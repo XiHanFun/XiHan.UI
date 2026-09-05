@@ -29,7 +29,7 @@ export interface PromptInputSchema extends MachineSchema {
      * 用一个布尔而不是四档运行态字符串——组件只需要二值判断，
      * 「这一轮走到哪一步」是宿主的事，透传成 data 属性属于作者的容器。
      */
-    busy?: boolean
+    loading?: boolean
     /** 按哪一档提交，默认 enter。 */
     submitKey?: PromptInputSubmitKey
     /** 允许空值提交，默认 false；有附件时由作者置真。这是唯一为附件留的钩子。 */
@@ -67,7 +67,7 @@ export interface PromptInputSchema extends MachineSchema {
     | { type: 'CONTROLLED.VALUE.EMPTY' }
     | { type: 'CONTROLLED.VALUE.FILLED' }
   tag: never
-  guard: 'canSubmit' | 'isBusy' | 'isValueEmpty' | 'isNextValueEmpty'
+  guard: 'canSubmit' | 'isLoading' | 'isValueEmpty' | 'isNextValueEmpty'
   action:
     | 'setValue'
     | 'clearValue'
@@ -85,7 +85,7 @@ export interface PromptInputApi<T extends PropTypes = PropTypes> {
   isComposing: boolean
   /** 能不能提交。比机器守卫多一条「非禁用」，供按钮置灰用。 */
   canSubmit: boolean
-  busy: boolean
+  loading: boolean
   disabled: boolean
   setValue: (next: string) => void
   submit: () => void

@@ -1,7 +1,12 @@
 <!-- 聚焦与选区 | input 部件就是一个原生 input，拿到它的节点就能聚焦、全选、把光标挪到末尾 -->
 <script setup lang="ts">
 import { ref } from "vue";
-import { XhTextFieldInput, XhTextFieldLabel, XhTextFieldRoot } from "@xihan-ui/vue";
+import {
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldLabel,
+  XhTextFieldRoot,
+} from "@xihan-ui/vue";
 
 const input = ref<HTMLInputElement | null>(null);
 
@@ -26,7 +31,9 @@ function caretToEnd(): void {
 <template>
   <XhTextFieldRoot default-value="曦寒组件库">
     <XhTextFieldLabel>标题</XhTextFieldLabel>
-    <XhTextFieldInput :ref="bindInput" style="inline-size: 220px" />
+    <XhTextFieldControl style="inline-size: 220px">
+      <XhTextFieldInput :ref="bindInput" />
+    </XhTextFieldControl>
     <div style="display: flex; gap: 8px">
       <button type="button" @click="input?.focus()">聚焦</button>
       <button type="button" @click="selectAll">全选</button>

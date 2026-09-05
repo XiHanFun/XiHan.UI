@@ -65,7 +65,7 @@ export const resizableSuite: ConformanceSuite = {
     {
       name: '默认：root 是 group，八向把手各自是分隔条并报出所在轴的尺寸',
       spec: { apg: `${APG}#wai-ariaroles,statesandproperties` },
-      props: { defaultSize: { width: 200, height: 100 } },
+      props: { defaultDimensions: { width: 200, height: 100 } },
       initial: {
         counts: { root: 1, handle: 8 },
         parts: {
@@ -97,7 +97,7 @@ export const resizableSuite: ConformanceSuite = {
       name: '方向键按屏幕方向推一步；Shift 走大步',
       spec: { apg: APG_KBD },
       covers: ['resizable.kbd.push', 'resizable.kbd.pull', 'resizable.kbd.large'],
-      props: { defaultSize: { width: 200, height: 100 } },
+      props: { defaultDimensions: { width: 200, height: 100 } },
       steps: [
         { kind: 'raw', why: LAYOUT_WHY, run: layout },
         { kind: 'focus', part: 'handle[2]' },
@@ -115,7 +115,7 @@ export const resizableSuite: ConformanceSuite = {
       name: 'Home / End 推到这条边能到的两端，且不越过约束',
       spec: { apg: APG_KBD },
       covers: ['resizable.kbd.min', 'resizable.kbd.max'],
-      props: { defaultSize: { width: 200, height: 100 }, minWidth: 120, maxWidth: 400 },
+      props: { defaultDimensions: { width: 200, height: 100 }, minWidth: 120, maxWidth: 400 },
       steps: [
         { kind: 'raw', why: LAYOUT_WHY, run: layout },
         { kind: 'focus', part: 'handle[2]' },
@@ -128,7 +128,7 @@ export const resizableSuite: ConformanceSuite = {
     {
       name: '拖东边只变宽；系统收走指针时退回按下那一刻',
       spec: { apg: APG },
-      props: { defaultSize: { width: 200, height: 100 } },
+      props: { defaultDimensions: { width: 200, height: 100 } },
       steps: [
         { kind: 'raw', why: LAYOUT_WHY, run: layout },
         { kind: 'raw', why: '指针按下要带真实坐标，按键步骤造不出', run: press('e', 300) },
@@ -149,7 +149,7 @@ export const resizableSuite: ConformanceSuite = {
     {
       name: '只开放部分边时，其余把手退出 Tab 序列',
       spec: { apg: APG },
-      props: { defaultSize: { width: 200, height: 100 }, edges: ['e', 's', 'se'] },
+      props: { defaultDimensions: { width: 200, height: 100 }, edges: ['e', 's', 'se'] },
       initial: {
         parts: {
           'handle[0]': { 'aria-disabled': 'true', 'tabindex': '-1', 'data-disabled': '' },
@@ -166,7 +166,7 @@ export const resizableSuite: ConformanceSuite = {
     {
       name: 'disabled：把手全部退出 Tab 序列，按下也不进调整',
       spec: { apg: APG },
-      props: { defaultSize: { width: 200, height: 100 }, disabled: true },
+      props: { defaultDimensions: { width: 200, height: 100 }, disabled: true },
       initial: {
         parts: {
           'root': { 'data-disabled': '' },

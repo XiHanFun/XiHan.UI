@@ -6,7 +6,7 @@
 
 - 长时间挂着的辅助界面：调试面板、图层属性、正在进行的通话、播放器。
 - 用户需要一边看页面一边改东西，弹窗那种"必须先处理完"的语气不合适。
-- 位置和大小要由用户自己定，并且值得记下来（`onPositionChange` / `onSizeChange` / `onStageChange` 就是为此留的）。
+- 位置和大小要由用户自己定，并且值得记下来（`onPositionChange` / `onDimensionsChange` / `onWindowStateChange` 就是为此留的）。
 
 ## 何时不用
 
@@ -17,11 +17,11 @@
 
 ## 特性
 
-- 三种形态：常规、收拢（只留标题栏）、铺满（占满视口），由 `stage` 一个值表达，可受控。
-- 位置与尺寸各自成对（`position` / `defaultPosition`、`size` / `defaultSize`），两态齐全。
+- 三种形态：常规、收拢（只留标题栏）、铺满（占满视口），由 `windowState` 一个值表达，可受控。
+- 位置与尺寸各自成对（`position` / `defaultPosition`、`dimensions` / `defaultDimensions`），两态齐全。
 - 八个改尺把手在节点上自报守的是哪条边，西边与北边的把手会同时改位置。
 - 键盘全程可达：拖拽把手上方向键平移、Shift 快移、Enter / Space 送回初始落点；改尺把手上方向键推边；Esc 关闭。
-- `minSize` / `maxSize` 在每一处入口都生效——拖、推、`setSize` 走的是同一个夹取函数。
+- `minSize` / `maxSize` 在每一处入口都生效——拖、推、`setDimensions` 走的是同一个夹取函数。
 
 ## 无障碍
 

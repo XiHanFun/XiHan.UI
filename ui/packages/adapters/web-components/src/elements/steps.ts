@@ -1,4 +1,4 @@
-import type { StepsItemProps, StepsSchema, StepsStepChangeDetails } from '@xihan-ui/headless'
+import type { StepsItemProps, StepsSchema, StepsValueChangeDetails } from '@xihan-ui/headless'
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectSteps, stepsAnatomy, stepsMachine, stepsMeta } from '@xihan-ui/headless'
@@ -7,7 +7,7 @@ import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 // 数值属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在 connect。
-// 空串也当缺席：`step=""` 经 Number() 会变成 0，那是一个真实存在的步序，不该由笔误产生。
+// 空串也当缺席：`value=""` 经 Number() 会变成 0，那是一个真实存在的步序，不该由笔误产生。
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 三态布尔：属性缺席 = undefined（用默认值），="false" = false，其余 = true。
@@ -35,8 +35,8 @@ function stepIndexOf(el: HTMLElement): number {
  * 图标、自定义序号、i18n 文案都再塞不进来。
  *
  * @customElement xh-steps
- * @attr {number} step - 受控步序（0 起）；缺省该属性即非受控
- * @attr {number} default-step - 非受控初始步序，默认 0
+ * @attr {number} value - 受控步序（0 起）；缺省该属性即非受控
+ * @attr {number} default-value - 非受控初始步序，默认 0
  * @attr {number} count - 总步数；步序上界取它（等于它即"全部完成"）
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 horizontal
  * @attr {boolean} linear - 线性模式：跳不到还没走到的步（那些 trigger 一律禁用）
@@ -44,7 +44,7 @@ function stepIndexOf(el: HTMLElement): number {
  * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义，默认 ltr
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @fires step-change - 步序变化；detail 为 `{ step: number }`
+ * @fires value-change - 步序变化；detail 为 `{ value: number }`
  * @csspart root - 组件根容器（承载 data-orientation / data-complete / data-empty）
  * @csspart list - role=tablist 容器（方向键与 Tab 序列在此收口）
  * @csspart item - 单个步骤容器；作者在此写 value（身份）与可选 disabled
@@ -62,8 +62,8 @@ export class XhStepsElement extends XhElement {
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
-    step: { converter: NUMBER_CONVERTER },
-    defaultStep: { converter: NUMBER_CONVERTER, attribute: 'default-step' },
+    value: { converter: NUMBER_CONVERTER },
+    defaultValue: { converter: NUMBER_CONVERTER, attribute: 'default-value' },
     count: { converter: NUMBER_CONVERTER },
     orientation: { converter: STRING_CONVERTER },
     linear: { converter: BOOLEAN_CONVERTER },
@@ -73,8 +73,8 @@ export class XhStepsElement extends XhElement {
     size: { converter: STRING_CONVERTER },
   }
 
-  declare step?: number
-  declare defaultStep?: number
+  declare value?: number
+  declare defaultValue?: number
   declare count?: number
   declare orientation?: Orientation
   declare linear?: boolean
@@ -83,8 +83,8 @@ export class XhStepsElement extends XhElement {
   declare tone?: Tone
   declare size?: Size
 
-  private readonly notify = (details: StepsStepChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('step-change', { detail: details, bubbles: true, composed: true }))
+  private readonly notify = (details: StepsValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
   // steps 机器无副作用：不需要 config/layer/refs，controller 只带 props。
@@ -92,8 +92,8 @@ export class XhStepsElement extends XhElement {
 
   private machineProps(): Partial<StepsSchema['props']> {
     return {
-      step: this.step,
-      defaultStep: this.defaultStep,
+      value: this.value,
+      defaultValue: this.defaultValue,
       count: this.count,
       orientation: this.orientation,
       // 布尔属性缺席即 undefined，把缺省交回 connect
@@ -102,7 +102,7 @@ export class XhStepsElement extends XhElement {
       dir: this.direction,
       tone: this.tone,
       size: this.size,
-      onStepChange: this.notify,
+      onValueChange: this.notify,
     }
   }
 
@@ -168,7 +168,7 @@ export class XhStepsElement extends XhElement {
     for (const el of this.getParts('content')) {
       const index = stepIndexOf(el)
       this.spreader.spread(el, api.getContentProps({ index }) as Record<string, unknown>)
-      this.setPartHidden(el, index !== api.step)
+      this.setPartHidden(el, index !== api.value)
     }
   }
 }

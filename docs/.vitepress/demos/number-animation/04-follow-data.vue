@@ -18,10 +18,10 @@ function next(): void {
     :to="readings[at]"
     :duration="1200"
     :active="running"
-    easing="ease-out"
+    easing="easeOut"
     separator=","
     size="lg"
-    @finish="settled = $event.value"
+    @complete="settled = $event.value"
   />
 
   <XhButton variant="solid" @click="next">换一组读数</XhButton>

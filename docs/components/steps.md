@@ -23,13 +23,13 @@
 
 ### 基础用法
 
-不传 step 即为非受控；方向键只搬焦点，按 Enter 或空格才切步，进退方法由 root 的插槽交出来
+不传 value 即为非受控；方向键只搬焦点，按 Enter 或空格才切步，进退方法由 root 的插槽交出来
 
 <XhDemo src="steps/01-basic" />
 
 ### 受控
 
-传了 step 就由宿主说了算，组件自己不再改步序；切步意图从 step-change 出来，写回才真的切
+传了 value 就由宿主说了算，组件自己不再改步序；切步意图从 value-change 出来，写回才真的切
 
 <XhDemo src="steps/02-controlled" />
 
@@ -89,8 +89,8 @@ size 换序号圆点的直径与标题、说明的字号，不传 size 即默认
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `step` | `number` |  | 当前步序（0 起）。给定即受控：内部不再自改，只发 onStepChange。 |
-| `defaultStep` | `number` |  | 非受控初值，默认 0。 |
+| `value` | `number` |  | 当前步序（0 起）。给定即受控：内部不再自改，只发 onValueChange。 |
+| `defaultValue` | `number` |  | 非受控初值，默认 0。 |
 | `count` | `number` |  | 总步数，是步序的上界与读屏"第 k 步，共 n 步"的分母。 缺省按 0 处理：此时 root 带 data-empty，步序被夹死在 0。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal；不同轴的方向键放行给页面滚动与读屏。 |
 | `linear` | `boolean` |  | 线性模式：只能回头看走过的步。未解锁（index &gt; step）的 trigger 一律禁用。 只拦跳转，goToNextStep 逐步前进照常可用。 |
@@ -98,7 +98,7 @@ size 换序号圆点的直径与标题、说明的字号，不传 size 即默认
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只影响水平轴上 ArrowLeft/ArrowRight 的前后语义。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `onStepChange` | `(details: StepsStepChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onValueChange` | `(details: StepsValueChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
 ## 事件
 
@@ -106,7 +106,7 @@ size 换序号圆点的直径与标题、说明的字号，不传 size 即默认
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `step-change` | `StepsStepChangeDetails` | 步序变化；detail 为 `{ step: number }` |
+| `value-change` | `StepsValueChangeDetails` | 步序变化；detail 为 `{ value: number }` |
 
 ## 插槽
 
@@ -134,7 +134,7 @@ size 换序号圆点的直径与标题、说明的字号，不传 size 即默认
 
 **状态**：`idle`
 
-**事件**：`STEP.SET` · `STEP.PREV` · `STEP.NEXT` · `TRIGGER.FOCUS` · `LIST.BLUR`
+**事件**：`VALUE.SET` · `STEP.PREV` · `STEP.NEXT` · `TRIGGER.FOCUS` · `LIST.BLUR`
 
 ## connect API
 
@@ -142,12 +142,12 @@ size 换序号圆点的直径与标题、说明的字号，不传 size 即默认
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `step` | `number` | 当前步序，恒在 [0, count] 内：count 变小后停在越界步也读得到一个可用的值。 |
+| `value` | `number` | 当前步序，恒在 [0, count] 内：count 变小后停在越界步也读得到一个可用的值。 |
 | `count` | `number` |  |
-| `complete` | `boolean` | 全部走完（step 走到 count）。此时没有任何一步是 current，作者据此渲染完成页。 |
+| `complete` | `boolean` | 全部走完（value 走到 count）。此时没有任何一步是 current，作者据此渲染完成页。 |
 | `focusedStep` | `number \| null` | 焦点在组外时为 null。 |
 | `getItemState` | `(props: StepsItemProps) => StepsItemState` |  |
-| `setStep` | `(next: number) => void` | 直接跳到某一步；越界会被夹回 [0, count]。 不认 linear：linear 只拦界面上的乱跳，不拦作者的命令式调用。 |
+| `setValue` | `(next: number) => void` | 直接跳到某一步；越界会被夹回 [0, count]。 不认 linear：linear 只拦界面上的乱跳，不拦作者的命令式调用。 |
 | `goToNextStep` | `() => void` |  |
 | `goToPrevStep` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |

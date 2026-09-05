@@ -4,7 +4,7 @@
     id="number-animation-follow-value"
     to="3600"
     duration="1200"
-    easing="ease-out"
+    easing="easeOut"
     separator=","
     size="lg"
   >
@@ -46,7 +46,7 @@
     run.textContent = running ? "暂停" : "继续";
   });
 
-  number.addEventListener("finish", (event) => {
+  number.addEventListener("complete", (event) => {
     settled.textContent = `上一次停在：${event.detail.value}`;
   });
 </script>

@@ -27,22 +27,22 @@ export function connectApproval<T extends PropTypes>(
   const { state, prop, send, context, scope } = service
   const status = state.get()
   const settled = status !== 'pending'
-  const busy = prop('busy') === true
+  const loading = prop('loading') === true
   const granted = context.get('grantedScopes')
   const note = context.get('note')
   const scopes = prop('scopes')
   const translations = prop('translations')
   const ids = scope.ids('approval', 'title', 'description')
   // 必选项没勾满、或判定在途，都批不了；拒绝这条路不受它们影响
-  const canApprove = !busy && canApproveScopes(scopes, granted)
+  const canApprove = !loading && canApproveScopes(scopes, granted)
 
   const isScopeGranted = (value: string): boolean => granted.includes(value)
-  const scopeDisabled = (item: ApprovalScope): boolean => settled || busy || item.disabled === true
+  const scopeDisabled = (item: ApprovalScope): boolean => settled || loading || item.disabled === true
 
   return {
     status,
     settled,
-    busy,
+    loading,
     grantedScopes: granted,
     note,
     canApprove,
@@ -61,16 +61,16 @@ export function connectApproval<T extends PropTypes>(
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
       'data-state': status,
-      'data-loading': dataAttr(busy),
+      'data-loading': dataAttr(loading),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'onKeyDown': (event: KeyboardEvent) => {
         // 备注框在根内，组合期间的 Escape 是收候选词框，不是拒绝
         if (isComposingEvent(event))
           return
-        // busy 与拒绝钮同一道闸门：Escape 是那颗钮的键盘等价物，只锁住钮的话
+        // loading 与拒绝钮同一道闸门：Escape 是那颗钮的键盘等价物，只锁住钮的话
         // 等待期里换只手按 Escape 照样打得出第二条判定
-        if (event.key !== 'Escape' || settled || busy || prop('denyOnEscape') === false)
+        if (event.key !== 'Escape' || settled || loading || prop('denyOnEscape') === false)
           return
         // 这不是「关闭」：本组件不提供不作答的出口
         event.preventDefault()
@@ -179,12 +179,12 @@ export function connectApproval<T extends PropTypes>(
     getApproveTriggerProps: () => normalize.button({
       ...parts['approve-trigger'].attrs,
       'type': 'button',
-      'aria-disabled': (!canApprove || busy) ? 'true' : 'false',
-      'aria-busy': busy ? 'true' : undefined,
+      'aria-disabled': (!canApprove || loading) ? 'true' : 'false',
+      'aria-busy': loading ? 'true' : undefined,
       'aria-label': translations?.approve,
       'disabled': settled || undefined,
       'data-state': status,
-      'data-loading': dataAttr(busy),
+      'data-loading': dataAttr(loading),
       'onClick': () => {
         if (!settled && canApprove)
           send({ type: 'APPROVE' })
@@ -198,14 +198,14 @@ export function connectApproval<T extends PropTypes>(
     getDenyTriggerProps: () => normalize.button({
       ...parts['deny-trigger'].attrs,
       'type': 'button',
-      'aria-disabled': busy ? 'true' : 'false',
-      'aria-busy': busy ? 'true' : undefined,
+      'aria-disabled': loading ? 'true' : 'false',
+      'aria-busy': loading ? 'true' : undefined,
       'aria-label': translations?.deny,
       'disabled': settled || undefined,
       'data-state': status,
-      'data-loading': dataAttr(busy),
+      'data-loading': dataAttr(loading),
       'onClick': () => {
-        if (!settled && !busy)
+        if (!settled && !loading)
           send({ type: 'DENY', source: 'user' })
       },
     }),

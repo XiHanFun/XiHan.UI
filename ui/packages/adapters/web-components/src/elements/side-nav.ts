@@ -1,4 +1,4 @@
-import type { SideNavExpandedChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from '@xihan-ui/headless'
+import type { SideNavExpandedValueChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from '@xihan-ui/headless'
 import type { Cleanup, IdGenerator, Layer, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
@@ -35,7 +35,7 @@ const GROUP_SELECTOR = '[data-xh-part="group"]'
  * @attr {boolean} loop - 上下键走到首尾回绕，默认关
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
  * @fires value-change - 选中变化；detail 为 `{ value: string | null }`
- * @fires expanded-change - 展开集合变化；detail 为 `{ value: string[] }`
+ * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - nav 地标根容器（aria-label 由 translations.root 给）
  * @csspart list - 顶层列表容器（ul），直接子节点只能是 item 与 branch
  * @csspart item - 叶子行的列表项（li），裹住一个 link
@@ -88,8 +88,8 @@ export class XhSideNavElement extends XhElement {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifyExpanded = (details: SideNavExpandedChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('expanded-change', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyExpanded = (details: SideNavExpandedValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('expanded-value-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -121,7 +121,7 @@ export class XhSideNavElement extends XhElement {
       dir: this.direction,
       translations: this.translations,
       onValueChange: this.notifyValue,
-      onExpandedChange: this.notifyExpanded,
+      onExpandedValueChange: this.notifyExpanded,
     }
   }
 

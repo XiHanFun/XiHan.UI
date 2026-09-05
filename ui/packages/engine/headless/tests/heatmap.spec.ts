@@ -1144,33 +1144,33 @@ describe('connectHeatmap 悬停详情', () => {
 
   it('指针进到某一格就把详情打开，离开即收起', () => {
     const harness = mountMonth(RANGE_TIP)
-    expect(harness.tooltip.hasAttribute('hidden')).toBe(true)
+    expect(harness.tooltip.getAttribute('data-state')).toBe('hidden')
 
     point(harness.cell('2024-01-02'), 'pointerenter')
     harness.render()
-    expect(harness.tooltip.hasAttribute('hidden')).toBe(false)
+    expect(harness.tooltip.getAttribute('data-state')).toBe('visible')
     expect(apiOf(harness.service).activeCell).toMatchObject({ date: '2024-01-02', count: 10, level: 4 })
 
     point(harness.cell('2024-01-02'), 'pointerleave')
     harness.render()
-    expect(harness.tooltip.hasAttribute('hidden')).toBe(true)
+    expect(harness.tooltip.getAttribute('data-state')).toBe('hidden')
   })
 
   it('键盘聚焦同样打开详情，焦点走出网格才收起', () => {
     const harness = mountMonth(RANGE_TIP)
     harness.cell('2024-01-02').focus()
     harness.render()
-    expect(harness.tooltip.hasAttribute('hidden')).toBe(false)
+    expect(harness.tooltip.getAttribute('data-state')).toBe('visible')
     expect(apiOf(harness.service).activeCell).toMatchObject({ date: '2024-01-02' })
 
     // 网格内换一格不算离场
     harness.cell('2024-01-03').focus()
     harness.render()
-    expect(harness.tooltip.hasAttribute('hidden')).toBe(false)
+    expect(harness.tooltip.getAttribute('data-state')).toBe('visible')
 
     harness.grid.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: document.body }))
     harness.render()
-    expect(harness.tooltip.hasAttribute('hidden')).toBe(true)
+    expect(harness.tooltip.getAttribute('data-state')).toBe('hidden')
     // 锚点留着，Tab 回来还落在原处
     expect(apiOf(harness.service).anchorDate).toBe('2024-01-03')
   })
@@ -1179,16 +1179,16 @@ describe('connectHeatmap 悬停详情', () => {
     const harness = mountMonth(RANGE_TIP)
     harness.cell('2024-01-02').focus()
     harness.render()
-    expect(harness.tooltip.hasAttribute('hidden')).toBe(false)
+    expect(harness.tooltip.getAttribute('data-state')).toBe('visible')
 
     press(harness as unknown as Harness, 'Escape')
     harness.render()
-    expect(harness.tooltip.hasAttribute('hidden')).toBe(true)
+    expect(harness.tooltip.getAttribute('data-state')).toBe('hidden')
     expect(document.activeElement).toBe(harness.cell('2024-01-02'))
 
     press(harness as unknown as Harness, 'ArrowRight')
     harness.render()
-    expect(harness.tooltip.hasAttribute('hidden')).toBe(false)
+    expect(harness.tooltip.getAttribute('data-state')).toBe('visible')
   })
 
   it('详情落点与摆放方向都写在条上：位置是量出来的，方向按行序算', () => {

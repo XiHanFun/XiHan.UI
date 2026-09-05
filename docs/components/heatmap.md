@@ -184,6 +184,12 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 ## 状态
 
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `tooltip` | 'hidden' \| 'visible' |
+
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
@@ -305,6 +311,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `cell` | `data-level` | String(level) |
 | `tooltip` | `data-inline-anchor` | undefined \| tip.inlineAnchor |
 | `tooltip` | `data-placement` | undefined \| ((): 'block-start' \| 'block-end' =&gt; { if (activeRef =… |
+| `tooltip` | `data-state` | 'hidden' \| 'visible' |
 | `legend-label` | `data-bound` | label.bound |
 | `legend-item` | `data-level` | String(item.level) |
 

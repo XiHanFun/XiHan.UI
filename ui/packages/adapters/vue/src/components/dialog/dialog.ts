@@ -97,6 +97,14 @@ export const XhDialogContent = defineComponent({
   },
 })
 
+export const XhDialogHeader = defineComponent({
+  name: 'XhDialogHeader',
+  setup(_, { slots }) {
+    const ctx = useDialogContext()
+    return () => h('header', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhDialogTitle = defineComponent({
   name: 'XhDialogTitle',
   setup(_, { slots }) {
@@ -110,6 +118,22 @@ export const XhDialogDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useDialogContext()
     return () => h('p', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhDialogBody = defineComponent({
+  name: 'XhDialogBody',
+  setup(_, { slots }) {
+    const ctx = useDialogContext()
+    return () => h('div', ctx.api.value.getBodyProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhDialogFooter = defineComponent({
+  name: 'XhDialogFooter',
+  setup(_, { slots }) {
+    const ctx = useDialogContext()
+    return () => h('footer', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

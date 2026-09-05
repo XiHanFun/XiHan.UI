@@ -85,7 +85,7 @@ export const treeSelectMachine = createMachine({
       value: prop('expandedValue'),
       defaultValue: prop('defaultExpandedValue') ?? [],
       isEqual: sameValues,
-      onChange: value => prop('onExpandedChange')?.({ value }),
+      onChange: value => prop('onExpandedValueChange')?.({ value }),
     })),
     // 焦点锚点不受控、不对外通知：它只服务 roving tabindex 与方向键起点
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),

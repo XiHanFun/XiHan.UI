@@ -3,15 +3,17 @@
   <div data-xh-part="root">
     <label data-xh-part="label">站内搜索</label>
     <div style="display: flex">
-      <!-- 输入框只留左侧圆角，右边一格外扣 1px 与按钮共用一条描边 -->
-      <input
-        data-xh-part="input"
+      <!-- 控件盒只留左侧圆角，右边一格外扣 1px 与按钮共用一条描边 -->
+      <div
+        data-xh-part="control"
         style="
           inline-size: 220px;
           margin-inline-end: -1px;
-          --xh-text-field-input-radius: var(--xh-shape-control) 0 0 var(--xh-shape-control);
+          --xh-text-field-control-radius: var(--xh-shape-control) 0 0 var(--xh-shape-control);
         "
-      />
+      >
+        <input data-xh-part="input" />
+      </div>
       <xh-button style="--xh-button-radius: 0 var(--xh-shape-control) var(--xh-shape-control) 0">
         <button data-xh-part="root">搜索</button>
       </xh-button>
@@ -23,7 +25,7 @@
   <div data-xh-part="root">
     <label data-xh-part="label">域名</label>
     <div style="display: flex">
-      <!-- 前后两块固定文本与输入框同高同描边，圆角各留一侧 -->
+      <!-- 前后两块固定文本与控件盒同高同描边，圆角各留一侧 -->
       <span
         style="
           display: inline-flex;
@@ -38,10 +40,12 @@
         "
         >https://</span
       >
-      <input
-        data-xh-part="input"
-        style="inline-size: 160px; margin-inline: -1px; --xh-text-field-input-radius: 0"
-      />
+      <div
+        data-xh-part="control"
+        style="inline-size: 160px; margin-inline: -1px; --xh-text-field-control-radius: 0"
+      >
+        <input data-xh-part="input" />
+      </div>
       <span
         style="
           display: inline-flex;

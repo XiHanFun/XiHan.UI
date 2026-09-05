@@ -69,10 +69,10 @@
   ];
 
   function apply(expanded) {
-    table.expanded = expanded;
+    table.expandedValue = expanded;
     readout.textContent = `展开：${expanded.length ? expanded.join("、") : "（无）"}`;
   }
 
   apply(["o1"]);
-  table.addEventListener("expanded-change", (event) => apply(event.detail.value));
+  table.addEventListener("expanded-value-change", (event) => apply(event.detail.value));
 </script>

@@ -4,7 +4,7 @@ import type { MachineSchema } from '@xihan-ui/machine'
 /** 滚回顶部的方式：auto 一步到位，smooth 平滑滚过去。 */
 export type BackTopBehavior = 'auto' | 'smooth'
 
-export interface BackTopVisibleChangeDetails {
+export interface BackTopVisibilityChangeDetails {
   /** 按钮此刻露不露面。 */
   visible: boolean
 }
@@ -33,7 +33,7 @@ export interface BackTopSchema extends MachineSchema {
     /** 尺寸：sm / md / lg。 */
     size?: Size
     /** 露面与否变化时回调。 */
-    onVisibleChange?: (details: BackTopVisibleChangeDetails) => void
+    onVisibilityChange?: (details: BackTopVisibilityChangeDetails) => void
   }
   context: Record<string, never>
   computed: Record<string, never>

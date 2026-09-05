@@ -78,7 +78,7 @@
 
   // 展开集合同样只走 property，元素发来的意图原样写回
   nav.expandedValue = ["user"];
-  nav.addEventListener("expanded-change", (event) => {
+  nav.addEventListener("expanded-value-change", (event) => {
     nav.expandedValue = event.detail.value;
   });
 

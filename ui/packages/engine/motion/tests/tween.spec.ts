@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest'
+import { easing, resolveEasing } from '../src/easing'
 import {
   isTweenDone,
-  resolveTweenEasing,
-  tweenEasings,
   tweenProgress,
   tweenValueAt,
 } from '../src/tween'
@@ -36,44 +35,6 @@ describe('isTweenDone', () => {
   })
 })
 
-describe('tweenEasings', () => {
-  it('每一档的两端都严格取到 0 与 1：否则起点会跳一下、终点会差一点', () => {
-    for (const [name, fn] of Object.entries(tweenEasings)) {
-      expect(fn(0), `${name} 在 0 处`).toBe(0)
-      expect(fn(1), `${name} 在 1 处`).toBe(1)
-    }
-  })
-
-  it('每一档在区间内单调不减', () => {
-    for (const [name, fn] of Object.entries(tweenEasings)) {
-      let previous = -1
-      for (let i = 0; i <= 50; i++) {
-        const value = fn(i / 50)
-        expect(value, name).toBeGreaterThanOrEqual(previous)
-        previous = value
-      }
-    }
-  })
-
-  it('linear 恒等；ease-out 前段快、ease-in 前段慢', () => {
-    expect(tweenEasings.linear(0.3)).toBe(0.3)
-    expect(tweenEasings['ease-out'](0.3)).toBeGreaterThan(0.3)
-    expect(tweenEasings['ease-in'](0.3)).toBeLessThan(0.3)
-  })
-
-  it('ease-in-out 在中点对半分', () => {
-    expect(tweenEasings['ease-in-out'](0.5)).toBeCloseTo(0.5, 10)
-  })
-})
-
-describe('resolveTweenEasing', () => {
-  it('认不出的档位退回 linear：档位可能来自 DOM 特性，那是一个任意字符串', () => {
-    expect(resolveTweenEasing(undefined)).toBe(tweenEasings.linear)
-    expect(resolveTweenEasing('bounce' as never)).toBe(tweenEasings.linear)
-    expect(resolveTweenEasing('ease-out')).toBe(tweenEasings['ease-out'])
-  })
-})
-
 describe('tweenValueAt', () => {
   it('线性补间按比例取值', () => {
     const spec = { from: 0, to: 1000, duration: 1000 }
@@ -84,7 +45,7 @@ describe('tweenValueAt', () => {
 
   it('走完那一刻返回终点本身，不是按曲线算出来的近似值', () => {
     // 逐帧累出来的浮点尾巴会让最后停在 4999.999999 上，定了小数位也照样露馅
-    const spec = { from: 0, to: 5000, duration: 333, easing: 'ease-in-out' as const }
+    const spec = { from: 0, to: 5000, duration: 333, easing: 'easeInOut' as const }
     expect(tweenValueAt(spec, 333)).toBe(5000)
     expect(tweenValueAt(spec, 1e9)).toBe(5000)
   })
@@ -109,10 +70,15 @@ describe('tweenValueAt', () => {
   })
 
   it('缓动只改路径不改两端', () => {
-    for (const easing of ['linear', 'ease-in', 'ease-out', 'ease-in-out'] as const) {
-      const spec = { from: 10, to: 20, duration: 100, easing }
-      expect(tweenValueAt(spec, 0)).toBe(10)
-      expect(tweenValueAt(spec, 100)).toBe(20)
+    for (const name of ['linear', 'standard', 'easeIn', 'easeOut', 'easeInOut'] as const) {
+      const spec = { from: 10, to: 20, duration: 100, easing: name }
+      expect(tweenValueAt(spec, 0), name).toBe(10)
+      expect(tweenValueAt(spec, 100), name).toBe(20)
     }
+  })
+
+  it('曲线取自共用的那一张表：同一个名字算出来与 resolveEasing 逐值相同', () => {
+    const spec = { from: 0, to: 100, duration: 100, easing: 'easeOut' as const }
+    expect(tweenValueAt(spec, 30)).toBe(resolveEasing(easing.easeOut)(0.3) * 100)
   })
 })

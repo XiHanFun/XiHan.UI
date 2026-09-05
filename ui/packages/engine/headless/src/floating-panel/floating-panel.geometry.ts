@@ -5,14 +5,14 @@ import type {
   FloatingPanelPosition,
   FloatingPanelResizeEdge,
   FloatingPanelSize,
-  FloatingPanelStage,
+  FloatingPanelWindowState,
 } from './floating-panel.types'
 import { clampSize, resizeRect } from '@xihan-ui/pointer'
 
 /** 作者没给 minSize 时的尺寸下限：再小标题栏里的按钮就排不下了。 */
 export const FLOATING_PANEL_MIN_SIZE: FloatingPanelSize = { width: 160, height: 120 }
 
-/** 作者没给 defaultSize 时的初始尺寸。 */
+/** 作者没给 defaultDimensions 时的初始尺寸。 */
 export const FLOATING_PANEL_DEFAULT_SIZE: FloatingPanelSize = { width: 360, height: 240 }
 
 /** 作者没给 defaultPosition 时的初始落点：离视口左上角留一段，别贴死在角上。 */
@@ -114,11 +114,11 @@ export function resizeFloatingPanel(
  * 四个键每帧都写齐，少写一个上一帧的值会留在节点上（改形态时尤其明显）。
  */
 export function floatingPanelRectStyle(
-  stage: FloatingPanelStage,
+  windowState: FloatingPanelWindowState,
   position: FloatingPanelPosition,
   size: FloatingPanelSize,
 ): Record<string, string> {
-  if (stage === 'maximized')
+  if (windowState === 'maximized')
     return { position: 'fixed', left: '0px', top: '0px', width: '100%', height: '100%' }
   return {
     position: 'fixed',
@@ -126,6 +126,6 @@ export function floatingPanelRectStyle(
     top: `${finite(position.y)}px`,
     width: `${finite(size.width)}px`,
     // 收拢时高度交给标题栏自己撑：正文已经收起，写死高度会留下一大片空白
-    height: stage === 'minimized' ? 'auto' : `${finite(size.height)}px`,
+    height: windowState === 'minimized' ? 'auto' : `${finite(size.height)}px`,
   }
 }

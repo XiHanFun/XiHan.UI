@@ -131,7 +131,7 @@ export const approvalSuite: ConformanceSuite = {
       // 闸门后面的系统会收到两条相互矛盾的结论。两颗钮同一把尺子
       name: '判定在途：批准与拒绝一起锁住，再点谁都打不出第二条判定',
       spec: { apg: APG },
-      props: { busy: true, scopes: [{ value: 'read', required: true }] },
+      props: { loading: true, scopes: [{ value: 'read', required: true }] },
       initial: {
         parts: {
           'approve-trigger': { 'aria-disabled': 'true', 'aria-busy': 'true', 'data-loading': '' },

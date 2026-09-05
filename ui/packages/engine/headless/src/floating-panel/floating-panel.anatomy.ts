@@ -12,7 +12,7 @@ export const floatingPanelAnatomy = createAnatomy('floating-panel', [
   'title',
   'drag-trigger',
   'resize-trigger',
-  'stage-trigger',
+  'window-state-trigger',
   'close-trigger',
   'body',
 ])

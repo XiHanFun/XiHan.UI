@@ -11,6 +11,7 @@ import {
   XhListboxItemText,
   XhListboxLabel,
   XhListboxRoot,
+  XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
@@ -35,7 +36,9 @@ const filtered = computed(() => {
   <div style="display: flex; flex-direction: column; gap: 8px; max-inline-size: 320px">
     <XhTextFieldRoot v-model:value="query" placeholder="输入姓名筛选">
       <XhTextFieldLabel>搜索</XhTextFieldLabel>
-      <XhTextFieldInput />
+      <XhTextFieldControl>
+        <XhTextFieldInput />
+      </XhTextFieldControl>
     </XhTextFieldRoot>
     <XhListboxRoot v-model:value="picked">
       <XhListboxLabel>成员</XhListboxLabel>

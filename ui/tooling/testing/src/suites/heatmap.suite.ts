@@ -677,20 +677,20 @@ export const heatmapSuite: ConformanceSuite = {
       props: { ...RANGE, value: [{ date: '2024-01-02', count: 9 }] },
       initial: {
         // 没有活跃的格子时整条收起，落点与摆放方向都不写
-        parts: { tooltip: { 'hidden': '', 'aria-hidden': 'true', 'data-placement': null } },
+        parts: { tooltip: { 'data-state': 'hidden', 'aria-hidden': 'true', 'data-placement': null } },
       },
       steps: [
         {
           kind: 'raw',
           why: '指针进出没有对应的步骤类型，只能直接派事件',
           run: pointer(at('2024-01-02'), 'pointerenter'),
-          expect: { parts: { tooltip: { 'hidden': null, 'data-placement': 'block-end' } } },
+          expect: { parts: { tooltip: { 'data-state': 'visible', 'data-placement': 'block-end' } } },
         },
         {
           kind: 'raw',
           why: '同上：指针离开也只能直接派事件',
           run: pointer(at('2024-01-02'), 'pointerleave'),
-          expect: { parts: { tooltip: { hidden: '' } } },
+          expect: { parts: { tooltip: { 'data-state': 'hidden' } } },
         },
       ],
     },
@@ -703,7 +703,7 @@ export const heatmapSuite: ConformanceSuite = {
         {
           kind: 'focus',
           part: `cell[${at('2024-01-02')}]`,
-          expect: { parts: { tooltip: { hidden: null } } },
+          expect: { parts: { tooltip: { 'data-state': 'visible' } } },
         },
         {
           // 网格内换一格不算离场，详情跟着焦点继续显示
@@ -711,13 +711,13 @@ export const heatmapSuite: ConformanceSuite = {
           key: 'ArrowDown',
           expect: {
             activeElement: { part: `cell[${at('2024-01-03')}]`, exact: true },
-            parts: { tooltip: { hidden: null } },
+            parts: { tooltip: { 'data-state': 'visible' } },
           },
         },
         {
           // 焦点整个离开网格：详情收起，锚点留着
           kind: 'blur',
-          expect: { parts: { tooltip: { hidden: '' } } },
+          expect: { parts: { tooltip: { 'data-state': 'hidden' } } },
         },
       ],
     },
@@ -731,13 +731,13 @@ export const heatmapSuite: ConformanceSuite = {
         {
           kind: 'focus',
           part: `cell[${at('2024-01-02')}]`,
-          expect: { parts: { tooltip: { hidden: null } } },
+          expect: { parts: { tooltip: { 'data-state': 'visible' } } },
         },
         {
           kind: 'key',
           key: 'Escape',
           expect: {
-            parts: { tooltip: { hidden: '' } },
+            parts: { tooltip: { 'data-state': 'hidden' } },
             activeElement: { part: `cell[${at('2024-01-02')}]`, exact: true },
           },
         },
@@ -746,7 +746,7 @@ export const heatmapSuite: ConformanceSuite = {
           key: 'ArrowDown',
           expect: {
             activeElement: { part: `cell[${at('2024-01-03')}]`, exact: true },
-            parts: { tooltip: { hidden: null } },
+            parts: { tooltip: { 'data-state': 'visible' } },
           },
         },
       ],

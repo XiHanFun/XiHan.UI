@@ -1,4 +1,4 @@
-<!-- 受控展开 | 传了 expandedValue 就由宿主说了算，组件只发 expanded-change 不落内部值，写回它才动 -->
+<!-- 受控展开 | 传了 expandedValue 就由宿主说了算，组件只发 expanded-value-change 不落内部值，写回它才动 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { JSON_VIEWER_ROOT_PATH, jsonExpandedPathsToDepth } from "@xihan-ui/headless";
@@ -11,7 +11,7 @@ const payload = {
 
 const expanded = ref<string[]>([JSON_VIEWER_ROOT_PATH]);
 
-function onExpandedChange(details: { value: string[] }) {
+function onExpandedValueChange(details: { value: string[] }) {
   expanded.value = details.value;
 }
 </script>
@@ -28,7 +28,7 @@ function onExpandedChange(details: { value: string[] }) {
     <XhJsonViewerRoot
       :value="payload"
       :expanded-value="expanded"
-      @expanded-change="onExpandedChange"
+      @expanded-value-change="onExpandedValueChange"
     />
 
     <span>展开了 {{ expanded.length }} 处</span>

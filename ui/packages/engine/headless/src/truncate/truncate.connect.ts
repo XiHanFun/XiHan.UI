@@ -18,7 +18,7 @@ export function connectTruncate<T extends PropTypes>(
 ): TruncateApi<T> {
   const { state, prop, context, send } = service
 
-  const expanded = state.matches('expanded')
+  const open = state.matches('open')
   const overflowing = context.get('overflowing')
   const expandable = !!prop('expandable')
   const lines = resolveTruncateLines(prop('lines'))
@@ -31,19 +31,19 @@ export function connectTruncate<T extends PropTypes>(
    * 铺开态无条件算数：量测在铺开态是跳过的（裁剪已撤，两个尺寸恒相等），
    * 此刻的 overflowing 未必反映夹住的那一版；靠它判就可能把收回去的入口一并撤掉。
    */
-  const actionable = expandable && (overflowing || expanded)
+  const actionable = expandable && (overflowing || open)
   // 铺开着就没什么被裁掉了，提示一并撤走
-  const title = prop('tooltip') && overflowing && !expanded ? context.get('text') : undefined
+  const title = prop('tooltip') && overflowing && !open ? context.get('text') : undefined
 
-  const setExpanded = (next: boolean): void => {
-    if (next !== expanded)
+  const setOpen = (next: boolean): void => {
+    if (next !== open)
       send({ type: 'TOGGLE' })
   }
 
   return {
-    expanded,
+    open,
     overflowing,
-    setExpanded,
+    setOpen,
     measure: () => send({ type: 'MEASURE' }),
 
     getRootProps: () => normalize.element({
@@ -60,10 +60,10 @@ export function connectTruncate<T extends PropTypes>(
         ? {
             'role': 'button',
             'tabindex': 0,
-            'aria-expanded': expanded ? 'true' : 'false',
+            'aria-expanded': open ? 'true' : 'false',
             // 与全库 29 处 aria-expanded 对齐的开合编码。按不动的那一支一个都不写：
             // 给一个恒 closed 会让皮肤画出一个永远转不动的箭头
-            'data-state': expanded ? 'open' : 'closed',
+            'data-state': open ? 'open' : 'closed',
             'onClick': () => send({ type: 'TOGGLE' }),
             'onKeydown': (event: KeyboardEvent) => {
               if (event.key !== 'Enter' && event.key !== ' ')

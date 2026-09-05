@@ -58,7 +58,7 @@ function mountViewer(opts: { loop?: boolean, maxScale?: number, defaultIndex?: n
   const app = createApp({
     setup: () => () =>
       h(XhImageViewerRoot, {
-        items: ITEMS,
+        collection: ITEMS,
         defaultOpen: true,
         defaultIndex: opts.defaultIndex,
         loop: opts.loop,

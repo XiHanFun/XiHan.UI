@@ -35,7 +35,7 @@ const collection = [
 const expanded = ref<string[]>(["api"]);
 const selected = ref<string[]>([]);
 
-function onExpandedChange(details: { value: string[] }) {
+function onExpandedValueChange(details: { value: string[] }) {
   expanded.value = details.value;
 }
 
@@ -55,7 +55,7 @@ function onSelectionChange(details: { value: string[] }) {
       :collection="collection"
       :expanded-value="expanded"
       :selection="selected"
-      @expanded-change="onExpandedChange"
+      @expanded-value-change="onExpandedValueChange"
       @selection-change="onSelectionChange"
     >
       <XhTreeLabel>文档目录</XhTreeLabel>

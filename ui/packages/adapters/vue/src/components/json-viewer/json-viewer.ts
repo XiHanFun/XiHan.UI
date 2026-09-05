@@ -90,12 +90,12 @@ export const XhJsonViewerRoot = defineComponent({
   },
   // expanded-change 携带 { value }，update:expandedValue 携带裸集合
   emits: {
-    'expanded-change': (_details: PayloadOf<JsonViewerProps, 'onExpandedChange'>) => true,
-    'update:expandedValue': (_value: PayloadOf<JsonViewerProps, 'onExpandedChange'>['value']) => true,
+    'expanded-value-change': (_details: PayloadOf<JsonViewerProps, 'onExpandedValueChange'>) => true,
+    'update:expandedValue': (_value: PayloadOf<JsonViewerProps, 'onExpandedValueChange'>['value']) => true,
   },
   setup(props, { emit }) {
-    const notify: JsonViewerProps['onExpandedChange'] = (details) => {
-      emit('expanded-change', details)
+    const notify: JsonViewerProps['onExpandedValueChange'] = (details) => {
+      emit('expanded-value-change', details)
       emit('update:expandedValue', details.value)
     }
     const ctx = useJsonViewer(withXhConfig('json-viewer', props) as JsonViewerProps, notify)

@@ -1,4 +1,4 @@
-import type { NumberAnimationEasing, NumberAnimationFinishDetails, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
+import type { NumberAnimationCompleteDetails, NumberAnimationEasing, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
 import type { Size, Tone } from '@xihan-ui/kernel'
 import { connectNumberAnimation, numberAnimationAnatomy, numberAnimationMachine, numberAnimationMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -27,14 +27,14 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {number} from - 起点，缺省 0
  * @attr {number} to - 终点，缺省 0
  * @attr {number} duration - 时长毫秒，缺省 1000；<=0 即一步到位
- * @attr {'linear'|'ease-in'|'ease-out'|'ease-in-out'} easing - 缓动，缺省 linear
+ * @attr {string} easing - 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 cubic-bezier 串，缺省线性
  * @attr {number} precision - 小数位，缺省 0
  * @attr {string} separator - 千位分隔符，缺省不分隔
  * @attr {boolean} active - 是否在跑，缺省真；`active="false"` 停在当前值
  * @attr {'sm'|'md'|'lg'} size - 尺寸，只改字号
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定数字用哪族颜色
  * @attr {'off'|'polite'|'assertive'} live - 读屏播报档位，缺省 off
- * @fires finish - 走到终点；detail 为 `{ value: number }`
+ * @fires complete - 走到终点；detail 为 `{ value: number }`
  * @csspart root - 数字本身（承载 status 语义、data-state 与两个视觉轴）；文字归元素写
  */
 export class XhNumberAnimationElement extends XhElement {
@@ -65,8 +65,8 @@ export class XhNumberAnimationElement extends XhElement {
   declare tone?: Tone
   declare live?: NumberAnimationLive
 
-  private readonly notify = (details: NumberAnimationFinishDetails): void => {
-    this.dispatchEvent(new CustomEvent('finish', { detail: details, bubbles: true, composed: true }))
+  private readonly notify = (details: NumberAnimationCompleteDetails): void => {
+    this.dispatchEvent(new CustomEvent('complete', { detail: details, bubbles: true, composed: true }))
   }
 
   // 机器的副作用只有一个逐帧循环（自身自足）：不需要 config/layer/refs，controller 只带 props。
@@ -85,7 +85,7 @@ export class XhNumberAnimationElement extends XhElement {
       size: this.size,
       tone: this.tone,
       live: this.live,
-      onFinish: this.notify,
+      onComplete: this.notify,
     }
   }
 

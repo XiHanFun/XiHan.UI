@@ -44,9 +44,9 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 
 <XhDemo src="drawer/04-size" />
 
-### 内容滚动
+### 头尾固定、正文滚动
 
-面板本身定高，把中间那段设成可伸缩并开滚动，标题与底部操作就钉在两头
+header / body / footer 把面板切成三段：头与尾定在原处，只有正文那一段在滚
 
 <XhDemo src="drawer/05-scroll" />
 
@@ -73,7 +73,7 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-drawer>` |
-| Vue 组件 | `XhDrawerCloseTrigger` `XhDrawerContent` `XhDrawerDescription` `XhDrawerRoot` `XhDrawerTitle` `XhDrawerTrigger` |
+| Vue 组件 | `XhDrawerBody` `XhDrawerCloseTrigger` `XhDrawerContent` `XhDrawerDescription` `XhDrawerFooter` `XhDrawerHeader` `XhDrawerRoot` `XhDrawerTitle` `XhDrawerTrigger` |
 | 组合式函数 | `useDrawer` |
 | 状态机 | `drawerMachine` |
 | 皮肤 | `@xihan-ui/styles/drawer.css` |
@@ -82,7 +82,7 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="drawer"`：**`root`** · `trigger` · `backdrop` · `positioner` · **`content`** · `title` · `description` · `close-trigger`
+`data-scope="drawer"`：**`root`** · `trigger` · `backdrop` · `positioner` · **`content`** · `header` · `title` · `description` · `body` · `footer` · `close-trigger`
 
 ## Props
 
@@ -152,8 +152,11 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 | `getBackdropProps` | `() => T['element']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
+| `getHeaderProps` | `() => T['element']` |  |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
+| `getBodyProps` | `() => T['element']` |  |
+| `getFooterProps` | `() => T['element']` |  |
 | `getCloseTriggerProps` | `() => T['button']` |  |
 
 ## 键盘
@@ -212,7 +215,7 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-drawer-backdrop-bg` · `--xh-drawer-backdrop-blur` · `--xh-drawer-backdrop-layer` · `--xh-drawer-bg` · `--xh-drawer-close-bg-active` · `--xh-drawer-close-bg-hover` · `--xh-drawer-close-fg` · `--xh-drawer-close-fg-hover` · `--xh-drawer-close-radius` · `--xh-drawer-close-size` · `--xh-drawer-description-fg` · `--xh-drawer-description-font-size` · `--xh-drawer-fg` · `--xh-drawer-gap` · `--xh-drawer-icon-size` · `--xh-drawer-layer` · `--xh-drawer-px` · `--xh-drawer-py` · `--xh-drawer-radius` · `--xh-drawer-shadow` · `--xh-drawer-size` · `--xh-drawer-title-fg` · `--xh-drawer-title-font-size` · `--xh-drawer-title-font-weight` · `--xh-drawer-trigger-bg` · `--xh-drawer-trigger-bg-active` · `--xh-drawer-trigger-bg-hover` · `--xh-drawer-trigger-bg-open` · `--xh-drawer-trigger-border` · `--xh-drawer-trigger-border-hover` · `--xh-drawer-trigger-border-open` · `--xh-drawer-trigger-fg` · `--xh-drawer-trigger-font-size` · `--xh-drawer-trigger-font-weight` · `--xh-drawer-trigger-gap` · `--xh-drawer-trigger-h` · `--xh-drawer-trigger-px` · `--xh-drawer-trigger-radius`
+`--xh-drawer-backdrop-bg` · `--xh-drawer-backdrop-blur` · `--xh-drawer-backdrop-layer` · `--xh-drawer-bg` · `--xh-drawer-close-bg-active` · `--xh-drawer-close-bg-hover` · `--xh-drawer-close-fg` · `--xh-drawer-close-fg-hover` · `--xh-drawer-close-radius` · `--xh-drawer-close-size` · `--xh-drawer-description-fg` · `--xh-drawer-description-font-size` · `--xh-drawer-fg` · `--xh-drawer-footer-gap` · `--xh-drawer-footer-pt` · `--xh-drawer-gap` · `--xh-drawer-header-gap` · `--xh-drawer-header-pb` · `--xh-drawer-icon-size` · `--xh-drawer-layer` · `--xh-drawer-px` · `--xh-drawer-py` · `--xh-drawer-radius` · `--xh-drawer-shadow` · `--xh-drawer-size` · `--xh-drawer-title-fg` · `--xh-drawer-title-font-size` · `--xh-drawer-title-font-weight` · `--xh-drawer-trigger-bg` · `--xh-drawer-trigger-bg-active` · `--xh-drawer-trigger-bg-hover` · `--xh-drawer-trigger-bg-open` · `--xh-drawer-trigger-border` · `--xh-drawer-trigger-border-hover` · `--xh-drawer-trigger-border-open` · `--xh-drawer-trigger-fg` · `--xh-drawer-trigger-font-size` · `--xh-drawer-trigger-font-weight` · `--xh-drawer-trigger-gap` · `--xh-drawer-trigger-h` · `--xh-drawer-trigger-px` · `--xh-drawer-trigger-radius`
 
 ## 动效
 

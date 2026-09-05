@@ -1,6 +1,6 @@
 <!-- 出错的那一步 | 步序只认下标，「这一步出错了」是宿主自己的数据：在那一步的 item 上换掉标记与颜色令牌 -->
 <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-  <xh-steps id="steps-error" step="1" count="3">
+  <xh-steps id="steps-error" value="1" count="3">
     <div data-xh-part="root">
       <div data-xh-part="list">
         <div data-xh-part="item" value="0">
@@ -62,15 +62,15 @@
   const second = document.getElementById("steps-error-second");
   const indicators = [...steps.querySelectorAll('[data-xh-part="indicator"]')];
 
-  function setStep(next) {
-    steps.step = next;
+  function setValue(next) {
+    steps.value = next;
     indicators.forEach((indicator, index) => {
       indicator.textContent =
         index === errorAt ? "!" : next > index ? "" : String(index + 1);
     });
   }
 
-  steps.addEventListener("step-change", (event) => setStep(event.detail.step));
-  third.addEventListener("click", () => setStep(2));
-  second.addEventListener("click", () => setStep(1));
+  steps.addEventListener("value-change", (event) => setValue(event.detail.value));
+  third.addEventListener("click", () => setValue(2));
+  second.addEventListener("click", () => setValue(1));
 </script>

@@ -3,7 +3,7 @@ import type {
   TableColumnKind,
   TableColumnPreference,
   TableColumnProps,
-  TableExpandedChangeDetails,
+  TableExpandedValueChangeDetails,
   TableRowDef,
   TableRowProps,
   TableSchema,
@@ -74,7 +74,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @prop {TableColumnPreference} columnPreference - 列偏好（显隐/顺序/宽/冻结），给定即受控
  * @prop {TableColumnKind[]} prefixColumns - 要哪几列前缀列，按给定顺序插在最前面
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] | 'all' }`
- * @fires expanded-change - 展开集合变化；detail 为 `{ value: string[] }`
+ * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @fires row-move - 行换了位置；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插），ids 是重排好的整份行序
  * @prop {(move: TableRowMoveDetails) => boolean} allowRowDrop - 这一次搬家许不许，收到的是折算好的落点；不给即都许
  * @csspart root - role=grid 容器（rows 里有可展开的行时为 treegrid），报行列总数与多选声明
@@ -93,7 +93,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @csspart row-drag-trigger - 行拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由表体上的 Alt + 方向键承担
  * @csspart live-region - 视觉隐藏的播报区，列拖拽过程的读屏文案写在这里；须写在 root 之外（root 是 role=grid，它的子节点只能是 row 与 rowgroup）
  * @csspart expand-trigger - 展开把手（aria-hidden 且不占 Tab 位，键盘那一路由左右方向键承担）
- * @csspart expanded-row - role=row 详情行，须自带 value 属性与它所属的数据行配对，内部须放一个 cell 承载详情；收起时 hidden
+ * @csspart expanded-row - role=row 详情行，须自带 value 属性与它所属的数据行配对，内部须放一个 cell 承载详情；收起时 data-state=closed
  * @csspart empty - 空态节点，表体为空且不在加载时显形
  * @csspart loading - 加载态节点，表体为空且正在加载时显形
  */
@@ -109,8 +109,8 @@ export class XhTableElement extends XhElement {
     defaultSort: { attribute: false },
     selection: { attribute: false },
     defaultSelection: { attribute: false },
-    expanded: { attribute: false },
-    defaultExpanded: { attribute: false },
+    expandedValue: { attribute: false },
+    defaultExpandedValue: { attribute: false },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
     // 前缀列是数组，走不了属性；只作为 property 暴露
     prefixColumns: { attribute: false },
@@ -142,8 +142,8 @@ export class XhTableElement extends XhElement {
   declare defaultSort?: TableSortDescriptor[]
   declare selection?: TableSelection
   declare defaultSelection?: TableSelection
-  declare expanded?: string[]
-  declare defaultExpanded?: string[]
+  declare expandedValue?: string[]
+  declare defaultExpandedValue?: string[]
   declare selectionMode?: TableSelectionMode
   declare prefixColumns?: TableColumnKind[]
   declare columnPreference?: TableColumnPreference
@@ -177,8 +177,8 @@ export class XhTableElement extends XhElement {
     this.dispatchEvent(new CustomEvent('selection-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifyExpanded = (details: TableExpandedChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('expanded-change', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyExpanded = (details: TableExpandedValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('expanded-value-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifyRowMove = (details: TableRowMoveDetails): void => {
@@ -197,8 +197,8 @@ export class XhTableElement extends XhElement {
       defaultSort: this.defaultSort,
       selection: this.selection,
       defaultSelection: this.defaultSelection,
-      expanded: this.expanded,
-      defaultExpanded: this.defaultExpanded,
+      expandedValue: this.expandedValue,
+      defaultExpandedValue: this.defaultExpandedValue,
       selectionMode: this.selectionMode,
       prefixColumns: this.prefixColumns,
       columnPreference: this.columnPreference,
@@ -221,7 +221,7 @@ export class XhTableElement extends XhElement {
       translations: this.translations,
       onSortChange: this.notifySort,
       onSelectionChange: this.notifySelection,
-      onExpandedChange: this.notifyExpanded,
+      onExpandedValueChange: this.notifyExpanded,
       onRowMove: this.notifyRowMove,
     }
   }
@@ -352,7 +352,7 @@ export class XhTableElement extends XhElement {
         el.removeAttribute('disabled')
     }
 
-    // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）
+    // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过皮肤那条收起规则）
     for (const el of this.getParts('expanded-row'))
       this.setPartHidden(el, !api.isExpanded(el.getAttribute('value') ?? ''))
     this.setPartHidden(this.getPart('empty'), !!emptyProps.hidden)

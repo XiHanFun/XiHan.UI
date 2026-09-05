@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 // 门禁：JS 动画引擎的缓动与时长常量必须逐字等于令牌。
 //
-// 真源是 packages/design/tokens 的 primitive.json：ease.standard / in / out 与
+// 真源是 packages/design/tokens 的 primitive.json：ease.standard / in / out / out-strong / in-out 与
 // duration.fast / normal / slow。@xihan-ui/motion 是 engine 组，不能依赖 design 组，
-// 所以它把同一批值抄成常量（easing.standard / easeIn / easeOut 与 durations.fast / normal / slow）。
+// 所以它把同一批值抄成常量（easing.standard / easeIn / easeOut / outStrong / easeInOut 与
+// durations.fast / normal / slow）。
 // 两边互不引用，任何一边改了值另一边不会报错，只有这里对账。
+//
+// easing.ts 是 JS 侧唯一的曲线表：补间也从它取曲线，逐帧算出来的路径与 CSS 声明的同名曲线同值。
 import { readFile } from 'node:fs/promises'
 
 const PRIMITIVE = 'packages/design/tokens/tokens/primitive.json'
@@ -17,6 +20,7 @@ const EASE_PAIRS = [
   ['in', 'easeIn'],
   ['out', 'easeOut'],
   ['out-strong', 'outStrong'],
+  ['in-out', 'easeInOut'],
 ]
 const DURATION_KEYS = ['fast', 'normal', 'slow']
 

@@ -13,7 +13,7 @@ const PUBLIC_EVENTS = {
   'download-complete': 'onDownloadComplete',
   'download-error': 'onDownloadError',
   'answers-change': 'onAnswersChange',
-  'expanded-change': 'onExpandedChange',
+  'expanded-value-change': 'onExpandedValueChange',
   'index-change': 'onIndexChange',
   'notes-change': 'onNotesChange',
   'item-focus': 'onItemFocus',
@@ -40,8 +40,7 @@ export function createVueHarness(): AdapterHarness {
   let app: App | null = null
   let host: HTMLElement | null = null
   const props = reactive<Record<string, unknown>>({})
-  // 对外事件缓冲。M1 的 Button/Dialog 不派发领域事件，管道存在但空跑；
-  // 适配器开始 emit 时在此登记各组件的对外事件清单即可。
+  // 对外事件缓冲：按 PUBLIC_EVENTS 的登记把 emit 收进来，供用例按序回放。
   let events: AdapterEvent[] = []
 
   /**

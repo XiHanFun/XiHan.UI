@@ -53,10 +53,10 @@ export interface JsonViewerWalkOptions {
 
 export interface JsonViewerFlattenOptions extends JsonViewerWalkOptions {
   /** 展开集合：只有在其中的分支才把子行摊进结果。 */
-  expanded?: Iterable<string>
+  expandedValue?: Iterable<string>
 }
 
-export interface JsonViewerExpandedChangeDetails {
+export interface JsonViewerExpandedValueChangeDetails {
   value: string[]
 }
 
@@ -99,7 +99,7 @@ export interface JsonViewerSchema extends MachineSchema {
      * 要的就是与后端下发的那份一字不差。展开集合与键盘导航在这一档上不起作用。
      */
     view?: JsonViewerView
-    /** 展开集合（元素是行路径）。给定即受控：cell 直读 prop，写只发 onExpandedChange 不落内部值。 */
+    /** 展开集合（元素是行路径）。给定即受控：cell 直读 prop，写只发 onExpandedValueChange 不落内部值。 */
     expandedValue?: string[]
     /** 非受控初值；不给就按 defaultExpandedDepth 现算。 */
     defaultExpandedValue?: string[]
@@ -118,7 +118,7 @@ export interface JsonViewerSchema extends MachineSchema {
     /** 尺寸：sm / md / lg。 */
     size?: Size
     translations?: Partial<JsonViewerTranslations>
-    onExpandedChange?: (details: JsonViewerExpandedChangeDetails) => void
+    onExpandedValueChange?: (details: JsonViewerExpandedValueChangeDetails) => void
   }
   context: {
     /**

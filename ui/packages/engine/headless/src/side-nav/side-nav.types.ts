@@ -42,7 +42,7 @@ export interface SideNavValueChangeDetails {
   value: string | null
 }
 
-export interface SideNavExpandedChangeDetails {
+export interface SideNavExpandedValueChangeDetails {
   /** 变化之后的完整展开集合，不是增量。 */
   value: string[]
 }
@@ -76,7 +76,7 @@ export interface SideNavSchema extends MachineSchema {
     /** 选中意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: SideNavValueChangeDetails) => void
     /** 展开集合变化意图回调；语义同上。 */
-    onExpandedChange?: (details: SideNavExpandedChangeDetails) => void
+    onExpandedValueChange?: (details: SideNavExpandedValueChangeDetails) => void
   }
   context: {
     /** 选中的叶子。受控（value 给定）时 cell 直读 prop。 */

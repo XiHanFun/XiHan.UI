@@ -1,7 +1,12 @@
 <!-- 事件 | 值的变化走组件的 value-change，聚焦失焦这类原生事件直接写在 input 部件上 -->
 <script setup lang="ts">
 import { ref } from "vue";
-import { XhTextFieldInput, XhTextFieldLabel, XhTextFieldRoot } from "@xihan-ui/vue";
+import {
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldLabel,
+  XhTextFieldRoot,
+} from "@xihan-ui/vue";
 
 const log = ref<string[]>([]);
 
@@ -18,11 +23,9 @@ function onValueChange(details: { value: string }) {
 <template>
   <XhTextFieldRoot placeholder="随便敲几个字" clearable @value-change="onValueChange">
     <XhTextFieldLabel>留言</XhTextFieldLabel>
-    <XhTextFieldInput
-      style="inline-size: 220px"
-      @focus="push('focus')"
-      @blur="push('blur')"
-    />
+    <XhTextFieldControl style="inline-size: 220px">
+      <XhTextFieldInput @focus="push('focus')" @blur="push('blur')" />
+    </XhTextFieldControl>
   </XhTextFieldRoot>
 
   <ol v-if="log.length" style="margin: 0; padding-inline-start: 20px">

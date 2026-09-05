@@ -1,4 +1,4 @@
-import type { JsonViewerApi, JsonViewerExpandedChangeDetails, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations } from '@xihan-ui/headless'
+import type { JsonViewerApi, JsonViewerExpandedValueChangeDetails, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations } from '@xihan-ui/headless'
 import type { Direction, Size } from '@xihan-ui/kernel'
 import { connectJsonViewer, jsonViewerAnatomy, jsonViewerMachine, jsonViewerMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -101,7 +101,7 @@ function scrollLayerOf(root: HTMLElement | null): HTMLElement | null {
  * @attr {boolean} loop - 上下键走到首尾回绕，默认关闭
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义；不写即从 DOM 现读
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @fires expanded-change - 展开集合变化；detail 为 `{ value: string[] }`
+ * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - 组件根容器，由作者写出；承载 data-size
  * @csspart tree - role=tree 的树容器（键盘在此收口，焦点在树外时它兜底占 Tab 位）
  * @csspart item - 标量行，role=treeitem，带 data-value-type
@@ -149,8 +149,8 @@ export class XhJsonViewerElement extends XhElement {
   declare size?: Size
   declare translations?: Partial<JsonViewerTranslations>
 
-  private readonly notify = (details: JsonViewerExpandedChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('expanded-change', { detail: details, bubbles: true, composed: true }))
+  private readonly notify = (details: JsonViewerExpandedValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('expanded-value-change', { detail: details, bubbles: true, composed: true }))
   }
 
   // json-viewer 机器无副作用：不需要 config/layer/refs，controller 只带 props。
@@ -186,7 +186,7 @@ export class XhJsonViewerElement extends XhElement {
       dir: this.direction,
       size: this.size,
       translations: this.translations,
-      onExpandedChange: this.notify,
+      onExpandedValueChange: this.notify,
     }
   }
 

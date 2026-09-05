@@ -413,8 +413,8 @@ describe('anchor 滚动观察', () => {
     expect(c.value()).toBe('install')
   })
 
-  it('作者给了 targets 就以清单为准：没渲染成链接的区块照样参与结算', async () => {
-    const c = makeAnchor({ targets: ['intro', 'usage'] })
+  it('作者给了 collection 就以清单为准：没渲染成链接的区块照样参与结算', async () => {
+    const c = makeAnchor({ collection: ['intro', 'usage'] })
     await settle()
     // install 被排除在清单外，滚到它头上也不算数
     c.scrollTo([-500, -20, 400])

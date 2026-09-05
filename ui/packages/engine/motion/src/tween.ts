@@ -1,8 +1,9 @@
 // 数值补间的纯函数：给起点、终点、时长与缓动，算出"走了这么多毫秒之后是多少"。
 // 不碰 DOM、不持有计时器——推进由调用方逐帧喂 elapsed。
+// 曲线不自带一份，一律经 resolveEasing 取，与 CSS 侧同名同值。
 
-/** 缓动档位。 */
-export type TweenEasing = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out'
+import type { EasingFunction, EasingName } from './easing'
+import { resolveEasing } from './easing'
 
 export interface TweenSpec {
   /** 起点值。 */
@@ -11,21 +12,8 @@ export interface TweenSpec {
   to: number
   /** 总时长毫秒；<=0 或非有限数表示一步到位。 */
   duration: number
-  /** 缓动，缺省 linear。 */
-  easing?: TweenEasing
-}
-
-/** 各档缓动曲线，入参与出参都在 [0,1]，两端严格取到 0 与 1。 */
-export const tweenEasings: Readonly<Record<TweenEasing, (t: number) => number>> = {
-  'linear': t => t,
-  'ease-in': t => t * t * t,
-  'ease-out': t => 1 - (1 - t) ** 3,
-  'ease-in-out': t => (t < 0.5 ? 4 * t * t * t : 1 - ((-2 * t + 2) ** 3) / 2),
-}
-
-/** 取缓动曲线。认不出的档位退回 linear：档位可能来自 DOM 特性，那是一个任意字符串。 */
-export function resolveTweenEasing(easing: TweenEasing | undefined): (t: number) => number {
-  return tweenEasings[easing as TweenEasing] ?? tweenEasings.linear
+  /** 缓动：曲线名、`cubic-bezier(...)` / `linear` 串，或函数本身。缺省线性。 */
+  easing?: EasingName | EasingFunction | string
 }
 
 /**
@@ -62,5 +50,5 @@ export function tweenValueAt(spec: TweenSpec, elapsed: number): number {
   const progress = tweenProgress(elapsed, spec.duration)
   if (progress >= 1)
     return to
-  return from + (to - from) * resolveTweenEasing(spec.easing)(progress)
+  return from + (to - from) * resolveEasing(spec.easing)(progress)
 }

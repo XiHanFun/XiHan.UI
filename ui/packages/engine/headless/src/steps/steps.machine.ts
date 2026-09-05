@@ -39,10 +39,10 @@ function walk(current: number, direction: 1 | -1, count: number): number {
 export const stepsMachine = createMachine({
   name: 'steps',
   context: ({ prop, cell }) => ({
-    step: cell<number>(() => ({
-      value: prop('step'),
-      defaultValue: prop('defaultStep') ?? 0,
-      onChange: step => prop('onStepChange')?.({ step }),
+    value: cell<number>(() => ({
+      value: prop('value'),
+      defaultValue: prop('defaultValue') ?? 0,
+      onChange: value => prop('onValueChange')?.({ value }),
     })),
     // 焦点锚点：不受控、不对外通知，只服务 roving tabindex 与方向键起点
     focusedStep: cell<number | null>(() => ({ defaultValue: null })),
@@ -52,7 +52,7 @@ export const stepsMachine = createMachine({
     idle: {
       // 省略 target：只跑 actions，不换状态
       on: {
-        'STEP.SET': { actions: ['setStep'] },
+        'VALUE.SET': { actions: ['setValue'] },
         'STEP.PREV': { actions: ['goPrev'] },
         'STEP.NEXT': { actions: ['goNext'] },
         'TRIGGER.FOCUS': { actions: ['setFocusedStep'] },
@@ -63,13 +63,13 @@ export const stepsMachine = createMachine({
   implementations: {
     actions: {
       // 越界步序在写入口就夹掉，受控宿主拿到的回调值永远可用
-      setStep: ({ context, prop, event }) => {
+      setValue: ({ context, prop, event }) => {
         const e = event.current()
-        if (e.type === 'STEP.SET')
-          context.set('step', clampStep(e.step, stepCount(prop)))
+        if (e.type === 'VALUE.SET')
+          context.set('value', clampStep(e.value, stepCount(prop)))
       },
-      goPrev: ({ context, prop }) => context.set('step', walk(context.get('step'), -1, stepCount(prop))),
-      goNext: ({ context, prop }) => context.set('step', walk(context.get('step'), 1, stepCount(prop))),
+      goPrev: ({ context, prop }) => context.set('value', walk(context.get('value'), -1, stepCount(prop))),
+      goNext: ({ context, prop }) => context.set('value', walk(context.get('value'), 1, stepCount(prop))),
       setFocusedStep: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'TRIGGER.FOCUS')

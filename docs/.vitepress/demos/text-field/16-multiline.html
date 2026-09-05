@@ -3,7 +3,9 @@
   <xh-text-field id="text-field-multiline" max-length="120" placeholder="说点什么">
     <div data-xh-part="root">
       <label data-xh-part="label">备注（2-6 行自动长高）</label>
-      <textarea data-xh-part="input"></textarea>
+      <div data-xh-part="control">
+        <textarea data-xh-part="input"></textarea>
+      </div>
       <p
         id="text-field-multiline-count"
         style="margin: 4px 0 0; font-size: 12px; color: var(--xh-fg-subtle)"
@@ -16,7 +18,9 @@
   <xh-text-field auto-size placeholder="不设行数界限，完全跟内容走">
     <div data-xh-part="root">
       <label data-xh-part="label">随写随长</label>
-      <textarea data-xh-part="input"></textarea>
+      <div data-xh-part="control">
+        <textarea data-xh-part="input"></textarea>
+      </div>
     </div>
   </xh-text-field>
 </div>

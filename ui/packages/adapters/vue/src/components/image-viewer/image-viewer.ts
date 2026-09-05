@@ -39,7 +39,7 @@ export const XhImageViewerRoot = defineComponent({
   name: 'XhImageViewerRoot',
   // 缺省值由 connect 与机器给出，这里一律 default: undefined
   props: {
-    items: { type: Array as PropType<ImageViewerItem[]>, default: undefined },
+    collection: { type: Array as PropType<ImageViewerItem[]>, default: undefined },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     index: { type: Number, default: undefined },

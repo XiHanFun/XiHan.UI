@@ -1,4 +1,4 @@
-<!-- 格内对齐 | align 管每一项在自己那格里的块向落点，justify 管行内落点；两轴缺省都是铺满整格 -->
+<!-- 格内对齐 | align 管每一项在自己那格里的块向落点，justify-items 管行内落点；两轴缺省都是铺满整格 -->
 <script setup lang="ts">
 import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
 
@@ -27,8 +27,8 @@ const justifies = ["start", "center", "end", "stretch"] as const;
 
     <!-- 内容比列窄，才看得出行内落点；stretch 下每一格铺满整列 -->
     <XhGridItem v-for="j in justifies" :key="j">
-      <div :style="labelStyle">justify = {{ j }}</div>
-      <XhGridRoot :cols="3" gap="sm" :justify="j" :style="trackStyle">
+      <div :style="labelStyle">justify-items = {{ j }}</div>
+      <XhGridRoot :cols="3" gap="sm" :justify-items="j" :style="trackStyle">
         <XhGridItem :style="cellStyle">甲</XhGridItem>
         <XhGridItem :style="cellStyle">乙</XhGridItem>
         <XhGridItem :style="cellStyle">丙</XhGridItem>

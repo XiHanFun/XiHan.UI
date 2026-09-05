@@ -218,9 +218,9 @@ export const truncateSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '受控 expanded：点一下不自改 DOM，父写回 expanded 后才铺开',
+      name: '受控 open：点一下不自改 DOM，父写回 open 后才铺开',
       spec: { adr: 'controlled-uncontrolled' },
-      props: { expandable: true, expanded: false },
+      props: { expandable: true, open: false },
       steps: [
         measureStep(400, 100, true),
         {
@@ -230,7 +230,7 @@ export const truncateSuite: ConformanceSuite = {
             parts: { root: { 'data-state': 'closed', 'aria-expanded': 'false' } },
           },
         },
-        { kind: 'setProps', props: { expanded: true } },
+        { kind: 'setProps', props: { open: true } },
         {
           kind: 'settle',
           until: { attr: { part: 'root', name: 'data-state', value: 'open' } },

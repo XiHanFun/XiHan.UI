@@ -46,7 +46,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 过滤不由本元素做：查询串变化时派发 query-change，作者据此增删 item 节点。
  *
  * @customElement xh-mention
- * @attr {string} prefix - 开候选的前缀字符，默认 '@'；多种前缀并存请用 property 传数组
+ * @attr {string} trigger-prefix - 开候选的前缀字符，默认 '@'；多种前缀并存请用 property 传数组
  * @attr {string} value - 受控正文；缺省该属性即非受控
  * @attr {string} default-value - 非受控初始正文
  * @attr {boolean} disabled - 整个控件禁用：输入框用原生 disabled，候选一概不开
@@ -79,8 +79,8 @@ export class XhMentionElement extends XhElement {
     // 数组只走 property，属性表达不了；给了 collection 候选的文本与禁用即以数据为准
     collection: { attribute: false },
     translations: { attribute: false },
-    // prefix 撞 Element 的原生只读属性（命名空间前缀），字段改名，属性名不变
-    triggerPrefix: { converter: STRING_CONVERTER, attribute: 'prefix' },
+    // prefix 撞 Element 的原生只读属性（命名空间前缀），属性名与字段名一并加 trigger- 前缀
+    triggerPrefix: { converter: STRING_CONVERTER, attribute: 'trigger-prefix' },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     disabled: { type: Boolean },
@@ -156,7 +156,7 @@ export class XhMentionElement extends XhElement {
 
   private machineProps(): Partial<MentionSchema['props']> {
     return {
-      prefix: this.triggerPrefix,
+      triggerPrefix: this.triggerPrefix,
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,

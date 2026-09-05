@@ -8,7 +8,7 @@
       </div>
       <div style="display: flex; align-items: center; gap: 12px; font-size: 12px">
         <label style="display: inline-flex; align-items: center; gap: 4px">
-          <input id="prompt-input-layout-busy" type="checkbox" />
+          <input id="prompt-input-layout-loading" type="checkbox" />
           生成中
         </label>
         <select id="prompt-input-layout-key" aria-label="按哪一档提交">
@@ -25,7 +25,7 @@
 
 <script type="module">
   const input = document.getElementById("prompt-input-layout");
-  const busy = document.getElementById("prompt-input-layout-busy");
+  const loading = document.getElementById("prompt-input-layout-loading");
   const key = document.getElementById("prompt-input-layout-key");
   const count = document.getElementById("prompt-input-layout-count");
   const line = document.getElementById("prompt-input-layout-sent");
@@ -43,10 +43,10 @@
   });
 
   input.addEventListener("stop", () => {
-    busy.checked = false;
-    input.removeAttribute("busy");
+    loading.checked = false;
+    input.removeAttribute("loading");
   });
 
-  busy.addEventListener("change", () => input.toggleAttribute("busy", busy.checked));
+  loading.addEventListener("change", () => input.toggleAttribute("loading", loading.checked));
   key.addEventListener("change", () => input.setAttribute("submit-key", key.value));
 </script>

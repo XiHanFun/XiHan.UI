@@ -26,13 +26,13 @@ export const XhBackTopRoot = defineComponent({
     target: { type: Object as PropType<HTMLElement | null>, default: undefined },
   },
   emits: {
-    'visible-change': (_details: PayloadOf<BackTopProps, 'onVisibleChange'>) => true,
+    'visibility-change': (_details: PayloadOf<BackTopProps, 'onVisibilityChange'>) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: BackTopRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    const notify: BackTopProps['onVisibleChange'] = details => emit('visible-change', details)
+    const notify: BackTopProps['onVisibilityChange'] = details => emit('visibility-change', details)
     // 传响应式 props 对象本身而非快照，供机器每次读时重新展开
     const ctx = useBackTop(withXhConfig('back-top', props) as BackTopProps, notify, () => props.target ?? null)
     provideBackTop(ctx)

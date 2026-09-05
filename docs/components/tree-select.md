@@ -142,7 +142,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
 | `name` | `string` |  | 表单字段名。给定后表单出口才带 name，选中值随表单一并提交。 |
 | `onValueChange` | `(details: TreeSelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
-| `onExpandedChange` | `(details: TreeSelectExpandedChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
+| `onExpandedValueChange` | `(details: TreeSelectExpandedValueChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
 | `onOpenChange` | `(details: TreeSelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ## 事件
@@ -152,7 +152,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TreeSelectValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
-| `expanded-change` | `TreeSelectExpandedChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `expanded-value-change` | `TreeSelectExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 | `open-change` | `TreeSelectOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ## 插槽

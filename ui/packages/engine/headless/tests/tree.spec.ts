@@ -314,12 +314,12 @@ describe('indexTree 全树索引', () => {
 
 describe('treeMachine 展开与选中', () => {
   it('展开：expand/collapse/toggle 各自到位，重复展开不重复通知', () => {
-    const onExpandedChange = vi.fn()
-    const h = mount({ onExpandedChange })
+    const onExpandedValueChange = vi.fn()
+    const h = mount({ onExpandedValueChange })
     h.api().expand('src')
     expect(h.expanded()).toEqual(['src'])
     h.api().expand('src')
-    expect(onExpandedChange).toHaveBeenCalledTimes(1)
+    expect(onExpandedValueChange).toHaveBeenCalledTimes(1)
     h.api().expand('docs')
     expect(h.expanded()).toEqual(['src', 'docs'])
     h.api().collapse('src')
@@ -351,14 +351,14 @@ describe('treeMachine 展开与选中', () => {
   })
 
   it('受控：内部值纹丝不动，回调照发；宿主写回后才生效', () => {
-    const onExpandedChange = vi.fn()
+    const onExpandedValueChange = vi.fn()
     const onSelectionChange = vi.fn()
-    const h = mount({ expandedValue: ['src'], selection: ['license'], onExpandedChange, onSelectionChange })
+    const h = mount({ expandedValue: ['src'], selection: ['license'], onExpandedValueChange, onSelectionChange })
     h.api().collapse('src')
     h.api().select('docs')
     expect(h.expanded()).toEqual(['src'])
     expect(h.selected()).toEqual(['license'])
-    expect(onExpandedChange).toHaveBeenCalledWith({ value: [] })
+    expect(onExpandedValueChange).toHaveBeenCalledWith({ value: [] })
     expect(onSelectionChange).toHaveBeenCalledWith({ value: ['docs'] })
     h.setProps({ expandedValue: [], selection: ['docs'] })
     expect(h.expanded()).toEqual([])
@@ -404,7 +404,7 @@ describe('connectTree 属性输出', () => {
     expect(math.hasAttribute('aria-expanded')).toBe(false)
   })
 
-  it('收起分支里的节点照样拿到层级属性：它们只是 hidden，没被卸载', () => {
+  it('收起分支里的节点照样拿到层级属性：它们只是收起，没被卸载', () => {
     const h = mount()
     const dom = h.item('dom').item
     expect(dom.getAttribute('aria-level')).toBe('3')
@@ -431,14 +431,12 @@ describe('connectTree 属性输出', () => {
     expect(h.item('license').item.hasAttribute('aria-label')).toBe(false)
   })
 
-  it('branch-content 是 role=group，收起时带 hidden、展开时撤掉', () => {
+  it('branch-content 是 role=group，收起时 data-state=closed、展开时翻成 open', () => {
     const h = mount()
     const content = h.branch('src').content
     expect(content.getAttribute('role')).toBe('group')
-    expect(content.hasAttribute('hidden')).toBe(true)
     expect(content.getAttribute('data-state')).toBe('closed')
     h.api().expand('src')
-    expect(content.hasAttribute('hidden')).toBe(false)
     expect(content.getAttribute('data-state')).toBe('open')
   })
 
@@ -533,7 +531,7 @@ describe('roving tabindex', () => {
   })
 
   it('选中值藏在收起的分支里：它不可聚焦，容器必须继续兜底', () => {
-    // 判据若只看"选中集合非空"，锚点会落在一个 hidden 的节点上：
+    // 判据若只看"选中集合非空"，锚点会落在一个收起的节点上：
     // 它认领了 tabindex=0 而实际不可聚焦，容器又让了位 → 整棵树零个停靠点
     const h = mount({ defaultSelection: ['dom'] })
     expect(h.item('dom').item.getAttribute('tabindex')).toBe('-1')
@@ -556,7 +554,7 @@ describe('roving tabindex', () => {
     h.item('index').item.focus()
     expect(h.api().focusedValue).toBe('index')
     expect(tabStops()).toEqual(['item'])
-    // 宿主收起了 src：index 随子树一起 hidden，再也不可聚焦
+    // 宿主收起了 src：index 随子树一起收起，再也不可聚焦
     h.api().collapse('src')
     expect(h.api().focusedValue).toBeNull()
     expect(tabStops()).toEqual(['tree'])

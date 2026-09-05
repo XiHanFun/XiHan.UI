@@ -278,9 +278,9 @@ describe('json 摊平', () => {
 
   it('顶层没给值就是空视图，一行也不摊', () => {
     expect(flattenJson(undefined)).toEqual([])
-    expect(flattenJson(undefined, { expanded: [ROOT] })).toEqual([])
+    expect(flattenJson(undefined, { expandedValue: [ROOT] })).toEqual([])
     // 只有顶层缺席才算空视图：成员位置上的 undefined 是一个真实的值，照常摊成一行
-    const rows = flattenJson({ a: undefined }, { expanded: [ROOT] })
+    const rows = flattenJson({ a: undefined }, { expandedValue: [ROOT] })
     expect(rows.map(r => [r.key, r.text])).toEqual([[null, ''], ['a', 'undefined']])
     // 顶层 null 是一个值，不是缺席
     expect(flattenJson(null).map(r => r.text)).toEqual(['null'])
@@ -293,7 +293,7 @@ describe('json 摊平', () => {
   })
 
   it('展开的分支才摊出子行，路径逐层拼出来', () => {
-    const rows = flattenJson(VALUE, { expanded: [ROOT] })
+    const rows = flattenJson(VALUE, { expandedValue: [ROOT] })
     expect(rows.map(r => r.value)).toEqual([
       ROOT,
       path('name'),
@@ -309,13 +309,13 @@ describe('json 摊平', () => {
   })
 
   it('空对象不当分支：展开它一行也看不到，箭头是白给的', () => {
-    const rows = flattenJson(VALUE, { expanded: [ROOT] })
+    const rows = flattenJson(VALUE, { expandedValue: [ROOT] })
     const empty = rows.find(r => r.key === 'empty')!
     expect(empty).toMatchObject({ branch: false, type: 'object', text: '{}', count: 0 })
   })
 
   it('数组下标当键名，逐项摊开', () => {
-    const rows = flattenJson(VALUE, { expanded: [ROOT, path('tags')] })
+    const rows = flattenJson(VALUE, { expandedValue: [ROOT, path('tags')] })
     const tags = rows.filter(r => r.parent === path('tags'))
     expect(tags.map(r => [r.key, r.text])).toEqual([['0', '"a"'], ['1', '"b"']])
   })
@@ -323,7 +323,7 @@ describe('json 摊平', () => {
   it('循环引用摊到就停，标成 [Circular] 而不是无限递归', () => {
     const cyclic: Record<string, unknown> = { name: 'a' }
     cyclic.self = cyclic
-    const rows = flattenJson(cyclic, { expanded: [ROOT, path('self')] })
+    const rows = flattenJson(cyclic, { expandedValue: [ROOT, path('self')] })
     const self = rows.find(r => r.key === 'self')!
     expect(self).toMatchObject({ circular: true, branch: false, text: '[Circular]' })
     expect(rows).toHaveLength(3)
@@ -331,13 +331,13 @@ describe('json 摊平', () => {
 
   it('同一个对象出现在两条不相干的分支里不算环，照样摊开', () => {
     const shared = { leaf: 1 }
-    const rows = flattenJson({ a: shared, b: shared }, { expanded: [ROOT, path('a'), path('b')] })
+    const rows = flattenJson({ a: shared, b: shared }, { expandedValue: [ROOT, path('a'), path('b')] })
     expect(rows.filter(r => r.key === 'leaf')).toHaveLength(2)
     expect(rows.every(r => !r.circular)).toBe(true)
   })
 
   it('maxItems 折掉多余成员并补一行占位，占位算进同层总数', () => {
-    const rows = flattenJson({ list: [1, 2, 3, 4, 5] }, { expanded: [ROOT, path('list')], maxItems: 2 })
+    const rows = flattenJson({ list: [1, 2, 3, 4, 5] }, { expandedValue: [ROOT, path('list')], maxItems: 2 })
     const kids = rows.filter(r => r.parent === path('list'))
     expect(kids.map(r => r.key)).toEqual(['0', '1', null])
     expect(kids.at(-1)).toMatchObject({ truncated: true, count: 3, posInSet: 3, setSize: 3, type: 'array' })
@@ -346,7 +346,7 @@ describe('json 摊平', () => {
 
   it('sortKeys 只排对象键，数组顺序不动', () => {
     const rows = flattenJson({ b: 1, a: 2, list: ['y', 'x'] }, {
-      expanded: [ROOT, path('list')],
+      expandedValue: [ROOT, path('list')],
       sortKeys: true,
     })
     expect(rows.filter(r => r.parent === ROOT).map(r => r.key)).toEqual(['a', 'b', 'list'])
@@ -354,7 +354,7 @@ describe('json 摊平', () => {
   })
 
   it('键里的点号不会把两条路径拼成同一个串', () => {
-    const rows = flattenJson({ 'a': { b: 1 }, 'a.b': 2 }, { expanded: [ROOT, path('a')] })
+    const rows = flattenJson({ 'a': { b: 1 }, 'a.b': 2 }, { expandedValue: [ROOT, path('a')] })
     const paths = rows.map(r => r.value)
     expect(new Set(paths).size).toBe(paths.length)
   })
@@ -412,7 +412,7 @@ describe('jsonViewerMachine 展开集合', () => {
 
   it('受控 expandedValue：点击只发意图，宿主不写回就纹丝不动', () => {
     const changes: string[][] = []
-    const h = mount({ expandedValue: [], onExpandedChange: d => changes.push(d.value) })
+    const h = mount({ expandedValue: [], onExpandedValueChange: d => changes.push(d.value) })
     click(h.row(ROOT).control!)
     expect(h.expanded()).toEqual([])
     expect(changes).toEqual([[ROOT]])

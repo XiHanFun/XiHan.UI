@@ -40,14 +40,14 @@ export const XhGridRoot = defineComponent({
     },
     gap: { type: String as PropType<GridProps['gap']>, default: undefined },
     align: { type: String as PropType<GridProps['align']>, default: undefined },
-    justify: { type: String as PropType<GridProps['justify']>, default: undefined },
+    justifyItems: { type: String as PropType<GridProps['justifyItems']>, default: undefined },
   },
   setup(props, { slots }) {
     const api = computed(() => connectGrid({
       cols: colsOf(props.cols),
       gap: props.gap,
       align: props.align,
-      justify: props.justify,
+      justifyItems: props.justifyItems,
     }, vueNormalize))
     provideGrid({ api })
     return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())

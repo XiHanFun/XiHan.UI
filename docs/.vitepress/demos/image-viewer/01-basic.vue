@@ -22,7 +22,7 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
 </script>
 
 <template>
-  <XhImageViewerRoot :items="items">
+  <XhImageViewerRoot :collection="items">
     <XhImageViewerTrigger>
       <img
         :src="items[0]!.src"

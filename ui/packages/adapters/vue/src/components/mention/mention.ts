@@ -27,7 +27,7 @@ export const XhMentionRoot = defineComponent({
   name: 'XhMentionRoot',
   // 有 connect 兜底的 prop 一律 default: undefined
   props: {
-    prefix: { type: [String, Array] as PropType<string | string[]>, default: undefined },
+    triggerPrefix: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     collection: { type: Array as PropType<MentionNode[]>, default: undefined },
     value: { type: String, default: undefined },
     defaultValue: { type: String, default: undefined },

@@ -70,7 +70,7 @@ export const sideNavMachine = createMachine({
         value: controlled ? [...controlled] : undefined,
         defaultValue: prop('defaultExpandedValue') ? unique(prop('defaultExpandedValue')!) : [],
         isEqual: sameValues,
-        onChange: value => prop('onExpandedChange')?.({ value }),
+        onChange: value => prop('onExpandedValueChange')?.({ value }),
       }
     }),
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),

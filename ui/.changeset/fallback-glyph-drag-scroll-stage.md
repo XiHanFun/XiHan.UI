@@ -3,10 +3,10 @@
 "@xihan-ui/styles": patch
 ---
 
-**补齐**两处按钮的兜底字形。这两个部件的解剖里都没有第二个节点放图形，皮肤又没画，渲染出来是摸得着却看不见的空盒：`sortable` 的 `item-drag-trigger` 是一块透明方块、`floating-panel` 的 `stage-trigger` 是标题栏上并排的两三个一模一样的空方块。名字只在 `aria-label` 上，看得见的那一路什么都没有。
+**补齐**两处按钮的兜底字形。这两个部件的解剖里都没有第二个节点放图形，皮肤又没画，渲染出来是摸得着却看不见的空盒：`sortable` 的 `item-drag-trigger` 是一块透明方块、`floating-panel` 的 `window-state-trigger` 是标题栏上并排的两三个一模一样的空方块。名字只在 `aria-label` 上，看得见的那一路什么都没有。
 
 - `sortable` 的 `item-drag-trigger` 画两条竖线的抓手，与 `tabs` 的 `tab-drag-trigger`、`table` 的 `column-drag-trigger` 同一种画法（`:empty::after` + `border-inline`）。新增覆盖槽 `--xh-sortable-drag-grip-w` / `--xh-sortable-drag-grip-h`。
-- `floating-panel` 的 `stage-trigger` 按 `data-target-stage` 分三档：还原、铺满、收拢各一枚。选的是 `data-target-stage` 而不是面板身上的 `data-stage`——后者说的是面板此刻在哪一档，用它会让并排的几颗钮同时换成同一枚字形。
+- `floating-panel` 的 `window-state-trigger` 按 `data-target-window-state` 分三档：还原、铺满、收拢各一枚。选的是 `data-target-window-state` 而不是面板身上的 `data-window-state`——后者说的是面板此刻在哪一档，用它会让并排的几颗钮同时换成同一枚字形。
 
 **新增**两个字形令牌 `--xh-glyph-mark-maximize`（四角朝外）与 `--xh-glyph-mark-restore`（四角朝内），供上面那三档使用；「收拢」复用已有的 `--xh-glyph-mark-minus`。
 

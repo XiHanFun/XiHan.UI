@@ -1,9 +1,9 @@
 import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
-export interface StepsStepChangeDetails {
+export interface StepsValueChangeDetails {
   /** 变化后的步序，恒在 [0, count] 内。 */
-  step: number
+  value: number
 }
 
 /** 单步的三态。 */
@@ -35,10 +35,10 @@ export interface StepsItemState {
 
 export interface StepsSchema extends MachineSchema {
   props: {
-    /** 当前步序（0 起）。给定即受控：内部不再自改，只发 onStepChange。 */
-    step?: number
+    /** 当前步序（0 起）。给定即受控：内部不再自改，只发 onValueChange。 */
+    value?: number
     /** 非受控初值，默认 0。 */
-    defaultStep?: number
+    defaultValue?: number
     /**
      * 总步数，是步序的上界与读屏"第 k 步，共 n 步"的分母。
      * 缺省按 0 处理：此时 root 带 data-empty，步序被夹死在 0。
@@ -60,11 +60,11 @@ export interface StepsSchema extends MachineSchema {
     /** 尺寸：sm / md / lg。 */
     size?: Size
     /** 步序变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
-    onStepChange?: (details: StepsStepChangeDetails) => void
+    onValueChange?: (details: StepsValueChangeDetails) => void
   }
   context: {
-    /** 当前步序。受控（step 给定）时 cell 直读 prop，写只发 onStepChange 不改内部值。 */
-    step: number
+    /** 当前步序。受控（value 给定）时 cell 直读 prop，写只发 onValueChange 不改内部值。 */
+    value: number
     /** 焦点位于组内时的瞬态锚点，焦点离组即清空。只服务 roving tabindex 与方向键起点。 */
     focusedStep: number | null
   }
@@ -73,22 +73,22 @@ export interface StepsSchema extends MachineSchema {
   /** 步骤条没有阶段可分：步序住在 context 的 cell 里，机器只是它的写入口。 */
   state: 'idle'
   event:
-    | { type: 'STEP.SET', step: number }
+    | { type: 'VALUE.SET', value: number }
     | { type: 'STEP.PREV' }
     | { type: 'STEP.NEXT' }
     | { type: 'TRIGGER.FOCUS', step: number }
     | { type: 'LIST.BLUR' }
   tag: never
   guard: never
-  action: 'setStep' | 'goPrev' | 'goNext' | 'setFocusedStep' | 'clearFocusedStep'
+  action: 'setValue' | 'goPrev' | 'goNext' | 'setFocusedStep' | 'clearFocusedStep'
   effect: never
 }
 
 export interface StepsApi<T extends PropTypes = PropTypes> {
   /** 当前步序，恒在 [0, count] 内：count 变小后停在越界步也读得到一个可用的值。 */
-  step: number
+  value: number
   count: number
-  /** 全部走完（step 走到 count）。此时没有任何一步是 current，作者据此渲染完成页。 */
+  /** 全部走完（value 走到 count）。此时没有任何一步是 current，作者据此渲染完成页。 */
   complete: boolean
   /** 焦点在组外时为 null。 */
   focusedStep: number | null
@@ -97,7 +97,7 @@ export interface StepsApi<T extends PropTypes = PropTypes> {
    * 直接跳到某一步；越界会被夹回 [0, count]。
    * 不认 linear：linear 只拦界面上的乱跳，不拦作者的命令式调用。
    */
-  setStep: (next: number) => void
+  setValue: (next: number) => void
   goToNextStep: () => void
   goToPrevStep: () => void
   getRootProps: () => T['element']

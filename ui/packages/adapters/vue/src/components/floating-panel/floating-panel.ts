@@ -4,7 +4,7 @@ import type {
   FloatingPanelResizeEdge,
   FloatingPanelSchema,
   FloatingPanelSize,
-  FloatingPanelStage,
+  FloatingPanelWindowState,
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -18,8 +18,8 @@ type FloatingPanelProps = FloatingPanelSchema['props']
 /** 默认插槽的载荷：开合、形态与矩形，以及改这四样的动作。 */
 export type FloatingPanelRootSlotProps = Pick<
   FloatingPanelApi,
-  'open' | 'stage' | 'position' | 'size' | 'dragging' | 'resizing' | 'canDrag' | 'canResize'
-  | 'setOpen' | 'setPosition' | 'setSize' | 'setStage'
+  'open' | 'windowState' | 'position' | 'dimensions' | 'dragging' | 'resizing' | 'canDrag' | 'canResize'
+  | 'setOpen' | 'setPosition' | 'setDimensions' | 'setWindowState'
 >
 
 export const XhFloatingPanelRoot = defineComponent({
@@ -30,12 +30,12 @@ export const XhFloatingPanelRoot = defineComponent({
     defaultOpen: { type: Boolean, default: undefined },
     position: { type: Object as PropType<FloatingPanelPosition>, default: undefined },
     defaultPosition: { type: Object as PropType<FloatingPanelPosition>, default: undefined },
-    size: { type: Object as PropType<FloatingPanelSize>, default: undefined },
-    defaultSize: { type: Object as PropType<FloatingPanelSize>, default: undefined },
+    dimensions: { type: Object as PropType<FloatingPanelSize>, default: undefined },
+    defaultDimensions: { type: Object as PropType<FloatingPanelSize>, default: undefined },
     minSize: { type: Object as PropType<FloatingPanelSize>, default: undefined },
     maxSize: { type: Object as PropType<FloatingPanelSize>, default: undefined },
-    stage: { type: String as PropType<FloatingPanelStage>, default: undefined },
-    defaultStage: { type: String as PropType<FloatingPanelStage>, default: undefined },
+    windowState: { type: String as PropType<FloatingPanelWindowState>, default: undefined },
+    defaultWindowState: { type: String as PropType<FloatingPanelWindowState>, default: undefined },
     // 缺省为真的两个开关：写成裸 Boolean 会被 Vue 的布尔 casting 永久关死
     draggable: { type: Boolean, default: undefined },
     resizable: { type: Boolean, default: undefined },
@@ -48,10 +48,10 @@ export const XhFloatingPanelRoot = defineComponent({
     'update:open': (_open: PayloadOf<FloatingPanelProps, 'onOpenChange'>['open']) => true,
     'position-change': (_details: PayloadOf<FloatingPanelProps, 'onPositionChange'>) => true,
     'update:position': (_position: PayloadOf<FloatingPanelProps, 'onPositionChange'>['position']) => true,
-    'size-change': (_details: PayloadOf<FloatingPanelProps, 'onSizeChange'>) => true,
-    'update:size': (_size: PayloadOf<FloatingPanelProps, 'onSizeChange'>['size']) => true,
-    'stage-change': (_details: PayloadOf<FloatingPanelProps, 'onStageChange'>) => true,
-    'update:stage': (_stage: PayloadOf<FloatingPanelProps, 'onStageChange'>['stage']) => true,
+    'dimensions-change': (_details: PayloadOf<FloatingPanelProps, 'onDimensionsChange'>) => true,
+    'update:dimensions': (_dimensions: PayloadOf<FloatingPanelProps, 'onDimensionsChange'>['dimensions']) => true,
+    'window-state-change': (_details: PayloadOf<FloatingPanelProps, 'onWindowStateChange'>) => true,
+    'update:windowState': (_windowState: PayloadOf<FloatingPanelProps, 'onWindowStateChange'>['windowState']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: FloatingPanelRootSlotProps) => VNode[]
@@ -66,29 +66,29 @@ export const XhFloatingPanelRoot = defineComponent({
         emit('position-change', details)
         emit('update:position', details.position)
       },
-      onSizeChange: (details) => {
-        emit('size-change', details)
-        emit('update:size', details.size)
+      onDimensionsChange: (details) => {
+        emit('dimensions-change', details)
+        emit('update:dimensions', details.dimensions)
       },
-      onStageChange: (details) => {
-        emit('stage-change', details)
-        emit('update:stage', details.stage)
+      onWindowStateChange: (details) => {
+        emit('window-state-change', details)
+        emit('update:windowState', details.windowState)
       },
     })
     provideFloatingPanel(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       open: ctx.api.value.open,
-      stage: ctx.api.value.stage,
+      windowState: ctx.api.value.windowState,
       position: ctx.api.value.position,
-      size: ctx.api.value.size,
+      dimensions: ctx.api.value.dimensions,
       dragging: ctx.api.value.dragging,
       resizing: ctx.api.value.resizing,
       canDrag: ctx.api.value.canDrag,
       canResize: ctx.api.value.canResize,
       setOpen: ctx.api.value.setOpen,
       setPosition: ctx.api.value.setPosition,
-      setSize: ctx.api.value.setSize,
-      setStage: ctx.api.value.setStage,
+      setDimensions: ctx.api.value.setDimensions,
+      setWindowState: ctx.api.value.setWindowState,
     }))
   },
 })
@@ -182,17 +182,17 @@ export const XhFloatingPanelResizeTrigger = defineComponent({
   },
 })
 
-export const XhFloatingPanelStageTrigger = defineComponent({
-  name: 'XhFloatingPanelStageTrigger',
+export const XhFloatingPanelWindowStateTrigger = defineComponent({
+  name: 'XhFloatingPanelWindowStateTrigger',
   props: {
     /** 按下它切到哪个形态；已经在该形态时再按一次回到常规。 */
-    stage: { type: String as PropType<FloatingPanelStage>, required: true },
+    windowState: { type: String as PropType<FloatingPanelWindowState>, required: true },
   },
   setup(props, { slots }) {
     const ctx = useFloatingPanelContext()
     return () => h(
       'button',
-      ctx.api.value.getStageTriggerProps({ stage: props.stage }) as Record<string, unknown>,
+      ctx.api.value.getWindowStateTriggerProps({ windowState: props.windowState }) as Record<string, unknown>,
       slots.default?.(),
     )
   },

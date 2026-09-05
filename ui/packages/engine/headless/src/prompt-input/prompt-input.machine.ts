@@ -31,7 +31,7 @@ export const promptInputMachine = createMachine({
   on: {
     'COMPOSITION.START': { actions: ['setComposing'] },
     'COMPOSITION.END': { actions: ['clearComposing'] },
-    'STOP': [{ guard: 'isBusy', actions: ['invokeStop'] }],
+    'STOP': [{ guard: 'isLoading', actions: ['invokeStop'] }],
     // invokeSubmit 排在 clearValue 前面，先读走待清空的值
     'KEY.SUBMIT': [
       { guard: 'canSubmit', target: 'empty', actions: ['invokeSubmit', 'clearValue'] },
@@ -86,10 +86,10 @@ export const promptInputMachine = createMachine({
   implementations: {
     guards: {
       canSubmit: ({ context, prop }) =>
-        !prop('busy')
+        !prop('loading')
         && !context.get('isComposing')
         && (prop('allowEmptySubmit') === true || context.get('value').trim() !== ''),
-      isBusy: ({ prop }) => prop('busy') === true,
+      isLoading: ({ prop }) => prop('loading') === true,
       isValueEmpty: ({ context }) => context.get('value').trim() === '',
       // 判定 VALUE.SET 事件载荷里的新值是否为空
       isNextValueEmpty: ({ event }) => {

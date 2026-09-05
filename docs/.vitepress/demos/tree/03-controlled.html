@@ -84,7 +84,7 @@
   setExpanded(["api"]);
   setSelected([]);
 
-  tree.addEventListener("expanded-change", (event) => setExpanded(event.detail.value));
+  tree.addEventListener("expanded-value-change", (event) => setExpanded(event.detail.value));
   tree.addEventListener("selection-change", (event) => setSelected(event.detail.value));
 
   const button = (id) =>

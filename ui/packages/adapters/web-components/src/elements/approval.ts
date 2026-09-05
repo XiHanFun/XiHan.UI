@@ -34,7 +34,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {number} timeout-ms - 多久没人答就按拒绝收口；缺省不起计时器
  * @attr {string} note - 受控的备注文本，随判定载荷一起发出
  * @attr {string} default-note - 备注的非受控初值，默认空串
- * @attr {boolean} busy - 判定在途：只挡重复批准，不挡拒绝
+ * @attr {boolean} loading - 判定在途：只挡重复批准，不挡拒绝
  * @attr {boolean} deny-on-escape - Escape 判为拒绝，默认开
  * @attr {boolean} deny-on-unmount - 卸载时若仍待决就按拒绝派一次，默认关
  * @attr {string} live - 播报档位：polite（默认）或 assertive
@@ -69,7 +69,7 @@ export class XhApprovalElement extends XhElement {
     timeoutMs: { converter: NUMBER_CONVERTER, attribute: 'timeout-ms' },
     note: { converter: STRING_CONVERTER },
     defaultNote: { converter: STRING_CONVERTER, attribute: 'default-note' },
-    busy: { converter: BOOLEAN_CONVERTER },
+    loading: { converter: BOOLEAN_CONVERTER },
     denyOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'deny-on-escape' },
     denyOnUnmount: { converter: BOOLEAN_CONVERTER, attribute: 'deny-on-unmount' },
     live: { converter: STRING_CONVERTER },
@@ -88,7 +88,7 @@ export class XhApprovalElement extends XhElement {
   declare timeoutMs?: number
   declare note?: string
   declare defaultNote?: string
-  declare busy?: boolean
+  declare loading?: boolean
   declare denyOnEscape?: boolean
   declare denyOnUnmount?: boolean
   declare live?: 'polite' | 'assertive'
@@ -118,7 +118,7 @@ export class XhApprovalElement extends XhElement {
     defaultGrantedScopes: this.defaultGrantedScopes,
     note: this.note,
     defaultNote: this.defaultNote,
-    busy: this.busy,
+    loading: this.loading,
     denyOnEscape: this.denyOnEscape,
     denyOnUnmount: this.denyOnUnmount,
     live: this.live,

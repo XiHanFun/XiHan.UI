@@ -1,6 +1,6 @@
 import type {
   TreeNode,
-  TreeSelectExpandedChangeDetails,
+  TreeSelectExpandedValueChangeDetails,
   TreeSelectNodeProps,
   TreeSelectOpenChangeDetails,
   TreeSelectSchema,
@@ -67,7 +67,7 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
  * @attr {string} name - 表单字段名；给了 hidden-input 才参与提交（多选按逗号拼成一串）
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
- * @fires expanded-change - 展开集合变化；detail 为 `{ value: string[] }`
+ * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）
  * @csspart label - 标题（aria-labelledby 目标）
@@ -160,8 +160,8 @@ export class XhTreeSelectElement extends XhElement {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifyExpanded = (details: TreeSelectExpandedChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('expanded-change', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyExpanded = (details: TreeSelectExpandedValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('expanded-value-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifyOpen = (details: TreeSelectOpenChangeDetails): void => {
@@ -214,7 +214,7 @@ export class XhTreeSelectElement extends XhElement {
       dir: this.direction,
       name: this.name,
       onValueChange: this.notifyValue,
-      onExpandedChange: this.notifyExpanded,
+      onExpandedValueChange: this.notifyExpanded,
       onOpenChange: this.notifyOpen,
     }
   }

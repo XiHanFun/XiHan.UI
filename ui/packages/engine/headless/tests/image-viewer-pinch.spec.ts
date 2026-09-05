@@ -12,7 +12,7 @@ type Dict = Record<string, unknown>
 const ITEMS = [{ src: 'a.png' }, { src: 'b.png' }]
 
 function mount(initial: Partial<Props> = {}) {
-  const props: Partial<Props> = { items: ITEMS, defaultOpen: true, ...initial }
+  const props: Partial<Props> = { collection: ITEMS, defaultOpen: true, ...initial }
   const runtime = createVanillaRuntime()
   const service = createService(imageViewerMachine, { props: () => props, runtime })
 

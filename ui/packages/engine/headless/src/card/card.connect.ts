@@ -17,7 +17,7 @@ export function connectCard<T extends PropTypes>(
     'data-variant': props.variant,
     'data-size': props.size,
     'data-hoverable': dataAttr(props.hoverable),
-    'data-split': dataAttr(props.segmented),
+    'data-split': dataAttr(props.split),
   }
 
   return {

@@ -150,7 +150,7 @@ export const diffViewSuite: ConformanceSuite = {
           part: 'gap-trigger',
           expect: {
             counts: { gap: 0 },
-            events: [{ type: 'expanded-change' }],
+            events: [{ type: 'expanded-value-change' }],
           },
         },
       ],

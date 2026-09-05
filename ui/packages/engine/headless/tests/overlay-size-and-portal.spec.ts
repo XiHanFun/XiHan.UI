@@ -201,7 +201,7 @@ describe('引导气泡的可用高度', () => {
   function tour(index: number) {
     const runtime = createVanillaRuntime()
     const service = createService(tourMachine, {
-      props: () => ({ steps, defaultStep: index, defaultOpen: true }),
+      props: () => ({ steps, defaultValue: index, defaultOpen: true }),
       runtime,
     })
     runtime.start()

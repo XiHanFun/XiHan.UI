@@ -72,7 +72,7 @@ export class XhImageViewerElement extends XhElement {
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
     variant: { converter: STRING_CONVERTER },
     // 对象值进不了属性，只作为 property 暴露
-    items: { attribute: false },
+    collection: { attribute: false },
     translations: { attribute: false },
   }
 
@@ -89,7 +89,7 @@ export class XhImageViewerElement extends XhElement {
   declare restoreFocus?: boolean
   declare variant?: OverlayBackdropVariant
   /** 图片清单。看单张就给长度 1 的数组。 */
-  declare items?: ImageViewerItem[]
+  declare collection?: ImageViewerItem[]
   /** 工具条按钮的可及名与计数文案；connect 每帧重写，只能从这里给。 */
   declare translations?: Partial<ImageViewerTranslations>
 
@@ -119,7 +119,7 @@ export class XhImageViewerElement extends XhElement {
 
   private machineProps(): Partial<ImageViewerSchema['props']> {
     return {
-      items: this.items,
+      collection: this.collection,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       index: this.index,

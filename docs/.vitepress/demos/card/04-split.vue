@@ -1,11 +1,11 @@
-<!-- 分段与悬停 | segmented 在段与段之间画一条分隔线；hoverable 只在能用指针的设备上抬起 -->
+<!-- 分段与悬停 | split 在段与段之间画一条分隔线；hoverable 只在能用指针的设备上抬起 -->
 <script setup lang="ts">
 import { XhCardBody, XhCardFooter, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/vue";
 </script>
 
 <template>
   <div style="display: flex; flex-wrap: wrap; gap: 16px">
-    <XhCardRoot variant="outline" segmented style="inline-size: 220px">
+    <XhCardRoot variant="outline" split style="inline-size: 220px">
       <XhCardHeader>
         <XhCardTitle>分段</XhCardTitle>
       </XhCardHeader>

@@ -290,47 +290,47 @@ describe('tourMachine 开合与走步', () => {
   })
 
   it('sTEP.NEXT / STEP.PREV 走步并夹在两端', () => {
-    const onStepChange = vi.fn()
-    const t = makeService({ steps: STEPS, defaultOpen: true, onStepChange })
-    expect(t.api().step).toBe(0)
+    const onValueChange = vi.fn()
+    const t = makeService({ steps: STEPS, defaultOpen: true, onValueChange })
+    expect(t.api().value).toBe(0)
     // 首步再退一步仍是首步，且不该通知（值没变）
     t.service.send({ type: 'STEP.PREV' })
-    expect(t.api().step).toBe(0)
-    expect(onStepChange).not.toHaveBeenCalled()
+    expect(t.api().value).toBe(0)
+    expect(onValueChange).not.toHaveBeenCalled()
 
     t.service.send({ type: 'STEP.NEXT' })
-    expect(t.api().step).toBe(1)
-    expect(onStepChange).toHaveBeenLastCalledWith({ step: 1 })
+    expect(t.api().value).toBe(1)
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: 1 })
     t.service.send({ type: 'STEP.PREV' })
-    expect(t.api().step).toBe(0)
+    expect(t.api().value).toBe(0)
   })
 
   it('sTEP.SET 越界被夹住', () => {
     const t = makeService({ steps: STEPS, defaultOpen: true })
-    t.api().setStep(99)
-    expect(t.api().step).toBe(2)
-    t.api().setStep(-4)
-    expect(t.api().step).toBe(0)
+    t.api().setValue(99)
+    expect(t.api().value).toBe(2)
+    t.api().setValue(-4)
+    expect(t.api().value).toBe(0)
   })
 
   it('末步再走一步 = 完成：先发 onComplete 再关闭', () => {
     const onComplete = vi.fn()
     const onOpenChange = vi.fn()
-    const onStepChange = vi.fn()
-    const t = makeService({ steps: STEPS, defaultOpen: true, defaultStep: 2, onComplete, onOpenChange, onStepChange })
+    const onValueChange = vi.fn()
+    const t = makeService({ steps: STEPS, defaultOpen: true, defaultValue: 2, onComplete, onOpenChange, onValueChange })
     t.service.send({ type: 'STEP.NEXT' })
     expect(onComplete).toHaveBeenCalledWith({ step: 2 })
     expect(onOpenChange).toHaveBeenCalledWith({ open: false })
     expect(t.service.state.get()).toBe('closed')
-    // 完成不是"又走了一步"：步序停在末步，不该多发一次 onStepChange
-    expect(onStepChange).not.toHaveBeenCalled()
-    expect(t.api().step).toBe(2)
+    // 完成不是"又走了一步"：步序停在末步，不该多发一次 onValueChange
+    expect(onValueChange).not.toHaveBeenCalled()
+    expect(t.api().value).toBe(2)
   })
 
   it('sKIP：先发 onSkip 再关闭，带上停在的那一步', () => {
     const onSkip = vi.fn()
     const onOpenChange = vi.fn()
-    const t = makeService({ steps: STEPS, defaultOpen: true, defaultStep: 1, onSkip, onOpenChange })
+    const t = makeService({ steps: STEPS, defaultOpen: true, defaultValue: 1, onSkip, onOpenChange })
     t.api().skip()
     expect(onSkip).toHaveBeenCalledWith({ step: 1 })
     expect(onOpenChange).toHaveBeenCalledWith({ open: false })
@@ -350,7 +350,7 @@ describe('tourMachine 开合与走步', () => {
     const t = makeService({ steps: STEPS, defaultOpen: true })
     t.service.send({ type: 'CLOSE' })
     t.service.send({ type: 'STEP.NEXT' })
-    expect(t.api().step).toBe(0)
+    expect(t.api().value).toBe(0)
   })
 })
 
@@ -368,7 +368,7 @@ describe('tourMachine 受控', () => {
   it('受控 open 下末步完成：onComplete 与 onOpenChange 照发，状态不自改', () => {
     const onComplete = vi.fn()
     const onOpenChange = vi.fn()
-    const t = makeService({ steps: STEPS, open: true, step: 2, onComplete, onOpenChange })
+    const t = makeService({ steps: STEPS, open: true, value: 2, onComplete, onOpenChange })
     t.service.send({ type: 'STEP.NEXT' })
     expect(onComplete).toHaveBeenCalledWith({ step: 2 })
     expect(onOpenChange).toHaveBeenCalledWith({ open: false })
@@ -385,14 +385,14 @@ describe('tourMachine 受控', () => {
     expect(t.service.state.get()).toBe('open')
   })
 
-  it('受控 step：走步只发 onStepChange，内部值不动', () => {
-    const onStepChange = vi.fn()
-    const t = makeService({ steps: STEPS, defaultOpen: true, step: 0, onStepChange })
+  it('受控 value：走步只发 onValueChange，内部值不动', () => {
+    const onValueChange = vi.fn()
+    const t = makeService({ steps: STEPS, defaultOpen: true, value: 0, onValueChange })
     t.service.send({ type: 'STEP.NEXT' })
-    expect(onStepChange).toHaveBeenCalledWith({ step: 1 })
-    expect(t.api().step).toBe(0)
-    t.setProps({ step: 1 })
-    expect(t.api().step).toBe(1)
+    expect(onValueChange).toHaveBeenCalledWith({ value: 1 })
+    expect(t.api().value).toBe(0)
+    t.setProps({ value: 1 })
+    expect(t.api().value).toBe(1)
   })
 
   it('open 变回 undefined = 转非受控，不强制关闭', () => {
@@ -430,7 +430,7 @@ describe('connectTour 输出', () => {
   })
 
   it('target 为 null 的步：居中、不画高亮框、不出箭头', () => {
-    const t = makeService({ steps: STEPS, defaultOpen: true, defaultStep: 2 })
+    const t = makeService({ steps: STEPS, defaultOpen: true, defaultValue: 2 })
     expect(t.api().anchored).toBe(false)
     expect((t.api().getPositionerProps() as Dict)['data-position']).toBe('center')
     expect((t.api().getSpotlightProps() as Dict).hidden).toBe(true)
@@ -440,21 +440,21 @@ describe('connectTour 输出', () => {
   it('单步 placement 覆盖整份引导的 placement', () => {
     const t = makeService({ steps: STEPS, defaultOpen: true, placement: 'top' })
     expect((t.api().getContentProps() as Dict)['data-placement']).toBe('top')
-    t.api().setStep(1)
+    t.api().setValue(1)
     expect((t.api().getContentProps() as Dict)['data-placement']).toBe('right')
   })
 
   it('progress-text 报第几步共几步，可整段替换文案', () => {
     const t = makeService({ steps: STEPS, defaultOpen: true })
     expect(t.api().progressText).toBe('Step 1 of 3')
-    t.api().setStep(2)
+    t.api().setValue(2)
     expect(t.api().progressText).toBe('Step 3 of 3')
     expect((t.api().getProgressTextProps() as Dict)['aria-live']).toBe('polite')
 
     const zh = makeService({
       steps: STEPS,
       defaultOpen: true,
-      defaultStep: 1,
+      defaultValue: 1,
       translations: { progress: (m, n) => `第 ${m} 步，共 ${n} 步` },
     })
     expect(zh.api().progressText).toBe('第 2 步，共 3 步')
@@ -470,7 +470,7 @@ describe('connectTour 输出', () => {
     const t = makeService({ steps: STEPS, defaultOpen: true })
     expect((t.api().getPrevTriggerProps() as Dict).disabled).toBe(true)
     expect((t.api().getNextTriggerProps() as Dict)['data-last']).toBeUndefined()
-    t.api().setStep(2)
+    t.api().setValue(2)
     expect((t.api().getPrevTriggerProps() as Dict).disabled).toBeUndefined()
     expect((t.api().getNextTriggerProps() as Dict)['data-last']).toBe('')
   })
@@ -489,10 +489,10 @@ describe('connectTour 输出', () => {
   })
 
   it('清单被改短：步序与当前步一并夹回可用范围', () => {
-    const t = makeService({ steps: STEPS, defaultOpen: true, defaultStep: 2 })
+    const t = makeService({ steps: STEPS, defaultOpen: true, defaultValue: 2 })
     expect(t.api().currentStep?.id).toBe('done')
     t.setProps({ steps: STEPS.slice(0, 2) })
-    expect(t.api().step).toBe(1)
+    expect(t.api().value).toBe(1)
     expect(t.api().currentStep?.id).toBe('b')
   })
 })
@@ -525,7 +525,7 @@ describe('tour 活 DOM：高亮框与键盘', () => {
   it('走到居中步：高亮框收起、positioner 让位给样式表', async () => {
     const t = mount({ defaultOpen: true })
     await settle()
-    t.api().setStep(2)
+    t.api().setValue(2)
     await settle()
     expect(t.spotlight.hasAttribute('hidden')).toBe(true)
     expect(t.positioner.getAttribute('data-position')).toBe('center')
@@ -580,9 +580,9 @@ describe('tour 活 DOM：高亮框与键盘', () => {
     await settle()
     const enter = keydown(t.content, 'Enter')
     expect(enter.defaultPrevented).toBe(true)
-    expect(t.api().step).toBe(1)
+    expect(t.api().value).toBe(1)
     keydown(t.content, ' ')
-    expect(t.api().step).toBe(2)
+    expect(t.api().value).toBe(2)
     t.stop()
   })
 
@@ -592,7 +592,7 @@ describe('tour 活 DOM：高亮框与键盘', () => {
     // 按键冒泡到 content，但目标是"上一步"按钮——接管的话按下上一步反而前进一步
     const event = keydown(t.prev, 'Enter')
     expect(event.defaultPrevented).toBe(false)
-    expect(t.api().step).toBe(0)
+    expect(t.api().value).toBe(0)
     t.stop()
   })
 
@@ -603,7 +603,7 @@ describe('tour 活 DOM：高亮框与键盘', () => {
       const event = keydown(t.content, key)
       expect(event.defaultPrevented).toBe(false)
     }
-    expect(t.api().step).toBe(0)
+    expect(t.api().value).toBe(0)
     t.stop()
   })
 
@@ -611,7 +611,7 @@ describe('tour 活 DOM：高亮框与键盘', () => {
     const t = mount()
     const event = keydown(t.content, 'Enter')
     expect(event.defaultPrevented).toBe(false)
-    expect(t.api().step).toBe(0)
+    expect(t.api().value).toBe(0)
     t.stop()
   })
 
@@ -622,14 +622,14 @@ describe('tour 活 DOM：高亮框与键盘', () => {
     const t = mount({ defaultOpen: true, onSkip, onComplete, onOpenChange })
     await settle()
     t.next.click()
-    expect(t.api().step).toBe(1)
+    expect(t.api().value).toBe(1)
     t.prev.click()
-    expect(t.api().step).toBe(0)
+    expect(t.api().value).toBe(0)
     t.skip.click()
     expect(onSkip).toHaveBeenCalledWith({ step: 0 })
     expect(t.api().open).toBe(false)
 
-    const t2 = mount({ defaultOpen: true, defaultStep: 2, onComplete })
+    const t2 = mount({ defaultOpen: true, defaultValue: 2, onComplete })
     await settle()
     t2.next.click()
     expect(onComplete).toHaveBeenCalledWith({ step: 2 })

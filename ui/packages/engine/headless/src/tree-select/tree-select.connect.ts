@@ -558,8 +558,6 @@ export function connectTreeSelect<T extends PropTypes>(
       ...branchState(node.value),
       // 子层是 treeitem 的下一级分组
       role: 'group',
-      // 收起只加 hidden，不卸载作者节点
-      hidden: !isExpanded(node.value) || undefined,
     }),
 
     // 表单出口：选中值随表单提交，对键盘与读屏不存在

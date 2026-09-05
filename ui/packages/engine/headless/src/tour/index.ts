@@ -21,6 +21,6 @@ export type {
   TourSkipDetails,
   TourSpotlightRect,
   TourStep,
-  TourStepChangeDetails,
   TourTranslations,
+  TourValueChangeDetails,
 } from './tour.types'

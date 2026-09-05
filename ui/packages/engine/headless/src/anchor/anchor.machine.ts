@@ -214,7 +214,7 @@ export const anchorMachine = createMachine({
         const resolve = (): void => {
           if (disposed)
             return
-          const ids = collectTargetIds(prop('targets'), refs.get('getListEl')())
+          const ids = collectTargetIds(prop('collection'), refs.get('getListEl')())
           if (ids.length === 0)
             return
           const container = refs.get('getScrollEl')()

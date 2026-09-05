@@ -3,14 +3,14 @@
 import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const size = ref({ width: 240, height: 120 });
+const dimensions = ref({ width: 240, height: 120 });
 // 只往右下角撑大——文档流里最常见的形态，不需要定位上下文也完全正确
 const EDGES = ["e", "s", "se"] as const;
 </script>
 
 <template>
   <XhResizableRoot
-    v-model:size="size"
+    v-model:dimensions="dimensions"
     :edges="[...EDGES]"
     :min-width="120"
     :min-height="80"

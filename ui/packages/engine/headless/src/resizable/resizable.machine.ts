@@ -1,12 +1,12 @@
 import type { ResizeConstraints, ResizeEdge } from '@xihan-ui/pointer'
-import type { ResizableSchema, ResizableSize } from './resizable.types'
+import type { ResizableDimensions, ResizableSchema } from './resizable.types'
 import { setup } from '@xihan-ui/machine'
 import { clampSize, createPointerSession, resizeRect, resolveSessionDoc } from '@xihan-ui/pointer'
 
 const { createMachine } = setup<ResizableSchema>()
 
 /** 没给初值时的尺寸。 */
-export const RESIZABLE_DEFAULT_SIZE: ResizableSize = { width: 240, height: 160 }
+export const RESIZABLE_DEFAULT_DIMENSIONS: ResizableDimensions = { width: 240, height: 160 }
 
 /** 方向键一次推多远（px）。 */
 export const RESIZABLE_STEP = 8
@@ -36,13 +36,13 @@ export function resizableConstraints(
 export const resizableMachine = createMachine({
   name: 'resizable',
   context: ({ cell, prop }) => ({
-    size: cell<ResizableSize>(() => ({
-      value: prop('size'),
-      defaultValue: clampSize(prop('defaultSize') ?? RESIZABLE_DEFAULT_SIZE, resizableConstraints(prop)),
+    dimensions: cell<ResizableDimensions>(() => ({
+      value: prop('dimensions'),
+      defaultValue: clampSize(prop('defaultDimensions') ?? RESIZABLE_DEFAULT_DIMENSIONS, resizableConstraints(prop)),
       // 每帧都是新对象，默认的 Object.is 会把「没变」也判成变了
       isEqual: (a, b) => !!b && a.width === b.width && a.height === b.height,
       // 通知挂在 cell 上：受控时 set 不写内部值，只有这条能把意图送出去
-      onChange: size => prop('onSizeChange')?.({ size }),
+      onChange: dimensions => prop('onDimensionsChange')?.({ dimensions }),
     })),
     offset: cell<ResizableSchema['context']['offset']>(() => ({
       defaultValue: ZERO,
@@ -60,7 +60,7 @@ export const resizableMachine = createMachine({
     // 键盘按一下就是一次完整的调整，因此顺手把收尾通知也发了
     'RESIZE.NUDGE': { guard: 'canResize', actions: ['nudge', 'invokeChangeEnd'] },
     'RESIZE.TO_BOUND': { guard: 'canResize', actions: ['toBound', 'invokeChangeEnd'] },
-    'SIZE.SET': { actions: ['setSize'] },
+    'DIMENSIONS.SET': { actions: ['setDimensions'] },
   },
   states: {
     idle: {
@@ -72,7 +72,7 @@ export const resizableMachine = createMachine({
       effects: ['trackPointer'],
       on: {
         'RESIZE.MOVE': { actions: ['trackResize'] },
-        // 收尾通知只在这里发一次，拖动途中 onSizeChange 已连发多次
+        // 收尾通知只在这里发一次，拖动途中 onDimensionsChange 已连发多次
         'RESIZE.END': { target: 'idle', actions: ['invokeChangeEnd', 'endResize'] },
         // 系统收走指针按取消算：尺寸退回按下那一刻
         'RESIZE.CANCEL': { target: 'idle', actions: ['cancelResize'] },
@@ -90,11 +90,11 @@ export const resizableMachine = createMachine({
           return
         const el = refs.get('getRootEl')()
         const box = el?.getBoundingClientRect()
-        const size = context.get('size')
+        const dimensions = context.get('dimensions')
         refs.set('session', {
           edge: e.edge,
           // 量真实矩形；无 DOM 时退回内部尺寸，纯逻辑测试照样能推
-          rect: { x: box?.x ?? 0, y: box?.y ?? 0, width: box?.width ?? size.width, height: box?.height ?? size.height },
+          rect: { x: box?.x ?? 0, y: box?.y ?? 0, width: box?.width ?? dimensions.width, height: box?.height ?? dimensions.height },
           originX: e.point.clientX,
           originY: e.point.clientY,
           offset: context.get('offset'),
@@ -118,10 +118,10 @@ export const resizableMachine = createMachine({
         if (e.type !== 'RESIZE.NUDGE')
           return
         // 键盘与拖动走同一条路：一次按键就是一小段位移
-        const size = context.get('size')
+        const dimensions = context.get('dimensions')
         const session = refs.get('session') ?? {
           edge: e.edge,
-          rect: { x: 0, y: 0, width: size.width, height: size.height },
+          rect: { x: 0, y: 0, width: dimensions.width, height: dimensions.height },
           originX: 0,
           originY: 0,
           offset: context.get('offset'),
@@ -134,20 +134,20 @@ export const resizableMachine = createMachine({
         if (e.type !== 'RESIZE.TO_BOUND')
           return
         const horizontal = e.edge !== 'n' && e.edge !== 's'
-        const current = context.get('size')
+        const current = context.get('dimensions')
         const c = resizableConstraints(prop)
         // 端点取这条边真走得到的位置：没给上限时 max 那一端不动
-        const target: ResizableSize = e.bound === 'min'
+        const target: ResizableDimensions = e.bound === 'min'
           ? { width: horizontal ? (c.minWidth ?? 0) : current.width, height: horizontal ? current.height : (c.minHeight ?? 0) }
           : { width: horizontal ? (c.maxWidth ?? current.width) : current.width, height: horizontal ? current.height : (c.maxHeight ?? current.height) }
-        context.set('size', clampSize(target, c))
+        context.set('dimensions', clampSize(target, c))
       },
 
-      setSize: ({ context, prop, event }) => {
+      setDimensions: ({ context, prop, event }) => {
         const e = event.current()
-        if (e.type !== 'SIZE.SET')
+        if (e.type !== 'DIMENSIONS.SET')
           return
-        context.set('size', clampSize(e.size, resizableConstraints(prop)))
+        context.set('dimensions', clampSize(e.dimensions, resizableConstraints(prop)))
       },
 
       invokeChangeEnd: ({ context, prop, event }) => {
@@ -158,7 +158,7 @@ export const resizableMachine = createMachine({
           ?? ((e.type === 'RESIZE.NUDGE' || e.type === 'RESIZE.TO_BOUND') ? e.edge : null)
         if (!edge)
           return
-        prop('onSizeChangeEnd')?.({ size: { ...context.get('size') }, edge })
+        prop('onDimensionsChangeEnd')?.({ dimensions: { ...context.get('dimensions') }, edge })
       },
 
       endResize: ({ context, refs }) => {
@@ -169,7 +169,7 @@ export const resizableMachine = createMachine({
       cancelResize: ({ context, prop, refs }) => {
         const session = refs.get('session')
         if (session) {
-          context.set('size', clampSize({ width: session.rect.width, height: session.rect.height }, resizableConstraints(prop)))
+          context.set('dimensions', clampSize({ width: session.rect.width, height: session.rect.height }, resizableConstraints(prop)))
           context.set('offset', session.offset)
         }
         refs.set('session', null)
@@ -221,7 +221,7 @@ function applyRect(
     delta,
     constraints: resizableConstraints(prop),
   })
-  context.set('size', { width: next.width, height: next.height })
+  context.set('dimensions', { width: next.width, height: next.height })
   // 推西边与北边时矩形的起点在动，把这段差额写进位移，对边才钉得住
   context.set('offset', {
     x: session.offset.x + (next.x - session.rect.x),

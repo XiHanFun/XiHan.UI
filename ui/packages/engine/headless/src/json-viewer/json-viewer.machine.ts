@@ -225,8 +225,8 @@ export function flattenJson(value: unknown, options: JsonViewerFlattenOptions = 
   // 顶层没给值就是空视图，一行也不摊；对象内部真有一个 undefined 成员时仍照常摊成一行
   if (value === undefined)
     return []
-  const expanded = new Set(options.expanded ?? [])
-  return collectRows(value, options, node => expanded.has(node.value))
+  const expandedValue = new Set(options.expandedValue ?? [])
+  return collectRows(value, options, node => expandedValue.has(node.value))
 }
 
 /** 层级号不超过 depth 的分支路径，用作 defaultExpandedValue 缺省时的初始展开集合。 */
@@ -284,7 +284,7 @@ export const jsonViewerMachine = createMachine({
       isEqual: samePaths,
       onChange: (value) => {
         if (value)
-          prop('onExpandedChange')?.({ value })
+          prop('onExpandedValueChange')?.({ value })
       },
     })),
     // 焦点锚点不受控、不对外通知：它只服务 roving tabindex 与方向键起点

@@ -233,7 +233,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     },
     sort: () => service.context.get('sort'),
     selection: () => service.context.get('selection'),
-    expanded: () => service.context.get('expanded'),
+    expanded: () => service.context.get('expandedValue'),
   }
 }
 
@@ -511,12 +511,12 @@ describe('tableMachine 排序 / 选择 / 展开', () => {
   })
 
   it('展开：只有可展开且未禁用的行改得动，重复展开不重复通知', () => {
-    const onExpandedChange = vi.fn()
-    const h = mount({ onExpandedChange })
+    const onExpandedValueChange = vi.fn()
+    const h = mount({ onExpandedValueChange })
     h.api().expandRow('a')
     expect(h.expanded()).toEqual(['a'])
     h.api().expandRow('a')
-    expect(onExpandedChange).toHaveBeenCalledTimes(1)
+    expect(onExpandedValueChange).toHaveBeenCalledTimes(1)
     // b 不可展开、c 禁用
     h.api().expandRow('b')
     h.api().expandRow('c')
@@ -533,15 +533,15 @@ describe('tableMachine 排序 / 选择 / 展开', () => {
   it('受控：内部值纹丝不动，回调照发；宿主写回后才生效', () => {
     const onSortChange = vi.fn()
     const onSelectionChange = vi.fn()
-    const onExpandedChange = vi.fn()
+    const onExpandedValueChange = vi.fn()
     const h = mount({
       selectionMode: 'multiple',
       sort: [{ id: 'name', direction: 'asc' }],
       selection: [],
-      expanded: [],
+      expandedValue: [],
       onSortChange,
       onSelectionChange,
-      onExpandedChange,
+      onExpandedValueChange,
     })
     h.api().toggleSort('name')
     h.api().selectRow('a')
@@ -551,9 +551,9 @@ describe('tableMachine 排序 / 选择 / 展开', () => {
     expect(h.expanded()).toEqual([])
     expect(onSortChange).toHaveBeenCalledWith({ value: [{ id: 'name', direction: 'desc' }] })
     expect(onSelectionChange).toHaveBeenCalledWith({ value: ['a'] })
-    expect(onExpandedChange).toHaveBeenCalledWith({ value: ['a'] })
+    expect(onExpandedValueChange).toHaveBeenCalledWith({ value: ['a'] })
 
-    h.setProps({ sort: [{ id: 'name', direction: 'desc' }], selection: ['a'], expanded: ['a'] })
+    h.setProps({ sort: [{ id: 'name', direction: 'desc' }], selection: ['a'], expandedValue: ['a'] })
     expect(h.sort()).toEqual([{ id: 'name', direction: 'desc' }])
     expect(h.selection()).toEqual(['a'])
     expect(h.expanded()).toEqual(['a'])
@@ -645,7 +645,7 @@ describe('connectTable 属性输出', () => {
   })
 
   it('展开一行会把它后面所有行的行号整体后移一位，详情行占的是真实行号', () => {
-    const h = mount({ defaultExpanded: ['a'] })
+    const h = mount({ defaultExpandedValue: ['a'] })
     expect(h.row('a').row.getAttribute('aria-rowindex')).toBe('2')
     expect(h.row('a').expandedRow.getAttribute('aria-rowindex')).toBe('3')
     expect(h.row('b').row.getAttribute('aria-rowindex')).toBe('4')
@@ -738,15 +738,13 @@ describe('connectTable 属性输出', () => {
     expect(a.row.getAttribute('data-state')).toBe('open')
   })
 
-  it('详情行常挂：收起时只加 hidden，不卸载作者节点', () => {
+  it('详情行常挂：收起时只翻 data-state，不卸载作者节点', () => {
     const h = mount()
     const a = h.row('a')
     expect(a.expandedRow.getAttribute('role')).toBe('row')
-    expect(a.expandedRow.hasAttribute('hidden')).toBe(true)
     expect(a.expandedRow.getAttribute('data-state')).toBe('closed')
     expect(a.expandedRow.textContent).toBe('a 详情')
     h.api().expandRow('a')
-    expect(a.expandedRow.hasAttribute('hidden')).toBe(false)
     expect(a.expandedRow.getAttribute('data-state')).toBe('open')
     // 不可展开的行没有行号可给它的详情行
     expect(h.row('b').expandedRow.hasAttribute('aria-rowindex')).toBe(false)
@@ -930,7 +928,7 @@ describe('键盘：行间导航', () => {
   })
 
   it('详情行不是方向键的落点：它承载业务内容，不是数据行', () => {
-    const h = mount({ defaultExpanded: ['a'] })
+    const h = mount({ defaultExpandedValue: ['a'] })
     h.row('a').row.focus()
     press(active(), 'ArrowDown')
     expect(focused()).toBe('b')

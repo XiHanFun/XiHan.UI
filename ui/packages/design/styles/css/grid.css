@@ -311,19 +311,19 @@
   }
 
   /* —— 行内对齐 —— */
-  [data-scope='grid'][data-part='root'][data-justify='start'] {
+  [data-scope='grid'][data-part='root'][data-justify-items='start'] {
     justify-items: start;
   }
 
-  [data-scope='grid'][data-part='root'][data-justify='center'] {
+  [data-scope='grid'][data-part='root'][data-justify-items='center'] {
     justify-items: center;
   }
 
-  [data-scope='grid'][data-part='root'][data-justify='end'] {
+  [data-scope='grid'][data-part='root'][data-justify-items='end'] {
     justify-items: end;
   }
 
-  [data-scope='grid'][data-part='root'][data-justify='stretch'] {
+  [data-scope='grid'][data-part='root'][data-justify-items='stretch'] {
     justify-items: stretch;
   }
 

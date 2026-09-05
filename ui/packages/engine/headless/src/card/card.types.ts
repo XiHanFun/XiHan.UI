@@ -11,7 +11,7 @@ export interface CardProps {
   /** 指针悬停时抬起：只落 data-hoverable，抬多少由皮肤定。 */
   hoverable?: boolean
   /** 分段：在头、身、脚之间画分隔线。 */
-  segmented?: boolean
+  split?: boolean
 }
 
 export interface CardApi<T extends PropTypes = PropTypes> {

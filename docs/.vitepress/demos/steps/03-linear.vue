@@ -17,7 +17,7 @@ const steps = ["实名认证", "绑定银行卡", "签署协议"];
 
 <template>
   <XhStepsRoot
-    v-slot="{ step, complete, goToPrevStep, goToNextStep }"
+    v-slot="{ value, complete, goToPrevStep, goToNextStep }"
     :count="steps.length"
     linear
     style="inline-size: 100%"
@@ -25,7 +25,7 @@ const steps = ["实名认证", "绑定银行卡", "签署协议"];
     <XhStepsList>
       <XhStepsItem v-for="(s, i) in steps" :key="s" :value="i">
         <XhStepsTrigger>
-          <XhStepsIndicator>{{ step > i ? "" : i + 1 }}</XhStepsIndicator>
+          <XhStepsIndicator>{{ value > i ? "" : i + 1 }}</XhStepsIndicator>
           <XhStepsTitle>{{ s }}</XhStepsTitle>
         </XhStepsTrigger>
         <XhStepsSeparator />
@@ -38,7 +38,7 @@ const steps = ["实名认证", "绑定银行卡", "签署协议"];
     <XhStepsContent :value="steps.length">全部完成。</XhStepsContent>
 
     <div style="display: flex; align-items: center; gap: 8px">
-      <XhButton variant="outline" :disabled="step === 0" @click="goToPrevStep()">
+      <XhButton variant="outline" :disabled="value === 0" @click="goToPrevStep()">
         上一步
       </XhButton>
       <XhButton variant="solid" :disabled="complete" @click="goToNextStep()">

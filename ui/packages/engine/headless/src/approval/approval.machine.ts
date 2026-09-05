@@ -85,8 +85,8 @@ export const approvalMachine = createMachine({
     guards: {
       isStatusControlled: ({ prop }) => prop('status') !== undefined,
       canApprove: ({ prop, context }) =>
-        prop('busy') !== true && canApproveScopes(prop('scopes'), context.get('grantedScopes')),
-      isEditable: ({ prop }) => prop('busy') !== true,
+        prop('loading') !== true && canApproveScopes(prop('scopes'), context.get('grantedScopes')),
+      isEditable: ({ prop }) => prop('loading') !== true,
       // 受控且能批：只发意图，不自改状态
       canApproveControlled: guards.and('isStatusControlled', 'canApprove'),
     },

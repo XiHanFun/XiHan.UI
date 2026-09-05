@@ -202,81 +202,81 @@ describe('clampStep', () => {
 // ── 机器 ────────────────────────────────────────────────────────────
 
 describe('stepsMachine', () => {
-  it('默认停在第 0 步，defaultStep 决定初值', () => {
-    expect(mount().api().step).toBe(0)
-    expect(mount({ defaultStep: 2 }).api().step).toBe(2)
+  it('默认停在第 0 步，defaultValue 决定初值', () => {
+    expect(mount().api().value).toBe(0)
+    expect(mount({ defaultValue: 2 }).api().value).toBe(2)
     // 越界初值同样夹回来
-    expect(mount({ defaultStep: 9 }).api().step).toBe(3)
+    expect(mount({ defaultValue: 9 }).api().value).toBe(3)
   })
 
   it('goToNextStep / goToPrevStep 各走一步，端点停住不回绕；末步之后是完成位', () => {
     const h = mount()
     h.api().goToNextStep()
-    expect(h.api().step).toBe(1)
+    expect(h.api().value).toBe(1)
     h.api().goToNextStep()
     h.api().goToNextStep()
-    expect(h.api().step).toBe(3)
+    expect(h.api().value).toBe(3)
     expect(h.api().complete).toBe(true)
     // 已在完成位：再按也不该绕回第 0 步
     h.api().goToNextStep()
-    expect(h.api().step).toBe(3)
+    expect(h.api().value).toBe(3)
 
     h.api().goToPrevStep()
-    expect(h.api().step).toBe(2)
+    expect(h.api().value).toBe(2)
     expect(h.api().complete).toBe(false)
     h.api().goToPrevStep()
     h.api().goToPrevStep()
     h.api().goToPrevStep()
-    expect(h.api().step).toBe(0)
+    expect(h.api().value).toBe(0)
   })
 
-  it('setStep 越界的步序在写入口就夹掉', () => {
+  it('setValue 越界的步序在写入口就夹掉', () => {
     const h = mount()
-    h.api().setStep(99)
-    expect(h.api().step).toBe(3)
-    h.api().setStep(-5)
-    expect(h.api().step).toBe(0)
+    h.api().setValue(99)
+    expect(h.api().value).toBe(3)
+    h.api().setValue(-5)
+    expect(h.api().value).toBe(0)
   })
 
-  it('setStep 不认 linear：作者自己的代码放行，不该被拦用户乱跳的那把锁挡住', () => {
+  it('setValue 不认 linear：作者自己的代码放行，不该被拦用户乱跳的那把锁挡住', () => {
     const h = mount({ linear: true })
-    h.api().setStep(2)
-    expect(h.api().step).toBe(2)
+    h.api().setValue(2)
+    expect(h.api().value).toBe(2)
   })
 
-  it('onStepChange 带上新步序，且值没变时不叫', () => {
-    const onStepChange = vi.fn()
-    const h = mount({ onStepChange })
+  it('onValueChange 带上新步序，且值没变时不叫', () => {
+    const onValueChange = vi.fn()
+    const h = mount({ onValueChange })
     h.api().goToNextStep()
-    expect(onStepChange).toHaveBeenCalledWith({ step: 1 })
+    expect(onValueChange).toHaveBeenCalledWith({ value: 1 })
 
-    onStepChange.mockClear()
-    h.api().setStep(1)
+    onValueChange.mockClear()
+    h.api().setValue(1)
     // 同一步再点一次不该惊动宿主：作者常在回调里发请求，重复回调就是重复请求
-    expect(onStepChange).not.toHaveBeenCalled()
+    expect(onValueChange).not.toHaveBeenCalled()
   })
 
-  it('受控 step：内部不自改，只发回调；宿主写回后跟着走', () => {
-    const onStepChange = vi.fn()
-    const h = mount({ step: 1, onStepChange })
+  it('受控 value：内部不自改，只发回调；宿主写回后跟着走', () => {
+    const onValueChange = vi.fn()
+    const h = mount({ value: 1, onValueChange })
     h.api().goToNextStep()
-    expect(onStepChange).toHaveBeenCalledWith({ step: 2 })
+    expect(onValueChange).toHaveBeenCalledWith({ value: 2 })
     // 宿主没写回：界面不该自作主张
-    expect(h.api().step).toBe(1)
+    expect(h.api().value).toBe(1)
 
-    h.setProps({ step: 2 })
-    expect(h.api().step).toBe(2)
+    h.setProps({ value: 2 })
+    expect(h.api().value).toBe(2)
   })
 
   it('count 变小后，上一步从看得见的那一步起算', () => {
-    const h = mount({ defaultStep: 3 })
-    expect(h.api().step).toBe(3)
+    const h = mount({ defaultValue: 3 })
+    expect(h.api().value).toBe(3)
     h.setProps({ count: 1 })
     // 内部值还停在 3，但界面显示的是夹过的第 1 步
-    expect(h.api().step).toBe(1)
+    expect(h.api().value).toBe(1)
     h.api().goToPrevStep()
     // 从 3 往回走会得到 2（再夹成 1），用户点一下看不到任何变化
-    expect(h.api().step).toBe(0)
+    expect(h.api().value).toBe(0)
   })
 })
 
@@ -284,7 +284,7 @@ describe('stepsMachine', () => {
 
 describe('connectSteps 属性', () => {
   it('root 带朝向；count 缺省时打 data-empty', () => {
-    const h = mount({ defaultStep: 1 })
+    const h = mount({ defaultValue: 1 })
     const root = h.api().getRootProps() as Dict
     expect(root['data-scope']).toBe('steps')
     expect(root['data-orientation']).toBe('horizontal')
@@ -296,7 +296,7 @@ describe('connectSteps 属性', () => {
   })
 
   it('走到完成位时 root 打 data-complete，且没有任何一步是 current', () => {
-    const h = mount({ defaultStep: 3 })
+    const h = mount({ defaultValue: 3 })
     expect((h.api().getRootProps() as Dict)['data-complete']).toBe('')
     expect([0, 1, 2].map(i => stateOf(h.trigger(i)))).toEqual(['completed', 'completed', 'completed'])
     expect([0, 1, 2].map(i => h.content(i).hasAttribute('hidden'))).toEqual([true, true, true])
@@ -311,7 +311,7 @@ describe('connectSteps 属性', () => {
   })
 
   it('三态：走过的 completed、停着的 current、没走到的 incomplete，六个部件口径一致', () => {
-    const h = mount({ defaultStep: 1 })
+    const h = mount({ defaultValue: 1 })
     const states = (i: number): (string | null)[] => [
       stateOf(h.item(i)),
       stateOf(h.trigger(i)),
@@ -325,14 +325,14 @@ describe('connectSteps 属性', () => {
   })
 
   it('getItemState 把三态与禁用一并算好，作者自绘图标直接取', () => {
-    const h = mount({ defaultStep: 1, linear: true })
+    const h = mount({ defaultValue: 1, linear: true })
     expect(h.api().getItemState({ index: 0 })).toEqual({ index: 0, status: 'completed', completed: true, current: false, disabled: false })
     expect(h.api().getItemState({ index: 1 })).toEqual({ index: 1, status: 'current', completed: false, current: true, disabled: false })
     expect(h.api().getItemState({ index: 2 })).toEqual({ index: 2, status: 'incomplete', completed: false, current: false, disabled: true })
   })
 
   it('trigger：role=tab + aria-selected/aria-current 成对，posinset/setsize 报出"第几步共几步"', () => {
-    const h = mount({ defaultStep: 1 })
+    const h = mount({ defaultValue: 1 })
     const current = h.trigger(1)
     const other = h.trigger(2)
     expect(current.getAttribute('role')).toBe('tab')
@@ -362,7 +362,7 @@ describe('connectSteps 属性', () => {
   })
 
   it('面板常挂，只有当前步那份不带 hidden', () => {
-    const h = mount({ defaultStep: 1 })
+    const h = mount({ defaultValue: 1 })
     expect([0, 1, 2].map(i => h.content(i).hasAttribute('hidden'))).toEqual([true, false, true])
     expect(h.content(1).getAttribute('role')).toBe('tabpanel')
     expect(h.content(1).getAttribute('tabindex')).toBe('0')
@@ -380,7 +380,7 @@ describe('connectSteps 属性', () => {
 
 describe('connectSteps roving tabindex', () => {
   it('条目侧只有锚点那一个 Tab 位，锚点落在当前步上', () => {
-    const h = mount({ defaultStep: 1 })
+    const h = mount({ defaultValue: 1 })
     expect([0, 1, 2].map(i => h.trigger(i).getAttribute('tabindex'))).toEqual(['-1', '0', '-1'])
     // 焦点还在组外，容器一并兜着：锚点未必有对应条目（见下一条），
     // 判据只能是"焦点在不在组内"，不能是"锚点在不在"
@@ -388,7 +388,7 @@ describe('connectSteps roving tabindex', () => {
   })
 
   it('锚点没有对应条目时（走到完成位）由 list 兜底，整组不脱序', () => {
-    const h = mount({ defaultStep: 3 })
+    const h = mount({ defaultValue: 3 })
     expect([0, 1, 2].map(i => h.trigger(i).getAttribute('tabindex'))).toEqual(['-1', '-1', '-1'])
     expect(h.list.getAttribute('tabindex')).toBe('0')
     expect(tabStops()).toEqual(['list'])
@@ -403,12 +403,12 @@ describe('connectSteps roving tabindex', () => {
   })
 
   it('焦点进入某个 trigger 后锚点跟着焦点走，list 让位；焦点离组则交还当前步', () => {
-    const h = mount({ defaultStep: 0 })
+    const h = mount({ defaultValue: 0 })
     h.trigger(2).focus()
     expect(tabStops()).toEqual(['trigger2'])
     expect(h.list.getAttribute('tabindex')).toBe('-1')
     // 焦点走了但步序没动
-    expect(h.api().step).toBe(0)
+    expect(h.api().value).toBe(0)
 
     h.trigger(2).blur()
     expect(h.api().focusedStep).toBeNull()
@@ -417,20 +417,20 @@ describe('connectSteps roving tabindex', () => {
   })
 
   it('焦点从组外落到 list：转投锚点那一步，落焦不等于切步', () => {
-    const h = mount({ defaultStep: 1 })
+    const h = mount({ defaultValue: 1 })
     h.list.dispatchEvent(new FocusEvent('focus', { relatedTarget: document.body }))
     expect(focusedStep()).toBe('1')
-    expect(h.api().step).toBe(1)
+    expect(h.api().value).toBe(1)
   })
 
   it('锚点那一步没有对应条目时，容器把焦点转投给首个可停留条目', () => {
-    const h = mount({ defaultStep: 3 })
+    const h = mount({ defaultValue: 3 })
     h.list.dispatchEvent(new FocusEvent('focus', { relatedTarget: document.body }))
     expect(focusedStep()).toBe('0')
   })
 
   it('组内往外退时容器不抢焦点，否则 Shift+Tab 会把人困在组里', () => {
-    const h = mount({ defaultStep: 1 })
+    const h = mount({ defaultValue: 1 })
     h.trigger(0).focus()
     h.list.dispatchEvent(new FocusEvent('focus', { relatedTarget: h.trigger(0) }))
     expect(focusedStep()).toBe('0')
@@ -441,11 +441,11 @@ describe('connectSteps roving tabindex', () => {
 
 describe('connectSteps 键盘', () => {
   it('arrowRight / ArrowLeft 只搬焦点，不改步序；两端不回绕', () => {
-    const h = mount({ defaultStep: 0 })
+    const h = mount({ defaultValue: 0 })
     h.trigger(0).focus()
     press(h.list, 'ArrowRight')
     expect(focusedStep()).toBe('1')
-    expect(h.api().step).toBe(0)
+    expect(h.api().value).toBe(0)
 
     press(h.list, 'ArrowLeft')
     expect(focusedStep()).toBe('0')
@@ -461,7 +461,7 @@ describe('connectSteps 键盘', () => {
   })
 
   it('home / End 跳到首尾 trigger', () => {
-    const h = mount({ defaultStep: 1 })
+    const h = mount({ defaultValue: 1 })
     h.trigger(1).focus()
     press(h.list, 'End')
     expect(focusedStep()).toBe('2')
@@ -470,17 +470,17 @@ describe('connectSteps 键盘', () => {
   })
 
   it('enter / Space 把当前步切到焦点所在的那一步', () => {
-    const h = mount({ defaultStep: 0 })
+    const h = mount({ defaultValue: 0 })
     h.trigger(0).focus()
     press(h.list, 'ArrowRight')
-    expect(h.api().step).toBe(0)
+    expect(h.api().value).toBe(0)
     const enter = press(document.activeElement as HTMLElement, 'Enter')
-    expect(h.api().step).toBe(1)
+    expect(h.api().value).toBe(1)
     expect(enter.defaultPrevented).toBe(true)
 
     press(h.list, 'ArrowRight')
     press(document.activeElement as HTMLElement, ' ')
-    expect(h.api().step).toBe(2)
+    expect(h.api().value).toBe(2)
   })
 
   it('横排里 ArrowDown 不归导航管：不 preventDefault，焦点也不动', () => {
@@ -502,7 +502,7 @@ describe('connectSteps 键盘', () => {
   })
 
   it('dir=rtl：水平轴左右镜像，ArrowRight 走上一个', () => {
-    const h = mount({ dir: 'rtl', defaultStep: 1 })
+    const h = mount({ dir: 'rtl', defaultValue: 1 })
     h.trigger(1).focus()
     press(h.list, 'ArrowRight')
     expect(focusedStep()).toBe('0')
@@ -519,13 +519,13 @@ describe('connectSteps 键盘', () => {
   })
 
   it('整组禁用时按键一概不接，也不 preventDefault', () => {
-    const h = mount({ disabled: true, defaultStep: 1 })
+    const h = mount({ disabled: true, defaultValue: 1 })
     h.trigger(1).focus()
     const event = press(h.list, 'ArrowRight')
     expect(event.defaultPrevented).toBe(false)
     expect(focusedStep()).toBe('1')
     press(h.trigger(1), 'Enter')
-    expect(h.api().step).toBe(1)
+    expect(h.api().value).toBe(1)
   })
 })
 
@@ -533,15 +533,15 @@ describe('connectSteps 键盘', () => {
 
 describe('connectSteps 点击与禁用', () => {
   it('点 trigger 即切步，面板随之显隐', () => {
-    const h = mount({ defaultStep: 0 })
+    const h = mount({ defaultValue: 0 })
     click(h.trigger(2))
-    expect(h.api().step).toBe(2)
+    expect(h.api().value).toBe(2)
     expect([0, 1, 2].map(i => h.content(i).hasAttribute('hidden'))).toEqual([true, true, false])
   })
 
   it('作者自报禁用的那一步：aria-disabled 而非原生 disabled，点了不动，方向键跳过它', () => {
-    const onStepChange = vi.fn()
-    const h = mount({ defaultStep: 0, onStepChange }, [1])
+    const onValueChange = vi.fn()
+    const h = mount({ defaultValue: 0, onValueChange }, [1])
     expect(h.trigger(1).getAttribute('aria-disabled')).toBe('true')
     expect(h.trigger(1).hasAttribute('disabled')).toBe(false)
     expect(h.item(1).getAttribute('data-disabled')).toBe('')
@@ -549,8 +549,8 @@ describe('connectSteps 点击与禁用', () => {
     // 禁用的表单控件上 el.click() 会被激活行为短路、事件压根不派发，
     // 断言会恒绿；直接派发合成事件才验得到那道守卫
     click(h.trigger(1))
-    expect(h.api().step).toBe(0)
-    expect(onStepChange).not.toHaveBeenCalled()
+    expect(h.api().value).toBe(0)
+    expect(onValueChange).not.toHaveBeenCalled()
 
     h.trigger(0).focus()
     press(h.list, 'ArrowRight')
@@ -558,7 +558,7 @@ describe('connectSteps 点击与禁用', () => {
   })
 
   it('禁用的条目仍可聚焦、仍能当方向键的起点', () => {
-    const h = mount({ defaultStep: 0 }, [1])
+    const h = mount({ defaultValue: 0 }, [1])
     h.trigger(1).focus()
     expect(focusedStep()).toBe('1')
     press(h.list, 'ArrowRight')
@@ -566,58 +566,58 @@ describe('connectSteps 点击与禁用', () => {
   })
 
   it('整组禁用：每一步都禁用，点了不动', () => {
-    const h = mount({ disabled: true, defaultStep: 1 })
+    const h = mount({ disabled: true, defaultValue: 1 })
     expect([0, 1, 2].map(i => h.trigger(i).getAttribute('aria-disabled'))).toEqual(['true', 'true', 'true'])
     click(h.trigger(2))
-    expect(h.api().step).toBe(1)
+    expect(h.api().value).toBe(1)
   })
 })
 
 // ── linear ──────────────────────────────────────────────────────────
 
 describe('connectSteps linear', () => {
-  it('未解锁的步骤（index > step）禁用，走过的与当前这一步照常可点', () => {
-    const h = mount({ linear: true, defaultStep: 1 })
+  it('未解锁的步骤（index > value）禁用，走过的与当前这一步照常可点', () => {
+    const h = mount({ linear: true, defaultValue: 1 })
     expect([0, 1, 2].map(i => h.trigger(i).getAttribute('aria-disabled'))).toEqual(['false', 'false', 'true'])
     click(h.trigger(0))
-    expect(h.api().step).toBe(0)
+    expect(h.api().value).toBe(0)
   })
 
   it('点未解锁的那一步毫无反应，宿主也收不到回调', () => {
-    const onStepChange = vi.fn()
-    const h = mount({ linear: true, defaultStep: 0, onStepChange })
+    const onValueChange = vi.fn()
+    const h = mount({ linear: true, defaultValue: 0, onValueChange })
     click(h.trigger(2))
-    expect(h.api().step).toBe(0)
-    expect(onStepChange).not.toHaveBeenCalled()
+    expect(h.api().value).toBe(0)
+    expect(onValueChange).not.toHaveBeenCalled()
   })
 
   it('enter 落在未解锁的那一步上同样不认', () => {
-    const h = mount({ linear: true, defaultStep: 0 })
+    const h = mount({ linear: true, defaultValue: 0 })
     h.trigger(2).focus()
     press(h.trigger(2), 'Enter')
-    expect(h.api().step).toBe(0)
+    expect(h.api().value).toBe(0)
   })
 
   it('方向键跳过未解锁的步骤，于是"往前走"自然停在当前步上', () => {
-    const h = mount({ linear: true, defaultStep: 0 })
+    const h = mount({ linear: true, defaultValue: 0 })
     h.trigger(0).focus()
     press(h.list, 'ArrowRight')
     expect(focusedStep()).toBe('0')
   })
 
   it('goToNextStep 不受 linear 影响：linear 拦的是跳，不是走', () => {
-    const h = mount({ linear: true, defaultStep: 0 })
+    const h = mount({ linear: true, defaultValue: 0 })
     h.api().goToNextStep()
-    expect(h.api().step).toBe(1)
+    expect(h.api().value).toBe(1)
     // 走过去之后那一步就解锁了
     expect(h.trigger(1).getAttribute('aria-disabled')).toBe('false')
   })
 
   it('非 linear 时可以直接跳到还没走到的步', () => {
-    const h = mount({ defaultStep: 0 })
+    const h = mount({ defaultValue: 0 })
     expect(h.trigger(2).getAttribute('aria-disabled')).toBe('false')
     click(h.trigger(2))
-    expect(h.api().step).toBe(2)
+    expect(h.api().value).toBe(2)
   })
 })
 

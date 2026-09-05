@@ -214,7 +214,7 @@ function rowsExpanded(...values: readonly string[]): readonly AttrExpectation[] 
 
 /** 详情行的显隐，与展开态逐一对应。 */
 function detailsShown(...values: readonly string[]): readonly AttrExpectation[] {
-  return DETAIL_ROWS.map(v => ({ hidden: values.includes(v) ? null : '' }))
+  return DETAIL_ROWS.map(v => ({ 'data-state': values.includes(v) ? 'open' : 'closed' }))
 }
 
 /** 三列的排序期望，逐列写全。 */
@@ -462,7 +462,7 @@ export const tableSuite: ConformanceSuite = {
     {
       name: '上下键走可见数据行：禁用行跳过，详情行不是落点，loop 默认关所以首尾不回绕',
       spec: { apg: `${APG}#keyboardinteraction` },
-      props: props({ defaultExpanded: ['a'] }),
+      props: props({ defaultExpandedValue: ['a'] }),
       covers: ['table.kbd.next', 'table.kbd.prev', 'table.kbd.first', 'table.kbd.last'],
       initial: {
         parts: { 'row': rowsExpanded('a'), 'expanded-row': detailsShown('a') },
@@ -597,7 +597,7 @@ export const tableSuite: ConformanceSuite = {
             parts: {
               'root': { 'aria-rowcount': '7' },
               'row[1]': { 'aria-rowindex': '2' },
-              'expanded-row[0]': { 'aria-rowindex': '3', 'hidden': null, 'data-state': 'open' },
+              'expanded-row[0]': { 'aria-rowindex': '3', 'data-state': 'open' },
               'row[2]': { 'aria-rowindex': '4' },
               'row[5]': { 'aria-rowindex': '7' },
             },
@@ -610,7 +610,7 @@ export const tableSuite: ConformanceSuite = {
             parts: {
               'root': { 'aria-rowcount': '6' },
               'row[2]': { 'aria-rowindex': '3' },
-              'expanded-row[0]': { hidden: '' },
+              'expanded-row[0]': { 'data-state': 'closed' },
             },
           },
         },
@@ -824,7 +824,7 @@ export const tableSuite: ConformanceSuite = {
       covers: ['table.kbd.row-indent'],
       // 树形那一份行只给这个用例：行值仍是 a/b/c/d，基准 fixture 一个节点都不用改，
       // 展开 a 之后可见序是 a、b、c、d，与 DOM 里那四个数据行一一对上
-      props: props({ rows: TREE_ROWS, rowReorderable: true, defaultExpanded: ['a'] }),
+      props: props({ rows: TREE_ROWS, rowReorderable: true, defaultExpandedValue: ['a'] }),
       initial: {
         parts: {
           // b、c 是 a 的子行：层级与位次都在第二层上算
@@ -1017,9 +1017,9 @@ export const tableSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '受控 sort / selection / expanded：宿主不写回则纹丝不动',
+      name: '受控 sort / selection / expandedValue：宿主不写回则纹丝不动',
       spec: { apg: APG },
-      props: props({ selectionMode: 'multiple', sort: [], selection: [], expanded: [] }),
+      props: props({ selectionMode: 'multiple', sort: [], selection: [], expandedValue: [] }),
       steps: [
         {
           kind: 'click',
@@ -1041,7 +1041,7 @@ export const tableSuite: ConformanceSuite = {
           props: {
             sort: [{ id: 'name', direction: 'desc' }],
             selection: ['a'],
-            expanded: ['a'],
+            expandedValue: ['a'],
           },
           expect: {
             parts: {

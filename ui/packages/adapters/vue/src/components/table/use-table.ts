@@ -18,7 +18,7 @@ export function useTable(
   props: TableSchema['props'],
   onSortChange?: TableSchema['props']['onSortChange'],
   onSelectionChange?: TableSchema['props']['onSelectionChange'],
-  onExpandedChange?: TableSchema['props']['onExpandedChange'],
+  onExpandedValueChange?: TableSchema['props']['onExpandedValueChange'],
   onColumnPreferenceChange?: TableSchema['props']['onColumnPreferenceChange'],
   onRowMove?: TableSchema['props']['onRowMove'],
 ): TableContext {
@@ -26,7 +26,7 @@ export function useTable(
   const scope = createScope(null, idGen)
   const service = useMachine(
     tableMachine,
-    () => ({ ...props, onSortChange, onSelectionChange, onExpandedChange, onColumnPreferenceChange, onRowMove }),
+    () => ({ ...props, onSortChange, onSelectionChange, onExpandedValueChange, onColumnPreferenceChange, onRowMove }),
     scope,
   )
   const api = computed(() => connectTable(service, vueNormalize))

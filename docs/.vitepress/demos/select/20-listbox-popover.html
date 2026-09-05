@@ -1,0 +1,48 @@
+<!-- 官方组合：浮层 + 列表框 | 值不进表单、只是就地切一个视图参数时用这一套：popover 管开合与定位，listbox 管条目与键盘，没有 hidden-select，也不占 name -->
+<xh-popover id="select-combo" open="false" placement="bottom-start">
+  <button data-xh-part="trigger">排序：最新发布</button>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <xh-listbox id="select-combo-list" value="latest">
+        <div data-xh-part="root" style="min-inline-size: 180px">
+          <div data-xh-part="content">
+            <div data-xh-part="item" value="latest">
+              <span data-xh-part="item-text">最新发布</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+            <div data-xh-part="item" value="hot">
+              <span data-xh-part="item-text">最多讨论</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+            <div data-xh-part="item" value="price">
+              <span data-xh-part="item-text">价格从低到高</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+          </div>
+        </div>
+      </xh-listbox>
+    </div>
+  </div>
+</xh-popover>
+
+<script type="module">
+  const popover = document.getElementById("select-combo");
+  const list = document.getElementById("select-combo-list");
+  // 触发器的 id 归连接层写，作者按部件取节点
+  const trigger = popover.querySelector('[data-xh-part="trigger"]');
+
+  // 浮层受控：开合写回
+  popover.addEventListener("open-change", (event) => {
+    popover.open = event.detail.open;
+  });
+
+  // 单选：落值即收起浮层，触发器换成当前选中项
+  list.addEventListener("value-change", (event) => {
+    list.value = event.detail.value;
+    const picked = list.querySelector(
+      `[data-xh-part="item"][value="${event.detail.value[0]}"]`,
+    );
+    trigger.textContent = `排序：${picked ? picked.textContent.trim() : "未选"}`;
+    if (event.detail.value.length > 0) popover.open = false;
+  });
+</script>

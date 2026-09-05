@@ -14,7 +14,7 @@ export const XhCardRoot = defineComponent({
     variant: { type: String as PropType<CardVariant>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
     hoverable: Boolean,
-    segmented: Boolean,
+    split: Boolean,
   },
   setup(props, { slots }) {
     const api = computed(() => connectCard(withXhConfig('card', props) as CardProps, vueNormalize))

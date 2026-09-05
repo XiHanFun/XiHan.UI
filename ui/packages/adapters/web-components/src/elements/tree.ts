@@ -1,4 +1,4 @@
-import type { TreeExpandedChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeTranslations } from '@xihan-ui/headless'
+import type { TreeExpandedValueChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeTranslations } from '@xihan-ui/headless'
 import type { Direction, Orientation } from '@xihan-ui/kernel'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectTree, treeAnatomy, treeMachine, treeMeta } from '@xihan-ui/headless'
@@ -50,7 +50,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @attr {boolean} typeahead - 连打检索，默认开；写 typeahead="false" 关掉
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
  * @attr {boolean} node-draggable - 节点可以拖着搬家，默认关；不叫 draggable 是因为那是 HTML 全局属性，写在元素上浏览器会拿它接管原生拖放，指针就到不了这里
- * @fires expanded-change - 展开集合变化；detail 为 `{ value: string[] }`
+ * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires node-move - 节点搬了家；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插）
  * @csspart root - 组件根容器
@@ -118,8 +118,8 @@ export class XhTreeElement extends XhElement {
   declare allowDrop?: (move: TreeNodeMoveDetails) => boolean
   declare translations?: Partial<TreeTranslations>
 
-  private readonly notifyExpanded = (details: TreeExpandedChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('expanded-change', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyExpanded = (details: TreeExpandedValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('expanded-value-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifySelection = (details: TreeSelectionChangeDetails): void => {
@@ -154,7 +154,7 @@ export class XhTreeElement extends XhElement {
       nodeDraggable: this.nodeDraggable ?? false,
       allowDrop: this.allowDrop,
       translations: this.translations,
-      onExpandedChange: this.notifyExpanded,
+      onExpandedValueChange: this.notifyExpanded,
       onSelectionChange: this.notifySelection,
       onNodeMove: this.notifyNodeMove,
     }
@@ -234,8 +234,8 @@ export class XhTreeElement extends XhElement {
     putAll('node-drag-trigger', NODE_SELECTOR, node => api.getNodeDragTriggerProps(node))
 
     // Light DOM 子层常驻，WC 自管可见性：收起时隐藏 branch-content。
-    // connect 已置 hidden，但 styles 给 [data-part=branch-content] 设了 display，
-    // 会盖过 UA 的 [hidden]{display:none}；内联 style.display 优先级更高，压得住。
+    // connect 已置 data-state=closed，皮肤那条收起规则会被作者层同特指度的 display 声明盖过；
+    // 内联 style.display 优先级更高，压得住。
     for (const el of this.getParts('branch-content'))
       this.setPartHidden(el, !api.isExpanded(this.nodeOf(el, BRANCH_SELECTOR).value))
   }

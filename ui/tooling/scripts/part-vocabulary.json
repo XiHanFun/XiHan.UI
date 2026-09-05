@@ -44,7 +44,9 @@
     ],
     "body": [
       "card",
+      "dialog",
       "diff-view",
+      "drawer",
       "floating-panel",
       "table"
     ],
@@ -353,6 +355,8 @@
     "footer": [
       "approval",
       "card",
+      "dialog",
+      "drawer",
       "layout",
       "page-header",
       "question-flow",
@@ -414,7 +418,9 @@
       "calendar",
       "card",
       "code-view",
+      "dialog",
       "diff-view",
+      "drawer",
       "floating-panel",
       "layout",
       "table"
@@ -1102,9 +1108,6 @@
     "spotlight": [
       "tour"
     ],
-    "stage-trigger": [
-      "floating-panel"
-    ],
     "status": [
       "signature-pad",
       "tool-call"
@@ -1285,6 +1288,9 @@
     "week-row": [
       "calendar"
     ],
+    "window-state-trigger": [
+      "floating-panel"
+    ],
     "zoom-in-trigger": [
       "image-viewer"
     ],
@@ -1426,6 +1432,7 @@
     "scope-item": "→ item",
     "scope-label": "→ item-text",
     "scroll-button": "→ scroll-to-end-trigger",
+    "stage-trigger": "→ window-state-trigger",
     "stat": "→ summary",
     "subtitle": "→ description",
     "week-day-label": "→ week-day"

@@ -38,7 +38,7 @@ export function connectResizable<T extends PropTypes>(
 ): ResizableApi<T> {
   const { context, prop, send, state } = service
 
-  const size = context.get('size')
+  const dimensions = context.get('dimensions')
   const offset = context.get('offset')
   const activeEdge = context.get('activeEdge')
   const resizing = state.matches('resizing')
@@ -52,13 +52,13 @@ export function connectResizable<T extends PropTypes>(
   const largeStep = prop('keyboardLargeStep') ?? RESIZABLE_LARGE_STEP
 
   return {
-    size,
+    dimensions,
     offset,
     resizing,
     activeEdge,
     disabled,
     edgeEnabled,
-    setSize: next => send({ type: 'SIZE.SET', size: next }),
+    setDimensions: next => send({ type: 'DIMENSIONS.SET', dimensions: next }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -71,8 +71,8 @@ export function connectResizable<T extends PropTypes>(
       // 用物理 left / top 而不是逻辑属性：位移来自指针，那是屏幕坐标，
       // 换成逻辑属性会在 rtl 与竖排书写模式下与手上的方向脱钩
       'style': {
-        inlineSize: `${size.width}px`,
-        blockSize: `${size.height}px`,
+        inlineSize: `${dimensions.width}px`,
+        blockSize: `${dimensions.height}px`,
         left: offset.x === 0 ? undefined : `${offset.x}px`,
         top: offset.y === 0 ? undefined : `${offset.y}px`,
       },
@@ -89,7 +89,7 @@ export function connectResizable<T extends PropTypes>(
         'aria-orientation': edge === 'n' || edge === 's' ? 'horizontal' : 'vertical',
         // edge 是内部枚举，直接拼进名字读屏念的就是 n / ne / se 这几个字母
         'aria-label': translations?.handle?.(edge) ?? `Resize ${EDGE_LABEL[edge]}`,
-        'aria-valuenow': Math.round(edge === 'n' || edge === 's' ? size.height : size.width),
+        'aria-valuenow': Math.round(edge === 'n' || edge === 's' ? dimensions.height : dimensions.width),
         'aria-disabled': enabled ? 'false' : 'true',
         'tabindex': enabled ? 0 : -1,
         'data-edge': edge,

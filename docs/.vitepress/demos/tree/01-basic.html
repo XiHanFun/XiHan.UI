@@ -90,7 +90,7 @@
   // 展开集合是数组，只走属性；这里由宿主持有，组件发的事件宿主写回才算数
   tree.expandedValue = ["src"];
   tree.addEventListener(
-    "expanded-change",
+    "expanded-value-change",
     (event) => (tree.expandedValue = event.detail.value),
   );
 </script>

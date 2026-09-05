@@ -131,6 +131,6 @@
   for (const el of document.getElementById("tree-select-state").children) {
     el.collection = files;
     el.expandedValue = ["docs"];
-    el.addEventListener("expanded-change", (event) => (el.expandedValue = event.detail.value));
+    el.addEventListener("expanded-value-change", (event) => (el.expandedValue = event.detail.value));
   }
 </script>

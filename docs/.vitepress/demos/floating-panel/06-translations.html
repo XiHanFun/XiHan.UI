@@ -11,7 +11,7 @@
         <div data-xh-part="header">
           <h2 data-xh-part="title">中文面板</h2>
           <button data-xh-part="drag-trigger"></button>
-          <button data-xh-part="stage-trigger" stage="minimized"></button>
+          <button data-xh-part="window-state-trigger" window-state="minimized"></button>
           <button data-xh-part="close-trigger"></button>
         </div>
         <div data-xh-part="body">
@@ -38,7 +38,7 @@
     nw: "左上角",
   };
 
-  const STAGE_LABEL = {
+  const WINDOW_STATE_LABEL = {
     default: "还原面板",
     minimized: "收起面板",
     maximized: "最大化面板",
@@ -49,7 +49,7 @@
     dragTrigger: "移动面板",
     resizeTrigger: (edge) => `拖动${EDGE_LABEL[edge]}改变大小`,
     resizeValueText: (size) => `宽 ${size.width}、高 ${size.height} 像素`,
-    stageTrigger: (stage) => STAGE_LABEL[stage],
+    windowStateTrigger: (windowState) => WINDOW_STATE_LABEL[windowState],
     close: "关闭面板",
   };
 </script>

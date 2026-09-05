@@ -94,7 +94,7 @@
     }, 800);
   }
 
-  treeSelect.addEventListener("expanded-change", (event) => {
+  treeSelect.addEventListener("expanded-value-change", (event) => {
     treeSelect.expandedValue = event.detail.value;
     for (const value of event.detail.value) fetchChildren(value);
   });

@@ -36,12 +36,12 @@ function mountTour(): { step: { value: number } } {
   app = createApp({
     setup: () => () => h(XhTourRoot, {
       'open': true,
-      'step': step.value,
+      'value': step.value,
       'steps': [
         { id: 'a', target: '#tour-backdrop-target', title: '锚定步' },
         { id: 'b', target: null, title: '居中步' },
       ],
-      'onUpdate:step': (next: number) => { step.value = next },
+      'onUpdate:value': (next: number) => { step.value = next },
     }, {
       default: () => [
         h(XhTourBackdrop),

@@ -74,8 +74,8 @@ export const XhTreeRoot = defineComponent({
   },
   // *-change 携带 { value }，update:* 携带裸集合；回传值恒为数组，单选时长度 ≤ 1
   emits: {
-    'expanded-change': (_details: PayloadOf<TreeProps, 'onExpandedChange'>) => true,
-    'update:expandedValue': (_value: PayloadOf<TreeProps, 'onExpandedChange'>['value']) => true,
+    'expanded-value-change': (_details: PayloadOf<TreeProps, 'onExpandedValueChange'>) => true,
+    'update:expandedValue': (_value: PayloadOf<TreeProps, 'onExpandedValueChange'>['value']) => true,
     'selection-change': (_details: PayloadOf<TreeProps, 'onSelectionChange'>) => true,
     'update:selection': (_value: PayloadOf<TreeProps, 'onSelectionChange'>['value']) => true,
     // 搬家是通知，节点顺序的真源在使用者的数据里，故没有配对的 update:*
@@ -85,8 +85,8 @@ export const XhTreeRoot = defineComponent({
     default?: (props: TreeRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    const onExpandedChange: TreeProps['onExpandedChange'] = (details) => {
-      emit('expanded-change', details)
+    const onExpandedValueChange: TreeProps['onExpandedValueChange'] = (details) => {
+      emit('expanded-value-change', details)
       emit('update:expandedValue', details.value)
     }
     const onSelectionChange: TreeProps['onSelectionChange'] = (details) => {
@@ -96,7 +96,7 @@ export const XhTreeRoot = defineComponent({
     const onNodeMove: TreeProps['onNodeMove'] = (move) => {
       emit('node-move', move)
     }
-    const ctx = useTree(withXhConfig('tree', props) as TreeProps, onExpandedChange, onSelectionChange, onNodeMove)
+    const ctx = useTree(withXhConfig('tree', props) as TreeProps, onExpandedValueChange, onSelectionChange, onNodeMove)
     provideTree(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       visibleNodes: ctx.api.value.visibleNodes,

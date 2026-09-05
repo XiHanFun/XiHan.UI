@@ -11,8 +11,8 @@ const panels = [{ id: "aside", min: 20 }, { id: "main", min: 20 }];
 const size = ref([30, 70]);
 const lastEnd = ref("（还没拖过）");
 
-function onSizeChangeEnd(details: { size: number[]; index: number }): void {
-  lastEnd.value = `第 ${details.index} 条 → ${details.size
+function onSizeChangeEnd(details: { sizes: number[], index: number }): void {
+  lastEnd.value = `第 ${details.index} 条 → ${details.sizes
     .map((n) => `${Math.round(n)}%`)
     .join(" / ")}`;
 }

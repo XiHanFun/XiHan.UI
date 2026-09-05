@@ -7,12 +7,12 @@
 
 import type { Service } from '@xihan-ui/machine'
 import type {
+  FloatingPanelDimensionsChangeDetails,
   FloatingPanelOpenChangeDetails,
   FloatingPanelPositionChangeDetails,
   FloatingPanelResizeEdge,
   FloatingPanelSchema,
-  FloatingPanelSizeChangeDetails,
-  FloatingPanelStageChangeDetails,
+  FloatingPanelWindowStateChangeDetails,
 } from '../src/floating-panel'
 import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
@@ -37,22 +37,22 @@ interface Rig {
   setProps: (next: Partial<Props>) => void
   opens: FloatingPanelOpenChangeDetails[]
   positions: FloatingPanelPositionChangeDetails[]
-  sizes: FloatingPanelSizeChangeDetails[]
-  stages: FloatingPanelStageChangeDetails[]
+  sizes: FloatingPanelDimensionsChangeDetails[]
+  windowStates: FloatingPanelWindowStateChangeDetails[]
 }
 
 /** props 对象身份固定、字段可改：受控用例要在机器活着的时候从外面写回。 */
 function makeRig(initial: Props = {}): Rig {
   const opens: FloatingPanelOpenChangeDetails[] = []
   const positions: FloatingPanelPositionChangeDetails[] = []
-  const sizes: FloatingPanelSizeChangeDetails[] = []
-  const stages: FloatingPanelStageChangeDetails[] = []
+  const sizes: FloatingPanelDimensionsChangeDetails[] = []
+  const windowStates: FloatingPanelWindowStateChangeDetails[] = []
   const props: Props = {
     ...initial,
     onOpenChange: d => opens.push(d),
     onPositionChange: d => positions.push(d),
-    onSizeChange: d => sizes.push(d),
-    onStageChange: d => stages.push(d),
+    onDimensionsChange: d => sizes.push(d),
+    onWindowStateChange: d => windowStates.push(d),
   }
   const runtime = createVanillaRuntime()
   const service = createService(floatingPanelMachine, { props: () => props, runtime })
@@ -63,7 +63,7 @@ function makeRig(initial: Props = {}): Rig {
     opens,
     positions,
     sizes,
-    stages,
+    windowStates,
   }
 }
 
@@ -198,8 +198,8 @@ describe('floatingPanelRectStyle', () => {
   })
 
   it('三种形态写出的键完全一样：少一个键上一帧的值会留在节点上', () => {
-    const keys = (stage: 'default' | 'maximized' | 'minimized') =>
-      Object.keys(floatingPanelRectStyle(stage, position, size)).sort()
+    const keys = (windowState: 'default' | 'maximized' | 'minimized') =>
+      Object.keys(floatingPanelRectStyle(windowState, position, size)).sort()
     expect(keys('minimized')).toEqual(keys('default'))
     expect(keys('maximized')).toEqual(keys('default'))
   })
@@ -278,38 +278,38 @@ describe('floatingPanelMachine 开合', () => {
 describe('floatingPanelMachine 形态', () => {
   it('形态按钮再按一次回到常规：不然收拢着的面板没有出口', () => {
     const rig = makeRig({ defaultOpen: true })
-    const click = (stage: 'maximized' | 'minimized') =>
-      ((api(rig.service).getStageTriggerProps({ stage }) as Dict).onClick as () => void)()
+    const click = (windowState: 'maximized' | 'minimized') =>
+      ((api(rig.service).getWindowStateTriggerProps({ windowState }) as Dict).onClick as () => void)()
 
     click('minimized')
-    expect(rig.service.context.get('stage')).toBe('minimized')
+    expect(rig.service.context.get('windowState')).toBe('minimized')
     click('minimized')
-    expect(rig.service.context.get('stage')).toBe('default')
-    expect(rig.stages).toEqual([{ stage: 'minimized' }, { stage: 'default' }])
+    expect(rig.service.context.get('windowState')).toBe('default')
+    expect(rig.windowStates).toEqual([{ windowState: 'minimized' }, { windowState: 'default' }])
   })
 
   it('收拢时正文带 hidden：只压高度的话读屏与 Tab 照样进得去', () => {
-    const rig = makeRig({ defaultOpen: true, defaultStage: 'minimized' })
+    const rig = makeRig({ defaultOpen: true, defaultWindowState: 'minimized' })
     expect(bodyProps(rig.service).hidden).toBe(true)
-    rig.service.send({ type: 'STAGE.SET', stage: 'default' })
+    rig.service.send({ type: 'WINDOW_STATE.SET', windowState: 'default' })
     expect(bodyProps(rig.service).hidden).toBeUndefined()
   })
 
   it('铺满时搬不动、收拢时改不了尺寸', () => {
-    const maximized = makeRig({ defaultOpen: true, defaultStage: 'maximized' })
+    const maximized = makeRig({ defaultOpen: true, defaultWindowState: 'maximized' })
     expect(api(maximized.service).canDrag).toBe(false)
     expect(dragProps(maximized.service)['aria-disabled']).toBe('true')
 
-    const minimized = makeRig({ defaultOpen: true, defaultStage: 'minimized' })
+    const minimized = makeRig({ defaultOpen: true, defaultWindowState: 'minimized' })
     expect(api(minimized.service).canResize).toBe(false)
     expect(resizeProps(minimized.service, 'se')['aria-disabled']).toBe('true')
   })
 
   it('受控形态：只发意图不自改', () => {
-    const rig = makeRig({ defaultOpen: true, stage: 'default' })
-    ;((api(rig.service).getStageTriggerProps({ stage: 'maximized' }) as Dict).onClick as () => void)()
-    expect(rig.service.context.get('stage')).toBe('default')
-    expect(rig.stages).toEqual([{ stage: 'maximized' }])
+    const rig = makeRig({ defaultOpen: true, windowState: 'default' })
+    ;((api(rig.service).getWindowStateTriggerProps({ windowState: 'maximized' }) as Dict).onClick as () => void)()
+    expect(rig.service.context.get('windowState')).toBe('default')
+    expect(rig.windowStates).toEqual([{ windowState: 'maximized' }])
   })
 })
 
@@ -352,7 +352,7 @@ describe('connectFloatingPanel ARIA', () => {
   it('改尺把手是分隔条：报的那根轴与 aria-orientation 对应，且恒留在 Tab 序列里', () => {
     const rig = makeRig({
       defaultOpen: true,
-      defaultSize: { width: 300, height: 200 },
+      defaultDimensions: { width: 300, height: 200 },
       minSize: { width: 200, height: 150 },
       maxSize: { width: 600, height: 400 },
     })
@@ -376,7 +376,7 @@ describe('connectFloatingPanel ARIA', () => {
   })
 
   it('不给上限时 aria-valuemax 缺席，宽高改由 aria-valuetext 念出来', () => {
-    const rig = makeRig({ defaultOpen: true, defaultSize: { width: 300, height: 200 } })
+    const rig = makeRig({ defaultOpen: true, defaultDimensions: { width: 300, height: 200 } })
     const props = resizeProps(rig.service, 'se')
     expect(props['aria-valuemax']).toBeUndefined()
     expect(props['aria-valuetext']).toBe('Width 300, height 200')
@@ -393,7 +393,7 @@ describe('connectFloatingPanel ARIA', () => {
   it('文案可整条替换', () => {
     const rig = makeRig({
       defaultOpen: true,
-      defaultSize: { width: 300, height: 200 },
+      defaultDimensions: { width: 300, height: 200 },
       translations: {
         dragTrigger: '移动面板',
         resizeTrigger: edge => `调整${edge}`,
@@ -406,7 +406,7 @@ describe('connectFloatingPanel ARIA', () => {
     expect(resizeProps(rig.service, 'e')['aria-valuetext']).toBe('宽 300、高 200')
     expect((api(rig.service).getCloseTriggerProps() as Dict)['aria-label']).toBe('关闭')
     // 没覆盖的那条仍走内建英文
-    expect((api(rig.service).getStageTriggerProps({ stage: 'minimized' }) as Dict)['aria-label'])
+    expect((api(rig.service).getWindowStateTriggerProps({ windowState: 'minimized' }) as Dict)['aria-label'])
       .toBe('Minimize panel')
   })
 })
@@ -457,29 +457,29 @@ describe('connectFloatingPanel 键盘', () => {
   })
 
   it('上下把手放行左右键：吞掉的话页面就再也滚不动了', () => {
-    const rig = makeRig({ defaultOpen: true, defaultSize: { width: 300, height: 200 } })
-    const before = rig.service.context.get('size')
+    const rig = makeRig({ defaultOpen: true, defaultDimensions: { width: 300, height: 200 } })
+    const before = rig.service.context.get('dimensions')
     expect(press(resizeProps(rig.service, 'n'), 'ArrowRight').defaultPrevented).toBe(false)
-    expect(rig.service.context.get('size')).toEqual(before)
+    expect(rig.service.context.get('dimensions')).toEqual(before)
   })
 
   it('东边把手：右键长宽只长宽，左键缩回去', () => {
-    const rig = makeRig({ defaultOpen: true, defaultSize: { width: 300, height: 200 } })
+    const rig = makeRig({ defaultOpen: true, defaultDimensions: { width: 300, height: 200 } })
     expect(press(resizeProps(rig.service, 'e'), 'ArrowRight').defaultPrevented).toBe(true)
-    expect(rig.service.context.get('size')).toEqual({ width: 310, height: 200 })
+    expect(rig.service.context.get('dimensions')).toEqual({ width: 310, height: 200 })
     press(resizeProps(rig.service, 'e'), 'ArrowLeft', { shiftKey: true })
-    expect(rig.service.context.get('size')).toEqual({ width: 260, height: 200 })
+    expect(rig.service.context.get('dimensions')).toEqual({ width: 260, height: 200 })
   })
 
   it('西边把手推边时位置跟着走', () => {
     const rig = makeRig({
       defaultOpen: true,
       defaultPosition: { x: 100, y: 100 },
-      defaultSize: { width: 300, height: 200 },
+      defaultDimensions: { width: 300, height: 200 },
     })
     press(resizeProps(rig.service, 'w'), 'ArrowRight')
     expect(rig.service.context.get('position')).toEqual({ x: 110, y: 100 })
-    expect(rig.service.context.get('size')).toEqual({ width: 290, height: 200 })
+    expect(rig.service.context.get('dimensions')).toEqual({ width: 290, height: 200 })
   })
 
   it('禁用时按键不改任何值也不拦键', () => {
@@ -514,14 +514,14 @@ describe('connectFloatingPanel 指针拖动', () => {
     const rig = makeRig({
       defaultOpen: true,
       defaultPosition: { x: 100, y: 100 },
-      defaultSize: { width: 300, height: 200 },
+      defaultDimensions: { width: 300, height: 200 },
       minSize: { width: 200, height: 150 },
     })
     pointerDown(resizeProps(rig.service, 'nw'), 0, 0)
     expect(rig.service.state.matches('open.resizing')).toBe(true)
 
     movePointer(500, 500)
-    expect(rig.service.context.get('size')).toEqual({ width: 200, height: 150 })
+    expect(rig.service.context.get('dimensions')).toEqual({ width: 200, height: 150 })
     expect(rig.service.context.get('position')).toEqual({ x: 200, y: 150 })
     releasePointer()
   })
@@ -551,12 +551,12 @@ describe('connectFloatingPanel 指针拖动', () => {
   })
 
   it('改不了尺寸时按下同样不进入改尺态', () => {
-    const rig = makeRig({ defaultOpen: true, resizable: false, defaultSize: { width: 300, height: 200 } })
+    const rig = makeRig({ defaultOpen: true, resizable: false, defaultDimensions: { width: 300, height: 200 } })
     expect(resizeProps(rig.service, 'se')['aria-disabled']).toBe('true')
     pointerDown(resizeProps(rig.service, 'se'), 10, 10)
     expect(rig.service.state.get()).toBe('open.idle')
     movePointer(200, 200)
-    expect(rig.service.context.get('size')).toEqual({ width: 300, height: 200 })
+    expect(rig.service.context.get('dimensions')).toEqual({ width: 300, height: 200 })
   })
 
   it('pointercancel 与 pointerup 一样收场：不收会永远停在拖动态', () => {
@@ -583,13 +583,13 @@ describe('floatingPanelMachine 受控几何', () => {
   })
 
   it('受控尺寸同样过一遍上下限：作者写进来的也不该小于 minSize', () => {
-    const rig = makeRig({ defaultOpen: true, size: { width: 10, height: 10 } })
-    expect(rig.service.context.get('size')).toEqual({ width: 160, height: 120 })
+    const rig = makeRig({ defaultOpen: true, dimensions: { width: 10, height: 10 } })
+    expect(rig.service.context.get('dimensions')).toEqual({ width: 160, height: 120 })
   })
 
-  it('setSize 公开出口不得造出界面造不出的值', () => {
+  it('setDimensions 公开出口不得造出界面造不出的值', () => {
     const rig = makeRig({ defaultOpen: true, minSize: { width: 240, height: 180 } })
-    api(rig.service).setSize({ width: 10, height: 10 })
-    expect(rig.service.context.get('size')).toEqual({ width: 240, height: 180 })
+    api(rig.service).setDimensions({ width: 10, height: 10 })
+    expect(rig.service.context.get('dimensions')).toEqual({ width: 240, height: 180 })
   })
 })

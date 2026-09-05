@@ -27,7 +27,7 @@ export interface FloatingPanelContext {
 /** 回调打包成一个对象：这个组件有四路对外通知，逐个当形参排下去没法读。 */
 export type FloatingPanelNotifiers = Pick<
   FloatingPanelSchema['props'],
-  'onOpenChange' | 'onPositionChange' | 'onSizeChange' | 'onStageChange'
+  'onOpenChange' | 'onPositionChange' | 'onDimensionsChange' | 'onWindowStateChange'
 >
 
 export function useFloatingPanel(

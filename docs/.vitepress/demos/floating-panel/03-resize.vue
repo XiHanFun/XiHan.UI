@@ -1,4 +1,4 @@
-<!-- 八个改尺把手 | 四条边加四个角；min-size 与 max-size 在拖、推、setSize 三处同时生效 -->
+<!-- 八个改尺把手 | 四条边加四个角；min-size 与 max-size 在拖、推、setDimensions 三处同时生效 -->
 <script setup lang="ts">
 import type { FloatingPanelResizeEdge } from "@xihan-ui/headless";
 import {
@@ -30,7 +30,7 @@ const edges: FloatingPanelResizeEdge[] = [
 <template>
   <XhFloatingPanelRoot
     :default-position="{ x: 240, y: 220 }"
-    :default-size="{ width: 320, height: 200 }"
+    :default-dimensions="{ width: 320, height: 200 }"
     :min-size="{ width: 240, height: 160 }"
     :max-size="{ width: 520, height: 420 }"
   >

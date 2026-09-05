@@ -15,9 +15,9 @@ export interface JsonViewerContext {
 // 不建 scope：connect 不派生任何 id
 export function useJsonViewer(
   props: JsonViewerSchema['props'],
-  onExpandedChange?: JsonViewerSchema['props']['onExpandedChange'],
+  onExpandedValueChange?: JsonViewerSchema['props']['onExpandedValueChange'],
 ): JsonViewerContext {
-  const service = useMachine(jsonViewerMachine, () => ({ ...props, onExpandedChange }))
+  const service = useMachine(jsonViewerMachine, () => ({ ...props, onExpandedValueChange }))
   const api = computed(() => connectJsonViewer(service, vueNormalize))
   return { api, service }
 }

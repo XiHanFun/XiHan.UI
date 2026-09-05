@@ -34,8 +34,11 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart backdrop - 遮罩层
  * @csspart positioner - 浮层定位容器
  * @csspart content - 对话框内容（role/aria-modal/焦点陷阱所在）
+ * @csspart header - 面板头：标题与说明所在的那一段，不跟着正文滚
  * @csspart title - 标题（aria-labelledby 目标）
  * @csspart description - 描述（aria-describedby 目标）
+ * @csspart body - 正文：面板里唯一会滚的一段
+ * @csspart footer - 面板尾：动作按钮所在的那一段，不跟着正文滚
  * @csspart close-trigger - 关闭按钮
  */
 export class XhDialogElement extends XhElement {
@@ -163,8 +166,11 @@ export class XhDialogElement extends XhElement {
     put('backdrop', api.getBackdropProps() as Record<string, unknown>)
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
+    put('header', api.getHeaderProps() as Record<string, unknown>)
     put('title', api.getTitleProps() as Record<string, unknown>)
     put('description', api.getDescriptionProps() as Record<string, unknown>)
+    put('body', api.getBodyProps() as Record<string, unknown>)
+    put('footer', api.getFooterProps() as Record<string, unknown>)
     put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
 
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。

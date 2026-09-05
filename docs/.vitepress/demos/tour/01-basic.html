@@ -88,8 +88,8 @@
 
   // 末步那颗按钮改念「完成」
   const next = document.getElementById("tour-basic-next");
-  tour.addEventListener("step-change", (event) => {
+  tour.addEventListener("value-change", (event) => {
     next.textContent =
-      event.detail.step === tour.steps.length - 1 ? "完成" : "下一步";
+      event.detail.value === tour.steps.length - 1 ? "完成" : "下一步";
   });
 </script>

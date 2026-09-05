@@ -67,7 +67,7 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
 | `translations` | `Partial<SideNavTranslations>` |  |  |
 | `onValueChange` | `(details: SideNavValueChangeDetails) => void` |  | 选中意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
-| `onExpandedChange` | `(details: SideNavExpandedChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
+| `onExpandedValueChange` | `(details: SideNavExpandedValueChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
 
 ## 事件
 
@@ -76,7 +76,7 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `SideNavValueChangeDetails` | 选中变化；detail 为 `{ value: string \| null }` |
-| `expanded-change` | `SideNavExpandedChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `expanded-value-change` | `SideNavExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 
 ## 插槽
 

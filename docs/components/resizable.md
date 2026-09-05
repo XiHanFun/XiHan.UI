@@ -5,7 +5,7 @@
 ## 何时使用
 
 - 尺寸该由用户自己定：可调侧栏、可调卡片、编辑器里的预览区。
-- 尺寸要记下来：`onSizeChangeEnd` 就是为此留的，一次调整只发一次。
+- 尺寸要记下来：`onDimensionsChangeEnd` 就是为此留的，一次调整只发一次。
 
 ## 何时不用
 
@@ -18,7 +18,7 @@
 - 八条边各一个把手，`edges` 可以只开放其中几条；没开放的边不显示把手。
 - `minWidth` / `maxWidth` / `minHeight` / `maxHeight` 夹住范围，`aspectRatio` 锁宽高比，`step` 吸附到整数倍。
 - 键盘按**屏幕方向**推：推东边时右键变宽、推西边时右键变窄，与拖动完全同义。Home / End 直接推到两端。
-- 两个回调分工明确：`onSizeChange` 拖动途中连着发，`onSizeChangeEnd` 收尾才发一次，存尺寸用后者。
+- 两个回调分工明确：`onDimensionsChange` 拖动途中连着发，`onDimensionsChangeEnd` 收尾才发一次，存尺寸用后者。
 - **推西边与北边时容器的起点会动**，那段位移写成 root 的 `left` / `top`。皮肤已给
   `position: relative`，开箱即对——`relative` 的 `left` / `top` 是视觉位移、元素仍占原位，
   因此对边钉得住。把 root 改成 `static` 会让这两个方向只变尺寸不移位，看起来像是「拖左边、
@@ -70,8 +70,8 @@ edges 决定哪几条边可调；没开放的边不显示把手
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `ResizableSize` |  | 受控尺寸。给了就由外面说了算，内部只发意图。 |
-| `defaultSize` | `ResizableSize` |  |  |
+| `dimensions` | `ResizableDimensions` |  | 受控尺寸。给了就由外面说了算，内部只发意图。 |
+| `defaultDimensions` | `ResizableDimensions` |  |  |
 | `minWidth` | `number` |  |  |
 | `minHeight` | `number` |  |  |
 | `maxWidth` | `number` |  |  |
@@ -84,8 +84,8 @@ edges 决定哪几条边可调；没开放的边不显示把手
 | `disabled` | `boolean` |  |  |
 | `dir` | `Direction` |  |  |
 | `translations` | `Partial<ResizableTranslations>` |  |  |
-| `onSizeChange` | `(details: ResizableSizeChangeDetails) => void` |  | 尺寸变化意图。拖动途中连着发。 |
-| `onSizeChangeEnd` | `(details: ResizableSizeChangeEndDetails) => void` |  | 一次调整收尾发一次。存尺寸用它，别用 onSizeChange。 |
+| `onDimensionsChange` | `(details: ResizableDimensionsChangeDetails) => void` |  | 尺寸变化意图。拖动途中连着发。 |
+| `onDimensionsChangeEnd` | `(details: ResizableDimensionsChangeEndDetails) => void` |  | 一次调整收尾发一次。存尺寸用它，别用 onDimensionsChange。 |
 
 ## 事件
 
@@ -93,8 +93,8 @@ edges 决定哪几条边可调；没开放的边不显示把手
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `size-change` | `ResizableSizeChangeDetails` | 尺寸变化（拖动途中会连发）；detail 为 `{ size }` |
-| `size-change-end` | `ResizableSizeChangeEndDetails` | 一次调整收尾发一次；detail 为 `{ size, edge }` |
+| `dimensions-change` | `ResizableDimensionsChangeDetails` | 尺寸变化（拖动途中会连发）；detail 为 `{ dimensions }` |
+| `dimensions-change-end` | `ResizableDimensionsChangeEndDetails` | 一次调整收尾发一次；detail 为 `{ dimensions, edge }` |
 
 ## 插槽
 
@@ -111,7 +111,7 @@ edges 决定哪几条边可调；没开放的边不显示把手
 
 **状态**：`idle` · `resizing`
 
-**事件**：`RESIZE.START` · `RESIZE.MOVE` · `RESIZE.END` · `RESIZE.CANCEL` · `RESIZE.NUDGE` · `RESIZE.TO_BOUND` · `SIZE.SET`
+**事件**：`RESIZE.START` · `RESIZE.MOVE` · `RESIZE.END` · `RESIZE.CANCEL` · `RESIZE.NUDGE` · `RESIZE.TO_BOUND` · `DIMENSIONS.SET`
 
 **判据**：`canResize`
 
@@ -121,13 +121,13 @@ edges 决定哪几条边可调；没开放的边不显示把手
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `size` | `ResizableSize` |  |
+| `dimensions` | `ResizableDimensions` |  |
 | `offset` | `ResizableOffset` |  |
 | `resizing` | `boolean` | 正在调整（拖动中）。键盘推一步不算。 |
 | `activeEdge` | `ResizeEdge \| null` |  |
 | `disabled` | `boolean` |  |
 | `edgeEnabled` | `(edge: ResizeEdge) => boolean` | 这条边是否开放。 |
-| `setSize` | `(size: ResizableSize) => void` | 整份赋值：先过约束再落地。 |
+| `setDimensions` | `(dimensions: ResizableDimensions) => void` | 整份赋值：先过约束再落地。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getHandleProps` | `(props: { edge: ResizeEdge }) => T['element']` |  |
 
@@ -154,7 +154,7 @@ edges 决定哪几条边可调；没开放的边不显示把手
 | `handle` | `aria-disabled` | 'false' \| 'true' |
 | `handle` | `aria-label` | translations?.handle?.(edge) |
 | `handle` | `aria-orientation` | 'horizontal' \| 'vertical' |
-| `handle` | `aria-valuenow` | Math.round(edge === 'n' \|\| edge === 's' ? size.height… |
+| `handle` | `aria-valuenow` | Math.round(edge === 'n' \|\| edge === 's' ? dimensions.… |
 | `handle` | `role` | 'separator' |
 
 ## 样式

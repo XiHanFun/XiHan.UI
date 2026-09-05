@@ -103,7 +103,7 @@
   }
 
   tree.expandedValue = [];
-  tree.addEventListener("expanded-change", (event) => {
+  tree.addEventListener("expanded-value-change", (event) => {
     tree.expandedValue = event.detail.value;
     for (const value of event.detail.value) fetchChildren(value);
   });

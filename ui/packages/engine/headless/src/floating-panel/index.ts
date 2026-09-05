@@ -18,6 +18,7 @@ export { floatingPanelMachine } from './floating-panel.machine'
 export { floatingPanelMeta } from './floating-panel.meta'
 export type {
   FloatingPanelApi,
+  FloatingPanelDimensionsChangeDetails,
   FloatingPanelDragSession,
   FloatingPanelOpenChangeDetails,
   FloatingPanelPoint,
@@ -28,9 +29,8 @@ export type {
   FloatingPanelResizeTriggerProps,
   FloatingPanelSchema,
   FloatingPanelSize,
-  FloatingPanelSizeChangeDetails,
-  FloatingPanelStage,
-  FloatingPanelStageChangeDetails,
-  FloatingPanelStageTriggerProps,
   FloatingPanelTranslations,
+  FloatingPanelWindowState,
+  FloatingPanelWindowStateChangeDetails,
+  FloatingPanelWindowStateTriggerProps,
 } from './floating-panel.types'

@@ -460,7 +460,7 @@ export const mentionSuite: ConformanceSuite = {
     {
       name: '换前缀：@ 不再触发，改用 # 才开',
       spec: { apg: APG },
-      props: { prefix: '#' },
+      props: { triggerPrefix: '#' },
       steps: [
         {
           kind: 'raw',

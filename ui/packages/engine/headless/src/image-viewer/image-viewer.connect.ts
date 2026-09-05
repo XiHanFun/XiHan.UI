@@ -18,10 +18,10 @@ export function connectImageViewer<T extends PropTypes>(
 ): ImageViewerApi<T> {
   const { state, context, prop, send, scope } = service
   const open = state.get() === 'open'
-  const items = prop('items') ?? []
-  const count = imageViewerCount(items)
+  const collection = prop('collection') ?? []
+  const count = imageViewerCount(collection)
   const index = clampImageViewerIndex(context.get('index'), count)
-  const currentItem = items[index] ?? null
+  const currentItem = collection[index] ?? null
   const transform = context.get('transform')
   const panning = context.get('panning')
   const loop = prop('loop') ?? true

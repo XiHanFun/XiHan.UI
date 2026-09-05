@@ -102,8 +102,8 @@ export const XhTableRoot = defineComponent({
     defaultColumnPreference: { type: Object as PropType<TableColumnPreference>, default: undefined },
     page: { type: Number, default: undefined },
     pageSize: { type: Number, default: undefined },
-    expanded: { type: Array as PropType<string[]>, default: undefined },
-    defaultExpanded: { type: Array as PropType<string[]>, default: undefined },
+    expandedValue: { type: Array as PropType<string[]>, default: undefined },
+    defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
     loading: Boolean,
     empty: { type: Boolean, default: undefined },
     stickyHeader: Boolean,
@@ -128,8 +128,8 @@ export const XhTableRoot = defineComponent({
     'update:sort': (_sort: PayloadOf<TableProps, 'onSortChange'>['value']) => true,
     'selection-change': (_details: PayloadOf<TableProps, 'onSelectionChange'>) => true,
     'update:selection': (_selection: PayloadOf<TableProps, 'onSelectionChange'>['value']) => true,
-    'expanded-change': (_details: PayloadOf<TableProps, 'onExpandedChange'>) => true,
-    'update:expanded': (_expanded: PayloadOf<TableProps, 'onExpandedChange'>['value']) => true,
+    'expanded-value-change': (_details: PayloadOf<TableProps, 'onExpandedValueChange'>) => true,
+    'update:expandedValue': (_value: PayloadOf<TableProps, 'onExpandedValueChange'>['value']) => true,
     // 行换位是通知，行序与父子归属的真源在使用者的数据里，故没有配对的 update:*
     'row-move': (_details: PayloadOf<TableProps, 'onRowMove'>) => true,
   },
@@ -152,14 +152,14 @@ export const XhTableRoot = defineComponent({
       emit('selection-change', details)
       emit('update:selection', details.value)
     }
-    const onExpandedChange: TableProps['onExpandedChange'] = (details) => {
-      emit('expanded-change', details)
-      emit('update:expanded', details.value)
+    const onExpandedValueChange: TableProps['onExpandedValueChange'] = (details) => {
+      emit('expanded-value-change', details)
+      emit('update:expandedValue', details.value)
     }
     const onRowMove: TableProps['onRowMove'] = (details) => {
       emit('row-move', details)
     }
-    const ctx = useTable(withXhConfig('table', props) as TableProps, onSortChange, onSelectionChange, onExpandedChange, onColumnPreferenceChange, onRowMove)
+    const ctx = useTable(withXhConfig('table', props) as TableProps, onSortChange, onSelectionChange, onExpandedValueChange, onColumnPreferenceChange, onRowMove)
     provideTable(ctx)
     // 播报区由根组件自己渲，作者插不进 root 的兄弟位。它不能进 root：
     // root 是 role=grid，塞活动区域进去是 aria-required-children（critical）

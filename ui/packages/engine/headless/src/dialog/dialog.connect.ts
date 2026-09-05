@@ -61,8 +61,12 @@ export function connectDialog<T extends PropTypes>(
       // 收起态自带 hidden：positioner 非必需部件，最小结构下没有别的节点兜底
       'hidden': !open || undefined,
     }),
+    // 面板三段：头与尾定在原处，正文自己滚
+    getHeaderProps: () => normalize.element({ ...parts.header.attrs }),
     getTitleProps: () => normalize.element({ ...parts.title.attrs, id: ids.title }),
     getDescriptionProps: () => normalize.element({ ...parts.description.attrs, id: ids.description }),
+    getBodyProps: () => normalize.element({ ...parts.body.attrs }),
+    getFooterProps: () => normalize.element({ ...parts.footer.attrs }),
     getCloseTriggerProps: () => normalize.button({
       ...parts['close-trigger'].attrs,
       'type': 'button',

@@ -50,17 +50,17 @@ describe('connectSkeleton', () => {
     expect((a.getItemProps() as Props)['aria-hidden']).toBeUndefined()
   })
 
-  it('形状缺省为 text，容器上的 variant 是每根骨架条的默认值', () => {
-    expect((api().getItemProps() as Props)['data-variant']).toBe('text')
-    expect((api({ variant: 'rect' }).getItemProps() as Props)['data-variant']).toBe('rect')
+  it('形状缺省为 text，容器上的 shape 是每根骨架条的默认值', () => {
+    expect((api().getItemProps() as Props)['data-shape']).toBe('text')
+    expect((api({ shape: 'rect' }).getItemProps() as Props)['data-shape']).toBe('rect')
   })
 
   it('骨架条自报的形状盖过容器给的默认值', () => {
-    const a = api({ variant: 'text' })
-    expect((a.getItemProps({ variant: 'circle' }) as Props)['data-variant']).toBe('circle')
+    const a = api({ shape: 'text' })
+    expect((a.getItemProps({ shape: 'circle' }) as Props)['data-shape']).toBe('circle')
     // 自报缺席才落回容器的默认值
-    expect((a.getItemProps({}) as Props)['data-variant']).toBe('text')
-    expect((a.getItemProps({ variant: undefined }) as Props)['data-variant']).toBe('text')
+    expect((a.getItemProps({}) as Props)['data-shape']).toBe('text')
+    expect((a.getItemProps({ shape: undefined }) as Props)['data-shape']).toBe('text')
   })
 
   it('meta 的必备 part 都在 anatomy 里', () => {

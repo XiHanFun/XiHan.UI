@@ -39,7 +39,7 @@
 
 部件同构（`root` / `input` / `submit-trigger`），`prompt-input` 另有可选的 `input-row` 与形态、语气、尺寸三轴。两处入口语义要改写：
 
-**运行态从两档字符串变成一个布尔。** `composer` 收 `runStatus: 'ready' | 'streaming'`，`prompt-input` 收 `busy: boolean`：`'streaming'` 对应 `busy` 为真，`'ready'` 对应不写 `busy`。组件真正需要的只有这个二值判断——按钮换不换成停止身份、提交路径挡不挡。类型 `ComposerRunStatus` 没有后继。
+**运行态从两档字符串变成一个布尔。** `composer` 收 `runStatus: 'ready' | 'streaming'`，`prompt-input` 收 `loading: boolean`：`'streaming'` 对应 `loading` 为真，`'ready'` 对应不写 `loading`。组件真正需要的只有这个二值判断——按钮换不换成停止身份、提交路径挡不挡。类型 `ComposerRunStatus` 没有后继。
 
 连带一处选择器要改：`composer` 把运行态铺成 root 上的 `data-state`（取值就是 `ready` / `streaming`），`prompt-input` 的 root 上**没有 `data-state`**，生成中改由布尔属性 `data-loading` 表达。`[data-scope='composer'][data-part='root'][data-state='streaming']` 换成 `[data-scope='prompt-input'][data-part='root'][data-loading]`。输入框那一层的 `data-state`（`empty` / `editing` / `disabled`）两边同名同值，不动。
 
@@ -53,9 +53,9 @@
 | `connectComposer` / `composerAnatomy` / `composerKeyboard` / `composerMachine` / `composerMeta` | `connectPromptInput` / `promptInputAnatomy` / `promptInputKeyboard` / `promptInputMachine` / `promptInputMeta` |
 | 类型 `ComposerApi` / `ComposerSchema` / `ComposerState` / `ComposerTranslations` / `ComposerSubmitDetails` / `ComposerValueChangeDetails` | 同名的 `PromptInput*` |
 | 类型 `ComposerContext` / `ComposerCallbacks` / `ComposerRootSlotProps` / `XhComposerElement` | `PromptInputContext` / `PromptInputCallbacks` / `PromptInputRootSlotProps` / `XhPromptInputElement` |
-| 类型 `ComposerRunStatus` | 无——改用布尔 `busy` |
-| prop `runStatus="streaming"` | `busy`（真） |
-| prop `runStatus="ready"` | 不写 `busy`（假） |
+| 类型 `ComposerRunStatus` | 无——改用布尔 `loading` |
+| prop `runStatus="streaming"` | `loading`（真） |
+| prop `runStatus="ready"` | 不写 `loading`（假） |
 | prop `submitOnEnter`（默认真） | `submitKey="enter"`（默认，不写即是） |
 | prop `:submit-on-enter="false"` | `submitKey="none"` |
 | 部件 `data-part="root"` / `"input"` / `"submit-trigger"` | 同名，另有可选的 `data-part="input-row"` |
@@ -113,7 +113,7 @@
 | `thread/07-load-earlier` | 迁成 `message-feed/06-load-earlier` |
 | `thread/08-scroll-to` | 迁成 `message-feed/07-scroll-to`。跳转不再靠自己算 `offsetTop`：`scrollToItem(id)` 与 `focusItem(id)` 收的就是写在条目上的那个 `item-id`。自定义元素那侧只暴露 `scrollToBottom()`，别的位置仍按 `item-id` 取节点自己滚 |
 | `composer/01-basic` | `prompt-input/01-basic` |
-| `composer/02-streaming` | `prompt-input/02-chat` 与 `prompt-input/03-layout` 已覆盖 `busy` 与原位停止 |
+| `composer/02-streaming` | `prompt-input/02-chat` 与 `prompt-input/03-layout` 已覆盖 `loading` 与原位停止 |
 | `composer/03-enter` | 迁成 `prompt-input/04-submit-key`，三档按键各摆一台 |
 | `composer/04-disabled` | 迁成 `prompt-input/05-disabled`，另加 `allowEmptySubmit` 一档 |
 | `composer/05-clear` 与 `composer/06-count` | 并成 `prompt-input/06-extras`：附加按钮、`setValue` 清空、`maxlength` 与字数在同一台上 |

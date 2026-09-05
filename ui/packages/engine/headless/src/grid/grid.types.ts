@@ -4,7 +4,7 @@ import type { PropTypes } from '@xihan-ui/kernel'
 export type GridAlign = 'start' | 'center' | 'end' | 'stretch' | 'baseline'
 
 /** 每一项在自己那格里的行内对齐。 */
-export type GridJustify = 'start' | 'center' | 'end' | 'stretch'
+export type GridJustifyItems = 'start' | 'center' | 'end' | 'stretch'
 
 /** 行列间距档位，逐档对应一个间距令牌；档位名与 Flex 同一套。 */
 export type GridGap = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
@@ -47,7 +47,7 @@ export interface GridProps {
   /** 每一项在自己那格里的块向对齐：start / center / end / stretch / baseline，不写则铺满格高。 */
   align?: GridAlign
   /** 每一项在自己那格里的行内对齐：start / center / end / stretch，不写则铺满格宽。 */
-  justify?: GridJustify
+  justifyItems?: GridJustifyItems
 }
 
 /** 每一格自报的占位声明。 */

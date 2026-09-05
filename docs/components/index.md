@@ -94,7 +94,7 @@
 | [分格输入](./pin-input) | `pin-input` | 4 | 6 | 11 |
 | [单选组](./radio-group) | `radio-group` | 6 | 4 | 7 |
 | [评分](./rating) | `rating` | 5 | 5 | 9 |
-| [选择器](./select) | `select` | 17 | 15 | 19 |
+| [选择器](./select) | `select` | 17 | 15 | 20 |
 | [签名板](./signature-pad) | `signature-pad` | 8 | 1 | 6 |
 | [滑块](./slider) | `slider` | 10 | 6 | 11 |
 | [开关](./switch) | `switch` | 5 | 1 | 11 |
@@ -161,8 +161,8 @@ portal 到统一落点、由定位引擎摆位的一层，共用浮层容器与�
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [对话框](./dialog) | `dialog` | 7 | 4 | 9 |
-| [抽屉](./drawer) | `drawer` | 8 | 4 | 8 |
+| [对话框](./dialog) | `dialog` | 10 | 4 | 9 |
+| [抽屉](./drawer) | `drawer` | 11 | 4 | 8 |
 | [浮动面板](./floating-panel) | `floating-panel` | 11 | 6 | 6 |
 | [悬浮卡片](./hover-card) | `hover-card` | 5 | 2 | 6 |
 | [弹出确认](./popconfirm) | `popconfirm` | 8 | 4 | 5 |

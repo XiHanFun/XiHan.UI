@@ -136,15 +136,15 @@ export const imageViewerMachine = createMachine({
       setIndex: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type === 'INDEX.SET')
-          context.set('index', clampImageViewerIndex(e.index, imageViewerCount(prop('items'))))
+          context.set('index', clampImageViewerIndex(e.index, imageViewerCount(prop('collection'))))
       },
       goNext: ({ context, prop }) => {
-        const count = imageViewerCount(prop('items'))
+        const count = imageViewerCount(prop('collection'))
         const current = clampImageViewerIndex(context.get('index'), count)
         context.set('index', stepImageViewerIndex(current, 1, count, prop('loop') ?? true))
       },
       goPrev: ({ context, prop }) => {
-        const count = imageViewerCount(prop('items'))
+        const count = imageViewerCount(prop('collection'))
         const current = clampImageViewerIndex(context.get('index'), count)
         context.set('index', stepImageViewerIndex(current, -1, count, prop('loop') ?? true))
       },

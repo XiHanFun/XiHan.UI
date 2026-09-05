@@ -164,7 +164,7 @@ export const stepsSuite: ConformanceSuite = {
     {
       name: '走到中间：前面的 completed、当前 current、后面的 incomplete',
       spec: { apg: APG },
-      props: { count: COUNT, defaultStep: 1 },
+      props: { count: COUNT, defaultValue: 1 },
       initial: {
         parts: {
           'item[0]': { 'data-state': 'completed' },
@@ -182,7 +182,7 @@ export const stepsSuite: ConformanceSuite = {
       // 走完最后一步后没有任何一步是 current，也没有条目认领 tabindex=0，容器须兜底
       name: '走到完成位：每一步都 completed，面板全收起，list 兜底进 Tab 序列',
       spec: { apg: APG },
-      props: { count: COUNT, defaultStep: COUNT },
+      props: { count: COUNT, defaultValue: COUNT },
       initial: {
         parts: {
           'root': { 'data-complete': '' },
@@ -232,7 +232,7 @@ export const stepsSuite: ConformanceSuite = {
       name: '焦点从组外落到容器：转投锚点那一步，落焦不等于切步，Enter 才切',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['steps.kbd.activate', 'steps.kbd.tab'],
-      props: { count: COUNT, defaultStep: 1 },
+      props: { count: COUNT, defaultValue: 1 },
       steps: [
         {
           kind: 'focus',
@@ -305,7 +305,7 @@ export const stepsSuite: ConformanceSuite = {
       name: 'Home/End 跳到首尾 trigger',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['steps.kbd.first', 'steps.kbd.last'],
-      props: { count: COUNT, defaultStep: 1 },
+      props: { count: COUNT, defaultValue: 1 },
       steps: [
         { kind: 'focus', part: 'trigger[1]' },
         { kind: 'key', key: 'End', expect: { activeElement: { part: 'trigger[2]', exact: true } } },
@@ -353,7 +353,7 @@ export const stepsSuite: ConformanceSuite = {
       name: '横排 + dir=rtl：ArrowRight 走上一个、ArrowLeft 走下一个',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['steps.kbd.prev', 'steps.kbd.next'],
-      props: { count: COUNT, defaultStep: 1, dir: 'rtl' },
+      props: { count: COUNT, defaultValue: 1, dir: 'rtl' },
       steps: [
         { kind: 'focus', part: 'trigger[1]' },
         { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'trigger[0]', exact: true } } },
@@ -397,7 +397,7 @@ export const stepsSuite: ConformanceSuite = {
     {
       name: 'linear：走过的与当前这一步照常可点，回头看是允许的',
       spec: { apg: APG },
-      props: { count: COUNT, linear: true, defaultStep: 2 },
+      props: { count: COUNT, linear: true, defaultValue: 2 },
       initial: {
         parts: {
           'trigger[0]': { 'aria-disabled': 'false' },
@@ -471,9 +471,9 @@ export const stepsSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '受控 step：点击只发意图不自改 DOM，宿主写回 step 后才切换',
+      name: '受控 value：点击只发意图不自改 DOM，宿主写回 value 后才切换',
       spec: { adr: 'controlled-uncontrolled' },
-      props: { count: COUNT, step: 0 },
+      props: { count: COUNT, value: 0 },
       steps: [
         {
           kind: 'click',
@@ -487,7 +487,7 @@ export const stepsSuite: ConformanceSuite = {
             },
           },
         },
-        { kind: 'setProps', props: { step: 1 } },
+        { kind: 'setProps', props: { value: 1 } },
         {
           kind: 'settle',
           until: { attr: { part: 'content[1]', name: 'hidden', value: null } },

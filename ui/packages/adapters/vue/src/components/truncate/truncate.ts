@@ -7,7 +7,7 @@ import { useTruncate } from './use-truncate'
 type TruncateProps = TruncateSchema['props']
 
 /** 默认插槽的载荷：展开态与量出来的溢出与否，以及展开与重量一次的方法。 */
-export type TruncateSlotProps = Pick<TruncateApi, 'expanded' | 'overflowing' | 'setExpanded' | 'measure'>
+export type TruncateSlotProps = Pick<TruncateApi, 'open' | 'overflowing' | 'setOpen' | 'measure'>
 
 /**
  * 一段夹住的文字：单行收成省略号，多行按行数裁。
@@ -20,14 +20,14 @@ export const XhTruncate = defineComponent({
   props: {
     lines: { type: Number, default: undefined },
     expandable: Boolean,
-    expanded: { type: Boolean, default: undefined },
-    defaultExpanded: Boolean,
+    open: { type: Boolean, default: undefined },
+    defaultOpen: Boolean,
     tooltip: Boolean,
   },
-  // expanded-change 携带 { expanded }，update:expanded 携带裸布尔
+  // open-change 携带 { open }，update:open 携带裸布尔
   emits: {
-    'expanded-change': (_details: PayloadOf<TruncateProps, 'onExpandedChange'>) => true,
-    'update:expanded': (_expanded: PayloadOf<TruncateProps, 'onExpandedChange'>['expanded']) => true,
+    'open-change': (_details: PayloadOf<TruncateProps, 'onOpenChange'>) => true,
+    'update:open': (_open: PayloadOf<TruncateProps, 'onOpenChange'>['open']) => true,
     'overflow-change': (_details: PayloadOf<TruncateProps, 'onOverflowChange'>) => true,
   },
   slots: Object as SlotsType<{
@@ -35,9 +35,9 @@ export const XhTruncate = defineComponent({
   }>,
   setup(props, { slots, emit }) {
     const ctx = useTruncate(props as TruncateProps, {
-      onExpandedChange: (details) => {
-        emit('expanded-change', details)
-        emit('update:expanded', details.expanded)
+      onOpenChange: (details) => {
+        emit('open-change', details)
+        emit('update:open', details.open)
       },
       onOverflowChange: details => emit('overflow-change', details),
     })
@@ -45,9 +45,9 @@ export const XhTruncate = defineComponent({
       ...ctx.api.value.getRootProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
     }, slots.default?.({
-      expanded: ctx.api.value.expanded,
+      open: ctx.api.value.open,
       overflowing: ctx.api.value.overflowing,
-      setExpanded: ctx.api.value.setExpanded,
+      setOpen: ctx.api.value.setOpen,
       measure: ctx.api.value.measure,
     }))
   },

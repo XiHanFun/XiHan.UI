@@ -63,7 +63,7 @@ export interface ApprovalSchema extends MachineSchema {
     note?: string
     defaultNote?: string
     /** 判定在途：只挡重复批准，不挡拒绝。 */
-    busy?: boolean
+    loading?: boolean
     /** Escape 判为拒绝，默认开。 */
     denyOnEscape?: boolean
     /**
@@ -124,7 +124,7 @@ export interface ApprovalApi<T extends PropTypes = PropTypes> {
   status: ApprovalStatus
   /** 已经判过了：两颗按钮都收起出口。 */
   settled: boolean
-  busy: boolean
+  loading: boolean
   grantedScopes: string[]
   /** 备注里的文字；没写过是空串。 */
   note: string

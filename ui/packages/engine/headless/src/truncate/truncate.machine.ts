@@ -36,7 +36,7 @@ type MeasureParams = Pick<Params<TruncateSchema>, 'refs' | 'prop' | 'context' | 
 function runMeasure(p: MeasureParams): void {
   // 铺开态量不出东西：裁剪已经撤掉，两个尺寸恒相等。「会不会被裁」问的是夹住的那一版，
   // 所以这里原地留住上一次的结论，等收回去再量
-  if (p.state.matches('expanded'))
+  if (p.state.matches('open'))
     return
   const el = p.refs.get('getRootEl')()
   // 无布局环境量不到尺寸：结论留在初值
@@ -54,7 +54,7 @@ function runMeasure(p: MeasureParams): void {
  * 省略机器。
  *
  * 量测全在效应里做：只有 DOM 知道这段字此刻被夹掉了没有。机器持有量出来的结论与展开态，
- * connect 只读结果。受控（expanded 给定）时用户事件只发意图、不自改状态，
+ * connect 只读结果。受控（open 给定）时用户事件只发意图、不自改状态，
  * 由 watch 派发 CONTROLLED.* 回写。
  */
 export const truncateMachine = createMachine({
@@ -67,10 +67,10 @@ export const truncateMachine = createMachine({
   refs: () => ({
     getRootEl: () => null,
   }),
-  initialState: ({ prop }) => ((prop('expanded') ?? prop('defaultExpanded')) ? 'expanded' : 'collapsed'),
+  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   effects: ['trackOverflow'],
   watch: ({ track, prop, action }) => {
-    track([() => prop('expanded')], () => action(['syncExpanded']))
+    track([() => prop('open')], () => action(['syncOpen']))
     // 换行数就是换了一把尺，上一次的结论作不得数
     track([() => prop('lines')], () => action(['measureSoon']))
   },
@@ -78,30 +78,30 @@ export const truncateMachine = createMachine({
     MEASURE: { actions: ['measure'] },
   },
   states: {
-    collapsed: {
+    closed: {
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'TOGGLE': [
-          { guard: 'isExpandedControlled', actions: ['invokeOnExpand'] },
-          { target: 'expanded', actions: ['invokeOnExpand'] },
+          { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
+          { target: 'open', actions: ['invokeOnOpen'] },
         ],
-        'CONTROLLED.EXPAND': { target: 'expanded' },
+        'CONTROLLED.OPEN': { target: 'open' },
       },
     },
-    expanded: {
+    open: {
       on: {
         // 收回去要重量：夹住的那一版才是判据，而它这会儿才刚刚回来
         'TOGGLE': [
-          { guard: 'isExpandedControlled', actions: ['invokeOnCollapse'] },
-          { target: 'collapsed', actions: ['invokeOnCollapse', 'measureSoon'] },
+          { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
+          { target: 'closed', actions: ['invokeOnClose', 'measureSoon'] },
         ],
-        'CONTROLLED.COLLAPSE': { target: 'collapsed', actions: ['measureSoon'] },
+        'CONTROLLED.CLOSE': { target: 'closed', actions: ['measureSoon'] },
       },
     },
   },
   implementations: {
     guards: {
-      isExpandedControlled: ({ prop }) => prop('expanded') !== undefined,
+      isOpenControlled: ({ prop }) => prop('open') !== undefined,
     },
     actions: {
       measure: params => runMeasure(params),
@@ -109,15 +109,15 @@ export const truncateMachine = createMachine({
       /** 推迟一拍再量：状态刚改，这一帧的裁剪还没提交到 DOM。 */
       measureSoon: params => params.flush(() => runMeasure(params)),
 
-      invokeOnExpand: ({ prop }) => prop('onExpandedChange')?.({ expanded: true }),
-      invokeOnCollapse: ({ prop }) => prop('onExpandedChange')?.({ expanded: false }),
+      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
+      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
 
-      // 只在受控（expanded 为布尔）时回写；变回 undefined = 转非受控，不强制收回
-      syncExpanded: ({ prop, send }) => {
-        const expanded = prop('expanded')
-        if (expanded === undefined)
+      // 只在受控（open 为布尔）时回写；变回 undefined = 转非受控，不强制收回
+      syncOpen: ({ prop, send }) => {
+        const open = prop('open')
+        if (open === undefined)
           return
-        send(expanded ? { type: 'CONTROLLED.EXPAND' } : { type: 'CONTROLLED.COLLAPSE' })
+        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
     },
     effects: {

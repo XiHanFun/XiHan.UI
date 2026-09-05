@@ -1,4 +1,4 @@
-<!-- 受控展开 | 传了 expandedValue 就由宿主说了算，组件只发 expanded-change 不落内部值，写回它才动 -->
+<!-- 受控展开 | 传了 expandedValue 就由宿主说了算，组件只发 expanded-value-change 不落内部值，写回它才动 -->
 <div style="display: grid; gap: 12px; inline-size: 100%; max-inline-size: 420px">
   <div style="display: flex; gap: 8px">
     <xh-button id="json-controlled-expand" size="sm">
@@ -42,7 +42,7 @@
   }
 
   setExpanded([ROOT]);
-  viewer.addEventListener("expanded-change", (event) =>
+  viewer.addEventListener("expanded-value-change", (event) =>
     setExpanded(event.detail.value),
   );
 

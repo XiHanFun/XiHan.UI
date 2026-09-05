@@ -14,7 +14,7 @@ export const IMAGE_VIEWER_ITEMS: readonly ImageViewerItem[] = [
 
 /** 每个用例都带上同一份清单；没有它打开也只有空视口。 */
 export function imageViewerProps(extra: Readonly<Record<string, unknown>> = {}): Readonly<Record<string, unknown>> {
-  return { items: IMAGE_VIEWER_ITEMS, ...extra }
+  return { collection: IMAGE_VIEWER_ITEMS, ...extra }
 }
 
 /** content 里的内容：视口、计数与工具条。工具条第一个按钮是打开后焦点的落点。 */

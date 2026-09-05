@@ -91,11 +91,11 @@ export const tableMachine = createMachine({
       isEqual: sameSelection,
       onChange: value => prop('onSelectionChange')?.({ value }),
     })),
-    expanded: cell<string[]>(() => ({
-      value: prop('expanded'),
-      defaultValue: prop('defaultExpanded') ?? [],
+    expandedValue: cell<string[]>(() => ({
+      value: prop('expandedValue'),
+      defaultValue: prop('defaultExpandedValue') ?? [],
       isEqual: sameValues,
-      onChange: value => prop('onExpandedChange')?.({ value }),
+      onChange: value => prop('onExpandedValueChange')?.({ value }),
     })),
     // 焦点锚点不受控、不对外通知：它只服务行级 roving tabindex 与方向键起点
     focusedRow: cell<string | null>(() => ({ defaultValue: null })),
@@ -521,7 +521,7 @@ export const tableMachine = createMachine({
         if (e.type !== 'EXPANDED.SET')
           return
         // 只去重不筛可不可展开：数据晚到时先记下意愿，摊平那一步会拦住不可展开的行
-        context.set('expanded', unique(e.value))
+        context.set('expandedValue', unique(e.value))
       },
       expandRow: ({ context, prop, event }) => {
         const e = event.current()
@@ -529,30 +529,30 @@ export const tableMachine = createMachine({
           return
         if (!canExpand(prop('rows') ?? [], e.value))
           return
-        const current = context.get('expanded')
+        const current = context.get('expandedValue')
         if (current.includes(e.value))
           return
-        context.set('expanded', [...current, e.value])
+        context.set('expandedValue', [...current, e.value])
       },
       collapseRow: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'ROW.COLLAPSE')
           return
         // 收起不查 rows，能摘就摘干净
-        context.set('expanded', context.get('expanded').filter(v => v !== e.value))
+        context.set('expandedValue', context.get('expandedValue').filter(v => v !== e.value))
       },
       toggleExpandRow: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'ROW.EXPAND_TOGGLE')
           return
-        const current = context.get('expanded')
+        const current = context.get('expandedValue')
         if (current.includes(e.value)) {
-          context.set('expanded', current.filter(v => v !== e.value))
+          context.set('expandedValue', current.filter(v => v !== e.value))
           return
         }
         if (!canExpand(prop('rows') ?? [], e.value))
           return
-        context.set('expanded', [...current, e.value])
+        context.set('expandedValue', [...current, e.value])
       },
       setFocusedRow: ({ context, event }) => {
         const e = event.current()
@@ -607,7 +607,7 @@ export const TABLE_COLUMN_LARGE_STEP = 40
 
 /** 行拖拽那一路的最小接口。 */
 interface RowDragContext {
-  get: (k: 'expanded') => string[]
+  get: (k: 'expandedValue') => string[]
   set: (k: 'announcement', v: string) => void
 }
 
@@ -693,10 +693,10 @@ function clearColumnDrag(
 
 /** 可见数据行的 id 序列。落点、位置播报与键盘命令三处都以它为准。 */
 function visibleRowIds(
-  context: { get: (k: 'expanded') => string[] },
+  context: { get: (k: 'expandedValue') => string[] },
   prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
 ): string[] {
-  return flattenTableRows(prop('rows') ?? [], context.get('expanded'))
+  return flattenTableRows(prop('rows') ?? [], context.get('expandedValue'))
     .filter(row => row.kind === 'data')
     .map(row => row.id)
 }
@@ -742,7 +742,7 @@ function commitRowMove(
   kind: DragAnnounceKind,
 ): void {
   const rows = prop('rows') ?? []
-  const move = tableRowMoveOf(flattenTableRows(rows, context.get('expanded')), rowId, target)
+  const move = tableRowMoveOf(flattenTableRows(rows, context.get('expandedValue')), rowId, target)
   if (!move) {
     announceRowMove(context, prop, 'rejected', rowId)
     return
@@ -776,13 +776,13 @@ function clearRowDrag(
  * 第四条是作者的 allowRowDrop——它收到的是折算好的搬家，与提交时那份一模一样。
  */
 function rowDropAllowed(
-  context: { get: (k: 'expanded') => string[] },
+  context: { get: (k: 'expandedValue') => string[] },
   prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
   rowId: string,
   target: TableDropTarget,
 ): boolean {
   const rows = prop('rows') ?? []
-  const move = tableRowMoveOf(flattenTableRows(rows, context.get('expanded')), rowId, target)
+  const move = tableRowMoveOf(flattenTableRows(rows, context.get('expandedValue')), rowId, target)
   if (!move)
     return false
   const allow = prop('allowRowDrop')

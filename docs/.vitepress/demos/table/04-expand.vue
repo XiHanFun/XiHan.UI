@@ -31,7 +31,7 @@ const expanded = ref<string[]>(["o1"]);
 
 <template>
   <div style="width: 100%; max-width: 560px; display: grid; gap: 12px">
-    <XhTableRoot v-model:expanded="expanded" :columns="columns" :rows="rows">
+    <XhTableRoot v-model:expanded-value="expanded" :columns="columns" :rows="rows">
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader value="expand" />

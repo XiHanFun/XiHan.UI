@@ -64,7 +64,7 @@ export const backTopMachine = createMachine({
         const e = event.current()
         if (e.type !== 'SCROLL.RESOLVE')
           return
-        prop('onVisibleChange')?.({ visible: e.visible })
+        prop('onVisibilityChange')?.({ visible: e.visible })
       },
       // 容器滚动滚容器，整页滚动滚窗口，两条路由同一个助手分派
       scrollToTop: ({ refs, prop, scope }) => {

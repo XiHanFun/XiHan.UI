@@ -1,19 +1,19 @@
 import type { PropTypes } from '@xihan-ui/kernel'
 
 /** 骨架条的形状：一行文字、一个圆、一块矩形。 */
-export type SkeletonVariant = 'text' | 'circle' | 'rect'
+export type SkeletonShape = 'text' | 'circle' | 'rect'
 
 export interface SkeletonProps {
   /** 是否还在加载，默认 true。 */
   loading?: boolean
   /** 容器内骨架条的默认形状，默认 'text'。 */
-  variant?: SkeletonVariant
+  shape?: SkeletonShape
 }
 
 /** 单根骨架条自报的声明。 */
 export interface SkeletonItemProps {
   /** 这一根的形状，覆盖容器给的默认值。 */
-  variant?: SkeletonVariant
+  shape?: SkeletonShape
 }
 
 export interface SkeletonApi<T extends PropTypes = PropTypes> {

@@ -1,4 +1,4 @@
-import type { DiffLine, DiffModel, DiffSide, DiffViewApi, DiffViewExpandedChangeDetails, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
+import type { DiffLine, DiffModel, DiffSide, DiffViewApi, DiffViewExpandedValueChangeDetails, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
 import type { CodeToken, Size } from '@xihan-ui/kernel'
 import { connectDiffView, diffViewAnatomy, diffViewMachine, diffViewMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -34,7 +34,7 @@ function segmentKey(line: DiffLine): string {
  * @attr {number} context-lines - 变更两侧各露几行上下文，其余折起来
  * @attr {boolean} wrap - 长行原地折行，默认关（长行横向滚动）
  * @attr {string} size - 尺寸：sm / md / lg
- * @fires expanded-change - 展开集合变化；detail 为 `{ expanded: string[] }`
+ * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - 外壳，承载 data-view / data-wrap / data-truncated
  * @csspart header - 文件名与增删统计那一行
  * @csspart summary - 增删统计位，写 data-change="added" / "removed"，数字由本元素填
@@ -63,8 +63,8 @@ export class XhDiffViewElement extends XhElement {
     size: { converter: STRING_CONVERTER },
     // 对象与数组值走不了 HTML 属性，只作为 property 暴露
     model: { attribute: false },
-    expanded: { attribute: false },
-    defaultExpanded: { attribute: false },
+    expandedValue: { attribute: false },
+    defaultExpandedValue: { attribute: false },
     translations: { attribute: false },
   }
 
@@ -74,12 +74,12 @@ export class XhDiffViewElement extends XhElement {
   declare size?: Size
   /** 差异模型，由 computeTextDiff 或 parseUnifiedPatch 算出来。 */
   declare model?: DiffModel
-  declare expanded?: readonly string[]
-  declare defaultExpanded?: readonly string[]
+  declare expandedValue?: readonly string[]
+  declare defaultExpandedValue?: readonly string[]
   declare translations?: Partial<DiffViewTranslations>
 
-  private readonly notify = (details: DiffViewExpandedChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('expanded-change', { detail: details, bubbles: true, composed: true }))
+  private readonly notify = (details: DiffViewExpandedValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('expanded-value-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<DiffViewSchema>(this, diffViewMachine, () => ({
@@ -87,11 +87,11 @@ export class XhDiffViewElement extends XhElement {
     view: this.view,
     contextLines: this.contextLines,
     wrap: this.wrap,
-    expanded: this.expanded,
-    defaultExpanded: this.defaultExpanded,
+    expandedValue: this.expandedValue,
+    defaultExpandedValue: this.defaultExpandedValue,
     size: this.size,
     translations: this.translations,
-    onExpandedChange: this.notify,
+    onExpandedValueChange: this.notify,
   }))
 
   /** 上一次铺进 body 的那份行序，用来判断要不要重铺。 */
@@ -140,7 +140,7 @@ export class XhDiffViewElement extends XhElement {
     const sides = sidesOf(api.view)
     const signature = `${api.view}|${api.rows
       .map(row => (row.kind === 'gap'
-        ? `g${row.gapId}:${row.hiddenCount}:${api.expanded.includes(row.gapId!) ? 1 : 0}`
+        ? `g${row.gapId}:${row.hiddenCount}:${api.expandedValue.includes(row.gapId!) ? 1 : 0}`
         : `l${row.rowIndex}:${row.line!.change}:${row.revealed === true ? 1 : 0}:${segmentKey(row.line!)}:${row.line!.text}`))
       .join('\n')}`
     if (signature === this.#painted)

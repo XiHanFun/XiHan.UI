@@ -1,6 +1,11 @@
 <!-- 程序化改值 | setValue 直接写值，只受禁用、只读与字数上限约束；clear 走清空意图，canClear 不成立时按兵不动 -->
 <script setup lang="ts">
-import { XhTextFieldInput, XhTextFieldLabel, XhTextFieldRoot } from "@xihan-ui/vue";
+import {
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldLabel,
+  XhTextFieldRoot,
+} from "@xihan-ui/vue";
 </script>
 
 <template>
@@ -11,7 +16,9 @@ import { XhTextFieldInput, XhTextFieldLabel, XhTextFieldRoot } from "@xihan-ui/v
     clearable
   >
     <XhTextFieldLabel>收货人</XhTextFieldLabel>
-    <XhTextFieldInput style="inline-size: 200px" />
+    <XhTextFieldControl style="inline-size: 200px">
+      <XhTextFieldInput />
+    </XhTextFieldControl>
     <div style="display: flex; gap: 8px">
       <button type="button" @click="setValue('曦寒')">写入</button>
       <button type="button" @click="setValue(value + '·')">追加一个点</button>

@@ -20,29 +20,29 @@ export function connectSteps<T extends PropTypes>(
 
   const count = normalizeStepCount(prop('count'))
   // 显示用的步序一律夹过：count 改小后内部值会停在一个已不存在的步上
-  const step = clampStep(context.get('step'), count)
+  const value = clampStep(context.get('value'), count)
   const focusedStep = context.get('focusedStep') ?? null
   // roving tabindex 的唯一锚点：焦点在组内时跟着焦点光标走，否则落在当前步
-  const anchor = focusedStep ?? step
+  const anchor = focusedStep ?? value
   const orientation = prop('orientation') ?? 'horizontal'
   const dir = prop('dir')
   const linear = !!prop('linear')
   const disabled = !!prop('disabled')
-  const complete = count > 0 && step >= count
+  const complete = count > 0 && value >= count
 
   const triggerId = (index: number): string => scope.partId(stepsAnatomy.name, `trigger:${index}`)
   const contentId = (index: number): string => scope.partId(stepsAnatomy.name, `content:${index}`)
 
   const getItemState = (item: StepsItemProps): StepsItemState => {
-    const completed = item.index < step
-    const current = item.index === step
+    const completed = item.index < value
+    const current = item.index === value
     return {
       index: item.index,
       status: completed ? 'completed' : current ? 'current' : 'incomplete',
       completed,
       current,
-      // 三条独立判据：整组禁用、作者标禁用、linear 下 index > step 未解锁
-      disabled: disabled || !!item.disabled || (linear && item.index > step),
+      // 三条独立判据：整组禁用、作者标禁用、linear 下 index > value 未解锁
+      disabled: disabled || !!item.disabled || (linear && item.index > value),
     }
   }
 
@@ -72,16 +72,16 @@ export function connectSteps<T extends PropTypes>(
     if (!trigger || next == null || isItemDisabled(trigger))
       return
     event.preventDefault()
-    send({ type: 'STEP.SET', step: Number(next) })
+    send({ type: 'VALUE.SET', value: Number(next) })
   }
 
   return {
-    step,
+    value,
     count,
     complete,
     focusedStep,
     getItemState,
-    setStep: next => send({ type: 'STEP.SET', step: next }),
+    setValue: next => send({ type: 'VALUE.SET', value: next }),
     goToNextStep: () => send({ type: 'STEP.NEXT' }),
     goToPrevStep: () => send({ type: 'STEP.PREV' }),
 
@@ -176,7 +176,7 @@ export function connectSteps<T extends PropTypes>(
         'data-disabled': dataAttr(s.disabled),
         'onClick': () => {
           if (!s.disabled)
-            send({ type: 'STEP.SET', step: item.index })
+            send({ type: 'VALUE.SET', value: item.index })
         },
         'onFocus': () => send({ type: 'TRIGGER.FOCUS', step: item.index }),
       })
@@ -217,7 +217,7 @@ export function connectSteps<T extends PropTypes>(
       'role': 'tabpanel',
       'aria-labelledby': triggerId(item.index),
       'tabindex': 0,
-      'hidden': item.index !== step || undefined,
+      'hidden': item.index !== value || undefined,
       'data-state': getItemState(item).status,
     }),
   }

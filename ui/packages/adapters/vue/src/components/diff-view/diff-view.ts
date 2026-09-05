@@ -12,7 +12,7 @@ type Props = DiffViewSchema['props']
 /** 默认插槽的载荷：可见行序、增删统计与展开集合。 */
 export type DiffViewRootSlotProps = Pick<
   DiffViewApi,
-  'view' | 'rows' | 'expanded' | 'stats' | 'truncated' | 'truncatedLines' | 'isEmpty' | 'toggleGap' | 'setExpanded'
+  'view' | 'rows' | 'expandedValue' | 'stats' | 'truncated' | 'truncatedLines' | 'isEmpty' | 'toggleGap' | 'setExpandedValue'
 >
 
 /** 单栏只有一列，恒为旧侧；并排两列都铺。 */
@@ -26,35 +26,35 @@ export const XhDiffViewRoot = defineComponent({
     model: { type: Object as PropType<DiffModel>, default: undefined },
     view: { type: String as PropType<DiffViewMode>, default: undefined },
     contextLines: { type: Number, default: undefined },
-    expanded: { type: Array as PropType<readonly string[]>, default: undefined },
-    defaultExpanded: { type: Array as PropType<readonly string[]>, default: undefined },
+    expandedValue: { type: Array as PropType<readonly string[]>, default: undefined },
+    defaultExpandedValue: { type: Array as PropType<readonly string[]>, default: undefined },
     wrap: { type: Boolean, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
     translations: { type: Object as PropType<Partial<DiffViewTranslations>>, default: undefined },
   },
   emits: {
-    'expanded-change': (_details: PayloadOf<Props, 'onExpandedChange'>) => true,
-    'update:expanded': (_expanded: string[]) => true,
+    'expanded-value-change': (_details: PayloadOf<Props, 'onExpandedValueChange'>) => true,
+    'update:expandedValue': (_value: string[]) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: DiffViewRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const ctx = useDiffView(withXhConfig('diff-view', props) as Props, (details) => {
-      emit('expanded-change', details)
-      emit('update:expanded', details.expanded)
+      emit('expanded-value-change', details)
+      emit('update:expandedValue', details.value)
     })
     provideDiffView(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       view: ctx.api.value.view,
       rows: ctx.api.value.rows,
-      expanded: ctx.api.value.expanded,
+      expandedValue: ctx.api.value.expandedValue,
       stats: ctx.api.value.stats,
       truncated: ctx.api.value.truncated,
       truncatedLines: ctx.api.value.truncatedLines,
       isEmpty: ctx.api.value.isEmpty,
       toggleGap: ctx.api.value.toggleGap,
-      setExpanded: ctx.api.value.setExpanded,
+      setExpandedValue: ctx.api.value.setExpandedValue,
     }))
   },
 })
