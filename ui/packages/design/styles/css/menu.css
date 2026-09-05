@@ -87,13 +87,13 @@
     /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
        列表族的 16rem 对命令菜单偏矮，这里另给一档 */
     max-block-size: min(var(--xh-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menu-available-h));
-    padding-block: var(--xh-menu-py, var(--xh-surface-pad-xs));
-    padding-inline: var(--xh-menu-px, var(--xh-surface-pad-xs));
+    padding-block: var(--xh-menu-content-py, var(--xh-surface-pad-xs));
+    padding-inline: var(--xh-menu-content-px, var(--xh-surface-pad-xs));
     border: var(--xh-stroke-thin) solid var(--xh-menu-border, var(--xh-border-default));
-    border-radius: var(--xh-menu-radius, var(--xh-shape-surface));
-    background: var(--xh-menu-bg, var(--xh-bg-surface));
-    color: var(--xh-menu-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-menu-shadow, var(--xh-elevation-floating));
+    border-radius: var(--xh-menu-content-radius, var(--xh-shape-surface));
+    background: var(--xh-menu-content-bg, var(--xh-bg-surface));
+    color: var(--xh-menu-content-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-menu-content-shadow, var(--xh-elevation-floating));
     /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
     overflow-y: auto;
     pointer-events: auto;
@@ -243,7 +243,7 @@
     --xh-_overlay-arrow-x: var(--xh-_menu-arrow-x);
     --xh-_overlay-arrow-y: var(--xh-_menu-arrow-y);
 
-    background: var(--xh-menu-bg, var(--xh-bg-surface));
+    background: var(--xh-menu-content-bg, var(--xh-bg-surface));
     border: var(--xh-stroke-thin) solid var(--xh-menu-border, var(--xh-border-default));
   }
 

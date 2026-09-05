@@ -6,7 +6,7 @@ import {
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
-  XhTimePickerInput,
+  XhTimePickerSegment,
   XhTimePickerSegmentGroup,
   XhTimePickerLabel,
   XhTimePickerItem,
@@ -22,9 +22,9 @@ const value = ref("09:30");
     <XhTimePickerLabel>预约时段</XhTimePickerLabel>
     <XhTimePickerControl>
       <XhTimePickerSegmentGroup>
-        <XhTimePickerInput segment="hour" />
+        <XhTimePickerSegment segment="hour" />
         <span>:</span>
-        <XhTimePickerInput segment="minute" />
+        <XhTimePickerSegment segment="minute" />
       </XhTimePickerSegmentGroup>
       <XhTimePickerClearTrigger />
     </XhTimePickerControl>

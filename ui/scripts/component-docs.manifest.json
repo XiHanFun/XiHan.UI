@@ -22,8 +22,8 @@
           "name": "下载触发器"
         },
         {
-          "id": "ellipsis",
-          "name": "文本省略"
+          "id": "truncate",
+          "name": "文本截断"
         },
         {
           "id": "float-button",
@@ -95,10 +95,6 @@
         {
           "id": "separator",
           "name": "分隔线"
-        },
-        {
-          "id": "space",
-          "name": "间距"
         },
         {
           "id": "sortable",
@@ -219,16 +215,16 @@
           "name": "日期选择器"
         },
         {
-          "id": "dynamic-input",
-          "name": "动态录入"
-        },
-        {
           "id": "editable",
           "name": "就地编辑"
         },
         {
           "id": "field",
           "name": "表单字段"
+        },
+        {
+          "id": "field-array",
+          "name": "字段数组"
         },
         {
           "id": "fieldset",
@@ -265,10 +261,6 @@
         {
           "id": "pin-input",
           "name": "分格输入"
-        },
-        {
-          "id": "popselect",
-          "name": "弹出选择"
         },
         {
           "id": "radio-group",
@@ -354,10 +346,6 @@
           "name": "折叠区域"
         },
         {
-          "id": "countdown",
-          "name": "倒计时"
-        },
-        {
           "id": "descriptions",
           "name": "描述列表"
         },
@@ -422,16 +410,16 @@
           "name": "标签"
         },
         {
-          "id": "time",
-          "name": "时间"
-        },
-        {
           "id": "timeline",
           "name": "时间线"
         },
         {
           "id": "timer",
           "name": "计时器"
+        },
+        {
+          "id": "timestamp",
+          "name": "时间戳"
         },
         {
           "id": "tree",
@@ -463,10 +451,6 @@
         {
           "id": "progress",
           "name": "进度条"
-        },
-        {
-          "id": "result",
-          "name": "结果页"
         },
         {
           "id": "skeleton",

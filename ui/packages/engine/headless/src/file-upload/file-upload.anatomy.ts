@@ -8,7 +8,7 @@ export const fileUploadAnatomy = createAnatomy('file-upload', [
   'dropzone',
   'trigger',
   'hidden-input',
-  'item-group',
+  'list',
   'item',
   'item-name',
   'item-size-text',

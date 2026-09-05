@@ -69,7 +69,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart dropzone - role=button 的投放区，键盘入口也在这里
  * @csspart trigger - 打开文件选择框的按钮，建议放在投放区之外（按钮里再套按钮读屏只念外面那个）
  * @csspart hidden-input - type=file 的表单出口，视觉上藏起来
- * @csspart item-group - role=list 的列表容器，承载 data-empty
+ * @csspart list - role=list 的列表容器，承载 data-empty
  * @csspart item - role=listitem 的一行，可自带 index 属性声明对应第几个文件
  * @csspart item-preview - 缩略图占位（aria-hidden），带 data-file-type 供皮肤挑图标
  * @csspart item-name - 文件名（元素代填）
@@ -270,7 +270,7 @@ export class XhFileUploadElement extends XhElement {
     put('dropzone', api.getDropzoneProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
-    put('item-group', api.getItemGroupProps() as Record<string, unknown>)
+    put('list', api.getListProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
 
     // 条目逐个打，身份取列表里对应位置的那个文件

@@ -6,7 +6,7 @@ import {
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
-  XhFileUploadItemGroup,
+  XhFileUploadList,
   XhFileUploadItemName,
   XhFileUploadItemPreview,
   XhFileUploadLabel,
@@ -55,7 +55,7 @@ onBeforeUnmount(() => {
         <XhFileUploadTrigger>选择图片</XhFileUploadTrigger>
       </div>
       <XhFileUploadHiddenInput />
-      <XhFileUploadItemGroup :style="wall">
+      <XhFileUploadList :style="wall">
         <XhFileUploadItem v-for="file in acceptedFiles" :key="file" :file="file" :style="card">
           <XhFileUploadItemPreview>
             <img :src="previewUrl(file)" alt="" />
@@ -63,7 +63,7 @@ onBeforeUnmount(() => {
           <XhFileUploadItemName />
           <XhFileUploadItemDeleteTrigger>移除</XhFileUploadItemDeleteTrigger>
         </XhFileUploadItem>
-      </XhFileUploadItemGroup>
+      </XhFileUploadList>
     </XhFileUploadRoot>
   </div>
 </template>

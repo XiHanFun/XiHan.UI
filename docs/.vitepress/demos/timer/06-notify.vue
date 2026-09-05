@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-  XhTimerArea,
+  XhTimerDisplay,
   XhTimerControl,
   XhTimerItem,
   XhTimerRoot,
@@ -26,11 +26,11 @@ function restart(): void {
     @tick="ticks++"
     @complete="done = true"
   >
-    <XhTimerArea>
+    <XhTimerDisplay>
       <XhTimerItem unit="minutes" />
       <XhTimerSeparator>:</XhTimerSeparator>
       <XhTimerItem unit="seconds" />
-    </XhTimerArea>
+    </XhTimerDisplay>
     <XhTimerControl @click="restart">起停</XhTimerControl>
   </XhTimerRoot>
 

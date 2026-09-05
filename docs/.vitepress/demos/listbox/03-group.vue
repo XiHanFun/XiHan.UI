@@ -1,11 +1,11 @@
-<!-- 分组 | item-group 把条目分段，group-label 是这一段的可及名字，不参与选中也不接方向键 -->
+<!-- 分组 | group 把条目分段，group-label 是这一段的可及名字，不参与选中也不接方向键 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
   XhListboxContent,
   XhListboxItem,
-  XhListboxItemGroup,
-  XhListboxItemGroupLabel,
+  XhListboxGroup,
+  XhListboxGroupLabel,
   XhListboxItemIndicator,
   XhListboxItemText,
   XhListboxLabel,
@@ -38,13 +38,13 @@ const groups = [
   <XhListboxRoot v-model:value="city" style="max-inline-size: 320px">
     <XhListboxLabel>城市</XhListboxLabel>
     <XhListboxContent>
-      <XhListboxItemGroup v-for="g in groups" :key="g.value" :value="g.value">
-        <XhListboxItemGroupLabel>{{ g.label }}</XhListboxItemGroupLabel>
+      <XhListboxGroup v-for="g in groups" :key="g.value" :value="g.value">
+        <XhListboxGroupLabel>{{ g.label }}</XhListboxGroupLabel>
         <XhListboxItem v-for="c in g.items" :key="c.value" :value="c.value">
           <XhListboxItemText>{{ c.label }}</XhListboxItemText>
           <XhListboxItemIndicator />
         </XhListboxItem>
-      </XhListboxItemGroup>
+      </XhListboxGroup>
     </XhListboxContent>
   </XhListboxRoot>
   <p>已选：{{ city.length ? city.join("、") : "（无）" }}</p>

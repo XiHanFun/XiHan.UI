@@ -1,7 +1,7 @@
 <!-- 换过渡效果 | 条目的内联样式只有尺寸与间距，位移之外的表现全归作者：把条目摞起来再按当前页调透明度与缩放，翻页、键盘与指示点一概照旧 -->
 <style>
   /* 后两档把条目摞在一起，轨道那条整页位移随之作废 */
-  #carousel-effect:not([data-effect="slide"]) [data-xh-part="item-group"] {
+  #carousel-effect:not([data-effect="slide"]) [data-xh-part="list"] {
     position: relative;
     transform: none !important;
   }
@@ -29,7 +29,7 @@
   <div data-xh-part="root" style="inline-size: 100%">
     <button data-xh-part="prev-trigger"></button>
     <div data-xh-part="viewport" style="block-size: 140px">
-      <div data-xh-part="item-group">
+      <div data-xh-part="list">
         <div data-xh-part="item" index="0">
           <div style="display: grid; place-items: center; block-size: 100%">
             城市夜景

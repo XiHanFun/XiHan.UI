@@ -35,7 +35,7 @@ const STRING_LIST_CONVERTER = {
 
 /**
  * `<xh-color-picker>` —— Light-DOM 行为宿主：作者写 root/label/trigger/value-text/swatch/
- * positioner/content/area/area-thumb/channel-slider/channel-input/swatch-item 等角色节点，
+ * positioner/content/saturation-area/area-thumb/channel-slider/channel-input/swatch-item 等角色节点，
  * 元素跑 color-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，
  * 锚点取 trigger，被定位的浮层取 positioner。
  *
@@ -71,7 +71,7 @@ const STRING_LIST_CONVERTER = {
  * @csspart swatch - 当前颜色的色块（aria-hidden，背景由连接层写成内联样式）
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - role=dialog 容器（焦点域与消解层的根节点），收起时带 hidden
- * @csspart area - 二维取色区，横轴饱和度、纵轴明度；底色是当前色相
+ * @csspart saturation-area - 二维取色区，横轴饱和度、纵轴明度；底色是当前色相
  * @csspart area-thumb - role=slider 的取色区拇指，两条轴的位置由连接层写成内联样式
  * @csspart channel-slider - 一条通道滑杆的外框，须自带 channel 属性（hue / alpha）
  * @csspart channel-slider-track - 通道轨道，值与坐标的换算以它的矩形为准
@@ -212,7 +212,7 @@ export class XhColorPickerElement extends XhElement {
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
-    svc.refs.set('getAreaEl', () => this.getPart('area'))
+    svc.refs.set('getAreaEl', () => this.getPart('saturation-area'))
     svc.refs.set('getChannelTrackEl', channel => this.channelTrack(channel))
   }
 
@@ -273,7 +273,7 @@ export class XhColorPickerElement extends XhElement {
     // spreader 见对象 style 会逐条写内联样式，直接 spread 即可
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
-    put('area', api.getAreaProps() as Record<string, unknown>)
+    put('saturation-area', api.getSaturationAreaProps() as Record<string, unknown>)
     put('area-thumb', api.getAreaThumbProps() as Record<string, unknown>)
     put('eye-dropper-trigger', api.getEyeDropperTriggerProps() as Record<string, unknown>)
     put('swatch-group', api.getSwatchGroupProps() as Record<string, unknown>)

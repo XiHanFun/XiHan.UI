@@ -11,12 +11,12 @@
 
     display: flex;
     align-items: center;
-    gap: var(--xh-menubar-root-gap, var(--xh-space-1));
-    padding-block: var(--xh-menubar-root-py, var(--xh-space-1));
-    padding-inline: var(--xh-menubar-root-px, var(--xh-space-1));
-    border-radius: var(--xh-menubar-root-radius, var(--xh-shape-control));
-    background: var(--xh-menubar-root-bg, transparent);
-    color: var(--xh-menubar-root-fg, var(--xh-fg-default));
+    gap: var(--xh-menubar-gap, var(--xh-space-1));
+    padding-block: var(--xh-menubar-py, var(--xh-space-1));
+    padding-inline: var(--xh-menubar-px, var(--xh-space-1));
+    border-radius: var(--xh-menubar-radius, var(--xh-shape-control));
+    background: var(--xh-menubar-bg, transparent);
+    color: var(--xh-menubar-fg, var(--xh-fg-default));
   }
 
   /* 浮层被搬到 portal 落点，继承不到 root 上的槽：这把尺在被搬走的那一侧再声明一次，
@@ -158,13 +158,13 @@
     /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
        列表族的 16rem 对命令菜单偏矮，这里另给一档 */
     max-block-size: min(var(--xh-menubar-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menubar-available-h));
-    padding-block: var(--xh-menubar-py, var(--xh-surface-pad-xs));
-    padding-inline: var(--xh-menubar-px, var(--xh-surface-pad-xs));
+    padding-block: var(--xh-menubar-content-py, var(--xh-surface-pad-xs));
+    padding-inline: var(--xh-menubar-content-px, var(--xh-surface-pad-xs));
     border: var(--xh-stroke-thin) solid var(--xh-menubar-border, var(--xh-border-default));
-    border-radius: var(--xh-menubar-radius, var(--xh-shape-surface));
-    background: var(--xh-menubar-bg, var(--xh-bg-surface));
-    color: var(--xh-menubar-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-menubar-shadow, var(--xh-elevation-floating));
+    border-radius: var(--xh-menubar-content-radius, var(--xh-shape-surface));
+    background: var(--xh-menubar-content-bg, var(--xh-bg-surface));
+    color: var(--xh-menubar-content-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-menubar-content-shadow, var(--xh-elevation-floating));
     /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
     overflow-y: auto;
     pointer-events: auto;

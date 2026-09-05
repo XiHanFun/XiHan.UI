@@ -1,0 +1,59 @@
+<!-- 行数上下限 | 到 min 删除把手按不动、到 max 新增把手按不动；两者都转 aria-disabled，焦点留得住 -->
+<xh-field-array id="field-array-bounds" min="2" max="4">
+  <div data-xh-part="root" style="max-inline-size: 420px">
+    <button data-xh-part="add-trigger">+ 添加选项</button>
+    <p id="field-array-bounds-note">2 / 4</p>
+  </div>
+</xh-field-array>
+
+<template id="field-array-bounds-row">
+  <div data-xh-part="item">
+    <div data-xh-part="item-content">
+      <input style="inline-size: 100%" placeholder="填一个选项" />
+    </div>
+    <div data-xh-part="item-action">
+      <button data-xh-part="item-delete-trigger"></button>
+    </div>
+  </div>
+</template>
+
+<script type="module">
+  const host = document.getElementById("field-array-bounds");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const addTrigger = host.querySelector('[data-xh-part="add-trigger"]');
+  const template = document.getElementById("field-array-bounds-row");
+  const note = document.getElementById("field-array-bounds-note");
+
+  const MIN = 2;
+  const MAX = 4;
+  let options = ["红", "绿"];
+
+  function render() {
+    for (const row of root.querySelectorAll('[data-xh-part="item"]')) row.remove();
+    options.forEach((value, index) => {
+      const row = template.content.firstElementChild.cloneNode(true);
+      const input = row.querySelector("input");
+      input.value = value;
+      input.addEventListener("input", () => {
+        options = options.map((item, i) => (i === index ? input.value : item));
+        host.value = options;
+      });
+      root.insertBefore(row, addTrigger);
+    });
+    // 上下限的判断与组件同一条规则：到底了就是到底了
+    const bounds
+      = (options.length <= MIN ? " · 至少留 2 个" : "")
+      + (options.length >= MAX ? " · 已到上限" : "");
+    note.textContent = `${options.length} / ${MAX}${bounds}`;
+  }
+
+  host.createItem = () => "";
+  host.value = options;
+  host.addEventListener("value-change", (event) => {
+    options = event.detail.value;
+    host.value = options;
+    render();
+  });
+
+  render();
+</script>

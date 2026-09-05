@@ -18,7 +18,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 
 /**
  * `<xh-prompt-input>` —— Light-DOM 行为宿主：跑 prompt-input 机器，把 connect 产出打到作者写的
- * root/input/submit-trigger 三类角色节点上，另有可选的 input-row。input 须是原生 `<textarea>`，
+ * root/input/submit-trigger 三类角色节点上，另有可选的 control。input 须是原生 `<textarea>`，
  * 值经 property 写、禁用走原生 disabled。生成期间发送按钮原位变停止，只换 `data-mode` 与 `aria-label`。
  *
  * @customElement xh-prompt-input
@@ -37,7 +37,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  *   与原生表单提交同名，故不冒泡，请直接在 `<xh-prompt-input>` 元素上监听
  * @fires stop - 生成期间按下停止；无 detail
  * @csspart root - 承载 data-disabled / data-loading 与三视觉轴的容器
- * @csspart input-row - 可选的输入行：写了它，root 翻成竖排，输入框与按钮收进这一行
+ * @csspart control - 可选的输入行：写了它，root 翻成竖排，输入框与按钮收进这一行
  * @csspart input - 输入框，须是原生 `<textarea>`
  * @csspart submit-trigger - 发送 / 停止按钮，留空时皮肤按 data-mode 画上箭头或停止方块
  */
@@ -113,7 +113,7 @@ export class XhPromptInputElement extends XhElement {
         this.spreader.spread(el, props)
     }
     put('root', api.getRootProps() as Record<string, unknown>)
-    put('input-row', api.getInputRowProps() as Record<string, unknown>)
+    put('control', api.getControlProps() as Record<string, unknown>)
     put('input', api.getInputProps() as Record<string, unknown>)
     put('submit-trigger', api.getSubmitTriggerProps() as Record<string, unknown>)
     // value 无需另行回写，spreader 已把它按 property 写入

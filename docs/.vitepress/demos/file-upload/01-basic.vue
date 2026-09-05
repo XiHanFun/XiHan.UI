@@ -5,7 +5,7 @@ import {
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
-  XhFileUploadItemGroup,
+  XhFileUploadList,
   XhFileUploadItemName,
   XhFileUploadItemPreview,
   XhFileUploadItemSizeText,
@@ -27,7 +27,7 @@ import {
         <XhFileUploadTrigger>选择文件</XhFileUploadTrigger>
       </div>
       <XhFileUploadHiddenInput />
-      <XhFileUploadItemGroup>
+      <XhFileUploadList>
         <!-- key 取 File 本身：同名同大小是两份不同的文件，拿文件名当 key 会撞 -->
         <XhFileUploadItem v-for="file in acceptedFiles" :key="file" :file="file">
           <XhFileUploadItemPreview />
@@ -35,7 +35,7 @@ import {
           <XhFileUploadItemSizeText />
           <XhFileUploadItemDeleteTrigger />
         </XhFileUploadItem>
-      </XhFileUploadItemGroup>
+      </XhFileUploadList>
     </XhFileUploadRoot>
   </div>
 </template>

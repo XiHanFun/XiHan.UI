@@ -7,7 +7,7 @@ import {
   XhSignaturePadHiddenInput,
   XhSignaturePadLabel,
   XhSignaturePadRoot,
-  XhSignaturePadSegment,
+  XhSignaturePadPath,
   XhSignaturePadStatus,
 } from "@xihan-ui/vue";
 </script>
@@ -22,7 +22,7 @@ import {
       <XhSignaturePadLabel>验收签名（必填）</XhSignaturePadLabel>
       <XhSignaturePadControl>
         <XhSignaturePadGuide />
-        <XhSignaturePadSegment />
+        <XhSignaturePadPath />
       </XhSignaturePadControl>
       <XhSignaturePadClearTrigger>清空</XhSignaturePadClearTrigger>
       <!-- 画布是一张图，签没签只能从这块活区域听出来；签上与清空都会播报一次 -->

@@ -1,5 +1,0 @@
-export { spaceAnatomy } from './space.anatomy'
-export { connectSpace } from './space.connect'
-export { spaceKeyboard } from './space.keyboard'
-export { spaceMeta } from './space.meta'
-export type { SpaceAlign, SpaceApi, SpaceGap, SpaceJustify, SpaceProps, SpaceTranslations } from './space.types'

@@ -10,7 +10,7 @@
 
 - 命令是主要路径：右键是隐藏入口，新用户找不到。主要动作要有可见的按钮。
 - 触摸端是主要场景：长按有学习成本，且与系统手势冲突。
-- 要选一个值而不是执行命令：用[选择器](./select)或[弹出选择](./popselect)。
+- 要选一个值而不是执行命令：用[选择器](./select)，或把[列表框](./listbox)装进[浮层](./popover)。
 
 ## 特性
 
@@ -240,7 +240,7 @@ XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-context-menu-arrow-size` · `--xh-context-menu-bg` · `--xh-context-menu-border` · `--xh-context-menu-content-gap` · `--xh-context-menu-fg` · `--xh-context-menu-group-gap` · `--xh-context-menu-group-label-fg` · `--xh-context-menu-group-label-font-size` · `--xh-context-menu-group-label-font-weight` · `--xh-context-menu-group-label-px` · `--xh-context-menu-group-label-py` · `--xh-context-menu-icon-size` · `--xh-context-menu-item-active-font-weight` · `--xh-context-menu-item-bg-active` · `--xh-context-menu-item-bg-hover` · `--xh-context-menu-item-fg` · `--xh-context-menu-item-font-size` · `--xh-context-menu-item-gap` · `--xh-context-menu-item-indicator-fg` · `--xh-context-menu-item-indicator-size` · `--xh-context-menu-item-leading` · `--xh-context-menu-item-px` · `--xh-context-menu-item-py` · `--xh-context-menu-item-radius` · `--xh-context-menu-layer` · `--xh-context-menu-max-h` · `--xh-context-menu-max-w` · `--xh-context-menu-min-w` · `--xh-context-menu-px` · `--xh-context-menu-py` · `--xh-context-menu-radius` · `--xh-context-menu-separator-color` · `--xh-context-menu-separator-my` · `--xh-context-menu-separator-thickness` · `--xh-context-menu-shadow` · `--xh-context-menu-trigger-bg-pressing`
+`--xh-context-menu-arrow-size` · `--xh-context-menu-border` · `--xh-context-menu-content-bg` · `--xh-context-menu-content-fg` · `--xh-context-menu-content-gap` · `--xh-context-menu-content-px` · `--xh-context-menu-content-py` · `--xh-context-menu-content-radius` · `--xh-context-menu-content-shadow` · `--xh-context-menu-group-gap` · `--xh-context-menu-group-label-fg` · `--xh-context-menu-group-label-font-size` · `--xh-context-menu-group-label-font-weight` · `--xh-context-menu-group-label-px` · `--xh-context-menu-group-label-py` · `--xh-context-menu-icon-size` · `--xh-context-menu-item-active-font-weight` · `--xh-context-menu-item-bg-active` · `--xh-context-menu-item-bg-hover` · `--xh-context-menu-item-fg` · `--xh-context-menu-item-font-size` · `--xh-context-menu-item-gap` · `--xh-context-menu-item-indicator-fg` · `--xh-context-menu-item-indicator-size` · `--xh-context-menu-item-leading` · `--xh-context-menu-item-px` · `--xh-context-menu-item-py` · `--xh-context-menu-item-radius` · `--xh-context-menu-layer` · `--xh-context-menu-max-h` · `--xh-context-menu-max-w` · `--xh-context-menu-min-w` · `--xh-context-menu-separator-color` · `--xh-context-menu-separator-my` · `--xh-context-menu-separator-thickness` · `--xh-context-menu-trigger-bg-pressing`
 
 ## 动效
 

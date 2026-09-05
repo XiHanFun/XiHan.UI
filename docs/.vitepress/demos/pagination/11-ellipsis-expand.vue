@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import {
   XhPaginationContent,
-  XhPaginationEllipsis,
+  XhPaginationEllipsisTrigger,
   XhPaginationItem,
   XhPaginationNextTrigger,
   XhPaginationPositioner,
@@ -21,7 +21,7 @@ import {
   >
     <XhPaginationPrevTrigger />
     <template v-for="(item, i) in pageItems" :key="`${item.type}-${i}`">
-      <XhPaginationEllipsis v-if="item.type === 'ellipsis'" :side="item.side" />
+      <XhPaginationEllipsisTrigger v-if="item.type === 'ellipsis'" :side="item.side" />
       <XhPaginationItem v-else :value="item.value">{{ item.value }}</XhPaginationItem>
     </template>
     <XhPaginationNextTrigger />

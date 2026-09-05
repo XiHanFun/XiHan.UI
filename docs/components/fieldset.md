@@ -139,7 +139,7 @@ required 落成 data-required，皮肤据此给组标题加星号；星号只是
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-fieldset-error-fg` · `--xh-fieldset-error-font-size` · `--xh-fieldset-gap` · `--xh-fieldset-helper-fg` · `--xh-fieldset-helper-fg-disabled` · `--xh-fieldset-helper-font-size` · `--xh-fieldset-legend-fg` · `--xh-fieldset-legend-fg-disabled` · `--xh-fieldset-legend-fg-invalid` · `--xh-fieldset-legend-font-size` · `--xh-fieldset-legend-font-weight` · `--xh-fieldset-legend-gap` · `--xh-fieldset-legend-star`
+`--xh-fieldset-description-fg` · `--xh-fieldset-description-fg-disabled` · `--xh-fieldset-description-font-size` · `--xh-fieldset-error-fg` · `--xh-fieldset-error-font-size` · `--xh-fieldset-gap` · `--xh-fieldset-legend-fg` · `--xh-fieldset-legend-fg-disabled` · `--xh-fieldset-legend-fg-invalid` · `--xh-fieldset-legend-font-size` · `--xh-fieldset-legend-font-weight` · `--xh-fieldset-legend-gap` · `--xh-fieldset-legend-star`
 
 ## 动效
 

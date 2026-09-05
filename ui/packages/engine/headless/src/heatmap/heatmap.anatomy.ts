@@ -11,7 +11,7 @@ export const heatmapAnatomy = createAnatomy('heatmap', [
   'grid',
   'month-block',
   'row',
-  'week-day-label',
+  'week-day',
   'month-label',
   'row-label',
   'column-label',

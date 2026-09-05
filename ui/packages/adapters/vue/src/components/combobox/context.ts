@@ -1,4 +1,4 @@
-import type { ComboboxItemGroupProps, ComboboxItemProps } from '@xihan-ui/headless'
+import type { ComboboxGroupProps, ComboboxItemProps } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey } from 'vue'
 import type { ComboboxContext } from './use-combobox'
 import { inject, provide } from 'vue'
@@ -10,7 +10,7 @@ export interface ComboboxItemContext {
 
 /** 分组自报的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
 export interface ComboboxItemGroupContext {
-  group: ComputedRef<ComboboxItemGroupProps>
+  group: ComputedRef<ComboboxGroupProps>
 }
 
 const KEY: InjectionKey<ComboboxContext> = Symbol.for('xh-combobox')
@@ -46,6 +46,6 @@ export function provideComboboxItemGroup(ctx: ComboboxItemGroupContext): void {
 export function useComboboxItemGroupContext(): ComboboxItemGroupContext {
   const ctx = inject(GROUP_KEY, null)
   if (!ctx)
-    throw new Error('[xh] Combobox 分组标题必须用在 XhComboboxItemGroup 内')
+    throw new Error('[xh] Combobox 分组标题必须用在 XhComboboxGroup 内')
   return ctx
 }

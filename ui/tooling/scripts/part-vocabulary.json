@@ -2,25 +2,19 @@
   "$description": "部件名（data-part 取值）的真源。parts 段由 check-part-vocabulary.mjs --update 从 127 份 *.anatomy.ts 现算生成。tails 段记尾词裁决：值为 true 是规范词，值为对象且带 synonymOf 的判红，pendingUsers 是收敛前放行的存量。",
   "parts": {
     "action": [
-      "empty-state",
-      "result"
+      "empty-state"
     ],
     "action-trigger": [
       "toast"
     ],
     "add-trigger": [
-      "dynamic-input"
+      "field-array"
     ],
     "approval": [
       "tool-call"
     ],
     "approve-trigger": [
       "approval"
-    ],
-    "area": [
-      "color-picker",
-      "editable",
-      "timer"
     ],
     "area-thumb": [
       "color-picker"
@@ -53,9 +47,6 @@
       "diff-view",
       "floating-panel",
       "table"
-    ],
-    "bone": [
-      "skeleton"
     ],
     "branch": [
       "json-viewer",
@@ -140,7 +131,6 @@
       "date-field",
       "date-picker",
       "file-upload",
-      "popselect",
       "select",
       "signature-pad",
       "tags-input",
@@ -213,7 +203,6 @@
       "pagination",
       "popconfirm",
       "popover",
-      "popselect",
       "reasoning",
       "scroll-area",
       "select",
@@ -239,7 +228,7 @@
       "field",
       "number-field",
       "password-input",
-      "popselect",
+      "prompt-input",
       "rating",
       "select",
       "signature-pad",
@@ -251,15 +240,15 @@
       "timer",
       "tree-select"
     ],
+    "copy-trigger": [
+      "clipboard"
+    ],
     "corner": [
       "scrollbar"
     ],
     "counter": [
       "image-viewer",
       "question-flow"
-    ],
-    "cover": [
-      "card"
     ],
     "crop-area": [
       "image-cropper"
@@ -282,12 +271,15 @@
       "empty-state",
       "field",
       "fieldset",
+      "page-header",
       "popconfirm",
       "popover",
-      "result",
       "steps",
       "timeline",
       "tour"
+    ],
+    "display": [
+      "timer"
     ],
     "drag-trigger": [
       "floating-panel"
@@ -303,7 +295,9 @@
       "editable"
     ],
     "ellipsis": [
-      "breadcrumb",
+      "breadcrumb"
+    ],
+    "ellipsis-trigger": [
       "pagination"
     ],
     "empty": [
@@ -389,16 +383,22 @@
       "calendar"
     ],
     "group": [
+      "approval",
+      "combobox",
       "context-menu",
+      "listbox",
       "menu",
       "menubar",
       "notification",
+      "question-flow",
       "side-nav",
       "toast",
       "toolbar"
     ],
     "group-label": [
+      "combobox",
       "context-menu",
+      "listbox",
       "menu",
       "menubar",
       "side-nav"
@@ -453,10 +453,7 @@
       "select"
     ],
     "icon": [
-      "alert",
-      "empty-state",
-      "reasoning",
-      "result"
+      "reasoning"
     ],
     "image": [
       "avatar",
@@ -469,6 +466,7 @@
     ],
     "indicator": [
       "accordion",
+      "alert",
       "anchor",
       "badge",
       "button",
@@ -478,6 +476,7 @@
       "checkbox-group",
       "clipboard",
       "collapsible",
+      "empty-state",
       "navigation-menu",
       "radio-group",
       "reasoning",
@@ -491,6 +490,9 @@
     "indicator-group": [
       "carousel"
     ],
+    "inline-change": [
+      "diff-view"
+    ],
     "input": [
       "cascader",
       "clipboard",
@@ -503,15 +505,12 @@
       "prompt-input",
       "tags-input",
       "text-field",
-      "time-picker",
       "tool-call"
-    ],
-    "input-row": [
-      "prompt-input"
     ],
     "item": [
       "accordion",
       "anchor",
+      "approval",
       "breadcrumb",
       "carousel",
       "cascader",
@@ -519,7 +518,7 @@
       "combobox",
       "context-menu",
       "descriptions",
-      "dynamic-input",
+      "field-array",
       "file-upload",
       "grid",
       "json-viewer",
@@ -533,12 +532,13 @@
       "navigation-menu",
       "notification",
       "pagination",
-      "popselect",
+      "question-flow",
       "radio-group",
       "rating",
       "segmented",
       "select",
       "side-nav",
+      "skeleton",
       "sortable",
       "steps",
       "tags-input",
@@ -553,7 +553,7 @@
       "virtualizer"
     ],
     "item-action": [
-      "dynamic-input",
+      "field-array",
       "list"
     ],
     "item-action-trigger": [
@@ -567,11 +567,11 @@
       "notification"
     ],
     "item-content": [
-      "dynamic-input",
+      "field-array",
       "list"
     ],
     "item-delete-trigger": [
-      "dynamic-input",
+      "field-array",
       "file-upload",
       "select",
       "tags-input"
@@ -583,24 +583,15 @@
     "item-drag-trigger": [
       "sortable"
     ],
-    "item-group": [
-      "carousel",
-      "combobox",
-      "file-upload",
-      "listbox"
-    ],
-    "item-group-label": [
-      "combobox",
-      "listbox"
-    ],
     "item-indicator": [
+      "approval",
       "cascader",
       "combobox",
       "context-menu",
       "listbox",
       "menubar",
       "notification",
-      "popselect",
+      "question-flow",
       "select",
       "tree",
       "tree-select"
@@ -628,6 +619,7 @@
       "file-upload"
     ],
     "item-text": [
+      "approval",
       "cascader",
       "checkbox-group",
       "combobox",
@@ -635,7 +627,7 @@
       "listbox",
       "mention",
       "menubar",
-      "popselect",
+      "question-flow",
       "radio-group",
       "segmented",
       "select",
@@ -729,6 +721,8 @@
     "list": [
       "anchor",
       "breadcrumb",
+      "carousel",
+      "file-upload",
       "float-button",
       "message-feed",
       "navigation-menu",
@@ -756,14 +750,10 @@
       "qr-code"
     ],
     "mark": [
-      "highlight",
-      "slider"
+      "highlight"
     ],
-    "mark-label": [
-      "slider"
-    ],
-    "marks": [
-      "slider"
+    "media": [
+      "card"
     ],
     "month-block": [
       "heatmap"
@@ -772,10 +762,10 @@
       "heatmap"
     ],
     "move-down-trigger": [
-      "dynamic-input"
+      "field-array"
     ],
     "move-up-trigger": [
-      "dynamic-input"
+      "field-array"
     ],
     "next-trigger": [
       "calendar",
@@ -795,22 +785,10 @@
       "approval",
       "question-flow"
     ],
-    "option": [
-      "question-flow"
-    ],
-    "option-group": [
-      "question-flow"
-    ],
-    "option-indicator": [
-      "question-flow"
-    ],
-    "option-label": [
-      "question-flow"
-    ],
     "output": [
       "tool-call"
     ],
-    "overflow": [
+    "overflow-item": [
       "avatar-group"
     ],
     "page-size-select": [
@@ -831,6 +809,9 @@
     "paragraph": [
       "typography"
     ],
+    "path": [
+      "signature-pad"
+    ],
     "positioner": [
       "cascader",
       "color-picker",
@@ -848,7 +829,6 @@
       "pagination",
       "popconfirm",
       "popover",
-      "popselect",
       "select",
       "side-nav",
       "time-picker",
@@ -867,7 +847,7 @@
       "date-picker",
       "time-picker"
     ],
-    "presets": [
+    "preset-group": [
       "date-picker",
       "time-picker"
     ],
@@ -937,18 +917,16 @@
       "color-picker",
       "combobox",
       "context-menu",
-      "countdown",
       "date-field",
       "date-picker",
       "descriptions",
       "diff-view",
       "download-trigger",
       "drawer",
-      "dynamic-input",
       "editable",
-      "ellipsis",
       "empty-state",
       "field",
+      "field-array",
       "fieldset",
       "file-upload",
       "flex",
@@ -987,7 +965,6 @@
       "password-input",
       "pin-input",
       "popconfirm",
-      "popselect",
       "progress",
       "prompt-input",
       "qr-code",
@@ -996,7 +973,6 @@
       "rating",
       "reasoning",
       "resizable",
-      "result",
       "scroll-area",
       "scrollbar",
       "segmented",
@@ -1007,7 +983,6 @@
       "skeleton",
       "slider",
       "sortable",
-      "space",
       "spinner",
       "splitter",
       "statistic",
@@ -1018,11 +993,11 @@
       "tag",
       "tags-input",
       "text-field",
-      "time",
       "time-field",
       "time-picker",
       "timeline",
       "timer",
+      "timestamp",
       "toast",
       "toggle",
       "toggle-group",
@@ -1032,6 +1007,7 @@
       "transfer",
       "tree",
       "tree-select",
+      "truncate",
       "typography",
       "virtualizer",
       "watermark"
@@ -1056,19 +1032,10 @@
     "row-select-trigger": [
       "table"
     ],
-    "scope-group": [
-      "approval"
+    "saturation-area": [
+      "color-picker"
     ],
-    "scope-indicator": [
-      "approval"
-    ],
-    "scope-item": [
-      "approval"
-    ],
-    "scope-label": [
-      "approval"
-    ],
-    "scroll-button": [
+    "scroll-to-end-trigger": [
       "log",
       "message-feed"
     ],
@@ -1086,9 +1053,8 @@
     ],
     "segment": [
       "date-field",
-      "diff-view",
-      "signature-pad",
-      "time-field"
+      "time-field",
+      "time-picker"
     ],
     "segment-group": [
       "date-field",
@@ -1131,16 +1097,13 @@
       "transfer"
     ],
     "split": [
-      "space"
+      "flex"
     ],
     "spotlight": [
       "tour"
     ],
     "stage-trigger": [
       "floating-panel"
-    ],
-    "stat": [
-      "diff-view"
     ],
     "status": [
       "signature-pad",
@@ -1152,14 +1115,12 @@
       "prompt-input",
       "question-flow"
     ],
-    "subtitle": [
-      "page-header"
-    ],
     "suffix": [
       "button",
       "statistic"
     ],
     "summary": [
+      "diff-view",
       "tool-call"
     ],
     "swatch": [
@@ -1191,6 +1152,15 @@
       "slider",
       "switch"
     ],
+    "tick": [
+      "slider"
+    ],
+    "tick-group": [
+      "slider"
+    ],
+    "tick-label": [
+      "slider"
+    ],
     "time": [
       "timeline"
     ],
@@ -1214,7 +1184,6 @@
       "page-header",
       "popconfirm",
       "popover",
-      "result",
       "steps",
       "timeline",
       "toast",
@@ -1252,7 +1221,6 @@
       "accordion",
       "back-top",
       "cascader",
-      "clipboard",
       "collapsible",
       "color-picker",
       "combobox",
@@ -1270,7 +1238,6 @@
       "navigation-menu",
       "popconfirm",
       "popover",
-      "popselect",
       "reasoning",
       "select",
       "steps",
@@ -1309,9 +1276,7 @@
       "password-input"
     ],
     "week-day": [
-      "calendar"
-    ],
-    "week-day-label": [
+      "calendar",
       "heatmap"
     ],
     "week-number": [
@@ -1335,19 +1300,17 @@
     "backdrop": true,
     "block": true,
     "body": true,
-    "bone": true,
     "branch": true,
     "button": {
       "synonymOf": "trigger",
       "$description": "规范 §17.4：能点的东西一律用具名 *-trigger",
-      "pendingUsers": [
-        "scroll-button"
-      ]
+      "pendingUsers": []
     },
     "calendar": true,
     "canvas": true,
     "caption": true,
     "cell": true,
+    "change": true,
     "checkbox": true,
     "code": true,
     "column": true,
@@ -1357,9 +1320,9 @@
     "corner": true,
     "count": true,
     "counter": true,
-    "cover": true,
     "day": true,
     "description": true,
+    "display": true,
     "dropzone": true,
     "duration": true,
     "ellipsis": true,
@@ -1392,21 +1355,18 @@
     "loading": true,
     "logo": true,
     "mark": true,
-    "marks": true,
     "media": true,
     "name": true,
     "note": true,
     "number": true,
-    "option": true,
     "output": true,
-    "overflow": true,
     "panel": true,
     "paragraph": true,
+    "path": true,
     "positioner": true,
     "pre": true,
     "prefix": true,
     "preset": true,
-    "presets": true,
     "preview": true,
     "prompt": true,
     "question": true,
@@ -1425,15 +1385,14 @@
     "slider": true,
     "split": true,
     "spotlight": true,
-    "stat": true,
     "status": true,
-    "subtitle": true,
     "suffix": true,
     "summary": true,
     "swatch": true,
     "tag": true,
     "text": true,
     "thumb": true,
+    "tick": true,
     "time": true,
     "timer": true,
     "title": true,
@@ -1447,5 +1406,28 @@
     "value": true,
     "viewport": true
   },
-  "retired": {}
+  "retired": {
+    "area": "→ control（editable）/ saturation-area（color-picker）/ display（timer）",
+    "bone": "→ item",
+    "cover": "→ media",
+    "input-row": "→ control",
+    "item-group": "→ group（combobox / listbox）/ list（carousel / file-upload）",
+    "item-group-label": "→ group-label",
+    "mark-label": "→ tick-label",
+    "marks": "→ tick-group",
+    "option": "→ item",
+    "option-group": "→ group",
+    "option-indicator": "→ item-indicator",
+    "option-label": "→ item-text",
+    "overflow": "→ overflow-item",
+    "presets": "→ preset-group",
+    "scope-group": "→ group",
+    "scope-indicator": "→ item-indicator",
+    "scope-item": "→ item",
+    "scope-label": "→ item-text",
+    "scroll-button": "→ scroll-to-end-trigger",
+    "stat": "→ summary",
+    "subtitle": "→ description",
+    "week-day-label": "→ week-day"
+  }
 }

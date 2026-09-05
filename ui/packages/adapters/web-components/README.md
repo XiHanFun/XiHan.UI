@@ -22,7 +22,7 @@ Web Components 适配器：把框架无关的 headless（anatomy + machine + con
 - **Presence 模型不同（已知差异，非缺陷）**：Vue 用 Presence 卸载 content（关闭即从 DOM 移除）；
   WC 是 Light DOM，不能删用户节点，content **常驻**，关闭态只由 `data-state="closed"` 标记，
   视觉隐藏交给 styles 层的 `[data-state='closed']{display:none}`。因此两端关闭态 DOM 不同
-  （Vue 无 content 节点，WC 有 content[data-state=closed]）。逐帧 parity 覆盖 101 个套件，
+  （Vue 无 content 节点，WC 有 content[data-state=closed]）。逐帧 parity 覆盖 97 个套件，
   收不进来的 26 个逐条登记在 `tooling/testing/runners/parity.spec.ts` 的 `EXCLUDED` 里并各带理由；
   dialog 在这 26 个里，理由就是这条 presence 模型差异——它属永久性差异，跨适配器保证由两端
   各自跑同一份 dialog conformance 规格提供。

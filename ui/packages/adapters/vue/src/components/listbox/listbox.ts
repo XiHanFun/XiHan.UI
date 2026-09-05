@@ -1,4 +1,4 @@
-import type { ListboxApi, ListboxItemGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
+import type { ListboxApi, ListboxGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
 import type { Direction, Orientation } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -92,25 +92,25 @@ export const XhListboxContent = defineComponent({
   },
 })
 
-export const XhListboxItemGroup = defineComponent({
-  name: 'XhListboxItemGroup',
+export const XhListboxGroup = defineComponent({
+  name: 'XhListboxGroup',
   props: {
     value: { type: String, required: true },
   },
   setup(props, { slots }) {
     const ctx = useListboxContext()
-    const group = computed<ListboxItemGroupProps>(() => ({ value: props.value }))
+    const group = computed<ListboxGroupProps>(() => ({ value: props.value }))
     provideListboxItemGroup({ group })
-    return () => h('div', ctx.api.value.getItemGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupProps(group.value) as Record<string, unknown>, slots.default?.())
   },
 })
 
-export const XhListboxItemGroupLabel = defineComponent({
-  name: 'XhListboxItemGroupLabel',
+export const XhListboxGroupLabel = defineComponent({
+  name: 'XhListboxGroupLabel',
   setup(_, { slots }) {
     const ctx = useListboxContext()
     const { group } = useListboxItemGroupContext()
-    return () => h('span', ctx.api.value.getItemGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
   },
 })
 

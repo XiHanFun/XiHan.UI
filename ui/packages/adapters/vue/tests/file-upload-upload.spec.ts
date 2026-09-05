@@ -3,7 +3,7 @@
 import type { FileUploadFile, FileUploadRemoteFile, FileUploadRequest, FileUploadResult, FileUploadSnapshot } from '@xihan-ui/headless'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
-import { XhFileUploadItem, XhFileUploadItemGroup, XhFileUploadItemName, XhFileUploadRoot } from '../src'
+import { XhFileUploadItem, XhFileUploadItemName, XhFileUploadList, XhFileUploadRoot } from '../src'
 
 interface UploadScope {
   acceptedFiles: File[]
@@ -61,7 +61,7 @@ function mountUpload(opts: MountOptions = {}): { scope: () => UploadScope } {
         default: (scope: UploadScope) => {
           captured = scope
           return [
-            h(XhFileUploadItemGroup, null, () => scope.allFiles.map((file, i) =>
+            h(XhFileUploadList, null, () => scope.allFiles.map((file, i) =>
               h(XhFileUploadItem, { key: i, file }, () => [h(XhFileUploadItemName)]))),
           ]
         },

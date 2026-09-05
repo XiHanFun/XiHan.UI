@@ -16,7 +16,7 @@ export interface CardProps {
 
 export interface CardApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
-  getCoverProps: () => T['element']
+  getMediaProps: () => T['element']
   getHeaderProps: () => T['element']
   getTitleProps: () => T['element']
   getDescriptionProps: () => T['element']

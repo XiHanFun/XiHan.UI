@@ -15,7 +15,7 @@ export const logKeyboard: KeyboardTable = {
       does: '日志区自身可聚焦，方向键/PageUp/PageDown/Home/End 交给浏览器滚动，组件不接管',
     },
     {
-      id: 'log.kbd.scroll-button',
+      id: 'log.kbd.scroll-to-end-trigger',
       keys: ['Space', 'Enter'],
       when: '焦点在"回到底部"按钮上',
       does: '滚回底部并重新粘附',

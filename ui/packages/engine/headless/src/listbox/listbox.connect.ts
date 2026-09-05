@@ -49,7 +49,7 @@ export function connectListbox<T extends PropTypes>(
     'data-highlighted': dataAttr(focusedValue === item.value),
   })
 
-  const groupLabelId = (group: string): string => scope.partId(listboxAnatomy.name, `item-group-label:${group}`)
+  const groupLabelId = (group: string): string => scope.partId(listboxAnatomy.name, `group-label:${group}`)
 
   /** 按文档序现读条目集合；仅在事件回调中调用。 */
   const items = (content: HTMLElement): HTMLElement[] => queryItems(content, listboxItemQuery)
@@ -233,16 +233,16 @@ export function connectListbox<T extends PropTypes>(
       },
     }),
 
-    getItemGroupProps: group => normalize.element({
-      ...parts['item-group'].attrs,
+    getGroupProps: group => normalize.element({
+      ...parts.group.attrs,
       'role': 'group',
       // 分组标题经 aria-labelledby 关联
       'aria-labelledby': groupLabelId(group.value),
       'data-disabled': dataAttr(listDisabled),
     }),
 
-    getItemGroupLabelProps: group => normalize.element({
-      ...parts['item-group-label'].attrs,
+    getGroupLabelProps: group => normalize.element({
+      ...parts['group-label'].attrs,
       'id': groupLabelId(group.value),
       'data-disabled': dataAttr(listDisabled),
     }),

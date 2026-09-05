@@ -35,42 +35,7 @@ outline-width: 3px
 outline-offset: 0px
 outline-color: oklch(0.145 0.005 258)
 
-[item]
-padding-top: 6px
-padding-right: 12px
-padding-bottom: 6px
-padding-left: 12px
-row-gap: 8px
-column-gap: 8px
-border-top-left-radius: 6px
-border-top-right-radius: 6px
-border-bottom-right-radius: 6px
-border-bottom-left-radius: 6px
-border-top-width: 0px
-border-right-width: 0px
-border-bottom-width: 0px
-border-left-width: 0px
-border-top-color: oklch(0.145 0.005 258)
-border-right-color: oklch(0.145 0.005 258)
-border-bottom-color: oklch(0.145 0.005 258)
-border-left-color: oklch(0.145 0.005 258)
-min-height: auto
-font-size: 14px
-line-height: 21px
-font-weight: 400
-color: oklch(0.145 0.005 258)
-background-color: rgba(0, 0, 0, 0)
-transition-property: background, color
-transition-duration: 0.12s, 0.12s
-transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1)
-animation-name: none
-animation-duration: 0s
-animation-timing-function: ease
-outline-width: 3px
-outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
-
-[item-group]
+[group]
 padding-top: 0px
 padding-right: 0px
 padding-bottom: 0px
@@ -105,7 +70,7 @@ outline-width: 3px
 outline-offset: 0px
 outline-color: oklch(0.145 0.005 258)
 
-[item-group-label]
+[group-label]
 padding-top: 4px
 padding-right: 12px
 padding-bottom: 4px
@@ -139,6 +104,41 @@ animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
 outline-color: oklch(0.52 0.006 258)
+
+[item]
+padding-top: 6px
+padding-right: 12px
+padding-bottom: 6px
+padding-left: 12px
+row-gap: 8px
+column-gap: 8px
+border-top-left-radius: 6px
+border-top-right-radius: 6px
+border-bottom-right-radius: 6px
+border-bottom-left-radius: 6px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.145 0.005 258)
+border-right-color: oklch(0.145 0.005 258)
+border-bottom-color: oklch(0.145 0.005 258)
+border-left-color: oklch(0.145 0.005 258)
+min-height: auto
+font-size: 14px
+line-height: 21px
+font-weight: 400
+color: oklch(0.145 0.005 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: background, color
+transition-duration: 0.12s, 0.12s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1)
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.145 0.005 258)
 
 [item-indicator]
 padding-top: 0px

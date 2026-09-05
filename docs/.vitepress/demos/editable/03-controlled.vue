@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-  XhEditableArea,
+  XhEditableControl,
   XhEditableInput,
   XhEditableLabel,
   XhEditablePreview,
@@ -16,10 +16,10 @@ const editing = ref(false);
 <template>
   <XhEditableRoot v-model:value="signature" v-model:edit="editing" placeholder="未填写">
     <XhEditableLabel>签名</XhEditableLabel>
-    <XhEditableArea>
+    <XhEditableControl>
       <XhEditablePreview />
       <XhEditableInput />
-    </XhEditableArea>
+    </XhEditableControl>
   </XhEditableRoot>
   <span>当前：{{ signature || "（空）" }} · {{ editing ? "编辑中" : "预览中" }}</span>
   <button type="button" @click="editing = true">从外部进编辑态</button>

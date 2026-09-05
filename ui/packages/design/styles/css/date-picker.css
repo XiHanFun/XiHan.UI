@@ -364,7 +364,7 @@
 
   /* 快捷选项列摆在日历的行内起始一侧，同样只在它真在场时才横过来。
      与上一条同理：不加 :not([hidden])，退场那几帧塌回 block 会让两块竖着堆一下 */
-  [data-scope='date-picker'][data-part='content']:has(> [data-part='presets']) {
+  [data-scope='date-picker'][data-part='content']:has(> [data-part='preset-group']) {
     display: flex;
     align-items: stretch;
   }
@@ -377,7 +377,7 @@
   }
 
   /* 快捷选项列与它旁边那张日历之间留出同样的空当，两道分隔线左右对称 */
-  [data-scope='date-picker'][data-part='presets'] + [data-scope='date-picker'][data-part='calendar'] {
+  [data-scope='date-picker'][data-part='preset-group'] + [data-scope='date-picker'][data-part='calendar'] {
     padding-inline-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
   }
 
@@ -394,21 +394,21 @@
   }
 
   /* —— 快捷选项：一列按钮式条目，贴在日历的行内起始一侧 —— */
-  [data-scope='date-picker'][data-part='presets'] {
+  [data-scope='date-picker'][data-part='preset-group'] {
     display: flex;
     flex: none;
     /* 这一列的高度由并排的日历给：不写就按内容收，右侧那道分隔线只画到最后一条选项 */
     align-self: stretch;
     flex-direction: column;
-    gap: var(--xh-date-picker-presets-gap, var(--xh-list-option-gap));
+    gap: var(--xh-date-picker-preset-group-gap, var(--xh-list-option-gap));
     /* 选项多起来时这一列自己滚，不把整张面板撑高 */
-    max-block-size: var(--xh-date-picker-presets-h, var(--xh-viewport-h-lg));
-    padding: var(--xh-date-picker-presets-padding, var(--xh-space-1));
+    max-block-size: var(--xh-date-picker-preset-group-h, var(--xh-viewport-h-lg));
+    padding: var(--xh-date-picker-preset-group-padding, var(--xh-space-1));
     overflow-y: auto;
     border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-border-subtle));
   }
 
-  [data-scope='date-picker'][data-part='presets'][hidden] {
+  [data-scope='date-picker'][data-part='preset-group'][hidden] {
     display: none;
   }
 
@@ -429,7 +429,7 @@
   }
 
   [data-scope='date-picker'][data-part='preset']:focus-visible,
-  [data-scope='date-picker'][data-part='presets']:focus-visible {
+  [data-scope='date-picker'][data-part='preset-group']:focus-visible {
     --xh-_ring-offset: var(--xh-_ring-inset);
   }
 

@@ -5,6 +5,6 @@ export const clipboardAnatomy = createAnatomy('clipboard', [
   'label',
   'control',
   'input',
-  'trigger',
+  'copy-trigger',
   'indicator',
 ])

@@ -25,12 +25,6 @@ import {
   XhMenuPositioner,
   XhMenuRoot,
   XhMenuTrigger,
-  XhPopselectContent,
-  XhPopselectItem,
-  XhPopselectItemText,
-  XhPopselectPositioner,
-  XhPopselectRoot,
-  XhPopselectTrigger,
   XhSelectContent,
   XhSelectItem,
   XhSelectItemText,
@@ -380,64 +374,6 @@ describe('hover 跟随高亮', () => {
     pointer(a, 'pointerleave')
     await tick()
     expect(a.hasAttribute('data-highlighted')).toBe(false)
-  })
-
-  it('popselect：指针落到条目之间的间隙上，高亮与焦点都不掉', async () => {
-    mount(() => h(XhPopselectRoot, {
-      collection: [
-        { value: 'a', label: '甲' },
-        { value: 'b', label: '乙' },
-      ],
-      defaultOpen: true,
-    }, () => [
-      h(XhPopselectTrigger, () => '挑一个'),
-      h(XhPopselectPositioner, null, () => [
-        h(XhPopselectContent, null, () => [
-          h(XhPopselectItem, { value: 'a' }, () => [h(XhPopselectItemText, () => '甲')]),
-          h(XhPopselectItem, { value: 'b' }, () => [h(XhPopselectItemText, () => '乙')]),
-        ]),
-      ]),
-    ]))
-    await tick()
-
-    const a = el('[data-scope="popselect"][data-part="item"][data-value="a"]')
-    const content = el('[data-scope="popselect"][data-part="content"]')
-    pointer(a, 'pointermove')
-    await tick()
-    expect(document.activeElement).toBe(a)
-
-    pointer(a, 'pointerleave', content)
-    await tick()
-    expect(a.hasAttribute('data-highlighted')).toBe(true)
-    expect(document.activeElement).toBe(a)
-  })
-
-  it('popselect：指针真的移出浮层仍收掉高亮、焦点还给 content', async () => {
-    mount(() => h(XhPopselectRoot, {
-      collection: [
-        { value: 'a', label: '甲' },
-        { value: 'b', label: '乙' },
-      ],
-      defaultOpen: true,
-    }, () => [
-      h(XhPopselectTrigger, () => '挑一个'),
-      h(XhPopselectPositioner, null, () => [
-        h(XhPopselectContent, null, () => [
-          h(XhPopselectItem, { value: 'a' }, () => [h(XhPopselectItemText, () => '甲')]),
-          h(XhPopselectItem, { value: 'b' }, () => [h(XhPopselectItemText, () => '乙')]),
-        ]),
-      ]),
-    ]))
-    await tick()
-
-    const a = el('[data-scope="popselect"][data-part="item"][data-value="a"]')
-    const content = el('[data-scope="popselect"][data-part="content"]')
-    pointer(a, 'pointermove')
-    await tick()
-    pointer(a, 'pointerleave')
-    await tick()
-    expect(a.hasAttribute('data-highlighted')).toBe(false)
-    expect(document.activeElement).toBe(content)
   })
 
   it('行内 listbox：hover 不动机器高亮，键盘锚点不受指针影响', async () => {

@@ -5,12 +5,12 @@ import {
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
-  XhTimePickerInput,
+  XhTimePickerSegment,
   XhTimePickerSegmentGroup,
   XhTimePickerItem,
   XhTimePickerLabel,
   XhTimePickerPositioner,
-  XhTimePickerPresets,
+  XhTimePickerPresetGroup,
   XhTimePickerRoot,
 } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
@@ -31,15 +31,15 @@ const presets = computed(() => [
     <XhTimePickerLabel>提交时刻</XhTimePickerLabel>
     <XhTimePickerControl>
       <XhTimePickerSegmentGroup>
-        <XhTimePickerInput segment="hour" />
+        <XhTimePickerSegment segment="hour" />
         <span>:</span>
-        <XhTimePickerInput segment="minute" />
+        <XhTimePickerSegment segment="minute" />
       </XhTimePickerSegmentGroup>
     </XhTimePickerControl>
     <XhTimePickerPositioner>
       <XhTimePickerContent>
         <!-- 不写默认插槽就按 presets 数据自动铺；这一列自己吃方向键，不与时分那两列抢 -->
-        <XhTimePickerPresets />
+        <XhTimePickerPresetGroup />
         <XhTimePickerColumn v-slot="{ options }" unit="hour">
           <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>

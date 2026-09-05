@@ -26,7 +26,6 @@ import type { CollapsibleTranslations } from '../collapsible/collapsible.types'
 import type { ColorPickerTranslations } from '../color-picker/color-picker.types'
 import type { ComboboxTranslations } from '../combobox/combobox.types'
 import type { ContextMenuTranslations } from '../context-menu/context-menu.types'
-import type { CountdownTranslations } from '../countdown/countdown.types'
 import type { DateFieldTranslations } from '../date-field/date-field.types'
 import type { DatePickerTranslations } from '../date-picker/date-picker.types'
 import type { DescriptionsTranslations } from '../descriptions/descriptions.types'
@@ -34,10 +33,9 @@ import type { DialogTranslations } from '../dialog/dialog.types'
 import type { DiffViewTranslations } from '../diff-view/diff-view.types'
 import type { DownloadTriggerTranslations } from '../download-trigger/download-trigger.types'
 import type { DrawerTranslations } from '../drawer/drawer.types'
-import type { DynamicInputTranslations } from '../dynamic-input/dynamic-input.types'
 import type { EditableTranslations } from '../editable/editable.types'
-import type { EllipsisTranslations } from '../ellipsis/ellipsis.types'
 import type { EmptyStateTranslations } from '../empty-state/empty-state.types'
+import type { FieldArrayTranslations } from '../field-array/field-array.types'
 import type { FieldTranslations } from '../field/field.types'
 import type { FieldsetTranslations } from '../fieldset/fieldset.types'
 import type { FileUploadTranslations } from '../file-upload/file-upload.types'
@@ -80,7 +78,6 @@ import type { PasswordInputTranslations } from '../password-input/password-input
 import type { PinInputTranslations } from '../pin-input/pin-input.types'
 import type { PopconfirmTranslations } from '../popconfirm/popconfirm.types'
 import type { PopoverTranslations } from '../popover/popover.types'
-import type { PopselectTranslations } from '../popselect/popselect.types'
 import type { ProgressTranslations } from '../progress/progress.types'
 import type { PromptInputTranslations } from '../prompt-input/prompt-input.types'
 import type { QrCodeTranslations } from '../qr-code/qr-code.types'
@@ -89,7 +86,6 @@ import type { RadioGroupTranslations } from '../radio-group/radio-group.types'
 import type { RatingTranslations } from '../rating/rating.types'
 import type { ReasoningTranslations } from '../reasoning/reasoning.types'
 import type { ResizableTranslations } from '../resizable/resizable.types'
-import type { ResultTranslations } from '../result/result.types'
 import type { ScrollAreaTranslations } from '../scroll-area/scroll-area.types'
 import type { ScrollbarTranslations } from '../scrollbar/scrollbar.types'
 import type { SegmentedTranslations } from '../segmented/segmented.types'
@@ -100,7 +96,6 @@ import type { SignaturePadTranslations } from '../signature-pad/signature-pad.ty
 import type { SkeletonTranslations } from '../skeleton/skeleton.types'
 import type { SliderTranslations } from '../slider/slider.types'
 import type { SortableTranslations } from '../sortable/sortable.types'
-import type { SpaceTranslations } from '../space/space.types'
 import type { SpinnerTranslations } from '../spinner/spinner.types'
 import type { SplitterTranslations } from '../splitter/splitter.types'
 import type { StatisticTranslations } from '../statistic/statistic.types'
@@ -113,9 +108,9 @@ import type { TagsInputTranslations } from '../tags-input/tags-input.types'
 import type { TextFieldTranslations } from '../text-field/text-field.types'
 import type { TimeFieldTranslations } from '../time-field/time-field.types'
 import type { TimePickerTranslations } from '../time-picker/time-picker.types'
-import type { TimeTranslations } from '../time/time.types'
 import type { TimelineTranslations } from '../timeline/timeline.types'
 import type { TimerTranslations } from '../timer/timer.types'
+import type { TimestampTranslations } from '../timestamp/timestamp.types'
 import type { ToastTranslations } from '../toast/toast.types'
 import type { ToggleGroupTranslations } from '../toggle-group/toggle-group.types'
 import type { ToggleTranslations } from '../toggle/toggle.types'
@@ -126,6 +121,7 @@ import type { TourTranslations } from '../tour/tour.types'
 import type { TransferTranslations } from '../transfer/transfer.types'
 import type { TreeSelectTranslations } from '../tree-select/tree-select.types'
 import type { TreeTranslations } from '../tree/tree.types'
+import type { TruncateTranslations } from '../truncate/truncate.types'
 import type { TypographyTranslations } from '../typography/typography.types'
 import type { VirtualizerTranslations } from '../virtualizer/virtualizer.types'
 import type { WatermarkTranslations } from '../watermark/watermark.types'
@@ -156,7 +152,6 @@ export interface XhTranslationOverrides {
   'color-picker'?: Partial<ColorPickerTranslations>
   'combobox'?: Partial<ComboboxTranslations>
   'context-menu'?: Partial<ContextMenuTranslations>
-  'countdown'?: Partial<CountdownTranslations>
   'date-field'?: Partial<DateFieldTranslations>
   'date-picker'?: Partial<DatePickerTranslations>
   'descriptions'?: Partial<DescriptionsTranslations>
@@ -164,11 +159,10 @@ export interface XhTranslationOverrides {
   'diff-view'?: Partial<DiffViewTranslations>
   'download-trigger'?: Partial<DownloadTriggerTranslations>
   'drawer'?: Partial<DrawerTranslations>
-  'dynamic-input'?: Partial<DynamicInputTranslations>
   'editable'?: Partial<EditableTranslations>
-  'ellipsis'?: Partial<EllipsisTranslations>
   'empty-state'?: Partial<EmptyStateTranslations>
   'field'?: Partial<FieldTranslations>
+  'field-array'?: Partial<FieldArrayTranslations>
   'fieldset'?: Partial<FieldsetTranslations>
   'file-upload'?: Partial<FileUploadTranslations>
   'flex'?: Partial<FlexTranslations>
@@ -209,7 +203,6 @@ export interface XhTranslationOverrides {
   'pin-input'?: Partial<PinInputTranslations>
   'popconfirm'?: Partial<PopconfirmTranslations>
   'popover'?: Partial<PopoverTranslations>
-  'popselect'?: Partial<PopselectTranslations>
   'progress'?: Partial<ProgressTranslations>
   'prompt-input'?: Partial<PromptInputTranslations>
   'qr-code'?: Partial<QrCodeTranslations>
@@ -218,7 +211,6 @@ export interface XhTranslationOverrides {
   'rating'?: Partial<RatingTranslations>
   'reasoning'?: Partial<ReasoningTranslations>
   'resizable'?: Partial<ResizableTranslations>
-  'result'?: Partial<ResultTranslations>
   'scroll-area'?: Partial<ScrollAreaTranslations>
   'scrollbar'?: Partial<ScrollbarTranslations>
   'segmented'?: Partial<SegmentedTranslations>
@@ -228,7 +220,6 @@ export interface XhTranslationOverrides {
   'signature-pad'?: Partial<SignaturePadTranslations>
   'skeleton'?: Partial<SkeletonTranslations>
   'slider'?: Partial<SliderTranslations>
-  'space'?: Partial<SpaceTranslations>
   'spinner'?: Partial<SpinnerTranslations>
   'sortable'?: Partial<SortableTranslations>
   'splitter'?: Partial<SplitterTranslations>
@@ -240,11 +231,11 @@ export interface XhTranslationOverrides {
   'tag'?: Partial<TagTranslations>
   'tags-input'?: Partial<TagsInputTranslations>
   'text-field'?: Partial<TextFieldTranslations>
-  'time'?: Partial<TimeTranslations>
   'time-field'?: Partial<TimeFieldTranslations>
   'time-picker'?: Partial<TimePickerTranslations>
   'timeline'?: Partial<TimelineTranslations>
   'timer'?: Partial<TimerTranslations>
+  'timestamp'?: Partial<TimestampTranslations>
   'toast'?: Partial<ToastTranslations>
   'notification'?: Partial<NotificationTranslations>
   'toggle'?: Partial<ToggleTranslations>
@@ -256,6 +247,7 @@ export interface XhTranslationOverrides {
   'transfer'?: Partial<TransferTranslations>
   'tree'?: Partial<TreeTranslations>
   'tree-select'?: Partial<TreeSelectTranslations>
+  'truncate'?: Partial<TruncateTranslations>
   'typography'?: Partial<TypographyTranslations>
   'virtualizer'?: Partial<VirtualizerTranslations>
   'watermark'?: Partial<WatermarkTranslations>

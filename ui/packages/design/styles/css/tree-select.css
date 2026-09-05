@@ -458,14 +458,14 @@
   [data-scope='tree-select'][data-part='branch-control'] {
     display: flex;
     align-items: center;
-    gap: var(--xh-tree-select-row-gap, var(--xh-_tree-select-gap));
-    padding-block: var(--xh-tree-select-row-py, var(--xh-_tree-select-row-py));
-    padding-inline: var(--xh-tree-select-row-px, var(--xh-_tree-select-row-px));
-    border-radius: var(--xh-tree-select-row-radius, var(--xh-shape-control));
-    color: var(--xh-tree-select-row-fg, var(--xh-fg-default));
-    font-size: var(--xh-tree-select-row-font-size, var(--xh-_tree-select-font-size));
+    gap: var(--xh-tree-select-item-gap, var(--xh-_tree-select-gap));
+    padding-block: var(--xh-tree-select-item-py, var(--xh-_tree-select-row-py));
+    padding-inline: var(--xh-tree-select-item-px, var(--xh-_tree-select-row-px));
+    border-radius: var(--xh-tree-select-item-radius, var(--xh-shape-control));
+    color: var(--xh-tree-select-item-fg, var(--xh-fg-default));
+    font-size: var(--xh-tree-select-item-font-size, var(--xh-_tree-select-font-size));
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
-    line-height: var(--xh-tree-select-row-leading, var(--xh-leading-normal));
+    line-height: var(--xh-tree-select-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
@@ -483,9 +483,9 @@
       :has(> [data-scope='tree-select'][data-part='item-indicator'])
     ) {
     padding-inline-start: calc(
-      var(--xh-tree-select-row-px, var(--xh-_tree-select-row-px)) +
+      var(--xh-tree-select-item-px, var(--xh-_tree-select-row-px)) +
         var(--xh-tree-select-item-indicator-size, var(--xh-control-indicator-size)) +
-        var(--xh-tree-select-row-gap, var(--xh-_tree-select-gap))
+        var(--xh-tree-select-item-gap, var(--xh-_tree-select-gap))
     );
   }
 
@@ -498,15 +498,15 @@
      与选中互相独立，键盘落焦另有聚焦环标记位置 */
   [data-scope='tree-select'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]),
   [data-scope='tree-select'][data-part='branch-control']:not([data-disabled]):is(:hover, [data-highlighted]) {
-    background: var(--xh-tree-select-row-bg-hover, var(--xh-bg-subtle));
+    background: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
   }
 
   /* 选中只换文字色与字重，配合行首那格 ✓ 标记；底色整条通道留给高亮，
      两者因此能同时看见 */
   [data-scope='tree-select'][data-part='item'][data-selected],
   [data-scope='tree-select'][data-part='branch-control'][data-selected] {
-    color: var(--xh-tree-select-row-fg-selected, var(--xh-_tree-select-selected-fg));
-    font-weight: var(--xh-tree-select-row-selected-font-weight, var(--xh-font-weight-medium));
+    color: var(--xh-tree-select-item-fg-selected, var(--xh-_tree-select-selected-fg));
+    font-weight: var(--xh-tree-select-item-selected-font-weight, var(--xh-font-weight-medium));
   }
 
   /* 叶子自己就是 treeitem，环往内收：行是撑满宽度的，画在外沿会被容器裁掉 */

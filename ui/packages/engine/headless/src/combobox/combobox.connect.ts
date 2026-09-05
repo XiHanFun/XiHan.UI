@@ -92,7 +92,7 @@ export function connectCombobox<T extends PropTypes>(
 
   /** 条目 id。aria-activedescendant 只认单个 IDREF，值里带空格会把它劈成两截，所以先编码再拼。 */
   const itemId = (v: string): string => scope.partId(comboboxAnatomy.name, `item:${encodeURIComponent(v)}`)
-  const groupLabelId = (group: string): string => scope.partId(comboboxAnatomy.name, `item-group-label:${group}`)
+  const groupLabelId = (group: string): string => scope.partId(comboboxAnatomy.name, `group-label:${group}`)
 
   /** 候选禁用：部件上写的优先，没写就回 collection 里查。 */
   const itemDisabled = (item: ComboboxItemProps): boolean =>
@@ -418,15 +418,15 @@ export function connectCombobox<T extends PropTypes>(
       },
     }),
 
-    getItemGroupProps: group => normalize.element({
-      ...parts['item-group'].attrs,
+    getGroupProps: group => normalize.element({
+      ...parts.group.attrs,
       'role': 'group',
       // 分组标题不是候选，只能靠 aria-labelledby 挂上来
       'aria-labelledby': groupLabelId(group.value),
     }),
 
-    getItemGroupLabelProps: group => normalize.element({
-      ...parts['item-group-label'].attrs,
+    getGroupLabelProps: group => normalize.element({
+      ...parts['group-label'].attrs,
       id: groupLabelId(group.value),
     }),
 

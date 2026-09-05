@@ -5,14 +5,14 @@
     <div data-xh-part="dropzone">拖进来或点击选择，收下即开传</div>
     <button data-xh-part="trigger">选择文件</button>
     <input data-xh-part="hidden-input" />
-    <div data-xh-part="item-group"></div>
+    <div data-xh-part="list"></div>
   </div>
 </xh-file-upload>
 <p>试试选一个文件名带「坏」字的文件，看失败与重试。</p>
 
 <script type="module">
   const upload = document.getElementById("file-upload-manual");
-  const group = upload.querySelector('[data-xh-part="item-group"]');
+  const group = upload.querySelector('[data-xh-part="list"]');
 
   // 每份文件的传输快照：进度由 upload 实现一路汇报，成败由元素的两个事件给
   const snapshots = new Map();

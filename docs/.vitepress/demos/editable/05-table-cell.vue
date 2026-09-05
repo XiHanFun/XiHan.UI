@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import {
-  XhEditableArea,
+  XhEditableControl,
   XhEditableInput,
   XhEditablePreview,
   XhEditableRoot,
@@ -33,18 +33,18 @@ const head = `${cell}; text-align: start; font-weight: 500; color: var(--xh-fg-m
         <tr v-for="row in rows" :key="row.id">
           <td :style="cell">
             <XhEditableRoot v-model:value="row.name" placeholder="未填写" auto-resize>
-              <XhEditableArea>
+              <XhEditableControl>
                 <XhEditablePreview />
                 <XhEditableInput />
-              </XhEditableArea>
+              </XhEditableControl>
             </XhEditableRoot>
           </td>
           <td :style="cell">
             <XhEditableRoot v-model:value="row.dept" placeholder="未填写" auto-resize>
-              <XhEditableArea>
+              <XhEditableControl>
                 <XhEditablePreview />
                 <XhEditableInput />
-              </XhEditableArea>
+              </XhEditableControl>
             </XhEditableRoot>
           </td>
           <td :style="cell">
@@ -54,10 +54,10 @@ const head = `${cell}; text-align: start; font-weight: 500; color: var(--xh-fg-m
               :max-length="11"
               auto-resize
             >
-              <XhEditableArea>
+              <XhEditableControl>
                 <XhEditablePreview />
                 <XhEditableInput />
-              </XhEditableArea>
+              </XhEditableControl>
             </XhEditableRoot>
           </td>
         </tr>

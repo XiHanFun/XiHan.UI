@@ -92,13 +92,6 @@ export function connectEditable<T extends PropTypes>(
       },
     }),
 
-    getAreaProps: () => normalize.element({
-      ...parts.area.attrs,
-      'data-state': stateAttr,
-      'data-disabled': dataAttr(disabled),
-      'data-invalid': dataAttr(invalid),
-    }),
-
     getPreviewProps: () => normalize.element({
       ...parts.preview.attrs,
       'id': ids.preview,
@@ -236,6 +229,7 @@ export function connectEditable<T extends PropTypes>(
       ...parts.control.attrs,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+      'data-invalid': dataAttr(invalid),
     }),
   }
 }

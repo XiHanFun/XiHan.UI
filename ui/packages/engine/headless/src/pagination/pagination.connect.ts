@@ -141,8 +141,8 @@ export function connectPagination<T extends PropTypes>(
      * 悬停摊开，点一下也摊开——纯 hover 会把键盘用户挡在外面，而这几页
      * 除了它没有别的入口（跳页输入框要求先知道页号）。
      */
-    getEllipsisProps: props => normalize.button({
-      ...parts.ellipsis.attrs,
+    getEllipsisTriggerProps: props => normalize.button({
+      ...parts['ellipsis-trigger'].attrs,
       'type': 'button',
       'data-side': props.side,
       'aria-label': label.ellipsis(

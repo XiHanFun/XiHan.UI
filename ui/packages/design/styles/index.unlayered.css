@@ -243,7 +243,7 @@
 
 /* —— 溢出计数 —— */
 /* 「+N」是这一排里的又一枚：直径、形状与字号跟着组走，里面写什么由作者定 */
-[data-scope='avatar-group'][data-part='overflow'] {
+[data-scope='avatar-group'][data-part='overflow-item'] {
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -251,15 +251,15 @@
   inline-size: var(--xh-_avatar-group-size);
   block-size: var(--xh-_avatar-group-size);
   border-radius: var(--xh-avatar-group-radius, var(--xh-shape-pill));
-  background: var(--xh-avatar-group-overflow-bg, var(--xh-bg-muted));
-  color: var(--xh-avatar-group-overflow-fg, var(--xh-fg-muted));
+  background: var(--xh-avatar-group-overflow-item-bg, var(--xh-bg-muted));
+  color: var(--xh-avatar-group-overflow-item-fg, var(--xh-fg-muted));
   font-size: var(--xh-_avatar-group-font-size);
   font-weight: var(--xh-avatar-group-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
   user-select: none;
 }
 
-[data-scope='avatar-group'][data-part='overflow'][hidden] {
+[data-scope='avatar-group'][data-part='overflow-item'][hidden] {
   display: none;
 }
 
@@ -526,34 +526,6 @@
   border-end-end-radius: var(--xh-button-group-radius, var(--xh-shape-control));
 }
 
-/* styles/countdown.css */
-/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
-[data-scope='countdown'] {
-  --xh-countdown-skin: 1;
-}
-
-[data-scope='countdown'][data-part='root'] {
-  display: inline-block;
-  color: var(--xh-countdown-fg, var(--xh-fg-default));
-  /* 不自带字号：倒计时多半嵌在一句话里或摆在别人的数值槽里，跟着上下文走 */
-  /* 等宽数字：逐位宽度一致，秒数换位时冒号不会左右挪动 */
-  font-variant-numeric: tabular-nums;
-  line-height: var(--xh-leading-tight);
-  /* 走到点那一刻前景退一档，这里让它淡过去而不是硬跳 */
-  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-}
-
-/* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
-[data-scope='countdown'][data-part='root'][hidden] {
-  display: none;
-}
-
-/* 到点之后这串 00:00:00 不再是活的信息，退一档；它与"暂停在 30 秒上"是两回事，
-   后者仍然是要盯着看的数，所以退档只认 data-finished，不认 data-state */
-[data-scope='countdown'][data-part='root'][data-finished] {
-  color: var(--xh-countdown-finished-fg, var(--xh-fg-muted));
-}
-
 /* styles/descriptions.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='descriptions'] {
@@ -818,19 +790,19 @@
 
 /* 增删统计整组顶到右侧：头部是 flex，自动外边距吃掉中间的空当。
    第二个之后的不再顶，与前一个之间只留头部本来的间隙 */
-[data-scope='diff-view'][data-part='stat'] {
+[data-scope='diff-view'][data-part='summary'] {
   margin-inline-start: auto;
 }
 
-[data-scope='diff-view'][data-part='stat'] ~ [data-scope='diff-view'][data-part='stat'] {
+[data-scope='diff-view'][data-part='summary'] ~ [data-scope='diff-view'][data-part='summary'] {
   margin-inline-start: 0;
 }
 
-[data-scope='diff-view'][data-part='stat'][data-change='added'] {
+[data-scope='diff-view'][data-part='summary'][data-change='added'] {
   color: var(--xh-diff-view-added-fg);
 }
 
-[data-scope='diff-view'][data-part='stat'][data-change='removed'] {
+[data-scope='diff-view'][data-part='summary'][data-change='removed'] {
   color: var(--xh-diff-view-removed-fg);
 }
 
@@ -984,18 +956,18 @@
 
 /* 词级片段：只有真正动过的那几段上底色，其余段落是纯包裹。
    不给内衬——等宽列要逐字对齐，多一像素整份差异就错位 */
-[data-scope='diff-view'][data-part='segment'][data-change] {
-  border-radius: var(--xh-diff-view-segment-radius, var(--xh-shape-inset));
+[data-scope='diff-view'][data-part='inline-change'][data-change] {
+  border-radius: var(--xh-diff-view-inline-change-radius, var(--xh-shape-inset));
   /* 片段跨行时两半各自收边，否则圆角只画在整段的首尾。两条都写：WebKit 只认带前缀那条 */
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
-[data-scope='diff-view'][data-part='segment'][data-change='added'] {
+[data-scope='diff-view'][data-part='inline-change'][data-change='added'] {
   background: color-mix(in oklab, var(--xh-diff-view-added-fg) 18%, transparent);
 }
 
-[data-scope='diff-view'][data-part='segment'][data-change='removed'] {
+[data-scope='diff-view'][data-part='inline-change'][data-change='removed'] {
   background: color-mix(in oklab, var(--xh-diff-view-removed-fg) 18%, transparent);
 }
 
@@ -1304,71 +1276,71 @@
   box-shadow: none;
 }
 
-/* styles/dynamic-input.css */
+/* styles/field-array.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
-[data-scope='dynamic-input'] {
-  --xh-dynamic-input-skin: 1;
+[data-scope='field-array'] {
+  --xh-field-array-skin: 1;
 }
 
 /* 一行一条，纵向堆叠；新增把手跟在最后一行下面 */
-[data-scope='dynamic-input'][data-part='root'] {
+[data-scope='field-array'][data-part='root'] {
   /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-dynamic-input-icon-size, var(--xh-glyph-size-text));
+  --xh-icon-size: var(--xh-field-array-icon-size, var(--xh-glyph-size-text));
 
   display: flex;
   flex-direction: column;
-  gap: var(--xh-dynamic-input-gap, var(--xh-space-2));
+  gap: var(--xh-field-array-gap, var(--xh-space-2));
 }
 
 /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
-[data-scope='dynamic-input'][data-part='root'][hidden] {
+[data-scope='field-array'][data-part='root'][hidden] {
   display: none;
 }
 
 /* 内容在左、把手在右，把手那一列不随内容伸缩 */
-[data-scope='dynamic-input'][data-part='item'] {
+[data-scope='field-array'][data-part='item'] {
   display: flex;
   align-items: center;
-  gap: var(--xh-dynamic-input-item-gap, var(--xh-space-2));
-  padding: var(--xh-dynamic-input-item-padding, var(--xh-space-0));
-  border-radius: var(--xh-dynamic-input-item-radius, var(--xh-shape-surface));
+  gap: var(--xh-field-array-item-gap, var(--xh-space-2));
+  padding: var(--xh-field-array-item-padding, var(--xh-space-0));
+  border-radius: var(--xh-field-array-item-radius, var(--xh-shape-surface));
 }
 
-[data-scope='dynamic-input'][data-part='item'][hidden] {
+[data-scope='field-array'][data-part='item'][hidden] {
   display: none;
 }
 
 /* 行里放什么控件归作者，这里只给它一条能撑开也能收窄的轨道。
    min-inline-size 归零：不写的话里面的输入框按 UA 默认宽度顶住，长内容会把整行撑破 */
-[data-scope='dynamic-input'][data-part='item-content'] {
+[data-scope='field-array'][data-part='item-content'] {
   display: flex;
   flex: 1 1 auto;
   align-items: center;
-  gap: var(--xh-dynamic-input-content-gap, var(--xh-space-2));
+  gap: var(--xh-field-array-content-gap, var(--xh-space-2));
   min-inline-size: 0;
 }
 
-[data-scope='dynamic-input'][data-part='item-action'] {
+[data-scope='field-array'][data-part='item-action'] {
   display: inline-flex;
   flex: none;
   align-items: center;
-  gap: var(--xh-dynamic-input-action-gap, var(--xh-space-1));
+  gap: var(--xh-field-array-action-gap, var(--xh-space-1));
 }
 
 /* —— 行内三个把手 —— */
-[data-scope='dynamic-input'][data-part='item-delete-trigger'],
-[data-scope='dynamic-input'][data-part='move-up-trigger'],
-[data-scope='dynamic-input'][data-part='move-down-trigger'] {
+[data-scope='field-array'][data-part='item-delete-trigger'],
+[data-scope='field-array'][data-part='move-up-trigger'],
+[data-scope='field-array'][data-part='move-down-trigger'] {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
   padding: 0;
   border: 0;
-  background: var(--xh-dynamic-input-trigger-bg, transparent);
-  color: var(--xh-dynamic-input-trigger-fg, var(--xh-fg-muted));
+  background: var(--xh-field-array-trigger-bg, transparent);
+  color: var(--xh-field-array-trigger-fg, var(--xh-fg-muted));
   font-family: inherit;
-  font-size: var(--xh-dynamic-input-trigger-font-size, var(--xh-text-secondary-size));
+  font-size: var(--xh-field-array-trigger-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   transition:
@@ -1377,72 +1349,72 @@
 }
 
 /* 行级删除把手：命中区取行内动作按钮尺寸，圆角取控件圆角 */
-[data-scope='dynamic-input'][data-part='item-delete-trigger'] {
-  inline-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
-  block-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
-  border-radius: var(--xh-dynamic-input-trigger-radius, var(--xh-shape-control));
+[data-scope='field-array'][data-part='item-delete-trigger'] {
+  inline-size: var(--xh-field-array-trigger-size, var(--xh-control-action-size));
+  block-size: var(--xh-field-array-trigger-size, var(--xh-control-action-size));
+  border-radius: var(--xh-field-array-trigger-radius, var(--xh-shape-control));
 }
 
-[data-scope='dynamic-input'][data-part='move-up-trigger'],
-[data-scope='dynamic-input'][data-part='move-down-trigger'] {
-  inline-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
-  block-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
-  border-radius: var(--xh-dynamic-input-trigger-radius, var(--xh-shape-control));
+[data-scope='field-array'][data-part='move-up-trigger'],
+[data-scope='field-array'][data-part='move-down-trigger'] {
+  inline-size: var(--xh-field-array-trigger-size, var(--xh-control-action-size));
+  block-size: var(--xh-field-array-trigger-size, var(--xh-control-action-size));
+  border-radius: var(--xh-field-array-trigger-radius, var(--xh-shape-control));
 }
 
 /* 不换序时连接层给换序把手写 hidden；上面那条 display 会把 UA 的 [hidden]{display:none}
    盖掉，少了这条把手还留在原地。删除把手同样声明了 display，作者自己收起它时要的是同一条 */
-[data-scope='dynamic-input'][data-part='item-delete-trigger'][hidden],
-[data-scope='dynamic-input'][data-part='move-up-trigger'][hidden],
-[data-scope='dynamic-input'][data-part='move-down-trigger'][hidden] {
+[data-scope='field-array'][data-part='item-delete-trigger'][hidden],
+[data-scope='field-array'][data-part='move-up-trigger'][hidden],
+[data-scope='field-array'][data-part='move-down-trigger'][hidden] {
   display: none;
 }
 
 /* 按不动的把手不给悬停与按下反馈：它仍然可聚焦、可点，反馈会让人以为点得动 */
-[data-scope='dynamic-input'][data-part='item-delete-trigger']:hover:not([aria-disabled='true']),
-[data-scope='dynamic-input'][data-part='move-up-trigger']:hover:not([aria-disabled='true']),
-[data-scope='dynamic-input'][data-part='move-down-trigger']:hover:not([aria-disabled='true']) {
-  background: var(--xh-dynamic-input-trigger-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-dynamic-input-trigger-fg-hover, var(--xh-fg-default));
+[data-scope='field-array'][data-part='item-delete-trigger']:hover:not([aria-disabled='true']),
+[data-scope='field-array'][data-part='move-up-trigger']:hover:not([aria-disabled='true']),
+[data-scope='field-array'][data-part='move-down-trigger']:hover:not([aria-disabled='true']) {
+  background: var(--xh-field-array-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  color: var(--xh-field-array-trigger-fg-hover, var(--xh-fg-default));
 }
 
-[data-scope='dynamic-input'][data-part='item-delete-trigger']:not([aria-disabled='true']):active,
-[data-scope='dynamic-input'][data-part='move-up-trigger']:not([aria-disabled='true']):active,
-[data-scope='dynamic-input'][data-part='move-down-trigger']:not([aria-disabled='true']):active {
-  background: var(--xh-dynamic-input-trigger-bg-active, var(--xh-bg-subtle-active));
+[data-scope='field-array'][data-part='item-delete-trigger']:not([aria-disabled='true']):active,
+[data-scope='field-array'][data-part='move-up-trigger']:not([aria-disabled='true']):active,
+[data-scope='field-array'][data-part='move-down-trigger']:not([aria-disabled='true']):active {
+  background: var(--xh-field-array-trigger-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
 }
 
 /* 删除把手悬停转危险色：它是这一行里唯一不可撤销的动作 */
-[data-scope='dynamic-input'][data-part='item-delete-trigger']:hover:not([aria-disabled='true']) {
-  color: var(--xh-dynamic-input-item-delete-fg-hover, var(--xh-fg-danger-hover));
+[data-scope='field-array'][data-part='item-delete-trigger']:hover:not([aria-disabled='true']) {
+  color: var(--xh-field-array-item-delete-fg-hover, var(--xh-fg-danger-hover));
 }
 
 /* 到上下限、或整份禁用时用 aria-disabled 表达（原生 disabled 不派 click，禁用守卫走不到），
    所以样式也得认这个属性，写 :disabled 永远不命中 */
-[data-scope='dynamic-input'][data-part='item-delete-trigger'][aria-disabled='true'],
-[data-scope='dynamic-input'][data-part='move-up-trigger'][aria-disabled='true'],
-[data-scope='dynamic-input'][data-part='move-down-trigger'][aria-disabled='true'] {
+[data-scope='field-array'][data-part='item-delete-trigger'][aria-disabled='true'],
+[data-scope='field-array'][data-part='move-up-trigger'][aria-disabled='true'],
+[data-scope='field-array'][data-part='move-down-trigger'][aria-disabled='true'] {
   background: transparent;
   color: var(--xh-fg-disabled);
 }
 
 /* —— 新增把手 —— */
 /* 虚线描边把它和行里的实心控件区分开：它加的是行，不是行里的值 */
-[data-scope='dynamic-input'][data-part='add-trigger'] {
+[data-scope='field-array'][data-part='add-trigger'] {
   display: inline-flex;
   align-self: flex-start;
   align-items: center;
   justify-content: center;
-  gap: var(--xh-dynamic-input-action-gap, var(--xh-space-1));
-  block-size: var(--xh-dynamic-input-add-height, var(--xh-control-h-md));
-  padding-inline: var(--xh-dynamic-input-add-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) dashed var(--xh-dynamic-input-add-border, var(--xh-border-control));
-  border-radius: var(--xh-dynamic-input-add-radius, var(--xh-shape-control));
-  background: var(--xh-dynamic-input-add-bg, transparent);
-  color: var(--xh-dynamic-input-add-fg, var(--xh-fg-brand));
+  gap: var(--xh-field-array-action-gap, var(--xh-space-1));
+  block-size: var(--xh-field-array-add-height, var(--xh-control-h-md));
+  padding-inline: var(--xh-field-array-add-px, var(--xh-control-px-md));
+  border: var(--xh-stroke-thin) dashed var(--xh-field-array-add-border, var(--xh-border-control));
+  border-radius: var(--xh-field-array-add-radius, var(--xh-shape-control));
+  background: var(--xh-field-array-add-bg, transparent);
+  color: var(--xh-field-array-add-fg, var(--xh-fg-brand));
   font-family: inherit;
-  font-size: var(--xh-dynamic-input-add-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-field-array-add-font-size, var(--xh-text-label-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   transition:
@@ -1451,28 +1423,28 @@
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
-[data-scope='dynamic-input'][data-part='add-trigger'][hidden] {
+[data-scope='field-array'][data-part='add-trigger'][hidden] {
   display: none;
 }
 
-[data-scope='dynamic-input'][data-part='add-trigger']:hover:not([aria-disabled='true']) {
-  border-color: var(--xh-dynamic-input-add-border-hover, var(--xh-border-control-hover));
-  background: var(--xh-dynamic-input-add-bg-hover, var(--xh-bg-subtle-hover));
+[data-scope='field-array'][data-part='add-trigger']:hover:not([aria-disabled='true']) {
+  border-color: var(--xh-field-array-add-border-hover, var(--xh-border-control-hover));
+  background: var(--xh-field-array-add-bg-hover, var(--xh-bg-subtle-hover));
 }
 
-[data-scope='dynamic-input'][data-part='add-trigger']:not([aria-disabled='true']):active {
-  background: var(--xh-dynamic-input-add-bg-active, var(--xh-bg-subtle-active));
+[data-scope='field-array'][data-part='add-trigger']:not([aria-disabled='true']):active {
+  background: var(--xh-field-array-add-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
 }
 
-[data-scope='dynamic-input'][data-part='add-trigger'][aria-disabled='true'] {
-  border-color: var(--xh-dynamic-input-add-border-disabled, var(--xh-border-subtle));
+[data-scope='field-array'][data-part='add-trigger'][aria-disabled='true'] {
+  border-color: var(--xh-field-array-add-border-disabled, var(--xh-border-subtle));
   background: transparent;
   color: var(--xh-fg-disabled);
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
-[data-scope='dynamic-input'][data-part='move-up-trigger']:empty::before {
+[data-scope='field-array'][data-part='move-up-trigger']:empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -1483,7 +1455,7 @@
   mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
 }
 
-[data-scope='dynamic-input'][data-part='move-down-trigger']:empty::before {
+[data-scope='field-array'][data-part='move-down-trigger']:empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -1494,7 +1466,7 @@
   mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
 }
 
-[data-scope='dynamic-input'][data-part='item-delete-trigger']:empty::before {
+[data-scope='field-array'][data-part='item-delete-trigger']:empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -1507,56 +1479,8 @@
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-[data-scope='dynamic-input'][data-part='item-content'][hidden],
-[data-scope='dynamic-input'][data-part='item-action'][hidden] {
-  display: none;
-}
-
-/* styles/ellipsis.css */
-/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
-[data-scope='ellipsis'] {
-  --xh-ellipsis-skin: 1;
-}
-
-/* 单行：一行装不下就收成省略号。
-   行数由连接层写进这个盒子的内联 style，样式表这一行只是它缺席时的落点 */
-[data-scope='ellipsis'][data-part='root'] {
-  --xh-_ellipsis-lines: 1;
-
-  display: block;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-/* 多行：按行数裁，裁掉的那一行末尾收省略号 */
-[data-scope='ellipsis'][data-part='root'][data-multiline] {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: var(--xh-_ellipsis-lines);
-  white-space: normal;
-  /* 一长串没有断点的字符（网址、编号）也得断开，否则它一路撑出去，裁不住 */
-  overflow-wrap: break-word;
-}
-
-/* 铺开：裁剪整个撤掉。写在两档之后，压得住上面同权重的那两条 */
-[data-scope='ellipsis'][data-part='root'][data-state='open'] {
-  display: block;
-  overflow: visible;
-  white-space: normal;
-}
-
-/* 真被裁了才是那颗按钮：装得下的短文本按下去什么都不变，摆出手型等于许一个按不动的按钮。
-   铺开态另收一条——那一档量不出"被裁"，但收回去的入口必须留着 */
-[data-scope='ellipsis'][data-part='root'][data-expandable][data-overflowing],
-[data-scope='ellipsis'][data-part='root'][data-expandable][data-state='open'] {
-  cursor: pointer;
-}
-
-/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
-   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-[data-scope='ellipsis'][data-part='root'][hidden] {
+[data-scope='field-array'][data-part='item-content'][hidden],
+[data-scope='field-array'][data-part='item-action'][hidden] {
   display: none;
 }
 
@@ -1614,15 +1538,15 @@
 
 [data-scope='fieldset'][data-part='description'] {
   margin: 0;
-  color: var(--xh-fieldset-helper-fg, var(--xh-fg-muted));
-  font-size: var(--xh-fieldset-helper-font-size, var(--xh-text-secondary-size));
+  color: var(--xh-fieldset-description-fg, var(--xh-fg-muted));
+  font-size: var(--xh-fieldset-description-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-normal);
   /* 与组标题同一档过渡：整组转禁用时两处一起变淡 */
   transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='fieldset'][data-part='description'][data-disabled] {
-  color: var(--xh-fieldset-helper-fg-disabled, var(--xh-fg-subtle));
+  color: var(--xh-fieldset-description-fg-disabled, var(--xh-fg-subtle));
 }
 
 /* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
@@ -1651,13 +1575,24 @@
   display: inline-flex;
 }
 
-/* —— 方向 —— */
-[data-scope='flex'][data-part='root'][data-orientation='horizontal'] {
-  flex-direction: row;
+/* 分隔符：夹在两个子项之间的装饰件，样子由放进去的内容决定。
+   这里只兜住两件事——不被主轴挤扁（一条 1px 的竖线会被弹性收缩吃没），
+   交叉轴上不单独发话，跟着容器的对齐走：横排随中线、竖排随拉伸 */
+[data-scope='flex'][data-part='split'] {
+  flex: none;
 }
 
+/* —— 方向与缺省对齐 —— */
+/* 横排时按中线对齐：一排里混着文字、按钮、标签，高度本就不齐，居中最不容易看出错位 */
+[data-scope='flex'][data-part='root'][data-orientation='horizontal'] {
+  flex-direction: row;
+  align-items: center;
+}
+
+/* 竖排时拉伸：一列里的块级子项该占满容器宽度 */
 [data-scope='flex'][data-part='root'][data-orientation='vertical'] {
   flex-direction: column;
+  align-items: stretch;
 }
 
 /* —— 折行 —— */
@@ -1666,6 +1601,7 @@
 }
 
 /* —— 交叉轴对齐 —— */
+/* 排在方向之后：两者特指度相同，写了 align 就该压过随方向来的那份缺省 */
 [data-scope='flex'][data-part='root'][data-align='start'] {
   align-items: flex-start;
 }
@@ -3010,7 +2946,7 @@
 /* 行首的星期名。月份行行首那个占位也是它，宽度一样，月份才对得上列。
    一整年放不下时网格横着滚，这一列钉在滚动容器的起始缘：跟着滚走的话，
    滚过头一屏就再也认不出哪一行是星期几。底色必须实色，格子从它下面滚过去不能透出来 */
-[data-scope='heatmap'][data-part='week-day-label'] {
+[data-scope='heatmap'][data-part='week-day'] {
   position: sticky;
   /* 层号收在 root 建的层叠上下文里，只跟组件内的兄弟比 */
   z-index: var(--xh-heatmap-sticky-layer, 1);
@@ -3031,10 +2967,10 @@
    一行只有 10px 高，七个 12px 的字挨着写会上下叠在一起；隔一行之后每个留下来的字
    有两行的高度（2 × 格高 + 格距）可用。哪一行是星期几由行自己的可及名字念出来，
    可见文字与可及名字是两件事，读屏这边一行都没少 */
-[data-scope='heatmap'][data-part='week-day-label'][data-week-day='0'],
-[data-scope='heatmap'][data-part='week-day-label'][data-week-day='2'],
-[data-scope='heatmap'][data-part='week-day-label'][data-week-day='4'],
-[data-scope='heatmap'][data-part='week-day-label'][data-week-day='6'] {
+[data-scope='heatmap'][data-part='week-day'][data-week-day='0'],
+[data-scope='heatmap'][data-part='week-day'][data-week-day='2'],
+[data-scope='heatmap'][data-part='week-day'][data-week-day='4'],
+[data-scope='heatmap'][data-part='week-day'][data-week-day='6'] {
   color: var(--xh-_heatmap-week-day-skip);
 }
 
@@ -3075,7 +3011,7 @@
    左侧那一列星期名就变成锯齿。两条选择器合起来正好是「本行第一个格子」，
    行里写不写星期名都成立 */
 [data-scope='heatmap'][data-part='row'] > [data-scope='heatmap'][data-part='cell']:first-child,
-[data-scope='heatmap'][data-part='week-day-label'] + [data-scope='heatmap'][data-part='cell'] {
+[data-scope='heatmap'][data-part='week-day'] + [data-scope='heatmap'][data-part='cell'] {
   margin-inline-start: calc(
     var(--xh-_heatmap-row-offset) * (var(--xh-_heatmap-cell-size) + var(--xh-_heatmap-gap))
   );
@@ -3110,7 +3046,7 @@
 /* 块里的星期名是一排列头，宽度改成格宽才对得上下面的格子，也不再钉住。
    字比一格宽，不裁：裁掉就是七个缺角的字，让它往两边的列间距里溢出去，
    相邻两个各溢出一点也还差着一段空白 */
-[data-scope='heatmap'][data-part='root'][data-variant='month'] [data-scope='heatmap'][data-part='week-day-label'] {
+[data-scope='heatmap'][data-part='root'][data-variant='month'] [data-scope='heatmap'][data-part='week-day'] {
   position: static;
   inline-size: var(--xh-_heatmap-cell-size);
   overflow: visible;
@@ -3252,7 +3188,7 @@
 [data-scope='heatmap'][data-part='grid'][hidden],
 [data-scope='heatmap'][data-part='month-block'][hidden],
 [data-scope='heatmap'][data-part='row'][hidden],
-[data-scope='heatmap'][data-part='week-day-label'][hidden],
+[data-scope='heatmap'][data-part='week-day'][hidden],
 [data-scope='heatmap'][data-part='month-label'][hidden],
 [data-scope='heatmap'][data-part='row-label'][hidden],
 [data-scope='heatmap'][data-part='column-label'][hidden],
@@ -3545,7 +3481,7 @@
   position: relative;
   display: block;
   overflow: hidden;
-  border-radius: var(--xh-image-cropper-radius, var(--xh-shape-surface));
+  border-radius: var(--xh-image-cropper-viewport-radius, var(--xh-shape-surface));
   background: var(--xh-image-cropper-bg, var(--xh-bg-muted));
   user-select: none;
 }
@@ -4458,21 +4394,21 @@
 }
 
 /* 回到底部：浮在视口右下角，收起时不卸载只隐藏 */
-[data-scope='log'][data-part='scroll-button'] {
+[data-scope='log'][data-part='scroll-to-end-trigger'] {
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-log-scroll-button-border, var(--xh-border-default));
-  border-radius: var(--xh-log-scroll-button-radius, var(--xh-shape-pill));
-  background: var(--xh-log-scroll-button-bg, var(--xh-bg-surface-raised));
-  box-shadow: var(--xh-log-scroll-button-shadow, var(--xh-elevation-raised));
-  color: var(--xh-log-scroll-button-fg, var(--xh-fg-default));
-  inline-size: var(--xh-log-scroll-button-size, var(--xh-control-h-sm));
-  block-size: var(--xh-log-scroll-button-size, var(--xh-control-h-sm));
-  inset-block-end: var(--xh-log-scroll-button-inset, var(--xh-space-3));
-  inset-inline-end: var(--xh-log-scroll-button-inset, var(--xh-space-3));
+  border: var(--xh-stroke-thin) solid var(--xh-log-scroll-to-end-trigger-border, var(--xh-border-default));
+  border-radius: var(--xh-log-scroll-to-end-trigger-radius, var(--xh-shape-pill));
+  background: var(--xh-log-scroll-to-end-trigger-bg, var(--xh-bg-surface-raised));
+  box-shadow: var(--xh-log-scroll-to-end-trigger-shadow, var(--xh-elevation-raised));
+  color: var(--xh-log-scroll-to-end-trigger-fg, var(--xh-fg-default));
+  inline-size: var(--xh-log-scroll-to-end-trigger-size, var(--xh-control-h-sm));
+  block-size: var(--xh-log-scroll-to-end-trigger-size, var(--xh-control-h-sm));
+  inset-block-end: var(--xh-log-scroll-to-end-trigger-inset, var(--xh-space-3));
+  inset-inline-end: var(--xh-log-scroll-to-end-trigger-inset, var(--xh-space-3));
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -4480,26 +4416,26 @@
 }
 
 /* 连接层收起按钮时写 hidden 属性，上面的 display 会盖掉 UA 规则，这里补回 */
-[data-scope='log'][data-part='scroll-button'][hidden] {
+[data-scope='log'][data-part='scroll-to-end-trigger'][hidden] {
   display: none;
 }
 
 /* 收起不卸载，冒出来时靠这条进场动画；不写 display，可见性归上面那条 [hidden] 管 */
-[data-scope='log'][data-part='scroll-button'][data-state='visible'] {
+[data-scope='log'][data-part='scroll-to-end-trigger'][data-state='visible'] {
   animation: xh-log-button-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
-[data-scope='log'][data-part='scroll-button']:hover {
-  background: var(--xh-log-scroll-button-bg-hover, var(--xh-bg-subtle-hover));
+[data-scope='log'][data-part='scroll-to-end-trigger']:hover {
+  background: var(--xh-log-scroll-to-end-trigger-bg-hover, var(--xh-bg-subtle-hover));
 }
 
-[data-scope='log'][data-part='scroll-button']:active {
+[data-scope='log'][data-part='scroll-to-end-trigger']:active {
   scale: var(--xh-motion-scale-press);
 }
 
 /* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中。
    不画的话这颗按钮就是一枚空盒，看不出它是干什么的——名字只在 aria-label 上 */
-[data-scope='log'][data-part='scroll-button']:empty::before {
+[data-scope='log'][data-part='scroll-to-end-trigger']:empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -4526,7 +4462,7 @@
 
 @media print {
   /* 打印：回到底部这颗钮只有在能滚的地方才成立，落到纸上是一颗按不动的按钮。 */
-  [data-scope='log'][data-part='scroll-button'] {
+  [data-scope='log'][data-part='scroll-to-end-trigger'] {
     display: none;
   }
 }
@@ -5417,12 +5353,12 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 副标题吃掉标题与操作之间的剩余宽度，长文本在这里收窄换行 */
-[data-scope='page-header'][data-part='subtitle'] {
+[data-scope='page-header'][data-part='description'] {
   margin: 0;
   flex: 1 1 auto;
   min-inline-size: 0;
-  color: var(--xh-page-header-subtitle-fg, var(--xh-fg-muted));
-  font-size: var(--xh-page-header-subtitle-font-size, var(--xh-text-secondary-size));
+  color: var(--xh-page-header-description-fg, var(--xh-fg-muted));
+  font-size: var(--xh-page-header-description-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-normal);
 }
 
@@ -6135,450 +6071,6 @@ input[data-scope='mention'][data-part='input'] {
   }
 }
 
-/* styles/popselect.css */
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
-   四个都没写就退回原地缩放 */
-@keyframes xh-overlay-pop-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    scale: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-pop-out {
-  from {
-    opacity: 1;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    scale: var(--xh-motion-scale-exit);
-  }
-}
-
-/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
-[data-scope='popselect'] {
-  --xh-popselect-skin: 1;
-}
-
-/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
-[data-scope='popselect'][data-part='positioner'] {
-  /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
-     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退回自己那档静态上限 */
-  --xh-_popselect-available-h: 100vh;
-  /* 触发器实测宽度，由定位引擎经内联自定义属性写进来，内容层拿它当最小宽的下界；
-     引擎没算（尚未落位 / 无引擎）时为 0，max 取静态档，等于不抬宽 */
-  --xh-_popselect-anchor-w: 0px;
-
-  /* 候选列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在列表右缘糊一条竖灰带 */
-  --xh-scrollbar-track-bg: transparent;
-
-  position: fixed;
-  z-index: var(--xh-popselect-layer, var(--xh-layer-popover));
-  /* 空壳不吃指针，交互只发生在 content 上 */
-  pointer-events: none;
-}
-
-/* 锚点被滚出可视区：整个浮层随之收起 */
-[data-scope='popselect'][data-part='positioner'][data-hidden] {
-  visibility: hidden;
-}
-
-/* 缩放原点与进场位移按落定的那一侧给：浮层从贴着盒的那条边涨开、沿主轴退让一小段。
-   两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
-   origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
-[data-scope='popselect'][data-part='positioner'][data-placement^='top'] {
-  --xh-_overlay-origin-y: 100%;
-  --xh-_overlay-enter-down: 1;
-}
-
-[data-scope='popselect'][data-part='positioner'][data-placement^='bottom'] {
-  --xh-_overlay-origin-y: 0;
-  --xh-_overlay-enter-up: 1;
-}
-
-[data-scope='popselect'][data-part='positioner'][data-placement^='left'] {
-  --xh-_overlay-origin-x: 100%;
-  --xh-_overlay-enter-right: 1;
-}
-
-[data-scope='popselect'][data-part='positioner'][data-placement^='right'] {
-  --xh-_overlay-origin-x: 0;
-  --xh-_overlay-enter-left: 1;
-}
-
-/* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
-[data-scope='popselect']:is([data-part='root'], [data-part='positioner']) {
-  /* 尺寸档只换这四个私有槽，触发器与条目都从这两处继承它们，换档不必给每个部件各写一条选择器 */
-  --xh-_popselect-h: var(--xh-control-h-md);
-  --xh-_popselect-px: var(--xh-control-px-md);
-  --xh-_popselect-item-py: var(--xh-list-option-py-md);
-  --xh-_popselect-item-px: var(--xh-control-px-md);
-  --xh-_popselect-gap: var(--xh-control-gap-md);
-  --xh-_popselect-font-size: var(--xh-control-font-md);
-
-  /* 形态档只换这五个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
-  --xh-_popselect-control-bg: var(--xh-bg-canvas);
-  /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
-  --xh-_popselect-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_popselect-control-border: var(--xh-border-control);
-  --xh-_popselect-control-border-hover: var(--xh-border-control-hover);
-  /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
-  --xh-_popselect-control-shadow: var(--xh-elevation-raised);
-
-  /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
-     没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
-  --xh-_popselect-ring: var(--xh-ring-focus);
-  --xh-_popselect-accent: var(--xh-_tone, var(--xh-fg-brand));
-  --xh-_popselect-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
-}
-
-[data-scope='popselect'][data-part='root'] {
-  /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
-  --xh-icon-size: var(--xh-popselect-icon-size, var(--xh-glyph-size-md));
-
-  display: inline-flex;
-  align-items: center;
-  gap: var(--xh-popselect-root-gap, var(--xh-space-1));
-}
-
-/* 图标只跟着盒那一侧换档：浮层里的勾选标记有自己的指示符盒，换成整档图标会撑破它 */
-[data-scope='popselect'][data-part='root'][data-size='sm'] {
-  --xh-icon-size: var(--xh-popselect-icon-size, var(--xh-glyph-size-sm));
-}
-
-[data-scope='popselect'][data-part='root'][data-size='lg'] {
-  --xh-icon-size: var(--xh-popselect-icon-size, var(--xh-glyph-size-lg));
-}
-
-/* —— 尺寸 —— */
-/* 缺省档写在上面的基础规则里 */
-[data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
-  --xh-_popselect-h: var(--xh-control-h-sm);
-  --xh-_popselect-px: var(--xh-control-px-sm);
-  --xh-_popselect-item-py: var(--xh-list-option-py-sm);
-  --xh-_popselect-item-px: var(--xh-control-px-sm);
-  --xh-_popselect-gap: var(--xh-control-gap-sm);
-  --xh-_popselect-font-size: var(--xh-control-font-sm);
-}
-
-[data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
-  --xh-_popselect-h: var(--xh-control-h-lg);
-  --xh-_popselect-px: var(--xh-control-px-lg);
-  --xh-_popselect-item-py: var(--xh-list-option-py-lg);
-  --xh-_popselect-item-px: var(--xh-control-px-lg);
-  --xh-_popselect-gap: var(--xh-control-gap-lg);
-  --xh-_popselect-font-size: var(--xh-control-font-lg);
-}
-
-/* —— 形态 —— */
-/* 形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
-[data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
-  --xh-_popselect-control-bg: var(--xh-bg-canvas);
-  --xh-_popselect-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_popselect-control-border: var(--xh-border-control);
-  --xh-_popselect-control-border-hover: var(--xh-border-control-hover);
-}
-
-/* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
-[data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
-  --xh-_popselect-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_popselect-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_popselect-control-border: transparent;
-  --xh-_popselect-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-}
-
-/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达。
-   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
-[data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
-  --xh-_popselect-control-shadow: 0 0 0 transparent;
-  --xh-_popselect-control-bg: transparent;
-  --xh-_popselect-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_popselect-control-border: transparent;
-  --xh-_popselect-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-}
-
-/* 盒：描边、底色、圆角、控件高度与行内内衬都长在这一层，触发器与清空按钮在里面并排。
-   聚焦环也画在它上面，焦点落在哪颗按钮上，看到的都是同一个框亮起来 */
-[data-scope='popselect'][data-part='control'] {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--xh-popselect-control-gap, var(--xh-_popselect-gap));
-  block-size: var(--xh-popselect-control-h, var(--xh-_popselect-h));
-  padding-inline: var(--xh-popselect-control-px, var(--xh-_popselect-px));
-  min-inline-size: var(--xh-popselect-control-min-w, var(--xh-control-min-w));
-  border: var(--xh-stroke-thin) solid var(--xh-popselect-control-border, var(--xh-_popselect-control-border));
-  border-radius: var(--xh-popselect-control-radius, var(--xh-shape-control));
-  background: var(--xh-popselect-control-bg, var(--xh-_popselect-control-bg));
-  box-shadow: var(--xh-popselect-control-shadow, var(--xh-_popselect-control-shadow));
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-}
-
-/* 描边挪一格之外再换一档填充：只换描边的悬停在浅底上几乎读不出来 */
-[data-scope='popselect'][data-part='control']:hover:not([data-disabled]) {
-  border-color: var(--xh-popselect-control-border-hover, var(--xh-_popselect-control-border-hover));
-  background: var(--xh-popselect-control-bg-hover, var(--xh-_popselect-control-bg-hover));
-}
-
-/* 焦点落在盒内任一颗按钮上都画同一圈环；禁用时按钮不可聚焦，守卫只是把这条说死。
-   描边色与环共用一族语气色 */
-[data-scope='popselect'][data-part='control']:focus-within:not([data-disabled]) {
-  border-color: var(--xh-popselect-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-  outline: var(--xh-ring-width) solid var(--xh-_popselect-ring);
-  outline-offset: var(--xh-ring-offset);
-}
-
-[data-scope='popselect'][data-part='control'][data-disabled] {
-  background: var(--xh-popselect-control-bg-disabled, var(--xh-bg-subtle));
-  color: var(--xh-fg-disabled);
-}
-
-/* 触发器退化成盒里那颗可聚焦的按钮：描边、底色与内衬归盒，它只占满剩余一行 */
-[data-scope='popselect'][data-part='trigger'] {
-  display: inline-flex;
-  flex: 1 1 auto;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--xh-popselect-trigger-gap, var(--xh-_popselect-gap));
-  /* 弹性子项默认最小尺寸是内容尺寸，不归零则长值把盒撑破 */
-  min-inline-size: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--xh-popselect-trigger-fg, var(--xh-fg-default));
-  font-size: var(--xh-popselect-trigger-font-size, var(--xh-_popselect-font-size));
-  line-height: var(--xh-leading-none);
-  text-align: start;
-  cursor: pointer;
-}
-
-/* 环画在盒上，按钮自己不再画：两圈套着的环读起来像两个控件 */
-[data-scope='popselect'][data-part='trigger']:focus-visible {
-  outline: none;
-}
-
-/* trigger 是单体控件，用原生 disabled（条目那边一律 aria-disabled） */
-[data-scope='popselect'][data-part='trigger']:disabled {
-  color: var(--xh-fg-disabled);
-}
-
-/* 无选中：触发器上显示的是占位文字，画淡一档 */
-[data-scope='popselect'][data-part='trigger'][data-placeholder] {
-  color: var(--xh-popselect-placeholder-fg, var(--xh-fg-subtle));
-}
-
-/* 清空钮：盒里排在触发器之后的方形小钮，没值即 hidden 收起 */
-[data-scope='popselect'][data-part='clear-trigger'] {
-  display: inline-grid;
-  flex: none;
-  place-items: center;
-  inline-size: var(--xh-popselect-action-size, var(--xh-control-action-size));
-  block-size: var(--xh-popselect-action-size, var(--xh-control-action-size));
-  padding: 0;
-  border: none;
-  border-radius: var(--xh-popselect-action-radius, var(--xh-shape-control));
-  background: none;
-  color: var(--xh-popselect-clear-fg, var(--xh-fg-subtle));
-  line-height: var(--xh-leading-none);
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
-}
-
-[data-scope='popselect'][data-part='clear-trigger']:hover {
-  background: var(--xh-popselect-clear-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-popselect-clear-fg-hover, var(--xh-fg-default));
-}
-
-[data-scope='popselect'][data-part='clear-trigger']:active {
-  background: var(--xh-popselect-clear-bg-active, var(--xh-bg-subtle-active));
-  scale: var(--xh-motion-scale-press);
-}
-
-[data-scope='popselect'][data-part='clear-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-_popselect-ring);
-  outline-offset: var(--xh-ring-offset);
-}
-
-[data-scope='popselect'][data-part='clear-trigger'][hidden] {
-  display: none;
-}
-
-/* 没写内容就由皮肤画叉；作者往部件里塞了自己的图形，这条规则即不命中 */
-[data-scope='popselect'][data-part='clear-trigger']:empty::before {
-  content: '';
-  display: inline-block;
-  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  vertical-align: var(--xh-glyph-baseline-shift);
-  background-color: currentColor;
-  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
-  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
-}
-
-[data-scope='popselect'][data-part='content'] {
-  display: flex;
-  flex-direction: column;
-  gap: var(--xh-popselect-content-gap, var(--xh-list-option-gap));
-  min-inline-size: max(var(--xh-popselect-content-min-w, var(--xh-overlay-menu-min-w)), var(--xh-_popselect-anchor-w));
-  max-inline-size: var(--xh-popselect-content-max-w, var(--xh-overlay-max-w));
-  max-block-size: min(var(--xh-popselect-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_popselect-available-h));
-  padding-block: var(--xh-popselect-content-py, var(--xh-space-1));
-  padding-inline: var(--xh-popselect-content-px, var(--xh-space-1));
-  border: var(--xh-stroke-thin) solid var(--xh-popselect-content-border, var(--xh-border-default));
-  border-radius: var(--xh-popselect-content-radius, var(--xh-shape-surface));
-  background: var(--xh-popselect-content-bg, var(--xh-bg-surface));
-  color: var(--xh-popselect-content-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-popselect-content-shadow, var(--xh-elevation-floating));
-  overflow-y: auto;
-  pointer-events: auto;
-  /* 进退场的缩放锚在贴着盒的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
-  transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
-}
-
-/* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
-   收起态连接层会给 content 打 hidden，而上面那条 display 正是要盖掉 UA 的
-   [hidden]{display:none}——退场动画得先能播。presence 读的是 content 的 animationName，
-   真正的收起由宿主在退场结束后落成内联 display:none（Vue 那边直接不渲染）。
-   其余声明了 display 的角色节点仍补 [hidden]，那几处没有退场动画。 */
-
-/* 焦点落在容器上只有一种情形：指针打开、无选中值、还没有任何条目当锚点。
-   那一刻它认领着 Tab 位，环画在浮层内沿；有锚点时环长在条目上，容器不再画 */
-[data-scope='popselect'][data-part='content'][tabindex='0']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
-[data-scope='popselect'][data-part='content']:not([tabindex='0']):focus-visible {
-  outline: none;
-}
-
-[data-scope='popselect'][data-part='content'][data-state='open'] {
-  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-  /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-  will-change: opacity, scale, translate;
-}
-
-/* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
-   免得动画结束到真收起之间闪一下原样 */
-[data-scope='popselect'][data-part='content'][data-state='closed'] {
-  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
-}
-
-[data-scope='popselect'][data-part='item'] {
-  display: flex;
-  align-items: center;
-  gap: var(--xh-popselect-item-gap, var(--xh-_popselect-gap));
-  padding-block: var(--xh-popselect-item-py, var(--xh-_popselect-item-py));
-  padding-inline: var(--xh-popselect-item-px, var(--xh-_popselect-item-px));
-  border-radius: var(--xh-popselect-item-radius, var(--xh-shape-control));
-  color: var(--xh-popselect-item-fg, var(--xh-fg-default));
-  font-size: var(--xh-popselect-item-font-size, var(--xh-_popselect-font-size));
-  /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
-  line-height: var(--xh-popselect-item-leading, var(--xh-leading-normal));
-  white-space: nowrap;
-  cursor: pointer;
-  user-select: none;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-}
-
-/* 悬停与键盘锚点共用中性灰轻档：条目本身承载焦点，不另画描边 */
-[data-scope='popselect'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
-  background: var(--xh-popselect-item-bg-hover, var(--xh-bg-subtle));
-}
-
-/* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，两者因此能同时看见 */
-[data-scope='popselect'][data-part='item'][data-state='checked'] {
-  color: var(--xh-popselect-item-fg-selected, var(--xh-_popselect-item-selected-fg));
-  font-weight: var(--xh-popselect-item-font-weight-selected, var(--xh-font-weight-medium));
-}
-
-/* 键盘走到条目上要画环：轻档底色对白底只有 1.1:1，够不上焦点指示器的对比度要求。
-   指针悬停走的是程序化聚焦，鼠标模态下 :focus-visible 不匹配，不会误画 */
-[data-scope='popselect'][data-part='item']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
-[data-scope='popselect'][data-part='item']:focus:not(:focus-visible) {
-  outline: none;
-}
-
-/* 禁用走 aria-disabled 而非原生 disabled，条目仍可聚焦，样式由 data-disabled 表达 */
-[data-scope='popselect'][data-part='item'][data-disabled] {
-  color: var(--xh-fg-disabled);
-}
-
-[data-scope='popselect'][data-part='item-text'] {
-  flex: 1;
-  /* 弹性子项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
-  min-inline-size: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-/* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动 */
-[data-scope='popselect'][data-part='item-indicator'] {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--xh-popselect-item-indicator-size, var(--xh-control-indicator-size));
-  color: var(--xh-popselect-item-indicator-fg, var(--xh-_popselect-accent));
-  visibility: hidden;
-}
-
-/* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
-[data-scope='popselect'][data-part='item-indicator']:empty::before {
-  content: '';
-  display: inline-block;
-  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  vertical-align: var(--xh-glyph-baseline-shift);
-  background-color: currentColor;
-  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-}
-
-[data-scope='popselect'][data-part='item-indicator'][data-state='checked'] {
-  visibility: visible;
-}
-
-/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
-   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-[data-scope='popselect'][data-part='root'][hidden],
-[data-scope='popselect'][data-part='control'][hidden],
-[data-scope='popselect'][data-part='trigger'][hidden],
-[data-scope='popselect'][data-part='item'][hidden],
-[data-scope='popselect'][data-part='item-indicator'][hidden] {
-  display: none;
-}
-
-@media print {
-  /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
-     收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
-  [data-scope='popselect'][data-part='positioner'] {
-    display: none;
-  }
-}
-
 /* styles/prompt-input.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='prompt-input'] {
@@ -6627,7 +6119,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 写了输入行，root 就翻成竖排：输入框与按钮收进那一行，上下两侧腾给附件条与动作行。
    不写就是单行，输入框与按钮并排——两种写法的皮肤是同一份 */
-[data-scope='prompt-input'][data-part='root']:has(> [data-scope='prompt-input'][data-part='input-row']) {
+[data-scope='prompt-input'][data-part='root']:has(> [data-scope='prompt-input'][data-part='control']) {
   flex-direction: column;
   align-items: stretch;
 }
@@ -6711,13 +6203,13 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 输入行承接单行写法下落在 root 上的那份几何：输入框与按钮并排、按钮贴着底边。
    它自己不画底也不画描边，边界仍由 root 表达 */
-[data-scope='prompt-input'][data-part='input-row'] {
+[data-scope='prompt-input'][data-part='control'] {
   display: flex;
   align-items: flex-end;
   gap: var(--xh-prompt-input-row-gap, var(--xh-_prompt-input-gap));
 }
 
-[data-scope='prompt-input'][data-part='input-row'][hidden] {
+[data-scope='prompt-input'][data-part='control'][hidden] {
   display: none;
 }
 
@@ -7443,160 +6935,6 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-/* styles/result.css */
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-
-/* 幅度走令牌，减弱动效时由令牌层归零；位移用独立属性而非 transform 简写 */
-@keyframes xh-rise-in {
-  from {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-sm);
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
-[data-scope='result'] {
-  --xh-result-skin: 1;
-}
-
-[data-scope='result'][data-part='root'] {
-  /* 三个尺寸档只换这几个私有槽，图标与标题都从 root 继承它们，
-     换档不必给每个部件各写一条选择器 */
-  --xh-_result-gap: var(--xh-stack-gap-md);
-  --xh-_result-py: var(--xh-section-py-md);
-  --xh-_result-icon-size: var(--xh-glyph-size-3xl);
-  --xh-_result-title-size: var(--xh-text-heading-3-size);
-  /* 图标区的语气色，由 data-status 换掉；没写 status 就退成中性 */
-  --xh-_result-accent: var(--xh-fg-subtle);
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--xh-result-gap, var(--xh-_result-gap));
-  padding-block: var(--xh-result-py, var(--xh-_result-py));
-  padding-inline: var(--xh-result-px, var(--xh-space-6));
-  color: var(--xh-result-fg, var(--xh-fg-default));
-  text-align: center;
-}
-
-/* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
-[data-scope='result'][data-part='root'][hidden] {
-  display: none;
-}
-
-/* —— 尺寸 —— */
-[data-scope='result'][data-part='root'][data-size='sm'] {
-  --xh-_result-gap: var(--xh-stack-gap-sm);
-  --xh-_result-py: var(--xh-section-py-sm);
-  --xh-_result-icon-size: var(--xh-glyph-size-2xl);
-  --xh-_result-title-size: var(--xh-control-font-lg);
-}
-
-[data-scope='result'][data-part='root'][data-size='lg'] {
-  --xh-_result-gap: var(--xh-stack-gap-lg);
-  --xh-_result-py: var(--xh-section-py-lg);
-  --xh-_result-icon-size: var(--xh-glyph-size-4xl);
-  --xh-_result-title-size: var(--xh-text-heading-2-size);
-}
-
-/* —— 语气 —— */
-/* 三个状态码各并进最接近的一族：找不到=提示，没权限=警示，服务出错=危险。
-   用 500 档而不是 600：500 是装饰性强调档，600 是给实心底与文字用的 */
-[data-scope='result'][data-part='root'][data-status='success'] {
-  --xh-_result-accent: var(--xh-color-success-500);
-}
-
-[data-scope='result'][data-part='root'][data-status='warning'],
-[data-scope='result'][data-part='root'][data-status='403'] {
-  --xh-_result-accent: var(--xh-color-warning-500);
-}
-
-[data-scope='result'][data-part='root'][data-status='error'],
-[data-scope='result'][data-part='root'][data-status='500'] {
-  --xh-_result-accent: var(--xh-color-danger-500);
-}
-
-[data-scope='result'][data-part='root'][data-status='info'],
-[data-scope='result'][data-part='root'][data-status='404'] {
-  --xh-_result-accent: var(--xh-color-info-500);
-}
-
-/* —— 各段 —— */
-[data-scope='result'][data-part='icon'] {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  /* 作者塞进图标槽的 XhIcon 与皮肤画的字形同一把尺，都按展示档的图标框量 */
-  --xh-icon-size: var(--xh-result-icon-size, var(--xh-_result-icon-size));
-
-  block-size: var(--xh-result-icon-size, var(--xh-_result-icon-size));
-  inline-size: var(--xh-result-icon-size, var(--xh-_result-icon-size));
-  color: var(--xh-result-icon-fg, var(--xh-_result-accent));
-  /* 图标常是一个字形，字号跟着图标框走，line-height 不再另占高度 */
-  font-size: var(--xh-result-icon-font-size, var(--xh-_result-icon-size));
-  line-height: var(--xh-leading-none);
-}
-
-[data-scope='result'][data-part='title'] {
-  margin: 0;
-  color: var(--xh-result-title-fg, var(--xh-fg-default));
-  font-size: var(--xh-result-title-font-size, var(--xh-_result-title-size));
-  font-weight: var(--xh-result-title-font-weight, var(--xh-font-weight-semibold));
-  line-height: var(--xh-result-title-leading, var(--xh-leading-tight));
-}
-
-[data-scope='result'][data-part='description'] {
-  margin: 0;
-  max-inline-size: var(--xh-result-description-max-w, var(--xh-measure-prose));
-  color: var(--xh-result-description-fg, var(--xh-fg-muted));
-  font-size: var(--xh-result-description-font-size, var(--xh-text-body-size));
-  line-height: var(--xh-result-description-leading, var(--xh-text-body-leading));
-}
-
-[data-scope='result'][data-part='action'] {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: var(--xh-result-action-gap, var(--xh-space-2));
-}
-
-/* 图标、标题、说明、动作按次序开幕，间隔由交错步长派生。
-   backwards 不能省：等待期间起帧不生效的话，后三段会先露一下再跳回去 */
-[data-scope='result'][data-part='icon'],
-[data-scope='result'][data-part='title'],
-[data-scope='result'][data-part='description'],
-[data-scope='result'][data-part='action'] {
-  animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
-}
-
-[data-scope='result'][data-part='title'] {
-  animation-delay: calc(var(--xh-motion-stagger-step) * 1);
-}
-
-[data-scope='result'][data-part='description'] {
-  animation-delay: calc(var(--xh-motion-stagger-step) * 2);
-}
-
-[data-scope='result'][data-part='action'] {
-  animation-delay: calc(var(--xh-motion-stagger-step) * 3);
-}
-
-/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
-   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-[data-scope='result'][data-part='icon'][hidden],
-[data-scope='result'][data-part='action'][hidden] {
-  display: none;
-}
-
 /* styles/segmented.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='segmented'] {
@@ -7900,7 +7238,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 笔迹是一条填充路径（每一笔是它的一条子路径），不是描边：
    粗细要随压感变，而 stroke-width 全线只有一个值 */
-[data-scope='signature-pad'][data-part='segment'] {
+[data-scope='signature-pad'][data-part='path'] {
   fill: var(--xh-signature-pad-ink, var(--xh-fg-default));
   stroke: none;
 }
@@ -7969,123 +7307,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='signature-pad'][data-part='control'][hidden],
 [data-scope='signature-pad'][data-part='clear-trigger'][hidden] {
   display: none;
-}
-
-/* styles/space.css */
-/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
-[data-scope='space'] {
-  --xh-space-skin: 1;
-}
-
-[data-scope='space'][data-part='root'] {
-  display: flex;
-  flex-wrap: nowrap;
-  /* 不写档位也按 md 留白，这是与裸弹性容器的分野；使用者槽位排在档位之前，写死一个值即盖过所有档 */
-  gap: var(--xh-space-root-gap, var(--xh-layout-gap-md));
-}
-
-/* 声明了 display 就盖掉了 UA 的 [hidden] 规则，这里还回去 */
-[data-scope='space'][data-part='root'][hidden] {
-  display: none;
-}
-
-/* 行内盒：宽度收到内容，能和文字排在同一行 */
-[data-scope='space'][data-part='root'][data-inline]:not([hidden]) {
-  display: inline-flex;
-}
-
-/* 分隔符：夹在两个子项之间的装饰件，样子由放进去的内容决定。
-   这里只兜住两件事——不被主轴挤扁（一条 1px 的竖线会被弹性收缩吃没），
-   交叉轴上不单独发话，跟着容器的对齐走：横排随中线、竖排随拉伸 */
-[data-scope='space'][data-part='split'] {
-  flex: none;
-}
-
-/* —— 方向与缺省对齐 —— */
-/* 横排时按中线对齐：一排里混着文字、按钮、标签，高度本就不齐，居中最不容易看出错位 */
-[data-scope='space'][data-part='root'][data-orientation='horizontal'] {
-  flex-direction: row;
-  align-items: center;
-}
-
-/* 竖排时拉伸：一列里的块级子项该占满容器宽度 */
-[data-scope='space'][data-part='root'][data-orientation='vertical'] {
-  flex-direction: column;
-  align-items: stretch;
-}
-
-/* —— 折行 —— */
-[data-scope='space'][data-part='root'][data-wrap] {
-  flex-wrap: wrap;
-}
-
-/* —— 交叉轴对齐 —— */
-/* 排在方向之后：两者特指度相同，写了 align 就该压过随方向来的那份缺省 */
-[data-scope='space'][data-part='root'][data-align='start'] {
-  align-items: flex-start;
-}
-
-[data-scope='space'][data-part='root'][data-align='center'] {
-  align-items: center;
-}
-
-[data-scope='space'][data-part='root'][data-align='end'] {
-  align-items: flex-end;
-}
-
-[data-scope='space'][data-part='root'][data-align='stretch'] {
-  align-items: stretch;
-}
-
-[data-scope='space'][data-part='root'][data-align='baseline'] {
-  align-items: baseline;
-}
-
-/* —— 主轴分布 —— */
-[data-scope='space'][data-part='root'][data-justify='start'] {
-  justify-content: flex-start;
-}
-
-[data-scope='space'][data-part='root'][data-justify='center'] {
-  justify-content: center;
-}
-
-[data-scope='space'][data-part='root'][data-justify='end'] {
-  justify-content: flex-end;
-}
-
-[data-scope='space'][data-part='root'][data-justify='between'] {
-  justify-content: space-between;
-}
-
-[data-scope='space'][data-part='root'][data-justify='around'] {
-  justify-content: space-around;
-}
-
-[data-scope='space'][data-part='root'][data-justify='evenly'] {
-  justify-content: space-evenly;
-}
-
-/* —— 间距档位 —— */
-/* 每一档指向一个间距令牌，折行时行与行之间也吃这份间距 */
-[data-scope='space'][data-part='root'][data-gap='xs'] {
-  gap: var(--xh-space-root-gap, var(--xh-layout-gap-xs));
-}
-
-[data-scope='space'][data-part='root'][data-gap='sm'] {
-  gap: var(--xh-space-root-gap, var(--xh-layout-gap-sm));
-}
-
-[data-scope='space'][data-part='root'][data-gap='md'] {
-  gap: var(--xh-space-root-gap, var(--xh-layout-gap-md));
-}
-
-[data-scope='space'][data-part='root'][data-gap='lg'] {
-  gap: var(--xh-space-root-gap, var(--xh-layout-gap-lg));
-}
-
-[data-scope='space'][data-part='root'][data-gap='xl'] {
-  gap: var(--xh-space-root-gap, var(--xh-layout-gap-xl));
 }
 
 /* styles/statistic.css */
@@ -8359,33 +7580,6 @@ input[data-scope='mention'][data-part='input'] {
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
-}
-
-/* styles/time.css */
-/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
-[data-scope='time'] {
-  --xh-time-skin: 1;
-}
-
-[data-scope='time'][data-part='root'] {
-  color: var(--xh-time-fg, var(--xh-fg-default));
-  /* 等宽数字：秒数跳动时后面的字符不会左右挪 */
-  font-variant-numeric: tabular-nums;
-  /* 一个时间戳不该被拆到两行去 */
-  white-space: nowrap;
-  /* 时刻换成认不出的值时前景要换档，这里让它淡过去而不是硬跳 */
-  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-}
-
-/* 相对说法是一句话不是一串数字，等宽数字反而把字距拉开 */
-[data-scope='time'][data-part='root'][data-relative] {
-  font-variant-numeric: normal;
-}
-
-/* 没给时刻、或给了认不出的时刻：这时显示的是作者写在节点里的兜底文案，退成弱前景 */
-[data-scope='time'][data-part='root'][data-state='empty'],
-[data-scope='time'][data-part='root'][data-state='invalid'] {
-  color: var(--xh-time-placeholder-fg, var(--xh-fg-muted));
 }
 
 /* styles/timeline.css */
@@ -8738,23 +7932,27 @@ input[data-scope='mention'][data-part='input'] {
 /* 等宽数字：逐位宽度一致，秒数换位时分隔符与后面的段都不会左右挪动。
    direction 钉成 ltr：每段是一个独立的 flex 项，主轴方向跟着文字方向走，
    不钉住的话 rtl 页面上时分秒会整体倒过来排——时间串的读序两个方向都一样。 */
-[data-scope='timer'][data-part='area'] {
+[data-scope='timer'][data-part='display'] {
   display: inline-flex;
   align-items: baseline;
   direction: ltr;
-  color: var(--xh-timer-area-fg, var(--xh-fg-default));
+  color: var(--xh-timer-display-fg, var(--xh-fg-default));
+  /* 嵌在一句话里或摆在别人的数值槽里时把 --xh-timer-digit-font-size 写成 inherit，
+     数字就跟着上下文的字号走，不再自带展示档字号 */
   font-size: var(--xh-timer-digit-font-size, var(--xh-_timer-digit-size));
   font-variant-numeric: tabular-nums;
   font-weight: var(--xh-font-weight-semibold);
   line-height: var(--xh-leading-tight);
+  /* 走到点那一刻前景退一档，这里让它淡过去而不是硬跳 */
+  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-[data-scope='timer'][data-part='area'][hidden] {
+[data-scope='timer'][data-part='display'][hidden] {
   display: none;
 }
 
 /* 走完之后这串数字不再是活的信息，退一档；暂停在半路的仍是要盯着看的数，不退 */
-[data-scope='timer'][data-part='area'][data-state='completed'] {
+[data-scope='timer'][data-part='display'][data-state='completed'] {
   color: var(--xh-timer-completed-fg, var(--xh-fg-muted));
 }
 
@@ -8838,6 +8036,81 @@ input[data-scope='mention'][data-part='input'] {
     position: absolute;
     inset: -8px;
   }
+}
+
+/* styles/timestamp.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='timestamp'] {
+  --xh-timestamp-skin: 1;
+}
+
+[data-scope='timestamp'][data-part='root'] {
+  color: var(--xh-timestamp-fg, var(--xh-fg-default));
+  /* 等宽数字：秒数跳动时后面的字符不会左右挪 */
+  font-variant-numeric: tabular-nums;
+  /* 一个时间戳不该被拆到两行去 */
+  white-space: nowrap;
+  /* 时刻换成认不出的值时前景要换档，这里让它淡过去而不是硬跳 */
+  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 相对说法是一句话不是一串数字，等宽数字反而把字距拉开 */
+[data-scope='timestamp'][data-part='root'][data-relative] {
+  font-variant-numeric: normal;
+}
+
+/* 没给时刻、或给了认不出的时刻：这时显示的是作者写在节点里的兜底文案，退成弱前景 */
+[data-scope='timestamp'][data-part='root'][data-state='empty'],
+[data-scope='timestamp'][data-part='root'][data-state='invalid'] {
+  color: var(--xh-timestamp-placeholder-fg, var(--xh-fg-muted));
+}
+
+/* styles/truncate.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='truncate'] {
+  --xh-truncate-skin: 1;
+}
+
+/* 单行：一行装不下就收成省略号。
+   行数由连接层写进这个盒子的内联 style，样式表这一行只是它缺席时的落点 */
+[data-scope='truncate'][data-part='root'] {
+  --xh-_truncate-lines: 1;
+
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 多行：按行数裁，裁掉的那一行末尾收省略号 */
+[data-scope='truncate'][data-part='root'][data-multiline] {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--xh-_truncate-lines);
+  white-space: normal;
+  /* 一长串没有断点的字符（网址、编号）也得断开，否则它一路撑出去，裁不住 */
+  overflow-wrap: break-word;
+}
+
+/* 铺开：裁剪整个撤掉。写在两档之后，压得住上面同权重的那两条 */
+[data-scope='truncate'][data-part='root'][data-state='open'] {
+  display: block;
+  overflow: visible;
+  white-space: normal;
+}
+
+/* 真被裁了才是那颗按钮：装得下的短文本按下去什么都不变，摆出手型等于许一个按不动的按钮。
+   铺开态另收一条——那一档量不出"被裁"，但收回去的入口必须留着 */
+[data-scope='truncate'][data-part='root'][data-expandable][data-overflowing],
+[data-scope='truncate'][data-part='root'][data-expandable][data-state='open'] {
+  cursor: pointer;
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='truncate'][data-part='root'][hidden] {
+  display: none;
 }
 
 /* styles/typography.css */
@@ -9026,7 +8299,6 @@ input[data-scope='mention'][data-part='input'] {
   xh-pagination,
   xh-popconfirm,
   xh-popover,
-  xh-popselect,
   xh-reasoning,
   xh-select,
   xh-side-nav,
@@ -9257,15 +8529,15 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-[data-scope='alert'][data-part='icon'] {
+[data-scope='alert'][data-part='indicator'] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: none;
   /* 与首行文字对齐：图标框高取一行正文的行高 */
   block-size: calc(var(--xh-text-body-size) * var(--xh-leading-normal));
-  inline-size: var(--xh-alert-icon-box, var(--xh-control-indicator-size));
-  color: var(--xh-alert-icon-fg, var(--xh-_tone-fg));
+  inline-size: var(--xh-alert-indicator-box, var(--xh-control-indicator-size));
+  color: var(--xh-alert-indicator-fg, var(--xh-_tone-fg));
 }
 
 /* 标题与说明摞成一列，占满 root 剩下的横向空间，
@@ -9387,7 +8659,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-[data-scope='alert'][data-part='icon'][hidden] {
+[data-scope='alert'][data-part='indicator'][hidden] {
   display: none;
 }
 
@@ -9420,6 +8692,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_empty-state-py: var(--xh-section-py-md);
   --xh-_empty-state-icon-size: var(--xh-glyph-size-2xl);
   --xh-_empty-state-title-size: var(--xh-control-font-lg);
+  /* 图标区的语气色，由 data-status 换掉；没写 status 就退成中性 */
+  --xh-_empty-state-accent: var(--xh-fg-subtle);
 
   display: flex;
   flex-direction: column;
@@ -9451,7 +8725,29 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_empty-state-title-size: var(--xh-text-heading-3-size);
 }
 
-[data-scope='empty-state'][data-part='icon'] {
+/* —— 语气 —— */
+/* 三个状态码各并进最接近的一族：找不到=提示，没权限=警示，服务出错=危险。
+   用 500 档而不是 600：500 是装饰性强调档，600 是给实心底与文字用的 */
+[data-scope='empty-state'][data-part='root'][data-status='success'] {
+  --xh-_empty-state-accent: var(--xh-color-success-500);
+}
+
+[data-scope='empty-state'][data-part='root'][data-status='warning'],
+[data-scope='empty-state'][data-part='root'][data-status='403'] {
+  --xh-_empty-state-accent: var(--xh-color-warning-500);
+}
+
+[data-scope='empty-state'][data-part='root'][data-status='error'],
+[data-scope='empty-state'][data-part='root'][data-status='500'] {
+  --xh-_empty-state-accent: var(--xh-color-danger-500);
+}
+
+[data-scope='empty-state'][data-part='root'][data-status='info'],
+[data-scope='empty-state'][data-part='root'][data-status='404'] {
+  --xh-_empty-state-accent: var(--xh-color-info-500);
+}
+
+[data-scope='empty-state'][data-part='indicator'] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -9461,9 +8757,9 @@ input[data-scope='mention'][data-part='input'] {
 
   block-size: var(--xh-empty-state-icon-size, var(--xh-_empty-state-icon-size));
   inline-size: var(--xh-empty-state-icon-size, var(--xh-_empty-state-icon-size));
-  color: var(--xh-empty-state-icon-fg, var(--xh-fg-subtle));
+  color: var(--xh-empty-state-indicator-fg, var(--xh-_empty-state-accent));
   /* 图标常是一个字形，字号跟着图标框走，line-height 不再另占高度 */
-  font-size: var(--xh-empty-state-icon-font-size, var(--xh-_empty-state-icon-size));
+  font-size: var(--xh-empty-state-indicator-font-size, var(--xh-_empty-state-icon-size));
   line-height: var(--xh-leading-none);
 }
 
@@ -9493,7 +8789,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 图标、标题、说明、动作按次序开幕，间隔由交错步长派生。
    backwards 不能省：等待期间起帧不生效的话，后三段会先露一下再跳回去 */
-[data-scope='empty-state'][data-part='icon'],
+[data-scope='empty-state'][data-part='indicator'],
 [data-scope='empty-state'][data-part='title'],
 [data-scope='empty-state'][data-part='description'],
 [data-scope='empty-state'][data-part='action'] {
@@ -9514,7 +8810,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-[data-scope='empty-state'][data-part='icon'][hidden],
+[data-scope='empty-state'][data-part='indicator'][hidden],
 [data-scope='empty-state'][data-part='action'][hidden] {
   display: none;
 }
@@ -9555,7 +8851,7 @@ input[data-scope='mention'][data-part='input'] {
  * 微光取比底亮一档的那支面色：浅色下比 bg-subtle 亮、深色下同样比它亮，
  * 两个主题里扫过去的都是一道亮带，而不是浅色下反倒扫出一道暗带。
  */
-[data-scope='skeleton'][data-part='bone'] {
+[data-scope='skeleton'][data-part='item'] {
   inline-size: 100%;
   border-radius: var(--xh-skeleton-radius, var(--xh-shape-control));
   background-color: var(--xh-skeleton-bg, var(--xh-bg-subtle));
@@ -9571,13 +8867,13 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 一行文字的高度取正文字号，圆角拉满，看起来就是一行还没排出来的字 */
-[data-scope='skeleton'][data-part='bone'][data-variant='text'] {
+[data-scope='skeleton'][data-part='item'][data-variant='text'] {
   block-size: var(--xh-skeleton-text-block-size, var(--xh-text-body-size));
   border-radius: var(--xh-skeleton-text-radius, var(--xh-shape-pill));
 }
 
 /* 头像位：正方形加满圆角。宽度定死不跟着容器拉长，高度也不许被主轴压扁 */
-[data-scope='skeleton'][data-part='bone'][data-variant='circle'] {
+[data-scope='skeleton'][data-part='item'][data-variant='circle'] {
   flex: none;
   inline-size: var(--xh-skeleton-circle-size, var(--xh-control-h-lg));
   aspect-ratio: 1;
@@ -9585,7 +8881,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 图片、卡片这类成块的占位：给个最小高度，撑开由作者决定 */
-[data-scope='skeleton'][data-part='bone'][data-variant='rect'] {
+[data-scope='skeleton'][data-part='item'][data-variant='rect'] {
   min-block-size: var(--xh-skeleton-rect-block-size, var(--xh-control-h-lg));
   border-radius: var(--xh-skeleton-rect-radius, var(--xh-shape-surface));
 }
@@ -9597,13 +8893,13 @@ input[data-scope='mention'][data-part='input'] {
  * 两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion。
  */
 @media (prefers-reduced-motion: reduce) {
-  [data-scope='skeleton'][data-part='bone'] {
+  [data-scope='skeleton'][data-part='item'] {
     background-image: none;
     animation: none;
   }
 }
 
-:where([data-motion='reduce']) [data-scope='skeleton'][data-part='bone'] {
+:where([data-motion='reduce']) [data-scope='skeleton'][data-part='item'] {
   background-image: none;
   animation: none;
 }
@@ -9613,7 +8909,7 @@ input[data-scope='mention'][data-part='input'] {
      取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份
      :where([data-motion='reduce']) 的钩子版本与它成对，打印没有对应的钩子可配，
      并成一条之后这层配对关系在文本上就断了。 */
-  [data-scope='skeleton'][data-part='bone'] {
+  [data-scope='skeleton'][data-part='item'] {
     background-image: none;
     animation: none;
   }
@@ -9624,7 +8920,7 @@ input[data-scope='mention'][data-part='input'] {
  * 一块什么都没有的空白——正在加载这件事没有了任何表达。改成描一圈边把条子勾出来。
  */
 @media (forced-colors: active) {
-  [data-scope='skeleton'][data-part='bone'] {
+  [data-scope='skeleton'][data-part='item'] {
     border: var(--xh-stroke-thin) solid GrayText;
     background-image: none;
   }
@@ -10135,7 +9431,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_approval-p: var(--xh-space-4);
   --xh-_approval-action-h: var(--xh-control-h-md);
   --xh-_approval-action-px: var(--xh-control-px-md);
-  --xh-_approval-scope-font-size: var(--xh-control-font-md);
+  --xh-_approval-item-font-size: var(--xh-control-font-md);
   --xh-_approval-note-font-size: var(--xh-control-font-md);
 
   display: flex;
@@ -10198,47 +9494,51 @@ input[data-scope='mention'][data-part='input'] {
   white-space: nowrap;
 }
 
-[data-scope='approval'][data-part='scope-group'] {
+[data-scope='approval'][data-part='group'] {
   display: flex;
   flex-direction: column;
-  gap: var(--xh-approval-scope-gap, var(--xh-space-1));
+  gap: var(--xh-approval-group-gap, var(--xh-space-1));
 }
 
-[data-scope='approval'][data-part='scope-group'][hidden] {
+[data-scope='approval'][data-part='group'][hidden] {
   display: none;
 }
 
 /* 一项授权：整行可点、可聚焦，勾选记号在左 */
-[data-scope='approval'][data-part='scope-item'] {
+[data-scope='approval'][data-part='item'] {
   display: flex;
   align-items: center;
-  gap: var(--xh-approval-scope-item-gap, var(--xh-space-1_5));
-  padding-inline: var(--xh-approval-scope-px, var(--xh-space-2));
-  padding-block: var(--xh-approval-scope-py, var(--xh-space-1));
-  border-radius: var(--xh-approval-scope-radius, var(--xh-shape-control));
-  font-size: var(--xh-approval-scope-font-size, var(--xh-_approval-scope-font-size));
+  gap: var(--xh-approval-item-gap, var(--xh-space-1_5));
+  padding-inline: var(--xh-approval-item-px, var(--xh-space-2));
+  padding-block: var(--xh-approval-item-py, var(--xh-space-1));
+  border-radius: var(--xh-approval-item-radius, var(--xh-shape-control));
+  font-size: var(--xh-approval-item-font-size, var(--xh-_approval-item-font-size));
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-[data-scope='approval'][data-part='scope-item'][hidden] {
+[data-scope='approval'][data-part='item'][hidden] {
   display: none;
 }
 
 /* 禁用项带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
    不挡掉的话已落定或置灰的那一条悬停仍会换底 */
-[data-scope='approval'][data-part='scope-item']:not([data-disabled]):hover {
-  background: var(--xh-approval-scope-bg-hover, var(--xh-bg-subtle-hover));
+[data-scope='approval'][data-part='item']:not([data-disabled]):hover {
+  background: var(--xh-approval-item-bg-hover, var(--xh-bg-subtle-hover));
 }
 
-[data-scope='approval'][data-part='scope-item'][data-disabled] {
+[data-scope='approval'][data-part='item']:active {
+  scale: var(--xh-motion-scale-press);
+}
+
+[data-scope='approval'][data-part='item'][data-disabled] {
   color: var(--xh-fg-disabled);
 }
 
 /* 勾选记号：方框 + 选中态填色，纯装饰不进可访问名 */
-[data-scope='approval'][data-part='scope-indicator'] {
+[data-scope='approval'][data-part='item-indicator'] {
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -10254,12 +9554,12 @@ input[data-scope='mention'][data-part='input'] {
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-[data-scope='approval'][data-part='scope-indicator'][hidden] {
+[data-scope='approval'][data-part='item-indicator'][hidden] {
   display: none;
 }
 
 /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
-[data-scope='approval'][data-part='scope-indicator']:empty::before {
+[data-scope='approval'][data-part='item-indicator']:empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -10270,33 +9570,33 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
-[data-scope='approval'][data-part='scope-indicator'][data-state='checked'] {
+[data-scope='approval'][data-part='item-indicator'][data-state='checked'] {
   border-color: var(--xh-approval-indicator-border-checked, var(--xh-bg-brand));
   background: var(--xh-approval-indicator-bg-checked, var(--xh-bg-brand));
 }
 
 /* 没勾上时把勾隐去而不是撤掉：盒子留在原位，翻面时整行不跳 */
-[data-scope='approval'][data-part='scope-indicator'][data-state='unchecked'] {
+[data-scope='approval'][data-part='item-indicator'][data-state='unchecked'] {
   color: transparent;
 }
 
 /* 勾上的那条读起来更重一档 */
-[data-scope='approval'][data-part='scope-label'] {
+[data-scope='approval'][data-part='item-text'] {
   display: block;
   flex: 1 1 auto;
-  color: var(--xh-approval-scope-fg, var(--xh-fg-muted));
+  color: var(--xh-approval-item-text-fg, var(--xh-fg-muted));
 }
 
-[data-scope='approval'][data-part='scope-item'][data-state='checked'] [data-part='scope-label'] {
-  color: var(--xh-approval-scope-fg-checked, var(--xh-fg-default));
+[data-scope='approval'][data-part='item'][data-state='checked'] [data-part='item-text'] {
+  color: var(--xh-approval-item-text-fg-checked, var(--xh-fg-default));
 }
 
 /* 排在勾选档之后：禁用项无论勾没勾都是禁用色 */
-[data-scope='approval'][data-part='scope-item'][data-disabled] [data-part='scope-label'] {
+[data-scope='approval'][data-part='item'][data-disabled] [data-part='item-text'] {
   color: var(--xh-fg-disabled);
 }
 
-[data-scope='approval'][data-part='scope-label'][hidden] {
+[data-scope='approval'][data-part='item-text'][hidden] {
   display: none;
 }
 
@@ -10506,7 +9806,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_approval-gap: var(--xh-space-2);
   --xh-_approval-action-h: var(--xh-control-h-sm);
   --xh-_approval-action-px: var(--xh-control-px-sm);
-  --xh-_approval-scope-font-size: var(--xh-control-font-sm);
+  --xh-_approval-item-font-size: var(--xh-control-font-sm);
   --xh-_approval-note-font-size: var(--xh-control-font-sm);
 }
 
@@ -10515,7 +9815,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_approval-gap: var(--xh-space-3);
   --xh-_approval-action-h: var(--xh-control-h-md);
   --xh-_approval-action-px: var(--xh-control-px-md);
-  --xh-_approval-scope-font-size: var(--xh-control-font-md);
+  --xh-_approval-item-font-size: var(--xh-control-font-md);
   --xh-_approval-note-font-size: var(--xh-control-font-md);
 }
 
@@ -10524,7 +9824,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_approval-gap: var(--xh-space-4);
   --xh-_approval-action-h: var(--xh-control-h-lg);
   --xh-_approval-action-px: var(--xh-control-px-lg);
-  --xh-_approval-scope-font-size: var(--xh-control-font-lg);
+  --xh-_approval-item-font-size: var(--xh-control-font-lg);
   --xh-_approval-note-font-size: var(--xh-control-font-lg);
 }
 
@@ -11565,7 +10865,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 各段 —— */
 /* 封面顶到根的边上，不吃内边距 */
-[data-scope='card'][data-part='cover'] {
+[data-scope='card'][data-part='media'] {
   display: block;
   overflow: hidden;
 }
@@ -11628,7 +10928,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='card'][data-part='root'][hidden],
-[data-scope='card'][data-part='cover'][hidden],
+[data-scope='card'][data-part='media'][hidden],
 [data-scope='card'][data-part='header'][hidden],
 [data-scope='card'][data-part='footer'][hidden] {
   display: none;
@@ -11679,7 +10979,7 @@ input[data-scope='mention'][data-part='input'] {
    transform 归连接层：整页位移与拖拽中的像素偏移都写在它的内联 style 上，
    样式层再碰这条轴就会把两个位移互相覆盖，画面当场错位。
    这里只负责排布与过渡 */
-[data-scope='carousel'][data-part='item-group'] {
+[data-scope='carousel'][data-part='list'] {
   display: flex;
   flex-direction: row;
   block-size: 100%;
@@ -11687,17 +10987,17 @@ input[data-scope='mention'][data-part='input'] {
     var(--xh-carousel-ease, var(--xh-motion-ease-slide));
 }
 
-[data-scope='carousel'][data-part='item-group'][hidden] {
+[data-scope='carousel'][data-part='list'][hidden] {
   display: none;
 }
 
-[data-scope='carousel'][data-part='item-group'][data-orientation='vertical'] {
+[data-scope='carousel'][data-part='list'][data-orientation='vertical'] {
   flex-direction: column;
 }
 
 /* 拖拽期间关掉过渡：留着的话画面会拖着手指慢半拍，像在拉一根皮筋。
    整条轨道的位移这一档每帧都在改，合成层只在这一档备好，松手随 data-dragging 一起撤掉 */
-[data-scope='carousel'][data-part='item-group'][data-dragging] {
+[data-scope='carousel'][data-part='list'][data-dragging] {
   transition: none;
   will-change: transform;
 }
@@ -11775,7 +11075,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 视口与指示点都不是可聚焦节点，落焦只会是浏览器兜底行为，别画焦点环 */
 [data-scope='carousel'][data-part='viewport']:focus-visible,
-[data-scope='carousel'][data-part='item-group']:focus-visible,
+[data-scope='carousel'][data-part='list']:focus-visible,
 [data-scope='carousel'][data-part='indicator-group']:focus-visible {
   outline: none;
 }
@@ -11844,12 +11144,12 @@ input[data-scope='mention'][data-part='input'] {
 /* 减少动效：位移立刻到位。翻页本身照常发生，只是不再有滑动的过程。
    两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
 @media (prefers-reduced-motion: reduce) {
-  [data-scope='carousel'][data-part='item-group'] {
+  [data-scope='carousel'][data-part='list'] {
     transition: none;
   }
 }
 
-:where([data-motion='reduce']) [data-scope='carousel'][data-part='item-group'] {
+:where([data-motion='reduce']) [data-scope='carousel'][data-part='list'] {
   transition: none;
 }
 
@@ -12335,15 +11635,15 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='cascader'][data-part='item'] {
   display: flex;
   align-items: center;
-  gap: var(--xh-cascader-row-gap, var(--xh-_cascader-gap));
-  max-inline-size: var(--xh-cascader-row-max-w, var(--xh-overlay-max-w));
-  padding-block: var(--xh-cascader-row-py, var(--xh-_cascader-row-py));
-  padding-inline: var(--xh-cascader-row-px, var(--xh-_cascader-row-px));
-  border-radius: var(--xh-cascader-row-radius, var(--xh-shape-control));
-  color: var(--xh-cascader-row-fg, var(--xh-fg-default));
-  font-size: var(--xh-cascader-row-font-size, var(--xh-_cascader-font-size));
+  gap: var(--xh-cascader-item-gap, var(--xh-_cascader-gap));
+  max-inline-size: var(--xh-cascader-item-max-w, var(--xh-overlay-max-w));
+  padding-block: var(--xh-cascader-item-py, var(--xh-_cascader-row-py));
+  padding-inline: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
+  border-radius: var(--xh-cascader-item-radius, var(--xh-shape-control));
+  color: var(--xh-cascader-item-fg, var(--xh-fg-default));
+  font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
   /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
-  line-height: var(--xh-cascader-row-leading, var(--xh-leading-normal));
+  line-height: var(--xh-cascader-item-leading, var(--xh-leading-normal));
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -12390,20 +11690,20 @@ input[data-scope='mention'][data-part='input'] {
    hover 恒中性灰、不接语气槽——两档同色相的话路径就认不出来了。
    悬停展开把路径挪走后留在原地的锚点降回轻档，每列至多一条路径高亮 */
 [data-scope='cascader'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
-  background: var(--xh-cascader-row-bg-hover, var(--xh-bg-subtle));
+  background: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
 }
 
 /* 必须排在轻档之后：锚点走到路径上时同特指度靠书写顺序压过轻档 */
 [data-scope='cascader'][data-part='item']:not([data-disabled])[data-in-path] {
-  background: var(--xh-cascader-row-bg-active, var(--xh-_cascader-active-bg));
-  font-weight: var(--xh-cascader-row-active-font-weight, var(--xh-font-weight-semibold));
+  background: var(--xh-cascader-item-bg-active, var(--xh-_cascader-active-bg));
+  font-weight: var(--xh-cascader-item-active-font-weight, var(--xh-font-weight-semibold));
 }
 
 /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色强档归展开路径、轻档归悬停，
    三者因此能同时看见 */
 [data-scope='cascader']:is([data-part='item'], [data-part='search-item'])[data-state='checked'] {
-  color: var(--xh-cascader-row-fg-selected, var(--xh-_cascader-selected-fg));
-  font-weight: var(--xh-cascader-row-selected-font-weight, var(--xh-font-weight-medium));
+  color: var(--xh-cascader-item-fg-selected, var(--xh-_cascader-selected-fg));
+  font-weight: var(--xh-cascader-item-selected-font-weight, var(--xh-font-weight-medium));
 }
 
 /* 环往内收：行是撑满列宽的，环画在外沿会被裁掉 */
@@ -12566,13 +11866,13 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 候选与列内条目同一套行度量，虚拟高亮与悬停同用轻档 */
 [data-scope='cascader'][data-part='search-item'] {
-  padding-block: var(--xh-cascader-row-py, var(--xh-_cascader-row-py));
-  padding-inline: var(--xh-cascader-row-px, var(--xh-_cascader-row-px));
+  padding-block: var(--xh-cascader-item-py, var(--xh-_cascader-row-py));
+  padding-inline: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
   overflow: hidden;
-  border-radius: var(--xh-cascader-row-radius, var(--xh-shape-control));
-  color: var(--xh-cascader-row-fg, var(--xh-fg-default));
-  font-size: var(--xh-cascader-row-font-size, var(--xh-_cascader-font-size));
-  line-height: var(--xh-cascader-row-leading, var(--xh-leading-normal));
+  border-radius: var(--xh-cascader-item-radius, var(--xh-shape-control));
+  color: var(--xh-cascader-item-fg, var(--xh-fg-default));
+  font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
+  line-height: var(--xh-cascader-item-leading, var(--xh-leading-normal));
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
@@ -12581,7 +11881,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='cascader'][data-part='search-item']:not([data-disabled]):is(:hover, [data-highlighted]) {
-  background: var(--xh-cascader-row-bg-hover, var(--xh-bg-subtle));
+  background: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
 }
 
 /* 焦点恒在输入框，环只跟虚拟高亮走，悬停不画；往内收，行是撑满列宽的，环画在外沿会被裁掉 */
@@ -12613,7 +11913,7 @@ input[data-scope='mention'][data-part='input'] {
   min-block-size: var(--xh-cascader-empty-min-h, 5rem);
   padding: var(--xh-cascader-empty-p, var(--xh-space-3));
   color: var(--xh-cascader-empty-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-cascader-row-font-size, var(--xh-_cascader-font-size));
+  font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
 }
 
 [data-scope='cascader'][data-part='empty'][hidden] {
@@ -13193,21 +12493,21 @@ input[data-scope='mention'][data-part='input'] {
   -webkit-text-fill-color: var(--xh-clipboard-input-autofill-fg, var(--xh-fg-default));
 }
 
-[data-scope='clipboard'][data-part='trigger'] {
+[data-scope='clipboard'][data-part='copy-trigger'] {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
-  gap: var(--xh-clipboard-trigger-gap, var(--xh-control-gap-sm));
-  block-size: var(--xh-clipboard-trigger-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-clipboard-trigger-px, var(--xh-control-px-md));
+  gap: var(--xh-clipboard-copy-trigger-gap, var(--xh-control-gap-sm));
+  block-size: var(--xh-clipboard-copy-trigger-h, var(--xh-control-h-md));
+  padding-inline: var(--xh-clipboard-copy-trigger-px, var(--xh-control-px-md));
   padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-clipboard-trigger-border, var(--xh-border-control));
-  border-radius: var(--xh-clipboard-trigger-radius, var(--xh-shape-control));
-  background: var(--xh-clipboard-trigger-bg, var(--xh-bg-canvas));
-  color: var(--xh-clipboard-trigger-fg, var(--xh-fg-default));
+  border: var(--xh-stroke-thin) solid var(--xh-clipboard-copy-trigger-border, var(--xh-border-control));
+  border-radius: var(--xh-clipboard-copy-trigger-radius, var(--xh-shape-control));
+  background: var(--xh-clipboard-copy-trigger-bg, var(--xh-bg-canvas));
+  color: var(--xh-clipboard-copy-trigger-fg, var(--xh-fg-default));
   font-family: inherit;
-  font-size: var(--xh-clipboard-trigger-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-clipboard-copy-trigger-font-size, var(--xh-text-body-size));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   cursor: pointer;
@@ -13222,31 +12522,31 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
-[data-scope='clipboard'][data-part='trigger'][hidden] {
+[data-scope='clipboard'][data-part='copy-trigger'][hidden] {
   display: none;
 }
 
 /* 换底、换描边之外再抬起一档：这是一块实心的可点面，指针停上去它从输入框那一行浮出来 */
-[data-scope='clipboard'][data-part='trigger']:hover {
-  border-color: var(--xh-clipboard-trigger-border-hover, var(--xh-border-control-hover));
-  background: var(--xh-clipboard-trigger-bg-hover, var(--xh-bg-subtle-hover));
-  box-shadow: var(--xh-clipboard-trigger-shadow-hover, var(--xh-elevation-raised));
+[data-scope='clipboard'][data-part='copy-trigger']:hover {
+  border-color: var(--xh-clipboard-copy-trigger-border-hover, var(--xh-border-control-hover));
+  background: var(--xh-clipboard-copy-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  box-shadow: var(--xh-clipboard-copy-trigger-shadow-hover, var(--xh-elevation-raised));
 }
 
 /* 换底之外再压一档：复制钮按下时缩放 */
-[data-scope='clipboard'][data-part='trigger']:active {
-  background: var(--xh-clipboard-trigger-bg-active, var(--xh-bg-subtle-active));
+[data-scope='clipboard'][data-part='copy-trigger']:active {
+  background: var(--xh-clipboard-copy-trigger-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
 }
 
 /* 写入在途：指针换成 progress，同时在按钮里转一枚圆环。
    不压透明度：那既没有令牌也没有覆盖槽，深色档下压出来的灰还会掉到读不清；
    圆环与下载键那一档同形，在途在全库读起来是同一件事 */
-[data-scope='clipboard'][data-part='trigger'][data-state='copying'] {
+[data-scope='clipboard'][data-part='copy-trigger'][data-state='copying'] {
   cursor: progress;
 }
 
-[data-scope='clipboard'][data-part='trigger'][data-state='copying']::before {
+[data-scope='clipboard'][data-part='copy-trigger'][data-state='copying']::before {
   content: '';
   flex: none;
   inline-size: 1em;
@@ -13260,23 +12560,23 @@ input[data-scope='mention'][data-part='input'] {
 /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
    两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
 @media (prefers-reduced-motion: reduce) {
-  [data-scope='clipboard'][data-part='trigger'][data-state='copying']::before {
+  [data-scope='clipboard'][data-part='copy-trigger'][data-state='copying']::before {
     border-style: dotted;
     border-color: currentColor;
     animation: none;
   }
 }
 
-:where([data-motion='reduce']) [data-scope='clipboard'][data-part='trigger'][data-state='copying']::before {
+:where([data-motion='reduce']) [data-scope='clipboard'][data-part='copy-trigger'][data-state='copying']::before {
   border-style: dotted;
   border-color: currentColor;
   animation: none;
 }
 
 /* 复制成功那一段换成成功色，撑住"这次真的写进去了"这句话 */
-[data-scope='clipboard'][data-part='trigger'][data-copied] {
-  border-color: var(--xh-clipboard-trigger-border-copied, var(--xh-fg-success));
-  color: var(--xh-clipboard-trigger-fg-copied, var(--xh-fg-success));
+[data-scope='clipboard'][data-part='copy-trigger'][data-copied] {
+  border-color: var(--xh-clipboard-copy-trigger-border-copied, var(--xh-fg-success));
+  color: var(--xh-clipboard-copy-trigger-fg-copied, var(--xh-fg-success));
 }
 
 [data-scope='clipboard'][data-part='indicator'] {
@@ -13963,16 +13263,16 @@ input[data-scope='mention'][data-part='input'] {
    两层都收在一个 ::before 里：它是盒树里的第一个子节点，作者写的拇指排在它后面，
    绘制顺序上就压在渐变之上；拆成 ::before + ::after 的话 ::after 是最后一个子节点，
    会反过来盖住拇指。 */
-[data-scope='color-picker'][data-part='area'] {
+[data-scope='color-picker'][data-part='saturation-area'] {
   position: relative;
   display: block;
-  block-size: var(--xh-color-picker-area-h, 9rem);
-  border-radius: var(--xh-color-picker-area-radius, var(--xh-shape-control));
+  block-size: var(--xh-color-picker-saturation-area-h, 9rem);
+  border-radius: var(--xh-color-picker-saturation-area-radius, var(--xh-shape-control));
   cursor: crosshair;
 }
 
 /* white / black 是 HSV 色彩空间自带的两个端点，不是主题色，因此不走令牌 */
-[data-scope='color-picker'][data-part='area']::before {
+[data-scope='color-picker'][data-part='saturation-area']::before {
   position: absolute;
   border-radius: inherit;
   background-image:
@@ -13984,17 +13284,17 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 渐变方向没有逻辑关键字可用，只能靠 :dir() 分流：
    拇指走的是 inset-inline-start，rtl 下自动换向，饱和度那层渐变不跟着换就反了 */
-[data-scope='color-picker'][data-part='area']:dir(rtl)::before {
+[data-scope='color-picker'][data-part='saturation-area']:dir(rtl)::before {
   background-image:
     linear-gradient(to bottom, transparent, black),
     linear-gradient(to left, white, transparent);
 }
 
-[data-scope='color-picker'][data-part='area'][data-readonly]:not([data-disabled]) {
+[data-scope='color-picker'][data-part='saturation-area'][data-readonly]:not([data-disabled]) {
   cursor: default;
 }
 
-[data-scope='color-picker'][data-part='area'][data-disabled] {
+[data-scope='color-picker'][data-part='saturation-area'][data-disabled] {
   opacity: var(--xh-state-disabled-opacity);
 }
 
@@ -14242,7 +13542,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='color-picker'][data-part='trigger'][hidden],
 [data-scope='color-picker'][data-part='swatch'][hidden],
 [data-scope='color-picker'][data-part='content'][hidden],
-[data-scope='color-picker'][data-part='area'][hidden],
+[data-scope='color-picker'][data-part='saturation-area'][hidden],
 [data-scope='color-picker'][data-part='area-thumb'][hidden],
 [data-scope='color-picker'][data-part='channel-slider'][hidden],
 [data-scope='color-picker'][data-part='channel-slider-thumb'][hidden],
@@ -14281,8 +13581,8 @@ input[data-scope='mention'][data-part='input'] {
  * 退出之后它们不再跟着系统底色走，各补一圈系统描边把它们从背景里框出来。
  */
 @media (forced-colors: active) {
-  [data-scope='color-picker'][data-part='area'],
-  [data-scope='color-picker'][data-part='area']::before,
+  [data-scope='color-picker'][data-part='saturation-area'],
+  [data-scope='color-picker'][data-part='saturation-area']::before,
   [data-scope='color-picker'][data-part='channel-slider'],
   [data-scope='color-picker'][data-part='channel-slider-track'],
   [data-scope='color-picker'][data-part='swatch'],
@@ -14290,7 +13590,7 @@ input[data-scope='mention'][data-part='input'] {
     forced-color-adjust: none;
   }
 
-  [data-scope='color-picker'][data-part='area'],
+  [data-scope='color-picker'][data-part='saturation-area'],
   [data-scope='color-picker'][data-part='channel-slider'],
   [data-scope='color-picker'][data-part='swatch'],
   [data-scope='color-picker'][data-part='swatch-item'] {
@@ -14751,23 +14051,23 @@ input[data-scope='mention'][data-part='input'] {
   animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
-[data-scope='combobox'][data-part='item-group'] {
+[data-scope='combobox'][data-part='group'] {
   display: flex;
   flex-direction: column;
-  gap: var(--xh-combobox-item-group-gap, var(--xh-list-option-gap));
+  gap: var(--xh-combobox-group-gap, var(--xh-list-option-gap));
 }
 
-[data-scope='combobox'][data-part='item-group'][hidden] {
+[data-scope='combobox'][data-part='group'][hidden] {
   display: none;
 }
 
 /* 组间留白只加在后继分组上：首组顶上已经有 content 的内边距，再加一层会显得头重 */
-[data-scope='combobox'][data-part='item-group'] + [data-scope='combobox'][data-part='item-group'] {
-  margin-block-start: var(--xh-combobox-group-gap, var(--xh-space-1_5));
+[data-scope='combobox'][data-part='group'] + [data-scope='combobox'][data-part='group'] {
+  margin-block-start: var(--xh-combobox-group-spacing, var(--xh-space-1_5));
 }
 
 /* 分组标题不是候选、进不了导航，画成小号次要文字，内缩与候选对齐（同一个 padding-inline） */
-[data-scope='combobox'][data-part='item-group-label'] {
+[data-scope='combobox'][data-part='group-label'] {
   display: block;
   padding-block: var(--xh-combobox-group-label-py, var(--xh-space-1));
   padding-inline: var(--xh-combobox-group-label-px, var(--xh-control-px-md));
@@ -14778,7 +14078,7 @@ input[data-scope='mention'][data-part='input'] {
   user-select: none;
 }
 
-[data-scope='combobox'][data-part='item-group-label'][hidden] {
+[data-scope='combobox'][data-part='group-label'][hidden] {
   display: none;
 }
 
@@ -15004,13 +14304,13 @@ input[data-scope='mention'][data-part='input'] {
   /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
      列表族的 16rem 对命令菜单偏矮，这里另给一档 */
   max-block-size: min(var(--xh-context-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_context-menu-available-h));
-  padding-block: var(--xh-context-menu-py, var(--xh-surface-pad-xs));
-  padding-inline: var(--xh-context-menu-px, var(--xh-surface-pad-xs));
+  padding-block: var(--xh-context-menu-content-py, var(--xh-surface-pad-xs));
+  padding-inline: var(--xh-context-menu-content-px, var(--xh-surface-pad-xs));
   border: var(--xh-stroke-thin) solid var(--xh-context-menu-border, var(--xh-border-default));
-  border-radius: var(--xh-context-menu-radius, var(--xh-shape-surface));
-  background: var(--xh-context-menu-bg, var(--xh-bg-surface));
-  color: var(--xh-context-menu-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-context-menu-shadow, var(--xh-elevation-floating));
+  border-radius: var(--xh-context-menu-content-radius, var(--xh-shape-surface));
+  background: var(--xh-context-menu-content-bg, var(--xh-bg-surface));
+  color: var(--xh-context-menu-content-fg, var(--xh-fg-default));
+  box-shadow: var(--xh-context-menu-content-shadow, var(--xh-elevation-floating));
   /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
   overflow-y: auto;
   pointer-events: auto;
@@ -15191,7 +14491,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_overlay-arrow-x: var(--xh-_context-menu-arrow-x);
   --xh-_overlay-arrow-y: var(--xh-_context-menu-arrow-y);
 
-  background: var(--xh-context-menu-bg, var(--xh-bg-surface));
+  background: var(--xh-context-menu-content-bg, var(--xh-bg-surface));
   border: var(--xh-stroke-thin) solid var(--xh-context-menu-border, var(--xh-border-default));
 }
 
@@ -15912,7 +15212,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 快捷选项列摆在日历的行内起始一侧，同样只在它真在场时才横过来。
    与上一条同理：不加 :not([hidden])，退场那几帧塌回 block 会让两块竖着堆一下 */
-[data-scope='date-picker'][data-part='content']:has(> [data-part='presets']) {
+[data-scope='date-picker'][data-part='content']:has(> [data-part='preset-group']) {
   display: flex;
   align-items: stretch;
 }
@@ -15925,7 +15225,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 快捷选项列与它旁边那张日历之间留出同样的空当，两道分隔线左右对称 */
-[data-scope='date-picker'][data-part='presets'] + [data-scope='date-picker'][data-part='calendar'] {
+[data-scope='date-picker'][data-part='preset-group'] + [data-scope='date-picker'][data-part='calendar'] {
   padding-inline-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
 }
 
@@ -15942,21 +15242,21 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* —— 快捷选项：一列按钮式条目，贴在日历的行内起始一侧 —— */
-[data-scope='date-picker'][data-part='presets'] {
+[data-scope='date-picker'][data-part='preset-group'] {
   display: flex;
   flex: none;
   /* 这一列的高度由并排的日历给：不写就按内容收，右侧那道分隔线只画到最后一条选项 */
   align-self: stretch;
   flex-direction: column;
-  gap: var(--xh-date-picker-presets-gap, var(--xh-list-option-gap));
+  gap: var(--xh-date-picker-preset-group-gap, var(--xh-list-option-gap));
   /* 选项多起来时这一列自己滚，不把整张面板撑高 */
-  max-block-size: var(--xh-date-picker-presets-h, var(--xh-viewport-h-lg));
-  padding: var(--xh-date-picker-presets-padding, var(--xh-space-1));
+  max-block-size: var(--xh-date-picker-preset-group-h, var(--xh-viewport-h-lg));
+  padding: var(--xh-date-picker-preset-group-padding, var(--xh-space-1));
   overflow-y: auto;
   border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-border-subtle));
 }
 
-[data-scope='date-picker'][data-part='presets'][hidden] {
+[data-scope='date-picker'][data-part='preset-group'][hidden] {
   display: none;
 }
 
@@ -15977,7 +15277,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='date-picker'][data-part='preset']:focus-visible,
-[data-scope='date-picker'][data-part='presets']:focus-visible {
+[data-scope='date-picker'][data-part='preset-group']:focus-visible {
   --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
@@ -16891,18 +16191,6 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-editable-label-fg-disabled, var(--xh-fg-subtle));
 }
 
-/* 预览区与输入框轮流上场，两者在同一处落脚：area 给这一处定最小宽高 */
-[data-scope='editable'][data-part='area'] {
-  display: inline-flex;
-  align-items: center;
-  min-block-size: var(--xh-editable-area-min-h, var(--xh-control-h-md));
-  min-inline-size: var(--xh-editable-area-min-w, 6ch);
-}
-
-[data-scope='editable'][data-part='area'][hidden] {
-  display: none;
-}
-
 /* 预览区的高度、内边距与边框都和输入框取同一档，只有描边是透明的：
    单行值定在控件档上，多行值才往下长 */
 [data-scope='editable'][data-part='preview'] {
@@ -17036,11 +16324,13 @@ input[data-scope='mention'][data-part='input'] {
   -webkit-text-fill-color: var(--xh-editable-input-autofill-fg, var(--xh-fg-default));
 }
 
+/* 预览区、输入框与三颗按钮同在这一层：预览与输入轮流上场，控件盒给这一处定最小宽高 */
 [data-scope='editable'][data-part='control'] {
   display: inline-flex;
-  flex: none;
   align-items: center;
   gap: var(--xh-editable-control-gap, var(--xh-space-1));
+  min-block-size: var(--xh-editable-control-min-h, var(--xh-control-h-md));
+  min-inline-size: var(--xh-editable-control-min-w, 6ch);
 }
 
 [data-scope='editable'][data-part='control'][hidden] {
@@ -17390,13 +16680,13 @@ input[data-scope='mention'][data-part='input'] {
   white-space: nowrap;
 }
 
-[data-scope='file-upload'][data-part='item-group'] {
+[data-scope='file-upload'][data-part='list'] {
   display: flex;
   flex-direction: column;
   gap: var(--xh-file-upload-item-gap, var(--xh-space-2));
 }
 
-[data-scope='file-upload'][data-part='item-group'][hidden] {
+[data-scope='file-upload'][data-part='list'][hidden] {
   display: none;
 }
 
@@ -18562,7 +17852,7 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
 }
 
-/* 整组禁用会把 data-disabled 一路打到 label / content / item-group 上，各处观感保持一致 */
+/* 整组禁用会把 data-disabled 一路打到 label / content / group 上，各处观感保持一致 */
 [data-scope='listbox'][data-part='label'][data-disabled] {
   color: var(--xh-fg-subtle);
 }
@@ -18602,24 +17892,24 @@ input[data-scope='mention'][data-part='input'] {
   outline: none;
 }
 
-[data-scope='listbox'][data-part='item-group'] {
+[data-scope='listbox'][data-part='group'] {
   display: flex;
   flex-direction: column;
-  gap: var(--xh-listbox-item-group-gap, var(--xh-list-option-gap));
+  gap: var(--xh-listbox-group-gap, var(--xh-list-option-gap));
 }
 
-[data-scope='listbox'][data-part='item-group'][hidden] {
+[data-scope='listbox'][data-part='group'][hidden] {
   display: none;
 }
 
 /* 组间留白只加在后继分组上：首组顶上已经有 content 的内边距，再加一层会显得头重 */
-[data-scope='listbox'][data-part='item-group'] + [data-scope='listbox'][data-part='item-group'] {
-  margin-block-start: var(--xh-listbox-group-gap, var(--xh-space-1_5));
+[data-scope='listbox'][data-part='group'] + [data-scope='listbox'][data-part='group'] {
+  margin-block-start: var(--xh-listbox-group-spacing, var(--xh-space-1_5));
 }
 
 /* 分组标题不是选项、进不了导航，画成小号次要文字，
    内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
-[data-scope='listbox'][data-part='item-group-label'] {
+[data-scope='listbox'][data-part='group-label'] {
   display: block;
   padding-block: var(--xh-listbox-group-label-py, var(--xh-space-1));
   padding-inline: var(--xh-listbox-group-label-px, var(--xh-control-px-md));
@@ -18630,11 +17920,11 @@ input[data-scope='mention'][data-part='input'] {
   user-select: none;
 }
 
-[data-scope='listbox'][data-part='item-group-label'][hidden] {
+[data-scope='listbox'][data-part='group-label'][hidden] {
   display: none;
 }
 
-[data-scope='listbox'][data-part='item-group-label'][data-disabled] {
+[data-scope='listbox'][data-part='group-label'][data-disabled] {
   color: var(--xh-fg-disabled);
 }
 
@@ -18908,13 +18198,13 @@ input[data-scope='mention'][data-part='input'] {
   /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
      列表族的 16rem 对命令菜单偏矮，这里另给一档 */
   max-block-size: min(var(--xh-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menu-available-h));
-  padding-block: var(--xh-menu-py, var(--xh-surface-pad-xs));
-  padding-inline: var(--xh-menu-px, var(--xh-surface-pad-xs));
+  padding-block: var(--xh-menu-content-py, var(--xh-surface-pad-xs));
+  padding-inline: var(--xh-menu-content-px, var(--xh-surface-pad-xs));
   border: var(--xh-stroke-thin) solid var(--xh-menu-border, var(--xh-border-default));
-  border-radius: var(--xh-menu-radius, var(--xh-shape-surface));
-  background: var(--xh-menu-bg, var(--xh-bg-surface));
-  color: var(--xh-menu-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-menu-shadow, var(--xh-elevation-floating));
+  border-radius: var(--xh-menu-content-radius, var(--xh-shape-surface));
+  background: var(--xh-menu-content-bg, var(--xh-bg-surface));
+  color: var(--xh-menu-content-fg, var(--xh-fg-default));
+  box-shadow: var(--xh-menu-content-shadow, var(--xh-elevation-floating));
   /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
   overflow-y: auto;
   pointer-events: auto;
@@ -19064,7 +18354,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_overlay-arrow-x: var(--xh-_menu-arrow-x);
   --xh-_overlay-arrow-y: var(--xh-_menu-arrow-y);
 
-  background: var(--xh-menu-bg, var(--xh-bg-surface));
+  background: var(--xh-menu-content-bg, var(--xh-bg-surface));
   border: var(--xh-stroke-thin) solid var(--xh-menu-border, var(--xh-border-default));
 }
 
@@ -19103,12 +18393,12 @@ input[data-scope='mention'][data-part='input'] {
 
   display: flex;
   align-items: center;
-  gap: var(--xh-menubar-root-gap, var(--xh-space-1));
-  padding-block: var(--xh-menubar-root-py, var(--xh-space-1));
-  padding-inline: var(--xh-menubar-root-px, var(--xh-space-1));
-  border-radius: var(--xh-menubar-root-radius, var(--xh-shape-control));
-  background: var(--xh-menubar-root-bg, transparent);
-  color: var(--xh-menubar-root-fg, var(--xh-fg-default));
+  gap: var(--xh-menubar-gap, var(--xh-space-1));
+  padding-block: var(--xh-menubar-py, var(--xh-space-1));
+  padding-inline: var(--xh-menubar-px, var(--xh-space-1));
+  border-radius: var(--xh-menubar-radius, var(--xh-shape-control));
+  background: var(--xh-menubar-bg, transparent);
+  color: var(--xh-menubar-fg, var(--xh-fg-default));
 }
 
 /* 浮层被搬到 portal 落点，继承不到 root 上的槽：这把尺在被搬走的那一侧再声明一次，
@@ -19250,13 +18540,13 @@ input[data-scope='mention'][data-part='input'] {
   /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
      列表族的 16rem 对命令菜单偏矮，这里另给一档 */
   max-block-size: min(var(--xh-menubar-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menubar-available-h));
-  padding-block: var(--xh-menubar-py, var(--xh-surface-pad-xs));
-  padding-inline: var(--xh-menubar-px, var(--xh-surface-pad-xs));
+  padding-block: var(--xh-menubar-content-py, var(--xh-surface-pad-xs));
+  padding-inline: var(--xh-menubar-content-px, var(--xh-surface-pad-xs));
   border: var(--xh-stroke-thin) solid var(--xh-menubar-border, var(--xh-border-default));
-  border-radius: var(--xh-menubar-radius, var(--xh-shape-surface));
-  background: var(--xh-menubar-bg, var(--xh-bg-surface));
-  color: var(--xh-menubar-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-menubar-shadow, var(--xh-elevation-floating));
+  border-radius: var(--xh-menubar-content-radius, var(--xh-shape-surface));
+  background: var(--xh-menubar-content-bg, var(--xh-bg-surface));
+  color: var(--xh-menubar-content-fg, var(--xh-fg-default));
+  box-shadow: var(--xh-menubar-content-shadow, var(--xh-elevation-floating));
   /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
   overflow-y: auto;
   pointer-events: auto;
@@ -19581,46 +18871,46 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 回到底部：贴在滚动区右下角，收起时不卸载只隐藏 */
-[data-scope='message-feed'][data-part='scroll-button'] {
+[data-scope='message-feed'][data-part='scroll-to-end-trigger'] {
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-message-feed-button-border, var(--xh-border-default));
-  border-radius: var(--xh-message-feed-button-radius, var(--xh-shape-pill));
-  background: var(--xh-message-feed-button-bg, var(--xh-bg-surface-raised));
-  box-shadow: var(--xh-message-feed-button-shadow, var(--xh-elevation-raised));
-  color: var(--xh-message-feed-button-fg, var(--xh-fg-default));
-  inline-size: var(--xh-message-feed-button-size, var(--xh-control-h-sm));
-  block-size: var(--xh-message-feed-button-size, var(--xh-control-h-sm));
-  inset-block-end: var(--xh-message-feed-button-inset, var(--xh-space-4));
-  inset-inline-end: var(--xh-message-feed-button-inset, var(--xh-space-4));
+  border: var(--xh-stroke-thin) solid var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-border-default));
+  border-radius: var(--xh-message-feed-scroll-to-end-trigger-radius, var(--xh-shape-pill));
+  background: var(--xh-message-feed-scroll-to-end-trigger-bg, var(--xh-bg-surface-raised));
+  box-shadow: var(--xh-message-feed-scroll-to-end-trigger-shadow, var(--xh-elevation-raised));
+  color: var(--xh-message-feed-scroll-to-end-trigger-fg, var(--xh-fg-default));
+  inline-size: var(--xh-message-feed-scroll-to-end-trigger-size, var(--xh-control-h-sm));
+  block-size: var(--xh-message-feed-scroll-to-end-trigger-size, var(--xh-control-h-sm));
+  inset-block-end: var(--xh-message-feed-scroll-to-end-trigger-inset, var(--xh-space-4));
+  inset-inline-end: var(--xh-message-feed-scroll-to-end-trigger-inset, var(--xh-space-4));
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
-[data-scope='message-feed'][data-part='scroll-button'][hidden] {
+[data-scope='message-feed'][data-part='scroll-to-end-trigger'][hidden] {
   display: none;
 }
 
 /* 收起不卸载，冒出来时靠这条进场动画；不写 display，可见性归上面那条 [hidden] 管 */
-[data-scope='message-feed'][data-part='scroll-button'][data-state='visible'] {
+[data-scope='message-feed'][data-part='scroll-to-end-trigger'][data-state='visible'] {
   animation: xh-message-feed-button-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
-[data-scope='message-feed'][data-part='scroll-button']:hover {
-  background: var(--xh-message-feed-button-bg-hover, var(--xh-bg-subtle-hover));
+[data-scope='message-feed'][data-part='scroll-to-end-trigger']:hover {
+  background: var(--xh-message-feed-scroll-to-end-trigger-bg-hover, var(--xh-bg-subtle-hover));
 }
 
-[data-scope='message-feed'][data-part='scroll-button']:active {
+[data-scope='message-feed'][data-part='scroll-to-end-trigger']:active {
   scale: var(--xh-motion-scale-press);
 }
 
 /* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中 */
-[data-scope='message-feed'][data-part='scroll-button']:empty::before {
+[data-scope='message-feed'][data-part='scroll-to-end-trigger']:empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -19662,7 +18952,7 @@ input[data-scope='mention'][data-part='input'] {
 
 @media print {
   /* 打印：回到底部这颗钮只有在能滚的地方才成立，落到纸上是一颗按不动的按钮。 */
-  [data-scope='message-feed'][data-part='scroll-button'] {
+  [data-scope='message-feed'][data-part='scroll-to-end-trigger'] {
     display: none;
   }
 }
@@ -20928,7 +20218,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='pagination'][data-part='prev-trigger'],
 [data-scope='pagination'][data-part='next-trigger'],
 [data-scope='pagination'][data-part='item'],
-[data-scope='pagination'][data-part='ellipsis'] {
+[data-scope='pagination'][data-part='ellipsis-trigger'] {
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -20952,7 +20242,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='pagination'][data-part='prev-trigger'][hidden],
 [data-scope='pagination'][data-part='next-trigger'][hidden],
 [data-scope='pagination'][data-part='item'][hidden],
-[data-scope='pagination'][data-part='ellipsis'][hidden] {
+[data-scope='pagination'][data-part='ellipsis-trigger'][hidden] {
   display: none;
 }
 
@@ -20960,7 +20250,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='pagination'][data-part='prev-trigger'],
 [data-scope='pagination'][data-part='next-trigger'],
 [data-scope='pagination'][data-part='item'],
-[data-scope='pagination'][data-part='ellipsis'] {
+[data-scope='pagination'][data-part='ellipsis-trigger'] {
   background: var(--xh-pagination-item-bg, transparent);
   color: var(--xh-pagination-item-fg, var(--xh-fg-default));
   font-weight: var(--xh-pagination-item-font-weight, var(--xh-text-label-weight));
@@ -20980,7 +20270,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='pagination'][data-part='prev-trigger']:hover:not(:disabled),
 [data-scope='pagination'][data-part='next-trigger']:hover:not(:disabled),
 [data-scope='pagination'][data-part='item']:not([data-current]):hover,
-[data-scope='pagination'][data-part='ellipsis']:hover {
+[data-scope='pagination'][data-part='ellipsis-trigger']:hover {
   background: var(--xh-pagination-item-bg-hover, var(--xh-bg-subtle-hover));
 }
 
@@ -20988,7 +20278,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='pagination'][data-part='prev-trigger']:active:not(:disabled),
 [data-scope='pagination'][data-part='next-trigger']:active:not(:disabled),
 [data-scope='pagination'][data-part='item']:not([data-current]):active,
-[data-scope='pagination'][data-part='ellipsis']:active {
+[data-scope='pagination'][data-part='ellipsis-trigger']:active {
   background: var(--xh-pagination-item-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
 }
@@ -21025,8 +20315,8 @@ input[data-scope='mention'][data-part='input'] {
 /* 省略位是可展开的按钮：折进去的那几页只有它一个入口，指针与键盘都得点得到，
    所以它跟着上面几组一起吃可点观感与聚焦环。这里只把字色压淡一档，
    与页码区分开——同权重且排在可点观感组之后，压得住那条 color */
-[data-scope='pagination'][data-part='ellipsis'] {
-  color: var(--xh-pagination-ellipsis-fg, var(--xh-fg-subtle));
+[data-scope='pagination'][data-part='ellipsis-trigger'] {
+  color: var(--xh-pagination-ellipsis-trigger-fg, var(--xh-fg-subtle));
 }
 /* 每页条数控制器：原生 select，抹掉系统外观后与页码格子共用同一副骨架。
    箭头用背景图而非伪元素——原生 select 不生成 ::before */
@@ -21962,29 +21252,29 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-[data-scope='question-flow'][data-part='option-group'] {
+[data-scope='question-flow'][data-part='group'] {
   display: flex;
   flex-direction: column;
-  gap: var(--xh-question-flow-option-group-gap, var(--xh-space-1));
+  gap: var(--xh-question-flow-group-gap, var(--xh-space-1));
 }
 
-[data-scope='question-flow'][data-part='option-group'][hidden] {
+[data-scope='question-flow'][data-part='group'][hidden] {
   display: none;
 }
 
 /* 一个选项：整行可点、可聚焦，记号在左 */
-[data-scope='question-flow'][data-part='option'] {
+[data-scope='question-flow'][data-part='item'] {
   display: flex;
   align-items: center;
-  gap: var(--xh-question-flow-option-gap, var(--xh-space-1_5));
-  padding-inline: var(--xh-question-flow-option-px, var(--xh-space-2));
-  padding-block: var(--xh-question-flow-option-py, var(--xh-space-1));
+  gap: var(--xh-question-flow-item-gap, var(--xh-space-1_5));
+  padding-inline: var(--xh-question-flow-item-px, var(--xh-space-2));
+  padding-block: var(--xh-question-flow-item-py, var(--xh-space-1));
   border: 0;
-  border-radius: var(--xh-question-flow-option-radius, var(--xh-shape-control));
-  background: var(--xh-question-flow-option-bg, transparent);
-  color: var(--xh-question-flow-option-fg, var(--xh-fg-muted));
+  border-radius: var(--xh-question-flow-item-radius, var(--xh-shape-control));
+  background: var(--xh-question-flow-item-bg, transparent);
+  color: var(--xh-question-flow-item-fg, var(--xh-fg-muted));
   font-family: inherit;
-  font-size: var(--xh-question-flow-option-font-size, var(--xh-_question-flow-font-size));
+  font-size: var(--xh-question-flow-item-font-size, var(--xh-_question-flow-font-size));
   line-height: var(--xh-leading-normal);
   text-align: start;
   cursor: pointer;
@@ -21994,57 +21284,57 @@ input[data-scope='mention'][data-part='input'] {
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
-[data-scope='question-flow'][data-part='option'][hidden] {
+[data-scope='question-flow'][data-part='item'][hidden] {
   display: none;
 }
 
-[data-scope='question-flow'][data-part='option']:hover {
-  background: var(--xh-question-flow-option-bg-hover, var(--xh-bg-subtle-hover));
+[data-scope='question-flow'][data-part='item']:hover {
+  background: var(--xh-question-flow-item-bg-hover, var(--xh-bg-subtle-hover));
 }
 
-[data-scope='question-flow'][data-part='option']:active {
+[data-scope='question-flow'][data-part='item']:active {
   scale: var(--xh-motion-scale-press);
 }
 
 /* 当前题的选项按位次错开开幕，换题时随 data-current 重跑。
    backwards 不能省：等待期间起帧不生效的话，后面几条会先露一下再跳回去。
    第 6 条起并到同一拍上 */
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='option'] {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item'] {
   animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
 }
 
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(2) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(2) {
   animation-delay: calc(var(--xh-motion-stagger-step) * 1);
 }
 
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(3) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(3) {
   animation-delay: calc(var(--xh-motion-stagger-step) * 2);
 }
 
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(4) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(4) {
   animation-delay: calc(var(--xh-motion-stagger-step) * 3);
 }
 
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(5) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(5) {
   animation-delay: calc(var(--xh-motion-stagger-step) * 4);
 }
 
-[data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(n + 6) {
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(n + 6) {
   animation-delay: calc(var(--xh-motion-stagger-step) * 5);
 }
 
 /* 选中的那条读起来更重一档 */
-[data-scope='question-flow'][data-part='option'][data-state='checked'] {
-  color: var(--xh-question-flow-option-fg-checked, var(--xh-fg-default));
+[data-scope='question-flow'][data-part='item'][data-state='checked'] {
+  color: var(--xh-question-flow-item-fg-checked, var(--xh-fg-default));
 }
 
 /* 排在选中档之后：禁用项无论选没选都是禁用色 */
-[data-scope='question-flow'][data-part='option'][data-disabled] {
+[data-scope='question-flow'][data-part='item'][data-disabled] {
   color: var(--xh-fg-disabled);
 }
 
 /* 记号盒：多选是圆角方格，单选是圆。选中态填色，纯装饰不进可访问名 */
-[data-scope='question-flow'][data-part='option-indicator'] {
+[data-scope='question-flow'][data-part='item-indicator'] {
   /* 盒里那枚记号跟着字号走，与其余带记号盒的控件同一把尺。
      根上那把是展示型图标档，比指示符盒还大一档，画进这个盒里会溢出四个像素 */
   --xh-icon-size: var(--xh-question-flow-indicator-icon-size, var(--xh-glyph-size-text));
@@ -22065,17 +21355,17 @@ input[data-scope='mention'][data-part='input'] {
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-[data-scope='question-flow'][data-part='option-indicator'][hidden] {
+[data-scope='question-flow'][data-part='item-indicator'][hidden] {
   display: none;
 }
 
 /* 单选那一档把方格收成圆 */
-[data-scope='question-flow'][data-part='option-indicator'][data-select-mode='single'] {
+[data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single'] {
   border-radius: var(--xh-question-flow-indicator-radius-single, var(--xh-shape-pill));
 }
 
 /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
-[data-scope='question-flow'][data-part='option-indicator']:empty::before {
+[data-scope='question-flow'][data-part='item-indicator']:empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -22088,7 +21378,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 单选那一档把勾换成实心点：mask 撤掉，圆点由伪元素自己的底色画。
    直径按记号盒的一半量，与其余单选控件的圆点同源——盒换档时点跟着换 */
-[data-scope='question-flow'][data-part='option-indicator'][data-select-mode='single']:empty::before {
+[data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single']:empty::before {
   inline-size: var(--xh-question-flow-dot-size, calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) / 2));
   block-size: var(--xh-question-flow-dot-size, calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) / 2));
   border-radius: var(--xh-question-flow-dot-radius, var(--xh-shape-pill));
@@ -22096,22 +21386,22 @@ input[data-scope='mention'][data-part='input'] {
   mask: none;
 }
 
-[data-scope='question-flow'][data-part='option-indicator'][data-state='checked'] {
+[data-scope='question-flow'][data-part='item-indicator'][data-state='checked'] {
   border-color: var(--xh-question-flow-indicator-border-checked, var(--xh-_tone, var(--xh-bg-brand)));
   background: var(--xh-question-flow-indicator-bg-checked, var(--xh-_tone, var(--xh-bg-brand)));
 }
 
 /* 没选中时把记号隐去而不是撤掉：盒留在原位，翻面时整行不跳 */
-[data-scope='question-flow'][data-part='option-indicator'][data-state='unchecked'] {
+[data-scope='question-flow'][data-part='item-indicator'][data-state='unchecked'] {
   color: transparent;
 }
 
-[data-scope='question-flow'][data-part='option-label'] {
+[data-scope='question-flow'][data-part='item-text'] {
   display: block;
   flex: 1 1 auto;
 }
 
-[data-scope='question-flow'][data-part='option-label'][hidden] {
+[data-scope='question-flow'][data-part='item-text'][hidden] {
   display: none;
 }
 
@@ -24113,33 +23403,33 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* —— 刻度：圆点钉在轨道上、文案排在轨道外侧，坐标由连接层按百分比内联给出 —— */
-[data-scope='slider'][data-part='marks'] {
+[data-scope='slider'][data-part='tick-group'] {
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
 
-[data-scope='slider'][data-part='mark'] {
+[data-scope='slider'][data-part='tick'] {
   position: absolute;
   inset-block-start: 50%;
-  inline-size: var(--xh-slider-mark-size, var(--xh-space-1));
-  block-size: var(--xh-slider-mark-size, var(--xh-space-1));
-  border-radius: var(--xh-slider-mark-radius, var(--xh-shape-pill));
-  background: var(--xh-slider-mark-bg, var(--xh-border-strong));
+  inline-size: var(--xh-slider-tick-size, var(--xh-space-1));
+  block-size: var(--xh-slider-tick-size, var(--xh-space-1));
+  border-radius: var(--xh-slider-tick-radius, var(--xh-shape-pill));
+  background: var(--xh-slider-tick-bg, var(--xh-border-strong));
   translate: -50% -50%;
 }
 
 /* 落进已选区间的刻度点跟 range 同色 */
-[data-scope='slider'][data-part='mark'][data-passed] {
-  background: var(--xh-slider-mark-bg-active, var(--xh-_tone, var(--xh-bg-brand)));
+[data-scope='slider'][data-part='tick'][data-passed] {
+  background: var(--xh-slider-tick-bg-active, var(--xh-_tone, var(--xh-bg-brand)));
 }
 
-[data-scope='slider'][data-part='mark-label'] {
+[data-scope='slider'][data-part='tick-label'] {
   position: absolute;
   inset-block-start: 100%;
-  margin-block-start: var(--xh-slider-mark-label-gap, var(--xh-space-1));
-  color: var(--xh-slider-mark-label-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-slider-mark-label-font-size, var(--xh-text-caption-size));
+  margin-block-start: var(--xh-slider-tick-label-gap, var(--xh-space-1));
+  color: var(--xh-slider-tick-label-fg, var(--xh-fg-subtle));
+  font-size: var(--xh-slider-tick-label-font-size, var(--xh-text-caption-size));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   translate: -50% 0;
@@ -24148,22 +23438,22 @@ input[data-scope='mention'][data-part='input'] {
   user-select: none;
 }
 
-[data-scope='slider'][data-part='mark-label'][data-passed] {
-  color: var(--xh-slider-mark-label-fg-active, var(--xh-fg-default));
+[data-scope='slider'][data-part='tick-label'][data-passed] {
+  color: var(--xh-slider-tick-label-fg-active, var(--xh-fg-default));
 }
 
 /* 竖直轨道：点与文案换轴，坐标由连接层写在 block 轴上 */
-[data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='mark'] {
+[data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='tick'] {
   inset-block-start: auto;
   inset-inline-start: 50%;
   translate: -50% 50%;
 }
 
-[data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='mark-label'] {
+[data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='tick-label'] {
   inset-block-start: auto;
   inset-inline-start: 100%;
   margin-block-start: 0;
-  margin-inline-start: var(--xh-slider-mark-label-gap, var(--xh-space-1));
+  margin-inline-start: var(--xh-slider-tick-label-gap, var(--xh-space-1));
   translate: 0 50%;
 }
 
@@ -27394,7 +26684,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 每一段是一小块可聚焦区，紧挨着排；间距长在段自己身上 */
-[data-scope='time-picker'][data-part='input'] {
+[data-scope='time-picker'][data-part='segment'] {
   display: inline-block;
   padding-inline: var(--xh-time-picker-segment-px, var(--xh-space-1));
   padding-block: 0;
@@ -27411,35 +26701,35 @@ input[data-scope='mention'][data-part='input'] {
 
 /* granularity / hourCycle 关掉的段由连接层打 hidden；上面那条 display 会把 UA 规则盖掉，
    少了这条，收起的段会一直杵在那儿 */
-[data-scope='time-picker'][data-part='input'][hidden] {
+[data-scope='time-picker'][data-part='segment'][hidden] {
   display: none;
 }
 
 /* 还没填的段压成弱色：一行里哪几段是占位符，一眼要看得出来 */
-[data-scope='time-picker'][data-part='input'][data-placeholder] {
+[data-scope='time-picker'][data-part='segment'][data-placeholder] {
   color: var(--xh-time-picker-placeholder-fg, var(--xh-fg-subtle));
 }
 
 /* 一行段长得差不多，光有边框亮起来看不出正在改哪一段：当前段必须自己有底色。
    data-focus 由机器给（它知道谁是当前段），:focus-visible 兜住机器状态还没回流的那一帧 */
-[data-scope='time-picker'][data-part='input'][data-focus]:not([data-disabled]),
-[data-scope='time-picker'][data-part='input']:focus-visible {
+[data-scope='time-picker'][data-part='segment'][data-focus]:not([data-disabled]),
+[data-scope='time-picker'][data-part='segment']:focus-visible {
   background: var(--xh-time-picker-segment-bg-focus, var(--xh-_time-picker-accent));
   color: var(--xh-time-picker-segment-fg-focus, var(--xh-_time-picker-accent-fg));
   outline: none;
 }
 
 /* 焦点态用了品牌底色之后，占位符那条弱色会被它盖住，这里明确让位给焦点态 */
-[data-scope='time-picker'][data-part='input'][data-focus][data-placeholder]:not([data-disabled]) {
+[data-scope='time-picker'][data-part='segment'][data-focus][data-placeholder]:not([data-disabled]) {
   color: var(--xh-time-picker-segment-fg-focus, var(--xh-_time-picker-accent-fg));
 }
 
-[data-scope='time-picker'][data-part='input']:hover:not([data-focus], [data-disabled]) {
+[data-scope='time-picker'][data-part='segment']:hover:not([data-focus], [data-disabled]) {
   background: var(--xh-time-picker-segment-bg-hover, var(--xh-bg-subtle-hover));
 }
 
 /* 段是集合条目形态（role=spinbutton 的 span），禁用走 data-disabled 而不是 :disabled */
-[data-scope='time-picker'][data-part='input'][data-disabled] {
+[data-scope='time-picker'][data-part='segment'][data-disabled] {
   color: var(--xh-fg-disabled);
 }
 
@@ -27548,19 +26838,19 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 快捷选项也是一列，与时分秒那几列并排，排在行内起始一侧 */
-[data-scope='time-picker'][data-part='presets'] {
+[data-scope='time-picker'][data-part='preset-group'] {
   display: flex;
   flex: none;
   flex-direction: column;
-  gap: var(--xh-time-picker-presets-gap, var(--xh-list-option-gap));
-  max-block-size: var(--xh-time-picker-presets-h, var(--xh-viewport-h-sm));
-  padding-inline: var(--xh-time-picker-presets-px, var(--xh-space-1));
+  gap: var(--xh-time-picker-preset-group-gap, var(--xh-list-option-gap));
+  max-block-size: var(--xh-time-picker-preset-group-h, var(--xh-viewport-h-sm));
+  padding-inline: var(--xh-time-picker-preset-group-px, var(--xh-space-1));
   overflow-y: auto;
   border-inline-end: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-border-subtle));
   scrollbar-width: thin;
 }
 
-[data-scope='time-picker'][data-part='presets'][hidden] {
+[data-scope='time-picker'][data-part='preset-group'][hidden] {
   display: none;
 }
 
@@ -27581,7 +26871,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='time-picker'][data-part='preset']:focus-visible,
-[data-scope='time-picker'][data-part='presets']:focus-visible {
+[data-scope='time-picker'][data-part='preset-group']:focus-visible {
   --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
@@ -28162,8 +27452,8 @@ input[data-scope='mention'][data-part='input'] {
 
   /* 按下态：强调交给底色。前景不用品牌色——subtle-active 这一档底上任何品牌色都过不了
      AA（浅色最好的 brand-700 只有 4.37），强调靠底、可读靠前景是更稳的分工 */
-  --xh-_bg-pressed: var(--xh-toggle-bg-pressed, var(--xh-bg-subtle-active));
-  --xh-_fg-pressed: var(--xh-toggle-fg-pressed, var(--xh-fg-default));
+  --xh-_bg-pressed: var(--xh-toggle-bg-on, var(--xh-bg-subtle-active));
+  --xh-_fg-pressed: var(--xh-toggle-fg-on, var(--xh-fg-default));
 
   display: inline-flex;
   align-items: center;
@@ -30973,14 +30263,14 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree-select'][data-part='branch-control'] {
   display: flex;
   align-items: center;
-  gap: var(--xh-tree-select-row-gap, var(--xh-_tree-select-gap));
-  padding-block: var(--xh-tree-select-row-py, var(--xh-_tree-select-row-py));
-  padding-inline: var(--xh-tree-select-row-px, var(--xh-_tree-select-row-px));
-  border-radius: var(--xh-tree-select-row-radius, var(--xh-shape-control));
-  color: var(--xh-tree-select-row-fg, var(--xh-fg-default));
-  font-size: var(--xh-tree-select-row-font-size, var(--xh-_tree-select-font-size));
+  gap: var(--xh-tree-select-item-gap, var(--xh-_tree-select-gap));
+  padding-block: var(--xh-tree-select-item-py, var(--xh-_tree-select-row-py));
+  padding-inline: var(--xh-tree-select-item-px, var(--xh-_tree-select-row-px));
+  border-radius: var(--xh-tree-select-item-radius, var(--xh-shape-control));
+  color: var(--xh-tree-select-item-fg, var(--xh-fg-default));
+  font-size: var(--xh-tree-select-item-font-size, var(--xh-_tree-select-font-size));
   /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
-  line-height: var(--xh-tree-select-row-leading, var(--xh-leading-normal));
+  line-height: var(--xh-tree-select-item-leading, var(--xh-leading-normal));
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -30998,9 +30288,9 @@ input[data-scope='mention'][data-part='input'] {
     :has(> [data-scope='tree-select'][data-part='item-indicator'])
   ) {
   padding-inline-start: calc(
-    var(--xh-tree-select-row-px, var(--xh-_tree-select-row-px)) +
+    var(--xh-tree-select-item-px, var(--xh-_tree-select-row-px)) +
       var(--xh-tree-select-item-indicator-size, var(--xh-control-indicator-size)) +
-      var(--xh-tree-select-row-gap, var(--xh-_tree-select-gap))
+      var(--xh-tree-select-item-gap, var(--xh-_tree-select-gap))
   );
 }
 
@@ -31013,15 +30303,15 @@ input[data-scope='mention'][data-part='input'] {
    与选中互相独立，键盘落焦另有聚焦环标记位置 */
 [data-scope='tree-select'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]),
 [data-scope='tree-select'][data-part='branch-control']:not([data-disabled]):is(:hover, [data-highlighted]) {
-  background: var(--xh-tree-select-row-bg-hover, var(--xh-bg-subtle));
+  background: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
 }
 
 /* 选中只换文字色与字重，配合行首那格 ✓ 标记；底色整条通道留给高亮，
    两者因此能同时看见 */
 [data-scope='tree-select'][data-part='item'][data-selected],
 [data-scope='tree-select'][data-part='branch-control'][data-selected] {
-  color: var(--xh-tree-select-row-fg-selected, var(--xh-_tree-select-selected-fg));
-  font-weight: var(--xh-tree-select-row-selected-font-weight, var(--xh-font-weight-medium));
+  color: var(--xh-tree-select-item-fg-selected, var(--xh-_tree-select-selected-fg));
+  font-weight: var(--xh-tree-select-item-selected-font-weight, var(--xh-font-weight-medium));
 }
 
 /* 叶子自己就是 treeitem，环往内收：行是撑满宽度的，画在外沿会被容器裁掉 */

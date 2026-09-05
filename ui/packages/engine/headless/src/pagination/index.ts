@@ -19,7 +19,7 @@ export {
 export type { PaginationEllipsisSide, PaginationEntryRange, PaginationPage, PaginationPageItem } from './pagination.range'
 export type {
   PaginationApi,
-  PaginationEllipsisProps,
+  PaginationEllipsisTriggerProps,
   PaginationItemProps,
   PaginationPageChangeDetails,
   PaginationPageSizeChangeDetails,

@@ -96,11 +96,11 @@ export const XhCarouselViewport = defineComponent({
   },
 })
 
-export const XhCarouselItemGroup = defineComponent({
-  name: 'XhCarouselItemGroup',
+export const XhCarouselList = defineComponent({
+  name: 'XhCarouselList',
   setup(_, { slots }) {
     const ctx = useCarouselContext()
-    return () => h('div', ctx.api.value.getItemGroupProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getListProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

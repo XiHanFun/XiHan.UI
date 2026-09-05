@@ -4,7 +4,7 @@ import {
   XhCarouselIndicator,
   XhCarouselIndicatorGroup,
   XhCarouselItem,
-  XhCarouselItemGroup,
+  XhCarouselList,
   XhCarouselNextTrigger,
   XhCarouselPrevTrigger,
   XhCarouselRoot,
@@ -25,13 +25,13 @@ const slides = ["一", "二", "三", "四", "五", "六"];
     <!-- 不回绕：首页的上一张与末页的下一张转成原生 disabled -->
     <XhCarouselPrevTrigger />
     <XhCarouselViewport style="block-size: 120px">
-      <XhCarouselItemGroup>
+      <XhCarouselList>
         <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
           <div style="display: grid; place-items: center; block-size: 100%">
             第 {{ text }} 张
           </div>
         </XhCarouselItem>
-      </XhCarouselItemGroup>
+      </XhCarouselList>
     </XhCarouselViewport>
     <XhCarouselNextTrigger />
     <XhCarouselIndicatorGroup>

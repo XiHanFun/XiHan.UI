@@ -12,7 +12,7 @@ export const alertSuite: ConformanceSuite = {
   fixture: {
     part: 'root',
     children: [
-      { part: 'icon', tag: 'span', text: 'i' },
+      { part: 'indicator', tag: 'span', text: 'i' },
       { part: 'title', text: '连接已断开' },
       { part: 'description', text: '正在尝试重连' },
       { part: 'close-trigger', tag: 'button' },
@@ -23,8 +23,8 @@ export const alertSuite: ConformanceSuite = {
       name: '默认 info：role=status + polite，标题与说明关联到 root，初始展开',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'icon', 'title', 'description', 'close-trigger'],
-        counts: { 'root': 1, 'icon': 1, 'title': 1, 'description': 1, 'close-trigger': 1 },
+        order: ['root', 'indicator', 'title', 'description', 'close-trigger'],
+        counts: { 'root': 1, 'indicator': 1, 'title': 1, 'description': 1, 'close-trigger': 1 },
         parts: {
           'root': {
             'role': 'status',
@@ -36,7 +36,7 @@ export const alertSuite: ConformanceSuite = {
             'data-state': 'open',
             'hidden': null,
           },
-          'icon': { 'aria-hidden': 'true' },
+          'indicator': { 'aria-hidden': 'true' },
           'close-trigger': {
             'type': 'button',
             'aria-label': 'Close',

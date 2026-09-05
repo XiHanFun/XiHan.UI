@@ -67,7 +67,7 @@
 
   /* 笔迹是一条填充路径（每一笔是它的一条子路径），不是描边：
      粗细要随压感变，而 stroke-width 全线只有一个值 */
-  [data-scope='signature-pad'][data-part='segment'] {
+  [data-scope='signature-pad'][data-part='path'] {
     fill: var(--xh-signature-pad-ink, var(--xh-fg-default));
     stroke: none;
   }

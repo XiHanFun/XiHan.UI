@@ -36,7 +36,7 @@ function buildFixture(): FixtureNode {
         part: 'row',
         children: [
           // 行首占位：与下面各行的星期名同宽，月份才对得上列
-          { part: 'week-day-label', tag: 'span' },
+          { part: 'week-day', tag: 'span' },
           ...GRID.months.map(month => ({
             part: 'month-label',
             tag: 'span',
@@ -52,7 +52,7 @@ function buildFixture(): FixtureNode {
           attrs: { value: String(row.weekDay) },
           children: [
             {
-              part: 'week-day-label',
+              part: 'week-day',
               tag: 'span',
               attrs: { value: String(row.weekDay) },
               text: GRID.weekDays[row.weekDay]?.label ?? '',
@@ -137,7 +137,7 @@ function buildMonthFixture(): FixtureNode {
             {
               part: 'row',
               children: MONTH_GRID.weekDays.map(day => ({
-                part: 'week-day-label',
+                part: 'week-day',
                 tag: 'span',
                 attrs: { value: String(day.weekDay) },
                 text: day.label,
@@ -226,7 +226,7 @@ export const heatmapSuite: ConformanceSuite = {
           // 七行星期加一条月份行
           'row': 8,
           // 每行行首一个，月份行行首那个占位也算一个
-          'week-day-label': 8,
+          'week-day': 8,
           'month-label': 1,
           'cell': 31,
           'legend': 1,
@@ -249,8 +249,8 @@ export const heatmapSuite: ConformanceSuite = {
           'row[1]': { 'role': 'row', 'aria-rowindex': '1', 'data-week-day': '0', 'aria-label': '星期一' },
           'row[7]': { 'role': 'row', 'aria-rowindex': '7', 'data-week-day': '6', 'aria-label': '星期日' },
           // 星期名与月份名都是给眼睛看的坐标轴，一律藏起来
-          'week-day-label[0]': { 'aria-hidden': 'true', 'data-week-day': null },
-          'week-day-label[1]': { 'aria-hidden': 'true', 'data-week-day': '0' },
+          'week-day[0]': { 'aria-hidden': 'true', 'data-week-day': null },
+          'week-day[1]': { 'aria-hidden': 'true', 'data-week-day': '0' },
           'month-label[0]': { 'aria-hidden': 'true', 'data-value': '2024-01' },
           // 图例容器不藏：两端那两个字要念得到，藏起来的是色块本身
           'legend': { 'aria-hidden': null, 'role': 'group', 'aria-label': 'Activity level' },
@@ -471,7 +471,7 @@ export const heatmapSuite: ConformanceSuite = {
           'month-block': 2,
           // 每块一条星期名轴加它自己的周行
           'row': 4,
-          'week-day-label': 14,
+          'week-day': 14,
           'month-label': 2,
           'cell': 7,
           'tooltip': 1,

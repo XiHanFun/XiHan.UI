@@ -65,7 +65,7 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-signature-pad>` |
-| Vue 组件 | `XhSignaturePadClearTrigger` `XhSignaturePadControl` `XhSignaturePadGuide` `XhSignaturePadHiddenInput` `XhSignaturePadLabel` `XhSignaturePadRoot` `XhSignaturePadSegment` `XhSignaturePadStatus` |
+| Vue 组件 | `XhSignaturePadClearTrigger` `XhSignaturePadControl` `XhSignaturePadGuide` `XhSignaturePadHiddenInput` `XhSignaturePadLabel` `XhSignaturePadPath` `XhSignaturePadRoot` `XhSignaturePadStatus` |
 | 组合式函数 | `useSignaturePad` |
 | 状态机 | `signaturePadMachine` |
 | 皮肤 | `@xihan-ui/styles/signature-pad.css` |
@@ -74,7 +74,7 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="signature-pad"`：**`root`** · `label` · **`control`** · `guide` · **`segment`** · `clear-trigger` · `status` · `hidden-input`
+`data-scope="signature-pad"`：**`root`** · `label` · **`control`** · `guide` · **`path`** · `clear-trigger` · `status` · `hidden-input`
 
 ## Props
 
@@ -135,7 +135,7 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 | `getLabelProps` | `() => T['element']` |  |
 | `getControlProps` | `() => T['element']` |  |
 | `getGuideProps` | `() => T['element']` |  |
-| `getSegmentProps` | `() => T['element']` |  |
+| `getPathProps` | `() => T['element']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getStatusProps` | `() => T['element']` | 状态出口：一块 role=status 的活区域，签上与清空都会播报一次。 |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份视觉隐藏的原生输入，随表单提交当前签名。 |
@@ -194,7 +194,7 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `guide` | `data-disabled` | ''（条件成立时才出现） |
-| `segment` | `data-empty` | ''（条件成立时才出现） |
+| `path` | `data-empty` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-empty` | ''（条件成立时才出现） |
 | `status` | `data-empty` | ''（条件成立时才出现） |
@@ -204,7 +204,7 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-signature-pad-aspect-ratio` · `--xh-signature-pad-bg` · `--xh-signature-pad-bg-disabled` · `--xh-signature-pad-border` · `--xh-signature-pad-border-drawing` · `--xh-signature-pad-clear-bg` · `--xh-signature-pad-clear-bg-active` · `--xh-signature-pad-clear-bg-disabled` · `--xh-signature-pad-clear-bg-hover` · `--xh-signature-pad-clear-border` · `--xh-signature-pad-clear-fg` · `--xh-signature-pad-clear-gap` · `--xh-signature-pad-clear-h` · `--xh-signature-pad-clear-px` · `--xh-signature-pad-clear-radius` · `--xh-signature-pad-control-border-invalid` · `--xh-signature-pad-gap` · `--xh-signature-pad-guide-stroke` · `--xh-signature-pad-ink` · `--xh-signature-pad-label-fg` · `--xh-signature-pad-label-font-size` · `--xh-signature-pad-label-font-weight` · `--xh-signature-pad-radius` · `--xh-signature-pad-status-fg` · `--xh-signature-pad-status-font-size`
+`--xh-signature-pad-aspect-ratio` · `--xh-signature-pad-bg` · `--xh-signature-pad-bg-disabled` · `--xh-signature-pad-border` · `--xh-signature-pad-border-drawing` · `--xh-signature-pad-clear-bg` · `--xh-signature-pad-clear-bg-active` · `--xh-signature-pad-clear-bg-disabled` · `--xh-signature-pad-clear-bg-hover` · `--xh-signature-pad-clear-border` · `--xh-signature-pad-clear-fg` · `--xh-signature-pad-clear-gap` · `--xh-signature-pad-clear-h` · `--xh-signature-pad-clear-px` · `--xh-signature-pad-clear-radius` · `--xh-signature-pad-clear-shadow-hover` · `--xh-signature-pad-control-border-invalid` · `--xh-signature-pad-gap` · `--xh-signature-pad-guide-stroke` · `--xh-signature-pad-ink` · `--xh-signature-pad-label-fg` · `--xh-signature-pad-label-font-size` · `--xh-signature-pad-label-font-weight` · `--xh-signature-pad-radius` · `--xh-signature-pad-status-fg` · `--xh-signature-pad-status-font-size`
 
 ## 动效
 
@@ -237,14 +237,14 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 
 - `control` 必须是 `<svg>`；
 - `guide` 必须是 `control` 里面的 `<line>`；
-- `segment` 必须是 `control` 里面的 `<path>`；
+- `path` 必须是 `control` 里面的 `<path>`；
 - `clear-trigger` 必须是原生 `<button>`，`hidden-input` 必须是原生 `<input>`。
 
 `viewBox` 由组件自己写，作者不要在 `control` 上再写一个。
 
 ### 两个适配器的分工
 
-- **Vue**：`XhSignaturePadRoot` 的默认插槽给出 `empty` / `paths` / `drawing` / `statusText` 与 `toSvg()` / `clear()`；也可以用 `useSignaturePad()` 自己拿。`XhSignaturePadGuide` 与 `XhSignaturePadSegment` 必须写在 `XhSignaturePadControl` 里面——SVG 命名空间由那棵子树带下去，挪出去就成了 HTML 元素，画不出东西。
+- **Vue**：`XhSignaturePadRoot` 的默认插槽给出 `empty` / `paths` / `drawing` / `statusText` 与 `toSvg()` / `clear()`；也可以用 `useSignaturePad()` 自己拿。`XhSignaturePadGuide` 与 `XhSignaturePadPath` 必须写在 `XhSignaturePadControl` 里面——SVG 命名空间由那棵子树带下去，挪出去就成了 HTML 元素，画不出东西。
 - **Web Components**：结构由作者自己写（Light DOM，不投影插槽）。`<xh-signature-pad>` 上有 `clear()`、`toSvg()` 与只读的 `empty`；提交前取签名用 `toSvg()`，不必去缓存上一次 `draw-end`。
 - 两边的 `status` 部件里都不必自己写字：节点为空时由适配器填内建文案；写了字就以作者写的为准。
 

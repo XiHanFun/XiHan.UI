@@ -150,7 +150,7 @@
   /* 行首的星期名。月份行行首那个占位也是它，宽度一样，月份才对得上列。
      一整年放不下时网格横着滚，这一列钉在滚动容器的起始缘：跟着滚走的话，
      滚过头一屏就再也认不出哪一行是星期几。底色必须实色，格子从它下面滚过去不能透出来 */
-  [data-scope='heatmap'][data-part='week-day-label'] {
+  [data-scope='heatmap'][data-part='week-day'] {
     position: sticky;
     /* 层号收在 root 建的层叠上下文里，只跟组件内的兄弟比 */
     z-index: var(--xh-heatmap-sticky-layer, 1);
@@ -171,10 +171,10 @@
      一行只有 10px 高，七个 12px 的字挨着写会上下叠在一起；隔一行之后每个留下来的字
      有两行的高度（2 × 格高 + 格距）可用。哪一行是星期几由行自己的可及名字念出来，
      可见文字与可及名字是两件事，读屏这边一行都没少 */
-  [data-scope='heatmap'][data-part='week-day-label'][data-week-day='0'],
-  [data-scope='heatmap'][data-part='week-day-label'][data-week-day='2'],
-  [data-scope='heatmap'][data-part='week-day-label'][data-week-day='4'],
-  [data-scope='heatmap'][data-part='week-day-label'][data-week-day='6'] {
+  [data-scope='heatmap'][data-part='week-day'][data-week-day='0'],
+  [data-scope='heatmap'][data-part='week-day'][data-week-day='2'],
+  [data-scope='heatmap'][data-part='week-day'][data-week-day='4'],
+  [data-scope='heatmap'][data-part='week-day'][data-week-day='6'] {
     color: var(--xh-_heatmap-week-day-skip);
   }
 
@@ -215,7 +215,7 @@
      左侧那一列星期名就变成锯齿。两条选择器合起来正好是「本行第一个格子」，
      行里写不写星期名都成立 */
   [data-scope='heatmap'][data-part='row'] > [data-scope='heatmap'][data-part='cell']:first-child,
-  [data-scope='heatmap'][data-part='week-day-label'] + [data-scope='heatmap'][data-part='cell'] {
+  [data-scope='heatmap'][data-part='week-day'] + [data-scope='heatmap'][data-part='cell'] {
     margin-inline-start: calc(
       var(--xh-_heatmap-row-offset) * (var(--xh-_heatmap-cell-size) + var(--xh-_heatmap-gap))
     );
@@ -250,7 +250,7 @@
   /* 块里的星期名是一排列头，宽度改成格宽才对得上下面的格子，也不再钉住。
      字比一格宽，不裁：裁掉就是七个缺角的字，让它往两边的列间距里溢出去，
      相邻两个各溢出一点也还差着一段空白 */
-  [data-scope='heatmap'][data-part='root'][data-variant='month'] [data-scope='heatmap'][data-part='week-day-label'] {
+  [data-scope='heatmap'][data-part='root'][data-variant='month'] [data-scope='heatmap'][data-part='week-day'] {
     position: static;
     inline-size: var(--xh-_heatmap-cell-size);
     overflow: visible;
@@ -392,7 +392,7 @@
   [data-scope='heatmap'][data-part='grid'][hidden],
   [data-scope='heatmap'][data-part='month-block'][hidden],
   [data-scope='heatmap'][data-part='row'][hidden],
-  [data-scope='heatmap'][data-part='week-day-label'][hidden],
+  [data-scope='heatmap'][data-part='week-day'][hidden],
   [data-scope='heatmap'][data-part='month-label'][hidden],
   [data-scope='heatmap'][data-part='row-label'][hidden],
   [data-scope='heatmap'][data-part='column-label'][hidden],

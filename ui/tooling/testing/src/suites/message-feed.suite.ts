@@ -35,7 +35,7 @@ export const messageFeedSuite: ConformanceSuite = {
           },
         ],
       },
-      { part: 'scroll-button', tag: 'button' },
+      { part: 'scroll-to-end-trigger', tag: 'button' },
       { part: 'live-region' },
     ],
   },
@@ -216,10 +216,10 @@ export const messageFeedSuite: ConformanceSuite = {
     {
       name: '回到底部按钮：在底时收起，只看在不在底、不看粘附意图',
       spec: { apg: APG },
-      covers: ['message-feed.kbd.scroll-button'],
+      covers: ['message-feed.kbd.scroll-to-end-trigger'],
       initial: {
         parts: {
-          'scroll-button': { 'hidden': '', 'data-state': 'hidden', 'aria-label': 'Scroll to bottom', 'type': 'button' },
+          'scroll-to-end-trigger': { 'hidden': '', 'data-state': 'hidden', 'aria-label': 'Scroll to bottom', 'type': 'button' },
         },
       },
     },

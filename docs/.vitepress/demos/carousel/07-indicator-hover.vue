@@ -4,7 +4,7 @@ import {
   XhCarouselIndicator,
   XhCarouselIndicatorGroup,
   XhCarouselItem,
-  XhCarouselItemGroup,
+  XhCarouselList,
   XhCarouselRoot,
   XhCarouselViewport,
 } from "@xihan-ui/vue";
@@ -19,13 +19,13 @@ const slides = ["城市夜景", "海岸线", "雪山", "沙漠"];
     style="inline-size: 100%"
   >
     <XhCarouselViewport style="block-size: 130px">
-      <XhCarouselItemGroup>
+      <XhCarouselList>
         <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
           <div style="display: grid; place-items: center; block-size: 100%">
             {{ text }}
           </div>
         </XhCarouselItem>
-      </XhCarouselItemGroup>
+      </XhCarouselList>
     </XhCarouselViewport>
     <XhCarouselIndicatorGroup>
       <!-- mouseenter 是落到指示点按钮上的原生事件，组件自带的点击不受影响 -->

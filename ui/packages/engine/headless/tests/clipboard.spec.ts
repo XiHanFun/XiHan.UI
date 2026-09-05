@@ -386,7 +386,7 @@ describe('connectClipboard 结构与标注', () => {
   it('trigger 是原生按钮且带 type=button，点一下走复制', () => {
     teardowns.push(installClipboard(async () => {}))
     const c = makeClipboard({ value: 'abc' })
-    const trigger = c.api().getTriggerProps() as Dict
+    const trigger = c.api().getCopyTriggerProps() as Dict
     // 漏了 type，按钮落在 form 里会变成 submit，Enter 直接提交表单
     expect(trigger.type).toBe('button')
 
@@ -404,7 +404,7 @@ describe('connectClipboard 结构与标注', () => {
     expect(api.copied).toBe(true)
     expect((api.getRootProps() as Dict)['data-copied']).toBe('')
     expect((api.getRootProps() as Dict)['data-state']).toBe('copied')
-    expect((api.getTriggerProps() as Dict)['data-copied']).toBe('')
+    expect((api.getCopyTriggerProps() as Dict)['data-copied']).toBe('')
     expect((api.getControlProps() as Dict)['data-state']).toBe('copied')
   })
 

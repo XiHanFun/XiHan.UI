@@ -316,7 +316,6 @@
         "mention.css",
         "popconfirm.css",
         "popover.css",
-        "popselect.css",
         "select.css",
         "time-picker.css",
         "tooltip.css",
@@ -331,7 +330,6 @@
         "mention",
         "popconfirm",
         "popover",
-        "popselect",
         "select",
         "time-picker",
         "tooltip",
@@ -383,7 +381,6 @@
         "pagination.css",
         "popconfirm.css",
         "popover.css",
-        "popselect.css",
         "select.css",
         "side-nav.css",
         "time-picker.css",
@@ -406,7 +403,6 @@
         "pagination",
         "popconfirm",
         "popover",
-        "popselect",
         "select",
         "side-nav",
         "time-picker",
@@ -491,13 +487,11 @@
       "content": "from{opacity:0;translate:0 var(--xh-motion-distance-sm)}to{opacity:1;translate:0 0}",
       "definedIn": [
         "empty-state.css",
-        "question-flow.css",
-        "result.css"
+        "question-flow.css"
       ],
       "consumers": [
         "empty-state",
-        "question-flow",
-        "result"
+        "question-flow"
       ]
     },
     "xh-skeleton-shimmer": {

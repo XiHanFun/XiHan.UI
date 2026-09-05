@@ -17,7 +17,7 @@
 ## 特性
 
 - 骨架四层：`root` · `viewport` · `content` · `line`；一行写什么由作者定，组件只给身份与等宽排版。
-  另有两个可缺省的部件：`scroll-button` 与 `live-region`。
+  另有两个可缺省的部件：`scroll-to-end-trigger` 与 `live-region`。
 - `rows` 按行数定高。
 - 自动跟到底部；用户往上翻时停住跟随，回到底部再恢复。
 - 内置「回到底部」：离底时冒出来，按下去归位并重新粘附。留空时皮肤画一枚向下的字形，

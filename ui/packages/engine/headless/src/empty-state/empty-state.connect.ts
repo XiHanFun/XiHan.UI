@@ -25,11 +25,12 @@ export function connectEmptyState<T extends PropTypes>(
       // 那里没有"更新"可播报，页面结构本身已经把这段读给用户了，挂活区只是噪音。
       'role': live === 'off' ? undefined : 'status',
       'data-size': props.size,
+      'data-status': props.status,
     }),
 
     // 图标是纯装饰：它表达的信息标题里已经写了，念出来只会重复一遍
-    getIconProps: () => normalize.element({
-      ...parts.icon.attrs,
+    getIndicatorProps: () => normalize.element({
+      ...parts.indicator.attrs,
       'aria-hidden': true,
     }),
 

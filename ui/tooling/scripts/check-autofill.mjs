@@ -33,7 +33,6 @@ const SKIN_DIR = 'packages/design/styles/css'
  * 值写清它实际渲染成什么，以及为什么不受这条约束。
  */
 const NOT_NATIVE = {
-  'time-picker': { tag: 'span', reason: '时分秒各是一个可聚焦的文字段，不是输入框，浏览器不会往里填' },
   'tool-call': { tag: 'div', reason: '展示工具调用的入参，是只读的代码块容器，不接受键入' },
 }
 

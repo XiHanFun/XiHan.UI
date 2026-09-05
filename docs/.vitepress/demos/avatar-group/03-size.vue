@@ -1,6 +1,6 @@
 <!-- 尺寸 | 直径、字号与叠放量在组上写一次，沿自定义属性流给组内每一枚，「+N」跟着一起换 -->
 <script setup lang="ts">
-import { XhAvatarFallback, XhAvatarGroupOverflow, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
+import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 
 const sizes = ["sm", "md", "lg"];
 const shown = ["曦", "寒", "懿"];
@@ -13,7 +13,7 @@ const shown = ["曦", "寒", "懿"];
         <XhAvatarImage />
         <XhAvatarFallback>{{ m }}</XhAvatarFallback>
       </XhAvatarRoot>
-      <XhAvatarGroupOverflow>+3</XhAvatarGroupOverflow>
+      <XhAvatarGroupOverflowItem>+3</XhAvatarGroupOverflowItem>
     </XhAvatarGroupRoot>
   </div>
 </template>

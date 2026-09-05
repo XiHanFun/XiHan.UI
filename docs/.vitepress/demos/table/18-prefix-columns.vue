@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import {
-  XhPaginationEllipsis,
+  XhPaginationEllipsisTrigger,
   XhPaginationItem,
   XhPaginationNextTrigger,
   XhPaginationPrevTrigger,
@@ -80,7 +80,7 @@ const selection = ref<string[]>([]);
     >
       <XhPaginationPrevTrigger />
       <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-        <XhPaginationEllipsis v-if="p === 'ellipsis'" />
+        <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'" />
         <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
       </template>
       <XhPaginationNextTrigger />

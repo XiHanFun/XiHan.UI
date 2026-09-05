@@ -4,7 +4,7 @@ import {
   XhCarouselIndicator,
   XhCarouselIndicatorGroup,
   XhCarouselItem,
-  XhCarouselItemGroup,
+  XhCarouselList,
   XhCarouselNextTrigger,
   XhCarouselPrevTrigger,
   XhCarouselRoot,
@@ -24,13 +24,13 @@ const slides = ["09:00 晨会", "11:00 客户沟通", "15:00 联调"];
     <XhCarouselPrevTrigger>∧</XhCarouselPrevTrigger>
     <!-- 纵轨的裁切窗口靠高度定，宽度交给根节点 -->
     <XhCarouselViewport style="block-size: 96px; inline-size: 100%">
-      <XhCarouselItemGroup>
+      <XhCarouselList>
         <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
           <div style="display: grid; place-items: center; block-size: 100%">
             {{ text }}
           </div>
         </XhCarouselItem>
-      </XhCarouselItemGroup>
+      </XhCarouselList>
     </XhCarouselViewport>
     <XhCarouselNextTrigger>∨</XhCarouselNextTrigger>
     <XhCarouselIndicatorGroup>

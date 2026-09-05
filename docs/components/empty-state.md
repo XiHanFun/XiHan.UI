@@ -2,6 +2,10 @@
 
 没有数据时那一块：说清楚为什么空，以及可以做什么。
 
+空态与结果页共用一副骨架：图标、标题、说明、操作四段与整页结果完全一致，所以 404、403、500
+这类结果页也用本组件铺。`status` 只落成 root 的 `data-status`，皮肤据它给图标区上语气色，
+不改任何语义、不带插画资产。
+
 ## 何时使用
 
 - 列表、表格、搜索结果为空。
@@ -10,12 +14,13 @@
 ## 何时不用
 
 - 数据在加载中：用[骨架屏](./skeleton)或[加载指示器](./spinner)。
-- 发生了错误：用[结果页](./result)。
+- 只是一次轻量操作的反馈：用[轻提示](./toast)。
 
 ## 特性
 
 - 图标、标题、描述、操作四段都可选。
 - `live` 决定这块内容出现时读屏怎么播报——搜索结果变空时这一条很重要。
+- `status` 决定图标区并进哪一族语气色：三个状态码各并进最接近的一族，另有成功、警示、出错、提示四档。
 
 ## 示例
 
@@ -39,22 +44,28 @@ size 只换留白与字号，语义一点不动；不传即 md
 
 ### 用作结果页
 
-同一套部件也承载 404、403 这类结果：换掉图标与文案，操作槽里放回退出口
+同一套部件也承载 404、403 这类结果：status 给图标区上语气色，操作槽里放回退出口
 
 <XhDemo src="empty-state/04-result" />
 
-### 按语气着色
+### 图标自带语气
 
-空状态自己不带语气，图标槽里放一枚带 tone 的图标，成功、警示、出错就各是一族颜色
+图标槽里放一枚带 tone 的图标，着色落在图标自己身上，不经过 status
 
 <XhDemo src="empty-state/05-tone-icon" />
+
+### 结果类型
+
+status 只落成 data-status，皮肤据它给图标区上语气色；画什么图标仍由作者塞
+
+<XhDemo src="empty-state/06-status" />
 
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-empty-state>` |
-| Vue 组件 | `XhEmptyStateAction` `XhEmptyStateDescription` `XhEmptyStateIcon` `XhEmptyStateRoot` `XhEmptyStateTitle` |
+| Vue 组件 | `XhEmptyStateAction` `XhEmptyStateDescription` `XhEmptyStateIndicator` `XhEmptyStateRoot` `XhEmptyStateTitle` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/empty-state.css` |
 
@@ -62,7 +73,7 @@ size 只换留白与字号，语义一点不动；不传即 md
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="empty-state"`：**`root`** · `icon` · `title` · `description` · `action`
+`data-scope="empty-state"`：**`root`** · `indicator` · `title` · `description` · `action`
 
 ## Props
 
@@ -70,6 +81,7 @@ size 只换留白与字号，语义一点不动；不传即 md
 | --- | --- | --- | --- |
 | `live` | `EmptyStateLive` |  | 缺省 polite。 |
 | `size` | `Size` |  | 尺寸档位，只改留白与字号，不改语义。 |
+| `status` | `EmptyStateStatus` |  | 结果类型，只落成 root 的 data-status；图标画什么由作者塞进图标槽。 |
 
 ## connect API
 
@@ -79,7 +91,7 @@ size 只换留白与字号，语义一点不动；不传即 md
 | --- | --- | --- |
 | `live` | `EmptyStateLive` | 生效的播报方式，缺省补齐后的值。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getIconProps` | `() => T['element']` |  |
+| `getIndicatorProps` | `() => T['element']` |  |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
 | `getActionProps` | `() => T['element']` |  |
@@ -97,7 +109,7 @@ size 只换留白与字号，语义一点不动；不传即 md
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `role` | undefined \| 'status' |
-| `icon` | `aria-hidden` | 'true' |
+| `indicator` | `aria-hidden` | 'true' |
 
 ## 样式
 
@@ -110,12 +122,13 @@ size 只换留白与字号，语义一点不动；不传即 md
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
+| `root` | `data-status` | props.status |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-empty-state-action-gap` · `--xh-empty-state-description-fg` · `--xh-empty-state-description-font-size` · `--xh-empty-state-description-leading` · `--xh-empty-state-description-max-w` · `--xh-empty-state-fg` · `--xh-empty-state-gap` · `--xh-empty-state-icon-fg` · `--xh-empty-state-icon-font-size` · `--xh-empty-state-icon-size` · `--xh-empty-state-px` · `--xh-empty-state-py` · `--xh-empty-state-title-fg` · `--xh-empty-state-title-font-size` · `--xh-empty-state-title-font-weight` · `--xh-empty-state-title-leading`
+`--xh-empty-state-action-gap` · `--xh-empty-state-description-fg` · `--xh-empty-state-description-font-size` · `--xh-empty-state-description-leading` · `--xh-empty-state-description-max-w` · `--xh-empty-state-fg` · `--xh-empty-state-gap` · `--xh-empty-state-icon-size` · `--xh-empty-state-indicator-fg` · `--xh-empty-state-indicator-font-size` · `--xh-empty-state-px` · `--xh-empty-state-py` · `--xh-empty-state-title-fg` · `--xh-empty-state-title-font-size` · `--xh-empty-state-title-font-weight` · `--xh-empty-state-title-leading`
 
 ## 动效
 
@@ -135,8 +148,11 @@ size 只换留白与字号，语义一点不动；不传即 md
 
 - 区分三种空：从来没有、筛选之后没有、搜索没结果。三者该说的话完全不同。
 - 给一条出路：新建、清除筛选、换个关键词。
+- 用作结果页时每一页都给回退出口：回首页、重试、联系支持。403 与 500 尤其需要。
+- 失败页给可追溯的标识（请求号、时间），用户报障时用得上。
 
 ## 反模式
 
 - 只画一个空盒子加"暂无数据"：用户不知道下一步做什么。
 - 首次使用时的空状态跟筛选无结果长得一样。
+- 只写"出错了"却不说是什么错，也不给下一步。

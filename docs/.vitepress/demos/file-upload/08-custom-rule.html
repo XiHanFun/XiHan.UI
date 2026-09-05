@@ -9,7 +9,7 @@
       <button data-xh-part="trigger">选择文件</button>
     </div>
     <input data-xh-part="hidden-input" />
-    <div data-xh-part="item-group"></div>
+    <div data-xh-part="list"></div>
   </div>
 </xh-file-upload>
 
@@ -18,7 +18,7 @@
 
 <script type="module">
   const upload = document.getElementById("file-upload-rule");
-  const group = upload.querySelector('[data-xh-part="item-group"]');
+  const group = upload.querySelector('[data-xh-part="list"]');
   const accepted = document.getElementById("file-upload-rule-accepted");
   const dropped = document.getElementById("file-upload-rule-dropped");
 

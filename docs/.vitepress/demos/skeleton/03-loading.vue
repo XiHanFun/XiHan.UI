@@ -1,7 +1,7 @@
 <!-- 加载结束 | loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给真内容 -->
 <script setup lang="ts">
 import { ref } from "vue";
-import { XhSkeletonBone, XhSkeletonRoot } from "@xihan-ui/vue";
+import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 
 const loading = ref(true);
 </script>
@@ -13,8 +13,8 @@ const loading = ref(true);
     </button>
 
     <XhSkeletonRoot :loading="loading" style="inline-size: 260px">
-      <XhSkeletonBone />
-      <XhSkeletonBone />
+      <XhSkeletonItem />
+      <XhSkeletonItem />
     </XhSkeletonRoot>
 
     <p v-if="!loading" style="margin: 0">这两行是接口回来之后的真内容。</p>

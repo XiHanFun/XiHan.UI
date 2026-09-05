@@ -19,7 +19,6 @@ const STYLES_DIR = 'packages/design/styles/css'
  */
 const PORTAL_EXEMPT = {
   'select': '浮层里的勾选标记有自己的指示符盒，换成整档图标会撑破它——图标只跟着盒那一侧换档',
-  'popselect': '同 select：浮层里的勾选标记有自己的指示符盒',
   'side-nav': '折叠态弹出面板里没有兜底字形，也没有图标槽；根上这条只服务留在原地的行图标',
 }
 

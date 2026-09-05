@@ -5,7 +5,7 @@ export const pageHeaderAnatomy = createAnatomy('page-header', [
   'root',
   'back-trigger',
   'title',
-  'subtitle',
+  'description',
   'extra',
   'footer',
 ])

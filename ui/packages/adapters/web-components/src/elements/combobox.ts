@@ -75,8 +75,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item - role=option 候选，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart item-text - 候选文本（选中后回填输入框的取字处）
  * @csspart item-indicator - 候选选中标记（aria-hidden）
- * @csspart item-group - role=group 分组容器，须自带 value 属性标识身份
- * @csspart item-group-label - 分组标题（本组 aria-labelledby 的目标）
+ * @csspart group - role=group 分组容器，须自带 value 属性标识身份
+ * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
  * @attr {string} name - 表单字段名；给了 hidden-input 才参与提交（多选按逗号拼成一串）
  * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
  * @csspart empty - 无匹配项提示；须放在 positioner 里当 content 的兄弟（列表内只允许 option 与 group）
@@ -278,11 +278,11 @@ export class XhComboboxElement extends XhElement {
     put('empty', api.getEmptyProps() as Record<string, unknown>)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
 
-    for (const el of this.getParts('item-group')) {
+    for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }
-      this.spreader.spread(el, api.getItemGroupProps(group) as Record<string, unknown>)
-      for (const label of this.partsIn(el, 'item-group-label'))
-        this.spreader.spread(label, api.getItemGroupLabelProps(group) as Record<string, unknown>)
+      this.spreader.spread(el, api.getGroupProps(group) as Record<string, unknown>)
+      for (const label of this.partsIn(el, 'group-label'))
+        this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
     }
 
     // 候选逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled。

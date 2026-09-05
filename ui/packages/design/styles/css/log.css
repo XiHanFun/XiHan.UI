@@ -93,21 +93,21 @@
   }
 
   /* 回到底部：浮在视口右下角，收起时不卸载只隐藏 */
-  [data-scope='log'][data-part='scroll-button'] {
+  [data-scope='log'][data-part='scroll-to-end-trigger'] {
     position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-log-scroll-button-border, var(--xh-border-default));
-    border-radius: var(--xh-log-scroll-button-radius, var(--xh-shape-pill));
-    background: var(--xh-log-scroll-button-bg, var(--xh-bg-surface-raised));
-    box-shadow: var(--xh-log-scroll-button-shadow, var(--xh-elevation-raised));
-    color: var(--xh-log-scroll-button-fg, var(--xh-fg-default));
-    inline-size: var(--xh-log-scroll-button-size, var(--xh-control-h-sm));
-    block-size: var(--xh-log-scroll-button-size, var(--xh-control-h-sm));
-    inset-block-end: var(--xh-log-scroll-button-inset, var(--xh-space-3));
-    inset-inline-end: var(--xh-log-scroll-button-inset, var(--xh-space-3));
+    border: var(--xh-stroke-thin) solid var(--xh-log-scroll-to-end-trigger-border, var(--xh-border-default));
+    border-radius: var(--xh-log-scroll-to-end-trigger-radius, var(--xh-shape-pill));
+    background: var(--xh-log-scroll-to-end-trigger-bg, var(--xh-bg-surface-raised));
+    box-shadow: var(--xh-log-scroll-to-end-trigger-shadow, var(--xh-elevation-raised));
+    color: var(--xh-log-scroll-to-end-trigger-fg, var(--xh-fg-default));
+    inline-size: var(--xh-log-scroll-to-end-trigger-size, var(--xh-control-h-sm));
+    block-size: var(--xh-log-scroll-to-end-trigger-size, var(--xh-control-h-sm));
+    inset-block-end: var(--xh-log-scroll-to-end-trigger-inset, var(--xh-space-3));
+    inset-inline-end: var(--xh-log-scroll-to-end-trigger-inset, var(--xh-space-3));
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -115,26 +115,26 @@
   }
 
   /* 连接层收起按钮时写 hidden 属性，上面的 display 会盖掉 UA 规则，这里补回 */
-  [data-scope='log'][data-part='scroll-button'][hidden] {
+  [data-scope='log'][data-part='scroll-to-end-trigger'][hidden] {
     display: none;
   }
 
   /* 收起不卸载，冒出来时靠这条进场动画；不写 display，可见性归上面那条 [hidden] 管 */
-  [data-scope='log'][data-part='scroll-button'][data-state='visible'] {
+  [data-scope='log'][data-part='scroll-to-end-trigger'][data-state='visible'] {
     animation: xh-log-button-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
-  [data-scope='log'][data-part='scroll-button']:hover {
-    background: var(--xh-log-scroll-button-bg-hover, var(--xh-bg-subtle-hover));
+  [data-scope='log'][data-part='scroll-to-end-trigger']:hover {
+    background: var(--xh-log-scroll-to-end-trigger-bg-hover, var(--xh-bg-subtle-hover));
   }
 
-  [data-scope='log'][data-part='scroll-button']:active {
+  [data-scope='log'][data-part='scroll-to-end-trigger']:active {
     scale: var(--xh-motion-scale-press);
   }
 
   /* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中。
      不画的话这颗按钮就是一枚空盒，看不出它是干什么的——名字只在 aria-label 上 */
-  [data-scope='log'][data-part='scroll-button']:empty::before {
+  [data-scope='log'][data-part='scroll-to-end-trigger']:empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -161,7 +161,7 @@
 
   @media print {
     /* 打印：回到底部这颗钮只有在能滚的地方才成立，落到纸上是一颗按不动的按钮。 */
-    [data-scope='log'][data-part='scroll-button'] {
+    [data-scope='log'][data-part='scroll-to-end-trigger'] {
       display: none;
     }
   }

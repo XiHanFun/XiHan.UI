@@ -21,11 +21,11 @@ export const XhAvatarGroupRoot = defineComponent({
   },
 })
 
-export const XhAvatarGroupOverflow = defineComponent({
-  name: 'XhAvatarGroupOverflow',
+export const XhAvatarGroupOverflowItem = defineComponent({
+  name: 'XhAvatarGroupOverflowItem',
   setup(_, { slots }) {
     const ctx = useAvatarGroupContext()
     // 「+N」的文本由作者写进插槽
-    return () => h('span', ctx.api.value.getOverflowProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getOverflowItemProps() as Record<string, unknown>, slots.default?.())
   },
 })

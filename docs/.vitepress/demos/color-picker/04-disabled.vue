@@ -1,7 +1,7 @@
 <!-- 禁用 | disabled 同时挡住触发器与面板内的所有交互 -->
 <script setup lang="ts">
 import {
-  XhColorPickerArea,
+  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerContent,
   XhColorPickerControl,
@@ -23,9 +23,9 @@ import {
     </XhColorPickerControl>
     <XhColorPickerPositioner>
       <XhColorPickerContent>
-        <XhColorPickerArea>
+        <XhColorPickerSaturationArea>
           <XhColorPickerAreaThumb />
-        </XhColorPickerArea>
+        </XhColorPickerSaturationArea>
       </XhColorPickerContent>
     </XhColorPickerPositioner>
   </XhColorPickerRoot>

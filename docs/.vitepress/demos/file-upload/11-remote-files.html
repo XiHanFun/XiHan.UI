@@ -5,14 +5,14 @@
     <div data-xh-part="dropzone">拖进来或点击选择</div>
     <button data-xh-part="trigger">选择文件</button>
     <input data-xh-part="hidden-input" />
-    <div data-xh-part="item-group"></div>
+    <div data-xh-part="list"></div>
   </div>
 </xh-file-upload>
 <p>剩余名额与新选文件共享；删除服务器附件只改 remote-files，落库由宿主决定。</p>
 
 <script type="module">
   const upload = document.getElementById("file-upload-remote");
-  const group = upload.querySelector('[data-xh-part="item-group"]');
+  const group = upload.querySelector('[data-xh-part="list"]');
   const label = upload.querySelector('[data-xh-part="label"]');
 
   // 编辑场景：这两条是服务端返回的既有附件，不是本地 File

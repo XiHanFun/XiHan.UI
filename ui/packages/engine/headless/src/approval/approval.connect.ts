@@ -95,16 +95,16 @@ export function connectApproval<T extends PropTypes>(
       'aria-atomic': 'true',
     }),
 
-    getScopeGroupProps: () => normalize.element({
-      ...parts['scope-group'].attrs,
+    getGroupProps: () => normalize.element({
+      ...parts.group.attrs,
       'role': 'group',
       'aria-label': translations?.scopes ?? 'Permissions',
     }),
 
     // 每个复选框各占一个 Tab 停靠点，不做 roving：授权项要逐条读、逐条勾
-    getScopeItemProps: item => normalize.element({
+    getItemProps: item => normalize.element({
       'role': 'checkbox',
-      ...parts['scope-item'].attrs,
+      ...parts.item.attrs,
       'aria-checked': isScopeGranted(item.value) ? 'true' : 'false',
       'aria-disabled': scopeDisabled(item) ? 'true' : 'false',
       'aria-required': item.required === true ? 'true' : 'false',
@@ -129,15 +129,15 @@ export function connectApproval<T extends PropTypes>(
       },
     }),
 
-    getScopeIndicatorProps: item => normalize.element({
-      ...parts['scope-indicator'].attrs,
+    getItemIndicatorProps: item => normalize.element({
+      ...parts['item-indicator'].attrs,
       'aria-hidden': true,
       'data-state': isScopeGranted(item.value) ? 'checked' : 'unchecked',
     }),
 
     // 排在勾选项之内，文本自然构成它的可及名
-    getScopeLabelProps: item => normalize.element({
-      ...parts['scope-label'].attrs,
+    getItemTextProps: item => normalize.element({
+      ...parts['item-text'].attrs,
       'data-value': item.value,
     }),
 

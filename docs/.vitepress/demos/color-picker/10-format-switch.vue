@@ -3,7 +3,7 @@
 import { nextTick, ref } from "vue";
 import {
   XhButton,
-  XhColorPickerArea,
+  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerChannelSlider,
   XhColorPickerChannelSliderThumb,
@@ -54,9 +54,9 @@ const modes = {
       </XhColorPickerControl>
       <XhColorPickerPositioner>
         <XhColorPickerContent>
-          <XhColorPickerArea>
+          <XhColorPickerSaturationArea>
             <XhColorPickerAreaThumb />
-          </XhColorPickerArea>
+          </XhColorPickerSaturationArea>
           <XhColorPickerChannelSlider channel="hue">
             <XhColorPickerChannelSliderTrack />
             <XhColorPickerChannelSliderThumb />

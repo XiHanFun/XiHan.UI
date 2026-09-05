@@ -35,11 +35,11 @@ export const XhAlertRoot = defineComponent({
   },
 })
 
-export const XhAlertIcon = defineComponent({
-  name: 'XhAlertIcon',
+export const XhAlertIndicator = defineComponent({
+  name: 'XhAlertIndicator',
   setup(_, { slots }) {
     const ctx = useAlertContext()
-    return () => h('span', ctx.api.value.getIconProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

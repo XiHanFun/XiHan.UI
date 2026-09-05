@@ -153,29 +153,29 @@
     display: none;
   }
 
-  [data-scope='question-flow'][data-part='option-group'] {
+  [data-scope='question-flow'][data-part='group'] {
     display: flex;
     flex-direction: column;
-    gap: var(--xh-question-flow-option-group-gap, var(--xh-space-1));
+    gap: var(--xh-question-flow-group-gap, var(--xh-space-1));
   }
 
-  [data-scope='question-flow'][data-part='option-group'][hidden] {
+  [data-scope='question-flow'][data-part='group'][hidden] {
     display: none;
   }
 
   /* 一个选项：整行可点、可聚焦，记号在左 */
-  [data-scope='question-flow'][data-part='option'] {
+  [data-scope='question-flow'][data-part='item'] {
     display: flex;
     align-items: center;
-    gap: var(--xh-question-flow-option-gap, var(--xh-space-1_5));
-    padding-inline: var(--xh-question-flow-option-px, var(--xh-space-2));
-    padding-block: var(--xh-question-flow-option-py, var(--xh-space-1));
+    gap: var(--xh-question-flow-item-gap, var(--xh-space-1_5));
+    padding-inline: var(--xh-question-flow-item-px, var(--xh-space-2));
+    padding-block: var(--xh-question-flow-item-py, var(--xh-space-1));
     border: 0;
-    border-radius: var(--xh-question-flow-option-radius, var(--xh-shape-control));
-    background: var(--xh-question-flow-option-bg, transparent);
-    color: var(--xh-question-flow-option-fg, var(--xh-fg-muted));
+    border-radius: var(--xh-question-flow-item-radius, var(--xh-shape-control));
+    background: var(--xh-question-flow-item-bg, transparent);
+    color: var(--xh-question-flow-item-fg, var(--xh-fg-muted));
     font-family: inherit;
-    font-size: var(--xh-question-flow-option-font-size, var(--xh-_question-flow-font-size));
+    font-size: var(--xh-question-flow-item-font-size, var(--xh-_question-flow-font-size));
     line-height: var(--xh-leading-normal);
     text-align: start;
     cursor: pointer;
@@ -185,57 +185,57 @@
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
-  [data-scope='question-flow'][data-part='option'][hidden] {
+  [data-scope='question-flow'][data-part='item'][hidden] {
     display: none;
   }
 
-  [data-scope='question-flow'][data-part='option']:hover {
-    background: var(--xh-question-flow-option-bg-hover, var(--xh-bg-subtle-hover));
+  [data-scope='question-flow'][data-part='item']:hover {
+    background: var(--xh-question-flow-item-bg-hover, var(--xh-bg-subtle-hover));
   }
 
-  [data-scope='question-flow'][data-part='option']:active {
+  [data-scope='question-flow'][data-part='item']:active {
     scale: var(--xh-motion-scale-press);
   }
 
   /* 当前题的选项按位次错开开幕，换题时随 data-current 重跑。
      backwards 不能省：等待期间起帧不生效的话，后面几条会先露一下再跳回去。
      第 6 条起并到同一拍上 */
-  [data-scope='question-flow'][data-part='question'][data-current] [data-part='option'] {
+  [data-scope='question-flow'][data-part='question'][data-current] [data-part='item'] {
     animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
   }
 
-  [data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(2) {
+  [data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(2) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 1);
   }
 
-  [data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(3) {
+  [data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(3) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 2);
   }
 
-  [data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(4) {
+  [data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(4) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 3);
   }
 
-  [data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(5) {
+  [data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(5) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 4);
   }
 
-  [data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(n + 6) {
+  [data-scope='question-flow'][data-part='question'][data-current] [data-part='item']:nth-child(n + 6) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 5);
   }
 
   /* 选中的那条读起来更重一档 */
-  [data-scope='question-flow'][data-part='option'][data-state='checked'] {
-    color: var(--xh-question-flow-option-fg-checked, var(--xh-fg-default));
+  [data-scope='question-flow'][data-part='item'][data-state='checked'] {
+    color: var(--xh-question-flow-item-fg-checked, var(--xh-fg-default));
   }
 
   /* 排在选中档之后：禁用项无论选没选都是禁用色 */
-  [data-scope='question-flow'][data-part='option'][data-disabled] {
+  [data-scope='question-flow'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
   }
 
   /* 记号盒：多选是圆角方格，单选是圆。选中态填色，纯装饰不进可访问名 */
-  [data-scope='question-flow'][data-part='option-indicator'] {
+  [data-scope='question-flow'][data-part='item-indicator'] {
     /* 盒里那枚记号跟着字号走，与其余带记号盒的控件同一把尺。
        根上那把是展示型图标档，比指示符盒还大一档，画进这个盒里会溢出四个像素 */
     --xh-icon-size: var(--xh-question-flow-indicator-icon-size, var(--xh-glyph-size-text));
@@ -256,17 +256,17 @@
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='question-flow'][data-part='option-indicator'][hidden] {
+  [data-scope='question-flow'][data-part='item-indicator'][hidden] {
     display: none;
   }
 
   /* 单选那一档把方格收成圆 */
-  [data-scope='question-flow'][data-part='option-indicator'][data-select-mode='single'] {
+  [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single'] {
     border-radius: var(--xh-question-flow-indicator-radius-single, var(--xh-shape-pill));
   }
 
   /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
-  [data-scope='question-flow'][data-part='option-indicator']:empty::before {
+  [data-scope='question-flow'][data-part='item-indicator']:empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -279,7 +279,7 @@
 
   /* 单选那一档把勾换成实心点：mask 撤掉，圆点由伪元素自己的底色画。
      直径按记号盒的一半量，与其余单选控件的圆点同源——盒换档时点跟着换 */
-  [data-scope='question-flow'][data-part='option-indicator'][data-select-mode='single']:empty::before {
+  [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single']:empty::before {
     inline-size: var(--xh-question-flow-dot-size, calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) / 2));
     block-size: var(--xh-question-flow-dot-size, calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) / 2));
     border-radius: var(--xh-question-flow-dot-radius, var(--xh-shape-pill));
@@ -287,22 +287,22 @@
     mask: none;
   }
 
-  [data-scope='question-flow'][data-part='option-indicator'][data-state='checked'] {
+  [data-scope='question-flow'][data-part='item-indicator'][data-state='checked'] {
     border-color: var(--xh-question-flow-indicator-border-checked, var(--xh-_tone, var(--xh-bg-brand)));
     background: var(--xh-question-flow-indicator-bg-checked, var(--xh-_tone, var(--xh-bg-brand)));
   }
 
   /* 没选中时把记号隐去而不是撤掉：盒留在原位，翻面时整行不跳 */
-  [data-scope='question-flow'][data-part='option-indicator'][data-state='unchecked'] {
+  [data-scope='question-flow'][data-part='item-indicator'][data-state='unchecked'] {
     color: transparent;
   }
 
-  [data-scope='question-flow'][data-part='option-label'] {
+  [data-scope='question-flow'][data-part='item-text'] {
     display: block;
     flex: 1 1 auto;
   }
 
-  [data-scope='question-flow'][data-part='option-label'][hidden] {
+  [data-scope='question-flow'][data-part='item-text'][hidden] {
     display: none;
   }
 

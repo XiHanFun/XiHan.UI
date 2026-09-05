@@ -3,7 +3,7 @@
 import { ref } from "vue";
 import {
   XhEmptyStateDescription,
-  XhEmptyStateIcon,
+  XhEmptyStateIndicator,
   XhEmptyStateRoot,
   XhEmptyStateTitle,
 } from "@xihan-ui/vue";
@@ -26,7 +26,7 @@ function search(): void {
 
     <!-- 结果换成空的那一刻，读屏会在不打断当前朗读的前提下把标题念出来 -->
     <XhEmptyStateRoot v-if="!hits.length" live="polite">
-      <XhEmptyStateIcon>∅</XhEmptyStateIcon>
+      <XhEmptyStateIndicator>∅</XhEmptyStateIndicator>
       <XhEmptyStateTitle>没有匹配「{{ keyword }}」的结果</XhEmptyStateTitle>
       <XhEmptyStateDescription>换个词，或者去掉几个筛选条件。</XhEmptyStateDescription>
     </XhEmptyStateRoot>

@@ -2,8 +2,6 @@
 // 锚定浮层的三件事：落定那一侧的可用高度要交到皮肤手上；条目集合类浮层还要拿到锚点宽度；
 // side-nav 的弹出面板有独立定位层，坐标不再写在面板身上。
 import type { ComboboxSchema } from '../src/combobox'
-import type { ListboxSchema } from '../src/listbox'
-import type { PopoverSchema } from '../src/popover'
 import type { SelectSchema } from '../src/select'
 import type { SideNavSchema } from '../src/side-nav'
 import type { TreeSelectSchema } from '../src/tree-select'
@@ -13,9 +11,6 @@ import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { describe, expect, it } from 'vitest'
 import { comboboxMachine, connectCombobox } from '../src/combobox'
 import { connectHoverCard, hoverCardMachine } from '../src/hover-card'
-import { listboxMachine } from '../src/listbox'
-import { popoverMachine } from '../src/popover'
-import { connectPopselect } from '../src/popselect'
 import { connectSelect, selectMachine } from '../src/select'
 import { connectSideNav, sideNavMachine } from '../src/side-nav'
 import { connectTour, tourMachine } from '../src/tour'
@@ -40,15 +35,6 @@ function treeSelect(props: Partial<TreeSelectSchema['props']>) {
   const service = createService(treeSelectMachine, { props: () => props, runtime })
   runtime.start()
   return { service, api: () => connectTreeSelect(service, normalizeProps) }
-}
-
-// popselect 没有自己的机器：浮层归 popover、选中归 listbox，位置写在 popover 的 context 上
-function popselect(props: Partial<PopoverSchema['props']>, listboxProps: Partial<ListboxSchema['props']> = {}) {
-  const runtime = createVanillaRuntime()
-  const popover = createService(popoverMachine, { props: () => props, runtime })
-  const listbox = createService(listboxMachine, { props: () => listboxProps, runtime })
-  runtime.start()
-  return { service: popover, api: () => connectPopselect({ popover, listbox, props: {} }, normalizeProps) }
 }
 
 function hoverCard(props: Record<string, unknown>) {
@@ -101,12 +87,6 @@ describe('锚点宽度交到皮肤手上', () => {
     const { service, api } = treeSelect({ defaultOpen: true })
     service.context.set('position', { x: 0, y: 0, placement: 'bottom-start', hidden: false, anchorWidth: 240 })
     expect(positionerStyle(api().getPositionerProps())['--xh-_tree-select-anchor-w']).toBe('240px')
-  })
-
-  it('popselect 把 anchorWidth 写成私有槽', () => {
-    const { service, api } = popselect({ defaultOpen: true })
-    service.context.set('position', { x: 0, y: 0, placement: 'bottom-start', hidden: false, anchorWidth: 200 })
-    expect(positionerStyle(api().getPositionerProps())['--xh-_popselect-anchor-w']).toBe('200px')
   })
 
   it('引擎没算出来就留空，皮肤退回自己那档最小宽', () => {

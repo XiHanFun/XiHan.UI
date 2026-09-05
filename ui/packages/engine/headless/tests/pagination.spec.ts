@@ -333,8 +333,8 @@ describe('connectPagination', () => {
 
   it('省略位是可展开的按钮，不再对读屏隐藏', () => {
     // 折进去那几页除了它没有别的入口，藏起来等于把它们从读屏用户那里删掉
-    const el = api(makeService({ count: 2000, defaultPage: 100 })).getEllipsisProps({ side: 'end' }) as Props
-    expect(el['data-part']).toBe('ellipsis')
+    const el = api(makeService({ count: 2000, defaultPage: 100 })).getEllipsisTriggerProps({ side: 'end' }) as Props
+    expect(el['data-part']).toBe('ellipsis-trigger')
     expect(el['aria-hidden']).toBeUndefined()
     expect(el.type).toBe('button')
     expect(el['aria-expanded']).toBe('false')

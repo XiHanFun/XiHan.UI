@@ -3,7 +3,7 @@
 import { ref } from "vue";
 import {
   XhCarouselItem,
-  XhCarouselItemGroup,
+  XhCarouselList,
   XhCarouselNextTrigger,
   XhCarouselPrevTrigger,
   XhCarouselRoot,
@@ -19,13 +19,13 @@ const page = ref(1);
     <XhCarouselRoot v-model:page="page" :slide-count="slides.length">
       <XhCarouselPrevTrigger />
       <XhCarouselViewport style="block-size: 120px">
-        <XhCarouselItemGroup>
+        <XhCarouselList>
           <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
             <div style="display: grid; place-items: center; block-size: 100%">
               {{ text }}
             </div>
           </XhCarouselItem>
-        </XhCarouselItemGroup>
+        </XhCarouselList>
       </XhCarouselViewport>
       <XhCarouselNextTrigger />
     </XhCarouselRoot>

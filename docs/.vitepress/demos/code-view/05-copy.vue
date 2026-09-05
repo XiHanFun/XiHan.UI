@@ -4,7 +4,7 @@ import { CheckIcon, CopyIcon } from "@xihan-ui/icons";
 import {
   XhClipboardIndicator,
   XhClipboardRoot,
-  XhClipboardTrigger,
+  XhClipboardCopyTrigger,
   XhCodeViewCode,
   XhCodeViewFilename,
   XhCodeViewHeader,
@@ -40,18 +40,18 @@ const sample = `export function createStore(reduce: Reducer, initial: State) {
         :value="sample"
         :timeout="1500"
         style="
-          --xh-clipboard-trigger-border: transparent;
-          --xh-clipboard-trigger-border-hover: transparent;
-          --xh-clipboard-trigger-bg: transparent;
-          --xh-clipboard-trigger-h: var(--xh-control-h-sm);
-          --xh-clipboard-trigger-px: var(--xh-control-px-sm);
-          --xh-clipboard-trigger-font-size: var(--xh-text-caption-size);
+          --xh-clipboard-copy-trigger-border: transparent;
+          --xh-clipboard-copy-trigger-border-hover: transparent;
+          --xh-clipboard-copy-trigger-bg: transparent;
+          --xh-clipboard-copy-trigger-h: var(--xh-control-h-sm);
+          --xh-clipboard-copy-trigger-px: var(--xh-control-px-sm);
+          --xh-clipboard-copy-trigger-font-size: var(--xh-text-caption-size);
         "
       >
-        <XhClipboardTrigger>
+        <XhClipboardCopyTrigger>
           <XhClipboardIndicator><XhIcon :icon="CopyIcon" /> 复制</XhClipboardIndicator>
           <XhClipboardIndicator copied><XhIcon :icon="CheckIcon" /> 已复制</XhClipboardIndicator>
-        </XhClipboardTrigger>
+        </XhClipboardCopyTrigger>
       </XhClipboardRoot>
     </XhCodeViewHeader>
     <XhCodeViewPre>

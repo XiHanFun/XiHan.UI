@@ -1,6 +1,6 @@
 # 组件总览
 
-127 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
+123 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
 
 本册每个组件一页，页内小节固定：概述 · 何时使用 · 何时不用 · 特性 · 示例 · 产物 · 解剖 · Props · 事件 · 插槽 · 状态 · connect API · 键盘 · 无障碍 · 样式 · 数据属性 · CSS 变量 · 动效 · 响应式 · RTL · 组合 · 最佳实践 · 反模式。其中契约类的小节由组件源码、连接层与皮肤直接生成，不会与代码对不上；讲取舍的几节与组件源码同放，见各组件目录下的 doc.md。某一节没有内容时整节不出现，不留空标题。
 
@@ -16,7 +16,7 @@
 | [按钮组](./button-group) | `button-group` | 1 | 0 | 4 |
 | [剪贴板](./clipboard) | `clipboard` | 6 | 0 | 3 |
 | [下载触发器](./download-trigger) | `download-trigger` | 1 | 1 | 5 |
-| [文本省略](./ellipsis) | `ellipsis` | 1 | 2 | 4 |
+| [文本截断](./truncate) | `truncate` | 1 | 2 | 4 |
 | [浮动按钮](./float-button) | `float-button` | 3 | 3 | 4 |
 | [渐变文字](./gradient-text) | `gradient-text` | 1 | 0 | 4 |
 | [快捷键](./hotkeys) | `hotkeys` | 3 | 2 | 6 |
@@ -34,13 +34,12 @@
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [弹性布局](./flex) | `flex` | 1 | 0 | 5 |
+| [弹性布局](./flex) | `flex` | 2 | 0 | 6 |
 | [栅格](./grid) | `grid` | 2 | 0 | 7 |
 | [布局](./layout) | `layout` | 6 | 1 | 7 |
 | [瀑布流](./masonry) | `masonry` | 3 | 0 | 5 |
 | [滚动区域](./scroll-area) | `scroll-area` | 4 | 5 | 5 |
 | [分隔线](./separator) | `separator` | 1 | 0 | 4 |
-| [间距](./space) | `space` | 2 | 0 | 5 |
 | [排序](./sortable) | `sortable` | 4 | 5 | 4 |
 | [可调容器](./resizable) | `resizable` | 2 | 5 | 4 |
 | [分栏](./splitter) | `splitter` | 3 | 7 | 6 |
@@ -81,9 +80,9 @@
 | [组合框](./combobox) | `combobox` | 15 | 14 | 14 |
 | [日期输入](./date-field) | `date-field` | 7 | 9 | 13 |
 | [日期选择器](./date-picker) | `date-picker` | 14 | 9 | 10 |
-| [动态录入](./dynamic-input) | `dynamic-input` | 8 | 0 | 5 |
-| [就地编辑](./editable) | `editable` | 9 | 3 | 6 |
+| [就地编辑](./editable) | `editable` | 8 | 3 | 6 |
 | [表单字段](./field) | `field` | 5 | 0 | 7 |
+| [字段数组](./field-array) | `field-array` | 8 | 0 | 5 |
 | [字段集](./fieldset) | `fieldset` | 4 | 0 | 5 |
 | [文件上传](./file-upload) | `file-upload` | 12 | 5 | 11 |
 | [表单](./form) | `form` | 6 | 0 | 13 |
@@ -93,7 +92,6 @@
 | [数字输入](./number-field) | `number-field` | 6 | 6 | 14 |
 | [密码输入](./password-input) | `password-input` | 6 | 2 | 8 |
 | [分格输入](./pin-input) | `pin-input` | 4 | 6 | 11 |
-| [弹出选择](./popselect) | `popselect` | 9 | 11 | 6 |
 | [单选组](./radio-group) | `radio-group` | 6 | 4 | 7 |
 | [评分](./rating) | `rating` | 5 | 5 | 9 |
 | [选择器](./select) | `select` | 17 | 15 | 19 |
@@ -120,9 +118,8 @@
 | [卡片](./card) | `card` | 7 | 0 | 5 |
 | [走马灯](./carousel) | `carousel` | 9 | 10 | 9 |
 | [折叠区域](./collapsible) | `collapsible` | 4 | 1 | 6 |
-| [倒计时](./countdown) | `countdown` | 1 | 0 | 4 |
 | [描述列表](./descriptions) | `descriptions` | 4 | 0 | 5 |
-| [空状态](./empty-state) | `empty-state` | 5 | 0 | 5 |
+| [空状态](./empty-state) | `empty-state` | 5 | 0 | 6 |
 | [热力图](./heatmap) | `heatmap` | 13 | 10 | 11 |
 | [文本高亮](./highlight) | `highlight` | 2 | 0 | 4 |
 | [图片](./image) | `image` | 3 | 0 | 8 |
@@ -137,9 +134,9 @@
 | [统计数值](./statistic) | `statistic` | 5 | 0 | 5 |
 | [表格](./table) | `table` | 19 | 17 | 23 |
 | [标签](./tag) | `tag` | 3 | 1 | 6 |
-| [时间](./time) | `time` | 1 | 0 | 4 |
 | [时间线](./timeline) | `timeline` | 8 | 0 | 5 |
-| [计时器](./timer) | `timer` | 5 | 1 | 6 |
+| [计时器](./timer) | `timer` | 5 | 1 | 7 |
+| [时间戳](./timestamp) | `timestamp` | 1 | 0 | 4 |
 | [树](./tree) | `tree` | 16 | 12 | 12 |
 | [虚拟滚动](./virtualizer) | `virtualizer` | 4 | 0 | 5 |
 
@@ -153,7 +150,6 @@
 | [徽标](./badge) | `badge` | 2 | 0 | 3 |
 | [加载条](./loading-bar) | `loading-bar` | 3 | 0 | 6 |
 | [进度条](./progress) | `progress` | 5 | 0 | 10 |
-| [结果页](./result) | `result` | 5 | 0 | 5 |
 | [骨架屏](./skeleton) | `skeleton` | 2 | 0 | 4 |
 | [加载指示器](./spinner) | `spinner` | 2 | 0 | 6 |
 | [通知](./notification) | `notification` | 8 | 0 | 6 |

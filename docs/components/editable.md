@@ -62,7 +62,7 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-editable>` |
-| Vue 组件 | `XhEditableArea` `XhEditableCancelTrigger` `XhEditableControl` `XhEditableEditTrigger` `XhEditableInput` `XhEditableLabel` `XhEditablePreview` `XhEditableRoot` `XhEditableSubmitTrigger` |
+| Vue 组件 | `XhEditableCancelTrigger` `XhEditableControl` `XhEditableEditTrigger` `XhEditableInput` `XhEditableLabel` `XhEditablePreview` `XhEditableRoot` `XhEditableSubmitTrigger` |
 | 组合式函数 | `useEditable` |
 | 状态机 | `editableMachine` |
 | 皮肤 | `@xihan-ui/styles/editable.css` |
@@ -71,7 +71,7 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="editable"`：**`root`** · `label` · `area` · **`preview`** · **`input`** · `edit-trigger` · `submit-trigger` · `cancel-trigger` · `control`
+`data-scope="editable"`：**`root`** · `label` · `control` · **`preview`** · **`input`** · `edit-trigger` · `submit-trigger` · `cancel-trigger`
 
 ## Props
 
@@ -123,13 +123,12 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 | --- | --- |
 | `root` | 'edit' \| 'preview' |
 | `label` | 'edit' \| 'preview' |
-| `area` | 'edit' \| 'preview' |
+| `control` | 'edit' \| 'preview' |
 | `preview` | 'edit' \| 'preview' |
 | `input` | 'edit' \| 'preview' |
 | `edit-trigger` | 'edit' \| 'preview' |
 | `submit-trigger` | 'edit' \| 'preview' |
 | `cancel-trigger` | 'edit' \| 'preview' |
-| `control` | 'edit' \| 'preview' |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
@@ -160,7 +159,6 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 | `cancel` | `() => void` | 撤销回上一次提交的值并回到预览态。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
-| `getAreaProps` | `() => T['element']` |  |
 | `getPreviewProps` | `() => T['element']` |  |
 | `getInputProps` | `() => T['input']` |  |
 | `getEditTriggerProps` | `() => T['button']` |  |
@@ -208,9 +206,9 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 | `root` | `data-state` | 'edit' \| 'preview' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `label` | `data-state` | 'edit' \| 'preview' |
-| `area` | `data-disabled` | ''（条件成立时才出现） |
-| `area` | `data-invalid` | ''（条件成立时才出现） |
-| `area` | `data-state` | 'edit' \| 'preview' |
+| `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-invalid` | ''（条件成立时才出现） |
+| `control` | `data-state` | 'edit' \| 'preview' |
 | `preview` | `data-activation-mode` | props.activationMode |
 | `preview` | `data-disabled` | ''（条件成立时才出现） |
 | `preview` | `data-invalid` | ''（条件成立时才出现） |
@@ -227,14 +225,12 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 | `submit-trigger` | `data-state` | 'edit' \| 'preview' |
 | `cancel-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `cancel-trigger` | `data-state` | 'edit' \| 'preview' |
-| `control` | `data-disabled` | ''（条件成立时才出现） |
-| `control` | `data-state` | 'edit' \| 'preview' |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-editable-area-min-h` · `--xh-editable-area-min-w` · `--xh-editable-control-gap` · `--xh-editable-gap` · `--xh-editable-input-autofill-bg` · `--xh-editable-input-autofill-fg` · `--xh-editable-input-bg` · `--xh-editable-input-bg-disabled` · `--xh-editable-input-bg-readonly` · `--xh-editable-input-border` · `--xh-editable-input-border-focus` · `--xh-editable-input-border-hover` · `--xh-editable-input-border-invalid` · `--xh-editable-input-fg` · `--xh-editable-input-font-size` · `--xh-editable-input-h` · `--xh-editable-input-px` · `--xh-editable-input-radius` · `--xh-editable-input-shadow` · `--xh-editable-label-fg` · `--xh-editable-label-fg-disabled` · `--xh-editable-label-font-size` · `--xh-editable-label-font-weight` · `--xh-editable-placeholder-fg` · `--xh-editable-preview-bg-hover` · `--xh-editable-preview-fg` · `--xh-editable-preview-font-size` · `--xh-editable-preview-min-h` · `--xh-editable-preview-px` · `--xh-editable-preview-radius` · `--xh-editable-submit-bg` · `--xh-editable-submit-bg-active` · `--xh-editable-submit-bg-hover` · `--xh-editable-submit-border` · `--xh-editable-submit-border-active` · `--xh-editable-submit-border-hover` · `--xh-editable-submit-fg` · `--xh-editable-submit-shadow` · `--xh-editable-trigger-bg` · `--xh-editable-trigger-bg-active` · `--xh-editable-trigger-bg-disabled` · `--xh-editable-trigger-bg-hover` · `--xh-editable-trigger-border` · `--xh-editable-trigger-border-disabled` · `--xh-editable-trigger-border-hover` · `--xh-editable-trigger-fg` · `--xh-editable-trigger-font-size` · `--xh-editable-trigger-h` · `--xh-editable-trigger-px` · `--xh-editable-trigger-radius`
+`--xh-editable-control-gap` · `--xh-editable-control-min-h` · `--xh-editable-control-min-w` · `--xh-editable-gap` · `--xh-editable-input-autofill-bg` · `--xh-editable-input-autofill-fg` · `--xh-editable-input-bg` · `--xh-editable-input-bg-disabled` · `--xh-editable-input-bg-hover` · `--xh-editable-input-bg-readonly` · `--xh-editable-input-border` · `--xh-editable-input-border-focus` · `--xh-editable-input-border-hover` · `--xh-editable-input-border-invalid` · `--xh-editable-input-fg` · `--xh-editable-input-font-size` · `--xh-editable-input-h` · `--xh-editable-input-px` · `--xh-editable-input-radius` · `--xh-editable-input-shadow` · `--xh-editable-label-fg` · `--xh-editable-label-fg-disabled` · `--xh-editable-label-font-size` · `--xh-editable-label-font-weight` · `--xh-editable-placeholder-fg` · `--xh-editable-preview-bg-hover` · `--xh-editable-preview-fg` · `--xh-editable-preview-font-size` · `--xh-editable-preview-min-h` · `--xh-editable-preview-px` · `--xh-editable-preview-radius` · `--xh-editable-submit-bg` · `--xh-editable-submit-bg-active` · `--xh-editable-submit-bg-hover` · `--xh-editable-submit-border` · `--xh-editable-submit-border-active` · `--xh-editable-submit-border-hover` · `--xh-editable-submit-fg` · `--xh-editable-submit-shadow` · `--xh-editable-trigger-bg` · `--xh-editable-trigger-bg-active` · `--xh-editable-trigger-bg-disabled` · `--xh-editable-trigger-bg-hover` · `--xh-editable-trigger-border` · `--xh-editable-trigger-border-disabled` · `--xh-editable-trigger-border-hover` · `--xh-editable-trigger-fg` · `--xh-editable-trigger-font-size` · `--xh-editable-trigger-h` · `--xh-editable-trigger-px` · `--xh-editable-trigger-radius`
 
 ## 动效
 

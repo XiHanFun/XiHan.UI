@@ -20,7 +20,7 @@ export interface PopoverRefs {
   getContentEl: () => HTMLElement | null
   /**
    * 展开那一刻的落焦点。返回 null 即交给焦点域的 Tab 序列探测（浮层的缺省行为）。
-   * 浮层里排着集合的组合件（如 popselect）由它把落点收口到锚点条目或集合容器上——
+   * 浮层里排着集合的组合件由它把落点收口到锚点条目或集合容器上——
    * 探测按文档序取 content 的可 tab 后代，作者放在集合前面的搜索框会把焦点抢走。
    */
   getInitialFocusEl: () => HTMLElement | null

@@ -20,8 +20,8 @@ import {
   XhBreadcrumbList,
   XhBreadcrumbRoot,
   XhClipboardControl,
+  XhClipboardCopyTrigger,
   XhClipboardRoot,
-  XhClipboardTrigger,
   XhDownloadTrigger,
   XhNavigationMenuItem,
   XhNavigationMenuLink,
@@ -174,9 +174,9 @@ describe('取数与写入在途的转圈', () => {
 
   it('复制钮写入在途：转圈接上了，此前那道裸 opacity 已经不在', async () => {
     await mount(() => h(XhClipboardRoot, { value: 'xh' }, () => [
-      h(XhClipboardControl, null, () => [h(XhClipboardTrigger, null, () => '复制')]),
+      h(XhClipboardControl, null, () => [h(XhClipboardCopyTrigger, null, () => '复制')]),
     ]))
-    const trigger = part('clipboard', 'trigger')
+    const trigger = part('clipboard', 'copy-trigger')
     // 写剪贴板要真实权限，headless 下拿不到；这一档皮肤本来就只认属性，直接把状态摆上去
     trigger.setAttribute('data-state', 'copying')
     expect(styleOf(trigger, 'cursor')).toBe('progress')

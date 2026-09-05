@@ -3,7 +3,7 @@ import type { Service } from '@xihan-ui/machine'
 import type { TimerApi, TimerControlAction, TimerSchema, TimerSegments } from './timer.types'
 import { dataAttr } from '@xihan-ui/kernel'
 import { timerAnatomy } from './timer.anatomy'
-import { splitTimer, timerSegmentText, timerValueAt } from './timer.format'
+import { formatTimerText, isTimerControlled, quantizeTimer, resolveTimerPrecision, splitTimer, timerRunOf, timerSegmentText, timerValueAt } from './timer.format'
 
 const parts = timerAnatomy.build()
 
@@ -36,9 +36,20 @@ export function connectTimer<T extends PropTypes>(
   const { context, prop, send, state } = service
 
   const phase = state.get()
-  const countdown = !!prop('countdown')
+  const run = timerRunOf({
+    value: prop('value'),
+    startMs: prop('startMs'),
+    targetMs: prop('targetMs'),
+    countdown: prop('countdown'),
+  })
+  const countdown = run.countdown
+  const controlled = isTimerControlled(prop('value'), prop('active'))
   const elapsed = context.get('elapsed')
-  const value = timerValueAt(elapsed, prop('startMs'), prop('targetMs'), countdown)
+  // 量化一次，拆分与铺字都读这一个数，免得两处各自取整取出不一样的秒
+  const value = quantizeTimer(
+    timerValueAt(elapsed, run.startMs, run.targetMs, countdown),
+    resolveTimerPrecision(prop('precision')),
+  )
   const segments = splitTimer(value)
 
   const translations = prop('translations')
@@ -61,6 +72,8 @@ export function connectTimer<T extends PropTypes>(
   return {
     phase,
     value,
+    text: formatTimerText(value, prop('format')),
+    controlled,
     elapsed,
     running: phase === 'running',
     paused: phase === 'paused',
@@ -80,15 +93,16 @@ export function connectTimer<T extends PropTypes>(
       'data-state': phase,
       'data-size': prop('size'),
       'data-countdown': dataAttr(countdown),
+      'data-controlled': dataAttr(controlled),
     }),
 
-    getAreaProps: () => normalize.element({
-      ...parts.area.attrs,
+    getDisplayProps: () => normalize.element({
+      ...parts.display.attrs,
       'role': 'timer',
-      // role=timer 的隐含播报本就是 off，这里写死只为各家 UA 一律不播：
+      // role=timer 的隐含播报本就是 off，这里显式写出来只为各家 UA 一律不播：
       // 每秒都在变的数字若按 polite 播报，一分钟就是六十条打断。
-      // 要播报的场景由作者在外层另起一个 live 区，只在关口上说一句
-      'aria-live': 'off',
+      // 要播报的场景（会话到期提醒这类）由作者把 live 开到 polite 或 assertive
+      'aria-live': prop('live') ?? 'off',
       // 屏幕上只有几组数字与分隔符，名字得把哪段是分、哪段是秒说清楚
       'aria-label': label.time(segments),
       'data-state': phase,
@@ -96,7 +110,7 @@ export function connectTimer<T extends PropTypes>(
 
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
-      // 整段时间的读法归 area 的名字管，这里的裸数字不必再被逐个念一遍
+      // 整段时间的读法归 display 的名字管，这里的裸数字不必再被逐个念一遍
       'aria-hidden': true,
       'data-unit': item.unit,
     }),
@@ -114,7 +128,11 @@ export function connectTimer<T extends PropTypes>(
       // 按钮里常常只有一个图标，名字得随这一下要做的事一起换
       'aria-label': label[controlAction],
       'data-action': controlAction,
-      'onClick': () => send(CONTROL_EVENT[controlAction]),
+      // 受控时状态归 value / active 两个 prop，这一下不改状态；受控用法本就不该铺这颗钮
+      'onClick': () => {
+        if (!controlled)
+          send(CONTROL_EVENT[controlAction])
+      },
     }),
   }
 }

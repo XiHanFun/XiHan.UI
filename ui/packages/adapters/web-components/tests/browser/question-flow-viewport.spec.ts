@@ -29,9 +29,9 @@ afterEach(() => {
 
 function optionMarkup(questionId: string, value: string, label: string): string {
   return `
-    <button data-xh-part="option" question-id="${questionId}" option-value="${value}">
-      <span data-xh-part="option-indicator" question-id="${questionId}" option-value="${value}"></span>
-      <span data-xh-part="option-label" question-id="${questionId}" option-value="${value}">${label}</span>
+    <button data-xh-part="item" question-id="${questionId}" option-value="${value}">
+      <span data-xh-part="item-indicator" question-id="${questionId}" option-value="${value}"></span>
+      <span data-xh-part="item-text" question-id="${questionId}" option-value="${value}">${label}</span>
     </button>`
 }
 
@@ -39,7 +39,7 @@ function questionMarkup(question: (typeof QUESTIONS)[number]): string {
   return `
     <div data-xh-part="question" question-id="${question.id}">
       <p data-xh-part="prompt" question-id="${question.id}">${question.prompt}</p>
-      <div data-xh-part="option-group" question-id="${question.id}">
+      <div data-xh-part="group" question-id="${question.id}">
         ${question.options.map(o => optionMarkup(question.id, o.value, o.label)).join('')}
       </div>
     </div>`

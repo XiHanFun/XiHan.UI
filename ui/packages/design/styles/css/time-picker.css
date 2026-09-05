@@ -226,7 +226,7 @@
   }
 
   /* 每一段是一小块可聚焦区，紧挨着排；间距长在段自己身上 */
-  [data-scope='time-picker'][data-part='input'] {
+  [data-scope='time-picker'][data-part='segment'] {
     display: inline-block;
     padding-inline: var(--xh-time-picker-segment-px, var(--xh-space-1));
     padding-block: 0;
@@ -243,35 +243,35 @@
 
   /* granularity / hourCycle 关掉的段由连接层打 hidden；上面那条 display 会把 UA 规则盖掉，
      少了这条，收起的段会一直杵在那儿 */
-  [data-scope='time-picker'][data-part='input'][hidden] {
+  [data-scope='time-picker'][data-part='segment'][hidden] {
     display: none;
   }
 
   /* 还没填的段压成弱色：一行里哪几段是占位符，一眼要看得出来 */
-  [data-scope='time-picker'][data-part='input'][data-placeholder] {
+  [data-scope='time-picker'][data-part='segment'][data-placeholder] {
     color: var(--xh-time-picker-placeholder-fg, var(--xh-fg-subtle));
   }
 
   /* 一行段长得差不多，光有边框亮起来看不出正在改哪一段：当前段必须自己有底色。
      data-focus 由机器给（它知道谁是当前段），:focus-visible 兜住机器状态还没回流的那一帧 */
-  [data-scope='time-picker'][data-part='input'][data-focus]:not([data-disabled]),
-  [data-scope='time-picker'][data-part='input']:focus-visible {
+  [data-scope='time-picker'][data-part='segment'][data-focus]:not([data-disabled]),
+  [data-scope='time-picker'][data-part='segment']:focus-visible {
     background: var(--xh-time-picker-segment-bg-focus, var(--xh-_time-picker-accent));
     color: var(--xh-time-picker-segment-fg-focus, var(--xh-_time-picker-accent-fg));
     outline: none;
   }
 
   /* 焦点态用了品牌底色之后，占位符那条弱色会被它盖住，这里明确让位给焦点态 */
-  [data-scope='time-picker'][data-part='input'][data-focus][data-placeholder]:not([data-disabled]) {
+  [data-scope='time-picker'][data-part='segment'][data-focus][data-placeholder]:not([data-disabled]) {
     color: var(--xh-time-picker-segment-fg-focus, var(--xh-_time-picker-accent-fg));
   }
 
-  [data-scope='time-picker'][data-part='input']:hover:not([data-focus], [data-disabled]) {
+  [data-scope='time-picker'][data-part='segment']:hover:not([data-focus], [data-disabled]) {
     background: var(--xh-time-picker-segment-bg-hover, var(--xh-bg-subtle-hover));
   }
 
   /* 段是集合条目形态（role=spinbutton 的 span），禁用走 data-disabled 而不是 :disabled */
-  [data-scope='time-picker'][data-part='input'][data-disabled] {
+  [data-scope='time-picker'][data-part='segment'][data-disabled] {
     color: var(--xh-fg-disabled);
   }
 
@@ -381,19 +381,19 @@
   }
 
   /* 快捷选项也是一列，与时分秒那几列并排，排在行内起始一侧 */
-  [data-scope='time-picker'][data-part='presets'] {
+  [data-scope='time-picker'][data-part='preset-group'] {
     display: flex;
     flex: none;
     flex-direction: column;
-    gap: var(--xh-time-picker-presets-gap, var(--xh-list-option-gap));
-    max-block-size: var(--xh-time-picker-presets-h, var(--xh-viewport-h-sm));
-    padding-inline: var(--xh-time-picker-presets-px, var(--xh-space-1));
+    gap: var(--xh-time-picker-preset-group-gap, var(--xh-list-option-gap));
+    max-block-size: var(--xh-time-picker-preset-group-h, var(--xh-viewport-h-sm));
+    padding-inline: var(--xh-time-picker-preset-group-px, var(--xh-space-1));
     overflow-y: auto;
     border-inline-end: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-border-subtle));
     scrollbar-width: thin;
   }
 
-  [data-scope='time-picker'][data-part='presets'][hidden] {
+  [data-scope='time-picker'][data-part='preset-group'][hidden] {
     display: none;
   }
 
@@ -414,7 +414,7 @@
   }
 
   [data-scope='time-picker'][data-part='preset']:focus-visible,
-  [data-scope='time-picker'][data-part='presets']:focus-visible {
+  [data-scope='time-picker'][data-part='preset-group']:focus-visible {
     --xh-_ring-offset: var(--xh-_ring-inset);
   }
 

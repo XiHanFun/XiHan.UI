@@ -311,20 +311,20 @@ describe('signaturePadMachine 落笔与收笔', () => {
 })
 
 describe('connectSignaturePad 属性表', () => {
-  it('空画布：root 与画布都带 data-empty，segment 的 d 是空串', () => {
+  it('空画布：root 与画布都带 data-empty，path 的 d 是空串', () => {
     const h = makeService()
     const a = api(h.service)
     expect(a.getRootProps()).toMatchObject({ 'data-empty': '', 'data-drawing': undefined })
     expect(a.getControlProps()).toMatchObject({ 'role': 'img', 'aria-label': 'Signature' })
-    expect(a.getSegmentProps()).toMatchObject({ 'd': '', 'data-empty': '' })
+    expect(a.getPathProps()).toMatchObject({ 'd': '', 'data-empty': '' })
   })
 
-  it('画完一笔后 data-empty 消失，segment 拿到那一笔的轮廓', () => {
+  it('画完一笔后 data-empty 消失，path 拿到那一笔的轮廓', () => {
     const h = makeService()
     drawStroke(h, [[0, 0], [40, 30]])
     const a = api(h.service)
     expect(a.getRootProps()).toMatchObject({ 'data-empty': undefined })
-    expect(String((a.getSegmentProps() as Record<string, unknown>).d)).toMatch(/^M/)
+    expect(String((a.getPathProps() as Record<string, unknown>).d)).toMatch(/^M/)
   })
 
   it('表单影子提交的就是导出的那份 SVG；空签名提交空串，required 才拦得住', () => {

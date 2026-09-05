@@ -8,8 +8,8 @@ import {
   XhComboboxEmpty,
   XhComboboxInput,
   XhComboboxItem,
-  XhComboboxItemGroup,
-  XhComboboxItemGroupLabel,
+  XhComboboxGroup,
+  XhComboboxGroupLabel,
   XhComboboxItemIndicator,
   XhComboboxItemText,
   XhComboboxLabel,
@@ -63,13 +63,13 @@ const filtered = computed(() => {
     </XhComboboxControl>
     <XhComboboxPositioner>
       <XhComboboxContent>
-        <XhComboboxItemGroup v-for="g in filtered" :key="g.value" :value="g.value">
-          <XhComboboxItemGroupLabel>{{ g.label }}</XhComboboxItemGroupLabel>
+        <XhComboboxGroup v-for="g in filtered" :key="g.value" :value="g.value">
+          <XhComboboxGroupLabel>{{ g.label }}</XhComboboxGroupLabel>
           <XhComboboxItem v-for="c in g.items" :key="c.value" :value="c.value">
             <XhComboboxItemText>{{ c.label }}</XhComboboxItemText>
             <XhComboboxItemIndicator />
           </XhComboboxItem>
-        </XhComboboxItemGroup>
+        </XhComboboxGroup>
       </XhComboboxContent>
       <XhComboboxEmpty>无匹配城市</XhComboboxEmpty>
     </XhComboboxPositioner>

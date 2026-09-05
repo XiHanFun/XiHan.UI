@@ -27,13 +27,13 @@
         <button data-xh-part="trigger">继续添加</button>
       </div>
       <input data-xh-part="hidden-input" />
-      <div data-xh-part="item-group"></div>
+      <div data-xh-part="list"></div>
       <button data-xh-part="clear-trigger">清空</button>
     </div>`;
   upload.defaultFiles = initialFiles;
   document.getElementById("file-upload-default").append(upload);
 
-  const group = upload.querySelector('[data-xh-part="item-group"]');
+  const group = upload.querySelector('[data-xh-part="list"]');
 
   // 条目节点由作者按当前列表铺，文件名与大小由元素代填
   function render(files) {

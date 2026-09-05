@@ -32,18 +32,6 @@
     color: var(--xh-editable-label-fg-disabled, var(--xh-fg-subtle));
   }
 
-  /* 预览区与输入框轮流上场，两者在同一处落脚：area 给这一处定最小宽高 */
-  [data-scope='editable'][data-part='area'] {
-    display: inline-flex;
-    align-items: center;
-    min-block-size: var(--xh-editable-area-min-h, var(--xh-control-h-md));
-    min-inline-size: var(--xh-editable-area-min-w, 6ch);
-  }
-
-  [data-scope='editable'][data-part='area'][hidden] {
-    display: none;
-  }
-
   /* 预览区的高度、内边距与边框都和输入框取同一档，只有描边是透明的：
      单行值定在控件档上，多行值才往下长 */
   [data-scope='editable'][data-part='preview'] {
@@ -177,11 +165,13 @@
     -webkit-text-fill-color: var(--xh-editable-input-autofill-fg, var(--xh-fg-default));
   }
 
+  /* 预览区、输入框与三颗按钮同在这一层：预览与输入轮流上场，控件盒给这一处定最小宽高 */
   [data-scope='editable'][data-part='control'] {
     display: inline-flex;
-    flex: none;
     align-items: center;
     gap: var(--xh-editable-control-gap, var(--xh-space-1));
+    min-block-size: var(--xh-editable-control-min-h, var(--xh-control-h-md));
+    min-inline-size: var(--xh-editable-control-min-w, 6ch);
   }
 
   [data-scope='editable'][data-part='control'][hidden] {

@@ -12,7 +12,7 @@
 
 ## 特性
 
-- 必备部件是 `root` · `content` · `area` · `area-thumb`，缺一个组件就不工作。
+- 必备部件是 `root` · `content` · `saturation-area` · `area-thumb`，缺一个组件就不工作。
 - `format` 决定值串写法；面板里也可以让用户自己切换写法。
 - `alpha` 打开透明度通道。
 - 支持屏幕取色（依赖平台能力）与数值输入。

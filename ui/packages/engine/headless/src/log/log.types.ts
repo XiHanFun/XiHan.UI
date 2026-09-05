@@ -70,13 +70,13 @@ export interface LogApi<T extends PropTypes = PropTypes> {
   /** 新行进来时是否自动跟到底。 */
   sticking: boolean
   /** 是否显示回到底部按钮，不在底部时为 true。 */
-  showScrollButton: boolean
+  showScrollToEndTrigger: boolean
   /** 滚到底部并恢复粘附。 */
   scrollToBottom: () => void
   getRootProps: () => T['element']
   getViewportProps: () => T['element']
   getContentProps: () => T['element']
   getLineProps: () => T['element']
-  getScrollButtonProps: () => T['button']
+  getScrollToEndTriggerProps: () => T['button']
   getLiveRegionProps: () => T['element']
 }

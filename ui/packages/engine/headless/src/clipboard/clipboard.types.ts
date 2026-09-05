@@ -71,7 +71,7 @@ export interface ClipboardApi<T extends PropTypes = PropTypes> {
   getLabelProps: () => T['label']
   getControlProps: () => T['element']
   getInputProps: () => T['input']
-  getTriggerProps: () => T['button']
+  getCopyTriggerProps: () => T['button']
   getIndicatorProps: (props: ClipboardIndicatorProps) => T['element']
 }
 

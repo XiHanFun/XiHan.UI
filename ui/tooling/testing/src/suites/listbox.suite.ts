@@ -6,7 +6,7 @@ const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/'
 
 /**
  * 四个条目分两组：banana 禁用（方向键与连打都跳过它，但它仍可聚焦、仍是导航起点），
- * durian 落在第二组里——分组是集合查询最容易漏掉的一层，条目与 content 之间隔着 item-group，
+ * durian 落在第二组里——分组是集合查询最容易漏掉的一层，条目与 content 之间隔着 group，
  * 归属判据写歪就会一个条目也查不到。
  * 条目文本用拉丁字母，连打检索按首字母匹配得上。
  */
@@ -32,20 +32,20 @@ const FIXTURE: FixtureNode = {
       part: 'content',
       children: [
         {
-          part: 'item-group',
+          part: 'group',
           attrs: { value: 'common' },
           children: [
-            { part: 'item-group-label', tag: 'span', text: '常见' },
+            { part: 'group-label', tag: 'span', text: '常见' },
             item('apple', 'Apple'),
             item('banana', 'Banana', true),
             item('cherry', 'Cherry'),
           ],
         },
         {
-          part: 'item-group',
+          part: 'group',
           attrs: { value: 'rare' },
           children: [
-            { part: 'item-group-label', tag: 'span', text: '少见' },
+            { part: 'group-label', tag: 'span', text: '少见' },
             item('durian', 'Durian'),
           ],
         },
@@ -76,8 +76,8 @@ export const listboxSuite: ConformanceSuite = {
           'root',
           'label',
           'content',
-          'item-group[0]',
-          'item-group-label[0]',
+          'group[0]',
+          'group-label[0]',
           'item[0]',
           'item-text[0]',
           'item-indicator[0]',
@@ -87,8 +87,8 @@ export const listboxSuite: ConformanceSuite = {
           'item[2]',
           'item-text[2]',
           'item-indicator[2]',
-          'item-group[1]',
-          'item-group-label[1]',
+          'group[1]',
+          'group-label[1]',
           'item[3]',
           'item-text[3]',
           'item-indicator[3]',
@@ -97,8 +97,8 @@ export const listboxSuite: ConformanceSuite = {
           'root': 1,
           'label': 1,
           'content': 1,
-          'item-group': 2,
-          'item-group-label': 2,
+          'group': 2,
+          'group-label': 2,
           'item': 4,
           'item-text': 4,
           'item-indicator': 4,
@@ -132,9 +132,9 @@ export const listboxSuite: ConformanceSuite = {
           },
           'item[1]': { 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null, 'tabindex': '-1' },
           'item[3]': { 'data-value': 'durian', 'tabindex': '-1' },
-          'item-group[0]': { 'role': 'group', 'aria-labelledby': '@part(item-group-label[0])' },
-          'item-group[1]': { 'role': 'group', 'aria-labelledby': '@part(item-group-label[1])' },
-          'item-group-label[0]': { id: '@self' },
+          'group[0]': { 'role': 'group', 'aria-labelledby': '@part(group-label[0])' },
+          'group[1]': { 'role': 'group', 'aria-labelledby': '@part(group-label[1])' },
+          'group-label[0]': { id: '@self' },
           'item-indicator[0]': { 'aria-hidden': 'true', 'data-state': 'unchecked' },
         },
       },

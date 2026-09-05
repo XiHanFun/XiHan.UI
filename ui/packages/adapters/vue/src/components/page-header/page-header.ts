@@ -50,11 +50,11 @@ export const XhPageHeaderTitle = defineComponent({
 })
 
 // 副标题与标题排在同一行，放编号、状态这类补充信息
-export const XhPageHeaderSubtitle = defineComponent({
-  name: 'XhPageHeaderSubtitle',
+export const XhPageHeaderDescription = defineComponent({
+  name: 'XhPageHeaderDescription',
   setup(_, { slots }) {
     const ctx = usePageHeaderContext()
-    return () => h('div', ctx.api.value.getSubtitleProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

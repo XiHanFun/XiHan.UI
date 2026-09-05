@@ -374,8 +374,8 @@ export function connectHeatmap<T extends PropTypes>(
 
     // 星期名与月份名都是给眼睛看的坐标轴：每格自己念得出完整日期与计数，
     // 读屏再把两条轴念一遍只是噪音，一律藏起来
-    getWeekDayLabelProps: label => normalize.element({
-      ...parts['week-day-label'].attrs,
+    getWeekDayProps: label => normalize.element({
+      ...parts['week-day'].attrs,
       'aria-hidden': true,
       'data-week-day': label.weekDay == null ? undefined : String(label.weekDay),
     }),

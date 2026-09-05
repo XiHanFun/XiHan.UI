@@ -19,9 +19,6 @@ import {
   XhPopoverPositioner,
   XhPopoverRoot,
   XhPopoverTrigger,
-  XhPopselectContent,
-  XhPopselectPositioner,
-  XhPopselectRoot,
 } from '../src'
 
 /** 运行时默认的浮层落点，body 末尾那一个。 */
@@ -104,14 +101,6 @@ const CASES: Array<{ scope: string, tree: (open: boolean) => unknown[] }> = [
       h(XhPopoverRoot, { open }, () => [
         h(XhPopoverTrigger, null, () => '打开'),
         h(XhPopoverPositioner, null, () => [h(XhPopoverContent, null, () => '正文')]),
-      ]),
-    ],
-  },
-  {
-    scope: 'popselect',
-    tree: open => [
-      h(XhPopselectRoot, { open }, () => [
-        h(XhPopselectPositioner, null, () => [h(XhPopselectContent, null, () => '正文')]),
       ]),
     ],
   },

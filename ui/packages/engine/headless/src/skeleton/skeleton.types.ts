@@ -11,7 +11,7 @@ export interface SkeletonProps {
 }
 
 /** 单根骨架条自报的声明。 */
-export interface SkeletonBoneProps {
+export interface SkeletonItemProps {
   /** 这一根的形状，覆盖容器给的默认值。 */
   variant?: SkeletonVariant
 }
@@ -20,7 +20,7 @@ export interface SkeletonApi<T extends PropTypes = PropTypes> {
   /** 当前是否处于加载态。 */
   loading: boolean
   getRootProps: () => T['element']
-  getBoneProps: (bone?: SkeletonBoneProps) => T['element']
+  getItemProps: (item?: SkeletonItemProps) => T['element']
 }
 
 /** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */

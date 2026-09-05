@@ -175,7 +175,7 @@ outline-width: 3px
 outline-offset: 0px
 outline-color: rgb(0, 0, 0)
 
-[scroll-button]
+[scroll-to-end-trigger]
 padding-top: 0px
 padding-right: 0px
 padding-bottom: 0px

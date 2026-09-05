@@ -1,6 +1,6 @@
 <!-- 形状 | 容器的 variant 是这一组的默认形状，单根骨架条自带 variant 就按自己的来 -->
 <script setup lang="ts">
-import { XhSkeletonBone, XhSkeletonRoot } from "@xihan-ui/vue";
+import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
@@ -8,12 +8,12 @@ import { XhSkeletonBone, XhSkeletonRoot } from "@xihan-ui/vue";
   <XhSkeletonRoot
     style="inline-size: 260px; flex-direction: row; align-items: center"
   >
-    <XhSkeletonBone variant="circle" />
-    <XhSkeletonBone />
+    <XhSkeletonItem variant="circle" />
+    <XhSkeletonItem />
   </XhSkeletonRoot>
 
   <!-- 整组都是块：容器给了 rect，里面不必逐根再写 -->
   <XhSkeletonRoot variant="rect" style="inline-size: 200px">
-    <XhSkeletonBone />
+    <XhSkeletonItem />
   </XhSkeletonRoot>
 </template>

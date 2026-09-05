@@ -222,7 +222,7 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-image-cropper-bg` · `--xh-image-cropper-crop-border` · `--xh-image-cropper-grid-line` · `--xh-image-cropper-handle-bg` · `--xh-image-cropper-handle-bg-resizing` · `--xh-image-cropper-handle-border` · `--xh-image-cropper-handle-radius` · `--xh-image-cropper-handle-size` · `--xh-image-cropper-mask` · `--xh-image-cropper-radius` · `--xh-image-cropper-w`
+`--xh-image-cropper-bg` · `--xh-image-cropper-crop-border` · `--xh-image-cropper-grid-line` · `--xh-image-cropper-handle-bg` · `--xh-image-cropper-handle-bg-resizing` · `--xh-image-cropper-handle-border` · `--xh-image-cropper-handle-radius` · `--xh-image-cropper-handle-size` · `--xh-image-cropper-mask` · `--xh-image-cropper-viewport-radius` · `--xh-image-cropper-w`
 
 ## 动效
 

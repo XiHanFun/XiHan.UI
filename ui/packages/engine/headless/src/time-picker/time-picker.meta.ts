@@ -6,5 +6,5 @@ import type { ComponentMeta } from '../spec/types'
 // label / clear-trigger / positioner / hidden-input 都可缺省。
 export const timePickerMeta: ComponentMeta = {
   component: 'time-picker',
-  requiredParts: ['root', 'control', 'input', 'trigger', 'content'],
+  requiredParts: ['root', 'control', 'segment', 'trigger', 'content'],
 }

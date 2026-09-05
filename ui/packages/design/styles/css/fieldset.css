@@ -52,15 +52,15 @@
 
   [data-scope='fieldset'][data-part='description'] {
     margin: 0;
-    color: var(--xh-fieldset-helper-fg, var(--xh-fg-muted));
-    font-size: var(--xh-fieldset-helper-font-size, var(--xh-text-secondary-size));
+    color: var(--xh-fieldset-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-fieldset-description-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
     /* 与组标题同一档过渡：整组转禁用时两处一起变淡 */
     transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='fieldset'][data-part='description'][data-disabled] {
-    color: var(--xh-fieldset-helper-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-fieldset-description-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */

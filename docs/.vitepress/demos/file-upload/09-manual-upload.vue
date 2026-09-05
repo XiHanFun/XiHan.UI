@@ -7,7 +7,7 @@ import {
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
-  XhFileUploadItemGroup,
+  XhFileUploadList,
   XhFileUploadItemName,
   XhFileUploadLabel,
   XhFileUploadRoot,
@@ -53,7 +53,7 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
     <XhFileUploadDropzone>拖进来或点击选择，收下即开传</XhFileUploadDropzone>
     <XhFileUploadTrigger>选择文件</XhFileUploadTrigger>
     <XhFileUploadHiddenInput />
-    <XhFileUploadItemGroup>
+    <XhFileUploadList>
       <XhFileUploadItem v-for="file in acceptedFiles" :key="file.name" :file="file">
         <XhFileUploadItemName />
         <template v-if="uploadOf(file)">
@@ -72,7 +72,7 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
         </template>
         <XhFileUploadItemDeleteTrigger />
       </XhFileUploadItem>
-    </XhFileUploadItemGroup>
+    </XhFileUploadList>
   </XhFileUploadRoot>
   <p>试试选一个文件名带「坏」字的文件，看失败与重试。</p>
 </template>

@@ -76,17 +76,17 @@ function penUp(expect?: StepWithExpect['expect'], pointerId = 1): StepWithExpect
   }
 }
 
-/** 笔迹落在 segment 的 d 上，而 d 不进归一化快照，只能直接读节点。 */
+/** 笔迹落在 path 的 d 上，而 d 不进归一化快照，只能直接读节点。 */
 function assertInk(drawn: boolean): StepWithExpect {
   return {
     kind: 'raw',
     why: 'd 是几何属性，不在快照采集的属性集里',
     run: ({ doc }) => {
-      const d = findPart(doc, 'segment').getAttribute('d') ?? ''
+      const d = findPart(doc, 'path').getAttribute('d') ?? ''
       if (drawn && d === '')
-        throw new Error('画了一笔，segment 的 d 却还是空的——笔迹没落到路径上')
+        throw new Error('画了一笔，path 的 d 却还是空的——笔迹没落到路径上')
       if (!drawn && d !== '')
-        throw new Error(`本不该有笔迹，segment 的 d 却是 ${d}`)
+        throw new Error(`本不该有笔迹，path 的 d 却是 ${d}`)
     },
   }
 }
@@ -97,7 +97,7 @@ function assertVertices(count: number, message: string): StepWithExpect {
     kind: 'raw',
     why: 'd 是几何属性，不在快照采集的属性集里',
     run: ({ doc }) => {
-      const d = findPart(doc, 'segment').getAttribute('d') ?? ''
+      const d = findPart(doc, 'path').getAttribute('d') ?? ''
       if ((d.match(/L/g) ?? []).length !== count)
         throw new Error(`${message}，d 是 ${d}`)
     },
@@ -143,7 +143,7 @@ export const signaturePadSuite: ConformanceSuite = {
         tag: 'svg',
         children: [
           { part: 'guide', tag: 'line' },
-          { part: 'segment', tag: 'path' },
+          { part: 'path', tag: 'path' },
         ],
       },
       { part: 'clear-trigger', tag: 'button', text: '清空' },
@@ -156,8 +156,8 @@ export const signaturePadSuite: ConformanceSuite = {
       name: '默认：画布报 role=img 并从标题取名，空画布带 data-empty，谁都不占 Tab 位',
       spec: { apg: NAMING },
       initial: {
-        order: ['root', 'label', 'control', 'guide', 'segment', 'clear-trigger', 'status', 'hidden-input'],
-        counts: { 'root': 1, 'label': 1, 'control': 1, 'guide': 1, 'segment': 1, 'clear-trigger': 1, 'status': 1, 'hidden-input': 1 },
+        order: ['root', 'label', 'control', 'guide', 'path', 'clear-trigger', 'status', 'hidden-input'],
+        counts: { 'root': 1, 'label': 1, 'control': 1, 'guide': 1, 'path': 1, 'clear-trigger': 1, 'status': 1, 'hidden-input': 1 },
         parts: {
           'root': {
             'data-empty': '',
@@ -178,7 +178,7 @@ export const signaturePadSuite: ConformanceSuite = {
           },
           // 基准线只是画面
           'guide': { 'aria-hidden': 'true' },
-          'segment': { 'data-empty': '' },
+          'path': { 'data-empty': '' },
           'clear-trigger': {
             'type': 'button',
             'aria-label': 'Clear signature',
@@ -221,7 +221,7 @@ export const signaturePadSuite: ConformanceSuite = {
           parts: {
             'root': { 'data-drawing': null, 'data-empty': null },
             'control': { 'data-drawing': null, 'data-empty': null },
-            'segment': { 'data-empty': null },
+            'path': { 'data-empty': null },
             'clear-trigger': { 'data-empty': null },
           },
         }),

@@ -5,7 +5,7 @@ import {
   XhMessageFeedItemLabel,
   XhMessageFeedList,
   XhMessageFeedRoot,
-  XhMessageFeedScrollButton,
+  XhMessageFeedScrollToEndTrigger,
   XhMessageFeedViewport,
 } from "@xihan-ui/vue";
 
@@ -43,6 +43,6 @@ const bubble = {
         </XhMessageFeedItem>
       </XhMessageFeedList>
     </XhMessageFeedViewport>
-    <XhMessageFeedScrollButton />
+    <XhMessageFeedScrollToEndTrigger />
   </XhMessageFeedRoot>
 </template>

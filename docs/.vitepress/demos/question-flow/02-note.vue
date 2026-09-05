@@ -6,10 +6,10 @@ import {
   XhQuestionFlowCounter,
   XhQuestionFlowFooter,
   XhQuestionFlowNote,
-  XhQuestionFlowOption,
-  XhQuestionFlowOptionGroup,
-  XhQuestionFlowOptionIndicator,
-  XhQuestionFlowOptionLabel,
+  XhQuestionFlowItem,
+  XhQuestionFlowGroup,
+  XhQuestionFlowItemIndicator,
+  XhQuestionFlowItemText,
   XhQuestionFlowPrompt,
   XhQuestionFlowQuestion,
   XhQuestionFlowRoot,
@@ -61,19 +61,19 @@ const log = ref("");
         <XhQuestionFlowTrack>
           <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
             <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
-            <XhQuestionFlowOptionGroup :question-id="question.id">
-              <XhQuestionFlowOption
+            <XhQuestionFlowGroup :question-id="question.id">
+              <XhQuestionFlowItem
                 v-for="option in question.options"
                 :key="option.value"
                 :question-id="question.id"
                 :option-value="option.value"
               >
-                <XhQuestionFlowOptionIndicator :question-id="question.id" :option-value="option.value" />
-                <XhQuestionFlowOptionLabel :question-id="question.id" :option-value="option.value">
+                <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
+                <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">
                   {{ option.label }}
-                </XhQuestionFlowOptionLabel>
-              </XhQuestionFlowOption>
-            </XhQuestionFlowOptionGroup>
+                </XhQuestionFlowItemText>
+              </XhQuestionFlowItem>
+            </XhQuestionFlowGroup>
             <!-- 写了一句就算答过这一题，继续键随之亮起 -->
             <XhQuestionFlowNote :question-id="question.id" />
           </XhQuestionFlowQuestion>

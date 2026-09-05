@@ -6,7 +6,7 @@ import {
   XhSignaturePadControl,
   XhSignaturePadGuide,
   XhSignaturePadRoot,
-  XhSignaturePadSegment,
+  XhSignaturePadPath,
 } from "@xihan-ui/vue";
 
 const size = ref(0);
@@ -21,7 +21,7 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
   <XhSignaturePadRoot v-slot="{ empty }" style="max-inline-size: 22rem" @draw-end="onDrawEnd">
     <XhSignaturePadControl>
       <XhSignaturePadGuide />
-      <XhSignaturePadSegment />
+      <XhSignaturePadPath />
     </XhSignaturePadControl>
     <div style="display: flex; gap: 8px; align-items: center">
       <XhSignaturePadClearTrigger>清空</XhSignaturePadClearTrigger>

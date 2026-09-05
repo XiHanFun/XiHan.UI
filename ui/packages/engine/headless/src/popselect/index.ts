@@ -1,5 +1,0 @@
-export { popselectAnatomy, popselectItemQuery, popselectItemText } from './popselect.anatomy'
-export { connectPopselect, POPSELECT_DEFAULT_PLACEMENT, popselectInitialFocus } from './popselect.connect'
-export { popselectKeyboard } from './popselect.keyboard'
-export { popselectMeta } from './popselect.meta'
-export type { PopselectApi, PopselectItemProps, PopselectNode, PopselectNodeMeta, PopselectProps, PopselectService, PopselectTranslations } from './popselect.types'

@@ -56,7 +56,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-approval>` |
-| Vue 组件 | `XhApprovalApproveTrigger` `XhApprovalDenyTrigger` `XhApprovalDescription` `XhApprovalFooter` `XhApprovalLiveRegion` `XhApprovalNote` `XhApprovalResult` `XhApprovalRoot` `XhApprovalScopeGroup` `XhApprovalScopeIndicator` `XhApprovalScopeItem` `XhApprovalScopeLabel` `XhApprovalTimer` `XhApprovalTitle` |
+| Vue 组件 | `XhApprovalApproveTrigger` `XhApprovalDenyTrigger` `XhApprovalDescription` `XhApprovalFooter` `XhApprovalGroup` `XhApprovalItem` `XhApprovalItemIndicator` `XhApprovalItemText` `XhApprovalLiveRegion` `XhApprovalNote` `XhApprovalResult` `XhApprovalRoot` `XhApprovalTimer` `XhApprovalTitle` |
 | 组合式函数 | `useApproval` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/approval.css` |
@@ -65,7 +65,7 @@
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="approval"`：**`root`** · `title` · `description` · `live-region` · `scope-group` · `scope-item` · `scope-indicator` · `scope-label` · `note` · `timer` · `result` · `footer` · **`approve-trigger`** · **`deny-trigger`**
+`data-scope="approval"`：**`root`** · `title` · `description` · `live-region` · `group` · `item` · `item-indicator` · `item-text` · `note` · `timer` · `result` · `footer` · **`approve-trigger`** · **`deny-trigger`**
 
 ## Props
 
@@ -107,8 +107,8 @@
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
+| `XhApprovalItem` | `default` | `ApprovalScopeSlotProps` |  |
 | `XhApprovalRoot` | `default` | `ApprovalRootSlotProps` |  |
-| `XhApprovalScopeItem` | `default` | `ApprovalScopeSlotProps` |  |
 
 ## 状态
 
@@ -117,8 +117,8 @@
 | 部件 | 取值 |
 | --- | --- |
 | `root` | state.get() |
-| `scope-item` | 'checked' \| 'unchecked' |
-| `scope-indicator` | 'checked' \| 'unchecked' |
+| `item` | 'checked' \| 'unchecked' |
+| `item-indicator` | 'checked' \| 'unchecked' |
 | `note` | state.get() |
 | `timer` | state.get() |
 | `result` | state.get() |
@@ -153,10 +153,10 @@
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
 | `getLiveRegionProps` | `() => T['element']` |  |
-| `getScopeGroupProps` | `() => T['element']` |  |
-| `getScopeItemProps` | `(scope: ApprovalScope) => T['element']` |  |
-| `getScopeIndicatorProps` | `(scope: ApprovalScope) => T['element']` |  |
-| `getScopeLabelProps` | `(scope: ApprovalScope) => T['element']` |  |
+| `getGroupProps` | `() => T['element']` |  |
+| `getItemProps` | `(scope: ApprovalScope) => T['element']` |  |
+| `getItemIndicatorProps` | `(scope: ApprovalScope) => T['element']` |  |
+| `getItemTextProps` | `(scope: ApprovalScope) => T['element']` |  |
 | `getNoteProps` | `() => T['input']` |  |
 | `getTimerProps` | `() => T['element']` |  |
 | `getResultProps` | `() => T['element']` |  |
@@ -186,13 +186,13 @@
 | `root` | `role` | 'group' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | props.live |
-| `scope-group` | `aria-label` | translations?.scopes |
-| `scope-group` | `role` | 'group' |
-| `scope-item` | `aria-checked` | 'true' \| 'false' |
-| `scope-item` | `aria-disabled` | 'true' \| 'false' |
-| `scope-item` | `aria-required` | 'true' \| 'false' |
-| `scope-item` | `role` | 'checkbox' |
-| `scope-indicator` | `aria-hidden` | 'true' |
+| `group` | `aria-label` | translations?.scopes |
+| `group` | `role` | 'group' |
+| `item` | `aria-checked` | 'true' \| 'false' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `aria-required` | 'true' \| 'false' |
+| `item` | `role` | 'checkbox' |
+| `item-indicator` | `aria-hidden` | 'true' |
 | `note` | `aria-label` | translations?.note |
 | `timer` | `aria-hidden` | 'true' |
 | `result` | `aria-hidden` | 'true' |
@@ -224,11 +224,11 @@
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | state.get() |
 | `root` | `data-tone` | props.tone |
-| `scope-item` | `data-disabled` | ''（条件成立时才出现） |
-| `scope-item` | `data-state` | 'checked' \| 'unchecked' |
-| `scope-item` | `data-value` | item.value |
-| `scope-indicator` | `data-state` | 'checked' \| 'unchecked' |
-| `scope-label` | `data-value` | item.value |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-state` | 'checked' \| 'unchecked' |
+| `item` | `data-value` | item.value |
+| `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
+| `item-text` | `data-value` | item.value |
 | `note` | `data-state` | state.get() |
 | `timer` | `data-state` | state.get() |
 | `result` | `data-state` | state.get() |
@@ -241,7 +241,7 @@
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-approval-action-font-size` · `--xh-approval-action-font-weight` · `--xh-approval-action-h` · `--xh-approval-action-px` · `--xh-approval-action-radius` · `--xh-approval-approve-bg` · `--xh-approval-approve-bg-hover` · `--xh-approval-approve-bg-off` · `--xh-approval-approve-fg` · `--xh-approval-approve-shadow` · `--xh-approval-bg` · `--xh-approval-border` · `--xh-approval-border-settled` · `--xh-approval-deny-bg` · `--xh-approval-deny-bg-hover` · `--xh-approval-deny-bg-off` · `--xh-approval-deny-border` · `--xh-approval-deny-border-off` · `--xh-approval-deny-fg` · `--xh-approval-description-fg` · `--xh-approval-description-font-size` · `--xh-approval-footer-gap` · `--xh-approval-gap` · `--xh-approval-icon-size` · `--xh-approval-indicator-bg-checked` · `--xh-approval-indicator-border` · `--xh-approval-indicator-border-checked` · `--xh-approval-indicator-fg` · `--xh-approval-indicator-radius` · `--xh-approval-indicator-size` · `--xh-approval-loading-duration` · `--xh-approval-note-bg` · `--xh-approval-note-border` · `--xh-approval-note-fg` · `--xh-approval-note-font-size` · `--xh-approval-note-px` · `--xh-approval-note-py` · `--xh-approval-note-radius` · `--xh-approval-p` · `--xh-approval-radius` · `--xh-approval-result-bg` · `--xh-approval-result-bg-denied` · `--xh-approval-result-fg` · `--xh-approval-result-fg-denied` · `--xh-approval-result-font-size` · `--xh-approval-result-font-weight` · `--xh-approval-result-gap` · `--xh-approval-result-px` · `--xh-approval-result-py` · `--xh-approval-result-radius` · `--xh-approval-scope-bg-hover` · `--xh-approval-scope-fg` · `--xh-approval-scope-fg-checked` · `--xh-approval-scope-font-size` · `--xh-approval-scope-gap` · `--xh-approval-scope-item-gap` · `--xh-approval-scope-px` · `--xh-approval-scope-py` · `--xh-approval-scope-radius` · `--xh-approval-shadow` · `--xh-approval-timer-fg` · `--xh-approval-timer-font-size` · `--xh-approval-title-fg` · `--xh-approval-title-font-size` · `--xh-approval-title-font-weight`
+`--xh-approval-action-font-size` · `--xh-approval-action-font-weight` · `--xh-approval-action-h` · `--xh-approval-action-px` · `--xh-approval-action-radius` · `--xh-approval-approve-bg` · `--xh-approval-approve-bg-hover` · `--xh-approval-approve-bg-off` · `--xh-approval-approve-fg` · `--xh-approval-approve-shadow` · `--xh-approval-bg` · `--xh-approval-border` · `--xh-approval-border-settled` · `--xh-approval-deny-bg` · `--xh-approval-deny-bg-hover` · `--xh-approval-deny-bg-off` · `--xh-approval-deny-border` · `--xh-approval-deny-border-off` · `--xh-approval-deny-fg` · `--xh-approval-description-fg` · `--xh-approval-description-font-size` · `--xh-approval-footer-gap` · `--xh-approval-gap` · `--xh-approval-group-gap` · `--xh-approval-icon-size` · `--xh-approval-indicator-bg-checked` · `--xh-approval-indicator-border` · `--xh-approval-indicator-border-checked` · `--xh-approval-indicator-fg` · `--xh-approval-indicator-radius` · `--xh-approval-indicator-size` · `--xh-approval-item-bg-hover` · `--xh-approval-item-font-size` · `--xh-approval-item-gap` · `--xh-approval-item-px` · `--xh-approval-item-py` · `--xh-approval-item-radius` · `--xh-approval-item-text-fg` · `--xh-approval-item-text-fg-checked` · `--xh-approval-loading-duration` · `--xh-approval-note-bg` · `--xh-approval-note-border` · `--xh-approval-note-fg` · `--xh-approval-note-font-size` · `--xh-approval-note-px` · `--xh-approval-note-py` · `--xh-approval-note-radius` · `--xh-approval-p` · `--xh-approval-radius` · `--xh-approval-result-bg` · `--xh-approval-result-bg-denied` · `--xh-approval-result-fg` · `--xh-approval-result-fg-denied` · `--xh-approval-result-font-size` · `--xh-approval-result-font-weight` · `--xh-approval-result-gap` · `--xh-approval-result-px` · `--xh-approval-result-py` · `--xh-approval-result-radius` · `--xh-approval-shadow` · `--xh-approval-timer-fg` · `--xh-approval-timer-font-size` · `--xh-approval-title-fg` · `--xh-approval-title-font-size` · `--xh-approval-title-font-weight`
 
 ## 动效
 
@@ -259,7 +259,7 @@
 - 要弹窗就一条一个[对话框](./dialog)：`role="alertdialog"`、关掉 `closeOnEscape`，
   并把 `initialFocus` 设成本组件导出的 `APPROVAL_DENY_SELECTOR`——
   这样浮层只剩批准与拒绝两个出口，而 Escape 仍会冒泡到闸门上判拒绝。
-- 剩余时间的跳字交给[倒计时](./countdown)，判定权仍在本组件手里。
+- 剩余时间的跳字交给[计时器](./timer)，判定权仍在本组件手里。
   **别把倒计时直接当 `timer` 那个节点渲**：两套解剖打在同一节点上会互相盖，
   让 `timer` 做外层容器、倒计时住在它里面。
 - 要一次问好几件事：用[步骤条](./steps)或[走马灯](./carousel)串起若干个闸门，一步一个。

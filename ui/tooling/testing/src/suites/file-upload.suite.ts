@@ -73,7 +73,7 @@ const BASE: FixtureNode = {
     // trigger 刻意放在投放区之外：按钮里再套按钮，读屏只念得出外面那一个
     { part: 'trigger', tag: 'button', text: '选择文件' },
     { part: 'hidden-input', tag: 'input' },
-    { part: 'item-group' },
+    { part: 'list' },
     { part: 'clear-trigger', tag: 'button', text: '清空' },
   ],
 }
@@ -101,7 +101,7 @@ function withItems(n: number) {
   return (base: FixtureNode): FixtureNode => ({
     ...base,
     children: base.children!.map(child =>
-      child.part === 'item-group'
+      child.part === 'list'
         ? { ...child, children: Array.from({ length: n }, (_, i) => itemNode(i)) }
         : child,
     ),
@@ -121,14 +121,14 @@ export const fileUploadSuite: ConformanceSuite = {
       // 投放区占一位、trigger 占一位、清空按钮占一位、藏起来的输入退出序列
       covers: ['file-upload.kbd.tab', 'file-upload.kbd.open-trigger', 'file-upload.kbd.clear'],
       initial: {
-        order: ['root', 'label', 'dropzone', 'trigger', 'hidden-input', 'item-group', 'clear-trigger'],
+        order: ['root', 'label', 'dropzone', 'trigger', 'hidden-input', 'list', 'clear-trigger'],
         counts: {
           'root': 1,
           'label': 1,
           'dropzone': 1,
           'trigger': 1,
           'hidden-input': 1,
-          'item-group': 1,
+          'list': 1,
           'clear-trigger': 1,
           // 一个文件都没有，条目位也没写：列表里空空如也
           'item': 0,
@@ -159,7 +159,7 @@ export const fileUploadSuite: ConformanceSuite = {
             name: null,
             disabled: null,
           },
-          'item-group': { 'role': 'list', 'data-empty': '' },
+          'list': { 'role': 'list', 'data-empty': '' },
           // 空列表下按钮照常在位可聚焦，只打 data-empty 交给皮肤压淡
           'clear-trigger': { 'type': 'button', 'disabled': null, 'data-disabled': null, 'data-empty': '' },
         },
@@ -190,7 +190,7 @@ export const fileUploadSuite: ConformanceSuite = {
           'dropzone',
           'trigger',
           'hidden-input',
-          'item-group',
+          'list',
           'item[0]',
           'item-preview[0]',
           'item-name[0]',
@@ -206,7 +206,7 @@ export const fileUploadSuite: ConformanceSuite = {
         counts: { 'item': 2, 'item-preview': 2, 'item-name': 2, 'item-size-text': 2, 'item-delete-trigger': 2 },
         parts: {
           'root': { 'data-empty': null },
-          'item-group': { 'role': 'list', 'data-empty': null },
+          'list': { 'role': 'list', 'data-empty': null },
           'item[0]': { 'role': 'listitem', 'data-file-name': 'photo.png', 'data-file-size': '2048' },
           'item[1]': { 'role': 'listitem', 'data-file-name': 'notes.txt', 'data-file-size': '12' },
           'item-size-text[0]': { 'data-file-size': '2048' },
@@ -252,7 +252,7 @@ export const fileUploadSuite: ConformanceSuite = {
           part: 'item-delete-trigger[0]',
           expect: {
             counts: { item: 0 },
-            parts: { 'root': { 'data-empty': '' }, 'item-group': { 'data-empty': '' }, 'clear-trigger': { 'disabled': null, 'data-empty': '' } },
+            parts: { 'root': { 'data-empty': '' }, 'list': { 'data-empty': '' }, 'clear-trigger': { 'disabled': null, 'data-empty': '' } },
           },
         },
         // 删空同样落投放区，清空按钮不是归还目标

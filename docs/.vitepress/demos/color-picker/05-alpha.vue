@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-  XhColorPickerArea,
+  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerChannelSlider,
   XhColorPickerChannelSliderThumb,
@@ -31,9 +31,9 @@ const overlay = ref("rgba(0, 169, 142, 0.6)");
     </XhColorPickerControl>
     <XhColorPickerPositioner>
       <XhColorPickerContent>
-        <XhColorPickerArea>
+        <XhColorPickerSaturationArea>
           <XhColorPickerAreaThumb />
-        </XhColorPickerArea>
+        </XhColorPickerSaturationArea>
         <XhColorPickerChannelSlider channel="hue">
           <XhColorPickerChannelSliderTrack />
           <XhColorPickerChannelSliderThumb />

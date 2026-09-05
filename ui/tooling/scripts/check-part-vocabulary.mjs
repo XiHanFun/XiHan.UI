@@ -63,9 +63,15 @@ if (process.argv.includes('--update')) {
   for (const name of [...usedBy.keys()].sort())
     parts[name] = [...usedBy.get(name)].sort()
 
-  // 尾词：保留上一版的裁决（synonymOf / pendingUsers），新出现的尾词默认收进规范词
+  // 尾词：保留上一版的裁决（synonymOf / pendingUsers），新出现的尾词默认收进规范词。
+  // 判成同义词的尾词即使已经没人用也留着：收敛完就把它删掉，下一个人写出来时又是无声放行。
+  const tailNames = new Set([...usedBy.keys()].map(tailOf))
+  for (const [tail, rule] of Object.entries(previous.tails ?? {})) {
+    if (rule !== true && rule?.synonymOf)
+      tailNames.add(tail)
+  }
   const tails = {}
-  for (const tail of [...new Set([...usedBy.keys()].map(tailOf))].sort())
+  for (const tail of [...tailNames].sort())
     tails[tail] = previous.tails?.[tail] ?? true
 
   const table = {

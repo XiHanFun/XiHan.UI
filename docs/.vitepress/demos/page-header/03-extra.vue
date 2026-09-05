@@ -3,7 +3,7 @@
 import {
   XhPageHeaderExtra,
   XhPageHeaderRoot,
-  XhPageHeaderSubtitle,
+  XhPageHeaderDescription,
   XhPageHeaderTitle,
 } from "@xihan-ui/vue";
 </script>
@@ -11,7 +11,7 @@ import {
 <template>
   <XhPageHeaderRoot>
     <XhPageHeaderTitle>订单详情</XhPageHeaderTitle>
-    <XhPageHeaderSubtitle>编号 SO-20260731-004</XhPageHeaderSubtitle>
+    <XhPageHeaderDescription>编号 SO-20260731-004</XhPageHeaderDescription>
     <XhPageHeaderExtra>
       <button type="button">导出</button>
       <button type="button">打印</button>

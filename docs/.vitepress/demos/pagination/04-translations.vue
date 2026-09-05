@@ -1,7 +1,7 @@
 <!-- 读屏文案 | translations 换掉 nav 地标名与各按钮的 aria-label，默认是英文 -->
 <script setup lang="ts">
 import {
-  XhPaginationEllipsis,
+  XhPaginationEllipsisTrigger,
   XhPaginationItem,
   XhPaginationNextTrigger,
   XhPaginationPrevTrigger,
@@ -26,7 +26,7 @@ const translations = {
   >
     <XhPaginationPrevTrigger />
     <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-      <XhPaginationEllipsis v-if="p === 'ellipsis'">…</XhPaginationEllipsis>
+      <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'">…</XhPaginationEllipsisTrigger>
       <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
     </template>
     <XhPaginationNextTrigger />

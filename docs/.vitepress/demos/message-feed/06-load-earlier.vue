@@ -4,7 +4,7 @@ import {
   XhMessageFeedItem,
   XhMessageFeedList,
   XhMessageFeedRoot,
-  XhMessageFeedScrollButton,
+  XhMessageFeedScrollToEndTrigger,
   XhMessageFeedViewport,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -53,7 +53,7 @@ function onScroll(event: Event): void {
           </XhMessageFeedItem>
         </XhMessageFeedList>
       </XhMessageFeedViewport>
-      <XhMessageFeedScrollButton />
+      <XhMessageFeedScrollToEndTrigger />
     </XhMessageFeedRoot>
 
     <span>

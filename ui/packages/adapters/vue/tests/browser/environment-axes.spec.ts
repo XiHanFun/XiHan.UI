@@ -122,10 +122,10 @@ describe('高对比档', () => {
 
   it('画的就是颜色的那几处退出强制着色，并各补一圈系统描边', () => {
     mount(`
-      <div data-scope="color-picker" data-part="area"></div>
+      <div data-scope="color-picker" data-part="saturation-area"></div>
       <div data-scope="heatmap" data-part="root"><div data-scope="heatmap" data-part="cell"></div></div>
     `)
-    expect(styleOf('[data-scope="color-picker"][data-part="area"]').forcedColorAdjust).toBe('none')
+    expect(styleOf('[data-scope="color-picker"][data-part="saturation-area"]').forcedColorAdjust).toBe('none')
     const cell = styleOf('[data-part="cell"]')
     expect(cell.forcedColorAdjust).toBe('none')
     expect(cell.outlineStyle).toBe('solid')

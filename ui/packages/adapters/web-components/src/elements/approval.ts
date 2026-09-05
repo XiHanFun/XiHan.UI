@@ -47,10 +47,10 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart title - 闸门标题，给它命名
  * @csspart description - 闸门说明，给它描述
  * @csspart live-region - 可配档位的活区
- * @csspart scope-group - 授权项那一组
- * @csspart scope-item - 一项授权，role=checkbox，只认 Space
- * @csspart scope-indicator - 勾选记号，对读屏隐藏
- * @csspart scope-label - 授权项文字，排在勾选项内因而构成它的可及名
+ * @csspart group - 授权项那一组
+ * @csspart item - 一项授权，role=checkbox，只认 Space
+ * @csspart item-indicator - 勾选记号，对读屏隐藏
+ * @csspart item-text - 授权项文字，排在勾选项内因而构成它的可及名
  * @csspart note - 附在判定上的一句自由文本
  * @csspart timer - 剩余时间，对读屏隐藏
  * @csspart result - 判定落定后才露出的结果条，对读屏隐藏
@@ -151,7 +151,7 @@ export class XhApprovalElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('title', api.getTitleProps() as Record<string, unknown>)
     put('description', api.getDescriptionProps() as Record<string, unknown>)
-    put('scope-group', api.getScopeGroupProps() as Record<string, unknown>)
+    put('group', api.getGroupProps() as Record<string, unknown>)
     put('note', api.getNoteProps() as Record<string, unknown>)
     put('timer', api.getTimerProps() as Record<string, unknown>)
     put('result', api.getResultProps() as Record<string, unknown>)
@@ -166,13 +166,13 @@ export class XhApprovalElement extends XhElement {
     }
 
     // 多实例 part 逐个打，授权项有几条打几条
-    for (const el of this.getParts('scope-item')) {
+    for (const el of this.getParts('item')) {
       const scope = this.scopeOf(el)
-      this.spreader.spread(el, api.getScopeItemProps(scope) as Record<string, unknown>)
-      for (const indicator of el.querySelectorAll<HTMLElement>('[data-xh-part="scope-indicator"]'))
-        this.spreader.spread(indicator, api.getScopeIndicatorProps(scope) as Record<string, unknown>)
-      for (const label of el.querySelectorAll<HTMLElement>('[data-xh-part="scope-label"]'))
-        this.spreader.spread(label, api.getScopeLabelProps(scope) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(scope) as Record<string, unknown>)
+      for (const indicator of el.querySelectorAll<HTMLElement>('[data-xh-part="item-indicator"]'))
+        this.spreader.spread(indicator, api.getItemIndicatorProps(scope) as Record<string, unknown>)
+      for (const label of el.querySelectorAll<HTMLElement>('[data-xh-part="item-text"]'))
+        this.spreader.spread(label, api.getItemTextProps(scope) as Record<string, unknown>)
     }
   }
 }

@@ -6,7 +6,7 @@ import {
   XhSliderControl,
   XhSliderHiddenInput,
   XhSliderLabel,
-  XhSliderMarks,
+  XhSliderTickGroup,
   XhSliderRange,
   XhSliderRoot,
   XhSliderThumb,
@@ -32,7 +32,7 @@ const snapped = ref([37]);
         <XhSliderTrack>
           <XhSliderRange />
         </XhSliderTrack>
-        <XhSliderMarks />
+        <XhSliderTickGroup />
         <XhSliderThumb>
           <XhSliderHiddenInput />
         </XhSliderThumb>
@@ -45,7 +45,7 @@ const snapped = ref([37]);
         <XhSliderTrack>
           <XhSliderRange />
         </XhSliderTrack>
-        <XhSliderMarks />
+        <XhSliderTickGroup />
         <XhSliderThumb>
           <XhSliderHiddenInput />
         </XhSliderThumb>

@@ -1,7 +1,7 @@
 <!-- 长行换行与词级差异 | 开 wrap 让长行原地折行；配对的删改行之间再比一次词，只有真正动过的那几段上底色 -->
 <script setup lang="ts">
 import { computeTextDiff } from "@xihan-ui/headless";
-import { XhDiffViewBody, XhDiffViewHeader, XhDiffViewRoot, XhDiffViewStat, XhDiffViewViewport } from "@xihan-ui/vue";
+import { XhDiffViewBody, XhDiffViewHeader, XhDiffViewRoot, XhDiffViewSummary, XhDiffViewViewport } from "@xihan-ui/vue";
 import { createHighlighter } from "@xihan-ui/code-highlight";
 import { computed } from "vue";
 
@@ -23,8 +23,8 @@ const model = computed(() =>
   <XhDiffViewRoot :model="model" wrap>
     <XhDiffViewHeader>
       <span>src/client.ts</span>
-      <XhDiffViewStat change="added" />
-      <XhDiffViewStat change="removed" />
+      <XhDiffViewSummary change="added" />
+      <XhDiffViewSummary change="removed" />
     </XhDiffViewHeader>
     <XhDiffViewViewport>
       <XhDiffViewBody />

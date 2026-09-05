@@ -87,7 +87,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-date-picker>` |
-| Vue 组件 | `XhDatePickerCalendar` `XhDatePickerCell` `XhDatePickerCellTrigger` `XhDatePickerClearTrigger` `XhDatePickerConfirmTrigger` `XhDatePickerContent` `XhDatePickerControl` `XhDatePickerGrid` `XhDatePickerGridBody` `XhDatePickerGridHead` `XhDatePickerHeader` `XhDatePickerHeading` `XhDatePickerHeadingMonthTrigger` `XhDatePickerHeadingYearTrigger` `XhDatePickerHiddenInput` `XhDatePickerLabel` `XhDatePickerNextTrigger` `XhDatePickerNextYearTrigger` `XhDatePickerPositioner` `XhDatePickerPreset` `XhDatePickerPresets` `XhDatePickerPrevTrigger` `XhDatePickerPrevYearTrigger` `XhDatePickerRoot` `XhDatePickerSegment` `XhDatePickerSegmentGroup` `XhDatePickerTimePanel` `XhDatePickerTrigger` `XhDatePickerWeekDay` `XhDatePickerWeekNumber` `XhDatePickerWeekRow` |
+| Vue 组件 | `XhDatePickerCalendar` `XhDatePickerCell` `XhDatePickerCellTrigger` `XhDatePickerClearTrigger` `XhDatePickerConfirmTrigger` `XhDatePickerContent` `XhDatePickerControl` `XhDatePickerGrid` `XhDatePickerGridBody` `XhDatePickerGridHead` `XhDatePickerHeader` `XhDatePickerHeading` `XhDatePickerHeadingMonthTrigger` `XhDatePickerHeadingYearTrigger` `XhDatePickerHiddenInput` `XhDatePickerLabel` `XhDatePickerNextTrigger` `XhDatePickerNextYearTrigger` `XhDatePickerPositioner` `XhDatePickerPreset` `XhDatePickerPresetGroup` `XhDatePickerPrevTrigger` `XhDatePickerPrevYearTrigger` `XhDatePickerRoot` `XhDatePickerSegment` `XhDatePickerSegmentGroup` `XhDatePickerTimePanel` `XhDatePickerTrigger` `XhDatePickerWeekDay` `XhDatePickerWeekNumber` `XhDatePickerWeekRow` |
 | 组合式函数 | `useDatePicker` |
 | 状态机 | `datePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/date-picker.css` |
@@ -96,7 +96,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="date-picker"`：`root` · `label` · **`control`** · `segment-group` · `trigger` · `clear-trigger` · `positioner` · **`content`** · `presets` · `preset` · **`calendar`** · `time-column` · `time-item` · `confirm-trigger`
+`data-scope="date-picker"`：`root` · `label` · **`control`** · `segment-group` · `trigger` · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · **`calendar`** · `time-column` · `time-item` · `confirm-trigger`
 
 ## Props
 
@@ -159,7 +159,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhDatePickerPreset` | `default` | — | 条目内容；不写就用数据里的 label。 |
-| `XhDatePickerPresets` | `default` | `DatePickerPresetsSlotProps` | 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 |
+| `XhDatePickerPresetGroup` | `default` | `DatePickerPresetsSlotProps` | 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 |
 | `XhDatePickerRoot` | `default` | `DatePickerRootSlotProps` |  |
 | `XhDatePickerSegment` | `default` | `DatePickerSegmentSlotProps` |  |
 
@@ -222,7 +222,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
-| `getPresetsProps` | `() => T['element']` | 快捷选项列（role=listbox）；没给 presets 时带 hidden。 |
+| `getPresetGroupProps` | `() => T['element']` | 快捷选项列（role=listbox）；没给 presets 时带 hidden。 |
 | `getPresetProps` | `(props: DatePickerPresetProps) => T['element']` | 一条快捷选项（role=option）：点按把整份日期写进选中值。 |
 | `getCalendarProps` | `() => T['element']` | 内嵌日历的挂载点，同时充当日历的根节点。 |
 | `getTimeColumnProps` | `(props: DatePickerTimeColumnProps) => T['element']` | 时间列容器（时/分[/秒]各一列）；没开 showTime 时带 hidden。 |
@@ -263,11 +263,11 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `content` | `aria-labelledby` | `label` 部件的 id |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
-| `presets` | `aria-disabled` | 'true' \| 'false' |
-| `presets` | `aria-label` | label.presets |
-| `presets` | `aria-multiselectable` | 'false' |
-| `presets` | `aria-orientation` | 'vertical' |
-| `presets` | `role` | 'listbox' |
+| `preset-group` | `aria-disabled` | 'true' \| 'false' |
+| `preset-group` | `aria-label` | label.presets |
+| `preset-group` | `aria-multiselectable` | 'false' |
+| `preset-group` | `aria-orientation` | 'vertical' |
+| `preset-group` | `role` | 'listbox' |
 | `preset` | `aria-disabled` | 'true' \| 'false' |
 | `preset` | `aria-selected` | 'true' \| 'false' |
 | `preset` | `role` | 'option' |
@@ -334,7 +334,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-date-picker-action-bg` · `--xh-date-picker-action-bg-active` · `--xh-date-picker-action-bg-hover` · `--xh-date-picker-action-fg` · `--xh-date-picker-action-fg-hover` · `--xh-date-picker-action-font-size` · `--xh-date-picker-action-radius` · `--xh-date-picker-action-size` · `--xh-date-picker-calendar-gap` · `--xh-date-picker-column-divider` · `--xh-date-picker-confirm-trigger-bg` · `--xh-date-picker-confirm-trigger-bg-active` · `--xh-date-picker-confirm-trigger-bg-hover` · `--xh-date-picker-confirm-trigger-fg` · `--xh-date-picker-confirm-trigger-h` · `--xh-date-picker-confirm-trigger-px` · `--xh-date-picker-confirm-trigger-radius` · `--xh-date-picker-confirm-trigger-shadow` · `--xh-date-picker-content-bg` · `--xh-date-picker-content-border` · `--xh-date-picker-content-fg` · `--xh-date-picker-content-px` · `--xh-date-picker-content-py` · `--xh-date-picker-content-radius` · `--xh-date-picker-content-shadow` · `--xh-date-picker-control-bg` · `--xh-date-picker-control-bg-disabled` · `--xh-date-picker-control-bg-readonly` · `--xh-date-picker-control-border` · `--xh-date-picker-control-border-focus` · `--xh-date-picker-control-border-hover` · `--xh-date-picker-control-border-invalid` · `--xh-date-picker-control-fg` · `--xh-date-picker-control-gap` · `--xh-date-picker-control-h` · `--xh-date-picker-control-min-w` · `--xh-date-picker-control-px` · `--xh-date-picker-control-radius` · `--xh-date-picker-control-shadow` · `--xh-date-picker-font-size` · `--xh-date-picker-gap` · `--xh-date-picker-icon-size` · `--xh-date-picker-label-fg` · `--xh-date-picker-label-fg-disabled` · `--xh-date-picker-label-font-size` · `--xh-date-picker-label-font-weight` · `--xh-date-picker-layer` · `--xh-date-picker-max-h` · `--xh-date-picker-panel-divider` · `--xh-date-picker-panel-gap` · `--xh-date-picker-preset-bg-hover` · `--xh-date-picker-preset-bg-selected` · `--xh-date-picker-preset-fg-disabled` · `--xh-date-picker-preset-fg-selected` · `--xh-date-picker-preset-px` · `--xh-date-picker-preset-py` · `--xh-date-picker-preset-radius` · `--xh-date-picker-presets-gap` · `--xh-date-picker-presets-h` · `--xh-date-picker-presets-padding` · `--xh-date-picker-time-column-gap` · `--xh-date-picker-time-column-h` · `--xh-date-picker-time-column-padding` · `--xh-date-picker-time-item-bg-hover` · `--xh-date-picker-time-item-bg-selected` · `--xh-date-picker-time-item-fg-selected` · `--xh-date-picker-time-item-px` · `--xh-date-picker-time-item-py` · `--xh-date-picker-time-item-radius`
+`--xh-date-picker-action-bg` · `--xh-date-picker-action-bg-active` · `--xh-date-picker-action-bg-hover` · `--xh-date-picker-action-fg` · `--xh-date-picker-action-fg-hover` · `--xh-date-picker-action-font-size` · `--xh-date-picker-action-radius` · `--xh-date-picker-action-size` · `--xh-date-picker-calendar-gap` · `--xh-date-picker-column-divider` · `--xh-date-picker-confirm-trigger-bg` · `--xh-date-picker-confirm-trigger-bg-active` · `--xh-date-picker-confirm-trigger-bg-hover` · `--xh-date-picker-confirm-trigger-fg` · `--xh-date-picker-confirm-trigger-h` · `--xh-date-picker-confirm-trigger-px` · `--xh-date-picker-confirm-trigger-radius` · `--xh-date-picker-confirm-trigger-shadow` · `--xh-date-picker-content-bg` · `--xh-date-picker-content-border` · `--xh-date-picker-content-fg` · `--xh-date-picker-content-px` · `--xh-date-picker-content-py` · `--xh-date-picker-content-radius` · `--xh-date-picker-content-shadow` · `--xh-date-picker-control-bg` · `--xh-date-picker-control-bg-disabled` · `--xh-date-picker-control-bg-hover` · `--xh-date-picker-control-bg-readonly` · `--xh-date-picker-control-border` · `--xh-date-picker-control-border-focus` · `--xh-date-picker-control-border-hover` · `--xh-date-picker-control-border-invalid` · `--xh-date-picker-control-fg` · `--xh-date-picker-control-gap` · `--xh-date-picker-control-h` · `--xh-date-picker-control-min-w` · `--xh-date-picker-control-px` · `--xh-date-picker-control-radius` · `--xh-date-picker-control-shadow` · `--xh-date-picker-font-size` · `--xh-date-picker-gap` · `--xh-date-picker-icon-size` · `--xh-date-picker-label-fg` · `--xh-date-picker-label-fg-disabled` · `--xh-date-picker-label-font-size` · `--xh-date-picker-label-font-weight` · `--xh-date-picker-layer` · `--xh-date-picker-max-h` · `--xh-date-picker-panel-divider` · `--xh-date-picker-panel-gap` · `--xh-date-picker-preset-bg-hover` · `--xh-date-picker-preset-bg-selected` · `--xh-date-picker-preset-fg-disabled` · `--xh-date-picker-preset-fg-selected` · `--xh-date-picker-preset-group-gap` · `--xh-date-picker-preset-group-h` · `--xh-date-picker-preset-group-padding` · `--xh-date-picker-preset-px` · `--xh-date-picker-preset-py` · `--xh-date-picker-preset-radius` · `--xh-date-picker-time-column-gap` · `--xh-date-picker-time-column-h` · `--xh-date-picker-time-column-padding` · `--xh-date-picker-time-item-bg-hover` · `--xh-date-picker-time-item-bg-selected` · `--xh-date-picker-time-item-fg-selected` · `--xh-date-picker-time-item-px` · `--xh-date-picker-time-item-py` · `--xh-date-picker-time-item-radius`
 
 ## 动效
 

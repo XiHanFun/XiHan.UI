@@ -39,15 +39,15 @@ const DISABLED_QUESTIONS = [
   QUESTIONS[2]!,
 ]
 
-function optionNode(questionId: string, value: string, label: string): FixtureNode {
+function itemNode(questionId: string, value: string, label: string): FixtureNode {
   const attrs = { 'question-id': questionId, 'option-value': value }
   return {
-    part: 'option',
+    part: 'item',
     tag: 'button',
     attrs,
     children: [
-      { part: 'option-indicator', tag: 'span', attrs },
-      { part: 'option-label', tag: 'span', attrs, text: label },
+      { part: 'item-indicator', tag: 'span', attrs },
+      { part: 'item-text', tag: 'span', attrs, text: label },
     ],
   }
 }
@@ -60,9 +60,9 @@ function questionNode(question: (typeof QUESTIONS)[number]): FixtureNode {
     children: [
       { part: 'prompt', tag: 'p', attrs, text: question.prompt },
       {
-        part: 'option-group',
+        part: 'group',
         attrs,
-        children: question.options.map(option => optionNode(question.id, option.value, option.label)),
+        children: question.options.map(option => itemNode(question.id, option.value, option.label)),
       },
       { part: 'note', tag: 'input', attrs },
     ],
@@ -98,7 +98,7 @@ export const questionFlowSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: { questions: QUESTIONS },
       initial: {
-        counts: { 'root': 1, 'question': 3, 'option': 7, 'submit-trigger': 1 },
+        counts: { 'root': 1, 'question': 3, 'item': 7, 'submit-trigger': 1 },
         parts: {
           'root': { 'data-state': 'answering' },
           'question': [
@@ -106,12 +106,12 @@ export const questionFlowSuite: ConformanceSuite = {
             { 'data-current': null, 'aria-hidden': 'true', 'inert': '' },
             { 'data-current': null, 'aria-hidden': 'true', 'inert': '' },
           ],
-          'option-group': [
+          'group': [
             { role: 'radiogroup' },
             { role: 'group' },
             { role: 'radiogroup' },
           ],
-          'option': [
+          'item': [
             { 'role': 'radio', 'aria-checked': 'false', 'tabindex': '0', 'disabled': null },
             { 'role': 'radio', 'aria-checked': 'false', 'tabindex': '-1' },
             { role: 'radio', tabindex: '-1' },
@@ -137,9 +137,9 @@ export const questionFlowSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'click',
-          part: 'option[0]',
+          part: 'item[0]',
           expect: {
-            parts: { option: [{ 'aria-checked': 'true' }] },
+            parts: { item: [{ 'aria-checked': 'true' }] },
             events: [{ type: 'answers-change', detail: { answers: { scope: ['ui'] } } }],
           },
         },
@@ -162,9 +162,9 @@ export const questionFlowSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'click',
-          part: 'option[3]',
+          part: 'item[3]',
           expect: {
-            parts: { option: [{ 'aria-checked': 'false' }, {}, {}, { 'aria-checked': 'true' }] },
+            parts: { item: [{ 'aria-checked': 'false' }, {}, {}, { 'aria-checked': 'true' }] },
             events: [{ type: 'answers-change', detail: { answers: { checks: ['unit'] } } }],
           },
         },
@@ -187,23 +187,23 @@ export const questionFlowSuite: ConformanceSuite = {
       covers: ['question-flow.kbd.next-option', 'question-flow.kbd.prev-option'],
       props: { questions: QUESTIONS, autoAdvance: false },
       steps: [
-        { kind: 'focus', part: 'option[0]' },
+        { kind: 'focus', part: 'item[0]' },
         {
           kind: 'key',
           key: 'ArrowDown',
           expect: {
             parts: {
-              option: [{ 'aria-checked': 'false', 'tabindex': '-1' }, { 'aria-checked': 'true', 'tabindex': '0' }],
+              item: [{ 'aria-checked': 'false', 'tabindex': '-1' }, { 'aria-checked': 'true', 'tabindex': '0' }],
             },
-            activeElement: 'option[1]',
+            activeElement: 'item[1]',
           },
         },
         {
           kind: 'key',
           key: 'ArrowUp',
           expect: {
-            parts: { option: [{ 'aria-checked': 'true', 'tabindex': '0' }, { 'aria-checked': 'false' }] },
-            activeElement: 'option[0]',
+            parts: { item: [{ 'aria-checked': 'true', 'tabindex': '0' }, { 'aria-checked': 'false' }] },
+            activeElement: 'item[0]',
           },
         },
       ],
@@ -214,21 +214,21 @@ export const questionFlowSuite: ConformanceSuite = {
       covers: ['question-flow.kbd.first-option', 'question-flow.kbd.last-option'],
       props: { questions: QUESTIONS, autoAdvance: false },
       steps: [
-        { kind: 'focus', part: 'option[0]' },
+        { kind: 'focus', part: 'item[0]' },
         {
           kind: 'key',
           key: 'End',
           expect: {
-            parts: { option: [{ 'aria-checked': 'false' }, { 'aria-checked': 'false' }, { 'aria-checked': 'true' }] },
-            activeElement: 'option[2]',
+            parts: { item: [{ 'aria-checked': 'false' }, { 'aria-checked': 'false' }, { 'aria-checked': 'true' }] },
+            activeElement: 'item[2]',
           },
         },
         {
           kind: 'key',
           key: 'Home',
           expect: {
-            parts: { option: [{ 'aria-checked': 'true' }, {}, { 'aria-checked': 'false' }] },
-            activeElement: 'option[0]',
+            parts: { item: [{ 'aria-checked': 'true' }, {}, { 'aria-checked': 'false' }] },
+            activeElement: 'item[0]',
           },
         },
       ],
@@ -239,12 +239,12 @@ export const questionFlowSuite: ConformanceSuite = {
       covers: ['question-flow.kbd.toggle'],
       props: { questions: QUESTIONS, defaultIndex: 1 },
       steps: [
-        { kind: 'focus', part: 'option[3]' },
+        { kind: 'focus', part: 'item[3]' },
         {
           kind: 'key',
           key: 'Space',
           expect: {
-            parts: { 'option[3]': { 'aria-checked': 'true' } },
+            parts: { 'item[3]': { 'aria-checked': 'true' } },
             events: [{ type: 'answers-change', detail: { answers: { checks: ['unit'] } } }],
           },
         },
@@ -252,7 +252,7 @@ export const questionFlowSuite: ConformanceSuite = {
           kind: 'key',
           key: 'Space',
           expect: {
-            parts: { 'option[3]': { 'aria-checked': 'false' } },
+            parts: { 'item[3]': { 'aria-checked': 'false' } },
             events: [{ type: 'answers-change', detail: { answers: { checks: [] } } }],
           },
         },
@@ -265,7 +265,7 @@ export const questionFlowSuite: ConformanceSuite = {
       initial: {
         parts: {
           // 用 aria-disabled 而非原生 disabled：禁用项照样能被点上去，因而 Space 那条路必须自己挡
-          option: [
+          item: [
             { 'aria-disabled': 'false', 'tabindex': '0' },
             { 'aria-disabled': 'true', 'tabindex': '-1' },
             { 'aria-disabled': 'false', 'tabindex': '-1' },
@@ -274,12 +274,12 @@ export const questionFlowSuite: ConformanceSuite = {
         events: [],
       },
       steps: [
-        { kind: 'focus', part: 'option[1]' },
+        { kind: 'focus', part: 'item[1]' },
         {
           kind: 'key',
           key: 'Space',
           expect: {
-            parts: { 'option[1]': { 'aria-checked': 'false' } },
+            parts: { 'item[1]': { 'aria-checked': 'false' } },
             events: [],
           },
         },
@@ -287,8 +287,8 @@ export const questionFlowSuite: ConformanceSuite = {
           kind: 'key',
           key: 'ArrowDown',
           expect: {
-            parts: { 'option[1]': { 'aria-checked': 'false' }, 'option[2]': { 'aria-checked': 'true' } },
-            activeElement: 'option[2]',
+            parts: { 'item[1]': { 'aria-checked': 'false' }, 'item[2]': { 'aria-checked': 'true' } },
+            activeElement: 'item[2]',
           },
         },
       ],
@@ -302,7 +302,7 @@ export const questionFlowSuite: ConformanceSuite = {
         parts: { 'submit-trigger': { 'data-mode': 'send', 'disabled': null } },
       },
       steps: [
-        { kind: 'focus', part: 'option[5]' },
+        { kind: 'focus', part: 'item[5]' },
         {
           kind: 'key',
           key: 'Enter',

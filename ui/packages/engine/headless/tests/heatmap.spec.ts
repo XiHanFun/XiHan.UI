@@ -442,7 +442,7 @@ describe('connectHeatmap 网格与格子的属性', () => {
     const weekRow = api.getRowProps({ weekDay: 2 }) as Record<string, unknown>
     expect(weekRow.role).toBe('row')
     expect(weekRow['aria-rowindex']).toBe(3)
-    expect((api.getWeekDayLabelProps({ weekDay: 0 }) as Record<string, unknown>)['aria-hidden']).toBe(true)
+    expect((api.getWeekDayProps({ weekDay: 0 }) as Record<string, unknown>)['aria-hidden']).toBe(true)
     expect((api.getMonthLabelProps({ value: '2024-01' }) as Record<string, unknown>)['aria-hidden']).toBe(true)
     // 图例容器不藏：作者写在色块旁的「少 → 多」要念得到；藏的是色块本身
     expect((api.getLegendProps() as Record<string, unknown>)['aria-hidden']).toBeUndefined()
@@ -837,7 +837,7 @@ function mountMonth(initial: Props = {}): MultiHarness {
       doc.spread(axis, api.getRowProps({}))
       for (const day of monthGrid.weekDays) {
         const label = document.createElement('span')
-        doc.spread(label, api.getWeekDayLabelProps({ weekDay: day.weekDay }))
+        doc.spread(label, api.getWeekDayProps({ weekDay: day.weekDay }))
         axis.append(label)
       }
       blockEl.append(axis)

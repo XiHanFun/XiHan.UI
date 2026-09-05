@@ -10,7 +10,7 @@
         <button data-xh-part="item" value="3">3</button>
         <button data-xh-part="item" value="4">4</button>
         <button data-xh-part="item" value="5">5</button>
-        <button data-xh-part="ellipsis" side="end">…</button>
+        <button data-xh-part="ellipsis-trigger" side="end">…</button>
         <button data-xh-part="item" value="20">20</button>
         <button data-xh-part="next-trigger"></button>
       </nav>
@@ -27,7 +27,7 @@
         <button data-xh-part="item" value="3">3</button>
         <button data-xh-part="item" value="4">4</button>
         <button data-xh-part="item" value="5">5</button>
-        <button data-xh-part="ellipsis" side="end">…</button>
+        <button data-xh-part="ellipsis-trigger" side="end">…</button>
         <button data-xh-part="item" value="20">20</button>
         <button data-xh-part="next-trigger"></button>
       </nav>
@@ -44,7 +44,7 @@
         <button data-xh-part="item" value="3">3</button>
         <button data-xh-part="item" value="4">4</button>
         <button data-xh-part="item" value="5">5</button>
-        <button data-xh-part="ellipsis" side="end">…</button>
+        <button data-xh-part="ellipsis-trigger" side="end">…</button>
         <button data-xh-part="item" value="20">20</button>
         <button data-xh-part="next-trigger"></button>
       </nav>
@@ -62,13 +62,13 @@
 
     host.addEventListener("page-change", () => {
       for (const node of root.querySelectorAll(
-        '[data-xh-part="item"], [data-xh-part="ellipsis"]',
+        '[data-xh-part="item"], [data-xh-part="ellipsis-trigger"]',
       ))
         node.remove();
       for (const item of host.pageItems) {
         const el = document.createElement("button");
         if (item.type === "ellipsis") {
-          el.dataset.xhPart = "ellipsis";
+          el.dataset.xhPart = "ellipsis-trigger";
           el.setAttribute("side", item.side);
           el.textContent = "…";
         } else {

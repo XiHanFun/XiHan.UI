@@ -82,7 +82,7 @@ export const logSuite: ConformanceSuite = {
           },
         ],
       },
-      { part: 'scroll-button', tag: 'button' },
+      { part: 'scroll-to-end-trigger', tag: 'button' },
       { part: 'live-region' },
     ],
   },
@@ -91,8 +91,8 @@ export const logSuite: ConformanceSuite = {
       name: 'ARIA 骨架：视口是可聚焦但恒不播报的 log 区，播报只在 live-region，初始在底故按钮收起',
       spec: { apg: LIVE },
       initial: {
-        order: ['root', 'viewport', 'content', 'line[0]', 'line[1]', 'line[2]', 'scroll-button', 'live-region'],
-        counts: { 'root': 1, 'viewport': 1, 'content': 1, 'line': 3, 'scroll-button': 1, 'live-region': 1 },
+        order: ['root', 'viewport', 'content', 'line[0]', 'line[1]', 'line[2]', 'scroll-to-end-trigger', 'live-region'],
+        counts: { 'root': 1, 'viewport': 1, 'content': 1, 'line': 3, 'scroll-to-end-trigger': 1, 'live-region': 1 },
         parts: {
           'root': {
             // 没在取行，data-loading 不留空属性
@@ -109,7 +109,7 @@ export const logSuite: ConformanceSuite = {
             // 让键盘用户落得进日志区
             'tabindex': '0',
           },
-          'scroll-button': {
+          'scroll-to-end-trigger': {
             'type': 'button',
             'aria-label': 'Scroll to bottom',
             'data-state': 'hidden',
@@ -134,7 +134,7 @@ export const logSuite: ConformanceSuite = {
       initial: {
         parts: {
           'viewport': { 'aria-label': '构建日志' },
-          'scroll-button': { 'aria-label': '回到最新' },
+          'scroll-to-end-trigger': { 'aria-label': '回到最新' },
         },
       },
     },
@@ -205,7 +205,7 @@ export const logSuite: ConformanceSuite = {
     {
       name: '离底后按钮露头，按下去归位到底并重新粘附',
       spec: { apg: APG },
-      covers: ['log.kbd.scroll-button'],
+      covers: ['log.kbd.scroll-to-end-trigger'],
       skipParity: 'jsdom 无布局，粘底状态由伪造几何驱动，两适配器的 RO 回调时机天然不同步',
       steps: [
         {
@@ -213,15 +213,15 @@ export const logSuite: ConformanceSuite = {
           why: 'jsdom 无布局，滚动几何恒为 0、视口永远判成在底，粘底状态只能由伪造几何驱动',
           run: scrollAwayFromBottom,
           expect: {
-            parts: { 'scroll-button': { 'hidden': null, 'data-state': 'visible' } },
+            parts: { 'scroll-to-end-trigger': { 'hidden': null, 'data-state': 'visible' } },
             events: [{ type: 'stick-change', detail: { atBottom: false, sticking: true } }],
           },
         },
         {
           kind: 'click',
-          part: 'scroll-button',
+          part: 'scroll-to-end-trigger',
           expect: {
-            parts: { 'scroll-button': { 'hidden': '', 'data-state': 'hidden' } },
+            parts: { 'scroll-to-end-trigger': { 'hidden': '', 'data-state': 'hidden' } },
             events: [{ type: 'stick-change', detail: { atBottom: true, sticking: true } }],
           },
         },

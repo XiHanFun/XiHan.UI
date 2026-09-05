@@ -7,18 +7,18 @@ import { createAnatomy } from '@xihan-ui/kernel'
 // input 是多实例 part：时/分/秒/上下午各一个，段的身份由作者写在节点上，
 // 结构与语义同分段时间输入（每段一个 spinbutton、整组一个 Tab 位），逻辑走 time-field 的纯函数。
 // column 同样是多实例，每列是一个 listbox，option 是列里的选项；列间靠左右键换，列内靠上下键走。
-// presets 是浮层里的快捷选项列（「此刻」「上午 9 点」这类），preset 是其中一项。
+// preset-group 是浮层里的快捷选项列（「此刻」「上午 9 点」这类），preset 是其中一项。
 export const timePickerAnatomy = createAnatomy('time-picker', [
   'root',
   'label',
   'control',
   'segment-group',
-  'input',
+  'segment',
   'trigger',
   'clear-trigger',
   'positioner',
   'content',
-  'presets',
+  'preset-group',
   'preset',
   'column',
   'item',
@@ -26,7 +26,7 @@ export const timePickerAnatomy = createAnatomy('time-picker', [
 ])
 
 /** 分段输入的集合：容器取 control（trigger 与清空按钮同在 control 里，但不是 input，查不到它们）。 */
-export const timePickerInputQuery: ItemQuery = { scope: timePickerAnatomy.name, part: 'input' }
+export const timePickerSegmentQuery: ItemQuery = { scope: timePickerAnatomy.name, part: 'segment' }
 
 /** 快捷选项的集合：容器取那一列自己。选项自报 data-value 为自己的值。 */
 export const timePickerPresetQuery: ItemQuery = { scope: timePickerAnatomy.name, part: 'preset' }

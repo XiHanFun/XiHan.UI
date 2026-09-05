@@ -237,7 +237,7 @@ describe('question-flow：连接层', () => {
     expect(current['data-current']).toBe('')
     expect(other['aria-hidden']).toBe(true)
     expect(other.inert).toBe(true)
-    expect((rig.api().getOptionProps({ questionId: 'b', value: 'b1' }) as Dict).tabindex).toBe(-1)
+    expect((rig.api().getItemProps({ questionId: 'b', value: 'b1' }) as Dict).tabindex).toBe(-1)
   })
 
   it('漫游焦点的锚点：选中项认领，一个都没选时首个可停留项认领', () => {
@@ -245,7 +245,7 @@ describe('question-flow：连接层', () => {
       questions: [{ id: 'a', type: 'single', options: [{ value: 'a1', disabled: true }, { value: 'a2' }, { value: 'a3' }] }],
     })
     const tabindexOf = (value: string): unknown =>
-      (rig.api().getOptionProps({ questionId: 'a', value }) as Dict).tabindex
+      (rig.api().getItemProps({ questionId: 'a', value }) as Dict).tabindex
     expect(tabindexOf('a1')).toBe(-1)
     expect(tabindexOf('a2')).toBe(0)
     rig.service.send({ type: 'OPTION.TOGGLE', questionId: 'a', value: 'a3' })
@@ -266,8 +266,8 @@ describe('question-flow：连接层', () => {
     const rig = mount({
       questions: [{ id: 'a', prompt: '有题干', type: 'single', options: [{ value: 'a1' }] }, { id: 'b', type: 'single', options: [{ value: 'b1' }] }],
     })
-    const named = rig.api().getOptionGroupProps({ id: 'a' }) as Dict
-    const fallback = rig.api().getOptionGroupProps({ id: 'b' }) as Dict
+    const named = rig.api().getGroupProps({ id: 'a' }) as Dict
+    const fallback = rig.api().getGroupProps({ id: 'b' }) as Dict
     expect(named['aria-labelledby']).toBeTruthy()
     expect(named['aria-label']).toBeUndefined()
     expect(fallback['aria-labelledby']).toBeUndefined()

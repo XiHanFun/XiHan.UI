@@ -40,7 +40,7 @@ const PRESSABLE = {
   'segmented': ['item'],
   'back-top': ['trigger'],
   'float-button': ['trigger'],
-  'clipboard': ['trigger'],
+  'clipboard': ['copy-trigger'],
   // 清空 / 关闭 / 移除按钮四类（契约见 check-clear-trigger）
   'cascader': ['clear-trigger'],
   'tree-select': ['clear-trigger'],
@@ -51,7 +51,6 @@ const PRESSABLE = {
   'text-field': ['clear-trigger'],
   'tags-input': ['clear-trigger', 'item-delete-trigger'],
   'select': ['clear-trigger', 'item-delete-trigger'],
-  'popselect': ['clear-trigger'],
   'date-field': ['clear-trigger'],
   'time-field': ['clear-trigger'],
   'file-upload': ['clear-trigger', 'item-delete-trigger', 'trigger'],
@@ -78,7 +77,7 @@ const PRESSABLE = {
     'next-trigger',
   ],
   'tag': ['close-trigger'],
-  'dynamic-input': ['item-delete-trigger', 'move-up-trigger', 'move-down-trigger', 'add-trigger'],
+  'field-array': ['item-delete-trigger', 'move-up-trigger', 'move-down-trigger', 'add-trigger'],
   // 表单里的编辑、提交与增减
   'editable': ['edit-trigger', 'submit-trigger', 'cancel-trigger'],
   'form': ['submit-trigger', 'reset-trigger'],
@@ -91,7 +90,7 @@ const PRESSABLE = {
   'rating': ['item'],
   // 色板格子的底色就是它要展示的那个颜色，换底会盖掉展示物，按压回执只能落在缩放上
   'color-picker': ['eye-dropper-trigger', 'swatch-item'],
-  'pagination': ['prev-trigger', 'next-trigger', 'item', 'ellipsis'],
+  'pagination': ['prev-trigger', 'next-trigger', 'item', 'ellipsis-trigger'],
   // 日历的翻页钮、标题钮与日期格
   'calendar': [
     'prev-year-trigger',
@@ -115,13 +114,13 @@ const PRESSABLE = {
   'carousel': ['prev-trigger', 'next-trigger', 'autoplay-trigger', 'indicator'],
   'layout': ['sider-trigger'],
   // AI 族里点得动的部件
-  'approval': ['approve-trigger', 'deny-trigger'],
+  'approval': ['approve-trigger', 'deny-trigger', 'item'],
   'code-view': ['fold-trigger'],
   'diff-view': ['gap-trigger'],
-  'log': ['scroll-button'],
-  'message-feed': ['scroll-button'],
+  'log': ['scroll-to-end-trigger'],
+  'message-feed': ['scroll-to-end-trigger'],
   'prompt-input': ['submit-trigger'],
-  'question-flow': ['option', 'prev-trigger', 'next-trigger', 'skip-trigger', 'submit-trigger'],
+  'question-flow': ['item', 'prev-trigger', 'next-trigger', 'skip-trigger', 'submit-trigger'],
   'reasoning': ['trigger'],
   'tool-call': ['trigger'],
   // 触屏上代替右键的长按：等待期的回执落在 data-pressing 上
@@ -141,7 +140,6 @@ const NO_PRESS = {
   'listbox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'select:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'combobox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'popselect:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'cascader:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'cascader:search-item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'mention:item': '列表行的按下回执走高亮档，缩放会抖动整列',
@@ -157,14 +155,13 @@ const NO_PRESS = {
   'time-picker:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'side-nav:link': '列表行的按下回执走高亮档，缩放会抖动整列',
   'side-nav:branch-trigger': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'approval:scope-item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'form:error-summary-item': '错误摘要里的每一条是一行文字链接，回执走文字色，缩放一行文字会把整块摘要抖起来',
   'steps:trigger': '步骤条目是序号圆点加标题说明的整块内容，按下回执走高亮底色，缩放会把多行文字一起抖起来',
   // 扩大命中区的标签：点它等于点控件，回执落在控件本体上
   'checkbox:label': '标签是包住方框与文字的整行命中区，点它等于点方框，按下的回执落在方框本体上，标签自己不动',
   'switch:label': '标签是包住轨道与文字的整行命中区，点它等于点轨道，按下的回执落在轨道与滑块上，标签自己不动',
   'editable:label': '标题是「点它等于进编辑态」的扩大命中区，反馈该落在预览区与输入框本体上，标签自己不动',
-  'slider:mark-label': '刻度文案是点它跳到该刻度的扩大命中区，回执落在拇指上，文案自己不动',
+  'slider:tick-label': '刻度文案是点它跳到该刻度的扩大命中区，回执落在拇指上，文案自己不动',
   // 方框圆圈连着文字的整行条目：回执落在方框与圆点的填色上
   'checkbox-group:item': '条目是「方框 + 文字」的整行命中区，缩放整行会把文字一起抖起来，按下的回执落在方框的填色上',
   'checkbox-group:select-all-trigger': '全选格与条目同形，也是「方框 + 文字」的整行，缩放会带着整列条目一起抖',
@@ -174,7 +171,6 @@ const NO_PRESS = {
   'cascader:control': '字段外壳，描边底色与控件高度都长在这一层，缩放它会把盒里的回显文字与按钮一起挤',
   'cascader:trigger': '盒里撑满剩余宽度的透明区，承载回显与箭头，缩放它等于抖动整个字段的内容',
   'select:trigger': '盒里撑满剩余宽度的透明区，承载回显与箭头，缩放它等于抖动整个字段的内容',
-  'popselect:trigger': '盒里撑满剩余宽度的透明区，承载回显与箭头，缩放它等于抖动整个字段的内容',
   'tree-select:control': '字段外壳，描边底色与控件高度都长在这一层，缩放它会把盒里的回显文字与按钮一起挤',
   'tree-select:trigger': '盒里撑满剩余宽度的透明区，承载回显与箭头，缩放它等于抖动整个字段的内容',
   'color-picker:control': '字段外壳：按下整壳缩放会把里面的色块与值文本一起挤，回执该落在盒里的部件上',
@@ -187,7 +183,7 @@ const NO_PRESS = {
   'image-viewer:trigger': '触发区是作者自己的一块内容（多为缩略图），皮肤对它零外观规则；缩放它会把作者的排版一起抖起来',
   'image-viewer:toolbar': '工具条本身是容器，cursor:pointer 落在它里面的按钮上（那几颗已登记有按压反馈），缩放整条会把所有按钮一起抖起来',
   'file-upload:dropzone': '大块投放区，按下回执由拖入态的描边与底色给出；缩放整块会把里面的说明文字一起抖起来',
-  'ellipsis:root': '触发区就是被裁的那整段文本，缩放它会把整段排版一起抖起来',
+  'truncate:root': '触发区就是被裁的那整段文本，缩放它会把整段排版一起抖起来',
   'table:sort-trigger': '排序把手 flex:1 撑满整块列标题，缩放会把表头文字连同列宽基线一起抖起来；按下回执落在排序指示字形与列标题底色上',
 }
 

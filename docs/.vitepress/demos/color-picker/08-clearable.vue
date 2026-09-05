@@ -3,7 +3,7 @@
 import { ref } from "vue";
 import {
   XhButton,
-  XhColorPickerArea,
+  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerChannelSlider,
   XhColorPickerChannelSliderThumb,
@@ -58,9 +58,9 @@ const actions = {
       </XhColorPickerControl>
       <XhColorPickerPositioner>
         <XhColorPickerContent>
-          <XhColorPickerArea>
+          <XhColorPickerSaturationArea>
             <XhColorPickerAreaThumb />
-          </XhColorPickerArea>
+          </XhColorPickerSaturationArea>
           <XhColorPickerChannelSlider channel="hue">
             <XhColorPickerChannelSliderTrack />
             <XhColorPickerChannelSliderThumb />

@@ -106,7 +106,7 @@ export interface MessageFeedApi<T extends PropTypes = PropTypes> {
   /** roving tabindex 的锚点。 */
   focusedId: string | null
   /** 是否显示回到底部按钮：只看在不在底，不看粘附意图。 */
-  showScrollButton: boolean
+  showScrollToEndTrigger: boolean
   scrollToBottom: () => void
   /** 把某条消息滚进可视区；那条不在活 DOM 里时什么都不做。 */
   scrollToItem: (id: string) => void
@@ -117,6 +117,6 @@ export interface MessageFeedApi<T extends PropTypes = PropTypes> {
   getListProps: () => T['element']
   getItemProps: (props: MessageFeedItemProps) => T['element']
   getItemLabelProps: (props: Pick<MessageFeedItemProps, 'id'>) => T['element']
-  getScrollButtonProps: () => T['button']
+  getScrollToEndTriggerProps: () => T['button']
   getLiveRegionProps: () => T['element']
 }

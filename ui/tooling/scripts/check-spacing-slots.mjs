@@ -45,6 +45,8 @@ const CROSS_PART = {
   'calendar.week-number': ['week-row'],
   // 搜索结果列表与空态占的都是一格列的位置，几何跟着 column 走，三种形态才等宽等高
   'cascader.column': ['search-list', 'empty'],
+  // 搜索候选与列内条目排的是同一套行度量，空态文字与条目同一档字号
+  'cascader.item': ['search-item', 'empty'],
   // 勾选框画在全选格上，checkbox-group 没有单独的 indicator 节点承载它
   'checkbox-group.indicator': ['select-all-trigger'],
   // --xh-code-view-line-height 是整块代码的行距，line 只是它头一个词，与行部件无关
@@ -65,6 +67,11 @@ const CROSS_PART = {
   'pagination.item': ['page-size-select'],
   // 星星之间的间距由装它们的那一行排
   'rating.item': ['control'],
+  // 文件条目之间的间距由装它们的那一列排
+  'file-upload.item': ['list'],
+  // 箭头是面板那片面探出来的尖角，底色与 content 同源，接缝处才不会出现两种底
+  'menu.content': ['arrow'],
+  'context-menu.content': ['arrow'],
   // 外壳与面板是同一片面的两种形态（单面板直接画在 content 上、多面板共用 viewport），
   // 底、描边与落影必须同源，否则两种形态并存时看得出接缝
   'navigation-menu.content': ['viewport'],
@@ -76,7 +83,7 @@ const CROSS_PART = {
   // 表头单元格铺的就是表头那一行的底色，两处不同源就会在吸顶时看出色差
   'table.header': ['column-header'],
   // 预设列与时间列并排在同一行，分隔线取同一族，两列之间只有一道等宽的线
-  'time-picker.column': ['presets'],
+  'time-picker.column': ['preset-group'],
   // 工具名用等宽字族，摘要行里跟着它排；耗时与错误行与状态标签同一档字号
   'tool-call.label': ['summary'],
   'tool-call.status': ['duration', 'error'],

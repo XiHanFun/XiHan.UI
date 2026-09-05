@@ -17,7 +17,7 @@ import {
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
-  XhDatePickerPresets,
+  XhDatePickerPresetGroup,
   XhDatePickerPrevTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
@@ -58,7 +58,7 @@ const presets = computed(() => [
     <XhDatePickerPositioner>
       <XhDatePickerContent>
         <!-- 不写默认插槽就按 presets 数据自动铺，产出的 DOM 与手写部件一致 -->
-        <XhDatePickerPresets />
+        <XhDatePickerPresetGroup />
         <XhDatePickerCalendar>
           <XhDatePickerHeader>
             <XhDatePickerPrevTrigger aria-label="上个月" />

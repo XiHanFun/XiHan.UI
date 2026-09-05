@@ -65,26 +65,6 @@ const HOSTS: Host[] = [
     attrs: { 'default-open': '' },
   },
   {
-    scope: 'popselect',
-    tag: 'xh-popselect',
-    markup: `
-      <div data-xh-part="root">
-        <div data-xh-part="control"><button data-xh-part="trigger">选择</button></div>
-        <div data-xh-part="positioner">
-          <div data-xh-part="content">
-            <div data-xh-part="item" value="apple"><span data-xh-part="item-text">苹果</span></div>
-          </div>
-        </div>
-      </div>
-    `,
-    // 不用 default-open：两台机器分别在自己的 hostConnected 里建，
-    // 而 popover 一上来就展开会在 listbox 建起来之前把接线拉起来
-    open: async (el) => {
-      el.querySelector<HTMLElement>('[data-xh-part="trigger"]')!.click()
-      await settle(el)
-    },
-  },
-  {
     scope: 'context-menu',
     tag: 'xh-context-menu',
     markup: `
@@ -131,7 +111,7 @@ const HOSTS: Host[] = [
     markup: `
       <div data-xh-part="root">
         <button data-xh-part="prev-trigger">上一页</button>
-        <button data-xh-part="ellipsis" side="start">…</button>
+        <button data-xh-part="ellipsis-trigger" side="start">…</button>
         <button data-xh-part="next-trigger">下一页</button>
         <div data-xh-part="positioner"><div data-xh-part="content"></div></div>
       </div>
@@ -139,7 +119,7 @@ const HOSTS: Host[] = [
     // 2000 条 / 每页 10 条 = 200 页，停在第 100 页：两侧各折一段
     attrs: { 'count': '2000', 'page-size': '10', 'default-page': '100' },
     open: async (el) => {
-      el.querySelector<HTMLElement>('[data-xh-part="ellipsis"]')!.click()
+      el.querySelector<HTMLElement>('[data-xh-part="ellipsis-trigger"]')!.click()
       await settle(el)
     },
   },

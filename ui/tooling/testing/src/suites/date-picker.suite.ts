@@ -88,7 +88,7 @@ function presetItems(doc: Document): HTMLElement[] {
   return [...doc.querySelectorAll<HTMLElement>('[data-scope="date-picker"][data-part="preset"]')]
 }
 
-/** 往某一条快捷选项上直接派按键；处理器挂在 presets 那一层，靠冒泡收。 */
+/** 往某一条快捷选项上直接派按键；处理器挂在 preset-group 那一层，靠冒泡收。 */
 async function pressOnPreset(ctx: RawStepContext, el: HTMLElement, key: string): Promise<void> {
   // 显式 cancelable，否则 preventDefault 是空操作
   el.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
@@ -226,9 +226,9 @@ const PRESETS_MIXED = [
 ] as const
 
 /** 快捷选项列排在日历前面，只有用到它的那条用例派生这一份。 */
-function presetsFixture(base: FixtureNode, presets: readonly { value: string, label: string }[] = PRESETS): FixtureNode {
+function presetGroupFixture(base: FixtureNode, presets: readonly { value: string, label: string }[] = PRESETS): FixtureNode {
   const list: FixtureNode = {
-    part: 'presets',
+    part: 'preset-group',
     children: presets.map(preset => ({
       part: 'preset',
       attrs: { value: preset.value },
@@ -452,7 +452,7 @@ export const datePickerSuite: ConformanceSuite = {
       name: '快捷选项列自成一套键盘：上下键在条目间走，Enter 整份写进去并收起',
       spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/#keyboardinteraction' },
       covers: ['date-picker.kbd.preset-move', 'date-picker.kbd.preset-pick'],
-      fixture: presetsFixture,
+      fixture: presetGroupFixture,
       props: { ...BASE_PROPS, presets: [...PRESETS] },
       steps: [
         { kind: 'focus', part: 'trigger' },
@@ -460,7 +460,7 @@ export const datePickerSuite: ConformanceSuite = {
         { kind: 'settle', until: { activeElement: 'calendar' } },
         {
           kind: 'raw',
-          why: '这一列的键盘处理器挂在 presets 自己身上，按键要从条目上派；条目按 data-value 认，不进快照',
+          why: '这一列的键盘处理器挂在 preset-group 自己身上，按键要从条目上派；条目按 data-value 认，不进快照',
           run: async (ctx) => {
             const items = presetItems(ctx.doc)
             // 锚点是命中当前值的那一条（BASE_PROPS 选中 2024-02-15，即第 1 条）
@@ -487,7 +487,7 @@ export const datePickerSuite: ConformanceSuite = {
       name: '按不下去的快捷选项：方向键停得上去，Enter 与点按都不写值；命中当前值的那条报 aria-selected',
       spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/#keyboardinteraction' },
       covers: ['date-picker.kbd.preset-move', 'date-picker.kbd.preset-pick'],
-      fixture: base => presetsFixture(base, PRESETS_MIXED),
+      fixture: base => presetGroupFixture(base, PRESETS_MIXED),
       props: { ...BASE_PROPS, presets: [...PRESETS_MIXED] },
       steps: [
         { kind: 'focus', part: 'trigger' },

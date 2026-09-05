@@ -1,5 +1,5 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { SkeletonApi, SkeletonBoneProps, SkeletonProps } from './skeleton.types'
+import type { SkeletonApi, SkeletonItemProps, SkeletonProps } from './skeleton.types'
 import { skeletonAnatomy } from './skeleton.anatomy'
 
 const parts = skeletonAnatomy.build()
@@ -35,10 +35,10 @@ export function connectSkeleton<T extends PropTypes>(
       'hidden': !loading || undefined,
     }),
 
-    getBoneProps: (bone: SkeletonBoneProps = {}) => normalize.element({
-      ...parts.bone.attrs,
+    getItemProps: (item: SkeletonItemProps = {}) => normalize.element({
+      ...parts.item.attrs,
       'aria-hidden': loading ? true : undefined,
-      'data-variant': bone.variant ?? variant,
+      'data-variant': item.variant ?? variant,
     }),
   }
 }

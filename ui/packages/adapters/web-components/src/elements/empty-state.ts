@@ -1,4 +1,4 @@
-import type { EmptyStateLive, EmptyStateProps } from '@xihan-ui/headless'
+import type { EmptyStateLive, EmptyStateProps, EmptyStateStatus } from '@xihan-ui/headless'
 import { connectEmptyState, emptyStateAnatomy, emptyStateMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -15,8 +15,9 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @customElement xh-empty-state
  * @attr {'sm'|'md'|'lg'} size - 尺寸档位，写到 root 的 data-size 上
  * @attr {'polite'|'off'} live - 播报方式，off 时 root 不带 role
- * @csspart root - 承载 role 与 data-size 的容器
- * @csspart icon - 装饰图标，对读屏隐藏
+ * @attr {'404'|'403'|'500'|'success'|'warning'|'error'|'info'} status - 结果类型，写到 root 的 data-status 上
+ * @csspart root - 承载 role 与 data-size / data-status 的容器
+ * @csspart indicator - 装饰图标，对读屏隐藏
  * @csspart title - 标题
  * @csspart description - 说明
  * @csspart action - 操作按钮槽
@@ -28,14 +29,16 @@ export class XhEmptyStateElement extends XhElement {
   static override properties = {
     size: { converter: STRING_CONVERTER },
     live: { converter: STRING_CONVERTER },
+    status: { converter: STRING_CONVERTER },
   }
 
   declare size?: 'sm' | 'md' | 'lg'
   declare live?: EmptyStateLive
+  declare status?: EmptyStateStatus
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
-    const props: EmptyStateProps = { size: this.size, live: this.live }
+    const props: EmptyStateProps = { size: this.size, live: this.live, status: this.status }
     const api = connectEmptyState(this.configured('empty-state', props), wcNormalize)
 
     const put = (name: string, attrs: Record<string, unknown>): void => {
@@ -44,7 +47,7 @@ export class XhEmptyStateElement extends XhElement {
         this.spreader.spread(el, attrs)
     }
     put('root', api.getRootProps() as Record<string, unknown>)
-    put('icon', api.getIconProps() as Record<string, unknown>)
+    put('indicator', api.getIndicatorProps() as Record<string, unknown>)
     put('title', api.getTitleProps() as Record<string, unknown>)
     put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('action', api.getActionProps() as Record<string, unknown>)

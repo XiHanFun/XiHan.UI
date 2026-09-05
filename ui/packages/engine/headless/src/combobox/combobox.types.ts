@@ -89,7 +89,7 @@ export interface ComboboxItemProps {
 }
 
 /** 分组自报身份：分组标题的 id 由它派生，group 与 label 靠这一个值互相认领。 */
-export interface ComboboxItemGroupProps {
+export interface ComboboxGroupProps {
   value: string
 }
 
@@ -263,8 +263,8 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
   getClearTriggerProps: () => T['button']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
-  getItemGroupProps: (props: ComboboxItemGroupProps) => T['element']
-  getItemGroupLabelProps: (props: ComboboxItemGroupProps) => T['element']
+  getGroupProps: (props: ComboboxGroupProps) => T['element']
+  getGroupLabelProps: (props: ComboboxGroupProps) => T['element']
   getItemProps: (props: ComboboxItemProps) => T['element']
   getItemTextProps: (props: ComboboxItemProps) => T['element']
   getItemIndicatorProps: (props: ComboboxItemProps) => T['element']

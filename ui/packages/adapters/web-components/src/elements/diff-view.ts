@@ -37,14 +37,14 @@ function segmentKey(line: DiffLine): string {
  * @fires expanded-change - 展开集合变化；detail 为 `{ expanded: string[] }`
  * @csspart root - 外壳，承载 data-view / data-wrap / data-truncated
  * @csspart header - 文件名与增删统计那一行
- * @csspart stat - 增删统计位，写 data-change="added" / "removed"，数字由本元素填
+ * @csspart summary - 增删统计位，写 data-change="added" / "removed"，数字由本元素填
  * @csspart viewport - 滚动容器，唯一的 Tab 停靠点
  * @csspart body - role=table，承载 aria-rowcount / aria-colcount
  * @csspart row - 一行，role=row + aria-rowindex + data-change
  * @csspart line-number - 行号槽，不给 role、对读屏隐藏，皮肤用 attr() 画
  * @csspart line-content - 唯一暴露的内容列，role=cell + aria-colindex
  * @csspart change-label - 变更类型的读屏文字，住在内容格里并视觉隐藏
- * @csspart segment - 词级片段，变更处承载 data-change
+ * @csspart inline-change - 词级片段，变更处承载 data-change
  * @csspart token - 着色片段，承载 data-kind
  * @csspart gap - 折起来的上下文那一行，role=row
  * @csspart gap-cell - 裹住展开按钮的那一格，role=cell
@@ -118,9 +118,9 @@ export class XhDiffViewElement extends XhElement {
     }
 
     // 统计位增删各一个，作者用 data-change 说明这一个是哪一档，数字由本元素填
-    for (const el of this.getParts('stat')) {
+    for (const el of this.getParts('summary')) {
       const change = el.dataset.change === 'removed' ? 'removed' : 'added'
-      this.spreader.spread(el, api.getStatProps({ change }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getSummaryProps({ change }) as Record<string, unknown>)
       el.textContent = change === 'added' ? `+${api.stats.added}` : `−${api.stats.removed}`
     }
 
@@ -187,7 +187,7 @@ export class XhDiffViewElement extends XhElement {
         if (segments.length > 0) {
           for (const segment of segments) {
             const span = doc.createElement('span')
-            this.spreader.spread(span, api.getSegmentProps({ rowIndex, changed: segment.changed }) as Record<string, unknown>)
+            this.spreader.spread(span, api.getInlineChangeProps({ rowIndex, changed: segment.changed }) as Record<string, unknown>)
             if (segment.tokens.length === 0)
               span.textContent = segment.text
             else

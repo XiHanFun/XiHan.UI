@@ -415,15 +415,15 @@
   [data-scope='cascader'][data-part='item'] {
     display: flex;
     align-items: center;
-    gap: var(--xh-cascader-row-gap, var(--xh-_cascader-gap));
-    max-inline-size: var(--xh-cascader-row-max-w, var(--xh-overlay-max-w));
-    padding-block: var(--xh-cascader-row-py, var(--xh-_cascader-row-py));
-    padding-inline: var(--xh-cascader-row-px, var(--xh-_cascader-row-px));
-    border-radius: var(--xh-cascader-row-radius, var(--xh-shape-control));
-    color: var(--xh-cascader-row-fg, var(--xh-fg-default));
-    font-size: var(--xh-cascader-row-font-size, var(--xh-_cascader-font-size));
+    gap: var(--xh-cascader-item-gap, var(--xh-_cascader-gap));
+    max-inline-size: var(--xh-cascader-item-max-w, var(--xh-overlay-max-w));
+    padding-block: var(--xh-cascader-item-py, var(--xh-_cascader-row-py));
+    padding-inline: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
+    border-radius: var(--xh-cascader-item-radius, var(--xh-shape-control));
+    color: var(--xh-cascader-item-fg, var(--xh-fg-default));
+    font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
-    line-height: var(--xh-cascader-row-leading, var(--xh-leading-normal));
+    line-height: var(--xh-cascader-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
@@ -470,20 +470,20 @@
      hover 恒中性灰、不接语气槽——两档同色相的话路径就认不出来了。
      悬停展开把路径挪走后留在原地的锚点降回轻档，每列至多一条路径高亮 */
   [data-scope='cascader'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
-    background: var(--xh-cascader-row-bg-hover, var(--xh-bg-subtle));
+    background: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
   }
 
   /* 必须排在轻档之后：锚点走到路径上时同特指度靠书写顺序压过轻档 */
   [data-scope='cascader'][data-part='item']:not([data-disabled])[data-in-path] {
-    background: var(--xh-cascader-row-bg-active, var(--xh-_cascader-active-bg));
-    font-weight: var(--xh-cascader-row-active-font-weight, var(--xh-font-weight-semibold));
+    background: var(--xh-cascader-item-bg-active, var(--xh-_cascader-active-bg));
+    font-weight: var(--xh-cascader-item-active-font-weight, var(--xh-font-weight-semibold));
   }
 
   /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色强档归展开路径、轻档归悬停，
      三者因此能同时看见 */
   [data-scope='cascader']:is([data-part='item'], [data-part='search-item'])[data-state='checked'] {
-    color: var(--xh-cascader-row-fg-selected, var(--xh-_cascader-selected-fg));
-    font-weight: var(--xh-cascader-row-selected-font-weight, var(--xh-font-weight-medium));
+    color: var(--xh-cascader-item-fg-selected, var(--xh-_cascader-selected-fg));
+    font-weight: var(--xh-cascader-item-selected-font-weight, var(--xh-font-weight-medium));
   }
 
   /* 环往内收：行是撑满列宽的，环画在外沿会被裁掉 */
@@ -646,13 +646,13 @@
 
   /* 候选与列内条目同一套行度量，虚拟高亮与悬停同用轻档 */
   [data-scope='cascader'][data-part='search-item'] {
-    padding-block: var(--xh-cascader-row-py, var(--xh-_cascader-row-py));
-    padding-inline: var(--xh-cascader-row-px, var(--xh-_cascader-row-px));
+    padding-block: var(--xh-cascader-item-py, var(--xh-_cascader-row-py));
+    padding-inline: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
     overflow: hidden;
-    border-radius: var(--xh-cascader-row-radius, var(--xh-shape-control));
-    color: var(--xh-cascader-row-fg, var(--xh-fg-default));
-    font-size: var(--xh-cascader-row-font-size, var(--xh-_cascader-font-size));
-    line-height: var(--xh-cascader-row-leading, var(--xh-leading-normal));
+    border-radius: var(--xh-cascader-item-radius, var(--xh-shape-control));
+    color: var(--xh-cascader-item-fg, var(--xh-fg-default));
+    font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
+    line-height: var(--xh-cascader-item-leading, var(--xh-leading-normal));
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: pointer;
@@ -661,7 +661,7 @@
   }
 
   [data-scope='cascader'][data-part='search-item']:not([data-disabled]):is(:hover, [data-highlighted]) {
-    background: var(--xh-cascader-row-bg-hover, var(--xh-bg-subtle));
+    background: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
   }
 
   /* 焦点恒在输入框，环只跟虚拟高亮走，悬停不画；往内收，行是撑满列宽的，环画在外沿会被裁掉 */
@@ -693,7 +693,7 @@
     min-block-size: var(--xh-cascader-empty-min-h, 5rem);
     padding: var(--xh-cascader-empty-p, var(--xh-space-3));
     color: var(--xh-cascader-empty-fg, var(--xh-fg-subtle));
-    font-size: var(--xh-cascader-row-font-size, var(--xh-_cascader-font-size));
+    font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
   }
 
   [data-scope='cascader'][data-part='empty'][hidden] {

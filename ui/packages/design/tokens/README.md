@@ -42,4 +42,4 @@ pnpm add @xihan-ui/tokens
 
 ## 单行控件本体的槽一律叫 control
 
-组件级覆盖槽里，单行控件本体的高度槽统一叫 `--xh-<组件>-control-h`。只有部件在解剖里确实叫 `trigger` / `input` 时才用 `--xh-<组件>-trigger-h` / `--xh-<组件>-input-h`：前者是弹出型控件的触发钮（select / popselect / tree-select），后者是文本类控件里真正的 `<input>`（text-field / number-field / password-input / mention）。槽名与它落在的部件名必须一致，不能选择器写 `control`、槽名叫 `input-h`。
+组件级覆盖槽里，单行控件本体的高度槽统一叫 `--xh-<组件>-control-h`。只有部件在解剖里确实叫 `trigger` / `input` 时才用 `--xh-<组件>-trigger-h` / `--xh-<组件>-input-h`：前者是弹出型控件的触发钮（select / tree-select），后者是文本类控件里真正的 `<input>`（text-field / number-field / password-input / mention）。槽名与它落在的部件名必须一致，不能选择器写 `control`、槽名叫 `input-h`。

@@ -38,7 +38,7 @@ import {
   XhFormErrorSummary,
   XhFormErrorSummaryItem,
   XhFormRoot,
-  XhPaginationEllipsis,
+  XhPaginationEllipsisTrigger,
   XhPaginationItem,
   XhPaginationRoot,
   XhPopoverCloseTrigger,
@@ -419,7 +419,7 @@ describe('timer 的数字段有自己的前景槽', () => {
   it('不设时随时间区继承：走完退一档，数字段跟得上', async () => {
     await mount(() => h(XhTimerRoot, { startMs: 0 }))
 
-    expect(styleOf(part('timer', 'item'), 'color')).toBe(styleOf(part('timer', 'area'), 'color'))
+    expect(styleOf(part('timer', 'item'), 'color')).toBe(styleOf(part('timer', 'display'), 'color'))
   })
 })
 
@@ -433,7 +433,7 @@ describe('分页省略位划过换底', () => {
       default: ({ pageItems }: { pageItems: Array<Record<string, unknown>> }) =>
         pageItems.map((item, i) =>
           item.type === 'ellipsis'
-            ? h(XhPaginationEllipsis, { key: `e${i}`, side: item.side as 'start' | 'end' })
+            ? h(XhPaginationEllipsisTrigger, { key: `e${i}`, side: item.side as 'start' | 'end' })
             : h(XhPaginationItem, { key: `p${i}`, value: item.value as number }, () => String(item.value)),
         ),
     },
@@ -442,7 +442,7 @@ describe('分页省略位划过换底', () => {
   it('指针停上去底色跟着换，与页码走同一个槽', async () => {
     setSlot('--xh-pagination-item-bg-hover', RED)
     await mount(PAGINATION)
-    const ellipsis = part('pagination', 'ellipsis')
+    const ellipsis = part('pagination', 'ellipsis-trigger')
 
     expect(styleOf(ellipsis, 'background-color'), '没停上去时不该有底色').not.toBe(RED)
     await hover(ellipsis)

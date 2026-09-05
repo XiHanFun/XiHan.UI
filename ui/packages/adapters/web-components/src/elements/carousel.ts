@@ -43,7 +43,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  *
  * 条目总数由 `slide-count` 声明，不从 DOM 数。指示点一页一个，页数由 `slide-count` 与
  * `slides-per-page` / `slides-per-move` 算出，由作者照着渲染节点，元素不生成节点。
- * 轨道位移写在 item-group 的内联 transform 上，样式层不得再碰那条轴。
+ * 轨道位移写在 list 的内联 transform 上，样式层不得再碰那条轴。
  *
  * @customElement xh-carousel
  * @attr {number} page - 受控页码，0 基；缺省该属性即非受控
@@ -60,7 +60,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @fires page-change - 页码变化；detail 为 `{ page: number }`
  * @csspart root - region 地标，承载 aria-roledescription="carousel" 与名字
  * @csspart viewport - 裁切窗口，兼作读屏活区
- * @csspart item-group - 被位移的轨道；transform 由元素写入，样式层别碰
+ * @csspart list - 被位移的轨道；transform 由元素写入，样式层别碰
  * @csspart item - 一张幻灯片，可自带 index 属性声明下标，缺省按文档序
  * @csspart prev-trigger - 上一张；首页且不回绕时转原生 disabled
  * @csspart next-trigger - 下一张；末页且不回绕时转原生 disabled
@@ -138,7 +138,7 @@ export class XhCarouselElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('viewport', api.getViewportProps() as Record<string, unknown>)
-    put('item-group', api.getItemGroupProps() as Record<string, unknown>)
+    put('list', api.getListProps() as Record<string, unknown>)
     put('prev-trigger', api.getPrevTriggerProps() as Record<string, unknown>)
     put('next-trigger', api.getNextTriggerProps() as Record<string, unknown>)
     put('autoplay-trigger', api.getAutoplayTriggerProps() as Record<string, unknown>)

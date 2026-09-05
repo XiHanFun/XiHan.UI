@@ -5,7 +5,7 @@ import {
   XhMessageFeedItemLabel,
   XhMessageFeedList,
   XhMessageFeedRoot,
-  XhMessageFeedScrollButton,
+  XhMessageFeedScrollToEndTrigger,
   XhMessageFeedViewport,
   XhPromptInputInput,
   XhPromptInputRoot,
@@ -80,7 +80,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
           </XhMessageFeedItem>
         </XhMessageFeedList>
       </XhMessageFeedViewport>
-      <XhMessageFeedScrollButton>↓</XhMessageFeedScrollButton>
+      <XhMessageFeedScrollToEndTrigger>↓</XhMessageFeedScrollToEndTrigger>
     </XhMessageFeedRoot>
 
     <!-- busy 期间按钮换成停止，输入框仍可编辑：用户还要能改下一句 -->

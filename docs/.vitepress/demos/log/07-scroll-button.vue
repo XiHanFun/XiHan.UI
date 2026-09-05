@@ -6,7 +6,7 @@ import {
   XhLogLine,
   XhLogLiveRegion,
   XhLogRoot,
-  XhLogScrollButton,
+  XhLogScrollToEndTrigger,
   XhLogViewport,
 } from "@xihan-ui/vue";
 
@@ -49,7 +49,7 @@ onUnmounted(() => window.clearTimeout(timer));
     </XhLogViewport>
 
     <!-- 留空就由皮肤画一枚向下的字形，往里塞节点即换成自己的图形 -->
-    <XhLogScrollButton />
+    <XhLogScrollToEndTrigger />
 
     <!-- 视觉隐藏的播报区：念哪一句、什么时候念都归宿主定 -->
     <XhLogLiveRegion>{{ announcement }}</XhLogLiveRegion>

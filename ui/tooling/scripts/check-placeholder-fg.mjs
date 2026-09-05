@@ -46,10 +46,9 @@ const ATTR = {
   'cascader': 'value-text',
   'date-field': 'segment',
   'editable': 'preview',
-  'popselect': 'trigger',
   'select': 'value-text',
   'time-field': 'segment',
-  'time-picker': 'input',
+  'time-picker': 'segment',
   'tree-select': 'value-text',
 }
 

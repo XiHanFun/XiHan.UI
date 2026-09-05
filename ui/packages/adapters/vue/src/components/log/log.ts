@@ -13,7 +13,7 @@ export type LogRootSlotProps = Pick<
   | 'loading'
   | 'atBottom'
   | 'sticking'
-  | 'showScrollButton'
+  | 'showScrollToEndTrigger'
   | 'scrollToBottom'
 >
 
@@ -41,7 +41,7 @@ export const XhLogRoot = defineComponent({
       loading: ctx.api.value.loading,
       atBottom: ctx.api.value.atBottom,
       sticking: ctx.api.value.sticking,
-      showScrollButton: ctx.api.value.showScrollButton,
+      showScrollToEndTrigger: ctx.api.value.showScrollToEndTrigger,
       scrollToBottom: ctx.api.value.scrollToBottom,
     }))
   },
@@ -80,12 +80,12 @@ export const XhLogLine = defineComponent({
   },
 })
 
-export const XhLogScrollButton = defineComponent({
-  name: 'XhLogScrollButton',
+export const XhLogScrollToEndTrigger = defineComponent({
+  name: 'XhLogScrollToEndTrigger',
   setup(_, { slots }) {
     const ctx = useLogContext()
     // 收起时走 hidden 属性，节点不卸载；插槽留空则由皮肤画兜底字形
-    return () => h('button', ctx.api.value.getScrollButtonProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getScrollToEndTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

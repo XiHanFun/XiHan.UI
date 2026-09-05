@@ -133,7 +133,7 @@
       "px": 16,
       "why": "勾选框本体，手指直接落上去"
     },
-    "clipboard:trigger": {
+    "clipboard:copy-trigger": {
       "px": 32,
       "why": "复制钮，手指直接落上去",
       "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的视觉盒"

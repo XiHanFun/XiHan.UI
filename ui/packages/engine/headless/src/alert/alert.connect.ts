@@ -59,8 +59,8 @@ export function connectAlert<T extends PropTypes>(
     }),
 
     // 图标只是把语气再画一遍，读屏念出来是重复信息
-    getIconProps: () => normalize.element({
-      ...parts.icon.attrs,
+    getIndicatorProps: () => normalize.element({
+      ...parts.indicator.attrs,
       'aria-hidden': true,
     }),
 

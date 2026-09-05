@@ -82,5 +82,5 @@ export type {
   HeatmapRowProps,
   HeatmapSchema,
   HeatmapTranslations,
-  HeatmapWeekDayLabelProps,
+  HeatmapWeekDayProps,
 } from './heatmap.types'

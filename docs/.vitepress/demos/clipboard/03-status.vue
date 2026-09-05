@@ -7,7 +7,7 @@ import {
   XhClipboardIndicator,
   XhClipboardInput,
   XhClipboardRoot,
-  XhClipboardTrigger,
+  XhClipboardCopyTrigger,
   XhIcon,
 } from "@xihan-ui/vue";
 
@@ -33,10 +33,10 @@ function onCopyError(details: { error: unknown; value: string }) {
   >
     <XhClipboardControl>
       <XhClipboardInput />
-      <XhClipboardTrigger>
+      <XhClipboardCopyTrigger>
         <XhClipboardIndicator>复制</XhClipboardIndicator>
         <XhClipboardIndicator copied><XhIcon :icon="CheckIcon" /> 已复制</XhClipboardIndicator>
-      </XhClipboardTrigger>
+      </XhClipboardCopyTrigger>
     </XhClipboardControl>
   </XhClipboardRoot>
 

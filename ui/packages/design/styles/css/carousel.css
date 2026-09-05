@@ -43,7 +43,7 @@
      transform 归连接层：整页位移与拖拽中的像素偏移都写在它的内联 style 上，
      样式层再碰这条轴就会把两个位移互相覆盖，画面当场错位。
      这里只负责排布与过渡 */
-  [data-scope='carousel'][data-part='item-group'] {
+  [data-scope='carousel'][data-part='list'] {
     display: flex;
     flex-direction: row;
     block-size: 100%;
@@ -51,17 +51,17 @@
       var(--xh-carousel-ease, var(--xh-motion-ease-slide));
   }
 
-  [data-scope='carousel'][data-part='item-group'][hidden] {
+  [data-scope='carousel'][data-part='list'][hidden] {
     display: none;
   }
 
-  [data-scope='carousel'][data-part='item-group'][data-orientation='vertical'] {
+  [data-scope='carousel'][data-part='list'][data-orientation='vertical'] {
     flex-direction: column;
   }
 
   /* 拖拽期间关掉过渡：留着的话画面会拖着手指慢半拍，像在拉一根皮筋。
      整条轨道的位移这一档每帧都在改，合成层只在这一档备好，松手随 data-dragging 一起撤掉 */
-  [data-scope='carousel'][data-part='item-group'][data-dragging] {
+  [data-scope='carousel'][data-part='list'][data-dragging] {
     transition: none;
     will-change: transform;
   }
@@ -139,7 +139,7 @@
 
   /* 视口与指示点都不是可聚焦节点，落焦只会是浏览器兜底行为，别画焦点环 */
   [data-scope='carousel'][data-part='viewport']:focus-visible,
-  [data-scope='carousel'][data-part='item-group']:focus-visible,
+  [data-scope='carousel'][data-part='list']:focus-visible,
   [data-scope='carousel'][data-part='indicator-group']:focus-visible {
     outline: none;
   }
@@ -208,12 +208,12 @@
   /* 减少动效：位移立刻到位。翻页本身照常发生，只是不再有滑动的过程。
      两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
-    [data-scope='carousel'][data-part='item-group'] {
+    [data-scope='carousel'][data-part='list'] {
       transition: none;
     }
   }
 
-  :where([data-motion='reduce']) [data-scope='carousel'][data-part='item-group'] {
+  :where([data-motion='reduce']) [data-scope='carousel'][data-part='list'] {
     transition: none;
   }
 

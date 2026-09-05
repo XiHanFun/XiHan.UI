@@ -1,4 +1,4 @@
-import type { ComboboxApi, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemGroupProps, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
+import type { ComboboxApi, ComboboxGroupProps, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -220,25 +220,25 @@ export const XhComboboxContent = defineComponent({
   },
 })
 
-export const XhComboboxItemGroup = defineComponent({
-  name: 'XhComboboxItemGroup',
+export const XhComboboxGroup = defineComponent({
+  name: 'XhComboboxGroup',
   props: {
     value: { type: String, required: true },
   },
   setup(props, { slots }) {
     const ctx = useComboboxContext()
-    const group = computed<ComboboxItemGroupProps>(() => ({ value: props.value }))
+    const group = computed<ComboboxGroupProps>(() => ({ value: props.value }))
     provideComboboxItemGroup({ group })
-    return () => h('div', ctx.api.value.getItemGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupProps(group.value) as Record<string, unknown>, slots.default?.())
   },
 })
 
-export const XhComboboxItemGroupLabel = defineComponent({
-  name: 'XhComboboxItemGroupLabel',
+export const XhComboboxGroupLabel = defineComponent({
+  name: 'XhComboboxGroupLabel',
   setup(_, { slots }) {
     const ctx = useComboboxContext()
     const { group } = useComboboxItemGroupContext()
-    return () => h('span', ctx.api.value.getItemGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
   },
 })
 

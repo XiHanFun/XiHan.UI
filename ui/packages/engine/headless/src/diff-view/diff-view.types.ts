@@ -48,7 +48,7 @@ export interface DiffViewGapProps {
   gapId: string
 }
 
-export interface DiffViewSegmentProps {
+export interface DiffViewInlineChangeProps {
   rowIndex: number
   /** 这一段是不是变更处。 */
   changed: boolean
@@ -107,14 +107,14 @@ export interface DiffViewApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getHeaderProps: () => T['element']
   /** 头部右侧的增删统计位，增删各一个。 */
-  getStatProps: (props: { change: DiffChange }) => T['element']
+  getSummaryProps: (props: { change: DiffChange }) => T['element']
   getViewportProps: () => T['element']
   getBodyProps: () => T['element']
   getRowProps: (props: DiffViewRowProps) => T['element']
   getLineNumberProps: (props: DiffViewCellProps) => T['element']
   getLineContentProps: (props: DiffViewCellProps) => T['element']
   getChangeLabelProps: (props: { change: DiffChange }) => T['element']
-  getSegmentProps: (props: DiffViewSegmentProps) => T['element']
+  getInlineChangeProps: (props: DiffViewInlineChangeProps) => T['element']
   getTokenProps: (token: CodeToken) => T['element']
   getGapProps: (props: DiffViewGapProps) => T['element']
   getGapCellProps: () => T['element']

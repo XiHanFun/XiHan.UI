@@ -61,7 +61,7 @@
 
   /* —— 各段 —— */
   /* 封面顶到根的边上，不吃内边距 */
-  [data-scope='card'][data-part='cover'] {
+  [data-scope='card'][data-part='media'] {
     display: block;
     overflow: hidden;
   }
@@ -124,7 +124,7 @@
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
   [data-scope='card'][data-part='root'][hidden],
-  [data-scope='card'][data-part='cover'][hidden],
+  [data-scope='card'][data-part='media'][hidden],
   [data-scope='card'][data-part='header'][hidden],
   [data-scope='card'][data-part='footer'][hidden] {
     display: none;

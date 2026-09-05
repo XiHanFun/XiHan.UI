@@ -82,12 +82,12 @@ export const XhSignaturePadGuide = defineComponent({
   },
 })
 
-export const XhSignaturePadSegment = defineComponent({
-  name: 'XhSignaturePadSegment',
+export const XhSignaturePadPath = defineComponent({
+  name: 'XhSignaturePadPath',
   setup() {
     const ctx = useSignaturePadContext()
     // 全部笔迹落在这一条路径上，每一笔是它的一条子路径
-    return () => h('path', ctx.api.value.getSegmentProps() as Record<string, unknown>)
+    return () => h('path', ctx.api.value.getPathProps() as Record<string, unknown>)
   },
 })
 

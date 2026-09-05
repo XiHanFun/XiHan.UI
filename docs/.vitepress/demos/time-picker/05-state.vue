@@ -4,7 +4,7 @@ import {
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
-  XhTimePickerInput,
+  XhTimePickerSegment,
   XhTimePickerSegmentGroup,
   XhTimePickerLabel,
   XhTimePickerItem,
@@ -32,9 +32,9 @@ const states = [
       <XhTimePickerLabel>{{ s.label }}</XhTimePickerLabel>
       <XhTimePickerControl>
         <XhTimePickerSegmentGroup>
-          <XhTimePickerInput segment="hour" />
+          <XhTimePickerSegment segment="hour" />
           <span>:</span>
-          <XhTimePickerInput segment="minute" />
+          <XhTimePickerSegment segment="minute" />
         </XhTimePickerSegmentGroup>
       </XhTimePickerControl>
       <XhTimePickerPositioner>

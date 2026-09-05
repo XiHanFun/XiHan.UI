@@ -10,7 +10,7 @@ export const emptyStateSuite: ConformanceSuite = {
   fixture: {
     part: 'root',
     children: [
-      { part: 'icon', tag: 'span', children: [{ text: '∅' }] },
+      { part: 'indicator', tag: 'span', children: [{ text: '∅' }] },
       { part: 'title', tag: 'p', children: [{ text: '没有匹配的结果' }] },
       { part: 'description', tag: 'p', children: [{ text: '换个关键词，或者把筛选条件放宽一些' }] },
       { part: 'action', children: [{ tag: 'button', text: '清空筛选' }] },
@@ -21,8 +21,8 @@ export const emptyStateSuite: ConformanceSuite = {
       name: '默认：root 是 role=status 活区，图标对读屏隐藏，不写 data-size',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'icon', 'title', 'description', 'action'],
-        counts: { root: 1, icon: 1, title: 1, description: 1, action: 1 },
+        order: ['root', 'indicator', 'title', 'description', 'action'],
+        counts: { root: 1, indicator: 1, title: 1, description: 1, action: 1 },
         parts: {
           root: {
             'role': 'status',
@@ -30,7 +30,7 @@ export const emptyStateSuite: ConformanceSuite = {
             // 活区自己念内容，root 不再借标题当名字
             'aria-labelledby': null,
           },
-          icon: { 'aria-hidden': 'true', 'role': null },
+          indicator: { 'aria-hidden': 'true', 'role': null },
           // 标题与说明只是普通文本，不占标题层级、不带 role
           title: { role: null },
           description: { role: null },
@@ -45,7 +45,7 @@ export const emptyStateSuite: ConformanceSuite = {
       initial: {
         parts: {
           root: { role: null },
-          icon: { 'aria-hidden': 'true' },
+          indicator: { 'aria-hidden': 'true' },
         },
       },
     },
@@ -58,6 +58,25 @@ export const emptyStateSuite: ConformanceSuite = {
           root: { 'role': 'status', 'data-size': 'lg' },
         },
       },
+    },
+    {
+      name: 'status：只落成 data-status，不改任何语义，也不与 live 相干',
+      spec: { apg: APG },
+      props: { status: '404', live: 'off' },
+      initial: {
+        parts: {
+          root: { 'role': null, 'data-status': '404' },
+        },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { status: 'success' },
+          expect: {
+            parts: { root: { 'role': null, 'data-status': 'success' } },
+          },
+        },
+      ],
     },
     {
       name: '筛选后转回空态：live 由 off 改回 polite，root 当场变成活区',

@@ -31,7 +31,6 @@ export const SIZE_NOT_ENGINE_POSITIONED = new Set(['dialog', 'drawer', 'image-vi
  */
 export const COMPOSED = {
   popconfirm: 'popover',
-  popselect: 'popover',
 }
 
 /**

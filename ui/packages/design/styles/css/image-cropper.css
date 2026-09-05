@@ -26,7 +26,7 @@
     position: relative;
     display: block;
     overflow: hidden;
-    border-radius: var(--xh-image-cropper-radius, var(--xh-shape-surface));
+    border-radius: var(--xh-image-cropper-viewport-radius, var(--xh-shape-surface));
     background: var(--xh-image-cropper-bg, var(--xh-bg-muted));
     user-select: none;
   }

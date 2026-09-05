@@ -25,7 +25,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart label - 标题，须是原生 `<label>`；`for` 恒写向 input
  * @csspart control - 输入框与按钮的包裹层，只承载 data-state
  * @csspart input - 展示要复制文本的只读输入框，须是原生 `<input>`；聚焦即全选
- * @csspart trigger - 复制按钮，须是原生 `<button>`
+ * @csspart copy-trigger - 复制按钮，须是原生 `<button>`
  * @csspart indicator - 状态标记；写 `copied` 属性的那个是成功侧，不写的是平时那侧
  */
 export class XhClipboardElement extends XhElement {
@@ -71,7 +71,7 @@ export class XhClipboardElement extends XhElement {
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
     put('input', api.getInputProps() as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
+    put('copy-trigger', api.getCopyTriggerProps() as Record<string, unknown>)
 
     // 指示器是多实例 part，逐个打：身份取作者写的 copied 属性
     for (const el of this.getParts('indicator')) {

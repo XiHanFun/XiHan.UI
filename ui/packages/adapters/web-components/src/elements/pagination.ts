@@ -23,7 +23,7 @@ function itemPage(el: HTMLElement): number {
 }
 
 /**
- * `<xh-pagination>` —— Light-DOM 行为宿主：作者写 root/prev-trigger/item/ellipsis/next-trigger
+ * `<xh-pagination>` —— Light-DOM 行为宿主：作者写 root/prev-trigger/item/ellipsis-trigger/next-trigger
  * 角色节点，元素跑 pagination 机器并把 connect 产出打上去。
  *
  * root 必须是 `<nav>`：分页器是"跳到某一页"的导航地标，元素只往上打 aria-label，
@@ -59,7 +59,7 @@ function itemPage(el: HTMLElement): number {
  * @csspart prev-trigger - 上一页；首页时转原生 disabled
  * @csspart next-trigger - 下一页；末页时转原生 disabled
  * @csspart item - 页码按钮，须自带 value 属性；当前页带 aria-current="page" 与 data-current
- * @csspart ellipsis - 折进去那几页的入口，须自带 side 属性（start / end）；承载 data-side 与 aria-expanded
+ * @csspart ellipsis-trigger - 折进去那几页的入口，须自带 side 属性（start / end）；承载 data-side 与 aria-expanded
  */
 export class XhPaginationElement extends XhElement {
   static override partContract = { anatomy: paginationAnatomy, meta: paginationMeta }
@@ -140,7 +140,7 @@ export class XhPaginationElement extends XhElement {
   private openEllipsisEl(side: PaginationEllipsisSide | null): HTMLElement | null {
     if (!side)
       return null
-    for (const el of this.getParts('ellipsis')) {
+    for (const el of this.getParts('ellipsis-trigger')) {
       if (el.getAttribute('data-side') === side)
         return el as HTMLElement
     }
@@ -156,7 +156,7 @@ export class XhPaginationElement extends XhElement {
       node: () => this.getPart('content'),
       // 省略位记为本层分支：指针按在它上面算层内交互。
       // 浮层壳一并记上：页码列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
-      branches: () => [...this.getParts('ellipsis'), this.getPart('positioner')].filter(Boolean) as Element[],
+      branches: () => [...this.getParts('ellipsis-trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
       surfaces: () => [],
@@ -194,7 +194,7 @@ export class XhPaginationElement extends XhElement {
   }
 
   /**
-   * 页码序列：页码与省略位交替的一串，作者照它渲染 item 与 ellipsis。
+   * 页码序列：页码与省略位交替的一串，作者照它渲染 item 与 ellipsis-trigger。
    * 机器尚未建起时给空数组。
    */
   get pages(): PaginationPage[] {
@@ -306,9 +306,9 @@ export class XhPaginationElement extends XhElement {
     // 省略位逐个打：身份取作者写的 side，缺省当 start。
     // 读的是作者写的 side 而不是元素自己回写的 data-side：后者是本元素的产出，
     // 拿产出当输入等于让第一帧（还没写过）与之后各帧的身份不一样
-    for (const el of this.getParts('ellipsis')) {
+    for (const el of this.getParts('ellipsis-trigger')) {
       const side = (el.getAttribute('side') === 'end' ? 'end' : 'start') as PaginationEllipsisSide
-      this.spreader.spread(el, api.getEllipsisProps({ side }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getEllipsisTriggerProps({ side }) as Record<string, unknown>)
     }
 
     // positioner 的 style 是坐标对象，spreader 会逐条写成内联样式

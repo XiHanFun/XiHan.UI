@@ -1,4 +1,4 @@
-import type { TimerApi, TimerSchema, TimerTranslations, TimerUnit } from '@xihan-ui/headless'
+import type { TimerApi, TimerLive, TimerSchema, TimerTranslations, TimerUnit } from '@xihan-ui/headless'
 import type { Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -13,7 +13,7 @@ type TimerProps = TimerSchema['props']
 /** 默认插槽的载荷：当前状态与显示值、拆开的每一段，以及起停归零四个动作。 */
 export type TimerRootSlotProps = Pick<
   TimerApi,
-  'phase' | 'value' | 'elapsed' | 'running' | 'paused' | 'completed' | 'countdown'
+  'phase' | 'value' | 'text' | 'elapsed' | 'running' | 'paused' | 'completed' | 'countdown' | 'controlled'
   | 'segments' | 'segmentText' | 'controlAction' | 'controlLabel'
   | 'start' | 'pause' | 'resume' | 'reset'
 >
@@ -28,8 +28,13 @@ export const XhTimerRoot = defineComponent({
     startMs: { type: Number, default: undefined },
     targetMs: { type: Number, default: undefined },
     countdown: { type: Boolean, default: undefined },
+    value: { type: Number, default: undefined },
+    active: { type: Boolean, default: undefined },
     autoStart: { type: Boolean, default: undefined },
     interval: { type: Number, default: undefined },
+    format: { type: String, default: undefined },
+    precision: { type: Number, default: undefined },
+    live: { type: String as PropType<TimerLive>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
     translations: { type: Object as PropType<Partial<TimerTranslations>>, default: undefined },
   },
@@ -53,6 +58,8 @@ export const XhTimerRoot = defineComponent({
       const content = slots.default?.({
         phase: api.phase,
         value: api.value,
+        text: api.text,
+        controlled: api.controlled,
         elapsed: api.elapsed,
         running: api.running,
         paused: api.paused,
@@ -77,11 +84,11 @@ export const XhTimerRoot = defineComponent({
   },
 })
 
-export const XhTimerArea = defineComponent({
-  name: 'XhTimerArea',
+export const XhTimerDisplay = defineComponent({
+  name: 'XhTimerDisplay',
   setup(_, { slots }) {
     const ctx = useTimerContext()
-    return () => h('div', ctx.api.value.getAreaProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getDisplayProps() as Record<string, unknown>, slots.default?.())
   },
 })
 
@@ -149,5 +156,5 @@ function renderDefaultTree(): VNode {
       children.push(h(XhTimerSeparator, { key: `separator-${unit}` }))
     children.push(h(XhTimerItem, { key: unit, unit }))
   }
-  return h(XhTimerArea, null, () => children)
+  return h(XhTimerDisplay, null, () => children)
 }

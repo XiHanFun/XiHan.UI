@@ -453,23 +453,23 @@
     animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
-  [data-scope='combobox'][data-part='item-group'] {
+  [data-scope='combobox'][data-part='group'] {
     display: flex;
     flex-direction: column;
-    gap: var(--xh-combobox-item-group-gap, var(--xh-list-option-gap));
+    gap: var(--xh-combobox-group-gap, var(--xh-list-option-gap));
   }
 
-  [data-scope='combobox'][data-part='item-group'][hidden] {
+  [data-scope='combobox'][data-part='group'][hidden] {
     display: none;
   }
 
   /* 组间留白只加在后继分组上：首组顶上已经有 content 的内边距，再加一层会显得头重 */
-  [data-scope='combobox'][data-part='item-group'] + [data-scope='combobox'][data-part='item-group'] {
-    margin-block-start: var(--xh-combobox-group-gap, var(--xh-space-1_5));
+  [data-scope='combobox'][data-part='group'] + [data-scope='combobox'][data-part='group'] {
+    margin-block-start: var(--xh-combobox-group-spacing, var(--xh-space-1_5));
   }
 
   /* 分组标题不是候选、进不了导航，画成小号次要文字，内缩与候选对齐（同一个 padding-inline） */
-  [data-scope='combobox'][data-part='item-group-label'] {
+  [data-scope='combobox'][data-part='group-label'] {
     display: block;
     padding-block: var(--xh-combobox-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-combobox-group-label-px, var(--xh-control-px-md));
@@ -480,7 +480,7 @@
     user-select: none;
   }
 
-  [data-scope='combobox'][data-part='item-group-label'][hidden] {
+  [data-scope='combobox'][data-part='group-label'][hidden] {
     display: none;
   }
 

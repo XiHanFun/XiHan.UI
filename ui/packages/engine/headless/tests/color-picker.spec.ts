@@ -108,7 +108,7 @@ function mountRig(service: Service<ColorPickerSchema>): Rig {
   service.refs.set('getAreaEl', () => area)
   service.refs.set('getChannelTrackEl', channel => tracks[channel])
 
-  area.addEventListener('pointerdown', api(service).getAreaProps().onPointerDown as EventListener)
+  area.addEventListener('pointerdown', api(service).getSaturationAreaProps().onPointerDown as EventListener)
   for (const channel of ['hue', 'alpha'] as const) {
     sliders[channel].addEventListener(
       'pointerdown',

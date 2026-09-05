@@ -51,19 +51,19 @@
 
   /* 增删统计整组顶到右侧：头部是 flex，自动外边距吃掉中间的空当。
      第二个之后的不再顶，与前一个之间只留头部本来的间隙 */
-  [data-scope='diff-view'][data-part='stat'] {
+  [data-scope='diff-view'][data-part='summary'] {
     margin-inline-start: auto;
   }
 
-  [data-scope='diff-view'][data-part='stat'] ~ [data-scope='diff-view'][data-part='stat'] {
+  [data-scope='diff-view'][data-part='summary'] ~ [data-scope='diff-view'][data-part='summary'] {
     margin-inline-start: 0;
   }
 
-  [data-scope='diff-view'][data-part='stat'][data-change='added'] {
+  [data-scope='diff-view'][data-part='summary'][data-change='added'] {
     color: var(--xh-diff-view-added-fg);
   }
 
-  [data-scope='diff-view'][data-part='stat'][data-change='removed'] {
+  [data-scope='diff-view'][data-part='summary'][data-change='removed'] {
     color: var(--xh-diff-view-removed-fg);
   }
 
@@ -217,18 +217,18 @@
 
   /* 词级片段：只有真正动过的那几段上底色，其余段落是纯包裹。
      不给内衬——等宽列要逐字对齐，多一像素整份差异就错位 */
-  [data-scope='diff-view'][data-part='segment'][data-change] {
-    border-radius: var(--xh-diff-view-segment-radius, var(--xh-shape-inset));
+  [data-scope='diff-view'][data-part='inline-change'][data-change] {
+    border-radius: var(--xh-diff-view-inline-change-radius, var(--xh-shape-inset));
     /* 片段跨行时两半各自收边，否则圆角只画在整段的首尾。两条都写：WebKit 只认带前缀那条 */
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
   }
 
-  [data-scope='diff-view'][data-part='segment'][data-change='added'] {
+  [data-scope='diff-view'][data-part='inline-change'][data-change='added'] {
     background: color-mix(in oklab, var(--xh-diff-view-added-fg) 18%, transparent);
   }
 
-  [data-scope='diff-view'][data-part='segment'][data-change='removed'] {
+  [data-scope='diff-view'][data-part='inline-change'][data-change='removed'] {
     background: color-mix(in oklab, var(--xh-diff-view-removed-fg) 18%, transparent);
   }
 

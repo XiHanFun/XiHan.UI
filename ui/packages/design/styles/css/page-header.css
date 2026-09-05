@@ -62,12 +62,12 @@
   }
 
   /* 副标题吃掉标题与操作之间的剩余宽度，长文本在这里收窄换行 */
-  [data-scope='page-header'][data-part='subtitle'] {
+  [data-scope='page-header'][data-part='description'] {
     margin: 0;
     flex: 1 1 auto;
     min-inline-size: 0;
-    color: var(--xh-page-header-subtitle-fg, var(--xh-fg-muted));
-    font-size: var(--xh-page-header-subtitle-font-size, var(--xh-text-secondary-size));
+    color: var(--xh-page-header-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-page-header-description-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
   }
 

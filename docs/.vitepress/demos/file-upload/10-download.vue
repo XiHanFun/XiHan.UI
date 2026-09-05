@@ -6,7 +6,7 @@ import {
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
-  XhFileUploadItemGroup,
+  XhFileUploadList,
   XhFileUploadItemName,
   XhFileUploadItemSizeText,
   XhFileUploadLabel,
@@ -59,7 +59,7 @@ const action = {
         <XhFileUploadTrigger>选择文件</XhFileUploadTrigger>
       </div>
       <XhFileUploadHiddenInput />
-      <XhFileUploadItemGroup>
+      <XhFileUploadList>
         <XhFileUploadItem v-for="file in acceptedFiles" :key="file" :file="file">
           <XhFileUploadItemName />
           <XhFileUploadItemSizeText />
@@ -69,7 +69,7 @@ const action = {
           </button>
           <XhFileUploadItemDeleteTrigger />
         </XhFileUploadItem>
-      </XhFileUploadItemGroup>
+      </XhFileUploadList>
     </XhFileUploadRoot>
   </div>
 </template>

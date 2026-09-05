@@ -1,7 +1,7 @@
 <!-- 并排与折叠 | 并排两列都发格子，空的那一侧照发；远离变更的连续上下文折成一格，点开即展开 -->
 <script setup lang="ts">
 import { computeTextDiff } from "@xihan-ui/headless";
-import { XhDiffViewBody, XhDiffViewHeader, XhDiffViewRoot, XhDiffViewStat, XhDiffViewViewport } from "@xihan-ui/vue";
+import { XhDiffViewBody, XhDiffViewHeader, XhDiffViewRoot, XhDiffViewSummary, XhDiffViewViewport } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
 
 const before = Array.from({ length: 24 }, (_, i) => `const step${i} = pipeline.at(${i})`).join("\n");
@@ -18,8 +18,8 @@ const expanded = ref<string[]>([]);
   <XhDiffViewRoot v-model:expanded="expanded" :model="model" view="split" :context-lines="3">
     <XhDiffViewHeader>
       <span>src/pipeline.ts</span>
-      <XhDiffViewStat change="added" />
-      <XhDiffViewStat change="removed" />
+      <XhDiffViewSummary change="added" />
+      <XhDiffViewSummary change="removed" />
     </XhDiffViewHeader>
     <XhDiffViewViewport>
       <XhDiffViewBody />

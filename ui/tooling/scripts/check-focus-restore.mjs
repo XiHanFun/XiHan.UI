@@ -30,7 +30,6 @@ const FOCUS_SCOPE = /\bcreateFocusScope\s*\(/
  * 这条就成了一张过期的免检通行证，由下面的名单核验报出来。
  */
 const EXEMPT = {
-  'popselect': '自己没有机器，浮层跑的是 popover 那台，焦点域与归还都在那一层建',
   'popconfirm': '自己没有机器，浮层跑的是 popover 那台，焦点域与归还都在那一层建',
   'navigation-menu': '不建焦点域：面板里是链接不是菜单项，收起时由 focusItem 直接把焦点放回对应 trigger',
   'menubar': 'roving 锚点自己算，退出动作里手搬焦点（restoreTriggerFocus）',

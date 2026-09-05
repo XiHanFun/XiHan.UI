@@ -31,7 +31,7 @@ const TRANSPARENT = 'rgba(0, 0, 0, 0)'
 function probe(size: string | null, vars: Record<string, string> = {}): Probe {
   const rows = [0, 1, 2, 3, 4, 5, 6].map(weekDay => `
     <div data-scope="heatmap" data-part="row" data-week-day="${weekDay}">
-      <span data-scope="heatmap" data-part="week-day-label" data-week-day="${weekDay}">${'一二三四五六日'[weekDay]}</span>
+      <span data-scope="heatmap" data-part="week-day" data-week-day="${weekDay}">${'一二三四五六日'[weekDay]}</span>
       <div data-scope="heatmap" data-part="cell" data-value="2024-01-0${weekDay + 1}"></div>
       <div data-scope="heatmap" data-part="cell" data-value="2024-01-1${weekDay + 1}"></div>
     </div>
@@ -57,7 +57,7 @@ function probe(size: string | null, vars: Record<string, string> = {}): Probe {
     inlineGap: b.left - a.right,
     blockGap: below.top - a.bottom,
     rowHeight: lines[0]!.getBoundingClientRect().height,
-    labels: [...root.querySelectorAll<HTMLElement>('[data-part="week-day-label"]')].map((el) => {
+    labels: [...root.querySelectorAll<HTMLElement>('[data-part="week-day"]')].map((el) => {
       const style = getComputedStyle(el)
       return {
         text: el.textContent ?? '',
@@ -123,7 +123,7 @@ describe('星期名隔行画', () => {
 
   it('留下来的三个字彼此不叠：每个都占得到两行的高度', () => {
     const at = probe(null)
-    const labels = [...host!.querySelectorAll<HTMLElement>('[data-part="week-day-label"]')]
+    const labels = [...host!.querySelectorAll<HTMLElement>('[data-part="week-day"]')]
       .filter(el => getComputedStyle(el).color !== TRANSPARENT)
       .map(el => el.getBoundingClientRect())
     expect(labels).toHaveLength(3)
@@ -162,7 +162,7 @@ describe('月历形态的星期名', () => {
         <div data-scope="heatmap" data-part="grid">
           <div data-scope="heatmap" data-part="month-block" data-value="2024-01">
             <div data-scope="heatmap" data-part="row" aria-hidden="true">
-              ${days.map(d => `<span data-scope="heatmap" data-part="week-day-label" data-week-day="${d}">${'一二三四五六日'[d]}</span>`).join('')}
+              ${days.map(d => `<span data-scope="heatmap" data-part="week-day" data-week-day="${d}">${'一二三四五六日'[d]}</span>`).join('')}
             </div>
             <div data-scope="heatmap" data-part="row" data-week="0">
               ${days.map(d => `<div data-scope="heatmap" data-part="cell" data-value="2024-01-0${d + 1}"></div>`).join('')}
@@ -173,7 +173,7 @@ describe('月历形态的星期名', () => {
     `
     document.body.append(host)
     const root = host.firstElementChild as HTMLElement
-    return { root, labels: [...root.querySelectorAll<HTMLElement>('[data-part="week-day-label"]')] }
+    return { root, labels: [...root.querySelectorAll<HTMLElement>('[data-part="week-day"]')] }
   }
 
   it('七个列头一个都不少，字比一格宽也不裁', () => {

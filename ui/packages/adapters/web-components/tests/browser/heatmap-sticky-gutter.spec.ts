@@ -44,7 +44,7 @@ function mount(variant: string | null): Mounted {
       `<div data-scope="heatmap" data-part="cell" data-value="2024-0${weekDay + 1}-${String(i + 1).padStart(2, '0')}"></div>`).join('')
     return `
       <div data-scope="heatmap" data-part="row" data-week-day="${weekDay}">
-        <span data-scope="heatmap" data-part="week-day-label" data-week-day="${weekDay}">${'一二三四五六日'[weekDay]}</span>
+        <span data-scope="heatmap" data-part="week-day" data-week-day="${weekDay}">${'一二三四五六日'[weekDay]}</span>
         ${cells}
       </div>
     `
@@ -59,7 +59,7 @@ function mount(variant: string | null): Mounted {
   const root = host.firstElementChild as HTMLElement
   return {
     root,
-    labels: [...root.querySelectorAll<HTMLElement>('[data-part="week-day-label"]')],
+    labels: [...root.querySelectorAll<HTMLElement>('[data-part="week-day"]')],
     cells: [...root.querySelectorAll<HTMLElement>('[data-part="cell"]')],
   }
 }
@@ -95,7 +95,7 @@ describe('热力图行首那一列', () => {
 
     // 逐行探：探针落在行首那一段条带正中，命中的必须是这一行的星期名而不是从下面过去的格子
     expect(labels.map(el => topmostAt(el)?.getAttribute('data-part') ?? null))
-      .toEqual(WEEK_DAYS.map(() => 'week-day-label'))
+      .toEqual(WEEK_DAYS.map(() => 'week-day'))
     // 隔行的那四行确实是「字不上色」而不是「盒子不画」：盒子还在，底色还在
     for (const weekDay of [0, 2, 4, 6]) {
       const style = getComputedStyle(labels[weekDay]!)

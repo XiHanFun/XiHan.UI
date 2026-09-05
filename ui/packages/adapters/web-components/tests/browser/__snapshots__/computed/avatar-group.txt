@@ -1,6 +1,6 @@
 # avatar-group
 
-[overflow]
+[overflow-item]
 padding-top: 0px
 padding-right: 0px
 padding-bottom: 0px

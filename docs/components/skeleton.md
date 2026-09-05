@@ -49,7 +49,7 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-skeleton>` |
-| Vue 组件 | `XhSkeletonBone` `XhSkeletonRoot` |
+| Vue 组件 | `XhSkeletonItem` `XhSkeletonRoot` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/skeleton.css` |
 
@@ -57,7 +57,7 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="skeleton"`：**`root`** · **`bone`**
+`data-scope="skeleton"`：**`root`** · **`item`**
 
 ## Props
 
@@ -82,7 +82,7 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 | --- | --- | --- |
 | `loading` | `boolean` | 当前是否处于加载态。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getBoneProps` | `(bone?: SkeletonBoneProps) => T['element']` |  |
+| `getItemProps` | `(item?: SkeletonItemProps) => T['element']` |  |
 
 ## 键盘
 
@@ -97,7 +97,7 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-busy` | 'true' \| undefined |
-| `bone` | `aria-hidden` | 'true' \| undefined |
+| `item` | `aria-hidden` | 'true' \| undefined |
 
 ## 样式
 
@@ -110,7 +110,7 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-state` | 'loading' \| 'loaded' |
-| `bone` | `data-variant` | bone.variant |
+| `item` | `data-variant` | item.variant |
 
 ## CSS 变量
 

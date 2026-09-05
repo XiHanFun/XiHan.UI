@@ -11,7 +11,7 @@
     <input data-xh-part="hidden-input" />
     <span id="file-upload-directory-count"></span>
     <div
-      data-xh-part="item-group"
+      data-xh-part="list"
       style="max-block-size: 220px; overflow: auto"
     ></div>
   </div>
@@ -19,7 +19,7 @@
 
 <script type="module">
   const upload = document.getElementById("file-upload-directory");
-  const group = upload.querySelector('[data-xh-part="item-group"]');
+  const group = upload.querySelector('[data-xh-part="list"]');
   const count = document.getElementById("file-upload-directory-count");
 
   // 条目节点由作者渲染，元素随后按文档序接上去

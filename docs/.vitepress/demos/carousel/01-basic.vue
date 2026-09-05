@@ -4,7 +4,7 @@ import {
   XhCarouselIndicator,
   XhCarouselIndicatorGroup,
   XhCarouselItem,
-  XhCarouselItemGroup,
+  XhCarouselList,
   XhCarouselNextTrigger,
   XhCarouselPrevTrigger,
   XhCarouselRoot,
@@ -23,13 +23,13 @@ const slides = ["第一张", "第二张", "第三张"];
     <XhCarouselPrevTrigger />
     <!-- 视口只负责裁切，高度由页面给：不给高度就没有可裁的窗口 -->
     <XhCarouselViewport style="block-size: 140px">
-      <XhCarouselItemGroup>
+      <XhCarouselList>
         <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
           <div style="display: grid; place-items: center; block-size: 100%">
             {{ text }}
           </div>
         </XhCarouselItem>
-      </XhCarouselItemGroup>
+      </XhCarouselList>
     </XhCarouselViewport>
     <XhCarouselNextTrigger />
     <XhCarouselIndicatorGroup>

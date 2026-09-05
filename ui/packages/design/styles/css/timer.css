@@ -44,23 +44,27 @@
   /* 等宽数字：逐位宽度一致，秒数换位时分隔符与后面的段都不会左右挪动。
      direction 钉成 ltr：每段是一个独立的 flex 项，主轴方向跟着文字方向走，
      不钉住的话 rtl 页面上时分秒会整体倒过来排——时间串的读序两个方向都一样。 */
-  [data-scope='timer'][data-part='area'] {
+  [data-scope='timer'][data-part='display'] {
     display: inline-flex;
     align-items: baseline;
     direction: ltr;
-    color: var(--xh-timer-area-fg, var(--xh-fg-default));
+    color: var(--xh-timer-display-fg, var(--xh-fg-default));
+    /* 嵌在一句话里或摆在别人的数值槽里时把 --xh-timer-digit-font-size 写成 inherit，
+       数字就跟着上下文的字号走，不再自带展示档字号 */
     font-size: var(--xh-timer-digit-font-size, var(--xh-_timer-digit-size));
     font-variant-numeric: tabular-nums;
     font-weight: var(--xh-font-weight-semibold);
     line-height: var(--xh-leading-tight);
+    /* 走到点那一刻前景退一档，这里让它淡过去而不是硬跳 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='timer'][data-part='area'][hidden] {
+  [data-scope='timer'][data-part='display'][hidden] {
     display: none;
   }
 
   /* 走完之后这串数字不再是活的信息，退一档；暂停在半路的仍是要盯着看的数，不退 */
-  [data-scope='timer'][data-part='area'][data-state='completed'] {
+  [data-scope='timer'][data-part='display'][data-state='completed'] {
     color: var(--xh-timer-completed-fg, var(--xh-fg-muted));
   }
 

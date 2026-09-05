@@ -7,7 +7,7 @@ import { createAnatomy } from '@xihan-ui/kernel'
  * 与 Calendar 的网格（data-scope="calendar"）。内嵌 DOM 须保留各自的 scope：
  * 日历翻月后的焦点归位按 calendar 的 cell-trigger 查活 DOM，改了 scope 就查不到。
  *
- * presets 是浮层里的快捷选项列（「今天」「近 7 天」这类），preset 是其中一项；
+ * preset-group 是浮层里的快捷选项列（「今天」「近 7 天」这类），preset 是其中一项；
  * 两者都归本 scope，选项的身份由作者写在节点上。
  */
 export const datePickerAnatomy = createAnatomy('date-picker', [
@@ -19,7 +19,7 @@ export const datePickerAnatomy = createAnatomy('date-picker', [
   'clear-trigger',
   'positioner',
   'content',
-  'presets',
+  'preset-group',
   'preset',
   'calendar',
   'time-column',

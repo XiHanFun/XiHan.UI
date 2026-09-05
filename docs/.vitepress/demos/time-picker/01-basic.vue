@@ -7,7 +7,7 @@ import {
   XhTimePickerContent,
   XhTimePickerControl,
   XhTimePickerHiddenInput,
-  XhTimePickerInput,
+  XhTimePickerSegment,
   XhTimePickerSegmentGroup,
   XhTimePickerLabel,
   XhTimePickerItem,
@@ -24,9 +24,9 @@ const value = ref("");
     <XhTimePickerControl>
       <XhTimePickerSegmentGroup>
         <!-- 段不写内容：显示什么由组件按当前值填，空段是占位串 -->
-        <XhTimePickerInput segment="hour" />
+        <XhTimePickerSegment segment="hour" />
         <span>:</span>
-        <XhTimePickerInput segment="minute" />
+        <XhTimePickerSegment segment="minute" />
       </XhTimePickerSegmentGroup>
       <XhTimePickerClearTrigger />
     </XhTimePickerControl>

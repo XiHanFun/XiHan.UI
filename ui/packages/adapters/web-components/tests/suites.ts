@@ -2,7 +2,7 @@
 // 若干组件的 fixture 与 Vue 侧不同构，需在此改写后再喂给运行方。
 // jsdom 一致性与浏览器无障碍扫描共用这一份，两边跑的是同一批组件。
 import type { ConformanceSuite, FixtureNode } from '@xihan-ui/testing'
-import { accordionSuite, affixSuite, alertSuite, anchorSuite, approvalSuite, avatarGroupSuite, avatarSuite, backTopSuite, badgeSuite, breadcrumbSuite, buttonGroupSuite, buttonSuite, calendarSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeViewSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, contextMenuSuite, countdownSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, diffViewSuite, downloadTriggerSuite, dynamicInputSuite, editableSuite, ellipsisSuite, emptyStateSuite, fieldsetSuite, fieldSuite, fileUploadSuite, flexSuite, floatButtonSuite, floatingPanelSuite, formSuite, gradientTextSuite, gridSuite, heatmapSuite, highlightSuite, hotkeysSuite, hoverCardSuite, iconSuite, iconWrapperSuite, imageCropperSuite, imageSuite, infiniteScrollSuite, jsonViewerSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, logSuite, markdownStreamSuite, marqueeSuite, masonrySuite, mentionSuite, menubarSuite, menuSuite, messageFeedSuite, navigationMenuSuite, notificationSuite, numberAnimationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, popselectSuite, progressSuite, promptInputSuite, qrCodeSuite, questionFlowSuite, radioGroupSuite, ratingSuite, reasoningSuite, resizableSuite, resultSuite, scrollAreaSuite, scrollbarSuite, segmentedSuite, selectSuite, separatorSuite, sideNavSuite, signaturePadSuite, skeletonSuite, sliderSuite, sortableSuite, spaceSuite, spinnerSuite, splitterSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, timeFieldSuite, timelineSuite, timePickerSuite, timerSuite, timeSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, toolCallSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, typographySuite, virtualizerSuite, watermarkSuite } from '@xihan-ui/testing'
+import { accordionSuite, affixSuite, alertSuite, anchorSuite, approvalSuite, avatarGroupSuite, avatarSuite, backTopSuite, badgeSuite, breadcrumbSuite, buttonGroupSuite, buttonSuite, calendarSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeViewSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, diffViewSuite, downloadTriggerSuite, editableSuite, emptyStateSuite, fieldArraySuite, fieldsetSuite, fieldSuite, fileUploadSuite, flexSuite, floatButtonSuite, floatingPanelSuite, formSuite, gradientTextSuite, gridSuite, heatmapSuite, highlightSuite, hotkeysSuite, hoverCardSuite, iconSuite, iconWrapperSuite, imageCropperSuite, imageSuite, infiniteScrollSuite, jsonViewerSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, logSuite, markdownStreamSuite, marqueeSuite, masonrySuite, mentionSuite, menubarSuite, menuSuite, messageFeedSuite, navigationMenuSuite, notificationSuite, numberAnimationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, progressSuite, promptInputSuite, qrCodeSuite, questionFlowSuite, radioGroupSuite, ratingSuite, reasoningSuite, resizableSuite, scrollAreaSuite, scrollbarSuite, segmentedSuite, selectSuite, separatorSuite, sideNavSuite, signaturePadSuite, skeletonSuite, sliderSuite, sortableSuite, spinnerSuite, splitterSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, timeFieldSuite, timelineSuite, timePickerSuite, timerSuite, timestampSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, toolCallSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, truncateSuite, typographySuite, virtualizerSuite, watermarkSuite } from '@xihan-ui/testing'
 
 // 布尔受控用例两侧跑的是同一份：假值由 harness 写成 name="false"（元素的三态转换器
 // 认得它），不是摘掉属性——摘掉在三态语义里是"没指定"，会落回缺省。见 harness.ts 的 applyInputs。
@@ -343,28 +343,24 @@ export const wcSuites: readonly ConformanceSuite[]
     logSuite,
     pageHeaderSuite,
     popconfirmSuite,
-    popselectSuite,
     reasoningSuite,
     resizableSuite,
-    resultSuite,
     statisticSuite,
     timelineSuite,
     typographySuite,
     promptInputSuite,
     qrCodeSuite,
     questionFlowSuite,
-    countdownSuite,
-    dynamicInputSuite,
-    ellipsisSuite,
+    fieldArraySuite,
+    truncateSuite,
     floatButtonSuite,
     highlightSuite,
     markdownStreamSuite,
     marqueeSuite,
     numberAnimationSuite,
-    timeSuite,
+    timestampSuite,
     watermarkSuite,
     wcMentionSuite,
-    spaceSuite,
     tagSuite,
     wcSegmentedSuite,
     wcMasonrySuite,

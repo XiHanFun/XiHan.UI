@@ -13,7 +13,7 @@ const HEADLESS = 'packages/engine/headless/src'
 const SHARED = `${HEADLESS}/shared/overlay.ts`
 
 /** 没有 positioner 部件、但把定位交给别的族的组合族：跟着宿主一起受管。 */
-const COMPOSED = ['popconfirm', 'popselect']
+const COMPOSED = ['popconfirm']
 
 /** 只在皮肤里用 inset 排布、不交给定位引擎的族：没有 placement / offset 可兜底。 */
 const NOT_ENGINE_POSITIONED = new Set(['dialog', 'drawer', 'floating-panel', 'image-viewer'])

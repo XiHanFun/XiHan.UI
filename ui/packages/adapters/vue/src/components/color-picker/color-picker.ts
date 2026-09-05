@@ -169,13 +169,13 @@ export const XhColorPickerContent = defineComponent({
   },
 })
 
-export const XhColorPickerArea = defineComponent({
-  name: 'XhColorPickerArea',
+export const XhColorPickerSaturationArea = defineComponent({
+  name: 'XhColorPickerSaturationArea',
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
     // 区域节点交给机器，矩形在指针事件里现量
     return () => h('div', {
-      ...ctx.api.value.getAreaProps() as Record<string, unknown>,
+      ...ctx.api.value.getSaturationAreaProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.areaRef.value = el as HTMLElement },
     }, slots.default?.())
   },

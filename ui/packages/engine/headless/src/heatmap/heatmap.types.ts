@@ -59,7 +59,7 @@ export interface HeatmapMonthBlockProps {
 }
 
 /** 星期名自报家门。 */
-export interface HeatmapWeekDayLabelProps {
+export interface HeatmapWeekDayProps {
   /** 行序 0-6；不给即坐标轴那一行行首的占位，它只负责让月份与格子对齐。 */
   weekDay?: number
 }
@@ -241,7 +241,7 @@ export interface HeatmapApi<T extends PropTypes = PropTypes> {
   getGridProps: () => T['element']
   getMonthBlockProps: (props: HeatmapMonthBlockProps) => T['element']
   getRowProps: (props: HeatmapRowProps) => T['element']
-  getWeekDayLabelProps: (props: HeatmapWeekDayLabelProps) => T['element']
+  getWeekDayProps: (props: HeatmapWeekDayProps) => T['element']
   getMonthLabelProps: (props: HeatmapMonthLabelProps) => T['element']
   getRowLabelProps: (props: HeatmapRowLabelProps) => T['element']
   getColumnLabelProps: (props: HeatmapColumnLabelProps) => T['element']

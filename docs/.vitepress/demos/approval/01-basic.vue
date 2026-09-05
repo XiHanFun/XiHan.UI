@@ -9,10 +9,10 @@ import {
   XhApprovalDescription,
   XhApprovalResult,
   XhApprovalRoot,
-  XhApprovalScopeGroup,
-  XhApprovalScopeIndicator,
-  XhApprovalScopeItem,
-  XhApprovalScopeLabel,
+  XhApprovalGroup,
+  XhApprovalItemIndicator,
+  XhApprovalItem,
+  XhApprovalItemText,
   XhApprovalTitle,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -36,8 +36,8 @@ const decided = ref("");
     >
       <XhApprovalTitle>要动你的工作区</XhApprovalTitle>
       <XhApprovalDescription>它想读一遍 src/ 并写回改动。</XhApprovalDescription>
-      <XhApprovalScopeGroup>
-        <XhApprovalScopeItem
+      <XhApprovalGroup>
+        <XhApprovalItem
           v-for="scope in scopes"
           :key="scope.value"
           :scope-value="scope.value"
@@ -45,10 +45,10 @@ const decided = ref("");
           :scope-required="scope.required"
         >
           <!-- 勾由皮肤画：指示符留空即可，不必手打记号 -->
-          <XhApprovalScopeIndicator :scope-value="scope.value" />
-          <XhApprovalScopeLabel :scope-value="scope.value">{{ scope.label }}</XhApprovalScopeLabel>
-        </XhApprovalScopeItem>
-      </XhApprovalScopeGroup>
+          <XhApprovalItemIndicator :scope-value="scope.value" />
+          <XhApprovalItemText :scope-value="scope.value">{{ scope.label }}</XhApprovalItemText>
+        </XhApprovalItem>
+      </XhApprovalGroup>
       <XhApprovalResult>{{ status === "approved" ? "已批准" : "已拒绝" }}</XhApprovalResult>
       <XhApprovalFooter>
         <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>

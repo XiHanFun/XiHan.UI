@@ -1,4 +1,4 @@
-export { questionFlowAnatomy, questionFlowOptionQuery, questionFlowQuestionQuery } from './question-flow.anatomy'
+export { questionFlowAnatomy, questionFlowItemQuery, questionFlowQuestionQuery } from './question-flow.anatomy'
 export { connectQuestionFlow } from './question-flow.connect'
 export { questionFlowKeyboard } from './question-flow.keyboard'
 export { questionFlowMachine } from './question-flow.machine'
@@ -9,10 +9,10 @@ export type {
   QuestionFlowAnswersChangeDetails,
   QuestionFlowApi,
   QuestionFlowIndexChangeDetails,
+  QuestionFlowItemProps,
   QuestionFlowNotes,
   QuestionFlowNotesChangeDetails,
   QuestionFlowOption,
-  QuestionFlowOptionProps,
   QuestionFlowQuestion,
   QuestionFlowQuestionProps,
   QuestionFlowRefs,

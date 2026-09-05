@@ -1,10 +1,10 @@
-<!-- 按语气着色 | 空状态自己不带语气，图标槽里放一枚带 tone 的图标，成功、警示、出错就各是一族颜色 -->
+<!-- 图标自带语气 | 图标槽里放一枚带 tone 的图标，着色落在图标自己身上，不经过 status -->
 <script setup lang="ts">
 import {
   XhButton,
   XhEmptyStateAction,
   XhEmptyStateDescription,
-  XhEmptyStateIcon,
+  XhEmptyStateIndicator,
   XhEmptyStateRoot,
   XhEmptyStateTitle,
   XhIcon,
@@ -94,9 +94,9 @@ const results = [
     size="sm"
     style="inline-size: 240px"
   >
-    <XhEmptyStateIcon>
+    <XhEmptyStateIndicator>
       <XhIcon :icon="r.icon" :tone="r.tone" size="lg" />
-    </XhEmptyStateIcon>
+    </XhEmptyStateIndicator>
     <XhEmptyStateTitle>{{ r.title }}</XhEmptyStateTitle>
     <XhEmptyStateDescription>{{ r.description }}</XhEmptyStateDescription>
     <XhEmptyStateAction>

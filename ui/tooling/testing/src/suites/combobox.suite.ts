@@ -75,9 +75,9 @@ const ITEMS: readonly FixtureNode[] = [
 function tree(items: readonly FixtureNode[] = ITEMS, grouped = false): FixtureNode {
   const listChildren: readonly FixtureNode[] = grouped
     ? [{
-        part: 'item-group',
+        part: 'group',
         attrs: { value: 'common' },
-        children: [{ part: 'item-group-label', tag: 'span', text: '常见' }, ...items],
+        children: [{ part: 'group-label', tag: 'span', text: '常见' }, ...items],
       }]
     : items
   return {
@@ -717,17 +717,17 @@ export const comboboxSuite: ConformanceSuite = {
       fixture: () => tree(ITEMS, true),
       initial: {
         parts: {
-          'item-group': { 'role': 'group', 'aria-labelledby': '@part(item-group-label)' },
-          'item-group-label': { id: '@self' },
+          'group': { 'role': 'group', 'aria-labelledby': '@part(group-label)' },
+          'group-label': { id: '@self' },
         },
-        counts: { 'item-group': 1, 'item-group-label': 1, 'item': 3 },
+        counts: { 'group': 1, 'group-label': 1, 'item': 3 },
       },
       steps: [
         { kind: 'focus', part: 'input' },
         {
           kind: 'key',
           key: 'ArrowDown',
-          // 候选与 content 之间隔着 item-group，集合查询的归属判据写歪就一个也查不到
+          // 候选与 content 之间隔着 group，集合查询的归属判据写歪就一个也查不到
           expect: { parts: { input: { 'aria-activedescendant': '@part(item[0])' } } },
         },
       ],

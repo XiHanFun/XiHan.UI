@@ -24,7 +24,6 @@ const OVERLAYS = [
   'menubar',
   'popconfirm',
   'popover',
-  'popselect',
   'select',
   'side-nav',
   'time-picker',

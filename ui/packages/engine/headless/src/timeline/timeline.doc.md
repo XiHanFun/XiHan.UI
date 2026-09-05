@@ -19,7 +19,7 @@
 
 ## 组合
 
-- 时间位放[时间](./time)；内容里放[卡片](./card)或[描述列表](./descriptions)。
+- 时间位放[时间戳](./timestamp)；内容里放[卡片](./card)或[描述列表](./descriptions)。
 
 ## 最佳实践
 

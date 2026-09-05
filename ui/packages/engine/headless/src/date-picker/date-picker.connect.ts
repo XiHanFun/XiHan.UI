@@ -165,7 +165,7 @@ export function connectDatePicker<T extends PropTypes>(
 
   /** 一列里的全部选项，文档序。事件那一刻现查，不缓存节点数组。 */
   const presetItemsIn = (from: HTMLElement): HTMLElement[] => {
-    const list = from.closest<HTMLElement>(parts.presets.selector)
+    const list = from.closest<HTMLElement>(parts['preset-group'].selector)
     return list ? [...list.querySelectorAll<HTMLElement>(parts.preset.selector)] : []
   }
 
@@ -530,8 +530,8 @@ export function connectDatePicker<T extends PropTypes>(
 
     // 键盘挂在这一列自己身上，不挂 content：同一份浮层里还有日历那张网格与时间列，
     // 它们各吃各的方向键，两个处理器挂同一个节点会互相抢
-    getPresetsProps: () => normalize.element({
-      ...parts.presets.attrs,
+    getPresetGroupProps: () => normalize.element({
+      ...parts['preset-group'].attrs,
       'role': 'listbox',
       'aria-label': label.presets,
       'aria-orientation': 'vertical',

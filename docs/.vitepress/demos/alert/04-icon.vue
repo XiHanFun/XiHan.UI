@@ -3,7 +3,7 @@
 import { CheckIcon } from "@xihan-ui/icons";
 import {
   XhAlertDescription,
-  XhAlertIcon,
+  XhAlertIndicator,
   XhAlertRoot,
   XhAlertTitle,
   XhIcon,
@@ -14,14 +14,14 @@ import {
   <div style="width: 100%; display: grid; gap: 12px">
     <!-- 一个字形就够：图标是纯装饰，读屏不会念它 -->
     <XhAlertRoot tone="success">
-      <XhAlertIcon><XhIcon :icon="CheckIcon" /></XhAlertIcon>
+      <XhAlertIndicator><XhIcon :icon="CheckIcon" /></XhAlertIndicator>
       <XhAlertTitle>发布完成</XhAlertTitle>
       <XhAlertDescription>三个节点都已切到新版本。</XhAlertDescription>
     </XhAlertRoot>
 
     <!-- 内联 svg 同样能塞进来，描边取 currentColor 就跟着语气走 -->
     <XhAlertRoot tone="danger">
-      <XhAlertIcon>
+      <XhAlertIndicator>
         <svg
           viewBox="0 0 24 24"
           width="16"
@@ -36,7 +36,7 @@ import {
           <path d="M12 9.5v4" />
           <path d="M12 16.5v.5" />
         </svg>
-      </XhAlertIcon>
+      </XhAlertIndicator>
       <XhAlertTitle>发布失败</XhAlertTitle>
       <XhAlertDescription>第 2 个节点健康检查未通过。</XhAlertDescription>
     </XhAlertRoot>

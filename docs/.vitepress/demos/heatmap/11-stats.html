@@ -57,7 +57,7 @@
 
   // 月份行排在网格之外，行首那个占位与下面各行的星期名同宽，月份才对得上列
   const monthRow = part("div", "row");
-  monthRow.append(part("span", "week-day-label"));
+  monthRow.append(part("span", "week-day"));
   for (const month of grid.months) {
     monthRow.append(part("span", "month-label", month.value, month.label));
   }
@@ -65,7 +65,7 @@
   const gridEl = part("div", "grid");
   for (const row of grid.rows) {
     const line = part("div", "row", row.weekDay);
-    line.append(part("span", "week-day-label", row.weekDay, grid.weekDays[row.weekDay].label));
+    line.append(part("span", "week-day", row.weekDay, grid.weekDays[row.weekDay].label));
     for (const day of row.cells) {
       line.append(part("div", "cell", day.date));
     }

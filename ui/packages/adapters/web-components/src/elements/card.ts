@@ -16,7 +16,7 @@ import { XhElement } from '../element-base'
  * @attr {boolean} hoverable - 指针悬停时抬起
  * @attr {boolean} segmented - 在头、身、脚之间画分隔线
  * @csspart root - 卡片根容器，承载 data-variant / data-size / data-hoverable / data-split
- * @csspart cover - 封面位，通常放图片，压在头部之上
+ * @csspart media - 封面位，通常放图片，压在头部之上
  * @csspart header - 头部，装标题与描述
  * @csspart title - 标题
  * @csspart description - 标题下的说明
@@ -55,7 +55,7 @@ export class XhCardElement extends XhElement {
     }
 
     put('root', api.getRootProps() as Record<string, unknown>)
-    put('cover', api.getCoverProps() as Record<string, unknown>)
+    put('media', api.getMediaProps() as Record<string, unknown>)
     put('header', api.getHeaderProps() as Record<string, unknown>)
     put('title', api.getTitleProps() as Record<string, unknown>)
     put('description', api.getDescriptionProps() as Record<string, unknown>)

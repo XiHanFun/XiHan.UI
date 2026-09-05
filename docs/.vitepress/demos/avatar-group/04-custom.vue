@@ -1,6 +1,6 @@
 <!-- 使用者令牌 | 直径、叠放量、分隔那圈底色都留了槽位，写在组上就整组换掉 -->
 <script setup lang="ts">
-import { XhAvatarFallback, XhAvatarGroupOverflow, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
+import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 
 const shown = ["曦", "寒", "懿", "承"];
 
@@ -19,6 +19,6 @@ const tokens = {
       <XhAvatarImage />
       <XhAvatarFallback>{{ m }}</XhAvatarFallback>
     </XhAvatarRoot>
-    <XhAvatarGroupOverflow>+2</XhAvatarGroupOverflow>
+    <XhAvatarGroupOverflowItem>+2</XhAvatarGroupOverflowItem>
   </XhAvatarGroupRoot>
 </template>

@@ -3,7 +3,7 @@
 import { ref } from "vue";
 import {
   XhButton,
-  XhColorPickerArea,
+  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerChannelSlider,
   XhColorPickerChannelSliderThumb,
@@ -39,9 +39,9 @@ function onSubmit(event: Event) {
       <input type="hidden" name="brandColor" :value="value" />
       <XhColorPickerPositioner>
         <XhColorPickerContent>
-          <XhColorPickerArea>
+          <XhColorPickerSaturationArea>
             <XhColorPickerAreaThumb />
-          </XhColorPickerArea>
+          </XhColorPickerSaturationArea>
           <XhColorPickerChannelSlider channel="hue">
             <XhColorPickerChannelSliderTrack />
             <XhColorPickerChannelSliderThumb />

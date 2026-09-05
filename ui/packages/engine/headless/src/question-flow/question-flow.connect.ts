@@ -2,19 +2,19 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type {
   QuestionFlowApi,
-  QuestionFlowOptionProps,
+  QuestionFlowItemProps,
   QuestionFlowQuestion,
   QuestionFlowSchema,
 } from './question-flow.types'
 import { focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
-import { questionFlowAnatomy, questionFlowOptionQuery } from './question-flow.anatomy'
+import { questionFlowAnatomy, questionFlowItemQuery } from './question-flow.anatomy'
 import { canAdvanceQuestion, clampQuestionIndex } from './question-flow.types'
 
 const parts = questionFlowAnatomy.build()
 
 // 选项集合只在事件处理器里查活 DOM，顺序即文档序
-const OPTION_QUERY = questionFlowOptionQuery
+const ITEM_QUERY = questionFlowItemQuery
 
 export function connectQuestionFlow<T extends PropTypes>(
   service: Service<QuestionFlowSchema>,
@@ -47,7 +47,7 @@ export function connectQuestionFlow<T extends PropTypes>(
   const isCurrent = (id: string): boolean => current?.id === id
   const isOptionSelected = (questionId: string, value: string): boolean => answersOf(questionId).includes(value)
 
-  const optionDisabled = (item: QuestionFlowOptionProps): boolean => {
+  const optionDisabled = (item: QuestionFlowItemProps): boolean => {
     if (submitted)
       return true
     const declared = item.disabled ?? questionOf(item.questionId)?.options.find(o => o.value === item.value)?.disabled
@@ -146,12 +146,12 @@ export function connectQuestionFlow<T extends PropTypes>(
     }),
 
     // 单选取 radiogroup，多选取普通组；题干在场时由题干命名
-    getOptionGroupProps: (item) => {
+    getGroupProps: (item) => {
       const prompt = questionOf(item.id)?.prompt
       const single = typeOf(item.id) === 'single'
       return normalize.element({
         'role': single ? 'radiogroup' : 'group',
-        ...parts['option-group'].attrs,
+        ...parts.group.attrs,
         'aria-labelledby': prompt ? promptId(item.id) : undefined,
         'aria-label': prompt ? undefined : (translations?.options ?? 'Options'),
         'data-select-mode': single ? 'single' : 'multiple',
@@ -192,7 +192,7 @@ export function connectQuestionFlow<T extends PropTypes>(
           if (!intent)
             return
           event.preventDefault()
-          const options = queryItems(container, OPTION_QUERY)
+          const options = queryItems(container, ITEM_QUERY)
           const target = navigateItems(options, from ?? anchorOf(item.id) ?? null, intent, { loop })
           const next = itemValue(target)
           if (next == null)
@@ -206,13 +206,13 @@ export function connectQuestionFlow<T extends PropTypes>(
     },
 
     // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦，禁用项就当不成方向键的起点
-    getOptionProps: (item) => {
+    getItemProps: (item) => {
       const single = typeOf(item.questionId) === 'single'
       const selected = isOptionSelected(item.questionId, item.value)
       const disabled = optionDisabled(item)
       const active = isCurrent(item.questionId)
       return normalize.button({
-        ...parts.option.attrs,
+        ...parts.item.attrs,
         // 原生按钮落在 form 里少了 type 会变成 submit
         'type': 'button',
         'role': single ? 'radio' : 'checkbox',
@@ -234,16 +234,16 @@ export function connectQuestionFlow<T extends PropTypes>(
     },
 
     // 勾与点由皮肤画，纯装饰不进可访问名
-    getOptionIndicatorProps: item => normalize.element({
-      ...parts['option-indicator'].attrs,
+    getItemIndicatorProps: item => normalize.element({
+      ...parts['item-indicator'].attrs,
       'aria-hidden': true,
       'data-state': isOptionSelected(item.questionId, item.value) ? 'checked' : 'unchecked',
       'data-select-mode': typeOf(item.questionId) === 'single' ? 'single' : 'multiple',
     }),
 
     // 排在选项之内，文本自然构成它的可及名
-    getOptionLabelProps: item => normalize.element({
-      ...parts['option-label'].attrs,
+    getItemTextProps: item => normalize.element({
+      ...parts['item-text'].attrs,
       'data-value': item.value,
       'data-state': isOptionSelected(item.questionId, item.value) ? 'checked' : 'unchecked',
     }),

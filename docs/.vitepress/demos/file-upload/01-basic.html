@@ -10,13 +10,13 @@
       <button data-xh-part="trigger">选择文件</button>
     </div>
     <input data-xh-part="hidden-input" />
-    <div data-xh-part="item-group"></div>
+    <div data-xh-part="list"></div>
   </div>
 </xh-file-upload>
 
 <script type="module">
   const upload = document.getElementById("file-upload-basic");
-  const group = upload.querySelector('[data-xh-part="item-group"]');
+  const group = upload.querySelector('[data-xh-part="list"]');
 
   // 条目节点由作者渲染，元素随后按文档序把文件名、大小与删除按钮接上去
   upload.addEventListener("files-change", (event) => {
