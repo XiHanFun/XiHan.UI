@@ -195,12 +195,14 @@
     "xh-fade-in": {
       "content": "from{opacity:0}to{opacity:1}",
       "definedIn": [
+        "command.css",
         "dialog.css",
         "drawer.css",
         "image-viewer.css",
         "tour.css"
       ],
       "consumers": [
+        "command",
         "dialog",
         "drawer",
         "image-viewer",
@@ -210,12 +212,14 @@
     "xh-fade-out": {
       "content": "from{opacity:1}to{opacity:0}",
       "definedIn": [
+        "command.css",
         "dialog.css",
         "drawer.css",
         "image-viewer.css",
         "tour.css"
       ],
       "consumers": [
+        "command",
         "dialog",
         "drawer",
         "image-viewer",
@@ -322,6 +326,7 @@
       "definedIn": [
         "cascader.css",
         "combobox.css",
+        "command.css",
         "date-picker.css",
         "hover-card.css",
         "mention.css",
@@ -336,6 +341,7 @@
       "consumers": [
         "cascader",
         "combobox",
+        "command",
         "date-picker",
         "hover-card",
         "mention",
@@ -381,6 +387,7 @@
         "cascader.css",
         "color-picker.css",
         "combobox.css",
+        "command.css",
         "context-menu.css",
         "date-picker.css",
         "floating-panel.css",
@@ -403,6 +410,7 @@
         "cascader",
         "color-picker",
         "combobox",
+        "command",
         "context-menu",
         "date-picker",
         "floating-panel",
@@ -497,10 +505,12 @@
     "xh-rise-in": {
       "content": "from{opacity:0;translate:0 var(--xh-motion-distance-sm)}to{opacity:1;translate:0 0}",
       "definedIn": [
+        "command.css",
         "empty-state.css",
         "question-flow.css"
       ],
       "consumers": [
+        "command",
         "empty-state",
         "question-flow"
       ]

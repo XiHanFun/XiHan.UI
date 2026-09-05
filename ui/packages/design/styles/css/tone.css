@@ -140,6 +140,26 @@
     --xh-_tone-shift: var(--xh-color-neutral-0);
   }
 
+  /* 语气轴对外的那一族：上面每支私有槽一对一指过来，取值恒等。
+     使用者在自己的节点上写 data-tone，就能在那个节点里取到整族颜色，
+     六族与深浅两态都跟着上面的推导走。
+     --xh-_tone-shift 是兑色的方向、不是一档颜色，不出公开令牌。
+     声明在 [data-tone] 上而不是 :root 上：值里带 var()，自定义属性的 var()
+     在「声明它的那个元素」上就替换掉了，落在 :root 上会把语气冻死在根元素。 */
+  [data-tone] {
+    --xh-tone-solid: var(--xh-_tone);
+    --xh-tone-solid-hover: var(--xh-_tone-hover);
+    --xh-tone-solid-active: var(--xh-_tone-active);
+    --xh-tone-on: var(--xh-_tone-on);
+    --xh-tone-subtle: var(--xh-_tone-subtle);
+    --xh-tone-subtle-hover: var(--xh-_tone-subtle-hover);
+    --xh-tone-subtle-active: var(--xh-_tone-subtle-active);
+    --xh-tone-fg: var(--xh-_tone-fg);
+    --xh-tone-border: var(--xh-_tone-border);
+    --xh-tone-border-control: var(--xh-_tone-border-control);
+    --xh-tone-soft: var(--xh-_tone-soft);
+  }
+
   /* 实心面顶边的内高光：一条极浅的内阴影，把一块实心底衬出厚度。
      全库十六处实心档共用这两条，别再逐个组件把式子抄一遍。
 

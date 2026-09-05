@@ -74,6 +74,39 @@ export interface TableColumnPreferenceChangeDetails {
   value: TableColumnPreference
 }
 
+/**
+ * 列设置区里的一行：列偏好算过之后的那一列，**藏起来的那些也在其中**。
+ *
+ * 生效列（`TableApi.columns`）把藏起来的滤掉了，而设置区正是要把它们放回来的地方；
+ * 前缀列不在其中——那些是结构性的，由 `prefixColumns` 说了算，不归用户调。
+ */
+export interface TableColumnSetting {
+  id: string
+  label?: string
+  /** 在设置区里的位次，0 起算。挪位时的落点用它算。 */
+  index: number
+  /** 这一列眼下藏着。 */
+  hidden: boolean
+  /** 生效的冻结档：偏好里的覆盖优先，没有就是列定义里写的。 */
+  sticky?: boolean | 'start' | 'end'
+  /** 生效的列宽：偏好里的覆盖优先，没有就是列定义里写的。 */
+  width?: string | number
+  sortable: boolean
+  resizable: boolean
+  reorderable: boolean
+  /** 该列当前的排序方向；不参与排序时为 null。 */
+  sortDirection: TableSortDirection | null
+  /** 该列在排序链里的优先级，1 起算；不参与排序时为 0。 */
+  sortPriority: number
+  /**
+   * 这一列的显隐还能不能改。
+   *
+   * 只剩最后一列显示着时它转 false：全藏起来的表是一张没有列的网格，
+   * 而用户从那里再也点不出任何一个把手把列放回来。
+   */
+  toggleable: boolean
+}
+
 /** 生效的列：作者定义的那些，加上库插在最前面的前缀列。 */
 export interface TableColumn extends TableColumnDef {
   kind: TableColumnKind
@@ -420,8 +453,8 @@ export interface TableSchema extends MachineSchema {
      * 宿主把整份渲出来之后再也恢复不了。
      */
     | { type: 'ROW.REORDER_BLOCKED', reason: TableRowReorderReason | null }
-    /** 改一列的显隐 / 位置 / 宽。 */
-    | { type: 'COLUMN_PREF.PATCH', columnId: string, hidden?: boolean, toIndex?: number, width?: number | string }
+    /** 改一列的显隐 / 位置 / 宽 / 冻结。 */
+    | { type: 'COLUMN_PREF.PATCH', columnId: string, hidden?: boolean, toIndex?: number, width?: number | string, sticky?: boolean | 'start' | 'end' }
     /** 整体改写选中集合。 */
     | { type: 'SELECTION.SET', value: TableSelection }
     /** 切换单行选中（单选替换、复选增删）。 */
@@ -530,6 +563,21 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   toggleExpandRow: (value: string) => void
   getRootProps: () => T['element']
   getCaptionProps: () => T['element']
+  /**
+   * 工具条：搜索、筛选、密度与列设置这些**对整张表下手**的控件摆在这儿。
+   *
+   * 它是 root 的兄弟不是子节点——root 是 grid 系角色，子节点只能是 row 与 rowgroup。
+   * 不给 role：一条控件带要不要 role=toolbar（连同那套方向键 roving）归作者，
+   * 要就往里放一个 Toolbar 组件。
+   */
+  getToolbarProps: () => T['element']
+  /**
+   * 列设置区：一列一行，行里放显隐把手、列名与作者自己的宽 / 冻结 / 排序控件。
+   * 渲什么照 `columnSettings` 走。
+   */
+  getColumnListProps: () => T['element']
+  /** 一列的显隐把手（复选形态）。最后一列显示着时它转 aria-disabled。 */
+  getColumnVisibilityTriggerProps: (props: TableColumnProps) => T['element']
   getHeaderProps: () => T['element']
   getBodyProps: () => T['element']
   getFooterProps: () => T['element']
@@ -544,8 +592,15 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   rowNumber: (rowId: string) => string
   /** 当下的列偏好。原样交出去即可存盘。 */
   columnPreference: TableColumnPreference
+  /**
+   * 列设置区照它渲：作者定义的那些列，按偏好排过序，**藏起来的也在其中**。
+   * 每条自带显隐、冻结、宽与排序，够渲一整行设置项而不必回去比对两份数组。
+   */
+  columnSettings: readonly TableColumnSetting[]
   /** 藏起 / 放出一列。 */
   setColumnHidden: (columnId: string, hidden: boolean) => void
+  /** 改一列的冻结档。false 是不冻结，true 等于 'start'。 */
+  setColumnSticky: (columnId: string, sticky: boolean | 'start' | 'end') => void
   /** 把一列挪到第几位（只在作者定义的那些列之间算，0 起算）。 */
   moveColumn: (columnId: string, toIndex: number) => void
   /** 改一列的宽。 */
@@ -596,6 +651,12 @@ export interface TableTranslations extends Partial<DragTranslations> {
    * 这里是整张表的选择功能对读屏唯一的入口，所以这一句总会发出去。
    */
   selectAll: string
+  /** 工具条的名字。它是 root 之外的一块区域，没有名字就只是页面上一堆散落的钮。 */
+  toolbar: string
+  /** 列设置区的名字。 */
+  columnList: string
+  /** 一列的显隐把手的名字。把手自己默认没有内容，名字是它对读屏唯一的自述。 */
+  columnVisibility: (columnLabel: string) => string
 }
 
 /** 列拖拽的落点：落在哪一列的哪一侧。 */

@@ -128,6 +128,38 @@ CSS 的级联顺序由 `@layer` 声明的**首次出现顺序**决定，与 `@im
 
 槽名是 `--xh-<组件名>-control-min-w`。`text-field` · `password-input` · `clipboard` · `mention` 的**内层输入框**另有一条 `--xh-<组件名>-input-min-w`：外框放开了内框还在顶，就是漏了这一条。整表见各组件页的「CSS 变量」。
 
+## 在自己的节点上接语气
+
+语气轴（`data-tone`）不只给库里的组件用。在自己的节点上写一个 `data-tone`，那个节点里就能取到整族颜色——六族语气、深浅两态、换过品牌色之后的取值，全都跟着走：
+
+```css
+.my-status-card {
+  background: var(--xh-tone-subtle);
+  border: 1px solid var(--xh-tone-border);
+  color: var(--xh-tone-fg);
+}
+```
+
+```html
+<div class="my-status-card" data-tone="danger">…</div>
+```
+
+| 令牌 | 是什么 |
+| --- | --- |
+| `--xh-tone-solid` | 实心底 |
+| `--xh-tone-solid-hover` / `--xh-tone-solid-active` | 实心底的悬停与按下 |
+| `--xh-tone-on` | 实心底上的前景色 |
+| `--xh-tone-subtle` | 淡底 |
+| `--xh-tone-subtle-hover` / `--xh-tone-subtle-active` | 淡底的悬停与按下 |
+| `--xh-tone-fg` | 普通背景上表达该语气的文字色 |
+| `--xh-tone-border` | 描边 |
+| `--xh-tone-border-control` | 可操作区的边界，对面 3:1 |
+| `--xh-tone-soft` | 色条、指示条这类装饰性强调，对画布 3:1 |
+
+这一族只在写了 `data-tone` 的节点及其后代里有取值。没写就取不到——`data-tone` 是它们的开关，不是可选修饰。
+
+对比度已经按 WCAG 逐族验过：实心底与 `--xh-tone-on`、淡底三态与 `--xh-tone-fg` 都是 4.5:1，两条非文字档是 3:1。所以自己配色时，字与底请照上表成对取，别把 `--xh-tone-fg` 压到 `--xh-tone-solid` 上。
+
 ## 换品牌色
 
 品牌色的唯一真源是 **原语梯度** `--xh-color-brand-50…950`：语义令牌（`--xh-bg-brand` 等）与语气层（`data-tone='brand'`）都从它取值。所以换品牌色要换整套原语，而不是只改 `--xh-bg-brand`——那只影响没写 `data-tone` 的缺省路径，写了 `data-tone='brand'` 的组件（实心按钮、开关、进度条这些）不会跟着变。

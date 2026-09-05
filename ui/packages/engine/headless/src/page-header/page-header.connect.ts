@@ -12,15 +12,23 @@ export function connectPageHeader<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): PageHeaderApi<T> {
   return {
-    // 尺寸与分隔线只落在根上，各段从这里继承私有槽，子部件不重复标注
+    // 尺寸、形态与分隔线只落在根上，各段从这里继承私有槽，子部件不重复标注。
+    // 形态不写即不发这个属性：没写轴的页头逐值不变
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-size': props.size,
+      'data-variant': props.variant,
       'data-bordered': dataAttr(props.bordered),
     }),
 
+    // 面包屑位整行另起排在标题之上，装什么归作者
+    getBreadcrumbProps: () => normalize.element({ ...parts.breadcrumb.attrs }),
+
     // 返回位只给身份与位置：标签、type、可及名字、点了往哪走，全归作者自己的按钮
     getBackTriggerProps: () => normalize.element({ ...parts['back-trigger'].attrs }),
+
+    // 头像 / 图标位只摆位置与尺寸下限，图形本身归作者
+    getMediaProps: () => normalize.element({ ...parts.media.attrs }),
 
     // 标题不占标题层级：页头嵌在页面哪一层由使用者决定，组件自己插一级标题会污染文档大纲
     getTitleProps: () => normalize.element({ ...parts.title.attrs }),

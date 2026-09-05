@@ -29,7 +29,7 @@ pnpm add @xihan-ui/code-highlight
 
 除了从 npm 装，还有两条本地路径：
 
-1. **克隆仓库直接开发**——构建库包后把文档站跑起来，125 个组件的示例都是真实组件；
+1. **克隆仓库直接开发**——构建库包后把文档站跑起来，126 个组件的示例都是真实组件；
 2. **本地构建后链接进你的项目**——想跟着仓库最新改动走的话走这条。
 
 ::: warning
@@ -72,7 +72,7 @@ pnpm lint         # oxlint + eslint + stylelint
 pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
 pnpm boundaries   # 分层依赖门禁
-pnpm gate         # 96 项结构门禁
+pnpm gate         # 97 项结构门禁
 pnpm size         # 产物体积棘轮
 ```
 
@@ -187,7 +187,7 @@ import '@xihan-ui/tokens/tokens.css'
    自己另起一套排序（按字母、按目录读取序）今天可能看不出差别，将来加进一条跨组件规则就会与全量引入的人渲染不同。
    要按需，就把 `index.css` 的 `@import` 清单过滤一遍，别自己排。
 
-全量是 136 份皮肤加令牌，压缩后约 66 kB gzip。没有明确的体积压力就用第一种。
+全量是 137 份皮肤加令牌，压缩后约 66 kB gzip。没有明确的体积压力就用第一种。
 :::
 
 ### 开发模式下查漏引

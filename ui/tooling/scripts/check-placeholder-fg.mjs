@@ -30,6 +30,7 @@ const cssDir = path.resolve(
 /** 通道 ①：`::placeholder` 伪元素，组件 → 承载占位串的部件。 */
 const PSEUDO = {
   'combobox': 'input',
+  'command': 'input',
   'editable': 'input',
   'mention': 'input',
   'number-field': 'input',

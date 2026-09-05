@@ -41,8 +41,12 @@ const ROW_EXEMPT = {
   'drawer.kbd.shift-tab': '同 dialog',
   'image-viewer.kbd.tab': '同 dialog',
   'image-viewer.kbd.shift-tab': '同 dialog',
+  'command.kbd.tab': '同 dialog',
   'popover.kbd.tab': '同 dialog',
   'popover.kbd.shift-tab': '同 dialog',
+  // 列设置区摆在 root 之外（root 是 grid 系角色，子节点只能是 row 与 rowgroup），
+  // 而套件的 fixture 是一棵以 root 为树根的树，表达不出它的兄弟位
+  'table.kbd.column-visibility': '列设置区在 root 之外，见 headless 的 tests/table-column-settings.spec.ts',
 }
 
 function camel(name) {

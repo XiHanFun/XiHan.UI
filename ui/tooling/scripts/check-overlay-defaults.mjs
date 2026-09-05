@@ -16,7 +16,7 @@ const SHARED = `${HEADLESS}/shared/overlay.ts`
 const COMPOSED = ['popconfirm']
 
 /** 只在皮肤里用 inset 排布、不交给定位引擎的族：没有 placement / offset 可兜底。 */
-const NOT_ENGINE_POSITIONED = new Set(['dialog', 'drawer', 'floating-panel', 'image-viewer'])
+const NOT_ENGINE_POSITIONED = new Set(['command', 'dialog', 'drawer', 'floating-panel', 'image-viewer'])
 
 /** 共享常量的名字；兜底处至少要 import 其中一个。 */
 const SHARED_NAMES = ['OVERLAY_PLACEMENT_ANCHORED', 'OVERLAY_PLACEMENT_LIST', 'OVERLAY_OFFSET']

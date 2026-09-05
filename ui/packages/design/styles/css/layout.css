@@ -207,6 +207,97 @@
     overflow-y: auto;
   }
 
+  /* —— 侧栏覆盖档 —— */
+  /* 侧栏移出画外、盖在内容之上：面板脱离网格，侧栏那一列于是收成零宽，内容占满整行。
+     排在固定定位那一节之后：两处特指度相同，覆盖档要盖住 sticky 那一档。
+     参照的是视口，与上面 sticky 那条同一个注意事项：整副骨架装进带 transform / filter 的祖先里时，
+     固定定位的包含块会换成那个祖先，面板跟着一起滚。 */
+  [data-scope='layout'][data-part='sider'][data-presentation='sheet'] {
+    /* 位移方向的私有槽位：默认按行首 + LTR，行尾与 RTL 在下面翻符号。
+       写成槽位而不是写死 ±100%：贴边用的是逻辑 inset，RTL 下行首落在物理右边，
+       位移若写死物理方向就会出现「贴在右边、却从左边滑进来」 */
+    --xh-_layout-sheet-shift: -100%;
+
+    position: fixed;
+    z-index: var(--xh-layout-sider-layer, var(--xh-layer-drawer));
+    inset-block: 0;
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+    inline-size: var(--xh-_layout-sider-expanded-w);
+    /* 面板贴死上下两条边，高度上限就是滚动容器可视区那么高——上面 sticky 那一档的
+       「减去顶栏偏移」在这一档不作数：覆盖档从视口顶铺到底。
+       不认 dvh 的引擎由级联回落到前一条的 vh */
+    max-block-size: var(--xh-layout-scrollport-h, 100vh);
+    max-block-size: var(--xh-layout-scrollport-h, 100dvh);
+    /* 贴死视口的那一档，内衬与安全区取大的一头：刘海、圆角与底部横条压住的那一段由系统给出。
+       桌面上 env() 恒为 0，取值与内衬槽完全一致。安全区只有物理方向的四个名字，
+       行内轴上两侧同取较宽的那一段，RTL 下不会翻错边 */
+    padding-block-start: max(var(--xh-layout-sider-padding, var(--xh-space-3)), env(safe-area-inset-top));
+    padding-block-end: max(var(--xh-layout-sider-padding, var(--xh-space-3)), env(safe-area-inset-bottom));
+    padding-inline: max(
+      var(--xh-layout-sider-padding, var(--xh-space-3)),
+      env(safe-area-inset-left),
+      env(safe-area-inset-right)
+    );
+    box-shadow: var(--xh-layout-sider-shadow, var(--xh-elevation-sheet));
+    translate: 0 0;
+    visibility: visible;
+    /* 条目多到装不下时在面板内部滚：这一档的高度就是视口那么高 */
+    overflow-y: auto;
+    /* 推出来与收进去是同一段行程，视口尺度的位移走 slide 档。
+       visibility 与它同拍：收起那一路等位移播完才真正藏起来，展开那一路立刻露出来 */
+    transition:
+      translate var(--xh-motion-duration-slide) var(--xh-motion-ease-slide),
+      visibility var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
+  }
+
+  /* 挂在行尾：贴另一条边，位移随之反向 */
+  [data-scope='layout'][data-part='sider'][data-presentation='sheet'][data-placement='end'] {
+    --xh-_layout-sheet-shift: 100%;
+
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+  }
+
+  [data-scope='layout'][data-part='sider'][data-presentation='sheet']:dir(rtl) {
+    --xh-_layout-sheet-shift: 100%;
+  }
+
+  [data-scope='layout'][data-part='sider'][data-presentation='sheet'][data-placement='end']:dir(rtl) {
+    --xh-_layout-sheet-shift: -100%;
+  }
+
+  /* 收起：推出画外并让出无障碍树与 Tab 序列。位移量按面板自身宽度的百分比算，
+     宽度换成任何一档都正好推到画外 */
+  [data-scope='layout'][data-part='sider'][data-presentation='sheet'][data-collapsed] {
+    translate: var(--xh-_layout-sheet-shift) 0;
+    visibility: hidden;
+  }
+
+  /* 覆盖档的遮罩：与面板同一个层号，谁盖谁看文档序——遮罩写在侧栏之前。
+     占位档下连接层给它打 hidden，这里不必再管 */
+  [data-scope='layout'][data-part='sider-backdrop'] {
+    position: fixed;
+    z-index: var(--xh-layout-sider-backdrop-layer, var(--xh-layer-drawer));
+    inset: 0;
+    background: var(--xh-layout-sider-backdrop-bg, var(--xh-bg-overlay));
+    opacity: 1;
+    transition: opacity var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 收起态：淡出并让开指针，底下的内容照常点得到 */
+  [data-scope='layout'][data-part='sider-backdrop'][data-collapsed] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* 纸上没有覆盖这回事：遮罩印出来就是盖住正文的一片灰 */
+  @media print {
+    [data-scope='layout'][data-part='sider-backdrop'] {
+      display: none;
+    }
+  }
+
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
   [data-scope='layout'][data-part='root'][hidden],

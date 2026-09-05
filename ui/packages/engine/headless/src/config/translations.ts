@@ -25,6 +25,7 @@ import type { CodeViewTranslations } from '../code-view/code-view.types'
 import type { CollapsibleTranslations } from '../collapsible/collapsible.types'
 import type { ColorPickerTranslations } from '../color-picker/color-picker.types'
 import type { ComboboxTranslations } from '../combobox/combobox.types'
+import type { CommandTranslations } from '../command/command.types'
 import type { ContextMenuTranslations } from '../context-menu/context-menu.types'
 import type { DateFieldTranslations } from '../date-field/date-field.types'
 import type { DatePickerTranslations } from '../date-picker/date-picker.types'
@@ -104,8 +105,8 @@ import type { StepsTranslations } from '../steps/steps.types'
 import type { SwitchTranslations } from '../switch/switch.types'
 import type { TableTranslations } from '../table/table.types'
 import type { TabsTranslations } from '../tabs/tabs.types'
-import type { TagTranslations } from '../tag/tag.types'
 import type { TagGroupTranslations } from '../tag-group/tag-group.types'
+import type { TagTranslations } from '../tag/tag.types'
 import type { TagsInputTranslations } from '../tags-input/tags-input.types'
 import type { TextFieldTranslations } from '../text-field/text-field.types'
 import type { TimeFieldTranslations } from '../time-field/time-field.types'
@@ -153,6 +154,7 @@ export interface XhTranslationOverrides {
   'collapsible'?: Partial<CollapsibleTranslations>
   'color-picker'?: Partial<ColorPickerTranslations>
   'combobox'?: Partial<ComboboxTranslations>
+  'command'?: Partial<CommandTranslations>
   'context-menu'?: Partial<ContextMenuTranslations>
   'date-field'?: Partial<DateFieldTranslations>
   'date-picker'?: Partial<DatePickerTranslations>

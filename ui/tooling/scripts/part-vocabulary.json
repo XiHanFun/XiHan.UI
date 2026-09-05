@@ -40,6 +40,7 @@
       "page-header"
     ],
     "backdrop": [
+      "command",
       "dialog",
       "drawer",
       "image-viewer",
@@ -93,6 +94,9 @@
       "side-nav",
       "tree",
       "tree-select"
+    ],
+    "breadcrumb": [
+      "page-header"
     ],
     "calendar": [
       "date-picker"
@@ -176,7 +180,13 @@
     "column-label": [
       "heatmap"
     ],
+    "column-list": [
+      "table"
+    ],
     "column-resize-trigger": [
+      "table"
+    ],
+    "column-visibility-trigger": [
       "table"
     ],
     "confirm-trigger": [
@@ -194,6 +204,7 @@
       "collapsible",
       "color-picker",
       "combobox",
+      "command",
       "context-menu",
       "date-picker",
       "dialog",
@@ -322,6 +333,7 @@
     "empty": [
       "cascader",
       "combobox",
+      "command",
       "diff-view",
       "json-viewer",
       "listbox",
@@ -381,6 +393,7 @@
       "approval",
       "card",
       "cascader",
+      "command",
       "dialog",
       "drawer",
       "layout",
@@ -417,6 +430,7 @@
       "approval",
       "cascader",
       "combobox",
+      "command",
       "context-menu",
       "listbox",
       "menu",
@@ -433,6 +447,7 @@
     "group-label": [
       "cascader",
       "combobox",
+      "command",
       "context-menu",
       "listbox",
       "menu",
@@ -542,6 +557,7 @@
       "cascader",
       "clipboard",
       "combobox",
+      "command",
       "editable",
       "mention",
       "number-field",
@@ -561,6 +577,7 @@
       "cascader",
       "checkbox-group",
       "combobox",
+      "command",
       "context-menu",
       "descriptions",
       "field-array",
@@ -683,6 +700,7 @@
       "cascader",
       "checkbox-group",
       "combobox",
+      "command",
       "context-menu",
       "listbox",
       "mention",
@@ -795,6 +813,7 @@
       "anchor",
       "breadcrumb",
       "carousel",
+      "command",
       "file-upload",
       "float-button",
       "message-feed",
@@ -825,6 +844,7 @@
     "loading": [
       "cascader",
       "combobox",
+      "command",
       "listbox",
       "mention",
       "select",
@@ -841,7 +861,8 @@
     ],
     "media": [
       "card",
-      "empty-state"
+      "empty-state",
+      "page-header"
     ],
     "month-block": [
       "heatmap"
@@ -910,6 +931,7 @@
       "cascader",
       "color-picker",
       "combobox",
+      "command",
       "context-menu",
       "date-picker",
       "dialog",
@@ -1200,6 +1222,9 @@
     "sider": [
       "layout"
     ],
+    "sider-backdrop": [
+      "layout"
+    ],
     "sider-trigger": [
       "layout"
     ],
@@ -1322,7 +1347,8 @@
       "diff-view"
     ],
     "toolbar": [
-      "image-viewer"
+      "image-viewer",
+      "table"
     ],
     "tooltip": [
       "heatmap"
@@ -1349,6 +1375,7 @@
       "collapsible",
       "color-picker",
       "combobox",
+      "command",
       "context-menu",
       "date-picker",
       "dialog",
@@ -1438,6 +1465,7 @@
     "block": true,
     "body": true,
     "branch": true,
+    "breadcrumb": true,
     "button": {
       "synonymOf": "trigger",
       "$description": "规范 §17.4：能点的东西一律用具名 *-trigger",

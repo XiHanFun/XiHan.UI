@@ -1,4 +1,4 @@
-import type { LayoutBreakpoint, LayoutSchema, LayoutSiderBreakpointDetails, LayoutSiderCollapsedChangeDetails, LayoutSiderPlacement } from '@xihan-ui/headless'
+import type { LayoutBreakpoint, LayoutSchema, LayoutSiderBreakpointDetails, LayoutSiderCollapsedChangeDetails, LayoutSiderPlacement, LayoutSiderPresentation } from '@xihan-ui/headless'
 import { connectLayout, layoutAnatomy, layoutMachine, layoutMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -9,7 +9,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-layout>` —— 页面骨架的 Light-DOM 行为宿主，跑 layout 机器并把 connect 产出打到
- * root/header/sider/content/footer/sider-trigger 角色节点。
+ * root/header/sider-backdrop/sider/content/footer/sider-trigger 角色节点。
  *
  * 除 root 外的部件全部可缺省。各段一律不带 role：地标该不该标、标在哪一段，
  * 取决于这套骨架在页面里的位置，由作者自己声明。
@@ -25,14 +25,16 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {string} sider-collapsed-width - 折叠时侧栏的宽度，任意 CSS 长度
  * @attr {'start'|'end'} sider-placement - 侧栏挂在行首还是行尾，缺省 start
  * @attr {'sm'|'md'|'lg'|'xl'} sider-breakpoint - 侧栏的自适应断点：视口窄于这一档时侧栏按折叠宽显示，折叠态不变
+ * @attr {'inline'|'sheet'} sider-presentation - 侧栏呈现形态：inline 占一列，sheet 移出画外、展开时盖在内容之上；写了断点时只在未达档时成立
  * @attr {boolean} header-fixed - 头吸顶：滚动时头钉在滚动容器的上沿
  * @attr {boolean} sider-fixed - 侧栏吸附：滚动时侧栏钉在滚动容器的上沿，头也吸顶时让开头那一条
  * @attr {boolean} bordered - 在头、侧栏、脚与内容之间画分隔线
  * @fires sider-collapsed-change - 折叠态变化；detail 为 `{ collapsed: boolean }`
  * @fires sider-breakpoint - 断点跨过去时发，挂载时也发一次当前值；detail 为 `{ matched: boolean }`
- * @csspart root - 骨架根容器，承载 data-sider-placement / data-sider-breakpoint / data-collapsed / data-header-fixed / data-sider-fixed / data-bordered
+ * @csspart root - 骨架根容器，承载 data-sider-placement / data-sider-breakpoint / data-sider-presentation / data-collapsed / data-header-fixed / data-sider-fixed / data-bordered
  * @csspart header - 顶部横幅区，横贯整行；吸顶时带 data-fixed
- * @csspart sider - 侧栏，折叠时带 data-collapsed、宽度随之在两档之间切换；吸附时带 data-fixed
+ * @csspart sider-backdrop - 覆盖档铺在内容之上的遮罩，点它收起侧栏；占位档下带 hidden。写在 sider 之前
+ * @csspart sider - 侧栏，折叠时带 data-collapsed、宽度随之在两档之间切换；吸附时带 data-fixed；覆盖档带 data-presentation="sheet"
  * @csspart content - 主内容区
  * @csspart footer - 底部区，横贯整行
  * @csspart sider-trigger - 折叠把手（aria-expanded / aria-controls 所在，折叠时带 data-collapsed）
@@ -56,6 +58,7 @@ export class XhLayoutElement extends XhElement {
     siderCollapsedWidth: { attribute: 'sider-collapsed-width', converter: STRING_CONVERTER },
     siderPlacement: { attribute: 'sider-placement', converter: STRING_CONVERTER },
     siderBreakpoint: { attribute: 'sider-breakpoint', converter: STRING_CONVERTER },
+    siderPresentation: { attribute: 'sider-presentation', converter: STRING_CONVERTER },
     headerFixed: { type: Boolean, attribute: 'header-fixed' },
     siderFixed: { type: Boolean, attribute: 'sider-fixed' },
     bordered: { type: Boolean },
@@ -67,6 +70,7 @@ export class XhLayoutElement extends XhElement {
   declare siderCollapsedWidth?: string
   declare siderPlacement?: LayoutSiderPlacement
   declare siderBreakpoint?: LayoutBreakpoint
+  declare siderPresentation?: LayoutSiderPresentation
   declare headerFixed?: boolean
   declare siderFixed?: boolean
   declare bordered?: boolean
@@ -89,6 +93,7 @@ export class XhLayoutElement extends XhElement {
       siderCollapsedWidth: this.siderCollapsedWidth,
       siderPlacement: this.siderPlacement,
       siderBreakpoint: this.siderBreakpoint,
+      siderPresentation: this.siderPresentation,
       headerFixed: this.headerFixed ?? false,
       siderFixed: this.siderFixed ?? false,
       bordered: this.bordered ?? false,
@@ -109,6 +114,7 @@ export class XhLayoutElement extends XhElement {
 
     put('root', api.getRootProps() as Record<string, unknown>)
     put('header', api.getHeaderProps() as Record<string, unknown>)
+    put('sider-backdrop', api.getSiderBackdropProps() as Record<string, unknown>)
     put('sider', api.getSiderProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
     put('footer', api.getFooterProps() as Record<string, unknown>)

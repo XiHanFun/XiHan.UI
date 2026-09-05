@@ -484,6 +484,10 @@
       "description": "portal 到统一落点、由定位引擎摆位的一层，共用浮层容器与焦点归还契约。",
       "components": [
         {
+          "id": "command",
+          "name": "命令面板"
+        },
+        {
           "id": "dialog",
           "name": "对话框"
         },

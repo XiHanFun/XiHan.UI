@@ -12,6 +12,7 @@ export const SKINS = 'packages/design/styles/css'
  * check-overlay-strategy 用全表；check-overlay-size 用 SIZE_NOT_ENGINE_POSITIONED 子集。
  */
 export const NOT_ENGINE_POSITIONED = {
+  'command': '面板偏上居中由皮肤的 inset + flex 排布，不问引擎要坐标',
   'dialog': '居中由皮肤的 inset + flex 排布，不问引擎要坐标',
   'drawer': '贴边由皮肤的 inset 排布，不问引擎要坐标',
   'floating-panel': '位置由用户拖出来、存在机器里，不问引擎要坐标',
@@ -23,7 +24,7 @@ export const NOT_ENGINE_POSITIONED = {
  * 与 NOT_ENGINE_POSITIONED 的差异：不含 floating-panel——它在 size 门禁里走 SIZE_EXEMPT，
  * 名单过期时（已接上可用高度）仍会被揪出来。
  */
-export const SIZE_NOT_ENGINE_POSITIONED = new Set(['dialog', 'drawer', 'image-viewer'])
+export const SIZE_NOT_ENGINE_POSITIONED = new Set(['command', 'dialog', 'drawer', 'image-viewer'])
 
 /**
  * 没有自己机器、跑别人机器的：坐标系与 size 开关都在被复用的那台机器上。

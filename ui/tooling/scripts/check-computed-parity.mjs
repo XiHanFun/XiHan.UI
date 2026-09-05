@@ -21,6 +21,7 @@ const WC = 'packages/adapters/web-components/tests/browser/__snapshots__/compute
  * 三个模态各自单开了 WC 规格，fixture 本就不同构；另两条是实测出来的真差异。
  */
 const KNOWN_DIVERGENCE = {
+  'command': 'WC 侧走单开的 fixture（浮层壳归作者手写），且 Light DOM 不删作者节点：收起这一屏 Vue 只剩 trigger，WC 是整棵面板都在',
   'dialog': 'WC 侧走单开的 wc-dialog.suite，presence 模型与共享套件不同构',
   'drawer': 'WC 侧走单开的 wc-drawer.suite，presence 模型与共享套件不同构',
   'image-viewer': 'WC 侧走单开的 wc-image-viewer.suite，presence 模型与共享套件不同构',

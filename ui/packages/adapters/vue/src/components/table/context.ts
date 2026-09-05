@@ -67,3 +67,8 @@ export function useTableColumnContext(): TableColumnContext {
     throw new Error('[xh] Table 排序把手必须用在 XhTableColumnHeader 内')
   return ctx
 }
+
+/** 注入列上下文，列设置区里的把手不在列标题内时返回 null，列身份改由自己的 value 声明。 */
+export function useOptionalTableColumnContext(): TableColumnContext | null {
+  return inject(COLUMN_KEY, null)
+}

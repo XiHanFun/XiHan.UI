@@ -18,6 +18,7 @@
 - 表头吸顶与列吸附、条纹、密度、边框都是开关。
 - 支持多行表头与表头分组、跨列单元格、树形表格、单元格就地编辑、列过滤、拖拽调列宽。
 - 行数很大时只渲窗口内的行。
+- 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐三样接出来：设置区照 `columnSettings` 渲，藏起来的列也在其中。两块都摆在 `root` 之外——`root` 是 grid 系角色，子节点只能是行与行组。
 - 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页的按钮点了做什么归作者，取数在途时自动停用。
 
 ## 示例
@@ -160,12 +161,18 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 <XhDemo src="table/23-tree-row-drag" />
 
+### 列设置与工具条
+
+工具条渲成表的兄弟排在表前（root 是 grid，工具条进不去它里面）；列设置区照 columnSettings 渲，藏起来的列也在其中，只剩最后一列显示着时那颗把手转禁用
+
+<XhDemo src="table/24-column-settings" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-table>` |
-| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnDragTrigger` `XhTableColumnHeader` `XhTableColumnResizeTrigger` `XhTableEmpty` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoadMoreTrigger` `XhTableLoading` `XhTableRoot` `XhTableRow` `XhTableRowDragTrigger` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` |
+| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnDragTrigger` `XhTableColumnHeader` `XhTableColumnList` `XhTableColumnResizeTrigger` `XhTableColumnVisibilityTrigger` `XhTableEmpty` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoadMoreTrigger` `XhTableLoading` `XhTableRoot` `XhTableRow` `XhTableRowDragTrigger` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` `XhTableToolbar` |
 | 组合式函数 | `useTable` |
 | 状态机 | `tableMachine` |
 | 皮肤 | `@xihan-ui/styles/table.css` |
@@ -174,7 +181,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `column-resize-trigger` · `column-drag-trigger` · `row-drag-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading` · `load-more-trigger` · `live-region`
+`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `toolbar` · `column-list` · `column-visibility-trigger` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `column-resize-trigger` · `column-drag-trigger` · `row-drag-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading` · `load-more-trigger` · `live-region`
 
 ## Props
 
@@ -232,6 +239,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhTableRoot` | `default` | `TableRootSlotProps` |  |
+| `XhTableRoot` | `toolbar` | `TableToolbarSlotProps` | 工具条槽：搜索、筛选、密度与列设置这些对整张表下手的控件写在这儿。 它渲成 root 的兄弟排在表前——root 是 grid 系角色，子节点只能是 row 与 rowgroup。 |
 
 ## 状态
 
@@ -239,6 +247,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 | 部件 | 取值 |
 | --- | --- |
+| `column-visibility-trigger` | 'unchecked' \| 'checked' |
 | `select-all-trigger` | tableSelectionState(selection, selectableIds) |
 | `expanded-row` | 'open' \| 'closed' |
 
@@ -286,6 +295,9 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `toggleExpandRow` | `(value: string) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getCaptionProps` | `() => T['element']` |  |
+| `getToolbarProps` | `() => T['element']` | 工具条：搜索、筛选、密度与列设置这些**对整张表下手**的控件摆在这儿。 它是 root 的兄弟不是子节点——root 是 grid 系角色，子节点只能是 row 与 rowgroup。 不给 role：一条控件带要不要 role=toolbar（连同那套方向键 roving）归作者， 要就往里放一个 Toolbar 组件。 |
+| `getColumnListProps` | `() => T['element']` | 列设置区：一列一行，行里放显隐把手、列名与作者自己的宽 / 冻结 / 排序控件。 渲什么照 `columnSettings` 走。 |
+| `getColumnVisibilityTriggerProps` | `(props: TableColumnProps) => T['element']` | 一列的显隐把手（复选形态）。最后一列显示着时它转 aria-disabled。 |
 | `getHeaderProps` | `() => T['element']` |  |
 | `getBodyProps` | `() => T['element']` |  |
 | `getFooterProps` | `() => T['element']` |  |
@@ -293,7 +305,9 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `getFooterRowProps` | `() => T['element']` | 脚注那一行：占行号空间的最后一行。 |
 | `rowNumber` | `(rowId: string) => string` | 这一行显示什么序号。平表是分页全局序号，树形是大纲编号。 不出序号列时仍可调用——它是纯计算，不看要不要那一列。 |
 | `columnPreference` | `TableColumnPreference` | 当下的列偏好。原样交出去即可存盘。 |
+| `columnSettings` | `readonly TableColumnSetting[]` | 列设置区照它渲：作者定义的那些列，按偏好排过序，**藏起来的也在其中**。 每条自带显隐、冻结、宽与排序，够渲一整行设置项而不必回去比对两份数组。 |
 | `setColumnHidden` | `(columnId: string, hidden: boolean) => void` | 藏起 / 放出一列。 |
+| `setColumnSticky` | `(columnId: string, sticky: boolean \| 'start' \| 'end') => void` | 改一列的冻结档。false 是不冻结，true 等于 'start'。 |
 | `moveColumn` | `(columnId: string, toIndex: number) => void` | 把一列挪到第几位（只在作者定义的那些列之间算，0 起算）。 |
 | `setColumnWidth` | `(columnId: string, width: number \| string) => void` | 改一列的宽。 |
 | `setColumnPreference` | `(next?: TableColumnPreference) => void` | 整份偏好换掉；不给即清空，回到作者定义的原样。 |
@@ -329,6 +343,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `ArrowLeft` | focus on 可展开且已展开的行（dir=rtl 时改由 ArrowRight 承担） | 就地收起当前行，焦点不动；其余情形什么都不做且不吞键 |
 | `Enter` / `Space` | focus on sort-trigger, 该列 sortable | 排序方向按 升序 → 降序 → 不排序 循环；按住 Shift 是追加到排序链而不是替换整条链 |
 | `Enter` / `Space` | focus on select-all-trigger, selectionMode=multiple | 当前可选行全选中就整段清空，否则整段选上；三态由 aria-checked 报出（半选为 mixed） |
+| `Enter` / `Space` | focus on column-visibility-trigger | 藏起 / 放出这一列；设置区不是 roving 集合，一列一个 Tab 位，Tab 一路走下去即可逐列开关。只剩最后一列显示着时它转 aria-disabled，按了不动 |
 | `Ctrl+A` / `Cmd+A` | focus in table body, selectionMode=multiple | 与全选把手同义：当前可选行全选中就整段清空，否则整段选上（禁用行不算进基数）。单选与不可选的表格不吞这个键，交还浏览器的整页全选；按住不放的连发只算一次 |
 | `ArrowLeft` / `ArrowRight` | focus in column-resize-trigger，该列 resizable | 把这一列按 8px 收窄 / 加宽；往行尾侧推是加宽，rtl 下左右两键对调，语义恒是「加宽 / 收窄」 |
 | `Shift+ArrowLeft` / `Shift+ArrowRight` | focus in column-resize-trigger，该列 resizable | 按 40px 收窄 / 加宽，方向规则同上 |
@@ -367,6 +382,13 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `cell` | `aria-colindex` | columnIndex.get(cell.value) |
 | `cell` | `aria-colspan` | cell.colSpan \| undefined |
 | `cell` | `role` | 'gridcell' |
+| `toolbar` | `aria-label` | label.toolbar |
+| `column-list` | `aria-label` | label.columnList |
+| `column-list` | `role` | 'group' |
+| `column-visibility-trigger` | `aria-checked` | 'false' \| 'true' |
+| `column-visibility-trigger` | `aria-disabled` | 'false' \| 'true' |
+| `column-visibility-trigger` | `aria-label` | label.columnVisibility(def?.label ?? column.value) |
+| `column-visibility-trigger` | `role` | 'checkbox' |
 | `select-all-trigger` | `aria-checked` | 'true' \| 'mixed' \| 'false' |
 | `select-all-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `select-all-trigger` | `aria-label` | label.selectAll |
@@ -430,6 +452,10 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `cell` | `data-dragging` | ''（条件成立时才出现） |
 | `cell` | `data-drop` | 'before' \| 'after' |
 | `cell` | `data-selected` | ''（条件成立时才出现） \| undefined |
+| `toolbar` | `data-size` | props.size |
+| `column-list` | `data-size` | props.size |
+| `column-visibility-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `column-visibility-trigger` | `data-state` | 'unchecked' \| 'checked' |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-state` | tableSelectionState(selection, selectableIds) |
 | `sort-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -449,7 +475,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-table-bg` · `--xh-table-border` · `--xh-table-caption-fg` · `--xh-table-caption-font-size` · `--xh-table-caption-font-weight` · `--xh-table-caption-px` · `--xh-table-caption-py` · `--xh-table-cell-gap` · `--xh-table-cell-min-w` · `--xh-table-cell-px` · `--xh-table-cell-py` · `--xh-table-cell-py-lg` · `--xh-table-cell-py-md` · `--xh-table-cell-py-sm` · `--xh-table-column-fg` · `--xh-table-column-font-weight` · `--xh-table-detail-bg` · `--xh-table-detail-px` · `--xh-table-detail-py` · `--xh-table-drag-fg` · `--xh-table-drag-fg-active` · `--xh-table-drag-fg-disabled` · `--xh-table-drag-grip-h` · `--xh-table-drag-grip-w` · `--xh-table-drag-size` · `--xh-table-dragging-opacity` · `--xh-table-drop-fg` · `--xh-table-drop-inside-bg` · `--xh-table-drop-line` · `--xh-table-expand-fg` · `--xh-table-fg` · `--xh-table-font-size` · `--xh-table-footer-bg` · `--xh-table-footer-font-weight` · `--xh-table-header-bg` · `--xh-table-icon-size` · `--xh-table-load-more-trigger-bg-hover` · `--xh-table-load-more-trigger-fg` · `--xh-table-load-more-trigger-font-size` · `--xh-table-load-more-trigger-gap` · `--xh-table-load-more-trigger-px` · `--xh-table-load-more-trigger-py` · `--xh-table-load-more-trigger-radius` · `--xh-table-loading-duration` · `--xh-table-max-h` · `--xh-table-radius` · `--xh-table-resize-fg` · `--xh-table-resize-fg-active` · `--xh-table-resize-line` · `--xh-table-resize-line-length` · `--xh-table-resize-radius` · `--xh-table-resize-width` · `--xh-table-row-bg` · `--xh-table-row-bg-hover` · `--xh-table-row-bg-selected` · `--xh-table-row-bg-striped` · `--xh-table-row-border` · `--xh-table-row-drag-fg` · `--xh-table-row-drag-fg-active` · `--xh-table-row-drag-fg-disabled` · `--xh-table-row-drag-grip-long` · `--xh-table-row-drag-grip-short` · `--xh-table-row-drag-size` · `--xh-table-sort-fg` · `--xh-table-sort-fg-active` · `--xh-table-sort-gap` · `--xh-table-state-fg` · `--xh-table-state-gap` · `--xh-table-state-min-h` · `--xh-table-state-px` · `--xh-table-state-py` · `--xh-table-sticky-column-layer` · `--xh-table-sticky-header-layer` · `--xh-table-sticky-inset` · `--xh-table-trigger-bg-checked` · `--xh-table-trigger-border` · `--xh-table-trigger-border-checked` · `--xh-table-trigger-fg` · `--xh-table-trigger-radius` · `--xh-table-trigger-size`
+`--xh-table-bg` · `--xh-table-border` · `--xh-table-caption-fg` · `--xh-table-caption-font-size` · `--xh-table-caption-font-weight` · `--xh-table-caption-px` · `--xh-table-caption-py` · `--xh-table-cell-gap` · `--xh-table-cell-min-w` · `--xh-table-cell-px` · `--xh-table-cell-py` · `--xh-table-cell-py-lg` · `--xh-table-cell-py-md` · `--xh-table-cell-py-sm` · `--xh-table-column-fg` · `--xh-table-column-font-weight` · `--xh-table-column-list-fg` · `--xh-table-column-list-font-size` · `--xh-table-column-list-gap` · `--xh-table-detail-bg` · `--xh-table-detail-px` · `--xh-table-detail-py` · `--xh-table-drag-fg` · `--xh-table-drag-fg-active` · `--xh-table-drag-fg-disabled` · `--xh-table-drag-grip-h` · `--xh-table-drag-grip-w` · `--xh-table-drag-size` · `--xh-table-dragging-opacity` · `--xh-table-drop-fg` · `--xh-table-drop-inside-bg` · `--xh-table-drop-line` · `--xh-table-expand-fg` · `--xh-table-fg` · `--xh-table-font-size` · `--xh-table-footer-bg` · `--xh-table-footer-font-weight` · `--xh-table-header-bg` · `--xh-table-icon-size` · `--xh-table-load-more-trigger-bg-hover` · `--xh-table-load-more-trigger-fg` · `--xh-table-load-more-trigger-font-size` · `--xh-table-load-more-trigger-gap` · `--xh-table-load-more-trigger-px` · `--xh-table-load-more-trigger-py` · `--xh-table-load-more-trigger-radius` · `--xh-table-loading-duration` · `--xh-table-max-h` · `--xh-table-radius` · `--xh-table-resize-fg` · `--xh-table-resize-fg-active` · `--xh-table-resize-line` · `--xh-table-resize-line-length` · `--xh-table-resize-radius` · `--xh-table-resize-width` · `--xh-table-row-bg` · `--xh-table-row-bg-hover` · `--xh-table-row-bg-selected` · `--xh-table-row-bg-striped` · `--xh-table-row-border` · `--xh-table-row-drag-fg` · `--xh-table-row-drag-fg-active` · `--xh-table-row-drag-fg-disabled` · `--xh-table-row-drag-grip-long` · `--xh-table-row-drag-grip-short` · `--xh-table-row-drag-size` · `--xh-table-sort-fg` · `--xh-table-sort-fg-active` · `--xh-table-sort-gap` · `--xh-table-state-fg` · `--xh-table-state-gap` · `--xh-table-state-min-h` · `--xh-table-state-px` · `--xh-table-state-py` · `--xh-table-sticky-column-layer` · `--xh-table-sticky-header-layer` · `--xh-table-sticky-inset` · `--xh-table-toolbar-fg` · `--xh-table-toolbar-gap` · `--xh-table-toolbar-py` · `--xh-table-trigger-bg-checked` · `--xh-table-trigger-border` · `--xh-table-trigger-border-checked` · `--xh-table-trigger-fg` · `--xh-table-trigger-radius` · `--xh-table-trigger-size`
 
 ## 动效
 

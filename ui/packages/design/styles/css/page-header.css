@@ -9,6 +9,9 @@
     --xh-_page-header-py: var(--xh-space-4);
     --xh-_page-header-row-gap: var(--xh-space-2);
     --xh-_page-header-title-size: var(--xh-text-heading-3-size);
+    /* 形态档只换这两个：不画面的那一档左右不留内衬、也不切圆角 */
+    --xh-_page-header-px: 0;
+    --xh-_page-header-radius: 0;
 
     /* 一行排不下就折行；返回位、标题、副标题排在同一行，操作贴到行尾，页脚整行另起 */
     display: flex;
@@ -17,6 +20,8 @@
     column-gap: var(--xh-page-header-column-gap, var(--xh-space-3));
     row-gap: var(--xh-page-header-row-gap, var(--xh-_page-header-row-gap));
     padding-block: var(--xh-page-header-py, var(--xh-_page-header-py));
+    padding-inline: var(--xh-page-header-px, var(--xh-_page-header-px));
+    border-radius: var(--xh-page-header-radius, var(--xh-_page-header-radius));
     color: var(--xh-page-header-fg, var(--xh-fg-default));
   }
 
@@ -43,7 +48,45 @@
     border-block-end: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-subtle));
   }
 
+  /* —— 形态 —— */
+  /* 不画面的那一档不在这儿：它就是上面那套基础取值，不写 data-variant 与写 plain 长一个样。
+     画了面的两档左右补上与上下同档的内衬，否则内容会贴着那块面的边 */
+  [data-scope='page-header'][data-part='root']:is([data-variant='surface'], [data-variant='raised']) {
+    --xh-_page-header-px: var(--xh-_page-header-py);
+    --xh-_page-header-radius: var(--xh-shape-surface);
+
+    background: var(--xh-page-header-bg, var(--xh-bg-surface));
+  }
+
+  /* 有面的两档不再画那条下边线：一块切了圆角的面底下横一条直线，两头会露在圆角外面。
+     整圈描边接手同一件事——把页头与下面的内容分开 */
+  [data-scope='page-header'][data-part='root']:is([data-variant='surface'], [data-variant='raised'])[data-bordered] {
+    border: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-subtle));
+  }
+
+  /* 抬起那一档恒带整圈描边：高对比档里投影整个被丢弃，只剩描边撑住这块面的边界 */
+  [data-scope='page-header'][data-part='root'][data-variant='raised'] {
+    border: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-subtle));
+    box-shadow: var(--xh-page-header-shadow, var(--xh-elevation-raised));
+  }
+
   /* —— 各段 —— */
+  /* 面包屑占满一整行排在标题之上：它写在标记的最前面，整行铺开就把标题挤到了下一行 */
+  [data-scope='page-header'][data-part='breadcrumb'] {
+    flex: 1 0 100%;
+    color: var(--xh-page-header-breadcrumb-fg, var(--xh-fg-muted));
+    font-size: var(--xh-page-header-breadcrumb-font-size, var(--xh-text-secondary-size));
+    line-height: var(--xh-leading-normal);
+  }
+
+  /* 头像 / 图标位：不参与伸缩，图形本身多大由作者定 */
+  [data-scope='page-header'][data-part='media'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+  }
+
   /* 返回位只摆位置与对齐，外观归作者自己的按钮 */
   [data-scope='page-header'][data-part='back-trigger'] {
     display: inline-flex;
@@ -91,6 +134,7 @@
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
   [data-scope='page-header'][data-part='back-trigger'][hidden],
+  [data-scope='page-header'][data-part='media'][hidden],
   [data-scope='page-header'][data-part='extra'][hidden] {
     display: none;
   }

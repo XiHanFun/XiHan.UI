@@ -114,7 +114,7 @@ const PRESSABLE = {
   'navigation-menu': ['trigger'],
   'tabs': ['trigger'],
   // 表格里的勾选与展开把手，以及表尾那颗「取下一页」
-  'table': ['select-all-trigger', 'row-select-trigger', 'expand-trigger', 'load-more-trigger'],
+  'table': ['select-all-trigger', 'row-select-trigger', 'column-visibility-trigger', 'expand-trigger', 'load-more-trigger'],
   // 走马灯的翻页钮、播放钮与圆点
   'carousel': ['prev-trigger', 'next-trigger', 'autoplay-trigger', 'indicator'],
   'layout': ['sider-trigger'],
@@ -145,6 +145,7 @@ const NO_PRESS = {
   'listbox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'select:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'combobox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'command:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'cascader:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'cascader:search-item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'mention:item': '列表行的按下回执走高亮档，缩放会抖动整列',

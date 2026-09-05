@@ -52,6 +52,7 @@
     "./collapsible.css": "./css/collapsible.css",
     "./color-picker.css": "./css/color-picker.css",
     "./combobox.css": "./css/combobox.css",
+    "./command.css": "./css/command.css",
     "./context-menu.css": "./css/context-menu.css",
     "./date-field.css": "./css/date-field.css",
     "./date-picker.css": "./css/date-picker.css",
