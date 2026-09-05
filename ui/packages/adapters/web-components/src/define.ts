@@ -24,6 +24,7 @@ import { XhCodeViewElement } from './elements/code-view'
 import { XhCollapsibleElement } from './elements/collapsible'
 import { XhColorPickerElement } from './elements/color-picker'
 import { XhComboboxElement } from './elements/combobox'
+import { XhCommandElement } from './elements/command'
 import { XhConfigElement } from './elements/config'
 import { XhContextMenuElement } from './elements/context-menu'
 import { XhDateFieldElement } from './elements/date-field'
@@ -136,6 +137,7 @@ export function defineXhElements(): void {
   defineElement('xh-avatar-group', XhAvatarGroupElement, VERSION)
   defineElement('xh-back-top', XhBackTopElement, VERSION)
   defineElement('xh-button-group', XhButtonGroupElement, VERSION)
+  defineElement('xh-command', XhCommandElement, VERSION)
   defineElement('xh-descriptions', XhDescriptionsElement, VERSION)
   defineElement('xh-diff-view', XhDiffViewElement, VERSION)
   defineElement('xh-download-trigger', XhDownloadTriggerElement, VERSION)
@@ -287,6 +289,7 @@ export {
   XhCollapsibleElement,
   XhColorPickerElement,
   XhComboboxElement,
+  XhCommandElement,
   XhConfigElement,
   XhContextMenuElement,
   XhDateFieldElement,

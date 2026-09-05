@@ -90,6 +90,56 @@
     display: none;
   }
 
+  /* —— 工具条与列设置区 —— */
+  /* 两块都摆在 root 之外：root 是 grid 系角色，子节点只能是 row 与 rowgroup。
+     工具条只管排布，里头控件的观感归控件自己的皮肤 */
+  [data-scope='table'][data-part='toolbar'] {
+    /* 尺寸档只换这一个私有槽：控件之间的间距 */
+    --xh-_table-toolbar-gap: var(--xh-space-2);
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--xh-table-toolbar-gap, var(--xh-_table-toolbar-gap));
+    padding-block: var(--xh-table-toolbar-py, var(--xh-space-2));
+    color: var(--xh-table-toolbar-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='table'][data-part='toolbar'][data-size='sm'] {
+    --xh-_table-toolbar-gap: var(--xh-space-1);
+  }
+
+  [data-scope='table'][data-part='toolbar'][data-size='lg'] {
+    --xh-_table-toolbar-gap: var(--xh-space-3);
+  }
+
+  [data-scope='table'][data-part='toolbar'][hidden] {
+    display: none;
+  }
+
+  /* 列设置区：一列一行竖着排。它常摆在浮层里，宽高都交给外面那层容器定 */
+  [data-scope='table'][data-part='column-list'] {
+    --xh-_table-column-list-gap: var(--xh-space-1);
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-table-column-list-gap, var(--xh-_table-column-list-gap));
+    color: var(--xh-table-column-list-fg, var(--xh-fg-default));
+    font-size: var(--xh-table-column-list-font-size, var(--xh-text-secondary-size));
+  }
+
+  [data-scope='table'][data-part='column-list'][data-size='sm'] {
+    --xh-_table-column-list-gap: var(--xh-space-0_5);
+  }
+
+  [data-scope='table'][data-part='column-list'][data-size='lg'] {
+    --xh-_table-column-list-gap: var(--xh-space-2);
+  }
+
+  [data-scope='table'][data-part='column-list'][hidden] {
+    display: none;
+  }
+
   /* 三个区段都是竖着排行的块。min-inline-size: max-content 让它们跟着最宽的一行一起横向溢出，
      否则横向滚动时右半边的行会在容器边缘被切断 */
   [data-scope='table'][data-part='header'],
@@ -250,9 +300,11 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 三个把手共用一副方形盒子，两种行的文字起点才对得齐 */
+  /* 四个把手共用一副方形盒子，两种行的文字起点才对得齐；
+     列设置区那颗与表头里的选择框同款，一眼看得出是同一件事 */
   [data-scope='table'][data-part='select-all-trigger'],
   [data-scope='table'][data-part='row-select-trigger'],
+  [data-scope='table'][data-part='column-visibility-trigger'],
   [data-scope='table'][data-part='expand-trigger'] {
     display: inline-flex;
     flex: none;
@@ -267,27 +319,31 @@
 
   [data-scope='table'][data-part='select-all-trigger'][hidden],
   [data-scope='table'][data-part='row-select-trigger'][hidden],
+  [data-scope='table'][data-part='column-visibility-trigger'][hidden],
   [data-scope='table'][data-part='expand-trigger'][hidden] {
     display: none;
   }
 
-  /* 三个把手按下时缩一档。缩放走 transform 通道不占版面，行高与列宽都不动 */
+  /* 四个把手按下时缩一档。缩放走 transform 通道不占版面，行高与列宽都不动 */
   [data-scope='table'][data-part='select-all-trigger']:active:not([data-disabled]),
   [data-scope='table'][data-part='row-select-trigger']:active:not([data-disabled]),
+  [data-scope='table'][data-part='column-visibility-trigger']:active:not([data-disabled]),
   [data-scope='table'][data-part='expand-trigger']:active:not([data-disabled]) {
     scale: var(--xh-motion-scale-press);
   }
 
-  /* 两个选择把手：未选中时只剩一个空框，勾选标记靠 visibility 显隐，
+  /* 三个勾选把手：未选中时只剩一个空框，勾选标记靠 visibility 显隐，
      切换选中不引起行宽抖动 */
   [data-scope='table'][data-part='select-all-trigger'],
-  [data-scope='table'][data-part='row-select-trigger'] {
+  [data-scope='table'][data-part='row-select-trigger'],
+  [data-scope='table'][data-part='column-visibility-trigger'] {
     border: var(--xh-stroke-thin) solid var(--xh-table-trigger-border, var(--xh-border-control));
     color: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
     visibility: visible;
   }
 
   [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']),
+  [data-scope='table'][data-part='column-visibility-trigger'][data-state='checked'],
   [data-scope='table'][data-part='row-select-trigger'][data-selected] {
     border-color: var(--xh-table-trigger-border-checked, var(--xh-table-trigger-bg-checked, var(--xh-bg-brand)));
     background: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
@@ -295,6 +351,7 @@
 
   /* 未选中时勾不出现，但盒子还在：它是边框画出来的空框 */
   [data-scope='table'][data-part='select-all-trigger'][data-state='unchecked'],
+  [data-scope='table'][data-part='column-visibility-trigger'][data-state='unchecked'],
   [data-scope='table'][data-part='row-select-trigger']:not([data-selected]) {
     color: transparent;
   }
@@ -317,6 +374,7 @@
   }
 
   [data-scope='table'][data-part='select-all-trigger'][data-disabled],
+  [data-scope='table'][data-part='column-visibility-trigger'][data-disabled],
   [data-scope='table'][data-part='row-select-trigger'][data-disabled] {
     border-color: var(--xh-border-subtle);
     background: var(--xh-bg-muted);
@@ -809,6 +867,7 @@
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
   [data-scope='table'][data-part='select-all-trigger']:empty::before,
+  [data-scope='table'][data-part='column-visibility-trigger']:empty::before,
   [data-scope='table'][data-part='row-select-trigger']:empty::before {
     content: '';
     display: inline-block;

@@ -61,6 +61,7 @@ const REQUIRED = { move: '--xh-motion-ease-continuous', shape: '--xh-motion-ease
  */
 const SLIDE_REQUIRED = {
   'carousel:transform': '整页换位，位移量以百分比计',
+  'layout:translate': '覆盖档的侧栏整条推出画外，位移量以自身宽度的百分比计',
 }
 
 /**

@@ -1,6 +1,6 @@
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { MeasuredRow } from './table.drag'
-import type { TableApi, TableColumn, TableColumnDef, TableSchema, TableVisibleRow } from './table.types'
+import type { TableApi, TableColumn, TableColumnDef, TableColumnSetting, TableSchema, TableVisibleRow } from './table.types'
 import {
   contains,
   dataAttr,
@@ -18,7 +18,7 @@ import { flatMoveIntentFromKey } from '../shared/drag'
 import { isEditableTarget } from '../shared/editable-target'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { tableAnatomy, tableRowQuery } from './table.anatomy'
-import { resolveTableColumns } from './table.columns'
+import { orderColumnIds, resolveTableColumns } from './table.columns'
 import { columnDragRects, columnMoveCommand, columnMoveIntentFromKey, draggableColumnIds, rowGroupRects, rowReorderReason, tableRowMoveCommand, treeRowIntentFromKey } from './table.drag'
 import { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableSelectionMode } from './table.machine'
 import {
@@ -158,6 +158,9 @@ export function connectTable<T extends PropTypes>(
     columnResize: translations?.columnResize ?? ((columnLabel: string) => `Resize column ${columnLabel}`),
     columnDrag: translations?.columnDrag ?? ((columnLabel: string) => `Reorder column ${columnLabel}`),
     selectAll: translations?.selectAll ?? 'Select all rows',
+    toolbar: translations?.toolbar ?? 'Table toolbar',
+    columnList: translations?.columnList ?? 'Column settings',
+    columnVisibility: translations?.columnVisibility ?? ((columnLabel: string) => `Show column ${columnLabel}`),
   }
   // 可拖的那一段列。谁能拖、落点算在谁身上、键盘能挪到哪儿，三处同一份口径
   const draggableColumns = draggableColumnIds(columns)
@@ -308,6 +311,45 @@ export function connectTable<T extends PropTypes>(
   const sortDirection = (value: string): 'asc' | 'desc' | null => tableSortDirectionOf(sort, value)
   const sortPriority = (value: string): number => tableSortIndexOf(sort, value)
 
+  // 列设置区那一份：只收作者定义的列（前缀列是结构性的，不归用户调），按偏好排过序，
+  // 藏起来的也在其中——生效列把它们滤掉了，而设置区正是把它们放回来的地方
+  const settingDefs = new Map<string, TableColumnDef>()
+  for (const column of authorColumns) {
+    // 列 id 重复时以先出现的为准，与列号索引同一口径
+    if (!settingDefs.has(column.id))
+      settingDefs.set(column.id, column)
+  }
+  const hiddenColumns = new Set(columnPreference.hidden ?? [])
+  const settingIds = orderColumnIds([...settingDefs.keys()], columnPreference.order)
+  const shownColumnCount = settingIds.reduce((n, id) => hiddenColumns.has(id) ? n : n + 1, 0)
+  /**
+   * 这一列的显隐还能不能改。
+   *
+   * 只剩最后一列显示着时不许再藏：全藏起来的表是一张没有列的网格，
+   * 而设置区里的把手都长在列上，用户从那里再也点不出任何一个把手把列放回来。
+   */
+  const canToggleColumn = (id: string): boolean =>
+    settingDefs.has(id) && (hiddenColumns.has(id) || shownColumnCount > 1)
+  const columnSettings: TableColumnSetting[] = settingIds.map((id, index) => {
+    const def = settingDefs.get(id)!
+    const width = columnPreference.widths?.[id] ?? def.width
+    const sticky = columnPreference.sticky?.[id] ?? def.sticky
+    return {
+      id,
+      label: def.label,
+      index,
+      hidden: hiddenColumns.has(id),
+      ...(sticky === undefined ? {} : { sticky }),
+      ...(width === undefined ? {} : { width }),
+      sortable: !!def.sortable,
+      resizable: !!def.resizable,
+      reorderable: !!def.reorderable,
+      sortDirection: sortDirection(id),
+      sortPriority: sortPriority(id),
+      toggleable: canToggleColumn(id),
+    }
+  })
+
   // 行级 roving 的唯一锚点：焦点在表体里跟焦点走，否则落在可见序里首个选中的数据行。
   // 取可见序而非选中集合的第一个，后者可能是不在本页的 id
   const anchor = focusedRow ?? dataRows.find(row => isSelected(row.id))?.id ?? null
@@ -390,7 +432,9 @@ export function connectTable<T extends PropTypes>(
     dropTarget,
     announcement: context.get('announcement'),
     columnPreference,
+    columnSettings,
     setColumnHidden: (columnId, hidden) => send({ type: 'COLUMN_PREF.PATCH', columnId, hidden }),
+    setColumnSticky: (columnId, sticky) => send({ type: 'COLUMN_PREF.PATCH', columnId, sticky }),
     moveColumn: (columnId, toIndex) => send({ type: 'COLUMN_PREF.PATCH', columnId, toIndex }),
     setColumnWidth: (columnId, width) => send({ type: 'COLUMN_PREF.PATCH', columnId, width }),
     setColumnPreference: next => send({ type: 'COLUMN_PREF.SET', value: next }),
@@ -448,6 +492,59 @@ export function connectTable<T extends PropTypes>(
       ...parts.caption.attrs,
       id: ids.caption,
     }),
+
+    // 工具条摆在 root 之外（root 是 grid 系角色，子节点只能是 row 与 rowgroup）。
+    // 不给 role：这条带要不要 role=toolbar 连同那套方向键 roving 归作者，要就往里放一个 Toolbar；
+    // 名字无条件发，否则它对读屏只是页面上一堆散落的钮
+    getToolbarProps: () => normalize.element({
+      ...parts.toolbar.attrs,
+      'aria-label': label.toolbar,
+      'data-size': prop('size'),
+    }),
+
+    // 列设置区：一列一行，渲什么照 columnSettings 走。
+    // 给 role=group 而不是 list：行里放的是把手不是文本条目，读屏该念的是这一组控件的名字
+    getColumnListProps: () => normalize.element({
+      ...parts['column-list'].attrs,
+      'role': 'group',
+      'aria-label': label.columnList,
+      'data-size': prop('size'),
+    }),
+
+    getColumnVisibilityTriggerProps: (column) => {
+      const def = settingDefs.get(column.value)
+      const hidden = hiddenColumns.has(column.value)
+      const toggleable = canToggleColumn(column.value)
+      return normalize.element({
+        ...parts['column-visibility-trigger'].attrs,
+        [ITEM_VALUE_ATTR]: column.value,
+        // 显式给角色：作者常写成 <span>，读屏听不出这是个能勾的东西
+        'role': 'checkbox',
+        // 勾着＝这一列显示着。名字里说的也是「显示某列」，两者同向
+        'aria-checked': hidden ? 'false' : 'true',
+        'aria-label': label.columnVisibility(def?.label ?? column.value),
+        // 角色节点是普通元素而非原生控件，禁用后仍要能被聚焦
+        'aria-disabled': toggleable ? 'false' : 'true',
+        // 设置区不是 roving 集合：一列一个 Tab 位，Tab 一路走下去即可逐列开关
+        'tabindex': 0,
+        'data-state': hidden ? 'unchecked' : 'checked',
+        'data-disabled': dataAttr(!toggleable),
+        'onClick': () => {
+          if (toggleable)
+            send({ type: 'COLUMN_PREF.PATCH', columnId: column.value, hidden: !hidden })
+        },
+        'onKeyDown': (event: KeyboardEvent) => {
+          if (!isCommitKey(event) || !toggleable)
+            return
+          // 作者写成 <button> 时按键会被再合成一次 click，拦下默认行为，否则同一次按键切两回
+          event.preventDefault()
+          // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+          if (event.repeat)
+            return
+          send({ type: 'COLUMN_PREF.PATCH', columnId: column.value, hidden: !hidden })
+        },
+      })
+    },
 
     getHeaderProps: () => normalize.element({
       ...parts.header.attrs,

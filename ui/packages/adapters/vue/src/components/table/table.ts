@@ -22,6 +22,7 @@ import {
   provideTableColumn,
   provideTableRow,
   provideTableSection,
+  useOptionalTableColumnContext,
   useOptionalTableRowContext,
   useTableColumnContext,
   useTableContext,
@@ -59,6 +60,8 @@ export type TableRootSlotProps = Pick<
   TableApi,
   | 'columns'
   | 'columnPreference'
+  | 'columnSettings'
+  | 'setColumnSticky'
   | 'setColumnHidden'
   | 'moveColumn'
   | 'setColumnWidth'
@@ -81,6 +84,28 @@ export type TableRootSlotProps = Pick<
   | 'toggleSelectAll'
   | 'toggleExpandRow'
   | 'rowReorderDisabledReason'
+>
+
+/**
+ * 工具条插槽的载荷：对**整张表**下手的那几样——列设置、排序链与整表状态。
+ * 逐行的东西（可见行、行号、逐行查询）不在其中：工具条摆在表外，够不着某一行。
+ */
+export type TableToolbarSlotProps = Pick<
+  TableApi,
+  | 'columns'
+  | 'columnSettings'
+  | 'columnPreference'
+  | 'setColumnHidden'
+  | 'setColumnSticky'
+  | 'setColumnWidth'
+  | 'moveColumn'
+  | 'setColumnPreference'
+  | 'sort'
+  | 'toggleSort'
+  | 'selection'
+  | 'selectionState'
+  | 'empty'
+  | 'loading'
 >
 
 export const XhTableRoot = defineComponent({
@@ -135,6 +160,11 @@ export const XhTableRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: TableRootSlotProps) => VNode[]
+    /**
+     * 工具条槽：搜索、筛选、密度与列设置这些对整张表下手的控件写在这儿。
+     * 它渲成 root 的兄弟排在表前——root 是 grid 系角色，子节点只能是 row 与 rowgroup。
+     */
+    toolbar?: (props: TableToolbarSlotProps) => VNode[]
   }>,
   // Fragment 根接不住自动透传：Vue 只在单个元素根上做这件事。
   // 作者写在 XhTableRoot 上的 class / aria-* / 监听器都要自己合到 root 那个 div 上
@@ -161,13 +191,31 @@ export const XhTableRoot = defineComponent({
     }
     const ctx = useTable(withXhConfig('table', props) as TableProps, onSortChange, onSelectionChange, onExpandedValueChange, onColumnPreferenceChange, onRowMove)
     provideTable(ctx)
-    // 播报区由根组件自己渲，作者插不进 root 的兄弟位。它不能进 root：
-    // root 是 role=grid，塞活动区域进去是 aria-required-children（critical）
     return () => h(Fragment, [
+      // 工具条排在表前且在 root 之外：root 是 role=grid，子节点只能是 row 与 rowgroup。
+      // 载荷只给对整张表下手的那几样，逐行的东西（visibleRows / rowNumber / 选中查询）不进来
+      slots.toolbar?.({
+        columns: ctx.api.value.columns,
+        columnSettings: ctx.api.value.columnSettings,
+        columnPreference: ctx.api.value.columnPreference,
+        setColumnHidden: ctx.api.value.setColumnHidden,
+        setColumnSticky: ctx.api.value.setColumnSticky,
+        setColumnWidth: ctx.api.value.setColumnWidth,
+        moveColumn: ctx.api.value.moveColumn,
+        setColumnPreference: ctx.api.value.setColumnPreference,
+        sort: ctx.api.value.sort,
+        toggleSort: ctx.api.value.toggleSort,
+        selection: ctx.api.value.selection,
+        selectionState: ctx.api.value.selectionState,
+        empty: ctx.api.value.empty,
+        loading: ctx.api.value.loading,
+      }) ?? null,
       h('div', mergeProps(ctx.api.value.getRootProps() as Record<string, unknown>, attrs), slots.default?.({
         columns: ctx.api.value.columns,
         columnPreference: ctx.api.value.columnPreference,
+        columnSettings: ctx.api.value.columnSettings,
         setColumnHidden: ctx.api.value.setColumnHidden,
+        setColumnSticky: ctx.api.value.setColumnSticky,
         moveColumn: ctx.api.value.moveColumn,
         setColumnWidth: ctx.api.value.setColumnWidth,
         setColumnPreference: ctx.api.value.setColumnPreference,
@@ -190,12 +238,60 @@ export const XhTableRoot = defineComponent({
         toggleExpandRow: ctx.api.value.toggleExpandRow,
         rowReorderDisabledReason: ctx.api.value.rowReorderDisabledReason,
       })),
+      // 播报区由根组件自己渲，作者插不进 root 的兄弟位。它不能进 root：
+      // root 是 role=grid，塞活动区域进去是 aria-required-children（critical）
       h(
         'div',
         ctx.api.value.getLiveRegionProps() as Record<string, unknown>,
         ctx.service.context.get('announcement'),
       ),
     ])
+  },
+})
+
+/**
+ * 工具条：搜索、筛选、密度与列设置这些对整张表下手的控件摆在这儿。
+ * 写在 XhTableRoot 的 toolbar 插槽里——它渲成 root 的兄弟，不进 role=grid 的子节点。
+ * 不带 role：要方向键 roving 就往里放一个 XhToolbarRoot。
+ */
+export const XhTableToolbar = defineComponent({
+  name: 'XhTableToolbar',
+  setup(_, { slots }) {
+    const ctx = useTableContext()
+    return () => h('div', ctx.api.value.getToolbarProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 列设置区：一列一行，渲什么照 root 插槽载荷里的 columnSettings 走。 */
+export const XhTableColumnList = defineComponent({
+  name: 'XhTableColumnList',
+  setup(_, { slots }) {
+    const ctx = useTableContext()
+    return () => h('div', ctx.api.value.getColumnListProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/**
+ * 一列的显隐把手（复选形态，勾着＝这一列显示着）。
+ * 列身份优先取自己的 value；不给就跟着所在的列标题走（表头里的那一路）。
+ */
+export const XhTableColumnVisibilityTrigger = defineComponent({
+  name: 'XhTableColumnVisibilityTrigger',
+  props: {
+    /** 列 id。写在列设置区里必给；写在列标题里可省，跟着那一列走。 */
+    value: { type: String, default: undefined },
+  },
+  setup(props, { slots }) {
+    const ctx = useTableContext()
+    const inherited = useOptionalTableColumnContext()
+    const column = computed<TableColumnProps>(() => ({
+      value: props.value ?? inherited?.column.value.value ?? '',
+    }))
+    return () => h(
+      'span',
+      ctx.api.value.getColumnVisibilityTriggerProps(column.value) as Record<string, unknown>,
+      slots.default?.(),
+    )
   },
 })
 

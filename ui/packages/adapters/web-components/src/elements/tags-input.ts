@@ -219,7 +219,7 @@ export class XhTagsInputElement extends XhElement {
     // 计数的数字由元素填；作者第一次就写了内容的节点判为归作者，之后一概不碰
     const countEl = this.getPart('count')
     if (countEl)
-      this.fillOwnedText(countEl, api.max === undefined ? String(api.count) : api.count + ' / ' + api.max)
+      this.fillOwnedText(countEl, api.max === undefined ? String(api.count) : `${api.count} / ${api.max}`)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
     // 输入框的 value 不必另外回写：spreader 把 value/checked/selected 三个键当 property 写
     // （dom/spread.ts 的 PROP_KEYS），属性写法只管初值、盖不住用户输入过的框

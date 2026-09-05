@@ -1,4 +1,4 @@
-import type { LayoutBreakpoint, LayoutSchema, LayoutSiderPlacement } from '@xihan-ui/headless'
+import type { LayoutBreakpoint, LayoutSchema, LayoutSiderPlacement, LayoutSiderPresentation } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
@@ -18,6 +18,7 @@ export const XhLayoutRoot = defineComponent({
     siderCollapsedWidth: { type: String, default: undefined },
     siderPlacement: { type: String as PropType<LayoutSiderPlacement>, default: undefined },
     siderBreakpoint: { type: String as PropType<LayoutBreakpoint>, default: undefined },
+    siderPresentation: { type: String as PropType<LayoutSiderPresentation>, default: undefined },
     headerFixed: Boolean,
     siderFixed: Boolean,
     bordered: Boolean,
@@ -45,6 +46,15 @@ export const XhLayoutHeader = defineComponent({
   setup(_, { slots }) {
     const ctx = useLayoutContext()
     return () => h('div', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+// 覆盖档铺在内容之上的遮罩：点它收起侧栏。写在 XhLayoutSider 之前，两层同一个层号
+export const XhLayoutSiderBackdrop = defineComponent({
+  name: 'XhLayoutSiderBackdrop',
+  setup(_, { slots }) {
+    const ctx = useLayoutContext()
+    return () => h('div', ctx.api.value.getSiderBackdropProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

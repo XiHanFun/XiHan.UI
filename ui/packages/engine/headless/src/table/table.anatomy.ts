@@ -12,6 +12,10 @@ export const tableAnatomy = createAnatomy('table', [
   'column-header',
   'cell',
   'caption',
+  // 工具条与列设置区都摆在 root 之外：root 是 grid 系角色，它的子节点只能是 row 与 rowgroup。
+  'toolbar',
+  'column-list',
+  'column-visibility-trigger',
   'select-all-trigger',
   'row-select-trigger',
   'sort-trigger',

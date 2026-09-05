@@ -1,0 +1,251 @@
+import type { CommandNodeMeta, CommandSchema } from './command.types'
+import { acquireScrollLock, createDismissLayer, createFocusScope, hideOutside, setup } from '@xihan-ui/core'
+import { closeReasonOf } from '../shared/close-reason'
+import { flattenCommandGroups, navigateCommandResults, resolveCommandGroups } from './command.filter'
+
+const { createMachine } = setup<CommandSchema>()
+
+/** 机器读 prop 的形状；这里只用到过滤要的那四项。 */
+type CommandProps = CommandSchema['props']
+
+/** 此刻该显示的那几条命令。过滤是纯函数，机器与连接层各算各的，不经 DOM。 */
+function commandResults(
+  prop: <K extends keyof CommandProps>(key: K) => CommandProps[K],
+  query: string,
+): readonly CommandNodeMeta[] {
+  return flattenCommandGroups(resolveCommandGroups(
+    prop('collection') ?? [],
+    prop('groups') ?? [],
+    query,
+    { filter: prop('filter') ?? true, caseSensitive: !!prop('caseSensitive') },
+  ))
+}
+
+// 开合编进 FSM 状态，走守卫对 + CONTROLLED.* 影子事件 + watch；
+// 检索串走 cell 原生受控（给定 inputValue 即受控），键盘锚点不受控、不对外通知。
+export const commandMachine = createMachine({
+  name: 'command',
+  context: ({ prop, cell }) => ({
+    inputValue: cell<string>(() => ({
+      value: prop('inputValue'),
+      defaultValue: prop('defaultInputValue') ?? '',
+      onChange: inputValue => prop('onInputValueChange')?.({ inputValue }),
+    })),
+    // 锚点只服务 aria-activedescendant 与确认键的落点，焦点全程留在检索框
+    highlightedValue: cell<string | null>(() => ({ defaultValue: null })),
+  }),
+  refs: () => ({
+    config: null,
+    registerLayer: null,
+    presence: null,
+    getContentEl: () => null,
+    getListEl: () => null,
+    getInputEl: () => null,
+  }),
+  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  watch: ({ track, prop, context, action }) => {
+    // 受控时用户事件只发意图；宿主写回 open 后由这条 watch 派发 CONTROLLED.* 回写状态
+    track([() => prop('open')], () => action(['syncOpen']))
+    // 检索串一变结果就换了一批，锚点跟着钉回首条。
+    // 挂在 watch 上而不是转移上：受控检索串要等宿主写回才真的变，那一拍才是结果换掉的时刻
+    track([context.dep('inputValue')], () => action(['highlightFirst']))
+    // 清单换了一批（远端取回、宿主自己筛完）：锚点还指得着就别动它，
+    // 指不着了才补挑一次。不无条件重挑——宿主在模板里就地造数组时这条 watch 每帧都跳，
+    // 无条件重挑会把方向键刚挪过去的锚点一次次拽回首条
+    track([() => prop('collection')], () => action(['highlightIfDangling']))
+  },
+  on: {
+    'INPUT.SET': { actions: ['setInputValue'] },
+  },
+  states: {
+    closed: {
+      on: {
+        // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
+        'OPEN': [
+          { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
+          { target: 'open', actions: ['invokeOnOpen'] },
+        ],
+        'TOGGLE': [
+          { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
+          { target: 'open', actions: ['invokeOnOpen'] },
+        ],
+        'CONTROLLED.OPEN': { target: 'open' },
+      },
+    },
+    open: {
+      // 每次开都从空检索串起步，锚点落在首条上
+      entry: ['resetInputValue', 'highlightFirst'],
+      exit: ['clearHighlightedValue'],
+      // 进入 open：按固定顺序装配 dismiss → focus → scroll，最后推迟一帧挂背景失活
+      effects: ['trackOverlay'],
+      on: {
+        'CLOSE': [
+          { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
+          { target: 'closed', actions: ['invokeOnClose'] },
+        ],
+        'TOGGLE': [
+          { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
+          { target: 'closed', actions: ['invokeOnClose'] },
+        ],
+        'INPUT.CHANGE': { actions: ['setInputValue'] },
+        'ITEM.HIGHLIGHT': { actions: ['setHighlightedValue'] },
+        'HIGHLIGHT.CLEAR': { actions: ['clearHighlightedValue'] },
+        // 先把选中通知发出去，再按 closeOnSelect 决定收不收；受控时收起同样只发意图
+        'ITEM.SELECT': [
+          { guard: 'keepsOpenOnSelect', actions: ['invokeOnSelect'] },
+          { guard: 'isOpenControlled', actions: ['invokeOnSelect', 'invokeOnClose'] },
+          { target: 'closed', actions: ['invokeOnSelect', 'invokeOnClose'] },
+        ],
+        'CONTROLLED.CLOSE': { target: 'closed' },
+      },
+    },
+  },
+  implementations: {
+    guards: {
+      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      // 命中即「选完不收起」：转移停在第一条上，不带 target
+      keepsOpenOnSelect: ({ prop }) => (prop('closeOnSelect') ?? true) === false,
+    },
+    actions: {
+      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
+      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
+
+      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
+      syncOpen: ({ prop, send }) => {
+        const open = prop('open')
+        if (open === undefined)
+          return
+        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
+      },
+
+      setInputValue: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'INPUT.CHANGE' || e.type === 'INPUT.SET')
+          context.set('inputValue', e.value)
+      },
+
+      /** 回到 defaultInputValue（缺省即空串）。受控时只发意图，宿主不写回就照旧。 */
+      resetInputValue: ({ context, prop }) => context.set('inputValue', prop('defaultInputValue') ?? ''),
+
+      setHighlightedValue: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'ITEM.HIGHLIGHT')
+          context.set('highlightedValue', e.value)
+      },
+
+      clearHighlightedValue: ({ context }) => context.set('highlightedValue', null),
+
+      /** 锚点落在首条可用命令上；一条都没有就留空。收起态不动锚点，退出动作已经清过。 */
+      highlightFirst: ({ context, prop, state }) => {
+        if (state.get() !== 'open')
+          return
+        const first = navigateCommandResults(commandResults(prop, context.get('inputValue')), null, 'first', true)
+        context.set('highlightedValue', first?.value ?? null)
+      },
+
+      /** 锚点还指得着就不动；指不着了（清单换了、那条被禁用了）才落回首条。 */
+      highlightIfDangling: ({ context, prop, state }) => {
+        if (state.get() !== 'open')
+          return
+        const results = commandResults(prop, context.get('inputValue'))
+        const current = context.get('highlightedValue')
+        if (current != null && results.some(item => item.value === current && !item.disabled))
+          return
+        context.set('highlightedValue', navigateCommandResults(results, null, 'first', true)?.value ?? null)
+      },
+
+      /** 选中通知；条目自报禁用的在连接层就被挡下，走不到这里。 */
+      invokeOnSelect: ({ prop, event }) => {
+        const e = event.current()
+        if (e.type === 'ITEM.SELECT')
+          prop('onSelect')?.({ value: e.value, label: e.label })
+      },
+    },
+    effects: {
+      trackOverlay: ({ refs, prop, scope, send, flush }) => {
+        const config = refs.get('config')
+        const registerLayer = refs.get('registerLayer')
+        // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
+        if (!config || !registerLayer)
+          return undefined
+
+        // 层只在展开期间入栈：只有栈顶响应 Escape，常驻的层会堵死其下各层
+        const { layer, dispose: disposeLayer } = registerLayer()
+
+        // 开场快照：滚动锁与背景失活装配一次就定了，事后补不回来
+        const modal = prop('modal') ?? true
+        const getContentEl = refs.get('getContentEl')
+        const disposers: Array<() => void> = []
+
+        const dismiss = createDismissLayer({
+          config,
+          layer,
+          // 两个开关都现读 prop，展开中途改也立刻生效
+          onEscapeKeyDown: (e) => {
+            if (!(prop('closeOnEscape') ?? true))
+              e.preventDefault()
+          },
+          onInteractOutside: (e) => {
+            if (!(prop('closeOnInteractOutside') ?? prop('modal') ?? true))
+              e.preventDefault()
+          },
+          onDismiss: reason =>
+            send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
+        })
+        disposers.push(() => dismiss.dispose())
+
+        // 焦点域无条件建，modal 只决定陷不陷焦点；放进 if (modal) 会让非模态
+        // 既不初始聚焦也不归还焦点，restoreFocus 失效
+        const focus = createFocusScope({
+          config,
+          layer,
+          container: getContentEl,
+          trapped: () => modal,
+          loop: modal,
+          // 开场焦点落在检索框上：面板一露面就能直接打字
+          initialFocus: () => refs.get('getInputEl')(),
+          restoreFocus: () => prop('restoreFocus') ?? true,
+          // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上。
+          // 按 connect 给 trigger 落的 id 现取，全局快捷键唤起的用法没有 trigger，归还照旧走快照
+          restoreTarget: () => scope.getById<HTMLElement>(scope.partId('command', 'trigger')),
+        })
+        disposers.push(() => focus.dispose())
+
+        if (modal) {
+          const lock = acquireScrollLock({ config })
+          disposers.push(() => lock.dispose())
+
+          // 栈中位于本层之上的层一并算作目标：内层浮层搬到落点之后也是它的
+          // 直接子元素，不排除会被本层的 MutationObserver 打上 inert
+          const getTargets = (): Element[] => [
+            getContentEl(),
+            ...config.layerRegistry.elementsAbove(layer),
+          ].filter(Boolean) as Element[]
+
+          // 背景失活推迟到宿主提交那一帧之后：进入 open 时 content 尚未渲染，
+          // 此刻 targets 为空会导致背景永不 inert
+          let hidden: (() => void) | undefined
+          let alive = true
+          flush(() => {
+            if (!alive)
+              return
+            if (getTargets().length)
+              hidden = hideOutside(getTargets, config.scope)
+          })
+          // flush 回调可能在效应拆除之后才跑，用存活标志挡住
+          disposers.push(() => {
+            alive = false
+            hidden?.()
+          })
+        }
+
+        // 逆序拆：先撤依赖层的订阅，最后才把层本身移出栈
+        return () => {
+          for (let i = disposers.length - 1; i >= 0; i--) disposers[i]!()
+          disposeLayer()
+        }
+      },
+    },
+  },
+})

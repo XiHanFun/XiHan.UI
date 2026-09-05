@@ -1,6 +1,6 @@
 # 页头 <Badge type="info" text="page-header" />
 
-一页内容的抬头：返回位、标题、副标题、行尾操作与页脚各占一段。
+一页内容的抬头：面包屑、返回位、头像位、标题、副标题、行尾操作与页脚各占一段。
 
 ## 何时使用
 
@@ -15,7 +15,8 @@
 
 - 除了 `root`，返回位、副标题、操作、页脚都可选，只写用得上的那几段。
 - 返回位就是作者自己的按钮：组件只给身份与位置，类型、可及名字与点击行为自己写。
-- `extra` 贴在整行的末尾。
+- `extra` 贴在整行的末尾；面包屑整行排在标题之上，头像 / 图标排在返回位与标题之间。
+- 形态分三档：不写即不画面（贴在页面底色上），`surface` 加底色与圆角，`raised` 再加一层抬起投影；后两档的 `bordered` 改画整圈描边。
 
 ## 示例
 
@@ -49,12 +50,24 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 
 <XhDemo src="page-header/05-bordered-footer" />
 
+### 形态
+
+不写 variant 即不画面（与写 plain 一个样）；surface 加底色、圆角与左右内衬，raised 再加一层抬起投影，bordered 在这两档改画整圈描边
+
+<XhDemo src="page-header/06-variant" />
+
+### 面包屑与头像位
+
+面包屑整行排在标题之上（写在标记最前面），头像/图标排在返回位与标题之间；两块都可缺省
+
+<XhDemo src="page-header/07-breadcrumb-media" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-page-header>` |
-| Vue 组件 | `XhPageHeaderBackTrigger` `XhPageHeaderDescription` `XhPageHeaderExtra` `XhPageHeaderFooter` `XhPageHeaderRoot` `XhPageHeaderTitle` |
+| Vue 组件 | `XhPageHeaderBackTrigger` `XhPageHeaderBreadcrumb` `XhPageHeaderDescription` `XhPageHeaderExtra` `XhPageHeaderFooter` `XhPageHeaderMedia` `XhPageHeaderRoot` `XhPageHeaderTitle` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/page-header.css` |
 
@@ -62,14 +75,15 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="page-header"`：**`root`** · `back-trigger` · `title` · `description` · `extra` · `footer`
+`data-scope="page-header"`：**`root`** · `breadcrumb` · `back-trigger` · `media` · `title` · `description` · `extra` · `footer`
 
 ## Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `bordered` | `boolean` |  | 底部画一条分隔线，把页头与下面的内容分开。 |
+| `bordered` | `boolean` |  | 底部画一条分隔线，把页头与下面的内容分开。给了面的两档改画整圈描边。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定标题字号与整块的上下留白。 |
+| `variant` | `PageHeaderVariant` |  | 形态：plain / surface / raised。不写即不画面，与写 plain 同一个样子。 |
 
 ## connect API
 
@@ -78,7 +92,9 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
+| `getBreadcrumbProps` | `() => T['element']` | 面包屑位：整行排在标题之上。放什么归作者，组件只圈出位置。 |
 | `getBackTriggerProps` | `() => T['element']` |  |
+| `getMediaProps` | `() => T['element']` | 头像 / 图标位：排在返回位与标题之间，不随标题行换行。 |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
 | `getExtraProps` | `() => T['element']` |  |
@@ -102,12 +118,13 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 | --- | --- | --- |
 | `root` | `data-bordered` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
+| `root` | `data-variant` | props.variant |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-page-header-border` · `--xh-page-header-column-gap` · `--xh-page-header-description-fg` · `--xh-page-header-description-font-size` · `--xh-page-header-extra-gap` · `--xh-page-header-fg` · `--xh-page-header-footer-fg` · `--xh-page-header-footer-font-size` · `--xh-page-header-py` · `--xh-page-header-row-gap` · `--xh-page-header-title-fg` · `--xh-page-header-title-font-size` · `--xh-page-header-title-font-weight`
+`--xh-page-header-bg` · `--xh-page-header-border` · `--xh-page-header-breadcrumb-fg` · `--xh-page-header-breadcrumb-font-size` · `--xh-page-header-column-gap` · `--xh-page-header-description-fg` · `--xh-page-header-description-font-size` · `--xh-page-header-extra-gap` · `--xh-page-header-fg` · `--xh-page-header-footer-fg` · `--xh-page-header-footer-font-size` · `--xh-page-header-px` · `--xh-page-header-py` · `--xh-page-header-radius` · `--xh-page-header-row-gap` · `--xh-page-header-shadow` · `--xh-page-header-title-fg` · `--xh-page-header-title-font-size` · `--xh-page-header-title-font-weight`
 
 ## RTL
 
@@ -115,7 +132,7 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 
 ## 组合
 
-- 上面接[面包屑](./breadcrumb)，`extra` 里放[按钮组](./button-group)，`footer` 里放[描述列表](./descriptions)或一组[统计数值](./statistic)。
+- 面包屑位里放[面包屑](./breadcrumb)，头像位里放[头像](./avatar)，`extra` 里放[按钮组](./button-group)，`footer` 里放[描述列表](./descriptions)或一组[统计数值](./statistic)。
 
 ## 最佳实践
 

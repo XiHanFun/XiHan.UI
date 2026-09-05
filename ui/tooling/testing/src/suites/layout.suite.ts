@@ -1,9 +1,22 @@
-import type { ConformanceSuite } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { layoutAnatomy, layoutKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
 
 // 骨架本身没有 APG 模式；能按的只有折叠把手，它照披露模式接线。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/'
+
+/**
+ * 把遮罩插到侧栏之前：覆盖档才用得上它，默认结构里不摆。
+ * 顺序就是契约的一半——两层同一个层号，先渲染的那层在下面。
+ */
+function withBackdrop(base: FixtureNode): FixtureNode {
+  const children = base.children ?? []
+  const at = children.findIndex(node => node.part === 'sider')
+  return {
+    ...base,
+    children: [...children.slice(0, at), { part: 'sider-backdrop' }, ...children.slice(at)],
+  }
+}
 
 export const layoutSuite: ConformanceSuite = {
   component: 'layout',
@@ -141,6 +154,90 @@ export const layoutSuite: ConformanceSuite = {
           sider: { 'data-collapsed': null },
         },
       },
+    },
+    {
+      name: '缺省呈现形态：占位档，侧栏与根都落 inline',
+      spec: { apg: APG },
+      initial: {
+        parts: {
+          root: { 'data-sider-presentation': 'inline' },
+          sider: { 'data-presentation': 'inline' },
+        },
+      },
+    },
+    {
+      name: '覆盖档：根与侧栏落 sheet，遮罩露出来；点遮罩收起侧栏',
+      spec: { apg: APG },
+      fixture: withBackdrop,
+      props: { siderPresentation: 'sheet' },
+      initial: {
+        parts: {
+          'root': { 'data-sider-presentation': 'sheet', 'data-collapsed': null },
+          'sider': { 'data-presentation': 'sheet', 'data-collapsed': null },
+          'sider-backdrop': { 'aria-hidden': 'true', 'hidden': null, 'data-collapsed': null },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'sider-backdrop',
+          expect: {
+            parts: {
+              'root': { 'data-collapsed': '' },
+              'sider': { 'data-collapsed': '' },
+              'sider-backdrop': { 'data-collapsed': '' },
+              'sider-trigger': { 'aria-expanded': 'false' },
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: '占位档的遮罩带 hidden：不占位也不吃指针',
+      spec: { apg: APG },
+      fixture: withBackdrop,
+      initial: {
+        parts: {
+          'sider-backdrop': { hidden: '' },
+        },
+      },
+    },
+    {
+      name: '覆盖档按 Escape 收起侧栏；占位档下 Escape 与侧栏无关',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['layout.kbd.dismiss-sider-sheet'],
+      props: { siderPresentation: 'sheet' },
+      steps: [
+        { kind: 'focus', part: 'sider-trigger' },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: {
+            parts: {
+              'root': { 'data-collapsed': '' },
+              'sider': { 'data-collapsed': '' },
+              'sider-trigger': { 'aria-expanded': 'false' },
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: '占位档不认 Escape：侧栏照旧展开',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      steps: [
+        { kind: 'focus', part: 'sider-trigger' },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: {
+            parts: {
+              root: { 'data-collapsed': null },
+              sider: { 'data-collapsed': null },
+            },
+          },
+        },
+      ],
     },
     {
       name: '侧栏挂到行尾：根与侧栏都如实落成 end',

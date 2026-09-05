@@ -22,6 +22,7 @@ import { codeViewSuite } from './code-view.suite'
 import { collapsibleSuite } from './collapsible.suite'
 import { colorPickerSuite } from './color-picker.suite'
 import { comboboxSuite } from './combobox.suite'
+import { commandSuite } from './command.suite'
 import { contextMenuSuite } from './context-menu.suite'
 import { dateFieldSuite } from './date-field.suite'
 import { datePickerSuite } from './date-picker.suite'
@@ -101,8 +102,8 @@ import { stepsSuite } from './steps.suite'
 import { switchSuite } from './switch.suite'
 import { tableSuite } from './table.suite'
 import { tabsSuite } from './tabs.suite'
-import { tagSuite } from './tag.suite'
 import { tagGroupSuite } from './tag-group.suite'
+import { tagSuite } from './tag.suite'
 import { tagsInputSuite } from './tags-input.suite'
 import { textFieldSuite } from './text-field.suite'
 import { timeFieldSuite } from './time-field.suite'
@@ -252,4 +253,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   watermarkSuite,
   tagGroupSuite,
   inputGroupSuite,
+  commandSuite,
 ]

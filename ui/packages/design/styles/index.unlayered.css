@@ -5234,6 +5234,97 @@
   overflow-y: auto;
 }
 
+/* —— 侧栏覆盖档 —— */
+/* 侧栏移出画外、盖在内容之上：面板脱离网格，侧栏那一列于是收成零宽，内容占满整行。
+   排在固定定位那一节之后：两处特指度相同，覆盖档要盖住 sticky 那一档。
+   参照的是视口，与上面 sticky 那条同一个注意事项：整副骨架装进带 transform / filter 的祖先里时，
+   固定定位的包含块会换成那个祖先，面板跟着一起滚。 */
+[data-scope='layout'][data-part='sider'][data-presentation='sheet'] {
+  /* 位移方向的私有槽位：默认按行首 + LTR，行尾与 RTL 在下面翻符号。
+     写成槽位而不是写死 ±100%：贴边用的是逻辑 inset，RTL 下行首落在物理右边，
+     位移若写死物理方向就会出现「贴在右边、却从左边滑进来」 */
+  --xh-_layout-sheet-shift: -100%;
+
+  position: fixed;
+  z-index: var(--xh-layout-sider-layer, var(--xh-layer-drawer));
+  inset-block: 0;
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+  inline-size: var(--xh-_layout-sider-expanded-w);
+  /* 面板贴死上下两条边，高度上限就是滚动容器可视区那么高——上面 sticky 那一档的
+     「减去顶栏偏移」在这一档不作数：覆盖档从视口顶铺到底。
+     不认 dvh 的引擎由级联回落到前一条的 vh */
+  max-block-size: var(--xh-layout-scrollport-h, 100vh);
+  max-block-size: var(--xh-layout-scrollport-h, 100dvh);
+  /* 贴死视口的那一档，内衬与安全区取大的一头：刘海、圆角与底部横条压住的那一段由系统给出。
+     桌面上 env() 恒为 0，取值与内衬槽完全一致。安全区只有物理方向的四个名字，
+     行内轴上两侧同取较宽的那一段，RTL 下不会翻错边 */
+  padding-block-start: max(var(--xh-layout-sider-padding, var(--xh-space-3)), env(safe-area-inset-top));
+  padding-block-end: max(var(--xh-layout-sider-padding, var(--xh-space-3)), env(safe-area-inset-bottom));
+  padding-inline: max(
+    var(--xh-layout-sider-padding, var(--xh-space-3)),
+    env(safe-area-inset-left),
+    env(safe-area-inset-right)
+  );
+  box-shadow: var(--xh-layout-sider-shadow, var(--xh-elevation-sheet));
+  translate: 0 0;
+  visibility: visible;
+  /* 条目多到装不下时在面板内部滚：这一档的高度就是视口那么高 */
+  overflow-y: auto;
+  /* 推出来与收进去是同一段行程，视口尺度的位移走 slide 档。
+     visibility 与它同拍：收起那一路等位移播完才真正藏起来，展开那一路立刻露出来 */
+  transition:
+    translate var(--xh-motion-duration-slide) var(--xh-motion-ease-slide),
+    visibility var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
+}
+
+/* 挂在行尾：贴另一条边，位移随之反向 */
+[data-scope='layout'][data-part='sider'][data-presentation='sheet'][data-placement='end'] {
+  --xh-_layout-sheet-shift: 100%;
+
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+}
+
+[data-scope='layout'][data-part='sider'][data-presentation='sheet']:dir(rtl) {
+  --xh-_layout-sheet-shift: 100%;
+}
+
+[data-scope='layout'][data-part='sider'][data-presentation='sheet'][data-placement='end']:dir(rtl) {
+  --xh-_layout-sheet-shift: -100%;
+}
+
+/* 收起：推出画外并让出无障碍树与 Tab 序列。位移量按面板自身宽度的百分比算，
+   宽度换成任何一档都正好推到画外 */
+[data-scope='layout'][data-part='sider'][data-presentation='sheet'][data-collapsed] {
+  translate: var(--xh-_layout-sheet-shift) 0;
+  visibility: hidden;
+}
+
+/* 覆盖档的遮罩：与面板同一个层号，谁盖谁看文档序——遮罩写在侧栏之前。
+   占位档下连接层给它打 hidden，这里不必再管 */
+[data-scope='layout'][data-part='sider-backdrop'] {
+  position: fixed;
+  z-index: var(--xh-layout-sider-backdrop-layer, var(--xh-layer-drawer));
+  inset: 0;
+  background: var(--xh-layout-sider-backdrop-bg, var(--xh-bg-overlay));
+  opacity: 1;
+  transition: opacity var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+}
+
+/* 收起态：淡出并让开指针，底下的内容照常点得到 */
+[data-scope='layout'][data-part='sider-backdrop'][data-collapsed] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 纸上没有覆盖这回事：遮罩印出来就是盖住正文的一片灰 */
+@media print {
+  [data-scope='layout'][data-part='sider-backdrop'] {
+    display: none;
+  }
+}
+
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='layout'][data-part='root'][hidden],
@@ -6474,6 +6565,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_page-header-py: var(--xh-space-4);
   --xh-_page-header-row-gap: var(--xh-space-2);
   --xh-_page-header-title-size: var(--xh-text-heading-3-size);
+  /* 形态档只换这两个：不画面的那一档左右不留内衬、也不切圆角 */
+  --xh-_page-header-px: 0;
+  --xh-_page-header-radius: 0;
 
   /* 一行排不下就折行；返回位、标题、副标题排在同一行，操作贴到行尾，页脚整行另起 */
   display: flex;
@@ -6482,6 +6576,8 @@ input[data-scope='mention'][data-part='input'] {
   column-gap: var(--xh-page-header-column-gap, var(--xh-space-3));
   row-gap: var(--xh-page-header-row-gap, var(--xh-_page-header-row-gap));
   padding-block: var(--xh-page-header-py, var(--xh-_page-header-py));
+  padding-inline: var(--xh-page-header-px, var(--xh-_page-header-px));
+  border-radius: var(--xh-page-header-radius, var(--xh-_page-header-radius));
   color: var(--xh-page-header-fg, var(--xh-fg-default));
 }
 
@@ -6508,7 +6604,45 @@ input[data-scope='mention'][data-part='input'] {
   border-block-end: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-subtle));
 }
 
+/* —— 形态 —— */
+/* 不画面的那一档不在这儿：它就是上面那套基础取值，不写 data-variant 与写 plain 长一个样。
+   画了面的两档左右补上与上下同档的内衬，否则内容会贴着那块面的边 */
+[data-scope='page-header'][data-part='root']:is([data-variant='surface'], [data-variant='raised']) {
+  --xh-_page-header-px: var(--xh-_page-header-py);
+  --xh-_page-header-radius: var(--xh-shape-surface);
+
+  background: var(--xh-page-header-bg, var(--xh-bg-surface));
+}
+
+/* 有面的两档不再画那条下边线：一块切了圆角的面底下横一条直线，两头会露在圆角外面。
+   整圈描边接手同一件事——把页头与下面的内容分开 */
+[data-scope='page-header'][data-part='root']:is([data-variant='surface'], [data-variant='raised'])[data-bordered] {
+  border: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-subtle));
+}
+
+/* 抬起那一档恒带整圈描边：高对比档里投影整个被丢弃，只剩描边撑住这块面的边界 */
+[data-scope='page-header'][data-part='root'][data-variant='raised'] {
+  border: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-subtle));
+  box-shadow: var(--xh-page-header-shadow, var(--xh-elevation-raised));
+}
+
 /* —— 各段 —— */
+/* 面包屑占满一整行排在标题之上：它写在标记的最前面，整行铺开就把标题挤到了下一行 */
+[data-scope='page-header'][data-part='breadcrumb'] {
+  flex: 1 0 100%;
+  color: var(--xh-page-header-breadcrumb-fg, var(--xh-fg-muted));
+  font-size: var(--xh-page-header-breadcrumb-font-size, var(--xh-text-secondary-size));
+  line-height: var(--xh-leading-normal);
+}
+
+/* 头像 / 图标位：不参与伸缩，图形本身多大由作者定 */
+[data-scope='page-header'][data-part='media'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+}
+
 /* 返回位只摆位置与对齐，外观归作者自己的按钮 */
 [data-scope='page-header'][data-part='back-trigger'] {
   display: inline-flex;
@@ -6556,6 +6690,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='page-header'][data-part='back-trigger'][hidden],
+[data-scope='page-header'][data-part='media'][hidden],
 [data-scope='page-header'][data-part='extra'][hidden] {
   display: none;
 }
@@ -9843,6 +9978,7 @@ input[data-scope='mention'][data-part='input'] {
   xh-collapsible,
   xh-color-picker,
   xh-combobox,
+  xh-command,
   xh-context-menu,
   xh-date-picker,
   xh-dialog,
@@ -10030,6 +10166,26 @@ input[data-scope='mention'][data-part='input'] {
    其余五族的底是固定原语、不随主题翻，shift 也就不必翻 */
 :is([data-theme='dark'] *, [data-theme='dark'])[data-tone='brand'] {
   --xh-_tone-shift: var(--xh-color-neutral-0);
+}
+
+/* 语气轴对外的那一族：上面每支私有槽一对一指过来，取值恒等。
+   使用者在自己的节点上写 data-tone，就能在那个节点里取到整族颜色，
+   六族与深浅两态都跟着上面的推导走。
+   --xh-_tone-shift 是兑色的方向、不是一档颜色，不出公开令牌。
+   声明在 [data-tone] 上而不是 :root 上：值里带 var()，自定义属性的 var()
+   在「声明它的那个元素」上就替换掉了，落在 :root 上会把语气冻死在根元素。 */
+[data-tone] {
+  --xh-tone-solid: var(--xh-_tone);
+  --xh-tone-solid-hover: var(--xh-_tone-hover);
+  --xh-tone-solid-active: var(--xh-_tone-active);
+  --xh-tone-on: var(--xh-_tone-on);
+  --xh-tone-subtle: var(--xh-_tone-subtle);
+  --xh-tone-subtle-hover: var(--xh-_tone-subtle-hover);
+  --xh-tone-subtle-active: var(--xh-_tone-subtle-active);
+  --xh-tone-fg: var(--xh-_tone-fg);
+  --xh-tone-border: var(--xh-_tone-border);
+  --xh-tone-border-control: var(--xh-_tone-border-control);
+  --xh-tone-soft: var(--xh-_tone-soft);
 }
 
 /* 实心面顶边的内高光：一条极浅的内阴影，把一块实心底衬出厚度。
@@ -16320,6 +16476,425 @@ input[data-scope='mention'][data-part='input'] {
   /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
   [data-scope='combobox'][data-part='positioner'] {
+    display: none;
+  }
+}
+
+/* styles/command.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes xh-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
+   四个都没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
+  from {
+    opacity: 0;
+    scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes xh-pop-out {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    scale: var(--xh-motion-scale-exit);
+  }
+}
+
+@keyframes xh-rise-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--xh-motion-distance-sm);
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='command'] {
+  --xh-command-skin: 1;
+}
+
+/* 私有槽同时声明在定位层与面板上：面板被搬到 portal 落点，两处各自带一份 data-size，
+   谁先命中谁给出这一档的取值；条目、检索框与提示条都从面板继承下去 */
+[data-scope='command']:is([data-part='positioner'], [data-part='content']) {
+  /* 尺寸档只换这六个私有槽，换档不必给每个部件各写一条选择器 */
+  --xh-_command-max-w: var(--xh-overlay-sheet-w-md);
+  --xh-_command-input-h: var(--xh-control-h-md);
+  --xh-_command-px: var(--xh-control-px-md);
+  --xh-_command-item-py: var(--xh-list-option-py-md);
+  --xh-_command-gap: var(--xh-control-gap-md);
+  --xh-_command-font-size: var(--xh-control-font-md);
+}
+
+/* 面板从上方落下来一小段：方向槽写在定位层上，面板继承过去喂给进场那支动画 */
+[data-scope='command'][data-part='positioner'] {
+  --xh-_overlay-enter-down: 1;
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里 */
+[data-scope='command']:is([data-part='positioner'], [data-part='content'])[data-size='sm'] {
+  --xh-_command-max-w: var(--xh-overlay-sheet-w-sm);
+  --xh-_command-input-h: var(--xh-control-h-sm);
+  --xh-_command-px: var(--xh-control-px-sm);
+  --xh-_command-item-py: var(--xh-list-option-py-sm);
+  --xh-_command-gap: var(--xh-control-gap-sm);
+  --xh-_command-font-size: var(--xh-control-font-sm);
+}
+
+[data-scope='command']:is([data-part='positioner'], [data-part='content'])[data-size='lg'] {
+  --xh-_command-max-w: var(--xh-overlay-sheet-w-lg);
+  --xh-_command-input-h: var(--xh-control-h-lg);
+  --xh-_command-px: var(--xh-control-px-lg);
+  --xh-_command-item-py: var(--xh-list-option-py-lg);
+  --xh-_command-gap: var(--xh-control-gap-lg);
+  --xh-_command-font-size: var(--xh-control-font-lg);
+}
+
+/* —— 遮罩 —— */
+[data-scope='command'][data-part='backdrop'] {
+  position: fixed;
+  inset: 0;
+  z-index: var(--xh-command-backdrop-layer, var(--xh-layer-modal));
+  background: var(--xh-command-backdrop-bg, var(--xh-bg-overlay));
+}
+
+/* 同一层底色之上再糊背后的页面 */
+[data-scope='command'][data-part='backdrop'][data-variant='blur'] {
+  backdrop-filter: blur(var(--xh-command-backdrop-blur, var(--xh-overlay-backdrop-blur)));
+}
+
+/* 去掉底色，只留下这一层吃指针：交互外关闭与滚动锁定照旧 */
+[data-scope='command'][data-part='backdrop'][data-variant='transparent'] {
+  background: transparent;
+}
+
+[data-scope='command'][data-part='backdrop'][data-state='open'] {
+  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+}
+
+/* 退场补 forwards：动画播完到宿主真正卸载之间还有一帧，不定住终态遮罩会闪回全黑 */
+[data-scope='command'][data-part='backdrop'][data-state='closed'] {
+  animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+}
+
+/* —— 定位层 —— */
+/* 面板不居中，贴着上沿放：下方留出来的空间全归结果列表，条目多的时候面板往下长，
+   不像居中那样两头一起挪、每敲一个字整块面板都在动 */
+[data-scope='command'][data-part='positioner'] {
+  position: fixed;
+  inset: 0;
+  z-index: var(--xh-command-layer, var(--xh-layer-modal));
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-block-start: max(var(--xh-command-inset-block-start, var(--xh-space-8)), env(safe-area-inset-top));
+  padding-block-end: max(var(--xh-command-positioner-pb, var(--xh-space-4)), env(safe-area-inset-bottom));
+  padding-inline: max(
+    var(--xh-command-positioner-px, var(--xh-space-4)),
+    env(safe-area-inset-left),
+    env(safe-area-inset-right)
+  );
+}
+
+/* —— 面板 —— */
+[data-scope='command'][data-part='content'] {
+  /* 作者塞进条目里的图标跟着这一档的字号走，与命令文字同一把尺 */
+  --xh-icon-size: var(--xh-command-icon-size, var(--xh-glyph-size-text));
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  max-inline-size: var(--xh-command-max-w, var(--xh-_command-max-w));
+  /* 封顶才有可滚的余量：不封顶结果列表会一路撑到视口外，滚动条永远出不来 */
+  max-block-size: var(--xh-command-max-h, var(--xh-overlay-max-h));
+  border-radius: var(--xh-command-radius, var(--xh-shape-surface));
+  background: var(--xh-command-bg, var(--xh-bg-surface));
+  color: var(--xh-command-fg, var(--xh-fg-default));
+  box-shadow: var(--xh-command-shadow, var(--xh-elevation-sheet));
+  /* 条目的高亮底色是方角，滚到两端时会探出面板的圆角 */
+  overflow: hidden;
+  /* 进退场的缩放锚在面板顶缘：它是从上方落下来的 */
+  transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 0);
+}
+
+/* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
+   收起态连接层会给 content 打 hidden，而上面那条 display: flex 正是要盖掉 UA 的
+   [hidden]{display:none}——退场动画得先能播。presence 读的是 content 的 animationName，
+   读到才申领租约、等 animationend 才卸载；一旦 display: none，元素不生成盒子、
+   动画根本不启动，探测器直接放弃租约，退场动画一帧都播不出来。
+   真正的收起由适配器兜住：Vue 卸载整棵，WC 写内联 style.display。
+   其余声明了 display 的角色节点仍补 [hidden]，那几处没有退场动画。 */
+
+/* 面板本身只承接程序化聚焦（开场那一刻还没轮到检索框），不画环 */
+[data-scope='command'][data-part='content']:focus-visible {
+  outline: none;
+}
+
+[data-scope='command'][data-part='content'][data-state='open'] {
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
+  will-change: opacity, scale, translate;
+}
+
+/* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
+   免得动画结束到真收起之间闪一下原样 */
+[data-scope='command'][data-part='content'][data-state='closed'] {
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+}
+
+/* —— 检索框 —— */
+/* 通栏一行，底下一道线把它与结果分开；框自己不画边不画底，边界归面板 */
+[data-scope='command'][data-part='input'] {
+  flex: none;
+  inline-size: 100%;
+  block-size: var(--xh-command-input-h, var(--xh-_command-input-h));
+  padding-block: 0;
+  padding-inline: var(--xh-command-input-px, var(--xh-_command-px));
+  border: 0;
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-command-input-border, var(--xh-border-subtle));
+  border-radius: 0;
+  background: transparent;
+  color: var(--xh-command-input-fg, var(--xh-fg-default));
+  font-family: inherit;
+  font-size: var(--xh-command-input-font-size, var(--xh-text-body-size));
+}
+
+[data-scope='command'][data-part='input']::placeholder {
+  color: var(--xh-command-placeholder-fg, var(--xh-fg-subtle));
+}
+
+/* 环往内收：检索框是通栏的，环画在外沿会顺着面板的圆角探出去 */
+[data-scope='command'][data-part='input']:focus-visible {
+  --xh-_ring-offset: var(--xh-_ring-inset);
+}
+
+/* 自动填充态：浏览器给填过的框强加一套系统色（多数引擎是黄底黑字），
+   优先级高到 background / color 改不动，也不跟主题走。
+   底用 box-shadow 的 inset 扩散铺满内容盒，字用 -webkit-text-fill-color 接回令牌。
+   两个选择器名分写两条：一条选择器列表里只要有一个名字不被认识，整条规则就被丢弃。
+   底取不透明的面令牌而不是 transparent：检索框自己不画底，铺透明等于没铺 */
+[data-scope='command'][data-part='input']:autofill {
+  box-shadow: inset 0 0 0 100vmax var(--xh-command-input-autofill-bg, var(--xh-bg-surface));
+  -webkit-text-fill-color: var(--xh-command-input-autofill-fg, var(--xh-fg-default));
+}
+
+[data-scope='command'][data-part='input']:-webkit-autofill {
+  box-shadow: inset 0 0 0 100vmax var(--xh-command-input-autofill-bg, var(--xh-bg-surface));
+  -webkit-text-fill-color: var(--xh-command-input-autofill-fg, var(--xh-fg-default));
+}
+
+/* —— 结果列表 —— */
+/* 只管滚动，留白归条目。min-block-size: 0 是弹性子项能真正滚动的前提——
+   不给的话它按内容撑高，面板的 max-block-size 就只会把溢出的部分裁掉而不是交给它滚 */
+[data-scope='command'][data-part='list'] {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--xh-command-list-gap, var(--xh-list-option-gap));
+  min-block-size: 0;
+  padding-block: var(--xh-command-list-py, var(--xh-space-2));
+  padding-inline: var(--xh-command-list-px, var(--xh-space-2));
+  overflow-y: auto;
+}
+
+/* 列表从不承载焦点（焦点恒在检索框，锚点走 aria-activedescendant），
+   可滚动容器在某些浏览器里会被自动塞进 Tab 序列，落焦时不画环 */
+[data-scope='command'][data-part='list']:focus-visible {
+  outline: none;
+}
+
+/* —— 分组 —— */
+[data-scope='command'][data-part='group'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-command-group-gap, var(--xh-list-option-gap));
+}
+
+/* 组间留白只加在后继分组上：首组顶上已经有列表的内边距，再加一层会显得头重 */
+[data-scope='command'][data-part='group'] + [data-scope='command'][data-part='group'] {
+  margin-block-start: var(--xh-command-group-spacing, var(--xh-space-1_5));
+}
+
+/* 分组标题不是命令、进不了导航，画成小号次要文字，内缩与条目对齐 */
+[data-scope='command'][data-part='group-label'] {
+  display: block;
+  padding-block: var(--xh-command-group-label-py, var(--xh-space-1));
+  padding-inline: var(--xh-command-group-label-px, var(--xh-_command-px));
+  color: var(--xh-command-group-label-fg, var(--xh-fg-subtle));
+  font-size: var(--xh-command-group-label-font-size, var(--xh-text-caption-size));
+  font-weight: var(--xh-command-group-label-font-weight, var(--xh-font-weight-medium));
+  line-height: var(--xh-leading-none);
+  user-select: none;
+}
+
+/* —— 命令 —— */
+[data-scope='command'][data-part='item'] {
+  display: flex;
+  align-items: center;
+  gap: var(--xh-command-item-gap, var(--xh-_command-gap));
+  padding-block: var(--xh-command-item-py, var(--xh-_command-item-py));
+  padding-inline: var(--xh-command-item-px, var(--xh-_command-px));
+  border-radius: var(--xh-command-item-radius, var(--xh-shape-control));
+  color: var(--xh-command-item-fg, var(--xh-fg-default));
+  font-size: var(--xh-command-item-font-size, var(--xh-_command-font-size));
+  /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
+  line-height: var(--xh-command-item-leading, var(--xh-leading-normal));
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 悬停与键盘锚点共用中性灰轻档：命令面板里没有第二档，选中即执行、不留状态 */
+[data-scope='command'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+  background: var(--xh-command-item-bg-hover, var(--xh-bg-subtle));
+}
+
+/* 禁用走 aria-disabled 而非原生 disabled，条目仍在文档里，样式由 data-disabled 表达 */
+[data-scope='command'][data-part='item'][data-disabled] {
+  cursor: not-allowed;
+  color: var(--xh-fg-disabled);
+}
+
+/* 开幕：结果自上而下逐条冒出来。筛掉的条目带 hidden 不生成盒子，重新露面时这段动画重新起跑，
+   所以每改一次检索串都会重播一遍。backwards 让每条在自己那份延迟里保持起始帧 */
+[data-scope='command'][data-part='list'] [data-part='item'] {
+  animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+}
+
+/* 交错的间隔：第二条起逐级往后推，第六条起统一钉在第五级，命令再多也不会拖出一条越来越慢的尾巴。
+   列表里同时挂着被筛掉的条目（收起态），计数把它们排掉，序号才对得上看得见的那几条 */
+[data-scope='command'][data-part='list'] [data-part='item']:nth-child(2 of :not([hidden])) {
+  animation-delay: var(--xh-motion-stagger-step);
+}
+
+[data-scope='command'][data-part='list'] [data-part='item']:nth-child(3 of :not([hidden])) {
+  animation-delay: calc(2 * var(--xh-motion-stagger-step));
+}
+
+[data-scope='command'][data-part='list'] [data-part='item']:nth-child(4 of :not([hidden])) {
+  animation-delay: calc(3 * var(--xh-motion-stagger-step));
+}
+
+[data-scope='command'][data-part='list'] [data-part='item']:nth-child(5 of :not([hidden])) {
+  animation-delay: calc(4 * var(--xh-motion-stagger-step));
+}
+
+[data-scope='command'][data-part='list'] [data-part='item']:nth-child(n + 6 of :not([hidden])) {
+  animation-delay: calc(5 * var(--xh-motion-stagger-step));
+}
+
+[data-scope='command'][data-part='item-text'] {
+  flex: 1;
+  /* 弹性子项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
+  min-inline-size: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* —— 两个占位 —— */
+/* 空态占位：待在面板里、列表的兄弟；盒与阴影归面板，这里只画一句居中的次要文字 */
+[data-scope='command'][data-part='empty'] {
+  display: block;
+  flex: none;
+  padding-block: var(--xh-command-empty-py, var(--xh-space-6));
+  padding-inline: var(--xh-command-empty-px, var(--xh-_command-px));
+  color: var(--xh-command-empty-fg, var(--xh-fg-subtle));
+  font-size: var(--xh-command-empty-font-size, var(--xh-_command-font-size));
+  line-height: var(--xh-leading-none);
+  text-align: center;
+}
+
+/* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
+[data-scope='command'][data-part='loading'] {
+  display: block;
+  flex: none;
+  padding-block: var(--xh-command-loading-py, var(--xh-space-6));
+  padding-inline: var(--xh-command-loading-px, var(--xh-_command-px));
+  color: var(--xh-command-loading-fg, var(--xh-fg-subtle));
+  font-size: var(--xh-command-loading-font-size, var(--xh-_command-font-size));
+  line-height: var(--xh-leading-none);
+  text-align: center;
+}
+
+/* 取数在途：列表压暗一档，与在途占位一起说明这块正在变 */
+[data-scope='command'][data-part='list'][aria-busy='true'] {
+  opacity: var(--xh-command-list-busy-opacity, var(--xh-state-disabled-opacity));
+}
+
+/* —— 底部提示条 —— */
+/* 贴在列表下沿，用一道分隔线与命令断开；作者往里放什么由作者定 */
+[data-scope='command'][data-part='footer'] {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--xh-command-footer-gap, var(--xh-space-2));
+  padding-block: var(--xh-command-footer-py, var(--xh-space-2));
+  padding-inline: var(--xh-command-footer-px, var(--xh-_command-px));
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-command-footer-border, var(--xh-border-subtle));
+  color: var(--xh-command-footer-fg, var(--xh-fg-muted));
+  font-size: var(--xh-command-footer-font-size, var(--xh-text-caption-size));
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='command'][data-part='positioner'][hidden],
+[data-scope='command'][data-part='list'][hidden],
+[data-scope='command'][data-part='group'][hidden],
+[data-scope='command'][data-part='group-label'][hidden],
+[data-scope='command'][data-part='item'][hidden],
+[data-scope='command'][data-part='item-text'][hidden],
+[data-scope='command'][data-part='empty'][hidden],
+[data-scope='command'][data-part='loading'][hidden],
+[data-scope='command'][data-part='footer'][hidden] {
+  display: none;
+}
+
+@media print {
+  /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
+     收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
+  [data-scope='command'][data-part='backdrop'],
+  [data-scope='command'][data-part='positioner'] {
     display: none;
   }
 }
@@ -27560,6 +28135,56 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* —— 工具条与列设置区 —— */
+/* 两块都摆在 root 之外：root 是 grid 系角色，子节点只能是 row 与 rowgroup。
+   工具条只管排布，里头控件的观感归控件自己的皮肤 */
+[data-scope='table'][data-part='toolbar'] {
+  /* 尺寸档只换这一个私有槽：控件之间的间距 */
+  --xh-_table-toolbar-gap: var(--xh-space-2);
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--xh-table-toolbar-gap, var(--xh-_table-toolbar-gap));
+  padding-block: var(--xh-table-toolbar-py, var(--xh-space-2));
+  color: var(--xh-table-toolbar-fg, var(--xh-fg-default));
+}
+
+[data-scope='table'][data-part='toolbar'][data-size='sm'] {
+  --xh-_table-toolbar-gap: var(--xh-space-1);
+}
+
+[data-scope='table'][data-part='toolbar'][data-size='lg'] {
+  --xh-_table-toolbar-gap: var(--xh-space-3);
+}
+
+[data-scope='table'][data-part='toolbar'][hidden] {
+  display: none;
+}
+
+/* 列设置区：一列一行竖着排。它常摆在浮层里，宽高都交给外面那层容器定 */
+[data-scope='table'][data-part='column-list'] {
+  --xh-_table-column-list-gap: var(--xh-space-1);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-table-column-list-gap, var(--xh-_table-column-list-gap));
+  color: var(--xh-table-column-list-fg, var(--xh-fg-default));
+  font-size: var(--xh-table-column-list-font-size, var(--xh-text-secondary-size));
+}
+
+[data-scope='table'][data-part='column-list'][data-size='sm'] {
+  --xh-_table-column-list-gap: var(--xh-space-0_5);
+}
+
+[data-scope='table'][data-part='column-list'][data-size='lg'] {
+  --xh-_table-column-list-gap: var(--xh-space-2);
+}
+
+[data-scope='table'][data-part='column-list'][hidden] {
+  display: none;
+}
+
 /* 三个区段都是竖着排行的块。min-inline-size: max-content 让它们跟着最宽的一行一起横向溢出，
    否则横向滚动时右半边的行会在容器边缘被切断 */
 [data-scope='table'][data-part='header'],
@@ -27720,9 +28345,11 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-disabled);
 }
 
-/* 三个把手共用一副方形盒子，两种行的文字起点才对得齐 */
+/* 四个把手共用一副方形盒子，两种行的文字起点才对得齐；
+   列设置区那颗与表头里的选择框同款，一眼看得出是同一件事 */
 [data-scope='table'][data-part='select-all-trigger'],
 [data-scope='table'][data-part='row-select-trigger'],
+[data-scope='table'][data-part='column-visibility-trigger'],
 [data-scope='table'][data-part='expand-trigger'] {
   display: inline-flex;
   flex: none;
@@ -27737,27 +28364,31 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='table'][data-part='select-all-trigger'][hidden],
 [data-scope='table'][data-part='row-select-trigger'][hidden],
+[data-scope='table'][data-part='column-visibility-trigger'][hidden],
 [data-scope='table'][data-part='expand-trigger'][hidden] {
   display: none;
 }
 
-/* 三个把手按下时缩一档。缩放走 transform 通道不占版面，行高与列宽都不动 */
+/* 四个把手按下时缩一档。缩放走 transform 通道不占版面，行高与列宽都不动 */
 [data-scope='table'][data-part='select-all-trigger']:active:not([data-disabled]),
 [data-scope='table'][data-part='row-select-trigger']:active:not([data-disabled]),
+[data-scope='table'][data-part='column-visibility-trigger']:active:not([data-disabled]),
 [data-scope='table'][data-part='expand-trigger']:active:not([data-disabled]) {
   scale: var(--xh-motion-scale-press);
 }
 
-/* 两个选择把手：未选中时只剩一个空框，勾选标记靠 visibility 显隐，
+/* 三个勾选把手：未选中时只剩一个空框，勾选标记靠 visibility 显隐，
    切换选中不引起行宽抖动 */
 [data-scope='table'][data-part='select-all-trigger'],
-[data-scope='table'][data-part='row-select-trigger'] {
+[data-scope='table'][data-part='row-select-trigger'],
+[data-scope='table'][data-part='column-visibility-trigger'] {
   border: var(--xh-stroke-thin) solid var(--xh-table-trigger-border, var(--xh-border-control));
   color: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
   visibility: visible;
 }
 
 [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']),
+[data-scope='table'][data-part='column-visibility-trigger'][data-state='checked'],
 [data-scope='table'][data-part='row-select-trigger'][data-selected] {
   border-color: var(--xh-table-trigger-border-checked, var(--xh-table-trigger-bg-checked, var(--xh-bg-brand)));
   background: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
@@ -27765,6 +28396,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 未选中时勾不出现，但盒子还在：它是边框画出来的空框 */
 [data-scope='table'][data-part='select-all-trigger'][data-state='unchecked'],
+[data-scope='table'][data-part='column-visibility-trigger'][data-state='unchecked'],
 [data-scope='table'][data-part='row-select-trigger']:not([data-selected]) {
   color: transparent;
 }
@@ -27787,6 +28419,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='table'][data-part='select-all-trigger'][data-disabled],
+[data-scope='table'][data-part='column-visibility-trigger'][data-disabled],
 [data-scope='table'][data-part='row-select-trigger'][data-disabled] {
   border-color: var(--xh-border-subtle);
   background: var(--xh-bg-muted);
@@ -28279,6 +28912,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
 [data-scope='table'][data-part='select-all-trigger']:empty::before,
+[data-scope='table'][data-part='column-visibility-trigger']:empty::before,
 [data-scope='table'][data-part='row-select-trigger']:empty::before {
   content: '';
   display: inline-block;

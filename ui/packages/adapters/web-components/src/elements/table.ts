@@ -1,9 +1,11 @@
 import type { Direction, Size } from '@xihan-ui/core'
 import type {
+  TableApi,
   TableColumnDef,
   TableColumnKind,
   TableColumnPreference,
   TableColumnProps,
+  TableColumnSetting,
   TableExpandedValueChangeDetails,
   TableRowDef,
   TableRowProps,
@@ -79,6 +81,9 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @prop {(move: TableRowMoveDetails) => boolean} allowRowDrop - 这一次搬家许不许，收到的是折算好的落点；不给即都许
  * @csspart root - role=grid 容器（rows 里有可展开的行时为 treegrid），报行列总数与多选声明
  * @csspart caption - 表格标题（aria-labelledby 目标）
+ * @csspart toolbar - 工具条：搜索、筛选、密度与列设置这些对整张表下手的控件摆在这儿；须写在 root 之外（root 是 role=grid），不带 role，要方向键 roving 就往里放一个 xh-toolbar
+ * @csspart column-list - 列设置区（role=group），一列一行；渲什么照 columnSettings 走，藏起来的列也在其中
+ * @csspart column-visibility-trigger - 一列的显隐把手（role=checkbox，勾着＝这一列显示着），须自带 value 属性标识列身份；只剩最后一列显示着时转 aria-disabled
  * @csspart header - role=rowgroup 表头区
  * @csspart body - role=rowgroup 表体区，键盘在此收口，也是行级 roving 的兜底 Tab 位
  * @csspart footer - role=rowgroup 脚注区
@@ -227,6 +232,26 @@ export class XhTableElement extends XhElement {
     }
   }
 
+  /** 命令式入口共用的取法；机器要到进文档（hostConnected）才建，未建则抛。 */
+  private commands(): TableApi {
+    if (!this.ctrl.service)
+      throw new Error('[xh] <xh-table> 还没进文档，命令式接口此时不可用')
+    return connectTable(this.ctrl.service, wcNormalize)
+  }
+
+  /**
+   * 列设置区照它渲：作者定义的那些列，按偏好排过序，藏起来的也在其中。
+   * 生效列滤掉了藏起来的那些，而设置区正是把它们放回来的地方。
+   */
+  get columnSettings(): readonly TableColumnSetting[] {
+    return this.commands().columnSettings
+  }
+
+  /** 改一列的冻结档。false 是不冻结，true 等于 'start'。 */
+  setColumnSticky(columnId: string, sticky: boolean | 'start' | 'end'): void {
+    this.commands().setColumnSticky(columnId, sticky)
+  }
+
   /** 承载焦点的行被移出 DOM 时上报 TABLE.BLUR，让机器重挑焦点锚点。 */
   protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
     const { context, getStatus, send } = this.ctrl.service
@@ -294,6 +319,9 @@ export class XhTableElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('caption', api.getCaptionProps() as Record<string, unknown>)
+    // 工具条与列设置区都写在 root 之外：root 是 role=grid，子节点只能是 row 与 rowgroup
+    put('toolbar', api.getToolbarProps() as Record<string, unknown>)
+    put('column-list', api.getColumnListProps() as Record<string, unknown>)
     put('header', api.getHeaderProps() as Record<string, unknown>)
     put('body', api.getBodyProps() as Record<string, unknown>)
     put('footer', api.getFooterProps() as Record<string, unknown>)
@@ -335,6 +363,8 @@ export class XhTableElement extends XhElement {
     putAll('sort-trigger', el => api.getSortTriggerProps(this.columnOf(el)))
     putAll('column-resize-trigger', el => api.getColumnResizeTriggerProps(this.columnOf(el)))
     putAll('column-drag-trigger', el => api.getColumnDragTriggerProps(this.columnOf(el)))
+    // 设置区里的把手不在任何列标题内，列身份读它自己的 value
+    putAll('column-visibility-trigger', el => api.getColumnVisibilityTriggerProps(this.columnOf(el)))
     // 把手长在行里，身份跟着所在行走
     putAll('row-drag-trigger', el => api.getRowDragTriggerProps(this.rowOf(el)))
     putAll('expand-trigger', el => api.getExpandTriggerProps(this.rowOf(el)))

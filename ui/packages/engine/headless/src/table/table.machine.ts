@@ -429,6 +429,9 @@ export const tableMachine = createMachine({
         if (e.width !== undefined)
           next.widths = { ...current.widths, [e.columnId]: e.width }
 
+        if (e.sticky !== undefined)
+          next.sticky = { ...current.sticky, [e.columnId]: e.sticky }
+
         if (e.toIndex !== undefined) {
           // 基线取「当下的列序」：没有偏好时就是作者给的原顺序
           const ids = (prop('columns') ?? []).map(column => column.id)

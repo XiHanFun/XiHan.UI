@@ -10,6 +10,9 @@ export const vueSsrExempt: SsrExemptions = {
   throwExempt: {},
   emptyExempt: {},
   partExempt: {
+    'command': {
+      root: '根组件只渲插槽，不产出自己的元素',
+    },
     'dialog': {
       'root': '根组件只渲插槽，不产出自己的元素',
       'content': CLOSED,

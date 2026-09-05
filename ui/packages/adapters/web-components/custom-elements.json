@@ -9338,6 +9338,867 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/command.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-command>` —— Light-DOM 行为宿主：作者写 trigger/backdrop/positioner/content/input/list/item/...\n角色节点，元素跑 command 机器并把 connect 产出打上去。\n\n过滤在库这一层做：命令清单经 collection 交进来，检索串一变，不在结果里的条目与整组空掉的分组\n由 connect 打上 hidden。作者只管把整份清单铺成节点，不必自己增删。\n\n焦点自始至终在 input 上：条目不可聚焦、也不进 Tab 序列，锚点经 aria-activedescendant 报给读屏。",
+          "name": "XhCommandElement",
+          "cssParts": [
+            {
+              "description": "打开面板的按钮，须是原生 button；焦点关闭后归还给它",
+              "name": "trigger"
+            },
+            {
+              "description": "遮罩层",
+              "name": "backdrop"
+            },
+            {
+              "description": "浮层定位容器，由皮肤的 inset 直接摆",
+              "name": "positioner"
+            },
+            {
+              "description": "role=dialog 面板（焦点陷阱所在），收起时带 hidden",
+              "name": "content"
+            },
+            {
+              "description": "检索框，面板里唯一的打字入口，带 role=combobox",
+              "name": "input"
+            },
+            {
+              "description": "role=listbox 结果容器",
+              "name": "list"
+            },
+            {
+              "description": "role=group 分组容器，须自带 value 属性标识身份；整组被筛空时带 hidden",
+              "name": "group"
+            },
+            {
+              "description": "分组标题（本组 aria-labelledby 的目标）",
+              "name": "group-label"
+            },
+            {
+              "description": "role=option 命令，须自带 value 属性标识身份；不在结果里时带 hidden",
+              "name": "item"
+            },
+            {
+              "description": "命令文本（选中时回传给宿主的取字处）",
+              "name": "item-text"
+            },
+            {
+              "description": "一条都没剩下时的提示；须放在 content 里当 list 的兄弟（列表内只允许 option 与 group）",
+              "name": "empty"
+            },
+            {
+              "description": "在途占位，与空态占位同一个位置，取数期间顶上来",
+              "name": "loading"
+            },
+            {
+              "description": "面板底部提示条，作者放什么由作者定",
+              "name": "footer"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: commandAnatomy, meta: commandMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "CommandNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "groups",
+              "privacy": "public",
+              "type": {
+                "text": "CommandGroup[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "CommandSchema['props']['translations'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "inputValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "input-value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultInputValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "default-input-value"
+            },
+            {
+              "kind": "field",
+              "name": "filter",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "filter"
+            },
+            {
+              "kind": "field",
+              "name": "caseSensitive",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "case-sensitive"
+            },
+            {
+              "kind": "field",
+              "name": "closeOnSelect",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "close-on-select"
+            },
+            {
+              "kind": "field",
+              "name": "modal",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "modal"
+            },
+            {
+              "kind": "field",
+              "name": "closeOnEscape",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "close-on-escape"
+            },
+            {
+              "kind": "field",
+              "name": "closeOnInteractOutside",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "close-on-interact-outside"
+            },
+            {
+              "kind": "field",
+              "name": "restoreFocus",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "restore-focus"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "OverlayBackdropVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "commandScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
+              "name": "declaredDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读"
+            },
+            {
+              "kind": "field",
+              "name": "notifyOpen",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyInputValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifySelect",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<CommandSchema>( this, commandMachine, () => this.machineProps(), { scope: this.commandScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "CommandApi | null"
+                }
+              },
+              "description": "取数口与命令共用的取法。机器要到进文档（hostConnected）才建，\n而这些都是公开面，作者拿到元素随时可能读、可能调——还没进文档时如实给空，不抛错。"
+            },
+            {
+              "kind": "field",
+              "name": "expanded",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "面板此刻开着没有（`open` 属性是受控入参，可能缺席；这里是结果）。\n机器尚未建起时给 false。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentInputValue",
+              "type": {
+                "text": "string"
+              },
+              "description": "此刻的检索串（`input-value` 属性缺席时非受控的那份住在机器里，只有这里读得到）。\n机器尚未建起时给空串。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "groupResults",
+              "type": {
+                "text": "readonly CommandGroupMeta[]"
+              },
+              "description": "过滤归组之后此刻该显示的命令，空组已经丢掉。机器尚未建起时给空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "results",
+              "type": {
+                "text": "readonly CommandNodeMeta[]"
+              },
+              "description": "上面那份分组视图摊平的结果，次序即方向键走的次序。机器尚未建起时给空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "highlightedValue",
+              "type": {
+                "text": "string | null"
+              },
+              "description": "键盘锚点；收起或一条都没剩下时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "isEmpty",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "一条都没剩下。机器尚未建起时给 false。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "setOpen",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "description": "开合面板。受控（写了 `open` 属性）时只发 open-change，开合归宿主写回。机器尚未建起时不动。"
+            },
+            {
+              "kind": "method",
+              "name": "setInputValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "改写检索串。受控时语义同 setOpen。机器尚未建起时不动。"
+            },
+            {
+              "kind": "method",
+              "name": "select",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "直接执行某条命令，等同于在它上面按回车。禁用的那条不认。机器尚未建起时不动。"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<CommandSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<CommandSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "owner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "取 owner 子树内指定名字的角色节点。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "open 状态变化；detail 为 `{ open: boolean, reason?: string }`",
+              "name": "open-change",
+              "type": {
+                "text": "CommandOpenChangeDetails"
+              }
+            },
+            {
+              "description": "检索串变化；detail 为 `{ inputValue: string }`",
+              "name": "input-value-change",
+              "type": {
+                "text": "CommandInputValueChangeDetails"
+              }
+            },
+            {
+              "description": "选中一条命令；detail 为 `{ value: string, label: string }`",
+              "name": "select",
+              "type": {
+                "text": "CommandSelectDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开合；缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为展开",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "受控检索串；缺省该属性即非受控",
+              "name": "input-value",
+              "fieldName": "inputValue"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "非受控初始检索串",
+              "name": "default-input-value",
+              "fieldName": "defaultInputValue"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "内置过滤，默认开；写 filter=\"false\" 即由调用方自己筛",
+              "name": "filter",
+              "fieldName": "filter"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "过滤区分大小写，默认不区分",
+              "name": "case-sensitive",
+              "fieldName": "caseSensitive"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "选中一条命令后收起面板，默认 true",
+              "name": "close-on-select",
+              "fieldName": "closeOnSelect"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "模态（陷焦点、锁滚动、遮罩交互外关闭），默认 true",
+              "name": "modal",
+              "fieldName": "modal"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "Esc 关闭，默认 true",
+              "name": "close-on-escape",
+              "fieldName": "closeOnEscape"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "点面板外关闭，默认跟随 modal",
+              "name": "close-on-interact-outside",
+              "fieldName": "closeOnInteractOutside"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "关闭后把焦点归还触发元素，默认 true",
+              "name": "restore-focus",
+              "fieldName": "restoreFocus"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "方向键走到尽头回绕，默认 true；写 loop=\"false\" 关掉",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "命令还在取：列表报 aria-busy，在途占位顶上来、空态占位让位",
+              "name": "loading",
+              "fieldName": "loading"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "检索框占位文字",
+              "name": "placeholder",
+              "fieldName": "placeholder"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给",
+              "name": "dir",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸：换面板宽度与条目的几何档位",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "OverlayBackdropVariant | undefined"
+              },
+              "description": "遮罩形态：只换 backdrop 的底色与模糊",
+              "name": "variant",
+              "fieldName": "variant"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-command",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-command-backdrop-bg"
+            },
+            {
+              "name": "--xh-command-backdrop-blur"
+            },
+            {
+              "name": "--xh-command-backdrop-layer"
+            },
+            {
+              "name": "--xh-command-bg"
+            },
+            {
+              "name": "--xh-command-empty-fg"
+            },
+            {
+              "name": "--xh-command-empty-font-size"
+            },
+            {
+              "name": "--xh-command-empty-px"
+            },
+            {
+              "name": "--xh-command-empty-py"
+            },
+            {
+              "name": "--xh-command-fg"
+            },
+            {
+              "name": "--xh-command-footer-border"
+            },
+            {
+              "name": "--xh-command-footer-fg"
+            },
+            {
+              "name": "--xh-command-footer-font-size"
+            },
+            {
+              "name": "--xh-command-footer-gap"
+            },
+            {
+              "name": "--xh-command-footer-px"
+            },
+            {
+              "name": "--xh-command-footer-py"
+            },
+            {
+              "name": "--xh-command-group-gap"
+            },
+            {
+              "name": "--xh-command-group-label-fg"
+            },
+            {
+              "name": "--xh-command-group-label-font-size"
+            },
+            {
+              "name": "--xh-command-group-label-font-weight"
+            },
+            {
+              "name": "--xh-command-group-label-px"
+            },
+            {
+              "name": "--xh-command-group-label-py"
+            },
+            {
+              "name": "--xh-command-group-spacing"
+            },
+            {
+              "name": "--xh-command-icon-size"
+            },
+            {
+              "name": "--xh-command-input-autofill-bg"
+            },
+            {
+              "name": "--xh-command-input-autofill-fg"
+            },
+            {
+              "name": "--xh-command-input-border"
+            },
+            {
+              "name": "--xh-command-input-fg"
+            },
+            {
+              "name": "--xh-command-input-font-size"
+            },
+            {
+              "name": "--xh-command-input-h"
+            },
+            {
+              "name": "--xh-command-input-px"
+            },
+            {
+              "name": "--xh-command-inset-block-start"
+            },
+            {
+              "name": "--xh-command-item-bg-hover"
+            },
+            {
+              "name": "--xh-command-item-fg"
+            },
+            {
+              "name": "--xh-command-item-font-size"
+            },
+            {
+              "name": "--xh-command-item-gap"
+            },
+            {
+              "name": "--xh-command-item-leading"
+            },
+            {
+              "name": "--xh-command-item-px"
+            },
+            {
+              "name": "--xh-command-item-py"
+            },
+            {
+              "name": "--xh-command-item-radius"
+            },
+            {
+              "name": "--xh-command-layer"
+            },
+            {
+              "name": "--xh-command-list-busy-opacity"
+            },
+            {
+              "name": "--xh-command-list-gap"
+            },
+            {
+              "name": "--xh-command-list-px"
+            },
+            {
+              "name": "--xh-command-list-py"
+            },
+            {
+              "name": "--xh-command-loading-fg"
+            },
+            {
+              "name": "--xh-command-loading-font-size"
+            },
+            {
+              "name": "--xh-command-loading-px"
+            },
+            {
+              "name": "--xh-command-loading-py"
+            },
+            {
+              "name": "--xh-command-max-h"
+            },
+            {
+              "name": "--xh-command-max-w"
+            },
+            {
+              "name": "--xh-command-placeholder-fg"
+            },
+            {
+              "name": "--xh-command-positioner-pb"
+            },
+            {
+              "name": "--xh-command-positioner-px"
+            },
+            {
+              "name": "--xh-command-radius"
+            },
+            {
+              "name": "--xh-command-shadow"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhCommandElement",
+          "declaration": {
+            "name": "XhCommandElement",
+            "module": "src/elements/command.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/config.ts",
       "declarations": [
         {
@@ -22380,11 +23241,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-layout>` —— 页面骨架的 Light-DOM 行为宿主，跑 layout 机器并把 connect 产出打到\nroot/header/sider/content/footer/sider-trigger 角色节点。\n\n除 root 外的部件全部可缺省。各段一律不带 role：地标该不该标、标在哪一段，\n取决于这套骨架在页面里的位置，由作者自己声明。\n\n侧栏宽度只写成 sider 上的内联 inline-size，宽度过渡由皮肤声明。\n\n固定定位只落 data-fixed 标记：钉住的实现（含滚动容器的分工）归皮肤。",
+          "description": "`<xh-layout>` —— 页面骨架的 Light-DOM 行为宿主，跑 layout 机器并把 connect 产出打到\nroot/header/sider-backdrop/sider/content/footer/sider-trigger 角色节点。\n\n除 root 外的部件全部可缺省。各段一律不带 role：地标该不该标、标在哪一段，\n取决于这套骨架在页面里的位置，由作者自己声明。\n\n侧栏宽度只写成 sider 上的内联 inline-size，宽度过渡由皮肤声明。\n\n固定定位只落 data-fixed 标记：钉住的实现（含滚动容器的分工）归皮肤。",
           "name": "XhLayoutElement",
           "cssParts": [
             {
-              "description": "骨架根容器，承载 data-sider-placement / data-sider-breakpoint / data-collapsed / data-header-fixed / data-sider-fixed / data-bordered",
+              "description": "骨架根容器，承载 data-sider-placement / data-sider-breakpoint / data-sider-presentation / data-collapsed / data-header-fixed / data-sider-fixed / data-bordered",
               "name": "root"
             },
             {
@@ -22392,7 +23253,11 @@
               "name": "header"
             },
             {
-              "description": "侧栏，折叠时带 data-collapsed、宽度随之在两档之间切换；吸附时带 data-fixed",
+              "description": "覆盖档铺在内容之上的遮罩，点它收起侧栏；占位档下带 hidden。写在 sider 之前",
+              "name": "sider-backdrop"
+            },
+            {
+              "description": "侧栏，折叠时带 data-collapsed、宽度随之在两档之间切换；吸附时带 data-fixed；覆盖档带 data-presentation=\"sheet\"",
               "name": "sider"
             },
             {
@@ -22471,6 +23336,15 @@
                 "text": "LayoutBreakpoint | undefined"
               },
               "attribute": "sider-breakpoint"
+            },
+            {
+              "kind": "field",
+              "name": "siderPresentation",
+              "privacy": "public",
+              "type": {
+                "text": "LayoutSiderPresentation | undefined"
+              },
+              "attribute": "sider-presentation"
             },
             {
               "kind": "field",
@@ -22606,6 +23480,14 @@
             },
             {
               "type": {
+                "text": "LayoutSiderPresentation | undefined"
+              },
+              "description": "侧栏呈现形态：inline 占一列，sheet 移出画外、展开时盖在内容之上；写了断点时只在未达档时成立",
+              "name": "sider-presentation",
+              "fieldName": "siderPresentation"
+            },
+            {
+              "type": {
                 "text": "boolean | undefined"
               },
               "description": "头吸顶：滚动时头钉在滚动容器的上沿",
@@ -22673,13 +23555,25 @@
               "name": "--xh-layout-scrollport-h"
             },
             {
+              "name": "--xh-layout-sider-backdrop-bg"
+            },
+            {
+              "name": "--xh-layout-sider-backdrop-layer"
+            },
+            {
               "name": "--xh-layout-sider-bg"
             },
             {
               "name": "--xh-layout-sider-collapsed-w"
             },
             {
+              "name": "--xh-layout-sider-layer"
+            },
+            {
               "name": "--xh-layout-sider-padding"
+            },
+            {
+              "name": "--xh-layout-sider-shadow"
             },
             {
               "name": "--xh-layout-sider-trigger-bg"
@@ -29255,12 +30149,20 @@
           "name": "XhPageHeaderElement",
           "cssParts": [
             {
-              "description": "页头根容器，承载 data-size / data-bordered",
+              "description": "页头根容器，承载 data-size / data-variant / data-bordered",
               "name": "root"
+            },
+            {
+              "description": "面包屑位，整行排在标题之上",
+              "name": "breadcrumb"
             },
             {
               "description": "返回位，作者自己的按钮，组件只摆位置",
               "name": "back-trigger"
+            },
+            {
+              "description": "头像 / 图标位，排在返回位与标题之间",
+              "name": "media"
             },
             {
               "description": "页面标题",
@@ -29308,6 +30210,15 @@
               "attribute": "bordered"
             },
             {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "PageHeaderVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -29331,9 +30242,17 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "底部画一条分隔线",
+              "description": "底部画一条分隔线；给了面的两档改画整圈描边",
               "name": "bordered",
               "fieldName": "bordered"
+            },
+            {
+              "type": {
+                "text": "PageHeaderVariant | undefined"
+              },
+              "description": "形态，不写即不画面（与 plain 同一个样子）；surface 加底色与圆角，raised 再加一层投影",
+              "name": "variant",
+              "fieldName": "variant"
             }
           ],
           "superclass": {
@@ -29344,7 +30263,16 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-page-header-bg"
+            },
+            {
               "name": "--xh-page-header-border"
+            },
+            {
+              "name": "--xh-page-header-breadcrumb-fg"
+            },
+            {
+              "name": "--xh-page-header-breadcrumb-font-size"
             },
             {
               "name": "--xh-page-header-column-gap"
@@ -29368,10 +30296,19 @@
               "name": "--xh-page-header-footer-font-size"
             },
             {
+              "name": "--xh-page-header-px"
+            },
+            {
               "name": "--xh-page-header-py"
             },
             {
+              "name": "--xh-page-header-radius"
+            },
+            {
               "name": "--xh-page-header-row-gap"
+            },
+            {
+              "name": "--xh-page-header-shadow"
             },
             {
               "name": "--xh-page-header-title-fg"
@@ -41523,6 +42460,18 @@
               "name": "caption"
             },
             {
+              "description": "工具条：搜索、筛选、密度与列设置这些对整张表下手的控件摆在这儿；须写在 root 之外（root 是 role=grid），不带 role，要方向键 roving 就往里放一个 xh-toolbar",
+              "name": "toolbar"
+            },
+            {
+              "description": "列设置区（role=group），一列一行；渲什么照 columnSettings 走，藏起来的列也在其中",
+              "name": "column-list"
+            },
+            {
+              "description": "一列的显隐把手（role=checkbox，勾着＝这一列显示着），须自带 value 属性标识列身份；只剩最后一列显示着时转 aria-disabled",
+              "name": "column-visibility-trigger"
+            },
+            {
               "description": "role=rowgroup 表头区",
               "name": "header"
             },
@@ -41888,6 +42837,50 @@
             },
             {
               "kind": "method",
+              "name": "commands",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "TableApi"
+                }
+              },
+              "description": "命令式入口共用的取法；机器要到进文档（hostConnected）才建，未建则抛。"
+            },
+            {
+              "kind": "field",
+              "name": "columnSettings",
+              "type": {
+                "text": "readonly TableColumnSetting[]"
+              },
+              "description": "列设置区照它渲：作者定义的那些列，按偏好排过序，藏起来的也在其中。\n生效列滤掉了藏起来的那些，而设置区正是把它们放回来的地方。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "setColumnSticky",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "columnId",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "sticky",
+                  "type": {
+                    "text": "boolean | 'start' | 'end'"
+                  }
+                }
+              ],
+              "description": "改一列的冻结档。false 是不冻结，true 等于 'start'。"
+            },
+            {
+              "kind": "method",
               "name": "onPartsReleased",
               "privacy": "protected",
               "return": {
@@ -42209,6 +43202,15 @@
               "name": "--xh-table-column-font-weight"
             },
             {
+              "name": "--xh-table-column-list-fg"
+            },
+            {
+              "name": "--xh-table-column-list-font-size"
+            },
+            {
+              "name": "--xh-table-column-list-gap"
+            },
+            {
               "name": "--xh-table-detail-bg"
             },
             {
@@ -42381,6 +43383,15 @@
             },
             {
               "name": "--xh-table-sticky-inset"
+            },
+            {
+              "name": "--xh-table-toolbar-fg"
+            },
+            {
+              "name": "--xh-table-toolbar-gap"
+            },
+            {
+              "name": "--xh-table-toolbar-py"
             },
             {
               "name": "--xh-table-trigger-bg-checked"

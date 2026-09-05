@@ -1,6 +1,6 @@
 # 组件总览
 
-125 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
+126 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
 
 本册每个组件一页，页内小节固定：概述 · 何时使用 · 何时不用 · 特性 · 示例 · 产物 · 解剖 · Props · 事件 · 插槽 · 状态 · connect API · 键盘 · 无障碍 · 样式 · 数据属性 · CSS 变量 · 动效 · 响应式 · RTL · 组合 · 最佳实践 · 反模式。其中契约类的小节由组件源码、连接层与皮肤直接生成，不会与代码对不上；讲取舍的几节与组件源码同放，见各组件目录下的 doc.md。某一节没有内容时整节不出现，不留空标题。
 
@@ -36,7 +36,7 @@
 | --- | --- | --- | --- | --- |
 | [弹性布局](./flex) | `flex` | 2 | 0 | 6 |
 | [栅格](./grid) | `grid` | 2 | 0 | 7 |
-| [布局](./layout) | `layout` | 6 | 1 | 7 |
+| [布局](./layout) | `layout` | 7 | 2 | 8 |
 | [瀑布流](./masonry) | `masonry` | 3 | 0 | 5 |
 | [滚动区域](./scroll-area) | `scroll-area` | 4 | 5 | 6 |
 | [分隔线](./separator) | `separator` | 3 | 0 | 4 |
@@ -58,7 +58,7 @@
 | [菜单](./menu) | `menu` | 11 | 9 | 11 |
 | [菜单栏](./menubar) | `menubar` | 12 | 15 | 10 |
 | [导航菜单](./navigation-menu) | `navigation-menu` | 9 | 7 | 10 |
-| [页头](./page-header) | `page-header` | 6 | 0 | 5 |
+| [页头](./page-header) | `page-header` | 8 | 0 | 7 |
 | [分页](./pagination) | `pagination` | 10 | 6 | 11 |
 | [分段控制器](./segmented) | `segmented` | 5 | 6 | 8 |
 | [侧栏导航](./side-nav) | `side-nav` | 13 | 10 | 2 |
@@ -134,7 +134,7 @@
 | [数值动画](./number-animation) | `number-animation` | 1 | 0 | 4 |
 | [二维码](./qr-code) | `qr-code` | 2 | 0 | 8 |
 | [统计数值](./statistic) | `statistic` | 6 | 0 | 6 |
-| [表格](./table) | `table` | 20 | 17 | 23 |
+| [表格](./table) | `table` | 23 | 18 | 24 |
 | [标签](./tag) | `tag` | 3 | 1 | 6 |
 | [时间线](./timeline) | `timeline` | 9 | 0 | 6 |
 | [计时器](./timer) | `timer` | 5 | 1 | 7 |
@@ -163,6 +163,7 @@ portal 到统一落点、由定位引擎摆位的一层，共用浮层容器与�
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
+| [命令面板](./command) | `command` | 13 | 8 | 2 |
 | [对话框](./dialog) | `dialog` | 11 | 4 | 9 |
 | [抽屉](./drawer) | `drawer` | 11 | 4 | 8 |
 | [浮动面板](./floating-panel) | `floating-panel` | 11 | 6 | 6 |

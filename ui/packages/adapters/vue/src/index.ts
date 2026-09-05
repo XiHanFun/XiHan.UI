@@ -218,6 +218,23 @@ export {
 export type { ComboboxRootSlotProps } from './components/combobox/combobox'
 export { useCombobox } from './components/combobox/use-combobox'
 export type { ComboboxContext } from './components/combobox/use-combobox'
+export {
+  XhCommandContent,
+  XhCommandEmpty,
+  XhCommandFooter,
+  XhCommandGroup,
+  XhCommandGroupLabel,
+  XhCommandInput,
+  XhCommandItem,
+  XhCommandItemText,
+  XhCommandList,
+  XhCommandLoading,
+  XhCommandRoot,
+  XhCommandTrigger,
+} from './components/command/command'
+export type { CommandRootSlotProps } from './components/command/command'
+export { useCommand } from './components/command/use-command'
+export type { CommandContext } from './components/command/use-command'
 export { provideContextMenuChain, provideContextMenuSub, useContextMenuChain, useContextMenuSubContext } from './components/context-menu/context'
 export type { ContextMenuChain, ContextMenuSubHandle } from './components/context-menu/context'
 export {
@@ -478,7 +495,7 @@ export { XhJsonViewerRoot } from './components/json-viewer/json-viewer'
 export { useJsonViewer } from './components/json-viewer/use-json-viewer'
 export type { JsonViewerContext } from './components/json-viewer/use-json-viewer'
 export { provideLayout, useLayoutContext } from './components/layout/context'
-export { XhLayoutContent, XhLayoutFooter, XhLayoutHeader, XhLayoutRoot, XhLayoutSider, XhLayoutSiderTrigger } from './components/layout/layout'
+export { XhLayoutContent, XhLayoutFooter, XhLayoutHeader, XhLayoutRoot, XhLayoutSider, XhLayoutSiderBackdrop, XhLayoutSiderTrigger } from './components/layout/layout'
 export { useLayout } from './components/layout/use-layout'
 export type { LayoutContext } from './components/layout/use-layout'
 export { provideList, useListContext } from './components/list/context'
@@ -629,7 +646,7 @@ export { useNumberField } from './components/number-field/use-number-field'
 export type { NumberFieldContext } from './components/number-field/use-number-field'
 export { providePageHeader, usePageHeaderContext } from './components/page-header/context'
 export type { PageHeaderContext } from './components/page-header/context'
-export { XhPageHeaderBackTrigger, XhPageHeaderDescription, XhPageHeaderExtra, XhPageHeaderFooter, XhPageHeaderRoot, XhPageHeaderTitle } from './components/page-header/page-header'
+export { XhPageHeaderBackTrigger, XhPageHeaderBreadcrumb, XhPageHeaderDescription, XhPageHeaderExtra, XhPageHeaderFooter, XhPageHeaderMedia, XhPageHeaderRoot, XhPageHeaderTitle } from './components/page-header/page-header'
 export {
   XhPaginationContent,
   XhPaginationEllipsisTrigger,
@@ -869,7 +886,9 @@ export {
   XhTableCell,
   XhTableColumnDragTrigger,
   XhTableColumnHeader,
+  XhTableColumnList,
   XhTableColumnResizeTrigger,
+  XhTableColumnVisibilityTrigger,
   XhTableEmpty,
   XhTableExpandedRow,
   XhTableExpandTrigger,
@@ -883,8 +902,9 @@ export {
   XhTableRowSelectTrigger,
   XhTableSelectAllTrigger,
   XhTableSortTrigger,
+  XhTableToolbar,
 } from './components/table/table'
-export type { TableRootSlotProps } from './components/table/table'
+export type { TableRootSlotProps, TableToolbarSlotProps } from './components/table/table'
 export { useTable } from './components/table/use-table'
 export type { TableContext } from './components/table/use-table'
 export {

@@ -32,10 +32,12 @@ function splitTopLevel(value) {
   let start = 0
   for (let i = 0; i < value.length; i++) {
     const ch = value[i]
-    if (ch === '(')
+    if (ch === '(') {
       depth++
-    else if (ch === ')')
+    }
+    else if (ch === ')') {
       depth--
+    }
     else if (ch === ',' && depth === 0) {
       out.push(value.slice(start, i))
       start = i + 1

@@ -39,6 +39,8 @@ const EXPECTED = {
   'cascader': { content: ['floating'] },
   'color-picker': { content: ['floating'] },
   'combobox': { content: ['floating'], empty: ['floating'], loading: ['floating'] },
+  // 命令面板是盖在页面上、带遮罩的一面，与对话框同档
+  'command': { content: ['sheet'] },
   'context-menu': { content: ['floating'] },
   'date-picker': { content: ['floating'] },
   'dialog': { content: ['sheet'] },
@@ -47,6 +49,8 @@ const EXPECTED = {
   'floating-panel': { content: ['sheet'] },
   'heatmap': { tooltip: ['floating'] },
   'hover-card': { content: ['floating'] },
+  // 覆盖档的侧栏是盖在内容之上、带遮罩的一面，与抽屉同档；占位档的侧栏不画投影
+  'layout': { sider: ['sheet'] },
   'mention': { content: ['floating'], empty: ['floating'], loading: ['floating'] },
   'menu': { content: ['floating'] },
   'menubar': { content: ['floating'] },
