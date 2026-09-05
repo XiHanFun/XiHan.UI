@@ -39,6 +39,12 @@ ghost 档不占一块面，开关收成只占文字宽度的小药丸，适合�
 
 <XhDemo src="reasoning/02-inline" />
 
+### 语气与尺寸
+
+tone 换指示符与状态文案的色族，size 换标题行与正文的几何档；五份都挂在思考中，正文自动展开
+
+<XhDemo src="reasoning/03-tone-size" />
+
 ## 产物
 
 | 层 | 值 |
@@ -143,6 +149,8 @@ ghost 档不占一块面，开关收成只占文字宽度的小药丸，适合�
 
 默认皮肤 `@xihan-ui/styles/reasoning.css` 按部件选择：`[data-scope="reasoning"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ## 数据属性
 
 由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
@@ -172,13 +180,11 @@ ghost 档不占一块面，开关收成只占文字宽度的小药丸，适合�
 
 ## 动效
 
-关键帧 `xh-reasoning-collapse` · `xh-reasoning-expand` · `xh-reasoning-fade-in` · `xh-reasoning-shimmer` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-reasoning-collapse` · `xh-reasoning-expand` · `xh-reasoning-fade-in` · `xh-reasoning-shimmer` 随皮肤自带，不引用别处文件里的名字；`background` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
-
-## 响应式
-
-皮肤内置条件规则：`forced-colors: active`。
 
 ## RTL
 

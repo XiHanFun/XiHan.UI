@@ -2,6 +2,7 @@ import { h, watch } from "vue";
 import Theme from "vitepress/theme";
 import XhDemo from "./XhDemo.vue";
 import XhFrameworkSwitch from "./XhFrameworkSwitch.vue";
+import XhPageMarkdown from "./XhPageMarkdown.vue";
 // 示例舞台隔离必须排在皮肤之前：两者选择器同权，同权时后来者胜，皮肤在后才盖得住隔离。
 import "./demo-isolation.css";
 // 组件默认皮肤：用无层版本。VitePress 自带无层的 button 重置，CSS 级联里无层
@@ -19,6 +20,8 @@ export default {
     // 框架切换器排在站点标题之后，全站一份、所有示例跟着它走
     return h(Theme.Layout, null, {
       "nav-bar-content-before": () => h(XhFrameworkSwitch),
+      // 每页正文上方一条取 Markdown 的直链，指向构建期落在同路径的 .md
+      "doc-before": () => h(XhPageMarkdown),
     });
   },
   enhanceApp(ctx) {

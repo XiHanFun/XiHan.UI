@@ -16,6 +16,8 @@
     /* 海拔先落进私有槽：语气档要把它与左侧色条叠成一条 box-shadow，无壳档把它关掉 */
     --xh-_tool-call-shadow: var(--xh-tool-call-shadow, var(--xh-elevation-raised));
 
+    --xh-icon-size: var(--xh-tool-call-icon-size, var(--xh-glyph-size-text));
+
     display: block;
     overflow: hidden;
     border: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
@@ -111,11 +113,33 @@
     transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
+  /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
+  [data-scope='tool-call'][data-part='indicator']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  }
+
   [data-scope='tool-call'][data-part='indicator'][hidden] {
     display: none;
   }
 
+  /* 收起时朝向行首、展开时转向下方，与逻辑书写方向一致：
+     rtl 下 inline-start 在右侧，箭头因此要反着转 */
   [data-scope='tool-call'][data-part='indicator'][data-state='open'] {
+    rotate: 90deg;
+  }
+
+  [dir='rtl'] [data-scope='tool-call'][data-part='indicator'] {
+    rotate: 180deg;
+  }
+
+  [dir='rtl'] [data-scope='tool-call'][data-part='indicator'][data-state='open'] {
     rotate: 90deg;
   }
 

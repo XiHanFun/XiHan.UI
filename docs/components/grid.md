@@ -154,9 +154,13 @@ cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列
 
 `--xh-grid-column-gap` · `--xh-grid-columns` · `--xh-grid-gap` · `--xh-grid-row-gap` · `--xh-grid-rows`
 
+## 动效
+
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
 ## 响应式
 
-皮肤内置条件规则：`min-width: 1024px` · `min-width: 1280px` · `min-width: 640px` · `min-width: 768px`。
+皮肤按视口分档：`min-width: 1024px` · `min-width: 1280px` · `min-width: 640px` · `min-width: 768px`。
 
 ## 组合
 

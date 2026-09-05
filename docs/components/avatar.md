@@ -176,6 +176,10 @@ tone 换淡底与回退字的配色族；不写 tone 就是中性缺省，直径
 
 `--xh-avatar-bg` · `--xh-avatar-fg` · `--xh-avatar-font-size` · `--xh-avatar-font-weight` · `--xh-avatar-radius` · `--xh-avatar-size`
 
+## 动效
+
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
 ## 组合
 
 - 成组时套[头像组](./avatar-group)；角标用[徽标](./badge)。

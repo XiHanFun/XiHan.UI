@@ -36,7 +36,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
   <div style="display: flex; flex-direction: column; gap: 8px;">
     <XhToolCallRoot :phase="phase" @open-change="lastSource = $event.source">
       <XhToolCallTrigger>
-        <XhToolCallIndicator>›</XhToolCallIndicator>
+        <XhToolCallIndicator />
         <XhToolCallLabel>read_file</XhToolCallLabel>
         <XhToolCallStatus />
       </XhToolCallTrigger>

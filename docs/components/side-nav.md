@@ -34,6 +34,12 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 
 <XhDemo src="side-nav/02-accordion-collapsed" />
 
+### 语气与尺寸
+
+tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两轴都打在 root 上，逐层继承
+
+<XhDemo src="side-nav/03-tone-size" />
+
 ## 产物
 
 | 层 | 值 |
@@ -227,7 +233,9 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 
 ## 动效
 
-关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

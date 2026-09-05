@@ -104,6 +104,10 @@ rotate 转整块图样，gap 决定两块之间留多少空白，fontSize 与 op
 
 `--xh-watermark-fg` · `--xh-watermark-image` · `--xh-watermark-tile`
 
+## 动效
+
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
 ## 组合
 
 - 包住[表格](./table)、[卡片](./card)或整块内容区。

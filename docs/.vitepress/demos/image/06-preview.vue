@@ -70,7 +70,8 @@ const itemStyle = {
         <XhImageImage
           :style="{
             transform: `scale(${scale}) rotate(${rotate}deg)`,
-            transition: 'transform 120ms var(--xh-ease-standard)',
+            transition:
+              'transform var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous)',
           }"
         />
         <XhImageFallback>加载中</XhImageFallback>

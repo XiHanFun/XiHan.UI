@@ -65,6 +65,12 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 
 <XhDemo src="toggle-group/07-size" />
 
+### 形态、语气与尺寸
+
+三轴打在 root 上沿继承流下发给每一段，条目自己不写任何一档
+
+<XhDemo src="toggle-group/08-variant-tone-size" />
+
 ## 产物
 
 | 层 | 值 |
@@ -173,6 +179,8 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 
 默认皮肤 `@xihan-ui/styles/toggle-group.css` 按部件选择：`[data-scope="toggle-group"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ## 数据属性
 
 由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
@@ -198,13 +206,9 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-## 响应式
-
-皮肤内置条件规则：`forced-colors: active`。
 
 ## RTL
 

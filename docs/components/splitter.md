@@ -173,6 +173,8 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 
 默认皮肤 `@xihan-ui/styles/splitter.css` 按部件选择：`[data-scope="splitter"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ## 数据属性
 
 由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
@@ -192,13 +194,9 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-## 响应式
-
-皮肤内置条件规则：`forced-colors: active`。
 
 ## 组合
 

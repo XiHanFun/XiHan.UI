@@ -292,23 +292,121 @@ function attrSurface(id, parts, states) {
 
 // ── 皮肤特征：动效 / 响应式 / RTL ─────────────────────────────────────────────
 
+/** 剥掉条件命中 test 的 @media 块，返回剩下的正文。 */
+function stripMedia(css, test) {
+  let out = ''
+  let cut = 0
+  const re = /@media([^{]*)\{/g
+  for (let m = re.exec(css); m; m = re.exec(css)) {
+    if (!test.test(m[1]))
+      continue
+    let depth = 1
+    let end = re.lastIndex
+    for (; end < css.length && depth > 0; end++) {
+      if (css[end] === '{')
+        depth++
+      else if (css[end] === '}')
+        depth--
+    }
+    out += css.slice(cut, m.index)
+    cut = end
+    re.lastIndex = end
+  }
+  return out + css.slice(cut)
+}
+
+/** 值是「不动」：none 或零时长。 */
+const motionOff = v => /^(?:none|0m?s)\b/.test(v.trim())
+
+/** 简写与 transition-property 里的属性名；其余 transition-* 分项不带属性名。 */
+function transitionProps(decls) {
+  const out = new Set()
+  for (const { suffix, value } of decls) {
+    if (suffix && suffix !== '-property')
+      continue
+    for (const part of value.split(',')) {
+      const name = part.trim().split(/\s+/)[0]
+      if (/^[a-z-]+$/.test(name) && !motionOff(name))
+        out.add(name)
+    }
+  }
+  return [...out].sort()
+}
+
 /** 默认皮肤里能直接读出来的几件事；没有皮肤返回 null，对应章节整个不出。 */
 function skinTraits(id) {
   const file = path.join(uiRoot, 'packages/design/styles/css', `${id}.css`)
   if (!fs.existsSync(file))
     return null
   const css = fs.readFileSync(file, 'utf8')
-  const uniq = re => [...new Set([...css.matchAll(re)].map(m => m[1].trim()))].sort()
+  const uniq = (re, text = css) => [...new Set([...text.matchAll(re)].map(m => m[1].trim()))].sort()
+  // 减弱动效、高对比与打印这三类块里写的是「关掉」，判动效只看剥掉它们之后的正文
+  const base = stripMedia(css, /prefers-reduced-motion|forced-colors|print/)
+  const declared = uniq(/@keyframes\s+([\w-]+)/g)
+  const animations = uniq(/^[ \t]*animation(?:-name)?\s*:\s*([^;}]+)/gm, base).filter(v => !motionOff(v))
+  // 名字被正文里的 animation 引到才算在播；名字走私有槽转发时解不出来，退回全部声明
+  const named = declared.filter(k => animations.some(v => new RegExp(`(?:^|[\\s,(])${k}(?=$|[\\s,)])`).test(v)))
+  const transitions = [...base.matchAll(/^[ \t]*transition(-[a-z]+)?\s*:\s*([^;}]+)/gm)]
+    .map(m => ({ suffix: m[1] ?? '', value: m[2] }))
+    .filter(d => !motionOff(d.value))
+  const queries = uniq(/@(?:container|media)[^({]*\(([^)]+)\)/g)
   return {
-    keyframes: uniq(/@keyframes\s+([\w-]+)/g),
+    keyframes: named.length ? named : (animations.length ? declared : []),
     layers: uniq(/@layer\s+([\w.]+)/g),
-    queries: uniq(/@(?:container|media)[^({]*\(([^)]+)\)/g).filter(
-      q => !q.includes('prefers-reduced-motion') && !q.includes('prefers-color-scheme'),
-    ),
-    transition: /^\s*transition(?:-[a-z]+)?\s*:/m.test(css),
+    transitions: transitions.length > 0,
+    transitionProps: transitionProps(transitions),
+    // 视口断点与容器查询是响应式；输入能力与渲染模式各自是另一回事，不混进那一节
+    viewportQueries: queries.filter(q => /(?:min|max)-(?:width|height|inline-size|block-size)/.test(q)),
+    inputQueries: queries.filter(q => /(?:any-)?(?:pointer|hover)\s*:/.test(q)),
+    forcedColors: queries.some(q => q.includes('forced-colors')),
     reduceMotion: css.includes('prefers-reduced-motion'),
     logical: /(?:margin|padding|inset|border)-inline|inline-(?:start|end)/.test(css),
     dirRules: /\[dir=|:dir\(/.test(css),
+  }
+}
+
+// 动效引擎里逐帧算值的那几个入口；resolveMotionPreference 只是读偏好，不驱动
+const MOTION_DRIVERS = [
+  'animate',
+  'createSpring',
+  'frameLoop',
+  'isTweenDone',
+  'springFromPerceptual',
+  'springToLinearEasing',
+  'tweenProgress',
+  'tweenValueAt',
+]
+
+/** 目录下全部 .ts 的源码合成一份文本；目录不存在返回空串。 */
+function readTs(dir) {
+  if (!fs.existsSync(dir))
+    return ''
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .flatMap(d => (d.isDirectory()
+      ? [readTs(path.join(dir, d.name))]
+      : d.isFile() && d.name.endsWith('.ts') ? [fs.readFileSync(path.join(dir, d.name), 'utf8')] : []))
+    .join('\n')
+}
+
+/** 皮肤里看不到的那部分动效：内核逐帧驱动的补间、适配器的退场闸门。 */
+function scriptedMotion(id) {
+  const src = readTs(path.join(headlessSrc, id))
+  const imported = new Set(
+    [...src.matchAll(/import\s+(?:type\s+)?\{([^}]*)\}\s+from\s+'@xihan-ui\/motion'/g)]
+      .flatMap(m => m[1].split(',').map(x => x.trim().split(/\s+as\s+/)[0])),
+  )
+  const adapters = [
+    readTs(path.join(uiRoot, 'packages/adapters/vue/src/components', id)),
+    fs.existsSync(path.join(uiRoot, 'packages/adapters/web-components/src/elements', `${id}.ts`))
+      ? fs.readFileSync(path.join(uiRoot, 'packages/adapters/web-components/src/elements', `${id}.ts`), 'utf8')
+      : '',
+  ].join('\n')
+  return {
+    drivers: MOTION_DRIVERS.filter(name => imported.has(name)),
+    prefers: imported.has('resolveMotionPreference'),
+    // 退场闸门直接建，或者走两个适配器各自的公共封装
+    presence: /createPresence|useOverlayExit|createOverlayExit/.test(adapters),
   }
 }
 
@@ -824,6 +922,8 @@ function renderComponent(entry, category) {
       + `要按层压过来就写进 ${code('xihan.overrides')}。`,
       '',
     )
+    if (sk.forcedColors)
+      push(`${code('forced-colors: active')} 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。`, '')
   }
 
   // 数据属性：皮肤与断言的选择面
@@ -846,29 +946,62 @@ function renderComponent(entry, category) {
     push(es.cssProps.map(code).join(' · '), '')
   }
 
-  // 动效：皮肤里实际声明了什么就写什么
-  if (sk && (sk.keyframes.length || sk.transition)) {
-    push('## 动效', '')
-    const bits = []
-    if (sk.keyframes.length)
-      bits.push(`关键帧 ${sk.keyframes.map(code).join(' · ')} 随皮肤自带，不引用别处文件里的名字`)
-    if (sk.transition)
-      bits.push(`状态切换走 ${code('transition')}`)
-    push(`${bits.join('；')}。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。`, '')
+  // 动效：分三种情形——皮肤里真在动、动效在皮肤之外由脚本驱动、本组件不动。
+  // 「皮肤里真在动」只认剥掉减弱动效与高对比两类块之后仍成立的声明：那两处写的是关掉
+  push('## 动效', '')
+  const sm = scriptedMotion(id)
+  const inSkin = []
+  if (sk?.keyframes.length)
+    inSkin.push(`关键帧 ${sk.keyframes.map(code).join(' · ')} 随皮肤自带，不引用别处文件里的名字`)
+  if (sk?.transitionProps.length)
+    inSkin.push(`${sk.transitionProps.map(code).join(' · ')} 走 ${code('transition')} 过渡`)
+  else if (sk?.transitions)
+    inSkin.push(`状态切换走 ${code('transition')}，属性由 ${code('transition-*')} 分项给定`)
+  const outsideSkin = []
+  if (sm.drivers.length)
+    outsideSkin.push(`值由内核逐帧算出（${sm.drivers.map(code).join(' · ')}），皮肤里看不到这段`)
+  if (sm.presence)
+    outsideSkin.push('退场由适配器的退场闸门把关，动画播完才真收起')
+  if (sm.prefers)
+    outsideSkin.push('内核读系统的减弱动效偏好，据此决定要不要动')
+
+  if (inSkin.length) {
+    push(`${inSkin.join('；')}。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。`, '')
+    if (outsideSkin.length)
+      push(`皮肤之外还有一段：${outsideSkin.join('；')}。`, '')
+  }
+  else if (outsideSkin.length) {
     push(
-      sk.reduceMotion
+      `皮肤里没有过渡也没有关键帧，本组件的动效不在皮肤里：${outsideSkin.join('；')}。`
+      + '时长与缓动仍读[动效令牌](../guide/motion)。',
+      '',
+    )
+  }
+  else {
+    push('本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。', '')
+  }
+  if (inSkin.length || outsideSkin.length) {
+    push(
+      sk?.reduceMotion
         ? `${code('prefers-reduced-motion: reduce')} 下本组件另有降级规则。`
         : '系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。',
       '',
     )
   }
 
-  // 响应式：皮肤里真有条件规则才出这一节
+  // 响应式：只有视口断点与容器查询算这一节；输入能力单独说，渲染模式不进来
   const responsive = authored('响应式')
-  if ((sk && sk.queries.length) || responsive) {
+  if (sk?.viewportQueries.length || sk?.inputQueries.length || responsive) {
     push('## 响应式', '')
-    if (sk?.queries.length)
-      push(`皮肤内置条件规则：${sk.queries.map(code).join(' · ')}。`, '')
+    if (sk?.viewportQueries.length)
+      push(`皮肤按视口分档：${sk.viewportQueries.map(code).join(' · ')}。`, '')
+    if (sk?.inputQueries.length) {
+      push(
+        `皮肤另按输入能力分档：${sk.inputQueries.map(code).join(' · ')}——`
+        + '同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。',
+        '',
+      )
+    }
     if (responsive)
       push(responsive, '')
   }

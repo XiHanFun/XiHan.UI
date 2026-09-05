@@ -43,6 +43,12 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 
 <XhDemo src="back-top/04-tone-size" />
 
+### 形态
+
+variant 换按钮的底色、描边与前景怎么用；这里把露面门槛设成 0，不滚也看得见
+
+<XhDemo src="back-top/05-variant" />
+
 ## 产物
 
 | 层 | 值 |
@@ -156,13 +162,13 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ## 响应式
 
-皮肤内置条件规则：`hover: hover` · `pointer: coarse`。
+皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ## RTL
 

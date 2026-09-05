@@ -24,16 +24,16 @@ const ArcIcon = {
   ],
 } as const;
 
-// 三个点错开相位地明灭：延迟各差一档，看起来就是一串跑动的点
-const dots = [0, 160, 320];
+// 三个点错开相位地明灭：延迟各差几个错峰步长，看起来就是一串跑动的点
+const dots = [0, 4, 8];
 
-function dotStyle(delay: number): string {
+function dotStyle(step: number): string {
   return [
     "inline-size: 6px",
     "block-size: 6px",
     "border-radius: var(--xh-radius-full)",
     "background: var(--xh-bg-brand)",
-    `animation: xh-fade-in 600ms var(--xh-ease-standard) ${delay}ms infinite alternate`,
+    `animation: xh-fade-in var(--xh-spin-duration) var(--xh-motion-ease-sweep) calc(var(--xh-motion-stagger-step) * ${step}) infinite alternate`,
   ].join("; ");
 }
 </script>
@@ -44,7 +44,10 @@ function dotStyle(delay: number): string {
     <XhIcon
       :icon="ArcIcon"
       size="lg"
-      style="--xh-icon-fg: var(--xh-bg-brand); animation: xh-spin 900ms linear infinite"
+      style="
+        --xh-icon-fg: var(--xh-bg-brand);
+        animation: xh-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
+      "
     />
     <XhSpinnerLabel style="margin-inline-start: 8px" />
   </XhSpinner>
@@ -52,7 +55,7 @@ function dotStyle(delay: number): string {
   <!-- 点阵：图形不必是一个整体，几个方块也能当指示器 -->
   <XhSpinner label="正在生成摘要" :style="noRing">
     <span style="display: inline-flex; gap: 4px">
-      <span v-for="d in dots" :key="d" :style="dotStyle(d)" />
+      <span v-for="step in dots" :key="step" :style="dotStyle(step)" />
     </span>
     <XhSpinnerLabel style="margin-inline-start: 8px" />
   </XhSpinner>

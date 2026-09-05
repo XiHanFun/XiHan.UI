@@ -83,6 +83,12 @@ root 里除三件外还能放自己的按钮与计数；值的读写归宿主，
 
 <XhDemo src="prompt-input/09-invalid" />
 
+### 语气
+
+tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受影响
+
+<XhDemo src="prompt-input/10-tone" />
+
 ## 产物
 
 | 层 | 值 |
@@ -223,7 +229,7 @@ root 里除三件外还能放自己的按钮与计数；值的读写归宿主，
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `border-radius` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

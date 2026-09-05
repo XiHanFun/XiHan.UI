@@ -68,6 +68,12 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 
 <XhDemo src="checkbox-group/08-numeric-value" />
 
+### 语气与尺寸
+
+tone 换勾选方框的色族，size 换方框边长与文字档；两轴打在组容器上，条目自己不写
+
+<XhDemo src="checkbox-group/09-tone-size" />
+
 ## 产物
 
 | 层 | 值 |
@@ -217,7 +223,7 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

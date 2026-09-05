@@ -51,6 +51,12 @@ markdown 块铺 html，代码块拿 source 交出去——照 html 渲会让同�
 
 <XhDemo src="markdown-stream/04-caret" />
 
+### 尺寸
+
+size 换正文字号与块间距，三档共用同一份块列表
+
+<XhDemo src="markdown-stream/05-size" />
+
 ## 产物
 
 | 层 | 值 |

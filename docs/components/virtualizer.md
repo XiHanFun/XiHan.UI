@@ -50,6 +50,12 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 
 <XhDemo src="virtualizer/05-scrollbar" />
 
+### 与无限滚动合成一条长列表
+
+哨兵摆在内容层之后而不是条目之间：窗口外的条目根本没渲染，摆进去的哨兵永远进不了可视区
+
+<XhDemo src="virtualizer/06-composed" />
+
 ## 产物
 
 | 层 | 值 |
@@ -151,6 +157,10 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 | `item` | `data-lane` | item.lane \| undefined |
 | `item` | `data-orientation` | 'horizontal' \| 'vertical' |
 
+## 动效
+
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
 ## RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
@@ -158,6 +168,7 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 ## 组合
 
 - 与[列表](./list)、[表格](./table)、[选择器](./select)的长选项列表、[穿梭框](./transfer)配合。
+- 与[无限滚动](./infinite-scroll)合成一条边滚边取的长列表：哨兵摆在内容层之后，取数目标指向视口那一层。
 
 ## 最佳实践
 
@@ -168,3 +179,4 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 
 - 在虚拟列表里放高度会突变的内容（图片没预留宽高比），滚动时位置乱跳。
 - 依赖 Ctrl + F 查找。
+- 把[无限滚动](./infinite-scroll)的哨兵摆进条目之间：窗口外的条目不渲染，哨兵跟着一起不渲染，第二页永远取不到。

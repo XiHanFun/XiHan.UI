@@ -43,6 +43,12 @@ selectionMode 决定点一枚是替换还是加选；Ctrl/Cmd + A 全选
 
 <XhDemo src="tag-group/02-selection" />
 
+### 尺寸
+
+size 打在组上沿继承流下发给每一枚标签，标签自己不写档位
+
+<XhDemo src="tag-group/03-size" />
+
 ## 产物
 
 | 层 | 值 |
@@ -211,7 +217,7 @@ selectionMode 决定点一枚是替换还是加选；Ctrl/Cmd + A 全选
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

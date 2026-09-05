@@ -390,10 +390,6 @@
           "name": "列表"
         },
         {
-          "id": "log",
-          "name": "日志"
-        },
-        {
           "id": "marquee",
           "name": "跑马灯"
         },
@@ -533,6 +529,10 @@
         {
           "id": "diff-view",
           "name": "差异视图"
+        },
+        {
+          "id": "log",
+          "name": "日志"
         },
         {
           "id": "markdown-stream",

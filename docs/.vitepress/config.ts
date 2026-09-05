@@ -1,5 +1,7 @@
 import { createRequire } from "node:module";
 import { DefaultTheme, HeadConfig, defineConfig } from "vitepress";
+// @ts-expect-error 纯 JS 生成器，没有类型声明
+import { writeLlmsAssets } from "./gen-llms.mjs";
 
 const require = createRequire(import.meta.url);
 
@@ -149,6 +151,21 @@ const runtimeSidebar: DefaultTheme.SidebarItem[] = [
   },
 ];
 
+// 场景册：一页一整屏界面，收的是跨组件的同框效果，不按组件排
+const examplesSidebar: DefaultTheme.SidebarItem[] = [
+  {
+    text: "场景",
+    collapsed: false,
+    items: [
+      { text: "这一册收什么", link: "/examples/" },
+      { text: "后台壳", link: "/examples/admin-shell" },
+      { text: "表单页", link: "/examples/form-page" },
+      { text: "数据页", link: "/examples/data-page" },
+      { text: "对话页", link: "/examples/chat-page" },
+    ],
+  },
+];
+
 const componentsSidebar: DefaultTheme.SidebarItem[] = [
   { text: "组件总览", link: "/components/" },
   ...componentManifest.categories.map((category) => ({
@@ -169,6 +186,7 @@ const sidebar: DefaultTheme.Sidebar = {
   "/guide/": guideSidebar,
   "/adapters/": adaptersSidebar,
   "/components/": componentsSidebar,
+  "/examples/": examplesSidebar,
   "/runtime/": runtimeSidebar,
   "/": startSidebar,
 };
@@ -183,6 +201,7 @@ const nav: DefaultTheme.NavItem[] = [
   { text: "核心概念", link: "/guide/anatomy", activeMatch: "/guide/" },
   { text: "适配器", link: "/adapters/vue", activeMatch: "/adapters/" },
   { text: "组件参考", link: "/components/", activeMatch: "/components/" },
+  { text: "场景示例", link: "/examples/", activeMatch: "/examples/" },
   { text: "服务与运行时", link: "/runtime/", activeMatch: "/runtime/" },
   {
     text: "探索未知",
@@ -340,17 +359,20 @@ export default defineConfig({
   head: head,
   lastUpdated: true,
   cleanUrls: true,
-  buildEnd() {
-    if (renderErrors.length === 0) return;
-    const list = renderErrors
-      .map(
-        (error, i) =>
-          `  ${i + 1}. ${demoOfStack(error)} —— ${error.name}: ${error.message}`
-      )
-      .join("\n");
-    throw new Error(
-      `渲染页面阶段抛了 ${renderErrors.length} 个异常，出错的示例在静态页里整块缺失（完整栈见上方日志）：\n${list}`
-    );
+  async buildEnd(siteConfig) {
+    if (renderErrors.length > 0) {
+      const list = renderErrors
+        .map(
+          (error, i) =>
+            `  ${i + 1}. ${demoOfStack(error)} —— ${error.name}: ${error.message}`
+        )
+        .join("\n");
+      throw new Error(
+        `渲染页面阶段抛了 ${renderErrors.length} 个异常，出错的示例在静态页里整块缺失（完整栈见上方日志）：\n${list}`
+      );
+    }
+    // 机读资产排在抛异常之后：构建没通过就不产出
+    await writeLlmsAssets(siteConfig.outDir);
   },
   vite: {
     // 组件库是 link: 进来的，Vite 的依赖预打包缓存只认 package.json 与锁文件，

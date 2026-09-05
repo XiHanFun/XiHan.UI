@@ -38,6 +38,12 @@
 
 <XhDemo src="clipboard/03-status" />
 
+### 形态、语气与尺寸
+
+三轴都打在 root 上：变体换复制钮的用色方式，语气换色族，尺寸连输入框一起换档
+
+<XhDemo src="clipboard/04-variant-tone-size" />
+
 ## 产物
 
 | 层 | 值 |
@@ -177,7 +183,7 @@
 
 ## 动效
 
-关键帧 `xh-clipboard-rotate` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-clipboard-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

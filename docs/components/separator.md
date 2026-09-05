@@ -121,6 +121,10 @@ variant 三档换深浅，dashed 画虚线（横竖各自成立），粗细与�
 
 `--xh-separator-align-length` · `--xh-separator-color` · `--xh-separator-content-fg` · `--xh-separator-content-font-size` · `--xh-separator-dash-gap` · `--xh-separator-dash-length` · `--xh-separator-gap` · `--xh-separator-thickness`
 
+## 动效
+
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
 ## 组合
 
 - 放进[菜单](./menu)、[工具栏](./toolbar)、[面包屑](./breadcrumb)的条目之间。

@@ -42,7 +42,7 @@ const calls = [
           <div style="display: flex; flex-direction: column; gap: 8px">
             <XhToolCallRoot v-for="call in calls" :key="call.name" phase="output-available">
               <XhToolCallTrigger>
-                <XhToolCallIndicator>›</XhToolCallIndicator>
+                <XhToolCallIndicator />
                 <XhToolCallLabel>{{ call.name }}</XhToolCallLabel>
                 <XhToolCallSummary>{{ call.summary }}</XhToolCallSummary>
                 <XhToolCallStatus />

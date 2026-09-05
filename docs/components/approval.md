@@ -51,6 +51,12 @@
 
 <XhDemo src="approval/03-note" />
 
+### 形态与尺寸
+
+variant 换这块闸门怎么与正文分开，size 换标题、条目与按钮的几何档；判定链一个字不动
+
+<XhDemo src="approval/04-variant-size" />
+
 ## 产物
 
 | 层 | 值 |
@@ -247,7 +253,7 @@
 
 ## 动效
 
-关键帧 `xh-approval-in` · `xh-approval-result-in` · `xh-approval-rotate` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-approval-in` · `xh-approval-result-in` · `xh-approval-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

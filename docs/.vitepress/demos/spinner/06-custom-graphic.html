@@ -11,7 +11,7 @@
       style="
         display: inline-flex;
         --xh-icon-fg: var(--xh-bg-brand);
-        animation: xh-spin 900ms linear infinite;
+        animation: xh-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
       "
     >
       <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
@@ -48,17 +48,17 @@
     ],
   };
 
-  // 三个点错开相位地明灭：延迟各差一档，看起来就是一串跑动的点
+  // 三个点错开相位地明灭：延迟各差几个错峰步长，看起来就是一串跑动的点
   const dots = document.getElementById("spinner-graphic-dots");
   dots.replaceChildren(
-    ...[0, 160, 320].map((delay) => {
+    ...[0, 4, 8].map((step) => {
       const dot = document.createElement("span");
       dot.style.cssText = [
         "inline-size: 6px",
         "block-size: 6px",
         "border-radius: var(--xh-radius-full)",
         "background: var(--xh-bg-brand)",
-        `animation: xh-fade-in 600ms var(--xh-ease-standard) ${delay}ms infinite alternate`,
+        `animation: xh-fade-in var(--xh-spin-duration) var(--xh-motion-ease-sweep) calc(var(--xh-motion-stagger-step) * ${step}) infinite alternate`,
       ].join("; ");
       return dot;
     }),

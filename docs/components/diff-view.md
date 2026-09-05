@@ -55,6 +55,12 @@
 
 <XhDemo src="diff-view/04-truncated" />
 
+### 尺寸
+
+size 换字号、行高与行号槽的宽度，三档并列对照
+
+<XhDemo src="diff-view/05-size" />
+
 ## 产物
 
 | 层 | 值 |
@@ -194,6 +200,8 @@
 
 默认皮肤 `@xihan-ui/styles/diff-view.css` 按部件选择：`[data-scope="diff-view"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ## 数据属性
 
 由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
@@ -228,13 +236,9 @@
 
 ## 动效
 
-关键帧 `xh-diff-view-reveal` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-diff-view-reveal` 随皮肤自带，不引用别处文件里的名字；`background` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-## 响应式
-
-皮肤内置条件规则：`forced-colors: active`。
 
 ## RTL
 

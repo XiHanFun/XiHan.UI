@@ -7,12 +7,16 @@ import {
   watchPostEffect,
   type Component,
 } from "vue";
+import { XhCodeViewCode, XhCodeViewPre, XhCodeViewRoot } from "@xihan-ui/vue";
+import { useData } from "vitepress";
 import {
   demoFramework,
   demoFrameworks,
   demoNotApplicable,
   setDemoFramework,
 } from "./demo-framework";
+import { stageAttrs, stageTheme } from "./demo-stage";
+import XhStageAxes from "./XhStageAxes.vue";
 
 const props = defineProps<{
   /** 示例路径，相对 .vitepress/demos 且不带扩展名，如 "switch/01-basic" */
@@ -133,6 +137,14 @@ watchPostEffect(() => {
   if (host && html) void mountWebComponents(host, html);
 });
 
+const { isDark } = useData();
+
+// 工具条选的档位打在舞台上而不是 html 上：令牌的各档选择器都是 :where([data-*])，
+// 落在任意容器上即对这棵子树生效，页面其余部分不受影响
+const stageBindings = computed(() => stageAttrs(isDark.value));
+// 主题轴离开「跟随站点」时舞台自备底色，否则深浅两套颜色会撞在一起
+const themed = computed(() => stageTheme.value !== "site");
+
 const expanded = ref(false);
 const copied = ref(false);
 
@@ -145,7 +157,11 @@ async function copy() {
 
 <template>
   <div class="xh-demo">
-    <div class="xh-demo__stage">
+    <div
+      class="xh-demo__stage"
+      :class="{ 'xh-demo__stage--themed': themed }"
+      v-bind="stageBindings"
+    >
       <component :is="vueDemo" v-if="vueDemo" />
       <div v-else-if="!missing" ref="wcHost" class="xh-demo__wc" />
       <div v-else class="xh-demo__missing">
@@ -162,8 +178,9 @@ async function copy() {
       </div>
     </div>
 
-    <template v-if="code">
-      <div class="xh-demo__bar">
+    <div class="xh-demo__bar">
+      <XhStageAxes />
+      <div v-if="code" class="xh-demo__actions">
         <button
           class="xh-demo__btn"
           type="button"
@@ -176,10 +193,21 @@ async function copy() {
           {{ copied ? "已复制" : "复制" }}
         </button>
       </div>
+    </div>
 
-      <div v-show="expanded" class="xh-demo__code">
-        <pre :data-lang="lang"><code>{{ code }}</code></pre>
-      </div>
+    <template v-if="code">
+      <XhCodeViewRoot
+        v-show="expanded"
+        class="xh-demo__code"
+        :code="code"
+        :lang="lang"
+        :translations="{ code: '示例代码' }"
+        complete
+      >
+        <XhCodeViewPre>
+          <XhCodeViewCode />
+        </XhCodeViewPre>
+      </XhCodeViewRoot>
     </template>
   </div>
 </template>
@@ -198,6 +226,13 @@ async function copy() {
   align-items: center;
   gap: 12px;
   padding: 28px 20px;
+  background: var(--demo-stage-bg, var(--vp-c-bg));
+}
+/* 主题轴钉住深浅时舞台的底与字改由令牌给，与所选那一档同源 */
+.xh-demo__stage--themed {
+  --demo-stage-bg: var(--xh-bg-canvas);
+
+  color: var(--xh-fg-default);
 }
 /* 自定义元素的示例整体挂在这一层，摆位与 Vue 那份一致 */
 .xh-demo__wc {
@@ -223,11 +258,19 @@ async function copy() {
 }
 .xh-demo__bar {
   display: flex;
-  justify-content: flex-end;
-  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
   padding: 8px 12px;
   border-top: 1px dashed var(--vp-c-divider);
   background: var(--vp-c-bg-soft);
+}
+/* 舞台的档位在左、代码的动作在右；行装不下时动作整组落到下一行右端 */
+.xh-demo__actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
 }
 .xh-demo__btn {
   padding: 3px 10px;
@@ -241,24 +284,18 @@ async function copy() {
   color: var(--vp-c-brand-1);
   background: var(--vp-c-default-soft);
 }
+/* 代码由 XhCodeView 渲染，语法着色随之接上。
+   它自带的表面（圆角、发丝边、落影）在这里收掉：外壳已经画了一圈边，代码块是它的一段。 */
 .xh-demo__code {
+  --xh-code-view-bg: var(--vp-code-block-bg);
+  --xh-code-view-fg: var(--vp-c-text-1);
+  --xh-code-view-border: transparent;
+  --xh-code-view-radius: 0;
+  --xh-code-view-shadow: none;
+  --xh-code-view-font-size: var(--vp-code-font-size);
+  --xh-code-view-px: 24px;
+  --xh-code-view-py: 20px;
+
   border-top: 1px solid var(--vp-c-divider);
-  background: var(--vp-code-block-bg);
-}
-.xh-demo__code pre {
-  margin: 0;
-  padding: 20px 0;
-  overflow-x: auto;
-}
-.xh-demo__code code {
-  display: block;
-  padding: 0 24px;
-  width: fit-content;
-  min-width: 100%;
-  font-family: var(--vp-font-family-mono);
-  font-size: var(--vp-code-font-size);
-  line-height: var(--vp-code-line-height);
-  color: var(--vp-c-text-1);
-  white-space: pre;
 }
 </style>

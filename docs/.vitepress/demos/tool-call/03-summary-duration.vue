@@ -42,7 +42,7 @@ const calls = [
     >
       <template #default="{ durationMs }">
         <XhToolCallTrigger>
-          <XhToolCallIndicator>›</XhToolCallIndicator>
+          <XhToolCallIndicator />
           <XhToolCallLabel>{{ call.name }}</XhToolCallLabel>
           <XhToolCallSummary>{{ call.summary }}</XhToolCallSummary>
           <XhToolCallStatus />

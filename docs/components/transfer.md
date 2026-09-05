@@ -75,6 +75,12 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 
 <XhDemo src="transfer/08-scale" />
 
+### 语气与尺寸
+
+tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两轴打在根上，两侧面板一起走
+
+<XhDemo src="transfer/09-tone-size" />
+
 ## 产物
 
 | 层 | 值 |
@@ -290,7 +296,7 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
