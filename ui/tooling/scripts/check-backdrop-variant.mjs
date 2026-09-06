@@ -61,6 +61,9 @@ function pascal(name) {
   return name.split(/[-_]/).filter(Boolean).map(w => w[0].toUpperCase() + w.slice(1)).join('')
 }
 
+/** 整份 props 透传：不逐个列键，而是把组件收到的那一份整个交给 hook。 */
+const FORWARDS_ALL_PROPS = /(?:^|[(,\s])(?:\.\.\.)?props\b/
+
 /** 取 `use<Pascal>(` 之后配平括号内的那段实参：React 侧把 prop 带进机器就在这一段。 */
 function machinePropsBlock(src, name) {
   const call = `use${pascal(name)}(`
@@ -152,7 +155,8 @@ for (const name of discovered) {
   if (block == null) {
     problems.push(`${name}：React 侧读不出 use${pascal(name)}(…) 这一段，判不了 variant 有没有带进机器——换写法了就把这条门禁的解析一起改`)
   }
-  else if (!/(?:^|[{,\s])variant\s*[,:]/.test(block)) {
+  // 两种写法都算带到了：逐个键列出来，或者整份 props 透传过去（后者更严，一个键都漏不掉）
+  else if (!/(?:^|[{,\s])variant\s*[,:]/.test(block) && !FORWARDS_ALL_PROPS.test(block)) {
     problems.push(`${name}：React 侧声明了 variant 却没带进机器 props，作者写 variant="blur" 一点反应也没有`)
   }
 }

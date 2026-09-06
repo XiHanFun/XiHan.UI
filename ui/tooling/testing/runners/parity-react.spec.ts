@@ -10,10 +10,10 @@
 import { describe, expect, it } from 'vitest'
 import { createReactHarness } from '../../../packages/adapters/react/tests/harness'
 import { createVueHarness } from '../../../packages/adapters/vue/tests/harness'
-import { runParity, switchSuite } from '../src'
+import { dialogSuite, runParity, switchSuite } from '../src'
 
 /** React 侧已经铺到、纳入逐帧对拍的组件。 */
-const SUITES = [switchSuite]
+const SUITES = [dialogSuite, switchSuite]
 
 /** React 侧还没铺到的组件。每批合入时删掉对应行；删空即本文件的覆盖等式自动收紧到全集。 */
 const PENDING = new Set([
@@ -45,7 +45,6 @@ const PENDING = new Set([
   'date-field',
   'date-picker',
   'descriptions',
-  'dialog',
   'diff-view',
   'download-trigger',
   'drawer',

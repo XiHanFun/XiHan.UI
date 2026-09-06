@@ -7,34 +7,48 @@ import { useXhConfig } from '../config/config'
 export type PortalContainer = (() => Element | null) | undefined
 
 /**
- * 落点解析：实例上写了的以实例为准，其次全局配置，最后 body。
+ * 落点解析。
  *
- * 首帧一律返回 null。服务端没有 document，客户端首帧要与服务端渲出来的那一份对齐——
- * 落点在挂载后的效应里才补上，此后内容才搬进浮层。
+ * 缺省立刻解析。推迟一拍会让 React 把这棵子树拆掉重建，机器刚放进去的焦点跟着丢——
+ * 浮层展开却没有焦点，键盘用户当场卡住。
+ *
+ * deferUntilMounted 为真时首帧返回 null、搬迁排到挂载后的效应里，好让客户端首帧与
+ * 服务端标记对齐。这一档是给「服务端直出过、且要搬走」的那一屏留的，代价就是上面那次拆建：
+ * 两者不能兼得——React 没有「此刻在水合」这个渲染期信号，判不出该走哪一档。
  */
-export function usePortalTarget(container: PortalContainer): Element | null {
+export function usePortalTarget(container: PortalContainer, deferUntilMounted = false): Element | null {
   const config = useXhConfig()
-  const [target, setTarget] = useState<Element | null>(null)
+  const resolve = (): Element | null => {
+    if (typeof document === 'undefined')
+      return null
+    return container?.() ?? config.portalContainer?.() ?? document.body
+  }
+  const [target, setTarget] = useState<Element | null>(() => (deferUntilMounted ? null : resolve()))
   useEffect(() => {
-    setTarget(container?.() ?? config.portalContainer?.() ?? document.body)
+    setTarget(resolve())
+    // resolve 每渲染都是新函数，跟着它走会每帧重设一次落点
   }, [container, config])
   return target
 }
 
 export interface XhPortalProps {
   container?: PortalContainer
+  /**
+   * 首帧就地渲染、等挂载后的效应再搬，用来与服务端标记对齐。缺省为假。
+   * 开了这一档，内容会被拆建一次，机器放进去的焦点会丢。
+   */
+  deferUntilMounted?: boolean
   children?: ReactNode
 }
 
 /**
  * 把内容搬到浮层落点。
  *
- * 服务端与客户端首帧就地渲染，不搬。react-dom/server 根本不支持 createPortal，
- * 而首屏即展开的浮层必须直出展开态——正文既要能被索引也要能被读屏念到，
- * 渲成空占位等于把这一屏丢了。搬迁推迟到挂载后的效应里，水合时两侧标记因此一致。
+ * 服务端一律就地渲染：react-dom/server 根本不支持 createPortal，而首屏即展开的浮层
+ * 必须直出展开态——正文既要能被索引也要能被读屏念到，渲成空占位等于把这一屏丢了。
  */
-export function XhPortal({ container, children }: XhPortalProps): ReactNode {
-  const target = usePortalTarget(container)
+export function XhPortal({ container, deferUntilMounted, children }: XhPortalProps): ReactNode {
+  const target = usePortalTarget(container, deferUntilMounted)
   if (!target)
     return children
   return createPortal(children, target)

@@ -31,6 +31,26 @@ describe('浮层落点', () => {
     expect(host!.contains(node)).toBe(false)
   })
 
+  it('不推迟那一档在首帧就已经搬走：拆建会让机器刚放进去的焦点丢掉', () => {
+    let firstPaintParent: Element | null | undefined
+    function Probe(): React.ReactNode {
+      return (
+        <XhPortal deferUntilMounted={false}>
+          <span
+            data-testid="paint"
+            ref={(el) => {
+              firstPaintParent ??= el?.parentElement
+            }}
+          >
+            x
+          </span>
+        </XhPortal>
+      )
+    }
+    mount(<Probe />)
+    expect(firstPaintParent).toBe(document.body)
+  })
+
   it('实例上写了容器就搬到那儿', () => {
     const tank = document.createElement('div')
     tank.dataset.testid = 'tank'

@@ -12,7 +12,7 @@
 //   那一份」而不是 XxxApi 全集——Vue 侧本来就是挑着交的，那份挑正是三边该对齐的口径。
 // - 元素侧取类上的公开 get 与公开方法。作者写的 attribute / property（value、open、page 这些）
 //   不算：它们是作者递进去的声明，非受控时元素上恒为 undefined，读不到机器此刻的值。
-// - React 侧取函数式 children 的参数对象，即 `children({ … })` 那个对象字面量的键。带载荷的
+// - React 侧取函数式 children 的参数对象：`children({ … })`，或经库自带助手的 `renderSlot(children, { … })`。带载荷的
 //   插槽在 React 上就落成函数式 children，普通 ReactNode 的 children 没有参数、什么都交不出去。
 //   React 铺一个新组件时，Vue 那份插槽作用域交了什么，这里就得原样传进 children 的参数里。
 //   React 侧没有存量清单：铺到哪个组件，那个组件当场就是硬判据。
@@ -133,7 +133,10 @@ const PENDING = {
 }
 
 function parse(text, name) {
-  return ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+  // .tsx 必须按 TSX 解析：按 TS 解析时 JSX 会被当成类型断言，整棵语法树跟着散架，
+  // 遍历一个节点都找不到——判据于是恒绿，这种漏检比判错更难发现
+  const kind = name.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS
+  return ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true, kind)
 }
 
 /** 剥掉 `!` 与括号，露出里面那个表达式。 */
@@ -375,8 +378,13 @@ function childrenPayload(source, fileName) {
   const rooted = n => isReactApiRoot(n) || (ts.isIdentifier(n) && alias.has(n.text))
   const ports = { names: new Set(), chains: new Set() }
   const walk = (n) => {
-    if (ts.isCallExpression(n) && /(?:^|\.)children$/.test(n.expression.getText().replaceAll(/\s/g, ''))) {
-      const arg = n.arguments[0]
+    if (ts.isCallExpression(n)) {
+      const callee = n.expression.getText().replaceAll(/\s/g, '')
+      // 两种写法：直接调函数式 children，或经库自带的 renderSlot 助手转一道。
+      // 后者的载荷是第二个实参，第一个是 children 本身
+      const direct = /(?:^|\.)children$/.test(callee)
+      const viaHelper = /(?:^|\.)renderSlot$/.test(callee)
+      const arg = direct ? n.arguments[0] : viaHelper ? n.arguments[1] : undefined
       if (arg && ts.isObjectLiteralExpression(arg)) {
         for (const prop of arg.properties) {
           if (ts.isPropertyAssignment(prop)) {
