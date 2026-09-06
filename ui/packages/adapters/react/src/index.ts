@@ -1,3 +1,31 @@
+export { useDialogContext } from './components/dialog/context'
+export {
+  XhDialogBody,
+  XhDialogCloseTrigger,
+  XhDialogContent,
+  XhDialogDescription,
+  XhDialogFooter,
+  XhDialogHeader,
+  XhDialogIndicator,
+  XhDialogRoot,
+  XhDialogTitle,
+  XhDialogTrigger,
+} from './components/dialog/dialog'
+export type {
+  DialogRootSlotProps,
+  XhDialogBodyProps,
+  XhDialogCloseTriggerProps,
+  XhDialogContentProps,
+  XhDialogDescriptionProps,
+  XhDialogFooterProps,
+  XhDialogHeaderProps,
+  XhDialogIndicatorProps,
+  XhDialogRootProps,
+  XhDialogTitleProps,
+  XhDialogTriggerProps,
+} from './components/dialog/dialog'
+export { useDialog } from './components/dialog/use-dialog'
+export type { DialogContext } from './components/dialog/use-dialog'
 export { XhSwitch } from './components/switch/switch'
 export type { XhSwitchProps } from './components/switch/switch'
 export { useSwitch } from './components/switch/use-switch'

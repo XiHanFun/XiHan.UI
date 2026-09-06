@@ -1,4 +1,4 @@
-import type { MachineConfig, MachineSchema, Service, ServiceOptions } from '@xihan-ui/core'
+import type { MachineConfig, MachineSchema, Scope, Service, ServiceOptions } from '@xihan-ui/core'
 import type { ReactRuntime } from './create-react-runtime'
 import { VERSION as CORE_VERSION, createService, isDev } from '@xihan-ui/core'
 import { checkLockstepVersion, printMetadataBannerOnce, registerRuntimeHost } from '@xihan-ui/core/metadata'
@@ -34,6 +34,18 @@ function getServerVersion(): number {
   return 0
 }
 
+export interface UseMachineOptions<T extends MachineSchema> {
+  /** 组件自己建的 scope；不给就由 createService 建一个。 */
+  scope?: Scope
+  /**
+   * 机器建好、挂载之前跑一次，用来把 refs 交出去。
+   * 机器的挂载效应（浮层的定位与消隐层就在里面）会立刻读 refs，
+   * 放进组件自己的效应里就晚了——那一步排在 useMachine 的挂载效应之后。
+   * 返回值在卸载时调用；StrictMode 重建机器时会再跑一次。
+   */
+  onCreate?: (service: Service<T>) => (() => void) | void
+}
+
 interface Instance<T extends MachineSchema> {
   runtime: ReactRuntime
   /** 身份稳定的对外句柄，内部机器换了也不用换引用。 */
@@ -45,9 +57,12 @@ interface Instance<T extends MachineSchema> {
 function createInstance<T extends MachineSchema>(
   machine: MachineConfig<T>,
   props: ServiceOptions<T>['props'],
+  options: UseMachineOptions<T> = {},
 ): Instance<T> {
   const runtime = createReactRuntime()
-  let service = createService(machine, { props, runtime })
+  const build = (): Service<T> => createService(machine, { props, runtime, scope: options.scope })
+  let service = build()
+  let disposeRefs = options.onCreate?.(service) ?? undefined
 
   const facade: Service<T> = {
     get machine() {
@@ -90,7 +105,9 @@ function createInstance<T extends MachineSchema>(
       // 停机后的 service 会静默丢弃一切事件，且状态与上下文只能一起回到初始才不分叉
       if (service.getStatus() === 'Stopped') {
         runtime.reset()
-        service = createService(machine, { props, runtime })
+        disposeRefs?.()
+        service = build()
+        disposeRefs = options.onCreate?.(service) ?? undefined
         runtime.mount()
         runtime.notify()
         return
@@ -99,6 +116,8 @@ function createInstance<T extends MachineSchema>(
     },
     unmount() {
       runtime.unmount()
+      disposeRefs?.()
+      disposeRefs = undefined
     },
   }
 }
@@ -107,6 +126,7 @@ function createInstance<T extends MachineSchema>(
 export function useMachine<T extends MachineSchema>(
   machine: MachineConfig<T>,
   getProps: () => Partial<T['props']>,
+  options: UseMachineOptions<T> = {},
 ): Service<T> {
   ensureDevChecks()
 
@@ -120,6 +140,9 @@ export function useMachine<T extends MachineSchema>(
   const configRef = useRef(getConfig)
   configRef.current = getConfig
 
+  const optionsRef = useRef(options)
+  optionsRef.current = options
+
   const [instance] = useState<Instance<T>>(() => createInstance<T>(
     machine,
     (() => applyXhConfigDefaults(
@@ -127,6 +150,10 @@ export function useMachine<T extends MachineSchema>(
       { ...propsRef.current() },
       configRef.current(),
     )) as ServiceOptions<T>['props'],
+    {
+      scope: optionsRef.current.scope,
+      onCreate: svc => optionsRef.current.onCreate?.(svc),
+    },
   ))
   const { runtime } = instance
 

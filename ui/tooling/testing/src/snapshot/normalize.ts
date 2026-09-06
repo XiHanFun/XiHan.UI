@@ -29,13 +29,23 @@ function collectedNames(el: Element): string[] {
   return [...names].sort()
 }
 
+/**
+ * 部件 id 的构造式：`<组件>:<实例>:<部件>`（见各适配器的 IdGenerator.partId）。
+ * 中段是宿主生成的实例标识，逐家不同——Vue 是 `v-0`，React 是 `_r_1_`。
+ */
+const SCOPED_ID = /^([a-z0-9-]+):.+:([a-z0-9-]+)$/
+
 function resolveIdref(id: string, buckets: Map<string, HTMLElement[]>): string {
   for (const [part, els] of buckets) {
     const i = els.findIndex(el => el.id === id)
     if (i >= 0)
       return els.length === 1 ? `@part(${part})` : `@part(${part}[${i}])`
   }
-  return `@extern(${id})`
+  // 指向的节点此刻不在文档里（浮层收起时的 aria-controls 就是这样）。
+  // 是部件 id 就把实例那一段抹掉：留着它，逐帧对拍比的是两家生成器的取名规则而不是行为。
+  // 作者自己写的 id 不长这个形状，原样留着。
+  const scoped = SCOPED_ID.exec(id)
+  return scoped ? `@extern(${scoped[1]}:*:${scoped[2]})` : `@extern(${id})`
 }
 
 function normalizeValue(name: string, raw: string | null, buckets: Map<string, HTMLElement[]>): string | null {
