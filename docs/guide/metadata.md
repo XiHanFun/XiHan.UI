@@ -22,7 +22,7 @@ XIHAN_UI_METADATA.documentationUrl; // 文档地址
 XIHAN_UI_METADATA.license; // 许可证与地址
 XIHAN_UI_METADATA.keywords; // 关键词
 XIHAN_UI_METADATA.supportedPlatforms; // 支持的浏览器引擎（Chrome / Edge / Firefox / Safari）
-XIHAN_UI_METADATA.adapters; // 渲染适配器（vue / web-components）
+XIHAN_UI_METADATA.adapters; // 渲染适配器（react / vue / web-components）
 ```
 
 对象与内部数组一律 `Object.freeze`——这是集中维护点，消费方改不坏它。
@@ -114,4 +114,4 @@ setMetadataAutoPrint(true);
 ## 相关
 
 - [版本与兼容性政策](./versioning)：同版发布与版本承诺
-- [安装与接入](../installation)：两个适配器的接入方式
+- [安装与接入](../installation)：三个适配器的接入方式

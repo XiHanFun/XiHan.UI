@@ -1,0 +1,85 @@
+{
+  "name": "@xihan-ui/react",
+  "type": "module",
+  "version": "1.1.0",
+  "description": "XiHan.UI React adapter — components, hooks, machine runtime.",
+  "author": {
+    "name": "XiHanFun",
+    "url": "https://github.com/XiHanFun"
+  },
+  "license": "MIT",
+  "homepage": "https://ui.docs.xihanfun.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XiHanFun/XiHan.UI.git",
+    "directory": "ui/packages/adapters/react"
+  },
+  "bugs": {
+    "url": "https://github.com/XiHanFun/XiHan.UI/issues"
+  },
+  "keywords": [
+    "react",
+    "react19",
+    "components",
+    "headless-ui",
+    "design-system"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./behavior": {
+      "types": "./dist/behavior.d.ts",
+      "import": "./dist/behavior.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "CHANGELOG.md",
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
+    "test": "vitest run",
+    "test:browser": "vitest run --config vitest.browser.config.ts"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "@xihan-ui/core": "workspace:^",
+    "@xihan-ui/headless": "workspace:^",
+    "@xihan-ui/motion": "workspace:^",
+    "@xihan-ui/pointer": "workspace:^",
+    "@xihan-ui/position": "workspace:^"
+  },
+  "devDependencies": {
+    "@testing-library/react": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitest/browser": "catalog:",
+    "@vitest/browser-playwright": "catalog:",
+    "@xihan-ui/build": "workspace:*",
+    "@xihan-ui/styles": "workspace:*",
+    "@xihan-ui/testing": "workspace:*",
+    "@xihan-ui/tokens": "workspace:*",
+    "@xihan-ui/tsconfig": "workspace:*",
+    "jsdom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "vitest": "catalog:"
+  }
+}

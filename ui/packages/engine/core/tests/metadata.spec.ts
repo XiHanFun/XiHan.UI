@@ -33,7 +33,7 @@ describe('框架元数据', () => {
     expect(m.XIHAN_UI_METADATA.license).toBe('MIT')
     expect(m.XIHAN_UI_METADATA.keywords).toContain('headless-ui')
     expect(m.XIHAN_UI_METADATA.supportedPlatforms).toContain('Safari')
-    expect(m.XIHAN_UI_METADATA.adapters).toEqual(['vue', 'web-components'])
+    expect(m.XIHAN_UI_METADATA.adapters).toEqual(['react', 'vue', 'web-components'])
   })
 
   it('元数据对象被冻结,集中维护点不可被消费方改坏', () => {

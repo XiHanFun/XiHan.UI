@@ -106,6 +106,18 @@
     "design/icons": {
       "level": 1,
       "canDependOn": []
+    },
+    "adapters/react": {
+      "level": 4,
+      "canDependOn": [
+        "engine/core",
+        "engine/headless",
+        "engine/position",
+        "features/code-highlight",
+        "design/tokens",
+        "engine/motion",
+        "engine/pointer"
+      ]
     }
   }
 }

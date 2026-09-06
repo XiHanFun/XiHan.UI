@@ -31,6 +31,13 @@ catalog:
   vue: ^3.5.40
   '@vue/test-utils': ^2.4.6
   vue-tsc: ^3.3.7
+  # React 端只支持 19：inert 是真布尔属性、for 会透传、ref 是普通 prop，
+  # 这三件直接决定三家适配器的 DOM 能不能逐字一样
+  react: ^19.2.0
+  react-dom: ^19.2.0
+  '@types/react': ^19.2.0
+  '@types/react-dom': ^19.2.0
+  '@testing-library/react': ^16.3.0
   # —— 日期运算（只在 @xihan-ui/headless 的日期族里用；零框架纯数据包，无副作用）——
   '@internationalized/date': ^3.12.0
   # 只供 @xihan-ui/markdown 的一致率棘轮读官方用例（CC-BY-SA-4.0），不进任何包的运行时依赖

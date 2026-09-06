@@ -24,6 +24,7 @@ export default {
         'sound',
         'animations',
         'vue',
+        'react',
         'web-components',
         // —— 工程 ——
         'tooling',

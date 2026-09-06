@@ -15,6 +15,10 @@ const ALLOWLIST = {
   '@xihan-ui/vue': {
     vue: '适配器的宿主框架，由使用者自带；这个包存在的意义就是接它，摘不掉',
   },
+  '@xihan-ui/react': {
+    'react': '适配器的宿主框架，由使用者自带；这个包存在的意义就是接它，摘不掉',
+    'react-dom': '同上；flushSync 与 createPortal 在 react-dom 里，浮层与提交时序都要它',
+  },
 }
 
 // 第三方 peer 也要登记：使用者装它是本库要求的，与直接依赖同样是长期维护面。
