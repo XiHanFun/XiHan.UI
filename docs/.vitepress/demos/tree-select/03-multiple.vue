@@ -1,6 +1,5 @@
 <!-- 多选与表单 | multiple 下确认键是切换、浮层不收起；写了 hidden-input 才随表单提交，多个值按逗号拼成一串 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
@@ -21,6 +20,7 @@ import {
   XhTreeSelectTrigger,
   XhTreeSelectValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const files = [
   {
@@ -59,8 +59,8 @@ const picked = ref<string[]>(["index"]);
         <XhTreeSelectTree>
           <XhTreeSelectBranch value="src">
             <XhTreeSelectBranchControl>
-  <XhTreeSelectBranchTrigger />
-  <XhTreeSelectBranchText>src</XhTreeSelectBranchText>
+              <XhTreeSelectBranchTrigger />
+              <XhTreeSelectBranchText>src</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem value="index">

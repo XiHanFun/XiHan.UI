@@ -1,6 +1,5 @@
 <!-- 点开看大图 | 缩略图的点击与键盘自己接，放大层是一个对话框，里面再放一份独立的图片实例 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhDialogCloseTrigger,
   XhDialogContent,
@@ -12,6 +11,7 @@ import {
   XhToolbarItem,
   XhToolbarRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const photo
   = "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%204%203%22%3E%3Crect%20width=%224%22%20height=%223%22%20fill=%22%230f172a%22/%3E%3Ccircle%20cx=%223.1%22%20cy=%220.8%22%20r=%220.35%22%20fill=%22%23fbbf24%22/%3E%3Cpath%20d=%22M0%203%201.4%201.4%202.4%202.3%203.1%201.6%204%202.4V3z%22%20fill=%22%2334d399%22/%3E%3C/svg%3E";

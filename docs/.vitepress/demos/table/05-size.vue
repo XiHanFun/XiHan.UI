@@ -23,7 +23,7 @@ const members = [
   { id: "u5", name: "周五", level: "P7" },
 ];
 
-const rows = members.map((m) => ({ id: m.id }));
+const rows = members.map(m => ({ id: m.id }));
 
 // 中间档不传 size，缺省即中密度
 const densities = [

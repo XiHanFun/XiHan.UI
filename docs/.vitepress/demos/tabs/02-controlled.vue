@@ -1,6 +1,5 @@
 <!-- 受控 | 传了 value 就由宿主说了算，组件自己不再改选中值；切换意图从 value-change 出来，写回才真的切 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhTabsContent,
@@ -8,6 +7,7 @@ import {
   XhTabsRoot,
   XhTabsTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref("account");
 </script>

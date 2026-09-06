@@ -171,14 +171,14 @@ CSS 的级联顺序由 `@layer` 声明的**首次出现顺序**决定，与 `@im
 一枚种子色就够，运行时会派生整套梯度：
 
 ```ts
-import { brandId, createThemeController, registerBrand } from '@xihan-ui/tokens'
+import { brandId, createThemeController, registerBrand } from "@xihan-ui/tokens";
 
 // 注册：从种子色派生 11 档原语，注入 [data-brand='acme'] 取值块
-registerBrand('acme', '#16a34a')
+registerBrand("acme", "#16a34a");
 
 // 切换：品牌是主题五维之一
-const theme = createThemeController({ storageKey: 'app-theme' })
-theme.setPreference({ brand: brandId('acme') })
+const theme = createThemeController({ storageKey: "app-theme" });
+theme.setPreference({ brand: brandId("acme") });
 ```
 
 派生只取种子的**色相与彩度**，明度曲线沿用基线——库里所有建立在明度上的对比度保证（实心底白字 4.5:1 这类）对任何种子色都继续成立。种子会被锚定到 600 档（实心底与强调文字的档位）。

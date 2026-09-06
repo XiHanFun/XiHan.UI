@@ -1,7 +1,7 @@
 <!-- 横向排布 | orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 aria-orientation -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhCheckboxGroupRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const channels = ref<string[]>(["email"]);
 const items = [

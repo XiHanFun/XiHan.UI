@@ -5,27 +5,27 @@
 ## 声明
 
 ```ts
-import { createAnatomy } from '@xihan-ui/core'
+import { createAnatomy } from "@xihan-ui/core";
 
-export const accordionAnatomy = createAnatomy('accordion', [
-  'root',
-  'item',
-  'header',
-  'trigger',
-  'content',
-  'indicator',
-])
+export const accordionAnatomy = createAnatomy("accordion", [
+  "root",
+  "item",
+  "header",
+  "trigger",
+  "content",
+  "indicator",
+]);
 ```
 
 `build()` 把它展开成属性与选择器：
 
 ```ts
-const parts = accordionAnatomy.build()
+const parts = accordionAnatomy.build();
 
-parts.content.attrs
+parts.content.attrs;
 // { 'data-scope': 'accordion', 'data-part': 'content' }
 
-parts.content.selector
+parts.content.selector;
 // '[data-scope="accordion"][data-part="content"]'
 ```
 
@@ -49,9 +49,9 @@ DOM 上出现的属性分三类，只有前两类是对外的样式接口：
 
 ```ts
 export const accordionMeta: ComponentMeta = {
-  component: 'accordion',
-  requiredParts: ['trigger', 'content'],
-}
+  component: "accordion",
+  requiredParts: ["trigger", "content"],
+};
 ```
 
 这份元数据不是文档注解，它有执行力：
@@ -124,7 +124,7 @@ export const accordionMeta: ComponentMeta = {
 export function connectAccordion<T extends PropTypes>(
   service: Service<AccordionSchema>,
   normalize: NormalizeProps<T>,
-): AccordionApi<T>
+): AccordionApi<T>;
 ```
 
 `normalize` 按元素类型分成 `element` / `button` / `input` / `label` / `img` 等若干 getter，各框架各实现一份。Vue 适配器传 `vueNormalize`，Web Components 适配器传 `wcNormalize`，无头场景直接用 `@xihan-ui/core` 的恒等归一化器 `normalizeProps`。

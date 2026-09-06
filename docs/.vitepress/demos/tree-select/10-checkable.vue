@@ -1,7 +1,6 @@
 <!-- 级联勾选与回显策略 | multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；对外值按 checked-strategy 收敛，parent 档整组选满只报组名 -->
 <script setup lang="ts">
 import { CheckIcon, MinusIcon } from "@xihan-ui/icons";
-import { ref } from "vue";
 import {
   XhIcon,
   XhTreeSelectBranch,
@@ -21,6 +20,7 @@ import {
   XhTreeSelectTrigger,
   XhTreeSelectValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const collection = [
   {
@@ -86,12 +86,12 @@ const boxStyle = {
             :value="group.value"
           >
             <XhTreeSelectBranchControl>
-  <XhTreeSelectBranchTrigger />
-  <span aria-hidden="true" :style="boxStyle">
-    <XhIcon v-if="isSelected(group.value)" :icon="CheckIcon" />
-    <XhIcon v-else-if="isIndeterminate(group.value)" :icon="MinusIcon" />
-  </span>
-  <XhTreeSelectBranchText>{{ group.label }}</XhTreeSelectBranchText>
+              <XhTreeSelectBranchTrigger />
+              <span aria-hidden="true" :style="boxStyle">
+                <XhIcon v-if="isSelected(group.value)" :icon="CheckIcon" />
+                <XhIcon v-else-if="isIndeterminate(group.value)" :icon="MinusIcon" />
+              </span>
+              <XhTreeSelectBranchText>{{ group.label }}</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem

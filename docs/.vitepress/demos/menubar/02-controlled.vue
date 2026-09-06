@@ -1,6 +1,5 @@
 <!-- 受控 | value 是当前展开的那一项，null 表示都收起；给了它就由宿主说了算 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhMenubarContent,
   XhMenubarItem,
@@ -9,6 +8,7 @@ import {
   XhMenubarRoot,
   XhMenubarTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref<string | null>(null);
 </script>

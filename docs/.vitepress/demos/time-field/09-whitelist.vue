@@ -1,6 +1,5 @@
 <!-- 可选值白名单 | 值交给宿主持有，写回来的时间被吸附到清单里的一格，上下键与数字键因此都落在清单上 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTimeFieldControl,
   XhTimeFieldLabel,
@@ -8,6 +7,7 @@ import {
   XhTimeFieldSegment,
   XhTimeFieldSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const allowed = ["08:00", "12:00", "18:00"];
 
@@ -15,11 +15,12 @@ const value = ref(allowed[0]);
 
 // 比原值大就取清单里的下一格，比原值小就取上一格，走到头回绕
 function snap(next: string) {
-  if (next === "" || allowed.includes(next)) return next;
+  if (next === "" || allowed.includes(next))
+    return next;
   const forward = next > value.value;
   const hit = forward
-    ? allowed.find((t) => t > next)
-    : [...allowed].reverse().find((t) => t < next);
+    ? allowed.find(t => t > next)
+    : [...allowed].reverse().find(t => t < next);
   return hit ?? (forward ? allowed[0] : allowed[allowed.length - 1]);
 }
 </script>

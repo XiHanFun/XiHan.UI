@@ -1,6 +1,5 @@
 <!-- 单向搬运 | oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的按钮也就不必写 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTransferItem,
   XhTransferItemCheckbox,
@@ -14,6 +13,7 @@ import {
   XhTransferTargetPanel,
   XhTransferToTargetTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const items = [
   { value: "cpu", label: "CPU 用量" },

@@ -58,8 +58,8 @@ const variants = ["outline", "subtle", "ghost"] as const;
           <XhTreeSelectTree>
             <XhTreeSelectBranch value="docs">
               <XhTreeSelectBranchControl>
-  <XhTreeSelectBranchTrigger />
-  <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
+                <XhTreeSelectBranchTrigger />
+                <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
               </XhTreeSelectBranchControl>
               <XhTreeSelectBranchContent>
                 <XhTreeSelectItem value="guide">

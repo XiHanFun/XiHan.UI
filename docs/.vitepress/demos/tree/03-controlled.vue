@@ -1,6 +1,5 @@
 <!-- 受控 | 传了 expandedValue / selection 就由宿主说了算，组件只发事件不落内部值，宿主写回它才动 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhTreeBranch,
@@ -15,6 +14,7 @@ import {
   XhTreeRoot,
   XhTreeTree,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const collection = [
   {

@@ -1,7 +1,7 @@
 <!-- 表单 | 给了 name 才带上隐藏输入参与提交；宿主表单点重置，选中值回落到 default-value -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhSegmentedRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const submitted = ref("");
 const channels = [

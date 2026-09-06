@@ -1,6 +1,5 @@
 <!-- 受控开合与禁用 | open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位；disabled 的那一段开关按不动，停在给定的那一档 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhReasoningContent,
@@ -9,6 +8,7 @@ import {
   XhReasoningRoot,
   XhReasoningTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const notes = [
   {

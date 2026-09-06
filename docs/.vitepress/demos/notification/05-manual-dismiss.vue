@@ -1,16 +1,16 @@
 <!-- 手动收走 | create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；dismiss 直接移出队列，不走退场窗口 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
+  XhNotificationGroup,
+  XhNotificationItem,
   XhNotificationItemCloseTrigger,
   XhNotificationItemDescription,
-  XhNotificationGroup,
-  XhNotificationRoot,
-  XhNotificationItem,
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
+  XhNotificationRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 type Create = (options: Record<string, unknown>) => string;
 type Dismiss = (id: string) => void;
@@ -37,7 +37,7 @@ function finish(dismiss: Dismiss): void {
 // 用户自己按叉关掉时，记下的 id 也要作废
 function settle(
   details: { id: string; status: string },
-  dismiss: Dismiss
+  dismiss: Dismiss,
 ): void {
   if (details.status !== "unmounted") {
     return;

@@ -1,6 +1,5 @@
 <!-- 提交时机 | 输入途中只动草稿，失焦或回车才把值交给业务模型；不合法就退回上一次提交的值 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
@@ -9,6 +8,7 @@ import {
   XhNumberFieldLabel,
   XhNumberFieldRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 草稿绑在组件上，模型只在提交那一刻更新
 const draft = ref("3");

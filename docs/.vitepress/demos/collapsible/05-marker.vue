@@ -1,6 +1,6 @@
 <!-- 自定义展开标记 | 往指示符部件里塞自己的图形，转向仍由皮肤按 open 接管 -->
 <script setup lang="ts">
-import { ref } from "vue";
+import { ChevronDownIcon } from "@xihan-ui/icons";
 import {
   XhCollapsibleContent,
   XhCollapsibleIndicator,
@@ -8,7 +8,7 @@ import {
   XhCollapsibleTrigger,
   XhIcon,
 } from "@xihan-ui/vue";
-import { ChevronDownIcon } from "@xihan-ui/icons";
+import { ref } from "vue";
 
 const open = ref(false);
 </script>

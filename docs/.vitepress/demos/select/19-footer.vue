@@ -1,6 +1,5 @@
 <!-- 浮层底部的操作区 | footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打检索走到 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhSelectContent,
@@ -17,6 +16,7 @@ import {
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const picked = ref<string[]>([]);
 const fruits = ref([

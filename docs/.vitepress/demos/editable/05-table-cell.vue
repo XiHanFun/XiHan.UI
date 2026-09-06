@@ -1,12 +1,12 @@
 <!-- 表格里的单元格 | 一格一个就地编辑：点开就是输入框，收尾即写回行数据；autoResize 让输入框按内容宽窄走，不把列撑变形 -->
 <script setup lang="ts">
-import { reactive } from "vue";
 import {
   XhEditableControl,
   XhEditableInput,
   XhEditablePreview,
   XhEditableRoot,
 } from "@xihan-ui/vue";
+import { reactive } from "vue";
 
 const rows = reactive([
   { id: "u1", name: "赵一", dept: "平台研发", phone: "13800000001" },

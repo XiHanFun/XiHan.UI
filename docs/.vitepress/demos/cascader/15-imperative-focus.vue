@@ -1,6 +1,5 @@
 <!-- 命令式聚焦与展开 | trigger 部件就是原生按钮，拿到它即可 focus / blur；开合交给宿主写 open -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhCascaderColumn,
@@ -16,6 +15,7 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const regions = [
   {

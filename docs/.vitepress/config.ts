@@ -1,5 +1,6 @@
+import type { DefaultTheme, HeadConfig } from "vitepress";
 import { createRequire } from "node:module";
-import { DefaultTheme, HeadConfig, defineConfig } from "vitepress";
+import { defineConfig } from "vitepress";
 // @ts-expect-error 纯 JS 生成器，没有类型声明
 import { writeLlmsAssets } from "./gen-llms.mjs";
 
@@ -12,7 +13,8 @@ const renderErrors: Error[] = [];
 const passThroughError = console.error.bind(console);
 console.error = (...args: unknown[]): void => {
   for (const arg of args) {
-    if (arg instanceof Error) renderErrors.push(arg);
+    if (arg instanceof Error)
+      renderErrors.push(arg);
   }
   passThroughError(...args);
 };
@@ -37,8 +39,8 @@ const componentManifest: {
 
 const title: string = "曦寒视图组件文档";
 const description: string = "框架无关的设计系统运行时与组件库";
-const keywords: string =
-  "曦寒,曦寒懿,视图组件,组件库,设计系统,Vue,Web Components,官方文档,开源,XiHanFun,XiHan.UI";
+const keywords: string
+  = "曦寒,曦寒懿,视图组件,组件库,设计系统,Vue,Web Components,官方文档,开源,XiHanFun,XiHan.UI";
 const logo: string = "/images/logo.png";
 const head: HeadConfig[] = [
   ["meta", { name: "author", content: "XiHanFun" }],
@@ -133,7 +135,7 @@ const adaptersSidebar: DefaultTheme.SidebarItem[] = [
 function enName(id: string): string {
   return id
     .split("-")
-    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .map(word => word[0].toUpperCase() + word.slice(1))
     .join(" ");
 }
 
@@ -168,10 +170,10 @@ const examplesSidebar: DefaultTheme.SidebarItem[] = [
 
 const componentsSidebar: DefaultTheme.SidebarItem[] = [
   { text: "组件总览", link: "/components/" },
-  ...componentManifest.categories.map((category) => ({
+  ...componentManifest.categories.map(category => ({
     text: `${category.label}（${category.components.length}）`,
     collapsed: false,
-    items: category.components.map((component) => ({
+    items: category.components.map(component => ({
       // 中英并列：中文认得快，英文对得上代码里的标识与导出名。
       // 侧栏文本走 v-html，英文压成次要样式，中文仍是主视觉
       text: `${component.name} <span class="xh-sidebar-en">${enName(component.id)}</span>`,
@@ -354,9 +356,9 @@ function searchOptions(): Partial<DefaultTheme.AlgoliaSearchOptions> {
 
 export default defineConfig({
   lang: "zh-CN",
-  title: title,
-  description: description,
-  head: head,
+  title,
+  description,
+  head,
   lastUpdated: true,
   cleanUrls: true,
   async buildEnd(siteConfig) {
@@ -364,11 +366,11 @@ export default defineConfig({
       const list = renderErrors
         .map(
           (error, i) =>
-            `  ${i + 1}. ${demoOfStack(error)} —— ${error.name}: ${error.message}`
+            `  ${i + 1}. ${demoOfStack(error)} —— ${error.name}: ${error.message}`,
         )
         .join("\n");
       throw new Error(
-        `渲染页面阶段抛了 ${renderErrors.length} 个异常，出错的示例在静态页里整块缺失（完整栈见上方日志）：\n${list}`
+        `渲染页面阶段抛了 ${renderErrors.length} 个异常，出错的示例在静态页里整块缺失（完整栈见上方日志）：\n${list}`,
       );
     }
     // 机读资产排在抛异常之后：构建没通过就不产出
@@ -398,7 +400,7 @@ export default defineConfig({
     },
   },
   themeConfig: {
-    logo: logo,
+    logo,
     socialLinks: [
       { icon: "github", link: "https://github.com/XiHanFun/XiHan.UI" },
       { icon: "gitee", link: "https://gitee.com/XiHanFun/XiHan.UI" },
@@ -408,8 +410,8 @@ export default defineConfig({
       provider: "local",
       options: searchOptions(),
     },
-    nav: nav,
-    sidebar: sidebar,
+    nav,
+    sidebar,
     docFooter: {
       prev: "上一页",
       next: "下一页",

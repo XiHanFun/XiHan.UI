@@ -1,6 +1,5 @@
 <!-- 整组禁用 | 分页自己没有禁用开关：裹一层 disabled 的 fieldset，里面的按钮统一失效并脱出 Tab 序 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhPaginationEllipsisTrigger,
@@ -9,6 +8,7 @@ import {
   XhPaginationPrevTrigger,
   XhPaginationRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const loading = ref(true);
 

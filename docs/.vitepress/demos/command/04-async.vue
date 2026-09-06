@@ -1,7 +1,6 @@
 <!-- 远程检索 | filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛选归服务端；取数期间 loading 让在途占位顶上来、列表压暗一档，空态让位 -->
 <script setup lang="ts">
 import type { CommandNode } from "@xihan-ui/headless";
-import { onBeforeUnmount, ref, watch } from "vue";
 import {
   XhCommandContent,
   XhCommandEmpty,
@@ -14,6 +13,7 @@ import {
   XhCommandRoot,
   XhCommandTrigger,
 } from "@xihan-ui/vue";
+import { onBeforeUnmount, ref, watch } from "vue";
 
 // 站在服务端那一头的整份名册，示例里用一次延迟冒充网络
 const roster = [
@@ -43,7 +43,7 @@ watch(query, (keyword) => {
       return;
     }
     const text = keyword.trim();
-    results.value = text ? roster.filter((one) => one.label.includes(text)) : roster.slice(0, 3);
+    results.value = text ? roster.filter(one => one.label.includes(text)) : roster.slice(0, 3);
     loading.value = false;
   }, 400);
 });

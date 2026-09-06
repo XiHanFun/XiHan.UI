@@ -1,6 +1,5 @@
 <!-- 上限与粘贴拆分 | add-on-paste 让粘进来的一串按分隔符拆成多个标签；顶到 max 后再打再粘都进不去 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTagsInputClearTrigger,
   XhTagsInputControl,
@@ -12,6 +11,7 @@ import {
   XhTagsInputLabel,
   XhTagsInputRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const tags = ref<string[]>(["Vue"]);
 </script>

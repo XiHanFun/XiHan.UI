@@ -1,6 +1,5 @@
 <!-- 单选 | selectionMode 给 single：选中集合最多一个元素，点已选中的那行再点一次就清空，焦点行按空格同理 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTableBody,
   XhTableCell,
@@ -10,6 +9,7 @@ import {
   XhTableRow,
   XhTableRowSelectTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 单选下全选把手不生效，表头那一格空着即可
 const columns = [
@@ -24,7 +24,7 @@ const plans = [
   { id: "p3", plan: "企业版", price: "¥ 399 / 月" },
 ];
 
-const rows = plans.map((p) => ({ id: p.id }));
+const rows = plans.map(p => ({ id: p.id }));
 
 const selection = ref<string[]>(["p2"]);
 </script>

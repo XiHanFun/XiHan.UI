@@ -1,9 +1,9 @@
 <!-- 年份切换 | 一排按钮换的是区间，网格、月份段、色阶与锚点全按新区间从头算 -->
 <script setup lang="ts">
 import type { HeatmapDatum } from "@xihan-ui/headless";
-import { computed, ref } from "vue";
 import { formatHeatmapDate } from "@xihan-ui/headless";
 import { XhButton, XhHeatmapRoot } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const DAY_MS = 86_400_000;
 
@@ -34,7 +34,7 @@ const ranges = [
 ];
 
 const activeKey = ref(ranges[0].key);
-const active = computed(() => ranges.find((r) => r.key === activeKey.value) ?? ranges[0]);
+const active = computed(() => ranges.find(r => r.key === activeKey.value) ?? ranges[0]);
 // 数据跟着区间换：区间外的日子不进网格，也不把档位标尺顶高
 const activity = computed(() => buildRange(active.value.start, active.value.end));
 </script>

@@ -1,6 +1,5 @@
 <!-- 单元格就地编辑 | 表体的方向键与 Home/End 是挂在 body 上的冒泡监听，可编辑控件上掐断冒泡这些键就回归输入框自己 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTableBody,
   XhTableCaption,
@@ -10,6 +9,7 @@ import {
   XhTableRoot,
   XhTableRow,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const columns = [
   { id: "item", label: "条目", width: "9rem" },
@@ -24,11 +24,12 @@ const lines = ref([
 ]);
 
 // 行序不随编辑变化，rows 取一次即可
-const rows = lines.value.map((line) => ({ id: line.id }));
+const rows = lines.value.map(line => ({ id: line.id }));
 
 // Escape 把焦点交还所在行，表体的方向键随即恢复
 function onEditKeydown(event: KeyboardEvent): void {
-  if (event.key !== "Escape") return;
+  if (event.key !== "Escape")
+    return;
   const input = event.currentTarget as HTMLElement;
   input.closest<HTMLElement>("[data-part='row']")?.focus();
 }
@@ -57,7 +58,7 @@ function onEditKeydown(event: KeyboardEvent): void {
               :aria-label="`${line.item} 数量`"
               style="inline-size: 100%; min-inline-size: 0"
               @keydown.stop="onEditKeydown"
-            />
+            >
           </XhTableCell>
           <XhTableCell value="note">
             <input
@@ -67,7 +68,7 @@ function onEditKeydown(event: KeyboardEvent): void {
               :aria-label="`${line.item} 备注`"
               style="inline-size: 100%; min-inline-size: 0"
               @keydown.stop="onEditKeydown"
-            />
+            >
           </XhTableCell>
         </XhTableRow>
       </XhTableBody>

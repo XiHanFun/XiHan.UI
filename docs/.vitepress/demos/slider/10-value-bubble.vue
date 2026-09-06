@@ -1,6 +1,5 @@
 <!-- 拖动时的值气泡 | value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出面，气泡里的文字取自作者的格式化函数 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhSliderControl,
   XhSliderHiddenInput,
@@ -11,6 +10,7 @@ import {
   XhSliderTrack,
   XhSliderValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const budget = ref([1800]);
 

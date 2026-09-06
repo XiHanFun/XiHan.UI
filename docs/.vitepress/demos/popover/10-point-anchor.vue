@@ -1,6 +1,5 @@
 <!-- 落在指针位置 | 触发器缩成一个像素、按点击坐标固定摆放，浮层就钉在刚点到的那一点上；再点一下换个落点 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhPopoverArrow,
   XhPopoverCloseTrigger,
@@ -11,6 +10,7 @@ import {
   XhPopoverTitle,
   XhPopoverTrigger,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const open = ref(false);
 const point = ref({ x: 0, y: 0 });

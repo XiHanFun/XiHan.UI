@@ -43,7 +43,7 @@ function validate(values: Record<string, unknown>) {
             type="password"
             :value="value"
             @input="setValue(($event.target as HTMLInputElement).value)"
-          />
+          >
         </XhFieldControl>
         <XhFieldErrorText>{{ error }}</XhFieldErrorText>
       </XhFieldRoot>
@@ -57,7 +57,7 @@ function validate(values: Record<string, unknown>) {
             type="password"
             :value="value"
             @input="setValue(($event.target as HTMLInputElement).value)"
-          />
+          >
         </XhFieldControl>
         <XhFieldErrorText>{{ error }}</XhFieldErrorText>
       </XhFieldRoot>

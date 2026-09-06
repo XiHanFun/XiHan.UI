@@ -1,7 +1,7 @@
 <!-- 受控与拦截 | 传了 value 就由宿主说了算，value-change 只报意图；这里最多留两项 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhCheckboxGroupRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const picked = ref<string[]>(["email"]);
 const rejected = ref(false);
@@ -15,7 +15,8 @@ const channels = [
 // 超过两项就不写回，界面停在原值
 function onValueChange(details: { value: string[] }) {
   rejected.value = details.value.length > 2;
-  if (!rejected.value) picked.value = details.value;
+  if (!rejected.value)
+    picked.value = details.value;
 }
 </script>
 

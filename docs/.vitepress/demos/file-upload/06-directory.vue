@@ -5,10 +5,10 @@ import {
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
-  XhFileUploadList,
   XhFileUploadItemName,
   XhFileUploadItemSizeText,
   XhFileUploadLabel,
+  XhFileUploadList,
   XhFileUploadRoot,
   XhFileUploadTrigger,
 } from "@xihan-ui/vue";

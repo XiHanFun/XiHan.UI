@@ -1,6 +1,5 @@
 <!-- 事件 | open-change 带一份 { open }，报的是这次要落到的状态；非受控时内部开合也照发一次 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhPopoverArrow,
   XhPopoverContent,
@@ -9,6 +8,7 @@ import {
   XhPopoverRoot,
   XhPopoverTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const log = ref<string[]>([]);
 

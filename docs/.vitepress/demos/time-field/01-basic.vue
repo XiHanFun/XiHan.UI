@@ -1,6 +1,5 @@
 <!-- 基础用法 | 默认 24 小时制，上下键在段区间里回绕，缺一段整份值就退回空串 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTimeFieldControl,
   XhTimeFieldHiddenInput,
@@ -9,6 +8,7 @@ import {
   XhTimeFieldSegment,
   XhTimeFieldSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref("");
 </script>

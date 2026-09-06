@@ -1,7 +1,7 @@
 <!-- 多选 | 选完不收起、输入串自动清空，候选立刻回到全集；框里空着时退格删掉最后一个已选项 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { XhComboboxRoot } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const cities = [
   { value: "beijing", label: "Beijing 北京" },
@@ -14,7 +14,7 @@ const value = ref<string[]>([]);
 const query = ref("");
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
-  return q === "" ? cities : cities.filter((c) => c.label.toLowerCase().includes(q));
+  return q === "" ? cities : cities.filter(c => c.label.toLowerCase().includes(q));
 });
 </script>
 

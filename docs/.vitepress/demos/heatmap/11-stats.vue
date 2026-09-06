@@ -1,9 +1,9 @@
 <!-- 数据统计 | 总天数、空白天数与占比、最大值、平均值都从网格模型直接读，不必自己再遍历一遍数据 -->
 <script setup lang="ts">
 import type { HeatmapDatum } from "@xihan-ui/headless";
-import { computed } from "vue";
 import { buildHeatmapGrid, formatHeatmapDate } from "@xihan-ui/headless";
 import { XhHeatmapRoot } from "@xihan-ui/vue";
+import { computed } from "vue";
 
 const DAY_MS = 86_400_000;
 const START = "2024-01-01";

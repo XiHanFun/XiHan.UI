@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import type { StageAxis } from "./demo-stage";
 import { onMounted } from "vue";
 import {
   resetDemoStage,
   restoreDemoStage,
   setStageAxis,
   stageAxes,
+
   stageIsInitial,
-  type StageAxis,
 } from "./demo-stage";
 
 // 挂载后才读记住的选择，预渲染出来的那一帧只认初始档

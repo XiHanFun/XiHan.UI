@@ -12,14 +12,14 @@ const code = ref("");
 const complete = ref(false);
 
 let timer = 0;
-const tick = () => {
+function tick() {
   if (code.value.length >= full.length) {
     complete.value = true;
     return;
   }
   code.value = full.slice(0, code.value.length + 2);
   timer = window.setTimeout(tick, 60);
-};
+}
 // 挂载后才开始追加：<script setup> 顶层在服务端渲染时也执行，那里没有 window
 onMounted(tick);
 

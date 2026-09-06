@@ -1,6 +1,5 @@
 <!-- 受控与切片 | 传了 page 就由宿主说了算；当前页决定从整份数据里切出哪一段 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhPaginationEllipsisTrigger,
   XhPaginationItem,
@@ -8,6 +7,7 @@ import {
   XhPaginationPrevTrigger,
   XhPaginationRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const rows = Array.from({ length: 23 }, (_, i) => `第 ${i + 1} 条记录`);
 const page = ref(1);

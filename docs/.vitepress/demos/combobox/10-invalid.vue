@@ -1,7 +1,7 @@
 <!-- 校验状态 | invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定自己撤掉 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { XhComboboxRoot } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const cities = [
   { value: "beijing", label: "Beijing 北京" },
@@ -13,7 +13,7 @@ const value = ref<string[]>([]);
 const query = ref("");
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
-  return q === "" ? cities : cities.filter((c) => c.label.toLowerCase().includes(q));
+  return q === "" ? cities : cities.filter(c => c.label.toLowerCase().includes(q));
 });
 // 校验归宿主，组件只负责把这个结论铺成属性
 const invalid = computed(() => value.value.length === 0);

@@ -1,7 +1,7 @@
 <!-- 撤掉与换色 | 文字空了就落 data-state="empty"，整层不画；印子的颜色走 --xh-watermark-fg，深浅主题各自跟着走 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhWatermarkContent, XhWatermarkRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const on = ref(true);
 </script>
@@ -9,7 +9,7 @@ const on = ref(true);
 <template>
   <div style="display: flex; flex-direction: column; gap: 12px">
     <label style="display: flex; align-items: center; gap: 8px; font-size: 13px">
-      <input v-model="on" type="checkbox" />
+      <input v-model="on" type="checkbox">
       盖上水印
     </label>
     <!-- 图样当遮罩用，颜色由这一个变量决定；写成背景图就得把颜色焊死在图里 -->

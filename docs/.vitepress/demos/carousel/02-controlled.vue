@@ -1,6 +1,5 @@
 <!-- 受控 | 传了 page 就由宿主说了算，组件只发 page-change 不自己改页码，宿主写回它才动 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhCarouselItem,
   XhCarouselList,
@@ -9,6 +8,7 @@ import {
   XhCarouselRoot,
   XhCarouselViewport,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const slides = ["登录", "选套餐", "付款"];
 const page = ref(1);

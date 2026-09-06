@@ -1,6 +1,5 @@
 <!-- 基础用法 | 三段各是一个可加减的数，整组只占一个 Tab 位，三段填齐才第一次报出值 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhDateFieldControl,
   XhDateFieldHiddenInput,
@@ -9,6 +8,7 @@ import {
   XhDateFieldSegment,
   XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref<string | null>(null);
 </script>

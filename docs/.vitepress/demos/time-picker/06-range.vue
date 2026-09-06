@@ -1,17 +1,17 @@
 <!-- 可选时段 | min / max 直接把界外的格从列里裁掉；分列还会随已选的时再裁一遍 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
-  XhTimePickerSegment,
-  XhTimePickerSegmentGroup,
-  XhTimePickerLabel,
   XhTimePickerItem,
+  XhTimePickerLabel,
   XhTimePickerPositioner,
   XhTimePickerRoot,
+  XhTimePickerSegment,
+  XhTimePickerSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref("");
 </script>

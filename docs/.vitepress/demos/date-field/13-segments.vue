@@ -1,7 +1,6 @@
 <!-- 段位可拼装 | segments 决定这份控件由哪几块组成；段位可按段名认领，不必数下标 -->
 <script setup lang="ts">
 import type { DateSegmentSet } from "@xihan-ui/headless";
-import { ref } from "vue";
 import {
   XhDateFieldControl,
   XhDateFieldLabel,
@@ -9,6 +8,7 @@ import {
   XhDateFieldSegment,
   XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 值的形态不变，仍是 ISO 日期串：季度取那一季的头一个月、周取那一周的周首日
 const quarter = ref<string | null>("2026-04-01");

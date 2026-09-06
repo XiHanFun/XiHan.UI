@@ -1,6 +1,5 @@
 <!-- 提交方式 | submitMode 决定编辑态怎么收尾，不算提交的那些出口一律按撤销处理，值还回上一次提交的那个 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhEditableCancelTrigger,
   XhEditableControl,
@@ -11,6 +10,7 @@ import {
   XhEditableRoot,
   XhEditableSubmitTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const blurCommitted = ref("失焦即提交");
 const enterCommitted = ref("回车才提交");

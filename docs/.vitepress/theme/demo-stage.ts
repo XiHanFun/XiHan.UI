@@ -1,4 +1,5 @@
-import { computed, ref, type Ref } from "vue";
+import type { Ref } from "vue";
+import { computed, ref } from "vue";
 
 /** 主题轴多一档「跟随站点」：舞台跟着 VitePress 的深浅走，不自己钉死。 */
 export type StageTheme = "site" | "light" | "dark";
@@ -69,7 +70,7 @@ export const stageAxes: readonly StageAxis[] = [
 
 /** 四个轴是否都停在初始档。 */
 export const stageIsInitial = computed(() =>
-  stageAxes.every((axis) => axis.value.value === axis.initial)
+  stageAxes.every(axis => axis.value.value === axis.initial),
 );
 
 const STORAGE_KEY = "xh-demo-stage";
@@ -81,7 +82,8 @@ function persist(): void {
 }
 
 export function setStageAxis(axis: StageAxis, value: string): void {
-  if (!axis.options.some((option) => option.value === value)) return;
+  if (!axis.options.some(option => option.value === value))
+    return;
   axis.value.value = value;
   persist();
 }
@@ -96,18 +98,21 @@ let restored = false;
 
 // 预渲染读不到 localStorage，首屏一律用初始档，挂载后再校正。舞台有很多份，只校正一次
 export function restoreDemoStage(): void {
-  if (restored) return;
+  if (restored)
+    return;
   restored = true;
   let saved: unknown;
   try {
     saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null");
-  } catch {
+  }
+  catch {
     return;
   }
-  if (saved === null || typeof saved !== "object") return;
+  if (saved === null || typeof saved !== "object")
+    return;
   for (const axis of stageAxes) {
     const value = (saved as Record<string, unknown>)[axis.id];
-    if (typeof value === "string" && axis.options.some((option) => option.value === value)) {
+    if (typeof value === "string" && axis.options.some(option => option.value === value)) {
       axis.value.value = value;
     }
   }
@@ -125,6 +130,6 @@ export function stageAttrs(siteDark: boolean): Record<string, string> {
       stageTheme.value === "site" ? (siteDark ? "dark" : "light") : stageTheme.value,
     "data-density": stageDensity.value,
     "data-contrast": stageContrast.value,
-    dir: stageDirection.value,
+    "dir": stageDirection.value,
   };
 }

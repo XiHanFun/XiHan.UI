@@ -7,9 +7,9 @@
 ## 注册
 
 ```ts
-import { defineXhElements } from '@xihan-ui/web-components/define'
+import { defineXhElements } from "@xihan-ui/web-components/define";
 
-defineXhElements() // 注册全部 128 个 xh-* 元素
+defineXhElements(); // 注册全部 128 个 xh-* 元素
 ```
 
 主入口的 `import` 本身**不注册**，必须显式调这一行。注册是幂等的：同版本重复调直接返回；同标签不同版本、或标签已被非 XiHan.UI 代码占用，都会抛错而不是静默覆盖。无 `customElements` 的环境（SSR）静默跳过。
@@ -17,9 +17,9 @@ defineXhElements() // 注册全部 128 个 xh-* 元素
 背景层单独注册，不引就不会把 WebGL 引擎打进包：
 
 ```ts
-import { defineXhBackground } from '@xihan-ui/web-components/backgrounds'
+import { defineXhBackground } from "@xihan-ui/web-components/backgrounds";
 
-defineXhBackground()
+defineXhBackground();
 ```
 
 ## 结构由你写
@@ -69,9 +69,9 @@ Shadow DOM 会把结构封在里面：你改不了标签、插不进自己的节
 ```
 
 ```ts
-const dialog = document.querySelector('xh-dialog')
-dialog.open = true // 受控
-dialog.closeOnEscape = false
+const dialog = document.querySelector("xh-dialog");
+dialog.open = true; // 受控
+dialog.closeOnEscape = false;
 ```
 
 布尔属性用**三态转换器**：属性缺席 = `undefined`（用组件默认值），`="false"` = `false`，其余 = `true`。这个区分是必要的——`modal` 的默认值是 `true`，如果缺席和 `="false"` 不能区分，就没法把它关掉。
@@ -81,10 +81,10 @@ dialog.closeOnEscape = false
 组件的变更以 `CustomEvent` 派发，`bubbles: true, composed: true`，事件名是 kebab-case：
 
 ```ts
-document.querySelector('xh-dialog')
-  .addEventListener('open-change', (e) => {
-    console.log(e.detail.open) // { open: boolean }
-  })
+document.querySelector("xh-dialog")
+  .addEventListener("open-change", (e) => {
+    console.log(e.detail.open); // { open: boolean }
+  });
 ```
 
 `detail` 就是无头内核里那个明细对象，与 Vue 适配器的 `value-change` 载荷完全一致。

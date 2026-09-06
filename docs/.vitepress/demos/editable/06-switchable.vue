@@ -1,6 +1,5 @@
 <!-- 整表进出编辑态 | edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放弃时宿主拿自己留的底稿还原 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhEditableControl,
@@ -8,6 +7,7 @@ import {
   XhEditablePreview,
   XhEditableRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 interface Row {
   id: string;
@@ -25,7 +25,7 @@ const editing = ref(false);
 let backup: Row[] = [];
 
 function start() {
-  backup = rows.value.map((row) => ({ ...row }));
+  backup = rows.value.map(row => ({ ...row }));
   editing.value = true;
 }
 
@@ -34,7 +34,7 @@ function save() {
 }
 
 function discard() {
-  rows.value = backup.map((row) => ({ ...row }));
+  rows.value = backup.map(row => ({ ...row }));
   editing.value = false;
 }
 

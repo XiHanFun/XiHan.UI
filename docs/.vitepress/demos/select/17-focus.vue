@@ -1,6 +1,5 @@
 <!-- 命令式聚焦 | 触发器就是你写的那个按钮，focus 与 blur 直接调它 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhSelectContent,
@@ -16,6 +15,7 @@ import {
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const levels = [
   { value: "p0", label: "紧急" },
@@ -30,7 +30,8 @@ const submitted = ref(false);
 // 提交时没选值就把焦点送回触发器
 function submit(): void {
   submitted.value = true;
-  if (picked.value.length === 0) trigger.value?.$el.focus();
+  if (picked.value.length === 0)
+    trigger.value?.$el.focus();
 }
 
 function blurTrigger(): void {

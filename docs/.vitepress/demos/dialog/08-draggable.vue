@@ -1,6 +1,5 @@
 <!-- 拖动标题栏挪窗口 | 指针按在标题上，顺着 DOM 找到 content 部件，把累计位移写进它的 translate；入场动画走的是 transform，两者互不覆盖 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhDialogCloseTrigger,
@@ -10,6 +9,7 @@ import {
   XhDialogTitle,
   XhDialogTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const offset = ref({ x: 0, y: 0 });
 const dragging = ref(false);
@@ -19,8 +19,9 @@ let startY = 0;
 
 function begin(event: PointerEvent): void {
   const handle = event.currentTarget as HTMLElement;
-  panel = handle.closest<HTMLElement>('[data-scope="dialog"][data-part="content"]');
-  if (!panel) return;
+  panel = handle.closest<HTMLElement>("[data-scope=\"dialog\"][data-part=\"content\"]");
+  if (!panel)
+    return;
   dragging.value = true;
   startX = event.clientX - offset.value.x;
   startY = event.clientY - offset.value.y;
@@ -28,13 +29,15 @@ function begin(event: PointerEvent): void {
 }
 
 function move(event: PointerEvent): void {
-  if (!dragging.value || !panel) return;
+  if (!dragging.value || !panel)
+    return;
   offset.value = { x: event.clientX - startX, y: event.clientY - startY };
   panel.style.translate = `${offset.value.x}px ${offset.value.y}px`;
 }
 
 function end(event: PointerEvent): void {
-  if (!dragging.value) return;
+  if (!dragging.value)
+    return;
   dragging.value = false;
   panel = null;
   (event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
@@ -42,7 +45,8 @@ function end(event: PointerEvent): void {
 
 // 每次重新展开都是一块新面板，位移从零算起
 function reset(details: { open: boolean }): void {
-  if (details.open) offset.value = { x: 0, y: 0 };
+  if (details.open)
+    offset.value = { x: 0, y: 0 };
 }
 </script>
 

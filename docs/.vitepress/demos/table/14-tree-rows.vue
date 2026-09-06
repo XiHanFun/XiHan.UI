@@ -1,6 +1,5 @@
 <!-- 树形表格 | rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自报，缩进落在首格的内边距上 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { ChevronRightIcon } from "@xihan-ui/icons";
 import {
   XhIcon,
@@ -11,6 +10,7 @@ import {
   XhTableRoot,
   XhTableRow,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 interface Node {
   id: string;
@@ -80,26 +80,29 @@ const flat = computed<FlatRow[]>(() => {
         branch,
         open,
       });
-      if (open) walk(node.children!, level + 1);
+      if (open)
+        walk(node.children!, level + 1);
     });
   };
   walk(tree, 1);
   return out;
 });
 
-const rows = computed(() => flat.value.map((row) => ({ id: row.id })));
+const rows = computed(() => flat.value.map(row => ({ id: row.id })));
 
 function toggle(id: string): void {
   expanded.value = expanded.value.includes(id)
-    ? expanded.value.filter((v) => v !== id)
+    ? expanded.value.filter(v => v !== id)
     : [...expanded.value, id];
 }
 
 // 焦点行是父级时左右方向键切换开合；连接层遇到不可展开的行原样放行这两个键
 function onBodyKeydown(event: KeyboardEvent, focused: string | null): void {
-  if (focused == null) return;
-  const row = flat.value.find((r) => r.id === focused);
-  if (!row?.branch) return;
+  if (focused == null)
+    return;
+  const row = flat.value.find(r => r.id === focused);
+  if (!row?.branch)
+    return;
   const wantOpen = event.key === "ArrowRight";
   const wantClose = event.key === "ArrowLeft";
   if ((wantOpen && !row.open) || (wantClose && row.open)) {

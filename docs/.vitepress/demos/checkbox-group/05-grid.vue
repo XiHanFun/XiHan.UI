@@ -1,13 +1,13 @@
 <!-- 栅格排布 | 组容器的行列只是缺省排布，行内把 display 改成 grid 就能摆成多列 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
-  XhCheckboxGroupItem,
   XhCheckboxGroupIndicator,
+  XhCheckboxGroupItem,
   XhCheckboxGroupItemText,
   XhCheckboxGroupLabel,
   XhCheckboxGroupRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const picked = ref<string[]>(["beijing", "chengdu"]);
 const cities = [

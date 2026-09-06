@@ -1,6 +1,5 @@
 <!-- 二级目录 | 子链接嵌在父项里的原生列表中，按文档序照常参与结算；父级要不要跟着亮由宿主自己算 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhAnchorIndicator,
   XhAnchorItem,
@@ -8,6 +7,7 @@ import {
   XhAnchorList,
   XhAnchorRoot,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const groups = [
   {
@@ -30,7 +30,7 @@ const groups = [
 
 // 正文区块按文档序摊平，父节与子节共用一份清单
 const sections = computed(() =>
-  groups.flatMap((g) => [{ value: g.value, label: g.label }, ...g.children]),
+  groups.flatMap(g => [{ value: g.value, label: g.label }, ...g.children]),
 );
 
 const active = ref<string | null>(null);
@@ -43,7 +43,7 @@ function isGroupActive(group: {
 }): boolean {
   return (
     active.value === group.value
-    || group.children.some((c) => c.value === active.value)
+    || group.children.some(c => c.value === active.value)
   );
 }
 </script>

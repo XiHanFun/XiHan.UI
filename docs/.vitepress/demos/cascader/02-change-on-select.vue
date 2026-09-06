@@ -1,6 +1,5 @@
 <!-- 中间层可选 | change-on-select 让分支自己也能落值；选中分支后浮层不收起，还能接着往下挑 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhCascaderClearTrigger,
   XhCascaderColumn,
@@ -16,6 +15,7 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const catalog = [
   {

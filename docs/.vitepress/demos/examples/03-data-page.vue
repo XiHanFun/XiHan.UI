@@ -1,7 +1,6 @@
 <!-- 数据页 | 搜索、筛选、分段、表格、状态标签、分页与空态同框：一份数据经四道筛选后落进表体，筛没了就换空态 -->
 <script setup lang="ts">
 import type { SelectNode } from "@xihan-ui/headless";
-import { computed, ref, watch } from "vue";
 import {
   XhButton,
   XhEmptyStateDescription,
@@ -44,6 +43,7 @@ import {
   XhTooltipRoot,
   XhTooltipTrigger,
 } from "@xihan-ui/vue";
+import { computed, ref, watch } from "vue";
 
 interface Order {
   id: string;
@@ -105,18 +105,20 @@ const filtered = computed(() => {
   const wanted = status.value[0] ?? "all";
   const text = keyword.value.trim();
   const rows = source.filter(
-    (order) =>
+    order =>
       order.days <= days
       && (wanted === "all" || order.status === wanted)
       && (text === "" || order.no.includes(text) || order.customer.includes(text)),
   );
-  if (sort.value.length === 0) return rows;
+  if (sort.value.length === 0)
+    return rows;
   return [...rows].sort((a, b) => {
     for (const rule of sort.value) {
       const diff = rule.id === "amount"
         ? a.amount - b.amount
         : a.no.localeCompare(b.no, "zh");
-      if (diff !== 0) return rule.direction === "asc" ? diff : -diff;
+      if (diff !== 0)
+        return rule.direction === "asc" ? diff : -diff;
     }
     return 0;
   });
@@ -126,7 +128,7 @@ const paged = computed(() =>
   filtered.value.slice((page.value - 1) * pageSize, page.value * pageSize),
 );
 
-const rows = computed(() => paged.value.map((order) => ({ id: order.id })));
+const rows = computed(() => paged.value.map(order => ({ id: order.id })));
 
 // 筛选条件一动就退回第一页，否则会停在一页不存在的页码上
 watch([keyword, status, range], () => {

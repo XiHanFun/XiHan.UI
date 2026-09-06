@@ -1,13 +1,13 @@
 <!-- 溢出才提示 | 上面套 Tooltip 按 overflow-change 开关，下面用 tooltip 交给平台的原生提示 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
-  XhTruncate,
   XhTooltipContent,
   XhTooltipPositioner,
   XhTooltipRoot,
   XhTooltipTrigger,
+  XhTruncate,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const width = ref(200);
 const overflowing = ref(false);
@@ -31,7 +31,7 @@ const asText = {
   <div style="display: grid; gap: 16px; inline-size: 100%">
     <label style="display: flex; align-items: center; gap: 8px">
       容器宽度
-      <input v-model.number="width" type="range" min="120" max="560" step="20" />
+      <input v-model.number="width" type="range" min="120" max="560" step="20">
       {{ width }}px
     </label>
 

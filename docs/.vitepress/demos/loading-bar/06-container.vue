@@ -1,12 +1,12 @@
 <!-- 挂在局部 | 条子默认贴视口顶边，改写成 absolute 再套一个相对定位的框子，它就只贴这块卡片的上沿 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhLoadingBarRange,
   XhLoadingBarRoot,
   XhLoadingBarTrack,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const loading = ref(false);
 

@@ -1,6 +1,5 @@
 <!-- 受控 | 传了 open 与 value 就由宿主说了算：内部不再自改，只发意图，浮层里的按钮与外面的进度读的是同一份状态 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhTourArrow,
@@ -15,6 +14,7 @@ import {
   XhTourSpotlight,
   XhTourTitle,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const steps = [
   {
@@ -41,8 +41,8 @@ const open = ref(false);
 const step = ref(0);
 const log = ref("（未开始）");
 
-const panel =
-  "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px";
+const panel
+  = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px";
 
 function start(from: number): void {
   step.value = from;

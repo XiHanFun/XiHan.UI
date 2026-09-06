@@ -1,7 +1,6 @@
 <!-- 异步校验 | 规则里的 validator 直接返回 Promise：提交时机器等它回来再放行或拦下，期间 validating 置真可用来标忙 -->
 <script setup lang="ts">
 import type { FormRules } from "@xihan-ui/headless";
-import { ref } from "vue";
 import {
   XhFieldControl,
   XhFieldDescription,
@@ -12,6 +11,7 @@ import {
   XhFormRoot,
   XhFormSubmitTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const taken = ["admin", "root", "xihan"];
 const submitted = ref("（还没提交过）");
@@ -22,7 +22,7 @@ const rules: FormRules = {
     { required: true, message: "用户名不能为空" },
     {
       validator: async (value) => {
-        await new Promise((r) => setTimeout(r, 700));
+        await new Promise(r => setTimeout(r, 700));
         return taken.includes(String(value).trim()) ? "这个用户名已经有人用了" : undefined;
       },
     },
@@ -50,7 +50,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
             placeholder="试试 admin"
             :value="value"
             @input="setValue(($event.target as HTMLInputElement).value)"
-          />
+          >
         </XhFieldControl>
         <XhFieldDescription>{{ validating ? "正在核验…" : "提交时先问一次服务端，占用的名字会被挡下" }}</XhFieldDescription>
         <XhFieldErrorText>{{ error }}</XhFieldErrorText>

@@ -2,7 +2,6 @@
 <script setup lang="ts">
 import type { ApprovalScope, MarkdownBlock } from "@xihan-ui/headless";
 import { createStreamRenderer } from "@xihan-ui/markdown";
-import { ref, shallowRef } from "vue";
 import {
   XhApprovalApproveTrigger,
   XhApprovalDenyTrigger,
@@ -50,6 +49,7 @@ import {
   XhToolCallStatus,
   XhToolCallTrigger,
 } from "@xihan-ui/vue";
+import { ref, shallowRef } from "vue";
 
 const answer = `按你给的约束，改动落在**一个文件**里：
 

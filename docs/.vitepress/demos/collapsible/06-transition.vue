@@ -1,11 +1,11 @@
 <!-- 展开动画 | 收起时节点不卸载，作者接管内容区的 display，用一条行高过渡就能平滑展开 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhCollapsibleContent,
   XhCollapsibleRoot,
   XhCollapsibleTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const open = ref(false);
 </script>

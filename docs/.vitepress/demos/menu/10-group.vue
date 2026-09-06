@@ -1,7 +1,6 @@
 <!-- 分组与标记位 | 组标题与组内条目用 role="group" 加 aria-labelledby 对上；中间包一层不影响方向键行程，条目里标记位与文字各占一段 -->
 <script setup lang="ts">
 import { CheckIcon } from "@xihan-ui/icons";
-import { ref } from "vue";
 import {
   XhIcon,
   XhMenuContent,
@@ -13,6 +12,7 @@ import {
   XhMenuSeparator,
   XhMenuTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const groups = [
   {
@@ -79,7 +79,7 @@ const markStyle = {
 
     <span>
       行高：{{ density === "compact" ? "紧凑" : "宽松" }}；面板：{{
-        panels.length ? panels.length + " 个" : "都收起了"
+        panels.length ? `${panels.length} 个` : "都收起了"
       }}
     </span>
   </div>

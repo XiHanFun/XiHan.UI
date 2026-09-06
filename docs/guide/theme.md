@@ -44,19 +44,19 @@ primitive  ──►  semantic  ──►  组件私有槽
 ## 主题运行时
 
 ```ts
-import { createThemeController } from '@xihan-ui/tokens/runtime'
+import { createThemeController } from "@xihan-ui/tokens/runtime";
 
 const theme = createThemeController({
   root: document.documentElement, // 默认就是它
-  storageKey: 'app-theme', // 传了才持久化
-  initial: { mode: 'system', density: 'comfortable' },
-})
+  storageKey: "app-theme", // 传了才持久化
+  initial: { mode: "system", density: "comfortable" },
+});
 
-theme.getState() // 已定型的五维状态
-theme.getPreference() // 用户提交的意图（可能含 undefined / 'system'）
-theme.setPreference({ mode: 'dark' })
-theme.subscribe(state => {})
-theme.dispose()
+theme.getState(); // 已定型的五维状态
+theme.getPreference(); // 用户提交的意图（可能含 undefined / 'system'）
+theme.setPreference({ mode: "dark" });
+theme.subscribe((state) => {});
+theme.dispose();
 ```
 
 它把状态投影成根元素上的五个属性：
@@ -77,11 +77,11 @@ theme.dispose()
 
 ```ts
 interface ThemePreference {
-  mode?: 'light' | 'dark' | 'system'
-  brand?: BrandId
-  density?: 'comfortable' | 'compact'
-  dir?: 'ltr' | 'rtl'
-  contrast?: 'base' | 'more' | 'system'
+  mode?: "light" | "dark" | "system";
+  brand?: BrandId;
+  density?: "comfortable" | "compact";
+  dir?: "ltr" | "rtl";
+  contrast?: "base" | "more" | "system";
 }
 ```
 
@@ -114,11 +114,12 @@ interface ThemePreference {
 ## 直接取用令牌
 
 ```ts
-// 机读产物：生成 Figma 变量、Tailwind 主题、设计稿标注都可以用
-import tokens from '@xihan-ui/tokens/tokens.json' with { type: 'json' }
-
+import type { TokenName } from "@xihan-ui/tokens";
 // TypeScript 侧带类型的令牌名
-import { tokens, type TokenName } from '@xihan-ui/tokens'
+import { tokens } from "@xihan-ui/tokens";
+
+// 机读产物：生成 Figma 变量、Tailwind 主题、设计稿标注都可以用
+import tokens from "@xihan-ui/tokens/tokens.json" with { type: "json" };
 ```
 
 ## 相关

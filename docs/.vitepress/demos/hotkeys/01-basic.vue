@@ -1,7 +1,7 @@
 <!-- 基础用法 | 一组组合的键帽：Mod 在 Mac 上出 ⌘、其余平台出 Ctrl，平台由组件自己测出来 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhHotkeys } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const count = ref(0);
 </script>

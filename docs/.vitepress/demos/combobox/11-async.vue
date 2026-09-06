@@ -1,7 +1,7 @@
 <!-- 异步候选 | 输入串每变一次就重新去远端查一遍，等结果的这段时间候选为空、由空态节点顶上 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhComboboxRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 interface City {
   value: string;
@@ -32,7 +32,7 @@ function onSearch(details: { inputValue: string }): void {
   }
   loading.value = true;
   timer = window.setTimeout(() => {
-    options.value = pool.filter((c) => c.label.toLowerCase().includes(q));
+    options.value = pool.filter(c => c.label.toLowerCase().includes(q));
     loading.value = false;
   }, 600);
 }

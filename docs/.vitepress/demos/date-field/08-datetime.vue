@@ -1,6 +1,5 @@
 <!-- 精确到分 | granularity=minute 在年月日后面接出时、分两段，值随之带上 T 与时间位 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhDateFieldControl,
   XhDateFieldLabel,
@@ -8,6 +7,7 @@ import {
   XhDateFieldSegment,
   XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref<string | null>("2026-07-28T13:45");
 </script>

@@ -1,6 +1,5 @@
 <!-- 浮层内关键词过滤 | 输入框是树的兄弟节点，树的键盘处理器挂在 tree 上，打字不会被连打检索收走；换掉 collection 可见行与方向键顺序跟着重算 -->
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
 import {
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
@@ -20,6 +19,7 @@ import {
   XhTreeSelectTrigger,
   XhTreeSelectValueText,
 } from "@xihan-ui/vue";
+import { computed, ref, watch } from "vue";
 
 interface City {
   value: string;
@@ -65,28 +65,30 @@ const keyword = ref("");
 // 分区名命中就整枝留下，否则只留命中的城市；一个都不剩的分区整枝去掉
 const collection = computed<Region[]>(() => {
   const key = keyword.value.trim();
-  if (!key) return source;
+  if (!key)
+    return source;
   return source
-    .map((region) => ({
+    .map(region => ({
       ...region,
       children: region.label.includes(key)
         ? region.children
-        : region.children.filter((city) => city.label.includes(key)),
+        : region.children.filter(city => city.label.includes(key)),
     }))
-    .filter((region) => region.children.length > 0);
+    .filter(region => region.children.length > 0);
 });
 
 const expanded = ref<string[]>([]);
 
 watch(keyword, () => {
   expanded.value = keyword.value.trim()
-    ? collection.value.map((region) => region.value)
+    ? collection.value.map(region => region.value)
     : [];
 });
 
 // 收起浮层顺手把关键词清掉，下次展开还是整棵树
 function onOpenChange(details: { open: boolean }): void {
-  if (!details.open) keyword.value = "";
+  if (!details.open)
+    keyword.value = "";
 }
 </script>
 
@@ -114,7 +116,7 @@ function onOpenChange(details: { open: boolean }): void {
           aria-label="城市关键词"
           placeholder="输入关键词"
           style="inline-size: 100%; margin-block-end: 6px"
-        />
+        >
         <XhTreeSelectTree>
           <XhTreeSelectBranch
             v-for="region in collection"
@@ -122,8 +124,8 @@ function onOpenChange(details: { open: boolean }): void {
             :value="region.value"
           >
             <XhTreeSelectBranchControl>
-  <XhTreeSelectBranchTrigger />
-  <XhTreeSelectBranchText>{{ region.label }}</XhTreeSelectBranchText>
+              <XhTreeSelectBranchTrigger />
+              <XhTreeSelectBranchText>{{ region.label }}</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem

@@ -1,6 +1,5 @@
 <!-- 级联勾选与回显策略 | multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；对外值按 checked-strategy 收敛（默认只收叶），半选标记由条目自报的半选态出面 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhCascaderClearTrigger,
   XhCascaderColumn,
@@ -16,6 +15,7 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 interface CatalogNode {
   value: string;
@@ -68,7 +68,7 @@ function labelOf(path: readonly string[]): string {
   let nodes: CatalogNode[] | undefined = catalog;
   let hit: CatalogNode | undefined;
   for (const segment of path) {
-    hit = nodes?.find((node) => node.value === segment);
+    hit = nodes?.find(node => node.value === segment);
     nodes = hit?.children;
   }
   return hit?.label ?? path[path.length - 1]!;

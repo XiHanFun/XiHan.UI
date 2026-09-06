@@ -1,6 +1,5 @@
 <!-- 分组与标记位 | group 用 value 跟自己的 group-label 配对，item-indicator 是纯装饰的勾选位 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhContextMenuContent,
   XhContextMenuGroup,
@@ -13,6 +12,7 @@ import {
   XhContextMenuSeparator,
   XhContextMenuTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const sortBy = ref("name");
 

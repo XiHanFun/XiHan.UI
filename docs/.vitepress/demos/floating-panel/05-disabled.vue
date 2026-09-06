@@ -9,9 +9,9 @@ import {
   XhFloatingPanelPositioner,
   XhFloatingPanelResizeTrigger,
   XhFloatingPanelRoot,
-  XhFloatingPanelWindowStateTrigger,
   XhFloatingPanelTitle,
   XhFloatingPanelTrigger,
+  XhFloatingPanelWindowStateTrigger,
 } from "@xihan-ui/vue";
 </script>
 

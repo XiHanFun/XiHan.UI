@@ -1,6 +1,5 @@
 <!-- 自定义换算 | parse 把显示串读成数、format 把数写回显示串；两个方向必须互逆，否则按一下加号值就会漂 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
@@ -9,6 +8,7 @@ import {
   XhNumberFieldLabel,
   XhNumberFieldRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const amount = ref("1,234");
 // 千位分隔符：读的时候把逗号去掉，写的时候再加回来

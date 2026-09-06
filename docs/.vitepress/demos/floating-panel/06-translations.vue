@@ -10,9 +10,9 @@ import {
   XhFloatingPanelPositioner,
   XhFloatingPanelResizeTrigger,
   XhFloatingPanelRoot,
-  XhFloatingPanelWindowStateTrigger,
   XhFloatingPanelTitle,
   XhFloatingPanelTrigger,
+  XhFloatingPanelWindowStateTrigger,
 } from "@xihan-ui/vue";
 
 // 八个把手与三个形态钮的名字带参数：读屏得念得出按的是哪一个
@@ -35,9 +35,9 @@ const WINDOW_STATE_LABEL = {
 
 const translations: FloatingPanelSchema["props"]["translations"] = {
   dragTrigger: "移动面板",
-  resizeTrigger: (edge) => `拖动${EDGE_LABEL[edge]}改变大小`,
-  resizeValueText: (size) => `宽 ${size.width}、高 ${size.height} 像素`,
-  windowStateTrigger: (windowState) => WINDOW_STATE_LABEL[windowState],
+  resizeTrigger: edge => `拖动${EDGE_LABEL[edge]}改变大小`,
+  resizeValueText: size => `宽 ${size.width}、高 ${size.height} 像素`,
+  windowStateTrigger: windowState => WINDOW_STATE_LABEL[windowState],
   close: "关闭面板",
 };
 </script>

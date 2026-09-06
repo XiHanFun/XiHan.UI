@@ -1,6 +1,5 @@
 <!-- 禁用与程序化操作 | 禁用时三类把手全按不动；从外面加一条走同一条闸门，整份替换值则不受闸门约束 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhFieldArrayAddTrigger,
   XhFieldArrayItem,
@@ -9,6 +8,7 @@ import {
   XhFieldArrayItemDeleteTrigger,
   XhFieldArrayRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const locked = ref(false);
 const tasks = ref<string[]>(["写方案", "评审", "上线"]);
@@ -16,7 +16,7 @@ const tasks = ref<string[]>(["写方案", "评审", "上线"]);
 
 <template>
   <label>
-    <input v-model="locked" type="checkbox" />
+    <input v-model="locked" type="checkbox">
     锁定这份清单
   </label>
 

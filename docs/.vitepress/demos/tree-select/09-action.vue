@@ -59,8 +59,8 @@ const files = [
         <XhTreeSelectTree>
           <XhTreeSelectBranch v-for="dir in files" :key="dir.value" :value="dir.value">
             <XhTreeSelectBranchControl>
-  <XhTreeSelectBranchTrigger />
-  <XhTreeSelectBranchText>{{ dir.label }}</XhTreeSelectBranchText>
+              <XhTreeSelectBranchTrigger />
+              <XhTreeSelectBranchText>{{ dir.label }}</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem

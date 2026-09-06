@@ -5,13 +5,13 @@ import {
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
-  XhTimePickerSegment,
-  XhTimePickerSegmentGroup,
   XhTimePickerItem,
   XhTimePickerLabel,
   XhTimePickerPositioner,
   XhTimePickerPresetGroup,
   XhTimePickerRoot,
+  XhTimePickerSegment,
+  XhTimePickerSegmentGroup,
 } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
 

@@ -1,7 +1,7 @@
 <!-- 弹簧 | 感知参数调出物理参数，曲线是解析解直接采样的，右边的方块按同一条曲线走 -->
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, useTemplateRef } from "vue";
 import { animate, createSpring, springToLinearEasing } from "@xihan-ui/motion";
+import { computed, onBeforeUnmount, ref, useTemplateRef } from "vue";
 
 const duration = ref(0.5);
 const bounce = ref(0.3);
@@ -26,7 +26,8 @@ let handle: { cancel: () => void } | null = null;
 
 function play() {
   const el = box.value;
-  if (!el) return;
+  if (!el)
+    return;
   handle?.cancel();
   const spring = solver.value;
   handle = animate(
@@ -44,11 +45,11 @@ onBeforeUnmount(() => handle?.cancel());
     <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
       <label style="display: flex; align-items: center; gap: 8px">
         时长 {{ duration.toFixed(2) }}s
-        <input v-model.number="duration" type="range" min="0.15" max="1.2" step="0.05" />
+        <input v-model.number="duration" type="range" min="0.15" max="1.2" step="0.05">
       </label>
       <label style="display: flex; align-items: center; gap: 8px">
         弹性 {{ bounce.toFixed(2) }}
-        <input v-model.number="bounce" type="range" min="-0.8" max="0.8" step="0.05" />
+        <input v-model.number="bounce" type="range" min="-0.8" max="0.8" step="0.05">
       </label>
     </div>
 

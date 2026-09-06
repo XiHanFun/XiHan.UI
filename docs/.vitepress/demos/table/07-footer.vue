@@ -1,6 +1,5 @@
 <!-- 脚注合计 | footer 把行号空间的最后一行留给脚注；脚注单元格不属于任何数据行，也就没有选中与禁用可言 -->
 <script setup lang="ts">
-import { computed } from "vue";
 import {
   XhTableBody,
   XhTableCaption,
@@ -11,6 +10,7 @@ import {
   XhTableRoot,
   XhTableRow,
 } from "@xihan-ui/vue";
+import { computed } from "vue";
 
 const columns = [
   { id: "item", label: "条目", width: "10rem" },
@@ -24,7 +24,7 @@ const lines = [
   { id: "l3", item: "显示器支架", count: 1, amount: 320 },
 ];
 
-const rows = lines.map((l) => ({ id: l.id }));
+const rows = lines.map(l => ({ id: l.id }));
 
 const totalCount = computed(() => lines.reduce((sum, l) => sum + l.count, 0));
 const totalAmount = computed(() => lines.reduce((sum, l) => sum + l.amount, 0));

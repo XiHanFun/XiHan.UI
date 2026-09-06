@@ -11,7 +11,7 @@
 一段动画是一份可 JSON 序列化的配方（`MotionSpec`）：若干视觉帧加一组时序参数。
 
 ```ts
-import type { MotionSpec } from '@xihan-ui/animations'
+import type { MotionSpec } from "@xihan-ui/animations";
 
 const riseUp: MotionSpec = {
   frames: [
@@ -19,8 +19,8 @@ const riseUp: MotionSpec = {
     { opacity: 1, y: 0, scale: 1 },
   ],
   duration: 420,
-  easing: 'emphasized',
-}
+  easing: "emphasized",
+};
 ```
 
 一帧能改六样东西：`opacity` `x` `y` `scale` `rotate` `blur`。位移写数字按 px，写字符串原样透传（`'100%'`）。省略的字段表示这一帧不参与该属性的插值。
@@ -46,13 +46,13 @@ const riseUp: MotionSpec = {
 ## 播
 
 ```ts
-import { createMotionPlayer } from '@xihan-ui/animations'
+import { createMotionPlayer } from "@xihan-ui/animations";
 
-const motion = createMotionPlayer()
+const motion = createMotionPlayer();
 
-await motion.play(card, 'fade-up')
-motion.play(input, 'shake') // 校验没过，抖一下
-motion.play(el, { frames: [{ opacity: 0 }, { opacity: 1 }], duration: 500 }) // 直接给配方
+await motion.play(card, "fade-up");
+motion.play(input, "shake"); // 校验没过，抖一下
+motion.play(el, { frames: [{ opacity: 0 }, { opacity: 1 }], duration: 500 }); // 直接给配方
 ```
 
 同一元素上再播一次会先撤掉上一段——两段一起写同一批属性的话，后一段会从被改过的中间态起步。被撤掉的那次 `play` 以 `'cancelled'` 结算，不抛异常。
@@ -64,11 +64,11 @@ const motion = createMotionPlayer({
   enabled: true, // 接到用户偏好上，别替最终用户决定
   speed: 1, // 全局时长系数，越大越慢
   presets: myPresets, // 省略用内置的
-})
+});
 
-motion.setEnabled(false) // 关掉时撤掉在播的，但 play 照常结算
-motion.cancel(el) // 撤一个
-motion.cancel() // 全撤
+motion.setEnabled(false); // 关掉时撤掉在播的，但 play 照常结算
+motion.cancel(el); // 撤一个
+motion.cancel(); // 全撤
 ```
 
 播未收录的名字不播、不抛，只产出一条诊断告警（见 [诊断通道](/guide/diagnostics)）。
@@ -78,7 +78,7 @@ motion.cancel() // 全撤
 <XhDemo src="animations/02-stagger" />
 
 ```ts
-await motion.playAll(list.children, 'rise', { stagger: 40, from: 'center' })
+await motion.playAll(list.children, "rise", { stagger: 40, from: "center" });
 ```
 
 `from` 决定从哪一端铺开：`first` 从头、`last` 从尾、`center` 从中间往两边。间隔叠在给定的基础延迟上。任意一个被打断，整体就算被打断。
@@ -88,11 +88,11 @@ await motion.playAll(list.children, 'rise', { stagger: 40, from: 'center' })
 `splitText` 把一段文字拆成逐字或逐词的行内块，正好是 `playAll` 要的一组元素。
 
 ```ts
-import { splitText } from '@xihan-ui/animations'
+import { splitText } from "@xihan-ui/animations";
 
-const { parts, restore } = splitText(title, { by: 'char' })
-await motion.playAll(parts, 'fade-up', { stagger: 30 })
-restore()
+const { parts, restore } = splitText(title, { by: "char" });
+await motion.playAll(parts, "fade-up", { stagger: 30 });
+restore();
 ```
 
 按码点切，不会把 emoji 拆成两半；空白原样保留，换行照常。每一段都是 `inline-block`——行内元素吃不到 `translate` 与 `scale`。
@@ -108,9 +108,9 @@ restore()
 `reverseSpec` 把一份进场配方翻成退场配方：帧序反转、偏移量镜像。逐帧缓动会被丢弃——它描述的是"本帧到下一帧"，反转之后那个区间换了主人。
 
 ```ts
-import { motionPresets, reverseSpec } from '@xihan-ui/animations'
+import { motionPresets, reverseSpec } from "@xihan-ui/animations";
 
-await motion.play(el, reverseSpec(motionPresets['fade-up']))
+await motion.play(el, reverseSpec(motionPresets["fade-up"]));
 ```
 
 要做的是**弹窗这类会挂载卸载的进出场**，别用这个——那需要在卸载前把动画播完，走 [行为原语](/guide/behavior) 的进出场时序，动画本身交给 CSS `@keyframes`。这里的退场适合元素常驻、只是隐藏的场景。
@@ -120,13 +120,13 @@ await motion.play(el, reverseSpec(motionPresets['fade-up']))
 观察不是动画，不收在这个包里。用 `@xihan-ui/core` 的 `createViewportEntry` 观察，回调里调 `play`：
 
 ```ts
-import { createViewportEntry } from '@xihan-ui/core'
+import { createViewportEntry } from "@xihan-ui/core";
 
 createViewportEntry({
   scope,
   target: () => card,
-  onEnter: () => void motion.play(card, 'rise'),
-})
+  onEnter: () => void motion.play(card, "rise"),
+});
 ```
 
 ## 相关

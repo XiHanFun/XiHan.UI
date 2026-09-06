@@ -63,8 +63,8 @@ const sizes = [
           <XhTreeSelectTree>
             <XhTreeSelectBranch value="docs">
               <XhTreeSelectBranchControl>
-  <XhTreeSelectBranchTrigger />
-  <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
+                <XhTreeSelectBranchTrigger />
+                <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
               </XhTreeSelectBranchControl>
               <XhTreeSelectBranchContent>
                 <XhTreeSelectItem value="guide">

@@ -1,7 +1,7 @@
 <!-- 选择模式 | selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，与 multiple 档的区别就在裸点 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhListboxRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const files = ref<string[]>(["a"]);
 const options = [

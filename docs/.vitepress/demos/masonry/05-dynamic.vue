@@ -1,10 +1,10 @@
 <!-- 动态增删 | 项增删后重新量高、重新落格；新项排在末尾，摘掉一项后其余项会补位 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhMasonry } from "@xihan-ui/vue";
+import { ref } from "vue";
 
-const cardStyle =
-  "padding: 12px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
+const cardStyle
+  = "padding: 12px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
 
 let seq = 4;
 const cards = ref([

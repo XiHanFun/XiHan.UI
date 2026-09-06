@@ -1,12 +1,12 @@
 <!-- 计时与暂停 | duration 走完自动退场；指针停在条子上或焦点进到条子里都会把计时按住，离开才接着走剩下那一段 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhToastCloseTrigger,
   XhToastRoot,
   XhToastTitle,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const seq = ref(0);
 </script>

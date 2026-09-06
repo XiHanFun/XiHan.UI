@@ -1,6 +1,5 @@
 <!-- 异步加载子节点 | 展开某个分支才去要它的子节点：先摆一行禁用占位，数据回来就地换掉，显示文本随之取到新 label -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
@@ -20,6 +19,7 @@ import {
   XhTreeSelectTrigger,
   XhTreeSelectValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 interface Node {
   value: string;
@@ -48,11 +48,13 @@ const picked = ref<string[]>([]);
 const loaded = new Set<string>();
 
 function fetchChildren(value: string): void {
-  if (loaded.has(value)) return;
+  if (loaded.has(value))
+    return;
   loaded.add(value);
   window.setTimeout(() => {
-    const branch = collection.value.find((node) => node.value === value);
-    if (!branch) return;
+    const branch = collection.value.find(node => node.value === value);
+    if (!branch)
+      return;
     branch.children = cities[value].map((name, index) => ({
       value: `${value}-${index}`,
       label: name,
@@ -91,8 +93,8 @@ function onExpandedValueChange(details: { value: string[] }): void {
             :value="region.value"
           >
             <XhTreeSelectBranchControl>
-  <XhTreeSelectBranchTrigger />
-  <XhTreeSelectBranchText>{{ region.label }}</XhTreeSelectBranchText>
+              <XhTreeSelectBranchTrigger />
+              <XhTreeSelectBranchText>{{ region.label }}</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem

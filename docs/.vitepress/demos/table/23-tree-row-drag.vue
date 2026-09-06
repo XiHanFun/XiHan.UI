@@ -1,6 +1,5 @@
 <!-- 树形表拖拽 | 行声明了 parentId 就是树：拖到一行中段是放进这一行（换个父），拖到上下两端仍是插在它前后；键盘走 Alt + 上下键同层挪、Alt + 左右键改缩进。库报的是「搬到哪个父下面的第几位」外加重排好的整份行序，写回归宿主——按 ids 重排、再把那一行的 parentId 设成 parent，两件都做才对得上。许不许搬那一句归 allowRowDrop -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhTableBody,
   XhTableCaption,
@@ -11,6 +10,7 @@ import {
   XhTableRoot,
   XhTableRow,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 /** 库报的落点：把 id 那一行搬到 parent 下面的第 index 位；parent 为 null 即根层。 */
 interface RowMove {
@@ -47,12 +47,12 @@ const tasks = ref<Task[]>([
   { id: "t4", label: "旧版导出", owner: "郑七", parentId: "archive" },
 ]);
 
-const byId = computed(() => new Map(tasks.value.map((task) => [task.id, task])));
+const byId = computed(() => new Map(tasks.value.map(task => [task.id, task])));
 
 // 行序与父子归属的事实源就是这份数组。分组行标上 expandable：
 // 有子行的行本来就展得开，标了它的分组被搬空之后也仍收得下东西
 const rows = computed(() =>
-  tasks.value.map((task) => ({
+  tasks.value.map(task => ({
     id: task.id,
     parentId: task.parentId ?? undefined,
     expandable: task.group,
@@ -74,7 +74,8 @@ function onRowMove(move: RowMove): void {
   const known = byId.value;
   tasks.value = move.ids.flatMap((id) => {
     const task = known.get(id);
-    if (!task) return [];
+    if (!task)
+      return [];
     return [id === move.id ? { ...task, parentId: move.parent } : task];
   });
   const where = move.parent == null ? "根层" : (known.get(move.parent)?.label ?? move.parent);
@@ -82,8 +83,8 @@ function onRowMove(move: RowMove): void {
 }
 
 // 叶子行没有开合把手，补一块同宽的空位，两种行的文字才起在同一处
-const twistySpacer =
-  "display: inline-flex; flex: none; inline-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size))";
+const twistySpacer
+  = "display: inline-flex; flex: none; inline-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size))";
 </script>
 
 <template>

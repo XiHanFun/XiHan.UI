@@ -1,6 +1,5 @@
 <!-- 格子里放内容 | cell-trigger 的内容全由作者写，日号之外还能塞自己的标记 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhCalendarCell,
   XhCalendarCellTrigger,
@@ -15,6 +14,7 @@ import {
   XhCalendarWeekDay,
   XhCalendarWeekRow,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref<string[]>([]);
 

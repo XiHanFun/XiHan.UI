@@ -1,6 +1,5 @@
 <!-- 外部触发的输入会话 | 输入部件平时收起，按「添加」才露面并聚焦；打字时给候选，选中即落标签，失焦按 blur-behavior 收尾 -->
 <script setup lang="ts">
-import { nextTick, ref } from "vue";
 import {
   XhButton,
   XhTagsInputControl,
@@ -12,6 +11,7 @@ import {
   XhTagsInputLabel,
   XhTagsInputRoot,
 } from "@xihan-ui/vue";
+import { nextTick, ref } from "vue";
 
 const domains = ["@qq.com", "@163.com", "@gmail.com"];
 
@@ -30,7 +30,7 @@ function start() {
 // 候选：拿已经打出来的前缀拼几个完整地址
 function options(text: string): string[] {
   const prefix = text.split("@")[0] ?? "";
-  return prefix ? domains.map((domain) => prefix + domain) : [];
+  return prefix ? domains.map(domain => prefix + domain) : [];
 }
 </script>
 

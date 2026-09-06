@@ -1,6 +1,5 @@
 <!-- 受控 | 传了 sider-collapsed 就由宿主说了算，组件不再自改，只发 sider-collapsed-change -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhLayoutContent,
@@ -9,6 +8,7 @@ import {
   XhLayoutSider,
   XhLayoutSiderTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const collapsed = ref(false);
 </script>

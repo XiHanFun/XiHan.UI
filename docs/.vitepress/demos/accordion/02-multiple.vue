@@ -1,7 +1,7 @@
 <!-- 多项展开 | multiple 允许多项并存，展开集合恒为 string[]，受控绑定即可拿到它 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhAccordionRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const items = [
   { value: "basic", label: "基础属性", content: "value、defaultValue、multiple。" },

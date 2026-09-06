@@ -1,6 +1,5 @@
 <!-- 值变化事件 | value-change 每次带上整份 ISO 串，段位被清掉时它是 null -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhDateFieldControl,
   XhDateFieldLabel,
@@ -8,6 +7,7 @@ import {
   XhDateFieldSegment,
   XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const log = ref<string[]>([]);
 

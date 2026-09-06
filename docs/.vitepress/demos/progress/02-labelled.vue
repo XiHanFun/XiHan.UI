@@ -1,7 +1,7 @@
 <!-- 配文字说明 | 进度条自身只画轨道与进度，百分比文字由使用者摆 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhProgress } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref(64);
 </script>

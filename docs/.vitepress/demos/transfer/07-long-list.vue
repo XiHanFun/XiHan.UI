@@ -1,6 +1,5 @@
 <!-- 一万条只渲可视区 | 面板插槽给的是本侧此刻看得见的全集，作者按滚动位置切一段挂出来，上下各留一个撑高块；全选、计数与搬运不读 DOM，照样管到窗口外 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTransferItem,
   XhTransferItemCheckbox,
@@ -17,14 +16,15 @@ import {
   XhTransferToSourceTrigger,
   XhTransferToTargetTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 行高与列表高度写死，窗口才算得出来
 const ROW = 30;
 const VIEW = 240;
 const OVERSCAN = 6;
 
-const listStyle =
-  "--xh-transfer-list-h: 240px";
+const listStyle
+  = "--xh-transfer-list-h: 240px";
 
 interface PanelItem {
   value: string;

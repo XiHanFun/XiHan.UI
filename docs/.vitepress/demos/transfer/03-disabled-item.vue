@@ -1,6 +1,5 @@
 <!-- 条目禁用 | 禁用写在 items 上：勾不动也搬不动，但仍可聚焦、仍是方向键的起点 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTransferItem,
   XhTransferItemCheckbox,
@@ -15,6 +14,7 @@ import {
   XhTransferToSourceTrigger,
   XhTransferToTargetTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const items = [
   { value: "read", label: "查看" },

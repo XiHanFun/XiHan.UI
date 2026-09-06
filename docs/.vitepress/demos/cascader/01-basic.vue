@@ -1,6 +1,5 @@
 <!-- 基础用法 | collection 是层级、显示文本与禁用的唯一事实源；levels 按深度摊开，每层一个 column -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhCascaderColumn,
   XhCascaderContent,
@@ -15,6 +14,7 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const regions = [
   {

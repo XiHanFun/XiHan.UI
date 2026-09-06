@@ -1,6 +1,5 @@
 <!-- 基础用法 | 框里打字按 Enter 落一个标签；标签由作者按当前值渲染，每个标签自带 value 标识身份 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTagsInputControl,
   XhTagsInputInput,
@@ -11,6 +10,7 @@ import {
   XhTagsInputLabel,
   XhTagsInputRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const tags = ref<string[]>(["Vue", "TypeScript"]);
 </script>

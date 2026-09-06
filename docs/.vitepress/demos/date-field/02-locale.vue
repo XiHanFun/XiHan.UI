@@ -1,6 +1,5 @@
 <!-- 段序随 locale | 同一份标记，locale 换成 en-US 后段序自动排成月日年 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhDateFieldControl,
   XhDateFieldLabel,
@@ -8,6 +7,7 @@ import {
   XhDateFieldSegment,
   XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const zh = ref<string | null>("2026-07-28");
 const us = ref<string | null>("2026-07-28");

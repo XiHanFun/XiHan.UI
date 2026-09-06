@@ -1,6 +1,5 @@
 <!-- 候选词一键添加 | 根插槽给出 addValue 与 atMax：输入框之外再开一条加标签的路，上限一样管得住 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhTagsInputControl,
@@ -12,6 +11,7 @@ import {
   XhTagsInputLabel,
   XhTagsInputRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const suggestions = ["文档", "无障碍", "设计令牌", "组件库"];
 const tags = ref<string[]>(["文档"]);

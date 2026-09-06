@@ -1,18 +1,18 @@
 <!-- 宿主自定的准入 | 组件只管 accept 与大小数量这几条通用规则，别的规矩由宿主在受控列表里再筛一道：这里同名文件只留最先来的那份 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhFileUploadDropzone,
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
-  XhFileUploadList,
   XhFileUploadItemName,
   XhFileUploadItemSizeText,
   XhFileUploadLabel,
+  XhFileUploadList,
   XhFileUploadRoot,
   XhFileUploadTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const files = ref<File[]>([]);
 const dropped = ref("");
@@ -37,7 +37,7 @@ function onFilesChange(details: { files: File[] }) {
 
 // 这一批组件收下了谁
 function onFileAccept(details: { files: File[] }) {
-  lastAccepted.value = details.files.map((file) => file.name).join("、");
+  lastAccepted.value = details.files.map(file => file.name).join("、");
 }
 </script>
 

@@ -1,6 +1,5 @@
 <!-- 出错的那一步 | 步序只认下标，「这一步出错了」是宿主自己的数据：在那一步的 item 上换掉标记与颜色令牌 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhStepsDescription,
@@ -12,6 +11,7 @@ import {
   XhStepsTitle,
   XhStepsTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const steps = [
   { title: "提交材料", description: "已通过" },

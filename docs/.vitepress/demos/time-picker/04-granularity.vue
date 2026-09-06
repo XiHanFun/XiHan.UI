@@ -1,18 +1,18 @@
 <!-- 精度到秒 | granularity 同时决定输入行显示几段、浮层里排几列 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTimePickerClearTrigger,
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
-  XhTimePickerSegment,
-  XhTimePickerSegmentGroup,
-  XhTimePickerLabel,
   XhTimePickerItem,
+  XhTimePickerLabel,
   XhTimePickerPositioner,
   XhTimePickerRoot,
+  XhTimePickerSegment,
+  XhTimePickerSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref("");
 </script>

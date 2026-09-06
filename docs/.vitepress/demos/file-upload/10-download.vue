@@ -1,18 +1,18 @@
 <!-- 列表项上的下载 | 条目里放什么由作者定：一条普通的 a[download] 就是下载口；想自己接管就换成按钮，在处理器里怎么取都行 -->
 <script setup lang="ts">
-import { onBeforeUnmount } from "vue";
 import {
   XhFileUploadDropzone,
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
-  XhFileUploadList,
   XhFileUploadItemName,
   XhFileUploadItemSizeText,
   XhFileUploadLabel,
+  XhFileUploadList,
   XhFileUploadRoot,
   XhFileUploadTrigger,
 } from "@xihan-ui/vue";
+import { onBeforeUnmount } from "vue";
 
 // 一个文件一条地址，取过就留着，卸载时统一交还
 const urls = new Map<File, string>();
@@ -36,7 +36,7 @@ function saveCopy(file: File) {
 }
 
 onBeforeUnmount(() => {
-  urls.forEach((url) => URL.revokeObjectURL(url));
+  urls.forEach(url => URL.revokeObjectURL(url));
   urls.clear();
 });
 

@@ -6,7 +6,7 @@
 export function connectAccordion<T extends PropTypes>(
   service: Service<AccordionSchema>,
   normalize: NormalizeProps<T>,
-): AccordionApi<T>
+): AccordionApi<T>;
 ```
 
 `connect` 里没有任何 DOM 写操作，也没有任何框架 API。它是一个纯函数：同样的服务状态，产出同样的属性字典。
@@ -18,17 +18,17 @@ export function connectAccordion<T extends PropTypes>(
 ```ts
 export interface AccordionApi<T extends PropTypes = PropTypes> {
   // 状态与操作
-  value: string[]
-  setValue: (next: string[]) => void
-  isOpen: (value: string) => boolean
+  value: string[];
+  setValue: (next: string[]) => void;
+  isOpen: (value: string) => boolean;
 
   // 每个部件一个 getter
-  getRootProps: () => T['element']
-  getItemProps: (props: AccordionItemProps) => T['element']
-  getHeaderProps: (props: AccordionItemProps) => T['element']
-  getTriggerProps: (props: AccordionItemProps) => T['button']
-  getContentProps: (props: AccordionItemProps) => T['element']
-  getIndicatorProps: (props: AccordionItemProps) => T['element']
+  getRootProps: () => T["element"];
+  getItemProps: (props: AccordionItemProps) => T["element"];
+  getHeaderProps: (props: AccordionItemProps) => T["element"];
+  getTriggerProps: (props: AccordionItemProps) => T["button"];
+  getContentProps: (props: AccordionItemProps) => T["element"];
+  getIndicatorProps: (props: AccordionItemProps) => T["element"];
 }
 ```
 
@@ -45,16 +45,16 @@ export interface AccordionApi<T extends PropTypes = PropTypes> {
 getTriggerProps: item => normalize.button({
   ...parts.trigger.attrs, // data-scope + data-part
   [ITEM_VALUE_ATTR]: item.value, // 集合导航用的身份标记
-  'id': triggerId(item.value), // 由 scope 派生，同页多实例不冲突
-  'type': 'button',
-  'aria-controls': contentId(item.value), // 与 content 的 id 对上
-  'aria-expanded': isOpen(item.value) ? 'true' : 'false',
-  'aria-disabled': item.disabled ? 'true' : 'false',
-  'data-state': stateAttr(item), // 皮肤钩子
-  'data-disabled': dataAttr(item.disabled),
-  'onClick': () => { /* send({ type: 'ITEM.TOGGLE', … }) */ },
-  'onKeydown': onTriggerKeydown(item),
-})
+  "id": triggerId(item.value), // 由 scope 派生，同页多实例不冲突
+  "type": "button",
+  "aria-controls": contentId(item.value), // 与 content 的 id 对上
+  "aria-expanded": isOpen(item.value) ? "true" : "false",
+  "aria-disabled": item.disabled ? "true" : "false",
+  "data-state": stateAttr(item), // 皮肤钩子
+  "data-disabled": dataAttr(item.disabled),
+  "onClick": () => { /* send({ type: 'ITEM.TOGGLE', … }) */ },
+  "onKeydown": onTriggerKeydown(item),
+});
 ```
 
 五类内容，缺一不可：
@@ -75,10 +75,10 @@ id 一律由 `scope` 派生而不是随手生成，这样同一页面挂多个�
 
 ```ts
 // 无头场景：恒等归一化，原样拿到属性字典
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from "@xihan-ui/core";
 
-const api = connectAccordion(service, normalizeProps)
-api.getTriggerProps({ value: 'a' })
+const api = connectAccordion(service, normalizeProps);
+api.getTriggerProps({ value: "a" });
 // { 'data-scope': 'accordion', 'data-part': 'trigger', 'aria-expanded': 'false', … }
 ```
 
@@ -101,9 +101,9 @@ Vue 里走组合式函数：
 
 ```vue
 <script setup lang="ts">
-import { useAccordion } from '@xihan-ui/vue'
+import { useAccordion } from "@xihan-ui/vue";
 
-const { api } = useAccordion({ multiple: true, defaultValue: ['a'] })
+const { api } = useAccordion({ multiple: true, defaultValue: ["a"] });
 </script>
 
 <template>
@@ -116,24 +116,23 @@ const { api } = useAccordion({ multiple: true, defaultValue: ['a'] })
 完全脱离框架时自己建服务：
 
 ```ts
-import { createScope, createCounterIdGenerator, normalizeProps } from '@xihan-ui/core'
-import { accordionMachine, connectAccordion } from '@xihan-ui/headless'
-import { createService } from '@xihan-ui/core'
-import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
+import { createCounterIdGenerator, createScope, createService, normalizeProps } from "@xihan-ui/core";
+import { createVanillaRuntime } from "@xihan-ui/core/vanilla";
+import { accordionMachine, connectAccordion } from "@xihan-ui/headless";
 
-const runtime = createVanillaRuntime()
-const scope = createScope(rootEl, createCounterIdGenerator())
+const runtime = createVanillaRuntime();
+const scope = createScope(rootEl, createCounterIdGenerator());
 const service = createService(accordionMachine, {
   props: () => ({ multiple: true }),
   runtime,
   scope,
-})
-runtime.start()
+});
+runtime.start();
 
-const api = connectAccordion(service, normalizeProps)
+const api = connectAccordion(service, normalizeProps);
 runtime.subscribe(() => {
   // 任一格子变化即重读 api，把属性刷到 DOM 上
-})
+});
 ```
 
 ## 相关

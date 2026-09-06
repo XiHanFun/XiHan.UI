@@ -1,6 +1,5 @@
 <!-- 离散档位 | 可选值不必是等距数值：让滑块在档位下标上走，宿主再把下标映射回自己的取值表，键盘与拖动都只落在档位上 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhSliderControl,
   XhSliderHiddenInput,
@@ -10,6 +9,7 @@ import {
   XhSliderThumb,
   XhSliderTrack,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const levels = [1, 5, 10, 50, 100, 500];
 

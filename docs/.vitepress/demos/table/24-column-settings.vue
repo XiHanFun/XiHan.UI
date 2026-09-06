@@ -1,6 +1,5 @@
 <!-- 列设置与工具条 | 工具条渲成表的兄弟排在表前（root 是 grid，工具条进不去它里面）；列设置区照 columnSettings 渲，藏起来的列也在其中，只剩最后一列显示着时那颗把手转禁用 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhPopoverContent,
   XhPopoverPositioner,
@@ -17,6 +16,7 @@ import {
   XhTableRow,
   XhTableToolbar,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 interface Member {
   id: string;
@@ -40,7 +40,7 @@ const members: Member[] = [
   { id: "u4", name: "李四", dept: "前端体验", city: "杭州", level: "P5" },
 ];
 
-const rows = members.map((m) => ({ id: m.id }));
+const rows = members.map(m => ({ id: m.id }));
 
 // 偏好存哪儿归使用者：这里只把它显示出来，存 localStorage 还是存后端都是应用的事
 const saved = ref<string>("尚未改过");

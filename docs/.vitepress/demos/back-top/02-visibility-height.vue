@@ -1,7 +1,7 @@
 <!-- 露面阈值 | visibility-height 决定滚过多少像素按钮才出现 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const scrollEl = ref<HTMLElement | null>(null);
 const threshold = ref(80);
@@ -11,7 +11,7 @@ const threshold = ref(80);
   <div style="display: grid; gap: 12px; inline-size: 100%">
     <label style="display: flex; align-items: center; gap: 8px">
       滚过
-      <input v-model.number="threshold" type="range" min="0" max="600" step="20" />
+      <input v-model.number="threshold" type="range" min="0" max="600" step="20">
       {{ threshold }}px 才露面
     </label>
 

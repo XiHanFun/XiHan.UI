@@ -1,6 +1,5 @@
 <!-- 列过滤 | 过滤把手是列标题里的一段内容，过滤结果就是宿主算好后传进来的那份 rows；表头是表体的兄弟，把手上的按键不会被表体收走 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { ChevronDownIcon } from "@xihan-ui/icons";
 import {
   XhIcon,
@@ -17,6 +16,7 @@ import {
   XhTableRoot,
   XhTableRow,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const columns = [
   { id: "name", label: "姓名", width: "7rem" },
@@ -33,8 +33,8 @@ const members = [
   { id: "u6", name: "吴六", dept: "平台研发", city: "上海" },
 ];
 
-const deptOptions = [...new Set(members.map((m) => m.dept))];
-const cityOptions = [...new Set(members.map((m) => m.city))];
+const deptOptions = [...new Set(members.map(m => m.dept))];
+const cityOptions = [...new Set(members.map(m => m.city))];
 
 // 过滤态由宿主持有，一个都没勾就是不过滤
 const deptFilter = ref<string[]>([]);
@@ -42,14 +42,14 @@ const cityFilter = ref<string[]>([]);
 
 const visible = computed(() =>
   members.filter(
-    (m) =>
-      (deptFilter.value.length === 0 || deptFilter.value.includes(m.dept)) &&
-      (cityFilter.value.length === 0 || cityFilter.value.includes(m.city))
-  )
+    m =>
+      (deptFilter.value.length === 0 || deptFilter.value.includes(m.dept))
+      && (cityFilter.value.length === 0 || cityFilter.value.includes(m.city)),
+  ),
 );
 
 // 行序的事实源跟着过滤结果走
-const rows = computed(() => visible.value.map((m) => ({ id: m.id })));
+const rows = computed(() => visible.value.map(m => ({ id: m.id })));
 
 const menuStyle = { display: "grid", gap: "6px", minInlineSize: "8rem" };
 const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
@@ -72,7 +72,7 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
                   <XhPopoverTitle>按部门过滤</XhPopoverTitle>
                   <div :style="menuStyle">
                     <label v-for="d in deptOptions" :key="d" :style="optionStyle">
-                      <input v-model="deptFilter" type="checkbox" :value="d" />
+                      <input v-model="deptFilter" type="checkbox" :value="d">
                       {{ d }}
                     </label>
                     <button type="button" @click="deptFilter = []">不限</button>
@@ -92,7 +92,7 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
                   <XhPopoverTitle>按城市过滤</XhPopoverTitle>
                   <div :style="menuStyle">
                     <label v-for="c in cityOptions" :key="c" :style="optionStyle">
-                      <input v-model="cityFilter" type="checkbox" :value="c" />
+                      <input v-model="cityFilter" type="checkbox" :value="c">
                       {{ c }}
                     </label>
                     <button type="button" @click="cityFilter = []">不限</button>

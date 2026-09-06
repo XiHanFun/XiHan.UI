@@ -1,6 +1,5 @@
 <!-- 弹出式选择 | 把列表装进浮层：触发器显示当前选中项，落值即收起，浮层底部还能放操作按钮 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhButton,
   XhListboxRoot,
@@ -9,6 +8,7 @@ import {
   XhPopoverRoot,
   XhPopoverTrigger,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const songs = [
   { value: "song1", label: "起风了" },
@@ -19,11 +19,12 @@ const songs = [
 
 const value = ref<string[]>(["song1"]);
 const open = ref(false);
-const label = computed(() => songs.find((s) => s.value === value.value[0])?.label ?? "弹出选择");
+const label = computed(() => songs.find(s => s.value === value.value[0])?.label ?? "弹出选择");
 
 // 单选：落值即收起浮层
 function onValueChange(details: { value: string[] }): void {
-  if (details.value.length > 0) open.value = false;
+  if (details.value.length > 0)
+    open.value = false;
 }
 </script>
 

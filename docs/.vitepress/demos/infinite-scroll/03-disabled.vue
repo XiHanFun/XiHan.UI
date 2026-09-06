@@ -1,7 +1,7 @@
 <!-- 取到没有了 | 最后一页取完把 disabled 打开，哨兵不再被观察，load 也不再派 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const scrollEl = ref<HTMLElement | null>(null);
 const maxPage = 3;

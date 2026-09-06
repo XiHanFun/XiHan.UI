@@ -1,6 +1,5 @@
 <!-- 标签用对象 | 组件里存的是标识那一份，显示哪一份由作者定：条目文本渲染 label，提交仍按标识拼串 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTagsInputControl,
   XhTagsInputHiddenInput,
@@ -12,6 +11,7 @@ import {
   XhTagsInputLabel,
   XhTagsInputRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 interface Option {
   value: string;
@@ -29,16 +29,16 @@ const value = ref<string[]>(["u-1"]);
 let seq = 0;
 
 function labelOf(id: string): string {
-  return options.value.find((option) => option.value === id)?.label ?? id;
+  return options.value.find(option => option.value === id)?.label ?? id;
 }
 
 // 组件报回来的是框里打的那串文本：同名的换成它的标识，没见过的现造一条对照
 function onValueChange(details: { value: string[] }) {
   const next: string[] = [];
   for (const raw of details.value) {
-    const known =
-      options.value.find((option) => option.value === raw) ??
-      options.value.find((option) => option.label === raw);
+    const known
+      = options.value.find(option => option.value === raw)
+        ?? options.value.find(option => option.label === raw);
     if (known) {
       if (!next.includes(known.value)) {
         next.push(known.value);

@@ -1,6 +1,5 @@
 <!-- 与无限滚动合成一条长列表 | 哨兵摆在内容层之后而不是条目之间：窗口外的条目根本没渲染，摆进去的哨兵永远进不了可视区 -->
 <script setup lang="ts">
-import { onBeforeUnmount, ref } from "vue";
 import {
   XhInfiniteScrollLoadMoreTrigger,
   XhInfiniteScrollRoot,
@@ -10,6 +9,7 @@ import {
   XhVirtualizerRoot,
   XhVirtualizerViewport,
 } from "@xihan-ui/vue";
+import { onBeforeUnmount, ref } from "vue";
 
 const PAGE = 100;
 const TOTAL = 400;
@@ -26,7 +26,8 @@ function bindViewport(el: unknown): void {
 
 let timer = 0;
 function onLoad(): void {
-  if (loading.value || done.value) return;
+  if (loading.value || done.value)
+    return;
   loading.value = true;
   timer = window.setTimeout(() => {
     loaded.value = Math.min(loaded.value + PAGE, TOTAL);

@@ -1,6 +1,5 @@
 <!-- 区间输入 | 组里放两个输入框，中间夹一个前后缀块当连接词：三段共用两条中缝，圆角只留在最外两端；两头各自带 aria-label，读屏分得清哪个是起点 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhInputGroupItem,
   XhInputGroupRoot,
@@ -8,6 +7,7 @@ import {
   XhTextFieldInput,
   XhTextFieldRoot,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const min = ref("100");
 const max = ref("800");

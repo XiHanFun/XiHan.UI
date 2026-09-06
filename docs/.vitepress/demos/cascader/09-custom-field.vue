@@ -1,6 +1,5 @@
 <!-- 后端字段映射 | collection 只认 value / label / disabled / children 这几个名字，后端字段不一致就在进组件前转一道 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhCascaderColumn,
   XhCascaderContent,
@@ -15,6 +14,7 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 后端原样返回的树：键名与组件对不上
 interface RawNode {
@@ -66,7 +66,7 @@ const raw: RawNode[] = [
 ];
 
 function toNodes(list: RawNode[]): RegionNode[] {
-  return list.map((item) => ({
+  return list.map(item => ({
     value: item.code,
     label: item.name,
     disabled: item.frozen,

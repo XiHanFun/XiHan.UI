@@ -1,6 +1,5 @@
 <!-- 校验状态 | invalid 让 trigger 报 aria-invalid、描边换成错误色；浮层照常展开，判定归宿主，这里是没选就报错 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhCascaderClearTrigger,
   XhCascaderColumn,
@@ -16,6 +15,7 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const departments = [
   {

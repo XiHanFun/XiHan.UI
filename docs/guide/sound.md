@@ -13,23 +13,23 @@
 一段声音是一份可 JSON 序列化的声明式配方（`SoundSpec`）：若干并行发声层，每层一条增益包络，可带音高包络、滤波与混响送出。
 
 ```ts
-import type { SoundSpec } from '@xihan-ui/sound'
+import type { SoundSpec } from "@xihan-ui/sound";
 
 const ding: SoundSpec = {
   layers: [
     {
-      kind: 'oscillator',
-      wave: 'sine',
+      kind: "oscillator",
+      wave: "sine",
       frequency: [{ time: 0, value: 1046.5 }], // C6
       gain: [
         { time: 0, value: 0 },
         { time: 0.01, value: 0.25 }, // 10ms 起音，避免爆音
-        { time: 0.3, value: 0, curve: 'exp' }, // 指数衰减
+        { time: 0.3, value: 0, curve: "exp" }, // 指数衰减
       ],
     },
   ],
   space: 0.2, // 混响送出量
-}
+};
 ```
 
 配方是纯数据，这带来三件事：主题可以整套替换、用户配置可以持久化再回放、调音界面可以直接编辑它——比如下面这个：
@@ -54,33 +54,33 @@ const ding: SoundSpec = {
 自定义主题就是普通对象展开：
 
 ```ts
-import { defaultSoundTheme, defineSoundTheme } from '@xihan-ui/sound'
+import { defaultSoundTheme, defineSoundTheme } from "@xihan-ui/sound";
 
 const mine = defineSoundTheme({
   ...defaultSoundTheme,
   click: ding, // 换掉一个，其余沿用
-})
+});
 ```
 
 ## 基础用法
 
 ```ts
-import { createSoundPlayer, softSoundTheme } from '@xihan-ui/sound'
+import { createSoundPlayer, softSoundTheme } from "@xihan-ui/sound";
 
 const sound = createSoundPlayer({
   volume: 0.5, // 主音量 0..1
   enabled: true, // 接到用户偏好上，别替最终用户决定
   throttle: 50, // 同名声音的最小重触发间隔（毫秒）
-})
+});
 
-sound.play('success')
-sound.play('click', { volume: 0.5 }) // 单次音量系数
-sound.play(ding) // 配方对象直接播，不经过主题
+sound.play("success");
+sound.play("click", { volume: 0.5 }); // 单次音量系数
+sound.play(ding); // 配方对象直接播，不经过主题
 
-sound.setTheme(softSoundTheme)
-sound.setVolume(0.3)
-sound.setEnabled(false)
-sound.dispose()
+sound.setTheme(softSoundTheme);
+sound.setVolume(0.3);
+sound.setEnabled(false);
+sound.dispose();
 ```
 
 音频上下文**惰性创建**：第一次真正播放才建，从不出声的页面不为它付任何代价。SSR 或没有 Web Audio 的环境里所有调用静默退化成空操作，不用条件守卫。
@@ -94,18 +94,18 @@ Vue 侧的适配放在**单独的子入口** `@xihan-ui/vue/sound`，两种用�
 `withToastSound` / `withDialogSound` 包一层现成的服务，**调用点一行都不用改**：
 
 ```ts
-import { createSoundPlayer, softSoundTheme } from '@xihan-ui/sound'
-import { createDialogService, createToastService } from '@xihan-ui/vue'
-import { setSoundPlayer, withDialogSound, withToastSound } from '@xihan-ui/vue/sound'
+import { createSoundPlayer, softSoundTheme } from "@xihan-ui/sound";
+import { createDialogService, createToastService } from "@xihan-ui/vue";
+import { setSoundPlayer, withDialogSound, withToastSound } from "@xihan-ui/vue/sound";
 
 // 换主题、接用户偏好；不设置就用一个默认播放器
-setSoundPlayer(createSoundPlayer({ theme: softSoundTheme, enabled: userPrefs.sound }))
+setSoundPlayer(createSoundPlayer({ theme: softSoundTheme, enabled: userPrefs.sound }));
 
-export const toast = withToastSound(createToastService())
-export const dialog = withDialogSound(createDialogService())
+export const toast = withToastSound(createToastService());
+export const dialog = withDialogSound(createDialogService());
 
-toast.success('已保存') // 视觉 + 听觉，返回值与原服务完全一致
-await dialog.confirm({ title: '删除这条记录？' })
+toast.success("已保存"); // 视觉 + 听觉，返回值与原服务完全一致
+await dialog.confirm({ title: "删除这条记录？" });
 ```
 
 <XhDemo src="sound/02-toast" />
@@ -125,8 +125,8 @@ await dialog.confirm({ title: '删除这条记录？' })
 
 ```ts
 withToastSound(createToastService(), {
-  sounds: { success: 'complete', error: null },
-})
+  sounds: { success: "complete", error: null },
+});
 ```
 
 这两个服务挂在 body 下的独立应用里，拿不到组件树的注入——音效开关要么走 `setSoundPlayer` 的那个播放器，要么给 `options.player` 单独传一个。
@@ -151,7 +151,7 @@ withToastSound(createToastService(), {
 
 ```ts
 // 应用入口处：首次交互解锁，之后 SignalR 推来的通知就能出声
-window.addEventListener('pointerdown', () => sound.unlock(), { once: true })
+window.addEventListener("pointerdown", () => sound.unlock(), { once: true });
 ```
 
 声音默认是打扰。把 `enabled` 与音量接到用户偏好里持久化，首选给出「关」的入口——这层礼貌是应用的责任，播放器只负责让开关随时生效。
@@ -161,11 +161,11 @@ window.addEventListener('pointerdown', () => sound.unlock(), { once: true })
 三个包络工厂把常用形状写短：
 
 ```ts
-import { flat, glide, strike } from '@xihan-ui/sound'
+import { flat, glide, strike } from "@xihan-ui/sound";
 
-strike(0.3, 0.005, 0.2) // 敲击：5ms 起音到 0.3，再 200ms 指数衰减
-flat(880) // 恒定值（音高 880Hz）
-glide(440, 880, 0.12) // 滑音：120ms 从 440 滑到 880
+strike(0.3, 0.005, 0.2); // 敲击：5ms 起音到 0.3，再 200ms 指数衰减
+flat(880); // 恒定值（音高 880Hz）
+glide(440, 880, 0.12); // 滑音：120ms 从 440 滑到 880
 ```
 
 层可以叠：琶音是几层错开 `delay` 的正弦，风声是一层扫频 lowpass 的噪声，按键是一层三角波加一撮 highpass 白噪。配方能用的原料：振荡器四种波形、白噪与粉噪、双二阶滤波五型（`lowpass` `highpass` `bandpass` `notch` `peaking`）、共享混响总线，整包不到 5 kB。

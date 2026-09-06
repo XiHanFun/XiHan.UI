@@ -3,7 +3,7 @@
 `@xihan-ui/icons` 是一套**结构化数据**，不是 SVG 字符串、也不是字体。每枚图标是一条 `IconRecord`：名字、`viewBox`、若干节点，节点带标签与属性。
 
 ```ts
-import { ArrowDownIcon } from '@xihan-ui/icons'
+import { ArrowDownIcon } from "@xihan-ui/icons";
 
 // { name: 'arrow-down', viewBox: '0 0 24 24', nodes: [{ tag: 'path', attrs: { d: '…' } }] }
 ```
@@ -78,7 +78,7 @@ npx xihan-icons ./node_modules/lucide-static/icons --out src/icons.mjs --dts
 产出一份运行期模块，每枚图标一个顶层 `export const`，可摇树；`--dts` 一并产出类型声明。之后照常用：
 
 ```ts
-import { ArrowDownIcon } from './icons.mjs'
+import { ArrowDownIcon } from "./icons.mjs";
 ```
 
 命令行参数：
@@ -93,10 +93,10 @@ import { ArrowDownIcon } from './icons.mjs'
 想接进自己的构建脚本，就用 `@xihan-ui/icons/codegen`：
 
 ```js
-import { ingestIconDir, renderModule } from '@xihan-ui/icons/codegen'
+import { ingestIconDir, renderModule } from "@xihan-ui/icons/codegen";
 
-const { icons, skipped } = await ingestIconDir('./svg')
-await writeFile('icons.mjs', renderModule(icons))
+const { icons, skipped } = await ingestIconDir("./svg");
+await writeFile("icons.mjs", renderModule(icons));
 ```
 
 `ingestIconDir` 不掀桌：转不了的那枚收进 `skipped`（带文件名与原因）继续跑，由你决定是报告还是当作失败。

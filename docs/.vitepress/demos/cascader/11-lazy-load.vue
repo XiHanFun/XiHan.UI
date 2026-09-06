@@ -1,6 +1,5 @@
 <!-- 子节点按需加载 | 先给分支塞一个禁用的占位子节点让子列开得出来，展开到它时才去取真数据换掉占位 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhCascaderColumn,
   XhCascaderContent,
@@ -15,6 +14,7 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 interface RegionNode {
   value: string;
@@ -57,11 +57,11 @@ function load(value: string) {
   }
   loading.value = [...loading.value, value];
   setTimeout(() => {
-    const node = regions.value.find((item) => item.value === value);
+    const node = regions.value.find(item => item.value === value);
     if (node) {
       node.children = children;
     }
-    loading.value = loading.value.filter((v) => v !== value);
+    loading.value = loading.value.filter(v => v !== value);
     loaded.value = [...loaded.value, value];
   }, 800);
 }

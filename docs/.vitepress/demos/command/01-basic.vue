@@ -1,8 +1,8 @@
 <!-- 基础用法 | 交一份命令清单，过滤、归组与空态都由组件包办 -->
 <script setup lang="ts">
 import type { CommandNode, CommandSelectDetails } from "@xihan-ui/headless";
-import { ref } from "vue";
 import { XhCommandRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // keywords 让一条命令同时认英文名与旧称：打 export 也能搜到「导出报表」
 const commands: CommandNode[] = [

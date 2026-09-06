@@ -2,10 +2,10 @@
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
-const trackStyle =
-  "border: 1px solid var(--xh-border-default); border-radius: var(--xh-radius-md); padding: 8px; max-inline-size: 320px";
-const tagStyle =
-  "padding: 4px 10px; border-radius: var(--xh-radius-full); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font-size: 13px";
+const trackStyle
+  = "border: 1px solid var(--xh-border-default); border-radius: var(--xh-radius-md); padding: 8px; max-inline-size: 320px";
+const tagStyle
+  = "padding: 4px 10px; border-radius: var(--xh-radius-full); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font-size: 13px";
 const labelStyle = "font-size: 13px; color: var(--xh-fg-muted)";
 
 const tags = ["前端", "组件库", "无障碍", "设计令牌", "自定义元素", "键盘导航"];

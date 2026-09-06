@@ -17,7 +17,7 @@ import {
   >
     <XhFieldLabel>端口</XhFieldLabel>
     <XhFieldControl>
-      <input value="abc" />
+      <input value="abc">
     </XhFieldControl>
     <XhFieldDescription style="grid-column-start: 2;">留空表示使用默认端口</XhFieldDescription>
     <XhFieldErrorText style="grid-column-start: 2;">端口只能是数字</XhFieldErrorText>

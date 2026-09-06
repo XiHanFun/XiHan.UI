@@ -12,11 +12,12 @@ env:
 // 端口只有一个方法：给代码与语言，返回记号序列；返回 null 表示这一次不着色
 const yamlComments = {
   highlight(code: string, lang: string) {
-    if (lang !== "yaml") return null;
+    if (lang !== "yaml")
+      return null;
     return code
       .split(/(#[^\n]*)/)
-      .filter((text) => text !== "")
-      .map((text) => ({
+      .filter(text => text !== "")
+      .map(text => ({
         text,
         kind: text.startsWith("#") ? ("comment" as const) : ("plain" as const),
       }));

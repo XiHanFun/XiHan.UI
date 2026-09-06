@@ -22,13 +22,13 @@ fetch(SSE)  ──►  sse-reader  ──►  normalize  ──►  reduce  ─�
 ## 传输
 
 ```ts
-import { createHttpSseTransport } from '@xihan-ui/chat-stream'
+import { createHttpSseTransport } from "@xihan-ui/chat-stream";
 
 const transport = createHttpSseTransport({
-  url: '/api/chat',
+  url: "/api/chat",
   headers: () => ({ authorization: `Bearer ${token}` }), // 每次请求取一次
   fetch: customFetch, // 可选
-})
+});
 ```
 
 `Transport` 是一个接口，`stream(req, signal)` 返回归一化事件的异步生成器。HTTP + SSE 只是它的一个实现——换成 WebSocket 或别的协议，实现同一个接口即可，上层一行不用改。
@@ -42,15 +42,15 @@ const transport = createHttpSseTransport({
 一条消息由若干 **part** 组成，而不是一个字符串：
 
 ```ts
-type UIMessagePart =
-  | TextPart // 正文
-  | ReasoningPart // 思维链
-  | ToolPart // 工具调用（含审批状态）
-  | FilePart // 文件
-  | SourcePart // 引用来源（URL / 文档 + 引文锚点）
-  | DataPart // 结构化数据
-  | ErrorPart
-  | StepStartPart
+type UIMessagePart
+  = | TextPart // 正文
+    | ReasoningPart // 思维链
+    | ToolPart // 工具调用（含审批状态）
+    | FilePart // 文件
+    | SourcePart // 引用来源（URL / 文档 + 引文锚点）
+    | DataPart // 结构化数据
+    | ErrorPart
+    | StepStartPart;
 ```
 
 配套的类型守卫 `isTextPart` / `isToolPart` / `isSourcePart` 等按 part 类型分流渲染。消息元数据里带 `TokenUsage` 与 `CostBreakdown`。
@@ -60,11 +60,11 @@ type UIMessagePart =
 流上来的是增量事件，界面要的是「此刻这条消息长什么样」。`reduceEvent` 负责这个折叠：
 
 ```ts
-import { createReduceState, reduceEvent } from '@xihan-ui/chat-stream'
+import { createReduceState, reduceEvent } from "@xihan-ui/chat-stream";
 
-let state = createReduceState()
+let state = createReduceState();
 for await (const event of transport.stream(req, signal))
-  state = reduceEvent(state, event)
+  state = reduceEvent(state, event);
 ```
 
 块注册表按 `BlockKey` 索引，同一个块的后续增量能找回原位——工具调用先来 `input` 后来 `output`、思维链与正文交错，都不会串。
@@ -74,24 +74,24 @@ for await (const event of transport.stream(req, signal))
 日常用的是封好的 store：
 
 ```ts
-import { createThreadStore } from '@xihan-ui/chat-stream'
+import { createThreadStore } from "@xihan-ui/chat-stream";
 
 const store = createThreadStore({
   transport,
   onData: (name, data) => {}, // 瞬态 data 帧，不进 parts
   generateId: () => crypto.randomUUID(),
-})
+});
 
 store.subscribe((snapshot) => {
-  snapshot.messages // readonly UIMessage[]
-  snapshot.status // 'idle' | 'submitted' | 'streaming' | 'error'
-  snapshot.error
-})
+  snapshot.messages; // readonly UIMessage[]
+  snapshot.status; // 'idle' | 'submitted' | 'streaming' | 'error'
+  snapshot.error;
+});
 
-store.submit('你好') // 追加 user 消息并发起运行；已有运行会先被取消
-store.stop() // 取消当前运行，保留已产出的 parts
-store.clear() // 清空全部消息
-store.dispose()
+store.submit("你好"); // 追加 user 消息并发起运行；已有运行会先被取消
+store.stop(); // 取消当前运行，保留已产出的 parts
+store.clear(); // 清空全部消息
+store.dispose();
 ```
 
 两个性能装置：
@@ -102,12 +102,12 @@ store.dispose()
 ## 流式 Markdown
 
 ```ts
-import { createStreamRenderer } from '@xihan-ui/markdown'
+import { createStreamRenderer } from "@xihan-ui/markdown";
 
-const renderer = createStreamRenderer()
+const renderer = createStreamRenderer();
 
 // 幂等：传截至当前的全文，拿回带稳定 key 的块列表
-const blocks = renderer.render(fullText, { ended: false })
+const blocks = renderer.render(fullText, { ended: false });
 // [{ key, kind: 'markdown' | 'code' | 'math' | 'html', html, complete, lang, source }]
 ```
 
@@ -130,10 +130,10 @@ const blocks = renderer.render(fullText, { ended: false })
 ## 代码着色
 
 ```ts
-import { createHighlighter } from '@xihan-ui/code-highlight'
+import { createHighlighter } from "@xihan-ui/code-highlight";
 
-const highlighter = createHighlighter()
-const tokens = highlighter.highlight(code, 'typescript') // CodeToken[] | null
+const highlighter = createHighlighter();
+const tokens = highlighter.highlight(code, "typescript"); // CodeToken[] | null
 ```
 
 自研的**粗粒度**词法器，只分注释、字符串、数字、关键字、标点五类。类型名、函数名、属性名这些要靠语法树才分得出的东西一概不分——那是 TextMate 语法那一档的活，本实现不追它。

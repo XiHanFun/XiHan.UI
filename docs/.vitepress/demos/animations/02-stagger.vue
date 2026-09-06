@@ -1,9 +1,9 @@
 <!-- 错开起播 | 一组元素依次进场，起点可以从头、从尾或从中间；文字拆开就是一组元素 -->
 <script setup lang="ts">
 import type { StaggerFrom } from "@xihan-ui/animations";
-import { onBeforeUnmount, ref, useTemplateRef } from "vue";
 import { createMotionPlayer, splitText } from "@xihan-ui/animations";
 import { XhButton, XhRadioGroupRoot } from "@xihan-ui/vue";
+import { onBeforeUnmount, ref, useTemplateRef } from "vue";
 
 const fromOptions = [
   { value: "first", label: "从头" },
@@ -19,7 +19,8 @@ const gap = ref(60);
 
 function playList() {
   const el = list.value;
-  if (!el) return;
+  if (!el)
+    return;
   void motion.playAll([...el.children] as HTMLElement[], "rise", {
     stagger: gap.value,
     from: from.value,
@@ -28,7 +29,8 @@ function playList() {
 
 async function playTitle() {
   const el = title.value;
-  if (!el) return;
+  if (!el)
+    return;
   const { parts, restore } = splitText(el);
   await motion.playAll(parts, "fade-up", { stagger: 30 });
   restore();
@@ -48,7 +50,7 @@ onBeforeUnmount(() => motion.cancel());
       />
       <label style="display: flex; align-items: center; gap: 8px">
         间隔 {{ gap }}ms
-        <input v-model.number="gap" type="range" min="0" max="200" step="10" />
+        <input v-model.number="gap" type="range" min="0" max="200" step="10">
       </label>
     </div>
 

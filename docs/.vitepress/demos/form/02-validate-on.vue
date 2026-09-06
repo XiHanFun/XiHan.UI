@@ -28,7 +28,7 @@ function validate(values: Record<string, unknown>) {
       <XhFieldRoot :invalid="invalid">
         <XhFieldLabel>端口（失焦校验）</XhFieldLabel>
         <XhFieldControl>
-          <input :value="value" @input="setValue(($event.target as HTMLInputElement).value)" />
+          <input :value="value" @input="setValue(($event.target as HTMLInputElement).value)">
         </XhFieldControl>
         <XhFieldErrorText>{{ error }}</XhFieldErrorText>
       </XhFieldRoot>
@@ -47,7 +47,7 @@ function validate(values: Record<string, unknown>) {
       <XhFieldRoot :invalid="invalid">
         <XhFieldLabel>端口（改动即校验）</XhFieldLabel>
         <XhFieldControl>
-          <input :value="value" @input="setValue(($event.target as HTMLInputElement).value)" />
+          <input :value="value" @input="setValue(($event.target as HTMLInputElement).value)">
         </XhFieldControl>
         <XhFieldErrorText>{{ error }}</XhFieldErrorText>
       </XhFieldRoot>

@@ -1,6 +1,5 @@
 <!-- 基础用法 | 默认只在提交时整表校验：过了发 submit，没过发 invalid、摘要显形并把焦点送到第一个出错的字段 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhFieldControl,
   XhFieldErrorText,
@@ -13,6 +12,7 @@ import {
   XhFormRoot,
   XhFormSubmitTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const submitted = ref("");
 
@@ -52,7 +52,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
             placeholder="you@example.com"
             :value="value"
             @input="setValue(($event.target as HTMLInputElement).value)"
-          />
+          >
         </XhFieldControl>
         <XhFieldErrorText>{{ error }}</XhFieldErrorText>
       </XhFieldRoot>
@@ -65,7 +65,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
           <input
             :value="value"
             @input="setValue(($event.target as HTMLInputElement).value)"
-          />
+          >
         </XhFieldControl>
         <XhFieldErrorText>{{ error }}</XhFieldErrorText>
       </XhFieldRoot>

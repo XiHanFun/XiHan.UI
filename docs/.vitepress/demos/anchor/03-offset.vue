@@ -1,6 +1,5 @@
 <!-- 判定线偏移 | offset 是判定线距容器视口顶边的距离，有吸顶栏就把栏高填进去，越过它的最后一节才算当前节 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhAnchorIndicator,
   XhAnchorItem,
@@ -8,6 +7,7 @@ import {
   XhAnchorList,
   XhAnchorRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const sections = [
   { value: "anchor-offset-a", label: "第一节" },

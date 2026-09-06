@@ -1,5 +1,5 @@
-import { h, watch } from "vue";
 import Theme from "vitepress/theme";
+import { h, watch } from "vue";
 import XhDemo from "./XhDemo.vue";
 import XhFrameworkSwitch from "./XhFrameworkSwitch.vue";
 import XhPageMarkdown from "./XhPageMarkdown.vue";
@@ -31,12 +31,13 @@ export default {
     // 组件页由生成器产出，示例统一写成 <XhDemo src="..." />，这里全局注册
     ctx.app.component("XhDemo", XhDemo);
 
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined")
+      return;
 
     watch(
       () => ctx.router.route.data.relativePath,
       () => updateHomePageStyle(location.pathname === "/"),
-      { immediate: true }
+      { immediate: true },
     );
   },
 };
@@ -45,7 +46,7 @@ export default {
 // [data-theme]，两者不通的话暗色页面里的组件还在用浅色令牌（白底深字）。
 if (typeof window !== "undefined") {
   const root = document.documentElement;
-  const syncTheme = () => {
+  const syncTheme = (): void => {
     root.dataset.theme = root.classList.contains("dark") ? "dark" : "light";
   };
   syncTheme();
@@ -67,9 +68,10 @@ if (typeof window !== "undefined") {
 }
 
 // 加快主页上的彩虹动画
-function updateHomePageStyle(value: boolean) {
+function updateHomePageStyle(value: boolean): void {
   if (value) {
-    if (homePageStyle) return;
+    if (homePageStyle)
+      return;
 
     homePageStyle = document.createElement("style");
     homePageStyle.innerHTML = `
@@ -77,8 +79,10 @@ function updateHomePageStyle(value: boolean) {
       animation: rainbow 12s linear infinite;
     }`;
     document.body.appendChild(homePageStyle);
-  } else {
-    if (!homePageStyle) return;
+  }
+  else {
+    if (!homePageStyle)
+      return;
 
     homePageStyle.remove();
     homePageStyle = undefined;

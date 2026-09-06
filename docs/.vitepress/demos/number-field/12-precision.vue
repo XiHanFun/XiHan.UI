@@ -1,6 +1,5 @@
 <!-- 固定小数位 | 步进本身带定点规整，宿主在离开输入框与松开加减钮时把值补齐到两位小数 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
@@ -9,6 +8,7 @@ import {
   XhNumberFieldLabel,
   XhNumberFieldRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const price = ref("12.50");
 

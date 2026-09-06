@@ -1,7 +1,7 @@
 <!-- 只交数据自动渲染 | Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节点落成 branch、其余落成 item，文本与禁用都查数据；label 给标题，clearable 带上清空钮（手写部件不看它），产出的 DOM 与手写全套部件完全一致；Web Components 没有自动铺树，节点部件照常手写、只报 value -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhTreeSelectRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const files = [
   {

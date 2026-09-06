@@ -1,6 +1,5 @@
 <!-- 缩放与旋转 | 两者同时作用在图片与裁切框上，看得更清楚；裁切矩形与源图像素的对应关系一点不变 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhImageCropperCropArea,
   XhImageCropperCropHandle,
@@ -8,9 +7,10 @@ import {
   XhImageCropperRoot,
   XhImageCropperViewport,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
-const photo =
-  "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E";
+const photo
+  = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E";
 
 const zoom = ref(1);
 const rotation = ref(0);

@@ -5,29 +5,29 @@
 对外只有一个工厂。
 
 ```ts
-import { createStreamRenderer } from '@xihan-ui/markdown'
+import { createStreamRenderer } from "@xihan-ui/markdown";
 
-const renderer = createStreamRenderer()
+const renderer = createStreamRenderer();
 
 // 每收到一批增量，把「截至当前的全文」整份喂进去
-const blocks = renderer.render(fullTextSoFar)
+const blocks = renderer.render(fullTextSoFar);
 
 // 流结束时告诉它
-const final = renderer.render(fullText, { ended: true })
+const final = renderer.render(fullText, { ended: true });
 
-renderer.dispose()
+renderer.dispose();
 ```
 
 ## 产出的是块，不是一整串 HTML
 
 ```ts
 interface RenderedBlock {
-  readonly key: string       // 稳定 key
-  readonly kind: 'markdown' | 'code' | 'math' | 'html'
-  readonly html: string      // 已消毒，可直接插进 DOM
-  readonly complete: boolean // 该块是否已闭合
-  readonly lang?: string     // 围栏语言标注，仅 code 块有
-  readonly source?: string   // 块正文的原始文本，仅 code 与 math 两种块有
+  readonly key: string; // 稳定 key
+  readonly kind: "markdown" | "code" | "math" | "html";
+  readonly html: string; // 已消毒，可直接插进 DOM
+  readonly complete: boolean; // 该块是否已闭合
+  readonly lang?: string; // 围栏语言标注，仅 code 块有
+  readonly source?: string; // 块正文的原始文本，仅 code 与 math 两种块有
 }
 ```
 

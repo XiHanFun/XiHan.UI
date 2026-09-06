@@ -1,7 +1,7 @@
 <!-- 自定义档数 | count 决定几颗星，星星按 1..count 逐颗写出 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const level = ref(7);
 </script>

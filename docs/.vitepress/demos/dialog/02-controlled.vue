@@ -1,6 +1,5 @@
 <!-- 受控 | 传了 open 就由宿主说了算，组件自己不再改状态；Esc、点遮罩、按叉都只回写 open -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhDialogCloseTrigger,
@@ -9,6 +8,7 @@ import {
   XhDialogRoot,
   XhDialogTitle,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const open = ref(false);
 </script>

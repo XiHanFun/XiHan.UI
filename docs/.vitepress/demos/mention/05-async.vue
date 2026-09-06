@@ -1,7 +1,7 @@
 <!-- 异步候选 | 查询串每变一次就重新去远端查一遍，等结果的这段时间浮层里空着 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhMentionRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 interface Person {
   value: string;
@@ -32,7 +32,7 @@ function onQuery(details: { query: string | null }): void {
   options.value = [];
   loading.value = true;
   timer = window.setTimeout(() => {
-    options.value = pool.filter((p) => p.value.includes(q) || p.label.toLowerCase().includes(q));
+    options.value = pool.filter(p => p.value.includes(q) || p.label.toLowerCase().includes(q));
     loading.value = false;
   }, 500);
 }

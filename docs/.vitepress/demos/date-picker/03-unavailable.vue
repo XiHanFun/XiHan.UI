@@ -1,6 +1,5 @@
 <!-- 不可选的日子 | 周末由 isDateUnavailable 判不可用：方向键仍走得过去，只是落不了值 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhDatePickerCalendar,
   XhDatePickerCell,
@@ -13,16 +12,17 @@ import {
   XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
-  XhDatePickerSegmentGroup,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
   XhDatePickerPrevTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
+  XhDatePickerSegmentGroup,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref<string[]>([]);
 

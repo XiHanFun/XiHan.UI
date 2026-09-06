@@ -1,12 +1,12 @@
 <!-- 一次性验证码 | otp 补上 autocomplete=one-time-code，隐藏输入把拼好的整串交给表单，填满那一刻发 value-complete -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhPinInputHiddenInput,
   XhPinInputInput,
   XhPinInputLabel,
   XhPinInputRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const code = ref<string[]>([]);
 const submitted = ref("");

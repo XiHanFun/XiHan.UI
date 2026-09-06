@@ -1,7 +1,7 @@
 <!-- 大量选项 | 浮层高度封顶后自行滚动；敲首字母连打检索直接跳到该字母开头的条目，方向键照常可用 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhSelectRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 // 26 个字母各四条，首字母连打即可在段间跳转

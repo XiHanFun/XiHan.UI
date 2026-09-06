@@ -46,7 +46,7 @@ const rules = {
             :placeholder="f.placeholder"
             :value="value"
             @input="setValue(($event.target as HTMLInputElement).value)"
-          />
+          >
         </XhFieldControl>
         <XhFieldErrorText />
       </XhFieldRoot>

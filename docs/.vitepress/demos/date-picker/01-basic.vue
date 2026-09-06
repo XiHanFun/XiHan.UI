@@ -1,6 +1,5 @@
 <!-- 基础用法 | 点输入行任意处即展开，不必再去点小箭头；段位与日历写的是同一个值，改哪边另一边当场跟着改口 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhDatePickerCalendar,
   XhDatePickerCell,
@@ -14,16 +13,17 @@ import {
   XhDatePickerHeader,
   XhDatePickerHeading,
   XhDatePickerHiddenInput,
-  XhDatePickerSegmentGroup,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
   XhDatePickerPrevTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
+  XhDatePickerSegmentGroup,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref<string[]>([]);
 </script>

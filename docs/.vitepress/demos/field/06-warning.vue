@@ -20,7 +20,7 @@ const warningStyle = {
     <XhFieldRoot>
       <XhFieldLabel>项目名</XhFieldLabel>
       <XhFieldControl>
-        <input value="xihan-ui" />
+        <input value="xihan-ui">
       </XhFieldControl>
       <XhFieldDescription>创建之后还能改</XhFieldDescription>
     </XhFieldRoot>
@@ -29,7 +29,7 @@ const warningStyle = {
     <XhFieldRoot data-tone="warning" :style="warningStyle">
       <XhFieldLabel>实例规格</XhFieldLabel>
       <XhFieldControl>
-        <input value="1 核 1G" />
+        <input value="1 核 1G">
       </XhFieldControl>
       <XhFieldDescription>这个规格跑构建会偏紧，仍然可以保存</XhFieldDescription>
     </XhFieldRoot>
@@ -37,7 +37,7 @@ const warningStyle = {
     <XhFieldRoot invalid>
       <XhFieldLabel>端口</XhFieldLabel>
       <XhFieldControl>
-        <input value="70000" />
+        <input value="70000">
       </XhFieldControl>
       <XhFieldDescription>可用范围 1 到 65535</XhFieldDescription>
       <XhFieldErrorText>端口超出可用范围</XhFieldErrorText>

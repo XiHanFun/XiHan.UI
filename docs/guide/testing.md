@@ -29,11 +29,11 @@ fixture 是框架无关的树：
 
 ```ts
 interface FixtureNode {
-  part?: string // 解剖 part 名，与 data-part 逐字相同
-  tag?: string
-  text?: string
-  attrs?: Record<string, string> // 业务属性，不含 aria- / data-scope / data-part
-  children?: FixtureNode[]
+  part?: string; // 解剖 part 名，与 data-part 逐字相同
+  tag?: string;
+  text?: string;
+  attrs?: Record<string, string>; // 业务属性，不含 aria- / data-scope / data-part
+  children?: FixtureNode[];
 }
 ```
 
@@ -41,11 +41,11 @@ interface FixtureNode {
 
 ```ts
 interface DomSnapshot {
-  parts: Record<string, PartSnapshot[]> // part 名 → 全部实例（文档序）
-  order: string[] // 文档序，集合项带下标：['trigger', 'content', 'item[0]']
-  activeElement: ActiveElementRef | null // 焦点落在哪个 part、是否恰为该元素本身
-  events: AdapterEvent[] // 自上一帧起适配器对外派发的事件
-  strayParts: string[] // 带 data-scope 却不属于任何声明 part 的元素
+  parts: Record<string, PartSnapshot[]>; // part 名 → 全部实例（文档序）
+  order: string[]; // 文档序，集合项带下标：['trigger', 'content', 'item[0]']
+  activeElement: ActiveElementRef | null; // 焦点落在哪个 part、是否恰为该元素本身
+  events: AdapterEvent[]; // 自上一帧起适配器对外派发的事件
+  strayParts: string[]; // 带 data-scope 却不属于任何声明 part 的元素
 }
 ```
 
@@ -174,6 +174,8 @@ pnpm gate:llms    # 文档站的机读资产：页数、组件数、令牌数与
 ```
 
 `gate:llms` 吃文档站的构建产物，跑之前先在 `docs/` 下跑一次 `pnpm build`。
+
+文档站是独立工作区，lint 也是独立的一份，在 `docs/` 下跑 `pnpm lint`。示例语料的引号与分号跟库源码相反，规则钉在 `docs/eslint.config.js` 里——示例是给使用者复制走的，不跟着库源码的写法走。
 
 `gate:publish` 按包声明的支持面校验：ESM-only、`engines.node >= 18`，不提供 CJS，也不承诺 node10 的旧式解析。
 

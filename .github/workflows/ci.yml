@@ -67,6 +67,9 @@ jobs:
       - name: 装文档站依赖
         working-directory: ./docs
         run: pnpm install
+      - name: 文档站 Lint
+        working-directory: ./docs
+        run: pnpm lint
       - name: 构建文档站（编译 .vue 示例 + 站内死链）
         working-directory: ./docs
         run: pnpm build

@@ -1,6 +1,5 @@
 <!-- 条目自带的属性与事件 | 条目上的原生属性照常生效，自己挂的 click 与内部的选中处理并存 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhMenuContent,
   XhMenuItem,
@@ -8,6 +7,7 @@ import {
   XhMenuRoot,
   XhMenuTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const trace = ref<string[]>([]);
 

@@ -1,6 +1,5 @@
 <!-- 拖拽换列位 | 列上标了 reorderable 才认拖拽把手；也可以 Tab 到它用方向键挪，Home / End 到两头 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTableBody,
   XhTableCaption,
@@ -11,6 +10,7 @@ import {
   XhTableRoot,
   XhTableRow,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 标了 reorderable 的列才产出把手。没标的列是屏障：拖不过去，也落不到它身上
 const columns = [
@@ -26,14 +26,15 @@ const members = [
   { id: "u3", name: "孙三", dept: "基础架构", city: "北京" },
 ];
 
-const rows = members.map((m) => ({ id: m.id }));
+const rows = members.map(m => ({ id: m.id }));
 
 // 换位落在列偏好的 order 里，可以直接存起来下次还原
 const preference = ref<Record<string, unknown>>({});
 
 // 列序由偏好决定，渲染顺序读 api.columns；这里照它取每行的格子
-const cell = (m: (typeof members)[number], id: string): string =>
-  ({ name: m.name, dept: m.dept, city: m.city, ops: "编辑" })[id] ?? "";
+function cell(m: (typeof members)[number], id: string): string {
+  return ({ name: m.name, dept: m.dept, city: m.city, ops: "编辑" })[id] ?? "";
+}
 </script>
 
 <template>

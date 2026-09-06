@@ -1,16 +1,16 @@
 <!-- 落位 | placement 决定这一摞贴视口的哪个角，换的只是 group 上的 data-placement，队列本身不动 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
+  XhNotificationGroup,
+  XhNotificationItem,
   XhNotificationItemCloseTrigger,
   XhNotificationItemDescription,
-  XhNotificationGroup,
-  XhNotificationRoot,
-  XhNotificationItem,
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
+  XhNotificationRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const placements = [
   "top-start",

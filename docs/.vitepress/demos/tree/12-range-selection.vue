@@ -1,6 +1,5 @@
 <!-- 范围选 | 按住 Shift 点某一项，选中锚点到它那一段；按可见序取，折叠起来的子节点选不进去 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTreeBranch,
   XhTreeBranchContent,
@@ -14,6 +13,7 @@ import {
   XhTreeRoot,
   XhTreeTree,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const collection = [
   {

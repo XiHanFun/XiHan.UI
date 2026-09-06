@@ -1,7 +1,7 @@
 <!-- 可选中 | selectionMode 决定点一枚是替换还是加选；Ctrl/Cmd + A 全选 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhTagGroupRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const picked = ref<string[]>(["design"]);
 const topics = [

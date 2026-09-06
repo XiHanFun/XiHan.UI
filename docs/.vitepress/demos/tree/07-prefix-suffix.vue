@@ -1,6 +1,5 @@
 <!-- 前缀与行尾 | 行里放什么由标记说了算：文字前塞图标、文字后塞操作，方向指示也可以挪到行尾去 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTreeBranch,
   XhTreeBranchContent,
@@ -13,6 +12,7 @@ import {
   XhTreeRoot,
   XhTreeTree,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const collection = [
   {

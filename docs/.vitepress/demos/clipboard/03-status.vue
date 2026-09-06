@@ -1,15 +1,15 @@
 <!-- 状态与失败 | 写入是异步的也真的会失败：按下先进 copying，写成功才翻成 copied，失败一律退回 idle 并把原因报出来 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { CheckIcon } from "@xihan-ui/icons";
 import {
   XhClipboardControl,
+  XhClipboardCopyTrigger,
   XhClipboardIndicator,
   XhClipboardInput,
   XhClipboardRoot,
-  XhClipboardCopyTrigger,
   XhIcon,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const status = ref("idle");
 const lastError = ref("");

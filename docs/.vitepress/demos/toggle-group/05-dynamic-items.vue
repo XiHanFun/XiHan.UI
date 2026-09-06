@@ -1,7 +1,7 @@
 <!-- 条目增删 | 条目集合在运行期可增可删，增删后照常接线；删掉的正好是选中项时由宿主把值收拾干净 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhToggleGroupRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 interface ViewOption {
   value: string;

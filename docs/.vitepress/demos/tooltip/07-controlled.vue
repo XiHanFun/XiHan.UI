@@ -1,6 +1,5 @@
 <!-- 受控 | 传了 open 就由宿主说了算；悬停、聚焦、Escape 都只发意图，最终写不写由外面这份状态决定 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhTooltipArrow,
@@ -9,6 +8,7 @@ import {
   XhTooltipRoot,
   XhTooltipTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const open = ref(false);
 const log = ref<string[]>([]);

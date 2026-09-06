@@ -1,6 +1,5 @@
 <!-- 切换后滚进视野 | 每个标签都带 data-value 身份标记，选中值一变就按它取到那个标签，滚到视口正中 -->
 <script setup lang="ts">
-import { ref, watch } from "vue";
 import {
   XhButton,
   XhTabsContent,
@@ -8,6 +7,7 @@ import {
   XhTabsRoot,
   XhTabsTrigger,
 } from "@xihan-ui/vue";
+import { ref, watch } from "vue";
 
 const tabs = Array.from({ length: 12 }, (_, i) => ({
   value: `chapter-${i + 1}`,

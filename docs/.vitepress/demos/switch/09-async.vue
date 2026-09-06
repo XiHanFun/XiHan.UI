@@ -1,7 +1,7 @@
 <!-- 异步提交 | 受控开关在回执到达前不落位；loading 让提交期呈现为「处理中」而非禁用——交互挂起、滑块转圈、仍可聚焦 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhSwitch } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const enabled = ref(false);
 const pending = ref(false);

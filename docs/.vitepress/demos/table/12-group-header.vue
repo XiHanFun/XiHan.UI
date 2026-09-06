@@ -25,7 +25,7 @@ const teams = [
   { id: "t3", team: "基础架构", q1: 7, q2: 8, q3: 10, q4: 12 },
 ];
 
-const rows = teams.map((t) => ({ id: t.id }));
+const rows = teams.map(t => ({ id: t.id }));
 
 // 分组格宽度取两列之和，伸缩系数也翻倍，两行表头才对得齐
 const groupStyle = { inlineSize: "10rem", flexGrow: 2 };

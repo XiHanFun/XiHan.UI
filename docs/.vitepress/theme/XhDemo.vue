@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import type { Component } from "vue";
+import { XhCodeViewCode, XhCodeViewPre, XhCodeViewRoot } from "@xihan-ui/vue";
+import { useData } from "vitepress";
 import {
+
   computed,
   defineAsyncComponent,
   ref,
   watchEffect,
   watchPostEffect,
-  type Component,
 } from "vue";
-import { XhCodeViewCode, XhCodeViewPre, XhCodeViewRoot } from "@xihan-ui/vue";
-import { useData } from "vitepress";
 import {
   demoFramework,
   demoFrameworks,
@@ -50,54 +51,56 @@ const availableIds = computed(
   () =>
     new Set(
       demoFrameworks
-        .filter((framework) => sourceKey(framework) in (sourcesByFramework[framework.id] ?? {}))
-        .map((framework) => framework.id)
-    )
+        .filter(framework => sourceKey(framework) in (sourcesByFramework[framework.id] ?? {}))
+        .map(framework => framework.id),
+    ),
 );
 
 // 当前框架这份示例的源码，加载完才有值
 const raw = ref("");
 watchEffect(async () => {
-  const framework = demoFrameworks.find((item) => item.id === demoFramework.value);
+  const framework = demoFrameworks.find(item => item.id === demoFramework.value);
   const load = framework && sourcesByFramework[framework.id]?.[sourceKey(framework)];
   const requested = demoFramework.value;
   const text = load ? await load() : "";
   // 加载期间可能已经切走，晚到的结果不许覆盖当前框架的
-  if (demoFramework.value === requested) raw.value = text;
+  if (demoFramework.value === requested)
+    raw.value = text;
 });
 
 // 示例文件首行注释写「标题 | 说明」，标题与说明由生成器落成 h3 与段落，
 // 这里只负责把它从展示的源码里剔除
 const code = computed(() =>
-  raw.value.replace(/^(<!--[\s\S]*?-->|\/\/[^\n]*)\s*/, "").trimEnd()
+  raw.value.replace(/^(<!--[\s\S]*?-->|\/\/[^\n]*)\s*/, "").trimEnd(),
 );
 
 const lang = computed(
-  () => demoFrameworks.find((framework) => framework.id === demoFramework.value)?.lang ?? ""
+  () => demoFrameworks.find(framework => framework.id === demoFramework.value)?.lang ?? "",
 );
 const activeName = computed(
-  () => demoFrameworks.find((framework) => framework.id === demoFramework.value)?.name ?? ""
+  () => demoFrameworks.find(framework => framework.id === demoFramework.value)?.name ?? "",
 );
 // 当前框架没有这份示例时，切到有的那个
 const fallback = computed(() =>
   demoFrameworks.find(
-    (framework) => framework.id !== demoFramework.value && availableIds.value.has(framework.id)
-  )
+    framework => framework.id !== demoFramework.value && availableIds.value.has(framework.id),
+  ),
 );
 
 const vueDemo = computed(() => {
-  if (demoFramework.value !== "vue") return undefined;
+  if (demoFramework.value !== "vue")
+    return undefined;
   const load = vueModules[`../demos/${props.src}.vue`];
   return load ? defineAsyncComponent(load) : undefined;
 });
 const wcHtml = computed(() =>
-  demoFramework.value === "web-components" ? code.value : ""
+  demoFramework.value === "web-components" ? code.value : "",
 );
 // 源码还在路上时不显示「暂无此框架版本」
 const missing = computed(() => !availableIds.value.has(demoFramework.value));
 // 这个目录本就不出当前框架的版本时，把结论摆出来，不说成「还没写」
 const notApplicable = computed(() =>
-  demoNotApplicable(demoFramework.value, props.src)
+  demoNotApplicable(demoFramework.value, props.src),
 );
 
 const wcHost = ref<HTMLElement | null>(null);
@@ -105,7 +108,7 @@ const wcHost = ref<HTMLElement | null>(null);
 // 自定义元素全站注册一次，且只在浏览器里注册
 let defined: Promise<void> | undefined;
 function defineElements(): Promise<void> {
-  defined ??= import("@xihan-ui/web-components/define").then((m) => m.defineXhElements());
+  defined ??= import("@xihan-ui/web-components/define").then(m => m.defineXhElements());
   return defined;
 }
 
@@ -124,7 +127,8 @@ function reviveScripts(host: HTMLElement): void {
 async function mountWebComponents(host: HTMLElement, html: string): Promise<void> {
   await defineElements();
   // 等注册期间可能已经切走，容器换了就不再往旧的写
-  if (wcHost.value !== host) return;
+  if (wcHost.value !== host)
+    return;
   // 重写 innerHTML 会摘掉上一份的全部节点，元素随之断开、挂在它们身上的监听一并撤走
   host.innerHTML = html;
   reviveScripts(host);
@@ -134,7 +138,8 @@ async function mountWebComponents(host: HTMLElement, html: string): Promise<void
 watchPostEffect(() => {
   const host = wcHost.value;
   const html = wcHtml.value;
-  if (host && html) void mountWebComponents(host, html);
+  if (host && html)
+    void mountWebComponents(host, html);
 });
 
 const { isDark } = useData();

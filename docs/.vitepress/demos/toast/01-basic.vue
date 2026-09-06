@@ -1,12 +1,12 @@
 <!-- 基础用法 | 一条一句话：title 部件留空时由属性上的文案填入；duration 给 0 即不自动消失 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhToastCloseTrigger,
   XhToastRoot,
   XhToastTitle,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 关掉之后换一个 key 重新挂一条，方便反复看
 const seq = ref(0);

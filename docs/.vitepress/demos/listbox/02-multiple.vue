@@ -1,7 +1,7 @@
 <!-- 多选 | selection-mode="multiple" 下空格改成切换该条，Shift + 方向键顺手扩选，Ctrl / Cmd + A 全选或全不选 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhListboxRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const cities = ref<string[]>(["beijing", "london"]);
 const options = [

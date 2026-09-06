@@ -1,12 +1,12 @@
 <!-- 等宽数字 | 数值用等宽数字排版，反复换数时字宽不变，后面的单位不会左右挪 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhStatisticLabel,
   XhStatisticRoot,
   XhStatisticSuffix,
   XhStatisticValue,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const amount = ref("1,111.11");
 

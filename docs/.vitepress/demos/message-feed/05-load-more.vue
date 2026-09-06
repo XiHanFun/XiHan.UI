@@ -21,7 +21,8 @@ const loading = ref(false);
 
 // 到了底、手上没在取、还有下一页，三条都满足才发起这一次加载
 function onStickChange(details: { atBottom: boolean; sticking: boolean }): void {
-  if (!details.atBottom || loading.value || page.value >= maxPage) return;
+  if (!details.atBottom || loading.value || page.value >= maxPage)
+    return;
   loading.value = true;
   window.setTimeout(() => {
     page.value += 1;

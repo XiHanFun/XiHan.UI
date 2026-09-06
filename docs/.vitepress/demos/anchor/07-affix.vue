@@ -1,6 +1,5 @@
 <!-- 吸顶目录 | 目录用 sticky 钉在滚动容器顶边，滚动时留在原处；判定线仍由 offset 定 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhAnchorIndicator,
   XhAnchorItem,
@@ -8,6 +7,7 @@ import {
   XhAnchorList,
   XhAnchorRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const sections = [
   { value: "anchor-affix-intro", label: "简介" },

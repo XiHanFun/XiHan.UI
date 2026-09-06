@@ -9,14 +9,14 @@
 CSS 侧的字符串与 JS 侧的采样函数在这里是同一份来源；取值的真源是令牌层的 `ease.standard / in / out` 与 `duration.fast / normal / slow`（`@xihan-ui/tokens` 的 primitive），这里的 `standard` / `easeIn` / `easeOut` 与 `durations` 三值逐字等于它们，由门禁 `check-motion-source` 比对。
 
 ```ts
-import { cubicBezier, easing, resolveEasing } from '@xihan-ui/motion'
+import { cubicBezier, easing, resolveEasing } from "@xihan-ui/motion";
 
-easing.easeOut // 'cubic-bezier(0, 0, 0.2, 1)'
+easing.easeOut; // 'cubic-bezier(0, 0, 0.2, 1)'
 
 // 名字、CSS 串、函数三种写法统一成函数
-resolveEasing('easeOut')(0.5) // 0.79…
-resolveEasing('cubic-bezier(0.4, 0, 0.2, 1)')(0.5)
-resolveEasing(t => t * t)(0.5) // 0.25
+resolveEasing("easeOut")(0.5); // 0.79…
+resolveEasing("cubic-bezier(0.4, 0, 0.2, 1)")(0.5);
+resolveEasing(t => t * t)(0.5); // 0.25
 ```
 
 八条命名缓动：`linear` `standard` `emphasized` `decelerate` `accelerate` `easeIn` `easeOut` `easeInOut`。
@@ -28,9 +28,9 @@ resolveEasing(t => t * t)(0.5) // 0.25
 `toLinearEasing` 把任意缓动函数采样成 CSS `linear()` 串，用来把 JS 才算得出的曲线交回 CSS：
 
 ```ts
-import { toLinearEasing } from '@xihan-ui/motion'
+import { toLinearEasing } from "@xihan-ui/motion";
 
-toLinearEasing(t => t ** 2, 5) // 'linear(0, 0.0625, 0.25, 0.5625, 1)'
+toLinearEasing(t => t ** 2, 5); // 'linear(0, 0.0625, 0.25, 0.5625, 1)'
 ```
 
 ## 弹簧
@@ -42,21 +42,21 @@ toLinearEasing(t => t ** 2, 5) // 'linear(0, 0.0625, 0.25, 0.5625, 1)'
 两种参数写法。物理参数直给：
 
 ```ts
-import { createSpring } from '@xihan-ui/motion'
+import { createSpring } from "@xihan-ui/motion";
 
-const spring = createSpring({ stiffness: 380, damping: 30, mass: 1 })
-spring(0.1) // 0.1 秒时的归一化位移，0 起 1 止，欠阻尼时可越过 1
-spring.durationMs // 沉降到静止阈值要多久
-spring.dampingRatio // <1 欠阻尼、=1 临界阻尼、>1 过阻尼
-spring.overshoot // 最大过冲量，不过冲为 0
+const spring = createSpring({ stiffness: 380, damping: 30, mass: 1 });
+spring(0.1); // 0.1 秒时的归一化位移，0 起 1 止，欠阻尼时可越过 1
+spring.durationMs; // 沉降到静止阈值要多久
+spring.dampingRatio; // <1 欠阻尼、=1 临界阻尼、>1 过阻尼
+spring.overshoot; // 最大过冲量，不过冲为 0
 ```
 
 感知参数更好调——只说"多久"和"弹不弹"：
 
 ```ts
-createSpring({ duration: 0.4, bounce: 0.3 }) // 弹
-createSpring({ duration: 0.4, bounce: 0 }) // 临界阻尼，全程单调不过冲
-createSpring({ duration: 0.4, bounce: -0.5 }) // 过阻尼，慢慢靠过去
+createSpring({ duration: 0.4, bounce: 0.3 }); // 弹
+createSpring({ duration: 0.4, bounce: 0 }); // 临界阻尼，全程单调不过冲
+createSpring({ duration: 0.4, bounce: -0.5 }); // 过阻尼，慢慢靠过去
 ```
 
 `bounce` 落在 (−1, 1)：正数减阻尼、负数加阻尼。五个预设 `snappy` `smooth` `gentle` `bouncy` `stiff` 直接按名字取。
@@ -66,12 +66,12 @@ createSpring({ duration: 0.4, bounce: -0.5 }) // 过阻尼，慢慢靠过去
 烘焙给 CSS：
 
 ```ts
-import { createSpring, springToLinearEasing, supportsLinearEasing } from '@xihan-ui/motion'
+import { createSpring, springToLinearEasing, supportsLinearEasing } from "@xihan-ui/motion";
 
-const spring = createSpring('bouncy')
+const spring = createSpring("bouncy");
 if (supportsLinearEasing()) {
-  el.style.animationDuration = `${spring.durationMs}ms`
-  el.style.animationTimingFunction = springToLinearEasing(spring, 32)
+  el.style.animationDuration = `${spring.durationMs}ms`;
+  el.style.animationTimingFunction = springToLinearEasing(spring, 32);
 }
 ```
 
@@ -84,14 +84,14 @@ import {
   onMotionPreferenceChange,
   resolveMotionPreference,
   setMotionOverride,
-} from '@xihan-ui/motion'
+} from "@xihan-ui/motion";
 
-resolveMotionPreference() // 'no-preference' | 'reduce'
+resolveMotionPreference(); // 'no-preference' | 'reduce'
 
 // 接到产品自己的"减弱动效"设置项上；传 null 交还给系统
-setMotionOverride('reduce')
+setMotionOverride("reduce");
 
-const off = onMotionPreferenceChange(preference => console.log(preference))
+const off = onMotionPreferenceChange(preference => console.log(preference));
 ```
 
 订阅只在最终值真的变了才回调：override 压住期间系统翻转不会触发，交还系统那一刻才浮现。
@@ -114,16 +114,16 @@ JS 与 CSS 是两条线，应用要减弱动效得各走一步：
 `animate` 是 Web Animations 的薄封装，把三件事收口：减弱动效降级、宿主缺 `Element.animate` 时的降级、结束时的结算方式。
 
 ```ts
-import { animate } from '@xihan-ui/motion'
+import { animate } from "@xihan-ui/motion";
 
-const handle = animate(el, [{ opacity: '0' }, { opacity: '1' }], {
+const handle = animate(el, [{ opacity: "0" }, { opacity: "1" }], {
   duration: 200,
-  easing: 'easeOut',
-})
+  easing: "easeOut",
+});
 
-await handle.finished // 'finished' | 'cancelled'
-handle.cancel()
-handle.finish()
+await handle.finished; // 'finished' | 'cancelled'
+handle.cancel();
+handle.finish();
 ```
 
 `finished` 永远 resolve，被打断也是——它给的是结束方式，不是异常。调用方不必为"用户中途关掉了弹窗"写一个 catch。
@@ -135,16 +135,17 @@ handle.finish()
 给数值动画用的纯函数与逐帧胶水。补间自己不认识帧、也不持有计时器，推进由调用方逐帧喂 `elapsed`。
 
 ```ts
-import { frameLoop, frameNow, isTweenDone, tweenValueAt } from '@xihan-ui/motion'
+import { frameLoop, frameNow, isTweenDone, tweenValueAt } from "@xihan-ui/motion";
 
-const spec = { from: 0, to: 1000, duration: 800, easing: 'ease-out' } as const
-const start = frameNow(window)
+const spec = { from: 0, to: 1000, duration: 800, easing: "ease-out" } as const;
+const start = frameNow(window);
 
 const stop = frameLoop(window, () => {
-  const elapsed = frameNow(window) - start
-  render(tweenValueAt(spec, elapsed))
-  if (isTweenDone(elapsed, spec.duration)) stop()
-})
+  const elapsed = frameNow(window) - start;
+  render(tweenValueAt(spec, elapsed));
+  if (isTweenDone(elapsed, spec.duration))
+    stop();
+});
 ```
 
 边界都按"宁可收在终点"处理：时长非正即刻满格，`elapsed` 是坏掉的时钟读数也按满格，走完那一刻返回终点本身而不是曲线算出来的近似值。

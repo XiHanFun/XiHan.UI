@@ -1,7 +1,7 @@
 <!-- 限定范围 | target 写 parent 时只在组件所在的那一层容器里接组合，整页范围的组合不会互相抢 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhHotkeys } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const hits = ref(0);
 </script>
@@ -18,7 +18,7 @@ const hits = ref(0);
     "
   >
     <!-- 监听装在这一层容器上：焦点在框外时按同一组合不会触发 -->
-    <input placeholder="在这里按 Mod+Enter" />
+    <input placeholder="在这里按 Mod+Enter">
     <XhHotkeys :keys="['Mod', 'Enter']" target="parent" @hot-key="hits += 1" />
     <span>框内已触发 {{ hits }} 次</span>
   </div>

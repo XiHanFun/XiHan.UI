@@ -9,21 +9,21 @@ import { XhFieldControl, XhFieldLabel, XhFieldRoot } from "@xihan-ui/vue";
     <XhFieldRoot style="inline-size: 160px;">
       <XhFieldLabel>姓名</XhFieldLabel>
       <XhFieldControl>
-        <input placeholder="请输入姓名" />
+        <input placeholder="请输入姓名">
       </XhFieldControl>
     </XhFieldRoot>
 
     <XhFieldRoot style="inline-size: 96px;">
       <XhFieldLabel>年龄</XhFieldLabel>
       <XhFieldControl>
-        <input type="number" placeholder="18" />
+        <input type="number" placeholder="18">
       </XhFieldControl>
     </XhFieldRoot>
 
     <XhFieldRoot style="inline-size: 180px;">
       <XhFieldLabel>电话</XhFieldLabel>
       <XhFieldControl>
-        <input type="tel" placeholder="请输入电话" />
+        <input type="tel" placeholder="请输入电话">
       </XhFieldControl>
     </XhFieldRoot>
   </div>

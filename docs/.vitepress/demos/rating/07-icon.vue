@@ -20,7 +20,9 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
           :key="i"
           v-slot="{ highlighted }"
           :value="i"
-        >{{ highlighted ? "★" : "☆" }}</XhRatingItem>
+        >
+          {{ highlighted ? "★" : "☆" }}
+        </XhRatingItem>
       </XhRatingControl>
     </XhRatingRoot>
   </div>

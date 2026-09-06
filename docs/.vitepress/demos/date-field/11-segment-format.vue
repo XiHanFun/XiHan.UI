@@ -1,6 +1,5 @@
 <!-- 段位自定义文本 | 段位插槽给出这一段的类型、取值与焦点状态，离焦后年份只留两位、月份换成中文名 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhDateFieldControl,
   XhDateFieldLabel,
@@ -8,6 +7,7 @@ import {
   XhDateFieldSegment,
   XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref<string | null>("2026-07-28");
 
@@ -37,9 +37,12 @@ interface Segment {
 
 // 空段与正在编辑的段照原样显示，其余按自己的写法渲染
 function display(segment: Segment) {
-  if (segment.empty || segment.focused) return segment.text;
-  if (segment.type === "year") return segment.text.slice(-2);
-  if (segment.type === "month") return MONTH_NAMES[(segment.value ?? 1) - 1];
+  if (segment.empty || segment.focused)
+    return segment.text;
+  if (segment.type === "year")
+    return segment.text.slice(-2);
+  if (segment.type === "month")
+    return MONTH_NAMES[(segment.value ?? 1) - 1];
   return segment.text;
 }
 </script>

@@ -1,6 +1,5 @@
 <!-- 范围选 | 按住 Shift 点勾选框选中一段；焦点落在表体里按 Ctrl/Cmd + A 全选。禁用行占着顺序位置但不被选进去 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTableBody,
   XhTableCell,
@@ -11,6 +10,7 @@ import {
   XhTableRowSelectTrigger,
   XhTableSelectAllTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const columns = [
   { id: "select", width: "3rem" },
@@ -28,7 +28,7 @@ const files = [
 ];
 
 // 禁用行选不动，也不算进全选的基数
-const rows = files.map((f) => ({ id: f.id, ...(f.id === "f4" ? { disabled: true } : {}) }));
+const rows = files.map(f => ({ id: f.id, ...(f.id === "f4" ? { disabled: true } : {}) }));
 
 const selection = ref<string[] | "all">([]);
 </script>

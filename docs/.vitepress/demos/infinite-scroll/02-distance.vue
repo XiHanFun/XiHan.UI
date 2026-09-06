@@ -1,7 +1,7 @@
 <!-- 提前量 | distance 把可视区沿块轴向外扩，哨兵还没露头就先取下一页 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const scrollEl = ref<HTMLElement | null>(null);
 const distance = ref(200);
@@ -24,7 +24,7 @@ function onLoad(): void {
   <div style="display: grid; gap: 12px; inline-size: 100%">
     <label style="display: flex; align-items: center; gap: 8px">
       提前
-      <input v-model.number="distance" type="range" min="0" max="400" step="50" />
+      <input v-model.number="distance" type="range" min="0" max="400" step="50">
       {{ distance }}px 触发 · 已取 {{ rounds }} 页
     </label>
 

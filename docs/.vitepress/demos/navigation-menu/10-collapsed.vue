@@ -1,6 +1,5 @@
 <!-- 收窄成一列图标 | 竖排时面板本就从入口侧边长出来；收窄只是把文字从入口里撤掉、把它挪进面板，指针停上去才露出来 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhIcon,
@@ -12,6 +11,7 @@ import {
   XhNavigationMenuRoot,
   XhNavigationMenuTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 三个图标共用一套描边呈现属性，stroke 取 currentColor
 const strokeAttrs = {

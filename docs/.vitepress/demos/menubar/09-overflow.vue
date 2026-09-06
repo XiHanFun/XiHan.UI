@@ -1,6 +1,5 @@
 <!-- 装不下就收进「更多」 | 宿主自己观测容器宽度，一次收起一个入口直到这排不再溢出；收起来的那几张菜单在「更多」里各占一组 -->
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import {
   XhButton,
   XhMenubarContent,
@@ -12,6 +11,7 @@ import {
   XhMenubarRoot,
   XhMenubarTrigger,
 } from "@xihan-ui/vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 
 const menus = [
   {
@@ -73,7 +73,8 @@ let reflowing = false;
 // 先全铺开，再一次收一个，直到这排不再溢出
 async function reflow(): Promise<void> {
   const box = boxRef.value;
-  if (!box || reflowing) return;
+  if (!box || reflowing)
+    return;
   reflowing = true;
   visible.value = menus.length;
   await nextTick();
@@ -90,7 +91,8 @@ function onSelect(details: { menu: string; value: string }): void {
 
 onMounted(() => {
   const box = boxRef.value;
-  if (!box) return;
+  if (!box)
+    return;
   observer = new ResizeObserver(() => void reflow());
   observer.observe(box);
 });
@@ -115,7 +117,7 @@ onBeforeUnmount(() => observer?.disconnect());
     <!-- 溢出裁在这一层，量的也是这一层 -->
     <div
       ref="boxRef"
-      :style="{ inlineSize: boxWidth + 'px', maxInlineSize: '100%', overflow: 'hidden' }"
+      :style="{ inlineSize: `${boxWidth}px`, maxInlineSize: '100%', overflow: 'hidden' }"
     >
       <XhMenubarRoot @select="onSelect">
         <XhMenubarTrigger v-for="m in shown" :key="m.value" :value="m.value">

@@ -1,6 +1,5 @@
 <!-- 局部抽屉 | 把抽屉收进某块区域：遮罩与定位层从 fixed 换成 absolute，只罩住那块区域而不是盖满整屏 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhDrawerCloseTrigger,
   XhDrawerContent,
@@ -9,6 +8,7 @@ import {
   XhDrawerTitle,
   XhDrawerTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 容器要自己带 position，否则 absolute 会往上找到别的定位祖先
 const panel = ref<HTMLElement | null>(null);

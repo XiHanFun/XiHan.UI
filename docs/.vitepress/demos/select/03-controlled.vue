@@ -1,6 +1,5 @@
 <!-- 受控 | 传了 value 就由宿主说了算：组件只发 value-change，宿主写回它才变，这里把樱桃挡在门外 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhSelectContent,
   XhSelectControl,
@@ -15,6 +14,7 @@ import {
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref<string[]>(["banana"]);
 const rejected = ref(false);
@@ -27,7 +27,8 @@ const fruits = [
 // 只有通过校验的值才写回，未写回则界面停在原值
 function onValueChange(details: { value: string[] }) {
   rejected.value = details.value.includes("cherry");
-  if (!rejected.value) value.value = details.value;
+  if (!rejected.value)
+    value.value = details.value;
 }
 </script>
 

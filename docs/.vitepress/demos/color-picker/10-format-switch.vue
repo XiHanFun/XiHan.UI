@@ -1,9 +1,7 @@
 <!-- 面板里切换写法 | format 只管对外的序列化：换过之后把当前值原样写回一次，值串就改按新写法产出，工作色一点不动 -->
 <script setup lang="ts">
-import { nextTick, ref } from "vue";
 import {
   XhButton,
-  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerChannelSlider,
   XhColorPickerChannelSliderThumb,
@@ -13,10 +11,12 @@ import {
   XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
+  XhColorPickerSaturationArea,
   XhColorPickerSwatch,
   XhColorPickerTrigger,
   XhColorPickerValueText,
 } from "@xihan-ui/vue";
+import { nextTick, ref } from "vue";
 
 type Format = "hex" | "rgba" | "hsla";
 

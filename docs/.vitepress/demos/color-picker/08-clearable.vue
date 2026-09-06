@@ -1,9 +1,7 @@
 <!-- 空态与面板按钮 | 受控时「没有颜色」由宿主表达：值置空，触发器换成占位方框；面板底下的两个按钮是作者自己的，收起浮层同样归宿主 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
-  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerChannelSlider,
   XhColorPickerChannelSliderThumb,
@@ -13,10 +11,12 @@ import {
   XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
+  XhColorPickerSaturationArea,
   XhColorPickerSwatch,
   XhColorPickerTrigger,
   XhColorPickerValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const color = ref("#3b82f6");
 

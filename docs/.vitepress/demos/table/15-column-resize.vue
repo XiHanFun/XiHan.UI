@@ -1,6 +1,5 @@
 <!-- 拖拽调列宽 | 列上标了 resizable 才认改宽把手；拖出表头仍跟手，方向键一次 8px、按住 Shift 一次 40px -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTableBody,
   XhTableCaption,
@@ -11,6 +10,7 @@ import {
   XhTableRoot,
   XhTableRow,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 列宽写成数字即按 px 处理；minWidth / maxWidth 是拖动的上下限
 const columns = [
@@ -26,7 +26,7 @@ const members = [
   { id: "u4", name: "李四", dept: "质量保障", city: "成都" },
 ];
 
-const rows = members.map((m) => ({ id: m.id }));
+const rows = members.map(m => ({ id: m.id }));
 
 // 改宽落在列偏好里，可以直接存起来下次还原
 const preference = ref<Record<string, unknown>>({});

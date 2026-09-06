@@ -7,28 +7,28 @@
 ## 对话框服务
 
 ```ts
-import { createDialogService } from '@xihan-ui/vue'
+import { createDialogService } from "@xihan-ui/vue";
 
-const dialog = createDialogService({ okText: '确定', cancelText: '取消' })
+const dialog = createDialogService({ okText: "确定", cancelText: "取消" });
 
 const ok = await dialog.confirm({
-  title: '删除这条记录？',
-  content: '删除后不可恢复。',
-  tone: 'danger',
-  okText: '删除',
-})
+  title: "删除这条记录？",
+  content: "删除后不可恢复。",
+  tone: "danger",
+  okText: "删除",
+});
 if (ok) {
   // 用户按了确定，且 onOk（如果给了）已经跑完
 }
 
-dialog.dispose()
+dialog.dispose();
 ```
 
 | 方法 | 返回 | 说明 |
 | --- | --- | --- |
 | `confirm(options)` | `Promise<boolean>` | 确认走完 `onOk` 后 resolve `true`；取消或 Escape resolve `false` |
 | `info` / `success` / `warning` / `error` | `Promise<void>` | 单按钮告知框，没有取消钮，徽记由预设档自己定 |
-| `prompt(options)` | `Promise<T | null>` | 取值型弹窗：确认后带回一份值，取消 resolve `null` |
+| `prompt(options)` | `Promise<T \| null>` | 取值型弹窗：确认后带回一份值，取消 resolve `null` |
 | `setConfig(next)` | — | 换一份全局配置源 |
 | `dispose()` | — | 卸载宿主应用并移除容器 |
 
@@ -40,9 +40,9 @@ dialog.dispose()
 
 ```ts
 await dialog.confirm({
-  title: '发布这个版本？',
-  onOk: () => api.publish(id),   // 拒绝时对话框不关，用户能再按一次
-})
+  title: "发布这个版本？",
+  onOk: () => api.publish(id), // 拒绝时对话框不关，用户能再按一次
+});
 ```
 
 ### 正文不止能放一句话
@@ -51,9 +51,9 @@ await dialog.confirm({
 
 ```ts
 await dialog.confirm({
-  title: '导入这份数据？',
-  content: () => h(XhAlertRoot, { tone: 'warning' }, () => '已存在的记录会被覆盖'),
-})
+  title: "导入这份数据？",
+  content: () => h(XhAlertRoot, { tone: "warning" }, () => "已存在的记录会被覆盖"),
+});
 ```
 
 不收裸 VNode：服务宿主是常驻的，忙态一翻就整棵重渲，同一个 VNode 实例被复用时的行为未定义。
@@ -64,15 +64,15 @@ await dialog.confirm({
 
 ```ts
 const next = await dialog.prompt({
-  title: '改邮箱',
-  initialValue: { email: '', password: '' },
+  title: "改邮箱",
+  initialValue: { email: "", password: "" },
   body: value => [
-    h(XhTextFieldRoot, { value: value.email, 'onUpdate:value': (v: string) => (value.email = v) }, () => h(XhTextFieldInput)),
-    h(XhTextFieldRoot, { type: 'password', value: value.password, 'onUpdate:value': (v: string) => (value.password = v) }, () => h(XhTextFieldInput)),
+    h(XhTextFieldRoot, { "value": value.email, "onUpdate:value": (v: string) => (value.email = v) }, () => h(XhTextFieldInput)),
+    h(XhTextFieldRoot, { "type": "password", "value": value.password, "onUpdate:value": (v: string) => (value.password = v) }, () => h(XhTextFieldInput)),
   ],
-  initialFocus: '[data-scope=text-field][data-part=input]',
-  onOk: value => value.email.includes('@'),   // 返回 false 表示校验没过，弹窗不关
-})
+  initialFocus: "[data-scope=text-field][data-part=input]",
+  onOk: value => value.email.includes("@"), // 返回 false 表示校验没过，弹窗不关
+});
 // next 是 { email, password } 的普通对象快照；取消 / Escape 得到 null
 ```
 
@@ -84,12 +84,12 @@ const next = await dialog.prompt({
 ## 轻提示服务
 
 ```ts
-import { createToastService } from '@xihan-ui/vue'
+import { createToastService } from "@xihan-ui/vue";
 
-const toast = createToastService({ placement: 'top', max: 5 })
+const toast = createToastService({ placement: "top", max: 5 });
 
-toast.success('已保存')
-toast.error('保存失败，请重试', { duration: 8000 })
+toast.success("已保存");
+toast.error("保存失败，请重试", { duration: 8000 });
 ```
 
 | 方法 | 返回 | 说明 |
@@ -109,13 +109,13 @@ toast.error('保存失败，请重试', { duration: 8000 })
 `loading` 加 `update` 是一条完整的链，不要连发两条：
 
 ```ts
-const id = toast.loading('正在上传…')
+const id = toast.loading("正在上传…");
 try {
-  await upload(file)
-  toast.update(id, { type: 'success', title: '上传完成' })
+  await upload(file);
+  toast.update(id, { type: "success", title: "上传完成" });
 }
 catch {
-  toast.update(id, { type: 'error', title: '上传失败' })
+  toast.update(id, { type: "error", title: "上传失败" });
 }
 ```
 
@@ -123,10 +123,10 @@ catch {
 
 ```ts
 const url = await toast.promise(upload(file), {
-  loading: '正在上传…',
+  loading: "正在上传…",
   success: result => `上传完成：${result.name}`,
   error: reason => `上传失败：${(reason as Error).message}`,
-})
+});
 ```
 
 ### 行内动作
@@ -134,7 +134,7 @@ const url = await toast.promise(upload(file), {
 给了 `actionLabel` 才渲染那颗钮，按下去做什么写在 `onAction` 里：
 
 ```ts
-toast.info('已删除 3 条记录', { duration: 8000, actionLabel: '撤销', onAction: () => restore() })
+toast.info("已删除 3 条记录", { duration: 8000, actionLabel: "撤销", onAction: () => restore() });
 ```
 
 文案进队列记录、回调存在服务里——记录只放能被整份替换、序列化、比对的纯数据。
@@ -144,9 +144,9 @@ toast.info('已删除 3 条记录', { duration: 8000, actionLabel: '撤销', onA
 同一句错误连发几次时，`dedupe: 'content'` 把它们并成一条并在标题后追加计数：
 
 ```ts
-const toast = createToastService({ dedupe: 'content' })
-toast.error('同步失败')
-toast.error('同步失败') // 界面上是「同步失败 ×2」
+const toast = createToastService({ dedupe: "content" });
+toast.error("同步失败");
+toast.error("同步失败"); // 界面上是「同步失败 ×2」
 ```
 
 超出 `max` 时先挤低优先级的、同级里挤最旧的。优先级不给就按语气派生（`error` 最高、
@@ -159,18 +159,18 @@ toast.error('同步失败') // 界面上是「同步失败 ×2」
 多一颗叉就多一个「要不要点」的判断。确实需要留出口（比如 `duration: 0` 的常驻提示）就显式开：
 
 ```ts
-toast.error('导出失败，请重试', { duration: 0, closable: true })
+toast.error("导出失败，请重试", { duration: 0, closable: true });
 ```
 
 ## 通知服务
 
 ```ts
-import { createNotificationService } from '@xihan-ui/vue'
+import { createNotificationService } from "@xihan-ui/vue";
 
-const notify = createNotificationService({ placement: 'bottom-end', max: 5 })
+const notify = createNotificationService({ placement: "bottom-end", max: 5 });
 
-notify.info('有新的审批', { description: '张三提交了一份请假单' })
-notify.error('同步失败', { description: '网络中断，稍后自动重试', duration: 0 })
+notify.info("有新的审批", { description: "张三提交了一份请假单" });
+notify.error("同步失败", { description: "网络中断，稍后自动重试", duration: 0 });
 ```
 
 | 方法 | 返回 | 说明 |
@@ -197,18 +197,18 @@ notify.error('同步失败', { description: '网络中断，稍后自动重试',
 路由守卫与请求拦截器都在组件树之外，要的正是命令式入口：
 
 ```ts
-import { createLoadingBarService } from '@xihan-ui/vue'
+import { createLoadingBarService } from "@xihan-ui/vue";
 
-const bar = createLoadingBarService()
+const bar = createLoadingBarService();
 
-router.beforeEach(() => { bar.start() })
-router.afterEach(() => { bar.finish() })
+router.beforeEach(() => { bar.start(); });
+router.afterEach(() => { bar.finish(); });
 
-http.interceptors.request.use((cfg) => { bar.start(); return cfg })
+http.interceptors.request.use((cfg) => { bar.start(); return cfg; });
 http.interceptors.response.use(
-  (res) => { bar.finish(); return res },
-  (err) => { bar.error(); return Promise.reject(err) },
-)
+  (res) => { bar.finish(); return res; },
+  (err) => { bar.error(); return Promise.reject(err); },
+);
 ```
 
 | 方法 | 说明 |
@@ -229,12 +229,12 @@ Vue 的四个服务都自建宿主应用，接不到组件树里的 `provideXhCo
 ```ts
 const dialog = createDialogService({
   config: () => ({ locale: app.locale.value, translations: myOverrides[app.locale.value] }),
-  okText: () => t('common.ok'),
-  cancelText: () => t('common.cancel'),
-})
+  okText: () => t("common.ok"),
+  cancelText: () => t("common.cancel"),
+});
 
 // 没有响应式源时也可以命令式推
-dialog.setConfig({ locale: 'en-US' })
+dialog.setConfig({ locale: "en-US" });
 ```
 
 取值优先级：**调用点 > 服务选项 > `config.translations.<组件>` > 组件内建默认**。
@@ -243,10 +243,10 @@ dialog.setConfig({ locale: 'en-US' })
 同样四个工厂，从 `@xihan-ui/web-components/services` 取，句柄的方法与 Vue 侧同名同形：
 
 ```ts
-import { createToastService } from '@xihan-ui/web-components/services'
+import { createToastService } from "@xihan-ui/web-components/services";
 
-const toast = createToastService({ placement: 'top', max: 5 })
-toast.success('已保存')
+const toast = createToastService({ placement: "top", max: 5 });
+toast.success("已保存");
 ```
 
 服务自己生成真实的自定义元素与角色节点（`<xh-toast>`、`<xh-notification>`、`<xh-dialog>`、

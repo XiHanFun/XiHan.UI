@@ -1,6 +1,6 @@
 <!-- 笔迹外形 | drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simulatePressure 决定压感取设备值还是按速度算 -->
 <script setup lang="ts">
-import { XhSignaturePadControl, XhSignaturePadGuide, XhSignaturePadRoot, XhSignaturePadPath } from "@xihan-ui/vue";
+import { XhSignaturePadControl, XhSignaturePadGuide, XhSignaturePadPath, XhSignaturePadRoot } from "@xihan-ui/vue";
 </script>
 
 <template>

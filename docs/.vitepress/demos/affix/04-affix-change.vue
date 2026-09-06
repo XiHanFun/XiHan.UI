@@ -1,7 +1,7 @@
 <!-- 监听吸附状态 | affix-change 报吸住与松开；默认插槽也把 affixed 透出来 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhAffixContent, XhAffixRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const scrollEl = ref<HTMLElement | null>(null);
 const affixed = ref(false);

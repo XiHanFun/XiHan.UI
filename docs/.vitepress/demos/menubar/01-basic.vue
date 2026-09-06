@@ -1,7 +1,7 @@
 <!-- 基础用法 | 一排入口各带一张菜单，同时只展开一张；条目以 value 标识身份，禁用项方向键跳过也选不中 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhMenubarRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const menus = [
   {

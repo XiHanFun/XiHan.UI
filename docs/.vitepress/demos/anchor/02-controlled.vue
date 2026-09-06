@@ -1,6 +1,5 @@
 <!-- 受控 | 传了 value 就由宿主说了算；一节都没越过判定线时它是 null，此时谁都不亮、指示条整条收起 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhAnchorIndicator,
   XhAnchorItem,
@@ -9,6 +8,7 @@ import {
   XhAnchorRoot,
   XhButton,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const sections = [
   { value: "anchor-ctl-install", label: "安装" },

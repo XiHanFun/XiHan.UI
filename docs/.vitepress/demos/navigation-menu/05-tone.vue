@@ -4,7 +4,7 @@ import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/vue";
 
 // 每档语气一个 root，root 里就一个入口，入口名即语气名
 const tones = ["brand", "neutral", "success", "warning", "danger", "info"].map(
-  (tone) => ({ tone, entries: [{ value: tone, label: tone }] }),
+  tone => ({ tone, entries: [{ value: tone, label: tone }] }),
 );
 </script>
 

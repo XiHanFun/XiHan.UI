@@ -1,7 +1,7 @@
 <!-- 状态透出 | phase / loading / disabled 由组件交给宿主，加载提示与结束语都由宿主自己摆 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const scrollEl = ref<HTMLElement | null>(null);
 const items = ref(Array.from({ length: 10 }, (_, i) => `第 ${i + 1} 条`));

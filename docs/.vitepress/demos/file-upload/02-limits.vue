@@ -1,20 +1,20 @@
 <!-- 限制与拒收 | accept / maxFiles / maxFileSize 越界的当场被拒，file-reject 逐个报出理由 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhFileUploadClearTrigger,
   XhFileUploadDropzone,
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
-  XhFileUploadList,
   XhFileUploadItemName,
   XhFileUploadItemPreview,
   XhFileUploadItemSizeText,
   XhFileUploadLabel,
+  XhFileUploadList,
   XhFileUploadRoot,
   XhFileUploadTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const rejected = ref("");
 
@@ -29,7 +29,7 @@ const reasonText: Record<string, string> = {
 function onReject(details: { files: { file: File; reasons: string[] }[] }) {
   rejected.value = details.files
     .map(
-      (it) => `${it.file.name}（${it.reasons.map((r) => reasonText[r] ?? r).join("、")}）`
+      it => `${it.file.name}（${it.reasons.map(r => reasonText[r] ?? r).join("、")}）`,
     )
     .join("；");
 }

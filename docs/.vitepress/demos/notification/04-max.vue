@@ -1,16 +1,16 @@
 <!-- 上限与清空 | max 限制每个位置同时显示几条，超出挤掉最旧的；dismissAll 把队列直接倒掉，不走退场窗口 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
+  XhNotificationGroup,
+  XhNotificationItem,
   XhNotificationItemCloseTrigger,
   XhNotificationItemDescription,
-  XhNotificationGroup,
-  XhNotificationRoot,
-  XhNotificationItem,
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
+  XhNotificationRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const seq = ref(0);
 const itemTranslations = { close: "关闭" };

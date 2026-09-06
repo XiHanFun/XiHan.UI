@@ -1,9 +1,9 @@
 <!-- 行尾操作 | extra 贴在整行的末尾，里面放什么按钮由作者决定 -->
 <script setup lang="ts">
 import {
+  XhPageHeaderDescription,
   XhPageHeaderExtra,
   XhPageHeaderRoot,
-  XhPageHeaderDescription,
   XhPageHeaderTitle,
 } from "@xihan-ui/vue";
 </script>

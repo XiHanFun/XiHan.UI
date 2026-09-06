@@ -1,6 +1,5 @@
 <!-- 嵌套模型与路径字段名 | 字段名直接写成路径，值仍住在宿主自己的嵌套对象里：表单只管错误、id 与摘要跳转，提交时不用把扁平表折回去 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhFieldControl,
   XhFieldErrorText,
@@ -12,6 +11,7 @@ import {
   XhFormRoot,
   XhFormSubmitTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const model = ref({
   user: { name: "", email: "" },
@@ -60,7 +60,7 @@ function onSubmit() {
         <XhFieldLabel>姓名</XhFieldLabel>
         <XhFieldControl>
           <!-- 控件直接绑在嵌套模型上，值不经过表单的值表 -->
-          <input v-model="model.user.name" />
+          <input v-model="model.user.name">
         </XhFieldControl>
         <XhFieldErrorText>{{ error }}</XhFieldErrorText>
       </XhFieldRoot>
@@ -70,7 +70,7 @@ function onSubmit() {
       <XhFieldRoot :invalid="invalid" required>
         <XhFieldLabel>邮箱</XhFieldLabel>
         <XhFieldControl>
-          <input v-model="model.user.email" type="email" />
+          <input v-model="model.user.email" type="email">
         </XhFieldControl>
         <XhFieldErrorText>{{ error }}</XhFieldErrorText>
       </XhFieldRoot>
@@ -81,7 +81,7 @@ function onSubmit() {
         <XhFieldRoot :invalid="invalid" required>
           <XhFieldLabel>爱好 {{ index + 1 }}</XhFieldLabel>
           <XhFieldControl>
-            <input v-model="row.hobby" />
+            <input v-model="row.hobby">
           </XhFieldControl>
           <XhFieldErrorText>{{ error }}</XhFieldErrorText>
         </XhFieldRoot>

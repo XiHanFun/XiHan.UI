@@ -1,7 +1,7 @@
 <!-- 基础用法 | 在触发区上右键（触摸端长按），菜单钉在按下去的那一点上 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhContextMenuRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const commands = [
   { value: "copy", label: "复制" },

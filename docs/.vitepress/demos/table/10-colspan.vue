@@ -22,7 +22,7 @@ const teams = [
 ];
 
 // 汇总行也占一个行号，只是它那格横跨了两列
-const rows = [...teams.map((t) => ({ id: t.id })), { id: "sum" }];
+const rows = [...teams.map(t => ({ id: t.id })), { id: "sum" }];
 </script>
 
 <template>

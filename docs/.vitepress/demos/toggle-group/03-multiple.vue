@@ -1,7 +1,7 @@
 <!-- 多选 | multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + aria-pressed，值也从字符串变成数组 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhToggleGroupRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const marks = ref<string[]>(["bold"]);
 

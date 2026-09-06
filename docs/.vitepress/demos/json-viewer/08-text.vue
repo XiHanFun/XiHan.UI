@@ -19,7 +19,7 @@ const view = ref<"tree" | "text">("text");
 <template>
   <div style="display: flex; flex-direction: column; gap: 8px; inline-size: 100%; max-inline-size: 420px">
     <label style="display: flex; align-items: center; gap: 6px">
-      <input v-model="view" type="checkbox" true-value="text" false-value="tree" />
+      <input v-model="view" type="checkbox" true-value="text" false-value="tree">
       原文视图
     </label>
     <XhJsonViewerRoot :value="payload" :view="view" :default-expanded-depth="2" />

@@ -42,7 +42,7 @@ function onSubmit(event: Event) {
     </label>
 
     <!-- 原生输入框做对照：它靠 value 这个内容属性还原，组件靠自己的 defaultValue -->
-    <label>备注 <input name="note" value="默认备注" /></label>
+    <label>备注 <input name="note" value="默认备注"></label>
 
     <label><XhCheckbox name="agree" default-checked /> 已阅读条款</label>
     <label><XhSwitch name="notify" /> 接收通知</label>

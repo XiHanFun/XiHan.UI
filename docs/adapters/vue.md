@@ -16,7 +16,7 @@ import {
   XhAccordionItem,
   XhAccordionRoot,
   XhAccordionTrigger,
-} from '@xihan-ui/vue'
+} from "@xihan-ui/vue";
 ```
 
 只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 915 个导出组件按组件分组列在[组件参考](../components/)里。
@@ -26,6 +26,8 @@ import {
 ## 事件与 v-model
 
 值类组件同时发两个事件：
+
+<!-- eslint-skip -->
 
 ```ts
 emits: {
@@ -88,11 +90,21 @@ emits: {
   <XhTabsRoot :collection="tabs">
     <!-- ✓ node 是 TabsNodeMeta，字段可补全 -->
     <template #panel="node">{{ node.label }}</template>
+  </XhTabsRoot>
+</template>
+```
 
-    <!-- ✗ TS2551: Property 'lable' does not exist on type 'TabsNodeMeta'. Did you mean 'label'? -->
+两类拼写错误各自接得住：
+
+```vue
+<template>
+  <!-- ✗ TS2551: Property 'lable' does not exist on type 'TabsNodeMeta'. Did you mean 'label'? -->
+  <XhTabsRoot :collection="tabs">
     <template #panel="node">{{ node.lable }}</template>
+  </XhTabsRoot>
 
-    <!-- ✗ TS2339: 组件没有这个插槽 -->
+  <!-- ✗ TS2339: 组件没有这个插槽 -->
+  <XhTabsRoot :collection="tabs">
     <template #panle>…</template>
   </XhTabsRoot>
 </template>
@@ -108,12 +120,12 @@ emits: {
 
 ```vue
 <script setup lang="ts">
-import { useAccordion } from '@xihan-ui/vue'
+import { useAccordion } from "@xihan-ui/vue";
 
 const { api } = useAccordion(
-  { multiple: true, defaultValue: ['a'] },
+  { multiple: true, defaultValue: ["a"] },
   details => console.log(details.value), // onValueChange
-)
+);
 </script>
 
 <template>
@@ -150,7 +162,7 @@ const { api } = useAccordion(
 Vue 侧的视觉适配在**单独的子入口**，不引就不会把 WebGL 引擎打进包：
 
 ```ts
-import { useBackground, vBackground, XhBackground } from '@xihan-ui/vue/backgrounds'
+import { useBackground, vBackground, XhBackground } from "@xihan-ui/vue/backgrounds";
 ```
 
 三种用法见[背景层](../guide/backgrounds#在-vue-里用)。
@@ -160,7 +172,7 @@ import { useBackground, vBackground, XhBackground } from '@xihan-ui/vue/backgrou
 同样是单独的子入口。`withToastSound` / `withDialogSound` 给命令式反馈服务配上声音，调用点一行都不用改；`v-sound` 给单个元素配声：
 
 ```ts
-import { setSoundPlayer, vSound, withToastSound } from '@xihan-ui/vue/sound'
+import { setSoundPlayer, vSound, withToastSound } from "@xihan-ui/vue/sound";
 ```
 
 默认映射与开关见[声音层](../guide/sound#在-vue-里用)。

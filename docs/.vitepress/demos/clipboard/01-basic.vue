@@ -3,11 +3,11 @@
 import { CheckIcon } from "@xihan-ui/icons";
 import {
   XhClipboardControl,
+  XhClipboardCopyTrigger,
   XhClipboardIndicator,
   XhClipboardInput,
   XhClipboardLabel,
   XhClipboardRoot,
-  XhClipboardCopyTrigger,
   XhIcon,
 } from "@xihan-ui/vue";
 

@@ -1,6 +1,5 @@
 <!-- 动态增删 | 标签清单归宿主维护；关掉当前这页时把选中值挪到相邻一项，全关完选中值是 null -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhTabsContent,
@@ -8,6 +7,7 @@ import {
   XhTabsRoot,
   XhTabsTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const tabs = ref([
   { value: "doc-1", label: "文档 1" },
@@ -24,7 +24,7 @@ function addTab(): void {
 }
 
 function closeTab(value: string): void {
-  const index = tabs.value.findIndex((tab) => tab.value === value);
+  const index = tabs.value.findIndex(tab => tab.value === value);
   if (index < 0) {
     return;
   }

@@ -16,7 +16,7 @@ import {
 const calls = [
   {
     name: "search",
-    summary: '{ "query": "xihan ui 组件" }',
+    summary: "{ \"query\": \"xihan ui 组件\" }",
     startTime: 0,
     endTime: 1240,
     output: "找到 3 条结果。",

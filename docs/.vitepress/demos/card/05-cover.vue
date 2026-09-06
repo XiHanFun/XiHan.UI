@@ -1,6 +1,6 @@
 <!-- 带封面 | 封面顶到根的边上、不吃内边距，圆角由根统一裁 -->
 <script setup lang="ts">
-import { XhCardBody, XhCardMedia, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/vue";
+import { XhCardBody, XhCardDescription, XhCardHeader, XhCardMedia, XhCardRoot, XhCardTitle } from "@xihan-ui/vue";
 </script>
 
 <template>

@@ -1,6 +1,5 @@
 <!-- 换序 | movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以连按一路挪到底 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhFieldArrayAddTrigger,
   XhFieldArrayItem,
@@ -11,6 +10,7 @@ import {
   XhFieldArrayMoveUpTrigger,
   XhFieldArrayRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const steps = ref<string[]>(["拉取代码", "安装依赖", "跑构建", "发布"]);
 
@@ -35,7 +35,7 @@ function setAt(index: number, next: string) {
           placeholder="这一步做什么"
           :value="row.value"
           @input="setAt(row.index, ($event.target as HTMLInputElement).value)"
-        />
+        >
       </XhFieldArrayItemContent>
       <XhFieldArrayItemAction>
         <XhFieldArrayMoveUpTrigger />

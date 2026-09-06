@@ -14,7 +14,7 @@ export interface PositionEnginePort {
     floating: HTMLElement,
     options: PositionOptions,
     onResult: (result: PositionResult) => void,
-  ) => () => void
+  ) => () => void;
 }
 ```
 
@@ -23,21 +23,21 @@ export interface PositionEnginePort {
 ## 用法
 
 ```ts
-import { createPositionEngine } from '@xihan-ui/position'
+import { createPositionEngine } from "@xihan-ui/position";
 
-const engine = createPositionEngine()
+const engine = createPositionEngine();
 
 const stop = engine.attach(
   triggerEl,
   floatingEl,
-  { placement: 'bottom-start', offset: 8, flip: true, shift: true, strategy: 'absolute' },
+  { placement: "bottom-start", offset: 8, flip: true, shift: true, strategy: "absolute" },
   ({ x, y, placement, hidden }) => {
-    floatingEl.style.left = `${x}px`
-    floatingEl.style.top = `${y}px`
+    floatingEl.style.left = `${x}px`;
+    floatingEl.style.top = `${y}px`;
   },
-)
+);
 
-stop() // 停止跟随
+stop(); // 停止跟随
 ```
 
 日常用不到这一层——浮层组件内部已经接好了，你只需要传 `placement` / `offset` 之类的 props。
@@ -78,8 +78,8 @@ stop() // 停止跟随
 ```ts
 const virtual = {
   getBoundingClientRect: () => ({ x: event.clientX, y: event.clientY, width: 0, height: 0 }),
-}
-engine.attach(virtual, floatingEl, { placement: 'bottom-start' }, apply)
+};
+engine.attach(virtual, floatingEl, { placement: "bottom-start" }, apply);
 ```
 
 在计算的第一步元素锚点与虚拟锚点就统一成矩形了，之后没有任何区别。

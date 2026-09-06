@@ -1,6 +1,5 @@
 <!-- 横排目录 | orientation="horizontal" 只改样式：条目排成一行，轨道与指示条从起始缘挪到底边 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhAnchorIndicator,
   XhAnchorItem,
@@ -8,6 +7,7 @@ import {
   XhAnchorList,
   XhAnchorRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const sections = [
   { value: "anchor-h-overview", label: "概览" },

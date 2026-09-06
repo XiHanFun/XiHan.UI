@@ -5,7 +5,7 @@ import { XhTabsRoot } from "@xihan-ui/vue";
 const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
 
 // 每族一套标签，选中那张的文本带上语气名
-const groups = tones.map((tone) => ({
+const groups = tones.map(tone => ({
   tone,
   tabs: [
     { value: "selected", label: `${tone}（选中）` },

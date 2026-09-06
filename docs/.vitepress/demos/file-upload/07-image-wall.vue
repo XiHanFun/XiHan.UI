@@ -1,18 +1,18 @@
 <!-- 缩略图墙 | item-preview 是个空方框，作者往里塞什么都行；塞进去的图会被裁成方格，一行摆几张由外层网格定 -->
 <script setup lang="ts">
-import { onBeforeUnmount } from "vue";
 import {
   XhFileUploadDropzone,
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
-  XhFileUploadList,
   XhFileUploadItemName,
   XhFileUploadItemPreview,
   XhFileUploadLabel,
+  XhFileUploadList,
   XhFileUploadRoot,
   XhFileUploadTrigger,
 } from "@xihan-ui/vue";
+import { onBeforeUnmount } from "vue";
 
 const wall = {
   display: "grid",
@@ -20,8 +20,8 @@ const wall = {
 };
 
 const card = {
-  flexDirection: "column",
-  alignItems: "stretch",
+  "flexDirection": "column",
+  "alignItems": "stretch",
   "--xh-file-upload-preview-size": "96px",
 };
 
@@ -39,7 +39,7 @@ function previewUrl(file: File) {
 }
 
 onBeforeUnmount(() => {
-  urls.forEach((url) => URL.revokeObjectURL(url));
+  urls.forEach(url => URL.revokeObjectURL(url));
   urls.clear();
 });
 </script>
@@ -58,7 +58,7 @@ onBeforeUnmount(() => {
       <XhFileUploadList :style="wall">
         <XhFileUploadItem v-for="file in acceptedFiles" :key="file" :file="file" :style="card">
           <XhFileUploadItemPreview>
-            <img :src="previewUrl(file)" alt="" />
+            <img :src="previewUrl(file)" alt="">
           </XhFileUploadItemPreview>
           <XhFileUploadItemName />
           <XhFileUploadItemDeleteTrigger>移除</XhFileUploadItemDeleteTrigger>

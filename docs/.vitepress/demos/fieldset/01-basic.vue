@@ -7,15 +7,15 @@ import { XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot } from "@xihan-
   <XhFieldsetRoot style="inline-size: 320px;">
     <XhFieldsetLegend>通知方式</XhFieldsetLegend>
     <label style="display: flex; gap: 8px; align-items: center;">
-      <input type="checkbox" checked />
+      <input type="checkbox" checked>
       站内消息
     </label>
     <label style="display: flex; gap: 8px; align-items: center;">
-      <input type="checkbox" />
+      <input type="checkbox">
       邮件
     </label>
     <label style="display: flex; gap: 8px; align-items: center;">
-      <input type="checkbox" />
+      <input type="checkbox">
       短信
     </label>
     <XhFieldsetDescription>至少保留一种，重要变更会照此通知你</XhFieldsetDescription>

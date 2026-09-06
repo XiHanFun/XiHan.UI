@@ -1,6 +1,5 @@
 <!-- 只让叶子进选中集合 | 选中受控就由宿主定夺：分支的值直接不写回，点目录只剩展开收起这一个效果 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTreeBranch,
   XhTreeBranchContent,
@@ -14,6 +13,7 @@ import {
   XhTreeRoot,
   XhTreeTree,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const collection = [
   {
@@ -34,12 +34,12 @@ const collection = [
   },
 ];
 
-const leaves = new Set(collection.flatMap((dir) => dir.children.map((file) => file.value)));
+const leaves = new Set(collection.flatMap(dir => dir.children.map(file => file.value)));
 
 const selected = ref<string[]>([]);
 
 function onSelectionChange(details: { value: string[] }): void {
-  selected.value = details.value.filter((value) => leaves.has(value));
+  selected.value = details.value.filter(value => leaves.has(value));
 }
 </script>
 

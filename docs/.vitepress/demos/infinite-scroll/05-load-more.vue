@@ -1,11 +1,11 @@
 <!-- 取下一页的按钮 | 与哨兵同一条通路：读屏在虚拟光标模式下不产生滚动事件，这颗按钮是它的键盘等价入口 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhInfiniteScrollLoadMoreTrigger,
   XhInfiniteScrollRoot,
   XhInfiniteScrollSentinel,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const scrollEl = ref<HTMLElement | null>(null);
 const items = ref(Array.from({ length: 10 }, (_, i) => `第 ${i + 1} 条`));

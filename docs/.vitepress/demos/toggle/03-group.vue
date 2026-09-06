@@ -1,7 +1,7 @@
 <!-- 排成一组 | 多个独立的 toggle 各管各的按下态；要互斥或单一 Tab 位请改用切换按钮组 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhToggle } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const marks = ref({ bold: false, italic: false, underline: true });
 </script>

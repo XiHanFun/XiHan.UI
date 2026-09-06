@@ -2,8 +2,8 @@
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
-const boxStyle =
-  "padding: 8px 14px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
+const boxStyle
+  = "padding: 8px 14px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
 </script>
 
 <template>

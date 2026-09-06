@@ -21,9 +21,9 @@ import {
     </XhTextFieldControl>
     <div style="display: flex; gap: 8px">
       <button type="button" @click="setValue('曦寒')">写入</button>
-      <button type="button" @click="setValue(value + '·')">追加一个点</button>
+      <button type="button" @click="setValue(`${value}·`)">追加一个点</button>
       <button type="button" :disabled="!canClear" @click="clear()">清空</button>
     </div>
-    <span>{{ empty ? "（空）" : value.length + " / 12" }}</span>
+    <span>{{ empty ? "（空）" : `${value.length} / 12` }}</span>
   </XhTextFieldRoot>
 </template>

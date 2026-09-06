@@ -1,6 +1,5 @@
 <!-- 多选标签 | 内建标签形态：api 的 tags 受 maxTagCount 截断、余数在 overflowCount；触发器里 XhSelectTag 纯展示，触发器外配 XhSelectItemDeleteTrigger 即可删 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhSelectContent,
   XhSelectControl,
@@ -17,6 +16,7 @@ import {
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const options = [
   { value: "vue", label: "Vue" },

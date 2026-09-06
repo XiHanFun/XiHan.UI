@@ -1,6 +1,5 @@
 <!-- 外部写值与清空 | 值由宿主持有，按钮直接写值；清空交给组件自带的清空钮，有值才出现；填齐与越界两个判据由组件给出 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhDateFieldClearTrigger,
@@ -10,6 +9,7 @@ import {
   XhDateFieldSegment,
   XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref<string | null>(null);
 

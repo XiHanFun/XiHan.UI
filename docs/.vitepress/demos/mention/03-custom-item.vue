@@ -1,6 +1,5 @@
 <!-- 候选里的自定义内容 | 手写各部件即可在候选行里放头像与职位；插回正文的那段字取自 item-text -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhAvatarFallback,
   XhAvatarRoot,
@@ -11,6 +10,7 @@ import {
   XhMentionPositioner,
   XhMentionRoot,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const people = [
   { value: "lilei", label: "李雷", role: "前端", initials: "李" },
@@ -24,7 +24,7 @@ const filtered = computed(() => {
   const q = (query.value ?? "").trim().toLowerCase();
   return q === ""
     ? people
-    : people.filter((p) => p.value.includes(q) || p.label.toLowerCase().includes(q));
+    : people.filter(p => p.value.includes(q) || p.label.toLowerCase().includes(q));
 });
 </script>
 

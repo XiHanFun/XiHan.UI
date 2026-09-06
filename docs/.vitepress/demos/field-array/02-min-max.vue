@@ -1,6 +1,5 @@
 <!-- 行数上下限 | 到 min 删除把手按不动、到 max 新增把手按不动；两者都转 aria-disabled，焦点留得住 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhFieldArrayAddTrigger,
   XhFieldArrayItem,
@@ -9,6 +8,7 @@ import {
   XhFieldArrayItemDeleteTrigger,
   XhFieldArrayRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const options = ref<string[]>(["红", "绿"]);
 
@@ -33,7 +33,7 @@ function setAt(index: number, next: string) {
           placeholder="填一个选项"
           :value="row.value"
           @input="setAt(row.index, ($event.target as HTMLInputElement).value)"
-        />
+        >
       </XhFieldArrayItemContent>
       <XhFieldArrayItemAction>
         <XhFieldArrayItemDeleteTrigger />

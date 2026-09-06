@@ -1,7 +1,6 @@
 <!-- 排布 | layout 四档：vertical 竖排（默认）、horizontal 标签左置两列（labelWidth 统一列宽、labelAlign 换对齐缘）、inline 横排一行流、grid 等宽列的网格（columns 给列数）；整表排布一个开关搞定，不必逐字段写栅格 -->
 <script setup lang="ts">
 import type { FormLayout } from "@xihan-ui/headless";
-import { ref } from "vue";
 import {
   XhFieldControl,
   XhFieldErrorText,
@@ -11,6 +10,7 @@ import {
   XhFormRoot,
   XhFormSubmitTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const layout = ref<FormLayout>("horizontal");
 const layouts: FormLayout[] = ["vertical", "horizontal", "inline", "grid"];
@@ -57,7 +57,7 @@ const rules = {
               :placeholder="f.placeholder"
               :value="value"
               @input="setValue(($event.target as HTMLInputElement).value)"
-            />
+            >
           </XhFieldControl>
           <XhFieldErrorText />
         </XhFieldRoot>

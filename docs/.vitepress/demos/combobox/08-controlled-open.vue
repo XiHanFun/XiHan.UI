@@ -1,7 +1,7 @@
 <!-- 受控展开 | 传了 open 就由宿主说了算：组件只报展开意图，这里满两个字符才真的把浮层放出来 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { XhComboboxRoot } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const cities = [
   { value: "beijing", label: "Beijing 北京" },
@@ -17,7 +17,7 @@ const wantOpen = ref(false);
 const open = computed(() => wantOpen.value && query.value.trim().length >= 2);
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
-  return q === "" ? cities : cities.filter((c) => c.label.toLowerCase().includes(q));
+  return q === "" ? cities : cities.filter(c => c.label.toLowerCase().includes(q));
 });
 
 function onOpenChange(details: { open: boolean }): void {

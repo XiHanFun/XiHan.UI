@@ -1,6 +1,5 @@
 <!-- 列表分组 | 本侧此刻看得见的条目由组件给出，据此分组渲染；group 是 role=group 的段落壳，段标题不入方向键也不入搬运 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTransferGroup,
   XhTransferGroupLabel,
@@ -18,6 +17,7 @@ import {
   XhTransferToSourceTrigger,
   XhTransferToTargetTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const groups = [
   { key: "read", label: "读取" },
@@ -41,8 +41,8 @@ function inGroup(
   list: readonly { value: string; label: string }[],
   group: string,
 ): { value: string; label: string }[] {
-  return list.filter((item) =>
-    permissions.some((p) => p.value === item.value && p.group === group),
+  return list.filter(item =>
+    permissions.some(p => p.value === item.value && p.group === group),
   );
 }
 

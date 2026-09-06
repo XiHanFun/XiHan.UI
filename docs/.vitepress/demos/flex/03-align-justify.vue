@@ -2,10 +2,10 @@
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
-const trackStyle =
-  "border: 1px solid var(--xh-border-default); border-radius: var(--xh-radius-md); padding: 8px; block-size: 72px";
-const boxStyle =
-  "padding: 8px 14px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
+const trackStyle
+  = "border: 1px solid var(--xh-border-default); border-radius: var(--xh-radius-md); padding: 8px; block-size: 72px";
+const boxStyle
+  = "padding: 8px 14px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
 const tallBoxStyle = `${boxStyle}; padding-block: 20px`;
 const labelStyle = "font-size: 13px; color: var(--xh-fg-muted)";
 

@@ -1,6 +1,5 @@
 <!-- 选中与展开双受控 | 两份集合都由宿主持有：组件只发事件，宿主写回它才动，回显的就是写回的那两份 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
@@ -21,6 +20,7 @@ import {
   XhTreeSelectTrigger,
   XhTreeSelectValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // draft.md 是禁用叶子：方向键与连打检索跳过它，确认键也不认它
 const files = [
@@ -67,8 +67,8 @@ const expanded = ref<string[]>(["docs"]);
         <XhTreeSelectTree>
           <XhTreeSelectBranch value="docs">
             <XhTreeSelectBranchControl>
-  <XhTreeSelectBranchTrigger />
-  <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
+              <XhTreeSelectBranchTrigger />
+              <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem value="guide">
@@ -81,8 +81,8 @@ const expanded = ref<string[]>(["docs"]);
               </XhTreeSelectItem>
               <XhTreeSelectBranch value="i18n">
                 <XhTreeSelectBranchControl>
-  <XhTreeSelectBranchTrigger />
-  <XhTreeSelectBranchText>i18n</XhTreeSelectBranchText>
+                  <XhTreeSelectBranchTrigger />
+                  <XhTreeSelectBranchText>i18n</XhTreeSelectBranchText>
                 </XhTreeSelectBranchControl>
                 <XhTreeSelectBranchContent>
                   <XhTreeSelectItem value="zh">

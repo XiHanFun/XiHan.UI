@@ -1,6 +1,5 @@
 <!-- 排序 | 列上标了 sortable 才认排序把手；按住 Shift 点是追加到排序链，裸点是整条链换成这一列 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhTableBody,
   XhTableCell,
@@ -10,6 +9,7 @@ import {
   XhTableRow,
   XhTableSortTrigger,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 interface Member {
   id: string;
@@ -35,21 +35,23 @@ const members: Member[] = [
 const sort = ref<{ id: string; direction: "asc" | "desc" }[]>([]);
 
 const sorted = computed(() => {
-  if (!sort.value.length) return members;
+  if (!sort.value.length)
+    return members;
   return [...members].sort((a, b) => {
     for (const s of sort.value) {
       const diff = String(a[s.id as keyof Member]).localeCompare(
         String(b[s.id as keyof Member]),
-        "zh"
+        "zh",
       );
-      if (diff !== 0) return s.direction === "asc" ? diff : -diff;
+      if (diff !== 0)
+        return s.direction === "asc" ? diff : -diff;
     }
     return 0;
   });
 });
 
 // 行序的事实源跟着排序结果走
-const rows = computed(() => sorted.value.map((m) => ({ id: m.id })));
+const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 </script>
 
 <template>

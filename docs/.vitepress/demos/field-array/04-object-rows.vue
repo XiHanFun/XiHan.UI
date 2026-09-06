@@ -1,6 +1,5 @@
 <!-- 一行多个字段 | 行数据是对象，createItem 造一个空项；改字段时整份重建数组，行号不跟着变 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhFieldArrayAddTrigger,
   XhFieldArrayItem,
@@ -11,6 +10,7 @@ import {
   XhFieldArrayMoveUpTrigger,
   XhFieldArrayRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 interface Header {
   name: string;
@@ -44,13 +44,13 @@ function patch(index: number, key: keyof Header, next: string) {
           placeholder="字段名"
           :value="row.value.name"
           @input="patch(row.index, 'name', ($event.target as HTMLInputElement).value)"
-        />
+        >
         <input
           style="inline-size: 60%"
           placeholder="字段值"
           :value="row.value.value"
           @input="patch(row.index, 'value', ($event.target as HTMLInputElement).value)"
-        />
+        >
       </XhFieldArrayItemContent>
       <XhFieldArrayItemAction>
         <XhFieldArrayMoveUpTrigger />

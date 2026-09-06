@@ -1,6 +1,5 @@
 <!-- 多选 | multiple 关着是单选，打开后点击与确认键都变成切换，选中集合形状不变仍是数组 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTreeBranch,
   XhTreeBranchContent,
@@ -14,6 +13,7 @@ import {
   XhTreeRoot,
   XhTreeTree,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const collection = [
   {

@@ -1,7 +1,7 @@
 <!-- 事件 | checked-change 带一份 { checked }，非受控时内部翻转也照发一次 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhCheckbox } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const log = ref<string[]>([]);
 

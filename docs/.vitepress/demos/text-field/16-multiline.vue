@@ -1,19 +1,19 @@
 <!-- 多行与自动长高 | input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，对象形态钉行数上下限（顶到 maxRows 后内部滚动） -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const note = ref("");
 </script>
 
 <template>
   <div style="display: grid; gap: 16px; inline-size: 320px">
-    <XhTextFieldRoot v-model:value="note" v-slot="{ value, atLimit }" :auto-size="{ minRows: 2, maxRows: 6 }" :max-length="120" placeholder="说点什么">
+    <XhTextFieldRoot v-slot="{ value, atLimit }" v-model:value="note" :auto-size="{ minRows: 2, maxRows: 6 }" :max-length="120" placeholder="说点什么">
       <XhTextFieldLabel>备注（2-6 行自动长高）</XhTextFieldLabel>
       <XhTextFieldControl>
         <XhTextFieldInput as="textarea" />

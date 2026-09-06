@@ -1,6 +1,5 @@
 <!-- 触屏拖动把手 | 整行起手只认鼠标与笔；触屏要按住行首那个把手才拖得动，代价是那一小块地方不再跟着表格滚。键盘那一路照旧：Tab 进表体后 Alt + 上下键 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhTableBody,
   XhTableCaption,
@@ -11,6 +10,7 @@ import {
   XhTableRow,
   XhTableRowDragTrigger,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const columns = [
   { id: "step", label: "序号", width: "4rem" },
@@ -27,19 +27,19 @@ const steps = ref([
 ]);
 
 // 行序的主人是这份数组，跟着它走
-const rows = computed(() => steps.value.map((s) => ({ id: s.id })));
+const rows = computed(() => steps.value.map(s => ({ id: s.id })));
 
 // details.ids 是已经重排好的整份行序，照它取一遍就是新数组。
 // 平表没有层级，details.parent 恒为 null、index 就是搬完之后的第几行
-const onRowMove = (details: {
+function onRowMove(details: {
   id: string;
   parent: string | null;
   index: number;
   ids: string[];
-}) => {
-  const byId = new Map(steps.value.map((s) => [s.id, s]));
-  steps.value = details.ids.flatMap((id) => byId.get(id) ?? []);
-};
+}) {
+  const byId = new Map(steps.value.map(s => [s.id, s]));
+  steps.value = details.ids.flatMap(id => byId.get(id) ?? []);
+}
 
 // 表头没有把手，补一块同宽的空位，列标题才和下面的格子对得上
 const spacerStyle = "flex: none; inline-size: var(--xh-table-row-drag-size, var(--xh-control-indicator-size))";
