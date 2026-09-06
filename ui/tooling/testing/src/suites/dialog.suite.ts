@@ -145,6 +145,18 @@ export const dialogSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '首屏即展开：defaultOpen 下 content 与内层部件在第 0 帧就已挂载',
+      spec: { adr: 'controlled-uncontrolled' },
+      props: { defaultOpen: true },
+      initial: {
+        counts: { content: 1, backdrop: 1, positioner: 1 },
+        parts: {
+          trigger: { 'aria-expanded': 'true', 'data-state': 'open' },
+          content: { 'role': 'dialog', 'aria-modal': 'true', 'data-state': 'open' },
+        },
+      },
+    },
+    {
       name: '受控 open：点击只发 open-change 不自改 DOM，父写回 open 后才打开',
       spec: { adr: 'controlled-uncontrolled' },
       props: { open: false },
