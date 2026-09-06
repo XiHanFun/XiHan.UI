@@ -1,4 +1,13 @@
+export { XhSwitch } from './components/switch/switch'
+export type { XhSwitchProps } from './components/switch/switch'
+export { useSwitch } from './components/switch/use-switch'
 // @xihan-ui/react —— React 适配器。
+export { mergeXhConfig, useXhConfig, withXhConfig, XhConfigProvider } from './config/config'
+export type { XhConfig, XhConfigProviderProps, XhTranslationOverrides } from './config/config'
 export { createReactRuntime } from './runtime/create-react-runtime'
+export { mergeReactProps } from './runtime/merge-props'
 export { reactNormalize } from './runtime/normalize-props'
+export { useReactIdGenerator, useReactScope } from './runtime/react-id'
+export { renderSlot, slotPaints } from './runtime/slot-content'
+export type { SlotChildren } from './runtime/slot-content'
 export { useMachine } from './runtime/use-machine'
