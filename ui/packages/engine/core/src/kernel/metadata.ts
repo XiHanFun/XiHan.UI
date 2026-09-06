@@ -85,7 +85,7 @@ export const XIHAN_UI_METADATA = Object.freeze({
   /** 框架支持的平台(浏览器引擎,硬底线见 docs/guide/versioning.md) */
   supportedPlatforms: Object.freeze(['Chrome', 'Edge', 'Firefox', 'Safari']),
   /** 框架提供的渲染适配器 */
-  adapters: Object.freeze(['vue', 'web-components']),
+  adapters: Object.freeze(['react', 'vue', 'web-components']),
 }) as Readonly<{
   name: string
   displayName: string

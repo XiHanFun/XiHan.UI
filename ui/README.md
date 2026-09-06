@@ -8,7 +8,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 
 126 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
 
-> The 16 public packages are released in lockstep and published to npm; the documentation site is at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to three recorded entries (the shared table’s `tag` disabled-state contrast and `prompt-input`’s author-owned accessible name, plus the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`.
+> The 17 public packages are released in lockstep and published to npm; the documentation site is at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to three recorded entries (the shared table’s `tag` disabled-state contrast and `prompt-input`’s author-owned accessible name, plus the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`.
 
 ## Packages
 
@@ -18,6 +18,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/motion` | Motion primitives: easing single source, tweening, frame loop, reduced-motion preference, closed-form springs, Web Animations wrapper |
 | `@xihan-ui/headless` | 126 components as anatomy + machine + `connect` — no styles, no framework |
 | `@xihan-ui/vue` | Vue 3 adapter |
+| `@xihan-ui/react` | React 19 adapter |
 | `@xihan-ui/web-components` | Web Components adapter (own reactive base, no third-party runtime dep) |
 | `@xihan-ui/styles` | Default skins, layered CSS |
 | `@xihan-ui/tokens` | Design tokens (from DTCG sources) + theme runtime (color scheme / brand / density / contrast / direction) |
@@ -53,7 +54,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # layered dependency gate (dependency-cruiser)
 pnpm build
-pnpm size         # bundle size ratchet — builds, then checks the 33 budgets in .size-limit.json
+pnpm size         # bundle size ratchet — builds, then checks the 35 budgets in .size-limit.json
 ```
 
 ## Conventions

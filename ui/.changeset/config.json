@@ -11,6 +11,7 @@
       "@xihan-ui/styles",
       "@xihan-ui/vue",
       "@xihan-ui/web-components",
+      "@xihan-ui/react",
       "@xihan-ui/chat-stream",
       "@xihan-ui/markdown",
       "@xihan-ui/code-highlight",

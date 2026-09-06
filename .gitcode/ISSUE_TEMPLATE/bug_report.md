@@ -40,7 +40,7 @@ labels: bug
 <!-- 运行时底座 core / 设计令牌与主题 tokens / 浮层定位 position / 指针原语 pointer / 动效引擎 motion /
      代码着色 code-highlight / 流式 Markdown markdown / AI 协议内核 chat-stream / 背景层 backgrounds /
      动效预设 animations / 音效 sound / 无头组件内核 headless / 默认皮肤 styles / Vue 适配器 vue /
-     Web Components 适配器 web-components / 图标 icons / 构建工程 tooling / 文档 -->
+     React 适配器 react / Web Components 适配器 web-components / 图标 icons / 构建工程 tooling / 文档 -->
 
 ## 相关组件 / 包名
 

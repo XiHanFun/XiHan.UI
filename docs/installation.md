@@ -2,7 +2,7 @@
 
 ## 从 npm 安装
 
-XiHan.UI 的 16 个公开包都已发布到 npm，同属一个版本组、始终同号。当前版本号以 npm 为准：`npm view @xihan-ui/vue version`。
+XiHan.UI 的 17 个公开包都已发布到 npm，同属一个版本组、始终同号。当前版本号以 npm 为准：`npm view @xihan-ui/vue version`。
 
 装哪几个包取决于你用哪个适配器：
 

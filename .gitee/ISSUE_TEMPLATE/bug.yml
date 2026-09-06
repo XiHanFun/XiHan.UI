@@ -81,6 +81,7 @@ body:
         - 无头组件内核（headless）
         - 默认皮肤（styles）
         - Vue 适配器（vue）
+        - React 适配器（react）
         - Web Components 适配器（web-components）
         - 图标（icons）
         - 构建 / 工程（tooling / turbo / vite）
