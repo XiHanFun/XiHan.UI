@@ -1,13 +1,13 @@
 <!-- 每一拍与到点 | tick 每过一个 interval 发一次，complete 只在走到终点那一刻发一次；到点那一拍不再发 tick -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
-  XhTimerDisplay,
   XhTimerControl,
+  XhTimerDisplay,
   XhTimerItem,
   XhTimerRoot,
   XhTimerSeparator,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const ticks = ref(0);
 const done = ref(false);

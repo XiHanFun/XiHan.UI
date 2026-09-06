@@ -1,6 +1,5 @@
 <!-- 区间选择 | selection-mode=range：第一下落起点、第二下落终点，中间铺一条连续底色 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhCalendarCell,
   XhCalendarCellTrigger,
@@ -15,13 +14,16 @@ import {
   XhCalendarWeekDay,
   XhCalendarWeekRow,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const value = ref<string[]>([]);
 
 // 挑到一半时集合里只有起点一个值
 const text = computed(() => {
-  if (value.value.length === 0) return "（未选）";
-  if (value.value.length === 1) return `${value.value[0]} → 待定`;
+  if (value.value.length === 0)
+    return "（未选）";
+  if (value.value.length === 1)
+    return `${value.value[0]} → 待定`;
   return `${value.value[0]} → ${value.value[1]}`;
 });
 </script>

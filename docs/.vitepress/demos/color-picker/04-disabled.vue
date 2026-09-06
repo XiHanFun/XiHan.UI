@@ -1,12 +1,12 @@
 <!-- 禁用 | disabled 同时挡住触发器与面板内的所有交互 -->
 <script setup lang="ts">
 import {
-  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerContent,
   XhColorPickerControl,
   XhColorPickerPositioner,
   XhColorPickerRoot,
+  XhColorPickerSaturationArea,
   XhColorPickerSwatch,
   XhColorPickerTrigger,
   XhColorPickerValueText,

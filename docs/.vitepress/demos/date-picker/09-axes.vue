@@ -13,13 +13,13 @@ import {
   XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
-  XhDatePickerSegmentGroup,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
   XhDatePickerPrevTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
+  XhDatePickerSegmentGroup,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
@@ -86,9 +86,11 @@ const sizes: Size[] = ["sm", "md", "lg"];
                       :key="day.value"
                       :value="day.value"
                     >
-                      <XhDatePickerCellTrigger>{{
-                        day.day
-                      }}</XhDatePickerCellTrigger>
+                      <XhDatePickerCellTrigger>
+                        {{
+                          day.day
+                        }}
+                      </XhDatePickerCellTrigger>
                     </XhDatePickerCell>
                   </XhDatePickerWeekRow>
                 </XhDatePickerGridBody>

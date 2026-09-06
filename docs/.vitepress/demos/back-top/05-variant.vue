@@ -1,7 +1,7 @@
 <!-- 形态 | variant 换按钮的底色、描边与前景怎么用；这里把露面门槛设成 0，不滚也看得见 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const solidEl = ref<HTMLElement | null>(null);
 const outlineEl = ref<HTMLElement | null>(null);
@@ -14,8 +14,8 @@ const boxStyle = {
   border: "1px solid var(--xh-border-default)",
   borderRadius: "8px",
 };
-const rootStyle =
-  "position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px";
+const rootStyle
+  = "position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px";
 </script>
 
 <template>

@@ -1,6 +1,5 @@
 <!-- 受控 | 传了 value 就由宿主说了算，组件自己不再改步序；切步意图从 value-change 出来，写回才真的切 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhStepsIndicator,
@@ -11,6 +10,7 @@ import {
   XhStepsTitle,
   XhStepsTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const steps = ["提交申请", "主管审批", "财务复核", "归档"];
 const current = ref(1);

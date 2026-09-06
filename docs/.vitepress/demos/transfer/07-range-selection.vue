@@ -1,6 +1,5 @@
 <!-- 范围选 | 按住 Shift 点某一项，选中锚点到它那一段；锚点跨到另一侧时退化成普通勾选 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTransferItem,
   XhTransferItemCheckbox,
@@ -15,6 +14,7 @@ import {
   XhTransferToSourceTrigger,
   XhTransferToTargetTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const items = [
   { value: "read", label: "查看" },

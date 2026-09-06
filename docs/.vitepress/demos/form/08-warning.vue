@@ -1,6 +1,5 @@
 <!-- 提醒但不拦下 | 可疑的值只在描述里提醒一句，不写进错误表：控件的 aria-invalid 仍是 false，提交照样放行 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhFieldControl,
   XhFieldDescription,
@@ -11,6 +10,7 @@ import {
   XhFormRoot,
   XhFormSubmitTrigger,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const personal = ["qq.com", "163.com", "gmail.com"];
 const values = ref<Record<string, unknown>>({ email: "zhaifanhua@qq.com" });
@@ -63,7 +63,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
             type="email"
             :value="value"
             @input="setValue(($event.target as HTMLInputElement).value)"
-          />
+          >
         </XhFieldControl>
         <!-- 描述恒在描述链里：提醒会被念出来，又不会把控件标成无效 -->
         <XhFieldDescription>{{ warning || "用于接收账单与安全提醒" }}</XhFieldDescription>

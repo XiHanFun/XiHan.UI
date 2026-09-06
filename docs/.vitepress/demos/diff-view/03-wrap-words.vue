@@ -1,8 +1,8 @@
 <!-- 长行换行与词级差异 | 开 wrap 让长行原地折行；配对的删改行之间再比一次词，只有真正动过的那几段上底色 -->
 <script setup lang="ts">
+import { createHighlighter } from "@xihan-ui/code-highlight";
 import { computeTextDiff } from "@xihan-ui/headless";
 import { XhDiffViewBody, XhDiffViewHeader, XhDiffViewRoot, XhDiffViewSummary, XhDiffViewViewport } from "@xihan-ui/vue";
-import { createHighlighter } from "@xihan-ui/code-highlight";
 import { computed } from "vue";
 
 const before = `const endpoint = "https://api.example.com/v1/workspaces/{id}/documents?include=revisions&limit=50"

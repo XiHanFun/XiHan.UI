@@ -1,6 +1,5 @@
 <!-- 拖拽搬家 | 整个节点都是拖动源：按住拖到别处松手，也可以 Tab 进树里用 Alt + 上下键在同层挪、Alt + 左右键改层级。三档落点（插在前 / 插在后 / 放进目录里）连同指示线、自我后代守卫与读屏播报都归库；树仍不拥有数据，宿主只管按库报的 value、parent、index 把数组搬一下，外加一条 allowDrop 说这次许不许 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTreeBranch,
   XhTreeBranchContent,
@@ -14,6 +13,7 @@ import {
   XhTreeRoot,
   XhTreeTree,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 /** 库报的落点：把 value 搬到 parent 下面的第 index 位；parent 为 null 即根层。 */
 interface Move {
@@ -59,7 +59,7 @@ const isFolder = (entry: Entry): entry is Folder => "children" in entry;
 
 // 目录只待在根层（下面那条 allowDrop 保证了这点），找目录就是在根层找
 function folderOf(value: string): Folder | undefined {
-  return collection.value.filter(isFolder).find((folder) => folder.value === value);
+  return collection.value.filter(isFolder).find(folder => folder.value === value);
 }
 
 /** parent 指的那一层：根层是 collection 本身，目录是它的 children。 */
@@ -71,7 +71,8 @@ function levelOf(parent: string | null): Entry[] | undefined {
 // 剩下的是这份数据的规矩：只有目录收得下东西，而且只收文件——
 // 目录因此永远待在根层，回收站也收不到整个目录。
 function allowDrop(move: Move): boolean {
-  if (move.parent == null) return true;
+  if (move.parent == null)
+    return true;
   return folderOf(move.parent) != null && folderOf(move.value) == null;
 }
 
@@ -80,16 +81,18 @@ function allowDrop(move: Move): boolean {
 function onNodeMove(move: Move): void {
   const levels: Entry[][] = [
     collection.value,
-    ...collection.value.filter(isFolder).map((folder) => folder.children),
+    ...collection.value.filter(isFolder).map(folder => folder.children),
   ];
-  const from = levels.find((level) => level.some((node) => node.value === move.value));
+  const from = levels.find(level => level.some(node => node.value === move.value));
   const into = levelOf(move.parent);
-  if (!from || !into) return;
+  if (!from || !into)
+    return;
   const [moved] = from.splice(
-    from.findIndex((node) => node.value === move.value),
+    from.findIndex(node => node.value === move.value),
     1,
   );
-  if (!moved) return;
+  if (!moved)
+    return;
   into.splice(move.index, 0, moved);
   const where = move.parent == null ? "根层" : (folderOf(move.parent)?.label ?? move.parent);
   log.value = `${moved.label} 搬到了${where}第 ${move.index + 1} 位`;

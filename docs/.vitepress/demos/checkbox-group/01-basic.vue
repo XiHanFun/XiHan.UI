@@ -1,7 +1,7 @@
 <!-- 基础用法 | 值是字符串数组，各选各的，再点一次即取消；组内有几项就有几个 Tab 停靠点 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhCheckboxGroupRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const toppings = ref<string[]>(["cheese"]);
 const items = [

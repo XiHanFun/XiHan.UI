@@ -1,7 +1,6 @@
 <!-- 数值输入与屏幕取色 | 四个数值框各管一路，回车才收下，收不下的留着草稿并标红；宿主环境没有取色接口时那个按钮自己禁用 -->
 <script setup lang="ts">
 import {
-  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerChannelInput,
   XhColorPickerChannelSlider,
@@ -13,6 +12,7 @@ import {
   XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
+  XhColorPickerSaturationArea,
   XhColorPickerSwatch,
   XhColorPickerTrigger,
   XhColorPickerValueText,

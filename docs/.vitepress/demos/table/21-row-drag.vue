@@ -1,6 +1,5 @@
 <!-- 拖拽换行位 | 整行都是拖动源，按住拖到别处松手；也可以 Tab 进表体后按 Alt + 上下键挪。库只报新行序，写回归使用者 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhTableBody,
   XhTableCaption,
@@ -10,6 +9,7 @@ import {
   XhTableRoot,
   XhTableRow,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const columns = [
   { id: "step", label: "序号", width: "4rem" },
@@ -26,19 +26,19 @@ const steps = ref([
 ]);
 
 // 行序的主人是这份数组，跟着它走
-const rows = computed(() => steps.value.map((s) => ({ id: s.id })));
+const rows = computed(() => steps.value.map(s => ({ id: s.id })));
 
 // details.ids 是已经重排好的整份行序，照它取一遍就是新数组。
 // 平表没有层级，details.parent 恒为 null、index 就是搬完之后的第几行
-const onRowMove = (details: {
+function onRowMove(details: {
   id: string;
   parent: string | null;
   index: number;
   ids: string[];
-}) => {
-  const byId = new Map(steps.value.map((s) => [s.id, s]));
-  steps.value = details.ids.flatMap((id) => byId.get(id) ?? []);
-};
+}) {
+  const byId = new Map(steps.value.map(s => [s.id, s]));
+  steps.value = details.ids.flatMap(id => byId.get(id) ?? []);
+}
 </script>
 
 <template>

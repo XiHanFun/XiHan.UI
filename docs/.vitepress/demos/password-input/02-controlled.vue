@@ -1,6 +1,5 @@
 <!-- 受控 | 值与明暗都能受控：传了就由宿主说了算，组件只把意图报出来，写不写回由宿主定 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhPasswordInputControl,
   XhPasswordInputInput,
@@ -8,6 +7,7 @@ import {
   XhPasswordInputRoot,
   XhPasswordInputVisibilityTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const password = ref("hunter2");
 const visible = ref(false);

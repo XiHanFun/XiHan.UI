@@ -2,14 +2,14 @@
 <script setup lang="ts">
 import type { QuestionFlowQuestion } from "@xihan-ui/headless";
 import {
-  XhQuestionFlowLiveRegion,
   XhQuestionFlowCounter,
   XhQuestionFlowFooter,
-  XhQuestionFlowNote,
-  XhQuestionFlowItem,
   XhQuestionFlowGroup,
+  XhQuestionFlowItem,
   XhQuestionFlowItemIndicator,
   XhQuestionFlowItemText,
+  XhQuestionFlowLiveRegion,
+  XhQuestionFlowNote,
   XhQuestionFlowPrompt,
   XhQuestionFlowQuestion,
   XhQuestionFlowRoot,

@@ -1,7 +1,6 @@
 <!-- 快捷键唤起 + 手写部件 | Mod+K 打开，命中的字由文本高亮标出来，行尾挂各命令自己的快捷键 -->
 <script setup lang="ts">
 import type { CommandNode } from "@xihan-ui/headless";
-import { ref } from "vue";
 import {
   XhCommandContent,
   XhCommandEmpty,
@@ -16,6 +15,7 @@ import {
   XhHighlight,
   XhHotkeys,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const open = ref(false);
 

@@ -1,7 +1,7 @@
 <!-- 基础用法 | 按下态由 pressed 表达，非受控时组件自己维护 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhToggle } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const bold = ref(false);
 </script>

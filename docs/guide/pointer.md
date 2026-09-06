@@ -25,7 +25,7 @@
 ## 用法
 
 ```ts
-import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
+import { createPointerSession, resolveSessionDoc } from "@xihan-ui/pointer";
 
 const session = createPointerSession({
   doc: resolveSessionDoc(trackEl),
@@ -35,9 +35,9 @@ const session = createPointerSession({
   onEnd: ({ reason }) => {
     // reason: 'pointerup' | 'pointercancel'
   },
-})
+});
 
-session.dispose() // 摘掉监听，重复调用是安全的
+session.dispose(); // 摘掉监听，重复调用是安全的
 ```
 
 日常用不到这一层——需要跟手的组件内部已经接好了。
@@ -63,6 +63,8 @@ session.dispose() // 摘掉监听，重复调用是安全的
 
 在状态机里的接法是把会话挂进拖动态的效应，效应拆卸时 `dispose`——状态一离开拖动态，监听自动摘干净：
 
+<!-- eslint-skip -->
+
 ```ts
 effects: {
   trackPointer: ({ send, refs }) => {
@@ -83,20 +85,20 @@ effects: {
 `createMultiPointerSession` 同时跟住多根指针：`add()` 记下一根新按下的，`onChange` 在任何一根移动或抬起时回送**当前全部触点**（按落下的先后排），最后一根离开才走 `onEnd`。
 
 ```ts
-import { createMultiPointerSession, pinchChange, pinchSnapshot } from '@xihan-ui/pointer'
+import { createMultiPointerSession, pinchChange, pinchSnapshot } from "@xihan-ui/pointer";
 
 const session = createMultiPointerSession({
   doc: resolveSessionDoc(el),
   onChange: (points) => {
     if (points.length < 2)
-      return
-    const now = pinchSnapshot(points[0], points[1])
-    const { scale, translate, rotate } = pinchChange(start, now)
+      return;
+    const now = pinchSnapshot(points[0], points[1]);
+    const { scale, translate, rotate } = pinchChange(start, now);
   },
   onEnd: ({ reason }) => {
     // reason 是 'pointercancel' 时该退回原样，'pointerup' 才是落定
   },
-})
+});
 ```
 
 `pinchSnapshot` 拍下两指此刻的间距、中点与连线角度；`pinchChange` 拿起始快照与当前快照算出**相对起始那一刻**的缩放、位移与转角。相对起始算而不是相对上一帧，是因为逐帧累乘会把浮点误差一路攒起来。触点数一变就该重拍基准：从双指退回单指时不重拍的话，剩下那根手指会带着上一段的缩放基准继续走，画面会跳一下。

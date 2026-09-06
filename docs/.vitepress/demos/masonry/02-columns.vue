@@ -2,8 +2,8 @@
 <script setup lang="ts">
 import { XhMasonry } from "@xihan-ui/vue";
 
-const cardStyle =
-  "padding: 12px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
+const cardStyle
+  = "padding: 12px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
 
 const cards = [
   { label: "甲", height: 80 },

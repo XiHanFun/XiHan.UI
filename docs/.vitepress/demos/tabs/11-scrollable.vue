@@ -1,6 +1,6 @@
 <!-- 可滚动的标签栏 | 标签多到一行放不下时，把 list 装进作者自建的横滚容器，两端各摆一个滚动按钮 -->
 <script setup lang="ts">
-import { ref } from "vue";
+import { ChevronLeftIcon, ChevronRightIcon } from "@xihan-ui/icons";
 import {
   XhButton,
   XhIcon,
@@ -9,7 +9,7 @@ import {
   XhTabsRoot,
   XhTabsTrigger,
 } from "@xihan-ui/vue";
-import { ChevronLeftIcon, ChevronRightIcon } from "@xihan-ui/icons";
+import { ref } from "vue";
 
 const tabs = Array.from({ length: 12 }, (_, i) => ({
   value: `module-${i + 1}`,

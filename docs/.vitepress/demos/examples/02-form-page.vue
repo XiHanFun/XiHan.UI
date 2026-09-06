@@ -1,7 +1,6 @@
 <!-- 表单页 | 一张值表喂七种控件：字段、文本框、下拉、单选组、数字、标签输入、滑块、开关、复选框同框，校验与错误摘要统一走表单 -->
 <script setup lang="ts">
 import type { RadioGroupNode, SelectNode } from "@xihan-ui/headless";
-import { ref } from "vue";
 import {
   XhAlertDescription,
   XhAlertRoot,
@@ -50,6 +49,7 @@ import {
   XhTextFieldInput,
   XhTextFieldRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const priorities: SelectNode[] = [
   { value: "p0", label: "P0 · 阻断" },
@@ -130,7 +130,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
                 :value="value"
                 placeholder="一句话说清现象"
                 @input="setValue(($event.target as HTMLInputElement).value)"
-              />
+              >
             </XhFieldControl>
             <XhFieldErrorText>{{ error }}</XhFieldErrorText>
           </XhFieldRoot>

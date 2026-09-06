@@ -1,6 +1,5 @@
 <!-- 分组 | 条目分段展示：group 是 role=group 的段落壳，group-label 是它的可及名字；条目照旧归到同一份集合，方向键与连打检索跨段贯通 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhSelectContent,
   XhSelectControl,
@@ -17,6 +16,7 @@ import {
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const groups = [
   {

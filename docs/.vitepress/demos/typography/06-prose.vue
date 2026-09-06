@@ -14,6 +14,7 @@ const html = `
 
 <template>
   <XhTypographyRoot>
+    <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -- 这个部件本来就是拿来放一段外来 HTML 的，它不收插槽内容 -->
     <XhTypographyProse v-html="html" />
   </XhTypographyRoot>
 </template>

@@ -2,7 +2,7 @@
 // 外加一份 skills/xihan-ui 的可下载副本。全部内容从本仓现算，没有手写清单。
 //
 // 站点是纯静态的，没有 route handler，所以产物一律写进 outDir。
-import { copyFile, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -18,11 +18,11 @@ const SITE = "https://ui.docs.xihanfun.com";
 /** 顶层目录 → 栏目名。目录没登记时退回目录名本身，新开一册也不会从索引里漏掉。 */
 const SECTION_LABELS = {
   ".": "开始",
-  guide: "核心概念",
-  adapters: "适配器",
-  runtime: "服务与运行时",
-  examples: "场景",
-  components: "组件",
+  "guide": "核心概念",
+  "adapters": "适配器",
+  "runtime": "服务与运行时",
+  "examples": "场景",
+  "components": "组件",
 };
 
 /** 栏目在索引里的排序，未登记的排在末尾并按目录名排。 */
@@ -37,8 +37,10 @@ async function markdownFiles(root, base = "") {
     if (entry.name === "node_modules" || entry.name === ".vitepress" || entry.name === "public")
       continue;
     const rel = base ? `${base}/${entry.name}` : entry.name;
-    if (entry.isDirectory()) out.push(...(await markdownFiles(root, rel)));
-    else if (entry.name.endsWith(".md")) out.push(rel);
+    if (entry.isDirectory())
+      out.push(...(await markdownFiles(root, rel)));
+    else if (entry.name.endsWith(".md"))
+      out.push(rel);
   }
   return out.sort();
 }
@@ -48,13 +50,15 @@ async function allFiles(root, base = "") {
   let entries;
   try {
     entries = await readdir(join(root, base), { withFileTypes: true });
-  } catch {
+  }
+  catch {
     return [];
   }
   const out = [];
   for (const entry of entries) {
     const rel = base ? `${base}/${entry.name}` : entry.name;
-    if (entry.isDirectory()) out.push(...(await allFiles(root, rel)));
+    if (entry.isDirectory())
+      out.push(...(await allFiles(root, rel)));
     else out.push(rel);
   }
   return out.sort();
@@ -63,7 +67,8 @@ async function allFiles(root, base = "") {
 async function readOrNull(path) {
   try {
     return await readFile(path, "utf8");
-  } catch {
+  }
+  catch {
     return null;
   }
 }
@@ -86,30 +91,33 @@ function frontmatterValue(frontmatter, key) {
 
 /** 组件页标题后那枚 <Badge text="button" /> 里的组件标识。 */
 function badgeText(line) {
-  const hit = /<Badge[^>]*\btext="([^"]+)"/.exec(line);
+  const hit = /<Badge[^>]+\btext="([^"]+)"/.exec(line);
   return hit ? hit[1] : "";
 }
 
 /** 正文首个一级标题的纯文本，连带它后面挂的组件标识。 */
 function headingOf(body) {
-  const hit = /^#\s+(.+)$/m.exec(body);
-  if (!hit) return { title: "", id: "" };
+  const hit = /^# +(\S.*)$/m.exec(body);
+  if (!hit)
+    return { title: "", id: "" };
   return { title: hit[1].replace(/<[^>]+>/g, "").trim(), id: badgeText(hit[1]) };
 }
 
 /** 一句话描述：首个一级标题之后的第一段，压成单行并截到一句。 */
 function summaryOf(body) {
-  const after = body.replace(/^#\s+.+$/m, "");
-  for (const block of after.split(/\r?\n\s*\r?\n/)) {
+  const after = body.replace(/^#\s+(?:\S.*|[\t\v\f \xA0\u1680\u2000-\u200A\u202F\u205F\u3000\uFEFF])$/m, "");
+  for (const block of after.split(/\r?\n\s*\n/)) {
     const text = block.trim();
-    if (!text || text.startsWith("#") || text.startsWith("```") || text.startsWith("<")) continue;
+    if (!text || text.startsWith("#") || text.startsWith("```") || text.startsWith("<"))
+      continue;
     const flat = text
       .replace(/\s+/g, " ")
       .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
       .replace(/\*\*([^*]+)\*\*/g, "$1")
       .trim();
     const stop = flat.indexOf("。");
-    if (stop !== -1 && stop < 200) return flat.slice(0, stop + 1);
+    if (stop !== -1 && stop < 200)
+      return flat.slice(0, stop + 1);
     return flat.length > 160 ? `${flat.slice(0, 160)}…` : flat;
   }
   return "";
@@ -137,11 +145,12 @@ async function inlineDemos(body) {
       ["html", ".html"],
     ]) {
       const source = await readOrNull(join(DEMOS, `${src}${ext}`));
-      if (source) blocks.push(`\`\`\`${lang}\n${stripDemoHeading(source)}\n\`\`\``);
+      if (source)
+        blocks.push(`\`\`\`${lang}\n${stripDemoHeading(source)}\n\`\`\``);
     }
     out = out.replace(
       tag,
-      blocks.length ? blocks.join("\n\n") : `> 示例 \`${src}\` 的源码未随本页发布。`
+      blocks.length ? blocks.join("\n\n") : `> 示例 \`${src}\` 的源码未随本页发布。`,
     );
   }
   return out;
@@ -154,7 +163,7 @@ function stripDemoHeading(source) {
 
 /** <Badge text="button" /> 在纯文本里没有意义，压成行内代码保留组件标识。 */
 function flattenBadges(body) {
-  return body.replace(/<Badge[^>]*\btext="([^"]+)"[^>]*\/>/g, "`$1`");
+  return body.replace(/<Badge[^>]+\btext="([^"]+)"[^>]*\/>/g, "`$1`");
 }
 
 /** 一页的机读正文：去 frontmatter、内联示例、压平站点组件。 */
@@ -162,7 +171,8 @@ async function pageText(source) {
   const { frontmatter, body } = splitFrontmatter(source);
   const text = flattenBadges(await inlineDemos(body)).trim();
   // 首页正文是空的，内容全在 frontmatter 的 hero 与 features 里
-  if (!text && frontmatter) return `\`\`\`yaml\n${frontmatter.trim()}\n\`\`\``;
+  if (!text && frontmatter)
+    return `\`\`\`yaml\n${frontmatter.trim()}\n\`\`\``;
   return text;
 }
 
@@ -174,8 +184,10 @@ function flattenTypes(node, path = [], out = {}) {
     out[`--xh-${path.join("-").replace(/\./g, "_")}`] = node.$type ?? "";
     return out;
   }
-  for (const [key, child] of Object.entries(node ?? {}))
-    if (child && typeof child === "object") flattenTypes(child, [...path, key], out);
+  for (const [key, child] of Object.entries(node ?? {})) {
+    if (child && typeof child === "object")
+      flattenTypes(child, [...path, key], out);
+  }
   return out;
 }
 
@@ -190,7 +202,8 @@ async function tokensReport() {
   const types = {};
   const layers = {};
   for (const file of await readdir(tokensDir)) {
-    if (!file.endsWith(".json")) continue;
+    if (!file.endsWith(".json"))
+      continue;
     const layer = file.replace(/^semantic\./, "").replace(/\.json$/, "");
     const flat = flattenTypes(JSON.parse(await readFile(join(tokensDir, file), "utf8")));
     for (const [name, type] of Object.entries(flat)) {
@@ -202,7 +215,8 @@ async function tokensReport() {
   const groups = new Map();
   for (const [name, value] of Object.entries(values)) {
     const family = name.split("-")[3] ?? "其他";
-    if (!groups.has(family)) groups.set(family, []);
+    if (!groups.has(family))
+      groups.set(family, []);
     groups.get(family).push({ name, value, type: types[name] ?? "", layers: layers[name] ?? [] });
   }
   return { count: Object.keys(values).length, groups };
@@ -247,8 +261,8 @@ export async function writeLlmsAssets(outDir) {
   const sections = [...new Set(pages.map(page => page.section))].sort((a, b) => {
     const ia = SECTION_ORDER.indexOf(a);
     const ib = SECTION_ORDER.indexOf(b);
-    return (ia === -1 ? SECTION_ORDER.length : ia) - (ib === -1 ? SECTION_ORDER.length : ib) ||
-      a.localeCompare(b);
+    return (ia === -1 ? SECTION_ORDER.length : ia) - (ib === -1 ? SECTION_ORDER.length : ib)
+      || a.localeCompare(b);
   });
 
   const pick = (...names) => pages.filter(page => names.includes(page.section));
@@ -304,7 +318,7 @@ export async function writeLlmsAssets(outDir) {
       `共 ${pages.length} 页。示例已按适配器内联为代码块。`,
       `索引见 ${SITE}/llms.txt`,
     ], pages),
-    "utf8"
+    "utf8",
   );
   await writeFile(
     join(outDir, "llms-components.txt"),
@@ -312,7 +326,7 @@ export async function writeLlmsAssets(outDir) {
       `共 ${componentPages.length} 页。每页含解剖部件、Props、事件、状态、键盘、数据属性、CSS 变量与两个适配器的示例源码。`,
       `索引见 ${SITE}/llms.txt`,
     ], componentPages),
-    "utf8"
+    "utf8",
   );
   await writeFile(
     join(outDir, "llms-guide.txt"),
@@ -320,7 +334,7 @@ export async function writeLlmsAssets(outDir) {
       `共 ${guidePages.length} 页：核心概念、两个适配器的接法、以及命令式服务与运行时。`,
       `索引见 ${SITE}/llms.txt`,
     ], guidePages),
-    "utf8"
+    "utf8",
   );
   await writeFile(join(outDir, "llms-tokens.txt"), tokensAsset(tokens, toneNames), "utf8");
 
@@ -331,15 +345,16 @@ export async function writeLlmsAssets(outDir) {
     await mkdir(dirname(target), { recursive: true });
     await copyFile(join(SKILL, rel), target);
   }
-  if (skillFiles.length)
+  if (skillFiles.length) {
     await writeFile(
       join(outDir, "skills", "xihan-ui", "FILES.txt"),
       `${skillFiles.join("\n")}\n`,
-      "utf8"
+      "utf8",
     );
+  }
 
   console.log(
-    `[gen-llms] ${pages.length} 页 · 组件 ${componentPages.length} · 概念 ${guidePages.length} · 令牌 ${tokens.count} · 技能包 ${skillFiles.length} 份文件 → ${relative(REPO, outDir).split(sep).join("/")}`
+    `[gen-llms] ${pages.length} 页 · 组件 ${componentPages.length} · 概念 ${guidePages.length} · 令牌 ${tokens.count} · 技能包 ${skillFiles.length} 份文件 → ${relative(REPO, outDir).split(sep).join("/")}`,
   );
 }
 
@@ -357,7 +372,7 @@ function tokensAsset(tokens, toneNames) {
     for (const token of list) {
       const rewritten = token.layers.filter(layer => layer !== "primitive" && layer !== "base" && layer !== "light");
       lines.push(
-        `| \`${token.name}\` | ${token.type} | \`${token.value}\` | ${rewritten.join(" / ") || "—"} |`
+        `| \`${token.name}\` | ${token.type} | \`${token.value}\` | ${rewritten.join(" / ") || "—"} |`,
       );
     }
     lines.push("");
@@ -370,7 +385,7 @@ function tokensAsset(tokens, toneNames) {
     "| 令牌 |",
     "| --- |",
     ...toneNames.map(name => `| \`${name}\` |`),
-    ""
+    "",
   );
   return lines.join("\n");
 }

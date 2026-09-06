@@ -1,7 +1,6 @@
 <!-- 基础用法 | 管理后台侧栏：分支内嵌展开（可多开）、选中落在叶子上并一路点亮祖先枝，方向键上下走行、左右管层级 -->
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";
-import { ref } from "vue";
 import {
   XhSideNavBranch,
   XhSideNavBranchContent,
@@ -14,6 +13,7 @@ import {
   XhSideNavList,
   XhSideNavRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const collection: SideNavNode[] = [
   { value: "dashboard", label: "工作台", href: "#dashboard" },

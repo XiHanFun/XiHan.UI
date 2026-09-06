@@ -1,13 +1,13 @@
 <!-- 取出签名 | 签名定稿时 draw-end 带上一份可直接落库的 SVG；提交前用 empty 拦一道，空签名不该走出客户端 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhSignaturePadClearTrigger,
   XhSignaturePadControl,
   XhSignaturePadGuide,
-  XhSignaturePadRoot,
   XhSignaturePadPath,
+  XhSignaturePadRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const size = ref(0);
 

@@ -1,7 +1,7 @@
 <!-- 允许自由文本 | allow-custom-value 让没匹配上候选的输入也能落值，适合标签、邮箱这类开放集合 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { XhComboboxRoot } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const frameworks = [
   { value: "vue", label: "Vue" },
@@ -13,7 +13,7 @@ const value = ref<string[]>([]);
 const query = ref("");
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
-  return q === "" ? frameworks : frameworks.filter((f) => f.label.toLowerCase().includes(q));
+  return q === "" ? frameworks : frameworks.filter(f => f.label.toLowerCase().includes(q));
 });
 </script>
 

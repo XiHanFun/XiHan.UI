@@ -1,6 +1,5 @@
 <!-- 异步加载选项 | 首次展开才去取数据：open-change 报出展开意图，数据到达前用一条禁用条目占位 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhSelectContent,
   XhSelectControl,
@@ -15,6 +14,7 @@ import {
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 interface Song {
   value: string;
@@ -28,7 +28,8 @@ let requested = false;
 
 // 展开一次即发起请求，拿到数据后不再重复取
 function onOpenChange(details: { open: boolean }): void {
-  if (!details.open || requested) return;
+  if (!details.open || requested)
+    return;
   requested = true;
   loading.value = true;
   window.setTimeout(() => {

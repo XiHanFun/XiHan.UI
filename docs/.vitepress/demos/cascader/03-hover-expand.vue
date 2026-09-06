@@ -1,6 +1,5 @@
 <!-- 悬停展开 | expand-trigger 改成 hover 后，指针划过分支即开子列，只挪展开路径不抢焦点；键盘仍走右方向键 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhCascaderColumn,
   XhCascaderContent,
@@ -15,6 +14,7 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const menu = [
   {

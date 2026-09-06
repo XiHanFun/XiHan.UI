@@ -3,9 +3,9 @@
 `@xihan-ui/code-highlight` 是 `HighlighterPort` 的自研实现：**粗粒度**词法着色，零第三方依赖。
 
 ```ts
-import { createHighlighter } from '@xihan-ui/code-highlight'
+import { createHighlighter } from "@xihan-ui/code-highlight";
 
-const highlighter = createHighlighter()
+const highlighter = createHighlighter();
 ```
 
 把它交给[代码视图](../components/code-view)组件的 `highlighter` prop 即可。组件本身不认任何具体的着色器——它只认这个端口。
@@ -34,7 +34,7 @@ pnpm add @xihan-ui/code-highlight
 
 ```ts
 interface HighlighterPort {
-  highlight: (code: string, lang: string) => readonly CodeToken[] | null
+  highlight: (code: string, lang: string) => readonly CodeToken[] | null;
 }
 ```
 

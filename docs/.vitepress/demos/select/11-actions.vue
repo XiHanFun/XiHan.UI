@@ -1,6 +1,5 @@
 <!-- 插槽里的操作入口 | 根部件把 open、value 与 setOpen、setValue 交给插槽，浮层之外的按钮据此展开或清空 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhSelectContent,
@@ -16,6 +15,7 @@ import {
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const picked = ref<string[]>([]);
 const fruits = [

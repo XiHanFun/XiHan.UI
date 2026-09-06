@@ -1,13 +1,13 @@
 <!-- 业务取值 | checked 只认布尔，在中间换一道，进出两头拿到的都是业务值 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { XhCheckbox } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 // 后端收的是两个状态码，界面上只有勾与不勾
 const status = ref<"enabled" | "disabled">("enabled");
 const enabled = computed({
   get: () => status.value === "enabled",
-  set: (next) => (status.value = next ? "enabled" : "disabled"),
+  set: next => (status.value = next ? "enabled" : "disabled"),
 });
 
 // 也可以不落中间变量，直接在事件里写回业务值

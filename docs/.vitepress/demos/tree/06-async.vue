@@ -1,6 +1,5 @@
 <!-- 异步加载子节点 | 展开那一刻才去要数据：先摆一行禁用的占位，取回来就地换掉，收起再展开不重复请求 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTreeBranch,
   XhTreeBranchContent,
@@ -14,6 +13,7 @@ import {
   XhTreeRoot,
   XhTreeTree,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 interface Node {
   value: string;
@@ -43,11 +43,13 @@ const expanded = ref<string[]>([]);
 const loaded = new Set<string>();
 
 function fetchChildren(value: string): void {
-  if (loaded.has(value)) return;
+  if (loaded.has(value))
+    return;
   loaded.add(value);
   window.setTimeout(() => {
-    const branch = collection.value.find((node) => node.value === value);
-    if (!branch) return;
+    const branch = collection.value.find(node => node.value === value);
+    if (!branch)
+      return;
     branch.children = staff[value].map((name, index) => ({
       value: `${value}-${index}`,
       label: name,

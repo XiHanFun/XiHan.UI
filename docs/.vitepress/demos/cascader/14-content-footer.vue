@@ -1,6 +1,5 @@
 <!-- 浮层底栏 | footer 写在 content 里、与列并列，横跨全部列；它不进任何一列的拥有关系，方向键也走不到 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhCascaderColumn,
@@ -17,6 +16,7 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const catalog = [
   {

@@ -1,6 +1,5 @@
 <!-- 受控 | 传了 open 就由宿主说了算；这里额外关掉点外部关闭，只有按钮与 Escape 能收起 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhPopoverArrow,
@@ -11,6 +10,7 @@ import {
   XhPopoverTitle,
   XhPopoverTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const open = ref(false);
 </script>

@@ -1,6 +1,5 @@
 <!-- 图标条目 | 只画图标的条目必须自带无障碍名：aria-label 直接写在条目上，透传到那一层 DOM -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhIcon,
   XhToolbarGroup,
@@ -8,6 +7,7 @@ import {
   XhToolbarRoot,
   XhToolbarSeparator,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 描边取 currentColor，图标颜色随条目文字色走
 const strokeAttrs = {

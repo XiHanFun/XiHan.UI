@@ -1,6 +1,5 @@
 <!-- 多行输入宿主 | 输入部件写成 textarea 即多行宿主；此时不写 role 与 aria-expanded，textarea 保留它自带的 textbox 角色 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhComboboxContent,
   XhComboboxControl,
@@ -13,6 +12,7 @@ import {
   XhComboboxRoot,
   XhComboboxTrigger,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const replies = [
   { value: "received", label: "已收到，稍后处理" },
@@ -24,7 +24,7 @@ const value = ref<string[]>([]);
 const draft = ref("");
 const filtered = computed(() => {
   const q = draft.value.trim().toLowerCase();
-  return q === "" ? replies : replies.filter((r) => r.label.toLowerCase().includes(q));
+  return q === "" ? replies : replies.filter(r => r.label.toLowerCase().includes(q));
 });
 </script>
 

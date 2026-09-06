@@ -1,6 +1,5 @@
 <!-- 行展开 | 行上标了 expandable 才认展开把手与左右方向键；详情行占一个真实行号，收起只加 hidden 不卸载内部节点 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTableBody,
   XhTableCell,
@@ -11,6 +10,7 @@ import {
   XhTableRoot,
   XhTableRow,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const columns = [
   { id: "expand", width: "2.5rem" },
@@ -24,7 +24,7 @@ const orders = [
   { id: "o3", no: "XH-2026-0003", amount: "¥ 96", detail: "线材若干" },
 ];
 
-const rows = orders.map((o) => ({ id: o.id, expandable: true }));
+const rows = orders.map(o => ({ id: o.id, expandable: true }));
 
 const expanded = ref<string[]>(["o1"]);
 </script>

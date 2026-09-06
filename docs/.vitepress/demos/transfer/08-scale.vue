@@ -1,6 +1,5 @@
 <!-- 整块换档 | 面板高度、表头、条目行、勾选格与搬运按钮各是一个令牌，写在根上整块一起换档 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTransferItem,
   XhTransferItemCheckbox,
@@ -16,6 +15,7 @@ import {
   XhTransferToSourceTrigger,
   XhTransferToTargetTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const items = [
   { value: "read", label: "查看" },
@@ -27,10 +27,10 @@ const items = [
 ];
 
 // 一档尺寸就是一组令牌：两栏间距、面板高度、表头、搜索框、条目、勾选格与搬运按钮
-const compact =
-  "--xh-transfer-gap: 8px; --xh-transfer-list-h: 7rem; --xh-transfer-panel-header-py: 2px; --xh-transfer-panel-title-font-size: 12px; --xh-transfer-search-h: 26px; --xh-transfer-search-font-size: 12px; --xh-transfer-item-py: 1px; --xh-transfer-item-font-size: 12px; --xh-transfer-checkbox-size: 13px; --xh-transfer-checkbox-font-size: 10px; --xh-transfer-trigger-size: 22px; --xh-transfer-trigger-font-size: 12px";
-const roomy =
-  "--xh-transfer-gap: 20px; --xh-transfer-list-h: 14rem; --xh-transfer-panel-header-py: 10px; --xh-transfer-panel-title-font-size: 16px; --xh-transfer-search-h: 40px; --xh-transfer-search-font-size: 16px; --xh-transfer-item-py: 6px; --xh-transfer-item-font-size: 16px; --xh-transfer-checkbox-size: 20px; --xh-transfer-checkbox-font-size: 14px; --xh-transfer-trigger-size: 36px; --xh-transfer-trigger-font-size: 16px";
+const compact
+  = "--xh-transfer-gap: 8px; --xh-transfer-list-h: 7rem; --xh-transfer-panel-header-py: 2px; --xh-transfer-panel-title-font-size: 12px; --xh-transfer-search-h: 26px; --xh-transfer-search-font-size: 12px; --xh-transfer-item-py: 1px; --xh-transfer-item-font-size: 12px; --xh-transfer-checkbox-size: 13px; --xh-transfer-checkbox-font-size: 10px; --xh-transfer-trigger-size: 22px; --xh-transfer-trigger-font-size: 12px";
+const roomy
+  = "--xh-transfer-gap: 20px; --xh-transfer-list-h: 14rem; --xh-transfer-panel-header-py: 10px; --xh-transfer-panel-title-font-size: 16px; --xh-transfer-search-h: 40px; --xh-transfer-search-font-size: 16px; --xh-transfer-item-py: 6px; --xh-transfer-item-font-size: 16px; --xh-transfer-checkbox-size: 20px; --xh-transfer-checkbox-font-size: 14px; --xh-transfer-trigger-size: 36px; --xh-transfer-trigger-font-size: 16px";
 
 const tight = ref<string[]>(["read"]);
 const loose = ref<string[]>(["read"]);

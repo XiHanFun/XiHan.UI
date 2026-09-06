@@ -1,7 +1,7 @@
 <!-- 事件 | checked-change 带一份 { checked }，非受控时内部转移也照发一次 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhSwitch } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const times = ref(0);
 const last = ref("（还没动过）");

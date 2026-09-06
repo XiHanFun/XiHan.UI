@@ -1,12 +1,12 @@
 <!-- 可关闭 | closable 开启后才渲染关闭按钮；open 受控时由宿主决定去留 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhAlertCloseTrigger,
   XhAlertRoot,
   XhAlertTitle,
   XhButton,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const open = ref(true);
 </script>

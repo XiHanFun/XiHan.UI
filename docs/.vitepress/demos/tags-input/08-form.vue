@@ -1,6 +1,5 @@
 <!-- 随表单提交 | 写了 name 与 hidden-input 才参与提交，整份标签按断词符拼成一串；框里没内容时回车留给表单 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhTagsInputControl,
@@ -13,6 +12,7 @@ import {
   XhTagsInputLabel,
   XhTagsInputRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const tags = ref<string[]>(["Vue", "TypeScript"]);
 const submitted = ref("");

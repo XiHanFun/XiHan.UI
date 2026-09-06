@@ -1,7 +1,7 @@
 <!-- 命令式聚焦 | 节点由作者自己写，DOM 引用因此拿得到：聚焦、失焦与翻转都走命令式 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { useCheckbox } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const { api } = useCheckbox({});
 const box = ref<HTMLButtonElement | null>(null);

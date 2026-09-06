@@ -8,13 +8,13 @@ const items = [
 ];
 
 // 一档尺寸就是一组令牌：方框边长、勾的字号、条目字号、条目内间距与条目间距
-const compact =
-  "--xh-checkbox-group-indicator-size: 13px; --xh-checkbox-group-indicator-font-size: 10px; --xh-checkbox-group-item-font-size: 13px; --xh-checkbox-group-item-gap: 6px; --xh-checkbox-group-gap: 8px";
-const roomy =
-  "--xh-checkbox-group-indicator-size: 20px; --xh-checkbox-group-indicator-font-size: 15px; --xh-checkbox-group-item-font-size: 17px; --xh-checkbox-group-item-gap: 10px; --xh-checkbox-group-gap: 14px";
+const compact
+  = "--xh-checkbox-group-indicator-size: 13px; --xh-checkbox-group-indicator-font-size: 10px; --xh-checkbox-group-item-font-size: 13px; --xh-checkbox-group-item-gap: 6px; --xh-checkbox-group-gap: 8px";
+const roomy
+  = "--xh-checkbox-group-indicator-size: 20px; --xh-checkbox-group-indicator-font-size: 15px; --xh-checkbox-group-item-font-size: 17px; --xh-checkbox-group-item-gap: 10px; --xh-checkbox-group-gap: 14px";
 // 选中态的底与描边各是一个令牌，两个一起换才不会只填色不换边
-const green =
-  "--xh-checkbox-group-indicator-bg-checked: #16a34a; --xh-checkbox-group-indicator-border-checked: #16a34a";
+const green
+  = "--xh-checkbox-group-indicator-bg-checked: #16a34a; --xh-checkbox-group-indicator-border-checked: #16a34a";
 </script>
 
 <template>

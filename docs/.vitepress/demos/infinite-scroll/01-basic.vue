@@ -1,7 +1,7 @@
 <!-- 基础用法 | 哨兵滚进可视区就派 load，取完把 loading 写回 false -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const scrollEl = ref<HTMLElement | null>(null);
 const items = ref(Array.from({ length: 12 }, (_, i) => `第 ${i + 1} 条`));

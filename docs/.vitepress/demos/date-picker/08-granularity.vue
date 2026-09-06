@@ -1,7 +1,6 @@
 <!-- 五种粒度 | 天 / 周 / 月 / 季度 / 年一套结构走完：输入行铺哪几段跟着 view 走，标题里的年与月可点，逐级钻上去 -->
 <script setup lang="ts">
 import type { CalendarView } from "@xihan-ui/headless";
-import { ref } from "vue";
 import {
   XhDatePickerCalendar,
   XhDatePickerCell,
@@ -16,7 +15,6 @@ import {
   XhDatePickerHeading,
   XhDatePickerHeadingMonthTrigger,
   XhDatePickerHeadingYearTrigger,
-  XhDatePickerSegmentGroup,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerNextYearTrigger,
@@ -25,10 +23,12 @@ import {
   XhDatePickerPrevYearTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
+  XhDatePickerSegmentGroup,
   XhDatePickerWeekDay,
   XhDatePickerWeekNumber,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 段位不必再手数几段：铺哪几块由 view 推出来，作者照 segments 铺就是
 const kinds = [

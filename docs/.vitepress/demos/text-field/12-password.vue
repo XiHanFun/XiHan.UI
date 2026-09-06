@@ -1,12 +1,12 @@
 <!-- 密码与明暗切换 | 写在 input 部件上的 type 盖过默认的 text，明暗由宿主的一个布尔翻转 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const visible = ref(false);
 </script>

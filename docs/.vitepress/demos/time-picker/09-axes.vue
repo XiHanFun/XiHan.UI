@@ -6,12 +6,12 @@ import {
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
-  XhTimePickerSegment,
-  XhTimePickerSegmentGroup,
   XhTimePickerItem,
   XhTimePickerLabel,
   XhTimePickerPositioner,
   XhTimePickerRoot,
+  XhTimePickerSegment,
+  XhTimePickerSegmentGroup,
 } from "@xihan-ui/vue";
 
 const variants: ControlVariant[] = ["outline", "subtle", "ghost"];

@@ -1,7 +1,7 @@
 <!-- 让出吸顶栏 | offset-top 把判定线往下挪，钉住后也在同一位置留出这段高度 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhAffixContent, XhAffixRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const scrollEl = ref<HTMLElement | null>(null);
 </script>

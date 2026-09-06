@@ -1,7 +1,7 @@
 <!-- 受控通道 | 给了 value 与 active 就走受控分支：value 改写即重新计时，active 翻假停在当前剩余量、翻真接着走 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhButton, XhTimerDisplay, XhTimerRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 两个时长交替：value 变了组件才重新计时，同一个值再写一遍不算换了一轮
 const rounds = [5000, 8000];

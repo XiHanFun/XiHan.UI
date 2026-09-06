@@ -1,6 +1,5 @@
 <!-- 校验状态 | 校验结论由宿主给出：invalid 让盒标红并输出 aria-invalid，错误文案用 aria-describedby 挂到触发器上 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhSelectContent,
   XhSelectControl,
@@ -15,6 +14,7 @@ import {
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const departments = [
   { value: "design", label: "设计组" },

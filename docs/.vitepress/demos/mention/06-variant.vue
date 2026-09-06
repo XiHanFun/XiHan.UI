@@ -1,7 +1,7 @@
 <!-- 形态 | variant 换正文框的描边与底色，候选面板不受影响 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { XhMentionRoot } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const people = [
   { value: "lilei", label: "李雷" },
@@ -14,7 +14,7 @@ const filtered = computed(() => {
   const q = (query.value ?? "").trim().toLowerCase();
   return q === ""
     ? people
-    : people.filter((p) => p.value.includes(q) || p.label.toLowerCase().includes(q));
+    : people.filter(p => p.value.includes(q) || p.label.toLowerCase().includes(q));
 });
 </script>
 

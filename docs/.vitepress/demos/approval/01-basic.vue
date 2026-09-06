@@ -2,17 +2,17 @@
 <script setup lang="ts">
 import type { ApprovalScope } from "@xihan-ui/headless";
 import {
-  XhApprovalFooter,
-  XhApprovalLiveRegion,
   XhApprovalApproveTrigger,
   XhApprovalDenyTrigger,
   XhApprovalDescription,
+  XhApprovalFooter,
+  XhApprovalGroup,
+  XhApprovalItem,
+  XhApprovalItemIndicator,
+  XhApprovalItemText,
+  XhApprovalLiveRegion,
   XhApprovalResult,
   XhApprovalRoot,
-  XhApprovalGroup,
-  XhApprovalItemIndicator,
-  XhApprovalItem,
-  XhApprovalItemText,
   XhApprovalTitle,
 } from "@xihan-ui/vue";
 import { ref } from "vue";

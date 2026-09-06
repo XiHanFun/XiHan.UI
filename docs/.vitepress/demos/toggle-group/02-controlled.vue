@@ -1,7 +1,7 @@
 <!-- 受控与不可清空 | 传了 value 就由宿主说了算；单选组再点一次当前项会清空成 null，disallow-empty 把这一手关掉 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const align = ref<string | null>("left");
 const density = ref<string | null>("comfortable");

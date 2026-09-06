@@ -1,7 +1,7 @@
 <!-- 盖住等待中的内容 | 转圈浮在内容上方，容器同时报 aria-busy，看得见的与念得出的是同一件事 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhSpinner } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const busy = ref(true);
 

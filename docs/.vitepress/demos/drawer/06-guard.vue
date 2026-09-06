@@ -1,6 +1,5 @@
 <!-- 关闭前拦截 | 受控时组件不自改状态：Escape、点面板外、按叉都只发一次收起意图，写不写由宿主定 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhDrawerCloseTrigger,
@@ -10,6 +9,7 @@ import {
   XhDrawerTitle,
   XhDrawerTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const open = ref(false);
 const asking = ref(false);
@@ -17,7 +17,8 @@ const asking = ref(false);
 // 展开意图照单全收，收起意图先扣下来，等下面那两颗按钮表态
 function onOpenChange(details: { open: boolean }) {
   asking.value = !details.open;
-  if (details.open) open.value = true;
+  if (details.open)
+    open.value = true;
 }
 
 function discard() {

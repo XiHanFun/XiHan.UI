@@ -1,6 +1,5 @@
 <!-- 受控 | value 与 edit 都能受控，传了就由宿主说了算，用户交互只发出意图；外部按钮同样进得了编辑态 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhEditableControl,
   XhEditableInput,
@@ -8,6 +7,7 @@ import {
   XhEditablePreview,
   XhEditableRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const signature = ref("这个人很懒");
 const editing = ref(false);

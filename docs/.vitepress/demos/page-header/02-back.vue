@@ -1,12 +1,12 @@
 <!-- 返回位 | 返回位就是作者自己的按钮：组件只给身份与位置，type、可及名字与点击行为自己写 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhPageHeaderBackTrigger,
-  XhPageHeaderRoot,
   XhPageHeaderDescription,
+  XhPageHeaderRoot,
   XhPageHeaderTitle,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const times = ref(0);
 </script>

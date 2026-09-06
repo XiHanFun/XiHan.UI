@@ -1,6 +1,5 @@
 <!-- 条目自定义内容 | 条目里长什么样归作者：勾选格与文本各就各位，前后再各加一段自己的标记 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTransferItem,
   XhTransferItemCheckbox,
@@ -15,6 +14,7 @@ import {
   XhTransferToSourceTrigger,
   XhTransferToTargetTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // label 与 disabled 归组件读，其余字段是作者自己的，只用来渲染
 const members = [

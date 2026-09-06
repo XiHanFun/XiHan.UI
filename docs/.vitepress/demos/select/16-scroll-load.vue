@@ -1,6 +1,5 @@
 <!-- 滚动加载 | 浮层的滚动容器就是 content：滚动事件直接落在它身上，滚到底就把下一页并进选项 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhSelectContent,
   XhSelectControl,
@@ -15,6 +14,7 @@ import {
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 interface Ticket {
   value: string;
@@ -38,8 +38,10 @@ const picked = ref<string[]>([]);
 // 距底不足 8px 视为触底，取下一页
 function onScroll(event: Event): void {
   const el = event.target as HTMLElement;
-  if (loading.value || tickets.value.length >= TOTAL) return;
-  if (el.scrollTop + el.clientHeight < el.scrollHeight - 8) return;
+  if (loading.value || tickets.value.length >= TOTAL)
+    return;
+  if (el.scrollTop + el.clientHeight < el.scrollHeight - 8)
+    return;
   loading.value = true;
   window.setTimeout(() => {
     tickets.value = [...tickets.value, ...makePage(tickets.value.length)];

@@ -2,13 +2,13 @@
 <script setup lang="ts">
 import {
   XhButton,
+  XhNotificationGroup,
+  XhNotificationItem,
   XhNotificationItemCloseTrigger,
   XhNotificationItemDescription,
-  XhNotificationGroup,
-  XhNotificationRoot,
-  XhNotificationItem,
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
+  XhNotificationRoot,
 } from "@xihan-ui/vue";
 
 type Create = (options: Record<string, unknown>) => string;

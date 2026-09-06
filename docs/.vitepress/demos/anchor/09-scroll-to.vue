@@ -1,6 +1,5 @@
 <!-- 从外部跳到某一节 | 组件只在点链接时滚动；程序化跳转由宿主自己滚，滚完观察器会把高亮结算过来 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhAnchorIndicator,
   XhAnchorItem,
@@ -9,6 +8,7 @@ import {
   XhAnchorRoot,
   XhButton,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 判定线与滚动落点用同一个偏移，跳过去之后高亮正好落在这一节
 const OFFSET = 12;

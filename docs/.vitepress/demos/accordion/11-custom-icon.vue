@@ -1,6 +1,5 @@
 <!-- 自定义展开图标 | indicator 是可选部件，不渲染它就没有默认字形；标记由作者按展开集合自己画 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhAccordionContent,
   XhAccordionHeader,
@@ -8,6 +7,7 @@ import {
   XhAccordionRoot,
   XhAccordionTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const items = [
   { value: "shipping", label: "配送方式", body: "同城次日达，跨省三日达。" },

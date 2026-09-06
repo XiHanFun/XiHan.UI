@@ -1,6 +1,5 @@
 <!-- 操作按钮 | action-trigger 按下时先发 action 事件，再让这条进入退场；closable 决定还要不要那颗叉 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhToastActionTrigger,
@@ -8,6 +7,7 @@ import {
   XhToastRoot,
   XhToastTitle,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const seq = ref(0);
 const log = ref("（还没点）");
@@ -20,8 +20,8 @@ function onAction(details: { id: string }): void {
 <template>
   <div style="display: grid; gap: 12px; justify-items: start">
     <XhToastRoot
-      :key="seq"
       id="toast-demo-action"
+      :key="seq"
       title="已删除 1 个文件"
       :duration="0"
       :translations="{ close: '关闭' }"

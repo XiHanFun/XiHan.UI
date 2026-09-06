@@ -1,16 +1,16 @@
 <!-- 分组 | group 把条目分段，group-label 是这一段的可及名字，不参与选中也不接方向键 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhListboxContent,
-  XhListboxItem,
   XhListboxGroup,
   XhListboxGroupLabel,
+  XhListboxItem,
   XhListboxItemIndicator,
   XhListboxItemText,
   XhListboxLabel,
   XhListboxRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const city = ref<string[]>([]);
 const groups = [

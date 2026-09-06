@@ -1,6 +1,5 @@
 <!-- 确认气泡 | 标题、说明与两颗按钮拼成一次就地确认；两颗按钮按下后都只是把浮层收起 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhPopoverArrow,
@@ -11,6 +10,7 @@ import {
   XhPopoverTitle,
   XhPopoverTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const removed = ref(false);
 

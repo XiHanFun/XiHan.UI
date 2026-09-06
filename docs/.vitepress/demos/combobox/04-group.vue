@@ -1,15 +1,14 @@
 <!-- 分组 | 候选分段展示；整段被筛空时连同段标题一起不渲染，列表里不留空壳 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhComboboxClearTrigger,
   XhComboboxContent,
   XhComboboxControl,
   XhComboboxEmpty,
-  XhComboboxInput,
-  XhComboboxItem,
   XhComboboxGroup,
   XhComboboxGroupLabel,
+  XhComboboxInput,
+  XhComboboxItem,
   XhComboboxItemIndicator,
   XhComboboxItemText,
   XhComboboxLabel,
@@ -17,6 +16,7 @@ import {
   XhComboboxRoot,
   XhComboboxTrigger,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const groups = [
   {
@@ -41,10 +41,11 @@ const value = ref<string[]>([]);
 const query = ref("");
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
-  if (q === "") return groups;
+  if (q === "")
+    return groups;
   return groups
-    .map((g) => ({ ...g, items: g.items.filter((c) => c.label.toLowerCase().includes(q)) }))
-    .filter((g) => g.items.length > 0);
+    .map(g => ({ ...g, items: g.items.filter(c => c.label.toLowerCase().includes(q)) }))
+    .filter(g => g.items.length > 0);
 });
 </script>
 

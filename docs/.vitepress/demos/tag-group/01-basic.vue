@@ -1,7 +1,7 @@
 <!-- 基础用法 | 一排可摘标签：整组只占一个 Tab 位，方向键走标签，Delete 或 Backspace 摘掉 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhTagGroupRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const tags = ref([
   { value: "vue", label: "Vue" },
@@ -12,7 +12,7 @@ const tags = ref([
 
 // 条目的去留归宿主：组件只报「用户要摘这一枚」
 function remove({ value }: { value: string }) {
-  tags.value = tags.value.filter((tag) => tag.value !== value);
+  tags.value = tags.value.filter(tag => tag.value !== value);
 }
 </script>
 

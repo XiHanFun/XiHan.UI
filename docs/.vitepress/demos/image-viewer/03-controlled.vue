@@ -1,6 +1,5 @@
 <!-- 受控与文案 | open 与 index 双受控；translations 换工具条的可及名与计数文案 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhImageViewerCloseTrigger,
@@ -12,6 +11,7 @@ import {
   XhImageViewerRoot,
   XhImageViewerViewport,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 内联的示例图，省得示例依赖外部资源
 const items = [

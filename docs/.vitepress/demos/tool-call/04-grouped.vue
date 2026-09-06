@@ -18,7 +18,7 @@ import {
 } from "@xihan-ui/vue";
 
 const calls = [
-  { name: "search", summary: '"折叠动画"', output: "找到 3 条结果。" },
+  { name: "search", summary: "\"折叠动画\"", output: "找到 3 条结果。" },
   { name: "read_file", summary: "src/tool-call.css", output: "读了 214 行。" },
   { name: "apply_patch", summary: "+12 −3 src/tool-call.css", output: "已写入 1 个文件。" },
 ];

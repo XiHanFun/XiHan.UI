@@ -1,6 +1,6 @@
 <!-- 基础用法 | 除了 root，返回位、副标题、操作、页脚都可选；只写用得上的那几段 -->
 <script setup lang="ts">
-import { XhPageHeaderRoot, XhPageHeaderDescription, XhPageHeaderTitle } from "@xihan-ui/vue";
+import { XhPageHeaderDescription, XhPageHeaderRoot, XhPageHeaderTitle } from "@xihan-ui/vue";
 </script>
 
 <template>

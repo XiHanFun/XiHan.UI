@@ -108,24 +108,24 @@ cd XiHan.UI/ui && pnpm build
 
 ```ts
 // main.ts
-import { createThemeController } from '@xihan-ui/tokens/runtime'
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createThemeController } from "@xihan-ui/tokens/runtime";
+import { createApp } from "vue";
+import App from "./App.vue";
 
 // 皮肤入口自带层序声明与令牌，只引这一行；单独引 tokens.css 是「只要令牌不要皮肤」那条路
-import '@xihan-ui/styles'
+import "@xihan-ui/styles";
 
 // 把主题的五个属性写到 <html> 上，并持久化用户偏好
-createThemeController({ storageKey: 'app-theme' })
+createThemeController({ storageKey: "app-theme" });
 
-createApp(App).mount('#app')
+createApp(App).mount("#app");
 ```
 
 组件按需从主入口取，不需要注册插件：
 
 ```vue
 <script setup lang="ts">
-import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@xihan-ui/vue'
+import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@xihan-ui/vue";
 </script>
 ```
 
@@ -140,14 +140,14 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@
 ## 接入原生 / 非 Vue 项目
 
 ```ts
-import { createThemeController } from '@xihan-ui/tokens/runtime'
-import { defineXhElements } from '@xihan-ui/web-components/define'
+import { createThemeController } from "@xihan-ui/tokens/runtime";
+import { defineXhElements } from "@xihan-ui/web-components/define";
 
-import '@xihan-ui/styles'
+import "@xihan-ui/styles";
 
 // 注册全部 xh-* 元素。主入口 import 本身不注册，必须显式调用这一行
-defineXhElements()
-createThemeController({ storageKey: 'app-theme' })
+defineXhElements();
+createThemeController({ storageKey: "app-theme" });
 ```
 
 之后在 HTML 里直接写标签，结构由你手写、用 `data-xh-part` 标出角色节点：
@@ -164,18 +164,25 @@ createThemeController({ storageKey: 'app-theme' })
 
 `@xihan-ui/styles` 是纯 CSS 包，与 JS 层无关，三种粒度任选：
 
+全量：令牌 + 层序 + reset + 全部组件皮肤。
+
 ```ts
-// 1. 全量：令牌 + 层序 + reset + 全部组件皮肤
-import '@xihan-ui/styles'
+import "@xihan-ui/styles";
+```
 
-// 2. 按组件挑（layers.css 与 tokens.css 各自都带完整层序声明，先引任一条即可；组件皮肤不能排在它们之前）
-import '@xihan-ui/styles/layers.css'
-import '@xihan-ui/tokens/tokens.css'
-import '@xihan-ui/styles/button.css'
-import '@xihan-ui/styles/dialog.css'
+按组件挑。layers.css 与 tokens.css 各自都带完整层序声明，先引任一条即可；组件皮肤不能排在它们之前。
 
-// 3. 只要令牌，皮肤自己写
-import '@xihan-ui/tokens/tokens.css'
+```ts
+import "@xihan-ui/styles/layers.css";
+import "@xihan-ui/tokens/tokens.css";
+import "@xihan-ui/styles/button.css";
+import "@xihan-ui/styles/dialog.css";
+```
+
+只要令牌，皮肤自己写。
+
+```ts
+import "@xihan-ui/tokens/tokens.css";
 ```
 
 第三种同样立得住层序：tokens.css 自己带一份完整的层序声明，自己写的皮肤直接写进 `@layer xihan.overrides` 即可。组件不依赖默认皮肤，它只往 DOM 上打 `data-scope` / `data-part` / `data-state` 等属性，样式全由你决定。参见[皮肤与样式分层](./guide/styling)。
@@ -197,8 +204,8 @@ import '@xihan-ui/tokens/tokens.css'
 
 ```ts
 if (import.meta.env.DEV) {
-  const { startSkinCheck } = await import('@xihan-ui/core/skin-check')
-  startSkinCheck()
+  const { startSkinCheck } = await import("@xihan-ui/core/skin-check");
+  startSkinCheck();
 }
 ```
 
@@ -214,7 +221,7 @@ if (import.meta.env.DEV) {
 令牌的机读形式也可直接取用，用于生成 Figma 变量、Tailwind 主题或别的产物：
 
 ```ts
-import tokens from '@xihan-ui/tokens/tokens.json' with { type: 'json' }
+import tokens from "@xihan-ui/tokens/tokens.json" with { type: "json" };
 // { "--xh-color-brand-500": "oklch(0.623 0.214 258)", ... }
 ```
 
@@ -235,7 +242,7 @@ button { padding: 0; background-color: transparent; }
 ```ts
 // 宿主带无层 reset 时用这份，规则改按特异性竞争
 // 皮肤选择器至少是 [data-scope][data-part]（0,2,0），稳压 button（0,0,1）
-import '@xihan-ui/styles/index.unlayered.css'
+import "@xihan-ui/styles/index.unlayered.css";
 ```
 
 两份怎么选：

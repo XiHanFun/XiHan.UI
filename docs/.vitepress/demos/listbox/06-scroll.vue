@@ -1,7 +1,7 @@
 <!-- 定高滚动 | 用 --xh-listbox-content-max-h 压住列表高度，条目多了就在容器里滚；方向键走到哪条，视图跟到哪条 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhListboxRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const tracks = Array.from({ length: 40 }, (_, i) => ({
   value: `track-${i + 1}`,

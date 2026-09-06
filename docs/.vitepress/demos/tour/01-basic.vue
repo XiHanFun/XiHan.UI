@@ -47,8 +47,8 @@ const translations = {
   progress: (step: number, count: number) => `第 ${step} 步，共 ${count} 步`,
 };
 
-const panel =
-  "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px";
+const panel
+  = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px";
 </script>
 
 <template>
@@ -76,9 +76,11 @@ const panel =
         <XhTourProgressIndicator />
         <div style="display: flex; align-items: center; gap: 8px">
           <XhTourPrevTrigger>上一步</XhTourPrevTrigger>
-          <XhTourNextTrigger>{{
-            lastStep ? "完成" : "下一步"
-          }}</XhTourNextTrigger>
+          <XhTourNextTrigger>
+            {{
+              lastStep ? "完成" : "下一步"
+            }}
+          </XhTourNextTrigger>
           <XhTourSkipTrigger>跳过</XhTourSkipTrigger>
         </div>
         <XhTourCloseTrigger />

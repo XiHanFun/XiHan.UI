@@ -1,7 +1,7 @@
 <!-- 请求在途 | 受控的 pressed 不写回就不会动，在途期间来的意图直接丢掉；忙碌反馈由 aria-busy 与一枚转圈补在按钮上 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhSpinner, XhToggle } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const subscribed = ref(false);
 const pending = ref(false);

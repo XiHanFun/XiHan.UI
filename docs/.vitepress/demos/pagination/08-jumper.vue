@@ -1,6 +1,5 @@
 <!-- 快速跳页 | 输入框按 Enter 调插槽给的 setPage；越界页码由它夹回合法区间 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhPaginationEllipsisTrigger,
   XhPaginationItem,
@@ -11,6 +10,7 @@ import {
   XhTextFieldInput,
   XhTextFieldRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const target = ref("");
 

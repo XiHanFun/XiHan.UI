@@ -1,9 +1,9 @@
 <!-- 调音台 | 配方是纯数据：调参、试听、把代码抄进项目，中间没有任何音频文件 -->
 <script setup lang="ts">
 import type { OscillatorLayer, SoundSpec } from "@xihan-ui/sound";
-import { computed, onBeforeUnmount, ref } from "vue";
 import { createSoundPlayer, glide, strike } from "@xihan-ui/sound";
 import { XhButton, XhRadioGroupRoot } from "@xihan-ui/vue";
+import { computed, onBeforeUnmount, ref } from "vue";
 
 const waves = [
   { value: "sine", label: "sine" },
@@ -65,27 +65,27 @@ onBeforeUnmount(() => player.dispose());
     >
       <label style="display: flex; align-items: center; gap: 8px">
         <span style="width: 76px">起始 {{ from }}Hz</span>
-        <input v-model.number="from" type="range" min="80" max="2400" step="10" />
+        <input v-model.number="from" type="range" min="80" max="2400" step="10">
       </label>
       <label style="display: flex; align-items: center; gap: 8px">
         <span style="width: 76px">终止 {{ to }}Hz</span>
-        <input v-model.number="to" type="range" min="80" max="2400" step="10" />
+        <input v-model.number="to" type="range" min="80" max="2400" step="10">
       </label>
       <label style="display: flex; align-items: center; gap: 8px">
         <span style="width: 76px">起音 {{ attack }}ms</span>
-        <input v-model.number="attack" type="range" min="1" max="80" step="1" />
+        <input v-model.number="attack" type="range" min="1" max="80" step="1">
       </label>
       <label style="display: flex; align-items: center; gap: 8px">
         <span style="width: 76px">衰减 {{ decay }}ms</span>
-        <input v-model.number="decay" type="range" min="20" max="900" step="10" />
+        <input v-model.number="decay" type="range" min="20" max="900" step="10">
       </label>
       <label style="display: flex; align-items: center; gap: 8px">
         <span style="width: 76px">峰值 {{ peak }}</span>
-        <input v-model.number="peak" type="range" min="0.05" max="0.6" step="0.05" />
+        <input v-model.number="peak" type="range" min="0.05" max="0.6" step="0.05">
       </label>
       <label style="display: flex; align-items: center; gap: 8px">
         <span style="width: 76px">空间 {{ space }}</span>
-        <input v-model.number="space" type="range" min="0" max="0.6" step="0.05" />
+        <input v-model.number="space" type="range" min="0" max="0.6" step="0.05">
       </label>
     </div>
 

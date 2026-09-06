@@ -15,8 +15,8 @@ const searchControl = `inline-size: 220px; margin-inline-end: -1px; --xh-text-fi
 const searchButton = `--xh-button-radius: 0 ${radius} ${radius} 0`;
 
 // 前后两块固定文本与控件盒同高同描边，圆角各留一侧
-const addonBase =
-  "display: inline-flex; align-items: center; block-size: var(--xh-control-h-md); padding-inline: 12px; border: 1px solid var(--xh-border-default); background: var(--xh-bg-subtle); color: var(--xh-fg-muted); font-size: var(--xh-text-body-size)";
+const addonBase
+  = "display: inline-flex; align-items: center; block-size: var(--xh-control-h-md); padding-inline: 12px; border: 1px solid var(--xh-border-default); background: var(--xh-bg-subtle); color: var(--xh-fg-muted); font-size: var(--xh-text-body-size)";
 const addonStart = `${addonBase}; border-radius: ${radius} 0 0 ${radius}`;
 const addonEnd = `${addonBase}; border-radius: 0 ${radius} ${radius} 0`;
 const middleControl = "inline-size: 160px; margin-inline: -1px; --xh-text-field-control-radius: 0";

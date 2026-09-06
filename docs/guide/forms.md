@@ -102,9 +102,9 @@ checkbox 与 switch 的根是 `<button>`，而 HTML 的内容模型禁止 button
 
 ```ts
 // MyInput 内部
-import { useFieldControl } from '@xihan-ui/vue'
+import { useFieldControl } from "@xihan-ui/vue";
 
-const controlProps = useFieldControl()
+const controlProps = useFieldControl();
 // 绑到真正可聚焦的那个节点上
 ```
 

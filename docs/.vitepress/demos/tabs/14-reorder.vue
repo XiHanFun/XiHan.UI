@@ -1,6 +1,5 @@
 <!-- 拖拽换位 | 整个标签都是拖动源：按住往旁边拖，落点画成一条线、被拖的标签原地不动；也可以聚焦标签带后按 Alt + 左右键挪一位（竖排是 Alt + 上下键），到首末就不动。库不拥有标签序，只报一次重排好的新顺序连同读屏播报，照它写回数组归使用者 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTabsContent,
   XhTabsList,
@@ -8,6 +7,7 @@ import {
   XhTabsRoot,
   XhTabsTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 /** 库报的换位：把 value 从第 from 位挪到第 to 位，values 是重排好的整份标签序。 */
 interface TabMove {
@@ -30,8 +30,8 @@ const log = ref("按住标签拖到别处，或聚焦标签带后按 Alt + 左�
 
 // values 已经重排好，照它取一遍就是新数组；选中的是哪一页不受换位影响
 function onTabMove(move: TabMove): void {
-  const byValue = new Map(tabs.value.map((tab) => [tab.value, tab]));
-  tabs.value = move.values.flatMap((value) => byValue.get(value) ?? []);
+  const byValue = new Map(tabs.value.map(tab => [tab.value, tab]));
+  tabs.value = move.values.flatMap(value => byValue.get(value) ?? []);
   log.value = `${byValue.get(move.value)?.label ?? move.value} 挪到了第 ${move.to + 1} 位`;
 }
 </script>

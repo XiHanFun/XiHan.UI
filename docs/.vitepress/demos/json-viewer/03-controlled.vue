@@ -1,8 +1,8 @@
 <!-- 受控展开 | 传了 expandedValue 就由宿主说了算，组件只发 expanded-value-change 不落内部值，写回它才动 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { JSON_VIEWER_ROOT_PATH, jsonExpandedPathsToDepth } from "@xihan-ui/headless";
 import { XhButton, XhJsonViewerRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const payload = {
   request: { method: "POST", path: "/api/login" },

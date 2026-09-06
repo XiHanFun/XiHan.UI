@@ -1,6 +1,5 @@
 <!-- 多选 | selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要在 columns 里占一条，否则右侧列号串位 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTableBody,
   XhTableCell,
@@ -11,6 +10,7 @@ import {
   XhTableRowSelectTrigger,
   XhTableSelectAllTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const columns = [
   { id: "select", width: "3rem" },

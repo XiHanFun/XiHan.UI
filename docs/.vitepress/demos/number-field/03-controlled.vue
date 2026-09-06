@@ -1,6 +1,5 @@
 <!-- 受控 | 传了 value 就由宿主说了算；value-change 除了原始串还带一份 valueAsNumber -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
@@ -9,6 +8,7 @@ import {
   XhNumberFieldLabel,
   XhNumberFieldRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const qty = ref("3");
 const asNumber = ref(3);

@@ -1,6 +1,5 @@
 <!-- 动态字段 | 字段容器随数组增删，值表的键跟着字段名走；校验只遍历当下这几行，删掉的行不再参与 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhFieldControl,
@@ -11,6 +10,7 @@ import {
   XhFormRoot,
   XhFormSubmitTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 let nextId = 1;
 const rows = ref([{ id: nextId }]);
@@ -53,7 +53,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
         <XhFieldRoot :invalid="invalid">
           <XhFieldLabel>标签 {{ index + 1 }}</XhFieldLabel>
           <XhFieldControl>
-            <input :value="value" @input="setValue(($event.target as HTMLInputElement).value)" />
+            <input :value="value" @input="setValue(($event.target as HTMLInputElement).value)">
           </XhFieldControl>
           <XhFieldErrorText>{{ error }}</XhFieldErrorText>
         </XhFieldRoot>

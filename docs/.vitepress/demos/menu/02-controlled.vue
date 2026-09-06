@@ -1,6 +1,5 @@
 <!-- 受控 | 传了 open 就由宿主说了算，组件只发 open-change 不自己改展开态 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhMenuContent,
   XhMenuItem,
@@ -8,6 +7,7 @@ import {
   XhMenuRoot,
   XhMenuTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const open = ref(false);
 </script>

@@ -1,12 +1,12 @@
 <!-- 可关闭 | closable 给出关闭钮；open 受控时去留由宿主决定，可访问名逐枚带上标签文字，摘掉一枚后焦点交给下一枚 -->
 <script setup lang="ts">
-import { nextTick, ref } from "vue";
 import {
   XhButton,
   XhTagCloseTrigger,
   XhTagLabel,
   XhTagRoot,
 } from "@xihan-ui/vue";
+import { nextTick, ref } from "vue";
 
 const all = ["设计", "前端", "无头内核", "可访问性"];
 const tags = ref([...all]);
@@ -14,7 +14,7 @@ const listEl = ref<HTMLElement | null>(null);
 
 async function remove(tag: string) {
   const index = tags.value.indexOf(tag);
-  tags.value = tags.value.filter((t) => t !== tag);
+  tags.value = tags.value.filter(t => t !== tag);
   await nextTick();
 
   // 被摘掉的那一枚带着焦点一起消失，接不住就掉回页面开头：
@@ -22,13 +22,13 @@ async function remove(tag: string) {
   const closes = listEl.value
     ? [
         ...listEl.value.querySelectorAll<HTMLElement>(
-          '[data-part="close-trigger"]',
+          "[data-part=\"close-trigger\"]",
         ),
       ]
     : [];
   const next = closes[Math.min(index, closes.length - 1)];
   const reset = listEl.value?.querySelector<HTMLElement>(
-    '[data-scope="button"]',
+    "[data-scope=\"button\"]",
   );
   (next ?? reset)?.focus();
 }

@@ -1,7 +1,7 @@
 <!-- 多种前缀 | @ 提人、# 打标签共用一个输入框，query-change 会报回是哪个前缀触发的 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { XhMentionRoot } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const people = [
   { value: "lilei", label: "李雷" },
@@ -25,7 +25,7 @@ const filtered = computed(() => {
   const q = (query.value ?? "").trim().toLowerCase();
   return q === ""
     ? pool
-    : pool.filter((item) => item.value.includes(q) || item.label.toLowerCase().includes(q));
+    : pool.filter(item => item.value.includes(q) || item.label.toLowerCase().includes(q));
 });
 
 function onQuery(details: { query: string | null; prefix: string | null }): void {

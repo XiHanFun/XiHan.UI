@@ -1,12 +1,12 @@
 <!-- 事件 | 值的变化走组件的 value-change，聚焦失焦这类原生事件直接写在 input 部件上 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const log = ref<string[]>([]);
 
@@ -16,7 +16,7 @@ function push(text: string) {
 }
 
 function onValueChange(details: { value: string }) {
-  push("value-change：" + (details.value || "（空）"));
+  push(`value-change：${details.value || "（空）"}`);
 }
 </script>
 

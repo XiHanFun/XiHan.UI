@@ -1,7 +1,7 @@
 <!-- 点击事件 | 处理器照常挂在组件上；载入态与禁用态的点击在根上就被拦下，作者挂的处理器也收不到 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhButton } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const count = ref(0);
 </script>

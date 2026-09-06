@@ -1,6 +1,5 @@
 <!-- 模态浮层 | modal 让焦点陷在浮层里：Tab 到末尾回绕，旁边那颗按钮这时接不到焦点 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhPopoverArrow,
@@ -12,6 +11,7 @@ import {
   XhPopoverTitle,
   XhPopoverTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const groups = ["收件箱", "待办", "归档"];
 const picked = ref("收件箱");

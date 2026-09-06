@@ -10,14 +10,14 @@
 
 ```ts
 interface DiagnosticRecord {
-  code: string // 稳定标识，如 'wc.missing-part'
-  level: 'error' | 'warn'
-  message: string // 面向开发者的说明，文案可变
-  scope?: string // 组件名，取解剖名
-  instanceId?: string // 区分同一组件的多个实例
-  part?: string
-  node?: Element
-  detail?: Record<string, unknown>
+  code: string; // 稳定标识，如 'wc.missing-part'
+  level: "error" | "warn";
+  message: string; // 面向开发者的说明，文案可变
+  scope?: string; // 组件名，取解剖名
+  instanceId?: string; // 区分同一组件的多个实例
+  part?: string;
+  node?: Element;
+  detail?: Record<string, unknown>;
 }
 ```
 
@@ -27,21 +27,21 @@ interface DiagnosticRecord {
 
 ```ts
 export const DIAGNOSTIC_CODES = {
-  invariant: 'core.invariant', // 断言不成立
-  warn: 'core.warn', // 条件告警
-  layerDisposeNotTop: 'core.layer.dispose-not-top', // dispose 的层不是栈顶
-  machineError: 'machine.error', // 机器抛出 MachineError
-  wcMissingPart: 'wc.missing-part', // 作者未渲染必需的角色节点
-  wcUnknownPart: 'wc.unknown-part', // 角色节点的 part 名不在组件解剖内
-  wcWrongPartTag: 'wc.wrong-part-tag', // 角色节点的标签不满足要求，原生语义会静默失效
-  qrCodeLogoDamage: 'qr-code.logo-damage', // 中心 logo 挖掉的码字超出纠错级别能恢复的量
-  stylesMissingSkin: 'styles.missing-skin', // 页面上出现了组件，但它那份皮肤没被引入
-  versionMismatch: 'core.version-mismatch', // 适配器与 core 的版本不一致，锁步发版被打破
-  ignoredSlot: 'core.ignored-slot', // 作者给了默认插槽，但该组件不渲染插槽内容
-  overlayStackingTrap: 'overlay.stacking-trap', // 浮层的祖先建了层叠上下文，浮层的层号被困在其中
-  scrollbarMissingScrollable: 'scrollbar.missing-scrollable', // 滚动条挂载时找不到它要管的滚动容器
-  overlayMissingAnchor: 'overlay.missing-anchor', // 浮层展开了却没有锚点，位置无从算起
-}
+  invariant: "core.invariant", // 断言不成立
+  warn: "core.warn", // 条件告警
+  layerDisposeNotTop: "core.layer.dispose-not-top", // dispose 的层不是栈顶
+  machineError: "machine.error", // 机器抛出 MachineError
+  wcMissingPart: "wc.missing-part", // 作者未渲染必需的角色节点
+  wcUnknownPart: "wc.unknown-part", // 角色节点的 part 名不在组件解剖内
+  wcWrongPartTag: "wc.wrong-part-tag", // 角色节点的标签不满足要求，原生语义会静默失效
+  qrCodeLogoDamage: "qr-code.logo-damage", // 中心 logo 挖掉的码字超出纠错级别能恢复的量
+  stylesMissingSkin: "styles.missing-skin", // 页面上出现了组件，但它那份皮肤没被引入
+  versionMismatch: "core.version-mismatch", // 适配器与 core 的版本不一致，锁步发版被打破
+  ignoredSlot: "core.ignored-slot", // 作者给了默认插槽，但该组件不渲染插槽内容
+  overlayStackingTrap: "overlay.stacking-trap", // 浮层的祖先建了层叠上下文，浮层的层号被困在其中
+  scrollbarMissingScrollable: "scrollbar.missing-scrollable", // 滚动条挂载时找不到它要管的滚动容器
+  overlayMissingAnchor: "overlay.missing-anchor", // 浮层展开了却没有锚点，位置无从算起
+};
 ```
 
 这份清单与 `@xihan-ui/core` 里的码表逐条对账，不会漏码，可以直接照它写分流。
@@ -51,19 +51,19 @@ export const DIAGNOSTIC_CODES = {
 ## 用法
 
 ```ts
-import { onDiagnostic, setDiagnosticsLevel, setDiagnosticsConsoleOutput } from '@xihan-ui/core'
+import { onDiagnostic, setDiagnosticsConsoleOutput, setDiagnosticsLevel } from "@xihan-ui/core";
 
 // 订阅
 const off = onDiagnostic((record) => {
-  if (record.code === 'wc.missing-part')
-    reportToSentry(record)
-})
+  if (record.code === "wc.missing-part")
+    reportToSentry(record);
+});
 
 // 调阈值：'error' | 'warn' | 'silent'
-setDiagnosticsLevel('warn')
+setDiagnosticsLevel("warn");
 
 // 关掉内建 console 输出，只走自己的订阅
-setDiagnosticsConsoleOutput(false)
+setDiagnosticsConsoleOutput(false);
 ```
 
 其余可用的口子：
@@ -96,19 +96,19 @@ setDiagnosticsConsoleOutput(false)
 把阈值调到 `warn` 并订阅，就能把契约违约变成用例失败：
 
 ```ts
-import { onDiagnostic, resetDiagnostics, setDiagnosticsLevel } from '@xihan-ui/core'
+import { onDiagnostic, resetDiagnostics, setDiagnosticsLevel } from "@xihan-ui/core";
 
 beforeEach(() => {
-  resetDiagnostics()
-  setDiagnosticsLevel('warn')
-})
+  resetDiagnostics();
+  setDiagnosticsLevel("warn");
+});
 
-it('不应有契约违约', () => {
-  const records: DiagnosticRecord[] = []
-  onDiagnostic(r => records.push(r))
-  render()
-  expect(records).toEqual([])
-})
+it("不应有契约违约", () => {
+  const records: DiagnosticRecord[] = [];
+  onDiagnostic(r => records.push(r));
+  render();
+  expect(records).toEqual([]);
+});
 ```
 
 ## 相关

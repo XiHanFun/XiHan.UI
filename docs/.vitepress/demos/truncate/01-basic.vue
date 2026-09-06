@@ -1,19 +1,19 @@
 <!-- 基础用法 | 一行放不下就收成省略号；有没有被裁如实报出来 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhTruncate } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const width = ref(240);
 const overflowing = ref(false);
-const text =
-  "订单 2024-0731-8842 已由杭州仓发出，预计明日 18:00 前送达，签收前请当面核对包装。";
+const text
+  = "订单 2024-0731-8842 已由杭州仓发出，预计明日 18:00 前送达，签收前请当面核对包装。";
 </script>
 
 <template>
   <div style="display: grid; gap: 12px; inline-size: 100%">
     <label style="display: flex; align-items: center; gap: 8px">
       容器宽度
-      <input v-model.number="width" type="range" min="120" max="640" step="20" />
+      <input v-model.number="width" type="range" min="120" max="640" step="20">
       {{ width }}px
     </label>
 

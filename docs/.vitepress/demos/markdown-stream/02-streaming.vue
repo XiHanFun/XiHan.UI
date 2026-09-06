@@ -18,13 +18,14 @@ const streaming = shallowRef(true);
 
 let at = 0;
 let timer = 0;
-const tick = () => {
+function tick() {
   at = Math.min(at + 3, article.length);
   const ended = at >= article.length;
   blocks.value = renderer.render(article.slice(0, at), { ended }) as readonly MarkdownBlock[];
   streaming.value = !ended;
-  if (!ended) timer = window.setTimeout(tick, 70);
-};
+  if (!ended)
+    timer = window.setTimeout(tick, 70);
+}
 // 挂载后才开始追加：<script setup> 顶层在服务端渲染时也执行，那里没有 window
 onMounted(tick);
 

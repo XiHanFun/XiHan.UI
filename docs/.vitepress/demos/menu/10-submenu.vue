@@ -1,6 +1,5 @@
 <!-- 二级子菜单 | XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照常走、右方向键进子层、子层左方向键退回），悬停经安全三角斜穿不误收，任意层级选中都发根的 select 并整链关闭 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhMenuContent,
   XhMenuItem,
@@ -11,6 +10,7 @@ import {
   XhMenuSubTrigger,
   XhMenuTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const picked = ref("（还没选）");
 </script>

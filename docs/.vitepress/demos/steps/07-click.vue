@@ -1,6 +1,5 @@
 <!-- 点击切步与禁用某步 | 点标签直接切到那一步；单步标了 disabled 就点不动，方向键也跳过它 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhStepsContent,
   XhStepsIndicator,
@@ -11,6 +10,7 @@ import {
   XhStepsTitle,
   XhStepsTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const steps = [
   { title: "选择商品", disabled: false },

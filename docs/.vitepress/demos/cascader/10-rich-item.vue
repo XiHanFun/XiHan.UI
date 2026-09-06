@@ -1,6 +1,5 @@
 <!-- 条目自定义内容 | 条目里放什么由作者定：文本后面加一段附加信息，分支箭头由皮肤自动画 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhCascaderColumn,
   XhCascaderContent,
@@ -15,6 +14,7 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const org = [
   {

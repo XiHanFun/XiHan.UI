@@ -1,6 +1,5 @@
 <!-- 候选里的自定义内容 | 条目内容由你写：主文本之外还能带副标题与标记，过滤与键盘行为一点不变 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhComboboxClearTrigger,
   XhComboboxContent,
@@ -17,6 +16,7 @@ import {
   XhTagLabel,
   XhTagRoot,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const mailboxes = [
   { value: "gmail", label: "name@gmail.com", note: "国际", tone: "info" },
@@ -28,7 +28,7 @@ const value = ref<string[]>([]);
 const query = ref("");
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
-  return q === "" ? mailboxes : mailboxes.filter((m) => m.label.toLowerCase().includes(q));
+  return q === "" ? mailboxes : mailboxes.filter(m => m.label.toLowerCase().includes(q));
 });
 </script>
 

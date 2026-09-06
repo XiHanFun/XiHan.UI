@@ -1,12 +1,12 @@
 <!-- 关掉爬升 | trickle 为 false 时条子停在起步值 minimum 不动，往前走全靠宿主收尾 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhLoadingBarRange,
   XhLoadingBarRoot,
   XhLoadingBarTrack,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const loading = ref(false);
 </script>

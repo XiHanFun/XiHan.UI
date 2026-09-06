@@ -1,8 +1,8 @@
 {
   "name": "xihan-ui-docs",
+  "type": "module",
   "version": "1.1.0",
   "private": true,
-  "type": "module",
   "description": "XiHan.UI document site. Framework-agnostic design system runtime with Vue and Web Components adapters.",
   "author": {
     "name": "XiHanFun"
@@ -25,7 +25,9 @@
     "clean:modules": "rimraf node_modules",
     "upgrade": "pnpm upgrade",
     "reinstall": "pnpm run clean:modules && pnpm install",
-    "rebuild": "pnpm run clean && pnpm run build"
+    "rebuild": "pnpm run clean && pnpm run build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@xihan-ui/animations": "link:../ui/packages/features/animations",
@@ -41,5 +43,9 @@
     "@xihan-ui/web-components": "link:../ui/packages/adapters/web-components",
     "vitepress": "^1.6.4",
     "vue": "^3.5.39"
+  },
+  "devDependencies": {
+    "@xihan-ui/eslint-config": "link:../ui/tooling/eslint-config",
+    "eslint": "10.7.0"
   }
 }

@@ -20,10 +20,10 @@ const lastSource = ref("");
 
 // 三秒一轮：在跑 → 完成 → 在跑
 let timer = 0;
-const tick = () => {
+function tick() {
   phase.value = phase.value === "input-streaming" ? "output-available" : "input-streaming";
   timer = window.setTimeout(tick, 3000);
-};
+}
 // 挂载后才起：<script setup> 顶层在服务端渲染时也执行，那里没有 window
 onMounted(() => {
   timer = window.setTimeout(tick, 3000);
@@ -44,7 +44,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
         <XhToolCallInput>
           <!-- 参数在流式期是半截 JSON，complete 接成「阶段不是参数在传」 -->
           <XhCodeViewRoot
-            code='{ "path": "src/index.ts" }'
+            code="{ &quot;path&quot;: &quot;src/index.ts&quot; }"
             lang="json"
             :complete="phase !== 'input-streaming'"
           >

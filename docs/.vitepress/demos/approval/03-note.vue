@@ -1,10 +1,10 @@
 <!-- 附一句备注 | 备注与勾选同批取快照，随判定载荷一起发出；空着就不带这一格，它不参与「必选项勾满了没有」的判断 -->
 <script setup lang="ts">
 import {
-  XhApprovalFooter,
   XhApprovalApproveTrigger,
   XhApprovalDenyTrigger,
   XhApprovalDescription,
+  XhApprovalFooter,
   XhApprovalNote,
   XhApprovalRoot,
   XhApprovalTitle,

@@ -1,6 +1,5 @@
 <!-- 基础用法 | 点触发器就地问一句，确认与取消都收起浮层；展开时焦点先落在取消上 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhPopconfirmArrow,
   XhPopconfirmCancelTrigger,
@@ -12,6 +11,7 @@ import {
   XhPopconfirmTitle,
   XhPopconfirmTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const answer = ref("还没答复");
 </script>

@@ -1,6 +1,5 @@
 <!-- 浮层与触发器同宽 | 量出触发器的实际宽度写进 content 的行内样式，同时解掉最大宽度上限；触发器换了文案宽度也跟着走 -->
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import {
   XhButton,
   XhPopoverContent,
@@ -10,6 +9,7 @@ import {
   XhPopoverTitle,
   XhPopoverTrigger,
 } from "@xihan-ui/vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 const anchorEl = ref<HTMLElement | null>(null);
 const triggerWidth = ref(0);
@@ -25,7 +25,8 @@ let observer: ResizeObserver | undefined;
 
 onMounted(() => {
   const el = anchorEl.value;
-  if (!el) return;
+  if (!el)
+    return;
   observer = new ResizeObserver(() => {
     triggerWidth.value = el.offsetWidth;
   });

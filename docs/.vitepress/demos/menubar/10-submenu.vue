@@ -1,10 +1,6 @@
 <!-- 二级子菜单 | XhMenubarSub 在菜单栏的一张菜单里再嵌一层：触发条目双重身份（菜单栏的方向键照常走、右方向键进子层），子层内用 XhMenu 系部件，选中带上所属菜单的身份汇到根并关掉整条菜单栏 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
-  XhMenuContent,
-  XhMenuItem,
-  XhMenuPositioner,
   XhMenubarContent,
   XhMenubarItem,
   XhMenubarPositioner,
@@ -13,7 +9,11 @@ import {
   XhMenubarSub,
   XhMenubarSubTrigger,
   XhMenubarTrigger,
+  XhMenuContent,
+  XhMenuItem,
+  XhMenuPositioner,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const picked = ref("（还没选）");
 

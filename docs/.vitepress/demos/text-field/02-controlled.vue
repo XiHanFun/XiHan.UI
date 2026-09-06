@@ -1,12 +1,12 @@
 <!-- 受控 | 传了 value 就由宿主说了算，组件自己不再改状态；变化经 value-change 报出来，写不写回由宿主定 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const nickname = ref("曦寒");
 </script>

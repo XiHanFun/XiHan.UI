@@ -1,7 +1,7 @@
 <!-- 基础用法 | 选中值恒是数组，条目按 value 标识身份；禁用的条目方向键会跳过 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhSelectRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const fruit = ref<string[]>([]);
 const fruits = [

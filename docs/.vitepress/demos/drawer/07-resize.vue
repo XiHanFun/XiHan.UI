@@ -1,6 +1,5 @@
 <!-- 拖边缘改厚度 | 面板里放一根把手，拖动时把新厚度写进 content 的 --xh-drawer-size；这个槽压过 size 三档，滑入滑出仍按面板自身宽度算 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhDrawerCloseTrigger,
@@ -10,6 +9,7 @@ import {
   XhDrawerTitle,
   XhDrawerTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const MIN = 260;
 const MAX = 560;
@@ -20,8 +20,9 @@ let panel: HTMLElement | null = null;
 
 function begin(event: PointerEvent): void {
   const handle = event.currentTarget as HTMLElement;
-  panel = handle.closest<HTMLElement>('[data-scope="drawer"][data-part="content"]');
-  if (!panel) return;
+  panel = handle.closest<HTMLElement>("[data-scope=\"drawer\"][data-part=\"content\"]");
+  if (!panel)
+    return;
   dragging.value = true;
   // 起点取面板当前的实际厚度
   width.value = Math.round(panel.getBoundingClientRect().width);
@@ -29,14 +30,16 @@ function begin(event: PointerEvent): void {
 }
 
 function move(event: PointerEvent): void {
-  if (!dragging.value || !panel) return;
+  if (!dragging.value || !panel)
+    return;
   // 面板贴右边，厚度就是视口右缘到指针的距离
   width.value = Math.round(Math.min(MAX, Math.max(MIN, window.innerWidth - event.clientX)));
   panel.style.setProperty("--xh-drawer-size", `${width.value}px`);
 }
 
 function end(event: PointerEvent): void {
-  if (!dragging.value) return;
+  if (!dragging.value)
+    return;
   dragging.value = false;
   panel = null;
   (event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
@@ -66,7 +69,7 @@ function end(event: PointerEvent): void {
         拖面板左边缘，厚度在 {{ MIN }} 到 {{ MAX }} 像素之间取值。
       </XhDrawerDescription>
       <p style="margin: 0; color: var(--xh-fg-muted)">
-        当前厚度：{{ width ? width + " px" : "默认" }}
+        当前厚度：{{ width ? `${width} px` : "默认" }}
       </p>
       <XhButton variant="solid" @click="setOpen(false)">关闭</XhButton>
       <XhDrawerCloseTrigger />

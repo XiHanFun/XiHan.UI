@@ -1,6 +1,5 @@
 <!-- 随表单提交 | 在根里补一个隐藏输入承接选中值，值随原生表单一并提交；浮层收起时回车留给表单 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhButton,
   XhComboboxClearTrigger,
@@ -16,6 +15,7 @@ import {
   XhComboboxRoot,
   XhComboboxTrigger,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const cities = [
   { value: "beijing", label: "Beijing 北京" },
@@ -28,7 +28,7 @@ const query = ref("");
 const submitted = ref("");
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
-  return q === "" ? cities : cities.filter((c) => c.label.toLowerCase().includes(q));
+  return q === "" ? cities : cities.filter(c => c.label.toLowerCase().includes(q));
 });
 
 function onSubmit(event: Event): void {
@@ -65,7 +65,7 @@ function onSubmit(event: Event): void {
         <XhComboboxEmpty>无匹配城市</XhComboboxEmpty>
       </XhComboboxPositioner>
       <!-- 进表单的出口由作者补：多选时按自己的约定拼串 -->
-      <input type="hidden" name="city" :value="picked.join(',')" />
+      <input type="hidden" name="city" :value="picked.join(',')">
     </XhComboboxRoot>
     <XhButton type="submit" variant="outline" style="align-self: start">提交</XhButton>
     <span>表单收到：{{ submitted || "（还没提交）" }}</span>

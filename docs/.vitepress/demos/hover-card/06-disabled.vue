@@ -1,6 +1,5 @@
 <!-- 禁用 | disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样进不了展开等待 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhHoverCardArrow,
   XhHoverCardContent,
@@ -8,6 +7,7 @@ import {
   XhHoverCardRoot,
   XhHoverCardTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const clicks = ref(0);
 </script>

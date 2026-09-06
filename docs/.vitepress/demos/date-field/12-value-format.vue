@@ -1,6 +1,5 @@
 <!-- 对外值换个写法 | 组件读写的恒是 ISO 串，宿主在读写两头各转一次换成自己的格式，表单也提交这一份 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhDateFieldControl,
   XhDateFieldLabel,
@@ -8,6 +7,7 @@ import {
   XhDateFieldSegment,
   XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 // 宿主与后端约定的写法
 const stored = ref("2026/07/28");
@@ -35,7 +35,7 @@ const iso = computed<string | null>({
       </XhDateFieldSegmentGroup>
     </XhDateFieldControl>
     <!-- 不用内建的隐藏输入，自己写一份提交宿主格式 -->
-    <input type="hidden" name="settle" :value="stored" />
+    <input type="hidden" name="settle" :value="stored">
   </XhDateFieldRoot>
 
   <span style="font-size: 13px">

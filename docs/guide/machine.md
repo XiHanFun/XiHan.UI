@@ -5,26 +5,26 @@
 ## 一台机器长什么样
 
 ```ts
-import type { AccordionSchema } from './accordion.types'
-import { setup } from '@xihan-ui/core'
+import type { AccordionSchema } from "./accordion.types";
+import { setup } from "@xihan-ui/core";
 
-const { createMachine } = setup<AccordionSchema>()
+const { createMachine } = setup<AccordionSchema>();
 
 export const accordionMachine = createMachine({
-  name: 'accordion',
+  name: "accordion",
   context: ({ prop, cell }) => ({
     value: cell<string[]>(() => ({
-      value: prop('value'),
-      defaultValue: prop('defaultValue') ?? [],
-      onChange: value => prop('onValueChange')?.({ value }),
+      value: prop("value"),
+      defaultValue: prop("defaultValue") ?? [],
+      onChange: value => prop("onValueChange")?.({ value }),
     })),
   }),
-  initialState: () => 'idle',
+  initialState: () => "idle",
   states: {
     idle: {
       on: {
-        'ITEM.TOGGLE': { actions: ['toggleItem'] },
-        'VALUE.SET': { actions: ['setValue'] },
+        "ITEM.TOGGLE": { actions: ["toggleItem"] },
+        "VALUE.SET": { actions: ["setValue"] },
       },
     },
   },
@@ -34,7 +34,7 @@ export const accordionMachine = createMachine({
       setValue: ({ context, prop, event }) => { /* … */ },
     },
   },
-})
+});
 ```
 
 `setup<Schema>()` 是类型锚：一次绑定 schema，之后 `prop()` / `context.get()` / 事件类型全部自动推断，不用在每处重复写泛型。它同时给出 `guards`，即 `and` / `or` / `not` 三个组合子。
@@ -60,10 +60,10 @@ export const accordionMachine = createMachine({
 
 ```ts
 value: cell<string[]>(() => ({
-  value: prop('value'), // 传了就是受控
-  defaultValue: prop('defaultValue') ?? [], // 只传它就是非受控
-  onChange: value => prop('onValueChange')?.({ value }),
-}))
+  value: prop("value"), // 传了就是受控
+  defaultValue: prop("defaultValue") ?? [], // 只传它就是非受控
+  onChange: value => prop("onValueChange")?.({ value }),
+}));
 ```
 
 规则：
@@ -73,6 +73,8 @@ value: cell<string[]>(() => ({
 - 从受控变回 `undefined` 表示转成非受控，不会强制复位。
 
 浮层类组件的开关不走 `cell`，而是走「意图 + 回写」两段式，因为状态本身就是机器的状态节点：
+
+<!-- eslint-skip -->
 
 ```ts
 'OPEN': [
@@ -88,6 +90,8 @@ value: cell<string[]>(() => ({
 
 一个事件可以配一组转移，**按书写顺序取第一条守卫通过的**：
 
+<!-- eslint-skip -->
+
 ```ts
 'OPEN': [
   { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
@@ -100,6 +104,8 @@ value: cell<string[]>(() => ({
 ## 副作用
 
 `effects` 声明在状态节点上，进入该状态时启动、离开时清理。对话框的遮罩装配就是一个 effect：
+
+<!-- eslint-skip -->
 
 ```ts
 states: {
@@ -116,13 +122,13 @@ states: {
 机器配置是纯数据，跑起来需要一个**服务**：
 
 ```ts
-import { createService } from '@xihan-ui/core'
+import { createService } from "@xihan-ui/core";
 
 const service = createService(accordionMachine, {
-  props: () => ({ multiple: true, defaultValue: ['a'] }),
+  props: () => ({ multiple: true, defaultValue: ["a"] }),
   runtime, // ReactiveRuntime，由宿主提供
   scope, // DOM 环境抽象
-})
+});
 ```
 
 `ReactiveRuntime` 是机器与框架之间唯一的接口，要实现的东西不多：`cell`（受控格子）、`track`（依赖追踪）、`flush`（微任务冲刷）、`onMount` / `onCleanup`。
@@ -159,7 +165,7 @@ createService(dialogMachine, {
   props: () => ({}),
   runtime,
   inspect: e => console.log(e.type, e.state, e.detail),
-})
+});
 ```
 
 ## 相关

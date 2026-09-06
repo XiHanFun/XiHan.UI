@@ -1,6 +1,5 @@
 <!-- 基础用法 | 与 Tooltip 的分界在于卡片本体可交互：指针停在卡片上不收起，里面的链接与按钮都点得到 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhHoverCardArrow,
@@ -11,6 +10,7 @@ import {
   XhHoverCardTitle,
   XhHoverCardTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const following = ref(false);
 </script>

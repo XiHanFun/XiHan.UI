@@ -1,7 +1,7 @@
 <!-- 基础用法 | 滚过判定线就把内容钉在滚动容器可视区的上边；占位盒留在原位，页面不跳 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhAffixContent, XhAffixRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const scrollEl = ref<HTMLElement | null>(null);
 </script>

@@ -1,6 +1,5 @@
 <!-- 异步确认 | 提交期间按钮转圈，Esc 与点遮罩这两条出口一并封住，落定之后才把 open 写回 false -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhButtonIndicator,
@@ -11,6 +10,7 @@ import {
   XhDialogTitle,
   XhDialogTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const open = ref(false);
 const submitting = ref(false);

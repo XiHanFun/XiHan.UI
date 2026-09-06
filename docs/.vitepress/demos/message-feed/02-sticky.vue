@@ -15,12 +15,13 @@ const announcement = ref("");
 const sticking = ref(true);
 
 let timer = 0;
-const tick = () => {
+function tick() {
   const n = messages.value.length + 1;
   messages.value = [...messages.value, { id: `m${n}`, text: `第 ${n} 条：内容还在长。` }];
   announcement.value = `已收到 ${n} 条消息`;
-  if (n < 12) timer = window.setTimeout(tick, 1200);
-};
+  if (n < 12)
+    timer = window.setTimeout(tick, 1200);
+}
 // 挂载后才起：<script setup> 顶层在服务端渲染时也执行，那里没有 window
 onMounted(() => {
   timer = window.setTimeout(tick, 1200);

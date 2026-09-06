@@ -1,17 +1,17 @@
 <!-- 轨道刻度 | 刻度分圆点与文案两层：圆点钉在轨道上、文案排在下方且点按跳值，落进已选区间的刻度分段上色；snapToMarks 让拖动/点按/键盘只认刻度落点 -->
 <script setup lang="ts">
 import type { SliderMark } from "@xihan-ui/headless";
-import { ref } from "vue";
 import {
   XhSliderControl,
   XhSliderHiddenInput,
   XhSliderLabel,
-  XhSliderTickGroup,
   XhSliderRange,
   XhSliderRoot,
   XhSliderThumb,
+  XhSliderTickGroup,
   XhSliderTrack,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const marks: SliderMark[] = [
   { value: 0, label: "0°C" },

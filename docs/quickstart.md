@@ -16,7 +16,7 @@ import {
   XhDialogRoot,
   XhDialogTitle,
   XhDialogTrigger,
-} from '@xihan-ui/vue'
+} from "@xihan-ui/vue";
 </script>
 
 <template>
@@ -43,11 +43,11 @@ import {
 
 ```vue
 <script setup lang="ts">
-import { XhAccordionContent, XhAccordionHeader, XhAccordionItem, XhAccordionRoot, XhAccordionTrigger, XhSwitch } from '@xihan-ui/vue'
-import { ref } from 'vue'
+import { XhAccordionContent, XhAccordionHeader, XhAccordionItem, XhAccordionRoot, XhAccordionTrigger, XhSwitch } from "@xihan-ui/vue";
+import { ref } from "vue";
 
-const panels = ref<string[]>(['a'])
-const wifi = ref(true)
+const panels = ref<string[]>(["a"]);
+const wifi = ref(true);
 </script>
 
 <template>
@@ -82,13 +82,13 @@ const wifi = ref(true)
 
 ```vue
 <script setup lang="ts">
-import { useAccordion } from '@xihan-ui/vue'
+import { useAccordion } from "@xihan-ui/vue";
 
-const { api } = useAccordion({ multiple: true, defaultValue: ['a'] })
+const { api } = useAccordion({ multiple: true, defaultValue: ["a"] });
 const items = [
-  { value: 'a', title: '第一节', body: '内容 A' },
-  { value: 'b', title: '第二节', body: '内容 B' },
-]
+  { value: "a", title: "第一节", body: "内容 A" },
+  { value: "b", title: "第二节", body: "内容 B" },
+];
 </script>
 
 <template>
@@ -124,10 +124,10 @@ const items = [
 ```
 
 ```ts
-import { defineXhElements } from '@xihan-ui/web-components/define'
-import '@xihan-ui/styles'
+import { defineXhElements } from "@xihan-ui/web-components/define";
+import "@xihan-ui/styles";
 
-defineXhElements()
+defineXhElements();
 ```
 
 必备部件漏写不会静默失败：Web Components 适配器会在诊断通道上报 `wc.missing-part`（error）；写了解剖之外的 part 名则上报 `wc.unknown-part`（warn）。每个组件的必备部件在[组件参考](./components/)里加粗标出。
@@ -137,21 +137,21 @@ defineXhElements()
 三种用法共用同一套主题运行时。它把五个属性写到根元素上，皮肤按属性选择器命中：
 
 ```ts
-import { createThemeController } from '@xihan-ui/tokens/runtime'
+import { createThemeController } from "@xihan-ui/tokens/runtime";
 
 const theme = createThemeController({
-  storageKey: 'app-theme', // 传了才持久化
-  initial: { mode: 'system', density: 'comfortable' },
-})
+  storageKey: "app-theme", // 传了才持久化
+  initial: { mode: "system", density: "comfortable" },
+});
 
 // 切到深色
-theme.setPreference({ mode: 'dark' })
+theme.setPreference({ mode: "dark" });
 
 // 跟随系统
-theme.setPreference({ mode: 'system' })
+theme.setPreference({ mode: "system" });
 
 // 订阅已定型的状态
-theme.subscribe(state => console.log(state.mode, state.density, state.dir))
+theme.subscribe(state => console.log(state.mode, state.density, state.dir));
 ```
 
 五个维度分别是色彩模式、品牌、密度、对比度、书写方向，详见[设计令牌与主题](./guide/theme)。

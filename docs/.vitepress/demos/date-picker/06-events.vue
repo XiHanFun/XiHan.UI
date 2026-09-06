@@ -1,6 +1,5 @@
 <!-- 受控展开与事件 | open 交给宿主持有，值、展开、聚焦日三条变化各自播报 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhDatePickerCalendar,
@@ -13,16 +12,17 @@ import {
   XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
-  XhDatePickerSegmentGroup,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
   XhDatePickerPrevTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
+  XhDatePickerSegmentGroup,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref<string[]>([]);
 const open = ref(false);

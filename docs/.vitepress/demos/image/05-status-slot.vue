@@ -1,7 +1,7 @@
 <!-- 按状态分流的回退内容 | 状态一落位就报出来：加载中给占位、失败给提示与重试入口，两套内容共用同一个回退部件 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const good
   = "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%203%202%22%3E%3Crect%20width=%223%22%20height=%222%22%20fill=%22%23334155%22/%3E%3Ccircle%20cx=%222.2%22%20cy=%220.6%22%20r=%220.3%22%20fill=%22%23fde68a%22/%3E%3Cpath%20d=%22M0%202%201.2%200.8%202%201.5%202.6%201%203%201.4V2z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E";

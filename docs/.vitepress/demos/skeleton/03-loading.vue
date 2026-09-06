@@ -1,7 +1,7 @@
 <!-- 加载结束 | loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给真内容 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const loading = ref(true);
 </script>

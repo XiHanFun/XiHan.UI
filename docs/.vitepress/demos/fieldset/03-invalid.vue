@@ -1,12 +1,12 @@
 <!-- 无效态 | invalid 一翻，错误文案接进描述链并显出；它带 role=alert，翻转那一刻读屏立即播报 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
-  XhFieldsetErrorText,
   XhFieldsetDescription,
+  XhFieldsetErrorText,
   XhFieldsetLegend,
   XhFieldsetRoot,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const email = ref("");
 const phone = ref("");
@@ -17,8 +17,8 @@ const invalid = computed(() => email.value === "" && phone.value === "");
 <template>
   <XhFieldsetRoot :invalid="invalid" style="inline-size: 320px;">
     <XhFieldsetLegend>联系方式</XhFieldsetLegend>
-    <input v-model="email" type="email" placeholder="邮箱" style="inline-size: 100%;" />
-    <input v-model="phone" type="tel" placeholder="手机号" style="inline-size: 100%;" />
+    <input v-model="email" type="email" placeholder="邮箱" style="inline-size: 100%;">
+    <input v-model="phone" type="tel" placeholder="手机号" style="inline-size: 100%;">
     <XhFieldsetDescription>两者填一个即可</XhFieldsetDescription>
     <XhFieldsetErrorText>请至少填写一种联系方式</XhFieldsetErrorText>
   </XhFieldsetRoot>

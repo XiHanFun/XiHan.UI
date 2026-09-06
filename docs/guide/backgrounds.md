@@ -24,33 +24,33 @@ WebGL2 缺席时自动降级成 CSS 静态背景，不报错、不留白。
 **传效果对象**——不经过注册表，没引到的效果会被打包器摇掉。只用一两个效果时选它：
 
 ```ts
-import { auroraEffect, createBackgroundSurface, nebulaEffect } from '@xihan-ui/backgrounds'
+import { auroraEffect, createBackgroundSurface, nebulaEffect } from "@xihan-ui/backgrounds";
 
 const surface = createBackgroundSurface(el, {
   effect: auroraEffect,
   params: { speed: 1.6 },
-  quality: 'high',
+  quality: "high",
   pointer: true, // 自动绑指针事件，想自己喂坐标就关掉
   autoplay: true,
   respectReducedMotion: true, // 系统开启减弱动态效果时冻结时间轴
   pauseOffscreen: true, // 滚出视口时暂停绘制
-})
+});
 
-surface.setParams({ speed: 2 })
-surface.setEffect(nebulaEffect)
-surface.pause()
-surface.destroy()
+surface.setParams({ speed: 2 });
+surface.setEffect(nebulaEffect);
+surface.pause();
+surface.destroy();
 ```
 
 **按名字**——适合参数存在配置里、由界面下拉切换。名字要先注册：
 
 ```ts
-import { auroraEffect, createBackgroundSurface, nebulaEffect, registerBuiltinEffects, registerEffects } from '@xihan-ui/backgrounds'
+import { auroraEffect, createBackgroundSurface, nebulaEffect, registerBuiltinEffects, registerEffects } from "@xihan-ui/backgrounds";
 
-registerBuiltinEffects() // 14 个内置效果全部注册
-registerEffects([auroraEffect, nebulaEffect]) // 或者只注册用到的这两个
+registerBuiltinEffects(); // 14 个内置效果全部注册
+registerEffects([auroraEffect, nebulaEffect]); // 或者只注册用到的这两个
 
-createBackgroundSurface(el, { effect: 'aurora' })
+createBackgroundSurface(el, { effect: "aurora" });
 ```
 
 内置效果不自动注册，是因为注册表一旦静态引上这 14 个，任何用到 `createBackgroundSurface` 的应用都会把它们全打进包——实测约 35 kB（gzip 约 8.6 kB），占整包四成。没注册就按名字取会抛错，错误信息会点名该调哪个函数、以及那个效果的导出名叫什么。合法的内置名字可以从 `BUILTIN_EFFECT_NAMES` 取，它是纯字符串清单，引它不会把效果对象带进包。
@@ -73,10 +73,10 @@ Vue 侧的适配放在**单独的子入口** `@xihan-ui/vue/backgrounds`，三�
 
 ```vue
 <script setup lang="ts">
-import { auroraEffect, fluidEffect, nebulaEffect } from '@xihan-ui/backgrounds'
-import { useBackground, vBackground, XhBackground } from '@xihan-ui/vue/backgrounds'
+import { auroraEffect, fluidEffect, nebulaEffect } from "@xihan-ui/backgrounds";
+import { useBackground, vBackground, XhBackground } from "@xihan-ui/vue/backgrounds";
 
-const visual = useBackground({ effect: fluidEffect })
+const visual = useBackground({ effect: fluidEffect });
 </script>
 
 <template>
@@ -101,9 +101,9 @@ Vue 子入口**不替你注册**内置效果。要在模板里写字符串名（
 同样是单独注册，不引这一行就不会把引擎打进包里：
 
 ```ts
-import { defineXhBackground } from '@xihan-ui/web-components/backgrounds'
+import { defineXhBackground } from "@xihan-ui/web-components/backgrounds";
 
-defineXhBackground()
+defineXhBackground();
 ```
 
 `defineXhBackground()` 会把内置效果一并注册进注册表，所以 `<xh-background effect="aurora">` 直接可用；代价是这条入口一定带上全部 14 个效果。
@@ -113,10 +113,10 @@ defineXhBackground()
 把任意东西采样成点，再让粒子摆成那个形状：
 
 ```ts
-import { imageToCloud, shapeCloud, svgToCloud, textToCloud } from '@xihan-ui/backgrounds'
+import { imageToCloud, shapeCloud, svgToCloud, textToCloud } from "@xihan-ui/backgrounds";
 
-const cloud = await textToCloud('曦寒', { count: 8000 })
-surface.setCloud(cloud, { duration: 1.2 }) // 与上一份点云之间形变过渡
+const cloud = await textToCloud("曦寒", { count: 8000 });
+surface.setCloud(cloud, { duration: 1.2 }); // 与上一份点云之间形变过渡
 ```
 
 | 来源 | 函数 |
@@ -132,23 +132,23 @@ surface.setCloud(cloud, { duration: 1.2 }) // 与上一份点云之间形变过�
 ## 自定义效果
 
 ```ts
-import { colorSpec, defineEffect, numberSpec, registerEffect } from '@xihan-ui/backgrounds'
+import { colorSpec, defineEffect, numberSpec, registerEffect } from "@xihan-ui/backgrounds";
 
 const myEffect = defineEffect({
-  name: 'my-effect',
+  name: "my-effect",
   params: {
     // (label, min, max, step, default)
-    speed: numberSpec('速度', 0, 4, 0.1, 1),
-    tint: colorSpec('主色', '#3b82f6'),
+    speed: numberSpec("速度", 0, 4, 0.1, 1),
+    tint: colorSpec("主色", "#3b82f6"),
   },
-  shared: '/* 两个通道共用的 uniform 声明与函数 */',
-  fragment: '/* 流场通道的片元着色器主体，含 main() */',
+  shared: "/* 两个通道共用的 uniform 声明与函数 */",
+  fragment: "/* 流场通道的片元着色器主体，含 main() */",
   uniforms: ctx => ({ /* 每帧算的 uniform */ }),
-  fallback: params => 'linear-gradient(…)', // 无 WebGL2 时当 CSS background
+  fallback: params => "linear-gradient(…)", // 无 WebGL2 时当 CSS background
   scale: 0.75, // 渲染分辨率倍率；柔和的画面调低可省掉大半像素
-})
+});
 
-registerEffect(myEffect)
+registerEffect(myEffect);
 ```
 
 注册后就能按名字引用，和已注册的内置效果一样进调参面板。画质档位有 `auto` / `high` / `balanced` / `eco` 四挡，`auto` 按设备像素比与硬件并发数推断。

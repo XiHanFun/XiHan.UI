@@ -1,7 +1,7 @@
 <!-- 填满才可提交 | 每格都有字才算填满，作者据此点亮提交按钮；重填一次清空整组 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const submitted = ref("");
 
@@ -23,6 +23,6 @@ function reset(clear: () => void) {
       </button>
       <button type="button" @click="reset(clear)">重填</button>
     </div>
-    <span>{{ submitted ? "已提交：" + submitted : "四格都填满才能提交" }}</span>
+    <span>{{ submitted ? `已提交：${submitted}` : "四格都填满才能提交" }}</span>
   </XhPinInputRoot>
 </template>

@@ -39,7 +39,7 @@ const items = [
           :src="item.src"
           :alt="item.alt"
           style="inline-size: 120px; aspect-ratio: 4/3; object-fit: cover; border-radius: 8px; display: block"
-        />
+        >
       </button>
     </div>
     <XhImageViewerContent>

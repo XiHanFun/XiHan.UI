@@ -21,7 +21,7 @@ const notApplicable: Record<string, Record<string, string>> = table.notApplicabl
 /** 这个目录不出该框架的版本时给出结论；出的话返回 undefined。 */
 export function demoNotApplicable(
   frameworkId: string,
-  src: string
+  src: string,
 ): string | undefined {
   return notApplicable[frameworkId]?.[src.split("/")[0]];
 }
@@ -31,7 +31,7 @@ const STORAGE_KEY = "xh-demo-framework";
 // 预渲染读不到 localStorage，首屏一律用默认值，挂载后再校正
 export function restoreDemoFramework(): void {
   const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved && demoFrameworks.some((framework) => framework.id === saved)) {
+  if (saved && demoFrameworks.some(framework => framework.id === saved)) {
     demoFramework.value = saved;
   }
 }

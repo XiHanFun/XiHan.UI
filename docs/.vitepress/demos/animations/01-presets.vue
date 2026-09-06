@@ -1,8 +1,8 @@
 <!-- 预设一览 | 十七个内置预设，进场一族从不在场进来，注意一族原地提醒；播完都回到静息态 -->
 <script setup lang="ts">
-import { onBeforeUnmount, ref, useTemplateRef } from "vue";
 import { BUILTIN_MOTION_NAMES, createMotionPlayer } from "@xihan-ui/animations";
 import { XhButton } from "@xihan-ui/vue";
+import { onBeforeUnmount, ref, useTemplateRef } from "vue";
 
 const enter = BUILTIN_MOTION_NAMES.slice(0, 11);
 const attention = BUILTIN_MOTION_NAMES.slice(11);
@@ -13,7 +13,8 @@ const last = ref("");
 
 function play(name: string) {
   const el = card.value;
-  if (!el) return;
+  if (!el)
+    return;
   last.value = name;
   void motion.play(el, name);
 }

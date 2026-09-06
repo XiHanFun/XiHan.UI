@@ -1,6 +1,5 @@
 <!-- 命令式确认框 | 一次函数调用把描述符推进表里并展开对话框；拿回的对象随后可改标题、正文与按钮状态，表里就是当前所有实例 -->
 <script setup lang="ts">
-import { reactive, ref } from "vue";
 import {
   XhButton,
   XhButtonIndicator,
@@ -10,6 +9,7 @@ import {
   XhDialogRoot,
   XhDialogTitle,
 } from "@xihan-ui/vue";
+import { reactive, ref } from "vue";
 
 interface Spec {
   id: number;
@@ -37,7 +37,8 @@ function ask(title: string, text: string): Spec {
 // 改的是描述符本身，对话框跟着变
 function submit(): void {
   const spec = current.value;
-  if (!spec) return;
+  if (!spec)
+    return;
   spec.loading = true;
   spec.confirmLabel = "提交中";
   spec.text = "正在提交，稍等一下。";

@@ -2,9 +2,9 @@
 <script setup lang="ts">
 import { CheckIcon, CopyIcon } from "@xihan-ui/icons";
 import {
+  XhClipboardCopyTrigger,
   XhClipboardIndicator,
   XhClipboardRoot,
-  XhClipboardCopyTrigger,
   XhCodeViewCode,
   XhCodeViewFilename,
   XhCodeViewHeader,

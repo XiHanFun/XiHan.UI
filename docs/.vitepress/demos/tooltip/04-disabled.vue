@@ -1,12 +1,12 @@
 <!-- 禁用 | disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTooltipContent,
   XhTooltipPositioner,
   XhTooltipRoot,
   XhTooltipTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const clicks = ref(0);
 </script>

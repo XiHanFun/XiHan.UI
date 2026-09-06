@@ -1,7 +1,7 @@
 <!-- 外形与贴边 | shape 换圆角档，offset 决定距那两条边多远；translations 换掉读屏念出的名字 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const shape = ref<"circle" | "square">("circle");
 const offset = ref(16);
@@ -19,7 +19,7 @@ const offset = ref(16);
       </label>
       <label style="display: flex; align-items: center; gap: 8px">
         贴边
-        <input v-model.number="offset" type="range" min="0" max="48" step="4" />
+        <input v-model.number="offset" type="range" min="0" max="48" step="4">
         {{ offset }}px
       </label>
     </div>

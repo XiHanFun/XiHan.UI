@@ -1,6 +1,5 @@
 <!-- 关键词过滤 | collection 换一份树就换一棵：标记跟着数据重铺，过滤剩下的分支顺手全展开 -->
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
 import {
   XhTreeBranch,
   XhTreeBranchContent,
@@ -14,6 +13,7 @@ import {
   XhTreeRoot,
   XhTreeTree,
 } from "@xihan-ui/vue";
+import { computed, ref, watch } from "vue";
 
 interface City {
   value: string;
@@ -59,27 +59,28 @@ const keyword = ref("");
 // 分支名命中就整枝留下，否则只留命中的子节点；一个子节点都不剩的分支整枝去掉
 const collection = computed<Region[]>(() => {
   const key = keyword.value.trim();
-  if (!key) return source;
+  if (!key)
+    return source;
   return source
-    .map((region) => ({
+    .map(region => ({
       ...region,
       children: region.label.includes(key)
         ? region.children
-        : region.children.filter((city) => city.label.includes(key)),
+        : region.children.filter(city => city.label.includes(key)),
     }))
-    .filter((region) => region.children.length > 0);
+    .filter(region => region.children.length > 0);
 });
 
 const expanded = ref<string[]>(["east"]);
 
 watch(keyword, () => {
-  expanded.value = collection.value.map((region) => region.value);
+  expanded.value = collection.value.map(region => region.value);
 });
 </script>
 
 <template>
   <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
-    <input v-model="keyword" type="search" aria-label="城市关键词" placeholder="输入城市名" />
+    <input v-model="keyword" type="search" aria-label="城市关键词" placeholder="输入城市名">
 
     <XhTreeRoot v-model:expanded-value="expanded" :collection="collection">
       <XhTreeLabel>投放城市</XhTreeLabel>

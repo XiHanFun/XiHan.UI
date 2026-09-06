@@ -1,7 +1,7 @@
 <!-- 空态与形态 | 一行也摊不出来时空态那一格站出来说话；variant="plain" 去掉外框与底色 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhButton, XhJsonViewerRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const payload = ref<unknown>(undefined);
 

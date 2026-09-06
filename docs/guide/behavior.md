@@ -9,16 +9,16 @@
 原语都是框架无关的：收一份配置与几个元素 getter，返回一个要自己释放的句柄。接进 Vue 无非是把释放挂到作用域结束，这层包装收在 `@xihan-ui/vue/behavior`：
 
 ```ts
-import { useHoverIntent, useScrollLock } from '@xihan-ui/vue/behavior'
+import { useHoverIntent, useScrollLock } from "@xihan-ui/vue/behavior";
 
-useScrollLock(() => open.value, config)
+useScrollLock(() => open.value, config);
 
 useHoverIntent({
   getTriggerEl: () => triggerRef.value,
   getContentEl: () => (open.value ? contentRef.value : null),
   onOpenIntent: () => (open.value = true),
   onCloseIntent: () => (open.value = false),
-})
+});
 ```
 
 另有 `useScrollTracker` / `useStickToBottom` / `useTypeahead`，接法同上。`useStickToBottom` 除状态外还交出句柄上的两个动作——「回到底部」按钮要的就是前者：
@@ -28,7 +28,7 @@ const { state, scrollToBottom } = useStickToBottom({
   config,
   scrollEl: () => viewportRef.value,
   contentEl: () => contentRef.value,
-})
+});
 
 // state.value?.atBottom 为假时露出「回到底部」，点了调 scrollToBottom()
 ```
@@ -42,15 +42,15 @@ const { state, scrollToBottom } = useStickToBottom({
 浮层不是一个个孤立的东西，它们叠成一摞。`LayerRegistry` 是这摞的账本：
 
 ```ts
-export type LayerKind = 'modal' | 'popover' | 'inline'
+export type LayerKind = "modal" | "popover" | "inline";
 
 export interface Layer {
-  readonly id: string
-  readonly kind: LayerKind
-  node: () => HTMLElement | null // 层的根节点
-  branches: () => Element[] // 逻辑属于本层、DOM 却在别处的节点
-  isModal: () => boolean
-  surfaces: () => Element[] // 点了就该关本层的表面，如遮罩
+  readonly id: string;
+  readonly kind: LayerKind;
+  node: () => HTMLElement | null; // 层的根节点
+  branches: () => Element[]; // 逻辑属于本层、DOM 却在别处的节点
+  isModal: () => boolean;
+  surfaces: () => Element[]; // 点了就该关本层的表面，如遮罩
 }
 ```
 
@@ -66,7 +66,7 @@ export interface Layer {
 ## 消隐层
 
 ```ts
-import { createDismissLayer } from '@xihan-ui/core'
+import { createDismissLayer } from "@xihan-ui/core";
 
 const layer = createDismissLayer({
   config, // RuntimeConfig：scope + 层注册表 + 豁免配置
@@ -76,7 +76,7 @@ const layer = createDismissLayer({
   onPointerDownOutside: (e) => {},
   onFocusOutside: (e) => {},
   onInteractOutside: (e) => {}, // 上面两者任一发生时也派发一次
-})
+});
 ```
 
 两条约束：
@@ -87,7 +87,7 @@ const layer = createDismissLayer({
 ## 焦点域
 
 ```ts
-import { createFocusScope } from '@xihan-ui/core'
+import { createFocusScope } from "@xihan-ui/core";
 
 const scope = createFocusScope({
   config,
@@ -100,7 +100,7 @@ const scope = createFocusScope({
   restoreFocus: () => true, // 卸载时把焦点还给创建前那个元素，默认开
   onMountAutoFocus: (e) => {}, // 可 preventDefault 接管首次聚焦
   onUnmountAutoFocus: (e) => {},
-})
+});
 ```
 
 `trapped` 与 `loop` 是两件事：陷住（逃不出去）和回绕（Tab 到末尾回到开头）。模态对话框两者都要；非模态气泡通常只要回绕。
@@ -110,10 +110,10 @@ const scope = createFocusScope({
 ## 滚动锁
 
 ```ts
-import { acquireScrollLock } from '@xihan-ui/core'
+import { acquireScrollLock } from "@xihan-ui/core";
 
-const lock = acquireScrollLock({ config })
-lock.dispose()
+const lock = acquireScrollLock({ config });
+lock.dispose();
 ```
 
 锁是**引用计数**的：叠了三层浮层就加了三次，全部释放才真正解锁并还原滚动位置。
@@ -133,11 +133,11 @@ lock.dispose()
 ## 背景失活
 
 ```ts
-import { hideOutside } from '@xihan-ui/core'
+import { hideOutside } from "@xihan-ui/core";
 
 const restore = hideOutside(() => [contentEl, ...branches, ...registry.elementsAbove(layer)], scope, {
-  exemptSelectors: ['.my-portal-root'],
-})
+  exemptSelectors: [".my-portal-root"],
+});
 ```
 
 给 `body` 下除目标与豁免节点外的直接子元素加 `inert`，背景内容对读屏与键盘一并消失。
@@ -152,14 +152,14 @@ const restore = hideOutside(() => [contentEl, ...branches, ...registry.elementsA
 
 ```ts
 export interface PresenceHandle {
-  readonly open: boolean // 逻辑状态：该开着吗
-  readonly rendered: boolean // 渲染状态：DOM 还该留着吗
-  readonly state: 'open' | 'closed' // 直接绑到 data-state
+  readonly open: boolean; // 逻辑状态：该开着吗
+  readonly rendered: boolean; // 渲染状态：DOM 还该留着吗
+  readonly state: "open" | "closed"; // 直接绑到 data-state
 
-  claimExit: (reason: string, timeoutMs?: number) => ExitLease
-  onBeforeExit: (fn: () => void) => Cleanup
-  onExitComplete: (fn: () => void) => Cleanup
-  update: (open: boolean) => void
+  claimExit: (reason: string, timeoutMs?: number) => ExitLease;
+  onBeforeExit: (fn: () => void) => Cleanup;
+  onExitComplete: (fn: () => void) => Cleanup;
+  update: (open: boolean) => void;
 }
 ```
 
@@ -172,13 +172,13 @@ export interface PresenceHandle {
 列表型组件（菜单、列表框、组合框、树、标签页）共用一套条目导航：
 
 ```ts
-import { focusItem, navIntentFromKey, navigateItems, queryItems } from '@xihan-ui/core'
+import { focusItem, navigateItems, navIntentFromKey, queryItems } from "@xihan-ui/core";
 
-const items = queryItems(rootEl, { scope: 'menu', part: 'item' })
-const intent = navIntentFromKey(event, { axis: 'vertical', dir: 'ltr' })
+const items = queryItems(rootEl, { scope: "menu", part: "item" });
+const intent = navIntentFromKey(event, { axis: "vertical", dir: "ltr" });
 if (intent) {
-  event.preventDefault()
-  focusItem(navigateItems(items, currentValue, intent, { loop: true }))
+  event.preventDefault();
+  focusItem(navigateItems(items, currentValue, intent, { loop: true }));
 }
 ```
 
@@ -189,11 +189,11 @@ if (intent) {
 ## Typeahead
 
 ```ts
-import { createTypeahead } from '@xihan-ui/core'
+import { createTypeahead } from "@xihan-ui/core";
 
-const typeahead = createTypeahead({ timeout: 350 })
-const query = typeahead.push(event.key) // 不参与检索的键返回 null
-typeahead.clear() // 收起浮层、切换焦点组时丢弃缓冲
+const typeahead = createTypeahead({ timeout: 350 });
+const query = typeahead.push(event.key); // 不参与检索的键返回 null
+typeahead.clear(); // 收起浮层、切换焦点组时丢弃缓冲
 ```
 
 连续按键在超时窗口内累积成查询串，超时后重开一轮。空格只在缓冲区非空时参与检索——否则会吃掉「空格 = 选中」。
@@ -203,18 +203,18 @@ typeahead.clear() // 收起浮层、切换焦点组时丢弃缓冲
 流式输出的消息列表需要「新内容来了自动滚到底，但用户往上翻之后就别抢」：
 
 ```ts
-import { createStickToBottom } from '@xihan-ui/core'
+import { createStickToBottom } from "@xihan-ui/core";
 
 const stick = createStickToBottom({
   config,
   scrollEl: () => viewportEl,
   contentEl: () => contentEl, // 尺寸变化的观察目标
   threshold: 64, // 距底多少 px 算「在底」
-  onChange: state => {},
-})
+  onChange: (state) => {},
+});
 
-stick.scrollToBottom() // 减弱动态效果开启时自动改为 'instant'
-stick.retarget() // 节点换了就解绑重绑
+stick.scrollToBottom(); // 减弱动态效果开启时自动改为 'instant'
+stick.retarget(); // 节点换了就解绑重绑
 ```
 
 会话线程组件用的就是它。

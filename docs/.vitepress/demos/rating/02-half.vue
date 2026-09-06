@@ -1,7 +1,7 @@
 <!-- 半星与悬停预览 | allow-half 让落点分左右半边；划过只发 hover-change，评分要点下去才改 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const score = ref(2.5);
 const preview = ref<number | null>(null);

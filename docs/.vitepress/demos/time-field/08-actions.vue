@@ -1,6 +1,5 @@
 <!-- 外部写值与清空 | 值由宿主持有，按钮直接写值；框内自带清空钮，有值才显形，点完焦点回到第一段 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhTimeFieldClearTrigger,
@@ -10,6 +9,7 @@ import {
   XhTimeFieldSegment,
   XhTimeFieldSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref("");
 

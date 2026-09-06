@@ -1,6 +1,5 @@
 <!-- 基础用法 | 目录跟着滚动位置自己换高亮；scroll-element 把判定线挂到指定滚动容器上，不给就挂在窗口上 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhAnchorIndicator,
   XhAnchorItem,
@@ -8,6 +7,7 @@ import {
   XhAnchorList,
   XhAnchorRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 链接的 value 就是目标区块的 id：href 由组件按它派生
 const sections = [

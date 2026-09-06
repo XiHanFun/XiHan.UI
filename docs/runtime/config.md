@@ -3,16 +3,16 @@
 组件的内建文案默认是英文，日期时间系组件另收一个 `locale`，尺寸档缺省是 `md`，浮层默认挂在 portal 落点上。这几样逐个实例传一遍既啰嗦又容易漏，`provideXhConfig` 让你在应用根上注入一次。
 
 ```ts
-import { provideXhConfig } from '@xihan-ui/vue'
+import { provideXhConfig } from "@xihan-ui/vue";
 
 provideXhConfig({
-  locale: 'zh-CN',
-  size: 'sm',
+  locale: "zh-CN",
+  size: "sm",
   translations: {
-    'dialog': { close: '关闭' },
-    'file-upload': { dropzone: '把文件拖到这里' },
+    "dialog": { close: "关闭" },
+    "file-upload": { dropzone: "把文件拖到这里" },
   },
-})
+});
 ```
 
 取值优先级只有一条：**实例 props > 最近一层注入 > 外层注入 > 组件内建默认（英文）**。不注入时组件走原路，零开销。
@@ -34,15 +34,15 @@ provideXhConfig({
 传 ref 或 getter，不要传裸对象——注入的是 `MaybeRefOrGetter<XhConfig>`，给了响应式来源，切语言时组件会跟着重渲。
 
 ```ts
-import { computed } from 'vue'
-import { provideXhConfig } from '@xihan-ui/vue'
+import { provideXhConfig } from "@xihan-ui/vue";
+import { computed } from "vue";
 
-const locale = ref<'zh-CN' | 'en-US'>('zh-CN')
+const locale = ref<"zh-CN" | "en-US">("zh-CN");
 
 provideXhConfig(() => ({
   locale: locale.value,
-  translations: locale.value === 'zh-CN' ? zhTranslations : {},
-}))
+  translations: locale.value === "zh-CN" ? zhTranslations : {},
+}));
 ```
 
 传裸对象也能用，只是从此定死——这是最常见的一处误用。
@@ -59,10 +59,10 @@ provideXhConfig(() => ({
 
 ```ts
 // 应用根
-provideXhConfig({ locale: 'zh-CN', size: 'sm' })
+provideXhConfig({ locale: "zh-CN", size: "sm" });
 
 // 某个子树里：只改文案，locale 与 size 照旧从外层继承
-provideXhConfig({ translations: { dialog: { close: 'Close' } } })
+provideXhConfig({ translations: { dialog: { close: "Close" } } });
 ```
 
 ## 自定义元素怎么办

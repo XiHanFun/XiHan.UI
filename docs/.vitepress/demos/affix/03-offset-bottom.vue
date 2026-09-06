@@ -1,7 +1,7 @@
 <!-- 贴下边 | 给了 offset-bottom 就改贴可视区的下边，判定线也换到下边 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhAffixContent, XhAffixRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const scrollEl = ref<HTMLElement | null>(null);
 </script>

@@ -1,6 +1,5 @@
 <!-- 手写部件 | 逐部件自己写，标签里就能塞头像、计数这类自带内容，摘除钮照旧归 cell 管；产出的结构与只交数据那一份完全一致，Tab 位与键盘也一样 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTagGroupCell,
   XhTagGroupItem,
@@ -10,6 +9,7 @@ import {
   XhTagGroupList,
   XhTagGroupRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const members = ref([
   { value: "zhang", label: "张三", initial: "张", tasks: 3 },
@@ -21,13 +21,13 @@ const picked = ref<string[]>(["li"]);
 
 // 条目的去留归宿主：组件只报「用户要摘这一枚」
 function remove({ value }: { value: string }) {
-  members.value = members.value.filter((member) => member.value !== value);
+  members.value = members.value.filter(member => member.value !== value);
 }
 
-const avatar =
-  "display: inline-flex; align-items: center; justify-content: center;" +
-  " inline-size: 16px; block-size: 16px; border-radius: 50%;" +
-  " background: var(--xh-bg-subtle); font-size: var(--xh-font-size-xs)";
+const avatar
+  = "display: inline-flex; align-items: center; justify-content: center;"
+    + " inline-size: 16px; block-size: 16px; border-radius: 50%;"
+    + " background: var(--xh-bg-subtle); font-size: var(--xh-font-size-xs)";
 </script>
 
 <template>

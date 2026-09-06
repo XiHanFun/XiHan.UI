@@ -1,7 +1,7 @@
 <!-- 基础用法 | 滚过 200px 按钮才露面，点它滚回顶部 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const scrollEl = ref<HTMLElement | null>(null);
 </script>

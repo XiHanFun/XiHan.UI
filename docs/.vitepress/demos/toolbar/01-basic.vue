@@ -1,11 +1,11 @@
 <!-- 基础用法 | 整条在 Tab 序列里只占一个位子，条内改用方向键走；条目是作者自己的按钮，工具条不接管它的点击 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhToolbarItem,
   XhToolbarRoot,
   XhToolbarSeparator,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 条目的观感归条目自己，工具条只补焦点环与禁用光标
 const itemStyle = {

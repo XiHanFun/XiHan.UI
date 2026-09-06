@@ -1,6 +1,5 @@
 <!-- 空态与加载态 | 两个状态节点常挂着只靠 hidden 显隐：表体为空且在取数时露加载态，取数完了没有行才露空态 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhTableBody,
   XhTableCell,
@@ -11,6 +10,7 @@ import {
   XhTableRoot,
   XhTableRow,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 interface Task {
   id: string;
@@ -50,7 +50,7 @@ function reset(): void {
 }
 
 // 表体为空与否按 rows 推导，不必另写 empty
-const rows = computed(() => tasks.value.map((t) => ({ id: t.id })));
+const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
 </script>
 
 <template>

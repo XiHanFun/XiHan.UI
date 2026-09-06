@@ -1,12 +1,12 @@
 <!-- 确定进度 | 传了 value 就由宿主说了算，宽度照它显示，内部爬升不再插手；loading 仍然负责露面与收起 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhLoadingBarRange,
   XhLoadingBarRoot,
   XhLoadingBarTrack,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const loading = ref(false);
 const value = ref(0);

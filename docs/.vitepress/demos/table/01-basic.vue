@@ -23,7 +23,7 @@ const members = [
   { id: "u4", name: "李四", dept: "质量保障", level: "P5" },
 ];
 
-const rows = members.map((m) => ({ id: m.id }));
+const rows = members.map(m => ({ id: m.id }));
 </script>
 
 <template>

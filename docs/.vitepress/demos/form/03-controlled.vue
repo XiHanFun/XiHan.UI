@@ -1,6 +1,5 @@
 <!-- 受控值表 | 传了 values 就由宿主说了算：组件内部不再落值，只发变更通知；页面别处也能直接改这张表 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhFieldControl,
   XhFieldLabel,
@@ -9,6 +8,7 @@ import {
   XhFormResetTrigger,
   XhFormRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const defaults = { host: "127.0.0.1", port: "5173" };
 const values = ref<Record<string, unknown>>({ ...defaults });
@@ -24,7 +24,7 @@ const values = ref<Record<string, unknown>>({ ...defaults });
       <XhFieldRoot>
         <XhFieldLabel>主机</XhFieldLabel>
         <XhFieldControl>
-          <input :value="value" @input="setValue(($event.target as HTMLInputElement).value)" />
+          <input :value="value" @input="setValue(($event.target as HTMLInputElement).value)">
         </XhFieldControl>
       </XhFieldRoot>
     </XhFormFieldGroup>
@@ -33,7 +33,7 @@ const values = ref<Record<string, unknown>>({ ...defaults });
       <XhFieldRoot>
         <XhFieldLabel>端口</XhFieldLabel>
         <XhFieldControl>
-          <input :value="value" @input="setValue(($event.target as HTMLInputElement).value)" />
+          <input :value="value" @input="setValue(($event.target as HTMLInputElement).value)">
         </XhFieldControl>
       </XhFieldRoot>
     </XhFormFieldGroup>

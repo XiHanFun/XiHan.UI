@@ -7,11 +7,11 @@ import { XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot } from "@xihan-
   <XhFieldsetRoot required style="inline-size: 320px;">
     <XhFieldsetLegend>配送时段</XhFieldsetLegend>
     <label style="display: flex; gap: 8px; align-items: center;">
-      <input type="radio" name="fieldset-slot" value="am" />
+      <input type="radio" name="fieldset-slot" value="am">
       上午（9:00–12:00）
     </label>
     <label style="display: flex; gap: 8px; align-items: center;">
-      <input type="radio" name="fieldset-slot" value="pm" />
+      <input type="radio" name="fieldset-slot" value="pm">
       下午（13:00–18:00）
     </label>
     <XhFieldsetDescription>必选一项，下单后不可更改</XhFieldsetDescription>

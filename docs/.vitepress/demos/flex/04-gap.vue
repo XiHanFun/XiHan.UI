@@ -2,8 +2,8 @@
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
-const boxStyle =
-  "padding: 6px 12px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
+const boxStyle
+  = "padding: 6px 12px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
 const labelStyle = "font-size: 13px; color: var(--xh-fg-muted); inline-size: 96px";
 
 const gaps = ["xs", "sm", "md", "lg", "xl"] as const;

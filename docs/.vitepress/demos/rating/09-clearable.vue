@@ -1,7 +1,7 @@
 <!-- 再点一次清空 | allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在最低档再往下走一步同样清零；设为 false 关掉 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const score = ref(3);
 const sticky = ref(3);

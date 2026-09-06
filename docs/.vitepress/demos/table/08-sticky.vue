@@ -30,7 +30,7 @@ const members = Array.from({ length: 16 }, (_, i) => ({
   mail: `member${i + 1}@example.com`,
 }));
 
-const rows = members.map((m) => ({ id: m.id }));
+const rows = members.map(m => ({ id: m.id }));
 </script>
 
 <template>

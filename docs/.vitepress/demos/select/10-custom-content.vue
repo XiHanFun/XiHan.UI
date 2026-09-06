@@ -1,6 +1,5 @@
 <!-- 选项里的自定义内容 | 条目与触发器显示的内容都由你写：想写什么写什么，选中与键盘行为不变 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhAvatarFallback,
   XhAvatarImage,
@@ -18,6 +17,7 @@ import {
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const members = [
   { value: "liuyi", name: "刘一", initial: "刘", team: "设计组" },
@@ -26,7 +26,7 @@ const members = [
 ];
 
 const picked = ref<string[]>(["liuyi"]);
-const current = computed(() => members.find((m) => m.value === picked.value[0]) ?? null);
+const current = computed(() => members.find(m => m.value === picked.value[0]) ?? null);
 </script>
 
 <template>

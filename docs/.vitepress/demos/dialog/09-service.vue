@@ -1,8 +1,8 @@
 <!-- 命令式服务 | createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk 返回 Promise 时确认钮自动 pending 并拦住关闭；多次调用排队顺次弹 -->
 <script setup lang="ts">
 import type { DialogService } from "@xihan-ui/vue";
-import { onBeforeUnmount, ref } from "vue";
 import { createDialogService, XhButton } from "@xihan-ui/vue";
+import { onBeforeUnmount, ref } from "vue";
 
 let modal: DialogService | undefined;
 function use(): DialogService {
@@ -19,7 +19,7 @@ async function remove(): Promise<void> {
     content: "删除后 30 天内还能恢复。",
     tone: "danger",
     okText: "删除",
-    onOk: () => new Promise((r) => setTimeout(r, 900)),
+    onOk: () => new Promise(r => setTimeout(r, 900)),
   });
   lastAnswer.value = ok ? "已删除" : "取消了";
 }

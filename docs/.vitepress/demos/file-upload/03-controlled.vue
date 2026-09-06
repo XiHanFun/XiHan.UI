@@ -1,19 +1,19 @@
 <!-- 受控 | 传了 files 就由宿主说了算，组件自己不再落值，只发 files-change 报告意图 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhFileUploadDropzone,
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
-  XhFileUploadList,
   XhFileUploadItemName,
   XhFileUploadItemSizeText,
   XhFileUploadLabel,
+  XhFileUploadList,
   XhFileUploadRoot,
   XhFileUploadTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const files = ref<File[]>([]);
 

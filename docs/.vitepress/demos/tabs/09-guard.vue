@@ -1,6 +1,5 @@
 <!-- 拦截切换 | 受控下 value-change 只是意图，宿主校验不过就不写回 value，标签页原地不动 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhTabsContent,
@@ -8,6 +7,7 @@ import {
   XhTabsRoot,
   XhTabsTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref("draft");
 const dirty = ref(true);

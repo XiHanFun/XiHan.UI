@@ -1,6 +1,5 @@
 <!-- 换过渡效果 | 条目的内联样式只有尺寸与间距，位移之外的表现全归作者：把条目摞起来再按当前页调透明度与缩放，翻页、键盘与指示点一概照旧 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhCarouselIndicator,
   XhCarouselIndicatorGroup,
@@ -11,6 +10,7 @@ import {
   XhCarouselRoot,
   XhCarouselViewport,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 type Effect = "slide" | "fade" | "zoom";
 
@@ -26,11 +26,12 @@ const effect = ref<Effect>("fade");
 
 // 后两档把条目摞在一起，轨道那条整页位移随之作废
 const groupStyle = computed(() =>
-  effect.value === "slide" ? undefined : { position: "relative", transform: "none" }
+  effect.value === "slide" ? undefined : { position: "relative", transform: "none" },
 );
 
 function itemStyle(index: number, page: number): Record<string, string> | undefined {
-  if (effect.value === "slide") return undefined;
+  if (effect.value === "slide")
+    return undefined;
   const current = index === page;
   return {
     position: "absolute",

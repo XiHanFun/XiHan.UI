@@ -1,12 +1,12 @@
 <!-- 预设色板 | swatches 给出常用色，选中即写回 value -->
 <script setup lang="ts">
 import {
-  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerContent,
   XhColorPickerControl,
   XhColorPickerPositioner,
   XhColorPickerRoot,
+  XhColorPickerSaturationArea,
   XhColorPickerSwatch,
   XhColorPickerSwatchGroup,
   XhColorPickerSwatchItem,

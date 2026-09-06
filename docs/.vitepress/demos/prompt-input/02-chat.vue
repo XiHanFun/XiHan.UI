@@ -28,14 +28,14 @@ const loading = ref(false);
 let timer = 0;
 let seq = 0;
 
-const reply = (question: string) => {
+function reply(question: string) {
   const id = `a${(seq += 1)}`;
   messages.value = [...messages.value, { id, role: "assistant", who: "助手", text: "" }];
   const full = `收到「${question}」，这是一段边写边显示的回复。`;
   let at = 0;
   const tick = () => {
     at = Math.min(at + 2, full.length);
-    messages.value = messages.value.map((m) => (m.id === id ? { ...m, text: full.slice(0, at) } : m));
+    messages.value = messages.value.map(m => (m.id === id ? { ...m, text: full.slice(0, at) } : m));
     if (at < full.length) {
       timer = window.setTimeout(tick, 60);
       return;
@@ -43,21 +43,21 @@ const reply = (question: string) => {
     loading.value = false;
   };
   tick();
-};
+}
 
-const onSubmit = ({ value }: { value: string }) => {
+function onSubmit({ value }: { value: string }) {
   messages.value = [
     ...messages.value,
     { id: `u${(seq += 1)}`, role: "user", who: "我", text: value },
   ];
   loading.value = true;
   reply(value);
-};
+}
 
-const onStop = () => {
+function onStop() {
   window.clearTimeout(timer);
   loading.value = false;
-};
+}
 
 onBeforeUnmount(() => window.clearTimeout(timer));
 </script>

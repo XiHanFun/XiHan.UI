@@ -1,7 +1,6 @@
 <!-- 区间选择 | 五种粒度都能挑区间：两端跨页才并排两页，同一页放得下就一页；翻页整窗一起走，大步翻那对钮一次跨一年或十页 -->
 <script setup lang="ts">
 import type { CalendarView } from "@xihan-ui/headless";
-import { ref } from "vue";
 import {
   XhDatePickerCalendar,
   XhDatePickerCell,
@@ -14,7 +13,6 @@ import {
   XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
-  XhDatePickerSegmentGroup,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerNextYearTrigger,
@@ -23,10 +21,12 @@ import {
   XhDatePickerPrevYearTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
+  XhDatePickerSegmentGroup,
   XhDatePickerWeekDay,
   XhDatePickerWeekNumber,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const kinds = [
   { key: "day", label: "按天", view: "day" as CalendarView, week: false },
@@ -48,8 +48,10 @@ const values = ref<Record<string, string[]>>({
 const translations = { startDate: "开始", endDate: "结束" };
 
 function text(v: string[]): string {
-  if (v.length === 0) return "（未选）";
-  if (v.length === 1) return `${v[0]}（另一端待定）`;
+  if (v.length === 0)
+    return "（未选）";
+  if (v.length === 1)
+    return `${v[0]}（另一端待定）`;
   return `${v[0]} → ${v[1]}`;
 }
 </script>

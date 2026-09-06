@@ -1,7 +1,7 @@
 <!-- 禁用 | 禁用走 aria-disabled 而非原生 disabled：禁用的入口仍聚焦得上、仍是方向键的起点，只是展不开菜单 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhMenubarRoot, XhSwitch } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const menus = [
   {

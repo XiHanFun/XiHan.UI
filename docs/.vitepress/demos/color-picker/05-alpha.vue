@@ -1,8 +1,6 @@
 <!-- 透明度 | alpha 打开后多一条透明度滑杆，值串跟着带上透明度；关掉时透明度恒是不透明，那条滑杆整条不可用 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
-  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerChannelSlider,
   XhColorPickerChannelSliderThumb,
@@ -12,10 +10,12 @@ import {
   XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
+  XhColorPickerSaturationArea,
   XhColorPickerSwatch,
   XhColorPickerTrigger,
   XhColorPickerValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const overlay = ref("rgba(0, 169, 142, 0.6)");
 </script>

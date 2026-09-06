@@ -1,7 +1,7 @@
 <!-- 语气与尺寸 | tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读屏念出的名字 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const scrollEl = ref<HTMLElement | null>(null);
 const tone = ref("brand");

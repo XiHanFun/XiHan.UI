@@ -9,7 +9,7 @@ const tones = [
   { value: "warning", label: "警告" },
   { value: "danger", label: "危险" },
   { value: "info", label: "信息" },
-].map((tone) => ({
+].map(tone => ({
   ...tone,
   panels: [
     {

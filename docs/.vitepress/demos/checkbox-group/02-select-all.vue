@@ -1,14 +1,14 @@
 <!-- 全选与半选 | select-all-trigger 是第三态复选框，只有把全部条目的值交给 itemValues 才分得清 checked 与 indeterminate -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
-  XhCheckboxGroupItem,
   XhCheckboxGroupIndicator,
+  XhCheckboxGroupItem,
   XhCheckboxGroupItemText,
   XhCheckboxGroupLabel,
   XhCheckboxGroupRoot,
   XhCheckboxGroupSelectAllTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const items = [
   { value: "cheese", label: "芝士" },
@@ -16,7 +16,7 @@ const items = [
   { value: "corn", label: "玉米" },
   { value: "truffle", label: "松露（禁用）", disabled: true },
 ];
-const itemValues = items.map((t) => t.value);
+const itemValues = items.map(t => t.value);
 const toppings = ref<string[]>(["cheese"]);
 </script>
 

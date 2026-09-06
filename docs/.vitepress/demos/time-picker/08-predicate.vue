@@ -1,17 +1,17 @@
 <!-- 自定可选格 | 列里渲染哪几格由作者决定，午休两格整段拿掉；手打进段位的时被吸到下一个可约小时 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
-  XhTimePickerSegment,
-  XhTimePickerSegmentGroup,
-  XhTimePickerLabel,
   XhTimePickerItem,
+  XhTimePickerLabel,
   XhTimePickerPositioner,
   XhTimePickerRoot,
+  XhTimePickerSegment,
+  XhTimePickerSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 午休不接待
 const closed = [12, 13];
@@ -20,12 +20,13 @@ const value = ref("09:00");
 
 // 列里只留通过谓词的那几格
 function bookable(options: readonly string[]) {
-  return options.filter((o) => !closed.includes(Number(o)));
+  return options.filter(o => !closed.includes(Number(o)));
 }
 
 // 落进午休的小时往后挪到最近一个可约的小时
 function snap(next: string) {
-  if (next === "") return next;
+  if (next === "")
+    return next;
   let hour = Number(next.slice(0, 2));
   while (closed.includes(hour)) hour += 1;
   return `${`${hour}`.padStart(2, "0")}${next.slice(2)}`;

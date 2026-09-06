@@ -1,6 +1,6 @@
 <!-- 竖排布局与兜底字形 | 写一层输入行，root 就翻成竖排：输入行在上、动作行在下；按钮留空时皮肤按身份画上箭头或停止方块 -->
 <script setup lang="ts">
-import { XhPromptInputInput, XhPromptInputControl, XhPromptInputRoot, XhPromptInputSubmitTrigger } from "@xihan-ui/vue";
+import { XhPromptInputControl, XhPromptInputInput, XhPromptInputRoot, XhPromptInputSubmitTrigger } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const submitKey = ref<"enter" | "mod-enter" | "none">("enter");
@@ -24,7 +24,7 @@ const sent = ref<string[]>([]);
       </XhPromptInputControl>
       <div style="display: flex; align-items: center; gap: 12px; font-size: 12px;">
         <label style="display: inline-flex; align-items: center; gap: 4px;">
-          <input v-model="loading" type="checkbox" />
+          <input v-model="loading" type="checkbox">
           生成中
         </label>
         <select v-model="submitKey" aria-label="按哪一档提交">

@@ -1,8 +1,6 @@
 <!-- 受控 | 传了 value 就由宿主说了算，取色只回写不自改 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
-  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerChannelSlider,
   XhColorPickerChannelSliderThumb,
@@ -11,9 +9,11 @@ import {
   XhColorPickerControl,
   XhColorPickerPositioner,
   XhColorPickerRoot,
+  XhColorPickerSaturationArea,
   XhColorPickerSwatch,
   XhColorPickerTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const color = ref("#3b82f6");
 </script>

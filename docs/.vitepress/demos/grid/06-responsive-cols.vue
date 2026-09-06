@@ -2,8 +2,8 @@
 <script setup lang="ts">
 import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
 
-const cellStyle =
-  "padding: 12px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default); text-align: center";
+const cellStyle
+  = "padding: 12px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default); text-align: center";
 const labelStyle = "font-size: 13px; color: var(--xh-fg-muted)";
 
 const cards = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛"];

@@ -1,10 +1,10 @@
 <!-- 间距档位 | gap 一档管两处：列与列之间、同一列里项与项之间，留白始终对齐 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhMasonry } from "@xihan-ui/vue";
+import { ref } from "vue";
 
-const cardStyle =
-  "padding: 12px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
+const cardStyle
+  = "padding: 12px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
 
 const gaps = ["xs", "sm", "md", "lg", "xl"] as const;
 const gap = ref<(typeof gaps)[number]>("md");

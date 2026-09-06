@@ -1,6 +1,5 @@
 <!-- 受控 | 传了 open 就由宿主说了算；Escape、点面板外、按叉都只回写 open，不自己改状态 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhDrawerCloseTrigger,
@@ -9,6 +8,7 @@ import {
   XhDrawerRoot,
   XhDrawerTitle,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const open = ref(false);
 </script>

@@ -1,7 +1,7 @@
 <!-- 滚动方式 | behavior=auto 一步跳回顶部，smooth 平滑滚过去 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const smoothEl = ref<HTMLElement | null>(null);
 const autoEl = ref<HTMLElement | null>(null);

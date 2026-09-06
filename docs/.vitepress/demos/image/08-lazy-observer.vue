@@ -1,7 +1,7 @@
 <!-- 自己决定何时取图 | src 是响应式的：进入视口前不给地址，观察器命中再换上，机器立刻走一遍完整加载 -->
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 const remote
   = "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%204%203%22%3E%3Crect%20width=%224%22%20height=%223%22%20fill=%22%23334155%22/%3E%3Crect%20x=%220.4%22%20y=%220.4%22%20width=%223.2%22%20height=%221%22%20fill=%22%2360a5fa%22/%3E%3Crect%20x=%220.4%22%20y=%221.8%22%20width=%222%22%20height=%220.8%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E";

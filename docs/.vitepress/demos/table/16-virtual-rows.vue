@@ -1,6 +1,5 @@
 <!-- 只渲窗口内的行 | 全量 rows 照常交给 root（那只是行序与行号的元信息，不产生 DOM），标记里只渲可见那一段，首尾用两块空白撑出真实滚动高度 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhTableBody,
   XhTableCell,
@@ -9,6 +8,7 @@ import {
   XhTableRoot,
   XhTableRow,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const columns = [
   { id: "no", label: "编号", width: "6rem" },
@@ -26,7 +26,7 @@ const people = Array.from({ length: 2000 }, (_, i) => ({
 }));
 
 // 行号与总数按全量算，与渲染了哪几行无关
-const rows = people.map((p) => ({ id: p.id }));
+const rows = people.map(p => ({ id: p.id }));
 
 // 行高写死才算得出窗口；上下各多渲几行做缓冲
 const ROW_H = 36;

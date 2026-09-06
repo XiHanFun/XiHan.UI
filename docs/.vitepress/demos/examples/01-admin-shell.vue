@@ -1,7 +1,6 @@
 <!-- 后台壳 | 布局四段、侧栏导航、面包屑、页头、工具条、通知角标与账户菜单同框；间距、圆角、颜色一律取令牌 -->
 <script setup lang="ts">
 import type { MenuNode, SideNavNode } from "@xihan-ui/headless";
-import { ref } from "vue";
 import {
   XhAvatarFallback,
   XhAvatarImage,
@@ -52,6 +51,7 @@ import {
   XhTooltipRoot,
   XhTooltipTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const nav: SideNavNode[] = [
   { value: "dashboard", label: "工作台", href: "#dashboard" },
@@ -79,7 +79,7 @@ const account: MenuNode[] = [
   { value: "signout", label: "退出登录", separatorBefore: true },
 ];
 
-const branches = nav.filter((node) => node.children);
+const branches = nav.filter(node => node.children);
 
 const current = ref<string | null>("order-list");
 const lastCommand = ref("（无）");

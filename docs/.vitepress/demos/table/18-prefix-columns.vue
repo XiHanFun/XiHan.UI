@@ -1,6 +1,5 @@
 <!-- 前缀列与分页序号 | prefix-columns 让库把序号/多选列插在最前面并占住列号；序号是分页全局序号，翻到第二页不会又从 1 开始 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhPaginationEllipsisTrigger,
   XhPaginationItem,
@@ -16,6 +15,7 @@ import {
   XhTableRowSelectTrigger,
   XhTableSelectAllTrigger,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const columns = [
   { id: "name", label: "名称" },
@@ -41,12 +41,12 @@ const selection = ref<string[]>([]);
   <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
     <XhTableRoot
       v-slot="{ columns: cols, rowNumber }"
+      v-model:selection="selection"
       :columns="columns"
       :rows="pageRows.map((r) => ({ id: r.id }))"
       :prefix-columns="['index', 'select']"
       :page="page"
       :page-size="pageSize"
-      v-model:selection="selection"
       selection-mode="multiple"
       striped
     >

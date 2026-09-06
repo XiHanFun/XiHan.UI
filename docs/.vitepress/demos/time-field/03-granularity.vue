@@ -1,6 +1,5 @@
 <!-- 精度到秒 | granularity=second 让秒段显出来并参与值，空段按上下键从该段边界起步 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTimeFieldControl,
   XhTimeFieldLabel,
@@ -8,6 +7,7 @@ import {
   XhTimeFieldSegment,
   XhTimeFieldSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref("");
 </script>

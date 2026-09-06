@@ -1,12 +1,12 @@
 <!-- 禁用 | 禁用走 aria-disabled 而非原生 disabled：禁用项仍聚焦得上、仍能当方向键的起点，只是方向键路过时跳过它 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhSwitch,
   XhToolbarItem,
   XhToolbarRoot,
   XhToolbarSeparator,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const itemStyle = {
   padding: "4px 10px",

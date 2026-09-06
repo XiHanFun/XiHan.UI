@@ -1,6 +1,5 @@
 <!-- 末端横排 | leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要指定哪一层横排就在节点上标 childrenOrientation，它比树级值优先，标 vertical 也压得住 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTreeBranch,
   XhTreeBranchCheckbox,
@@ -15,6 +14,7 @@ import {
   XhTreeRoot,
   XhTreeTree,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const collection = [
   {
@@ -64,7 +64,7 @@ const selection = ref<string[]>(["user:add"]);
 <template>
   <div style="width: 100%; display: grid; gap: 12px; justify-items: start">
     <label style="display: inline-flex; gap: 6px; align-items: center">
-      <input v-model="wide" type="checkbox" />
+      <input v-model="wide" type="checkbox">
       按钮那层横排
     </label>
 

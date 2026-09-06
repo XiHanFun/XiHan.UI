@@ -1,7 +1,7 @@
 <!-- 跟着数据走 | 改 to 就从当前数字接着走向新终点，跑完停下之后再改也照样重新跑；active 翻假即停在当前值 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhButton, XhNumberAnimation } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const readings = [3600, 8250, 4180, 12040];
 const at = ref(0);

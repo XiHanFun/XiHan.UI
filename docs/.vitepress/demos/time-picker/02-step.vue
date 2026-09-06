@@ -1,18 +1,18 @@
 <!-- 分列步长 | step=15 只裁浮层里的可选值（分列剩四格），段位上手打的分数不受它限制 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTimePickerClearTrigger,
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
-  XhTimePickerSegment,
-  XhTimePickerSegmentGroup,
-  XhTimePickerLabel,
   XhTimePickerItem,
+  XhTimePickerLabel,
   XhTimePickerPositioner,
   XhTimePickerRoot,
+  XhTimePickerSegment,
+  XhTimePickerSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const value = ref("09:30");
 </script>

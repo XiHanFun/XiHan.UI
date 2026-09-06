@@ -1,6 +1,5 @@
 <!-- 搜索过滤 | searchable 给每侧配一个搜索框，筛剩下的才参与方向键、全选与搬运 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTransferItem,
   XhTransferItemCheckbox,
@@ -17,6 +16,7 @@ import {
   XhTransferToSourceTrigger,
   XhTransferToTargetTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const items = [
   { value: "beijing", label: "北京" },

@@ -1,8 +1,8 @@
 <!-- 失败要说出来 | 取数抛出或拒绝都会退回 idle 并派 download-error，按钮不会一直停在"下载中" -->
 <script setup lang="ts">
 import type { DownloadTriggerErrorDetails } from "@xihan-ui/headless";
-import { ref } from "vue";
 import { XhDownloadTrigger } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const message = ref("还没试过");
 

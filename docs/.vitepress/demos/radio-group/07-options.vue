@@ -1,7 +1,7 @@
 <!-- 数据驱动 | 自家字段叫什么由数据定，映射成条目的值、文本与禁用即可 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { XhRadioGroupRoot } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const level = ref<string | null>("p1");
 const levels = [
@@ -11,7 +11,7 @@ const levels = [
   { code: "p3", text: "低", locked: true },
 ];
 const collection = computed(() =>
-  levels.map((lv) => ({ value: lv.code, label: lv.text, disabled: lv.locked }))
+  levels.map(lv => ({ value: lv.code, label: lv.text, disabled: lv.locked })),
 );
 </script>
 

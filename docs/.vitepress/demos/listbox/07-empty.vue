@@ -1,6 +1,5 @@
 <!-- 空态 | 条目筛空时收起列表、亮出空态节点：它挂在 content 之外，方向键、连打检索与全选都看不见它 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhEmptyStateDescription,
   XhEmptyStateRoot,
@@ -16,6 +15,7 @@ import {
   XhTextFieldLabel,
   XhTextFieldRoot,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const members = [
   { value: "liuyi", label: "刘一" },
@@ -28,7 +28,7 @@ const query = ref("");
 const picked = ref<string[]>([]);
 const filtered = computed(() => {
   const q = query.value.trim();
-  return q === "" ? members : members.filter((m) => m.label.includes(q));
+  return q === "" ? members : members.filter(m => m.label.includes(q));
 });
 </script>
 

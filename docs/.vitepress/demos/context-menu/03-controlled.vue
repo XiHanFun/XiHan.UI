@@ -1,6 +1,5 @@
 <!-- 受控与锚点 | 传了 open 就由宿主说了算；root 的插槽给出锚点坐标与 openAt，可以从任意位置弹出 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhContextMenuContent,
   XhContextMenuItem,
@@ -9,6 +8,7 @@ import {
   XhContextMenuRoot,
   XhContextMenuTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const open = ref(false);
 </script>

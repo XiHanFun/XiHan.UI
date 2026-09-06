@@ -1,12 +1,12 @@
 <!-- 点击展开 | expandable 让整块文字变成一颗按钮，Enter / Space 也按得动 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhTruncate } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const expanded = ref(false);
-const text =
-  "这次更新把导出改成了后台任务：点导出后先落一条记录，处理完再推通知，" +
-  "中途关掉页面也不影响；文件保留 7 天，过期由清理任务回收。";
+const text
+  = "这次更新把导出改成了后台任务：点导出后先落一条记录，处理完再推通知，"
+    + "中途关掉页面也不影响；文件保留 7 天，过期由清理任务回收。";
 </script>
 
 <template>

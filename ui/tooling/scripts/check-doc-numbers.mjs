@@ -62,7 +62,7 @@ function paritySuites(source) {
 
 /** 逐行的 `键: '值',` → `键=值` 空格分隔：源码与正文里贴的那份代码块用同一把尺子量。 */
 function codePairs(text) {
-  return [...text.matchAll(/^\s*(\w+): '([^']+)'/gm)].map(hit => `${hit[1]}=${hit[2]}`).join(' ')
+  return [...text.matchAll(/^\s*(\w+): ['"]([^'"]+)['"]/gm)].map(hit => `${hit[1]}=${hit[2]}`).join(' ')
 }
 
 /** 表格里以 `| \`@xihan-ui/x\` |` 开头的行 → 包名去重排序后空格分隔。 */
@@ -1128,7 +1128,7 @@ const TABLE = [
   ['docs/guide/styling.md', /派生 (\d+) 档原语/, '品牌原语档数'],
   ['docs/guide/backgrounds.md', /^(\d+) 个：`aurora`/m, '内置背景效果数'],
   ['docs/guide/backgrounds.md', /这 (\d+) 个\*\*不自动注册\*\*/, '内置背景效果数'],
-  ['docs/guide/backgrounds.md', /registerBuiltinEffects\(\) \/\/ (\d+) 个内置效果全部注册/, '内置背景效果数'],
+  ['docs/guide/backgrounds.md', /registerBuiltinEffects\(\);? \/\/ (\d+) 个内置效果全部注册/, '内置背景效果数'],
   ['docs/guide/backgrounds.md', /一定带上全部 (\d+) 个效果/, '内置背景效果数'],
   ['docs/guide/sound.md', /内置 (\d+) 个语义名/, '内置音效语义数'],
   ['docs/guide/animations.md', /(\d+) 个进场预设/, '进场预设数'],
@@ -1300,7 +1300,7 @@ const TABLE = [
   ['docs/guide/a11y.md', /只剩([\d一二三四五六七八九十两]+)个组件在真机里推不到用例终态/, 'a11y重放豁免条数'],
 
   // 名单式登记：正文抄的是一整份清单，第四项把捕获到的那段归一成与真值同形的串再比
-  ['docs/guide/diagnostics.md', /```ts\nexport const DIAGNOSTIC_CODES = \{\n([\s\S]*?)\n\}\n```/, '诊断码名单', codePairs],
+  ['docs/guide/diagnostics.md', /```ts\nexport const DIAGNOSTIC_CODES = \{\n([\s\S]*?)\n\};?\n```/, '诊断码名单', codePairs],
   ['docs/guide/versioning.md', /## 九、包的稳定性分级\n([\s\S]*?)\n---\n/, '分级表覆盖的包名单', tabledPackageNames],
 
   // 稳定性分级表里的规模数：与上面同名的数各自登记过，这两张表是第二处抄写

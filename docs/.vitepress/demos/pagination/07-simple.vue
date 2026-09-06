@@ -1,11 +1,11 @@
 <!-- 极简排布 | 页码序列不渲染也行，只留上一页 / 下一页与一行位置回显；先后顺序归作者 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhPaginationNextTrigger,
   XhPaginationPrevTrigger,
   XhPaginationRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const page = ref(2);
 </script>

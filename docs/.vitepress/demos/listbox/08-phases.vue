@@ -1,6 +1,5 @@
 <!-- 三种相位 | 空、在途、还有更多各有部件：给了 collection 时前两者的收放归组件，取下一页那颗钮点了做什么归你 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhListboxContent,
   XhListboxEmpty,
@@ -8,10 +7,11 @@ import {
   XhListboxItemIndicator,
   XhListboxItemText,
   XhListboxLabel,
-  XhListboxLoadMoreTrigger,
   XhListboxLoading,
+  XhListboxLoadMoreTrigger,
   XhListboxRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const pool = [
   { value: "liuyi", label: "刘一" },

@@ -5,8 +5,8 @@ import {
   XhSignaturePadControl,
   XhSignaturePadGuide,
   XhSignaturePadLabel,
-  XhSignaturePadRoot,
   XhSignaturePadPath,
+  XhSignaturePadRoot,
 } from "@xihan-ui/vue";
 </script>
 

@@ -1,6 +1,5 @@
 <!-- 长列表只渲可视区 | 列自己就是滚动容器：按滚动位置切一段挂出来，其余交给撑高块，焦点那一条无论在不在窗口里都挂着 -->
 <script setup lang="ts">
-import { nextTick, ref } from "vue";
 import {
   XhCascaderColumn,
   XhCascaderContent,
@@ -15,6 +14,7 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
+import { nextTick, ref } from "vue";
 
 // 行高与列高写死，窗口才算得出来
 const ROW = 32;
@@ -66,7 +66,7 @@ function onOpenChange(details: { open: boolean }) {
   nextTick(() => {
     const next: Record<number, number> = {};
     shell.value
-      ?.querySelectorAll<HTMLElement>('[data-part="column"]')
+      ?.querySelectorAll<HTMLElement>("[data-part=\"column\"]")
       .forEach((el, level) => {
         next[level] = el.scrollTop;
       });
@@ -79,7 +79,7 @@ function syncFocus(event: KeyboardEvent) {
   const content = event.currentTarget as HTMLElement;
   nextTick(() => {
     const el = content.querySelector<HTMLElement>(
-      '[data-part="item"][data-highlighted]',
+      "[data-part=\"item\"][data-highlighted]",
     );
     if (el && el !== document.activeElement) {
       el.focus();
@@ -102,10 +102,10 @@ function windowOf(column: Column, focusedPath: string[] | null): Row[] {
     .map((item, i) => ({ ...item, index: start + i }));
 
   const anchor = focusedPath?.[column.level];
-  const hit =
-    anchor == null
+  const hit
+    = anchor == null
       ? undefined
-      : column.items.find((item) => item.value === anchor);
+      : column.items.find(item => item.value === anchor);
   if (hit) {
     const at = column.items.indexOf(hit);
     if (at < start || at >= end) {

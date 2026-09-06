@@ -17,7 +17,7 @@ const text = ref("");
 const full = "先看约束：只读一次文件，别改它。再看目标：找出导出面。";
 let at = 0;
 let timer = 0;
-const tick = () => {
+function tick() {
   at = Math.min(at + 2, full.length);
   text.value = full.slice(0, at);
   if (at < full.length) {
@@ -26,7 +26,7 @@ const tick = () => {
   }
   endTime.value = Date.now();
   streaming.value = false;
-};
+}
 // 挂载后才开始追加：<script setup> 顶层在服务端渲染时也执行，那里没有 window
 onMounted(() => {
   startTime.value = Date.now();

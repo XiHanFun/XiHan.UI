@@ -25,7 +25,8 @@ const hasMore = ref(true);
 // 离顶部不到 48px 就取上一页；条目是 list 的直接子节点，内容增高时滚动位置按锚点补偿
 function onScroll(event: Event): void {
   const el = event.currentTarget as HTMLElement;
-  if (el.scrollTop > 48 || loading.value || !hasMore.value) return;
+  if (el.scrollTop > 48 || loading.value || !hasMore.value)
+    return;
   loading.value = true;
   window.setTimeout(() => {
     const size = Math.min(6, earliest.value - 1);

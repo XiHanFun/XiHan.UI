@@ -2,10 +2,10 @@
 <script setup lang="ts">
 import type { ApprovalStatus } from "@xihan-ui/headless";
 import {
-  XhApprovalFooter,
   XhApprovalApproveTrigger,
   XhApprovalDenyTrigger,
   XhApprovalDescription,
+  XhApprovalFooter,
   XhApprovalResult,
   XhApprovalRoot,
   XhApprovalTimer,
@@ -16,16 +16,18 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 const left = ref(10);
 const decided = ref("");
 
-const resultText = (status: ApprovalStatus) => {
-  if (status === "approved") return "已批准";
+function resultText(status: ApprovalStatus) {
+  if (status === "approved")
+    return "已批准";
   return status === "expired" ? "超时未答，按拒绝处理" : "已拒绝";
-};
+}
 
 let timer = 0;
-const tick = () => {
+function tick() {
   left.value = Math.max(0, left.value - 1);
-  if (left.value > 0) timer = window.setTimeout(tick, 1000);
-};
+  if (left.value > 0)
+    timer = window.setTimeout(tick, 1000);
+}
 // 倒计时挂载后才起：<script setup> 顶层在服务端渲染时也执行，那里没有 window
 onMounted(() => {
   timer = window.setTimeout(tick, 1000);

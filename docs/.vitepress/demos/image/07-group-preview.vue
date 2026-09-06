@@ -1,6 +1,5 @@
 <!-- 一组图共用一个预览层 | 图与图之间不必互相认识：宿主拿着地址数组与当前下标，预览层里只放一份图片实例 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhDialogCloseTrigger,
@@ -11,6 +10,7 @@ import {
   XhImageImage,
   XhImageRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 function tile(bg: string, mark: string): string {
   return `data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%204%203%22%3E%3Crect%20width=%224%22%20height=%223%22%20fill=%22%23${bg}%22/%3E%3Ccircle%20cx=%222%22%20cy=%221.5%22%20r=%220.8%22%20fill=%22%23${mark}%22/%3E%3C/svg%3E`;

@@ -1,6 +1,5 @@
 <!-- 多选 | 选中的是一组路径，落值后浮层不收起、焦点留在列里接着挑；再点一次即取消 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhCascaderClearTrigger,
   XhCascaderColumn,
@@ -16,6 +15,7 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const catalog = [
   {

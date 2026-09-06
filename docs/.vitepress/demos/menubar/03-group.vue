@@ -1,6 +1,5 @@
 <!-- 分组与标记位 | group 用 value 跟自己的 group-label 配对，item-indicator 是纯装饰的勾选位 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhMenubarContent,
   XhMenubarGroup,
@@ -13,11 +12,13 @@ import {
   XhMenubarSeparator,
   XhMenubarTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const theme = ref("light");
 
 function onSelect(details: { menu: string; value: string }): void {
-  if (details.menu === "view") theme.value = details.value;
+  if (details.menu === "view")
+    theme.value = details.value;
 }
 </script>
 

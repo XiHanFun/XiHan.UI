@@ -1,7 +1,6 @@
 <!-- 受控展开与禁用 | 展开集合交给宿主：一次全展开或全收起，也能按当前路由把该开的那一枝开上；collection 里标了 disabled 的入口方向键跳过，点它也不落值 -->
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";
-import { ref } from "vue";
 import {
   XhButton,
   XhSideNavBranch,
@@ -15,6 +14,7 @@ import {
   XhSideNavList,
   XhSideNavRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const collection: SideNavNode[] = [
   { value: "dashboard", label: "工作台", href: "#dashboard" },
@@ -42,14 +42,14 @@ const collection: SideNavNode[] = [
   },
 ];
 
-const branches = collection.filter((node) => node.children);
+const branches = collection.filter(node => node.children);
 
 const expanded = ref<string[]>(["user"]);
 const value = ref<string | null>("user-list");
 
 // 展开集合归宿主，组件只发意图：这两颗钮改的是同一份状态
 function expandAll() {
-  expanded.value = branches.map((branch) => branch.value);
+  expanded.value = branches.map(branch => branch.value);
 }
 
 function collapseAll() {

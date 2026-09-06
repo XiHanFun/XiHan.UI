@@ -1,6 +1,5 @@
 <!-- 基础用法 | 加一行、删一行归组件管；行里放什么控件归作者，写在 item-content 里 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhFieldArrayAddTrigger,
   XhFieldArrayItem,
@@ -9,6 +8,7 @@ import {
   XhFieldArrayItemDeleteTrigger,
   XhFieldArrayRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const links = ref<string[]>(["https://xihan.fun", ""]);
 
@@ -33,7 +33,7 @@ function setAt(index: number, next: string) {
           placeholder="填一个链接"
           :value="row.value"
           @input="setAt(row.index, ($event.target as HTMLInputElement).value)"
-        />
+        >
       </XhFieldArrayItemContent>
       <XhFieldArrayItemAction>
         <XhFieldArrayItemDeleteTrigger />

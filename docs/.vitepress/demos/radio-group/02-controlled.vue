@@ -1,12 +1,12 @@
 <!-- 受控 | 传了 value 就由宿主说了算；值可以是 null，表示一项都没选中 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhRadioGroupItem,
   XhRadioGroupItemText,
   XhRadioGroupLabel,
   XhRadioGroupRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const plan = ref<string | null>("free");
 </script>

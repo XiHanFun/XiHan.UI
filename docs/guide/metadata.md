@@ -5,24 +5,24 @@
 ## 元数据对象
 
 ```ts
-import { XIHAN_UI_METADATA, XIHAN_UI_VERSION } from '@xihan-ui/core/metadata'
+import { XIHAN_UI_METADATA, XIHAN_UI_VERSION } from "@xihan-ui/core/metadata";
 
-XIHAN_UI_METADATA.name            // 'XiHan.UI'
-XIHAN_UI_METADATA.displayName     // '曦寒视图组件'
-XIHAN_UI_METADATA.version         // 与 package.json 同源，即整套库的版本
-XIHAN_UI_METADATA.majorVersion    // 主版本号（数字）
-XIHAN_UI_METADATA.minorVersion    // 次版本号
-XIHAN_UI_METADATA.patchVersion    // 修订版本号
-XIHAN_UI_METADATA.prerelease      // 预发布标识（如 'alpha.2'），正式版为 null
-XIHAN_UI_METADATA.copyright       // 版权信息
-XIHAN_UI_METADATA.author          // 作者
-XIHAN_UI_METADATA.organization    // 组织与网址
-XIHAN_UI_METADATA.repositoryUrl   // 仓库地址
-XIHAN_UI_METADATA.documentationUrl // 文档地址
-XIHAN_UI_METADATA.license         // 许可证与地址
-XIHAN_UI_METADATA.keywords        // 关键词
-XIHAN_UI_METADATA.supportedPlatforms // 支持的浏览器引擎（Chrome / Edge / Firefox / Safari）
-XIHAN_UI_METADATA.adapters        // 渲染适配器（vue / web-components）
+XIHAN_UI_METADATA.name; // 'XiHan.UI'
+XIHAN_UI_METADATA.displayName; // '曦寒视图组件'
+XIHAN_UI_METADATA.version; // 与 package.json 同源，即整套库的版本
+XIHAN_UI_METADATA.majorVersion; // 主版本号（数字）
+XIHAN_UI_METADATA.minorVersion; // 次版本号
+XIHAN_UI_METADATA.patchVersion; // 修订版本号
+XIHAN_UI_METADATA.prerelease; // 预发布标识（如 'alpha.2'），正式版为 null
+XIHAN_UI_METADATA.copyright; // 版权信息
+XIHAN_UI_METADATA.author; // 作者
+XIHAN_UI_METADATA.organization; // 组织与网址
+XIHAN_UI_METADATA.repositoryUrl; // 仓库地址
+XIHAN_UI_METADATA.documentationUrl; // 文档地址
+XIHAN_UI_METADATA.license; // 许可证与地址
+XIHAN_UI_METADATA.keywords; // 关键词
+XIHAN_UI_METADATA.supportedPlatforms; // 支持的浏览器引擎（Chrome / Edge / Firefox / Safari）
+XIHAN_UI_METADATA.adapters; // 渲染适配器（vue / web-components）
 ```
 
 对象与内部数组一律 `Object.freeze`——这是集中维护点，消费方改不坏它。
@@ -30,7 +30,7 @@ XIHAN_UI_METADATA.adapters        // 渲染适配器（vue / web-components）
 标志与寄语不在这个对象里，是两个独立导出：
 
 ```ts
-import { XIHAN_UI_LOGO, XIHAN_UI_SEND_WORD } from '@xihan-ui/core/metadata'
+import { XIHAN_UI_LOGO, XIHAN_UI_SEND_WORD } from "@xihan-ui/core/metadata";
 ```
 
 对象被整体引用时打包器摇不掉它里面的字段，并进去这两样就会跟着浏览器产物发到每个访问者手上。单独导出之后没人引用就整个消失——它们是给开发者看的，见下文的终端横幅。
@@ -40,9 +40,9 @@ import { XIHAN_UI_LOGO, XIHAN_UI_SEND_WORD } from '@xihan-ui/core/metadata'
 ## 运行时信息
 
 ```ts
-import { getRuntimeInfo, getRuntimeHost } from '@xihan-ui/core/metadata'
+import { getRuntimeHost, getRuntimeInfo } from "@xihan-ui/core/metadata";
 
-getRuntimeInfo()
+getRuntimeInfo();
 // { mode: 'development' | 'production', ssr: boolean, host: { name, version } | null }
 ```
 
@@ -54,19 +54,19 @@ getRuntimeInfo()
 与 Framework 的 `GetSummary()` / `GetDetails()` 同款：
 
 ```ts
-import { getMetadataSummary, getMetadataDetails, printMetadataSummary } from '@xihan-ui/core/metadata'
+import { getMetadataDetails, getMetadataSummary, printMetadataSummary } from "@xihan-ui/core/metadata";
 
-const summary = getMetadataSummary()
+const summary = getMetadataSummary();
 // XiHan.UI 曦寒视图 v<当前版本>
 // 快速、轻量、高效、用心的框架无关跨端组件库。
 //
 // 宿主:vue v<当前版本>
 
-const details = getMetadataDetails() // 摘要之外再补作者 / 组织 / 仓库 / 文档 / 许可证 / 环境
+const details = getMetadataDetails(); // 摘要之外再补作者 / 组织 / 仓库 / 文档 / 许可证 / 环境
 
 // dev 里打到控制台，生产静默
-printMetadataSummary()
-printMetadataDetails()
+printMetadataSummary();
+printMetadataDetails();
 ```
 
 ### 启动横幅：打在开发者的终端里
@@ -75,10 +75,10 @@ printMetadataDetails()
 
 ```ts
 // vite.config.ts
-import { xihanUiBanner } from '@xihan-ui/core/vite'
-import { defineConfig } from 'vite'
+import { xihanUiBanner } from "@xihan-ui/core/vite";
+import { defineConfig } from "vite";
 
-export default defineConfig({ plugins: [xihanUiBanner()] })
+export default defineConfig({ plugins: [xihanUiBanner()] });
 ```
 
 ```text
@@ -104,9 +104,9 @@ XiHan.UI 曦寒视图 v<当前版本>
 适配器启动时也能往浏览器控制台打一次摘要，但**默认关着**：控制台是访问网站的人也看得见的地方，横幅是给开发者看的。要打就显式开，开关只影响之后的启动，手动 `print` 不受影响：
 
 ```ts
-import { setMetadataAutoPrint } from '@xihan-ui/core/metadata'
+import { setMetadataAutoPrint } from "@xihan-ui/core/metadata";
 
-setMetadataAutoPrint(true)
+setMetadataAutoPrint(true);
 ```
 
 打开后 Vue 适配器在第一个组件建机器时、Web Components 适配器在 `defineXhElements()` 时各打一次，整个页面只打一次，**生产构建静默**。打的只有摘要，标志与寄语归终端那一份。

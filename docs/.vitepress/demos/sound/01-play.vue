@@ -1,7 +1,6 @@
 <!-- 试听 | 十四个语义名，切主题听同一件事的三种说法；音量与开关直接落在播放器上 -->
 <script setup lang="ts">
 import type { SoundTheme } from "@xihan-ui/sound";
-import { onBeforeUnmount, ref, watch } from "vue";
 import {
   BUILTIN_SOUND_NAMES,
   createSoundPlayer,
@@ -10,6 +9,7 @@ import {
   softSoundTheme,
 } from "@xihan-ui/sound";
 import { XhButton, XhRadioGroupRoot, XhSwitch } from "@xihan-ui/vue";
+import { onBeforeUnmount, ref, watch } from "vue";
 
 const themes: Record<string, SoundTheme> = {
   default: defaultSoundTheme,
@@ -29,9 +29,9 @@ const theme = ref("default");
 const volume = ref(0.5);
 const enabled = ref(true);
 
-watch(theme, (name) => player.setTheme(themes[name] ?? defaultSoundTheme));
-watch(volume, (value) => player.setVolume(value));
-watch(enabled, (on) => player.setEnabled(on));
+watch(theme, name => player.setTheme(themes[name] ?? defaultSoundTheme));
+watch(volume, value => player.setVolume(value));
+watch(enabled, on => player.setEnabled(on));
 
 onBeforeUnmount(() => player.dispose());
 </script>
@@ -47,7 +47,7 @@ onBeforeUnmount(() => player.dispose());
       />
       <label style="display: flex; align-items: center; gap: 8px">
         音量
-        <input v-model.number="volume" type="range" min="0" max="1" step="0.05" />
+        <input v-model.number="volume" type="range" min="0" max="1" step="0.05">
       </label>
       <label style="display: flex; align-items: center; gap: 8px">
         出声

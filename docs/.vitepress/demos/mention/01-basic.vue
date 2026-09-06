@@ -1,7 +1,7 @@
 <!-- 基础用法 | 在正文里敲 @ 才开候选，选中的那条被插到光标处，前后文一字不动 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { XhMentionRoot } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const people = [
   { value: "lilei", label: "李雷" },
@@ -18,7 +18,7 @@ const filtered = computed(() => {
   const q = (query.value ?? "").trim().toLowerCase();
   return q === ""
     ? people
-    : people.filter((p) => p.value.includes(q) || p.label.toLowerCase().includes(q));
+    : people.filter(p => p.value.includes(q) || p.label.toLowerCase().includes(q));
 });
 </script>
 

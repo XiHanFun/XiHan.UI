@@ -1,7 +1,7 @@
 <!-- 焦点明细 | 焦点落到某一天时报出日期与计数，键盘用户与鼠标用户看到同一份明细 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import { XhHeatmapRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const activity = [
   { date: "2024-01-02", count: 1 },

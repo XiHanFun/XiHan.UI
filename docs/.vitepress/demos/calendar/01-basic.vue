@@ -1,6 +1,5 @@
 <!-- 基础用法 | 网格由作者照 weeks / weekDays 自己渲染，组件一个节点都不替你生成 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhCalendarCell,
   XhCalendarCellTrigger,
@@ -15,6 +14,7 @@ import {
   XhCalendarWeekDay,
   XhCalendarWeekRow,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 // 选中值恒为数组，单选时长度不超过 1
 const value = ref<string[]>([]);

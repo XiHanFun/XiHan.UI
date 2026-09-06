@@ -2,13 +2,13 @@
 <script setup lang="ts">
 import {
   XhButton,
+  XhNotificationGroup,
+  XhNotificationItem,
   XhNotificationItemCloseTrigger,
   XhNotificationItemDescription,
-  XhNotificationGroup,
-  XhNotificationRoot,
-  XhNotificationItem,
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
+  XhNotificationRoot,
 } from "@xihan-ui/vue";
 
 // 存一份放在外面：写在模板里每渲染一次都是个新对象，白白惊动一轮 props

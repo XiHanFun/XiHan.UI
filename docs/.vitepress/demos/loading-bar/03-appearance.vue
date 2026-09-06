@@ -1,12 +1,12 @@
 <!-- 厚度与颜色 | height 数字按像素、字符串按任意 CSS 长度；color 只改进度段的底色 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhLoadingBarRange,
   XhLoadingBarRoot,
   XhLoadingBarTrack,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const loading = ref(false);
 </script>

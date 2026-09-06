@@ -1,12 +1,12 @@
 <!-- 受控 | 传了 open 就由宿主说了算，组件自己不再改状态，只发 open-change 报告意图 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhCollapsibleContent,
   XhCollapsibleRoot,
   XhCollapsibleTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const open = ref(false);
 </script>

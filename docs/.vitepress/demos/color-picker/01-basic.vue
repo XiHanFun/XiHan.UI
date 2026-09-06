@@ -1,7 +1,6 @@
 <!-- 基础用法 | 必备部件是 trigger / content / saturation-area / area-thumb，缺一个组件就不工作 -->
 <script setup lang="ts">
 import {
-  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerChannelSlider,
   XhColorPickerChannelSliderThumb,
@@ -10,6 +9,7 @@ import {
   XhColorPickerControl,
   XhColorPickerPositioner,
   XhColorPickerRoot,
+  XhColorPickerSaturationArea,
   XhColorPickerSwatch,
   XhColorPickerTrigger,
   XhColorPickerValueText,

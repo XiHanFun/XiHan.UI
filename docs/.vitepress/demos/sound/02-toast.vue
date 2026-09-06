@@ -1,9 +1,9 @@
 <!-- 给通知配声 | withToastSound 包一层现成服务，调用点一行都不用改；loading 不响，转成 success 那一刻才响 -->
 <script setup lang="ts">
 import type { ToastService } from "@xihan-ui/vue";
-import { onBeforeUnmount } from "vue";
 import { createToastService, XhButton } from "@xihan-ui/vue";
 import { withToastSound } from "@xihan-ui/vue/sound";
+import { onBeforeUnmount } from "vue";
 
 // 惰性建单例：服务要 document，等到第一次调用（必然在客户端）再建
 let toast: ToastService | undefined;

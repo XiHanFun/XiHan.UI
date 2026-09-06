@@ -1,7 +1,7 @@
 <!-- 轨道内文案与滑块标记 | 轨道的子节点全由作者决定，data-state 同时打在轨道与滑块上 -->
 <script setup lang="ts">
-import { XhIcon, useSwitch } from "@xihan-ui/vue";
 import { CheckIcon, XIcon } from "@xihan-ui/icons";
+import { useSwitch, XhIcon } from "@xihan-ui/vue";
 
 const { api: trackApi } = useSwitch({ defaultChecked: true });
 const { api: markApi } = useSwitch({});

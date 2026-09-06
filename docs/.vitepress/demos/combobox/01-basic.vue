@@ -1,7 +1,7 @@
 <!-- 基础用法 | 过滤由宿主自己算：组件把输入串交出来，此刻显示哪几条候选由调用方定 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { XhComboboxRoot } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const cities = [
   { value: "beijing", label: "Beijing 北京" },
@@ -15,7 +15,7 @@ const value = ref<string[]>([]);
 const query = ref("");
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
-  return q === "" ? cities : cities.filter((c) => c.label.toLowerCase().includes(q));
+  return q === "" ? cities : cities.filter(c => c.label.toLowerCase().includes(q));
 });
 </script>
 

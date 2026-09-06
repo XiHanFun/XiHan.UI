@@ -1,6 +1,5 @@
 <!-- 只挑文件不挑目录 | 选中值与展开态双受控：目录的值不写回，紧跟着那一次收起意图也一并吞掉，点目录就只剩展开收起 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
@@ -20,6 +19,7 @@ import {
   XhTreeSelectTrigger,
   XhTreeSelectValueText,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 interface Node {
   value: string;
@@ -53,13 +53,14 @@ const files: Node[] = [
 
 // 目录的值集合：判定这次选中该不该写回
 const dirs = new Set<string>();
-const collectDirs = (nodes: Node[]): void => {
+function collectDirs(nodes: Node[]): void {
   for (const node of nodes) {
-    if (!node.children) continue;
+    if (!node.children)
+      continue;
     dirs.add(node.value);
     collectDirs(node.children);
   }
-};
+}
 collectDirs(files);
 
 const value = ref<string[]>([]);
@@ -67,7 +68,7 @@ const open = ref(false);
 let swallowClose = false;
 
 function onValueChange(details: { value: string[] }): void {
-  if (details.value.some((v) => dirs.has(v))) {
+  if (details.value.some(v => dirs.has(v))) {
     // 目录不进选中值；单选下紧跟着的那次收起随之作废
     swallowClose = true;
     return;
@@ -107,8 +108,8 @@ function onOpenChange(details: { open: boolean }): void {
         <XhTreeSelectTree>
           <XhTreeSelectBranch value="docs">
             <XhTreeSelectBranchControl>
-  <XhTreeSelectBranchTrigger />
-  <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
+              <XhTreeSelectBranchTrigger />
+              <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem value="guide">
@@ -117,8 +118,8 @@ function onOpenChange(details: { open: boolean }): void {
               </XhTreeSelectItem>
               <XhTreeSelectBranch value="i18n">
                 <XhTreeSelectBranchControl>
-  <XhTreeSelectBranchTrigger />
-  <XhTreeSelectBranchText>i18n</XhTreeSelectBranchText>
+                  <XhTreeSelectBranchTrigger />
+                  <XhTreeSelectBranchText>i18n</XhTreeSelectBranchText>
                 </XhTreeSelectBranchControl>
                 <XhTreeSelectBranchContent>
                   <XhTreeSelectItem value="zh">
@@ -136,8 +137,8 @@ function onOpenChange(details: { open: boolean }): void {
 
           <XhTreeSelectBranch value="assets">
             <XhTreeSelectBranchControl>
-  <XhTreeSelectBranchTrigger />
-  <XhTreeSelectBranchText>assets</XhTreeSelectBranchText>
+              <XhTreeSelectBranchTrigger />
+              <XhTreeSelectBranchText>assets</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem value="logo">

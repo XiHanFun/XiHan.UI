@@ -1,6 +1,6 @@
 <!-- 尺寸 | size 换的是标题字号与整块的上下留白，不写 size 即默认档 -->
 <script setup lang="ts">
-import { XhPageHeaderRoot, XhPageHeaderDescription, XhPageHeaderTitle } from "@xihan-ui/vue";
+import { XhPageHeaderDescription, XhPageHeaderRoot, XhPageHeaderTitle } from "@xihan-ui/vue";
 
 // 中间一档不写 size，用 undefined 表达
 const sizes = [

@@ -1,6 +1,5 @@
 <!-- 分步校验 | 校验函数每次提交现读一次：闭住当前这一步，提交就只校验这一步的字段；存草稿走的是普通按钮，一条规则都不跑 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import {
   XhButton,
   XhFieldControl,
@@ -11,6 +10,7 @@ import {
   XhFormRoot,
   XhFormSubmitTrigger,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const steps = [
   {
@@ -81,7 +81,7 @@ function saveDraft(values: Record<string, unknown>) {
         <XhFieldRoot :invalid="invalid" required>
           <XhFieldLabel>{{ field.label }}</XhFieldLabel>
           <XhFieldControl>
-            <input :value="value" @input="setValue(($event.target as HTMLInputElement).value)" />
+            <input :value="value" @input="setValue(($event.target as HTMLInputElement).value)">
           </XhFieldControl>
           <XhFieldErrorText>{{ error }}</XhFieldErrorText>
         </XhFieldRoot>

@@ -1,6 +1,5 @@
 <!-- 入库前统一改写 | 给了 value 就由宿主说了算：组件只发变更意图，写回什么形状在这里定 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTagsInputControl,
   XhTagsInputInput,
@@ -11,6 +10,7 @@ import {
   XhTagsInputLabel,
   XhTagsInputRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const tags = ref<string[]>(["#vue"]);
 

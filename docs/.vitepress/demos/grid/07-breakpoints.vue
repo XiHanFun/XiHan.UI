@@ -2,8 +2,8 @@
 <script setup lang="ts">
 import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
 
-const cellStyle =
-  "padding: 10px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default); text-align: center";
+const cellStyle
+  = "padding: 10px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default); text-align: center";
 const headStyle = `${cellStyle}; background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong)`;
 const labelStyle = "font-size: 13px; color: var(--xh-fg-muted)";
 

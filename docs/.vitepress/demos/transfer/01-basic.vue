@@ -1,6 +1,5 @@
 <!-- 基础用法 | collection 是条目全集的唯一事实源，value 只装落在右侧的那批 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhTransferItem,
   XhTransferItemCheckbox,
@@ -15,6 +14,7 @@ import {
   XhTransferToSourceTrigger,
   XhTransferToTargetTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const items = [
   { value: "read", label: "查看" },

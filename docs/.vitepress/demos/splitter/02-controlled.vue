@@ -1,19 +1,19 @@
 <!-- 受控 | 传了 sizes 就由宿主说了算；sizes-change 拖动途中连着发，sizes-change-end 松手才发一次 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhSplitterPanel,
   XhSplitterResizeTrigger,
   XhSplitterRoot,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const panels = [{ id: "aside", min: 20 }, { id: "main", min: 20 }];
 const size = ref([30, 70]);
 const lastEnd = ref("（还没拖过）");
 
-function onSizeChangeEnd(details: { sizes: number[], index: number }): void {
+function onSizeChangeEnd(details: { sizes: number[]; index: number }): void {
   lastEnd.value = `第 ${details.index} 条 → ${details.sizes
-    .map((n) => `${Math.round(n)}%`)
+    .map(n => `${Math.round(n)}%`)
     .join(" / ")}`;
 }
 </script>

@@ -1,6 +1,5 @@
 <!-- 禁用与只读 | disabled 把提交、重置、写值三条路一起封死；read-only 只封写值与重置，提交照发 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhFieldControl,
   XhFieldDescription,
@@ -11,6 +10,7 @@ import {
   XhFormRoot,
   XhFormSubmitTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const submitted = ref("（还没提交过）");
 
@@ -30,7 +30,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
             disabled
             :value="value"
             @input="setValue(($event.target as HTMLInputElement).value)"
-          />
+          >
         </XhFieldControl>
         <XhFieldDescription>整表禁用</XhFieldDescription>
       </XhFieldRoot>
@@ -57,7 +57,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
             readonly
             :value="value"
             @input="setValue(($event.target as HTMLInputElement).value)"
-          />
+          >
         </XhFieldControl>
         <XhFieldDescription>只读：能提交，改不动</XhFieldDescription>
       </XhFieldRoot>

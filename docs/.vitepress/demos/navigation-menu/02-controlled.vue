@@ -1,6 +1,5 @@
 <!-- 受控 | 传了 value 就由宿主说了算，null 表示都收起 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhButton,
   XhNavigationMenuContent,
@@ -10,6 +9,7 @@ import {
   XhNavigationMenuRoot,
   XhNavigationMenuTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const groups = [
   {
