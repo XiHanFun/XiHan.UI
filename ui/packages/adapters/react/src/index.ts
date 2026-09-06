@@ -7,6 +7,8 @@ export type { XhConfig, XhConfigProviderProps, XhTranslationOverrides } from './
 export { createReactRuntime } from './runtime/create-react-runtime'
 export { mergeReactProps } from './runtime/merge-props'
 export { reactNormalize } from './runtime/normalize-props'
+export { usePortalTarget, XhPortal } from './runtime/portal'
+export type { PortalContainer, XhPortalProps } from './runtime/portal'
 export { useReactIdGenerator, useReactScope } from './runtime/react-id'
 export { renderSlot, slotPaints } from './runtime/slot-content'
 export type { SlotChildren } from './runtime/slot-content'

@@ -11,6 +11,7 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import ts from 'typescript'
+import { ADAPTERS, reactCovered, reactProgress } from './lib/adapters.mjs'
 
 const PACKAGES = 'packages'
 const HEADLESS = 'packages/engine/headless/src'
@@ -285,12 +286,22 @@ const surface = {
 
 await writeFile(OUT, `${JSON.stringify(surface, null, 2)}\n`)
 
+// 三个适配器各采到多少导出名：包是按目录枚举的，第三家不必登记就在内，
+// 但收尾行只报总数的话，React 的名字有没有进基线是看不出来的——它一旦缺席，
+// 删掉 React 的名字 check-public-surface 也不会判红。
+const adapterExports = {}
+for (const adapter of Object.values(ADAPTERS)) {
+  const name = JSON.parse(await readFile(join(adapter.root, 'package.json'), 'utf8')).name
+  adapterExports[adapter.label] = (exportsByPackage[name] ?? []).length
+}
+const covered = await reactCovered()
+
 const count = o => Object.values(o).reduce((n, v) => n + (Array.isArray(v) ? v.length : 1), 0)
 console.log(`[build-public-surface] 已写入 ${OUT}`)
 console.log(`  包 ${Object.keys(packages).length} 个 · 子入口 ${count(packages)} 条`)
-console.log(`  导出名 ${count(exportsByPackage)} 个`)
+console.log(`  导出名 ${count(exportsByPackage)} 个（适配器：${Object.entries(adapterExports).map(([label, n]) => `${label} ${n}`).join(' / ')}；${reactProgress(covered, Object.keys(anatomy).length)}）`)
 console.log(`  解剖 ${Object.keys(anatomy).length} 个 scope · 部件配对 ${count(anatomy)} 条`)
 console.log(`  组件 props ${Object.keys(componentProps).length} 个组件 · ${count(componentProps)} 个名字`)
 console.log(`  data-* 属性 ${surface.dataAttributes.length} 种 · data-state 取值 ${surface.dataStateValues.length} 个`)
 console.log(`  令牌 ${tokens.length} 个 · @layer ${surface.cssLayers.length} 个 · 组件槽 ${surface.cssSlots.length} 个 · 关键帧 ${surface.keyframes.length} 个`)
-console.log(`  自定义元素 ${Object.keys(elements).length} 个`)
+console.log(`  自定义元素 ${Object.keys(elements).length} 个（只有 Web Components 有这一种介质：标签名与 attribute 是那一侧独有的公开面，Vue 与 React 的对应物在上面的导出名与组件 props 里）`)

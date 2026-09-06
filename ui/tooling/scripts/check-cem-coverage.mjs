@@ -11,6 +11,14 @@
 // 判据是双向差集：define.ts 注册了但清单里没有 → 漏收；清单里有但没注册 → 死条目。
 import { readFile } from 'node:fs/promises'
 
+/**
+ * 这张门禁只核 Web Components 一家。
+ * 两侧都是自定义元素独有的产物：define.ts 是 customElements.define 的调用点，
+ * custom-elements.json 是元素清单。Vue 与 React 渲染的是各自框架的组件，
+ * 没有元素注册这一层，也没有可比的清单产物，扩过去核的是空气。
+ */
+const SCOPE = '只核 Web Components 一家；Vue 与 React 不在其列：它们没有自定义元素注册这一层，也没有对应的清单产物'
+
 const DEFINE = 'packages/adapters/web-components/src/define.ts'
 const MANIFEST = 'packages/adapters/web-components/custom-elements.json'
 
@@ -43,3 +51,4 @@ if (missing.length || orphaned.length) {
 }
 
 console.log(`[check-cem-coverage] 通过：${registered.size} 个注册元素在清单里一一对得上`)
+console.log(`[check-cem-coverage] 适用面：${SCOPE}`)

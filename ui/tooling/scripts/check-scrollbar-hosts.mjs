@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 门禁：给已有滚动层配自绘条的宿主，两个适配器都得接，壳与皮肤也得配齐。
+// 门禁：给已有滚动层配自绘条的宿主，三个适配器都得接，壳与皮肤也得配齐。
 //
 // 这条接线不新增任何 part，check-part-wiring 那套「从解剖派生 getter 名」的判据整个看不见它。
 // 而它有五个失效面：只接了一端（一路绿到发布）、壳没有定位上下文（条子飘到某个远房祖先，
@@ -7,17 +7,30 @@
 // 滚动层皮肤里还留着没加守卫的 scrollbar-width / scrollbar-gutter（原生条与自绘条并存）、
 // 浮层没把壳记进层分支（条子是 content 的兄弟，按住它那一下被判成层外交互，浮层当场收起）。
 // 前四条都不报错、只“看着不对”，所以在这里逐条钉死。
+//
+// 第三家（React）只核规则①的那一半：它有没有在同一个组件上接这条线。
+// 后面几条（壳点名一个角色节点、皮肤的定位上下文与轨道底色、层分支）的解析入口
+// 是 WC 那个选项对象与 Vue 的 branches 行，React 侧的写法要等它铺到第一个滚动宿主
+// 才定得下来；那之前把解析硬猜出来，只会核出一批假绿。
+// React 只核 react-coverage.json 里已铺到的组件，没铺到的跳过。
 import { readdir, readFile } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 
-const VUE = 'packages/adapters/vue/src/components'
-const WC = 'packages/adapters/web-components/src/elements'
+import { ADAPTERS, reactCovered, reactProgress } from './lib/adapters.mjs'
+
+const VUE = ADAPTERS.vue.components
+const WC = ADAPTERS.wc.components
+const REACT = ADAPTERS.react.components
 const STYLES = 'packages/design/styles/css'
+/** 组件总数的分母：一个组件一份套件。 */
+const SUITES_DIR = 'tooling/testing/src/suites'
 
 /** Vue 侧的调用点。 */
 const VUE_CALL = 'useScrollbars('
 /** WC 侧的调用点。 */
 const WC_CALL = 'new ScrollbarsController('
+/** React 侧的调用点：与 Vue 同为 hook，同名。 */
+const REACT_CALL = 'useScrollbars('
 
 async function read(path) {
   try {
@@ -242,11 +255,18 @@ function camel(part) {
 }
 
 async function* walk(dir) {
-  for (const entry of await readdir(dir, { withFileTypes: true })) {
+  let entries
+  try {
+    entries = await readdir(dir, { withFileTypes: true })
+  }
+  catch {
+    return
+  }
+  for (const entry of entries) {
     const full = join(dir, entry.name)
     if (entry.isDirectory())
       yield* walk(full)
-    else if (entry.name.endsWith('.ts'))
+    else if (/\.(?:ts|tsx)$/.test(entry.name))
       yield full
   }
 }
@@ -278,14 +298,32 @@ for (const name of await readdir(WC)) {
   wcHosts.set(basename(name, '.ts'), { block: callBlock(src) ?? '', src })
 }
 
-// 规则①：一端接了另一端忘了，页面上只会在那一端看出来
-for (const comp of vueHosts.keys()) {
-  if (!wcHosts.has(comp))
-    problems.push(`${comp}：Vue 侧配了自绘条，WC 侧没配`)
+// React 侧：组件名取 components/ 下那一层目录名，与 Vue 同一套铺法
+const reactHosts = new Map()
+for await (const file of walk(REACT)) {
+  const src = stripSourceComments(await readFile(file, 'utf8'))
+  const dir = basename(dirname(file))
+  const comp = dir === basename(REACT) ? basename(file).replace(/\.tsx?$/, '') : dir
+  if (src.includes(REACT_CALL))
+    reactHosts.set(comp, file)
 }
-for (const comp of wcHosts.keys()) {
-  if (!vueHosts.has(comp))
-    problems.push(`${comp}：WC 侧配了自绘条，Vue 侧没配`)
+
+const covered = await reactCovered()
+const suiteCount = (await readdir(SUITES_DIR)).filter(f => f.endsWith('.suite.ts')).length
+
+// 规则①：一家接了另一家忘了，页面上只会在那一家看出来。
+// React 只算已铺到的组件：没铺到就既不要求它接，也不拿它接了当依据
+const allHosts = [...new Set([...vueHosts.keys(), ...wcHosts.keys(), ...reactHosts.keys()])].sort()
+for (const comp of allHosts) {
+  const sides = [
+    { label: ADAPTERS.vue.label, has: vueHosts.has(comp), inScope: true },
+    { label: ADAPTERS.wc.label, has: wcHosts.has(comp), inScope: true },
+    { label: ADAPTERS.react.label, has: reactHosts.has(comp), inScope: covered.has(comp) },
+  ].filter(side => side.inScope)
+  const wired = sides.filter(side => side.has).map(side => side.label)
+  const bare = sides.filter(side => !side.has).map(side => side.label)
+  if (wired.length > 0 && bare.length > 0)
+    problems.push(`${comp}：${wired.join(' / ')} 侧配了自绘条，${bare.join(' / ')} 侧没配`)
 }
 
 let checkedShells = 0
@@ -365,7 +403,12 @@ if (problems.length) {
   process.exit(1)
 }
 
+const reactExpected = allHosts.filter(comp => covered.has(comp)).length
 console.log(
-  `[check-scrollbar-hosts] 通过：${wcHosts.size} 个宿主两端都配了自绘条，`
+  `[check-scrollbar-hosts] 通过：${allHosts.length} 个宿主的接线齐（Vue ${vueHosts.size} · Web Components ${wcHosts.size} · React ${reactHosts.size}/${reactExpected}），`
   + `${checkedShells} 个壳有定位上下文与轨道底色、也都记进了层分支，滚动层皮肤没有漏守卫的原生条声明`,
+)
+console.log(
+  `[check-scrollbar-hosts] ${reactProgress(covered, suiteCount)}，没铺到的宿主不核；`
+  + 'React 侧只核有没有接这条线，壳与层分支那几条等它铺到第一个滚动宿主再定解析',
 )

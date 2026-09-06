@@ -12,6 +12,18 @@ import { readdir, readFile } from 'node:fs/promises'
 const SCRIPT_DIRS = ['tooling/scripts', 'scripts']
 const ROOT_PKG = 'package.json'
 
+/**
+ * 这张门禁不看适配器，收尾行照原样打出来，免得读输出的人以为它顺带核过 React。
+ *
+ * SCRIPT_DIRS 这两个目录是脚本所在地，不是 vue / react / web-components——检查脚本与
+ * 生成器是全库共用的一套，接没接进 pnpm script 与哪个适配器铺到哪儿无关。新加一个适配器，
+ * 这张门禁的判据一个字都不用改；反过来它也永远不会替某个适配器发现漏检。
+ *
+ * 「加一个组件要落哪些点」由 scripts/new-component.mjs --verify 管，各适配器的落点清单
+ * 在 scripts/new-component.targets.json 里，不在本脚本。
+ */
+const NOT_ABOUT_ADAPTERS = '三个适配器都不在其列：本门禁核的是脚本目录与 package.json 的接线，与适配器无关'
+
 // 免检名单:键是脚本相对路径,值是理由。名单里的条目必须真实存在,否则一并报错。
 const EXEMPT = {}
 
@@ -154,5 +166,6 @@ if (errors.length > 0) {
 const exempt = Object.keys(EXEMPT).length
 console.log(
   `[check-wiring] 通过:${checks.size} 个检查脚本、${generators.size} 个生成器全部接入 script`
-  + `${exempt > 0 ? `(${exempt} 个免检)` : ''},生成器产物均由 gate 核对(基线快照 ${usedBaseline.size} 个由检查器兜住),script 里没有死引用`,
+  + `${exempt > 0 ? `(${exempt} 个免检)` : ''},生成器产物均由 gate 核对(基线快照 ${usedBaseline.size} 个由检查器兜住),script 里没有死引用`
+  + `。${NOT_ABOUT_ADAPTERS}`,
 )

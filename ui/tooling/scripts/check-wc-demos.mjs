@@ -19,6 +19,14 @@ const uiRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const demosDir = join(uiRoot, '..', 'docs', '.vitepress', 'demos')
 const EXT = '.html'
 
+/**
+ * 这张门禁只核 Web Components 一家。
+ * 它挑的是文档站里的 .html 示例：整份文件就是一段写死标签的 HTML，靠元素升级跑起来。
+ * Vue 与 React 的示例是 .vue / .tsx，由各自的构建与运行时挂载，
+ * 五条判据里「元素升级」「必需部件齐备」都不成立，转发过去的那条 test:demos 也不认它们。
+ */
+const SCOPE = '只核 Web Components 一家；Vue 与 React 不在其列：它们的示例不是写死标签的 HTML，没有元素升级这一步'
+
 const wanted = process.argv.slice(2).filter(arg => !arg.startsWith('-'))
 
 /** 各组件目录下的自定义元素版示例文件名；没有示例的组件不进表。 */
@@ -48,6 +56,7 @@ if (empty.length > 0) {
 const selected = wanted.length > 0 ? wanted : [...available.keys()]
 const count = selected.reduce((sum, name) => sum + available.get(name).length, 0)
 console.log(`[check-wc-demos] ${selected.length} 个组件 · ${count} 份示例`)
+console.log(`[check-wc-demos] 适用面：${SCOPE}`)
 
 const result = spawnSync(
   'pnpm',

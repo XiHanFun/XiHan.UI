@@ -24,8 +24,23 @@ import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
 
+import { VUE_COMPONENTS_DIR } from './lib/adapters.mjs'
+
+/**
+ * 这张门禁的断言全部落在共享皮肤上，React 不在其列。
+ * 要求的是 packages/design/styles/css/<组件>.css 里有那两条 autofill 规则，而皮肤三家共用：
+ * 规则写齐了，Vue、Web Components、React 渲染出来的那个 input 一起受益，
+ * 逐家再核一遍核的是同一份文件。Vue 适配器在这里只当取样点——它是唯一被解析的地方，
+ * 用来判断某个组件的 input 部件到底渲染成 <input>/<textarea> 还是别的标签。
+ *
+ * React 该纳入的时机：它铺到某个带 input 部件的组件、且那里渲染出来的标签与 Vue 不同的时候。
+ * 那时判据要多一条「三家的 input 部件解析出同一个标签」——标签不同则皮肤按 Vue 推出的
+ * 那份 autofill 规则在 React 上落不着，是这张门禁现在看不见的一个面。
+ */
+const SCOPE = 'React 不在其列：判据落在三家共用的皮肤上，Vue 只是解析 input 部件渲染成什么标签的取样点'
+
 const ANATOMY_DIR = 'packages/engine/headless/src'
-const VUE_DIR = 'packages/adapters/vue/src/components'
+const VUE_DIR = VUE_COMPONENTS_DIR
 const SKIN_DIR = 'packages/design/styles/css'
 
 /**
@@ -330,3 +345,4 @@ console.log(
   `[check-autofill] 通过：${candidates.length} 个带 input 部件的组件里 ${native.length} 个渲染原生表单控件，`
   + `共 ${ruleCount} 条 autofill 规则把底与字接回令牌（不是原生控件的 ${Object.keys(NOT_NATIVE).length} 个已登记）`,
 )
+console.log(`[check-autofill] 适用面：${SCOPE}`)

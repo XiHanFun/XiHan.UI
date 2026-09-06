@@ -9,9 +9,13 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
+import { ADAPTERS, reactCovered, reactProgress } from './lib/adapters.mjs'
+
 const STYLES_DIR = 'packages/design/styles/css'
+/** 组件总数的分母：一个组件一份套件。 */
+const SUITES_DIR = 'tooling/testing/src/suites'
 /** 适配器源码：内联样式里不许引用动画名，它们不归任何一份皮肤管，名字在不在场没人保证。 */
-const ADAPTER_DIRS = ['packages/adapters/vue/src', 'packages/adapters/web-components/src']
+const ADAPTER_DIRS = Object.values(ADAPTERS).map(a => ({ label: a.label, dir: `${a.root}/src`, name: a.name }))
 
 /** 去掉块注释：注释里提到的动画名不是引用。 */
 function stripComments(css) {
@@ -125,24 +129,48 @@ for (const [name, list] of defsByName) {
 /** 递归列出目录下的源码文件。 */
 async function walk(dir) {
   const out = []
-  for (const entry of await readdir(dir, { withFileTypes: true })) {
+  let entries
+  try {
+    entries = await readdir(dir, { withFileTypes: true })
+  }
+  catch {
+    return out
+  }
+  for (const entry of entries) {
     const path = join(dir, entry.name)
     if (entry.isDirectory())
       out.push(...await walk(path))
-    else if (/\.(?:ts|vue)$/.test(entry.name) && !/\.(?:test|spec)\./.test(entry.name))
+    else if (/\.(?:ts|tsx|vue)$/.test(entry.name) && !/\.(?:test|spec)\./.test(entry.name))
       out.push(path)
   }
   return out
 }
 
+const covered = await reactCovered()
+const suiteCount = (await readdir(SUITES_DIR)).filter(f => f.endsWith('.suite.ts')).length
+
+/** React 侧还没铺到的组件：目录不该有文件，真有也先不核，铺开进度由 react-coverage.json 单点控制。 */
+function skipUnrolled(adapter, path) {
+  if (adapter !== 'react')
+    return false
+  const at = path.replace(/\\/g, '/').match(/\/src\/components\/([^/]+)\//)
+  return at !== null && !covered.has(at[1])
+}
+
 /** 适配器里写进内联样式的动画名：模板不附属于任何皮肤，引用名字的那份皮肤不一定在场。 */
 const inlined = []
-for (const dir of ADAPTER_DIRS) {
+const scanned = new Map()
+for (const { label, dir, name } of ADAPTER_DIRS) {
+  let count = 0
   for (const path of await walk(dir)) {
+    if (skipUnrolled(name, path))
+      continue
+    count++
     const src = stripComments(await readFile(path, 'utf8')).replace(/(^|[^:])\/\/.*$/gm, '$1')
     for (const m of src.matchAll(/animation(?:Name|-name)?['"]?\s*[:=]\s*[`'"][^`'"]*?(?<![-\w])(xh-[a-z0-9-]+)/g))
-      inlined.push(`${path.replace(/\\/g, '/')} 在内联样式里引用了动画名 ${m[1]}——适配器代码不附属于任何皮肤，改用 Web Animations 或由皮肤按 data 属性播`)
+      inlined.push(`${label}：${path.replace(/\\/g, '/')} 在内联样式里引用了动画名 ${m[1]}——适配器代码不附属于任何皮肤，改用 Web Animations 或由皮肤按 data 属性播`)
   }
+  scanned.set(label, count)
 }
 
 const problems = [...undefinedRefs, ...crossFile, ...drifted, ...unlayered, ...inlined]
@@ -156,3 +184,8 @@ if (problems.length > 0) {
 const total = [...defsByName.values()].reduce((n, list) => n + list.length, 0)
 const shared = [...defsByName].filter(([, list]) => list.length > 1).length
 console.log(`[check-keyframe-refs] 通过：${files.length} 份皮肤 · ${total} 处动画定义（${defsByName.size} 个名字，其中 ${shared} 个被多份皮肤各自带了一份），引用全部就地可解析`)
+console.log(
+  `[check-keyframe-refs] 三个适配器的源码里没有内联的动画名：`
+  + `${[...scanned].map(([label, n]) => `${label} ${n} 份`).join(' · ')}`
+  + `（${reactProgress(covered, suiteCount)}，没铺到的组件不核）`,
+)

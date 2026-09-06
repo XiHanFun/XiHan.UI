@@ -9,10 +9,14 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
+import { ADAPTERS, reactCovered, reactProgress } from './lib/adapters.mjs'
+
 const STYLES_DIR = 'packages/design/styles/css'
 const TOKENS_CSS = 'packages/design/tokens/tokens.css'
+/** 组件总数的分母：一个组件一份套件。 */
+const SUITES_DIR = 'tooling/testing/src/suites'
 /** 适配器里由 JS 拼出来的默认模板（命令式 toast / dialog 的类型徽记）也引这族令牌。 */
-const ADAPTER_SRC = ['packages/adapters/vue/src', 'packages/adapters/web-components/src']
+const ADAPTER_SRC = Object.values(ADAPTERS).map(a => ({ label: a.label, dir: `${a.root}/src`, name: a.name }))
 
 /**
  * 数据本身的语法字符，不是视觉标记：换掉它渲染出来的就不是那个数据格式了。
@@ -36,7 +40,9 @@ if (declared.size === 0) {
 
 const files = (await readdir(STYLES_DIR)).filter(name => name.endsWith('.css')).sort()
 const literals = []
-const used = new Set()
+/** 令牌名 → 引用它的出处；引用了没声明的槽时靠它指名是哪一家。 */
+const used = new Map()
+const noteUse = (name, where) => used.set(name, (used.get(name) ?? new Set()).add(where))
 /** 真的用来放行过的语法字符，写成「皮肤 字面量」。 */
 const usedExempt = new Set()
 
@@ -57,18 +63,45 @@ for (const file of files) {
       literals.push(`${file}:${i + 1}  content: ${raw}`)
     }
     for (const m of line.matchAll(/var\(\s*(--xh-glyph-mark-[a-z0-9-]+)/g))
-      used.add(m[1])
+      noteUse(m[1], `皮肤 ${file}:${i + 1}`)
   })
 }
 
-for (const root of ADAPTER_SRC) {
-  for (const entry of await readdir(root, { withFileTypes: true, recursive: true })) {
-    if (!entry.isFile() || !entry.name.endsWith('.ts'))
-      continue
-    const source = await readFile(join(entry.parentPath ?? entry.path, entry.name), 'utf8')
-    for (const m of source.matchAll(/(--xh-glyph-mark-[a-z0-9-]+)/g))
-      used.add(m[1])
+const covered = await reactCovered()
+const suiteCount = (await readdir(SUITES_DIR)).filter(f => f.endsWith('.suite.ts')).length
+
+/** React 侧还没铺到的组件先不核，铺开进度由 react-coverage.json 单点控制。 */
+function skipUnrolled(adapter, path) {
+  if (adapter !== 'react')
+    return false
+  const at = path.match(/\/src\/components\/([^/]+)\//)
+  return at !== null && !covered.has(at[1])
+}
+
+/** 各适配器扫到的引用处数：收尾行按家报，别只报一个总数。 */
+const perAdapter = new Map()
+for (const { label, dir, name } of ADAPTER_SRC) {
+  let hits = 0
+  let entries = []
+  try {
+    entries = await readdir(dir, { withFileTypes: true, recursive: true })
   }
+  catch {
+    entries = []
+  }
+  for (const entry of entries) {
+    if (!entry.isFile() || !/\.(?:ts|tsx)$/.test(entry.name))
+      continue
+    const path = join(entry.parentPath ?? entry.path, entry.name).replaceAll('\\', '/')
+    if (skipUnrolled(name, path))
+      continue
+    const source = await readFile(path, 'utf8')
+    for (const m of source.matchAll(/(--xh-glyph-mark-[a-z0-9-]+)/g)) {
+      noteUse(m[1], `${label} ${path}`)
+      hits++
+    }
+  }
+  perAdapter.set(label, hits)
 }
 
 const stale = []
@@ -79,7 +112,7 @@ for (const [file, raws] of NOT_A_MARK) {
   }
 }
 
-const unknown = [...used].filter(name => !declared.has(name))
+const unknown = [...used.keys()].filter(name => !declared.has(name))
 const dead = [...declared].filter(name => !used.has(name))
 
 if (literals.length) {
@@ -89,9 +122,9 @@ if (literals.length) {
   console.error(`名字在 ${TOKENS_CSS} 里，缺哪个就先去 tokens/semantic.base.json 的 glyph 组加一条。`)
 }
 if (unknown.length) {
-  console.error('[check-glyph-slots] ✗ 皮肤引用了没有声明的字形槽：')
+  console.error('[check-glyph-slots] ✗ 引用了没有声明的字形槽：')
   for (const name of unknown)
-    console.error(`  ${name}`)
+    console.error(`  ${name}——出处：${[...used.get(name)].join('、')}`)
 }
 if (dead.length) {
   console.error('[check-glyph-slots] ✗ 下列字形槽声明了却没人用，删掉它：')
@@ -107,3 +140,8 @@ if (literals.length || unknown.length || dead.length || stale.length)
   process.exit(1)
 
 console.log(`[check-glyph-slots] 通过：${declared.size} 个字形令牌都有人用，${files.length} 份皮肤里没有写死的字形（数据语法字符 ${usedExempt.size} 处）`)
+console.log(
+  `[check-glyph-slots] 三个适配器的模板引用一并算进「有人用」：`
+  + `${[...perAdapter].map(([label, n]) => `${label} ${n} 处`).join(' · ')}`
+  + `（${reactProgress(covered, suiteCount)}，没铺到的组件不核）`,
+)

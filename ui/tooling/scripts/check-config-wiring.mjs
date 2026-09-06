@@ -1,18 +1,29 @@
 #!/usr/bin/env node
-// 门禁：两个适配器的全局配置面必须一致，且配了要真能生效。
+// 门禁：三个适配器的全局配置面必须一致，且配了要真能生效。
 //
 // 四条判据各对应一种静默失效：
-//   两侧字段不一致 → 同一份配置在 Vue 上生效、在 Web Components 上没反应，谁也不会报错
+//   某一侧少了字段 → 同一份配置在别处生效、在这一侧没反应，谁也不会报错
 //   size 同名不同义的组件没进豁免名单 → 全局垫一个 'md' 进去，那个组件当场坏掉
 //   headless 声明了 size / translations 的组件在某一侧没接配置 → 全局值对它永远不命中
-//   XhConfig 的字段没有任何组件真读它 → 配置是死的，写了也不生效
+//   XhConfig 的字段没有任何人真读它 → 配置是死的，写了也不生效
+//
+// React 正在按批次铺开：逐组件那一段只核 react-coverage.json 里已铺的组件，
+// 没铺到的跳过并在收尾行报出进度。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { ADAPTERS, reactCovered, reactProgress } from './lib/adapters.mjs'
 
-const VUE_CONFIG = 'packages/adapters/vue/src/config/config.ts'
-const WC_CONFIG = 'packages/adapters/web-components/src/config.ts'
+const CONFIG_FILES = {
+  vue: 'packages/adapters/vue/src/config/config.ts',
+  react: 'packages/adapters/react/src/config/config.tsx',
+  wc: 'packages/adapters/web-components/src/config.ts',
+}
+const SRC = {
+  vue: `${ADAPTERS.vue.root}/src`,
+  react: `${ADAPTERS.react.root}/src`,
+  wc: `${ADAPTERS.wc.root}/src`,
+}
 const MERGE = 'packages/engine/headless/src/config/config-merge.ts'
-const VUE_COMPONENTS = 'packages/adapters/vue/src/components'
 const HEADLESS = 'packages/engine/headless/src'
 
 /** 取 `export interface X { ... }` 里的字段名。 */
@@ -34,20 +45,30 @@ function exemptSizes(source, where) {
 }
 
 const errors = []
+const covered = await reactCovered()
 
-// —— 一、两个适配器的配置面 ——
-// 共同字段在 headless 的 XhConfigBase 上；Vue 在它之上扩展，WC 直接用它。
+// —— 一、三个适配器的配置面 ——
+// 共同字段在 headless 的 XhConfigBase 上；Vue 与 React 在它之上各自扩展，WC 直接用它。
 const mergeSource = await readFile(MERGE, 'utf8')
 const baseFields = fieldsOf(mergeSource, 'XhConfigBase', MERGE)
-const vueFields = new Set([...baseFields, ...fieldsOf(await readFile(VUE_CONFIG, 'utf8'), 'XhConfig', VUE_CONFIG)])
-if (!/export type XhConfig = XhConfigBase/.test(await readFile(WC_CONFIG, 'utf8')))
-  errors.push(`${WC_CONFIG} 的 XhConfig 不再等于 XhConfigBase；字段一旦分叉，同一份配置在两侧会静默不一致`)
+const vueFields = new Set([...baseFields, ...fieldsOf(await readFile(CONFIG_FILES.vue, 'utf8'), 'XhConfig', CONFIG_FILES.vue)])
+const reactFields = new Set([...baseFields, ...fieldsOf(await readFile(CONFIG_FILES.react, 'utf8'), 'XhConfig', CONFIG_FILES.react)])
+if (!/export type XhConfig = XhConfigBase/.test(await readFile(CONFIG_FILES.wc, 'utf8')))
+  errors.push(`${CONFIG_FILES.wc} 的 XhConfig 不再等于 XhConfigBase；字段一旦分叉，同一份配置在各侧会静默不一致`)
 const wcFields = baseFields
-// portalContainer 只有 Vue 有：WC 是 Light DOM，浮层不搬运，那个端口在这一侧没有意义
-const VUE_ONLY = new Set(['portalContainer'])
-for (const field of vueFields) {
-  if (!wcFields.has(field) && !VUE_ONLY.has(field))
-    errors.push(`XhConfig.${field} 只有 Vue 侧有；同一份配置在 Web Components 上会静默不生效`)
+
+const fieldsByAdapter = { vue: vueFields, react: reactFields, wc: wcFields }
+// portalContainer 只有搬得动浮层的两侧有：WC 是 Light DOM，浮层不搬运，那个端口在这一侧没有意义
+const NOT_IN_WC = new Set(['portalContainer'])
+const allFields = new Set([...vueFields, ...reactFields, ...wcFields])
+for (const field of allFields) {
+  for (const adapter of Object.values(ADAPTERS)) {
+    if (fieldsByAdapter[adapter.name].has(field))
+      continue
+    if (adapter.name === 'wc' && NOT_IN_WC.has(field))
+      continue
+    errors.push(`XhConfig.${field} 在 ${adapter.label} 侧的配置面里没有；同一份配置在这一侧会静默不生效`)
+  }
 }
 
 // —— 二、size 同名不同义的豁免名单 ——
@@ -77,11 +98,10 @@ for (const name of exempt) {
     errors.push(`SIZE_IS_NOT_AXIS 里的 '${name}' 不是组件`)
 }
 
-// —— 三、声明了 size / translations 的组件，两个适配器都要真接得到全局配置 ——
+// —— 三、声明了 size / translations 的组件，每个适配器都要真接得到全局配置 ——
 // 真源是 headless 的 props 声明（四格缩进在 schema 的 props 块里，两格在无机器组件的 Props 接口里）。
 // translations 按组件名分桶，只有 withXhConfig 认得出自己是谁；size 跑机器的走 useMachine /
-// MachineController 那一处，没机器的自己调 withXhConfig（Vue）或 this.configured（WC，带宿主沿祖先链解析）。
-const WC_ELEMENTS = 'packages/adapters/web-components/src/elements'
+// MachineController 那一处，没机器的自己调 withXhConfig（Vue 与 React）或 this.configured（WC，带宿主沿祖先链解析）。
 
 async function readAll(paths) {
   let out = ''
@@ -90,14 +110,17 @@ async function readAll(paths) {
   return out
 }
 
-/** Vue 组件的源码：目录形态（components/x/*.ts）与单文件形态（components/x.ts）都认。 */
-async function vueSource(name) {
-  const dir = join(VUE_COMPONENTS, name)
-  const files = await readdir(dir).catch(() => null)
+/** 某个适配器下这个组件的源码：目录形态（components/x/*）与单文件形态（components/x.*）都认。 */
+async function componentSource(dir, name, extensions) {
+  const sub = join(dir, name)
+  const files = await readdir(sub).catch(() => null)
   if (files)
-    return readAll(files.filter(file => file.endsWith('.ts')).map(file => join(dir, file)))
-  return readAll([join(VUE_COMPONENTS, `${name}.ts`)])
+    return readAll(files.filter(file => extensions.some(ext => file.endsWith(ext))).map(file => join(sub, file)))
+  return readAll(extensions.map(ext => join(dir, `${name}${ext}`)))
 }
+
+const wiredCount = { vue: 0, react: 0, wc: 0 }
+const reactSkipped = []
 
 for (const name of components) {
   const types = await readFile(join(HEADLESS, name, `${name}.types.ts`), 'utf8')
@@ -107,44 +130,51 @@ for (const name of components) {
     continue
   const want = [wantsSize ? 'size' : '', wantsText ? 'translations' : ''].filter(Boolean).join(' 与 ')
 
-  const vue = await vueSource(name)
-  if (vue !== '') {
-    // size / locale 由 useMachine 那一处并（fillXhConfigDefaults 只认这两个键）；
-    // translations 按组件名分桶，只有 withXhConfig 认得出自己是谁——跑机器也不代表它接上了
-    if (wantsSize && !vue.includes('withXhConfig(') && !vue.includes('useMachine('))
-      errors.push(`Vue 的 ${name}：headless 声明了 size，却既没跑机器也没调 withXhConfig，全局配置到不了它`)
-    if (wantsText && !vue.includes('withXhConfig('))
-      errors.push(`Vue 的 ${name}：headless 声明了 translations，Vue 侧必须调 withXhConfig——useMachine 只并 locale 与 size，按组件名分桶的文案到不了它`)
+  // Vue 与 React 的接线形状一样：size / locale 由 useMachine 那一处并（fillXhConfigDefaults 只认这两个键）；
+  // translations 按组件名分桶，只有 withXhConfig 认得出自己是谁——跑机器也不代表它接上了
+  for (const adapter of [ADAPTERS.vue, ADAPTERS.react]) {
+    // React 按批次铺开：没铺到的组件这一侧没有源码，跳过并计进收尾行的进度
+    if (adapter.name === 'react' && !covered.has(name)) {
+      reactSkipped.push(name)
+      continue
+    }
+    const source = await componentSource(adapter.components, name, ['.ts', '.tsx'])
+    if (source === '')
+      continue
+    wiredCount[adapter.name]++
+    if (wantsSize && !source.includes('withXhConfig(') && !source.includes('useMachine('))
+      errors.push(`${adapter.label} 的 ${name}：headless 声明了 size，却既没跑机器也没调 withXhConfig，全局配置到不了它`)
+    if (wantsText && !source.includes('withXhConfig('))
+      errors.push(`${adapter.label} 的 ${name}：headless 声明了 translations，这一侧必须调 withXhConfig——useMachine 只并 locale 与 size，按组件名分桶的文案到不了它`)
   }
 
-  const wc = await readFile(join(WC_ELEMENTS, `${name}.ts`), 'utf8').catch(() => '')
+  const wc = await readFile(join(ADAPTERS.wc.components, `${name}.ts`), 'utf8').catch(() => '')
   if (wc !== '') {
+    wiredCount.wc++
     const wired = wc.includes('MachineController') || wc.includes('this.configured(')
     if (!wired)
-      errors.push(`Web Components 的 ${name}：headless 声明了 ${want}，却既没跑机器也没调 this.configured，全局配置到不了它`)
+      errors.push(`${ADAPTERS.wc.label} 的 ${name}：headless 声明了 ${want}，却既没跑机器也没调 this.configured，全局配置到不了它`)
     // 跑机器只保证全局那份并得进来，逐实例那条通道是另一回事：元素上没有
     // translations 这个 property、或者收下了不往 props 里转交，作者就只能靠
     // <xh-config> 改整棵子树，同一个组件在 Vue 上却能逐实例改——五个元素曾一直如此。
     if (wantsText) {
       if (!/^\s*translations: \{/m.test(wc))
-        errors.push(`Web Components 的 ${name}：headless 声明了 translations，元素上没有这个 property——照 select.ts 写 translations: { attribute: false }（对象递不进属性），作者只能改整棵子树的文案`)
+        errors.push(`${ADAPTERS.wc.label} 的 ${name}：headless 声明了 translations，元素上没有这个 property——照 select.ts 写 translations: { attribute: false }（对象递不进属性），作者只能改整棵子树的文案`)
       else if (!/\btranslations: this\.translations\b/.test(wc))
-        errors.push(`Web Components 的 ${name}：translations 这个 property 收下了却没转交进 props——machineProps 里补 translations: this.translations，否则设了也不生效`)
+        errors.push(`${ADAPTERS.wc.label} 的 ${name}：translations 这个 property 收下了却没转交进 props——machineProps 里补 translations: this.translations，否则设了也不生效`)
     }
     // 绕开宿主直接调 withXhConfig 只看得见全局那份，<xh-config> 的局部覆盖对它无效
     if (/\bwithXhConfig\(/.test(wc))
-      errors.push(`Web Components 的 ${name}：元素里直接调 withXhConfig 看不见祖先链上的 <xh-config>，改用 this.configured`)
+      errors.push(`${ADAPTERS.wc.label} 的 ${name}：元素里直接调 withXhConfig 看不见祖先链上的 <xh-config>，改用 this.configured`)
   }
 }
 
 // —— 四、XhConfig 的每个字段都要有人真读 ——
 // 声明了字段、合并也正确，但没有任何组件读它，配置就是死的：scrollRoot 曾在 WC 侧一直如此。
 //
-// 扫描面是两个适配器 src 下的全部 .ts，config.ts 也在内——两侧真正把 motion 交给
-// setMotionOverride 的接线点就写在那几个 config.ts 里，按文件名把它们排除，等于把要查的
+// 扫描面是各适配器 src 下的全部 .ts / .tsx，config 那一份也在内——各侧真正把 motion 交给
+// setMotionOverride 的接线点就写在那几个 config 文件里，按文件名把它们排除，等于把要查的
 // 东西本身排除在外：删掉接线，判据照样绿。
-const VUE_SRC = 'packages/adapters/vue/src'
-const WC_SRC = 'packages/adapters/web-components/src'
 
 /**
  * 去掉注释，字符串与模板串里的 `//` 不动。
@@ -188,11 +218,14 @@ function stripComments(source) {
   return out
 }
 
-async function sourcesUnder(root) {
-  let out = ''
+/** 一个适配器 src 下的全部 .ts / .tsx，逐份留着路径：字段由谁读要按文件分辨。 */
+async function filesUnder(root) {
+  const out = []
   for (const entry of await readdir(root, { withFileTypes: true, recursive: true })) {
-    if (entry.isFile() && entry.name.endsWith('.ts'))
-      out += `${stripComments(await readFile(join(entry.parentPath ?? entry.path, entry.name), 'utf8'))}\n`
+    if (!entry.isFile() || !/\.tsx?$/.test(entry.name))
+      continue
+    const path = join(entry.parentPath ?? entry.path, entry.name)
+    out.push({ path: path.replace(/\\/g, '/'), source: stripComments(await readFile(path, 'utf8')) })
   }
   return out
 }
@@ -200,17 +233,31 @@ async function sourcesUnder(root) {
 /**
  * 一次真实取值：从一份配置里把这个字段读出来。
  *
- * 判据是「点号左边那一串里带 config」，两侧现有的读法都是这个形状：
+ * 判据是「点号左边那一串里带 config」，现有的读法多数是这个形状：
  *   config.<字段>            ·  toValue(config).<字段>
  *   xhConfig.value.<字段>    ·  resolveXhConfig(this).<字段>
+ * 另一种是先把一份配置绑到局部名字上再读它（React 把合并结果记在 useMemo 的返回值里，
+ * 点号左边不带 config 字样），那个名字由 configAliases 认出来。
  * 反过来，`motion: this.motion` 这种把值**装进**一份配置的写法不算消费——装进去没人读，
  * 配置照样是死的；接口里的字段声明、`declare` 的类字段、import 路径、kebab 字符串同理，
  * 它们都不是取值，不必再按文件或按 interface 块去排除。
  *
- * 新读法读不出来时改这个函数，别去放宽扫描面。
+ * 新读法读不出来时改这两个函数，别去放宽扫描面。
  */
-function consumes(source, field) {
-  return new RegExp(`[Cc]onfig[\\w$.?!()[\\]]*\\.${field}\\b`).test(source)
+function consumes(source, field, aliases) {
+  if (new RegExp(`[Cc]onfig[\\w$.?!()[\\]]*\\.${field}\\b`).test(source))
+    return true
+  for (const alias of aliases ?? []) {
+    if (new RegExp(`\\b${alias}\\.${field}\\b`).test(source))
+      return true
+  }
+  return false
+}
+
+/** 绑着一份配置的局部名字：`const x = …mergeXhConfig(…)` 里的 x。中间不许跨过另一条声明。 */
+function configAliases(source) {
+  const bind = /\b(?:const|let)\s+(\w+)\s*=\s*(?:(?!\b(?:const|let|function|return)\b)[\s\S]){0,200}?\b(?:useXhConfig|resolveXhConfig|mergeXhConfig|useContext)\(/g
+  return new Set([...source.matchAll(bind)].map(m => m[1]))
 }
 
 /** locale / size / translations 经 withXhConfig 统一垫进 props，不必逐字段点名。 */
@@ -223,29 +270,66 @@ const withBody = mergeSource.slice(
   mergeSource.indexOf('\n}', mergeSource.indexOf('export function withXhConfigBase')),
 )
 
-const vueAll = await sourcesUnder(VUE_SRC)
-const wcAll = await sourcesUnder(WC_SRC)
+const files = { vue: await filesUnder(SRC.vue), react: await filesUnder(SRC.react), wc: await filesUnder(SRC.wc) }
+const blob = {}
+const aliases = {}
+for (const key of Object.keys(files)) {
+  blob[key] = files[key].map(file => file.source).join('\n')
+  aliases[key] = configAliases(blob[key])
+}
+
+/**
+ * 这个字段在 Vue 侧由谁读：适配器级的一处，还是某几个组件。
+ *
+ * React 那一侧据此判断「没人读」是缺陷还是还没轮到：读它的若是适配器级的接线，
+ * 三家都该有；读它的若全是还没铺到的组件，缺席是进度，不是缺陷。
+ */
+function vueReaders(field) {
+  const inComponents = new Set()
+  let adapterLevel = false
+  for (const file of files.vue) {
+    if (!consumes(file.source, field, aliases.vue))
+      continue
+    const hit = file.path.match(/\/src\/components\/([^/]+)/)
+    if (hit)
+      inComponents.add(hit[1].replace(/\.tsx?$/, ''))
+    else
+      adapterLevel = true
+  }
+  return { inComponents, adapterLevel }
+}
+
 let probed = 0
-for (const field of vueFields) {
+const deferred = []
+for (const field of allFields) {
   if (MERGED_BY_WITH.has(field))
     continue
   probed++
   const how = `写法要能被 consumes() 认出来（config.${field} 这个形状）；确实读了但写法不同，把新形状加进 check-config-wiring.mjs 的 consumes()`
-  if (!consumes(vueAll, field))
-    errors.push(`XhConfig.${field} 在 Vue 侧没有任何组件读它，配置是死的：${how}`)
-  if (!VUE_ONLY.has(field) && !consumes(wcAll, field))
-    errors.push(`XhConfig.${field} 在 Web Components 侧没有任何组件读它，配置是死的：${how}`)
+  const readers = vueReaders(field)
+  for (const adapter of Object.values(ADAPTERS)) {
+    if (adapter.name === 'wc' && NOT_IN_WC.has(field))
+      continue
+    if (consumes(blob[adapter.name], field, aliases[adapter.name]))
+      continue
+    // React 还没铺到读它的那些组件时，缺席是进度不是缺陷；适配器级的接线不在此列
+    if (adapter.name === 'react' && !readers.adapterLevel && ![...readers.inComponents].some(name => covered.has(name))) {
+      deferred.push(field)
+      continue
+    }
+    errors.push(`XhConfig.${field} 在 ${adapter.label} 侧没有任何人读它，配置是死的：${how}`)
+  }
 }
 
 // 两张豁免名单的过期反查：登了却已不成立的比漏登更危险，它会一直放行
-for (const field of VUE_ONLY) {
-  if (!vueFields.has(field))
-    errors.push(`VUE_ONLY 里的 '${field}' 已经不是 XhConfig 的字段——名单过期了，删掉这一条`)
+for (const field of NOT_IN_WC) {
+  if (!vueFields.has(field) && !reactFields.has(field))
+    errors.push(`NOT_IN_WC 里的 '${field}' 已经不是任何一侧 XhConfig 的字段——名单过期了，删掉这一条`)
   else if (wcFields.has(field))
-    errors.push(`VUE_ONLY 里的 '${field}' 现在 Web Components 侧也有了——名单过期了，删掉这一条，让它跟别的字段一样两侧都查`)
+    errors.push(`NOT_IN_WC 里的 '${field}' 现在 Web Components 侧也有了——名单过期了，删掉这一条，让它跟别的字段一样三侧都查`)
 }
 for (const field of MERGED_BY_WITH) {
-  if (!vueFields.has(field))
+  if (!allFields.has(field))
     errors.push(`MERGED_BY_WITH 里的 '${field}' 已经不是 XhConfig 的字段——名单过期了，删掉这一条`)
   else if (!globalKeys.has(field) && !withBody.includes(field))
     errors.push(`MERGED_BY_WITH 里的 '${field}' 已经不由 withXhConfig 统一垫底（${MERGE} 的 GLOBAL_KEYS 与 withXhConfigBase 里都找不到它）——名单过期了，删掉这一条，让它照常查有没有人读`)
@@ -258,4 +342,8 @@ if (errors.length > 0) {
   process.exit(1)
 }
 
-console.log(`[check-config-wiring] 通过：两侧配置面各 ${vueFields.size}/${wcFields.size} 个字段，其中 ${probed} 个逐一验过有人真读（另 ${MERGED_BY_WITH.size} 个经 withXhConfig 统一垫底），size 豁免 ${exempt.size} 个，声明了 size / translations 的组件两侧都接了全局配置`)
+const deferredNote = deferred.length > 0
+  ? `，另 ${new Set(deferred).size} 个字段（${[...new Set(deferred)].join(' / ')}）在 React 侧等读它的组件铺到`
+  : ''
+console.log(`[check-config-wiring] 通过：配置面 Vue ${vueFields.size} / React ${reactFields.size} / Web Components ${wcFields.size} 个字段，其中 ${probed} 个逐一验过有人真读（另 ${MERGED_BY_WITH.size} 个经 withXhConfig 统一垫底）${deferredNote}`)
+console.log(`  接了全局配置的组件：Vue ${wiredCount.vue} 个 / React ${wiredCount.react} 个 / Web Components ${wiredCount.wc} 个，size 豁免 ${exempt.size} 个（${reactProgress(covered, components.length)}，这一段跳过 React 还没铺的 ${new Set(reactSkipped).size} 个组件）`)
