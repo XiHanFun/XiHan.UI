@@ -10,10 +10,10 @@
 import { describe, expect, it } from 'vitest'
 import { createReactHarness } from '../../../packages/adapters/react/tests/harness'
 import { createVueHarness } from '../../../packages/adapters/vue/tests/harness'
-import { dialogSuite, runParity, switchSuite } from '../src'
+import { dialogSuite, fieldSuite, formSuite, runParity, selectSuite, switchSuite } from '../src'
 
 /** React 侧已经铺到、纳入逐帧对拍的组件。 */
-const SUITES = [dialogSuite, switchSuite]
+const SUITES = [dialogSuite, fieldSuite, formSuite, selectSuite, switchSuite]
 
 /** React 侧还没铺到的组件。每批合入时删掉对应行；删空即本文件的覆盖等式自动收紧到全集。 */
 const PENDING = new Set([
@@ -50,14 +50,12 @@ const PENDING = new Set([
   'drawer',
   'editable',
   'empty-state',
-  'field',
   'field-array',
   'fieldset',
   'file-upload',
   'flex',
   'float-button',
   'floating-panel',
-  'form',
   'gradient-text',
   'grid',
   'heatmap',
@@ -105,7 +103,6 @@ const PENDING = new Set([
   'scroll-area',
   'scrollbar',
   'segmented',
-  'select',
   'separator',
   'side-nav',
   'signature-pad',
@@ -143,7 +140,13 @@ const PENDING = new Set([
   'watermark',
 ])
 
-runParity([createVueHarness(), createReactHarness()], SUITES, { describe, it })
+runParity([createVueHarness(), createReactHarness()], SUITES, { describe, it }, {
+  // 焦点由提交后的回调放下去，两家排这一步的时机不同（React 在离散事件末尾同步跑完，
+  // Vue 排在 nextTick 链上），而两侧的 tick 都盯 DOM 变动、看不见移焦——同一帧里
+  // 一个已经移完、另一个还在半路，同一份代码两次跑能得出两种结果。实测五轮里红一轮。
+  // 焦点本身不放过：各自的一致性套件用 settle 等着断言，那一侧是确定的。
+  ignore: ['activeElement'],
+})
 
 /** 套件全集取自目录，不取 allSuites：拿被审对象当分母，漏登记的组件根本不进等式。 */
 function suiteFilesOnDisk(): string[] {

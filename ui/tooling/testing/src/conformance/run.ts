@@ -72,14 +72,14 @@ function assertCaseFrames(c: ConformanceCase, frames: readonly DomSnapshot[]): v
 }
 
 /** 两个快照按结构字段深比；返回差异描述，空即一致。 */
-function diffSnapshot(a: DomSnapshot, b: DomSnapshot): string[] {
+function diffSnapshot(a: DomSnapshot, b: DomSnapshot, ignore: ReadonlySet<ParityField>): string[] {
   const diffs: string[] = []
   const j = (x: unknown): string => JSON.stringify(x)
   if (j(a.parts) !== j(b.parts))
     diffs.push(`parts:\n    A=${j(a.parts)}\n    B=${j(b.parts)}`)
   if (j(a.order) !== j(b.order))
     diffs.push(`order: A=${j(a.order)} B=${j(b.order)}`)
-  if (j(a.activeElement) !== j(b.activeElement))
+  if (!ignore.has('activeElement') && j(a.activeElement) !== j(b.activeElement))
     diffs.push(`activeElement: A=${j(a.activeElement)} B=${j(b.activeElement)}`)
   if (j(a.events) !== j(b.events))
     diffs.push(`events: A=${j(a.events)} B=${j(b.events)}`)
@@ -88,12 +88,29 @@ function diffSnapshot(a: DomSnapshot, b: DomSnapshot): string[] {
   return diffs
 }
 
+/** 逐帧比对里可以声明不比的字段。 */
+export type ParityField = 'activeElement'
+
+export interface RunParityOptions {
+  /**
+   * 声明不比的帧字段，每一项都要在调用处写清为什么。
+   *
+   * `activeElement` 是唯一会因适配器调度差异而抖的一项：移焦由提交后的回调放下去，
+   * 各家排这一步的时机不同，而两侧的 tick 都盯 DOM 变动、看不见移焦，
+   * 于是同一帧里可能一个已经移完、另一个还在半路——同一份代码两次跑能得出两种结果。
+   * 声明不比它之后，焦点仍由各自的一致性套件用 settle 等着断言，那一侧是确定的。
+   */
+  readonly ignore?: readonly ParityField[]
+}
+
 /** 跨适配器轨迹比对：同一份规格在多个 harness 上串行录制，逐帧结构比对并打印 diff。 */
 export function runParity(
   harnesses: readonly AdapterHarness[],
   suites: readonly ConformanceSuite[],
   hooks: TestHooks,
+  options: RunParityOptions = {},
 ): void {
+  const ignore = new Set<ParityField>(options.ignore ?? [])
   for (const suite of suites) {
     const names = harnesses.map(h => h.adapterName).join(' vs ')
     hooks.describe(`parity: ${suite.component} (${names})`, () => {
@@ -114,7 +131,7 @@ export function runParity(
             if (trace.length !== baseTrace.length)
               throw new Error(`parity ${name} vs ${baseName}：轨迹帧数 ${trace.length} ≠ ${baseTrace.length}`)
             for (let i = 0; i < baseTrace.length; i++) {
-              const diff = diffSnapshot(baseTrace[i]!, trace[i]!)
+              const diff = diffSnapshot(baseTrace[i]!, trace[i]!, ignore)
               if (diff.length) {
                 const label = i === 0 ? 'mount' : `step#${i - 1} (${c.steps![i - 1]!.kind})`
                 throw new Error(`parity ${name} vs ${baseName} @ ${label}:\n  ${diff.join('\n  ')}`)

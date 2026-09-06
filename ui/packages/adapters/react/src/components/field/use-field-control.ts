@@ -1,4 +1,5 @@
 import { useOptionalFieldContext } from './context'
+import { wiringOnly } from './field'
 
 /** 读屏只念焦点所在节点的描述，所以说明与校验状态要落到真控件上，不能停在封装根。 */
 const STATE_KEYS = ['aria-describedby', 'aria-invalid', 'aria-required', 'aria-readonly'] as const
@@ -7,6 +8,19 @@ const EMPTY: Record<string, unknown> = {}
 
 function identity(props: Record<string, unknown>): Record<string, unknown> {
   return props
+}
+
+/**
+ * 在薄封装内部取字段的控件接线属性（id 与 aria-*），把它们绑到真正可聚焦的那个节点上。
+ *
+ * 外层要写 `<XhFieldControl asChild={false}>`，否则属性会被合两遍。
+ * 不在字段里时返回空对象，封装照样能单独用。
+ */
+export function useFieldControl(): Record<string, unknown> {
+  const ctx = useOptionalFieldContext()
+  if (!ctx)
+    return EMPTY
+  return wiringOnly(ctx.api.getControlProps() as Record<string, unknown>)
 }
 
 /** 字段的说明、校验与只读状态，供薄封装补到自己那个可聚焦节点上。 */
@@ -34,9 +48,7 @@ export function useFieldLabelWiring(): (props: Record<string, unknown>) => Recor
   const ctx = useOptionalFieldContext()
   if (!ctx)
     return identity
-  const labelId = (ctx.api.getLabelProps() as { id?: string }).id
-  if (labelId === undefined)
-    return identity
+  const labelId = ctx.api.labelId
   return (props) => {
     const own = props['aria-labelledby']
     return { ...props, 'aria-labelledby': own == null ? labelId : `${labelId} ${String(own)}` }
