@@ -1,11 +1,30 @@
 import type { MachineConfig, MachineSchema, Service, ServiceOptions } from '@xihan-ui/core'
 import type { ReactRuntime } from './create-react-runtime'
-import { createService } from '@xihan-ui/core'
+import { VERSION as CORE_VERSION, createService, isDev } from '@xihan-ui/core'
+import { checkLockstepVersion, printMetadataBannerOnce, registerRuntimeHost } from '@xihan-ui/core/metadata'
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { version as REACT_ADAPTER_VERSION } from '../../package.json'
+import { applyXhConfigDefaults, useXhConfigDefaults } from './config-defaults'
 import { createReactRuntime } from './create-react-runtime'
 
 // 一台机器一个 hook 实例：渲染体登记最新 props，提交后挂载机器、跑 trackers，
 // 状态变化经 useSyncExternalStore 拉回组件重渲。
+
+// 锁步版本检查只跑一次：第一个组件建机器时借路启动，之后的组件全走这个开关。
+// 生产构建里 isDev() 为 false，跳过。
+let devChecksStarted = false
+
+function ensureDevChecks(): void {
+  if (devChecksStarted)
+    return
+  devChecksStarted = true
+  // 宿主登记不分 dev/prod：元数据要能报出运行在哪个适配器上
+  registerRuntimeHost('react', REACT_ADAPTER_VERSION)
+  if (isDev()) {
+    checkLockstepVersion('react', REACT_ADAPTER_VERSION, CORE_VERSION)
+    printMetadataBannerOnce()
+  }
+}
 
 // 服务端渲染没有提交，layout effect 换成永不执行的 useEffect，避开 React 的警告
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
@@ -89,13 +108,25 @@ export function useMachine<T extends MachineSchema>(
   machine: MachineConfig<T>,
   getProps: () => Partial<T['props']>,
 ): Service<T> {
+  ensureDevChecks()
+
   // 渲染体就换上这一帧的取值器：service 的 props() 调用极频繁，读到的必须是最新那一份
   const propsRef = useRef(getProps)
   propsRef.current = getProps
 
+  // 全局配置在这一处并进来：所有跑机器的组件都从这里取 props，不必逐个接线。
+  // 与 WC 侧 MachineController 里那一处对位，三个适配器的生效面因此一致
+  const getConfig = useXhConfigDefaults()
+  const configRef = useRef(getConfig)
+  configRef.current = getConfig
+
   const [instance] = useState<Instance<T>>(() => createInstance<T>(
     machine,
-    (() => propsRef.current()) as ServiceOptions<T>['props'],
+    (() => applyXhConfigDefaults(
+      machine.name,
+      { ...propsRef.current() },
+      configRef.current(),
+    )) as ServiceOptions<T>['props'],
   ))
   const { runtime } = instance
 

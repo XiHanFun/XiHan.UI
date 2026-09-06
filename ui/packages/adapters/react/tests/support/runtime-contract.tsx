@@ -51,6 +51,9 @@ export function describeRuntimeContract(name: string, useMachine: UseMachineFn):
     afterEach(() => {
       act(() => root.unmount())
       container.remove()
+      // 标记留着会让同进程后跑的一致性套件为「不在 act 里的更新」发警告，
+      // 而那些更新是直接派 DOM 事件触发的、本来就同步处理完了
+      delete (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT
     })
 
     /** 开合件：内容节点只在展开态渲染，展开态的 entry 会做一次提交后探测。 */
