@@ -69,13 +69,19 @@ const vueExposes = source => /^ {4}dir: \{/m.test(source)
 /** React 侧露出 dir：组件的 Props 接口里写着一条 dir（成员缩进两格）。 */
 const reactExposes = source => /^ {2}dir\?:/m.test(source)
 
+/** 整份 props 透传给 use<组件>：不逐个列键，而是把组件收到的那一份整个交出去。 */
+const FORWARDS_ALL_PROPS = /\buse[A-Z]\w*\(\s*(?:with\w+\(\s*'[^']*'\s*,\s*)?(?:\.\.\.)?props\b/
+
 /**
  * React 的 Props 大多从 ComponentPropsWithRef<'…'> 扩展而来，那里本就带着 HTML 的 dir，
  * 只声明不接线时 dir 会随 rest 落到 DOM 节点上、却永远到不了机器——看着生效，行内轴不翻。
- * 判据是接口块以外还提到 dir：组件体里解构出来再交进机器 props 的那一处。
+ *
+ * 两种接线都算数：组件体里把 dir 解构出来再交进机器 props，或者整份 props 直接交出去
+ * （后者更严，一个键都漏不掉）。
  */
 function reactForwards(source) {
-  return /\bdir\b/.test(source.replace(/export (?:interface|type) \w[^{]*\{[\s\S]*?\n\}/g, ''))
+  const body = source.replace(/export (?:interface|type) \w[^{]*\{[\s\S]*?\n\}/g, '')
+  return /\bdir\b/.test(body) || FORWARDS_ALL_PROPS.test(body)
 }
 
 /**
