@@ -26,6 +26,14 @@ export default xihanUi(
     },
   },
   {
+    // 供应链策略不在这份工作区开：文档站吃 vitepress 钉住的 vite 5，
+    // 那个版本当前过不了注册表的信任校验，开了策略连依赖都装不上
+    files: ["pnpm-workspace.yaml"],
+    rules: {
+      "pnpm/yaml-enforce-settings": "off",
+    },
+  },
+  {
     // 正文里的代码块：打印取值是文档的表达方式，一行写完的回调也是
     files: ["**/*.md/**"],
     rules: {
