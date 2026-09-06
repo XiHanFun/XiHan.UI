@@ -3,22 +3,88 @@
   "probe": "toggle",
   "$probe": "反查用的既有组件：creates 的每条路径它都得有，modifies 的每条 probeAnchor 都得在对应文件里命中。命中不了说明这张表过期了。",
   "creates": [
-    { "id": "headless-anatomy", "path": "packages/engine/headless/src/{c}/{c}.anatomy.ts", "what": "解剖：scope 名与部件名" },
-    { "id": "headless-types", "path": "packages/engine/headless/src/{c}/{c}.types.ts", "what": "Schema / Api / Translations 三组类型" },
-    { "id": "headless-machine", "path": "packages/engine/headless/src/{c}/{c}.machine.ts", "what": "状态机" },
-    { "id": "headless-connect", "path": "packages/engine/headless/src/{c}/{c}.connect.ts", "what": "连接层：机器状态翻成 DOM 属性" },
-    { "id": "headless-keyboard", "path": "packages/engine/headless/src/{c}/{c}.keyboard.ts", "what": "键盘规格表" },
-    { "id": "headless-meta", "path": "packages/engine/headless/src/{c}/{c}.meta.ts", "what": "必备部件声明" },
-    { "id": "headless-doc", "path": "packages/engine/headless/src/{c}/{c}.doc.md", "what": "文档站正文（概述 + 小节）" },
-    { "id": "headless-entry", "path": "packages/engine/headless/src/{c}/index.ts", "what": "组件目录的 index" },
-    { "id": "vue-component", "path": "packages/adapters/vue/src/components/{c}/{c}.ts", "what": "Vue 外壳组件" },
-    { "id": "vue-composable", "path": "packages/adapters/vue/src/components/{c}/use-{c}.ts", "what": "Vue 组合式函数" },
-    { "id": "wc-element", "path": "packages/adapters/web-components/src/elements/{c}.ts", "what": "自定义元素" },
-    { "id": "skin", "path": "packages/design/styles/css/{c}.css", "what": "皮肤" },
-    { "id": "suite", "path": "tooling/testing/src/suites/{c}.suite.ts", "what": "两端共用的一致性套件" },
-    { "id": "demo-vue", "path": "../docs/.vitepress/demos/{c}/01-basic.vue", "what": "文档站示例（Vue 版）" },
-    { "id": "demo-html", "path": "../docs/.vitepress/demos/{c}/01-basic.html", "what": "文档站示例（自定义元素版）" },
-    { "id": "changeset", "path": ".changeset/{c}.md", "probe": "none", "whyNoProbe": "变更集发版后被 changeset version 消费掉，既有组件留不下来", "what": "变更集（新增组件目录触发 changeset-required）" }
+    {
+      "id": "headless-anatomy",
+      "path": "packages/engine/headless/src/{c}/{c}.anatomy.ts",
+      "what": "解剖：scope 名与部件名"
+    },
+    {
+      "id": "headless-types",
+      "path": "packages/engine/headless/src/{c}/{c}.types.ts",
+      "what": "Schema / Api / Translations 三组类型"
+    },
+    {
+      "id": "headless-machine",
+      "path": "packages/engine/headless/src/{c}/{c}.machine.ts",
+      "what": "状态机"
+    },
+    {
+      "id": "headless-connect",
+      "path": "packages/engine/headless/src/{c}/{c}.connect.ts",
+      "what": "连接层：机器状态翻成 DOM 属性"
+    },
+    {
+      "id": "headless-keyboard",
+      "path": "packages/engine/headless/src/{c}/{c}.keyboard.ts",
+      "what": "键盘规格表"
+    },
+    {
+      "id": "headless-meta",
+      "path": "packages/engine/headless/src/{c}/{c}.meta.ts",
+      "what": "必备部件声明"
+    },
+    {
+      "id": "headless-doc",
+      "path": "packages/engine/headless/src/{c}/{c}.doc.md",
+      "what": "文档站正文（概述 + 小节）"
+    },
+    {
+      "id": "headless-entry",
+      "path": "packages/engine/headless/src/{c}/index.ts",
+      "what": "组件目录的 index"
+    },
+    {
+      "id": "vue-component",
+      "path": "packages/adapters/vue/src/components/{c}/{c}.ts",
+      "what": "Vue 外壳组件"
+    },
+    {
+      "id": "vue-composable",
+      "path": "packages/adapters/vue/src/components/{c}/use-{c}.ts",
+      "what": "Vue 组合式函数"
+    },
+    {
+      "id": "wc-element",
+      "path": "packages/adapters/web-components/src/elements/{c}.ts",
+      "what": "自定义元素"
+    },
+    {
+      "id": "skin",
+      "path": "packages/design/styles/css/{c}.css",
+      "what": "皮肤"
+    },
+    {
+      "id": "suite",
+      "path": "tooling/testing/src/suites/{c}.suite.ts",
+      "what": "两端共用的一致性套件"
+    },
+    {
+      "id": "demo-vue",
+      "path": "../docs/.vitepress/demos/{c}/01-basic.vue",
+      "what": "文档站示例（Vue 版）"
+    },
+    {
+      "id": "demo-html",
+      "path": "../docs/.vitepress/demos/{c}/01-basic.html",
+      "what": "文档站示例（自定义元素版）"
+    },
+    {
+      "id": "changeset",
+      "path": ".changeset/{c}.md",
+      "probe": "none",
+      "whyNoProbe": "变更集发版后被 changeset version 消费掉，既有组件留不下来",
+      "what": "变更集（新增组件目录触发 changeset-required）"
+    }
   ],
   "modifies": [
     {
@@ -101,18 +167,81 @@
     }
   ],
   "generated": [
-    { "path": "packages/adapters/web-components/custom-elements.json", "command": "pnpm gate:cem", "what": "自定义元素清单" },
-    { "path": "packages/design/styles/index.unlayered.css", "command": "pnpm gate:styled", "what": "按需入口的无层版皮肤" },
-    { "path": "packages/design/styles/package.json", "command": "pnpm gate:exports", "what": "皮肤子路径导出" },
-    { "path": "../docs/components/{c}.md", "command": "pnpm gen:docs", "what": "组件参考页与目录页" },
-    { "path": "tooling/public-surface.json", "command": "pnpm surface:update", "what": "公开面基线" },
-    { "path": ".size-limit.css.json", "command": "pnpm size:css --update", "what": "逐份皮肤体积基线" },
-    { "path": "tooling/scripts/part-vocabulary.json", "command": "pnpm vocab:update", "what": "部件名词汇表" },
-    { "path": "packages/adapters/vue/tests/browser/__snapshots__/computed/{c}.txt", "command": "pnpm test:browser", "what": "Vue 侧计算样式快照（两侧逐字对拍的一半）" },
-    { "path": "packages/adapters/web-components/tests/browser/__snapshots__/computed/{c}.txt", "command": "pnpm test:browser", "what": "WC 侧计算样式快照（缺一侧即判两端漏登记）" }
+    {
+      "path": "packages/adapters/web-components/custom-elements.json",
+      "command": "pnpm gate:cem",
+      "what": "自定义元素清单"
+    },
+    {
+      "path": "packages/design/styles/index.unlayered.css",
+      "command": "pnpm gate:styled",
+      "what": "按需入口的无层版皮肤"
+    },
+    {
+      "path": "packages/design/styles/package.json",
+      "command": "pnpm gate:exports",
+      "what": "皮肤子路径导出"
+    },
+    {
+      "path": "../docs/components/{c}.md",
+      "command": "pnpm gen:docs",
+      "what": "组件参考页与目录页"
+    },
+    {
+      "path": "tooling/public-surface.json",
+      "command": "pnpm surface:update",
+      "what": "公开面基线"
+    },
+    {
+      "path": ".size-limit.css.json",
+      "command": "pnpm size:css --update",
+      "what": "逐份皮肤体积基线"
+    },
+    {
+      "path": "tooling/scripts/part-vocabulary.json",
+      "command": "pnpm vocab:update",
+      "what": "部件名词汇表"
+    },
+    {
+      "path": "packages/adapters/vue/tests/browser/__snapshots__/computed/{c}.txt",
+      "command": "pnpm test:browser",
+      "what": "Vue 侧计算样式快照（两侧逐字对拍的一半）"
+    },
+    {
+      "path": "packages/adapters/web-components/tests/browser/__snapshots__/computed/{c}.txt",
+      "command": "pnpm test:browser",
+      "what": "WC 侧计算样式快照（缺一侧即判两端漏登记）"
+    }
   ],
   "manual": [
-    { "path": ".size-limit.json", "what": "styles 那条是全部皮肤合起来称一次；新皮肤把它顶破了要人工重设限额，并在变更集里写清涨在哪" },
-    { "path": "packages/engine/headless/tests/{c}.spec.ts", "probe": "none", "whyNoProbe": "没有门禁强制，参照组件本身就没有这份单测", "what": "headless 单测：机器一旦长出真逻辑就补上" }
+    {
+      "path": ".size-limit.json",
+      "what": "styles 那条是全部皮肤合起来称一次；新皮肤把它顶破了要人工重设限额，并在变更集里写清涨在哪"
+    },
+    {
+      "path": "packages/engine/headless/tests/{c}.spec.ts",
+      "probe": "none",
+      "whyNoProbe": "没有门禁强制，参照组件本身就没有这份单测",
+      "what": "headless 单测：机器一旦长出真逻辑就补上"
+    },
+    {
+      "id": "react-component",
+      "path": "packages/adapters/react/src/components/{c}/{c}.tsx",
+      "probe": "none",
+      "whyNoProbe": "React 适配器按批次铺开，探针组件还没铺到；铺到哪个组件由 react-coverage.json 说了算，check-react-coverage 做两侧反查",
+      "what": "React 外壳组件。不进脚手架：一律生成会让每个新组件都被迫同时交 React 版"
+    },
+    {
+      "id": "react-composable",
+      "path": "packages/adapters/react/src/components/{c}/use-{c}.ts",
+      "probe": "none",
+      "whyNoProbe": "React 适配器按批次铺开，探针组件还没铺到；铺到哪个组件由 react-coverage.json 说了算，check-react-coverage 做两侧反查",
+      "what": "React hook。同上，按批次人工落"
+    },
+    {
+      "id": "react-coverage",
+      "path": "tooling/scripts/react-coverage.json",
+      "what": "React 铺开进度登记。铺到一个就往 covered 里加一个，十几张门禁按它决定该核谁；不加就是静默漏检"
+    }
   ]
 }

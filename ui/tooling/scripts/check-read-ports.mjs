@@ -1,24 +1,28 @@
 #!/usr/bin/env node
-// 门禁：Vue 适配器的 Root 组件通过默认插槽交给作者的每一样东西，自定义元素这边也要取得到。
+// 门禁：Vue 适配器的 Root 组件通过默认插槽交给作者的每一样东西，另外两个适配器也要取得到。
 //
-// 两个适配器接的是同一台机器、同一份 connect。Vue 侧把 connect 算出来的派生值与命令式方法
+// 三个适配器接的是同一台机器、同一份 connect。Vue 侧把 connect 算出来的派生值与命令式方法
 // 挑一部分塞进插槽作用域（`v-slot="{ pages, totalPages, setPage }"`），作者照着渲染；
 // 自定义元素这边没有插槽作用域这条路，同样的东西得落成元素上的只读属性与公开方法
 // （`el.pages`、`el.setPage(3)`）。少一样，作者就得把库里那段算法自己再写一遍——页码序列、
 // 标签截断、分侧过滤都出现过整段抄写的示例，库里口径一改，外面静默走样。
 //
-// 两侧各自怎么取：
+// 三侧各自怎么取：
 // - Vue 侧取 `Xh<组件>Root` 的 `slots.default?.({ … })` 那个对象的键。取的是「挑出来交出去的
-//   那一份」而不是 XxxApi 全集——Vue 侧本来就是挑着交的，那份挑正是两边该对齐的口径。
+//   那一份」而不是 XxxApi 全集——Vue 侧本来就是挑着交的，那份挑正是三边该对齐的口径。
 // - 元素侧取类上的公开 get 与公开方法。作者写的 attribute / property（value、open、page 这些）
 //   不算：它们是作者递进去的声明，非受控时元素上恒为 undefined，读不到机器此刻的值。
+// - React 侧取函数式 children 的参数对象，即 `children({ … })` 那个对象字面量的键。带载荷的
+//   插槽在 React 上就落成函数式 children，普通 ReactNode 的 children 没有参数、什么都交不出去。
+//   React 铺一个新组件时，Vue 那份插槽作用域交了什么，这里就得原样传进 children 的参数里。
+//   React 侧没有存量清单：铺到哪个组件，那个组件当场就是硬判据。
 //
 // 对齐判在 api 成员上，不判名字：两侧读同一个 api 成员就算接上了。名字本来就会不一样——
 // `page` 这个名字在元素上已经被作者写的属性占着，派生的当前页只能另起一个名字（currentPage）；
 // Vue 侧的 `sourceItems: api.visibleItems('source')` 与元素侧带参数的 `visibleItems(side)`
 // 也是同一个口，元素少开一个。名字撞上了同样算数，覆盖读不出 api 成员的那几项。
 //
-// PENDING 是一张存量清单，不是豁免表：键是当前还没对齐的组件，值是当前差的那几样，逐字与
+// PENDING 是元素侧的一张存量清单，不是豁免表：键是当前还没对齐的组件，值是当前差的那几样，逐字与
 // 扫描结果核对——补上一个就得从表里删一个，删空了这道门禁自动变成硬判据。
 // 带 --report 跑一次，打出来的就是 PENDING 的形状，可整段换进去。
 // 带 --rank 跑一次，把缺口按「有多少份 Vue 示例真的解构过这个名字」排出来。
@@ -26,10 +30,12 @@ import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
 import ts from 'typescript'
+import { ADAPTERS, reactCovered, reactProgress } from './lib/adapters.mjs'
 
-const VUE = 'packages/adapters/vue/src/components'
-const WC = 'packages/adapters/web-components/src/elements'
-const DEFINE = 'packages/adapters/web-components/src/define.ts'
+const VUE = ADAPTERS.vue.components
+const REACT = ADAPTERS.react.components
+const WC = ADAPTERS.wc.components
+const DEFINE = `${ADAPTERS.wc.root}/src/define.ts`
 // --rank 用：数缺口在文档站示例里被解构了多少次
 const DEMOS = '../docs/.vitepress/demos'
 
@@ -352,6 +358,66 @@ function throughComposable(initializer, viaComposable) {
   return chains
 }
 
+// ── React 侧 ──
+
+/** api 在 React 侧长这样：从 use-<组件> 里解构出来的 `api`，不像 Vue 那样裹一层 ref。 */
+function isReactApiRoot(node) {
+  return ts.isIdentifier(node) && node.text === 'api'
+}
+
+/**
+ * React 组件交给作者的东西：函数式 children 的参数对象。
+ * 记下键名，以及每个键读到的 api 成员链——与元素侧一样，名字撞上了也算数。
+ */
+function childrenPayload(source, fileName) {
+  const sf = parse(source, fileName)
+  const alias = aliasesOf(sf, isReactApiRoot)
+  const rooted = n => isReactApiRoot(n) || (ts.isIdentifier(n) && alias.has(n.text))
+  const ports = { names: new Set(), chains: new Set() }
+  const walk = (n) => {
+    if (ts.isCallExpression(n) && /(?:^|\.)children$/.test(n.expression.getText().replaceAll(/\s/g, ''))) {
+      const arg = n.arguments[0]
+      if (arg && ts.isObjectLiteralExpression(arg)) {
+        for (const prop of arg.properties) {
+          if (ts.isPropertyAssignment(prop)) {
+            ports.names.add(prop.name.getText().replaceAll('\'', ''))
+            for (const chain of apiChains(prop.initializer, rooted))
+              ports.chains.add(chain)
+          }
+          else if (ts.isShorthandPropertyAssignment(prop)) {
+            ports.names.add(prop.name.getText())
+          }
+        }
+      }
+    }
+    ts.forEachChild(n, walk)
+  }
+  walk(sf)
+  return ports
+}
+
+/** 一个 React 组件目录里所有 .ts / .tsx 合起来的取数口。 */
+async function reactPorts(comp) {
+  const ports = { names: new Set(), chains: new Set() }
+  let entries
+  try {
+    entries = await readdir(join(REACT, comp), { withFileTypes: true })
+  }
+  catch {
+    return ports
+  }
+  for (const entry of entries) {
+    if (!entry.isFile() || !/\.tsx?$/.test(entry.name))
+      continue
+    const found = childrenPayload(await readFile(join(REACT, comp, entry.name), 'utf8'), entry.name)
+    for (const name of found.names)
+      ports.names.add(name)
+    for (const chain of found.chains)
+      ports.chains.add(chain)
+  }
+  return ports
+}
+
 // ── 比对 ──
 
 const { tagToClass, classToFile } = await readRegistry()
@@ -371,10 +437,21 @@ for (const [tag, className] of tagToClass) {
   ports.set(tag.replace(/^xh-/, ''), elementPorts(await readFile(join(WC, `${file}.ts`), 'utf8'), file, className))
 }
 
+/** React 侧已经铺到的组件，没铺到的不核 React 这一侧。 */
+const covered = await reactCovered()
+const vueEntries = await readdir(VUE, { withFileTypes: true })
+/** 库里的组件数：vue 组件目录下既有 <名>/ 目录也有平铺的 <名>.ts。给 React 的铺开进度当分母。 */
+const componentTotal = new Set(
+  vueEntries.filter(e => e.isDirectory() || e.name.endsWith('.ts')).map(e => e.name.replace(/\.ts$/, '')),
+).size
+
 const gaps = new Map()
+/** React 侧对不上的：键是组件，值是插槽作用域交了、函数式 children 却没交出去的那几样。 */
+const reactGaps = new Map()
 let compared = 0
 let handed = 0
-for (const dir of await readdir(VUE, { withFileTypes: true })) {
+let reactCompared = 0
+for (const dir of vueEntries) {
   if (!dir.isDirectory())
     continue
   const comp = dir.name
@@ -397,6 +474,16 @@ for (const dir of await readdir(VUE, { withFileTypes: true })) {
     .map(([key]) => key)
   if (missing.length > 0)
     gaps.set(comp, missing)
+
+  if (!covered.has(comp))
+    continue
+  reactCompared++
+  const payload = await reactPorts(comp)
+  const reactMissing = [...scope]
+    .filter(([key, chains]) => !payload.names.has(key) && ![...chains].some(c => payload.chains.has(c)))
+    .map(([key]) => key)
+  if (reactMissing.length > 0)
+    reactGaps.set(comp, reactMissing)
 }
 
 if (process.argv.includes('--report')) {
@@ -468,14 +555,25 @@ for (const [comp, listed] of Object.entries(PENDING).sort()) {
     errors.push(`${comp} 这几样已经取得到了，从登记表里删掉：${stale.join(' ')}`)
 }
 
-if (errors.length > 0) {
-  console.error('[check-read-ports] ✗ 插槽作用域与元素取数口对不上：')
+/** React 侧没有存量清单，铺到的组件差一样就判红。 */
+const reactErrors = []
+for (const [comp, missing] of [...reactGaps].sort())
+  reactErrors.push(`${comp} 的函数式 children 没把这几样交出去：${missing.join(' ')}`)
+
+if (errors.length > 0 || reactErrors.length > 0) {
+  console.error('[check-read-ports] ✗ 插槽作用域与另外两侧的取数口对不上：')
   for (const e of errors)
-    console.error(`  ${e}`)
-  console.error('\n元素上补一个 get（机器没建起时给安全空值）或公开方法，读的 api 成员与插槽作用域那一项一致；')
-  console.error('补完把 PENDING 里对应的那几样删掉。当前存量用 --report 打出来。')
+    console.error(`  ${ADAPTERS.wc.label}：${e}`)
+  for (const e of reactErrors)
+    console.error(`  ${ADAPTERS.react.label}：${e}`)
+  if (errors.length > 0) {
+    console.error('\n元素上补一个 get（机器没建起时给安全空值）或公开方法，读的 api 成员与插槽作用域那一项一致；')
+    console.error('补完把 PENDING 里对应的那几样删掉。当前存量用 --report 打出来。')
+  }
+  if (reactErrors.length > 0)
+    console.error('\nReact 上把这几样加进 children 的参数对象里，读的 api 成员与插槽作用域那一项一致。')
   process.exit(1)
 }
 
 const pendingCount = Object.values(PENDING).reduce((n, list) => n + list.length, 0)
-console.log(`[check-read-ports] 通过：${compared} 份 Root 插槽作用域共 ${handed} 样，元素侧逐样对齐（存量清单还剩 ${gaps.size} 份 · ${pendingCount} 样）`)
+console.log(`[check-read-ports] 通过：${compared} 份 Root 插槽作用域共 ${handed} 样，${ADAPTERS.wc.label} 侧逐样对齐（存量清单还剩 ${gaps.size} 份 · ${pendingCount} 样）；${reactProgress(covered, componentTotal)}，其中有插槽作用域可比对的 ${reactCompared} 份，函数式 children 逐样对齐`)

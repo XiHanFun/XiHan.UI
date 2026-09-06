@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 门禁：两个适配器的计算样式快照逐字一致。
+// 门禁：Vue 与 Web Components 两个适配器的计算样式快照逐字一致。
 //
 // 快照由两侧的 computed-snapshot.spec.ts 在真实浏览器里采出并入库，
 // 内容是每个部件解析完令牌代换、继承与层序之后的最终取值。
@@ -9,12 +9,25 @@
 // 两侧逐字一致，等于把「两端视觉一致」从人眼判断变成机器判断。
 //
 // 已知差异逐条登记，两侧反查：登记的组件必须确实还不一致，一致了就判登记过期。
+//
+// React 尚未纳入：判据的输入是浏览器态采出的快照文件，React 侧还没有 computed-snapshot
+// 这一份产出，目录是空的，扩过去只能比出「两边都没有」。它不是「跳过没铺到的组件」，
+// 是整条输入都还不存在，所以这里显式声明而不是静默两家比完就报「通过」。
+//
+// 纳入时判据该长什么样：主判据改成三方逐字全等（同一个部件在三家解析出同一个像素）；
+// 报错时指出是哪一对对不上。KNOWN_DIVERGENCE 的键要从「组件」改成「组件 + 适配器对」——
+// 现有六条里 command / dialog / drawer / image-viewer 的理由都是「WC 侧走单开的 fixture」，
+// 那只对 Vue↔WC 与 React↔WC 两对成立，Vue↔React 仍该逐字一致，登记成组件级会把它一起放过。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
 
-const VUE = 'packages/adapters/vue/tests/browser/__snapshots__/computed'
-const WC = 'packages/adapters/web-components/tests/browser/__snapshots__/computed'
+import { ADAPTERS } from './lib/adapters.mjs'
+
+const SNAPSHOTS = 'tests/browser/__snapshots__/computed'
+const VUE = `${ADAPTERS.vue.root}/${SNAPSHOTS}`
+const WC = `${ADAPTERS.wc.root}/${SNAPSHOTS}`
+const REACT = `${ADAPTERS.react.root}/${SNAPSHOTS}`
 
 /**
  * 已知不一致的组件，值写一句理由。
@@ -48,6 +61,16 @@ if (!vueFiles || !wcFiles) {
 
 const problems = []
 const diverged = new Set()
+
+// React 一旦开始采快照，这张门禁就必须当场改成三方全等；不报出来的话它会继续只比两家，
+// 而收尾行照旧打印「通过」，读输出的人无从知道第三家没在核
+const reactFiles = await listSnapshots(REACT)
+if (reactFiles && reactFiles.length > 0) {
+  problems.push(
+    `${REACT} 下已经有 ${reactFiles.length} 份计算样式快照，这张门禁却还只比 Vue 与 Web Components 两家`
+    + '——按文件头注释里写的判据把它扩成三方全等，并把 KNOWN_DIVERGENCE 的键改成「组件 + 适配器对」',
+  )
+}
 
 const vueSet = new Set(vueFiles)
 const wcSet = new Set(wcFiles)
@@ -109,6 +132,10 @@ if (problems.length) {
 }
 
 console.log(
-  `[check-computed-parity] 通过：${vueFiles.length} 个组件的计算样式快照两侧逐字一致`
+  `[check-computed-parity] 通过：Vue ${vueFiles.length} 份 · Web Components ${wcFiles.length} 份快照逐字一致`
   + `（登记 ${Object.keys(KNOWN_DIVERGENCE).length} 处已知差异）`,
+)
+console.log(
+  `[check-computed-parity] 适用面：React ${reactFiles ? reactFiles.length : 0} 份，尚未纳入`
+  + '——它还没有浏览器态的 computed-snapshot 产出，这张门禁没在核 React',
 )

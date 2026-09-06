@@ -3,6 +3,8 @@
 // 分母从源码扫出来而不是手写名单：新加一个表单组件，它自动进等式，忘了接线就红。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import process from 'node:process'
+import { ADAPTERS, reactCovered, reactProgress } from './lib/adapters.mjs'
 
 const HEADLESS = 'packages/engine/headless/src'
 
@@ -10,14 +12,26 @@ const HEADLESS = 'packages/engine/headless/src'
 const EXEMPT = {}
 
 /**
- * 两个适配器各自唯一的接入点。各组件机器里逐条的重置声明全靠这两座桥兑现，
- * 桥一拆，这些组件的重置同时变成空转而每一条声明看着都还在。
+ * 三个适配器各自把宿主表单的 reset 翻成机器事件的接入点。各组件机器里逐条的重置声明
+ * 全靠这几座桥兑现，桥一拆，那一侧所有组件的重置同时变成空转而每一条声明看着都还在。
  */
 const BRIDGES = [
-  ['packages/adapters/vue/src/runtime/use-machine.ts', 'attachFormReset('],
-  ['packages/adapters/vue/src/runtime/attach-form-reset.ts', 'createFormResetBridge('],
-  ['packages/adapters/web-components/src/runtime/machine-controller.ts', 'createFormResetBridge('],
+  ['vue', `${ADAPTERS.vue.root}/src/runtime/use-machine.ts`, 'attachFormReset('],
+  ['vue', `${ADAPTERS.vue.root}/src/runtime/attach-form-reset.ts`, 'createFormResetBridge('],
+  ['wc', `${ADAPTERS.wc.root}/src/runtime/machine-controller.ts`, 'createFormResetBridge('],
+  ['react', `${ADAPTERS.react.root}/src/runtime/attach-form-reset.ts`, 'createFormResetBridge('],
 ]
+
+/** 每个适配器各有几处接入点，收尾行照这个数报。 */
+function bridgeCount(key) {
+  return BRIDGES.filter(([k]) => k === key).length
+}
+
+/**
+ * React 的桥是个 hook，由每个组件自己调，不像 Vue / WC 那样在运行时统一挂一次。
+ * 所以桥在不等于组件接上了：还要逐个组件核这句调用，漏一个只漏它自己，且不报任何错。
+ */
+const REACT_HOOK = 'useFormReset('
 
 const dirs = (await readdir(HEADLESS, { withFileTypes: true }))
   .filter(d => d.isDirectory())
@@ -38,6 +52,29 @@ async function read(p) {
   }
 }
 
+/** 去掉 import 语句：import 进来的名字不算调用，留着它这条判据只要写了 import 就放行。 */
+function stripImports(src) {
+  return src.replace(/^\s*import\s[\s\S]*?from\s+'[^']*'\s*$/gm, '')
+}
+
+/** 读某个 React 组件目录下的全部源码（已去掉 import），拼成一段文本。目录不在时返回 null。 */
+async function readReactComponent(name) {
+  const dir = join(ADAPTERS.react.components, name)
+  let entries
+  try {
+    entries = await readdir(dir, { withFileTypes: true })
+  }
+  catch {
+    return null
+  }
+  const parts = []
+  for (const entry of entries) {
+    if (entry.isFile() && /\.tsx?$/.test(entry.name))
+      parts.push(stripImports(await read(join(dir, entry.name)) ?? ''))
+  }
+  return parts.join('\n')
+}
+
 /**
  * 取根级 on 块的正文。根级 = 缩进两格、且排在 states 之前；
  * 状态级 on 只在那个状态下生效，而重置从任何状态发出都要认。
@@ -55,20 +92,27 @@ function rootOnBlock(machine) {
 const fields = []
 const missing = []
 const staleExempt = []
+/** 机器在根级 on 里声明了 FORM.RESET 的组件。 */
+const declaresReset = []
+/** 有 types 文件的目录才算一个组件，config / shared / spec 这类不算。 */
+let components = 0
 
 for (const name of dirs) {
   const types = await read(join(HEADLESS, name, `${name}.types.ts`))
   const machine = await read(join(HEADLESS, name, `${name}.machine.ts`))
   if (types == null)
     continue
+  components += 1
+
+  const declared = !!machine && (rootOnBlock(machine)?.includes('\'FORM.RESET\'') ?? false)
+  if (declared)
+    declaresReset.push(name)
 
   // props 段里出现 name?: string 即视为表单字段
   const isField = /^\s{4}name\?: string/m.test(types)
   if (!isField)
     continue
   fields.push(name)
-
-  const declared = !!machine && (rootOnBlock(machine)?.includes('\'FORM.RESET\'') ?? false)
 
   if (!declared && !(name in EXEMPT))
     missing.push(name)
@@ -96,10 +140,10 @@ if (staleExempt.length) {
 
 // 总闸：桥断了，上面逐组件的声明会一起变成空转，而每一条看着都还在
 const brokenBridges = []
-for (const [path, needle] of BRIDGES) {
+for (const [key, path, needle] of BRIDGES) {
   const text = await read(path)
   if (text == null || !text.includes(needle))
-    brokenBridges.push(`${path} 里找不到 ${needle}`)
+    brokenBridges.push(`${ADAPTERS[key].label}：${path} 里找不到 ${needle}`)
 }
 if (brokenBridges.length) {
   console.error('[check-form-reset] ✗ 适配器把宿主表单的 reset 送进机器的那座桥断了：')
@@ -109,4 +153,34 @@ if (brokenBridges.length) {
   process.exit(1)
 }
 
-console.log(`[check-form-reset] 通过：${fields.length} 个表单字段组件都认表单重置，两个适配器的桥都在`)
+// React 逐组件核这句 hook 调用：只核已铺到的组件，没铺到的跳过
+const covered = await reactCovered()
+const reactProblems = []
+let reactWired = 0
+for (const name of declaresReset) {
+  if (!covered.has(name))
+    continue
+  const src = await readReactComponent(name)
+  if (src == null) {
+    reactProblems.push(`${name} —— React 登记成已铺，却没有 ${join(ADAPTERS.react.components, name)} 这个目录`)
+    continue
+  }
+  if (src.includes(REACT_HOOK))
+    reactWired += 1
+  else
+    reactProblems.push(`${name} —— React 的组件源码没有调 ${REACT_HOOK})：机器认重置，宿主表单的 reset 却送不进去`)
+}
+
+if (reactProblems.length) {
+  console.error('[check-form-reset] ✗ React 侧逐组件挂的那座桥有组件没挂上：')
+  for (const p of reactProblems)
+    console.error(`  ${p}`)
+  console.error(`React 不像 Vue / WC 在运行时统一挂，${REACT_HOOK}) 要写在组件里；漏一个只漏它自己，页面上不报任何错。`)
+  process.exit(1)
+}
+
+console.log(
+  `[check-form-reset] 通过：${components} 个组件里 ${fields.length} 个带 name 参与提交、都认表单重置；`
+  + `桥都在（${ADAPTERS.vue.label} ${bridgeCount('vue')} 处 / ${ADAPTERS.wc.label} ${bridgeCount('wc')} 处 / ${ADAPTERS.react.label} ${bridgeCount('react')} 处）；`
+  + `${reactProgress(covered, components)}，其中 ${reactWired} 个认重置的组件都调了 ${REACT_HOOK})（未铺到的跳过）`,
+)

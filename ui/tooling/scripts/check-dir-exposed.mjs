@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 门禁：headless 的作者面声明了 dir 的组件，两个适配器都要把它露出来。
+// 门禁：headless 的作者面声明了 dir 的组件，三个适配器都要把它露出来。
 //
 // dir 是条真接线：机器把它交给定位引擎翻转行内轴，connect 把它写到被搬走的
 // 浮层落点上（那里继承不到作者子树的方向，只能由作者显式给）。适配器不露，
@@ -7,15 +7,16 @@
 // 一个只在文档里存在、代码里够不着的形状。
 //
 // 判据三条：
-//   声明了 dir，Vue 没有 dir prop        → 这一侧的作者永远设不了
-//   声明了 dir，WC 没有 dir 属性或没转交 → 同上；转交漏了则属性写了也不生效
-//   适配器露了 dir，headless 没声明      → 要么是死 prop，要么是复合件转交给内部机器（登记进 COMPOSED）
+//   声明了 dir，某一侧没有 dir prop / 属性        → 这一侧的作者永远设不了
+//   声明了 dir，收下了却没转交给机器              → 属性写了也不生效
+//   适配器露了 dir，headless 没声明               → 要么是死 prop，要么是复合件转交给内部机器（登记进 COMPOSED）
+//
+// React 正在按批次铺开：只核 react-coverage.json 里已铺的组件，没铺到的跳过并在收尾行报出进度。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { ADAPTERS, reactCovered, reactProgress } from './lib/adapters.mjs'
 
 const HEADLESS = 'packages/engine/headless/src'
-const VUE_COMPONENTS = 'packages/adapters/vue/src/components'
-const WC_ELEMENTS = 'packages/adapters/web-components/src/elements'
 
 /**
  * 自己没有 schema、把 dir 转交给内部机器的复合件。
@@ -46,20 +47,36 @@ function declaresDir(source) {
   return false
 }
 
-/** Vue 组件源码：目录形态（components/x/*.ts）与单文件形态（components/x.ts）都认。 */
-async function vueSource(name) {
-  const dir = join(VUE_COMPONENTS, name)
-  const files = await readdir(dir).catch(() => null)
-  if (files === null)
-    return readFile(join(VUE_COMPONENTS, `${name}.ts`), 'utf8').catch(() => '')
+/** 某个适配器下这个组件的源码：目录形态（components/x/*）与单文件形态（components/x.*）都认。 */
+async function componentSource(dir, name, extensions) {
+  const sub = join(dir, name)
+  const files = await readdir(sub).catch(() => null)
+  if (files === null) {
+    let single = ''
+    for (const ext of extensions)
+      single += await readFile(join(dir, `${name}${ext}`), 'utf8').catch(() => '')
+    return single
+  }
   let out = ''
-  for (const file of files.filter(f => f.endsWith('.ts')))
-    out += await readFile(join(dir, file), 'utf8')
+  for (const file of files.filter(f => extensions.some(ext => f.endsWith(ext))))
+    out += await readFile(join(sub, file), 'utf8')
   return out
 }
 
 /** Vue 侧露出 dir：Root 的 props 块里有一条 dir 声明（缩进四格）。 */
 const vueExposes = source => /^ {4}dir: \{/m.test(source)
+
+/** React 侧露出 dir：组件的 Props 接口里写着一条 dir（成员缩进两格）。 */
+const reactExposes = source => /^ {2}dir\?:/m.test(source)
+
+/**
+ * React 的 Props 大多从 ComponentPropsWithRef<'…'> 扩展而来，那里本就带着 HTML 的 dir，
+ * 只声明不接线时 dir 会随 rest 落到 DOM 节点上、却永远到不了机器——看着生效，行内轴不翻。
+ * 判据是接口块以外还提到 dir：组件体里解构出来再交进机器 props 的那一处。
+ */
+function reactForwards(source) {
+  return /\bdir\b/.test(source.replace(/export (?:interface|type) \w[^{]*\{[\s\S]*?\n\}/g, ''))
+}
 
 /**
  * WC 侧的 dir 字段名：属性名占 dir，字段另起（direction / textDir），
@@ -71,7 +88,11 @@ function wcField(source) {
 
 const errors = []
 const declared = []
+const exposedCount = { vue: 0, react: 0, wc: 0 }
+let scanned = 0
+const reactSkipped = new Set()
 const composedSeen = new Set()
+const covered = await reactCovered()
 
 for (const entry of await readdir(HEADLESS, { withFileTypes: true })) {
   if (!entry.isDirectory())
@@ -80,33 +101,60 @@ for (const entry of await readdir(HEADLESS, { withFileTypes: true })) {
   const types = await readFile(join(HEADLESS, name, `${name}.types.ts`), 'utf8').catch(() => null)
   if (types === null)
     continue
+  scanned++
 
-  const vue = await vueSource(name)
-  const wc = await readFile(join(WC_ELEMENTS, `${name}.ts`), 'utf8').catch(() => '')
+  const vue = await componentSource(ADAPTERS.vue.components, name, ['.ts'])
+  // React 按批次铺开：没铺到的组件这一侧没有源码，跳过并计进收尾行的进度
+  const reactSkip = !covered.has(name)
+  if (reactSkip)
+    reactSkipped.add(name)
+  const react = reactSkip ? '' : await componentSource(ADAPTERS.react.components, name, ['.ts', '.tsx'])
+  const wc = await readFile(join(ADAPTERS.wc.components, `${name}.ts`), 'utf8').catch(() => '')
 
   if (declaresDir(types)) {
     declared.push(name)
-    if (vue !== '' && !vueExposes(vue))
-      errors.push(`Vue 的 ${name}：headless 作者面声明了 dir，Root 的 props 里没有——文档站照登，作者却设不了它`)
+    if (vue !== '') {
+      if (vueExposes(vue))
+        exposedCount.vue++
+      else
+        errors.push(`${ADAPTERS.vue.label} 的 ${name}：headless 作者面声明了 dir，Root 的 props 里没有——文档站照登，作者却设不了它`)
+    }
+    if (react !== '') {
+      if (!reactExposes(react))
+        errors.push(`${ADAPTERS.react.label} 的 ${name}：headless 作者面声明了 dir，组件的 Props 里没有——文档站照登，作者却设不了它`)
+      else if (!reactForwards(react))
+        errors.push(`${ADAPTERS.react.label} 的 ${name}：dir 只声明在 Props 上，组件体里没有它——随 rest 落到 DOM 节点是到不了机器的，要解构出来交进机器 props`)
+      else
+        exposedCount.react++
+    }
     if (wc !== '') {
       const field = wcField(wc)
       if (field === null)
-        errors.push(`Web Components 的 ${name}：headless 作者面声明了 dir，元素上没有 dir 属性——照 tabs.ts 写 direction: { converter: STRING_CONVERTER, attribute: 'dir' }`)
+        errors.push(`${ADAPTERS.wc.label} 的 ${name}：headless 作者面声明了 dir，元素上没有 dir 属性——照 tabs.ts 写 direction: { converter: STRING_CONVERTER, attribute: 'dir' }`)
       else if (!new RegExp(`\\bdir: this\\.${field}\\b`).test(wc))
-        errors.push(`Web Components 的 ${name}：dir 属性收下了却没进机器 props——machineProps 里补 dir: this.${field}`)
+        errors.push(`${ADAPTERS.wc.label} 的 ${name}：dir 属性收下了却没进机器 props——machineProps 里补 dir: this.${field}`)
+      else
+        exposedCount.wc++
     }
     continue
   }
 
   // 反向：headless 没声明，适配器却露着
-  const exposed = (vue !== '' && vueExposes(vue)) || (wc !== '' && wcField(wc) !== null)
+  const exposed = (vue !== '' && vueExposes(vue))
+    || (react !== '' && reactExposes(react))
+    || (wc !== '' && wcField(wc) !== null)
   if (!exposed)
     continue
   if (name in COMPOSED) {
     composedSeen.add(name)
     continue
   }
-  errors.push(`${name} 的适配器露着 dir，headless 的作者面却没声明它——要么是通不到机器的死 prop，要么是转交给内部机器的复合件（登记进 COMPOSED）`)
+  const where = [
+    vue !== '' && vueExposes(vue) ? ADAPTERS.vue.label : '',
+    react !== '' && reactExposes(react) ? ADAPTERS.react.label : '',
+    wc !== '' && wcField(wc) !== null ? ADAPTERS.wc.label : '',
+  ].filter(Boolean).join(' / ')
+  errors.push(`${name} 的适配器露着 dir（${where}），headless 的作者面却没声明它——要么是通不到机器的死 prop，要么是转交给内部机器的复合件（登记进 COMPOSED）`)
 }
 
 // 名单过期反查：登记了却已经不成立的，比漏登更危险——它会一直放行
@@ -122,4 +170,5 @@ if (errors.length > 0) {
   process.exit(1)
 }
 
-console.log(`[check-dir-exposed] 通过：${declared.length} 个声明了 dir 的组件两个适配器都露出来了（另有 ${composedSeen.size} 个复合件转交给内部机器）`)
+console.log(`[check-dir-exposed] 通过：${declared.length} 个声明了 dir 的组件，露出来的 Vue ${exposedCount.vue} 个 / React ${exposedCount.react} 个 / Web Components ${exposedCount.wc} 个（另有 ${composedSeen.size} 个复合件转交给内部机器）`)
+console.log(`  ${reactProgress(covered, scanned)}；React 还没铺的 ${reactSkipped.size} 个组件这一轮跳过`)

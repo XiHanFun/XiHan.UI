@@ -15,13 +15,26 @@ import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
+import { ADAPTERS } from './lib/adapters.mjs'
+
+/**
+ * 这个运行器只跑 Vue 适配器里的截图用例，React 与 Web Components 不在其列。
+ * 基线是一批位图，整库只有 packages/adapters/vue/tests/browser/__screenshots__ 这一份；
+ * 另两家没有基线图，也没有对应的截图用例，起容器进去只会跑出一个空集。
+ * 像素这一层的「两端一致」由 check-computed-parity 从计算样式那侧盯着，不靠再存一份位图。
+ *
+ * React 该纳入的时机：它自己产出一份基线图之后。那时这里要多接一个包，
+ * 挂载点与 --spec 的相对基准都得按包分开（现在这两处都写死在 Vue 包上）。
+ */
+const SCOPE = '只跑 Vue 适配器的截图用例；Web Components 与 React 不在其列：整库只有 Vue 这一份基线图'
+
 const IMAGE = 'mcr.microsoft.com/playwright:v1.62.0-noble'
 // 卷里同时放 pnpm store、corepack 缓存与容器自己的工作副本，重复运行不重装依赖。
 const VOLUME = 'xihan-ui-visual-baseline'
 const DEFAULT_SPEC = 'tests/browser/visual-baseline.spec.ts'
 
 const uiRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
-const vuePkg = join(uiRoot, 'packages/adapters/vue')
+const vuePkg = join(uiRoot, ADAPTERS.vue.root)
 const shotsDir = join(vuePkg, 'tests/browser/__screenshots__')
 const attachDir = join(vuePkg, '.vitest-attachments')
 
@@ -113,6 +126,7 @@ args.push(IMAGE, 'bash', '/host/tooling/scripts/visual-baseline.container.sh')
 
 console.log(`[visual-baseline] ${update ? '更新基线' : '校验基线'}：${spec || '全部浏览器态用例'}`)
 console.log(`[visual-baseline] 镜像 ${IMAGE}，缓存卷 ${VOLUME}`)
+console.log(`[visual-baseline] 适用面：${SCOPE}`)
 
 const run = spawnSync('docker', args, {
   stdio: 'inherit',

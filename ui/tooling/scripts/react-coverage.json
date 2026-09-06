@@ -1,0 +1,6 @@
+{
+  "$description": "React 适配器的铺开进度真源。covered 列已铺到的组件，十几张门禁按它决定该核哪些；每批合入时往里加。两侧反查在 check-react-coverage.mjs：登记多了核不存在的组件，登记少了是静默漏检。",
+  "covered": [
+    "switch"
+  ]
+}

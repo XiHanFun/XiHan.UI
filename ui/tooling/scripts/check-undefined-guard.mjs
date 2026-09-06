@@ -6,7 +6,18 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-const ELEMENTS_DIR = 'packages/adapters/web-components/src/elements'
+import { WC_ELEMENTS_DIR } from './lib/adapters.mjs'
+
+/**
+ * 这张门禁只核 Web Components 一家。
+ * 「升级前」这段时间只有自定义元素有：标签先进 DOM，类定义后到，中间那一段既没有
+ * data-scope / data-part 也没有收起态，靠 undefined.css 按标签名先收住。
+ * Vue 与 React 的节点是运行时创建的，出现在 DOM 里时属性与内联样式已经在身上了，
+ * 没有这段空窗，也没有标签名可以让 undefined.css 去点。
+ */
+const SCOPE = '只核 Web Components 一家；Vue 与 React 不在其列：它们的节点是运行时创建的，没有「标签已在、类未到」这段升级前空窗'
+
+const ELEMENTS_DIR = WC_ELEMENTS_DIR
 const UNDEFINED_CSS = 'packages/design/styles/css/undefined.css'
 
 /** 升级前必须收起的浮层部件。 */
@@ -114,3 +125,4 @@ if (problems.length) {
 }
 
 console.log(`[check-undefined-guard] 通过：${files.length} 个元素里 ${shouldList.size} 个收起浮层部件，与升级前名单逐一对上`)
+console.log(`[check-undefined-guard] 适用面：${SCOPE}`)

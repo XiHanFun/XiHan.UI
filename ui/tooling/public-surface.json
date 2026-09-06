@@ -1,6 +1,10 @@
 {
   "$comment": "公开面基线。由 build-public-surface.mjs 采集，check-public-surface.mjs 比对。基线里有而当前没有 = 删了或改名了，门禁失败。判据与分档见 docs/guide/versioning.md。",
   "packages": {
+    "@xihan-ui/react": [
+      ".",
+      "./behavior"
+    ],
     "@xihan-ui/vue": [
       ".",
       "./backgrounds",
@@ -206,6 +210,31 @@
     ]
   },
   "exports": {
+    "@xihan-ui/react": [
+      "PortalContainer",
+      "SlotChildren",
+      "XhConfig",
+      "XhConfigProvider",
+      "XhConfigProviderProps",
+      "XhPortal",
+      "XhPortalProps",
+      "XhSwitch",
+      "XhSwitchProps",
+      "XhTranslationOverrides",
+      "createReactRuntime",
+      "mergeReactProps",
+      "mergeXhConfig",
+      "reactNormalize",
+      "renderSlot",
+      "slotPaints",
+      "useMachine",
+      "usePortalTarget",
+      "useReactIdGenerator",
+      "useReactScope",
+      "useSwitch",
+      "useXhConfig",
+      "withXhConfig"
+    ],
     "@xihan-ui/vue": [
       "AccordionContext",
       "AffixContext",
