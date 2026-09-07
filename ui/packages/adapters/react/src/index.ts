@@ -1,5 +1,77 @@
+export {
+  XhAccordionContent,
+  XhAccordionHeader,
+  XhAccordionIndicator,
+  XhAccordionItem,
+  XhAccordionItemSeparator,
+  XhAccordionRoot,
+  XhAccordionTrigger,
+} from './components/accordion/accordion'
+export type {
+  XhAccordionContentProps,
+  XhAccordionHeaderProps,
+  XhAccordionIndicatorProps,
+  XhAccordionItemProps,
+  XhAccordionItemSeparatorProps,
+  XhAccordionRootProps,
+  XhAccordionTriggerProps,
+} from './components/accordion/accordion'
+export { useAccordionContext, useAccordionItemContext } from './components/accordion/context'
+export { useAccordion } from './components/accordion/use-accordion'
+export type { AccordionContext } from './components/accordion/use-accordion'
+export {
+  XhAlertAction,
+  XhAlertCloseTrigger,
+  XhAlertContent,
+  XhAlertDescription,
+  XhAlertIndicator,
+  XhAlertRoot,
+  XhAlertTitle,
+} from './components/alert/alert'
+export type {
+  XhAlertActionProps,
+  XhAlertCloseTriggerProps,
+  XhAlertContentProps,
+  XhAlertDescriptionProps,
+  XhAlertIndicatorProps,
+  XhAlertRootProps,
+  XhAlertTitleProps,
+} from './components/alert/alert'
+export { useAlertContext } from './components/alert/context'
+export { useAlert } from './components/alert/use-alert'
+export type { AlertContext } from './components/alert/use-alert'
+export { XhBadge, XhBadgeIndicator, XhBadgeRoot } from './components/badge/badge'
+export type {
+  BadgeIndicatorSlotProps,
+  XhBadgeIndicatorProps,
+  XhBadgeProps,
+  XhBadgeRootProps,
+} from './components/badge/badge'
+export { useBadgeContext } from './components/badge/context'
+export type { BadgeContext } from './components/badge/context'
 export { XhButton, XhButtonIndicator, XhButtonLabel, XhButtonPrefix, XhButtonSuffix } from './components/button'
 export type { XhButtonIndicatorProps, XhButtonLabelProps, XhButtonPrefixProps, XhButtonProps, XhButtonSuffixProps } from './components/button'
+export { XhCheckbox } from './components/checkbox/checkbox'
+export type { XhCheckboxProps } from './components/checkbox/checkbox'
+export { useCheckbox } from './components/checkbox/use-checkbox'
+export type { CheckboxContext } from './components/checkbox/use-checkbox'
+export {
+  XhCollapsibleContent,
+  XhCollapsibleHeader,
+  XhCollapsibleIndicator,
+  XhCollapsibleRoot,
+  XhCollapsibleTrigger,
+} from './components/collapsible/collapsible'
+export type {
+  XhCollapsibleContentProps,
+  XhCollapsibleHeaderProps,
+  XhCollapsibleIndicatorProps,
+  XhCollapsibleRootProps,
+  XhCollapsibleTriggerProps,
+} from './components/collapsible/collapsible'
+export { useCollapsibleContext } from './components/collapsible/context'
+export { useCollapsible } from './components/collapsible/use-collapsible'
+export type { CollapsibleContext } from './components/collapsible/use-collapsible'
 export { useDialogContext } from './components/dialog/context'
 export {
   XhDialogBody,
@@ -223,6 +295,10 @@ export type {
 } from './components/toast/toast'
 export { useToast } from './components/toast/use-toast'
 export type { ToastContext } from './components/toast/use-toast'
+export { XhToggle } from './components/toggle/toggle'
+export type { XhToggleProps } from './components/toggle/toggle'
+export { useToggle } from './components/toggle/use-toggle'
+export type { ToggleContext } from './components/toggle/use-toggle'
 export { useTooltipContext } from './components/tooltip/context'
 export {
   XhTooltipArrow,

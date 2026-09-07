@@ -10,33 +10,28 @@
 import { describe, expect, it } from 'vitest'
 import { createReactHarness } from '../../../packages/adapters/react/tests/harness'
 import { createVueHarness } from '../../../packages/adapters/vue/tests/harness'
-import { buttonSuite, dialogSuite, drawerSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, popoverSuite, runParity, selectSuite, switchSuite, toastSuite, tooltipSuite } from '../src'
+import { accordionSuite, alertSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, popoverSuite, runParity, selectSuite, switchSuite, toastSuite, toggleSuite, tooltipSuite } from '../src'
 
 /** React 侧已经铺到、纳入逐帧对拍的组件。 */
-const SUITES = [buttonSuite, dialogSuite, drawerSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, popoverSuite, selectSuite, switchSuite, toastSuite, tooltipSuite]
+const SUITES = [accordionSuite, alertSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, popoverSuite, selectSuite, switchSuite, toastSuite, toggleSuite, tooltipSuite]
 
 /** React 侧还没铺到的组件。每批合入时删掉对应行；删空即本文件的覆盖等式自动收紧到全集。 */
 const PENDING = new Set([
-  'accordion',
   'affix',
-  'alert',
   'anchor',
   'approval',
   'avatar',
   'avatar-group',
   'back-top',
-  'badge',
   'breadcrumb',
   'button-group',
   'calendar',
   'card',
   'carousel',
   'cascader',
-  'checkbox',
   'checkbox-group',
   'clipboard',
   'code-view',
-  'collapsible',
   'color-picker',
   'combobox',
   'command',
@@ -119,7 +114,6 @@ const PENDING = new Set([
   'timeline',
   'timer',
   'timestamp',
-  'toggle',
   'toggle-group',
   'tool-call',
   'toolbar',

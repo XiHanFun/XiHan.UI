@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { buttonSuite, dialogSuite, drawerSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, popoverSuite, runConformance, selectSuite, switchSuite, toastSuite, tooltipSuite } from '@xihan-ui/testing'
+import { accordionSuite, alertSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, popoverSuite, runConformance, selectSuite, switchSuite, toastSuite, toggleSuite, tooltipSuite } from '@xihan-ui/testing'
 import { describe, it } from 'vitest'
 import { createReactHarness } from './harness'
 
@@ -9,7 +9,7 @@ import { createReactHarness } from './harness'
 
 runConformance(
   createReactHarness(),
-  [buttonSuite, dialogSuite, drawerSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, popoverSuite, selectSuite, switchSuite, toastSuite, tooltipSuite],
+  [accordionSuite, alertSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, popoverSuite, selectSuite, switchSuite, toastSuite, toggleSuite, tooltipSuite],
   { describe, it },
   {
     keyboardCoverageExempt: {
