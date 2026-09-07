@@ -4,7 +4,7 @@
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, describe, expect, it } from 'vitest'
-import { XhSwitch } from '../src'
+import { XhCheckbox, XhSwitch } from '../src'
 
 let host: HTMLElement | null = null
 let root: ReturnType<typeof createRoot> | null = null
@@ -42,5 +42,23 @@ describe('原生表单重置', () => {
     expect(track().getAttribute('aria-checked')).toBe('false')
     act(() => form.reset())
     expect(track().getAttribute('aria-checked')).toBe('true')
+  })
+
+  it('复选框：重置回到 defaultChecked，锚点在带文字时的 <label> 上也接得住', () => {
+    const box = (): HTMLButtonElement => host!.querySelector<HTMLButtonElement>('[data-scope="checkbox"][data-part="root"]')!
+    const form = mount(<XhCheckbox name="agree" defaultChecked={false}>同意条款</XhCheckbox>)
+    act(() => box().click())
+    expect(box().getAttribute('aria-checked')).toBe('true')
+    act(() => form.reset())
+    expect(box().getAttribute('aria-checked')).toBe('false')
+  })
+
+  it('复选框：半选也由重置还原', () => {
+    const box = (): HTMLButtonElement => host!.querySelector<HTMLButtonElement>('[data-scope="checkbox"][data-part="root"]')!
+    const form = mount(<XhCheckbox name="agree" defaultChecked="indeterminate" />)
+    act(() => box().click())
+    expect(box().getAttribute('aria-checked')).toBe('true')
+    act(() => form.reset())
+    expect(box().getAttribute('aria-checked')).toBe('mixed')
   })
 })
