@@ -51,8 +51,14 @@ async function readVue(comp) {
   return (await read(join(VUE, `${comp}.ts`))) ?? (await read(join(VUE, comp, `${comp}.ts`))) ?? ''
 }
 
-/** react 侧组件是一个目录，接线可能分散在目录里的几个 .ts / .tsx 上，全拼起来看。 */
+/**
+ * react 侧组件多是一个目录，接线可能分散在目录里的几个 .ts / .tsx 上，全拼起来看；
+ * 没有机器的那几个（button 这类）与 Vue 侧一样是单文件平铺，两种形态都要认。
+ */
 async function readReact(comp) {
+  const flat = (await read(join(REACT, `${comp}.tsx`))) ?? (await read(join(REACT, `${comp}.ts`)))
+  if (flat != null)
+    return flat
   let entries
   try {
     entries = await readdir(join(REACT, comp), { withFileTypes: true })
