@@ -125,6 +125,7 @@ const adaptersSidebar: DefaultTheme.SidebarItem[] = [
     collapsed: false,
     items: [
       { text: "Vue 适配器", link: "/adapters/vue" },
+      { text: "React 适配器", link: "/adapters/react" },
       { text: "Web Components 适配器", link: "/adapters/web-components" },
     ],
   },

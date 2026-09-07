@@ -302,6 +302,42 @@ const truth = {
       return n
     },
   },
+  React已铺组件数: {
+    how: 'tooling/scripts/react-coverage.json 的 covered 条数',
+    async value() {
+      return JSON.parse(await read('tooling/scripts/react-coverage.json')).covered.length
+    },
+  },
+  用track的机器数: {
+    how: '<name>.machine.ts 里出现 track( 的文件数',
+    async value() {
+      const names = await once('anatomy', () => componentDirs('anatomy.ts'))
+      let n = 0
+      for (const name of names) {
+        try {
+          if ((await readFile(join(HEADLESS, name, `${name}.machine.ts`), 'utf8')).includes('track('))
+            n++
+        }
+        catch {}
+      }
+      return n
+    },
+  },
+  带watch块的机器数: {
+    how: '<name>.machine.ts 里有 watch: 顶层键的文件数',
+    async value() {
+      const names = await once('anatomy', () => componentDirs('anatomy.ts'))
+      let n = 0
+      for (const name of names) {
+        try {
+          if (/^ {2}watch:/m.test(await readFile(join(HEADLESS, name, `${name}.machine.ts`), 'utf8')))
+            n++
+        }
+        catch {}
+      }
+      return n
+    },
+  },
   Vue导出组件数: {
     how: 'packages/adapters/vue/src/index.ts 的值导出里 Xh 开头的去重条数',
     async value() {
@@ -1135,6 +1171,10 @@ const TABLE = [
   ['docs/guide/animations.md', /(\d+) 个注意预设/, '注意预设数'],
 
   ['docs/adapters/vue.md', /全部 (\d+) 个导出组件/, 'Vue导出组件数'],
+  ['docs/adapters/react.md', /(\d+) 个组件里已铺 \d+ 个/, '组件数'],
+  ['docs/adapters/react.md', /\d+ 个组件里已铺 (\d+) 个/, 'React已铺组件数'],
+  ['docs/adapters/react.md', /(\d+) 个机器里的 `track`/, '用track的机器数'],
+  ['docs/adapters/react.md', /(\d+) 个 `watch` 块全部静默失效/, '带watch块的机器数'],
   ['docs/adapters/web-components.md', /注册全部 (\d+) 个 xh-\* 元素/, '自定义元素数'],
   ['docs/adapters/web-components.md', /（CEM 格式），(\d+) 个元素的标签名/, 'CEM元素数'],
 
