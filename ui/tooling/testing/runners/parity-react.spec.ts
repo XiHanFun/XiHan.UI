@@ -10,19 +10,17 @@
 import { describe, expect, it } from 'vitest'
 import { createReactHarness } from '../../../packages/adapters/react/tests/harness'
 import { createVueHarness } from '../../../packages/adapters/vue/tests/harness'
-import { accordionSuite, alertSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, calendarSuite, cardSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, comboboxSuite, commandSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, dialogSuite, drawerSuite, editableSuite, emptyStateSuite, fieldArraySuite, fieldsetSuite, fieldSuite, flexSuite, formSuite, gridSuite, hoverCardSuite, inputGroupSuite, layoutSuite, listboxSuite, loadingBarSuite, menuSuite, notificationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, runParity, segmentedSuite, selectSuite, separatorSuite, skeletonSuite, spinnerSuite, statisticSuite, stepsSuite, switchSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, timeFieldSuite, timelineSuite, timePickerSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite, treeSelectSuite, truncateSuite, typographySuite, watermarkSuite } from '../src'
+import { accordionSuite, alertSuite, anchorSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, calendarSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, comboboxSuite, commandSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, dialogSuite, drawerSuite, editableSuite, emptyStateSuite, fieldArraySuite, fieldsetSuite, fieldSuite, flexSuite, formSuite, gridSuite, hoverCardSuite, imageCropperSuite, imageSuite, imageViewerSuite, infiniteScrollSuite, inputGroupSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, menubarSuite, menuSuite, navigationMenuSuite, notificationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, progressSuite, qrCodeSuite, radioGroupSuite, ratingSuite, runParity, segmentedSuite, selectSuite, separatorSuite, sideNavSuite, signaturePadSuite, skeletonSuite, spinnerSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, timeFieldSuite, timelineSuite, timePickerSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, truncateSuite, typographySuite, virtualizerSuite, watermarkSuite } from '../src'
 
 /** React 侧已经铺到、纳入逐帧对拍的组件。 */
-const SUITES = [accordionSuite, alertSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, calendarSuite, cardSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, comboboxSuite, commandSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, dialogSuite, drawerSuite, editableSuite, emptyStateSuite, fieldArraySuite, fieldsetSuite, fieldSuite, flexSuite, formSuite, gridSuite, hoverCardSuite, inputGroupSuite, layoutSuite, listboxSuite, loadingBarSuite, menuSuite, notificationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, segmentedSuite, selectSuite, separatorSuite, skeletonSuite, spinnerSuite, statisticSuite, stepsSuite, switchSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, timeFieldSuite, timelineSuite, timePickerSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite, treeSelectSuite, truncateSuite, typographySuite, watermarkSuite]
+const SUITES = [accordionSuite, alertSuite, anchorSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, calendarSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, comboboxSuite, commandSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, dialogSuite, drawerSuite, editableSuite, emptyStateSuite, fieldArraySuite, fieldsetSuite, fieldSuite, flexSuite, formSuite, gridSuite, hoverCardSuite, imageCropperSuite, imageSuite, imageViewerSuite, infiniteScrollSuite, inputGroupSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, menubarSuite, menuSuite, navigationMenuSuite, notificationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, progressSuite, qrCodeSuite, radioGroupSuite, ratingSuite, segmentedSuite, selectSuite, separatorSuite, sideNavSuite, signaturePadSuite, skeletonSuite, spinnerSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, timeFieldSuite, timelineSuite, timePickerSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, truncateSuite, typographySuite, virtualizerSuite, watermarkSuite]
 
 /** React 侧还没铺到的组件。每批合入时删掉对应行；删空即本文件的覆盖等式自动收紧到全集。 */
 const PENDING = new Set([
   'affix',
-  'anchor',
   'approval',
   'back-top',
   'button-group',
-  'carousel',
   'clipboard',
   'code-view',
   'color-picker',
@@ -37,43 +35,27 @@ const PENDING = new Set([
   'hotkeys',
   'icon',
   'icon-wrapper',
-  'image',
-  'image-cropper',
-  'image-viewer',
-  'infinite-scroll',
   'json-viewer',
-  'list',
   'log',
   'markdown-stream',
   'marquee',
   'masonry',
   'mention',
-  'menubar',
   'message-feed',
-  'navigation-menu',
   'number-animation',
   'prompt-input',
-  'qr-code',
   'question-flow',
   'reasoning',
   'resizable',
   'scroll-area',
   'scrollbar',
-  'side-nav',
-  'signature-pad',
   'slider',
   'sortable',
   'splitter',
-  'table',
   'tag-group',
   'timer',
   'timestamp',
   'tool-call',
-  'toolbar',
-  'tour',
-  'transfer',
-  'tree',
-  'virtualizer',
 ])
 
 runParity([createVueHarness(), createReactHarness()], SUITES, { describe, it }, {
