@@ -102,6 +102,8 @@ const { api, service } = useDialog({ open, onOpenChange });
 
 这类 props 由适配器改装成真实的 DOM 监听器，行为与另外两家适配器一致。
 
+这一条由门禁看着：`check-native-events` 逐组件对账 `connect` 派了哪几个不冒泡的事件、React 侧有没有逐个摘出来，摘了 `connect` 根本不派的名字同样判失败。`onFocusIn` / `onFocusOut` 不在其列——它们经 `reactNormalize` 归到 React 的 `onFocus` / `onBlur`，而那两个合成事件挂的正是冒泡的 `focusin` / `focusout`。
+
 ## 行为原语
 
 `@xihan-ui/react/behavior` 是单独的子入口，装的是行为原语的 React 包装——滚动锁、悬停意图、滚动观察、贴底、连敲检索五件：

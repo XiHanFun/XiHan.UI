@@ -5,6 +5,7 @@ import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
+import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
@@ -285,6 +286,11 @@ export function XhSelectItem({ value, disabled, children, ...rest }: XhSelectIte
   const item = useMemo(() => ({ value, disabled }), [value, disabled])
   const itemEl = useRef<HTMLElement | null>(null)
   const previous = useRef(value)
+  // 条目的聚焦上报与指针离开都不冒泡，改装成原生监听器
+  const bind = useNativeEvents(
+    ctx.api.getItemProps(item) as Record<string, unknown>,
+    ['onFocus', 'onPointerLeave'],
+  )
 
   // 本条目持有焦点时，value 变更重报高亮条目
   useEffect(() => {
@@ -312,8 +318,9 @@ export function XhSelectItem({ value, disabled, children, ...rest }: XhSelectIte
     <SelectItemProvider value={item}>
       <div
         {...mergeReactProps(
-          ctx.api.getItemProps(item) as Record<string, unknown>,
+          bind.attrs,
           rest as Record<string, unknown>,
+          { ref: bind.ref },
           { ref: (el: HTMLDivElement | null) => { itemEl.current = el } },
         )}
       >
