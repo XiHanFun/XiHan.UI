@@ -95,21 +95,25 @@ export function connectImageViewer<T extends PropTypes>(
       'onClick': () => send({ type: 'OPEN' }),
     }),
 
+    // 收起态不打 hidden：淡出动画就挂在这一层，而皮肤给遮罩没声明 display，
+    // UA 的 [hidden]{display:none} 会直接压下来，淡出一帧都播不出来。
+    // 真正的收起由宿主兜住：Vue 与 React 卸载整棵，WC 写内联 display
     getBackdropProps: () => normalize.element({
       ...parts.backdrop.attrs,
       'aria-hidden': true,
       'data-state': stateAttr,
       // 形态轴落在 backdrop 上：三档换的都是这一层自己的底色与模糊
       'data-variant': prop('variant'),
-      'hidden': !open || undefined,
     }),
 
+    // 收起态不打 hidden：整棵内容都在定位层底下，皮肤对它的 [hidden] 兜底是 display: none，
+    // 一收起内容就不生成盒子、退场动画根本不启动，退场探测读得到 animationName 却等不到
+    // animationend，浮层要卡到兜底票过期才收。收起同样由宿主兜住
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
       'data-state': stateAttr,
       // 由皮肤的 inset 直接摆，不问引擎要坐标，没有「还没量完」的窗口：恒已落位
       'data-positioned': '',
-      'hidden': !open || undefined,
     }),
 
     getContentProps: () => normalize.element({

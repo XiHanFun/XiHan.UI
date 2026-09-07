@@ -18,8 +18,12 @@ function dispatchOnViewerImage(type: string): (ctx: RawStepContext) => void {
  * WC 专属 image-viewer 规格。
  *
  * 与 dialog 同因单开一份：Light DOM 下 backdrop / positioner / content 都由作者写、常驻在那儿，
- * 关闭态靠 hidden 与 data-state=closed 收起；Vue 版则关闭即整棵卸载。
+ * 关闭态靠 data-state=closed 加元素写的内联 display 收起；Vue 版则关闭即整棵卸载。
  * 共享套件按"卸载"写的断言在这边对不上；翻页、两端直达、受控与 Escape 的步骤与共享套件同一份。
+ *
+ * 三层里只有 content 带 hidden：淡出动画挂在 backdrop 与 content 上，而整棵内容都在
+ * positioner 底下。这两层一旦带 hidden 就会吃到皮肤那条 [hidden]{display:none}，
+ * 不生成盒子、动画根本不启动，退场探测读得到 animationName 却等不到 animationend。
  */
 export const wcImageViewerSuite: ConformanceSuite = {
   component: 'image-viewer',
@@ -47,21 +51,23 @@ export const wcImageViewerSuite: ConformanceSuite = {
       steps: [nativeActivation('image-viewer', 'trigger')],
     },
     {
-      name: '初始关闭：content 常驻、data-state=closed，三层都带 hidden',
+      name: '初始关闭：content 常驻、data-state=closed，只有 content 带 hidden',
       spec: { apg: APG },
       props: imageViewerProps(),
       initial: {
         counts: { trigger: 1, backdrop: 1, positioner: 1, content: 1 },
         parts: {
           trigger: { 'type': 'button', 'aria-haspopup': 'dialog', 'aria-expanded': 'false', 'data-state': 'closed' },
-          backdrop: { 'aria-hidden': 'true', 'data-state': 'closed', 'hidden': '' },
-          positioner: { 'data-state': 'closed', 'hidden': '' },
+          // 这两层不带 hidden：淡出挂在遮罩上、整棵内容在定位层底下，
+          // 带上就吃到皮肤的 [hidden]{display:none}，退场一帧都播不出来
+          backdrop: { 'aria-hidden': 'true', 'data-state': 'closed', 'hidden': null },
+          positioner: { 'data-state': 'closed', 'hidden': null },
           content: { 'role': 'dialog', 'data-state': 'closed', 'hidden': '' },
         },
       },
     },
     {
-      name: '点击 trigger 打开：三层去掉 hidden，对话框语义与工具条接线完整',
+      name: '点击 trigger 打开：content 去掉 hidden，对话框语义与工具条接线完整',
       spec: { apg: `${APG}#roles_states_properties` },
       props: imageViewerProps(),
       steps: [
@@ -112,7 +118,7 @@ export const wcImageViewerSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '点击 close-trigger 关闭：三层复位 hidden，trigger 归位',
+      name: '点击 close-trigger 关闭：content 复位 hidden，trigger 归位',
       spec: { apg: `${APG}#keyboardinteraction` },
       props: imageViewerProps(),
       steps: [
@@ -124,8 +130,8 @@ export const wcImageViewerSuite: ConformanceSuite = {
           expect: {
             parts: {
               trigger: { 'aria-expanded': 'false', 'data-state': 'closed' },
-              backdrop: { hidden: '' },
-              positioner: { hidden: '' },
+              backdrop: { hidden: null },
+              positioner: { hidden: null },
               content: { hidden: '' },
             },
           },
@@ -143,7 +149,7 @@ export const wcImageViewerSuite: ConformanceSuite = {
         {
           kind: 'settle',
           until: { attr: { part: 'content', name: 'data-state', value: 'closed' } },
-          expect: { parts: { trigger: { 'data-state': 'closed' }, positioner: { 'data-state': 'closed', 'hidden': '' } } },
+          expect: { parts: { trigger: { 'data-state': 'closed' }, positioner: { 'data-state': 'closed', 'hidden': null } } },
         },
         { kind: 'settle', until: { activeElement: 'trigger' }, expect: { activeElement: 'trigger' } },
       ],
