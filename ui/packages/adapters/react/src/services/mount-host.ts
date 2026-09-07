@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
+import { flushSync } from 'react-dom'
 import { createRoot } from 'react-dom/client'
 
 /**
@@ -16,7 +17,10 @@ export function mountServiceHost(holder: HTMLElement, node: ReactNode, service: 
   let root: Root | null = null
   try {
     root = createRoot(holder)
-    root.render(node)
+    // 同步提交这一帧：createRoot().render() 是排队的，而服务建好之后紧接着就可能收到命令
+    // （拦截器里 createToastService() 下一行就 toast.info(…)）。宿主没渲出来时队列句柄还是空的，
+    // 那条提示会被当成「宿主没挂起来」静默丢掉
+    flushSync(() => root!.render(node))
     return root
   }
   catch (error) {

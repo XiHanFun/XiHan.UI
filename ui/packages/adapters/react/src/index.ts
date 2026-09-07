@@ -265,4 +265,23 @@ export type {
   PromptOptions,
   ServiceText,
 } from './services/dialog-service'
+export { createLoadingBarService } from './services/loading-bar-service'
+export type { LoadingBarService, LoadingBarServiceOptions, LoadingBarTranslationsSource } from './services/loading-bar-service'
+export { createNotificationService } from './services/notification-service'
+export type {
+  NotificationCreateOptions,
+  NotificationMessageOptions,
+  NotificationService,
+  NotificationServiceOptions,
+  NotificationTranslationsSource,
+} from './services/notification-service'
 export type { XhConfigSource } from './services/service-config'
+export { createToastService } from './services/toast-service'
+export type {
+  ToastCreateOptions,
+  ToastMessageOptions,
+  ToastPromiseOptions,
+  ToastService,
+  ToastServiceOptions,
+  ToastTranslationsSource,
+} from './services/toast-service'
