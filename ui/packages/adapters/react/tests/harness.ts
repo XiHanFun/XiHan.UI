@@ -61,6 +61,11 @@ export function createReactHarness(): AdapterHarness {
    * 固定刷几拍是靠不住的：从「派事件」到「属性落到节点上」要经过
    * 机器写 context → 版本号自增 → 重渲 → 提交后效应 这条链，中间还可能夹着机器自己的
    * flush 效应，需要几拍取决于组件。少刷一拍，快照就停在上一帧。
+   *
+   * 每一拍交给 act 的是同步回调而不是异步的：异步那条路 act 恒要让出一个宏任务，
+   * 用例排在计时器上的东西会被这一拍提前带进来——冲刷本该只把框架排空，不该把时间往前推。
+   * Vue 那一侧的 nextTick 同样不推时间，两个宿主的「一帧」于是是同一个意思。
+   * 同步这条路只在 act 队列里真有活时才让出宏任务，机器的更新本就由 flushSync 同步提交。
    */
   const tick = async (): Promise<void> => {
     let mutated = false
@@ -72,9 +77,9 @@ export function createReactHarness(): AdapterHarness {
     try {
       for (let round = 0; round < 10; round++) {
         mutated = false
-        await inAct(async () => {
-          await Promise.resolve()
-        })
+        await inAct(() => {})
+        // 机器的 flush 排在微任务上，act 之后再排一次干净
+        await Promise.resolve()
         if (!mutated)
           return
       }

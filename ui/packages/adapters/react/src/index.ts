@@ -19,6 +19,15 @@ export type {
 export { useAccordionContext, useAccordionItemContext } from './components/accordion/context'
 export { useAccordion } from './components/accordion/use-accordion'
 export type { AccordionContext } from './components/accordion/use-accordion'
+export { XhAffixContent, XhAffixRoot } from './components/affix/affix'
+export type {
+  AffixRootSlotProps,
+  XhAffixContentProps,
+  XhAffixRootProps,
+} from './components/affix/affix'
+export { useAffixContext } from './components/affix/context'
+export { useAffix } from './components/affix/use-affix'
+export type { AffixContext } from './components/affix/use-affix'
 export {
   XhAlertAction,
   XhAlertCloseTrigger,
@@ -115,6 +124,15 @@ export type {
 export { useAvatarContext } from './components/avatar/context'
 export { useAvatar } from './components/avatar/use-avatar'
 export type { AvatarContext } from './components/avatar/use-avatar'
+export { XhBackTopRoot, XhBackTopTrigger } from './components/back-top/back-top'
+export type {
+  BackTopRootSlotProps,
+  XhBackTopRootProps,
+  XhBackTopTriggerProps,
+} from './components/back-top/back-top'
+export { useBackTopContext } from './components/back-top/context'
+export { useBackTop } from './components/back-top/use-back-top'
+export type { BackTopContext } from './components/back-top/use-back-top'
 export { XhBadge, XhBadgeIndicator, XhBadgeRoot } from './components/badge/badge'
 export type {
   BadgeIndicatorSlotProps,
@@ -147,6 +165,8 @@ export { useBreadcrumb } from './components/breadcrumb/use-breadcrumb'
 export type { BreadcrumbContext } from './components/breadcrumb/use-breadcrumb'
 export { XhButton, XhButtonIndicator, XhButtonLabel, XhButtonPrefix, XhButtonSuffix } from './components/button'
 export type { XhButtonIndicatorProps, XhButtonLabelProps, XhButtonPrefixProps, XhButtonProps, XhButtonSuffixProps } from './components/button'
+export { XhButtonGroup, XhButtonGroupSeparator } from './components/button-group/button-group'
+export type { XhButtonGroupProps, XhButtonGroupSeparatorProps } from './components/button-group/button-group'
 export {
   XhCalendarCell,
   XhCalendarCellTrigger,
@@ -289,6 +309,28 @@ export { XhCheckbox } from './components/checkbox/checkbox'
 export type { XhCheckboxProps } from './components/checkbox/checkbox'
 export { useCheckbox } from './components/checkbox/use-checkbox'
 export type { CheckboxContext } from './components/checkbox/use-checkbox'
+export {
+  XhClipboardControl,
+  XhClipboardCopyTrigger,
+  XhClipboardIndicator,
+  XhClipboardInput,
+  XhClipboardLabel,
+  XhClipboardRoot,
+  XhClipboardStatus,
+} from './components/clipboard/clipboard'
+export type {
+  ClipboardRootSlotProps,
+  XhClipboardControlProps,
+  XhClipboardCopyTriggerProps,
+  XhClipboardIndicatorProps,
+  XhClipboardInputProps,
+  XhClipboardLabelProps,
+  XhClipboardRootProps,
+  XhClipboardStatusProps,
+} from './components/clipboard/clipboard'
+export { useClipboardContext } from './components/clipboard/context'
+export { useClipboard } from './components/clipboard/use-clipboard'
+export type { ClipboardContext } from './components/clipboard/use-clipboard'
 export {
   XhCodeViewCode,
   XhCodeViewFilename,
@@ -629,6 +671,13 @@ export type {
 } from './components/diff-view/diff-view'
 export { useDiffView } from './components/diff-view/use-diff-view'
 export type { DiffViewContext } from './components/diff-view/use-diff-view'
+export { XhDownloadTrigger } from './components/download-trigger/download-trigger'
+export type {
+  DownloadTriggerSlotProps,
+  XhDownloadTriggerProps,
+} from './components/download-trigger/download-trigger'
+export { useDownloadTrigger } from './components/download-trigger/use-download-trigger'
+export type { DownloadTriggerContext } from './components/download-trigger/use-download-trigger'
 export { useDrawerContext } from './components/drawer/context'
 export {
   XhDrawerBody,
@@ -800,6 +849,50 @@ export { useFlexContext } from './components/flex/context'
 export type { FlexContext } from './components/flex/context'
 export { XhFlex, XhFlexSplit } from './components/flex/flex'
 export type { XhFlexProps, XhFlexSplitProps } from './components/flex/flex'
+export { useFloatButtonContext } from './components/float-button/context'
+export {
+  XhFloatButtonList,
+  XhFloatButtonRoot,
+  XhFloatButtonTrigger,
+} from './components/float-button/float-button'
+export type {
+  FloatButtonRootSlotProps,
+  XhFloatButtonListProps,
+  XhFloatButtonRootProps,
+  XhFloatButtonTriggerProps,
+} from './components/float-button/float-button'
+export { useFloatButton } from './components/float-button/use-float-button'
+export type { FloatButtonContext } from './components/float-button/use-float-button'
+export { useFloatingPanelContext } from './components/floating-panel/context'
+export {
+  XhFloatingPanelBody,
+  XhFloatingPanelCloseTrigger,
+  XhFloatingPanelContent,
+  XhFloatingPanelDragTrigger,
+  XhFloatingPanelHeader,
+  XhFloatingPanelPositioner,
+  XhFloatingPanelResizeTrigger,
+  XhFloatingPanelRoot,
+  XhFloatingPanelTitle,
+  XhFloatingPanelTrigger,
+  XhFloatingPanelWindowStateTrigger,
+} from './components/floating-panel/floating-panel'
+export type {
+  FloatingPanelRootSlotProps,
+  XhFloatingPanelBodyProps,
+  XhFloatingPanelCloseTriggerProps,
+  XhFloatingPanelContentProps,
+  XhFloatingPanelDragTriggerProps,
+  XhFloatingPanelHeaderProps,
+  XhFloatingPanelPositionerProps,
+  XhFloatingPanelResizeTriggerProps,
+  XhFloatingPanelRootProps,
+  XhFloatingPanelTitleProps,
+  XhFloatingPanelTriggerProps,
+  XhFloatingPanelWindowStateTriggerProps,
+} from './components/floating-panel/floating-panel'
+export { useFloatingPanel } from './components/floating-panel/use-floating-panel'
+export type { FloatingPanelContext } from './components/floating-panel/use-floating-panel'
 export {
   XhFormErrorSummary,
   XhFormErrorSummaryItem,
@@ -822,10 +915,53 @@ export type {
 } from './components/form/form'
 export { useForm } from './components/form/use-form'
 export type { FormCallbacks, FormContext } from './components/form/use-form'
+export { XhGradientText } from './components/gradient-text/gradient-text'
+export type { XhGradientTextProps } from './components/gradient-text/gradient-text'
 export { useGridContext } from './components/grid/context'
 export type { GridContext } from './components/grid/context'
 export { XhGridItem, XhGridRoot } from './components/grid/grid'
 export type { XhGridItemProps, XhGridRootProps } from './components/grid/grid'
+export { useHeatmapContext, useHeatmapMonth, useHeatmapRow } from './components/heatmap/context'
+export {
+  XhHeatmapCell,
+  XhHeatmapColumnLabel,
+  XhHeatmapGrid,
+  XhHeatmapLegend,
+  XhHeatmapLegendItem,
+  XhHeatmapLegendLabel,
+  XhHeatmapMonthBlock,
+  XhHeatmapMonthLabel,
+  XhHeatmapRoot,
+  XhHeatmapRow,
+  XhHeatmapRowLabel,
+  XhHeatmapTooltip,
+  XhHeatmapWeekDay,
+} from './components/heatmap/heatmap'
+export type {
+  HeatmapCellSlotProps,
+  HeatmapRootSlotProps,
+  XhHeatmapCellProps,
+  XhHeatmapColumnLabelProps,
+  XhHeatmapGridProps,
+  XhHeatmapLegendItemProps,
+  XhHeatmapLegendLabelProps,
+  XhHeatmapLegendProps,
+  XhHeatmapMonthBlockProps,
+  XhHeatmapMonthLabelProps,
+  XhHeatmapRootProps,
+  XhHeatmapRowLabelProps,
+  XhHeatmapRowProps,
+  XhHeatmapTooltipProps,
+  XhHeatmapWeekDayProps,
+} from './components/heatmap/heatmap'
+export { useHeatmap } from './components/heatmap/use-heatmap'
+export type { HeatmapContext } from './components/heatmap/use-heatmap'
+export { XhHighlight } from './components/highlight/highlight'
+export type { XhHighlightProps } from './components/highlight/highlight'
+export { XhHotkeys } from './components/hotkeys/hotkeys'
+export type { XhHotkeysProps } from './components/hotkeys/hotkeys'
+export { useHotkeys } from './components/hotkeys/use-hotkeys'
+export type { HotkeysHandle, UseHotkeysOptions } from './components/hotkeys/use-hotkeys'
 export { useHoverCardContext } from './components/hover-card/context'
 export {
   XhHoverCardArrow,
@@ -848,6 +984,10 @@ export type {
 } from './components/hover-card/hover-card'
 export { useHoverCard } from './components/hover-card/use-hover-card'
 export type { HoverCardContext } from './components/hover-card/use-hover-card'
+export { XhIconWrapper } from './components/icon-wrapper/icon-wrapper'
+export type { XhIconWrapperProps } from './components/icon-wrapper/icon-wrapper'
+export { XhIcon } from './components/icon/icon'
+export type { XhIconProps } from './components/icon/icon'
 export { useImageCropperContext } from './components/image-cropper/context'
 export {
   XhImageCropperCropArea,
@@ -1053,6 +1193,12 @@ export type {
 } from './components/markdown-stream/markdown-stream'
 export { useMarkdownStream } from './components/markdown-stream/use-markdown-stream'
 export type { MarkdownStreamContext } from './components/markdown-stream/use-markdown-stream'
+export { useMarqueeContext } from './components/marquee/context'
+export type { MarqueeContext } from './components/marquee/context'
+export { XhMarqueeContent, XhMarqueeRoot } from './components/marquee/marquee'
+export type { XhMarqueeContentProps, XhMarqueeRootProps } from './components/marquee/marquee'
+export { XhMasonry } from './components/masonry/masonry'
+export type { XhMasonryProps } from './components/masonry/masonry'
 export { useMentionContext, useMentionItemContext } from './components/mention/context'
 export {
   XhMentionContent,
@@ -1250,6 +1396,8 @@ export type {
   XhNotificationRootProps,
 } from './components/notification/notification'
 export { useNotification, useNotificationItem } from './components/notification/use-notification'
+export { XhNumberAnimation } from './components/number-animation/number-animation'
+export type { NumberAnimationSlotProps, XhNumberAnimationProps } from './components/number-animation/number-animation'
 export { useNumberFieldContext } from './components/number-field/context'
 export {
   XhNumberFieldControl,
@@ -1898,6 +2046,29 @@ export type {
 } from './components/tabs/tabs'
 export { useTabs } from './components/tabs/use-tabs'
 export type { TabsContext } from './components/tabs/use-tabs'
+export { useTagGroupContext, useTagGroupItemContext } from './components/tag-group/context'
+export type { TagGroupItemContext } from './components/tag-group/context'
+export {
+  XhTagGroupCell,
+  XhTagGroupItem,
+  XhTagGroupItemDeleteTrigger,
+  XhTagGroupItemText,
+  XhTagGroupLabel,
+  XhTagGroupList,
+  XhTagGroupRoot,
+} from './components/tag-group/tag-group'
+export type {
+  TagGroupRootSlotProps,
+  XhTagGroupCellProps,
+  XhTagGroupItemDeleteTriggerProps,
+  XhTagGroupItemProps,
+  XhTagGroupItemTextProps,
+  XhTagGroupLabelProps,
+  XhTagGroupListProps,
+  XhTagGroupRootProps,
+} from './components/tag-group/tag-group'
+export { useTagGroup } from './components/tag-group/use-tag-group'
+export type { TagGroupContext } from './components/tag-group/use-tag-group'
 export { useTagContext } from './components/tag/context'
 export { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from './components/tag/tag'
 export type { XhTagCloseTriggerProps, XhTagLabelProps, XhTagRootProps } from './components/tag/tag'
@@ -2045,6 +2216,26 @@ export type {
   XhTimelineTimeProps,
   XhTimelineTitleProps,
 } from './components/timeline/timeline'
+export { useTimerContext } from './components/timer/context'
+export {
+  XhTimerControl,
+  XhTimerDisplay,
+  XhTimerItem,
+  XhTimerRoot,
+  XhTimerSeparator,
+} from './components/timer/timer'
+export type {
+  TimerRootSlotProps,
+  XhTimerControlProps,
+  XhTimerDisplayProps,
+  XhTimerItemProps,
+  XhTimerRootProps,
+  XhTimerSeparatorProps,
+} from './components/timer/timer'
+export { useTimer } from './components/timer/use-timer'
+export type { TimerContext } from './components/timer/use-timer'
+export { XhTimestamp } from './components/timestamp/timestamp'
+export type { XhTimestampProps } from './components/timestamp/timestamp'
 export { useToastContext } from './components/toast/context'
 export {
   XhToastActionTrigger,
