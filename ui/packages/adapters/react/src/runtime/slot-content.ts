@@ -22,3 +22,15 @@ export function slotPaints(children: ReactNode): boolean {
     return true
   })
 }
+
+/**
+ * children 是不是只有纯文本。
+ *
+ * Children.toArray 已经把 null / undefined / 布尔丢掉，剩下的只要有一个不是字符串或数字
+ * 就不算纯文本。拿它决定「要不要替作者补一层承载节点」：作者写下的是一段字，包进去才吃得到
+ * 那一层的规则；作者自己写了节点就一个都不动。
+ */
+export function slotIsPlainText(children: ReactNode): boolean {
+  return slotPaints(children)
+    && Children.toArray(children).every(node => typeof node === 'string' || typeof node === 'number')
+}
