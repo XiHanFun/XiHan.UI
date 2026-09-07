@@ -7,6 +7,9 @@ export const reactSsrExempt: SsrExemptions = {
   throwExempt: {},
   emptyExempt: {},
   partExempt: {
+    command: {
+      root: SLOT_ONLY,
+    },
     dialog: {
       root: SLOT_ONLY,
     },

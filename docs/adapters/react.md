@@ -4,7 +4,7 @@
 
 依赖：`react` 与 `react-dom` 是 peer 依赖，下限 19。这一版只支持 React 19——机器要求「宿主提交完这一帧、DOM 落定之后再跑回调」，`flushSync` 与 `useSyncExternalStore` 的行为是这条契约的地基。
 
-铺开进度：126 个组件里已铺 51 个，真源是 `ui/tooling/scripts/react-coverage.json`，十几张门禁按它决定该核哪些组件。没铺到的组件在这个包里没有导出。
+铺开进度：126 个组件里已铺 69 个，真源是 `ui/tooling/scripts/react-coverage.json`，十几张门禁按它决定该核哪些组件。没铺到的组件在这个包里没有导出。
 
 ## 组件命名
 
