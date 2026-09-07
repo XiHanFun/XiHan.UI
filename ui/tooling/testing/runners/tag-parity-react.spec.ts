@@ -10,7 +10,7 @@ import type { ConformanceSuite } from '../src'
 import { describe, expect, it } from 'vitest'
 import { createReactHarness } from '../../../packages/adapters/react/tests/harness'
 import { createVueHarness } from '../../../packages/adapters/vue/tests/harness'
-import { accordionSuite, alertSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldArraySuite, fieldsetSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, paginationSuite, popoverSuite, radioGroupSuite, segmentedSuite, selectSuite, separatorSuite, skeletonSuite, spinnerSuite, stepsSuite, switchSuite, tabsSuite, tagSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite } from '../src'
+import { accordionSuite, alertSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, cardSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, contextMenuSuite, dialogSuite, drawerSuite, editableSuite, emptyStateSuite, fieldArraySuite, fieldsetSuite, fieldSuite, formSuite, hoverCardSuite, inputGroupSuite, loadingBarSuite, menuSuite, notificationSuite, numberFieldSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, segmentedSuite, selectSuite, separatorSuite, skeletonSuite, spinnerSuite, statisticSuite, stepsSuite, switchSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, timelineSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite } from '../src'
 
 /** 部件名 → 标签名，同名部件多份时按文档序排成数组。 */
 function tagsByPart(root: HTMLElement): Record<string, string[]> {
@@ -22,7 +22,7 @@ function tagsByPart(root: HTMLElement): Record<string, string[]> {
   return out
 }
 
-const SUITES: ConformanceSuite[] = [accordionSuite, alertSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldArraySuite, fieldsetSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, paginationSuite, popoverSuite, radioGroupSuite, segmentedSuite, selectSuite, separatorSuite, skeletonSuite, spinnerSuite, stepsSuite, switchSuite, tabsSuite, tagSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite]
+const SUITES: ConformanceSuite[] = [accordionSuite, alertSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, cardSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, contextMenuSuite, dialogSuite, drawerSuite, editableSuite, emptyStateSuite, fieldArraySuite, fieldsetSuite, fieldSuite, formSuite, hoverCardSuite, inputGroupSuite, loadingBarSuite, menuSuite, notificationSuite, numberFieldSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, segmentedSuite, selectSuite, separatorSuite, skeletonSuite, spinnerSuite, statisticSuite, stepsSuite, switchSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, timelineSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite]
 
 describe('标签名对拍（vue vs react）', () => {
   for (const suite of SUITES) {

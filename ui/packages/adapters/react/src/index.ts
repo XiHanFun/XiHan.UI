@@ -92,6 +92,26 @@ export type { BreadcrumbContext } from './components/breadcrumb/use-breadcrumb'
 export { XhButton, XhButtonIndicator, XhButtonLabel, XhButtonPrefix, XhButtonSuffix } from './components/button'
 export type { XhButtonIndicatorProps, XhButtonLabelProps, XhButtonPrefixProps, XhButtonProps, XhButtonSuffixProps } from './components/button'
 export {
+  XhCardBody,
+  XhCardDescription,
+  XhCardFooter,
+  XhCardHeader,
+  XhCardMedia,
+  XhCardRoot,
+  XhCardTitle,
+} from './components/card/card'
+export type {
+  XhCardBodyProps,
+  XhCardDescriptionProps,
+  XhCardFooterProps,
+  XhCardHeaderProps,
+  XhCardMediaProps,
+  XhCardRootProps,
+  XhCardTitleProps,
+} from './components/card/card'
+export { useCardContext } from './components/card/context'
+export type { CardContext } from './components/card/context'
+export {
   XhCheckboxGroupIndicator,
   XhCheckboxGroupItem,
   XhCheckboxGroupItemText,
@@ -132,6 +152,50 @@ export type {
 export { useCollapsibleContext } from './components/collapsible/context'
 export { useCollapsible } from './components/collapsible/use-collapsible'
 export type { CollapsibleContext } from './components/collapsible/use-collapsible'
+export {
+  useContextMenuChain,
+  useContextMenuContext,
+  useContextMenuGroupContext,
+  useContextMenuItemContext,
+  useContextMenuSubContext,
+} from './components/context-menu/context'
+export type { ContextMenuChain, ContextMenuSubHandle } from './components/context-menu/context'
+export {
+  XhContextMenuArrow,
+  XhContextMenuContent,
+  XhContextMenuGroup,
+  XhContextMenuGroupLabel,
+  XhContextMenuItem,
+  XhContextMenuItemDescription,
+  XhContextMenuItemIndicator,
+  XhContextMenuItemText,
+  XhContextMenuPositioner,
+  XhContextMenuRoot,
+  XhContextMenuSeparator,
+  XhContextMenuSub,
+  XhContextMenuSubTrigger,
+  XhContextMenuTrigger,
+} from './components/context-menu/context-menu'
+export type {
+  ContextMenuRootSlotProps,
+  ContextMenuSubSlotProps,
+  XhContextMenuArrowProps,
+  XhContextMenuContentProps,
+  XhContextMenuGroupLabelProps,
+  XhContextMenuGroupProps,
+  XhContextMenuItemDescriptionProps,
+  XhContextMenuItemIndicatorProps,
+  XhContextMenuItemProps,
+  XhContextMenuItemTextProps,
+  XhContextMenuPositionerProps,
+  XhContextMenuRootProps,
+  XhContextMenuSeparatorProps,
+  XhContextMenuSubProps,
+  XhContextMenuSubTriggerProps,
+  XhContextMenuTriggerProps,
+} from './components/context-menu/context-menu'
+export { useContextMenu } from './components/context-menu/use-context-menu'
+export type { ContextMenuContext } from './components/context-menu/use-context-menu'
 export { useDialogContext } from './components/dialog/context'
 export {
   XhDialogBody,
@@ -186,6 +250,49 @@ export type {
 } from './components/drawer/drawer'
 export { useDrawer } from './components/drawer/use-drawer'
 export type { DrawerContext } from './components/drawer/use-drawer'
+export { useEditableContext } from './components/editable/context'
+export {
+  XhEditableCancelTrigger,
+  XhEditableControl,
+  XhEditableEditTrigger,
+  XhEditableInput,
+  XhEditableLabel,
+  XhEditablePreview,
+  XhEditableRoot,
+  XhEditableSubmitTrigger,
+} from './components/editable/editable'
+export type {
+  EditableRootSlotProps,
+  XhEditableCancelTriggerProps,
+  XhEditableControlProps,
+  XhEditableEditTriggerProps,
+  XhEditableInputProps,
+  XhEditableLabelProps,
+  XhEditablePreviewProps,
+  XhEditableRootProps,
+  XhEditableSubmitTriggerProps,
+} from './components/editable/editable'
+export { useEditable } from './components/editable/use-editable'
+export type { EditableContext } from './components/editable/use-editable'
+export { useEmptyStateContext } from './components/empty-state/context'
+export {
+  XhEmptyStateAction,
+  XhEmptyStateDescription,
+  XhEmptyStateIndicator,
+  XhEmptyStateMedia,
+  XhEmptyStateRoot,
+  XhEmptyStateTitle,
+} from './components/empty-state/empty-state'
+export type {
+  XhEmptyStateActionProps,
+  XhEmptyStateDescriptionProps,
+  XhEmptyStateIndicatorProps,
+  XhEmptyStateMediaProps,
+  XhEmptyStateRootProps,
+  XhEmptyStateTitleProps,
+} from './components/empty-state/empty-state'
+export { useEmptyState } from './components/empty-state/use-empty-state'
+export type { EmptyStateContext } from './components/empty-state/use-empty-state'
 export { useFieldArrayContext, useFieldArrayItemContext } from './components/field-array/context'
 export {
   XhFieldArrayAddTrigger,
@@ -272,6 +379,32 @@ export type {
 } from './components/form/form'
 export { useForm } from './components/form/use-form'
 export type { FormCallbacks, FormContext } from './components/form/use-form'
+export { useHoverCardContext } from './components/hover-card/context'
+export {
+  XhHoverCardArrow,
+  XhHoverCardContent,
+  XhHoverCardDescription,
+  XhHoverCardPositioner,
+  XhHoverCardRoot,
+  XhHoverCardTitle,
+  XhHoverCardTrigger,
+} from './components/hover-card/hover-card'
+export type {
+  HoverCardRootSlotProps,
+  XhHoverCardArrowProps,
+  XhHoverCardContentProps,
+  XhHoverCardDescriptionProps,
+  XhHoverCardPositionerProps,
+  XhHoverCardRootProps,
+  XhHoverCardTitleProps,
+  XhHoverCardTriggerProps,
+} from './components/hover-card/hover-card'
+export { useHoverCard } from './components/hover-card/use-hover-card'
+export type { HoverCardContext } from './components/hover-card/use-hover-card'
+export { useInputGroupContext } from './components/input-group/context'
+export type { InputGroupContext } from './components/input-group/context'
+export { XhInputGroupItem, XhInputGroupRoot } from './components/input-group/input-group'
+export type { XhInputGroupItemProps, XhInputGroupRootProps } from './components/input-group/input-group'
 export { useLoadingBarContext } from './components/loading-bar/context'
 export {
   XhLoadingBarPeg,
@@ -288,6 +421,50 @@ export type {
 } from './components/loading-bar/loading-bar'
 export { useLoadingBar } from './components/loading-bar/use-loading-bar'
 export type { LoadingBarContext } from './components/loading-bar/use-loading-bar'
+export {
+  useMenuChain,
+  useMenuContext,
+  useMenuGroupContext,
+  useMenuItemContext,
+  useMenuSubContext,
+} from './components/menu/context'
+export type { MenuChain, MenuSubHandle } from './components/menu/context'
+export {
+  XhMenuArrow,
+  XhMenuContent,
+  XhMenuGroup,
+  XhMenuGroupLabel,
+  XhMenuItem,
+  XhMenuItemDescription,
+  XhMenuItemIndicator,
+  XhMenuItemText,
+  XhMenuPositioner,
+  XhMenuRoot,
+  XhMenuSeparator,
+  XhMenuSub,
+  XhMenuSubTrigger,
+  XhMenuTrigger,
+} from './components/menu/menu'
+export type {
+  MenuRootSlotProps,
+  MenuSubSlotProps,
+  XhMenuArrowProps,
+  XhMenuContentProps,
+  XhMenuGroupLabelProps,
+  XhMenuGroupProps,
+  XhMenuItemDescriptionProps,
+  XhMenuItemIndicatorProps,
+  XhMenuItemProps,
+  XhMenuItemTextProps,
+  XhMenuPositionerProps,
+  XhMenuRootProps,
+  XhMenuSeparatorProps,
+  XhMenuSubProps,
+  XhMenuSubTriggerProps,
+  XhMenuTriggerProps,
+} from './components/menu/menu'
+export { useMenu } from './components/menu/use-menu'
+export type { MenuContext } from './components/menu/use-menu'
 export {
   NotificationItemProvider,
   NotificationProvider,
@@ -322,6 +499,30 @@ export type {
   XhNotificationRootProps,
 } from './components/notification/notification'
 export { useNotification, useNotificationItem } from './components/notification/use-notification'
+export { useNumberFieldContext } from './components/number-field/context'
+export {
+  XhNumberFieldControl,
+  XhNumberFieldDecrementTrigger,
+  XhNumberFieldIncrementTrigger,
+  XhNumberFieldInput,
+  XhNumberFieldLabel,
+  XhNumberFieldPrefix,
+  XhNumberFieldRoot,
+  XhNumberFieldSuffix,
+} from './components/number-field/number-field'
+export type {
+  NumberFieldRootSlotProps,
+  XhNumberFieldControlProps,
+  XhNumberFieldDecrementTriggerProps,
+  XhNumberFieldIncrementTriggerProps,
+  XhNumberFieldInputProps,
+  XhNumberFieldLabelProps,
+  XhNumberFieldPrefixProps,
+  XhNumberFieldRootProps,
+  XhNumberFieldSuffixProps,
+} from './components/number-field/number-field'
+export { useNumberField } from './components/number-field/use-number-field'
+export type { NumberFieldContext } from './components/number-field/use-number-field'
 export { usePaginationContext } from './components/pagination/context'
 export {
   XhPaginationContent,
@@ -353,6 +554,74 @@ export type {
 } from './components/pagination/pagination'
 export { usePagination } from './components/pagination/use-pagination'
 export type { PaginationContext } from './components/pagination/use-pagination'
+export { usePasswordInputContext } from './components/password-input/context'
+export {
+  XhPasswordInputCapsLockIndicator,
+  XhPasswordInputControl,
+  XhPasswordInputInput,
+  XhPasswordInputLabel,
+  XhPasswordInputRoot,
+  XhPasswordInputStrengthMeter,
+  XhPasswordInputVisibilityTrigger,
+} from './components/password-input/password-input'
+export type {
+  PasswordInputRootSlotProps,
+  XhPasswordInputCapsLockIndicatorProps,
+  XhPasswordInputControlProps,
+  XhPasswordInputInputProps,
+  XhPasswordInputLabelProps,
+  XhPasswordInputRootProps,
+  XhPasswordInputStrengthMeterProps,
+  XhPasswordInputVisibilityTriggerProps,
+} from './components/password-input/password-input'
+export { usePasswordInput } from './components/password-input/use-password-input'
+export type { PasswordInputContext } from './components/password-input/use-password-input'
+export { usePinInputContext } from './components/pin-input/context'
+export {
+  XhPinInputGroup,
+  XhPinInputHiddenInput,
+  XhPinInputInput,
+  XhPinInputLabel,
+  XhPinInputRoot,
+  XhPinInputSeparator,
+} from './components/pin-input/pin-input'
+export type {
+  PinInputRootSlotProps,
+  XhPinInputGroupProps,
+  XhPinInputHiddenInputProps,
+  XhPinInputInputProps,
+  XhPinInputLabelProps,
+  XhPinInputRootProps,
+  XhPinInputSeparatorProps,
+} from './components/pin-input/pin-input'
+export { usePinInput } from './components/pin-input/use-pin-input'
+export type { PinInputContext } from './components/pin-input/use-pin-input'
+export { usePopconfirmContext } from './components/popconfirm/context'
+export {
+  XhPopconfirmArrow,
+  XhPopconfirmCancelTrigger,
+  XhPopconfirmConfirmTrigger,
+  XhPopconfirmContent,
+  XhPopconfirmDescription,
+  XhPopconfirmPositioner,
+  XhPopconfirmRoot,
+  XhPopconfirmTitle,
+  XhPopconfirmTrigger,
+} from './components/popconfirm/popconfirm'
+export type {
+  PopconfirmRootSlotProps,
+  XhPopconfirmArrowProps,
+  XhPopconfirmCancelTriggerProps,
+  XhPopconfirmConfirmTriggerProps,
+  XhPopconfirmContentProps,
+  XhPopconfirmDescriptionProps,
+  XhPopconfirmPositionerProps,
+  XhPopconfirmRootProps,
+  XhPopconfirmTitleProps,
+  XhPopconfirmTriggerProps,
+} from './components/popconfirm/popconfirm'
+export { usePopconfirm } from './components/popconfirm/use-popconfirm'
+export type { PopconfirmContext } from './components/popconfirm/use-popconfirm'
 export { usePopoverContext } from './components/popover/context'
 export {
   XhPopoverArrow,
@@ -377,6 +646,8 @@ export type {
 } from './components/popover/popover'
 export { usePopover } from './components/popover/use-popover'
 export type { PopoverContext } from './components/popover/use-popover'
+export { XhProgress } from './components/progress/progress'
+export type { XhProgressProps } from './components/progress/progress'
 export { useRadioGroupContext, useRadioGroupItemContext } from './components/radio-group/context'
 export {
   XhRadioGroupItem,
@@ -392,6 +663,27 @@ export type {
 } from './components/radio-group/radio-group'
 export { useRadioGroup } from './components/radio-group/use-radio-group'
 export type { RadioGroupContext } from './components/radio-group/use-radio-group'
+export { useRatingContext } from './components/rating/context'
+export {
+  XhRatingControl,
+  XhRatingHiddenInput,
+  XhRatingItem,
+  XhRatingLabel,
+  XhRatingRoot,
+  XhRatingValueText,
+} from './components/rating/rating'
+export type {
+  RatingItemSlotProps,
+  RatingRootSlotProps,
+  XhRatingControlProps,
+  XhRatingHiddenInputProps,
+  XhRatingItemProps,
+  XhRatingLabelProps,
+  XhRatingRootProps,
+  XhRatingValueTextProps,
+} from './components/rating/rating'
+export { useRating } from './components/rating/use-rating'
+export type { RatingContext } from './components/rating/use-rating'
 export { useSegmentedContext, useSegmentedItemContext } from './components/segmented/context'
 export {
   XhSegmentedHiddenInput,
@@ -464,6 +756,24 @@ export { XhSpinner, XhSpinnerLabel } from './components/spinner/spinner'
 export type { XhSpinnerLabelProps, XhSpinnerProps } from './components/spinner/spinner'
 export { useSpinner } from './components/spinner/use-spinner'
 export type { SpinnerContext } from './components/spinner/use-spinner'
+export { useStatisticContext } from './components/statistic/context'
+export type { StatisticContext } from './components/statistic/context'
+export {
+  XhStatisticLabel,
+  XhStatisticPrefix,
+  XhStatisticRoot,
+  XhStatisticSuffix,
+  XhStatisticTrend,
+  XhStatisticValue,
+} from './components/statistic/statistic'
+export type {
+  XhStatisticLabelProps,
+  XhStatisticPrefixProps,
+  XhStatisticRootProps,
+  XhStatisticSuffixProps,
+  XhStatisticTrendProps,
+  XhStatisticValueProps,
+} from './components/statistic/statistic'
 export { useStepsContext, useStepsItemContext } from './components/steps/context'
 export {
   XhStepsContent,
@@ -521,6 +831,88 @@ export { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from './components/tag/tag'
 export type { XhTagCloseTriggerProps, XhTagLabelProps, XhTagRootProps } from './components/tag/tag'
 export { useStaticTag, useTag } from './components/tag/use-tag'
 export type { TagContext } from './components/tag/use-tag'
+export { useTagsInputContext, useTagsInputItemContext } from './components/tags-input/context'
+export {
+  XhTagsInputClearTrigger,
+  XhTagsInputControl,
+  XhTagsInputCount,
+  XhTagsInputHiddenInput,
+  XhTagsInputInput,
+  XhTagsInputItem,
+  XhTagsInputItemDeleteTrigger,
+  XhTagsInputItemInput,
+  XhTagsInputItemPreview,
+  XhTagsInputItemText,
+  XhTagsInputLabel,
+  XhTagsInputRoot,
+} from './components/tags-input/tags-input'
+export type {
+  TagsInputCountSlotProps,
+  TagsInputRootSlotProps,
+  XhTagsInputClearTriggerProps,
+  XhTagsInputControlProps,
+  XhTagsInputCountProps,
+  XhTagsInputHiddenInputProps,
+  XhTagsInputInputProps,
+  XhTagsInputItemDeleteTriggerProps,
+  XhTagsInputItemInputProps,
+  XhTagsInputItemPreviewProps,
+  XhTagsInputItemProps,
+  XhTagsInputItemTextProps,
+  XhTagsInputLabelProps,
+  XhTagsInputRootProps,
+} from './components/tags-input/tags-input'
+export { useTagsInput } from './components/tags-input/use-tags-input'
+export type { TagsInputContext } from './components/tags-input/use-tags-input'
+export { useTextFieldContext } from './components/text-field/context'
+export {
+  XhTextFieldClearTrigger,
+  XhTextFieldControl,
+  XhTextFieldCount,
+  XhTextFieldInput,
+  XhTextFieldLabel,
+  XhTextFieldPrefix,
+  XhTextFieldRoot,
+  XhTextFieldSuffix,
+} from './components/text-field/text-field'
+export type {
+  TextFieldCountSlotProps,
+  TextFieldRootSlotProps,
+  XhTextFieldClearTriggerProps,
+  XhTextFieldControlProps,
+  XhTextFieldCountProps,
+  XhTextFieldInputProps,
+  XhTextFieldLabelProps,
+  XhTextFieldPrefixProps,
+  XhTextFieldRootProps,
+  XhTextFieldSuffixProps,
+} from './components/text-field/text-field'
+export { useTextField } from './components/text-field/use-text-field'
+export type { TextFieldContext } from './components/text-field/use-text-field'
+export { useTimelineContext, useTimelineItemContext } from './components/timeline/context'
+export type { TimelineContext } from './components/timeline/context'
+export {
+  XhTimelineConnector,
+  XhTimelineContent,
+  XhTimelineDescription,
+  XhTimelineIndicator,
+  XhTimelineItem,
+  XhTimelineLabel,
+  XhTimelineRoot,
+  XhTimelineTime,
+  XhTimelineTitle,
+} from './components/timeline/timeline'
+export type {
+  XhTimelineConnectorProps,
+  XhTimelineContentProps,
+  XhTimelineDescriptionProps,
+  XhTimelineIndicatorProps,
+  XhTimelineItemProps,
+  XhTimelineLabelProps,
+  XhTimelineRootProps,
+  XhTimelineTimeProps,
+  XhTimelineTitleProps,
+} from './components/timeline/timeline'
 export { useToastContext } from './components/toast/context'
 export {
   XhToastActionTrigger,

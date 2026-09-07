@@ -8,14 +8,35 @@ import {
   XhCheckbox,
   XhCheckboxGroupItem,
   XhCheckboxGroupRoot,
+  XhEditableEditTrigger,
+  XhEditableInput,
+  XhEditablePreview,
+  XhEditableRoot,
+  XhEditableSubmitTrigger,
   XhFieldArrayAddTrigger,
   XhFieldArrayItem,
   XhFieldArrayRoot,
+  XhNumberFieldInput,
+  XhNumberFieldRoot,
+  XhPasswordInputInput,
+  XhPasswordInputRoot,
+  XhPinInputHiddenInput,
+  XhPinInputInput,
+  XhPinInputRoot,
   XhRadioGroupItem,
   XhRadioGroupRoot,
+  XhRatingControl,
+  XhRatingHiddenInput,
+  XhRatingItem,
+  XhRatingRoot,
   XhSegmentedItem,
   XhSegmentedRoot,
   XhSwitch,
+  XhTagsInputHiddenInput,
+  XhTagsInputInput,
+  XhTagsInputRoot,
+  XhTextFieldInput,
+  XhTextFieldRoot,
   XhToggleGroupItem,
   XhToggleGroupRoot,
 } from '../src'
@@ -150,5 +171,133 @@ describe('组与容器的原生表单重置', () => {
     expect(rows()).toBe(2)
     act(() => form.reset())
     expect(rows()).toBe(1)
+  })
+
+  it('评分：重置回到 defaultValue，表单影子随之还原', () => {
+    const shadow = (): HTMLInputElement =>
+      host!.querySelector<HTMLInputElement>('[data-scope="rating"][data-part="hidden-input"]')!
+    const form = mount(
+      <XhRatingRoot name="score" defaultValue={2}>
+        <XhRatingControl>
+          <XhRatingItem value={1} />
+          <XhRatingItem value={2} />
+          <XhRatingItem value={3} />
+        </XhRatingControl>
+        <XhRatingHiddenInput />
+      </XhRatingRoot>,
+    )
+    act(() => items('rating')[2]!.click())
+    expect(items('rating').map(el => el.getAttribute('aria-checked'))).toEqual(['false', 'false', 'true'])
+    expect(shadow().value).toBe('3')
+    act(() => form.reset())
+    expect(items('rating').map(el => el.getAttribute('aria-checked'))).toEqual(['false', 'true', 'false'])
+    expect(shadow().value).toBe('2')
+  })
+})
+
+/**
+ * 文本输入族：值全攥在机器里，原生 reset 只还原原生控件。
+ * 锚点是根部件自己渲的那个 div，单独核它接住了没有——门禁对 React 只做静态串匹配，
+ * 核不到 ref 究竟落在哪个节点上。
+ */
+describe('文本输入族的原生表单重置', () => {
+  const part = (scope: string, name: string): HTMLInputElement =>
+    host!.querySelector<HTMLInputElement>(`[data-scope="${scope}"][data-part="${name}"]`)!
+
+  /** 真实输入：写进框里再派 input，与用户敲字走同一条路。 */
+  const typeInto = (el: HTMLInputElement, text: string): void => {
+    act(() => {
+      el.value = text
+      el.dispatchEvent(new Event('input', { bubbles: true }))
+    })
+  }
+
+  const press = (el: HTMLElement, key: string): void => {
+    act(() => {
+      el.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
+    })
+  }
+
+  it('文本框：重置回到 defaultValue', () => {
+    const form = mount(
+      <XhTextFieldRoot name="nickname" defaultValue="阿旺">
+        <XhTextFieldInput />
+      </XhTextFieldRoot>,
+    )
+    typeInto(part('text-field', 'input'), '小黑')
+    expect(part('text-field', 'input').value).toBe('小黑')
+    act(() => form.reset())
+    expect(part('text-field', 'input').value).toBe('阿旺')
+  })
+
+  it('数字框：重置回到 defaultValue', () => {
+    const form = mount(
+      <XhNumberFieldRoot name="count" defaultValue="3">
+        <XhNumberFieldInput />
+      </XhNumberFieldRoot>,
+    )
+    typeInto(part('number-field', 'input'), '9')
+    expect(part('number-field', 'input').value).toBe('9')
+    act(() => form.reset())
+    expect(part('number-field', 'input').value).toBe('3')
+  })
+
+  it('密码框：重置回到 defaultValue', () => {
+    const form = mount(
+      <XhPasswordInputRoot name="password" defaultValue="a1">
+        <XhPasswordInputInput />
+      </XhPasswordInputRoot>,
+    )
+    typeInto(part('password-input', 'input'), 'b2c3')
+    expect(part('password-input', 'input').value).toBe('b2c3')
+    act(() => form.reset())
+    expect(part('password-input', 'input').value).toBe('a1')
+  })
+
+  it('分格验证码：重置回到 defaultValue，隐藏输入随之还原', () => {
+    const form = mount(
+      <XhPinInputRoot name="code" length={3} defaultValue={['1']}>
+        <XhPinInputInput index={0} />
+        <XhPinInputInput index={1} />
+        <XhPinInputInput index={2} />
+        <XhPinInputHiddenInput />
+      </XhPinInputRoot>,
+    )
+    typeInto(part('pin-input', 'input'), '9')
+    expect(part('pin-input', 'hidden-input').value).toBe('9')
+    act(() => form.reset())
+    expect(part('pin-input', 'hidden-input').value).toBe('1')
+  })
+
+  it('就地编辑：重置回到 defaultValue，预览区跟着还原', () => {
+    const preview = (): HTMLElement => host!.querySelector<HTMLElement>('[data-scope="editable"][data-part="preview"]')!
+    const form = mount(
+      <XhEditableRoot name="nickname" defaultValue="阿旺">
+        <XhEditablePreview />
+        <XhEditableInput />
+        <XhEditableEditTrigger>编辑</XhEditableEditTrigger>
+        <XhEditableSubmitTrigger>保存</XhEditableSubmitTrigger>
+      </XhEditableRoot>,
+    )
+    act(() => host!.querySelector<HTMLButtonElement>('[data-scope="editable"][data-part="edit-trigger"]')!.click())
+    typeInto(part('editable', 'input'), '小黑')
+    act(() => host!.querySelector<HTMLButtonElement>('[data-scope="editable"][data-part="submit-trigger"]')!.click())
+    expect(preview().textContent).toBe('小黑')
+    act(() => form.reset())
+    expect(preview().textContent).toBe('阿旺')
+  })
+
+  it('标签输入：重置回到 defaultValue，隐藏输入随之还原', () => {
+    const form = mount(
+      <XhTagsInputRoot name="stack" defaultValue={['vue']}>
+        <XhTagsInputInput />
+        <XhTagsInputHiddenInput />
+      </XhTagsInputRoot>,
+    )
+    typeInto(part('tags-input', 'input'), 'react')
+    press(part('tags-input', 'input'), 'Enter')
+    expect(part('tags-input', 'hidden-input').value).toBe('vue,react')
+    act(() => form.reset())
+    expect(part('tags-input', 'hidden-input').value).toBe('vue')
   })
 })

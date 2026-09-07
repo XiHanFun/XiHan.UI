@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { accordionSuite, alertSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldArraySuite, fieldsetSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, paginationSuite, popoverSuite, radioGroupSuite, runConformance, segmentedSuite, selectSuite, separatorSuite, skeletonSuite, spinnerSuite, stepsSuite, switchSuite, tabsSuite, tagSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite } from '@xihan-ui/testing'
+import { accordionSuite, alertSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, cardSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, contextMenuSuite, dialogSuite, drawerSuite, editableSuite, emptyStateSuite, fieldArraySuite, fieldsetSuite, fieldSuite, formSuite, hoverCardSuite, inputGroupSuite, loadingBarSuite, menuSuite, notificationSuite, numberFieldSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, runConformance, segmentedSuite, selectSuite, separatorSuite, skeletonSuite, spinnerSuite, statisticSuite, stepsSuite, switchSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, timelineSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite } from '@xihan-ui/testing'
 import { describe, it } from 'vitest'
 import { createReactHarness } from './harness'
 
@@ -9,7 +9,7 @@ import { createReactHarness } from './harness'
 
 runConformance(
   createReactHarness(),
-  [accordionSuite, alertSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldArraySuite, fieldsetSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, paginationSuite, popoverSuite, radioGroupSuite, segmentedSuite, selectSuite, separatorSuite, skeletonSuite, spinnerSuite, stepsSuite, switchSuite, tabsSuite, tagSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite],
+  [accordionSuite, alertSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, cardSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, contextMenuSuite, dialogSuite, drawerSuite, editableSuite, emptyStateSuite, fieldArraySuite, fieldsetSuite, fieldSuite, formSuite, hoverCardSuite, inputGroupSuite, loadingBarSuite, menuSuite, notificationSuite, numberFieldSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, segmentedSuite, selectSuite, separatorSuite, skeletonSuite, spinnerSuite, statisticSuite, stepsSuite, switchSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, timelineSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite],
   { describe, it },
   {
     keyboardCoverageExempt: {
