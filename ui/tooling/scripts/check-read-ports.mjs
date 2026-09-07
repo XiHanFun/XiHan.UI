@@ -407,6 +407,23 @@ function childrenPayload(source, fileName) {
 /** 一个 React 组件目录里所有 .ts / .tsx 合起来的取数口。 */
 async function reactPorts(comp) {
   const ports = { names: new Set(), chains: new Set() }
+
+  // 没有机器的那几个与 Vue 侧一样是单文件平铺，不在同名目录里
+  for (const ext of ['tsx', 'ts']) {
+    try {
+      const file = `${comp}.${ext}`
+      const found = childrenPayload(await readFile(join(REACT, file), 'utf8'), file)
+      for (const name of found.names)
+        ports.names.add(name)
+      for (const chain of found.chains)
+        ports.chains.add(chain)
+      return ports
+    }
+    catch {
+      // 换下一种扩展名，都没有就按目录读
+    }
+  }
+
   let entries
   try {
     entries = await readdir(join(REACT, comp), { withFileTypes: true })

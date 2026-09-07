@@ -31,11 +31,18 @@ function eventName(key: string): string {
   return key.slice(2).toLowerCase()
 }
 
-export function useNativeEvents(props: Record<string, unknown>): NativeEventBinding {
+/**
+ * @param props connect 交下来的那一份 props。
+ * @param only 只把这几个处理器改装成原生监听器，其余留在 attrs 里继续走 React 合成事件；
+ * 不给就整份改装。同一个节点上两档并存时用它：`onFocus` / `onBlur` 挂的是冒泡的
+ * focusin / focusout，改装成原生监听器后名字变回不冒泡的 focus / blur，后代得焦就收不到了。
+ */
+export function useNativeEvents(props: Record<string, unknown>, only?: readonly string[]): NativeEventBinding {
   const attrs: Record<string, unknown> = {}
   const handlers = new Map<string, (event: Event) => void>()
+  const wanted = only ? new Set(only) : null
   for (const [key, value] of Object.entries(props)) {
-    if (isHandler(key, value))
+    if (isHandler(key, value) && (!wanted || wanted.has(key)))
       handlers.set(eventName(key), value as (event: Event) => void)
     else
       attrs[key] = value

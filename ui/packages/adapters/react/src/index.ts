@@ -1,3 +1,5 @@
+export { XhButton, XhButtonIndicator, XhButtonLabel, XhButtonPrefix, XhButtonSuffix } from './components/button'
+export type { XhButtonIndicatorProps, XhButtonLabelProps, XhButtonPrefixProps, XhButtonProps, XhButtonSuffixProps } from './components/button'
 export { useDialogContext } from './components/dialog/context'
 export {
   XhDialogBody,
@@ -93,6 +95,56 @@ export type {
 } from './components/form/form'
 export { useForm } from './components/form/use-form'
 export type { FormCallbacks, FormContext } from './components/form/use-form'
+export { useLoadingBarContext } from './components/loading-bar/context'
+export {
+  XhLoadingBarPeg,
+  XhLoadingBarRange,
+  XhLoadingBarRoot,
+  XhLoadingBarTrack,
+} from './components/loading-bar/loading-bar'
+export type {
+  LoadingBarRootSlotProps,
+  XhLoadingBarPegProps,
+  XhLoadingBarRangeProps,
+  XhLoadingBarRootProps,
+  XhLoadingBarTrackProps,
+} from './components/loading-bar/loading-bar'
+export { useLoadingBar } from './components/loading-bar/use-loading-bar'
+export type { LoadingBarContext } from './components/loading-bar/use-loading-bar'
+export {
+  NotificationItemProvider,
+  NotificationProvider,
+  useNotificationContext,
+  useNotificationContextOptional,
+  useNotificationItemContext,
+} from './components/notification/context'
+export type { NotificationContext, NotificationItemContext } from './components/notification/context'
+export {
+  XhNotificationGroup,
+  XhNotificationItem,
+  XhNotificationItemActionTrigger,
+  XhNotificationItemCloseTrigger,
+  XhNotificationItemDescription,
+  XhNotificationItemIndicator,
+  XhNotificationItemProgress,
+  XhNotificationItemTitle,
+  XhNotificationRoot,
+} from './components/notification/notification'
+export type {
+  NotificationGroupSlotProps,
+  NotificationItemSlotProps,
+  NotificationRootSlotProps,
+  XhNotificationGroupProps,
+  XhNotificationItemActionTriggerProps,
+  XhNotificationItemCloseTriggerProps,
+  XhNotificationItemDescriptionProps,
+  XhNotificationItemIndicatorProps,
+  XhNotificationItemProgressProps,
+  XhNotificationItemProps,
+  XhNotificationItemTitleProps,
+  XhNotificationRootProps,
+} from './components/notification/notification'
+export { useNotification, useNotificationItem } from './components/notification/use-notification'
 export { usePopoverContext } from './components/popover/context'
 export {
   XhPopoverArrow,
@@ -151,6 +203,26 @@ export type { SelectContext } from './components/select/use-select'
 export { XhSwitch } from './components/switch/switch'
 export type { XhSwitchProps } from './components/switch/switch'
 export { useSwitch } from './components/switch/use-switch'
+export { useToastContext } from './components/toast/context'
+export {
+  XhToastActionTrigger,
+  XhToastCloseTrigger,
+  XhToastIndicator,
+  XhToastProgress,
+  XhToastRoot,
+  XhToastTitle,
+} from './components/toast/toast'
+export type {
+  ToastRootSlotProps,
+  XhToastActionTriggerProps,
+  XhToastCloseTriggerProps,
+  XhToastIndicatorProps,
+  XhToastProgressProps,
+  XhToastRootProps,
+  XhToastTitleProps,
+} from './components/toast/toast'
+export { useToast } from './components/toast/use-toast'
+export type { ToastContext } from './components/toast/use-toast'
 export { useTooltipContext } from './components/tooltip/context'
 export {
   XhTooltipArrow,
@@ -183,3 +255,14 @@ export { useReactIdGenerator, useReactScope } from './runtime/react-id'
 export { renderSlot, slotPaints } from './runtime/slot-content'
 export type { SlotChildren } from './runtime/slot-content'
 export { useMachine } from './runtime/use-machine'
+export { createDialogService } from './services/dialog-service'
+export type {
+  AlertOptions,
+  ConfirmOptions,
+  DialogBody,
+  DialogService,
+  DialogServiceOptions,
+  PromptOptions,
+  ServiceText,
+} from './services/dialog-service'
+export type { XhConfigSource } from './services/service-config'

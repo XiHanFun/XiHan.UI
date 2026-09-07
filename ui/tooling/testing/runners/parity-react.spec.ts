@@ -10,10 +10,10 @@
 import { describe, expect, it } from 'vitest'
 import { createReactHarness } from '../../../packages/adapters/react/tests/harness'
 import { createVueHarness } from '../../../packages/adapters/vue/tests/harness'
-import { dialogSuite, drawerSuite, fieldSuite, formSuite, popoverSuite, runParity, selectSuite, switchSuite, tooltipSuite } from '../src'
+import { buttonSuite, dialogSuite, drawerSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, popoverSuite, runParity, selectSuite, switchSuite, toastSuite, tooltipSuite } from '../src'
 
 /** React 侧已经铺到、纳入逐帧对拍的组件。 */
-const SUITES = [dialogSuite, drawerSuite, fieldSuite, formSuite, popoverSuite, selectSuite, switchSuite, tooltipSuite]
+const SUITES = [buttonSuite, dialogSuite, drawerSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, popoverSuite, selectSuite, switchSuite, toastSuite, tooltipSuite]
 
 /** React 侧还没铺到的组件。每批合入时删掉对应行；删空即本文件的覆盖等式自动收紧到全集。 */
 const PENDING = new Set([
@@ -27,7 +27,6 @@ const PENDING = new Set([
   'back-top',
   'badge',
   'breadcrumb',
-  'button',
   'button-group',
   'calendar',
   'card',
@@ -72,7 +71,6 @@ const PENDING = new Set([
   'layout',
   'list',
   'listbox',
-  'loading-bar',
   'log',
   'markdown-stream',
   'marquee',
@@ -82,7 +80,6 @@ const PENDING = new Set([
   'menubar',
   'message-feed',
   'navigation-menu',
-  'notification',
   'number-animation',
   'number-field',
   'page-header',
@@ -122,7 +119,6 @@ const PENDING = new Set([
   'timeline',
   'timer',
   'timestamp',
-  'toast',
   'toggle',
   'toggle-group',
   'tool-call',
