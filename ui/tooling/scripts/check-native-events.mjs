@@ -62,6 +62,24 @@ function emittedNonBubbling(source) {
 }
 
 /**
+ * 这份 connect 把哪几家的 props 原样转交了出去。
+ *
+ * 判据是「从兄弟组件目录引进了那一家的 connect 函数」：date-picker 的段位与格子
+ * 直接返回 connectDateField / connectCalendar 算出来的 props，处理器因此是那两家派的，
+ * 只读本组件的 connect 会一个都看不见——而漏掉的正是段位聚焦与格子悬停这两路。
+ */
+function embeddedConnects(source) {
+  const out = new Set()
+  for (const hit of source.matchAll(/import\s*\{([\s\S]*?)\}\s*from\s*'\.\.\/([a-z][a-z-]*)'/g)) {
+    const name = hit[2]
+    const pascal = name.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join('')
+    if (new RegExp(`\\bconnect${pascal}\\b`).test(hit[1]))
+      out.add(name)
+  }
+  return out
+}
+
+/**
  * React 侧改装到的事件名。
  *
  * 第二参给了名单就按名单摘，没给是整份改装（button 与 tooltip 那三处）——
@@ -100,6 +118,18 @@ for (const name of covered) {
   }
 
   const wanted = emittedNonBubbling(connect)
+  // 转交出去的那几家一并算上：处理器落在本组件的部件上，改装的责任也在本组件这一侧
+  for (const inner of embeddedConnects(connect)) {
+    let source
+    try {
+      source = await readFile(join(HEADLESS, inner, `${inner}.connect.ts`), 'utf8')
+    }
+    catch {
+      continue
+    }
+    for (const event of emittedNonBubbling(source))
+      wanted.add(event)
+  }
   if (wanted.size === 0)
     continue
 

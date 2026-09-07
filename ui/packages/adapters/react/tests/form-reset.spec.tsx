@@ -8,6 +8,24 @@ import {
   XhCheckbox,
   XhCheckboxGroupItem,
   XhCheckboxGroupRoot,
+  XhComboboxClearTrigger,
+  XhComboboxControl,
+  XhComboboxHiddenInput,
+  XhComboboxInput,
+  XhComboboxRoot,
+  XhDateFieldClearTrigger,
+  XhDateFieldControl,
+  XhDateFieldHiddenInput,
+  XhDateFieldRoot,
+  XhDateFieldSegment,
+  XhDateFieldSegmentGroup,
+  XhDatePickerClearTrigger,
+  XhDatePickerControl,
+  XhDatePickerHiddenInput,
+  XhDatePickerRoot,
+  XhDatePickerSegment,
+  XhDatePickerSegmentGroup,
+  XhDatePickerTrigger,
   XhEditableEditTrigger,
   XhEditableInput,
   XhEditablePreview,
@@ -37,8 +55,27 @@ import {
   XhTagsInputRoot,
   XhTextFieldInput,
   XhTextFieldRoot,
+  XhTimeFieldClearTrigger,
+  XhTimeFieldControl,
+  XhTimeFieldHiddenInput,
+  XhTimeFieldRoot,
+  XhTimeFieldSegment,
+  XhTimeFieldSegmentGroup,
+  XhTimePickerClearTrigger,
+  XhTimePickerControl,
+  XhTimePickerHiddenInput,
+  XhTimePickerRoot,
+  XhTimePickerSegment,
+  XhTimePickerSegmentGroup,
+  XhTimePickerTrigger,
   XhToggleGroupItem,
   XhToggleGroupRoot,
+  XhTreeSelectClearTrigger,
+  XhTreeSelectControl,
+  XhTreeSelectHiddenInput,
+  XhTreeSelectRoot,
+  XhTreeSelectTrigger,
+  XhTreeSelectValueText,
 } from '../src'
 
 let host: HTMLElement | null = null
@@ -299,5 +336,165 @@ describe('文本输入族的原生表单重置', () => {
     expect(part('tags-input', 'hidden-input').value).toBe('vue,react')
     act(() => form.reset())
     expect(part('tags-input', 'hidden-input').value).toBe('vue')
+  })
+})
+
+/**
+ * 日期时间族：值同样攥在机器里。
+ * 锚点是根部件自己渲的那个 div，逐个核它接住了没有——门禁对 React 只做静态串匹配，
+ * 核不到那只 ref 有没有真落到根节点上。
+ * 两个选择器还各自内嵌着自己的分段输入机器，那几台也得一并收到重置。
+ */
+describe('日期时间族的原生表单重置', () => {
+  const part = (scope: string, name: string): HTMLInputElement =>
+    host!.querySelector<HTMLInputElement>(`[data-scope="${scope}"][data-part="${name}"]`)!
+
+  const clear = (scope: string): void => {
+    act(() => host!.querySelector<HTMLButtonElement>(`[data-scope="${scope}"][data-part="clear-trigger"]`)!.click())
+  }
+
+  it('分段日期：清空后重置回到 defaultValue', () => {
+    const form = mount(
+      <XhDateFieldRoot name="due" defaultValue="2024-02-15" locale="zh-CN" timeZone="UTC">
+        <XhDateFieldControl>
+          <XhDateFieldSegmentGroup>
+            <XhDateFieldSegment index={0} />
+            <XhDateFieldSegment index={1} />
+            <XhDateFieldSegment index={2} />
+          </XhDateFieldSegmentGroup>
+          <XhDateFieldClearTrigger>清空</XhDateFieldClearTrigger>
+        </XhDateFieldControl>
+        <XhDateFieldHiddenInput />
+      </XhDateFieldRoot>,
+    )
+    expect(part('date-field', 'hidden-input').value).toBe('2024-02-15')
+    clear('date-field')
+    expect(part('date-field', 'hidden-input').value).toBe('')
+    act(() => form.reset())
+    expect(part('date-field', 'hidden-input').value).toBe('2024-02-15')
+  })
+
+  it('分段时间：清空后重置回到 defaultValue', () => {
+    const form = mount(
+      <XhTimeFieldRoot name="start" defaultValue="09:30">
+        <XhTimeFieldControl>
+          <XhTimeFieldSegmentGroup>
+            <XhTimeFieldSegment segment="hour" />
+            <XhTimeFieldSegment segment="minute" />
+          </XhTimeFieldSegmentGroup>
+          <XhTimeFieldClearTrigger>清空</XhTimeFieldClearTrigger>
+        </XhTimeFieldControl>
+        <XhTimeFieldHiddenInput />
+      </XhTimeFieldRoot>,
+    )
+    expect(part('time-field', 'hidden-input').value).toBe('09:30')
+    clear('time-field')
+    expect(part('time-field', 'hidden-input').value).toBe('')
+    act(() => form.reset())
+    expect(part('time-field', 'hidden-input').value).toBe('09:30')
+  })
+
+  it('时间选择器：清空后重置回到 defaultValue', () => {
+    const form = mount(
+      <XhTimePickerRoot name="start" defaultValue="09:30" min="08:00" max="11:00" step={30}>
+        <XhTimePickerControl>
+          <XhTimePickerSegmentGroup>
+            <XhTimePickerSegment segment="hour" />
+            <XhTimePickerSegment segment="minute" />
+          </XhTimePickerSegmentGroup>
+          <XhTimePickerTrigger>选择</XhTimePickerTrigger>
+          <XhTimePickerClearTrigger>清空</XhTimePickerClearTrigger>
+        </XhTimePickerControl>
+        <XhTimePickerHiddenInput />
+      </XhTimePickerRoot>,
+    )
+    expect(part('time-picker', 'hidden-input').value).toBe('09:30')
+    clear('time-picker')
+    expect(part('time-picker', 'hidden-input').value).toBe('')
+    act(() => form.reset())
+    expect(part('time-picker', 'hidden-input').value).toBe('09:30')
+  })
+
+  it('日期选择器：清空后重置回到 defaultValue，内嵌那组段位跟着还原', () => {
+    const segments = (): string[] =>
+      [...host!.querySelectorAll<HTMLElement>('[data-scope="date-field"][data-part="segment"]')]
+        .map(el => el.textContent ?? '')
+    const form = mount(
+      <XhDatePickerRoot name="due" defaultValue="2024-02-15" locale="zh-CN" timeZone="UTC">
+        <XhDatePickerControl>
+          <XhDatePickerSegmentGroup>
+            <XhDatePickerSegment index={0} />
+            <XhDatePickerSegment index={1} />
+            <XhDatePickerSegment index={2} />
+          </XhDatePickerSegmentGroup>
+          <XhDatePickerClearTrigger>清空</XhDatePickerClearTrigger>
+          <XhDatePickerTrigger>选择</XhDatePickerTrigger>
+        </XhDatePickerControl>
+        <XhDatePickerHiddenInput />
+      </XhDatePickerRoot>,
+    )
+    expect(part('date-field', 'hidden-input').value).toBe('2024-02-15')
+    expect(segments()).toEqual(['2024', '02', '15'])
+    clear('date-picker')
+    expect(part('date-field', 'hidden-input').value).toBe('')
+    act(() => form.reset())
+    expect(part('date-field', 'hidden-input').value).toBe('2024-02-15')
+    expect(segments()).toEqual(['2024', '02', '15'])
+  })
+})
+
+/**
+ * 集合浮层族：选中值攥在机器里，浮层里那份表单出口只是影子。
+ * 锚点是根部件自己渲的那个 div，逐个核它接住了没有——门禁对 React 只做静态串匹配，
+ * 核不到那只 ref 有没有真落到根节点上。
+ */
+describe('集合浮层族的原生表单重置', () => {
+  const part = (scope: string, name: string): HTMLInputElement =>
+    host!.querySelector<HTMLInputElement>(`[data-scope="${scope}"][data-part="${name}"]`)!
+
+  const clear = (scope: string): void => {
+    act(() => host!.querySelector<HTMLButtonElement>(`[data-scope="${scope}"][data-part="clear-trigger"]`)!.click())
+  }
+
+  it('组合框：清空后重置回到 defaultValue', () => {
+    const form = mount(
+      <XhComboboxRoot
+        name="fruit"
+        defaultValue="apple"
+        collection={[{ value: 'apple', label: 'Apple' }, { value: 'pear', label: 'Pear' }]}
+      >
+        <XhComboboxControl>
+          <XhComboboxInput />
+          <XhComboboxClearTrigger>清空</XhComboboxClearTrigger>
+        </XhComboboxControl>
+        <XhComboboxHiddenInput />
+      </XhComboboxRoot>,
+    )
+    expect(part('combobox', 'hidden-input').value).toBe('apple')
+    clear('combobox')
+    expect(part('combobox', 'hidden-input').value).toBe('')
+    act(() => form.reset())
+    expect(part('combobox', 'hidden-input').value).toBe('apple')
+  })
+
+  it('树形选择：清空后重置回到 defaultValue', () => {
+    const form = mount(
+      <XhTreeSelectRoot
+        name="dir"
+        defaultValue="src"
+        collection={[{ value: 'src', label: 'Source' }, { value: 'docs', label: 'Docs' }]}
+      >
+        <XhTreeSelectControl>
+          <XhTreeSelectTrigger><XhTreeSelectValueText /></XhTreeSelectTrigger>
+          <XhTreeSelectClearTrigger>清空</XhTreeSelectClearTrigger>
+        </XhTreeSelectControl>
+        <XhTreeSelectHiddenInput />
+      </XhTreeSelectRoot>,
+    )
+    expect(part('tree-select', 'hidden-input').value).toBe('src')
+    clear('tree-select')
+    expect(part('tree-select', 'hidden-input').value).toBe('')
+    act(() => form.reset())
+    expect(part('tree-select', 'hidden-input').value).toBe('src')
   })
 })
