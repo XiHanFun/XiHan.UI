@@ -10,10 +10,10 @@
 import { describe, expect, it } from 'vitest'
 import { createReactHarness } from '../../../packages/adapters/react/tests/harness'
 import { createVueHarness } from '../../../packages/adapters/vue/tests/harness'
-import { dialogSuite, fieldSuite, formSuite, runParity, selectSuite, switchSuite } from '../src'
+import { dialogSuite, drawerSuite, fieldSuite, formSuite, popoverSuite, runParity, selectSuite, switchSuite, tooltipSuite } from '../src'
 
 /** React 侧已经铺到、纳入逐帧对拍的组件。 */
-const SUITES = [dialogSuite, fieldSuite, formSuite, selectSuite, switchSuite]
+const SUITES = [dialogSuite, drawerSuite, fieldSuite, formSuite, popoverSuite, selectSuite, switchSuite, tooltipSuite]
 
 /** React 侧还没铺到的组件。每批合入时删掉对应行；删空即本文件的覆盖等式自动收紧到全集。 */
 const PENDING = new Set([
@@ -47,7 +47,6 @@ const PENDING = new Set([
   'descriptions',
   'diff-view',
   'download-trigger',
-  'drawer',
   'editable',
   'empty-state',
   'field-array',
@@ -91,7 +90,6 @@ const PENDING = new Set([
   'password-input',
   'pin-input',
   'popconfirm',
-  'popover',
   'progress',
   'prompt-input',
   'qr-code',
@@ -129,7 +127,6 @@ const PENDING = new Set([
   'toggle-group',
   'tool-call',
   'toolbar',
-  'tooltip',
   'tour',
   'transfer',
   'tree',
