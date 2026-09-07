@@ -11,13 +11,17 @@ const pending = (): Promise<string> => new Promise<string>(() => {})
 /**
  * 推到宏任务才失败的取数。
  *
- * 立刻拒绝的 promise 会在 click 之后那一轮冲刷（全是微任务）里就走完，
- * preparing 那一帧根本采不到；改用计时器推到宏任务，冲刷期间状态稳定在 preparing，
- * 随后的 settle 会让出宏任务，失败在那时落地。
+ * 立刻拒绝的 promise 会在 click 之后那一轮冲刷里就走完，preparing 那一帧根本采不到；
+ * 改用计时器推到宏任务，冲刷期间状态稳定在 preparing，随后的 settle 会等到失败落地。
+ *
+ * 延时刻意留出余量，不用 0：冲刷是不是只走微任务，各家宿主给不出同一个答案——
+ * Vue 的 nextTick 只排微任务，而 React 的 act 在有排队工作时会让出一个宏任务，
+ * 0ms 的计时器于是可能在 click 那一拍里就烧掉，preparing 与 idle 两帧一起采空。
+ * settle 每 10ms 让一次、最多等 1000ms，这个量级绰绰有余。
  */
 function failLater(): Promise<string> {
   return new Promise<string>((_resolve, reject) => {
-    setTimeout(() => reject(new Error('取数失败')), 0)
+    setTimeout(() => reject(new Error('取数失败')), 50)
   })
 }
 

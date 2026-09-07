@@ -40,6 +40,11 @@ import {
   XhTableCell,
   XhTableRoot,
   XhTableRow,
+  XhTagGroupCell,
+  XhTagGroupItem,
+  XhTagGroupItemText,
+  XhTagGroupList,
+  XhTagGroupRoot,
   XhTransferItem,
   XhTransferItemText,
   XhTransferList,
@@ -425,5 +430,37 @@ describe('json-viewer 的不冒泡事件按 DOM 语义送达', () => {
 
     expect(item.getAttribute('tabindex')).toBe('0')
     expect(branch.getAttribute('tabindex')).toBe('-1')
+  })
+})
+
+describe('tag-group 的不冒泡事件按 DOM 语义送达', () => {
+  const TREE = (
+    <XhTagGroupRoot selectionMode="multiple">
+      <XhTagGroupList>
+        <XhTagGroupItem value="vue"><XhTagGroupCell><XhTagGroupItemText>Vue</XhTagGroupItemText></XhTagGroupCell></XhTagGroupItem>
+        <XhTagGroupItem value="react"><XhTagGroupCell><XhTagGroupItemText>React</XhTagGroupItemText></XhTagGroupCell></XhTagGroupItem>
+      </XhTagGroupList>
+    </XhTagGroupRoot>
+  )
+
+  it('标签列表自己得焦：焦点转交给锚点标签，容器让出 Tab 位', async () => {
+    await mount(TREE)
+    const list = parts('tag-group', 'list')[0]!
+    expect(list.getAttribute('tabindex')).toBe('0')
+
+    await fire(list, new Event('focus'))
+
+    expect(list.getAttribute('tabindex')).toBe('-1')
+    expect(parts('tag-group', 'item')[0]!.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('标签自己得焦：锚点改记它，roving tabindex 跟着换人', async () => {
+    await mount(TREE)
+    const [first, second] = parts('tag-group', 'item')
+
+    await fire(second!, new Event('focus'))
+
+    expect(second!.getAttribute('tabindex')).toBe('0')
+    expect(first!.getAttribute('tabindex')).toBe('-1')
   })
 })

@@ -18,6 +18,11 @@ import {
   XhTableCell,
   XhTableRoot,
   XhTableRow,
+  XhTagGroupCell,
+  XhTagGroupItem,
+  XhTagGroupItemText,
+  XhTagGroupList,
+  XhTagGroupRoot,
   XhTransferItem,
   XhTransferItemText,
   XhTransferList,
@@ -233,5 +238,50 @@ describe('table 的焦点落点如实上报', () => {
 
     expect(parts('table', 'row')).toHaveLength(1)
     expect(parts('table', 'body')[0]!.getAttribute('tabindex')).toBe('0')
+  })
+})
+
+// key 取位次而不是 value：value 换掉时 React 复用同一个 DOM 节点，
+// 「节点还在、身份变了」这一路才演得出来
+function tagGroupTree(values: readonly string[]): ReactNode {
+  return (
+    <XhTagGroupRoot selectionMode="multiple">
+      <XhTagGroupList>
+        {values.map((value, i) => (
+          <XhTagGroupItem key={i} value={value}>
+            <XhTagGroupCell><XhTagGroupItemText>{value}</XhTagGroupItemText></XhTagGroupCell>
+          </XhTagGroupItem>
+        ))}
+      </XhTagGroupList>
+    </XhTagGroupRoot>
+  )
+}
+
+describe('tag-group 的焦点落点如实上报', () => {
+  it('持有焦点的标签被摘掉：焦点锚点当场清空，列表重新兜底进 Tab 序列', async () => {
+    await mount(tagGroupTree(['vue', 'react']))
+    const [, second] = parts('tag-group', 'item')
+    await focus(second!)
+    expect(parts('tag-group', 'list')[0]!.getAttribute('tabindex')).toBe('-1')
+
+    await rerender(tagGroupTree(['vue']))
+
+    expect(parts('tag-group', 'item')).toHaveLength(1)
+    expect(parts('tag-group', 'list')[0]!.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('持有焦点的标签换了身份：锚点跟着改记新值', async () => {
+    await mount(tagGroupTree(['vue', 'react']))
+    const [, second] = parts('tag-group', 'item')
+    await focus(second!)
+    expect(second!.getAttribute('tabindex')).toBe('0')
+
+    // 同一个 DOM 节点复用，只是 value 换了：机器不重报就还记着已经不在场的旧值，
+    // 那个锚点没有标签认领，整排标签于是一个 Tab 停靠点都没有
+    await rerender(tagGroupTree(['vue', 'svelte']))
+
+    const items = parts('tag-group', 'item')
+    expect(items[1]!.getAttribute('data-value')).toBe('svelte')
+    expect(items[1]!.getAttribute('tabindex')).toBe('0')
   })
 })

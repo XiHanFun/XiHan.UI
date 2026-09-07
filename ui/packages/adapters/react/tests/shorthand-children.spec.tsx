@@ -7,7 +7,7 @@
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { XhSeparator, XhTagCloseTrigger, XhTagLabel, XhTagRoot } from '../src'
+import { XhNumberAnimation, XhSeparator, XhTagCloseTrigger, XhTagLabel, XhTagRoot } from '../src'
 
 let host: HTMLElement | null = null
 let root: ReturnType<typeof createRoot> | null = null
@@ -94,5 +94,30 @@ describe('xhTagRoot 的默认内容', () => {
     )
     expect(parts('tag', 'label')).toHaveLength(0)
     expect(host!.querySelector('[data-testid="dot"]')).not.toBeNull()
+  })
+})
+
+describe('xhNumberAnimation 的默认内容', () => {
+  it('不给 children：根里是格式化好的那串字', () => {
+    mount(<XhNumberAnimation from={1234.5} to={1234.5} active={false} precision={1} separator="," />)
+    expect(parts('number-animation', 'root')[0]!.textContent).toBe('1,234.5')
+  })
+
+  it('函数式 children：作者拿到当前帧的值与那串字，自己排版', () => {
+    mount(
+      <XhNumberAnimation from={1234.5} to={1234.5} active={false} precision={1} separator=",">
+        {({ value, text }) => <span data-testid="body">{`${text}／${value}`}</span>}
+      </XhNumberAnimation>,
+    )
+    expect(host!.querySelector('[data-testid="body"]')!.textContent).toBe('1,234.5／1234.5')
+  })
+
+  it('children 落空：退回组件自己铺好的那串字', () => {
+    mount(
+      <XhNumberAnimation from={1234.5} to={1234.5} active={false} precision={1} separator=",">
+        {() => false}
+      </XhNumberAnimation>,
+    )
+    expect(parts('number-animation', 'root')[0]!.textContent).toBe('1,234.5')
   })
 })
