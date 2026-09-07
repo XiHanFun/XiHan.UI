@@ -6,17 +6,18 @@ import { createNormalizer } from '@xihan-ui/core'
 
 // DOM 属性名 → React 属性名。括号里是该键在 headless 各 connect 里出现的处数。
 const ATTR_ALIAS: Record<string, string> = {
-  tabindex: 'tabIndex', // 137
-  readonly: 'readOnly', // 13
-  for: 'htmlFor', // 11
-  autocomplete: 'autoComplete', // 11
-  autocapitalize: 'autoCapitalize', // 6
-  inputmode: 'inputMode', // 4
-  spellcheck: 'spellCheck', // 3
-  maxlength: 'maxLength', // 2
-  datetime: 'dateTime', // 1
-  novalidate: 'noValidate', // 1
-  autocorrect: 'autoCorrect', // 1
+  'tabindex': 'tabIndex', // 137
+  'readonly': 'readOnly', // 13
+  'for': 'htmlFor', // 11
+  'autocomplete': 'autoComplete', // 11
+  'autocapitalize': 'autoCapitalize', // 6
+  'inputmode': 'inputMode', // 4
+  'spellcheck': 'spellCheck', // 3
+  'maxlength': 'maxLength', // 2
+  'datetime': 'dateTime', // 1
+  'novalidate': 'noValidate', // 1
+  'autocorrect': 'autoCorrect', // 1
+  'shape-rendering': 'shapeRendering', // 1
 }
 
 // React 合成事件名，按全小写形式索引。headless 里同一个事件有两种写法并存

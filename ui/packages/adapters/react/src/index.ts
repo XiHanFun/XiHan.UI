@@ -41,6 +41,25 @@ export { useAlertContext } from './components/alert/context'
 export { useAlert } from './components/alert/use-alert'
 export type { AlertContext } from './components/alert/use-alert'
 export {
+  XhAnchorIndicator,
+  XhAnchorItem,
+  XhAnchorLink,
+  XhAnchorLinkText,
+  XhAnchorList,
+  XhAnchorRoot,
+} from './components/anchor/anchor'
+export type {
+  XhAnchorIndicatorProps,
+  XhAnchorItemProps,
+  XhAnchorLinkProps,
+  XhAnchorLinkTextProps,
+  XhAnchorListProps,
+  XhAnchorRootProps,
+} from './components/anchor/anchor'
+export { useAnchorContext } from './components/anchor/context'
+export { useAnchor } from './components/anchor/use-anchor'
+export type { AnchorContext } from './components/anchor/use-anchor'
+export {
   XhAvatarGroupOverflowItem,
   XhAvatarGroupRoot,
 } from './components/avatar-group/avatar-group'
@@ -153,6 +172,33 @@ export type {
 } from './components/card/card'
 export { useCardContext } from './components/card/context'
 export type { CardContext } from './components/card/context'
+export {
+  XhCarouselAutoplayTrigger,
+  XhCarouselIndicator,
+  XhCarouselIndicatorGroup,
+  XhCarouselItem,
+  XhCarouselList,
+  XhCarouselNextTrigger,
+  XhCarouselPrevTrigger,
+  XhCarouselRoot,
+  XhCarouselViewport,
+} from './components/carousel/carousel'
+export type {
+  CarouselAutoplayTriggerSlotProps,
+  CarouselRootSlotProps,
+  XhCarouselAutoplayTriggerProps,
+  XhCarouselIndicatorGroupProps,
+  XhCarouselIndicatorProps,
+  XhCarouselItemProps,
+  XhCarouselListProps,
+  XhCarouselNextTriggerProps,
+  XhCarouselPrevTriggerProps,
+  XhCarouselRootProps,
+  XhCarouselViewportProps,
+} from './components/carousel/carousel'
+export { useCarouselContext } from './components/carousel/context'
+export { useCarousel } from './components/carousel/use-carousel'
+export type { CarouselContext } from './components/carousel/use-carousel'
 export {
   XhCascaderClearTrigger,
   XhCascaderColumn,
@@ -642,6 +688,90 @@ export type {
 } from './components/hover-card/hover-card'
 export { useHoverCard } from './components/hover-card/use-hover-card'
 export type { HoverCardContext } from './components/hover-card/use-hover-card'
+export { useImageCropperContext } from './components/image-cropper/context'
+export {
+  XhImageCropperCropArea,
+  XhImageCropperCropHandle,
+  XhImageCropperGrid,
+  XhImageCropperHiddenInput,
+  XhImageCropperImage,
+  XhImageCropperRoot,
+  XhImageCropperRotateSlider,
+  XhImageCropperViewport,
+  XhImageCropperZoomSlider,
+} from './components/image-cropper/image-cropper'
+export type {
+  ImageCropperRootSlotProps,
+  XhImageCropperCropAreaProps,
+  XhImageCropperCropHandleProps,
+  XhImageCropperGridProps,
+  XhImageCropperHiddenInputProps,
+  XhImageCropperImageProps,
+  XhImageCropperRootProps,
+  XhImageCropperRotateSliderProps,
+  XhImageCropperViewportProps,
+  XhImageCropperZoomSliderProps,
+} from './components/image-cropper/image-cropper'
+export { useImageCropper } from './components/image-cropper/use-image-cropper'
+export type { ImageCropperContext } from './components/image-cropper/use-image-cropper'
+export { useImageViewerContext } from './components/image-viewer/context'
+export {
+  XhImageViewerCloseTrigger,
+  XhImageViewerContent,
+  XhImageViewerCounter,
+  XhImageViewerFlipHorizontalTrigger,
+  XhImageViewerFlipVerticalTrigger,
+  XhImageViewerImage,
+  XhImageViewerNextTrigger,
+  XhImageViewerPrevTrigger,
+  XhImageViewerResetTrigger,
+  XhImageViewerRoot,
+  XhImageViewerRotateLeftTrigger,
+  XhImageViewerRotateRightTrigger,
+  XhImageViewerToolbar,
+  XhImageViewerTrigger,
+  XhImageViewerViewport,
+  XhImageViewerZoomInTrigger,
+  XhImageViewerZoomOutTrigger,
+} from './components/image-viewer/image-viewer'
+export type {
+  ImageViewerRootSlotProps,
+  XhImageViewerContentProps,
+  XhImageViewerCounterProps,
+  XhImageViewerImageProps,
+  XhImageViewerRootProps,
+  XhImageViewerToolbarProps,
+  XhImageViewerToolTriggerProps,
+  XhImageViewerTriggerProps,
+  XhImageViewerViewportProps,
+} from './components/image-viewer/image-viewer'
+export { useImageViewer } from './components/image-viewer/use-image-viewer'
+export type { ImageViewerContext } from './components/image-viewer/use-image-viewer'
+export { useImageContext } from './components/image/context'
+export { XhImageFallback, XhImageImage, XhImagePlaceholder, XhImageRoot } from './components/image/image'
+export type {
+  ImageRootSlotProps,
+  XhImageFallbackProps,
+  XhImageImageProps,
+  XhImagePlaceholderProps,
+  XhImageRootProps,
+} from './components/image/image'
+export { useImage } from './components/image/use-image'
+export type { ImageContext } from './components/image/use-image'
+export { useInfiniteScrollContext } from './components/infinite-scroll/context'
+export {
+  XhInfiniteScrollLoadMoreTrigger,
+  XhInfiniteScrollRoot,
+  XhInfiniteScrollSentinel,
+} from './components/infinite-scroll/infinite-scroll'
+export type {
+  InfiniteScrollRootSlotProps,
+  XhInfiniteScrollLoadMoreTriggerProps,
+  XhInfiniteScrollRootProps,
+  XhInfiniteScrollSentinelProps,
+} from './components/infinite-scroll/infinite-scroll'
+export { useInfiniteScroll } from './components/infinite-scroll/use-infinite-scroll'
+export type { InfiniteScrollContext } from './components/infinite-scroll/use-infinite-scroll'
 export { useInputGroupContext } from './components/input-group/context'
 export type { InputGroupContext } from './components/input-group/context'
 export { XhInputGroupItem, XhInputGroupRoot } from './components/input-group/input-group'
@@ -667,6 +797,26 @@ export type {
 } from './components/layout/layout'
 export { useLayout } from './components/layout/use-layout'
 export type { LayoutContext } from './components/layout/use-layout'
+export { useListContext } from './components/list/context'
+export type { ListContext } from './components/list/context'
+export {
+  XhListItem,
+  XhListItemAction,
+  XhListItemContent,
+  XhListItemDescription,
+  XhListItemMedia,
+  XhListItemTitle,
+  XhListRoot,
+} from './components/list/list'
+export type {
+  XhListItemActionProps,
+  XhListItemContentProps,
+  XhListItemDescriptionProps,
+  XhListItemMediaProps,
+  XhListItemProps,
+  XhListItemTitleProps,
+  XhListRootProps,
+} from './components/list/list'
 export {
   useListboxContext,
   useListboxGroupContext,
@@ -748,6 +898,76 @@ export type {
 } from './components/menu/menu'
 export { useMenu } from './components/menu/use-menu'
 export type { MenuContext } from './components/menu/use-menu'
+export {
+  useMenubarChain,
+  useMenubarContext,
+  useMenubarGroupContext,
+  useMenubarItemContext,
+  useMenubarMenuContext,
+  useMenubarSubContext,
+} from './components/menubar/context'
+export type { MenubarChain, MenubarSubHandle } from './components/menubar/context'
+export {
+  XhMenubarArrow,
+  XhMenubarContent,
+  XhMenubarGroup,
+  XhMenubarGroupLabel,
+  XhMenubarItem,
+  XhMenubarItemDescription,
+  XhMenubarItemIndicator,
+  XhMenubarItemText,
+  XhMenubarPositioner,
+  XhMenubarRoot,
+  XhMenubarSeparator,
+  XhMenubarSub,
+  XhMenubarSubTrigger,
+  XhMenubarTrigger,
+} from './components/menubar/menubar'
+export type {
+  MenubarRootSlotProps,
+  MenubarSubSlotProps,
+  XhMenubarArrowProps,
+  XhMenubarContentProps,
+  XhMenubarGroupLabelProps,
+  XhMenubarGroupProps,
+  XhMenubarItemDescriptionProps,
+  XhMenubarItemIndicatorProps,
+  XhMenubarItemProps,
+  XhMenubarItemTextProps,
+  XhMenubarPositionerProps,
+  XhMenubarRootProps,
+  XhMenubarSeparatorProps,
+  XhMenubarSubProps,
+  XhMenubarSubTriggerProps,
+  XhMenubarTriggerProps,
+} from './components/menubar/menubar'
+export { useMenubar } from './components/menubar/use-menubar'
+export type { MenubarContext, MenubarPartRegistry } from './components/menubar/use-menubar'
+export { useNavigationMenuContext } from './components/navigation-menu/context'
+export {
+  XhNavigationMenuContent,
+  XhNavigationMenuIndicator,
+  XhNavigationMenuItem,
+  XhNavigationMenuLink,
+  XhNavigationMenuList,
+  XhNavigationMenuRoot,
+  XhNavigationMenuTrigger,
+  XhNavigationMenuTriggerIndicator,
+  XhNavigationMenuViewport,
+} from './components/navigation-menu/navigation-menu'
+export type {
+  XhNavigationMenuContentProps,
+  XhNavigationMenuIndicatorProps,
+  XhNavigationMenuItemProps,
+  XhNavigationMenuLinkProps,
+  XhNavigationMenuListProps,
+  XhNavigationMenuRootProps,
+  XhNavigationMenuTriggerIndicatorProps,
+  XhNavigationMenuTriggerProps,
+  XhNavigationMenuViewportProps,
+} from './components/navigation-menu/navigation-menu'
+export { useNavigationMenu } from './components/navigation-menu/use-navigation-menu'
+export type { NavigationMenuContext } from './components/navigation-menu/use-navigation-menu'
 export {
   NotificationItemProvider,
   NotificationProvider,
@@ -953,6 +1173,10 @@ export { usePopover } from './components/popover/use-popover'
 export type { PopoverContext } from './components/popover/use-popover'
 export { XhProgress } from './components/progress/progress'
 export type { XhProgressProps } from './components/progress/progress'
+export { useQrCodeContext } from './components/qr-code/context'
+export type { QrCodeContext } from './components/qr-code/context'
+export { XhQrCode, XhQrCodeLogo } from './components/qr-code/qr-code'
+export type { XhQrCodeLogoProps, XhQrCodeProps } from './components/qr-code/qr-code'
 export { useRadioGroupContext, useRadioGroupItemContext } from './components/radio-group/context'
 export {
   XhRadioGroupItem,
@@ -1051,6 +1275,63 @@ export type {
   XhSeparatorProps,
   XhSeparatorRootProps,
 } from './components/separator/separator'
+export { useSideNavContext, useSideNavNodeContext } from './components/side-nav/context'
+export type { SideNavNodeContext } from './components/side-nav/context'
+export {
+  XhSideNavBranch,
+  XhSideNavBranchContent,
+  XhSideNavBranchIndicator,
+  XhSideNavBranchText,
+  XhSideNavBranchTrigger,
+  XhSideNavGroup,
+  XhSideNavGroupLabel,
+  XhSideNavItem,
+  XhSideNavLink,
+  XhSideNavLinkText,
+  XhSideNavList,
+  XhSideNavRoot,
+} from './components/side-nav/side-nav'
+export type {
+  SideNavRootSlotProps,
+  XhSideNavBranchContentProps,
+  XhSideNavBranchIndicatorProps,
+  XhSideNavBranchProps,
+  XhSideNavBranchTextProps,
+  XhSideNavBranchTriggerProps,
+  XhSideNavGroupLabelProps,
+  XhSideNavGroupProps,
+  XhSideNavItemProps,
+  XhSideNavLinkProps,
+  XhSideNavLinkTextProps,
+  XhSideNavListProps,
+  XhSideNavRootProps,
+} from './components/side-nav/side-nav'
+export { useSideNav } from './components/side-nav/use-side-nav'
+export type { SideNavContext } from './components/side-nav/use-side-nav'
+export { useSignaturePadContext } from './components/signature-pad/context'
+export {
+  XhSignaturePadClearTrigger,
+  XhSignaturePadControl,
+  XhSignaturePadGuide,
+  XhSignaturePadHiddenInput,
+  XhSignaturePadLabel,
+  XhSignaturePadPath,
+  XhSignaturePadRoot,
+  XhSignaturePadStatus,
+} from './components/signature-pad/signature-pad'
+export type {
+  SignaturePadRootSlotProps,
+  XhSignaturePadClearTriggerProps,
+  XhSignaturePadControlProps,
+  XhSignaturePadGuideProps,
+  XhSignaturePadHiddenInputProps,
+  XhSignaturePadLabelProps,
+  XhSignaturePadPathProps,
+  XhSignaturePadRootProps,
+  XhSignaturePadStatusProps,
+} from './components/signature-pad/signature-pad'
+export { useSignaturePad } from './components/signature-pad/use-signature-pad'
+export type { SignaturePadContext } from './components/signature-pad/use-signature-pad'
 export { useSkeletonContext } from './components/skeleton/context'
 export { XhSkeletonItem, XhSkeletonRoot } from './components/skeleton/skeleton'
 export type { XhSkeletonItemProps, XhSkeletonRootProps } from './components/skeleton/skeleton'
@@ -1108,6 +1389,67 @@ export type { StepsContext } from './components/steps/use-steps'
 export { XhSwitch } from './components/switch/switch'
 export type { XhSwitchProps } from './components/switch/switch'
 export { useSwitch } from './components/switch/use-switch'
+export {
+  useOptionalTableColumnContext,
+  useOptionalTableRowContext,
+  useTableColumnContext,
+  useTableContext,
+  useTableRowContext,
+  useTableSection,
+} from './components/table/context'
+export type { TableSection } from './components/table/context'
+export {
+  XhTableBody,
+  XhTableCaption,
+  XhTableCell,
+  XhTableColumnDragTrigger,
+  XhTableColumnHeader,
+  XhTableColumnList,
+  XhTableColumnResizeTrigger,
+  XhTableColumnVisibilityTrigger,
+  XhTableEmpty,
+  XhTableExpandedRow,
+  XhTableExpandTrigger,
+  XhTableFooter,
+  XhTableHeader,
+  XhTableLoading,
+  XhTableLoadMoreTrigger,
+  XhTableRoot,
+  XhTableRow,
+  XhTableRowDragTrigger,
+  XhTableRowSelectTrigger,
+  XhTableSelectAllTrigger,
+  XhTableSortTrigger,
+  XhTableToolbar,
+} from './components/table/table'
+export type {
+  TableRootSlotProps,
+  TableToolbarSlotProps,
+  XhTableBodyProps,
+  XhTableCaptionProps,
+  XhTableCellProps,
+  XhTableColumnDragTriggerProps,
+  XhTableColumnHeaderProps,
+  XhTableColumnListProps,
+  XhTableColumnResizeTriggerProps,
+  XhTableColumnVisibilityTriggerProps,
+  XhTableEmptyProps,
+  XhTableExpandedRowProps,
+  XhTableExpandTriggerProps,
+  XhTableFooterProps,
+  XhTableHeaderProps,
+  XhTableLoadingProps,
+  XhTableLoadMoreTriggerProps,
+  XhTableRootProps,
+  XhTableRowDragTriggerProps,
+  XhTableRowProps,
+  XhTableRowSelectTriggerProps,
+  XhTableSelectAllTriggerProps,
+  XhTableSortTriggerProps,
+  XhTableToolbarProps,
+} from './components/table/table'
+export { useTable } from './components/table/use-table'
+export type { TableContext } from './components/table/use-table'
 export { useTabsContext } from './components/tabs/context'
 export {
   XhTabsContent,
@@ -1317,6 +1659,22 @@ export { XhToggle } from './components/toggle/toggle'
 export type { XhToggleProps } from './components/toggle/toggle'
 export { useToggle } from './components/toggle/use-toggle'
 export type { ToggleContext } from './components/toggle/use-toggle'
+export { useToolbarContext } from './components/toolbar/context'
+export {
+  XhToolbarGroup,
+  XhToolbarItem,
+  XhToolbarRoot,
+  XhToolbarSeparator,
+} from './components/toolbar/toolbar'
+export type {
+  ToolbarRootSlotProps,
+  XhToolbarGroupProps,
+  XhToolbarItemProps,
+  XhToolbarRootProps,
+  XhToolbarSeparatorProps,
+} from './components/toolbar/toolbar'
+export { useToolbar } from './components/toolbar/use-toolbar'
+export type { ToolbarContext } from './components/toolbar/use-toolbar'
 export { useTooltipContext } from './components/tooltip/context'
 export {
   XhTooltipArrow,
@@ -1335,6 +1693,93 @@ export type {
 } from './components/tooltip/tooltip'
 export { useTooltip } from './components/tooltip/use-tooltip'
 export type { TooltipContext } from './components/tooltip/use-tooltip'
+export { useTourContext } from './components/tour/context'
+export {
+  XhTourArrow,
+  XhTourBackdrop,
+  XhTourCloseTrigger,
+  XhTourContent,
+  XhTourDescription,
+  XhTourNextTrigger,
+  XhTourPositioner,
+  XhTourPrevTrigger,
+  XhTourProgressDot,
+  XhTourProgressIndicator,
+  XhTourProgressText,
+  XhTourRoot,
+  XhTourSkipTrigger,
+  XhTourSpotlight,
+  XhTourTitle,
+} from './components/tour/tour'
+export type {
+  TourRootSlotProps,
+  XhTourArrowProps,
+  XhTourBackdropProps,
+  XhTourCloseTriggerProps,
+  XhTourContentProps,
+  XhTourDescriptionProps,
+  XhTourNextTriggerProps,
+  XhTourPositionerProps,
+  XhTourPrevTriggerProps,
+  XhTourProgressDotProps,
+  XhTourProgressIndicatorProps,
+  XhTourProgressTextProps,
+  XhTourRootProps,
+  XhTourSkipTriggerProps,
+  XhTourSpotlightProps,
+  XhTourTitleProps,
+} from './components/tour/tour'
+export { useTour } from './components/tour/use-tour'
+export type { TourContext } from './components/tour/use-tour'
+export {
+  useTransferContext,
+  useTransferGroupContext,
+  useTransferItemContext,
+  useTransferPanelContext,
+} from './components/transfer/context'
+export {
+  XhTransferEmpty,
+  XhTransferGroup,
+  XhTransferGroupLabel,
+  XhTransferItem,
+  XhTransferItemCheckbox,
+  XhTransferItemText,
+  XhTransferList,
+  XhTransferLoading,
+  XhTransferPanelCount,
+  XhTransferPanelHeader,
+  XhTransferPanelTitle,
+  XhTransferRoot,
+  XhTransferSearch,
+  XhTransferSelectAllTrigger,
+  XhTransferSourcePanel,
+  XhTransferTargetPanel,
+  XhTransferToSourceTrigger,
+  XhTransferToTargetTrigger,
+} from './components/transfer/transfer'
+export type {
+  TransferPanelSlotProps,
+  TransferRootSlotProps,
+  XhTransferEmptyProps,
+  XhTransferGroupLabelProps,
+  XhTransferGroupProps,
+  XhTransferItemCheckboxProps,
+  XhTransferItemProps,
+  XhTransferItemTextProps,
+  XhTransferListProps,
+  XhTransferLoadingProps,
+  XhTransferPanelCountProps,
+  XhTransferPanelHeaderProps,
+  XhTransferPanelProps,
+  XhTransferPanelTitleProps,
+  XhTransferRootProps,
+  XhTransferSearchProps,
+  XhTransferSelectAllTriggerProps,
+  XhTransferToSourceTriggerProps,
+  XhTransferToTargetTriggerProps,
+} from './components/transfer/transfer'
+export { useTransfer } from './components/transfer/use-transfer'
+export type { TransferContext } from './components/transfer/use-transfer'
 export { useTreeSelectContext, useTreeSelectNodeContext } from './components/tree-select/context'
 export {
   XhTreeSelectBranch,
@@ -1364,6 +1809,50 @@ export {
 export type { TreeSelectRootSlotProps } from './components/tree-select/tree-select'
 export { useTreeSelect } from './components/tree-select/use-tree-select'
 export type { TreeSelectContext } from './components/tree-select/use-tree-select'
+export { useTreeContext, useTreeNodeContext } from './components/tree/context'
+export {
+  XhTreeBranch,
+  XhTreeBranchCheckbox,
+  XhTreeBranchContent,
+  XhTreeBranchControl,
+  XhTreeBranchIndicator,
+  XhTreeBranchText,
+  XhTreeBranchTrigger,
+  XhTreeEmpty,
+  XhTreeItem,
+  XhTreeItemCheckbox,
+  XhTreeItemIndicator,
+  XhTreeItemText,
+  XhTreeLabel,
+  XhTreeLiveRegion,
+  XhTreeLoading,
+  XhTreeNodeDragTrigger,
+  XhTreeRoot,
+  XhTreeTree,
+} from './components/tree/tree'
+export type {
+  TreeRootSlotProps,
+  XhTreeBranchCheckboxProps,
+  XhTreeBranchContentProps,
+  XhTreeBranchControlProps,
+  XhTreeBranchIndicatorProps,
+  XhTreeBranchProps,
+  XhTreeBranchTextProps,
+  XhTreeBranchTriggerProps,
+  XhTreeEmptyProps,
+  XhTreeItemCheckboxProps,
+  XhTreeItemIndicatorProps,
+  XhTreeItemProps,
+  XhTreeItemTextProps,
+  XhTreeLabelProps,
+  XhTreeLiveRegionProps,
+  XhTreeLoadingProps,
+  XhTreeNodeDragTriggerProps,
+  XhTreeRootProps,
+  XhTreeTreeProps,
+} from './components/tree/tree'
+export { useTree } from './components/tree/use-tree'
+export type { TreeContext } from './components/tree/use-tree'
 export { XhTruncate } from './components/truncate/truncate'
 export type { TruncateSlotProps, XhTruncateProps } from './components/truncate/truncate'
 export { useTruncate } from './components/truncate/use-truncate'
@@ -1386,6 +1875,22 @@ export type {
   XhTypographyRootProps,
   XhTypographyTextProps,
 } from './components/typography/typography'
+export { useVirtualizerContext } from './components/virtualizer/context'
+export { useVirtualizer } from './components/virtualizer/use-virtualizer'
+export type { VirtualizerContext } from './components/virtualizer/use-virtualizer'
+export {
+  XhVirtualizerContent,
+  XhVirtualizerItem,
+  XhVirtualizerRoot,
+  XhVirtualizerViewport,
+} from './components/virtualizer/virtualizer'
+export type {
+  VirtualizerRootSlotProps,
+  XhVirtualizerContentProps,
+  XhVirtualizerItemProps,
+  XhVirtualizerRootProps,
+  XhVirtualizerViewportProps,
+} from './components/virtualizer/virtualizer'
 export { useWatermarkContext } from './components/watermark/context'
 export type { WatermarkContext } from './components/watermark/context'
 export { XhWatermarkContent, XhWatermarkRoot } from './components/watermark/watermark'

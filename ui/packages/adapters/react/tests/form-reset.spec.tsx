@@ -34,6 +34,12 @@ import {
   XhFieldArrayAddTrigger,
   XhFieldArrayItem,
   XhFieldArrayRoot,
+  XhImageCropperCropArea,
+  XhImageCropperCropHandle,
+  XhImageCropperHiddenInput,
+  XhImageCropperImage,
+  XhImageCropperRoot,
+  XhImageCropperViewport,
   XhNumberFieldInput,
   XhNumberFieldRoot,
   XhPasswordInputInput,
@@ -49,6 +55,10 @@ import {
   XhRatingRoot,
   XhSegmentedItem,
   XhSegmentedRoot,
+  XhSignaturePadControl,
+  XhSignaturePadHiddenInput,
+  XhSignaturePadPath,
+  XhSignaturePadRoot,
   XhSwitch,
   XhTagsInputHiddenInput,
   XhTagsInputInput,
@@ -496,5 +506,90 @@ describe('集合浮层族的原生表单重置', () => {
     expect(part('tree-select', 'hidden-input').value).toBe('')
     act(() => form.reset())
     expect(part('tree-select', 'hidden-input').value).toBe('src')
+  })
+})
+
+/**
+ * 指针拖拽族：裁切矩形与笔迹都攥在机器里，DOM 上只有一份影子输入。
+ * 锚点是根部件自己渲的那个 div，逐个核它接住了没有——门禁对 React 只做静态串匹配，
+ * 核不到那只 ref 有没有真落到根节点上。
+ */
+describe('指针拖拽族的原生表单重置', () => {
+  const part = (scope: string, name: string): HTMLElement =>
+    host!.querySelector<HTMLElement>(`[data-scope="${scope}"][data-part="${name}"]`)!
+
+  const value = (scope: string): string =>
+    (part(scope, 'hidden-input') as HTMLInputElement).value
+
+  it('图片裁切：方向键挪过之后，重置回到 defaultValue', () => {
+    const form = mount(
+      <XhImageCropperRoot name="avatar" defaultValue={{ x: 100, y: 50, width: 100, height: 50 }}>
+        <XhImageCropperViewport>
+          <XhImageCropperImage />
+          <XhImageCropperCropArea>
+            <XhImageCropperCropHandle position="nw" />
+          </XhImageCropperCropArea>
+        </XhImageCropperViewport>
+        <XhImageCropperHiddenInput />
+      </XhImageCropperRoot>,
+    )
+    // 图片自然尺寸只能由 load 事件报进来，jsdom 不会真去取图
+    const img = part('image-cropper', 'image')
+    Object.defineProperty(img, 'naturalWidth', { value: 400, configurable: true })
+    Object.defineProperty(img, 'naturalHeight', { value: 200, configurable: true })
+    act(() => {
+      img.dispatchEvent(new Event('load'))
+    })
+
+    expect(value('image-cropper')).toBe('100,50,100,50')
+    act(() => {
+      part('image-cropper', 'crop-area').dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }),
+      )
+    })
+    expect(value('image-cropper')).toBe('101,50,100,50')
+    act(() => form.reset())
+    expect(value('image-cropper')).toBe('100,50,100,50')
+  })
+
+  it('手写签名：画过一笔之后，重置把画布清空', () => {
+    const form = mount(
+      <XhSignaturePadRoot name="sign">
+        <XhSignaturePadControl>
+          <XhSignaturePadPath />
+        </XhSignaturePadControl>
+        <XhSignaturePadHiddenInput />
+      </XhSignaturePadRoot>,
+    )
+    // jsdom 不做布局，画布矩形恒是全 0，落笔坐标换算不出来
+    const control = part('signature-pad', 'control')
+    control.getBoundingClientRect = (): DOMRect => ({
+      x: 0,
+      y: 0,
+      width: 300,
+      height: 120,
+      top: 0,
+      left: 0,
+      right: 300,
+      bottom: 120,
+      toJSON: () => ({}),
+    }) as DOMRect
+
+    const ink = (): string => part('signature-pad', 'path').getAttribute('d') ?? ''
+    act(() => {
+      control.dispatchEvent(new PointerEvent('pointerdown', { button: 0, pointerId: 1, clientX: 10, clientY: 10, bubbles: true, cancelable: true }))
+    })
+    act(() => {
+      document.dispatchEvent(new PointerEvent('pointermove', { pointerId: 1, clientX: 40, clientY: 30, bubbles: true }))
+    })
+    act(() => {
+      document.dispatchEvent(new PointerEvent('pointerup', { pointerId: 1, bubbles: true }))
+    })
+    expect(ink()).not.toBe('')
+    expect(value('signature-pad')).toContain('<path')
+
+    act(() => form.reset())
+    expect(ink()).toBe('')
+    expect(value('signature-pad')).toBe('')
   })
 })

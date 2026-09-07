@@ -31,7 +31,24 @@ import {
   XhListboxItem,
   XhListboxItemText,
   XhListboxRoot,
+  XhTableBody,
+  XhTableCell,
+  XhTableRoot,
+  XhTableRow,
+  XhTransferItem,
+  XhTransferItemText,
+  XhTransferList,
+  XhTransferRoot,
+  XhTransferSourcePanel,
+  XhTreeBranch,
+  XhTreeBranchContent,
+  XhTreeBranchControl,
+  XhTreeBranchText,
+  XhTreeItem,
+  XhTreeItemText,
+  XhTreeRoot,
   XhTreeSelectRoot,
+  XhTreeTree,
 } from '../src'
 
 let host: HTMLElement | null = null
@@ -232,5 +249,115 @@ describe('tree-select 的不冒泡事件按 DOM 语义送达', () => {
 
     expect(leaf.getAttribute('data-highlighted')).toBe('')
     expect(branch.getAttribute('data-highlighted')).toBeNull()
+  })
+})
+
+describe('tree 的不冒泡事件按 DOM 语义送达', () => {
+  const COLLECTION = [
+    { value: 'src', label: 'Source', children: [{ value: 'index', label: 'Index' }] },
+    { value: 'license', label: 'License' },
+  ]
+
+  const TREE = (
+    <XhTreeRoot collection={COLLECTION}>
+      <XhTreeTree>
+        <XhTreeBranch value="src">
+          <XhTreeBranchControl><XhTreeBranchText>Source</XhTreeBranchText></XhTreeBranchControl>
+          <XhTreeBranchContent>
+            <XhTreeItem value="index"><XhTreeItemText>Index</XhTreeItemText></XhTreeItem>
+          </XhTreeBranchContent>
+        </XhTreeBranch>
+        <XhTreeItem value="license"><XhTreeItemText>License</XhTreeItemText></XhTreeItem>
+      </XhTreeTree>
+    </XhTreeRoot>
+  )
+
+  it('树容器自己得焦：焦点转交给锚点节点，容器让出 Tab 位', async () => {
+    await mount(TREE)
+    const tree = parts('tree', 'tree')[0]!
+    expect(tree.getAttribute('tabindex')).toBe('0')
+
+    await fire(tree, new Event('focus'))
+
+    expect(tree.getAttribute('tabindex')).toBe('-1')
+    expect(parts('tree', 'branch')[0]!.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('叶子自己得焦：锚点改记它，roving tabindex 跟着换人', async () => {
+    await mount(TREE)
+    const branch = parts('tree', 'branch')[0]!
+    const leaf = parts('tree', 'item').at(-1)!
+
+    await fire(branch, new Event('focus'))
+    await fire(leaf, new Event('focus'))
+
+    expect(leaf.getAttribute('tabindex')).toBe('0')
+    expect(branch.getAttribute('tabindex')).toBe('-1')
+  })
+})
+
+describe('transfer 的不冒泡事件按 DOM 语义送达', () => {
+  const TREE = (
+    <XhTransferRoot collection={[{ value: 'apple', label: 'Apple' }, { value: 'berry', label: 'Berry' }]}>
+      <XhTransferSourcePanel>
+        <XhTransferList>
+          <XhTransferItem value="apple"><XhTransferItemText>Apple</XhTransferItemText></XhTransferItem>
+          <XhTransferItem value="berry"><XhTransferItemText>Berry</XhTransferItemText></XhTransferItem>
+        </XhTransferList>
+      </XhTransferSourcePanel>
+    </XhTransferRoot>
+  )
+
+  it('列表自己得焦：焦点转交给锚点条目，容器让出 Tab 位', async () => {
+    await mount(TREE)
+    const list = parts('transfer', 'list')[0]!
+    expect(list.getAttribute('tabindex')).toBe('0')
+
+    await fire(list, new Event('focus'))
+
+    expect(list.getAttribute('tabindex')).toBe('-1')
+    expect(parts('transfer', 'item')[0]!.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('条目自己得焦：锚点改记它，roving tabindex 跟着换人', async () => {
+    await mount(TREE)
+    const [first, second] = parts('transfer', 'item')
+
+    await fire(second!, new Event('focus'))
+
+    expect(second!.getAttribute('tabindex')).toBe('0')
+    expect(first!.getAttribute('tabindex')).toBe('-1')
+  })
+})
+
+describe('table 的不冒泡事件按 DOM 语义送达', () => {
+  const TREE = (
+    <XhTableRoot columns={[{ id: 'name', label: 'Name' }]} rows={[{ id: 'a' }, { id: 'b' }]}>
+      <XhTableBody>
+        <XhTableRow value="a"><XhTableCell value="name">a</XhTableCell></XhTableRow>
+        <XhTableRow value="b"><XhTableCell value="name">b</XhTableCell></XhTableRow>
+      </XhTableBody>
+    </XhTableRoot>
+  )
+
+  it('表体自己得焦：焦点转交给锚点行，容器让出 Tab 位', async () => {
+    await mount(TREE)
+    const body = parts('table', 'body')[0]!
+    expect(body.getAttribute('tabindex')).toBe('0')
+
+    await fire(body, new Event('focus'))
+
+    expect(body.getAttribute('tabindex')).toBe('-1')
+    expect(parts('table', 'row')[0]!.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('数据行自己得焦：锚点改记它，roving tabindex 跟着换人', async () => {
+    await mount(TREE)
+    const [first, second] = parts('table', 'row')
+
+    await fire(second!, new Event('focus'))
+
+    expect(second!.getAttribute('tabindex')).toBe('0')
+    expect(first!.getAttribute('tabindex')).toBe('-1')
   })
 })
