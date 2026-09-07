@@ -3,8 +3,9 @@ import type { TagsInputApi, TagsInputBlurBehavior, TagsInputSchema, TagsInputTra
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { contains } from '@xihan-ui/core'
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
+import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
@@ -14,7 +15,6 @@ import { useTagsInput } from './use-tags-input'
 type TagsInputProps = TagsInputSchema['props']
 
 /** 服务端没有提交这一步，layout effect 换成永不执行的 useEffect，避开 React 的警告。 */
-const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
 function noop(): void {}
 

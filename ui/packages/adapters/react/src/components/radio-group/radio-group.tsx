@@ -2,6 +2,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { useEffect, useMemo, useRef } from 'react'
+import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { RadioGroupItemProvider, RadioGroupProvider, useRadioGroupContext, useRadioGroupItemContext } from './context'
@@ -92,7 +93,7 @@ export function XhRadioGroupItem({ value, disabled, children, ...rest }: XhRadio
   }, [ctx.service, value])
 
   // 卸载时上报整组失焦：按「本节点当下正持有焦点」判定，不按 value 比对
-  useEffect(() => () => {
+  useIsomorphicLayoutEffect(() => () => {
     const svc = ctx.service
     if (svc.getStatus() !== 'Started')
       return

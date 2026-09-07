@@ -5,6 +5,7 @@ import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useFormReset } from '../../runtime/attach-form-reset'
+import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
@@ -198,7 +199,7 @@ export function XhRatingItem({ value, children, ...rest }: XhRatingItemProps): R
   }, [ctx.service, item.value])
 
   // 卸载时上报评分带失焦：按「本节点当下正持有焦点」判定，不按序号比对
-  useEffect(() => () => {
+  useIsomorphicLayoutEffect(() => () => {
     const svc = ctx.service
     if (svc.getStatus() !== 'Started')
       return
