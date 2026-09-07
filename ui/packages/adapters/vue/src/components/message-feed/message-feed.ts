@@ -1,8 +1,9 @@
 import type { Size } from '@xihan-ui/core'
 import type { MessageFeedApi, MessageFeedItemRole, MessageFeedSchema, MessageFeedStatus, MessageFeedTranslations } from '@xihan-ui/headless'
-import type { PropType, SlotsType, VNode } from 'vue'
+import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, onBeforeUnmount, onMounted, ref } from 'vue'
+import type { MessageFeedContext } from './use-message-feed'
+import { defineComponent, h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import {
   provideMessageFeed,
@@ -13,6 +14,28 @@ import {
 import { useMessageFeed } from './use-message-feed'
 
 type Props = MessageFeedSchema['props']
+
+/** 本条持有焦点时，id 变更重报锚点，卸载时上报整份消息流失焦 */
+function reportItemFocus(ctx: MessageFeedContext, el: Ref<HTMLElement | null>, id: () => string): void {
+  watch(id, (next, prev) => {
+    if (next === prev)
+      return
+    const { service } = ctx
+    if (service.getStatus() !== 'Started')
+      return
+    if (el.value && service.scope.getActiveElement() === el.value)
+      service.send({ type: 'ITEM.FOCUS', id: next })
+  })
+  onBeforeUnmount(() => {
+    const { service } = ctx
+    // 整份消息流一起卸载时根部件先停机，此刻送事件会在 dev 下抛
+    if (service.getStatus() !== 'Started')
+      return
+    // 按「本条当下正持有焦点」判定，不按 id 比对
+    if (el.value && service.scope.getActiveElement() === el.value)
+      service.send({ type: 'FEED.BLUR' })
+  })
+}
 
 /** 默认插槽的载荷：粘底状态、锚点，以及三个命令式入口。 */
 export type MessageFeedRootSlotProps = Pick<
@@ -104,14 +127,19 @@ export const XhMessageFeedItem = defineComponent({
   setup(props, { slots }) {
     const ctx = useMessageFeedContext()
     const labelCount = ref(0)
+    const el = ref<HTMLElement | null>(null)
     provideMessageFeedItem({ id: () => props.itemId, labelCount })
-    return () => h('article', ctx.api.value.getItemProps({
-      id: props.itemId,
-      index: Number(props.itemIndex),
-      role: props.itemRole,
-      streaming: props.itemStreaming,
-      labelled: labelCount.value > 0,
-    }) as Record<string, unknown>, slots.default?.())
+    reportItemFocus(ctx, el, () => props.itemId)
+    return () => h('article', {
+      ...ctx.api.value.getItemProps({
+        id: props.itemId,
+        index: Number(props.itemIndex),
+        role: props.itemRole,
+        streaming: props.itemStreaming,
+        labelled: labelCount.value > 0,
+      }) as Record<string, unknown>,
+      ref: el,
+    }, slots.default?.())
   },
 })
 

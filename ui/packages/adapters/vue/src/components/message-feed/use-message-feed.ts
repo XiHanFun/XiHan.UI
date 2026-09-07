@@ -1,3 +1,4 @@
+import type { Service } from '@xihan-ui/core'
 import type { MessageFeedApi, MessageFeedSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -11,6 +12,8 @@ type Props = MessageFeedSchema['props']
 
 export interface MessageFeedContext {
   api: ComputedRef<MessageFeedApi>
+  /** 机器实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
+  service: Service<MessageFeedSchema>
   /** 根节点，条目集合的归属容器。 */
   rootRef: Ref<HTMLElement | null>
   /** overflow:auto 的滚动容器节点。 */
@@ -46,5 +49,5 @@ export function useMessageFeed(
   })
 
   const api = computed(() => connectMessageFeed(service, vueNormalize))
-  return { api, rootRef, viewportRef, contentRef }
+  return { api, service, rootRef, viewportRef, contentRef }
 }

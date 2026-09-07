@@ -120,10 +120,33 @@ export const XhMenubarTrigger = defineComponent({
     const ctx = useMenubarContext()
     // trigger 同时作为定位锚点与焦点归还目标
     const setEl = useMenubarPart(ctx.registerTrigger, () => props.value)
+    // 本入口持有焦点时，value 变更重报焦点入口，卸载时上报菜单栏失焦
+    const triggerEl = ref<HTMLElement | null>(null)
+    watch(() => props.value, (next, prev) => {
+      if (next === prev)
+        return
+      const { service } = ctx
+      if (service.getStatus() !== 'Started')
+        return
+      if (triggerEl.value && service.scope.getActiveElement() === triggerEl.value)
+        service.send({ type: 'TRIGGER.FOCUS', value: next, disabled: props.disabled })
+    })
+    onBeforeUnmount(() => {
+      const { service } = ctx
+      // 整条栏一起卸载时根部件先停机，此刻送事件会在 dev 下抛
+      if (service.getStatus() !== 'Started')
+        return
+      // 按「本入口当下正持有焦点」判定，不按 value 比对
+      if (triggerEl.value && service.scope.getActiveElement() === triggerEl.value)
+        service.send({ type: 'MENUBAR.BLUR' })
+    })
     return () => {
       const attrs = {
         ...ctx.api.value.getTriggerProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>,
-        ref: (el: unknown) => setEl(el as HTMLElement | null),
+        ref: (el: unknown) => {
+          triggerEl.value = el as HTMLElement | null
+          setEl(el as HTMLElement | null)
+        },
       }
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
