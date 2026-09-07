@@ -205,12 +205,17 @@
     {
       "path": "packages/adapters/vue/tests/browser/__snapshots__/computed/{c}.txt",
       "command": "pnpm test:browser",
-      "what": "Vue 侧计算样式快照（两侧逐字对拍的一半）"
+      "what": "Vue 侧计算样式快照（三侧逐字对拍的一份）"
+    },
+    {
+      "path": "packages/adapters/react/tests/browser/__snapshots__/computed/{c}.txt",
+      "command": "pnpm test:browser",
+      "what": "React 侧计算样式快照（与 Vue 那一份要求逐字节全等）"
     },
     {
       "path": "packages/adapters/web-components/tests/browser/__snapshots__/computed/{c}.txt",
       "command": "pnpm test:browser",
-      "what": "WC 侧计算样式快照（缺一侧即判两端漏登记）"
+      "what": "WC 侧计算样式快照（缺一侧即判三端漏登记）"
     }
   ],
   "manual": [

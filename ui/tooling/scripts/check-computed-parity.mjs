@@ -1,23 +1,16 @@
 #!/usr/bin/env node
-// 门禁：Vue 与 Web Components 两个适配器的计算样式快照逐字一致。
+// 门禁：三个适配器的计算样式快照两两逐字一致。
 //
-// 快照由两侧的 computed-snapshot.spec.ts 在真实浏览器里采出并入库，
+// 快照由各侧的 computed-snapshot 用例在真实浏览器里采出并入库，
 // 内容是每个部件解析完令牌代换、继承与层序之后的最终取值。
 //
 // 这一条查的是别的门禁查不到的那一层：check-control-height / check-shape-scale 只能核
 // 「引的是不是同一个令牌」，核不到「令牌代换加继承加层序算完之后是不是同一个像素」。
-// 两侧逐字一致，等于把「两端视觉一致」从人眼判断变成机器判断。
 //
-// 已知差异逐条登记，两侧反查：登记的组件必须确实还不一致，一致了就判登记过期。
-//
-// React 尚未纳入：判据的输入是浏览器态采出的快照文件，React 侧还没有 computed-snapshot
-// 这一份产出，目录是空的，扩过去只能比出「两边都没有」。它不是「跳过没铺到的组件」，
-// 是整条输入都还不存在，所以这里显式声明而不是静默两家比完就报「通过」。
-//
-// 纳入时判据该长什么样：主判据改成三方逐字全等（同一个部件在三家解析出同一个像素）；
-// 报错时指出是哪一对对不上。KNOWN_DIVERGENCE 的键要从「组件」改成「组件 + 适配器对」——
-// 现有六条里 command / dialog / drawer / image-viewer 的理由都是「WC 侧走单开的 fixture」，
-// 那只对 Vue↔WC 与 React↔WC 两对成立，Vue↔React 仍该逐字一致，登记成组件级会把它一起放过。
+// 比对按适配器对逐对进行：vue↔react、vue↔wc、react↔wc。
+// 已知差异按「组件 + 适配器对」登记——三个模态的差异只在与 wc 配对时成立，
+// 登记成组件级会把 vue↔react 这一对一起放过。
+// 表两侧反查：登记的对必须确实还不一致，一致了就判登记过期。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
@@ -25,117 +18,155 @@ import process from 'node:process'
 import { ADAPTERS } from './lib/adapters.mjs'
 
 const SNAPSHOTS = 'tests/browser/__snapshots__/computed'
-const VUE = `${ADAPTERS.vue.root}/${SNAPSHOTS}`
-const WC = `${ADAPTERS.wc.root}/${SNAPSHOTS}`
-const REACT = `${ADAPTERS.react.root}/${SNAPSHOTS}`
+
+/** 参与比对的适配器，按这个顺序两两配对。 */
+const SIDES = ['vue', 'react', 'wc']
+
+/** 两两配对，键写成 `a-b`。 */
+const PAIRS = SIDES.flatMap((a, i) => SIDES.slice(i + 1).map(b => [a, b]))
 
 /**
- * 已知不一致的组件，值写一句理由。
- * 三个模态各自单开了 WC 规格，fixture 本就不同构；另两条是实测出来的真差异。
+ * 已知不一致的「组件@适配器对」，值写一句结构性理由。
+ *
+ * 三个模态与 command 在 wc 侧走单开的 fixture，本就不同构；
+ * menubar 与 tour 是实测出来的真差异。这几条对 vue↔react 都不成立——
+ * 那一对必须逐字全等，所以表里没有任何 vue-react 的条目。
  */
 const KNOWN_DIVERGENCE = {
-  'command': 'WC 侧走单开的 fixture（浮层壳归作者手写），且 Light DOM 不删作者节点：收起这一屏 Vue 只剩 trigger，WC 是整棵面板都在',
-  'dialog': 'WC 侧走单开的 wc-dialog.suite，presence 模型与共享套件不同构',
-  'drawer': 'WC 侧走单开的 wc-drawer.suite，presence 模型与共享套件不同构',
-  'image-viewer': 'WC 侧走单开的 wc-image-viewer.suite，presence 模型与共享套件不同构',
-  'menubar': 'positioner 的 color 两侧不同：Vue 侧落回初始黑，WC 侧继承到语义前景色。全库 22 个 positioner 里只有它与 tour 两侧不同',
-  'tour': 'backdrop 与 positioner 的 color 两侧不同，同 menubar',
+  'command@vue-wc': 'WC 侧走单开的 fixture（浮层壳归作者手写），且 Light DOM 不删作者节点：收起这一屏 Vue 只剩 trigger，WC 是整棵面板都在',
+  'command@react-wc': '同 command@vue-wc：WC 侧 fixture 不同构，收起这一屏 React 只剩 trigger，WC 是整棵面板都在',
+  'dialog@vue-wc': 'WC 侧走单开的 wc-dialog.suite，presence 模型与共享套件不同构',
+  'dialog@react-wc': '同 dialog@vue-wc：WC 侧不吃共享套件，presence 模型不同构',
+  'drawer@vue-wc': 'WC 侧走单开的 wc-drawer.suite，presence 模型与共享套件不同构',
+  'drawer@react-wc': '同 drawer@vue-wc：WC 侧不吃共享套件，presence 模型不同构',
+  'image-viewer@vue-wc': 'WC 侧走单开的 wc-image-viewer.suite，presence 模型与共享套件不同构',
+  'image-viewer@react-wc': '同 image-viewer@vue-wc：WC 侧不吃共享套件，presence 模型不同构',
+  'menubar@vue-wc': 'positioner 的 color 两侧不同：Vue 侧落回初始黑，WC 侧继承到语义前景色。全库 22 个 positioner 里只有它与 tour 两侧不同',
+  'menubar@react-wc': '同 menubar@vue-wc：React 侧与 Vue 侧取值一致，差的是 WC 侧 positioner 的 color 继承链',
+  'tour@vue-wc': 'backdrop 与 positioner 的 color 两侧不同，同 menubar',
+  'tour@react-wc': '同 tour@vue-wc：React 侧与 Vue 侧取值一致，差的是 WC 侧的 color 继承链',
 }
 
-async function listSnapshots(dir) {
+function dirOf(side) {
+  return `${ADAPTERS[side].root}/${SNAPSHOTS}`
+}
+
+/** 列出一侧的快照文件名；目录不存在返回 null。 */
+async function listSnapshots(side) {
   try {
-    return (await readdir(dir)).filter(f => f.endsWith('.txt')).sort()
+    return (await readdir(dirOf(side))).filter(f => f.endsWith('.txt')).sort()
   }
   catch {
     return null
   }
 }
 
-const vueFiles = await listSnapshots(VUE)
-const wcFiles = await listSnapshots(WC)
-
-if (!vueFiles || !wcFiles) {
-  console.error('[check-computed-parity] ✗ 读不到计算样式快照目录——先在两个适配器各跑一遍 computed-snapshot.spec.ts')
-  process.exit(1)
-}
-
+const files = new Map()
 const problems = []
-const diverged = new Set()
 
-// React 一旦开始采快照，这张门禁就必须当场改成三方全等；不报出来的话它会继续只比两家，
-// 而收尾行照旧打印「通过」，读输出的人无从知道第三家没在核
-const reactFiles = await listSnapshots(REACT)
-if (reactFiles && reactFiles.length > 0) {
-  problems.push(
-    `${REACT} 下已经有 ${reactFiles.length} 份计算样式快照，这张门禁却还只比 Vue 与 Web Components 两家`
-    + '——按文件头注释里写的判据把它扩成三方全等，并把 KNOWN_DIVERGENCE 的键改成「组件 + 适配器对」',
-  )
-}
-
-const vueSet = new Set(vueFiles)
-const wcSet = new Set(wcFiles)
-
-for (const file of vueFiles) {
-  if (!wcSet.has(file))
-    problems.push(`${file} 只有 Vue 侧有——WC 侧的套件清单漏了这个组件`)
-}
-for (const file of wcFiles) {
-  if (!vueSet.has(file))
-    problems.push(`${file} 只有 WC 侧有——Vue 侧的套件清单漏了这个组件`)
-}
-
-for (const file of vueFiles) {
-  if (!wcSet.has(file))
-    continue
-  const component = file.replace(/\.txt$/, '')
-  const [a, b] = await Promise.all([
-    readFile(join(VUE, file), 'utf8'),
-    readFile(join(WC, file), 'utf8'),
-  ])
-  if (a === b)
-    continue
-
-  diverged.add(component)
-  if (component in KNOWN_DIVERGENCE)
-    continue
-
-  const al = a.split('\n')
-  const bl = b.split('\n')
-  const first = al.findIndex((line, i) => line !== bl[i])
-  let part = ''
-  for (let i = first; i >= 0; i--) {
-    if (al[i]?.startsWith('[')) {
-      part = al[i]
-      break
-    }
+for (const side of SIDES) {
+  const list = await listSnapshots(side)
+  if (list === null) {
+    console.error(`[check-computed-parity] ✗ 读不到 ${dirOf(side)}——先在这个适配器跑一遍 computed-snapshot 用例`)
+    process.exit(1)
   }
-  problems.push(
-    `${component} 两侧计算样式不一致，首处在第 ${first + 1} 行 ${part}：\n`
-    + `      vue: ${al[first]}\n`
-    + `      wc:  ${bl[first] ?? '(缺这一行)'}\n`
-    + `    —— 同一个部件在两个适配器里解析出不同的值；确实该不同就登进 KNOWN_DIVERGENCE 并写清理由`,
-  )
+  // 目录在但一份快照都没有：接着比会「两边都没有」地静默通过
+  if (list.length === 0) {
+    console.error(`[check-computed-parity] ✗ ${dirOf(side)} 下一份快照都没有——这一侧的用例没跑或套件清单是空的`)
+    process.exit(1)
+  }
+  files.set(side, list)
 }
 
-for (const component of Object.keys(KNOWN_DIVERGENCE)) {
-  if (!vueSet.has(`${component}.txt`))
-    problems.push(`${component} 登记在 KNOWN_DIVERGENCE 里却没有快照——组件改名或退役了就一起改`)
-  else if (!diverged.has(component))
-    problems.push(`${component} 登记成两侧不一致，实测已经一致了——把这条删掉`)
+/** 逐字不一致的「组件@适配器对」。 */
+const diverged = new Set()
+/** 实际比对过内容的对数，一份都没比到时判失败。 */
+let compared = 0
+
+/** 差异首行往上找最近的部件标题行，用来指出差在哪一段。 */
+function partOf(lines, index) {
+  for (let i = index; i >= 0; i--) {
+    if (lines[i]?.startsWith('['))
+      return lines[i]
+  }
+  return '(首个部件标题之前)'
+}
+
+for (const [a, b] of PAIRS) {
+  const pair = `${a}-${b}`
+  const aSet = new Set(files.get(a))
+  const bSet = new Set(files.get(b))
+
+  for (const file of files.get(a)) {
+    if (!bSet.has(file))
+      problems.push(`${file} 只有 ${ADAPTERS[a].label} 侧有——${ADAPTERS[b].label} 侧的套件清单漏了这个组件`)
+  }
+  for (const file of files.get(b)) {
+    if (!aSet.has(file))
+      problems.push(`${file} 只有 ${ADAPTERS[b].label} 侧有——${ADAPTERS[a].label} 侧的套件清单漏了这个组件`)
+  }
+
+  for (const file of files.get(a)) {
+    if (!bSet.has(file))
+      continue
+    const component = file.replace(/\.txt$/, '')
+    const key = `${component}@${pair}`
+    const [textA, textB] = await Promise.all([
+      readFile(join(dirOf(a), file), 'utf8'),
+      readFile(join(dirOf(b), file), 'utf8'),
+    ])
+    compared++
+    if (textA === textB)
+      continue
+
+    diverged.add(key)
+    if (key in KNOWN_DIVERGENCE)
+      continue
+
+    const linesA = textA.split('\n')
+    const linesB = textB.split('\n')
+    const first = linesA.findIndex((line, i) => line !== linesB[i])
+    problems.push(
+      `${component} 在 ${ADAPTERS[a].label}↔${ADAPTERS[b].label} 两侧计算样式不一致，`
+      + `首处在第 ${first + 1} 行 ${partOf(linesA, first)}：\n`
+      + `      ${a}: ${linesA[first]}\n`
+      + `      ${b}: ${linesB[first] ?? '(缺这一行)'}\n`
+      + `    —— 同一个部件在两个适配器里解析出不同的值；确实该不同就以 ${key} 登进 KNOWN_DIVERGENCE 并写清结构性理由`,
+    )
+  }
+}
+
+if (compared === 0)
+  problems.push('三侧一份快照都没比到——同名文件对不上，判据落空')
+
+// 例外表反查：键的写法、组件是否还在、以及是不是真的还不一致
+for (const [key, why] of Object.entries(KNOWN_DIVERGENCE)) {
+  const [component, pair] = key.split('@')
+  if (!pair || !PAIRS.some(([a, b]) => `${a}-${b}` === pair)) {
+    problems.push(`KNOWN_DIVERGENCE 里的 ${key} 不是「组件@适配器对」的写法，适配器对只有 ${PAIRS.map(([a, b]) => `${a}-${b}`).join(' / ')}`)
+    continue
+  }
+  if (!why?.trim()) {
+    problems.push(`KNOWN_DIVERGENCE 里的 ${key} 没写理由`)
+    continue
+  }
+  const [a, b] = pair.split('-')
+  const missing = [a, b].filter(side => !files.get(side).includes(`${component}.txt`))
+  if (missing.length > 0)
+    problems.push(`${key} 登记在 KNOWN_DIVERGENCE 里，${missing.map(s => ADAPTERS[s].label).join(' 与 ')} 侧却没有这份快照——组件改名或退役了就一起改`)
+  else if (!diverged.has(key))
+    problems.push(`${key} 登记成两侧不一致，实测已经一致了——把这条删掉`)
 }
 
 if (problems.length) {
-  console.error('[check-computed-parity] ✗ 两个适配器的计算样式对不上：')
+  console.error('[check-computed-parity] ✗ 适配器之间的计算样式对不上：')
   for (const p of problems)
     console.error(`  ${p}`)
   process.exit(1)
 }
 
+const counts = SIDES.map(s => `${ADAPTERS[s].label} ${files.get(s).length} 份`).join(' · ')
 console.log(
-  `[check-computed-parity] 通过：Vue ${vueFiles.length} 份 · Web Components ${wcFiles.length} 份快照逐字一致`
+  `[check-computed-parity] 通过：${counts}快照，${PAIRS.length} 对适配器共比对 ${compared} 处，逐字一致`
   + `（登记 ${Object.keys(KNOWN_DIVERGENCE).length} 处已知差异）`,
-)
-console.log(
-  `[check-computed-parity] 适用面：React ${reactFiles ? reactFiles.length : 0} 份，尚未纳入`
-  + '——它还没有浏览器态的 computed-snapshot 产出，这张门禁没在核 React',
 )

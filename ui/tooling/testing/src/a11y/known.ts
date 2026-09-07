@@ -49,3 +49,10 @@ export const wcA11yBaseline = {
   knownEverywhere: knownA11yViolationsEverywhere,
   replayExempt,
 }
+
+/** React 适配器的基线，在共用表之上逐条列出 React 独有的登记。 */
+export const reactA11yBaseline = {
+  known: knownA11yViolations,
+  knownEverywhere: knownA11yViolationsEverywhere,
+  replayExempt,
+}
