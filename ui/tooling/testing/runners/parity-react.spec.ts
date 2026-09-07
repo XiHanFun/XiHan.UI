@@ -10,26 +10,22 @@
 import { describe, expect, it } from 'vitest'
 import { createReactHarness } from '../../../packages/adapters/react/tests/harness'
 import { createVueHarness } from '../../../packages/adapters/vue/tests/harness'
-import { accordionSuite, alertSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, popoverSuite, runParity, selectSuite, switchSuite, toastSuite, toggleSuite, tooltipSuite } from '../src'
+import { accordionSuite, alertSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldArraySuite, fieldsetSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, paginationSuite, popoverSuite, radioGroupSuite, runParity, segmentedSuite, selectSuite, separatorSuite, skeletonSuite, spinnerSuite, stepsSuite, switchSuite, tabsSuite, tagSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite } from '../src'
 
 /** React 侧已经铺到、纳入逐帧对拍的组件。 */
-const SUITES = [accordionSuite, alertSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, popoverSuite, selectSuite, switchSuite, toastSuite, toggleSuite, tooltipSuite]
+const SUITES = [accordionSuite, alertSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldArraySuite, fieldsetSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, paginationSuite, popoverSuite, radioGroupSuite, segmentedSuite, selectSuite, separatorSuite, skeletonSuite, spinnerSuite, stepsSuite, switchSuite, tabsSuite, tagSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite]
 
 /** React 侧还没铺到的组件。每批合入时删掉对应行；删空即本文件的覆盖等式自动收紧到全集。 */
 const PENDING = new Set([
   'affix',
   'anchor',
   'approval',
-  'avatar',
-  'avatar-group',
   'back-top',
-  'breadcrumb',
   'button-group',
   'calendar',
   'card',
   'carousel',
   'cascader',
-  'checkbox-group',
   'clipboard',
   'code-view',
   'color-picker',
@@ -43,8 +39,6 @@ const PENDING = new Set([
   'download-trigger',
   'editable',
   'empty-state',
-  'field-array',
-  'fieldset',
   'file-upload',
   'flex',
   'float-button',
@@ -78,7 +72,6 @@ const PENDING = new Set([
   'number-animation',
   'number-field',
   'page-header',
-  'pagination',
   'password-input',
   'pin-input',
   'popconfirm',
@@ -86,26 +79,18 @@ const PENDING = new Set([
   'prompt-input',
   'qr-code',
   'question-flow',
-  'radio-group',
   'rating',
   'reasoning',
   'resizable',
   'scroll-area',
   'scrollbar',
-  'segmented',
-  'separator',
   'side-nav',
   'signature-pad',
-  'skeleton',
   'slider',
   'sortable',
-  'spinner',
   'splitter',
   'statistic',
-  'steps',
   'table',
-  'tabs',
-  'tag',
   'tag-group',
   'tags-input',
   'text-field',
@@ -114,7 +99,6 @@ const PENDING = new Set([
   'timeline',
   'timer',
   'timestamp',
-  'toggle-group',
   'tool-call',
   'toolbar',
   'tour',

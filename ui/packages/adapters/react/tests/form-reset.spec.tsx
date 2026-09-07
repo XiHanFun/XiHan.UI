@@ -4,7 +4,21 @@
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, describe, expect, it } from 'vitest'
-import { XhCheckbox, XhSwitch } from '../src'
+import {
+  XhCheckbox,
+  XhCheckboxGroupItem,
+  XhCheckboxGroupRoot,
+  XhFieldArrayAddTrigger,
+  XhFieldArrayItem,
+  XhFieldArrayRoot,
+  XhRadioGroupItem,
+  XhRadioGroupRoot,
+  XhSegmentedItem,
+  XhSegmentedRoot,
+  XhSwitch,
+  XhToggleGroupItem,
+  XhToggleGroupRoot,
+} from '../src'
 
 let host: HTMLElement | null = null
 let root: ReturnType<typeof createRoot> | null = null
@@ -60,5 +74,81 @@ describe('原生表单重置', () => {
     expect(box().getAttribute('aria-checked')).toBe('true')
     act(() => form.reset())
     expect(box().getAttribute('aria-checked')).toBe('mixed')
+  })
+})
+
+/** 组与容器的锚点不在单件那种壳上，而是根部件自己渲的那个节点，单独核一遍它接住了没有。 */
+describe('组与容器的原生表单重置', () => {
+  const items = (scope: string): HTMLElement[] =>
+    [...host!.querySelectorAll<HTMLElement>(`[data-scope="${scope}"][data-part="item"]`)]
+
+  it('复选框组：重置回到 defaultValue', () => {
+    const form = mount(
+      <XhCheckboxGroupRoot name="topping" defaultValue={['a']}>
+        <XhCheckboxGroupItem value="a" />
+        <XhCheckboxGroupItem value="b" />
+      </XhCheckboxGroupRoot>,
+    )
+    act(() => items('checkbox-group')[1]!.click())
+    expect(items('checkbox-group').map(el => el.getAttribute('aria-checked'))).toEqual(['true', 'true'])
+    act(() => form.reset())
+    expect(items('checkbox-group').map(el => el.getAttribute('aria-checked'))).toEqual(['true', 'false'])
+  })
+
+  it('单选组：重置回到 defaultValue', () => {
+    const form = mount(
+      <XhRadioGroupRoot name="size" defaultValue="a">
+        <XhRadioGroupItem value="a" />
+        <XhRadioGroupItem value="b" />
+      </XhRadioGroupRoot>,
+    )
+    act(() => items('radio-group')[1]!.click())
+    expect(items('radio-group').map(el => el.getAttribute('aria-checked'))).toEqual(['false', 'true'])
+    act(() => form.reset())
+    expect(items('radio-group').map(el => el.getAttribute('aria-checked'))).toEqual(['true', 'false'])
+  })
+
+  it('开关组：重置回到 defaultValue', () => {
+    const form = mount(
+      <XhToggleGroupRoot name="align" defaultValue="a">
+        <XhToggleGroupItem value="a">左</XhToggleGroupItem>
+        <XhToggleGroupItem value="b">右</XhToggleGroupItem>
+      </XhToggleGroupRoot>,
+    )
+    act(() => items('toggle-group')[1]!.click())
+    expect(items('toggle-group').map(el => el.getAttribute('aria-checked'))).toEqual(['false', 'true'])
+    act(() => form.reset())
+    expect(items('toggle-group').map(el => el.getAttribute('aria-checked'))).toEqual(['true', 'false'])
+  })
+
+  it('分段控件：重置回到 defaultValue', () => {
+    const form = mount(
+      <XhSegmentedRoot name="range" defaultValue="day">
+        <XhSegmentedItem value="day">日</XhSegmentedItem>
+        <XhSegmentedItem value="month">月</XhSegmentedItem>
+      </XhSegmentedRoot>,
+    )
+    act(() => items('segmented')[1]!.click())
+    expect(items('segmented').map(el => el.getAttribute('aria-checked'))).toEqual(['false', 'true'])
+    act(() => form.reset())
+    expect(items('segmented').map(el => el.getAttribute('aria-checked'))).toEqual(['true', 'false'])
+  })
+
+  it('动态录入：重置回到 defaultValue 的行数', () => {
+    const rows = (): number => items('field-array').length
+    const form = mount(
+      <XhFieldArrayRoot name="tags" defaultValue={['甲']}>
+        {({ items: rowList }) => (
+          <>
+            {rowList.map(row => <XhFieldArrayItem key={row.key} index={row.index} />)}
+            <XhFieldArrayAddTrigger>加一行</XhFieldArrayAddTrigger>
+          </>
+        )}
+      </XhFieldArrayRoot>,
+    )
+    act(() => host!.querySelector<HTMLButtonElement>('[data-scope="field-array"][data-part="add-trigger"]')!.click())
+    expect(rows()).toBe(2)
+    act(() => form.reset())
+    expect(rows()).toBe(1)
   })
 })

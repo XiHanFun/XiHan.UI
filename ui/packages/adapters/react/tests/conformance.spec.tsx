@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { accordionSuite, alertSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, popoverSuite, runConformance, selectSuite, switchSuite, toastSuite, toggleSuite, tooltipSuite } from '@xihan-ui/testing'
+import { accordionSuite, alertSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldArraySuite, fieldsetSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, paginationSuite, popoverSuite, radioGroupSuite, runConformance, segmentedSuite, selectSuite, separatorSuite, skeletonSuite, spinnerSuite, stepsSuite, switchSuite, tabsSuite, tagSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite } from '@xihan-ui/testing'
 import { describe, it } from 'vitest'
 import { createReactHarness } from './harness'
 
@@ -9,7 +9,7 @@ import { createReactHarness } from './harness'
 
 runConformance(
   createReactHarness(),
-  [accordionSuite, alertSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, popoverSuite, selectSuite, switchSuite, toastSuite, toggleSuite, tooltipSuite],
+  [accordionSuite, alertSuite, avatarGroupSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, dialogSuite, drawerSuite, fieldArraySuite, fieldsetSuite, fieldSuite, formSuite, loadingBarSuite, notificationSuite, paginationSuite, popoverSuite, radioGroupSuite, segmentedSuite, selectSuite, separatorSuite, skeletonSuite, spinnerSuite, stepsSuite, switchSuite, tabsSuite, tagSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite],
   { describe, it },
   {
     keyboardCoverageExempt: {
