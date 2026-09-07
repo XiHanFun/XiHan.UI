@@ -10,6 +10,10 @@ import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
+  XhMessageFeedItem,
+  XhMessageFeedList,
+  XhMessageFeedRoot,
+  XhMessageFeedViewport,
   XhTableBody,
   XhTableCell,
   XhTableRoot,
@@ -155,6 +159,51 @@ describe('transfer 的焦点落点如实上报', () => {
 
     expect(parts('transfer', 'item')).toHaveLength(1)
     expect(parts('transfer', 'list')[0]!.getAttribute('tabindex')).toBe('0')
+  })
+})
+
+// key 取位次而不是 itemId：id 换掉时 React 复用同一个 DOM 节点，
+// 「节点还在、身份变了」这一路才演得出来
+function feedTree(ids: readonly string[]): ReactNode {
+  return (
+    <XhMessageFeedRoot count={ids.length}>
+      <XhMessageFeedViewport>
+        <XhMessageFeedList>
+          {ids.map((id, i) => (
+            <XhMessageFeedItem key={i} itemId={id} itemIndex={i}>{id}</XhMessageFeedItem>
+          ))}
+        </XhMessageFeedList>
+      </XhMessageFeedViewport>
+    </XhMessageFeedRoot>
+  )
+}
+
+describe('message-feed 的焦点落点如实上报', () => {
+  it('持有焦点的条目被摘掉：焦点锚点当场清空，消息流重新兜底进 Tab 序列', async () => {
+    await mount(feedTree(['m1', 'm2']))
+    const [, second] = parts('message-feed', 'item')
+    await focus(second!)
+    expect(parts('message-feed', 'root')[0]!.getAttribute('tabindex')).toBe('-1')
+
+    await rerender(feedTree(['m1']))
+
+    expect(parts('message-feed', 'item')).toHaveLength(1)
+    expect(parts('message-feed', 'root')[0]!.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('持有焦点的条目换了身份：锚点跟着改记新值', async () => {
+    await mount(feedTree(['m1', 'm2']))
+    const [, second] = parts('message-feed', 'item')
+    await focus(second!)
+    expect(second!.getAttribute('tabindex')).toBe('0')
+
+    // 同一个 DOM 节点复用，只是 itemId 换了：机器不重报就还记着已经不在场的旧值，
+    // 那个锚点没有条目认领，整份消息流于是一个 Tab 停靠点都没有
+    await rerender(feedTree(['m1', 'm3']))
+
+    const items = parts('message-feed', 'item')
+    expect(items[1]!.getAttribute('data-value')).toBe('m3')
+    expect(items[1]!.getAttribute('tabindex')).toBe('0')
   })
 })
 

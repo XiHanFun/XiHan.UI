@@ -31,16 +31,34 @@ export function declaredEvents(component: ComponentType<Record<string, unknown>>
 }
 
 /**
+ * 部件节点上的连字符键换成驼峰。
+ *
+ * 部件解析成的是 React 组件，它的入参是驼峰 props；fixture 写的是 DOM 属性口径
+ * （`item-id`、`scope-value`），原样传过去组件读到的是 undefined，条目的身份整个丢掉。
+ * data-* / aria-* 不动：那两类 React 直接认，也不该变成组件入参。
+ */
+function toCamel(key: string): string {
+  if (key.startsWith('data-') || key.startsWith('aria-'))
+    return key
+  return key.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase())
+}
+
+/**
  * fixture 的 attrs 是 DOM 属性口径，React 收到的是 props。
  *
  * 空串在 DOM 里是「这个布尔属性在场」的写法（`<div disabled>`），换成 React 的写法就是 true；
  * 原样传过去是空串、在 React 里是假值，禁用一类的状态会静默失效。
  * 只对不带连字符的键这么转：带连字符的是 data-* / aria-* 这类真属性，空串对它们是有意义的取值。
+ *
+ * @param attrs fixture 节点上写的那一份属性。
+ * @param part 这是不是一个部件节点；是的话连字符键先换成驼峰，再按上面那条判空串。
  */
-function toReactProps(attrs: Record<string, unknown> | undefined): Record<string, unknown> {
+function toReactProps(attrs: Record<string, unknown> | undefined, part: boolean): Record<string, unknown> {
   const out: Record<string, unknown> = {}
-  for (const [key, value] of Object.entries(attrs ?? {}))
+  for (const [rawKey, value] of Object.entries(attrs ?? {})) {
+    const key = part ? toCamel(rawKey) : rawKey
     out[key] = value === '' && !key.includes('-') ? true : value
+  }
   return out
 }
 
@@ -48,7 +66,7 @@ function toReactProps(attrs: Record<string, unknown> | undefined): Record<string
 export function renderFixtureNode(node: FixtureNode, component: string, key?: number): ReactElement {
   const kids = node.children?.map((c, i) => renderFixtureNode(c, component, i))
   const children = kids ?? node.text
-  const props = { ...toReactProps(node.attrs), key } as Record<string, unknown>
+  const props = { ...toReactProps(node.attrs, node.part != null), key } as Record<string, unknown>
   if (node.part)
     return createElement(resolvePart(component, node.part), props, children)
   return createElement(node.tag ?? 'div', props, children)

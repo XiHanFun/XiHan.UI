@@ -60,6 +60,43 @@ export { useAnchorContext } from './components/anchor/context'
 export { useAnchor } from './components/anchor/use-anchor'
 export type { AnchorContext } from './components/anchor/use-anchor'
 export {
+  XhApprovalApproveTrigger,
+  XhApprovalDenyTrigger,
+  XhApprovalDescription,
+  XhApprovalFooter,
+  XhApprovalGroup,
+  XhApprovalItem,
+  XhApprovalItemIndicator,
+  XhApprovalItemText,
+  XhApprovalLiveRegion,
+  XhApprovalNote,
+  XhApprovalResult,
+  XhApprovalRoot,
+  XhApprovalTimer,
+  XhApprovalTitle,
+} from './components/approval/approval'
+export type {
+  ApprovalRootSlotProps,
+  ApprovalScopeSlotProps,
+  XhApprovalApproveTriggerProps,
+  XhApprovalDenyTriggerProps,
+  XhApprovalDescriptionProps,
+  XhApprovalFooterProps,
+  XhApprovalGroupProps,
+  XhApprovalItemIndicatorProps,
+  XhApprovalItemProps,
+  XhApprovalItemTextProps,
+  XhApprovalLiveRegionProps,
+  XhApprovalNoteProps,
+  XhApprovalResultProps,
+  XhApprovalRootProps,
+  XhApprovalTimerProps,
+  XhApprovalTitleProps,
+} from './components/approval/approval'
+export { useApprovalContext } from './components/approval/context'
+export { useApproval } from './components/approval/use-approval'
+export type { ApprovalContext } from './components/approval/use-approval'
+export {
   XhAvatarGroupOverflowItem,
   XhAvatarGroupRoot,
 } from './components/avatar-group/avatar-group'
@@ -253,6 +290,29 @@ export type { XhCheckboxProps } from './components/checkbox/checkbox'
 export { useCheckbox } from './components/checkbox/use-checkbox'
 export type { CheckboxContext } from './components/checkbox/use-checkbox'
 export {
+  XhCodeViewCode,
+  XhCodeViewFilename,
+  XhCodeViewFoldTrigger,
+  XhCodeViewHeader,
+  XhCodeViewLangLabel,
+  XhCodeViewPre,
+  XhCodeViewRoot,
+} from './components/code-view/code-view'
+export type {
+  CodeViewLineSlotProps,
+  CodeViewRootSlotProps,
+  XhCodeViewCodeProps,
+  XhCodeViewFilenameProps,
+  XhCodeViewFoldTriggerProps,
+  XhCodeViewHeaderProps,
+  XhCodeViewLangLabelProps,
+  XhCodeViewPreProps,
+  XhCodeViewRootProps,
+} from './components/code-view/code-view'
+export { useCodeViewContext } from './components/code-view/context'
+export { useCodeView } from './components/code-view/use-code-view'
+export type { CodeViewContext } from './components/code-view/use-code-view'
+export {
   XhCollapsibleContent,
   XhCollapsibleHeader,
   XhCollapsibleIndicator,
@@ -269,6 +329,50 @@ export type {
 export { useCollapsibleContext } from './components/collapsible/context'
 export { useCollapsible } from './components/collapsible/use-collapsible'
 export type { CollapsibleContext } from './components/collapsible/use-collapsible'
+export {
+  XhColorPickerAreaThumb,
+  XhColorPickerChannelInput,
+  XhColorPickerChannelSlider,
+  XhColorPickerChannelSliderThumb,
+  XhColorPickerChannelSliderTrack,
+  XhColorPickerContent,
+  XhColorPickerControl,
+  XhColorPickerEyeDropperTrigger,
+  XhColorPickerHiddenInput,
+  XhColorPickerLabel,
+  XhColorPickerPositioner,
+  XhColorPickerRoot,
+  XhColorPickerSaturationArea,
+  XhColorPickerSwatch,
+  XhColorPickerSwatchGroup,
+  XhColorPickerSwatchItem,
+  XhColorPickerTrigger,
+  XhColorPickerValueText,
+} from './components/color-picker/color-picker'
+export type {
+  ColorPickerRootSlotProps,
+  XhColorPickerAreaThumbProps,
+  XhColorPickerChannelInputProps,
+  XhColorPickerChannelSliderProps,
+  XhColorPickerChannelSliderThumbProps,
+  XhColorPickerChannelSliderTrackProps,
+  XhColorPickerContentProps,
+  XhColorPickerControlProps,
+  XhColorPickerEyeDropperTriggerProps,
+  XhColorPickerHiddenInputProps,
+  XhColorPickerLabelProps,
+  XhColorPickerPositionerProps,
+  XhColorPickerRootProps,
+  XhColorPickerSaturationAreaProps,
+  XhColorPickerSwatchGroupProps,
+  XhColorPickerSwatchItemProps,
+  XhColorPickerSwatchProps,
+  XhColorPickerTriggerProps,
+  XhColorPickerValueTextProps,
+} from './components/color-picker/color-picker'
+export { useColorPickerChannelContext, useColorPickerContext } from './components/color-picker/context'
+export { useColorPicker } from './components/color-picker/use-color-picker'
+export type { ColorPickerContext } from './components/color-picker/use-color-picker'
 export {
   XhComboboxClearTrigger,
   XhComboboxContent,
@@ -503,6 +607,28 @@ export type {
 } from './components/dialog/dialog'
 export { useDialog } from './components/dialog/use-dialog'
 export type { DialogContext } from './components/dialog/use-dialog'
+export { useDiffViewContext } from './components/diff-view/context'
+export {
+  XhDiffViewBody,
+  XhDiffViewEmpty,
+  XhDiffViewHeader,
+  XhDiffViewRoot,
+  XhDiffViewSummary,
+  XhDiffViewTruncation,
+  XhDiffViewViewport,
+} from './components/diff-view/diff-view'
+export type {
+  DiffViewRootSlotProps,
+  XhDiffViewBodyProps,
+  XhDiffViewEmptyProps,
+  XhDiffViewHeaderProps,
+  XhDiffViewRootProps,
+  XhDiffViewSummaryProps,
+  XhDiffViewTruncationProps,
+  XhDiffViewViewportProps,
+} from './components/diff-view/diff-view'
+export { useDiffView } from './components/diff-view/use-diff-view'
+export type { DiffViewContext } from './components/diff-view/use-diff-view'
 export { useDrawerContext } from './components/drawer/context'
 export {
   XhDrawerBody,
@@ -636,6 +762,40 @@ export type {
 } from './components/fieldset/fieldset'
 export { useFieldset } from './components/fieldset/use-fieldset'
 export type { FieldsetContext } from './components/fieldset/use-fieldset'
+export { useFileUploadContext, useFileUploadItemContext } from './components/file-upload/context'
+export {
+  XhFileUploadClearTrigger,
+  XhFileUploadDropzone,
+  XhFileUploadHiddenInput,
+  XhFileUploadItem,
+  XhFileUploadItemDeleteTrigger,
+  XhFileUploadItemName,
+  XhFileUploadItemPreview,
+  XhFileUploadItemProgress,
+  XhFileUploadItemSizeText,
+  XhFileUploadLabel,
+  XhFileUploadList,
+  XhFileUploadRoot,
+  XhFileUploadTrigger,
+} from './components/file-upload/file-upload'
+export type {
+  FileUploadRootSlotProps,
+  XhFileUploadClearTriggerProps,
+  XhFileUploadDropzoneProps,
+  XhFileUploadHiddenInputProps,
+  XhFileUploadItemDeleteTriggerProps,
+  XhFileUploadItemNameProps,
+  XhFileUploadItemPreviewProps,
+  XhFileUploadItemProgressProps,
+  XhFileUploadItemProps,
+  XhFileUploadItemSizeTextProps,
+  XhFileUploadLabelProps,
+  XhFileUploadListProps,
+  XhFileUploadRootProps,
+  XhFileUploadTriggerProps,
+} from './components/file-upload/file-upload'
+export { useFileUpload } from './components/file-upload/use-file-upload'
+export type { FileUploadContext } from './components/file-upload/use-file-upload'
 export { useFlexContext } from './components/flex/context'
 export type { FlexContext } from './components/flex/context'
 export { XhFlex, XhFlexSplit } from './components/flex/flex'
@@ -776,6 +936,10 @@ export { useInputGroupContext } from './components/input-group/context'
 export type { InputGroupContext } from './components/input-group/context'
 export { XhInputGroupItem, XhInputGroupRoot } from './components/input-group/input-group'
 export type { XhInputGroupItemProps, XhInputGroupRootProps } from './components/input-group/input-group'
+export { XhJsonViewerRoot } from './components/json-viewer/json-viewer'
+export type { XhJsonViewerRootProps } from './components/json-viewer/json-viewer'
+export { useJsonViewer } from './components/json-viewer/use-json-viewer'
+export type { JsonViewerContext } from './components/json-viewer/use-json-viewer'
 export { useLayoutContext } from './components/layout/context'
 export {
   XhLayoutContent,
@@ -854,6 +1018,67 @@ export type {
 } from './components/loading-bar/loading-bar'
 export { useLoadingBar } from './components/loading-bar/use-loading-bar'
 export type { LoadingBarContext } from './components/loading-bar/use-loading-bar'
+export { useLogContext } from './components/log/context'
+export {
+  XhLogContent,
+  XhLogLine,
+  XhLogLiveRegion,
+  XhLogRoot,
+  XhLogScrollToEndTrigger,
+  XhLogViewport,
+} from './components/log/log'
+export type {
+  LogRootSlotProps,
+  XhLogContentProps,
+  XhLogLineProps,
+  XhLogLiveRegionProps,
+  XhLogRootProps,
+  XhLogScrollToEndTriggerProps,
+  XhLogViewportProps,
+} from './components/log/log'
+export { useLog } from './components/log/use-log'
+export type { LogContext } from './components/log/use-log'
+export { useMarkdownStreamContext } from './components/markdown-stream/context'
+export {
+  XhMarkdownStreamContent,
+  XhMarkdownStreamLiveRegion,
+  XhMarkdownStreamRoot,
+} from './components/markdown-stream/markdown-stream'
+export type {
+  MarkdownStreamBlockSlotProps,
+  MarkdownStreamRootSlotProps,
+  XhMarkdownStreamContentProps,
+  XhMarkdownStreamLiveRegionProps,
+  XhMarkdownStreamRootProps,
+} from './components/markdown-stream/markdown-stream'
+export { useMarkdownStream } from './components/markdown-stream/use-markdown-stream'
+export type { MarkdownStreamContext } from './components/markdown-stream/use-markdown-stream'
+export { useMentionContext, useMentionItemContext } from './components/mention/context'
+export {
+  XhMentionContent,
+  XhMentionEmpty,
+  XhMentionInput,
+  XhMentionItem,
+  XhMentionItemText,
+  XhMentionLabel,
+  XhMentionLoading,
+  XhMentionPositioner,
+  XhMentionRoot,
+} from './components/mention/mention'
+export type {
+  MentionRootSlotProps,
+  XhMentionContentProps,
+  XhMentionEmptyProps,
+  XhMentionInputProps,
+  XhMentionItemProps,
+  XhMentionItemTextProps,
+  XhMentionLabelProps,
+  XhMentionLoadingProps,
+  XhMentionPositionerProps,
+  XhMentionRootProps,
+} from './components/mention/mention'
+export { useMention } from './components/mention/use-mention'
+export type { MentionContext } from './components/mention/use-mention'
 export {
   useMenuChain,
   useMenuContext,
@@ -943,6 +1168,29 @@ export type {
 } from './components/menubar/menubar'
 export { useMenubar } from './components/menubar/use-menubar'
 export type { MenubarContext, MenubarPartRegistry } from './components/menubar/use-menubar'
+export { useMessageFeedContext, useMessageFeedItemContext } from './components/message-feed/context'
+export type { MessageFeedItemContext } from './components/message-feed/context'
+export {
+  XhMessageFeedItem,
+  XhMessageFeedItemLabel,
+  XhMessageFeedList,
+  XhMessageFeedLiveRegion,
+  XhMessageFeedRoot,
+  XhMessageFeedScrollToEndTrigger,
+  XhMessageFeedViewport,
+} from './components/message-feed/message-feed'
+export type {
+  MessageFeedRootSlotProps,
+  XhMessageFeedItemLabelProps,
+  XhMessageFeedItemProps,
+  XhMessageFeedListProps,
+  XhMessageFeedLiveRegionProps,
+  XhMessageFeedRootProps,
+  XhMessageFeedScrollToEndTriggerProps,
+  XhMessageFeedViewportProps,
+} from './components/message-feed/message-feed'
+export { useMessageFeed } from './components/message-feed/use-message-feed'
+export type { MessageFeedContext } from './components/message-feed/use-message-feed'
 export { useNavigationMenuContext } from './components/navigation-menu/context'
 export {
   XhNavigationMenuContent,
@@ -1173,10 +1421,71 @@ export { usePopover } from './components/popover/use-popover'
 export type { PopoverContext } from './components/popover/use-popover'
 export { XhProgress } from './components/progress/progress'
 export type { XhProgressProps } from './components/progress/progress'
+export { usePromptInputContext } from './components/prompt-input/context'
+export {
+  XhPromptInputControl,
+  XhPromptInputInput,
+  XhPromptInputRoot,
+  XhPromptInputSubmitTrigger,
+} from './components/prompt-input/prompt-input'
+export type {
+  PromptInputRootSlotProps,
+  XhPromptInputControlProps,
+  XhPromptInputInputProps,
+  XhPromptInputRootProps,
+  XhPromptInputSubmitTriggerProps,
+} from './components/prompt-input/prompt-input'
+export { usePromptInput } from './components/prompt-input/use-prompt-input'
+export type { PromptInputContext } from './components/prompt-input/use-prompt-input'
 export { useQrCodeContext } from './components/qr-code/context'
 export type { QrCodeContext } from './components/qr-code/context'
 export { XhQrCode, XhQrCodeLogo } from './components/qr-code/qr-code'
 export type { XhQrCodeLogoProps, XhQrCodeProps } from './components/qr-code/qr-code'
+export { useQuestionFlowContext } from './components/question-flow/context'
+export {
+  XhQuestionFlowCounter,
+  XhQuestionFlowFooter,
+  XhQuestionFlowGroup,
+  XhQuestionFlowItem,
+  XhQuestionFlowItemIndicator,
+  XhQuestionFlowItemText,
+  XhQuestionFlowLiveRegion,
+  XhQuestionFlowNextTrigger,
+  XhQuestionFlowNote,
+  XhQuestionFlowPrevTrigger,
+  XhQuestionFlowPrompt,
+  XhQuestionFlowQuestion,
+  XhQuestionFlowResult,
+  XhQuestionFlowRoot,
+  XhQuestionFlowSkipTrigger,
+  XhQuestionFlowSubmitTrigger,
+  XhQuestionFlowTrack,
+  XhQuestionFlowViewport,
+} from './components/question-flow/question-flow'
+export type {
+  QuestionFlowOptionSlotProps,
+  QuestionFlowRootSlotProps,
+  XhQuestionFlowCounterProps,
+  XhQuestionFlowFooterProps,
+  XhQuestionFlowGroupProps,
+  XhQuestionFlowItemIndicatorProps,
+  XhQuestionFlowItemProps,
+  XhQuestionFlowItemTextProps,
+  XhQuestionFlowLiveRegionProps,
+  XhQuestionFlowNextTriggerProps,
+  XhQuestionFlowNoteProps,
+  XhQuestionFlowPrevTriggerProps,
+  XhQuestionFlowPromptProps,
+  XhQuestionFlowQuestionProps,
+  XhQuestionFlowResultProps,
+  XhQuestionFlowRootProps,
+  XhQuestionFlowSkipTriggerProps,
+  XhQuestionFlowSubmitTriggerProps,
+  XhQuestionFlowTrackProps,
+  XhQuestionFlowViewportProps,
+} from './components/question-flow/question-flow'
+export { useQuestionFlow } from './components/question-flow/use-question-flow'
+export type { QuestionFlowContext } from './components/question-flow/use-question-flow'
 export { useRadioGroupContext, useRadioGroupItemContext } from './components/radio-group/context'
 export {
   XhRadioGroupItem,
@@ -1213,6 +1522,71 @@ export type {
 } from './components/rating/rating'
 export { useRating } from './components/rating/use-rating'
 export type { RatingContext } from './components/rating/use-rating'
+export { useReasoningContext } from './components/reasoning/context'
+export {
+  XhReasoningContent,
+  XhReasoningDuration,
+  XhReasoningIcon,
+  XhReasoningIndicator,
+  XhReasoningLabel,
+  XhReasoningRoot,
+  XhReasoningTrigger,
+} from './components/reasoning/reasoning'
+export type {
+  ReasoningRootSlotProps,
+  XhReasoningContentProps,
+  XhReasoningDurationProps,
+  XhReasoningIconProps,
+  XhReasoningIndicatorProps,
+  XhReasoningLabelProps,
+  XhReasoningRootProps,
+  XhReasoningTriggerProps,
+} from './components/reasoning/reasoning'
+export { useReasoning } from './components/reasoning/use-reasoning'
+export type { ReasoningContext } from './components/reasoning/use-reasoning'
+export { useResizableContext } from './components/resizable/context'
+export { XhResizableHandle, XhResizableRoot } from './components/resizable/resizable'
+export type { ResizableRootSlotProps, XhResizableHandleProps, XhResizableRootProps } from './components/resizable/resizable'
+export { useResizable } from './components/resizable/use-resizable'
+export type { ResizableContext } from './components/resizable/use-resizable'
+export { useScrollAreaContext, useScrollAreaScrollbarContext } from './components/scroll-area/context'
+export {
+  XhScrollAreaContent,
+  XhScrollAreaCorner,
+  XhScrollAreaRoot,
+  XhScrollAreaScrollbar,
+  XhScrollAreaThumb,
+  XhScrollAreaTrack,
+  XhScrollAreaViewport,
+} from './components/scroll-area/scroll-area'
+export type {
+  ScrollAreaRootSlotProps,
+  XhScrollAreaContentProps,
+  XhScrollAreaCornerProps,
+  XhScrollAreaRootProps,
+  XhScrollAreaScrollbarProps,
+  XhScrollAreaThumbProps,
+  XhScrollAreaTrackProps,
+  XhScrollAreaViewportProps,
+} from './components/scroll-area/scroll-area'
+export { useScrollArea } from './components/scroll-area/use-scroll-area'
+export type { ScrollAreaContext } from './components/scroll-area/use-scroll-area'
+export { useScrollbarContext } from './components/scrollbar/context'
+export {
+  XhScrollbarCorner,
+  XhScrollbarRoot,
+  XhScrollbarThumb,
+  XhScrollbarTrack,
+} from './components/scrollbar/scrollbar'
+export type {
+  ScrollbarRootSlotProps,
+  XhScrollbarCornerProps,
+  XhScrollbarRootProps,
+  XhScrollbarThumbProps,
+  XhScrollbarTrackProps,
+} from './components/scrollbar/scrollbar'
+export { useScrollbar } from './components/scrollbar/use-scrollbar'
+export type { ScrollbarContext, ScrollbarSource, ScrollbarTarget } from './components/scrollbar/use-scrollbar'
 export { useSegmentedContext, useSegmentedItemContext } from './components/segmented/context'
 export {
   XhSegmentedHiddenInput,
@@ -1337,11 +1711,62 @@ export { XhSkeletonItem, XhSkeletonRoot } from './components/skeleton/skeleton'
 export type { XhSkeletonItemProps, XhSkeletonRootProps } from './components/skeleton/skeleton'
 export { useSkeleton } from './components/skeleton/use-skeleton'
 export type { SkeletonContext } from './components/skeleton/use-skeleton'
+export { useSliderContext, useSliderThumbContext } from './components/slider/context'
+export {
+  XhSliderControl,
+  XhSliderHiddenInput,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTickGroup,
+  XhSliderTrack,
+  XhSliderValueText,
+} from './components/slider/slider'
+export type {
+  SliderRootSlotProps,
+  SliderTickSlotProps,
+  XhSliderControlProps,
+  XhSliderHiddenInputProps,
+  XhSliderLabelProps,
+  XhSliderRangeProps,
+  XhSliderRootProps,
+  XhSliderThumbProps,
+  XhSliderTickGroupProps,
+  XhSliderTrackProps,
+  XhSliderValueTextProps,
+} from './components/slider/slider'
+export { useSlider } from './components/slider/use-slider'
+export type { SliderContext } from './components/slider/use-slider'
+export { useSortableContext } from './components/sortable/context'
+export {
+  XhSortableDropIndicator,
+  XhSortableItem,
+  XhSortableItemDragTrigger,
+  XhSortableLiveRegion,
+  XhSortableRoot,
+} from './components/sortable/sortable'
+export type {
+  SortableItemSlotProps,
+  SortableRootSlotProps,
+  XhSortableDropIndicatorProps,
+  XhSortableItemDragTriggerProps,
+  XhSortableItemProps,
+  XhSortableLiveRegionProps,
+  XhSortableRootProps,
+} from './components/sortable/sortable'
+export { useSortable } from './components/sortable/use-sortable'
+export type { SortableContext } from './components/sortable/use-sortable'
 export { useSpinnerContext } from './components/spinner/context'
 export { XhSpinner, XhSpinnerLabel } from './components/spinner/spinner'
 export type { XhSpinnerLabelProps, XhSpinnerProps } from './components/spinner/spinner'
 export { useSpinner } from './components/spinner/use-spinner'
 export type { SpinnerContext } from './components/spinner/use-spinner'
+export { useSplitterContext } from './components/splitter/context'
+export { XhSplitterPanel, XhSplitterResizeTrigger, XhSplitterRoot } from './components/splitter/splitter'
+export type { SplitterRootSlotProps, XhSplitterPanelProps, XhSplitterResizeTriggerProps, XhSplitterRootProps } from './components/splitter/splitter'
+export { useSplitter } from './components/splitter/use-splitter'
+export type { SplitterContext } from './components/splitter/use-splitter'
 export { useStatisticContext } from './components/statistic/context'
 export type { StatisticContext } from './components/statistic/context'
 export {
@@ -1659,6 +2084,38 @@ export { XhToggle } from './components/toggle/toggle'
 export type { XhToggleProps } from './components/toggle/toggle'
 export { useToggle } from './components/toggle/use-toggle'
 export type { ToggleContext } from './components/toggle/use-toggle'
+export { useToolCallContext } from './components/tool-call/context'
+export {
+  XhToolCallApproval,
+  XhToolCallContent,
+  XhToolCallDuration,
+  XhToolCallError,
+  XhToolCallIndicator,
+  XhToolCallInput,
+  XhToolCallLabel,
+  XhToolCallOutput,
+  XhToolCallRoot,
+  XhToolCallStatus,
+  XhToolCallSummary,
+  XhToolCallTrigger,
+} from './components/tool-call/tool-call'
+export type {
+  ToolCallRootSlotProps,
+  XhToolCallApprovalProps,
+  XhToolCallContentProps,
+  XhToolCallDurationProps,
+  XhToolCallErrorProps,
+  XhToolCallIndicatorProps,
+  XhToolCallInputProps,
+  XhToolCallLabelProps,
+  XhToolCallOutputProps,
+  XhToolCallRootProps,
+  XhToolCallStatusProps,
+  XhToolCallSummaryProps,
+  XhToolCallTriggerProps,
+} from './components/tool-call/tool-call'
+export { useToolCall } from './components/tool-call/use-tool-call'
+export type { ToolCallContext } from './components/tool-call/use-tool-call'
 export { useToolbarContext } from './components/toolbar/context'
 export {
   XhToolbarGroup,

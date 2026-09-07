@@ -210,6 +210,9 @@ importers:
       '@xihan-ui/build':
         specifier: workspace:*
         version: link:../../../tooling/build
+      '@xihan-ui/code-highlight':
+        specifier: workspace:*
+        version: link:../../features/code-highlight
       '@xihan-ui/styles':
         specifier: workspace:*
         version: link:../../design/styles
