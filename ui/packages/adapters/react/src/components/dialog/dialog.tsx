@@ -1,8 +1,10 @@
 import type { OverlayBackdropVariant, Size } from '@xihan-ui/core'
 import type { DialogApi, DialogSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
+import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
+import { renderAsChild } from '../../runtime/as-child'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
@@ -41,15 +43,15 @@ export function XhDialogRoot({ children, ...props }: XhDialogRootProps): ReactNo
 
 XhDialogRoot.xhEvents = ['open-change'] as const
 
-export interface XhDialogTriggerProps extends ComponentPropsWithRef<'button'> {}
+export interface XhDialogTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 
-export function XhDialogTrigger({ children, ...rest }: XhDialogTriggerProps): ReactNode {
+export function XhDialogTrigger({ children, asChild, ...rest }: XhDialogTriggerProps): ReactNode {
   const ctx = useDialogContext()
-  return (
-    <button {...mergeReactProps(ctx.api.getTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {children}
-    </button>
+  const props = mergeReactProps(
+    ctx.api.getTriggerProps() as Record<string, unknown>,
+    rest as Record<string, unknown>,
   )
+  return renderAsChild(asChild, children, props, 'dialog', (p, kids) => <button {...p}>{kids}</button>)
 }
 
 export interface XhDialogContentProps extends ComponentPropsWithRef<'div'> {

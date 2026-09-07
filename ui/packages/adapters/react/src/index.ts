@@ -26,6 +26,32 @@ export type {
 } from './components/dialog/dialog'
 export { useDialog } from './components/dialog/use-dialog'
 export type { DialogContext } from './components/dialog/use-dialog'
+export { useDrawerContext } from './components/drawer/context'
+export {
+  XhDrawerBody,
+  XhDrawerCloseTrigger,
+  XhDrawerContent,
+  XhDrawerDescription,
+  XhDrawerFooter,
+  XhDrawerHeader,
+  XhDrawerRoot,
+  XhDrawerTitle,
+  XhDrawerTrigger,
+} from './components/drawer/drawer'
+export type {
+  DrawerRootSlotProps,
+  XhDrawerBodyProps,
+  XhDrawerCloseTriggerProps,
+  XhDrawerContentProps,
+  XhDrawerDescriptionProps,
+  XhDrawerFooterProps,
+  XhDrawerHeaderProps,
+  XhDrawerRootProps,
+  XhDrawerTitleProps,
+  XhDrawerTriggerProps,
+} from './components/drawer/drawer'
+export { useDrawer } from './components/drawer/use-drawer'
+export type { DrawerContext } from './components/drawer/use-drawer'
 export { FieldProvider, useFieldContext, useOptionalFieldContext } from './components/field/context'
 export {
   XhFieldControl,
@@ -67,6 +93,30 @@ export type {
 } from './components/form/form'
 export { useForm } from './components/form/use-form'
 export type { FormCallbacks, FormContext } from './components/form/use-form'
+export { usePopoverContext } from './components/popover/context'
+export {
+  XhPopoverArrow,
+  XhPopoverCloseTrigger,
+  XhPopoverContent,
+  XhPopoverDescription,
+  XhPopoverPositioner,
+  XhPopoverRoot,
+  XhPopoverTitle,
+  XhPopoverTrigger,
+} from './components/popover/popover'
+export type {
+  PopoverRootSlotProps,
+  XhPopoverArrowProps,
+  XhPopoverCloseTriggerProps,
+  XhPopoverContentProps,
+  XhPopoverDescriptionProps,
+  XhPopoverPositionerProps,
+  XhPopoverRootProps,
+  XhPopoverTitleProps,
+  XhPopoverTriggerProps,
+} from './components/popover/popover'
+export { usePopover } from './components/popover/use-popover'
+export type { PopoverContext } from './components/popover/use-popover'
 export {
   useSelectContext,
   useSelectGroupContext,
@@ -101,9 +151,29 @@ export type { SelectContext } from './components/select/use-select'
 export { XhSwitch } from './components/switch/switch'
 export type { XhSwitchProps } from './components/switch/switch'
 export { useSwitch } from './components/switch/use-switch'
+export { useTooltipContext } from './components/tooltip/context'
+export {
+  XhTooltipArrow,
+  XhTooltipContent,
+  XhTooltipPositioner,
+  XhTooltipRoot,
+  XhTooltipTrigger,
+} from './components/tooltip/tooltip'
+export type {
+  TooltipRootSlotProps,
+  XhTooltipArrowProps,
+  XhTooltipContentProps,
+  XhTooltipPositionerProps,
+  XhTooltipRootProps,
+  XhTooltipTriggerProps,
+} from './components/tooltip/tooltip'
+export { useTooltip } from './components/tooltip/use-tooltip'
+export type { TooltipContext } from './components/tooltip/use-tooltip'
 // @xihan-ui/react —— React 适配器。
 export { mergeXhConfig, useXhConfig, withXhConfig, XhConfigProvider } from './config/config'
 export type { XhConfig, XhConfigProviderProps, XhTranslationOverrides } from './config/config'
+export { carriesOwnAnatomy, mergeIntoChild, renderAsChild } from './runtime/as-child'
+export type { AsChildProps } from './runtime/as-child'
 export { createReactRuntime } from './runtime/create-react-runtime'
 export { mergeReactProps } from './runtime/merge-props'
 export { reactNormalize } from './runtime/normalize-props'

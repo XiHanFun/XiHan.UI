@@ -10,7 +10,7 @@ import type { ConformanceSuite } from '../src'
 import { describe, expect, it } from 'vitest'
 import { createReactHarness } from '../../../packages/adapters/react/tests/harness'
 import { createVueHarness } from '../../../packages/adapters/vue/tests/harness'
-import { dialogSuite, fieldSuite, formSuite, selectSuite, switchSuite } from '../src'
+import { dialogSuite, drawerSuite, fieldSuite, formSuite, popoverSuite, selectSuite, switchSuite, tooltipSuite } from '../src'
 
 /** 部件名 → 标签名，同名部件多份时按文档序排成数组。 */
 function tagsByPart(root: HTMLElement): Record<string, string[]> {
@@ -22,7 +22,7 @@ function tagsByPart(root: HTMLElement): Record<string, string[]> {
   return out
 }
 
-const SUITES: ConformanceSuite[] = [dialogSuite, fieldSuite, formSuite, selectSuite, switchSuite]
+const SUITES: ConformanceSuite[] = [dialogSuite, drawerSuite, fieldSuite, formSuite, popoverSuite, selectSuite, switchSuite, tooltipSuite]
 
 describe('标签名对拍（vue vs react）', () => {
   for (const suite of SUITES) {

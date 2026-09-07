@@ -67,16 +67,45 @@ export function withXhConfig<T extends object>(component: keyof XhTranslationOve
   const config = useContext(XhConfigContext)
   if (!config)
     return props
+
+  /** 这三个键由本层接管；size 只在它是尺寸轴的组件上接管。 */
+  const managed = (key: string | symbol): boolean =>
+    key === 'translations' || key === 'locale' || (key === 'size' && !SIZE_IS_NOT_AXIS.has(component))
+
+  const read = (target: T, key: string | symbol, receiver?: unknown): unknown => {
+    const value = Reflect.get(target, key, receiver)
+    if (key === 'translations')
+      return componentTranslations(component, value as object | undefined, config)
+    if (key === 'locale')
+      return value ?? config.locale
+    if (key === 'size' && !SIZE_IS_NOT_AXIS.has(component))
+      return value ?? config.size
+    return value
+  }
+
   return new Proxy(props, {
-    get(target, key, receiver) {
-      const value = Reflect.get(target, key, receiver)
-      if (key === 'translations')
-        return componentTranslations(component, value as object | undefined, config)
-      if (key === 'locale')
-        return value ?? config.locale
-      if (key === 'size' && !SIZE_IS_NOT_AXIS.has(component))
-        return value ?? config.size
-      return value
+    get: (target, key, receiver) => read(target, key, receiver),
+    has: (target, key) => managed(key) || Reflect.has(target, key),
+    // 接管的这三个键即使作者没写，也要算作自有键。
+    //
+    // React 的 props 只有作者真写了的那几个键，与 Vue 那种「声明了就一定在」不同：
+    // 作者没写 translations 时它不是自有键，展开（useMachine 里那次 { ...props }）就带不走，
+    // 全局配置里按组件名分桶的那份文案于是原地蒸发，组件回落到内建英文。
+    // 有人读得出来（get 陷阱还在），但没人读——机器拿到的是展开后的普通对象。
+    ownKeys(target) {
+      const keys = Reflect.ownKeys(target)
+      const extra = (['translations', 'locale', 'size'] as const)
+        .filter(k => managed(k) && !keys.includes(k) && read(target, k) !== undefined)
+      return [...keys, ...extra]
+    },
+    getOwnPropertyDescriptor(target, key) {
+      const own = Reflect.getOwnPropertyDescriptor(target, key)
+      if (own)
+        return own
+      if (!managed(key))
+        return undefined
+      const value = read(target, key)
+      return value === undefined ? undefined : { value, enumerable: true, configurable: true, writable: true }
     },
   }) as T
 }
