@@ -27,10 +27,15 @@ import {
   XhComboboxPositioner,
   XhComboboxRoot,
   XhCommandRoot,
+  XhJsonViewerRoot,
   XhListboxContent,
   XhListboxItem,
   XhListboxItemText,
   XhListboxRoot,
+  XhMessageFeedItem,
+  XhMessageFeedList,
+  XhMessageFeedRoot,
+  XhMessageFeedViewport,
   XhTableBody,
   XhTableCell,
   XhTableRoot,
@@ -330,6 +335,40 @@ describe('transfer 的不冒泡事件按 DOM 语义送达', () => {
   })
 })
 
+describe('message-feed 的不冒泡事件按 DOM 语义送达', () => {
+  const TREE = (
+    <XhMessageFeedRoot count={2}>
+      <XhMessageFeedViewport>
+        <XhMessageFeedList>
+          <XhMessageFeedItem itemId="m1" itemIndex={0} itemRole="user">你好</XhMessageFeedItem>
+          <XhMessageFeedItem itemId="m2" itemIndex={1} itemRole="assistant">在的</XhMessageFeedItem>
+        </XhMessageFeedList>
+      </XhMessageFeedViewport>
+    </XhMessageFeedRoot>
+  )
+
+  it('消息流自己得焦：焦点转交给锚点条目，容器让出 Tab 位', async () => {
+    await mount(TREE)
+    const feed = parts('message-feed', 'root')[0]!
+    expect(feed.getAttribute('tabindex')).toBe('0')
+
+    await fire(feed, new Event('focus'))
+
+    expect(feed.getAttribute('tabindex')).toBe('-1')
+    expect(parts('message-feed', 'item')[0]!.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('条目自己得焦：锚点改记它，roving tabindex 跟着换人', async () => {
+    await mount(TREE)
+    const [first, second] = parts('message-feed', 'item')
+
+    await fire(second!, new Event('focus'))
+
+    expect(second!.getAttribute('tabindex')).toBe('0')
+    expect(first!.getAttribute('tabindex')).toBe('-1')
+  })
+})
+
 describe('table 的不冒泡事件按 DOM 语义送达', () => {
   const TREE = (
     <XhTableRoot columns={[{ id: 'name', label: 'Name' }]} rows={[{ id: 'a' }, { id: 'b' }]}>
@@ -359,5 +398,32 @@ describe('table 的不冒泡事件按 DOM 语义送达', () => {
 
     expect(second!.getAttribute('tabindex')).toBe('0')
     expect(first!.getAttribute('tabindex')).toBe('-1')
+  })
+})
+
+describe('json-viewer 的不冒泡事件按 DOM 语义送达', () => {
+  const TREE = <XhJsonViewerRoot value={{ name: 'xihan', tags: ['a'] }} />
+
+  it('树容器自己得焦：焦点转交给锚点行，容器让出 Tab 位', async () => {
+    await mount(TREE)
+    const tree = parts('json-viewer', 'tree')[0]!
+    expect(tree.getAttribute('tabindex')).toBe('0')
+
+    await fire(tree, new Event('focus'))
+
+    expect(tree.getAttribute('tabindex')).toBe('-1')
+    expect(parts('json-viewer', 'branch')[0]!.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('标量行自己得焦：锚点改记它，roving tabindex 跟着换人', async () => {
+    await mount(TREE)
+    const branch = parts('json-viewer', 'branch')[0]!
+    const item = parts('json-viewer', 'item')[0]!
+
+    await fire(branch, new Event('focus'))
+    await fire(item, new Event('focus'))
+
+    expect(item.getAttribute('tabindex')).toBe('0')
+    expect(branch.getAttribute('tabindex')).toBe('-1')
   })
 })

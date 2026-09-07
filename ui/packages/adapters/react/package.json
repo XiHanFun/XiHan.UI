@@ -56,8 +56,14 @@
     "test:browser": "vitest run --config vitest.browser.config.ts"
   },
   "peerDependencies": {
+    "@xihan-ui/code-highlight": "workspace:^",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@xihan-ui/code-highlight": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@xihan-ui/core": "workspace:^",
@@ -73,6 +79,7 @@
     "@vitest/browser": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "@xihan-ui/build": "workspace:*",
+    "@xihan-ui/code-highlight": "workspace:*",
     "@xihan-ui/styles": "workspace:*",
     "@xihan-ui/testing": "workspace:*",
     "@xihan-ui/tokens": "workspace:*",

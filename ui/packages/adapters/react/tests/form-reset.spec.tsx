@@ -8,6 +8,9 @@ import {
   XhCheckbox,
   XhCheckboxGroupItem,
   XhCheckboxGroupRoot,
+  XhColorPickerChannelInput,
+  XhColorPickerHiddenInput,
+  XhColorPickerRoot,
   XhComboboxClearTrigger,
   XhComboboxControl,
   XhComboboxHiddenInput,
@@ -34,12 +37,18 @@ import {
   XhFieldArrayAddTrigger,
   XhFieldArrayItem,
   XhFieldArrayRoot,
+  XhFileUploadHiddenInput,
+  XhFileUploadItem,
+  XhFileUploadItemName,
+  XhFileUploadList,
+  XhFileUploadRoot,
   XhImageCropperCropArea,
   XhImageCropperCropHandle,
   XhImageCropperHiddenInput,
   XhImageCropperImage,
   XhImageCropperRoot,
   XhImageCropperViewport,
+  XhMentionRoot,
   XhNumberFieldInput,
   XhNumberFieldRoot,
   XhPasswordInputInput,
@@ -59,6 +68,12 @@ import {
   XhSignaturePadHiddenInput,
   XhSignaturePadPath,
   XhSignaturePadRoot,
+  XhSliderControl,
+  XhSliderHiddenInput,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
   XhSwitch,
   XhTagsInputHiddenInput,
   XhTagsInputInput,
@@ -507,6 +522,28 @@ describe('集合浮层族的原生表单重置', () => {
     act(() => form.reset())
     expect(part('tree-select', 'hidden-input').value).toBe('src')
   })
+
+  it('提及：正文攥在机器里，改过之后重置回到 defaultValue', () => {
+    const form = mount(
+      <XhMentionRoot
+        name="body"
+        defaultValue="@lilei 早"
+        collection={[{ value: 'lilei', label: 'Lilei' }]}
+      />,
+    )
+    const input = (): HTMLTextAreaElement => part('mention', 'input') as unknown as HTMLTextAreaElement
+    expect(input().value).toBe('@lilei 早')
+    // 正文只落 DOM property，改它得直接写值再派原生 input 事件
+    act(() => {
+      const el = input()
+      el.value = '改过了'
+      el.setSelectionRange(3, 3)
+      el.dispatchEvent(new Event('input', { bubbles: true }))
+    })
+    expect(input().value).toBe('改过了')
+    act(() => form.reset())
+    expect(input().value).toBe('@lilei 早')
+  })
 })
 
 /**
@@ -591,5 +628,72 @@ describe('指针拖拽族的原生表单重置', () => {
     act(() => form.reset())
     expect(ink()).toBe('')
     expect(value('signature-pad')).toBe('')
+  })
+
+  it('滑块：方向键推过之后，重置回到 defaultValue', () => {
+    const form = mount(
+      <XhSliderRoot name="volume" defaultValue={[40]}>
+        <XhSliderControl>
+          <XhSliderTrack><XhSliderRange /></XhSliderTrack>
+          <XhSliderThumb><XhSliderHiddenInput /></XhSliderThumb>
+        </XhSliderControl>
+      </XhSliderRoot>,
+    )
+    expect(value('slider')).toBe('40')
+    act(() => {
+      part('slider', 'thumb').dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }),
+      )
+    })
+    expect(value('slider')).toBe('41')
+    act(() => form.reset())
+    expect(value('slider')).toBe('40')
+  })
+
+  it('取色器：数值框改过颜色之后，重置回到 defaultValue', () => {
+    const form = mount(
+      <XhColorPickerRoot name="theme" defaultValue="#3b82f6">
+        <XhColorPickerChannelInput channel="hex" />
+        <XhColorPickerHiddenInput />
+      </XhColorPickerRoot>,
+    )
+    expect(value('color-picker')).toBe('#3b82f6')
+    act(() => {
+      const input = part('color-picker', 'channel-input') as HTMLInputElement
+      input.value = '#00ff00'
+      input.dispatchEvent(new Event('input', { bubbles: true }))
+    })
+    expect(value('color-picker')).toBe('#00ff00')
+    act(() => form.reset())
+    expect(value('color-picker')).toBe('#3b82f6')
+  })
+})
+
+/** 文件清单同样攥在机器里：那份 type=file 的影子输入每次选完就被拨回空串，原生 reset 清了它也是空转。 */
+describe('文件上传的原生表单重置', () => {
+  const named = (name: string): HTMLElement | null =>
+    host!.querySelector<HTMLElement>(`[data-scope="file-upload"][data-part="${name}"]`)
+
+  it('选过文件之后，重置把列表清回 defaultFiles', () => {
+    const form = mount(
+      <XhFileUploadRoot name="attach">
+        <XhFileUploadHiddenInput />
+        <XhFileUploadList>
+          <XhFileUploadItem index={0}><XhFileUploadItemName /></XhFileUploadItem>
+        </XhFileUploadList>
+      </XhFileUploadRoot>,
+    )
+    expect(named('item-name')).toBeNull()
+
+    // 无头 DOM 里选不出文件：直接把 files 摆上去再派 change，与浏览器同序
+    act(() => {
+      const input = named('hidden-input') as HTMLInputElement
+      Object.defineProperty(input, 'files', { value: [new File(['x'], 'a.txt', { type: 'text/plain' })], configurable: true })
+      input.dispatchEvent(new Event('change', { bubbles: true }))
+    })
+    expect(named('item-name')?.textContent).toBe('a.txt')
+
+    act(() => form.reset())
+    expect(named('item-name')).toBeNull()
   })
 })
