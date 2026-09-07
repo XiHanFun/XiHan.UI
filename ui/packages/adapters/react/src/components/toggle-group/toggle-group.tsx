@@ -2,6 +2,7 @@ import type { ActionVariant, Direction, Orientation, Size, Tone } from '@xihan-u
 import type { ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupValue } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
+import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { ToggleGroupProvider, useToggleGroupContext } from './context'
@@ -88,7 +89,7 @@ export function XhToggleGroupItem({ value, disabled, children, ...rest }: XhTogg
   }, [ctx.service, value])
 
   // 卸载时上报整组失焦：按「本节点当下正持有焦点」判定，不按 value 比对
-  useEffect(() => () => {
+  useIsomorphicLayoutEffect(() => () => {
     const svc = ctx.service
     if (svc.getStatus() !== 'Started')
       return

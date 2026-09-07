@@ -4,6 +4,7 @@ import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
+import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
@@ -56,7 +57,7 @@ function useNodeFocusReport(
   }, [service, el, value])
 
   // 按「本节点当下正持有焦点」判定，不按 value 比对
-  useEffect(() => () => {
+  useIsomorphicLayoutEffect(() => () => {
     if (service.getStatus() !== 'Started')
       return
     if (el.current && service.scope.getActiveElement() === el.current)

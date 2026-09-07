@@ -17,6 +17,7 @@ import { mergeProps } from '@xihan-ui/core'
 import { Fragment, useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
+import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
@@ -199,7 +200,7 @@ export function XhContextMenuItem({ value, disabled, children, ...rest }: XhCont
   }, [ctx.service, value])
 
   // 卸载时上报焦点丢失：按「本节点当下正持有焦点」判定，不按 value 比对
-  useEffect(() => () => {
+  useIsomorphicLayoutEffect(() => () => {
     const svc = ctx.service
     if (svc.getStatus() !== 'Started')
       return

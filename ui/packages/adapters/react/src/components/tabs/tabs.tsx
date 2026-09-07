@@ -3,6 +3,7 @@ import type { TabsActivationMode, TabsNode, TabsNodeMeta, TabsSchema, TabsVarian
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
+import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { slotPaints } from '../../runtime/slot-content'
@@ -129,7 +130,7 @@ export function XhTabsTrigger({ value, disabled, children, ...rest }: XhTabsTrig
   }, [ctx.service, value])
 
   // 卸载时上报列表失焦：按「本节点当下正持有焦点」判定，不按 value 比对
-  useEffect(() => () => {
+  useIsomorphicLayoutEffect(() => () => {
     const svc = ctx.service
     if (svc.getStatus() !== 'Started')
       return

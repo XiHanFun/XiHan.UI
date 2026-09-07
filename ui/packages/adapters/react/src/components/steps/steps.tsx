@@ -4,6 +4,7 @@ import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
+import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
@@ -113,7 +114,7 @@ export function XhStepsTrigger({ children, ...rest }: XhStepsTriggerProps): Reac
   }, [ctx.service, item.index])
 
   // 卸载时上报列表失焦：按「本节点当下正持有焦点」判定，不按下标比对
-  useEffect(() => () => {
+  useIsomorphicLayoutEffect(() => () => {
     const svc = ctx.service
     if (svc.getStatus() !== 'Started')
       return
