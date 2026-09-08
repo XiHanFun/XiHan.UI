@@ -18,7 +18,7 @@ import { Fragment, useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
@@ -112,10 +112,12 @@ export interface XhContextMenuTriggerProps extends ComponentPropsWithRef<'div'>,
 /** 触发区渲染为 div，语义由 connect 打上的 ARIA 属性给出。 */
 export function XhContextMenuTrigger({ children, asChild, ...rest }: XhContextMenuTriggerProps): ReactNode {
   const ctx = useContextMenuContext()
-  const props = mergeReactProps(
-    ctx.api.getTriggerProps() as Record<string, unknown>,
+  const props = mergePartProps(
+    mergeReactProps(
+      ctx.api.getTriggerProps() as Record<string, unknown>,
+      { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
+    ),
     rest as Record<string, unknown>,
-    { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
   )
   return renderAsChild(asChild, children, props, 'context-menu', (p, kids) => <div {...p}>{kids}</div>)
 }

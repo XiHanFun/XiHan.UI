@@ -5,6 +5,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, mergeProps, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
+import { mergePartProps } from '../../runtime/merge-props'
 import { provideDrawer, useDrawerContext } from './context'
 import { useDrawer } from './use-drawer'
 
@@ -70,22 +71,24 @@ export const XhDrawerRoot = defineComponent({
 
 export const XhDrawerTrigger = defineComponent({
   name: 'XhDrawerTrigger',
+  // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
+  inheritAttrs: false,
   props: {
     /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const ctx = useDrawerContext()
     return () => {
-      const attrs = ctx.api.value.getTriggerProps() as Record<string, unknown>
+      const part = mergePartProps(ctx.api.value.getTriggerProps() as Record<string, unknown>, attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
-        const merged = mergeIntoChild(children, attrs, 'drawer')
+        const merged = mergeIntoChild(children, part, 'drawer')
         if (merged)
           return merged
       }
-      return h('button', attrs, children)
+      return h('button', part, children)
     }
   },
 })

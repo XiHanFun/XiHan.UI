@@ -5,6 +5,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, mergeProps, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
+import { mergePartProps } from '../../runtime/merge-props'
 import { provideDialog, useDialogContext } from './context'
 import { useDialog } from './use-dialog'
 
@@ -49,22 +50,24 @@ export const XhDialogRoot = defineComponent({
 
 export const XhDialogTrigger = defineComponent({
   name: 'XhDialogTrigger',
+  // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
+  inheritAttrs: false,
   props: {
     /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const ctx = useDialogContext()
     return () => {
-      const attrs = ctx.api.value.getTriggerProps() as Record<string, unknown>
+      const part = mergePartProps(ctx.api.value.getTriggerProps() as Record<string, unknown>, attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
-        const merged = mergeIntoChild(children, attrs, 'dialog')
+        const merged = mergeIntoChild(children, part, 'dialog')
         if (merged)
           return merged
       }
-      return h('button', attrs, children)
+      return h('button', part, children)
     }
   },
 })

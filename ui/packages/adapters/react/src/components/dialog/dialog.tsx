@@ -5,7 +5,7 @@ import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { DialogProvider, useDialogContext } from './context'
@@ -47,7 +47,7 @@ export interface XhDialogTriggerProps extends ComponentPropsWithRef<'button'>, A
 
 export function XhDialogTrigger({ children, asChild, ...rest }: XhDialogTriggerProps): ReactNode {
   const ctx = useDialogContext()
-  const props = mergeReactProps(
+  const props = mergePartProps(
     ctx.api.getTriggerProps() as Record<string, unknown>,
     rest as Record<string, unknown>,
   )

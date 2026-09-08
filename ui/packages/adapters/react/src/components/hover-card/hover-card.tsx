@@ -4,7 +4,7 @@ import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { renderAsChild } from '../../runtime/as-child'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
@@ -58,11 +58,13 @@ export function XhHoverCardTrigger({ children, asChild, ...rest }: XhHoverCardTr
     ctx.api.getTriggerProps() as Record<string, unknown>,
     ['onFocus', 'onPointerEnter', 'onPointerLeave'],
   )
-  const props = mergeReactProps(
-    bind.attrs,
+  const props = mergePartProps(
+    mergeReactProps(
+      bind.attrs,
+      { ref: bind.ref },
+      { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
+    ),
     rest as Record<string, unknown>,
-    { ref: bind.ref },
-    { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
   )
   return renderAsChild(asChild, children, props, 'hover-card', (p, kids) => <button {...p}>{kids}</button>)
 }

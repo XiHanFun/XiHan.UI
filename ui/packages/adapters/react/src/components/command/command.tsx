@@ -7,7 +7,7 @@ import { COMMAND_UNGROUPED, resolveCommandGroups } from '@xihan-ui/headless'
 import { Fragment, useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
@@ -107,7 +107,7 @@ XhCommandRoot.xhEvents = ['open-change', 'input-value-change', 'select'] as cons
 export interface XhCommandTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 export function XhCommandTrigger({ children, asChild, ...rest }: XhCommandTriggerProps): ReactNode {
   const ctx = useCommandContext()
-  const props = mergeReactProps(
+  const props = mergePartProps(
     ctx.api.getTriggerProps() as Record<string, unknown>,
     rest as Record<string, unknown>,
   )

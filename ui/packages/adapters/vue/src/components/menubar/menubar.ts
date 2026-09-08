@@ -7,6 +7,7 @@ import { createRuntimeConfig } from '@xihan-ui/core'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
+import { mergePartProps } from '../../runtime/merge-props'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { provideMenu, provideMenuChain, useMenuContext } from '../menu/context'
 import { useMenu } from '../menu/use-menu'
@@ -109,6 +110,8 @@ export const XhMenubarRoot = defineComponent({
 
 export const XhMenubarTrigger = defineComponent({
   name: 'XhMenubarTrigger',
+  // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
+  inheritAttrs: false,
   props: {
     value: { type: String, required: true },
     // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
@@ -116,7 +119,7 @@ export const XhMenubarTrigger = defineComponent({
     /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const ctx = useMenubarContext()
     // trigger 同时作为定位锚点与焦点归还目标
     const setEl = useMenubarPart(ctx.registerTrigger, () => props.value)
@@ -141,21 +144,21 @@ export const XhMenubarTrigger = defineComponent({
         service.send({ type: 'MENUBAR.BLUR' })
     })
     return () => {
-      const attrs = {
+      const part = mergePartProps({
         ...ctx.api.value.getTriggerProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>,
         ref: (el: unknown) => {
           triggerEl.value = el as HTMLElement | null
           setEl(el as HTMLElement | null)
         },
-      }
+      }, attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
-        const merged = mergeIntoChild(children, attrs, 'menubar')
+        const merged = mergeIntoChild(children, part, 'menubar')
         if (merged)
           return merged
       }
-      return h('button', attrs, children)
+      return h('button', part, children)
     }
   },
 })

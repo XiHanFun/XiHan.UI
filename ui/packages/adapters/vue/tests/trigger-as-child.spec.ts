@@ -152,6 +152,63 @@ describe('触发器 asChild', () => {
     expect(document.querySelector('[data-scope="popover"][data-part="content"]')).not.toBeNull()
   })
 
+  // 同名处理器串起来依次跑，作者的排在部件的前面。三条路都是同一个先后：
+  // 不开 asChild 写在部件上、开 asChild 写在子节点上、开 asChild 写在部件上。
+  // 先后一旦跟着写法反转，作者在一种写法里拦得住的事在另一种写法里拦不住，而两边看着是同一个 prop。
+  it('不开 asChild、作者写在部件上：作者先跑、部件后跑', async () => {
+    const seen: string[] = []
+    mount(() => h(XhDialogRoot, { onOpenChange: () => seen.push('部件') }, () => [
+      h(XhDialogTrigger, { onClick: () => seen.push('作者') }, () => '打开'),
+      h(XhDialogContent, () => '内容'),
+    ]))
+    await tick()
+
+    el('[data-scope="dialog"][data-part="trigger"]').click()
+    await tick()
+    expect(seen).toEqual(['作者', '部件'])
+  })
+
+  it('开 asChild、作者写在子节点上：作者先跑、部件后跑', async () => {
+    const seen: string[] = []
+    mount(() => h(XhDialogRoot, { onOpenChange: () => seen.push('部件') }, () => [
+      h(XhDialogTrigger, { asChild: true }, () => h('button', { onClick: () => seen.push('作者') }, '打开')),
+      h(XhDialogContent, () => '内容'),
+    ]))
+    await tick()
+
+    el('[data-scope="dialog"][data-part="trigger"]').click()
+    await tick()
+    expect(seen).toEqual(['作者', '部件'])
+  })
+
+  it('开 asChild、作者写在部件上：先后与另外两条路相同', async () => {
+    const seen: string[] = []
+    mount(() => h(XhDialogRoot, { onOpenChange: () => seen.push('部件') }, () => [
+      h(XhDialogTrigger, { asChild: true, onClick: () => seen.push('作者') }, () => h('button', null, '打开')),
+      h(XhDialogContent, () => '内容'),
+    ]))
+    await tick()
+
+    el('[data-scope="dialog"][data-part="trigger"]').click()
+    await tick()
+    expect(seen).toEqual(['作者', '部件'])
+  })
+
+  it('作者写在部件上的普通值仍然盖过部件的，class 两边都留', async () => {
+    mount(() => h(XhDialogRoot, null, () => [
+      h(XhDialogTrigger, { 'class': 'mine', 'type': 'submit', 'aria-label': '我的名字' }, () => '打开'),
+      h(XhDialogContent, () => '内容'),
+    ]))
+    await tick()
+
+    const trigger = el('[data-scope="dialog"][data-part="trigger"]')
+    expect(trigger.getAttribute('type')).toBe('submit')
+    expect(trigger.getAttribute('aria-label')).toBe('我的名字')
+    expect(trigger.classList.contains('mine')).toBe(true)
+    // 部件的接线属性没被顺手丢掉
+    expect(trigger.getAttribute('aria-haspopup')).toBe('dialog')
+  })
+
   it('子节点不是恰好一个：报诊断并退回默认的 button 渲染', async () => {
     const seen: string[] = []
     const off = onDiagnostic(record => seen.push(`${record.scope}:${record.message}`))

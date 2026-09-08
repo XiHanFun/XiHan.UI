@@ -70,6 +70,9 @@ export function mergeIntoChild(nodes: readonly VNode[] | undefined, props: Recor
     const inner = merged.ref as (el: unknown) => void
     merged.ref = (value: unknown) => inner(unwrapElement(value))
   }
-  // 第三个参数让两边的 ref 都保留：作者自己的 ref 与部件的 ref 各拿各的
+  // 第三个参数让两边的 ref 都保留：作者自己的 ref 与部件的 ref 各拿各的。
+  // cloneVNode 把子节点自己的同名处理器排在传进来这一份的前面，也就是作者先跑、部件后跑；
+  // 传进来的 props 已经把写在部件上的那一份按同一个先后合过（mergePartProps），
+  // 所以写在子节点上还是写在部件上，作者的处理器都在部件之前。
   return cloneVNode(child, merged, true)
 }
