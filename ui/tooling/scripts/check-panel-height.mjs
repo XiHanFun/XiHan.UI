@@ -45,7 +45,9 @@ const EXEMPT = {
   'layout sider': '贴边侧栏的高度是视口减去顶栏偏移，跟着页面走',
   'log viewport': '日志窗高度是「显示几行」乘行高，行数由使用者给',
   'marquee root': '跑马灯的高度是内容轨道自己的高度',
+  'markdown-stream block': '滚的是行内方向（overflow-x）：块轴的高度就是这一段渲染结果自己的高度',
   'scroll-area viewport': '视口高度是容器高度减去滚动条厚度，容器多高就多高',
+  'tool-call content': '滚的是行内方向（overflow-x）：块轴由展开收起的行高动画给，收起时归零',
 }
 
 /** 去掉注释。 */

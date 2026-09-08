@@ -287,7 +287,10 @@
   [data-scope='tool-call'][data-part='content'] {
     display: grid;
     grid-template-rows: 1fr;
-    overflow: clip;
+    /* 块轴照旧裁掉：收起靠行高归零，多出来的那一截不能露在外面。
+       行内一轴改成可横滚，宽过卡片的参数与结果推得回来看，不再被裁掉且取不回 */
+    overflow-x: auto;
+    overflow-y: clip;
     gap: var(--xh-tool-call-content-gap, var(--xh-space-2));
     padding-inline: var(--xh-tool-call-px, var(--xh-_tool-call-px));
     padding-block: var(--xh-tool-call-py, var(--xh-_tool-call-py));

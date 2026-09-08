@@ -85,6 +85,10 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-cascader-gap, var(--xh-space-1));
+
+    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+    min-inline-size: min(var(--xh-cascader-control-min-w, var(--xh-control-min-w)), 100%);
+    max-inline-size: 100%;
   }
 
   /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，作者手动收起时要自己还回去 */
@@ -161,7 +165,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--xh-cascader-control-gap, var(--xh-_cascader-gap));
-    min-inline-size: var(--xh-cascader-control-min-w, var(--xh-control-min-w));
+    min-inline-size: min(var(--xh-cascader-control-min-w, var(--xh-control-min-w)), 100%);
     block-size: var(--xh-cascader-control-h, var(--xh-_cascader-h));
     padding-inline: var(--xh-cascader-control-px, var(--xh-_cascader-px));
     border: var(--xh-stroke-thin) solid var(--xh-cascader-control-border, var(--xh-_cascader-border));

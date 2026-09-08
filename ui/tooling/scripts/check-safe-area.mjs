@@ -55,7 +55,6 @@ const REGISTERED = {
  * 确实碰不到屏幕边的贴边处，逐条写明理由。
  */
 const EXEMPT = {
-  'dialog.css:positioner': '对话框恒居中，这条内衬正是把它挡在视口边之外的那一段，面板自己不贴边',
   'tooltip.css:positioner': '那两个 0 是坐标算出来之前的落点，落位由引擎写进内联样式，定位层自己不贴边',
 }
 

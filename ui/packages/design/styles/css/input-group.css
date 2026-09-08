@@ -17,6 +17,9 @@
 
     display: inline-flex;
     align-items: stretch;
+
+    /* 父容器给不出这么宽时整组跟着收，不越出父容器 */
+    max-inline-size: 100%;
   }
 
   /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，

@@ -333,9 +333,12 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 页脚：左边步进，右边动作 */
+  /* 页脚：左边步进，右边动作。
+     两侧的钮都不收缩、文案也不折行，一行摆不下时整条页脚顶出卡片；
+     允许换行后摆不下的那一组落到下一行 */
   [data-scope='question-flow'][data-part='footer'] {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: var(--xh-question-flow-footer-gap, var(--xh-space-3));

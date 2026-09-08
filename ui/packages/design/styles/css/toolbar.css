@@ -11,7 +11,9 @@
     --xh-_toolbar-gap: var(--xh-space-1);
     --xh-_toolbar-p: var(--xh-space-1);
 
+    /* 一行排不下就折行：条目宽度由各自的控件决定，硬撑一行会把整条顶出容器 */
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--xh-toolbar-gap, var(--xh-_toolbar-gap));
     padding-block: var(--xh-toolbar-py, var(--xh-_toolbar-p));
@@ -34,6 +36,7 @@
   [data-scope='toolbar'][data-part='root'][data-orientation='vertical'] {
     flex-direction: column;
     align-items: stretch;
+    flex-wrap: nowrap;
   }
 
   /* —— 形态 —— */
@@ -80,6 +83,7 @@
      "这几个是一伙的"才看得出来 */
   [data-scope='toolbar'][data-part='group'] {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--xh-toolbar-group-gap, var(--xh-space-0_5));
   }
@@ -87,6 +91,7 @@
   [data-scope='toolbar'][data-part='group'][data-orientation='vertical'] {
     flex-direction: column;
     align-items: stretch;
+    flex-wrap: nowrap;
   }
 
   [data-scope='toolbar'][data-part='group'][hidden] {

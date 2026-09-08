@@ -323,6 +323,12 @@
   }
 
   /* —— 文字 —— */
+  /* 中间没有断点的长串——单号、路径、无空格的标识——在框内断开。
+     每条的宽度由内容的最小宽度定，断不开就会把整条轴顶出容器 */
+  [data-scope='timeline']:is([data-part='title'], [data-part='description'], [data-part='time'], [data-part='label']) {
+    overflow-wrap: anywhere;
+  }
+
   [data-scope='timeline'][data-part='title'] {
     color: var(--xh-timeline-title-fg, var(--xh-fg-default));
     font-size: var(--xh-timeline-title-font-size, var(--xh-_timeline-title-font-size));

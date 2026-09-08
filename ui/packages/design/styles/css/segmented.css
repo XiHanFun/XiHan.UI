@@ -16,8 +16,12 @@
     --xh-_segmented-indicator-bg: var(--xh-bg-surface);
     --xh-_segmented-fg-selected: var(--xh-fg-default);
 
+    /* 一行排不下就折行：每个选项都必须看得见、点得到，硬撑一行会把末尾几段顶出容器。
+       段各自带圆角，折行不会切角；不改成横向滚动是因为段离轨道内沿只有一格衬距，
+       轨道一旦成为滚动容器，段的焦点环（画在段外侧 2px 处）会被裁掉 */
     position: relative;
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: stretch;
     padding: var(--xh-segmented-track-padding, var(--xh-space-0_5));
     border: var(--xh-stroke-thin) solid var(--xh-segmented-border, var(--xh-border-subtle));
@@ -26,18 +30,27 @@
     font-size: var(--xh-segmented-font-size, var(--xh-_segmented-font-size));
   }
 
-  /* 横排时外盒整体就是一档控件高：段被 align-items: stretch 撑满轨道内侧，与同行控件齐平 */
+  /* 横排时外盒整体就是一档控件高：段被 align-items: stretch 撑满轨道内侧，与同行控件齐平。
+     写下限而非定值：排得下时两者逐值相同，排不下折了行才让轨道往下长 */
   [data-scope='segmented'][data-part='root'][data-orientation='horizontal'] {
     flex-direction: row;
-    block-size: var(--xh-segmented-h, var(--xh-_segmented-h));
+    min-block-size: var(--xh-segmented-h, var(--xh-_segmented-h));
   }
 
+  /* 段的高度交给轨道：一行时被 stretch 撑满轨道内侧。
+     下限按「一档控件高减掉轨道上下的衬距与描边」算，折了行每一行仍是这个高度，
+     不写的话多行会被 align-content 均分成一叠扁条 */
   [data-scope='segmented'][data-part='root'][data-orientation='horizontal'] [data-scope='segmented'][data-part='item'] {
     block-size: auto;
+    min-block-size: calc(
+      var(--xh-segmented-h, var(--xh-_segmented-h)) - 2 * var(--xh-segmented-track-padding, var(--xh-space-0_5)) - 2 *
+        var(--xh-stroke-thin)
+    );
   }
 
   [data-scope='segmented'][data-part='root'][data-orientation='vertical'] {
     flex-direction: column;
+    flex-wrap: nowrap;
   }
 
   /* 撑满行宽：各段等分剩余空间，长短不一的文字也排得齐 */

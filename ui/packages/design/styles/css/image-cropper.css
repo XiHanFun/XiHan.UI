@@ -213,6 +213,8 @@
   [data-scope='image-cropper'][data-part='zoom-slider'],
   [data-scope='image-cropper'][data-part='rotate-slider'] {
     inline-size: var(--xh-image-cropper-slider-w, 100%);
+    /* 原生 range 自带左右各一段外边距，与铺满的宽度叠在一起就把这两条轴顶出容器 */
+    margin-inline: 0;
     accent-color: var(--xh-image-cropper-slider-accent, var(--xh-bg-brand));
   }
 
