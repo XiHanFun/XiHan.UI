@@ -11,9 +11,17 @@
 // 置 XH_DEMO_REQUIRE_ALL_FRAMEWORKS=1 把缺席逐条升成失败，缺几条就红几条。
 //
 // 有些目录的主语不是元素而是一个框架无关的 JS 包，那种目录不出这个框架的版本，
-// 写在 scripts/demo-frameworks.json 的 notApplicable 里。登记带三条反查，谁也放不烂：
-// 目录必须真的存在、必须没有这个框架的文件、必须没有对应的自定义元素——
-// 哪天 <xh-那个目录名> 落地了，这条登记当场判红，结论要重新做。
+// 写在 scripts/demo-frameworks.json 的 notApplicable 里，两种粒度：
+//
+// 目录粒度（键是目录名，值是结论）——整个目录都没有对应的元素。三条反查：目录必须真的存在、
+// 必须没有这个框架的文件、必须没有对应的自定义元素——哪天 <xh-那个目录名> 落地了，
+// 这条登记当场判红，结论要重新做。
+//
+// 单份粒度（键是「目录/基名」，值是 { symbol, reason }）——目录里有元素、能出这个框架的版本，
+// 只是这一份示例的主语是个只能 import 的名字（工厂函数、组合式函数），而示例这一档取不到它。
+// 三条反查：规范版必须真的存在、这个框架的版本必须真的不在、规范版必须真的值导入了 symbol
+// 那个名字。谁把规范版改成不用它了，或者谁把这个框架的版本写出来了，这条登记当场判红。
+// symbol 不许写成组件名（Xh 开头）——组件都有元素形态，拿它当理由是搪塞。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -58,6 +66,8 @@ const dirs = (await readdir(DEMOS_DIR, { withFileTypes: true }))
 
 // 「这个目录不出这个框架的版本」的登记表：框架 id → 目录名 → 结论
 const exempt = new Map(frameworks.map(f => [f.id, new Map()]))
+// 单份粒度的登记：框架 id → 「目录/基名」→ 结论
+const perDemoExempt = new Map(frameworks.map(f => [f.id, new Map()]))
 
 for (const [id, entries] of Object.entries(notApplicable)) {
   const fw = frameworks.find(f => f.id === id)
@@ -71,7 +81,42 @@ for (const [id, entries] of Object.entries(notApplicable)) {
     continue
   }
   const tags = await elementTags(fw.elements)
-  for (const [dir, reason] of Object.entries(entries)) {
+  for (const [key, value] of Object.entries(entries)) {
+    // 单份粒度：键里带斜杠
+    if (key.includes('/')) {
+      const [dir, base] = key.split('/')
+      const symbol = typeof value === 'object' && value !== null ? value.symbol : undefined
+      const reason = typeof value === 'object' && value !== null ? value.reason : undefined
+      if (typeof symbol !== 'string' || symbol.trim() === '' || typeof reason !== 'string' || reason.trim() === '') {
+        errors.push(`notApplicable 的 ${key} 要写成 { symbol, reason } 且两项都不许留白`)
+        continue
+      }
+      if (/^Xh[A-Z]/.test(symbol)) {
+        errors.push(`notApplicable 的 ${key} 把 ${symbol} 当理由，可它是组件名——组件都有元素形态，这不成其为理由`)
+        continue
+      }
+      let specSource
+      try {
+        specSource = await readFile(join(DEMOS_DIR, dir, `${base}${spec.ext}`), 'utf8')
+      }
+      catch {
+        errors.push(`notApplicable 登记了 ${key}，但 ${DEMOS_DIR}/${dir}/${base}${spec.ext} 不在——规范版都没有，登记的是什么`)
+        continue
+      }
+      // 值导入才算：import type 在编译期就擦掉了，构不成「取不到」。
+      // `\{` 紧跟在 `import\s+` 之后，import type { … } 那一行因此匹配不上
+      const imports = [...specSource.matchAll(/^import\s+\{([^}]*)\}/gm)]
+        .flatMap(hit => hit[1].split(',').map(name => name.trim().split(/\s+as\s+/)[0].trim()))
+      if (!imports.includes(symbol)) {
+        errors.push(`notApplicable 登记 ${key} 的理由是取不到 ${symbol}，可 ${base}${spec.ext} 根本没有值导入它——这条结论过期了`)
+        continue
+      }
+      perDemoExempt.get(id).set(key, reason)
+      continue
+    }
+
+    const dir = key
+    const reason = value
     if (!dirs.includes(dir)) {
       errors.push(`notApplicable 登记了 ${dir}，但 ${DEMOS_DIR} 下没有这个目录`)
       continue
@@ -105,6 +150,8 @@ for (const dir of dirs) {
     }
     if (exempt.get(fw.id).has(dir))
       errors.push(`${dir}/${file} 是 ${fw.name} 版，但 ${dir} 登记了不出 ${fw.name} 版——留一份就说明那条结论不成立了`)
+    if (perDemoExempt.get(fw.id).has(`${dir}/${file.slice(0, -fw.ext.length)}`))
+      errors.push(`${dir}/${file} 是 ${fw.name} 版，但它登记了出不了 ${fw.name} 版——写出来了就把登记删掉`)
     const base = file.slice(0, -fw.ext.length)
     if (!byBase.has(base))
       byBase.set(base, new Map())
@@ -135,7 +182,7 @@ for (const dir of dirs) {
     for (const fw of frameworks) {
       if (versions.has(fw.id))
         continue
-      if (exempt.get(fw.id).has(dir)) {
+      if (exempt.get(fw.id).has(dir) || perDemoExempt.get(fw.id).has(`${dir}/${base}`)) {
         skipped.set(fw.id, skipped.get(fw.id) + 1)
         continue
       }
@@ -157,7 +204,7 @@ const rate = frameworks
   .join(' · ')
 const aside = frameworks
   .filter(f => skipped.get(f.id) > 0)
-  .map(f => `${f.name} 另有 ${skipped.get(f.id)} 份登记为不适用（${[...exempt.get(f.id).keys()].join('、')}）`)
+  .map(f => `${f.name} 另有 ${skipped.get(f.id)} 份登记为不适用（${[...exempt.get(f.id).keys(), ...perDemoExempt.get(f.id).keys()].join('、')}）`)
   .join('，')
 const mode = REQUIRE_ALL ? '按齐备要求' : '缺席只报数（置 XH_DEMO_REQUIRE_ALL_FRAMEWORKS=1 升为失败）'
 console.log(
