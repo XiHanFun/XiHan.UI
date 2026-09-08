@@ -1,0 +1,79 @@
+const a=`<!-- 遮罩形态 | variant 只落在 backdrop 那一层：opaque 压一层底、blur 糊掉背后、transparent 只挡点击 -->
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+  <xh-command class="command-variant" variant="opaque" placeholder="搜命令…">
+    <button data-xh-part="trigger">opaque 遮罩</button>
+    <div data-xh-part="backdrop"></div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <input data-xh-part="input" />
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="users">
+            <span data-xh-part="item-text">用户管理</span>
+          </div>
+          <div data-xh-part="item" value="roles">
+            <span data-xh-part="item-text">角色管理</span>
+          </div>
+          <div data-xh-part="item" value="export">
+            <span data-xh-part="item-text">导出报表</span>
+          </div>
+        </div>
+        <div data-xh-part="empty">没有匹配的命令</div>
+      </div>
+    </div>
+  </xh-command>
+
+  <xh-command class="command-variant" variant="blur" placeholder="搜命令…">
+    <button data-xh-part="trigger">blur 遮罩</button>
+    <div data-xh-part="backdrop"></div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <input data-xh-part="input" />
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="users">
+            <span data-xh-part="item-text">用户管理</span>
+          </div>
+          <div data-xh-part="item" value="roles">
+            <span data-xh-part="item-text">角色管理</span>
+          </div>
+          <div data-xh-part="item" value="export">
+            <span data-xh-part="item-text">导出报表</span>
+          </div>
+        </div>
+        <div data-xh-part="empty">没有匹配的命令</div>
+      </div>
+    </div>
+  </xh-command>
+
+  <xh-command class="command-variant" variant="transparent" placeholder="搜命令…">
+    <button data-xh-part="trigger">transparent 遮罩</button>
+    <div data-xh-part="backdrop"></div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <input data-xh-part="input" />
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="users">
+            <span data-xh-part="item-text">用户管理</span>
+          </div>
+          <div data-xh-part="item" value="roles">
+            <span data-xh-part="item-text">角色管理</span>
+          </div>
+          <div data-xh-part="item" value="export">
+            <span data-xh-part="item-text">导出报表</span>
+          </div>
+        </div>
+        <div data-xh-part="empty">没有匹配的命令</div>
+      </div>
+    </div>
+  </xh-command>
+</div>
+
+<script type="module">
+  // 命令清单只走 property：三档遮罩共用同一份
+  const commands = [
+    { value: "users", label: "用户管理" },
+    { value: "roles", label: "角色管理" },
+    { value: "export", label: "导出报表" },
+  ];
+  for (const host of document.querySelectorAll(".command-variant")) host.collection = commands;
+<\/script>
+`;export{a as default};

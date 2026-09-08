@@ -1,0 +1,33 @@
+const t=`<!-- 极简排布 | 页码序列不渲染也行，只留上一页 / 下一页与一行位置回显；先后顺序归作者 -->
+<xh-pagination
+  id="pagination-simple"
+  count="1000"
+  page-size="10"
+  page="2"
+  style="inline-size: 100%"
+>
+  <nav data-xh-part="root">
+    <button data-xh-part="prev-trigger"></button>
+    <!-- 整条序列都不铺，只留当前页那一格当位置回显 -->
+    <button id="pagination-simple-current" data-xh-part="item" value="2">
+      2
+    </button>
+    <span id="pagination-simple-total">/ 100</span>
+    <button data-xh-part="next-trigger"></button>
+  </nav>
+</xh-pagination>
+
+<script type="module">
+  const host = document.getElementById("pagination-simple");
+  const current = document.getElementById("pagination-simple-current");
+  const total = document.getElementById("pagination-simple-total");
+
+  host.addEventListener("page-change", (event) => {
+    // 受控：当前页住在 page 属性里，先写回再读取数口，否则读到的还是上一页那份
+    host.page = event.detail.page;
+    current.setAttribute("value", String(host.currentPage));
+    current.textContent = String(host.currentPage);
+    total.textContent = \`/ \${host.totalPages}\`;
+  });
+<\/script>
+`;export{t as default};

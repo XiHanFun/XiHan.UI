@@ -1,0 +1,761 @@
+来源：https://ui.docs.xihanfun.com/components/tooltip
+
+# 文字提示 `tooltip`
+
+悬停或聚焦时出现的一句纯文字说明。
+
+## 何时使用
+
+- 补充说明一个图标按钮是什么、一个截断的文字全文是什么。
+- 内容是纯文字，且没有任何可交互元素。
+
+## 何时不用
+
+- 内容里有按钮或链接：用[气泡卡片](./popover)——提示是够不着的。
+- 信息重要到不能错过：写在界面上，别藏进悬停。
+- 触摸设备是主要场景：那里没有悬停。
+
+## 特性
+
+- `openDelay` / `closeDelay` 防止指针路过时一路闪。
+- 聚焦也能触发，键盘用户拿得到。
+- 语气与尺寸两轴。
+
+## 示例
+
+### 基础用法
+
+悬停或聚焦触发器即出；指针停在提示上也不收起
+
+```vue
+<script setup lang="ts">
+import {
+  XhTooltipArrow,
+  XhTooltipContent,
+  XhTooltipPositioner,
+  XhTooltipRoot,
+  XhTooltipTrigger,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhTooltipRoot>
+    <XhTooltipTrigger>保存</XhTooltipTrigger>
+    <XhTooltipPositioner>
+      <XhTooltipContent>
+        写入草稿箱，不会发布
+        <XhTooltipArrow />
+      </XhTooltipContent>
+    </XhTooltipPositioner>
+  </XhTooltipRoot>
+</template>
+```
+
+```html
+<xh-tooltip>
+  <button data-xh-part="trigger">保存</button>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      写入草稿箱，不会发布
+      <div data-xh-part="arrow"></div>
+    </div>
+  </div>
+</xh-tooltip>
+```
+
+### 朝向
+
+placement 是请求值，空间不够时由定位引擎避让；箭头跟着最终落定的那一面走
+
+```vue
+<script setup lang="ts">
+import {
+  XhTooltipArrow,
+  XhTooltipContent,
+  XhTooltipPositioner,
+  XhTooltipRoot,
+  XhTooltipTrigger,
+} from "@xihan-ui/vue";
+
+const placements = [
+  { value: "top", label: "上方" },
+  { value: "right", label: "右侧" },
+  { value: "bottom", label: "下方" },
+  { value: "left", label: "左侧" },
+] as const;
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 24px">
+    <XhTooltipRoot
+      v-for="p in placements"
+      :key="p.value"
+      :placement="p.value"
+      :open-delay="0"
+    >
+      <XhTooltipTrigger>{{ p.label }}</XhTooltipTrigger>
+      <XhTooltipPositioner>
+        <XhTooltipContent>
+          请求朝向 {{ p.value }}
+          <XhTooltipArrow />
+        </XhTooltipContent>
+      </XhTooltipPositioner>
+    </XhTooltipRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; gap: 24px">
+  <xh-tooltip placement="top" open-delay="0">
+    <button data-xh-part="trigger">上方</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        请求朝向 top
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+
+  <xh-tooltip placement="right" open-delay="0">
+    <button data-xh-part="trigger">右侧</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        请求朝向 right
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+
+  <xh-tooltip placement="bottom" open-delay="0">
+    <button data-xh-part="trigger">下方</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        请求朝向 bottom
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+
+  <xh-tooltip placement="left" open-delay="0">
+    <button data-xh-part="trigger">左侧</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        请求朝向 left
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+</div>
+```
+
+### 延时
+
+openDelay 默认 700ms 用来防误触，closeDelay 默认 300ms 留出指针走位的余地；聚焦不走这两段等待
+
+```vue
+<script setup lang="ts">
+import {
+  XhTooltipContent,
+  XhTooltipPositioner,
+  XhTooltipRoot,
+  XhTooltipTrigger,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 24px">
+    <XhTooltipRoot>
+      <XhTooltipTrigger>默认（700 / 300）</XhTooltipTrigger>
+      <XhTooltipPositioner>
+        <XhTooltipContent>停够 700ms 才出来</XhTooltipContent>
+      </XhTooltipPositioner>
+    </XhTooltipRoot>
+
+    <XhTooltipRoot :open-delay="0" :close-delay="0">
+      <XhTooltipTrigger>无延时</XhTooltipTrigger>
+      <XhTooltipPositioner>
+        <XhTooltipContent>指针一进就出，一走就收</XhTooltipContent>
+      </XhTooltipPositioner>
+    </XhTooltipRoot>
+
+    <XhTooltipRoot :open-delay="1500">
+      <XhTooltipTrigger>慢一点（1500）</XhTooltipTrigger>
+      <XhTooltipPositioner>
+        <XhTooltipContent>用 Tab 聚焦它，立刻就出来</XhTooltipContent>
+      </XhTooltipPositioner>
+    </XhTooltipRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; gap: 24px">
+  <xh-tooltip>
+    <button data-xh-part="trigger">默认（700 / 300）</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">停够 700ms 才出来</div>
+    </div>
+  </xh-tooltip>
+
+  <xh-tooltip open-delay="0" close-delay="0">
+    <button data-xh-part="trigger">无延时</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">指针一进就出，一走就收</div>
+    </div>
+  </xh-tooltip>
+
+  <xh-tooltip open-delay="1500">
+    <button data-xh-part="trigger">慢一点（1500）</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">用 Tab 聚焦它，立刻就出来</div>
+    </div>
+  </xh-tooltip>
+</div>
+```
+
+### 禁用
+
+disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
+
+```vue
+<script setup lang="ts">
+import {
+  XhTooltipContent,
+  XhTooltipPositioner,
+  XhTooltipRoot,
+  XhTooltipTrigger,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const clicks = ref(0);
+</script>
+
+<template>
+  <div style="display: flex; align-items: center; gap: 16px">
+    <XhTooltipRoot disabled>
+      <XhTooltipTrigger @click="clicks++">点我（提示已关）</XhTooltipTrigger>
+      <XhTooltipPositioner>
+        <XhTooltipContent>这段话不会出现</XhTooltipContent>
+      </XhTooltipPositioner>
+    </XhTooltipRoot>
+    <span>已点 {{ clicks }} 次</span>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; align-items: center; gap: 16px">
+  <xh-tooltip id="tooltip-disabled" disabled>
+    <button data-xh-part="trigger">点我（提示已关）</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">这段话不会出现</div>
+    </div>
+  </xh-tooltip>
+  <span>已点 <span id="tooltip-disabled-clicks">0</span> 次</span>
+</div>
+
+<script type="module">
+  // 触发器的点击照常到达，计数跟着走
+  const tooltip = document.getElementById("tooltip-disabled");
+  const trigger = tooltip.querySelector('[data-xh-part="trigger"]');
+  const readout = document.getElementById("tooltip-disabled-clicks");
+  let clicks = 0;
+  trigger.addEventListener("click", () => {
+    clicks += 1;
+    readout.textContent = String(clicks);
+  });
+</script>
+```
+
+### 语气
+
+六种语气换的是浮层实心底与其上的文字色，箭头一并跟着走；把指针停在触发器上（或用 Tab 聚焦）看差别
+
+```vue
+<script setup lang="ts">
+import {
+  XhTooltipArrow,
+  XhTooltipContent,
+  XhTooltipPositioner,
+  XhTooltipRoot,
+  XhTooltipTrigger,
+} from "@xihan-ui/vue";
+
+const tones = [
+  { value: "brand", label: "品牌" },
+  { value: "neutral", label: "中性" },
+  { value: "success", label: "成功" },
+  { value: "warning", label: "警告" },
+  { value: "danger", label: "危险" },
+  { value: "info", label: "信息" },
+] as const;
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 24px">
+    <XhTooltipRoot
+      v-for="t in tones"
+      :key="t.value"
+      :tone="t.value"
+      placement="bottom"
+      :open-delay="0"
+    >
+      <XhTooltipTrigger>{{ t.label }}</XhTooltipTrigger>
+      <XhTooltipPositioner>
+        <XhTooltipContent>
+          tone = {{ t.value }}
+          <XhTooltipArrow />
+        </XhTooltipContent>
+      </XhTooltipPositioner>
+    </XhTooltipRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; gap: 24px">
+  <xh-tooltip tone="brand" placement="bottom" open-delay="0">
+    <button data-xh-part="trigger">品牌</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        tone = brand
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+
+  <xh-tooltip tone="neutral" placement="bottom" open-delay="0">
+    <button data-xh-part="trigger">中性</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        tone = neutral
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+
+  <xh-tooltip tone="success" placement="bottom" open-delay="0">
+    <button data-xh-part="trigger">成功</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        tone = success
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+
+  <xh-tooltip tone="warning" placement="bottom" open-delay="0">
+    <button data-xh-part="trigger">警告</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        tone = warning
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+
+  <xh-tooltip tone="danger" placement="bottom" open-delay="0">
+    <button data-xh-part="trigger">危险</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        tone = danger
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+
+  <xh-tooltip tone="info" placement="bottom" open-delay="0">
+    <button data-xh-part="trigger">信息</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        tone = info
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+</div>
+```
+
+### 尺寸
+
+三档换的是浮层的内边距与字号，不写 size 即缺省档；把指针停在触发器上（或用 Tab 聚焦）看差别
+
+```vue
+<script setup lang="ts">
+import {
+  XhTooltipArrow,
+  XhTooltipContent,
+  XhTooltipPositioner,
+  XhTooltipRoot,
+  XhTooltipTrigger,
+} from "@xihan-ui/vue";
+
+const sizes = [
+  { value: "sm", label: "小" },
+  { value: undefined, label: "缺省" },
+  { value: "lg", label: "大" },
+] as const;
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 24px">
+    <XhTooltipRoot
+      v-for="s in sizes"
+      :key="s.label"
+      :size="s.value"
+      placement="bottom"
+      :open-delay="0"
+    >
+      <XhTooltipTrigger>{{ s.label }}</XhTooltipTrigger>
+      <XhTooltipPositioner>
+        <XhTooltipContent>
+          size = {{ s.value ?? "未指定" }}
+          <XhTooltipArrow />
+        </XhTooltipContent>
+      </XhTooltipPositioner>
+    </XhTooltipRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; gap: 24px">
+  <xh-tooltip size="sm" placement="bottom" open-delay="0">
+    <button data-xh-part="trigger">小</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        size = sm
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+
+  <xh-tooltip placement="bottom" open-delay="0">
+    <button data-xh-part="trigger">缺省</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        size = 未指定
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+
+  <xh-tooltip size="lg" placement="bottom" open-delay="0">
+    <button data-xh-part="trigger">大</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        size = lg
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+</div>
+```
+
+### 受控
+
+传了 open 就由宿主说了算；悬停、聚焦、Escape 都只发意图，最终写不写由外面这份状态决定
+
+```vue
+<script setup lang="ts">
+import {
+  XhButton,
+  XhTooltipArrow,
+  XhTooltipContent,
+  XhTooltipPositioner,
+  XhTooltipRoot,
+  XhTooltipTrigger,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const open = ref(false);
+const log = ref<string[]>([]);
+
+// 只留最近三条意图
+function onOpenChange(details: { open: boolean }) {
+  log.value = [details.open ? "要展开" : "要收起", ...log.value].slice(0, 3);
+}
+</script>
+
+<template>
+  <div style="display: flex; align-items: center; gap: 16px">
+    <XhTooltipRoot
+      v-model:open="open"
+      placement="bottom"
+      :open-delay="0"
+      @open-change="onOpenChange"
+    >
+      <XhTooltipTrigger>把指针停上来</XhTooltipTrigger>
+      <XhTooltipPositioner>
+        <XhTooltipContent>
+          显隐完全跟着 open 走
+          <XhTooltipArrow />
+        </XhTooltipContent>
+      </XhTooltipPositioner>
+    </XhTooltipRoot>
+
+    <XhButton variant="outline" @click="open = !open">
+      {{ open ? "收起" : "展开" }}
+    </XhButton>
+    <span>最近意图：{{ log.join(" ← ") || "（还没动过）" }}</span>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; align-items: center; gap: 16px">
+  <xh-tooltip id="tooltip-controlled" open="false" placement="bottom" open-delay="0">
+    <button data-xh-part="trigger">把指针停上来</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        显隐完全跟着 open 走
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+
+  <xh-button variant="outline">
+    <button data-xh-part="root" id="tooltip-controlled-toggle">展开</button>
+  </xh-button>
+  <span>最近意图：<span id="tooltip-controlled-log">（还没动过）</span></span>
+</div>
+
+<script type="module">
+  // 开合由外面这份状态说了算，组件报上来的意图先记一笔再写回去
+  const tooltip = document.getElementById("tooltip-controlled");
+  const toggle = document.getElementById("tooltip-controlled-toggle");
+  const readout = document.getElementById("tooltip-controlled-log");
+  let log = [];
+
+  function apply(open) {
+    tooltip.open = open;
+    toggle.textContent = open ? "收起" : "展开";
+  }
+
+  tooltip.addEventListener("open-change", (event) => {
+    // 只留最近三条意图
+    log = [event.detail.open ? "要展开" : "要收起", ...log].slice(0, 3);
+    readout.textContent = log.join(" ← ");
+    apply(event.detail.open);
+  });
+  toggle.addEventListener("click", () => apply(!tooltip.open));
+</script>
+```
+
+### 长文案
+
+提示到了宽度上限就换行，不会拉成一条横线；上限是 content 上的 --xh-tooltip-max-w 槽位
+
+```vue
+<script setup lang="ts">
+import {
+  XhTooltipArrow,
+  XhTooltipContent,
+  XhTooltipPositioner,
+  XhTooltipRoot,
+  XhTooltipTrigger,
+} from "@xihan-ui/vue";
+
+const text = "导出会把当前筛选条件下的全部行写进文件，行数很多时要等上一会儿。";
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 24px">
+    <XhTooltipRoot placement="bottom" :open-delay="0">
+      <XhTooltipTrigger>缺省上限</XhTooltipTrigger>
+      <XhTooltipPositioner>
+        <XhTooltipContent>
+          {{ text }}
+          <XhTooltipArrow />
+        </XhTooltipContent>
+      </XhTooltipPositioner>
+    </XhTooltipRoot>
+
+    <XhTooltipRoot placement="bottom" :open-delay="0">
+      <XhTooltipTrigger>放宽到 360px</XhTooltipTrigger>
+      <XhTooltipPositioner>
+        <XhTooltipContent style="--xh-tooltip-max-w: 360px">
+          {{ text }}
+          <XhTooltipArrow />
+        </XhTooltipContent>
+      </XhTooltipPositioner>
+    </XhTooltipRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; gap: 24px">
+  <xh-tooltip placement="bottom" open-delay="0">
+    <button data-xh-part="trigger">缺省上限</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        导出会把当前筛选条件下的全部行写进文件，行数很多时要等上一会儿。
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+
+  <xh-tooltip placement="bottom" open-delay="0">
+    <button data-xh-part="trigger">放宽到 360px</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content" style="--xh-tooltip-max-w: 360px">
+        导出会把当前筛选条件下的全部行写进文件，行数很多时要等上一会儿。
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-tooltip>
+</div>
+```
+
+## 产物
+
+| 层 | 值 |
+| --- | --- |
+| 自定义元素 | `<xh-tooltip>` |
+| Vue 组件 | `XhTooltipArrow` `XhTooltipContent` `XhTooltipPositioner` `XhTooltipRoot` `XhTooltipTrigger` |
+| 组合式函数 | `useTooltip` |
+| 状态机 | `tooltipMachine` |
+| 皮肤 | `@xihan-ui/styles/tooltip.css` |
+
+## 解剖
+
+部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
+
+`data-scope="tooltip"`：**`trigger`** · `positioner` · **`content`** · `arrow`
+
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `open` | `boolean` |  |  |
+| `defaultOpen` | `boolean` |  |  |
+| `placement` | `Placement` |  | 请求的浮层朝向，默认 bottom；空间不足时由定位引擎避让。 |
+| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
+| `offset` | `number` |  | 浮层与锚点的间距（px）。 |
+| `openDelay` | `number` |  | 悬停进入到展开的等待毫秒，默认 700。 |
+| `closeDelay` | `number` |  | 悬停移出到收起的等待毫秒，默认 300。 |
+| `disabled` | `boolean` |  | 只关闭提示本身，不影响被包裹控件的可用性。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定提示的底色与其上的文字色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定内边距与字号档位。 |
+| `onOpenChange` | `(details: TooltipOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
+
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `open-change` | `TooltipOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhTooltipRoot` | `default` | `TooltipRootSlotProps` |  |
+
+## 状态
+
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `trigger` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+
+**状态**：`closed` · `opening` · `visible` · `visible.open` · `visible.closing`
+
+**事件**：`POINTER.ENTER` · `POINTER.LEAVE` · `POINTER.DOWN` · `FOCUS` · `BLUR` · `ESCAPE` · `OPEN` · `CLOSE` · `after.openDelay` · `after.closeDelay` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
+
+**判据**：`isOpenControlled` · `isDisabled` · `isFocusOpened`
+
+## connect API
+
+`useTooltip` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+
+| 成员 | 类型 | 说明 |
+| --- | --- | --- |
+| `open` | `boolean` |  |
+| `setOpen` | `(next: boolean) => void` |  |
+| `getTriggerProps` | `() => T['button']` |  |
+| `getPositionerProps` | `() => T['element']` |  |
+| `getContentProps` | `() => T['element']` |  |
+| `getArrowProps` | `() => T['element']` |  |
+
+## 键盘
+
+规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/#keyboardinteraction)
+
+| 按键 | 生效条件 | 行为 |
+| --- | --- | --- |
+| `Tab` / `Shift+Tab` | not disabled | 焦点进入 trigger 立即展开、离开立即收起，都不走延时 |
+| `Escape` | 展开中且本层在层栈栈顶，或 focus in trigger 且等待展开中 | 立即收起，不等 closeDelay；下层浮层不受这一次按键影响 |
+
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-describedby` | `content` 部件的 id \| undefined |
+| `content` | `role` | 'tooltip' |
+| `arrow` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/tooltip.css` 按部件选择：`[data-scope="tooltip"][data-part="trigger"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-positioned` | ''（条件成立时才出现） |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-size` | props.size |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-tone` | props.tone |
+| `arrow` | `data-placement` | 定位引擎算出的实际落位 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-tooltip-arrow-size` · `--xh-tooltip-bg` · `--xh-tooltip-fg` · `--xh-tooltip-font-size` · `--xh-tooltip-layer` · `--xh-tooltip-max-w` · `--xh-tooltip-px` · `--xh-tooltip-py` · `--xh-tooltip-radius` · `--xh-tooltip-shadow` · `--xh-tooltip-trigger-gap`
+
+## 动效
+
+关键帧 `xh-overlay-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 挂在[图标](./icon)按钮、[切换按钮](./toggle)、[文本截断](./truncate)上。
+
+## 最佳实践
+
+- 一句话讲完，超过一行就该换别的形式。
+- 图标按钮的可及名字要写在按钮上（`aria-label`），提示只是视觉补充。
+
+## 反模式
+
+- 把唯一的操作说明放进提示：触摸用户永远看不到。
+- 提示里放链接。

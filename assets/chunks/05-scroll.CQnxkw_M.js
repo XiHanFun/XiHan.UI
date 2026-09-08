@@ -1,0 +1,46 @@
+const t=`<!-- 头尾固定、正文滚动 | header / body / footer 把面板切成三段：头与尾定在原处，只有正文那一段在滚 -->
+<xh-drawer id="drawer-scroll">
+  <div data-xh-part="root">
+    <button data-xh-part="trigger">查看操作记录</button>
+    <div data-xh-part="backdrop"></div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <header data-xh-part="header">
+          <h2 data-xh-part="title">操作记录</h2>
+          <p data-xh-part="description">共 24 条，往下翻。</p>
+        </header>
+        <div data-xh-part="body" id="drawer-scroll-records"></div>
+        <footer data-xh-part="footer">
+          <xh-button variant="solid">
+            <button data-xh-part="root" data-dismiss>看完了</button>
+          </xh-button>
+        </footer>
+        <button data-xh-part="close-trigger"></button>
+      </div>
+    </div>
+  </div>
+</xh-drawer>
+
+<script type="module">
+  const drawer = document.getElementById("drawer-scroll");
+  // 文案是对象，只走 property
+  drawer.translations = { close: "关闭" };
+
+  // 24 条记录填进正文那一段
+  const records = document.getElementById("drawer-scroll-records");
+  for (let i = 1; i <= 24; i++) {
+    const line = document.createElement("p");
+    line.style.margin = "0";
+    line.style.padding = "8px 0";
+    line.style.borderBlockEnd = "1px solid var(--xh-border-subtle)";
+    line.textContent = \`第 \${i} 条操作记录\`;
+    records.append(line);
+  }
+
+  // 面板里那颗按钮把关闭转交给已接线的关闭部件
+  const close = drawer.querySelector('[data-xh-part="close-trigger"]');
+  for (const button of drawer.querySelectorAll("[data-dismiss]")) {
+    button.addEventListener("click", () => close.click());
+  }
+<\/script>
+`;export{t as default};

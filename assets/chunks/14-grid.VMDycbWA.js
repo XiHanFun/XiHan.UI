@@ -1,0 +1,98 @@
+const t=`<!-- 网格排布 | columns 给列数、窄视口自动收成一列；字段自报 span 跨列，span="full" 占满整行且跟着当下列数走 -->
+<xh-form id="form-grid" layout="grid" columns='{"base":1,"md":2}'>
+  <form data-xh-part="root" style="inline-size: 100%">
+    <div data-xh-part="field-group" value="name">
+      <xh-field>
+        <div data-xh-part="root">
+          <label data-xh-part="label">姓名</label>
+          <input data-xh-part="control" placeholder="必填" />
+          <p data-xh-part="error-text"></p>
+        </div>
+      </xh-field>
+    </div>
+
+    <div data-xh-part="field-group" value="phone">
+      <xh-field>
+        <div data-xh-part="root">
+          <label data-xh-part="label">手机号</label>
+          <input data-xh-part="control" placeholder="11 位数字" />
+          <p data-xh-part="error-text"></p>
+        </div>
+      </xh-field>
+    </div>
+
+    <div data-xh-part="field-group" value="company">
+      <xh-field>
+        <div data-xh-part="root">
+          <label data-xh-part="label">公司</label>
+          <input data-xh-part="control" placeholder="选填" />
+          <p data-xh-part="error-text"></p>
+        </div>
+      </xh-field>
+    </div>
+
+    <div data-xh-part="field-group" value="title">
+      <xh-field>
+        <div data-xh-part="root">
+          <label data-xh-part="label">职位</label>
+          <input data-xh-part="control" placeholder="选填" />
+          <p data-xh-part="error-text"></p>
+        </div>
+      </xh-field>
+    </div>
+
+    <div data-xh-part="field-group" value="address" span="full">
+      <xh-field>
+        <div data-xh-part="root">
+          <label data-xh-part="label">通讯地址</label>
+          <input data-xh-part="control" placeholder="选填" />
+          <p data-xh-part="error-text"></p>
+        </div>
+      </xh-field>
+    </div>
+
+    <!-- 按钮不是字段，它是网格里的普通一格：想让它自己占一行就写 grid-column -->
+    <button data-xh-part="submit-trigger" style="grid-column: 1 / -1; justify-self: start">
+      提交
+    </button>
+  </form>
+</xh-form>
+
+<script type="module">
+  const host = document.getElementById("form-grid");
+
+  const defaults = { name: "", phone: "", company: "", title: "", address: "" };
+  let values = { ...defaults };
+
+  host.rules = {
+    name: { required: true, message: "姓名不能为空" },
+    phone: { required: true, message: "手机号不能为空" },
+  };
+  host.defaultValues = defaults;
+  host.values = values;
+
+  const groups = [...host.querySelectorAll('[data-xh-part="field-group"]')];
+  const nameOf = (el) => el.getAttribute("value");
+
+  for (const group of groups) {
+    const input = group.querySelector('[data-xh-part="control"]');
+    input.addEventListener("input", () => host.setFieldValue(nameOf(group), input.value));
+  }
+
+  host.addEventListener("values-change", (event) => {
+    values = event.detail.values;
+    host.values = values;
+    for (const group of groups) {
+      const input = group.querySelector('[data-xh-part="control"]');
+      const next = String(values[nameOf(group)] ?? "");
+      if (input.value !== next) input.value = next;
+    }
+  });
+
+  host.addEventListener("errors-change", (event) => {
+    for (const group of groups)
+      group.querySelector('[data-xh-part="error-text"]').textContent
+        = event.detail.errors[nameOf(group)] ?? "";
+  });
+<\/script>
+`;export{t as default};

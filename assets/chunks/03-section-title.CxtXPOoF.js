@@ -1,0 +1,36 @@
+const a=`<!-- 分节标题 | 分隔线自己排成「线 · 文字 · 线」三段；align 把文字挪到一侧，那一侧的线收成一小截 -->
+<div style="width: 100%; display: grid; gap: 12px">
+  <!-- 标题居中：两侧各一条，等分剩下的宽度 -->
+  <xh-separator decorative style="display: contents">
+    <div data-xh-part="root">
+      <div data-xh-part="line"></div>
+      <span data-xh-part="content">基本信息</span>
+      <div data-xh-part="line"></div>
+    </div>
+  </xh-separator>
+
+  <p style="margin: 0">姓名、部门、入职时间</p>
+
+  <!-- 标题靠左：左边那条收成一小截 -->
+  <xh-separator decorative align="start" style="display: contents">
+    <div data-xh-part="root">
+      <div data-xh-part="line"></div>
+      <span data-xh-part="content">联系方式</span>
+      <div data-xh-part="line"></div>
+    </div>
+  </xh-separator>
+
+  <p style="margin: 0">邮箱、电话</p>
+
+  <!-- 标题靠右 -->
+  <xh-separator decorative align="end" style="display: contents">
+    <div data-xh-part="root">
+      <div data-xh-part="line"></div>
+      <span data-xh-part="content">备注</span>
+      <div data-xh-part="line"></div>
+    </div>
+  </xh-separator>
+
+  <p style="margin: 0">其他补充说明</p>
+</div>
+`;export{a as default};

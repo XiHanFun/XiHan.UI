@@ -1,0 +1,45 @@
+const t=`<!-- 基础用法 | 一排可摘标签：整组只占一个 Tab 位，方向键走标签，Delete 或 Backspace 摘掉 -->
+<xh-tag-group id="tag-group-basic" deletable>
+  <div data-xh-part="root">
+    <span data-xh-part="label">技术栈</span>
+    <div data-xh-part="list">
+      <span data-xh-part="item" value="vue">
+        <span data-xh-part="cell">
+          <span data-xh-part="item-text">Vue</span>
+          <button data-xh-part="item-delete-trigger"></button>
+        </span>
+      </span>
+      <span data-xh-part="item" value="react">
+        <span data-xh-part="cell">
+          <span data-xh-part="item-text">React</span>
+          <button data-xh-part="item-delete-trigger"></button>
+        </span>
+      </span>
+      <span data-xh-part="item" value="svelte">
+        <span data-xh-part="cell">
+          <span data-xh-part="item-text">Svelte</span>
+          <button data-xh-part="item-delete-trigger"></button>
+        </span>
+      </span>
+      <span data-xh-part="item" value="angular">
+        <span data-xh-part="cell">
+          <span data-xh-part="item-text">Angular</span>
+          <button data-xh-part="item-delete-trigger"></button>
+        </span>
+      </span>
+    </div>
+  </div>
+</xh-tag-group>
+<p>还剩：<span id="tag-group-basic-rest">Vue、React、Svelte、Angular</span></p>
+
+<script type="module">
+  // 条目的去留归宿主：组件只报「用户要摘这一枚」，节点由这里摘掉
+  const group = document.getElementById("tag-group-basic");
+  const readout = document.getElementById("tag-group-basic-rest");
+  group.addEventListener("item-delete", (event) => {
+    group.querySelector(\`[data-xh-part="item"][value="\${event.detail.value}"]\`)?.remove();
+    const rest = [...group.querySelectorAll('[data-xh-part="item-text"]')].map((el) => el.textContent);
+    readout.textContent = rest.join("、") || "（空）";
+  });
+<\/script>
+`;export{t as default};

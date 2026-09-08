@@ -1,0 +1,31 @@
+const a=`<!-- 自定义角标内容 | 拆成 Root + Indicator 两件：角标里能自己排版，插槽拿得到算好的计数；不写内容才回落那串数字，showZero 让 0 留在原地 -->
+<div style="display: flex; align-items: center; gap: 32px">
+  <!-- 作者自己写了内容就以内容为准，元素不再往里填计数 -->
+  <xh-badge count="12" tone="danger" label="12 条未读">
+    <span data-xh-part="root">
+      <xh-button variant="outline"><button data-xh-part="root">收件箱</button></xh-button>
+      <span data-xh-part="indicator">12 条</span>
+    </span>
+  </xh-badge>
+
+  <!-- 不吃 count 的一枚：角标里是一句短标记，不是数字 -->
+  <xh-badge tone="brand" label="有新功能">
+    <span data-xh-part="root">
+      <xh-button variant="outline"><button data-xh-part="root">工作台</button></xh-button>
+      <span data-xh-part="indicator">NEW</span>
+    </span>
+  </xh-badge>
+
+  <!-- show-zero：计数归零也留在原地，报的是「这里确实是 0」而不是「这里没有角标」 -->
+  <xh-badge count="0" show-zero tone="neutral" label="0 条待办">
+    <span data-xh-part="root">
+      <xh-avatar>
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">曦</span>
+        </span>
+      </xh-avatar>
+      <span data-xh-part="indicator"></span>
+    </span>
+  </xh-badge>
+</div>
+`;export{a as default};

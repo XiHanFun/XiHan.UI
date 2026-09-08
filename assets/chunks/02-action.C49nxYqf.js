@@ -1,0 +1,16 @@
+const t=`<!-- 搭动作钮 | 按钮作用在紧挨着它的那个输入框上，两段共用中缝那条边 -->
+<xh-input-group>
+  <div data-xh-part="root">
+    <xh-text-field placeholder="搜索文档" clearable>
+      <div data-xh-part="root">
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-text-field>
+    <xh-button variant="solid">
+      <button data-xh-part="root">搜索</button>
+    </xh-button>
+  </div>
+</xh-input-group>
+`;export{t as default};

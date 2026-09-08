@@ -1,0 +1,94 @@
+const t=`<!-- 尺寸 | size 换问句、选项行与页脚按钮的几何档，三档共用同一份问题 -->
+<div style="display: flex; flex-direction: column; gap: 16px; max-width: 340px">
+  <xh-question-flow class="question-flow-size" size="sm">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport">
+        <div data-xh-part="track">
+          <div data-xh-part="question" question-id="scope">
+            <p data-xh-part="prompt" question-id="scope">这次改动动到哪一层？（sm）</p>
+            <div data-xh-part="group" question-id="scope">
+              <button data-xh-part="item" question-id="scope" option-value="ui">
+                <span data-xh-part="item-indicator" question-id="scope" option-value="ui"></span>
+                <span data-xh-part="item-text" question-id="scope" option-value="ui">只改界面</span>
+              </button>
+              <button data-xh-part="item" question-id="scope" option-value="api">
+                <span data-xh-part="item-indicator" question-id="scope" option-value="api"></span>
+                <span data-xh-part="item-text" question-id="scope" option-value="api">改到接口</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-xh-part="footer">
+        <button data-xh-part="submit-trigger">发送</button>
+      </div>
+    </div>
+  </xh-question-flow>
+
+  <xh-question-flow class="question-flow-size">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport">
+        <div data-xh-part="track">
+          <div data-xh-part="question" question-id="scope">
+            <p data-xh-part="prompt" question-id="scope">这次改动动到哪一层？（md）</p>
+            <div data-xh-part="group" question-id="scope">
+              <button data-xh-part="item" question-id="scope" option-value="ui">
+                <span data-xh-part="item-indicator" question-id="scope" option-value="ui"></span>
+                <span data-xh-part="item-text" question-id="scope" option-value="ui">只改界面</span>
+              </button>
+              <button data-xh-part="item" question-id="scope" option-value="api">
+                <span data-xh-part="item-indicator" question-id="scope" option-value="api"></span>
+                <span data-xh-part="item-text" question-id="scope" option-value="api">改到接口</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-xh-part="footer">
+        <button data-xh-part="submit-trigger">发送</button>
+      </div>
+    </div>
+  </xh-question-flow>
+
+  <xh-question-flow class="question-flow-size" size="lg">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport">
+        <div data-xh-part="track">
+          <div data-xh-part="question" question-id="scope">
+            <p data-xh-part="prompt" question-id="scope">这次改动动到哪一层？（lg）</p>
+            <div data-xh-part="group" question-id="scope">
+              <button data-xh-part="item" question-id="scope" option-value="ui">
+                <span data-xh-part="item-indicator" question-id="scope" option-value="ui"></span>
+                <span data-xh-part="item-text" question-id="scope" option-value="ui">只改界面</span>
+              </button>
+              <button data-xh-part="item" question-id="scope" option-value="api">
+                <span data-xh-part="item-indicator" question-id="scope" option-value="api"></span>
+                <span data-xh-part="item-text" question-id="scope" option-value="api">改到接口</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-xh-part="footer">
+        <button data-xh-part="submit-trigger">发送</button>
+      </div>
+    </div>
+  </xh-question-flow>
+</div>
+
+<script type="module">
+  // 问题清单是数组，只走 property：三档共用同一份
+  const questions = [
+    {
+      id: "scope",
+      prompt: "这次改动动到哪一层？",
+      type: "single",
+      options: [
+        { value: "ui", label: "只改界面" },
+        { value: "api", label: "改到接口" },
+      ],
+    },
+  ];
+  for (const flow of document.querySelectorAll(".question-flow-size")) flow.questions = questions;
+<\/script>
+`;export{t as default};

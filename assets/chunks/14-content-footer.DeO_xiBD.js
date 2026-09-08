@@ -1,0 +1,118 @@
+const n=`<!-- 浮层底栏 | footer 写在 content 里、与列并列，横跨全部列；它不进任何一列的拥有关系，方向键也走不到 -->
+<xh-cascader
+  id="cascader-content-footer"
+  multiple
+  open="false"
+  placeholder="可以多挑几条"
+>
+  <div data-xh-part="root">
+    <span data-xh-part="label">采购清单</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="column" level="0">
+          <div data-xh-part="item" value="fruit">
+            <span data-xh-part="item-text">水果</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="vegetable">
+            <span data-xh-part="item-text">蔬菜</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+        <div data-xh-part="column" level="1">
+          <div data-xh-part="item" value="apple">
+            <span data-xh-part="item-text">苹果</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="banana">
+            <span data-xh-part="item-text">香蕉</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="grape">
+            <span data-xh-part="item-text">葡萄</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="tomato">
+            <span data-xh-part="item-text">番茄</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="potato">
+            <span data-xh-part="item-text">土豆</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+        <div data-xh-part="footer" style="justify-content: space-between">
+          <span id="cascader-content-footer-count">已选 1 条</span>
+          <span style="display: flex; gap: 8px">
+            <xh-button size="sm" variant="ghost">
+              <button data-xh-part="root" id="cascader-content-footer-clear">
+                清空
+              </button>
+            </xh-button>
+            <xh-button size="sm">
+              <button data-xh-part="root" id="cascader-content-footer-done">
+                完成
+              </button>
+            </xh-button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-cascader>
+<p>已选：<span id="cascader-content-footer-value">fruit/apple</span></p>
+
+<script type="module">
+  const cascader = document.getElementById("cascader-content-footer");
+  cascader.collection = [
+    {
+      value: "fruit",
+      label: "水果",
+      children: [
+        { value: "apple", label: "苹果" },
+        { value: "banana", label: "香蕉" },
+        { value: "grape", label: "葡萄" },
+      ],
+    },
+    {
+      value: "vegetable",
+      label: "蔬菜",
+      children: [
+        { value: "tomato", label: "番茄" },
+        { value: "potato", label: "土豆" },
+      ],
+    },
+  ];
+
+  const count = document.getElementById("cascader-content-footer-count");
+  const readout = document.getElementById("cascader-content-footer-value");
+
+  // 选中路径集合与开合都受控：组件只发意图，宿主写回才算数
+  function apply(next) {
+    cascader.value = next;
+    count.textContent = \`已选 \${next.length} 条\`;
+    readout.textContent = next.map((path) => path.join("/")).join("、") || "（无）";
+  }
+
+  apply([["fruit", "apple"]]);
+  cascader.addEventListener("value-change", (event) => apply(event.detail.value));
+  cascader.addEventListener("open-change", (event) => {
+    cascader.open = event.detail.open;
+  });
+
+  document
+    .getElementById("cascader-content-footer-clear")
+    .addEventListener("click", () => apply([]));
+  document
+    .getElementById("cascader-content-footer-done")
+    .addEventListener("click", () => {
+      cascader.open = false;
+    });
+<\/script>
+`;export{n as default};

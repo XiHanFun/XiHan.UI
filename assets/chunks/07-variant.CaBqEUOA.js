@@ -1,0 +1,1 @@
+import{eP as a}from"./theme.D9gHp_UI.js";import{d as n,o as t,c as o,E as e,k as r,F as s}from"./framework.BpF7DVZ1.js";const _=n({__name:"07-variant",setup(l){return(c,m)=>(t(),o(s,null,[e(r(a),{label:"加载中"}),e(r(a),{variant:"arc",label:"加载中"}),e(r(a),{variant:"dots",label:"加载中"})],64))}});export{_ as default};

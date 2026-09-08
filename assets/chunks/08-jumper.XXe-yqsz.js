@@ -1,0 +1,82 @@
+const t=`<!-- 快速跳页 | 输入框按 Enter 调插槽给的 setPage；越界页码由它夹回合法区间 -->
+<xh-pagination
+  id="pagination-jumper"
+  count="1000"
+  page-size="10"
+  page="5"
+  style="inline-size: 100%"
+>
+  <nav data-xh-part="root">
+    <button data-xh-part="prev-trigger"></button>
+    <button data-xh-part="item" value="1">1</button>
+    <button data-xh-part="ellipsis-trigger" side="start">…</button>
+    <button data-xh-part="item" value="4">4</button>
+    <button data-xh-part="item" value="5">5</button>
+    <button data-xh-part="item" value="6">6</button>
+    <button data-xh-part="ellipsis-trigger" side="end">…</button>
+    <button data-xh-part="item" value="100">100</button>
+    <button data-xh-part="next-trigger"></button>
+
+    <xh-text-field
+      id="pagination-jumper-field"
+      value=""
+      size="sm"
+      placeholder="页码"
+    >
+      <div data-xh-part="root">
+        <div data-xh-part="control" style="inline-size: 72px">
+          <input data-xh-part="input" aria-label="跳至页码" />
+        </div>
+      </div>
+    </xh-text-field>
+  </nav>
+</xh-pagination>
+
+<script type="module">
+  const host = document.getElementById("pagination-jumper");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const next = root.querySelector('[data-xh-part="next-trigger"]');
+  const field = document.getElementById("pagination-jumper-field");
+  const input = field.querySelector('[data-xh-part="input"]');
+
+  function render() {
+    for (const node of root.querySelectorAll(
+      '[data-xh-part="item"], [data-xh-part="ellipsis-trigger"]',
+    ))
+      node.remove();
+    for (const item of host.pageItems) {
+      const el = document.createElement("button");
+      if (item.type === "ellipsis") {
+        el.dataset.xhPart = "ellipsis-trigger";
+        el.setAttribute("side", item.side);
+        el.textContent = "…";
+      } else {
+        el.dataset.xhPart = "item";
+        el.setAttribute("value", String(item.value));
+        el.textContent = String(item.value);
+      }
+      root.insertBefore(el, next);
+    }
+  }
+
+  // 受控：页码写回 page 之后再照新序列重挂
+  host.addEventListener("page-change", (event) => {
+    host.page = event.detail.page;
+    render();
+  });
+
+  field.addEventListener("value-change", (event) => {
+    field.value = event.detail.value;
+  });
+
+  // 只放正整数进去，其余按无效输入丢掉；超出总页数的照给，setPage 会夹回合法区间
+  input.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    const target = Number(field.value);
+    if (Number.isInteger(target) && target > 0) {
+      host.setPage(target);
+    }
+    field.value = "";
+  });
+<\/script>
+`;export{t as default};

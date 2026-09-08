@@ -1,0 +1,1 @@
+import{kO as o}from"./theme.D9gHp_UI.js";import{d as e,o as t,b as a,k as r}from"./framework.BpF7DVZ1.js";const _=e({__name:"01-basic",setup(s){return(n,c)=>(t(),a(r(o),{"auto-start":""}))}});export{_ as default};

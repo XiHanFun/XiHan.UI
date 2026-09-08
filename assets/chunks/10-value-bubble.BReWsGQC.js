@@ -1,0 +1,39 @@
+const e=`<!-- 拖动时的值气泡 | value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出面，气泡里的文字取自作者的格式化函数 -->
+<xh-slider
+  id="slider-budget"
+  default-value="1800"
+  min="0"
+  max="5000"
+  step="50"
+  name="budget"
+>
+  <div data-xh-part="root" style="inline-size: 320px; --xh-slider-gap: 32px">
+    <label data-xh-part="label">
+      预算上限：<span id="slider-budget-label">¥1,800</span>
+    </label>
+    <div data-xh-part="control">
+      <div data-xh-part="track">
+        <div data-xh-part="range"></div>
+      </div>
+      <div data-xh-part="thumb">
+        <span data-xh-part="value-text"></span>
+        <input data-xh-part="hidden-input" />
+      </div>
+    </div>
+  </div>
+</xh-slider>
+
+<script type="module">
+  const slider = document.getElementById("slider-budget");
+  const label = document.getElementById("slider-budget-label");
+
+  const money = (value) => \`¥\${value.toLocaleString("zh-CN")}\`;
+
+  // 读屏走 aria-valuetext，气泡里的文字也取同一个格式化函数
+  slider.getValueText = ({ value }) => money(value);
+
+  slider.addEventListener("value-change", (event) => {
+    label.textContent = money(event.detail.value[0]);
+  });
+<\/script>
+`;export{e as default};

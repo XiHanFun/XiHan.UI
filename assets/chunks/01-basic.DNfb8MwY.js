@@ -1,0 +1,46 @@
+const e=`<!-- 基础用法 | 勾选与判定是原子的：批准的载荷带着批的是哪几项，不存在「已批准但范围还没同步」的窗口 -->
+<div style="display: flex; flex-direction: column; gap: 12px">
+  <!-- 必选项没勾满就批不了；拒绝这条路不受它影响 -->
+  <xh-approval id="approval-basic" tone="warning">
+    <div data-xh-part="root">
+      <h3 data-xh-part="title">要动你的工作区</h3>
+      <p data-xh-part="description">它想读一遍 src/ 并写回改动。</p>
+      <div data-xh-part="group">
+        <div data-xh-part="item" scope-value="read" scope-label="读取 src/ 下的文件" scope-required>
+          <!-- 勾由皮肤画：指示符留空即可，不必手打记号 -->
+          <span data-xh-part="item-indicator" scope-value="read"></span>
+          <span data-xh-part="item-text" scope-value="read">读取 src/ 下的文件</span>
+        </div>
+        <div data-xh-part="item" scope-value="write" scope-label="写回改动">
+          <span data-xh-part="item-indicator" scope-value="write"></span>
+          <span data-xh-part="item-text" scope-value="write">写回改动</span>
+        </div>
+      </div>
+      <!-- 升级前先自己收起：属性由连接层接管，判定落定后自动撤掉 -->
+      <div data-xh-part="result" hidden></div>
+      <div data-xh-part="footer">
+        <button data-xh-part="approve-trigger">批准</button>
+        <button data-xh-part="deny-trigger">拒绝</button>
+      </div>
+      <div data-xh-part="live-region"></div>
+    </div>
+  </xh-approval>
+  <p id="approval-basic-decision" style="margin: 0"></p>
+</div>
+
+<script type="module">
+  // 授权项是数组，只走 property
+  const gate = document.getElementById("approval-basic");
+  const result = gate.querySelector('[data-xh-part="result"]');
+  const line = document.getElementById("approval-basic-decision");
+  gate.scopes = [
+    { value: "read", label: "读取 src/ 下的文件", required: true },
+    { value: "write", label: "写回改动" },
+  ];
+  gate.addEventListener("decision", (event) => {
+    const { decision, source, scopes } = event.detail;
+    result.textContent = decision === "approved" ? "已批准" : "已拒绝";
+    line.textContent = \`判定：\${decision}（来源 \${source}，范围 \${scopes.join("、") || "无"}）\`;
+  });
+<\/script>
+`;export{e as default};

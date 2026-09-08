@@ -1,0 +1,29 @@
+const n=`<!-- 空态与形态 | 一行也摊不出来时空态那一格站出来说话；variant="plain" 去掉外框与底色 -->
+<div style="display: grid; gap: 12px; inline-size: 100%; max-inline-size: 420px">
+  <xh-button size="sm" variant="outline">
+    <button id="json-empty-toggle" data-xh-part="root">喂一份数据</button>
+  </xh-button>
+
+  <xh-json-viewer id="json-empty-a" default-expanded-depth="2">
+    <div data-xh-part="root"></div>
+  </xh-json-viewer>
+
+  <xh-json-viewer id="json-empty-b" default-expanded-depth="2" variant="plain">
+    <div data-xh-part="root"></div>
+  </xh-json-viewer>
+</div>
+
+<script type="module">
+  const viewers = ["json-empty-a", "json-empty-b"].map((id) => document.getElementById(id));
+  const toggle = document.getElementById("json-empty-toggle");
+
+  // 文案走 translations，缺省是英文的 No data；它是对象，只走属性
+  viewers[0].translations = { empty: "这份接口还没有返回内容" };
+
+  toggle.addEventListener("click", () => {
+    const next = viewers[0].value === undefined ? { id: 7, label: "曦寒" } : undefined;
+    for (const el of viewers) el.value = next;
+    toggle.textContent = next === undefined ? "喂一份数据" : "把数据撤掉";
+  });
+<\/script>
+`;export{n as default};

@@ -1,0 +1,9 @@
+const t=`<!-- 基础用法 | 容器竖着码放骨架条，形状缺省是一行文字 -->
+<xh-skeleton>
+  <div data-xh-part="root" style="inline-size: 260px">
+    <div data-xh-part="item"></div>
+    <div data-xh-part="item"></div>
+    <div data-xh-part="item"></div>
+  </div>
+</xh-skeleton>
+`;export{t as default};

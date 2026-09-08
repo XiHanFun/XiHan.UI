@@ -1,0 +1,93 @@
+const t=`<!-- 摊开省略号 | 折进去的那几页悬停即摊开，点一下也摊开——纯悬停会把键盘用户挡在外面，而这几页除了这里没有别的入口；Escape 或点外面收起 -->
+<xh-pagination
+  id="pagination-expand"
+  count="2000"
+  page-size="10"
+  default-page="100"
+  style="inline-size: 100%"
+>
+  <nav data-xh-part="root">
+    <button data-xh-part="prev-trigger"></button>
+    <button data-xh-part="item" value="1">1</button>
+    <button data-xh-part="ellipsis-trigger" side="start">…</button>
+    <button data-xh-part="item" value="99">99</button>
+    <button data-xh-part="item" value="100">100</button>
+    <button data-xh-part="item" value="101">101</button>
+    <button data-xh-part="ellipsis-trigger" side="end">…</button>
+    <button data-xh-part="item" value="200">200</button>
+    <button data-xh-part="next-trigger"></button>
+
+    <!-- 同时只开一个省略位，一份定位层就够；面板里的页码由脚本按那一侧折进去的那几页铺 -->
+    <div data-xh-part="positioner">
+      <div data-xh-part="content"></div>
+    </div>
+
+    <span id="pagination-expand-readout" style="flex-basis: 100%">
+      当前第 100 页，共 200 页
+    </span>
+  </nav>
+</xh-pagination>
+
+<script type="module">
+  const host = document.getElementById("pagination-expand");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const next = root.querySelector('[data-xh-part="next-trigger"]');
+  const content = root.querySelector('[data-xh-part="content"]');
+  const readout = document.getElementById("pagination-expand-readout");
+
+  function makeItem(value) {
+    const el = document.createElement("button");
+    el.dataset.xhPart = "item";
+    el.setAttribute("value", String(value));
+    el.textContent = String(value);
+    return el;
+  }
+
+  function render() {
+    // 只摘行里的格子：面板里的页码也是 item，不能一起清掉
+    for (const node of [...root.children]) {
+      const part = node.dataset.xhPart;
+      if (part === "item" || part === "ellipsis-trigger") node.remove();
+    }
+    for (const item of host.pageItems) {
+      if (item.type === "ellipsis") {
+        const el = document.createElement("button");
+        el.dataset.xhPart = "ellipsis-trigger";
+        el.setAttribute("side", item.side);
+        el.textContent = "…";
+        root.insertBefore(el, next);
+      } else {
+        root.insertBefore(makeItem(item.value), next);
+      }
+    }
+    readout.textContent = \`当前第 \${host.currentPage} 页，共 \${host.totalPages} 页\`;
+  }
+
+  // 指针停上去与按下去都会摊开，面板照那一侧折进去的页码铺：
+  // 折的是哪几页由 pageItems 的省略位自带，脚本只负责认出指的是哪一侧
+  let filled = null;
+
+  function fill(el) {
+    const side = el.getAttribute("side");
+    if (filled === side) return;
+    filled = side;
+    const folded = host.pageItems.find(
+      (item) => item.type === "ellipsis" && item.side === side,
+    );
+    content.replaceChildren(...(folded?.pages ?? []).map(makeItem));
+  }
+
+  for (const type of ["pointerover", "click"]) {
+    root.addEventListener(type, (event) => {
+      const el = event.target.closest('[data-xh-part="ellipsis-trigger"]');
+      if (el) fill(el);
+    });
+  }
+
+  host.addEventListener("page-change", () => {
+    // 换页之后折进去的页码变了，面板下次摊开要重铺
+    filled = null;
+    render();
+  });
+<\/script>
+`;export{t as default};

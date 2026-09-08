@@ -1,0 +1,54 @@
+const n=`<!-- 尺寸 | size 换字号、行高与行号槽的宽度，三档并列对照 -->
+<div style="display: flex; flex-direction: column; gap: 12px">
+  <xh-diff-view class="diff-view-size" size="sm">
+    <div data-xh-part="root">
+      <div data-xh-part="header">src/clamp.ts · sm</div>
+      <div data-xh-part="viewport">
+        <div data-xh-part="body"></div>
+      </div>
+    </div>
+  </xh-diff-view>
+
+  <xh-diff-view class="diff-view-size">
+    <div data-xh-part="root">
+      <div data-xh-part="header">src/clamp.ts · md</div>
+      <div data-xh-part="viewport">
+        <div data-xh-part="body"></div>
+      </div>
+    </div>
+  </xh-diff-view>
+
+  <xh-diff-view class="diff-view-size" size="lg">
+    <div data-xh-part="root">
+      <div data-xh-part="header">src/clamp.ts · lg</div>
+      <div data-xh-part="viewport">
+        <div data-xh-part="body"></div>
+      </div>
+    </div>
+  </xh-diff-view>
+</div>
+
+<script type="module">
+  // 真实应用里这份模型来自 computeTextDiff 或 parseUnifiedPatch；
+  // 这份示例是裸 HTML、没有打包器，所以把模型直接写在这里
+  const model = {
+    hunks: [
+      {
+        header: "@@ -1,3 +1,3 @@",
+        oldStart: 1,
+        oldLines: 3,
+        newStart: 1,
+        newLines: 3,
+        lines: [
+          { change: "removed", oldNumber: 1, text: "export function clamp(n: number, min: number) {" },
+          { change: "added", newNumber: 1, text: "export function clamp(n: number, min: number, max: number) {" },
+          { change: "removed", oldNumber: 2, text: "  return Math.max(n, min)" },
+          { change: "added", newNumber: 2, text: "  return Math.min(Math.max(n, min), max)" },
+          { change: "context", oldNumber: 3, newNumber: 3, text: "}" },
+        ],
+      },
+    ],
+  };
+  for (const view of document.querySelectorAll(".diff-view-size")) view.model = model;
+<\/script>
+`;export{n as default};

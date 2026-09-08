@@ -1,0 +1,52 @@
+const t=`<!-- 语气 | tone 落在触发按钮的展开态上，六种语气各展开一份做对照 -->
+<div
+  style="
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    align-items: start;
+  "
+>
+  <xh-collapsible tone="brand" default-open>
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">brand</button>
+      <div data-xh-part="content">收起后触发按钮不吃语气色。</div>
+    </div>
+  </xh-collapsible>
+
+  <xh-collapsible tone="neutral" default-open>
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">neutral</button>
+      <div data-xh-part="content">收起后触发按钮不吃语气色。</div>
+    </div>
+  </xh-collapsible>
+
+  <xh-collapsible tone="success" default-open>
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">success</button>
+      <div data-xh-part="content">收起后触发按钮不吃语气色。</div>
+    </div>
+  </xh-collapsible>
+
+  <xh-collapsible tone="warning" default-open>
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">warning</button>
+      <div data-xh-part="content">收起后触发按钮不吃语气色。</div>
+    </div>
+  </xh-collapsible>
+
+  <xh-collapsible tone="danger" default-open>
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">danger</button>
+      <div data-xh-part="content">收起后触发按钮不吃语气色。</div>
+    </div>
+  </xh-collapsible>
+
+  <xh-collapsible tone="info" default-open>
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">info</button>
+      <div data-xh-part="content">收起后触发按钮不吃语气色。</div>
+    </div>
+  </xh-collapsible>
+</div>
+`;export{t as default};

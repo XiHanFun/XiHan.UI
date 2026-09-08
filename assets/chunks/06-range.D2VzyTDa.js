@@ -1,0 +1,74 @@
+const n=`<!-- 可选时段 | min / max 直接把界外的格从列里裁掉；分列还会随已选的时再裁一遍 -->
+<xh-time-picker id="time-picker-range" min="09:00" max="18:00" step="30">
+  <div data-xh-part="root">
+    <label data-xh-part="label">面谈时段</label>
+    <div data-xh-part="control">
+      <div data-xh-part="segment-group">
+        <span data-xh-part="segment" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="segment" segment="minute"></span>
+      </div>
+      <button data-xh-part="trigger"></button>
+    </div>
+    <div data-xh-part="positioner">
+      <!-- 列与格子都由作者渲染，组件只说该排哪几列、每列还剩哪些值 -->
+      <div data-xh-part="content"></div>
+    </div>
+  </div>
+</xh-time-picker>
+
+<span style="font-size: 13px">
+  手打进段位的时间不受裁剪限制，越界只被标注：<span id="time-picker-range-value">（空）</span>
+</span>
+
+<script type="module">
+  const picker = document.getElementById("time-picker-range");
+  const content = picker.querySelector('[data-xh-part="content"]');
+  const readout = document.getElementById("time-picker-range-value");
+
+  // 一列一个节点，按单位记着；重画只换里面的格子
+  const columns = new Map();
+  // 每列上一次画的是哪一串值，没变就不动它（正在用方向键走的那一列不该被换掉）
+  const painted = new Map();
+
+  function columnOf(unit) {
+    let node = columns.get(unit);
+    if (!node) {
+      node = document.createElement("div");
+      node.dataset.xhPart = "column";
+      node.setAttribute("unit", unit);
+      columns.set(unit, node);
+      content.append(node);
+    }
+    return node;
+  }
+
+  function itemNode(value) {
+    const cell = document.createElement("div");
+    cell.dataset.xhPart = "item";
+    cell.setAttribute("value", value);
+    // 格子上的字由组件按 locale 填
+    return cell;
+  }
+
+  // 列里排哪些格子由组件给：越界的、不合 step 的、随已选的时收窄掉的，都已经不在里面
+  function paint() {
+    for (const column of picker.columns) {
+      const shape = column.options.join(",");
+      if (painted.get(column.unit) === shape) continue;
+      painted.set(column.unit, shape);
+      columnOf(column.unit).replaceChildren(...column.options.map(itemNode));
+    }
+  }
+
+  // 挑一格、敲一个数字都可能让别的列跟着收窄；交互之后重读一遍
+  for (const type of ["value-change", "click", "keydown"])
+    picker.addEventListener(type, paint);
+
+  picker.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value || "（空）";
+  });
+
+  paint();
+<\/script>
+`;export{n as default};

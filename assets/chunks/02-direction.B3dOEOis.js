@@ -1,0 +1,47 @@
+const n=`<!-- 方向 | orientation 换主轴：horizontal 横排（缺省），vertical 竖排 -->
+<style>
+  #flex-direction [data-box] {
+    padding: 8px 14px;
+    border-radius: var(--xh-radius-md);
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+  #flex-direction [data-label] {
+    font-size: 13px;
+    color: var(--xh-fg-muted);
+  }
+</style>
+
+<!-- 宿主设 display: contents，排布落在 root 上 -->
+<div id="flex-direction">
+  <xh-flex orientation="vertical" gap="lg" style="display: contents">
+    <div data-xh-part="root">
+      <xh-flex orientation="vertical" gap="xs" style="display: contents">
+        <div data-xh-part="root">
+          <span data-label>horizontal（缺省）</span>
+          <xh-flex gap="sm" style="display: contents">
+            <div data-xh-part="root">
+              <span data-box>甲</span>
+              <span data-box>乙</span>
+              <span data-box>丙</span>
+            </div>
+          </xh-flex>
+        </div>
+      </xh-flex>
+
+      <xh-flex orientation="vertical" gap="xs" style="display: contents">
+        <div data-xh-part="root">
+          <span data-label>vertical</span>
+          <xh-flex orientation="vertical" gap="sm" style="display: contents">
+            <div data-xh-part="root">
+              <span data-box>甲</span>
+              <span data-box>乙</span>
+              <span data-box>丙</span>
+            </div>
+          </xh-flex>
+        </div>
+      </xh-flex>
+    </div>
+  </xh-flex>
+</div>
+`;export{n as default};

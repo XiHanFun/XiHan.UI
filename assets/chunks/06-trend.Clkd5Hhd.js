@@ -1,0 +1,30 @@
+const a=`<!-- 涨跌 | trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正交——跌也可以是好事 -->
+<div style="display: flex; flex-wrap: wrap; gap: 32px">
+  <xh-statistic tone="success" trend="up">
+    <div data-xh-part="root">
+      <span data-xh-part="label">本月新增用户</span>
+      <span data-xh-part="value">12,480</span>
+      <span data-xh-part="suffix">人</span>
+      <span data-xh-part="trend">同比 12.4%</span>
+    </div>
+  </xh-statistic>
+
+  <xh-statistic tone="success" trend="down">
+    <div data-xh-part="root">
+      <span data-xh-part="label">订单退货率</span>
+      <span data-xh-part="value">1.8</span>
+      <span data-xh-part="suffix">%</span>
+      <span data-xh-part="trend">同比 0.6%</span>
+    </div>
+  </xh-statistic>
+
+  <xh-statistic tone="neutral" trend="flat">
+    <div data-xh-part="root">
+      <span data-xh-part="label">平均响应时长</span>
+      <span data-xh-part="value">240</span>
+      <span data-xh-part="suffix">ms</span>
+      <span data-xh-part="trend">与上周持平</span>
+    </div>
+  </xh-statistic>
+</div>
+`;export{a as default};

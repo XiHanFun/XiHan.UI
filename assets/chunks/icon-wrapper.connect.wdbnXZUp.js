@@ -1,1 +1,0 @@
-import{a as o}from"./normalize-props.C19uE7bg.js";const n=o("icon-wrapper",["root"]),r=n.build();function c(t,a){return{getRootProps:()=>a.element({...r.root.attrs,"data-variant":t.variant,"data-tone":t.tone,"data-size":t.size})}}export{c,n as i};

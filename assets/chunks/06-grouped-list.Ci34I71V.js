@@ -1,0 +1,114 @@
+const e=`<!-- 列表分组 | 本侧此刻看得见的条目由组件给出，据此分组渲染；group 是 role=group 的段落壳，段标题不入方向键也不入搬运 -->
+<div id="transfer-grouped" style="inline-size: 100%; max-inline-size: 520px">
+  <xh-transfer searchable>
+    <div data-xh-part="root">
+      <div data-xh-part="source-panel">
+        <div data-xh-part="panel-header">
+          <span data-xh-part="panel-title">可授予</span>
+          <span data-xh-part="panel-count"></span>
+        </div>
+        <input data-xh-part="search" placeholder="搜索" />
+        <div data-xh-part="list"></div>
+      </div>
+
+      <button data-xh-part="to-target-trigger"></button>
+      <button data-xh-part="to-source-trigger"></button>
+
+      <div data-xh-part="target-panel">
+        <div data-xh-part="panel-header">
+          <span data-xh-part="panel-title">已授予</span>
+          <span data-xh-part="panel-count"></span>
+        </div>
+        <input data-xh-part="search" placeholder="搜索" />
+        <div data-xh-part="list"></div>
+      </div>
+    </div>
+  </xh-transfer>
+</div>
+
+<script type="module">
+  const stage = document.getElementById("transfer-grouped");
+  const transfer = stage.querySelector("xh-transfer");
+
+  const groups = [
+    { key: "read", label: "读取" },
+    { key: "write", label: "写入" },
+    { key: "admin", label: "管理" },
+  ];
+
+  const permissions = [
+    { value: "list", label: "查看列表", group: "read" },
+    { value: "detail", label: "查看详情", group: "read" },
+    { value: "export", label: "导出数据", group: "read" },
+    { value: "create", label: "新建", group: "write" },
+    { value: "update", label: "编辑", group: "write" },
+    { value: "remove", label: "删除", group: "write" },
+    { value: "grant", label: "授权", group: "admin" },
+    { value: "audit", label: "审计", group: "admin" },
+  ];
+
+  // 面板给的条目只带 value / label，分组信息回自己那份数据里查
+  const groupOf = new Map(permissions.map((item) => [item.value, item.group]));
+
+  transfer.collection = permissions;
+  transfer.value = ["list"];
+
+  const panels = ["source", "target"].map((side) => ({
+    side,
+    list: stage.querySelector(
+      \`[data-xh-part="\${side}-panel"] [data-xh-part="list"]\`,
+    ),
+  }));
+
+  // 段落壳自报 value，组内标题由元素接上 aria-labelledby
+  function groupNode(group, items) {
+    const el = document.createElement("div");
+    el.dataset.xhPart = "group";
+    el.setAttribute("value", group.key);
+    const label = document.createElement("span");
+    label.dataset.xhPart = "group-label";
+    label.textContent = group.label;
+    el.append(label, ...items.map(itemNode));
+    return el;
+  }
+
+  function itemNode(item) {
+    const el = document.createElement("div");
+    el.dataset.xhPart = "item";
+    el.setAttribute("value", item.value);
+    const box = document.createElement("span");
+    box.dataset.xhPart = "item-checkbox";
+    const text = document.createElement("span");
+    text.dataset.xhPart = "item-text";
+    text.textContent = item.label;
+    el.append(box, text);
+    return el;
+  }
+
+  // 本侧此刻看得见哪些条目由组件给：落在哪一侧、被搜索筛掉没有都在它里面算完了
+  function render() {
+    for (const panel of panels) {
+      const shown = transfer.visibleItems(panel.side);
+      const nodes = [];
+      for (const group of groups) {
+        const inGroup = shown.filter(
+          (item) => groupOf.get(item.value) === group.key,
+        );
+        // 本组一条都不剩时整段跟着不出
+        if (inGroup.length === 0) continue;
+        nodes.push(groupNode(group, inGroup));
+      }
+      panel.list.replaceChildren(...nodes);
+    }
+  }
+
+  transfer.addEventListener("value-change", (event) => {
+    transfer.value = event.detail.value;
+    render();
+  });
+  // 搜索串住在组件里、不对外派事件；这一条挂在宿主上，跑在组件写给搜索框的处理器之后
+  transfer.addEventListener("input", render);
+
+  render();
+<\/script>
+`;export{e as default};

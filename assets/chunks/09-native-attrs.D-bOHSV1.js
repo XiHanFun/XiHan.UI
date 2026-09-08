@@ -1,0 +1,29 @@
+const t=`<!-- 原生属性 | 写在 input 部件上的属性直接落到真正的输入框，自动填充与移动端键盘类型由它们决定 -->
+<xh-text-field placeholder="you@example.com">
+  <div data-xh-part="root">
+    <label data-xh-part="label">邮箱</label>
+    <div data-xh-part="control" style="inline-size: 220px">
+      <input
+        data-xh-part="input"
+        autocomplete="email"
+        inputmode="email"
+        spellcheck="false"
+      />
+    </div>
+  </div>
+</xh-text-field>
+
+<xh-text-field placeholder="11 位手机号" max-length="11">
+  <div data-xh-part="root">
+    <label data-xh-part="label">手机号</label>
+    <div data-xh-part="control" style="inline-size: 220px">
+      <input
+        data-xh-part="input"
+        autocomplete="tel"
+        inputmode="numeric"
+        enterkeyhint="done"
+      />
+    </div>
+  </div>
+</xh-text-field>
+`;export{t as default};

@@ -1,0 +1,76 @@
+const n=`<!-- 取下一页的按钮 | 与哨兵同一条通路：读屏在虚拟光标模式下不产生滚动事件，这颗按钮是它的键盘等价入口 -->
+<style>
+  #infinite-scroll-more-shell [data-row] {
+    padding: 8px 12px;
+  }
+  #infinite-scroll-more-shell [data-footer] {
+    display: flex;
+    justify-content: center;
+    padding: 8px 12px;
+  }
+</style>
+
+<div
+  id="infinite-scroll-more-shell"
+  style="
+    block-size: 240px;
+    overflow: auto;
+    border: 1px solid var(--xh-border-default);
+    border-radius: 8px;
+  "
+>
+  <!-- 宿主设 display: contents，列表外壳落在 root 上 -->
+  <xh-infinite-scroll id="infinite-scroll-more" style="display: contents">
+    <div data-xh-part="root">
+      <div data-list>
+        <div data-row>第 1 条</div>
+        <div data-row>第 2 条</div>
+        <div data-row>第 3 条</div>
+        <div data-row>第 4 条</div>
+        <div data-row>第 5 条</div>
+        <div data-row>第 6 条</div>
+        <div data-row>第 7 条</div>
+        <div data-row>第 8 条</div>
+        <div data-row>第 9 条</div>
+        <div data-row>第 10 条</div>
+      </div>
+      <div data-xh-part="sentinel"></div>
+      <!-- 文案写在按钮里：组件不代填名字，读屏念的与眼睛看的是同一句 -->
+      <div data-footer>
+        <button data-xh-part="load-more-trigger">加载更多</button>
+      </div>
+    </div>
+  </xh-infinite-scroll>
+</div>
+
+<script type="module">
+  const host = document.getElementById("infinite-scroll-more");
+  const shell = document.getElementById("infinite-scroll-more-shell");
+  const list = host.querySelector("[data-list]");
+  const trigger = host.querySelector('[data-xh-part="load-more-trigger"]');
+
+  // target 指向真正在滚的那层；它是 DOM 句柄，只走属性
+  host.target = shell;
+
+  function append(count) {
+    const base = list.childElementCount;
+    for (let i = 1; i <= count; i += 1) {
+      const row = document.createElement("div");
+      row.setAttribute("data-row", "");
+      row.textContent = \`第 \${base + i} 条\`;
+      list.append(row);
+    }
+  }
+
+  // 取下一页；这里用定时器代替真实请求
+  host.addEventListener("load", () => {
+    host.loading = true;
+    trigger.textContent = "正在取下一页…";
+    setTimeout(() => {
+      append(6);
+      host.loading = false;
+      trigger.textContent = "加载更多";
+    }, 500);
+  });
+<\/script>
+`;export{n as default};

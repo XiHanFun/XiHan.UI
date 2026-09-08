@@ -1,0 +1,23 @@
+const n=`<!-- 框内前后缀 | 前后缀与输入框同在 control 这一个框里排成一行，共用它的描边与底色 -->
+<xh-text-field placeholder="0.00">
+  <div data-xh-part="root">
+    <label data-xh-part="label">金额</label>
+    <div data-xh-part="control" style="inline-size: 200px">
+      <!-- 不参与分宽，也不吃指针事件：点在前后缀上仍然落到输入框里 -->
+      <span style="flex: none; color: var(--xh-fg-muted); pointer-events: none">¥</span>
+      <input data-xh-part="input" inputmode="decimal" />
+      <span style="flex: none; color: var(--xh-fg-muted); pointer-events: none">元</span>
+    </div>
+  </div>
+</xh-text-field>
+
+<xh-text-field placeholder="170">
+  <div data-xh-part="root">
+    <label data-xh-part="label">身高</label>
+    <div data-xh-part="control" style="inline-size: 160px">
+      <input data-xh-part="input" inputmode="numeric" />
+      <span style="flex: none; color: var(--xh-fg-muted); pointer-events: none">cm</span>
+    </div>
+  </div>
+</xh-text-field>
+`;export{n as default};

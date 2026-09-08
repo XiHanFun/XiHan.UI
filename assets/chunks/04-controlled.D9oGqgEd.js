@@ -1,0 +1,81 @@
+const n=`<!-- 受控开合与禁用 | open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位；disabled 的那一段开关按不动，停在给定的那一档 -->
+<div id="reasoning-controlled-demo" style="display: flex; flex-direction: column; gap: 12px">
+  <div style="display: flex; gap: 8px">
+    <xh-button size="sm" variant="outline">
+      <button data-xh-part="root" id="reasoning-expand-all">全部展开</button>
+    </xh-button>
+    <xh-button size="sm" variant="outline">
+      <button data-xh-part="root" id="reasoning-collapse-all">全部收起</button>
+    </xh-button>
+  </div>
+
+  <xh-reasoning
+    class="reasoning-controlled"
+    variant="outline"
+    open
+    start-time="0"
+    end-time="2400"
+  >
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">
+        <span data-xh-part="indicator"></span>
+        <span data-xh-part="label"></span>
+      </button>
+      <div data-xh-part="content">
+        先确认这次只改皮肤：解剖与事件都不动，公开面就只增不减。
+      </div>
+    </div>
+  </xh-reasoning>
+
+  <xh-reasoning class="reasoning-controlled" variant="outline" start-time="0" end-time="900">
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">
+        <span data-xh-part="indicator"></span>
+        <span data-xh-part="label"></span>
+      </button>
+      <div data-xh-part="content">再看形态轴：outline 只留一条描边，底色交回页面。</div>
+    </div>
+  </xh-reasoning>
+
+  <!-- 归档的那一段：开关按不动，正文停在收起 -->
+  <xh-reasoning variant="outline" disabled start-time="0" end-time="12000">
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">
+        <span data-xh-part="indicator"></span>
+        <span data-xh-part="label"></span>
+      </button>
+      <div data-xh-part="content">这一段已归档，正文不再展开。</div>
+    </div>
+  </xh-reasoning>
+</div>
+
+<script type="module">
+  const demo = document.getElementById("reasoning-controlled-demo");
+  const panels = demo.querySelectorAll(".reasoning-controlled");
+  const translations = {
+    label: "思考过程",
+    thinking: "正在思考…",
+    thoughtFor: "想了 {seconds} 秒",
+  };
+
+  // 文案是对象，只走 property；{seconds} 由元素代入
+  for (const panel of demo.querySelectorAll("xh-reasoning")) {
+    panel.translations = translations;
+  }
+
+  // 开合归宿主：元素只发意图，落值全在这里
+  for (const panel of panels) {
+    panel.addEventListener("open-change", (event) => {
+      panel.open = event.detail.open;
+    });
+  }
+
+  // 外面那两颗钮改的是同一份状态
+  document.getElementById("reasoning-expand-all").addEventListener("click", () => {
+    for (const panel of panels) panel.open = true;
+  });
+  document.getElementById("reasoning-collapse-all").addEventListener("click", () => {
+    for (const panel of panels) panel.open = false;
+  });
+<\/script>
+`;export{n as default};

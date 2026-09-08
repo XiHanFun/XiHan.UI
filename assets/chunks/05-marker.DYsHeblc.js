@@ -1,0 +1,28 @@
+const n=`<!-- 自定义展开标记 | 往指示符部件里塞自己的图形，转向仍由皮肤按 open 接管 -->
+<div style="width: 100%; max-width: 420px; display: grid; gap: 12px">
+  <xh-collapsible id="collapsible-marker">
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">
+        <span>高级筛选</span>
+        <span style="font-size: 12px; display: inline-flex; align-items: center; gap: 2px">
+          <span id="collapsible-marker-text">展开</span>
+          <!-- 部件里放什么归作者；transform 由皮肤跟着 data-state 打 -->
+          <span data-xh-part="indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9L12 15L18 9"/></svg></span>
+        </span>
+      </button>
+      <div data-xh-part="content">
+        创建时间、负责人、标签这些不常用的条件收在这里。
+      </div>
+    </div>
+  </xh-collapsible>
+</div>
+
+<script type="module">
+  // 只有这行文案要跟着开合换；箭头的转向归皮肤
+  const collapsible = document.getElementById("collapsible-marker");
+  const text = document.getElementById("collapsible-marker-text");
+  collapsible.addEventListener("open-change", (event) => {
+    text.textContent = event.detail.open ? "收起" : "展开";
+  });
+<\/script>
+`;export{n as default};

@@ -1,0 +1,34 @@
+const a=`<!-- 面包屑与头像位 | 面包屑整行排在标题之上（写在标记最前面），头像/图标排在返回位与标题之间；两块都可缺省 -->
+<xh-page-header variant="surface" bordered>
+  <div data-xh-part="root">
+    <div data-xh-part="breadcrumb">
+      <xh-breadcrumb>
+        <nav data-xh-part="root">
+          <ol data-xh-part="list">
+            <li data-xh-part="item">
+              <a data-xh-part="link" href="#">工作台</a>
+            </li>
+            <li data-xh-part="separator">/</li>
+            <li data-xh-part="item">
+              <a data-xh-part="link" href="#">订单</a>
+            </li>
+            <li data-xh-part="separator">/</li>
+            <li data-xh-part="item">
+              <a data-xh-part="link" href="#" current>SO-20260731-004</a>
+            </li>
+          </ol>
+        </nav>
+      </xh-breadcrumb>
+    </div>
+    <div data-xh-part="media">
+      <xh-avatar size="sm">
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">赵</span>
+        </span>
+      </xh-avatar>
+    </div>
+    <div data-xh-part="title">订单详情</div>
+    <div data-xh-part="description">负责人 赵一 · 编号 SO-20260731-004</div>
+  </div>
+</xh-page-header>
+`;export{a as default};

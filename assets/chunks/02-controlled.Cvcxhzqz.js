@@ -1,0 +1,52 @@
+const n=`<!-- 受控与切片 | 传了 page 就由宿主说了算；当前页决定从整份数据里切出哪一段 -->
+<xh-pagination
+  id="pagination-controlled"
+  count="23"
+  page-size="5"
+  page="1"
+  style="inline-size: 100%"
+>
+  <nav data-xh-part="root">
+    <ul
+      id="pagination-controlled-rows"
+      style="flex-basis: 100%; margin: 0 0 4px; padding-inline-start: 20px"
+    ></ul>
+
+    <button data-xh-part="prev-trigger"></button>
+    <button data-xh-part="item" value="1">1</button>
+    <button data-xh-part="item" value="2">2</button>
+    <button data-xh-part="item" value="3">3</button>
+    <button data-xh-part="item" value="4">4</button>
+    <button data-xh-part="item" value="5">5</button>
+    <button data-xh-part="next-trigger"></button>
+    <span id="pagination-controlled-range" style="flex-basis: 100%"></span>
+  </nav>
+</xh-pagination>
+
+<script type="module">
+  const host = document.getElementById("pagination-controlled");
+  const list = document.getElementById("pagination-controlled-rows");
+  const range = document.getElementById("pagination-controlled-range");
+  const rows = Array.from({ length: 23 }, (_, i) => \`第 \${i + 1} 条记录\`);
+
+  // 切片与条目区间都按当前页从元素上取：偏移量与末页那个不满的右端都不必自己算
+  function render() {
+    list.replaceChildren(
+      ...host.slice(rows).map((row) => {
+        const li = document.createElement("li");
+        li.textContent = row;
+        return li;
+      }),
+    );
+    const { start, end } = host.pageRange;
+    range.textContent = \`第 \${start}-\${end} 条，共 \${host.count} 条\`;
+  }
+
+  render();
+  host.addEventListener("page-change", (event) => {
+    // 受控：先把新页码写回 page，切出来的才是这一页
+    host.page = event.detail.page;
+    render();
+  });
+<\/script>
+`;export{n as default};

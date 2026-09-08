@@ -1,0 +1,5174 @@
+# 曦寒视图组件 · 核心概念与运行时
+
+共 29 页：核心概念、两个适配器的接法、以及命令式服务与运行时。
+索引见 https://ui.docs.xihanfun.com/llms.txt
+
+---
+
+来源：https://ui.docs.xihanfun.com/adapters/react
+
+# React 适配器
+
+`@xihan-ui/react` 是无头内核的 React 外壳。它做三件事：把机器接到 React 的渲染周期上、把部件包成组件、把 `connect` 产出的 props 展开到元素上。**不实现任何组件逻辑。**
+
+依赖：`react` 与 `react-dom` 是 peer 依赖，下限 19。这一版只支持 React 19——机器要求「宿主提交完这一帧、DOM 落定之后再跑回调」，`flushSync` 与 `useSyncExternalStore` 的行为是这条契约的地基。
+
+铺开进度：126 个组件里已铺 126 个，组件面与 Vue 侧齐平。登记在 `ui/tooling/scripts/react-coverage.json`，十几张门禁按它决定该核哪些组件——登记多了会核到不存在的组件，登记少了是静默漏检，两侧都判失败。
+
+## 组件命名
+
+与 Vue 侧同名：每个部件一个组件，一律 `Xh` 前缀 + 组件名 + 部件名。
+
+```tsx
+import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@xihan-ui/react";
+```
+
+只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`）。没有 provider 要装，按名字 import 即可。
+
+## 受控与非受控
+
+传受控属性即受控，只传 `default*` 即非受控。变更回调是普通的 React 回调，没有第二套事件：
+
+```tsx
+// 受控
+<XhDialogRoot open={open} onOpenChange={({ open }) => setOpen(open)} />
+
+// 非受控
+<XhDialogRoot defaultOpen />
+```
+
+载荷与 Vue 侧的明细对象是同一个：`{ open }`、`{ value }`、`{ checked }`。Vue 那边额外发一个裸值事件是为了 `v-model`，React 没有这层语法，就只留明细一种。
+
+受控属性是**每帧现读**的：机器不缓存上一次拿到的值，浮层开着的时候改 `closeOnEscape` 当场生效。
+
+## 带载荷的插槽写成函数式 children
+
+派生值由这一层算好，作者拿函数式 children 接：
+
+```tsx
+<XhSelectRoot value={value} onValueChange={({ value }) => setValue(value)}>
+  {({ hasValue, valueText }) => (hasValue ? valueText : "请选择")}
+</XhSelectRoot>
+```
+
+类型是 `SlotChildren<P>`——给节点也行，给函数才拿得到载荷。每个组件的载荷类型（`SelectRootSlotProps` 这类）都一并导出。
+
+## asChild
+
+要把部件的行为落到自己的元素上，传 `asChild` 并给单个子元素：
+
+```tsx
+<XhDialogTrigger asChild>
+  <MyButton>打开</MyButton>
+</XhDialogTrigger>
+```
+
+props 合并的顺序是子元素在先、部件在后：同名事件处理器两边都会跑，作者那个先跑。
+
+## 组合式函数
+
+不想用现成结构就直接拿 `api`：
+
+```tsx
+const { api, service } = useDialog({ open, onOpenChange });
+```
+
+`api` 每次渲染重新求值，随机器状态变化。上下文类型（`DialogContext` 这类）也导出，便于把 `api` 往下透传时标注类型。父子部件之间的 context 是内部实现，不对外开放。
+
+## 全局配置
+
+`XhConfigProvider` 往下喂 locale、文案覆盖、尺寸与浮层落点：
+
+```tsx
+<XhConfigProvider config={{ locale: "zh-CN", size: "sm" }}>
+  <App />
+</XhConfigProvider>
+```
+
+配置是经代理喂给部件 props 的：作者没传的属性从配置里取，传了的以作者为准。代理实现了 `ownKeys` 与 `getOwnPropertyDescriptor`——`{ ...props }` 这种展开在 React 里到处都是，只有 `get` 陷阱的代理一展开就退化成空对象，配置默认值会静默消失。
+
+## 机器接到 React
+
+内部只有一层薄适配。`createReactRuntime()` 实现 `ReactiveRuntime` 的五个口子：
+
+| 接口 | React 实现 |
+| --- | --- |
+| `cell` | 闭包存值 + 受控语义（受控时值从 `prop()` 现读，内部值不写）；写入撞版本号，经 `useSyncExternalStore` 推重渲 |
+| `track` | 拉式：每次提交后逐项比对依赖，变了才触发 |
+| `flush` | `flushSync` 逼出一次提交，回调在 DOM 落定之后跑 |
+| `onMount` / `onCleanup` | `useLayoutEffect` 的挂载与清理 |
+
+`track` 是拉式的，这一条与 Vue 侧不同。Vue 的 `watch` 挂在响应式源上，源一动就通知；React 这边 props 的变化不经过任何可订阅的源，它就是下一次渲染函数的入参。推式实现在这里会永远收不到 props 变化——54 个机器里的 `track` 与 53 个 `watch` 块全部静默失效，而且不报错。
+
+`useMachine(machine, getProps, options)` 把它包起来。props 传的是 getter：每次渲染现取，机器读到的永远是这一帧的值。
+
+## 有些处理器要挂成原生监听器
+
+`connect` 是按 DOM 语义写的，有两类处理器过不了 React 的合成事件层：
+
+- `pointerenter` / `pointerleave` 不冒泡。React 的同名合成事件是从 `pointerover` / `pointerout` 合出来的，直接派到节点上的那一种到不了。
+- `stopImmediatePropagation()` 在 `SyntheticEvent` 上不存在，调用直接抛。载入态的按钮靠它拦同节点上作者的处理器。
+
+这类 props 由适配器改装成真实的 DOM 监听器，行为与另外两家适配器一致。
+
+这一条由门禁看着：`check-native-events` 逐组件对账 `connect` 派了哪几个不冒泡的事件、React 侧有没有逐个摘出来，摘了 `connect` 根本不派的名字同样判失败。`onFocusIn` / `onFocusOut` 不在其列——它们经 `reactNormalize` 归到 React 的 `onFocus` / `onBlur`，而那两个合成事件挂的正是冒泡的 `focusin` / `focusout`。
+
+## 行为原语
+
+`@xihan-ui/react/behavior` 是单独的子入口，装的是行为原语的 React 包装——滚动锁、悬停意图、滚动观察、贴底、连敲检索五件：
+
+```tsx
+import { useHoverIntent, useScrollLock, useScrollTracker, useStickToBottom, useTypeahead } from "@xihan-ui/react/behavior";
+```
+
+自建浮层才用得上。不用的应用不必把它压进主入口的体积。
+
+## 命令式服务
+
+对话框、轻提示、通知、顶部进度条四个服务从组件树之外调起，自带宿主树：
+
+```ts
+import { createToastService } from "@xihan-ui/react";
+
+const toast = createToastService();
+toast.success("保存好了");
+```
+
+行为与命令面见[命令式服务](../runtime/services)。React 侧有一处实现上的差别：`createRoot().render()` 是排队的，而 Vue 的 `app.mount()` 当场渲完，所以首帧提交由 `flushSync` 包住——服务建好之后紧接着发的那条命令（拦截器里很常见）不会因为宿主还没渲出来而被丢掉。
+
+宿主树在组件树之外，接不到组件树里的 `XhConfigProvider`。要让它跟应用同语言，从 `config` 选项给，或之后用 `setConfig` 推。
+
+## 服务端渲染
+
+- `createReactRuntime()` 的 `isServer` 由 `typeof window === 'undefined'` 判定，服务端不挂事件、不读媒体查询；
+- scope 的基名取自 `useId`，同一棵树两端一致，不会 hydration 不匹配；
+- 主题属性建议在服务端就渲染到 `<html>` 上，见[设计令牌与主题](../guide/theme#服务端渲染)。
+
+## 与另外两家适配器的关系
+
+三家跑同一个机器、同一份 `connect`，输出的 DOM 属性完全一致——跨适配器一致性测试逐帧比对归一化快照，抹不掉的差异即判失败。React 侧还多一道服务端渲染一致性判据。
+
+## 相关
+
+- [组件参考](../components/)：全部组件与部件
+- [connect 与属性产出](../guide/connect)
+- [Vue 适配器](./vue)
+- [Web Components 适配器](./web-components)
+
+---
+
+来源：https://ui.docs.xihanfun.com/adapters/vue
+
+# Vue 适配器
+
+`@xihan-ui/vue` 是无头内核的 Vue 3 外壳。它做三件事：把机器接到 Vue 的响应式上、把部件包成组件、把 `connect` 产出的 props 展开到 vnode 上。**不实现任何组件逻辑。**
+
+依赖：`vue` 是 peer 依赖（由你的项目提供）；`@xihan-ui/backgrounds` 与 `@xihan-ui/sound` 是**可选** peer，不用视觉效果或音效就不必装。
+
+## 组件命名
+
+每个部件一个组件，一律 `Xh` 前缀 + 组件名 + 部件名：
+
+```ts
+import {
+  XhAccordionContent,
+  XhAccordionHeader,
+  XhAccordionIndicator,
+  XhAccordionItem,
+  XhAccordionRoot,
+  XhAccordionTrigger,
+} from "@xihan-ui/vue";
+```
+
+只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 915 个导出组件按组件分组列在[组件参考](../components/)里。
+
+没有插件，不需要 `app.use()`。按名字 import 即可，`sideEffects: false` 让打包器摇掉没用到的部分。
+
+## 事件与 v-model
+
+值类组件同时发两个事件：
+
+<!-- eslint-skip -->
+
+```ts
+emits: {
+  'value-change': (details: PayloadOf<AccordionProps, 'onValueChange'>) => true,
+  'update:value': (value: PayloadOf<AccordionProps, 'onValueChange'>['value']) => true,
+}
+```
+
+| 事件 | 载荷 | 用途 |
+| --- | --- | --- |
+| `value-change` | 完整明细对象，如 `{ value }` | 需要拿到全部上下文时 |
+| `update:value` | 裸值 | 供 `v-model` 用 |
+
+```vue
+<template>
+  <!-- 双向绑定 -->
+  <XhAccordionRoot v-model:value="panels" multiple />
+
+  <!-- 或者自己接明细 -->
+  <XhAccordionRoot :value="panels" @value-change="onChange" />
+</template>
+```
+
+具体的绑定名按组件而定：开关是 `v-model:checked`，浮层是 `v-model:open`，输入框是 `v-model:value`。
+
+## 受控与非受控
+
+传受控属性即受控，只传 `default*` 即非受控：
+
+```vue
+<template>
+  <XhSwitch v-model:checked="wifi" />      <!-- 受控 -->
+  <XhSwitch :default-checked="false" />     <!-- 非受控 -->
+</template>
+```
+
+受控时组件**永远不会自己动**：它只发出变更意图，等你把新值写回来才真的改。这条语义收在机器的 `cell` 与 `watch` 里，不由各组件自己判断。详见[状态机运行时](../guide/machine#受控与非受控-cell)。
+
+## 作用域插槽
+
+根组件通过作用域插槽把命令式方法交出来：
+
+```vue
+<template>
+  <XhDialogRoot v-slot="{ setOpen }">
+    <XhDialogTrigger>打开</XhDialogTrigger>
+    <XhDialogContent>
+      <XhButton @click="setOpen(false)">取消</XhButton>
+    </XhDialogContent>
+  </XhDialogRoot>
+</template>
+```
+
+### 载荷有类型
+
+插槽载荷都写进了组件的 `SlotsType`，所以 `vue-tsc` 接得住两类拼写错误：
+
+```vue
+<template>
+  <XhTabsRoot :collection="tabs">
+    <!-- ✓ node 是 TabsNodeMeta，字段可补全 -->
+    <template #panel="node">{{ node.label }}</template>
+  </XhTabsRoot>
+</template>
+```
+
+两类拼写错误各自接得住：
+
+```vue
+<template>
+  <!-- ✗ TS2551: Property 'lable' does not exist on type 'TabsNodeMeta'. Did you mean 'label'? -->
+  <XhTabsRoot :collection="tabs">
+    <template #panel="node">{{ node.lable }}</template>
+  </XhTabsRoot>
+
+  <!-- ✗ TS2339: 组件没有这个插槽 -->
+  <XhTabsRoot :collection="tabs">
+    <template #panle>…</template>
+  </XhTabsRoot>
+</template>
+```
+
+载荷类型本身也从主入口导出（`TabsPanelSlotProps`、`StepsRootSlotProps` 这样命名），
+需要把插槽内容拆成子组件时可以直接拿来标注 props。
+
+插槽键在类型上一律是**可选**的：组件内部靠「作者写没写这个插槽」决定要不要按 `collection` 铺开默认结构，
+键若非可选，那条判断在类型上就恒为真了。
+
+不想用现成 DOM 结构时，直接拿 `api` 自己渲染：
+
+```vue
+<script setup lang="ts">
+import { useAccordion } from "@xihan-ui/vue";
+
+const { api } = useAccordion(
+  { multiple: true, defaultValue: ["a"] },
+  details => console.log(details.value), // onValueChange
+);
+</script>
+
+<template>
+  <section v-bind="api.getRootProps()">
+    <article v-bind="api.getItemProps({ value: 'a' })">
+      <h3 v-bind="api.getHeaderProps({ value: 'a' })">
+        <button v-bind="api.getTriggerProps({ value: 'a' })">第一节</button>
+      </h3>
+      <div v-bind="api.getContentProps({ value: 'a' })">内容</div>
+    </article>
+  </section>
+</template>
+```
+
+`api` 是一个 `ComputedRef`，随机器状态变化重新求值。纯展示型组件（`XhBadge` 这类没有状态机的）不提供组合式函数。
+
+上下文类型（`AccordionContext` 等）也一并导出，便于把 `api` 往下透传时标注类型。父子组件之间的 provide / inject 是内部实现，不对外开放——要自定义结构请直接用组合式函数拿 `api`，而不是接进现成组件的上下文。
+
+## 机器接到 Vue 响应式
+
+内部只有一层薄适配。`createVueRuntime()` 实现 `ReactiveRuntime` 的五个口子：
+
+| 接口 | Vue 实现 |
+| --- | --- |
+| `cell` | `shallowRef` + 受控语义（受控时值从 `prop()` 读，内部 ref 不写） |
+| `track` | `watch(deps, fn, { flush: 'pre' })` |
+| `flush` | `nextTick` |
+| `onMount` / `onCleanup` | `onMounted` / `onBeforeUnmount`（不在组件内则立即执行 / 忽略） |
+
+`useMachine(machine, props, scope)` 把它包起来。props 传的是 getter 而不是对象，每次展开成新对象让机器的身份缓存失效——这样在模板里原地改某个 prop 也收得到。
+
+## 背景层
+
+Vue 侧的视觉适配在**单独的子入口**，不引就不会把 WebGL 引擎打进包：
+
+```ts
+import { useBackground, vBackground, XhBackground } from "@xihan-ui/vue/backgrounds";
+```
+
+三种用法见[背景层](../guide/backgrounds#在-vue-里用)。
+
+## 声音层
+
+同样是单独的子入口。`withToastSound` / `withDialogSound` 给命令式反馈服务配上声音，调用点一行都不用改；`v-sound` 给单个元素配声：
+
+```ts
+import { setSoundPlayer, vSound, withToastSound } from "@xihan-ui/vue/sound";
+```
+
+默认映射与开关见[声音层](../guide/sound#在-vue-里用)。
+
+## 服务端渲染
+
+- `createVueRuntime()` 的 `isServer` 由 `typeof window === 'undefined'` 判定，服务端不挂事件、不读媒体查询；
+- id 由 `createVueIdGenerator()` 生成，同一棵树两端一致，不会 hydration 不匹配；
+- 主题属性建议在服务端就渲染到 `<html>` 上，见[设计令牌与主题](../guide/theme#服务端渲染)。
+
+## 与 Web Components 适配器的关系
+
+两者跑同一个机器、同一份 `connect`，输出的 DOM 属性完全一致——跨适配器一致性测试逐帧比对归一化快照，抹不掉的差异即判失败。
+
+选哪个：Vue 项目用这个；需要在多个框架 / 无框架页面里复用同一套组件时用[自定义元素](./web-components)。两者可以在同一页面共存。
+
+## 相关
+
+- [组件参考](../components/)：全部组件与部件
+- [connect 与属性产出](../guide/connect)
+- [Web Components 适配器](./web-components)
+
+---
+
+来源：https://ui.docs.xihanfun.com/adapters/web-components
+
+# Web Components 适配器
+
+`@xihan-ui/web-components` 把同一套无头内核包成原生自定义元素。它有一个不常见的形态：**Light-DOM 行为宿主**——元素本身不渲染任何结构，结构由你手写，元素只负责发现角色节点并往上挂属性与事件。
+
+响应式基类是自研的（`XhReactiveElement`），不依赖任何第三方运行时。
+
+## 注册
+
+```ts
+import { defineXhElements } from "@xihan-ui/web-components/define";
+
+defineXhElements(); // 注册全部 128 个 xh-* 元素
+```
+
+主入口的 `import` 本身**不注册**，必须显式调这一行。注册是幂等的：同版本重复调直接返回；同标签不同版本、或标签已被非 XiHan.UI 代码占用，都会抛错而不是静默覆盖。无 `customElements` 的环境（SSR）静默跳过。
+
+背景层单独注册，不引就不会把 WebGL 引擎打进包：
+
+```ts
+import { defineXhBackground } from "@xihan-ui/web-components/backgrounds";
+
+defineXhBackground();
+```
+
+## 结构由你写
+
+```html
+<xh-dialog>
+  <button data-xh-part="trigger">打开对话框</button>
+  <div data-xh-part="backdrop"></div>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <h3 data-xh-part="title">确认操作</h3>
+      <p data-xh-part="description">这条操作不可撤销。</p>
+      <button data-xh-part="close-trigger" aria-label="关闭">✕</button>
+    </div>
+  </div>
+</xh-dialog>
+```
+
+接线后元素会往这些节点上打 `data-scope` / `data-part` / `aria-*` / `data-state` 与事件处理器。打开 DevTools 能直接看到。
+
+::: tip 为什么是 Light DOM 而不是 Shadow DOM
+Shadow DOM 会把结构封在里面：你改不了标签、插不进自己的节点、外部 CSS 进不去、表单关联和 `aria-*` 跨边界引用都要额外机制。这套库的定位是「行为可复用、外观完全由你定」，Light DOM 才对得上。
+
+代价是你得自己写结构。这也是为什么必备部件的校验必须存在。
+:::
+
+## 部件契约校验
+
+元素接线时会比对你写的 DOM 与组件解剖，三种问题上报到[诊断通道](../guide/diagnostics)：
+
+| 码 | 级别 | 触发条件 |
+| --- | --- | --- |
+| `wc.missing-part` | error | 缺必备角色节点，该部件不会被接线 |
+| `wc.unknown-part` | warn | 角色节点的 part 名不在组件解剖内 |
+| `wc.wrong-part-tag` | error | 角色节点用的标签不满足要求 |
+
+第三条只登记「写错了会**静默失效**」的情况。比如表单字段的 `label` 必须是原生 `<label>`，写成 `<div>` 会让 `for` 关联整条失效、点标签不再聚焦控件——但页面看起来一切正常。
+
+有的宿主会把内嵌部件的 DOM 摊在自己的 Light DOM 里接线（日期选择器之于日期输入与日历就是这样），这些角色节点归内嵌部件管，通过契约里的 `delegates` 登记，不会被当成野节点报警。
+
+## 属性
+
+属性遵循自定义元素惯例：kebab-case 的 HTML attribute ↔ camelCase 的 JS property。
+
+```html
+<xh-dialog default-open modal="false" role="alertdialog">
+```
+
+```ts
+const dialog = document.querySelector("xh-dialog");
+dialog.open = true; // 受控
+dialog.closeOnEscape = false;
+```
+
+布尔属性用**三态转换器**：属性缺席 = `undefined`（用组件默认值），`="false"` = `false`，其余 = `true`。这个区分是必要的——`modal` 的默认值是 `true`，如果缺席和 `="false"` 不能区分，就没法把它关掉。
+
+## 事件
+
+组件的变更以 `CustomEvent` 派发，`bubbles: true, composed: true`，事件名是 kebab-case：
+
+```ts
+document.querySelector("xh-dialog")
+  .addEventListener("open-change", (e) => {
+    console.log(e.detail.open); // { open: boolean }
+  });
+```
+
+`detail` 就是无头内核里那个明细对象，与 Vue 适配器的 `value-change` 载荷完全一致。
+
+## 生命周期
+
+一台机器一个控制器：
+
+- `connectedCallback` → 建机器并 mount（旧机器已停止时从 `initialState` 重建）；
+- 每次更新 → 跑依赖追踪；
+- `disconnectedCallback` → unmount。
+
+角色节点的进出由 `MutationObserver` 监视，但只在**真有角色节点进出**时才重新接线——业务内容（图表、虚拟列表、面板里的业务 DOM）的增删与部件集合无关。这条判断同时断掉一条死循环：角色节点若本身是会在属性变化时改写自身子节点的自定义元素，「宿主重新接线 → 写属性 → 该节点改子节点 → 又命中观察器」会闭成环。
+
+属性观察同理只盯 `value` / `disabled` / `aria-disabled` 三个**作者写的声明**，不盯机器每帧写上去的 `aria-*` / `data-*`——全量观察等于自己触发自己。
+
+## 收起态
+
+浮层关闭时用**内联 `style.display`** 而不是只靠 `hidden` 属性：作者层若给这个部件声明了 `display`，会盖过 UA 的 `[hidden] { display: none }`，光靠 `hidden` 收不起来。
+
+展开时还回作者原本的内联值而不是清成空串——后者会把你写在该节点上的 `style="display:grid"` 一并抹掉，且再也回不来。
+
+## 升级前
+
+自定义元素在 JS 到达之前不会升级，那段时间 `data-scope` / `data-part` 都还没打上，浮层内容会以裸文本堆在页面流里。`@xihan-ui/styles` 的 `undefined.css` 用 `:not(:defined)` 配合作者写的 `data-xh-part` 先把浮层子树收起来，见[皮肤与样式分层](../guide/styling#升级前的形态)。
+
+## 自定义元素清单
+
+包内附带 `custom-elements.json`（CEM 格式），128 个元素的标签名、属性、事件、CSS part 都在里面。编辑器与框架的自定义元素支持可以直接读它拿到补全与类型提示。
+
+清单由构建生成，`pnpm gate:cem` 会重跑生成后比对——改了元素忘了重新生成会被拦下。
+
+## 与 Vue 适配器的关系
+
+两者跑同一个机器、同一份 `connect`，输出的 DOM 属性完全一致。文档站每个组件页的示例两套写法并排，就是为了逐帧对照。
+
+在同一页面共存没有问题：诊断通道是全局的、层栈按文档共享，两套适配器的浮层会正确地叠在同一摞里。
+
+## 相关
+
+- [组件参考](../components/)：每个组件的标签名与必备部件
+- [解剖与部件契约](../guide/anatomy)
+- [诊断通道](../guide/diagnostics)
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/a11y
+
+# 无障碍与键盘规格
+
+无障碍在 XiHan.UI 里不是「尽量做到」，它是**判据**：每个组件都有一份机读的键盘规格表，它同时是测试的分母。
+
+## 键盘规格表
+
+```ts
+export const accordionKeyboard: KeyboardTable = {
+  component: "accordion",
+  source: "https://www.w3.org/WAI/ARIA/apg/patterns/accordion/#keyboardinteraction",
+  rows: [
+    {
+      id: "accordion.kbd.toggle",
+      keys: ["Space", "Enter"],
+      when: "focus in trigger, not disabled",
+      does: "展开/收起该条目的 content",
+    },
+    {
+      id: "accordion.kbd.next",
+      keys: ["ArrowDown", "ArrowRight"],
+      when: "focus in trigger, 按键与 orientation 同轴（dir=rtl 时左右键语义互换）",
+      does: "焦点移到下一个 trigger，末条不回绕",
+    },
+    // …
+  ],
+};
+```
+
+每一行有稳定的 `id`、触发按键、生效前置条件、以及效果。全库共 **523 条**，散落在 126 个组件上。
+
+规格表由三方共同消费：
+
+1. **测试**——一致性用例通过 `covers` 字段反查行 id，**缺一行即套件失败**；
+2. **文档**——[组件参考](../components/)里每个组件的键盘表就是它渲染出来的；
+3. **校验**——`source` 字段指向规格出处（W3C APG 模式、WAI-ARIA、HTML 标准或 WCAG 技术），改行为时能追回依据。
+
+::: tip 分母外化
+想让键盘测试通过，只能去写用例，不能去改分母。规格表是先立的契约，不是事后补的记录。
+:::
+
+## ARIA 上的几处刻意选择
+
+读组件源码时会反复见到这几种处理，它们都是权衡过的：
+
+**`aria-disabled` 而非 `disabled`**——当禁用项仍需可聚焦时用它。原生 `disabled` 会让元素丢掉焦点，读屏用户就再也 Tab 不到它，也读不到「为什么不能点」。手风琴的禁用条目、加载中的按钮都走这条。
+
+**该不做 roving tabindex 的地方就不做**——手风琴的每个触发器都是独立的 Tab 停靠点，这是 APG 对该模式的规定。组件不输出 `tabindex` 是刻意的，不是遗漏。
+
+**方向键的轴向与书写方向**——垂直列表不响应左右键；RTL 下左右键语义互换。这两件事收在 `navIntentFromKey` 一处，所有列表型组件共享同一份判断。
+
+**不归导航管的按键绝不 `preventDefault`**——否则会吃掉输入法、浏览器快捷键和默认行为。
+
+**输入法组合期不误判**——`isComposingEvent()` 用于识别输入法组合中的按键，避免把候选词确认的 `Enter` 当成提交。
+
+## 背景失活与焦点
+
+模态浮层打开时按固定顺序装配四件事：
+
+1. 注册层，压入层栈；
+2. 建消隐层（Esc、点外面、焦点移出）；
+3. 建焦点域（陷住 + 回绕 + 归还）；
+4. 锁滚动；
+5. 推迟一帧给背景加 `inert`。
+
+顺序不能乱，细节见[行为原语](./behavior)。
+
+## 浏览器里的自动扫描
+
+一致性套件的 fixture 会被挂进**真实 Chromium**，对初始态与各用例终态跑 axe。终态按形态签名去重，避免同一形态重复扫。
+
+必须在真浏览器里跑：jsdom 没有布局，对比度、目标尺寸、翻面与避让一概演不出来。
+
+```bash
+pnpm exec playwright install chromium # 首次
+pnpm test:browser
+```
+
+## 存量违规登记表
+
+扫出的存量问题登记在 `tooling/testing/src/a11y/known.ts` 里。命中已登记的规则不判失败，但**一条都不再命中时判登记过期**——修好了就必须从表里删掉，不许留着一份早已不成立的豁免。
+
+当前共三条。两个适配器共用的两条：`tag` 的禁用标签文字用的是全库统一的 `fg-disabled` / `bg-muted`（2.36:1），按 1.4.3 的失效控件豁免不算违规，但 tag 的 root 没有 axe 认得的禁用语义，所以只有它被扫出来；`prompt-input` 的输入框刻意不无条件发 `aria-label`（那会盖掉作者的 `<label for>`），一致性夹具刻意不给文案以钉住这条契约，扫出来就是一个没有名字的 textarea，真实用法里由作者命名。Web Components 适配器自己的一条：`steps` 的必需子节点由作者手写，可能缺角色要求的直接子节点。全局登记为空。
+
+::: warning
+这份表是当前状态的诚实记录，不是「已知可接受」。表里还有条目时，请自行评估这两条对你的合规要求是否可接受。
+:::
+
+## 步骤重放豁免
+
+只剩一个组件在真机里推不到用例终态，两个适配器共用这条登记：
+
+- `breadcrumb`——扫描必须拦下跨文档跳转，否则测试宿主被导航走；而用例断言的正是「不拦下」，同一文档里不可兼得。
+
+## 相关
+
+- [组件参考](../components/)：每个组件的完整键盘表
+- [测试与质量门禁](./testing)：三套判据怎么跑
+- [行为原语](./behavior)：焦点域与背景失活
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/ai
+
+# AI 对话内核
+
+做流式对话界面要解决的问题有三个：**读流**、**收敛状态**、**增量渲染**。XiHan.UI 把它们拆成三个互不依赖的包，都不碰 DOM、不碰框架。
+
+| 包 | 职责 |
+| --- | --- |
+| `@xihan-ui/chat-stream` | SSE 读取 → 协议归一 → parts 归约 → 会话 store |
+| `@xihan-ui/markdown` | 流式 Markdown 渲染：增量切块、稳定 key、消毒 |
+| `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器；可选 peer，装了才有 |
+
+配套的组件按职责分成四件：[消息流](../components/message-feed)渲结构化会话，[日志](../components/log)渲任意会往下追加的内容，[提示输入框](../components/prompt-input)收话，[代码视图](../components/code-view)呈现代码。
+
+## 数据流
+
+```
+fetch(SSE)  ──►  sse-reader  ──►  normalize  ──►  reduce  ──►  thread-store
+  网络            拆帧           协议归一        parts 归约      快照 + 订阅
+```
+
+四步各管一件事，每一步都可以单独替换或单独测试。
+
+## 传输
+
+```ts
+import { createHttpSseTransport } from "@xihan-ui/chat-stream";
+
+const transport = createHttpSseTransport({
+  url: "/api/chat",
+  headers: () => ({ authorization: `Bearer ${token}` }), // 每次请求取一次
+  fetch: customFetch, // 可选
+});
+```
+
+`Transport` 是一个接口，`stream(req, signal)` 返回归一化事件的异步生成器。HTTP + SSE 只是它的一个实现——换成 WebSocket 或别的协议，实现同一个接口即可，上层一行不用改。
+
+**`stream()` 不抛异常。** 错误路径一律先产一条事件再结束：取消产 `abort`，其余产 `retryable` 的 `error`。异常在流的边界就被转成数据，上层不必到处 try/catch。
+
+服务端协议按 Data Stream v1 归一（`normalizeDataStreamV1`），请求头 `x-vercel-ai-ui-message-stream: v1`。
+
+## 消息模型
+
+一条消息由若干 **part** 组成，而不是一个字符串：
+
+```ts
+type UIMessagePart
+  = | TextPart // 正文
+    | ReasoningPart // 思维链
+    | ToolPart // 工具调用（含审批状态）
+    | FilePart // 文件
+    | SourcePart // 引用来源（URL / 文档 + 引文锚点）
+    | DataPart // 结构化数据
+    | ErrorPart
+    | StepStartPart;
+```
+
+配套的类型守卫 `isTextPart` / `isToolPart` / `isSourcePart` 等按 part 类型分流渲染。消息元数据里带 `TokenUsage` 与 `CostBreakdown`。
+
+## 归约
+
+流上来的是增量事件，界面要的是「此刻这条消息长什么样」。`reduceEvent` 负责这个折叠：
+
+```ts
+import { createReduceState, reduceEvent } from "@xihan-ui/chat-stream";
+
+let state = createReduceState();
+for await (const event of transport.stream(req, signal))
+  state = reduceEvent(state, event);
+```
+
+块注册表按 `BlockKey` 索引，同一个块的后续增量能找回原位——工具调用先来 `input` 后来 `output`、思维链与正文交错，都不会串。
+
+## 会话容器
+
+日常用的是封好的 store：
+
+```ts
+import { createThreadStore } from "@xihan-ui/chat-stream";
+
+const store = createThreadStore({
+  transport,
+  onData: (name, data) => {}, // 瞬态 data 帧，不进 parts
+  generateId: () => crypto.randomUUID(),
+});
+
+store.subscribe((snapshot) => {
+  snapshot.messages; // readonly UIMessage[]
+  snapshot.status; // 'idle' | 'submitted' | 'streaming' | 'error'
+  snapshot.error;
+});
+
+store.submit("你好"); // 追加 user 消息并发起运行；已有运行会先被取消
+store.stop(); // 取消当前运行，保留已产出的 parts
+store.clear(); // 清空全部消息
+store.dispose();
+```
+
+两个性能装置：
+
+- **帧批处理**（`createFrameBatcher`）——把一帧内的多次增量合并成一次通知，token 级的高频更新不会变成高频重渲；
+- **打字机**（`visibleLength`）——按字符每秒的速率算此刻该显示到第几个字，把网络的突发抖动摊平成匀速输出。
+
+## 流式 Markdown
+
+```ts
+import { createStreamRenderer } from "@xihan-ui/markdown";
+
+const renderer = createStreamRenderer();
+
+// 幂等：传截至当前的全文，拿回带稳定 key 的块列表
+const blocks = renderer.render(fullText, { ended: false });
+// [{ key, kind: 'markdown' | 'code' | 'math' | 'html', html, complete, lang, source }]
+```
+
+两条设计要点：
+
+**冻结前缀。** 文本只会往后长，尾部留一块前瞻余量之后，前面的块此生不会再变。每次只解析没冻结的那一截，冻结块直接从缓存拿。不这么做的话每来一个 token 就要把整篇重解析重渲，长回复到后面会肉眼可见地卡。
+
+唯一的例外是引用定义写在引用它的块后面——这时只把用到那个标签的冻结块就地重渲，其余照旧。
+
+**稳定 key。** 生长中的那一块 key 恒为 `'live'`，定型块的 key 由下标与内容摘要拼成。生长块 key 不变，框架才会复用同一份 DOM 只改文本；每帧换 key 的话用户每收到一个 token 就被重建一次节点，选区和滚动位置全丢。
+
+`complete` 标记该块是否已闭合。未闭合的块随时会变，宿主据此决定要不要上高亮这类昂贵渲染。
+
+`html` 一律**已消毒**，可以直接插进 DOM。渲染器只暴露这一个工厂，中间态（解析结果、切块、冻结缓存）一概不放出去——放出去了消费方迟早会绕过缓存直接改块，增量渲染的保证也就没了。
+
+::: tip CommonMark 覆盖面
+实现的是 CommonMark 的一个子集，官方用例通过 489/652。仓库里有一道一致率棘轮盯着这个数字，只许涨不许跌。
+:::
+
+## 代码着色
+
+```ts
+import { createHighlighter } from "@xihan-ui/code-highlight";
+
+const highlighter = createHighlighter();
+const tokens = highlighter.highlight(code, "typescript"); // CodeToken[] | null
+```
+
+自研的**粗粒度**词法器，只分注释、字符串、数字、关键字、标点五类。类型名、函数名、属性名这些要靠语法树才分得出的东西一概不分——那是 TextMate 语法那一档的活，本实现不追它。
+
+认不出的语言、超长代码一律返回 `null`，调用方原样渲染纯文本。
+
+`HighlighterPort` 同样是 `@xihan-ui/core` 里的端口。想要更高精度，把别的高亮库接到同一个端口上即可，`code-view` 组件侧不用改。
+
+## 相关
+
+- [消息流](../components/message-feed) 与 [提示输入框](../components/prompt-input)：合起来就是一个最小对话界面
+- [日志](../components/log)：不分条、只往下追加的输出，同样粘底
+- [代码视图](../components/code-view)：把流里的代码原文渲成带行号的代码块
+- [行为原语](./behavior#贴底)：消息列表的自动贴底
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/anatomy
+
+# 解剖与部件契约
+
+「解剖」（anatomy）是 XiHan.UI 的地基约定：把一个组件拆成若干具名**部件**（part），每个部件在 DOM 上由 `data-scope` + `data-part` 两个属性唯一标识。皮肤、测试、诊断、跨适配器一致性判据全都建在这一条约定上。
+
+## 声明
+
+```ts
+import { createAnatomy } from "@xihan-ui/core";
+
+export const accordionAnatomy = createAnatomy("accordion", [
+  "root",
+  "item",
+  "header",
+  "trigger",
+  "content",
+  "indicator",
+]);
+```
+
+`build()` 把它展开成属性与选择器：
+
+```ts
+const parts = accordionAnatomy.build();
+
+parts.content.attrs;
+// { 'data-scope': 'accordion', 'data-part': 'content' }
+
+parts.content.selector;
+// '[data-scope="accordion"][data-part="content"]'
+```
+
+部件名一律 kebab-case，直接就是 `data-part` 的值，也直接就是 CSS 选择器里出现的字面量——三处同名，不做任何转换。
+
+## 三类属性
+
+DOM 上出现的属性分三类，只有前两类是对外的样式接口：
+
+| 属性 | 含义 | 谁写 |
+| --- | --- | --- |
+| `data-scope` / `data-part` | 结构标识：这是哪个组件的哪个部件 | 解剖 |
+| `data-state` / `data-disabled` / `data-orientation` / `data-highlighted` / `data-side` / `data-align` | 状态：此刻是什么样 | `connect` |
+| `data-xh-*` | 内部标记（层栈、集合项、焦点哨兵、滚动分片等） | 原语内部 |
+
+第三类以 `data-xh-` 前缀与前两类区分开。**不要在皮肤里选中它们**——它们是实现细节，不承诺稳定。
+
+## 必备部件
+
+每个组件另有一份机读元数据，声明哪些部件缺了组件就不工作：
+
+```ts
+export const accordionMeta: ComponentMeta = {
+  component: "accordion",
+  requiredParts: ["trigger", "content"],
+};
+```
+
+这份元数据不是文档注解，它有执行力：
+
+- Web Components 适配器在接线时比对作者写的 DOM，缺必备部件报 `wc.missing-part`（error），出现解剖之外的部件名报 `wc.unknown-part`（warn）；
+- 有的部件还登记了**必须使用的标签**——比如表单字段的 `label` 必须是原生 `<label>`，写成 `<div>` 会让 `for` 关联整条失效、点标签不再聚焦控件，这类「写错了会静默失效」的情况报 `wc.wrong-part-tag`。
+
+每个组件的必备部件在[组件参考](../components/)里加粗标出。
+
+## collection 管不管铺开结构
+
+不少组件收一个 `collection`（或 `columns` / `rows`）当数据入口。**收了数据不等于会替你渲染结构**，
+这里分两档，写代码前先对号入座：
+
+| 档 | 传了数据之后 | 哪些组件 |
+| --- | --- | --- |
+| **根级代铺** | `<XhXxxRoot :collection>` 单独就能用，整套部件由组件铺开；写了默认插槽就整体接管 | `accordion` `checkbox-group` `combobox` `context-menu` `listbox` `mention` `menu` `menubar` `navigation-menu` `radio-group` `select` `tabs` `toggle-group` |
+| **仅元信息** | 一个节点都不铺，结构全部手写；数据只供组件内部判断禁用、层级、选中这些 | `tree` `tree-select` `cascader` `transfer` `side-nav` `table`（`columns` / `rows`）`steps`（`count`） |
+
+判据是**结构的自由度**：扁平集合的 DOM 形状是确定的，代铺不会挡住任何写法；
+层级与多区（树、级联、穿梭框）的结构有太多合理变体，代铺一份出来只会逼作者推翻重写。
+
+代铺的那一档有一条硬约束，由 `tests/collection-required-parts.spec.ts` 逐个组件钉住：
+**铺出来的结构必须凑齐该组件的必备部件**，与手写全套部件产出的 DOM 一致。
+少一个部件就是渲染出一个看着正常、其实不工作的组件——浮层打不开、方向键找不到条目、
+读屏在自定义元素那侧直接报 `wc.missing-part`。给新组件加代铺时，先往那份测试里加一行。
+
+## 两套适配器怎么用它
+
+**Vue 适配器**把部件包成组件。`XhAccordionContent` 内部就是把 `api.getContentProps()` 展开到一个 `<div>` 上，属性由 `connect` 给，你看不见 `data-part`，但它在。
+
+**Web Components 适配器**反过来：结构由你手写，你用 `data-xh-part` 声明「这个节点担任哪个角色」，元素发现它们之后把属性挂上去。
+
+```html
+<xh-accordion>
+  <div data-xh-part="item" data-value="a">
+    <h3 data-xh-part="header">
+      <button data-xh-part="trigger">第一节</button>
+    </h3>
+    <div data-xh-part="content">内容</div>
+  </div>
+</xh-accordion>
+```
+
+::: tip 为什么是两个不同的属性名
+作者写的是 `data-xh-part`（**声明**：我打算让这个节点当 trigger），元素接线后打上的是 `data-part`（**事实**：它已经被接成 trigger 了）。两者分开，才能区分「作者写了但没接上」与「已经接上」，`wc.missing-part` 这类诊断才有意义。
+:::
+
+部件发现是逐层向下遍历，遇到嵌套的 `xh-*` 子树就跳过——嵌在里面的另一个组件的部件归它自己管。
+
+## 为什么皮肤只认属性不认类名
+
+因为类名是框架的东西，属性不是。
+
+```css
+@layer xihan.components {
+  [data-scope='button'][data-part='root'] { /* … */ }
+  [data-scope='button'][data-part='root'][data-variant='solid'] { /* … */ }
+  [data-scope='button'][data-part='root'][data-disabled] { /* … */ }
+}
+```
+
+同一份 CSS 同时给 Vue 组件与自定义元素上色，因为两者在 DOM 上长得一模一样。这也意味着你可以整包丢掉默认皮肤自己写，组件行为一点不受影响。
+
+## 归一化与属性合并
+
+`connect` 产出的是**框架无关的 prop 字典**，交给适配器的归一化器落到具体框架上：
+
+```ts
+export function connectAccordion<T extends PropTypes>(
+  service: Service<AccordionSchema>,
+  normalize: NormalizeProps<T>,
+): AccordionApi<T>;
+```
+
+`normalize` 按元素类型分成 `element` / `button` / `input` / `label` / `img` 等若干 getter，各框架各实现一份。Vue 适配器传 `vueNormalize`，Web Components 适配器传 `wcNormalize`，无头场景直接用 `@xihan-ui/core` 的恒等归一化器 `normalizeProps`。
+
+需要把自己的属性叠上去时用 `mergeProps`，它的合并语义是固定的：
+
+| 键 | 语义 |
+| --- | --- |
+| `class` / `className` | 空格拼接 |
+| `style` | 对象浅合并 |
+| `onXxx` 事件处理器 | 顺序组合，前者先执行 |
+| 其余 | 后者覆盖前者 |
+
+## 相关
+
+- [connect 与属性产出](./connect)：`getXxxProps()` 里到底装了什么
+- [皮肤与样式分层](./styling)：属性选择器怎么组织成一套皮肤
+- [诊断通道](./diagnostics)：契约违约怎么被报出来
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/animations
+
+# 动画层
+
+`@xihan-ui/animations` 是现成的动效：11 个进场预设、6 个注意预设，外加错开起播与文字拆分。零第三方依赖，框架无关，任何框架（或没有框架）都直接装、直接用。
+
+它建在 [动效原语](/guide/motion) 之上——减弱动效的降级由那一层统一兜住，这一层不另开通道。
+
+```vue
+<script setup lang="ts">
+import { BUILTIN_MOTION_NAMES, createMotionPlayer } from "@xihan-ui/animations";
+import { XhButton } from "@xihan-ui/vue";
+import { onBeforeUnmount, ref, useTemplateRef } from "vue";
+
+const enter = BUILTIN_MOTION_NAMES.slice(0, 11);
+const attention = BUILTIN_MOTION_NAMES.slice(11);
+
+const motion = createMotionPlayer();
+const card = useTemplateRef<HTMLElement>("card");
+const last = ref("");
+
+function play(name: string) {
+  const el = card.value;
+  if (!el)
+    return;
+  last.value = name;
+  void motion.play(el, name);
+}
+
+onBeforeUnmount(() => motion.cancel());
+</script>
+
+<template>
+  <div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+    <div
+      style="
+        display: grid;
+        place-items: center;
+        min-height: 140px;
+        border: 1px dashed var(--vp-c-divider);
+        border-radius: 12px;
+      "
+    >
+      <div
+        ref="card"
+        style="
+          padding: 16px 24px;
+          border-radius: 10px;
+          background: var(--vp-c-brand-1);
+          color: #fff;
+          font-weight: 600;
+        "
+      >
+        {{ last || "点下面的名字" }}
+      </div>
+    </div>
+
+    <div>
+      <p style="margin: 0 0 8px; font-size: 13px; opacity: 0.7">进场</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <XhButton
+          v-for="name in enter"
+          :key="name"
+          variant="outline"
+          size="sm"
+          @click="play(name)"
+        >
+          {{ name }}
+        </XhButton>
+      </div>
+    </div>
+
+    <div>
+      <p style="margin: 0 0 8px; font-size: 13px; opacity: 0.7">注意</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <XhButton
+          v-for="name in attention"
+          :key="name"
+          variant="outline"
+          size="sm"
+          @click="play(name)"
+        >
+          {{ name }}
+        </XhButton>
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+## 动画是配方，不是类名
+
+一段动画是一份可 JSON 序列化的配方（`MotionSpec`）：若干视觉帧加一组时序参数。
+
+```ts
+import type { MotionSpec } from "@xihan-ui/animations";
+
+const riseUp: MotionSpec = {
+  frames: [
+    { opacity: 0, y: 24, scale: 0.98 },
+    { opacity: 1, y: 0, scale: 1 },
+  ],
+  duration: 420,
+  easing: "emphasized",
+};
+```
+
+一帧能改六样东西：`opacity` `x` `y` `scale` `rotate` `blur`。位移写数字按 px，写字符串原样透传（`'100%'`）。省略的字段表示这一帧不参与该属性的插值。
+
+配方是纯数据，所以它能存进数据库、由界面下拉切换、被用户改完存回去。播放前一律过一道钳制（`clampSpec`）：越界钳住、非有限值丢弃、帧数与时长有上限，坏数据不炸播放。
+
+摊成宿主认的关键帧时有一条规矩：**某个属性只要有一帧声明过，其余帧就补上它的中性值**。只在中间帧出现的属性，宿主会拿元素当前的计算值当端点，而那个值随皮肤而变——同一份配方在不同皮肤下就不是同一个动画了。
+
+## 预设
+
+进场一族把元素从"不在场"带到静息态：
+
+`fade` `fade-up` `fade-down` `fade-start` `fade-end` `zoom-in` `zoom-out` `blur-in` `rise` `drop-in` `spin-in`
+
+注意一族从静息态出发，回到静息态：
+
+`shake` `pulse` `bounce` `wobble` `flash` `heartbeat`
+
+两族都**不留值**：播完元素回到皮肤定义的样子，动画不接管静息态的外观。这也是它们能反复播的原因。
+
+`fade-start` / `fade-end` 标了 `logical`，横向位移在 RTL 下自动取反；`fade-up` 这类纵向的不受影响。
+
+## 播
+
+```ts
+import { createMotionPlayer } from "@xihan-ui/animations";
+
+const motion = createMotionPlayer();
+
+await motion.play(card, "fade-up");
+motion.play(input, "shake"); // 校验没过，抖一下
+motion.play(el, { frames: [{ opacity: 0 }, { opacity: 1 }], duration: 500 }); // 直接给配方
+```
+
+同一元素上再播一次会先撤掉上一段——两段一起写同一批属性的话，后一段会从被改过的中间态起步。被撤掉的那次 `play` 以 `'cancelled'` 结算，不抛异常。
+
+播放器上有开关、时长系数与预设表：
+
+```ts
+const motion = createMotionPlayer({
+  enabled: true, // 接到用户偏好上，别替最终用户决定
+  speed: 1, // 全局时长系数，越大越慢
+  presets: myPresets, // 省略用内置的
+});
+
+motion.setEnabled(false); // 关掉时撤掉在播的，但 play 照常结算
+motion.cancel(el); // 撤一个
+motion.cancel(); // 全撤
+```
+
+播未收录的名字不播、不抛，只产出一条诊断告警（见 [诊断通道](/guide/diagnostics)）。
+
+## 错开起播
+
+```vue
+<script setup lang="ts">
+import type { StaggerFrom } from "@xihan-ui/animations";
+import { createMotionPlayer, splitText } from "@xihan-ui/animations";
+import { XhButton, XhRadioGroupRoot } from "@xihan-ui/vue";
+import { onBeforeUnmount, ref, useTemplateRef } from "vue";
+
+const fromOptions = [
+  { value: "first", label: "从头" },
+  { value: "last", label: "从尾" },
+  { value: "center", label: "从中间" },
+];
+
+const motion = createMotionPlayer();
+const list = useTemplateRef<HTMLElement>("list");
+const title = useTemplateRef<HTMLElement>("title");
+const from = ref<StaggerFrom>("first");
+const gap = ref(60);
+
+function playList() {
+  const el = list.value;
+  if (!el)
+    return;
+  void motion.playAll([...el.children] as HTMLElement[], "rise", {
+    stagger: gap.value,
+    from: from.value,
+  });
+}
+
+async function playTitle() {
+  const el = title.value;
+  if (!el)
+    return;
+  const { parts, restore } = splitText(el);
+  await motion.playAll(parts, "fade-up", { stagger: 30 });
+  restore();
+}
+
+onBeforeUnmount(() => motion.cancel());
+</script>
+
+<template>
+  <div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
+      <XhRadioGroupRoot
+        v-model:value="from"
+        :collection="fromOptions"
+        label="起点"
+        name="stagger-from"
+      />
+      <label style="display: flex; align-items: center; gap: 8px">
+        间隔 {{ gap }}ms
+        <input v-model.number="gap" type="range" min="0" max="200" step="10">
+      </label>
+    </div>
+
+    <div style="display: flex; gap: 8px">
+      <XhButton size="sm" @click="playList">播列表</XhButton>
+      <XhButton size="sm" variant="outline" @click="playTitle">播标题</XhButton>
+    </div>
+
+    <h3 ref="title" style="margin: 0; font-size: 24px">曦寒 UI 动画层</h3>
+
+    <div ref="list" style="display: flex; flex-wrap: wrap; gap: 8px">
+      <div
+        v-for="n in 8"
+        :key="n"
+        style="
+          display: grid;
+          place-items: center;
+          width: 48px;
+          height: 48px;
+          border-radius: 10px;
+          background: var(--vp-c-brand-soft);
+          font-weight: 600;
+        "
+      >
+        {{ n }}
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+```ts
+await motion.playAll(list.children, "rise", { stagger: 40, from: "center" });
+```
+
+`from` 决定从哪一端铺开：`first` 从头、`last` 从尾、`center` 从中间往两边。间隔叠在给定的基础延迟上。任意一个被打断，整体就算被打断。
+
+## 文字拆分
+
+`splitText` 把一段文字拆成逐字或逐词的行内块，正好是 `playAll` 要的一组元素。
+
+```ts
+import { splitText } from "@xihan-ui/animations";
+
+const { parts, restore } = splitText(title, { by: "char" });
+await motion.playAll(parts, "fade-up", { stagger: 30 });
+restore();
+```
+
+按码点切，不会把 emoji 拆成两半；空白原样保留，换行照常。每一段都是 `inline-block`——行内元素吃不到 `translate` 与 `scale`。
+
+::: warning 无障碍
+原文会挂到容器的 `aria-label`，拆出来的每一段标 `aria-hidden`——逐字的 `span` 会让部分读屏逐字念出来。
+
+这意味着**容器的角色得支持命名**（标题、按钮、链接这类）。套在裸 `div` 上读屏可能读不到无障碍名，那种情况自己另给可访问文本。用完记得 `restore()`。
+:::
+
+## 倒着播
+
+`reverseSpec` 把一份进场配方翻成退场配方：帧序反转、偏移量镜像。逐帧缓动会被丢弃——它描述的是"本帧到下一帧"，反转之后那个区间换了主人。
+
+```ts
+import { motionPresets, reverseSpec } from "@xihan-ui/animations";
+
+await motion.play(el, reverseSpec(motionPresets["fade-up"]));
+```
+
+要做的是**弹窗这类会挂载卸载的进出场**，别用这个——那需要在卸载前把动画播完，走 [行为原语](/guide/behavior) 的进出场时序，动画本身交给 CSS `@keyframes`。这里的退场适合元素常驻、只是隐藏的场景。
+
+## 滚动进入视口再播
+
+观察不是动画，不收在这个包里。用 `@xihan-ui/core` 的 `createViewportEntry` 观察，回调里调 `play`：
+
+```ts
+import { createViewportEntry } from "@xihan-ui/core";
+
+createViewportEntry({
+  scope,
+  target: () => card,
+  onEnter: () => void motion.play(card, "rise"),
+});
+```
+
+## 相关
+
+- [动效原语](/guide/motion)：缓动、弹簧、减弱动效偏好
+- [行为原语](/guide/behavior)：进出场时序、滚动观察
+- [声音层](/guide/sound)：同一套"配方 + 预设 + 播放器"的形状，换成听觉
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/backgrounds
+
+# 背景层
+
+`@xihan-ui/backgrounds` 是一层 WebGL2 背景效果与数据驱动粒子点云，框架无关、零第三方依赖。它是**可选**的：适配器把它声明为 optional peer，不用视觉效果的应用不会因为装了 `@xihan-ui/vue` 而多出一个 WebGL 引擎。
+
+WebGL2 缺席时自动降级成 CSS 静态背景，不报错、不留白。
+
+## 两条主线
+
+1. **程序化效果**——传一个效果对象与一份参数，把它铺在任意元素的背景上；
+2. **点云**——图片、文字、SVG、参数方程都能采样成点云，交给 `particles` 效果显示，两份点云之间自动形变过渡。
+
+## 内置效果
+
+14 个：`aurora` `beam` `flow-field` `fluid` `glass` `grain` `mesh` `nebula` `orb` `particles` `plasma` `ripple` `starfield` `wave`。
+
+每个效果自带参数规格（数值、布尔、枚举、颜色四类），可以据此自动生成调参面板。
+
+这 14 个**不自动注册**。按名字取用前要先注册；直接传效果对象则不需要，见下。
+
+## 基础用法
+
+两条路，按场景选。
+
+**传效果对象**——不经过注册表，没引到的效果会被打包器摇掉。只用一两个效果时选它：
+
+```ts
+import { auroraEffect, createBackgroundSurface, nebulaEffect } from "@xihan-ui/backgrounds";
+
+const surface = createBackgroundSurface(el, {
+  effect: auroraEffect,
+  params: { speed: 1.6 },
+  quality: "high",
+  pointer: true, // 自动绑指针事件，想自己喂坐标就关掉
+  autoplay: true,
+  respectReducedMotion: true, // 系统开启减弱动态效果时冻结时间轴
+  pauseOffscreen: true, // 滚出视口时暂停绘制
+});
+
+surface.setParams({ speed: 2 });
+surface.setEffect(nebulaEffect);
+surface.pause();
+surface.destroy();
+```
+
+**按名字**——适合参数存在配置里、由界面下拉切换。名字要先注册：
+
+```ts
+import { auroraEffect, createBackgroundSurface, nebulaEffect, registerBuiltinEffects, registerEffects } from "@xihan-ui/backgrounds";
+
+registerBuiltinEffects(); // 14 个内置效果全部注册
+registerEffects([auroraEffect, nebulaEffect]); // 或者只注册用到的这两个
+
+createBackgroundSurface(el, { effect: "aurora" });
+```
+
+内置效果不自动注册，是因为注册表一旦静态引上这 14 个，任何用到 `createBackgroundSurface` 的应用都会把它们全打进包——实测约 35 kB（gzip 约 8.6 kB），占整包四成。没注册就按名字取会抛错，错误信息会点名该调哪个函数、以及那个效果的导出名叫什么。合法的内置名字可以从 `BUILTIN_EFFECT_NAMES` 取，它是纯字符串清单，引它不会把效果对象带进包。
+
+后两个选项默认开着，是让这层在真实页面里不成为负担的关键：看不见的画面不烧 GPU，声明了「减弱动态效果」的用户不会被动画晃到。
+
+## 宿主的定位
+
+`target` 传容器元素时，画布是绝对定位的，所以容器必须是它的定位祖先。库的做法是：
+
+- 容器自己已有定位（内联写的、类名写的都算）——**一个字都不动**；
+- 容器量出来是 `static`——写一句内联 `position: relative` 兜底；
+- 容器还没进文档——**先不挂画布、也不写定位**。此时 `getComputedStyle` 什么都算不出来，写下去会压过你用类名写的定位且撤不回来。等容器进文档拿到盒子，库再来定这一次。
+
+所以容器的定位写在类名里是安全的，不必为了这层背景改成内联样式。
+
+## 在 Vue 里用
+
+Vue 侧的适配放在**单独的子入口** `@xihan-ui/vue/backgrounds`，三种用法从轻到重：
+
+```vue
+<script setup lang="ts">
+import { auroraEffect, fluidEffect, nebulaEffect } from "@xihan-ui/backgrounds";
+import { useBackground, vBackground, XhBackground } from "@xihan-ui/vue/backgrounds";
+
+const visual = useBackground({ effect: fluidEffect });
+</script>
+
+<template>
+  <!-- 1. 指令：给任意元素或组件的根元素铺一层背景，一个字都不用改组件 -->
+  <XhButton v-background="auroraEffect">提交</XhButton>
+  <div v-background="{ effect: auroraEffect, params: { speed: 1.6 } }" />
+
+  <!-- 2. 组件：插槽内容浮在效果之上，画布 pointer-events: none 不挡交互 -->
+  <XhBackground :effect="nebulaEffect" :params="{ density: 0.8 }">
+    <h1>标题浮在效果上</h1>
+  </XhBackground>
+
+  <!-- 3. 组合式函数：自己拿画面实例，接自定义调度或调参面板 -->
+  <div :ref="visual.attach" />
+</template>
+```
+
+Vue 子入口**不替你注册**内置效果。要在模板里写字符串名（`v-background="'aurora'"`、`effect="nebula"`），先在应用入口调一次 `registerBuiltinEffects()` 或 `registerEffects([...])`。
+
+## 在自定义元素里用
+
+同样是单独注册，不引这一行就不会把引擎打进包里：
+
+```ts
+import { defineXhBackground } from "@xihan-ui/web-components/backgrounds";
+
+defineXhBackground();
+```
+
+`defineXhBackground()` 会把内置效果一并注册进注册表，所以 `<xh-background effect="aurora">` 直接可用；代价是这条入口一定带上全部 14 个效果。
+
+## 点云
+
+把任意东西采样成点，再让粒子摆成那个形状：
+
+```ts
+import { imageToCloud, shapeCloud, svgToCloud, textToCloud } from "@xihan-ui/backgrounds";
+
+const cloud = await textToCloud("曦寒", { count: 8000 });
+surface.setCloud(cloud, { duration: 1.2 }); // 与上一份点云之间形变过渡
+```
+
+| 来源 | 函数 |
+| --- | --- |
+| 文字 | `textToCloud` |
+| 图片 | `imageToCloud` / `drawableToCloud` |
+| SVG 路径 | `svgToCloud` / `pathToCloud` |
+| 内置形状 | `shapeCloud`（`SHAPE_NAMES` 里列出全部） |
+| 自定义 | `createCloud` + `normalizeCloud` / `resample` / `mergeClouds` |
+
+点云工具还有 `boundsOf`（包围盒）、`lerpArrays`（插值）、`scatterShell`（球壳散布）、`createRng`（可复现随机）。
+
+## 自定义效果
+
+```ts
+import { colorSpec, defineEffect, numberSpec, registerEffect } from "@xihan-ui/backgrounds";
+
+const myEffect = defineEffect({
+  name: "my-effect",
+  params: {
+    // (label, min, max, step, default)
+    speed: numberSpec("速度", 0, 4, 0.1, 1),
+    tint: colorSpec("主色", "#3b82f6"),
+  },
+  shared: "/* 两个通道共用的 uniform 声明与函数 */",
+  fragment: "/* 流场通道的片元着色器主体，含 main() */",
+  uniforms: ctx => ({ /* 每帧算的 uniform */ }),
+  fallback: params => "linear-gradient(…)", // 无 WebGL2 时当 CSS background
+  scale: 0.75, // 渲染分辨率倍率；柔和的画面调低可省掉大半像素
+});
+
+registerEffect(myEffect);
+```
+
+注册后就能按名字引用，和已注册的内置效果一样进调参面板。画质档位有 `auto` / `high` / `balanced` / `eco` 四挡，`auto` 按设备像素比与硬件并发数推断。
+
+## 调度
+
+所有画面共享一个调度器（`joinScheduler`），页面上开十个效果也只有一条 `requestAnimationFrame` 循环。`scheduledCount()` 可以查此刻有几个在跑。
+
+## 相关
+
+- [Vue 适配器](../adapters/vue)
+- [Web Components 适配器](../adapters/web-components)
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/behavior
+
+# 行为原语
+
+`@xihan-ui/core` 里的行为原语收的是**跨组件复用的交互机制**：对话框、抽屉、气泡、菜单、右键菜单、悬浮卡片……它们的差别在触发方式和视觉，但「点外面要关」「焦点要陷住」「背景不能滚」这些是同一套东西。写在这里一次，组件只管调用。
+
+配套的层栈与背景失活也在 `@xihan-ui/core` 里（它们是结构原语，比行为更底层）。
+
+## 在 Vue 里用
+
+原语都是框架无关的：收一份配置与几个元素 getter，返回一个要自己释放的句柄。接进 Vue 无非是把释放挂到作用域结束，这层包装收在 `@xihan-ui/vue/behavior`：
+
+```ts
+import { useHoverIntent, useScrollLock } from "@xihan-ui/vue/behavior";
+
+useScrollLock(() => open.value, config);
+
+useHoverIntent({
+  getTriggerEl: () => triggerRef.value,
+  getContentEl: () => (open.value ? contentRef.value : null),
+  onOpenIntent: () => (open.value = true),
+  onCloseIntent: () => (open.value = false),
+});
+```
+
+另有 `useScrollTracker` / `useStickToBottom` / `useTypeahead`，接法同上。`useStickToBottom` 除状态外还交出句柄上的两个动作——「回到底部」按钮要的就是前者：
+
+```ts
+const { state, scrollToBottom } = useStickToBottom({
+  config,
+  scrollEl: () => viewportRef.value,
+  contentEl: () => contentRef.value,
+});
+
+// state.value?.atBottom 为假时露出「回到底部」，点了调 scrollToBottom()
+```
+
+两个 getter 里读的是 ref 就不必自己 `retarget`：节点换了这层包装会重绑。
+
+**需要层栈仪式的那几个不在这里**——消隐层、焦点域、背景失活要按顺序接四五个东西，接错的表现是「点子菜单父层跟着关」这类不报错的怪症。那种场景请直接用库里现成的浮层组件；真要自建，照下面几节的顺序接。
+
+## 层栈
+
+浮层不是一个个孤立的东西，它们叠成一摞。`LayerRegistry` 是这摞的账本：
+
+```ts
+export type LayerKind = "modal" | "popover" | "inline";
+
+export interface Layer {
+  readonly id: string;
+  readonly kind: LayerKind;
+  node: () => HTMLElement | null; // 层的根节点
+  branches: () => Element[]; // 逻辑属于本层、DOM 却在别处的节点
+  isModal: () => boolean;
+  surfaces: () => Element[]; // 点了就该关本层的表面，如遮罩
+}
+```
+
+两个概念值得单独说：
+
+- **`branches`（分支）**——嵌套 portal 出去的子层。菜单开在对话框里、子菜单再 portal 到 body，DOM 上它们是兄弟，逻辑上是父子。漏登记分支会让「点子菜单」被判成「点了外面」，父层跟着关掉。
+- **`surfaces`（表面）**——遮罩这类点了就该关的元素。它属于本层，但点它的语义是关闭而不是「点在层内」。
+
+同一文档共用一个注册表；不同文档（iframe、画中画窗口）各有一份。
+
+注册表还给出 `elementsAbove(layer)`：栈中位于该层之上的各层的全部节点（`node` + `branches` + `surfaces`）。背景失活要用它把上层排除在自己的管辖之外。
+
+## 消隐层
+
+```ts
+import { createDismissLayer } from "@xihan-ui/core";
+
+const layer = createDismissLayer({
+  config, // RuntimeConfig：scope + 层注册表 + 豁免配置
+  layer, // 已注册的层
+  onDismiss: (reason) => { /* 'escape-key' | 'pointer-down-outside' | 'focus-outside' | 'programmatic' */ },
+  onEscapeKeyDown: (e) => { /* preventDefault() 即这次别关 */ },
+  onPointerDownOutside: (e) => {},
+  onFocusOutside: (e) => {},
+  onInteractOutside: (e) => {}, // 上面两者任一发生时也派发一次
+});
+```
+
+两条约束：
+
+- **只有栈顶层响应 `Escape`。** 否则一次按键会把整摞层全关掉。
+- **四个回调都是可取消的表决票。** 它们收到的是 `cancelable` 的 `CustomEvent`，`preventDefault()` 即否决本次关闭，原生事件在 `detail.originalEvent` 里。这让「表单没填完时按 Esc 先弹确认」这类需求不必绕开组件实现。
+
+## 焦点域
+
+```ts
+import { createFocusScope } from "@xihan-ui/core";
+
+const scope = createFocusScope({
+  config,
+  layer,
+  container: () => contentEl,
+  trapped: () => isModal, // 焦点不得逃逸，生命周期内可变
+  loop: true, // Tab 到边界回绕，与 trapped 正交
+  branches: () => nestedPortals,
+  initialFocus: () => firstInputEl,
+  restoreFocus: () => true, // 卸载时把焦点还给创建前那个元素，默认开
+  onMountAutoFocus: (e) => {}, // 可 preventDefault 接管首次聚焦
+  onUnmountAutoFocus: (e) => {},
+});
+```
+
+`trapped` 与 `loop` 是两件事：陷住（逃不出去）和回绕（Tab 到末尾回到开头）。模态对话框两者都要；非模态气泡通常只要回绕。
+
+非栈顶的焦点域会自动暂停——上面又开了一层时，下面那层不该再抢焦点。
+
+## 滚动锁
+
+```ts
+import { acquireScrollLock } from "@xihan-ui/core";
+
+const lock = acquireScrollLock({ config });
+lock.dispose();
+```
+
+锁是**引用计数**的：叠了三层浮层就加了三次，全部释放才真正解锁并还原滚动位置。
+
+**锁哪个元素**由 `config.scrollRoot?.()` 决定。没注入就先看整页，再往下探测真正在滚的那个容器——宿主把滚动搬进了内容容器（`body` 自己不滚）时必须注入，否则锁到的是不滚的那个，浮层背后照样能滚。
+
+加锁期间让出来的滚动条宽度写在文档根的 `--xh-scroll-lock-gutter` 上，供 `fixed` 定位的元素让位：
+
+```css
+.my-fixed-header {
+  padding-inline-end: var(--xh-scroll-lock-gutter, 0px);
+}
+```
+
+浮层内部自己要能滚的场景不靠白名单：锁改的是滚动容器本身，浮层是 portal 出去的独立子树，它内部的滚动不受影响。
+
+## 背景失活
+
+```ts
+import { hideOutside } from "@xihan-ui/core";
+
+const restore = hideOutside(() => [contentEl, ...branches, ...registry.elementsAbove(layer)], scope, {
+  exemptSelectors: [".my-portal-root"],
+});
+```
+
+给 `body` 下除目标与豁免节点外的直接子元素加 `inert`，背景内容对读屏与键盘一并消失。
+
+第一个参数取的是函数而不是数组：施加 `inert` 的时机横跨整个展开期（`MutationObserver` 盯着后来新增到 `body` 的节点），晚于调用时刻才挂载的节点必须也能被算进目标。**目标必须包含全部分支节点，以及栈中位于自己之上的层**（`registry.elementsAbove(layer)`），漏传会把 portal 出去的嵌套浮层一起 inert 掉——看得见、点不动。
+
+带 `data-xh-inert-exempt` 的元素默认豁免。
+
+## 进出场
+
+退场动画和「什么时候可以从 DOM 里摘掉」是一对老问题。`presence` 用**租约**解决：
+
+```ts
+export interface PresenceHandle {
+  readonly open: boolean; // 逻辑状态：该开着吗
+  readonly rendered: boolean; // 渲染状态：DOM 还该留着吗
+  readonly state: "open" | "closed"; // 直接绑到 data-state
+
+  claimExit: (reason: string, timeoutMs?: number) => ExitLease;
+  onBeforeExit: (fn: () => void) => Cleanup;
+  onExitComplete: (fn: () => void) => Cleanup;
+  update: (open: boolean) => void;
+}
+```
+
+关闭时先同步触发 `onBeforeExit`，动画探测器在此**申领租约**；所有租约归还之前 `rendered` 保持 `true`，DOM 不摘。退场中途又被打开则 `cancel()` 租约，不卸载。租约带超时，动画事件没来也不会永远卡住。
+
+适配器必须在 `data-state` **已提交到 DOM 之后**才调 `update(open)`——先改属性再让 CSS 过渡起跑，顺序反了动画不会播。
+
+## 集合导航
+
+列表型组件（菜单、列表框、组合框、树、标签页）共用一套条目导航：
+
+```ts
+import { focusItem, navigateItems, navIntentFromKey, queryItems } from "@xihan-ui/core";
+
+const items = queryItems(rootEl, { scope: "menu", part: "item" });
+const intent = navIntentFromKey(event, { axis: "vertical", dir: "ltr" });
+if (intent) {
+  event.preventDefault();
+  focusItem(navigateItems(items, currentValue, intent, { loop: true }));
+}
+```
+
+`navIntentFromKey` 把按键翻成方向意图（`next` / `prev` / `first` / `last`），并处理两件容易出错的事：**轴向**（垂直列表不该响应左右键）与**书写方向**（RTL 下左右键语义互换）。不归导航管的按键返回 `null`，此时绝不能 `preventDefault`——否则会吃掉输入法、快捷键和浏览器默认行为。
+
+条目的禁用与身份通过统一的 `data` 标记读取，因此判定逻辑对所有组件一致。
+
+## Typeahead
+
+```ts
+import { createTypeahead } from "@xihan-ui/core";
+
+const typeahead = createTypeahead({ timeout: 350 });
+const query = typeahead.push(event.key); // 不参与检索的键返回 null
+typeahead.clear(); // 收起浮层、切换焦点组时丢弃缓冲
+```
+
+连续按键在超时窗口内累积成查询串，超时后重开一轮。空格只在缓冲区非空时参与检索——否则会吃掉「空格 = 选中」。
+
+## 贴底
+
+流式输出的消息列表需要「新内容来了自动滚到底，但用户往上翻之后就别抢」：
+
+```ts
+import { createStickToBottom } from "@xihan-ui/core";
+
+const stick = createStickToBottom({
+  config,
+  scrollEl: () => viewportEl,
+  contentEl: () => contentEl, // 尺寸变化的观察目标
+  threshold: 64, // 距底多少 px 算「在底」
+  onChange: (state) => {},
+});
+
+stick.scrollToBottom(); // 减弱动态效果开启时自动改为 'instant'
+stick.retarget(); // 节点换了就解绑重绑
+```
+
+会话线程组件用的就是它。
+
+## 其他
+
+| 导出 | 用途 |
+| --- | --- |
+| `prefersReducedMotion()` / `onReducedMotionChange()` | 读与订阅「减弱动态效果」系统偏好 |
+| `easing` | 一组具名缓动函数 |
+| `applySelection()` / `toggleSelectAll()` / `rangeBetween()` | 选中集合运算：带锚点的范围选、全选与切换，不碰 DOM |
+| `dispatchCancelable()` | 派发可取消的自定义事件（表决票模式） |
+| `getTabbables()` / `focusFirst()` / `focusSafely()` | 可聚焦元素查询与安全聚焦 |
+
+## 相关
+
+- [浮层定位](./position)：坐标怎么算
+- [状态机运行时](./machine)：这些原语在 effects 里被装配
+- [无障碍与键盘规格](./a11y)：焦点与按键的规格出处
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/connect
+
+# connect 与属性产出
+
+`connect` 是无头内核的出口：**输入是服务与归一化器，输出是一组 props-getter**。它把「机器现在处于什么状态」翻译成「DOM 上此刻该有哪些属性」。
+
+```ts
+export function connectAccordion<T extends PropTypes>(
+  service: Service<AccordionSchema>,
+  normalize: NormalizeProps<T>,
+): AccordionApi<T>;
+```
+
+`connect` 里没有任何 DOM 写操作，也没有任何框架 API。它是一个纯函数：同样的服务状态，产出同样的属性字典。
+
+## api 上有什么
+
+以手风琴为例：
+
+```ts
+export interface AccordionApi<T extends PropTypes = PropTypes> {
+  // 状态与操作
+  value: string[];
+  setValue: (next: string[]) => void;
+  isOpen: (value: string) => boolean;
+
+  // 每个部件一个 getter
+  getRootProps: () => T["element"];
+  getItemProps: (props: AccordionItemProps) => T["element"];
+  getHeaderProps: (props: AccordionItemProps) => T["element"];
+  getTriggerProps: (props: AccordionItemProps) => T["button"];
+  getContentProps: (props: AccordionItemProps) => T["element"];
+  getIndicatorProps: (props: AccordionItemProps) => T["element"];
+}
+```
+
+两类成员：
+
+- **状态与操作**——当前值、判定函数、命令式方法，给你在模板外用；
+- **props-getter**——每个部件一个，名字固定是 `get` + 部件名的大驼峰 + `Props`。
+
+部件本身有身份的（条目、标签页面板这类），getter 收一个描述该条目的参数；单例部件的 getter 不收参数。
+
+## getter 里装了什么
+
+```ts
+getTriggerProps: item => normalize.button({
+  ...parts.trigger.attrs, // data-scope + data-part
+  [ITEM_VALUE_ATTR]: item.value, // 集合导航用的身份标记
+  "id": triggerId(item.value), // 由 scope 派生，同页多实例不冲突
+  "type": "button",
+  "aria-controls": contentId(item.value), // 与 content 的 id 对上
+  "aria-expanded": isOpen(item.value) ? "true" : "false",
+  "aria-disabled": item.disabled ? "true" : "false",
+  "data-state": stateAttr(item), // 皮肤钩子
+  "data-disabled": dataAttr(item.disabled),
+  "onClick": () => { /* send({ type: 'ITEM.TOGGLE', … }) */ },
+  "onKeydown": onTriggerKeydown(item),
+});
+```
+
+五类内容，缺一不可：
+
+| 类别 | 例子 | 谁消费 |
+| --- | --- | --- |
+| 结构标识 | `data-scope` `data-part` | 皮肤、测试、诊断 |
+| 无障碍语义 | `role` `aria-expanded` `aria-controls` | 读屏 |
+| 状态钩子 | `data-state` `data-disabled` | 皮肤 |
+| id 关联 | `id` `aria-labelledby` | 读屏；id 由 `scope.partId()` 派生 |
+| 事件处理器 | `onClick` `onKeydown` | 适配器绑到 DOM |
+
+id 一律由 `scope` 派生而不是随手生成，这样同一页面挂多个实例时 `aria-controls` 指向的仍然是自己那份内容。跨适配器一致性测试会把 id 的具体值抹掉、把 IDREF 属性翻译成 `@part(...)` 再比对——两套适配器的关联结构必须完全一致。
+
+## 归一化器
+
+`normalize` 按元素类型分成若干 getter：`element` / `button` / `input` / `label` / `output` / `select` / `textarea` / `img`。`connect` 按部件实际渲染成什么标签选对应的那个，适配器就能针对性地转换。
+
+```ts
+// 无头场景：恒等归一化，原样拿到属性字典
+import { normalizeProps } from "@xihan-ui/core";
+
+const api = connectAccordion(service, normalizeProps);
+api.getTriggerProps({ value: "a" });
+// { 'data-scope': 'accordion', 'data-part': 'trigger', 'aria-expanded': 'false', … }
+```
+
+Vue 适配器传的是 `vueNormalize`（把 `onKeydown` 一类的键改写成 Vue 认的形态），Web Components 适配器传 `wcNormalize`。要接第三个框架，实现一份 `NormalizeProps` 即可，`connect` 一行不用改。
+
+## 无障碍属性上的几处刻意选择
+
+`connect` 里对 ARIA 的处理有一批是明确权衡过的，读组件源码时会反复见到：
+
+- **`aria-disabled` 而非 `disabled`**，当禁用项仍需可聚焦时（手风琴的禁用条目、加载中的按钮）。原生 `disabled` 会让元素丢掉焦点，读屏用户就再也 Tab 不到它，也读不到「为什么不能点」。
+- **不输出 `tabindex` 的组件是刻意的**。手风琴不做 roving tabindex，每个触发器都是独立的 Tab 停靠点——这是 APG 对该模式的规定，不是遗漏。
+- **`hidden` 用 `!open || undefined`**，让属性在展开时彻底消失而不是 `hidden="false"`。
+- **纯装饰部件挂 `aria-hidden="true"`**，比如指示箭头。
+
+## 自己拿 api 渲染
+
+三种宿主都可以直接用 `connect`，不必经过现成组件。
+
+Vue 里走组合式函数：
+
+```vue
+<script setup lang="ts">
+import { useAccordion } from "@xihan-ui/vue";
+
+const { api } = useAccordion({ multiple: true, defaultValue: ["a"] });
+</script>
+
+<template>
+  <section v-bind="api.getRootProps()">
+    <!-- 自己决定渲染成什么标签 -->
+  </section>
+</template>
+```
+
+完全脱离框架时自己建服务：
+
+```ts
+import { createCounterIdGenerator, createScope, createService, normalizeProps } from "@xihan-ui/core";
+import { createVanillaRuntime } from "@xihan-ui/core/vanilla";
+import { accordionMachine, connectAccordion } from "@xihan-ui/headless";
+
+const runtime = createVanillaRuntime();
+const scope = createScope(rootEl, createCounterIdGenerator());
+const service = createService(accordionMachine, {
+  props: () => ({ multiple: true }),
+  runtime,
+  scope,
+});
+runtime.start();
+
+const api = connectAccordion(service, normalizeProps);
+runtime.subscribe(() => {
+  // 任一格子变化即重读 api，把属性刷到 DOM 上
+});
+```
+
+## 相关
+
+- [解剖与部件契约](./anatomy)：`data-scope` / `data-part` 从哪来
+- [状态机运行时](./machine)：`service` 从哪来
+- [无障碍与键盘规格](./a11y)：这些 ARIA 属性对应的规格出处
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/diagnostics
+
+# 诊断通道
+
+组件在运行期发现「这里不对」时不直接 `console.warn`，而是往**诊断通道**投递一条结构化记录。宿主订阅后自行决定打印、收集还是上报。
+
+## 为什么不直接打日志
+
+因为契约违约需要被**处理**，不只是被看见。`wc.missing-part` 这类问题在开发时该显眼地报出来，在测试里该让用例失败，在生产环境该静默——同一条记录，三种归宿。写死 `console.warn` 只满足第一种。
+
+## 记录的形状
+
+```ts
+interface DiagnosticRecord {
+  code: string; // 稳定标识，如 'wc.missing-part'
+  level: "error" | "warn";
+  message: string; // 面向开发者的说明，文案可变
+  scope?: string; // 组件名，取解剖名
+  instanceId?: string; // 区分同一组件的多个实例
+  part?: string;
+  node?: Element;
+  detail?: Record<string, unknown>;
+}
+```
+
+**`code` 稳定，`message` 不稳定。** 订阅方按码分流，不要匹配文案。
+
+## 现有的码
+
+```ts
+export const DIAGNOSTIC_CODES = {
+  invariant: "core.invariant", // 断言不成立
+  warn: "core.warn", // 条件告警
+  layerDisposeNotTop: "core.layer.dispose-not-top", // dispose 的层不是栈顶
+  machineError: "machine.error", // 机器抛出 MachineError
+  wcMissingPart: "wc.missing-part", // 作者未渲染必需的角色节点
+  wcUnknownPart: "wc.unknown-part", // 角色节点的 part 名不在组件解剖内
+  wcWrongPartTag: "wc.wrong-part-tag", // 角色节点的标签不满足要求，原生语义会静默失效
+  qrCodeLogoDamage: "qr-code.logo-damage", // 中心 logo 挖掉的码字超出纠错级别能恢复的量
+  stylesMissingSkin: "styles.missing-skin", // 页面上出现了组件，但它那份皮肤没被引入
+  versionMismatch: "core.version-mismatch", // 适配器与 core 的版本不一致，锁步发版被打破
+  ignoredSlot: "core.ignored-slot", // 作者给了默认插槽，但该组件不渲染插槽内容
+  overlayStackingTrap: "overlay.stacking-trap", // 浮层的祖先建了层叠上下文，浮层的层号被困在其中
+  scrollbarMissingScrollable: "scrollbar.missing-scrollable", // 滚动条挂载时找不到它要管的滚动容器
+  overlayMissingAnchor: "overlay.missing-anchor", // 浮层展开了却没有锚点，位置无从算起
+};
+```
+
+这份清单与 `@xihan-ui/core` 里的码表逐条对账，不会漏码，可以直接照它写分流。
+
+三条 `wc.*` 是 Web Components 适配器的部件契约校验，也是日常最容易撞上的三条——手写 DOM 时漏一个 `data-xh-part` 或者写错名字，通道会明确告诉你哪个节点、哪个部件。
+
+## 用法
+
+```ts
+import { onDiagnostic, setDiagnosticsConsoleOutput, setDiagnosticsLevel } from "@xihan-ui/core";
+
+// 订阅
+const off = onDiagnostic((record) => {
+  if (record.code === "wc.missing-part")
+    reportToSentry(record);
+});
+
+// 调阈值：'error' | 'warn' | 'silent'
+setDiagnosticsLevel("warn");
+
+// 关掉内建 console 输出，只走自己的订阅
+setDiagnosticsConsoleOutput(false);
+```
+
+其余可用的口子：
+
+| 函数 | 作用 |
+| --- | --- |
+| `getDiagnostics()` | 拿到通道对象本身 |
+| `reportDiagnostic(record)` | 投递一条（自定义组件里用） |
+| `setDiagnosticsDedupe(on)` | 同一 `code + scope + instanceId + part + message` 是否只报一次 |
+| `resetDiagnostics()` | 清空订阅者、去重记录与全部开关 |
+
+## 默认行为
+
+| 环境 | 阈值 | console 输出 | 去重 |
+| --- | --- | --- | --- |
+| 开发 | `warn` | 开 | 开 |
+| 生产 | `silent` | 关 | 开 |
+
+生产默认 `silent`，投递直接被丢弃，不产生任何开销。要在生产收集，显式调 `setDiagnosticsLevel('error')` 并挂自己的订阅。
+
+去重键包含 message——同一个码下不同文案是不同的问题，只有逐帧重复的同一条才该被压掉。去重集有容量上限，超出即整体清空，长跑进程不会无界增长。
+
+## 隔离性
+
+- 通道挂在全局，同一页面里多份 `@xihan-ui/core` 副本共用一条通道；
+- **订阅方抛错不会回流进组件**——你的上报逻辑炸了不会连累界面。
+
+## 在测试里用
+
+把阈值调到 `warn` 并订阅，就能把契约违约变成用例失败：
+
+```ts
+import { onDiagnostic, resetDiagnostics, setDiagnosticsLevel } from "@xihan-ui/core";
+
+beforeEach(() => {
+  resetDiagnostics();
+  setDiagnosticsLevel("warn");
+});
+
+it("不应有契约违约", () => {
+  const records: DiagnosticRecord[] = [];
+  onDiagnostic(r => records.push(r));
+  render();
+  expect(records).toEqual([]);
+});
+```
+
+## 相关
+
+- [解剖与部件契约](./anatomy)：部件契约校验的内容
+- [Web Components 适配器](../adapters/web-components)：三条 `wc.*` 码的来源
+- [版本与兼容性政策](./versioning)：名字怎么改、怎么删
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/forms
+
+# 表单参与与重置
+
+复合控件的值攥在自己的机器里，浏览器看不见。要让它随 `<form>` 一起提交、一起重置，靠两件事：
+一份**表单影子**（把值映射成原生输入）和一条**重置事件**（把宿主表单的 `reset` 翻译进机器）。
+
+## 表单影子
+
+给了 `name` 才生出影子，不给就整条不参与提交——既有 DOM 一个字节不变。
+
+```vue
+<XhSwitch name="notify" default-checked />
+```
+
+提交出去是 `notify=on`。值可以换：`<XhSwitch name="theme" value="dark" />` 提交 `theme=dark`。
+
+三种形态，按组件的值形状分：
+
+| 形态 | 谁在用 | 说明 |
+| --- | --- | --- |
+| 单个 `hidden-input` | color-picker、combobox、tree-select、checkbox、switch、rating…… | 多值的按逗号拼成一串 |
+| 一值一个影子输入 | checkbox-group、radio-group | 与原生 checkbox / radio 同构，靠 `checked` 表达选中 |
+| 隐藏 `<select>` | select | 多选直接开原生 `multiple` |
+
+**勾选类控件的语义与原生一致**：没勾就整条不进 `FormData`，不是提交一个空值。checkbox 的半选
+（`indeterminate`）按未勾处理——原生里它也只是外观，提交与否看 `checked`。
+
+影子在两个适配器里的来路不同：
+
+- **Vue**：单体控件（checkbox、switch）由组件自己渲染，给了 `name` 才有那个节点；有子部件的组件
+  由作者写上对应部件，例如 `<XhComboboxHiddenInput />`。
+- **Web Components**：一律由作者写 `data-xh-part="hidden-input"` 的原生节点，元素只负责往上铺属性。
+
+::: tip 为什么 `type=hidden` 能放进 `<button>`
+checkbox 与 switch 的根是 `<button>`，而 HTML 的内容模型禁止 button 有交互内容后代。
+`<input type="hidden">` 不在其列——规范里 input 那条写的是「type 属性**不处于 Hidden 状态时**」，
+所以这样嵌是合法的。
+:::
+
+## 表单重置
+
+带 `name` 的组件都认表单重置。点 `<button type="reset">`（或调 `form.reset()`），它们各自回到
+自己的默认值，和旁边的原生输入框一起。
+
+```vue
+<form>
+  <XhRadioGroupRoot name="plan" default-value="standard">…</XhRadioGroupRoot>
+  <XhRatingRoot name="score" :default-value="3">…</XhRatingRoot>
+  <button type="reset">重置</button>
+</form>
+```
+
+几条要点：
+
+**落点按当下的 props 重算**，不是挂载那一刻冻结的值。宿主把 `defaultValue` 换掉（比如切去编辑
+另一条记录），重置就回到新的那一份——与原生 `reset()` 回到「当下的 default」一致。
+
+**受控组件只发意图。** 组件不会自改状态，只调一次 `onValueChange`（或 `onCheckedChange`），
+由宿主写回。
+
+::: warning 受控组件要拿到重置，必须显式传 `defaultValue`
+这是本库与「受控 reset 是纯空操作」的分歧点，也是最容易踩的一条。
+
+组件内部那句 `?? 兜底` 把「宿主声明的默认值」和「组件的空值」写在同一个表达式里
+（radio-group 是 `null`、rating 是 `0`、tags-input 是空数组）。受控且没写 `defaultValue` 时，
+组件**一动不动、一条意图都不发**——否则那个空值会被当成默认值发给宿主，重置就成了「把你的数据抹掉」。
+:::
+
+**重置被拦下就不动。** 表单那侧 `event.preventDefault()` 之后，同表单的原生控件也没还原，
+组件单方面还原会拼出半份默认值。
+
+**归属在事件那一刻现算。** 监听挂在组件所在的根节点上而不是那个 `<form>` 上（表单会被条件渲染
+换掉、组件也会被搬走），用 `closest('form')` 比对，因此嵌套表单不会误伤。
+
+不在任何表单里、无 DOM 的服务端、作者没写影子输入——三种情形都不需要特别处理：归属判定不命中、
+服务端根本不挂副作用、锚点是组件根节点而不是影子输入。
+
+## 控件在薄封装里
+
+`XhFieldControl` 默认把接线属性（`id` 与各条 `aria-*`）合到它唯一的子节点上。子节点是个组件时，合的是**组件的根**——而薄封装的根往往是 `div`。
+
+标签的 `for` 只对可标注元素生效（`input` / `select` / `textarea` / `button` 等），指到 `div` 上什么也不会发生，而且**不报错**。
+
+点标题这一半库替它兜住了：`for` 没落到实处时，字段会把焦点送给控件里第一个可 tab 的节点——不管那层封装是库里的还是自己写的。读屏念不念得出名字是另一半，取决于下面两种写法。
+
+两种写法：
+
+**一、控件的根就是可聚焦元素**——什么都不用做，默认路径正确：
+
+```vue
+<XhFieldControl>
+  <input type="email" />
+</XhFieldControl>
+```
+
+**二、控件藏在封装里**——关掉 `asChild`，让封装内部自取：
+
+```vue
+<XhFieldControl :as-child="false">
+  <MyInput />
+</XhFieldControl>
+```
+
+```ts
+// MyInput 内部
+import { useFieldControl } from "@xihan-ui/vue";
+
+const controlProps = useFieldControl();
+// 绑到真正可聚焦的那个节点上
+```
+
+`useFieldControl` 在字段外调用返回空对象，封装照样能单独用。不关 `asChild` 的话属性会被合两遍——一遍在封装根、一遍在真控件，页面上会出现两个相同的 `id`。
+
+**库自己的控件不用管这一层。** select、text-field、date-picker 这些封装内部已经把两份接线取到了真正可聚焦的那个部件上：说明与校验状态一份，字段的标签一份。直接套进 `XhFieldControl` 就行，`asChild` 保持默认。
+
+标签那份是**并进**不是覆盖——字段的标签排在最前，控件自己那截（下拉的当前值这类）跟在后面，两边都念得到。控件自带的 `aria-labelledby` 指的是它自己的 `label` 部件，用字段的标签时那个部件根本没渲染，只留它就是一条悬空引用：按 accname 规则跳过，名字又回退不到 `for`（`for` 指的是封装根那个 `div`），焦点所在的控件于是一个名字都没有。
+
+## 哪些组件参与
+
+27 个：checkbox、checkbox-group、color-picker、combobox、date-field、date-picker、editable、
+file-upload、image-cropper、number-field、password-input、pin-input、radio-group、rating、
+segmented、select、signature-pad、slider、switch、tags-input、text-field、time-field、
+time-picker、tree-select。
+
+新加的表单组件忘了接重置会被门禁拦下：判据的分母是从源码里扫出来的（`types` 的 props 里有
+`name?: string` 即表单字段），不是手写名单。
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/i18n
+
+# 国际化
+
+开箱行为一句话：**组件里写死的那部分文本是英文，其余全部跟着 `locale` 走，而 `locale` 不给就跟着宿主浏览器走。**
+
+拆开说是四条：
+
+- 内建文案（关闭钮的读屏名、分页的翻页说明、上传区的提示、色阶两端的 `Less` / `More` 这类）一律英文，换语言经 `translations`。
+- 日期时间系组件的月份名、星期名、段位先后、周首日与缺省格式串全部由 `locale` 决定，不写死。
+- `locale` 的解析链是**实例 props → 全局配置 → 宿主的 `navigator.language` → `en-US`**，`calendar` / `date-picker` / `date-field` / `heatmap` / `time` 五个都走它。所以中文浏览器里不配任何东西也是中文日期；服务端渲染期读不到宿主语言，落 `en-US`。
+- 例外一处：`time-picker` / `time-field` 的**小时制**不从宿主推。`hourCycle` 与 `locale` 都不给时恒是 24 时制，要 12 时制就给其中之一。
+
+::: warning 周首日跟着 locale 走
+一周从周日还是周一起算由 `locale` 定：`en-US` 周日起、`zh-CN` 与多数欧洲语言周一起。
+不配 `locale` 时它跟着读者的浏览器变，同一份代码在两台机器上排出来的月历首列不同。
+要固定成一种排法，就把 `locale` 显式传上去（实例上传，或全局配置里配一次），别依赖缺省。
+:::
+
+两个适配器各有一处全局出口，语义一致：Vue 侧是 `provideXhConfig`（走 provide/inject，可按子树覆盖），
+自定义元素侧是 `setXhConfig`（模块级，整个文档一份）。
+
+## 全局注入一次
+
+```ts
+import { provideXhConfig } from "@xihan-ui/vue";
+
+// 应用根组件的 setup 里
+provideXhConfig({
+  locale: "zh-CN",
+  translations: {
+    breadcrumb: { root: "面包屑" },
+    pagination: { root: "分页", prevTrigger: "上一页", nextTrigger: "下一页" },
+    dialog: { close: "关闭" },
+    toast: { close: "关闭" },
+  },
+});
+```
+
+取值优先级从高到低：**实例 props → 全局注入 → 组件内建默认（文案是英文，`locale` 则再往下问一次宿主浏览器）**。`translations` 按键合并——全局给整包、个别实例只覆盖要改的那一个键即可。
+
+## 运行时切语言
+
+传 ref 或 getter，切换时用到这些文案的组件跟着重渲：
+
+```ts
+import { provideXhConfig } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
+import { enUS, zhCN } from "./locales";
+
+const lang = ref<"zh" | "en">("zh");
+provideXhConfig(computed(() => (lang.value === "zh" ? zhCN : enUS)));
+```
+
+语言包就是一个普通对象（`XhConfig` 类型），按组件名收纳各自的 `Translations`；每个组件页的 Props 表里列有它的文案键。
+
+## locale 收在哪些组件
+
+`locale` 一律收 BCP 47 语言标记（如 `zh-CN`、`en-US`），喂给这几个组件：
+
+| 组件 | `locale` 管什么 | 不给时 |
+| --- | --- | --- |
+| `calendar` / `date-picker` | 月份名、星期名、周首日、标题里年月的先后 | 宿主语言，再退 `en-US` |
+| `date-field` | 年月日三段的先后、上午/下午的写法 | 宿主语言，再退 `en-US` |
+| `heatmap` | 月份名、星期名 | 宿主语言，再退 `en-US` |
+| `time` | 用词（`zh` 开头用中文那套，其余英文）与缺省格式串 | 宿主语言，再退 `en-US` |
+| `time-picker` / `time-field` | 上午/下午的写法、推断小时制 | 不问宿主：小时制恒 24，上午/下午写 AM/PM |
+
+实例上显式给过 `locale` 的不受全局影响。
+
+## 作用域与边界
+
+- 注入走 Vue 的 provide/inject：在应用根 provide 就是全应用默认，也可以只在某个子树 provide 给局部换语言。
+- `createToastService` / `createDialogService` 自带宿主应用，接不到组件树里的注入。它们的按钮文案走各自创建时的选项（`okText` 缺省 `OK`、`cancelText` 缺省 `Cancel`、`translations`），要让整个服务跟应用同语言就把配置从 `config` 交进去：
+
+  ```ts
+  const dialog = createDialogService({
+    config: { locale: "zh-CN", translations: { dialog: { close: "关闭" } } },
+    okText: "确定",
+    cancelText: "取消",
+  });
+  ```
+
+  `config` 是一份普通的 `XhConfig`，服务会在自己那棵子树里 `provideXhConfig` 一次；不给就走内建默认。
+- 不注入时组件走原路，没有任何额外开销。
+- 自定义元素接不到 Vue 的注入，用它自己那处全局出口，见下。
+
+::: tip 文档站的示例为什么都在逐实例传
+每条示例都是孤立片段，没有应用根可以注入，所以一律写成 `:translations="{ … }"`。
+真实应用按上面全局配一次即可，实例上只留要单独覆盖的那一个键。
+:::
+
+## 自定义元素那一侧
+
+自定义元素拿不到 Vue 的 provide/inject，文案又是对象、只能走 property 不能走 attribute，
+所以逐实例设是唯一的老路。`setXhConfig` 给一处全局出口：
+
+```ts
+import { setXhConfig } from "@xihan-ui/web-components";
+import { defineXhElements } from "@xihan-ui/web-components/define";
+
+defineXhElements();
+setXhConfig({
+  locale: "zh-CN",
+  translations: {
+    dialog: { close: "关闭" },
+    pagination: { root: "分页", prevTrigger: "上一页", nextTrigger: "下一页" },
+  },
+});
+```
+
+取值优先级与 Vue 侧一致：**元素上的 property → `setXhConfig` 的全局值 → 组件内建默认（文案是英文，`locale` 则再往下问一次宿主浏览器）**，
+`translations` 逐键合并。切语言直接再调一次，已挂载的元素会跟着重渲：
+
+```ts
+setXhConfig({ locale: "en-US", translations: enUS });
+```
+
+两处差别记一下：
+
+- `setXhConfig` 是**整份替换**，不做深合并——想改一处就把整份拿去改。Vue 侧那份也是同样的语义。
+- 它是模块级的，整个文档一份，没有 Vue 那种「只在某棵子树里换语言」的能力。
+  真要分区，把那部分渲染成 Vue 组件，或者逐实例设 `.translations`。
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/icons
+
+# 图标集
+
+`@xihan-ui/icons` 是一套**结构化数据**，不是 SVG 字符串、也不是字体。每枚图标是一条 `IconRecord`：名字、`viewBox`、若干节点，节点带标签与属性。
+
+```ts
+import { ArrowDownIcon } from "@xihan-ui/icons";
+
+// { name: 'arrow-down', viewBox: '0 0 24 24', nodes: [{ tag: 'path', attrs: { d: '…' } }] }
+```
+
+渲染端逐节点建元素，运行期不经任何解析，也就不存在把外来字符串塞进 `innerHTML` 的那条路。这份数据框架无关，Vue 适配器、Web Components 适配器和不用框架的场景吃的是同一份。
+
+首方集覆盖中后台界面的常用语义，逐枚手绘、统一 24 网格与 2 粗描边：方向与布局、文件与文档、文本编辑、媒体与设备、通信、状态与安全、数据与图表、系统与账户、商业场景。
+
+它不打算做成一套穷尽的图标库。图标审美与授权都属于使用者，我们不替你选——要用 Lucide、Tabler、Bootstrap Icons 还是你自己画的一套，把 SVG 目录交给下面的转换器就行。集合大小不影响你的产物：打包器逐枚证明未被引用并摇掉，只引一枚就只付一枚的体积。
+
+## 组件自带的兜底字形
+
+作者什么都不往部件里塞时，皮肤会替他画一个：多选框里的勾、下拉框的箭头、清空钮的叉、表头的排序方向、树的展开把手、数字框的加减号。这些图形不是字符，是图标包里对应的那枚 SVG：令牌 `--xh-glyph-mark-*` 的取值是 `url("data:image/svg+xml,…")`，皮肤拿它当 `mask-image`、用 `currentColor` 着色，于是随语气、悬停、禁用自动变色，与你用 `<XhIcon>` 画出来的一模一样。
+
+| 令牌 | 取自 | 用在哪 |
+| --- | --- | --- |
+| `--xh-glyph-mark-check` | `check` | 各列表族的条目勾、多选框、树、穿梭框、表格勾选把手、步骤条已完成 |
+| `--xh-glyph-mark-minus` | `minus` | 半选横杠；number-field 的减号 |
+| `--xh-glyph-mark-plus` | `plus` | number-field 的加号、悬浮按钮 |
+| `--xh-glyph-mark-close` | `x` | 清空钮、关闭钮、标签与文件条目的删除钮 |
+| `--xh-glyph-mark-chevron-down` · `-up` · `-left` · `-right` | `chevron-*` | 展开箭头、树与侧栏的分支把手、轮播与穿梭框的翻页、回到顶部 |
+| `--xh-glyph-mark-sort` · `-sort-asc` · `-sort-desc` | `arrow-up-down` / `arrow-up` / `arrow-down` | table 的排序方向 |
+| `--xh-glyph-mark-info` · `-warning` | `info` / `triangle-alert` | 命令式 dialog / notification 的类型徽记，以及 toast 的状态字形 |
+| `--xh-glyph-mark-zoom-in` · `-zoom-out` · `-rotate-left` · `-rotate-right` · `-flip-horizontal` · `-flip-vertical` | 同名图标 | image-viewer 的工具条 |
+| `--xh-glyph-mark-required` | `'*'` | field · fieldset 的必填星号（这是文字，不是图标） |
+
+### 换掉它们
+
+**通道一：改令牌。** 全局改写在 `:root` 上，只改一块就写在那块的容器上——它是普通的自定义属性，跟着 DOM 继承走。取值是任意一张 SVG 的 `url()`，着色一样走 `currentColor`：
+
+```css
+:root {
+  --xh-glyph-mark-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E…%3C/svg%3E");
+}
+
+/* 只有这张表里的排序箭头换成实心三角 */
+.report-table {
+  --xh-glyph-mark-sort-asc: url("/icons/caret-up.svg");
+  --xh-glyph-mark-sort-desc: url("/icons/caret-down.svg");
+}
+```
+
+遮罩只看图形的不透明度，颜色由部件的 `color` 决定，所以 SVG 里 `fill` / `stroke` 写什么都行。
+
+**通道二：自己放节点。** 往那个部件里写内容，皮肤那条规则就不命中——它带着 `:empty` 守卫：
+
+```vue
+<XhSelectItemIndicator>
+  <XhIcon :icon="CheckIcon" />
+</XhSelectItemIndicator>
+```
+
+```html
+<span data-xh-part="item-indicator"><svg data-xh-part="root">…</svg></span>
+```
+
+注意 `:empty` 连空白文本都不放过：HTML 里要写成 `<span data-xh-part="item-indicator"></span>`，标签之间不留换行。
+
+有几处的部件里本来就装着别的东西，`:empty` 恒不命中，只能走通道一：checkbox-group 与 transfer 的全选格、field 与 fieldset 的必填星号。
+
+json-viewer 键名后面那个冒号不在这族里：它是 JSON 这个数据格式的语法字符，不是视觉标记。hotkeys 的 `⌘` `⇧` 键帽由 JS 渲染成文本，走它自己的 `translations`。
+
+
+## 把任意 SVG 目录转成图标集
+
+包里带一个 `xihan-icons` 命令：
+
+```bash
+npx xihan-icons ./node_modules/lucide-static/icons --out src/icons.mjs --dts
+```
+
+产出一份运行期模块，每枚图标一个顶层 `export const`，可摇树；`--dts` 一并产出类型声明。之后照常用：
+
+```ts
+import { ArrowDownIcon } from "./icons.mjs";
+```
+
+命令行参数：
+
+| 参数 | 说明 |
+| --- | --- |
+| `<svg 目录>` | 必填。扫这个目录下的 `*.svg`，不递归 |
+| `--out <文件>` | 产物路径，默认 `icons.mjs` |
+| `--dts` | 一并产出同名 `.d.mts` |
+| `--quiet` | 跳过的图标只列前 5 条 |
+
+想接进自己的构建脚本，就用 `@xihan-ui/icons/codegen`：
+
+```js
+import { ingestIconDir, renderModule } from "@xihan-ui/icons/codegen";
+
+const { icons, skipped } = await ingestIconDir("./svg");
+await writeFile("icons.mjs", renderModule(icons));
+```
+
+`ingestIconDir` 不掀桌：转不了的那枚收进 `skipped`（带文件名与原因）继续跑，由你决定是报告还是当作失败。
+
+## 转换时会丢掉什么
+
+图标名由文件名归一而来：小写、连字符分段。数字打头的（Bootstrap Icons 的 `0-circle`）会派生出不合法的导出标识符，前缀一个 `n` 收编成 `n0-circle` → `N0CircleIcon`。撞名的后来者被跳过而不是覆盖。
+
+非 24 网格的源会就地归一到 `0 0 24 24`——坐标、描边宽度、半径一并按比例换算，不是简单改个 `viewBox`。
+
+外部图标集普遍带着一堆与图标本身无关的东西，这些会被丢掉并逐条记进 `notes`：
+
+- 根上的 `width` / `height` / `xmlns` / `version` / `xml:space` 等
+- 任何节点上的 `class`（样式归皮肤）、`style`、`onclick` 这类内联事件属性
+- 白名单外的属性、取值不合规的属性
+- `<title>` / `<desc>` / 许可注释
+
+内联事件属性走的是同一条「丢掉」的路，也就是说无论源里写了什么脚本，它都进不了产物。
+
+丢掉它们正是想要的：尺寸由使用处决定，颜色走 `currentColor`，无障碍名字由 `XhIcon` 的 `label` 给。
+
+## 转不了的，会明确报错
+
+属性层可以宽松，标签层不行。宽松模式下这几类**照样报错**：
+
+- **`<use>`**：它的样子依赖记录里表达不了的外部引用
+- **`<text>` / `<tspan>` / 任何文本内容**：记录没有文本变体，字体不在也就画不出来
+- **`<style>` / `<image>` / `<script>`**：让图标的样子依赖记录之外的东西
+
+收下这些会产出一枚**画错的**图标，而画错比缺一枚更难被发现，所以报错。CLI 会把跳过的逐条打出来——默默少几枚，用的人只会以为自己名字写错了。
+
+还有一类会报错：源不是 24 网格、同时节点上带 `transform`。这种要正确归一得先把变换乘进去，管线不做，直接说清楚。
+
+按三套真实图标集实测：
+
+| 图标集 | 转成 | 跳过 |
+| --- | --- | --- |
+| Lucide 1.31.0 | 2025 / 2025 | 0 |
+| Tabler 3.46.0（outline） | 5130 / 5130 | 0 |
+| Bootstrap Icons 1.13.1 | 2077 / 2078 | 1（16 网格 + `transform`） |
+
+## 首方集走的是严格模式
+
+本仓 `src/svg` 下的图标由 `buildIconSet` 构建，任何属性不合规都直接失败——首方集的每一枚都由我们自己画，写错就是写错，没有「宽松收下」的余地。这条路径与上面的摄取管线共用同一套白名单与变换，只是不开宽松开关。
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/machine
+
+# 状态机运行时
+
+`@xihan-ui/core` 里的状态机是一台**薄**的有限状态机运行时：零第三方运行时依赖。组件的全部行为写在这里，因此它必须与框架无关——响应式由宿主框架经一个 `ReactiveRuntime` 接口注入。
+
+## 一台机器长什么样
+
+```ts
+import type { AccordionSchema } from "./accordion.types";
+import { setup } from "@xihan-ui/core";
+
+const { createMachine } = setup<AccordionSchema>();
+
+export const accordionMachine = createMachine({
+  name: "accordion",
+  context: ({ prop, cell }) => ({
+    value: cell<string[]>(() => ({
+      value: prop("value"),
+      defaultValue: prop("defaultValue") ?? [],
+      onChange: value => prop("onValueChange")?.({ value }),
+    })),
+  }),
+  initialState: () => "idle",
+  states: {
+    idle: {
+      on: {
+        "ITEM.TOGGLE": { actions: ["toggleItem"] },
+        "VALUE.SET": { actions: ["setValue"] },
+      },
+    },
+  },
+  implementations: {
+    actions: {
+      toggleItem: ({ context, prop, event }) => { /* … */ },
+      setValue: ({ context, prop, event }) => { /* … */ },
+    },
+  },
+});
+```
+
+`setup<Schema>()` 是类型锚：一次绑定 schema，之后 `prop()` / `context.get()` / 事件类型全部自动推断，不用在每处重复写泛型。它同时给出 `guards`，即 `and` / `or` / `not` 三个组合子。
+
+## 配置的各个面
+
+| 字段 | 作用 |
+| --- | --- |
+| `context` | 机器自己的状态。用 `cell()` 声明的格子自带受控语义 |
+| `refs` | 不参与响应式的引用（DOM 取值器、宿主注入的配置、层注册器等） |
+| `computed` | 由 context / props 派生的只读值 |
+| `props` | 宿主传进来的属性，经 `prop('x')` 读取 |
+| `initialState` | 初始状态，可读 props 决定 |
+| `states` | 状态节点：`on` 转移表、`entry` / `exit` 动作、`effects` 副作用、`tags` |
+| `watch` | 追踪外部值变化并触发动作，受控回写走这里 |
+| `implementations` | `actions` / `guards` / `effects` 的具名实现 |
+
+**具名实现是硬约束。** `states` 里只能出现动作名、守卫名、副作用名的字符串；裸内联函数会在 `createMachine` 时直接抛 `MachineError`（守卫只放行 `and` / `or` / `not` 组合子的产物）。开发模式下还会自检：转移表里引用了 `implementations` 里不存在的名字，同样报错。这条约束换来的是——状态图是可静态分析的数据，测试能算转移覆盖率，而不是一堆闭包。
+
+## 受控与非受控：`cell`
+
+值类组件的取值语义统一在 `cell` 一处，不由各组件自己判断：
+
+```ts
+value: cell<string[]>(() => ({
+  value: prop("value"), // 传了就是受控
+  defaultValue: prop("defaultValue") ?? [], // 只传它就是非受控
+  onChange: value => prop("onValueChange")?.({ value }),
+}));
+```
+
+规则：
+
+- `value !== undefined` → **受控**。`context.set()` 不改内部值，只调 `onChange` 通知宿主；真正的值始终从 `prop('value')` 读。
+- `value === undefined` → **非受控**。内部持有值，变更时也调 `onChange`。
+- 从受控变回 `undefined` 表示转成非受控，不会强制复位。
+
+浮层类组件的开关不走 `cell`，而是走「意图 + 回写」两段式，因为状态本身就是机器的状态节点：
+
+<!-- eslint-skip -->
+
+```ts
+'OPEN': [
+  { guard: 'isOpenControlled', actions: ['invokeOnOpen'] }, // 受控：只发意图
+  { target: 'open', actions: ['invokeOnOpen'] }, // 非受控：直接转移
+],
+'CONTROLLED.OPEN': { target: 'open' }, // 宿主写回 open 后由 watch 派发
+```
+
+`watch` 追踪 `prop('open')`，宿主把新值写回来时才派发 `CONTROLLED.OPEN` / `CONTROLLED.CLOSE`。受控组件因此永远不会「自己动」。
+
+## 转移表的匹配顺序
+
+一个事件可以配一组转移，**按书写顺序取第一条守卫通过的**：
+
+<!-- eslint-skip -->
+
+```ts
+'OPEN': [
+  { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
+  { target: 'open', actions: ['invokeOnOpen'] }, // 无 guard = 兜底
+]
+```
+
+没有任何一条匹配时事件被丢弃，不报错。
+
+## 副作用
+
+`effects` 声明在状态节点上，进入该状态时启动、离开时清理。对话框的遮罩装配就是一个 effect：
+
+<!-- eslint-skip -->
+
+```ts
+states: {
+  open: {
+    effects: ['trackOverlay'], // 装配消隐层 → 焦点域 → 滚动锁 → 背景失活
+  },
+}
+```
+
+副作用拿得到 `refs`（宿主注入的 DOM 取值器与运行时配置）、`send`、`flush`，返回一个清理函数。`setTimeoutEffect` / `setIntervalEffect` 是两个现成的定时器 effect 工厂。
+
+## 服务与响应式运行时
+
+机器配置是纯数据，跑起来需要一个**服务**：
+
+```ts
+import { createService } from "@xihan-ui/core";
+
+const service = createService(accordionMachine, {
+  props: () => ({ multiple: true, defaultValue: ["a"] }),
+  runtime, // ReactiveRuntime，由宿主提供
+  scope, // DOM 环境抽象
+});
+```
+
+`ReactiveRuntime` 是机器与框架之间唯一的接口，要实现的东西不多：`cell`（受控格子）、`track`（依赖追踪）、`flush`（微任务冲刷）、`onMount` / `onCleanup`。
+
+| 运行时 | 来源 | 用在哪 |
+| --- | --- | --- |
+| Vue | `@xihan-ui/vue` 内部的 `createVueRuntime()` | Vue 适配器 |
+| vanilla | `@xihan-ui/core/vanilla` 的 `createVanillaRuntime()` | Web Components 适配器、测试、benchmark |
+
+vanilla 运行时是一个同步 dirty 循环的微 signal 实现，也是这套契约的参考实现——想接第三个框架，照它写一份即可。
+
+## 服务对外的面
+
+`connect` 拿到的 `service` 就是下面这些：
+
+| 成员 | 用途 |
+| --- | --- |
+| `state` | `get()` / `previous()` / `matches(...)` / `hasTag()` |
+| `context` | 读写 context 格子 |
+| `computed` | 读派生值 |
+| `prop` | 读 props |
+| `refs` | 读写非响应式引用 |
+| `event` | 读当前 / 上一个事件 |
+| `send` | 派发事件 |
+| `scope` | DOM 环境：`getDoc()` / `getWin()` / `partId()` / `getActiveElement()` 等 |
+| `machine` / `getStatus()` | 机器配置本身与生命周期状态 |
+
+注意**没有**「直接改状态」的口子。状态只能由事件驱动转移，这条限制让「当前状态」始终可以由事件序列复现——跨适配器一致性测试正是靠这一点比对两套适配器。
+
+调试时可以给 `createService` 传 `inspect`，逐条拿到转移、动作、副作用与事件：
+
+```ts
+createService(dialogMachine, {
+  props: () => ({}),
+  runtime,
+  inspect: e => console.log(e.type, e.state, e.detail),
+});
+```
+
+## 相关
+
+- [connect 与属性产出](./connect)：从服务到 DOM 属性
+- [行为原语](./behavior)：effects 里调用的那些东西
+- [测试与质量门禁](./testing)：转移覆盖率与一致性判据
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/metadata
+
+# 框架元数据
+
+框架名称、版本、版权与运行时信息的**单一事实源**在 `@xihan-ui/core` 的 `XIHAN_UI_METADATA` 里，与 [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) 的 `XiHanMetadata` 同构：常量集中维护在一份文件里，版本从 package.json 派生，运行时信息由适配器登记。
+
+## 元数据对象
+
+```ts
+import { XIHAN_UI_METADATA, XIHAN_UI_VERSION } from "@xihan-ui/core/metadata";
+
+XIHAN_UI_METADATA.name; // 'XiHan.UI'
+XIHAN_UI_METADATA.displayName; // '曦寒视图组件'
+XIHAN_UI_METADATA.version; // 与 package.json 同源，即整套库的版本
+XIHAN_UI_METADATA.majorVersion; // 主版本号（数字）
+XIHAN_UI_METADATA.minorVersion; // 次版本号
+XIHAN_UI_METADATA.patchVersion; // 修订版本号
+XIHAN_UI_METADATA.prerelease; // 预发布标识（如 'alpha.2'），正式版为 null
+XIHAN_UI_METADATA.copyright; // 版权信息
+XIHAN_UI_METADATA.author; // 作者
+XIHAN_UI_METADATA.organization; // 组织与网址
+XIHAN_UI_METADATA.repositoryUrl; // 仓库地址
+XIHAN_UI_METADATA.documentationUrl; // 文档地址
+XIHAN_UI_METADATA.license; // 许可证与地址
+XIHAN_UI_METADATA.keywords; // 关键词
+XIHAN_UI_METADATA.supportedPlatforms; // 支持的浏览器引擎（Chrome / Edge / Firefox / Safari）
+XIHAN_UI_METADATA.adapters; // 渲染适配器（react / vue / web-components）
+```
+
+对象与内部数组一律 `Object.freeze`——这是集中维护点，消费方改不坏它。
+
+标志与寄语不在这个对象里，是两个独立导出：
+
+```ts
+import { XIHAN_UI_LOGO, XIHAN_UI_SEND_WORD } from "@xihan-ui/core/metadata";
+```
+
+对象被整体引用时打包器摇不掉它里面的字段，并进去这两样就会跟着浏览器产物发到每个访问者手上。单独导出之后没人引用就整个消失——它们是给开发者看的，见下文的终端横幅。
+
+版本不在元数据里手写：`version` / `majorVersion` / `minorVersion` / `patchVersion` / `prerelease` 全部由 `XIHAN_UI_VERSION` 从 core 的 package.json 解析而来。改版本只改 package.json 一处，元数据自动跟上。
+
+## 运行时信息
+
+```ts
+import { getRuntimeHost, getRuntimeInfo } from "@xihan-ui/core/metadata";
+
+getRuntimeInfo();
+// { mode: 'development' | 'production', ssr: boolean, host: { name, version } | null }
+```
+
+- `mode` 取 `import.meta.env.DEV`；`ssr` 表示当前是否运行在无 DOM 的环境（服务端渲染 / 纯 Node）。
+- `host` 是**适配器自己登记的运行时宿主**：Vue 适配器在第一个组件建机器时登记 `{ name: 'vue', version }`，Web Components 适配器在 `defineXhElements()` 里登记。元数据据此能报出「这套组件运行在哪个适配器、什么版本」——这是 Framework 侧 EntryAssembly 概念在浏览器语境下的对应物。
+
+## 输出
+
+与 Framework 的 `GetSummary()` / `GetDetails()` 同款：
+
+```ts
+import { getMetadataDetails, getMetadataSummary, printMetadataSummary } from "@xihan-ui/core/metadata";
+
+const summary = getMetadataSummary();
+// XiHan.UI 曦寒视图 v<当前版本>
+// 快速、轻量、高效、用心的框架无关跨端组件库。
+//
+// 宿主:vue v<当前版本>
+
+const details = getMetadataDetails(); // 摘要之外再补作者 / 组织 / 仓库 / 文档 / 许可证 / 环境
+
+// dev 里打到控制台，生产静默
+printMetadataSummary();
+printMetadataDetails();
+```
+
+### 启动横幅：打在开发者的终端里
+
+对齐 [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) 的 `XiHanApplicationBase`——应用构造时自动印 Logo 与摘要。UI 库的等价位置是**开发服务器启动的那个终端**，由 `@xihan-ui/core/vite` 子入口负责：
+
+```ts
+// vite.config.ts
+import { xihanUiBanner } from "@xihan-ui/core/vite";
+import { defineConfig } from "vite";
+
+export default defineConfig({ plugins: [xihanUiBanner()] });
+```
+
+```text
+   _  __ ______  _____    _   __        ← 标志逐字符横向彩虹
+  | |/ //  _/ / / /   |  / | / /
+  |   / / // /_/ / /| | /  |/ /
+ /   |_/ // __  / ___ |/ /|  /
+/_/|_/___/_/ /_/_/  |_/_/ |_/
+
+XiHan.UI 曦寒视图 v<当前版本>
+快速、轻量、高效、用心的框架无关跨端组件库。
+碧落降恩承淑颜，共挚崎缘挽曦寒。
+迁般故事终成忆，谨此葳蕤换思短。
+              —— 致她
+```
+
+同一入口另出两个不认识 Vite 的函数，任何 Node 脚本都能调：`getXiHanUiBanner()` 只返回文本，`printXiHanUiBanner()` 打到 stdout。这一份不从 `index` 再导出，浏览器产物里不会有它。
+
+要不要上色的判据与 `picocolors` 逐条对齐——Vite 自己的输出就是用它上色的，照它走横幅才与周围那几行同进同退；`NO_COLOR` 与 `--no-color` 一票否决。横幅排在 Vite 打完本地地址之后（它打那一段时会清屏），走的是 `server.config.logger`，因此 `--silent` 与 `logLevel` 管得住它。
+
+### 浏览器控制台：默认不打
+
+适配器启动时也能往浏览器控制台打一次摘要，但**默认关着**：控制台是访问网站的人也看得见的地方，横幅是给开发者看的。要打就显式开，开关只影响之后的启动，手动 `print` 不受影响：
+
+```ts
+import { setMetadataAutoPrint } from "@xihan-ui/core/metadata";
+
+setMetadataAutoPrint(true);
+```
+
+打开后 Vue 适配器在第一个组件建机器时、Web Components 适配器在 `defineXhElements()` 时各打一次，整个页面只打一次，**生产构建静默**。打的只有摘要，标志与寄语归终端那一份。
+
+## 相关
+
+- [版本与兼容性政策](./versioning)：同版发布与版本承诺
+- [安装与接入](../installation)：三个适配器的接入方式
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/motion
+
+# 动效原语
+
+`@xihan-ui/motion` 是动效的地基层：缓动曲线与时长常量、不持有计时器的纯补间、逐帧循环、减弱动效偏好，以及解析解弹簧与 Web Animations 的薄封装。零第三方依赖，`import` 无副作用，SSR 安全。
+
+装了任意一个适配器就自动拿到它——`headless` 的数字动画与倒计时、`core` 的缓动表都从这里取。要自己写动画的话，它也可以单独装。
+
+## 缓动
+
+CSS 侧的字符串与 JS 侧的采样函数在这里是同一份来源；取值的真源是令牌层的 `ease.standard / in / out` 与 `duration.fast / normal / slow`（`@xihan-ui/tokens` 的 primitive），这里的 `standard` / `easeIn` / `easeOut` 与 `durations` 三值逐字等于它们，由门禁 `check-motion-source` 比对。
+
+```ts
+import { cubicBezier, easing, resolveEasing } from "@xihan-ui/motion";
+
+easing.easeOut; // 'cubic-bezier(0, 0, 0.2, 1)'
+
+// 名字、CSS 串、函数三种写法统一成函数
+resolveEasing("easeOut")(0.5); // 0.79…
+resolveEasing("cubic-bezier(0.4, 0, 0.2, 1)")(0.5);
+resolveEasing(t => t * t)(0.5); // 0.25
+```
+
+八条命名缓动：`linear` `standard` `emphasized` `decelerate` `accelerate` `easeIn` `easeOut` `easeInOut`。
+
+三档时长（毫秒）：`durations.fast` 120、`durations.normal` 200、`durations.slow` 320。`animate()` 缺省取 `durations.normal`，`@xihan-ui/animations` 的配方缺省取 `durations.slow`。
+
+`resolveEasing` 认不出的写法退回线性——写法可能来自 DOM 特性或后端配置，那是一个任意字符串，不该让一段动画整个不动。`cubicBezier` 用牛顿迭代反解参数，导数过小时退回二分。
+
+`toLinearEasing` 把任意缓动函数采样成 CSS `linear()` 串，用来把 JS 才算得出的曲线交回 CSS：
+
+```ts
+import { toLinearEasing } from "@xihan-ui/motion";
+
+toLinearEasing(t => t ** 2, 5); // 'linear(0, 0.0625, 0.25, 0.5625, 1)'
+```
+
+## 弹簧
+
+弹簧走解析解，不是逐帧数值积分。给定质量、刚度、阻尼，任意时刻的位移可以 O(1) 直接算出来——所以它能被任意采样、能离线烘焙成 `linear()` 串交给 CSS，而不必每帧回主线程写样式。
+
+```vue
+<script setup lang="ts">
+import { animate, createSpring, springToLinearEasing } from "@xihan-ui/motion";
+import { computed, onBeforeUnmount, ref, useTemplateRef } from "vue";
+
+const duration = ref(0.5);
+const bounce = ref(0.3);
+
+const solver = computed(() => createSpring({ duration: duration.value, bounce: bounce.value }));
+
+// 曲线画在 0..1 的归一化坐标里，y 轴翻过来让 1 在上方
+const path = computed(() => {
+  const spring = solver.value;
+  const seconds = spring.durationMs / 1000;
+  const points: string[] = [];
+  for (let i = 0; i <= 80; i++) {
+    const t = i / 80;
+    const value = spring(t * seconds);
+    points.push(`${(t * 280).toFixed(1)},${(110 - value * 80).toFixed(1)}`);
+  }
+  return `M ${points.join(" L ")}`;
+});
+
+const box = useTemplateRef<HTMLElement>("box");
+let handle: { cancel: () => void } | null = null;
+
+function play() {
+  const el = box.value;
+  if (!el)
+    return;
+  handle?.cancel();
+  const spring = solver.value;
+  handle = animate(
+    el,
+    [{ translate: "0 0" }, { translate: "180px 0" }],
+    { duration: spring.durationMs, easing: springToLinearEasing(spring, 48), fill: "forwards" },
+  );
+}
+
+onBeforeUnmount(() => handle?.cancel());
+</script>
+
+<template>
+  <div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
+      <label style="display: flex; align-items: center; gap: 8px">
+        时长 {{ duration.toFixed(2) }}s
+        <input v-model.number="duration" type="range" min="0.15" max="1.2" step="0.05">
+      </label>
+      <label style="display: flex; align-items: center; gap: 8px">
+        弹性 {{ bounce.toFixed(2) }}
+        <input v-model.number="bounce" type="range" min="-0.8" max="0.8" step="0.05">
+      </label>
+    </div>
+
+    <p style="margin: 0; font-size: 13px; opacity: 0.7">
+      阻尼比 {{ solver.dampingRatio.toFixed(3) }} · 沉降 {{ Math.round(solver.durationMs) }}ms · 过冲
+      {{ (solver.overshoot * 100).toFixed(1) }}%
+    </p>
+
+    <svg viewBox="0 0 280 120" style="width: 100%; height: 120px">
+      <line x1="0" y1="30" x2="280" y2="30" stroke="var(--vp-c-divider)" stroke-dasharray="4 4" />
+      <line x1="0" y1="110" x2="280" y2="110" stroke="var(--vp-c-divider)" />
+      <path :d="path" fill="none" stroke="var(--vp-c-brand-1)" stroke-width="2" />
+    </svg>
+
+    <div style="display: flex; align-items: center; gap: 12px">
+      <button
+        type="button"
+        style="
+          padding: 6px 14px;
+          border: 1px solid var(--vp-c-divider);
+          border-radius: 8px;
+          background: transparent;
+          color: inherit;
+          cursor: pointer;
+        "
+        @click="play"
+      >
+        播一次
+      </button>
+      <div
+        style="
+          position: relative;
+          flex: 1;
+          height: 40px;
+          border: 1px dashed var(--vp-c-divider);
+          border-radius: 8px;
+        "
+      >
+        <div
+          ref="box"
+          style="
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--vp-c-brand-1);
+          "
+        />
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+两种参数写法。物理参数直给：
+
+```ts
+import { createSpring } from "@xihan-ui/motion";
+
+const spring = createSpring({ stiffness: 380, damping: 30, mass: 1 });
+spring(0.1); // 0.1 秒时的归一化位移，0 起 1 止，欠阻尼时可越过 1
+spring.durationMs; // 沉降到静止阈值要多久
+spring.dampingRatio; // <1 欠阻尼、=1 临界阻尼、>1 过阻尼
+spring.overshoot; // 最大过冲量，不过冲为 0
+```
+
+感知参数更好调——只说"多久"和"弹不弹"：
+
+```ts
+createSpring({ duration: 0.4, bounce: 0.3 }); // 弹
+createSpring({ duration: 0.4, bounce: 0 }); // 临界阻尼，全程单调不过冲
+createSpring({ duration: 0.4, bounce: -0.5 }); // 过阻尼，慢慢靠过去
+```
+
+`bounce` 落在 (−1, 1)：正数减阻尼、负数加阻尼。五个预设 `snappy` `smooth` `gentle` `bouncy` `stiff` 直接按名字取。
+
+沉降时长按阻尼比分三支算，不是一个公式套到底——欠阻尼看包络衰减、临界阻尼要解一个含 t 的指数方程、过阻尼由较慢的那个根主导。三支各有断言，并与 dt=0.1ms 的四阶龙格-库塔积分逐点对拍。
+
+烘焙给 CSS：
+
+```ts
+import { createSpring, springToLinearEasing, supportsLinearEasing } from "@xihan-ui/motion";
+
+const spring = createSpring("bouncy");
+if (supportsLinearEasing()) {
+  el.style.animationDuration = `${spring.durationMs}ms`;
+  el.style.animationTimingFunction = springToLinearEasing(spring, 32);
+}
+```
+
+## 减弱动效
+
+系统偏好之上叠一层应用级 override，最终偏好 = override ?? 系统设置。
+
+```ts
+import {
+  onMotionPreferenceChange,
+  resolveMotionPreference,
+  setMotionOverride,
+} from "@xihan-ui/motion";
+
+resolveMotionPreference(); // 'no-preference' | 'reduce'
+
+// 接到产品自己的"减弱动效"设置项上；传 null 交还给系统
+setMotionOverride("reduce");
+
+const off = onMotionPreferenceChange(preference => console.log(preference));
+```
+
+订阅只在最终值真的变了才回调：override 压住期间系统翻转不会触发，交还系统那一刻才浮现。
+
+没有 `matchMedia` 的宿主（SSR、jsdom）一律按「不减弱」：`prefersReducedMotion()` 返回 `false`，`getMotionPreference()` 返回 `'no-preference'`。
+
+这是仓内唯一的探测通道：`@xihan-ui/core` 的 `RuntimeConfig.reducedMotion`（退场租约、贴底滚动）与平滑滚动、`headless` 的数字动画、反馈服务的加载弧线与 `backgrounds` 的画面都经 `resolveMotionPreference` 读，应用级 override 一处设、处处生效。门禁 `check-reduced-motion-channel` 守着：除 motion 包自身外，源码里不许再出现 `matchMedia('(prefers-reduced-motion')`。
+
+### 减弱动效的两步
+
+JS 与 CSS 是两条线，应用要减弱动效得各走一步：
+
+1. **JS 侧**：在全局配置里写 `motion: 'reduce'`（Vue `provideXhConfig({ motion: 'reduce' })`，WC `setXhConfig({ motion: 'reduce' })` 或 `<xh-config motion="reduce">`），适配器收到就调 `setMotionOverride`；不经配置直接调 `setMotionOverride('reduce')` 也一样。配置里没写这个字段就不碰 override。
+2. **CSS 侧**：把 `data-motion="reduce"` 打到容器上。`tokens.css` 在 `@media (prefers-reduced-motion: reduce)` 之外还生成一份 `:where([data-motion='reduce'])` 块，重映射同一批 `--xh-motion-*` 语义令牌（时长 1ms、位移 0、缩放 1）。打在 `<html>` 上即全局，打在某个容器上即局部。
+
+配置不绑 DOM 节点，所以第二步由作者自己打；系统开了 prefers-reduced-motion 时两条线都自动降级，不必做任何事。
+
+## 播一段
+
+`animate` 是 Web Animations 的薄封装，把三件事收口：减弱动效降级、宿主缺 `Element.animate` 时的降级、结束时的结算方式。
+
+```ts
+import { animate } from "@xihan-ui/motion";
+
+const handle = animate(el, [{ opacity: "0" }, { opacity: "1" }], {
+  duration: 200,
+  easing: "easeOut",
+});
+
+await handle.finished; // 'finished' | 'cancelled'
+handle.cancel();
+handle.finish();
+```
+
+`finished` 永远 resolve，被打断也是——它给的是结束方式，不是异常。调用方不必为"用户中途关掉了弹窗"写一个 catch。
+
+降级时不产生中间帧：按 `fill` 决定要不要把末帧样式落到元素上，`finished` 立即以 `'finished'` 结算。**降级只影响中间帧存不存在，不影响控制流**——回调照常触发，`await` 照常返回。
+
+## 补间与帧
+
+给数值动画用的纯函数与逐帧胶水。补间自己不认识帧、也不持有计时器，推进由调用方逐帧喂 `elapsed`。
+
+```ts
+import { frameLoop, frameNow, isTweenDone, tweenValueAt } from "@xihan-ui/motion";
+
+const spec = { from: 0, to: 1000, duration: 800, easing: "ease-out" } as const;
+const start = frameNow(window);
+
+const stop = frameLoop(window, () => {
+  const elapsed = frameNow(window) - start;
+  render(tweenValueAt(spec, elapsed));
+  if (isTweenDone(elapsed, spec.duration))
+    stop();
+});
+```
+
+边界都按"宁可收在终点"处理：时长非正即刻满格，`elapsed` 是坏掉的时钟读数也按满格，走完那一刻返回终点本身而不是曲线算出来的近似值。
+
+## 相关
+
+- [动画层](/guide/animations)：现成的进场与注意动效，建在这一层之上
+- [行为原语](/guide/behavior)：进出场时序、焦点域、滚动观察
+- [设计令牌与主题](/guide/theme)：`--xh-motion-*` 时长与缓动令牌
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/pointer
+
+# 指针原语
+
+`@xihan-ui/pointer` 收的是指针交互里「写对了才不出事」的那部分公共几何与生命周期。自研实现，零运行时依赖，整包压缩后 2.04 kB，分四层：
+
+| 层 | 收什么 |
+| --- | --- |
+| 指针会话 | 一根指针从按下到抬起的跟手、过滤与收尾 |
+| 多指会话与双指几何 | 同时跟住多根指针，以及两指的间距、中点、连线角度与相对起始那一刻的缩放 / 位移 / 转角 |
+| 拖放几何 | 排序落点投影、让位位移、激活阈值、边缘自动滚动 |
+| 尺寸调整几何 | 八向边推动，带吸附步进、宽高比、上下限与容器夹取 |
+
+后两层是纯函数：不碰 DOM、不持状态，输入几何、输出几何，因此能在无 DOM 的用例里直接断言。
+
+## 为什么需要它
+
+跟手这件事看着简单，写对却有四个必须一次都不漏的点：
+
+- **监听要挂在文档上，不能挂在按下的那个元素上。** 挂在元素上，指针一滑出去就断手，滑块拖到一半停住、面板半路掉下来。
+- **`pointercancel` 必须收。** 系统随时可能把指针收走（手机上被浏览器判定为页面滚动、笔离开数位板、来电打断）。不收，状态就永远停在「拖动中」，元素从此粘在指针上。
+- **多指同按时，第二根手指不该劫持正在进行的那一场。** 不认 `pointerId`，触屏上双指一碰，拖拽目标会瞬移到另一根手指下。
+- **拆卸路径必须摘干净监听。** 拖到一半组件被卸掉，监听还挂在文档上，后续每一次指针移动都在往一台已经死掉的状态机里送事件。
+
+四条里漏任何一条，症状都是「偶发、只在真机上出现、复现不了」。会话把这四条一次写对，需要跟手的组件调它就行。
+
+## 用法
+
+```ts
+import { createPointerSession, resolveSessionDoc } from "@xihan-ui/pointer";
+
+const session = createPointerSession({
+  doc: resolveSessionDoc(trackEl),
+  onMove: ({ point }) => {
+    // point.clientX / point.clientY
+  },
+  onEnd: ({ reason }) => {
+    // reason: 'pointerup' | 'pointercancel'
+  },
+});
+
+session.dispose(); // 摘掉监听，重复调用是安全的
+```
+
+日常用不到这一层——需要跟手的组件内部已经接好了。
+
+## 选项
+
+| 选项 | 必填 | 说明 |
+| --- | --- | --- |
+| `doc` | 是 | 会话跟随的文档。传 `null` 时会话退化成空操作，`dispose` 照常可调 |
+| `pointerId` | 否 | 只跟这根指针，别的指针的事件全滤掉。不给则不过滤 |
+| `onMove` | 是 | 指针移动。回送坐标、`pointerId`、压感与原始事件 |
+| `onEnd` | 是 | 手抬起来或被系统收走。两种情形都只回送一次 |
+
+## 跟哪个文档
+
+`resolveSessionDoc` 的解析顺序是：元素自己的文档 → 全局 `document` → `null`。
+
+按元素解析而不是直接取全局，是因为组件可能渲在 iframe 或另一个文档里，跟错文档的表现就是指针一动就断手。元素还没就位（首帧尚未布局）时退回全局；连全局都没有（无 DOM 的纯逻辑测试）返回 `null`，此时会话什么都不做，状态照常转移，只是没有指针可跟。
+
+## 谁在用
+
+跟手期间的指针监听统一走这一层，14 个组件在用：`slider` · `splitter` · `scrollbar` · `color-picker` · `image-cropper` · `floating-panel` · `signature-pad` · `carousel` · `image-viewer` · `sortable` · `resizable` · `table` · `tabs` · `tree`。
+
+在状态机里的接法是把会话挂进拖动态的效应，效应拆卸时 `dispose`——状态一离开拖动态，监听自动摘干净：
+
+<!-- eslint-skip -->
+
+```ts
+effects: {
+  trackPointer: ({ send, refs }) => {
+    const session = createPointerSession({
+      doc: resolveSessionDoc(refs.get('getTrackEl')()),
+      onMove: ({ point }) => send({ type: 'DRAG.MOVE', point }),
+      onEnd: () => send({ type: 'DRAG.END' }),
+    })
+    return () => session.dispose()
+  },
+},
+```
+
+`signature-pad` 多传一个 `pointerId`：起笔那根指针的 id 在效应挂载前就记进了 refs，笔画因此不会被第二根手指接管。
+
+## 多指会话与双指几何
+
+`createMultiPointerSession` 同时跟住多根指针：`add()` 记下一根新按下的，`onChange` 在任何一根移动或抬起时回送**当前全部触点**（按落下的先后排），最后一根离开才走 `onEnd`。
+
+```ts
+import { createMultiPointerSession, pinchChange, pinchSnapshot } from "@xihan-ui/pointer";
+
+const session = createMultiPointerSession({
+  doc: resolveSessionDoc(el),
+  onChange: (points) => {
+    if (points.length < 2)
+      return;
+    const now = pinchSnapshot(points[0], points[1]);
+    const { scale, translate, rotate } = pinchChange(start, now);
+  },
+  onEnd: ({ reason }) => {
+    // reason 是 'pointercancel' 时该退回原样，'pointerup' 才是落定
+  },
+});
+```
+
+`pinchSnapshot` 拍下两指此刻的间距、中点与连线角度；`pinchChange` 拿起始快照与当前快照算出**相对起始那一刻**的缩放、位移与转角。相对起始算而不是相对上一帧，是因为逐帧累乘会把浮点误差一路攒起来。触点数一变就该重拍基准：从双指退回单指时不重拍的话，剩下那根手指会带着上一段的缩放基准继续走，画面会跳一下。
+
+`onEnd` 的 `reason` 要分开处理：被系统收走时该退回原样，抬手才是落定提交。会话本身可以反复用——最后一根手指抬起只是这一场结束，不是会话作废，因此可以挂在根级效应上常驻。
+
+`carousel` 与 `image-viewer` 走的是这一层：前者只把第一根手指交进会话（单指划动，已经在划的时候第二根落下不算数），后者用双指缩放，两指整体平移时只动偏移不动缩放。
+
+## 拖放几何
+
+四个纯函数，`sortable` / `table` / `tree` / `tabs` 的重排都建在上面：
+
+| 导出 | 用途 |
+| --- | --- |
+| `projectSortable()` | 算出此刻的落点下标与每一项该让开多少 |
+| `sortableOffsets()` | 只要让位位移那一份 |
+| `shouldActivate()` / `DEFAULT_ACTIVATION_DISTANCE` | 这次位移够不够格开始拖（默认 5px） |
+| `edgeScrollDelta()` / `DEFAULT_EDGE_THRESHOLD` / `DEFAULT_EDGE_SPEED` | 拖到容器边缘时该滚多少，速度随入侵深度线性上升 |
+| `moveItem()` | 「先摘后插」的下标折算 |
+
+两条判据值得单独记：
+
+- **落点按「被拖项的中心越过了谁的中心」判，不按矩形相交。** 项高不齐时相交判据会在边界反复横跳；沿轴扫描一遇到没越过的就停，落点因此连续，不会从第 0 位跳到第 5 位。
+- **几何一律取按下那一刻的快照。** 让位之后布局已经变了，拿变形后的几何再算会自激振荡。拖动中版面滚走的那部分漂移由调用方换算回快照坐标。
+- **激活阈值用直线距离而不是分轴比较。** 斜着拖 4px + 4px 的实际位移是 5.7px，分轴比较会判成没动。
+
+## 尺寸调整几何
+
+`resizeRect()` 算推动某条边之后的矩形，`clampSize` / `snapSize` / `applyAspectRatio` 是它用到的三条约束，也单独导出。`resizable` 与 `table` 的列宽、`floating-panel` 的改尺寸都走它。
+
+两条硬规则：
+
+- **西边与北边动的是矩形的起点**，所以位置要跟着走；尺寸先过约束，起点再按「实际收了多少」回算——顶到下限之后对边才不会继续漂。
+- **约束次序是 吸附 → 宽高比 → 上下限 → 容器，夹取优先于比例。** 顶到容器或上下限时比例会破，因为边界是硬约束而比例是意图；反过来（保比例、越界）会把矩形推到看得见的容器外面。
+
+## 这个包不管什么
+
+- 不碰 DOM，不改样式，不调 `setPointerCapture`
+- 不换算业务坐标（轨道百分比、裁剪框、面板位置都由各自的组件算）
+- 不做时序类手势识别（轻点、长按、双击都不在这一层）
+- 不持有拖动状态：拖没拖、拖的是谁、松手写回哪里，全在组件的状态机里
+
+留在调用方，是因为同一段跟手在不同组件里意味着完全不同的东西：滑块要的是轨道上的比例，面板要的是相对起点的位移，签名板要的是压感曲线。这个包只保证「指针现在在这儿」与「这几个数该怎么算」两件事是对的。
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/position
+
+# 浮层定位
+
+`@xihan-ui/position` 负责一件事：把一个浮层放到锚点旁边正确的位置，并在页面变化时持续跟住。它是自研实现，零第三方运行时依赖。
+
+## 端口与实现是分开的
+
+定位能力在 `@xihan-ui/core` 里以**端口**形式声明，`@xihan-ui/position` 只是它的一个实现：
+
+```ts
+export interface PositionEnginePort {
+  /** 计算并持续更新浮层位置，返回值调用后停止跟随。 */
+  attach: (
+    anchor: Anchor,
+    floating: HTMLElement,
+    options: PositionOptions,
+    onResult: (result: PositionResult) => void,
+  ) => () => void;
+}
+```
+
+组件只认这个端口。想换成别的定位库，实现一份 `PositionEnginePort` 注入即可，组件与皮肤一行不用改。定位判据本身也是**引擎无关**的：它只断言浮层最终出现在屏幕的哪个位置，换实现照跑不误。
+
+## 用法
+
+```ts
+import { createPositionEngine } from "@xihan-ui/position";
+
+const engine = createPositionEngine();
+
+const stop = engine.attach(
+  triggerEl,
+  floatingEl,
+  { placement: "bottom-start", offset: 8, flip: true, shift: true, strategy: "absolute" },
+  ({ x, y, placement, hidden }) => {
+    floatingEl.style.left = `${x}px`;
+    floatingEl.style.top = `${y}px`;
+  },
+);
+
+stop(); // 停止跟随
+```
+
+日常用不到这一层——浮层组件内部已经接好了，你只需要传 `placement` / `offset` 之类的 props。
+
+## 选项
+
+| 选项 | 默认 | 说明 |
+| --- | --- | --- |
+| `placement` | `'bottom'` | 12 种：四个方向 × `start` / `center` / `end` |
+| `offset` | `8` | 与锚点的间距（px） |
+| `flip` | `true` | 主轴空间不足时翻到对面 |
+| `shift` | `true` | 交叉轴溢出时沿边推回，贴边留 4px 余量 |
+| `strategy` | `'absolute'` | 坐标系，见下 |
+
+回传的 `PositionResult` 里除了坐标，还有**最终采用的** `placement`（翻面后可能与请求的不同，皮肤靠 `data-side` / `data-align` 画箭头）与 `hidden`（锚点已被裁剪掉，浮层该藏起来）。
+
+## 两套坐标系
+
+这是浮层最容易出错的地方：
+
+| strategy | 坐标基准 | 被谁裁 |
+| --- | --- | --- |
+| `absolute` | 包含块的布局坐标 | 任何 `overflow` 祖先 |
+| `fixed` | 视口坐标 | 只被「劫持了它包含块」的那类祖先（`transform` / `filter` / `contain` 等）约束 |
+
+引擎对两者的处理不是简单换个基准：`fixed` 时会把裁剪祖先链**截断**到那个劫持了包含块的祖先为止。不截断的话，浮层会逃出裁剪区却仍在躲一条已经不存在的边界，表现为莫名其妙的翻面或被推回去。
+
+::: warning 坐标系必须三处一致
+机器传给引擎的 `strategy`、`connect` 产出的内联 `position`、皮肤里 `positioner` 规则的 `position`——三处必须写同一个值。任意一处走岔，引擎按一套坐标算、CSS 按另一套渲染，整族浮层会整体偏掉一个 `scrollY`，而且不会有任何报错。
+
+仓库里有一道门禁（`check-overlay-strategy.mjs`）专门盯这三处。新增吃引擎坐标的浮层组件时，必须把它登记进那份名单，否则它不受保护。
+:::
+
+## 虚拟锚点
+
+右键菜单、文本选区这类没有实体元素的锚点，给一个能返回矩形的对象即可：
+
+```ts
+const virtual = {
+  getBoundingClientRect: () => ({ x: event.clientX, y: event.clientY, width: 0, height: 0 }),
+};
+engine.attach(virtual, floatingEl, { placement: "bottom-start" }, apply);
+```
+
+在计算的第一步元素锚点与虚拟锚点就统一成矩形了，之后没有任何区别。
+
+## 落位才露
+
+浮层的坐标依赖它自己的尺寸，而尺寸要等元素进 DOM 参与排版才量得到——「先定位再展开」做不到，
+顺序只能是渲染、量、定位。展开的那几帧坐标还是兜底的 0，不处理的话浮层会先在视口左上角闪一帧：
+快机器上这一帧赶在绘制前闭合，慢机器或开着 devtools 时画得出来。
+
+所以定位层有一条生命周期契约，落在皮肤基线与连接层两处：
+
+- `reset.css` 给所有 `[data-part='positioner']` 默认 `visibility: hidden`，只有带 `data-positioned` 的才显示。
+  用 visibility 而不是 display——`display: none` 会让浮层退出排版，引擎量不到它的尺寸。
+- 连接层在引擎回报坐标后打 `data-positioned`（吃引擎坐标的走 `overlayPositioned(position)`；
+  由皮肤 inset 直接摆的对话框、抽屉、图片查看器恒带，它们没有「还没量完」的窗口）。
+- 判据与展开态无关：收起中的浮层留着坐标把退场播完；重开前由各机器的 `trackPosition` 先清坐标，
+  于是再次落位前同样藏着。`(0, 0)` 是合法坐标，判据只认 `x` 是否存在。
+- 锚点被滚出可视区时引擎置 `hidden`，这是另一个信号 `data-hidden`，各皮肤压回隐藏。
+
+忘了接线的新浮层只会不显示，不会闪——`check-overlay-positioned` 门禁在构建前就报出来。
+
+多面板共用一份坐标的组件（菜单栏、侧栏的折叠弹出）还要逐面板记账：换张时共享份立刻归新面板所有，
+正在收起的那张若从共享份取坐标会当场归零。菜单栏此外遵循原生菜单栏的成规——首开有进场、
+末收有退场，相邻切换瞬时换张；且新张落位前上一张保持显示（`data-instant` 与交接），
+否则两张之间的空档快速掠过就成了频闪。
+
+## 跟随
+
+`attach` 之后引擎会持续更新位置，覆盖这些情况：
+
+- 页面滚动、容器滚动
+- 视口尺寸变化
+- 锚点或浮层自身尺寸变化
+- 祖先链上的 `transform` / 缩放容器
+
+静置时不空转，`stop()` 之后不再有任何回调。这两条与十二种 placement 的贴边对齐、翻面与避让（各配一条「关掉之后应当溢出」的对照）、缩放容器、裁剪后的 `hidden` 一起，构成了浏览器里跑的定位契约判据。
+
+## 相关
+
+- [组件参考](../components/)：哪些组件带 `positioner` 部件
+- [行为原语](./behavior)：定位之外的层栈、消隐与焦点
+- [测试与质量门禁](./testing)：定位契约怎么验
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/sound
+
+# 声音层
+
+`@xihan-ui/sound` 是一层纯 Web Audio 的程序化 UI 音效：零音频文件、零第三方依赖、框架无关。点击、成功、报错这些提示音不是加载 MP3，而是在播放的瞬间用振荡器与噪声实时合成出来——整个包比一张音频文件还小。
+
+它是**独立**的：不依赖任何适配器，任何框架（或没有框架）都直接装、直接用。
+
+下面的示例都会真的出声，先把音量调小一点。
+
+```vue
+<script setup lang="ts">
+import type { SoundTheme } from "@xihan-ui/sound";
+import {
+  BUILTIN_SOUND_NAMES,
+  createSoundPlayer,
+  defaultSoundTheme,
+  minimalSoundTheme,
+  softSoundTheme,
+} from "@xihan-ui/sound";
+import { XhButton, XhRadioGroupRoot, XhSwitch } from "@xihan-ui/vue";
+import { onBeforeUnmount, ref, watch } from "vue";
+
+const themes: Record<string, SoundTheme> = {
+  default: defaultSoundTheme,
+  minimal: minimalSoundTheme,
+  soft: softSoundTheme,
+};
+
+const options = [
+  { value: "default", label: "default 清亮" },
+  { value: "minimal", label: "minimal 极简" },
+  { value: "soft", label: "soft 柔和" },
+];
+
+// 建播放器不碰音频上下文，等第一次真的发声才建，放 setup 里是安全的
+const player = createSoundPlayer();
+const theme = ref("default");
+const volume = ref(0.5);
+const enabled = ref(true);
+
+watch(theme, name => player.setTheme(themes[name] ?? defaultSoundTheme));
+watch(volume, value => player.setVolume(value));
+watch(enabled, on => player.setEnabled(on));
+
+onBeforeUnmount(() => player.dispose());
+</script>
+
+<template>
+  <div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
+      <XhRadioGroupRoot
+        v-model:value="theme"
+        :collection="options"
+        label="主题"
+        name="sound-theme"
+      />
+      <label style="display: flex; align-items: center; gap: 8px">
+        音量
+        <input v-model.number="volume" type="range" min="0" max="1" step="0.05">
+      </label>
+      <label style="display: flex; align-items: center; gap: 8px">
+        出声
+        <XhSwitch v-model:checked="enabled" />
+      </label>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <XhButton
+        v-for="name in BUILTIN_SOUND_NAMES"
+        :key="name"
+        variant="outline"
+        size="sm"
+        @click="player.play(name)"
+      >
+        {{ name }}
+      </XhButton>
+    </div>
+  </div>
+</template>
+```
+
+## 声音是配方，不是文件
+
+一段声音是一份可 JSON 序列化的声明式配方（`SoundSpec`）：若干并行发声层，每层一条增益包络，可带音高包络、滤波与混响送出。
+
+```ts
+import type { SoundSpec } from "@xihan-ui/sound";
+
+const ding: SoundSpec = {
+  layers: [
+    {
+      kind: "oscillator",
+      wave: "sine",
+      frequency: [{ time: 0, value: 1046.5 }], // C6
+      gain: [
+        { time: 0, value: 0 },
+        { time: 0.01, value: 0.25 }, // 10ms 起音，避免爆音
+        { time: 0.3, value: 0, curve: "exp" }, // 指数衰减
+      ],
+    },
+  ],
+  space: 0.2, // 混响送出量
+};
+```
+
+配方是纯数据，这带来三件事：主题可以整套替换、用户配置可以持久化再回放、调音界面可以直接编辑它——比如下面这个：
+
+```vue
+<script setup lang="ts">
+import type { OscillatorLayer, SoundSpec } from "@xihan-ui/sound";
+import { createSoundPlayer, glide, strike } from "@xihan-ui/sound";
+import { XhButton, XhRadioGroupRoot } from "@xihan-ui/vue";
+import { computed, onBeforeUnmount, ref } from "vue";
+
+const waves = [
+  { value: "sine", label: "sine" },
+  { value: "triangle", label: "triangle" },
+  { value: "square", label: "square" },
+  { value: "sawtooth", label: "sawtooth" },
+];
+
+const wave = ref<OscillatorLayer["wave"]>("triangle");
+const from = ref(880);
+const to = ref(1320);
+const attack = ref(5);
+const decay = ref(180);
+const peak = ref(0.3);
+const space = ref(0.15);
+
+const seconds = computed(() => Math.max(0.01, decay.value / 1000));
+
+const spec = computed<SoundSpec>(() => ({
+  layers: [
+    {
+      kind: "oscillator",
+      wave: wave.value,
+      frequency: glide(from.value, to.value, seconds.value),
+      gain: strike(peak.value, attack.value / 1000, seconds.value),
+    },
+  ],
+  space: space.value,
+}));
+
+const code = computed(
+  () => `sound.play({
+  layers: [
+    {
+      kind: 'oscillator',
+      wave: '${wave.value}',
+      frequency: glide(${from.value}, ${to.value}, ${seconds.value.toFixed(3)}),
+      gain: strike(${peak.value}, ${(attack.value / 1000).toFixed(3)}, ${seconds.value.toFixed(3)}),
+    },
+  ],
+  space: ${space.value},
+})`,
+);
+
+const player = createSoundPlayer();
+onBeforeUnmount(() => player.dispose());
+</script>
+
+<template>
+  <div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+    <XhRadioGroupRoot v-model:value="wave" :collection="waves" label="波形" name="sound-wave" />
+
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 10px 20px;
+      "
+    >
+      <label style="display: flex; align-items: center; gap: 8px">
+        <span style="width: 76px">起始 {{ from }}Hz</span>
+        <input v-model.number="from" type="range" min="80" max="2400" step="10">
+      </label>
+      <label style="display: flex; align-items: center; gap: 8px">
+        <span style="width: 76px">终止 {{ to }}Hz</span>
+        <input v-model.number="to" type="range" min="80" max="2400" step="10">
+      </label>
+      <label style="display: flex; align-items: center; gap: 8px">
+        <span style="width: 76px">起音 {{ attack }}ms</span>
+        <input v-model.number="attack" type="range" min="1" max="80" step="1">
+      </label>
+      <label style="display: flex; align-items: center; gap: 8px">
+        <span style="width: 76px">衰减 {{ decay }}ms</span>
+        <input v-model.number="decay" type="range" min="20" max="900" step="10">
+      </label>
+      <label style="display: flex; align-items: center; gap: 8px">
+        <span style="width: 76px">峰值 {{ peak }}</span>
+        <input v-model.number="peak" type="range" min="0.05" max="0.6" step="0.05">
+      </label>
+      <label style="display: flex; align-items: center; gap: 8px">
+        <span style="width: 76px">空间 {{ space }}</span>
+        <input v-model.number="space" type="range" min="0" max="0.6" step="0.05">
+      </label>
+    </div>
+
+    <div>
+      <XhButton variant="solid" @click="player.play(spec)">试听</XhButton>
+    </div>
+
+    <pre
+      style="
+        margin: 0;
+        padding: 12px 14px;
+        border-radius: 8px;
+        background: var(--vp-c-bg-soft);
+        font-size: 12px;
+        line-height: 1.6;
+        overflow-x: auto;
+      "
+    >{{ code }}</pre>
+  </div>
+</template>
+```
+播放前配方一律过一道钳制（`clampSpec`）：越界钳住、类型不对回落、未知形态丢弃，坏数据不炸播放、也不会产出刺耳或超长的声音。
+
+## 语义名与主题
+
+主题把语义名映射到配方。内置 14 个语义名：
+
+`click` `tap` `toggle-on` `toggle-off` `open` `close` `success` `error` `warning` `info` `notification` `send` `receive` `complete`
+
+内置三套主题，每套都覆盖全部语义名：
+
+| 主题 | 性格 |
+| --- | --- |
+| `defaultSoundTheme` | 清亮乐音系：C 大调琶音、高频短敲、适度混响 |
+| `minimalSoundTheme` | 短促干净、无混响，整段不超过 0.3 秒，只标记事件不渲染情绪 |
+| `softSoundTheme` | 低音区正弦、慢起音、厚混响，提示要被听见但不许惊到人 |
+
+自定义主题就是普通对象展开：
+
+```ts
+import { defaultSoundTheme, defineSoundTheme } from "@xihan-ui/sound";
+
+const mine = defineSoundTheme({
+  ...defaultSoundTheme,
+  click: ding, // 换掉一个，其余沿用
+});
+```
+
+## 基础用法
+
+```ts
+import { createSoundPlayer, softSoundTheme } from "@xihan-ui/sound";
+
+const sound = createSoundPlayer({
+  volume: 0.5, // 主音量 0..1
+  enabled: true, // 接到用户偏好上，别替最终用户决定
+  throttle: 50, // 同名声音的最小重触发间隔（毫秒）
+});
+
+sound.play("success");
+sound.play("click", { volume: 0.5 }); // 单次音量系数
+sound.play(ding); // 配方对象直接播，不经过主题
+
+sound.setTheme(softSoundTheme);
+sound.setVolume(0.3);
+sound.setEnabled(false);
+sound.dispose();
+```
+
+音频上下文**惰性创建**：第一次真正播放才建，从不出声的页面不为它付任何代价。SSR 或没有 Web Audio 的环境里所有调用静默退化成空操作，不用条件守卫。
+
+## 在 Vue 里用
+
+Vue 侧的适配放在**单独的子入口** `@xihan-ui/vue/sound`，两种用法：给命令式反馈服务配声，或给单个元素配声。
+
+### 给通知与确认框配声
+
+`withToastSound` / `withDialogSound` 包一层现成的服务，**调用点一行都不用改**：
+
+```ts
+import { createSoundPlayer, softSoundTheme } from "@xihan-ui/sound";
+import { createDialogService, createToastService } from "@xihan-ui/vue";
+import { setSoundPlayer, withDialogSound, withToastSound } from "@xihan-ui/vue/sound";
+
+// 换主题、接用户偏好；不设置就用一个默认播放器
+setSoundPlayer(createSoundPlayer({ theme: softSoundTheme, enabled: userPrefs.sound }));
+
+export const toast = withToastSound(createToastService());
+export const dialog = withDialogSound(createDialogService());
+
+toast.success("已保存"); // 视觉 + 听觉，返回值与原服务完全一致
+await dialog.confirm({ title: "删除这条记录？" });
+```
+
+```vue
+<script setup lang="ts">
+import type { ToastService } from "@xihan-ui/vue";
+import { createToastService, XhButton } from "@xihan-ui/vue";
+import { withToastSound } from "@xihan-ui/vue/sound";
+import { onBeforeUnmount } from "vue";
+
+// 惰性建单例：服务要 document，等到第一次调用（必然在客户端）再建
+let toast: ToastService | undefined;
+function use(): ToastService {
+  toast ??= withToastSound(createToastService({ placement: "top" }));
+  return toast;
+}
+onBeforeUnmount(() => toast?.dispose());
+
+function upload(): void {
+  const id = use().loading("上传中");
+  setTimeout(() => use().update(id, { type: "success", title: "上传完成" }), 1200);
+}
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 8px">
+    <XhButton variant="solid" @click="upload()">上传（静默转成功才响）</XhButton>
+    <XhButton variant="outline" @click="use().success('已保存')">success</XhButton>
+    <XhButton variant="outline" @click="use().warning('磁盘快满了')">warning</XhButton>
+    <XhButton variant="outline" @click="use().error('同步失败，稍后自动重试')">
+      error
+    </XhButton>
+  </div>
+</template>
+```
+
+默认映射：
+
+| 调用 | 声音 |
+| --- | --- |
+| `toast.info/success/warning/error` | 同名语义声 |
+| `toast.loading` | 不发声（加载中只是过渡态） |
+| `toast.update(id, { type })` | 新类型的声音，`loading` 除外——上传完成那一刻该响，改文案不该响 |
+| `dialog.confirm` | `open` |
+| `dialog.info/success/warning/error` | 同名语义声 |
+| 关闭、消失 | 不发声 |
+
+逐项改写，给 `null` 即这一类静音：
+
+```ts
+withToastSound(createToastService(), {
+  sounds: { success: "complete", error: null },
+});
+```
+
+这两个服务挂在 body 下的独立应用里，拿不到组件树的注入——音效开关要么走 `setSoundPlayer` 的那个播放器，要么给 `options.player` 单独传一个。
+
+服务默认还会在**首次用户手势**时解锁音频上下文（`autoUnlock`），因为通知常来自请求拦截器或推送这类非手势场景，不解锁就发不出声。
+
+### 给单个元素配声
+
+```vue
+<script setup lang="ts">
+import { XhButton } from "@xihan-ui/vue";
+import { vSound } from "@xihan-ui/vue/sound";
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 8px">
+    <XhButton v-sound variant="solid">默认 click</XhButton>
+    <XhButton v-sound="'send'" variant="outline">发送</XhButton>
+    <XhButton v-sound="{ sound: 'toggle-on', volume: 0.6 }" variant="outline">
+      指定音量
+    </XhButton>
+    <XhButton v-sound disabled variant="outline">禁用不响</XhButton>
+  </div>
+</template>
+```
+
+指令挂在 `click` 上而不是 `pointerdown`：键盘敲 Enter / Space 激活也要响，按下又拖开取消的那种不该响。带 `disabled` / `aria-disabled` / `data-disabled` 的元素不发声。
+
+`@xihan-ui/sound` 是**可选** peer：不装它，主入口一行都不引，应用里不会多出一个音频引擎。
+
+## 自动播放策略
+
+浏览器要求用户先与页面交互，音频上下文才允许出声。播放器对此的态度：
+
+- 点击、切换这类**手势触发**的声音天然合规——手势本身就解锁了上下文；
+- 上下文仍被挂起时，只保留**最近一声**待发，恢复后补那一声，绝不把积压的提示音一口气倒出来；
+- 通知这类**非手势**的声音要能响，需在任意一次用户手势里先调 `sound.unlock()` 提前解锁。
+
+```ts
+// 应用入口处：首次交互解锁，之后 SignalR 推来的通知就能出声
+window.addEventListener("pointerdown", () => sound.unlock(), { once: true });
+```
+
+声音默认是打扰。把 `enabled` 与音量接到用户偏好里持久化，首选给出「关」的入口——这层礼貌是应用的责任，播放器只负责让开关随时生效。
+
+## 调音
+
+三个包络工厂把常用形状写短：
+
+```ts
+import { flat, glide, strike } from "@xihan-ui/sound";
+
+strike(0.3, 0.005, 0.2); // 敲击：5ms 起音到 0.3，再 200ms 指数衰减
+flat(880); // 恒定值（音高 880Hz）
+glide(440, 880, 0.12); // 滑音：120ms 从 440 滑到 880
+```
+
+层可以叠：琶音是几层错开 `delay` 的正弦，风声是一层扫频 lowpass 的噪声，按键是一层三角波加一撮 highpass 白噪。配方能用的原料：振荡器四种波形、白噪与粉噪、双二阶滤波五型（`lowpass` `highpass` `bandpass` `notch` `peaking`）、共享混响总线，整包不到 5 kB。
+
+## 相关
+
+- [背景层](./backgrounds)——同为 `features/` 组的可选能力层，视觉对偶
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/styling
+
+# 皮肤与样式分层
+
+`@xihan-ui/styles` 是**纯 CSS** 包：不依赖任何 JS 包，也不被任何 JS 包依赖。它可以脱离整个 JS 层单独使用，也可以整包丢掉自己写。
+
+## 层序
+
+CSS 的级联顺序由 `@layer` 声明的**首次出现顺序**决定，与 `@import` 顺序无关。人写的那份单独放在一个文件里：
+
+```css
+/* layers.css */
+@layer xihan.reset, xihan.tokens, xihan.motion, xihan.components, xihan.overrides;
+```
+
+| 层 | 内容 |
+| --- | --- |
+| `xihan.reset` | 库自己的基线，只作用于带 `data-scope` 的节点 |
+| `xihan.tokens` | 令牌声明（来自 `@xihan-ui/tokens/tokens.css`） |
+| `xihan.motion` | 关键帧动画 |
+| `xihan.components` | 组件皮肤 |
+| `xihan.overrides` | 留给使用者，永远盖得住上面全部 |
+
+令牌产物 `tokens.css` 由生成器带一份逐字相同的副本，好让先引令牌的项目层序照样成立；两份不许漂移，由 `check-layer-order` 门禁盯住。
+
+按组件挑样式时**必须先引 `layers.css` 或 `tokens.css` 之一**，否则层序不成立，级联顺序就变成了引入顺序。
+
+::: warning 本站的示例跑的是无层版本
+文档站引的是 `index.unlayered.css`（VitePress 自带无层的 `button` 重置，见[安装与接入](../installation#宿主有无层-reset-时改用无层版)）。层壳被拆掉之后，本页说的这套层序在本站的示例里一条都不生效——规则改按特异性竞争。层序相关的表现本站演示不出来，请在你自己的项目里引 `index.css` 之后验。
+:::
+
+## reset 只碰自己的节点
+
+```css
+@layer xihan.reset {
+  [data-scope],
+  [data-scope]::before,
+  [data-scope]::after {
+    box-sizing: border-box;
+  }
+
+  [data-scope]:where(button, input, optgroup, select, textarea) {
+    font: inherit;
+    letter-spacing: inherit;
+  }
+}
+```
+
+没有全局 reset，不碰宿主页面的任何元素。与现有页面共存不需要做任何隔离。
+
+## 皮肤的写法
+
+选择器只认 `data-*`，不认类名：
+
+```css
+@layer xihan.components {
+  [data-scope='button'][data-part='root'] {
+    /* 私有槽位：组件令牌 → 语义令牌两级回退 */
+    --xh-_bg: var(--xh-button-bg, var(--xh-bg-subtle));
+    --xh-_bg-hover: var(--xh-button-bg-hover, var(--xh-bg-subtle-hover));
+    --xh-_fg: var(--xh-button-fg, var(--xh-fg-default));
+
+    block-size: var(--xh-button-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-button-px, var(--xh-control-px-md));
+    border-radius: var(--xh-button-radius, var(--xh-shape-control));
+    background: var(--xh-_bg);
+    color: var(--xh-_fg);
+  }
+
+  /* 变体只改槽位，不重写整条规则 */
+  [data-scope='button'][data-part='root'][data-variant='solid'] {
+    --xh-_bg: var(--xh-bg-brand);
+    --xh-_fg: var(--xh-fg-on-brand);
+  }
+
+  [data-scope='button'][data-part='root'][data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+```
+
+三层变量各司其职：
+
+| 形式 | 名字 | 谁写 |
+| --- | --- | --- |
+| 组件覆盖槽 | `--xh-button-bg` | **使用者**：想改这个组件的背景就设它 |
+| 语义令牌 | `--xh-bg-subtle` | 令牌产物：改它影响全库 |
+| 皮肤私有槽 | `--xh-_bg` | 皮肤内部：变体只改它，规则本身不重复 |
+
+带下划线前缀的私有槽不是公开接口，别在外面设它。
+
+## 覆盖样式的三种粒度
+
+```css
+/* 1. 改语义令牌：影响所有直接消费它的规则 */
+:root {
+  --xh-shape-control: 10px;
+}
+
+/* 2. 改组件覆盖槽：只影响这一类组件 */
+:root {
+  --xh-button-h: 36px;
+  --xh-dialog-max-w: 40rem;
+}
+
+/* 3. 直接写规则：放进 overrides 层，永远盖得住 */
+@layer xihan.overrides {
+  [data-scope='button'][data-part='root'] {
+    text-transform: uppercase;
+  }
+}
+```
+
+优先选前两种。写死规则会绕开令牌体系，深色模式、密度切换这些跟着一起失效。
+
+## 输入类控件有默认最小宽度
+
+下拉、日期、文本框这类控件默认带 `min-inline-size: var(--xh-control-min-w)`，缺省 `12rem`（约 192px）。控件放进 flex 或 grid 里天然会被压扁——压到只剩一个箭头就没法用了，先给一条底线比让它塌掉合理。
+
+15 份皮肤吃这条令牌。窄栏场景（两列表单、抽屉里的设置项、表格上方的筛选行）会顶出容器：这条是底线不是宽度，容器再窄它也不让步。要么把它放开、要么给控件所在的栏留够宽度：
+
+```css
+/* 全局：所有吃这条令牌的控件一起改 */
+:root {
+  --xh-control-min-w: 0;
+}
+
+/* 单类：只改下拉，其余照旧 */
+:root {
+  --xh-select-control-min-w: 8rem;
+}
+```
+
+槽名是 `--xh-<组件名>-control-min-w`。`text-field` · `password-input` · `clipboard` · `mention` 的**内层输入框**另有一条 `--xh-<组件名>-input-min-w`：外框放开了内框还在顶，就是漏了这一条。整表见各组件页的「CSS 变量」。
+
+## 在自己的节点上接语气
+
+语气轴（`data-tone`）不只给库里的组件用。在自己的节点上写一个 `data-tone`，那个节点里就能取到整族颜色——六族语气、深浅两态、换过品牌色之后的取值，全都跟着走：
+
+```css
+.my-status-card {
+  background: var(--xh-tone-subtle);
+  border: 1px solid var(--xh-tone-border);
+  color: var(--xh-tone-fg);
+}
+```
+
+```html
+<div class="my-status-card" data-tone="danger">…</div>
+```
+
+| 令牌 | 是什么 |
+| --- | --- |
+| `--xh-tone-solid` | 实心底 |
+| `--xh-tone-solid-hover` / `--xh-tone-solid-active` | 实心底的悬停与按下 |
+| `--xh-tone-on` | 实心底上的前景色 |
+| `--xh-tone-subtle` | 淡底 |
+| `--xh-tone-subtle-hover` / `--xh-tone-subtle-active` | 淡底的悬停与按下 |
+| `--xh-tone-fg` | 普通背景上表达该语气的文字色 |
+| `--xh-tone-border` | 描边 |
+| `--xh-tone-border-control` | 可操作区的边界，对面 3:1 |
+| `--xh-tone-soft` | 色条、指示条这类装饰性强调，对画布 3:1 |
+
+这一族只在写了 `data-tone` 的节点及其后代里有取值。没写就取不到——`data-tone` 是它们的开关，不是可选修饰。
+
+对比度已经按 WCAG 逐族验过：实心底与 `--xh-tone-on`、淡底三态与 `--xh-tone-fg` 都是 4.5:1，两条非文字档是 3:1。所以自己配色时，字与底请照上表成对取，别把 `--xh-tone-fg` 压到 `--xh-tone-solid` 上。
+
+## 换品牌色
+
+品牌色的唯一真源是 **原语梯度** `--xh-color-brand-50…950`：语义令牌（`--xh-bg-brand` 等）与语气层（`data-tone='brand'`）都从它取值。所以换品牌色要换整套原语，而不是只改 `--xh-bg-brand`——那只影响没写 `data-tone` 的缺省路径，写了 `data-tone='brand'` 的组件（实心按钮、开关、进度条这些）不会跟着变。
+
+一枚种子色就够，运行时会派生整套梯度：
+
+```ts
+import { brandId, createThemeController, registerBrand } from "@xihan-ui/tokens";
+
+// 注册：从种子色派生 11 档原语，注入 [data-brand='acme'] 取值块
+registerBrand("acme", "#16a34a");
+
+// 切换：品牌是主题五维之一
+const theme = createThemeController({ storageKey: "app-theme" });
+theme.setPreference({ brand: brandId("acme") });
+```
+
+派生只取种子的**色相与彩度**，明度曲线沿用基线——库里所有建立在明度上的对比度保证（实心底白字 4.5:1 这类）对任何种子色都继续成立。种子会被锚定到 600 档（实心底与强调文字的档位）。
+
+要逐档手调，把整套梯度直接交给 `registerBrand('acme', { 50: '...', ..., 950: '...' })`。SSR 场景用 `brandScaleCss(id, seed)` 拿到取值块字符串，随首屏 HTML 下发，客户端不必再注册。
+
+## 动画与进出场
+
+进出场动画挂在 `data-state` 上：
+
+```css
+[data-scope='dialog'][data-part='backdrop'][data-state='open'] {
+  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+}
+
+[data-scope='dialog'][data-part='backdrop'][data-state='closed'] {
+  animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);
+}
+```
+
+关闭时 DOM 不会立刻消失——[进出场原语](./behavior#进出场)会等动画结束（或超时）才允许卸载，所以 `[data-state='closed']` 的那条动画真的播得完。
+
+## 升级前的形态
+
+自定义元素在 JS 到达之前不会升级，那段时间 `data-scope` / `data-part` 都还没打上，浮层的内容会以裸文本堆在页面流里，被搜索引擎与读屏当作正文。SSR / SSG 直出时这段窗口尤其长。
+
+`undefined.css` 处理这件事——按作者写的 `data-xh-part` 选中（那是升级前唯一存在的标记）：
+
+```css
+@layer xihan.components {
+  :where(xh-dialog, xh-popover, xh-select /* … */):not(:defined)
+    :where([data-xh-part='backdrop'], [data-xh-part='content'],
+           [data-xh-part='positioner'], [data-xh-part='viewport']) {
+    display: none;
+  }
+}
+```
+
+## 门禁
+
+皮肤不是随便写的，几道门禁盯着它（`pnpm gate`）：
+
+| 门禁 | 拦什么 |
+| --- | --- |
+| `check-token-refs` | 皮肤引用了令牌产物里不存在的令牌名。孤儿引用不报错也不降级——整条声明在计算值阶段静默失效 |
+| `check-shared-slots` | 同一个字面量在两个以上组件里当默认值。那是一条没被命名的设计决策，应当先立语义令牌 |
+| `check-disabled-contrast` | 禁用态的前景色令牌上又叠 `opacity`。两种手段同时用会把对比度压到读不出字 |
+| `check-overlay-strategy` | 浮层的坐标系在机器、`connect`、皮肤三处不一致 |
+| `check-part-wiring` | 解剖里声明、`connect` 里产出、适配器却没接线的部件。皮肤为它写了规则却匹配不到任何元素 |
+| stylelint | 常规 CSS 规范 |
+
+## 完全自己写皮肤
+
+丢掉 `@xihan-ui/styles`，只留令牌（或连令牌一起丢），组件行为一点不受影响。你需要知道的全部接口是：
+
+1. **`data-scope` + `data-part`**——结构标识，见[组件参考](../components/)里每个组件的解剖；
+2. **`data-state` / `data-disabled` / `data-readonly` / `data-invalid` / `data-orientation` / `data-highlighted` / `data-side` / `data-align`**——状态钩子；
+3. 组件自己的语义属性，如 `data-variant`、`data-position`。
+
+两条贯穿全库的取值约定，写全局规则时可以依赖：
+
+- **开合**一律编成 `data-state='open'|'closed'`，与元素上的 `aria-expanded` 同步。
+- **`role='option'` 的条目**一律编成 `data-state='checked'|'unchecked'`，与 `aria-selected` 同步，条目上不再发 `data-selected`。
+- **`data-selected`** 只用于结构性选中——树节点、表格行这类既非 option、选中态又与展开/高亮各自独立的角色。
+- **布尔状态**为真时属性在场且值为空串，为假时属性整个缺席——所以选择器写 `[data-disabled]` 即可，不必写 `[data-disabled='true']`。
+
+`data-xh-*` 前缀的属性是内部标记（层栈、集合项、焦点哨兵），不承诺稳定，不要选它们。
+
+## 相关
+
+- [设计令牌与主题](./theme)：令牌从哪来
+- [解剖与部件契约](./anatomy)：`data-scope` / `data-part` 的约定
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/testing
+
+# 测试与质量门禁
+
+一个「框架无关」的组件库最容易出的问题是：两套适配器悄悄跑偏了。行为写在同一个内核里不代表两边表现一致——挂属性的时机、事件的派发形态、焦点的落点都可能各走各的。
+
+XiHan.UI 的测试体系主要是为了防这件事。
+
+## 三套判据
+
+| 入口 | 回答什么问题 | 跑在哪 |
+| --- | --- | --- |
+| `@xihan-ui/testing` | 这个适配器的实现符合规格吗 | jsdom |
+| `@xihan-ui/testing/a11y` | 渲出来的东西有无障碍违规吗 | 真实 Chromium |
+| `@xihan-ui/testing/position` | 浮层最终落在屏幕上对的位置吗 | 真实 Chromium |
+
+后两套必须在真浏览器里跑：jsdom 没有布局，对比度、目标尺寸、翻面与避让一概演不出来。
+
+```bash
+pnpm test         # 第一套
+pnpm test:browser # 后两套（先 pnpm exec playwright install chromium）
+```
+
+在 Windows / macOS 宿主上，`pnpm test:browser` **必红一条**：像素基线那个文件挂在字体守卫上，整文件判失败、40 条用例全部 skipped。这是预期结果不是环境坏了，怎么在本地验像素改动见下面的「像素基线」。
+
+## 一致性：一份规格喂两个适配器
+
+**规格**（`ConformanceSuite`）声明组件的解剖部件、键盘表与用例；**适配器**各实现一个 `AdapterHarness`（挂载 fixture 树、取事件、卸载）。运行器把同一份规格喂给不同的 harness，逐帧采集归一化后的 `DomSnapshot` 并断言。
+
+fixture 是框架无关的树：
+
+```ts
+interface FixtureNode {
+  part?: string; // 解剖 part 名，与 data-part 逐字相同
+  tag?: string;
+  text?: string;
+  attrs?: Record<string, string>; // 业务属性，不含 aria- / data-scope / data-part
+  children?: FixtureNode[];
+}
+```
+
+快照也是归一化的：
+
+```ts
+interface DomSnapshot {
+  parts: Record<string, PartSnapshot[]>; // part 名 → 全部实例（文档序）
+  order: string[]; // 文档序，集合项带下标：['trigger', 'content', 'item[0]']
+  activeElement: ActiveElementRef | null; // 焦点落在哪个 part、是否恰为该元素本身
+  events: AdapterEvent[]; // 自上一帧起适配器对外派发的事件
+  strayParts: string[]; // 带 data-scope 却不属于任何声明 part 的元素
+}
+```
+
+### 五条契约不变量
+
+这套判据能成立靠的是五条自我约束：
+
+1. **规格零框架**——套件只从 `@xihan-ui/core` / `@xihan-ui/headless` 取纯数据（解剖、键盘表、类型），不 import 任何框架；
+2. **只断言归一化快照**——断言对象只能是 `DomSnapshot`，不碰组件实例、内部 ref、`shadowRoot`；
+3. **快照适配器无关**——id 的具体值、`data-v-*` 这类适配器痕迹在采集阶段抹掉，IDREF 属性翻译成 `@part(...)`。**抹不掉的差异即抽象泄漏**；
+4. **单实例文档**——同一时刻文档内只有一个 harness 的一个挂载实例，卸载后该 scope 不得残留节点；
+5. **状态断言归纯逻辑层**——harness 不暴露「当前机器状态」，`settle` 只等可观察的 DOM 事实。
+
+第 3 条是关键：如果两个适配器的差异没法在归一化里抹掉，那说明抽象漏了，该修的是库不是测试。
+
+### 分母外化
+
+键盘规格表是可达性的**分母**。用例通过 `covers` 字段反查行 id，缺一行即套件失败。
+
+想让键盘测试通过只能去写用例，不能去改分母。
+
+## 无障碍
+
+把一致性套件的 fixture 挂进真实 Chromium，对初始态与各用例终态跑 axe，终态按形态签名去重。
+
+存量违规登记在 `tooling/testing/src/a11y/known.ts`：命中已登记的规则不判失败，但**一条都不再命中时判登记过期**——修好了必须从表里删掉，不许留着一份早已不成立的豁免。当前登记的清单见[无障碍与键盘规格](./a11y#存量违规登记表)。
+
+## 浮层定位
+
+`runPositionEngine(engine, hooks, name)` 是一份**引擎无关**的契约：判据只认浮层最终出现在屏幕的哪个位置，两个矩形都取视口坐标，因此不关心谁是谁的包含块、中间隔了几层 transform。换一个定位引擎实现照跑不误。
+
+覆盖：十二种 placement 的贴边与对齐、offset、翻面与交叉轴避让（各配一条「关掉之后应当溢出」的对照）、虚拟锚点、缩放与 transform 容器、文档滚动、容器滚动跟随、裁剪后的 `hidden`、尺寸变化重算、静置不空转、停止跟随后不再回调。
+
+## 像素基线
+
+计算样式对不上会被令牌快照拦下，结构错位会被一致性套件拦下，但「值都对、看起来还是不一样」这一档没有任何判据管得住——层叠顺序、私有槽的覆盖时机、两条规则谁排在前面，这些只在最终那张位图上显形。像素基线守的就是这一档。
+
+受管范围是母组件 `button` / `text-field` / `select` / `menu` / `popover` / `dialog` / `drawer` / `toast`，每件在五组轴上各出一张：`light×comfortable`、`dark×comfortable`、`light×compact`、`dark×compact`、`dark×more`。前四格是主题与密度的笛卡尔积；第五格是层叠最脆的一格——两块 `contrast` 取值块必须排在两个 `mode` 块之后，顺序一错就静默回归。`motion=reduce` 不在其中：静止帧与默认档没有差别，那一轴由令牌快照与 `check-infinite-motion` 承担。
+
+基线文件在 `packages/adapters/vue/tests/browser/__screenshots__/` 下，具体几张以那个目录为准，这里不抄。
+
+### 为什么必须在容器里生成
+
+基线比的是逐像素的位图。字体、字形栅格化与子像素抹平在 Windows 与 Linux 上不是一回事，同一份 CSS 在两边渲出来的位图不同——在开发机上出的基线，CI 上一张都对不上。
+
+字体是这里最大的不确定性：全库皮肤写的是 `font-family: inherit`，没有 sans 字体令牌，字体最终取文档根上的那一个。截图用例因此把根上的字体族按名字写死成 `DejaVu Sans`，不留给环境默认的 `sans-serif` 去解析。所以基线的成立条件不止「Linux」，还包括「`DejaVu Sans` 这个名字解析得到」，即装了 `fonts-dejavu-core`——CI 的 `browser` job 里有一步专门装它，删掉那一步基线会整体判红。
+
+反过来，环境里多装几款字体不影响基线：字体族是按名字定的，默认 `sans-serif` 落到 Noto Sans 还是别的，画面一个像素都不变。核对字体时核对的是这个名字（`fc-match 'DejaVu Sans'`），不是默认 `sans-serif`。
+
+```bash
+pnpm visual:baseline            # 校验：与库里的基线逐像素比对
+pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
+```
+
+两条都在 `mcr.microsoft.com/playwright:v1.62.0-noble` 里跑，与 CI 同一套渲染栈。第一次要先 `docker pull` 这个镜像；镜像版本与 `pnpm-workspace.yaml` 里 `playwright` 的版本必须对上，浏览器二进制才配套。
+
+运行器把仓库同步进容器里的工作副本再装依赖，不在宿主的 `node_modules` 上动手——宿主装的是 win32-x64 的原生二进制，容器里跑不起来，反过来在容器里装又会把宿主那份覆盖掉。pnpm store 与工作副本都落在一个命名卷上，重复运行不重装。
+
+校验模式下基线目录**根本没挂进容器**，容器写不到它。要改基线只能显式走 `--update`。
+
+比对失败时，实际截图与差异图落在 `packages/adapters/vue/.vitest-attachments/`（不入库）。CI 上同一批文件会作为 `visual-diffs` artifact 传出来，下载下来逐张看。
+
+### 本地怎么跑，本地那条红怎么回事
+
+`pnpm visual:baseline` 是本地唯一有效的入口，它不吃宿主的渲染栈：源码同步进容器、依赖在容器里装、用例也在容器里跑，所以 Windows 与 macOS 上跑出来的结果与 CI 逐像素一致。前置条件只有一个 `docker pull`。
+
+直接跑 `pnpm test:browser` 时，像素基线那个文件会整文件判红：字体守卫在 `beforeAll` 里抛错，40 条用例全部 skipped，一张位图都不会生成，因此也不会在 `__screenshots__/` 下留下带 `-win32` 后缀的垃圾文件。在宿主上装 DejaVu 也解决不了：字体只是差异之一，字形栅格化与子像素抹平仍与 Linux 不同，比出来的结果没有意义。这条红是预期结果，同一批浏览器态用例里的无障碍与浮层定位在宿主上照常全绿。
+
+于是改皮肤的工作方式是：
+
+- 本地 `pnpm visual:baseline` 看这次动了哪几张，差异图在 `.vitest-attachments/` 下逐张打开；
+- PR 的判据是 CI 的 `browser` job，本地 `pnpm test:browser` 的那条红不用管；
+- CI 红了先下 `visual-diffs` artifact 看图，确认是有意的视觉改动，再 `pnpm visual:baseline --update` 重出基线并提交。
+
+字体族名、装它的 apt 包、容器镜像与运行命令这四样散在用例、容器脚本、CI 与本页里，任何一处走样都只表现为「四十张整体判红」。`check-visual-baseline-env` 把四处对齐，并核对镜像版本与 `pnpm-workspace.yaml` 里 `playwright` 的版本一致、CI 的 `browser` job 里装字体那步排在跑用例之前。
+
+### 基线变更必须过人眼
+
+基线的更新是无声的：`git diff` 只会说二进制文件变了，看不出变成了什么样。谁都能 `--update` 一把，把一次真实的视觉回归洗成「基线本来就长这样」。
+
+所以规则是：**PR 里凡有 `__screenshots__/` 下的改动，作者必须逐张说明为什么该变，审阅者必须打开图看过**。改动张数与改动理由对不上的 PR 不合并。
+
+基线文件名带浏览器与平台后缀（`…-chromium-linux.png`），入库的只有 `linux` 这一套。带别的平台后缀的文件不该出现——字体守卫会在生成之前就把用例拦下——真见到了直接删，不要提交。
+
+## 结构门禁
+
+`pnpm gate` 跑 105 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
+
+| 门禁 | 拦什么 |
+| --- | --- |
+| `check-runtime-deps` | 库包的运行时依赖引了未登记的第三方 |
+| `check-exact-pins` | 库包依赖内联了版本号（只许 `catalog:` / `workspace:`） |
+| `check-tokens-dist` | 令牌产物没入库 |
+| `check-overlay-strategy` | 浮层坐标系在机器 / `connect` / 皮肤三处不一致 |
+| `check-token-refs` | 皮肤引用了不存在的令牌名（整条声明会静默失效） |
+| `check-tone-tokens` | 语气轴对外的 `--xh-tone-*` 没声明在语气层的 `[data-tone]` 上，或与私有槽的取值分叉 |
+| `check-shared-slots` | 同一字面量在多个组件里当默认值，却没立语义令牌 |
+| `check-motion-easing` | 皮肤的缓动下探到 `--xh-ease-*` 原语、手写 `cubic-bezier()`，或用了没登记的字面曲线 |
+| `check-motion-amplitude` | 位移与缩放的幅度写成字面量（减弱动效档把 `--xh-motion-distance-*` 压成 `0px`、`--xh-motion-scale-*` 压成 `1`，写死的那一处压不下去）；居中用的百分比与 `0` / `1` 是几何，不在此列 |
+| `check-disabled-contrast` | 禁用态前景色令牌上又叠 `opacity`，对比度被压到读不出字 |
+| `check-color-literals` | 颜色写死在 `background` 简写、`box-shadow` 颜色位或 `--xh-*` 槽赋值里——stylelint 的六个长属性白名单看不见这几处 |
+| `check-print-surface` | 浮层定位层 / 遮罩 / 滚动条 / 钉在视口上的节点在打印时没收起，或投影没由令牌层取消 |
+| `check-placeholder-fg` | 占位文字两条通道（`::placeholder` 与 `[data-placeholder]`）取了不同的默认前景，或用 `opacity` 表达深浅 |
+| `check-autofill` | 渲染原生表单控件的输入框没写自动填充规则，或两个手段 / 两个引擎的选择器缺一 |
+| `check-part-wiring` | 解剖声明、`connect` 产出、适配器却不接线的部件 |
+| `check-dead-state-attr` | `connect` 发出的 `data-*` 在**本组件的作用域**里没有一条规则消费——别的组件有同名规则不算数，那条规则永远选不中它。信息钩子逐条登记，登记项过期同样判失败 |
+| `check-breakpoints` | 皮肤 `@media` 里的断点字面量不在令牌清单里（自定义属性在媒体条件里不生效，只能写字面量） |
+| `check-focus-ring` | 聚焦环的粗细、颜色、偏移写了字面量而不是令牌，主题与全局调整对它无效 |
+| `check-exports` | 实现了却忘了从包级入口导出，包外拿不到它，而构建与类型检查照过 |
+| `check-package-roles` | 包所在的角色组与它 `package.json` 里的依赖声明对不上 |
+| `check-public-surface` | 公开面基线里有而当前没有的名字——被删了或改名了 |
+
+另有分层依赖检查与九项单独的门禁：
+
+```bash
+pnpm boundaries   # 分层依赖 + 禁循环 + styles 不依赖 JS + 库包不引第三方
+pnpm gate:tokens  # 重跑令牌生成后比对，改源忘了跑生成会被拦下
+pnpm gate:styled  # 重新生成皮肤的无层版产物后比对
+pnpm gate:cem     # 重新生成自定义元素清单后比对
+pnpm gate:docs    # 重新生成组件文档页后比对
+pnpm gate:exports # 重新生成子路径导出后比对 package.json
+pnpm gate:surface # 公开面基线：基线里有而当前没有的名字判失败
+pnpm gate:demos   # 真实 Chromium 里跑文档站的自定义元素示例
+pnpm gate:publish # 逐包跑 publint 与 attw，校验 exports 条件与类型解析
+pnpm gate:llms    # 文档站的机读资产：页数、组件数、令牌数与库对账，示例不许留站点标签
+```
+
+`gate:llms` 吃文档站的构建产物，跑之前先在 `docs/` 下跑一次 `pnpm build`。
+
+文档站是独立工作区，lint 也是独立的一份，在 `docs/` 下跑 `pnpm lint`。示例语料的引号与分号跟库源码相反，规则钉在 `docs/eslint.config.js` 里——示例是给使用者复制走的，不跟着库源码的写法走。
+
+`gate:publish` 按包声明的支持面校验：ESM-only、`engines.node >= 18`，不提供 CJS，也不承诺 node10 的旧式解析。
+
+## 体积棘轮
+
+```bash
+pnpm size
+```
+
+35 条产物各有上限（gzip 后），涨过线就红。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，要看具体数字请翻那一份，这里不抄。
+
+## 相关
+
+- [无障碍与键盘规格](./a11y)
+- [浮层定位](./position)
+- [架构总览](../overview#分层与依赖矩阵)
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/theme
+
+# 设计令牌与主题
+
+`@xihan-ui/tokens` 装两样东西：**设计令牌**（一份 CSS 自定义属性产物）与**主题运行时**（把用户偏好折算成根元素上的属性）。它是层 1 的包，不依赖任何东西。
+
+## 令牌的两层
+
+```
+primitive  ──►  semantic  ──►  组件私有槽
+调色板本身      有语义的角色      单个组件的覆盖点
+```
+
+**primitive**：与场景无关的原始值，任何作用域都不变，只声明一次。
+
+```css
+--xh-color-brand-500: oklch(0.623 0.214 258);
+--xh-color-neutral-900: oklch(0.208 0.006 258);
+--xh-space-4: 16px;
+--xh-radius-md: 6px;
+```
+
+颜色用 `oklch` 而不是 `hex` / `hsl`：同一明度的不同色相在感知上真的一样亮，做深色反转和对比度调整时不用逐个手调。
+
+**semantic**：带语义的角色，指向 primitive。皮肤里只能用这一层。
+
+```css
+--xh-bg-canvas: var(--xh-color-neutral-0);
+--xh-bg-surface: var(--xh-color-neutral-0);
+--xh-bg-brand: var(--xh-color-brand-600);
+--xh-fg-default: var(--xh-color-neutral-900);
+--xh-fg-muted: var(--xh-color-neutral-550);
+--xh-border-subtle: var(--xh-color-neutral-200);
+--xh-control-h-md: 32px;
+--xh-shape-control: var(--xh-radius-md);
+--xh-elevation-floating: var(--xh-shadow-md);
+--xh-motion-duration-enter: var(--xh-duration-normal);
+--xh-layer-modal: var(--xh-z-modal);
+--xh-overlay-max-w: 20rem;
+```
+
+语义层按角色分组：`bg-*` 背景、`fg-*` 前景、`border-*` 描边、`control-*` 控件尺寸、`shape-*` 圆角、`ring-*` 焦点环、`elevation-*` 阴影、`motion-*` 时长与缓动、`layer-*` 层级、`overlay-*` 浮层尺寸、`text-*` 排版。
+
+令牌源是 DTCG 格式的 JSON（`packages/design/tokens/tokens/`），产物由构建脚本生成，`tokens.css` / `tokens.json` / `src/generated/tokens.ts` 三份都入库。产物与源是否同步由 CI 重跑生成后比对，改源忘了跑生成会被拦下。
+
+## 主题运行时
+
+```ts
+import { createThemeController } from "@xihan-ui/tokens/runtime";
+
+const theme = createThemeController({
+  root: document.documentElement, // 默认就是它
+  storageKey: "app-theme", // 传了才持久化
+  initial: { mode: "system", density: "comfortable" },
+});
+
+theme.getState(); // 已定型的五维状态
+theme.getPreference(); // 用户提交的意图（可能含 undefined / 'system'）
+theme.setPreference({ mode: "dark" });
+theme.subscribe((state) => {});
+theme.dispose();
+```
+
+它把状态投影成根元素上的五个属性：
+
+```html
+<html data-theme="dark" data-brand="xihan" data-density="comfortable" data-contrast="base" dir="ltr">
+```
+
+## 偏好与状态是两回事
+
+这是这套设计的关键区分：
+
+| | 偏好 `ThemePreference` | 状态 `ThemeState` |
+| --- | --- | --- |
+| 含义 | 用户/服务端提交的**意图** | 已完全定型的**事实** |
+| 可以是 `undefined` | 可以，表示继承父作用域 | 不可以，五个维度全部非空 |
+| 可以是 `'system'` | 可以（仅 `mode` 与 `contrast`） | 不可以，已折算成具体值 |
+
+```ts
+interface ThemePreference {
+  mode?: "light" | "dark" | "system";
+  brand?: BrandId;
+  density?: "comfortable" | "compact";
+  dir?: "ltr" | "rtl";
+  contrast?: "base" | "more" | "system";
+}
+```
+
+只有 `mode` 与 `contrast` 接受 `'system'`，因为只有这两维有对应的媒体查询（`prefers-color-scheme`、`prefers-contrast`）。折算规则很简单：`undefined` 取父作用域值，`'system'` 读媒体查询，其余原样。
+
+基线是浅色、`xihan` 品牌、`comfortable` 密度、`base` 对比度、`ltr`。
+
+## 五个维度各管什么
+
+| 维度 | 说明 |
+| --- | --- |
+| `data-theme` | 明暗两值各有整套语义取值 |
+| `data-contrast='more'` | 明暗两档各有一组边框 / 描边加强取值 |
+| `data-brand` | 注册后生效：`registerBrand(id, 种子色)` 注入该 id 的原语取值块，切到这个品牌即换色（见[换品牌色](./styling#换品牌色)）；不注册就切只写属性、不改视觉 |
+| `data-density='compact'` | 收的是盒子：控件高度、内距、间隙、区块留白整档收紧；字号与字形不动，可读性不随密度掉。属性可挂在任意子树上做局部密集区 |
+| `dir` | 布局层通过逻辑属性天然支持 |
+
+## 服务端渲染
+
+运行时在 `document` / `window` 缺席时自动走 SSR 分支：不读媒体查询、不写 DOM，一律回退到浅色与基线对比度。
+
+要让首屏不闪，请在服务端直接把五个属性渲染到 `<html>` 上——客户端的控制器会读到相同的偏好并算出相同的状态，属性值一致时它不会触碰 DOM。
+
+## 局部主题
+
+`applyThemeAttrs(el, state)` 可以把一份状态写到任意元素上，用于「侧栏永远深色」这类局部反转。属性写在哪一层，令牌就在哪一层重新解析——因为令牌块的选择器是 `:where([data-theme='dark'])` 而不是 `:root`，嵌套生效。
+
+`color-scheme` 声明也写在深色取值块里，所以嵌套的深色区域里原生控件（滚动条、日期选择器）同样是深色的。
+
+## 直接取用令牌
+
+```ts
+import type { TokenName } from "@xihan-ui/tokens";
+// TypeScript 侧带类型的令牌名
+import { tokens } from "@xihan-ui/tokens";
+
+// 机读产物：生成 Figma 变量、Tailwind 主题、设计稿标注都可以用
+import tokens from "@xihan-ui/tokens/tokens.json" with { type: "json" };
+```
+
+## 相关
+
+- [皮肤与样式分层](./styling)：皮肤怎么消费这些令牌
+- [安装与接入](../installation)：令牌与皮肤的引入顺序
+
+---
+
+来源：https://ui.docs.xihanfun.com/guide/versioning
+
+# 版本与兼容性政策
+
+这一页回答一个问题：**升级到下一个 `1.x` 小版本，我依赖的东西会不会变。**
+
+XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写一套」「手写 Light DOM 结构」都是被 [皮肤与样式分层](./styling) 和 [解剖与部件契约](./anatomy) 公开教过的用法：
+
+| 介质 | 使用者写在哪里 | 例子 |
+| --- | --- | --- |
+| JS / TS 导出 | 自己的源码 | `import { XhSelectRoot } from '@xihan-ui/vue'` |
+| 解剖属性 | CSS 选择器 | `[data-scope='select'][data-part='trigger']` |
+| `data-*` 状态属性 | CSS 选择器 | `[data-state='open']`、`[data-tone='danger']` |
+| CSS 自定义属性与 `@layer` 名 | 自己的样式表 | `--xh-bg-brand`、`@layer xihan.overrides` |
+| 自定义元素标签与 attribute | 自己的 HTML | `<xh-dialog modal="true">`、`data-xh-part="content"` |
+
+破坏其中任何一种，都不会有编译错误、不会有运行时异常、也不会有降级——只会是「样式没了」或「按钮不响应」。所以这一页对五种介质**逐类**给出结论，不留空白。
+
+## 三个档位
+
+| 档位 | 含义 |
+| --- | --- |
+| **受约束** | 改名、删除、收窄语义 = major。新增同类成员 = minor。 |
+| **只增不减** | 只保证「已经有的不会消失、不会改名」。往里加字段、加条目不算破坏。 |
+| **排除** | 明确不在承诺内，任何版本都可能改。使用者不应依赖。 |
+
+版本号本身走标准语义化版本：`major.minor.patch`。受约束的东西改了走 major，新增走 minor，只修行为不改名字走 patch。
+
+## 17 个包必须同版本安装
+
+17 个包锁步发布：任何一个包发新版本，全部 17 个包一起发同一个号。
+
+```
+@xihan-ui/core     @xihan-ui/position       @xihan-ui/tokens
+@xihan-ui/styles   @xihan-ui/headless       @xihan-ui/icons
+@xihan-ui/vue      @xihan-ui/web-components @xihan-ui/chat-stream
+@xihan-ui/markdown @xihan-ui/code-highlight @xihan-ui/backgrounds
+@xihan-ui/sound    @xihan-ui/motion         @xihan-ui/animations
+@xihan-ui/pointer
+```
+
+两条后果，都要知道：
+
+- **某个包的 major 可能不含任何针对它自己的变更。** `@xihan-ui/markdown` 升到 `2.0.0` 完全可能只是因为 `@xihan-ui/vue` 改了一个 prop。判断某次 major 影响到你没有，看 [更新日志](../changelog) 的分类条目，不要看版本号跨度。
+- **不要混装版本。** `@xihan-ui/vue` 与 `@xihan-ui/headless` 版本不一致时，类型会对不上；`@xihan-ui/web-components` 更硬——同一个 `xh-` 标签被两个版本注册会直接抛错，整页挂掉。适配器与它的兄弟包目前是普通 `dependencies`，包管理器不会阻止你装出这种组合，所以这一条靠你自己保证（见[仍然只靠自觉的](#仍然只靠自觉的)）。
+
+---
+
+## 一、JS / TS 导出面
+
+17 个包中 16 个出 JS（`@xihan-ui/styles` 只出 CSS），共 30 个带类型的入口。
+
+### 受约束
+
+| 类别 | 数量 | 说明 |
+| --- | --- | --- |
+| 包名 | 17 | 把代码从一个包挪到另一个包 = major |
+| `exports` 子路径 | 30 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）被 Node 与打包器一并挡住，那些路径不是 API |
+| Vue 组件导出 `Xh*` | 918（126 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
+| Vue 组合式函数 `use<家族>` | 97 | `useSelect`、`useCombobox`。这是「不用我的部件、自己写标记」的唯一入口 |
+| Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
+| 无头内核 `connect*` | 126 | `connectAccordion` 及其参数顺序、返回的 getter 名 |
+| 无头内核 `*Machine` | 80 | 机器 schema 的形状 |
+| 类型 `*Props` / `*Api` / `*ChangeDetails` / `*Schema` | 145 / 120 / 103 / 80 | 删字段、改字段名、把可选改必填都是 major |
+| Vue prop 名与「没传」语义 | 373 个不同名字 / 1335 处声明 | 见下方专条 |
+| Vue emit 名集合 | 67 个不同名字 / 243 处 | 名字本身受约束（列在 `emits` 里的事件不走 `$attrs` 透传，删名字会静默改变行为） |
+| Vue 插槽名 | 12 | `default`、`item`、`label`、`trigger`、`panel`、`content`、`empty`、`indicator`、`mark`、`cell`、`split`、`tooltip` |
+
+::: tip Vue prop 的「没传」也是契约
+`disabled` 写成裸 `Boolean`（不传恒为 `false`）还是 `{ type: Boolean, default: undefined }`（不传交给底层机器决定），在类型上几乎看不出差别，但决定了你不写这个 prop 时组件怎么表现。仓库里 202 处裸 `Boolean`、180 处三态、12 处 `default: true`、1 处显式 `default: false`。**把某个 prop 从一种改成另一种是 major**，即使名字和类型都没动。
+:::
+
+### 只增不减
+
+| 类别 | 数量 | 说明 |
+| --- | --- | --- |
+| Vue 上下文类型 `*Context` / `*Callbacks` | 108 | 用于给透传的 `api` 标注类型。**只保证可读，不保证可构造**——往里加可选字段不算破坏，所以别写 `const c: SelectContext = { … }` 这种字面量赋值 |
+| `custom-elements.json`（CEM） | 1 份 / 128 个元素 | 已经进过清单的 `tagName` / `attribute` / `event` 条目不会消失；`cssProperties`（皮肤覆盖槽）与 `events` 的 `type`（detail 类型）由 `scripts/enrich-cem.mjs` 从皮肤与元素源码生成，`gate:cem` 校验同步。字段结构细节仍不承诺，补充算 minor |
+
+### 排除
+
+| 类别 | 数量 | 为什么排除是安全的 |
+| --- | --- | --- |
+| `@xihan-ui/headless` 的内部算子与常量 | 625 | `clampRating`、`buildMonthGrid`、`colorPickerHexToRgba`、`CAROUSEL_AUTOPLAY_INTERVAL` 这类。它们是内核实现的一部分，改一次实现就得改一次签名。你需要的默认值应当从组件 props 的文档默认值读，不要 import 一个常量再自己比对 |
+| `@xihan-ui/headless` 的内部伴生类型 | 563 | `*Refs`（机器持有的 DOM 引用袋，40 个）、`ColorPickerHsva`、`CascaderLevel` 等，是上面那批函数的参数与返回类型 |
+| `xxxAnatomy` / `xxxMeta` / `xxxKeyboard` 三组导出对象 | 各 126 | **它们描述的 part 名单是受约束的（见第二节），但这三个对象本身的组织方式不是。** 想拿到部件名单，请以组件文档页的解剖表为准，不要 import 这些对象 |
+| Vue 的 `provide*` / `use*Context` 函数 | 112 | [Vue 适配器](../adapters/vue) 早已写明「父子组件之间的 provide / inject 是内部实现，不对外开放」。要下探请用 `use<家族>()` |
+| Vue 的 `useTimelineItem` | 1 | 名字看着像组合式函数，实际是 inject 管道，与上一行同类 |
+| 适配器运行时底座 | Vue 3 个、WC 8 个 | `createVueRuntime` / `createVueIdGenerator` / `vueNormalize`；`createLitRuntime` / `createSpreader` / `defineElement` / `discoverParts` / `wcNormalize` / `MachineController` 等。这些是适配器与内核之间的接缝，签名依赖的类型没有从同一个包导出，实际也写不出调用 |
+| WC 的元素类导出 `Xh*Element` | 100 | 只作 `instanceof` 与手动 `customElements.define` 的便利品，**不支持 `extends`**（基类不导出、`wire()` 是 protected abstract）。要拿元素请用 `document.querySelector` |
+| WC 元素上的 `static partContract` | 126 | 部件校验的输入数据，实现细节 |
+| `dist/` 内部文件名 | — | `element-Bx4xCiT2.js` 这类打包 chunk 每次构建都可能变，永远不要 deep import |
+| `.d.ts` 的文件布局 | — | 类型从包入口拿，不要引具体 `.d.ts` 路径 |
+| `ui/tooling/`、`ui/apps/playground-*` | — | 不发布 |
+
+---
+
+## 二、解剖属性（`data-scope` / `data-part`）
+
+这是换皮肤时最核心的一组名字，也是 WC 使用者手写 HTML 时要打的字符串。
+
+| 类别 | 数量 | 档位 |
+| --- | --- | --- |
+| `data-scope` 取值（组件身份） | 126 | **受约束**（新增第 127 个组件是 minor） |
+| `data-part` 取值（部件名） | 254 个不同名字 / 945 条「组件 × 部件」配对 | **受约束** |
+| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 254 个 | **受约束** |
+| `meta.requiredParts`（必备部件） | 272 条 | **受约束**（加条目 = major），方向见下 |
+
+`data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改一个就是四处同时破坏。
+
+::: warning `data-xh-part` 是 `data-xh-` 前缀里唯一的例外
+其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt` 等 6 个）是库自用标记，**排除**在承诺之外。但 `data-xh-part` 不是——它是 Web Components 适配器唯一的作者输入 API：你写 `data-xh-part="trigger"` 是**声明**，元素接线后往同一节点打上 `data-scope` + `data-part` 是**事实**。皮肤匹配后者，你永远不该手写后者。
+:::
+
+### requiredParts 的方向是反的
+
+往 `requiredParts` 里**加**一条是收紧：昨天能跑的 Light DOM，今天开始在 [诊断通道](./diagnostics) 报 `wc.missing-part`。规则：
+
+- 删条目：任何版本都可以。
+- 加条目：是破坏性变更，只出现在 major，并且从落地那一刻起就按 `error` 报——缺必需角色节点恒发 `error`，没有先以 `warn` 缓一个版本的过渡档。
+
+---
+
+## 三、`data-*` 状态属性
+
+`connect` 一共产出 199 个不同的 `data-*` 属性名、910 条「组件 × 属性」配对。分两类。
+
+### 受约束
+
+**行为契约**——这些不是样式钩子，删掉会让功能静默失效：
+
+| 属性 | 作用 |
+| --- | --- |
+| `data-value` | 集合型组件的条目值。行为层按它反查节点做方向键导航，WC 使用者要手写在 `item` 节点上。删掉它，所有集合型组件的键盘导航静默失效 |
+| `data-name` | 表单字段名（`form`） |
+| `data-index` | 条目序号（0 基） |
+
+**样式钩子**——自带皮肤自己就消费了 155 个属性名 / 702 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤照着抄的就是这一组：
+
+| 属性 | 选中它的皮肤份数 |
+| --- | --- |
+| `data-size` | 79 |
+| `data-state` | 64 |
+| `data-disabled` | 58 |
+| `data-variant` | 32 |
+| `data-invalid` | 27 |
+| `data-orientation` / `data-readonly` | 各 26 |
+| `data-placement` | 22 |
+| `data-highlighted` | 20 |
+| `data-hidden` / `data-motion` | 各 18 |
+| `data-dragging` | 13 |
+| `data-tone` | 10 |
+| `data-current` / `data-placeholder` / `data-empty` / `data-clearable` … | 其余 |
+| `data-cols-sm` / `-md` / `-lg` / `-xl` | 仅 `grid`，断点分档名受约束 |
+
+份数低不等于用得少：`data-tone` 的规则集中写在 `tone.css` 一份文件里，浮层的 `data-placement`
+同样集中写在定位块里，逐份皮肤只在需要额外微调时才自己选中它们。属性名与取值的约束不看份数。
+
+**取值也受约束。** 属性名改了会打碎皮肤，取值改了同样打碎、而且更隐蔽——`[data-state='open']` 在取值改成 `expanded` 之后仍然是合法 CSS，只是永远不匹配。自带皮肤当前用到的 32 个 `data-state` 取值全部受约束：
+
+```
+open  closed  checked  unchecked  indeterminate  on
+active  current  visible  hidden  ready  empty  invalid  error
+completed  preparing  finishing  dismissing  picking  copying
+```
+
+取值的真源是 `tooling/scripts/state-vocabulary.json`，那里按「族」登记了 7 个族共 38 个取值——同族互斥，一个部件同一时刻只取其中一个。上面 20 个是皮肤当前真的选中的那批，其余的只在 DOM 上出现、还没有对应的皮肤规则。`check-state-vocabulary` 双向守着：`connect` 发词汇表外的值报错，皮肤选词汇表里没有的值同样报错。
+
+三条视觉轴的取值同理。`data-tone` 的合法值是 6 个，唯一真源是 `tone.css`：
+
+```
+brand  neutral  success  warning  danger  info
+```
+
+### 排除
+
+其余 45 个 `data-*`（`data-lane`、`data-one-way`、`data-checked-count`、`data-sticking`、`data-file-size`、`data-modules` 等）——自带皮肤没有选中它们、组件文档页也没有记载它们。`check-state-vocabulary` 每次都会把这批「发射但零引用」的属性名列出来（连同上面 `data-value` / `data-index` 两个数据载体，共 47 个）。它们在 DOM 上存在，但不承诺稳定，随时可能改名或消失。要靠它们出样式，先在 issue 里提出来。
+
+---
+
+## 四、CSS 自定义属性与 `@layer`
+
+### 受约束
+
+| 类别 | 数量 | 说明 |
+| --- | --- | --- |
+| `@layer` 名与声明顺序 | 5 | `xihan.reset` → `xihan.tokens` → `xihan.motion` → `xihan.components` → `xihan.overrides`。改名、调序、增删中间层全是 major。`xihan.overrides` 是**故意留空的**，专门给你覆盖用，不会被「清理未使用的层」删掉 |
+| 全局令牌 · 原语层 | 91 | `--xh-color-brand-500`、`--xh-space-4`、`--xh-radius-md`。皮肤里不该直接用它们，但接品牌轴必须写 `--xh-color-brand-*`，所以它们是公开的 |
+| 全局令牌 · 语义层 | 179 | `--xh-bg-brand`、`--xh-fg-on-brand`、`--xh-control-h-md`、`--xh-shape-control`。主题定制的正门，见 [设计令牌与主题](./theme) |
+| 组件覆盖槽 | 3457（覆盖 125 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，你在 `:root` 里设它就改了这个组件 |
+| 语气轴槽 | 12 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。**这是自定义语气的唯一机制**——你写 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读这批槽的 58 份皮肤都会跟着走。虽然带下划线前缀，但按受约束处理 |
+| 关键帧名 | 62 | `xh-pop-in`、`xh-fade-out`、`xh-spinner-rotate`。关键帧逐皮肤自带，你在 `xihan.overrides` 层里重定义同名关键帧就换掉了那段动画（规范 §8.7 约束 3）——所以改名与删名同样是 major |
+| 跨包内联属性 | 2 | `--xh-_truncate-lines`、`--xh-_float-button-offset`。由 headless 写进内联 `style`，皮肤必须读。**换整套皮肤时不读这两条，`truncate` 不截断、`float-button` 贴边，且不报任何错** |
+| `@xihan-ui/styles` 的 CSS 子路径 | 140 | `.`、`./index.css`、`./index.unlayered.css`，与 137 条 `.css`——126 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./undefined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css` |
+| `@xihan-ui/tokens` 的 CSS 子路径 | 2 | `./tokens.css`、`./tokens.json` |
+
+### 排除
+
+| 类别 | 数量 | 为什么安全 |
+| --- | --- | --- |
+| 其余 `--xh-_` 私有槽 | 465 | 皮肤内部的回退中转（`--xh-_bg`、`--xh-_bg-hover`、`--xh-_mention-py` 等），变体只改槽位不重写规则全靠它。不要在外面设它们 |
+| 令牌的**取值** | — | `--xh-color-brand-500` 这个名字受约束，它等于哪一串 `oklch()` 不受约束。调色板会随视觉迭代动，这正是令牌存在的意义 |
+| `index.unlayered.css` 的内部结构 | — | 它是生成的扁平镜像，**不带 `@layer`**。走这个入口就没有 `xihan.overrides` 这个覆盖槽位，层名承诺不适用 |
+
+::: warning 命名前缀不能反推归属
+`--xh-field-py` 长得像 `field` 组件的覆盖槽，实际是全局语义令牌，而且 `field.css` 自己都不用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 344 个全局令牌里，不要按前缀猜。
+:::
+
+---
+
+## 五、自定义元素与 attribute
+
+| 类别 | 数量 | 档位 |
+| --- | --- | --- |
+| 自定义元素标签 `xh-*` | 129（`defineXhElements()` 注册 128 + `xh-background`） | **受约束** |
+| 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
+| observed attribute | 1207 条声明 / 367 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| attribute 名词汇表本身 | 367 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
+| `CustomEvent` 名 | 83 个名字 / 180 条「元素 × 事件」 | **受约束** |
+| 事件传播语义 | `bubbles: true, composed: true`（165 处中 163 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，免得被祖先 `<form>` 当成自己的提交 |
+| 事件 `detail` 形状 | 165 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
+| `attribute: false` 的 JS 字段 | 187 条（涉及 65 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 这类只能用 JS 赋值，HTML 里表达不出来——**不是每个 property 都有对应 attribute** |
+| 命令式方法 | 47（分布在 16 个元素） | **受约束**，含参数与返回类型 |
+
+命令式方法全清单：
+
+| 元素 | 方法 |
+| --- | --- |
+| `xh-form` | `setFieldValue` `setFieldError` `clearErrors` `submit` `reset` `getFieldId` `getFieldValue` `getFieldError` |
+| `xh-notification` | `create` `updateItem` `dismiss` `dismissAll` `getItemsByPlacement` |
+| `xh-file-upload` | `openFilePicker` `setFiles` `addFiles` `deleteFile` `clear` |
+| `xh-timer` | `start` `pause` `resume` `reset` |
+| `xh-virtualizer` | `scrollToIndex` `measureElement` `measure` |
+| `xh-signature-pad` | `clear` `toSvg` |
+| `xh-log` | `scrollToBottom` |
+| `xh-tour` | `remeasure` |
+
+::: tip 布尔 attribute 是三态的
+`modal="false"` 表示关，不写表示「交给组件决定」——这与原生 HTML 布尔属性（写了即为真）不同。把三态转换器换回原生语义是**不改名字的语义收窄**，按 major 处理。
+:::
+
+几条与包结构有关的事实，也在承诺内：
+
+- 元素在 `@xihan-ui/web-components/define`，不在包主入口。`defineXhElements()` 是全有全无——调它就注册全部 128 个元素，没有逐个的 `defineXhButton()`。（补细粒度 define 是 minor；补完之后 `defineXhElements` 的「全量」语义就成了承诺。）
+- `xh-background` 单独在 `@xihan-ui/web-components/backgrounds`，因为它依赖可选 peer。把它挪进 `./define` 会强制所有人装 WebGL 引擎，属于破坏性变更。
+- 元素全部是 **Light DOM**，没有 shadow root，`::part()` 永远不生效。CEM 里的 `cssParts` 条目在本包读作 `data-xh-part`，不是 shadow part。
+
+---
+
+## 六、什么算破坏性变更
+
+正例（= major）与反例（= minor / patch）对照，按介质各举几条。
+
+### JS 导出
+
+| 算破坏 | 不算破坏 |
+| --- | --- |
+| 删掉或改名任一 `Xh*` 组件（含 `XhTreeSelectBranchIndicator` 这种冷门部件） | 新增组件、新增部件 |
+| `connectAccordion` 的返回值把 `getRootProps` 改成 `getProps` | 给 `connectAccordion` 加一个新的 getter |
+| `SelectProps` 新增一个**必填**字段，或把可选字段改必填 | `SelectProps` 新增可选字段 |
+| `SelectApi` 删掉一个 getter | `SelectContext` 加一个可选字段 |
+| 把 `useSelect()` 的返回从 `ComputedRef<Api>` 换成别的容器 | 新增 `useXxx` |
+| 把某个 prop 从裸 `Boolean` 改成 `default: undefined` | 给某个 prop 补文档 |
+| 从某个组件的 `emits` 数组里删一个名字 | 往 `emits` 里加一个名字 |
+
+### 解剖与 `data-*`
+
+| 算破坏 | 不算破坏 |
+| --- | --- |
+| `data-part` 从 `indicator` 改成 `marker` | 给某个组件新增一个可选部件 |
+| 把 `item-text` 改成 `itemText`（分词/大小写变化） | 皮肤内部改用别的选择器组合实现同样的视觉 |
+| 某个组件不再输出 `data-size` / `data-tone` | 给某个组件补上原本没有的 `data-tone` |
+| `data-state` 的取值从 `open` 改成 `expanded` | 新增一个 `data-state` 取值 |
+| 把 `data-disabled` 从「存在即禁用」改成 `data-disabled="true"` | — |
+| 删掉 `data-value` | 删掉 `data-lane`（在排除清单里） |
+
+### CSS
+
+| 算破坏 | 不算破坏 |
+| --- | --- |
+| `--xh-button-h` 改名成 `--xh-button-block-size` | 新增 `--xh-button-letter-spacing` |
+| 删掉 `--xh-radius-xl`（哪怕库内部没人用它） | 把 `--xh-color-brand-500` 的 `oklch()` 值调深一点 |
+| 把 `var(--xh-alert-px, …)` 改成直接写死语义令牌（等于取消这个覆盖点） | 给某条规则补 `@supports` 兜底 |
+| 调整 `@layer` 声明顺序 | 在 `xihan.components` 里加规则 |
+| 删掉 `./tone.css` 子路径 | 新增 `./<新组件>.css` 子路径 |
+
+### 自定义元素
+
+| 算破坏 | 不算破坏 |
+| --- | --- |
+| `xh-empty-state` 改名成 `xh-empty` | 新增 `xh-xxx` 元素 |
+| 某元素的 `observedAttributes` 里少一条 | 给某元素新增 attribute |
+| 把 `read-only` 改写成 `readonly` | 把某个 `attribute: false` 的字段反向暴露成 attribute |
+| 事件名 `value-change` 改成 `change` | 新增事件名 |
+| 把某个事件的 `bubbles` 改成 `false` | 补 `HTMLElementEventMap` 类型增强 |
+| `xh-notification.create()` 从返回 `string` 改成返回对象 | 给 `xh-form` 新增一个方法 |
+| 把某个可选 part 提升为 `requiredParts` | 新增一个可选 part |
+
+### 支持面
+
+| 算破坏 | 不算破坏 |
+| --- | --- |
+| 抬高 Node 下限 | 降低 Node 下限 |
+| 抬高浏览器硬底线（用一个无兜底的新 CSS 特性） | 加一个带退化路径的增强特性 |
+| 收窄 `vue` peer 区间（加上限、抬下限） | 放宽 peer 区间 |
+| 撤掉 ESM 导出条件 | 增加 CJS 导出条件 |
+
+---
+
+## 七、移除流程
+
+**本库不设废弃期，也不留兼容层。** 名字要改就直接改、东西要删就直接删：库里不会为旧写法保留别名、不会把旧名塞进兜底链、也不会在源码里挂 `@deprecated` 让它多活几个版本。你在一个 major 里读到的名字，就是当时唯一存在的那个。
+
+移除动作集中在 major，一律出现在更新日志顶部、单列一节，逐条写清楚旧名是什么、换成什么——这就是唯一的迁移材料。
+
+有一种介质值得单独说：`data-*`、CSS 自定义属性、`@layer` 名、元素 attribute 这四样**没有 IDE 提示**，改名之后你那条选择器只会静默失配，不报错也不降级。这四样唯一的告知渠道就是更新日志，所以每次移除都在 changeset 里把旧名与替换写法逐条列全，你可以直接照着在自己的代码库里全文搜索。
+
+---
+
+## 八、支持面
+
+收窄支持面按破坏性变更处理，放宽随时可以。
+
+### 运行时
+
+| 项 | 值 | 变更规则 |
+| --- | --- | --- |
+| Node（安装并运行本库） | **≥ 18** | 抬高 = major。产物实际用到的最高特性是 `Object.hasOwn`（Node 16.9），`>=18` 留了余量 |
+| Node（开发本仓库） | ≥ 24，pnpm ≥ 11 | 与上面是两码事，随时可动 |
+| 模块格式 | **ESM only** | 无 CJS、无 node10 解析条件。包里 `main` / `module` 字段存在但指向 ESM 文件，是给老式 bundler 的别名，**不代表可以 `require`** |
+| 包管理器 | 无要求 | — |
+
+### 浏览器
+
+硬底线由三个**无兜底**的 CSS 特性决定：`@layer`（125/125 个样式文件都在用，不认它的解析器会丢弃整块）、`oklch()`（`tokens.css` 里 63 处，是唯一颜色来源）、`color-mix()`。
+
+| 浏览器 | 硬底线 | 完整保真 |
+| --- | --- | --- |
+| Chrome / Edge | **111** | 111 |
+| Firefox | **113** | 121（`:has()`） |
+| Safari | **16.2** | 16.4 |
+
+测试承诺：当前正式版，外加 Chromium 与 Safari 各往前两个大版本、Firefox ESR。硬底线只在 major 里抬高。
+
+低于硬底线不会降级、会**无样式**——皮肤里刻意不写兜底值，令牌缺席是缺陷而不是降级。
+
+可选增强层（不支持时按下表退化，加新的增强特性不算破坏，前提是退化路径一起加）：
+
+| 特性 | Chrome | Firefox | Safari | 不支持时 |
+| --- | --- | --- | --- | --- |
+| `:has()` | 105 | 121 | 15.4 | 少量间距/gutter 微调失效 |
+| `scrollbar-gutter` | 94 | 97 | 18.2 | 滚动条出现时轻微位移 |
+| `dvh` / `svh` / `lvh` | 108 | 101 | 15.4 | 回落到 `vh` |
+| `text-wrap: balance` | 114 | 121 | 17.5 | 标题按默认换行 |
+| `light-dark()` | 123 | 120 | 17.5 | 代码块语法色退化成单色 |
+| `field-sizing` | 123 | 152 | 26.2 | `prompt-input` 输入框退化成固定行数 |
+
+Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM、`ElementInternals`、`adoptedStyleSheets`，平台要求只到 Custom Elements v1。
+
+### 宿主框架
+
+| 包 | peer | 规则 |
+| --- | --- | --- |
+| `@xihan-ui/vue` | `vue: ^3.5.0` | 下限由 `useId` 决定（Vue 3.5 引入）。**收窄 = major，放宽 = minor** |
+| `@xihan-ui/vue`、`@xihan-ui/web-components` | `@xihan-ui/backgrounds`（optional） | 不用背景效果就不必装 |
+| `@xihan-ui/vue` | `@xihan-ui/sound`（optional） | 不用音效就不必装 |
+| `@xihan-ui/web-components` | 无框架 peer | 原生自定义元素，不要求任何框架 |
+| 其余 15 个包 | 无 | — |
+
+---
+
+## 九、包的稳定性分级
+
+锁步发版意味着版本号看不出稳定性，所以单列一张表。
+
+下面两张表覆盖全部 17 个包，每个包必在其中一张里；门禁比对两张表的包名与 `packages/` 下的公开包，新增一个包不定级就构建失败。
+
+### 稳定
+
+破坏性变更只出现在 major，移除走上面的流程。
+
+| 包 | 说明 |
+| --- | --- |
+| `@xihan-ui/vue` | 918 个组件、97 个组合式函数 |
+| `@xihan-ui/react` | 组件与 hooks（铺开中，公开面随批次增长） |
+| `@xihan-ui/web-components` | 129 个自定义元素 |
+| `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
+| `@xihan-ui/styles` | 126 份组件皮肤、5 个层名 |
+| `@xihan-ui/tokens` | 344 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
+| `@xihan-ui/icons` | 图标集 |
+| `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约 |
+| `@xihan-ui/position` | `createPositionEngine` 与它的选项；其余 9 个导出是内部算子 |
+| `@xihan-ui/motion` | 缓动名、时长常量、`animate`、补间与弹簧算子。三值与令牌层同源（`check-motion-source` 比对），并且 `core` / `headless` / 两个适配器都建在它上面——这里改名等于库自己先碎 |
+| `@xihan-ui/pointer` | `createPointerSession` / `createMultiPointerSession` 与四层几何纯函数。`headless` 与两个适配器的拖拽、缩放、划动全部经它，同上 |
+
+### 实验
+
+**这六个包的破坏性变更可以出现在 minor 里。** 不适合放进不易升级的生产代码。
+
+| 包 | 为什么还在动 |
+| --- | --- |
+| `@xihan-ui/code-highlight` | 承诺面是 `HighlighterPort` 这个端口，自研分词器（`tokenizeCode`、`langSpecOf`、`LangSpec`）随时可能整体换掉 |
+| `@xihan-ui/markdown` | 公开面是 `createStreamRenderer` 与它的三个类型，外加 `blockKind` / `fenceLang` / `isFenceClosed` / `LIVE_BLOCK_KEY` 四个切块算子；解析、切块、缓存的中间件随时会变 |
+| `@xihan-ui/chat-stream` | AI 会话协议类型（`UIMessage`、`TextPart` 等）跟随上游生态演进 |
+| `@xihan-ui/backgrounds` | 效果参数与点云 API 仍在调整；通用短名（`bool` / `num` / `str` / `rgb`）不是公开 API |
+| `@xihan-ui/animations` | 公开面是 `MotionSpec` 的字段与 `BUILTIN_MOTION_NAMES` 里的预设名。预设表随组件接入继续调整，而预设改名没有任何门禁拦得住——它不是导出名，删不掉也就报不出来 |
+| `@xihan-ui/sound` | 同上：`SoundSpec` 的层与包络字段、三套主题、`BUILTIN_SOUND_NAMES` 里的预设名都还在调 |
+
+---
+
+## 门禁兜住了什么
+
+### 已经焊死的
+
+**六种介质的「改名 = major」现在有门禁兜着。** `pnpm gate:surface` 跑的 `check-public-surface`
+拿一份入库的基线（`ui/tooling/public-surface.json`，13703 个名字）比对当前状态：
+**基线里有而当前没有，就是删了或改名了，构建失败**。新增一律放行，因为那是 minor。
+
+覆盖：包名与 173 条子入口、7198 个导出名、126 个 `data-scope` 与 945 条部件配对、
+126 个组件的 1558 个 prop 名、201 种 `data-*`、32 个 `data-state` 取值、344 个令牌、
+5 个 `@layer` 名、3457 个组件覆盖槽、128 个自定义元素及其 attribute 与事件。
+
+prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测 `transfer` 的 `items` 改
+`collection`、`splitter` 的 `size` 改 `sizes`）其余门禁全程沉默。它的事实源是无头内核的
+`<组件>Schema['props']`，两个适配器的 props 都照它铺。
+
+它存在的理由可以复现：把 `switch` 的 `thumb` 改名 `knob`，其余门禁全部通过，
+只有这一道拦下来；把 `switch` 的 `checked` 改名 `isChecked`，同样只有它报出
+「组件 prop switch: checked」。删一个语义令牌、改一个组件覆盖槽名同理。
+
+真要做破坏性变更时，跑 `pnpm surface:update` 推基线并在 changeset 里说清——
+门禁拦的是「无意中删掉」，不是「有意的 major」。
+
+::: warning 基线锁的名字比本页承诺的范围宽
+基线是「所有能写下来的名字」的机械快照，不区分档位：本页归入**排除**的那些也在里面——
+headless 的 625 个内部算子与常量、563 个伴生类型、`*Anatomy` / `*Meta` / `*Keyboard` 三组导出对象，
+以及六个实验包的全部导出。政策允许你随时删改它们，但删了照样撞门禁。
+**行使这份删除权时，先跑 `pnpm surface:update` 推基线**，这不是破坏性变更，
+changeset 里按 patch / minor 写就行——推基线这个动作本身不代表 major。
+:::
+
+**还有三道门禁把「只靠自觉」的条款焊成了机器检查。** `check-css-floor` 守着浏览器硬底线：
+`.browserslistrc` 书面记录地板，拒绝名单拦住 `@container` 这类无兜底的抬底线特性，
+`light-dark()` / `dvh` 必须带级联兜底。`check-version-lock` 守着 17 包锁步：任何一个
+package.json 的 version 与其余不同，门禁直接失败。`check-wiring` 守着检查系统自身：新增的
+check 脚本不接进 `pnpm gate` 就等于没写，死引用同样被拦下。
+
+**三条视觉轴已收成联合类型**，`tone` / `size` / `variant` 不再是裸 `string`，
+写错值编译期就报错。**Vue 事件载荷也有类型了**，92 个组件的 `emits` 全是对象式，
+产物 `.d.ts` 里 `(...args: any[]) => any` 一处不剩。
+
+### 仍然只靠自觉的
+
+下面这些**目前没有门禁**。列在这里，比假装什么都兜得住有用。
+
+| 条款 | 现状 | 计划补的机制 |
+| --- | --- | --- |
+| Vue 作用域插槽载荷 | 带载荷的插槽已声明 `slots:` 选项，`check-slot-types` 门禁四条判据兜着（缺声明 / 键非可选 / 值非函数 / 声明未用）。仅渲染无载荷插槽的部件仍不声明，消费方写错 slot 名不会报 | 无载荷插槽也补声明，或明确「只有带载荷的插槽进契约」 |
+| 移除提示（CSS / `data-*` / attribute / 层名） | 这四种介质没有 IDE 提示：名字被移走之后，消费方那条声明只是静默失配，既不报错也不降级。唯一的告知渠道是更新日志，所以每次移除都在 changeset 里逐条列出旧名与替换写法，供使用者在自己的代码库里全文搜索 | 无 |
+| 浏览器硬底线 | 已落地：`.browserslistrc` 记录硬底线，`check-css-floor` 门禁拒绝抬底线的无兜底特性（`@container` 等），并校验 `light-dark()` / `dvh` 的级联兜底 | 拒绝名单改动时联动本页支持面表格的提醒 |
+| 「17 个包必须同版本」 | `check-version-lock` 门禁保证 17 个 package.json 同版本。运行期这一侧只在 dev 有提示：三个适配器启动时调 `checkLockstepVersion`，自身版本与 core 不一致就经诊断通道发一条 `warn`；生产构建里跳过，且只比适配器与 core 两个版本，不是全部 17 个 | 提成 peer，或把运行期比对扩到全部包 |
+
+发现本页写的和实际行为对不上，按缺陷处理——请提 issue，不要当成「政策就是这样」。
+
+---
+
+来源：https://ui.docs.xihanfun.com/runtime/code-highlight
+
+# 代码着色
+
+`@xihan-ui/code-highlight` 是 `HighlighterPort` 的自研实现：**粗粒度**词法着色，零第三方依赖。
+
+```ts
+import { createHighlighter } from "@xihan-ui/code-highlight";
+
+const highlighter = createHighlighter();
+```
+
+把它交给[代码视图](../components/code-view)组件的 `highlighter` prop 即可。组件本身不认任何具体的着色器——它只认这个端口。
+
+## 装不装它
+
+它是两个适配器的**可选 peer**，不随适配器一起来：
+
+```bash
+pnpm add @xihan-ui/code-highlight
+```
+
+装了它，[代码视图](../components/code-view)自动着色，`highlighter` prop 一个字都不用写；不装，代码视图渲纯文本，不报错。要换成别的实现（典型是接 Shiki），照旧走 `highlighter` prop。
+
+## 它分得出什么，分不出什么
+
+只分五类：**注释、字符串、数字、关键字、标点**。
+
+类型名、函数名、属性名这些要靠语法树才分得出的东西**一概不分**——那是 TextMate 语法那一档的活，本实现不追它。所以同一段代码在这里和在编辑器里看不会完全一样，这是预期内的。
+
+认不出的语言、超长代码一律返回 `null`，由调用方原样渲染纯文本。**没有着色不等于坏了**，这是设计上的降级路径。
+
+## 想要更高精度就换一个
+
+`highlighter` 是一个端口，不是一个实现。把 Shiki、Prism 或别的着色器包成同一个形状接上去，组件侧一个字都不用改：
+
+```ts
+interface HighlighterPort {
+  highlight: (code: string, lang: string) => readonly CodeToken[] | null;
+}
+```
+
+这条端口存在的理由就是这个：**库不替你决定要不要为语法高亮付那几百 kB**。默认给一个够用又不要钱的，想升级随时换。
+
+## 为什么不直接内置 Shiki
+
+Shiki 要带 TextMate 语法与主题数据，体积在几百 kB 量级，且需要异步加载。对一个"文档里偶尔出现一段代码"的场景，这个代价不成比例。而对真的在做代码编辑器的人来说，粗粒度着色又肯定不够——两边都不该被库替他们决定。端口是唯一能同时满足两边的形态。
+
+## 支持哪些语言
+
+`langSpecOf(lang)` 认得的语言就是支持的。传进去认不出的标注返回 `null`，代码原样渲染。
+
+流式场景要配合 `complete` 用：未闭合的代码随时会变，着色是纯计算但不是免费的，等闭合了再上一次更划算。[代码视图](../components/code-view)组件的 `highlightWhileStreaming` 就是这个开关。
+
+## 长度上限
+
+超过 `HIGHLIGHT_MAX_LENGTH` 的代码直接返回 `null`。着色是同步的，超长输入会阻塞主线程，与其卡住不如不着色。这个常量是导出的，可以读但改不了——要处理超长代码，那本来就该是 worker 里的活。
+
+---
+
+来源：https://ui.docs.xihanfun.com/runtime/config
+
+# 全局配置
+
+组件的内建文案默认是英文，日期时间系组件另收一个 `locale`，尺寸档缺省是 `md`，浮层默认挂在 portal 落点上。这几样逐个实例传一遍既啰嗦又容易漏，`provideXhConfig` 让你在应用根上注入一次。
+
+```ts
+import { provideXhConfig } from "@xihan-ui/vue";
+
+provideXhConfig({
+  locale: "zh-CN",
+  size: "sm",
+  translations: {
+    "dialog": { close: "关闭" },
+    "file-upload": { dropzone: "把文件拖到这里" },
+  },
+});
+```
+
+取值优先级只有一条：**实例 props > 最近一层注入 > 外层注入 > 组件内建默认（英文）**。不注入时组件走原路，零开销。
+
+## 五个字段
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `locale` | `string` | BCP 47 语言标记，喂给日期时间系组件（`calendar` / `date-*` / `time-*`）。它只管这几个组件的日期时间格式，不换文案。 |
+| `translations` | `XhTranslationOverrides` | 按组件 id 分组的文案覆盖。每个组件的可覆盖键就是它 `<Pascal>Translations` 里的字段，组件页的 Props 表里能查到。 |
+| `size` | `'sm' \| 'md' \| 'lg'` | 尺寸档的默认值，落到每个声明了三轴 `size` 的组件上——跑机器的与不跑机器的（按钮、徽标、空状态这些）都算。它与 `data-density` 是两条独立的轴：`size` 换的是控件高度与字号档，密度只收紧间距。`floating-panel` 的 `size` 是一对像素数、同名不同义，不受它影响。 |
+| `portalContainer` | `() => Element \| null` | 浮层默认挂到哪个容器；返回 `null` 即挂 `body`。实例上写了容器的以实例为准。仅 Vue 适配器有——Web Components 是 Light DOM，浮层不搬运。 |
+| `scrollRoot` | `() => HTMLElement \| null` | 真正在滚的那个元素。宿主把滚动搬进内容容器（`body` 本身不滚）时必须给，否则模态浮层加的滚动锁是空操作、背后照样能滚。返回 `null` 即交给滚动锁自行探测。 |
+
+**方向不在这里。** `dir` 走 DOM：写在 `<html dir="rtl">` 或任意祖先上即可，行为层从计算样式读它，皮肤里的 `[dir='rtl']` 规则也跟着走。往这份配置里再加一个 JS 侧的 `dir` 只会多一条对不上的通道。
+
+## 运行期切语言
+
+传 ref 或 getter，不要传裸对象——注入的是 `MaybeRefOrGetter<XhConfig>`，给了响应式来源，切语言时组件会跟着重渲。
+
+```ts
+import { provideXhConfig } from "@xihan-ui/vue";
+import { computed } from "vue";
+
+const locale = ref<"zh-CN" | "en-US">("zh-CN");
+
+provideXhConfig(() => ({
+  locale: locale.value,
+  translations: locale.value === "zh-CN" ? zhTranslations : {},
+}));
+```
+
+传裸对象也能用，只是从此定死——这是最常见的一处误用。
+
+## 文案怎么合并
+
+`translations` 是**按键合并**而不是整块替换：全局给了 `{ close: '关闭', open: '展开' }`、实例给了 `{ close: '收起' }`，组件最终拿到的是 `{ close: '收起', open: '展开' }`。所以全局只需要写你要改的那几条，不必把一个组件的文案抄全。
+
+## 作用域：全局与局部
+
+它就是 Vue 的 provide/inject，因此**按组件树作用域生效**，不是全局单例。同一个应用里可以在不同子树注入不同配置：整站中文，某个内嵌的第三方面板保持英文，各注各的即可。
+
+嵌套注入**逐键合并**，不整份遮蔽：内层只写 `translations` 时，外层的 `locale` 与 `size` 仍然生效；同一个组件下的文案也按键并，内层只覆盖它写了的那几条。键缺席与写成 `undefined` 都算「这一层没说」。
+
+```ts
+// 应用根
+provideXhConfig({ locale: "zh-CN", size: "sm" });
+
+// 某个子树里：只改文案，locale 与 size 照旧从外层继承
+provideXhConfig({ translations: { dialog: { close: "Close" } } });
+```
+
+## 自定义元素怎么办
+
+两条出口，语义与 Vue 侧一一对应：`setXhConfig` 管整页，`<xh-config>` 管一棵子树。前者是模块级单例，后者沿 DOM 祖先链解析——Vue 那边找的是组件树，这边找的是 DOM 树，合并规则完全一样。
+
+```html
+<script type="module">
+  import { setXhConfig } from '@xihan-ui/web-components'
+
+  setXhConfig({ locale: 'zh-CN', size: 'sm' })
+</script>
+
+<!-- 这一小块保持英文，size 仍从全局继承 -->
+<xh-config id="panel">
+  <xh-dialog>…</xh-dialog>
+</xh-config>
+
+<script type="module">
+  document.getElementById('panel').translations = { dialog: { close: 'Close' } }
+</script>
+```
+
+`locale` 与 `size` 两条属性写在标签上就行；`translations` 是对象、`scrollRoot` 是函数，只能走 property。子树里每个元素都沿祖先链解析，跑机器的与不跑机器的一视同仁；`scrollRoot` 由 `xh-dialog` / `xh-drawer` / `xh-image-viewer` 开模态时现读，改了下一次打开就生效。`<xh-config>` 自己不渲染任何东西，也不接线任何角色节点——它是 `display: contents`，布局上完全让开。
+
+`setXhConfig` 是**整份替换**（不深合并），想改一处就把整份拿去改；`<xh-config>` 之间以及它与全局那份之间才是逐键合并。
+
+## 与别的库的对应关系
+
+| 别的库 | 这里 |
+| --- | --- |
+| Element Plus `<el-config-provider>` | `provideXhConfig()` / `<xh-config>` |
+| Ant Design `<ConfigProvider>` | `provideXhConfig()` / `<xh-config>`（`componentSize` 即这里的 `size`） |
+| Naive UI `<n-config-provider>` | `provideXhConfig()`（主题部分见[设计令牌与主题](../guide/theme)） |
+| Semi Design `<LocaleProvider>` | `provideXhConfig()` 的 `locale` 与 `translations` |
+
+**主题不在这里。** 那几家的 ConfigProvider 同时管主题，这里的主题是 CSS 令牌层的事：换主题是改 CSS 自定义属性、切 `data-theme` 这类属性，跟着 DOM 继承走，局部主题天然可嵌套，与这份配置无关。
+
+---
+
+来源：https://ui.docs.xihanfun.com/runtime/
+
+# 服务与运行时
+
+组件册收的是**有解剖、有部件、能摆在页面上**的东西。还有一类东西不是组件，却同样是这个库对外提供的能力：应用级的一份配置、一次调用就弹出来的对话框、一套把流式文本变成节点的内核。它们没有 `data-part`，所以进不了组件册，但你确实会用到——本册就是收这些的。
+
+| 这一册 | 是什么 | 对应的包 |
+| --- | --- | --- |
+| [全局配置](./config) | 应用级注入一次，语言与内建文案的默认值 | `@xihan-ui/vue` |
+| [命令式服务](./services) | `confirm()` / `toast.success()` 这种一次调用就出结果的入口 | `@xihan-ui/vue` |
+| [流式 Markdown](./markdown) | 喂截至当前的全文，拿回一组带稳定 key 的已渲染块 | `@xihan-ui/markdown` |
+| [代码着色](./code-highlight) | 零依赖的粗粒度词法着色，也是一个可替换的端口 | `@xihan-ui/code-highlight` |
+
+## 为什么它们不在组件册里
+
+组件册每一页固定给出解剖、部件、状态机、connect API 与键盘规格，因为组件的契约就是这几样。这四样东西一样都套不上：全局配置是一个 provide 函数，命令式服务返回的是一个对象，Markdown 渲染器产出的是数据而不是 DOM。硬塞进组件册只会让那册的页内结构失去意义。
+
+但**能力清单**该是完整的。如果你是照着别的组件库的心智来找东西的——Element Plus 的 `ElMessageBox`、Ant Design 的 `App.useApp()`、Naive UI 的 `useDialog`、Semi Design 的 Markdown 渲染器——它们在这里，不在组件册。
+
+---
+
+来源：https://ui.docs.xihanfun.com/runtime/markdown
+
+# 流式 Markdown
+
+`@xihan-ui/markdown` 解决的是一个很具体的问题：AI 一个 token 一个 token 地吐 Markdown，你要边收边渲染，而且**不能每帧重建整段 DOM**——重建一次，用户的选区和滚动位置就没了。
+
+对外只有一个工厂。
+
+```ts
+import { createStreamRenderer } from "@xihan-ui/markdown";
+
+const renderer = createStreamRenderer();
+
+// 每收到一批增量，把「截至当前的全文」整份喂进去
+const blocks = renderer.render(fullTextSoFar);
+
+// 流结束时告诉它
+const final = renderer.render(fullText, { ended: true });
+
+renderer.dispose();
+```
+
+## 产出的是块，不是一整串 HTML
+
+```ts
+interface RenderedBlock {
+  readonly key: string; // 稳定 key
+  readonly kind: "markdown" | "code" | "math" | "html";
+  readonly html: string; // 已消毒，可直接插进 DOM
+  readonly complete: boolean; // 该块是否已闭合
+  readonly lang?: string; // 围栏语言标注，仅 code 块有
+  readonly source?: string; // 块正文的原始文本，仅 code 与 math 两种块有
+}
+```
+
+三件事值得单独说：
+
+**`key` 是稳定的。** 生长中的那一块恒为 `LIVE_BLOCK_KEY`，定型块由下标与内容摘要拼成。框架据此复用同一份 DOM 只改文本，而不是整段重建。你在 `v-for` 里必须用它当 key——用下标就白费了。
+
+**`render` 是幂等的。** 传同一份全文调多少次结果都一样，内部按块 memo，已定型的块不会重渲。所以你不需要自己做增量 diff，每帧整份喂进去就行。
+
+**`complete` 是给你做决策用的。** 未闭合的块随时会变，昂贵的渲染（比如[代码着色](./code-highlight)）等它闭合再上。[代码视图](../components/code-view)组件的 `complete` 与 `highlightWhileStreaming` 两个 prop 就是为这条留的。
+
+## `ended` 不传是什么后果
+
+不传等同于"还在生长"：最后一块会按未闭合处理，拿的是 `LIVE_BLOCK_KEY`。流结束时必须传 `{ ended: true }`，否则最后一段永远停在生长态，key 也定不下来。
+
+## 这是一个子集，不是 CommonMark 实现
+
+**当前对官方 652 条用例的一致率是 489/652（75.0%）**，逐节数字在包里的 `tests/commonmark-baseline.json`。
+
+这个数字不是目标，是事实的记录。本包服务的是 AI 聊天输出，不是通用 Markdown 渲染，所以不追求满分。
+
+### 按设计不打算过的
+
+| 节 | 条数 | 原因 |
+| --- | --- | --- |
+| HTML blocks | 0/44 | 原生 HTML 块不透传 |
+| Raw HTML | 7/20 | 行内原生 HTML 不透传 |
+
+**消毒收在解析器内部**（`html: false` 加协议白名单），而不是渲染后再过一道清洗。不透传 HTML 是这条安全约束的代价，也是本包最重要的一条约束，不会为了跑分改掉。把这两节摘掉之后的一致率是 482/588（82.0%）。
+
+如果你的内容来源可信、又确实需要透传 HTML，那本包不适合你——换一个通用 Markdown 渲染器，自己接消毒。
+
+### 已知缺口
+
+| 缺口 | 波及 | 说明 |
+| --- | --- | --- |
+| 列表项内容缩进的判定 | `List items` 35/48、`Lists` 19/26 | 延续行要缩进到「标记后内容起始列」才算这一项的；现在按剥掉最多 N 个空格近似，差一列的分不出来。眼下最大的一块 |
+| 标题里的换行 | `Link reference definitions` 19/27 | 跨行标题的换行被吃掉了，规范要求原样留在 `title` 属性里 |
+| 制表符在列表与引用里的展开 | `Tabs` 6/11 | 行首缩进已按 4 列制表位算，列表项内容缩进与引用标记后的制表符还没走同一套换算 |
+
+## 为什么不暴露解析中间态
+
+解析、切块、冻结缓存一概不对外。中间态放出去，消费方迟早绕过缓存直接改块，增量渲染的保证就没了。要定制渲染就在块这一层做——`kind` 与 `complete` 足够你决定每一块交给谁渲。
+
+## 与组件的配合
+
+它产出数据，不产出 DOM，所以框架无关。一条助手消息的正文就是它的块列表，典型接法是配[消息流](../components/message-feed)：
+
+```vue
+<XhMessageFeedItem :item-id="message.id" :item-index="index" item-role="assistant">
+  <div v-for="block in blocks" :key="block.key" v-html="block.html" />
+</XhMessageFeedItem>
+```
+
+不分条、只往下追加的输出（命令回显、构建日志）配[日志](../components/log)，粘底那套是一样的。
+
+`v-html` 在这里是安全的——`html` 字段已经消毒过，这正是消毒收在解析器内部的意义。
+
+代码块的 `html` 是一份降级产物：渲染好的 `<pre><code>`，语言标注在 `lang` 上。**原始代码文本另放在 `source` 里**，所以要换成组件形态是一次转手：`source` 交给[代码视图](../components/code-view)的 `code`，`lang` 与 `complete` 原样传过去，行号、指定行高亮、超长折叠与闭合后才着色都归它管。
+
+```vue
+<XhCodeViewRoot :code="block.source" :lang="block.lang" :complete="block.complete" line-numbers>
+  <XhCodeViewPre><XhCodeViewCode /></XhCodeViewPre>
+</XhCodeViewRoot>
+```
+
+---
+
+来源：https://ui.docs.xihanfun.com/runtime/services
+
+# 命令式服务
+
+有些东西写成模板反而绕：删除前问一句、保存完提示一下——这些没有"挂在哪"的问题，就该一次调用弹出来。库提供四个服务工厂：对话框、轻提示、通知与顶部进度条。
+
+四者都自己建宿主容器、自己管挂载与卸载，**用完记得 `dispose()`**。
+
+## 对话框服务
+
+```ts
+import { createDialogService } from "@xihan-ui/vue";
+
+const dialog = createDialogService({ okText: "确定", cancelText: "取消" });
+
+const ok = await dialog.confirm({
+  title: "删除这条记录？",
+  content: "删除后不可恢复。",
+  tone: "danger",
+  okText: "删除",
+});
+if (ok) {
+  // 用户按了确定，且 onOk（如果给了）已经跑完
+}
+
+dialog.dispose();
+```
+
+| 方法 | 返回 | 说明 |
+| --- | --- | --- |
+| `confirm(options)` | `Promise<boolean>` | 确认走完 `onOk` 后 resolve `true`；取消或 Escape resolve `false` |
+| `info` / `success` / `warning` / `error` | `Promise<void>` | 单按钮告知框，没有取消钮，徽记由预设档自己定 |
+| `prompt(options)` | `Promise<T \| null>` | 取值型弹窗：确认后带回一份值，取消 resolve `null` |
+| `setConfig(next)` | — | 换一份全局配置源 |
+| `dispose()` | — | 卸载宿主应用并移除容器 |
+
+`ConfirmOptions` 的字段：`title`（必填）、`content`、`tone`（确认钮语气，危险操作传 `danger`）、`badge`（标题旁的类型徽记）、`okText` / `cancelText`、`onOk`。
+
+### 异步确认
+
+`onOk` 返回 Promise 时，确认钮自动进入 pending 并**拦住关闭**；失败保持打开，用户可以重试或取消。这是它比自己写一个 `<XhDialog>` 省事的主要一点。
+
+```ts
+await dialog.confirm({
+  title: "发布这个版本？",
+  onOk: () => api.publish(id), // 拒绝时对话框不关，用户能再按一次
+});
+```
+
+### 正文不止能放一句话
+
+`content` 收串也收渲染函数。给串走 `XhDialogDescription`（读屏的 `aria-describedby` 接在它上面），给函数则整块摊在正文位：
+
+```ts
+await dialog.confirm({
+  title: "导入这份数据？",
+  content: () => h(XhAlertRoot, { tone: "warning" }, () => "已存在的记录会被覆盖"),
+});
+```
+
+不收裸 VNode：服务宿主是常驻的，忙态一翻就整棵重渲，同一个 VNode 实例被复用时的行为未定义。
+
+### 要填东西的弹窗
+
+`prompt` 管的是「弹窗里填点什么，填完把值带回来」。每次打开建一份初值，`body` 与 `onOk` 拿的是同一份可写代理：
+
+```ts
+const next = await dialog.prompt({
+  title: "改邮箱",
+  initialValue: { email: "", password: "" },
+  body: value => [
+    h(XhTextFieldRoot, { "value": value.email, "onUpdate:value": (v: string) => (value.email = v) }, () => h(XhTextFieldInput)),
+    h(XhTextFieldRoot, { "type": "password", "value": value.password, "onUpdate:value": (v: string) => (value.password = v) }, () => h(XhTextFieldInput)),
+  ],
+  initialFocus: "[data-scope=text-field][data-part=input]",
+  onOk: value => value.email.includes("@"), // 返回 false 表示校验没过，弹窗不关
+});
+// next 是 { email, password } 的普通对象快照；取消 / Escape 得到 null
+```
+
+`prompt` 的 `onOk` 返回 `false` 表示不放行。`confirm` 的 `onOk` 不吃这条——它的返回值不参与判定，只有拒绝才拦住关闭。
+### 同一时刻只有一个
+
+后来的排队顺次弹出，避开多层模态叠加。关到再开之间留了退场窗口，动效走完才放下一个。
+
+## 轻提示服务
+
+```ts
+import { createToastService } from "@xihan-ui/vue";
+
+const toast = createToastService({ placement: "top", max: 5 });
+
+toast.success("已保存");
+toast.error("保存失败，请重试", { duration: 8000 });
+```
+
+| 方法 | 返回 | 说明 |
+| --- | --- | --- |
+| `create(options)` | `string`（id） | 入队；**同 id 已存在则就地改写** |
+| `update(id, options)` | — | 改写已在显示的那一条 |
+| `dismiss(id)` / `dismissAll()` | — | 手动收走 |
+| `info` / `success` / `warning` / `error` | `string`（id） | 类型糖，第一参是正文 |
+| `loading(message, options)` | `string`（id） | 返回 id，之后用 `update` 收尾 |
+| `promise(input, options)` | `Promise<T>` | 先弹 loading，落定后就地改写成成功/失败 |
+| `pauseAll()` / `resumeAll()` | — | 整摞一起按住计时、再放开 |
+| `setConfig(next)` | — | 换一份全局配置源（切语言用） |
+| `dispose()` | — | 卸载宿主应用并移除容器 |
+
+### 在途 → 完成
+
+`loading` 加 `update` 是一条完整的链，不要连发两条：
+
+```ts
+const id = toast.loading("正在上传…");
+try {
+  await upload(file);
+  toast.update(id, { type: "success", title: "上传完成" });
+}
+catch {
+  toast.update(id, { type: "error", title: "上传失败" });
+}
+```
+
+同一条链有现成的写法，结果与拒绝都原样交回来：
+
+```ts
+const url = await toast.promise(upload(file), {
+  loading: "正在上传…",
+  success: result => `上传完成：${result.name}`,
+  error: reason => `上传失败：${(reason as Error).message}`,
+});
+```
+
+### 行内动作
+
+给了 `actionLabel` 才渲染那颗钮，按下去做什么写在 `onAction` 里：
+
+```ts
+toast.info("已删除 3 条记录", { duration: 8000, actionLabel: "撤销", onAction: () => restore() });
+```
+
+文案进队列记录、回调存在服务里——记录只放能被整份替换、序列化、比对的纯数据。
+
+### 重复与优先级
+
+同一句错误连发几次时，`dedupe: 'content'` 把它们并成一条并在标题后追加计数：
+
+```ts
+const toast = createToastService({ dedupe: "content" });
+toast.error("同步失败");
+toast.error("同步失败"); // 界面上是「同步失败 ×2」
+```
+
+超出 `max` 时先挤低优先级的、同级里挤最旧的。优先级不给就按语气派生（`error` 最高、
+`warning` 次之、其余持平），也可以逐条写 `priority`——**一条报错不该被随后的五条提示顶掉**。
+
+服务档的默认落位是 `top`，最多同时留 5 条，超出的挤掉最旧的。落位是整个服务的口径——
+一次操作的反馈不该逐条各去一处，写在 `createToastService({ placement })` 里一次定好。
+
+**默认不出关闭按钮。** 一条轻提示是「一枚状态字形 + 一句话」的小条，到点自己走；
+多一颗叉就多一个「要不要点」的判断。确实需要留出口（比如 `duration: 0` 的常驻提示）就显式开：
+
+```ts
+toast.error("导出失败，请重试", { duration: 0, closable: true });
+```
+
+## 通知服务
+
+```ts
+import { createNotificationService } from "@xihan-ui/vue";
+
+const notify = createNotificationService({ placement: "bottom-end", max: 5 });
+
+notify.info("有新的审批", { description: "张三提交了一份请假单" });
+notify.error("同步失败", { description: "网络中断，稍后自动重试", duration: 0 });
+```
+
+| 方法 | 返回 | 说明 |
+| --- | --- | --- |
+| `create(options)` | `string`（id） | 入队；**同 id 已存在则就地改写** |
+| `update(id, options)` | — | 改写已在显示的那一条 |
+| `dismiss(id)` / `dismissAll()` | — | 手动收走 |
+| `info` / `success` / `warning` / `error` | `string`（id） | 类型糖，第一参是标题，正文写在 `options.description` |
+| `pauseAll()` / `resumeAll()` | — | 把当下这些卡片的计时一起按住、再放开 |
+| `setConfig(next)` | — | 换一份全局配置源（切语言用） |
+| `dispose()` | — | 卸载宿主应用并移除容器 |
+
+行内动作、`dedupe` 与 `priority` 与轻提示同形——两者跑的是同一台队列机器，上限、挤条与
+合并计数只有一份实现。
+
+与轻提示的两处不同：条目有标题与正文两层，且**单条可以用 `options.placement` 覆盖落位**——
+消息各有轻重，逐条决定去哪一格是说得通的。`duration: 0` 即常驻不消失，让用户自己收走。
+
+队列要长在页面结构里（通知中心那一栏自己排版）时改用组件形态的
+[通知](../components/notification)，两者不共享队列。
+
+## 顶部进度条服务
+
+路由守卫与请求拦截器都在组件树之外，要的正是命令式入口：
+
+```ts
+import { createLoadingBarService } from "@xihan-ui/vue";
+
+const bar = createLoadingBarService();
+
+router.beforeEach(() => { bar.start(); });
+router.afterEach(() => { bar.finish(); });
+
+http.interceptors.request.use((cfg) => { bar.start(); return cfg; });
+http.interceptors.response.use(
+  (res) => { bar.finish(); return res; },
+  (err) => { bar.error(); return Promise.reject(err); },
+);
+```
+
+| 方法 | 说明 |
+| --- | --- |
+| `start()` | 在途计数 +1；从 0 起跳即开始爬升 |
+| `finish()` | 在途计数 −1（夹到 0，多调不会变负）；归零才收 |
+| `error()` | 强制归零并以 `errorTone`（缺省 `danger`）收 |
+| `finishAll()` | 不管还剩几笔在途一律收掉 |
+| `set(value)` | 切成确定进度；再 `start()` 回到不确定 |
+| `setConfig(next)` | 换一份全局配置源 |
+| `dispose()` | 卸载宿主应用并移除容器 |
+
+**在途计数是这层壳的要点**。写成布尔开关的话，三个并发请求里第一个回来就把条子收了，剩下两个还在跑——进度条比请求先结束。
+## 切语言要跟得上（Vue 侧）
+
+Vue 的四个服务都自建宿主应用，接不到组件树里的 `provideXhConfig`，所以配置要从 `config` 选项给。**传 ref 或 getter**，不要传一次性的对象——传对象的话文案只在建服务那一刻求值一次，之后应用切了语言，服务子树里的按钮与读屏名不跟；队列里排着的对话框还会跨过这次切换。
+
+```ts
+const dialog = createDialogService({
+  config: () => ({ locale: app.locale.value, translations: myOverrides[app.locale.value] }),
+  okText: () => t("common.ok"),
+  cancelText: () => t("common.cancel"),
+});
+
+// 没有响应式源时也可以命令式推
+dialog.setConfig({ locale: "en-US" });
+```
+
+取值优先级：**调用点 > 服务选项 > `config.translations.<组件>` > 组件内建默认**。
+## Web Components 侧
+
+同样四个工厂，从 `@xihan-ui/web-components/services` 取，句柄的方法与 Vue 侧同名同形：
+
+```ts
+import { createToastService } from "@xihan-ui/web-components/services";
+
+const toast = createToastService({ placement: "top", max: 5 });
+toast.success("已保存");
+```
+
+服务自己生成真实的自定义元素与角色节点（`<xh-toast>`、`<xh-notification>`、`<xh-dialog>`、
+`<xh-loading-bar>`），拿到的仍是一棵可查、可选中的 DOM；用到的元素在服务建起来时按需注册，
+不必先 `import '@xihan-ui/web-components/define'`。
+
+与 Vue 侧的两处不同都来自这一侧的身份：
+
+- **没有 `config` 入参，也没有 `setConfig`**。全局配置沿 DOM 祖先链解析，服务的宿主容器就挂在
+  文档里，语言、尺寸、浮层落点由 `setXhConfig` 与外层 `<xh-config>` 直接说了算。
+- **对话框的正文渲染函数收的是节点**：`content: (body) => { … }` 拿到正文那个角色节点自己往里写，
+  没有 `prompt`——取值型弹窗要放表单，直接写 `<xh-dialog>`。
+
+## 什么时候不要用服务
+
+- **确认可以撤销的操作**：直接做，然后发一条带"撤销"按钮的轻提示。事前确认对用户是一道额外的关，撤销才是真的兜底。
+- **提示内容较长或需要用户处理**：轻提示会自己消失，用[警告提示](../components/alert)让它常驻，或用[通知](../components/notification)分标题与正文两层。
+- **对话框里要放表单**：用组件形态的[对话框](../components/dialog)，服务档只出标题、正文与按钮行。
+
+## 一个应用建几个
+
+各建一个，挂在应用启动处，全局共用。每个页面各建一个会挂出多个宿主容器，几摞提示互相盖。
+
+服务不走 provide/inject，所以在组件外（路由守卫、拦截器、store）也能调——这正是命令式的意义。但也因此**它拿不到 [全局配置](./config) 注入的文案**：服务的文案在 `createDialogService` / `createToastService` / `createNotificationService` 的入参里单独给。
+
+## 与别的库的对应关系
+
+| 别的库 | 这里 |
+| --- | --- |
+| Element Plus `ElMessageBox.confirm` | `dialog.confirm` |
+| Element Plus `ElMessage` / `ElNotification` | `toast.*` / [通知](../components/notification) |
+| Ant Design `Modal.confirm` / `message` / `notification` | `dialog.confirm` / `toast.*` / [通知](../components/notification) |
+| Naive UI `useDialog` / `useMessage` | `createDialogService` / `createToastService` |
+| Semi Design `Modal.confirm` / `Toast` | `dialog.confirm` / `toast.*` |
+
+**轻提示与通知的分工是「谁发起的」。** 轻提示是用户刚才那次操作的结果，一句话、自己消失；[通知](../components/notification)是系统或他人主动推来的消息，有标题与正文两层、可以常驻。两者都有服务档（`createToastService` / `createNotificationService`），队列各归各的；通知另有组件形态 `XhNotificationRoot`，队列要长在页面结构里（通知中心那一栏自己排版）时用它。轻提示没有容器组件——反馈落在哪儿是整个服务的口径。

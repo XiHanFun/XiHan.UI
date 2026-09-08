@@ -1,0 +1,46 @@
+const t=`<!-- 语气 | tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受影响 -->
+<div style="display: flex; flex-direction: column; gap: 12px">
+  <xh-prompt-input class="prompt-input-tone" tone="brand">
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="1" placeholder="brand 档"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+  <xh-prompt-input class="prompt-input-tone" tone="neutral">
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="1" placeholder="neutral 档"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+  <xh-prompt-input class="prompt-input-tone" tone="success">
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="1" placeholder="success 档"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+  <xh-prompt-input class="prompt-input-tone" tone="warning">
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="1" placeholder="warning 档"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+  <xh-prompt-input class="prompt-input-tone" tone="danger">
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="1" placeholder="danger 档"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+  <xh-prompt-input class="prompt-input-tone" tone="info">
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="1" placeholder="info 档"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+</div>
+
+<script type="module">
+  // 文案是对象，只走 property
+  for (const input of document.querySelectorAll(".prompt-input-tone"))
+    input.translations = { input: "给助手写点什么" };
+<\/script>
+`;export{t as default};

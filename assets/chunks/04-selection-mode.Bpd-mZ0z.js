@@ -1,0 +1,25 @@
+const e=`<!-- 选择模式 | selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，与 multiple 档的区别就在裸点 -->
+<script setup lang="ts">
+import { XhListboxRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const files = ref<string[]>(["a"]);
+const options = [
+  { value: "a", label: "report.pdf" },
+  { value: "b", label: "cover.png" },
+  { value: "c", label: "notes.md" },
+  { value: "d", label: "data.csv" },
+];
+<\/script>
+
+<template>
+  <XhListboxRoot
+    v-model:value="files"
+    :collection="options"
+    label="文件（extended）"
+    selection-mode="extended"
+    style="max-inline-size: 320px"
+  />
+  <p>已选：{{ files.length ? files.join("、") : "（无）" }}</p>
+</template>
+`;export{e as default};

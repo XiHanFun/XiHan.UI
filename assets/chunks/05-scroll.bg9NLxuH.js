@@ -1,0 +1,52 @@
+const t=`<!-- 头尾固定、正文滚动 | header / body / footer 把面板切成三段：头与尾定在原处，只有正文那一段在滚 -->
+<xh-dialog id="dialog-scroll">
+  <button data-xh-part="trigger">阅读服务条款</button>
+  <div data-xh-part="backdrop"></div>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <header data-xh-part="header">
+        <h2 data-xh-part="title">服务条款</h2>
+        <p data-xh-part="description">
+          写了 body 那一段，面板自己封顶、正文自己滚，头尾不跟着走。
+        </p>
+      </header>
+      <div data-xh-part="body">
+        <p style="margin: 0 0 8px">第 1 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 2 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 3 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 4 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 5 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 6 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 7 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 8 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 9 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 10 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 11 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 12 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 13 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 14 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 15 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 16 条 条款正文</p>
+      </div>
+      <footer data-xh-part="footer">
+        <xh-button variant="ghost">
+          <button data-xh-part="root" data-dismiss>再看看</button>
+        </xh-button>
+        <xh-button variant="solid">
+          <button data-xh-part="root" data-dismiss>同意</button>
+        </xh-button>
+      </footer>
+      <button data-xh-part="close-trigger" aria-label="关闭"></button>
+    </div>
+  </div>
+</xh-dialog>
+
+<script type="module">
+  // 底部两个按钮把关闭转交给已接线的关闭部件
+  const dialog = document.getElementById("dialog-scroll");
+  const close = dialog.querySelector('[data-xh-part="close-trigger"]');
+  for (const button of dialog.querySelectorAll("[data-dismiss]")) {
+    button.addEventListener("click", () => close.click());
+  }
+<\/script>
+`;export{t as default};

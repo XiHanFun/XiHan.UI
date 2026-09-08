@@ -1,0 +1,16 @@
+const n=`<!-- 富文本 | prose 收外来的整段 HTML：节点由内容自己带，样式按标签给 -->
+<xh-typography>
+  <div data-xh-part="root">
+    <div data-xh-part="prose">
+      <h3>安装</h3>
+      <p>包管理器装上 <code>@xihan-ui/web-components</code>，再把皮肤引进来。</p>
+      <pre><code>pnpm add @xihan-ui/web-components @xihan-ui/styles</code></pre>
+      <ul>
+        <li>元素按需注册</li>
+        <li>皮肤整份引入</li>
+      </ul>
+      <blockquote>皮肤只引一次，重复引入会让层序失效。</blockquote>
+    </div>
+  </div>
+</xh-typography>
+`;export{n as default};

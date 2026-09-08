@@ -1,0 +1,52 @@
+const a=`<!-- 分组 | 条目分段展示：group 是 role=group 的段落壳，group-label 是它的可及名字；条目照旧归到同一份集合，方向键与连打检索跨段贯通 -->
+<xh-select id="select-group" placeholder="请选择">
+  <div data-xh-part="root">
+    <span data-xh-part="label">食材</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="list">
+          <!-- 段标题不带条目标记，导航与检索都跳过它 -->
+          <div data-xh-part="group" value="fruit">
+            <span data-xh-part="group-label">水果</span>
+            <div data-xh-part="item" value="apple">
+              <span data-xh-part="item-text">苹果</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+            <div data-xh-part="item" value="banana">
+              <span data-xh-part="item-text">香蕉</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+          </div>
+          <div data-xh-part="group" value="vegetable">
+            <span data-xh-part="group-label">蔬菜</span>
+            <div data-xh-part="item" value="carrot">
+              <span data-xh-part="item-text">胡萝卜</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+            <div data-xh-part="item" value="celery">
+              <span data-xh-part="item-text">芹菜</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-select>
+<p>当前值：<span id="select-group-value">（未选）</span></p>
+
+<script type="module">
+  // 选中值回显在下面那行文字里
+  const select = document.getElementById("select-group");
+  const readout = document.getElementById("select-group-value");
+  select.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value[0] ?? "（未选）";
+  });
+<\/script>
+`;export{a as default};

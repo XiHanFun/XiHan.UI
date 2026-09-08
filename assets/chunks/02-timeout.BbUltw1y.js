@@ -1,0 +1,42 @@
+const t=`<!-- 超时按拒绝收口 | 缺省不给默认超时值：替宿主定安全策略比不定更危险。到点落成拒绝，expired 只是显示态 -->
+<div style="display: flex; flex-direction: column; gap: 12px">
+  <xh-approval id="approval-timeout" timeout-ms="10000" tone="danger">
+    <div data-xh-part="root">
+      <h3 data-xh-part="title">要执行一条删除命令</h3>
+      <p data-xh-part="description">没人答的话，到点按拒绝处理。</p>
+      <!-- 剩余时间对读屏隐藏：逐秒跳字进活区会不停打断 -->
+      <div data-xh-part="timer">还剩 10 秒</div>
+      <!-- 升级前先自己收起：属性由连接层接管，判定落定后自动撤掉 -->
+      <div data-xh-part="result" hidden></div>
+      <div data-xh-part="footer">
+        <button data-xh-part="approve-trigger">批准</button>
+        <button data-xh-part="deny-trigger">拒绝</button>
+      </div>
+    </div>
+  </xh-approval>
+  <p id="approval-timeout-decision" style="margin: 0"></p>
+</div>
+
+<script type="module">
+  const gate = document.getElementById("approval-timeout");
+  const timer = gate.querySelector('[data-xh-part="timer"]');
+  const result = gate.querySelector('[data-xh-part="result"]');
+  const line = document.getElementById("approval-timeout-decision");
+
+  let left = 10;
+  const tick = () => {
+    if (!gate.isConnected) return;
+    left = Math.max(0, left - 1);
+    timer.textContent = \`还剩 \${left} 秒\`;
+    if (left > 0) setTimeout(tick, 1000);
+  };
+  setTimeout(tick, 1000);
+
+  gate.addEventListener("decision", (event) => {
+    const { decision, source } = event.detail;
+    if (decision === "approved") result.textContent = "已批准";
+    else result.textContent = source === "timeout" ? "超时未答，按拒绝处理" : "已拒绝";
+    line.textContent = \`判定：\${decision}（来源 \${source}）\`;
+  });
+<\/script>
+`;export{t as default};

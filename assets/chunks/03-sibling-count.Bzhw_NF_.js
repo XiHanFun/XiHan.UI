@@ -1,0 +1,54 @@
+const t=`<!-- 两侧页数 | sibling-count 决定当前页两侧各留几页，序列长度恒定，切页时省略号左右挪、按钮不抖 -->
+<xh-pagination
+  id="pagination-siblings"
+  count="500"
+  page-size="10"
+  default-page="12"
+  sibling-count="2"
+  style="inline-size: 100%"
+>
+  <nav data-xh-part="root">
+    <button data-xh-part="prev-trigger"></button>
+    <button data-xh-part="item" value="1">1</button>
+    <button data-xh-part="ellipsis-trigger" side="start">…</button>
+    <button data-xh-part="item" value="10">10</button>
+    <button data-xh-part="item" value="11">11</button>
+    <button data-xh-part="item" value="12">12</button>
+    <button data-xh-part="item" value="13">13</button>
+    <button data-xh-part="item" value="14">14</button>
+    <button data-xh-part="ellipsis-trigger" side="end">…</button>
+    <button data-xh-part="item" value="50">50</button>
+    <button data-xh-part="next-trigger"></button>
+  </nav>
+</xh-pagination>
+
+<script type="module">
+  const host = document.getElementById("pagination-siblings");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const next = root.querySelector('[data-xh-part="next-trigger"]');
+
+  // 序列照 sibling-count 折好了才交出来：每一轮的格子数恒为 siblings * 2 + 5，
+  // 省略位在其中左右挪，一行的宽度不变
+  function render() {
+    for (const node of root.querySelectorAll(
+      '[data-xh-part="item"], [data-xh-part="ellipsis-trigger"]',
+    ))
+      node.remove();
+    for (const item of host.pageItems) {
+      const el = document.createElement("button");
+      if (item.type === "ellipsis") {
+        el.dataset.xhPart = "ellipsis-trigger";
+        el.setAttribute("side", item.side);
+        el.textContent = "…";
+      } else {
+        el.dataset.xhPart = "item";
+        el.setAttribute("value", String(item.value));
+        el.textContent = String(item.value);
+      }
+      root.insertBefore(el, next);
+    }
+  }
+
+  host.addEventListener("page-change", render);
+<\/script>
+`;export{t as default};

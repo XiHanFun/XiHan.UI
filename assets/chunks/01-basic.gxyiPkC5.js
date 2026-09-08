@@ -1,0 +1,45 @@
+const n=`<!-- 基础用法 | 想的时候自动展开、想完自动收起；状态文案由组件按在不在想与时长给出 -->
+<xh-reasoning id="reasoning-basic" streaming>
+  <div data-xh-part="root">
+    <button data-xh-part="trigger">
+      <span data-xh-part="indicator"></span>
+      <span data-xh-part="label">正在思考…</span>
+    </button>
+    <div data-xh-part="content"></div>
+  </div>
+</xh-reasoning>
+
+<script type="module">
+  const panel = document.getElementById("reasoning-basic");
+  const body = panel.querySelector('[data-xh-part="content"]');
+  const label = panel.querySelector('[data-xh-part="label"]');
+  const full = "先看约束：只读一次文件，别改它。再看目标：找出导出面。";
+
+  // 文案是对象，只走 property；{seconds} 由元素代入
+  panel.translations = {
+    label: "思考过程",
+    thinking: "正在思考…",
+    thoughtFor: "想了 {seconds} 秒",
+  };
+
+  const startTime = performance.timeOrigin + performance.now();
+  panel.setAttribute("start-time", String(Math.round(startTime)));
+
+  let at = 0;
+  const tick = () => {
+    if (!panel.isConnected) return;
+    at = Math.min(at + 2, full.length);
+    body.textContent = full.slice(0, at);
+    if (at < full.length) {
+      setTimeout(tick, 60);
+      return;
+    }
+    const endTime = performance.timeOrigin + performance.now();
+    panel.setAttribute("end-time", String(Math.round(endTime)));
+    panel.removeAttribute("streaming");
+    // 状态文案由元素算好，作者把它写进名字位
+    label.textContent = panel.statusText;
+  };
+  tick();
+<\/script>
+`;export{n as default};

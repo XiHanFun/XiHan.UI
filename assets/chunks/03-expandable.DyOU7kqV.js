@@ -1,0 +1,33 @@
+const n=`<!-- 点击展开 | expandable 让整块文字变成一颗按钮，Enter / Space 也按得动 -->
+<div style="display: grid; gap: 12px; inline-size: 100%; max-inline-size: 420px">
+  <!-- 写了 open 就是受控：状态在外面，组件只发意图 -->
+  <xh-truncate id="truncate-expandable" lines="2" expandable open="false">
+    <div data-xh-part="root">
+      这次更新把导出改成了后台任务：点导出后先落一条记录，处理完再推通知，中途关掉页面也不影响；文件保留
+      7 天，过期由清理任务回收。
+    </div>
+  </xh-truncate>
+
+  <button id="truncate-expandable-toggle" type="button" style="justify-self: start">
+    在外面展开
+  </button>
+</div>
+
+<script type="module">
+  // 展开状态握在外面，组件发的意图写回去才算数
+  const host = document.getElementById("truncate-expandable");
+  const toggle = document.getElementById("truncate-expandable-toggle");
+  let expanded = false;
+
+  function setOpen(next) {
+    expanded = next;
+    host.open = next;
+    toggle.textContent = next ? "收回去" : "在外面展开";
+  }
+
+  host.addEventListener("open-change", (event) =>
+    setOpen(event.detail.open)
+  );
+  toggle.addEventListener("click", () => setOpen(!expanded));
+<\/script>
+`;export{n as default};
