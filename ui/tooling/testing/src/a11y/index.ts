@@ -2,5 +2,5 @@
 export { expectNoAxeViolations, formatViolations, runAxe, WCAG_21_AA_TAGS } from './axe'
 export type { AxeCheckOptions } from './axe'
 export { reactA11yBaseline, vueA11yBaseline, wcA11yBaseline } from './known'
-export { runA11y } from './run'
-export type { A11yRunOptions, KnownViolations } from './run'
+export { DEFAULT_A11Y_THEMES, runA11y } from './run'
+export type { A11yRunOptions, A11yTheme, KnownViolations } from './run'
