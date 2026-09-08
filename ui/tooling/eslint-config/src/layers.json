@@ -115,6 +115,8 @@
         "engine/position",
         "features/code-highlight",
         "design/tokens",
+        "features/backgrounds",
+        "features/sound",
         "engine/motion",
         "engine/pointer"
       ]

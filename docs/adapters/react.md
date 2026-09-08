@@ -114,6 +114,20 @@ import { useHoverIntent, useScrollLock, useScrollTracker, useStickToBottom, useT
 
 自建浮层才用得上。不用的应用不必把它压进主入口的体积。
 
+## 背景层
+
+React 侧的视觉适配也在**单独的子入口**，不引就不会把 WebGL 引擎打进包：
+
+```tsx
+import { useBackground, XhBackground } from "@xihan-ui/react/backgrounds";
+```
+
+`@xihan-ui/backgrounds` 是可选 peer，用之前先装上——不用视觉效果的应用装了本包也不会多出一个引擎。
+
+`XhBackground` 是独立视觉组件，children 浮在效果之上；`useBackground` 把画面实例交到手上，它返回的 `ref` 挂到哪个元素上，效果就铺在哪个元素上。Vue 那份还有第三种写法 `v-background`，React 没有对应物：指令是 Vue 才有的介质，挂 `ref` 就是同一件事。
+
+两种用法见[背景层](../guide/backgrounds#在-react-里用)。
+
 ## 命令式服务
 
 对话框、轻提示、通知、顶部进度条四个服务从组件树之外调起，自带宿主树：
@@ -128,6 +142,16 @@ toast.success("保存好了");
 行为与命令面见[命令式服务](../runtime/services)。React 侧有一处实现上的差别：`createRoot().render()` 是排队的，而 Vue 的 `app.mount()` 当场渲完，所以首帧提交由 `flushSync` 包住——服务建好之后紧接着发的那条命令（拦截器里很常见）不会因为宿主还没渲出来而被丢掉。
 
 宿主树在组件树之外，接不到组件树里的 `XhConfigProvider`。要让它跟应用同语言，从 `config` 选项给，或之后用 `setConfig` 推。
+
+## 声音层
+
+`@xihan-ui/react/sound` 是单独的子入口。`withToastSound` / `withDialogSound` 给上面那两个命令式服务配上声音，调用点一行都不用改；`useSoundOnPress` 给单个元素配声，返回值挂到该元素的 `ref` 上：
+
+```tsx
+import { setSoundPlayer, useSoundOnPress, withToastSound } from "@xihan-ui/react/sound";
+```
+
+Vue 侧同一件事由 `v-sound` 指令做。React 没有指令这一介质，改成一个返回 ref 回调的 hook；两侧的服务包装名与选项完全同名同形。默认映射与开关见[声音层](../guide/sound#在-react-里用)。
 
 ## 服务端渲染
 

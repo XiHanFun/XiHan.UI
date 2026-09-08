@@ -54,7 +54,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # layered dependency gate (dependency-cruiser)
 pnpm build
-pnpm size         # bundle size ratchet — builds, then checks the 35 budgets in .size-limit.json
+pnpm size         # bundle size ratchet — builds, then checks the 37 budgets in .size-limit.json
 ```
 
 ## Conventions
