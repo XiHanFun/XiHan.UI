@@ -8,18 +8,42 @@ import { formatViolations, runAxe } from './axe'
 /** 组件名 → 规则 id → 一句话说明。 */
 export type KnownViolations = Readonly<Record<string, Readonly<Record<string, string>>>>
 
+/** 主题维度，取值与根元素上的 data-theme 一致。 */
+export type A11yTheme = 'light' | 'dark'
+
+/** 不指定主题时扫的两遍。 */
+export const DEFAULT_A11Y_THEMES: readonly A11yTheme[] = ['light', 'dark']
+
 export interface A11yRunOptions extends AxeCheckOptions {
-  /** 逐组件登记的存量违规，命中不判失败，但一条都不再命中时判登记过期。 */
+  /** 逐组件登记的存量违规，每个主题下都要命中；某个主题下不再命中时判登记过期。 */
   readonly known?: KnownViolations
-  /** 全组件通用的登记，规则 id → 理由，整轮至少命中一次，否则判登记过期。 */
+  /** 只在某一主题下出现的登记，主题 → 逐组件登记；该主题下不再命中时判登记过期。 */
+  readonly knownByTheme?: Readonly<Partial<Record<A11yTheme, KnownViolations>>>
+  /** 全组件通用的登记，规则 id → 理由，每个主题各自至少命中一次，否则判登记过期。 */
   readonly knownEverywhere?: Readonly<Record<string, string>>
   /** 步骤在浏览器里放不完的组件，组件名 → 理由；步骤能放完时判豁免过期。 */
   readonly replayExempt?: Readonly<Record<string, string>>
+  /** 要扫的主题，默认 {@link DEFAULT_A11Y_THEMES}。 */
+  readonly themes?: readonly A11yTheme[]
 }
 
 async function mount(harness: AdapterHarness, suite: ConformanceSuite, props: Readonly<Record<string, unknown>>, tree: ConformanceSuite['fixture']): Promise<ApplyContext> {
   const { root } = await harness.mount({ component: suite.component, props, tree })
   return { harness, root, doc: root.ownerDocument, component: suite.component, anatomy: suite.anatomy }
+}
+
+/**
+ * 把主题标记写到根元素上，并给 body 铺上该主题的底色与前景色。
+ *
+ * 底色必须铺：axe 沿祖先一路找不到画过底色的元素时按白底算，深色一趟不铺就等于
+ * 拿深色的字去比白底，量出来的既不是屏幕上那个比值，也不是任何真实场景的比值。
+ * 铺的是 bg-canvas 与 fg-default，与令牌层的对比度基准同一块底。
+ * 浅色下 bg-canvas 就是纯白，铺不铺结果一样，两趟因此用同一段代码。
+ */
+function applyTheme(doc: Document, theme: A11yTheme): void {
+  doc.documentElement.dataset.theme = theme
+  doc.body.style.backgroundColor = 'var(--xh-bg-canvas)'
+  doc.body.style.color = 'var(--xh-fg-default)'
 }
 
 /** 挡掉表单提交与跨文档链接引发的真实导航；挂在冒泡阶段，不影响组件自身的处理器。 */
@@ -70,6 +94,7 @@ function signature(ctx: ApplyContext, harness: AdapterHarness): string {
 /**
  * 把一致性套件的 fixture 挂进浏览器，对初始态与各用例终态跑 axe。
  * 扫描目标是 `document.body`，以覆盖 portal 里的浮层内容；终态按形态签名去重。
+ * 整套按 {@link A11yRunOptions.themes} 逐个主题各跑一遍，登记与命中记账也各主题一本。
  */
 export function runA11y(
   harness: AdapterHarness,
@@ -77,116 +102,140 @@ export function runA11y(
   hooks: TestHooks,
   options: A11yRunOptions = {},
 ): void {
-  const { known = {}, knownEverywhere = {}, replayExempt = {}, ...axeOptions } = options
+  const { known = {}, knownByTheme = {}, knownEverywhere = {}, replayExempt = {}, themes = DEFAULT_A11Y_THEMES, ...axeOptions } = options
   blockNavigation(document)
 
   const componentNames = new Set(suites.map(s => s.component))
-  const hitEverywhere = new Set<string>()
   hooks.describe(`a11y 登记表 (${harness.adapterName})`, () => {
     hooks.it('登记的组件都还在', () => {
-      const gone = Object.keys(known).filter(c => !componentNames.has(c))
+      const registered = new Set([
+        ...Object.keys(known),
+        ...Object.values(knownByTheme).flatMap(t => Object.keys(t ?? {})),
+      ])
+      const gone = [...registered].filter(c => !componentNames.has(c))
       if (gone.length)
         throw new Error(`登记表里的组件已不存在，请删掉：${gone.join(', ')}`)
     })
+
+    hooks.it('按主题登记的那些主题都真的在扫', () => {
+      const gone = Object.keys(knownByTheme).filter(t => !themes.includes(t as A11yTheme))
+      if (gone.length)
+        throw new Error(`knownByTheme 里的主题没在扫描名单里，登记永远命不中：${gone.join(', ')}`)
+    })
   })
 
-  for (const suite of suites) {
-    const knownRules = known[suite.component] ?? {}
-    const hitRules = new Set<string>()
-    const replayReason = replayExempt[suite.component]
-    let replayFailures = 0
+  for (const theme of themes) {
+    const hitEverywhere = new Set<string>()
 
-    /** 扫一次：已登记的规则记账后放行，其余攒进 report 由调用方统一抛出。 */
-    const scan = async (ctx: ApplyContext, label: string, report: string[]): Promise<void> => {
-      await settleAnimations(ctx.doc)
-      const { violations } = await runAxe(ctx.doc.body, axeOptions)
-      const fresh = violations.filter((v) => {
-        if (v.id in knownEverywhere) {
-          hitEverywhere.add(v.id)
+    for (const suite of suites) {
+      const sharedRules = known[suite.component] ?? {}
+      const themeRules = knownByTheme[theme]?.[suite.component] ?? {}
+      const knownRules = { ...sharedRules, ...themeRules }
+      const hitRules = new Set<string>()
+      const replayReason = replayExempt[suite.component]
+      let replayFailures = 0
+
+      /** 扫一次：已登记的规则记账后放行，其余攒进 report 由调用方统一抛出。 */
+      const scan = async (ctx: ApplyContext, label: string, report: string[]): Promise<void> => {
+        await settleAnimations(ctx.doc)
+        const { violations } = await runAxe(ctx.doc.body, axeOptions)
+        const fresh = violations.filter((v) => {
+          if (v.id in knownEverywhere) {
+            hitEverywhere.add(v.id)
+            return false
+          }
+          if (!(v.id in knownRules))
+            return true
+          hitRules.add(v.id)
           return false
-        }
-        if (!(v.id in knownRules))
-          return true
-        hitRules.add(v.id)
-        return false
-      })
-      if (fresh.length)
-        report.push(`${label}\n${formatViolations(fresh)}`)
-    }
+        })
+        if (fresh.length)
+          report.push(`${label}\n${formatViolations(fresh)}`)
+      }
 
-    hooks.describe(`a11y: ${suite.component} (${harness.adapterName})`, () => {
-      hooks.it('初始态无违规', async () => {
-        const report: string[] = []
-        const ctx = await mount(harness, suite, {}, suite.fixture)
-        try {
-          await harness.flush()
-          await scan(ctx, '初始态：', report)
-        }
-        finally {
-          await harness.unmount()
-        }
-        if (report.length)
-          throw new Error(`${suite.component}:\n${report.join('\n')}`)
-      })
-
-      const interactive = suite.cases.filter(c => c.steps?.length)
-      if (interactive.length > 0) {
-        hooks.it(`交互终态无违规（${interactive.length} 个用例，按形态去重）`, async () => {
+      hooks.describe(`a11y: ${suite.component} (${harness.adapterName} · ${theme})`, () => {
+        hooks.it('初始态无违规', async () => {
           const report: string[] = []
-          const seen = new Set<string>()
-          for (const c of interactive) {
-            const ctx = await mount(harness, suite, c.props ?? {}, c.fixture ? c.fixture(suite.fixture) : suite.fixture)
-            try {
-              await harness.flush()
-              for (const step of c.steps!) {
-                await applyStep(ctx, step)
-                await harness.flush()
-              }
-              const sig = signature(ctx, harness)
-              if (seen.has(sig))
-                continue
-              seen.add(sig)
-              await scan(ctx, `用例「${c.name}」终态：`, report)
-            }
-            catch (e) {
-              replayFailures++
-              if (replayReason == null)
-                report.push(`用例「${c.name}」在浏览器里推不到终态：${(e as Error).message}`)
-            }
-            finally {
-              await harness.unmount()
-            }
+          applyTheme(document, theme)
+          const ctx = await mount(harness, suite, {}, suite.fixture)
+          try {
+            await harness.flush()
+            await scan(ctx, '初始态：', report)
+          }
+          finally {
+            await harness.unmount()
           }
           if (report.length)
-            throw new Error(`${suite.component}:\n${report.join('\n')}`)
+            throw new Error(`${suite.component}（${theme}）:\n${report.join('\n')}`)
         })
-      }
 
-      // 放在最后，等前面几条跑完命中账才记全
-      if (Object.keys(knownRules).length > 0) {
-        hooks.it('已登记的违规仍然存在', () => {
-          const stale = Object.keys(knownRules).filter(id => !hitRules.has(id))
-          if (stale.length)
-            throw new Error(`已经扫不出来了，请从登记表删掉：${stale.join(', ')}`)
-        })
-      }
-      if (replayReason != null) {
-        hooks.it('步骤豁免仍然必要', () => {
-          if (replayFailures === 0)
-            throw new Error('步骤现在能在浏览器里放完了，请从 replayExempt 里删掉本组件')
-        })
-      }
-    })
-  }
+        const interactive = suite.cases.filter(c => c.steps?.length)
+        if (interactive.length > 0) {
+          hooks.it(`交互终态无违规（${interactive.length} 个用例，按形态去重）`, async () => {
+            const report: string[] = []
+            const seen = new Set<string>()
+            applyTheme(document, theme)
+            for (const c of interactive) {
+              const ctx = await mount(harness, suite, c.props ?? {}, c.fixture ? c.fixture(suite.fixture) : suite.fixture)
+              try {
+                await harness.flush()
+                for (const step of c.steps!) {
+                  await applyStep(ctx, step)
+                  await harness.flush()
+                }
+                const sig = signature(ctx, harness)
+                if (seen.has(sig))
+                  continue
+                seen.add(sig)
+                await scan(ctx, `用例「${c.name}」终态：`, report)
+              }
+              catch (e) {
+                replayFailures++
+                if (replayReason == null)
+                  report.push(`用例「${c.name}」在浏览器里推不到终态：${(e as Error).message}`)
+              }
+              finally {
+                await harness.unmount()
+              }
+            }
+            if (report.length)
+              throw new Error(`${suite.component}（${theme}）:\n${report.join('\n')}`)
+          })
+        }
 
-  if (Object.keys(knownEverywhere).length > 0) {
-    // 放在最后，整轮扫完才知道通用登记有没有命中过
-    hooks.describe(`a11y 通用登记 (${harness.adapterName})`, () => {
-      hooks.it('通用登记的规则整轮至少命中一次', () => {
-        const stale = Object.keys(knownEverywhere).filter(id => !hitEverywhere.has(id))
-        if (stale.length)
-          throw new Error(`整轮一次都没扫出来，请从通用登记删掉：${stale.join(', ')}`)
+        // 放在最后，等前面几条跑完命中账才记全
+        if (Object.keys(sharedRules).length > 0) {
+          hooks.it('共用登记的违规在本主题下仍然存在', () => {
+            const stale = Object.keys(sharedRules).filter(id => !hitRules.has(id))
+            if (stale.length)
+              throw new Error(`在 ${theme} 下已经扫不出来了：改好了就从 known 删掉，只剩另一主题还有就挪进 knownByTheme：${stale.join(', ')}`)
+          })
+        }
+        if (Object.keys(themeRules).length > 0) {
+          hooks.it('本主题独有的登记仍然存在', () => {
+            const stale = Object.keys(themeRules).filter(id => !hitRules.has(id))
+            if (stale.length)
+              throw new Error(`已经扫不出来了，请从 knownByTheme.${theme} 删掉：${stale.join(', ')}`)
+          })
+        }
+        if (replayReason != null) {
+          hooks.it('步骤豁免仍然必要', () => {
+            if (replayFailures === 0)
+              throw new Error('步骤现在能在浏览器里放完了，请从 replayExempt 里删掉本组件')
+          })
+        }
       })
-    })
+    }
+
+    if (Object.keys(knownEverywhere).length > 0) {
+      // 放在最后，本主题整轮扫完才知道通用登记有没有命中过
+      hooks.describe(`a11y 通用登记 (${harness.adapterName} · ${theme})`, () => {
+        hooks.it('通用登记的规则整轮至少命中一次', () => {
+          const stale = Object.keys(knownEverywhere).filter(id => !hitEverywhere.has(id))
+          if (stale.length)
+            throw new Error(`在 ${theme} 下整轮一次都没扫出来，请从通用登记删掉：${stale.join(', ')}`)
+        })
+      })
+    }
   }
 }
