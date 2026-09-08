@@ -34,6 +34,12 @@
     display: none;
   }
 
+  /* 中间没有断点的长串——网址、令牌、无空格的标识——排到行尾就断开，不把整块正文顶宽。
+     属性由后代继承，这里逐个部件写一遍，是为了任一部件单独用时也盖得到 */
+  [data-scope='typography']:is([data-part='root'], [data-part='heading'], [data-part='paragraph'], [data-part='prose']) {
+    overflow-wrap: break-word;
+  }
+
   /* —— 尺寸 —— */
   /* 小档整体降一级字号档位 */
   [data-scope='typography'][data-part='root'][data-size='sm'] {
@@ -356,6 +362,8 @@
     border-block-end: var(--xh-stroke-thin) solid
       var(--xh-typography-prose-cell-border, var(--xh-border-subtle));
     text-align: start;
+    /* 表格的宽度由各格的最小宽度撑出来，格里的长串断得开，整张表才收得进正文的宽度 */
+    overflow-wrap: anywhere;
   }
 
   [data-scope='typography'][data-part='prose'] :where(th) {

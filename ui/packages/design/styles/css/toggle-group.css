@@ -33,7 +33,12 @@
     /* 选中段是实心底才画内高光；淡底的那几档在自己的形态块里收成 none */
     --xh-_toggle-group-item-highlight-on: var(--xh-_highlight-tone);
 
+    /* 一行排不下就折行：每个选项都必须看得见、点得到，硬撑一行会把末尾几段顶出容器。
+       折行的代价是行末与行首那两个角变成直角（两端圆角只补在首末两段上）；
+       不改成横向滚动是因为段与容器等高，容器一旦成为滚动容器，
+       段的焦点环（画在段外侧 2px 处）会被整圈裁掉 */
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: stretch;
   }
 
@@ -110,6 +115,7 @@
 
   [data-scope='toggle-group'][data-part='root'][data-orientation='vertical'] {
     flex-direction: column;
+    flex-wrap: nowrap;
   }
 
   /* root 会短暂拿到 tabindex=0，但它的 onFocus 立刻把焦点转投给条目，

@@ -89,7 +89,7 @@ border-top-color: oklch(0.439 0.006 258)
 border-right-color: oklch(0.439 0.006 258)
 border-bottom-color: oklch(0.439 0.006 258)
 border-left-color: oklch(0.439 0.006 258)
-min-height: auto
+min-height: 26px
 font-size: 14px
 line-height: 14px
 font-weight: 500
@@ -159,7 +159,7 @@ border-top-color: oklch(0.967 0.001 258)
 border-right-color: oklch(0.967 0.001 258)
 border-bottom-color: oklch(0.967 0.001 258)
 border-left-color: oklch(0.967 0.001 258)
-min-height: 0px
+min-height: 32px
 font-size: 14px
 line-height: normal
 font-weight: 400

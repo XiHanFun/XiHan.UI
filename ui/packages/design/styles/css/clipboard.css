@@ -31,6 +31,9 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-clipboard-gap, var(--xh-space-1));
+
+    /* 父容器给不出这么宽时整件跟着收，不越出父容器 */
+    max-inline-size: 100%;
   }
 
   /* —— 尺寸 —— */
@@ -117,7 +120,9 @@
   }
 
   [data-scope='clipboard'][data-part='input'] {
-    min-inline-size: var(--xh-clipboard-input-min-w, var(--xh-control-min-w));
+    /* 宽度是偏好值不是地板：并排的复制钮占掉位置后，输入框还能继续被压缩 */
+    inline-size: var(--xh-clipboard-input-min-w, var(--xh-control-min-w));
+    min-inline-size: 0;
     block-size: var(--xh-clipboard-input-h, var(--xh-_clipboard-h));
     padding-inline: var(--xh-clipboard-input-px, var(--xh-_clipboard-px));
     padding-block: 0;

@@ -33,7 +33,8 @@
 
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    /* safe：文案放不下时居中改成靠行首排，裁掉的是末尾那截，开头仍然读得到 */
+    justify-content: safe center;
     gap: var(--xh-download-trigger-gap, var(--xh-control-gap-md));
     block-size: var(--xh-download-trigger-h, var(--xh-control-h-md));
     padding-inline: var(--xh-download-trigger-px, var(--xh-control-px-md));
@@ -48,6 +49,10 @@
     font-weight: var(--xh-download-trigger-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
+    /* 文案比所在那一栏还长时，按钮的盒收到栏宽为止，多出来的字在行内一轴裁掉，
+       整颗按钮不再撑破侧栏。块轴留 visible：粗指针那一档的命中区是往块轴外扩的伪元素 */
+    max-inline-size: 100%;
+    overflow-x: clip;
     cursor: pointer;
     /* 导出键常被连点，触屏上默认会当成双击缩放 */
     user-select: none;

@@ -454,7 +454,15 @@
 
 /* 一组按钮连成一条：段与段之间不留缝，靠共边接上，所以不设 gap。
    排布只能读 data-orientation——role=group 不收 aria-orientation，连接层根本不输出它。
-   圆角在容器上先收成 0，组内每段都取得到，两端的圆角再逐段补回来 */
+   圆角在容器上先收成 0，组内每段都取得到，两端的圆角再逐段补回来。
+
+   排不下时这里不折行、也不自己翻成竖排，两条都是有意的：
+   折行会把两端的圆角切在行末与行首——圆角只补在 :first-child 与 :last-child 上，
+   中间那两个角是直角，一条焊死的按钮条断在半路。
+   皮肤自己翻成竖排则会与 data-orientation 脱钩：合边的负外边距收哪个轴、
+   两端圆角补哪一对角、连接层给分隔线派的朝向，三处全部由 data-orientation 决定，
+   只有排布偷偷换了轴，线会横竖不对、角会补在错的两端。
+   朝向由使用者显式给 orientation="vertical"，三处才一起换过去。 */
 [data-scope='button-group'][data-part='root'] {
   /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
      既不让页面上的层号插进来，也不让它们漏出去压住别人 */
@@ -1321,7 +1329,8 @@
 
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  /* safe：文案放不下时居中改成靠行首排，裁掉的是末尾那截，开头仍然读得到 */
+  justify-content: safe center;
   gap: var(--xh-download-trigger-gap, var(--xh-control-gap-md));
   block-size: var(--xh-download-trigger-h, var(--xh-control-h-md));
   padding-inline: var(--xh-download-trigger-px, var(--xh-control-px-md));
@@ -1336,6 +1345,10 @@
   font-weight: var(--xh-download-trigger-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
+  /* 文案比所在那一栏还长时，按钮的盒收到栏宽为止，多出来的字在行内一轴裁掉，
+     整颗按钮不再撑破侧栏。块轴留 visible：粗指针那一档的命中区是往块轴外扩的伪元素 */
+  max-inline-size: 100%;
+  overflow-x: clip;
   cursor: pointer;
   /* 导出键常被连点，触屏上默认会当成双击缩放 */
   user-select: none;
@@ -4523,6 +4536,8 @@
 [data-scope='image-cropper'][data-part='zoom-slider'],
 [data-scope='image-cropper'][data-part='rotate-slider'] {
   inline-size: var(--xh-image-cropper-slider-w, 100%);
+  /* 原生 range 自带左右各一段外边距，与铺满的宽度叠在一起就把这两条轴顶出容器 */
+  margin-inline: 0;
   accent-color: var(--xh-image-cropper-slider-accent, var(--xh-bg-brand));
 }
 
@@ -4636,6 +4651,9 @@
 
   display: inline-flex;
   align-items: stretch;
+
+  /* 父容器给不出这么宽时整组跟着收，不越出父容器 */
+  max-inline-size: 100%;
 }
 
 /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
@@ -5744,6 +5762,9 @@
 [data-scope='markdown-stream'][data-part='block'] {
   display: block;
   min-inline-size: 0;
+  /* 块里铺的是渲染好的 Markdown，宽表格与不断行的长串由内容自己带；
+     行内一轴可横滚，这类块自己滚，不把整篇正文顶宽 */
+  overflow-x: auto;
 }
 
 [data-scope='markdown-stream'][data-part='block'][hidden] {
@@ -6219,6 +6240,10 @@
 
 [data-scope='mention'][data-part='root'] {
   display: block;
+
+  /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+  min-inline-size: min(var(--xh-mention-input-min-w, var(--xh-control-min-w)), 100%);
+  max-inline-size: 100%;
 }
 
 /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -6297,7 +6322,7 @@
 [data-scope='mention'][data-part='input'] {
   display: block;
   inline-size: 100%;
-  min-inline-size: var(--xh-mention-input-min-w, var(--xh-control-min-w));
+  min-inline-size: min(var(--xh-mention-input-min-w, var(--xh-control-min-w)), 100%);
   /* 缺省宿主是 textarea：高度按行数撑，控件档只兜住底线 */
   min-block-size: var(--xh-mention-input-h, var(--xh-_mention-h));
   padding-block: var(--xh-mention-input-py, var(--xh-_mention-py));
@@ -6682,6 +6707,10 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='page-header'][data-part='title'] {
   margin: 0;
   flex: none;
+  /* 标题不参与伸缩，长过整行时收到行宽为止，中间没有断点的长串在行尾断开，
+     不把整条页头撑出容器 */
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
   color: var(--xh-page-header-title-fg, var(--xh-fg-default));
   font-size: var(--xh-page-header-title-font-size, var(--xh-_page-header-title-size));
   font-weight: var(--xh-page-header-title-font-weight, var(--xh-font-weight-semibold));
@@ -6767,6 +6796,10 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-password-input-gap, var(--xh-space-1));
+
+  /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+  min-inline-size: min(var(--xh-password-input-control-min-w, var(--xh-control-min-w)), 100%);
+  max-inline-size: 100%;
 }
 
 /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -6859,7 +6892,7 @@ input[data-scope='mention'][data-part='input'] {
    :focus-within 而不是 :focus——盒里有两个 Tab 停靠点，输入框与切换钮各占一个 */
 [data-scope='password-input'][data-part='control'] {
   display: inline-flex;
-  min-inline-size: var(--xh-password-input-control-min-w, var(--xh-control-min-w));
+  min-inline-size: min(var(--xh-password-input-control-min-w, var(--xh-control-min-w)), 100%);
   /* 居中而不是拉伸：提示是一行文字，被拉满整框高度后字会贴着框顶 */
   align-items: center;
   gap: var(--xh-password-input-control-gap, var(--xh-_password-input-gap));
@@ -6911,7 +6944,7 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 输入框 —— */
 /* 不写 control 时它自己就是那个框：描边、圆角、底都长在它身上 */
 [data-scope='password-input'][data-part='input'] {
-  min-inline-size: var(--xh-password-input-input-min-w, var(--xh-control-min-w));
+  min-inline-size: min(var(--xh-password-input-input-min-w, var(--xh-control-min-w)), 100%);
   block-size: var(--xh-password-input-input-h, var(--xh-_password-input-h));
   padding-inline: var(--xh-password-input-input-px, var(--xh-_password-input-px));
   padding-block: 0;
@@ -8386,8 +8419,12 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_segmented-indicator-bg: var(--xh-bg-surface);
   --xh-_segmented-fg-selected: var(--xh-fg-default);
 
+  /* 一行排不下就折行：每个选项都必须看得见、点得到，硬撑一行会把末尾几段顶出容器。
+     段各自带圆角，折行不会切角；不改成横向滚动是因为段离轨道内沿只有一格衬距，
+     轨道一旦成为滚动容器，段的焦点环（画在段外侧 2px 处）会被裁掉 */
   position: relative;
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: stretch;
   padding: var(--xh-segmented-track-padding, var(--xh-space-0_5));
   border: var(--xh-stroke-thin) solid var(--xh-segmented-border, var(--xh-border-subtle));
@@ -8396,18 +8433,27 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-segmented-font-size, var(--xh-_segmented-font-size));
 }
 
-/* 横排时外盒整体就是一档控件高：段被 align-items: stretch 撑满轨道内侧，与同行控件齐平 */
+/* 横排时外盒整体就是一档控件高：段被 align-items: stretch 撑满轨道内侧，与同行控件齐平。
+   写下限而非定值：排得下时两者逐值相同，排不下折了行才让轨道往下长 */
 [data-scope='segmented'][data-part='root'][data-orientation='horizontal'] {
   flex-direction: row;
-  block-size: var(--xh-segmented-h, var(--xh-_segmented-h));
+  min-block-size: var(--xh-segmented-h, var(--xh-_segmented-h));
 }
 
+/* 段的高度交给轨道：一行时被 stretch 撑满轨道内侧。
+   下限按「一档控件高减掉轨道上下的衬距与描边」算，折了行每一行仍是这个高度，
+   不写的话多行会被 align-content 均分成一叠扁条 */
 [data-scope='segmented'][data-part='root'][data-orientation='horizontal'] [data-scope='segmented'][data-part='item'] {
   block-size: auto;
+  min-block-size: calc(
+    var(--xh-segmented-h, var(--xh-_segmented-h)) - 2 * var(--xh-segmented-track-padding, var(--xh-space-0_5)) - 2 *
+      var(--xh-stroke-thin)
+  );
 }
 
 [data-scope='segmented'][data-part='root'][data-orientation='vertical'] {
   flex-direction: column;
+  flex-wrap: nowrap;
 }
 
 /* 撑满行宽：各段等分剩余空间，长短不一的文字也排得齐 */
@@ -9384,6 +9430,12 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* —— 文字 —— */
+/* 中间没有断点的长串——单号、路径、无空格的标识——在框内断开。
+   每条的宽度由内容的最小宽度定，断不开就会把整条轴顶出容器 */
+[data-scope='timeline']:is([data-part='title'], [data-part='description'], [data-part='time'], [data-part='label']) {
+  overflow-wrap: anywhere;
+}
+
 [data-scope='timeline'][data-part='title'] {
   color: var(--xh-timeline-title-fg, var(--xh-fg-default));
   font-size: var(--xh-timeline-title-font-size, var(--xh-_timeline-title-font-size));
@@ -9691,6 +9743,12 @@ input[data-scope='mention'][data-part='input'] {
 /* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
 [data-scope='typography'][data-part='root'][hidden] {
   display: none;
+}
+
+/* 中间没有断点的长串——网址、令牌、无空格的标识——排到行尾就断开，不把整块正文顶宽。
+   属性由后代继承，这里逐个部件写一遍，是为了任一部件单独用时也盖得到 */
+[data-scope='typography']:is([data-part='root'], [data-part='heading'], [data-part='paragraph'], [data-part='prose']) {
+  overflow-wrap: break-word;
 }
 
 /* —— 尺寸 —— */
@@ -10015,6 +10073,8 @@ input[data-scope='mention'][data-part='input'] {
   border-block-end: var(--xh-stroke-thin) solid
     var(--xh-typography-prose-cell-border, var(--xh-border-subtle));
   text-align: start;
+  /* 表格的宽度由各格的最小宽度撑出来，格里的长串断得开，整张表才收得进正文的宽度 */
+  overflow-wrap: anywhere;
 }
 
 [data-scope='typography'][data-part='prose'] :where(th) {
@@ -10319,7 +10379,9 @@ input[data-scope='mention'][data-part='input'] {
    不套这一层时下面那几条照旧生效，两种写法都成立 */
 [data-scope='alert'][data-part='content'] {
   display: flex;
-  flex: 1 1 auto;
+  /* 伸缩基准取 0 而不是 auto：取 auto 时基准是这一列的 max-content——
+     一段长说明就能把基准撑到比整行还宽，root 那条换行随即把图标、文本列、叉拆成三行 */
+  flex: 1 1 0;
   flex-direction: column;
   gap: var(--xh-alert-content-gap, var(--xh-space-1));
   min-inline-size: 0;
@@ -13430,6 +13492,10 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-cascader-gap, var(--xh-space-1));
+
+  /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+  min-inline-size: min(var(--xh-cascader-control-min-w, var(--xh-control-min-w)), 100%);
+  max-inline-size: 100%;
 }
 
 /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，作者手动收起时要自己还回去 */
@@ -13506,7 +13572,7 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   align-items: center;
   gap: var(--xh-cascader-control-gap, var(--xh-_cascader-gap));
-  min-inline-size: var(--xh-cascader-control-min-w, var(--xh-control-min-w));
+  min-inline-size: min(var(--xh-cascader-control-min-w, var(--xh-control-min-w)), 100%);
   block-size: var(--xh-cascader-control-h, var(--xh-_cascader-h));
   padding-inline: var(--xh-cascader-control-px, var(--xh-_cascader-px));
   border: var(--xh-stroke-thin) solid var(--xh-cascader-control-border, var(--xh-_cascader-border));
@@ -14666,6 +14732,9 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-clipboard-gap, var(--xh-space-1));
+
+  /* 父容器给不出这么宽时整件跟着收，不越出父容器 */
+  max-inline-size: 100%;
 }
 
 /* —— 尺寸 —— */
@@ -14752,7 +14821,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='clipboard'][data-part='input'] {
-  min-inline-size: var(--xh-clipboard-input-min-w, var(--xh-control-min-w));
+  /* 宽度是偏好值不是地板：并排的复制钮占掉位置后，输入框还能继续被压缩 */
+  inline-size: var(--xh-clipboard-input-min-w, var(--xh-control-min-w));
+  min-inline-size: 0;
   block-size: var(--xh-clipboard-input-h, var(--xh-_clipboard-h));
   padding-inline: var(--xh-clipboard-input-px, var(--xh-_clipboard-px));
   padding-block: 0;
@@ -15446,6 +15517,10 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-color-picker-gap, var(--xh-space-1));
+
+  /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+  min-inline-size: min(var(--xh-color-picker-control-min-w, var(--xh-control-min-w)), 100%);
+  max-inline-size: 100%;
 }
 
 /* —— 尺寸 —— */
@@ -15477,7 +15552,7 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   align-items: center;
   gap: var(--xh-color-picker-control-gap, var(--xh-_color-picker-gap));
-  min-inline-size: var(--xh-color-picker-control-min-w, var(--xh-control-min-w));
+  min-inline-size: min(var(--xh-color-picker-control-min-w, var(--xh-control-min-w)), 100%);
   block-size: var(--xh-color-picker-control-h, var(--xh-_color-picker-h));
   padding-inline: var(--xh-color-picker-control-px, var(--xh-_color-picker-px));
   border: var(--xh-stroke-thin) solid var(--xh-color-picker-control-border, var(--xh-border-control));
@@ -16084,6 +16159,10 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-combobox-gap, var(--xh-space-1));
+
+  /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+  min-inline-size: min(var(--xh-combobox-control-min-w, var(--xh-control-min-w)), 100%);
+  max-inline-size: 100%;
 }
 
 /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -16162,7 +16241,7 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   align-items: center;
   gap: var(--xh-combobox-control-gap, var(--xh-_combobox-gap));
-  min-inline-size: var(--xh-combobox-control-min-w, var(--xh-control-min-w));
+  min-inline-size: min(var(--xh-combobox-control-min-w, var(--xh-control-min-w)), 100%);
   block-size: var(--xh-combobox-control-h, var(--xh-_combobox-h));
   padding-inline: var(--xh-combobox-control-px, var(--xh-_combobox-px));
   border: var(--xh-stroke-thin) solid var(--xh-combobox-control-border, var(--xh-_combobox-control-border));
@@ -17412,6 +17491,10 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-date-field-gap, var(--xh-space-1));
+
+  /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+  min-inline-size: min(var(--xh-date-field-control-min-w, var(--xh-control-min-w)), 100%);
+  max-inline-size: 100%;
 }
 
 /* —— 尺寸 —— */
@@ -17482,7 +17565,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 分段框整体长得像一个输入框：边框与背景长在 control 上，各段只是里面的文字 */
 [data-scope='date-field'][data-part='control'] {
   display: inline-flex;
-  min-inline-size: var(--xh-date-field-control-min-w, var(--xh-control-min-w));
+  min-inline-size: min(var(--xh-date-field-control-min-w, var(--xh-control-min-w)), 100%);
   align-items: center;
   gap: var(--xh-date-field-control-gap, var(--xh-_date-field-gap));
   block-size: var(--xh-date-field-control-h, var(--xh-_date-field-control-h));
@@ -17767,6 +17850,10 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-date-picker-gap, var(--xh-space-1));
+
+  /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+  min-inline-size: min(var(--xh-date-picker-control-min-w, var(--xh-control-min-w)), 100%);
+  max-inline-size: 100%;
 }
 
 /* —— 尺寸 —— */
@@ -17844,7 +17931,7 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   align-items: center;
   gap: var(--xh-date-picker-control-gap, var(--xh-_date-picker-gap));
-  min-inline-size: var(--xh-date-picker-control-min-w, var(--xh-control-min-w));
+  min-inline-size: min(var(--xh-date-picker-control-min-w, var(--xh-control-min-w)), 100%);
   block-size: var(--xh-date-picker-control-h, var(--xh-_date-picker-control-h));
   padding-inline: var(--xh-date-picker-control-px, var(--xh-_date-picker-control-px));
   padding-block: 0;
@@ -18352,7 +18439,17 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--xh-dialog-positioner-padding, var(--xh-space-4));
+  /* 这段内衬是面板与视口边之间的全部距离，与安全区取大的一头：
+     刘海、圆角与底部横条压住的那一段由系统给出，内衬比它窄时面板的一角会被切掉。
+     桌面上 env() 恒为 0，取值与内衬槽完全一致。安全区只有物理方向的四个名字，
+     行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。 */
+  padding-block-start: max(var(--xh-dialog-positioner-padding, var(--xh-space-4)), env(safe-area-inset-top));
+  padding-block-end: max(var(--xh-dialog-positioner-padding, var(--xh-space-4)), env(safe-area-inset-bottom));
+  padding-inline: max(
+    var(--xh-dialog-positioner-padding, var(--xh-space-4)),
+    env(safe-area-inset-left),
+    env(safe-area-inset-right)
+  );
 }
 
 [data-scope='dialog'][data-part='content'] {
@@ -21899,7 +21996,10 @@ input[data-scope='mention'][data-part='input'] {
   /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-menubar-icon-size, var(--xh-glyph-size-text));
 
+  /* 一行排不下就折行：菜单名宽度由文字决定，硬撑一行会把整条顶出容器，
+     末尾几个菜单既看不见也点不到 */
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--xh-menubar-gap, var(--xh-space-1));
   padding-block: var(--xh-menubar-py, var(--xh-space-1));
@@ -21922,6 +22022,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='menubar'][data-part='root'][data-orientation='vertical'] {
   flex-direction: column;
   align-items: stretch;
+  flex-wrap: nowrap;
 }
 
 /* root 只是 roving tabindex 的兜底落点，焦点转投给 trigger 之后就不再停留，不画环 */
@@ -22588,10 +22689,13 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 指示条的定位参照系（它是 absolute，量出来的偏移就是相对这里的）。
-   ul 的项目符号与内外边距是 UA 给的，库里没有全局 preflight，只能在这儿自己抹平 */
+   ul 的项目符号与内外边距是 UA 给的，库里没有全局 preflight，只能在这儿自己抹平。
+   一行排不下就折行：入口宽度由文字决定，硬撑一行会把整条导航顶出容器；
+   这里不改成横向滚动——面板是绝对定位在各自那一项里的，列表一旦成为滚动容器就把面板裁掉了 */
 [data-scope='navigation-menu'][data-part='list'] {
   position: relative;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--xh-navigation-menu-gap, var(--xh-space-1));
   margin: 0;
@@ -22606,6 +22710,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='navigation-menu'][data-part='list'][data-orientation='vertical'] {
   flex-direction: column;
   align-items: stretch;
+  flex-wrap: nowrap;
 }
 
 /* 一项一个 li，面板就住在里面：给 relative 让面板贴着自己这一项落位 */
@@ -23358,6 +23463,10 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-number-field-gap, var(--xh-space-1));
+
+  /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+  min-inline-size: min(var(--xh-number-field-control-min-w, var(--xh-control-min-w)), 100%);
+  max-inline-size: 100%;
 }
 
 /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -23456,7 +23565,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 居中而不是拉伸：作者插在框里的前后缀是一行文字，被拉满整框高度后字会贴着框顶 */
   align-items: center;
   gap: var(--xh-number-field-control-gap, var(--xh-_number-field-gap));
-  min-inline-size: var(--xh-number-field-control-min-w, var(--xh-control-min-w));
+  min-inline-size: min(var(--xh-number-field-control-min-w, var(--xh-control-min-w)), 100%);
   block-size: var(--xh-number-field-control-h, var(--xh-_number-field-h));
   padding-inline: var(--xh-number-field-control-px, var(--xh-_number-field-px));
   border: var(--xh-stroke-thin) solid var(--xh-number-field-control-border, var(--xh-_number-field-border));
@@ -24198,6 +24307,10 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-pin-input-gap, var(--xh-space-1));
+  /* 每格都有定宽，一行格子的最小宽度就是这些定宽之和，收缩到边框盒之内不再有余地：
+     不封顶的话整块控件按这个和撑开，比容器宽多少就顶出多少。
+     封到容器那么宽，格子那条收缩才有得可收 */
+  max-inline-size: 100%;
 }
 
 /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -24292,7 +24405,12 @@ input[data-scope='mention'][data-part='input'] {
 /* 每格是等宽方框：宽高同取一个尺寸，内边距归零。
    留了内边距，单字符居中后可用宽度不足，中文与全角字符会被挤出框外 */
 [data-scope='pin-input'][data-part='input'] {
-  flex: none;
+  /* 一行放不下时逐格收窄，收不动就整行顶出屏幕。
+     min-inline-size 归零解开表单控件那份按字符数算出来的自动最小宽度。
+     高度不跟着收：它取自控件高度尺，与同一行里别的控件对齐靠的就是这个数。
+     宽度放得下时收窄量为零，格子仍是尺寸档给的那个正方形。 */
+  flex: 0 1 auto;
+  min-inline-size: 0;
   inline-size: var(--xh-pin-input-box-size, var(--xh-_pin-input-box-size));
   block-size: var(--xh-pin-input-box-size, var(--xh-_pin-input-box-size));
   padding: 0;
@@ -25178,9 +25296,12 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-disabled);
 }
 
-/* 页脚：左边步进，右边动作 */
+/* 页脚：左边步进，右边动作。
+   两侧的钮都不收缩、文案也不折行，一行摆不下时整条页脚顶出卡片；
+   允许换行后摆不下的那一组落到下一行 */
 [data-scope='question-flow'][data-part='footer'] {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--xh-question-flow-footer-gap, var(--xh-space-3));
@@ -25438,8 +25559,11 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
 }
 
+/* 横排一行摆不下时条目落到下一行。不换行的话它们只会被压窄，
+   文字逐字折行、每个条目变成一根竖条 */
 [data-scope='radio-group'][data-part='root'][data-orientation='horizontal'] {
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
 }
 
@@ -26234,6 +26358,10 @@ input[data-scope='mention'][data-part='input'] {
   gap: var(--xh-select-gap, var(--xh-space-1));
   /* 隐藏 select 以此为定位基准：它必须留在布局里，原生校验提示要有处可贴 */
   position: relative;
+
+  /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+  min-inline-size: min(var(--xh-select-control-min-w, var(--xh-control-min-w)), 100%);
+  max-inline-size: 100%;
 }
 
 /* —— 尺寸 —— */
@@ -26314,7 +26442,7 @@ input[data-scope='mention'][data-part='input'] {
   gap: var(--xh-select-control-gap, var(--xh-_select-gap));
   block-size: var(--xh-select-control-h, var(--xh-_select-h));
   padding-inline: var(--xh-select-control-px, var(--xh-_select-px));
-  min-inline-size: var(--xh-select-control-min-w, var(--xh-control-min-w));
+  min-inline-size: min(var(--xh-select-control-min-w, var(--xh-control-min-w)), 100%);
   border: var(--xh-stroke-thin) solid var(--xh-select-control-border, var(--xh-_select-control-border));
   border-radius: var(--xh-select-control-radius, var(--xh-shape-control));
   background: var(--xh-select-control-bg, var(--xh-_select-control-bg));
@@ -27285,6 +27413,14 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   block-size: var(--xh-_thumb-size);
   cursor: pointer;
+}
+
+/* 刻度文案以刻度为圆心横向摊开，首末两档各有一半落在轨道之外，页面因此恒多出半个文案的宽度。
+   排了刻度文案的横轨两侧各让出一段，那半个文案落进让出来的这一段里。
+   让在控件上而不是根上：轨道、刻度、拇指的坐标都以控件为基准，一起让开才不会彼此错位。 */
+[data-scope='slider'][data-part='root']:has([data-part='tick-label'])
+  [data-part='control'][data-orientation='horizontal'] {
+  margin-inline: var(--xh-slider-control-gutter, var(--xh-space-6));
 }
 
 [data-scope='slider'][data-part='control'][data-orientation='vertical'] {
@@ -29332,9 +29468,13 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tabs-trigger-shadow-active: var(--xh-elevation-raised);
 }
 
+/* 一行排不下就折行：标签宽度由文字决定，硬撑一行会把整块版面顶出去。
+   这里不改成横向滚动：指示条是绝对定位、块向落点在列表盒外沿（下面那条 inset-block-end 是负值），
+   列表一旦成为滚动容器就会把它连同标签的焦点环一起裁掉 */
 [data-scope='tabs'][data-part='list'] {
   position: relative;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--xh-tabs-list-gap, var(--xh-_tabs-list-gap));
   padding: var(--xh-tabs-list-p, var(--xh-_tabs-list-p));
@@ -29346,6 +29486,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tabs'][data-part='list'][aria-orientation='vertical'] {
   flex-direction: column;
   align-items: stretch;
+  flex-wrap: nowrap;
   border-block-end: 0;
   border-inline-end: var(--xh-_tabs-list-border-width) solid var(--xh-tabs-list-border, var(--xh-border-default));
 }
@@ -29965,6 +30106,10 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   gap: var(--xh-tags-input-gap, var(--xh-space-1));
   inline-size: 100%;
+
+  /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+  min-inline-size: min(var(--xh-tags-input-control-min-w, var(--xh-control-min-w)), 100%);
+  max-inline-size: 100%;
 }
 
 /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -30037,7 +30182,7 @@ input[data-scope='mention'][data-part='input'] {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--xh-tags-input-control-gap, var(--xh-_tags-input-control-gap));
-  min-inline-size: var(--xh-tags-input-control-min-w, var(--xh-control-min-w));
+  min-inline-size: min(var(--xh-tags-input-control-min-w, var(--xh-control-min-w)), 100%);
   min-block-size: var(--xh-tags-input-control-h, var(--xh-_tags-input-control-h));
   /* 纵向只留半档：标签行加上下内距要装进控件档的高度里 */
   padding-block: var(--xh-tags-input-control-py, var(--xh-space-0_5));
@@ -30421,6 +30566,10 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-text-field-gap, var(--xh-space-1));
+
+  /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+  min-inline-size: min(var(--xh-text-field-control-min-w, var(--xh-control-min-w)), 100%);
+  max-inline-size: 100%;
 }
 
 /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -30498,7 +30647,7 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   align-items: center;
   gap: var(--xh-text-field-control-gap, var(--xh-_text-field-gap));
-  min-inline-size: var(--xh-text-field-control-min-w, var(--xh-control-min-w));
+  min-inline-size: min(var(--xh-text-field-control-min-w, var(--xh-control-min-w)), 100%);
   block-size: var(--xh-text-field-control-h, var(--xh-_text-field-h));
   padding-inline: var(--xh-text-field-control-px, var(--xh-_text-field-px));
   border: var(--xh-stroke-thin) solid var(--xh-text-field-control-border, var(--xh-_text-field-border));
@@ -30758,6 +30907,10 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-time-field-gap, var(--xh-space-1));
+
+  /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+  min-inline-size: min(var(--xh-time-field-control-min-w, var(--xh-control-min-w)), 100%);
+  max-inline-size: 100%;
 }
 
 /* —— 尺寸 —— */
@@ -30825,7 +30978,7 @@ input[data-scope='mention'][data-part='input'] {
    段自己只管一小块可聚焦的高亮区 */
 [data-scope='time-field'][data-part='control'] {
   display: inline-flex;
-  min-inline-size: var(--xh-time-field-control-min-w, var(--xh-control-min-w));
+  min-inline-size: min(var(--xh-time-field-control-min-w, var(--xh-control-min-w)), 100%);
   align-items: center;
   gap: var(--xh-time-field-control-gap, var(--xh-_time-field-gap));
   block-size: var(--xh-time-field-control-h, var(--xh-_time-field-control-h));
@@ -31103,6 +31256,10 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-time-picker-gap, var(--xh-space-1));
+
+  /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+  min-inline-size: min(var(--xh-time-picker-control-min-w, var(--xh-control-min-w)), 100%);
+  max-inline-size: 100%;
 }
 
 /* —— 尺寸 —— */
@@ -31175,7 +31332,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 画成一个框的是 control：几段文字、展开按钮、清空按钮要看起来是一体的，
    边框长在其中任何一个身上都会把另外几个割在框外 */
 [data-scope='time-picker'][data-part='control'] {
-  min-inline-size: var(--xh-time-picker-control-min-w, var(--xh-control-min-w));
+  min-inline-size: min(var(--xh-time-picker-control-min-w, var(--xh-control-min-w)), 100%);
   display: inline-flex;
   align-items: center;
   gap: var(--xh-time-picker-control-gap, var(--xh-_time-picker-gap));
@@ -32317,7 +32474,12 @@ input[data-scope='mention'][data-part='input'] {
   /* 选中段是实心底才画内高光；淡底的那几档在自己的形态块里收成 none */
   --xh-_toggle-group-item-highlight-on: var(--xh-_highlight-tone);
 
+  /* 一行排不下就折行：每个选项都必须看得见、点得到，硬撑一行会把末尾几段顶出容器。
+     折行的代价是行末与行首那两个角变成直角（两端圆角只补在首末两段上）；
+     不改成横向滚动是因为段与容器等高，容器一旦成为滚动容器，
+     段的焦点环（画在段外侧 2px 处）会被整圈裁掉 */
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: stretch;
 }
 
@@ -32394,6 +32556,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='toggle-group'][data-part='root'][data-orientation='vertical'] {
   flex-direction: column;
+  flex-wrap: nowrap;
 }
 
 /* root 会短暂拿到 tabindex=0，但它的 onFocus 立刻把焦点转投给条目，
@@ -32936,7 +33099,10 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tool-call'][data-part='content'] {
   display: grid;
   grid-template-rows: 1fr;
-  overflow: clip;
+  /* 块轴照旧裁掉：收起靠行高归零，多出来的那一截不能露在外面。
+     行内一轴改成可横滚，宽过卡片的参数与结果推得回来看，不再被裁掉且取不回 */
+  overflow-x: auto;
+  overflow-y: clip;
   gap: var(--xh-tool-call-content-gap, var(--xh-space-2));
   padding-inline: var(--xh-tool-call-px, var(--xh-_tool-call-px));
   padding-block: var(--xh-tool-call-py, var(--xh-_tool-call-py));
@@ -33095,7 +33261,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_toolbar-gap: var(--xh-space-1);
   --xh-_toolbar-p: var(--xh-space-1);
 
+  /* 一行排不下就折行：条目宽度由各自的控件决定，硬撑一行会把整条顶出容器 */
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--xh-toolbar-gap, var(--xh-_toolbar-gap));
   padding-block: var(--xh-toolbar-py, var(--xh-_toolbar-p));
@@ -33118,6 +33286,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='toolbar'][data-part='root'][data-orientation='vertical'] {
   flex-direction: column;
   align-items: stretch;
+  flex-wrap: nowrap;
 }
 
 /* —— 形态 —— */
@@ -33164,6 +33333,7 @@ input[data-scope='mention'][data-part='input'] {
    "这几个是一伙的"才看得出来 */
 [data-scope='toolbar'][data-part='group'] {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--xh-toolbar-group-gap, var(--xh-space-0_5));
 }
@@ -33171,6 +33341,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='toolbar'][data-part='group'][data-orientation='vertical'] {
   flex-direction: column;
   align-items: stretch;
+  flex-wrap: nowrap;
 }
 
 [data-scope='toolbar'][data-part='group'][hidden] {
@@ -35086,6 +35257,10 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-tree-select-gap, var(--xh-space-1));
+
+  /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+  min-inline-size: min(var(--xh-tree-select-control-min-w, var(--xh-control-min-w)), 100%);
+  max-inline-size: 100%;
 }
 
 /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，作者手动收起时要自己还回去 */
@@ -35162,7 +35337,7 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   align-items: center;
   gap: var(--xh-tree-select-control-gap, var(--xh-_tree-select-gap));
-  min-inline-size: var(--xh-tree-select-control-min-w, var(--xh-control-min-w));
+  min-inline-size: min(var(--xh-tree-select-control-min-w, var(--xh-control-min-w)), 100%);
   block-size: var(--xh-tree-select-control-h, var(--xh-_tree-select-h));
   padding-inline: var(--xh-tree-select-control-px, var(--xh-_tree-select-px));
   border: var(--xh-stroke-thin) solid var(--xh-tree-select-control-border, var(--xh-_tree-select-border));

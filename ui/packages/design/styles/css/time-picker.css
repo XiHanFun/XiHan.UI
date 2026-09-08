@@ -76,6 +76,10 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-time-picker-gap, var(--xh-space-1));
+
+    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+    min-inline-size: min(var(--xh-time-picker-control-min-w, var(--xh-control-min-w)), 100%);
+    max-inline-size: 100%;
   }
 
   /* —— 尺寸 —— */
@@ -148,7 +152,7 @@
   /* 画成一个框的是 control：几段文字、展开按钮、清空按钮要看起来是一体的，
      边框长在其中任何一个身上都会把另外几个割在框外 */
   [data-scope='time-picker'][data-part='control'] {
-    min-inline-size: var(--xh-time-picker-control-min-w, var(--xh-control-min-w));
+    min-inline-size: min(var(--xh-time-picker-control-min-w, var(--xh-control-min-w)), 100%);
     display: inline-flex;
     align-items: center;
     gap: var(--xh-time-picker-control-gap, var(--xh-_time-picker-gap));

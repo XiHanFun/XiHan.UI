@@ -9,7 +9,10 @@
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-menubar-icon-size, var(--xh-glyph-size-text));
 
+    /* 一行排不下就折行：菜单名宽度由文字决定，硬撑一行会把整条顶出容器，
+       末尾几个菜单既看不见也点不到 */
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--xh-menubar-gap, var(--xh-space-1));
     padding-block: var(--xh-menubar-py, var(--xh-space-1));
@@ -32,6 +35,7 @@
   [data-scope='menubar'][data-part='root'][data-orientation='vertical'] {
     flex-direction: column;
     align-items: stretch;
+    flex-wrap: nowrap;
   }
 
   /* root 只是 roving tabindex 的兜底落点，焦点转投给 trigger 之后就不再停留，不画环 */

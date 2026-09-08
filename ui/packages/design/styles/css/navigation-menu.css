@@ -87,10 +87,13 @@
   }
 
   /* 指示条的定位参照系（它是 absolute，量出来的偏移就是相对这里的）。
-     ul 的项目符号与内外边距是 UA 给的，库里没有全局 preflight，只能在这儿自己抹平 */
+     ul 的项目符号与内外边距是 UA 给的，库里没有全局 preflight，只能在这儿自己抹平。
+     一行排不下就折行：入口宽度由文字决定，硬撑一行会把整条导航顶出容器；
+     这里不改成横向滚动——面板是绝对定位在各自那一项里的，列表一旦成为滚动容器就把面板裁掉了 */
   [data-scope='navigation-menu'][data-part='list'] {
     position: relative;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--xh-navigation-menu-gap, var(--xh-space-1));
     margin: 0;
@@ -105,6 +108,7 @@
   [data-scope='navigation-menu'][data-part='list'][data-orientation='vertical'] {
     flex-direction: column;
     align-items: stretch;
+    flex-wrap: nowrap;
   }
 
   /* 一项一个 li，面板就住在里面：给 relative 让面板贴着自己这一项落位 */

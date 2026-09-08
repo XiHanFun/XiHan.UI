@@ -79,9 +79,13 @@
     --xh-_tabs-trigger-shadow-active: var(--xh-elevation-raised);
   }
 
+  /* 一行排不下就折行：标签宽度由文字决定，硬撑一行会把整块版面顶出去。
+     这里不改成横向滚动：指示条是绝对定位、块向落点在列表盒外沿（下面那条 inset-block-end 是负值），
+     列表一旦成为滚动容器就会把它连同标签的焦点环一起裁掉 */
   [data-scope='tabs'][data-part='list'] {
     position: relative;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--xh-tabs-list-gap, var(--xh-_tabs-list-gap));
     padding: var(--xh-tabs-list-p, var(--xh-_tabs-list-p));
@@ -93,6 +97,7 @@
   [data-scope='tabs'][data-part='list'][aria-orientation='vertical'] {
     flex-direction: column;
     align-items: stretch;
+    flex-wrap: nowrap;
     border-block-end: 0;
     border-inline-end: var(--xh-_tabs-list-border-width) solid var(--xh-tabs-list-border, var(--xh-border-default));
   }

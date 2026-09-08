@@ -31,6 +31,10 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-time-field-gap, var(--xh-space-1));
+
+    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+    min-inline-size: min(var(--xh-time-field-control-min-w, var(--xh-control-min-w)), 100%);
+    max-inline-size: 100%;
   }
 
   /* —— 尺寸 —— */
@@ -98,7 +102,7 @@
      段自己只管一小块可聚焦的高亮区 */
   [data-scope='time-field'][data-part='control'] {
     display: inline-flex;
-    min-inline-size: var(--xh-time-field-control-min-w, var(--xh-control-min-w));
+    min-inline-size: min(var(--xh-time-field-control-min-w, var(--xh-control-min-w)), 100%);
     align-items: center;
     gap: var(--xh-time-field-control-gap, var(--xh-_time-field-gap));
     block-size: var(--xh-time-field-control-h, var(--xh-_time-field-control-h));

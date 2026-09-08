@@ -90,6 +90,10 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-date-picker-gap, var(--xh-space-1));
+
+    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+    min-inline-size: min(var(--xh-date-picker-control-min-w, var(--xh-control-min-w)), 100%);
+    max-inline-size: 100%;
   }
 
   /* —— 尺寸 —— */
@@ -167,7 +171,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--xh-date-picker-control-gap, var(--xh-_date-picker-gap));
-    min-inline-size: var(--xh-date-picker-control-min-w, var(--xh-control-min-w));
+    min-inline-size: min(var(--xh-date-picker-control-min-w, var(--xh-control-min-w)), 100%);
     block-size: var(--xh-date-picker-control-h, var(--xh-_date-picker-control-h));
     padding-inline: var(--xh-date-picker-control-px, var(--xh-_date-picker-control-px));
     padding-block: 0;

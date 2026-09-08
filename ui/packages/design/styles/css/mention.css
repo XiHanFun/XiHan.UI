@@ -107,6 +107,10 @@
 
   [data-scope='mention'][data-part='root'] {
     display: block;
+
+    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+    min-inline-size: min(var(--xh-mention-input-min-w, var(--xh-control-min-w)), 100%);
+    max-inline-size: 100%;
   }
 
   /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -185,7 +189,7 @@
   [data-scope='mention'][data-part='input'] {
     display: block;
     inline-size: 100%;
-    min-inline-size: var(--xh-mention-input-min-w, var(--xh-control-min-w));
+    min-inline-size: min(var(--xh-mention-input-min-w, var(--xh-control-min-w)), 100%);
     /* 缺省宿主是 textarea：高度按行数撑，控件档只兜住底线 */
     min-block-size: var(--xh-mention-input-h, var(--xh-_mention-h));
     padding-block: var(--xh-mention-input-py, var(--xh-_mention-py));

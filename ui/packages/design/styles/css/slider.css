@@ -49,6 +49,14 @@
     cursor: pointer;
   }
 
+  /* 刻度文案以刻度为圆心横向摊开，首末两档各有一半落在轨道之外，页面因此恒多出半个文案的宽度。
+     排了刻度文案的横轨两侧各让出一段，那半个文案落进让出来的这一段里。
+     让在控件上而不是根上：轨道、刻度、拇指的坐标都以控件为基准，一起让开才不会彼此错位。 */
+  [data-scope='slider'][data-part='root']:has([data-part='tick-label'])
+    [data-part='control'][data-orientation='horizontal'] {
+    margin-inline: var(--xh-slider-control-gutter, var(--xh-space-6));
+  }
+
   [data-scope='slider'][data-part='control'][data-orientation='vertical'] {
     flex-direction: column;
     justify-content: center;

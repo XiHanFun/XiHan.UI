@@ -27,6 +27,10 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-pin-input-gap, var(--xh-space-1));
+    /* 每格都有定宽，一行格子的最小宽度就是这些定宽之和，收缩到边框盒之内不再有余地：
+       不封顶的话整块控件按这个和撑开，比容器宽多少就顶出多少。
+       封到容器那么宽，格子那条收缩才有得可收 */
+    max-inline-size: 100%;
   }
 
   /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -121,7 +125,12 @@
   /* 每格是等宽方框：宽高同取一个尺寸，内边距归零。
      留了内边距，单字符居中后可用宽度不足，中文与全角字符会被挤出框外 */
   [data-scope='pin-input'][data-part='input'] {
-    flex: none;
+    /* 一行放不下时逐格收窄，收不动就整行顶出屏幕。
+       min-inline-size 归零解开表单控件那份按字符数算出来的自动最小宽度。
+       高度不跟着收：它取自控件高度尺，与同一行里别的控件对齐靠的就是这个数。
+       宽度放得下时收窄量为零，格子仍是尺寸档给的那个正方形。 */
+    flex: 0 1 auto;
+    min-inline-size: 0;
     inline-size: var(--xh-pin-input-box-size, var(--xh-_pin-input-box-size));
     block-size: var(--xh-pin-input-box-size, var(--xh-_pin-input-box-size));
     padding: 0;

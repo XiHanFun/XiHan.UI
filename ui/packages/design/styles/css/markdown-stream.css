@@ -45,6 +45,9 @@
   [data-scope='markdown-stream'][data-part='block'] {
     display: block;
     min-inline-size: 0;
+    /* 块里铺的是渲染好的 Markdown，宽表格与不断行的长串由内容自己带；
+       行内一轴可横滚，这类块自己滚，不把整篇正文顶宽 */
+    overflow-x: auto;
   }
 
   [data-scope='markdown-stream'][data-part='block'][hidden] {
