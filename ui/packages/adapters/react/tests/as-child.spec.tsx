@@ -59,38 +59,51 @@ describe('触发器的 asChild', () => {
     expect(triggers()[0]!.tagName).toBe('BUTTON')
   })
 
-  // 同名处理器串起来依次跑，两条路的顺序刚好相反：不开 asChild 时部件在前，
-  // 开了 asChild 时作者在前。这不是这一侧自己定的——Vue 侧两条路本来就是这个顺序
-  // （实测过），三家要对得上就照它，不另立一套。顺序一旦分叉，作者在 asChild 上
-  // 拦得住的事在另一条路上拦不住，而两边看着是同一个 prop。
+  // 同名处理器串起来依次跑，作者的排在部件的前面。写在子节点上还是写在部件上、
+  // 开不开 asChild，都是同一个先后：先后一旦跟着写法反转，作者在一种写法里拦得住的事
+  // 在另一种写法里拦不住，而两边看着是同一个 prop。
   it('开 asChild：写在作者节点上的处理器先跑，部件的后跑', () => {
     const seen: string[] = []
     mount(
-      <XhDialogRoot onOpenChange={() => seen.push('机器')}>
+      <XhDialogRoot onOpenChange={() => seen.push('部件')}>
         <XhDialogTrigger asChild>
           <button type="button" onClick={() => seen.push('作者')}>打开</button>
         </XhDialogTrigger>
       </XhDialogRoot>,
     )
     act(() => triggers()[0]!.click())
-    expect(seen).toEqual(['作者', '机器'])
+    expect(seen).toEqual(['作者', '部件'])
   })
 
-  it('写在部件上的处理器：部件的先跑，作者的后跑（两条路都一样）', () => {
+  it('写在部件上的处理器：作者的先跑，部件的后跑（两条路都一样）', () => {
     for (const asChild of [false, true]) {
       const seen: string[] = []
       mount(
-        <XhDialogRoot onOpenChange={() => seen.push('机器')}>
+        <XhDialogRoot onOpenChange={() => seen.push('部件')}>
           <XhDialogTrigger asChild={asChild} onClick={() => seen.push('作者')}>
             {asChild ? <button type="button">打开</button> : '打开'}
           </XhDialogTrigger>
         </XhDialogRoot>,
       )
       act(() => triggers()[0]!.click())
-      expect(seen, `asChild=${asChild}`).toEqual(['机器', '作者'])
+      expect(seen, `asChild=${asChild}`).toEqual(['作者', '部件'])
       act(() => root!.unmount())
       host!.remove()
     }
+  })
+
+  it('作者写在部件上的普通值仍然盖过部件的，className 两边都留', () => {
+    mount(
+      <XhDialogRoot>
+        <XhDialogTrigger className="mine" type="submit" aria-label="我的名字">打开</XhDialogTrigger>
+      </XhDialogRoot>,
+    )
+    const trigger = triggers()[0]!
+    expect(trigger.getAttribute('type')).toBe('submit')
+    expect(trigger.getAttribute('aria-label')).toBe('我的名字')
+    expect(trigger.className.split(/\s+/)).toContain('mine')
+    // 部件的接线属性没被顺手丢掉
+    expect(trigger.getAttribute('aria-haspopup')).toBe('dialog')
   })
 
   it('作者的 ref 与部件的 ref 都拿得到节点', () => {

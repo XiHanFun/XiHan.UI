@@ -5,7 +5,7 @@ import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { DrawerProvider, useDrawerContext } from './context'
@@ -62,7 +62,7 @@ export interface XhDrawerTriggerProps extends ComponentPropsWithRef<'button'>, A
 
 export function XhDrawerTrigger({ children, asChild, ...rest }: XhDrawerTriggerProps): ReactNode {
   const ctx = useDrawerContext()
-  const props = mergeReactProps(
+  const props = mergePartProps(
     ctx.api.getTriggerProps() as Record<string, unknown>,
     rest as Record<string, unknown>,
   )

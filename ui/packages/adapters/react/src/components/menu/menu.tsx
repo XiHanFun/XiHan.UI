@@ -9,7 +9,7 @@ import { Fragment, useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
@@ -100,10 +100,12 @@ XhMenuRoot.xhEvents = ['open-change', 'select'] as const
 export interface XhMenuTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 export function XhMenuTrigger({ children, asChild, ...rest }: XhMenuTriggerProps): ReactNode {
   const ctx = useMenuContext()
-  const props = mergeReactProps(
-    ctx.api.getTriggerProps() as Record<string, unknown>,
+  const props = mergePartProps(
+    mergeReactProps(
+      ctx.api.getTriggerProps() as Record<string, unknown>,
+      { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
+    ),
     rest as Record<string, unknown>,
-    { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
   )
   return renderAsChild(asChild, children, props, 'menu', (p, kids) => <button {...p}>{kids}</button>)
 }

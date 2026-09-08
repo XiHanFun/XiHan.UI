@@ -6,6 +6,7 @@ import { mergeProps } from '@xihan-ui/core'
 import { computed, defineComponent, h, mergeProps as mergeVueProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
+import { mergePartProps } from '../../runtime/merge-props'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { provideMenu, provideMenuChain, useMenuContext } from '../menu/context'
 import { useMenu } from '../menu/use-menu'
@@ -105,26 +106,28 @@ export const XhContextMenuRoot = defineComponent({
 
 export const XhContextMenuTrigger = defineComponent({
   name: 'XhContextMenuTrigger',
+  // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
+  inheritAttrs: false,
   props: {
     /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const ctx = useContextMenuContext()
     // 触发区渲染为 div，语义由 connect 打上的 ARIA 属性给出
     return () => {
-      const attrs = {
+      const part = mergePartProps({
         ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
         ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
-      }
+      }, attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
-        const merged = mergeIntoChild(children, attrs, 'context-menu')
+        const merged = mergeIntoChild(children, part, 'context-menu')
         if (merged)
           return merged
       }
-      return h('div', attrs, children)
+      return h('div', part, children)
     }
   },
 })

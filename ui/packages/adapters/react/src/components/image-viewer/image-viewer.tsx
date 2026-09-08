@@ -6,7 +6,7 @@ import type { SlotChildren } from '../../runtime/slot-content'
 import { imageViewerCounterText } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
@@ -98,7 +98,7 @@ export interface XhImageViewerTriggerProps extends ComponentPropsWithRef<'button
 
 export function XhImageViewerTrigger({ children, asChild, ...rest }: XhImageViewerTriggerProps): ReactNode {
   const ctx = useImageViewerContext()
-  const props = mergeReactProps(
+  const props = mergePartProps(
     ctx.api.getTriggerProps() as Record<string, unknown>,
     rest as Record<string, unknown>,
   )

@@ -3,7 +3,7 @@ import type { CollapsibleSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import { renderAsChild } from '../../runtime/as-child'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { CollapsibleProvider, useCollapsibleContext } from './context'
 import { useCollapsible } from './use-collapsible'
 
@@ -41,7 +41,7 @@ export function XhCollapsibleHeader({ children, ...rest }: XhCollapsibleHeaderPr
 export interface XhCollapsibleTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 export function XhCollapsibleTrigger({ children, asChild, ...rest }: XhCollapsibleTriggerProps): ReactNode {
   const ctx = useCollapsibleContext()
-  const props = mergeReactProps(
+  const props = mergePartProps(
     ctx.api.getTriggerProps() as Record<string, unknown>,
     rest as Record<string, unknown>,
   )

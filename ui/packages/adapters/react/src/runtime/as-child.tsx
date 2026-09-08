@@ -64,12 +64,10 @@ export function mergeIntoChild(
     own[key] = value
   }
 
-  // 作者的那一份排在前：同名处理器串起来时作者先跑，部件后跑（与 Vue 侧的 asChild 一致——
-  // 那边由 cloneVNode 把部件属性合到作者节点上，顺序同此）。普通值反过来由部件说了算：
-  // data-part 与各种 aria 接线是这个部件的身份，作者盖掉它就等于把角色拆了。
-  //
-  // 注意这与不开 asChild 那条路刚好相反（那边作者的属性排在后、处理器因此后跑）。
-  // 两条路的顺序在 Vue 侧本来就不同，这里照它对齐，不另立一套。
+  // 作者的那一份排在前：同名处理器串起来时作者先跑，部件后跑。传进来的 props 已经把
+  // 写在部件上的那一份按同一个先后合过（mergePartProps），所以写在子节点上还是写在部件上，
+  // 作者的处理器都在部件之前。普通值反过来由部件说了算：data-part 与各种 aria 接线是这个
+  // 部件的身份，作者盖掉它就等于把角色拆了。
   //
   // ref 两边都要拿到节点：React 19 里 ref 是普通 prop，直接后盖前会让作者那一份收不到。
   const childProps = child.props as Record<string, unknown>

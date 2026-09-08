@@ -10,7 +10,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
@@ -130,11 +130,13 @@ export function XhMenubarTrigger({ value, disabled, asChild, children, ...rest }
     ctx.api.getTriggerProps({ value, disabled }) as Record<string, unknown>,
     ['onFocus', 'onPointerEnter'],
   )
-  const props = mergeReactProps(
-    bind.attrs,
+  const props = mergePartProps(
+    mergeReactProps(
+      bind.attrs,
+      { ref: bind.ref },
+      { ref: setEl },
+    ),
     rest as Record<string, unknown>,
-    { ref: bind.ref },
-    { ref: setEl },
   )
   return renderAsChild(asChild, children, props, 'menubar', (p, kids) => <button {...p}>{kids}</button>)
 }

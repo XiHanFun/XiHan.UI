@@ -4,7 +4,7 @@ import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { renderAsChild } from '../../runtime/as-child'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { PopconfirmProvider, usePopconfirmContext } from './context'
@@ -64,10 +64,12 @@ XhPopconfirmRoot.xhEvents = ['open-change'] as const
 export interface XhPopconfirmTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 export function XhPopconfirmTrigger({ children, asChild, ...rest }: XhPopconfirmTriggerProps): ReactNode {
   const ctx = usePopconfirmContext()
-  const props = mergeReactProps(
-    ctx.api.getTriggerProps() as Record<string, unknown>,
+  const props = mergePartProps(
+    mergeReactProps(
+      ctx.api.getTriggerProps() as Record<string, unknown>,
+      { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
+    ),
     rest as Record<string, unknown>,
-    { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
   )
   return renderAsChild(asChild, children, props, 'popconfirm', (p, kids) => <button {...p}>{kids}</button>)
 }
