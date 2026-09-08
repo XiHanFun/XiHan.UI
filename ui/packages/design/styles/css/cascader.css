@@ -6,6 +6,10 @@
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='cascader'][data-part='positioner'] {
+    /* 落定那一侧的可用宽度，由定位引擎经内联自定义属性写进来，列区据此夹住行内轴；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+    --xh-_cascader-available-w: 100vw;
+
     /* 列区的自绘条浮在内容之上：轨道不上底色，实色轨道会在列区下缘糊出一条灰带 */
     --xh-scrollbar-track-bg: transparent;
 
@@ -345,7 +349,9 @@
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    max-inline-size: var(--xh-cascader-content-max-w, var(--xh-overlay-max-w-xl));
+    /* 静态档与落位后的可用宽度取小：列多起来时外框自己就宽过了可用区，
+       盒内不产生溢出，下面那条 overflow-x 便一直没事可做，最右那一列落在屏外点不到 */
+    max-inline-size: min(var(--xh-cascader-content-max-w, var(--xh-overlay-max-w-xl)), var(--xh-_cascader-available-w));
     border: var(--xh-stroke-thin) solid var(--xh-cascader-content-border, var(--xh-border-default));
     border-radius: var(--xh-cascader-content-radius, var(--xh-shape-surface));
     background: var(--xh-cascader-content-bg, var(--xh-bg-surface));

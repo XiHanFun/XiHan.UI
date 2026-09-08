@@ -9,6 +9,9 @@
     /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
     --xh-_date-picker-available-h: 100vh;
+    /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，内容层据此夹住行内轴；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+    --xh-_date-picker-available-w: 100vw;
 
     /* 面板的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊出一条竖灰带 */
     --xh-scrollbar-track-bg: transparent;
@@ -313,6 +316,9 @@
 
   [data-scope='date-picker'][data-part='content'] {
     display: block;
+    /* 行内轴只有落位后的可用宽度这一个上限：不夹住，浮层就会被定位层的包含块压窄，
+       网格轨道跟着缩到比日期钮还窄，相邻两颗日期钮互相盖住 */
+    max-inline-size: var(--xh-_date-picker-available-w);
     padding-block: var(--xh-date-picker-content-py, var(--xh-space-3));
     padding-inline: var(--xh-date-picker-content-px, var(--xh-space-3));
     border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
@@ -322,7 +328,9 @@
     /* 日历是定高结构：六行日期加表头本来就有固定高度，上限走页内滚动面那一档；
        可用高度是定位引擎算出的视口余量，视口真放不下时再收一截 */
     max-block-size: min(var(--xh-date-picker-max-h, var(--xh-viewport-h-lg)), var(--xh-_date-picker-available-h));
-    overflow-y: auto;
+    /* 两轴都滚：块轴放不下时面板内自己竖滚，行内轴放不下时面板内自己横滚，
+       日历那几块保持各自的天然宽度，不被压 */
+    overflow: auto;
     /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
     transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
     box-shadow: var(--xh-date-picker-content-shadow, var(--xh-elevation-floating));
@@ -387,6 +395,9 @@
 
   [data-scope='date-picker'][data-part='calendar'] {
     display: flex;
+    /* 面板被夹窄时不跟着缩：日期钮的宽度是定死的，网格轨道再窄下去就会与右邻的钮叠在一起。
+       撑出去的那截交给面板自己横滚 */
+    min-inline-size: max-content;
     flex-direction: column;
     gap: var(--xh-date-picker-calendar-gap, var(--xh-space-3));
     /* 数字等宽：1 与 7 的字形宽度在比例字体里并不相同，不定住会让整张网格随月份抖动 */

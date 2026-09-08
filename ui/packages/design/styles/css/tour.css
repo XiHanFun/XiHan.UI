@@ -166,6 +166,9 @@
     /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，气泡继承它限高；
        居中步与尚未落位时不额外限高 */
     --xh-_tour-available-h: 100vh;
+    /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+    --xh-_tour-available-w: 100vw;
 
     z-index: var(--xh-tour-positioner-layer, var(--xh-layer-popover));
     pointer-events: none;
@@ -216,7 +219,8 @@
     flex-direction: column;
     gap: var(--xh-tour-gap, var(--xh-space-2));
     inline-size: max-content;
-    max-inline-size: var(--xh-tour-max-w, var(--xh-overlay-max-w-lg));
+    /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+    max-inline-size: min(var(--xh-tour-max-w, var(--xh-overlay-max-w-lg)), var(--xh-_tour-available-w));
     padding-block: var(--xh-tour-py, var(--xh-surface-py-md));
     padding-inline: var(--xh-tour-px, var(--xh-surface-px-md));
     /* 引导步骤的正文长度由作者定，矮视口下不限高气泡会整块伸出视口 */

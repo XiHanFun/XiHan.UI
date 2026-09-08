@@ -43,6 +43,9 @@
     /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
        引擎没算（尚未落位 / 无引擎）时不额外限高 */
     --xh-_combobox-available-h: 100vh;
+    /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+    --xh-_combobox-available-w: 100vw;
     /* 输入框实测宽度，由定位引擎经内联自定义属性写进来，内容层拿它当最小宽的下界；
        引擎没算（尚未落位 / 无引擎）时为 0，max 取静态档，等于不抬宽 */
     --xh-_combobox-anchor-w: 0px;
@@ -417,8 +420,14 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-combobox-content-gap, var(--xh-list-option-gap));
-    min-inline-size: max(var(--xh-combobox-content-min-w, var(--xh-overlay-min-w)), var(--xh-_combobox-anchor-w));
-    max-inline-size: var(--xh-combobox-content-max-w, var(--xh-overlay-max-w));
+    /* 下界跟着输入框走，面板不窄于它；可用宽度的夹取写在这一侧：
+       min-inline-size 恒压过 max-inline-size，锚点比可用区还宽时只夹 max 等于没夹 */
+    min-inline-size: min(
+      max(var(--xh-combobox-content-min-w, var(--xh-overlay-min-w)), var(--xh-_combobox-anchor-w)),
+      var(--xh-_combobox-available-w)
+    );
+    /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+    max-inline-size: min(var(--xh-combobox-content-max-w, var(--xh-overlay-max-w)), var(--xh-_combobox-available-w));
     max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-max-h)), var(--xh-_combobox-available-h));
     padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
     padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));

@@ -43,6 +43,9 @@
     /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
     --xh-_popover-available-h: 100vh;
+    /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+    --xh-_popover-available-w: 100vw;
 
     /* 面板内容的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊一条竖灰带 */
     --xh-scrollbar-track-bg: transparent;
@@ -95,7 +98,8 @@
     flex-direction: column;
     gap: var(--xh-popover-gap, var(--xh-space-2));
     inline-size: max-content;
-    max-inline-size: var(--xh-popover-max-w, var(--xh-_popover-max-w));
+    /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+    max-inline-size: min(var(--xh-popover-max-w, var(--xh-_popover-max-w)), var(--xh-_popover-available-w));
     /* 内容由作者给，长度不可预知：不限高就整块伸出视口且滚不到 */
     max-block-size: min(var(--xh-popover-max-h, var(--xh-overlay-max-h)), var(--xh-_popover-available-h));
     overflow-y: auto;

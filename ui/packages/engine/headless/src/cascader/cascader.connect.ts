@@ -17,6 +17,20 @@ import { cascaderFilterCandidates, cascaderSearchCandidates } from './cascader.s
 
 const parts = cascaderAnatomy.build()
 
+// 落定那一侧的可用宽度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零宽，
+// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档静态值
+const AVAILABLE_W_FLOOR = 96
+
+function availableSpaceVars(
+  placed: { availableWidth?: number } | null | undefined,
+): Record<string, string> {
+  const available = placed?.availableWidth
+  return {
+    '--xh-_cascader-available-w':
+      available != null && available >= AVAILABLE_W_FLOOR ? `${available}px` : '',
+  }
+}
+
 export function connectCascader<T extends PropTypes>(
   service: Service<CascaderSchema>,
   normalize: NormalizeProps<T>,
@@ -357,6 +371,7 @@ export function connectCascader<T extends PropTypes>(
         position: 'fixed',
         left: `${position?.x ?? 0}px`,
         top: `${position?.y ?? 0}px`,
+        ...availableSpaceVars(position),
       },
     }),
 

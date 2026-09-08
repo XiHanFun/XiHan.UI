@@ -6174,6 +6174,9 @@
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎）时不额外限高 */
   --xh-_mention-available-h: 100vh;
+  /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_mention-available-w: 100vw;
 
   /* 候选列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在列表右缘糊一条竖灰带 */
   --xh-scrollbar-track-bg: transparent;
@@ -6416,7 +6419,8 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   gap: var(--xh-mention-content-gap, var(--xh-list-option-gap));
   min-inline-size: var(--xh-mention-content-min-w, var(--xh-overlay-min-w));
-  max-inline-size: var(--xh-mention-content-max-w, var(--xh-overlay-max-w));
+  /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+  max-inline-size: min(var(--xh-mention-content-max-w, var(--xh-overlay-max-w)), var(--xh-_mention-available-w));
   max-block-size: min(var(--xh-mention-content-max-h, var(--xh-overlay-max-h)), var(--xh-_mention-available-h));
   padding-block: var(--xh-mention-content-py, var(--xh-space-1));
   padding-inline: var(--xh-mention-content-px, var(--xh-space-1));
@@ -7269,6 +7273,16 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='popconfirm'][data-part='positioner'] {
+  /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，面板继承它限高；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
+  --xh-_popconfirm-available-h: 100vh;
+  /* 落定那一侧的可用宽度，同一路由定位引擎写进来，行内轴据此夹取；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_popconfirm-available-w: 100vw;
+
+  /* 面板内容的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊一条竖灰带 */
+  --xh-scrollbar-track-bg: transparent;
+
   position: fixed;
   z-index: var(--xh-popconfirm-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 上 */
@@ -7316,7 +7330,11 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   gap: var(--xh-popconfirm-gap, var(--xh-space-2));
   inline-size: max-content;
-  max-inline-size: var(--xh-popconfirm-max-w, var(--xh-_popconfirm-max-w));
+  /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的两颗钮就点不到了 */
+  max-inline-size: min(var(--xh-popconfirm-max-w, var(--xh-_popconfirm-max-w)), var(--xh-_popconfirm-available-w));
+  /* 说明文案长度由作者给，矮视口下不限高面板会整块伸出视口且滚不到 */
+  max-block-size: min(var(--xh-popconfirm-max-h, var(--xh-overlay-max-h)), var(--xh-_popconfirm-available-h));
+  overflow-y: auto;
   padding-block: var(--xh-popconfirm-py, var(--xh-_popconfirm-pad));
   padding-inline: var(--xh-popconfirm-px, var(--xh-_popconfirm-pad));
   border: var(--xh-stroke-thin) solid var(--xh-popconfirm-border, var(--xh-border-default));
@@ -13413,6 +13431,10 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='cascader'][data-part='positioner'] {
+  /* 落定那一侧的可用宽度，由定位引擎经内联自定义属性写进来，列区据此夹住行内轴；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_cascader-available-w: 100vw;
+
   /* 列区的自绘条浮在内容之上：轨道不上底色，实色轨道会在列区下缘糊出一条灰带 */
   --xh-scrollbar-track-bg: transparent;
 
@@ -13752,7 +13774,9 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  max-inline-size: var(--xh-cascader-content-max-w, var(--xh-overlay-max-w-xl));
+  /* 静态档与落位后的可用宽度取小：列多起来时外框自己就宽过了可用区，
+     盒内不产生溢出，下面那条 overflow-x 便一直没事可做，最右那一列落在屏外点不到 */
+  max-inline-size: min(var(--xh-cascader-content-max-w, var(--xh-overlay-max-w-xl)), var(--xh-_cascader-available-w));
   border: var(--xh-stroke-thin) solid var(--xh-cascader-content-border, var(--xh-border-default));
   border-radius: var(--xh-cascader-content-radius, var(--xh-shape-surface));
   background: var(--xh-cascader-content-bg, var(--xh-bg-surface));
@@ -15650,6 +15674,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
   --xh-_color-picker-available-h: 100vh;
+  /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，内容层据此夹住行内轴；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_color-picker-available-w: 100vw;
 
   /* 面板的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊出一条竖灰带 */
   --xh-scrollbar-track-bg: transparent;
@@ -15670,6 +15697,8 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   gap: var(--xh-color-picker-content-gap, var(--xh-space-3));
   inline-size: var(--xh-color-picker-content-w, var(--xh-overlay-min-w));
+  /* 定宽的面板也要夹一道：窄视口下伸出去，右半边的取色区就点不到了 */
+  max-inline-size: var(--xh-_color-picker-available-w);
   padding-block: var(--xh-color-picker-content-py, var(--xh-space-3));
   padding-inline: var(--xh-color-picker-content-px, var(--xh-space-3));
   max-block-size: min(var(--xh-color-picker-max-h, var(--xh-viewport-h-md)), var(--xh-_color-picker-available-h));
@@ -16083,6 +16112,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎）时不额外限高 */
   --xh-_combobox-available-h: 100vh;
+  /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_combobox-available-w: 100vw;
   /* 输入框实测宽度，由定位引擎经内联自定义属性写进来，内容层拿它当最小宽的下界；
      引擎没算（尚未落位 / 无引擎）时为 0，max 取静态档，等于不抬宽 */
   --xh-_combobox-anchor-w: 0px;
@@ -16456,8 +16488,14 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-direction: column;
   gap: var(--xh-combobox-content-gap, var(--xh-list-option-gap));
-  min-inline-size: max(var(--xh-combobox-content-min-w, var(--xh-overlay-min-w)), var(--xh-_combobox-anchor-w));
-  max-inline-size: var(--xh-combobox-content-max-w, var(--xh-overlay-max-w));
+  /* 下界跟着输入框走，面板不窄于它；可用宽度的夹取写在这一侧：
+     min-inline-size 恒压过 max-inline-size，锚点比可用区还宽时只夹 max 等于没夹 */
+  min-inline-size: min(
+    max(var(--xh-combobox-content-min-w, var(--xh-overlay-min-w)), var(--xh-_combobox-anchor-w)),
+    var(--xh-_combobox-available-w)
+  );
+  /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+  max-inline-size: min(var(--xh-combobox-content-max-w, var(--xh-overlay-max-w)), var(--xh-_combobox-available-w));
   max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-max-h)), var(--xh-_combobox-available-h));
   padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
   padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));
@@ -17101,6 +17139,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，content 继承它限高；
      引擎没算（尚未落位 / 无引擎）时不额外限高 */
   --xh-_context-menu-available-h: 100vh;
+  /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_context-menu-available-w: 100vw;
 
   /* 条目列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在菜单右缘糊一条竖灰带 */
   --xh-scrollbar-track-bg: transparent;
@@ -17184,7 +17225,8 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   gap: var(--xh-context-menu-content-gap, var(--xh-list-option-gap));
   min-inline-size: var(--xh-context-menu-min-w, var(--xh-overlay-menu-min-w));
-  max-inline-size: var(--xh-context-menu-max-w, var(--xh-overlay-max-w));
+  /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+  max-inline-size: min(var(--xh-context-menu-max-w, var(--xh-overlay-max-w)), var(--xh-_context-menu-available-w));
   /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
      列表族的 16rem 对命令菜单偏矮，这里另给一档 */
   max-block-size: min(var(--xh-context-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_context-menu-available-h));
@@ -17769,6 +17811,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
   --xh-_date-picker-available-h: 100vh;
+  /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，内容层据此夹住行内轴；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_date-picker-available-w: 100vw;
 
   /* 面板的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊出一条竖灰带 */
   --xh-scrollbar-track-bg: transparent;
@@ -18072,6 +18117,9 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='date-picker'][data-part='content'] {
   display: block;
+  /* 行内轴只有落位后的可用宽度这一个上限：不夹住，浮层就会被定位层的包含块压窄，
+     网格轨道跟着缩到比日期钮还窄，相邻两颗日期钮互相盖住 */
+  max-inline-size: var(--xh-_date-picker-available-w);
   padding-block: var(--xh-date-picker-content-py, var(--xh-space-3));
   padding-inline: var(--xh-date-picker-content-px, var(--xh-space-3));
   border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
@@ -18081,7 +18129,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 日历是定高结构：六行日期加表头本来就有固定高度，上限走页内滚动面那一档；
      可用高度是定位引擎算出的视口余量，视口真放不下时再收一截 */
   max-block-size: min(var(--xh-date-picker-max-h, var(--xh-viewport-h-lg)), var(--xh-_date-picker-available-h));
-  overflow-y: auto;
+  /* 两轴都滚：块轴放不下时面板内自己竖滚，行内轴放不下时面板内自己横滚，
+     日历那几块保持各自的天然宽度，不被压 */
+  overflow: auto;
   /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
   transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
   box-shadow: var(--xh-date-picker-content-shadow, var(--xh-elevation-floating));
@@ -18146,6 +18196,9 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='date-picker'][data-part='calendar'] {
   display: flex;
+  /* 面板被夹窄时不跟着缩：日期钮的宽度是定死的，网格轨道再窄下去就会与右邻的钮叠在一起。
+     撑出去的那截交给面板自己横滚 */
+  min-inline-size: max-content;
   flex-direction: column;
   gap: var(--xh-date-picker-calendar-gap, var(--xh-space-3));
   /* 数字等宽：1 与 7 的字形宽度在比例字体里并不相同，不定住会让整张网格随月份抖动 */
@@ -20493,6 +20546,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
   --xh-_hover-card-available-h: 100vh;
+  /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_hover-card-available-w: 100vw;
 
   /* 卡片内容的自绘条浮在内容之上：轨道不上底色，实色轨道会在卡片右缘糊一条竖灰带 */
   --xh-scrollbar-track-bg: transparent;
@@ -20545,7 +20601,8 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   gap: var(--xh-hover-card-gap, var(--xh-space-2));
   inline-size: max-content;
-  max-inline-size: var(--xh-hover-card-max-w, var(--xh-_hover-card-max-w));
+  /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+  max-inline-size: min(var(--xh-hover-card-max-w, var(--xh-_hover-card-max-w)), var(--xh-_hover-card-available-w));
   /* 内容由作者给，长度不可预知：不限高就整块伸出视口且滚不到 */
   max-block-size: min(var(--xh-hover-card-max-h, var(--xh-overlay-max-h)), var(--xh-_hover-card-available-h));
   overflow-y: auto;
@@ -21699,6 +21756,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，content 继承它限高；
      引擎没算（尚未落位 / 无引擎）时不额外限高 */
   --xh-_menu-available-h: 100vh;
+  /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_menu-available-w: 100vw;
 
   /* 条目列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在菜单右缘糊一条竖灰带 */
   --xh-scrollbar-track-bg: transparent;
@@ -21746,7 +21806,8 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   gap: var(--xh-menu-content-gap, var(--xh-list-option-gap));
   min-inline-size: var(--xh-menu-min-w, var(--xh-overlay-menu-min-w));
-  max-inline-size: var(--xh-menu-max-w, var(--xh-overlay-max-w));
+  /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+  max-inline-size: min(var(--xh-menu-max-w, var(--xh-overlay-max-w)), var(--xh-_menu-available-w));
   /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
      列表族的 16rem 对命令菜单偏矮，这里另给一档 */
   max-block-size: min(var(--xh-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menu-available-h));
@@ -22088,6 +22149,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，content 继承它限高；
      引擎没算（尚未落位 / 无引擎）时不额外限高 */
   --xh-_menubar-available-h: 100vh;
+  /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_menubar-available-w: 100vw;
 
   position: fixed;
   z-index: var(--xh-menubar-layer, var(--xh-layer-popover));
@@ -22145,7 +22209,8 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   gap: var(--xh-menubar-content-gap, var(--xh-list-option-gap));
   min-inline-size: var(--xh-menubar-min-w, var(--xh-overlay-menu-min-w));
-  max-inline-size: var(--xh-menubar-max-w, var(--xh-overlay-max-w));
+  /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+  max-inline-size: min(var(--xh-menubar-max-w, var(--xh-overlay-max-w)), var(--xh-_menubar-available-w));
   /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
      列表族的 16rem 对命令菜单偏矮，这里另给一档 */
   max-block-size: min(var(--xh-menubar-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menubar-available-h));
@@ -24156,6 +24221,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，面板继承它限高；
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
   --xh-_pagination-available-h: 100vh;
+  /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_pagination-available-w: 100vw;
 
   /* 页码面板的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊一条竖灰带 */
   --xh-scrollbar-track-bg: transparent;
@@ -24177,7 +24245,8 @@ input[data-scope='mention'][data-part='input'] {
   flex-flow: row wrap;
   gap: var(--xh-pagination-gap, var(--xh-space-1));
   /* 页码不可预知有多少：不限高就整块伸出视口且滚不到 */
-  max-inline-size: var(--xh-pagination-content-max-w, var(--xh-overlay-max-w));
+  /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+  max-inline-size: min(var(--xh-pagination-content-max-w, var(--xh-overlay-max-w)), var(--xh-_pagination-available-w));
   max-block-size: min(
     var(--xh-pagination-content-max-h, var(--xh-overlay-max-h)),
     var(--xh-_pagination-available-h)
@@ -24565,6 +24634,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
   --xh-_popover-available-h: 100vh;
+  /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_popover-available-w: 100vw;
 
   /* 面板内容的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊一条竖灰带 */
   --xh-scrollbar-track-bg: transparent;
@@ -24617,7 +24689,8 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   gap: var(--xh-popover-gap, var(--xh-space-2));
   inline-size: max-content;
-  max-inline-size: var(--xh-popover-max-w, var(--xh-_popover-max-w));
+  /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+  max-inline-size: min(var(--xh-popover-max-w, var(--xh-_popover-max-w)), var(--xh-_popover-available-w));
   /* 内容由作者给，长度不可预知：不限高就整块伸出视口且滚不到 */
   max-block-size: min(var(--xh-popover-max-h, var(--xh-overlay-max-h)), var(--xh-_popover-available-h));
   overflow-y: auto;
@@ -26283,6 +26356,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎）时不额外限高 */
   --xh-_select-available-h: 100vh;
+  /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_select-available-w: 100vw;
   /* 触发器实测宽度，由定位引擎经内联自定义属性写进来，内容层拿它当最小宽的下界；
      引擎没算（尚未落位 / 无引擎）时为 0，max 取静态档，等于不抬宽 */
   --xh-_select-anchor-w: 0px;
@@ -26676,8 +26752,14 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='select'][data-part='content'] {
   display: flex;
   flex-direction: column;
-  min-inline-size: max(var(--xh-select-content-min-w, var(--xh-overlay-menu-min-w)), var(--xh-_select-anchor-w));
-  max-inline-size: var(--xh-select-content-max-w, var(--xh-overlay-max-w));
+  /* 下界跟着触发器走，面板不窄于它；可用宽度的夹取写在这一侧：
+     min-inline-size 恒压过 max-inline-size，锚点比可用区还宽时只夹 max 等于没夹 */
+  min-inline-size: min(
+    max(var(--xh-select-content-min-w, var(--xh-overlay-menu-min-w)), var(--xh-_select-anchor-w)),
+    var(--xh-_select-available-w)
+  );
+  /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+  max-inline-size: min(var(--xh-select-content-max-w, var(--xh-overlay-max-w)), var(--xh-_select-available-w));
   max-block-size: min(var(--xh-select-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_select-available-h));
   padding-block: var(--xh-select-content-py, var(--xh-space-1));
   padding-inline: var(--xh-select-content-px, var(--xh-space-1));
@@ -27281,6 +27363,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，面板继承它限高；
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
   --xh-_side-nav-available-h: 100vh;
+  /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_side-nav-available-w: 100vw;
 
   position: fixed;
   z-index: var(--xh-side-nav-popout-layer, var(--xh-layer-popover));
@@ -27296,7 +27381,8 @@ input[data-scope='mention'][data-part='input'] {
    面板自己不吃子层缩进（padding 整圈盖掉），面板内的嵌套子层照常缩进 */
 [data-scope='side-nav'][data-part='branch-content'][data-popout] {
   min-inline-size: var(--xh-side-nav-popout-min-w, var(--xh-overlay-menu-min-w));
-  max-inline-size: var(--xh-side-nav-popout-max-w, var(--xh-overlay-max-w));
+  /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+  max-inline-size: min(var(--xh-side-nav-popout-max-w, var(--xh-overlay-max-w)), var(--xh-_side-nav-available-w));
   padding: var(--xh-side-nav-popout-p, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-side-nav-popout-border, var(--xh-border-default));
   border-radius: var(--xh-side-nav-popout-radius, var(--xh-shape-surface));
@@ -33729,6 +33815,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，气泡继承它限高；
      居中步与尚未落位时不额外限高 */
   --xh-_tour-available-h: 100vh;
+  /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_tour-available-w: 100vw;
 
   z-index: var(--xh-tour-positioner-layer, var(--xh-layer-popover));
   pointer-events: none;
@@ -33779,7 +33868,8 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   gap: var(--xh-tour-gap, var(--xh-space-2));
   inline-size: max-content;
-  max-inline-size: var(--xh-tour-max-w, var(--xh-overlay-max-w-lg));
+  /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+  max-inline-size: min(var(--xh-tour-max-w, var(--xh-overlay-max-w-lg)), var(--xh-_tour-available-w));
   padding-block: var(--xh-tour-py, var(--xh-surface-py-md));
   padding-inline: var(--xh-tour-px, var(--xh-surface-px-md));
   /* 引导步骤的正文长度由作者定，矮视口下不限高气泡会整块伸出视口 */
@@ -35177,6 +35267,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎）时不额外限高 */
   --xh-_tree-select-available-h: 100vh;
+  /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+  --xh-_tree-select-available-w: 100vw;
   /* 触发器实测宽度，由定位引擎经内联自定义属性写进来，内容层拿它当最小宽的下界；
      引擎没算（尚未落位 / 无引擎）时为 0，max 取静态档，等于不抬宽 */
   --xh-_tree-select-anchor-w: 0px;
@@ -35506,7 +35599,8 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-direction: column;
   min-inline-size: max(var(--xh-tree-select-content-min-w, var(--xh-overlay-min-w)), var(--xh-_tree-select-anchor-w));
-  max-inline-size: var(--xh-tree-select-content-max-w, var(--xh-overlay-max-w));
+  /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+  max-inline-size: min(var(--xh-tree-select-content-max-w, var(--xh-overlay-max-w)), var(--xh-_tree-select-available-w));
   max-block-size: min(var(--xh-tree-select-content-max-h, var(--xh-overlay-max-h)), var(--xh-_tree-select-available-h));
   padding-block: var(--xh-tree-select-content-py, var(--xh-space-1));
   padding-inline: var(--xh-tree-select-content-px, var(--xh-space-1));
