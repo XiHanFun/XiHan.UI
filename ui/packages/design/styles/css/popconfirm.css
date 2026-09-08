@@ -54,6 +54,16 @@
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='popconfirm'][data-part='positioner'] {
+    /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，面板继承它限高；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
+    --xh-_popconfirm-available-h: 100vh;
+    /* 落定那一侧的可用宽度，同一路由定位引擎写进来，行内轴据此夹取；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+    --xh-_popconfirm-available-w: 100vw;
+
+    /* 面板内容的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊一条竖灰带 */
+    --xh-scrollbar-track-bg: transparent;
+
     position: fixed;
     z-index: var(--xh-popconfirm-layer, var(--xh-layer-popover));
     /* 空壳不吃指针，交互只发生在 content 上 */
@@ -101,7 +111,11 @@
     align-items: center;
     gap: var(--xh-popconfirm-gap, var(--xh-space-2));
     inline-size: max-content;
-    max-inline-size: var(--xh-popconfirm-max-w, var(--xh-_popconfirm-max-w));
+    /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的两颗钮就点不到了 */
+    max-inline-size: min(var(--xh-popconfirm-max-w, var(--xh-_popconfirm-max-w)), var(--xh-_popconfirm-available-w));
+    /* 说明文案长度由作者给，矮视口下不限高面板会整块伸出视口且滚不到 */
+    max-block-size: min(var(--xh-popconfirm-max-h, var(--xh-overlay-max-h)), var(--xh-_popconfirm-available-h));
+    overflow-y: auto;
     padding-block: var(--xh-popconfirm-py, var(--xh-_popconfirm-pad));
     padding-inline: var(--xh-popconfirm-px, var(--xh-_popconfirm-pad));
     border: var(--xh-stroke-thin) solid var(--xh-popconfirm-border, var(--xh-border-default));

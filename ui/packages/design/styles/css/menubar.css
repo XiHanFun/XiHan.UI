@@ -101,6 +101,9 @@
     /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，content 继承它限高；
        引擎没算（尚未落位 / 无引擎）时不额外限高 */
     --xh-_menubar-available-h: 100vh;
+    /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+    --xh-_menubar-available-w: 100vw;
 
     position: fixed;
     z-index: var(--xh-menubar-layer, var(--xh-layer-popover));
@@ -158,7 +161,8 @@
     flex-direction: column;
     gap: var(--xh-menubar-content-gap, var(--xh-list-option-gap));
     min-inline-size: var(--xh-menubar-min-w, var(--xh-overlay-menu-min-w));
-    max-inline-size: var(--xh-menubar-max-w, var(--xh-overlay-max-w));
+    /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+    max-inline-size: min(var(--xh-menubar-max-w, var(--xh-overlay-max-w)), var(--xh-_menubar-available-w));
     /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
        列表族的 16rem 对命令菜单偏矮，这里另给一档 */
     max-block-size: min(var(--xh-menubar-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menubar-available-h));

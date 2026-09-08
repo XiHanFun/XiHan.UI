@@ -58,10 +58,20 @@ function resolveTranslations(input: Partial<ColorPickerTranslations> | undefined
 // 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
 const AVAILABLE_H_FLOOR = 96
 
-function availableHeightVar(available: number | undefined): Record<string, string> {
+// 行内轴同理：贴边时引擎回报 0，写进 min() 会把面板压成零宽
+const AVAILABLE_W_FLOOR = 96
+
+/** 引擎回报的可用尺寸转成 CSS 长度；低于下限当作没算出来，空串撤掉声明。 */
+function availablePx(available: number | undefined, floor: number): string {
+  return available != null && available >= floor ? `${available}px` : ''
+}
+
+function availableSpaceVars(
+  placed: { availableWidth?: number, availableHeight?: number } | null | undefined,
+): Record<string, string> {
   return {
-    '--xh-_color-picker-available-h':
-      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
+    '--xh-_color-picker-available-w': availablePx(placed?.availableWidth, AVAILABLE_W_FLOOR),
+    '--xh-_color-picker-available-h': availablePx(placed?.availableHeight, AVAILABLE_H_FLOOR),
   }
 }
 
@@ -251,7 +261,7 @@ export function connectColorPicker<T extends PropTypes>(
         position: 'fixed',
         left: `${position?.x ?? 0}px`,
         top: `${position?.y ?? 0}px`,
-        ...availableHeightVar(position?.availableHeight),
+        ...availableSpaceVars(position),
       },
     }),
 

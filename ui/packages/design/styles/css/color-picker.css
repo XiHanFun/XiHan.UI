@@ -181,6 +181,9 @@
     /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
     --xh-_color-picker-available-h: 100vh;
+    /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，内容层据此夹住行内轴；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+    --xh-_color-picker-available-w: 100vw;
 
     /* 面板的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊出一条竖灰带 */
     --xh-scrollbar-track-bg: transparent;
@@ -201,6 +204,8 @@
     flex-direction: column;
     gap: var(--xh-color-picker-content-gap, var(--xh-space-3));
     inline-size: var(--xh-color-picker-content-w, var(--xh-overlay-min-w));
+    /* 定宽的面板也要夹一道：窄视口下伸出去，右半边的取色区就点不到了 */
+    max-inline-size: var(--xh-_color-picker-available-w);
     padding-block: var(--xh-color-picker-content-py, var(--xh-space-3));
     padding-inline: var(--xh-color-picker-content-px, var(--xh-space-3));
     max-block-size: min(var(--xh-color-picker-max-h, var(--xh-viewport-h-md)), var(--xh-_color-picker-available-h));

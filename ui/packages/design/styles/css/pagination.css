@@ -275,6 +275,9 @@
     /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，面板继承它限高；
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
     --xh-_pagination-available-h: 100vh;
+    /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+    --xh-_pagination-available-w: 100vw;
 
     /* 页码面板的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊一条竖灰带 */
     --xh-scrollbar-track-bg: transparent;
@@ -296,7 +299,8 @@
     flex-flow: row wrap;
     gap: var(--xh-pagination-gap, var(--xh-space-1));
     /* 页码不可预知有多少：不限高就整块伸出视口且滚不到 */
-    max-inline-size: var(--xh-pagination-content-max-w, var(--xh-overlay-max-w));
+    /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+    max-inline-size: min(var(--xh-pagination-content-max-w, var(--xh-overlay-max-w)), var(--xh-_pagination-available-w));
     max-block-size: min(
       var(--xh-pagination-content-max-h, var(--xh-overlay-max-h)),
       var(--xh-_pagination-available-h)

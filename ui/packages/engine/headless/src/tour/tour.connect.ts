@@ -18,10 +18,20 @@ const INTERACTIVE = 'button, a[href], input, select, textarea, [role="button"], 
 // 比别的浮层高一截，因为气泡的固定部件比一张空面板多
 const AVAILABLE_H_FLOOR = 160
 
-function availableHeightVar(available: number | undefined): Record<string, string> {
+// 行内轴同理：贴边时引擎回报 0，写进 min() 会把面板压成零宽
+const AVAILABLE_W_FLOOR = 96
+
+/** 引擎回报的可用尺寸转成 CSS 长度；低于下限当作没算出来，空串撤掉声明。 */
+function availablePx(available: number | undefined, floor: number): string {
+  return available != null && available >= floor ? `${available}px` : ''
+}
+
+function availableSpaceVars(
+  placed: { availableWidth?: number, availableHeight?: number } | null | undefined,
+): Record<string, string> {
   return {
-    '--xh-_tour-available-h':
-      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
+    '--xh-_tour-available-w': availablePx(placed?.availableWidth, AVAILABLE_W_FLOOR),
+    '--xh-_tour-available-h': availablePx(placed?.availableHeight, AVAILABLE_H_FLOOR),
   }
 }
 
@@ -132,7 +142,7 @@ export function connectTour<T extends PropTypes>(
         left: anchored ? `${position?.x ?? 0}px` : '',
         top: anchored ? `${position?.y ?? 0}px` : '',
         // 居中步没有引擎结果，同样发空串把上一步的高度撤掉
-        ...availableHeightVar(anchored ? position?.availableHeight : undefined),
+        ...availableSpaceVars(anchored ? position : undefined),
       },
     }),
 
