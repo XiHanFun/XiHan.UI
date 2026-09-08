@@ -1,0 +1,84 @@
+// 换过渡效果 | 条目的内联样式只有尺寸与间距，位移之外的表现全归作者：把条目摞起来再按当前页调透明度与缩放，翻页、键盘与指示点一概照旧
+import type { CSSProperties, ReactNode } from "react";
+import {
+  XhCarouselIndicator,
+  XhCarouselIndicatorGroup,
+  XhCarouselItem,
+  XhCarouselList,
+  XhCarouselNextTrigger,
+  XhCarouselPrevTrigger,
+  XhCarouselRoot,
+  XhCarouselViewport,
+} from "@xihan-ui/react";
+import { useState } from "react";
+
+type Effect = "slide" | "fade" | "zoom";
+
+const slides = ["城市夜景", "海岸线", "雪山", "沙漠"];
+
+const options: { key: Effect; label: string }[] = [
+  { key: "slide", label: "平移" },
+  { key: "fade", label: "淡入" },
+  { key: "zoom", label: "缩放淡入" },
+];
+
+export default function Demo(): ReactNode {
+  const [effect, setEffect] = useState<Effect>("fade");
+
+  // 后两档把条目摞在一起，轨道那条整页位移随之作废
+  const groupStyle: CSSProperties | undefined
+    = effect === "slide" ? undefined : { position: "relative", transform: "none" };
+
+  function itemStyle(index: number, page: number): CSSProperties | undefined {
+    if (effect === "slide")
+      return undefined;
+    const current = index === page;
+    return {
+      position: "absolute",
+      inset: "0",
+      opacity: current ? "1" : "0",
+      scale: effect === "zoom" && !current ? "0.9" : "1",
+      transition:
+        "opacity var(--xh-motion-duration-slide) var(--xh-motion-ease-slide), scale var(--xh-motion-duration-slide) var(--xh-motion-ease-slide)",
+    };
+  }
+
+  return (
+    <XhCarouselRoot slideCount={slides.length} style={{ inlineSize: "100%" }}>
+      {({ page, totalPages }) => (
+        <>
+          <XhCarouselPrevTrigger />
+          <XhCarouselViewport style={{ blockSize: "140px" }}>
+            <XhCarouselList style={groupStyle}>
+              {slides.map((text, i) => (
+                <XhCarouselItem key={text} index={i} style={itemStyle(i, page)}>
+                  <div style={{ display: "grid", placeItems: "center", blockSize: "100%" }}>
+                    {text}
+                  </div>
+                </XhCarouselItem>
+              ))}
+            </XhCarouselList>
+          </XhCarouselViewport>
+          <XhCarouselNextTrigger />
+          <XhCarouselIndicatorGroup>
+            {Array.from({ length: totalPages }, (_, p) => (
+              <XhCarouselIndicator key={p} index={p} />
+            ))}
+          </XhCarouselIndicatorGroup>
+          <div style={{ flexBasis: "100%", display: "flex", justifyContent: "center", gap: "8px" }}>
+            {options.map(opt => (
+              <button
+                key={opt.key}
+                type="button"
+                aria-pressed={effect === opt.key}
+                onClick={() => setEffect(opt.key)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </XhCarouselRoot>
+  );
+}

@@ -1,0 +1,69 @@
+// 文案本地化 | 把手与几个按钮只有图标，可及名一律走 translations
+import type { FloatingPanelSchema } from "@xihan-ui/headless";
+import type { ReactNode } from "react";
+import {
+  XhFloatingPanelBody,
+  XhFloatingPanelCloseTrigger,
+  XhFloatingPanelContent,
+  XhFloatingPanelDragTrigger,
+  XhFloatingPanelHeader,
+  XhFloatingPanelPositioner,
+  XhFloatingPanelResizeTrigger,
+  XhFloatingPanelRoot,
+  XhFloatingPanelTitle,
+  XhFloatingPanelTrigger,
+  XhFloatingPanelWindowStateTrigger,
+} from "@xihan-ui/react";
+
+// 八个把手与三个形态钮的名字带参数：读屏得念得出按的是哪一个
+const EDGE_LABEL = {
+  n: "上边",
+  e: "右边",
+  s: "下边",
+  w: "左边",
+  ne: "右上角",
+  se: "右下角",
+  sw: "左下角",
+  nw: "左上角",
+};
+
+const WINDOW_STATE_LABEL = {
+  default: "还原面板",
+  minimized: "收起面板",
+  maximized: "最大化面板",
+};
+
+const translations: FloatingPanelSchema["props"]["translations"] = {
+  dragTrigger: "移动面板",
+  resizeTrigger: edge => `拖动${EDGE_LABEL[edge]}改变大小`,
+  resizeValueText: size => `宽 ${size.width}、高 ${size.height} 像素`,
+  windowStateTrigger: windowState => WINDOW_STATE_LABEL[windowState],
+  close: "关闭面板",
+};
+
+export default function Demo(): ReactNode {
+  return (
+    <XhFloatingPanelRoot
+      translations={translations}
+      defaultPosition={{ x: 360, y: 340 }}
+    >
+      <XhFloatingPanelTrigger>打开面板</XhFloatingPanelTrigger>
+      <XhFloatingPanelPositioner>
+        <XhFloatingPanelContent>
+          <XhFloatingPanelHeader>
+            <XhFloatingPanelTitle>中文面板</XhFloatingPanelTitle>
+            <XhFloatingPanelDragTrigger />
+            <XhFloatingPanelWindowStateTrigger windowState="minimized" />
+            <XhFloatingPanelCloseTrigger />
+          </XhFloatingPanelHeader>
+          <XhFloatingPanelBody>
+            <p style={{ margin: 0 }}>
+              这几处名字只出现在读屏里，界面上一个字都看不见。
+            </p>
+          </XhFloatingPanelBody>
+          <XhFloatingPanelResizeTrigger edge="se" />
+        </XhFloatingPanelContent>
+      </XhFloatingPanelPositioner>
+    </XhFloatingPanelRoot>
+  );
+}
