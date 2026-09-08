@@ -24,7 +24,7 @@ async function demoFiles(dir) {
       out.push(...await demoFiles(path))
       continue
     }
-    if (/\.(?:vue|html|ts|js|mjs)$/.test(entry.name))
+    if (/\.(?:vue|html|tsx?|js|mjs)$/.test(entry.name))
       out.push(path)
   }
   return out

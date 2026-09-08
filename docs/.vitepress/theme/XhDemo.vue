@@ -35,11 +35,16 @@ const wcSources = import.meta.glob<string>("../demos/**/*.html", {
   query: "?raw",
   import: "default",
 });
+const reactSources = import.meta.glob<string>("../demos/**/*.tsx", {
+  query: "?raw",
+  import: "default",
+});
 
 // 一个框架一份源码表，键是 glob 给出的文件路径。加框架时这里多一条
 const sourcesByFramework: Record<string, Record<string, () => Promise<string>>> = {
   "vue": vueSources,
   "web-components": wcSources,
+  "react": reactSources,
 };
 
 function sourceKey(framework: { id: string; ext: string }): string {

@@ -12,6 +12,12 @@
       "ext": ".html",
       "lang": "html",
       "elements": "packages/adapters/web-components/custom-elements.json"
+    },
+    {
+      "id": "react",
+      "name": "React",
+      "ext": ".tsx",
+      "lang": "tsx"
     }
   ],
   "notApplicable": {
