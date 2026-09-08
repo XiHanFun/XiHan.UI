@@ -26,7 +26,10 @@ export type MentionRootSlotProps = Pick<
   | 'close'
 >
 
-export interface XhMentionRootProps {
+/** 根上自有的那些取值；defaultValue、dir 与 onSelect 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir' | 'onSelect'>
+
+export interface XhMentionRootProps extends RootElementProps {
   /** 开候选的前缀字符，缺省 '@'；给数组即多种前缀并存。 */
   triggerPrefix?: string | string[]
   collection?: MentionNode[]
@@ -59,8 +62,59 @@ export interface XhMentionRootProps {
   children?: SlotChildren<MentionRootSlotProps>
 }
 
-export function XhMentionRoot({ children, renderItem, empty, ...props }: XhMentionRootProps): ReactNode {
-  const ctx = useMention(withXhConfig('mention', props) as MentionProps)
+export function XhMentionRoot({
+  triggerPrefix,
+  collection,
+  value,
+  defaultValue,
+  disabled,
+  loading,
+  name,
+  readOnly,
+  invalid,
+  placeholder,
+  loop,
+  placement,
+  offset,
+  dir,
+  translations,
+  variant,
+  tone,
+  size,
+  onValueChange,
+  onQueryChange,
+  onSelect,
+  onOpenChange,
+  children,
+  renderItem,
+  empty,
+  ...rest
+}: XhMentionRootProps): ReactNode {
+  const machineProps = {
+    triggerPrefix,
+    collection,
+    value,
+    defaultValue,
+    disabled,
+    loading,
+    name,
+    readOnly,
+    invalid,
+    placeholder,
+    loop,
+    placement,
+    offset,
+    dir,
+    translations,
+    variant,
+    tone,
+    size,
+    onValueChange,
+    onQueryChange,
+    onSelect,
+    onOpenChange,
+  }
+  const ctx = useMention(withXhConfig('mention', machineProps) as MentionProps)
   const api = ctx.api
 
   // 首帧结算一次候选条数，之后的增删由条目自己上报
@@ -77,15 +131,18 @@ export function XhMentionRoot({ children, renderItem, empty, ...props }: XhMenti
         setValue: api.setValue,
         close: api.close,
       })
-    : props.collection
+    : collection
       ? <DefaultTree collection={api.collection} empty={empty} renderItem={renderItem} />
       : null
 
   return (
     <MentionProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {body}
       </div>

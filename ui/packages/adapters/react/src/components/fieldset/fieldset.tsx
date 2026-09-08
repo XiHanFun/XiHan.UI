@@ -5,7 +5,7 @@ import { mergeReactProps } from '../../runtime/merge-props'
 import { FieldsetProvider, useFieldsetContext } from './context'
 import { useFieldset } from './use-fieldset'
 
-export interface XhFieldsetRootProps {
+export interface XhFieldsetRootProps extends ComponentPropsWithRef<'fieldset'> {
   /** 整组禁用：落成原生 disabled，浏览器把组内每个表单控件一并停掉。 */
   disabled?: boolean
   invalid?: boolean
@@ -15,11 +15,25 @@ export interface XhFieldsetRootProps {
 }
 
 /** 必须是原生 fieldset：整组禁用连坐组内控件是浏览器给的，换成 div 就只剩一层灰样式。 */
-export function XhFieldsetRoot({ children, ...props }: XhFieldsetRootProps): ReactNode {
-  const ctx = useFieldset(withXhConfig('fieldset', props) as FieldsetProps)
+export function XhFieldsetRoot({
+  disabled,
+  invalid,
+  required,
+  translations,
+  children,
+  ...rest
+}: XhFieldsetRootProps): ReactNode {
+  const ctx = useFieldset(withXhConfig('fieldset', {
+    disabled,
+    invalid,
+    required,
+    translations,
+  }) as FieldsetProps)
   return (
     <FieldsetProvider value={ctx}>
-      <fieldset {...ctx.api.getRootProps() as Record<string, unknown>}>{children}</fieldset>
+      <fieldset {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+        {children}
+      </fieldset>
     </FieldsetProvider>
   )
 }

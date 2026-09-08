@@ -17,7 +17,10 @@ export type NumberFieldRootSlotProps = Pick<
   'value' | 'valueAsNumber' | 'empty' | 'canIncrement' | 'canDecrement' | 'setValue' | 'increment' | 'decrement'
 >
 
-export interface XhNumberFieldRootProps {
+/** 根上自有的那些取值；defaultValue 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'>
+
+export interface XhNumberFieldRootProps extends RootElementProps {
   /** 值是原始输入串。 */
   value?: string
   defaultValue?: string
@@ -42,14 +45,59 @@ export interface XhNumberFieldRootProps {
   children?: SlotChildren<NumberFieldRootSlotProps>
 }
 
-export function XhNumberFieldRoot({ children, ...props }: XhNumberFieldRootProps): ReactNode {
-  const ctx = useNumberField(props as NumberFieldProps)
+export function XhNumberFieldRoot({
+  value,
+  defaultValue,
+  min,
+  max,
+  step,
+  largeStep,
+  disabled,
+  readOnly,
+  required,
+  invalid,
+  name,
+  changeDelay,
+  changeInterval,
+  variant,
+  tone,
+  size,
+  parse,
+  format,
+  onValueChange,
+  children,
+  ...rest
+}: XhNumberFieldRootProps): ReactNode {
+  const ctx = useNumberField({
+    value,
+    defaultValue,
+    min,
+    max,
+    step,
+    largeStep,
+    disabled,
+    readOnly,
+    required,
+    invalid,
+    name,
+    changeDelay,
+    changeInterval,
+    variant,
+    tone,
+    size,
+    parse,
+    format,
+    onValueChange,
+  } as NumberFieldProps)
   const api = ctx.api
   return (
     <NumberFieldProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {renderSlot(children, {
           value: api.value,

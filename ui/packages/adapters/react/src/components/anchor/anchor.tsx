@@ -9,7 +9,10 @@ import { useAnchor } from './use-anchor'
 
 type AnchorProps = AnchorSchema['props']
 
-export interface XhAnchorRootProps {
+/** 根上自有的那些取值；dir 与 defaultValue 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'nav'>, 'defaultValue' | 'dir'>
+
+export interface XhAnchorRootProps extends RootElementProps {
   value?: string | null
   defaultValue?: string | null
   collection?: readonly string[]
@@ -28,15 +31,46 @@ export interface XhAnchorRootProps {
 }
 
 /** 根节点渲染为 nav 地标。 */
-export function XhAnchorRoot({ scrollElement, children, ...props }: XhAnchorRootProps): ReactNode {
+export function XhAnchorRoot({
+  value,
+  defaultValue,
+  collection,
+  offset,
+  bounds,
+  smooth,
+  orientation,
+  dir,
+  translations,
+  tone,
+  size,
+  scrollElement,
+  onValueChange,
+  children,
+  ...rest
+}: XhAnchorRootProps): ReactNode {
   // 取值器每帧换、接线只建一次：现读这一帧的 scrollElement，别让它成为重建的理由
   const latest = useRef(scrollElement)
   latest.current = scrollElement
   const getScrollEl = useCallback(() => latest.current ?? null, [])
-  const ctx = useAnchor(withXhConfig('anchor', props) as AnchorProps, getScrollEl)
+  const ctx = useAnchor(withXhConfig('anchor', {
+    value,
+    defaultValue,
+    collection,
+    offset,
+    bounds,
+    smooth,
+    orientation,
+    dir,
+    translations,
+    tone,
+    size,
+    onValueChange,
+  }) as AnchorProps, getScrollEl)
   return (
     <AnchorProvider value={ctx}>
-      <nav {...ctx.api.getRootProps() as Record<string, unknown>}>{children}</nav>
+      <nav {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+        {children}
+      </nav>
     </AnchorProvider>
   )
 }

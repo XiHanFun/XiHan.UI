@@ -19,7 +19,10 @@ export interface MarkdownStreamBlockSlotProps {
   index: number
 }
 
-export interface XhMarkdownStreamRootProps {
+/** 根上自有的那些取值。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children'>
+
+export interface XhMarkdownStreamRootProps extends RootElementProps {
   /** 已渲染好的块列表。 */
   blocks?: readonly MarkdownBlock[]
   /** 这一段正文是否仍在增长，只落 data-streaming。 */
@@ -34,13 +37,22 @@ export interface XhMarkdownStreamRootProps {
   children?: SlotChildren<MarkdownStreamRootSlotProps>
 }
 
-export function XhMarkdownStreamRoot({ children, ...props }: XhMarkdownStreamRootProps): ReactNode {
-  const configured = withXhConfig('markdown-stream', props) as XhMarkdownStreamRootProps
+export function XhMarkdownStreamRoot({
+  blocks,
+  streaming,
+  announce,
+  caret,
+  size,
+  translations,
+  children,
+  ...rest
+}: XhMarkdownStreamRootProps): ReactNode {
+  const configured = withXhConfig('markdown-stream', { blocks, streaming, announce, caret, size, translations })
   const ctx = useMarkdownStream({ ...configured, blocks: configured.blocks ?? [] } as MarkdownStreamProps)
   const { api } = ctx
   return (
     <MarkdownStreamProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, { blocks: api.blocks, streaming: api.streaming, announcement: api.announcement })}
       </div>
     </MarkdownStreamProvider>

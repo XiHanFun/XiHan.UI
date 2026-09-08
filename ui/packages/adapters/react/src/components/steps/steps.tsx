@@ -19,7 +19,10 @@ export type StepsRootSlotProps = Pick<
   'value' | 'count' | 'complete' | 'setValue' | 'goToNextStep' | 'goToPrevStep'
 >
 
-export interface XhStepsRootProps {
+/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
+
+export interface XhStepsRootProps extends RootElementProps {
   value?: number
   defaultValue?: number
   /** 总步数；缺省时步序夹死在 0，读屏那边也不报「共 n 步」。 */
@@ -40,13 +43,45 @@ export interface XhStepsRootProps {
   children?: SlotChildren<StepsRootSlotProps>
 }
 
-export function XhStepsRoot({ children, ...props }: XhStepsRootProps): ReactNode {
-  const ctx = useSteps(withXhConfig('steps', props) as StepsProps)
+export function XhStepsRoot({
+  value,
+  defaultValue,
+  count,
+  collection,
+  statuses,
+  orientation,
+  linear,
+  disabled,
+  loop,
+  dir,
+  translations,
+  tone,
+  size,
+  onValueChange,
+  children,
+  ...rest
+}: XhStepsRootProps): ReactNode {
+  const ctx = useSteps(withXhConfig('steps', {
+    value,
+    defaultValue,
+    count,
+    collection,
+    statuses,
+    orientation,
+    linear,
+    disabled,
+    loop,
+    dir,
+    translations,
+    tone,
+    size,
+    onValueChange,
+  }) as StepsProps)
   const api = ctx.api
   // 经 children 载荷交出状态与前进/后退方法，供步骤条外的按钮使用
   return (
     <StepsProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           value: api.value,
           count: api.count,

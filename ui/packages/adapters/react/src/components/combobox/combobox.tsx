@@ -28,7 +28,10 @@ export type ComboboxRootSlotProps = Pick<
   'open' | 'value' | 'inputValue' | 'highlightedValue' | 'empty' | 'isSelected' | 'setOpen' | 'setValue' | 'setInputValue' | 'clear'
 >
 
-export interface XhComboboxRootProps {
+/** 根上自有的那些取值；dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'>
+
+export interface XhComboboxRootProps extends RootElementProps {
   collection?: ComboboxNode[]
   /** 标题文字。给了它就不必再写 label 部件。 */
   label?: ReactNode
@@ -69,8 +72,73 @@ export interface XhComboboxRootProps {
   children?: SlotChildren<ComboboxRootSlotProps>
 }
 
-export function XhComboboxRoot({ children, label, empty, renderItem, ...props }: XhComboboxRootProps): ReactNode {
-  const ctx = useCombobox(withXhConfig('combobox', props) as ComboboxProps)
+export function XhComboboxRoot({
+  collection,
+  label,
+  empty,
+  value,
+  defaultValue,
+  inputValue,
+  defaultInputValue,
+  open,
+  defaultOpen,
+  name,
+  multiple,
+  disabled,
+  readOnly,
+  invalid,
+  loading,
+  loop,
+  placeholder,
+  clearable,
+  translations,
+  allowCustomValue,
+  openOnClick,
+  inputBehavior,
+  placement,
+  offset,
+  dir,
+  variant,
+  tone,
+  size,
+  onValueChange,
+  onInputValueChange,
+  onOpenChange,
+  renderItem,
+  children,
+  ...rest
+}: XhComboboxRootProps): ReactNode {
+  const ctx = useCombobox(withXhConfig('combobox', {
+    collection,
+    value,
+    defaultValue,
+    inputValue,
+    defaultInputValue,
+    open,
+    defaultOpen,
+    name,
+    multiple,
+    disabled,
+    readOnly,
+    invalid,
+    loading,
+    loop,
+    placeholder,
+    clearable,
+    translations,
+    allowCustomValue,
+    openOnClick,
+    inputBehavior,
+    placement,
+    offset,
+    dir,
+    variant,
+    tone,
+    size,
+    onValueChange,
+    onInputValueChange,
+    onOpenChange,
+  }) as ComboboxProps)
   const api = ctx.api
 
   // 首帧结算一次候选条数供空态节点判断，之后的增删由候选自己上报
@@ -90,13 +158,13 @@ export function XhComboboxRoot({ children, label, empty, renderItem, ...props }:
         setInputValue: api.setInputValue,
         clear: api.clear,
       })
-    : props.collection
+    : collection
       ? (
           <DefaultTree
             collection={api.collection}
             label={label}
             empty={empty}
-            clearable={props.clearable}
+            clearable={clearable}
             renderItem={renderItem}
           />
         )
@@ -105,8 +173,11 @@ export function XhComboboxRoot({ children, label, empty, renderItem, ...props }:
   return (
     <ComboboxProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {body}
       </div>

@@ -25,7 +25,7 @@ export interface FloatingPanelRootSlotProps extends Pick<
   | 'setOpen' | 'setPosition' | 'setDimensions' | 'setWindowState'
 > {}
 
-export interface XhFloatingPanelRootProps {
+export interface XhFloatingPanelRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   open?: boolean
   defaultOpen?: boolean
   position?: FloatingPanelPosition
@@ -47,12 +47,52 @@ export interface XhFloatingPanelRootProps {
   children?: SlotChildren<FloatingPanelRootSlotProps>
 }
 
-export function XhFloatingPanelRoot({ children, ...props }: XhFloatingPanelRootProps): ReactNode {
-  const ctx = useFloatingPanel(withXhConfig('floating-panel', props) as FloatingPanelProps)
+export function XhFloatingPanelRoot({
+  open,
+  defaultOpen,
+  position,
+  defaultPosition,
+  dimensions,
+  defaultDimensions,
+  minSize,
+  maxSize,
+  windowState,
+  defaultWindowState,
+  draggable,
+  resizable,
+  disabled,
+  translations,
+  onOpenChange,
+  onPositionChange,
+  onDimensionsChange,
+  onWindowStateChange,
+  children,
+  ...rest
+}: XhFloatingPanelRootProps): ReactNode {
+  const ctx = useFloatingPanel(withXhConfig('floating-panel', {
+    open,
+    defaultOpen,
+    position,
+    defaultPosition,
+    dimensions,
+    defaultDimensions,
+    minSize,
+    maxSize,
+    windowState,
+    defaultWindowState,
+    draggable,
+    resizable,
+    disabled,
+    translations,
+    onOpenChange,
+    onPositionChange,
+    onDimensionsChange,
+    onWindowStateChange,
+  }) as FloatingPanelProps)
   const api = ctx.api
   return (
     <FloatingPanelProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           open: api.open,
           windowState: api.windowState,

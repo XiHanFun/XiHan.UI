@@ -12,7 +12,7 @@ type AffixProps = AffixSchema['props']
 /** 函数式 children 的载荷：此刻是不是吸住了。 */
 export interface AffixRootSlotProps extends Pick<AffixApi, 'affixed'> {}
 
-export interface XhAffixRootProps {
+export interface XhAffixRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   offsetTop?: number
   offsetBottom?: number
   /** 滚动容器，缺省即整页滚动；经 refs 交给观察器。 */
@@ -22,17 +22,25 @@ export interface XhAffixRootProps {
 }
 
 /** 根节点是占位盒：content 吸住时脱流，它留在原位撑住那块空间。 */
-export function XhAffixRoot({ target, children, ...props }: XhAffixRootProps): ReactNode {
+export function XhAffixRoot({
+  offsetTop,
+  offsetBottom,
+  target,
+  onAffixChange,
+  children,
+  ...rest
+}: XhAffixRootProps): ReactNode {
   // 取值器每帧换、接线只建一次：现读这一帧的 target，别让它成为重建的理由
   const latest = useRef(target)
   latest.current = target
   const getTargetEl = useCallback(() => latest.current ?? null, [])
-  const ctx = useAffix(props as AffixProps, getTargetEl)
+  const ctx = useAffix({ offsetTop, offsetBottom, onAffixChange } as AffixProps, getTargetEl)
   return (
     <AffixProvider value={ctx}>
       <div
         {...mergeReactProps(
           ctx.api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >

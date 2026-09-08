@@ -16,7 +16,10 @@ export type PopconfirmRootSlotProps = Pick<
   'open' | 'pending' | 'setOpen' | 'confirm' | 'cancel'
 >
 
-export interface XhPopconfirmRootProps {
+/** 根上自有的那些取值；onCancel 与原生的同名事件含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'onCancel'>
+
+export interface XhPopconfirmRootProps extends RootElementProps {
   open?: boolean
   defaultOpen?: boolean
   placement?: Placement
@@ -36,17 +39,32 @@ export interface XhPopconfirmRootProps {
 }
 
 export function XhPopconfirmRoot({
+  open,
+  defaultOpen,
+  placement,
+  offset,
+  closeOnEscape,
+  closeOnInteractOutside,
+  size,
   onOpenChange,
   onConfirm,
   onCancel,
   children,
-  ...props
+  ...rest
 }: XhPopconfirmRootProps): ReactNode {
   const notify: PopconfirmNotifiers = { onOpenChange, onConfirm, onCancel }
-  const ctx = usePopconfirm(props as PopconfirmOverlayProps, notify)
+  const ctx = usePopconfirm({
+    open,
+    defaultOpen,
+    placement,
+    offset,
+    closeOnEscape,
+    closeOnInteractOutside,
+    size,
+  } as PopconfirmOverlayProps, notify)
   return (
     <PopconfirmProvider value={ctx}>
-      <div {...ctx.api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           open: ctx.api.open,
           pending: ctx.api.pending,

@@ -16,7 +16,7 @@ type DrawerProps = DrawerSchema['props']
 /** 函数式 children 的载荷：展开状态、已解析的滑出边，与开合命令。 */
 export interface DrawerRootSlotProps extends Pick<DrawerApi, 'open' | 'side' | 'setOpen'> {}
 
-export interface XhDrawerRootProps {
+export interface XhDrawerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   open?: boolean
   defaultOpen?: boolean
   modal?: boolean
@@ -43,13 +43,44 @@ export interface XhDrawerRootProps {
   children?: SlotChildren<DrawerRootSlotProps>
 }
 
-export function XhDrawerRoot({ children, container, ...props }: XhDrawerRootProps): ReactNode {
-  const ctx = useDrawer(withXhConfig('drawer', props) as DrawerProps, container)
+export function XhDrawerRoot({
+  open,
+  defaultOpen,
+  modal,
+  side,
+  role,
+  closeOnEscape,
+  closeOnInteractOutside,
+  restoreFocus,
+  size,
+  variant,
+  contained,
+  translations,
+  onOpenChange,
+  children,
+  container,
+  ...rest
+}: XhDrawerRootProps): ReactNode {
+  const ctx = useDrawer(withXhConfig('drawer', {
+    open,
+    defaultOpen,
+    modal,
+    side,
+    role,
+    closeOnEscape,
+    closeOnInteractOutside,
+    restoreFocus,
+    size,
+    variant,
+    contained,
+    translations,
+    onOpenChange,
+  }) as DrawerProps, container)
   const api = ctx.api
   // root 是真实节点，content 会被搬到浮层落点，data-side 挂在这里供页面内的部分读取
   return (
     <DrawerProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, { open: api.open, side: api.side, setOpen: api.setOpen })}
       </div>
     </DrawerProvider>

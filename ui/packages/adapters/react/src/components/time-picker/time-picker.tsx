@@ -50,7 +50,7 @@ export interface TimePickerPresetsSlotProps {
   presets: readonly TimePickerPresetState[]
 }
 
-export interface XhTimePickerRootProps {
+export interface XhTimePickerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   value?: string
   defaultValue?: string
   open?: boolean
@@ -82,14 +82,73 @@ export interface XhTimePickerRootProps {
   children?: SlotChildren<TimePickerRootSlotProps>
 }
 
-export function XhTimePickerRoot({ children, ...props }: XhTimePickerRootProps): ReactNode {
-  const ctx = useTimePicker(withXhConfig('time-picker', props) as TimePickerProps)
+export function XhTimePickerRoot({
+  value,
+  defaultValue,
+  open,
+  defaultOpen,
+  min,
+  max,
+  locale,
+  hourCycle,
+  granularity,
+  step,
+  presets,
+  disabled,
+  translations,
+  isTimeUnavailable,
+  readOnly,
+  invalid,
+  required,
+  name,
+  variant,
+  tone,
+  size,
+  placement,
+  offset,
+  dir,
+  onValueChange,
+  onOpenChange,
+  children,
+  ...rest
+}: XhTimePickerRootProps): ReactNode {
+  const ctx = useTimePicker(withXhConfig('time-picker', {
+    value,
+    defaultValue,
+    open,
+    defaultOpen,
+    min,
+    max,
+    locale,
+    hourCycle,
+    granularity,
+    step,
+    presets,
+    disabled,
+    translations,
+    isTimeUnavailable,
+    readOnly,
+    invalid,
+    required,
+    name,
+    variant,
+    tone,
+    size,
+    placement,
+    offset,
+    dir,
+    onValueChange,
+    onOpenChange,
+  }) as TimePickerProps)
   const api = ctx.api
   return (
     <TimePickerProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {children == null
           ? null

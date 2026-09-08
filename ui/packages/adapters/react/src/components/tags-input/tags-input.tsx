@@ -42,7 +42,7 @@ export type TagsInputRootSlotProps = Pick<
   | 'edit'
 >
 
-export interface XhTagsInputRootProps {
+export interface XhTagsInputRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   value?: string[]
   defaultValue?: string[]
   inputValue?: string
@@ -71,14 +71,67 @@ export interface XhTagsInputRootProps {
   children?: SlotChildren<TagsInputRootSlotProps>
 }
 
-export function XhTagsInputRoot({ children, ...props }: XhTagsInputRootProps): ReactNode {
-  const ctx = useTagsInput(withXhConfig('tags-input', props) as TagsInputProps)
+export function XhTagsInputRoot({
+  value,
+  defaultValue,
+  inputValue,
+  defaultInputValue,
+  max,
+  allowOverflow,
+  disabled,
+  readOnly,
+  required,
+  invalid,
+  showCount,
+  name,
+  placeholder,
+  delimiter,
+  addOnPaste,
+  editable,
+  blurBehavior,
+  variant,
+  tone,
+  size,
+  translations,
+  onValueChange,
+  onInputValueChange,
+  children,
+  ...rest
+}: XhTagsInputRootProps): ReactNode {
+  const ctx = useTagsInput(withXhConfig('tags-input', {
+    value,
+    defaultValue,
+    inputValue,
+    defaultInputValue,
+    max,
+    allowOverflow,
+    disabled,
+    readOnly,
+    required,
+    invalid,
+    showCount,
+    name,
+    placeholder,
+    delimiter,
+    addOnPaste,
+    editable,
+    blurBehavior,
+    variant,
+    tone,
+    size,
+    translations,
+    onValueChange,
+    onInputValueChange,
+  }) as TagsInputProps)
   const api = ctx.api
   return (
     <TagsInputProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {renderSlot(children, {
           value: api.value,

@@ -12,7 +12,10 @@ import { useNavigationMenu } from './use-navigation-menu'
 
 type NavigationMenuProps = NavigationMenuSchema['props']
 
-export interface XhNavigationMenuRootProps {
+/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'nav'>, 'children' | 'defaultValue' | 'dir'>
+
+export interface XhNavigationMenuRootProps extends RootElementProps {
   collection?: NavigationMenuNode[]
   value?: string | null
   defaultValue?: string | null
@@ -32,8 +35,40 @@ export interface XhNavigationMenuRootProps {
 }
 
 /** 根节点渲染为 nav，收起的三条出口（指针离开、焦点离场、Escape）在这一层处理。 */
-export function XhNavigationMenuRoot({ children, renderPanel, ...props }: XhNavigationMenuRootProps): ReactNode {
-  const ctx = useNavigationMenu(withXhConfig('navigation-menu', props) as NavigationMenuProps)
+export function XhNavigationMenuRoot({
+  collection,
+  value,
+  defaultValue,
+  orientation,
+  delayDuration,
+  skipDelayDuration,
+  dir,
+  loop,
+  disabled,
+  translations,
+  tone,
+  size,
+  onValueChange,
+  children,
+  renderPanel,
+  ...rest
+}: XhNavigationMenuRootProps): ReactNode {
+  const machineProps = {
+    collection,
+    value,
+    defaultValue,
+    orientation,
+    delayDuration,
+    skipDelayDuration,
+    dir,
+    loop,
+    disabled,
+    translations,
+    tone,
+    size,
+    onValueChange,
+  }
+  const ctx = useNavigationMenu(withXhConfig('navigation-menu', machineProps) as NavigationMenuProps)
   // 根上的指针离开不冒泡，改装成原生监听器；onFocusout 归到的 onBlur 本就是冒泡的 focusout，不动它
   const bind = useNativeEvents(
     ctx.api.getRootProps() as Record<string, unknown>,
@@ -43,12 +78,13 @@ export function XhNavigationMenuRoot({ children, renderPanel, ...props }: XhNavi
   // 给了 collection 就按数据铺开整套结构
   const body = slotPaints(children)
     ? children
-    : (props.collection ? <DefaultTree collection={ctx.api.collection} renderPanel={renderPanel} /> : null)
+    : (collection ? <DefaultTree collection={ctx.api.collection} renderPanel={renderPanel} /> : null)
   return (
     <NavigationMenuProvider value={ctx}>
       <nav
         {...mergeReactProps(
           bind.attrs,
+          rest as Record<string, unknown>,
           { ref: bind.ref },
           { ref: (el: HTMLElement | null) => { ctx.rootRef.current = el } },
         )}
