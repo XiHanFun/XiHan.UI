@@ -37,6 +37,7 @@
     "@xihan-ui/icons": "link:../ui/packages/design/icons",
     "@xihan-ui/markdown": "link:../ui/packages/features/markdown",
     "@xihan-ui/motion": "link:../ui/packages/engine/motion",
+    "@xihan-ui/react": "link:../ui/packages/adapters/react",
     "@xihan-ui/sound": "link:../ui/packages/features/sound",
     "@xihan-ui/styles": "link:../ui/packages/design/styles",
     "@xihan-ui/vue": "link:../ui/packages/adapters/vue",

@@ -4,7 +4,7 @@
 // stylelint 的 glob 是 packages/**/*.css，皮肤那侧的 check-motion-easing 也只读
 // packages/design/styles/css——两者都扫不到 docs/.vitepress/demos。这条判据补这一段。
 //
-// 判据：示例（.vue / .html）里 transition / animation 与它们的时长、延迟、曲线三个长属性，
+// 判据：示例（.vue / .html / .tsx）里 transition / animation 与它们的时长、延迟、曲线三个长属性，
 // 值里出现下面四类之一就判红：
 //   · 字面时间：320ms、0.3s，以及模板串里 `${x}ms` 这种拼出来的时间
 //   · 手写曲线：cubic-bezier()
@@ -100,7 +100,7 @@ async function* walk(dir) {
     const full = join(dir, entry.name)
     if (entry.isDirectory())
       yield* walk(full)
-    else if (['.vue', '.html'].includes(extname(entry.name)))
+    else if (['.vue', '.html', '.tsx'].includes(extname(entry.name)))
       yield full
   }
 }

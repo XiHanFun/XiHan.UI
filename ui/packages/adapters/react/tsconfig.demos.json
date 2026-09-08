@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@xihan-ui/react": ["./src/index.ts"],
+      "@xihan-ui/react/*": ["./src/*"],
+      "react": ["./node_modules/@types/react"],
+      "react/jsx-runtime": ["./node_modules/@types/react/jsx-runtime"]
+    },
+    "types": [],
+    "noEmit": true
+  },
+  "include": ["../../../../docs/.vitepress/demos/*/*.tsx"]
+}

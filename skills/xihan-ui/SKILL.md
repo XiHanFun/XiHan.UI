@@ -1,6 +1,6 @@
 ---
 name: xihan-ui
-description: 用 XiHan.UI（曦寒视图组件）写界面时加载：框架无关的设计系统运行时，无头内核 + Vue 与 Web Components 两个适配器 + 纯 CSS 皮肤。涵盖三视觉轴、部件契约、设计令牌、三级覆盖通道与两个适配器的写法差异。触发词：XiHan.UI、曦寒视图组件、@xihan-ui、XhButton、xh-button、data-xh-part、--xh-。
+description: 用 XiHan.UI（曦寒视图组件）写界面时加载：框架无关的设计系统运行时，无头内核 + Vue、React 与 Web Components 三个适配器 + 纯 CSS 皮肤。涵盖三视觉轴、部件契约、设计令牌、三级覆盖通道与三个适配器的写法差异。触发词：XiHan.UI、曦寒视图组件、@xihan-ui、XhButton、xh-button、data-xh-part、--xh-。
 ---
 
 # XiHan.UI
