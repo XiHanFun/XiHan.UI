@@ -19,7 +19,7 @@ import { useFloatButton } from './use-float-button'
 /** 函数式 children 的载荷：展开的那一组此刻露不露面，以及改写展开状态的动作。 */
 export interface FloatButtonRootSlotProps extends Pick<FloatButtonApi, 'open' | 'setOpen'> {}
 
-export interface XhFloatButtonRootProps {
+export interface XhFloatButtonRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   open?: boolean
   defaultOpen?: boolean
   disabled?: boolean
@@ -36,8 +36,35 @@ export interface XhFloatButtonRootProps {
 }
 
 /** 根节点是定位壳：把整组钉在视口一角，悬停展开时进出它才算数。 */
-export function XhFloatButtonRoot({ children, onOpenChange, ...props }: XhFloatButtonRootProps): ReactNode {
-  const ctx = useFloatButton(withXhConfig('float-button', props) as FloatButtonProps, { onOpenChange })
+export function XhFloatButtonRoot({
+  open,
+  defaultOpen,
+  disabled,
+  placement,
+  offset,
+  shape,
+  expandTrigger,
+  variant,
+  tone,
+  size,
+  translations,
+  onOpenChange,
+  children,
+  ...rest
+}: XhFloatButtonRootProps): ReactNode {
+  const ctx = useFloatButton(withXhConfig('float-button', {
+    open,
+    defaultOpen,
+    disabled,
+    placement,
+    offset,
+    shape,
+    expandTrigger,
+    variant,
+    tone,
+    size,
+    translations,
+  }) as FloatButtonProps, { onOpenChange })
   // 悬停展开挂的是 pointerenter / pointerleave，两者都不冒泡：留在 React 的合成事件上
   // 收到的是从 pointerover / pointerout 合出来的那一档，直接派到壳上的事件到不了
   const bind = useNativeEvents(
@@ -46,7 +73,7 @@ export function XhFloatButtonRoot({ children, onOpenChange, ...props }: XhFloatB
   )
   return (
     <FloatButtonProvider value={ctx}>
-      <div {...bind.attrs} ref={bind.ref}>
+      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
         {renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })}
       </div>
     </FloatButtonProvider>

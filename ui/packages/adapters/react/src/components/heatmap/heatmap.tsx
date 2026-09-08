@@ -77,7 +77,7 @@ function stringOf(value: number | string | undefined): string | undefined {
   return String(value)
 }
 
-export interface XhHeatmapRootProps {
+export interface XhHeatmapRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'> {
   /** 形态：calendar 一年一张、month 一个自然月一块、matrix 行列自定。 */
   variant?: HeatmapVariant
   value?: HeatmapValue[]
@@ -110,8 +110,48 @@ export interface XhHeatmapRootProps {
   children?: SlotChildren<HeatmapRootSlotProps>
 }
 
-export function XhHeatmapRoot({ children, renderCell, renderTooltip, ...props }: XhHeatmapRootProps): ReactNode {
-  const ctx = useHeatmap(withXhConfig('heatmap', props) as HeatmapProps)
+export function XhHeatmapRoot({
+  variant,
+  value,
+  rows,
+  columns,
+  startDate,
+  endDate,
+  levels,
+  thresholds,
+  firstDayOfWeek,
+  locale,
+  dir,
+  tone,
+  palette,
+  size,
+  translations,
+  onCellFocus,
+  onCellActive,
+  renderCell,
+  renderTooltip,
+  children,
+  ...rest
+}: XhHeatmapRootProps): ReactNode {
+  const ctx = useHeatmap(withXhConfig('heatmap', {
+    variant,
+    value,
+    rows,
+    columns,
+    startDate,
+    endDate,
+    levels,
+    thresholds,
+    firstDayOfWeek,
+    locale,
+    dir,
+    tone,
+    palette,
+    size,
+    translations,
+    onCellFocus,
+    onCellActive,
+  }) as HeatmapProps)
   const { api } = ctx
   const body = children === undefined
     ? <DefaultTree api={api} renderCell={renderCell} renderTooltip={renderTooltip} />
@@ -132,7 +172,7 @@ export function XhHeatmapRoot({ children, renderCell, renderTooltip, ...props }:
       })
   return (
     <HeatmapProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>{body}</div>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
     </HeatmapProvider>
   )
 }

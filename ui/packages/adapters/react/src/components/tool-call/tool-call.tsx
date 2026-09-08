@@ -14,7 +14,7 @@ type MachineProps = ToolCallSchema['props']
 /** 函数式 children 的载荷：开合、阶段与在不在跑，一句可播报的状态文本，以及跑了多久。 */
 export type ToolCallRootSlotProps = Pick<ToolCallApi, 'open' | 'phase' | 'running' | 'disabled' | 'statusText' | 'durationMs' | 'setOpen'>
 
-export interface XhToolCallRootProps {
+export interface XhToolCallRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 这次调用走到哪一步，默认 input-available。 */
   phase?: ToolCallPhase
   /** 这次调用开始的时刻，毫秒时间戳。 */
@@ -36,8 +36,36 @@ export interface XhToolCallRootProps {
   children?: SlotChildren<ToolCallRootSlotProps>
 }
 
-export function XhToolCallRoot({ children, ...props }: XhToolCallRootProps): ReactNode {
-  const configured = withXhConfig('tool-call', props) as XhToolCallRootProps
+export function XhToolCallRoot({
+  phase,
+  startTime,
+  endTime,
+  open,
+  defaultOpen,
+  autoDisclosure,
+  disabled,
+  variant,
+  tone,
+  size,
+  translations,
+  onOpenChange,
+  children,
+  ...rest
+}: XhToolCallRootProps): ReactNode {
+  const configured = withXhConfig('tool-call', {
+    phase,
+    startTime,
+    endTime,
+    open,
+    defaultOpen,
+    autoDisclosure,
+    disabled,
+    variant,
+    tone,
+    size,
+    translations,
+    onOpenChange,
+  }) as XhToolCallRootProps
   const ctx = useToolCall(
     {
       // 作者只写 phase，跑不跑由纯函数折出来交给机器
@@ -61,7 +89,7 @@ export function XhToolCallRoot({ children, ...props }: XhToolCallRootProps): Rea
   const { api } = ctx
   return (
     <ToolCallProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           open: api.open,
           phase: api.phase,

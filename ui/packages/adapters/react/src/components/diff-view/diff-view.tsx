@@ -50,7 +50,7 @@ function renderCell(api: DiffViewApi, rowIndex: number, side: DiffSide): ReactNo
   return renderTokens(api, tokens)
 }
 
-export interface XhDiffViewRootProps {
+export interface XhDiffViewRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 差异模型，唯一入口。补丁与新旧两版文本都先归一到它。 */
   model?: DiffModel
   /** 单栏 unified 还是并排 split。 */
@@ -68,12 +68,34 @@ export interface XhDiffViewRootProps {
   children?: SlotChildren<DiffViewRootSlotProps>
 }
 
-export function XhDiffViewRoot({ children, ...props }: XhDiffViewRootProps): ReactNode {
-  const ctx = useDiffView(withXhConfig('diff-view', props) as Props)
+export function XhDiffViewRoot({
+  model,
+  view,
+  contextLines,
+  expandedValue,
+  defaultExpandedValue,
+  wrap,
+  size,
+  translations,
+  onExpandedValueChange,
+  children,
+  ...rest
+}: XhDiffViewRootProps): ReactNode {
+  const ctx = useDiffView(withXhConfig('diff-view', {
+    model,
+    view,
+    contextLines,
+    expandedValue,
+    defaultExpandedValue,
+    wrap,
+    size,
+    translations,
+    onExpandedValueChange,
+  }) as Props)
   const { api } = ctx
   return (
     <DiffViewProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           view: api.view,
           rows: api.rows,

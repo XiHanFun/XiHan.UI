@@ -14,7 +14,7 @@ type BackTopProps = BackTopSchema['props']
 /** 函数式 children 的载荷：按钮此刻露不露面。 */
 export interface BackTopRootSlotProps extends Pick<BackTopApi, 'visible'> {}
 
-export interface XhBackTopRootProps {
+export interface XhBackTopRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   visibilityHeight?: number
   behavior?: BackTopBehavior
   translations?: Partial<BackTopTranslations>
@@ -28,15 +28,34 @@ export interface XhBackTopRootProps {
 }
 
 /** 根节点是定位壳：把按钮钉在视口一角，收起时整块让位。 */
-export function XhBackTopRoot({ target, children, ...props }: XhBackTopRootProps): ReactNode {
+export function XhBackTopRoot({
+  visibilityHeight,
+  behavior,
+  translations,
+  variant,
+  tone,
+  size,
+  target,
+  onVisibilityChange,
+  children,
+  ...rest
+}: XhBackTopRootProps): ReactNode {
   // 取值器每帧换、接线只建一次：现读这一帧的 target，别让它成为重建的理由
   const latest = useRef(target)
   latest.current = target
   const getTargetEl = useCallback(() => latest.current ?? null, [])
-  const ctx = useBackTop(withXhConfig('back-top', props) as BackTopProps, getTargetEl)
+  const ctx = useBackTop(withXhConfig('back-top', {
+    visibilityHeight,
+    behavior,
+    translations,
+    variant,
+    tone,
+    size,
+    onVisibilityChange,
+  }) as BackTopProps, getTargetEl)
   return (
     <BackTopProvider value={ctx}>
-      <div {...ctx.api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, { visible: ctx.api.visible })}
       </div>
     </BackTopProvider>

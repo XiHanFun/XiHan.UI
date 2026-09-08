@@ -65,7 +65,7 @@ function useNodeFocusReport(
   }, [service, el])
 }
 
-export interface XhTreeSelectRootProps {
+export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   collection?: TreeNode[]
   /** 标题文字。给了它就不必再写 label 部件。 */
   label?: ReactNode
@@ -100,8 +100,69 @@ export interface XhTreeSelectRootProps {
   children?: SlotChildren<TreeSelectRootSlotProps>
 }
 
-export function XhTreeSelectRoot({ children, label, ...props }: XhTreeSelectRootProps): ReactNode {
-  const ctx = useTreeSelect(withXhConfig('tree-select', props) as TreeSelectProps)
+export function XhTreeSelectRoot({
+  collection,
+  label,
+  clearable,
+  value,
+  defaultValue,
+  expandedValue,
+  defaultExpandedValue,
+  open,
+  defaultOpen,
+  multiple,
+  cascade,
+  checkedStrategy,
+  disabled,
+  readOnly,
+  invalid,
+  loading,
+  variant,
+  tone,
+  size,
+  placeholder,
+  translations,
+  placement,
+  offset,
+  loop,
+  dir,
+  name,
+  onValueChange,
+  onExpandedValueChange,
+  onOpenChange,
+  children,
+  ...rest
+}: XhTreeSelectRootProps): ReactNode {
+  const ctx = useTreeSelect(withXhConfig('tree-select', {
+    collection,
+    clearable,
+    value,
+    defaultValue,
+    expandedValue,
+    defaultExpandedValue,
+    open,
+    defaultOpen,
+    multiple,
+    cascade,
+    checkedStrategy,
+    disabled,
+    readOnly,
+    invalid,
+    loading,
+    variant,
+    tone,
+    size,
+    placeholder,
+    translations,
+    placement,
+    offset,
+    loop,
+    dir,
+    name,
+    onValueChange,
+    onExpandedValueChange,
+    onOpenChange,
+  }) as TreeSelectProps)
   const api = ctx.api
 
   const body = children != null
@@ -124,15 +185,18 @@ export function XhTreeSelectRoot({ children, label, ...props }: XhTreeSelectRoot
         select: api.select,
         clear: api.clear,
       })
-    : props.collection
-      ? <DefaultTree collection={api.collection} label={label} clearable={props.clearable} />
+    : collection
+      ? <DefaultTree collection={api.collection} label={label} clearable={clearable} />
       : null
 
   return (
     <TreeSelectProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {body}
       </div>

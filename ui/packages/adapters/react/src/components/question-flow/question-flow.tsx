@@ -33,7 +33,10 @@ export interface QuestionFlowOptionSlotProps {
   selected: boolean
 }
 
-export interface XhQuestionFlowRootProps {
+/** 根上自有的那些取值；onSubmit 与原生的同名事件含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'onSubmit'>
+
+export interface XhQuestionFlowRootProps extends RootElementProps {
   questions?: readonly QuestionFlowQuestion[]
   index?: number
   defaultIndex?: number
@@ -63,12 +66,60 @@ export interface XhQuestionFlowRootProps {
   children?: SlotChildren<QuestionFlowRootSlotProps>
 }
 
-export function XhQuestionFlowRoot({ children, ...props }: XhQuestionFlowRootProps): ReactNode {
-  const ctx = useQuestionFlow(withXhConfig('question-flow', props) as Props)
+export function XhQuestionFlowRoot({
+  questions,
+  index,
+  defaultIndex,
+  answers,
+  defaultAnswers,
+  notes,
+  defaultNotes,
+  status,
+  defaultStatus,
+  autoAdvance,
+  autoAdvanceDelay,
+  allowSkip,
+  loop,
+  variant,
+  tone,
+  size,
+  translations,
+  onIndexChange,
+  onAnswersChange,
+  onNotesChange,
+  onSkip,
+  onSubmit,
+  children,
+  ...rest
+}: XhQuestionFlowRootProps): ReactNode {
+  const ctx = useQuestionFlow(withXhConfig('question-flow', {
+    questions,
+    index,
+    defaultIndex,
+    answers,
+    defaultAnswers,
+    notes,
+    defaultNotes,
+    status,
+    defaultStatus,
+    autoAdvance,
+    autoAdvanceDelay,
+    allowSkip,
+    loop,
+    variant,
+    tone,
+    size,
+    translations,
+    onIndexChange,
+    onAnswersChange,
+    onNotesChange,
+    onSkip,
+    onSubmit,
+  }) as Props)
   const { api } = ctx
   return (
     <QuestionFlowProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           status: api.status,
           submitted: api.submitted,

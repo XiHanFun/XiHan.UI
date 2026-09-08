@@ -29,7 +29,7 @@ export type TourRootSlotProps = Pick<
   | 'remeasure'
 >
 
-export interface XhTourRootProps {
+export interface XhTourRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   steps?: TourStep[]
   value?: number
   defaultValue?: number
@@ -52,13 +52,53 @@ export interface XhTourRootProps {
   children?: SlotChildren<TourRootSlotProps>
 }
 
-export function XhTourRoot({ children, ...props }: XhTourRootProps): ReactNode {
-  const ctx = useTour(withXhConfig('tour', props) as TourProps)
+export function XhTourRoot({
+  steps,
+  value,
+  defaultValue,
+  open,
+  defaultOpen,
+  placement,
+  offset,
+  dir,
+  closeOnEscape,
+  closeOnInteractOutside,
+  showBackdrop,
+  spotlightPadding,
+  autoScroll,
+  translations,
+  onOpenChange,
+  onValueChange,
+  onComplete,
+  onSkip,
+  children,
+  ...rest
+}: XhTourRootProps): ReactNode {
+  const ctx = useTour(withXhConfig('tour', {
+    steps,
+    value,
+    defaultValue,
+    open,
+    defaultOpen,
+    placement,
+    offset,
+    dir,
+    closeOnEscape,
+    closeOnInteractOutside,
+    showBackdrop,
+    spotlightPadding,
+    autoScroll,
+    translations,
+    onOpenChange,
+    onValueChange,
+    onComplete,
+    onSkip,
+  }) as TourProps)
   const api = ctx.api
   // 经 children 载荷交出状态与走步、放弃等命令，供浮层外的按钮使用
   return (
     <TourProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           open: api.open,
           value: api.value,

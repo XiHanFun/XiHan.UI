@@ -54,7 +54,7 @@ export interface TransferPanelSlotProps {
   query: string
 }
 
-export interface XhTransferRootProps {
+export interface XhTransferRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   collection?: TransferItem[]
   value?: string[]
   defaultValue?: string[]
@@ -77,12 +77,54 @@ export interface XhTransferRootProps {
   children?: SlotChildren<TransferRootSlotProps>
 }
 
-export function XhTransferRoot({ children, ...props }: XhTransferRootProps): ReactNode {
-  const ctx = useTransfer(withXhConfig('transfer', props) as TransferProps)
+export function XhTransferRoot({
+  collection,
+  value,
+  defaultValue,
+  selection,
+  defaultSelection,
+  searchable,
+  filter,
+  disabled,
+  readOnly,
+  invalid,
+  loading,
+  tone,
+  size,
+  oneWay,
+  loop,
+  dir,
+  translations,
+  onValueChange,
+  onSelectionChange,
+  children,
+  ...rest
+}: XhTransferRootProps): ReactNode {
+  const ctx = useTransfer(withXhConfig('transfer', {
+    collection,
+    value,
+    defaultValue,
+    selection,
+    defaultSelection,
+    searchable,
+    filter,
+    disabled,
+    readOnly,
+    invalid,
+    loading,
+    tone,
+    size,
+    oneWay,
+    loop,
+    dir,
+    translations,
+    onValueChange,
+    onSelectionChange,
+  }) as TransferProps)
   const api = ctx.api
   return (
     <TransferProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           value: api.value,
           selection: api.selection,

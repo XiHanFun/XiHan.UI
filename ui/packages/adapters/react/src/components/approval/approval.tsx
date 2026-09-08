@@ -23,7 +23,7 @@ export interface ApprovalScopeSlotProps {
   granted: boolean
 }
 
-export interface XhApprovalRootProps {
+export interface XhApprovalRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 这一轮请求的身份。变了即重入待决，并按新时长重起计时。 */
   requestId?: string
   /** 给定即受控。 */
@@ -56,12 +56,56 @@ export interface XhApprovalRootProps {
   children?: SlotChildren<ApprovalRootSlotProps>
 }
 
-export function XhApprovalRoot({ children, ...props }: XhApprovalRootProps): ReactNode {
-  const ctx = useApproval(withXhConfig('approval', props) as Props)
+export function XhApprovalRoot({
+  requestId,
+  status,
+  defaultStatus,
+  timeoutMs,
+  scopes,
+  grantedScopes,
+  defaultGrantedScopes,
+  note,
+  defaultNote,
+  loading,
+  denyOnEscape,
+  denyOnUnmount,
+  live,
+  variant,
+  tone,
+  size,
+  translations,
+  onDecision,
+  onGrantedScopesChange,
+  onNoteChange,
+  children,
+  ...rest
+}: XhApprovalRootProps): ReactNode {
+  const ctx = useApproval(withXhConfig('approval', {
+    requestId,
+    status,
+    defaultStatus,
+    timeoutMs,
+    scopes,
+    grantedScopes,
+    defaultGrantedScopes,
+    note,
+    defaultNote,
+    loading,
+    denyOnEscape,
+    denyOnUnmount,
+    live,
+    variant,
+    tone,
+    size,
+    translations,
+    onDecision,
+    onGrantedScopesChange,
+    onNoteChange,
+  }) as Props)
   const { api } = ctx
   return (
     <ApprovalProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           status: api.status,
           settled: api.settled,

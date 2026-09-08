@@ -13,7 +13,7 @@ type MachineProps = ToolCallSchema['props']
 /** 函数式 children 的载荷：开合、还在不在想、想了多久，以及当前该显示哪句状态文案。 */
 export type ReasoningRootSlotProps = Pick<ReasoningApi, 'open' | 'streaming' | 'disabled' | 'durationMs' | 'statusText' | 'setOpen'>
 
-export interface XhReasoningRootProps {
+export interface XhReasoningRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 还在思考。折成机器的「在跑」。 */
   streaming?: boolean
   /** 开始思考的时刻，毫秒时间戳。 */
@@ -35,8 +35,36 @@ export interface XhReasoningRootProps {
   children?: SlotChildren<ReasoningRootSlotProps>
 }
 
-export function XhReasoningRoot({ children, ...props }: XhReasoningRootProps): ReactNode {
-  const configured = withXhConfig('reasoning', props) as XhReasoningRootProps
+export function XhReasoningRoot({
+  streaming,
+  startTime,
+  endTime,
+  open,
+  defaultOpen,
+  autoDisclosure,
+  disabled,
+  variant,
+  tone,
+  size,
+  translations,
+  onOpenChange,
+  children,
+  ...rest
+}: XhReasoningRootProps): ReactNode {
+  const configured = withXhConfig('reasoning', {
+    streaming,
+    startTime,
+    endTime,
+    open,
+    defaultOpen,
+    autoDisclosure,
+    disabled,
+    variant,
+    tone,
+    size,
+    translations,
+    onOpenChange,
+  }) as XhReasoningRootProps
   const ctx = useReasoning(
     {
       // 还在写就是还在跑，自动开合据此走
@@ -60,7 +88,7 @@ export function XhReasoningRoot({ children, ...props }: XhReasoningRootProps): R
   const { api } = ctx
   return (
     <ReasoningProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           open: api.open,
           streaming: api.streaming,

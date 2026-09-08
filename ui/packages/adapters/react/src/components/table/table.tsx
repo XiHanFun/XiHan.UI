@@ -120,7 +120,10 @@ export type TableToolbarSlotProps = Pick<
   | 'loading'
 >
 
-export interface XhTableRootProps {
+/** 根上自有的那些取值；dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'>
+
+export interface XhTableRootProps extends RootElementProps {
   columns?: TableColumnDef[]
   rows?: TableRowDef[]
   sort?: TableSortDescriptor[]
@@ -167,8 +170,77 @@ export interface XhTableRootProps {
   children?: SlotChildren<TableRootSlotProps>
 }
 
-export function XhTableRoot({ children, toolbar, ...props }: XhTableRootProps): ReactNode {
-  const ctx = useTable(withXhConfig('table', props) as TableProps)
+export function XhTableRoot({
+  columns,
+  rows,
+  sort,
+  defaultSort,
+  selection,
+  defaultSelection,
+  selectionMode,
+  prefixColumns,
+  columnPreference,
+  defaultColumnPreference,
+  page,
+  pageSize,
+  expandedValue,
+  defaultExpandedValue,
+  loading,
+  empty,
+  stickyHeader,
+  striped,
+  borderless,
+  ruled,
+  footer,
+  rowReorderable,
+  allowRowDrop,
+  loop,
+  dir,
+  size,
+  translations,
+  onColumnPreferenceChange,
+  onSortChange,
+  onSelectionChange,
+  onExpandedValueChange,
+  onRowMove,
+  toolbar,
+  children,
+  ...rest
+}: XhTableRootProps): ReactNode {
+  const ctx = useTable(withXhConfig('table', {
+    columns,
+    rows,
+    sort,
+    defaultSort,
+    selection,
+    defaultSelection,
+    selectionMode,
+    prefixColumns,
+    columnPreference,
+    defaultColumnPreference,
+    page,
+    pageSize,
+    expandedValue,
+    defaultExpandedValue,
+    loading,
+    empty,
+    stickyHeader,
+    striped,
+    borderless,
+    ruled,
+    footer,
+    rowReorderable,
+    allowRowDrop,
+    loop,
+    dir,
+    size,
+    translations,
+    onColumnPreferenceChange,
+    onSortChange,
+    onSelectionChange,
+    onExpandedValueChange,
+    onRowMove,
+  }) as TableProps)
   const api = ctx.api
   return (
     <TableProvider value={ctx}>
@@ -190,7 +262,7 @@ export function XhTableRoot({ children, toolbar, ...props }: XhTableRootProps): 
         empty: api.empty,
         loading: api.loading,
       })}
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           columns: api.columns,
           columnPreference: api.columnPreference,

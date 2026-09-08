@@ -49,7 +49,10 @@ function useMenubarPart(register: MenubarPartRegistry, value: string): (el: HTML
 /** 函数式 children 的载荷：当前展开的那一项、有没有菜单展开着，与切换展开项的命令。 */
 export type MenubarRootSlotProps = Pick<MenubarApi, 'value' | 'open' | 'setValue'>
 
-export interface XhMenubarRootProps {
+/** 根上自有的那些取值；defaultValue、dir 与 onSelect 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir' | 'onSelect'>
+
+export interface XhMenubarRootProps extends RootElementProps {
   /** 菜单栏数据；给了它就不必逐条摆部件。 */
   collection?: MenubarNode[]
   value?: string | null
@@ -72,8 +75,44 @@ export interface XhMenubarRootProps {
 }
 
 /** role=menubar 根节点：trigger 的 roving tabindex 作用域，各菜单浮层也挂在其内。 */
-export function XhMenubarRoot({ children, renderItem, ...props }: XhMenubarRootProps): ReactNode {
-  const ctx = useMenubar(withXhConfig('menubar', props) as MenubarProps)
+export function XhMenubarRoot({
+  collection,
+  value,
+  defaultValue,
+  orientation,
+  loop,
+  dir,
+  disabled,
+  typeahead,
+  placement,
+  offset,
+  tone,
+  size,
+  translations,
+  onValueChange,
+  onSelect,
+  children,
+  renderItem,
+  ...rest
+}: XhMenubarRootProps): ReactNode {
+  const machineProps = {
+    collection,
+    value,
+    defaultValue,
+    orientation,
+    loop,
+    dir,
+    disabled,
+    typeahead,
+    placement,
+    offset,
+    tone,
+    size,
+    translations,
+    onValueChange,
+    onSelect,
+  }
+  const ctx = useMenubar(withXhConfig('menubar', machineProps) as MenubarProps)
   // 菜单栏根上的 onFocus 是 DOM 的 focus（不冒泡，只在根自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，trigger 得焦也会把它叫起来——装成原生监听器，到达路径才与另外两家一致。
   // onFocusOut 归到的 onBlur 本就是冒泡的 focusout，不动它
@@ -82,8 +121,8 @@ export function XhMenubarRoot({ children, renderItem, ...props }: XhMenubarRootP
   // 子菜单任意层级的选中都汇到这里：先发根的 select，再关掉整条菜单栏。
   // 关根用 setValue(null) —— 菜单栏是「当前展开哪一项」的模型，没有 setOpen。
   // 取值器每帧换、链只建一次：拿 ref 转一道，别让它成为重建的理由
-  const latest = useRef({ onSelect: props.onSelect, api: ctx.api })
-  latest.current = { onSelect: props.onSelect, api: ctx.api }
+  const latest = useRef({ onSelect, api: ctx.api })
+  latest.current = { onSelect, api: ctx.api }
   const chain = useMemo<MenubarChain>(() => ({
     notifySelect: (details) => {
       latest.current.onSelect?.(details)
@@ -93,7 +132,7 @@ export function XhMenubarRoot({ children, renderItem, ...props }: XhMenubarRootP
 
   const body = children != null
     ? renderSlot(children, { value: ctx.api.value, open: ctx.api.open, setValue: ctx.api.setValue })
-    : props.collection
+    : collection
       ? <DefaultTree collection={ctx.api.collection} renderItem={renderItem} />
       : null
 
@@ -103,6 +142,7 @@ export function XhMenubarRoot({ children, renderItem, ...props }: XhMenubarRootP
         <div
           {...mergeReactProps(
             bind.attrs,
+            rest as Record<string, unknown>,
             { ref: bind.ref },
             { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
           )}

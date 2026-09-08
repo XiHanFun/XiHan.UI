@@ -12,7 +12,10 @@ import { useTabs } from './use-tabs'
 
 type TabsProps = TabsSchema['props']
 
-export interface XhTabsRootProps {
+/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
+
+export interface XhTabsRootProps extends RootElementProps {
   collection?: TabsNode[]
   value?: string | null
   defaultValue?: string | null
@@ -39,16 +42,53 @@ export interface XhTabsRootProps {
   children?: ReactNode
 }
 
-export function XhTabsRoot({ children, renderPanel, ...props }: XhTabsRootProps): ReactNode {
-  const ctx = useTabs(withXhConfig('tabs', props) as TabsProps)
+export function XhTabsRoot({
+  collection,
+  value,
+  defaultValue,
+  orientation,
+  dir,
+  activationMode,
+  loop,
+  variant,
+  tone,
+  size,
+  reorderable,
+  closable,
+  translations,
+  onValueChange,
+  onTabMove,
+  onTabClose,
+  renderPanel,
+  children,
+  ...rest
+}: XhTabsRootProps): ReactNode {
+  const ctx = useTabs(withXhConfig('tabs', {
+    collection,
+    value,
+    defaultValue,
+    orientation,
+    dir,
+    activationMode,
+    loop,
+    variant,
+    tone,
+    size,
+    reorderable,
+    closable,
+    translations,
+    onValueChange,
+    onTabMove,
+    onTabClose,
+  }) as TabsProps)
   // children 里有真会画出东西的节点就照旧交给作者；只剩空白时当没写，
   // 给了 collection 就按数据铺开整套结构
   const body = slotPaints(children)
     ? children
-    : (props.collection ? <DefaultTree collection={ctx.api.collection} renderPanel={renderPanel} /> : null)
+    : (collection ? <DefaultTree collection={ctx.api.collection} renderPanel={renderPanel} /> : null)
   return (
     <TabsProvider value={ctx}>
-      <div {...ctx.api.getRootProps() as Record<string, unknown>}>{body}</div>
+      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
     </TabsProvider>
   )
 }

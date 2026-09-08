@@ -95,7 +95,7 @@ export interface DatePickerPresetsSlotProps {
   presets: readonly DatePickerPresetState[]
 }
 
-export interface XhDatePickerRootProps {
+export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'> {
   value?: string | string[]
   defaultValue?: string | string[]
   open?: boolean
@@ -149,14 +149,97 @@ export interface XhDatePickerRootProps {
 }
 
 /** 网格与段位由作者照 children 载荷里的 weeks / segments 自行渲染。 */
-export function XhDatePickerRoot({ children, ...props }: XhDatePickerRootProps): ReactNode {
-  const ctx = useDatePicker(withXhConfig('date-picker', props) as DatePickerProps)
+export function XhDatePickerRoot({
+  value,
+  defaultValue,
+  open,
+  defaultOpen,
+  min,
+  max,
+  locale,
+  timeZone,
+  selectionMode,
+  view,
+  activeView,
+  segments,
+  weekSelection,
+  visibleCount,
+  fixedWeeks,
+  defaultFocusedValue,
+  presets,
+  isDateUnavailable,
+  disabled,
+  readOnly,
+  invalid,
+  required,
+  name,
+  endName,
+  translations,
+  variant,
+  tone,
+  size,
+  placement,
+  offset,
+  dir,
+  closeOnSelect,
+  showTime,
+  timeGranularity,
+  onValueChange,
+  onOpenChange,
+  onFocusedValueChange,
+  onActiveViewChange,
+  children,
+  ...rest
+}: XhDatePickerRootProps): ReactNode {
+  const ctx = useDatePicker(withXhConfig('date-picker', {
+    value,
+    defaultValue,
+    open,
+    defaultOpen,
+    min,
+    max,
+    locale,
+    timeZone,
+    selectionMode,
+    view,
+    activeView,
+    segments,
+    weekSelection,
+    visibleCount,
+    fixedWeeks,
+    defaultFocusedValue,
+    presets,
+    isDateUnavailable,
+    disabled,
+    readOnly,
+    invalid,
+    required,
+    name,
+    endName,
+    translations,
+    variant,
+    tone,
+    size,
+    placement,
+    offset,
+    dir,
+    closeOnSelect,
+    showTime,
+    timeGranularity,
+    onValueChange,
+    onOpenChange,
+    onFocusedValueChange,
+    onActiveViewChange,
+  }) as DatePickerProps)
   const api = ctx.api
   return (
     <DatePickerProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {children == null
           ? null

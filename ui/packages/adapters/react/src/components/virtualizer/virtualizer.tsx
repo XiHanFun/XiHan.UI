@@ -23,7 +23,7 @@ export type VirtualizerRootSlotProps = Pick<
   | 'measure'
 >
 
-export interface XhVirtualizerRootProps {
+export interface XhVirtualizerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'onChange'> {
   /** 总条数。 */
   count?: number
   /** 每条的估算主轴尺寸（px）；等高列表直接给一个数字。 */
@@ -48,12 +48,38 @@ export interface XhVirtualizerRootProps {
   children?: SlotChildren<VirtualizerRootSlotProps>
 }
 
-export function XhVirtualizerRoot({ children, ...props }: XhVirtualizerRootProps): ReactNode {
-  const ctx = useVirtualizer(props as VirtualizerProps)
+export function XhVirtualizerRoot({
+  count,
+  estimateSize,
+  overscan,
+  horizontal,
+  gap,
+  getItemKey,
+  scrollMargin,
+  paddingStart,
+  paddingEnd,
+  lanes,
+  onChange,
+  children,
+  ...rest
+}: XhVirtualizerRootProps): ReactNode {
+  const ctx = useVirtualizer({
+    count,
+    estimateSize,
+    overscan,
+    horizontal,
+    gap,
+    getItemKey,
+    scrollMargin,
+    paddingStart,
+    paddingEnd,
+    lanes,
+    onChange,
+  } as VirtualizerProps)
   const api = ctx.api
   return (
     <VirtualizerProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           virtualItems: api.virtualItems,
           totalSize: api.totalSize,

@@ -22,7 +22,7 @@ export type TextFieldRootSlotProps = Pick<
 /** 字数部件函数式 children 的载荷：当前字数、上限与顶到上限的标志。 */
 export type TextFieldCountSlotProps = Pick<TextFieldApi, 'count' | 'maxLength' | 'atLimit'>
 
-export interface XhTextFieldRootProps {
+export interface XhTextFieldRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   value?: string
   defaultValue?: string
   type?: TextFieldType
@@ -45,14 +45,57 @@ export interface XhTextFieldRootProps {
   children?: SlotChildren<TextFieldRootSlotProps>
 }
 
-export function XhTextFieldRoot({ children, ...props }: XhTextFieldRootProps): ReactNode {
-  const ctx = useTextField(withXhConfig('text-field', props) as TextFieldProps)
+export function XhTextFieldRoot({
+  value,
+  defaultValue,
+  type,
+  placeholder,
+  disabled,
+  readOnly,
+  required,
+  invalid,
+  name,
+  maxLength,
+  clearable,
+  showCount,
+  autoSize,
+  variant,
+  tone,
+  size,
+  translations,
+  onValueChange,
+  children,
+  ...rest
+}: XhTextFieldRootProps): ReactNode {
+  const ctx = useTextField(withXhConfig('text-field', {
+    value,
+    defaultValue,
+    type,
+    placeholder,
+    disabled,
+    readOnly,
+    required,
+    invalid,
+    name,
+    maxLength,
+    clearable,
+    showCount,
+    autoSize,
+    variant,
+    tone,
+    size,
+    translations,
+    onValueChange,
+  }) as TextFieldProps)
   const api = ctx.api
   return (
     <TextFieldProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {renderSlot(children, {
           value: api.value,

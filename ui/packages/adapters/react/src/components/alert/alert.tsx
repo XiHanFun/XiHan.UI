@@ -8,7 +8,7 @@ import { useAlert } from './use-alert'
 
 type AlertProps = AlertSchema['props']
 
-export interface XhAlertRootProps {
+export interface XhAlertRootProps extends ComponentPropsWithRef<'div'> {
   tone?: Tone
   /** 缺省交给 connect 决定，写 false 才真的关掉。 */
   closable?: boolean
@@ -19,11 +19,29 @@ export interface XhAlertRootProps {
   children?: ReactNode
 }
 
-export function XhAlertRoot({ children, ...props }: XhAlertRootProps): ReactNode {
-  const ctx = useAlert(withXhConfig('alert', props) as AlertProps)
+export function XhAlertRoot({
+  tone,
+  closable,
+  open,
+  defaultOpen,
+  translations,
+  onOpenChange,
+  children,
+  ...rest
+}: XhAlertRootProps): ReactNode {
+  const ctx = useAlert(withXhConfig('alert', {
+    tone,
+    closable,
+    open,
+    defaultOpen,
+    translations,
+    onOpenChange,
+  }) as AlertProps)
   return (
     <AlertProvider value={ctx}>
-      <div {...ctx.api.getRootProps() as Record<string, unknown>}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+        {children}
+      </div>
     </AlertProvider>
   )
 }

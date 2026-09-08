@@ -19,7 +19,10 @@ export type PinInputRootSlotProps = Pick<
   'value' | 'valueAsString' | 'complete' | 'length' | 'focusedIndex' | 'setValue' | 'clear'
 >
 
-export interface XhPinInputRootProps {
+/** 根上自有的那些取值；defaultValue 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'>
+
+export interface XhPinInputRootProps extends RootElementProps {
   value?: string[]
   defaultValue?: string[]
   length?: number
@@ -47,14 +50,62 @@ export interface XhPinInputRootProps {
   children?: SlotChildren<PinInputRootSlotProps>
 }
 
-export function XhPinInputRoot({ children, ...props }: XhPinInputRootProps): ReactNode {
-  const ctx = usePinInput(withXhConfig('pin-input', props) as PinInputProps)
+export function XhPinInputRoot({
+  value,
+  defaultValue,
+  length,
+  type,
+  pattern,
+  mask,
+  otp,
+  placeholder,
+  disabled,
+  readOnly,
+  required,
+  invalid,
+  blurOnComplete,
+  name,
+  variant,
+  tone,
+  size,
+  translations,
+  onValueChange,
+  onValueComplete,
+  children,
+  ...rest
+}: XhPinInputRootProps): ReactNode {
+  const machineProps = {
+    value,
+    defaultValue,
+    length,
+    type,
+    pattern,
+    mask,
+    otp,
+    placeholder,
+    disabled,
+    readOnly,
+    required,
+    invalid,
+    blurOnComplete,
+    name,
+    variant,
+    tone,
+    size,
+    translations,
+    onValueChange,
+    onValueComplete,
+  }
+  const ctx = usePinInput(withXhConfig('pin-input', machineProps) as PinInputProps)
   const api = ctx.api
   return (
     <PinInputProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {renderSlot(children, {
           value: api.value,

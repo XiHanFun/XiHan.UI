@@ -33,7 +33,10 @@ export interface NotificationRootSlotProps {
   dismissAll: () => void
 }
 
-export interface XhNotificationRootProps {
+/** 根上自有的那些取值。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children'>
+
+export interface XhNotificationRootProps extends RootElementProps {
   items?: NotificationRecord[]
   defaultItems?: NotificationRecord[]
   placement?: NotificationPlacement
@@ -48,13 +51,40 @@ export interface XhNotificationRootProps {
   children?: SlotChildren<NotificationRootSlotProps>
 }
 
-export function XhNotificationRoot({ children, ...props }: XhNotificationRootProps): ReactNode {
-  const ctx = useNotification(withXhConfig('notification', props) as NotificationProps)
+export function XhNotificationRoot({
+  items,
+  defaultItems,
+  placement,
+  max,
+  dedupe,
+  gap,
+  duration,
+  removeDelay,
+  pauseOnPageIdle,
+  translations,
+  onItemsChange,
+  children,
+  ...rest
+}: XhNotificationRootProps): ReactNode {
+  const machineProps = {
+    items,
+    defaultItems,
+    placement,
+    max,
+    dedupe,
+    gap,
+    duration,
+    removeDelay,
+    pauseOnPageIdle,
+    translations,
+    onItemsChange,
+  }
+  const ctx = useNotification(withXhConfig('notification', machineProps) as NotificationProps)
   const api = ctx.api
   // 根节点是地标容器，children 的作用域里一并暴露队列与增删改命令
   return (
     <NotificationProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           items: api.visibleNotifications,
           placements: api.placements,

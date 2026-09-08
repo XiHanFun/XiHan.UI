@@ -13,7 +13,10 @@ type LoadingBarProps = LoadingBarSchema['props']
 /** 函数式 children 的载荷：条子的阶段、进度值、是否露面与是否不确定进度。 */
 export type LoadingBarRootSlotProps = Pick<LoadingBarApi, 'phase' | 'value' | 'visible' | 'indeterminate'>
 
-export interface XhLoadingBarRootProps {
+/** 根上自有的那些取值；defaultValue 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'>
+
+export interface XhLoadingBarRootProps extends RootElementProps {
   value?: number
   defaultValue?: number
   loading?: boolean
@@ -30,12 +33,41 @@ export interface XhLoadingBarRootProps {
   children?: SlotChildren<LoadingBarRootSlotProps>
 }
 
-export function XhLoadingBarRoot({ children, ...props }: XhLoadingBarRootProps): ReactNode {
-  const ctx = useLoadingBar(withXhConfig('loading-bar', props) as LoadingBarProps)
+export function XhLoadingBarRoot({
+  value,
+  defaultValue,
+  loading,
+  height,
+  color,
+  tone,
+  trickle,
+  trickleSpeed,
+  minimum,
+  fadeDuration,
+  translations,
+  onValueChange,
+  children,
+  ...rest
+}: XhLoadingBarRootProps): ReactNode {
+  const machineProps = {
+    value,
+    defaultValue,
+    loading,
+    height,
+    color,
+    tone,
+    trickle,
+    trickleSpeed,
+    minimum,
+    fadeDuration,
+    translations,
+    onValueChange,
+  }
+  const ctx = useLoadingBar(withXhConfig('loading-bar', machineProps) as LoadingBarProps)
   const api = ctx.api
   return (
     <LoadingBarProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           phase: api.phase,
           value: api.value,

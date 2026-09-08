@@ -34,7 +34,10 @@ export type PaginationRootSlotProps = Pick<
   | 'slice'
 >
 
-export interface XhPaginationRootProps {
+/** 根上自有的那些取值；dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'nav'>, 'children' | 'dir'>
+
+export interface XhPaginationRootProps extends RootElementProps {
   /** 总条数。 */
   count?: number
   pageSize?: number
@@ -58,12 +61,51 @@ export interface XhPaginationRootProps {
 }
 
 /** 根节点渲染为 nav 地标。 */
-export function XhPaginationRoot({ children, ...props }: XhPaginationRootProps): ReactNode {
-  const ctx = usePagination(withXhConfig('pagination', props) as PaginationProps)
+export function XhPaginationRoot({
+  count,
+  pageSize,
+  defaultPageSize,
+  pageSizeOptions,
+  page,
+  defaultPage,
+  siblingCount,
+  dir,
+  translations,
+  placement,
+  offset,
+  openDelay,
+  closeDelay,
+  tone,
+  size,
+  onPageChange,
+  onPageSizeChange,
+  children,
+  ...rest
+}: XhPaginationRootProps): ReactNode {
+  const machineProps = {
+    count,
+    pageSize,
+    defaultPageSize,
+    pageSizeOptions,
+    page,
+    defaultPage,
+    siblingCount,
+    dir,
+    translations,
+    placement,
+    offset,
+    openDelay,
+    closeDelay,
+    tone,
+    size,
+    onPageChange,
+    onPageSizeChange,
+  }
+  const ctx = usePagination(withXhConfig('pagination', machineProps) as PaginationProps)
   const api = ctx.api
   return (
     <PaginationProvider value={ctx}>
-      <nav {...api.getRootProps() as Record<string, unknown>}>
+      <nav {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           page: api.page,
           pageSize: api.pageSize,

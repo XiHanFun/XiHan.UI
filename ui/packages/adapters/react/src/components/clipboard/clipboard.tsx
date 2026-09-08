@@ -14,7 +14,7 @@ type ClipboardProps = ClipboardSchema['props']
 /** 函数式 children 的载荷：复制状态、当前要复制的文本，以及走一次复制的句柄。 */
 export interface ClipboardRootSlotProps extends Pick<ClipboardApi, 'status' | 'copied' | 'value' | 'copy'> {}
 
-export interface XhClipboardRootProps {
+export interface XhClipboardRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 属性缺席即没给要复制的文本，落回空串。 */
   value?: string
   timeout?: number
@@ -28,11 +28,33 @@ export interface XhClipboardRootProps {
   children?: SlotChildren<ClipboardRootSlotProps>
 }
 
-export function XhClipboardRoot({ children, ...props }: XhClipboardRootProps): ReactNode {
-  const ctx = useClipboard(withXhConfig('clipboard', props) as ClipboardProps)
+export function XhClipboardRoot({
+  value,
+  timeout,
+  disabled,
+  variant,
+  tone,
+  size,
+  translations,
+  onStatusChange,
+  onCopyError,
+  children,
+  ...rest
+}: XhClipboardRootProps): ReactNode {
+  const ctx = useClipboard(withXhConfig('clipboard', {
+    value,
+    timeout,
+    disabled,
+    variant,
+    tone,
+    size,
+    translations,
+    onStatusChange,
+    onCopyError,
+  }) as ClipboardProps)
   return (
     <ClipboardProvider value={ctx}>
-      <div {...ctx.api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           status: ctx.api.status,
           copied: ctx.api.copied,

@@ -32,7 +32,7 @@ export type CalendarRootSlotProps = Pick<
   | 'goToNextMonth'
 >
 
-export interface XhCalendarRootProps {
+export interface XhCalendarRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
   value?: string | string[]
   defaultValue?: string | string[]
   selectionMode?: CalendarSelectionMode
@@ -64,12 +64,60 @@ export interface XhCalendarRootProps {
 }
 
 /** 网格与表头由作者照 children 载荷里的 weeks / weekDays 自行渲染。 */
-export function XhCalendarRoot({ children, ...props }: XhCalendarRootProps): ReactNode {
-  const ctx = useCalendar(withXhConfig('calendar', props) as CalendarProps)
+export function XhCalendarRoot({
+  value,
+  defaultValue,
+  selectionMode,
+  focusedValue,
+  defaultFocusedValue,
+  min,
+  max,
+  isDateUnavailable,
+  locale,
+  timeZone,
+  disabled,
+  readOnly,
+  weekdayFormat,
+  fixedWeeks,
+  view,
+  activeView,
+  defaultActiveView,
+  weekSelection,
+  visibleCount,
+  onValueChange,
+  onFocusedValueChange,
+  onActiveViewChange,
+  children,
+  ...rest
+}: XhCalendarRootProps): ReactNode {
+  const ctx = useCalendar(withXhConfig('calendar', {
+    value,
+    defaultValue,
+    selectionMode,
+    focusedValue,
+    defaultFocusedValue,
+    min,
+    max,
+    isDateUnavailable,
+    locale,
+    timeZone,
+    disabled,
+    readOnly,
+    weekdayFormat,
+    fixedWeeks,
+    view,
+    activeView,
+    defaultActiveView,
+    weekSelection,
+    visibleCount,
+    onValueChange,
+    onFocusedValueChange,
+    onActiveViewChange,
+  }) as CalendarProps)
   const api = ctx.api
   return (
     <CalendarProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {children == null
           ? null
           : renderSlot(children, {

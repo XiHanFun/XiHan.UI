@@ -47,7 +47,7 @@ export type ContextMenuRootSlotProps = Pick<ContextMenuApi, 'open' | 'point' | '
 /** 子菜单函数式 children 的载荷：这一层子菜单自己的展开态与开合命令。 */
 export type ContextMenuSubSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 
-export interface XhContextMenuRootProps {
+export interface XhContextMenuRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir' | 'onSelect'> {
   /** 条目数据；给了它就不必逐条摆部件。 */
   collection?: ContextMenuNode[]
   open?: boolean
@@ -72,13 +72,47 @@ export interface XhContextMenuRootProps {
   children?: SlotChildren<ContextMenuRootSlotProps>
 }
 
-export function XhContextMenuRoot({ trigger, renderItem, children, ...props }: XhContextMenuRootProps): ReactNode {
-  const ctx = useContextMenu(withXhConfig('context-menu', props) as ContextMenuProps)
+export function XhContextMenuRoot({
+  collection,
+  open,
+  defaultOpen,
+  placement,
+  offset,
+  loop,
+  typeahead,
+  translations,
+  dir,
+  longPressDelay,
+  tone,
+  size,
+  trigger,
+  renderItem,
+  onOpenChange,
+  onSelect,
+  children,
+  ...rest
+}: XhContextMenuRootProps): ReactNode {
+  const ctx = useContextMenu(withXhConfig('context-menu', {
+    collection,
+    open,
+    defaultOpen,
+    placement,
+    offset,
+    loop,
+    typeahead,
+    translations,
+    dir,
+    longPressDelay,
+    tone,
+    size,
+    onOpenChange,
+    onSelect,
+  }) as ContextMenuProps)
 
   // 子菜单任意层级的选中都汇到根：先发根的 select 再关根，各级随父关闭级联收起。
   // 取值器每帧换、链只建一次：拿 ref 转一道，别让它成为重建的理由
-  const latest = useRef({ onSelect: props.onSelect, api: ctx.api })
-  latest.current = { onSelect: props.onSelect, api: ctx.api }
+  const latest = useRef({ onSelect, api: ctx.api })
+  latest.current = { onSelect, api: ctx.api }
   const chain = useMemo<ContextMenuChain>(() => ({
     notifySelect: (details) => {
       latest.current.onSelect?.(details)
@@ -93,14 +127,14 @@ export function XhContextMenuRoot({ trigger, renderItem, children, ...props }: X
         setOpen: ctx.api.setOpen,
         openAt: ctx.api.openAt,
       })
-    : props.collection
+    : collection
       ? <DefaultTree collection={ctx.api.collection} trigger={trigger} renderItem={renderItem} />
       : null
 
   return (
     <ContextMenuProvider value={ctx}>
       <ContextMenuChainProvider value={chain}>
-        <div {...ctx.api.getRootProps() as Record<string, unknown>}>{body}</div>
+        <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
       </ContextMenuChainProvider>
     </ContextMenuProvider>
   )

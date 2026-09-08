@@ -61,7 +61,10 @@ function useItemFocusReport(
   }, [service, el])
 }
 
-export interface XhMessageFeedRootProps {
+/** 根上自有的那些取值。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children'>
+
+export interface XhMessageFeedRootProps extends RootElementProps {
   /** 消息总数，由宿主声明，不从 DOM 数；aria-setsize 取它。 */
   count?: number
   /** 这一轮的运行态，只落 data-state。 */
@@ -78,8 +81,20 @@ export interface XhMessageFeedRootProps {
   children?: SlotChildren<MessageFeedRootSlotProps>
 }
 
-export function XhMessageFeedRoot({ children, ...props }: XhMessageFeedRootProps): ReactNode {
-  const ctx = useMessageFeed(withXhConfig('message-feed', props) as Props)
+export function XhMessageFeedRoot({
+  count,
+  status,
+  threshold,
+  loop,
+  size,
+  translations,
+  onStickChange,
+  onItemFocus,
+  children,
+  ...rest
+}: XhMessageFeedRootProps): ReactNode {
+  const machineProps = { count, status, threshold, loop, size, translations, onStickChange, onItemFocus }
+  const ctx = useMessageFeed(withXhConfig('message-feed', machineProps) as Props)
   const { api } = ctx
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，条目得焦也会把它叫起来，那一下会把焦点从条目抢回锚点上。
@@ -90,6 +105,7 @@ export function XhMessageFeedRoot({ children, ...props }: XhMessageFeedRootProps
       <div
         {...mergeReactProps(
           bind.attrs,
+          rest as Record<string, unknown>,
           { ref: bind.ref },
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}

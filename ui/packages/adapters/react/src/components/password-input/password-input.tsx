@@ -17,7 +17,10 @@ export type PasswordInputRootSlotProps = Pick<
   'value' | 'empty' | 'visible' | 'capsLock' | 'inputType' | 'setValue' | 'setVisible' | 'toggleVisibility'
 >
 
-export interface XhPasswordInputRootProps {
+/** 根上自有的那些取值；defaultValue 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'>
+
+export interface XhPasswordInputRootProps extends RootElementProps {
   value?: string
   defaultValue?: string
   visible?: boolean
@@ -41,14 +44,58 @@ export interface XhPasswordInputRootProps {
   children?: SlotChildren<PasswordInputRootSlotProps>
 }
 
-export function XhPasswordInputRoot({ children, ...props }: XhPasswordInputRootProps): ReactNode {
-  const ctx = usePasswordInput(withXhConfig('password-input', props) as PasswordInputProps)
+export function XhPasswordInputRoot({
+  value,
+  defaultValue,
+  visible,
+  defaultVisible,
+  disabled,
+  readOnly,
+  required,
+  invalid,
+  name,
+  placeholder,
+  autoComplete,
+  strength,
+  variant,
+  tone,
+  size,
+  translations,
+  onValueChange,
+  onVisibilityChange,
+  children,
+  ...rest
+}: XhPasswordInputRootProps): ReactNode {
+  const machineProps = {
+    value,
+    defaultValue,
+    visible,
+    defaultVisible,
+    disabled,
+    readOnly,
+    required,
+    invalid,
+    name,
+    placeholder,
+    autoComplete,
+    strength,
+    variant,
+    tone,
+    size,
+    translations,
+    onValueChange,
+    onVisibilityChange,
+  }
+  const ctx = usePasswordInput(withXhConfig('password-input', machineProps) as PasswordInputProps)
   const api = ctx.api
   return (
     <PasswordInputProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {renderSlot(children, {
           value: api.value,

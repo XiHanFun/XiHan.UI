@@ -53,7 +53,10 @@ export type CascaderRootSlotProps = Pick<
   | 'clear'
 >
 
-export interface XhCascaderRootProps {
+/** 根上自有的那些取值；dir 与 defaultValue 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
+
+export interface XhCascaderRootProps extends RootElementProps {
   collection?: CascaderNode[]
   value?: CascaderValue
   defaultValue?: CascaderValue
@@ -84,12 +87,70 @@ export interface XhCascaderRootProps {
   children?: SlotChildren<CascaderRootSlotProps>
 }
 
-export function XhCascaderRoot({ children, ...props }: XhCascaderRootProps): ReactNode {
-  const ctx = useCascader(withXhConfig('cascader', props) as CascaderProps)
+export function XhCascaderRoot({
+  collection,
+  value,
+  defaultValue,
+  open,
+  defaultOpen,
+  expandTrigger,
+  changeOnSelect,
+  multiple,
+  searchable,
+  cascade,
+  checkedStrategy,
+  disabled,
+  readOnly,
+  invalid,
+  loading,
+  translations,
+  variant,
+  tone,
+  size,
+  placeholder,
+  separator,
+  placement,
+  offset,
+  loop,
+  dir,
+  onValueChange,
+  onOpenChange,
+  children,
+  ...rest
+}: XhCascaderRootProps): ReactNode {
+  const ctx = useCascader(withXhConfig('cascader', {
+    collection,
+    value,
+    defaultValue,
+    open,
+    defaultOpen,
+    expandTrigger,
+    changeOnSelect,
+    multiple,
+    searchable,
+    cascade,
+    checkedStrategy,
+    disabled,
+    readOnly,
+    invalid,
+    loading,
+    translations,
+    variant,
+    tone,
+    size,
+    placeholder,
+    separator,
+    placement,
+    offset,
+    loop,
+    dir,
+    onValueChange,
+    onOpenChange,
+  }) as CascaderProps)
   const api = ctx.api
   return (
     <CascaderProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           open: api.open,
           // levels 每层一列、层内节点各一条目，供作者渲染；columns 只读当前展开的列

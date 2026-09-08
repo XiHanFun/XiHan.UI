@@ -21,7 +21,7 @@ export type CheckboxGroupRootSlotProps = Pick<
   'value' | 'checkedState' | 'isChecked' | 'setValue' | 'toggleValue'
 >
 
-export interface XhCheckboxGroupRootProps {
+export interface XhCheckboxGroupRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   collection?: CheckboxGroupNode[]
   /** 标题文字。给了它就不必再写 label 部件。 */
   label?: ReactNode
@@ -42,8 +42,38 @@ export interface XhCheckboxGroupRootProps {
   children?: SlotChildren<CheckboxGroupRootSlotProps>
 }
 
-export function XhCheckboxGroupRoot({ children, label, renderItem, ...props }: XhCheckboxGroupRootProps): ReactNode {
-  const ctx = useCheckboxGroup(props as CheckboxGroupProps)
+export function XhCheckboxGroupRoot({
+  collection,
+  label,
+  value,
+  defaultValue,
+  itemValues,
+  disabled,
+  readOnly,
+  invalid,
+  name,
+  orientation,
+  tone,
+  size,
+  onValueChange,
+  renderItem,
+  children,
+  ...rest
+}: XhCheckboxGroupRootProps): ReactNode {
+  const ctx = useCheckboxGroup({
+    collection,
+    value,
+    defaultValue,
+    itemValues,
+    disabled,
+    readOnly,
+    invalid,
+    name,
+    orientation,
+    tone,
+    size,
+    onValueChange,
+  } as CheckboxGroupProps)
   const api = ctx.api
 
   const body = children != null
@@ -54,15 +84,18 @@ export function XhCheckboxGroupRoot({ children, label, renderItem, ...props }: X
         setValue: api.setValue,
         toggleValue: api.toggleValue,
       })
-    : props.collection
+    : collection
       ? <DefaultTree collection={api.collection} label={label} renderItem={renderItem} />
       : null
 
   return (
     <CheckboxGroupProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {body}
       </div>

@@ -16,7 +16,10 @@ export type PromptInputRootSlotProps = Pick<
   'value' | 'isComposing' | 'canSubmit' | 'loading' | 'disabled' | 'setValue' | 'submit' | 'stop'
 >
 
-export interface XhPromptInputRootProps {
+/** 根上自有的那些取值；defaultValue 与 onSubmit 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'onSubmit'>
+
+export interface XhPromptInputRootProps extends RootElementProps {
   /** 给定即受控。 */
   value?: string
   defaultValue?: string
@@ -40,12 +43,44 @@ export interface XhPromptInputRootProps {
   children?: SlotChildren<PromptInputRootSlotProps>
 }
 
-export function XhPromptInputRoot({ children, ...props }: XhPromptInputRootProps): ReactNode {
-  const ctx = usePromptInput(withXhConfig('prompt-input', props) as Props)
+export function XhPromptInputRoot({
+  value,
+  defaultValue,
+  disabled,
+  loading,
+  submitKey,
+  allowEmptySubmit,
+  clearOnSubmit,
+  variant,
+  tone,
+  size,
+  translations,
+  onValueChange,
+  onSubmit,
+  onStop,
+  children,
+  ...rest
+}: XhPromptInputRootProps): ReactNode {
+  const ctx = usePromptInput(withXhConfig('prompt-input', {
+    value,
+    defaultValue,
+    disabled,
+    loading,
+    submitKey,
+    allowEmptySubmit,
+    clearOnSubmit,
+    variant,
+    tone,
+    size,
+    translations,
+    onValueChange,
+    onSubmit,
+    onStop,
+  }) as Props)
   const { api } = ctx
   return (
     <PromptInputProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           value: api.value,
           isComposing: api.isComposing,

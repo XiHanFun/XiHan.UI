@@ -33,7 +33,10 @@ export type SideNavRootSlotProps = Pick<
   | 'closePopout'
 >
 
-export interface XhSideNavRootProps {
+/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'nav'>, 'children' | 'defaultValue' | 'dir'>
+
+export interface XhSideNavRootProps extends RootElementProps {
   collection?: SideNavNode[]
   value?: string | null
   defaultValue?: string | null
@@ -53,13 +56,49 @@ export interface XhSideNavRootProps {
   children?: SlotChildren<SideNavRootSlotProps>
 }
 
-export function XhSideNavRoot({ children, ...props }: XhSideNavRootProps): ReactNode {
-  const ctx = useSideNav(withXhConfig('side-nav', props) as SideNavProps)
+export function XhSideNavRoot({
+  collection,
+  value,
+  defaultValue,
+  expandedValue,
+  defaultExpandedValue,
+  accordion,
+  collapsed,
+  collapsedPopout,
+  disabled,
+  loop,
+  dir,
+  tone,
+  size,
+  translations,
+  onValueChange,
+  onExpandedValueChange,
+  children,
+  ...rest
+}: XhSideNavRootProps): ReactNode {
+  const ctx = useSideNav(withXhConfig('side-nav', {
+    collection,
+    value,
+    defaultValue,
+    expandedValue,
+    defaultExpandedValue,
+    accordion,
+    collapsed,
+    collapsedPopout,
+    disabled,
+    loop,
+    dir,
+    tone,
+    size,
+    translations,
+    onValueChange,
+    onExpandedValueChange,
+  }) as SideNavProps)
   const api = ctx.api
   // 经 children 载荷交出状态与命令，供折叠开关这类外部控件使用
   return (
     <SideNavProvider value={ctx}>
-      <nav {...api.getRootProps() as Record<string, unknown>}>
+      <nav {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           value: api.value,
           expandedValue: api.expandedValue,

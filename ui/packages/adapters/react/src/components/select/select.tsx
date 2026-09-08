@@ -30,7 +30,10 @@ export type SelectRootSlotProps = Pick<
   'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
 >
 
-export interface XhSelectRootProps {
+/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
+
+export interface XhSelectRootProps extends RootElementProps {
   collection?: SelectNode[]
   /** 标题文字。给了它就不必再写 label 部件。 */
   label?: ReactNode
@@ -65,8 +68,64 @@ export interface XhSelectRootProps {
   children?: SlotChildren<SelectRootSlotProps>
 }
 
-export function XhSelectRoot({ children, label, renderItem, ...props }: XhSelectRootProps): ReactNode {
-  const ctx = useSelect(withXhConfig('select', props) as SelectProps)
+export function XhSelectRoot({
+  collection,
+  label,
+  value,
+  defaultValue,
+  multiple,
+  open,
+  defaultOpen,
+  disabled,
+  readOnly,
+  clearable,
+  invalid,
+  loading,
+  required,
+  name,
+  translations,
+  maxTagCount,
+  placeholder,
+  placement,
+  offset,
+  loop,
+  dir,
+  variant,
+  tone,
+  size,
+  onValueChange,
+  onOpenChange,
+  renderItem,
+  children,
+  ...rest
+}: XhSelectRootProps): ReactNode {
+  const ctx = useSelect(withXhConfig('select', {
+    collection,
+    value,
+    defaultValue,
+    multiple,
+    open,
+    defaultOpen,
+    disabled,
+    readOnly,
+    clearable,
+    invalid,
+    loading,
+    required,
+    name,
+    translations,
+    maxTagCount,
+    placeholder,
+    placement,
+    offset,
+    loop,
+    dir,
+    variant,
+    tone,
+    size,
+    onValueChange,
+    onOpenChange,
+  }) as SelectProps)
   const api = ctx.api
 
   // 表单影子由根部件装配：空串选项打底，每个选中值一个 selected 选项，供 required 判定。
@@ -92,15 +151,18 @@ export function XhSelectRoot({ children, label, renderItem, ...props }: XhSelect
         clear: api.clear,
         deselect: api.deselect,
       })
-    : props.collection
-      ? <DefaultTree collection={api.collection} label={label} clearable={props.clearable} renderItem={renderItem} />
+    : collection
+      ? <DefaultTree collection={api.collection} label={label} clearable={clearable} renderItem={renderItem} />
       : null
 
   return (
     <SelectProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {hiddenSelect}
         {body}

@@ -19,7 +19,7 @@ export type TimeFieldRootSlotProps = Pick<
   'value' | 'empty' | 'outOfRange' | 'canClear' | 'segments' | 'focusedSegment' | 'hourCycle' | 'granularity' | 'setValue' | 'clear'
 >
 
-export interface XhTimeFieldRootProps {
+export interface XhTimeFieldRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   value?: string
   defaultValue?: string
   min?: string
@@ -41,14 +41,57 @@ export interface XhTimeFieldRootProps {
   children?: SlotChildren<TimeFieldRootSlotProps>
 }
 
-export function XhTimeFieldRoot({ children, ...props }: XhTimeFieldRootProps): ReactNode {
-  const ctx = useTimeField(withXhConfig('time-field', props) as TimeFieldProps)
+export function XhTimeFieldRoot({
+  value,
+  defaultValue,
+  min,
+  max,
+  locale,
+  hourCycle,
+  granularity,
+  disabled,
+  translations,
+  readOnly,
+  invalid,
+  required,
+  name,
+  placeholder,
+  variant,
+  tone,
+  size,
+  onValueChange,
+  children,
+  ...rest
+}: XhTimeFieldRootProps): ReactNode {
+  const ctx = useTimeField(withXhConfig('time-field', {
+    value,
+    defaultValue,
+    min,
+    max,
+    locale,
+    hourCycle,
+    granularity,
+    disabled,
+    translations,
+    readOnly,
+    invalid,
+    required,
+    name,
+    placeholder,
+    variant,
+    tone,
+    size,
+    onValueChange,
+  }) as TimeFieldProps)
   const api = ctx.api
   return (
     <TimeFieldProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {children == null
           ? null

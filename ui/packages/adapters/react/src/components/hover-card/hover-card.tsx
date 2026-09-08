@@ -17,7 +17,7 @@ type HoverCardProps = HoverCardSchema['props']
 /** 函数式 children 的载荷：卡片的展开态与开合命令。 */
 export interface HoverCardRootSlotProps extends Pick<HoverCardApi, 'open' | 'setOpen'> {}
 
-export interface XhHoverCardRootProps {
+export interface XhHoverCardRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'> {
   open?: boolean
   defaultOpen?: boolean
   placement?: Placement
@@ -35,11 +35,35 @@ export interface XhHoverCardRootProps {
   children?: SlotChildren<HoverCardRootSlotProps>
 }
 
-export function XhHoverCardRoot({ children, ...props }: XhHoverCardRootProps): ReactNode {
-  const ctx = useHoverCard(props as HoverCardProps)
+export function XhHoverCardRoot({
+  open,
+  defaultOpen,
+  placement,
+  offset,
+  openDelay,
+  closeDelay,
+  dir,
+  disabled,
+  size,
+  onOpenChange,
+  children,
+  ...rest
+}: XhHoverCardRootProps): ReactNode {
+  const ctx = useHoverCard({
+    open,
+    defaultOpen,
+    placement,
+    offset,
+    openDelay,
+    closeDelay,
+    dir,
+    disabled,
+    size,
+    onOpenChange,
+  } as HoverCardProps)
   return (
     <HoverCardProvider value={ctx}>
-      <div {...ctx.api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })}
       </div>
     </HoverCardProvider>

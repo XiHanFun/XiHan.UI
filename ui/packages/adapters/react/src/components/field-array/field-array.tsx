@@ -28,7 +28,7 @@ export type FieldArrayRootSlotProps = Pick<
   | 'moveDown'
 >
 
-export interface XhFieldArrayRootProps {
+export interface XhFieldArrayRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
   value?: unknown[]
   defaultValue?: unknown[]
   min?: number
@@ -45,15 +45,46 @@ export interface XhFieldArrayRootProps {
   children?: SlotChildren<FieldArrayRootSlotProps>
 }
 
-export function XhFieldArrayRoot({ children, ...props }: XhFieldArrayRootProps): ReactNode {
-  const ctx = useFieldArray(withXhConfig('field-array', props) as FieldArrayProps)
+export function XhFieldArrayRoot({
+  value,
+  defaultValue,
+  min,
+  max,
+  createItem,
+  movable,
+  disabled,
+  readOnly,
+  invalid,
+  name,
+  translations,
+  onValueChange,
+  children,
+  ...rest
+}: XhFieldArrayRootProps): ReactNode {
+  const ctx = useFieldArray(withXhConfig('field-array', {
+    value,
+    defaultValue,
+    min,
+    max,
+    createItem,
+    movable,
+    disabled,
+    readOnly,
+    invalid,
+    name,
+    translations,
+    onValueChange,
+  }) as FieldArrayProps)
   const api = ctx.api
 
   return (
     <FieldArrayProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {/* items 里每一项都带 key，作者铺行时直接用 row.key */}
         {renderSlot(children, {

@@ -19,7 +19,10 @@ export type TagGroupRootSlotProps = Pick<
   'value' | 'selectionMode' | 'focusedValue' | 'isSelected' | 'setValue' | 'select' | 'toggle' | 'deleteItem'
 >
 
-export interface XhTagGroupRootProps {
+/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
+
+export interface XhTagGroupRootProps extends RootElementProps {
   collection?: TagGroupNode[]
   /** 标题内容。给了它就不必再写 label 部件。 */
   label?: ReactNode
@@ -48,8 +51,48 @@ export interface XhTagGroupRootProps {
 }
 
 /** 一排可选、可摘的标签。回传值恒为数组，单选时长度 ≤ 1。 */
-export function XhTagGroupRoot({ children, label, renderItem, ...props }: XhTagGroupRootProps): ReactNode {
-  const ctx = useTagGroup(withXhConfig('tag-group', props) as TagGroupProps)
+export function XhTagGroupRoot({
+  collection,
+  label,
+  value,
+  defaultValue,
+  selectionMode,
+  deletable,
+  disabled,
+  readOnly,
+  loop,
+  dir,
+  orientation,
+  typeahead,
+  variant,
+  tone,
+  size,
+  translations,
+  onValueChange,
+  onItemDelete,
+  renderItem,
+  children,
+  ...rest
+}: XhTagGroupRootProps): ReactNode {
+  const ctx = useTagGroup(withXhConfig('tag-group', {
+    collection,
+    value,
+    defaultValue,
+    selectionMode,
+    deletable,
+    disabled,
+    readOnly,
+    loop,
+    dir,
+    orientation,
+    typeahead,
+    variant,
+    tone,
+    size,
+    translations,
+    onValueChange,
+    onItemDelete,
+  }) as TagGroupProps)
   const api = ctx.api
 
   const body = children != null
@@ -63,13 +106,13 @@ export function XhTagGroupRoot({ children, label, renderItem, ...props }: XhTagG
         toggle: api.toggle,
         deleteItem: api.deleteItem,
       })
-    : props.collection
+    : collection
       ? <DefaultTree collection={api.collection} label={label} renderItem={renderItem} />
       : null
 
   return (
     <TagGroupProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>{body}</div>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
     </TagGroupProvider>
   )
 }
