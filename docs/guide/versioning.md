@@ -439,7 +439,7 @@ changeset 里按 patch / minor 写就行——推基线这个动作本身不代�
 
 **还有三道门禁把「只靠自觉」的条款焊成了机器检查。** `check-css-floor` 守着浏览器硬底线：
 `.browserslistrc` 书面记录地板，拒绝名单拦住 `@scope` 这类无兜底的抬底线特性，
-`light-dark()` / `dvh` 必须带级联兜底。`check-version-lock` 守着 17 包锁步：任何一个
+`light-dark()` / `dvh` / `lh` 必须带级联兜底。`check-version-lock` 守着 17 包锁步：任何一个
 package.json 的 version 与其余不同，门禁直接失败。`check-wiring` 守着检查系统自身：新增的
 check 脚本不接进 `pnpm gate` 就等于没写，死引用同样被拦下。
 
@@ -455,7 +455,7 @@ check 脚本不接进 `pnpm gate` 就等于没写，死引用同样被拦下。
 | --- | --- | --- |
 | Vue 作用域插槽载荷 | 带载荷的插槽已声明 `slots:` 选项，`check-slot-types` 门禁四条判据兜着（缺声明 / 键非可选 / 值非函数 / 声明未用）。仅渲染无载荷插槽的部件仍不声明，消费方写错 slot 名不会报 | 无载荷插槽也补声明，或明确「只有带载荷的插槽进契约」 |
 | 移除提示（CSS / `data-*` / attribute / 层名） | 这四种介质没有 IDE 提示：名字被移走之后，消费方那条声明只是静默失配，既不报错也不降级。唯一的告知渠道是更新日志，所以每次移除都在 changeset 里逐条列出旧名与替换写法，供使用者在自己的代码库里全文搜索 | 无 |
-| 浏览器硬底线 | 已落地：`.browserslistrc` 记录硬底线，`check-css-floor` 门禁拒绝抬底线的无兜底特性（`@scope` 等），并校验 `light-dark()` / `dvh` 的级联兜底 | 拒绝名单改动时联动本页支持面表格的提醒 |
+| 浏览器硬底线 | 已落地：`.browserslistrc` 记录硬底线，`check-css-floor` 门禁拒绝抬底线的无兜底特性（`@scope` 等），并校验 `light-dark()` / `dvh` / `lh` 的级联兜底 | 拒绝名单改动时联动本页支持面表格的提醒 |
 | 「17 个包必须同版本」 | `check-version-lock` 门禁保证 17 个 package.json 同版本。运行期这一侧只在 dev 有提示：三个适配器启动时调 `checkLockstepVersion`，自身版本与 core 不一致就经诊断通道发一条 `warn`；生产构建里跳过，且只比适配器与 core 两个版本，不是全部 17 个 | 提成 peer，或把运行期比对扩到全部包 |
 
 发现本页写的和实际行为对不上，按缺陷处理——请提 issue，不要当成「政策就是这样」。

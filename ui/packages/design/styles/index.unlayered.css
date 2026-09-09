@@ -7158,15 +7158,36 @@ input[data-scope='mention'][data-part='input'] {
 /* 贴在切换钮之前的一小块提示，字号比正文小一档，颜色取次级前景：
    它是提示不是报错，抢不过框里正在输入的内容。
    槽名按部件取 --xh-password-input-caps-lock-* */
+/* 这一格恒占一个字形的宽，开合都不变：区内那句话有多长，控件就跟着宽多少，
+   而这个盒是收缩包裹的（见 control 的 inline-flex），一开大写锁定控件当场宽出一整句话。
+   文字留在盒里不动——它是活区域要念的内容——只是被 text-indent 推出可视范围，
+   露出来的是 ::before 画的那枚字形。 */
 [data-scope='password-input'][data-part='caps-lock-indicator'] {
+  position: relative;
   display: inline-flex;
   flex: none;
   align-items: center;
-  gap: var(--xh-password-input-caps-lock-gap, var(--xh-space-1));
-  padding-inline: var(--xh-password-input-caps-lock-px, var(--xh-space-1));
+  justify-content: center;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  overflow: hidden;
   color: var(--xh-password-input-caps-lock-fg, var(--xh-fg-muted));
   font-size: var(--xh-password-input-caps-lock-font-size, var(--xh-_password-input-caps-lock-font-size));
   line-height: var(--xh-leading-none);
+  white-space: nowrap;
+  text-indent: 100%;
+}
+
+/* 开着时才画字形：这一格的宽两态一样，画不画只换露不露出记号 */
+[data-scope='password-input'][data-part='caps-lock-indicator'][data-state='visible']::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-arrow-up) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-arrow-up) center / contain no-repeat;
 }
 
 /* 作者自己给这个节点写 hidden 时照样收起；上面那条 display 会把 UA 规则盖掉，
@@ -7177,9 +7198,9 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没开大写锁定时只把这块收成零宽，不用 display / visibility 撤掉它：
    播报区一旦从渲染树里消失就不再是活区域，重新出现时读屏当作插入了个新节点，多数不念。
-   此时区内文字是空串，留着的只有一个不占位的空盒 */
-[data-scope='password-input'][data-part='caps-lock-indicator'][data-state='hidden'] {
-  padding-inline: 0;
+   这一格的宽两态一样，关着时只是不画字形，盒本身照旧在场 */
+[data-scope='password-input'][data-part='caps-lock-indicator'][data-state='hidden']::before {
+  content: none;
 }
 
 /* 强度条：一条底槽，填充按档位加长。档位由调用方打分后经 strength 传进来，
@@ -7701,7 +7722,12 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='prompt-input'][data-part='input'] {
   flex: 1;
   min-inline-size: 0;
-  /* 上下留白把单行文本盒撑到控件高度，文字中线与按钮中线对齐 */
+  /* 上下留白把单行文本盒撑到控件高度，文字中线与按钮中线对齐。
+     级联兜底：先写一行的高度算式（输入框字号 × 行距），再写 1lh。
+     1lh 晚于本库声明的浏览器地板，取不到时旧引擎丢掉后一条、留下前一条。
+     两条取的是同一组槽——字号来自下面那条 font-size、行距来自它下面那条 line-height，
+     所以算出来是同一个数。 */
+  padding-block: calc((var(--xh-_prompt-input-h) - var(--xh-prompt-input-input-font-size, var(--xh-_prompt-input-font-size)) * var(--xh-leading-normal)) / 2);
   padding-block: calc((var(--xh-_prompt-input-h) - 1lh) / 2);
   padding-inline: 0;
   border: 0;
@@ -19750,6 +19776,11 @@ input[data-scope='mention'][data-part='input'] {
   /* 与控件的首行文字对齐：行高保持正文行距（标签折行时每行不会撑成一个控件高），
      上下留白把单行文本盒撑到控件高度；配的是哪一档控件由 --xh-field-control-h 告诉它 */
   line-height: var(--xh-field-label-leading, var(--xh-leading-normal));
+  /* 级联兜底：先写一行的高度算式（标签字号 × 标签行距），再写 1lh。
+     1lh 晚于本库声明的浏览器地板，取不到时旧引擎丢掉后一条、留下前一条。
+     两条取的是同一组槽——字号来自本文件里标签那条 font-size、行距来自紧邻上一行，
+     所以算出来是同一个数，使用者覆盖任一槽两条一起跟着走。 */
+  padding-block: calc((var(--xh-field-control-h, var(--xh-control-h-md)) - var(--xh-field-label-font-size, var(--xh-text-label-size)) * var(--xh-field-label-leading, var(--xh-leading-normal))) / 2);
   padding-block: calc((var(--xh-field-control-h, var(--xh-control-h-md)) - 1lh) / 2);
 }
 

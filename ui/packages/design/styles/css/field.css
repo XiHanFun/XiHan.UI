@@ -27,6 +27,11 @@
     /* 与控件的首行文字对齐：行高保持正文行距（标签折行时每行不会撑成一个控件高），
        上下留白把单行文本盒撑到控件高度；配的是哪一档控件由 --xh-field-control-h 告诉它 */
     line-height: var(--xh-field-label-leading, var(--xh-leading-normal));
+    /* 级联兜底：先写一行的高度算式（标签字号 × 标签行距），再写 1lh。
+       1lh 晚于本库声明的浏览器地板，取不到时旧引擎丢掉后一条、留下前一条。
+       两条取的是同一组槽——字号来自本文件里标签那条 font-size、行距来自紧邻上一行，
+       所以算出来是同一个数，使用者覆盖任一槽两条一起跟着走。 */
+    padding-block: calc((var(--xh-field-control-h, var(--xh-control-h-md)) - var(--xh-field-label-font-size, var(--xh-text-label-size)) * var(--xh-field-label-leading, var(--xh-leading-normal))) / 2);
     padding-block: calc((var(--xh-field-control-h, var(--xh-control-h-md)) - 1lh) / 2);
   }
 
