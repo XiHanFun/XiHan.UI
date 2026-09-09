@@ -1,0 +1,29 @@
+{
+  "$comment": "容器查询的落点白名单。键是「组件:部件」，只有登在这里的部件才许在皮肤里写 container-type。判据：它是库自己渲的根、是块级盒、宽度由外部给，不是收缩包裹的。pending 是「已核准、这一批还没写」，写上了就把 pending 删掉。",
+  "containers": {
+    "descriptions:root": {
+      "why": "库自己渲的描述列表根，display: grid 是块级盒，宽度由外面的容器给；根内没有任何 absolute 后代",
+      "pending": "形态换档（标签左置↔上置、列数）还没写"
+    },
+    "diff-view:root": {
+      "why": "库自己渲的差异表面根，display: block 且 overflow: hidden，宽度由外面的容器给；根内唯一的 absolute 后代是读屏用的 change-label，它不写 inset，落位与包含块无关",
+      "pending": "并排↔堆叠的换档还没写"
+    },
+    "field:root": {
+      "why": "库自己渲的字段根，独立时 display: flex 列、在横排表单里是 display: grid，两种都是块级盒，宽度由表单的轨道给；根内没有任何 absolute 后代",
+      "pending": "标签左置↔上置的换档还没写"
+    },
+    "transfer:root": {
+      "why": "库自己渲的穿梭框根，display: grid 是块级盒，宽度由外面的容器给；根内唯一的 absolute 是 select-all-trigger 的字形伪元素，它的包含块是自己那颗 position: relative 的按钮，不是根",
+      "pending": "两栏并排↔上下堆叠的换档还没写"
+    },
+    "timeline:root": {
+      "why": "库自己渲的时间轴根（ol），display: flex 是块级盒，宽度由外面的容器给；根内没有任何 absolute 后代",
+      "pending": "横排↔竖排的换档还没写"
+    },
+    "steps:root": {
+      "why": "库自己渲的步骤条根，display: flex 列是块级盒，宽度由外面的容器给；根内没有任何 absolute 后代",
+      "pending": "横排↔竖排的换档还没写"
+    }
+  }
+}
