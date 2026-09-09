@@ -100,6 +100,12 @@
     color: var(--xh-_fg-pressed);
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='toggle'][data-part='root'][data-state='on']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   /* 只有实心档按下后才是一块实心语气底，顶边画一条极浅的内高光把它衬出厚度；
      其余三档按下走的是淡底，面上没有厚度可言。置灰时整枚已经压暗，高光一并排除 */
   [data-scope='toggle'][data-part='root'][data-variant='solid'][data-state='on']:not([data-disabled]) {

@@ -69,11 +69,6 @@
     scrollbar-gutter: stable;
   }
 
-  /* 偏移取负画在内侧，避免被 root 裁掉 */
-  [data-scope='log'][data-part='viewport']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   /* 取行期间指针给出忙的反馈 */
   [data-scope='log'][data-part='root'][data-loading] [data-scope='log'][data-part='viewport'] {
     cursor: progress;

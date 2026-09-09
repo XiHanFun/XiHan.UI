@@ -18,9 +18,8 @@
        不接控件高度那把尺——它是给可点可输的控件在一行里排齐用的，矩阵格子不可交互，
        接上去密度档一换矩阵就跟着变形 */
     --xh-_heatmap-row-h: var(--xh-heatmap-row-h, var(--xh-space-5));
-    /* 格间距等于聚焦环占的宽度（偏移 + 环宽）：环因此整圈落在格子之间的空当里，
-       不压到相邻的格子上（外缘与相邻格相接） */
-    --xh-_heatmap-gap: calc(var(--xh-ring-offset) + var(--xh-ring-width));
+    /* 格与格之间的空当：格子按天铺满一年，靠这道缝把一格与相邻格分开 */
+    --xh-_heatmap-gap: var(--xh-space-1);
     --xh-_heatmap-gutter: var(--xh-heatmap-gutter, var(--xh-space-8));
     --xh-_heatmap-font-size: var(--xh-text-caption-size);
     /* 星期名隔行画：第 0/2/4/6 行那个字的颜色。缺省透明——只是字不上色，
@@ -43,9 +42,9 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-heatmap-gap, var(--xh-space-2));
-    /* 一整年五十几列，一屏放不下就自己横着滚。横向滚动会把纵向也变成 auto，
-       上下留出一圈聚焦环的余量，最上一行与最下一行的环才不会被裁掉 */
-    padding-block: var(--xh-heatmap-py, calc(var(--xh-ring-offset) + var(--xh-ring-width)));
+    /* 一整年五十几列，一屏放不下就自己横着滚。上下各留一道与格间距同宽的空当，
+       最上一行与最下一行不贴着滚动容器的边 */
+    padding-block: var(--xh-heatmap-py, var(--xh-_heatmap-gap));
     overflow-x: auto;
     /* 键盘走到视口外的格子时 scrollIntoView 会把它滚进来，落点要让开钉住的那一列，
        否则往回走的那一格正好停在行首星期名底下 */
@@ -119,11 +118,6 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-heatmap-grid-gap, var(--xh-_heatmap-gap));
-  }
-
-  /* 环往内收：网格铺满 root，root 那层 overflow-x: auto 会把画在外沿的环裁掉 */
-  [data-scope='heatmap'][data-part='grid']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='heatmap'][data-part='row'] {

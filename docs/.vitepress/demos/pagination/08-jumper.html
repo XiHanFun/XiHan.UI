@@ -9,11 +9,11 @@
   <nav data-xh-part="root">
     <button data-xh-part="prev-trigger"></button>
     <button data-xh-part="item" value="1">1</button>
-    <button data-xh-part="ellipsis-trigger" side="start">…</button>
+    <button data-xh-part="ellipsis-trigger" side="start"></button>
     <button data-xh-part="item" value="4">4</button>
     <button data-xh-part="item" value="5">5</button>
     <button data-xh-part="item" value="6">6</button>
-    <button data-xh-part="ellipsis-trigger" side="end">…</button>
+    <button data-xh-part="ellipsis-trigger" side="end"></button>
     <button data-xh-part="item" value="100">100</button>
     <button data-xh-part="next-trigger"></button>
 
@@ -49,7 +49,6 @@
       if (item.type === "ellipsis") {
         el.dataset.xhPart = "ellipsis-trigger";
         el.setAttribute("side", item.side);
-        el.textContent = "…";
       } else {
         el.dataset.xhPart = "item";
         el.setAttribute("value", String(item.value));

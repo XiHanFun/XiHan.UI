@@ -1,5 +1,7 @@
+import type { Service } from '@xihan-ui/core'
 import type { PaginationPage } from '../src/pagination'
 import type { PaginationSchema } from '../src/pagination/pagination.types'
+import type { SelectSchema } from '../src/select'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it, vi } from 'vitest'
@@ -9,8 +11,10 @@ import {
   connectPagination,
   pageRangeOf,
   paginationMachine,
+  paginationPageSizeSelectProps,
   totalPagesOf,
 } from '../src/pagination'
+import { selectMachine } from '../src/select'
 
 // ── 纯函数：页码序列 ────────────────────────────────────────────────
 
@@ -154,15 +158,26 @@ describe('clampPage', () => {
 
 // ── 机器与 connect ──────────────────────────────────────────────────
 
+/**
+ * 每台翻页机配一台内嵌下拉：档位受控于翻页机，取一次 api 不该把它重建掉，
+ * 故按翻页机记住，而不是在 api() 里现建。
+ */
+const embeddedSelect = new WeakMap<object, Service<SelectSchema>>()
+
 function makeService(props: PaginationSchema['props'] = {}) {
   const runtime = createVanillaRuntime()
   const service = createService(paginationMachine, { props: () => props, runtime })
+  // 顺序要紧：下拉的 props 从翻页机现读，翻页机必须先立起来
+  embeddedSelect.set(service, createService(selectMachine, {
+    props: () => paginationPageSizeSelectProps(service),
+    runtime,
+  }))
   runtime.start()
   return service
 }
 
 function api(service: ReturnType<typeof makeService>) {
-  return connectPagination(service, normalizeProps)
+  return connectPagination({ root: service, pageSizeSelect: embeddedSelect.get(service)! }, normalizeProps)
 }
 
 type Props = Record<string, unknown>
@@ -172,6 +187,10 @@ function makeMutableService(initial: PaginationSchema['props'] = {}) {
   const props: PaginationSchema['props'] = { ...initial }
   const runtime = createVanillaRuntime()
   const service = createService(paginationMachine, { props: () => props, runtime })
+  embeddedSelect.set(service, createService(selectMachine, {
+    props: () => paginationPageSizeSelectProps(service),
+    runtime,
+  }))
   runtime.start()
   return { service, patch: (next: PaginationSchema['props']) => Object.assign(props, next) }
 }
@@ -393,5 +412,84 @@ describe('connectPagination', () => {
     const a = api(makeService({ count: 3, pageSize: 0 }))
     expect(a.pageSize).toBe(1)
     expect(a.totalPages).toBe(3)
+  })
+})
+
+describe('内嵌的每页条数下拉', () => {
+  it('挂载点是普通元素，不再是原生 select', () => {
+    const mount = api(makeService({ count: 196 })).getPageSizeSelectProps() as Props
+    expect(mount['data-scope']).toBe('pagination')
+    expect(mount['data-part']).toBe('page-size-select')
+    // 值与 change 都归内嵌下拉，挂载点不再自己收
+    expect(mount.value).toBeUndefined()
+    expect(mount.onChange).toBeUndefined()
+  })
+
+  it('角色节点带的是 select 的 scope：吃的是那份皮肤', () => {
+    const select = api(makeService({ count: 196 })).pageSizeSelect
+    for (const props of [select.getRootProps(), select.getTriggerProps(), select.getListProps()] as Props[])
+      expect(props['data-scope']).toBe('select')
+  })
+
+  it('档位表变成下拉的 collection，档位文字取 translations.pageSizeOption', () => {
+    const select = api(makeService({
+      count: 196,
+      pageSizeOptions: [50, 10, 10, 20],
+      translations: { pageSizeOption: size => `${size} 条 / 页` },
+    })).pageSizeSelect
+    // 升序去重照旧在档位表这一层做掉
+    expect(select.collection.map(node => node.value)).toEqual(['10', '20', '50'])
+    expect(select.collection.map(node => node.label)).toEqual(['10 条 / 页', '20 条 / 页', '50 条 / 页'])
+  })
+
+  it('当前档位就是下拉的选中值', () => {
+    const select = api(makeService({ count: 196, defaultPageSize: 20 })).pageSizeSelect
+    expect(select.value).toEqual(['20'])
+    expect(select.displayText).toBe('20 / page')
+  })
+
+  it('挑一档即换档，页码跟着换算', () => {
+    // 10 条一页的第 5 页 = 第 41 条起；换成 50 条一页后第 41 条落在第 1 页
+    const s = makeService({ count: 196, defaultPageSize: 10, defaultPage: 5 })
+    api(s).pageSizeSelect.setValue('50')
+    expect(api(s).pageSize).toBe(50)
+    expect(api(s).page).toBe(1)
+  })
+
+  it('名字由 aria-label 直给，不指向当前值', () => {
+    // 下拉自己把名字指给「标签 + 当前值」两个节点，而分页行里不摆可见标签，
+    // 只剩当前值那一段——那是值不是名字
+    const select = api(makeService({ count: 196, translations: { pageSizeSelect: '每页条数' } })).pageSizeSelect
+    const trigger = select.getTriggerProps() as Props
+    const list = select.getListProps() as Props
+    expect(trigger['aria-label']).toBe('每页条数')
+    expect(trigger['aria-labelledby']).toBeUndefined()
+    expect(list['aria-label']).toBe('每页条数')
+    expect(list['aria-labelledby']).toBeUndefined()
+  })
+
+  it('键盘那一套原样保留：触发器是 combobox，条目是 option', () => {
+    const select = api(makeService({ count: 196 })).pageSizeSelect
+    const trigger = select.getTriggerProps() as Props
+    expect(trigger.role).toBe('combobox')
+    expect(trigger['aria-haspopup']).toBe('listbox')
+    expect(typeof trigger.onKeydown).toBe('function')
+    expect((select.getListProps() as Props).role).toBe('listbox')
+    expect((select.getItemProps({ value: '10' }) as Props).role).toBe('option')
+  })
+
+  it('清空不改档位：分页没有「不分页」这一档', () => {
+    const s = makeService({ count: 196, defaultPageSize: 20 })
+    api(s).pageSizeSelect.clear()
+    expect(api(s).pageSize).toBe(20)
+    expect(api(s).pageSizeSelect.value).toEqual(['20'])
+  })
+
+  it('三个视觉轴与方向一并透传，下拉与页码格子同一档', () => {
+    const select = api(makeService({ count: 196, tone: 'success', size: 'sm', dir: 'rtl' })).pageSizeSelect
+    const root = select.getRootProps() as Props
+    expect(root['data-tone']).toBe('success')
+    expect(root['data-size']).toBe('sm')
+    expect((select.getPositionerProps() as Props).dir).toBe('rtl')
   })
 })

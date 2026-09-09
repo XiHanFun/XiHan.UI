@@ -91,6 +91,7 @@
 --xh-glyph-mark-clock: url("data:image/svg+xml,…")  sha256:c83cb32c22e1
 --xh-glyph-mark-close: url("data:image/svg+xml,…")  sha256:247de13c80d0
 --xh-glyph-mark-download: url("data:image/svg+xml,…")  sha256:ed3f64d86adf
+--xh-glyph-mark-ellipsis: url("data:image/svg+xml,…")  sha256:e7bb8cccc041
 --xh-glyph-mark-eye: url("data:image/svg+xml,…")  sha256:0038fceca8f4
 --xh-glyph-mark-eye-off: url("data:image/svg+xml,…")  sha256:9adea7064151
 --xh-glyph-mark-flip-horizontal: url("data:image/svg+xml,…")  sha256:e520b8e3e17b
@@ -189,7 +190,7 @@
 --xh-overlay-sheet-w-sm: 24rem
 --xh-ring-focus: oklch(0.623 0.214 258)  ← var(--xh-color-brand-500)
 --xh-ring-invalid: oklch(0.637 0.208 25)  ← var(--xh-color-danger-500)
---xh-ring-offset: 2px
+--xh-ring-offset: calc(-1 * 2px)  ← calc(-1 * var(--xh-ring-width))
 --xh-ring-width: 2px  ← var(--xh-stroke-thick)
 --xh-scrollbar-gutter: 2px
 --xh-scrollbar-thickness-lg: 14px

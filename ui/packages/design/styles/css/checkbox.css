@@ -49,6 +49,12 @@
     background: var(--xh-checkbox-bg-checked, var(--xh-_checkbox-accent));
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='checkbox'][data-part='root']:is([data-state='checked'], [data-state='indeterminate']):focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   /* 校验失败：方框描边转警示色。未勾时只有描边，勾上后填充仍走语气色，
      两者不打架——描边压在 checked 规则之后，选择器同特指度靠书写顺序取胜 */
   [data-scope='checkbox'][data-part='root'][data-invalid],

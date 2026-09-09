@@ -1459,7 +1459,6 @@ export {
 } from './components/pagination/pagination'
 export type {
   PaginationContentSlotProps,
-  PaginationPageSizeSelectSlotProps,
   PaginationRootSlotProps,
   PaginationSummarySlotProps,
   XhPaginationContentProps,

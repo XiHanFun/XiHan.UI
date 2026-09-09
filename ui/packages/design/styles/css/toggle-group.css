@@ -234,6 +234,12 @@
     z-index: 1;
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='toggle-group'][data-part='item'][data-state='on']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   /* 集合条目一律 aria-disabled 而非原生 disabled（禁用项仍要能当方向键的起点），
      所以这里读 data-disabled，写 :disabled 永远不命中。
      另外禁用不能用 opacity 变淡：半透明会把压在下面那条边透出来，共边处当场变成两条线 */

@@ -221,11 +221,6 @@
     color: var(--xh-command-placeholder-fg, var(--xh-fg-subtle));
   }
 
-  /* 环往内收：检索框是通栏的，环画在外沿会顺着面板的圆角探出去 */
-  [data-scope='command'][data-part='input']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   /* 自动填充态：浏览器给填过的框强加一套系统色（多数引擎是黄底黑字），
      优先级高到 background / color 改不动，也不跟主题走。
      底用 box-shadow 的 inset 扩散铺满内容盒，字用 -webkit-text-fill-color 接回令牌。

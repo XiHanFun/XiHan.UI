@@ -413,12 +413,6 @@
     border-inline-start: var(--xh-stroke-thin) solid var(--xh-cascader-column-divider, var(--xh-border-subtle));
   }
 
-  /* 焦点落在根列上只有一种情形：指针打开、无选中值、还没有任何条目当锚点。
-     那一刻它认领着 Tab 位，环画在列内沿；有锚点时环长在条目上，列不再画 */
-  [data-scope='cascader'][data-part='column'][tabindex='0']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   [data-scope='cascader'][data-part='column']:not([tabindex='0']):focus-visible {
     outline: none;
   }
@@ -532,11 +526,6 @@
   [data-scope='cascader']:is([data-part='item'], [data-part='search-item'])[data-state='checked'] {
     color: var(--xh-cascader-item-fg-selected, var(--xh-_cascader-selected-fg));
     font-weight: var(--xh-cascader-item-selected-font-weight, var(--xh-font-weight-medium));
-  }
-
-  /* 环往内收：行是撑满列宽的，环画在外沿会被裁掉 */
-  [data-scope='cascader'][data-part='item']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
@@ -712,10 +701,10 @@
     background: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
   }
 
-  /* 焦点恒在输入框，环只跟虚拟高亮走，悬停不画；往内收，行是撑满列宽的，环画在外沿会被裁掉 */
+  /* 焦点恒在输入框，环只跟虚拟高亮走，悬停不画 */
   [data-scope='cascader'][data-part='search-item']:not([data-disabled])[data-highlighted] {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='cascader'][data-part='search-item'][data-disabled] {

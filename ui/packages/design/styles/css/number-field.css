@@ -24,6 +24,11 @@
     /* 盒子的圆角 */
     --xh-_number-field-radius: var(--xh-shape-control);
 
+    /* 盒内那道分隔线的长度：取控件高的一半，线的上下各留一截空白，不与控件等高。
+       按控件高算而不是按钮高算：钮三档同宽高，只有控件跟着尺寸档变，
+       线跟着控件走才在 sm/md/lg 三档都保持同一个比例 */
+    --xh-_number-field-divider-h: calc(var(--xh-_number-field-h) * 0.5);
+
     /* 形态档只换这几个私有槽：输入框的底、描边与落影，加减钮的底与描边 */
     --xh-_number-field-bg: var(--xh-bg-canvas);
     --xh-_number-field-border: var(--xh-border-control);
@@ -255,10 +260,47 @@
      常态只剩符号，符号取次级前景，悬停与按下才浮出底色 */
   [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'],
   [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'] {
+    /* 分隔线那枚伪元素按这颗钮的边框盒定位 */
+    position: relative;
     margin: 0;
     border: 0;
     background: transparent;
     color: var(--xh-number-field-trigger-fg, var(--xh-fg-muted));
+  }
+
+  /* 加减钮与输入之间的细线：把「按的」与「填的」分成两块。
+     线画在钮的伪元素上而不是钮的边框上：边框会跟着钮的圆角与悬停底走，
+     而这道线要独立于钮的各态，长度也短于钮自己。
+     ::before 已被兜底字形占着，几何全落在 ::after 上。
+     线落在钮朝向输入的那一侧：钮排在输入前面就画在末端，排在后面就画在起始端；
+     用 inline-start / inline-end 两个逻辑侧，阿拉伯语这类右起排版下自动换边 */
+  [data-scope='number-field'][data-part='control'] :is([data-part='decrement-trigger'], [data-part='increment-trigger']):has(~ [data-part='input'])::after,
+  [data-scope='number-field'][data-part='control'] [data-part='input'] ~ :is([data-part='decrement-trigger'], [data-part='increment-trigger'])::after {
+    content: '';
+    position: absolute;
+    /* 线在钮的纵向中线上：钮高减线长，余下的上下均分 */
+    inset-block-start: calc((100% - var(--xh-number-field-trigger-divider-h, var(--xh-_number-field-divider-h))) / 2);
+    inline-size: 0;
+    block-size: var(--xh-number-field-trigger-divider-h, var(--xh-_number-field-divider-h));
+    /* 一道发丝线走 border 而不是底色：高对比档下底色被系统换成面色，线会整条消失，
+       边框那一档系统换的是边色，线还在 */
+    border-inline-start: var(--xh-stroke-thin) solid
+      var(--xh-number-field-trigger-divider, var(--xh-border-default));
+  }
+
+  /* 钮排在输入之前：线落在钮与输入之间那道间隙的正中。
+     位移是「半道间隙再加半根线」——线本身占一根发丝的宽，只退半道间隙会把它压到偏钮的一侧 */
+  [data-scope='number-field'][data-part='control'] :is([data-part='decrement-trigger'], [data-part='increment-trigger']):has(~ [data-part='input'])::after {
+    inset-inline-end: calc(
+      (var(--xh-number-field-control-gap, var(--xh-_number-field-gap)) + var(--xh-stroke-thin)) / -2
+    );
+  }
+
+  /* 钮排在输入之后：同一道间隙，换到钮的起始端 */
+  [data-scope='number-field'][data-part='control'] [data-part='input'] ~ :is([data-part='decrement-trigger'], [data-part='increment-trigger'])::after {
+    inset-inline-start: calc(
+      (var(--xh-number-field-control-gap, var(--xh-_number-field-gap)) + var(--xh-stroke-thin)) / -2
+    );
   }
 
   /* 悬停只在分段自己身上浮出一块底色与更实的符号，盒子的描边纹丝不动 */

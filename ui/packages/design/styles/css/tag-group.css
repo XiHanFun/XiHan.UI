@@ -107,11 +107,6 @@
     background: var(--xh-tag-group-item-bg-hover, var(--xh-bg-subtle-hover));
   }
 
-  /* 键盘落焦的标签画内收环；指针触发的聚焦不画 */
-  [data-scope='tag-group'][data-part='item']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   [data-scope='tag-group'][data-part='item']:focus:not(:focus-visible) {
     outline: none;
   }
@@ -187,11 +182,6 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 环往内收：命中区贴着标签内缘，往外画会被相邻标签压住 */
-  [data-scope='tag-group'][data-part='item-delete-trigger']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   /* —— 形态 —— */
   /* 形态只决定颜色怎么用。每个形态拆成两条：先是没写语气时的基线配色，
      再是写了语气时的覆盖。语气槽会沿继承流下来，覆盖那条必须带 [data-tone] 限定，
@@ -204,6 +194,12 @@
     background: var(--xh-tag-group-item-bg, var(--xh-bg-brand));
     color: var(--xh-tag-group-item-fg, var(--xh-fg-on-brand));
     box-shadow: var(--xh-tag-group-item-shadow, var(--xh-_tag-group-item-highlight));
+  }
+
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='tag-group'][data-part='item'][data-variant='solid']:focus-visible {
+    --xh-_ring-color: currentColor;
   }
 
   [data-scope='tag-group'][data-part='item'][data-variant='solid'][data-tone] {

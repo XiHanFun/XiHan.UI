@@ -337,6 +337,12 @@
     box-shadow: var(--xh-form-submit-shadow, var(--xh-_form-submit-highlight));
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='form'][data-part='submit-trigger']:not(:disabled):focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   [data-scope='form'][data-part='submit-trigger']:hover:not(:disabled) {
     border-color: var(--xh-form-submit-border-hover, var(--xh-form-submit-bg-hover, var(--xh-bg-brand-hover)));
     background: var(--xh-form-submit-bg-hover, var(--xh-bg-brand-hover));

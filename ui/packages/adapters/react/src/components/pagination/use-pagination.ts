@@ -1,8 +1,8 @@
 import type { Cleanup, Layer, Service } from '@xihan-ui/core'
-import type { PaginationApi, PaginationSchema } from '@xihan-ui/headless'
+import type { PaginationApi, PaginationSchema, SelectSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import { createRuntimeConfig } from '@xihan-ui/core'
-import { connectPagination, paginationMachine } from '@xihan-ui/headless'
+import { connectPagination, paginationMachine, paginationPageSizeSelectProps, selectMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { useCallback, useMemo, useRef } from 'react'
 import { useXhConfig } from '../../config/config'
@@ -24,6 +24,12 @@ export interface PaginationContext {
   visible: boolean
   /** 浮层搬到哪儿：全局配置 > 运行时配置 > body。 */
   portalContainer: () => Element | null
+  /** 每页条数那个下拉的触发器，它是那一层的定位锚点。 */
+  pageSizeTriggerRef: RefObject<HTMLElement | null>
+  pageSizePositionerRef: RefObject<HTMLElement | null>
+  pageSizeContentRef: RefObject<HTMLElement | null>
+  /** 下拉那一层此刻该不该渲染；与省略位那层各走各的闸门。 */
+  pageSizeVisible: boolean
 }
 
 export function usePagination(props: PaginationSchema['props']): PaginationContext {
@@ -33,6 +39,9 @@ export function usePagination(props: PaginationSchema['props']): PaginationConte
   const ellipsisRef = useRef<HTMLElement | null>(null)
   const positionerRef = useRef<HTMLElement | null>(null)
   const contentRef = useRef<HTMLElement | null>(null)
+  const pageSizeTriggerRef = useRef<HTMLElement | null>(null)
+  const pageSizePositionerRef = useRef<HTMLElement | null>(null)
+  const pageSizeContentRef = useRef<HTMLElement | null>(null)
 
   // 服务端没有 DOM，也就没有定位与消解层；退场闸门在 config 为 null 时退化成「跟着展开态」
   const config = useMemo(
@@ -65,16 +74,59 @@ export function usePagination(props: PaginationSchema['props']): PaginationConte
     service.refs.set('getContentEl', () => contentRef.current)
   }, [config])
 
+  // 下拉自己一层：触发器记为本层分支，点它算层内交互
+  const onCreatePageSize = useCallback((service: Service<SelectSchema>) => {
+    if (config) {
+      const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
+        kind: 'popover',
+        node: () => pageSizeContentRef.current,
+        branches: () => [pageSizeTriggerRef.current].filter(Boolean) as Element[],
+        isModal: () => false,
+        setModal: () => {},
+        surfaces: () => [],
+      })
+      service.refs.set('config', config)
+      service.refs.set('registerLayer', registerLayer)
+      service.refs.set('position', createPositionEngine())
+    }
+    service.refs.set('getAnchorEl', () => pageSizeTriggerRef.current)
+    service.refs.set('getFloatingEl', () => pageSizePositionerRef.current)
+    service.refs.set('getContentEl', () => pageSizeContentRef.current)
+  }, [config])
+
   const service = useMachine(paginationMachine, () => props, { scope, onCreate })
-  const api = connectPagination(service, reactNormalize)
+  // 内嵌下拉的 props 从翻页机现读，翻页机须先建立
+  const pageSizeSelect = useMachine(
+    selectMachine,
+    () => paginationPageSizeSelectProps(service),
+    { scope, onCreate: onCreatePageSize },
+  )
+  const api = connectPagination({ root: service, pageSizeSelect }, reactNormalize)
 
   // 退场闸门：收起从跟着展开态走，改成跟着 presence 走
   const visible = useOverlayExit({ config, isOpen: () => api.openEllipsis != null, contentRef })
+  const pageSizeVisible = useOverlayExit({
+    config,
+    isOpen: () => api.pageSizeSelect.open,
+    contentRef: pageSizeContentRef,
+  })
 
   const portalContainer = useCallback(
     () => xhConfig.portalContainer?.() ?? config?.portalContainer() ?? null,
     [xhConfig, config],
   )
 
-  return { api, service, ellipsisRef, positionerRef, contentRef, visible, portalContainer }
+  return {
+    api,
+    service,
+    ellipsisRef,
+    positionerRef,
+    contentRef,
+    visible,
+    portalContainer,
+    pageSizeTriggerRef,
+    pageSizePositionerRef,
+    pageSizeContentRef,
+    pageSizeVisible,
+  }
 }

@@ -1,10 +1,12 @@
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { PaginationApi, PaginationSchema } from './pagination.types'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { SelectApi } from '../select'
+import type { PaginationApi, PaginationServices } from './pagination.types'
 import { dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { connectSelect } from '../select'
 import { OVERLAY_PLACEMENT_LIST, overlayPositioned } from '../shared/overlay'
 import { paginationAnatomy } from './pagination.anatomy'
-import { PAGINATION_PAGE_SIZE_OPTIONS, PAGINATION_SIBLING_COUNT } from './pagination.machine'
-import { buildPageItems, buildPageSequence, clampPage, normalizeCount, normalizePageSize, pageRangeOf, totalPagesOf } from './pagination.range'
+import { PAGINATION_PAGE_SIZE_OPTIONS, PAGINATION_SIBLING_COUNT, paginationLabels } from './pagination.machine'
+import { buildPageItems, buildPageSequence, clampPage, normalizeCount, normalizePageSize, pageRangeOf, pageSizeOptionsOf, totalPagesOf } from './pagination.range'
 
 const parts = paginationAnatomy.build()
 
@@ -29,10 +31,10 @@ function availableSpaceVars(
 }
 
 export function connectPagination<T extends PropTypes>(
-  service: Service<PaginationSchema>,
+  services: PaginationServices,
   normalize: NormalizeProps<T>,
 ): PaginationApi<T> {
-  const { context, prop, send, state, scope } = service
+  const { context, prop, send, state, scope } = services.root
   const ids = scope.ids('pagination', 'content')
 
   const count = normalizeCount(prop('count'))
@@ -45,18 +47,7 @@ export function connectPagination<T extends PropTypes>(
   const canGoPrev = page > 1
   const canGoNext = page < totalPages
 
-  const translations = prop('translations')
-  const label = {
-    root: translations?.root ?? 'Pagination',
-    prevTrigger: translations?.prevTrigger ?? 'Previous page',
-    nextTrigger: translations?.nextTrigger ?? 'Next page',
-    item: translations?.item ?? ((value: number) => `Page ${value}`),
-    ellipsis: translations?.ellipsis ?? ((n: number) => `${n} more pages`),
-    pageSizeSelect: translations?.pageSizeSelect ?? 'Items per page',
-    pageSizeOption: translations?.pageSizeOption ?? ((size: number) => `${size} / page`),
-    summary: translations?.summary ?? ((start: number, end: number, total: number) => `${start}-${end} of ${total}`),
-    jumper: translations?.jumper ?? 'Go to page',
-  }
+  const label = paginationLabels(prop)
 
   const pageRange = pageRangeOf(page, pageSize, count)
 
@@ -78,10 +69,25 @@ export function connectPagination<T extends PropTypes>(
   const folded = foldedPages?.type === 'ellipsis' ? foldedPages.pages : []
 
   // 档位表只做取值来源，不决定长相：升序去重、每档至少 1
-  const pageSizeOptions = [...new Set((prop('pageSizeOptions') ?? PAGINATION_PAGE_SIZE_OPTIONS).map(normalizePageSize))]
-    .sort((a, b) => a - b)
+  const pageSizeOptions = pageSizeOptionsOf(prop('pageSizeOptions') ?? PAGINATION_PAGE_SIZE_OPTIONS)
+
+  // 每页条数那个下拉就是库里的 select，整份 api 转发出去，作者照它渲染角色节点。
+  // 两处名字改由 aria-label 直给：select 自己把名字指向「标签 + 当前值」两个节点，
+  // 而分页行里不摆可见标签，只剩当前值那一段——那是值不是名字，读屏会把「10 / 页」念成控件名
+  const select = connectSelect(services.pageSizeSelect, normalize)
+  /** 摘掉下拉指过去的名字链，换成这里直给的一句。 */
+  const named = (props: Record<string, unknown>): Record<string, unknown> => {
+    const { 'aria-labelledby': _chain, ...rest } = props
+    return { ...rest, 'aria-label': label.pageSizeSelect }
+  }
+  const pageSizeSelect: SelectApi<T> = {
+    ...select,
+    getTriggerProps: () => named(select.getTriggerProps() as Record<string, unknown>) as T['button'],
+    getListProps: () => named(select.getListProps() as Record<string, unknown>) as T['element'],
+  }
 
   return {
+    pageSizeSelect,
     page,
     pageSize,
     pageSizeOptions,
@@ -203,23 +209,12 @@ export function connectPagination<T extends PropTypes>(
     }),
 
     /**
-     * 每页条数控制器。用原生 select 而不是再造一个浮层：档位就那么几档，
-     * 浮层带不来什么，却要多接一层定位、消解与键盘。
+     * 每页条数控制器的挂载点：一个只管排布的格子，里头装的是库里的 select，
+     * 角色节点从 api.pageSizeSelect 取（那份 api 上的部件带的是 data-scope="select"）。
      */
-    getPageSizeSelectProps: () => normalize.select({
+    getPageSizeSelectProps: () => normalize.element({
       ...parts['page-size-select'].attrs,
-      'aria-label': label.pageSizeSelect,
-      'value': String(pageSize),
-      'onChange': (event: Event) => {
-        const el = event.target as HTMLSelectElement
-        const next = Number(el.value)
-        if (Number.isFinite(next))
-          send({ type: 'PAGE_SIZE.SET', pageSize: next })
-        // 受控时宿主可能不写回：DOM 的选中项已被用户改掉，而 vdom 那边没有变化就不会
-        // 打补丁，控件于是显示着一个并没生效的档位。这里同步回填一次；真写回了的话，
-        // 随后那次渲染会再把它设成新值，两者不冲突
-        el.value = String(pageSize)
-      },
+      'data-empty': dataAttr(totalPages === 0),
     }),
 
     getPositionerProps: () => normalize.element({

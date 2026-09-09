@@ -27,7 +27,7 @@ export default function Demo(): ReactNode {
         <>
           <XhPaginationPrevTrigger />
           {pages.map((p, i) => (p === "ellipsis"
-            ? <XhPaginationEllipsisTrigger key={`${p}-${i}`}>…</XhPaginationEllipsisTrigger>
+            ? <XhPaginationEllipsisTrigger key={`${p}-${i}`} />
             : <XhPaginationItem key={`${p}-${i}`} value={p}>{p}</XhPaginationItem>))}
           <XhPaginationNextTrigger />
         </>

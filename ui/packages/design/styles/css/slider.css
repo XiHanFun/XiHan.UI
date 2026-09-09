@@ -135,6 +135,12 @@
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='slider'][data-part='thumb']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   /* 内联样式把 inset-inline-start 定在值所在的比例上，那是拇指的**起始边**不是圆心；
      用负的逻辑外边距回拉半个直径，圆心才落在比例点上。
      这里刻意不用 translate(-50%)：rtl 下 inset-inline-start 映射到 right，

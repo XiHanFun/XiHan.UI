@@ -4,7 +4,9 @@ export { paginationKeyboard } from './pagination.keyboard'
 export {
   PAGINATION_PAGE_SIZE,
   PAGINATION_SIBLING_COUNT,
+  paginationLabels,
   paginationMachine,
+  paginationPageSizeSelectProps,
 } from './pagination.machine'
 export { paginationMeta } from './pagination.meta'
 export {
@@ -14,6 +16,7 @@ export {
   normalizeCount,
   normalizePageSize,
   pageRangeOf,
+  pageSizeOptionsOf,
   totalPagesOf,
 } from './pagination.range'
 export type { PaginationEllipsisSide, PaginationEntryRange, PaginationPage, PaginationPageItem } from './pagination.range'
@@ -24,5 +27,6 @@ export type {
   PaginationPageChangeDetails,
   PaginationPageSizeChangeDetails,
   PaginationSchema,
+  PaginationServices,
   PaginationTranslations,
 } from './pagination.types'

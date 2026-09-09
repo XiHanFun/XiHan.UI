@@ -9,11 +9,11 @@
   <nav data-xh-part="root">
     <button data-xh-part="prev-trigger"></button>
     <button data-xh-part="item" value="1">1</button>
-    <button data-xh-part="ellipsis-trigger" side="start">…</button>
+    <button data-xh-part="ellipsis-trigger" side="start"></button>
     <button data-xh-part="item" value="99">99</button>
     <button data-xh-part="item" value="100">100</button>
     <button data-xh-part="item" value="101">101</button>
-    <button data-xh-part="ellipsis-trigger" side="end">…</button>
+    <button data-xh-part="ellipsis-trigger" side="end"></button>
     <button data-xh-part="item" value="200">200</button>
     <button data-xh-part="next-trigger"></button>
 
@@ -54,7 +54,6 @@
         const el = document.createElement("button");
         el.dataset.xhPart = "ellipsis-trigger";
         el.setAttribute("side", item.side);
-        el.textContent = "…";
         root.insertBefore(el, next);
       } else {
         root.insertBefore(makeItem(item.value), next);

@@ -403,8 +403,7 @@
   [data-scope='color-picker'][data-part='channel-input']:focus-visible {
     border-color: var(--xh-color-picker-input-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    /* 往内收一道发丝：输入框贴着面板边排，环画在外沿会压到相邻通道 */
-    outline-offset: calc(-1 * var(--xh-stroke-thin));
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 打到一半的串：框里留着草稿，但值没动——描边提示"这串还没被收下" */
@@ -461,6 +460,12 @@
   [data-scope='color-picker'][data-part='eye-dropper-trigger'][data-state='picking'] {
     border-color: var(--xh-color-picker-action-border-active, var(--xh-bg-brand));
     background: var(--xh-color-picker-action-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='color-picker'][data-part='eye-dropper-trigger'][data-state='picking']:focus-visible {
+    --xh-_ring-color: currentColor;
   }
 
   [data-scope='color-picker'][data-part='eye-dropper-trigger']:disabled {

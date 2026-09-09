@@ -173,6 +173,12 @@
     border-color: var(--xh-drawer-trigger-border-open, var(--xh-border-control-hover));
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='drawer'][data-part='trigger'][data-state='open']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   [data-scope='drawer'][data-part='trigger']:active:not(:disabled) {
     background: var(--xh-drawer-trigger-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);

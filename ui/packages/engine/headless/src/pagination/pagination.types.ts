@@ -1,4 +1,5 @@
-import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { SelectApi, SelectSchema } from '../select'
 import type { PaginationEllipsisSide, PaginationEntryRange, PaginationPage, PaginationPageItem } from './pagination.range'
 
 export interface PaginationPageSizeChangeDetails {
@@ -124,6 +125,13 @@ export interface PaginationSchema extends MachineSchema {
   effect: 'waitForOpenDelay' | 'waitForCloseDelay' | 'trackPosition' | 'trackLayer'
 }
 
+/** 分页跑两台机器：翻页那台，与每页条数那个下拉。 */
+export interface PaginationServices {
+  root: Service<PaginationSchema>
+  /** 每页条数控制器；档位与当前档受控于 root，换档经回调送回去。 */
+  pageSizeSelect: Service<SelectSchema>
+}
+
 export interface PaginationApi<T extends PropTypes = PropTypes> {
   /** 当前页，恒在 [1, max(totalPages, 1)] 内。 */
   page: number
@@ -163,8 +171,13 @@ export interface PaginationApi<T extends PropTypes = PropTypes> {
   getItemProps: (props: PaginationItemProps) => T['button']
   /** 省略位：可展开的按钮，摊开后列出被折叠的页码。 */
   getEllipsisTriggerProps: (props: PaginationEllipsisTriggerProps) => T['button']
-  /** 每页条数控制器：绑到一个原生 select 上，档位由作者按 pageSizeOptions 渲染成 option。 */
-  getPageSizeSelectProps: () => T['select']
+  /** 每页条数控制器的挂载点：只管排布的一格，控件本体是内嵌下拉的角色节点。 */
+  getPageSizeSelectProps: () => T['element']
+  /**
+   * 每页条数那个下拉，整份 select 的 api。档位由 collection 给出（文字取
+   * translations.pageSizeOption），选中值即当前每页条数；作者照它渲染 select 的角色节点。
+   */
+  pageSizeSelect: SelectApi<T>
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   /** 收起摊开的省略位。 */

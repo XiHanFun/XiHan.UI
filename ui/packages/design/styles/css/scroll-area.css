@@ -58,11 +58,6 @@
     overflow-y: hidden;
   }
 
-  /* 偏移取负：环画在视口内侧，否则会被 root 的 overflow:hidden 裁掉半圈 */
-  [data-scope='scroll-area'][data-part='viewport']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   /* 有滚动条要占道时，视口在那条轴上收窄一条道的宽度，末端内容不再被压在滚动条底下。
      缩视口而不是给视口加内边距：滚动容器末端缘的 padding 计不计进 scrollWidth，各引擎不一致。 */
   [data-scope='scroll-area'][data-part='viewport'][data-lane-vertical] {

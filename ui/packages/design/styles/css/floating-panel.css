@@ -192,10 +192,6 @@
     cursor: default;
   }
 
-  [data-scope='floating-panel'][data-part='drag-trigger']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   /* —— 改尺把手 ——
      这一段刻意用物理的 inset / width / height：面板的坐标是屏幕坐标（连接层写的是
      left/top），指针位移与方向键推动的也是屏幕方向。改成逻辑属性后，RTL 下 inset-inline-start
@@ -212,10 +208,6 @@
      这两套禁用语义对不上 */
   [data-scope='floating-panel'][data-part='resize-trigger'][data-disabled] {
     cursor: default;
-  }
-
-  [data-scope='floating-panel'][data-part='resize-trigger']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='n'] {
@@ -336,6 +328,12 @@
   [data-scope='floating-panel'][data-part='window-state-trigger'][data-state='on'] {
     background: var(--xh-floating-panel-action-bg-active, var(--xh-bg-subtle-active));
     color: var(--xh-floating-panel-action-fg-active, var(--xh-fg-default));
+  }
+
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='floating-panel'][data-part='window-state-trigger'][data-state='on']:focus-visible {
+    --xh-_ring-color: currentColor;
   }
 
   /* 只换前景不叠 opacity：叠了之后禁用文字的对比度会掉到读不出来 */

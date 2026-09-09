@@ -48,11 +48,6 @@
     overflow-y: hidden;
   }
 
-  /* 偏移取负：环画在视口内侧，否则会被 root 的 overflow:hidden 裁掉半圈 */
-  [data-scope='virtualizer'][data-part='viewport']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   /* 撑出总长的那层，同时是条目的定位上下文——条目是绝对定位的，
      没有它就会以最近的定位祖先（多半是页面某处）为参照，整列飘走。 */
   [data-scope='virtualizer'][data-part='content'] {

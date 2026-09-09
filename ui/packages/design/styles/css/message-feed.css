@@ -53,11 +53,6 @@
     display: none;
   }
 
-  /* 偏移取负画在内侧，免得被外层裁掉 */
-  [data-scope='message-feed'][data-part='root']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   /* 滚动容器。overscroll-behavior 挡住滚到头之后把整页一起带走 */
   [data-scope='message-feed'][data-part='viewport'] {
     overflow-y: auto;

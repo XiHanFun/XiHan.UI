@@ -94,6 +94,12 @@
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='splitter'][data-part='resize-trigger']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   [data-scope='splitter'][data-part='resize-trigger'][data-orientation='horizontal'] {
     inline-size: var(--xh-splitter-trigger-thickness, var(--xh-space-1));
     cursor: col-resize;
@@ -111,11 +117,6 @@
   /* 只有正被拖的那条带 data-dragging：多条分隔条时全高亮就分不出手在哪一条上 */
   [data-scope='splitter'][data-part='resize-trigger'][data-dragging] {
     background: var(--xh-splitter-trigger-bg-dragging, var(--xh-bg-brand));
-  }
-
-  /* 焦点环往里画：分隔条只有几像素粗，往外画的那圈会被 root 的 overflow: hidden 切掉 */
-  [data-scope='splitter'][data-part='resize-trigger']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 分隔条是 div、role=separator，原生 disabled 在它身上不生效，
