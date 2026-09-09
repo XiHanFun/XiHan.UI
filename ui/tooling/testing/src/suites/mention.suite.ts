@@ -2,8 +2,7 @@ import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { mentionAnatomy, mentionKeyboard } from '@xihan-ui/headless'
 
 // 提及没有独立的 APG 模式：它是组合框那套「输入框 + aria-activedescendant」用在正文里，
-// 差别在于宿主是多行的（因此不写 role=combobox 与 aria-expanded），
-// 而选中动作是把光标处那段查询串换掉，不是替换整个值。
+// 差别在于选中动作是把光标处那段查询串换掉，不是替换整个值。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/combobox/'
 
 const INPUT = '[data-scope="mention"][data-part="input"]'
@@ -13,13 +12,13 @@ const INPUT = '[data-scope="mention"][data-part="input"]'
  * 快照只采属性，因此这一路只能直接读 DOM。
  */
 function assertText(doc: Document, expected: string): void {
-  const actual = doc.querySelector<HTMLTextAreaElement>(INPUT)?.value ?? null
+  const actual = doc.querySelector<HTMLInputElement>(INPUT)?.value ?? null
   if (actual !== expected)
     throw new Error(`正文不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
 }
 
 function assertCaret(doc: Document, expected: number): void {
-  const actual = doc.querySelector<HTMLTextAreaElement>(INPUT)?.selectionStart ?? null
+  const actual = doc.querySelector<HTMLInputElement>(INPUT)?.selectionStart ?? null
   if (actual !== expected)
     throw new Error(`光标位置不符：期望 ${expected}，实际 ${actual}`)
 }
@@ -29,7 +28,7 @@ function assertCaret(doc: Document, expected: number): void {
  * 而提及的入口正是「原生 input 事件 + 那一刻的光标位置」，只能直接写值再派事件。
  */
 async function typeInto(doc: Document, text: string, flush: () => Promise<void>, caret = text.length): Promise<void> {
-  const input = doc.querySelector<HTMLTextAreaElement>(INPUT)!
+  const input = doc.querySelector<HTMLInputElement>(INPUT)!
   input.focus()
   input.value = text
   input.setSelectionRange(caret, caret)
@@ -39,7 +38,7 @@ async function typeInto(doc: Document, text: string, flush: () => Promise<void>,
 
 /** 只挪光标、不改正文：keyup 里那几个纯移动键才会让机器重算触发。 */
 async function moveCaret(doc: Document, caret: number, flush: () => Promise<void>): Promise<void> {
-  const input = doc.querySelector<HTMLTextAreaElement>(INPUT)!
+  const input = doc.querySelector<HTMLInputElement>(INPUT)!
   input.setSelectionRange(caret, caret)
   input.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowLeft', bubbles: true }))
   await flush()
@@ -67,13 +66,13 @@ const ITEMS: readonly FixtureNode[] = [
   itemNode('poly', 'Poly'),
 ]
 
-/** 输入宿主必须是 textarea：WC 侧由 fixture 的 tag 决定，div 既不可聚焦也没有 value。 */
+/** 输入宿主必须是单行 input：WC 侧由 fixture 的 tag 决定，div 既不可聚焦也没有 value。 */
 function tree(items: readonly FixtureNode[] = ITEMS): FixtureNode {
   return {
     part: 'root',
     children: [
       // 可及名字归作者：这里没有 label 部件，输入框自己带一句
-      { part: 'input', tag: 'textarea', attrs: { 'aria-label': '正文' } },
+      { part: 'input', tag: 'input', attrs: { 'aria-label': '正文' } },
       {
         part: 'positioner',
         children: [{ part: 'content', children: items }],
@@ -91,7 +90,7 @@ export const mentionSuite: ConformanceSuite = {
   fixture: tree(),
   cases: [
     {
-      name: '初始收起：多行宿主不写 role 与 aria-expanded，其余组合框属性互指',
+      name: '初始收起：单行宿主写足组合框那一套属性，彼此互指',
       spec: { apg: `${APG}#roles_states_properties` },
       initial: {
         order: [
@@ -117,13 +116,10 @@ export const mentionSuite: ConformanceSuite = {
         parts: {
           root: { 'data-state': 'closed', 'data-disabled': null },
           input: {
-            // textarea 的允许角色只有它自带的 textbox，改角色是文档一致性违规
-            'role': null,
-            // aria-expanded 不在 textbox 的支持属性里
-            'aria-expanded': null,
-            // textarea 没有 type 属性
-            'type': null,
-            // 「有候选浮层」改由这四条表达，它们 textbox 都支持
+            // 单行 input 取 combobox 角色，开合经 aria-expanded 上报
+            'role': 'combobox',
+            'aria-expanded': 'false',
+            'type': 'text',
             'aria-haspopup': 'listbox',
             'aria-autocomplete': 'list',
             'aria-controls': '@part(content)',
@@ -174,7 +170,7 @@ export const mentionSuite: ConformanceSuite = {
           run: ({ doc, flush }) => typeInto(doc, '你好 @li', flush),
           expect: {
             parts: {
-              input: { 'data-state': 'open' },
+              input: { 'data-state': 'open', 'aria-expanded': 'true' },
               content: { 'hidden': null, 'data-state': 'open' },
             },
             // 先落正文再开浮层：正文是打字的直接结果，开合是从光标算出来的
@@ -402,7 +398,7 @@ export const mentionSuite: ConformanceSuite = {
     {
       name: '没有可提交的候选时回车不被吞：只把浮层收起来',
       spec: { apg: `${APG}#keyboardinteraction` },
-      covers: ['mention.kbd.newline'],
+      covers: ['mention.kbd.enter-pass'],
       fixture: () => tree([]),
       steps: [
         {

@@ -1,4 +1,16 @@
 {
+  // 包外围的 node 侧代码：门禁脚本、构建脚本，以及各包的构建与测试配置。
+  // 由根 package.json 的 typecheck 脚本跑。
+  //
+  // 下面前三条是 .mjs：node.json 开着 allowJs 但没开 checkJs，它们只是进了 program，
+  // tsc 一条错也不报。要真检查得先给这批脚本补上类型标注。
   "extends": "@xihan-ui/tsconfig/node.json",
-  "include": ["tooling/**/*.mjs", "*.config.*", "scripts/**/*.mjs"]
+  "include": [
+    "tooling/**/*.mjs",
+    "scripts/**/*.mjs",
+    "*.config.*",
+    "packages/*/*/tsdown.config.ts",
+    "packages/*/*/vitest*.config.ts",
+    "tooling/*/tsdown.config.ts"
+  ]
 }

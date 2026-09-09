@@ -11,9 +11,11 @@
 
 - 整个输入框的值就是选中项：用[组合框](./combobox)。
 - 只是补全普通词汇：用[组合框](./combobox)或原生自动补全。
+- 正文本身要跨行：本组件的输入框是单行的，不提供多行形态。
 
 ## 特性
 
+- 单行输入框，与其它输入控件同一档行高与内衬。
 - 多种前缀各自映射一份候选。
 - `onQueryChange` 给出当前查询串，异步候选据此拉取。
 - 正文可受控，选中时另有回调。
@@ -162,7 +164,7 @@ variant 换正文框的描边与底色，候选面板不受影响
 | `close` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` | 标题；`for` 恒写向 input，故须是原生 `&lt;label&gt;`。 |
-| `getInputProps` | `(props?: MentionInputProps) => T['textarea']` | 不传参即多行 textarea。 |
+| `getInputProps` | `() => T['input']` | 单行输入框；正文就写在它身上。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` | 一条候选都没有时显出的空态；有候选时带 hidden 收起。 |
@@ -180,8 +182,8 @@ variant 换正文框的描边与底色，候选面板不受影响
 | `可打印字符` | open | 查询串跟着变长，过滤由调用方按 onQueryChange 自己做 |
 | `ArrowDown` | open | 高亮移到下一个候选（禁用项跳过、尽头按 loop 回绕），焦点不动 |
 | `ArrowUp` | open | 高亮移到上一个候选（禁用项跳过、尽头按 loop 回绕），焦点不动 |
-| `Enter` | open, 有高亮且未禁用 | 把候选文本插到光标处替换查询串，光标落到插入内容之后，浮层收起；这次回车不换行 |
-| `Enter` | open, 无可提交候选 | 照常换行，只把浮层收起来 |
+| `Enter` | open, 有高亮且未禁用 | 把候选文本插到光标处替换查询串，光标落到插入内容之后，浮层收起；这次回车被吞掉，不落到表单上 |
+| `Enter` | open, 无可提交候选 | 不吞按键，只把浮层收起来；摆在表单里时这次回车照常提交表单 |
 | `Escape` | open | 收起浮层且正文不变；光标不离开这个触发点就不再自动展开 |
 | `Tab` / `Shift+Tab` | open | 收起浮层且不拦按键，焦点按 Tab 序列自然离开 |
 | `ArrowLeft` / `ArrowRight` / `Home` / `End` | 任意时候 | 一律不接管：光标照常移动，触发按新的光标位置重算，挪出查询串即收起 |
@@ -195,12 +197,12 @@ variant 换正文框的描边与底色，候选面板不受影响
 | `input` | `aria-activedescendant` | `item` 部件的 id \| undefined |
 | `input` | `aria-autocomplete` | 'list' |
 | `input` | `aria-controls` | `content` 部件的 id |
-| `input` | `aria-expanded` | undefined \| 'true' \| 'false' |
+| `input` | `aria-expanded` | 'true' \| 'false' |
 | `input` | `aria-haspopup` | 'listbox' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | props.translations.input |
 | `input` | `aria-labelledby` | `label` 部件的 id |
-| `input` | `role` | undefined \| 'combobox' |
+| `input` | `role` | 'combobox' |
 | `content` | `aria-busy` | 'true' \| undefined |
 | `content` | `aria-label` | props.translations.content |
 | `content` | `role` | 'listbox' |
@@ -249,7 +251,7 @@ variant 换正文框的描边与底色，候选面板不受影响
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-mention-content-bg` · `--xh-mention-content-border` · `--xh-mention-content-fg` · `--xh-mention-content-gap` · `--xh-mention-content-max-h` · `--xh-mention-content-max-w` · `--xh-mention-content-min-w` · `--xh-mention-content-px` · `--xh-mention-content-py` · `--xh-mention-content-radius` · `--xh-mention-content-shadow` · `--xh-mention-empty-bg` · `--xh-mention-empty-border` · `--xh-mention-empty-fg` · `--xh-mention-empty-font-size` · `--xh-mention-empty-px` · `--xh-mention-empty-py` · `--xh-mention-empty-radius` · `--xh-mention-empty-shadow` · `--xh-mention-input-autofill-bg` · `--xh-mention-input-autofill-fg` · `--xh-mention-input-bg` · `--xh-mention-input-bg-disabled` · `--xh-mention-input-bg-hover` · `--xh-mention-input-bg-readonly` · `--xh-mention-input-border` · `--xh-mention-input-border-focus` · `--xh-mention-input-border-hover` · `--xh-mention-input-border-invalid` · `--xh-mention-input-fg` · `--xh-mention-input-font-size` · `--xh-mention-input-h` · `--xh-mention-input-min-w` · `--xh-mention-input-px` · `--xh-mention-input-py` · `--xh-mention-input-radius` · `--xh-mention-input-shadow` · `--xh-mention-item-bg-hover` · `--xh-mention-item-fg` · `--xh-mention-item-font-size` · `--xh-mention-item-gap` · `--xh-mention-item-leading` · `--xh-mention-item-px` · `--xh-mention-item-py` · `--xh-mention-item-radius` · `--xh-mention-label-fg` · `--xh-mention-label-fg-disabled` · `--xh-mention-label-font-size` · `--xh-mention-label-font-weight` · `--xh-mention-label-gap` · `--xh-mention-layer` · `--xh-mention-loading-bg` · `--xh-mention-loading-border` · `--xh-mention-loading-fg` · `--xh-mention-loading-font-size` · `--xh-mention-loading-px` · `--xh-mention-loading-py` · `--xh-mention-loading-radius` · `--xh-mention-loading-shadow` · `--xh-mention-placeholder-fg`
+`--xh-mention-content-bg` · `--xh-mention-content-border` · `--xh-mention-content-fg` · `--xh-mention-content-gap` · `--xh-mention-content-max-h` · `--xh-mention-content-max-w` · `--xh-mention-content-min-w` · `--xh-mention-content-px` · `--xh-mention-content-py` · `--xh-mention-content-radius` · `--xh-mention-content-shadow` · `--xh-mention-empty-bg` · `--xh-mention-empty-border` · `--xh-mention-empty-fg` · `--xh-mention-empty-font-size` · `--xh-mention-empty-px` · `--xh-mention-empty-py` · `--xh-mention-empty-radius` · `--xh-mention-empty-shadow` · `--xh-mention-input-autofill-bg` · `--xh-mention-input-autofill-fg` · `--xh-mention-input-bg` · `--xh-mention-input-bg-disabled` · `--xh-mention-input-bg-hover` · `--xh-mention-input-bg-readonly` · `--xh-mention-input-border` · `--xh-mention-input-border-focus` · `--xh-mention-input-border-hover` · `--xh-mention-input-border-invalid` · `--xh-mention-input-fg` · `--xh-mention-input-font-size` · `--xh-mention-input-h` · `--xh-mention-input-min-w` · `--xh-mention-input-px` · `--xh-mention-input-radius` · `--xh-mention-input-shadow` · `--xh-mention-item-bg-hover` · `--xh-mention-item-fg` · `--xh-mention-item-font-size` · `--xh-mention-item-gap` · `--xh-mention-item-leading` · `--xh-mention-item-px` · `--xh-mention-item-py` · `--xh-mention-item-radius` · `--xh-mention-label-fg` · `--xh-mention-label-fg-disabled` · `--xh-mention-label-font-size` · `--xh-mention-label-font-weight` · `--xh-mention-label-gap` · `--xh-mention-layer` · `--xh-mention-loading-bg` · `--xh-mention-loading-border` · `--xh-mention-loading-fg` · `--xh-mention-loading-font-size` · `--xh-mention-loading-px` · `--xh-mention-loading-py` · `--xh-mention-loading-radius` · `--xh-mention-loading-shadow` · `--xh-mention-placeholder-fg`
 
 ## 动效
 
@@ -265,7 +267,8 @@ variant 换正文框的描边与底色，候选面板不受影响
 
 ## 组合
 
-- 输入宿主可以是[文本输入](./text-field)的多行形态，或 AI 场景里的[提示输入框](./prompt-input)。
+- 正文只有一行，与[文本输入](./text-field)的单行档并排时等高。
+- 要在多行正文里 @ 人：本库现在给不出这样的组件。
 
 ## 最佳实践
 

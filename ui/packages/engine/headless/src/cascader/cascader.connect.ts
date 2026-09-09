@@ -13,7 +13,12 @@ import {
   cascaderStepColumn,
 } from './cascader.columns'
 import { CASCADER_DEFAULT_PLACEMENT, CASCADER_DEFAULT_SEPARATOR, findCascaderItemEl } from './cascader.machine'
-import { cascaderFilterCandidates, cascaderSearchCandidates } from './cascader.search'
+import {
+  cascaderFilterCandidates,
+  cascaderResolveSearchHighlight,
+  cascaderSearchCandidates,
+  cascaderStepSearch,
+} from './cascader.search'
 
 const parts = cascaderAnatomy.build()
 
@@ -174,15 +179,21 @@ export function connectCascader<T extends PropTypes>(
     ? cascaderFilterCandidates(cascaderSearchCandidates(collection, !!prop('changeOnSelect')), inputValue)
         .map(candidate => ({ ...candidate, key: cascaderPathKey(candidate.path) }))
     : []
-  const searchHighlightIndex = searchResults.length === 0
-    ? -1
-    : Math.min(context.get('searchIndex'), searchResults.length - 1)
+  // 高亮只落在可选候选上：禁用整条的候选轮不到它，aria-activedescendant 也就不会指过去
+  const searchHighlightIndex = cascaderResolveSearchHighlight(searchResults, context.get('searchIndex'))
   const searchItemId = (key: string): string => scope.partId('cascader', `search-item-${key}`)
 
-  /** 选中一条候选：与点列内条目同一语义；禁用整条不认。 */
+  /** 选中一条候选：与点列内条目同一语义；只读与禁用改不了选中值，禁用整条也不认。 */
   const selectSearchResult = (result: CascaderSearchResult | undefined): void => {
-    if (result && !result.disabled)
-      send({ type: 'ITEM.SELECT', path: result.path })
+    if (!interactive || !result || result.disabled)
+      return
+    send({ type: 'ITEM.SELECT', path: result.path })
+  }
+
+  /** 候选高亮走一步，落点与当下不同才发事件。 */
+  const highlightSearch = (next: number): void => {
+    if (next >= 0 && next !== searchHighlightIndex)
+      send({ type: 'SEARCH.HIGHLIGHT', index: next })
   }
 
   // 读屏与空态占位的文案：实例覆盖并入默认。
@@ -191,6 +202,7 @@ export function connectCascader<T extends PropTypes>(
     empty: prop('translations')?.empty ?? 'No data',
     noMatch: prop('translations')?.noMatch ?? 'No matches',
     column: prop('translations')?.column ?? 'Options',
+    searchInput: prop('translations')?.searchInput ?? 'Search',
     searchList: prop('translations')?.searchList ?? 'Search results',
     clearTrigger: prop('translations')?.clearTrigger ?? 'Clear',
   }
@@ -476,6 +488,8 @@ export function connectCascader<T extends PropTypes>(
       'hidden': !searchable || undefined,
       'autocomplete': 'off',
       'autocapitalize': 'none',
+      // 字段标签名的是整个控件（trigger 指着它），浮层里这个框只能自带一句
+      'aria-label': translations.searchInput,
       'aria-autocomplete': 'list',
       'aria-controls': ids['search-list'],
       // 没有高亮可指时属性整个缺席
@@ -489,30 +503,64 @@ export function connectCascader<T extends PropTypes>(
         // 组合期间的按键属于输入法候选框，组件一律不接
         if (isComposingEvent(event))
           return
-        // 横向键与 Home/End 留给光标；stopPropagation 挡掉 content 的跨列导航
-        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'Home' || event.key === 'End') {
+        // 带 Ctrl/Cmd/Alt 的组合不归检索框管，与浮层壳同一条家规
+        if (event.ctrlKey || event.metaKey || event.altKey)
+          return
+        // 浮层壳把落在检索框里的按键整个让开，Tab 收起只能在这里收口；
+        // 不 preventDefault，焦点按 Tab 序列自然离开
+        if (event.key === 'Tab') {
+          send({ type: 'CLOSE', src: 'tab' })
+          return
+        }
+        // 横向键留给光标；stopPropagation 挡掉 content 的跨列导航
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
           event.stopPropagation()
           return
         }
         if (event.key === 'Escape') {
-          // 先清词回列视图，词已空才放行给消解层收浮层
+          // 词非空就先清词回列视图。消解层在 document 捕获期按同一判据分过一次岔，
+          // 这一支管的是没挂消解层的宿主
           if (inputValue !== '') {
             event.stopPropagation()
             send({ type: 'INPUT.CHANGE', value: '' })
           }
           return
         }
-        if (!searching)
+        // 列视图当下顶着（检索词为空）：上下键把焦点交给列，Home/End 仍归光标
+        if (!searching) {
+          if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault()
+            event.stopPropagation()
+            // 有锚点就落回锚点，没有就按方向进当前列的头尾
+            if (focusedMeta)
+              focusMeta(focusedMeta)
+            else
+              focusBy(event.key === 'ArrowDown' ? 'first' : 'last')
+            return
+          }
+          if (event.key === 'Home' || event.key === 'End')
+            event.stopPropagation()
           return
+        }
+        // 候选列表顶着：方向键与 Home/End 都走高亮，禁用候选跳过
         if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
           event.preventDefault()
           event.stopPropagation()
-          const step = event.key === 'ArrowDown' ? 1 : -1
-          const next = Math.min(Math.max(searchHighlightIndex + step, 0), searchResults.length - 1)
-          send({ type: 'SEARCH.HIGHLIGHT', index: next })
+          highlightSearch(cascaderStepSearch(searchResults, searchHighlightIndex, event.key === 'ArrowDown' ? 1 : -1, loop))
+          return
+        }
+        if (event.key === 'Home' || event.key === 'End') {
+          event.preventDefault()
+          event.stopPropagation()
+          highlightSearch(event.key === 'Home'
+            ? cascaderStepSearch(searchResults, -1, 1, false)
+            : cascaderStepSearch(searchResults, searchResults.length, -1, false))
           return
         }
         if (event.key === 'Enter') {
+          // 没有可选候选（无匹配或整批禁用）就不吞这个键，别让这一下悄无声息地消失
+          if (searchHighlightIndex < 0)
+            return
           event.preventDefault()
           event.stopPropagation()
           selectSearchResult(searchResults[searchHighlightIndex])

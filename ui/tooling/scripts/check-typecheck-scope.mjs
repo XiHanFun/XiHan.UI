@@ -10,11 +10,10 @@
 //
 // 豁免登记在 tooling/scripts/typecheck-scope.json；表两侧都反查：登记了却已经合规、
 // 或者包/tests 目录没了，都判红。
-import { readdir, readFile, stat } from 'node:fs/promises'
 import { join, posix } from 'node:path'
 import process from 'node:process'
+import { exists, listFiles, listPackages, matchesAny, readJson } from './lib/tsconfig.mjs'
 
-const PACKAGE_GLOBS = ['packages/*/*', 'tooling/*']
 const REGISTRY = 'tooling/scripts/typecheck-scope.json'
 const TEST_CONFIG = 'tsconfig.test.json'
 
@@ -27,140 +26,6 @@ const FORBIDDEN_OFF = [
   'noUncheckedIndexedAccess',
   'noImplicitOverride',
 ]
-
-/** 去掉 // 与块注释，让带注释的 tsconfig 也能 JSON.parse；字符串里的斜杠星号原样留着。 */
-function stripJsonComments(text) {
-  let out = ''
-  let inString = false
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i]
-    if (inString) {
-      out += ch
-      if (ch === '\\') {
-        out += text[++i] ?? ''
-        continue
-      }
-      if (ch === '"')
-        inString = false
-      continue
-    }
-    if (ch === '"') {
-      inString = true
-      out += ch
-      continue
-    }
-    if (ch === '/' && text[i + 1] === '/') {
-      while (i < text.length && text[i] !== '\n')
-        i++
-      out += '\n'
-      continue
-    }
-    if (ch === '/' && text[i + 1] === '*') {
-      i += 2
-      while (i < text.length && !(text[i] === '*' && text[i + 1] === '/'))
-        i++
-      i++
-      continue
-    }
-    out += ch
-  }
-  return out
-}
-
-async function readJson(path) {
-  return JSON.parse(stripJsonComments(await readFile(path, 'utf8')))
-}
-
-async function exists(path) {
-  try {
-    await stat(path)
-    return true
-  }
-  catch {
-    return false
-  }
-}
-
-/** tsconfig 的 include/exclude 通配转成正则：** 跨目录，* 与 ? 不跨。 */
-function patternToRegExp(pattern) {
-  let body = ''
-  for (let i = 0; i < pattern.length; i++) {
-    const ch = pattern[i]
-    if (ch === '*') {
-      if (pattern[i + 1] === '*' && pattern[i + 2] === '/') {
-        body += '(?:.*/)?'
-        i += 2
-      }
-      else if (pattern[i + 1] === '*') {
-        body += '.*'
-        i += 1
-      }
-      else {
-        body += '[^/]*'
-      }
-    }
-    else if (ch === '?') {
-      body += '[^/]'
-    }
-    else if ('.+^${}()|[]\\/'.includes(ch)) {
-      body += `\\${ch}`
-    }
-    else {
-      body += ch
-    }
-  }
-  return new RegExp(`^${body}$`)
-}
-
-/** tsconfig 里不带扩展名的目录式条目等价于该目录下的全部源文件。 */
-function normalizePattern(pattern) {
-  return /\.[^/]*$/.test(pattern) ? pattern : posix.join(pattern, '**/*')
-}
-
-function matchesAny(patterns, relPath) {
-  return patterns.some(p => patternToRegExp(normalizePattern(p)).test(relPath))
-}
-
-/** 列出目录下全部文件的相对路径（posix 分隔符）。 */
-async function listFiles(dir, base) {
-  const out = []
-  for (const entry of await readdir(dir, { withFileTypes: true })) {
-    const full = join(dir, entry.name)
-    const rel = posix.join(base, entry.name)
-    if (entry.isDirectory())
-      out.push(...await listFiles(full, rel))
-    else
-      out.push(rel)
-  }
-  return out
-}
-
-/** 按 pnpm-workspace 的两段 glob 展开包目录。 */
-async function listPackages() {
-  const dirs = []
-  for (const glob of PACKAGE_GLOBS) {
-    const segments = glob.split('/')
-    let level = [segments[0]]
-    for (const seg of segments.slice(1)) {
-      const next = []
-      for (const parent of level) {
-        for (const entry of await readdir(parent, { withFileTypes: true })) {
-          if (!entry.isDirectory())
-            continue
-          if (seg !== '*' && seg !== entry.name)
-            continue
-          next.push(posix.join(parent, entry.name))
-        }
-      }
-      level = next
-    }
-    for (const dir of level) {
-      if (await exists(join(dir, 'package.json')))
-        dirs.push(dir)
-    }
-  }
-  return dirs.sort()
-}
 
 const registry = await readJson(REGISTRY)
 const exempt = new Map(registry.exempt.map(e => [e.package, e.why]))

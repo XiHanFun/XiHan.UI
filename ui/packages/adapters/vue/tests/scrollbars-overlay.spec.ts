@@ -75,7 +75,7 @@ async function mountOverlay(
 }
 
 /** 打字：写值、摆光标、派原生 input 事件——提及的入口就是这三件。 */
-async function typeAt(el: HTMLTextAreaElement): Promise<void> {
+async function typeAt(el: HTMLInputElement): Promise<void> {
   el.focus()
   el.value = '@'
   el.setSelectionRange(1, 1)
@@ -93,7 +93,7 @@ async function mountMention(): Promise<void> {
     ]),
   ]))
   await settle()
-  await typeAt(document.querySelector<HTMLTextAreaElement>('[data-scope="mention"][data-part="input"]')!)
+  await typeAt(document.querySelector<HTMLInputElement>('[data-scope="mention"][data-part="input"]')!)
 }
 
 interface PageItem { type: string, side?: string, value?: number }

@@ -531,7 +531,7 @@ describe('集合浮层族的原生表单重置', () => {
         collection={[{ value: 'lilei', label: 'Lilei' }]}
       />,
     )
-    const input = (): HTMLTextAreaElement => part('mention', 'input') as unknown as HTMLTextAreaElement
+    const input = (): HTMLInputElement => part('mention', 'input') as unknown as HTMLInputElement
     expect(input().value).toBe('@lilei 早')
     // 正文只落 DOM property，改它得直接写值再派原生 input 事件
     act(() => {

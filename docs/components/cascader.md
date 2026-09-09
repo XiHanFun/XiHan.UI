@@ -238,7 +238,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `searching` | `boolean` | 正处在搜索视图（开了 searchable 且输入非空）：列视图让位给候选列表。 |
 | `inputValue` | `string` | 搜索框里的原始串。 |
 | `searchResults` | `readonly CascaderSearchResult[]` | 过滤后的候选：整条路径连缀匹配，带 pathKey 与禁用标记。 |
-| `searchHighlightIndex` | `number` | 候选里的虚拟高亮下标（已夹进候选长度）；没有候选为 -1。 |
+| `searchHighlightIndex` | `number` | 候选里的虚拟高亮下标，恒落在一条可选候选上；没有候选或整批禁用为 -1。 |
 | `translations` | `CascaderTranslations` | 空态占位的文案：实例覆盖并入默认后的完整一份。 |
 | `setInputValue` | `(next: string) => void` |  |
 | `setOpen` | `(next: boolean) => void` |  |
@@ -288,6 +288,17 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `Enter` / `Space` | open, 焦点条目未禁用 | 叶子：落值并收起浮层、焦点归还 trigger。分支：展开它的子列且浮层不收起，changeOnSelect 打开时同时落值 |
 | `Escape` | open | 收起浮层并把焦点归还 trigger，选中值不变 |
 | `Tab` / `Shift+Tab` | open | 收起浮层，焦点不归还 trigger，按 Tab 序列自然离开 |
+| `可打印字符` | open, focus in input, searchable | 改写检索词；trim 后非空即把列视图整个换成候选列表（整条路径连缀匹配），高亮落到首个可选候选 |
+| `ArrowDown` | open, focus in input, 检索词非空 | 高亮移到下一个候选（禁用整条的候选跳过；loop 默认开，末条回绕到首条），焦点留在检索框 |
+| `ArrowUp` | open, focus in input, 检索词非空 | 高亮移到上一个候选（禁用整条的候选跳过；loop 默认开，首条回绕到末条），焦点留在检索框 |
+| `Home` | open, focus in input, 检索词非空 | 高亮移到首个可选候选；检索词为空时不接管，光标照常跳到行首 |
+| `End` | open, focus in input, 检索词非空 | 高亮移到末个可选候选；检索词为空时不接管，光标照常跳到行尾 |
+| `Enter` | open, focus in input, 有高亮候选 | 把整条候选路径落成选中值：单选收起浮层、焦点归还 trigger，多选并入集合且浮层不收起；两种都清掉检索词回列视图。无可选候选时不吞这个键 |
+| `Escape` | open, focus in input, 检索词非空 | 清掉检索词回到列视图，浮层不收起、焦点留在检索框；检索词已空才轮到收浮层那一档 |
+| `ArrowDown` / `ArrowUp` | open, focus in input, 检索词为空 | 把焦点交给列视图：有锚点条目就落回它，没有则 ArrowDown 进当前列首个可用条目、ArrowUp 进末个 |
+| `ArrowLeft` / `ArrowRight` | open, focus in input | 不接管，留给检索框自己移光标；进子列 / 回上一列那一套只在焦点落在条目上时发生 |
+| `Tab` / `Shift+Tab` | open, focus in input | 收起浮层，焦点不归还 trigger，按 Tab 序列自然离开 |
+| `输入法组合期间的任意键` | open, focus in input, isComposing | 一律不接管：组合期的 Enter 与上下键属于输入法候选框，既不选中候选也不移高亮 |
 
 ## 无障碍
 
@@ -308,6 +319,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `input` | `aria-activedescendant` | `search-item` 部件的 id \| undefined |
 | `input` | `aria-autocomplete` | 'list' |
 | `input` | `aria-controls` | `search-list` 部件的 id |
+| `input` | `aria-label` | translations.searchInput |
 | `search-list` | `aria-label` | translations.searchList |
 | `search-list` | `aria-multiselectable` | 'true' \| 'false' |
 | `search-list` | `role` | 'listbox' |

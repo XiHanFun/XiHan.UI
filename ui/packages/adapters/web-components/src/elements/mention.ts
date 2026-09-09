@@ -1,7 +1,6 @@
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
   MentionInputEl,
-  MentionInputHost,
   MentionItemProps,
   MentionNode,
   MentionOpenChangeDetails,
@@ -37,10 +36,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 邮箱地址里的 @ 因此不会误触发；前缀到光标之间那段就是查询串。其二，选中候选不是替换整个值，
  * 而是把那段查询串换成候选文本、前后文一字不动，光标随后落在插入内容之后。
  *
- * input 部件写成 textarea（缺省）时保留它自带的 textbox 角色：ARIA in HTML 只允许 textarea
- * 取 textbox，而 aria-expanded 不在 textbox 的支持属性里，两者一并让位；
- * 「有候选浮层」改由 aria-haspopup、aria-controls、aria-autocomplete 与 aria-activedescendant 表达。
- * 写成 input 时才补上 role=combobox 与 aria-expanded。
+ * input 部件是单行 `<input>`，元素往上打 role=combobox 与 aria-expanded；
+ * 候选身份经 aria-controls、aria-autocomplete 与 aria-activedescendant 上报。
  *
  * 过滤不由本元素做：查询串变化时派发 query-change，作者据此增删 item 节点。
  *
@@ -67,7 +64,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires open-change - 浮层开合；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state/data-disabled 与三个视觉轴）
  * @csspart label - 标题；`for` 恒写向输入框，故须是原生 `<label>` 才点得动
- * @csspart input - 输入框，写 textarea（推荐）或 input；没给 translations.input 时名字取自 label 部件
+ * @csspart input - 单行输入框，须写成 `<input>`；没给 translations.input 时名字取自 label 部件
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - role=listbox 容器（消解层的根节点），收起时带 hidden
  * @csspart empty - 一条候选都没有时显出的空态；须与 content 同级（listbox 里只许放 option）
@@ -247,10 +244,8 @@ export class XhMentionElement extends XhElement {
     put('empty', api.getEmptyProps() as Record<string, unknown>)
     put('loading', api.getLoadingProps() as Record<string, unknown>)
 
-    // 宿主标签直接读作者写的标记：作者摆的是 textarea 还是 input，DOM 已经说明白了
     const inputEl = this.getPart('input') as MentionInputEl | null
-    const inputHost: MentionInputHost = inputEl?.tagName === 'INPUT' ? 'input' : 'textarea'
-    const inputProps = api.getInputProps({ as: inputHost }) as Record<string, unknown>
+    const inputProps = api.getInputProps() as Record<string, unknown>
     // 值一样就别重写：给 value 重新赋值会把光标弹到末尾，正文中间的提及就插不进去了
     if (inputEl && inputEl.value === inputProps.value)
       delete inputProps.value

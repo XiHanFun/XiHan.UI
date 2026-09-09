@@ -15,7 +15,7 @@ export interface MentionContext {
   /** 机器实例，供部件直接上报 DOM 侧事实。 */
   service: Service<MentionSchema>
   api: ComputedRef<MentionApi>
-  /** 输入宿主，textarea 或 input；由 XhMentionInput 的 as 决定渲染成哪个。 */
+  /** 单行输入框，由 XhMentionInput 渲出来。 */
   inputRef: Ref<MentionInputEl | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>

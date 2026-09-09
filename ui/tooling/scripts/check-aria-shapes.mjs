@@ -9,6 +9,9 @@
 // ③ aria-busy 写省略式；凡在 DOM 上说了「正在加载」的组件都得报 aria-busy。
 // ④ 报了 aria-busy 的组件，皮肤得把在途画出来，且不许只画在 cursor 上。
 //    ③ 与 ④ 是同一份契约的两半：③ 管读屏那一侧，④ 管眼睛这一侧。
+// ⑤ 发了 role='toolbar' 的连接层必须真的实现那套走位：整条只占一个 Tab 位
+//    （roving tabindex），条内靠方向键走。只发角色不发走位，读屏把它念成工具条、
+//    键盘用户却得一个个 Tab 过去，名实不符。当不了工具条就报 role='group'。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -64,6 +67,7 @@ let connects = 0
 let ariaHidden = 0
 let ariaBusy = 0
 let listboxTriggers = 0
+let toolbarRoles = 0
 
 /** 抠出 getXxxProps 的函数体（到下一个 getXxxProps 或对象末尾）。 */
 function getter(src, name) {
@@ -74,6 +78,14 @@ function getter(src, name) {
   const next = rest.search(/\n\s{4}get[A-Z][A-Za-z]*Props\s*[:(]/)
   return next < 0 ? rest : rest.slice(0, next)
 }
+
+/** 一份 connect 里所有 getXxxProps 的名字，文档序。 */
+function getterNames(src) {
+  return [...src.matchAll(/\n\s{4}(get[A-Z][A-Za-z]*Props)\s*[:(]/g)].map(m => m[1])
+}
+
+const TOOLBAR_ROLE = /['"]role['"]\s*:\s*['"]toolbar['"]/
+const ROVING_TABINDEX = /['"]tabindex['"]\s*:[^\n,?]*\?[^\n,]*\b0\s*:\s*-1/
 
 function stripComments(src) {
   return src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`])\/\/.*$/gm, '$1')
@@ -111,6 +123,22 @@ for (const dir of await readdir(HEADLESS, { withFileTypes: true })) {
       problems.push(`${name}.connect.ts：getTriggerProps 发了 aria-haspopup='listbox' 却没有 role='combobox'；按钮式弹出要登记进 ALLOWED`)
     if (combobox && ALLOWED.has(name))
       problems.push(`${name}.connect.ts：已写 role='combobox'，从 ALLOWED 里去掉`)
+  }
+
+  // ⑤ role='toolbar' 与那套走位捆绑：条内方向键导航（navigateItems）与 roving tabindex
+  // （条目的 tabindex 在 0 与 -1 之间切）缺一不可。两样都没有的，报 group 而不是 toolbar。
+  //
+  // roving 那一位要在**条目**的取属性函数里找，不能在整份文件里找：发角色的那个容器
+  // 自己也写 tabindex（焦点在条外时兜底进 Tab 序列），拿它顶数，条目的 roving 拆没了也照样绿
+  const withToolbarRole = getterNames(src).filter(g => TOOLBAR_ROLE.test(getter(src, g) ?? ''))
+  if (withToolbarRole.length) {
+    toolbarRoles += 1
+    const arrows = src.includes('navigateItems')
+    const roving = getterNames(src).some(g => !withToolbarRole.includes(g) && ROVING_TABINDEX.test(getter(src, g) ?? ''))
+    if (!arrows || !roving) {
+      const missing = [!arrows && '条内方向键导航（navigateItems）', !roving && 'roving tabindex（条目的取属性函数里 tabindex 在 0 / -1 之间切）'].filter(Boolean)
+      problems.push(`${name}.connect.ts：${withToolbarRole.join(' / ')} 发了 role='toolbar' 却缺 ${missing.join(' 与 ')}——读屏念成工具条、键盘却得一个个 Tab 过去。做不到那套走位就报 role='group'`)
+    }
   }
 }
 
@@ -244,4 +272,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-aria-shapes] 通过：${connects} 份 connect，${ariaHidden} 处 aria-hidden 都写布尔，${listboxTriggers} 个 listbox 触发器角色齐全，${ariaBusy} 处 aria-busy 都写省略式；${busyPainted.size} 个组件把在途画在了 cursor 以外，${Object.keys(BUSY_WITHOUT_SKIN).length} 个登记放行`)
+console.log(`[check-aria-shapes] 通过：${connects} 份 connect，${ariaHidden} 处 aria-hidden 都写布尔，${listboxTriggers} 个 listbox 触发器角色齐全，${ariaBusy} 处 aria-busy 都写省略式，${toolbarRoles} 处 role='toolbar' 都带 roving 与方向键走位；${busyPainted.size} 个组件把在途画在了 cursor 以外，${Object.keys(BUSY_WITHOUT_SKIN).length} 个登记放行`)

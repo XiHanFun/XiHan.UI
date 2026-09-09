@@ -92,6 +92,8 @@ export interface CascaderTranslations {
   noMatch: string
   /** 没有父条目可指的列（根列与收起的那几列）的兜底名字，两个名字部件都没渲染时才出面。 */
   column: string
+  /** 检索框的可及名字：字段标签名的是整个控件，浮层里这个框要自己一句。 */
+  searchInput: string
   /** 搜索结果列表的可及名字：它没有可指的标题部件，只能自带一句。 */
   searchList: string
   /** 清空按钮的可及名字。 */
@@ -317,7 +319,7 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   inputValue: string
   /** 过滤后的候选：整条路径连缀匹配，带 pathKey 与禁用标记。 */
   searchResults: readonly CascaderSearchResult[]
-  /** 候选里的虚拟高亮下标（已夹进候选长度）；没有候选为 -1。 */
+  /** 候选里的虚拟高亮下标，恒落在一条可选候选上；没有候选或整批禁用为 -1。 */
   searchHighlightIndex: number
   /** 空态占位的文案：实例覆盖并入默认后的完整一份。 */
   translations: CascaderTranslations

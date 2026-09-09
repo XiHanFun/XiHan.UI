@@ -91,7 +91,8 @@ export const wcImageViewerSuite: ConformanceSuite = {
               },
               'viewport': { 'data-state': 'open', 'data-dragging': null },
               'image': { 'data-state': 'open', 'data-dragging': null },
-              'toolbar': { 'role': 'toolbar', 'aria-label': 'Image tools', 'data-state': 'open' },
+              // 报 group 不报 toolbar：条内没有方向键走位，那四个键在这台上是翻页
+              'toolbar': { 'role': 'group', 'aria-label': 'Image tools', 'data-state': 'open' },
               'counter': { 'aria-live': 'polite', 'data-index': '1', 'data-count': '3', 'data-state': 'open' },
               'prev-trigger': { 'type': 'button', 'aria-label': 'Previous image', 'disabled': null, 'data-disabled': null },
               'next-trigger': { 'type': 'button', 'aria-label': 'Next image', 'disabled': null, 'data-disabled': null },
