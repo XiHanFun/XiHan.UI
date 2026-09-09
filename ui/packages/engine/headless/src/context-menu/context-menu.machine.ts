@@ -1,8 +1,9 @@
 import type { PositionResult, VirtualAnchor } from '@xihan-ui/core'
 import type { ContextMenuFocusIntent, ContextMenuPoint, ContextMenuSchema } from './context-menu.types'
-import { createDismissLayer, createFocusScope, createTypeahead, DIAGNOSTIC_CODES, itemValue, navigateItems, queryItems, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { createTypeahead, DIAGNOSTIC_CODES, itemValue, navigateItems, queryItems, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
+import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition } from '../shared/overlay-shell'
 import { contextMenuAnatomy, contextMenuItemQuery } from './context-menu.anatomy'
 
 const { createMachine } = setup<ContextMenuSchema>()
@@ -240,29 +241,16 @@ export const contextMenuMachine = createMachine({
           prop('longPressDelay') ?? CONTEXT_MENU_LONG_PRESS_DELAY,
         ),
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读。
-      trackPosition: ({ refs, prop, context, flush }) => {
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
+        // 无引擎时不定位，其余照常
+        engine: refs.get('position'),
+        flush,
         // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
         // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
-        context.set('position', null)
-        const engine = refs.get('position')
-        // 无引擎时不定位，其余照常
-        if (!engine)
-          return undefined
-
-        let stop: (() => void) | undefined
-        let queued = false
-        let disposed = false
-
-        const attach = (): void => {
-          queued = false
-          if (disposed)
-            return
-          // 换锚点先撤旧订阅：引擎的 autoUpdate 会一直跟着旧坐标算，留着就是两套位置轮流写
-          stop?.()
-          stop = undefined
-          const floating = refs.get('getFloatingEl')()
-          if (!floating)
-            return
+        clear: () => context.set('position', null),
+        // 坐标变了由 watch 调这个钩子重挂一轮，层与焦点域原地不动
+        onSchedule: schedule => refs.set('reanchor', schedule),
+        getAnchor: () => {
           // 受控 open、defaultOpen 直接进展开态、命令式 setOpen 未给坐标：三条路都没有光标坐标，
           // 锚点退回触发区的起始角
           const point = context.get('point') ?? triggerOrigin(refs.get('getTriggerEl')())
@@ -274,75 +262,39 @@ export const contextMenuMachine = createMachine({
               message: '菜单展开了却没有锚点：既没有光标坐标，也找不到 trigger 部件。'
                 + '右键或 openAt(x, y) 交坐标进来，或者渲染一个 trigger 让菜单锚在它上面',
             })
-            return
+            return null
           }
           // 虚拟锚点：菜单钉在这一点上，零尺寸矩形 + offset 0 即菜单角贴着它
           const anchor: VirtualAnchor = {
             getBoundingClientRect: () => ({ x: point.x, y: point.y, width: 0, height: 0 }),
           }
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? CONTEXT_MENU_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? CONTEXT_MENU_DEFAULT_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-              dir: prop('dir'),
-              // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
-              arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
-              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
-              size: true,
-            },
-            result => context.set('position', result),
-          )
-        }
-
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden，此时量出的浮层尺寸为 0。
-        // 同一拍里的多次请求合并成一次
-        const schedule = (): void => {
-          if (queued || disposed)
-            return
-          queued = true
-          flush(attach)
-        }
-
-        refs.set('reanchor', schedule)
-        schedule()
-
-        return () => {
-          disposed = true
-          refs.set('reanchor', null)
-          stop?.()
-        }
-      },
+          return anchor
+        },
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? CONTEXT_MENU_DEFAULT_PLACEMENT,
+          offset: prop('offset') ?? CONTEXT_MENU_DEFAULT_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+          dir: prop('dir'),
+          // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
+          arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
+          // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+          size: true,
+        }),
+        onResult: result => context.set('position', result),
+      }),
       // 层与消解层、焦点域绑在同一个效应里，三者生命周期必须一致。
       // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape
-      trackLayer: ({ refs, context, send }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
+      trackLayer: ({ refs, context, send }) => trackOverlayLayer({
         // 无 DOM 环境不挂副作用，状态机照常转移
-        if (!config || !registerLayer)
-          return undefined
-
-        const { layer, dispose: disposeLayer } = registerLayer()
-
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: reason =>
-            send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
-        })
-
-        const focus = createFocusScope({
-          config,
-          layer,
+        config: refs.get('config'),
+        registerLayer: refs.get('registerLayer'),
+        onDismiss: overlayCloseOnDismiss(send),
+        focusScope: {
           // 每次读最新 ref，容器晚一拍就位也能命中
           container: () => refs.get('getContentEl')(),
-          // 菜单不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
-          trapped: () => false,
-          loop: false,
           // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测走 focusFirst(removeLinks(...))，
           // 条目写成 <a> 会被整体过滤掉，且容器自身从来不是候选——只靠它焦点要等到最后一帧才落位。
           // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
@@ -364,15 +316,8 @@ export const contextMenuMachine = createMachine({
           // 归还落点显式给触发区：右键那一下浏览器未必把焦点放在它身上（各平台不一致），
           // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
           restoreTarget: () => refs.get('getTriggerEl')(),
-        })
-
-        // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈
-        return () => {
-          focus.dispose()
-          dismiss.dispose()
-          disposeLayer()
-        }
-      },
+        },
+      }),
     },
   },
 })

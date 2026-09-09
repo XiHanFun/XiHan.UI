@@ -1,9 +1,10 @@
 import type { PositionResult } from '@xihan-ui/core'
 import type { TreeVisibleNode } from '../tree'
 import type { TreeSelectFocusIntent, TreeSelectSchema } from './tree-select.types'
-import { cascadeToggle, collapseChecked, createDismissLayer, createFocusScope, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { cascadeToggle, collapseChecked, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
+import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition } from '../shared/overlay-shell'
 import { flattenTree } from '../tree'
 import { treeSelectAnatomy, treeSelectBranchQuery, treeSelectItemQuery } from './tree-select.anatomy'
 
@@ -317,75 +318,38 @@ export const treeSelectMachine = createMachine({
     },
     effects: {
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
-      trackPosition: ({ refs, prop, context, flush }) => {
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
+        // 无引擎时不定位，其余照常
+        engine: refs.get('position'),
+        flush,
         // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
         // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
-        context.set('position', null)
-        const engine = refs.get('position')
-        // 无引擎时不定位，其余照常
-        if (!engine)
-          return undefined
-
-        let stop: (() => void) | undefined
-        let disposed = false
-
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带 hidden、高度为 0，算出的坐标会错位
-        flush(() => {
-          if (disposed)
-            return
-          const anchor = refs.get('getAnchorEl')()
-          const floating = refs.get('getFloatingEl')()
-          if (!anchor || !floating)
-            return
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? TREE_SELECT_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? OVERLAY_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-              dir: prop('dir'),
-              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
-              size: true,
-            },
-            result => context.set('position', result),
-          )
-        })
-
-        return () => {
-          disposed = true
-          stop?.()
-        }
-      },
+        clear: () => context.set('position', null),
+        getAnchor: () => refs.get('getAnchorEl')(),
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? TREE_SELECT_DEFAULT_PLACEMENT,
+          offset: prop('offset') ?? OVERLAY_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+          dir: prop('dir'),
+          // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+          size: true,
+        }),
+        onResult: result => context.set('position', result),
+      }),
 
       // 层与消解层、焦点域绑在同一个效应里，三者生命周期必须一致；
       // 层只在展开期间入栈，常驻会占死栈顶把下面各层的 Escape 堵死。
-      trackLayer: ({ refs, context, send }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
+      trackLayer: ({ refs, context, send }) => trackOverlayLayer({
         // 无 DOM 环境：状态机照常转移，不挂副作用
-        if (!config || !registerLayer)
-          return undefined
-
-        const { layer, dispose: disposeLayer } = registerLayer()
-
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: reason =>
-            send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
-        })
-
-        const focus = createFocusScope({
-          config,
-          layer,
+        config: refs.get('config'),
+        registerLayer: refs.get('registerLayer'),
+        onDismiss: overlayCloseOnDismiss(send),
+        focusScope: {
           // 每次读最新 ref，容器晚一拍就位也能命中
           container: () => refs.get('getContentEl')(),
-          // 树不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
-          trapped: () => false,
-          loop: false,
           // 显式指定落焦点为锚点节点：Tab 序列探测会过滤掉写成 <a> 的节点。
           // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试。
           // 无锚点（指针打开且无选中值）时落到 tree 部件自己身上，它此刻正认领着 Tab 位。
@@ -408,15 +372,8 @@ export const treeSelectMachine = createMachine({
           // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
           // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
           restoreTarget: () => refs.get('getAnchorEl')(),
-        })
-
-        // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈
-        return () => {
-          focus.dispose()
-          dismiss.dispose()
-          disposeLayer()
-        }
-      },
+        },
+      }),
     },
   },
 })

@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import type { RuntimeConfig } from '@xihan-ui/core'
+import type { Anchor, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
 import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
 import type { MentionApi, MentionSchema } from '../src/mention'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
@@ -66,6 +66,12 @@ interface Harness {
   root: HTMLElement
   input: HTMLInputElement
   content: HTMLElement
+  positioner: HTMLElement
+  send: (event: MentionSchema['event']) => void
+  /** 引擎回报并写进 context 的位置结果。 */
+  position: () => PositionResult | null
+  /** 把锚点 / 浮层 ref 换成空的，用来验它们缺席时不挂订阅。 */
+  clearRef: (key: 'getInputEl' | 'getFloatingEl') => void
   item: (value: string) => HTMLElement
   /** 换一批候选：过滤是调用方的活儿，这里模拟它按查询串重渲列表。 */
   setItems: (values: readonly string[]) => void
@@ -79,6 +85,10 @@ interface Harness {
 interface Options {
   /** 收到 onQueryChange 就按前缀过滤候选——真实调用方的最小形态。 */
   filterOnQuery?: boolean
+  /** 定位引擎；不给即缺省，机器照常转移但不产出位置结果。 */
+  position?: PositionEnginePort
+  /** 本层被移出层栈时调一次，用来记拆除顺序。 */
+  onLayerDispose?: () => void
 }
 
 const runtimes: VanillaRuntime[] = []
@@ -127,14 +137,25 @@ function mount(initial: Partial<Props> = {}, options: Options = {}): Harness {
 
   const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
   service.refs.set('config', config)
-  service.refs.set('registerLayer', () => config.layerRegistry.register({
-    kind: 'popover',
-    node: () => content,
-    branches: () => [input],
-    isModal: () => false,
-    setModal: () => {},
-    surfaces: () => [],
-  }))
+  service.refs.set('registerLayer', () => {
+    const handle = config.layerRegistry.register({
+      kind: 'popover',
+      node: () => content,
+      branches: () => [input],
+      isModal: () => false,
+      setModal: () => {},
+      surfaces: () => [],
+    })
+    return {
+      layer: handle.layer,
+      dispose: () => {
+        handle.dispose()
+        options.onLayerDispose?.()
+      },
+    }
+  })
+  if (options.position)
+    service.refs.set('position', options.position)
   service.refs.set('getFloatingEl', () => positioner)
   service.refs.set('getContentEl', () => content)
   service.refs.set('getInputEl', () => input)
@@ -172,6 +193,15 @@ function mount(initial: Partial<Props> = {}, options: Options = {}): Harness {
     root,
     input,
     content,
+    positioner,
+    send: event => service.send(event),
+    position: () => service.context.get('position'),
+    clearRef: (key) => {
+      if (key === 'getFloatingEl')
+        service.refs.set('getFloatingEl', () => null)
+      else
+        service.refs.set('getInputEl', () => null)
+    },
     item: v => itemEls.get(v)!,
     setItems,
     setProps: (next) => {
@@ -648,5 +678,224 @@ describe('异步候选', () => {
     finally {
       vi.useRealTimers()
     }
+  })
+})
+
+/** 记账用的假定位引擎：每次 attach 的入参原样收下，撤订阅也记一笔。 */
+function fakeEngine(): {
+  port: PositionEnginePort
+  calls: { anchor: Anchor, floating: HTMLElement, options: PositionOptions, emit: (r: PositionResult) => void }[]
+  stops: () => number
+} {
+  const calls: { anchor: Anchor, floating: HTMLElement, options: PositionOptions, emit: (r: PositionResult) => void }[] = []
+  let stops = 0
+  return {
+    calls,
+    stops: () => stops,
+    port: {
+      attach: (anchor, floating, options, onResult) => {
+        calls.push({ anchor, floating, options, emit: onResult })
+        return () => {
+          stops += 1
+        }
+      },
+    },
+  }
+}
+
+/** 等 n 帧：焦点域若真挂了，落焦重试排在 rAF 上。 */
+async function frames(n = 5): Promise<void> {
+  for (let i = 0; i < n; i++)
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+}
+
+function pointerDown(el: HTMLElement): void {
+  el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true }))
+}
+
+const RESULT: PositionResult = { x: 12, y: 34, placement: 'bottom-start', hidden: false }
+
+describe('mention 浮层定位', () => {
+  it('等 DOM 落定才挂：进入展开态那一刻还没碰引擎，一拍之后才把输入框与浮层交进去', async () => {
+    const engine = fakeEngine()
+    const m = mount({}, { position: engine.port })
+    m.send({ type: 'OPEN' })
+    expect(engine.calls).toHaveLength(0)
+    await tick()
+    expect(engine.calls).toHaveLength(1)
+    // 提及的定位锚点就是输入框本体
+    expect(engine.calls[0]!.anchor).toBe(m.input)
+    expect(engine.calls[0]!.floating).toBe(m.positioner)
+  })
+
+  it('交给引擎的参数：缺省 bottom-start 与 8px，坐标系走视口，要可用空间，不要箭头', async () => {
+    const engine = fakeEngine()
+    const m = mount({}, { position: engine.port })
+    m.send({ type: 'OPEN' })
+    await tick()
+    const options = engine.calls[0]!.options
+    expect(options.placement).toBe('bottom-start')
+    expect(options.offset).toBe(8)
+    expect(options.strategy).toBe('fixed')
+    expect(options.size).toBe(true)
+    expect(options.dir).toBeUndefined()
+    expect(options.arrow).toBeUndefined()
+  })
+
+  it('placement / offset / dir 由 props 覆盖', async () => {
+    const engine = fakeEngine()
+    const m = mount({ placement: 'top-end', offset: 2, dir: 'rtl' }, { position: engine.port })
+    m.send({ type: 'OPEN' })
+    await tick()
+    const options = engine.calls[0]!.options
+    expect(options.placement).toBe('top-end')
+    expect(options.offset).toBe(2)
+    expect(options.dir).toBe('rtl')
+  })
+
+  it('引擎回报的结果写进 context，连接层据此认落位', async () => {
+    const engine = fakeEngine()
+    const m = mount({}, { position: engine.port })
+    m.send({ type: 'OPEN' })
+    await tick()
+    expect((m.api().getPositionerProps() as Record<string, unknown>)['data-positioned']).toBeUndefined()
+    engine.calls[0]!.emit(RESULT)
+    expect(m.position()).toEqual(RESULT)
+    expect((m.api().getPositionerProps() as Record<string, unknown>)['data-positioned']).toBe('')
+  })
+
+  it('重新展开先把上一轮坐标清掉：再次落位之前不算已定位', async () => {
+    const engine = fakeEngine()
+    const m = mount({}, { position: engine.port })
+    m.send({ type: 'OPEN' })
+    await tick()
+    engine.calls[0]!.emit(RESULT)
+    m.send({ type: 'CLOSE' })
+    // 收起中坐标还留着，退场要用
+    expect(m.position()).toEqual(RESULT)
+    m.send({ type: 'OPEN' })
+    expect(m.position()).toBeNull()
+  })
+
+  it('收起即撤订阅', async () => {
+    const engine = fakeEngine()
+    const m = mount({}, { position: engine.port })
+    m.send({ type: 'OPEN' })
+    await tick()
+    expect(engine.stops()).toBe(0)
+    m.send({ type: 'CLOSE' })
+    expect(engine.stops()).toBe(1)
+  })
+
+  it('展开当拍又收起：那一拍到来时不再挂订阅', async () => {
+    const engine = fakeEngine()
+    const m = mount({}, { position: engine.port })
+    m.send({ type: 'OPEN' })
+    m.send({ type: 'CLOSE' })
+    await tick()
+    expect(engine.calls).toHaveLength(0)
+  })
+
+  it('输入框或浮层缺席就不挂', async () => {
+    const engine = fakeEngine()
+    const noAnchor = mount({}, { position: engine.port })
+    noAnchor.clearRef('getInputEl')
+    noAnchor.send({ type: 'OPEN' })
+    await tick()
+    expect(engine.calls).toHaveLength(0)
+
+    const noFloating = mount({}, { position: engine.port })
+    noFloating.clearRef('getFloatingEl')
+    noFloating.send({ type: 'OPEN' })
+    await tick()
+    expect(engine.calls).toHaveLength(0)
+  })
+
+  it('没有引擎照常转移，只是没有位置结果', async () => {
+    const m = mount()
+    m.send({ type: 'OPEN' })
+    await tick()
+    expect(m.state()).toBe('open')
+    expect(m.position()).toBeNull()
+  })
+})
+
+describe('mention 浮层的层与消解', () => {
+  it('escape 走消解层：收起并把这一处记下，光标不挪走就不再自动展开', async () => {
+    const onOpenChange = vi.fn()
+    const m = mount({ onOpenChange })
+    type(m.input, '@li')
+    await tick()
+    press(document.body, 'Escape')
+    expect(m.state()).toBe('closed')
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+    type(m.input, '@lil')
+    expect(m.state()).toBe('closed')
+  })
+
+  it('层外按下指针收起；与 escape 不是一回事——它不记触发点，同一处接着打字照常弹回来', async () => {
+    const onOpenChange = vi.fn()
+    const m = mount({ onOpenChange })
+    type(m.input, '@li')
+    await tick()
+    pointerDown(document.body)
+    expect(m.state()).toBe('closed')
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+    type(m.input, '@lil')
+    expect(m.state()).toBe('open')
+  })
+
+  it('焦点跑到层外不由消解层收口：那一路归输入框自己的 blur，两处都认会为同一次离场发两遍', async () => {
+    const onOpenChange = vi.fn()
+    const m = mount({ onOpenChange })
+    m.send({ type: 'OPEN' })
+    await tick()
+    onOpenChange.mockClear()
+    const outside = document.createElement('button')
+    document.body.appendChild(outside)
+    outside.focus()
+    expect(m.state()).toBe('open')
+    expect(onOpenChange).not.toHaveBeenCalled()
+  })
+
+  it('收起之后这一层不再吃 Escape', async () => {
+    const onOpenChange = vi.fn()
+    const m = mount({ onOpenChange })
+    m.send({ type: 'OPEN' })
+    await tick()
+    m.send({ type: 'CLOSE' })
+    onOpenChange.mockClear()
+    press(document.body, 'Escape')
+    expect(onOpenChange).not.toHaveBeenCalled()
+  })
+
+  it('不挂焦点域：展开不搬焦点，收起也不归还——焦点全程留在输入框', async () => {
+    const m = mount()
+    m.input.focus()
+    m.send({ type: 'OPEN' })
+    await frames()
+    expect(document.activeElement).toBe(m.input)
+    m.send({ type: 'CLOSE' })
+    await frames()
+    expect(document.activeElement).toBe(m.input)
+  })
+
+  it('逆序拆：先撤消解层的订阅，最后才把层移出栈', async () => {
+    const order: string[] = []
+    const m = mount({}, { onLayerDispose: () => order.push('layer') })
+    m.send({ type: 'OPEN' })
+    await tick()
+    const remove = document.removeEventListener.bind(document)
+    const spy = vi.spyOn(document, 'removeEventListener').mockImplementation(((type: string, listener: EventListener, opts?: boolean | EventListenerOptions) => {
+      // pointerdown 只有消解层摘；focusout 是焦点域的标记，这一族根本不该出现
+      if (type === 'pointerdown')
+        order.push('dismiss')
+      if (type === 'focusout')
+        order.push('focus-scope')
+      remove(type, listener, opts)
+    }) as typeof document.removeEventListener)
+    m.send({ type: 'CLOSE' })
+    spy.mockRestore()
+    expect(order).toEqual(['dismiss', 'layer'])
   })
 })

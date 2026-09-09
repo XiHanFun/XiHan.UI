@@ -1,7 +1,8 @@
 import type { PositionResult } from '@xihan-ui/core'
 import type { ComboboxFocusIntent, ComboboxSchema } from './combobox.types'
-import { createDismissLayer, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
+import { trackOverlayLayer, trackOverlayPosition } from '../shared/overlay-shell'
 import { comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 
 const { createMachine } = setup<ComboboxSchema>()
@@ -411,82 +412,47 @@ export const comboboxMachine = createMachine({
     },
     effects: {
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
-      trackPosition: ({ refs, prop, context, flush }) => {
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
+        // 无引擎时不定位，其余照常
+        engine: refs.get('position'),
+        flush,
         // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
         // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
-        context.set('position', null)
-        const engine = refs.get('position')
-        // 无引擎时不定位，其余照常
-        if (!engine)
-          return undefined
+        clear: () => context.set('position', null),
+        getAnchor: () => refs.get('getAnchorEl')(),
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? COMBOBOX_DEFAULT_PLACEMENT,
+          offset: prop('offset') ?? OVERLAY_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+          dir: prop('dir'),
+          // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+          size: true,
+        }),
+        onResult: result => context.set('position', result),
+      }),
 
-        let stop: (() => void) | undefined
-        let disposed = false
-
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden，此时量出的浮层尺寸为 0
-        flush(() => {
-          if (disposed)
-            return
-          const anchor = refs.get('getAnchorEl')()
-          const floating = refs.get('getFloatingEl')()
-          if (!anchor || !floating)
-            return
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? COMBOBOX_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? OVERLAY_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-              dir: prop('dir'),
-              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
-              size: true,
-            },
-            result => context.set('position', result),
-          )
-        })
-
-        return () => {
-          disposed = true
-          stop?.()
-        }
-      },
-
-      // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape
-      trackLayer: ({ refs, send }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
+      // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape。
+      // 列表不接管焦点，因此不给焦点域；焦点离开整个组件由输入框的 blur 上报（INPUT.BLUR）
+      trackLayer: ({ refs, send }) => trackOverlayLayer({
         // 无 DOM 环境不挂副作用，状态机照常转移
-        if (!config || !registerLayer)
-          return undefined
-
-        const { layer, dispose: disposeLayer } = registerLayer()
-
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: (reason) => {
-            // Escape 走两拍（先清高亮再收起），所以不复用 CLOSE
-            if (reason === 'escape-key') {
-              send({ type: 'ESCAPE' })
-              return
-            }
-            // 焦点跑到层外与输入框自己的 blur 是同一件事，只认后者，
-            // 两处都收口时 onOpenChange 会为同一次离场发两遍
-            if (reason === 'focus-outside')
-              return
-            send({ type: 'CLOSE' })
-          },
-        })
-
-        // 列表不接管焦点，因此没有焦点域可挂；焦点离开整个组件由输入框的 blur 上报（INPUT.BLUR）
-        return () => {
-          dismiss.dispose()
-          disposeLayer()
-        }
-      },
+        config: refs.get('config'),
+        registerLayer: refs.get('registerLayer'),
+        onDismiss: (reason) => {
+          // Escape 走两拍（先清高亮再收起），所以不复用 CLOSE
+          if (reason === 'escape-key') {
+            send({ type: 'ESCAPE' })
+            return
+          }
+          // 焦点跑到层外与输入框自己的 blur 是同一件事，只认后者，
+          // 两处都收口时 onOpenChange 会为同一次离场发两遍
+          if (reason === 'focus-outside')
+            return
+          send({ type: 'CLOSE' })
+        },
+      }),
     },
   },
 })
