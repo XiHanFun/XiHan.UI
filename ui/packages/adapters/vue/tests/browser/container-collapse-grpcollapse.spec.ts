@@ -112,12 +112,17 @@ function widthOf(rootHtml: string, outer: Outer): number {
   return Math.round(root.getBoundingClientRect().width)
 }
 
-/** 拼一个组件根：flex-1 这一档要显式写 flex-basis，off 档行内把容器关掉。 */
+/**
+ * 拼一个组件根：flex-1 这一档要显式写 flex-basis，off 档行内把容器关掉。
+ *
+ * off 档要连行内轴填充一起关：皮肤给容器根写了 inline-size 填充，不关的话对照组也会
+ * 铺满外层，「内容照常撑宽」这个前提就不成立了，下面几条断言会失去参照。
+ */
 function rootHtml(comp: string, inner: string, outer: Outer, mode: Mode): string {
   const tag = TAG[comp] ?? 'div'
   const style = [
     outer === 'flex-1' ? 'flex: 1; min-inline-size: 0' : '',
-    mode === 'off' ? 'container-type: normal' : '',
+    mode === 'off' ? 'container-type: normal; inline-size: auto' : '',
   ].filter(Boolean).join('; ')
   return `<${tag} data-scope="${comp}" data-part="root" style="${style}">${inner}</${tag}>`
 }
@@ -168,7 +173,7 @@ describe('库内的正常外层：这几个根的宽度不受影响', () => {
   })
 })
 
-describe('收缩包裹的外层：塌宽确实会发生', () => {
+describe('收缩包裹的外层：flex 项铺满，inline-block 仍塌', () => {
   it.each(ROOTS)('%s', (comp, build) => {
     // 皮肤有没有把这个根建成容器，决定下面该看到哪一种表现，两种都是断言，没有放过的一档
     const declared = declaredContainerType(comp, build(NARROW))
@@ -187,9 +192,15 @@ describe('收缩包裹的外层：塌宽确实会发生', () => {
       // 建成查询容器 ⟺ 内容不再撑宽
       expect(liveNarrow === liveWide).toBe(isContainer)
 
-      if (isContainer) {
-        // 残宽只剩根自己的边框与轨道，比最短的那份内容还窄；
-        // 谁要是给根补一条最小宽度兜底把塌宽盖掉，这条就判红
+      if (isContainer && outer === 'flex-item') {
+        // 皮肤给容器根写了行内轴填充，flex 项这一档铺满 flex 容器、不再塌。
+        // 文档站的示例台就是这一档（flex-wrap 的收缩外层），它塌过一次：
+        // 每个字占一行、时间轴整条不见。这条盯着它别塌回去
+        expect(liveWide).toBe(HOST_W)
+      }
+      else if (isContainer) {
+        // inline-block 外层自己就是收缩包裹的，填充无从填起：这一档仍然塌。
+        // 这是容器查询的固有代价，不是漏修，避开写法见 docs/guide/styling.md
         expect(liveWide).toBeLessThan(baseNarrow)
       }
       else {

@@ -22,6 +22,12 @@
     display: flex;
     /* 横排的换档按这条轴自己的宽度决定，不看视口：同一条轴放进窄栏里也堆叠 */
     container-type: inline-size;
+    /* 查询容器不由内容撑宽（行内轴被 container-type 收进尺寸限制），
+       落在收缩包裹的外层里就会塌成零宽——文档站的示例台正是 flex-wrap 的收缩外层。
+       这三条按引擎各取所认的一条，含义都是「填满外面给的宽度」，普通块流下与不写时同值 */
+    inline-size: -moz-available;
+    inline-size: -webkit-fill-available;
+    inline-size: stretch;
     container-name: xh-timeline;
     margin: 0;
     padding: 0;

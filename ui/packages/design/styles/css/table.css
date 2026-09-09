@@ -36,7 +36,11 @@
     display: flex;
     position: relative;
     flex-direction: column;
-    max-block-size: var(--xh-table-max-h, var(--xh-viewport-h-lg));
+    /* 高度上限再由视口收一次：定值比屏幕还高时表格自己滚不动，只能靠页面滚，
+       吸顶表头也就钉不住。视口取 dvb：移动端地址栏收放会改变可视高度，dvb 跟着变；
+       不认 dvb 的引擎由级联回落到前一条的 vh */
+    max-block-size: min(var(--xh-table-max-h, var(--xh-viewport-h-lg)), 100vh);
+    max-block-size: min(var(--xh-table-max-h, var(--xh-viewport-h-lg)), 100dvb);
     /* 外框由 [data-bordered] 画：那一位缺席就是不要外框，只留行间横线 */
     border: 0;
     background: var(--xh-table-bg, var(--xh-bg-surface));

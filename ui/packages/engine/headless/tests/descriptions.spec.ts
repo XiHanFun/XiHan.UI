@@ -17,19 +17,19 @@ describe('connectDescriptions 的跨列', () => {
   })
 
   it('span 落成网格轨道数', () => {
-    expect((api({ columns: 3 }).getItemProps({ span: 2 }) as Props).style).toEqual({ gridColumn: 'span 2' })
+    expect((api({ columns: 3 }).getItemProps({ span: 2 }) as Props).style).toEqual({ '--xh-_descriptions-item-span': '2' })
   })
 
   it('超过列数按列数算：跨出网格的格子会另起一行', () => {
-    expect((api({ columns: 2 }).getItemProps({ span: 5 }) as Props).style).toEqual({ gridColumn: 'span 2' })
+    expect((api({ columns: 2 }).getItemProps({ span: 5 }) as Props).style).toEqual({ '--xh-_descriptions-item-span': '2' })
   })
 
   it('不写 columns 即只有一列，跨列钳到 1', () => {
-    expect((api().getItemProps({ span: 4 }) as Props).style).toEqual({ gridColumn: 'span 1' })
+    expect((api().getItemProps({ span: 4 }) as Props).style).toEqual({ '--xh-_descriptions-item-span': '1' })
   })
 
   it('小于 1 与带小数的值取整后钳到 1', () => {
-    expect((api({ columns: 4 }).getItemProps({ span: 0 }) as Props).style).toEqual({ gridColumn: 'span 1' })
-    expect((api({ columns: 4 }).getItemProps({ span: 2.7 }) as Props).style).toEqual({ gridColumn: 'span 2' })
+    expect((api({ columns: 4 }).getItemProps({ span: 0 }) as Props).style).toEqual({ '--xh-_descriptions-item-span': '1' })
+    expect((api({ columns: 4 }).getItemProps({ span: 2.7 }) as Props).style).toEqual({ '--xh-_descriptions-item-span': '2' })
   })
 })

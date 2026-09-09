@@ -301,9 +301,12 @@
     color: var(--xh-approval-result-fg-denied, var(--xh-fg-danger));
   }
 
-  /* 动作行：两颗按钮靠右排，间距归库管 */
+  /* 动作行：两颗按钮靠右排，间距归库管。
+     一行排不下就折行：两颗钮的文案都不折行，靠右排的行溢出时是往行首那侧漫出去，
+     漫出去的那截既不产生横滚也回不来，折行是这一行唯一取得回来的形态。 */
   [data-scope='approval'][data-part='footer'] {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
     gap: var(--xh-approval-footer-gap, var(--xh-space-2));
