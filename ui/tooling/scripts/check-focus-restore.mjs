@@ -21,8 +21,11 @@ const HEADLESS = 'packages/engine/headless/src'
 
 /** 机器里交出归还落点的写法。 */
 const WIRED = /\brestoreTarget\s*:/
-/** 建焦点域的调用。 */
-const FOCUS_SCOPE = /\bcreateFocusScope\s*\(/
+/** 建焦点域：自己调，或者把焦点域那一份交给共享的浮层外壳。 */
+const FOCUS_SCOPE = /\bcreateFocusScope\s*\(|\bfocusScope\s*:/
+
+/** src 下不是组件的目录，不参与这道门禁。 */
+const NOT_COMPONENTS = new Set(['shared'])
 
 /**
  * 不交显式落点的组件，逐个写明凭什么。
@@ -144,6 +147,8 @@ let scoped = 0
 
 for (const entry of (await readdir(HEADLESS, { withFileTypes: true })).filter(d => d.isDirectory()).sort((a, b) => a.name < b.name ? -1 : 1)) {
   const name = entry.name
+  if (NOT_COMPONENTS.has(name))
+    continue
   const dir = join(HEADLESS, name)
   const keyboardFile = `${HEADLESS}/${name}/${name}.keyboard.ts`.split('\\').join('/')
 

@@ -3,7 +3,7 @@ import type { Anchor, PositionEnginePort, PositionOptions, PositionRect, Service
 import type { MenubarApi, MenubarSchema, MenubarSelectDetails, MenubarValueChangeDetails } from '../src/menubar'
 import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
 import { connectMenubar, menubarMachine } from '../src/menubar'
 
@@ -65,6 +65,9 @@ function spread(el: HTMLElement, props: Record<string, unknown>): void {
 
 interface AttachCall {
   rect: PositionRect
+  /** 这一轮交给引擎的锚点：换菜单时它要跟着换到新的 trigger 上。 */
+  anchor: Anchor
+  floating: HTMLElement
   options: PositionOptions
 }
 
@@ -78,9 +81,11 @@ function createFakeEngine(): FakeEngine {
   const engine: FakeEngine = {
     calls: [],
     stopped: 0,
-    attach(anchor: Anchor, _floating, options) {
+    attach(anchor: Anchor, floating, options) {
       engine.calls.push({
         rect: (anchor as { getBoundingClientRect: () => PositionRect }).getBoundingClientRect(),
+        anchor,
+        floating,
         options,
       })
       return () => {
@@ -98,6 +103,10 @@ interface MountOptions {
   disabledItem?: string
   /** 是否接上运行时配置与层注册（消解层与焦点域要用）。 */
   layers?: boolean
+  /** 不接定位引擎：验没有引擎时状态照常转移。 */
+  noEngine?: boolean
+  /** 本层被移出层栈时调一次，用来记拆除顺序。 */
+  onLayerDispose?: () => void
 }
 
 interface Harness {
@@ -117,10 +126,12 @@ interface Harness {
   value: () => string | null
   setProps: (next: Partial<Props>) => void
   render: () => void
+  /** 换掉锚点 / 浮层 ref，用来验它们缺席时不挂订阅。 */
+  setRef: (key: 'getAnchorEl' | 'getFloatingEl', value: () => HTMLElement | null) => void
 }
 
 function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harness {
-  const { disabledMenu, disabledItem, layers = false } = options
+  const { disabledMenu, disabledItem, layers = false, noEngine = false } = options
   const props: Partial<Props> = { ...initial }
   const valueChanges: MenubarValueChangeDetails[] = []
   const selects: MenubarSelectDetails[] = []
@@ -194,7 +205,8 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
 
   const engine = createFakeEngine()
   const currentValue = (): string | null => service.context.get('value') ?? null
-  service.refs.set('position', engine)
+  if (!noEngine)
+    service.refs.set('position', engine)
   service.refs.set('getRootEl', () => root)
   service.refs.set('getAnchorEl', () => {
     const v = currentValue()
@@ -223,7 +235,13 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
         setModal: () => {},
         surfaces: () => [],
       })
-      return { layer: handle.layer, dispose: handle.dispose }
+      return {
+        layer: handle.layer,
+        dispose: () => {
+          handle.dispose()
+          options.onLayerDispose?.()
+        },
+      }
     })
   }
 
@@ -275,6 +293,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
       render()
     },
     render,
+    setRef: (key, value) => service.refs.set(key, value),
   }
 }
 
@@ -943,5 +962,142 @@ describe('menubar 定位', () => {
     await flushed()
     click(c.trigger('edit'))
     expect(c.engine.stopped).toBe(1)
+  })
+
+  it('等 DOM 落定才挂：展开那一刻还没碰引擎，一拍之后才把锚点与浮层交进去', async () => {
+    const c = mount()
+    click(c.trigger('file'))
+    expect(c.engine.calls).toHaveLength(0)
+    await flushed()
+    expect(c.engine.calls).toHaveLength(1)
+    expect(c.engine.calls[0]!.anchor).toBe(c.trigger('file'))
+    expect(c.engine.calls[0]!.floating).toBe(c.positioner('file'))
+  })
+
+  it('交给引擎的参数：缺省 bottom-start 与 8px，坐标系走视口，要可用空间，箭头量由这边交进去', async () => {
+    const c = mount()
+    click(c.trigger('file'))
+    await flushed()
+    const options = c.engine.calls[0]!.options
+    expect(options.placement).toBe('bottom-start')
+    expect(options.offset).toBe(8)
+    expect(options.strategy).toBe('fixed')
+    expect(options.size).toBe(true)
+    expect(options.dir).toBeUndefined()
+    expect(options.arrow).toEqual({ size: 8 * Math.SQRT2, padding: 8 })
+  })
+
+  it('placement / offset / dir 由 props 覆盖', async () => {
+    const c = mount({ placement: 'top-end', offset: 2, dir: 'rtl' })
+    click(c.trigger('file'))
+    await flushed()
+    const options = c.engine.calls[0]!.options
+    expect(options.placement).toBe('top-end')
+    expect(options.offset).toBe(2)
+    expect(options.dir).toBe('rtl')
+  })
+
+  it('换菜单换锚：撤掉上一轮订阅、按新 trigger 重挂，且撤订阅排在重挂那一拍里', async () => {
+    const c = mount()
+    click(c.trigger('file'))
+    await flushed()
+    hover(c.trigger('edit'))
+    // 重挂排在下一拍：这一刻旧订阅还在，浮层不会有一拍无人跟随
+    expect(c.engine.stopped).toBe(0)
+    await flushed()
+    expect(c.engine.stopped).toBe(1)
+    expect(c.engine.calls).toHaveLength(2)
+    expect(c.engine.calls[1]!.anchor).toBe(c.trigger('edit'))
+    expect(c.engine.calls[1]!.floating).toBe(c.positioner('edit'))
+  })
+
+  it('同一拍里连换两张只重挂一次，锚点落在最后那张上', async () => {
+    const c = mount()
+    click(c.trigger('file'))
+    await flushed()
+    hover(c.trigger('edit'))
+    hover(c.trigger('view'))
+    await flushed()
+    expect(c.engine.calls).toHaveLength(2)
+    expect(c.engine.calls[1]!.anchor).toBe(c.trigger('view'))
+    expect(c.engine.stopped).toBe(1)
+  })
+
+  it('锚点或浮层缺席就不挂', async () => {
+    const noAnchor = mount()
+    noAnchor.setRef('getAnchorEl', () => null)
+    click(noAnchor.trigger('file'))
+    await flushed()
+    expect(noAnchor.engine.calls).toHaveLength(0)
+
+    const noFloating = mount()
+    noFloating.setRef('getFloatingEl', () => null)
+    click(noFloating.trigger('file'))
+    await flushed()
+    expect(noFloating.engine.calls).toHaveLength(0)
+  })
+
+  it('没有引擎照常转移，只是没有位置结果', async () => {
+    const c = mount({}, { noEngine: true })
+    click(c.trigger('file'))
+    await flushed()
+    expect(c.state()).toBe('open')
+    expect(c.value()).toBe('file')
+    expect(c.engine.calls).toHaveLength(0)
+  })
+})
+
+describe('menubar 浮层的层与焦点域', () => {
+  it('键盘入口建焦点域：逆序拆是 焦点域 → 消解层 → 层', async () => {
+    const order: string[] = []
+    const c = mount({}, { layers: true, onLayerDispose: () => order.push('layer') })
+    c.trigger('file').focus()
+    press(c.trigger('file'), 'ArrowDown')
+    await frames()
+    const remove = document.removeEventListener.bind(document)
+    const spy = vi.spyOn(document, 'removeEventListener').mockImplementation(((type: string, listener: EventListener, opts?: boolean | EventListenerOptions) => {
+      // focusout 只有焦点域摘、pointerdown 只有消解层摘，拿它们当各自的拆除标记
+      if (type === 'focusout')
+        order.push('focus-scope')
+      if (type === 'pointerdown')
+        order.push('dismiss')
+      remove(type, listener, opts)
+    }) as typeof document.removeEventListener)
+    c.service.send({ type: 'CLOSE' })
+    spy.mockRestore()
+    expect(order).toEqual(['focus-scope', 'dismiss', 'layer'])
+  })
+
+  it('指针入口不建焦点域：焦点留在 trigger 上不被搬进菜单，拆除也只有 消解层 → 层', async () => {
+    const order: string[] = []
+    const c = mount({}, { layers: true, onLayerDispose: () => order.push('layer') })
+    realClick(c.trigger('file'))
+    await frames()
+    expect(focused()).toBe('trigger:file')
+    const remove = document.removeEventListener.bind(document)
+    const spy = vi.spyOn(document, 'removeEventListener').mockImplementation(((type: string, listener: EventListener, opts?: boolean | EventListenerOptions) => {
+      if (type === 'focusout')
+        order.push('focus-scope')
+      if (type === 'pointerdown')
+        order.push('dismiss')
+      remove(type, listener, opts)
+    }) as typeof document.removeEventListener)
+    c.service.send({ type: 'CLOSE' })
+    spy.mockRestore()
+    expect(order).toEqual(['dismiss', 'layer'])
+  })
+
+  it('焦点归还全归 restoreTriggerFocus：掠过换张后 Escape，隔几帧焦点也不会被抢回最初那一项', async () => {
+    const c = mount({}, { layers: true })
+    c.trigger('file').focus()
+    press(c.trigger('file'), 'ArrowDown')
+    await frames()
+    hover(c.trigger('view'))
+    await frames()
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+    expect(focused()).toBe('trigger:view')
+    // 焦点域的归还排在 rAF 上，它若也来归还就会把焦点拉回建域那一刻的 trigger:file
+    await frames()
+    expect(focused()).toBe('trigger:view')
   })
 })

@@ -3,9 +3,10 @@ import type { CalendarSchema, CalendarSelectionMode, CalendarView } from '../cal
 import type { DateFieldSchema, DateGranularity, DateSegmentSet } from '../date-field'
 import type { DatePickerSchema, DatePickerValueSource } from './date-picker.types'
 import { getLocalTimeZone, today } from '@internationalized/date'
-import { createDismissLayer, createFocusScope, itemValue, resetDeclaredValue, resolveLocale, setup } from '@xihan-ui/core'
+import { itemValue, resetDeclaredValue, resolveLocale, setup } from '@xihan-ui/core'
 import { calendarAnatomy, calendarPeriodStart, calendarWeekRange, parseCalendarDate } from '../calendar'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
+import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition } from '../shared/overlay-shell'
 import { datePickerDatePart, datePickerJoinDateTime, datePickerTimePart } from './date-picker.time'
 
 const { createMachine, guards } = setup<DatePickerSchema>()
@@ -495,76 +496,38 @@ export const datePickerMachine = createMachine({
     },
     effects: {
       // 引擎订阅的返回值即 cleanup；位置结果写进 context 供 connect 读
-      trackPosition: ({ refs, prop, context, flush }) => {
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
+        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
+        engine: refs.get('position'),
+        flush,
         // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
         // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
-        context.set('position', null)
-        const engine = refs.get('position')
-        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
-        if (!engine)
-          return undefined
-
-        let stop: (() => void) | undefined
-        let disposed = false
-
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden（高度为 0），
-        // 此时算出的坐标会少掉浮层自身尺寸
-        flush(() => {
-          if (disposed)
-            return
-          const anchor = refs.get('getAnchorEl')()
-          const floating = refs.get('getFloatingEl')()
-          if (!anchor || !floating)
-            return
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? DATE_PICKER_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? OVERLAY_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-              dir: prop('dir'),
-              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
-              size: true,
-            },
-            result => context.set('position', result),
-          )
-        })
-
-        return () => {
-          disposed = true
-          stop?.()
-        }
-      },
+        clear: () => context.set('position', null),
+        getAnchor: () => refs.get('getAnchorEl')(),
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? DATE_PICKER_DEFAULT_PLACEMENT,
+          offset: prop('offset') ?? OVERLAY_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+          dir: prop('dir'),
+          // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+          size: true,
+        }),
+        onResult: result => context.set('position', result),
+      }),
 
       // 层的入栈出栈与消解层、焦点域同生命周期，绑在同一个效应里。
       // 层只能在展开期间入栈：消解层只让栈顶响应 Escape，常驻栈里会堵死其下各层的 Escape。
-      trackLayer: ({ refs, context, send }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
+      trackLayer: ({ refs, context, send }) => trackOverlayLayer({
         // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
-        if (!config || !registerLayer)
-          return undefined
-
-        const { layer, dispose: disposeLayer } = registerLayer()
-
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: reason =>
-            send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
-        })
-
-        const focus = createFocusScope({
-          config,
-          layer,
+        config: refs.get('config'),
+        registerLayer: refs.get('registerLayer'),
+        onDismiss: overlayCloseOnDismiss(send),
+        focusScope: {
           // 每次读最新 ref，容器晚一拍就位也能命中
           container: () => refs.get('getContentEl')(),
-          // 日历不陷焦点也不回绕：Tab 能走出去，走出去由消解层判定是否关闭
-          trapped: () => false,
-          loop: false,
           // 落点显式指定为聚焦日那一格，交给 Tab 序列探测会停在第一个可聚焦元素。
           // 每次求值都现查：content 仍带 hidden 的那一帧返回 null，焦点域会重试到 DOM 就位
           initialFocus: () => {
@@ -572,22 +535,15 @@ export const datePickerMachine = createMachine({
             // 就认账,于是既不搬走焦点,也不会退回去聚焦浮层里的头一个可聚焦元素
             if (!context.get('moveFocusIn')) {
               const anchor = refs.get('getAnchorEl')()
-              const active = config.scope.getActiveElement()
+              const active = refs.get('config')?.scope.getActiveElement()
               if (anchor && active instanceof HTMLElement && anchor.contains(active))
                 return active
             }
             return findDatePickerCellEl(refs.get('getContentEl')(), context.get('focusedValue'))
           },
           restoreFocus: () => context.get('returnFocus'),
-        })
-
-        // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈
-        return () => {
-          focus.dispose()
-          dismiss.dispose()
-          disposeLayer()
-        }
-      },
+        },
+      }),
     },
   },
 })

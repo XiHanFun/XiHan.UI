@@ -1,8 +1,6 @@
 import type { PositionResult } from '@xihan-ui/core'
 import type { MenubarFocusIntent, MenubarSchema } from './menubar.types'
 import {
-  createDismissLayer,
-  createFocusScope,
   createTypeahead,
   focusItem,
   itemValue,
@@ -11,6 +9,7 @@ import {
   setup,
 } from '@xihan-ui/core'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
+import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition } from '../shared/overlay-shell'
 import { menubarItemQuery, menubarTriggerQuery } from './menubar.anatomy'
 
 const { createMachine } = setup<MenubarSchema>()
@@ -295,98 +294,48 @@ export const menubarMachine = createMachine({
     },
     effects: {
       /** 挂载定位引擎，结果写进 context 供 connect 读；换项时由 reanchor 撤旧订阅后重挂。 */
-      trackPosition: ({ refs, prop, context, flush }) => {
-        const engine = refs.get('position')
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
         // 无引擎时不定位
-        if (!engine)
-          return undefined
-
-        let stop: (() => void) | undefined
-        let queued = false
-        let disposed = false
-
-        const attach = (): void => {
-          queued = false
-          if (disposed)
-            return
-          stop?.()
-          stop = undefined
-          const anchor = refs.get('getAnchorEl')()
-          const floating = refs.get('getFloatingEl')()
-          if (!anchor || !floating)
-            return
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? MENUBAR_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? OVERLAY_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-              dir: prop('dir'),
-              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
-              size: true,
-              arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
-            },
-            (result) => {
-              context.set('position', result)
-              // 记到这张菜单名下：收起中的那张靠自己的这份留在原地播完退场
-              const owner = context.get('value')
-              if (owner != null) {
-                context.set('placements', { ...context.get('placements'), [owner]: result })
-                // 新菜单落位，交接完成——上一张同帧收起
-                context.set('handoffValue', null)
-              }
-            },
-          )
-        }
-
-        // 等 DOM 落定再挂，同一拍内的多次请求合并成一次
-        const schedule = (): void => {
-          if (queued || disposed)
-            return
-          queued = true
-          flush(attach)
-        }
-
-        refs.set('reanchor', schedule)
-        schedule()
-
-        return () => {
-          disposed = true
-          refs.set('reanchor', null)
-          stop?.()
-        }
-      },
+        engine: refs.get('position'),
+        flush,
+        // 重挂入口交给 reanchor 记着：换菜单时 syncOpenState 调它一次，锚点跟着换到新的 trigger
+        onSchedule: schedule => refs.set('reanchor', schedule),
+        getAnchor: () => refs.get('getAnchorEl')(),
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? MENUBAR_DEFAULT_PLACEMENT,
+          offset: prop('offset') ?? OVERLAY_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+          dir: prop('dir'),
+          // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+          size: true,
+          arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
+        }),
+        onResult: (result) => {
+          context.set('position', result)
+          // 记到这张菜单名下：收起中的那张靠自己的这份留在原地播完退场
+          const owner = context.get('value')
+          if (owner != null) {
+            context.set('placements', { ...context.get('placements'), [owner]: result })
+            // 新菜单落位，交接完成——上一张同帧收起
+            context.set('handoffValue', null)
+          }
+        },
+      }),
       // 层、消解层与焦点域同生共死，仅在有菜单展开期间入栈
-      trackLayer: ({ refs, context, send }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
+      trackLayer: ({ refs, context, send }) => trackOverlayLayer({
         // 无 DOM 环境时不挂副作用
-        if (!config || !registerLayer)
-          return undefined
-
-        const { layer, dispose: disposeLayer } = registerLayer()
-
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: reason =>
-            send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
-        })
-
-        /** 焦点域用于把焦点送进刚展开的菜单，仅键盘入口（focusIntent 非 none）才建。 */
-        const focus = context.get('focusIntent') === 'none'
+        config: refs.get('config'),
+        registerLayer: refs.get('registerLayer'),
+        onDismiss: overlayCloseOnDismiss(send),
+        // 焦点域用于把焦点送进刚展开的菜单，仅键盘入口（focusIntent 非 none）才建
+        focusScope: context.get('focusIntent') === 'none'
           ? null
-          : createFocusScope({
-              config,
-              layer,
+          : {
               // 每次读最新 ref，容器晚一拍就位或中途换菜单都能命中
               container: () => refs.get('getContentEl')(),
-              // 不陷焦点也不回绕，Tab 走出后由消解层判定是否收起
-              trapped: () => false,
-              loop: false,
               // 显式指定初始焦点为锚点条目：默认的 Tab 序列探测会滤掉写成 <a> 的条目
               initialFocus: () => {
                 const content = refs.get('getContentEl')()
@@ -397,15 +346,8 @@ export const menubarMachine = createMachine({
               },
               // 焦点归还由 restoreTriggerFocus 收口
               restoreFocus: () => false,
-            })
-
-        // 逆序拆：先撤订阅，最后移出层栈
-        return () => {
-          focus?.dispose()
-          dismiss.dispose()
-          disposeLayer()
-        }
-      },
+            },
+      }),
     },
   },
 })

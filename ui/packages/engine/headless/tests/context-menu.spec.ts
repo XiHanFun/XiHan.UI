@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import type { Anchor, PositionEnginePort, PositionOptions, PositionRect, Service } from '@xihan-ui/core'
+import type { Anchor, PositionEnginePort, PositionOptions, PositionRect, PositionResult, Service } from '@xihan-ui/core'
 import type { ContextMenuApi, ContextMenuSchema } from '../src/context-menu'
-import { createService, normalizeProps, onDiagnostic } from '@xihan-ui/core'
+import { createRuntimeConfig, createService, normalizeProps, onDiagnostic } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { connectContextMenu, contextMenuMachine } from '../src/context-menu'
@@ -54,7 +54,10 @@ function spread(el: HTMLElement, props: Record<string, unknown>): void {
 
 interface AttachCall {
   rect: PositionRect
+  floating: HTMLElement
   options: PositionOptions
+  /** 引擎回报一次位置。 */
+  emit: (result: PositionResult) => void
 }
 
 interface FakeEngine extends PositionEnginePort {
@@ -67,10 +70,12 @@ function createFakeEngine(): FakeEngine {
   const engine: FakeEngine = {
     calls: [],
     stopped: 0,
-    attach(anchor: Anchor, _floating, options) {
+    attach(anchor: Anchor, floating, options, onResult) {
       engine.calls.push({
         rect: (anchor as { getBoundingClientRect: () => PositionRect }).getBoundingClientRect(),
+        floating: floating as HTMLElement,
         options,
+        emit: onResult,
       })
       return () => {
         engine.stopped += 1
@@ -78,6 +83,15 @@ function createFakeEngine(): FakeEngine {
     },
   }
   return engine
+}
+
+interface MountOptions {
+  /** 不给定位引擎：验无引擎时状态照常转移。 */
+  noEngine?: boolean
+  /** 挂层、消解层与焦点域；不给即只跑机器与定位那一半。 */
+  layer?: boolean
+  /** 本层被移出层栈时调一次，用来记拆除顺序（给了它即挂层）。 */
+  onLayerDispose?: () => void
 }
 
 interface Harness {
@@ -91,12 +105,13 @@ interface Harness {
   groupLabel: (value: string) => HTMLElement
   engine: FakeEngine
   service: Service<ContextMenuSchema>
+  position: () => PositionResult | null
   setProps: (next: Partial<Props>) => void
   render: () => void
   state: () => string
 }
 
-function mount(initial: Partial<Props> = {}): Harness {
+function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harness {
   const props: Partial<Props> = { ...initial }
   const runtime = createVanillaRuntime()
   // 受控的 open 必须由一个 signal 承载：宿主写回要能把 watch 唤醒，
@@ -144,12 +159,36 @@ function mount(initial: Partial<Props> = {}): Harness {
   doc.body.appendChild(root)
 
   const engine = createFakeEngine()
-  service.refs.set('position', engine)
+  if (!options.noEngine)
+    service.refs.set('position', engine)
   service.refs.set('getFloatingEl', () => positioner)
   // jsdom 的 getBoundingClientRect 恒返回全零，打桩之后「锚回触发区起始角」才断言得出来
   trigger.getBoundingClientRect = () => ({ x: 40, y: 60, width: 200, height: 24, top: 60, left: 40, right: 240, bottom: 84, toJSON: () => ({}) })
   service.refs.set('getTriggerEl', () => trigger)
   service.refs.set('getContentEl', () => content)
+  // 层、消解层与焦点域按需接上：不接时机器照常转移，只是没有这三样副作用
+  if (options.layer || options.onLayerDispose) {
+    const config = createRuntimeConfig()
+    service.refs.set('config', config)
+    service.refs.set('registerLayer', () => {
+      const handle = config.layerRegistry.register({
+        kind: 'popover',
+        node: () => content,
+        // 触发区记为本层分支：在它身上再右键算层内交互，只挪锚点而不先关一次
+        branches: () => [trigger],
+        isModal: () => false,
+        setModal: () => {},
+        surfaces: () => [],
+      })
+      return {
+        layer: handle.layer,
+        dispose: () => {
+          handle.dispose()
+          options.onLayerDispose?.()
+        },
+      }
+    })
+  }
   runtime.start()
 
   const render = (): void => {
@@ -186,6 +225,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     groupLabel: v => groupLabels.get(v)!,
     engine,
     service,
+    position: () => service.context.get('position'),
     setProps: (next) => {
       Object.assign(props, next)
       if ('open' in next)
@@ -821,5 +861,159 @@ describe('没有光标坐标时的锚点', () => {
     off()
     expect(h.engine.calls).toHaveLength(0)
     expect(records).toContain('overlay.missing-anchor')
+  })
+})
+
+/** 焦点域的落焦重试与归还都排在 requestAnimationFrame 上，等够几帧。 */
+function settle(): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, 80))
+}
+
+const RESULT: PositionResult = { x: 12, y: 34, placement: 'bottom-start', hidden: false }
+
+describe('定位效应的其余出口', () => {
+  it('浮层缺席就不挂，也不投「找不到锚点」：浮层还没就位时锚点是不是空的还说不准', async () => {
+    const records: string[] = []
+    const off = onDiagnostic(record => void records.push(record.code))
+    const h = mount()
+    h.service.refs.set('getFloatingEl', () => null)
+    h.service.refs.set('getTriggerEl', () => null)
+    h.api().setOpen(true)
+    await flushed()
+    off()
+    expect(h.engine.calls).toHaveLength(0)
+    expect(records).not.toContain('overlay.missing-anchor')
+  })
+
+  it('重新展开先把上一轮坐标清掉：再次落位之前不算已定位', async () => {
+    const h = mount()
+    rightClick(h.trigger, 120, 80)
+    await flushed()
+    h.engine.calls[0]!.emit(RESULT)
+    expect(h.position()).toEqual(RESULT)
+    h.api().setOpen(false)
+    // 收起中坐标还留着，退场要用
+    expect(h.position()).toEqual(RESULT)
+    h.api().setOpen(true)
+    expect(h.position()).toBeNull()
+  })
+
+  it('引擎回报的结果写进 context，连接层据此认落位', async () => {
+    const h = mount()
+    rightClick(h.trigger, 120, 80)
+    await flushed()
+    expect((h.api().getPositionerProps() as Record<string, unknown>)['data-positioned']).toBeUndefined()
+    h.engine.calls[0]!.emit(RESULT)
+    expect((h.api().getPositionerProps() as Record<string, unknown>)['data-positioned']).toBe('')
+  })
+
+  it('没有引擎照常转移，坐标仍被显式置空', async () => {
+    const h = mount({}, { noEngine: true })
+    rightClick(h.trigger, 120, 80)
+    await flushed()
+    expect(h.state()).toBe('open')
+    expect(h.position()).toBeNull()
+  })
+
+  it('展开当拍又收起：那一拍到来时不再挂订阅', async () => {
+    const h = mount()
+    rightClick(h.trigger, 120, 80)
+    h.api().setOpen(false)
+    await flushed()
+    expect(h.engine.calls).toHaveLength(0)
+  })
+})
+
+describe('层、消解与焦点归还', () => {
+  it('escape 收起且把关闭原因报成 esc', async () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange }, { layer: true })
+    rightClick(h.trigger, 120, 80)
+    await wait(0)
+    press(document.body, 'Escape')
+    expect(h.state()).toBe('closed')
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'esc' })
+  })
+
+  it('层外按下指针收起且把关闭原因报成 interact-outside', async () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange }, { layer: true })
+    rightClick(h.trigger, 120, 80)
+    await wait(0)
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true }))
+    expect(h.state()).toBe('closed')
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'interact-outside' })
+  })
+
+  it('收起之后这一层不再吃 Escape', async () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange }, { layer: true })
+    rightClick(h.trigger, 120, 80)
+    await wait(0)
+    h.api().setOpen(false)
+    onOpenChange.mockClear()
+    press(document.body, 'Escape')
+    expect(onOpenChange).not.toHaveBeenCalled()
+  })
+
+  it('逆序拆：先撤焦点域与消解层的订阅，最后才把层移出栈', async () => {
+    const order: string[] = []
+    const h = mount({}, { onLayerDispose: () => order.push('layer') })
+    rightClick(h.trigger, 120, 80)
+    await wait(0)
+    const remove = document.removeEventListener.bind(document)
+    const spy = vi.spyOn(document, 'removeEventListener').mockImplementation(((type: string, listener: EventListener, opts?: boolean | EventListenerOptions) => {
+      // focusout 只有焦点域摘、pointerdown 只有消解层摘，拿它们当各自的拆除标记
+      if (type === 'focusout')
+        order.push('focus-scope')
+      if (type === 'pointerdown')
+        order.push('dismiss')
+      remove(type, listener, opts)
+    }) as typeof document.removeEventListener)
+    h.api().setOpen(false)
+    spy.mockRestore()
+    expect(order).toEqual(['focus-scope', 'dismiss', 'layer'])
+  })
+
+  it('键盘入口：焦点落在锚点条目上', async () => {
+    const h = mount({}, { layer: true })
+    menuKey(h.trigger)
+    await settle()
+    expect(h.api().focusedValue).toBe('copy')
+    expect(document.activeElement).toBe(h.item('copy'))
+  })
+
+  it('指针入口：不落锚点，焦点歇在认领着 Tab 位的 content 上', async () => {
+    const h = mount({}, { layer: true })
+    rightClick(h.trigger, 120, 80)
+    await settle()
+    expect(h.api().focusedValue).toBeNull()
+    expect(document.activeElement).toBe(h.content)
+  })
+
+  it('escape 关掉之后焦点归还触发区——右键那一下焦点在 body 上也一样', async () => {
+    const h = mount({}, { layer: true })
+    expect(document.activeElement).toBe(document.body)
+    rightClick(h.trigger, 120, 80)
+    await settle()
+    await wait(0)
+    press(document.body, 'Escape')
+    await settle()
+    expect(h.state()).toBe('closed')
+    expect(document.activeElement).toBe(h.trigger)
+  })
+
+  it('层外交互关掉的那一路把焦点让出去，不往回抢', async () => {
+    const h = mount({}, { layer: true })
+    rightClick(h.trigger, 120, 80)
+    await settle()
+    await wait(0)
+    const outside = document.createElement('button')
+    document.body.appendChild(outside)
+    outside.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true }))
+    expect(h.state()).toBe('closed')
+    expect(h.service.context.get('returnFocus')).toBe(false)
+    await settle()
+    expect(document.activeElement).not.toBe(h.trigger)
   })
 })
