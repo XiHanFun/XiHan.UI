@@ -9,11 +9,13 @@ import type {
 import { dataAttr, focusSafely } from '@xihan-ui/core'
 import { floatingPanelAnatomy } from './floating-panel.anatomy'
 import {
+  fitFloatingPanelToViewport,
   FLOATING_PANEL_DEFAULT_POSITION,
   FLOATING_PANEL_LARGE_STEP,
   FLOATING_PANEL_MIN_SIZE,
   FLOATING_PANEL_STEP,
   floatingPanelRectStyle,
+  floatingPanelViewportFrom,
 } from './floating-panel.geometry'
 
 const parts = floatingPanelAnatomy.build()
@@ -84,8 +86,14 @@ export function connectFloatingPanel<T extends PropTypes>(
   // 改尺把手报值用的上下限，与机器夹取用的是同一份缺省
   const minSize = prop('minSize') ?? FLOATING_PANEL_MIN_SIZE
   const maxSize = prop('maxSize')
-  // Enter / Space 把面板送回这个落点
-  const homePosition = prop('defaultPosition') ?? FLOATING_PANEL_DEFAULT_POSITION
+  // Enter / Space 把面板送回这个落点。
+  // 内建落点按当前尺寸与视口夹一次：面板被拖出视口后靠这一键收回来，收回去的落点自己不能又在屏外
+  const homePosition = prop('defaultPosition')
+    ?? fitFloatingPanelToViewport(
+      FLOATING_PANEL_DEFAULT_POSITION,
+      dimensions,
+      floatingPanelViewportFrom(scope),
+    ).position
 
   // 整块面板的状态标记，几个角色节点共用一份，样式层各处一致
   const panelAttrs = (): Record<string, string | undefined> => ({

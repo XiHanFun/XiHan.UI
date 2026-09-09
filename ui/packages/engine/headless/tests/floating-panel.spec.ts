@@ -27,6 +27,7 @@ import {
   sameFloatingPanelPosition,
   sameFloatingPanelSize,
 } from '../src/floating-panel'
+import { fitFloatingPanelToViewport } from '../src/floating-panel/floating-panel.geometry'
 
 type Props = FloatingPanelSchema['props']
 type Dict = Record<string, unknown>
@@ -136,6 +137,41 @@ describe('floating-panel 尺寸夹取', () => {
 
   it('不给上限即不封顶', () => {
     expect(clampFloatingPanelSize({ width: 5000, height: 4000 })).toEqual({ width: 5000, height: 4000 })
+  })
+})
+
+describe('fitFloatingPanelToViewport 视口夹取', () => {
+  const home = { x: 24, y: 24 }
+  const size = { width: 360, height: 240 }
+
+  it('装得下就原样放行', () => {
+    expect(fitFloatingPanelToViewport(home, size, { width: 1280, height: 800 })).toEqual({
+      position: home,
+      size,
+    })
+  })
+
+  it('装不下时先收尺寸：四边各留 24 的余量', () => {
+    // 375 宽：360 的面板右缘落在 384，比视口还宽 9
+    const fitted = fitFloatingPanelToViewport(home, size, { width: 375, height: 667 })
+    expect(fitted.size.width).toBe(327)
+    expect(fitted.position.x).toBe(24)
+    expect(fitted.position.x + fitted.size.width).toBe(351)
+  })
+
+  it('落点推回视口内，尺寸够小时不动尺寸', () => {
+    const fitted = fitFloatingPanelToViewport({ x: 900, y: 900 }, { width: 200, height: 160 }, { width: 375, height: 667 })
+    expect(fitted).toEqual({ position: { x: 151, y: 483 }, size: { width: 200, height: 160 } })
+  })
+
+  it('视口比尺寸下限还窄时守住下限，落点归 0', () => {
+    const fitted = fitFloatingPanelToViewport(home, size, { width: 100, height: 100 })
+    expect(fitted.size).toEqual({ width: 160, height: 120 })
+    expect(fitted.position).toEqual({ x: 0, y: 0 })
+  })
+
+  it('量不到视口就原样返回', () => {
+    expect(fitFloatingPanelToViewport(home, size, null)).toEqual({ position: home, size })
   })
 })
 
@@ -590,5 +626,50 @@ describe('floatingPanelMachine 受控几何', () => {
     const rig = makeRig({ defaultOpen: true, minSize: { width: 240, height: 180 } })
     api(rig.service).setDimensions({ width: 10, height: 10 })
     expect(rig.service.context.get('dimensions')).toEqual({ width: 240, height: 180 })
+  })
+})
+
+describe('floatingPanelMachine 内建默认矩形按视口夹', () => {
+  /** 换掉 jsdom 的可视尺寸；机器在构造时量一次，改完再造 rig。 */
+  function setViewport(width: number, height: number): void {
+    Object.defineProperty(window, 'innerWidth', { value: width, configurable: true })
+    Object.defineProperty(window, 'innerHeight', { value: height, configurable: true })
+  }
+
+  afterEach(() => setViewport(1024, 768))
+
+  it('375 档收窄到装得下：右缘不再落到屏外', () => {
+    setViewport(375, 667)
+    const rig = makeRig({ defaultOpen: true })
+    const position = rig.service.context.get('position')
+    const dimensions = rig.service.context.get('dimensions')
+    expect(position.x + dimensions.width).toBeLessThanOrEqual(375)
+    expect(dimensions.width).toBe(327)
+  })
+
+  it('768 与 1280 两档装得下，仍是 360×240 落在 24,24', () => {
+    for (const [w, h] of [[768, 1024], [1280, 800]] as const) {
+      setViewport(w, h)
+      const rig = makeRig({ defaultOpen: true })
+      expect(rig.service.context.get('position')).toEqual({ x: 24, y: 24 })
+      expect(rig.service.context.get('dimensions')).toEqual({ width: 360, height: 240 })
+    }
+  })
+
+  it('作者写了 defaultDimensions / defaultPosition 就照写的来', () => {
+    setViewport(375, 667)
+    const rig = makeRig({ defaultOpen: true, defaultPosition: { x: 300, y: 300 }, defaultDimensions: { width: 600, height: 400 } })
+    expect(rig.service.context.get('position')).toEqual({ x: 300, y: 300 })
+    expect(rig.service.context.get('dimensions')).toEqual({ width: 600, height: 400 })
+  })
+
+  it('没给 defaultPosition 时 Home 键送回的落点也在视口内', () => {
+    setViewport(375, 667)
+    const rig = makeRig({ defaultOpen: true })
+    const drag = dragProps(rig.service)
+    api(rig.service).setPosition({ x: 900, y: 900 })
+    press(drag, 'Enter')
+    const position = rig.service.context.get('position')
+    expect(position.x + rig.service.context.get('dimensions').width).toBeLessThanOrEqual(375)
   })
 })

@@ -32,7 +32,7 @@ export const floatingPanelKeyboard: KeyboardTable = {
       id: 'floating-panel.kbd.recenter',
       keys: ['Enter', 'Space'],
       when: 'focus on drag-trigger, 未禁用、draggable 开启且不是铺满形态',
-      does: '把面板送回初始落点（defaultPosition，没给就是 24,24）；面板被拖出视口后靠这一键收回来',
+      does: '把面板送回初始落点（defaultPosition，没给就是按视口夹过的 24,24）；面板被拖出视口后靠这一键收回来',
     },
     {
       id: 'floating-panel.kbd.resize',
