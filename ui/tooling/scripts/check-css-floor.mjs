@@ -60,6 +60,9 @@ function coveredByFloor(item, floor) {
 const CASCADE = [
   { name: 'light-dark()', marker: /light-dark\(/, fallbackOf: value => !value.includes('light-dark('), hint: '同一属性先写一条普通颜色声明,再写 light-dark() 那条' },
   { name: '动态视口单位 svh/lvh/dvh', marker: /(?:^|[^a-z-])(?:svh|lvh|dvh)\b/, fallbackOf: value => /(?:^|[^a-z-])vh\b/.test(value), hint: '同一属性先写 vh 声明,再写动态视口单位那条' },
+  // 行盒单位:一行字的高度。晚于地板的具体版本没查证到,所以不进拒绝名单——它有兜底可写:
+  // 同一行的高度等于「字号 × 行距」,两者都是本库的令牌,算出来的数与 1lh 一致。
+  { name: '行盒单位 lh/rlh', marker: /(?:^|[^\w-])[\d.]+r?lh\b/, fallbackOf: value => !/(?:^|[^\w-])[\d.]+r?lh\b/.test(value), hint: '同一属性先写一条按令牌算的「字号 × 行距」声明,再写 lh 那条' },
 ]
 
 // —— 受 @supports 守卫的增强:每一处都必须落在测同一个特性的 @supports 块里 ——
@@ -125,7 +128,7 @@ function ruleBlocks(css) {
 
 /** 块内声明行:缩进 + 属性名 + 冒号 + 值。属性名覆盖 --xh-* 与普通属性;空白只吃水平空白。 */
 function declarationsOf(block) {
-  return [...block.matchAll(/^[^\S\n]*((--[\w-]+|[a-z-]+))[^\S\n]*:([^\n]*)$/gm)]
+  return [...block.matchAll(/^[^\S\n]*(--[\w-]+|[a-z-]+)[^\S\n]*:([^\n]*)$/gm)]
     .map(m => ({ name: m[1], value: m[2].trim(), line: m[0].trim() }))
 }
 
