@@ -21,6 +21,10 @@
 
     display: block;
     overflow: hidden;
+    /* 并排↔堆叠按自己的盒宽换档，不看视口：差异视图常嵌在半宽的评审栏里，
+       视口再宽也不影响这块盒里放不放得下两列 */
+    container-type: inline-size;
+    container-name: xh-diff-view;
     border: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
     border-radius: var(--xh-diff-view-radius, var(--xh-shape-surface));
     background: var(--xh-diff-view-bg, var(--xh-bg-surface));
@@ -158,9 +162,12 @@
     color: var(--xh-diff-view-removed-fg);
   }
 
-  /* 并排视图两列之间的接缝：新侧的行号槽再补一条左边线 */
-  [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='line-number'][data-side='new'] {
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
+  /* 窄档的并排视图：一行的两侧改成上下两段，旧行在上、新行在下。
+     行由横排 flex 换成两列栅格——行号一列、正文一列，一行里的四个格按 DOM 次序
+     自然落成两行，正文列因此只按单侧的最长行撑宽，不再是两侧之和 */
+  [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='row']:not([hidden]) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
   }
 
   /* white-space: pre 保留缩进；每一侧各占一半宽 */
@@ -372,6 +379,19 @@
     --xh-_diff-view-font-size: var(--xh-control-font-lg);
     --xh-_diff-view-px: var(--xh-space-4);
     --xh-_diff-view-py: var(--xh-space-3);
+  }
+
+  /* 宽档：盒里放得下两列，并排视图回到一行两侧 */
+  @container xh-diff-view (min-width: 1024px) {
+    [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='row']:not([hidden]) {
+      display: flex;
+    }
+
+    /* 两列之间的接缝：新侧的行号槽再补一条左边线。只在并排时是接缝，
+       堆叠时它落在段首，成了一条与任何东西都不相接的竖线 */
+    [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='line-number'][data-side='new'] {
+      border-inline-start: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
+    }
   }
 
   /*

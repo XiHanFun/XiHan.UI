@@ -33,9 +33,15 @@
     display: none;
   }
 
-  /* 纵向：步骤列与面板并排 */
+  /* 纵向：步骤列与面板并排；两栏一起放不下时面板换到下一行，步骤列因此拿得回整行宽度 */
   [data-scope='steps'][data-part='root'][data-orientation='vertical'] {
     flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  /* 面板的换行基准：一行正文的宽度。步骤列的内容宽加上这一格放不下，两者就分成两行 */
+  [data-scope='steps'][data-part='root'][data-orientation='vertical'] > [data-scope='steps'][data-part='content'] {
+    flex: 1 1 var(--xh-steps-content-min-inline-size, var(--xh-measure-prose));
   }
 
   /* —— 尺寸 —— */
@@ -53,8 +59,10 @@
     --xh-_steps-caption-font-size: var(--xh-text-secondary-size);
   }
 
+  /* 横排一整行摆不下时按条折到下一行，折行的判据由每一步自己的 min-inline-size 给 */
   [data-scope='steps'][data-part='list'] {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--xh-steps-list-gap, var(--xh-space-2));
   }
@@ -63,8 +71,11 @@
     display: none;
   }
 
+  /* 竖排时列被拉到与面板同高，那是一个确定的块向尺寸；折行在这里会把步骤摊成两列，
+     所以这一档明确关掉 */
   [data-scope='steps'][data-part='list'][data-orientation='vertical'] {
     flex-direction: column;
+    flex-wrap: nowrap;
     align-items: stretch;
   }
 
@@ -82,13 +93,22 @@
     display: none;
   }
 
-  /* 末步后面没有"下一步"，那截连接线不该占地方；作者不写它也一样，写了就替他收掉 */
+  /* 末步后面没有"下一步"，那截连接线不该占地方；作者不写它也一样，写了就替他收掉。
+     末步按内容宽摆、不参与伸缩，标题长过整行时由 100% 收住，超出的部分走省略号 */
   [data-scope='steps'][data-part='item']:last-child {
     flex: none;
+    max-inline-size: 100%;
   }
 
   [data-scope='steps'][data-part='item']:last-child [data-scope='steps'][data-part='separator'] {
     display: none;
+  }
+
+  /* 横排的折行下限：一步至少要有一列的宽度，写不下这么多步就折到下一行。
+     100% 兜住只放得下一步的容器，那时它退回省略号、不把列表顶出容器。
+     宽处的分配不变：flex 简写里的基准值仍是 0，各步等分整行，这个下限够不着 */
+  [data-scope='steps'][data-part='item'][data-orientation='horizontal']:not(:last-child) {
+    min-inline-size: min(var(--xh-steps-item-min-inline-size, var(--xh-layout-col-min-xs)), 100%);
   }
 
   [data-scope='steps'][data-part='item'][data-orientation='vertical'] {
