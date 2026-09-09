@@ -76,7 +76,7 @@
 | [级联选择](./cascader) | `cascader` | 21 | 25 | 16 |
 | [复选框](./checkbox) | `checkbox` | 5 | 1 | 8 |
 | [复选框组](./checkbox-group) | `checkbox-group` | 7 | 3 | 9 |
-| [颜色选择器](./color-picker) | `color-picker` | 18 | 9 | 10 |
+| [颜色选择器](./color-picker) | `color-picker` | 18 | 10 | 10 |
 | [组合框](./combobox) | `combobox` | 16 | 14 | 14 |
 | [日期输入](./date-field) | `date-field` | 7 | 9 | 13 |
 | [日期选择器](./date-picker) | `date-picker` | 14 | 9 | 10 |

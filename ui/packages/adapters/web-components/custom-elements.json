@@ -7865,6 +7865,31 @@
             },
             {
               "kind": "field",
+              "name": "hueCtrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<SliderSchema>( this, sliderMachine, () => colorPickerChannelSliderProps(this.ctrl.service, 'hue'), { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.channelTrack('hue')) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "alphaCtrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<SliderSchema>( this, sliderMachine, () => colorPickerChannelSliderProps(this.ctrl.service, 'alpha'), { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.channelTrack('alpha')) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "services",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ColorPickerServices"
+                }
+              },
+              "description": "连接层要的整份服务表。"
+            },
+            {
+              "kind": "field",
               "name": "bars",
               "privacy": "private",
               "readonly": true,

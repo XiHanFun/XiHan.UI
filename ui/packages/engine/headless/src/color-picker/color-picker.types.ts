@@ -1,4 +1,5 @@
-import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/core'
+import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { SliderSchema } from '../slider'
 import type {
   ColorPickerAnchor,
   ColorPickerChannel,
@@ -9,8 +10,11 @@ import type {
 } from './color-picker.color'
 import type { ColorPickerPoint } from './color-picker.geometry'
 
-/** 正被指针拖着的是哪一处。 */
-export type ColorPickerDragTarget = 'area' | ColorPickerChannel
+/**
+ * 正被指针拖着的是哪一处。
+ * 只有二维取色区归取色器自己管；两条通道滑杆的拖动住在各自那台内嵌滑杆里。
+ */
+export type ColorPickerDragTarget = 'area'
 
 /** 某个输入框里那串还没收下的字。同一时刻只会有一个框在编辑（就是聚焦的那个）。 */
 export interface ColorPickerDraft {
@@ -53,8 +57,20 @@ export interface ColorPickerRefs {
   getContentEl: () => HTMLElement | null
   /** 二维取色区本体：坐标换算以它的矩形为准，矩形在事件那一刻才量。 */
   getAreaEl: () => HTMLElement | null
-  /** 某条通道的轨道本体，同样只在事件那一刻量。 */
-  getChannelTrackEl: (channel: ColorPickerChannel) => HTMLElement | null
+}
+
+/**
+ * 取色器跑起来要的几台机器：自己一台，两条通道滑杆各一台。
+ *
+ * 两条滑杆的区间、步长与当下的值都受控于取色器，推动经 CHANNEL.SET 送回来；
+ * 轨道矩形由适配器接到各自那台滑杆的 getTrackEl 上。
+ */
+export interface ColorPickerServices {
+  root: Service<ColorPickerSchema>
+  /** 色相那条，区间 0-360。 */
+  hueSlider: Service<SliderSchema>
+  /** 透明度那条，区间 0-100；alpha 关掉时整条禁用。 */
+  alphaSlider: Service<SliderSchema>
 }
 
 export interface ColorPickerValueChangeDetails {

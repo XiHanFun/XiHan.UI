@@ -4,12 +4,14 @@ import type {
   ColorPickerFormat,
   ColorPickerOpenChangeDetails,
   ColorPickerSchema,
+  ColorPickerServices,
   ColorPickerTranslations,
   ColorPickerValueChangeDetails,
+  SliderSchema,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { colorPickerAnatomy, colorPickerMachine, colorPickerMeta, colorPickerToChannel, colorPickerToInputChannel, connectColorPicker } from '@xihan-ui/headless'
+import { colorPickerAnatomy, colorPickerChannelSliderProps, colorPickerMachine, colorPickerMeta, colorPickerToChannel, colorPickerToInputChannel, connectColorPicker, sliderMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -143,6 +145,27 @@ export class XhColorPickerElement extends XhElement {
     { scope: this.pickerScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  // 两条通道各自一台滑杆：区间与当下的值从取色器现读，推动经 CHANNEL.SET 送回去。
+  // 三台共用一份 scope，part id 里带组件名区分，不会撞
+  private readonly hueCtrl = new MachineController<SliderSchema>(
+    this,
+    sliderMachine,
+    () => colorPickerChannelSliderProps(this.ctrl.service, 'hue'),
+    { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.channelTrack('hue')) },
+  )
+
+  private readonly alphaCtrl = new MachineController<SliderSchema>(
+    this,
+    sliderMachine,
+    () => colorPickerChannelSliderProps(this.ctrl.service, 'alpha'),
+    { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.channelTrack('alpha')) },
+  )
+
+  /** 连接层要的整份服务表。 */
+  private services(): ColorPickerServices {
+    return { root: this.ctrl.service, hueSlider: this.hueCtrl.service, alphaSlider: this.alphaCtrl.service }
+  }
+
   /** 面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('positioner'),
@@ -212,7 +235,6 @@ export class XhColorPickerElement extends XhElement {
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
     svc.refs.set('getAreaEl', () => this.getPart('saturation-area'))
-    svc.refs.set('getChannelTrackEl', channel => this.channelTrack(channel))
   }
 
   /** 提前发现一次角色节点，让 default-open 时机器在 hostConnected 里就取得到 content。 */
@@ -225,7 +247,7 @@ export class XhColorPickerElement extends XhElement {
    * 命令式入口共用的取法；机器要到进文档（hostConnected）才建，还没建时给 null，调用方退回空操作。
    */
   private api(): ReturnType<typeof connectColorPicker> | null {
-    return this.ctrl.service ? connectColorPicker(this.ctrl.service, wcNormalize) : null
+    return this.ctrl.service ? connectColorPicker(this.services(), wcNormalize) : null
   }
 
   /**
@@ -256,7 +278,7 @@ export class XhColorPickerElement extends XhElement {
   }
 
   protected wire(): void {
-    const api = connectColorPicker(this.ctrl.service, wcNormalize)
+    const api = connectColorPicker(this.services(), wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)

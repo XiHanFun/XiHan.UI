@@ -42,6 +42,7 @@ export type { ColorPickerPoint, ColorPickerRatio, ColorPickerRect } from './colo
 export { colorPickerKeyboard } from './color-picker.keyboard'
 export {
   COLOR_PICKER_DEFAULT_PLACEMENT,
+  colorPickerChannelSliderProps,
   colorPickerHasEyeDropper,
   colorPickerMachine,
   colorPickerOpenEyeDropper,
@@ -57,6 +58,7 @@ export type {
   ColorPickerOpenChangeDetails,
   ColorPickerRefs,
   ColorPickerSchema,
+  ColorPickerServices,
   ColorPickerSwatchItemProps,
   ColorPickerTranslations,
   ColorPickerValueChangeDetails,

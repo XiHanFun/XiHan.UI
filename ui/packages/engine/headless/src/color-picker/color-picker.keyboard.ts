@@ -44,6 +44,12 @@ export const colorPickerKeyboard: KeyboardTable = {
       does: '同上，但一步走 10',
     },
     {
+      id: 'color-picker.kbd.channel-page-step',
+      keys: ['PageUp', 'PageDown'],
+      when: 'focus in channel-slider-thumb, channel enabled',
+      does: '朝 max / min 各走 10，与 dir 无关',
+    },
+    {
       id: 'color-picker.kbd.channel-edge',
       keys: ['Home', 'End'],
       when: 'focus in channel-slider-thumb, channel enabled',
