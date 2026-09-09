@@ -31725,7 +31725,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-pin-input>` —— Light-DOM 行为宿主：作者写 root/label/input（多个）/hidden-input 角色节点，\n元素跑 pin-input 机器并把 connect 产出打上去。\n\n每格是一个原生输入框：敲一个字符自动跳下一格，退格在空格上回退并清掉上一格，\n左右键与 Home/End 在格间移动，粘贴整串按格分发。不接受的字符直接丢弃，\n既不进值也不留在框里。整份值另由 hidden-input 随表单提交。",
+          "description": "`<xh-pin-input>` —— Light-DOM 行为宿主：作者写 root/label/input（多个）/hidden-input 角色节点，\n元素跑 pin-input 机器并把 connect 产出打上去。\n\n每格是一个原生输入框：敲一个字符自动跳下一格，退格在空格上回退并清掉上一格，\n左右键与 Home/End 在格间移动，粘贴整串按格分发。不接受的字符直接丢弃，\n既不进值也不留在框里。整份值另由 hidden-input 随表单提交。\n\n按顺序录入：焦点落在第一个空格上，还轮不到的格子既点不进、也不是 Tab 停靠点；\n往回改已填的格子照走，填满之后哪一格都能改。read-only 与 disabled 不设这道限。",
           "name": "XhPinInputElement",
           "cssParts": [
             {

@@ -29,6 +29,9 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * 左右键与 Home/End 在格间移动，粘贴整串按格分发。不接受的字符直接丢弃，
  * 既不进值也不留在框里。整份值另由 hidden-input 随表单提交。
  *
+ * 按顺序录入：焦点落在第一个空格上，还轮不到的格子既点不进、也不是 Tab 停靠点；
+ * 往回改已填的格子照走，填满之后哪一格都能改。read-only 与 disabled 不设这道限。
+ *
  * @customElement xh-pin-input
  * @attr {string} value - 受控值，逐字符摊进各格；缺省该属性即非受控
  * @attr {string} default-value - 非受控初值，同样逐字符摊开

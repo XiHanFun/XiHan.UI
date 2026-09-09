@@ -2,9 +2,11 @@ export { pinInputAnatomy } from './pin-input.anatomy'
 export { connectPinInput } from './pin-input.connect'
 export { pinInputKeyboard } from './pin-input.keyboard'
 export {
+  firstEmptyPinIndex,
   isPinComplete,
   padPinValue,
   PIN_INPUT_LENGTH,
+  pinFocusTarget,
   pinInputMachine,
   pinLength,
   samePinValue,

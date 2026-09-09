@@ -115,6 +115,10 @@
     gap: var(--xh-tags-input-control-gap, var(--xh-_tags-input-control-gap));
     min-inline-size: min(var(--xh-tags-input-control-min-w, var(--xh-control-min-w)), 100%);
     min-block-size: var(--xh-tags-input-control-h, var(--xh-_tags-input-control-h));
+    /* 标签一多就换行，行数没有尽头：框到这个高度就不再长，剩下的标签在框内滚出来。
+       上限取滚动面最小的那一档，与页面上其它滚动面用同一把尺 */
+    max-block-size: var(--xh-tags-input-control-max-h, var(--xh-viewport-h-sm));
+    overflow-y: auto;
     /* 纵向只留半档：标签行加上下内距要装进控件档的高度里 */
     padding-block: var(--xh-tags-input-control-py, var(--xh-space-0_5));
     padding-inline: var(--xh-tags-input-control-px, var(--xh-_tags-input-control-px));

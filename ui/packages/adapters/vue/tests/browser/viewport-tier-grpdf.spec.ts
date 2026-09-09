@@ -43,7 +43,7 @@ function items(el: HTMLElement): HTMLElement[] {
 
 /** 第一行摆了几格：与首格同一条上边线的就算同一行。 */
 function perRow(el: HTMLElement): number {
-  const top = items(el)[0].getBoundingClientRect().top
+  const top = items(el)[0]!.getBoundingClientRect().top
   return items(el).filter(i => Math.abs(i.getBoundingClientRect().top - top) < 0.5).length
 }
 
