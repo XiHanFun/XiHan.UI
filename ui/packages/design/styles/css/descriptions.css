@@ -16,6 +16,11 @@
     /* 标签在左时那一列的宽度：收到最长的那个标签 */
     --xh-_descriptions-label-w: max-content;
 
+    /* 这一份自己的宽度就是换档的依据：同一份描述列表塞进窄容器与塞进窄视口，
+       取值列被压扁的坏法一样，所以量的是根的宽而不是视口的宽 */
+    container-type: inline-size;
+    container-name: xh-descriptions;
+
     display: grid;
     /* 不写 columns 即每行一组；二到六列各有一条规则 */
     grid-template-columns: minmax(0, 1fr);
@@ -71,21 +76,14 @@
   }
 
   /* —— 每一格 —— */
-  /* 一格自己也是网格：不写 placement 即标签一行、取值一行叠着排 */
+  /* 一格自己也是网格：不写 placement 即标签一行、取值一行叠着排。
+     窄档每格横跨根上排定的所有列，一行只摆一组；作者写在格上的 span 是行内样式，盖不过来 */
   [data-scope='descriptions'][data-part='item'] {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
+    grid-column: 1 / -1;
     align-content: start;
     gap: var(--xh-descriptions-pair-gap, var(--xh-_descriptions-pair-gap));
-  }
-
-  /* 标签在左：一格分成「标签列 + 取值列」，两段的首行文字对齐同一条基线。
-     只认自己的直接子格，套在取值里的另一份描述由它自己的根管 */
-  [data-scope='descriptions'][data-part='root'][data-placement='left']
-    > [data-scope='descriptions'][data-part='item'] {
-    grid-template-columns: var(--xh-descriptions-label-w, var(--xh-_descriptions-label-w)) minmax(0, 1fr);
-    align-items: baseline;
-    column-gap: var(--xh-descriptions-label-gap, var(--xh-_descriptions-label-gap));
   }
 
   [data-scope='descriptions'][data-part='label'] {
@@ -127,80 +125,113 @@
     border-block-start-width: 0;
   }
 
-  /* 二到六列：左边线一律补上，再抹掉每行第一格的左边线与首行那几格的上边线 */
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='2']
-    > [data-scope='descriptions'][data-part='item'] {
-    border-inline-start-width: var(--xh-stroke-thin);
+  /* —— 逐档的列数与边线 ——
+     窄档一行只摆一组：每格的上边线就是行与行之间那条线，左边线用不上——
+     上面那两条默认规则就是这一档的写法。
+     宽起来以后逐档恢复：每一档写两件事，一是这一档一行摆几格（跨列数），
+     二是这一档的边线：不在行首的格补上左边线，首行那几格抹掉上边线。
+     两组集合逐档只增不减，宽档不必回收窄档写下的边线。 */
+  @container xh-descriptions (min-width: 768px) {
+    /* 标签左置从这一档起生效：窄档一律标签在上，取值拿满整格的宽。
+       只认自己的直接子格，套在取值里的另一份描述由它自己的根管 */
+    [data-scope='descriptions'][data-part='root'][data-placement='left']
+      > [data-scope='descriptions'][data-part='item'] {
+      grid-template-columns: var(--xh-descriptions-label-w, var(--xh-_descriptions-label-w)) minmax(0, 1fr);
+      align-items: baseline;
+      column-gap: var(--xh-descriptions-label-gap, var(--xh-_descriptions-label-gap));
+    }
+
+    /* 二列与三列在这一档按作者写的列数摆 */
+    [data-scope='descriptions'][data-part='root'][data-columns='2']
+      > [data-scope='descriptions'][data-part='item'],
+    [data-scope='descriptions'][data-part='root'][data-columns='3']
+      > [data-scope='descriptions'][data-part='item'] {
+      grid-column: auto;
+    }
+
+    /* 四列与六列在这一档摆两列：一格横跨一半的轨道。
+       五列没有能摆成两列等宽的跨列数，留在一列，到宽档再按作者的五列摆 */
+    [data-scope='descriptions'][data-part='root'][data-columns='4']
+      > [data-scope='descriptions'][data-part='item'] {
+      grid-column: span 2;
+    }
+
+    [data-scope='descriptions'][data-part='root'][data-columns='6']
+      > [data-scope='descriptions'][data-part='item'] {
+      grid-column: span 3;
+    }
+
+    /* 一行两格：二、四、六列在这一档共用这套边线 */
+    [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='2']
+      > [data-scope='descriptions'][data-part='item']:not(:nth-child(2n + 1)),
+    [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
+      > [data-scope='descriptions'][data-part='item']:not(:nth-child(2n + 1)),
+    [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
+      > [data-scope='descriptions'][data-part='item']:not(:nth-child(2n + 1)) {
+      border-inline-start-width: var(--xh-stroke-thin);
+    }
+
+    [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='2']
+      > [data-scope='descriptions'][data-part='item']:nth-child(-n + 2),
+    [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
+      > [data-scope='descriptions'][data-part='item']:nth-child(-n + 2),
+    [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
+      > [data-scope='descriptions'][data-part='item']:nth-child(-n + 2) {
+      border-block-start-width: 0;
+    }
+
+    /* 一行三格 */
+    [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='3']
+      > [data-scope='descriptions'][data-part='item']:not(:nth-child(3n + 1)) {
+      border-inline-start-width: var(--xh-stroke-thin);
+    }
+
+    [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='3']
+      > [data-scope='descriptions'][data-part='item']:nth-child(-n + 3) {
+      border-block-start-width: 0;
+    }
   }
 
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='2']
-    > [data-scope='descriptions'][data-part='item']:nth-child(2n + 1) {
-    border-inline-start-width: 0;
-  }
+  @container xh-descriptions (min-width: 1024px) {
+    /* 四、五、六列到这一档按作者写的列数摆 */
+    [data-scope='descriptions'][data-part='root'][data-columns='4']
+      > [data-scope='descriptions'][data-part='item'],
+    [data-scope='descriptions'][data-part='root'][data-columns='5']
+      > [data-scope='descriptions'][data-part='item'],
+    [data-scope='descriptions'][data-part='root'][data-columns='6']
+      > [data-scope='descriptions'][data-part='item'] {
+      grid-column: auto;
+    }
 
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='2']
-    > [data-scope='descriptions'][data-part='item']:nth-child(-n + 2) {
-    border-block-start-width: 0;
-  }
+    [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
+      > [data-scope='descriptions'][data-part='item']:not(:nth-child(4n + 1)) {
+      border-inline-start-width: var(--xh-stroke-thin);
+    }
 
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='3']
-    > [data-scope='descriptions'][data-part='item'] {
-    border-inline-start-width: var(--xh-stroke-thin);
-  }
+    [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
+      > [data-scope='descriptions'][data-part='item']:nth-child(-n + 4) {
+      border-block-start-width: 0;
+    }
 
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='3']
-    > [data-scope='descriptions'][data-part='item']:nth-child(3n + 1) {
-    border-inline-start-width: 0;
-  }
+    [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='5']
+      > [data-scope='descriptions'][data-part='item']:not(:nth-child(5n + 1)) {
+      border-inline-start-width: var(--xh-stroke-thin);
+    }
 
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='3']
-    > [data-scope='descriptions'][data-part='item']:nth-child(-n + 3) {
-    border-block-start-width: 0;
-  }
+    [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='5']
+      > [data-scope='descriptions'][data-part='item']:nth-child(-n + 5) {
+      border-block-start-width: 0;
+    }
 
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
-    > [data-scope='descriptions'][data-part='item'] {
-    border-inline-start-width: var(--xh-stroke-thin);
-  }
+    [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
+      > [data-scope='descriptions'][data-part='item']:not(:nth-child(6n + 1)) {
+      border-inline-start-width: var(--xh-stroke-thin);
+    }
 
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
-    > [data-scope='descriptions'][data-part='item']:nth-child(4n + 1) {
-    border-inline-start-width: 0;
-  }
-
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
-    > [data-scope='descriptions'][data-part='item']:nth-child(-n + 4) {
-    border-block-start-width: 0;
-  }
-
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='5']
-    > [data-scope='descriptions'][data-part='item'] {
-    border-inline-start-width: var(--xh-stroke-thin);
-  }
-
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='5']
-    > [data-scope='descriptions'][data-part='item']:nth-child(5n + 1) {
-    border-inline-start-width: 0;
-  }
-
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='5']
-    > [data-scope='descriptions'][data-part='item']:nth-child(-n + 5) {
-    border-block-start-width: 0;
-  }
-
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
-    > [data-scope='descriptions'][data-part='item'] {
-    border-inline-start-width: var(--xh-stroke-thin);
-  }
-
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
-    > [data-scope='descriptions'][data-part='item']:nth-child(6n + 1) {
-    border-inline-start-width: 0;
-  }
-
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
-    > [data-scope='descriptions'][data-part='item']:nth-child(-n + 6) {
-    border-block-start-width: 0;
+    [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
+      > [data-scope='descriptions'][data-part='item']:nth-child(-n + 6) {
+      border-block-start-width: 0;
+    }
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。

@@ -4,11 +4,13 @@
     --xh-transfer-skin: 1;
   }
 
-  /* 三栏栅格：两侧面板各占一栏、跨两行，中间那栏上下各放一个搬运按钮，
-     两个按钮在中线处相遇。栅格的列号本身就是随书写方向走的（第 1 栏永远在行首侧），
-     dir=rtl 时整块自动镜像，不必另写一套。
+  /* 三栏栅格：宽档两侧面板各占一栏、跨两行，中间那栏上下各放一个搬运按钮；
+     窄档四个节点改按行叠放，中栏被两个按钮各跨一半、宽度收成零，两钮因此仍在中线相遇。
+     两档共用这一份轨道声明：轨道写在根上，而根是查询容器自己，容器查询改不到它，
+     换档只能靠四个子节点各自换安放。
+     栅格的列号本身就是随书写方向走的（第 1 栏永远在行首侧），dir=rtl 时整块自动镜像。
      中间那栏没有对应的角色节点（anatomy 里两个按钮是 root 的直接子节点），
-     所以只能按位置显式安放，不能靠自动流——自动流会把"往左搬"甩到右侧面板的位置上 */
+     所以只能按位置显式安放，不能靠自动流——自动流会把"往回搬"甩到目标面板的位置上 */
   [data-scope='transfer'][data-part='root'] {
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-text));
@@ -25,8 +27,13 @@
     --xh-_transfer-accent: var(--xh-_tone, var(--xh-bg-brand));
     --xh-_transfer-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
 
+    /* 两栏并排↔上下堆叠按自己的盒宽换档，不看视口：穿梭框常放在对话框或分栏表单里，
+       视口再宽也不影响这块盒里放不放得下两块面板 */
+    container-type: inline-size;
+    container-name: xh-transfer;
+
     display: grid;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: auto auto;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     gap: var(--xh-transfer-gap, var(--xh-space-3));
     align-items: center;
@@ -64,27 +71,29 @@
     cursor: default;
   }
 
+  /* 窄档：源面板在上、目标面板在下，各自跨满三栏 */
   [data-scope='transfer'][data-part='source-panel'] {
-    grid-row: 1 / 3;
-    grid-column: 1;
+    grid-row: 1;
+    grid-column: 1 / 4;
   }
 
   [data-scope='transfer'][data-part='target-panel'] {
-    grid-row: 1 / 3;
-    grid-column: 3;
+    grid-row: 3;
+    grid-column: 1 / 4;
   }
 
-  /* 上格贴底、下格贴顶：两个按钮因此夹着中线成对出现，而不是各自漂在半栏中央 */
+  /* 两钮同占中间一行，各跨到中栏为止，一个贴行尾侧、一个贴行首侧，
+     因此夹着中线成对出现，而不是各自漂在半行中央 */
   [data-scope='transfer'][data-part='to-target-trigger'] {
-    grid-row: 1;
-    grid-column: 2;
-    align-self: end;
+    grid-row: 2;
+    grid-column: 1 / 3;
+    justify-self: end;
   }
 
   [data-scope='transfer'][data-part='to-source-trigger'] {
     grid-row: 2;
-    grid-column: 2;
-    align-self: start;
+    grid-column: 2 / 4;
+    justify-self: start;
   }
 
   [data-scope='transfer'][data-part='source-panel'],
@@ -502,7 +511,8 @@
     display: none;
   }
 
-  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中。
+     堆叠时目标面板在下方，箭头因此朝下与朝上，指的是条目真正要去的方向 */
   [data-scope='transfer'][data-part='to-source-trigger']:empty::before {
     content: '';
     display: inline-block;
@@ -510,8 +520,8 @@
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
-    -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+    -webkit-mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
   }
 
   [data-scope='transfer'][data-part='to-target-trigger']:empty::before {
@@ -521,7 +531,60 @@
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
-    -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+    -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  }
+
+  /* 宽档：盒里放得下两块面板，回到并排——两侧面板各占一栏、跨两行，
+     中间那栏上下各放一个搬运按钮，上格贴底、下格贴顶，两钮夹着中线相遇 */
+  @container xh-transfer (min-width: 640px) {
+    [data-scope='transfer'][data-part='source-panel'] {
+      grid-row: 1 / 3;
+      grid-column: 1;
+    }
+
+    [data-scope='transfer'][data-part='target-panel'] {
+      grid-row: 1 / 3;
+      grid-column: 3;
+    }
+
+    [data-scope='transfer'][data-part='to-target-trigger'] {
+      grid-row: 1;
+      grid-column: 2;
+      align-self: end;
+      justify-self: stretch;
+    }
+
+    [data-scope='transfer'][data-part='to-source-trigger'] {
+      grid-row: 2;
+      grid-column: 2;
+      align-self: start;
+      justify-self: stretch;
+    }
+
+    /* 并排时目标面板在行尾侧，箭头改回朝行尾与朝行首。
+       盒的量法与窄档那两条逐字相同：兜底字形的盒必须按 --xh-icon-size 量，
+       作者换成自己的图标才和皮肤画的一样大 */
+    [data-scope='transfer'][data-part='to-source-trigger']:empty::before {
+      content: '';
+      display: inline-block;
+      inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+      block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+      vertical-align: var(--xh-glyph-baseline-shift);
+      background-color: currentColor;
+      -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+      mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+    }
+
+    [data-scope='transfer'][data-part='to-target-trigger']:empty::before {
+      content: '';
+      display: inline-block;
+      inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+      block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+      vertical-align: var(--xh-glyph-baseline-shift);
+      background-color: currentColor;
+      -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+      mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+    }
   }
 }
