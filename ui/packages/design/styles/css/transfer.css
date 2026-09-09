@@ -6,8 +6,7 @@
 
   /* 三栏栅格：宽档两侧面板各占一栏、跨两行，中间那栏上下各放一个搬运按钮；
      窄档四个节点改按行叠放，中栏被两个按钮各跨一半、宽度收成零，两钮因此仍在中线相遇。
-     两档共用这一份轨道声明：轨道写在根上，而根是查询容器自己，容器查询改不到它，
-     换档只能靠四个子节点各自换安放。
+     两档共用这一份轨道声明，换档靠四个子节点各自换安放。
      栅格的列号本身就是随书写方向走的（第 1 栏永远在行首侧），dir=rtl 时整块自动镜像。
      中间那栏没有对应的角色节点（anatomy 里两个按钮是 root 的直接子节点），
      所以只能按位置显式安放，不能靠自动流——自动流会把"往回搬"甩到目标面板的位置上 */
@@ -26,17 +25,6 @@
     /* 勾选格的填色随语气走；没写 data-tone 时退回品牌色 */
     --xh-_transfer-accent: var(--xh-_tone, var(--xh-bg-brand));
     --xh-_transfer-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
-
-    /* 两栏并排↔上下堆叠按自己的盒宽换档，不看视口：穿梭框常放在对话框或分栏表单里，
-       视口再宽也不影响这块盒里放不放得下两块面板 */
-    container-type: inline-size;
-    /* 查询容器不由内容撑宽（行内轴被 container-type 收进尺寸限制），
-       落在收缩包裹的外层里就会塌成零宽——文档站的示例台正是 flex-wrap 的收缩外层。
-       这三条按引擎各取所认的一条，含义都是「填满外面给的宽度」，普通块流下与不写时同值 */
-    inline-size: -moz-available;
-    inline-size: -webkit-fill-available;
-    inline-size: stretch;
-    container-name: xh-transfer;
 
     display: grid;
     grid-template-rows: auto auto;
@@ -541,9 +529,9 @@
     mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
   }
 
-  /* 宽档：盒里放得下两块面板，回到并排——两侧面板各占一栏、跨两行，
+  /* 宽档：视口放得下两块面板，回到并排——两侧面板各占一栏、跨两行，
      中间那栏上下各放一个搬运按钮，上格贴底、下格贴顶，两钮夹着中线相遇 */
-  @container xh-transfer (min-width: 640px) {
+  @media (min-width: 640px) {
     [data-scope='transfer'][data-part='source-panel'] {
       grid-row: 1 / 3;
       grid-column: 1;

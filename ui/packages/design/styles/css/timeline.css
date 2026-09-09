@@ -20,15 +20,6 @@
     /* 条目之间不设 gap：留白由 content 自己的边距撑出来，连线才连得到下一条的圆点。
        ol 的项目符号与内外边距是 UA 给的，库里没有全局 preflight，只能在这儿自己抹平 */
     display: flex;
-    /* 横排的换档按这条轴自己的宽度决定，不看视口：同一条轴放进窄栏里也堆叠 */
-    container-type: inline-size;
-    /* 查询容器不由内容撑宽（行内轴被 container-type 收进尺寸限制），
-       落在收缩包裹的外层里就会塌成零宽——文档站的示例台正是 flex-wrap 的收缩外层。
-       这三条按引擎各取所认的一条，含义都是「填满外面给的宽度」，普通块流下与不写时同值 */
-    inline-size: -moz-available;
-    inline-size: -webkit-fill-available;
-    inline-size: stretch;
-    container-name: xh-timeline;
     margin: 0;
     padding: 0;
     color: var(--xh-timeline-fg, var(--xh-fg-default));
@@ -44,7 +35,7 @@
   }
 
   /* 横排排成一行、允许折行：窄档里每条占满整行，于是一条一行地堆下来。
-     容器查询照不到容器自己，所以朝向不在这儿换，换的是下面每条的 flex 基准 */
+     朝向两档都是 row，换档换的是下面每条的 flex 基准 */
   [data-scope='timeline'][data-part='root'][data-orientation='horizontal'] {
     flex-direction: row;
     flex-wrap: wrap;
@@ -71,7 +62,7 @@
   /* —— 条目 —— */
   /* 圆点与连线占一列，内容占另一列，用 grid 而不是再包一层节点：
      解剖里没有那个包裹层，作者也不该被逼着多写一个 div。
-     这份两列的摆法是两个朝向共同的窄档，横排在下面的容器查询里改写它 */
+     这份两列的摆法是两个朝向共同的窄档，横排在下面的宽档里改写它 */
   [data-scope='timeline'][data-part='item'] {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
@@ -285,10 +276,10 @@
   }
 
   /* —— 横排的宽档 —— */
-  /* 上面那份两列的摆法是两个朝向共同的窄档。这条轴自己宽到放得下一行事件时，
+  /* 上面那份两列的摆法是两个朝向共同的窄档。视口宽到放得下一行事件时，
      横排在这里把圆点与连线转回同一行、内容落到下一行。
-     不支持容器查询的环境停在窄档：一条一行，事件仍逐条读得完 */
-  @container xh-timeline (min-width: 768px) {
+     手机档停在窄档：一条一行，事件仍逐条读得完 */
+  @media (min-width: 768px) {
     /* 每条等分整行 */
     [data-scope='timeline'][data-part='item'][data-orientation='horizontal'] {
       flex: 1;

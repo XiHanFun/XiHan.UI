@@ -338,13 +338,6 @@ const truth = {
       return n
     },
   },
-  查询容器根数: {
-    how: 'tooling/scripts/container-scope-registry.json 的 containers 条数',
-    async value() {
-      const table = JSON.parse(await read('tooling/scripts/container-scope-registry.json'))
-      return Object.keys(table.containers ?? {}).length
-    },
-  },
   Vue导出组件数: {
     how: 'packages/adapters/vue/src/index.ts 的值导出里 Xh 开头的去重条数',
     async value() {
@@ -1179,7 +1172,6 @@ const TABLE = [
 
   ['docs/adapters/vue.md', /全部 (\d+) 个导出组件/, 'Vue导出组件数'],
   ['docs/adapters/react.md', /(\d+) 个组件里已铺 \d+ 个/, '组件数'],
-  ['docs/guide/styling.md', /有 (\d+) 个组件按自己有多宽换形态/, '查询容器根数'],
   ['docs/adapters/react.md', /\d+ 个组件里已铺 (\d+) 个/, 'React已铺组件数'],
   ['docs/adapters/react.md', /(\d+) 个机器里的 `track`/, '用track的机器数'],
   ['docs/adapters/react.md', /(\d+) 个 `watch` 块全部静默失效/, '带watch块的机器数'],

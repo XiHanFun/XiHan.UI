@@ -1,8 +1,7 @@
-// 容器档：diff-view 的并排视图与 transfer 的两栏面板，在窄盒里换成堆叠。
+// 视口档：diff-view 的并排视图与 transfer 的两栏面板，在窄视口里换成堆叠。
 //
-// 门槛是这两块盒自己的宽度，不是视口——差异视图常嵌在半宽的评审栏里、穿梭框常放在
-// 对话框里，视口再宽也不影响盒里放不放得下两列。所以这里不套 iframe，只挂一个定宽的
-// 外层 div：容器查询读的就是它给的宽度。
+// 换档由 @media (min-width) 决定，宿主视口固定改不动，所以每一档开一个那么宽的 iframe，
+// 组件挂进 iframe 的文档里量。
 //
 // 窄档量的是"看得见"：并排时新侧那一列整个落在首屏之外，只看得见旧侧，而看新侧正是
 // 差异视图的全部意义；穿梭框窄档时两块面板各自被挤到条目文字都放不下。
@@ -29,6 +28,7 @@ import {
   XhTransferToSourceTrigger,
   XhTransferToTargetTrigger,
 } from '../../src'
+import { closeFrame, frameHost, styleOf } from './viewport-frame'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -40,13 +40,12 @@ afterEach(() => {
   host?.remove()
   app = null
   host = null
+  closeFrame()
 })
 
-/** 挂一个定宽的外层 div，组件的根就是查询容器本身。 */
-function mount(width: number, render: () => unknown): void {
-  host = document.createElement('div')
-  host.style.cssText = `width: ${width}px`
-  document.body.append(host)
+/** 开一个给定视口宽的 iframe，把组件挂进它的文档里。 */
+function mount(viewport: number, render: () => unknown): void {
+  host = frameHost(viewport)
   app = createApp({ setup: () => render })
   app.mount(host)
 }
@@ -84,8 +83,8 @@ const OLD_NUMBER = '[data-part=\'line-number\'][data-side=\'old\']'
 const NEW_NUMBER = '[data-part=\'line-number\'][data-side=\'new\']'
 const NEW_CONTENT = '[data-part=\'line-content\'][data-side=\'new\']'
 
-describe('diff-view 并排视图的容器档', () => {
-  it('窄盒：新侧落到旧侧下方，两侧同起一列', async () => {
+describe('diff-view 并排视图的视口档', () => {
+  it('窄视口：新侧落到旧侧下方，两侧同起一列', async () => {
     await mountDiff(375)
     const oldNum = box(OLD_NUMBER)
     const newNum = box(NEW_NUMBER)
@@ -94,7 +93,7 @@ describe('diff-view 并排视图的容器档', () => {
     expect(newNum.left).toBeCloseTo(oldNum.left, 1)
   })
 
-  it('窄盒：新侧那一列落在首屏里，不必横滚就看得见', async () => {
+  it('窄视口：新侧那一列落在首屏里，不必横滚就看得见', async () => {
     await mountDiff(375)
     const viewport = pick('[data-part=\'viewport\']')
     const visibleRight = viewport.getBoundingClientRect().left + viewport.clientWidth
@@ -103,7 +102,7 @@ describe('diff-view 并排视图的容器档', () => {
     expect(box(NEW_NUMBER).right).toBeLessThanOrEqual(visibleRight)
   })
 
-  it('窄盒：正文只按单侧的最长行撑宽，不再是两侧之和', async () => {
+  it('窄视口：正文只按单侧的最长行撑宽，不再是两侧之和', async () => {
     await mountDiff(375)
     const stacked = box('[data-part=\'body\']').width
 
@@ -114,7 +113,7 @@ describe('diff-view 并排视图的容器档', () => {
     expect(stacked).toBeLessThan(sideBySide * 0.6)
   })
 
-  it('窄盒：开了换行之后整份差异收在盒里，一点横滚都不剩', async () => {
+  it('窄视口：开了换行之后整份差异收在盒里，一点横滚都不剩', async () => {
     await mountDiff(375, true)
     const viewport = pick('[data-part=\'viewport\']')
 
@@ -122,7 +121,7 @@ describe('diff-view 并排视图的容器档', () => {
     expect(viewport.scrollWidth).toBe(viewport.clientWidth)
   })
 
-  it('宽盒：两侧回到同一行并排', async () => {
+  it('宽视口：两侧回到同一行并排', async () => {
     await mountDiff(1280)
     const oldNum = box(OLD_NUMBER)
     const newNum = box(NEW_NUMBER)
@@ -131,18 +130,18 @@ describe('diff-view 并排视图的容器档', () => {
     expect(newNum.left).toBeGreaterThan(oldNum.right)
   })
 
-  it('宽盒：接缝那条左边线只在并排时画', async () => {
+  it('宽视口：接缝那条左边线只在并排时画', async () => {
     await mountDiff(1280)
-    const wide = getComputedStyle(pick(NEW_NUMBER)).borderInlineStartWidth
+    const wide = styleOf(pick(NEW_NUMBER)).borderInlineStartWidth
 
     await mountDiff(375)
-    const narrow = getComputedStyle(pick(NEW_NUMBER)).borderInlineStartWidth
+    const narrow = styleOf(pick(NEW_NUMBER)).borderInlineStartWidth
 
     expect(Number.parseFloat(wide)).toBeGreaterThan(0)
     expect(Number.parseFloat(narrow)).toBe(0)
   })
 
-  it('窄盒：堆叠只换了排布，split 的语义与读屏播报照旧', async () => {
+  it('窄视口：堆叠只换了排布，split 的语义与读屏播报照旧', async () => {
     await mountDiff(375)
 
     expect(pick('[data-part=\'root\']').dataset.view).toBe('split')
@@ -153,7 +152,7 @@ describe('diff-view 并排视图的容器档', () => {
 
     // 变更类型的读屏文字仍在无障碍树里：视觉隐藏，不是 display: none
     const label = pick('[data-part=\'change-label\']')
-    expect(getComputedStyle(label).display).not.toBe('none')
+    expect(styleOf(label).display).not.toBe('none')
     expect(label.textContent?.trim()).not.toBe('')
   })
 })
@@ -193,8 +192,8 @@ const TARGET = '[data-part=\'target-panel\']'
 const TO_TARGET = '[data-part=\'to-target-trigger\']'
 const TO_SOURCE = '[data-part=\'to-source-trigger\']'
 
-describe('transfer 两栏面板的容器档', () => {
-  it('窄盒：两块面板各占满一行，目标在源下方', async () => {
+describe('transfer 两栏面板的视口档', () => {
+  it('窄视口：两块面板各占满一行，目标在源下方', async () => {
     await mountTransfer(375)
     const root = box('[data-part=\'root\']')
     const source = box(SOURCE)
@@ -205,7 +204,7 @@ describe('transfer 两栏面板的容器档', () => {
     expect(target.top).toBeGreaterThanOrEqual(source.bottom)
   })
 
-  it('窄盒：条目文字与面板标题都放得下，不再被削', async () => {
+  it('窄视口：条目文字与面板标题都放得下，不再被削', async () => {
     await mountTransfer(375)
     const text = pick('[data-part=\'item-text\']')
     const title = pick('[data-part=\'panel-title\']')
@@ -215,7 +214,7 @@ describe('transfer 两栏面板的容器档', () => {
     expect(title.scrollWidth).toBeLessThanOrEqual(title.clientWidth)
   })
 
-  it('窄盒：两颗搬运钮并排在中间一行，夹着中线', async () => {
+  it('窄视口：两颗搬运钮并排在中间一行，夹着中线', async () => {
     await mountTransfer(375)
     const root = box('[data-part=\'root\']')
     const toTarget = box(TO_TARGET)
@@ -229,21 +228,21 @@ describe('transfer 两栏面板的容器档', () => {
     expect(toSource.left).toBeGreaterThanOrEqual(middle)
   })
 
-  it('窄盒：兜底箭头改指上下，与面板真正的去向对上', async () => {
+  it('窄视口：兜底箭头改指上下，与面板真正的去向对上', async () => {
     await mountTransfer(375)
-    const narrowDown = getComputedStyle(pick(TO_TARGET), '::before').maskImage
-    const narrowUp = getComputedStyle(pick(TO_SOURCE), '::before').maskImage
+    const narrowDown = styleOf(pick(TO_TARGET), '::before').maskImage
+    const narrowUp = styleOf(pick(TO_SOURCE), '::before').maskImage
 
     await mountTransfer(1024)
-    const wideRight = getComputedStyle(pick(TO_TARGET), '::before').maskImage
-    const wideLeft = getComputedStyle(pick(TO_SOURCE), '::before').maskImage
+    const wideRight = styleOf(pick(TO_TARGET), '::before').maskImage
+    const wideLeft = styleOf(pick(TO_SOURCE), '::before').maskImage
 
     expect(narrowDown).not.toBe(wideRight)
     expect(narrowUp).not.toBe(wideLeft)
     expect(narrowDown).not.toBe(narrowUp)
   })
 
-  it('宽盒：回到两栏并排，两颗钮在中间那栏上下相遇', async () => {
+  it('宽视口：回到两栏并排，两颗钮在中间那栏上下相遇', async () => {
     await mountTransfer(1024)
     const source = box(SOURCE)
     const target = box(TARGET)

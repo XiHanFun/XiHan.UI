@@ -21,16 +21,6 @@
 
     display: block;
     overflow: hidden;
-    /* 并排↔堆叠按自己的盒宽换档，不看视口：差异视图常嵌在半宽的评审栏里，
-       视口再宽也不影响这块盒里放不放得下两列 */
-    container-type: inline-size;
-    /* 查询容器不由内容撑宽（行内轴被 container-type 收进尺寸限制），
-       落在收缩包裹的外层里就会塌成零宽——文档站的示例台正是 flex-wrap 的收缩外层。
-       这三条按引擎各取所认的一条，含义都是「填满外面给的宽度」，普通块流下与不写时同值 */
-    inline-size: -moz-available;
-    inline-size: -webkit-fill-available;
-    inline-size: stretch;
-    container-name: xh-diff-view;
     border: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
     border-radius: var(--xh-diff-view-radius, var(--xh-shape-surface));
     background: var(--xh-diff-view-bg, var(--xh-bg-surface));
@@ -387,8 +377,8 @@
     --xh-_diff-view-py: var(--xh-space-3);
   }
 
-  /* 宽档：盒里放得下两列，并排视图回到一行两侧 */
-  @container xh-diff-view (min-width: 1024px) {
+  /* 宽档：视口放得下两列，并排视图回到一行两侧 */
+  @media (min-width: 1024px) {
     [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='row']:not([hidden]) {
       display: flex;
     }

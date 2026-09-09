@@ -678,17 +678,6 @@
   /* 标签在左时那一列的宽度：收到最长的那个标签 */
   --xh-_descriptions-label-w: max-content;
 
-  /* 这一份自己的宽度就是换档的依据：同一份描述列表塞进窄容器与塞进窄视口，
-     取值列被压扁的坏法一样，所以量的是根的宽而不是视口的宽 */
-  container-type: inline-size;
-  /* 查询容器不由内容撑宽（行内轴被 container-type 收进尺寸限制），
-     落在收缩包裹的外层里就会塌成零宽——文档站的示例台正是 flex-wrap 的收缩外层。
-     这三条按引擎各取所认的一条，含义都是「填满外面给的宽度」，普通块流下与不写时同值 */
-  inline-size: -moz-available;
-  inline-size: -webkit-fill-available;
-  inline-size: stretch;
-  container-name: xh-descriptions;
-
   display: grid;
   /* 不写 columns 即每行一组；二到六列各有一条规则 */
   grid-template-columns: minmax(0, 1fr);
@@ -802,7 +791,7 @@
    宽起来以后逐档恢复：每一档写两件事，一是这一档一行摆几格（跨列数），
    二是这一档的边线：不在行首的格补上左边线，首行那几格抹掉上边线。
    两组集合逐档只增不减，宽档不必回收窄档写下的边线。 */
-@container xh-descriptions (min-width: 768px) {
+@media (min-width: 768px) {
   /* 标签左置从这一档起生效：窄档一律标签在上，取值拿满整格的宽。
      只认自己的直接子格，套在取值里的另一份描述由它自己的根管 */
   [data-scope='descriptions'][data-part='root'][data-placement='left']
@@ -864,7 +853,7 @@
   }
 }
 
-@container xh-descriptions (min-width: 1024px) {
+@media (min-width: 1024px) {
   /* 四、五、六列到这一档按作者写的列数摆，作者写在格上的 span 从这一档起认 */
   [data-scope='descriptions'][data-part='root'][data-columns='4']
     > [data-scope='descriptions'][data-part='item'],
@@ -935,16 +924,6 @@
 
   display: block;
   overflow: hidden;
-  /* 并排↔堆叠按自己的盒宽换档，不看视口：差异视图常嵌在半宽的评审栏里，
-     视口再宽也不影响这块盒里放不放得下两列 */
-  container-type: inline-size;
-  /* 查询容器不由内容撑宽（行内轴被 container-type 收进尺寸限制），
-     落在收缩包裹的外层里就会塌成零宽——文档站的示例台正是 flex-wrap 的收缩外层。
-     这三条按引擎各取所认的一条，含义都是「填满外面给的宽度」，普通块流下与不写时同值 */
-  inline-size: -moz-available;
-  inline-size: -webkit-fill-available;
-  inline-size: stretch;
-  container-name: xh-diff-view;
   border: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
   border-radius: var(--xh-diff-view-radius, var(--xh-shape-surface));
   background: var(--xh-diff-view-bg, var(--xh-bg-surface));
@@ -1301,8 +1280,8 @@
   --xh-_diff-view-py: var(--xh-space-3);
 }
 
-/* 宽档：盒里放得下两列，并排视图回到一行两侧 */
-@container xh-diff-view (min-width: 1024px) {
+/* 宽档：视口放得下两列，并排视图回到一行两侧 */
+@media (min-width: 1024px) {
   [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='row']:not([hidden]) {
     display: flex;
   }
@@ -9212,15 +9191,6 @@ input[data-scope='mention'][data-part='input'] {
   /* 条目之间不设 gap：留白由 content 自己的边距撑出来，连线才连得到下一条的圆点。
      ol 的项目符号与内外边距是 UA 给的，库里没有全局 preflight，只能在这儿自己抹平 */
   display: flex;
-  /* 横排的换档按这条轴自己的宽度决定，不看视口：同一条轴放进窄栏里也堆叠 */
-  container-type: inline-size;
-  /* 查询容器不由内容撑宽（行内轴被 container-type 收进尺寸限制），
-     落在收缩包裹的外层里就会塌成零宽——文档站的示例台正是 flex-wrap 的收缩外层。
-     这三条按引擎各取所认的一条，含义都是「填满外面给的宽度」，普通块流下与不写时同值 */
-  inline-size: -moz-available;
-  inline-size: -webkit-fill-available;
-  inline-size: stretch;
-  container-name: xh-timeline;
   margin: 0;
   padding: 0;
   color: var(--xh-timeline-fg, var(--xh-fg-default));
@@ -9236,7 +9206,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 横排排成一行、允许折行：窄档里每条占满整行，于是一条一行地堆下来。
-   容器查询照不到容器自己，所以朝向不在这儿换，换的是下面每条的 flex 基准 */
+   朝向两档都是 row，换档换的是下面每条的 flex 基准 */
 [data-scope='timeline'][data-part='root'][data-orientation='horizontal'] {
   flex-direction: row;
   flex-wrap: wrap;
@@ -9263,7 +9233,7 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 条目 —— */
 /* 圆点与连线占一列，内容占另一列，用 grid 而不是再包一层节点：
    解剖里没有那个包裹层，作者也不该被逼着多写一个 div。
-   这份两列的摆法是两个朝向共同的窄档，横排在下面的容器查询里改写它 */
+   这份两列的摆法是两个朝向共同的窄档，横排在下面的宽档里改写它 */
 [data-scope='timeline'][data-part='item'] {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -9477,10 +9447,10 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* —— 横排的宽档 —— */
-/* 上面那份两列的摆法是两个朝向共同的窄档。这条轴自己宽到放得下一行事件时，
+/* 上面那份两列的摆法是两个朝向共同的窄档。视口宽到放得下一行事件时，
    横排在这里把圆点与连线转回同一行、内容落到下一行。
-   不支持容器查询的环境停在窄档：一条一行，事件仍逐条读得完 */
-@container xh-timeline (min-width: 768px) {
+   手机档停在窄档：一条一行，事件仍逐条读得完 */
+@media (min-width: 768px) {
   /* 每条等分整行 */
   [data-scope='timeline'][data-part='item'][data-orientation='horizontal'] {
     flex: 1;
@@ -34403,8 +34373,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 三栏栅格：宽档两侧面板各占一栏、跨两行，中间那栏上下各放一个搬运按钮；
    窄档四个节点改按行叠放，中栏被两个按钮各跨一半、宽度收成零，两钮因此仍在中线相遇。
-   两档共用这一份轨道声明：轨道写在根上，而根是查询容器自己，容器查询改不到它，
-   换档只能靠四个子节点各自换安放。
+   两档共用这一份轨道声明，换档靠四个子节点各自换安放。
    栅格的列号本身就是随书写方向走的（第 1 栏永远在行首侧），dir=rtl 时整块自动镜像。
    中间那栏没有对应的角色节点（anatomy 里两个按钮是 root 的直接子节点），
    所以只能按位置显式安放，不能靠自动流——自动流会把"往回搬"甩到目标面板的位置上 */
@@ -34423,17 +34392,6 @@ input[data-scope='mention'][data-part='input'] {
   /* 勾选格的填色随语气走；没写 data-tone 时退回品牌色 */
   --xh-_transfer-accent: var(--xh-_tone, var(--xh-bg-brand));
   --xh-_transfer-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
-
-  /* 两栏并排↔上下堆叠按自己的盒宽换档，不看视口：穿梭框常放在对话框或分栏表单里，
-     视口再宽也不影响这块盒里放不放得下两块面板 */
-  container-type: inline-size;
-  /* 查询容器不由内容撑宽（行内轴被 container-type 收进尺寸限制），
-     落在收缩包裹的外层里就会塌成零宽——文档站的示例台正是 flex-wrap 的收缩外层。
-     这三条按引擎各取所认的一条，含义都是「填满外面给的宽度」，普通块流下与不写时同值 */
-  inline-size: -moz-available;
-  inline-size: -webkit-fill-available;
-  inline-size: stretch;
-  container-name: xh-transfer;
 
   display: grid;
   grid-template-rows: auto auto;
@@ -34938,9 +34896,9 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
 }
 
-/* 宽档：盒里放得下两块面板，回到并排——两侧面板各占一栏、跨两行，
+/* 宽档：视口放得下两块面板，回到并排——两侧面板各占一栏、跨两行，
    中间那栏上下各放一个搬运按钮，上格贴底、下格贴顶，两钮夹着中线相遇 */
-@container xh-transfer (min-width: 640px) {
+@media (min-width: 640px) {
   [data-scope='transfer'][data-part='source-panel'] {
     grid-row: 1 / 3;
     grid-column: 1;

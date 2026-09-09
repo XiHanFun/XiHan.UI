@@ -1,7 +1,7 @@
-// 容器档：descriptions 里作者写在某一格上的 span，逐档由皮肤决定认不认。
+// 视口档：descriptions 里作者写在某一格上的 span，逐档由皮肤决定认不认。
 //
-// 门槛是这份描述自己的宽度，不是视口——它常嵌在卡片、抽屉或半宽的详情栏里，
-// 所以这里不套 iframe，只挂一个定宽的外层 div。
+// 换档由 @media (min-width) 决定，宿主视口固定改不动，所以每一档开一个那么宽的 iframe，
+// 组件挂进 iframe 的文档里量。
 //
 // 这一条量的是「宽窄反了」：窄档皮肤要每格横跨所有列、一行只摆一组，可 span 从前是
 // 连接层直接写死的 grid-column 行内样式，皮肤盖不过去——于是同一份描述里，作者标了
@@ -15,6 +15,7 @@ import {
   XhDescriptionsRoot,
   XhDescriptionsValue,
 } from '../../src'
+import { closeFrame, frameHost, styleOf } from './viewport-frame'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -26,13 +27,12 @@ afterEach(() => {
   host?.remove()
   app = null
   host = null
+  closeFrame()
 })
 
-/** 挂一个定宽的外层 div，组件的根就是查询容器本身。 */
-function mount(width: number, render: () => unknown): void {
-  host = document.createElement('div')
-  host.style.cssText = `width: ${width}px`
-  document.body.append(host)
+/** 开一个给定视口宽的 iframe，把组件挂进它的文档里。 */
+function mount(viewport: number, render: () => unknown): void {
+  host = frameHost(viewport)
   app = createApp({ setup: () => render })
   app.mount(host)
 }
@@ -75,14 +75,14 @@ function widths(): number[] {
 }
 
 describe('descriptions 的 span 在窄档', () => {
-  it('窄盒：带 span 的那格与邻居同宽，一行只摆一组', async () => {
+  it('窄视口：带 span 的那格与邻居同宽，一行只摆一组', async () => {
     await mountDesc(300, 4)
 
     // 改之前：不带 span 的三格各 300，带 span 的那格只有 144——标了「更宽」反而更窄
     expect(widths()).toEqual([300, 300, 300, 300])
   })
 
-  it('窄盒：带 span 的那格自己占一行，上下都没有别的格', async () => {
+  it('窄视口：带 span 的那格自己占一行，上下都没有别的格', async () => {
     await mountDesc(300, 4)
     const tops = all(ITEM).map(el => Math.round(el.getBoundingClientRect().top))
 
@@ -90,7 +90,7 @@ describe('descriptions 的 span 在窄档', () => {
     expect(new Set(tops).size).toBe(4)
   })
 
-  it('窄盒：长地址拿到整行的宽度，不再被压在半行里折行', async () => {
+  it('窄视口：长地址拿到整行的宽度，不再被压在半行里折行', async () => {
     await mountDesc(375, 4)
     const value = all('[data-part=\'value\']')[1]!
 
@@ -99,7 +99,7 @@ describe('descriptions 的 span 在窄档', () => {
     expect(value.scrollWidth).toBeLessThanOrEqual(value.clientWidth)
   })
 
-  it('窄盒 + 外框：带 span 的那格右缘贴住外框，不留半行空白', async () => {
+  it('窄视口 + 外框：带 span 的那格右缘贴住外框，不留半行空白', async () => {
     await mountDesc(300, 4, true)
     const root = pick('[data-part=\'root\']')
     const rootBox = root.getBoundingClientRect()
@@ -110,7 +110,7 @@ describe('descriptions 的 span 在窄档', () => {
   })
 
   // 两列那一档本来就成立：span 被夹到列数上限，跨两列正好是整行
-  it.each([2, 3, 4, 5, 6] as const)('窄盒 %i 列：每一格都占满整行，span 一律不认', async (columns) => {
+  it.each([2, 3, 4, 5, 6] as const)('窄视口 %i 列：每一格都占满整行，span 一律不认', async (columns) => {
     await mountDesc(300, columns)
     const set = new Set(widths())
 
@@ -120,27 +120,27 @@ describe('descriptions 的 span 在窄档', () => {
 })
 
 describe('descriptions 的 span 在换档之后', () => {
-  it('中档 4 列（一行两格）：span 同样不认，四格等宽', async () => {
+  it('中视口档 4 列（一行两格）：span 同样不认，四格等宽', async () => {
     await mountDesc(800, 4)
 
     // 一行只摆得下两格时认了 span 的那格反而比邻居窄，所以这一档也压成等宽
     expect(widths()).toEqual([394, 394, 394, 394])
   })
 
-  it('宽档 4 列：作者写的列数生效，span 也跟着生效', async () => {
+  it('宽视口档 4 列：作者写的列数生效，span 也跟着生效', async () => {
     await mountDesc(1100, 4)
     const [first, spanned] = widths()
 
     expect(first).toBe(266)
     // 一格 266，跨两列再加上中间那道 12px 的缝
     expect(spanned).toBe(544)
-    expect(getComputedStyle(pick(SPANNED)).gridColumn).toBe('span 2')
+    expect(styleOf(pick(SPANNED)).gridColumn).toBe('span 2')
   })
 
-  it('宽档：不带 span 的格解析成 span 1，与从前的 auto 摆法一致', async () => {
+  it('宽视口档：不带 span 的格解析成 span 1，与从前的 auto 摆法一致', async () => {
     await mountDesc(1100, 4)
 
-    expect(getComputedStyle(all(ITEM)[0]!).gridColumn).toBe('span 1')
+    expect(styleOf(all(ITEM)[0]!).gridColumn).toBe('span 1')
   })
 
   it.each([300, 375, 560, 700, 768, 800, 1024, 1100])('%ipx：三档都不把自己的盒顶出横滚', async (width) => {
@@ -165,6 +165,6 @@ describe('descriptions 的 span 走的是槽，不是行内 grid-column', () => 
     const plain = all(ITEM)[0]!
 
     expect(plain.getAttribute('style')).toBeNull()
-    expect(getComputedStyle(plain).getPropertyValue('--xh-_descriptions-item-span').trim()).toBe('1')
+    expect(styleOf(plain).getPropertyValue('--xh-_descriptions-item-span').trim()).toBe('1')
   })
 })

@@ -1,16 +1,23 @@
-// descriptions 的容器档与 field 横排标签的收窄。
+// descriptions 的视口档与 field 横排标签的收窄。
 //
-// 量的是「把同一份东西放进定宽容器」的结果：容器档不需要 iframe，挂一个定宽 div 当外层即可，
-// 页面视口在整份用例里始终是同一个宽度——两个宽度不同的容器在同一页里换出不同的形态，
-// 就说明换档看的是容器的宽而不是视口的宽。
+// descriptions 的换档由 @media (min-width) 决定，量它要把视口做出来：宿主视口固定改不动，
+// 所以每一档开一个那么宽的 iframe。field 的收窄一句查询都没写，仍挂在定宽 div 里量。
 import { afterEach, describe, expect, it } from 'vitest'
+import { closeFrame, frameHost, styleOf } from './viewport-frame'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 let host: HTMLElement | null = null
 
-/** 在一个定宽容器里挂一段标记，返回那个容器。 */
-function mount(container: number, markup: string): HTMLElement {
+/** 在给定视口里挂一段标记，返回装它的外层。 */
+function mount(viewport: number, markup: string): HTMLElement {
+  host?.remove()
+  host = null
+  return frameHost(viewport, markup)
+}
+
+/** 在一个定宽的 div 里挂一段标记：不吃任何查询的那几条用这个。 */
+function mountBox(container: number, markup: string): HTMLElement {
   host?.remove()
   host = document.createElement('div')
   host.style.cssText = `inline-size: ${container}px`
@@ -41,10 +48,11 @@ function perRow(el: HTMLElement): number {
 }
 
 function part(el: HTMLElement, name: string): HTMLElement {
+  // iframe 里的节点属于那个文档的 HTMLElement，与本页的不是同一个构造器，不能用 instanceof 认
   const found = el.querySelector(`[data-scope="descriptions"][data-part="${name}"]`)
-  if (!(found instanceof HTMLElement))
+  if (!found)
     throw new Error(`没有 ${name}`)
-  return found
+  return found as HTMLElement
 }
 
 /** 一格里标签与取值是否叠着排：取值的上沿落在标签的下沿之下即为叠排。 */
@@ -65,7 +73,7 @@ function borderMismatches(el: HTMLElement): string[] {
   boxes.forEach((box, index) => {
     const row = tops.indexOf(Math.round(box.rect.top))
     const isRowStart = boxes.every(o => Math.round(o.rect.top) !== Math.round(box.rect.top) || o.rect.left >= box.rect.left)
-    const style = getComputedStyle(box.el)
+    const style = styleOf(box.el)
     const left = Number.parseFloat(style.borderLeftWidth)
     const top = Number.parseFloat(style.borderTopWidth)
     if (isRowStart ? left !== 0 : left === 0)
@@ -76,7 +84,7 @@ function borderMismatches(el: HTMLElement): string[] {
   return bad
 }
 
-/** 三档的容器宽：窄档、平板档、电脑档。带边框的根量的是内容盒，各档都取到档内一段。 */
+/** 三档的视口宽：手机档、平板档、电脑档，各取档内一段。 */
 const NARROW = 700
 const TABLET = 800
 const DESKTOP = 1100
@@ -84,6 +92,7 @@ const DESKTOP = 1100
 afterEach(() => {
   host?.remove()
   host = null
+  closeFrame()
 })
 
 describe('descriptions 逐档收列', () => {
@@ -104,40 +113,42 @@ describe('descriptions 逐档收列', () => {
     expect(perRow(mount(DESKTOP, descriptions(columns)))).toBe(desktop)
   })
 
-  it('取值列在窄容器里不再被压没', () => {
-    // 改之前：四列的取值列在 300 的容器里量到 0px，单格高 100px（同一格在宽处是 37px）
+  it('取值列在手机档不再被压没', () => {
+    // 改之前：四列的取值列在 300 的宽度里量到 0px，单格高 100px（同一格在宽处是 37px）
     const el = mount(300, descriptions(4))
     expect(perRow(el)).toBe(1)
     expect(part(el, 'value').getBoundingClientRect().width).toBeGreaterThan(240)
     expect(part(el, 'item').getBoundingClientRect().height).toBeLessThan(70)
   })
 
-  it('六列在 375 的容器里同样收成一列', () => {
+  it('六列在 375 的视口里同样收成一列', () => {
     const el = mount(375, descriptions(6))
     expect(perRow(el)).toBe(1)
     expect(part(el, 'value').getBoundingClientRect().width).toBeGreaterThan(300)
   })
 
   it('宽档不插手作者写的列数', () => {
-    // 视口不变，只把容器放宽：四列在电脑档仍是四列，取值列宽也与改动前一致
     const el = mount(1280, descriptions(4))
     expect(perRow(el)).toBe(4)
-    expect(part(el, 'value').getBoundingClientRect().width).toBeCloseTo(224.5, 0)
+    // 取值列 = 每格 319.5 减去内衬 24、标签列 64.22 与标签间距 8。
+    // 标签列是 max-content，同一段中文在 iframe 文档里量出来比在宿主文档里宽 1.22px，
+    // 这个数是在 iframe 里量的
+    expect(part(el, 'value').getBoundingClientRect().width).toBeCloseTo(223.3, 0)
     expect(part(el, 'item').getBoundingClientRect().height).toBeCloseTo(37, 0)
   })
 
-  it('换的是容器的档，不是视口的档', () => {
-    // 同一页、同一个视口，两个宽度不同的容器各摆各的：按视口写的档做不到这件事
-    host?.remove()
-    host = document.createElement('div')
-    host.innerHTML = `
+  it('换的是视口的档，不是外层容器的档', () => {
+    // 同一个视口里两个宽度差得很远的外层，摆法一模一样：档只看视口
+    const el = mount(DESKTOP, `
       <div id="narrow" style="inline-size:300px">${descriptions(4)}</div>
-      <div id="wide" style="inline-size:1100px">${descriptions(4)}</div>`
-    document.body.append(host)
-    const narrow = host.querySelector('#narrow') as HTMLElement
-    const wide = host.querySelector('#wide') as HTMLElement
-    expect(perRow(narrow)).toBe(1)
-    expect(perRow(wide)).toBe(4)
+      <div id="wide" style="inline-size:1100px">${descriptions(4)}</div>`)
+    expect(perRow(el.querySelector('#narrow') as HTMLElement)).toBe(4)
+    expect(perRow(el.querySelector('#wide') as HTMLElement)).toBe(4)
+  })
+
+  it('窄视口里放宽外层也不换档', () => {
+    const el = mount(375, `<div style="inline-size:1100px">${descriptions(4)}</div>`)
+    expect(perRow(el)).toBe(1)
   })
 })
 
@@ -184,13 +195,13 @@ describe('field 横排标签收进自己那一列', () => {
   it.each([240, 320, 420])('容器 %ipx：标签不从左边越出去', (width) => {
     // 改之前：标签顶着自己的最小宽度，320 的容器里左缘量到 -54px、240 里 -78px，
     // 越出去那一截没有横向滚动可以够回来
-    const el = mount(width, FORM)
+    const el = mountBox(width, FORM)
     expect(label(el).left - el.getBoundingClientRect().left).toBeGreaterThanOrEqual(0)
     expect(el.scrollWidth).toBe(width)
   })
 
   it('宽处仍是一行，标签宽度不受影响', () => {
-    const el = mount(1280, FORM)
+    const el = mountBox(1280, FORM)
     expect(label(el).height).toBeCloseTo(32, 0)
     expect(label(el).width).toBeCloseTo(150.1, 0)
   })

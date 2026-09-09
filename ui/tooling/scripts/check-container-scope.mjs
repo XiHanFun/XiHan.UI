@@ -12,6 +12,10 @@
 // 两侧反查：写了 container-type 却没登记判红；登记了却没写、又没标 pending 也判红；
 // 标了 pending 却已经写上了，同样判红——那条理由过期了。
 //
+// 登记表现在是空的，空表算通过：库里一处 container-type 都没有，四个换档组件全部改走
+// 视口断点 @media。这道门禁此刻守的是「谁都不许再写 container-type」——皮肤里凡出现一处
+// 就没有对应登记，立刻判红。要重新启用某个落点，先在登记表里补一条写清判据。
+//
 // 取值只许 inline-size：`size` 还要一个确定的块向尺寸，块向一轴的换档不在三层口径里。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -187,7 +191,10 @@ if (problems.length) {
   process.exit(1)
 }
 
+const total = Object.keys(containers).length
 console.log(
-  `[check-container-scope] 通过：${files.length} 份皮肤 · 登记在册的查询容器 ${Object.keys(containers).length} 个，`
-  + `${live} 个已建、${pending} 个已核准待写；皮肤里没有第二处 container-type`,
+  total === 0
+    ? `[check-container-scope] 通过：${files.length} 份皮肤 · 登记表是空的，皮肤里一处 container-type 都没有`
+    : `[check-container-scope] 通过：${files.length} 份皮肤 · 登记在册的查询容器 ${total} 个，`
+      + `${live} 个已建、${pending} 个已核准待写；皮肤里没有第二处 container-type`,
 )
