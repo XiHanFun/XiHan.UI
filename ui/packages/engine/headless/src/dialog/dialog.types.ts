@@ -14,6 +14,11 @@ export interface DialogRefs {
   getContentEl: () => HTMLElement | null
   getTriggerEl: () => HTMLElement | null
   branches: () => Element[]
+  /**
+   * connect 给部件落 id 时用的组件名。归还焦点时按这个名字现取 trigger，
+   * 抽屉跑的是同一台机器、部件名却是 drawer，由它的 refs 初值改写成自己的。
+   */
+  partScope: string
 }
 
 export interface DialogOpenChangeDetails {

@@ -1,25 +1,48 @@
 // @vitest-environment jsdom
 
-import type { Service } from '@xihan-ui/core'
-import type { ColorPickerChannel, ColorPickerSchema } from '../src/color-picker'
+import type { Runtime, Service } from '@xihan-ui/core'
+import type { ColorPickerChannel, ColorPickerSchema, ColorPickerServices } from '../src/color-picker'
+import type { SliderSchema } from '../src/slider'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { colorPickerMachine, colorPickerParse, connectColorPicker } from '../src/color-picker'
+import { colorPickerChannelSliderProps, colorPickerMachine, colorPickerParse, connectColorPicker } from '../src/color-picker'
+import { sliderMachine } from '../src/slider'
 
 type Props = ColorPickerSchema['props']
 type Dict = Record<string, unknown>
 
+/**
+ * 两条通道各自那台内嵌滑杆，按根服务索引。
+ * 用例照旧只拿根服务说话，连接层要的整份服务表由这里补齐。
+ */
+const sliderBundles = new WeakMap<Service<ColorPickerSchema>, ColorPickerServices>()
+
+/** 给一台取色器补上两条通道的滑杆机器；须在 runtime.start() 之前调。 */
+function attachSliders(service: Service<ColorPickerSchema>, runtime: Runtime): Service<ColorPickerSchema> {
+  const make = (channel: ColorPickerChannel): Service<SliderSchema> =>
+    createService(sliderMachine, { props: () => colorPickerChannelSliderProps(service, channel), runtime })
+  sliderBundles.set(service, { root: service, hueSlider: make('hue'), alphaSlider: make('alpha') })
+  return service
+}
+
+function servicesOf(service: Service<ColorPickerSchema>): ColorPickerServices {
+  const bundle = sliderBundles.get(service)
+  if (!bundle)
+    throw new Error('这台取色器没登记通道滑杆')
+  return bundle
+}
+
 /** props 用可变对象承载：受控用例要在机器活着的时候从外面改写 value / open。 */
 function makeService(props: Props = {}): Service<ColorPickerSchema> {
   const runtime = createVanillaRuntime()
-  const service = createService(colorPickerMachine, { props: () => props, runtime })
+  const service = attachSliders(createService(colorPickerMachine, { props: () => props, runtime }), runtime)
   runtime.start()
   return service
 }
 
 function api(service: Service<ColorPickerSchema>) {
-  return connectColorPicker(service, normalizeProps)
+  return connectColorPicker(servicesOf(service), normalizeProps)
 }
 
 /**
@@ -105,7 +128,9 @@ function mountRig(service: Service<ColorPickerSchema>): Rig {
   document.body.append(area, sliders.hue, sliders.alpha)
 
   service.refs.set('getAreaEl', () => area)
-  service.refs.set('getChannelTrackEl', channel => tracks[channel])
+  // 通道的轨道矩形归各自那台滑杆量
+  servicesOf(service).hueSlider.refs.set('getTrackEl', () => tracks.hue)
+  servicesOf(service).alphaSlider.refs.set('getTrackEl', () => tracks.alpha)
 
   area.addEventListener('pointerdown', api(service).getSaturationAreaProps().onPointerDown as EventListener)
   for (const channel of ['hue', 'alpha'] as const) {
@@ -331,10 +356,10 @@ describe('colorPickerMachine 受控', () => {
     const onValueChange = vi.fn()
     const runtime = createVanillaRuntime()
     const value = runtime.signal('#ff0000')
-    const s = createService(colorPickerMachine, {
+    const s = attachSliders(createService(colorPickerMachine, {
       props: () => ({ value: value.get(), onValueChange }),
       runtime,
-    })
+    }), runtime)
     runtime.start()
 
     s.send({ type: 'CHANNEL.SET', channel: 'hue', value: 120 })
@@ -351,10 +376,10 @@ describe('colorPickerMachine 受控', () => {
     const onOpenChange = vi.fn()
     const runtime = createVanillaRuntime()
     const open = runtime.signal(false)
-    const s = createService(colorPickerMachine, {
+    const s = attachSliders(createService(colorPickerMachine, {
       props: () => ({ open: open.get(), onOpenChange }),
       runtime,
-    })
+    }), runtime)
     runtime.start()
 
     s.send({ type: 'TOGGLE' })
@@ -582,5 +607,176 @@ describe('connectColorPicker 键盘', () => {
     ;(props.onKeyDown as (e: KeyboardEvent) => void)(event)
     expect(event.defaultPrevented).toBe(true)
     expect(api(s).inputText('hex')).toBe('#ff0000')
+  })
+})
+
+// 通道滑杆三件套的现状判据：属性、键盘、指针三面各钉一遍。
+describe('connectColorPicker 通道滑杆', () => {
+  it('三个部件各带 data-channel，状态标记逐个写全', () => {
+    const s = makeService({ defaultValue: '#3b82f6', defaultOpen: true, alpha: true })
+    const slider = api(s).getChannelSliderProps({ channel: 'hue' }) as Dict
+    const track = api(s).getChannelSliderTrackProps({ channel: 'hue' }) as Dict
+    const thumb = api(s).getChannelSliderThumbProps({ channel: 'hue' }) as Dict
+    for (const props of [slider, track, thumb]) {
+      expect(props['data-channel']).toBe('hue')
+      expect(props['data-state']).toBe('open')
+      expect(props['data-disabled']).toBeUndefined()
+      expect(props['data-readonly']).toBeUndefined()
+      expect(props['data-scope']).toBe('color-picker')
+    }
+    expect(slider['data-part']).toBe('channel-slider')
+    expect(track['data-part']).toBe('channel-slider-track')
+    expect(thumb['data-part']).toBe('channel-slider-thumb')
+    expect(thumb['aria-orientation']).toBe('horizontal')
+    // 拇指的位置写进内联样式，横轴一条
+    expect(thumb.style).toMatchObject({ insetInlineStart: '60.34%' })
+  })
+
+  it('只读留 Tab 位、写上 data-readonly；禁用抽 Tab 位、三个部件都打 data-disabled', () => {
+    const ro = makeService({ defaultValue: '#3b82f6', readOnly: true })
+    const roThumb = api(ro).getChannelSliderThumbProps({ channel: 'hue' }) as Dict
+    expect(roThumb['data-readonly']).toBe('')
+    expect(roThumb['data-disabled']).toBeUndefined()
+    expect(roThumb['aria-disabled']).toBe('false')
+    expect(roThumb.tabindex).toBe(0)
+
+    const off = makeService({ defaultValue: '#3b82f6', disabled: true })
+    for (const part of ['getChannelSliderProps', 'getChannelSliderTrackProps', 'getChannelSliderThumbProps'] as const) {
+      const props = (api(off)[part] as (p: { channel: ColorPickerChannel }) => Dict)({ channel: 'hue' })
+      expect(props['data-disabled']).toBe('')
+    }
+    expect((api(off).getChannelSliderThumbProps({ channel: 'hue' }) as Dict).tabindex).toBeUndefined()
+  })
+
+  it('alpha 关掉时那条滑杆整条打 data-disabled，色相那条不受牵连', () => {
+    const s = makeService({ defaultValue: '#3b82f6' })
+    expect((api(s).getChannelSliderProps({ channel: 'alpha' }) as Dict)['data-disabled']).toBe('')
+    expect((api(s).getChannelSliderTrackProps({ channel: 'alpha' }) as Dict)['data-disabled']).toBe('')
+    expect((api(s).getChannelSliderProps({ channel: 'hue' }) as Dict)['data-disabled']).toBeUndefined()
+  })
+
+  it('channelState 报出对外的区间与位置', () => {
+    const s = makeService({ defaultValue: '#ff0000', alpha: true })
+    expect(api(s).channelState('hue')).toEqual({ channel: 'hue', value: 0, min: 0, max: 360, percent: 0 })
+    s.send({ type: 'CHANNEL.SET', channel: 'hue', value: 180 })
+    expect(api(s).channelState('hue')).toEqual({ channel: 'hue', value: 180, min: 0, max: 360, percent: 0.5 })
+    expect(api(s).channelState('alpha')).toEqual({ channel: 'alpha', value: 100, min: 0, max: 100, percent: 1 })
+  })
+
+  it('rtl 下通道的左右两键对调，上下不受影响', () => {
+    const s = makeService({ defaultValue: '#ff0000', dir: 'rtl' })
+    pressChannel(s, 'hue', 'ArrowLeft')
+    expect(Math.round(api(s).hsva.h)).toBe(1)
+    pressChannel(s, 'hue', 'ArrowRight')
+    expect(Math.round(api(s).hsva.h)).toBe(0)
+    pressChannel(s, 'hue', 'ArrowUp')
+    expect(Math.round(api(s).hsva.h)).toBe(1)
+  })
+
+  it('通道上的 Home/End 与 Shift 大步在透明度那条同样成立', () => {
+    const s = makeService({ defaultValue: '#ff0000', alpha: true })
+    expect(pressChannel(s, 'alpha', 'Home').defaultPrevented).toBe(true)
+    expect(api(s).channelState('alpha').value).toBe(0)
+    pressChannel(s, 'alpha', 'ArrowUp', { shiftKey: true })
+    expect(api(s).channelState('alpha').value).toBe(10)
+    pressChannel(s, 'alpha', 'End')
+    expect(api(s).channelState('alpha').value).toBe(100)
+  })
+
+  it('pageUp / PageDown 在通道上走大步，与 dir 无关', () => {
+    const s = makeService({ defaultValue: '#ff0000', dir: 'rtl' })
+    expect(pressChannel(s, 'hue', 'PageUp').defaultPrevented).toBe(true)
+    expect(api(s).channelState('hue').value).toBe(10)
+    pressChannel(s, 'hue', 'PageDown')
+    expect(api(s).channelState('hue').value).toBe(0)
+  })
+
+  it('禁用、只读与 alpha 关掉时 PageUp 同样不吞键', () => {
+    for (const props of [{ disabled: true }, { readOnly: true }] as const) {
+      const s = makeService({ defaultValue: '#ff0000', ...props })
+      expect(pressChannel(s, 'hue', 'PageUp').defaultPrevented).toBe(false)
+      expect(api(s).channelState('hue').value).toBe(0)
+    }
+    const off = makeService({ defaultValue: '#ff0000' })
+    expect(pressChannel(off, 'alpha', 'PageUp').defaultPrevented).toBe(false)
+    expect(api(off).channelState('alpha').value).toBe(100)
+  })
+
+  it('通道上带 Ctrl / Meta / Alt 的组合一律放行', () => {
+    const s = makeService({ defaultValue: '#ff0000' })
+    for (const init of [{ ctrlKey: true }, { metaKey: true }, { altKey: true }]) {
+      const event = pressChannel(s, 'hue', 'End', init)
+      expect(event.defaultPrevented).toBe(false)
+    }
+    expect(Math.round(api(s).hsva.h)).toBe(0)
+  })
+
+  it('通道上认不下的键不吞，留给页面', () => {
+    const s = makeService({ defaultValue: '#ff0000' })
+    expect(pressChannel(s, 'hue', 'a').defaultPrevented).toBe(false)
+    expect(pressChannel(s, 'hue', 'Tab').defaultPrevented).toBe(false)
+    expect(Math.round(api(s).hsva.h)).toBe(0)
+  })
+
+  it('alpha 关掉时透明度那条键盘也推不动', () => {
+    const s = makeService({ defaultValue: '#ff0000' })
+    expect(pressChannel(s, 'alpha', 'Home').defaultPrevented).toBe(false)
+    expect(api(s).channelState('alpha').value).toBe(100)
+  })
+
+  it('按下通道滑杆把焦点转投到该条的拇指上，拖动期间三个部件打 data-dragging', () => {
+    const s = makeService({ defaultValue: '#ff0000', defaultOpen: true })
+    const rig = mountRig(s)
+
+    rig.pressChannel('hue', 100)
+    expect(document.activeElement?.getAttribute('data-part')).toBe('channel-slider-thumb')
+    expect(api(s).dragging).toBe(true)
+    // 外框与拇指打这个标记，轨道不打
+    for (const props of [
+      api(s).getChannelSliderProps({ channel: 'hue' }) as Dict,
+      api(s).getChannelSliderThumbProps({ channel: 'hue' }) as Dict,
+    ]) {
+      expect(props['data-dragging']).toBe('')
+    }
+    expect((api(s).getChannelSliderTrackProps({ channel: 'hue' }) as Dict)['data-dragging']).toBeUndefined()
+    // 另一条滑杆不该跟着亮
+    expect((api(s).getChannelSliderThumbProps({ channel: 'alpha' }) as Dict)['data-dragging']).toBeUndefined()
+    // 取色区也不该跟着亮
+    expect((api(s).getSaturationAreaProps() as Dict)['data-dragging']).toBeUndefined()
+
+    movePointer(200)
+    expect(Math.round(api(s).hsva.h)).toBe(360)
+    releasePointer()
+    expect(api(s).dragging).toBe(false)
+    expect((api(s).getChannelSliderThumbProps({ channel: 'hue' }) as Dict)['data-dragging']).toBeUndefined()
+
+    // 松手后监听器撤干净，再动指针值不跟
+    const settled = s.context.get('value')
+    movePointer(0)
+    expect(s.context.get('value')).toBe(settled)
+  })
+
+  it('只读、禁用、以及 alpha 关掉时按下通道都不改值', () => {
+    for (const props of [{ readOnly: true }, { disabled: true }] as const) {
+      const s = makeService({ defaultValue: '#ff0000', alpha: true, defaultOpen: true, ...props })
+      const rig = mountRig(s)
+      rig.pressChannel('hue', 100)
+      expect(s.context.get('value')).toBe('#ff0000')
+      expect(api(s).dragging).toBe(false)
+      document.body.innerHTML = ''
+    }
+    const off = makeService({ defaultValue: '#ff0000', defaultOpen: true })
+    const rig = mountRig(off)
+    rig.pressChannel('alpha', 100)
+    expect(off.context.get('value')).toBe('#ff0000')
+    expect(api(off).dragging).toBe(false)
+  })
+
+  it('非主键按下不接管', () => {
+    const s = makeService({ defaultValue: '#ff0000', defaultOpen: true })
+    const rig = mountRig(s)
+    rig.hue.dispatchEvent(new PointerEvent('pointerdown', { clientX: 100, clientY: 5, button: 2, bubbles: true }))
+    expect(s.context.get('value')).toBe('#ff0000')
+    expect(api(s).dragging).toBe(false)
   })
 })

@@ -715,3 +715,103 @@ describe('connectJsonViewer 点击', () => {
     expect(h.expanded()).toEqual(before)
   })
 })
+
+/**
+ * 这一组钉的是「本视图没有的东西」与几条散落的细节：
+ * 它们此前一条判据也没有，实现改一笔就会静默走样。
+ */
+describe('connectJsonViewer 现状', () => {
+  it('按住确认键连发时只切一次：repeat 那几下不再翻转', () => {
+    const h = mount()
+    const tags = h.row(path('tags')).host
+    tags.focus()
+    press(tags, 'Enter')
+    expect(h.expanded()).toContain(path('tags'))
+    // 按住不放会连发 keydown；这是切换，重复执行会来回翻转
+    press(tags, 'Enter', { repeat: true })
+    press(tags, 'Enter', { repeat: true })
+    expect(h.expanded()).toContain(path('tags'))
+    // 松开再按才是下一次切换
+    press(tags, ' ')
+    expect(h.expanded()).not.toContain(path('tags'))
+    press(tags, ' ', { repeat: true })
+    expect(h.expanded()).not.toContain(path('tags'))
+  })
+
+  it('本视图没有连打检索：可打印字符一概不吞，焦点也不动', () => {
+    const h = mount({ defaultExpandedValue: [ROOT] })
+    const first = h.row(path('name')).host
+    first.focus()
+    for (const key of ['t', 'a', 'g', 'N', '1']) {
+      const event = press(document.activeElement as HTMLElement, key)
+      expect(event.defaultPrevented).toBe(false)
+    }
+    expect(focusedPath()).toBe(path('name'))
+  })
+
+  it('本视图没有选中语义：行不报 aria-selected 与 aria-checked，树也不报可多选', () => {
+    const h = mount({ defaultExpandedValue: [ROOT] })
+    expect(h.treeEl.getAttribute('aria-multiselectable')).toBeNull()
+    for (const p of [ROOT, path('name'), path('tags')]) {
+      const el = h.row(p).host
+      expect(el.getAttribute('aria-selected')).toBeNull()
+      expect(el.getAttribute('aria-checked')).toBeNull()
+      expect(el.getAttribute('data-selected')).toBeNull()
+    }
+  })
+
+  it('本视图没有禁用语义：行不报 aria-disabled，也不带 data-disabled', () => {
+    const h = mount({ defaultExpandedValue: [ROOT] })
+    for (const p of [ROOT, path('name'), path('tags')]) {
+      const el = h.row(p).host
+      expect(el.getAttribute('aria-disabled')).toBeNull()
+      expect(el.getAttribute('data-disabled')).toBeNull()
+    }
+  })
+
+  it('整体改写展开集合会去重：它是一个集合', () => {
+    const h = mount()
+    h.api().setExpandedValue([ROOT, path('tags'), ROOT, path('tags')])
+    expect(h.expanded()).toEqual([ROOT, path('tags')])
+  })
+
+  it('行内各部件与行本身带同一份状态标记', () => {
+    const h = mount({ defaultExpandedValue: [ROOT] })
+    const name = h.row(path('name'))
+    expect(name.itemKey!.getAttribute('data-value-type')).toBe('string')
+    expect(name.itemValue!.getAttribute('data-value-type')).toBe('string')
+
+    const tags = h.row(path('tags'))
+    // 分支一系再多一个展开态
+    for (const el of [tags.host, tags.control!, tags.trigger!, tags.indicator!, tags.text!, tags.preview!])
+      expect(el.getAttribute('data-state')).toBe('closed')
+
+    // 高亮跟着焦点走，行内各部件一起亮
+    tags.host.focus()
+    for (const el of [tags.host, tags.control!, tags.trigger!, tags.indicator!, tags.text!, tags.preview!])
+      expect(el.getAttribute('data-highlighted')).toBe('')
+  })
+
+  it('原文把 JSON 写不出的值退回树上那份文本，整份仍解析得动', () => {
+    const h = mount({ value: { n: 10n, u: undefined, f: () => 1, s: 'x' } })
+    const text = h.api().text
+    expect(JSON.parse(text)).toEqual({
+      n: 10,
+      u: 'undefined',
+      f: expect.stringContaining('=>'),
+      s: 'x',
+    })
+  })
+
+  it('空态：只有顶层缺席才算空，顶层 null 是一个值', () => {
+    const empty = mount({ value: undefined })
+    expect(empty.api().isEmpty).toBe(true)
+    expect(empty.api().emptyText).toBe('No data')
+    expect((empty.api().getEmptyProps() as Record<string, unknown>).hidden).toBe(undefined)
+
+    const nulled = mount({ value: null })
+    expect(nulled.api().isEmpty).toBe(false)
+    // 有行可摊时空态那一格收起来，不占位置
+    expect((nulled.api().getEmptyProps() as Record<string, unknown>).hidden).toBe(true)
+  })
+})

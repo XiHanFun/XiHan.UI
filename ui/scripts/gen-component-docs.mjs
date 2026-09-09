@@ -652,6 +652,25 @@ function typeMeta(id) {
           if (key === 'guard')
             result.guards = unionMembers(member.type, sf)
         }
+
+        // 除 props 外整份继承别人的 schema（drawer 跑 dialog 那台机器），状态、事件与判据
+        // 声明在父那边，从这份声明的成员里读不到，经类型检查器把继承来的成员解析出来
+        if (!result.states || !result.events || !result.guards) {
+          for (const sym of checker.getPropertiesOfType(checker.getTypeAtLocation(node))) {
+            if (sym.name !== 'state' && sym.name !== 'event' && sym.name !== 'guard')
+              continue
+            const decl = sym.declarations?.[0]
+            if (!decl || !ts.isPropertySignature(decl) || !decl.type)
+              continue
+            const members = unionMembers(decl.type, decl.getSourceFile())
+            if (sym.name === 'state')
+              result.states ??= members
+            if (sym.name === 'event')
+              result.events ??= members
+            if (sym.name === 'guard')
+              result.guards ??= members
+          }
+        }
       }
 
       // 视图 props 单独写成一个 XxxProps：没有机器的组件全部 props 都在这儿，

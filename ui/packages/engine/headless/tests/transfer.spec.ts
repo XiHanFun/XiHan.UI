@@ -71,7 +71,20 @@ interface PanelEls {
   selectAll: HTMLButtonElement
   search: HTMLInputElement
   list: HTMLElement
+  empty: HTMLElement
+  loading: HTMLElement
+  /** 条目外面那层分组容器，只在 mount 传了 group 时才有条目挂进去。 */
+  group: HTMLElement
+  groupLabel: HTMLElement
   collection: Map<string, { item: HTMLElement, text: HTMLElement, checkbox: HTMLElement }>
+}
+
+/** 分组的值，两侧各挂一份同名分组。 */
+const GROUP = 'fruit'
+
+interface MountOptions {
+  /** 条目挂进分组容器里，不直接挂在 list 上。 */
+  group?: boolean
 }
 
 interface Harness {
@@ -86,7 +99,7 @@ interface Harness {
   selection: () => string[]
 }
 
-function mount(initial: Partial<Props> = {}): Harness {
+function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harness {
   const props: Partial<Props> = { collection: ITEMS, ...initial }
   // 作者标记镜像的是机器手上的那份 items：两侧都挂全集，不属于本侧的那一份由 connect 隐去
   const collection = props.collection!
@@ -105,19 +118,29 @@ function mount(initial: Partial<Props> = {}): Harness {
     const selectAll = doc.createElement('button')
     const search = doc.createElement('input')
     const list = doc.createElement('div')
+    const empty = doc.createElement('div')
+    const loading = doc.createElement('div')
+    const group = doc.createElement('div')
+    const groupLabel = doc.createElement('span')
     header.append(title, count, selectAll)
-    panel.append(header, search, list)
+    // 空态与在途占位是 list 的兄弟：role=listbox 只许拥有 option 与 group
+    panel.append(header, search, list, empty, loading)
     const map = new Map<string, { item: HTMLElement, text: HTMLElement, checkbox: HTMLElement }>()
+    const host = options.group ? group : list
+    if (options.group) {
+      group.appendChild(groupLabel)
+      list.appendChild(group)
+    }
     for (const spec of collection) {
       const item = doc.createElement('div')
       const checkbox = doc.createElement('span')
       const text = doc.createElement('span')
       text.textContent = spec.label
       item.append(checkbox, text)
-      list.appendChild(item)
+      host.appendChild(item)
       map.set(spec.value, { item, text, checkbox })
     }
-    return { panel, title, count, selectAll, search, list, collection: map }
+    return { panel, title, count, selectAll, search, list, empty, loading, group, groupLabel, collection: map }
   }
 
   const panels: Record<TransferSide, PanelEls> = { source: build(), target: build() }
@@ -140,6 +163,13 @@ function mount(initial: Partial<Props> = {}): Harness {
       spread(p.selectAll, api.getSelectAllTriggerProps({ side }) as Record<string, unknown>)
       spread(p.search, api.getSearchProps({ side }) as Record<string, unknown>)
       spread(p.list, api.getListProps({ side }) as Record<string, unknown>)
+      spread(p.empty, api.getEmptyProps({ side }) as Record<string, unknown>)
+      spread(p.loading, api.getLoadingProps({ side }) as Record<string, unknown>)
+      if (options.group) {
+        const group = { value: GROUP, side }
+        spread(p.group, api.getGroupProps(group) as Record<string, unknown>)
+        spread(p.groupLabel, api.getGroupLabelProps(group) as Record<string, unknown>)
+      }
       for (const [value, els] of p.collection) {
         const item = { value, side }
         spread(els.item, api.getItemProps(item) as Record<string, unknown>)
@@ -788,5 +818,237 @@ describe('范围选', () => {
     const h = mount()
     h.api().toggle('cherry', { extend: true })
     expect(h.selection()).toEqual(['cherry'])
+  })
+})
+
+// ── 以下各组钉的是此前没有判据覆盖的那一半：只读、校验、取数相位、分组、
+// 不回绕、Ctrl+Space、长按连发、视觉轴，以及两侧各自独立的焦点锚点与全选态。 ──
+
+describe('连接层：只读', () => {
+  it('照常浏览与搜索，但勾不动也搬不动', () => {
+    const h = mount({ readOnly: true, searchable: true, defaultValue: ['cherry'], defaultSelection: ['apple'] })
+    expect(h.root.getAttribute('data-readonly')).toBe('')
+    expect(h.side('source').list.getAttribute('aria-readonly')).toBe('true')
+    expect(h.side('source').list.getAttribute('data-readonly')).toBe('')
+    // 只读不是禁用：搜索框照常可用
+    expect(h.side('source').search.disabled).toBe(false)
+    typeIn(h.side('source').search, 'dur')
+    expect(shownOn(h, 'source')).toEqual(['durian'])
+    typeIn(h.side('source').search, '')
+
+    click(h.item('source', 'durian'))
+    expect(h.selection()).toEqual(['apple'])
+    expect(h.side('source').selectAll.disabled).toBe(true)
+    expect(h.toTarget.disabled).toBe(true)
+    expect(h.toSource.disabled).toBe(true)
+  })
+
+  it('焦点与方向键照常走，确认键与 Ctrl+A 改不了集合', () => {
+    const h = mount({ readOnly: true })
+    h.side('source').list.focus()
+    expect(focusedValue()).toBe('apple')
+    press(active(), 'ArrowDown')
+    expect(focusedValue()).toBe('cherry')
+    press(active(), ' ')
+    expect(h.selection()).toEqual([])
+    // Ctrl+A 在只读下连键都不吞：这一侧此刻没有它能做的事
+    expect(press(active(), 'a', { ctrlKey: true }).defaultPrevented).toBe(false)
+    expect(h.selection()).toEqual([])
+  })
+
+  it('只读只拦 DOM 那一路：程序化入口照旧改得动，禁用才连它一起拦', () => {
+    const h = mount({ readOnly: true })
+    h.api().toggle('apple')
+    expect(h.selection()).toEqual(['apple'])
+    h.api().move('target')
+    expect(h.value()).toEqual(['apple'])
+
+    const off = mount({ disabled: true })
+    off.api().toggle('apple')
+    expect(off.selection()).toEqual([])
+  })
+})
+
+describe('连接层：校验失败', () => {
+  it('两侧列表报 aria-invalid，根与列表带 data-invalid', () => {
+    const h = mount({ invalid: true })
+    expect(h.root.getAttribute('data-invalid')).toBe('')
+    for (const side of ['source', 'target'] as const) {
+      expect(h.side(side).list.getAttribute('aria-invalid')).toBe('true')
+      expect(h.side(side).list.getAttribute('data-invalid')).toBe('')
+    }
+    // 没给 invalid 时列表显式报假，不靠省略
+    const ok = mount()
+    expect(ok.side('source').list.getAttribute('aria-invalid')).toBe('false')
+    expect(ok.root.hasAttribute('data-invalid')).toBe(false)
+  })
+})
+
+describe('连接层：空态与在途两个占位', () => {
+  it('本侧一条可见条目都没有时空态露面：右侧起初是空的', () => {
+    const h = mount()
+    expect(h.side('target').empty.hasAttribute('hidden')).toBe(false)
+    expect(h.side('source').empty.hasAttribute('hidden')).toBe(true)
+    click(h.item('source', 'apple'))
+    click(h.toTarget)
+    expect(h.side('target').empty.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('搜索筛干净也算空', () => {
+    const h = mount({ searchable: true })
+    typeIn(h.side('source').search, 'zzz')
+    expect(shownOn(h, 'source')).toEqual([])
+    expect(h.side('source').empty.hasAttribute('hidden')).toBe(false)
+  })
+
+  it('取数在途：两侧列表报 aria-busy，在途占位顶上来、空态让位', () => {
+    const h = mount({ loading: true })
+    expect(h.root.getAttribute('data-loading')).toBe('')
+    for (const side of ['source', 'target'] as const) {
+      expect(h.side(side).list.getAttribute('aria-busy')).toBe('true')
+      expect(h.side(side).loading.hasAttribute('hidden')).toBe(false)
+      // 两者不同屏：右侧本来没有条目，空态仍要让位给在途
+      expect(h.side(side).empty.hasAttribute('hidden')).toBe(true)
+    }
+    // 在途占位不看有没有条目：左侧四条都在，它照样顶着
+    expect(shownOn(h, 'source')).toHaveLength(4)
+  })
+
+  it('不在取数时 aria-busy 整个缺席，不写 false', () => {
+    const h = mount()
+    expect(h.side('source').list.hasAttribute('aria-busy')).toBe(false)
+    expect(h.side('source').loading.hasAttribute('hidden')).toBe(true)
+  })
+})
+
+describe('连接层：分组', () => {
+  it('分组是 role=group，标题经 aria-labelledby 关联，两侧同名分组各有各的 id', () => {
+    const h = mount({}, { group: true })
+    const source = h.side('source')
+    const target = h.side('target')
+    expect(source.group.getAttribute('role')).toBe('group')
+    expect(source.group.getAttribute('data-side')).toBe('source')
+    expect(source.group.getAttribute('aria-labelledby')).toBe(source.groupLabel.id)
+    expect(source.groupLabel.id).not.toBe('')
+    // 两侧各挂一份同名分组：id 连 side 一起派生，否则两个标题撞成一个
+    expect(target.groupLabel.id).not.toBe(source.groupLabel.id)
+    expect(target.group.getAttribute('aria-labelledby')).toBe(target.groupLabel.id)
+  })
+
+  it('隔着分组照样导航与勾选：归属按最近的 list 判', () => {
+    const h = mount({}, { group: true })
+    h.side('source').list.focus()
+    expect(focusedValue()).toBe('apple')
+    press(active(), 'ArrowDown')
+    expect(focusedValue()).toBe('cherry')
+    press(active(), ' ')
+    expect(h.selection()).toEqual(['cherry'])
+  })
+})
+
+describe('连接层：不回绕', () => {
+  it('loop=false 时走到尽头就停在原处，扩选也不再多勾一个', () => {
+    const h = mount({ loop: false })
+    h.side('source').list.focus()
+    press(active(), 'End')
+    expect(focusedValue()).toBe('durian')
+    press(active(), 'ArrowDown')
+    expect(focusedValue()).toBe('durian')
+    press(active(), 'ArrowDown', { shiftKey: true })
+    expect(focusedValue()).toBe('durian')
+    expect(h.selection()).toEqual([])
+    press(active(), 'Home')
+    expect(focusedValue()).toBe('apple')
+    press(active(), 'ArrowUp')
+    expect(focusedValue()).toBe('apple')
+  })
+})
+
+describe('连接层：修饰键与长按', () => {
+  it('ctrl+Space 与裸空格同义', () => {
+    const h = mount()
+    h.side('source').list.focus()
+    expect(press(active(), ' ', { ctrlKey: true }).defaultPrevented).toBe(true)
+    expect(h.selection()).toEqual(['apple'])
+    press(active(), ' ', { metaKey: true })
+    expect(h.selection()).toEqual([])
+  })
+
+  it('按住不放连发的那些不来回翻转：切换类按键只认第一下', () => {
+    const h = mount()
+    h.side('source').list.focus()
+    press(active(), ' ')
+    expect(h.selection()).toEqual(['apple'])
+    press(active(), ' ', { repeat: true })
+    expect(h.selection()).toEqual(['apple'])
+    press(active(), 'a', { ctrlKey: true })
+    expect(h.selection()).toEqual(['apple', 'cherry', 'durian'])
+    press(active(), 'a', { ctrlKey: true, repeat: true })
+    expect(h.selection()).toEqual(['apple', 'cherry', 'durian'])
+  })
+
+  it('带 Alt 或 Ctrl 的方向键不算导航，键放行给页面', () => {
+    const h = mount()
+    h.side('source').list.focus()
+    expect(press(active(), 'ArrowDown', { altKey: true }).defaultPrevented).toBe(false)
+    expect(focusedValue()).toBe('apple')
+    expect(press(active(), 'ArrowDown', { ctrlKey: true }).defaultPrevented).toBe(false)
+    expect(focusedValue()).toBe('apple')
+  })
+})
+
+describe('连接层：两侧各自独立', () => {
+  it('焦点锚点两侧各存一份：焦点搬到对面，只有原来那侧退回容器兜底', () => {
+    const h = mount({ defaultValue: ['cherry', 'durian'] })
+    h.side('source').list.focus()
+    expect(focusedValue()).toBe('apple')
+    expect(h.side('source').list.getAttribute('tabindex')).toBe('-1')
+
+    h.side('target').list.focus()
+    expect(focusedValue()).toBe('cherry')
+    // 左侧的锚点跟着焦点一起走了，那一侧重新由容器兜底
+    expect(h.side('source').list.getAttribute('tabindex')).toBe('0')
+    expect(h.item('source', 'apple').getAttribute('tabindex')).toBe('-1')
+    expect(h.side('target').list.getAttribute('tabindex')).toBe('-1')
+    expect(h.item('target', 'cherry').getAttribute('tabindex')).toBe('0')
+  })
+
+  it('全选态两侧各算各的：左侧全勾不会把右侧也说成全勾', () => {
+    const h = mount({ defaultValue: ['cherry', 'durian'] })
+    click(h.side('source').selectAll)
+    expect(h.side('source').selectAll.getAttribute('aria-checked')).toBe('true')
+    expect(h.side('target').selectAll.getAttribute('aria-checked')).toBe('false')
+    expect(h.side('source').count.getAttribute('data-checked-count')).toBe('1')
+    expect(h.side('target').count.getAttribute('data-checked-count')).toBe('0')
+  })
+})
+
+describe('连接层：视觉轴与读取面', () => {
+  it('语气与尺寸只打在根上，子部件不重复标注', () => {
+    const h = mount({ tone: 'success', size: 'lg' })
+    expect(h.root.getAttribute('data-tone')).toBe('success')
+    expect(h.root.getAttribute('data-size')).toBe('lg')
+    expect(h.side('source').list.hasAttribute('data-tone')).toBe(false)
+    expect(h.item('source', 'apple').hasAttribute('data-size')).toBe(false)
+  })
+
+  it('setValue / setSelection 去重且保序', () => {
+    const h = mount()
+    h.api().setValue(['cherry', 'apple', 'cherry'])
+    expect(h.value()).toEqual(['cherry', 'apple'])
+    h.api().setSelection(['apple', 'apple'])
+    expect(h.selection()).toEqual(['apple'])
+  })
+
+  it('api 的读取面与两侧推导同一口径', () => {
+    const h = mount({ defaultValue: ['cherry'], defaultSelection: ['apple'] })
+    const api = h.api()
+    expect(api.sideOf('cherry')).toBe('target')
+    expect(api.sideOf('apple')).toBe('source')
+    expect(api.checkedValues('source')).toEqual(['apple'])
+    expect(api.checkedValues('target')).toEqual([])
+    expect(api.canMove('target')).toBe(true)
+    expect(api.canMove('source')).toBe(false)
+    expect(api.query('source')).toBe('')
   })
 })

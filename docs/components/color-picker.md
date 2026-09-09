@@ -206,6 +206,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `Home` / `End` | focus in area-thumb, not disabled/readOnly | 饱和度取 0 / 100（与 aria-valuenow 报的是同一条轴） |
 | `ArrowRight` / `ArrowLeft` / `ArrowUp` / `ArrowDown` | focus in channel-slider-thumb, channel enabled | 按 1 调该通道；RTL 下左右对调，上下恒是"朝 max 走" |
 | `Shift+ArrowRight` / `Shift+ArrowLeft` / `Shift+ArrowUp` / `Shift+ArrowDown` | focus in channel-slider-thumb, channel enabled | 同上，但一步走 10 |
+| `PageUp` / `PageDown` | focus in channel-slider-thumb, channel enabled | 朝 max / min 各走 10，与 dir 无关 |
 | `Home` / `End` | focus in channel-slider-thumb, channel enabled | 该通道取 min / max（色相 0-360，透明度 0-100） |
 | `Enter` | focus in channel-input | 收下框里的字；收不了（打了一半）就复原成规范文本。一并拦住表单提交 |
 | `Escape` | open（本层在层栈顶） | 收起浮层，焦点归还触发器 |

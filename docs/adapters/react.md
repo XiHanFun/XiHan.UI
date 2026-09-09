@@ -89,7 +89,7 @@ const { api, service } = useDialog({ open, onOpenChange });
 | `flush` | `flushSync` 逼出一次提交，回调在 DOM 落定之后跑 |
 | `onMount` / `onCleanup` | `useLayoutEffect` 的挂载与清理 |
 
-`track` 是拉式的，这一条与 Vue 侧不同。Vue 的 `watch` 挂在响应式源上，源一动就通知；React 这边 props 的变化不经过任何可订阅的源，它就是下一次渲染函数的入参。推式实现在这里会永远收不到 props 变化——54 个机器里的 `track` 与 53 个 `watch` 块全部静默失效，而且不报错。
+`track` 是拉式的，这一条与 Vue 侧不同。Vue 的 `watch` 挂在响应式源上，源一动就通知；React 这边 props 的变化不经过任何可订阅的源，它就是下一次渲染函数的入参。推式实现在这里会永远收不到 props 变化——53 个机器里的 `track` 与 52 个 `watch` 块全部静默失效，而且不报错。
 
 `useMachine(machine, getProps, options)` 把它包起来。props 传的是 getter：每次渲染现取，机器读到的永远是这一帧的值。
 

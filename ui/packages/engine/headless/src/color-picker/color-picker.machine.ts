@@ -1,4 +1,5 @@
-import type { Params, Scope } from '@xihan-ui/core'
+import type { Params, Scope, Service } from '@xihan-ui/core'
+import type { SliderSchema } from '../slider'
 import type { ColorPickerChannel, ColorPickerHsva } from './color-picker.color'
 import type { ColorPickerPoint } from './color-picker.geometry'
 import type { ColorPickerDragTarget, ColorPickerSchema } from './color-picker.types'
@@ -91,22 +92,46 @@ function applyValueString(params: MachineParams, raw: string): void {
   applyHsva(params, colorPickerRgbaToHsva(rgba, currentHsva(params).h))
 }
 
-/** 拖动落点 → 工作色。矩形在事件那一刻现量，connect 不得读 DOM。 */
-function applyPoint(params: MachineParams, target: ColorPickerDragTarget, point: ColorPickerPoint): void {
+/** 取色区的拖动落点 → 工作色。矩形在事件那一刻现量，connect 不得读 DOM。 */
+function applyPoint(params: MachineParams, point: ColorPickerPoint): void {
   const { refs, prop } = params
-  const el = target === 'area' ? refs.get('getAreaEl')() : refs.get('getChannelTrackEl')(target)
+  const el = refs.get('getAreaEl')()
   // 节点还没就位时原地不动
   if (!el)
     return
   const ratio = colorPickerPointRatio(point, el.getBoundingClientRect(), prop('dir'))
-  const hsva = currentHsva(params)
-  if (target === 'area') {
-    // 纵轴向下是明度变暗，所以取补数
-    applyHsva(params, { ...hsva, s: ratio.x * 100, v: (1 - ratio.y) * 100 })
-    return
+  // 纵轴向下是明度变暗，所以取补数
+  applyHsva(params, { ...currentHsva(params), s: ratio.x * 100, v: (1 - ratio.y) * 100 })
+}
+
+/**
+ * 喂给某条通道那台内嵌滑杆的 props：区间、步长与当下的值都受控于取色器，推动经回调送回来。
+ *
+ * 透明度那条在 alpha 关掉时整条不可用，与禁用同一档；只读只是改不动，Tab 位照留。
+ */
+export function colorPickerChannelSliderProps(
+  service: Service<ColorPickerSchema>,
+  channel: ColorPickerChannel,
+): SliderSchema['props'] {
+  const { prop, context, send } = service
+  const range = colorPickerChannelRange(channel)
+  const hsva = colorPickerResolveHsva(context.get('value'), context.get('anchor'))
+  return {
+    value: [Math.round(colorPickerChannelValue(hsva, channel))],
+    min: range.min,
+    max: range.max,
+    step: range.step,
+    largeStep: range.largeStep,
+    orientation: 'horizontal',
+    dir: prop('dir'),
+    disabled: !!prop('disabled') || (channel === 'alpha' && !(prop('alpha') ?? false)),
+    readOnly: !!prop('readOnly'),
+    onValueChange: ({ value }) => {
+      const next = value[0]
+      if (Number.isFinite(next))
+        send({ type: 'CHANNEL.SET', channel, value: next! })
+    },
   }
-  const range = colorPickerChannelRange(target)
-  applyHsva(params, colorPickerWithChannel(hsva, target, range.min + ratio.x * (range.max - range.min)))
 }
 
 function stepSize(channel: ColorPickerChannel | 'area', large: boolean): number {
@@ -141,7 +166,6 @@ export const colorPickerMachine = createMachine({
     getFloatingEl: () => null,
     getContentEl: () => null,
     getAreaEl: () => null,
-    getChannelTrackEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   // 挂载即问一次环境有没有屏幕取色，按钮从首帧起就要正确禁用
@@ -338,7 +362,7 @@ export const colorPickerMachine = createMachine({
         if (e.type !== 'DRAG.START')
           return
         params.context.set('dragTarget', e.target)
-        applyPoint(params, e.target, e.point)
+        applyPoint(params, e.point)
       },
 
       dragMove: (params) => {
@@ -346,7 +370,7 @@ export const colorPickerMachine = createMachine({
         const target = params.context.get('dragTarget')
         if (e.type !== 'DRAG.MOVE' || !target)
           return
-        applyPoint(params, target, e.point)
+        applyPoint(params, e.point)
       },
 
       endDrag: ({ context }) => context.set('dragTarget', null),

@@ -1,4 +1,4 @@
-import type { ConformanceSuite, FixtureNode } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { colorPickerAnatomy, colorPickerKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
@@ -52,6 +52,35 @@ function channelSlider(channel: string): FixtureNode {
       { part: 'channel-slider-thumb' },
     ],
   }
+}
+
+/**
+ * 按下色相轨道的正中。
+ *
+ * 通道的取值按轨道矩形算，而无布局环境里量什么都是 0，只能把这一帧的矩形原地伪造出来。
+ * 这一步同时核的是适配器有没有把轨道节点接到那条通道上——接错或漏接，值一动不动。
+ */
+function pressHueTrackCenter({ doc }: RawStepContext): void {
+  const track = findPart(doc, 'channel-slider-track', 0)
+  track.getBoundingClientRect = () => ({
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 10,
+    top: 0,
+    left: 0,
+    right: 200,
+    bottom: 10,
+    toJSON: () => ({}),
+  }) as DOMRect
+  findPart(doc, 'channel-slider', 0).dispatchEvent(
+    new PointerEvent('pointerdown', { clientX: 100, clientY: 5, button: 0, bubbles: true, cancelable: true }),
+  )
+}
+
+/** 松手，收掉挂在文档上的跟手监听。 */
+function releasePointer({ doc }: RawStepContext): void {
+  doc.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
 }
 
 export const colorPickerSuite: ConformanceSuite = {
@@ -336,6 +365,49 @@ export const colorPickerSuite: ConformanceSuite = {
         },
         { kind: 'key', key: 'End', expect: { parts: { 'channel-slider-thumb[0]': { 'aria-valuenow': '360' } } } },
         { kind: 'key', key: 'Home', expect: { parts: { 'channel-slider-thumb[0]': { 'aria-valuenow': '0' } } } },
+      ],
+    },
+    {
+      name: '色相滑杆：按下轨道即跳到落点，焦点转投到那条的拇指上',
+      spec: { apg: `${APG_SLIDER}#roles_states_properties` },
+      props: { defaultValue: '#ff0000', defaultOpen: true },
+      steps: [
+        {
+          kind: 'raw',
+          why: '取值按轨道矩形算，无布局环境量什么都是 0，只能把这一帧的矩形原地伪造出来',
+          run: pressHueTrackCenter,
+          expect: {
+            parts: {
+              // 200px 轨道的正中 → 180 度；按下的那条打上拖动标记，另一条不跟着亮
+              'channel-slider-thumb[0]': { 'aria-valuenow': '180', 'data-dragging': '' },
+              'channel-slider-thumb[1]': { 'data-dragging': null },
+              'saturation-area': { 'data-dragging': null },
+            },
+            // 松手就能接着用方向键微调
+            activeElement: 'channel-slider-thumb[0]',
+          },
+        },
+        {
+          kind: 'raw',
+          why: '跟手的监听挂在文档上，不松手会留到下一个用例',
+          run: releasePointer,
+          expect: { parts: { 'channel-slider-thumb[0]': { 'aria-valuenow': '180', 'data-dragging': null } } },
+        },
+      ],
+    },
+    {
+      name: '色相滑杆：PageUp / PageDown 各走十格',
+      spec: { apg: APG_SLIDER_KBD },
+      covers: ['color-picker.kbd.channel-page-step'],
+      props: { defaultValue: '#ff0000', defaultOpen: true },
+      steps: [
+        { kind: 'focus', part: 'channel-slider-thumb[0]' },
+        {
+          kind: 'key',
+          key: 'PageUp',
+          expect: { parts: { 'channel-slider-thumb[0]': { 'aria-valuenow': '10', 'aria-valuetext': '10°' } } },
+        },
+        { kind: 'key', key: 'PageDown', expect: { parts: { 'channel-slider-thumb[0]': { 'aria-valuenow': '0' } } } },
       ],
     },
     {

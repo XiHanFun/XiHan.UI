@@ -12,6 +12,7 @@ import type { SlotChildren } from '../../runtime/slot-content'
 import { colorPickerToChannel, colorPickerToInputChannel } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
+import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
@@ -317,13 +318,14 @@ export interface XhColorPickerChannelSliderThumbProps extends ComponentPropsWith
 export function XhColorPickerChannelSliderThumb({ children, ...rest }: XhColorPickerChannelSliderThumbProps): ReactNode {
   const ctx = useColorPickerContext()
   const channel = useColorPickerChannelContext()
+  // 拇指上的 onFocus 来自内嵌滑杆，是不冒泡的 DOM focus，React 的同名合成事件挂的是冒泡的 focusin：
+  // 后代得焦会被算成拇指自己得焦。装成原生监听器，到达路径才与另外两家一致
+  const bind = useNativeEvents(
+    ctx.api.getChannelSliderThumbProps({ channel }) as Record<string, unknown>,
+    ['onFocus'],
+  )
   return (
-    <div
-      {...mergeReactProps(
-        ctx.api.getChannelSliderThumbProps({ channel }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
-      )}
-    >
+    <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest as Record<string, unknown>)}>
       {children}
     </div>
   )

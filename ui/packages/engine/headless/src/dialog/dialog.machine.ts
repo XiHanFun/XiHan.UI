@@ -26,6 +26,7 @@ export const dialogMachine = createMachine({
     getContentEl: () => null,
     getTriggerEl: () => null,
     branches: () => [],
+    partScope: 'dialog',
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   // 受控时用户事件只发意图回调；宿主写回 open 后由这条 watch 派发 CONTROLLED.* 回写状态。
@@ -135,8 +136,9 @@ export const dialogMachine = createMachine({
           restoreFocus: () => prop('restoreFocus') ?? true,
           // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
           // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上。
-          // 按 connect 给 trigger 落的 id 现取，没有 trigger 的用法回 null，归还照旧走快照
-          restoreTarget: () => scope.getById<HTMLElement>(scope.partId('dialog', 'trigger')),
+          // 按 connect 给 trigger 落的 id 现取，没有 trigger 的用法回 null，归还照旧走快照。
+          // 组件名取自 refs：抽屉跑同一台机器，它的部件 id 挂在 drawer 名下
+          restoreTarget: () => scope.getById<HTMLElement>(scope.partId(refs.get('partScope'), 'trigger')),
         })
         disposers.push(() => focus.dispose())
 
