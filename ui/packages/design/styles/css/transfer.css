@@ -30,6 +30,12 @@
     /* 两栏并排↔上下堆叠按自己的盒宽换档，不看视口：穿梭框常放在对话框或分栏表单里，
        视口再宽也不影响这块盒里放不放得下两块面板 */
     container-type: inline-size;
+    /* 查询容器不由内容撑宽（行内轴被 container-type 收进尺寸限制），
+       落在收缩包裹的外层里就会塌成零宽——文档站的示例台正是 flex-wrap 的收缩外层。
+       这三条按引擎各取所认的一条，含义都是「填满外面给的宽度」，普通块流下与不写时同值 */
+    inline-size: -moz-available;
+    inline-size: -webkit-fill-available;
+    inline-size: stretch;
     container-name: xh-transfer;
 
     display: grid;

@@ -129,8 +129,10 @@ describe('描述列表的 as 与 span', () => {
         <XhDescriptionsItem />
       </XhDescriptionsRoot>,
     )
+    // 跨列走自定义属性而不是 style.gridColumn：内联的 gridColumn 皮肤盖不过，
+    // 窄档要把带 span 的格收成整行就没有出口
     const spans = [...host!.querySelectorAll<HTMLElement>('[data-part="item"]')]
-      .map(el => el.style.gridColumn)
-    expect(spans).toEqual(['span 2', 'span 3', 'span 1', ''])
+      .map(el => el.style.getPropertyValue('--xh-_descriptions-item-span'))
+    expect(spans).toEqual(['2', '3', '1', ''])
   })
 })

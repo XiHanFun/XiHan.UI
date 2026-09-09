@@ -27,6 +27,8 @@ export interface DescriptionsItemProps {
   /**
    * 这一格横跨几列，不写即占一列。
    * 小于 1 按 1 算，超过当前列数按列数算——跨出网格的格子会另起一行，比截断更难看。
+   * 这个数落成 `--xh-_descriptions-item-span`，由皮肤逐档决定认不认：
+   * 一行只摆得下一组的窄档不认，那一档每格都占满整行。
    */
   span?: number
 }

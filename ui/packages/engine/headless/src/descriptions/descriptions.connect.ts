@@ -33,12 +33,16 @@ export function connectDescriptions<T extends PropTypes>(
   return {
     getRootProps: () => normalize.element(rootAttrs),
 
-    // 跨列写成网格轨道数，不另发状态属性：这一格占几列是排版量，皮肤无须再据它分档
+    // 跨列数落成一个私有槽交给皮肤，不直接写 grid-column：
+    // 内联的 grid-column 盖过皮肤里所有规则，窄档「一行只摆一组」就对带 span 的格失效，
+    // 那一格反而比不带 span 的窄。写成槽之后由皮肤逐档决定这个数认不认
     getItemProps: (item) => {
       const span = spanOf(item)
       return normalize.element({
         ...parts.item.attrs,
-        style: span == null ? undefined : { gridColumn: `span ${span}` },
+        // 没写 span 就一条声明都不发：皮肤在这个部件上已经声明了默认的一列，
+        // 发一条空串等于让每个格子都平白多一个 style 属性
+        ...(span == null ? {} : { style: { '--xh-_descriptions-item-span': String(span) } }),
       })
     },
 
