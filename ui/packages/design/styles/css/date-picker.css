@@ -368,29 +368,67 @@
      showTime 那套结构里 content 直属子节点是作者自己的包裹块与确认行,
      无条件横排会把它们并到日历旁边去。
      不加 :not([hidden])：content 收起态带 hidden 但仍在播退场动画，
-     排除掉会让它在那几帧退回 block、两张日历竖着堆一下 */
+     排除掉会让它在那几帧退回 block、两张日历竖着堆一下。
+     并排放不下就折行，第二张月历落到第一张下面：视口窄与面板被夹窄都命中这一条 */
   [data-scope='date-picker'][data-part='content']:has(> [data-part='calendar'] + [data-part='calendar']) {
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-start;
   }
 
   /* 快捷选项列摆在日历的行内起始一侧，同样只在它真在场时才横过来。
-     与上一条同理：不加 :not([hidden])，退场那几帧塌回 block 会让两块竖着堆一下 */
+     与上一条同理：不加 :not([hidden])，退场那几帧塌回 block 会让两块竖着堆一下。
+     一并折行：选项条在手机档占满一行，日历落到它下面 */
   [data-scope='date-picker'][data-part='content']:has(> [data-part='preset-group']) {
     display: flex;
+    flex-wrap: wrap;
     align-items: stretch;
   }
 
-  /* 第二个起的面板画一道左分隔线：两张网格挨着排时要有条界，
-     否则 8 月末与 9 月初那两列看着像同一张表 */
-  [data-scope='date-picker'][data-part='calendar'] + [data-scope='date-picker'][data-part='calendar'] {
-    padding-inline-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-panel-divider, var(--xh-border-subtle));
+  /* showTime 的时间列与日历同处一条可折行的行内流：放得下就并排贴在日历旁边，
+     放不下时整组时间列折到日历下面，几列彼此仍横着排。
+     不写这一条时 content 是 block，时列与分列会各占满一行竖着摞成一长条 */
+  [data-scope='date-picker'][data-part='content']:has(> [data-part='time-column']) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
   }
 
-  /* 快捷选项列与它旁边那张日历之间留出同样的空当，两道分隔线左右对称 */
+  /* 确认按钮沉到所在那一行的底边：它是整块面板的出口，不跟日历顶边对齐 */
+  [data-scope='date-picker'][data-part='content']:has(> [data-part='time-column']) > [data-part='confirm-trigger'] {
+    align-self: flex-end;
+  }
+
+  /* 第二个起的面板画一道分隔线：两张网格挨着排时要有条界，
+     否则 8 月末与 9 月初那两列看着像同一张表。
+     手机档两张月历折行堆叠，线画在块起始边 */
+  [data-scope='date-picker'][data-part='calendar'] + [data-scope='date-picker'][data-part='calendar'] {
+    padding-block-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-date-picker-panel-divider, var(--xh-border-subtle));
+  }
+
+  /* 平板起两张月历并排放得下，线改画在行内起始边 */
+  @media (min-width: 768px) {
+    [data-scope='date-picker'][data-part='calendar'] + [data-scope='date-picker'][data-part='calendar'] {
+      padding-block-start: 0;
+      padding-inline-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
+      border-block-start: none;
+      border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-panel-divider, var(--xh-border-subtle));
+    }
+  }
+
+  /* 快捷选项与它旁边那张日历之间留出同样的空当。
+     手机档选项条在上、日历在下，空当留在块轴 */
   [data-scope='date-picker'][data-part='preset-group'] + [data-scope='date-picker'][data-part='calendar'] {
-    padding-inline-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
+    padding-block-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
+  }
+
+  /* 平板起选项列回到日历一侧，空当跟着回到行内轴，两道分隔线左右对称 */
+  @media (min-width: 768px) {
+    [data-scope='date-picker'][data-part='preset-group'] + [data-scope='date-picker'][data-part='calendar'] {
+      padding-block-start: 0;
+      padding-inline-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
+    }
   }
 
   [data-scope='date-picker'][data-part='calendar'] {
@@ -408,19 +446,33 @@
     display: none;
   }
 
-  /* —— 快捷选项：一列按钮式条目，贴在日历的行内起始一侧 —— */
+  /* —— 快捷选项：一条按钮式条目 —— */
+  /* 手机档：整条压在面板顶部占满一行，条目横着排，放不下就这一条自己横滚 */
   [data-scope='date-picker'][data-part='preset-group'] {
     display: flex;
-    flex: none;
-    /* 这一列的高度由并排的日历给：不写就按内容收，右侧那道分隔线只画到最后一条选项 */
+    /* 独占面板的一整行，后面的日历折到它下面 */
+    flex: 0 0 100%;
+    /* 这一条的另一轴由并排的那块给：不写就按内容收，分隔线只画到最后一条选项 */
     align-self: stretch;
-    flex-direction: column;
+    flex-direction: row;
     gap: var(--xh-date-picker-preset-group-gap, var(--xh-list-option-gap));
-    /* 选项多起来时这一列自己滚，不把整张面板撑高 */
+    /* 选项多起来时这一条自己滚，不把整张面板撑大 */
     max-block-size: var(--xh-date-picker-preset-group-h, var(--xh-viewport-h-lg));
     padding: var(--xh-date-picker-preset-group-padding, var(--xh-space-1));
-    overflow-y: auto;
-    border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-border-subtle));
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-border-subtle));
+  }
+
+  /* 平板起：换成贴在日历行内起始一侧的竖列，滚动轴与分隔线一起转过来 */
+  @media (min-width: 768px) {
+    [data-scope='date-picker'][data-part='preset-group'] {
+      flex: none;
+      flex-direction: column;
+      overflow: auto;
+      border-block-end: none;
+      border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-border-subtle));
+    }
   }
 
   [data-scope='date-picker'][data-part='preset-group'][hidden] {
@@ -428,6 +480,8 @@
   }
 
   [data-scope='date-picker'][data-part='preset'] {
+    /* 横着排那一档不许被压扁：条目文本本来就不折行 */
+    flex: none;
     padding-block: var(--xh-date-picker-preset-py, var(--xh-space-1));
     padding-inline: var(--xh-date-picker-preset-px, var(--xh-space-3));
     border-radius: var(--xh-date-picker-preset-radius, var(--xh-shape-control));

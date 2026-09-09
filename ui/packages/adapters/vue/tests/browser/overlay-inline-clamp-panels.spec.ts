@@ -191,7 +191,9 @@ describe('窄视口下浮层不伸出视口', () => {
     expect(rect.right).toBeLessThanOrEqual(doc.documentElement.clientWidth)
   })
 
-  it.each(CASES.filter(([scope]) => scope !== 'popover'))('%s（%s）撑出去的那截改成面内横滚', async (scope, _shape, render) => {
+  // popover 的正文本来就能换行，夹窄了不产生溢出；
+  // date-picker 的两张月历放不下时自己折行堆叠，也不再靠横滚够到第二张
+  it.each(CASES.filter(([scope]) => scope !== 'popover' && scope !== 'date-picker'))('%s（%s）撑出去的那截改成面内横滚', async (scope, _shape, render) => {
     const doc = mountAt(NARROW, render)
     const content = await contentAt(doc, scope)
     // 夹住外框之后盒内才产生溢出，overflow-x 这才有事可做：滚得到就点得到
