@@ -1,5 +1,5 @@
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { MentionApi, MentionInputEl, MentionInputProps, MentionItemProps, MentionNodeMeta, MentionSchema } from './mention.types'
+import type { MentionApi, MentionInputEl, MentionItemProps, MentionNodeMeta, MentionSchema } from './mention.types'
 import { contains, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
 import { overlayPositioned } from '../shared/overlay'
 import { mentionAnatomy, mentionItemQuery, mentionItemText } from './mention.anatomy'
@@ -9,18 +9,6 @@ const parts = mentionAnatomy.build()
 
 /** 只有这些键单纯挪光标；正文与它们无关，重算触发才有意义。 */
 const CARET_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown'])
-
-/**
- * 输入宿主是不是多行。
- *
- * textarea 的允许角色只有它自带的 textbox，写 role="combobox" 是文档一致性违规；
- * 而 aria-expanded 不在 textbox 的支持属性里。所以多行宿主上 type / role / aria-expanded
- * 三条一并缺席，「有候选浮层」改由 aria-haspopup、aria-controls、aria-autocomplete
- * 与 aria-activedescendant 表达——这四条 textbox 都支持。
- */
-function isMultilineHost(input: MentionInputProps): boolean {
-  return (input.as ?? 'textarea') === 'textarea'
-}
 
 /** 取光标位置；拿不到就当在末尾。 */
 function caretOf(el: MentionInputEl): number {
@@ -169,7 +157,7 @@ export function connectMention<T extends PropTypes>(
      * 输出一条空的 aria-label / placeholder 会把作者写在 input 部件上的那份抹掉——
      * WC 侧的属性铺设按「值为 undefined 即删属性」办事。
      */
-    getInputProps: (input = {}) => normalize.textarea({
+    getInputProps: () => normalize.input({
       ...parts.input.attrs,
       'id': ids.input,
       'name': prop('name'),
@@ -177,10 +165,8 @@ export function connectMention<T extends PropTypes>(
       // 两条同时写时 aria-labelledby 优先，会把作者那句盖掉
       ...(inputLabel === undefined ? { 'aria-labelledby': ids.label } : { 'aria-label': inputLabel }),
       ...(placeholder === undefined ? {} : { placeholder }),
-      // textarea 没有 type 属性
-      'type': isMultilineHost(input) ? undefined : 'text',
-      // 多行宿主保留它自带的 textbox 角色，不改成 combobox
-      'role': isMultilineHost(input) ? undefined : 'combobox',
+      'type': 'text',
+      'role': 'combobox',
       // 关掉浏览器自带的历史补全，它会盖在候选列表上
       'autocomplete': 'off',
       'value': value,
@@ -189,8 +175,7 @@ export function connectMention<T extends PropTypes>(
       // 显式 true/false：省略是没说，显式 false 是明确说了不是
       'aria-invalid': invalid ? 'true' : 'false',
       'aria-haspopup': 'listbox',
-      // aria-expanded 不在 textbox 的支持属性里，多行宿主上整条缺席
-      'aria-expanded': isMultilineHost(input) ? undefined : (open ? 'true' : 'false'),
+      'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
       'aria-autocomplete': 'list',
       // 收起态没有高亮可指，属性整个缺席（aria-activedescendant 没有"假值"写法）
@@ -247,11 +232,11 @@ export function connectMention<T extends PropTypes>(
         }
         if (key === 'Enter') {
           if (commitHighlighted()) {
-            // 提交了候选就吞掉这次回车，正文里不留换行
+            // 提交了候选就吞掉这次回车，它不再往下走到表单
             event.preventDefault()
             return
           }
-          // 没有可提交的候选：回车照常换行，只把浮层收起来
+          // 没有可提交的候选：不拦按键，只把浮层收起来；这一发照常留给表单做隐式提交
           send({ type: 'CLOSE' })
           return
         }
@@ -264,7 +249,7 @@ export function connectMention<T extends PropTypes>(
           // 不拦：焦点要按 Tab 序列自然离开，浮层让开即可
           send({ type: 'CLOSE' })
         }
-        // Home / End 一概不拦：多行正文里它们是跳行首行尾，抢走就没法打字了。
+        // Home / End 一概不拦：正文里它们是把光标跳到首尾，抢走就没法打字了。
         // 光标随之挪动，keyup 会把新位置报回来，触发跟着重算
       },
     }),

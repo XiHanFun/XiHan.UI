@@ -140,7 +140,10 @@ export const imageViewerSuite: ConformanceSuite = {
               },
               'viewport': { 'data-state': 'open', 'data-dragging': null },
               'image': { 'data-state': 'open', 'data-dragging': null },
-              'toolbar': { 'role': 'toolbar', 'aria-label': 'Image tools', 'data-state': 'open' },
+              // 报 group 不报 toolbar：条内没有方向键走位，那四个键在这台上是翻页。
+              // 装什么进这条带也归作者（这份夹具就往里放了翻页与关闭），
+              // toolbar 承诺的「整条只占一个 Tab 位」在这儿立不住
+              'toolbar': { 'role': 'group', 'aria-label': 'Image tools', 'data-state': 'open' },
               'counter': { 'aria-live': 'polite', 'data-index': '1', 'data-count': '3', 'data-state': 'open' },
               'prev-trigger': { 'type': 'button', 'aria-label': 'Previous image', 'disabled': null, 'data-disabled': null },
               'next-trigger': { 'type': 'button', 'aria-label': 'Next image', 'disabled': null, 'data-disabled': null },

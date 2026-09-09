@@ -64,7 +64,7 @@ function spread(el: HTMLElement, props: Record<string, unknown>): void {
 interface Harness {
   api: () => MentionApi
   root: HTMLElement
-  input: HTMLTextAreaElement
+  input: HTMLInputElement
   content: HTMLElement
   item: (value: string) => HTMLElement
   /** 换一批候选：过滤是调用方的活儿，这里模拟它按查询串重渲列表。 */
@@ -93,7 +93,7 @@ function mount(initial: Partial<Props> = {}, options: Options = {}): Harness {
   const scope = createScope(null, idGen)
 
   const root = doc.createElement('div')
-  const input = doc.createElement('textarea')
+  const input = doc.createElement('input')
   const positioner = doc.createElement('div')
   const content = doc.createElement('div')
   positioner.append(content)
@@ -201,14 +201,14 @@ function click(el: HTMLElement): void {
 }
 
 /** 打字：把整段正文写进框里、把光标摆到指定位置，再派原生 input 事件。 */
-function type(input: HTMLTextAreaElement, text: string, caret = text.length): void {
+function type(input: HTMLInputElement, text: string, caret = text.length): void {
   input.value = text
   input.setSelectionRange(caret, caret)
   input.dispatchEvent(new Event('input', { bubbles: true }))
 }
 
 /** 只挪光标，不改正文。 */
-function moveCaret(input: HTMLTextAreaElement, caret: number): void {
+function moveCaret(input: HTMLInputElement, caret: number): void {
   input.setSelectionRange(caret, caret)
   release(input, 'ArrowLeft')
 }
@@ -549,21 +549,22 @@ describe('公开 API 与无障碍属性', () => {
     expect(m.state()).toBe('closed')
   })
 
-  it('多行宿主不写 role 与 aria-expanded，组合框语义走 textbox 支持的那几条', () => {
+  it('输入框写足组合框那一套属性，彼此互指', () => {
     const m = mount()
-    expect(m.input.hasAttribute('role')).toBe(false)
-    expect(m.input.hasAttribute('aria-expanded')).toBe(false)
+    expect(m.input.getAttribute('role')).toBe('combobox')
+    expect(m.input.getAttribute('type')).toBe('text')
+    expect(m.input.getAttribute('aria-expanded')).toBe('false')
     expect(m.input.getAttribute('aria-haspopup')).toBe('listbox')
     expect(m.input.getAttribute('aria-autocomplete')).toBe('list')
     expect(m.input.getAttribute('aria-controls')).toBe(m.content.getAttribute('id'))
   })
 
-  it('单行宿主才补上 role=combobox 与 aria-expanded', () => {
+  it('展开时 aria-expanded 翻成 true', async () => {
     const m = mount()
-    const props = m.api().getInputProps({ as: 'input' }) as Record<string, unknown>
-    expect(props.role).toBe('combobox')
-    expect(props.type).toBe('text')
-    expect(props['aria-expanded']).toBe('false')
+    type(m.input, '@li')
+    await tick()
+    expect(m.state()).toBe('open')
+    expect(m.input.getAttribute('aria-expanded')).toBe('true')
   })
 
   it('浮层自带可及名字：role=listbox 必须有名字，而这里没有可指的标题部件', () => {

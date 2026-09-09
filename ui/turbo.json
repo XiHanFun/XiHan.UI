@@ -9,7 +9,7 @@
     },
     "typecheck": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**", "tests/**", "*.vue", "tsconfig*.json"],
+      "inputs": ["src/**", "tests/**", "spec/**", "runners/**", "*.vue", "tsconfig*.json", "package.json"],
       "outputs": []
     },
     "test": {

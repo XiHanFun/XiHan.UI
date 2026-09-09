@@ -16988,6 +16988,9 @@
               "name": "--xh-file-upload-label-font-weight"
             },
             {
+              "name": "--xh-file-upload-list-max-h"
+            },
+            {
               "name": "--xh-file-upload-preview-bg"
             },
             {
@@ -25656,7 +25659,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-mention>` —— Light-DOM 行为宿主：作者写 root/input/positioner/content/item 角色节点，\n元素跑 mention 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点就是输入框本身（浮层贴着整个输入框，不跟着光标走）。\n\n与组合框的分水岭有两条。其一，浮层由「光标处的前缀字符」开合：前缀必须紧跟在行首或空白之后，\n邮箱地址里的 @ 因此不会误触发；前缀到光标之间那段就是查询串。其二，选中候选不是替换整个值，\n而是把那段查询串换成候选文本、前后文一字不动，光标随后落在插入内容之后。\n\ninput 部件写成 textarea（缺省）时保留它自带的 textbox 角色：ARIA in HTML 只允许 textarea\n取 textbox，而 aria-expanded 不在 textbox 的支持属性里，两者一并让位；\n「有候选浮层」改由 aria-haspopup、aria-controls、aria-autocomplete 与 aria-activedescendant 表达。\n写成 input 时才补上 role=combobox 与 aria-expanded。\n\n过滤不由本元素做：查询串变化时派发 query-change，作者据此增删 item 节点。",
+          "description": "`<xh-mention>` —— Light-DOM 行为宿主：作者写 root/input/positioner/content/item 角色节点，\n元素跑 mention 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点就是输入框本身（浮层贴着整个输入框，不跟着光标走）。\n\n与组合框的分水岭有两条。其一，浮层由「光标处的前缀字符」开合：前缀必须紧跟在行首或空白之后，\n邮箱地址里的 @ 因此不会误触发；前缀到光标之间那段就是查询串。其二，选中候选不是替换整个值，\n而是把那段查询串换成候选文本、前后文一字不动，光标随后落在插入内容之后。\n\ninput 部件是单行 `<input>`，元素往上打 role=combobox 与 aria-expanded；\n候选身份经 aria-controls、aria-autocomplete 与 aria-activedescendant 上报。\n\n过滤不由本元素做：查询串变化时派发 query-change，作者据此增删 item 节点。",
           "name": "XhMentionElement",
           "cssParts": [
             {
@@ -25668,7 +25671,7 @@
               "name": "label"
             },
             {
-              "description": "输入框，写 textarea（推荐）或 input；没给 translations.input 时名字取自 label 部件",
+              "description": "单行输入框，须写成 `<input>`；没给 translations.input 时名字取自 label 部件",
               "name": "input"
             },
             {
@@ -26302,9 +26305,6 @@
             },
             {
               "name": "--xh-mention-input-px"
-            },
-            {
-              "name": "--xh-mention-input-py"
             },
             {
               "name": "--xh-mention-input-radius"
@@ -31548,12 +31548,6 @@
             },
             {
               "name": "--xh-password-input-caps-lock-font-size"
-            },
-            {
-              "name": "--xh-password-input-caps-lock-gap"
-            },
-            {
-              "name": "--xh-password-input-caps-lock-px"
             },
             {
               "name": "--xh-password-input-control-bg"
@@ -45644,6 +45638,9 @@
               "name": "--xh-tags-input-control-h"
             },
             {
+              "name": "--xh-tags-input-control-max-h"
+            },
+            {
               "name": "--xh-tags-input-control-min-w"
             },
             {
@@ -46315,6 +46312,9 @@
             },
             {
               "name": "--xh-text-field-control-h"
+            },
+            {
+              "name": "--xh-text-field-control-max-h"
             },
             {
               "name": "--xh-text-field-control-min-w"

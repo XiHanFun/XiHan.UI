@@ -35,7 +35,7 @@ const COMPONENTS = [
  * 解剖里有 control 的组件登在这里等于一条走不到的死登记，会被下面的名单核验报出来。
  */
 const SINGLE_ELEMENT = {
-  'mention': '多行 textarea 自画盒，没有尾钮',
+  'mention': '单行 input 自画盒，没有尾钮',
   'pin-input': '每格一个 input 自画盒，格与格之间由 root 排布',
 }
 
@@ -86,7 +86,6 @@ const EXEMPT = {
   'pin-input box-h': '每格是等宽方框，宽高同取 --xh-pin-input-box-size 一个尺寸，不走控件行高',
   'pin-input box-px': '方格内距归零，留了内距单字符居中后可用宽度不足',
   'pin-input box-min-w': '格宽即方格边长，再给最小宽会把方框拉成长方形',
-  'mention box-h': '多行 textarea 由行数撑高，纵向走 field-py 内距而不是控件行高',
 }
 
 /** 检查项的说明，用在报告里。 */

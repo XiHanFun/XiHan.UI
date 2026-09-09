@@ -202,6 +202,13 @@ export interface ImageViewerApi<T extends PropTypes = PropTypes> {
   getContentProps: () => T['element']
   getViewportProps: () => T['element']
   getImageProps: () => T['img']
+  /**
+   * 底部那条控件带，装缩放、旋转、翻转与归零这几颗钮。
+   *
+   * 它报的是 `role=group`：一组有名字的控件，每颗钮各占一个 Tab 位。
+   * 不报 `role=toolbar`——那个角色承诺条内靠方向键走位，而左右方向键与
+   * Home/End 在这台上是翻页；要那套走位就往这条带里放一个 Toolbar 组件。
+   */
   getToolbarProps: () => T['element']
   getZoomInTriggerProps: () => T['button']
   getZoomOutTriggerProps: () => T['button']

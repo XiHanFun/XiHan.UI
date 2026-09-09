@@ -1,16 +1,7 @@
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 
-/** 输入框渲染成哪个标签：多行 textarea（缺省）或单行 input。 */
-export type MentionInputHost = 'textarea' | 'input'
-
-/** 输入宿主元素。机器只用到 value 与 setSelectionRange，两种标签都提供。 */
-export type MentionInputEl = HTMLTextAreaElement | HTMLInputElement
-
-/** 输入部件自报宿主标签，connect 据此决定写不写 type 与组合框角色。 */
-export interface MentionInputProps {
-  /** 缺省 textarea。 */
-  as?: MentionInputHost
-}
+/** 输入宿主元素。机器只用到 value 与 setSelectionRange。 */
+export type MentionInputEl = HTMLInputElement
 
 /**
  * 光标处的一次触发。
@@ -228,8 +219,8 @@ export interface MentionApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   /** 标题；`for` 恒写向 input，故须是原生 `<label>`。 */
   getLabelProps: () => T['label']
-  /** 不传参即多行 textarea。 */
-  getInputProps: (props?: MentionInputProps) => T['textarea']
+  /** 单行输入框；正文就写在它身上。 */
+  getInputProps: () => T['input']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   /** 一条候选都没有时显出的空态；有候选时带 hidden 收起。 */

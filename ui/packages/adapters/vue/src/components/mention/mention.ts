@@ -1,5 +1,5 @@
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { MentionApi, MentionInputEl, MentionInputHost, MentionItemProps, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
+import type { MentionApi, MentionInputEl, MentionItemProps, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, Teleport, watch } from 'vue'
@@ -112,23 +112,17 @@ export const XhMentionLabel = defineComponent({
   },
 })
 
+/** 单行输入框；正文写在它身上，候选浮层贴着它落位。 */
 export const XhMentionInput = defineComponent({
   name: 'XhMentionInput',
-  props: {
-    /**
-     * 输入框渲染成哪个标签，默认 textarea。
-     * 写 input 即单行宿主：connect 随之补上 type、role 与 aria-expanded。
-     */
-    as: { type: String as PropType<MentionInputHost>, default: 'textarea' },
-  },
-  setup(props) {
+  setup() {
     // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
     const fieldWiring = useFieldStateWiring()
     // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
     const fieldLabel = useFieldLabelWiring()
     const ctx = useMentionContext()
-    return () => h(props.as, fieldLabel.value({
-      ...ctx.api.value.getInputProps({ as: props.as }) as Record<string, unknown>,
+    return () => h('input', fieldLabel.value({
+      ...ctx.api.value.getInputProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.inputRef.value = el as MentionInputEl },
       ...fieldWiring.value,
     }))

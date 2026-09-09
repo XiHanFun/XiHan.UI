@@ -18,6 +18,7 @@
 - 缩放步长与上下限可调。
 - 触屏上两指撑开放大、捏合缩小，单指平移；缩放以两指中点为锚。
 - 关闭后焦点归还触发器。
+- 底部控件带是一组有名字的控件，每颗钮各占一个 Tab 位；左右方向键与 Home/End 留给翻页，条里条外都一样。
 
 ## 示例
 
@@ -155,7 +156,7 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 | `getContentProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getImageProps` | `() => T['img']` |  |
-| `getToolbarProps` | `() => T['element']` |  |
+| `getToolbarProps` | `() => T['element']` | 底部那条控件带，装缩放、旋转、翻转与归零这几颗钮。 它报的是 `role=group`：一组有名字的控件，每颗钮各占一个 Tab 位。 不报 `role=toolbar`——那个角色承诺条内靠方向键走位，而左右方向键与 Home/End 在这台上是翻页；要那套走位就往这条带里放一个 Toolbar 组件。 |
 | `getZoomInTriggerProps` | `() => T['button']` |  |
 | `getZoomOutTriggerProps` | `() => T['button']` |  |
 | `getRotateLeftTriggerProps` | `() => T['button']` |  |
@@ -201,7 +202,7 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 | `content` | `role` | 'dialog' |
 | `viewport` | `aria-busy` | imageStatus === 'loading' \|\| undefined |
 | `toolbar` | `aria-label` | label.toolbar |
-| `toolbar` | `role` | 'toolbar' |
+| `toolbar` | `role` | 'group' |
 | `counter` | `aria-live` | 'polite' |
 
 ## 样式
