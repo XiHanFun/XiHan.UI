@@ -1,4 +1,4 @@
-// 每页条数 | 控制器由库自带：档位从 page-size-options 来，换档时页码跟着换算，改档前第一条仍留在页内
+// 每页条数 | 控制器就是库里的下拉：档位从 page-size-options 来、档位文字取 translations.pageSizeOption，换档时页码跟着换算，改档前第一条仍留在页内
 import type { ReactNode } from "react";
 import {
   XhPaginationEllipsisTrigger,
@@ -9,6 +9,8 @@ import {
   XhPaginationRoot,
 } from "@xihan-ui/react";
 
+const translations = { pageSizeOption: (size: number) => `${size} 条 / 页` };
+
 export default function Demo(): ReactNode {
   return (
     <XhPaginationRoot
@@ -16,15 +18,12 @@ export default function Demo(): ReactNode {
       defaultPageSize={10}
       pageSizeOptions={[10, 20, 50]}
       defaultPage={8}
+      translations={translations}
       style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px", inlineSize: "100%" }}
     >
       {({ pages, pageRange, count, page }) => (
         <>
-          <XhPaginationPageSizeSelect>
-            {({ options }) => options.map(o => (
-              <option key={o} value={String(o)}>{`${o} 条 / 页`}</option>
-            ))}
-          </XhPaginationPageSizeSelect>
+          <XhPaginationPageSizeSelect />
 
           <XhPaginationPrevTrigger />
           {pages.map((p, i) => (p === "ellipsis"

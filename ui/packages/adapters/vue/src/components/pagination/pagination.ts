@@ -185,26 +185,60 @@ export const XhPaginationJumper = defineComponent({
   },
 })
 
+/**
+ * 每页条数控制器：装的是库里的 select，不再是原生下拉。
+ *
+ * 组合发生在这一层——连接层把整份 select 的 api 摆在 api.pageSizeSelect 上，
+ * 这里照它铺角色节点（DOM 上带 data-scope="select"，吃的是 select 那份皮肤）。
+ * 档位与档位文字都由连接层从 pageSizeOptions 与 translations.pageSizeOption 算好。
+ */
 export const XhPaginationPageSizeSelect = defineComponent({
   name: 'XhPaginationPageSizeSelect',
-  slots: Object as SlotsType<{
-    default?: (props: { options: number[], label: (size: number) => string }) => VNode[]
-  }>,
-  setup(_, { slots }) {
+  // 渲染出来是「挂载点 + 被搬走的浮层」两截，作者写的 class 与 style 得自己接住落到挂载点上
+  inheritAttrs: false,
+  setup(_, { attrs }) {
     const ctx = usePaginationContext()
-    // 档位由作者渲染成 option：原生 select 的子节点不是角色节点，用不着再立一个部件
-    return () => h(
-      'select',
-      ctx.api.value.getPageSizeSelectProps() as Record<string, unknown>,
-      slots.default
-        ? slots.default({
-            options: ctx.api.value.pageSizeOptions,
-            label: (size: number) => String(size),
-          })
-        : ctx.api.value.pageSizeOptions.map(size =>
-            h('option', { key: size, value: String(size) }, String(size)),
-          ),
-    )
+    return () => {
+      const api = ctx.api.value
+      const select = api.pageSizeSelect
+      return [
+        h('div', mergeProps(api.getPageSizeSelectProps() as Record<string, unknown>, attrs), [
+          h('div', select.getRootProps() as Record<string, unknown>, [
+            h('div', select.getControlProps() as Record<string, unknown>, [
+              h('button', {
+                ...select.getTriggerProps() as Record<string, unknown>,
+                ref: (el: unknown) => { ctx.pageSizeTriggerRef.value = el as HTMLElement },
+              }, [
+                h('span', select.getValueTextProps() as Record<string, unknown>, select.displayText),
+                h('span', select.getIndicatorProps() as Record<string, unknown>),
+              ]),
+            ]),
+          ]),
+        ]),
+        h(Teleport, { to: ctx.portalTarget.value }, [
+          h('div', {
+            ...select.getPositionerProps() as Record<string, unknown>,
+            ref: (el: unknown) => { ctx.pageSizePositionerRef.value = el as HTMLElement },
+          }, [
+            h('div', {
+              ...select.getContentProps() as Record<string, unknown>,
+              // 收起跟着退场闸门走，与省略位那层同一套写法
+              style: ctx.pageSizeVisible.value ? undefined : { display: 'none' },
+              ref: (el: unknown) => { ctx.pageSizeContentRef.value = el as HTMLElement },
+            }, [
+              h('div', select.getListProps() as Record<string, unknown>, select.collection.map(option =>
+                h('div', {
+                  ...select.getItemProps({ value: option.value }) as Record<string, unknown>,
+                  key: option.value,
+                }, [
+                  h('span', select.getItemTextProps({ value: option.value }) as Record<string, unknown>, option.label),
+                  h('span', select.getItemIndicatorProps({ value: option.value }) as Record<string, unknown>),
+                ]))),
+            ]),
+          ]),
+        ]),
+      ]
+    }
   },
 })
 

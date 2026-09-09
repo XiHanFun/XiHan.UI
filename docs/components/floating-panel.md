@@ -22,6 +22,7 @@
 - 八个改尺把手在节点上自报守的是哪条边，西边与北边的把手会同时改位置。
 - 键盘全程可达：拖拽把手上方向键平移、Shift 快移、Enter / Space 送回初始落点；改尺把手上方向键推边；Esc 关闭。
 - `minSize` / `maxSize` 在每一处入口都生效——拖、推、`setDimensions` 走的是同一个夹取函数。
+- 内建默认矩形挂载时按视口夹一次：先收尺寸再推落点，窄屏上面板与右侧那几个改尺把手不会落在屏外。写了 `defaultPosition` / `defaultDimensions` 就照写的来。
 
 ## 示例
 
@@ -177,7 +178,7 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `Escape` | focus in content, 面板展开 | 关闭面板；面板不是模态的，焦点在页面别处时这一键不归它管 |
 | `ArrowUp` / `ArrowDown` / `ArrowLeft` / `ArrowRight` | focus on drag-trigger, 未禁用、draggable 开启且不是铺满形态 | 把整块面板往该方向平移 10px |
 | `Shift+ArrowUp` / `Shift+ArrowDown` / `Shift+ArrowLeft` / `Shift+ArrowRight` | focus on drag-trigger, 未禁用、draggable 开启且不是铺满形态 | 同上，一下走 50px |
-| `Enter` / `Space` | focus on drag-trigger, 未禁用、draggable 开启且不是铺满形态 | 把面板送回初始落点（defaultPosition，没给就是 24,24）；面板被拖出视口后靠这一键收回来 |
+| `Enter` / `Space` | focus on drag-trigger, 未禁用、draggable 开启且不是铺满形态 | 把面板送回初始落点（defaultPosition，没给就是按视口夹过的 24,24）；面板被拖出视口后靠这一键收回来 |
 | `ArrowUp` / `ArrowDown` / `ArrowLeft` / `ArrowRight` | focus on resize-trigger, 未禁用、resizable 开启且是常规形态 | 把这个把手守的那条边往该方向推 10px；推不动的那根轴上不拦键（上下把手放行左右键） |
 | `Shift+ArrowUp` / `Shift+ArrowDown` / `Shift+ArrowLeft` / `Shift+ArrowRight` | focus on resize-trigger, 未禁用、resizable 开启且是常规形态 | 同上，一下推 50px |
 

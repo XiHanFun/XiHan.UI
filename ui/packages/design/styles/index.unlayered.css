@@ -20,9 +20,14 @@
  * 聚焦环的公共层：全库共用一份。
  *
  * 解剖给每个部件打上 data-scope 与 data-part，键盘焦点落在哪个部件上，环就由这里画：
- * 粗细取 --xh-ring-width，颜色取 --xh-ring-focus，偏移取 --xh-_ring-offset（默认 --xh-ring-offset）。
+ * 粗细取 --xh-ring-width，颜色取 --xh-_ring-color（默认 --xh-ring-focus），
+ * 偏移取 --xh-ring-offset——这个令牌是负的一个环宽，环的外沿与元素边框外沿重合，
+ * 元素聚焦前后占的地方一样大。全库只有这一种偏移，要另画的组件把整条环重写。
  *
- * 往内收的档由组件给 --xh-_ring-offset 赋值，赋值写在自己的 :focus-visible 规则里。
+ * 环画进元素里之后，压着的是元素自己的面。面是实心的那几档，环色与面同族，贴上去就看不出来；
+ * 那几档在各自皮肤的 :focus-visible 规则里把 --xh-_ring-color 灌成 currentColor，
+ * 环随之取面自己的前景色。槽在这里只留一个默认值，名单不收在本份里——
+ * 谁的面是实心的由那份皮肤自己知道，也只有引了那份皮肤的人该为它付字节。
  * :focus-visible 只匹配拿着焦点的那一个节点，祖先不匹配，所以这个槽不会被后代读到。
  *
  * 选择器停在两个属性加一个伪类（0,3,0）：与组件皮肤里
@@ -30,18 +35,12 @@
  * 要另画的组件照写即可压过；同时压过 forced-colors.css 里 (0,2,0) 的状态环，
  * 高对比档里键盘焦点仍然压在选中、展开这类状态之上。
  *
- * 排在全部组件皮肤之前：组件不必为了改一个偏移把整条环重写一遍。
+ * 排在全部组件皮肤之前：组件不必为了换个环色把整条环重写一遍。
  */
 
-:root {
-  /* 往内收的那一档：环画在元素内沿，宽度就是环自己的宽度。
-     要内收的组件把它灌进 --xh-_ring-offset。 */
-  --xh-_ring-inset: calc(-1 * var(--xh-ring-width));
-}
-
 [data-scope][data-part]:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: var(--xh-_ring-offset, var(--xh-ring-offset));
+  outline: var(--xh-ring-width) solid var(--xh-_ring-color, var(--xh-ring-focus));
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 排在全部组件皮肤之前：字段族标签的公共层，组件另写行距即可压过。 */
@@ -976,11 +975,6 @@
   max-block-size: var(--xh-diff-view-max-h, var(--xh-viewport-max-h));
 }
 
-/* 焦点环偏移取负画在内侧，避免被 root 的 overflow: hidden 裁掉 */
-[data-scope='diff-view'][data-part='viewport']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 [data-scope='diff-view'][data-part='body'] {
   display: block;
   font-family: var(--xh-diff-view-font, var(--xh-font-family-mono));
@@ -1210,10 +1204,6 @@
   scale: var(--xh-motion-scale-press);
 }
 
-[data-scope='diff-view'][data-part='gap-trigger']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 [data-scope='diff-view'][data-part='empty'] {
   display: block;
   padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
@@ -1434,6 +1424,12 @@
   --xh-_download-trigger-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
   --xh-_download-trigger-border: transparent;
   --xh-_download-trigger-border-hover: transparent;
+}
+
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='download-trigger'][data-part='root'][data-variant='solid']:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 [data-scope='download-trigger'][data-part='root'][data-variant='subtle'] {
@@ -2461,10 +2457,6 @@
   cursor: default;
 }
 
-[data-scope='floating-panel'][data-part='drag-trigger']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 /* —— 改尺把手 ——
    这一段刻意用物理的 inset / width / height：面板的坐标是屏幕坐标（连接层写的是
    left/top），指针位移与方向键推动的也是屏幕方向。改成逻辑属性后，RTL 下 inset-inline-start
@@ -2481,10 +2473,6 @@
    这两套禁用语义对不上 */
 [data-scope='floating-panel'][data-part='resize-trigger'][data-disabled] {
   cursor: default;
-}
-
-[data-scope='floating-panel'][data-part='resize-trigger']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='n'] {
@@ -2605,6 +2593,12 @@
 [data-scope='floating-panel'][data-part='window-state-trigger'][data-state='on'] {
   background: var(--xh-floating-panel-action-bg-active, var(--xh-bg-subtle-active));
   color: var(--xh-floating-panel-action-fg-active, var(--xh-fg-default));
+}
+
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='floating-panel'][data-part='window-state-trigger'][data-state='on']:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 /* 只换前景不叠 opacity：叠了之后禁用文字的对比度会掉到读不出来 */
@@ -3716,9 +3710,8 @@
      不接控件高度那把尺——它是给可点可输的控件在一行里排齐用的，矩阵格子不可交互，
      接上去密度档一换矩阵就跟着变形 */
   --xh-_heatmap-row-h: var(--xh-heatmap-row-h, var(--xh-space-5));
-  /* 格间距等于聚焦环占的宽度（偏移 + 环宽）：环因此整圈落在格子之间的空当里，
-     不压到相邻的格子上（外缘与相邻格相接） */
-  --xh-_heatmap-gap: calc(var(--xh-ring-offset) + var(--xh-ring-width));
+  /* 格与格之间的空当：格子按天铺满一年，靠这道缝把一格与相邻格分开 */
+  --xh-_heatmap-gap: var(--xh-space-1);
   --xh-_heatmap-gutter: var(--xh-heatmap-gutter, var(--xh-space-8));
   --xh-_heatmap-font-size: var(--xh-text-caption-size);
   /* 星期名隔行画：第 0/2/4/6 行那个字的颜色。缺省透明——只是字不上色，
@@ -3741,9 +3734,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--xh-heatmap-gap, var(--xh-space-2));
-  /* 一整年五十几列，一屏放不下就自己横着滚。横向滚动会把纵向也变成 auto，
-     上下留出一圈聚焦环的余量，最上一行与最下一行的环才不会被裁掉 */
-  padding-block: var(--xh-heatmap-py, calc(var(--xh-ring-offset) + var(--xh-ring-width)));
+  /* 一整年五十几列，一屏放不下就自己横着滚。上下各留一道与格间距同宽的空当，
+     最上一行与最下一行不贴着滚动容器的边 */
+  padding-block: var(--xh-heatmap-py, var(--xh-_heatmap-gap));
   overflow-x: auto;
   /* 键盘走到视口外的格子时 scrollIntoView 会把它滚进来，落点要让开钉住的那一列，
      否则往回走的那一格正好停在行首星期名底下 */
@@ -3817,11 +3810,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--xh-heatmap-grid-gap, var(--xh-_heatmap-gap));
-}
-
-/* 环往内收：网格铺满 root，root 那层 overflow-x: auto 会把画在外沿的环裁掉 */
-[data-scope='heatmap'][data-part='grid']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 [data-scope='heatmap'][data-part='row'] {
@@ -4434,11 +4422,6 @@
   cursor: default;
 }
 
-/* 环往内收：裁切框长在视口里，视口那层 overflow: hidden 会把画在外沿的环裁掉 */
-[data-scope='image-cropper'][data-part='crop-area']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 /* 三分构图参考线：两条竖线、两条横线，落点写死在三分处，不占节点、不吃指针。
    停靠点逐条写全而不用 repeating-：重复单元从 0 起算会在框的两条边缘上各多画一根，
    那两根与裁切框的描边叠在一起，看着像描边加粗了一倍。
@@ -4501,13 +4484,14 @@
   content: '';
 }
 
-/* 与裁切框同一口径：把手也在视口的 overflow: hidden 里，环画在外沿会被裁掉 */
-[data-scope='image-cropper'][data-part='crop-handle']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 [data-scope='image-cropper'][data-part='crop-handle'][data-resizing] {
   background: var(--xh-image-cropper-handle-bg-resizing, var(--xh-bg-brand));
+}
+
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='image-cropper'][data-part='crop-handle'][data-resizing]:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 /* —— 八个方位：落点 + 光标 —— */
@@ -4911,11 +4895,6 @@
 [data-scope='json-viewer'][data-part='text'][hidden] {
   display: none;
 }
-
-/* 这一档没有行可落焦，环画在整块上，往内收免得被容器裁掉 */
-[data-scope='json-viewer'][data-part='text']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
 [data-scope='json-viewer'][data-part='tree'][hidden] {
   display: none;
 }
@@ -4933,8 +4912,7 @@
 
 [data-scope='json-viewer'][data-part='branch']:focus-visible > [data-scope='json-viewer'][data-part='branch-control'] {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  /* 往内收：行是撑满宽度的，环画在外沿会被容器裁掉 */
-  outline-offset: calc(-1 * var(--xh-ring-width));
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 行：标量与分支共用同一套盒子，两种行在视觉上必须齐平 */
@@ -4966,11 +4944,6 @@
 [data-scope='json-viewer'][data-part='branch-control'] {
   cursor: pointer;
   user-select: none;
-}
-
-/* 标量行自己就是 treeitem，环往内收：行是撑满宽度的，画在外沿会被容器裁掉 */
-[data-scope='json-viewer'][data-part='item']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 /* 键名不参与压缩：它短且必须完整可读，被挤掉的应该是值 */
@@ -5624,11 +5597,6 @@
    带 data-xh-scrollbar 的容器已经把原生条藏成零宽，这条空道对它没有布局作用，排除掉 */
 [data-scope='log'][data-part='viewport']:not([data-xh-scrollbar]) {
   scrollbar-gutter: stable;
-}
-
-/* 偏移取负画在内侧，避免被 root 裁掉 */
-[data-scope='log'][data-part='viewport']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 /* 取行期间指针给出忙的反馈 */
@@ -6538,9 +6506,9 @@ input[data-scope='mention'][data-part='input'] {
    两套底色各画各的会出现"鼠标停在 A 上、回车却插进了 B" */
 [data-scope='mention'][data-part='item'][data-highlighted]:not([data-disabled]) {
   background: var(--xh-mention-item-bg-hover, var(--xh-bg-subtle));
-  /* 焦点恒在输入框，高亮条目自带内收环；列表是滚动容器，环画在外沿会被裁掉 */
+  /* 焦点恒在输入框，环跟着高亮条目走 */
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: calc(-1 * var(--xh-ring-width));
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
@@ -7161,7 +7129,7 @@ input[data-scope='mention'][data-part='input'] {
    换了色也等于没画 */
 [data-scope='password-input'][data-part='control'] [data-part='visibility-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_password-input-ring);
-  outline-offset: calc(-1 * var(--xh-ring-width));
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 明暗两态各一枚字形：换的是这个槽，兜底盒的量法只写一遍 */
@@ -7505,6 +7473,12 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-popconfirm-confirm-shadow, var(--xh-_popconfirm-confirm-highlight));
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='popconfirm'][data-part='confirm-trigger']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 /* 异步确认挂起：按钮转圈、指针摆「在途」；不是禁用，焦点与对比度都保持 */
 [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading] {
   cursor: progress;
@@ -7812,6 +7786,12 @@ input[data-scope='mention'][data-part='input'] {
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='prompt-input'][data-part='submit-trigger']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 [data-scope='prompt-input'][data-part='submit-trigger'][hidden] {
   display: none;
 }
@@ -8070,10 +8050,6 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='reasoning'][data-part='trigger']:active:not(:disabled) {
   scale: var(--xh-motion-scale-press);
-}
-
-[data-scope='reasoning'][data-part='trigger']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 [data-scope='reasoning'][data-part='trigger']:disabled {
@@ -8387,6 +8363,12 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-bg-brand);
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='resizable'][data-part='handle'][data-resizing]:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 [data-scope='resizable'][data-part='handle'][hidden] {
   display: none;
 }
@@ -8641,11 +8623,6 @@ input[data-scope='mention'][data-part='input'] {
    禁用由轨道底色、未选中段的文字色与光标表达，选中段保持可读 */
 [data-scope='segmented'][data-part='item'][data-disabled][data-state='checked'] {
   color: var(--xh-segmented-item-fg-checked-disabled, var(--xh-_segmented-fg-selected));
-}
-
-/* 焦点环往内收一格：段贴着轨道内缘，往外画会被 root 的描边切掉一半 */
-[data-scope='segmented'][data-part='item']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 [data-scope='segmented'][data-part='item-text'] {
@@ -9060,11 +9037,6 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-disabled);
 }
 
-/* 环往内收：命中区贴着标签内缘，往外画会被相邻标签压住 */
-[data-scope='tag'][data-part='close-trigger']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 /* —— 形态 —— */
 /* 形态只决定颜色怎么用。每个形态拆成两条：先是没写语气时的基线配色，
    再是写了语气时的覆盖。语气槽会沿继承流下来，覆盖那条必须带 [data-tone] 限定，
@@ -9079,6 +9051,12 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-tag-bg, var(--xh-bg-brand));
   color: var(--xh-tag-fg, var(--xh-fg-on-brand));
   box-shadow: var(--xh-tag-shadow, var(--xh-_tag-highlight));
+}
+
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='tag'][data-part='root'][data-variant='solid']:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 [data-scope='tag'][data-part='root'][data-variant='solid'][data-tone] {
@@ -11918,6 +11896,12 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-approval-approve-shadow, var(--xh-_approval-approve-highlight));
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='approval'][data-part='approve-trigger']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 /* 两道守卫缺一不可：判定在途走 aria-disabled（保住可聚焦），落定后才换成原生 disabled，
    而浏览器对原生 disabled 的按钮照样给 :hover */
 [data-scope='approval'][data-part='approve-trigger']:not([aria-disabled='true']):not(:disabled):hover {
@@ -12531,6 +12515,12 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-_highlight-tone), var(--xh-elevation-raised));
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='button'][data-part='root'][data-variant='solid']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 /* 另外三档的面不是实心底，高光在上面只会显脏；显式清掉，
    免得整组写了实心形态时那条高光顺着继承流漏到组里写了别的形态的段上 */
 [data-scope='button'][data-part='root'][data-variant='subtle'] {
@@ -12996,6 +12986,12 @@ input[data-scope='mention'][data-part='input'] {
   font-weight: var(--xh-font-weight-medium);
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='calendar'][data-part='cell-trigger'][data-selected]:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 /* 不可用走 aria-disabled 而非原生 disabled：格子仍要可聚焦（它还得当方向键的起点），
    所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
 [data-scope='calendar'][data-part='cell-trigger'][data-disabled] {
@@ -13014,11 +13010,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='calendar'][data-part='grid'][data-readonly][data-view='day']
   [data-part='cell-trigger']:not([data-disabled]) {
   cursor: default;
-}
-
-/* 焦点环往内收一像素，免得被相邻格子的底色盖住 */
-[data-scope='calendar'][data-part='cell-trigger']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -13423,6 +13414,12 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+}
+
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='carousel'][data-part='indicator']:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 [data-scope='carousel'][data-part='indicator'][hidden] {
@@ -13936,12 +13933,6 @@ input[data-scope='mention'][data-part='input'] {
   border-inline-start: var(--xh-stroke-thin) solid var(--xh-cascader-column-divider, var(--xh-border-subtle));
 }
 
-/* 焦点落在根列上只有一种情形：指针打开、无选中值、还没有任何条目当锚点。
-   那一刻它认领着 Tab 位，环画在列内沿；有锚点时环长在条目上，列不再画 */
-[data-scope='cascader'][data-part='column'][tabindex='0']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 [data-scope='cascader'][data-part='column']:not([tabindex='0']):focus-visible {
   outline: none;
 }
@@ -14055,11 +14046,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='cascader']:is([data-part='item'], [data-part='search-item'])[data-state='checked'] {
   color: var(--xh-cascader-item-fg-selected, var(--xh-_cascader-selected-fg));
   font-weight: var(--xh-cascader-item-selected-font-weight, var(--xh-font-weight-medium));
-}
-
-/* 环往内收：行是撑满列宽的，环画在外沿会被裁掉 */
-[data-scope='cascader'][data-part='item']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
@@ -14235,10 +14221,10 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
 }
 
-/* 焦点恒在输入框，环只跟虚拟高亮走，悬停不画；往内收，行是撑满列宽的，环画在外沿会被裁掉 */
+/* 焦点恒在输入框，环只跟虚拟高亮走，悬停不画 */
 [data-scope='cascader'][data-part='search-item']:not([data-disabled])[data-highlighted] {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: calc(-1 * var(--xh-ring-width));
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='cascader'][data-part='search-item'][data-disabled] {
@@ -14427,6 +14413,12 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='checkbox'][data-part='root'][data-state='indeterminate'] {
   border-color: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
   background: var(--xh-checkbox-bg-checked, var(--xh-_checkbox-accent));
+}
+
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='checkbox'][data-part='root']:is([data-state='checked'], [data-state='indeterminate']):focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 /* 校验失败：方框描边转警示色。未勾时只有描边，勾上后填充仍走语气色，
@@ -15215,11 +15207,6 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-code-view-line-height, var(--xh-text-code-leading));
 }
 
-/* 偏移取负画在内侧，避免被 root 的 overflow: hidden 裁掉 */
-[data-scope='code-view'][data-part='pre']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 /* 折叠时 <pre> 的高度被连接层写死，超出部分沿圆角收边 */
 [data-scope='code-view'][data-part='root'][data-clamped] [data-part='pre'] {
   overflow-y: hidden;
@@ -15359,10 +15346,6 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='code-view'][data-part='fold-trigger']:active {
   scale: var(--xh-motion-scale-press);
-}
-
-[data-scope='code-view'][data-part='fold-trigger']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 /* 尺寸档写私有槽、由 root 基础规则消费一次：缺省与阶梯是同一个口子，
@@ -15994,8 +15977,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='color-picker'][data-part='channel-input']:focus-visible {
   border-color: var(--xh-color-picker-input-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  /* 往内收一道发丝：输入框贴着面板边排，环画在外沿会压到相邻通道 */
-  outline-offset: calc(-1 * var(--xh-stroke-thin));
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 打到一半的串：框里留着草稿，但值没动——描边提示"这串还没被收下" */
@@ -16052,6 +16034,12 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='color-picker'][data-part='eye-dropper-trigger'][data-state='picking'] {
   border-color: var(--xh-color-picker-action-border-active, var(--xh-bg-brand));
   background: var(--xh-color-picker-action-bg-active, var(--xh-bg-subtle-active));
+}
+
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='color-picker'][data-part='eye-dropper-trigger'][data-state='picking']:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 [data-scope='color-picker'][data-part='eye-dropper-trigger']:disabled {
@@ -16691,9 +16679,9 @@ input[data-scope='mention'][data-part='input'] {
    两套底色各画各的会出现"鼠标停在 A 上、回车提交的却是 B" */
 [data-scope='combobox'][data-part='item'][data-highlighted]:not([data-disabled]) {
   background: var(--xh-combobox-item-bg-hover, var(--xh-bg-subtle));
-  /* 焦点恒在输入框，高亮条目自带内收环；列表是滚动容器，环画在外沿会被裁掉 */
+  /* 焦点恒在输入框，环跟着高亮条目走 */
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: calc(-1 * var(--xh-ring-width));
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
@@ -17028,11 +17016,6 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-command-placeholder-fg, var(--xh-fg-subtle));
 }
 
-/* 环往内收：检索框是通栏的，环画在外沿会顺着面板的圆角探出去 */
-[data-scope='command'][data-part='input']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 /* 自动填充态：浏览器给填过的框强加一套系统色（多数引擎是黄底黑字），
    优先级高到 background / color 改不动，也不跟主题走。
    底用 box-shadow 的 inset 扩散铺满内容盒，字用 -webkit-text-fill-color 接回令牌。
@@ -17346,12 +17329,6 @@ input[data-scope='mention'][data-part='input'] {
    真正的收起由宿主在退场结束后落成内联 display:none（Vue 那边直接不渲染）。
    其余声明了 display 的角色节点仍补 [hidden]，那几处没有退场动画。 */
 
-/* 焦点落在容器上只有一种情形：指针打开、还没有任何条目当锚点。那一刻它认领着 Tab 位，
-   环画在浮层内沿，用户才看得出键盘此刻在哪儿；有锚点时环长在条目上，容器不再画 */
-[data-scope='context-menu'][data-part='content'][tabindex='0']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 [data-scope='context-menu'][data-part='content']:not([tabindex='0']):focus-visible {
   outline: none;
 }
@@ -17449,12 +17426,6 @@ input[data-scope='mention'][data-part='input'] {
 [dir='rtl'] [data-scope='context-menu'][data-part='item'][aria-haspopup='menu']::after {
   -webkit-mask-image: var(--xh-glyph-mark-chevron-left);
   mask-image: var(--xh-glyph-mark-chevron-left);
-}
-
-/* 键盘走到条目上要画环：轻档底色只有 1.1:1，够不上焦点指示器的对比度要求。
-   指针悬停走的是程序化聚焦，鼠标模态下 :focus-visible 不匹配，不会误画 */
-[data-scope='context-menu'][data-part='item']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 [data-scope='context-menu'][data-part='item']:focus:not(:focus-visible) {
@@ -18201,6 +18172,12 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-date-picker-action-fg-hover, var(--xh-fg-default));
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='date-picker'][data-part='trigger'][data-state='open']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 /* 清空按钮不占 Tab 位（tabindex=-1），这条是给程序化聚焦兜底：落焦时得看得见。
    展开钮是常规 Tab 停靠点，它落焦时环由盒的 :focus-within 画，这里不再套一圈 */
 [data-scope='date-picker'][data-part='clear-trigger']:focus-visible {
@@ -18396,11 +18373,6 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-date-picker-preset-bg-hover, var(--xh-bg-subtle));
 }
 
-[data-scope='date-picker'][data-part='preset']:focus-visible,
-[data-scope='date-picker'][data-part='preset-group']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 [data-scope='date-picker'][data-part='preset'][data-state='checked'] {
   background: var(--xh-date-picker-preset-bg-selected, var(--xh-_date-picker-accent-subtle));
   color: var(--xh-date-picker-preset-fg-selected, var(--xh-_date-picker-accent-subtle-fg));
@@ -18443,12 +18415,6 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-date-picker-time-item-bg-hover, var(--xh-bg-subtle));
 }
 
-/* 键盘走到哪一格要看得见：这几列靠方向键逐格走，没有这一条就等于闭着眼挑 */
-[data-scope='date-picker'][data-part='time-item']:focus-visible,
-[data-scope='date-picker'][data-part='time-column']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 [data-scope='date-picker'][data-part='time-item'][data-state='checked'] {
   background: var(--xh-date-picker-time-item-bg-selected, var(--xh-_date-picker-accent-subtle));
   color: var(--xh-date-picker-time-item-fg-selected, var(--xh-_date-picker-accent-subtle-fg));
@@ -18484,8 +18450,10 @@ input[data-scope='mention'][data-part='input'] {
   scale: var(--xh-motion-scale-press);
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
 [data-scope='date-picker'][data-part='confirm-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
+  outline: var(--xh-ring-width) solid currentColor;
   outline-offset: var(--xh-ring-offset);
 }
 
@@ -19069,6 +19037,12 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='drawer'][data-part='trigger'][data-state='open'] {
   background: var(--xh-drawer-trigger-bg-open, var(--xh-bg-subtle-active));
   border-color: var(--xh-drawer-trigger-border-open, var(--xh-border-control-hover));
+}
+
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='drawer'][data-part='trigger'][data-state='open']:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 [data-scope='drawer'][data-part='trigger']:active:not(:disabled) {
@@ -19731,6 +19705,12 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-editable-submit-shadow, var(--xh-_editable-submit-highlight));
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='editable'][data-part='submit-trigger']:not(:disabled):focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 [data-scope='editable'][data-part='submit-trigger']:hover:not(:disabled) {
   border-color: var(--xh-editable-submit-border-hover, var(--xh-editable-submit-bg-hover, var(--xh-bg-brand-hover)));
   background: var(--xh-editable-submit-bg-hover, var(--xh-bg-brand-hover));
@@ -19778,6 +19758,11 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='form'][data-part='root'][data-layout='horizontal'] [data-scope='field'][data-part='root'] > :not([data-part='label']) {
+  grid-column: 2;
+}
+
+/* 横排下这一列是网格的自动流，占位块跟着控件走第二列（选择器不匹配伪元素，单列一条） */
+[data-scope='form'][data-part='root'][data-layout='horizontal'] [data-scope='field'][data-part='root']::after {
   grid-column: 2;
 }
 
@@ -19853,6 +19838,29 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='field'][data-part='error-text'] {
   margin: 0;
   color: var(--xh-field-error-fg, var(--xh-fg-danger));
+  font-size: var(--xh-field-error-font-size, var(--xh-text-secondary-size));
+  line-height: var(--xh-leading-normal);
+}
+
+/* 辅助文字那一行的占位：字段渲染了错误文案、当前又没在报错时，补一个与错误文案等高的空块。
+   报错时这个空块让位给错误文案，字段的外框高度前后一样，表单不会因为一段错误文字重新排版，
+   定高或限高的父级里也不会把控件挤出去。
+
+   两个条件缺一不可：
+   渲染了 error-text 且它带 hidden——没有错误文案可显示的字段不占这一行；
+   没有在场的 description——描述已经占着这一行了，报错时由描述让位给错误文案（见 description.css）。
+
+   高度按错误文案那一档的字号乘行距算，得到的正是它一行的高度。
+   不写 1lh：那个单位晚于本库声明的浏览器地板，取不到时整条声明被丢弃、占位高退回 0，
+   字段又会随报错撑高一次，而这种失效不报错。
+   与前一块的距离由根的 gap 给，和错误文案顶上来时是同一段。 */
+[data-scope='field'][data-part='root']:has(> [data-scope='field'][data-part='error-text'][hidden]):not(
+    :has(> [data-scope='field'][data-part='description']:not([hidden]))
+  )::after {
+  content: '';
+  block-size: calc(
+    var(--xh-field-error-font-size, var(--xh-text-secondary-size)) * var(--xh-leading-normal)
+  );
   font-size: var(--xh-field-error-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-normal);
 }
@@ -20607,6 +20615,12 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-form-submit-shadow, var(--xh-_form-submit-highlight));
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='form'][data-part='submit-trigger']:not(:disabled):focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 [data-scope='form'][data-part='submit-trigger']:hover:not(:disabled) {
   border-color: var(--xh-form-submit-border-hover, var(--xh-form-submit-bg-hover, var(--xh-bg-brand-hover)));
   background: var(--xh-form-submit-bg-hover, var(--xh-bg-brand-hover));
@@ -21313,6 +21327,14 @@ input[data-scope='mention'][data-part='input'] {
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='image-viewer'][data-part='close-trigger']:focus-visible,
+[data-scope='image-viewer'][data-part='prev-trigger']:focus-visible,
+[data-scope='image-viewer'][data-part='next-trigger']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 [data-scope='image-viewer'][data-part='close-trigger'][hidden] {
   display: none;
 }
@@ -21700,11 +21722,6 @@ input[data-scope='mention'][data-part='input'] {
   font-weight: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-medium));
 }
 
-/* 键盘落焦的条目画内收环；指针触发的聚焦不画 */
-[data-scope='listbox'][data-part='item']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 [data-scope='listbox'][data-part='item']:focus:not(:focus-visible) {
   outline: none;
 }
@@ -22050,11 +22067,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='menu'][data-part='item']:not([data-disabled])[data-state='open'] {
   background: var(--xh-menu-item-bg-active, var(--xh-_menu-item-active-bg));
   font-weight: var(--xh-menu-item-active-font-weight, var(--xh-font-weight-semibold));
-}
-
-/* 键盘落焦的条目画内收环；指针触发的聚焦不画 */
-[data-scope='menu'][data-part='item']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 [data-scope='menu'][data-part='item']:focus:not(:focus-visible) {
@@ -22497,11 +22509,6 @@ input[data-scope='mention'][data-part='input'] {
   mask-image: var(--xh-glyph-mark-chevron-left);
 }
 
-/* 键盘落焦的条目画内收环；指针触发的聚焦不画 */
-[data-scope='menubar'][data-part='item']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 [data-scope='menubar'][data-part='item']:focus:not(:focus-visible) {
   outline: none;
 }
@@ -22688,11 +22695,6 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='message-feed'][data-part='root'][hidden] {
   display: none;
-}
-
-/* 偏移取负画在内侧，免得被外层裁掉 */
-[data-scope='message-feed'][data-part='root']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 /* 滚动容器。overscroll-behavior 挡住滚到头之后把整页一起带走 */
@@ -23663,6 +23665,11 @@ input[data-scope='mention'][data-part='input'] {
   /* 盒子的圆角 */
   --xh-_number-field-radius: var(--xh-shape-control);
 
+  /* 盒内那道分隔线的长度：取控件高的一半，线的上下各留一截空白，不与控件等高。
+     按控件高算而不是按钮高算：钮三档同宽高，只有控件跟着尺寸档变，
+     线跟着控件走才在 sm/md/lg 三档都保持同一个比例 */
+  --xh-_number-field-divider-h: calc(var(--xh-_number-field-h) * 0.5);
+
   /* 形态档只换这几个私有槽：输入框的底、描边与落影，加减钮的底与描边 */
   --xh-_number-field-bg: var(--xh-bg-canvas);
   --xh-_number-field-border: var(--xh-border-control);
@@ -23894,10 +23901,47 @@ input[data-scope='mention'][data-part='input'] {
    常态只剩符号，符号取次级前景，悬停与按下才浮出底色 */
 [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'],
 [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'] {
+  /* 分隔线那枚伪元素按这颗钮的边框盒定位 */
+  position: relative;
   margin: 0;
   border: 0;
   background: transparent;
   color: var(--xh-number-field-trigger-fg, var(--xh-fg-muted));
+}
+
+/* 加减钮与输入之间的细线：把「按的」与「填的」分成两块。
+   线画在钮的伪元素上而不是钮的边框上：边框会跟着钮的圆角与悬停底走，
+   而这道线要独立于钮的各态，长度也短于钮自己。
+   ::before 已被兜底字形占着，几何全落在 ::after 上。
+   线落在钮朝向输入的那一侧：钮排在输入前面就画在末端，排在后面就画在起始端；
+   用 inline-start / inline-end 两个逻辑侧，阿拉伯语这类右起排版下自动换边 */
+[data-scope='number-field'][data-part='control'] :is([data-part='decrement-trigger'], [data-part='increment-trigger']):has(~ [data-part='input'])::after,
+[data-scope='number-field'][data-part='control'] [data-part='input'] ~ :is([data-part='decrement-trigger'], [data-part='increment-trigger'])::after {
+  content: '';
+  position: absolute;
+  /* 线在钮的纵向中线上：钮高减线长，余下的上下均分 */
+  inset-block-start: calc((100% - var(--xh-number-field-trigger-divider-h, var(--xh-_number-field-divider-h))) / 2);
+  inline-size: 0;
+  block-size: var(--xh-number-field-trigger-divider-h, var(--xh-_number-field-divider-h));
+  /* 一道发丝线走 border 而不是底色：高对比档下底色被系统换成面色，线会整条消失，
+     边框那一档系统换的是边色，线还在 */
+  border-inline-start: var(--xh-stroke-thin) solid
+    var(--xh-number-field-trigger-divider, var(--xh-border-default));
+}
+
+/* 钮排在输入之前：线落在钮与输入之间那道间隙的正中。
+   位移是「半道间隙再加半根线」——线本身占一根发丝的宽，只退半道间隙会把它压到偏钮的一侧 */
+[data-scope='number-field'][data-part='control'] :is([data-part='decrement-trigger'], [data-part='increment-trigger']):has(~ [data-part='input'])::after {
+  inset-inline-end: calc(
+    (var(--xh-number-field-control-gap, var(--xh-_number-field-gap)) + var(--xh-stroke-thin)) / -2
+  );
+}
+
+/* 钮排在输入之后：同一道间隙，换到钮的起始端 */
+[data-scope='number-field'][data-part='control'] [data-part='input'] ~ :is([data-part='decrement-trigger'], [data-part='increment-trigger'])::after {
+  inset-inline-start: calc(
+    (var(--xh-number-field-control-gap, var(--xh-_number-field-gap)) + var(--xh-stroke-thin)) / -2
+  );
 }
 
 /* 悬停只在分段自己身上浮出一块底色与更实的符号，盒子的描边纹丝不动 */
@@ -24275,6 +24319,12 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-pagination-item-shadow, var(--xh-_pagination-highlight));
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='pagination'][data-part='item'][data-current]:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 [data-scope='pagination'][data-part='item'][data-current]:hover {
   border-color: var(--xh-pagination-item-border-selected-hover, var(--xh-_pagination-selected-bg-hover));
   background: var(--xh-pagination-item-bg-selected-hover, var(--xh-_pagination-selected-bg-hover));
@@ -24292,39 +24342,16 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='pagination'][data-part='ellipsis-trigger'] {
   color: var(--xh-pagination-ellipsis-trigger-fg, var(--xh-fg-subtle));
 }
-/* 每页条数控制器：原生 select，抹掉系统外观后与页码格子共用同一副骨架。
-   箭头用背景图而非伪元素——原生 select 不生成 ::before */
+/* 每页条数控制器的挂载点：里头装的是库里的 select，控件本身的描边、底色、聚焦环与
+   浮层都归 select 那份皮肤，这一格只把它摆进分页行 */
 [data-scope='pagination'][data-part='page-size-select'] {
+  display: inline-flex;
   flex: none;
-  block-size: var(--xh-pagination-item-h, var(--xh-_pagination-item-size));
-  padding-inline: var(--xh-pagination-item-px, var(--xh-_pagination-item-px));
-  /* 右侧让开箭头 */
-  padding-inline-end: calc(
-    var(--xh-pagination-item-px, var(--xh-_pagination-item-px)) +
-      var(--xh-icon-size, var(--xh-glyph-size-text)) + var(--xh-space-1)
-  );
-  border: var(--xh-stroke-thin) solid var(--xh-pagination-page-size-border, var(--xh-border-default));
-  border-radius: var(--xh-pagination-item-radius, var(--xh-shape-control));
-  background: var(--xh-pagination-page-size-bg, var(--xh-bg-surface));
-  color: var(--xh-pagination-item-fg, var(--xh-fg-default));
-  font-size: var(--xh-pagination-font-size, var(--xh-_pagination-font-size));
-  line-height: var(--xh-leading-none);
-  appearance: none;
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  align-items: center;
 }
 
-/* 描边与填充一起换：只加深一圈描边的话，指针停在控件正中时那点变化落在视野外围，
-   旁边那排页码格子换的是整块底色，两者的回执强度对不上 */
-[data-scope='pagination'][data-part='page-size-select']:hover:not(:disabled) {
-  border-color: var(--xh-pagination-page-size-border-hover, var(--xh-border-strong));
-  background: var(--xh-pagination-page-size-bg-hover, var(--xh-bg-subtle-hover));
-}
-
-[data-scope='pagination'][data-part='page-size-select']:disabled {
-  color: var(--xh-fg-disabled);
+[data-scope='pagination'][data-part='page-size-select'][hidden] {
+  display: none;
 }
 
 /* 信息区：一段次要文字，与页码格子同一条基线 */
@@ -24457,6 +24484,18 @@ input[data-scope='mention'][data-part='input'] {
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
   mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+}
+
+/* 省略位不写内容时画三点：折进去那几页的入口，空着就是一格看不出能点的空白 */
+[data-scope='pagination'][data-part='ellipsis-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-ellipsis) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-ellipsis) center / contain no-repeat;
 }
 
 /* rtl 下页序从右往左走，箭头跟着指向行进方向 */
@@ -25648,6 +25687,12 @@ input[data-scope='mention'][data-part='input'] {
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='question-flow'][data-part='submit-trigger']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 [data-scope='question-flow'][data-part='skip-trigger'][hidden],
 [data-scope='question-flow'][data-part='submit-trigger'][hidden] {
   display: none;
@@ -26151,11 +26196,6 @@ input[data-scope='mention'][data-part='input'] {
   overflow-y: hidden;
 }
 
-/* 偏移取负：环画在视口内侧，否则会被 root 的 overflow:hidden 裁掉半圈 */
-[data-scope='scroll-area'][data-part='viewport']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 /* 有滚动条要占道时，视口在那条轴上收窄一条道的宽度，末端内容不再被压在滚动条底下。
    缩视口而不是给视口加内边距：滚动容器末端缘的 padding 计不计进 scrollWidth，各引擎不一致。 */
 [data-scope='scroll-area'][data-part='viewport'][data-lane-vertical] {
@@ -26423,11 +26463,6 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='scrollbar'][data-part='thumb'][data-dragging] {
   background: var(--xh-scrollbar-thumb-bg-active, var(--xh-fg-scrollbar-thumb-active));
-}
-
-/* 偏移取负：环画在轨道内侧，否则会被滚动容器的溢出边界裁掉半圈 */
-[data-scope='scrollbar'][data-part='thumb']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 /* 根与轨道都是纯容器，不承载焦点；作者若给它们加了 tabindex，也不该在这儿多画一圈 */
@@ -26971,12 +27006,6 @@ input[data-scope='mention'][data-part='input'] {
    真正的收起由宿主在退场结束后落成内联 display:none（Vue 那边直接不渲染）。
    其余声明了 display 的角色节点仍补 [hidden]，那几处没有退场动画。 */
 
-/* 焦点落在容器上只有一种情形：指针打开、无选中值、还没有任何条目当锚点。
-   那一刻它认领着 Tab 位，环画在浮层内沿；有锚点时环长在条目上，容器不再画 */
-[data-scope='select'][data-part='list'][tabindex='0']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 [data-scope='select'][data-part='list']:not([tabindex='0']):focus-visible {
   outline: none;
 }
@@ -27087,12 +27116,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='select'][data-part='item'][data-state='checked'] {
   color: var(--xh-select-item-fg-selected, var(--xh-_select-item-selected-fg));
   font-weight: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-medium));
-}
-
-/* 键盘走到条目上要画环：轻档底色对白底只有 1.1:1，够不上焦点指示器的对比度要求。
-   指针悬停走的是程序化聚焦，鼠标模态下 :focus-visible 不匹配，不会误画 */
-[data-scope='select'][data-part='item']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 [data-scope='select'][data-part='item']:focus:not(:focus-visible) {
@@ -27746,6 +27769,12 @@ input[data-scope='mention'][data-part='input'] {
     box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='slider'][data-part='thumb']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 /* 内联样式把 inset-inline-start 定在值所在的比例上，那是拇指的**起始边**不是圆心；
    用负的逻辑外边距回拉半个直径，圆心才落在比例点上。
    这里刻意不用 translate(-50%)：rtl 下 inset-inline-start 映射到 right，
@@ -28146,6 +28175,12 @@ input[data-scope='mention'][data-part='input'] {
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='splitter'][data-part='resize-trigger']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 [data-scope='splitter'][data-part='resize-trigger'][data-orientation='horizontal'] {
   inline-size: var(--xh-splitter-trigger-thickness, var(--xh-space-1));
   cursor: col-resize;
@@ -28163,11 +28198,6 @@ input[data-scope='mention'][data-part='input'] {
 /* 只有正被拖的那条带 data-dragging：多条分隔条时全高亮就分不出手在哪一条上 */
 [data-scope='splitter'][data-part='resize-trigger'][data-dragging] {
   background: var(--xh-splitter-trigger-bg-dragging, var(--xh-bg-brand));
-}
-
-/* 焦点环往里画：分隔条只有几像素粗，往外画的那圈会被 root 的 overflow: hidden 切掉 */
-[data-scope='splitter'][data-part='resize-trigger']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 /* 分隔条是 div、role=separator，原生 disabled 在它身上不生效，
@@ -28561,6 +28591,12 @@ input[data-scope='mention'][data-part='input'] {
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='switch'][data-part='root']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 [data-scope='switch'][data-part='root'][data-state='checked'] {
   background: var(--xh-switch-bg-checked, var(--xh-_switch-accent));
 }
@@ -28943,13 +28979,14 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-table-row-bg-selected, var(--xh-bg-subtle-active));
 }
 
-[data-scope='table'][data-part='row'][data-disabled] {
-  color: var(--xh-fg-disabled);
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='table'][data-part='row'][data-selected]:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
-/* 行才是 Tab 停靠点，环画在整行上；往内收：行是撑满宽度的，环画在外沿会被滚动容器裁掉 */
-[data-scope='table'][data-part='row']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
+[data-scope='table'][data-part='row'][data-disabled] {
+  color: var(--xh-fg-disabled);
 }
 
 /* 列宽由连接层写进内联 inline-size，因此 flex-basis 取 auto：
@@ -29080,6 +29117,13 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']):focus-visible,
+[data-scope='table'][data-part='column-visibility-trigger'][data-state='checked']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 /* 未选中时勾不出现，但盒子还在：它是边框画出来的空框 */
 [data-scope='table'][data-part='select-all-trigger'][data-state='unchecked'],
 [data-scope='table'][data-part='column-visibility-trigger'][data-state='unchecked'],
@@ -29110,13 +29154,6 @@ input[data-scope='mention'][data-part='input'] {
   border-color: var(--xh-border-subtle);
   background: var(--xh-bg-muted);
   color: transparent;
-}
-
-/* 全选把手是表头里独立的 Tab 停靠点，环得画在它自己身上。
-   往内收，与行、排序把手同一口径：把手长在列头里，列头与根都收 overflow，
-   环画在外沿会被裁掉 */
-[data-scope='table'][data-part='select-all-trigger']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 /* 行选择把手不占 Tab 位（键盘那一路走 Space），只服务指针 */
@@ -29494,10 +29531,6 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='table'][data-part='sort-trigger'][data-disabled]::after {
   content: none;
-}
-
-[data-scope='table'][data-part='sort-trigger']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 /* 详情行：靠 data-state 收起，不卸载作者节点。内容长在它的单元格里，行本身只画底色 */
@@ -30145,11 +30178,6 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-tag-group-item-bg-hover, var(--xh-bg-subtle-hover));
 }
 
-/* 键盘落焦的标签画内收环；指针触发的聚焦不画 */
-[data-scope='tag-group'][data-part='item']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 [data-scope='tag-group'][data-part='item']:focus:not(:focus-visible) {
   outline: none;
 }
@@ -30225,11 +30253,6 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-disabled);
 }
 
-/* 环往内收：命中区贴着标签内缘，往外画会被相邻标签压住 */
-[data-scope='tag-group'][data-part='item-delete-trigger']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 /* —— 形态 —— */
 /* 形态只决定颜色怎么用。每个形态拆成两条：先是没写语气时的基线配色，
    再是写了语气时的覆盖。语气槽会沿继承流下来，覆盖那条必须带 [data-tone] 限定，
@@ -30242,6 +30265,12 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-tag-group-item-bg, var(--xh-bg-brand));
   color: var(--xh-tag-group-item-fg, var(--xh-fg-on-brand));
   box-shadow: var(--xh-tag-group-item-shadow, var(--xh-_tag-group-item-highlight));
+}
+
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='tag-group'][data-part='item'][data-variant='solid']:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 [data-scope='tag-group'][data-part='item'][data-variant='solid'][data-tone] {
@@ -30663,8 +30692,7 @@ input[data-scope='mention'][data-part='input'] {
    留着焦点环是给程序化聚焦兜底——删完把焦点交回输入框之前，它确实短暂持有过焦点 */
 [data-scope='tags-input'][data-part='item-delete-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-  /* 比默认档窄一道：它长在胶囊里，按默认偏移画会压到相邻胶囊 */
-  outline-offset: var(--xh-stroke-thin);
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 按钮是单体控件，禁用走原生 disabled */
@@ -30693,8 +30721,7 @@ input[data-scope='mention'][data-part='input'] {
    外层 control 的 :focus-within 环同时亮着也合理——焦点确实在框内 */
 [data-scope='tags-input'][data-part='item-input']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-  /* 比默认档窄一道：它长在胶囊里，按默认偏移画会压到相邻胶囊 */
-  outline-offset: var(--xh-stroke-thin);
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='tags-input'][data-part='item-input']:disabled {
@@ -30742,8 +30769,7 @@ input[data-scope='mention'][data-part='input'] {
    留着焦点环是给程序化聚焦兜底——清完把焦点交回输入框之前，它确实短暂持有过焦点 */
 [data-scope='tags-input'][data-part='clear-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-  /* 比默认档窄一道：它长在框的末端，按默认偏移画会压到相邻胶囊 */
-  outline-offset: var(--xh-stroke-thin);
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -31865,16 +31891,17 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-time-picker-preset-bg-hover, var(--xh-bg-subtle));
 }
 
-[data-scope='time-picker'][data-part='preset']:focus-visible,
-[data-scope='time-picker'][data-part='preset-group']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 /* 命中的那一条与选中的格子同一副实心底：同一份浮层里两种「选中」不该长成两个样 */
 [data-scope='time-picker'][data-part='preset'][data-state='checked'] {
   background: var(--xh-time-picker-preset-bg-checked, var(--xh-_time-picker-accent));
   color: var(--xh-time-picker-preset-fg-checked, var(--xh-_time-picker-accent-fg));
   font-weight: var(--xh-font-weight-medium);
+}
+
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='time-picker'][data-part='preset'][data-state='checked']:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 [data-scope='time-picker'][data-part='preset'][data-state='checked']:hover:not([data-disabled]) {
@@ -31913,7 +31940,7 @@ input[data-scope='mention'][data-part='input'] {
    那一刻它认领着 Tab 位，环画在列内沿；有锚点时环长在格上，列不再画 */
 [data-scope='time-picker'][data-part='column'][tabindex='0']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_time-picker-ring);
-  outline-offset: calc(-1 * var(--xh-ring-width));
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='time-picker'][data-part='column']:not([tabindex='0']):focus-visible {
@@ -31964,10 +31991,11 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-time-picker-item-bg-checked-hover, var(--xh-_time-picker-accent-hover));
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
 [data-scope='time-picker'][data-part='item']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-_time-picker-ring);
-  /* 往内收：选项在滚动列里挨着排，环画在外沿会被列的溢出裁掉 */
-  outline-offset: calc(-1 * var(--xh-ring-width));
+  outline: var(--xh-ring-width) solid currentColor;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
@@ -32640,6 +32668,12 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-_fg-pressed);
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='toggle'][data-part='root'][data-state='on']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 /* 只有实心档按下后才是一块实心语气底，顶边画一条极浅的内高光把它衬出厚度；
    其余三档按下走的是淡底，面上没有厚度可言。置灰时整枚已经压暗，高光一并排除 */
 [data-scope='toggle'][data-part='root'][data-variant='solid'][data-state='on']:not([data-disabled]) {
@@ -32944,6 +32978,12 @@ input[data-scope='mention'][data-part='input'] {
   z-index: 1;
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='toggle-group'][data-part='item'][data-state='on']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 /* 集合条目一律 aria-disabled 而非原生 disabled（禁用项仍要能当方向键的起点），
    所以这里读 data-disabled，写 :disabled 永远不命中。
    另外禁用不能用 opacity 变淡：半透明会把压在下面那条边透出来，共边处当场变成两条线 */
@@ -33173,10 +33213,6 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='tool-call'][data-part='trigger']:active:not(:disabled) {
   scale: var(--xh-motion-scale-press);
-}
-
-[data-scope='tool-call'][data-part='trigger']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 [data-scope='tool-call'][data-part='trigger']:disabled {
@@ -34178,6 +34214,12 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-tour-next-shadow, var(--xh-_tour-next-highlight));
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='tour'][data-part='next-trigger']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 [data-scope='tour'][data-part='next-trigger']:hover {
   background: var(--xh-tour-next-bg-hover, var(--xh-bg-brand-hover));
 }
@@ -34526,10 +34568,6 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-transfer-search-font-size, var(--xh-_transfer-font-size));
 }
 
-[data-scope='transfer'][data-part='search']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 /* 单体控件的禁用是原生 disabled，样式只能写 :disabled；集合条目才读 data-disabled */
 [data-scope='transfer'][data-part='search']:disabled {
   color: var(--xh-fg-disabled);
@@ -34665,10 +34703,6 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-transfer-item-bg-hover, var(--xh-bg-subtle));
 }
 
-[data-scope='transfer'][data-part='item']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
    所以样式只能读 data-disabled，写 :disabled 永远不命中 */
 [data-scope='transfer'][data-part='item'][data-disabled] {
@@ -34715,6 +34749,12 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='transfer'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
   border-color: var(--xh-transfer-checkbox-border-checked, var(--xh-_transfer-accent));
   background: var(--xh-transfer-checkbox-bg-checked, var(--xh-_transfer-accent));
+}
+
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='transfer'][data-part='item-checkbox'][data-state='checked']:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 /* 没写内容就由皮肤画勾；作者往格子里塞了自己的图形，这条规则即不命中。
@@ -34799,12 +34839,6 @@ input[data-scope='mention'][data-part='input'] {
   font-weight: var(--xh-font-weight-medium);
   line-height: var(--xh-leading-none);
   cursor: pointer;
-}
-
-/* 往内收，与搜索框、条目同一口径：全选格长在面板里，面板收 overflow，
-   环画在外沿会被裁掉 */
-[data-scope='transfer'][data-part='select-all-trigger']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 [data-scope='transfer'][data-part='select-all-trigger']:disabled {
@@ -35077,8 +35111,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='tree'][data-part='branch']:focus-visible > [data-scope='tree'][data-part='branch-control'] {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  /* 往内收：行是撑满宽度的，环画在外沿会被容器裁掉 */
-  outline-offset: calc(-1 * var(--xh-ring-width));
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 行：叶子与分支共用同一套盒子，两种行在视觉上必须齐平 */
@@ -35149,6 +35182,13 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-tree-checkbox-bg-checked, var(--xh-bg-brand));
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+[data-scope='tree'][data-part='item-checkbox'][data-selected]:focus-visible,
+[data-scope='tree'][data-part='branch-checkbox'][data-selected]:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 /* 半选：级联勾选下「子树勾了一部分」的第三态，此前发了 data-indeterminate 却没人画 */
 [data-scope='tree'][data-part='item-checkbox'][data-indeterminate]:not([data-selected]),
 [data-scope='tree'][data-part='branch-checkbox'][data-indeterminate]:not([data-selected]) {
@@ -35192,11 +35232,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree'][data-part='branch-control'][data-selected] {
   color: var(--xh-tree-row-fg-selected, var(--xh-fg-brand-strong));
   font-weight: var(--xh-tree-row-selected-font-weight, var(--xh-font-weight-medium));
-}
-
-/* 叶子自己就是 treeitem，环往内收：行是撑满宽度的，画在外沿会被容器裁掉 */
-[data-scope='tree'][data-part='item']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled：节点仍要可聚焦（它还得当方向键的起点），
@@ -35942,12 +35977,6 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-/* 焦点落在树容器上只有一种情形：指针打开、还没有任何行当锚点。那一刻它认领着 Tab 位，
-   环画在内沿，用户才看得出键盘此刻在哪儿；有锚点时环长在行上，容器不再画 */
-[data-scope='tree-select'][data-part='tree'][tabindex='0']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
-}
-
 [data-scope='tree-select'][data-part='tree']:not([tabindex='0']):focus-visible {
   outline: none;
 }
@@ -35974,8 +36003,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='tree-select'][data-part='branch']:focus-visible > [data-scope='tree-select'][data-part='branch-control'] {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  /* 往内收：行是撑满宽度的，环画在外沿会被容器裁掉 */
-  outline-offset: calc(-1 * var(--xh-ring-width));
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 行：叶子与分支共用同一套盒子，两种行在视觉上必须齐平 */
@@ -36032,11 +36060,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree-select'][data-part='branch-control'][data-selected] {
   color: var(--xh-tree-select-item-fg-selected, var(--xh-_tree-select-selected-fg));
   font-weight: var(--xh-tree-select-item-selected-font-weight, var(--xh-font-weight-medium));
-}
-
-/* 叶子自己就是 treeitem，环往内收：行是撑满宽度的，画在外沿会被容器裁掉 */
-[data-scope='tree-select'][data-part='item']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled：节点仍要可聚焦（它还得当方向键的起点），
@@ -36237,11 +36260,6 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='virtualizer'][data-part='viewport'][data-orientation='horizontal'] {
   overflow-y: hidden;
-}
-
-/* 偏移取负：环画在视口内侧，否则会被 root 的 overflow:hidden 裁掉半圈 */
-[data-scope='virtualizer'][data-part='viewport']:focus-visible {
-  --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
 /* 撑出总长的那层，同时是条目的定位上下文——条目是绝对定位的，

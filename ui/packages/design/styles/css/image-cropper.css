@@ -65,11 +65,6 @@
     cursor: default;
   }
 
-  /* 环往内收：裁切框长在视口里，视口那层 overflow: hidden 会把画在外沿的环裁掉 */
-  [data-scope='image-cropper'][data-part='crop-area']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   /* 三分构图参考线：两条竖线、两条横线，落点写死在三分处，不占节点、不吃指针。
      停靠点逐条写全而不用 repeating-：重复单元从 0 起算会在框的两条边缘上各多画一根，
      那两根与裁切框的描边叠在一起，看着像描边加粗了一倍。
@@ -132,13 +127,14 @@
     content: '';
   }
 
-  /* 与裁切框同一口径：把手也在视口的 overflow: hidden 里，环画在外沿会被裁掉 */
-  [data-scope='image-cropper'][data-part='crop-handle']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   [data-scope='image-cropper'][data-part='crop-handle'][data-resizing] {
     background: var(--xh-image-cropper-handle-bg-resizing, var(--xh-bg-brand));
+  }
+
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='image-cropper'][data-part='crop-handle'][data-resizing]:focus-visible {
+    --xh-_ring-color: currentColor;
   }
 
   /* —— 八个方位：落点 + 光标 —— */

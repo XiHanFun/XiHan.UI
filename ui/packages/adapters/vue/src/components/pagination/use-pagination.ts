@@ -1,8 +1,8 @@
 import type { Cleanup, Layer, RuntimeConfig } from '@xihan-ui/core'
-import type { PaginationApi, PaginationSchema } from '@xihan-ui/headless'
+import type { PaginationApi, PaginationSchema, PaginationServices, SelectSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectPagination, paginationMachine } from '@xihan-ui/headless'
+import { connectPagination, paginationMachine, paginationPageSizeSelectProps, selectMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
@@ -23,6 +23,12 @@ export interface PaginationContext {
   visible: Ref<boolean>
   /** 浮层搬到哪儿：全局配置的 portalContainer > body。 */
   portalTarget: ComputedRef<string | Element>
+  /** 每页条数那个下拉的触发器，它是那一层的定位锚点。 */
+  pageSizeTriggerRef: Ref<HTMLElement | null>
+  pageSizePositionerRef: Ref<HTMLElement | null>
+  pageSizeContentRef: Ref<HTMLElement | null>
+  /** 下拉那一层此刻该不该渲染；与省略位那层各走各的闸门。 */
+  pageSizeVisible: Ref<boolean>
 }
 
 export function usePagination(
@@ -35,6 +41,10 @@ export function usePagination(
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
 
+  const pageSizeTriggerRef = ref<HTMLElement | null>(null)
+  const pageSizePositionerRef = ref<HTMLElement | null>(null)
+  const pageSizeContentRef = ref<HTMLElement | null>(null)
+
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const service = useMachine(
@@ -42,6 +52,14 @@ export function usePagination(
     () => ({ ...props, onPageChange, onPageSizeChange }),
     scope,
   )
+  // 内嵌下拉的 props 从翻页机现读，翻页机须先建立；两台共用一份 scope，
+  // part id 里带组件名区分，不会撞
+  const pageSizeSelect = useMachine<SelectSchema>(
+    selectMachine,
+    () => paginationPageSizeSelectProps(service),
+    scope,
+  )
+  const services: PaginationServices = { root: service, pageSizeSelect }
 
   // 服务端没有 DOM，也就没有定位与消解层；退场闸门在 config 为 null 时退化成「跟着展开态」
   let config: RuntimeConfig | null = null
@@ -62,26 +80,60 @@ export function usePagination(
       surfaces: () => [],
     })
 
+    // 下拉自己一层：触发器记为本层分支，点它算层内交互
+    const registerPageSizeLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
+      kind: 'popover',
+      node: () => pageSizeContentRef.value,
+      branches: () => [pageSizeTriggerRef.value].filter(Boolean) as Element[],
+      isModal: () => false,
+      setModal: () => {},
+      surfaces: () => [],
+    })
+
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createPositionEngine())
+
+    pageSizeSelect.refs.set('config', config)
+    pageSizeSelect.refs.set('registerLayer', registerPageSizeLayer)
+    pageSizeSelect.refs.set('position', createPositionEngine())
   }
+
+  pageSizeSelect.refs.set('getAnchorEl', () => pageSizeTriggerRef.value)
+  pageSizeSelect.refs.set('getFloatingEl', () => pageSizePositionerRef.value)
+  pageSizeSelect.refs.set('getContentEl', () => pageSizeContentRef.value)
 
   // 元素 getter 在无 DOM 环境下也要设：连接层与效应经它们取节点
   service.refs.set('getAnchorEl', () => ellipsisRef.value)
   service.refs.set('getFloatingEl', () => positionerRef.value)
   service.refs.set('getContentEl', () => contentRef.value)
 
-  const api = computed(() => connectPagination(service, vueNormalize))
+  const api = computed(() => connectPagination(services, vueNormalize))
   // 退场闸门：收起从跟着展开态走，改成跟着 presence 走
   const visible = useOverlayExit({
     config,
     isOpen: () => api.value.openEllipsis != null,
     contentRef,
   })
+  const pageSizeVisible = useOverlayExit({
+    config,
+    isOpen: () => api.value.pageSizeSelect.open,
+    contentRef: pageSizeContentRef,
+  })
   const portalTarget = computed<string | Element>(
     () => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body',
   )
 
-  return { api, ellipsisRef, positionerRef, contentRef, visible, portalTarget }
+  return {
+    api,
+    ellipsisRef,
+    positionerRef,
+    contentRef,
+    visible,
+    portalTarget,
+    pageSizeTriggerRef,
+    pageSizePositionerRef,
+    pageSizeContentRef,
+    pageSizeVisible,
+  }
 }

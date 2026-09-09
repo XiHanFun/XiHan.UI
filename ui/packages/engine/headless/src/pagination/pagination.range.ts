@@ -45,6 +45,11 @@ export function normalizePageSize(value: number | undefined): number {
   return Math.max(1, Math.trunc(value))
 }
 
+/** 档位表：升序去重，每档至少 1。只做取值来源，不决定长相。 */
+export function pageSizeOptionsOf(values: readonly number[]): number[] {
+  return [...new Set(values.map(normalizePageSize))].sort((a, b) => a - b)
+}
+
 /**
  * 换每页条数时的新页码：让改档前第一条仍留在视野里。
  *

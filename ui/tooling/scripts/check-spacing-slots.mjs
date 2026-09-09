@@ -63,8 +63,9 @@ const CROSS_PART = {
   'diff-view.empty': ['line-content'],
   // 图例里那几个方块就是格子本身的缩略，形状与底色同源才对得上图上的深浅
   'heatmap.cell': ['legend-item'],
-  // 每页条数下拉、信息区与跳页框都与页码钮并排在同一行，盒型取同一族才平齐
-  'pagination.item': ['page-size-select', 'summary', 'jumper'],
+  // 信息区与跳页框都与页码钮并排在同一行，盒型取同一族才平齐。
+  // 每页条数那个下拉不在其列：它装的是库里的 select，盒型归 select 那份皮肤
+  'pagination.item': ['summary', 'jumper'],
   // 星星之间的间距由装它们的那一行排
   'rating.item': ['control'],
   // 文件条目之间的间距由装它们的那一列排

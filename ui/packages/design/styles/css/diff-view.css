@@ -73,11 +73,6 @@
     max-block-size: var(--xh-diff-view-max-h, var(--xh-viewport-max-h));
   }
 
-  /* 焦点环偏移取负画在内侧，避免被 root 的 overflow: hidden 裁掉 */
-  [data-scope='diff-view'][data-part='viewport']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   [data-scope='diff-view'][data-part='body'] {
     display: block;
     font-family: var(--xh-diff-view-font, var(--xh-font-family-mono));
@@ -305,10 +300,6 @@
 
   [data-scope='diff-view'][data-part='gap-trigger']:active {
     scale: var(--xh-motion-scale-press);
-  }
-
-  [data-scope='diff-view'][data-part='gap-trigger']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='diff-view'][data-part='empty'] {

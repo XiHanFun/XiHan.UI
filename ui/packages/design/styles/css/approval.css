@@ -354,6 +354,12 @@
     box-shadow: var(--xh-approval-approve-shadow, var(--xh-_approval-approve-highlight));
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='approval'][data-part='approve-trigger']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   /* 两道守卫缺一不可：判定在途走 aria-disabled（保住可聚焦），落定后才换成原生 disabled，
      而浏览器对原生 disabled 的按钮照样给 :hover */
   [data-scope='approval'][data-part='approve-trigger']:not([aria-disabled='true']):not(:disabled):hover {

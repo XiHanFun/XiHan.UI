@@ -216,13 +216,14 @@
     background: var(--xh-table-row-bg-selected, var(--xh-bg-subtle-active));
   }
 
-  [data-scope='table'][data-part='row'][data-disabled] {
-    color: var(--xh-fg-disabled);
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='table'][data-part='row'][data-selected]:focus-visible {
+    --xh-_ring-color: currentColor;
   }
 
-  /* 行才是 Tab 停靠点，环画在整行上；往内收：行是撑满宽度的，环画在外沿会被滚动容器裁掉 */
-  [data-scope='table'][data-part='row']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
+  [data-scope='table'][data-part='row'][data-disabled] {
+    color: var(--xh-fg-disabled);
   }
 
   /* 列宽由连接层写进内联 inline-size，因此 flex-basis 取 auto：
@@ -353,6 +354,13 @@
     background: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']):focus-visible,
+  [data-scope='table'][data-part='column-visibility-trigger'][data-state='checked']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   /* 未选中时勾不出现，但盒子还在：它是边框画出来的空框 */
   [data-scope='table'][data-part='select-all-trigger'][data-state='unchecked'],
   [data-scope='table'][data-part='column-visibility-trigger'][data-state='unchecked'],
@@ -383,13 +391,6 @@
     border-color: var(--xh-border-subtle);
     background: var(--xh-bg-muted);
     color: transparent;
-  }
-
-  /* 全选把手是表头里独立的 Tab 停靠点，环得画在它自己身上。
-     往内收，与行、排序把手同一口径：把手长在列头里，列头与根都收 overflow，
-     环画在外沿会被裁掉 */
-  [data-scope='table'][data-part='select-all-trigger']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 行选择把手不占 Tab 位（键盘那一路走 Space），只服务指针 */
@@ -767,10 +768,6 @@
 
   [data-scope='table'][data-part='sort-trigger'][data-disabled]::after {
     content: none;
-  }
-
-  [data-scope='table'][data-part='sort-trigger']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 详情行：靠 data-state 收起，不卸载作者节点。内容长在它的单元格里，行本身只画底色 */

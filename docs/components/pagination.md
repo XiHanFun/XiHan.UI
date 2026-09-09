@@ -72,7 +72,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 
 ### 每页条数
 
-控制器由库自带：档位从 page-size-options 来，换档时页码跟着换算，改档前第一条仍留在页内
+控制器就是库里的下拉：档位从 page-size-options 来、档位文字取 translations.pageSizeOption，换档时页码跟着换算，改档前第一条仍留在页内
 
 <XhDemo src="pagination/09-page-size" />
 
@@ -142,7 +142,6 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhPaginationContent` | `default` | `{ pages: number[] }` |  |
-| `XhPaginationPageSizeSelect` | `default` | `{ options: number[], label: (size: number) => string }` |  |
 | `XhPaginationRoot` | `default` | `PaginationRootSlotProps` |  |
 | `XhPaginationSummary` | `default` | `{ summaryText: string, start: number, end: number, count: number }` |  |
 
@@ -194,7 +193,8 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `getNextTriggerProps` | `() => T['button']` |  |
 | `getItemProps` | `(props: PaginationItemProps) => T['button']` |  |
 | `getEllipsisTriggerProps` | `(props: PaginationEllipsisTriggerProps) => T['button']` | 省略位：可展开的按钮，摊开后列出被折叠的页码。 |
-| `getPageSizeSelectProps` | `() => T['select']` | 每页条数控制器：绑到一个原生 select 上，档位由作者按 pageSizeOptions 渲染成 option。 |
+| `getPageSizeSelectProps` | `() => T['element']` | 每页条数控制器的挂载点：只管排布的一格，控件本体是内嵌下拉的角色节点。 |
+| `pageSizeSelect` | `SelectApi<T>` | 每页条数那个下拉，整份 select 的 api。档位由 collection 给出（文字取 translations.pageSizeOption），选中值即当前每页条数；作者照它渲染 select 的角色节点。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `closeEllipsis` | `() => void` | 收起摊开的省略位。 |
@@ -228,7 +228,6 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `ellipsis-trigger` | `aria-expanded` | 'true' \| 'false' |
 | `ellipsis-trigger` | `aria-haspopup` | 'true' |
 | `ellipsis-trigger` | `aria-label` | label.ellipsis( (items.find(item =&gt; item.type === 'el… |
-| `page-size-select` | `aria-label` | label.pageSizeSelect |
 | `content` | `aria-label` | label.ellipsis(folded.length) |
 | `content` | `role` | 'group' |
 
@@ -252,6 +251,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `item` | `data-current` | ''（条件成立时才出现） |
 | `ellipsis-trigger` | `data-side` | props.side |
 | `ellipsis-trigger` | `data-state` | 'open' \| 'closed' |
+| `page-size-select` | `data-empty` | ''（条件成立时才出现） |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
@@ -266,7 +266,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-pagination-content-bg` · `--xh-pagination-content-border` · `--xh-pagination-content-max-h` · `--xh-pagination-content-max-w` · `--xh-pagination-content-p` · `--xh-pagination-content-radius` · `--xh-pagination-content-shadow` · `--xh-pagination-ellipsis-trigger-fg` · `--xh-pagination-font-size` · `--xh-pagination-gap` · `--xh-pagination-icon-size` · `--xh-pagination-item-bg` · `--xh-pagination-item-bg-active` · `--xh-pagination-item-bg-hover` · `--xh-pagination-item-bg-selected` · `--xh-pagination-item-bg-selected-active` · `--xh-pagination-item-bg-selected-hover` · `--xh-pagination-item-border-selected` · `--xh-pagination-item-border-selected-active` · `--xh-pagination-item-border-selected-hover` · `--xh-pagination-item-fg` · `--xh-pagination-item-fg-selected` · `--xh-pagination-item-font-weight` · `--xh-pagination-item-h` · `--xh-pagination-item-min-size` · `--xh-pagination-item-px` · `--xh-pagination-item-radius` · `--xh-pagination-item-shadow` · `--xh-pagination-jumper-bg` · `--xh-pagination-jumper-bg-hover` · `--xh-pagination-jumper-border` · `--xh-pagination-jumper-border-hover` · `--xh-pagination-jumper-w` · `--xh-pagination-layer` · `--xh-pagination-page-size-bg` · `--xh-pagination-page-size-bg-hover` · `--xh-pagination-page-size-border` · `--xh-pagination-page-size-border-hover` · `--xh-pagination-summary-fg`
+`--xh-pagination-content-bg` · `--xh-pagination-content-border` · `--xh-pagination-content-max-h` · `--xh-pagination-content-max-w` · `--xh-pagination-content-p` · `--xh-pagination-content-radius` · `--xh-pagination-content-shadow` · `--xh-pagination-ellipsis-trigger-fg` · `--xh-pagination-font-size` · `--xh-pagination-gap` · `--xh-pagination-icon-size` · `--xh-pagination-item-bg` · `--xh-pagination-item-bg-active` · `--xh-pagination-item-bg-hover` · `--xh-pagination-item-bg-selected` · `--xh-pagination-item-bg-selected-active` · `--xh-pagination-item-bg-selected-hover` · `--xh-pagination-item-border-selected` · `--xh-pagination-item-border-selected-active` · `--xh-pagination-item-border-selected-hover` · `--xh-pagination-item-fg` · `--xh-pagination-item-fg-selected` · `--xh-pagination-item-font-weight` · `--xh-pagination-item-h` · `--xh-pagination-item-min-size` · `--xh-pagination-item-px` · `--xh-pagination-item-radius` · `--xh-pagination-item-shadow` · `--xh-pagination-jumper-bg` · `--xh-pagination-jumper-bg-hover` · `--xh-pagination-jumper-border` · `--xh-pagination-jumper-border-hover` · `--xh-pagination-jumper-w` · `--xh-pagination-layer` · `--xh-pagination-summary-fg`
 
 ## 动效
 
@@ -287,6 +287,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 ## 组合
 
 - 与[表格](./table)、[列表](./list)配合；整组禁用时裹一层 `disabled` 的 `fieldset`。
+- 每页条数那个控制器就是[下拉选择](./select)：`page-size-select` 是挂载点，里头的角色节点带的是 `data-scope="select"`，吃 select 那份皮肤。档位来自 `pageSizeOptions`，每一档的文字取 `translations.pageSizeOption`，控件的可及名取 `translations.pageSizeSelect`。
 
 ## 最佳实践
 

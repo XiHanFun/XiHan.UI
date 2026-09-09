@@ -176,11 +176,6 @@
     color: var(--xh-segmented-item-fg-checked-disabled, var(--xh-_segmented-fg-selected));
   }
 
-  /* 焦点环往内收一格：段贴着轨道内缘，往外画会被 root 的描边切掉一半 */
-  [data-scope='segmented'][data-part='item']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   [data-scope='segmented'][data-part='item-text'] {
     color: inherit;
     user-select: none;

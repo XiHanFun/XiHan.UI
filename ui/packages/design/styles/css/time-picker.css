@@ -417,16 +417,17 @@
     background: var(--xh-time-picker-preset-bg-hover, var(--xh-bg-subtle));
   }
 
-  [data-scope='time-picker'][data-part='preset']:focus-visible,
-  [data-scope='time-picker'][data-part='preset-group']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   /* 命中的那一条与选中的格子同一副实心底：同一份浮层里两种「选中」不该长成两个样 */
   [data-scope='time-picker'][data-part='preset'][data-state='checked'] {
     background: var(--xh-time-picker-preset-bg-checked, var(--xh-_time-picker-accent));
     color: var(--xh-time-picker-preset-fg-checked, var(--xh-_time-picker-accent-fg));
     font-weight: var(--xh-font-weight-medium);
+  }
+
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='time-picker'][data-part='preset'][data-state='checked']:focus-visible {
+    --xh-_ring-color: currentColor;
   }
 
   [data-scope='time-picker'][data-part='preset'][data-state='checked']:hover:not([data-disabled]) {
@@ -465,7 +466,7 @@
      那一刻它认领着 Tab 位，环画在列内沿；有锚点时环长在格上，列不再画 */
   [data-scope='time-picker'][data-part='column'][tabindex='0']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_time-picker-ring);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='time-picker'][data-part='column']:not([tabindex='0']):focus-visible {
@@ -516,10 +517,11 @@
     background: var(--xh-time-picker-item-bg-checked-hover, var(--xh-_time-picker-accent-hover));
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
   [data-scope='time-picker'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-_time-picker-ring);
-    /* 往内收：选项在滚动列里挨着排，环画在外沿会被列的溢出裁掉 */
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    outline: var(--xh-ring-width) solid currentColor;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），

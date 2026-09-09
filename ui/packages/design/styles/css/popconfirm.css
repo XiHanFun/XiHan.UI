@@ -240,6 +240,12 @@
     box-shadow: var(--xh-popconfirm-confirm-shadow, var(--xh-_popconfirm-confirm-highlight));
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='popconfirm'][data-part='confirm-trigger']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   /* 异步确认挂起：按钮转圈、指针摆「在途」；不是禁用，焦点与对比度都保持 */
   [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading] {
     cursor: progress;

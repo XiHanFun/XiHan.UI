@@ -290,11 +290,6 @@
     mask-image: var(--xh-glyph-mark-chevron-left);
   }
 
-  /* 键盘落焦的条目画内收环；指针触发的聚焦不画 */
-  [data-scope='menubar'][data-part='item']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   [data-scope='menubar'][data-part='item']:focus:not(:focus-visible) {
     outline: none;
   }

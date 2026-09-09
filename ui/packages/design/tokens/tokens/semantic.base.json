@@ -301,6 +301,11 @@
       "$type": "icon",
       "$value": "clock"
     },
+    "mark-ellipsis": {
+      "$description": "折起来的那一段：分页里被折掉的页码、面包屑里被折掉的层级。三点横排。",
+      "$type": "icon",
+      "$value": "ellipsis"
+    },
     "mark-required": {
       "$type": "string",
       "$value": "'*'"
@@ -393,8 +398,9 @@
       "$value": "{stroke.thick}"
     },
     "offset": {
+      "$description": "聚焦环画在元素自己那一圈：往内收一个环宽，环的外沿与元素的边框外沿重合，聚焦前后绘制外沿一样大。",
       "$type": "dimension",
-      "$value": "2px"
+      "$value": "calc(-1 * {ring.width})"
     }
   },
   "state": {

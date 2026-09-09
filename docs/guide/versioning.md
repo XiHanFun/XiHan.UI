@@ -201,7 +201,7 @@ brand  neutral  success  warning  danger  info
 | `index.unlayered.css` 的内部结构 | — | 它是生成的扁平镜像，**不带 `@layer`**。走这个入口就没有 `xihan.overrides` 这个覆盖槽位，层名承诺不适用 |
 
 ::: warning 命名前缀不能反推归属
-`--xh-field-py` 长得像 `field` 组件的覆盖槽，实际是全局语义令牌，而且 `field.css` 自己都不用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 344 个全局令牌里，不要按前缀猜。
+`--xh-field-py` 长得像 `field` 组件的覆盖槽，实际是全局语义令牌，而且 `field.css` 自己都不用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 345 个全局令牌里，不要按前缀猜。
 :::
 
 ---
@@ -384,7 +384,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 | `@xihan-ui/web-components` | 129 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
 | `@xihan-ui/styles` | 126 份组件皮肤、5 个层名 |
-| `@xihan-ui/tokens` | 344 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
+| `@xihan-ui/tokens` | 345 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
 | `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约 |
 | `@xihan-ui/position` | `createPositionEngine` 与它的选项；其余 9 个导出是内部算子 |

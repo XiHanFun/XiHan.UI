@@ -38,6 +38,11 @@
     grid-column: 2;
   }
 
+  /* 横排下这一列是网格的自动流，占位块跟着控件走第二列（选择器不匹配伪元素，单列一条） */
+  [data-scope='form'][data-part='root'][data-layout='horizontal'] [data-scope='field'][data-part='root']::after {
+    grid-column: 2;
+  }
+
   [data-scope='field'][data-part='label'] {
     /* 一段不带空格的长标识（字段名、英文标识符）在窄处从词内断开：
        横排表单里标签列是一段比例宽度，这行让标签在那一列里折行，而不是从列的左边顶出去 */
@@ -110,6 +115,29 @@
   [data-scope='field'][data-part='error-text'] {
     margin: 0;
     color: var(--xh-field-error-fg, var(--xh-fg-danger));
+    font-size: var(--xh-field-error-font-size, var(--xh-text-secondary-size));
+    line-height: var(--xh-leading-normal);
+  }
+
+  /* 辅助文字那一行的占位：字段渲染了错误文案、当前又没在报错时，补一个与错误文案等高的空块。
+     报错时这个空块让位给错误文案，字段的外框高度前后一样，表单不会因为一段错误文字重新排版，
+     定高或限高的父级里也不会把控件挤出去。
+
+     两个条件缺一不可：
+     渲染了 error-text 且它带 hidden——没有错误文案可显示的字段不占这一行；
+     没有在场的 description——描述已经占着这一行了，报错时由描述让位给错误文案（见 description.css）。
+
+     高度按错误文案那一档的字号乘行距算，得到的正是它一行的高度。
+     不写 1lh：那个单位晚于本库声明的浏览器地板，取不到时整条声明被丢弃、占位高退回 0，
+     字段又会随报错撑高一次，而这种失效不报错。
+     与前一块的距离由根的 gap 给，和错误文案顶上来时是同一段。 */
+  [data-scope='field'][data-part='root']:has(> [data-scope='field'][data-part='error-text'][hidden]):not(
+      :has(> [data-scope='field'][data-part='description']:not([hidden]))
+    )::after {
+    content: '';
+    block-size: calc(
+      var(--xh-field-error-font-size, var(--xh-text-secondary-size)) * var(--xh-leading-normal)
+    );
     font-size: var(--xh-field-error-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
   }

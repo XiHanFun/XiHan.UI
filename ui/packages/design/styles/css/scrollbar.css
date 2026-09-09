@@ -126,11 +126,6 @@
     background: var(--xh-scrollbar-thumb-bg-active, var(--xh-fg-scrollbar-thumb-active));
   }
 
-  /* 偏移取负：环画在轨道内侧，否则会被滚动容器的溢出边界裁掉半圈 */
-  [data-scope='scrollbar'][data-part='thumb']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   /* 根与轨道都是纯容器，不承载焦点；作者若给它们加了 tabindex，也不该在这儿多画一圈 */
   [data-scope='scrollbar'][data-part='root']:focus-visible,
   [data-scope='scrollbar'][data-part='track']:focus-visible {

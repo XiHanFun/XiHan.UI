@@ -325,8 +325,7 @@
      留着焦点环是给程序化聚焦兜底——删完把焦点交回输入框之前，它确实短暂持有过焦点 */
   [data-scope='tags-input'][data-part='item-delete-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-    /* 比默认档窄一道：它长在胶囊里，按默认偏移画会压到相邻胶囊 */
-    outline-offset: var(--xh-stroke-thin);
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 按钮是单体控件，禁用走原生 disabled */
@@ -355,8 +354,7 @@
      外层 control 的 :focus-within 环同时亮着也合理——焦点确实在框内 */
   [data-scope='tags-input'][data-part='item-input']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-    /* 比默认档窄一道：它长在胶囊里，按默认偏移画会压到相邻胶囊 */
-    outline-offset: var(--xh-stroke-thin);
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='tags-input'][data-part='item-input']:disabled {
@@ -404,8 +402,7 @@
      留着焦点环是给程序化聚焦兜底——清完把焦点交回输入框之前，它确实短暂持有过焦点 */
   [data-scope='tags-input'][data-part='clear-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-    /* 比默认档窄一道：它长在框的末端，按默认偏移画会压到相邻胶囊 */
-    outline-offset: var(--xh-stroke-thin);
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

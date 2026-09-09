@@ -159,10 +159,6 @@
     font-size: var(--xh-transfer-search-font-size, var(--xh-_transfer-font-size));
   }
 
-  [data-scope='transfer'][data-part='search']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   /* 单体控件的禁用是原生 disabled，样式只能写 :disabled；集合条目才读 data-disabled */
   [data-scope='transfer'][data-part='search']:disabled {
     color: var(--xh-fg-disabled);
@@ -298,10 +294,6 @@
     background: var(--xh-transfer-item-bg-hover, var(--xh-bg-subtle));
   }
 
-  [data-scope='transfer'][data-part='item']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
      所以样式只能读 data-disabled，写 :disabled 永远不命中 */
   [data-scope='transfer'][data-part='item'][data-disabled] {
@@ -348,6 +340,12 @@
   [data-scope='transfer'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
     border-color: var(--xh-transfer-checkbox-border-checked, var(--xh-_transfer-accent));
     background: var(--xh-transfer-checkbox-bg-checked, var(--xh-_transfer-accent));
+  }
+
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='transfer'][data-part='item-checkbox'][data-state='checked']:focus-visible {
+    --xh-_ring-color: currentColor;
   }
 
   /* 没写内容就由皮肤画勾；作者往格子里塞了自己的图形，这条规则即不命中。
@@ -432,12 +430,6 @@
     font-weight: var(--xh-font-weight-medium);
     line-height: var(--xh-leading-none);
     cursor: pointer;
-  }
-
-  /* 往内收，与搜索框、条目同一口径：全选格长在面板里，面板收 overflow，
-     环画在外沿会被裁掉 */
-  [data-scope='transfer'][data-part='select-all-trigger']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='transfer'][data-part='select-all-trigger']:disabled {

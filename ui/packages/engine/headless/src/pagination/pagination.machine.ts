@@ -1,9 +1,10 @@
-import type { PositionResult, PropFn } from '@xihan-ui/core'
+import type { PositionResult, PropFn, Service } from '@xihan-ui/core'
+import type { SelectSchema } from '../select'
 import type { PaginationEllipsisSide } from './pagination.range'
-import type { PaginationSchema } from './pagination.types'
+import type { PaginationSchema, PaginationTranslations } from './pagination.types'
 import { createDismissLayer, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
-import { clampPage, normalizePageSize, pageForResize, totalPagesOf } from './pagination.range'
+import { clampPage, normalizePageSize, pageForResize, pageSizeOptionsOf, totalPagesOf } from './pagination.range'
 
 const { createMachine } = setup<PaginationSchema>()
 
@@ -16,6 +17,46 @@ export const PAGINATION_PAGE_SIZE_OPTIONS = [10, 20, 50, 100]
 export const PAGINATION_OPEN_DELAY = 200
 /** 指针离开后多久收起（ms）：留出斜着划进浮层的时间。 */
 export const PAGINATION_CLOSE_DELAY = 300
+
+/** 文案桶：缺省英文，作者给了哪条就换哪条。连接层与内嵌下拉的档位文字都从这里取。 */
+export function paginationLabels(prop: PropFn<PaginationSchema>): PaginationTranslations {
+  const translations = prop('translations')
+  return {
+    root: translations?.root ?? 'Pagination',
+    prevTrigger: translations?.prevTrigger ?? 'Previous page',
+    nextTrigger: translations?.nextTrigger ?? 'Next page',
+    item: translations?.item ?? ((value: number) => `Page ${value}`),
+    ellipsis: translations?.ellipsis ?? ((n: number) => `${n} more pages`),
+    pageSizeSelect: translations?.pageSizeSelect ?? 'Items per page',
+    pageSizeOption: translations?.pageSizeOption ?? ((size: number) => `${size} / page`),
+    summary: translations?.summary ?? ((start: number, end: number, total: number) => `${start}-${end} of ${total}`),
+    jumper: translations?.jumper ?? 'Go to page',
+  }
+}
+
+/**
+ * 喂给内嵌下拉的那份 props：档位表与当前档都受控于分页机，换档经回调送回来。
+ * 三个视觉轴与方向一并透传，下拉在分页行里与页码格子同一档。
+ */
+export function paginationPageSizeSelectProps(service: Service<PaginationSchema>): SelectSchema['props'] {
+  const { prop, context, send } = service
+  const label = paginationLabels(prop)
+  return {
+    collection: pageSizeOptionsOf(prop('pageSizeOptions') ?? PAGINATION_PAGE_SIZE_OPTIONS)
+      .map(size => ({ value: String(size), label: label.pageSizeOption(size) })),
+    value: [String(normalizePageSize(context.get('pageSize')))],
+    dir: prop('dir'),
+    tone: prop('tone'),
+    size: prop('size'),
+    onValueChange: ({ value }) => {
+      // 清空是下拉自带的键盘动作（Delete / Backspace），而分页没有「不分页」这一档：
+      // 落空即不发事件，受控的档位于是原样留着
+      const next = Number(value[0])
+      if (Number.isFinite(next))
+        send({ type: 'PAGE_SIZE.SET', pageSize: next })
+    },
+  }
+}
 
 /** 总页数现算，不缓存。每页条数住在 cell 里，不能再从 prop 直读——受控与非受控两条路只有 cell 认得全。 */
 function pageCount(prop: PropFn<PaginationSchema>, pageSize: number): number {

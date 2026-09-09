@@ -83,10 +83,6 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='reasoning'][data-part='trigger']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   [data-scope='reasoning'][data-part='trigger']:disabled {
     color: var(--xh-fg-disabled);
   }

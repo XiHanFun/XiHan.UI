@@ -12667,7 +12667,7 @@
               "name": "root"
             },
             {
-              "description": "一组「标签 + 取值」，占网格里的一格；作者在此写 span（这一格横跨几列）",
+              "description": "一组「标签 + 取值」，占网格里的一格；作者在此写 span（这一格横跨几列，窄档不认）",
               "name": "item"
             },
             {
@@ -16947,6 +16947,9 @@
             },
             {
               "name": "--xh-file-upload-item-inner-gap"
+            },
+            {
+              "name": "--xh-file-upload-item-name-min-w"
             },
             {
               "name": "--xh-file-upload-item-progress-fill"
@@ -30131,6 +30134,12 @@
               "name": "--xh-number-field-trigger-border-hover"
             },
             {
+              "name": "--xh-number-field-trigger-divider"
+            },
+            {
+              "name": "--xh-number-field-trigger-divider-h"
+            },
+            {
               "name": "--xh-number-field-trigger-fg"
             },
             {
@@ -30389,6 +30398,10 @@
             {
               "description": "折进去那几页的入口，须自带 side 属性（start / end）；承载 data-side 与 aria-expanded",
               "name": "ellipsis-trigger"
+            },
+            {
+              "description": "每页条数控制器的挂载点，写一个空 `<div>` 即可；里头那套下拉的角色节点由元素自己建",
+              "name": "page-size-select"
             }
           ],
           "members": [
@@ -30599,6 +30612,43 @@
             },
             {
               "kind": "field",
+              "name": "pageSizeCtrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<SelectSchema>( this, selectMachine, () => paginationPageSizeSelectProps(this.ctrl.service as Service<PaginationSchema>), { scope: this.paginationScope, onBuilt: svc => this.injectPageSizeRefs(svc) }, )",
+              "description": "每页条数那个下拉：用的是库里的 select，不再是原生下拉。\nprops 从翻页机现读，故必须排在 ctrl 之后建。"
+            },
+            {
+              "kind": "field",
+              "name": "pageSizeNodes",
+              "type": {
+                "text": "PageSizeNodes | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "下拉那套节点；作者写的挂载点换了就整套重建。"
+            },
+            {
+              "kind": "field",
+              "name": "pageSizeMount",
+              "type": {
+                "text": "HTMLElement | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "pageSizeExit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "下拉浮层的退场闸门，与省略位那层各走各的。"
+            },
+            {
+              "kind": "field",
               "name": "bars",
               "privacy": "private",
               "readonly": true,
@@ -30639,6 +30689,30 @@
               "name": "registerLayer",
               "privacy": "private",
               "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "registerPageSizeLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectPageSizeRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<SelectSchema>"
+                  }
+                }
+              ]
             },
             {
               "kind": "method",
@@ -30806,6 +30880,46 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "ensurePageSizeNodes",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "PageSizeNodes | null"
+                }
+              },
+              "description": "内嵌下拉的角色节点由元素自己建：作者只写 page-size-select 那一格挂载点。\n\n建出来的节点一律不打 data-xh-part——打了会被 discoverParts 收进 partMap，\n而它们归 select 的 scope 管，本就不在分页的解剖里。"
+            },
+            {
+              "kind": "method",
+              "name": "releasePageSizeNodes",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wirePageSizeSelect",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "select",
+                  "type": {
+                    "text": "SelectApi"
+                  }
+                }
+              ],
+              "description": "把内嵌下拉那份 api 打到自建的节点上；档位表变了只补差额。"
             }
           ],
           "events": [
@@ -31035,18 +31149,6 @@
             },
             {
               "name": "--xh-pagination-layer"
-            },
-            {
-              "name": "--xh-pagination-page-size-bg"
-            },
-            {
-              "name": "--xh-pagination-page-size-bg-hover"
-            },
-            {
-              "name": "--xh-pagination-page-size-border"
-            },
-            {
-              "name": "--xh-pagination-page-size-border-hover"
             },
             {
               "name": "--xh-pagination-summary-fg"
@@ -32502,6 +32604,9 @@
             },
             {
               "name": "--xh-popconfirm-loading-duration"
+            },
+            {
+              "name": "--xh-popconfirm-max-h"
             },
             {
               "name": "--xh-popconfirm-max-w"
@@ -40506,6 +40611,9 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-slider-control-gutter"
+            },
+            {
               "name": "--xh-slider-gap"
             },
             {
@@ -41983,6 +42091,9 @@
               "name": "--xh-steps-content-fg"
             },
             {
+              "name": "--xh-steps-content-min-inline-size"
+            },
+            {
               "name": "--xh-steps-content-py"
             },
             {
@@ -42053,6 +42164,9 @@
             },
             {
               "name": "--xh-steps-item-gap"
+            },
+            {
+              "name": "--xh-steps-item-min-inline-size"
             },
             {
               "name": "--xh-steps-list-gap"

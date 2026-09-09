@@ -346,6 +346,12 @@
     box-shadow: var(--xh-tour-next-shadow, var(--xh-_tour-next-highlight));
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='tour'][data-part='next-trigger']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   [data-scope='tour'][data-part='next-trigger']:hover {
     background: var(--xh-tour-next-bg-hover, var(--xh-bg-brand-hover));
   }
