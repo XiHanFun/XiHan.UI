@@ -16,17 +16,6 @@
     /* 标签在左时那一列的宽度：收到最长的那个标签 */
     --xh-_descriptions-label-w: max-content;
 
-    /* 这一份自己的宽度就是换档的依据：同一份描述列表塞进窄容器与塞进窄视口，
-       取值列被压扁的坏法一样，所以量的是根的宽而不是视口的宽 */
-    container-type: inline-size;
-    /* 查询容器不由内容撑宽（行内轴被 container-type 收进尺寸限制），
-       落在收缩包裹的外层里就会塌成零宽——文档站的示例台正是 flex-wrap 的收缩外层。
-       这三条按引擎各取所认的一条，含义都是「填满外面给的宽度」，普通块流下与不写时同值 */
-    inline-size: -moz-available;
-    inline-size: -webkit-fill-available;
-    inline-size: stretch;
-    container-name: xh-descriptions;
-
     display: grid;
     /* 不写 columns 即每行一组；二到六列各有一条规则 */
     grid-template-columns: minmax(0, 1fr);
@@ -140,7 +129,7 @@
      宽起来以后逐档恢复：每一档写两件事，一是这一档一行摆几格（跨列数），
      二是这一档的边线：不在行首的格补上左边线，首行那几格抹掉上边线。
      两组集合逐档只增不减，宽档不必回收窄档写下的边线。 */
-  @container xh-descriptions (min-width: 768px) {
+  @media (min-width: 768px) {
     /* 标签左置从这一档起生效：窄档一律标签在上，取值拿满整格的宽。
        只认自己的直接子格，套在取值里的另一份描述由它自己的根管 */
     [data-scope='descriptions'][data-part='root'][data-placement='left']
@@ -202,7 +191,7 @@
     }
   }
 
-  @container xh-descriptions (min-width: 1024px) {
+  @media (min-width: 1024px) {
     /* 四、五、六列到这一档按作者写的列数摆，作者写在格上的 span 从这一档起认 */
     [data-scope='descriptions'][data-part='root'][data-columns='4']
       > [data-scope='descriptions'][data-part='item'],

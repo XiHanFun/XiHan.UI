@@ -132,68 +132,6 @@ CSS 的级联顺序由 `@layer` 声明的**首次出现顺序**决定，与 `@im
 
 槽名是 `--xh-<组件名>-control-min-w`。`text-field` · `password-input` · `clipboard` · `mention` 的**内层输入框**另有一条 `--xh-<组件名>-input-min-w`：外框放开了内框还在顶，就是漏了这一条。整表见各组件页的「CSS 变量」。
 
-## 有几个组件的根是查询容器
-
-有 4 个组件按自己有多宽换形态（列数、并排还是堆叠、标签左置还是上置），皮肤在它们的**根**上写了 `container-type: inline-size`：
-
-| 组件 | 根上按自己有多宽换的是什么 |
-| --- | --- |
-| `descriptions` | 标签左置↔上置、列数 |
-| `diff-view` | 并排↔堆叠 |
-| `transfer` | 两栏并排↔上下堆叠 |
-| `timeline` | 横排↔竖排 |
-
-除这几个之外，库里再没有第二处 `container-type`——换形态能靠 `flex-wrap` 或 `auto-fit` 表达的组件都走了那条路，它们的根不是容器，下面这一节与它们无关。清单的真源是 `tooling/scripts/container-scope-registry.json`，`check-container-scope` 盯着它与皮肤两侧对账。
-
-### 这几个根必须由外部给宽
-
-`container-type: inline-size` 不是一条样式，它给那个盒换了套尺寸规则：**盒里的内容不再参与自己的宽度计算**。宽度由外面给的时候没有任何影响——块级父、`flex: 1` 的项、grid `1fr` 的格，三种都照旧。
-
-所以这四个根的皮肤都写了行内轴填充（`inline-size` 依次给 `-moz-available` / `-webkit-fill-available` / `stretch`，各引擎取自己认的那条），含义是「填满外面给的宽度」。普通块流下与不写时同值，而 flex 项这一档因此不再向内容要宽度：
-
-```html
-<!-- 好：flex 项没写 flex-basis 也铺满，填充把宽度接过来了 -->
-<div style="display: flex">
-  <XhTimelineRoot>…</XhTimelineRoot>
-</div>
-```
-
-**还剩一档填不住**：外层自己就是收缩包裹的时候，填充无从填起。
-
-```html
-<!-- 塌：inline-block 的父自己就向内容要宽度，填满它等于填满零 -->
-<span style="display: inline-block">
-  <XhTimelineRoot>…</XhTimelineRoot>
-</span>
-```
-
-这一档宽度会塌到只剩根自己的边框与轨道那一点残宽，一个字都放不下；行内挤没了，内容全部换行，高度跟着炸开。这不是 bug，是把「按自己有多宽换形态」这件事换来的代价——一个盒不能既由内容决定宽度、又按宽度决定内容怎么排。把这几个根放进 `inline-block`、浮动或表格单元格里时，要自己给一个与内容无关的宽度。
-
-### 怎么避开
-
-任选一种，都是给根一个与内容无关的宽度来源：
-
-```html
-<!-- 1. 给 flex 项写 flex-basis -->
-<div style="display: flex">
-  <div style="flex: 1; min-inline-size: 0"><XhTimelineRoot>…</XhTimelineRoot></div>
-</div>
-
-<!-- 2. 用块级父 -->
-<div>
-  <XhTimelineRoot>…</XhTimelineRoot>
-</div>
-
-<!-- 3. 外面套一层定宽 -->
-<span style="display: inline-block; inline-size: 20rem">
-  <XhTimelineRoot>…</XhTimelineRoot>
-</span>
-```
-
-第一种最常用：`flex: 1` 把 flex-basis 定成 `0`，宽度改由剩余空间分配，与内容无关；`min-inline-size: 0` 一并解掉 flex 项的最小尺寸下限。
-
-还有一处连带影响：这几个根现在是查询容器，**在它们内部写的无名 `@container` 查询，最近的容器就是这个根**，不再是使用者自己在外面建的那个。要跳过它，给自己的容器起名再按名字查询。
-
 ## 在自己的节点上接语气
 
 语气轴（`data-tone`）不只给库里的组件用。在自己的节点上写一个 `data-tone`，那个节点里就能取到整族颜色——六族语气、深浅两态、换过品牌色之后的取值，全都跟着走：

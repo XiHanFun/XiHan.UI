@@ -1,15 +1,26 @@
-// 横排折竖排这一组：timeline 走容器查询换档，steps 只折行、不翻朝向。
+// 横排折竖排这一组：timeline 按视口断点换档，steps 只折行、不翻朝向。
 //
 // steps 的键盘轴跟着 orientation 走（方向键与 aria-orientation 都读它），
 // 皮肤把横排翻成竖排会让左右键在竖着的一列上走，所以这一件不做形态换档，
 // 只在第一层把折行做出来——下面的用例把这条契约钉住：横排永远是横排。
 //
-// 容器档不需要 iframe：挂一个定宽的块级 div 当外层即可。
+// timeline 的换档由 @media (min-width) 决定，宿主视口固定改不动，每一档开一个那么宽的
+// iframe 来量；steps 一句查询都没写，仍挂在定宽的块级 div 里量。
 import { afterEach, describe, expect, it } from 'vitest'
+import { closeFrame, frameHost } from './viewport-frame'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 let host: HTMLElement | null = null
+
+/** 在给定视口里挂一段标记，返回装它的外层。 */
+function frame(viewport: number, html: string): HTMLElement {
+  host?.remove()
+  host = null
+  const el = frameHost(viewport, html)
+  el.style.cssText = 'display: flow-root; border: 0'
+  return el
+}
 
 /** 在给定宽度的块级外层里挂一段标记。外层写 flow-root，宽度由它说了算。 */
 function mount(width: number, html: string): HTMLElement {
@@ -41,6 +52,7 @@ function clipped(el: HTMLElement): boolean {
 afterEach(() => {
   host?.remove()
   host = null
+  closeFrame()
 })
 
 const STEP_TITLES = ['填写收货地址', '选择支付方式', '确认订单信息']
@@ -81,9 +93,9 @@ function timelineMarkup(orientation: 'horizontal' | 'vertical', withLabel = fals
 const NARROW = [320, 375, 640]
 const WIDE = [768, 1024, 1280]
 
-describe('timeline 横排按容器宽度换档', () => {
+describe('timeline 横排按视口宽度换档', () => {
   it.each(NARROW)('%ipx：窄档一条一行，连线立起来接下一条', (w) => {
-    const h = mount(w, timelineMarkup('horizontal'))
+    const h = frame(w, timelineMarkup('horizontal'))
     const axis = pick(h, '#axis')
 
     // 每条独占整行
@@ -97,7 +109,7 @@ describe('timeline 横排按容器宽度换档', () => {
   })
 
   it.each(WIDE)('%ipx：宽档回到并排，连线躺平', (w) => {
-    const h = mount(w, timelineMarkup('horizontal'))
+    const h = frame(w, timelineMarkup('horizontal'))
     const axis = pick(h, '#axis')
 
     // 四条等分整行
@@ -111,15 +123,15 @@ describe('timeline 横排按容器宽度换档', () => {
   })
 
   it('窄档的横排与竖排摆法一致：换的是形态，不是别的', () => {
-    const across = mount(375, timelineMarkup('horizontal')).querySelector('#axis') as HTMLElement
+    const across = frame(375, timelineMarkup('horizontal')).querySelector('#axis') as HTMLElement
     const acrossHeight = across.getBoundingClientRect().height
-    const down = mount(375, timelineMarkup('vertical')).querySelector('#axis') as HTMLElement
+    const down = frame(375, timelineMarkup('vertical')).querySelector('#axis') as HTMLElement
 
     expect(down.getBoundingClientRect().height).toBe(acrossHeight)
   })
 
   it.each([375, 1280])('%ipx：竖排不受横排那档影响', (w) => {
-    const h = mount(w, timelineMarkup('vertical'))
+    const h = frame(w, timelineMarkup('vertical'))
     const line = pick(h, '#line0').getBoundingClientRect()
 
     expect(line.height).toBeGreaterThan(line.width)
@@ -127,7 +139,7 @@ describe('timeline 横排按容器宽度换档', () => {
   })
 
   it('窄档带坐标时圆点与连线仍对在一条竖线上', () => {
-    const h = mount(375, timelineMarkup('horizontal', true))
+    const h = frame(375, timelineMarkup('horizontal', true))
     const dot = pick(h, '#dot0').getBoundingClientRect()
     const line = pick(h, '#line0').getBoundingClientRect()
 
@@ -136,20 +148,21 @@ describe('timeline 横排按容器宽度换档', () => {
     expect(pick(h, '#label0').getBoundingClientRect().right).toBeLessThanOrEqual(dot.left)
   })
 
-  it('查询看的是容器自己的宽度，不是视口', () => {
-    // 外层给一个窄栏，视口再宽这条轴也堆叠
-    const h = mount(1280, `<div style="inline-size: 360px">${timelineMarkup('horizontal')}</div>`)
+  it('查询看的是视口，不是外层容器的宽度', () => {
+    // 宽视口里塞一个 360 的窄栏：档仍按视口算，这条轴照旧并排
+    const h = frame(1280, `<div style="inline-size: 360px">${timelineMarkup('horizontal')}</div>`)
     const line = pick(h, '#line0').getBoundingClientRect()
 
-    expect(line.height).toBeGreaterThan(line.width)
-    expect(pick(h, '#event0').getBoundingClientRect().width).toBe(pick(h, '#axis').clientWidth)
+    expect(line.width).toBeGreaterThan(line.height)
+    expect(pick(h, '#event0').getBoundingClientRect().width)
+      .toBeCloseTo(pick(h, '#axis').clientWidth / EVENTS.length, 1)
   })
 
   it('不可断的长串在框内断开，不把整条轴顶出容器', () => {
-    const h = mount(375, timelineMarkup('horizontal').replace('内测启动', 'ORD-2026090812345678901234'))
+    const h = frame(375, timelineMarkup('horizontal').replace('内测启动', 'ORD-2026090812345678901234'))
 
     expect(overflow(pick(h, '#axis'))).toBe(0)
-    expect(overflow(host!)).toBe(0)
+    expect(overflow(h)).toBe(0)
   })
 })
 
