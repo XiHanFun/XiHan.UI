@@ -14,6 +14,8 @@
 ## 特性
 
 - `otp` 一开就接上平台的验证码自动填充。
+- 按顺序录入：焦点落在第一个空格上，还轮不到的格子既点不进、也不是 Tab 停靠点；
+  往回改已填的格子照走，填满之后哪一格都能改。`readOnly` 与 `disabled` 不设这道限。
 - 粘贴一整串会按格拆开填进去。
 - `mask` 遮蔽字符、`type` 与 `pattern` 限制可输入字符类别。
 - `onValueComplete` 在填满那一刻发一次，用来自动提交。
@@ -166,7 +168,7 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 | `valueAsString` | `string` |  |
 | `complete` | `boolean` | 每格都填满了。作者据此点亮提交按钮。 |
 | `length` | `number` |  |
-| `focusedIndex` | `number` | 焦点所在格；焦点在组外时为 -1。 |
+| `focusedIndex` | `number` | 焦点该落在哪一格；焦点在组外时为 -1。按顺序录入时它不会越过第一个空格。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
@@ -185,10 +187,10 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `ArrowRight` | focus in a box, not disabled | 焦点移到下一格；已在末格则不动，不回绕 |
+| `ArrowRight` | focus in a box, not disabled | 焦点移到下一格；越不过第一个空格，已在末格则不动，不回绕 |
 | `ArrowLeft` | focus in a box, not disabled | 焦点移到上一格；已在首格则不动，不回绕 |
 | `Home` | focus in a box, not disabled | 焦点移到首格 |
-| `End` | focus in a box, not disabled | 焦点移到末格 |
+| `End` | focus in a box, not disabled | 焦点移到最后一格可落焦的格子：填满时是末格，还有空格时是第一个空格 |
 | `Backspace` | focus in a box, not disabled | 本格有值则清本格；本格为空则退回上一格并清掉上一格 |
 | `Delete` | focus in a box, not disabled | 清掉本格，焦点不动 |
 

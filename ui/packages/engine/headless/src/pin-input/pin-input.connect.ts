@@ -2,7 +2,7 @@ import type { ItemQuery, NormalizeProps, PropTypes, Service } from '@xihan-ui/co
 import type { PinInputApi, PinInputSchema } from './pin-input.types'
 import { dataAttr, focusSafely, isComposingEvent, navIntentFromKey, queryItems, readDirection, stepIndex } from '@xihan-ui/core'
 import { pinInputAnatomy } from './pin-input.anatomy'
-import { isPinComplete, padPinValue, pinLength, sanitizePin } from './pin-input.machine'
+import { firstEmptyPinIndex, isPinComplete, padPinValue, pinFocusTarget, pinLength, sanitizePin } from './pin-input.machine'
 
 const parts = pinInputAnatomy.build()
 
@@ -47,6 +47,12 @@ export function connectPinInput<T extends PropTypes>(
   const ids = scope.ids('pin-input', 'label')
   const inputId = (index: number): string => scope.partId('pin-input', `input-${index}`)
 
+  // 按顺序录入：焦点不许越过第一个空格。只读与禁用不设限，那两档值改不动，
+  // 把焦点往回拽只会挡住读与复制
+  const orderedEntry = !disabled && !readOnly
+  // 这一格之后的格子还轮不到：填满时是 -1，即哪一格都能落
+  const lockedFrom = orderedEntry ? firstEmptyPinIndex(value) : -1
+
   // 处理器里一律读活值而不是闭包里那份快照
   const liveValue = (): string[] => padPinValue(context.get('value'), length)
 
@@ -54,12 +60,14 @@ export function connectPinInput<T extends PropTypes>(
   const boxesOf = (el: HTMLElement): HTMLElement[] =>
     queryItems(el.closest<HTMLElement>(parts.root.selector), INPUT_QUERY)
 
-  /** 聚焦某一格并全选，使打字替换而非追加。 */
+  /** 聚焦某一格并全选，使打字替换而非追加。落点先过一次裁定，越不过第一个空格。 */
   const focusBox = (from: HTMLElement, index: number): void => {
     const boxes = boxesOf(from)
     if (!boxes.length)
       return
-    focusSafely(boxes[Math.min(Math.max(index, 0), boxes.length - 1)], { select: true })
+    const wanted = Math.min(Math.max(index, 0), boxes.length - 1)
+    const target = orderedEntry ? pinFocusTarget(liveValue(), wanted) : wanted
+    focusSafely(boxes[Math.min(Math.max(target, 0), boxes.length - 1)], { select: true })
   }
 
   /** 把框里的内容拨回权威值：非法字符被丢弃、多字符铺开时值不变，宿主不重渲，须手动同步。 */
@@ -128,7 +136,8 @@ export function connectPinInput<T extends PropTypes>(
     getLabelProps: () => normalize.label({
       ...parts.label.attrs,
       'id': ids.label,
-      // for 指向首格，点标题落到第一个待填的格子
+      // for 恒指向首格：这是一份不随值变动的关联，点标题即落到首格，
+      // 再由落焦裁定接手（值还空着时那里就是第一个空格）
       'for': inputId(0),
       'data-disabled': dataAttr(disabled),
     }),
@@ -143,6 +152,9 @@ export function connectPinInput<T extends PropTypes>(
       // 这一格填没填上；皮肤据此把填过的格子与还空着的分开
       'data-empty': dataAttr((value[index] ?? '') === ''),
       'data-focus': dataAttr(focusedIndex === index),
+      // 还轮不到的格子退出 Tab 序列：留在序列里，Tab 一停上去就会被拨回第一个空格，
+      // 键盘与读屏用户按多少下都走不出这一组
+      'tabindex': lockedFrom >= 0 && index > lockedFrom ? -1 : undefined,
       // 每格自带名字，读屏念得出这是第几格、一共几格；
       // label 部件命名的是整组（root 的 aria-labelledby），单格的名字只能由这里给
       'aria-label': label.input(index + 1, length),
@@ -187,7 +199,14 @@ export function connectPinInput<T extends PropTypes>(
           return
         fillFrom(el, index, chars)
       },
-      'onFocus': () => send({ type: 'INPUT.FOCUS', index }),
+      'onFocus': (event: FocusEvent) => {
+        send({ type: 'INPUT.FOCUS', index })
+        // 机器裁定的落点与点中的那一格不同（前面还空着）时，把焦点交过去。
+        // 裁定过的落点自己再裁一次仍是它，所以这一步至多搬一次，不会来回弹
+        const target = context.get('focusedIndex') ?? index
+        if (target !== index)
+          focusBox(event.currentTarget as HTMLElement, target)
+      },
       'onBlur': () => {
         // 只在本格当下持有焦点锚点时才清，避免格间移动时抹掉刚记下的锚点
         if (context.get('focusedIndex') === index)
@@ -232,7 +251,8 @@ export function connectPinInput<T extends PropTypes>(
         const target = stepIndex(boxes.length, index, intent, { loop: false })
         if (target < 0)
           return
-        focusSafely(boxes[target], { select: true })
+        // 往回改上一格照走，往前越不过第一个空格：落点在 focusBox 里再裁一次
+        focusBox(el, target)
       },
     }),
 

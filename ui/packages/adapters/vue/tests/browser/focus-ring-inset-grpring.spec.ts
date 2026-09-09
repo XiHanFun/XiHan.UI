@@ -77,18 +77,23 @@ function rgb(value: string): [number, number, number] {
   ctx.fillStyle = value
   ctx.fillRect(0, 0, 1, 1)
   const d = ctx.getImageData(0, 0, 1, 1).data
-  return [d[0], d[1], d[2]]
+  return [d[0]!, d[1]!, d[2]!]
 }
 function luminance(value: string) {
   const lin = (c: number) => {
     const s = c / 255
     return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4
   }
-  const [r, g, b] = rgb(value)
+  const channels = rgb(value)
+  const r = channels[0]!
+  const g = channels[1]!
+  const b = channels[2]!
   return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
 }
 function contrast(a: string, b: string) {
-  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+  const sorted = [luminance(a), luminance(b)].sort((x, y) => y - x)
+  const hi = sorted[0]!
+  const lo = sorted[1]!
   return (hi + 0.05) / (lo + 0.05)
 }
 

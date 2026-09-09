@@ -290,9 +290,11 @@ export const pinInputSuite: ConformanceSuite = {
           why: '同上：粘贴事件要手工构造，结果读 value property',
           run: async (ctx) => {
             const { doc } = ctx
+            // 先把前两格填上，第三格才落得了焦——顺序录入下落点越不过第一个空格
             await typeInto(ctx, 0, '9')
+            await typeInto(ctx, 1, '8')
             await pasteInto(ctx, 2, '345')
-            expectBoxes(doc, ['9', '', '3', '4', '5', ''], '从落点起铺，落点之前的格子不受影响')
+            expectBoxes(doc, ['9', '8', '3', '4', '5', ''], '从落点起铺，落点之前的格子不受影响')
           },
           expect: { activeElement: { part: 'input[5]', exact: true } },
         },
@@ -301,6 +303,8 @@ export const pinInputSuite: ConformanceSuite = {
     {
       name: '一次塞进多个字符要拆开分发，而不是把整串留在一格里',
       spec: { apg: APG },
+      // 首格先填上，第二格才落得了焦
+      props: { defaultValue: ['9', '', '', '', '', ''] },
       steps: [
         {
           kind: 'raw',
@@ -309,7 +313,7 @@ export const pinInputSuite: ConformanceSuite = {
           run: async (ctx) => {
             const { doc } = ctx
             await typeInto(ctx, 1, '234')
-            expectBoxes(doc, ['', '2', '3', '4', '', ''], '多字符按格拆开')
+            expectBoxes(doc, ['9', '2', '3', '4', '', ''], '多字符按格拆开')
           },
           expect: { activeElement: { part: 'input[4]', exact: true } },
         },
@@ -386,6 +390,8 @@ export const pinInputSuite: ConformanceSuite = {
       name: 'arrowLeft / ArrowRight 移格，两端停住不回绕',
       spec: { apg: APG },
       covers: ['pin-input.kbd.next', 'pin-input.kbd.prev'],
+      // 填满之后格间随便走：越不过第一个空格是另一条判据的事
+      props: { defaultValue: ['1', '2', '3', '4', '5', '6'] },
       steps: [
         { kind: 'focus', part: 'input[0]' },
         // 首格再往左没有格可去，不回绕到末格
@@ -401,6 +407,8 @@ export const pinInputSuite: ConformanceSuite = {
       name: 'home / End 到首末格',
       spec: { apg: APG },
       covers: ['pin-input.kbd.first', 'pin-input.kbd.last'],
+      // 填满之后 End 才到得了末格；没填满时它停在第一个空格上
+      props: { defaultValue: ['1', '2', '3', '4', '5', '6'] },
       steps: [
         { kind: 'focus', part: 'input[2]' },
         { kind: 'key', key: 'End', expect: { activeElement: { part: 'input[5]', exact: true } } },
@@ -420,6 +428,75 @@ export const pinInputSuite: ConformanceSuite = {
           why: '"值没动"只能直接比对',
           run: ({ doc }) => expectBoxes(doc, ['1', '2', '3', '', '', ''], '上下键不该改值'),
         },
+      ],
+    },
+    {
+      name: '按顺序录入：点还轮不到的格子，焦点落到第一个空格上',
+      spec: { apg: APG },
+      props: { defaultValue: ['1', '', '', '', '', ''] },
+      initial: {
+        parts: {
+          // 首格已填、第二格待填，两格都还是 Tab 停靠点；后面四格退出 Tab 序列
+          input: [
+            { tabindex: null },
+            { tabindex: null },
+            { tabindex: '-1' },
+            { tabindex: '-1' },
+            { tabindex: '-1' },
+            { tabindex: '-1' },
+          ],
+        },
+      },
+      steps: [
+        {
+          kind: 'focus',
+          part: 'input[4]',
+          expect: {
+            activeElement: { part: 'input[1]', exact: true },
+            parts: { 'input[1]': { 'data-focus': '' }, 'input[4]': { 'data-focus': null } },
+          },
+        },
+        // 往回改上一格不受限
+        {
+          kind: 'focus',
+          part: 'input[0]',
+          expect: { activeElement: { part: 'input[0]', exact: true } },
+        },
+      ],
+    },
+    {
+      name: '填满之后哪一格都能落焦，每格也都回到 Tab 序列里',
+      spec: { apg: APG },
+      props: { defaultValue: ['1', '2', '3', '4', '5', '6'] },
+      initial: {
+        parts: { input: Array.from({ length: LENGTH }, () => ({ tabindex: null })) },
+      },
+      steps: [
+        { kind: 'focus', part: 'input[4]', expect: { activeElement: { part: 'input[4]', exact: true } } },
+        { kind: 'focus', part: 'input[1]', expect: { activeElement: { part: 'input[1]', exact: true } } },
+      ],
+    },
+    {
+      name: '右键越不过第一个空格，左键在已填区间里照走',
+      spec: { apg: APG },
+      covers: ['pin-input.kbd.next', 'pin-input.kbd.prev'],
+      props: { defaultValue: ['1', '2', '', '', '', ''] },
+      steps: [
+        { kind: 'focus', part: 'input[2]' },
+        { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'input[2]', exact: true } } },
+        { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'input[1]', exact: true } } },
+        { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'input[2]', exact: true } } },
+      ],
+    },
+    {
+      name: '只读不按顺序录入：点哪一格就落哪一格，也不摘 Tab 停靠点',
+      spec: { apg: APG },
+      props: { defaultValue: ['1', '', '3', '', '', ''], readOnly: true },
+      initial: {
+        parts: { input: Array.from({ length: LENGTH }, () => ({ tabindex: null })) },
+      },
+      steps: [
+        { kind: 'focus', part: 'input[2]', expect: { activeElement: { part: 'input[2]', exact: true } } },
       ],
     },
     {

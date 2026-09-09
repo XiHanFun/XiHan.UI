@@ -76,7 +76,12 @@ export interface PinInputSchema extends MachineSchema {
   context: {
     /** 逐格的值。受控（value 给定）时 cell 直读 prop。 */
     value: string[]
-    /** 焦点所在格；焦点离开整组时为 -1。只服务 data-focus 标记，不参与值的计算。 */
+    /**
+     * 焦点该落在哪一格；焦点离开整组时为 -1。不参与值的计算。
+     *
+     * 存的是裁定后的下标而不是作者点的那一格：按顺序录入时它不会越过第一个空格，
+     * 连接层据此把焦点交到该去的格子上。
+     */
     focusedIndex: number
   }
   computed: Record<string, never>
@@ -107,7 +112,7 @@ export interface PinInputApi<T extends PropTypes = PropTypes> {
   /** 每格都填满了。作者据此点亮提交按钮。 */
   complete: boolean
   length: number
-  /** 焦点所在格；焦点在组外时为 -1。 */
+  /** 焦点该落在哪一格；焦点在组外时为 -1。按顺序录入时它不会越过第一个空格。 */
   focusedIndex: number
   disabled: boolean
   readOnly: boolean

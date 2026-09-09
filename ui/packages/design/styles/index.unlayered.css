@@ -6506,9 +6506,6 @@ input[data-scope='mention'][data-part='input'] {
    两套底色各画各的会出现"鼠标停在 A 上、回车却插进了 B" */
 [data-scope='mention'][data-part='item'][data-highlighted]:not([data-disabled]) {
   background: var(--xh-mention-item-bg-hover, var(--xh-bg-subtle));
-  /* 焦点恒在输入框，环跟着高亮条目走 */
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: var(--xh-ring-offset);
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
@@ -14247,12 +14244,6 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
 }
 
-/* 焦点恒在输入框，环只跟虚拟高亮走，悬停不画 */
-[data-scope='cascader'][data-part='search-item']:not([data-disabled])[data-highlighted] {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: var(--xh-ring-offset);
-}
-
 [data-scope='cascader'][data-part='search-item'][data-disabled] {
   color: var(--xh-fg-disabled);
 }
@@ -16705,9 +16696,6 @@ input[data-scope='mention'][data-part='input'] {
    两套底色各画各的会出现"鼠标停在 A 上、回车提交的却是 B" */
 [data-scope='combobox'][data-part='item'][data-highlighted]:not([data-disabled]) {
   background: var(--xh-combobox-item-bg-hover, var(--xh-bg-subtle));
-  /* 焦点恒在输入框，环跟着高亮条目走 */
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: var(--xh-ring-offset);
 }
 
 /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
@@ -20052,8 +20040,12 @@ input[data-scope='mention'][data-part='input'] {
   white-space: nowrap;
 }
 
+/* 文件条数由用户一次选进来多少给，行数没有尽头：
+   列表到这个高度就不再长，剩下的行在列表内滚出来，投放区与触发钮不会被推出视野 */
 [data-scope='file-upload'][data-part='list'] {
   display: flex;
+  max-block-size: var(--xh-file-upload-list-max-h, var(--xh-viewport-h-md));
+  overflow-y: auto;
   flex-direction: column;
   gap: var(--xh-file-upload-item-gap, var(--xh-space-2));
 }
@@ -30513,6 +30505,10 @@ input[data-scope='mention'][data-part='input'] {
   gap: var(--xh-tags-input-control-gap, var(--xh-_tags-input-control-gap));
   min-inline-size: min(var(--xh-tags-input-control-min-w, var(--xh-control-min-w)), 100%);
   min-block-size: var(--xh-tags-input-control-h, var(--xh-_tags-input-control-h));
+  /* 标签一多就换行，行数没有尽头：框到这个高度就不再长，剩下的标签在框内滚出来。
+     上限取滚动面最小的那一档，与页面上其它滚动面用同一把尺 */
+  max-block-size: var(--xh-tags-input-control-max-h, var(--xh-viewport-h-sm));
+  overflow-y: auto;
   /* 纵向只留半档：标签行加上下内距要装进控件档的高度里 */
   padding-block: var(--xh-tags-input-control-py, var(--xh-space-0_5));
   padding-inline: var(--xh-tags-input-control-px, var(--xh-_tags-input-control-px));
@@ -31032,6 +31028,14 @@ input[data-scope='mention'][data-part='input'] {
   align-items: flex-start;
   block-size: auto;
   min-block-size: var(--xh-text-field-control-h, var(--xh-_text-field-h));
+}
+
+/* 自增高的多行宿主：高度由 autoSize 按内容量出来写进内联样式，没给 maxRows 时行数没有尽头。
+   框到这个高度就不再长，多出来的行在框内滚出来。
+   上限画在框上而不是输入框上：输入框那条 block-size 是内联写的，样式表压不住它 */
+[data-scope='text-field'][data-part='control']:has([data-part='input'][data-multiline][data-auto-resize]) {
+  max-block-size: var(--xh-text-field-control-max-h, var(--xh-viewport-h-sm));
+  overflow-y: auto;
 }
 
 /* 装饰段：货币符、单位、图标。与输入框同框，不参与分宽，弱一档前景把它与正文分开 */

@@ -155,7 +155,7 @@ export { buildPageItems, buildPageSequence, clampPage, connectPagination, normal
 export type { PaginationApi, PaginationEllipsisSide, PaginationEllipsisTriggerProps, PaginationEntryRange, PaginationItemProps, PaginationPage, PaginationPageChangeDetails, PaginationPageItem, PaginationPageSizeChangeDetails, PaginationSchema, PaginationServices, PaginationTranslations } from './pagination'
 export { connectPasswordInput, passwordInputAnatomy, passwordInputInputId, passwordInputKeyboard, passwordInputMachine, passwordInputMeta } from './password-input'
 export type { PasswordInputApi, PasswordInputSchema, PasswordInputTranslations, PasswordInputType, PasswordInputValueChangeDetails, PasswordInputVisibilityChangeDetails } from './password-input'
-export { connectPinInput, isPinComplete, padPinValue, PIN_INPUT_LENGTH, pinInputAnatomy, pinInputKeyboard, pinInputMachine, pinInputMeta, pinLength, samePinValue, sanitizePin } from './pin-input'
+export { connectPinInput, firstEmptyPinIndex, isPinComplete, padPinValue, PIN_INPUT_LENGTH, pinFocusTarget, pinInputAnatomy, pinInputKeyboard, pinInputMachine, pinInputMeta, pinLength, samePinValue, sanitizePin } from './pin-input'
 export type { PinInputApi, PinInputInputProps, PinInputSchema, PinInputTranslations, PinInputType, PinInputValueChangeDetails } from './pin-input'
 export { connectPopconfirm, POPCONFIRM_DEFAULT_PLACEMENT, popconfirmAnatomy, popconfirmKeyboard, popconfirmMeta } from './popconfirm'
 export type { PopconfirmApi, PopconfirmIntents, PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmPendingChannel, PopconfirmProps, PopconfirmTranslations } from './popconfirm'

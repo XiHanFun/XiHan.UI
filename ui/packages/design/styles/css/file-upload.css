@@ -147,8 +147,12 @@
     white-space: nowrap;
   }
 
+  /* 文件条数由用户一次选进来多少给，行数没有尽头：
+     列表到这个高度就不再长，剩下的行在列表内滚出来，投放区与触发钮不会被推出视野 */
   [data-scope='file-upload'][data-part='list'] {
     display: flex;
+    max-block-size: var(--xh-file-upload-list-max-h, var(--xh-viewport-h-md));
+    overflow-y: auto;
     flex-direction: column;
     gap: var(--xh-file-upload-item-gap, var(--xh-space-2));
   }

@@ -182,7 +182,9 @@ describe('区间两张月历', () => {
   it(`${PHONE}px 下第二张落到第一张下面`, async () => {
     const doc = mountAt(PHONE, rangeShape)
     await contentAt(doc)
-    const [first, second] = parts(doc, 'calendar')
+    const calendars = parts(doc, 'calendar')
+    const first = calendars[0]!
+    const second = calendars[1]!
     expect(second.offsetTop).toBeGreaterThanOrEqual(first.offsetTop + first.offsetHeight)
     expect(second.offsetLeft).toBe(first.offsetLeft)
   })
@@ -190,7 +192,9 @@ describe('区间两张月历', () => {
   it.each([[TABLET], [DESKTOP]])('%ipx 下两张仍并排', async (width) => {
     const doc = mountAt(width, rangeShape)
     await contentAt(doc)
-    const [first, second] = parts(doc, 'calendar')
+    const calendars = parts(doc, 'calendar')
+    const first = calendars[0]!
+    const second = calendars[1]!
     expect(second.offsetTop).toBe(first.offsetTop)
     expect(second.offsetLeft).toBeGreaterThanOrEqual(first.offsetLeft + first.offsetWidth)
   })
@@ -204,7 +208,7 @@ describe('区间两张月历', () => {
   it(`${PHONE}px 下分隔线画在两张之间的块起始边`, async () => {
     const doc = mountAt(PHONE, rangeShape)
     await contentAt(doc)
-    const second = parts(doc, 'calendar')[1]
+    const second = parts(doc, 'calendar')[1]!
     const style = doc.defaultView!.getComputedStyle(second)
     expect(Number.parseFloat(style.borderBlockStartWidth)).toBeGreaterThan(0)
     expect(Number.parseFloat(style.borderInlineStartWidth)).toBe(0)
@@ -213,7 +217,7 @@ describe('区间两张月历', () => {
   it.each([[TABLET], [DESKTOP]])('%ipx 下分隔线回到行内起始边', async (width) => {
     const doc = mountAt(width, rangeShape)
     await contentAt(doc)
-    const second = parts(doc, 'calendar')[1]
+    const second = parts(doc, 'calendar')[1]!
     const style = doc.defaultView!.getComputedStyle(second)
     expect(Number.parseFloat(style.borderInlineStartWidth)).toBeGreaterThan(0)
     expect(Number.parseFloat(style.borderBlockStartWidth)).toBe(0)
@@ -230,8 +234,8 @@ describe('区间两张月历', () => {
     expect(cells).toHaveLength(7)
     const rects = cells.map(cell => cell.getBoundingClientRect())
     for (let i = 1; i < rects.length; i += 1)
-      expect(rects[i].left - rects[i - 1].right).toBeGreaterThanOrEqual(0)
-    expect(rects[6].right).toBeLessThanOrEqual(row.getBoundingClientRect().right)
+      expect(rects[i]!.left - rects[i - 1]!.right).toBeGreaterThanOrEqual(0)
+    expect(rects[6]!.right).toBeLessThanOrEqual(row.getBoundingClientRect().right)
   })
 })
 
@@ -248,7 +252,7 @@ describe('带时间的时间列', () => {
   it(`${PHONE}px 下每列只占日历一小截宽，整块面板不再纵向溢出`, async () => {
     const doc = mountAt(PHONE, showTimeShape)
     const content = await contentAt(doc)
-    const calendar = parts(doc, 'calendar')[0]
+    const calendar = parts(doc, 'calendar')[0]!
     const hour = part(doc, 'time-column', `[data-unit='hour']`)
     expect(hour.offsetWidth).toBeLessThan(calendar.offsetWidth / 2)
     expect(content.scrollHeight).toBe(content.clientHeight)
@@ -257,7 +261,7 @@ describe('带时间的时间列', () => {
   it.each([[TABLET], [DESKTOP]])('%ipx 下确认按钮沉到日历底边，不吊在顶上', async (width) => {
     const doc = mountAt(width, showTimeShape)
     await contentAt(doc)
-    const calendar = parts(doc, 'calendar')[0]
+    const calendar = parts(doc, 'calendar')[0]!
     const confirm = part(doc, 'confirm-trigger')
     expect(confirm.offsetTop + confirm.offsetHeight).toBe(calendar.offsetTop + calendar.offsetHeight)
     expect(confirm.offsetTop).toBeGreaterThan(calendar.offsetTop)
@@ -277,7 +281,7 @@ describe('快捷选项', () => {
     const doc = mountAt(PHONE, presetShape)
     const content = await contentAt(doc)
     const group = part(doc, 'preset-group')
-    const calendar = parts(doc, 'calendar')[0]
+    const calendar = parts(doc, 'calendar')[0]!
     const style = doc.defaultView!.getComputedStyle(group)
     expect(style.flexDirection).toBe('row')
     expect(style.overflowX).toBe('auto')
@@ -294,17 +298,17 @@ describe('快捷选项', () => {
     const items = parts(doc, 'preset')
     expect(items).toHaveLength(PRESETS.length)
     for (let i = 1; i < items.length; i += 1) {
-      expect(items[i].offsetTop).toBe(items[0].offsetTop)
-      expect(items[i].offsetLeft).toBeGreaterThanOrEqual(items[i - 1].offsetLeft + items[i - 1].offsetWidth)
+      expect(items[i]!.offsetTop).toBe(items[0]!.offsetTop)
+      expect(items[i]!.offsetLeft).toBeGreaterThanOrEqual(items[i - 1]!.offsetLeft + items[i - 1]!.offsetWidth)
     }
     // 条目按自己那行字的宽度排：被压扁的话文字会折行，高度会比单行高
-    expect(items[0].offsetHeight).toBeLessThan(items[0].offsetWidth)
+    expect(items[0]!.offsetHeight).toBeLessThan(items[0]!.offsetWidth)
   })
 
   it(`${PHONE}px 下选项与日历之间的空当留在块轴`, async () => {
     const doc = mountAt(PHONE, presetShape)
     await contentAt(doc)
-    const style = doc.defaultView!.getComputedStyle(parts(doc, 'calendar')[0])
+    const style = doc.defaultView!.getComputedStyle(parts(doc, 'calendar')[0]!)
     expect(Number.parseFloat(style.paddingBlockStart)).toBeGreaterThan(0)
     expect(Number.parseFloat(style.paddingInlineStart)).toBe(0)
   })
@@ -312,7 +316,7 @@ describe('快捷选项', () => {
   it.each([[TABLET], [DESKTOP]])('%ipx 下选项与日历之间的空当回到行内轴', async (width) => {
     const doc = mountAt(width, presetShape)
     await contentAt(doc)
-    const style = doc.defaultView!.getComputedStyle(parts(doc, 'calendar')[0])
+    const style = doc.defaultView!.getComputedStyle(parts(doc, 'calendar')[0]!)
     expect(Number.parseFloat(style.paddingInlineStart)).toBeGreaterThan(0)
     expect(Number.parseFloat(style.paddingBlockStart)).toBe(0)
   })
@@ -321,7 +325,7 @@ describe('快捷选项', () => {
     const doc = mountAt(width, presetShape)
     await contentAt(doc)
     const group = part(doc, 'preset-group')
-    const calendar = parts(doc, 'calendar')[0]
+    const calendar = parts(doc, 'calendar')[0]!
     const style = doc.defaultView!.getComputedStyle(group)
     expect(style.flexDirection).toBe('column')
     expect(group.offsetTop).toBe(calendar.offsetTop)

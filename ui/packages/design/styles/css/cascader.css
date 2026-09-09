@@ -701,12 +701,6 @@
     background: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
   }
 
-  /* 焦点恒在输入框，环只跟虚拟高亮走，悬停不画 */
-  [data-scope='cascader'][data-part='search-item']:not([data-disabled])[data-highlighted] {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='cascader'][data-part='search-item'][data-disabled] {
     color: var(--xh-fg-disabled);
   }

@@ -183,6 +183,14 @@
     min-block-size: var(--xh-text-field-control-h, var(--xh-_text-field-h));
   }
 
+  /* 自增高的多行宿主：高度由 autoSize 按内容量出来写进内联样式，没给 maxRows 时行数没有尽头。
+     框到这个高度就不再长，多出来的行在框内滚出来。
+     上限画在框上而不是输入框上：输入框那条 block-size 是内联写的，样式表压不住它 */
+  [data-scope='text-field'][data-part='control']:has([data-part='input'][data-multiline][data-auto-resize]) {
+    max-block-size: var(--xh-text-field-control-max-h, var(--xh-viewport-h-sm));
+    overflow-y: auto;
+  }
+
   /* 装饰段：货币符、单位、图标。与输入框同框，不参与分宽，弱一档前景把它与正文分开 */
   [data-scope='text-field'][data-part='prefix'],
   [data-scope='text-field'][data-part='suffix'] {

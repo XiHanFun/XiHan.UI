@@ -7,10 +7,10 @@ export const pinInputKeyboard: KeyboardTable = {
   component: 'pin-input',
   source: APG,
   rows: [
-    { id: 'pin-input.kbd.next', keys: ['ArrowRight'], when: 'focus in a box, not disabled', does: '焦点移到下一格；已在末格则不动，不回绕' },
+    { id: 'pin-input.kbd.next', keys: ['ArrowRight'], when: 'focus in a box, not disabled', does: '焦点移到下一格；越不过第一个空格，已在末格则不动，不回绕' },
     { id: 'pin-input.kbd.prev', keys: ['ArrowLeft'], when: 'focus in a box, not disabled', does: '焦点移到上一格；已在首格则不动，不回绕' },
     { id: 'pin-input.kbd.first', keys: ['Home'], when: 'focus in a box, not disabled', does: '焦点移到首格' },
-    { id: 'pin-input.kbd.last', keys: ['End'], when: 'focus in a box, not disabled', does: '焦点移到末格' },
+    { id: 'pin-input.kbd.last', keys: ['End'], when: 'focus in a box, not disabled', does: '焦点移到最后一格可落焦的格子：填满时是末格，还有空格时是第一个空格' },
     { id: 'pin-input.kbd.backspace', keys: ['Backspace'], when: 'focus in a box, not disabled', does: '本格有值则清本格；本格为空则退回上一格并清掉上一格' },
     { id: 'pin-input.kbd.delete', keys: ['Delete'], when: 'focus in a box, not disabled', does: '清掉本格，焦点不动' },
   ],

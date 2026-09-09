@@ -65,6 +65,28 @@ export function isPinComplete(value: readonly string[]): boolean {
   return value.length > 0 && value.every(char => char !== '')
 }
 
+/** 第一个还空着的格子的下标；每格都填上了得 -1。 */
+export function firstEmptyPinIndex(value: readonly string[]): number {
+  return value.findIndex(char => char === '')
+}
+
+/**
+ * 落焦裁定：按顺序录入时焦点不许越过第一个空格。
+ *
+ * 还有空格时取「点的那一格」与「第一个空格」里靠前的那个，填满后原样返回（任意格都可落焦，
+ * 改哪一位都行）。下标一并夹进 [0, 格数-1]。
+ *
+ * 结果自身再算一次仍是它自己（min(x, 空格) 里 x 已不大于空格），所以按裁定搬焦点不会来回弹。
+ */
+export function pinFocusTarget(value: readonly string[], index: number): number {
+  if (value.length === 0)
+    return 0
+  const raw = Number.isFinite(index) ? Math.trunc(index) : 0
+  const clamped = Math.min(Math.max(raw, 0), value.length - 1)
+  const firstEmpty = firstEmptyPinIndex(value)
+  return firstEmpty < 0 ? clamped : Math.min(clamped, firstEmpty)
+}
+
 /** 逐格比内容，供 cell 的 isEqual 用。数组每次都是新引用，不比内容的话值没变也会通知一遍。 */
 export function samePinValue(a: readonly string[], b: readonly string[] | undefined): boolean {
   return !!b && a.length === b.length && a.every((char, i) => char === b[i])
@@ -169,10 +191,17 @@ export const pinInputMachine = createMachine({
       clearValue: (params) => {
         commitValue(params, padPinValue([], pinLength(params.prop('length'))))
       },
-      setFocusedIndex: ({ context, event }) => {
+      setFocusedIndex: ({ context, event, prop }) => {
         const e = event.current()
-        if (e.type === 'INPUT.FOCUS')
+        if (e.type !== 'INPUT.FOCUS')
+          return
+        // 只读与禁用不按顺序录入：值本来就改不动，再把焦点往回拽只会挡住读与复制
+        if (prop('disabled') || prop('readOnly')) {
           context.set('focusedIndex', e.index)
+          return
+        }
+        const value = padPinValue(context.get('value'), pinLength(prop('length')))
+        context.set('focusedIndex', pinFocusTarget(value, e.index))
       },
       clearFocusedIndex: ({ context }) => context.set('focusedIndex', -1),
     },
