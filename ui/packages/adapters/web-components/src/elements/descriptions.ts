@@ -20,7 +20,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'top'|'left'} placement - 标签在上还是在左；不写即在上
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定每格的内边距、组与组的间距与整体字号
  * @csspart root - 网格容器，承载 data-columns / data-placement / data-size / data-bordered
- * @csspart item - 一组「标签 + 取值」，占网格里的一格；作者在此写 span（这一格横跨几列）
+ * @csspart item - 一组「标签 + 取值」，占网格里的一格；作者在此写 span（这一格横跨几列，窄档不认）
  * @csspart label - 标签
  * @csspart value - 取值
  */
