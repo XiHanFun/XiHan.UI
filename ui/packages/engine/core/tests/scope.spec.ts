@@ -97,6 +97,16 @@ describe('scope 的宿主解析', () => {
 })
 
 describe('getActiveElementDeep', () => {
+  it('返回带焦点能力的 svg 元素', () => {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    svg.setAttribute('tabindex', '0')
+    document.body.appendChild(svg)
+    svg.focus()
+
+    expect(getActiveElementDeep(document)).toBe(svg)
+    expect(createScope(svg, createCounterIdGenerator()).getActiveElement()).toBe(svg)
+  })
+
   it('没有 shadow 时就是 document.activeElement', () => {
     const input = document.createElement('input')
     document.body.appendChild(input)

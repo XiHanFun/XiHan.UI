@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { focusFirst, focusSafely } from '../src/behavior/focus-scope/tabbable'
+import { focusFirst, focusSafely, removeLinks } from '../src/behavior/focus-scope/tabbable'
 
 afterEach(() => {
   document.body.innerHTML = ''
@@ -59,5 +59,22 @@ describe('焦点工具的所属根与窗口', () => {
     focusSafely(input, { select: true })
     expect(document.activeElement).toBe(input)
     expect(select).toHaveBeenCalledTimes(1)
+  })
+
+  it('html 与 svg 的链接都从无链接焦点候选中移除', () => {
+    const htmlLink = document.createElement('a')
+    const svgLink = document.createElementNS('http://www.w3.org/2000/svg', 'a')
+    const button = document.createElement('button')
+
+    expect(removeLinks([htmlLink, svgLink, button])).toEqual([button])
+  })
+
+  it('公开焦点工具直接接受可聚焦 svg', () => {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    svg.setAttribute('tabindex', '0')
+    document.body.appendChild(svg)
+
+    focusSafely(svg)
+    expect(document.activeElement).toBe(svg)
   })
 })

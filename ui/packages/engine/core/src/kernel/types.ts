@@ -22,6 +22,9 @@ export function toCleanup(d: Disposable): Cleanup {
 /** 方向。 */
 export type Direction = 'ltr' | 'rtl'
 
+/** 具备浏览器原生焦点能力的 Element。 */
+export type FocusableElement = Element & HTMLOrSVGElement
+
 /** 朝向。 */
 export type Orientation = 'horizontal' | 'vertical'
 

@@ -1,5 +1,6 @@
 // Scope：宿主 DOM 环境抽象，core 对 document/window 的访问统一经此。
 import type { IdGenerator } from './id-generator'
+import type { FocusableElement } from './types'
 import { isDocument, isShadowRoot } from './guards'
 
 export interface Scope {
@@ -15,7 +16,7 @@ export interface Scope {
   /** 一次性派生一组 part id 只读表。 */
   ids: <K extends string>(component: string, ...parts: K[]) => Readonly<Record<K, string>>
   /** 递归穿透 shadow root，返回真正被聚焦的元素。 */
-  getActiveElement: () => HTMLElement | null
+  getActiveElement: () => FocusableElement | null
   /** 取计算样式，绑定到本 scope 所在的 window。 */
   getComputedStyle: (el: Element, pseudo?: string) => CSSStyleDeclaration
   /** shadow root 内为 true。 */
@@ -23,10 +24,10 @@ export interface Scope {
 }
 
 /** 跨 shadow root 深挖真正聚焦的元素。 */
-export function getActiveElementDeep(root: Document | ShadowRoot): HTMLElement | null {
-  let active = root.activeElement as HTMLElement | null
+export function getActiveElementDeep(root: Document | ShadowRoot): FocusableElement | null {
+  let active = root.activeElement as FocusableElement | null
   while (active?.shadowRoot?.activeElement)
-    active = active.shadowRoot.activeElement as HTMLElement
+    active = active.shadowRoot.activeElement as FocusableElement
   return active
 }
 

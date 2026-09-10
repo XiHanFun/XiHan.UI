@@ -1,3 +1,4 @@
+import type { FocusableElement } from '../../kernel'
 import type { NavIntent, StepOptions } from './navigate'
 import { DATA_PART, DATA_SCOPE } from '../../kernel'
 import { focusSafely } from '../focus-scope/tabbable'
@@ -106,7 +107,7 @@ export function navigateItems(
 }
 
 /** 聚焦条目并滚入可视区。 */
-export function focusItem(el: HTMLElement | null): void {
+export function focusItem(el: FocusableElement | null): void {
   if (!el)
     return
   focusSafely(el)
