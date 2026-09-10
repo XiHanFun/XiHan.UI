@@ -17,7 +17,7 @@
 ## 特性
 
 - `hidden-select` 承担表单参与。
-- 多选可以把选中项显示成标签，`maxTagCount` 折叠超出的部分。
+- 多选可以把选中项显示成标签行：最多摆 `maxTagCount` 枚（缺省 3），其余合成一枚 +N，触发器始终是一行。
 - 浮层里可以有分组、底部操作区与滚动加载。
 - 三种非条目相位各有部件：空（`empty`）与在途（`loading`）。`loading` 为真时列表报 `aria-busy`，在途占位顶上来、空态让位。
 - 大量选项时列表可以只渲可视区。
@@ -104,7 +104,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 多选标签
 
-内建标签形态：api 的 tags 受 maxTagCount 截断、余数在 overflowCount；触发器里 XhSelectTag 纯展示，触发器外配 XhSelectItemDeleteTrigger 即可删
+内建标签形态：触发器里的标签行最多摆 maxTagCount 枚（缺省 3），其余合成一枚 +N；触发器里 XhSelectTag 纯展示，触发器外配 XhSelectItemDeleteTrigger 即可删
 
 <XhDemo src="select/14-tags" />
 
@@ -149,7 +149,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-select>` |
-| Vue 组件 | `XhSelectClearTrigger` `XhSelectContent` `XhSelectControl` `XhSelectEmpty` `XhSelectFooter` `XhSelectGroup` `XhSelectGroupLabel` `XhSelectIndicator` `XhSelectItem` `XhSelectItemDeleteTrigger` `XhSelectItemIndicator` `XhSelectItemText` `XhSelectLabel` `XhSelectList` `XhSelectLoading` `XhSelectPositioner` `XhSelectRoot` `XhSelectTag` `XhSelectTrigger` `XhSelectValueText` |
+| Vue 组件 | `XhSelectClearTrigger` `XhSelectContent` `XhSelectControl` `XhSelectEmpty` `XhSelectFooter` `XhSelectGroup` `XhSelectGroupLabel` `XhSelectIndicator` `XhSelectItem` `XhSelectItemDeleteTrigger` `XhSelectItemIndicator` `XhSelectItemText` `XhSelectLabel` `XhSelectList` `XhSelectLoading` `XhSelectOverflowTag` `XhSelectPositioner` `XhSelectRoot` `XhSelectTag` `XhSelectTagList` `XhSelectTrigger` `XhSelectValueText` |
 | 组合式函数 | `useSelect` |
 | 状态机 | `selectMachine` |
 | 皮肤 | `@xihan-ui/styles/select.css` |
@@ -158,7 +158,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag` · `item-delete-trigger` · `positioner` · **`content`** · **`list`** · `footer` · `group` · `group-label` · **`item`** · `item-text` · `item-indicator` · `empty` · `loading` · `hidden-select`
+`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag-list` · `tag` · `item-delete-trigger` · `overflow-tag` · `positioner` · **`content`** · **`list`** · `footer` · `group` · `group-label` · **`item`** · `item-text` · `item-indicator` · `empty` · `loading` · `hidden-select`
 
 ## Props
 
@@ -175,7 +175,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `invalid` | `boolean` |  | 校验错误态：trigger 标红并输出 aria-invalid。 |
 | `loading` | `boolean` |  | 条目还在取：列表报 aria-busy，在途占位顶上来、空态占位让位。 |
 | `translations` | `Partial<SelectTranslations>` |  | 读屏用的文案，默认英文。 |
-| `maxTagCount` | `number` |  | 多选标签最多摆几个，其余折进 overflowCount；缺省全摆。 |
+| `maxTagCount` | `number` |  | 多选标签最多摆几枚，其余折进 overflowCount、合成 overflow-tag 那一枚；缺省 3（SELECT_DEFAULT_MAX_TAG_COUNT）。 |
 | `required` | `boolean` |  | 原生表单校验：无选中值时提交被拦下。 |
 | `name` | `string` |  | 表单字段名。给定后隐藏 select 才带 name，选中值随表单一并提交。 |
 | `placeholder` | `string` |  | 无选中时 value-text 显示的占位文字。 |
@@ -249,7 +249,8 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `readOnly` | `boolean` | 只读态。 |
 | `canClear` | `boolean` | 此刻能否清空：有选中且既不禁用也不只读。 |
 | `tags` | `SelectTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value/valueText 同序。 |
-| `overflowCount` | `number` | 被 maxTagCount 折起来的标签数；作者据此渲染 +N。 |
+| `overflowCount` | `number` | 被 maxTagCount 折起来的标签数。 |
+| `overflowText` | `string` | overflow-tag 显示的文字（translations.overflowTag 算出）；没有折起的标签时为空串。 |
 | `highlightedValue` | `string \| null` | 高亮锚点；收起时为 null。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string \| string[]) => void` |  |
@@ -262,7 +263,9 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `getValueTextProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getClearTriggerProps` | `() => T['button']` | 清空按钮：不占 Tab 位；清不了时整个藏掉；点按清空全部选中、不展开浮层，焦点送回 trigger。 |
+| `getTagListProps` | `() => T['element']` | 标签行：收着可见标签与 overflow-tag，放在触发器里；无选中时整个 hidden。 |
 | `getTagProps` | `(props: SelectTagProps) => T['element']` | 标签：一个选中值一枚；放触发器里就是纯展示，放外面配 item-delete-trigger 可删。 |
+| `getOverflowTagProps` | `() => T['element']` | 被折起的标签那一枚：显示 overflowText；没有折起的标签时 hidden。 |
 | `getItemDeleteTriggerProps` | `(props: SelectTagProps) => T['button']` | 标签删除按钮：点按摘掉所在标签的选中值；须放在 tag 部件里。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` | 浮层外壳：描边、底色、阴影与键盘收口都在它身上。 |
@@ -361,9 +364,12 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `indicator` | `data-clearable` | ''（条件成立时才出现） |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
+| `tag-list` | `data-disabled` | ''（条件成立时才出现） |
 | `tag` | `data-disabled` | ''（条件成立时才出现） |
 | `tag` | `data-value` | v |
 | `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `overflow-tag` | `data-count` | String(overflowCount) |
+| `overflow-tag` | `data-disabled` | ''（条件成立时才出现） |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
@@ -383,7 +389,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-select-action-bg` · `--xh-select-action-bg-active` · `--xh-select-action-bg-hover` · `--xh-select-action-fg` · `--xh-select-action-fg-hover` · `--xh-select-action-font-size` · `--xh-select-action-radius` · `--xh-select-action-size` · `--xh-select-content-bg` · `--xh-select-content-border` · `--xh-select-content-fg` · `--xh-select-content-max-h` · `--xh-select-content-max-w` · `--xh-select-content-min-w` · `--xh-select-content-px` · `--xh-select-content-py` · `--xh-select-content-radius` · `--xh-select-content-shadow` · `--xh-select-control-bg` · `--xh-select-control-bg-disabled` · `--xh-select-control-bg-hover` · `--xh-select-control-bg-readonly` · `--xh-select-control-border` · `--xh-select-control-border-focus` · `--xh-select-control-border-hover` · `--xh-select-control-border-invalid` · `--xh-select-control-gap` · `--xh-select-control-h` · `--xh-select-control-min-w` · `--xh-select-control-px` · `--xh-select-control-radius` · `--xh-select-control-shadow` · `--xh-select-empty-fg` · `--xh-select-empty-font-size` · `--xh-select-empty-px` · `--xh-select-empty-py` · `--xh-select-footer-border` · `--xh-select-footer-fg` · `--xh-select-footer-font-size` · `--xh-select-footer-gap` · `--xh-select-footer-px` · `--xh-select-footer-py` · `--xh-select-gap` · `--xh-select-group-gap` · `--xh-select-group-label-fg` · `--xh-select-group-label-font-size` · `--xh-select-group-label-font-weight` · `--xh-select-group-label-px` · `--xh-select-group-label-py` · `--xh-select-group-spacing` · `--xh-select-icon-size` · `--xh-select-indicator-fg` · `--xh-select-item-bg-hover` · `--xh-select-item-delete-bg-active` · `--xh-select-item-delete-bg-hover` · `--xh-select-item-delete-fg` · `--xh-select-item-delete-fg-hover` · `--xh-select-item-delete-radius` · `--xh-select-item-delete-size` · `--xh-select-item-fg` · `--xh-select-item-fg-selected` · `--xh-select-item-font-size` · `--xh-select-item-font-weight-selected` · `--xh-select-item-gap` · `--xh-select-item-indicator-fg` · `--xh-select-item-indicator-size` · `--xh-select-item-leading` · `--xh-select-item-px` · `--xh-select-item-py` · `--xh-select-item-radius` · `--xh-select-label-fg` · `--xh-select-label-fg-disabled` · `--xh-select-label-font-size` · `--xh-select-label-font-weight` · `--xh-select-layer` · `--xh-select-list-gap` · `--xh-select-loading-fg` · `--xh-select-loading-font-size` · `--xh-select-loading-px` · `--xh-select-loading-py` · `--xh-select-placeholder-fg` · `--xh-select-tag-bg` · `--xh-select-tag-fg` · `--xh-select-tag-font-size` · `--xh-select-tag-gap` · `--xh-select-tag-px` · `--xh-select-tag-radius` · `--xh-select-trigger-fg` · `--xh-select-trigger-font-size` · `--xh-select-trigger-gap`
+`--xh-select-action-bg` · `--xh-select-action-bg-active` · `--xh-select-action-bg-hover` · `--xh-select-action-fg` · `--xh-select-action-fg-hover` · `--xh-select-action-font-size` · `--xh-select-action-radius` · `--xh-select-action-size` · `--xh-select-content-bg` · `--xh-select-content-border` · `--xh-select-content-fg` · `--xh-select-content-max-h` · `--xh-select-content-max-w` · `--xh-select-content-min-w` · `--xh-select-content-px` · `--xh-select-content-py` · `--xh-select-content-radius` · `--xh-select-content-shadow` · `--xh-select-control-bg` · `--xh-select-control-bg-disabled` · `--xh-select-control-bg-hover` · `--xh-select-control-bg-readonly` · `--xh-select-control-border` · `--xh-select-control-border-focus` · `--xh-select-control-border-hover` · `--xh-select-control-border-invalid` · `--xh-select-control-gap` · `--xh-select-control-h` · `--xh-select-control-min-w` · `--xh-select-control-px` · `--xh-select-control-radius` · `--xh-select-control-shadow` · `--xh-select-empty-fg` · `--xh-select-empty-font-size` · `--xh-select-empty-px` · `--xh-select-empty-py` · `--xh-select-footer-border` · `--xh-select-footer-fg` · `--xh-select-footer-font-size` · `--xh-select-footer-gap` · `--xh-select-footer-px` · `--xh-select-footer-py` · `--xh-select-gap` · `--xh-select-group-gap` · `--xh-select-group-label-fg` · `--xh-select-group-label-font-size` · `--xh-select-group-label-font-weight` · `--xh-select-group-label-px` · `--xh-select-group-label-py` · `--xh-select-group-spacing` · `--xh-select-icon-size` · `--xh-select-indicator-fg` · `--xh-select-item-bg-hover` · `--xh-select-item-delete-bg-active` · `--xh-select-item-delete-bg-hover` · `--xh-select-item-delete-fg` · `--xh-select-item-delete-fg-hover` · `--xh-select-item-delete-radius` · `--xh-select-item-delete-size` · `--xh-select-item-fg` · `--xh-select-item-fg-selected` · `--xh-select-item-font-size` · `--xh-select-item-font-weight-selected` · `--xh-select-item-gap` · `--xh-select-item-indicator-fg` · `--xh-select-item-indicator-size` · `--xh-select-item-leading` · `--xh-select-item-px` · `--xh-select-item-py` · `--xh-select-item-radius` · `--xh-select-label-fg` · `--xh-select-label-fg-disabled` · `--xh-select-label-font-size` · `--xh-select-label-font-weight` · `--xh-select-layer` · `--xh-select-list-gap` · `--xh-select-loading-fg` · `--xh-select-loading-font-size` · `--xh-select-loading-px` · `--xh-select-loading-py` · `--xh-select-overflow-tag-bg` · `--xh-select-overflow-tag-fg` · `--xh-select-overflow-tag-font-size` · `--xh-select-overflow-tag-px` · `--xh-select-overflow-tag-radius` · `--xh-select-placeholder-fg` · `--xh-select-tag-bg` · `--xh-select-tag-fg` · `--xh-select-tag-font-size` · `--xh-select-tag-gap` · `--xh-select-tag-list-gap` · `--xh-select-tag-px` · `--xh-select-tag-radius` · `--xh-select-trigger-fg` · `--xh-select-trigger-font-size` · `--xh-select-trigger-gap`
 
 ## 动效
 

@@ -1,5 +1,5 @@
 import type { ConformanceSuite } from '../conformance/types'
-import { notificationAnatomy, notificationKeyboard } from '@xihan-ui/headless'
+import { NOTIFICATION_MAX, notificationAnatomy, notificationKeyboard } from '@xihan-ui/headless'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/alert/'
 
@@ -109,6 +109,33 @@ export const notificationSuite: ConformanceSuite = {
           // 三条进队、只留两条
           'root': { 'data-count': '2' },
           'group[1]': { 'data-count': '2' },
+        },
+      },
+    },
+    {
+      name: '不给 max：每个位置默认只留 NOTIFICATION_MAX 条，多出来的不再渲染',
+      spec: { apg: APG },
+      props: {
+        defaultItems: Array.from({ length: NOTIFICATION_MAX + 2 }, (_, i) => ({ id: `n${i}`, placement: 'bottom-end' as const })),
+      },
+      initial: {
+        parts: {
+          'root': { 'data-count': String(NOTIFICATION_MAX) },
+          'group[1]': { 'data-count': String(NOTIFICATION_MAX) },
+        },
+      },
+    },
+    {
+      name: 'max 给 Infinity 即不限：多少条都留',
+      spec: { apg: APG },
+      props: {
+        max: Number.POSITIVE_INFINITY,
+        defaultItems: Array.from({ length: NOTIFICATION_MAX + 2 }, (_, i) => ({ id: `n${i}`, placement: 'bottom-end' as const })),
+      },
+      initial: {
+        parts: {
+          'root': { 'data-count': String(NOTIFICATION_MAX + 2) },
+          'group[1]': { 'data-count': String(NOTIFICATION_MAX + 2) },
         },
       },
     },

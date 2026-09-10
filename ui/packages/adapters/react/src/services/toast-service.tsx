@@ -19,6 +19,7 @@ import type { XhConfigSource } from './service-config'
 import { DATA_INERT_EXEMPT, ensurePortalRoot } from '@xihan-ui/core'
 import {
   connectNotification,
+  NOTIFICATION_MAX,
   notificationMachine,
   TOAST_DURATION,
   TOAST_GAP,
@@ -178,7 +179,7 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     config,
     placement = TOAST_PLACEMENT,
     gap = TOAST_GAP,
-    max = 5,
+    max = NOTIFICATION_MAX,
     dedupe,
     ...defaults
   } = options

@@ -3,6 +3,7 @@ export { connectNotification, connectNotificationItem } from './notification.con
 export { notificationKeyboard } from './notification.keyboard'
 export {
   NOTIFICATION_GAP,
+  NOTIFICATION_MAX,
   NOTIFICATION_PLACEMENT,
   NOTIFICATION_PLACEMENTS,
   notificationMachine,

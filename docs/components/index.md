@@ -95,7 +95,7 @@
 | [分格输入](./pin-input) | `pin-input` | 6 | 6 | 11 |
 | [单选组](./radio-group) | `radio-group` | 6 | 4 | 7 |
 | [评分](./rating) | `rating` | 6 | 5 | 9 |
-| [选择器](./select) | `select` | 21 | 15 | 20 |
+| [选择器](./select) | `select` | 23 | 15 | 20 |
 | [签名板](./signature-pad) | `signature-pad` | 8 | 1 | 6 |
 | [滑块](./slider) | `slider` | 11 | 6 | 11 |
 | [开关](./switch) | `switch` | 5 | 1 | 11 |

@@ -10,6 +10,7 @@ import type { ToastCreateOptions, ToastMessageOptions, ToastPromiseOptions, Toas
 import { createService, DATA_INERT_EXEMPT } from '@xihan-ui/core'
 import {
   connectNotification,
+  NOTIFICATION_MAX,
   notificationMachine,
   TOAST_DURATION,
   TOAST_GAP,
@@ -54,7 +55,7 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     target,
     placement = TOAST_PLACEMENT,
     gap = TOAST_GAP,
-    max = 5,
+    max = NOTIFICATION_MAX,
     dedupe,
     toastTranslations,
     ...defaults

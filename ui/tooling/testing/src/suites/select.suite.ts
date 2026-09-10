@@ -6,13 +6,23 @@ const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/'
 const VALUES = ['apple', 'banana', 'cherry'] as const
 
 const VALUE_TEXT = '[data-scope="select"][data-part="value-text"]'
+const OVERFLOW_TAG = '[data-scope="select"][data-part="overflow-tag"]'
 const HIDDEN_SELECT = '[data-scope="select"][data-part="hidden-select"]'
 
 /** 显示文字不进归一化快照（快照只采属性），只能直接读 DOM。 */
-function assertValueText(doc: Document, expected: string): void {
-  const actual = doc.querySelector<HTMLElement>(VALUE_TEXT)?.textContent?.trim() ?? null
+function assertPartText(doc: Document, selector: string, part: string, expected: string): void {
+  const actual = doc.querySelector<HTMLElement>(selector)?.textContent?.trim() ?? null
   if (actual !== expected)
-    throw new Error(`value-text 文本不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+    throw new Error(`${part} 文本不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+}
+
+function assertValueText(doc: Document, expected: string): void {
+  assertPartText(doc, VALUE_TEXT, 'value-text', expected)
+}
+
+/** +N 那一枚的文字：三侧都由库填（Vue / React 的默认内容、WC 的元素代填）。 */
+function assertOverflowText(doc: Document, expected: string): void {
+  assertPartText(doc, OVERFLOW_TAG, 'overflow-tag', expected)
 }
 
 /**
@@ -113,6 +123,45 @@ function withClearTrigger(base: FixtureNode): FixtureNode {
     node.part === 'control'
       ? { ...node, children: [...(node.children ?? []), { part: 'clear-trigger', tag: 'button' }] }
       : node,
+  )
+  return { ...base, children }
+}
+
+/**
+ * 标签形态：触发器里的标签行（tag-list）收着两枚标签与 +N 那一枚（overflow-tag），
+ * 触发器外再摆一枚带删除钮的。标签由作者按 api.tags 渲染，fixture 是静态的，这里直接写死两枚。
+ */
+function withTags(base: FixtureNode): FixtureNode {
+  const tag = (value: string, text: string, deletable = false): FixtureNode => ({
+    part: 'tag',
+    attrs: { value },
+    children: deletable
+      ? [{ tag: 'span', text }, { part: 'item-delete-trigger', tag: 'button' }]
+      : [{ tag: 'span', text }],
+  })
+  // 触发器外那枚放在 control 之后、positioner 之前：positioner 得是根的末子
+  const children = (base.children ?? []).flatMap((node): FixtureNode[] =>
+    node.part === 'control'
+      ? [
+          {
+            ...node,
+            children: (node.children ?? []).map(child =>
+              child.part === 'trigger'
+                ? {
+                    ...child,
+                    // 标签行排在 value-text 与 indicator 之间：三者是触发器里并排的一行
+                    children: (child.children ?? []).flatMap((grandchild): FixtureNode[] =>
+                      grandchild.part === 'value-text'
+                        ? [grandchild, { part: 'tag-list', children: [tag(VALUES[0], 'Apple'), tag(VALUES[1], 'Banana'), { part: 'overflow-tag' }] }]
+                        : [grandchild],
+                    ),
+                  }
+                : child,
+            ),
+          },
+          tag(VALUES[0], 'Apple', true),
+        ]
+      : [node],
   )
   return { ...base, children }
 }
@@ -1081,6 +1130,133 @@ export const selectSuite: ConformanceSuite = {
             parts: { 'trigger': { 'aria-expanded': 'false', 'data-placeholder': '' }, 'item[1]': { 'aria-selected': 'false' } },
             events: [{ type: 'value-change', detail: { value: [] } }],
           },
+        },
+      ],
+    },
+    {
+      name: '标签：每枚标签带 data-value；删除钮的可及名走 translations.deleteItem，点按摘掉那个值',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { multiple: true, defaultValue: ['apple', 'banana'], name: 'fruit', translations: { deleteItem: (label: string) => `移除${label}` } },
+      initial: {
+        counts: { 'tag-list': 1, 'tag': 3, 'overflow-tag': 1, 'item-delete-trigger': 1 },
+        parts: {
+          // 有选中：标签行露面；两枚都摆得下，+N 那一枚收起
+          'tag-list': { 'hidden': null, 'data-disabled': null },
+          'tag': [
+            { 'data-value': 'apple', 'data-disabled': null },
+            { 'data-value': 'banana', 'data-disabled': null },
+            { 'data-value': 'apple', 'data-disabled': null },
+          ],
+          'overflow-tag': { 'hidden': '', 'data-count': '0', 'data-disabled': null },
+          'item-delete-trigger': { 'type': 'button', 'aria-label': '移除Apple', 'data-disabled': null },
+          // 名字仍从 value-text 取：标签行只是视觉，读屏念到的是完整的选中项文本
+          'trigger': { 'aria-labelledby': '@part(label) @part(value-text)' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '+N 的文字不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertOverflowText(doc, '')
+            assertValueText(doc, 'Apple, Banana')
+          },
+        },
+        {
+          kind: 'click',
+          part: 'item-delete-trigger',
+          expect: {
+            parts: { 'item[0]': { 'aria-selected': 'false' }, 'item[1]': { 'aria-selected': 'true' }, 'tag-list': { hidden: null } },
+            events: [{ type: 'value-change', detail: { value: ['banana'] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '标签：不给 maxTagCount 时最多摆 3 枚，第 4 个起折进 +N；overflow-tag 去掉 hidden、带 data-count 并显示 +1',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      // 第 4 个值没有对应条目：显示文本退回值本身，折叠只看个数
+      props: { multiple: true, defaultValue: ['apple', 'banana', 'cherry', 'durian'], name: 'fruit' },
+      initial: {
+        parts: {
+          'tag-list': { hidden: null },
+          'overflow-tag': { 'hidden': null, 'data-count': '1' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '+N 的文字不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => assertOverflowText(doc, '+1'),
+        },
+      ],
+    },
+    {
+      name: '标签：maxTagCount 给 1 时折起其余；文字走 translations.overflowTag；受控写回后个数跟着变',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { multiple: true, value: ['apple', 'banana', 'cherry'], maxTagCount: 1, name: 'fruit', translations: { overflowTag: (count: number) => `还有 ${count} 项` } },
+      initial: {
+        parts: { 'overflow-tag': { 'hidden': null, 'data-count': '2' } },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '+N 的文字不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => assertOverflowText(doc, '还有 2 项'),
+        },
+        {
+          kind: 'setProps',
+          props: { value: ['apple'] },
+          expect: { parts: { 'overflow-tag': { 'hidden': '', 'data-count': '0' }, 'tag-list': { hidden: null } } },
+        },
+        {
+          kind: 'setProps',
+          props: { value: [] },
+          expect: { parts: { 'overflow-tag': { 'hidden': '', 'data-count': '0' }, 'tag-list': { hidden: '' } } },
+        },
+      ],
+    },
+    {
+      name: '标签：无选中时标签行 hidden，点条目选中后露面',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { multiple: true, name: 'fruit', placeholder: '请选择' },
+      initial: {
+        parts: { 'tag-list': { hidden: '' }, 'overflow-tag': { hidden: '' } },
+      },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'click',
+          part: 'item[2]',
+          expect: {
+            parts: { 'tag-list': { hidden: null }, 'overflow-tag': { hidden: '' }, 'item[2]': { 'aria-selected': 'true' } },
+            events: [{ type: 'value-change', detail: { value: ['cherry'] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '标签：禁用时标签行、每枚标签、+N 与删除钮都标 data-disabled，点删除钮不动',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { multiple: true, defaultValue: ['apple', 'banana'], disabled: true, name: 'fruit' },
+      initial: {
+        parts: {
+          'tag-list': { 'data-disabled': '' },
+          'tag': [{ 'data-disabled': '' }, { 'data-disabled': '' }, { 'data-disabled': '' }],
+          'overflow-tag': { 'data-disabled': '' },
+          'item-delete-trigger': { 'data-disabled': '' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'item-delete-trigger',
+          expect: { parts: { 'item[0]': { 'aria-selected': 'true' } }, events: [] },
         },
       ],
     },

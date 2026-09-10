@@ -27,7 +27,7 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 空串也当缺席：max="" 经 Number() 会变成 0，那等于"一条都不显示"
+// 空串也当缺席：max="" 经 Number() 会变成 0，那会被当成不限而不是缺省
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 // 三态布尔：缺席=undefined（用缺省）、在场=true、显式写 "false"=false。
 // 缺省为真的开关（closable）只有三态才关得掉——Lit 默认的 Boolean 转换器是 v !== null，
@@ -55,7 +55,7 @@ function groupPlacement(el: HTMLElement): NotificationPlacement | undefined {
  *
  * @customElement xh-notification
  * @attr {'top-start'|'top'|'top-end'|'middle-start'|'middle'|'middle-end'|'bottom-start'|'bottom'|'bottom-end'} placement - 默认落位，默认 bottom-end
- * @attr {number} max - 每个位置最多同时留几条，超出先挤低优先级的、同级里挤最旧的；不给即不限
+ * @attr {number} max - 每个位置最多同时留几条，超出先挤低优先级的、同级里挤最旧的；默认 5，给 Infinity 即不限
  * @attr {'id'|'content'} dedupe - 重复怎么算，默认 id；content 则同一句话合并成一条并计数
  * @attr {number} gap - 同一摞内的间距（px），默认 16
  * @attr {number} duration - 单条没写 duration 时的默认停留毫秒

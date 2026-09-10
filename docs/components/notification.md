@@ -17,7 +17,7 @@
 ## 特性
 
 - 九宫格落位，`placement` 决定这一摞落在哪儿；也可以按条逐个指定。
-- `max` 限制每个位置同时显示几条，超出的挤掉最旧的。
+- `max` 限制每个位置同时显示几条，默认 5，超出先挤低优先级、同级里挤最旧的；给 `Infinity` 即不限。
 - 同一个 id 再发一次即就地改写，位置不动，用来做"处理中 → 已完成"。
 - 每条自带计时与暂停：指针停在卡片上、或焦点落进去时不再走表。
 - `duration` 给 0 即常驻不消失，适合需要用户处理的消息。
@@ -83,7 +83,7 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | `items` | `NotificationRecord[]` |  | 受控队列：给了就由宿主说了算，内部写入只发 onItemsChange。 |
 | `defaultItems` | `NotificationRecord[]` |  |  |
 | `placement` | `NotificationPlacement` |  | 默认落位，默认 bottom-end。 |
-| `max` | `number` |  | 每个位置最多同时留几条，超出先挤低优先级、同级里挤最旧的。不给即不限。 |
+| `max` | `number` |  | 每个位置最多同时留几条，超出先挤低优先级、同级里挤最旧的。默认 5；给 Infinity 即不限。 |
 | `dedupe` | `NotificationDedupe` |  | 重复怎么算，默认 'id'。 |
 | `gap` | `number` |  | 同一摞内的间距（px），默认 16。 |
 | `duration` | `number` |  | 单条没写 duration 时的默认停留毫秒。 |

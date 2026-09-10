@@ -11,6 +11,9 @@ const { createMachine } = setup<SelectSchema>()
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const SELECT_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
+/** 未指定 maxTagCount 时多选标签最多摆几枚，其余折进 overflow-tag。 */
+export const SELECT_DEFAULT_MAX_TAG_COUNT = 3
+
 // 对外允许裸串与 null 两种单选简写，内部一律按数组处理；undefined 要原样透传给 cell 判非受控
 function toValues(input: string | string[] | null | undefined): string[] | undefined {
   if (input === undefined)

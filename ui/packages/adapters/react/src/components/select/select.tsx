@@ -24,10 +24,10 @@ import { useSelect } from './use-select'
 
 type SelectProps = SelectSchema['props']
 
-/** 函数式 children 的载荷：展开态、选中集合与显示文字、可见标签与被折起的个数，以及四个动作。 */
+/** 函数式 children 的载荷：展开态、选中集合与显示文字、可见标签与被折起的个数及其文字，以及四个动作。 */
 export type SelectRootSlotProps = Pick<
   SelectApi,
-  'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
+  'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'overflowText' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
 >
 
 /** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
@@ -146,6 +146,7 @@ export function XhSelectRoot({
         displayText: api.displayText,
         tags: api.tags,
         overflowCount: api.overflowCount,
+        overflowText: api.overflowText,
         setOpen: api.setOpen,
         setValue: api.setValue,
         clear: api.clear,
@@ -230,6 +231,13 @@ export function XhSelectClearTrigger({ children, ...rest }: XhSelectClearTrigger
   return <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
 }
 
+export interface XhSelectTagListProps extends ComponentPropsWithRef<'span'> {}
+/** 标签行：可见标签与 +N 那一枚在里面并排；无选中时连接层给 hidden，value-text 回来显示占位文字。 */
+export function XhSelectTagList({ children, ...rest }: XhSelectTagListProps): ReactNode {
+  const ctx = useSelectContext()
+  return <span {...mergeReactProps(ctx.api.getTagListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhSelectTagProps extends ComponentPropsWithRef<'span'> {
   /** 它代表哪个选中值。 */
   value: string
@@ -240,6 +248,17 @@ export function XhSelectTag({ value, children, ...rest }: XhSelectTagProps): Rea
     <SelectTagProvider value={value}>
       <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
     </SelectTagProvider>
+  )
+}
+
+export interface XhSelectOverflowTagProps extends ComponentPropsWithRef<'span'> {}
+/** 有内容用内容，否则显示 +N；没有折起的标签时连接层给 hidden。 */
+export function XhSelectOverflowTag({ children, ...rest }: XhSelectOverflowTagProps): ReactNode {
+  const ctx = useSelectContext()
+  return (
+    <span {...mergeReactProps(ctx.api.getOverflowTagProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children ?? ctx.api.overflowText}
+    </span>
   )
 }
 

@@ -65,6 +65,16 @@ describe('轻提示服务', () => {
     expect(toasts()).toHaveLength(2)
   })
 
+  it('不写 max 缺省留 5 条：连发 20 条只剩最新的五条', async () => {
+    const toast = createToastService()
+    dispose.push(() => toast.dispose())
+    for (let i = 1; i <= 20; i++)
+      toast.info(`第 ${i} 条`, { duration: 0 })
+    await settle()
+    expect(titleTexts(toasts())).toEqual(['第 16 条', '第 17 条', '第 18 条', '第 19 条', '第 20 条'])
+    expect(document.querySelector('[data-scope="toast"][data-part="group"]')?.getAttribute('data-count')).toBe('5')
+  })
+
   it('promise 兑现后就地改写成成功，且原样透传结果', async () => {
     const toast = createToastService()
     dispose.push(() => toast.dispose())

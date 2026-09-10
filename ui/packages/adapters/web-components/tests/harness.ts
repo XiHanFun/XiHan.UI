@@ -14,6 +14,11 @@ const PUBLIC_EVENTS = ['open-change', 'checked-change', 'clamp-toggle', 'column-
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 
+/** 节点声明了只在某些适配器下渲、名单里又没有 wc 时，本侧当它没写。 */
+function rendersHere(node: FixtureNode): boolean {
+  return node.only == null || node.only.includes('wc')
+}
+
 // FixtureNode → Light-DOM 元素：part 节点打 data-xh-part，纯文本子节点建文本节点。
 // <svg> 连同它的子树建在 SVG 命名空间下：createElement('svg') 建出的是 XHTML 的 <svg>，
 // 那上面的 viewBox 会被小写成 viewbox，挂进去的图元也不显示。
@@ -24,8 +29,9 @@ function renderNode(node: FixtureNode, doc: Document, ns?: string): HTMLElement 
   if (node.part)
     el.dataset.xhPart = node.part
   for (const [k, v] of Object.entries(node.attrs ?? {})) el.setAttribute(k, v)
-  if (node.children?.length) {
-    for (const c of node.children) {
+  const kids = node.children?.filter(rendersHere)
+  if (kids?.length) {
+    for (const c of kids) {
       if (c.text != null && c.tag == null && c.part == null && c.children == null)
         el.appendChild(doc.createTextNode(c.text))
       else

@@ -9,10 +9,10 @@ import { useSelect } from './use-select'
 
 type SelectProps = SelectSchema['props']
 
-/** 默认插槽的载荷：展开态、选中集合与显示文字、可见标签与被折起的个数，以及改展开、改值、清空、摘值四个动作。 */
+/** 默认插槽的载荷：展开态、选中集合与显示文字、可见标签与被折起的个数及其文字，以及改展开、改值、清空、摘值四个动作。 */
 export type SelectRootSlotProps = Pick<
   SelectApi,
-  'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
+  'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'overflowText' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
 >
 
 export const XhSelectRoot = defineComponent({
@@ -91,6 +91,7 @@ export const XhSelectRoot = defineComponent({
           displayText: ctx.api.value.displayText,
           tags: ctx.api.value.tags,
           overflowCount: ctx.api.value.overflowCount,
+          overflowText: ctx.api.value.overflowText,
           setOpen: ctx.api.value.setOpen,
           setValue: ctx.api.value.setValue,
           clear: ctx.api.value.clear,
@@ -171,6 +172,15 @@ export const XhSelectClearTrigger = defineComponent({
   },
 })
 
+export const XhSelectTagList = defineComponent({
+  name: 'XhSelectTagList',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    // 标签行：可见标签与 +N 那一枚在里面并排；无选中时连接层给 hidden，value-text 回来显示占位文字
+    return () => h('span', ctx.api.value.getTagListProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhSelectTag = defineComponent({
   name: 'XhSelectTag',
   props: {
@@ -181,6 +191,19 @@ export const XhSelectTag = defineComponent({
     const ctx = useSelectContext()
     provideSelectTag({ value: () => props.value })
     return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhSelectOverflowTag = defineComponent({
+  name: 'XhSelectOverflowTag',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    // 有插槽用插槽，否则显示 +N；没有折起的标签时连接层给 hidden
+    return () => h(
+      'span',
+      ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.overflowText,
+    )
   },
 })
 
