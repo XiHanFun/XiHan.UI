@@ -1,4 +1,4 @@
-<!-- 多选标签 | 内建标签形态：触发器里的标签行最多摆 maxTagCount 枚（缺省 3），其余合成一枚 +N；触发器里 XhSelectTag 纯展示，触发器外配 XhSelectItemDeleteTrigger 即可删 -->
+<!-- 多选标签 | 内建标签形态：触发器里的标签行最多摆 maxTagCount 枚（缺省 3），其余合成一枚 +N；每枚标签与 +N 都是库里的 tag（语气与尺寸随控件，形态按控件的面派），触发器里纯展示，触发器外配 XhSelectItemDeleteTrigger 即可删 -->
 <xh-select id="select-tags" multiple max-tag-count="2" placeholder="请选择">
   <div data-xh-part="root" style="inline-size: 280px">
     <span data-xh-part="label">技术栈</span>
@@ -6,7 +6,7 @@
       <button data-xh-part="trigger">
         <!-- 占位文字与标签行同时写着：有选中时标签行露面、占位让位，无选中时反过来 -->
         <span data-xh-part="value-text"></span>
-        <!-- 触发器里的标签只作展示：按钮不能套按钮，这里不放删除钮；+N 那一枚由元素填字 -->
+        <!-- 触发器里的标签只作展示：按钮不能套按钮，这里不放删除钮；tag / overflow-tag 接的都是 tag 的 root，只有文字的由元素包一层 label，+N 那一枚由元素填字 -->
         <span data-xh-part="tag-list">
           <span data-xh-part="overflow-tag"></span>
         </span>

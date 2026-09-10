@@ -2,7 +2,7 @@ import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement,
 import type { SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectSelect, selectAnatomy, selectMachine, selectMeta } from '@xihan-ui/headless'
+import { connectSelect, selectAnatomy, selectMachine, selectMeta, tagAnatomy } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -24,6 +24,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  *
  * value-text 的显示文字、overflow-tag 的 +N 与表单影子 hidden-select 的选项由元素代填，作者只需给出空节点；
  * value-text / overflow-tag 里作者写了内容就归作者，元素不再改写。
+ *
+ * tag 与 overflow-tag 两个角色节点接的是库里 tag 的 root（DOM 上带 data-scope="tag"，吃 tag 那份皮肤）：
+ * 语气、尺寸与禁用从本元素传下去，形态按控件的面派（outline / ghost / 缺省摆淡底标签，subtle 摆描边标签），不可关闭。
+ * 节点里只有文字时元素替它包一层 tag 的 label（截断落在那一层），
+ * 作者自己写了子节点就原样放行。
  *
  * @customElement xh-select
  * @attr {string} value - 受控选中值；缺省该属性即非受控。多选集合请写 property，属性只递得进单值
@@ -56,9 +61,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart control - 盒：触发器与清空按钮在里面并排，描边、底色、控件高度与聚焦环都长在它上面
  * @csspart clear-trigger - 清空按钮：盒里 trigger 的兄弟节点，不占 Tab 位；清不了（无值 / 禁用 / 只读）时带 hidden，点完焦点送回 trigger；可及名走 translations.clearTrigger
  * @csspart tag-list - 触发器里的标签行：可见标签与 overflow-tag 放在它里面；无选中时带 hidden，value-text 回来显示占位文字
- * @csspart tag - 多选标签，须自带 value 属性标识选中值；放触发器里是纯展示，放外面配 item-delete-trigger 可删
+ * @csspart tag - 多选标签，须自带 value 属性标识选中值；接的是 tag 的 root（data-scope="tag"），语气、尺寸与禁用随本元素、形态按控件的面派；放触发器里是纯展示，放外面配 item-delete-trigger 可删
  * @csspart item-delete-trigger - 标签删除按钮，须放在 tag 里；点按摘掉所在标签的选中值，可及名走 translations.deleteItem
- * @csspart overflow-tag - 折起的标签合成的那一枚：留空即由元素填入 +N（文字走 translations.overflowTag），作者写了内容则归作者；没有折起的标签时带 hidden
+ * @csspart overflow-tag - 折起的标签合成的那一枚，同样接 tag 的 root，带 data-count：留空即由元素填入 +N（文字走 translations.overflowTag），作者写了内容则归作者；没有折起的标签时带 hidden
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - 浮层外壳（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart list - role=listbox 本体，条目放在它里面；滚动也在这一层
@@ -73,7 +78,12 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart hidden-select - 表单影子，须是原生 select 空壳；选项由元素按当前值补齐（多选时开原生 multiple），省略该节点即不参与表单
  */
 export class XhSelectElement extends XhElement {
-  static override partContract = { anatomy: selectAnatomy, meta: selectMeta }
+  // tag / overflow-tag 两个角色节点接的是 tag 的 root，归 tag 那套 scope 管，不在本元素的解剖里
+  static override partContract = {
+    anatomy: selectAnatomy,
+    meta: selectMeta,
+    delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag'] }],
+  }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -135,8 +145,10 @@ export class XhSelectElement extends XhElement {
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
 
-  /** value-text / overflow-tag 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
+  /** value-text / overflow-tag 的文字是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
   private readonly ownsText = new WeakMap<HTMLElement, boolean>()
+  /** 每枚标签里由元素补出来的那层 label。 */
+  private readonly tagLabels = new WeakMap<HTMLElement, HTMLElement>()
   /** 表单影子当前这批选项对应的值与文字，同一份不重建。 */
   private readonly hiddenOptionKey = new WeakMap<HTMLElement, string>()
 
@@ -268,6 +280,23 @@ export class XhSelectElement extends XhElement {
   }
 
   /**
+   * 标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，
+   * 返回 null。补出来的那层不打 data-xh-part，不进角色节点表。
+   */
+  private ensureTagLabel(tag: HTMLElement): HTMLElement | null {
+    const existing = this.tagLabels.get(tag)
+    if (existing && existing.parentNode === tag)
+      return existing
+    if (tag.children.length > 0)
+      return null
+    const label = this.ownerDocument.createElement('span')
+    label.append(...Array.from(tag.childNodes))
+    tag.append(label)
+    this.tagLabels.set(tag, label)
+    return label
+  }
+
+  /**
    * 给表单影子补齐选项：空串选项是无选中时的落点，每个选中值一个 selected 选项。
    * 必须晚于属性写入：multiple 还没落到元素上时，单选 select 每收下一个 selected 选项
    * 就会跑一次原生「ask for a reset」，把前面的选中全撤掉。
@@ -327,18 +356,27 @@ export class XhSelectElement extends XhElement {
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
 
     put('tag-list', api.getTagListProps() as Record<string, unknown>)
-    // 标签是多实例 part：身份取自己（或所在 tag）的 value 属性
-    for (const el of this.getParts('tag'))
+    // 标签是多实例 part，接的是 tag 的 root：身份取自己（或所在 tag）的 value 属性；只有文字的补一层 label
+    const tagLabelProps = api.getTagLabelProps() as Record<string, unknown>
+    for (const el of this.getParts('tag')) {
       this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      const label = this.ensureTagLabel(el)
+      if (label)
+        this.spreader.spread(label, tagLabelProps)
+    }
     for (const el of this.getParts('item-delete-trigger')) {
       const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
       this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
     }
-    // +N 那一枚：属性先落，再填文字
+    // +N 那一枚：属性先落，文字填进 label；作者写了子节点就归作者
     const overflowTag = this.getPart('overflow-tag')
     if (overflowTag) {
       this.spreader.spread(overflowTag, api.getOverflowTagProps() as Record<string, unknown>)
-      this.fillText(overflowTag, api.overflowText)
+      const label = this.ensureTagLabel(overflowTag)
+      if (label) {
+        this.spreader.spread(label, tagLabelProps)
+        this.fillText(label, api.overflowText)
+      }
     }
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)

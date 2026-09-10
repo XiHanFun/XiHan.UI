@@ -1,4 +1,4 @@
-// 尺寸 | size 换内边距、间距、字号与行框，不写就是缺省档；同一档有没有关闭钮都一样高，lg 档的关闭钮跟着放大
+// 尺寸 | size 换内边距、间距、字号与行框，不写就是缺省档；同一档有没有关闭钮都一样高，关闭钮三档同一个尺寸
 import type { ReactNode } from "react";
 import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from "@xihan-ui/react";
 import { Fragment } from "react";

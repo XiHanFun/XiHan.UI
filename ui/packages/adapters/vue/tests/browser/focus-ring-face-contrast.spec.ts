@@ -863,7 +863,24 @@ const 删除叉的灰字 = '连接层不给删除叉发 data-highlighted，皮�
  * 明知不达标、且换环色那一行救不回来的档。键是档位标签，值写一句差在哪、过线要动什么。
  * 两侧反查：登记的档必须仍挂得出来、仍在画环、也仍然不达标，三条有一条不成立即判登记过期。
  */
+/** 删除钮在实心标签里：select 只传 subtle / outline，solid 档挂不出来。 */
+const 删除钮在实心标签里 = 'select 的连接层只把 subtle / outline 传给标签，solid 是 tag.css 有规则、在 select 里却挂不出来的档；判据从夹具学到 tag/root 套着 select/item-delete-trigger 之后把那条上下文也套了上来。删除钮退役成 tag 自己的 close-trigger 后这一档随之消失'
+
 const KNOWN = new Map<string, string>([
+  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid · 无语气 · light', 删除钮在实心标签里],
+  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid · 无语气 · dark', 删除钮在实心标签里],
+  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · brand · light', 删除钮在实心标签里],
+  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · brand · dark', 删除钮在实心标签里],
+  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · neutral · light', 删除钮在实心标签里],
+  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · neutral · dark', 删除钮在实心标签里],
+  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · danger · light', 删除钮在实心标签里],
+  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · danger · dark', 删除钮在实心标签里],
+  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · success · light', 删除钮在实心标签里],
+  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · success · dark', 删除钮在实心标签里],
+  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · warning · light', 删除钮在实心标签里],
+  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · warning · dark', 删除钮在实心标签里],
+  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · info · light', 删除钮在实心标签里],
+  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · info · dark', 删除钮在实心标签里],
   ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted + tag-group/item state=checked · brand · light', 轻档的灰底],
   ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted + tag-group/item state=checked · danger · light', 轻档的灰底],
   ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted + tag-group/item state=checked · info · light', 轻档的灰底],

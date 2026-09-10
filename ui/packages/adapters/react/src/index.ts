@@ -1777,6 +1777,7 @@ export {
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTag,
+  XhSelectTagLabel,
   XhSelectTagList,
   XhSelectTrigger,
   XhSelectValueText,

@@ -37792,7 +37792,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-select>` —— Light-DOM 行为宿主：用户写 root/trigger/value-text/positioner/content/item/...\n角色节点，元素跑 select 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner。\n条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。\n\nvalue-text 的显示文字、overflow-tag 的 +N 与表单影子 hidden-select 的选项由元素代填，作者只需给出空节点；\nvalue-text / overflow-tag 里作者写了内容就归作者，元素不再改写。",
+          "description": "`<xh-select>` —— Light-DOM 行为宿主：用户写 root/trigger/value-text/positioner/content/item/...\n角色节点，元素跑 select 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner。\n条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。\n\nvalue-text 的显示文字、overflow-tag 的 +N 与表单影子 hidden-select 的选项由元素代填，作者只需给出空节点；\nvalue-text / overflow-tag 里作者写了内容就归作者，元素不再改写。\n\ntag 与 overflow-tag 两个角色节点接的是库里 tag 的 root（DOM 上带 data-scope=\"tag\"，吃 tag 那份皮肤）：\n语气、尺寸与禁用从本元素传下去，形态按控件的面派（outline / ghost / 缺省摆淡底标签，subtle 摆描边标签），不可关闭。\n节点里只有文字时元素替它包一层 tag 的 label（截断落在那一层），\n作者自己写了子节点就原样放行。",
           "name": "XhSelectElement",
           "cssParts": [
             {
@@ -37828,7 +37828,7 @@
               "name": "tag-list"
             },
             {
-              "description": "多选标签，须自带 value 属性标识选中值；放触发器里是纯展示，放外面配 item-delete-trigger 可删",
+              "description": "多选标签，须自带 value 属性标识选中值；接的是 tag 的 root（data-scope=\"tag\"），语气、尺寸与禁用随本元素、形态按控件的面派；放触发器里是纯展示，放外面配 item-delete-trigger 可删",
               "name": "tag"
             },
             {
@@ -37836,7 +37836,7 @@
               "name": "item-delete-trigger"
             },
             {
-              "description": "折起的标签合成的那一枚：留空即由元素填入 +N（文字走 translations.overflowTag），作者写了内容则归作者；没有折起的标签时带 hidden",
+              "description": "折起的标签合成的那一枚，同样接 tag 的 root，带 data-count：留空即由元素填入 +N（文字走 translations.overflowTag），作者写了内容则归作者；没有折起的标签时带 hidden",
               "name": "overflow-tag"
             },
             {
@@ -37896,7 +37896,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: selectAnatomy, meta: selectMeta }"
+              "default": "{ anatomy: selectAnatomy, meta: selectMeta, delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag'] }], }"
             },
             {
               "kind": "field",
@@ -38144,7 +38144,15 @@
               "privacy": "private",
               "readonly": true,
               "default": "new WeakMap<HTMLElement, boolean>()",
-              "description": "value-text / overflow-tag 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。"
+              "description": "value-text / overflow-tag 的文字是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。"
+            },
+            {
+              "kind": "field",
+              "name": "tagLabels",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, HTMLElement>()",
+              "description": "每枚标签里由元素补出来的那层 label。"
             },
             {
               "kind": "field",
@@ -38291,6 +38299,25 @@
                 }
               ],
               "description": "填入元素代管的文字（value-text 的显示文字、overflow-tag 的 +N）；首次见到该节点时若已有内容则归作者，之后不再改写。"
+            },
+            {
+              "kind": "method",
+              "name": "ensureTagLabel",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "tag",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，\n返回 null。补出来的那层不打 data-xh-part，不进角色节点表。"
             },
             {
               "kind": "method",
@@ -38793,43 +38820,10 @@
               "name": "--xh-select-loading-py"
             },
             {
-              "name": "--xh-select-overflow-tag-bg"
-            },
-            {
-              "name": "--xh-select-overflow-tag-fg"
-            },
-            {
-              "name": "--xh-select-overflow-tag-font-size"
-            },
-            {
-              "name": "--xh-select-overflow-tag-px"
-            },
-            {
-              "name": "--xh-select-overflow-tag-radius"
-            },
-            {
               "name": "--xh-select-placeholder-fg"
             },
             {
-              "name": "--xh-select-tag-bg"
-            },
-            {
-              "name": "--xh-select-tag-fg"
-            },
-            {
-              "name": "--xh-select-tag-font-size"
-            },
-            {
-              "name": "--xh-select-tag-gap"
-            },
-            {
               "name": "--xh-select-tag-list-gap"
-            },
-            {
-              "name": "--xh-select-tag-px"
-            },
-            {
-              "name": "--xh-select-tag-radius"
             },
             {
               "name": "--xh-select-trigger-fg"

@@ -123,13 +123,14 @@ describe('标签的尺寸阶梯', () => {
   })
 
   it('三档的高严格递增，台阶一样宽', async () => {
-    const heights = []
+    const heights: number[] = []
     for (const tier of TIERS)
       heights.push((await measure(tier, true)).height)
+    const [sm, md, lg] = heights as [number, number, number]
 
-    expect(heights[0]).toBeLessThan(heights[1])
-    expect(heights[1]).toBeLessThan(heights[2])
-    expect(heights[1] - heights[0]).toBe(heights[2] - heights[1])
+    expect(sm).toBeLessThan(md)
+    expect(md).toBeLessThan(lg)
+    expect(md - sm).toBe(lg - md)
   })
 
   it('compact 密度下三档随指示符档各收一号，台阶仍一样宽', async () => {

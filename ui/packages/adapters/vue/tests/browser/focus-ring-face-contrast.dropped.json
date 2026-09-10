@@ -434,8 +434,6 @@
   "[data-scope=\"select\"][data-part=\"item-delete-trigger\"]:hover": "写法挂不出来：:hover",
   "[data-scope=\"select\"][data-part=\"item-indicator\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"select\"][data-part=\"item\"]:not([data-disabled]):hover": "写法挂不出来：:hover",
-  "[data-scope=\"select\"][data-part=\"overflow-tag\"]": "部件不接焦点：select/overflow-tag",
-  "[data-scope=\"select\"][data-part=\"tag\"]": "部件不接焦点：select/tag",
   "[data-scope=\"separator\"][data-part=\"line\"]": "部件不接焦点：separator/line",
   "[data-scope=\"separator\"][data-part=\"root\"]": "部件不接焦点：separator/root",
   "[data-scope=\"separator\"][data-part=\"root\"]:has([data-part=\"content\"])": "写法挂不出来：:has(",
