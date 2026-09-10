@@ -1,6 +1,5 @@
 import type { Disposable, Layer, RuntimeConfig } from '../../kernel'
 import { contains, EV_MOUNT_AUTO_FOCUS, EV_UNMOUNT_AUTO_FOCUS } from '../../kernel'
-import { dispatchCancelable } from '../dispatch'
 import { acquireFocusGuards } from './focus-guards'
 import { focusFirst, focusSafely, getTabbables, removeLinks } from './tabbable'
 
@@ -41,6 +40,18 @@ function hasNewerScope(seq: number): boolean {
   return false
 }
 
+function dispatchAutoFocus(
+  win: Window & typeof globalThis,
+  target: EventTarget,
+  type: string,
+  callback: ((event: CustomEvent) => void) | undefined,
+): boolean {
+  const event = new win.CustomEvent(type, { bubbles: false, cancelable: true, detail: {} })
+  target.dispatchEvent(event)
+  callback?.(event)
+  return !event.defaultPrevented
+}
+
 export function createFocusScope(o: FocusScopeOptions): Disposable {
   const { config, layer, container } = o
   const scope = config.scope
@@ -49,14 +60,15 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
   const registry = config.layerRegistry
 
   const mountSeq = ++focusScopeSeq
-  liveFocusScopes.add(mountSeq)
-
   let disposed = false
+  let resourcesReleased = false
   let paused = registry.top() !== layer
   let lastFocused: HTMLElement | null = scope.getActiveElement()
   const previouslyFocused = scope.getActiveElement()
+  let unsubscribe: () => void = () => {}
 
   const guardsCleanup = acquireFocusGuards(doc)
+  liveFocusScopes.add(mountSeq)
 
   function isInScope(el: Element | null): boolean {
     if (!el)
@@ -71,22 +83,33 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
   // 容器可能晚一拍才就位，按 initialFocus → 首个可聚焦元素 → 容器 的顺序取焦点，
   // 容器兜底只在最后一帧使用。
   let focusSettled = false
+  let mountEventDispatched = false
+  let mountFocusAllowed = true
+  let boundContainer: HTMLElement | null = null
   function tryMountFocus(lastChance: boolean): void {
     if (focusSettled || disposed)
       return
     const el = container()
     if (!el)
       return // 容器还没就位，留待重试
+    boundContainer ??= el
     const active = scope.getActiveElement()
     // 焦点已落在容器后代则视为完成，落在容器本身不算
     if (isInScope(active) && active !== el) {
       focusSettled = true
       return
     }
-    const proceed = dispatchCancelable(el, EV_MOUNT_AUTO_FOCUS, {})
-    // onMountAutoFocus 里可 preventDefault 改写默认聚焦
-    o.onMountAutoFocus?.(new CustomEvent(EV_MOUNT_AUTO_FOCUS))
-    if (!proceed) {
+    if (!mountEventDispatched) {
+      mountEventDispatched = true
+      // DOM 监听器与选项回调对同一枚事件表决，任一 preventDefault 都接管默认聚焦。
+      mountFocusAllowed = dispatchAutoFocus(win, el, EV_MOUNT_AUTO_FOCUS, o.onMountAutoFocus)
+      // 回调可能同步打开更新层。旧层不再于后续帧补抢初始焦点。
+      if (disposed || paused) {
+        focusSettled = true
+        return
+      }
+    }
+    if (!mountFocusAllowed) {
       focusSettled = true
       return
     }
@@ -114,7 +137,14 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
     win.requestAnimationFrame(() => {
       if (focusSettled || disposed)
         return
-      tryMountFocus(remaining <= 1)
+      try {
+        tryMountFocus(remaining <= 1)
+      }
+      catch (error) {
+        disposed = true
+        releaseResources()
+        throw error
+      }
       if (!focusSettled && remaining > 1)
         scheduleFocus(remaining - 1)
     })
@@ -180,57 +210,65 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
     }
   }
 
+  function releaseResources(): void {
+    if (resourcesReleased)
+      return
+    resourcesReleased = true
+    liveFocusScopes.delete(mountSeq)
+    doc.removeEventListener('focusin', onFocusIn, { capture: true })
+    doc.removeEventListener('focusout', onFocusOut, { capture: true })
+    doc.removeEventListener('keydown', onKeyDown, { capture: true })
+    unsubscribe()
+    guardsCleanup()
+  }
+
   // 监听必须先于挂载聚焦装上：那一次聚焦同样要记进 lastFocused，
   // 否则首次逃逸时手里只有创建前的旧值（通常是 body），一拉就拉了个空。
   doc.addEventListener('focusin', onFocusIn, { capture: true })
   doc.addEventListener('focusout', onFocusOut, { capture: true })
   doc.addEventListener('keydown', onKeyDown, { capture: true })
 
-  tryMountFocus(false)
-  if (!focusSettled)
-    scheduleFocus(3)
-
-  const unsub = registry.subscribe((layers) => {
-    paused = layers[layers.length - 1] !== layer
-  })
+  try {
+    unsubscribe = registry.subscribe((layers) => {
+      paused = layers[layers.length - 1] !== layer
+    })
+    tryMountFocus(false)
+    if (!focusSettled)
+      scheduleFocus(3)
+  }
+  catch (error) {
+    disposed = true
+    releaseResources()
+    throw error
+  }
 
   return {
     dispose() {
       if (disposed)
         return
       disposed = true
-      liveFocusScopes.delete(mountSeq)
-      doc.removeEventListener('focusin', onFocusIn, { capture: true })
-      doc.removeEventListener('focusout', onFocusOut, { capture: true })
-      doc.removeEventListener('keydown', onKeyDown, { capture: true })
-      unsub()
-      guardsCleanup()
+      const autoFocusEventTarget = boundContainer
+      releaseResources()
       // 焦点返还延后一帧
       win.requestAnimationFrame(() => {
-        if (!(o.restoreFocus?.() ?? true))
+        const proceed = autoFocusEventTarget
+          ? dispatchAutoFocus(win, autoFocusEventTarget, EV_UNMOUNT_AUTO_FOCUS, o.onUnmountAutoFocus)
+          : true
+        // 回调可能同步打开更新层；生命周期通知照发，旧层不从新层手里抢焦点。
+        if (!proceed || !(o.restoreFocus?.() ?? true) || hasNewerScope(mountSeq))
           return
-        // 比本域更晚建立的焦点域还活着：焦点是它的，不抢。
-        // 归还排在拆除后一帧，这一帧里「关掉又立刻开一个」的新域已经把焦点安排好了，
-        // 无条件归还会把它拽回旧触发器。子层先于父层拆除的常见顺序不受影响：
-        // 父层拆时子层已不在场，没有更晚的域，照常归还
-        if (hasNewerScope(mountSeq))
+        // 显式落点优先于创建前的快照：快照是「点按那一刻焦点在哪」，指针入口下它常是 body
+        const explicit = o.restoreTarget?.() ?? null
+        const back = explicit?.isConnected ? explicit : previouslyFocused
+        if (back?.isConnected) {
+          focusSafely(back, { select: true })
           return
-        const anchor = container() ?? doc.body
-        if (dispatchCancelable(anchor, EV_UNMOUNT_AUTO_FOCUS, {})) {
-          o.onUnmountAutoFocus?.(new CustomEvent(EV_UNMOUNT_AUTO_FOCUS))
-          // 显式落点优先于创建前的快照：快照是「点按那一刻焦点在哪」，指针入口下它常是 body
-          const explicit = o.restoreTarget?.() ?? null
-          const back = explicit?.isConnected ? explicit : previouslyFocused
-          if (back?.isConnected) {
-            focusSafely(back, { select: true })
-            return
-          }
-          // 原持有者已离场。不能靠 body.focus()——body 不在各引擎一致的可聚焦集合里，
-          // 那样焦点会留在这个已经关掉的层里（WC 侧节点常驻，尤其明显）。显式松手。
-          const active = scope.getActiveElement()
-          if (active && isInScope(active))
-            active.blur()
         }
+        // 原持有者已离场。不能靠 body.focus()——body 不在各引擎一致的可聚焦集合里，
+        // 那样焦点会留在这个已经关掉的层里（WC 侧节点常驻，尤其明显）。显式松手。
+        const active = scope.getActiveElement()
+        if (active && isInScope(active))
+          active.blur()
       })
     },
   }
