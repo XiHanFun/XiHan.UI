@@ -25,29 +25,29 @@ afterEach(() => {
 })
 
 /** 等 n 帧：挂载聚焦与卸载归还都排在 rAF 上。 */
-async function frames(n = 1): Promise<void> {
+async function frames(n = 1, win: Window = window): Promise<void> {
   for (let i = 0; i < n; i++)
-    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+    await new Promise<void>(resolve => win.requestAnimationFrame(() => resolve()))
 }
 
-function setup(buttonCount = 3): Harness {
-  const outside = document.createElement('button')
+function setup(buttonCount = 3, doc: Document = document): Harness {
+  const outside = doc.createElement('button')
   outside.textContent = '外面'
-  document.body.appendChild(outside)
+  doc.body.appendChild(outside)
 
-  const container = document.createElement('div')
+  const container = doc.createElement('div')
   // 真实组件的 content 部件都带 tabindex=-1，无可聚焦子节点时才兜得住
   container.tabIndex = -1
   const buttons: HTMLButtonElement[] = []
   for (let i = 0; i < buttonCount; i++) {
-    const b = document.createElement('button')
+    const b = doc.createElement('button')
     b.textContent = `里面 ${i}`
     container.appendChild(b)
     buttons.push(b)
   }
-  document.body.appendChild(container)
+  doc.body.appendChild(container)
 
-  const registry = createLayerRegistry(document)
+  const registry = createLayerRegistry(doc)
   const { layer, dispose: disposeLayer } = registry.register({
     kind: 'modal',
     node: () => container,
@@ -57,7 +57,7 @@ function setup(buttonCount = 3): Harness {
     surfaces: () => [],
   })
   const config = createRuntimeConfig({
-    scope: createScope(null, createCounterIdGenerator()),
+    scope: createScope(container, createCounterIdGenerator()),
     layerRegistry: registry,
   })
 
@@ -398,6 +398,27 @@ describe('卸载归还', () => {
     expect(document.activeElement).toBe(h.outside)
   })
 
+  it('其他 document 的更新焦点域不阻止当前 document 归还', async () => {
+    const h = setup()
+    h.outside.focus()
+    const current = open(h)
+    await frames(2)
+
+    const frame = document.createElement('iframe')
+    document.body.appendChild(frame)
+    const foreign = setup(1, frame.contentDocument!)
+    const foreignScope = open(foreign, {
+      onMountAutoFocus: event => event.preventDefault(),
+      restoreFocus: () => false,
+    })
+
+    current.dispose()
+    await frames(2)
+    expect(document.activeElement).toBe(h.outside)
+    foreignScope.dispose()
+    await frames(2, frame.contentWindow!)
+  })
+
   it('restoreFocus 为假时不归还', async () => {
     const h = setup()
     h.outside.focus()
@@ -487,6 +508,49 @@ describe('卸载归还', () => {
     scope.dispose()
     await frames(2)
     expect(document.activeElement).toBe(upperButton)
+  })
+
+  it('restoreTarget 同步打开同文档更新焦点域时，旧域不抢回焦点', async () => {
+    const h = setup()
+    h.outside.focus()
+    const oldTargetFocus = vi.fn()
+    h.outside.addEventListener('focus', oldTargetFocus)
+    const upperContainer = document.createElement('div')
+    const upperButton = document.createElement('button')
+    upperContainer.appendChild(upperButton)
+    document.body.appendChild(upperContainer)
+    let upperScope: ReturnType<typeof createFocusScope> | undefined
+    let disposeUpperLayer: (() => void) | undefined
+    cleanups.unshift(() => {
+      upperScope?.dispose()
+      disposeUpperLayer?.()
+    })
+    const scope = open(h, {
+      restoreTarget: () => {
+        const upper = h.registry.register({
+          kind: 'modal',
+          node: () => upperContainer,
+          branches: () => [],
+          isModal: () => true,
+          setModal: () => {},
+          surfaces: () => [],
+        })
+        disposeUpperLayer = upper.dispose
+        upperScope = createFocusScope({
+          config: h.config,
+          layer: upper.layer,
+          container: () => upperContainer,
+          trapped: () => true,
+        })
+        return h.outside
+      },
+    })
+
+    await frames(2)
+    scope.dispose()
+    await frames(2)
+    expect(document.activeElement).toBe(upperButton)
+    expect(oldTargetFocus).not.toHaveBeenCalled()
   })
 
   it('容器在关闭前离场时，unmount 事件仍派给 mount 时的原节点', async () => {

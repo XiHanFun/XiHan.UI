@@ -1,5 +1,5 @@
 import type { Disposable, Layer, RuntimeConfig } from '../../kernel'
-import { contains, EV_MOUNT_AUTO_FOCUS, EV_UNMOUNT_AUTO_FOCUS } from '../../kernel'
+import { contains, createPerDocumentRegistry, EV_MOUNT_AUTO_FOCUS, EV_UNMOUNT_AUTO_FOCUS } from '../../kernel'
 import { acquireFocusGuards } from './focus-guards'
 import { focusFirst, focusSafely, getTabbables, removeLinks } from './tabbable'
 
@@ -27,13 +27,20 @@ export interface FocusScopeOptions {
   restoreTarget?: () => HTMLElement | null
 }
 
-// 在场的焦点域，按建立先后编号。焦点归还要据此判断「有没有更晚的域接手了焦点」。
-let focusScopeSeq = 0
-const liveFocusScopes = new Set<number>()
+interface FocusScopeDocumentState {
+  sequence: number
+  live: Set<number>
+}
+
+// 焦点归还只和同一 Document 中更晚建立的域竞争；其他窗口有自己的焦点生命周期。
+const focusScopesByDocument = createPerDocumentRegistry<FocusScopeDocumentState>(() => ({
+  sequence: 0,
+  live: new Set<number>(),
+}))
 
 /** 有比 seq 更晚建立、且此刻仍在场的焦点域吗。 */
-function hasNewerScope(seq: number): boolean {
-  for (const live of liveFocusScopes) {
+function hasNewerScope(state: FocusScopeDocumentState, seq: number): boolean {
+  for (const live of state.live) {
     if (live > seq)
       return true
   }
@@ -59,7 +66,8 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
   const win = scope.getWin()
   const registry = config.layerRegistry
 
-  const mountSeq = ++focusScopeSeq
+  const documentScopes = focusScopesByDocument.get(doc)
+  const mountSeq = ++documentScopes.sequence
   let disposed = false
   let resourcesReleased = false
   let paused = registry.top() !== layer
@@ -68,7 +76,7 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
   let unsubscribe: () => void = () => {}
 
   const guardsCleanup = acquireFocusGuards(doc)
-  liveFocusScopes.add(mountSeq)
+  documentScopes.live.add(mountSeq)
 
   function isInScope(el: Element | null): boolean {
     if (!el)
@@ -214,7 +222,7 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
     if (resourcesReleased)
       return
     resourcesReleased = true
-    liveFocusScopes.delete(mountSeq)
+    documentScopes.live.delete(mountSeq)
     doc.removeEventListener('focusin', onFocusIn, { capture: true })
     doc.removeEventListener('focusout', onFocusOut, { capture: true })
     doc.removeEventListener('keydown', onKeyDown, { capture: true })
@@ -255,10 +263,13 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
           ? dispatchAutoFocus(win, autoFocusEventTarget, EV_UNMOUNT_AUTO_FOCUS, o.onUnmountAutoFocus)
           : true
         // 回调可能同步打开更新层；生命周期通知照发，旧层不从新层手里抢焦点。
-        if (!proceed || !(o.restoreFocus?.() ?? true) || hasNewerScope(mountSeq))
+        if (!proceed || !(o.restoreFocus?.() ?? true) || hasNewerScope(documentScopes, mountSeq))
           return
         // 显式落点优先于创建前的快照：快照是「点按那一刻焦点在哪」，指针入口下它常是 body
         const explicit = o.restoreTarget?.() ?? null
+        // restoreTarget 是用户代码，也可能同步建立并聚焦更新域；写焦点前必须重新表决。
+        if (hasNewerScope(documentScopes, mountSeq))
+          return
         const back = explicit?.isConnected ? explicit : previouslyFocused
         if (back?.isConnected) {
           focusSafely(back, { select: true })
