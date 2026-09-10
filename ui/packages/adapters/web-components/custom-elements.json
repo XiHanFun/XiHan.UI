@@ -37792,7 +37792,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-select>` —— Light-DOM 行为宿主：用户写 root/trigger/value-text/positioner/content/item/...\n角色节点，元素跑 select 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner。\n条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。\n\nvalue-text 的显示文字、overflow-tag 的 +N 与表单影子 hidden-select 的选项由元素代填，作者只需给出空节点；\nvalue-text / overflow-tag 里作者写了内容就归作者，元素不再改写。\n\ntag 与 overflow-tag 两个角色节点接的是库里 tag 的 root（DOM 上带 data-scope=\"tag\"，吃 tag 那份皮肤）：\n语气、尺寸与禁用从本元素传下去，形态按控件的面派（outline / ghost / 缺省摆淡底标签，subtle 摆描边标签），不可关闭。\n节点里只有文字时元素替它包一层 tag 的 label（截断落在那一层），\n作者自己写了子节点就原样放行。",
+          "description": "`<xh-select>` —— Light-DOM 行为宿主：用户写 root/trigger/value-text/positioner/content/item/...\n角色节点，元素跑 select 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner。\n条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。\n\nvalue-text 的显示文字、overflow-tag 的 +N 与表单影子 hidden-select 的选项由元素代填，作者只需给出空节点；\nvalue-text / overflow-tag 里作者写了内容就归作者，元素不再改写。\n\ntag 与 overflow-tag 两个角色节点接的是库里 tag 的 root（DOM 上带 data-scope=\"tag\"，吃 tag 那份皮肤）：\n语气、尺寸与禁用从本元素传下去，形态按控件的面派（outline / ghost / 缺省摆淡底标签，subtle 摆描边标签）。\n节点里只有文字时元素替它包一层 tag 的 label（截断落在那一层），\n作者自己写了子节点就原样放行。item-delete-trigger 接的是所在标签那份 tag 的 close-trigger。",
           "name": "XhSelectElement",
           "cssParts": [
             {
@@ -37832,7 +37832,7 @@
               "name": "tag"
             },
             {
-              "description": "标签删除按钮，须放在 tag 里；点按摘掉所在标签的选中值，可及名走 translations.deleteItem",
+              "description": "标签删除按钮，须放在 tag 里；接的是所在标签那份 tag 的 close-trigger（data-scope=\"tag\"），禁用时留位、原生 disabled；点按摘掉所在标签的选中值，可及名走 translations.deleteItem",
               "name": "item-delete-trigger"
             },
             {
@@ -37896,7 +37896,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: selectAnatomy, meta: selectMeta, delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag'] }], }"
+              "default": "{ anatomy: selectAnatomy, meta: selectMeta, delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
@@ -38737,24 +38737,6 @@
             },
             {
               "name": "--xh-select-item-bg-hover"
-            },
-            {
-              "name": "--xh-select-item-delete-bg-active"
-            },
-            {
-              "name": "--xh-select-item-delete-bg-hover"
-            },
-            {
-              "name": "--xh-select-item-delete-fg"
-            },
-            {
-              "name": "--xh-select-item-delete-fg-hover"
-            },
-            {
-              "name": "--xh-select-item-delete-radius"
-            },
-            {
-              "name": "--xh-select-item-delete-size"
             },
             {
               "name": "--xh-select-item-fg"
@@ -44124,7 +44106,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tag-group>` —— Light-DOM 行为宿主：作者写 root/label/list 与若干 item（内含 cell）角色节点，\n元素跑 tag-group 机器并把 connect 产出打上去。条目身份取自条目节点上的 value 属性，\n禁用由条目自报 aria-disabled，可摘由条目自报 deletable 属性。\n\n整组只占一个 Tab 停靠点：组内走方向键，摘除走 Delete / Backspace，\n每枚标签的摘除钮一律 tabindex=-1。\n\n条目的去留归宿主：item-delete 只报「用户要摘这一枚」，作者收到后自己把节点摘掉。\n\n选中值是集合：单选可以直接写 value=\"a\" 属性，多选只能走 property（`el.value = ['a','b']`），\n属性表达不了数组。",
+          "description": "`<xh-tag-group>` —— Light-DOM 行为宿主：作者写 root/label/list 与若干 item（内含 cell）角色节点，\n元素跑 tag-group 机器并把 connect 产出打上去。条目身份取自条目节点上的 value 属性，\n禁用由条目自报 aria-disabled，可摘由条目自报 deletable 属性。\n\nitem / item-text / item-delete-trigger 三个角色节点接的是库里 tag 的 root / label / close-trigger\n（DOM 上带 data-scope=\"tag\"，吃 tag 那份皮肤）：三轴、置灰与摘除钮的可及名都由 tag 给，\n元素只往标签上叠行角色、Tab 停靠点、选中与锚点。\n\n整组只占一个 Tab 停靠点：组内走方向键，摘除走 Delete / Backspace，\n每枚标签的摘除钮一律 tabindex=-1。\n\n条目的去留归宿主：item-delete 只报「用户要摘这一枚」，作者收到后自己把节点摘掉。\n\n选中值是集合：单选可以直接写 value=\"a\" 属性，多选只能走 property（`el.value = ['a','b']`），\n属性表达不了数组。",
           "name": "XhTagGroupElement",
           "cssParts": [
             {
@@ -44140,7 +44122,7 @@
               "name": "list"
             },
             {
-              "description": "role=row 标签，须自带 value 属性标识身份；禁用写 aria-disabled=\"true\"",
+              "description": "一枚标签，须自带 value 属性标识身份；禁用写 aria-disabled=\"true\"。接的是 tag 的 root（data-scope=\"tag\"），叠上 role=row、roving tabindex、data-selected 与 data-highlighted",
               "name": "item"
             },
             {
@@ -44148,11 +44130,11 @@
               "name": "cell"
             },
             {
-              "description": "标签文字（连打检索的取字处）",
+              "description": "标签文字（连打检索的取字处），接的是 tag 的 label（data-scope=\"tag\"）",
               "name": "item-text"
             },
             {
-              "description": "摘除钮，不占 Tab 位",
+              "description": "摘除钮，不占 Tab 位；接的是所在标签那份 tag 的 close-trigger（data-scope=\"tag\"），整组没开放摘除时收起，可及名走 translations.deleteItem",
               "name": "item-delete-trigger"
             }
           ],
@@ -44164,7 +44146,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: tagGroupAnatomy, meta: tagGroupMeta }"
+              "default": "{ anatomy: tagGroupAnatomy, meta: tagGroupMeta, delegates: [{ name: tagAnatomy.name, parts: ['item', 'item-text', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
@@ -44701,73 +44683,16 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-tag-group-cell-gap"
-            },
-            {
               "name": "--xh-tag-group-gap"
-            },
-            {
-              "name": "--xh-tag-group-item-bg"
-            },
-            {
-              "name": "--xh-tag-group-item-bg-disabled"
             },
             {
               "name": "--xh-tag-group-item-bg-hover"
             },
             {
-              "name": "--xh-tag-group-item-border"
-            },
-            {
-              "name": "--xh-tag-group-item-border-disabled"
-            },
-            {
               "name": "--xh-tag-group-item-border-selected"
             },
             {
-              "name": "--xh-tag-group-item-delete-bg-active"
-            },
-            {
-              "name": "--xh-tag-group-item-delete-bg-hover"
-            },
-            {
-              "name": "--xh-tag-group-item-delete-fg"
-            },
-            {
-              "name": "--xh-tag-group-item-delete-radius"
-            },
-            {
-              "name": "--xh-tag-group-item-delete-size"
-            },
-            {
-              "name": "--xh-tag-group-item-fg"
-            },
-            {
               "name": "--xh-tag-group-item-fg-selected"
-            },
-            {
-              "name": "--xh-tag-group-item-font-size"
-            },
-            {
-              "name": "--xh-tag-group-item-font-weight"
-            },
-            {
-              "name": "--xh-tag-group-item-icon-size"
-            },
-            {
-              "name": "--xh-tag-group-item-px"
-            },
-            {
-              "name": "--xh-tag-group-item-px-deletable"
-            },
-            {
-              "name": "--xh-tag-group-item-py"
-            },
-            {
-              "name": "--xh-tag-group-item-radius"
-            },
-            {
-              "name": "--xh-tag-group-item-shadow"
             },
             {
               "name": "--xh-tag-group-label-fg"
@@ -44871,6 +44796,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
             },
             {
               "kind": "field",
@@ -44986,6 +44920,14 @@
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "只读，关闭钮留在原地但按不动，标签本身不置灰",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
               "description": "受控显隐；缺省该属性即非受控",
               "name": "open",
               "fieldName": "open"
@@ -45080,7 +45022,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tags-input>` —— Light-DOM 行为宿主：作者写 root/label/control/input/item 一族与\nclear-trigger/hidden-input 角色节点，元素跑 tags-input 机器并把 connect 产出打上去。\n\n标签节点由作者按当前值渲染（每个标签一个 item，身份取节点上的 value 属性）；\n元素自己不生成结构，值变了要由作者那一侧增删节点，改完 MutationObserver 会自动重新接线。\n\nlabel 的 `for` 恒写向 input 的 id，所以 label 必须是原生 `<label>`、input 必须是原生 `<input>`。\n就地编辑框（item-input）与预览（item-preview）互斥收起而不是卸载，作者写的节点不会被替他删掉。",
+          "description": "`<xh-tags-input>` —— Light-DOM 行为宿主：作者写 root/label/control/input/item 一族与\nclear-trigger/hidden-input 角色节点，元素跑 tags-input 机器并把 connect 产出打上去。\n\n标签节点由作者按当前值渲染（每个标签一个 item，身份取节点上的 value 属性）；\n元素自己不生成结构，值变了要由作者那一侧增删节点，改完 MutationObserver 会自动重新接线。\n\nlabel 的 `for` 恒写向 input 的 id，所以 label 必须是原生 `<label>`、input 必须是原生 `<input>`。\n就地编辑框（item-input）与预览（item-preview）互斥收起而不是卸载，作者写的节点不会被替他删掉。\n\nitem-preview / item-text / item-delete-trigger 三个角色节点接的是库里 tag 的 root / label / close-trigger\n（DOM 上带 data-scope=\"tag\"，吃 tag 那份皮肤）：语气、尺寸、禁用与只读从本元素传下去，\n形态按控件的面派（outline / ghost / 缺省摆淡底标签，subtle 摆描边标签）。",
           "name": "XhTagsInputElement",
           "cssParts": [
             {
@@ -45104,15 +45046,15 @@
               "name": "item"
             },
             {
-              "description": "标签平常那一套（文本 + 删除按钮）；就地编辑时收起",
+              "description": "标签平常那一套（文本 + 删除按钮）；接的是 tag 的 root（data-scope=\"tag\"），就地编辑时收起",
               "name": "item-preview"
             },
             {
-              "description": "标签文本",
+              "description": "标签文本；接的是 tag 的 label，截断落在这一层",
               "name": "item-text"
             },
             {
-              "description": "删除按钮，须是原生 `<button>`；不占 Tab 位，自带 aria-label",
+              "description": "删除按钮，须是原生 `<button>`；接的是所在标签那份 tag 的 close-trigger（data-scope=\"tag\"），不占 Tab 位、自带 aria-label，禁用与只读时留位、原生 disabled",
               "name": "item-delete-trigger"
             },
             {
@@ -45140,7 +45082,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: tagsInputAnatomy, meta: tagsInputMeta }"
+              "default": "{ anatomy: tagsInputAnatomy, meta: tagsInputMeta, delegates: [{ name: tagAnatomy.name, parts: ['item-preview', 'item-text', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
@@ -45722,33 +45664,6 @@
               "name": "--xh-tags-input-count-font-size"
             },
             {
-              "name": "--xh-tags-input-delete-bg"
-            },
-            {
-              "name": "--xh-tags-input-delete-bg-active"
-            },
-            {
-              "name": "--xh-tags-input-delete-bg-hover"
-            },
-            {
-              "name": "--xh-tags-input-delete-fg"
-            },
-            {
-              "name": "--xh-tags-input-delete-fg-highlight"
-            },
-            {
-              "name": "--xh-tags-input-delete-fg-hover"
-            },
-            {
-              "name": "--xh-tags-input-delete-font-size"
-            },
-            {
-              "name": "--xh-tags-input-delete-radius"
-            },
-            {
-              "name": "--xh-tags-input-delete-size"
-            },
-            {
               "name": "--xh-tags-input-gap"
             },
             {
@@ -45770,22 +45685,13 @@
               "name": "--xh-tags-input-input-min-w"
             },
             {
-              "name": "--xh-tags-input-item-bg"
-            },
-            {
               "name": "--xh-tags-input-item-bg-highlight"
-            },
-            {
-              "name": "--xh-tags-input-item-fg"
             },
             {
               "name": "--xh-tags-input-item-fg-highlight"
             },
             {
               "name": "--xh-tags-input-item-font-size"
-            },
-            {
-              "name": "--xh-tags-input-item-gap"
             },
             {
               "name": "--xh-tags-input-item-input-bg"

@@ -164,16 +164,6 @@
     "theme": "light",
     "tone": null
   },
-  "select [data-part='root'][data-scope='tag'][data-tone][data-variant='solid'] [data-part='item-delete-trigger'][data-scope='select']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "select [data-part='root'][data-scope='tag'][data-variant='solid'] [data-part='item-delete-trigger'][data-scope='select']": {
-    "ratio": 1.37,
-    "theme": "light",
-    "tone": null
-  },
   "slider [data-invalid][data-part='thumb'][data-scope='slider']": {
     "ratio": 1.3,
     "theme": "light",
@@ -229,12 +219,82 @@
     "theme": "light",
     "tone": null
   },
+  "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='close-trigger'][data-scope='tag']": {
+    "ratio": 1.01,
+    "theme": "dark",
+    "tone": "warning"
+  },
+  "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='root'][data-scope='tag'][data-variant='solid']:not([data-disabled]) [data-part='close-trigger'][data-scope='tag']": {
+    "ratio": 1.01,
+    "theme": "dark",
+    "tone": "warning"
+  },
+  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag']:not([data-disabled]):not([data-variant='solid'])": {
+    "ratio": 2.95,
+    "theme": "light",
+    "tone": null
+  },
+  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag']:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-scope='tag']": {
+    "ratio": 2.95,
+    "theme": "light",
+    "tone": null
+  },
+  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-selected]:not([data-disabled]):not([data-variant='solid'])": {
+    "ratio": 2.95,
+    "theme": "light",
+    "tone": "brand"
+  },
+  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-selected]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-scope='tag']": {
+    "ratio": 2.95,
+    "theme": "light",
+    "tone": "brand"
+  },
+  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-selected][data-variant='outline']:not([data-disabled]):not([data-variant='solid'])": {
+    "ratio": 2.95,
+    "theme": "light",
+    "tone": "brand"
+  },
+  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-selected][data-variant='subtle']:not([data-disabled]):not([data-variant='solid'])": {
+    "ratio": 2.95,
+    "theme": "light",
+    "tone": "brand"
+  },
+  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-tone][data-variant='outline']:not([data-disabled]):not([data-variant='solid'])": {
+    "ratio": 2.95,
+    "theme": "light",
+    "tone": "brand"
+  },
+  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-tone][data-variant='subtle']:not([data-disabled]):not([data-variant='solid'])": {
+    "ratio": 2.95,
+    "theme": "light",
+    "tone": "brand"
+  },
+  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-tone][data-variant='subtle']:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-scope='tag']": {
+    "ratio": 2.95,
+    "theme": "light",
+    "tone": "brand"
+  },
+  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-variant='outline']:not([data-disabled]):not([data-variant='solid'])": {
+    "ratio": 2.95,
+    "theme": "light",
+    "tone": null
+  },
+  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-variant='subtle']:not([data-disabled]):not([data-variant='solid'])": {
+    "ratio": 2.95,
+    "theme": "light",
+    "tone": null
+  },
   "tag [data-part='root'][data-scope='tag'][data-tone][data-variant='solid']": {
     "ratio": 1.01,
     "theme": "dark",
     "tone": "warning"
   },
   "tag [data-part='root'][data-scope='tag'][data-tone][data-variant='solid'] [data-part='close-trigger'][data-scope='tag']": {
+    "ratio": 1.01,
+    "theme": "dark",
+    "tone": "warning"
+  },
+  "tag [data-part='root'][data-scope='tag'][data-tone][data-variant='solid']:not([data-disabled]) [data-part='close-trigger'][data-scope='tag']": {
     "ratio": 1.01,
     "theme": "dark",
     "tone": "warning"
@@ -248,131 +308,6 @@
     "ratio": 1.37,
     "theme": "light",
     "tone": null
-  },
-  "tag-group [data-highlighted][data-part='item'][data-scope='tag-group']:not([data-disabled])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": null
-  },
-  "tag-group [data-highlighted][data-part='item'][data-scope='tag-group']:not([data-disabled]) [data-part='item-delete-trigger'][data-scope='tag-group']": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": null
-  },
-  "tag-group [data-highlighted][data-part='item'][data-scope='tag-group'][data-state='checked']:not([data-disabled])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag-group [data-highlighted][data-part='item'][data-scope='tag-group'][data-state='checked']:not([data-disabled]) [data-part='item-delete-trigger'][data-scope='tag-group']": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag-group [data-highlighted][data-part='item'][data-scope='tag-group'][data-state='checked'][data-variant='outline']:not([data-disabled])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag-group [data-highlighted][data-part='item'][data-scope='tag-group'][data-state='checked'][data-variant='solid']:not([data-disabled])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag-group [data-highlighted][data-part='item'][data-scope='tag-group'][data-state='checked'][data-variant='solid']:not([data-disabled]) [data-part='item-delete-trigger'][data-scope='tag-group']": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag-group [data-highlighted][data-part='item'][data-scope='tag-group'][data-state='checked'][data-variant='subtle']:not([data-disabled])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag-group [data-highlighted][data-part='item'][data-scope='tag-group'][data-tone][data-variant='outline']:not([data-disabled])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag-group [data-highlighted][data-part='item'][data-scope='tag-group'][data-tone][data-variant='outline']:not([data-disabled]) [data-part='item-delete-trigger'][data-scope='tag-group']": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag-group [data-highlighted][data-part='item'][data-scope='tag-group'][data-tone][data-variant='solid']:not([data-disabled])": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "tag-group [data-highlighted][data-part='item'][data-scope='tag-group'][data-variant='outline']:not([data-disabled])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": null
-  },
-  "tag-group [data-highlighted][data-part='item'][data-scope='tag-group'][data-variant='solid']:not([data-disabled])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": null
-  },
-  "tag-group [data-highlighted][data-part='item'][data-scope='tag-group'][data-variant='solid']:not([data-disabled]) [data-part='item-delete-trigger'][data-scope='tag-group']": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": null
-  },
-  "tag-group [data-highlighted][data-part='item'][data-scope='tag-group'][data-variant='subtle']:not([data-disabled])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": null
-  },
-  "tag-group [data-part='item'][data-scope='tag-group'][data-state='checked'][data-tone][data-variant='solid']:not([data-disabled])": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "tag-group [data-part='item'][data-scope='tag-group'][data-state='checked'][data-tone][data-variant='solid']:not([data-disabled]) [data-part='item-delete-trigger'][data-scope='tag-group']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "tag-group [data-part='item'][data-scope='tag-group'][data-state='checked'][data-variant='solid']": {
-    "ratio": 1.37,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag-group [data-part='item'][data-scope='tag-group'][data-state='checked'][data-variant='solid'] [data-part='item-delete-trigger'][data-scope='tag-group']": {
-    "ratio": 1.37,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag-group [data-part='item'][data-scope='tag-group'][data-tone][data-variant='solid']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "tag-group [data-part='item'][data-scope='tag-group'][data-tone][data-variant='solid'] [data-part='item-delete-trigger'][data-scope='tag-group']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "tag-group [data-part='item'][data-scope='tag-group'][data-tone][data-variant='solid']:not([data-disabled]) [data-part='item-delete-trigger'][data-scope='tag-group']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "tag-group [data-part='item'][data-scope='tag-group'][data-variant='solid']": {
-    "ratio": 1.37,
-    "theme": "light",
-    "tone": null
-  },
-  "tag-group [data-part='item'][data-scope='tag-group'][data-variant='solid'] [data-part='item-delete-trigger'][data-scope='tag-group']": {
-    "ratio": 1.37,
-    "theme": "light",
-    "tone": null
-  },
-  "tags-input [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='item-delete-trigger'][data-scope='tags-input']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
   },
   "time-picker [data-disabled][data-part='item'][data-scope='time-picker'][data-state='checked']": {
     "ratio": 1.01,

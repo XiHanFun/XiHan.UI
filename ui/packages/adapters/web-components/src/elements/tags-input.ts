@@ -7,7 +7,7 @@ import type {
   TagsInputValueChangeDetails,
 } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTagsInput, tagsInputAnatomy, tagsInputMachine, tagsInputMeta } from '@xihan-ui/headless'
+import { connectTagsInput, tagAnatomy, tagsInputAnatomy, tagsInputMachine, tagsInputMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -33,6 +33,10 @@ const ARRAY_CONVERTER = {
  *
  * label 的 `for` 恒写向 input 的 id，所以 label 必须是原生 `<label>`、input 必须是原生 `<input>`。
  * 就地编辑框（item-input）与预览（item-preview）互斥收起而不是卸载，作者写的节点不会被替他删掉。
+ *
+ * item-preview / item-text / item-delete-trigger 三个角色节点接的是库里 tag 的 root / label / close-trigger
+ * （DOM 上带 data-scope="tag"，吃 tag 那份皮肤）：语气、尺寸、禁用与只读从本元素传下去，
+ * 形态按控件的面派（outline / ghost / 缺省摆淡底标签，subtle 摆描边标签）。
  *
  * @customElement xh-tags-input
  * @attr {string} value - 受控标签集合，按逗号拆；缺省该属性即非受控，别的分隔符请用 property
@@ -62,16 +66,21 @@ const ARRAY_CONVERTER = {
  * @csspart control - role=group 的框，点它的空白处即聚焦输入框
  * @csspart input - 真正的输入框，须是原生 `<input>`；键盘交互全在它身上
  * @csspart item - 一个标签一个，须自带 value 属性标识身份
- * @csspart item-preview - 标签平常那一套（文本 + 删除按钮）；就地编辑时收起
- * @csspart item-text - 标签文本
- * @csspart item-delete-trigger - 删除按钮，须是原生 `<button>`；不占 Tab 位，自带 aria-label
+ * @csspart item-preview - 标签平常那一套（文本 + 删除按钮）；接的是 tag 的 root（data-scope="tag"），就地编辑时收起
+ * @csspart item-text - 标签文本；接的是 tag 的 label，截断落在这一层
+ * @csspart item-delete-trigger - 删除按钮，须是原生 `<button>`；接的是所在标签那份 tag 的 close-trigger（data-scope="tag"），不占 Tab 位、自带 aria-label，禁用与只读时留位、原生 disabled
  * @csspart item-input - 就地编辑框，须是原生 `<input>`；不编辑时收起
  * @csspart clear-trigger - 清空按钮；没东西可清时收起（hidden）
  * @csspart count - 标签个数；文本由元素按「已用 / 上限」填，作者写了自己的内容即不覆盖；没开 show-count 时收起
  * @csspart hidden-input - type=hidden 的表单出口，值是按 delimiter 拼好的整串
  */
 export class XhTagsInputElement extends XhElement {
-  static override partContract = { anatomy: tagsInputAnatomy, meta: tagsInputMeta }
+  // item-preview / item-text / item-delete-trigger 接的是 tag 的 root / label / close-trigger：三个作者名都归 tag 那套 scope 管，不在本元素的解剖里
+  static override partContract = {
+    anatomy: tagsInputAnatomy,
+    meta: tagsInputMeta,
+    delegates: [{ name: tagAnatomy.name, parts: ['item-preview', 'item-text', 'item-delete-trigger'] }],
+  }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
@@ -229,12 +238,14 @@ export class XhTagsInputElement extends XhElement {
       const item: TagsInputItemProps = { value: el.getAttribute('value') ?? '' }
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
       const editing = api.editedValue === item.value
+      // 预览是 tag 的 root：就地编辑时 tag 按 open=false 给 hidden
       for (const preview of this.partsIn(el, 'item-preview')) {
         this.spreader.spread(preview, api.getItemPreviewProps(item) as Record<string, unknown>)
         // 只写 hidden 属性是不够的：作者层给这个 part 声明的任何一条 display
         // 都会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住
         this.setPartHidden(preview, editing)
       }
+      // 文字与删除钮是同一份 tag 的 label 与 close-trigger
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
       for (const trigger of this.partsIn(el, 'item-delete-trigger'))

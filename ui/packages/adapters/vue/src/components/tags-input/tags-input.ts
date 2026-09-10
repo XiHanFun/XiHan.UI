@@ -166,6 +166,7 @@ export const XhTagsInputItem = defineComponent({
   },
 })
 
+/** 标签的预览：渲的是库里 tag 的 root（data-scope="tag"），就地编辑时由 tag 收起。 */
 export const XhTagsInputItemPreview = defineComponent({
   name: 'XhTagsInputItemPreview',
   setup(_, { slots }) {
@@ -175,6 +176,7 @@ export const XhTagsInputItemPreview = defineComponent({
   },
 })
 
+/** 标签文字：渲的是 tag 的 label，截断落在这一层。 */
 export const XhTagsInputItemText = defineComponent({
   name: 'XhTagsInputItemText',
   setup(_, { slots }) {
@@ -184,6 +186,7 @@ export const XhTagsInputItemText = defineComponent({
   },
 })
 
+/** 删除钮：渲的是所在标签那份 tag 的 close-trigger，不占 Tab 位；禁用与只读时留位、原生 disabled。 */
 export const XhTagsInputItemDeleteTrigger = defineComponent({
   name: 'XhTagsInputItemDeleteTrigger',
   setup(_, { slots }) {

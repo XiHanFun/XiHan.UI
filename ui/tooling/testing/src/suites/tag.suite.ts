@@ -137,6 +137,21 @@ export const tagSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'readOnly：关闭钮留在原位但禁用，root 不打 data-disabled，直接派 click 也不收标签',
+      spec: { apg: APG },
+      props: { closable: true, readOnly: true },
+      steps: [
+        dispatchClickOnDisabled('tag', 'close-trigger', {
+          parts: {
+            // 只读只锁那颗叉，标签本身不置灰
+            'root': { 'data-disabled': null, 'data-state': 'open', 'hidden': null },
+            'close-trigger': { 'disabled': '', 'data-disabled': '', 'hidden': null },
+          },
+          events: [],
+        }),
+      ],
+    },
+    {
       name: 'translations：关闭钮的可访问名可替换',
       spec: { apg: APG },
       props: { closable: true, translations: { close: '移除 前端' } },

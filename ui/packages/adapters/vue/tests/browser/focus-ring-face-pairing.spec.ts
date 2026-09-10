@@ -210,49 +210,24 @@ describe('实心面上的环取面自己的前景色', () => {
   })
 
   describe('标签输入里反白标签上的删除叉', () => {
-    const 反白标签 = (tone: string, 叉带高亮: boolean) =>
+    // 标签就是 tag：反白画在 tag 的 root 上，叉是它的 close-trigger，字随 root 换成配对的那支，环取 currentColor
+    const 反白标签 = (tone: string) =>
       `<div data-scope="tags-input" data-part="root" data-tone="${tone}">`
       + '<span data-scope="tags-input" data-part="item" data-highlighted>'
-      + '<span data-scope="tags-input" data-part="item-text">标签</span>'
-      + `<button data-scope="tags-input" data-part="item-delete-trigger"${叉带高亮 ? ' data-highlighted' : ''}></button>`
-      + '</span></div>'
+      + '<span data-scope="tag" data-part="root" data-variant="subtle">'
+      + '<span data-scope="tag" data-part="label">标签</span>'
+      + '<button data-scope="tag" data-part="close-trigger"></button>'
+      + '</span></span></div>'
 
-    // 皮肤按叉自己带 data-highlighted 写换色：这一档里环取到的是换过的那支字
-    it.each(组合)('$theme · $tone · 叉带 data-highlighted', async ({ theme, tone }) => {
-      const stage = mount(反白标签(tone, true), theme)
-      const del = stage.querySelector<HTMLElement>('[data-part=\'item-delete-trigger\']')!
+    it.each(组合)('$theme · $tone · 叉的环取反白档换过的字，压在反白的实心底上仍有 3:1', async ({ theme, tone }) => {
+      const stage = mount(反白标签(tone), theme)
+      const del = stage.querySelector<HTMLElement>('[data-part=\'close-trigger\']')!
       await focus(del)
       expect(del.matches(':focus-visible'), '焦点没落上去').toBe(true)
 
       const { ratio, ring, face } = ringVsFace(del)
       expect(ratio, `环 ${ring}｜面 ${face}`).toBeGreaterThanOrEqual(3)
       expect(ring, '环色要与反白档换过的字同值').toBe(getComputedStyle(del).color)
-    })
-
-    // 连接层的 getItemDeleteTriggerProps 不带 stateAttrs，叉从来拿不到 data-highlighted：
-    // 真实 DOM 里叉的字仍是没换过的灰，环跟着取到这支灰，压在反白的实心底上
-    it.each(组合)('$theme · $tone · 叉不带 data-highlighted（连接层的真实形态），环取到的是没换过的字', async ({ theme, tone }) => {
-      const stage = mount(反白标签(tone, false), theme)
-      const del = stage.querySelector<HTMLElement>('[data-part=\'item-delete-trigger\']')!
-      await focus(del)
-      expect(del.matches(':focus-visible'), '焦点没落上去').toBe(true)
-      expect(getComputedStyle(del).outlineColor, '环取的是叉自己没换过的那支字').toBe(getComputedStyle(del).color)
-    })
-
-    // 十二档里最低的一档（浅色 neutral）环与面同色、只有 1.00，深色 neutral 擦线 3.02，其余都在线下。
-    // 这条在连接层给叉带上状态、或换色规则改锚在标签上的那天变红，好把上面那条并进带 data-highlighted 的那组
-    it('叉不带 data-highlighted 时，十二档里有环压不过 3:1 的', async () => {
-      const ratios: string[] = []
-      let lowest = Number.POSITIVE_INFINITY
-      for (const { theme, tone } of 组合) {
-        const stage = mount(反白标签(tone, false), theme)
-        const del = stage.querySelector<HTMLElement>('[data-part=\'item-delete-trigger\']')!
-        await focus(del)
-        const { ratio, ring, face } = ringVsFace(del)
-        ratios.push(`${theme} · ${tone}：${ratio.toFixed(2)}（环 ${ring}｜面 ${face}）`)
-        lowest = Math.min(lowest, ratio)
-      }
-      expect(lowest, ratios.join('\n')).toBeLessThan(3)
     })
   })
 })

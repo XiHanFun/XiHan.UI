@@ -1014,3 +1014,54 @@ describe('selectSelect 展开时的焦点', () => {
     expect(document.activeElement).not.toBe(h.trigger)
   })
 })
+
+describe('selectSelect 标签删除钮：就是 tag 的 close-trigger', () => {
+  /** 把删除钮的 props 摊到一颗真按钮上，与适配器渲出来的节点同形。 */
+  function deleteButton(h: Harness, value: string): HTMLButtonElement {
+    const el = document.createElement('button')
+    spread(el, h.api().getItemDeleteTriggerProps({ value }) as Record<string, unknown>)
+    h.root.appendChild(el)
+    return el
+  }
+
+  it('可及名走 translations.deleteItem，缺省 Delete + 标签文字；点按摘掉那个值并通知一次', async () => {
+    const onValueChange = vi.fn()
+    const h = mount({ multiple: true, defaultValue: ['apple', 'banana'], onValueChange })
+    await tick()
+    const props = h.api().getItemDeleteTriggerProps({ value: 'apple' })
+    expect([props['data-scope'], props['data-part'], props.type]).toEqual(['tag', 'close-trigger', 'button'])
+    // 标签本体也是同一份 tag 的 root：三轴与 data-value 齐全，触发器里不渲钮，root 不因带钮而变
+    const root = h.api().getTagProps({ value: 'apple' })
+    expect([root['data-scope'], root['data-part'], root['data-value'], root['data-variant'], root['data-state']]).toEqual(['tag', 'root', 'apple', 'subtle', 'open'])
+    const remove0 = deleteButton(h, 'apple')
+    expect(remove0.getAttribute('aria-label')).toBe('Delete Apple')
+    // 可摘：留在原地、可按
+    expect([remove0.hasAttribute('hidden'), remove0.hasAttribute('disabled'), remove0.hasAttribute('data-disabled')]).toEqual([false, false, false])
+    h.setProps({ translations: { deleteItem: label => `移除${label}` } })
+    const remove = deleteButton(h, 'apple')
+    expect(remove.getAttribute('aria-label')).toBe('移除Apple')
+    click(remove)
+    expect(h.value()).toEqual(['banana'])
+    expect(onValueChange.mock.calls).toEqual([[{ value: ['banana'] }]])
+  })
+
+  it('禁用：钮留在原地、原生 disabled 且标 data-disabled，标签本体置灰；点按不动值', () => {
+    const onValueChange = vi.fn()
+    const h = mount({ multiple: true, defaultValue: ['apple', 'banana'], disabled: true, onValueChange })
+    const remove = deleteButton(h, 'apple')
+    expect([remove.hasAttribute('hidden'), remove.hasAttribute('disabled'), remove.hasAttribute('data-disabled')]).toEqual([false, true, true])
+    expect(h.api().getTagProps({ value: 'apple' })['data-disabled']).toBe('')
+    click(remove)
+    expect(h.value()).toEqual(['apple', 'banana'])
+    expect(onValueChange).not.toHaveBeenCalled()
+  })
+
+  it('只读：点按送到机器的 VALUE.SET 被守卫挡下，不动值、不通知；标签本体不置灰', () => {
+    const onValueChange = vi.fn()
+    const h = mount({ multiple: true, defaultValue: ['apple', 'banana'], readOnly: true, onValueChange })
+    expect(h.api().getTagProps({ value: 'apple' })['data-disabled']).toBeUndefined()
+    click(deleteButton(h, 'apple'))
+    expect(h.value()).toEqual(['apple', 'banana'])
+    expect(onValueChange).not.toHaveBeenCalled()
+  })
+})

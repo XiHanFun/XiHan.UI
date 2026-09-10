@@ -258,7 +258,7 @@ export interface XhSelectTagProps extends ComponentPropsWithRef<'span'> {
   /** 它代表哪个选中值。 */
   value: string
 }
-/** 一个选中值一枚，就是库里 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从 select 传下去，形态按控件的面派，不可关闭。 */
+/** 一个选中值一枚，就是库里 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从 select 传下去，形态按控件的面派；触发器里纯展示，触发器外配 XhSelectItemDeleteTrigger 可删。 */
 export function XhSelectTag({ value, children, ...rest }: XhSelectTagProps): ReactNode {
   const ctx = useSelectContext()
   return (
@@ -280,6 +280,7 @@ export function XhSelectOverflowTag({ children, ...rest }: XhSelectOverflowTagPr
 }
 
 export interface XhSelectItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 标签里的删除钮：就是所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名走 translations.deleteItem；点按摘掉所在标签的选中值。 */
 export function XhSelectItemDeleteTrigger({ children, ...rest }: XhSelectItemDeleteTriggerProps): ReactNode {
   const ctx = useSelectContext()
   const value = useSelectTagContext()

@@ -148,7 +148,7 @@ export interface XhTagGroupItemProps extends Omit<ComponentPropsWithRef<'span'>,
   deletable?: boolean
 }
 
-/** 一枚标签。用 span 才能随文排，选中与摘除的键盘路径都在 list 上。 */
+/** 一枚标签：渲出来是 tag 的 root（data-scope="tag"），组把行角色、Tab 停靠点、选中与锚点叠在它上面。用 span 才能随文排，选中与摘除的键盘路径都在 list 上。 */
 export function XhTagGroupItem({ value, disabled, deletable, children, ...rest }: XhTagGroupItemProps): ReactNode {
   const ctx = useTagGroupContext()
   const item = useMemo(() => ({ value, disabled, deletable }), [value, disabled, deletable])
@@ -205,6 +205,8 @@ export function XhTagGroupCell({ children, ...rest }: XhTagGroupCellProps): Reac
 }
 
 export interface XhTagGroupItemTextProps extends ComponentPropsWithRef<'span'> {}
+
+/** 标签文字：渲出来是 tag 的 label。 */
 export function XhTagGroupItemText({ children, ...rest }: XhTagGroupItemTextProps): ReactNode {
   const ctx = useTagGroupContext()
   const { item } = useTagGroupItemContext()
@@ -213,7 +215,7 @@ export function XhTagGroupItemText({ children, ...rest }: XhTagGroupItemTextProp
 
 export interface XhTagGroupItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
 
-/** 摘除钮：整组没开放摘除时收起，不留一个按不动的叉。 */
+/** 摘除钮：渲出来是所在标签那份 tag 的 close-trigger，不占 Tab 位；整组没开放摘除时收起，不留一个按不动的叉。 */
 export function XhTagGroupItemDeleteTrigger({ children, ...rest }: XhTagGroupItemDeleteTriggerProps): ReactNode {
   const ctx = useTagGroupContext()
   const { item } = useTagGroupItemContext()

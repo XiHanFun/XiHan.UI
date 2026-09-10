@@ -9,10 +9,7 @@
     "toggle-group:hidden-input": "原生 input 被压成 1px 藏在组里承接表单提交，指针落在可见的段上，不落在它身上"
   },
   "inlineMark": {
-    "select:item-delete-trigger": "回显区里每枚标签自带的移除钮，随文排在标签文字旁，尺寸随指示符档不随控件行高",
-    "tag-group:item-delete-trigger": "一排标签里每枚自带的移除钮，随文排在标签文字旁，尺寸随指示符档不随控件行高",
-    "tag:close-trigger": "标签是随文排的标记，那颗叉排在标签文字旁，尺寸随指示符档不随控件行高",
-    "tags-input:item-delete-trigger": "输入框里每枚标签自带的移除钮，随文排在标签文字旁，尺寸随指示符档不随控件行高"
+    "tag:close-trigger": "标签是随文排的标记，那颗叉排在标签文字旁，尺寸随指示符档不随控件行高"
   },
   "backlog": {
     "carousel:indicator": {

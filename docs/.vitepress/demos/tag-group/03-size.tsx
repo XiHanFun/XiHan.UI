@@ -1,4 +1,4 @@
-// 尺寸 | size 打在组上沿继承流下发给每一枚标签，标签自己不写档位
+// 尺寸 | size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自己不写档位
 import type { ReactNode } from "react";
 import { XhTagGroupRoot } from "@xihan-ui/react";
 

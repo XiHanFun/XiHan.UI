@@ -759,6 +759,9 @@ for (const file of files) {
         continue
       }
       const anchor = anchorOf(branch.subject)
+      // 键以主语的 scope 打头：宿主皮肤给内嵌部件写的规则（tags-input 给 tag 的叉）归那个部件，
+      // 与浏览器态判据按选择器里的 scope 认组件同一条规矩；主语没写 scope 的才按皮肤文件算
+      const keyComp = anchor.scope ?? comp
       if (anchor.parts) {
         if (subjectHas(branchText, ':focus-visible') && !/:not\(\s*:focus-visible\s*\)/.test(branchText))
           markSkin(skinFocusable, comp, anchor.parts)
@@ -771,20 +774,20 @@ for (const file of files) {
         slots.get(decl.prop).push({ file, comp, branch, value: decl.value, at })
       }
       if (isFace)
-        surfaces.push({ file, comp, branch, value: decl.value, at, hover: /:hover|:active/.test(branchText) })
+        surfaces.push({ file, comp, keyComp, branch, value: decl.value, at, hover: /:hover|:active/.test(branchText) })
       if (decl.prop === '--xh-_ring-color' && decl.value.trim() === 'currentColor')
-        declared.push({ file, comp, branch, at, key: `${comp} ${render(branch)}` })
+        declared.push({ file, comp, branch, at, key: `${keyComp} ${render(branch)}` })
       // 整条 outline 自写成 currentColor 的，同样是「环取面的前景色」
       if (decl.prop === 'outline' && /\bcurrentColor\b/.test(decl.value))
-        declared.push({ file, comp, branch, at, key: `${comp} ${render(branch)}`, whole: true })
+        declared.push({ file, comp, branch, at, key: `${keyComp} ${render(branch)}`, whole: true })
       // 只认真的把键盘焦点环关掉的那种：`:focus:not(:focus-visible)` 关的是指针落焦那一路，
       // 键盘环照画
       const keyboardFocus = /:focus-visible|\[data-focus\]/.test(branchText) && !/:not\(\s*:focus-visible\s*\)/.test(branchText)
       if (keyboardFocus && turnsRingOff(decl.prop, decl.value))
-        ringless.push({ file, comp, branch, at, key: `${comp} ${render(branch)}`, prop: decl.prop, value: decl.value.trim() })
+        ringless.push({ file, comp, branch, at, key: `${keyComp} ${render(branch)}`, prop: decl.prop, value: decl.value.trim() })
       // 环色解成透明：环还在画，只是画成了看不见的
       if (keyboardFocus && ringVanishes(ringColorsOf(decl.prop, decl.value)))
-        vanished.push({ at, key: `${comp} ${render(branch)}`, prop: decl.prop, value: decl.value.trim() })
+        vanished.push({ at, key: `${keyComp} ${render(branch)}`, prop: decl.prop, value: decl.value.trim() })
     }
   }
 }
@@ -887,7 +890,7 @@ for (const surface of surfaces) {
       dropped.nativeDisabled++
       continue
     }
-    const key = `${surface.comp} ${render(tier)}`
+    const key = `${surface.keyComp} ${render(tier)}`
     const worst = outcome.seeThrough ? { seeThrough: true } : worstAgainstRing(outcome.expr)
     if (worst === null) {
       // 键里不带行号：面没改过就不该因为上面插了几行而重新走一遍登记

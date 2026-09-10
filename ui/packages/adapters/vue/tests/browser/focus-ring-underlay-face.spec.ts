@@ -5,8 +5,8 @@
 // 那块底来自别处，两种来路都在 focus-ring-face-contrast 的量法之外——那一份只顺着
 // parentElement 往上叠底色：
 //   · 分段控件的选中段：底是指示器，一个绝对定位、与选中段同一块矩形的兄弟节点
-//   · 实心标签上的摘除钮：底是它外面那枚标签，祖先链上叠得到，但那一份没有
-//     「同一个元素上形态与状态两条规则叠出来的档」这种组合
+//   · 标签组里实心标签上的摘除钮：标签是 tag 的 root，叉是它的 close-trigger，底是外面那枚标签，
+//     祖先链上叠得到，但那一份没有「同一个元素上形态与状态两条规则叠出来的档」这种组合
 //
 // 量法与 focus-ring-face-contrast 一致：把环色叠在环内侧那一摞底上，按 WCAG 2.2
 // SC 1.4.11 的非文本对比算比值，阈值 3:1。
@@ -167,22 +167,22 @@ function 分段(tone: string | null, 带指示器 = true): { root: HTMLElement, 
   return { root, item, indicator }
 }
 
-/** 一枚实心标签，标签里带一颗摘除钮。 */
+/** 标签组里的一枚实心标签（tag 的 root），标签里带一颗摘除钮（tag 的 close-trigger）。 */
 function 标签(attrs: string): { item: HTMLElement, 叉: HTMLElement } {
   const root = mount(`
     <div data-scope="tag-group" data-part="root">
       <div data-scope="tag-group" data-part="list">
-        <span data-scope="tag-group" data-part="item" data-variant="solid" data-deletable ${attrs} tabindex="0">
+        <span data-scope="tag" data-part="root" data-variant="solid" data-selectable data-deletable ${attrs} tabindex="0">
           <span data-scope="tag-group" data-part="cell">
-            <span data-scope="tag-group" data-part="item-text">甲</span>
-            <button type="button" data-scope="tag-group" data-part="item-delete-trigger"></button>
+            <span data-scope="tag" data-part="label">甲</span>
+            <button type="button" data-scope="tag" data-part="close-trigger"></button>
           </span>
         </span>
       </div>
     </div>`)
   return {
-    item: root.querySelector<HTMLElement>('[data-part=\'item\']')!,
-    叉: root.querySelector<HTMLElement>('[data-part=\'item-delete-trigger\']')!,
+    item: root.querySelector<HTMLElement>('[data-scope=\'tag\'][data-part=\'root\']')!,
+    叉: root.querySelector<HTMLElement>('[data-part=\'close-trigger\']')!,
   }
 }
 
@@ -238,9 +238,8 @@ describe('环内侧那块面不长在部件自己身上', () => {
   })
 })
 
-describe('实心标签的面被换成中性档的那两档', () => {
-  // 置灰档把底换成静默色、字换成置灰色；轻档把没写语气的实心底换成中性灰、字不动。
-  // 两档的面都不是实心语气底，环不跟着字走，退回 --xh-ring-focus。
+describe('实心标签的置灰档与轻档', () => {
+  // 置灰档把底换成静默色、字换成置灰色：面不是实心语气底，环不跟着字走，退回 --xh-ring-focus。
   it.each(THEMES)('置灰档：标签与叉的环都退回默认那一支 · %s', async (theme) => {
     document.documentElement.dataset.theme = theme
     const { item, 叉 } = 标签('data-disabled')
@@ -253,15 +252,17 @@ describe('实心标签的面被换成中性档的那两档', () => {
     }
   })
 
-  // 这一档浅色只有 2.97：底是 --xh-bg-subtle-hover（neutral-200），默认环是 brand-500，
-  // 两者本身就差着 0.03。这里只钉住「不取 currentColor」——取了是 1.26，比现在还低一截。
-  it.each(THEMES)('轻档：标签与叉的环都退回默认那一支 · %s', async (theme) => {
+  // 轻档（键盘锚点）不落到实心标签上：面仍是实心语气底，环照旧取字色，压在那块底上仍读得出
+  it.each(THEMES)('轻档：实心标签的面不换，标签与叉的环仍取字色 · %s', async (theme) => {
     document.documentElement.dataset.theme = theme
+    const 静息 = getComputedStyle(标签('').item).backgroundColor
     const { item, 叉 } = 标签('data-highlighted')
-    const 默认环 = resolve('var(--xh-ring-focus)')
+    expect(getComputedStyle(item).backgroundColor, '轻档不该把实心底换掉').toBe(静息)
     for (const el of [item, 叉]) {
       await focus(el)
-      expect(getComputedStyle(el).outlineColor).toBe(默认环)
+      expect(getComputedStyle(el).outlineColor).toBe(getComputedStyle(el).color)
+      const { ratio, 说明 } = 环压面(el)
+      expect(ratio, `${theme}｜${说明}`).toBeGreaterThanOrEqual(3)
     }
   })
 })

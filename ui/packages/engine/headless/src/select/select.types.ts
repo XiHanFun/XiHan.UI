@@ -53,7 +53,7 @@ export interface SelectNode {
 export interface SelectTranslations {
   /** 清空按钮的可及名。 */
   clearTrigger: string
-  /** 标签删除按钮的可及名，接收标签文本。 */
+  /** 标签删除按钮的可及名，接收标签文本；经 tag 的 translations.close 落到那颗钮上。 */
   deleteItem: (label: string) => string
   /** 被折起的标签那一枚（overflow-tag）显示的文字，接收折起的个数；默认 +N。 */
   overflowTag: (count: number) => string
@@ -246,13 +246,13 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   getClearTriggerProps: () => T['button']
   /** 标签行：收着可见标签与 +N 那一枚，放在触发器里；无选中时整个 hidden。 */
   getTagListProps: () => T['element']
-  /** 标签：一个选中值一枚，就是库里 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下去，形态按控件的面派（outline / ghost / 缺省摆淡底标签，subtle 摆描边标签），不可关闭，另带 data-value 记它代表哪个值。放触发器里就是纯展示，放外面配 item-delete-trigger 可删。 */
+  /** 标签：一个选中值一枚，就是库里 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下去，形态按控件的面派（outline / ghost / 缺省摆淡底标签，subtle 摆描边标签），另带 data-value 记它代表哪个值。放触发器里就是纯展示（不渲关闭钮），放外面配删除钮可删。 */
   getTagProps: (props: SelectTagProps) => T['element']
   /** 标签文字所在的块（tag 的 label）：截断落在这一层；标签与 +N 共用。 */
   getTagLabelProps: () => T['element']
   /** 被折起的标签合成的那一枚：同样是 tag 的 root，显示 overflowText、带 data-count；没有折起的标签时 hidden。 */
   getOverflowTagProps: () => T['element']
-  /** 标签删除按钮：点按摘掉所在标签的选中值；须放在标签里。 */
+  /** 标签删除按钮：就是所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名走 translations.deleteItem，禁用时留位、原生 disabled；点按摘掉所在标签的选中值；须放在标签里。 */
   getItemDeleteTriggerProps: (props: SelectTagProps) => T['button']
   getPositionerProps: () => T['element']
   /** 浮层外壳：描边、底色、阴影与键盘收口都在它身上。 */

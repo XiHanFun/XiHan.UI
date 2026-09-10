@@ -1,4 +1,4 @@
-// 形态 | variant 只改控件与胶囊的颜色槽位，落标签与删标签的行为三档一致
+// 形态 | variant 只改控件的颜色槽位，标签的形态按控件的面派：subtle 控件里是描边标签，其余是淡底标签；落标签与删标签的行为三档一致
 import type { ReactNode } from "react";
 import {
   XhTagsInputControl,

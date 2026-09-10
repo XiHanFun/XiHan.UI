@@ -145,6 +145,8 @@ const HOOKS = {
   'scroll-area:data-reveal-mode': '露面策略是入参；露不露由 data-state=visible|hidden 表出',
   'scrollbar:data-reveal-mode': '露面策略是入参；露不露由 data-state=visible|hidden 表出',
   'table:data-sortable': '这一列排不排得了序。排序钮不排序时置 hidden，箭头由 data-sort 画',
+  'tag-group:data-deletable': '这一枚摘不摘得掉：摘除钮收不收由它自己的 hidden 承载，键盘 Delete / Backspace 路读这一位定夺',
+  'tags-input:data-editing': '正在就地编辑：预览（tag 的 root）与编辑框的切换由两边各自的 hidden 承载',
   'tags-input:data-overflowing': '越过上限时 data-at-max 同时为真（前者是 count > max，后者是 count >= max），观感由 control 上的 at-max 描边一并承载，两者不另分档',
   'timer:data-action': '控制钮这一按是开始还是暂停，换的是文案不是外观',
   'tool-call:data-settled': '跑完没跑完看的是状态文字与用时那两格；跑砸了另有 data-errored 换描边色',

@@ -14,6 +14,8 @@
 // 全集是扫出来的，不是登出来的：皮肤里带 cursor:pointer 的部件就是「可点部件」，
 // 两张表加起来必须盖住它们，漏一个就判红。反过来不成立——已登记的部件不要求自己那条
 // 规则里写 cursor:pointer，共享规则里继承来的也算数。
+// 可点的是选择器末尾那个复合体（主体）；主体戴着别的组件的 scope 时，说明这份皮肤把可点加在了
+// 内嵌的别家部件上（tag-group 给 tag 的 root），键写成「宿主:scope/部件」，登记时照抄。
 //
 // 两种形态：
 // ① 即时按压（多数）：反馈落在 :active 上，缩放量走令牌。
@@ -44,8 +46,8 @@ const PRESSABLE = {
   'infinite-scroll': ['load-more-trigger'],
   // 集合件尾部的「取下一页」：一颗铺满一行的按钮，整条就是点击目标
   'listbox': ['load-more-trigger'],
-  // 一枚标签就是一颗紧凑的芯片，整枚就是点击目标
-  'tag-group': ['item', 'item-delete-trigger'],
+  // 组里的一枚标签就是 tag 的 root，整枚就是点击目标；摘除钮是 tag 的 close-trigger，按压归 tag.css
+  'tag-group': ['tag/root'],
   // 清空 / 关闭 / 移除按钮四类（契约见 check-clear-trigger）
   'cascader': ['clear-trigger'],
   'tree-select': ['clear-trigger'],
@@ -54,8 +56,9 @@ const PRESSABLE = {
   'date-picker': ['clear-trigger', 'trigger', 'confirm-trigger'],
   'time-picker': ['clear-trigger', 'trigger'],
   'text-field': ['clear-trigger'],
-  'tags-input': ['clear-trigger', 'item-delete-trigger'],
-  'select': ['clear-trigger', 'item-delete-trigger'],
+  // 标签里的删除钮是 tag 的 close-trigger，按压归 tag.css
+  'tags-input': ['clear-trigger'],
+  'select': ['clear-trigger'],
   'date-field': ['clear-trigger'],
   'time-field': ['clear-trigger'],
   'file-upload': ['clear-trigger', 'item-delete-trigger', 'trigger'],
@@ -187,7 +190,6 @@ const NO_PRESS = {
   'color-picker:channel-slider': '拖拽轨道，按下的回执由拇指的拖拽放大给出；缩放整条轨道会让渐变与拇指位置一起错开',
   // 大块区域：缩放会把里面的排版一起抖起来
   'image-viewer:trigger': '触发区是作者自己的一块内容（多为缩略图），皮肤对它零外观规则；缩放它会把作者的排版一起抖起来',
-  'image-viewer:toolbar': '工具条本身是容器，cursor:pointer 落在它里面的按钮上（那几颗已登记有按压反馈），缩放整条会把所有按钮一起抖起来',
   'file-upload:dropzone': '大块投放区，按下回执由拖入态的描边与底色给出；缩放整块会把里面的说明文字一起抖起来',
   'truncate:root': '触发区就是被裁的那整段文本，缩放它会把整段排版一起抖起来',
   'table:sort-trigger': '排序把手 flex:1 撑满整块列标题，缩放会把表头文字连同列宽基线一起抖起来；按下回执落在排序指示字形与列标题底色上',
@@ -262,10 +264,15 @@ async function collectClickableParts() {
     for (const rule of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
       if (!/cursor:\s*pointer/.test(rule[2]))
         continue
-      // 选择器可能是逗号分组，一条规则里列的部件全收
-      const parts = new Set([...rule[1].matchAll(/\[data-part='([a-z0-9-]+)'\]/g)].map(m => m[1]))
-      for (const part of parts) {
-        const key = `${name}:${part}`
+      // 选择器可能是逗号分组，每条分支只收主体那个复合体
+      for (const branch of rule[1].split(',')) {
+        const compounds = splitCompounds(branch.trim().replace(/\s+/g, ' '))
+        const subject = compounds[compounds.length - 1] ?? ''
+        const part = /\[data-part='([a-z0-9-]+)'\]/.exec(subject)?.[1]
+        if (!part)
+          continue
+        const scope = /\[data-scope='([a-z0-9-]+)'\]/.exec(subject)?.[1] ?? name
+        const key = scope === name ? `${name}:${part}` : `${name}:${scope}/${part}`
         if (!found.has(key))
           found.set(key, css.slice(0, rule.index).split('\n').length)
       }
@@ -274,9 +281,40 @@ async function collectClickableParts() {
   return [...found].sort(([a], [b]) => a.localeCompare(b))
 }
 
+/** 括号与方括号之外的空格与组合符才分隔复合体。 */
+function splitCompounds(branch) {
+  const out = []
+  let depth = 0
+  let current = ''
+  for (const ch of branch) {
+    if (ch === '[' || ch === '(')
+      depth++
+    else if (ch === ']' || ch === ')')
+      depth--
+    if (depth === 0 && (ch === ' ' || ch === '>' || ch === '+' || ch === '~')) {
+      if (current)
+        out.push(current)
+      current = ''
+      continue
+    }
+    current += ch
+  }
+  if (current)
+    out.push(current)
+  return out
+}
+
+/** 登记名里的部件：本组件的写部件名，别家的写 scope/部件，选择器按后者要带上那个 scope。 */
+function partSelector(part) {
+  const slash = part.indexOf('/')
+  return slash < 0
+    ? `\\[data-part='${part}'\\]`
+    : `\\[data-scope='${part.slice(0, slash)}'\\]\\[data-part='${part.slice(slash + 1)}'\\]`
+}
+
 function checkPart(name, part, css) {
   // :active 规则要落在该部件上，且缩放量走令牌
-  const active = new RegExp(`\\[data-part='${part}'\\][^{]*:active(?::not\\([^)]*\\))?\\s*\\{([^}]*)\\}`)
+  const active = new RegExp(`${partSelector(part)}[^{]*:active(?::not\\([^)]*\\))?\\s*\\{([^}]*)\\}`)
   const match = css.match(active)
   if (!match) {
     problems.push(`${name} 的 ${part} 没有 :active 规则——按下去到松手之间没有任何变化`)

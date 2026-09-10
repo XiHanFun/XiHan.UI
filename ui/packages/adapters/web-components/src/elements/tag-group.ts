@@ -1,7 +1,7 @@
 import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
 import type { TagGroupApi, TagGroupItemDeleteDetails, TagGroupItemProps, TagGroupNode, TagGroupSchema, TagGroupSelectionMode, TagGroupTranslations, TagGroupValueChangeDetails, TagVariant } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTagGroup, tagGroupAnatomy, tagGroupMachine, tagGroupMeta } from '@xihan-ui/headless'
+import { connectTagGroup, tagAnatomy, tagGroupAnatomy, tagGroupMachine, tagGroupMeta } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -18,6 +18,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * `<xh-tag-group>` —— Light-DOM 行为宿主：作者写 root/label/list 与若干 item（内含 cell）角色节点，
  * 元素跑 tag-group 机器并把 connect 产出打上去。条目身份取自条目节点上的 value 属性，
  * 禁用由条目自报 aria-disabled，可摘由条目自报 deletable 属性。
+ *
+ * item / item-text / item-delete-trigger 三个角色节点接的是库里 tag 的 root / label / close-trigger
+ * （DOM 上带 data-scope="tag"，吃 tag 那份皮肤）：三轴、置灰与摘除钮的可及名都由 tag 给，
+ * 元素只往标签上叠行角色、Tab 停靠点、选中与锚点。
  *
  * 整组只占一个 Tab 停靠点：组内走方向键，摘除走 Delete / Backspace，
  * 每枚标签的摘除钮一律 tabindex=-1。
@@ -46,13 +50,19 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart root - 组件根容器（承载三视觉轴与 data-orientation/data-disabled）
  * @csspart label - 组标题（aria-labelledby 目标）
  * @csspart list - role=grid 容器，键盘在此收口，也是 roving tabindex 的兜底位
- * @csspart item - role=row 标签，须自带 value 属性标识身份；禁用写 aria-disabled="true"
+ * @csspart item - 一枚标签，须自带 value 属性标识身份；禁用写 aria-disabled="true"。接的是 tag 的 root（data-scope="tag"），叠上 role=row、roving tabindex、data-selected 与 data-highlighted
  * @csspart cell - role=gridcell，标签里那一格，文字与摘除钮都写在它之内
- * @csspart item-text - 标签文字（连打检索的取字处）
- * @csspart item-delete-trigger - 摘除钮，不占 Tab 位
+ * @csspart item-text - 标签文字（连打检索的取字处），接的是 tag 的 label（data-scope="tag"）
+ * @csspart item-delete-trigger - 摘除钮，不占 Tab 位；接的是所在标签那份 tag 的 close-trigger（data-scope="tag"），整组没开放摘除时收起，可及名走 translations.deleteItem
  */
 export class XhTagGroupElement extends XhElement {
-  static override partContract = { anatomy: tagGroupAnatomy, meta: tagGroupMeta }
+  // item 接的是 tag 的 root，item-text 接的是 tag 的 label，item-delete-trigger 接的是 tag 的 close-trigger：
+  // 三个作者名都归 tag 那套 scope 管，不在本元素的解剖里
+  static override partContract = {
+    anatomy: tagGroupAnatomy,
+    meta: tagGroupMeta,
+    delegates: [{ name: tagAnatomy.name, parts: ['item', 'item-text', 'item-delete-trigger'] }],
+  }
 
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。
@@ -259,7 +269,8 @@ export class XhTagGroupElement extends XhElement {
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('list', api.getListProps() as Record<string, unknown>)
 
-    // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled
+    // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled。
+    // 条目节点接成 tag 的 root，文字与摘除钮接成同一份 tag 的 label 与 close-trigger
     for (const el of this.getParts('item')) {
       const item = this.itemProps(el)
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)

@@ -11,6 +11,8 @@ const HIDDEN_SELECT = '[data-scope="select"][data-part="hidden-select"]'
 const TAG_ROOT = '[data-scope="select"][data-part="root"] [data-scope="tag"][data-part="root"]'
 const OVERFLOW_TAG = `${TAG_ROOT}[data-count]`
 const SELECT_TAG = `${TAG_ROOT}:not([data-count])`
+/** 标签里的删除钮：就是 tag 的 close-trigger，戴 tag 的 scope。 */
+const DELETE_TRIGGER = '[data-scope="select"][data-part="root"] [data-scope="tag"][data-part="close-trigger"]'
 
 /** 显示文字不进归一化快照（快照只采属性），只能直接读 DOM。 */
 function assertPartText(doc: Document, selector: string, part: string, expected: string): void {
@@ -52,6 +54,22 @@ function assertTags(doc: Document, expected: readonly Record<string, string | nu
 
 function assertOverflowTag(doc: Document, expected: Record<string, string | null>): void {
   assertTagAttrs(doc, OVERFLOW_TAG, 'overflow-tag', [expected])
+}
+
+/** 删除钮只有触发器外那一枚：触发器里的标签不渲它（按钮不能套按钮）。 */
+function assertDeleteTrigger(doc: Document, expected: Record<string, string | null>): void {
+  assertTagAttrs(doc, DELETE_TRIGGER, 'item-delete-trigger', [{ type: 'button', ...expected }])
+  if (doc.querySelector('[data-scope="select"][data-part="trigger"] [data-scope="tag"][data-part="close-trigger"]'))
+    throw new Error('触发器里的标签不该有 tag 的关闭钮')
+}
+
+/** 删除钮戴 tag 的 scope，声明式 click 步找不到它，照 click 步的动作直接点。 */
+function clickDeleteTrigger(doc: Document): void {
+  const el = doc.querySelector<HTMLElement>(DELETE_TRIGGER)
+  if (!el)
+    throw new Error('找不到删除钮')
+  el.focus?.()
+  el.click()
 }
 
 /**
@@ -159,7 +177,7 @@ function withClearTrigger(base: FixtureNode): FixtureNode {
 /**
  * 标签形态：触发器里的标签行（tag-list）收着两枚标签与 +N 那一枚（overflow-tag），
  * 触发器外再摆一枚带删除钮的。标签由作者按 api.tags 渲染，fixture 是静态的，这里直接写死两枚。
- * tag 与 overflow-tag 是作者侧的写法名，渲出来都是 tag 的 root（data-scope="tag"），不进本组件的解剖。
+ * tag / overflow-tag / item-delete-trigger 是作者侧的写法名，渲出来是 tag 的 root 与 close-trigger（data-scope="tag"），不进本组件的解剖。
  */
 function withTags(base: FixtureNode): FixtureNode {
   const tag = (value: string, text: string, deletable = false): FixtureNode => ({
@@ -1164,16 +1182,15 @@ export const selectSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '标签：每枚都是 tag 的 root 并带 data-value；删除钮的可及名走 translations.deleteItem，点按摘掉那个值',
+      name: '标签：每枚都是 tag 的 root 并带 data-value；删除钮是 tag 的 close-trigger，可及名走 translations.deleteItem，点按摘掉那个值',
       spec: { apg: `${APG}#roles_states_properties` },
       fixture: withTags,
       props: { multiple: true, defaultValue: ['apple', 'banana'], name: 'fruit', translations: { deleteItem: (label: string) => `移除${label}` } },
       initial: {
-        counts: { 'tag-list': 1, 'item-delete-trigger': 1 },
+        counts: { 'tag-list': 1 },
         parts: {
           // 有选中：标签行露面
           'tag-list': { 'hidden': null, 'data-disabled': null },
-          'item-delete-trigger': { 'type': 'button', 'aria-label': '移除Apple', 'data-disabled': null },
           // 名字仍从 value-text 取：标签行只是视觉，读屏念到的是完整的选中项文本
           'trigger': { 'aria-labelledby': '@part(label) @part(value-text)' },
         },
@@ -1181,25 +1198,27 @@ export const selectSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          why: '标签戴 tag 的 scope、+N 的文字不进属性快照，只能直接读 DOM',
+          why: '标签与删除钮戴 tag 的 scope、+N 的文字不进属性快照，只能直接读 DOM',
           run: ({ doc }) => {
-            // 三枚标签都是 tag 的 root，展示态、不可关闭；两枚都摆得下，+N 那一枚收起
+            // 三枚标签都是 tag 的 root，展示态；两枚都摆得下，+N 那一枚收起
             assertTags(doc, [
               { 'data-value': 'apple', 'data-state': 'open', 'hidden': null, 'data-disabled': null },
               { 'data-value': 'banana', 'data-state': 'open', 'hidden': null, 'data-disabled': null },
               { 'data-value': 'apple', 'data-state': 'open', 'hidden': null, 'data-disabled': null },
             ])
             assertOverflowTag(doc, { 'hidden': '', 'data-state': 'closed', 'data-count': '0', 'data-disabled': null })
-            // 触发器里的标签不给关闭钮：按钮不能套按钮
-            if (doc.querySelector('[data-scope="tag"][data-part="close-trigger"]'))
-              throw new Error('触发器里的标签不该有 tag 的关闭钮')
+            // 触发器外那枚的删除钮：留在原地、可按；本组件不再有自己的删除钮部件
+            assertDeleteTrigger(doc, { 'aria-label': '移除Apple', 'hidden': null, 'disabled': null, 'data-disabled': null })
+            if (doc.querySelector('[data-scope="select"][data-part="item-delete-trigger"]'))
+              throw new Error('删除钮不该再戴 select 的 scope')
             assertOverflowText(doc, '')
             assertValueText(doc, 'Apple, Banana')
           },
         },
         {
-          kind: 'click',
-          part: 'item-delete-trigger',
+          kind: 'raw',
+          why: '删除钮戴 tag 的 scope，声明式 click 步找不到它',
+          run: ({ doc }) => clickDeleteTrigger(doc),
           expect: {
             parts: { 'item[0]': { 'aria-selected': 'false' }, 'item[1]': { 'aria-selected': 'true' }, 'tag-list': { hidden: null } },
             events: [{ type: 'value-change', detail: { value: ['banana'] } }],
@@ -1294,29 +1313,48 @@ export const selectSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '标签：禁用时标签行、每枚标签、+N 与删除钮都标 data-disabled，点删除钮不动',
+      name: '标签：禁用时标签行、每枚标签与 +N 都标 data-disabled，删除钮留位、原生 disabled，点删除钮不动',
       spec: { apg: `${APG}#roles_states_properties` },
       fixture: withTags,
       props: { multiple: true, defaultValue: ['apple', 'banana'], disabled: true, name: 'fruit' },
       initial: {
         parts: {
           'tag-list': { 'data-disabled': '' },
-          'item-delete-trigger': { 'data-disabled': '' },
         },
       },
       steps: [
         {
           kind: 'raw',
-          why: '标签戴 tag 的 scope，只能直接读 DOM',
+          why: '标签与删除钮戴 tag 的 scope，只能直接读 DOM',
           run: ({ doc }) => {
             assertTags(doc, [{ 'data-disabled': '' }, { 'data-disabled': '' }, { 'data-disabled': '' }])
             assertOverflowTag(doc, { 'data-disabled': '' })
+            assertDeleteTrigger(doc, { 'hidden': null, 'disabled': '', 'data-disabled': '' })
           },
         },
         {
-          kind: 'click',
-          part: 'item-delete-trigger',
+          kind: 'raw',
+          why: '删除钮戴 tag 的 scope，声明式 click 步找不到它',
+          run: ({ doc }) => clickDeleteTrigger(doc),
           expect: { parts: { 'item[0]': { 'aria-selected': 'true' } }, events: [] },
+        },
+      ],
+    },
+    {
+      name: '标签：只读时标签不置灰，删除钮留位、原生 disabled，点它不动值、不发事件',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { multiple: true, defaultValue: ['apple', 'banana'], readOnly: true, name: 'fruit' },
+      steps: [
+        {
+          kind: 'raw',
+          why: '标签与删除钮戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertTags(doc, [{ 'data-disabled': null }, { 'data-disabled': null }, { 'data-disabled': null }])
+            assertDeleteTrigger(doc, { 'hidden': null, 'disabled': '', 'data-disabled': '' })
+            clickDeleteTrigger(doc)
+          },
+          expect: { parts: { 'item[0]': { 'aria-selected': 'true' }, 'item[1]': { 'aria-selected': 'true' } }, events: [] },
         },
       ],
     },

@@ -3,7 +3,7 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { TagsInputContext } from './use-tags-input'
 import { inject, provide } from 'vue'
 
-/** 标签自报的值，供 item-preview / item-text / 删除按钮 / 编辑框复用同一份声明。 */
+/** 标签自报的值，供预览（tag 的 root）/ 文字（tag 的 label）/ 删除钮（tag 的 close-trigger）/ 编辑框复用同一份声明。 */
 export interface TagsInputItemContext {
   item: ComputedRef<TagsInputItemProps>
 }

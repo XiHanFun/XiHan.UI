@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 // select 多选标签形态：api 的 tags 受 maxTagCount 截断（缺省 3）、余数进 overflowCount，
-// XhSelectOverflowTag 把余数显示成 +N；XhSelectItemDeleteTrigger 点按摘掉所在标签的选中值，禁用时不动。
-// 每枚标签与 +N 都是库里 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从 select 传下去，形态按控件的面派，不可关闭；
-// 只有文字的标签替它包一层 tag 的 label，作者自己写了节点就原样放行。
+// XhSelectOverflowTag 把余数显示成 +N；XhSelectItemDeleteTrigger 渲的是所在标签那份 tag 的 close-trigger，
+// 点按摘掉所在标签的选中值，禁用时留位、原生 disabled，只读时点了不动。
+// 每枚标签与 +N 都是库里 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从 select 传下去，形态按控件的面派；
+// 触发器里的不渲关闭钮；只有文字的标签替它包一层 tag 的 label，作者自己写了节点就原样放行。
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
@@ -85,13 +86,19 @@ function mountSelect(props: Record<string, unknown> = {}): { change: ReturnType<
 }
 
 const TAG_ROOT = '[data-scope="tag"][data-part="root"]'
+const CLOSE_TRIGGER = '[data-scope="tag"][data-part="close-trigger"]'
 
 /** 触发器外那枚带删除钮的标签。 */
 function tagEl(host: HTMLElement, v: string): HTMLElement {
-  const hit = host.querySelector<HTMLElement>(`${TAG_ROOT}[data-value="${v}"]:has([data-part="item-delete-trigger"])`)
+  const hit = host.querySelector<HTMLElement>(`${TAG_ROOT}[data-value="${v}"]:has(${CLOSE_TRIGGER})`)
   if (!hit)
     throw new Error(`找不到标签 ${v}`)
   return hit
+}
+
+/** 触发器外那枚标签里的删除钮：就是 tag 的 close-trigger。 */
+function deleteTriggerEl(host: HTMLElement, v: string): HTMLButtonElement {
+  return tagEl(host, v).querySelector<HTMLButtonElement>(CLOSE_TRIGGER)!
 }
 
 /** 触发器里的标签，文档序。 */
@@ -240,28 +247,42 @@ describe('select 多选标签', () => {
     expect(m.bag().overflowCount).toBe(1)
   })
 
-  it('点删除钮摘掉那个值；可及名走 deleteItem', async () => {
+  it('删除钮就是 tag 的 close-trigger：本组件不再有自己的删除钮部件；可及名走 deleteItem，点按摘掉那个值', async () => {
     const m = mountSelect({ defaultValue: ['a', 'b'], translations: { deleteItem: (label: string) => `移除${label}` } })
     await tick()
-    const remove = tagEl(m.host, 'a').querySelector<HTMLElement>('[data-part="item-delete-trigger"]')!
+    const remove = deleteTriggerEl(m.host, 'a')
+    expect(remove.tagName).toBe('BUTTON')
+    expect(remove.getAttribute('type')).toBe('button')
     expect(remove.getAttribute('aria-label')).toBe('移除甲')
+    // 可摘：留在原地、可按
+    expect([remove.hidden, remove.disabled, remove.hasAttribute('data-disabled')]).toEqual([false, false, false])
+    expect(m.host.querySelector('[data-scope="select"][data-part="item-delete-trigger"]')).toBeNull()
     remove.click()
     await tick()
     expect(m.change).toHaveBeenCalledWith({ value: ['b'] })
   })
 
-  it('禁用时删除钮不动', async () => {
+  it('缺省可及名是 Delete + 标签文字', async () => {
+    const m = mountSelect({ defaultValue: ['a'] })
+    await tick()
+    expect(deleteTriggerEl(m.host, 'a').getAttribute('aria-label')).toBe('Delete 甲')
+  })
+
+  it('禁用时删除钮留位、原生 disabled 且标 data-disabled，点了不动', async () => {
     const m = mountSelect({ defaultValue: ['a'], disabled: true })
     await tick()
-    tagEl(m.host, 'a').querySelector<HTMLElement>('[data-part="item-delete-trigger"]')!.click()
+    const remove = deleteTriggerEl(m.host, 'a')
+    expect([remove.hidden, remove.disabled, remove.hasAttribute('data-disabled')]).toEqual([false, true, true])
+    remove.click()
     await tick()
     expect(m.change).not.toHaveBeenCalled()
   })
 
-  it('只读时删除钮同样不动', async () => {
+  it('只读时标签不置灰，点删除钮不动', async () => {
     const m = mountSelect({ defaultValue: ['a'], readOnly: true })
     await tick()
-    tagEl(m.host, 'a').querySelector<HTMLElement>('[data-part="item-delete-trigger"]')!.click()
+    expect(tagEl(m.host, 'a').hasAttribute('data-disabled')).toBe(false)
+    deleteTriggerEl(m.host, 'a').click()
     await tick()
     expect(m.change).not.toHaveBeenCalled()
   })

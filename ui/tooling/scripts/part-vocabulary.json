@@ -604,7 +604,6 @@
       "skeleton",
       "sortable",
       "steps",
-      "tag-group",
       "tags-input",
       "time-picker",
       "timeline",
@@ -636,10 +635,7 @@
     ],
     "item-delete-trigger": [
       "field-array",
-      "file-upload",
-      "select",
-      "tag-group",
-      "tags-input"
+      "file-upload"
     ],
     "item-description": [
       "context-menu",
@@ -682,8 +678,7 @@
       "file-upload"
     ],
     "item-preview": [
-      "file-upload",
-      "tags-input"
+      "file-upload"
     ],
     "item-progress": [
       "file-upload",
@@ -710,8 +705,6 @@
       "radio-group",
       "segmented",
       "select",
-      "tag-group",
-      "tags-input",
       "transfer",
       "tree",
       "tree-select"

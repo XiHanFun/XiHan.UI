@@ -2,11 +2,11 @@ import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone, Type
 import type { TagVariant } from '../tag/tag.types'
 
 /**
- * 焦点模型：roving tabindex。焦点真的落在标签上，整组只留一个 Tab 停靠点：
+ * 焦点模型：roving tabindex。焦点真的落在标签（tag 的 root）上，整组只留一个 Tab 停靠点：
  * 锚点 = focusedValue ?? 首个选中值，认领 tabindex=0，其余一律 -1；
  * 焦点不在组内时由 list 兜底进 Tab 序列，其 onFocus 再把焦点转投给锚点条目。
  *
- * 每枚标签自己的摘除钮一律 tabindex=-1，摘除那一路走 Delete / Backspace。
+ * 每枚标签自己的摘除钮（tag 的 close-trigger）一律 tabindex=-1，摘除那一路走 Delete / Backspace。
  * 这是本组件存在的理由：一排十枚可摘标签，逐枚摘除钮各占一个停靠点时 Tab 就没法用了。
  */
 export type TagGroupFocusModel = 'roving-tabindex'
@@ -66,7 +66,8 @@ export interface TagGroupItemProps {
 export interface TagGroupTranslations {
   /**
    * 摘除钮的 aria-label：钮里通常只有一个叉，读屏念不出摘掉的是哪一枚。
-   * 缺省 `Delete {标签文字}`，与 tag、select、tags-input 里同一个动作用同一个词。
+   * 缺省 `Delete {标签文字}`，经 tag 的 translations.close 落到那颗钮上，
+   * 与 tag、select、tags-input 里同一个动作用同一个词。
    */
   deleteItem: (label: string) => string
   /**
@@ -107,11 +108,11 @@ export interface TagGroupSchema extends MachineSchema {
     orientation?: Orientation
     /** 连打检索，默认开。 */
     typeahead?: boolean
-    /** 形态：solid / subtle / outline，沿继承流下发给每一枚标签。 */
+    /** 形态：solid / subtle / outline，逐枚落到每一枚标签（tag 的 root）上。 */
     variant?: TagVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
     tone?: Tone
-    /** 尺寸：sm / md / lg。 */
+    /** 尺寸：sm / md / lg，走 tag 的三档。 */
     size?: Size
     /** value 变化意图回调。 */
     onValueChange?: (details: TagGroupValueChangeDetails) => void
@@ -173,9 +174,15 @@ export interface TagGroupApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getListProps: () => T['element']
+  /**
+   * 一枚标签：库里 tag 的 root（data-scope="tag"），三轴与置灰由 tag 给；
+   * row 角色、身份、roving tabindex、选中（data-selected）与锚点（data-highlighted）叠在它上面。
+   */
   getItemProps: (props: TagGroupItemProps) => T['element']
   /** 标签里那一格；摘除钮必须落在它之内。 */
   getCellProps: (props: TagGroupItemProps) => T['element']
+  /** 标签文字：tag 的 label，截断规则挂在那一层。 */
   getItemTextProps: (props: TagGroupItemProps) => T['element']
+  /** 摘除钮：所在标签那份 tag 的 close-trigger，不占 Tab 位；可及名、禁用与收起都由 tag 给。 */
   getItemDeleteTriggerProps: (props: TagGroupItemProps) => T['button']
 }
