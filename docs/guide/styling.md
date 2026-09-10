@@ -255,9 +255,28 @@ const theme = createThemeController({ storageKey: "app-theme" });
 theme.setPreference({ brand: brandId("acme") });
 ```
 
-派生只取种子的**色相与彩度**，明度曲线沿用基线——库里所有建立在明度上的对比度保证（实心底白字 4.5:1 这类）对任何种子色都继续成立。种子会被锚定到 600 档（实心底与强调文字的档位）。
+派生只取种子的**色相与彩度**，明度曲线沿用基线——库里所有建立在明度上的对比度保证（实心底白字 4.5:1 这类）对任何种子色都继续成立。种子会被锚定到 600 档（实心底与强调文字的档位），因此种子必须完全不透明；透明品牌色依赖宿主背景，运行时会直接拒绝。
 
 要逐档手调，把整套梯度直接交给 `registerBrand('acme', { 50: '...', ..., 950: '...' })`。SSR 场景用 `brandScaleCss(id, seed)` 拿到取值块字符串，随首屏 HTML 下发，客户端不必再注册。
+
+## 透明颜色与对比度
+
+颜色运行时把 alpha 作为 `Oklch.a` 的必填通道保留。`compositeColors(foreground, backdrop)` 按 CSS source-over 在 sRGB 编码通道合成；WCAG 相对亮度在得到最终像素后再线性化。
+
+```ts
+import { compositeColors, contrastRatio } from "@xihan-ui/tokens";
+
+const page = "oklch(0.97 0.01 250)";
+const glass = "oklch(0.98 0.01 250 / 82%)";
+const renderedGlass = compositeColors(glass, page);
+
+// 背景本身透明时，第三个参数必须给出最终底色。
+const ratio = contrastRatio("oklch(0.2 0.02 250)", glass, page);
+```
+
+`relativeLuminance(transparentColor)` 和缺少最终底色的 `contrastRatio(foreground, transparentBackground)` 会直接抛错，不会假设白底。玻璃位于图片、品牌色或多层 surface 上时，应分别传入实际像素或逐层合成；平均色不能证明每一处文字都满足对比度。
+
+`pickOnColor` 与 `pickAwayColor` 可通过 `{ backdrop: actualBackdrop }` 处理玻璃背景，并会比较自定义 light/dark 候选的真实对比度。没有最终底色时仍会抛错，运行时不会替你猜页面背景。
 
 ## 动画与进出场
 
