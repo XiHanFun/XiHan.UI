@@ -3,6 +3,7 @@
   "type": "module",
   "version": "1.1.0",
   "private": true,
+  "packageManager": "pnpm@11.7.0",
   "description": "XiHan.UI document site. Framework-agnostic design system runtime with Vue and Web Components adapters.",
   "author": {
     "name": "XiHanFun"
@@ -16,7 +17,7 @@
     "url": "https://github.com/XiHanFun/XiHan.UI/issues"
   },
   "scripts": {
-    "bootstrap": "pnpm install",
+    "bootstrap": "pnpm install --frozen-lockfile",
     "dev": "vitepress dev",
     "build": "vitepress build",
     "serve": "vitepress serve",
@@ -24,7 +25,7 @@
     "clean": "rimraf .vitepress/dist",
     "clean:modules": "rimraf node_modules",
     "upgrade": "pnpm upgrade",
-    "reinstall": "pnpm run clean:modules && pnpm install",
+    "reinstall": "pnpm run clean:modules && pnpm install --frozen-lockfile",
     "rebuild": "pnpm run clean && pnpm run build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
