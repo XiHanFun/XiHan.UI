@@ -1,5 +1,13 @@
 import type { Disposable, FocusableElement, Layer, RuntimeConfig } from '../../kernel'
-import { contains, createPerDocumentRegistry, EV_MOUNT_AUTO_FOCUS, EV_UNMOUNT_AUTO_FOCUS, isElement } from '../../kernel'
+import {
+  contains,
+  createPerDocumentRegistry,
+  EV_MOUNT_AUTO_FOCUS,
+  EV_UNMOUNT_AUTO_FOCUS,
+  getActiveElementDeep,
+  isElement,
+  isShadowRoot,
+} from '../../kernel'
 import { acquireFocusGuards } from './focus-guards'
 import { focusFirst, focusSafely, getTabbables, removeLinks } from './tabbable'
 
@@ -30,12 +38,14 @@ export interface FocusScopeOptions {
 interface FocusScopeDocumentState {
   sequence: number
   live: Set<number>
+  ownershipListeners: Set<() => void>
 }
 
 // 焦点归还只和同一 Document 中更晚建立的域竞争；其他窗口有自己的焦点生命周期。
 const focusScopesByDocument = createPerDocumentRegistry<FocusScopeDocumentState>(() => ({
   sequence: 0,
   live: new Set<number>(),
+  ownershipListeners: new Set<() => void>(),
 }))
 
 /** 有比 seq 更晚建立、且此刻仍在场的焦点域吗。 */
@@ -71,12 +81,18 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
   let disposed = false
   let resourcesReleased = false
   let paused = registry.top() !== layer
-  let lastFocused: FocusableElement | null = scope.getActiveElement()
   const previouslyFocused = scope.getActiveElement()
+  let lastFocused: FocusableElement | null = null
   let unsubscribe: () => void = () => {}
+  let mutationObserver: MutationObserver | null = null
+  let recoveryFrame: number | null = null
+  let pendingRemovedFocus: FocusableElement | null = null
+  let trackedFocusPath = new Set<Node>()
+  let trackedShadowHosts = new Set<Element>()
 
   const guardsCleanup = acquireFocusGuards(doc)
   documentScopes.live.add(mountSeq)
+  documentScopes.ownershipListeners.add(schedulePendingRecovery)
 
   function isInScope(el: Element | null): boolean {
     if (!el || el.ownerDocument !== doc)
@@ -85,6 +101,137 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
     if (contains(el2, el))
       return true
     return (o.branches?.() ?? []).some(b => contains(b, el))
+  }
+
+  function cancelRecovery(): void {
+    pendingRemovedFocus = null
+    if (recoveryFrame === null)
+      return
+    win.cancelAnimationFrame(recoveryFrame)
+    recoveryFrame = null
+  }
+
+  function schedulePendingRecovery(): void {
+    if (disposed
+      || paused
+      || !pendingRemovedFocus
+      || recoveryFrame !== null
+      || hasNewerScope(documentScopes, mountSeq)) {
+      return
+    }
+    recoveryFrame = win.requestAnimationFrame(recoverRemovedFocus)
+  }
+
+  function clearFocusTracking(target: FocusableElement): void {
+    if (lastFocused !== target)
+      return
+    lastFocused = null
+    trackedFocusPath = new Set<Node>()
+    trackedShadowHosts = new Set<Element>()
+    mutationObserver?.disconnect()
+    cancelRecovery()
+  }
+
+  // 只观察最后焦点到所属 Document 的祖先链：能捕获自身、祖先与 Shadow host 被移除，
+  // 又不会让页面其他子树的普通更新唤醒每一个 FocusScope。
+  function rememberFocus(target: FocusableElement): void {
+    const path = new Set<Node>()
+    const observerTargets = new Set<Node>()
+    const shadowHosts = new Set<Element>()
+    let current: Node | null = target
+    while (current && current !== doc) {
+      path.add(current)
+      if (isShadowRoot(current)) {
+        shadowHosts.add(current.host)
+        current = current.host
+      }
+      else {
+        const parentNode: Node | null = current.parentNode
+        if (!parentNode)
+          return
+        observerTargets.add(parentNode)
+        current = parentNode
+      }
+    }
+    if (current !== doc)
+      return
+    path.add(doc)
+
+    cancelRecovery()
+    mutationObserver?.disconnect()
+    for (const targetNode of observerTargets)
+      mutationObserver?.observe(targetNode, { childList: true })
+    lastFocused = target
+    trackedFocusPath = path
+    trackedShadowHosts = shadowHosts
+  }
+
+  function removedTrackedPath(records: MutationRecord[]): boolean {
+    return records.some(record =>
+      Array.from(record.removedNodes).some(node => trackedFocusPath.has(node)),
+    )
+  }
+
+  function recoverRemovedFocus(): void {
+    recoveryFrame = null
+    const pending = pendingRemovedFocus
+    pendingRemovedFocus = null
+    if (!pending || disposed || lastFocused !== pending)
+      return
+    const trapped = o.trapped()
+    if (disposed || lastFocused !== pending)
+      return
+    if (!trapped) {
+      clearFocusTracking(pending)
+      return
+    }
+    if (paused || hasNewerScope(documentScopes, mountSeq)) {
+      pendingRemovedFocus = pending
+      return
+    }
+
+    const activeInScope = activeFocusWithinScope()
+    if (disposed || lastFocused !== pending)
+      return
+    if (activeInScope) {
+      rememberFocus(activeInScope)
+      return
+    }
+    const active = getActiveElementDeep(doc)
+    const fellBackToShadowHost = active !== null && trackedShadowHosts.has(active)
+    const fellBackToDocument = active === doc.body || active === doc.documentElement
+    // MutationObserver 不接管业务已经完成的域外焦点交接；普通逃逸仍由 focusin 处理。
+    if (!fellBackToShadowHost && !fellBackToDocument && active && active !== pending) {
+      clearFocusTracking(pending)
+      return
+    }
+    const stillTrapped = o.trapped()
+    if (disposed || lastFocused !== pending)
+      return
+    if (!stillTrapped) {
+      clearFocusTracking(pending)
+      return
+    }
+    if (paused || hasNewerScope(documentScopes, mountSeq)) {
+      pendingRemovedFocus = pending
+      return
+    }
+    pullBackRemovedFocus(pending)
+  }
+
+  function onMutations(records: MutationRecord[]): void {
+    const candidate = lastFocused
+    if (disposed || !candidate || !removedTrackedPath(records))
+      return
+    const trapped = o.trapped()
+    if (disposed || lastFocused !== candidate)
+      return
+    if (!trapped) {
+      clearFocusTracking(candidate)
+      return
+    }
+    pendingRemovedFocus = candidate
+    schedulePendingRecovery()
   }
 
   // —— 挂载自动聚焦 ——
@@ -103,7 +250,8 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
     boundContainer ??= el
     const active = scope.getActiveElement()
     // 焦点已落在容器后代则视为完成，落在容器本身不算
-    if (isInScope(active) && active !== el) {
+    if (active && isInScope(active) && active !== el) {
+      rememberFocus(active)
       focusSettled = true
       return
     }
@@ -177,21 +325,138 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
       && typeof (value as Element & { focus?: unknown }).focus === 'function'
   }
 
+  function activeFocusWithinScope(): FocusableElement | null {
+    const roots = new Set<Document | ShadowRoot>()
+    const addRoot = (node: Node | null): void => {
+      if (!node)
+        return
+      const root = node.getRootNode()
+      if (root === doc) {
+        roots.add(doc)
+        return
+      }
+      if (isShadowRoot(root) && root.ownerDocument === doc)
+        roots.add(root)
+    }
+    addRoot(container())
+    for (const branch of o.branches?.() ?? []) {
+      if (branch.ownerDocument === doc)
+        addRoot(branch)
+    }
+    addRoot(scope.getRootNode())
+
+    for (const root of roots) {
+      const active = getActiveElementDeep(root)
+      if (isFocusableElement(active) && active.isConnected && isInScope(active))
+        return active
+    }
+    return null
+  }
+
+  function isScopeShadowHost(target: Element): boolean {
+    const roots = [container(), ...(o.branches?.() ?? [])]
+    for (const node of roots) {
+      if (!node || node.ownerDocument !== doc)
+        continue
+      let root: Node = node.getRootNode()
+      while (isShadowRoot(root)) {
+        if (root.host === target)
+          return true
+        root = root.host.getRootNode()
+      }
+    }
+    return false
+  }
+
+  function ensureRecoveryOwnership(expected: FocusableElement): boolean {
+    if (disposed || lastFocused !== expected)
+      return false
+    const trapped = o.trapped()
+    if (disposed || lastFocused !== expected)
+      return false
+    if (!trapped) {
+      clearFocusTracking(expected)
+      return false
+    }
+    if (paused || hasNewerScope(documentScopes, mountSeq)) {
+      pendingRemovedFocus = expected
+      return false
+    }
+    return true
+  }
+
+  /** 尝试一次焦点写入后，true 表示已有有效接管者、不得继续碰后续候选。 */
+  function focusAttemptSettled(expected: FocusableElement): boolean {
+    if (!ensureRecoveryOwnership(expected))
+      return true
+    const activeInScope = activeFocusWithinScope()
+    if (!ensureRecoveryOwnership(expected))
+      return true
+    if (activeInScope) {
+      rememberFocus(activeInScope)
+      return true
+    }
+    const active = getActiveElementDeep(doc)
+    const browserFallback = active === null
+      || active === doc.body
+      || active === doc.documentElement
+      || trackedShadowHosts.has(active)
+    if (!active || active === expected || browserFallback)
+      return false
+    clearFocusTracking(expected)
+    return true
+  }
+
+  function pullBackRemovedFocus(expected: FocusableElement): void {
+    if (!ensureRecoveryOwnership(expected))
+      return
+    if (expected.isConnected) {
+      const expectedInScope = isInScope(expected)
+      if (!ensureRecoveryOwnership(expected))
+        return
+      if (expectedInScope) {
+        focusSafely(expected)
+        if (focusAttemptSettled(expected))
+          return
+      }
+    }
+
+    const el = container()
+    if (!el)
+      return
+    if (el.ownerDocument !== doc)
+      throw new Error('[xh] FocusScope container 必须属于 config.scope 的 Document')
+    if (!ensureRecoveryOwnership(expected))
+      return
+    for (const candidate of removeLinks(getTabbables(el))) {
+      if (!ensureRecoveryOwnership(expected))
+        return
+      focusSafely(candidate, { select: true })
+      if (focusAttemptSettled(expected))
+        return
+    }
+
+    if (!ensureRecoveryOwnership(expected))
+      return
+    focusSafely(el)
+    focusAttemptSettled(expected)
+  }
+
   function onFocusIn(e: FocusEvent): void {
     if (disposed)
       return
-    const scopedActive = scope.getActiveElement()
+    const scopedActive = activeFocusWithinScope()
     const originalTarget = e.composedPath()[0]
     let target: FocusableElement | null = null
-    if (isFocusableElement(scopedActive) && isInScope(scopedActive))
+    if (scopedActive)
       target = scopedActive
     else if (isFocusableElement(originalTarget))
       target = originalTarget
     else if (isFocusableElement(e.target))
       target = e.target
     // 记账不看 trapped：它可以在生命周期内打开，那一刻要有个新鲜的落点可回
-    if (isInScope(target)) {
-      lastFocused = target
+    if (target && isInScope(target)) {
+      rememberFocus(target)
       return
     }
     if (paused || !o.trapped())
@@ -202,11 +467,18 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
     if (disposed || paused || !o.trapped())
       return
     const related = e.relatedTarget as Element | null
-    // relatedTarget 为 null 一律放行（切 tab / 元素被移除）
+    // relatedTarget 为 null 先让浏览器完成窗口切换或节点移除；后者由精确路径观察器延迟复核。
     if (related === null)
       return
-    if (!isInScope(related))
-      pullBack()
+    if (isInScope(related) || isScopeShadowHost(related))
+      return
+    // closed shadow 会把 relatedTarget 重定向成 host；优先核对 Scope/branch 的真实活动元素。
+    const activeInScope = activeFocusWithinScope()
+    if (activeInScope) {
+      rememberFocus(activeInScope)
+      return
+    }
+    pullBack()
   }
 
   // —— Tab 边界回绕 ——
@@ -236,7 +508,14 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
     if (resourcesReleased)
       return
     resourcesReleased = true
+    documentScopes.ownershipListeners.delete(schedulePendingRecovery)
     documentScopes.live.delete(mountSeq)
+    for (const listener of [...documentScopes.ownershipListeners]) listener()
+    mutationObserver?.disconnect()
+    mutationObserver = null
+    trackedFocusPath.clear()
+    trackedShadowHosts.clear()
+    cancelRecovery()
     doc.removeEventListener('focusin', onFocusIn, { capture: true })
     doc.removeEventListener('focusout', onFocusOut, { capture: true })
     doc.removeEventListener('keydown', onKeyDown, { capture: true })
@@ -251,8 +530,13 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
   doc.addEventListener('keydown', onKeyDown, { capture: true })
 
   try {
+    mutationObserver = new win.MutationObserver(onMutations)
     unsubscribe = registry.subscribe((layers) => {
-      paused = layers[layers.length - 1] !== layer
+      const nextPaused = layers[layers.length - 1] !== layer
+      const resumed = paused && !nextPaused
+      paused = nextPaused
+      if (resumed)
+        schedulePendingRecovery()
     })
     tryMountFocus(false)
     if (!focusSettled)

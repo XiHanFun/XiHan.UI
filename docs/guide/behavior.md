@@ -119,6 +119,8 @@ const scope = createFocusScope({
 
 `focusSafely` 与 `focusFirst` 按候选节点所属的 Document/ShadowRoot 判断焦点是否真正落下；可选中文本控件通过严格 HTMLElement 身份与 HTML 节点名识别，不依赖可能因 `adoptNode` 改变的 owner realm 构造器。Shadow DOM 中 `document.activeElement` 只指向 host，不能拿它判断内部候选失败或重复聚焦。
 
+陷焦点域会精确观察最后一个域内焦点的 DOM/ShadowRoot 祖先路径。该路径被移除后，FocusScope 等到所属 Window 的下一动画帧再确认最终焦点；只有域仍在场、仍为活动层、`trapped` 仍开启且业务没有把焦点交给其他有效节点时，才恢复到重新插回的原节点、主容器首个有效项或容器。暂停中的域保留待复核资格，重新取得同一 Document 的焦点所有权后再继续；每次尝试候选后都会重新仲裁，候选的 focus 回调同步打开新层时不会再触碰后续节点。动态 `branches`、closed ShadowRoot 与容器替换走同一判据，普通 DOM 删除不会触发补焦。
+
 公开 `FocusableElement` 统一表示 `Element & HTMLOrSVGElement`，即具备浏览器原生焦点能力的 Element。`getTabbables`、`focusSafely`、`focusFirst`、`focusItem`、Scope 活动元素和 FocusScope 的显式焦点目标都使用这份合同；带 `tabindex` 的 SVG/MathML 不会再被类型系统遗漏。
 
 ## 滚动锁

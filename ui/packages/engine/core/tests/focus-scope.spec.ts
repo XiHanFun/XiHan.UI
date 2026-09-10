@@ -30,10 +30,15 @@ async function frames(n = 1, win: Window = window): Promise<void> {
     await new Promise<void>(resolve => win.requestAnimationFrame(() => resolve()))
 }
 
-function setup(buttonCount = 3, doc: Document = document): Harness {
+/** 等 MutationObserver 完成当前任务的节点变更派发。 */
+async function mutations(win: Window = window): Promise<void> {
+  await new Promise<void>(resolve => win.setTimeout(resolve, 0))
+}
+
+function setup(buttonCount = 3, doc: Document = document, root: HTMLElement | ShadowRoot = doc.body): Harness {
   const outside = doc.createElement('button')
   outside.textContent = '外面'
-  doc.body.appendChild(outside)
+  root.appendChild(outside)
 
   const container = doc.createElement('div')
   // 真实组件的 content 部件都带 tabindex=-1，无可聚焦子节点时才兜得住
@@ -45,7 +50,7 @@ function setup(buttonCount = 3, doc: Document = document): Harness {
     container.appendChild(b)
     buttons.push(b)
   }
-  doc.body.appendChild(container)
+  root.appendChild(container)
 
   const registry = createLayerRegistry(doc)
   const { layer, dispose: disposeLayer } = registry.register({
@@ -314,6 +319,405 @@ describe('逃逸抢回', () => {
     await frames(2)
     branch.focus()
     expect(document.activeElement).toBe(branch)
+  })
+})
+
+describe('焦点节点移除恢复', () => {
+  it('挂载聚焦被取消且从未持有域内焦点时不追踪外部旧焦点', async () => {
+    const h = setup()
+    h.outside.focus()
+    const fallbackFocus = vi.fn()
+    h.buttons[0]!.addEventListener('focus', fallbackFocus)
+    open(h, { onMountAutoFocus: event => event.preventDefault() })
+    await frames(2)
+    h.outside.remove()
+
+    await frames(2)
+    expect(document.activeElement).toBe(document.body)
+    expect(fallbackFocus).not.toHaveBeenCalled()
+  })
+
+  it('当前焦点节点被移除后恢复到域内首个有效项', async () => {
+    const h = setup()
+    open(h)
+    await frames(2)
+    expect(document.activeElement).toBe(h.buttons[0])
+
+    h.buttons[0]!.remove()
+    await frames(2)
+    expect(document.activeElement).toBe(h.buttons[1])
+  })
+
+  it('分支里的当前焦点节点被连根移除后恢复到主容器', async () => {
+    const h = setup()
+    const branch = document.createElement('div')
+    const branchButton = document.createElement('button')
+    branch.appendChild(branchButton)
+    document.body.appendChild(branch)
+    open(h, {
+      branches: () => [branch],
+      initialFocus: () => branchButton,
+    })
+    await frames(2)
+    expect(document.activeElement).toBe(branchButton)
+
+    branch.remove()
+    await frames(2)
+    expect(document.activeElement).toBe(h.buttons[0])
+  })
+
+  it('移除后的微任务已把焦点交给域内有效项时不产生临时抢焦', async () => {
+    const h = setup()
+    open(h)
+    await frames(2)
+    const fallbackFocus = vi.fn()
+    h.buttons[1]!.addEventListener('focus', fallbackFocus)
+    h.buttons[0]!.remove()
+    await Promise.resolve()
+    h.buttons[2]!.focus()
+
+    await frames(2)
+    expect(document.activeElement).toBe(h.buttons[2])
+    expect(fallbackFocus).not.toHaveBeenCalled()
+  })
+
+  it('移除发生时 trapped 已关闭则不恢复', async () => {
+    const h = setup()
+    let trapped = true
+    open(h, { trapped: () => trapped })
+    await frames(2)
+    trapped = false
+    h.buttons[0]!.remove()
+
+    await mutations()
+    expect(document.activeElement).toBe(document.body)
+  })
+
+  it('唯一可聚焦项被移除后恢复到容器', async () => {
+    const h = setup(1)
+    open(h)
+    await frames(2)
+    h.buttons[0]!.remove()
+
+    await frames(2)
+    expect(document.activeElement).toBe(h.container)
+  })
+
+  it('被移除节点在恢复帧前重新插回域内时恢复原节点', async () => {
+    const h = setup()
+    open(h)
+    await frames(2)
+    const original = h.buttons[0]!
+    original.remove()
+    h.container.appendChild(original)
+
+    await frames(2)
+    expect(document.activeElement).toBe(original)
+  })
+
+  it('重新插回的原节点已禁用时继续恢复到下一个有效项', async () => {
+    const h = setup()
+    open(h)
+    await frames(2)
+    const original = h.buttons[0]!
+    original.remove()
+    original.disabled = true
+    h.container.prepend(original)
+
+    await frames(2)
+    expect(document.activeElement).toBe(h.buttons[1])
+  })
+
+  it('旧容器连根移除且 getter 已换新容器时恢复到新容器', async () => {
+    const h = setup()
+    let current = h.container
+    open(h, { container: () => current })
+    await frames(2)
+    const replacement = document.createElement('div')
+    replacement.tabIndex = -1
+    const replacementButton = document.createElement('button')
+    replacement.appendChild(replacementButton)
+    document.body.appendChild(replacement)
+    current = replacement
+    h.container.remove()
+
+    await frames(2)
+    expect(document.activeElement).toBe(replacementButton)
+  })
+
+  it('容器从一个 closed shadow root 换到另一个时按新根恢复并继续跟踪', async () => {
+    const oldHost = document.createElement('div')
+    document.body.appendChild(oldHost)
+    const oldRoot = oldHost.attachShadow({ mode: 'closed' })
+    const h = setup(2, document, oldRoot)
+    let current = h.container
+    open(h, { container: () => current })
+    await frames(2)
+    expect(oldRoot.activeElement).toBe(h.buttons[0])
+
+    const newHost = document.createElement('div')
+    document.body.appendChild(newHost)
+    const newRoot = newHost.attachShadow({ mode: 'closed' })
+    const replacement = document.createElement('div')
+    replacement.tabIndex = -1
+    const replacementButton = document.createElement('button')
+    replacement.appendChild(replacementButton)
+    newRoot.appendChild(replacement)
+    current = replacement
+    oldHost.remove()
+
+    await frames(2)
+    expect(newRoot.activeElement).toBe(replacementButton)
+
+    replacementButton.remove()
+    await frames(2)
+    expect(newRoot.activeElement).toBe(replacement)
+  })
+
+  it('较高层在场时等待，恢复活动后再修复被移除的旧焦点', async () => {
+    const h = setup()
+    open(h)
+    await frames(2)
+    const upper = h.registry.register({
+      kind: 'modal',
+      node: () => h.outside,
+      branches: () => [],
+      isModal: () => true,
+      setModal: () => {},
+      surfaces: () => [],
+    })
+    cleanups.push(upper.dispose)
+    h.buttons[0]!.remove()
+
+    await frames(2)
+    expect(document.activeElement).toBe(document.body)
+    upper.dispose()
+    await frames(2)
+    expect(document.activeElement).toBe(h.buttons[1])
+  })
+
+  it('首个 fallback 的 focus 回调打开新层后不再尝试后续候选', async () => {
+    const h = setup()
+    open(h)
+    await frames(2)
+    const upperContainer = document.createElement('div')
+    const upperButton = document.createElement('button')
+    upperContainer.appendChild(upperButton)
+    document.body.appendChild(upperContainer)
+    const laterFocus = vi.fn()
+    h.buttons[2]!.addEventListener('focus', laterFocus)
+    let disposeUpper: (() => void) | undefined
+    cleanups.push(() => disposeUpper?.())
+    h.buttons[1]!.addEventListener('focus', () => {
+      const upper = h.registry.register({
+        kind: 'modal',
+        node: () => upperContainer,
+        branches: () => [],
+        isModal: () => true,
+        setModal: () => {},
+        surfaces: () => [],
+      })
+      disposeUpper = upper.dispose
+      upperButton.focus()
+    }, { once: true })
+
+    h.buttons[0]!.remove()
+    await frames(2)
+    expect(document.activeElement).toBe(upperButton)
+    expect(laterFocus).not.toHaveBeenCalled()
+  })
+
+  it('删除期间经较高层完成的域外焦点交接不会在恢复帧被覆盖', async () => {
+    const h = setup()
+    open(h)
+    await frames(2)
+    h.buttons[0]!.remove()
+    const upper = h.registry.register({
+      kind: 'modal',
+      node: () => h.outside,
+      branches: () => [],
+      isModal: () => true,
+      setModal: () => {},
+      surfaces: () => [],
+    })
+    h.outside.focus()
+    upper.dispose()
+
+    await frames(2)
+    expect(document.activeElement).toBe(h.outside)
+  })
+
+  it('当前焦点已失去但删除的是无关节点时不恢复', async () => {
+    const h = setup()
+    open(h)
+    await frames(2)
+    const fallbackFocus = vi.fn()
+    h.buttons[0]!.addEventListener('focus', fallbackFocus)
+    h.buttons[0]!.blur()
+    h.outside.remove()
+
+    await frames(2)
+    expect(document.activeElement).toBe(document.body)
+    expect(fallbackFocus).not.toHaveBeenCalled()
+  })
+
+  it('移除后在 observer 派发前释放就不再恢复', async () => {
+    const h = setup()
+    const scope = open(h, { restoreFocus: () => false })
+    await frames(2)
+    const fallbackFocus = vi.fn()
+    h.buttons[1]!.addEventListener('focus', fallbackFocus)
+    h.buttons[0]!.remove()
+    scope.dispose()
+
+    await frames(2)
+    expect(document.activeElement).toBe(document.body)
+    expect(fallbackFocus).not.toHaveBeenCalled()
+  })
+
+  it('observer 已排恢复帧后释放会取消任务且回调再入也不写焦点', async () => {
+    const h = setup()
+    const scope = open(h, { restoreFocus: () => false })
+    await frames(2)
+    const fallbackFocus = vi.fn()
+    h.buttons[1]!.addEventListener('focus', fallbackFocus)
+    let nextFrame = 100
+    const queued = new Map<number, FrameRequestCallback>()
+    const requestFrame = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+      nextFrame += 1
+      queued.set(nextFrame, callback)
+      return nextFrame
+    })
+    const cancelFrame = vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(id => queued.delete(id))
+
+    h.buttons[0]!.remove()
+    await mutations()
+    const recoveryId = nextFrame
+    const recovery = queued.get(recoveryId)
+    expect(recovery).toBeTypeOf('function')
+    scope.dispose()
+    expect(cancelFrame).toHaveBeenCalledWith(recoveryId)
+    recovery!(performance.now())
+    expect(fallbackFocus).not.toHaveBeenCalled()
+
+    requestFrame.mockRestore()
+    cancelFrame.mockRestore()
+  })
+
+  it('shadow root 内的当前焦点节点被移除后仍在同一根内恢复', async () => {
+    const host = document.createElement('div')
+    document.body.appendChild(host)
+    const shadow = host.attachShadow({ mode: 'open' })
+    const h = setup(3, document, shadow)
+    open(h)
+    await frames(2)
+    expect(shadow.activeElement).toBe(h.buttons[0])
+    h.buttons[0]!.remove()
+
+    await frames(2)
+    expect(shadow.activeElement).toBe(h.buttons[1])
+  })
+
+  it('closed shadow root 内的焦点路径不会因事件重定向而丢失', async () => {
+    const host = document.createElement('div')
+    document.body.appendChild(host)
+    const shadow = host.attachShadow({ mode: 'closed' })
+    const h = setup(2, document, shadow)
+    open(h)
+    await frames(2)
+    expect(shadow.activeElement).toBe(h.buttons[0])
+    h.buttons[0]!.remove()
+
+    await frames(2)
+    expect(shadow.activeElement).toBe(h.buttons[1])
+  })
+
+  it('closed shadow branch 的微任务交接与 host 移除都按真实焦点处理', async () => {
+    const h = setup()
+    const host = document.createElement('div')
+    document.body.appendChild(host)
+    const shadow = host.attachShadow({ mode: 'closed' })
+    const branch = document.createElement('div')
+    const first = document.createElement('button')
+    const second = document.createElement('button')
+    branch.append(first, second)
+    shadow.appendChild(branch)
+    const fallbackFocus = vi.fn()
+    h.buttons[0]!.addEventListener('focus', fallbackFocus)
+    open(h, { branches: () => [branch] })
+    await frames(2)
+    fallbackFocus.mockClear()
+    first.focus()
+    expect(shadow.activeElement).toBe(first)
+
+    first.remove()
+    await Promise.resolve()
+    second.focus()
+    await frames(2)
+    expect(shadow.activeElement).toBe(second)
+    expect(fallbackFocus).not.toHaveBeenCalled()
+
+    const detachedActive = vi.spyOn(shadow, 'activeElement', 'get').mockReturnValue(second)
+    host.remove()
+    await frames(2)
+    expect(document.activeElement).toBe(h.buttons[0])
+    expect(fallbackFocus).toHaveBeenCalledTimes(1)
+    detachedActive.mockRestore()
+  })
+
+  it('iframe 使用所属 Window 的 MutationObserver 与动画帧恢复', async () => {
+    const frame = document.createElement('iframe')
+    document.body.appendChild(frame)
+    const win = frame.contentWindow! as Window & typeof globalThis
+    const doc = frame.contentDocument!
+    const NativeMutationObserver = win.MutationObserver
+    let constructions = 0
+    class ScopedMutationObserver extends NativeMutationObserver {
+      constructor(callback: MutationCallback) {
+        super(callback)
+        constructions += 1
+      }
+    }
+    Object.defineProperty(win, 'MutationObserver', {
+      configurable: true,
+      value: ScopedMutationObserver,
+    })
+    const h = setup(2, doc)
+    const focusScope = open(h)
+    await frames(2, win)
+    let recovery: FrameRequestCallback | undefined
+    const foreignFrame = vi.spyOn(win, 'requestAnimationFrame').mockImplementation((callback) => {
+      recovery = callback
+      return 701
+    })
+    const globalFrame = vi.spyOn(window, 'requestAnimationFrame')
+    h.buttons[0]!.remove()
+
+    await mutations(win)
+    expect(foreignFrame).toHaveBeenCalledTimes(1)
+    expect(globalFrame).not.toHaveBeenCalled()
+    recovery!(performance.now())
+    expect(doc.activeElement).toBe(h.buttons[1])
+    expect(constructions).toBe(1)
+    foreignFrame.mockRestore()
+    globalFrame.mockRestore()
+    focusScope.dispose()
+    await frames(2, win)
+  })
+
+  it('带 tabindex 的 svg 持有焦点后被移除时恢复到下一个有效项', async () => {
+    const h = setup(0)
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    svg.setAttribute('tabindex', '0')
+    const next = document.createElement('button')
+    h.container.append(svg, next)
+    open(h)
+    await frames(2)
+    expect(document.activeElement).toBe(svg)
+
+    svg.remove()
+    await frames(2)
+    expect(document.activeElement).toBe(next)
   })
 })
 
