@@ -1,4 +1,4 @@
-import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { FocusableElement, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { MessageFeedApi, MessageFeedItemRole, MessageFeedSchema, MessageFeedStatus } from './message-feed.types'
 import { contains, dataAttr, focusItem, getTabbables, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
 import { messageFeedAnatomy, messageFeedItemQuery } from './message-feed.anatomy'
@@ -56,7 +56,7 @@ export function connectMessageFeed<T extends PropTypes>(
     const doc = container.ownerDocument
     const outside = getTabbables(doc.body).filter(el => !container.contains(el))
     const after = edge === 'after'
-    let picked: HTMLElement | null = null
+    let picked: FocusableElement | null = null
     for (const el of outside) {
       const position = container.compareDocumentPosition(el)
       const isAfter = (position & Node.DOCUMENT_POSITION_FOLLOWING) !== 0

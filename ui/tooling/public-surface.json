@@ -4413,6 +4413,7 @@
       "FORM_RESET_EVENT",
       "FocusOptions",
       "FocusScopeOptions",
+      "FocusableElement",
       "FormResetBridgeOptions",
       "GuardCombinators",
       "GuardExpr",

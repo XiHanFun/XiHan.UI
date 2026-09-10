@@ -1,5 +1,5 @@
-import type { Disposable, Layer, RuntimeConfig } from '../../kernel'
-import { contains, createPerDocumentRegistry, EV_MOUNT_AUTO_FOCUS, EV_UNMOUNT_AUTO_FOCUS } from '../../kernel'
+import type { Disposable, FocusableElement, Layer, RuntimeConfig } from '../../kernel'
+import { contains, createPerDocumentRegistry, EV_MOUNT_AUTO_FOCUS, EV_UNMOUNT_AUTO_FOCUS, isElement } from '../../kernel'
 import { acquireFocusGuards } from './focus-guards'
 import { focusFirst, focusSafely, getTabbables, removeLinks } from './tabbable'
 
@@ -14,7 +14,7 @@ export interface FocusScopeOptions {
   branches?: () => Element[]
   onMountAutoFocus?: (e: CustomEvent) => void
   onUnmountAutoFocus?: (e: CustomEvent) => void
-  initialFocus?: () => HTMLElement | null
+  initialFocus?: () => FocusableElement | null
   /** 卸载时是否归还焦点；默认 true。 */
   restoreFocus?: () => boolean
   /**
@@ -24,7 +24,7 @@ export interface FocusScopeOptions {
    * （Safari 点按不给按钮焦点），落到 body 上时 Escape 之后 Tab 得从头开始。
    * 契约里承诺焦点归还触发器的层，把触发器显式交到这里。
    */
-  restoreTarget?: () => HTMLElement | null
+  restoreTarget?: () => FocusableElement | null
 }
 
 interface FocusScopeDocumentState {
@@ -71,7 +71,7 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
   let disposed = false
   let resourcesReleased = false
   let paused = registry.top() !== layer
-  let lastFocused: HTMLElement | null = scope.getActiveElement()
+  let lastFocused: FocusableElement | null = scope.getActiveElement()
   const previouslyFocused = scope.getActiveElement()
   let unsubscribe: () => void = () => {}
 
@@ -79,7 +79,7 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
   documentScopes.live.add(mountSeq)
 
   function isInScope(el: Element | null): boolean {
-    if (!el)
+    if (!el || el.ownerDocument !== doc)
       return false
     const el2 = container()
     if (contains(el2, el))
@@ -171,10 +171,24 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
     if (el && !focusFirst(removeLinks(getTabbables(el)), { select: true }))
       focusSafely(el)
   }
+
+  function isFocusableElement(value: unknown): value is FocusableElement {
+    return isElement(value)
+      && typeof (value as Element & { focus?: unknown }).focus === 'function'
+  }
+
   function onFocusIn(e: FocusEvent): void {
     if (disposed)
       return
-    const target = e.target as HTMLElement | null
+    const scopedActive = scope.getActiveElement()
+    const originalTarget = e.composedPath()[0]
+    let target: FocusableElement | null = null
+    if (isFocusableElement(scopedActive) && isInScope(scopedActive))
+      target = scopedActive
+    else if (isFocusableElement(originalTarget))
+      target = originalTarget
+    else if (isFocusableElement(e.target))
+      target = e.target
     // 记账不看 trapped：它可以在生命周期内打开，那一刻要有个新鲜的落点可回
     if (isInScope(target)) {
       lastFocused = target
@@ -187,7 +201,7 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
   function onFocusOut(e: FocusEvent): void {
     if (disposed || paused || !o.trapped())
       return
-    const related = e.relatedTarget as HTMLElement | null
+    const related = e.relatedTarget as Element | null
     // relatedTarget 为 null 一律放行（切 tab / 元素被移除）
     if (related === null)
       return
