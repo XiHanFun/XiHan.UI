@@ -105,6 +105,12 @@ const scope = createFocusScope({
 
 `trapped` 与 `loop` 是两件事：陷住（逃不出去）和回绕（Tab 到末尾回到开头）。模态对话框两者都要；非模态气泡通常只要回绕。
 
+容器上的 `xh.focusScope.mountAutoFocus` / `xh.focusScope.unmountAutoFocus` DOM 事件与两个选项回调收到同一个 `cancelable` `CustomEvent`。成功绑定容器后，每个生命周期只派发一次，DOM 监听器先执行，选项回调随后执行；两条通道都会收到通知。任一通道调用 `preventDefault()`，FocusScope 都不再执行对应的默认聚焦或焦点归还。scope 从未取得容器时不会伪造 body 事件。
+
+`restoreFocus: () => false` 或更新的焦点域仍在场时，unmount 通知仍会发出，只跳过默认归还。回调抛错会直接暴露；挂载回调抛错时，FocusScope 会先撤销监听、哨兵和层订阅，不留下拿不到句柄的半成品。
+
+挂载回调是同步表决点；要让 FocusScope 在 DOM 稳定后聚焦指定节点，使用 `initialFocus`，它会沿既定帧预算重试。回调取消后自行安排异步焦点时，调度与目标有效性由调用方负责。
+
 非栈顶的焦点域会自动暂停——上面又开了一层时，下面那层不该再抢焦点。
 
 ## 滚动锁
