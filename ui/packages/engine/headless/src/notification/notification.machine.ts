@@ -7,6 +7,8 @@ const { createMachine } = setup<NotificationSchema>()
 export const NOTIFICATION_PLACEMENT: NotificationPlacement = 'bottom-end'
 /** 同一摞内的默认间距（px）。 */
 export const NOTIFICATION_GAP = 16
+/** 每个位置默认最多同时留几条。 */
+export const NOTIFICATION_MAX = 5
 
 /** 九个位的固定顺序：placements 与分组遍历都按它走，界面顺序不随插入次序漂。 */
 export const NOTIFICATION_PLACEMENTS: readonly NotificationPlacement[] = [
@@ -68,14 +70,15 @@ export function visibleNotifications(
   max: number | undefined,
   fallback: NotificationPlacement,
 ): NotificationRecord[] {
-  // 不给 max 就是不限；<=0 与非有限数一并按不限处理
-  if (max == null || !Number.isFinite(max) || max <= 0)
+  // 不给 max 用默认上限；Infinity 即不限，<=0 与 NaN 一并按不限处理
+  const limit = max ?? NOTIFICATION_MAX
+  if (!Number.isFinite(limit) || limit <= 0)
     return [...list]
 
   const overflow = new Set<NotificationRecord>()
   for (const placement of NOTIFICATION_PLACEMENTS) {
     const group = list.filter(item => notificationPlacementOf(item, fallback) === placement)
-    const drop = group.length - max
+    const drop = group.length - limit
     if (drop <= 0)
       continue
     // 加入次序当稳定键：同优先级里排在前面的（更旧的）先出局

@@ -316,6 +316,29 @@
     outline-offset: var(--xh-ring-offset);
   }
 
+  /* 标签行：触发器里收着可见标签与 +N 那一枚的一行。它是弹性子项，只缩不涨：
+     得允许自己被压缩并把溢出裁掉，否则标签会冲出盒的右缘、把展开箭头挤到盒外；
+     展开箭头靠触发器的 space-between 留在末端，行本身不必撑开 */
+  [data-scope='select'][data-part='tag-list'] {
+    display: inline-flex;
+    flex: 0 1 auto;
+    align-items: center;
+    gap: var(--xh-select-tag-list-gap, var(--xh-space-1));
+    min-inline-size: 0;
+    overflow: hidden;
+  }
+
+  /* 无选中时连接层给 hidden，占位文字回来 */
+  [data-scope='select'][data-part='tag-list'][hidden] {
+    display: none;
+  }
+
+  /* 标签行露面时 value-text 让位：两者是触发器里的同一格，占位文字与标签不同屏。
+     value-text 留在 DOM 里，trigger 的可及名仍从它取到完整的选中项文本 */
+  [data-scope='select'][data-part='trigger']:has([data-part='tag-list']:not([hidden])) [data-part='value-text'] {
+    display: none;
+  }
+
   /* 多选标签：淡底小药丸；放触发器里是纯展示，放外面配 item-delete-trigger 可删 */
   [data-scope='select'][data-part='tag'] {
     display: inline-flex;
@@ -332,6 +355,41 @@
   }
 
   [data-scope='select'][data-part='tag'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 标签行里的标签：行装不下时各自缩短并以省略号收尾，+N 那一枚不缩。
+     省略号只在块容器的行内文字上生效，所以这里不再是弹性容器；行里的标签本就只有文字，没有删除钮 */
+  [data-scope='select'][data-part='tag-list'] > [data-part='tag'] {
+    display: block;
+    flex: 0 1 auto;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* 折起的标签合成的那一枚（+N）：与标签同一副药丸身形，底色与字色压一档，说明它不是某个选中值 */
+  [data-scope='select'][data-part='overflow-tag'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    padding-block: 0;
+    padding-inline: var(--xh-select-overflow-tag-px, var(--xh-select-tag-px, var(--xh-space-2)));
+    border-radius: var(--xh-select-overflow-tag-radius, var(--xh-select-tag-radius, var(--xh-shape-pill)));
+    background: var(--xh-select-overflow-tag-bg, var(--xh-bg-muted));
+    color: var(--xh-select-overflow-tag-fg, var(--xh-fg-muted));
+    font-size: var(--xh-select-overflow-tag-font-size, var(--xh-select-tag-font-size, var(--xh-text-caption-size)));
+    line-height: var(--xh-leading-normal);
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  /* 没有折起的标签时连接层给 hidden，不留空位 */
+  [data-scope='select'][data-part='overflow-tag'][hidden] {
+    display: none;
+  }
+
+  [data-scope='select'][data-part='overflow-tag'][data-disabled] {
     color: var(--xh-fg-disabled);
   }
 

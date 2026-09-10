@@ -4,7 +4,7 @@ import { contains, dataAttr, focusItem, focusSafely, indexOfValue, isItemDisable
 import { overlayPositioned } from '../shared/overlay'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { selectAnatomy, selectItemQuery, selectItemText } from './select.anatomy'
-import { SELECT_DEFAULT_PLACEMENT } from './select.machine'
+import { SELECT_DEFAULT_MAX_TAG_COUNT, SELECT_DEFAULT_PLACEMENT } from './select.machine'
 
 const parts = selectAnatomy.build()
 
@@ -77,11 +77,14 @@ export function connectSelect<T extends PropTypes>(
   const placeholder = prop('placeholder') ?? null
   // 多选把各项文本连起来显示；分隔符固定，作者要别的排版就自己渲染 valueText
   const displayText = valueText.length > 0 ? valueText.join(', ') : placeholder ?? ''
-  // 标签形态：与 value/valueText 同序，maxTagCount 只截可见的、余数进 overflowCount
+  // 标签形态：与 value/valueText 同序，maxTagCount 只截可见的、余数进 overflowCount 并合成 overflow-tag 那一枚
   const allTags = value.map((v, i) => ({ value: v, label: valueText[i] ?? v }))
-  const maxTagCount = prop('maxTagCount')
-  const tags = maxTagCount === undefined ? allTags : allTags.slice(0, Math.max(0, maxTagCount))
+  const maxTagCount = prop('maxTagCount') ?? SELECT_DEFAULT_MAX_TAG_COUNT
+  const tags = allTags.slice(0, Math.max(0, maxTagCount))
   const overflowCount = allTags.length - tags.length
+  const overflowText = overflowCount > 0
+    ? (prop('translations')?.overflowTag ?? ((count: number) => `+${count}`))(overflowCount)
+    : ''
   const tagLabel = (v: string): string => allTags.find(tag => tag.value === v)?.label ?? v
   // roving tabindex 与方向键起点共用这一个锚点；收起时为 null（条目此刻不可达）
   const highlighted = context.get('highlightedValue') ?? null
@@ -158,6 +161,7 @@ export function connectSelect<T extends PropTypes>(
     canClear,
     tags,
     overflowCount,
+    overflowText,
     highlightedValue: highlighted,
     setOpen: (next) => {
       if (next !== open)
@@ -268,9 +272,22 @@ export function connectSelect<T extends PropTypes>(
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
     }),
+    // 标签行：无选中时整个收起，皮肤据此让 value-text 回来显示占位文字
+    getTagListProps: () => normalize.element({
+      ...parts['tag-list'].attrs,
+      'hidden': value.length === 0 || undefined,
+      'data-disabled': dataAttr(disabled),
+    }),
     getTagProps: ({ value: v }) => normalize.element({
       ...parts.tag.attrs,
       'data-value': v,
+      'data-disabled': dataAttr(disabled),
+    }),
+    // 折起来的那些合成一枚：没有折起的就整个收起，不留空位
+    getOverflowTagProps: () => normalize.element({
+      ...parts['overflow-tag'].attrs,
+      'hidden': overflowCount === 0 || undefined,
+      'data-count': String(overflowCount),
       'data-disabled': dataAttr(disabled),
     }),
     getItemDeleteTriggerProps: ({ value: v }) => normalize.button({

@@ -1,4 +1,4 @@
-<!-- 多选标签 | 内建标签形态：api 的 tags 受 maxTagCount 截断、余数在 overflowCount；触发器里 XhSelectTag 纯展示，触发器外配 XhSelectItemDeleteTrigger 即可删 -->
+<!-- 多选标签 | 内建标签形态：触发器里的标签行最多摆 maxTagCount 枚（缺省 3），其余合成一枚 +N；触发器里 XhSelectTag 纯展示，触发器外配 XhSelectItemDeleteTrigger 即可删 -->
 <script setup lang="ts">
 import {
   XhSelectContent,
@@ -10,9 +10,11 @@ import {
   XhSelectItemText,
   XhSelectLabel,
   XhSelectList,
+  XhSelectOverflowTag,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTag,
+  XhSelectTagList,
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/vue";
@@ -31,7 +33,7 @@ const picked = ref<string[]>(["vue", "svelte", "solid"]);
 
 <template>
   <XhSelectRoot
-    v-slot="{ tags, overflowCount }"
+    v-slot="{ tags }"
     v-model:value="picked"
     :collection="options"
     :max-tag-count="2"
@@ -42,13 +44,12 @@ const picked = ref<string[]>(["vue", "svelte", "solid"]);
     <XhSelectLabel>技术栈</XhSelectLabel>
     <XhSelectControl>
       <XhSelectTrigger>
-        <XhSelectValueText v-if="tags.length === 0" />
-        <span v-else style="display: inline-flex; align-items: center; gap: 4px">
+        <!-- 占位文字与标签行同时写着：有选中时标签行露面、占位让位，无选中时反过来 -->
+        <XhSelectValueText />
+        <XhSelectTagList>
           <XhSelectTag v-for="t in tags" :key="t.value" :value="t.value">{{ t.label }}</XhSelectTag>
-          <span v-if="overflowCount > 0" style="color: var(--xh-fg-muted); font-size: 12px">
-            +{{ overflowCount }}
-          </span>
-        </span>
+          <XhSelectOverflowTag />
+        </XhSelectTagList>
         <XhSelectIndicator />
       </XhSelectTrigger>
     </XhSelectControl>

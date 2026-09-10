@@ -2,7 +2,7 @@ import type { Fixture } from '@xihan-ui/testing'
 import type { SsrHarness } from '@xihan-ui/testing/ssr'
 import { createSSRApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import { renderFixtureNode, resolveRoot } from './fixture-vnode'
+import { renderFixtureChildren, resolveRoot } from './fixture-vnode'
 
 /**
  * Vue 的服务端直出宿主。
@@ -16,7 +16,7 @@ export function createVueSsrHarness(): SsrHarness {
       const app = createSSRApp({
         setup: () => () =>
           h(Root, { ...fixture.tree.attrs, ...fixture.props }, {
-            default: () => fixture.tree.children?.map(c => renderFixtureNode(c, fixture.component)) ?? [],
+            default: () => renderFixtureChildren(fixture.tree.children, fixture.component) ?? [],
           }),
       })
       app.config.warnHandler = (message) => {

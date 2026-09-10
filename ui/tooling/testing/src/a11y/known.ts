@@ -27,6 +27,8 @@ export const knownA11yViolations: KnownViolations = {
   // 真实用法里由作者命名：给 translations.input，或自己写 <label for> / aria-label。
   'prompt-input': { label: '输入框的可访问名归作者，组件不无条件发 aria-label；夹具刻意不给文案以钉住这条契约' },
   'tag': { 'color-contrast': '禁用标签的文字是全库统一的 fg-disabled/bg-muted 一档（浅色 2.36:1、深色 1.93:1），按 1.4.3 失效控件豁免；tag 的 root 没有 axe 认得的禁用语义，所以只有它被扫出来' },
+  // select 摆在触发器外的那枚可删标签与 tag 同一档：触发器里的那些在原生 disabled 的按钮内，axe 跳过；外面这枚是个没有角色的 span
+  'select': { 'color-contrast': '禁用时触发器外那枚标签的文字同 tag：fg-disabled 落在 bg-subtle 上（浅色 2.35:1、深色 1.93:1），按 1.4.3 失效控件豁免；它不在原生 disabled 的按钮里，axe 看得见' },
 }
 
 /** 全组件通用登记，整轮至少命中一次即可。 */
@@ -50,10 +52,6 @@ export const wcA11yBaseline = {
     ...knownA11yViolations,
     // 必需子节点由作者手写
     steps: { 'aria-required-children': 'WC 侧作者手写的部件缺角色要求的直接子节点' },
-    // 检索档的候选在 WC 侧由作者在标记里声明（cascader.suite.ts 的 SEARCH_PARITY 写明了这一条），
-    // 共用夹具一个候选节点都没声明，于是连接层照机器状态发出的 aria-activedescendant 指向不存在的 id。
-    // Vue / React 的 search-list 按当下命中自渲，两侧解得开，只有 WC 悬空
-    cascader: { 'aria-valid-attr-value': '共用夹具在 WC 侧不声明 search-item 候选，检索档的 aria-activedescendant 因此指向不存在的 id；补夹具才是正解' },
   },
   knownEverywhere: knownA11yViolationsEverywhere,
   replayExempt,

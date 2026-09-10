@@ -1,4 +1,4 @@
-// 多选标签 | 内建标签形态：api 的 tags 受 maxTagCount 截断、余数在 overflowCount；触发器里 XhSelectTag 纯展示，触发器外配 XhSelectItemDeleteTrigger 即可删
+// 多选标签 | 内建标签形态：触发器里的标签行最多摆 maxTagCount 枚（缺省 3），其余合成一枚 +N；触发器里 XhSelectTag 纯展示，触发器外配 XhSelectItemDeleteTrigger 即可删
 import type { ReactNode } from "react";
 import {
   XhSelectContent,
@@ -10,9 +10,11 @@ import {
   XhSelectItemText,
   XhSelectLabel,
   XhSelectList,
+  XhSelectOverflowTag,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTag,
+  XhSelectTagList,
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/react";
@@ -39,27 +41,19 @@ export default function Demo(): ReactNode {
       placeholder="请选择"
       style={{ inlineSize: "280px" }}
     >
-      {({ tags, overflowCount }) => (
+      {({ tags }) => (
         <>
           <XhSelectLabel>技术栈</XhSelectLabel>
           <XhSelectControl>
             <XhSelectTrigger>
-              {tags.length === 0
-                ? <XhSelectValueText />
-                : (
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                      {tags.map(t => (
-                        <XhSelectTag key={t.value} value={t.value}>{t.label}</XhSelectTag>
-                      ))}
-                      {overflowCount > 0
-                        ? (
-                            <span style={{ color: "var(--xh-fg-muted)", fontSize: "12px" }}>
-                              {`+${overflowCount}`}
-                            </span>
-                          )
-                        : null}
-                    </span>
-                  )}
+              {/* 占位文字与标签行同时写着：有选中时标签行露面、占位让位，无选中时反过来 */}
+              <XhSelectValueText />
+              <XhSelectTagList>
+                {tags.map(t => (
+                  <XhSelectTag key={t.value} value={t.value}>{t.label}</XhSelectTag>
+                ))}
+                <XhSelectOverflowTag />
+              </XhSelectTagList>
               <XhSelectIndicator />
             </XhSelectTrigger>
           </XhSelectControl>

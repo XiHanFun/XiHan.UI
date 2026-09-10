@@ -85,7 +85,7 @@ export interface NotificationSchema extends MachineSchema {
     defaultItems?: NotificationRecord[]
     /** 默认落位，默认 bottom-end。 */
     placement?: NotificationPlacement
-    /** 每个位置最多同时留几条，超出先挤低优先级、同级里挤最旧的。不给即不限。 */
+    /** 每个位置最多同时留几条，超出先挤低优先级、同级里挤最旧的。默认 5；给 Infinity 即不限。 */
     max?: number
     /** 重复怎么算，默认 'id'。 */
     dedupe?: NotificationDedupe

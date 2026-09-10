@@ -62,9 +62,19 @@ function toReactProps(attrs: Record<string, unknown> | undefined, part: boolean)
   return out
 }
 
+/** 节点声明了只在某些适配器下渲、名单里又没有 react 时，本侧当它没写。 */
+function rendersHere(node: FixtureNode): boolean {
+  return node.only == null || node.only.includes('react')
+}
+
+/** 一组子节点 → React 元素列表，本侧不渲的先剔掉、下标作 key；没有子节点给 undefined。 */
+export function renderFixtureChildren(nodes: readonly FixtureNode[] | undefined, component: string): ReactElement[] | undefined {
+  return nodes?.filter(rendersHere).map((c, i) => renderFixtureNode(c, component, i))
+}
+
 // FixtureNode → ReactElement。part 节点解析成对应组件，纯结构节点直接建元素；组件数增加时零改动。
 export function renderFixtureNode(node: FixtureNode, component: string, key?: number): ReactElement {
-  const kids = node.children?.map((c, i) => renderFixtureNode(c, component, i))
+  const kids = renderFixtureChildren(node.children, component)
   const children = kids ?? node.text
   const props = { ...toReactProps(node.attrs, node.part != null), key } as Record<string, unknown>
   if (node.part)

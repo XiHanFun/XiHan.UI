@@ -900,6 +900,9 @@
     "overflow-item": [
       "avatar-group"
     ],
+    "overflow-tag": [
+      "select"
+    ],
     "page-size-select": [
       "pagination"
     ],
@@ -1282,6 +1285,9 @@
       "tabs"
     ],
     "tag": [
+      "select"
+    ],
+    "tag-list": [
       "select"
     ],
     "target-panel": [

@@ -3,7 +3,7 @@ import type { ToastSchema } from '../src/toast'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
-import { connectNotification, notificationMachine, notificationPriorityOf, visibleNotifications } from '../src/notification'
+import { connectNotification, NOTIFICATION_MAX, notificationMachine, notificationPriorityOf, visibleNotifications } from '../src/notification'
 import { toastMachine } from '../src/toast'
 
 type Props = NotificationSchema['props']
@@ -52,6 +52,70 @@ describe('挤条按优先级', () => {
       { id: 'c', placement: 'bottom' as const },
     ]
     expect(visibleNotifications(list, 1, 'top').map(item => item.id)).toEqual(['b', 'c'])
+  })
+})
+
+describe('上限的缺省', () => {
+  it('不给 max：每个位置默认只留 NOTIFICATION_MAX 条，多出来的从队列里挤掉', () => {
+    expect(NOTIFICATION_MAX).toBe(5)
+    const q = makeQueue()
+    for (let i = 1; i <= NOTIFICATION_MAX + 2; i++)
+      q.api().create({ title: `第 ${i} 条` })
+    expect(q.items().length).toBe(NOTIFICATION_MAX)
+    expect(q.api().count).toBe(NOTIFICATION_MAX)
+    expect(q.titles()).toEqual(['第 3 条', '第 4 条', '第 5 条', '第 6 条', '第 7 条'])
+    q.stop()
+  })
+
+  it('缺省上限按位置各算各的：两个位各留满一份', () => {
+    const q = makeQueue()
+    for (let i = 1; i <= NOTIFICATION_MAX + 1; i++) {
+      q.api().create({ title: `顶 ${i}`, placement: 'top' })
+      q.api().create({ title: `底 ${i}` })
+    }
+    expect(q.api().getItemsByPlacement('top').length).toBe(NOTIFICATION_MAX)
+    expect(q.api().getItemsByPlacement('bottom-end').length).toBe(NOTIFICATION_MAX)
+    q.stop()
+  })
+
+  it('受控队列不给 max 同样只显示默认窗口内的', () => {
+    const items = Array.from({ length: NOTIFICATION_MAX + 3 }, (_, i) => ({ id: `n${i}` }))
+    const q = makeQueue({ items })
+    expect(q.items().length).toBe(NOTIFICATION_MAX + 3)
+    expect(q.api().visibleNotifications.map(item => item.id)).toEqual(['n3', 'n4', 'n5', 'n6', 'n7'])
+    q.stop()
+  })
+
+  it('max 给 Infinity 即不限', () => {
+    const q = makeQueue({ max: Number.POSITIVE_INFINITY })
+    for (let i = 1; i <= 7; i++)
+      q.api().create({ title: `第 ${i} 条` })
+    expect(q.items().length).toBe(7)
+    expect(q.api().visibleNotifications.length).toBe(7)
+    q.stop()
+  })
+
+  it('非受控队列里被挤掉的那条直接丢弃，腾出位子也不回来', () => {
+    const q = makeQueue({ max: 2 })
+    const a = q.api().create({ title: 'a' })
+    q.api().create({ title: 'b' })
+    q.api().create({ title: 'c' })
+    expect(q.titles()).toEqual(['b', 'c'])
+    // 队列里已经没有 a 这一条：改它是空操作，不会把它重新变出来
+    q.api().update(a, { title: 'a2' })
+    expect(q.titles()).toEqual(['b', 'c'])
+    // 腾出一个位子，a 也不会补上来
+    q.api().dismiss(q.api().visibleNotifications[0]!.id)
+    expect(q.titles()).toEqual(['c'])
+    q.stop()
+  })
+
+  it('受控队列只是不显示窗口外的：宿主那份 items 原样', () => {
+    const q = makeQueue({ max: 2, items: [{ id: 'a' }, { id: 'b' }, { id: 'c' }] })
+    expect(q.items().length).toBe(3)
+    expect(q.api().visibleNotifications.map(item => item.id)).toEqual(['b', 'c'])
+    expect(q.api().count).toBe(2)
+    q.stop()
   })
 })
 

@@ -168,14 +168,34 @@ function assertValueText(doc: Document, expected: string): void {
 // —— 检索档 ——
 
 /**
- * 候选节点两侧不同源：Vue / React 的 search-list 按当下候选自渲，
- * WC 的候选由作者在标记里声明；而 Vue 侧根本没有 search-item 部件组件供 fixture 声明，
- * 于是同一份 fixture 在 Vue 侧长出候选节点、在 WC 侧一个都没有。逐帧比对因此比不了检索档。
+ * 候选节点两侧不同源：WC 的候选由作者在标记里声明、常驻 DOM，词换了不匹配的带 hidden；
+ * Vue / React 的 search-list 只渲当下命中的那几条。同一帧里两侧的候选节点数因此对不上，
+ * 逐帧比对比不了打过字的检索档。
  */
-const SEARCH_PARITY = 'Vue / React 的候选按当下命中自渲，WC 的候选由作者声明，同一份 fixture 两侧的候选节点数对不上'
+const SEARCH_PARITY = 'WC 的候选常驻 DOM 靠 hidden 过滤，Vue / React 只渲当下命中的那几条，同一帧的候选节点数对不上'
 
-/** 检索档结构：检索框与候选列表插在列前面，候选节点归各适配器自己产出。 */
-function searchFixture(base: FixtureNode): FixtureNode {
+/** 一条 WC 侧手写的候选：整条路径的 JSON 串写在 value 上，显示文本是逐段连缀。 */
+function searchItem(path: readonly string[], text: string): FixtureNode {
+  return { part: 'search-item', attrs: { value: cascaderPathKey(path) }, text, only: ['wc'] }
+}
+
+/**
+ * 全部候选，与 cascaderSearchCandidates 摊出来的一致：每条叶子路径一条，按树序；
+ * taiwan 的 children 是空数组、算叶子；wenzhou 自身禁用、整条禁用。
+ * 只在 WC 侧渲：Vue / React 的 search-list 按当下命中自渲，不收作者写的候选。
+ */
+const SEARCH_ITEMS: readonly FixtureNode[] = [
+  searchItem(['zhejiang', 'hangzhou', 'xihu'], 'Zhejiang / Hangzhou / Xihu'),
+  searchItem(['zhejiang', 'hangzhou', 'yuhang'], 'Zhejiang / Hangzhou / Yuhang'),
+  searchItem(['zhejiang', 'ningbo', 'jiangbei'], 'Zhejiang / Ningbo / Jiangbei'),
+  searchItem(['zhejiang', 'wenzhou'], 'Zhejiang / Wenzhou'),
+  searchItem(['jiangsu', 'nanjing', 'xuanwu'], 'Jiangsu / Nanjing / Xuanwu'),
+  searchItem(['taiwan'], 'Taiwan'),
+  searchItem(['macau'], 'Macau'),
+]
+
+/** 检索档结构：检索框与候选列表插在列前面，候选列表里装 candidates 那些节点。 */
+function searchFixture(base: FixtureNode, candidates: readonly FixtureNode[] = SEARCH_ITEMS): FixtureNode {
   return {
     ...base,
     children: base.children!.map((child) => {
@@ -188,7 +208,7 @@ function searchFixture(base: FixtureNode): FixtureNode {
           ...content,
           children: [
             { part: 'input', tag: 'input' },
-            { part: 'search-list' },
+            { part: 'search-list', children: candidates },
             ...content.children!,
           ],
         }],
@@ -216,14 +236,16 @@ async function typeQuery(doc: Document, text: string, flush: () => Promise<void>
 /**
  * 断言高亮落在哪条候选上（传 null 断言没有高亮）。
  *
- * 候选节点两侧不同源，快照里的 `@part(search-item[i])` 引用因此对不上；
+ * 候选节点的下标两侧对不上（WC 的候选常驻、Vue / React 只渲命中的那几条），
+ * 快照里的 `@part(search-item[i])` 引用因此表达不了落点；
  * 而 aria-activedescendant 的 id 末段是候选自己的身份（整条路径的 JSON 串），
- * 由连接层同一份代码产出，两侧逐字相同——判据落在这一段上。
+ * 由连接层同一份代码产出，两侧逐字相同——判据落在这一段上，
+ * 再要求这个 id 在文档里真能解到一条带高亮标记的候选。
  */
 function expectHighlight(path: readonly string[] | null): StepWithExpect {
   return {
     kind: 'raw',
-    why: '候选节点两侧不同源，快照的 @part 引用表达不了高亮落点；改判 aria-activedescendant 末段的候选身份',
+    why: '候选节点的下标两侧对不上，快照的 @part 引用表达不了高亮落点；改判 aria-activedescendant 末段的候选身份，并要求它解得开',
     run: ({ doc }) => {
       const input = doc.querySelector(`${SCOPE}[data-part="input"]`)
       if (!input)
@@ -233,6 +255,13 @@ function expectHighlight(path: readonly string[] | null): StepWithExpect {
       const ok = suffix == null ? actual == null : !!actual && actual.endsWith(suffix)
       if (!ok)
         throw new Error(`高亮落点不符：期望 ${suffix ?? '（无高亮）'}，实际 ${actual ?? '（无高亮）'}`)
+      if (actual == null)
+        return
+      const target = doc.getElementById(actual)
+      if (!target || target.getAttribute('data-part') !== 'search-item')
+        throw new Error(`aria-activedescendant 指向 ${actual}，文档里没有这条候选`)
+      if (!target.hasAttribute('data-highlighted'))
+        throw new Error(`aria-activedescendant 指到的候选 ${actual} 没带 data-highlighted`)
     },
   }
 }
@@ -1401,7 +1430,8 @@ export const cascaderSuite: ConformanceSuite = {
       name: '检索档：检索词为空时上下键把焦点交给列——有锚点落回锚点，没有则按方向进列的头尾',
       spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
       props: props({ searchable: true }),
-      fixture: searchFixture,
+      // 全程不打字，用不着候选；不声明候选，两侧的候选节点数就对得上，这一条留在逐帧比对里
+      fixture: base => searchFixture(base, []),
       covers: ['cascader.kbd.search.into-columns'],
       steps: [
         ...OPEN_AND_FOCUS_INPUT,

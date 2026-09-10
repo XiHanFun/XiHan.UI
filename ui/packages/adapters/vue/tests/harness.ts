@@ -2,7 +2,7 @@ import type { AdapterEvent, AdapterHarness, Fixture } from '@xihan-ui/testing'
 import type { App, Component } from 'vue'
 import { attachHost } from '@xihan-ui/testing'
 import { createApp, h, nextTick, reactive } from 'vue'
-import { renderFixtureNode, resolveRoot } from './fixture-vnode'
+import { renderFixtureChildren, resolveRoot } from './fixture-vnode'
 
 const PUBLIC_EVENTS = {
   'checked-change': 'onCheckedChange',
@@ -106,7 +106,7 @@ export function createVueHarness(): AdapterHarness {
       app = createApp({
         setup: () => () =>
           h(Root, { ...fixture.tree.attrs, ...props, ...listeners }, {
-            default: () => fixture.tree.children?.map(c => renderFixtureNode(c, fixture.component)) ?? [],
+            default: () => renderFixtureChildren(fixture.tree.children, fixture.component) ?? [],
           }),
       })
       app.config.warnHandler = (message) => {

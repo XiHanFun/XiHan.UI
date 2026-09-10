@@ -798,9 +798,11 @@ export {
   XhSelectLabel,
   XhSelectList,
   XhSelectLoading,
+  XhSelectOverflowTag,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTag,
+  XhSelectTagList,
   XhSelectTrigger,
   XhSelectValueText,
 } from './components/select/select'

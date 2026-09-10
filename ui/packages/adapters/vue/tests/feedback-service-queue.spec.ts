@@ -142,6 +142,28 @@ describe('promise 三态', () => {
   })
 })
 
+describe('通知的可见条数上限', () => {
+  it('不给 max 缺省留 5 张：连发 7 条只剩最新的五张卡片', async () => {
+    const notify = createNotificationService()
+    for (let i = 1; i <= 7; i++)
+      notify.info(`第 ${i} 条`, { duration: 0 })
+    await tick()
+    const titles = [...document.querySelectorAll('[data-scope="notification"][data-part="item-title"]')].map(el => el.textContent)
+    expect(titles).toEqual(['第 3 条', '第 4 条', '第 5 条', '第 6 条', '第 7 条'])
+    expect(partOf('notification', 'group')?.getAttribute('data-count')).toBe('5')
+    notify.dispose()
+  })
+
+  it('max 给 Infinity 即不限', async () => {
+    const notify = createNotificationService({ max: Number.POSITIVE_INFINITY })
+    for (let i = 1; i <= 7; i++)
+      notify.info(`第 ${i} 条`, { duration: 0 })
+    await tick()
+    expect(document.querySelectorAll('[data-scope="notification"][data-part="item"]').length).toBe(7)
+    notify.dispose()
+  })
+})
+
 describe('通知的行内动作', () => {
   it('给了文案才出那颗钮', async () => {
     const notify = createNotificationService()

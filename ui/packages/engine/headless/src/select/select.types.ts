@@ -55,6 +55,8 @@ export interface SelectTranslations {
   clearTrigger: string
   /** 标签删除按钮的可及名，接收标签文本。 */
   deleteItem: (label: string) => string
+  /** 被折起的标签那一枚（overflow-tag）显示的文字，接收折起的个数；默认 +N。 */
+  overflowTag: (count: number) => string
   /** 列表框容器的兜底名字，作者两个名字部件（label / value-text）都没渲染时才出面。 */
   content: string
 }
@@ -121,7 +123,7 @@ export interface SelectSchema extends MachineSchema {
     loading?: boolean
     /** 读屏用的文案，默认英文。 */
     translations?: Partial<SelectTranslations>
-    /** 多选标签最多摆几个，其余折进 overflowCount；缺省全摆。 */
+    /** 多选标签最多摆几枚，其余折进 overflowCount、合成 overflow-tag 那一枚；缺省 3（SELECT_DEFAULT_MAX_TAG_COUNT）。 */
     maxTagCount?: number
     /** 原生表单校验：无选中值时提交被拦下。 */
     required?: boolean
@@ -221,8 +223,10 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   canClear: boolean
   /** 可见标签（受 maxTagCount 截断），与 value/valueText 同序。 */
   tags: SelectTagMeta[]
-  /** 被 maxTagCount 折起来的标签数；作者据此渲染 +N。 */
+  /** 被 maxTagCount 折起来的标签数。 */
   overflowCount: number
+  /** overflow-tag 显示的文字（translations.overflowTag 算出）；没有折起的标签时为空串。 */
+  overflowText: string
   /** 高亮锚点；收起时为 null。 */
   highlightedValue: string | null
   setOpen: (next: boolean) => void
@@ -240,8 +244,12 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   getIndicatorProps: () => T['element']
   /** 清空按钮：不占 Tab 位；清不了时整个藏掉；点按清空全部选中、不展开浮层，焦点送回 trigger。 */
   getClearTriggerProps: () => T['button']
+  /** 标签行：收着可见标签与 overflow-tag，放在触发器里；无选中时整个 hidden。 */
+  getTagListProps: () => T['element']
   /** 标签：一个选中值一枚；放触发器里就是纯展示，放外面配 item-delete-trigger 可删。 */
   getTagProps: (props: SelectTagProps) => T['element']
+  /** 被折起的标签那一枚：显示 overflowText；没有折起的标签时 hidden。 */
+  getOverflowTagProps: () => T['element']
   /** 标签删除按钮：点按摘掉所在标签的选中值；须放在 tag 部件里。 */
   getItemDeleteTriggerProps: (props: SelectTagProps) => T['button']
   getPositionerProps: () => T['element']

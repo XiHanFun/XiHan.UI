@@ -28845,7 +28845,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "每个位置最多同时留几条，超出先挤低优先级的、同级里挤最旧的；不给即不限",
+              "description": "每个位置最多同时留几条，超出先挤低优先级的、同级里挤最旧的；默认 5，给 Infinity 即不限",
               "name": "max",
               "fieldName": "max"
             },
@@ -37792,7 +37792,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-select>` —— Light-DOM 行为宿主：用户写 root/trigger/value-text/positioner/content/item/...\n角色节点，元素跑 select 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner。\n条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。\n\nvalue-text 的显示文字与表单影子 hidden-select 的选项由元素代填，作者只需给出空节点；\nvalue-text 里作者写了内容就归作者，元素不再改写。",
+          "description": "`<xh-select>` —— Light-DOM 行为宿主：用户写 root/trigger/value-text/positioner/content/item/...\n角色节点，元素跑 select 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner。\n条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。\n\nvalue-text 的显示文字、overflow-tag 的 +N 与表单影子 hidden-select 的选项由元素代填，作者只需给出空节点；\nvalue-text / overflow-tag 里作者写了内容就归作者，元素不再改写。",
           "name": "XhSelectElement",
           "cssParts": [
             {
@@ -37824,12 +37824,20 @@
               "name": "clear-trigger"
             },
             {
+              "description": "触发器里的标签行：可见标签与 overflow-tag 放在它里面；无选中时带 hidden，value-text 回来显示占位文字",
+              "name": "tag-list"
+            },
+            {
               "description": "多选标签，须自带 value 属性标识选中值；放触发器里是纯展示，放外面配 item-delete-trigger 可删",
               "name": "tag"
             },
             {
               "description": "标签删除按钮，须放在 tag 里；点按摘掉所在标签的选中值，可及名走 translations.deleteItem",
               "name": "item-delete-trigger"
+            },
+            {
+              "description": "折起的标签合成的那一枚：留空即由元素填入 +N（文字走 translations.overflowTag），作者写了内容则归作者；没有折起的标签时带 hidden",
+              "name": "overflow-tag"
             },
             {
               "description": "浮层定位容器，坐标由引擎写成内联样式",
@@ -38132,11 +38140,11 @@
             },
             {
               "kind": "field",
-              "name": "ownsValueText",
+              "name": "ownsText",
               "privacy": "private",
               "readonly": true,
               "default": "new WeakMap<HTMLElement, boolean>()",
-              "description": "value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。"
+              "description": "value-text / overflow-tag 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。"
             },
             {
               "kind": "field",
@@ -38261,7 +38269,7 @@
             },
             {
               "kind": "method",
-              "name": "fillValueText",
+              "name": "fillText",
               "privacy": "private",
               "return": {
                 "type": {
@@ -38282,7 +38290,7 @@
                   }
                 }
               ],
-              "description": "填入选中项显示文字；首次见到该节点时若已有内容则归作者，之后不再改写。"
+              "description": "填入元素代管的文字（value-text 的显示文字、overflow-tag 的 +N）；首次见到该节点时若已有内容则归作者，之后不再改写。"
             },
             {
               "kind": "method",
@@ -38336,7 +38344,16 @@
               "type": {
                 "text": "number"
               },
-              "description": "被 max-tag-count 折起来的标签数，作者据它渲染 +N。机器尚未建起时为 0。",
+              "description": "被 max-tag-count 折起来的标签数；+N 那一枚由元素填进 overflow-tag，这里只供作者读。机器尚未建起时为 0。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overflowText",
+              "type": {
+                "text": "string"
+              },
+              "description": "overflow-tag 显示的文字（translations.overflowTag 算出）；没有折起的标签、或机器尚未建起时为空串。",
               "readonly": true
             },
             {
@@ -38435,7 +38452,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "多选标签最多摆几个，其余折进 api 的 overflowCount；缺省全摆",
+              "description": "多选标签最多摆几个，其余折进 overflowCount 并合成 overflow-tag 那一枚；缺省 3",
               "name": "max-tag-count",
               "fieldName": "maxTagCount"
             },
@@ -38776,6 +38793,21 @@
               "name": "--xh-select-loading-py"
             },
             {
+              "name": "--xh-select-overflow-tag-bg"
+            },
+            {
+              "name": "--xh-select-overflow-tag-fg"
+            },
+            {
+              "name": "--xh-select-overflow-tag-font-size"
+            },
+            {
+              "name": "--xh-select-overflow-tag-px"
+            },
+            {
+              "name": "--xh-select-overflow-tag-radius"
+            },
+            {
               "name": "--xh-select-placeholder-fg"
             },
             {
@@ -38789,6 +38821,9 @@
             },
             {
               "name": "--xh-select-tag-gap"
+            },
+            {
+              "name": "--xh-select-tag-list-gap"
             },
             {
               "name": "--xh-select-tag-px"

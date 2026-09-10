@@ -3,7 +3,7 @@ import type { Root } from 'react-dom/client'
 import { attachHost } from '@xihan-ui/testing'
 import { act, createElement } from 'react'
 import { createRoot } from 'react-dom/client'
-import { declaredEvents, renderFixtureNode, resolveRoot } from './fixture-element'
+import { declaredEvents, renderFixtureChildren, resolveRoot } from './fixture-element'
 
 /** 对外语义事件 → React 侧的回调 prop 名。跨适配器一致的那一份。 */
 const PUBLIC_EVENTS = {
@@ -120,7 +120,7 @@ export function createReactHarness(): AdapterHarness {
         root!.render(createElement(
           Root,
           { ...fixture.tree.attrs, ...next, ...listeners },
-          fixture.tree.children?.map((c, i) => renderFixtureNode(c, fixture.component, i)),
+          renderFixtureChildren(fixture.tree.children, fixture.component),
         ))
       }
       await inAct(async () => {
