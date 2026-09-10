@@ -54,6 +54,14 @@
     background: var(--xh-switch-bg-checked, var(--xh-_switch-accent));
   }
 
+  /* 选中档的轨道换成实心语气底，环得取这块面配对的前景色。
+     轨道是 <button>、皮肤没给它写 color，上一条的 currentColor 在这里取到的是 UA 的
+     buttontext，不是面上的前景色，所以这一档把那支色写进槽里。
+     只读那一档的轨道是中性底，不进这条 */
+  [data-scope='switch'][data-part='root'][data-state='checked']:not([data-readonly]):focus-visible {
+    --xh-_ring-color: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  }
+
   /* 校验失败：轨道描一圈警示色。轨道本身没有边框，这里补出来 */
   [data-scope='switch'][data-part='root'][data-invalid] {
     box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-switch-border-invalid, var(--xh-border-invalid));

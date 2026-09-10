@@ -518,10 +518,10 @@
   }
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='time-picker'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid currentColor;
-    outline-offset: var(--xh-ring-offset);
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     没选中的格底是透空或淡底，不在这一条里，环走公共层的默认色 */
+  [data-scope='time-picker'][data-part='item'][data-state='checked']:focus-visible {
+    --xh-_ring-color: currentColor;
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），

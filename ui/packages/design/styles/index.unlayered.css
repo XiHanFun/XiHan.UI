@@ -24,10 +24,24 @@
  * 偏移取 --xh-ring-offset——这个令牌是负的一个环宽，环的外沿与元素边框外沿重合，
  * 元素聚焦前后占的地方一样大。全库只有这一种偏移，要另画的组件把整条环重写。
  *
- * 环画进元素里之后，压着的是元素自己的面。面是实心的那几档，环色与面同族，贴上去就看不出来；
- * 那几档在各自皮肤的 :focus-visible 规则里把 --xh-_ring-color 灌成 currentColor，
- * 环随之取面自己的前景色。槽在这里只留一个默认值，名单不收在本份里——
- * 谁的面是实心的由那份皮肤自己知道，也只有引了那份皮肤的人该为它付字节。
+ * 环往内收之后，内侧紧挨着的是环压着的那块面。面是实心的那几档，环色与面同族、贴上去就
+ * 看不出来；那几档在各自皮肤的 :focus-visible 规则里把 --xh-_ring-color 灌成 currentColor，
+ * 环随之取这块面配对的前景色——那一支色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+ * 取的是「面配对的前景色」，不是语气色：环仍然不随 data-tone 走，没有实心面的那些档
+ * 一律是 --xh-ring-focus 这一支。
+ *
+ * 灌 currentColor 的档要同时成立三件事：
+ *   一、面画在谁身上——画在祖先上（标签里那颗透空的关闭钮坐在标签那块实心底上）时
+ *       规则写成后代选择器，槽仍然灌在拿焦点的那个节点上；
+ *   二、部件得有 color——圆点、滑块这类没有字的部件先补一支与面配对的墨色，
+ *       不补则 currentColor 取到继承下来的正文色或原生控件的 UA 前景色；
+ *       只有一档要换的（开关选中的轨道）把那支色直接写进槽，不绕 currentColor；
+ *   三、面被换走的档要退出——失效档把面换成置灰底、前景换成置灰色或透明，
+ *       中性轻档把实心底换成灰底，currentColor 在这些档上会把环跟着糊掉甚至整条画成透明。
+ *       靠收窄选择器退回本份的默认值，或把槽显式写回 var(--xh-ring-focus)。
+ *
+ * 槽在这里只留一个默认值，名单不收在本份里——谁的面是实心的由那份皮肤自己知道，
+ * 也只有引了那份皮肤的人该为它付字节。
  * :focus-visible 只匹配拿着焦点的那一个节点，祖先不匹配，所以这个槽不会被后代读到。
  *
  * 选择器停在两个属性加一个伪类（0,3,0）：与组件皮肤里
@@ -343,6 +357,13 @@
   --xh-_back-top-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
   --xh-_back-top-border: transparent;
   --xh-_back-top-border-hover: transparent;
+}
+
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+   形态写在 root 上、拿焦点的是按钮，规则因此写成后代 */
+[data-scope='back-top'][data-part='root'][data-variant='solid'] [data-scope='back-top'][data-part='trigger']:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 [data-scope='back-top'][data-part='root'][data-variant='subtle'] {
@@ -2106,6 +2127,14 @@
   --xh-_float-button-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
   --xh-_float-button-border: transparent;
   --xh-_float-button-border-hover: transparent;
+}
+
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+   形态写在壳上、面画在触发器上，所以这条是后代选择器，环落在拿焦点的那颗钮上 */
+[data-scope='float-button'][data-part='root'][data-variant='solid']
+  [data-scope='float-button'][data-part='trigger']:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 [data-scope='float-button'][data-part='root'][data-variant='subtle'] {
@@ -7514,6 +7543,13 @@
   color: var(--xh-popconfirm-cancel-fg, var(--xh-fg-default));
 }
 
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+   悬停与按下两档的底更深，环跟着这块面的前景色走才在三档上都读得出来 */
+[data-scope='popconfirm'][data-part='cancel-trigger']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 [data-scope='popconfirm'][data-part='cancel-trigger']:hover {
   background: var(--xh-bg-subtle-hover);
 }
@@ -8603,6 +8639,14 @@
   color: var(--xh-segmented-item-fg-checked, var(--xh-_segmented-fg-selected));
 }
 
+/* 指示器在场时选中段自己透空，环紧挨着的是压在它底下、与它同一块矩形的指示器实心底；
+   环色与那块底同族就看不出来，改取选中段自己的前景色——那一支本来就配着这块底定的。
+   指示器是可选部件，作者没渲染它时选中段直接坐在轨道底上，那一档的环仍取默认那一支 */
+[data-scope='segmented'][data-part='root']:has([data-scope='segmented'][data-part='indicator']:not([hidden]))
+  [data-scope='segmented'][data-part='item'][data-state='checked']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 /* 悬停只提亮未选中的那几段：选中段的底下压着指示器，再变色就成了两套强调。
    底色用中性的悬停档——它是「指哪一段」的轻反馈，不表达选中 */
 [data-scope='segmented'][data-part='item']:not([data-disabled]):not([data-state='checked']):hover {
@@ -9065,6 +9109,13 @@
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
 [data-scope='tag'][data-part='root'][data-variant='solid']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
+/* 关闭钮自己的面是透空的，环压着的是标签那块实心底；它的字色就是那块底上的前景色，
+   环跟着取过来 */
+[data-scope='tag'][data-part='root'][data-variant='solid']
+  [data-scope='tag'][data-part='close-trigger']:focus-visible {
   --xh-_ring-color: currentColor;
 }
 
@@ -10262,6 +10313,10 @@
  * （永远背离前景色走，悬停与按下才不会反过来压低对比度）。两者都由 --xh-_tone 现推：
  * 按 WCAG 的权重算出语气色的相对亮度，低于 0.179 配白字、高于配深字，shift 取反面。
  * 0.179 是白字与黑字对比度相等的那一点，解析解。
+ *
+ * --xh-_tone-on 还有第二个消费者：实心面上的聚焦环取的是这块面配对的前景色（见 focus.css），
+ * 部件没写 color 的那几档直接把这一支写进环色槽。所以它同时管着字与环两件事。
+ * 环本身不接语气：语气只决定面是哪一族色，不决定环是什么色。
  *
  * 现推是因为语气色可换肤：写死的分派只对本仓这套 600 档成立，使用者换一套调色板
  * 配对就不再成立，而门禁只验本仓的色，换肤后的失配一路绿灯。
@@ -11906,8 +11961,11 @@
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='approval'][data-part='approve-trigger']:focus-visible {
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+   两条分支对着还铺着实心底的那两档：按得动的常态，与判定在途那一档。
+   关闭档的底换成置灰底、字换成置灰色，环取过来就跟底一起糊了，那一档走公共层的环 */
+[data-scope='approval'][data-part='approve-trigger']:not([aria-disabled='true']):focus-visible,
+[data-scope='approval'][data-part='approve-trigger'][data-loading]:focus-visible {
   --xh-_ring-color: currentColor;
 }
 
@@ -12530,6 +12588,14 @@
   --xh-_ring-color: currentColor;
 }
 
+/* 组把实心形态写在自己身上、段上没有 data-variant 时，段的面由组灌的 --xh-button-bg 画成同一块实心底，
+   上面那条按段自己的形态限定的规则匹配不上；这一条按组限定，覆盖的是那些不自报形态的段。
+   段自己写了形态时走它自己那条，不进这里 */
+[data-scope='button-group'][data-part='root'][data-variant='solid']
+  [data-scope='button'][data-part='root']:not([data-variant]):focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 /* 另外三档的面不是实心底，高光在上面只会显脏；显式清掉，
    免得整组写了实心形态时那条高光顺着继承流漏到组里写了别的形态的段上 */
 [data-scope='button'][data-part='root'][data-variant='subtle'] {
@@ -12996,8 +13062,10 @@
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='calendar'][data-part='cell-trigger'][data-selected]:focus-visible {
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+   排掉不可用的格子：那一档的底换成置灰底、字换成置灰色，环取过来就跟底一起糊了，
+   它仍要能聚焦（方向键的起点），环由公共层画 */
+[data-scope='calendar'][data-part='cell-trigger'][data-selected]:not([data-disabled]):focus-visible {
   --xh-_ring-color: currentColor;
 }
 
@@ -14876,6 +14944,13 @@
   --xh-_clipboard-copy-trigger-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
   --xh-_clipboard-copy-trigger-border: transparent;
   --xh-_clipboard-copy-trigger-border-hover: transparent;
+}
+
+/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+   形态写在 root 上、拿焦点的是按钮，规则因此写成后代 */
+[data-scope='clipboard'][data-part='root'][data-variant='solid'] [data-scope='clipboard'][data-part='copy-trigger']:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 [data-scope='clipboard'][data-part='root'][data-variant='subtle'] {
@@ -19701,7 +19776,9 @@
 
   border-color: var(--xh-editable-submit-border, var(--xh-_tone, var(--xh-bg-brand)));
   background: var(--xh-editable-submit-bg, var(--xh-_tone, var(--xh-bg-brand)));
-  color: var(--xh-editable-submit-fg, var(--xh-fg-on-brand));
+  /* 前景与底同接一条语气链：底取 --xh-_tone，字就取配它的 --xh-_tone-on；
+     没写语气时两支各自退回品牌那一档，与不接语气时逐值相同 */
+  color: var(--xh-editable-submit-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
   box-shadow: var(--xh-editable-submit-shadow, var(--xh-_editable-submit-highlight));
 }
 
@@ -19711,14 +19788,16 @@
   --xh-_ring-color: currentColor;
 }
 
+/* 交互两档的底同接语气链，与常态那一档同源：不接的话写了语气的提交钮一悬停就翻回品牌色，
+   而字仍是配语气底的那一支 */
 [data-scope='editable'][data-part='submit-trigger']:hover:not(:disabled) {
-  border-color: var(--xh-editable-submit-border-hover, var(--xh-editable-submit-bg-hover, var(--xh-bg-brand-hover)));
-  background: var(--xh-editable-submit-bg-hover, var(--xh-bg-brand-hover));
+  border-color: var(--xh-editable-submit-border-hover, var(--xh-editable-submit-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover))));
+  background: var(--xh-editable-submit-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
 }
 
 [data-scope='editable'][data-part='submit-trigger']:active:not(:disabled) {
-  border-color: var(--xh-editable-submit-border-active, var(--xh-editable-submit-bg-active, var(--xh-bg-brand-active)));
-  background: var(--xh-editable-submit-bg-active, var(--xh-bg-brand-active));
+  border-color: var(--xh-editable-submit-border-active, var(--xh-editable-submit-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active))));
+  background: var(--xh-editable-submit-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
 }
 
 /* styles/field.css */
@@ -21336,8 +21415,9 @@
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
-/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+/* 三颗钮的面是一层深色纱，纱底下是使用者的图片，环色算不出稳定的取值。
+   content 把前景钉死在浅字上、三颗钮写 color: inherit，环取 currentColor 即是那支浅字，
+   不随图片内容也不随主题翻 */
 [data-scope='image-viewer'][data-part='close-trigger']:focus-visible,
 [data-scope='image-viewer'][data-part='prev-trigger']:focus-visible,
 [data-scope='image-viewer'][data-part='next-trigger']:focus-visible {
@@ -26450,8 +26530,13 @@
   position: absolute;
   border-radius: var(--xh-scrollbar-thumb-radius, var(--xh-shape-pill));
   background: var(--xh-scrollbar-thumb-bg, var(--xh-fg-scrollbar-thumb));
+  /* 滑块里没有字，这支墨色只给聚焦环用：环取 currentColor 时读的就是它。
+     静息这一档的面是浅一侧的中性灰，配正文墨；下面换面的两档各自换成配得上的另一支 */
+  color: var(--xh-fg-default);
   cursor: default;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 交叉轴在轨道内两侧各收进一个间隙，与轨道那条 padding 共用同一个旋钮。
@@ -26466,12 +26551,20 @@
   inset-block: var(--xh-scrollbar-gutter);
 }
 
+/* 这两档的面往另一头走（浅色主题更深、深色主题更亮），配对的墨色跟着翻到反色那一支 */
 [data-scope='scrollbar'][data-part='thumb']:hover {
   background: var(--xh-scrollbar-thumb-bg-hover, var(--xh-fg-scrollbar-thumb-hover));
+  color: var(--xh-fg-on-brand);
 }
 
 [data-scope='scrollbar'][data-part='thumb'][data-dragging] {
   background: var(--xh-scrollbar-thumb-bg-active, var(--xh-fg-scrollbar-thumb-active));
+  color: var(--xh-fg-on-brand);
+}
+
+/* 面是实心的中性色，环色与面同族，画在面里就看不出来；环改取这一档配对的墨色 */
+[data-scope='scrollbar'][data-part='thumb']:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 /* 根与轨道都是纯容器，不承载焦点；作者若给它们加了 tabindex，也不该在这儿多画一圈 */
@@ -27771,6 +27864,9 @@
   border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-bg-surface));
   border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-pill));
   background: var(--xh-slider-thumb-bg, var(--xh-_tone, var(--xh-bg-brand)));
+  /* 圆点上没有字，这一支是给环用的：环灌 currentColor 时取到的是与这块底配对的前景色，
+     不写就取到从页面继承下来的正文色 */
+  color: var(--xh-_tone-on, var(--xh-fg-on-brand));
   box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-raised));
   cursor: grab;
   transition:
@@ -28610,6 +28706,14 @@
   background: var(--xh-switch-bg-checked, var(--xh-_switch-accent));
 }
 
+/* 选中档的轨道换成实心语气底，环得取这块面配对的前景色。
+   轨道是 <button>、皮肤没给它写 color，上一条的 currentColor 在这里取到的是 UA 的
+   buttontext，不是面上的前景色，所以这一档把那支色写进槽里。
+   只读那一档的轨道是中性底，不进这条 */
+[data-scope='switch'][data-part='root'][data-state='checked']:not([data-readonly]):focus-visible {
+  --xh-_ring-color: var(--xh-_tone-on, var(--xh-fg-on-brand));
+}
+
 /* 校验失败：轨道描一圈警示色。轨道本身没有边框，这里补出来 */
 [data-scope='switch'][data-part='root'][data-invalid] {
   box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-switch-border-invalid, var(--xh-border-invalid));
@@ -28989,8 +29093,9 @@
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='table'][data-part='row'][data-selected]:focus-visible {
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+   禁用行的前景被换成灰档，不在这一条里，环走公共层的默认色 */
+[data-scope='table'][data-part='row'][data-selected]:not([data-disabled]):focus-visible {
   --xh-_ring-color: currentColor;
 }
 
@@ -29127,9 +29232,10 @@
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']):focus-visible,
-[data-scope='table'][data-part='column-visibility-trigger'][data-state='checked']:focus-visible {
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+   禁用档的前景是透明的（勾要藏起来），不在这一条里，环走公共层的默认色 */
+[data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']):not([data-disabled]):focus-visible,
+[data-scope='table'][data-part='column-visibility-trigger'][data-state='checked']:not([data-disabled]):focus-visible {
   --xh-_ring-color: currentColor;
 }
 
@@ -30277,9 +30383,22 @@
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='tag-group'][data-part='item'][data-variant='solid']:focus-visible {
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+   标签里那颗叉自己透空，环紧挨着的仍是标签这块实心底，跟着走同一条。
+   置灰那档的底已经换成静默色、字换成置灰色，不在其列 */
+[data-scope='tag-group'][data-part='item'][data-variant='solid']:not([data-disabled]):focus-visible,
+[data-scope='tag-group'][data-part='item'][data-variant='solid']:not([data-disabled])
+  [data-scope='tag-group'][data-part='item-delete-trigger']:focus-visible {
   --xh-_ring-color: currentColor;
+}
+
+/* 没写语气的实心标签在轻档里把底换成中性灰，字仍是实心档那一支浅字，
+   环跟着字走就糊在灰底上；这两档把环收回默认那一支。
+   写了语气的实心标签不进这里——它的底由下面那条语气规则压回实心色 */
+[data-scope='tag-group'][data-part='item'][data-variant='solid']:not([data-tone]):not([data-disabled]):is(:hover, [data-highlighted]):focus-visible,
+[data-scope='tag-group'][data-part='item'][data-variant='solid']:not([data-tone]):not([data-disabled]):is(:hover, [data-highlighted])
+  [data-scope='tag-group'][data-part='item-delete-trigger']:focus-visible {
+  --xh-_ring-color: var(--xh-ring-focus);
 }
 
 [data-scope='tag-group'][data-part='item'][data-variant='solid'][data-tone] {
@@ -30706,6 +30825,13 @@
 [data-scope='tags-input'][data-part='item-delete-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
   outline-offset: var(--xh-ring-offset);
+}
+
+/* 整颗标签反白成实心语气底时环压在那块面上，环色与面同族就看不出来；
+   环改取按钮自己的前景色——上面那条反白规则已经把它换成配对的那支色。
+   偏移仍取上一条的取值：outline-offset 不在 outline 简写里 */
+[data-scope='tags-input'][data-part='item'][data-highlighted]:not([data-disabled]) [data-scope='tags-input'][data-part='item-delete-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid currentColor;
 }
 
 /* 按钮是单体控件，禁用走原生 disabled */
@@ -32013,10 +32139,10 @@
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='time-picker'][data-part='item']:focus-visible {
-  outline: var(--xh-ring-width) solid currentColor;
-  outline-offset: var(--xh-ring-offset);
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+   没选中的格底是透空或淡底，不在这一条里，环走公共层的默认色 */
+[data-scope='time-picker'][data-part='item'][data-state='checked']:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
@@ -35204,9 +35330,12 @@
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+   勾满与半选铺的是同一块实心底，两态一起收 */
 [data-scope='tree'][data-part='item-checkbox'][data-selected]:focus-visible,
-[data-scope='tree'][data-part='branch-checkbox'][data-selected]:focus-visible {
+[data-scope='tree'][data-part='item-checkbox'][data-indeterminate]:focus-visible,
+[data-scope='tree'][data-part='branch-checkbox'][data-selected]:focus-visible,
+[data-scope='tree'][data-part='branch-checkbox'][data-indeterminate]:focus-visible {
   --xh-_ring-color: currentColor;
 }
 

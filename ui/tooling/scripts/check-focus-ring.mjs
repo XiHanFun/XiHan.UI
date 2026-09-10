@@ -7,6 +7,9 @@
 //
 // 真发生过：--xh-ring-offset 声明的是 1px，而 45 份皮肤各自硬编码 2px，
 // 库里因此长期有两套聚焦环间距，谁都没发现。
+//
+// 环色**取哪一档**是另一条判据：面是实心的那几档要把 --xh-_ring-color 灌成 currentColor，
+// 那条由 check-focus-ring-surface 管，本份只查三件走没走令牌。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 

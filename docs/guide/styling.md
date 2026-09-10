@@ -164,6 +164,38 @@ CSS 的级联顺序由 `@layer` 声明的**首次出现顺序**决定，与 `@im
 
 对比度已经按 WCAG 逐族验过：实心底与 `--xh-tone-on`、淡底三态与 `--xh-tone-fg` 都是 4.5:1，两条非文字档是 3:1。所以自己配色时，字与底请照上表成对取，别把 `--xh-tone-fg` 压到 `--xh-tone-solid` 上。
 
+## 聚焦环与实心面
+
+键盘焦点的环由公共皮肤 `focus.css` 画一份，组件不必自己写 `outline`：
+
+```css
+[data-scope][data-part]:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-_ring-color, var(--xh-ring-focus));
+  outline-offset: var(--xh-ring-offset);
+}
+```
+
+偏移是**负的一个环宽**：环往元素里收，外沿与元素边框外沿重合，聚焦前后占的地方一样大。因此环内侧紧挨着的是**元素自己那块面**。面是实心的那几档，环色与面同族，贴上去就看不出来——最坏的档量到 1.00:1，即整条环与底完全同色。这些档把环色槽灌成 `currentColor`，环改取这块面配对的前景色：
+
+```css
+[data-scope='tag'][data-part='root'][data-variant='solid'] {
+  background: var(--xh-tag-bg, var(--xh-bg-brand));
+  color: var(--xh-tag-fg, var(--xh-fg-on-brand));
+}
+
+[data-scope='tag'][data-part='root'][data-variant='solid']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+```
+
+**环仍然不随语气。** `currentColor` 取的是那块面配对的前景色（实心底上就是 `--xh-tone-on` 那一支），不是语气色本体——语气色本体当环色，warning 压白底只有 2.70:1、success 3.04:1，够不到 3:1。没有实心面的那些档一律是 `--xh-ring-focus` 一支色。判据看的是「环压着的那块面」，不是「组件是什么语气」。
+
+自己写皮肤时，灌之前核三件事：
+
+1. **面画在谁身上**。画在祖先上时（透空的关闭钮坐在标签那块实心底上）规则写成后代选择器，槽仍然灌在拿焦点的那个节点上。
+2. **部件有没有 `color`**。圆点、滑块这类没有字的部件先补一支与面配对的墨色；不补则 `currentColor` 取到继承下来的正文色，或原生控件的 UA 前景色。只有一档要换的把那支色直接写进槽，不绕 `currentColor`。
+3. **面被换走的档要退出**。失效档把面换成置灰底、前景换成置灰色甚至透明（`color: transparent` 会让整条环一起透明），中性轻档把实心底换成灰底。收窄选择器退回默认值，或把槽显式写回 `var(--xh-ring-focus)`。
+
 ## 换品牌色
 
 品牌色的唯一真源是 **原语梯度** `--xh-color-brand-50…950`：语义令牌（`--xh-bg-brand` 等）与语气层（`data-tone='brand'`）都从它取值。所以换品牌色要换整套原语，而不是只改 `--xh-bg-brand`——那只影响没写 `data-tone` 的缺省路径，写了 `data-tone='brand'` 的组件（实心按钮、开关、进度条这些）不会跟着变。
@@ -226,6 +258,7 @@ theme.setPreference({ brand: brandId("acme") });
 | `check-token-refs` | 皮肤引用了令牌产物里不存在的令牌名。孤儿引用不报错也不降级——整条声明在计算值阶段静默失效 |
 | `check-shared-slots` | 同一个字面量在两个以上组件里当默认值。那是一条没被命名的设计决策，应当先立语义令牌 |
 | `check-disabled-contrast` | 禁用态的前景色令牌上又叠 `opacity`。两种手段同时用会把对比度压到读不出字 |
+| `check-focus-ring-surface` | 可聚焦部件的面压着环不到 3:1，那一档却没把 `--xh-_ring-color` 灌成 `currentColor`。键盘焦点落在那块面上等于没画 |
 | `check-overlay-strategy` | 浮层的坐标系在机器、`connect`、皮肤三处不一致 |
 | `check-part-wiring` | 解剖里声明、`connect` 里产出、适配器却没接线的部件。皮肤为它写了规则却匹配不到任何元素 |
 | stylelint | 常规 CSS 规范 |

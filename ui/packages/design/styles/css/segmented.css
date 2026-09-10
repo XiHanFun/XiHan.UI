@@ -145,6 +145,14 @@
     color: var(--xh-segmented-item-fg-checked, var(--xh-_segmented-fg-selected));
   }
 
+  /* 指示器在场时选中段自己透空，环紧挨着的是压在它底下、与它同一块矩形的指示器实心底；
+     环色与那块底同族就看不出来，改取选中段自己的前景色——那一支本来就配着这块底定的。
+     指示器是可选部件，作者没渲染它时选中段直接坐在轨道底上，那一档的环仍取默认那一支 */
+  [data-scope='segmented'][data-part='root']:has([data-scope='segmented'][data-part='indicator']:not([hidden]))
+    [data-scope='segmented'][data-part='item'][data-state='checked']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   /* 悬停只提亮未选中的那几段：选中段的底下压着指示器，再变色就成了两套强调。
      底色用中性的悬停档——它是「指哪一段」的轻反馈，不表达选中 */
   [data-scope='segmented'][data-part='item']:not([data-disabled]):not([data-state='checked']):hover {

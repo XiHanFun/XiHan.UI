@@ -332,6 +332,13 @@
     outline-offset: var(--xh-ring-offset);
   }
 
+  /* 整颗标签反白成实心语气底时环压在那块面上，环色与面同族就看不出来；
+     环改取按钮自己的前景色——上面那条反白规则已经把它换成配对的那支色。
+     偏移仍取上一条的取值：outline-offset 不在 outline 简写里 */
+  [data-scope='tags-input'][data-part='item'][data-highlighted]:not([data-disabled]) [data-scope='tags-input'][data-part='item-delete-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid currentColor;
+  }
+
   /* 按钮是单体控件，禁用走原生 disabled */
   [data-scope='tags-input'][data-part='item-delete-trigger']:disabled {
     background: transparent;
