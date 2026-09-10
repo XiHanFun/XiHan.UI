@@ -50,6 +50,10 @@ export const wcA11yBaseline = {
     ...knownA11yViolations,
     // 必需子节点由作者手写
     steps: { 'aria-required-children': 'WC 侧作者手写的部件缺角色要求的直接子节点' },
+    // 检索档的候选在 WC 侧由作者在标记里声明（cascader.suite.ts 的 SEARCH_PARITY 写明了这一条），
+    // 共用夹具一个候选节点都没声明，于是连接层照机器状态发出的 aria-activedescendant 指向不存在的 id。
+    // Vue / React 的 search-list 按当下命中自渲，两侧解得开，只有 WC 悬空
+    cascader: { 'aria-valid-attr-value': '共用夹具在 WC 侧不声明 search-item 候选，检索档的 aria-activedescendant 因此指向不存在的 id；补夹具才是正解' },
   },
   knownEverywhere: knownA11yViolationsEverywhere,
   replayExempt,
