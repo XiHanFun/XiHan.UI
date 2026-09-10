@@ -41,6 +41,8 @@ checkbox 与 switch 的根是 `<button>`，而 HTML 的内容模型禁止 button
 带 `name` 的组件都认表单重置。点 `<button type="reset">`（或调 `form.reset()`），它们各自回到
 自己的默认值，和旁边的原生输入框一起。
 
+重置桥按事件目标的原生 HTMLElement 品牌与 `form` 节点名识别表单，不依赖顶层 `HTMLFormElement` 构造器。因此组件与表单位于 iframe 中，或表单从另一 Window adopt 到当前 Document 后，仍会跟随所属表单重置；普通元素派发的同名事件不会冒充表单。
+
 ```vue
 <form>
   <XhRadioGroupRoot name="plan" default-value="standard">…</XhRadioGroupRoot>
