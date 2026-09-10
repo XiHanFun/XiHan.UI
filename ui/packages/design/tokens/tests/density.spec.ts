@@ -1,4 +1,4 @@
-// compact 档是覆盖档：每一项都必须对得上基线里的同名令牌，且取值真的不同。
+// compact 档是覆盖档：每一项都必须对得上基线里的同名令牌，且解析后的取值真的不同。
 // 拼错组名/键名会发出一个没人消费的新自定义属性，静默无效——这里把它挡下来。
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -30,6 +30,18 @@ function flatten(obj: unknown, path: string[] = []): FlatToken[] {
 const base = flatten(loadJson('semantic.base.json'))
 const compact = flatten(loadJson('semantic.compact.json'))
 const primitive = flatten(loadJson('primitive.json'))
+const baseValues = new Map([...primitive, ...base].map(t => [t.name, t.value]))
+const compactValues = new Map([...primitive, ...base, ...compact].map(t => [t.name, t.value]))
+
+/** 别名按当前密度的完整取值表解析；缺失和环都必须让检查失败。 */
+function resolveValue(name: string, values: ReadonlyMap<string, string>, path: string[] = []): string {
+  if (path.includes(name))
+    throw new Error(`令牌循环引用：${[...path, name].join(' → ')}`)
+  const value = values.get(name)
+  if (value === undefined)
+    throw new Error(`令牌引用不存在：${[...path, name].join(' → ')}`)
+  return value.replace(/\{([^}]+)\}/g, (_, ref: string) => resolveValue(ref.trim().replace(/\./g, '-'), values, [...path, name]))
+}
 
 describe('semantic.compact.json', () => {
   it('每一项都对应基线里的同名令牌', () => {
@@ -38,18 +50,25 @@ describe('semantic.compact.json', () => {
       expect(baseNames.has(t.name), t.name).toBe(true)
   })
 
-  it('每一项的取值都与基线不同（等值覆盖是死重）', () => {
-    const baseByName = new Map(base.map(t => [t.name, t.value]))
+  it('每一项解析后的取值都与基线不同', () => {
     for (const t of compact)
-      expect(t.value, t.name).not.toBe(baseByName.get(t.name))
+      expect(resolveValue(t.name, compactValues), t.name).not.toBe(resolveValue(t.name, baseValues))
   })
 
-  it('引用全部解析得到原语', () => {
-    const primitiveNames = new Set(primitive.map(t => t.name))
-    for (const t of compact) {
-      for (const [, ref] of t.value.matchAll(/\{([^}]+)\}/g))
-        expect(primitiveNames.has(ref!.replace(/\./g, '-')), `${t.name} → ${ref}`).toBe(true)
-    }
+  it('原语和语义别名都能沿引用链解析到最终值', () => {
+    for (const t of compact)
+      expect(resolveValue(t.name, compactValues), t.name).not.toMatch(/\{[^}]+\}/)
+  })
+
+  it('相同的指示符别名在两档作用域内分别取各自的中档尺寸', () => {
+    expect(baseValues.get('control-indicator-size')).toBe(compactValues.get('control-indicator-size'))
+    expect(resolveValue('control-indicator-size', baseValues)).toBe('16px')
+    expect(resolveValue('control-indicator-size', compactValues)).toBe('14px')
+  })
+
+  it('引用缺失和循环引用都直接报错', () => {
+    expect(() => resolveValue('a', new Map([['a', '{missing}']]))).toThrow('令牌引用不存在：a → missing')
+    expect(() => resolveValue('a', new Map([['a', '{b}'], ['b', '{a}']]))).toThrow('令牌循环引用：a → b → a')
   })
 
   it('紧凑档逐项小于基线（收密度不该有放大的项）', () => {
@@ -59,17 +78,9 @@ describe('semantic.compact.json', () => {
         return null
       return Number(m[1]) * (m[2] === 'rem' ? 16 : 1)
     }
-    const spacePx = new Map(primitive.filter(t => t.name.startsWith('space-')).map(t => [t.name, px(t.value)]))
-    const resolvePx = (v: string): number | null => {
-      const ref = /^\{([^}]+)\}$/.exec(v)
-      if (ref)
-        return spacePx.get(ref[1]!.replace(/\./g, '-')) ?? null
-      return px(v)
-    }
-    const baseByName = new Map(base.map(t => [t.name, t.value]))
     for (const t of compact) {
-      const a = resolvePx(t.value)
-      const b = resolvePx(baseByName.get(t.name)!)
+      const a = px(resolveValue(t.name, compactValues))
+      const b = px(resolveValue(t.name, baseValues))
       expect(a, `${t.name} 解析`).not.toBeNull()
       expect(b, `${t.name} 基线解析`).not.toBeNull()
       expect(a!, t.name).toBeLessThan(b!)

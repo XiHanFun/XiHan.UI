@@ -144,11 +144,23 @@ describe('标签的尺寸阶梯', () => {
       await nextTick()
       await nextTick()
       heights.push(part('root').getBoundingClientRect().height)
+      expect(part('close-trigger').getBoundingClientRect().height).toBe(14)
       app.unmount()
       host.remove()
     }
 
     expect(heights).toEqual([20, 24, 28])
+  })
+
+  it('嵌套密度作用域重新解析关闭钮别名，宽松子树不继承紧凑尺寸', async () => {
+    await mount(() => h('div', { 'data-density': 'compact' }, [
+      tag('md', true),
+      h('div', { 'data-density': 'comfortable' }, [tag('md', true)]),
+    ]))
+    const closeTriggers = host!.querySelectorAll<HTMLElement>('[data-scope=tag][data-part=close-trigger]')
+    expect(closeTriggers).toHaveLength(2)
+    expect(closeTriggers[0]!.getBoundingClientRect().height).toBe(14)
+    expect(closeTriggers[1]!.getBoundingClientRect().height).toBe(16)
   })
 
   it('作者把字号调得比行框还大，行框跟着字走，文字不被 label 的截断剪掉上下沿', async () => {
