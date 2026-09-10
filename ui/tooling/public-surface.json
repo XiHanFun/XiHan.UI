@@ -4329,6 +4329,7 @@
       "brandId",
       "brandScaleCss",
       "clampChroma",
+      "compositeColors",
       "contrastRatio",
       "createEnvSignals",
       "createThemeController",

@@ -4,6 +4,7 @@ export { brandScaleCss, deriveBrandScale, registerBrand } from './brand'
 export type { Oklch, PickColorOptions } from './color'
 export {
   clampChroma,
+  compositeColors,
   CONTRAST_MIN,
   contrastRatio,
   darken,

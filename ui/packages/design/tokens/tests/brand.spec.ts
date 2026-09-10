@@ -46,6 +46,7 @@ describe('parseColorToOklch', () => {
       expect(r.c).toBeCloseTo(results[0]!.c, 5)
       expect(r.h).toBeCloseTo(results[0]!.h, 3)
     }
+    expect(results.map(r => r.a)).toEqual([1, 1, 1, 1, 0.5])
   })
 
   it('短 hex 与长 hex 等价', () => {
@@ -72,7 +73,7 @@ describe('parseColorToOklch', () => {
 
   it('oklch 直读，百分号明度与 0.4 基准彩度按规范折算', () => {
     const a = parseColorToOklch('oklch(0.546 0.216 258)')
-    expect(a).toEqual({ l: 0.546, c: 0.216, h: 258 })
+    expect(a).toEqual({ l: 0.546, c: 0.216, h: 258, a: 1 })
     const b = parseColorToOklch('oklch(54.6% 54% 258deg)')
     expect(b.l).toBeCloseTo(0.546, 6)
     expect(b.c).toBeCloseTo(0.216, 6)
@@ -85,6 +86,10 @@ describe('parseColorToOklch', () => {
 })
 
 describe('deriveBrandScale', () => {
+  it('拒绝透明品牌种子，不把背景相关颜色静默当成实体品牌色', () => {
+    expect(() => deriveBrandScale('rgb(59 130 246 / 50%)')).toThrow(/不透明/)
+  })
+
   it('基线 600 档当种子 → 派生结果与 primitive.json 逐值一致', () => {
     const scale = deriveBrandScale(brandPrimitives['600']!.$value)
     for (const step of STEPS) {
