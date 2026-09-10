@@ -117,6 +117,8 @@ const scope = createFocusScope({
 
 非栈顶的焦点域会自动暂停——上面又开了一层时，下面那层不该再抢焦点。
 
+`focusSafely` 与 `focusFirst` 按候选节点所属的 Document/ShadowRoot 判断焦点是否真正落下；可选中文本控件通过严格 HTMLElement 身份与 HTML 节点名识别，不依赖可能因 `adoptNode` 改变的 owner realm 构造器。Shadow DOM 中 `document.activeElement` 只指向 host，不能拿它判断内部候选失败或重复聚焦。
+
 ## 滚动锁
 
 ```ts
