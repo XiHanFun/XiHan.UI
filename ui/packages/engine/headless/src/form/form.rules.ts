@@ -184,15 +184,23 @@ export function runFormRules(
 ): FormErrors | Promise<FormErrors> {
   const ruleOutcomes: Record<string, string | undefined> = {}
   const pending: Array<Promise<void>> = []
-  for (const name of Object.keys(rules ?? {})) {
-    const out = runFieldRules(rules![name]!, values[name], values, name, messages)
-    if (out instanceof Promise)
-      pending.push(out.then((message) => { ruleOutcomes[name] = message }))
-    else
-      ruleOutcomes[name] = out
+  let custom: FormErrorPatch | Promise<FormErrorPatch> | undefined
+  try {
+    for (const name of Object.keys(rules ?? {})) {
+      const out = runFieldRules(rules![name]!, values[name], values, name, messages)
+      if (out instanceof Promise)
+        pending.push(out.then((message) => { ruleOutcomes[name] = message }))
+      else
+        ruleOutcomes[name] = out
+    }
+    custom = validate?.(values)
   }
-
-  const custom = validate?.(values)
+  catch (cause) {
+    if (pending.length === 0)
+      throw cause
+    // 已启动的异步规则与这次同步异常一起交给聚合，避免前者晚到的拒绝失去处理器。
+    pending.push(Promise.reject(cause))
+  }
 
   const merge = (customErrors: FormErrorPatch | undefined): FormErrors => {
     const out = normalizeFormErrors(customErrors)

@@ -5118,6 +5118,7 @@
       "FormTranslations",
       "FormValidateMessages",
       "FormValidateOn",
+      "FormValidationErrorDetails",
       "FormValues",
       "FormValuesChangeDetails",
       "GradientTextApi",
@@ -9275,6 +9276,7 @@
       "onErrorsChange",
       "onInvalid",
       "onSubmit",
+      "onValidationError",
       "onValuesChange",
       "readOnly",
       "rules",
@@ -15263,6 +15265,7 @@
         "errors-change",
         "invalid",
         "submit",
+        "validation-error",
         "values-change"
       ]
     },

@@ -10,6 +10,7 @@ import type {
   FormSchema,
   FormSubmitDetails,
   FormValidateOn,
+  FormValidationErrorDetails,
   FormValues,
   FormValuesChangeDetails,
 } from '@xihan-ui/headless'
@@ -101,6 +102,7 @@ function fieldNameOf(el: HTMLElement): string {
  * @fires errors-change - 错误表变化；detail 为 `{ errors }`
  * @fires submit - 校验通过才派发；detail 为 `{ values }`
  * @fires invalid - 校验不通过时派发；detail 为 `{ errors, values }`
+ * @fires validation-error - 校验器执行异常；detail 为 `{ cause, values, field }`，field 为 null 表示整表提交
  * @csspart root - 表单根容器，必须是原生 `<form>`（承载 data-state/data-disabled/data-readonly/data-invalid）
  * @csspart field-group - 单个字段的容器，须自带 value 属性标识字段名；带 id 供摘要链接指向。
  *   grid 排布下再写个 `span` 属性（1 至 4，或 full 占满整行）就是这一格占多宽，落成 data-span；
@@ -168,6 +170,10 @@ export class XhFormElement extends XhElement {
     this.dispatchEvent(new CustomEvent('invalid', { detail: details, bubbles: true, composed: true }))
   }
 
+  private readonly notifyValidationError = (details: FormValidationErrorDetails): void => {
+    this.dispatchEvent(new CustomEvent('validation-error', { detail: details, bubbles: true, composed: true }))
+  }
+
   private readonly ctrl = new MachineController<FormSchema>(
     this,
     formMachine,
@@ -197,6 +203,7 @@ export class XhFormElement extends XhElement {
       onErrorsChange: this.notifyErrors,
       onSubmit: this.notifySubmit,
       onInvalid: this.notifyInvalid,
+      onValidationError: this.notifyValidationError,
     }
   }
 
@@ -265,6 +272,11 @@ export class XhFormElement extends XhElement {
   /** 上一次提交被拦下了：错误摘要据此显形。 */
   get submitFailed(): boolean {
     return this.commands().submitFailed
+  }
+
+  /** 最近一次有效校验的执行异常；没有异常时为 null。 */
+  get validationError(): FormValidationErrorDetails | null {
+    return this.commands().validationError
   }
 
   protected wire(): void {

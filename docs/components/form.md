@@ -17,6 +17,8 @@
 - `validateOn` 决定何时校验：输入时、失焦时还是提交时。
 - 支持异步校验、跨字段规则与手动触发入口。
 - `validating` 表示仍有有效异步校验；任何字段变值、受控值更新、重置或卸载都会撤销旧快照的写回与提交资格，不自动重提。
+- 校验器抛错或拒绝 Promise 时，`validationError` 保存 `{ cause, values, field }`，并发出 `validation-error` 事件（React/内核为 `onValidationError`）；`field=null` 表示整表提交。执行异常不会转换成字段错误或触发成功提交。
+- 新校验、变值或重置会清除旧异常；重试由业务显式调用 `submit()`，不自动重试。Vue 默认插槽、React 函数式 children、Web Components 的 `validationError` 只读属性都能读取该状态。
 - 嵌套模型走路径字段名，字段值表与业务模型形状一致。
 - 错误汇总（`error-summary`）把所有错误列在一处，每条都能点回对应字段。
 - "提醒但不拦下"是一档独立行为：警告级的问题不阻断提交。
@@ -145,6 +147,7 @@ columns 给列数、窄视口自动收成一列；字段自报 span 跨列，spa
 | `onErrorsChange` | `(details: FormErrorsChangeDetails) => void` |  | 错误表变化意图回调；受控时是唯一出口。 |
 | `onSubmit` | `(details: FormSubmitDetails) => void` |  | 校验通过才调。 |
 | `onInvalid` | `(details: FormInvalidDetails) => void` |  | 校验不通过时调，带上拦下来的整张错误表。 |
+| `onValidationError` | `(details: FormValidationErrorDetails) => void` |  | 校验器抛错或拒绝 Promise 时调用；不触发 onInvalid 或 onSubmit。 |
 
 ## 事件
 
@@ -156,6 +159,7 @@ columns 给列数、窄视口自动收成一列；字段自报 span 跨列，spa
 | `errors-change` | `FormErrorsChangeDetails` | 错误表变化；detail 为 `{ errors }` |
 | `submit` | `FormSubmitDetails` | 校验通过才派发；detail 为 `{ values }` |
 | `invalid` | `FormInvalidDetails` | 校验不通过时派发；detail 为 `{ errors, values }` |
+| `validation-error` | `FormValidationErrorDetails` | 校验器执行异常；detail 为 `{ cause, values, field }`，field 为 null 表示整表提交 |
 
 ## 插槽
 
@@ -198,6 +202,7 @@ columns 给列数、窄视口自动收成一列；字段自报 span 跨列，spa
 | `invalid` | `boolean` | 错误表非空。与"提交失败过"无关，挂载时作者塞进来的错误也算。 |
 | `submitFailed` | `boolean` | 上一次提交被拦下了：错误摘要据此显形。 |
 | `validating` | `boolean` | 异步校验进行中（提交或逐字段都算）。 |
+| `validationError` | `FormValidationErrorDetails \| null` | 校验服务异常；null 表示没有异常，字段错误仍从 errors 读取。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `validateOn` | `FormValidateOn` |  |

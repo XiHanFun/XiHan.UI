@@ -18367,6 +18367,12 @@
             },
             {
               "kind": "field",
+              "name": "notifyValidationError",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -18560,6 +18566,15 @@
               "readonly": true
             },
             {
+              "kind": "field",
+              "name": "validationError",
+              "type": {
+                "text": "FormValidationErrorDetails | null"
+              },
+              "description": "最近一次有效校验的执行异常；没有异常时为 null。",
+              "readonly": true
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -18597,6 +18612,13 @@
               "name": "invalid",
               "type": {
                 "text": "FormInvalidDetails"
+              }
+            },
+            {
+              "description": "校验器执行异常；detail 为 `{ cause, values, field }`，field 为 null 表示整表提交",
+              "name": "validation-error",
+              "type": {
+                "text": "FormValidationErrorDetails"
               }
             }
           ],

@@ -26,6 +26,7 @@ export type FormRootSlotProps = Pick<
   | 'invalid'
   | 'submitFailed'
   | 'validating'
+  | 'validationError'
   | 'getFieldId'
   | 'getFieldError'
   | 'setFieldValue'
@@ -77,6 +78,7 @@ export interface XhFormRootProps extends FormElementProps {
   onErrorsChange?: FormProps['onErrorsChange']
   onSubmit?: FormProps['onSubmit']
   onInvalid?: FormProps['onInvalid']
+  onValidationError?: FormProps['onValidationError']
   children?: SlotChildren<FormRootSlotProps>
 }
 
@@ -100,6 +102,7 @@ export function XhFormRoot({
   onErrorsChange,
   onSubmit,
   onInvalid,
+  onValidationError,
   children,
   ...rest
 }: XhFormRootProps): ReactNode {
@@ -120,7 +123,7 @@ export function XhFormRoot({
       disabled,
       readOnly,
     } as FormProps,
-    { onValuesChange, onErrorsChange, onSubmit, onInvalid },
+    { onValuesChange, onErrorsChange, onSubmit, onInvalid, onValidationError },
   )
   const api = ctx.api
   return (
@@ -139,6 +142,7 @@ export function XhFormRoot({
           invalid: api.invalid,
           submitFailed: api.submitFailed,
           validating: api.validating,
+          validationError: api.validationError,
           getFieldId: api.getFieldId,
           getFieldError: api.getFieldError,
           setFieldValue: ctx.setFieldValue,
