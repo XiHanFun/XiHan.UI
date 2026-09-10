@@ -1,12 +1,12 @@
 {
   "backlog": {},
   "declared": {
-    "approval [data-loading][data-part='approve-trigger'][data-scope='approval']": "判定在途那一档不置灰，面仍是基础规则铺的那块实心语气底；这一支只多了 data-loading，本脚本按它算不出面",
     "image-viewer [data-part='close-trigger'][data-scope='image-viewer']": "面是半透明的（neutral-950 兑 transparent 55%），压在使用者的图片上，静态算不出对比度",
     "image-viewer [data-part='next-trigger'][data-scope='image-viewer']": "面是半透明的（neutral-950 兑 transparent 55%），压在使用者的图片上，静态算不出对比度",
     "image-viewer [data-part='prev-trigger'][data-scope='image-viewer']": "面是半透明的（neutral-950 兑 transparent 55%），压在使用者的图片上，静态算不出对比度",
     "popconfirm [data-part='cancel-trigger'][data-scope='popconfirm']:is(:hover, :active)": "规则只罩 :is(:hover, :active) 两档：那两档的面 bg-subtle-hover 2.97、bg-subtle-active 2.52 在线下，本脚本不收 :hover / :active 的面；常态的淡底 3.40 过线，吃默认环",
     "segmented [data-part='root'][data-scope='segmented']:has([data-scope='segmented'][data-part='indicator']:not([hidden])) [data-part='item'][data-scope='segmented'][data-state='checked']": "选中段自己的面是透空的，环内侧是压在它底下、与它同一块矩形的指示器实心底（写了 data-tone 时默认环压上去 1.08-2.89）；本脚本只看部件自己那条 background，看不见被压在下面的兄弟节点",
+    "table [data-part='select-all-trigger'][data-scope='table'][data-state='indeterminate']:not([data-disabled])": "半选档的前景是透明的（勾藏起来、横杠由伪元素画），currentColor 会取到透明，这一条改取面配对的前景色；面那条规则把 checked 与 indeterminate 写在同一个 :is() 里，本脚本记成一档 [data-state=:is(checked,indeterminate)]，只写 indeterminate 的这条罩不上它",
     "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='root'][data-scope='tag'] [data-part='close-trigger'][data-scope='tag']": "叉（tag 的 close-trigger）自己的面是透空的，环内侧是整颗标签（tag 的 root）反白后的实心语气底（默认环压上去 1.00-2.89）；本脚本只看部件自己那条 background，透空的面透出祖先那一层算不出来",
     "tag [data-part='root'][data-scope='tag'][data-variant='solid']:not([data-disabled]) [data-part='close-trigger'][data-scope='tag']": "关闭钮自己的面是透空的，环压着的是标签根那块实心语气底；本脚本按部件自己那条面规则算，看不到祖先铺的底",
     "transfer [data-part='item-checkbox'][data-scope='transfer'][data-state='checked']": "连接层给这颗把手发 aria-hidden: true，焦点落不上去，这条 :focus-visible 规则画不出来",
@@ -86,7 +86,6 @@
     "time-picker [data-part='segment'][data-scope='time-picker']": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
     "toggle-group [data-part='root'][data-scope='toggle-group']": "root 会短暂拿到 tabindex=0，onFocus 立刻把焦点转投给条目，高亮长在条目上",
     "toolbar [data-part='root'][data-scope='toolbar']": "root 会短暂拿到 tabindex=0，onFocus 立刻把焦点转投给条目，高亮长在条目上",
-    "tour [data-part='content'][data-scope='tour']": "焦点落在气泡本身（Enter/Space 归下一步管），它是纯容器不画环",
     "transfer [data-part='list'][data-scope='transfer']": "焦点在集合外时容器自己进 Tab 序列兜底，高亮永远长在条目上",
     "tree [data-part='branch'][data-scope='tree']": "branch 是 treeitem，环画在它自己那一行上；整棵子树套一圈会把展开的层级全框进去",
     "tree [data-part='tree'][data-scope='tree']": "焦点在树外时容器自己进 Tab 序列兜底，环永远长在行上",
@@ -123,77 +122,77 @@
         "approve-trigger"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "back-top [data-part='root'][data-scope='back-top'][data-variant='solid'] [data-part='trigger'][data-scope='back-top']": {
       "parts": [
         "trigger"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "button [data-part='root'][data-scope='button-group'][data-variant='solid'] [data-part='root'][data-scope='button']": {
       "parts": [
         "root"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "button [data-part='root'][data-scope='button'][data-variant='solid']": {
       "parts": [
         "root"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "calendar [data-part='cell-trigger'][data-scope='calendar'][data-selected]": {
       "parts": [
         "cell-trigger"
       ],
       "ratio": 1.36,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "carousel [data-current][data-part='indicator'][data-scope='carousel']": {
       "parts": [
         "indicator"
       ],
       "ratio": 1.36,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "carousel [data-part='indicator'][data-scope='carousel']": {
       "parts": [
         "indicator"
       ],
       "ratio": 1.16,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "checkbox [data-part='root'][data-scope='checkbox'][data-state='checked']": {
       "parts": [
         "root"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "checkbox [data-part='root'][data-scope='checkbox'][data-state='indeterminate']": {
       "parts": [
         "root"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "clipboard [data-part='root'][data-scope='clipboard'][data-variant='solid'] [data-part='copy-trigger'][data-scope='clipboard']": {
       "parts": [
         "copy-trigger"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "color-picker [data-part='eye-dropper-trigger'][data-scope='color-picker'][data-state='picking']": {
       "parts": [
         "eye-dropper-trigger"
       ],
       "ratio": 2.52,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "date-field [data-part='root'][data-scope='date-field'] [data-focus][data-part='segment'][data-scope='date-field']": {
       "parts": [
@@ -214,189 +213,189 @@
         "confirm-trigger"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "date-picker [data-part='trigger'][data-scope='date-picker'][data-state='open']": {
       "parts": [
         "trigger"
       ],
       "ratio": 2.52,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "download-trigger [data-part='root'][data-scope='download-trigger'][data-variant='solid']": {
       "parts": [
         "root"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "drawer [data-part='trigger'][data-scope='drawer'][data-state='open']": {
       "parts": [
         "trigger"
       ],
       "ratio": 2.52,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "editable [data-part='submit-trigger'][data-scope='editable']": {
       "parts": [
         "submit-trigger"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "float-button [data-part='root'][data-scope='float-button'][data-variant='solid'] [data-part='trigger'][data-scope='float-button']": {
       "parts": [
         "trigger"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "floating-panel [data-part='window-state-trigger'][data-scope='floating-panel'][data-state='on']": {
       "parts": [
         "window-state-trigger"
       ],
       "ratio": 2.52,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "form [data-part='submit-trigger'][data-scope='form']": {
       "parts": [
         "submit-trigger"
       ],
       "ratio": 1.36,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "image-cropper [data-part='crop-handle'][data-resizing][data-scope='image-cropper']": {
       "parts": [
         "crop-handle"
       ],
       "ratio": 1.36,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "pagination [data-part=:is(positioner,root)][data-scope='pagination'] [data-current][data-part='item'][data-scope='pagination']": {
       "parts": [
         "item"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "popconfirm [data-part='confirm-trigger'][data-scope='popconfirm']": {
       "parts": [
         "confirm-trigger"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "prompt-input [data-part='submit-trigger'][data-scope='prompt-input']": {
       "parts": [
         "submit-trigger"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "question-flow [data-part='submit-trigger'][data-scope='question-flow']": {
       "parts": [
         "submit-trigger"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "resizable [data-part='handle'][data-resizing][data-scope='resizable']": {
       "parts": [
         "handle"
       ],
       "ratio": 1.36,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "scrollbar [data-dragging][data-part='thumb'][data-scope='scrollbar']": {
       "parts": [
         "thumb"
       ],
       "ratio": 1.82,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "scrollbar [data-part='thumb'][data-scope='scrollbar']": {
       "parts": [
         "thumb"
       ],
       "ratio": 1.44,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "slider [data-invalid][data-part='thumb'][data-scope='slider']": {
       "parts": [
         "thumb"
       ],
       "ratio": 1.29,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "slider [data-part='thumb'][data-scope='slider']": {
       "parts": [
         "thumb"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "splitter [data-dragging][data-part='resize-trigger'][data-scope='splitter']": {
       "parts": [
         "resize-trigger"
       ],
       "ratio": 1.36,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "splitter [data-part='resize-trigger'][data-scope='splitter']": {
       "parts": [
         "resize-trigger"
       ],
       "ratio": 2.97,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "switch [data-part='root'][data-scope='switch']": {
       "parts": [
         "root"
       ],
       "ratio": 2.52,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "switch [data-part='root'][data-scope='switch'][data-state='checked']": {
       "parts": [
         "root"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "table [data-part='column-visibility-trigger'][data-scope='table'][data-state='checked']": {
       "parts": [
         "column-visibility-trigger"
       ],
       "ratio": 1.36,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "table [data-part='row'][data-scope='table'][data-selected]": {
       "parts": [
         "row"
       ],
       "ratio": 2.52,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "table [data-part='select-all-trigger'][data-scope='table'][data-state=:is(checked,indeterminate)]": {
       "parts": [
         "select-all-trigger"
       ],
       "ratio": 1.36,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "tag [data-part='root'][data-scope='tag'][data-tone][data-variant='solid']": {
       "parts": [
         "root"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "tag [data-part='root'][data-scope='tag'][data-variant='solid']": {
       "parts": [
         "root"
       ],
       "ratio": 1.36,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "time-field [data-part='root'][data-scope='time-field'] [data-focus][data-part='segment'][data-scope='time-field']:not([data-disabled])": {
       "parts": [
@@ -424,21 +423,21 @@
         "item"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "time-picker [data-part=:is(positioner,root)][data-scope='time-picker'] [data-part='item'][data-scope='time-picker'][data-state='checked']": {
       "parts": [
         "item"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "time-picker [data-part=:is(positioner,root)][data-scope='time-picker'] [data-part='preset'][data-scope='time-picker'][data-state='checked']": {
       "parts": [
         "preset"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "time-picker [data-part=:is(positioner,root)][data-scope='time-picker'] [data-part='segment'][data-scope='time-picker']": {
       "parts": [
@@ -452,70 +451,70 @@
         "root"
       ],
       "ratio": 2.52,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='ghost']": {
       "parts": [
         "root"
       ],
       "ratio": 2.31,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='outline']": {
       "parts": [
         "root"
       ],
       "ratio": 2.31,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='solid']": {
       "parts": [
         "root"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='subtle']": {
       "parts": [
         "root"
       ],
       "ratio": 2.31,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "toggle-group [data-part='root'][data-scope='toggle-group'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
       "parts": [
         "item"
       ],
       "ratio": 1,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='ghost'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
       "parts": [
         "item"
       ],
       "ratio": 2.31,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='outline'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
       "parts": [
         "item"
       ],
       "ratio": 2.31,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='subtle'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
       "parts": [
         "item"
       ],
       "ratio": 2.31,
-      "ring": "currentColor"
+      "ring": "poured"
     },
     "tour [data-part='next-trigger'][data-scope='tour']": {
       "parts": [
         "next-trigger"
       ],
       "ratio": 1.36,
-      "ring": "currentColor"
+      "ring": "poured"
     }
   }
 }

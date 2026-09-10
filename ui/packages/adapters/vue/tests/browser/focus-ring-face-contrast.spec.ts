@@ -204,7 +204,10 @@ function parseCompound(text: string): Compound {
   }
 }
 
-/** 库随包发出去的样式表里，所有不带条件（不在 @media / @container / @supports 里）的规则。 */
+/**
+ * 库随包发出去的样式表里，所有不带媒体条件（不在 @media / @container 里）的规则。
+ * @supports 块按块内条件成立处理，里面的规则照收。
+ */
 function unconditionalRules(): CSSStyleRule[] {
   const out: CSSStyleRule[] = []
   const walk = (list: CSSRuleList, conditional: boolean) => {
@@ -214,8 +217,7 @@ function unconditionalRules(): CSSStyleRule[] {
           out.push(rule)
       }
       else if ('cssRules' in rule) {
-        const grouping = rule instanceof CSSMediaRule || rule instanceof CSSSupportsRule
-          || rule.constructor.name === 'CSSContainerRule'
+        const grouping = rule instanceof CSSMediaRule || rule.constructor.name === 'CSSContainerRule'
         walk((rule as CSSGroupingRule).cssRules, conditional || grouping)
       }
     }

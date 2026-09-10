@@ -239,10 +239,8 @@
      收起态连接层会给 content 打 hidden，补上这条退场动画就一帧都播不出来。
      真正的收起由退场闸门落成内联 display，节点始终留在原地。 */
 
-  /* 焦点落在气泡本身（Enter/Space 归"下一步"管），但它是纯容器，不画焦点环 */
-  [data-scope='tour'][data-part='content']:focus-visible {
-    outline: none;
-  }
+  /* 焦点落在气泡本身，Enter / Space 落在它身上推进下一步：它是可操作目标，
+     环由 focus.css 的默认内收环画，这里不另写 */
 
   [data-scope='tour'][data-part='content'][data-state='open'] {
     animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);

@@ -190,7 +190,47 @@ CSS 的级联顺序由 `@layer` 声明的**首次出现顺序**决定，与 `@im
 
 **环仍然不随语气。** `currentColor` 取的是那块面配对的前景色（实心底上就是 `--xh-tone-on` 那一支），不是语气色本体——语气色本体当环色，warning 压白底只有 2.70:1、success 3.04:1，够不到 3:1。没有实心面的那些档一律是 `--xh-ring-focus` 一支色。判据看的是「环压着的那块面」，不是「组件是什么语气」。
 
-**过了线的面不为统一而灌。** 淡底、透空的面这些非实心档一律吃默认环；一条 `currentColor` 规则罩到了非实心档（同一个部件的另一个形态、失效档、只读档），门禁判红，把选择器收窄到实心那一档，而不是登记豁免。
+**过了线的面不为统一而灌。** 淡底、透空的面这些非实心档一律吃默认环；一条灌环色的规则罩到了非实心档（同一个部件的另一个形态、失效档、只读档），门禁判红，把选择器收窄到实心那一档，而不是登记豁免。
+
+**「灌」按求值认，不按写法认。** 门禁看的是三条声明——`--xh-_ring-color`、`outline-color`、键盘聚焦规则里的 `outline` 简写——的值求出来是什么：顺着皮肤里的槽摊开、再顺着令牌链解到颜色，在任一主题 × 语气下与库自己的两支环（`--xh-ring-focus`、`--xh-ring-invalid`）都不相等就是灌，解不出来的（`currentColor`、使用者传进来的色值、没兜底的使用者令牌）同样算。所以下面几种写法与写 `currentColor` 受同一套判据管：
+
+```css
+/* 与面配对的前景色令牌：开关选中的轨道是 <button>、皮肤没给它 color，只能这么写 */
+[data-scope='switch'][data-part='root'][data-state='checked']:focus-visible {
+  --xh-_ring-color: var(--xh-_tone-on, var(--xh-fg-on-brand));
+}
+
+/* 不经槽、直接写长手：一样算灌 */
+[data-scope='x'][data-part='y']:focus-visible {
+  outline-color: var(--xh-fg-default);
+}
+
+/* 包进 @supports：块内条件按成立处理，一样算灌 */
+@supports (color: red) {
+  [data-scope='x'][data-part='y']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+}
+
+/* 包进 @media screen / @container：静态判不出它什么时候不成立，按成立处理，一样算灌 */
+@media screen {
+  [data-scope='x'][data-part='y']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+}
+
+/* 写在裸 :focus 里的 outline 简写：:focus 包含键盘落焦，一样算灌；没写颜色那一节等于 currentColor */
+[data-scope='x'][data-part='y']:focus {
+  outline: var(--xh-ring-width) solid var(--xh-fg-default);
+}
+
+/* 没兜底的使用者令牌：值由使用者定，解不出来，一样算灌 */
+[data-scope='x'][data-part='y']:focus-visible {
+  --xh-_ring-color: var(--xh-tag-fg);
+}
+```
+
+显式写回 `var(--xh-ring-focus)`、校验失败换 `var(--xh-ring-invalid)` 不算灌。`@media` 只有纸面、高对比、减动效、粗指针、断点这几种真实媒体条件才算条件块。用 `[data-variant]` / `[data-state]` 这类属性存在式选择器一次罩住几个形态也逃不掉：每个形态各算一档，罩到的非实心档逐档判红——规则写了、档位没写的属性，存在式一律算罩得到（DOM 上多半有这个属性），写了取值的（`[data-state='on']`）看有没有一档兄弟档认领了它。库环两支令牌与它们顺着解到底经过的名字（`--xh-color-brand-500` 这些）皮肤里一律不许赋值。浏览器态的 `focus-ring-inset-grpring` 按同一定义从样式表里读出灌了环色的规则，逐条挂出来落焦量 3:1——静态放行的别名色（比如在实心底上写了同族的 `var(--xh-color-brand-600)`）在那里量出来就是 1:1。
 
 自己写皮肤时，灌之前核三件事：
 
@@ -260,7 +300,7 @@ theme.setPreference({ brand: brandId("acme") });
 | `check-token-refs` | 皮肤引用了令牌产物里不存在的令牌名。孤儿引用不报错也不降级——整条声明在计算值阶段静默失效 |
 | `check-shared-slots` | 同一个字面量在两个以上组件里当默认值。那是一条没被命名的设计决策，应当先立语义令牌 |
 | `check-disabled-contrast` | 禁用态的前景色令牌上又叠 `opacity`。两种手段同时用会把对比度压到读不出字 |
-| `check-focus-ring-surface` | 可聚焦部件的面压着环不到 3:1，那一档却没把 `--xh-_ring-color` 灌成 `currentColor`。键盘焦点落在那块面上等于没画。反过来 `currentColor` 罩到非实心档、`:focus-visible` 里关掉环（`outline: none` / `outline-width: 0`）却没登记环由谁画、画了实心面却不接焦点也没登记的部件，同样判红；聚焦规则把环色写成透明的直接判红——失效档只豁免对比度，环不许消失 |
+| `check-focus-ring-surface` | 可聚焦部件的面压着环不到 3:1，那一档却没有一条规则把环色换掉（`--xh-_ring-color` / `outline-color` / 聚焦规则里的 `outline` 简写求值后仍是库环）。键盘焦点落在那块面上等于没画。反过来灌了环色的规则罩到非实心档、`:focus-visible` 里关掉环（`outline: none` / `outline-width: 0`）却没登记环由谁画、画了实心面却不接焦点也没登记的部件，同样判红；聚焦规则把环色写成透明的直接判红——失效档只豁免对比度，环不许消失。`@supports` 块里的规则按块内条件成立处理，`@media` 只认几种真实媒体条件为条件块，其余条件块与 `@container` 一律按成立处理；皮肤里给库环令牌链上的名字赋值直接判红 |
 | `check-overlay-strategy` | 浮层的坐标系在机器、`connect`、皮肤三处不一致 |
 | `check-part-wiring` | 解剖里声明、`connect` 里产出、适配器却没接线的部件。皮肤为它写了规则却匹配不到任何元素 |
 | stylelint | 常规 CSS 规范 |

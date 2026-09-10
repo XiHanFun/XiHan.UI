@@ -1,10 +1,23 @@
 #!/usr/bin/env node
-// 门禁：环压在实心面上的那几档，环色必须取 currentColor；非实心面一律吃默认环。
+// 门禁：环压在实心面上的那几档，环色必须换掉（灌）；非实心面一律吃库自己的环。
 //
 // 聚焦环往内收（--xh-ring-offset = 负一个环宽），外沿与元素边框外沿重合，
 // 环内侧相邻的就是元素自己那块面。本份查的是内侧这一对：面与环。
-// 灌法是在那一档的 :focus-visible 规则里写 --xh-_ring-color: currentColor，
-// 公共层 focus.css 读 var(--xh-_ring-color, var(--xh-ring-focus))。
+// 公共层 focus.css 画 outline: var(--xh-ring-width) solid var(--xh-_ring-color, var(--xh-ring-focus))，
+// 皮肤在那一档的 :focus-visible 规则里给 --xh-_ring-color 赋值（多数写 currentColor，取面配对的前景色）。
+//
+// 「灌」按求值判，不按字面量判：一条声明改了环色——给 --xh-_ring-color 或 outline-color 赋值，
+// 或在键盘聚焦规则里写 outline 简写——它的值顺着皮肤里的槽摊开、再顺着令牌链解到 oklch，
+// 在任一 (主题, 语气) 下与库自己的两支环（--xh-ring-focus、--xh-ring-invalid）都不相等，就是灌；
+// 解不出来的（currentColor、使用者传进来的色值、没兜底的使用者令牌）同样算灌。求值后等于库环的
+// （显式写回 var(--xh-ring-focus)、校验失败换 --xh-ring-invalid）不算。
+// --xh-_ring-color 与 outline-color 写在哪条规则里都算（它们只喂环这一处）；outline 简写只认
+// 键盘聚焦规则里的那些：:focus-visible、[data-focus]，以及裸 :focus（它包含键盘落焦；
+// `:focus:not(:focus-visible)` 关的是指针那一路，不算）。选中态、高对比档的描边式 outline 不是聚焦环。
+// 普通属性名不分大小写，先归成小写再认；自定义属性名分大小写，照原样。
+//
+// 库环两支令牌与它们在 tokens.css 里顺着解到底经过的每个名字，皮肤里一律不许赋值：
+// 在子树上改了它们，库环在那棵子树上就不再是库环，本脚本按 tokens.css 求的值也就失真。
 //
 // 「面是不是实心」按颜色算，不按形态名猜：皮肤里的面顺着令牌链解到 oklch 字面量，
 // 与同主题的 --xh-ring-focus 算 WCAG 对比度，低于 3:1（SC 1.4.11 非文本对比）才是实心档。
@@ -13,16 +26,25 @@
 // 半透明的面（oklch 带 alpha、color-mix 兑 transparent）内侧的真色是它与底下那层叠出来的，
 // 底下那层是谁静态不知道，逐条登在 opaque；报错信息附一句叠在画布上的估值。
 //
+// 条件块：@supports 按块内条件成立处理；@media 只有写成 CONDITIONAL_MEDIA 里那几种真实媒体条件
+// （纸面、高对比、减动效、粗指针、断点）的才是条件块，块里的档不收；写成别的样子的
+// （screen / all / 逗号并列 / not、以及任何 @container）静态判不出它什么时候不成立，一律按成立处理，
+// 面与环色都照收。@keyframes 里的不是规则，不算。
+//
+// 规则罩没罩到某一档，按选择器判：规则写了、档位没写的属性，存在式（[data-state]）一律算罩得到——
+// DOM 上多半有这个属性；写了取值的（[data-state='on']）看有没有一档兄弟档把它认领了：
+// 兄弟档是这一档再加上那几个条件得出来的档（有自己的面），有就归兄弟档，没有就仍罩这一档。
+//
 // 判定面之外的几类，交给浏览器态判据：
 //   · :hover / :active 限定的面
 //   · ::before / ::after 铺的底（环压的是元素盒）
-//   · @media / @supports 里的面
+//   · 真实媒体条件里的面
 //   · 解不出颜色的面（半透明、渐变、连接层内联进 style 的色值），逐条登在 opaque
 //   · 环由 :focus-within 画在外框上的部件，环色走那份皮肤自己的槽
 //
 // 五条判据配五张登记表，每张两侧都反查：
-//   一 实心档要被一条 currentColor 规则覆盖，或被一条登了记的关环规则关掉环
-//   二 currentColor 规则不许罩到非实心档；一档实心档都罩不上的登进 declared 写明凭什么
+//   一 实心档要被一条灌环色的规则覆盖，或被一条登了记的关环规则关掉环
+//   二 灌环色的规则不许罩到非实心档；一档实心档都罩不上的登进 declared 写明凭什么
 //   三 算出来还没灌的实心档登进 backlog，带理由与实测比值
 //   四 :focus-visible 里把环关掉的规则（outline: none、outline-width: 0、outline-style: none）
 //      逐条登进 ringless，写明环由谁画或为什么不画
@@ -34,7 +56,7 @@
 // 失效档只豁免对比度，环不许消失。
 //
 // `--update` 只把新算出来的条目落进表里，理由留空由人补，不删条目。
-// `--list` 把实心档、非实心档、不接焦点的面、关环规则、环色透明的规则、解不出的面与没进判定面的分支打成 JSON。
+// `--list` 把实心档、非实心档、不接焦点的面、关环规则、灌环色的规则、环色透明的规则、解不出的面与没进判定面的分支打成 JSON。
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
@@ -80,6 +102,55 @@ function ringColorsOf(prop, value) {
     return splitTop(v, ch => ch === ' ' || ch === '\t' || ch === '\n')
   return []
 }
+
+/** 改环色的三条声明。 */
+const RING_PROP = /^(?:--xh-_ring-color|outline-color|outline)$/
+
+/** 库自己的两支环：默认环与校验失败环。环色求值后落在这两支之外才算灌。 */
+const LIBRARY_RINGS = ['--xh-ring-focus', '--xh-ring-invalid']
+
+/**
+ * 键盘聚焦规则：:focus-visible、[data-focus]、裸 :focus。
+ * `:focus:not(:focus-visible)` 关的是指针落焦那一路，键盘环照画，不算。
+ */
+function isKeyboardFocus(selector) {
+  return /:focus(?:-visible)?(?![\w-])|\[data-focus\]/.test(selector) && !/:not\(\s*:focus-visible\s*\)/.test(selector)
+}
+
+/**
+ * 真实媒体条件：只在纸面、系统高对比、减动效偏好、粗指针设备或某个断点之上成立。
+ * 只认这几种写法；写成别的样子的条件块静态判不出它什么时候不成立，按成立处理。
+ */
+const CONDITIONAL_MEDIA = [
+  /^@media print$/,
+  /^@media \(forced-colors: active\)$/,
+  /^@media \(prefers-reduced-motion: reduce\)$/,
+  /^@media \(prefers-contrast: more\)$/,
+  /^@media \(pointer: coarse\)$/,
+  /^@media \(min-width: \d+px\)$/,
+]
+
+/** 这条规则的选择器栈：是不是 @keyframes 里的、是不是落在真实媒体条件里。 */
+function classifyStack(selectors) {
+  let keyframes = false
+  let conditional = false
+  for (const s of selectors) {
+    if (!s.startsWith('@'))
+      continue
+    const prelude = s.replace(/\s+/g, ' ').trim()
+    if (prelude.startsWith('@keyframes'))
+      keyframes = true
+    else if (CONDITIONAL_MEDIA.some(re => re.test(prelude)))
+      conditional = true
+  }
+  return { keyframes, conditional }
+}
+
+/** outline 简写里的线型关键字与粗细关键字，不是颜色。 */
+const OUTLINE_KEYWORD = /^(?:none|auto|hidden|solid|dashed|dotted|double|groove|ridge|inset|outset|thin|medium|thick|invert)$/i
+
+/** 长度：数字带单位，或 calc()。 */
+const LENGTH = /^(?:-?(?:\d+(?:\.\d*)?|\.\d+)[a-z%]*|calc\(.*\))$/i
 
 /** 面的声明。 */
 const FACE_PROP = /^(?:background|background-color)$/
@@ -306,6 +377,22 @@ function contrast(x, y) {
 const themes = loadThemes(parseBlocks(await readFile(TOKENS, 'utf8')))
 const toneSrc = loadTones(parseBlocks(dropSupports(stripComments(await readFile(TONE_FILE, 'utf8')))))
 
+/** 库环两支令牌与它们在 tokens.css 里顺着解到底经过的每个名字：皮肤里给这些名字赋值就是在子树上换掉库环。 */
+const RING_CHAIN = new Set()
+{
+  const queue = [...LIBRARY_RINGS]
+  while (queue.length) {
+    const name = queue.pop()
+    if (RING_CHAIN.has(name))
+      continue
+    RING_CHAIN.add(name)
+    for (const map of [themes.light, themes.dark]) {
+      for (const ref of (map.get(name) ?? '').matchAll(/var\(\s*(--[\w-]+)/g))
+        queue.push(ref[1])
+    }
+  }
+}
+
 /** (主题, 语气) → 求值用的作用域链。 */
 function scopeFor(theme, tone) {
   if (!tone)
@@ -318,13 +405,19 @@ function scopeFor(theme, tone) {
   return [merged, themes[theme]]
 }
 
-/** 全部 (主题, 语气) 组合，连同各自的环色与画布色。 */
+/** 全部 (主题, 语气) 组合，连同各自的默认环色、库环（oklab）与画布色。 */
 const CONTEXTS = []
 for (const theme of THEMES) {
   const ring = srgbOf(evaluate('var(--xh-ring-focus)', scopeFor(theme, null)))
+  const rings = LIBRARY_RINGS.map(name => evaluate(`var(${name})`, scopeFor(theme, null)))
   const canvas = evaluate('var(--xh-bg-canvas)', scopeFor(theme, null))
   for (const tone of TONES)
-    CONTEXTS.push({ theme, tone, ring, canvas, scope: scopeFor(theme, tone) })
+    CONTEXTS.push({ theme, tone, ring, rings, canvas, scope: scopeFor(theme, tone) })
+}
+
+/** 两个 oklab 色是不是同一个色：四个分量都对得上。 */
+function sameColor(a, b) {
+  return ['L', 'a', 'b', 'alpha'].every(k => Math.abs(a[k] - b[k]) < 1e-6)
 }
 
 /** 环色在任一 (主题, 语气) 下解成 alpha 为 0：环画了等于没画。解不出来的（currentColor、私有槽、宽度）不判。 */
@@ -538,8 +631,12 @@ function holds(cond, t) {
   return true
 }
 
-/** 覆盖方（规则）对被覆盖方（档位）的复合条件判定。 */
-function compoundCovers(r, t) {
+/**
+ * 覆盖方（规则）对被覆盖方（档位）的复合条件判定。
+ * 规则写了、档位没写的属性：unknown 为 null 时直接判不覆盖（严格判定）；
+ * 给了数组就连同档位这一节一起收进去，由调用方按兄弟档裁决。
+ */
+function compoundCovers(r, t, unknown = null) {
   const ra = anchorOf(r)
   const ta = anchorOf(t)
   if (ra.scope && ra.scope !== ta.scope)
@@ -552,12 +649,19 @@ function compoundCovers(r, t) {
   // 规则用 :not(…) 排掉的条件在这一档上成立，规则就落不到这一档
   if (r.nots.some(n => holds(n, t)))
     return false
+  // 档位用 :not(…) 排掉的条件正是规则要求的，规则同样落不到这一档
+  if (t.nots.some(n => holds(n, r)))
+    return false
   for (const [key, vals] of r.attrs) {
     if (key === 'data-scope' || key === 'data-part')
       continue
     const have = t.attrs.get(key)
-    if (!have)
-      return false
+    if (!have) {
+      if (!unknown)
+        return false
+      unknown.push({ key, vals, tier: t })
+      continue
+    }
     if (vals.has(ANY))
       continue
     for (const v of have) {
@@ -568,9 +672,9 @@ function compoundCovers(r, t) {
   return true
 }
 
-/** 规则 r 是否覆盖档位 t：主语条件要被满足，r 写出来的祖先在 t 里都得找得到。 */
-function covers(r, t) {
-  if (!compoundCovers(r.subject, t.subject))
+/** 规则 r 的选择器条件在档位 t 上是否都成立（档位没写的属性按 unknown 的约定处理）。 */
+function coversWith(r, t, unknown) {
+  if (!compoundCovers(r.subject, t.subject, unknown))
     return false
   return r.ancestors.every((ra) => {
     const a = anchorOf(ra)
@@ -580,9 +684,60 @@ function covers(r, t) {
         return false
       if (a.parts && (!b.parts || [...b.parts].some(p => !a.parts.has(p))))
         return false
-      return compoundCovers(ra, ta)
+      return compoundCovers(ra, ta, unknown)
     })
   })
+}
+
+/** 两节复合能落在同一个元素上：scope 相同、部件有交集、同名属性取值有交集、谁排掉的条件都不在对方身上成立。 */
+function compatible(a, b) {
+  const aa = anchorOf(a)
+  const ba = anchorOf(b)
+  if (aa.scope && ba.scope && aa.scope !== ba.scope)
+    return false
+  if (aa.parts && ba.parts && ![...aa.parts].some(p => ba.parts.has(p)))
+    return false
+  for (const [key, vals] of a.attrs) {
+    const have = b.attrs.get(key)
+    if (!have || vals.has(ANY) || have.has(ANY))
+      continue
+    if (![...vals].some(v => have.has(v)))
+      return false
+  }
+  return !a.nots.some(n => holds(n, b)) && !b.nots.some(n => holds(n, a))
+}
+
+/**
+ * 兄弟档们把规则 r 写了、档位 t 没写的那个条件认领走了：
+ * 与 t 落得到同一个元素上、r 排掉的条件在它身上不成立的兄弟档，在对应的那一节上写了这个属性，
+ * 它们写的取值合起来包住了 r 写的每个值（存在式只有存在式包得住）。
+ * 认领了就是说满足 r 的元素都有某个兄弟档的面，r 不再罩 t。
+ */
+function claimed(siblings, t, r, u) {
+  const taken = new Set()
+  for (const s of siblings) {
+    if (s === t || !compatible(t.subject, s.subject) || r.subject.nots.some(n => holds(n, s.subject)))
+      continue
+    const nodes = u.tier === t.subject ? [s.subject] : s.ancestors.filter(sa => compatible(u.tier, sa))
+    for (const node of nodes) {
+      for (const v of node.attrs.get(u.key) ?? []) taken.add(v)
+    }
+  }
+  if (taken.has(ANY))
+    return true
+  return !u.vals.has(ANY) && [...u.vals].every(v => taken.has(v))
+}
+
+/**
+ * 规则 r 是否覆盖档位 t：主语条件要被满足，r 写出来的祖先在 t 里都得找得到。
+ * 规则写了、档位没写的属性：兄弟档认领了其中任何一个，规则就归兄弟档，不罩 t；
+ * 一个都没人认领的（存在式 [data-state] 罩着写了取值的档、没有面的状态）仍罩 t。
+ */
+function covers(r, t, siblings = []) {
+  const unknown = []
+  if (!coversWith(r, t, unknown))
+    return false
+  return !unknown.some(u => claimed(siblings, t, r, u))
 }
 
 /** 两个复合合成同一个元素上的条件；取值集合无交集即这一档不可能出现。 */
@@ -701,7 +856,9 @@ const files = (await readdir(SKINS)).filter(f => f.endsWith('.css')).sort()
 const slots = new Map()
 /** 面的消费点：写了 background 的规则。 */
 const surfaces = []
-/** currentColor 规则。 */
+/** 改环色的声明，扫完皮肤、槽赋值齐了之后再逐条求值，判出哪些是灌。 */
+const ringAssignments = []
+/** 灌环色的规则：环色求值后落在库环之外。 */
 const declared = []
 /** :focus-visible 里把环关掉的规则。 */
 const ringless = []
@@ -717,6 +874,10 @@ const ringHosts = new Map()
 const opaqueValues = new Map()
 /** 没进判定面的面声明按原因计数。 */
 const dropped = { conditional: 0, pseudoElement: 0, unreadable: 0, hover: 0, noPart: 0, blocked: 0, mixedParts: 0, focusWithinHost: 0, nativeDisabled: 0, impossible: 0 }
+/** 皮肤里给库环令牌链上的名字赋值的声明：没有登记表，逐条判红。 */
+const ringOverrides = []
+/** 属性名带转义的声明：声明拆解读不出它，等于这一条从扫描面里消失，逐条判红。 */
+const escapedProps = []
 
 function markSkin(map, comp, parts) {
   if (!map.has(comp))
@@ -728,10 +889,29 @@ for (const file of files) {
   const comp = file.replace(/\.css$/, '')
   const css = stripComments(await readFile(join(SKINS, file), 'utf8'))
   const lineAt = lineCounter(css)
+  // 声明拆解只认字母、数字、连字符组成的属性名，带转义的整条静默跳过：先把这些点出来
+  for (const body of css.matchAll(/\{([^{}]*)\}/g)) {
+    let offset = body.index + 1
+    for (const seg of body[1].split(';')) {
+      const colon = seg.indexOf(':')
+      if (colon > 0 && seg.slice(0, colon).includes('\\'))
+        escapedProps.push(`${file}:${lineAt(offset)} 属性名 ${seg.slice(0, colon).trim()} 带转义——本脚本读不出这条声明，属性名照 CSS 原样写`)
+      offset += seg.length + 1
+    }
+  }
   for (const decl of declarations(css)) {
-    const isFace = FACE_PROP.test(decl.prop)
-    // @media / @supports 里的档不收；@layer 只是分层，照收
-    if (decl.selectors.some(s => s.startsWith('@') && !s.startsWith('@layer'))) {
+    // 普通属性名不分大小写；自定义属性名分大小写
+    const prop = decl.prop.startsWith('--') ? decl.prop : decl.prop.toLowerCase()
+    const value = decl.value.trim()
+    const isFace = FACE_PROP.test(prop)
+    const stack = classifyStack(decl.selectors)
+    if (stack.keyframes)
+      continue
+    const at = `${file}:${lineAt(decl.index)}`
+    if (RING_CHAIN.has(prop))
+      ringOverrides.push(`${at} 皮肤里给 ${prop} 赋值（${value}）——库环令牌链上的名字只在 tokens.css 里声明，皮肤在子树上改它等于换掉库环`)
+    // 真实媒体条件里的档不收；@layer 只是分层、@supports 与写成别的样子的条件块按成立处理，都照收
+    if (stack.conditional) {
       if (isFace)
         dropped.conditional++
       continue
@@ -739,7 +919,6 @@ for (const file of files) {
     const raw = decl.selectors.filter(s => !s.startsWith('@')).join(' ')
     if (!raw)
       continue
-    const at = `${file}:${lineAt(decl.index)}`
 
     for (const branchText of splitTop(raw, ch => ch === ',')) {
       // 伪元素铺的底不是元素自己的面
@@ -751,10 +930,10 @@ for (const file of files) {
       const branch = parseBranch(branchText)
       if (!branch) {
         // 面与环两类声明读不出选择器就等于这一档从判定面里消失，报出来而不是跳过
-        if (isFace || /^(?:outline|--xh-_ring-color)$/.test(decl.prop)) {
+        if (isFace || RING_PROP.test(prop)) {
           if (isFace)
             dropped.unreadable++
-          unreadable.push(`${at} ${branchText.trim()} —— 本脚本读不出这条选择器的形态，${decl.prop} 这一档没进判定面`)
+          unreadable.push(`${at} ${branchText.trim()} —— 本脚本读不出这条选择器的形态，${prop} 这一档没进判定面`)
         }
         continue
       }
@@ -765,29 +944,26 @@ for (const file of files) {
       if (anchor.parts) {
         if (subjectHas(branchText, ':focus-visible') && !/:not\(\s*:focus-visible\s*\)/.test(branchText))
           markSkin(skinFocusable, comp, anchor.parts)
-        if (subjectHas(branchText, ':focus-within') && decl.prop === 'outline' && !turnsRingOff(decl.prop, decl.value))
+        if (subjectHas(branchText, ':focus-within') && prop === 'outline' && !turnsRingOff(prop, value))
           markSkin(ringHosts, comp, anchor.parts)
       }
-      if (decl.prop.startsWith('--')) {
-        if (!slots.has(decl.prop))
-          slots.set(decl.prop, [])
-        slots.get(decl.prop).push({ file, comp, branch, value: decl.value, at })
+      if (prop.startsWith('--')) {
+        if (!slots.has(prop))
+          slots.set(prop, [])
+        slots.get(prop).push({ file, comp, branch, value, at })
       }
       if (isFace)
-        surfaces.push({ file, comp, keyComp, branch, value: decl.value, at, hover: /:hover|:active/.test(branchText) })
-      if (decl.prop === '--xh-_ring-color' && decl.value.trim() === 'currentColor')
-        declared.push({ file, comp, branch, at, key: `${keyComp} ${render(branch)}` })
-      // 整条 outline 自写成 currentColor 的，同样是「环取面的前景色」
-      if (decl.prop === 'outline' && /\bcurrentColor\b/.test(decl.value))
-        declared.push({ file, comp, branch, at, key: `${keyComp} ${render(branch)}`, whole: true })
-      // 只认真的把键盘焦点环关掉的那种：`:focus:not(:focus-visible)` 关的是指针落焦那一路，
-      // 键盘环照画
-      const keyboardFocus = /:focus-visible|\[data-focus\]/.test(branchText) && !/:not\(\s*:focus-visible\s*\)/.test(branchText)
-      if (keyboardFocus && turnsRingOff(decl.prop, decl.value))
-        ringless.push({ file, comp, branch, at, key: `${keyComp} ${render(branch)}`, prop: decl.prop, value: decl.value.trim() })
+        surfaces.push({ file, comp, keyComp, branch, value, at, hover: /:hover|:active/.test(branchText) })
+      const keyboardFocus = isKeyboardFocus(branchText)
+      const ringOff = turnsRingOff(prop, value)
+      // 改环色的声明先收着：环色槽与 outline-color 写在哪都算，outline 简写只认聚焦规则里的
+      if (RING_PROP.test(prop) && !ringOff && (prop !== 'outline' || keyboardFocus))
+        ringAssignments.push({ file, comp, branch, at, key: `${keyComp} ${render(branch)}`, prop, value })
+      if (keyboardFocus && ringOff)
+        ringless.push({ file, comp, branch, at, key: `${keyComp} ${render(branch)}`, prop, value })
       // 环色解成透明：环还在画，只是画成了看不见的
-      if (keyboardFocus && ringVanishes(ringColorsOf(decl.prop, decl.value)))
-        vanished.push({ at, key: `${keyComp} ${render(branch)}`, prop: decl.prop, value: decl.value.trim() })
+      if (keyboardFocus && ringVanishes(ringColorsOf(prop, value)))
+        vanished.push({ at, key: `${keyComp} ${render(branch)}`, prop, value })
     }
   }
 }
@@ -829,12 +1005,93 @@ function expand(value, file, trail = [], depth = 0) {
   return out
 }
 
+/**
+ * 顺着令牌链把一个值解到底，只看原文不解颜色：
+ * 判 outline 简写里哪一节是粗细、哪一节是颜色用。解不到底返回 null。
+ */
+function rawOf(expr, depth = 0) {
+  const m = /^var\(\s*(--[\w-]+)\s*(?:,([\s\S]*))?\)$/.exec(expr.trim())
+  if (!m)
+    return expr.trim()
+  if (depth > 8)
+    return null
+  const [, name, fallback] = m
+  for (const map of [themes.light, toneSrc.base]) {
+    if (map.has(name))
+      return rawOf(map.get(name), depth + 1)
+  }
+  const assigns = slots.get(name)
+  if (assigns?.length)
+    return rawOf(assigns[0].value, depth + 1)
+  return fallback == null ? null : rawOf(fallback, depth + 1)
+}
+
+/**
+ * outline 简写里的颜色那一节：线型关键字与长度（含解到底是长度的令牌）都不是；
+ * 一节颜色都没写时，简写把颜色重置成 currentColor。
+ */
+function outlineColorTokens(value) {
+  const colors = ringColorsOf('outline', value).filter((tok) => {
+    if (OUTLINE_KEYWORD.test(tok) || LENGTH.test(tok))
+      return false
+    const raw = rawOf(tok)
+    return raw === null || !(OUTLINE_KEYWORD.test(raw) || LENGTH.test(raw))
+  })
+  return colors.length ? colors : ['currentColor']
+}
+
+/**
+ * 这条改环色的声明是不是灌：值顺着皮肤里的槽摊开，每一支终值在任一 (主题, 语气) 下
+ * 求值后落在库环之外就是灌；一档都解不出来的（currentColor、使用者色值）同样算灌；
+ * 一支终值都摊不出来的（没兜底的使用者令牌、本份皮肤里没赋值的私有槽）值由使用者定，同样算灌。
+ * 摊出来的每支终值都等于库环（显式写回默认环、校验失败换 --xh-ring-invalid）才不算。
+ */
+function pours(assign) {
+  const exprs = assign.prop === 'outline' ? outlineColorTokens(assign.value) : [assign.value]
+  for (const expr of exprs) {
+    const outcomes = expand(expr, assign.file)
+    if (!outcomes.length)
+      return true
+    for (const outcome of outcomes) {
+      let evaluated = 0
+      for (const ctx of CONTEXTS) {
+        let color
+        try {
+          color = evaluate(outcome.expr, ctx.scope)
+        }
+        catch {
+          continue
+        }
+        evaluated++
+        if (!ctx.rings.some(ring => sameColor(ring, color)))
+          return true
+      }
+      if (!evaluated)
+        return true
+    }
+  }
+  return false
+}
+
+for (const assign of ringAssignments) {
+  if (pours(assign))
+    declared.push(assign)
+}
+
 /** 算出来的实心档：键 → { comp, parts, tier, ratio, theme, tone, expr, at } */
 const solidTiers = new Map()
 /** 非实心档（面过了线、或透出祖先）：currentColor 规则罩到这里就是罩宽了。 */
 const nonSolidTiers = new Map()
 /** 不接焦点却画了实心面的部件：键 `comp [part]` → { ratio, theme, tone, expr, at, tier } */
 const unfocusableFaces = new Map()
+/** 每份皮肤推出来的全部档位（不论实心与否、接不接焦点），按键去重：覆盖判定里当兄弟档用。 */
+const tiersByComp = new Map()
+
+function rememberTier(comp, key, tier) {
+  if (!tiersByComp.has(comp))
+    tiersByComp.set(comp, new Map())
+  tiersByComp.get(comp).set(key, tier)
+}
 
 const round = n => Math.round(n * 100) / 100
 
@@ -891,6 +1148,7 @@ for (const surface of surfaces) {
       continue
     }
     const key = `${surface.keyComp} ${render(tier)}`
+    rememberTier(surface.comp, key, tier)
     const worst = outcome.seeThrough ? { seeThrough: true } : worstAgainstRing(outcome.expr)
     if (worst === null) {
       // 键里不带行号：面没改过就不该因为上面插了几行而重新走一遍登记
@@ -938,23 +1196,28 @@ for (const surface of surfaces) {
   }
 }
 
-/** 每档实心档的环怎么来：灌了 currentColor、被关环规则关掉、或者两者皆无。 */
+/** 同一份皮肤推出来的其余档位，覆盖判定里当兄弟档。 */
+const siblingsOf = comp => [...(tiersByComp.get(comp)?.values() ?? [])]
+
+/** 每档实心档的环怎么来：被灌环色的规则罩住、被关环规则关掉、或者两者皆无。 */
 for (const tier of solidTiers.values()) {
-  tier.coveredBy = declared.filter(r => r.comp === tier.comp && covers(r.branch, tier.tier)).map(r => r.key)
-  tier.ringlessBy = ringless.filter(r => r.comp === tier.comp && covers(r.branch, tier.tier)).map(r => r.key)
-  tier.ring = tier.ringlessBy.length ? 'off' : tier.coveredBy.length ? 'currentColor' : 'backlog'
+  const siblings = siblingsOf(tier.comp)
+  tier.coveredBy = declared.filter(r => r.comp === tier.comp && covers(r.branch, tier.tier, siblings)).map(r => r.key)
+  tier.ringlessBy = ringless.filter(r => r.comp === tier.comp && covers(r.branch, tier.tier, siblings)).map(r => r.key)
+  tier.ring = tier.ringlessBy.length ? 'off' : tier.coveredBy.length ? 'poured' : 'backlog'
 }
 
-/** 每条 currentColor 规则覆盖到的实心档与非实心档。 */
+/** 每条灌环色的规则覆盖到的实心档与非实心档。 */
 const declaredHits = new Map()
 for (const rule of declared) {
+  const siblings = siblingsOf(rule.comp)
   declaredHits.set(rule.key, {
-    solid: [...solidTiers.entries()].filter(([, t]) => t.comp === rule.comp && covers(rule.branch, t.tier)).map(([k]) => k),
-    nonSolid: [...nonSolidTiers.entries()].filter(([, t]) => t.comp === rule.comp && covers(rule.branch, t.tier)).map(([k]) => k),
+    solid: [...solidTiers.entries()].filter(([, t]) => t.comp === rule.comp && covers(rule.branch, t.tier, siblings)).map(([k]) => k),
+    nonSolid: [...nonSolidTiers.entries()].filter(([, t]) => t.comp === rule.comp && covers(rule.branch, t.tier, siblings)).map(([k]) => k),
   })
 }
 
-/** 没被任何 currentColor 规则覆盖、环也没被关掉的实心档。 */
+/** 没被任何灌环色的规则覆盖、环也没被关掉的实心档。 */
 const uncovered = [...solidTiers.entries()].filter(([, t]) => t.ring === 'backlog').map(([key, t]) => ({ key, ...t }))
 
 /** 只读分区 solid 的内容：算出来的全部实心档。 */
@@ -986,6 +1249,8 @@ if (process.argv.includes('--list')) {
     nonSolid: [...nonSolidTiers.entries()].map(([key, t]) => ({ key, comp: t.comp, parts: [...t.parts], selector: render(t.tier), ratio: t.seeThrough ? null : round(t.ratio), face: t.expr, at: t.at, seeThrough: !!t.seeThrough })),
     unfocusable: [...unfocusableFaces.entries()].map(([key, t]) => ({ key, comp: t.comp, part: t.part, selector: render(t.tier), ratio: round(t.ratio), theme: t.theme, tone: t.tone, face: t.expr, at: t.at })),
     ringless: ringless.map(r => ({ key: r.key, comp: r.comp, selector: render(r.branch), at: r.at, prop: r.prop, value: r.value })),
+    poured: declared.map(r => ({ key: r.key, comp: r.comp, selector: render(r.branch), at: r.at, prop: r.prop, value: r.value, ...declaredHits.get(r.key) })),
+    ringAssignments: ringAssignments.map(r => ({ key: r.key, at: r.at, prop: r.prop, value: r.value, poured: declared.includes(r) })),
     vanished: vanished.map(r => ({ key: r.key, at: r.at, prop: r.prop, value: r.value })),
     opaque: [...opaqueValues.entries()].map(([key, v]) => ({ key, at: v.at, hint: v.hint })),
     focusWithinHosts: [...ringHosts.entries()].flatMap(([comp, parts]) => [...parts].map(part => `${comp} [${part}]`)),
@@ -1025,7 +1290,7 @@ if (process.argv.includes('--update')) {
   await writeFile(REGISTRY, `${JSON.stringify(out, null, 2)}\n`, 'utf8')
   console.log(
     `[focus-ring-surface:update] 已写入 ${REGISTRY}：`
-    + `未灌的实心档 ${Object.keys(backlog).length} 条、算不出实心档的 currentColor 规则 ${Object.keys(declaredTable).length} 条、`
+    + `未灌的实心档 ${Object.keys(backlog).length} 条、算不出实心档的灌环色规则 ${Object.keys(declaredTable).length} 条、`
     + `解不出颜色的面 ${Object.keys(opaqueTable).length} 条、关环规则 ${Object.keys(ringlessTable).length} 条、`
     + `不接焦点的实心面 ${Object.keys(unfocusableTable).length} 条；只读分区 solid 重写为 ${solidTiers.size} 档`
     + `——理由留空的条目要人补上，门禁会拦`,
@@ -1035,15 +1300,15 @@ if (process.argv.includes('--update')) {
 
 const problems = []
 
-// 判据一 · 三：实心档要么灌了 currentColor、要么被登了记的关环规则关掉，要么登记在 backlog 里并写明理由
+// 判据一 · 三：实心档要么被灌环色的规则罩住、要么被登了记的关环规则关掉，要么登记在 backlog 里并写明理由
 for (const tier of uncovered) {
   const entry = registry.backlog[tier.key]
   const measured = describe(tier, tier.expr)
   if (!entry) {
     problems.push(
       `${tier.at} ${tier.key} 的面压着环最低只有 ${measured}，不到 ${MIN_RATIO}:1，`
-      + `这一档没有一条 :focus-visible 规则把 --xh-_ring-color 灌成 currentColor——`
-      + `补一条覆盖得住这一档的规则，或登进 backlog 并写一句理由`,
+      + `这一档没有一条 :focus-visible 规则把环色换掉（--xh-_ring-color / outline-color / outline 求值后仍是库环 --xh-ring-focus）——`
+      + `补一条覆盖得住这一档、把环色灌成 currentColor 或面配对的前景色的规则，或登进 backlog 并写一句理由`,
     )
     continue
   }
@@ -1056,7 +1321,7 @@ for (const tier of uncovered) {
 for (const [key, entry] of Object.entries(registry.backlog)) {
   if (!uncovered.some(t => t.key === key)) {
     problems.push(
-      `${key} 登在 backlog 里，现在已经不是「未灌 currentColor 的实心档」了`
+      `${key} 登在 backlog 里，现在已经不是「未灌环色的实心档」了`
       + `——补上了、面换了、或者部件退役了，把这条一起删`,
     )
   }
@@ -1064,7 +1329,7 @@ for (const [key, entry] of Object.entries(registry.backlog)) {
     problems.push(`${key} 在 backlog 里缺 why 字段`)
 }
 
-// 判据二：反查每条 currentColor 规则——罩到非实心档的判红，一档实心档都罩不上的要登记
+// 判据二：反查每条灌环色的规则——罩到非实心档的判红，一档实心档都罩不上的要登记
 const declaredSeen = new Set()
 for (const rule of declared) {
   const hits = declaredHits.get(rule.key)
@@ -1072,8 +1337,8 @@ for (const rule of declared) {
     const t = nonSolidTiers.get(key)
     const face = t.seeThrough ? `面 ${t.expr}，透出祖先` : `面 ${t.expr} 压环最低 ${round(t.ratio)}:1（${t.theme} · ${t.tone ?? '无语气'}）`
     problems.push(
-      `${rule.at} ${rule.key} 这条 currentColor 规则罩到了非实心档 ${key}（${face}）——`
-      + `非实心面一律吃默认 --xh-ring-focus，把选择器收窄到实心那一档`,
+      `${rule.at} ${rule.key} 这条规则把 ${rule.prop} 灌成 ${rule.value}，罩到了非实心档 ${key}（${face}）——`
+      + `非实心面一律吃库环 --xh-ring-focus，把选择器收窄到实心那一档`,
     )
   }
   if (hits.solid.length) {
@@ -1085,7 +1350,7 @@ for (const rule of declared) {
     continue
   if (!(rule.key in registry.declared)) {
     problems.push(
-      `${rule.at} ${rule.key} 灌了 currentColor，本脚本却算不出它压着的面低于 ${MIN_RATIO}:1——`
+      `${rule.at} ${rule.key} 把 ${rule.prop} 灌成 ${rule.value}，本脚本却算不出它压着的面低于 ${MIN_RATIO}:1——`
       + `要么这一档的面本来就够（那条规则多余），要么判定面漏了这种面，`
       + `登进 declared 并写明凭什么`,
     )
@@ -1098,7 +1363,7 @@ for (const rule of declared) {
 
 for (const key of Object.keys(registry.declared)) {
   if (!declaredSeen.has(key))
-    problems.push(`${key} 登在 declared 里，皮肤里却没有这条 currentColor 规则了，或者它已经罩到了算得出的档——名单过期，删掉这条`)
+    problems.push(`${key} 登在 declared 里，皮肤里却没有这条灌环色的规则了（或者它的环色已经求值回了库环），或者它已经罩到了算得出的档——名单过期，删掉这条`)
 }
 
 // 面解不出颜色的，同样逐条登记：不登记就等于这一档从此没人再想起来
@@ -1185,6 +1450,14 @@ for (const rule of vanished) {
 for (const line of unreadable)
   problems.push(line)
 
+// 库环令牌链上的名字在皮肤里被赋值：没有登记表，逐条判红
+for (const line of ringOverrides)
+  problems.push(line)
+
+// 属性名带转义：声明拆解读不出，逐条判红
+for (const line of escapedProps)
+  problems.push(line)
+
 if (problems.length) {
   console.error('[check-focus-ring-surface] ✗ 实心面上的聚焦环对不上：')
   for (const p of problems)
@@ -1192,14 +1465,14 @@ if (problems.length) {
   process.exit(1)
 }
 
-const byRing = { currentColor: 0, off: 0, backlog: 0 }
+const byRing = { poured: 0, off: 0, backlog: 0 }
 for (const t of solidTiers.values()) byRing[t.ring]++
 const droppedTotal = Object.values(dropped).reduce((a, b) => a + b, 0)
 console.log(
   `[check-focus-ring-surface] 通过：${files.length} 份皮肤里算出 ${solidTiers.size} 档面压环不到 ${MIN_RATIO}:1，`
-  + `${byRing.currentColor} 档灌了 currentColor、${byRing.off} 档由登了记的关环规则关掉、${byRing.backlog} 档登在 backlog；`
+  + `${byRing.poured} 档灌了环色、${byRing.off} 档由登了记的关环规则关掉、${byRing.backlog} 档登在 backlog；`
   + `另有 ${nonSolidTiers.size} 档非实心档（${[...nonSolidTiers.values()].filter(t => t.seeThrough).length} 档透出祖先），`
-  + `${declared.length} 条 currentColor 规则逐条反查（${Object.keys(registry.declared).length} 条算不出实心档、已登记）；`
+  + `${ringAssignments.length} 条改环色的声明里 ${declared.length} 条是灌（${Object.keys(registry.declared).length} 条算不出实心档、已登记）；`
   + `${ringless.length} 条关环规则、${unfocusableFaces.size} 块不接焦点的实心面、${opaqueValues.size} 块解不出颜色的面逐条登记；`
   + `${droppedTotal} 条面声明没进判定面（${Object.entries(dropped).filter(([, n]) => n).map(([k, n]) => `${k} ${n}`).join('、')}）`,
 )
