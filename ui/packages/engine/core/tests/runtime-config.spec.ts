@@ -189,7 +189,29 @@ describe('createRuntimeConfig · 显式 scope 的所属窗口', () => {
     const scope = createScope(node, createCounterIdGenerator())
 
     expect(detached.defaultView).toBeNull()
-    expect(() => createRuntimeConfig({ scope })).toThrow(/不一致/)
+    vi.stubGlobal('document', undefined)
+    vi.stubGlobal('window', undefined)
+    vi.stubGlobal('Node', undefined)
+    vi.stubGlobal('Document', undefined)
+    vi.stubGlobal('Window', undefined)
+    vi.stubGlobal('Element', undefined)
+    vi.stubGlobal('HTMLElement', undefined)
+    vi.stubGlobal('ShadowRoot', undefined)
+    try {
+      try {
+        createRuntimeConfig({ scope })
+        throw new Error('预期 createRuntimeConfig 拒绝离线 Document')
+      }
+      catch (error) {
+        expect(error).toBeInstanceOf(Error)
+        expect((error as Error).message).toContain('无法从 scope 解析有效')
+        expect((error as Error).cause).toBeInstanceOf(Error)
+        expect(((error as Error).cause as Error).message).toContain('没有活动 Window')
+      }
+    }
+    finally {
+      vi.unstubAllGlobals()
+    }
   })
 
   it('默认 portal 缺少 body 时给出稳定错误，显式容器仍优先', () => {

@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createCounterIdGenerator } from '../src/kernel/id-generator'
 import { createScope, getActiveElementDeep } from '../src/kernel/scope'
 
 afterEach(() => {
+  vi.unstubAllGlobals()
   document.body.innerHTML = ''
 })
 
@@ -49,6 +50,42 @@ describe('scope 的 id 派生', () => {
 })
 
 describe('scope 的宿主解析', () => {
+  it('空锚点在无全局 Document 时给出稳定错误', () => {
+    vi.stubGlobal('document', undefined)
+    vi.stubGlobal('window', undefined)
+    const scope = createScope(null, createCounterIdGenerator())
+
+    expect(() => scope.getDoc()).toThrow('[xh] Scope 没有锚点，且宿主未提供有效的全局 Document')
+    expect(() => scope.getWin()).toThrow('[xh] Scope 没有锚点，且宿主未提供有效的全局 Document')
+  })
+
+  it('离线 Document 不借用主窗口', () => {
+    const offline = document.implementation.createHTMLDocument('offline')
+    const node = offline.createElement('div')
+    const scope = createScope(node, createCounterIdGenerator())
+
+    expect(scope.getDoc()).toBe(offline)
+    expect(() => scope.getWin()).toThrow('[xh] Scope 的 Document 没有活动 Window')
+  })
+
+  it('全部 DOM globals 缺失时仍从显式锚点识别离线 Document', () => {
+    const offline = document.implementation.createHTMLDocument('offline-without-globals')
+    const node = offline.createElement('div')
+    offline.body.appendChild(node)
+    const scope = createScope(node, createCounterIdGenerator())
+    vi.stubGlobal('document', undefined)
+    vi.stubGlobal('window', undefined)
+    vi.stubGlobal('Node', undefined)
+    vi.stubGlobal('Document', undefined)
+    vi.stubGlobal('Window', undefined)
+    vi.stubGlobal('Element', undefined)
+    vi.stubGlobal('HTMLElement', undefined)
+    vi.stubGlobal('ShadowRoot', undefined)
+
+    expect(scope.getDoc()).toBe(offline)
+    expect(() => scope.getWin()).toThrow('[xh] Scope 的 Document 没有活动 Window')
+  })
+
   it('节点为空时回退到全局 document', () => {
     const scope = createScope(null, createCounterIdGenerator())
     expect(scope.getDoc()).toBe(document)

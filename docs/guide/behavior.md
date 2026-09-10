@@ -8,6 +8,8 @@
 
 无全局 DOM 时必须提供有效 Scope；只提供 layer registry 不会得到一个伪造的空 Scope。Scope 的 root、document、window 必须互相归属，离线 Document 没有活动 Window 时直接报错。默认 PortalRoot 保持惰性创建，但 Document 没有 body 时会给出明确错误；需要其他容器就显式传 `portalContainer`。
 
+`createScope(null, ...)` 本身保持惰性，便于在 CSR 中先建立机器再挂载组件节点；这份 Scope 始终表示 ambient Document，不会在之后改绑节点。真正读取 root/document 时若宿主没有有效全局 Document，会抛出稳定错误。传入离线 Document 的节点时 `getDoc()` 仍返回该 Document，但 `getWin()` 明确失败，不会借用主页面 Window 伪造一组混合 realm。
+
 ## 在 Vue 里用
 
 原语都是框架无关的：收一份配置与几个元素 getter，返回一个要自己释放的句柄。接进 Vue 无非是把释放挂到作用域结束，这层包装收在 `@xihan-ui/vue/behavior`：
