@@ -4,6 +4,8 @@
 
 配套的层栈与背景失活也在 `@xihan-ui/core` 里（它们是结构原语，比行为更底层）。
 
+`createScope(node, idGenerator)` 从节点自己的 realm 解析 Document、Window、Element 与 ShadowRoot。传入 iframe 或画中画窗口中的节点时，`getRootNode/getDoc/getWin` 不会因当前页面的 `instanceof` 失败而回落到主文档。调用方仍须给 RuntimeConfig 配置同一文档的 layer registry 与 portal container；Scope 不替调用方搬运浮层。
+
 ## 在 Vue 里用
 
 原语都是框架无关的：收一份配置与几个元素 getter，返回一个要自己释放的句柄。接进 Vue 无非是把释放挂到作用域结束，这层包装收在 `@xihan-ui/vue/behavior`：

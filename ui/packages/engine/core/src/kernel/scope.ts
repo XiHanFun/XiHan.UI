@@ -1,6 +1,6 @@
 // Scope：宿主 DOM 环境抽象，core 对 document/window 的访问统一经此。
 import type { IdGenerator } from './id-generator'
-import { isDocument } from './guards'
+import { isDocument, isShadowRoot } from './guards'
 
 export interface Scope {
   /** 本 scope 的实例级唯一 id，构造时求值一次。 */
@@ -36,9 +36,9 @@ export function createScope(node: Element | null | undefined, idGenerator: IdGen
 
   const getRootNode = (): Document | ShadowRoot => {
     const root = node?.getRootNode?.()
-    if (root && (isDocument(root) || root instanceof ShadowRoot))
+    if (root && (isDocument(root) || isShadowRoot(root)))
       return root as Document | ShadowRoot
-    return document
+    return node?.ownerDocument ?? document
   }
 
   const getDoc = (): Document => {
@@ -66,6 +66,6 @@ export function createScope(node: Element | null | undefined, idGenerator: IdGen
     },
     getActiveElement: () => getActiveElementDeep(getRootNode()),
     getComputedStyle: (el, pseudo) => getWin().getComputedStyle(el, pseudo),
-    isShadow: () => getRootNode() instanceof ShadowRoot,
+    isShadow: () => isShadowRoot(getRootNode()),
   }
 }
