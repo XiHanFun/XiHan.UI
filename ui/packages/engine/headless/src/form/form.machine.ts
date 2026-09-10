@@ -1,6 +1,6 @@
 import type { Params } from '@xihan-ui/core'
 import type { FormErrors } from './form.errors'
-import type { FormSchema, FormValidateOn, FormValues } from './form.types'
+import type { FormSchema, FormValidateOn, FormValidationErrorDetails, FormValues } from './form.types'
 import { focusFirst, focusSafely, getTabbables, queryItems, setup } from '@xihan-ui/core'
 import { formFieldGroupQuery, formFieldName } from './form.anatomy'
 import { firstFormErrorName, formErrorNames, mergeFormErrors, normalizeFormErrors, sameFormErrors } from './form.errors'
@@ -77,6 +77,7 @@ function syncValidating({ context, refs }: Params<FormSchema>): void {
 function discardValidation({ context, refs }: Params<FormSchema>): void {
   refs.get('validation').clear()
   context.set('validating', false)
+  context.set('validationError', null)
 }
 
 /** 同字段只保留最新任务；任务持有值快照，删除后即使 Promise 完成也不能写回。 */
@@ -84,6 +85,7 @@ function beginValidation(params: Params<FormSchema>, values: FormValues, field: 
   const running = params.refs.get('validation')
   const task = { values: { ...values }, pending: false }
   running.set(field, task)
+  params.context.set('validationError', null)
   syncValidating(params)
   return {
     pending: (): void => {
@@ -102,16 +104,51 @@ function beginValidation(params: Params<FormSchema>, values: FormValues, field: 
   }
 }
 
+/** 校验执行与结果落地分开：只捕获校验器异常，不把用户事件处理器抛错当成校验失败。 */
+function executeValidation(
+  params: Params<FormSchema>,
+  values: FormValues,
+  field: string | null,
+  validate: () => FormErrors | Promise<FormErrors>,
+  apply: (errors: FormErrors) => void,
+): void {
+  const task = beginValidation(params, values, field)
+  const fail = (cause: unknown): void => {
+    if (!task.complete())
+      return
+    discardValidation(params)
+    const details: FormValidationErrorDetails = { cause, values: { ...values }, field }
+    params.context.set('validationError', details)
+    params.prop('onValidationError')?.(details)
+  }
+  let outcome: FormErrors | Promise<FormErrors>
+  try {
+    outcome = validate()
+  }
+  catch (cause) {
+    fail(cause)
+    return
+  }
+  const settle = (errors: FormErrors): void => {
+    if (task.complete())
+      apply(errors)
+  }
+  if (outcome instanceof Promise) {
+    task.pending()
+    void outcome.then(settle, fail)
+  }
+  else {
+    settle(outcome)
+  }
+}
+
 /** 跑一次校验（可能读取整表），但只把当前字段写回错误表。 */
 function validateOneField(params: Params<FormSchema>, values: FormValues, name: string): void {
   const validate = params.prop('validate')
   const rules = params.prop('rules')
   if (!validate && !rules?.[name])
     return
-  const task = beginValidation(params, values, name)
   const settle = (all: FormErrors): void => {
-    if (!task.complete())
-      return
     // 这一条的来源改记成「校验算出来的」：接下来再编辑这个字段不该把它抹掉
     const validated = params.refs.get('validatedErrors')
     if (all[name])
@@ -120,18 +157,18 @@ function validateOneField(params: Params<FormSchema>, values: FormValues, name: 
       validated.delete(name)
     params.context.set('errors', mergeFormErrors(params.context.get('errors'), { [name]: all[name] }))
   }
-  const outcome = runFormRules(
-    rules?.[name] ? { [name]: rules[name]! } : undefined,
-    validate,
+  executeValidation(
+    params,
     values,
-    params.prop('validateMessages'),
+    name,
+    () => runFormRules(
+      rules?.[name] ? { [name]: rules[name]! } : undefined,
+      validate,
+      values,
+      params.prop('validateMessages'),
+    ),
+    settle,
   )
-  if (outcome instanceof Promise) {
-    task.pending()
-    void outcome.then(settle)
-    return
-  }
-  settle(outcome)
 }
 
 // 值表与错误表住在 context 的 cell 里（给定 prop 即受控：读直取 prop、写只发回调不落内部值）。
@@ -159,6 +196,7 @@ export const formMachine = createMachine({
       onChange: errors => prop('onErrorsChange')?.({ errors }),
     })),
     validating: cell<boolean>(() => ({ defaultValue: false })),
+    validationError: cell<FormValidationErrorDetails | null>(() => ({ defaultValue: null })),
   }),
   // 挂载即 idle：作者预置的 defaultErrors 不该让错误摘要一上来就显形
   initialState: () => 'idle',
@@ -232,6 +270,9 @@ export const formMachine = createMachine({
           if (!sameFormValues(task.values, values))
             running.delete(key)
         }
+        const error = params.context.get('validationError')
+        if (error && !sameFormValues(error.values, values))
+          params.context.set('validationError', null)
         syncValidating(params)
       },
       setFieldValue: (params) => {
@@ -289,12 +330,10 @@ export const formMachine = createMachine({
         const validate = prop('validate')
         const rules = prop('rules')
         discardValidation(params)
-        const task = beginValidation(params, values, null)
         // computed=true 是真跑过一轮：整表被替换掉，这张表整个记成校验算出来的，
         // 库外写进来的那几条随旧表一起作废。什么都没跑的那一路照旧不动来源登记。
-        const settle = (errors: FormErrors, computed: boolean): void => {
-          if (!task.complete())
-            return
+        const computed = !!(validate || rules)
+        const settle = (errors: FormErrors): void => {
           if (computed) {
             const validated = refs.get('validatedErrors')
             validated.clear()
@@ -306,17 +345,13 @@ export const formMachine = createMachine({
             ? { type: 'VALIDATION.FAIL', errors, values }
             : { type: 'VALIDATION.PASS', errors, values })
         }
-        if (!validate && !rules) {
-          settle(context.get('errors'), false)
-          return
-        }
-        const outcome = runFormRules(rules, validate, values, prop('validateMessages'))
-        if (outcome instanceof Promise) {
-          task.pending()
-          void outcome.then(errors => settle(errors, true))
-          return
-        }
-        settle(outcome, true)
+        executeValidation(
+          params,
+          values,
+          null,
+          () => computed ? runFormRules(rules, validate, values, prop('validateMessages')) : context.get('errors'),
+          settle,
+        )
       },
 
       invokeSubmit: ({ prop, event }) => {

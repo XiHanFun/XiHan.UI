@@ -16,6 +16,7 @@ export type FormRootSlotProps = Pick<
   | 'invalid'
   | 'submitFailed'
   | 'validating'
+  | 'validationError'
   | 'getFieldId'
   | 'getFieldError'
   | 'setFieldValue'
@@ -70,6 +71,7 @@ export const XhFormRoot = defineComponent({
     'errors-change': (_details: PayloadOf<FormProps, 'onErrorsChange'>) => true,
     'submit': (_details: PayloadOf<FormProps, 'onSubmit'>) => true,
     'invalid': (_details: PayloadOf<FormProps, 'onInvalid'>) => true,
+    'validation-error': (_details: PayloadOf<FormProps, 'onValidationError'>) => true,
     'update:values': (_values: PayloadOf<FormProps, 'onValuesChange'>['values']) => true,
     'update:errors': (_errors: PayloadOf<FormProps, 'onErrorsChange'>['errors']) => true,
   },
@@ -88,6 +90,7 @@ export const XhFormRoot = defineComponent({
       },
       onSubmit: details => emit('submit', details),
       onInvalid: details => emit('invalid', details),
+      onValidationError: details => emit('validation-error', details),
     })
     provideForm(ctx)
 
@@ -102,6 +105,7 @@ export const XhFormRoot = defineComponent({
       invalid: ctx.api.value.invalid,
       submitFailed: ctx.api.value.submitFailed,
       validating: ctx.api.value.validating,
+      validationError: ctx.api.value.validationError,
       getFieldId: ctx.api.value.getFieldId,
       getFieldError: ctx.api.value.getFieldError,
       setFieldValue: ctx.setFieldValue,

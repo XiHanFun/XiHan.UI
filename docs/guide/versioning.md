@@ -214,9 +214,9 @@ brand  neutral  success  warning  danger  info
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
 | observed attribute | 1208 条声明 / 367 个不同名字 | **受约束**（具体元素上的具体属性名） |
 | attribute 名词汇表本身 | 367 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
-| `CustomEvent` 名 | 83 个名字 / 180 条「元素 × 事件」 | **受约束** |
-| 事件传播语义 | `bubbles: true, composed: true`（165 处中 163 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，免得被祖先 `<form>` 当成自己的提交 |
-| 事件 `detail` 形状 | 165 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
+| `CustomEvent` 名 | 84 个名字 / 181 条「元素 × 事件」 | **受约束** |
+| 事件传播语义 | `bubbles: true, composed: true`（166 处中 164 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，免得被祖先 `<form>` 当成自己的提交 |
+| 事件 `detail` 形状 | 166 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
 | `attribute: false` 的 JS 字段 | 187 条（涉及 65 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 这类只能用 JS 赋值，HTML 里表达不出来——**不是每个 property 都有对应 attribute** |
 | 命令式方法 | 47（分布在 16 个元素） | **受约束**，含参数与返回类型 |
 
@@ -411,11 +411,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 ### 已经焊死的
 
 **六种介质的「改名 = major」现在有门禁兜着。** `pnpm gate:surface` 跑的 `check-public-surface`
-拿一份入库的基线（`ui/tooling/public-surface.json`，13689 个名字）比对当前状态：
+拿一份入库的基线（`ui/tooling/public-surface.json`，13691 个名字）比对当前状态：
 **基线里有而当前没有，就是删了或改名了，构建失败**。新增一律放行，因为那是 minor。
 
-覆盖：包名与 175 条子入口、7228 个导出名、126 个 `data-scope` 与 938 条部件配对、
-126 个组件的 1559 个 prop 名、201 种 `data-*`、32 个 `data-state` 取值、345 个令牌、
+覆盖：包名与 175 条子入口、7229 个导出名、126 个 `data-scope` 与 938 条部件配对、
+126 个组件的 1560 个 prop 名、201 种 `data-*`、32 个 `data-state` 取值、345 个令牌、
 5 个 `@layer` 名、3418 个组件覆盖槽、128 个自定义元素及其 attribute 与事件。
 
 prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测 `transfer` 的 `items` 改

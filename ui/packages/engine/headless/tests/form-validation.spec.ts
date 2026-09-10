@@ -190,3 +190,141 @@ describe('表单校验批次与值快照', () => {
     expect(service.context.get('errors')).toEqual({})
   })
 })
+
+describe('表单校验执行异常', () => {
+  it.each(['rule', 'validate'])('先启动的异步规则在后续 %s 同步抛错后仍有拒绝处理', async (source) => {
+    const pending = deferred<string | undefined>()
+    const cause = new Error('后续同步校验失败')
+    const fail = (): never => {
+      throw cause
+    }
+    const onValidationError = vi.fn()
+    const { service } = mount({
+      defaultValues: { a: '甲', b: '乙' },
+      rules: {
+        a: { validator: () => pending.promise },
+        ...(source === 'rule' ? { b: { validator: fail } } : {}),
+      },
+      ...(source === 'validate' ? { validate: fail } : {}),
+      onValidationError,
+    })
+    service.send({ type: 'SUBMIT' })
+    await vi.waitFor(() => expect(onValidationError).toHaveBeenCalledTimes(1))
+    expect(service.context.get('validationError')?.cause).toBe(cause)
+    pending.reject(new Error('已经失效的异步规则失败'))
+    await new Promise<void>(resolve => setTimeout(resolve, 0))
+    expect(onValidationError).toHaveBeenCalledTimes(1)
+    expect(service.context.get('validating')).toBe(false)
+  })
+
+  it.each([
+    ['submit', 'throw'],
+    ['submit', 'reject'],
+    ['field', 'throw'],
+    ['field', 'reject'],
+  ] as const)('%s 校验的 %s 进入独立异常状态并发事件，不伪装成字段错误', async (source, mode) => {
+    const cause = new Error('校验服务不可用')
+    const fail = () => {
+      if (mode === 'throw')
+        throw cause
+      return Promise.reject(cause)
+    }
+    const onValidationError = vi.fn()
+    const onSubmit = vi.fn()
+    const onInvalid = vi.fn()
+    const { service } = mount({
+      defaultValues: { a: '甲' },
+      validateOn: 'blur',
+      ...(source === 'submit' ? { validate: fail } : { rules: { a: { validator: fail } } }),
+      onValidationError,
+      onSubmit,
+      onInvalid,
+    })
+    expect(() => service.send(source === 'submit' ? { type: 'SUBMIT' } : { type: 'FIELD.BLUR', name: 'a' })).not.toThrow()
+    await vi.waitFor(() => expect(onValidationError).toHaveBeenCalledTimes(1))
+    const details = { cause, values: { a: '甲' }, field: source === 'submit' ? null : 'a' }
+    expect(service.context.get('validationError')).toEqual(details)
+    expect(onValidationError).toHaveBeenCalledWith(details)
+    expect(service.context.get('validating')).toBe(false)
+    expect(service.context.get('errors')).toEqual({})
+    expect(onSubmit).not.toHaveBeenCalled()
+    expect(onInvalid).not.toHaveBeenCalled()
+    expect(service.getStatus()).toBe('Started')
+  })
+
+  it('没有订阅异常事件时仍保留原始异常状态，不提供虚假的默认错误文案', async () => {
+    const pending = deferred<Record<string, string>>()
+    const { service } = mount({ validate: () => pending.promise })
+    service.send({ type: 'SUBMIT' })
+    pending.reject(null)
+    await vi.waitFor(() => expect(service.context.get('validationError')).toEqual({ cause: null, values: {}, field: null }))
+    expect(service.context.get('validating')).toBe(false)
+  })
+
+  it('重新校验清除旧异常，成功后只发提交事件', async () => {
+    const cause = new Error('暂时失败')
+    const retry = deferred<Record<string, string>>()
+    const validate = vi.fn().mockRejectedValueOnce(cause).mockReturnValueOnce(retry.promise)
+    const onSubmit = vi.fn()
+    const { service } = mount({ validate, onSubmit })
+    service.send({ type: 'SUBMIT' })
+    await vi.waitFor(() => expect(service.context.get('validationError')?.cause).toBe(cause))
+    service.send({ type: 'SUBMIT' })
+    expect(service.context.get('validationError')).toBeNull()
+    expect(service.context.get('validating')).toBe(true)
+    retry.resolve({})
+    await vi.waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1))
+    expect(service.context.get('validationError')).toBeNull()
+  })
+
+  it.each(['change', 'controlled', 'reset'])('%s 清除属于旧值的异常状态', async (operation) => {
+    const cause = new Error('失败')
+    const { service, setProps } = mount({
+      ...(operation === 'controlled' ? { values: { a: '旧值' } } : { defaultValues: { a: '旧值' } }),
+      validate: () => { throw cause },
+    })
+    service.send({ type: 'SUBMIT' })
+    expect(service.context.get('validationError')?.cause).toBe(cause)
+    if (operation === 'reset')
+      service.send({ type: 'RESET' })
+    else if (operation === 'controlled')
+      setProps({ values: { a: '新值' } })
+    else
+      service.send({ type: 'FIELD.SET', name: 'a', value: '新值' })
+    await vi.waitFor(() => expect(service.context.get('validationError')).toBeNull())
+  })
+
+  it('过期或卸载任务的拒绝被接收，但不写回状态或发异常事件', async () => {
+    const pending = deferred<Record<string, string>>()
+    const onValidationError = vi.fn()
+    const { service, runtime } = mount({ validate: () => pending.promise, onValidationError })
+    service.send({ type: 'SUBMIT' })
+    runtime.stop()
+    pending.reject(new Error('卸载后失败'))
+    await new Promise<void>(resolve => setTimeout(resolve, 0))
+    expect(onValidationError).not.toHaveBeenCalled()
+    expect(service.context.get('validationError')).toBeNull()
+  })
+
+  it('一个字段执行异常撤销同快照的其他任务，不被随后结果覆盖', async () => {
+    const a = deferred<string | undefined>()
+    const b = deferred<string | undefined>()
+    const cause = new Error('甲的服务失败')
+    const onValidationError = vi.fn()
+    const { service } = mount({
+      defaultValues: { a: '甲', b: '乙' },
+      validateOn: 'blur',
+      rules: { a: { validator: () => a.promise }, b: { validator: () => b.promise } },
+      onValidationError,
+    })
+    service.send({ type: 'FIELD.BLUR', name: 'a' })
+    service.send({ type: 'FIELD.BLUR', name: 'b' })
+    a.reject(cause)
+    await vi.waitFor(() => expect(service.context.get('validationError')?.cause).toBe(cause))
+    expect(service.context.get('validating')).toBe(false)
+    b.reject(new Error('乙晚到的失败'))
+    await new Promise<void>(resolve => setTimeout(resolve, 0))
+    expect(onValidationError).toHaveBeenCalledTimes(1)
+    expect(service.context.get('validationError')?.cause).toBe(cause)
+  })
+})

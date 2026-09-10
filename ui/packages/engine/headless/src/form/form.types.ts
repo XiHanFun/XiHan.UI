@@ -111,6 +111,15 @@ export interface FormInvalidDetails {
   values: FormValues
 }
 
+/** 校验器执行异常，和字段填写错误分开；原始 cause 不转换成默认文案。 */
+export interface FormValidationErrorDetails {
+  cause: unknown
+  /** 发生异常的值快照。 */
+  values: FormValues
+  /** null 表示整表提交校验；字符串表示触发校验的字段名。 */
+  field: string | null
+}
+
 /**
  * 字段容器自报家门：名字由作者声明，connect 据此产出 id、data-name 与失焦上报。
  * connect 不得反查 DOM：Vue 侧在 render 期求值（本帧 DOM 还不存在）、WC 侧在 updated 后求值，
@@ -194,6 +203,8 @@ export interface FormSchema extends MachineSchema {
     onSubmit?: (details: FormSubmitDetails) => void
     /** 校验不通过时调，带上拦下来的整张错误表。 */
     onInvalid?: (details: FormInvalidDetails) => void
+    /** 校验器抛错或拒绝 Promise 时调用；不触发 onInvalid 或 onSubmit。 */
+    onValidationError?: (details: FormValidationErrorDetails) => void
   }
   context: {
     /** 当下的值表。受控（values 给定）时 cell 直读 prop。 */
@@ -202,6 +213,8 @@ export interface FormSchema extends MachineSchema {
     errors: FormErrors
     /** 至少一项有效异步校验进行中；过期任务不再计入。 */
     validating: boolean
+    /** 最近一次有效校验的执行异常；新校验、变值或重置时清除。 */
+    validationError: FormValidationErrorDetails | null
   }
   computed: Record<string, never>
   refs: FormRefs
@@ -266,6 +279,8 @@ export interface FormApi<T extends PropTypes = PropTypes> {
   submitFailed: boolean
   /** 异步校验进行中（提交或逐字段都算）。 */
   validating: boolean
+  /** 校验服务异常；null 表示没有异常，字段错误仍从 errors 读取。 */
+  validationError: FormValidationErrorDetails | null
   disabled: boolean
   readOnly: boolean
   validateOn: FormValidateOn

@@ -17,6 +17,8 @@
 - `validateOn` 决定何时校验：输入时、失焦时还是提交时。
 - 支持异步校验、跨字段规则与手动触发入口。
 - `validating` 表示仍有有效异步校验；任何字段变值、受控值更新、重置或卸载都会撤销旧快照的写回与提交资格，不自动重提。
+- 校验器抛错或拒绝 Promise 时，`validationError` 保存 `{ cause, values, field }`，并发出 `validation-error` 事件（React/内核为 `onValidationError`）；`field=null` 表示整表提交。执行异常不会转换成字段错误或触发成功提交。
+- 新校验、变值或重置会清除旧异常；重试由业务显式调用 `submit()`，不自动重试。Vue 默认插槽、React 函数式 children、Web Components 的 `validationError` 只读属性都能读取该状态。
 - 嵌套模型走路径字段名，字段值表与业务模型形状一致。
 - 错误汇总（`error-summary`）把所有错误列在一处，每条都能点回对应字段。
 - "提醒但不拦下"是一档独立行为：警告级的问题不阻断提交。

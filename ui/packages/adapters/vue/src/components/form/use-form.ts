@@ -15,6 +15,7 @@ export interface FormCallbacks {
   onErrorsChange?: Props['onErrorsChange']
   onSubmit?: Props['onSubmit']
   onInvalid?: Props['onInvalid']
+  onValidationError?: Props['onValidationError']
 }
 
 export interface FormContext {
