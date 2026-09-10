@@ -172,4 +172,33 @@ describe('跨窗口 dom 类型守卫', () => {
       vi.unstubAllGlobals()
     }
   })
+
+  it('顶层 DOM 构造器缺失时仍用节点所属 iframe realm 完成品牌检查', () => {
+    const frame = document.createElement('iframe')
+    document.body.appendChild(frame)
+    const frameWindow = frame.contentWindow!
+    const frameDocument = frame.contentDocument!
+    const element = frameDocument.createElement('div')
+    const shadow = element.attachShadow({ mode: 'open' })
+
+    vi.stubGlobal('Node', undefined)
+    vi.stubGlobal('Document', undefined)
+    vi.stubGlobal('Window', undefined)
+    vi.stubGlobal('Element', undefined)
+    vi.stubGlobal('HTMLElement', undefined)
+    vi.stubGlobal('ShadowRoot', undefined)
+    try {
+      expect(isDocument(frameDocument)).toBe(true)
+      expect(isWindow(frameWindow)).toBe(true)
+      expect(isElement(element)).toBe(true)
+      expect(isHTMLElement(element)).toBe(true)
+      expect(isShadowRoot(shadow)).toBe(true)
+      const scope = createScope(element, createCounterIdGenerator())
+      expect(scope.getDoc()).toBe(frameDocument)
+      expect(scope.getWin()).toBe(frameWindow)
+    }
+    finally {
+      vi.unstubAllGlobals()
+    }
+  })
 })

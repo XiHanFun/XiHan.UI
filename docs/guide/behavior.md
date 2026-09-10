@@ -4,7 +4,9 @@
 
 配套的层栈与背景失活也在 `@xihan-ui/core` 里（它们是结构原语，比行为更底层）。
 
-`createScope(node, idGenerator)` 从节点自己的 realm 解析 Document、Window、Element 与 ShadowRoot。传入 iframe 或画中画窗口中的节点时，`getRootNode/getDoc/getWin` 不会因当前页面的 `instanceof` 失败而回落到主文档。调用方仍须给 RuntimeConfig 配置同一文档的 layer registry 与 portal container；Scope 不替调用方搬运浮层。
+`createScope(node, idGenerator)` 从节点自己的 realm 解析 Document、Window、Element 与 ShadowRoot。传入 iframe 或画中画窗口中的节点时，`getRootNode/getDoc/getWin` 不会因当前页面的 `instanceof` 失败而回落到主文档。把这份显式 Scope 传给 `createRuntimeConfig({ scope })` 后，默认 locale、LayerRegistry、PortalRoot 与 reduced-motion 都从该 Scope 的 document/window 派生；显式传入的配置仍然优先。
+
+无全局 DOM 时必须提供有效 Scope；只提供 layer registry 不会得到一个伪造的空 Scope。Scope 的 root、document、window 必须互相归属，离线 Document 没有活动 Window 时直接报错。默认 PortalRoot 保持惰性创建，但 Document 没有 body 时会给出明确错误；需要其他容器就显式传 `portalContainer`。
 
 ## 在 Vue 里用
 
