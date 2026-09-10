@@ -69,21 +69,49 @@ export function focusFormField(root: HTMLElement | null, name: string): boolean 
   return true
 }
 
-/**
- * 跑一次整表校验（校验可能带跨字段规则），但只把 name 这一条写回错误表。
- * 转异步时置 validating，晚到的结果按字段各自的批次号判弃。
- */
+/** 忙碌状态来自有效任务，单个字段完成不能覆盖其他字段的状态。 */
+function syncValidating({ context, refs }: Params<FormSchema>): void {
+  context.set('validating', [...refs.get('validation').values()].some(task => task.pending))
+}
+
+function discardValidation({ context, refs }: Params<FormSchema>): void {
+  refs.get('validation').clear()
+  context.set('validating', false)
+}
+
+/** 同字段只保留最新任务；任务持有值快照，删除后即使 Promise 完成也不能写回。 */
+function beginValidation(params: Params<FormSchema>, values: FormValues, field: string | null): { pending: () => void, complete: () => boolean } {
+  const running = params.refs.get('validation')
+  const task = { values: { ...values }, pending: false }
+  running.set(field, task)
+  syncValidating(params)
+  return {
+    pending: (): void => {
+      if (running.get(field) !== task)
+        return
+      task.pending = true
+      syncValidating(params)
+    },
+    complete: (): boolean => {
+      if (running.get(field) !== task)
+        return false
+      running.delete(field)
+      syncValidating(params)
+      return sameFormValues(task.values, params.context.get('values'))
+    },
+  }
+}
+
+/** 跑一次校验（可能读取整表），但只把当前字段写回错误表。 */
 function validateOneField(params: Params<FormSchema>, values: FormValues, name: string): void {
   const validate = params.prop('validate')
   const rules = params.prop('rules')
   if (!validate && !rules?.[name])
     return
-  const tracker = params.refs.get('validation')
-  const seq = (tracker.fieldSeq[name] = (tracker.fieldSeq[name] ?? 0) + 1)
+  const task = beginValidation(params, values, name)
   const settle = (all: FormErrors): void => {
-    if (tracker.fieldSeq[name] !== seq)
+    if (!task.complete())
       return
-    params.context.set('validating', false)
     // 这一条的来源改记成「校验算出来的」：接下来再编辑这个字段不该把它抹掉
     const validated = params.refs.get('validatedErrors')
     if (all[name])
@@ -99,7 +127,7 @@ function validateOneField(params: Params<FormSchema>, values: FormValues, name: 
     params.prop('validateMessages'),
   )
   if (outcome instanceof Promise) {
-    params.context.set('validating', true)
+    task.pending()
     void outcome.then(settle)
     return
   }
@@ -112,7 +140,7 @@ export const formMachine = createMachine({
   name: 'form',
   refs: () => ({
     getRootEl: () => null,
-    validation: { seq: 0, fieldSeq: {} },
+    validation: new Map(),
     // 空表起步：作者预置的 defaultErrors 不是校验算出来的，编辑那个字段就该让它走
     validatedErrors: new Set<string>(),
   }),
@@ -134,6 +162,10 @@ export const formMachine = createMachine({
   }),
   // 挂载即 idle：作者预置的 defaultErrors 不该让错误摘要一上来就显形
   initialState: () => 'idle',
+  exit: ['discardValidation'],
+  watch: ({ track, prop, context, action }) => {
+    track([context.dep('values'), () => prop('values')], () => action(['discardStaleValidation']))
+  },
   on: {
     'FIELD.SET': [
       // 禁用/只读整条吃掉，连 onValuesChange 都不发：受控宿主收到意图会照写，等于绕过禁用
@@ -158,8 +190,8 @@ export const formMachine = createMachine({
           // 把跑校验写进守卫的话，同一次提交会把 validate 跑两遍
           { actions: ['runValidation'] },
         ],
-        'VALIDATION.FAIL': { target: 'invalid', actions: ['invokeInvalid', 'focusFirstError'] },
-        'VALIDATION.PASS': { actions: ['invokeSubmit'] },
+        'VALIDATION.FAIL': { guard: 'isValidationSnapshotCurrent', target: 'invalid', actions: ['invokeInvalid', 'focusFirstError'] },
+        'VALIDATION.PASS': { guard: 'isValidationSnapshotCurrent', actions: ['invokeSubmit'] },
         'RESET': [
           { guard: not('isEditable') },
           { actions: ['resetForm'] },
@@ -173,8 +205,8 @@ export const formMachine = createMachine({
           { actions: ['runValidation'] },
         ],
         // 又没过：状态不变，但错误重报一次、焦点也重新送回第一个错处
-        'VALIDATION.FAIL': { actions: ['invokeInvalid', 'focusFirstError'] },
-        'VALIDATION.PASS': { target: 'idle', actions: ['invokeSubmit'] },
+        'VALIDATION.FAIL': { guard: 'isValidationSnapshotCurrent', actions: ['invokeInvalid', 'focusFirstError'] },
+        'VALIDATION.PASS': { guard: 'isValidationSnapshotCurrent', target: 'idle', actions: ['invokeSubmit'] },
         'RESET': [
           { guard: not('isEditable') },
           { target: 'idle', actions: ['resetForm'] },
@@ -186,13 +218,32 @@ export const formMachine = createMachine({
     guards: {
       isEnabled: ({ prop }) => !prop('disabled'),
       isEditable: ({ prop }) => !prop('disabled') && !prop('readOnly'),
+      isValidationSnapshotCurrent: ({ context, event }) => {
+        const e = event.current()
+        return (e.type === 'VALIDATION.PASS' || e.type === 'VALIDATION.FAIL') && sameFormValues(e.values, context.get('values'))
+      },
     },
     actions: {
-      setFieldValue: ({ context, event }) => {
+      discardValidation,
+      discardStaleValidation: (params) => {
+        const running = params.refs.get('validation')
+        const values = params.context.get('values')
+        for (const [key, task] of running) {
+          if (!sameFormValues(task.values, values))
+            running.delete(key)
+        }
+        syncValidating(params)
+      },
+      setFieldValue: (params) => {
+        const { context, event } = params
         const e = event.current()
         if (e.type !== 'FIELD.SET')
           return
-        context.set('values', setFormFieldValue(context.get('values'), e.name, e.value))
+        const current = context.get('values')
+        const next = setFormFieldValue(current, e.name, e.value)
+        if (next !== current)
+          discardValidation(params)
+        context.set('values', next)
       },
 
       /**
@@ -230,20 +281,20 @@ export const formMachine = createMachine({
       /**
        * 提交这一路：整表跑（声明式规则 + validate 函数）、整表替换，与 validateOn 无关。
        * 两边都没给就沿用当下的错误表，作者可能自己在管错误（如服务端返回的）。
-       * 转异步时置 validating；再次提交或重置把批次号顶掉，晚到的旧结果整批作废。
+       * 整表提交取代先前的校验任务；变值、重置或卸载撤销旧快照，不自动重提。
        */
-      runValidation: ({ prop, context, refs, send }) => {
+      runValidation: (params) => {
+        const { prop, context, refs, send } = params
         const values = context.get('values')
         const validate = prop('validate')
         const rules = prop('rules')
-        const tracker = refs.get('validation')
-        const seq = ++tracker.seq
+        discardValidation(params)
+        const task = beginValidation(params, values, null)
         // computed=true 是真跑过一轮：整表被替换掉，这张表整个记成校验算出来的，
         // 库外写进来的那几条随旧表一起作废。什么都没跑的那一路照旧不动来源登记。
         const settle = (errors: FormErrors, computed: boolean): void => {
-          if (tracker.seq !== seq)
+          if (!task.complete())
             return
-          context.set('validating', false)
           if (computed) {
             const validated = refs.get('validatedErrors')
             validated.clear()
@@ -261,7 +312,7 @@ export const formMachine = createMachine({
         }
         const outcome = runFormRules(rules, validate, values, prop('validateMessages'))
         if (outcome instanceof Promise) {
-          context.set('validating', true)
+          task.pending()
           void outcome.then(errors => settle(errors, true))
           return
         }
@@ -332,16 +383,13 @@ export const formMachine = createMachine({
       /**
        * 回到初始。落点取 prop 的当下值而不是挂载时的快照，
        * 宿主换了 defaultValues（如编辑另一条记录）时重置回到新的那一份。
-       * 批次号整体顶掉：还在天上飞的异步校验结果落地时一律作废。
+       * 清空有效任务：还在进行的异步校验结果一律作废。
        */
-      resetForm: ({ prop, context, refs }) => {
-        const tracker = refs.get('validation')
-        tracker.seq++
-        for (const name of Object.keys(tracker.fieldSeq))
-          tracker.fieldSeq[name]!++
+      resetForm: (params) => {
+        const { prop, context, refs } = params
+        discardValidation(params)
         // 落回去的是 defaultErrors，那份归库外
         refs.get('validatedErrors').clear()
-        context.set('validating', false)
         context.set('values', { ...(prop('defaultValues') ?? {}) })
         context.set('errors', normalizeFormErrors(prop('defaultErrors')))
       },

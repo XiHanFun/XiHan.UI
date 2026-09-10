@@ -138,8 +138,8 @@ export interface FormErrorSummaryItemProps {
 export interface FormRefs {
   /** 表单根节点（那个 `<form>`）：字段容器的现查范围与落焦的起点。 */
   getRootEl: () => HTMLElement | null
-  /** 运行中的校验批次号，晚到的异步结果按它判弃；整表与逐字段各记各的。 */
-  validation: { seq: number, fieldSeq: Record<string, number> }
+  /** 当前有效的校验任务；null 表示整表提交，字符串表示字段。替换或删除即撤销写回资格。 */
+  validation: Map<string | null, { values: FormValues, pending: boolean }>
   /**
    * 当下这张错误表里，哪几条是本库自己校验算出来的。
    *
@@ -200,7 +200,7 @@ export interface FormSchema extends MachineSchema {
     values: FormValues
     /** 当下的错误表，已清理（在表里 = 此刻有错）。受控（errors 给定）时 cell 直读 prop。 */
     errors: FormErrors
-    /** 异步校验进行中；全同步的校验不碰它。 */
+    /** 至少一项有效异步校验进行中；过期任务不再计入。 */
     validating: boolean
   }
   computed: Record<string, never>
@@ -233,7 +233,7 @@ export interface FormSchema extends MachineSchema {
     /** 把焦点送进某个字段（错误摘要里的链接点了就发它）。 */
     | { type: 'ERROR.FOCUS', name: string }
   tag: never
-  guard: 'isEnabled' | 'isEditable'
+  guard: 'isEnabled' | 'isEditable' | 'isValidationSnapshotCurrent'
   action:
     | 'setFieldValue'
     | 'clearExternalFieldError'
@@ -247,6 +247,8 @@ export interface FormSchema extends MachineSchema {
     | 'setFieldError'
     | 'clearErrors'
     | 'resetForm'
+    | 'discardValidation'
+    | 'discardStaleValidation'
   effect: never
 }
 
