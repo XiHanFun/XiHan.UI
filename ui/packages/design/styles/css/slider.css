@@ -128,6 +128,9 @@
     border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-bg-surface));
     border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-pill));
     background: var(--xh-slider-thumb-bg, var(--xh-_tone, var(--xh-bg-brand)));
+    /* 圆点上没有字，这一支是给环用的：环灌 currentColor 时取到的是与这块底配对的前景色，
+       不写就取到从页面继承下来的正文色 */
+    color: var(--xh-_tone-on, var(--xh-fg-on-brand));
     box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-raised));
     cursor: grab;
     transition:

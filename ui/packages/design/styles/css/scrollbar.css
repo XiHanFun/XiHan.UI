@@ -102,8 +102,13 @@
     position: absolute;
     border-radius: var(--xh-scrollbar-thumb-radius, var(--xh-shape-pill));
     background: var(--xh-scrollbar-thumb-bg, var(--xh-fg-scrollbar-thumb));
+    /* 滑块里没有字，这支墨色只给聚焦环用：环取 currentColor 时读的就是它。
+       静息这一档的面是浅一侧的中性灰，配正文墨；下面换面的两档各自换成配得上的另一支 */
+    color: var(--xh-fg-default);
     cursor: default;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 交叉轴在轨道内两侧各收进一个间隙，与轨道那条 padding 共用同一个旋钮。
@@ -118,12 +123,20 @@
     inset-block: var(--xh-scrollbar-gutter);
   }
 
+  /* 这两档的面往另一头走（浅色主题更深、深色主题更亮），配对的墨色跟着翻到反色那一支 */
   [data-scope='scrollbar'][data-part='thumb']:hover {
     background: var(--xh-scrollbar-thumb-bg-hover, var(--xh-fg-scrollbar-thumb-hover));
+    color: var(--xh-fg-on-brand);
   }
 
   [data-scope='scrollbar'][data-part='thumb'][data-dragging] {
     background: var(--xh-scrollbar-thumb-bg-active, var(--xh-fg-scrollbar-thumb-active));
+    color: var(--xh-fg-on-brand);
+  }
+
+  /* 面是实心的中性色，环色与面同族，画在面里就看不出来；环改取这一档配对的墨色 */
+  [data-scope='scrollbar'][data-part='thumb']:focus-visible {
+    --xh-_ring-color: currentColor;
   }
 
   /* 根与轨道都是纯容器，不承载焦点；作者若给它们加了 tabindex，也不该在这儿多画一圈 */

@@ -198,9 +198,12 @@
   }
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     勾满与半选铺的是同一块实心底，两态一起收 */
   [data-scope='tree'][data-part='item-checkbox'][data-selected]:focus-visible,
-  [data-scope='tree'][data-part='branch-checkbox'][data-selected]:focus-visible {
+  [data-scope='tree'][data-part='item-checkbox'][data-indeterminate]:focus-visible,
+  [data-scope='tree'][data-part='branch-checkbox'][data-selected]:focus-visible,
+  [data-scope='tree'][data-part='branch-checkbox'][data-indeterminate]:focus-visible {
     --xh-_ring-color: currentColor;
   }
 

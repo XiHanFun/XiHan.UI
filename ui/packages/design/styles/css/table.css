@@ -217,8 +217,9 @@
   }
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='table'][data-part='row'][data-selected]:focus-visible {
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     禁用行的前景被换成灰档，不在这一条里，环走公共层的默认色 */
+  [data-scope='table'][data-part='row'][data-selected]:not([data-disabled]):focus-visible {
     --xh-_ring-color: currentColor;
   }
 
@@ -355,9 +356,10 @@
   }
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']):focus-visible,
-  [data-scope='table'][data-part='column-visibility-trigger'][data-state='checked']:focus-visible {
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     禁用档的前景是透明的（勾要藏起来），不在这一条里，环走公共层的默认色 */
+  [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']):not([data-disabled]):focus-visible,
+  [data-scope='table'][data-part='column-visibility-trigger'][data-state='checked']:not([data-disabled]):focus-visible {
     --xh-_ring-color: currentColor;
   }
 

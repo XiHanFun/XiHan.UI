@@ -108,6 +108,14 @@
     --xh-_float-button-border-hover: transparent;
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     形态写在壳上、面画在触发器上，所以这条是后代选择器，环落在拿焦点的那颗钮上 */
+  [data-scope='float-button'][data-part='root'][data-variant='solid']
+    [data-scope='float-button'][data-part='trigger']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   [data-scope='float-button'][data-part='root'][data-variant='subtle'] {
     --xh-_float-button-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_float-button-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));

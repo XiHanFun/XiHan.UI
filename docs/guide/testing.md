@@ -132,7 +132,7 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 
 ## 结构门禁
 
-`pnpm gate` 跑 108 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
+`pnpm gate` 跑 109 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
 
 | 门禁 | 拦什么 |
 | --- | --- |
@@ -154,6 +154,7 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 | `check-dead-state-attr` | `connect` 发出的 `data-*` 在**本组件的作用域**里没有一条规则消费——别的组件有同名规则不算数，那条规则永远选不中它。信息钩子逐条登记，登记项过期同样判失败 |
 | `check-breakpoints` | 皮肤 `@media` 里的断点字面量不在令牌清单里（自定义属性在媒体条件里不生效，只能写字面量） |
 | `check-focus-ring` | 聚焦环的粗细、颜色、偏移写了字面量而不是令牌，主题与全局调整对它无效 |
+| `check-focus-ring-surface` | 可聚焦部件的面压着环不到 3:1（算出来的，不是看形态猜的），那一档却没把 `--xh-_ring-color` 灌成 `currentColor`——键盘焦点在那块面上等于没画 |
 | `check-exports` | 实现了却忘了从包级入口导出，包外拿不到它，而构建与类型检查照过 |
 | `check-package-roles` | 包所在的角色组与它 `package.json` 里的依赖声明对不上 |
 | `check-public-surface` | 公开面基线里有而当前没有的名字——被删了或改名了 |

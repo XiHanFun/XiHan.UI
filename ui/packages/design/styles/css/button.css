@@ -102,6 +102,14 @@
     --xh-_ring-color: currentColor;
   }
 
+  /* 组把实心形态写在自己身上、段上没有 data-variant 时，段的面由组灌的 --xh-button-bg 画成同一块实心底，
+     上面那条按段自己的形态限定的规则匹配不上；这一条按组限定，覆盖的是那些不自报形态的段。
+     段自己写了形态时走它自己那条，不进这里 */
+  [data-scope='button-group'][data-part='root'][data-variant='solid']
+    [data-scope='button'][data-part='root']:not([data-variant]):focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   /* 另外三档的面不是实心底，高光在上面只会显脏；显式清掉，
      免得整组写了实心形态时那条高光顺着继承流漏到组里写了别的形态的段上 */
   [data-scope='button'][data-part='root'][data-variant='subtle'] {

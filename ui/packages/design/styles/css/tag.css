@@ -112,6 +112,13 @@
     --xh-_ring-color: currentColor;
   }
 
+  /* 关闭钮自己的面是透空的，环压着的是标签那块实心底；它的字色就是那块底上的前景色，
+     环跟着取过来 */
+  [data-scope='tag'][data-part='root'][data-variant='solid']
+    [data-scope='tag'][data-part='close-trigger']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   [data-scope='tag'][data-part='root'][data-variant='solid'][data-tone] {
     --xh-_tag-highlight: var(--xh-_highlight-tone);
 

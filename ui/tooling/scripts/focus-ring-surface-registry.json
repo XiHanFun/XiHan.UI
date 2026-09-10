@@ -1,0 +1,26 @@
+{
+  "backlog": {},
+  "declared": {
+    "approval [data-loading][data-part='approve-trigger'][data-scope='approval']": "判定在途那一档不置灰，面仍是基础规则铺的那块实心语气底；这一支只多了 data-loading，本脚本按它算不出面",
+    "image-viewer [data-part='close-trigger'][data-scope='image-viewer']": "面是半透明的（neutral-950 兑 transparent 55%），压在使用者的图片上，静态算不出对比度",
+    "image-viewer [data-part='next-trigger'][data-scope='image-viewer']": "面是半透明的（neutral-950 兑 transparent 55%），压在使用者的图片上，静态算不出对比度",
+    "image-viewer [data-part='prev-trigger'][data-scope='image-viewer']": "面是半透明的（neutral-950 兑 transparent 55%），压在使用者的图片上，静态算不出对比度",
+    "popconfirm [data-part='cancel-trigger'][data-scope='popconfirm']": "常态的淡底压环 3.40 刚过线，悬停 bg-subtle-hover 2.97、按下 bg-subtle-active 2.52 都在线下；本脚本不收 :hover / :active 的面，算不出这一档是实心面",
+    "segmented [data-part='root'][data-scope='segmented'] [data-part='item'][data-scope='segmented'][data-state='checked']": "选中段自己的面是透空的，环内侧是压在它底下、与它同一块矩形的指示器实心底（写了 data-tone 时默认环压上去 1.08-2.89）；本脚本只看部件自己那条 background，看不见被压在下面的兄弟节点",
+    "tags-input [data-highlighted][data-part='item'][data-scope='tags-input'] [data-part='item-delete-trigger'][data-scope='tags-input']": "叉自己的面是透明的，环内侧是整颗标签反白后的实心语气底（默认环压上去 1.00-2.89）；本脚本只看部件自己那条 background，透空的面透出祖先那一层算不出来",
+    "tag [data-part='root'][data-scope='tag'][data-variant='solid'] [data-part='close-trigger'][data-scope='tag']": "关闭钮自己的面是透空的，环压着的是标签根那块实心语气底；本脚本按部件自己那条面规则算，看不到祖先铺的底",
+    "tag-group [data-part='item'][data-scope='tag-group'][data-variant='solid'] [data-part='item-delete-trigger'][data-scope='tag-group']": "叉自己的面是透空的，环内侧是标签那块实心底（默认环压上去 1.37-2.89）；本脚本只看部件自己那条 background，透空的面透出祖先那一层算不出来",
+    "transfer [data-part='item-checkbox'][data-scope='transfer'][data-state='checked']": "连接层给这颗把手发 aria-hidden: true，焦点落不上去，这条 :focus-visible 规则画不出来",
+    "tree [data-indeterminate][data-part='branch-checkbox'][data-scope='tree']": "连接层给这颗把手发 aria-hidden: true 与 tabindex: -1，并在 pointerdown 里拦掉默认聚焦，焦点落不上去",
+    "tree [data-indeterminate][data-part='item-checkbox'][data-scope='tree']": "连接层给这颗把手发 aria-hidden: true 与 tabindex: -1，并在 pointerdown 里拦掉默认聚焦，焦点落不上去",
+    "tree [data-part='branch-checkbox'][data-scope='tree'][data-selected]": "连接层给这颗把手发 aria-hidden: true 与 tabindex: -1，并在 pointerdown 里拦掉默认聚焦，焦点落不上去",
+    "tree [data-part='item-checkbox'][data-scope='tree'][data-selected]": "连接层给这颗把手发 aria-hidden: true 与 tabindex: -1，并在 pointerdown 里拦掉默认聚焦，焦点落不上去"
+  },
+  "opaque": {
+    "heatmap [cell] color-mix(in oklab, var(--xh-_heatmap-ink) var(--xh-_heatmap-level), var(--xh-_heatmap-empty))": "档位是连着的百分比、由连接层内联写进 style，皮肤里恒是 0%，静态解不出格子的实际颜色；满档那一格的面就是 --xh-_heatmap-ink（缺省即 --xh-bg-brand），环压上去大概率不到 3:1，要浏览器态判据接",
+    "image-viewer [close-trigger] color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent)": "面是半透明的，压在使用者的图片上，静态算不出对比度",
+    "image-viewer [next-trigger] color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent)": "面是半透明的，压在使用者的图片上，静态算不出对比度",
+    "image-viewer [prev-trigger] color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent)": "面是半透明的，压在使用者的图片上，静态算不出对比度",
+    "toggle-group [item] color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted))": "禁用且按下那一档，色由私有槽掺进 color-mix 里，本脚本只解整条 var() 链、不进函数实参；失效控件本就在 SC 1.4.11 的豁免里"
+  }
+}

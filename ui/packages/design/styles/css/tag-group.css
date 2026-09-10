@@ -197,9 +197,22 @@
   }
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='tag-group'][data-part='item'][data-variant='solid']:focus-visible {
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     标签里那颗叉自己透空，环紧挨着的仍是标签这块实心底，跟着走同一条。
+     置灰那档的底已经换成静默色、字换成置灰色，不在其列 */
+  [data-scope='tag-group'][data-part='item'][data-variant='solid']:not([data-disabled]):focus-visible,
+  [data-scope='tag-group'][data-part='item'][data-variant='solid']:not([data-disabled])
+    [data-scope='tag-group'][data-part='item-delete-trigger']:focus-visible {
     --xh-_ring-color: currentColor;
+  }
+
+  /* 没写语气的实心标签在轻档里把底换成中性灰，字仍是实心档那一支浅字，
+     环跟着字走就糊在灰底上；这两档把环收回默认那一支。
+     写了语气的实心标签不进这里——它的底由下面那条语气规则压回实心色 */
+  [data-scope='tag-group'][data-part='item'][data-variant='solid']:not([data-tone]):not([data-disabled]):is(:hover, [data-highlighted]):focus-visible,
+  [data-scope='tag-group'][data-part='item'][data-variant='solid']:not([data-tone]):not([data-disabled]):is(:hover, [data-highlighted])
+    [data-scope='tag-group'][data-part='item-delete-trigger']:focus-visible {
+    --xh-_ring-color: var(--xh-ring-focus);
   }
 
   [data-scope='tag-group'][data-part='item'][data-variant='solid'][data-tone] {

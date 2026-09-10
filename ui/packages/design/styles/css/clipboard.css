@@ -60,6 +60,13 @@
     --xh-_clipboard-copy-trigger-border-hover: transparent;
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     形态写在 root 上、拿焦点的是按钮，规则因此写成后代 */
+  [data-scope='clipboard'][data-part='root'][data-variant='solid'] [data-scope='clipboard'][data-part='copy-trigger']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   [data-scope='clipboard'][data-part='root'][data-variant='subtle'] {
     --xh-_clipboard-copy-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_clipboard-copy-trigger-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));

@@ -268,8 +268,9 @@
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  /* 三颗钮的面是一层深色纱，纱底下是使用者的图片，环色算不出稳定的取值。
+     content 把前景钉死在浅字上、三颗钮写 color: inherit，环取 currentColor 即是那支浅字，
+     不随图片内容也不随主题翻 */
   [data-scope='image-viewer'][data-part='close-trigger']:focus-visible,
   [data-scope='image-viewer'][data-part='prev-trigger']:focus-visible,
   [data-scope='image-viewer'][data-part='next-trigger']:focus-visible {

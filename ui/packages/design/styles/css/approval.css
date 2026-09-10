@@ -355,8 +355,11 @@
   }
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='approval'][data-part='approve-trigger']:focus-visible {
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     两条分支对着还铺着实心底的那两档：按得动的常态，与判定在途那一档。
+     关闭档的底换成置灰底、字换成置灰色，环取过来就跟底一起糊了，那一档走公共层的环 */
+  [data-scope='approval'][data-part='approve-trigger']:not([aria-disabled='true']):focus-visible,
+  [data-scope='approval'][data-part='approve-trigger'][data-loading]:focus-visible {
     --xh-_ring-color: currentColor;
   }
 

@@ -301,7 +301,9 @@
 
     border-color: var(--xh-editable-submit-border, var(--xh-_tone, var(--xh-bg-brand)));
     background: var(--xh-editable-submit-bg, var(--xh-_tone, var(--xh-bg-brand)));
-    color: var(--xh-editable-submit-fg, var(--xh-fg-on-brand));
+    /* 前景与底同接一条语气链：底取 --xh-_tone，字就取配它的 --xh-_tone-on；
+       没写语气时两支各自退回品牌那一档，与不接语气时逐值相同 */
+    color: var(--xh-editable-submit-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
     box-shadow: var(--xh-editable-submit-shadow, var(--xh-_editable-submit-highlight));
   }
 
@@ -311,13 +313,15 @@
     --xh-_ring-color: currentColor;
   }
 
+  /* 交互两档的底同接语气链，与常态那一档同源：不接的话写了语气的提交钮一悬停就翻回品牌色，
+     而字仍是配语气底的那一支 */
   [data-scope='editable'][data-part='submit-trigger']:hover:not(:disabled) {
-    border-color: var(--xh-editable-submit-border-hover, var(--xh-editable-submit-bg-hover, var(--xh-bg-brand-hover)));
-    background: var(--xh-editable-submit-bg-hover, var(--xh-bg-brand-hover));
+    border-color: var(--xh-editable-submit-border-hover, var(--xh-editable-submit-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover))));
+    background: var(--xh-editable-submit-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
   }
 
   [data-scope='editable'][data-part='submit-trigger']:active:not(:disabled) {
-    border-color: var(--xh-editable-submit-border-active, var(--xh-editable-submit-bg-active, var(--xh-bg-brand-active)));
-    background: var(--xh-editable-submit-bg-active, var(--xh-bg-brand-active));
+    border-color: var(--xh-editable-submit-border-active, var(--xh-editable-submit-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active))));
+    background: var(--xh-editable-submit-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
   }
 }

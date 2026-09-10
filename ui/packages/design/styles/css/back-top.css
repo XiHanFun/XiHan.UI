@@ -56,6 +56,13 @@
     --xh-_back-top-border-hover: transparent;
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     形态写在 root 上、拿焦点的是按钮，规则因此写成后代 */
+  [data-scope='back-top'][data-part='root'][data-variant='solid'] [data-scope='back-top'][data-part='trigger']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   [data-scope='back-top'][data-part='root'][data-variant='subtle'] {
     --xh-_back-top-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_back-top-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
