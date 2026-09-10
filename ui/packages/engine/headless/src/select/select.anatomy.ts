@@ -2,9 +2,9 @@ import type { ItemQuery } from '@xihan-ui/core'
 import { createAnatomy } from '@xihan-ui/core'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
-// tag 是控件里表示一个已选值的那枚小片，由本组件自己画；它与 tag 组件同名不同物——
-// scope 名（data-scope）标识的是组件，部件名（data-part）标识的是组件里的位置，两把尺子不交叉。
-// tag-list 是触发器里收着这些小片的那一行，overflow-tag 是折起来的那些合成的一枚（+N）。
+// tag-list 是触发器里收着已选值标签的那一行；行里每一枚标签（含折起来的那些合成的 +N）
+// 都是库里的 tag 组件（data-scope="tag"），由连接层套 tag 的连接层产出，本组件不另立部件。
+// item-delete-trigger 是放在标签里的删除钮，标签摆在触发器外时才用得上（按钮不能套按钮）。
 export const selectAnatomy = createAnatomy('select', [
   'root',
   'label',
@@ -14,9 +14,7 @@ export const selectAnatomy = createAnatomy('select', [
   'indicator',
   'clear-trigger',
   'tag-list',
-  'tag',
   'item-delete-trigger',
-  'overflow-tag',
   'positioner',
   'content',
   'list',

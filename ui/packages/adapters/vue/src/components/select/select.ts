@@ -3,6 +3,7 @@ import type { SelectApi, SelectGroupProps, SelectItemProps, SelectNode, SelectNo
 import type { PropType, SlotsType, VNode } from 'vue'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { slotIsPlainText } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { provideSelect, provideSelectGroup, provideSelectItem, provideSelectTag, useSelectContext, useSelectGroupContext, useSelectItemContext, useSelectTagContext } from './context'
 import { useSelect } from './use-select'
@@ -181,6 +182,27 @@ export const XhSelectTagList = defineComponent({
   },
 })
 
+/** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
+export const XhSelectTagLabel = defineComponent({
+  name: 'XhSelectTagLabel',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    return () => h('span', ctx.api.value.getTagLabelProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/**
+ * 标签内容：只有文字时替它包一层 label——截断规则挂在 label 上，直接摊在 root 上的文字过长会把
+ * 删除钮挤出去；作者自己写了节点就原样放行。与 XhTagRoot 同一条规矩。
+ * 库自己填的文字（+N，没有折起时是空串）恒包 label，三家适配器渲出同一棵树。
+ */
+function tagChildren(content: VNode[] | string | undefined): VNode[] | string | undefined {
+  if (typeof content === 'string')
+    return [h(XhSelectTagLabel, null, () => content)]
+  return slotIsPlainText(content) ? [h(XhSelectTagLabel, null, () => content)] : content
+}
+
+/** 一个选中值一枚，就是库里 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从 select 传下去，形态按控件的面派，不可关闭。 */
 export const XhSelectTag = defineComponent({
   name: 'XhSelectTag',
   props: {
@@ -190,19 +212,20 @@ export const XhSelectTag = defineComponent({
   setup(props, { slots }) {
     const ctx = useSelectContext()
     provideSelectTag({ value: () => props.value })
-    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, slots.default?.())
+    // 标签随文排在触发器那一行里，根用 span
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, tagChildren(slots.default?.()))
   },
 })
 
+/** 折起的标签合成的那一枚：同样是 tag 的 root；有插槽用插槽，否则显示 +N。没有折起的标签时连接层给 hidden。 */
 export const XhSelectOverflowTag = defineComponent({
   name: 'XhSelectOverflowTag',
   setup(_, { slots }) {
     const ctx = useSelectContext()
-    // 有插槽用插槽，否则显示 +N；没有折起的标签时连接层给 hidden
     return () => h(
       'span',
       ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
-      slots.default?.() ?? ctx.api.value.overflowText,
+      tagChildren(slots.default?.() ?? ctx.api.value.overflowText),
     )
   },
 })

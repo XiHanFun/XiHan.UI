@@ -164,6 +164,16 @@
     "theme": "light",
     "tone": null
   },
+  "select [data-part='root'][data-scope='tag'][data-tone][data-variant='solid'] [data-part='item-delete-trigger'][data-scope='select']": {
+    "ratio": 1.01,
+    "theme": "dark",
+    "tone": "warning"
+  },
+  "select [data-part='root'][data-scope='tag'][data-variant='solid'] [data-part='item-delete-trigger'][data-scope='select']": {
+    "ratio": 1.37,
+    "theme": "light",
+    "tone": null
+  },
   "slider [data-invalid][data-part='thumb'][data-scope='slider']": {
     "ratio": 1.3,
     "theme": "light",

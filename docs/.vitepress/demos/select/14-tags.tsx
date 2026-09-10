@@ -1,4 +1,4 @@
-// 多选标签 | 内建标签形态：触发器里的标签行最多摆 maxTagCount 枚（缺省 3），其余合成一枚 +N；触发器里 XhSelectTag 纯展示，触发器外配 XhSelectItemDeleteTrigger 即可删
+// 多选标签 | 内建标签形态：触发器里的标签行最多摆 maxTagCount 枚（缺省 3），其余合成一枚 +N；每枚标签与 +N 都是库里的 tag（语气与尺寸随控件，形态按控件的面派），触发器里纯展示，触发器外配 XhSelectItemDeleteTrigger 即可删
 import type { ReactNode } from "react";
 import {
   XhSelectContent,
@@ -46,7 +46,7 @@ export default function Demo(): ReactNode {
           <XhSelectLabel>技术栈</XhSelectLabel>
           <XhSelectControl>
             <XhSelectTrigger>
-              {/* 占位文字与标签行同时写着：有选中时标签行露面、占位让位，无选中时反过来 */}
+              {/* 占位文字与标签行同时写着：有选中时标签行露面、占位让位，无选中时反过来。行里每枚标签与 +N 都是 tag 的 root，样子归 tag.css */}
               <XhSelectValueText />
               <XhSelectTagList>
                 {tags.map(t => (

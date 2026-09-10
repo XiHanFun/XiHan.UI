@@ -900,9 +900,6 @@
     "overflow-item": [
       "avatar-group"
     ],
-    "overflow-tag": [
-      "select"
-    ],
     "page-size-select": [
       "pagination"
     ],
@@ -1284,9 +1281,6 @@
     "tab-drag-trigger": [
       "tabs"
     ],
-    "tag": [
-      "select"
-    ],
     "tag-list": [
       "select"
     ],
@@ -1567,7 +1561,6 @@
     "suffix": true,
     "summary": true,
     "swatch": true,
-    "tag": true,
     "text": true,
     "thumb": true,
     "tick": true,

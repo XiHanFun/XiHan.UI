@@ -8,7 +8,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
-import { renderSlot } from '../../runtime/slot-content'
+import { renderSlot, slotIsPlainText } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import {
   SelectGroupProvider,
@@ -238,26 +238,43 @@ export function XhSelectTagList({ children, ...rest }: XhSelectTagListProps): Re
   return <span {...mergeReactProps(ctx.api.getTagListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+export interface XhSelectTagLabelProps extends ComponentPropsWithRef<'span'> {}
+/** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
+export function XhSelectTagLabel({ children, ...rest }: XhSelectTagLabelProps): ReactNode {
+  const ctx = useSelectContext()
+  return <span {...mergeReactProps(ctx.api.getTagLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+/**
+ * 标签内容：只有文字时替它包一层 label——截断规则挂在 label 上，直接摊在 root 上的文字过长会把
+ * 删除钮挤出去；作者自己写了节点就原样放行。与 XhTagRoot 同一条规矩。
+ * 库自己填的文字（+N，没有折起时是空串）恒包 label，三家适配器渲出同一棵树。
+ */
+function tagChildren(children: ReactNode): ReactNode {
+  return typeof children === 'string' || slotIsPlainText(children) ? <XhSelectTagLabel>{children}</XhSelectTagLabel> : children
+}
+
 export interface XhSelectTagProps extends ComponentPropsWithRef<'span'> {
   /** 它代表哪个选中值。 */
   value: string
 }
+/** 一个选中值一枚，就是库里 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从 select 传下去，形态按控件的面派，不可关闭。 */
 export function XhSelectTag({ value, children, ...rest }: XhSelectTagProps): ReactNode {
   const ctx = useSelectContext()
   return (
     <SelectTagProvider value={value}>
-      <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+      <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{tagChildren(children)}</span>
     </SelectTagProvider>
   )
 }
 
 export interface XhSelectOverflowTagProps extends ComponentPropsWithRef<'span'> {}
-/** 有内容用内容，否则显示 +N；没有折起的标签时连接层给 hidden。 */
+/** 折起的标签合成的那一枚：同样是 tag 的 root；有内容用内容，否则显示 +N。没有折起的标签时连接层给 hidden。 */
 export function XhSelectOverflowTag({ children, ...rest }: XhSelectOverflowTagProps): ReactNode {
   const ctx = useSelectContext()
   return (
     <span {...mergeReactProps(ctx.api.getOverflowTagProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {children ?? ctx.api.overflowText}
+      {tagChildren(children ?? ctx.api.overflowText)}
     </span>
   )
 }
