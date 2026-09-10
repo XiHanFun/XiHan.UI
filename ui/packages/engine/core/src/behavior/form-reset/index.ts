@@ -1,5 +1,5 @@
 import type { Disposable } from '../../kernel'
-import { isDocument, isShadowRoot } from '../../kernel'
+import { isDocument, isElement, isHTMLElement, isShadowRoot } from '../../kernel'
 
 export interface FormResetBridgeOptions {
   /** 组件在文档里的锚点，每次用时现取：重渲会换掉它。 */
@@ -13,7 +13,7 @@ const INERT: Disposable = { disposed: true, dispose: () => {} }
 function elementOf(node: Node | null | undefined): Element | null {
   if (!node)
     return null
-  return node.nodeType === 1 ? (node as Element) : node.parentElement
+  return isElement(node) ? node : node.parentElement
 }
 
 /**
@@ -32,7 +32,7 @@ export function createFormResetBridge(options: FormResetBridgeOptions): Disposab
 
   const handler = (event: Event): void => {
     const form = event.target
-    if (!(form instanceof HTMLFormElement))
+    if (!isHTMLElement(form) || form.localName !== 'form')
       return
     // 比对 closest 的结果而不是 form.contains：appendChild 造得出嵌套表单，
     // 外层重置不该误伤内层表单里的组件
