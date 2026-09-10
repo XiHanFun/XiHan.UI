@@ -218,6 +218,8 @@ if (import.meta.env.DEV) {
 每个 scope 只探一次（探测要读计算样式，逐实例探是真实的强制样式重算），
 用 `MutationObserver` 接住后续进来的节点，返回值是停止函数。全量引入的人开着它也没有额外产出。
 
+传入 `root` 时，元素品牌、计算样式和 MutationObserver 全部取自该 root 所属的 Window，因此 iframe 中的按需皮肤可以独立检查；即使顶层没有 DOM globals，有效的显式 root 仍可工作。显式 root 没有活动 Window，或所属 Window 不提供 MutationObserver 时会直接抛错，不会只扫一次后静默停止持续检查。SSR 中不传 root 仍返回空停止函数。
+
 令牌的机读形式也可直接取用，用于生成 Figma 变量、Tailwind 主题或别的产物：
 
 ```ts
