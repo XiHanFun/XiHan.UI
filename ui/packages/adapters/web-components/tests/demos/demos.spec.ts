@@ -5,6 +5,7 @@
 //
 // 只跑指定组件：置环境变量 XH_WC_DEMOS=select,dialog（由 tooling/scripts/check-wc-demos.mjs 传入）。
 import type { DiagnosticRecord } from '@xihan-ui/core'
+import type { PartContract } from '../../src/dom/part-contract'
 import type { XhElement } from '../../src/element-base'
 import {
   onDiagnostic,
@@ -15,6 +16,7 @@ import {
 import * as headless from '@xihan-ui/headless'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../../src/define'
+import { delegatedScopesOf } from '../../src/dom/part-contract'
 import { discoverParts } from '../../src/dom/parts'
 // 皮肤与令牌一起加载：示例在文档站里就是带皮肤跑的，缺皮肤会引出与示例本身无关的诊断
 import '@xihan-ui/tokens/tokens.css'
@@ -104,17 +106,13 @@ function describeNode(el: Element): string {
   return `<${el.tagName.toLowerCase()}${part ? ` data-xh-part="${part}"` : ''}>`
 }
 
-/**
- * 这个角色节点被最近的 xh-* 宿主委派给了哪个内嵌部件的 scope：
- * 宿主的 partContract.delegates 登记了作者名，接出来的 data-part 是那个部件自己的名字。
- */
-function delegatedScope(el: Element, authored: string): string | null {
+/** 最近的 xh-* 宿主声明的契约；没有宿主或宿主没声明时为 null。 */
+function hostContractOf(el: Element): PartContract | null {
   for (let host = el.parentElement; host; host = host.parentElement) {
     const tag = host.tagName.toLowerCase()
     if (!tag.startsWith('xh-'))
       continue
-    const contract = (customElements.get(tag) as typeof XhElement | undefined)?.partContract
-    return contract?.delegates?.find(d => d.parts.includes(authored))?.name ?? null
+    return (customElements.get(tag) as typeof XhElement | undefined)?.partContract ?? null
   }
   return null
 }
@@ -223,23 +221,26 @@ describe('自定义元素版示例', () => {
       }
 
       // 判据二：作者写的每个角色节点都被发现并接线。包在 xh-* 子元素里的触发器、拼错的部件名都栽在这。
-      // 宿主以 delegates 委派出去的作者名接成内嵌部件自己的名字，data-scope 得是那个部件的
+      // 宿主以 delegates 委派出去的作者名归内嵌部件管：不论接出来的名字变没变，data-scope 都得是那个部件的；
+      // 委派表与运行期的契约校验取同一份
       for (const el of Array.from(stage.querySelectorAll('[data-xh-part]'))) {
         const authored = el.getAttribute('data-xh-part')!
         const wired = el.getAttribute('data-part')
+        const scope = el.getAttribute('data-scope')
+        const contract = hostContractOf(el)
+        const delegated = contract ? delegatedScopesOf(contract).get(authored) : undefined
         if (wired === null) {
           problems.push(`${describeNode(el)} 没被接线：拿不到 data-part，检查部件名是否拼错、是否被包进了别的 xh-* 元素里`)
         }
-        else if (!el.hasAttribute('data-scope')) {
+        else if (scope === null) {
           problems.push(`${describeNode(el)} 拿到了 data-part 却没有 data-scope`)
         }
+        else if (delegated) {
+          if (!delegated.has(scope))
+            problems.push(`${describeNode(el)} 委派给了 ${[...delegated].join(' / ')}，接出来的 data-scope 却是 "${scope}"`)
+        }
         else if (wired !== authored) {
-          // 接出来的名字与作者写的不同：只有宿主把这个作者名委派给了内嵌部件、且 scope 也是那个部件的才算接对
-          const delegate = delegatedScope(el, authored)
-          if (!delegate)
-            problems.push(`${describeNode(el)} 接成了 data-part="${wired}"`)
-          else if (el.getAttribute('data-scope') !== delegate)
-            problems.push(`${describeNode(el)} 委派给了 ${delegate}，接出来的 data-scope 却是 "${el.getAttribute('data-scope')}"`)
+          problems.push(`${describeNode(el)} 接成了 data-part="${wired}"`)
         }
       }
 
