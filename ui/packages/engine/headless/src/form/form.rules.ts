@@ -140,7 +140,8 @@ export function runFieldRules(
           return messageOf(rule, m.byLength ? 'maxLength' : 'maxNumber', slots)
       }
     }
-    if (rule.pattern && typeof value === 'string' && !rule.pattern.test(value))
+    // 每次匹配从头开始，既不消费也不重置作者正则的 lastIndex。
+    if (rule.pattern && typeof value === 'string' && !new RegExp(rule.pattern.source, rule.pattern.flags).test(value))
       return messageOf(rule, 'pattern', slots)
     return rule.validator ? 'validator' : undefined
   }
