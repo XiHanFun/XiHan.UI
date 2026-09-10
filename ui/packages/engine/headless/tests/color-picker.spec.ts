@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import type { Runtime, Service } from '@xihan-ui/core'
+import type { ReactiveRuntime, Service } from '@xihan-ui/core'
 import type { ColorPickerChannel, ColorPickerSchema, ColorPickerServices } from '../src/color-picker'
 import type { SliderSchema } from '../src/slider'
 import { createService, normalizeProps } from '@xihan-ui/core'
@@ -19,7 +19,7 @@ type Dict = Record<string, unknown>
 const sliderBundles = new WeakMap<Service<ColorPickerSchema>, ColorPickerServices>()
 
 /** 给一台取色器补上两条通道的滑杆机器；须在 runtime.start() 之前调。 */
-function attachSliders(service: Service<ColorPickerSchema>, runtime: Runtime): Service<ColorPickerSchema> {
+function attachSliders(service: Service<ColorPickerSchema>, runtime: ReactiveRuntime): Service<ColorPickerSchema> {
   const make = (channel: ColorPickerChannel): Service<SliderSchema> =>
     createService(sliderMachine, { props: () => colorPickerChannelSliderProps(service, channel), runtime })
   sliderBundles.set(service, { root: service, hueSlider: make('hue'), alphaSlider: make('alpha') })
