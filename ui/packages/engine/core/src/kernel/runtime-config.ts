@@ -4,7 +4,7 @@ import type { LayerRegistry } from './structure/layer-registry'
 // RuntimeConfig：环境包，由适配器解析后以纯对象传入。
 import type { Direction } from './types'
 import { resolveMotionPreference } from '@xihan-ui/motion'
-import { isSSR } from './guards'
+import { isDocument, isShadowRoot, isSSR, isWindow } from './guards'
 import { createCounterIdGenerator } from './id-generator'
 import { resolveLocale } from './locale'
 import { createScope } from './scope'
@@ -25,12 +25,47 @@ export interface RuntimeConfig {
   readonly scrollRoot?: () => HTMLElement | null
 }
 
-/** 构造 RuntimeConfig，未提供的字段用 CSR 默认值补全（依赖 document/window，勿在 SSR 期调用）。 */
+function resolveScopeRealm(scope: Scope): { doc: Document, win: Window & typeof globalThis } {
+  let root: Document | ShadowRoot
+  let doc: Document
+  let win: Window & typeof globalThis
+  try {
+    root = scope.getRootNode()
+    doc = scope.getDoc()
+    win = scope.getWin()
+  }
+  catch (cause) {
+    throw new Error('[xh] createRuntimeConfig 无法从 scope 解析有效的 Document/Window', { cause })
+  }
+
+  if (!isDocument(doc) || !isWindow(win))
+    throw new Error('[xh] createRuntimeConfig 无法从 scope 解析有效的 Document/Window')
+  const rootDocument = isDocument(root)
+    ? root
+    : isShadowRoot(root)
+      ? root.ownerDocument
+      : null
+  if (rootDocument !== doc || doc.defaultView !== win || win.document !== doc)
+    throw new Error('[xh] createRuntimeConfig 的 scope root、document 与 window 不一致')
+  return { doc, win }
+}
+
+function defaultPortalContainer(doc: Document): HTMLElement {
+  if (!doc.body)
+    throw new Error('[xh] createRuntimeConfig 的默认 portalContainer 需要 scope Document.body')
+  return ensurePortalRoot(doc)
+}
+
+/** 构造 RuntimeConfig；无全局 DOM 时必须显式提供能解析活动 Document/Window 的 Scope。 */
 export function createRuntimeConfig(partial: Partial<RuntimeConfig> = {}): RuntimeConfig {
   const idGenerator = partial.idGenerator ?? createCounterIdGenerator()
-  const doc = isSSR() ? undefined : document
-  const scope = partial.scope ?? createScope(doc?.body, idGenerator)
-  const layerRegistry = partial.layerRegistry ?? (doc ? getLayerRegistry(doc) : undefinedLayerRegistry())
+  const ambientDocument = isSSR() ? undefined : document
+  if (!partial.scope && !ambientDocument)
+    throw new Error('[xh] createRuntimeConfig 在无 DOM 环境必须显式提供 scope')
+  const scope = partial.scope ?? createScope(ambientDocument!.body, idGenerator)
+  const { doc: scopedDocument, win: scopedWindow } = resolveScopeRealm(scope)
+  const layerRegistry = partial.layerRegistry
+    ?? getLayerRegistry(scopedDocument)
 
   return {
     scope,
@@ -38,14 +73,11 @@ export function createRuntimeConfig(partial: Partial<RuntimeConfig> = {}): Runti
     layerRegistry,
     dir: partial.dir ?? 'ltr',
     locale: resolveLocale(partial.locale, scope),
-    portalContainer: partial.portalContainer ?? (doc ? () => ensurePortalRoot(doc) : () => null),
+    portalContainer: partial.portalContainer
+      ?? (() => defaultPortalContainer(scopedDocument)),
     scrollRoot: partial.scrollRoot ?? (() => null),
     reducedMotion:
       partial.reducedMotion
-      ?? (() => !isSSR() && resolveMotionPreference(window) === 'reduce'),
+      ?? (() => resolveMotionPreference(scopedWindow) === 'reduce'),
   }
-}
-
-function undefinedLayerRegistry(): LayerRegistry {
-  throw new Error('[xh] createRuntimeConfig 在 SSR 环境需显式传入 layerRegistry')
 }

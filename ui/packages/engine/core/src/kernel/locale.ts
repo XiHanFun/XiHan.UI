@@ -10,7 +10,7 @@ export const XH_FALLBACK_LOCALE = 'en-US'
  * 给了 scope 就问它所属的那个 window，没给才问全局。
  */
 export function hostLocale(scope?: Scope): string | undefined {
-  if (isSSR())
+  if (!scope && isSSR())
     return undefined
   const tag = (scope?.getWin() ?? window).navigator?.language
   return typeof tag === 'string' && tag !== '' ? tag : undefined
