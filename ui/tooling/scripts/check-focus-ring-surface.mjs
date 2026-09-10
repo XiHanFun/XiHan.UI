@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 门禁：环压在实心面上的那几档，环色必须取 currentColor。
+// 门禁：环压在实心面上的那几档，环色必须取 currentColor；非实心面一律吃默认环。
 //
 // 聚焦环往内收（--xh-ring-offset = 负一个环宽），外沿与元素边框外沿重合，
 // 环内侧相邻的就是元素自己那块面。本份查的是内侧这一对：面与环。
@@ -7,22 +7,34 @@
 // 公共层 focus.css 读 var(--xh-_ring-color, var(--xh-ring-focus))。
 //
 // 「面是不是实心」按颜色算，不按形态名猜：皮肤里的面顺着令牌链解到 oklch 字面量，
-// 与同主题的 --xh-ring-focus 算 WCAG 对比度，低于 3:1（SC 1.4.11 非文本对比）才进判定面。
+// 与同主题的 --xh-ring-focus 算 WCAG 对比度，低于 3:1（SC 1.4.11 非文本对比）才是实心档。
 // 浅深两档 × 六族语气加「没写语气」共十四种组合逐一算，取最低的那个。
+// 过了线的面与透空的面（transparent / none，环内侧透出祖先那一层）一起收进非实心档。
+// 半透明的面（oklch 带 alpha、color-mix 兑 transparent）内侧的真色是它与底下那层叠出来的，
+// 底下那层是谁静态不知道，逐条登在 opaque；报错信息附一句叠在画布上的估值。
 //
 // 判定面之外的几类，交给浏览器态判据：
 //   · :hover / :active 限定的面
 //   · ::before / ::after 铺的底（环压的是元素盒）
 //   · @media / @supports 里的面
 //   · 解不出颜色的面（半透明、渐变、连接层内联进 style 的色值），逐条登在 opaque
+//   · 环由 :focus-within 画在外框上的部件，环色走那份皮肤自己的槽
 //
-// 三条判据配三张登记表，每张两侧都反查：
-//   一 实心档要被一条 currentColor 规则覆盖；这一档显式写了 outline: none 的除外
-//   二 每条 currentColor 规则要落在一个算出来的实心档上，落不上的登进 declared 写明凭什么
+// 五条判据配五张登记表，每张两侧都反查：
+//   一 实心档要被一条 currentColor 规则覆盖，或被一条登了记的关环规则关掉环
+//   二 currentColor 规则不许罩到非实心档；一档实心档都罩不上的登进 declared 写明凭什么
 //   三 算出来还没灌的实心档登进 backlog，带理由与实测比值
+//   四 :focus-visible 里把环关掉的规则（outline: none、outline-width: 0、outline-style: none）
+//      逐条登进 ringless，写明环由谁画或为什么不画
+//   五 画了不到 3:1 的实心面、连接层没给焦点、皮肤也没写 :focus-visible 的部件登进 unfocusable，
+//      写明这块面不接焦点；接得上焦点的改成接 tabindex 或补 :focus-visible
 // 登记项过期（补上了、面换了、部件退役了、比值变了）一律判红。
+// 另有一个只读分区 solid：算出来的全部实心档，`--update` 整份重写，与算出来的对不上判红。
+// 环色写成透明（--xh-_ring-color / outline-color 解出来 alpha 为 0）的聚焦规则没有登记表，直接判红：
+// 失效档只豁免对比度，环不许消失。
 //
 // `--update` 只把新算出来的条目落进表里，理由留空由人补，不删条目。
+// `--list` 把实心档、非实心档、不接焦点的面、关环规则、环色透明的规则、解不出的面与没进判定面的分支打成 JSON。
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
@@ -41,13 +53,38 @@ const MIN_RATIO = 3
 const TONES = [null, 'brand', 'neutral', 'danger', 'success', 'warning', 'info']
 const THEMES = ['light', 'dark']
 
-/** 取不出颜色的值：这些不是面，跳过且不报。 */
-const NOT_A_COLOR = /^(?:transparent|none|inherit|initial|unset|revert|revert-layer|currentColor)$/i
+/** 透出祖先的写法：元素自己没铺面，环内侧是它底下那一层。 */
+const SEE_THROUGH = /^(?:transparent|none|inherit|initial|unset|revert|revert-layer)$/i
 
-/** 环由别处画或干脆不画的写法：环没画在这个部件上，实心与否无关。 */
-const RING_OFF = /^(?:none|0)$/
+/** 零长度：0 或带任意单位的 0。 */
+const ZERO = /^0[a-z%]*$/i
 
-// —— 颜色：把令牌链解成 oklab，再算 WCAG 对比度 —— //
+/** 这条声明把环关了：outline 简写里带 none 或零宽，outline-width 为零，outline-style 为 none。 */
+function turnsRingOff(prop, value) {
+  const v = value.trim()
+  if (prop === 'outline')
+    return splitTop(v, ch => ch === ' ' || ch === '\t' || ch === '\n').some(tok => /^none$/i.test(tok) || ZERO.test(tok))
+  if (prop === 'outline-width')
+    return ZERO.test(v)
+  if (prop === 'outline-style')
+    return /^none$/i.test(v)
+  return false
+}
+
+/** 这条声明里可能是环色的那几节：环色槽与 outline-color 整条算，outline 简写按顶层空白拆开逐节算。 */
+function ringColorsOf(prop, value) {
+  const v = value.trim()
+  if (prop === '--xh-_ring-color' || prop === 'outline-color')
+    return [v]
+  if (prop === 'outline')
+    return splitTop(v, ch => ch === ' ' || ch === '\t' || ch === '\n')
+  return []
+}
+
+/** 面的声明。 */
+const FACE_PROP = /^(?:background|background-color)$/
+
+// —— 颜色：把令牌链解成带 alpha 的 oklab，再算 WCAG 对比度 —— //
 
 /** 把一段 CSS 拆成 { selector, decls }，只认 `--xh-*: value;` 声明。 */
 function parseBlocks(src) {
@@ -160,7 +197,15 @@ function inner(expr, start) {
   throw new Error(`括号不配对：${expr}`)
 }
 
-/** 把一个值求成 oklab {L,a,b}；scope 是按优先级排好的若干 Map。 */
+/** oklch 斜杠后的 alpha：没写为 1，百分数按百分比。 */
+function parseAlpha(text) {
+  if (text === undefined)
+    return 1
+  const t = text.trim()
+  return t.endsWith('%') ? Number.parseFloat(t) / 100 : Number(t)
+}
+
+/** 把一个值求成带 alpha 的 oklab {L,a,b,alpha}；scope 是按优先级排好的若干 Map。 */
 function evaluate(expr, scope, trail = []) {
   expr = expr.trim()
   if (expr.startsWith('var(')) {
@@ -175,10 +220,13 @@ function evaluate(expr, scope, trail = []) {
       return evaluate(fallback.join(','), scope, trail)
     throw new Error(`令牌未定义：${name}`)
   }
+  if (/^transparent$/i.test(expr))
+    return { L: 0, a: 0, b: 0, alpha: 0 }
   if (expr.startsWith('oklch(')) {
-    const [L, C, H] = inner(expr, 5).split('/')[0].trim().split(/\s+/).map(Number)
+    const [body, alphaText] = inner(expr, 5).split('/')
+    const [L, C, H] = body.trim().split(/\s+/).map(Number)
     const h = (H || 0) * Math.PI / 180
-    return { L, a: C * Math.cos(h), b: C * Math.sin(h) }
+    return { L, a: C * Math.cos(h), b: C * Math.sin(h), alpha: parseAlpha(alphaText) }
   }
   if (expr.startsWith('color-mix(')) {
     const [space, p1, p2] = splitArgs(inner(expr, 9))
@@ -202,11 +250,13 @@ function evaluate(expr, scope, trail = []) {
     const sum = A.weight + B.weight
     const wa = A.weight / sum
     const wb = B.weight / sum
-    return {
-      L: A.color.L * wa + B.color.L * wb,
-      a: A.color.a * wa + B.color.a * wb,
-      b: A.color.b * wa + B.color.b * wb,
-    }
+    // 分量按预乘 alpha 插值，权重之和不足 100% 时 alpha 按之和打折
+    const alpha = (A.color.alpha * wa + B.color.alpha * wb) * Math.min(1, sum)
+    if (alpha === 0)
+      return { L: 0, a: 0, b: 0, alpha: 0 }
+    const premul = A.color.alpha * wa + B.color.alpha * wb
+    const mix = k => (A.color[k] * A.color.alpha * wa + B.color[k] * B.color.alpha * wb) / premul
+    return { L: mix('L'), a: mix('a'), b: mix('b'), alpha }
   }
   throw new Error(`不认识的颜色表达式：${expr}`)
 }
@@ -224,9 +274,25 @@ function toLinear({ L, a, b }) {
   ]
 }
 
-/** WCAG 相对亮度。 */
-function luminance(oklab) {
-  const [r, g, b] = toLinear(oklab)
+/** 线性 sRGB 分量 ↔ 伽马编码分量。 */
+const encode = c => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055)
+const decode = s => (s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4)
+
+/** 不透明的 oklab → 伽马 sRGB 三分量。 */
+function srgbOf(oklab) {
+  return toLinear(oklab).map(encode)
+}
+
+/** 带 alpha 的色按 source-over 叠在一块不透明的底上，在伽马 sRGB 里叠。 */
+function over(top, ground) {
+  const t = srgbOf(top)
+  const g = srgbOf(ground)
+  return t.map((v, i) => v * top.alpha + g[i] * (1 - top.alpha))
+}
+
+/** WCAG 相对亮度，入参是伽马 sRGB。 */
+function luminance(rgb) {
+  const [r, g, b] = rgb.map(decode)
   return 0.2126 * r + 0.7152 * g + 0.0722 * b
 }
 
@@ -252,12 +318,31 @@ function scopeFor(theme, tone) {
   return [merged, themes[theme]]
 }
 
-/** 全部 (主题, 语气) 组合，连同各自的环色。 */
+/** 全部 (主题, 语气) 组合，连同各自的环色与画布色。 */
 const CONTEXTS = []
 for (const theme of THEMES) {
-  const ring = evaluate('var(--xh-ring-focus)', scopeFor(theme, null))
+  const ring = srgbOf(evaluate('var(--xh-ring-focus)', scopeFor(theme, null)))
+  const canvas = evaluate('var(--xh-bg-canvas)', scopeFor(theme, null))
   for (const tone of TONES)
-    CONTEXTS.push({ theme, tone, ring, scope: scopeFor(theme, tone) })
+    CONTEXTS.push({ theme, tone, ring, canvas, scope: scopeFor(theme, tone) })
+}
+
+/** 环色在任一 (主题, 语气) 下解成 alpha 为 0：环画了等于没画。解不出来的（currentColor、私有槽、宽度）不判。 */
+function ringVanishes(exprs) {
+  for (const expr of exprs) {
+    for (const ctx of CONTEXTS) {
+      let color
+      try {
+        color = evaluate(expr, ctx.scope)
+      }
+      catch {
+        continue
+      }
+      if (color.alpha === 0)
+        return true
+    }
+  }
+  return false
 }
 
 /** 全局令牌：tokens.css 与 tone.css 里声明过的名字，皮肤里的私有槽不算。 */
@@ -271,10 +356,14 @@ const GLOBAL = new Set([
 /**
  * 一个面表达式在全部 (主题, 语气) 下与环色的最低对比度。
  * 某一档解不出来就跳过那一档：`var(--xh-_tone)` 在没写 data-tone 的档里本就无效，
- * 那一档的面不是这个值。全部档都解不出来才返回 null，由调用方另行记账。
+ * 那一档的面不是这个值。全部档都解不出来返回 null，由调用方另行记账。
+ * 全透明的档按透出祖先算，全部档都全透明返回 { seeThrough: true }；
+ * 有一档半透明的记 translucent，比值是叠在画布上算的估值。
  */
 function worstAgainstRing(expr) {
   let worst = null
+  let evaluated = 0
+  let translucent = false
   for (const ctx of CONTEXTS) {
     let color
     try {
@@ -283,11 +372,21 @@ function worstAgainstRing(expr) {
     catch {
       continue
     }
-    const ratio = contrast(color, ctx.ring)
+    evaluated++
+    if (color.alpha === 0)
+      continue
+    if (color.alpha < 1)
+      translucent = true
+    const face = color.alpha < 1 ? over(color, ctx.canvas) : srgbOf(color)
+    const ratio = contrast(face, ctx.ring)
     if (worst === null || ratio < worst.ratio)
-      worst = { ratio, theme: ctx.theme, tone: ctx.tone }
+      worst = { ratio, theme: ctx.theme, tone: ctx.tone, alpha: color.alpha }
   }
-  return worst
+  if (!evaluated)
+    return null
+  if (worst === null)
+    return { seeThrough: true }
+  return { ...worst, translucent }
 }
 
 // —— 选择器：拆成「主语 + 祖先」，两条选择器之间做覆盖判定 —— //
@@ -314,16 +413,20 @@ function splitTop(text, isSep) {
   return out.map(s => s.trim()).filter(Boolean)
 }
 
+/** 组合子：空白与 > + ~。 */
+const isCombinator = ch => ch === ' ' || ch === '\t' || ch === '\n' || ch === '>' || ch === '+' || ch === '~'
+
 /** 属性存在但没写取值时占位。 */
 const ANY = '\u0000any'
 
 /**
- * 拆一段复合选择器：属性条件、data-part 的取值集合、以及除聚焦伪类外剩下的伪类。
- * `:is(…)` 里的分支按属性逐键并集合并；`:not(…)` 只记不参与覆盖判定。
+ * 拆一段复合选择器：属性条件、data-part 的取值集合、`:not(…)` 排除掉的条件，
+ * 以及除聚焦伪类外剩下的伪类。`:is(…)` 里的分支按属性逐键并集合并。
  */
 function parseCompound(text) {
   const attrs = new Map()
   const pseudos = []
+  const nots = []
   const add = (key, value) => {
     if (!attrs.has(key))
       attrs.set(key, new Set())
@@ -364,7 +467,7 @@ function parseCompound(text) {
         const keys = new Set(branches.flatMap(b => [...b.attrs.keys()]))
         const mergeable = branches.every(b => !b.pseudos.length) && [...keys].every(key => branches.every(b => b.attrs.has(key)))
         if (!mergeable) {
-          pseudos.push(name[1])
+          pseudos.push(`${name[1]}(${arg})`)
         }
         else {
           for (const key of keys) {
@@ -374,8 +477,15 @@ function parseCompound(text) {
           }
         }
       }
-      else if (name[1] !== 'not' && !/^focus(?:-visible|-within)?$/.test(name[1])) {
-        pseudos.push(name[1])
+      else if (name[1] === 'not') {
+        // 只收属性条件；`:not(:hover)` 这类伪类条件判不了，不记
+        for (const branch of splitTop(arg ?? '', c => c === ',').map(parseCompound)) {
+          if (branch && branch.attrs.size && !branch.pseudos.length)
+            nots.push(branch)
+        }
+      }
+      else if (!/^focus(?:-visible|-within)?$/.test(name[1])) {
+        pseudos.push(arg === null ? name[1] : `${name[1]}(${arg})`)
       }
       i = next
       continue
@@ -383,18 +493,23 @@ function parseCompound(text) {
     // 标签名、`*`、以及 `&` 这类主语占位一概忽略
     i++
   }
-  return { attrs, pseudos }
+  return { attrs, pseudos, nots }
 }
 
 /** 拆一条选择器分支：末尾那个复合是主语，前面的都是祖先（组合子一律按后代处理）。 */
 function parseBranch(branch) {
-  const compounds = splitTop(branch, ch => ch === ' ' || ch === '\t' || ch === '\n' || ch === '>' || ch === '+' || ch === '~')
-    .map(parseCompound)
+  const compounds = splitTop(branch, isCombinator).map(parseCompound)
   if (compounds.includes(null) || !compounds.length)
     return null
   const subject = compounds[compounds.length - 1]
   const ancestors = compounds.slice(0, -1).filter(c => c.attrs.has('data-part') || c.attrs.has('data-scope'))
   return { subject, ancestors }
+}
+
+/** 一条分支的主语（末尾那个复合）里有没有写这个伪类。 */
+function subjectHas(branchText, pseudo) {
+  const compounds = splitTop(branchText, isCombinator)
+  return compounds.length > 0 && compounds[compounds.length - 1].includes(pseudo)
 }
 
 /** 一个复合的落点：scope 与 part 各取唯一值时才算认得出。 */
@@ -407,6 +522,22 @@ function anchorOf(compound) {
   }
 }
 
+/** 一组属性条件在档位上是否全部成立：档位写了这个属性，取值也都落在条件里。 */
+function holds(cond, t) {
+  for (const [key, vals] of cond.attrs) {
+    const have = t.attrs.get(key)
+    if (!have)
+      return false
+    if (vals.has(ANY))
+      continue
+    for (const v of have) {
+      if (!vals.has(v))
+        return false
+    }
+  }
+  return true
+}
+
 /** 覆盖方（规则）对被覆盖方（档位）的复合条件判定。 */
 function compoundCovers(r, t) {
   const ra = anchorOf(r)
@@ -415,7 +546,11 @@ function compoundCovers(r, t) {
     return false
   if (ra.parts && (!ta.parts || [...ta.parts].some(p => !ra.parts.has(p))))
     return false
-  if (r.pseudos.length)
+  // 规则带的伪类（:checked、:has(…) 这类）档位上也得写着同名的那个
+  if (r.pseudos.some(p => !t.pseudos.includes(p)))
+    return false
+  // 规则用 :not(…) 排掉的条件在这一档上成立，规则就落不到这一档
+  if (r.nots.some(n => holds(n, t)))
     return false
   for (const [key, vals] of r.attrs) {
     if (key === 'data-scope' || key === 'data-part')
@@ -471,7 +606,7 @@ function mergeCompound(a, b) {
       return null
     attrs.set(key, both)
   }
-  return { attrs, pseudos: [...a.pseudos, ...b.pseudos] }
+  return { attrs, pseudos: [...a.pseudos, ...b.pseudos], nots: [...a.nots, ...b.nots] }
 }
 
 /** 祖先按写出来的样子去重：同一条槽赋值被两处引用时不该在档位里出现两遍。 */
@@ -500,6 +635,10 @@ function renderCompound(c) {
     const vals = [...c.attrs.get(key)].sort()
     bits.push(vals[0] === ANY ? `[${key}]` : vals.length === 1 ? `[${key}='${vals[0]}']` : `[${key}=:is(${vals.join(',')})]`)
   }
+  for (const n of [...c.nots].map(renderCompound).sort())
+    bits.push(`:not(${n})`)
+  for (const p of [...c.pseudos].sort())
+    bits.push(`:${p}`)
   return bits.join('')
 }
 
@@ -508,7 +647,7 @@ function render(tier) {
   return [...tier.ancestors.map(renderCompound), renderCompound(tier.subject)].join(' ')
 }
 
-// —— 可聚焦部件：判定面只收连接层真的会落焦的那些 —— //
+// —— 可聚焦部件：连接层给了焦点的那些 —— //
 
 async function collectFocusableParts() {
   const found = new Map()
@@ -562,24 +701,41 @@ const files = (await readdir(SKINS)).filter(f => f.endsWith('.css')).sort()
 const slots = new Map()
 /** 面的消费点：写了 background 的规则。 */
 const surfaces = []
-/** currentColor 规则与 outline:none 规则。 */
+/** currentColor 规则。 */
 const declared = []
+/** :focus-visible 里把环关掉的规则。 */
 const ringless = []
+/** :focus-visible 里把环色写成透明的规则：没有登记表，逐条判红。 */
+const vanished = []
 /** 选择器形态读不出来的规则，逐条报出来，免得静默漏掉。 */
 const unreadable = []
 /** 皮肤自己写了 :focus-visible 规则的部件：皮肤这么写就是断言这里落得上焦点。 */
 const skinFocusable = new Map()
-/** 面解不出颜色的消费点：键 → 出处。 */
+/** 皮肤用 :focus-within 在外框上画环的部件：环色走那份皮肤自己的槽，不归本份。 */
+const ringHosts = new Map()
+/** 面解不出颜色的消费点：键 → { at, hint }。 */
 const opaqueValues = new Map()
+/** 没进判定面的面声明按原因计数。 */
+const dropped = { conditional: 0, pseudoElement: 0, unreadable: 0, hover: 0, noPart: 0, blocked: 0, mixedParts: 0, focusWithinHost: 0, nativeDisabled: 0, impossible: 0 }
+
+function markSkin(map, comp, parts) {
+  if (!map.has(comp))
+    map.set(comp, new Set())
+  for (const p of parts) map.get(comp).add(p)
+}
 
 for (const file of files) {
   const comp = file.replace(/\.css$/, '')
   const css = stripComments(await readFile(join(SKINS, file), 'utf8'))
   const lineAt = lineCounter(css)
   for (const decl of declarations(css)) {
+    const isFace = FACE_PROP.test(decl.prop)
     // @media / @supports 里的档不收；@layer 只是分层，照收
-    if (decl.selectors.some(s => s.startsWith('@') && !s.startsWith('@layer')))
+    if (decl.selectors.some(s => s.startsWith('@') && !s.startsWith('@layer'))) {
+      if (isFace)
+        dropped.conditional++
       continue
+    }
     const raw = decl.selectors.filter(s => !s.startsWith('@')).join(' ')
     if (!raw)
       continue
@@ -587,29 +743,34 @@ for (const file of files) {
 
     for (const branchText of splitTop(raw, ch => ch === ',')) {
       // 伪元素铺的底不是元素自己的面
-      if (/::[\w-]+/.test(branchText))
+      if (/::[\w-]+/.test(branchText)) {
+        if (isFace)
+          dropped.pseudoElement++
         continue
+      }
       const branch = parseBranch(branchText)
       if (!branch) {
         // 面与环两类声明读不出选择器就等于这一档从判定面里消失，报出来而不是跳过
-        if (/^(?:background|background-color|outline|--xh-_ring-color)$/.test(decl.prop))
+        if (isFace || /^(?:outline|--xh-_ring-color)$/.test(decl.prop)) {
+          if (isFace)
+            dropped.unreadable++
           unreadable.push(`${at} ${branchText.trim()} —— 本脚本读不出这条选择器的形态，${decl.prop} 这一档没进判定面`)
+        }
         continue
       }
-      if (/:focus-visible/.test(branchText) && !/:not\(\s*:focus-visible\s*\)/.test(branchText)) {
-        const anchor = anchorOf(branch.subject)
-        if (anchor.parts) {
-          if (!skinFocusable.has(comp))
-            skinFocusable.set(comp, new Set())
-          for (const p of anchor.parts) skinFocusable.get(comp).add(p)
-        }
+      const anchor = anchorOf(branch.subject)
+      if (anchor.parts) {
+        if (subjectHas(branchText, ':focus-visible') && !/:not\(\s*:focus-visible\s*\)/.test(branchText))
+          markSkin(skinFocusable, comp, anchor.parts)
+        if (subjectHas(branchText, ':focus-within') && decl.prop === 'outline' && !turnsRingOff(decl.prop, decl.value))
+          markSkin(ringHosts, comp, anchor.parts)
       }
       if (decl.prop.startsWith('--')) {
         if (!slots.has(decl.prop))
           slots.set(decl.prop, [])
         slots.get(decl.prop).push({ file, comp, branch, value: decl.value, at })
       }
-      if (decl.prop === 'background' || decl.prop === 'background-color')
+      if (isFace)
         surfaces.push({ file, comp, branch, value: decl.value, at, hover: /:hover|:active/.test(branchText) })
       if (decl.prop === '--xh-_ring-color' && decl.value.trim() === 'currentColor')
         declared.push({ file, comp, branch, at, key: `${comp} ${render(branch)}` })
@@ -617,11 +778,13 @@ for (const file of files) {
       if (decl.prop === 'outline' && /\bcurrentColor\b/.test(decl.value))
         declared.push({ file, comp, branch, at, key: `${comp} ${render(branch)}`, whole: true })
       // 只认真的把键盘焦点环关掉的那种：`:focus:not(:focus-visible)` 关的是指针落焦那一路，
-      // 键盘环照画，把它当成关环会把整档从判定面里抹掉
-      if (decl.prop === 'outline' && RING_OFF.test(decl.value.trim())
-        && /:focus-visible|\[data-focus\]/.test(branchText) && !/:not\(\s*:focus-visible\s*\)/.test(branchText)) {
-        ringless.push({ file, comp, branch })
-      }
+      // 键盘环照画
+      const keyboardFocus = /:focus-visible|\[data-focus\]/.test(branchText) && !/:not\(\s*:focus-visible\s*\)/.test(branchText)
+      if (keyboardFocus && turnsRingOff(decl.prop, decl.value))
+        ringless.push({ file, comp, branch, at, key: `${comp} ${render(branch)}`, prop: decl.prop, value: decl.value.trim() })
+      // 环色解成透明：环还在画，只是画成了看不见的
+      if (keyboardFocus && ringVanishes(ringColorsOf(decl.prop, decl.value)))
+        vanished.push({ at, key: `${comp} ${render(branch)}`, prop: decl.prop, value: decl.value.trim() })
     }
   }
 }
@@ -629,6 +792,7 @@ for (const file of files) {
 /**
  * 把一个面的取值摊成若干「终值 + 经过的槽赋值」。
  * var(--a, b) 两支都要摊：--a 在皮肤里另有赋值时走那一支，没赋值时走 b。
+ * 透出祖先的终值（transparent / none）照样摊出来，记 seeThrough。
  *
  * 私有槽只在本份皮肤里连线：`--xh-_bg` 这类名字好几份皮肤各用各的，跨文件连起来会拼出
  * 「按钮嵌在开关根里」这种 DOM 里不存在的档。跨组件流下去的是使用者令牌
@@ -640,8 +804,8 @@ function expand(value, file, trail = [], depth = 0) {
     return []
   const m = /^var\(\s*(--[\w-]+)\s*(?:,([\s\S]*))?\)$/.exec(expr)
   if (!m) {
-    if (NOT_A_COLOR.test(expr))
-      return []
+    if (SEE_THROUGH.test(expr))
+      return [{ expr, trail, seeThrough: true }]
     return [{ expr, trail }]
   }
   const [, name, fallback] = m
@@ -662,64 +826,145 @@ function expand(value, file, trail = [], depth = 0) {
   return out
 }
 
-/** 算出来的实心档：键 → { comp, part, sel, ratio, theme, tone, expr, at } */
+/** 算出来的实心档：键 → { comp, parts, tier, ratio, theme, tone, expr, at } */
 const solidTiers = new Map()
+/** 非实心档（面过了线、或透出祖先）：currentColor 规则罩到这里就是罩宽了。 */
+const nonSolidTiers = new Map()
+/** 不接焦点却画了实心面的部件：键 `comp [part]` → { ratio, theme, tone, expr, at, tier } */
+const unfocusableFaces = new Map()
+
+const round = n => Math.round(n * 100) / 100
+
+function describe(worst, expr) {
+  return `${round(worst.ratio)}:1（${worst.theme} · ${worst.tone ?? '无语气'}，面 ${expr}）`
+}
 
 for (const surface of surfaces) {
-  if (surface.hover)
+  if (surface.hover) {
+    dropped.hover++
     continue
+  }
+  const anchor = anchorOf(surface.branch.subject)
+  if (!anchor.parts) {
+    dropped.noPart++
+    continue
+  }
+  const parts = [...anchor.parts]
   const off = blockedParts.get(surface.comp) ?? new Set()
-  const parts = new Set(
+  const focusable = new Set(
     [...focusableParts.get(surface.comp) ?? [], ...skinFocusable.get(surface.comp) ?? []].filter(p => !off.has(p)),
   )
-  const anchor = anchorOf(surface.branch.subject)
-  if (!anchor.parts || [...anchor.parts].some(p => !parts.has(p)))
+  const hosts = ringHosts.get(surface.comp) ?? new Set()
+  if (parts.every(p => off.has(p))) {
+    dropped.blocked++
     continue
-
-  for (const outcome of expand(surface.value, surface.file)) {
-    const worst = worstAgainstRing(outcome.expr)
-    if (worst === null) {
-      // 键里不带行号：面没改过就不该因为上面插了几行而重新走一遍登记
-      for (const part of anchor.parts)
-        opaqueValues.set(`${surface.comp} [${part}] ${outcome.expr}`, surface.at)
+  }
+  const takesFocus = parts.every(p => focusable.has(p))
+  if (!takesFocus) {
+    if (parts.some(p => focusable.has(p) || off.has(p))) {
+      dropped.mixedParts++
       continue
     }
-    if (worst.ratio >= MIN_RATIO)
+    if (parts.every(p => hosts.has(p))) {
+      dropped.focusWithinHost++
       continue
+    }
+  }
+
+  for (const outcome of expand(surface.value, surface.file)) {
     let tier = surface.branch
     for (const step of outcome.trail) {
       tier = mergeInto(tier, step.branch)
       if (!tier)
         break
     }
-    if (!tier)
+    if (!tier) {
+      dropped.impossible++
       continue
+    }
+    // 原生禁用的控件落不上焦点
+    if (tier.subject.pseudos.includes('disabled') || tier.subject.attrs.has('disabled')) {
+      dropped.nativeDisabled++
+      continue
+    }
     const key = `${surface.comp} ${render(tier)}`
+    const worst = outcome.seeThrough ? { seeThrough: true } : worstAgainstRing(outcome.expr)
+    if (worst === null) {
+      // 键里不带行号：面没改过就不该因为上面插了几行而重新走一遍登记
+      if (takesFocus) {
+        for (const part of parts)
+          opaqueValues.set(`${surface.comp} [${part}] ${outcome.expr}`, { at: surface.at, hint: '' })
+      }
+      continue
+    }
+    if (worst.seeThrough) {
+      if (takesFocus && !solidTiers.has(key))
+        nonSolidTiers.set(key, { comp: surface.comp, parts, tier, expr: outcome.expr, at: surface.at, seeThrough: true })
+      continue
+    }
+    if (worst.translucent) {
+      if (takesFocus) {
+        const hint = `α=${round(worst.alpha)} 的半透明面，叠在 ${worst.theme} 画布上估约 ${round(worst.ratio)}:1`
+        for (const part of parts)
+          opaqueValues.set(`${surface.comp} [${part}] ${outcome.expr}`, { at: surface.at, hint })
+      }
+      continue
+    }
+    if (!takesFocus) {
+      if (worst.ratio >= MIN_RATIO)
+        continue
+      for (const part of parts) {
+        const k = `${surface.comp} [${part}]`
+        const prev = unfocusableFaces.get(k)
+        if (prev && prev.ratio <= worst.ratio)
+          continue
+        unfocusableFaces.set(k, { comp: surface.comp, part, tier, ...worst, expr: outcome.expr, at: surface.at })
+      }
+      continue
+    }
+    if (worst.ratio >= MIN_RATIO) {
+      if (!solidTiers.has(key))
+        nonSolidTiers.set(key, { comp: surface.comp, parts, tier, ...worst, expr: outcome.expr, at: surface.at })
+      continue
+    }
     const prev = solidTiers.get(key)
     if (prev && prev.ratio <= worst.ratio)
       continue
-    solidTiers.set(key, {
-      comp: surface.comp,
-      tier,
-      ratio: worst.ratio,
-      theme: worst.theme,
-      tone: worst.tone,
-      expr: outcome.expr,
-      at: surface.at,
-    })
+    nonSolidTiers.delete(key)
+    solidTiers.set(key, { comp: surface.comp, parts, tier, ...worst, expr: outcome.expr, at: surface.at })
   }
 }
 
-// 环压根没画在这一档上的，实心与否与本门禁无关
-for (const key of [...solidTiers.keys()]) {
-  const tier = solidTiers.get(key)
-  if (ringless.some(r => r.comp === tier.comp && covers(r.branch, tier.tier)))
-    solidTiers.delete(key)
+/** 每档实心档的环怎么来：灌了 currentColor、被关环规则关掉、或者两者皆无。 */
+for (const tier of solidTiers.values()) {
+  tier.coveredBy = declared.filter(r => r.comp === tier.comp && covers(r.branch, tier.tier)).map(r => r.key)
+  tier.ringlessBy = ringless.filter(r => r.comp === tier.comp && covers(r.branch, tier.tier)).map(r => r.key)
+  tier.ring = tier.ringlessBy.length ? 'off' : tier.coveredBy.length ? 'currentColor' : 'backlog'
+}
+
+/** 每条 currentColor 规则覆盖到的实心档与非实心档。 */
+const declaredHits = new Map()
+for (const rule of declared) {
+  declaredHits.set(rule.key, {
+    solid: [...solidTiers.entries()].filter(([, t]) => t.comp === rule.comp && covers(rule.branch, t.tier)).map(([k]) => k),
+    nonSolid: [...nonSolidTiers.entries()].filter(([, t]) => t.comp === rule.comp && covers(rule.branch, t.tier)).map(([k]) => k),
+  })
+}
+
+/** 没被任何 currentColor 规则覆盖、环也没被关掉的实心档。 */
+const uncovered = [...solidTiers.entries()].filter(([, t]) => t.ring === 'backlog').map(([key, t]) => ({ key, ...t }))
+
+/** 只读分区 solid 的内容：算出来的全部实心档。 */
+function solidPartition() {
+  const out = {}
+  for (const [key, t] of [...solidTiers.entries()].sort(([a], [b]) => a.localeCompare(b)))
+    out[key] = { parts: [...t.parts].sort(), ratio: round(t.ratio), ring: t.ring }
+  return out
 }
 
 // —— 登记表 —— //
 
-let registry = { backlog: {}, declared: {}, opaque: {} }
+let registry = { backlog: {}, declared: {}, opaque: {}, ringless: {}, unfocusable: {}, solid: {} }
 try {
   registry = { ...registry, ...JSON.parse(await readFile(REGISTRY, 'utf8')) }
 }
@@ -730,21 +975,22 @@ catch {
   }
 }
 
-/** 每条 currentColor 规则覆盖到的实心档。 */
-const declaredHits = new Map()
-for (const rule of declared) {
-  const hit = [...solidTiers.values()].filter(t => t.comp === rule.comp && covers(rule.branch, t.tier))
-  declaredHits.set(rule.key, hit)
-}
+const sorted = obj => Object.fromEntries(Object.entries(obj).sort(([a], [b]) => a.localeCompare(b)))
 
-/** 没被任何 currentColor 规则覆盖的实心档。 */
-const uncovered = []
-for (const [key, tier] of solidTiers) {
-  if (!declared.some(r => r.comp === tier.comp && covers(r.branch, tier.tier)))
-    uncovered.push({ key, ...tier })
+if (process.argv.includes('--list')) {
+  const list = {
+    solid: [...solidTiers.entries()].map(([key, t]) => ({ key, comp: t.comp, parts: [...t.parts], selector: render(t.tier), ratio: round(t.ratio), theme: t.theme, tone: t.tone, face: t.expr, at: t.at, ring: t.ring, coveredBy: t.coveredBy, ringlessBy: t.ringlessBy })),
+    nonSolid: [...nonSolidTiers.entries()].map(([key, t]) => ({ key, comp: t.comp, parts: [...t.parts], selector: render(t.tier), ratio: t.seeThrough ? null : round(t.ratio), face: t.expr, at: t.at, seeThrough: !!t.seeThrough })),
+    unfocusable: [...unfocusableFaces.entries()].map(([key, t]) => ({ key, comp: t.comp, part: t.part, selector: render(t.tier), ratio: round(t.ratio), theme: t.theme, tone: t.tone, face: t.expr, at: t.at })),
+    ringless: ringless.map(r => ({ key: r.key, comp: r.comp, selector: render(r.branch), at: r.at, prop: r.prop, value: r.value })),
+    vanished: vanished.map(r => ({ key: r.key, at: r.at, prop: r.prop, value: r.value })),
+    opaque: [...opaqueValues.entries()].map(([key, v]) => ({ key, at: v.at, hint: v.hint })),
+    focusWithinHosts: [...ringHosts.entries()].flatMap(([comp, parts]) => [...parts].map(part => `${comp} [${part}]`)),
+    dropped,
+  }
+  console.log(JSON.stringify(list, null, 2))
+  process.exit(0)
 }
-
-const round = n => Math.round(n * 100) / 100
 
 if (process.argv.includes('--update')) {
   const backlog = { ...registry.backlog }
@@ -752,29 +998,44 @@ if (process.argv.includes('--update')) {
     backlog[tier.key] = { ratio: round(tier.ratio), why: registry.backlog[tier.key]?.why ?? '' }
   const declaredTable = { ...registry.declared }
   for (const rule of declared) {
-    if (!declaredHits.get(rule.key).length)
+    const hits = declaredHits.get(rule.key)
+    if (!hits.solid.length && !hits.nonSolid.length)
       declaredTable[rule.key] = registry.declared[rule.key] ?? ''
   }
   const opaqueTable = { ...registry.opaque }
   for (const key of opaqueValues.keys())
     opaqueTable[key] = registry.opaque[key] ?? ''
-  const sorted = obj => Object.fromEntries(Object.entries(obj).sort(([a], [b]) => a.localeCompare(b)))
-  const out = { backlog: sorted(backlog), declared: sorted(declaredTable), opaque: sorted(opaqueTable) }
+  const ringlessTable = { ...registry.ringless }
+  for (const rule of ringless)
+    ringlessTable[rule.key] = registry.ringless[rule.key] ?? ''
+  const unfocusableTable = { ...registry.unfocusable }
+  for (const key of unfocusableFaces.keys())
+    unfocusableTable[key] = registry.unfocusable[key] ?? ''
+  const out = {
+    backlog: sorted(backlog),
+    declared: sorted(declaredTable),
+    opaque: sorted(opaqueTable),
+    ringless: sorted(ringlessTable),
+    unfocusable: sorted(unfocusableTable),
+    solid: solidPartition(),
+  }
   await writeFile(REGISTRY, `${JSON.stringify(out, null, 2)}\n`, 'utf8')
   console.log(
     `[focus-ring-surface:update] 已写入 ${REGISTRY}：`
     + `未灌的实心档 ${Object.keys(backlog).length} 条、算不出实心档的 currentColor 规则 ${Object.keys(declaredTable).length} 条、`
-    + `解不出颜色的面 ${Object.keys(opaqueTable).length} 条——理由留空的条目要人补上，门禁会拦`,
+    + `解不出颜色的面 ${Object.keys(opaqueTable).length} 条、关环规则 ${Object.keys(ringlessTable).length} 条、`
+    + `不接焦点的实心面 ${Object.keys(unfocusableTable).length} 条；只读分区 solid 重写为 ${solidTiers.size} 档`
+    + `——理由留空的条目要人补上，门禁会拦`,
   )
   process.exit(0)
 }
 
 const problems = []
 
-// 判据一 · 三：实心档要么灌了 currentColor，要么登记在 backlog 里并写明理由
+// 判据一 · 三：实心档要么灌了 currentColor、要么被登了记的关环规则关掉，要么登记在 backlog 里并写明理由
 for (const tier of uncovered) {
   const entry = registry.backlog[tier.key]
-  const measured = `${round(tier.ratio)}:1（${tier.theme} · ${tier.tone ?? '无语气'}，面 ${tier.expr}）`
+  const measured = describe(tier, tier.expr)
   if (!entry) {
     problems.push(
       `${tier.at} ${tier.key} 的面压着环最低只有 ${measured}，不到 ${MIN_RATIO}:1，`
@@ -800,14 +1061,25 @@ for (const [key, entry] of Object.entries(registry.backlog)) {
     problems.push(`${key} 在 backlog 里缺 why 字段`)
 }
 
-// 判据二：反查每条 currentColor 规则
+// 判据二：反查每条 currentColor 规则——罩到非实心档的判红，一档实心档都罩不上的要登记
 const declaredSeen = new Set()
 for (const rule of declared) {
-  if (declaredHits.get(rule.key).length) {
+  const hits = declaredHits.get(rule.key)
+  for (const key of hits.nonSolid) {
+    const t = nonSolidTiers.get(key)
+    const face = t.seeThrough ? `面 ${t.expr}，透出祖先` : `面 ${t.expr} 压环最低 ${round(t.ratio)}:1（${t.theme} · ${t.tone ?? '无语气'}）`
+    problems.push(
+      `${rule.at} ${rule.key} 这条 currentColor 规则罩到了非实心档 ${key}（${face}）——`
+      + `非实心面一律吃默认 --xh-ring-focus，把选择器收窄到实心那一档`,
+    )
+  }
+  if (hits.solid.length) {
     if (rule.key in registry.declared)
       problems.push(`${rule.at} ${rule.key} 已经能算出实心档了——declared 里那条过期，删掉`)
     continue
   }
+  if (hits.nonSolid.length)
+    continue
   if (!(rule.key in registry.declared)) {
     problems.push(
       `${rule.at} ${rule.key} 灌了 currentColor，本脚本却算不出它压着的面低于 ${MIN_RATIO}:1——`
@@ -823,15 +1095,15 @@ for (const rule of declared) {
 
 for (const key of Object.keys(registry.declared)) {
   if (!declaredSeen.has(key))
-    problems.push(`${key} 登在 declared 里，皮肤里却没有这条 currentColor 规则了——名单过期，删掉这条`)
+    problems.push(`${key} 登在 declared 里，皮肤里却没有这条 currentColor 规则了，或者它已经罩到了算得出的档——名单过期，删掉这条`)
 }
 
 // 面解不出颜色的，同样逐条登记：不登记就等于这一档从此没人再想起来
-for (const [key, at] of opaqueValues) {
+for (const [key, { at, hint }] of opaqueValues) {
   if (!(key in registry.opaque)) {
     problems.push(
       `${at} ${key} —— 这块面本脚本解不出颜色（半透明、渐变、或使用者传进来的色值），`
-      + `判不了实心与否；登进 opaque 并写明这一档的环由什么保证`,
+      + `判不了实心与否${hint ? `；${hint}` : ''}；登进 opaque 并写明这一档的环由什么保证`,
     )
     continue
   }
@@ -844,6 +1116,69 @@ for (const key of Object.keys(registry.opaque)) {
     problems.push(`${key} 登在 opaque 里，皮肤里已经没有这块面了——名单过期，删掉这条`)
 }
 
+// 判据四：:focus-visible 里关掉环的规则逐条登记——环由谁画、或为什么这一档不该有环
+const ringlessSeen = new Set()
+for (const rule of ringless) {
+  ringlessSeen.add(rule.key)
+  if (!(rule.key in registry.ringless)) {
+    problems.push(
+      `${rule.at} ${rule.key} 在聚焦规则里把 ${rule.prop} 写成 ${rule.value}，键盘焦点在这一档没有环——`
+      + `环由别处画的（外框的 :focus-within、包一层的壳）登进 ringless 写明是谁画；`
+      + `谁都不画的把这条删掉，失效档也只豁免对比度，环不许消失`,
+    )
+    continue
+  }
+  if (!registry.ringless[rule.key])
+    problems.push(`${rule.key} 登在 ringless 里没写理由——补一句「这一档的环由谁画、或为什么不画」`)
+}
+
+for (const key of Object.keys(registry.ringless)) {
+  if (!ringlessSeen.has(key))
+    problems.push(`${key} 登在 ringless 里，皮肤里已经没有这条关环规则了——名单过期，删掉这条`)
+}
+
+// 判据五：画了实心面却两条来路都查无此人的部件，必须表态
+for (const [key, face] of unfocusableFaces) {
+  if (!(key in registry.unfocusable)) {
+    problems.push(
+      `${face.at} ${key} 画了一块面，压环最低只有 ${describe(face, face.expr)}，`
+      + `连接层没给它 tabindex、皮肤也没写 :focus-visible——`
+      + `接焦点的在连接层接 tabindex 或在皮肤补 :focus-visible；不接焦点的登进 unfocusable 写明「这块面不接焦点」`,
+    )
+    continue
+  }
+  if (!registry.unfocusable[key])
+    problems.push(`${key} 登在 unfocusable 里没写理由——补一句「这块面为什么不接焦点」`)
+}
+
+for (const key of Object.keys(registry.unfocusable)) {
+  if (!unfocusableFaces.has(key))
+    problems.push(`${key} 登在 unfocusable 里，现在要么接上了焦点、要么面已经过线或没了——名单过期，删掉这条`)
+}
+
+// 只读分区 solid：与算出来的逐档对拍，供浏览器态判据对账
+const expectedSolid = solidPartition()
+const storedSolid = registry.solid ?? {}
+for (const [key, entry] of Object.entries(expectedSolid)) {
+  const have = storedSolid[key]
+  if (!have)
+    problems.push(`${key} 是算出来的实心档，solid 分区里没有——跑 pnpm focus-ring-surface:update 重写分区`)
+  else if (JSON.stringify(have) !== JSON.stringify(entry))
+    problems.push(`${key} 在 solid 分区里登记 ${JSON.stringify(have)}，算出来 ${JSON.stringify(entry)}——跑 pnpm focus-ring-surface:update 重写分区`)
+}
+for (const key of Object.keys(storedSolid)) {
+  if (!(key in expectedSolid))
+    problems.push(`${key} 登在 solid 分区里，已经算不出这一档了——跑 pnpm focus-ring-surface:update 重写分区`)
+}
+
+// 环色写成透明的聚焦规则：没有登记表，环不许消失
+for (const rule of vanished) {
+  problems.push(
+    `${rule.at} ${rule.key} 在聚焦规则里把 ${rule.prop} 写成 ${rule.value}，环色解出来是透明的——`
+    + `环画了等于没画；失效档也只豁免对比度，环不许消失，把这一行删掉或换成看得见的色`,
+  )
+}
+
 for (const line of unreadable)
   problems.push(line)
 
@@ -854,10 +1189,14 @@ if (problems.length) {
   process.exit(1)
 }
 
-const covered = solidTiers.size - uncovered.length
+const byRing = { currentColor: 0, off: 0, backlog: 0 }
+for (const t of solidTiers.values()) byRing[t.ring]++
+const droppedTotal = Object.values(dropped).reduce((a, b) => a + b, 0)
 console.log(
   `[check-focus-ring-surface] 通过：${files.length} 份皮肤里算出 ${solidTiers.size} 档面压环不到 ${MIN_RATIO}:1，`
-  + `${covered} 档灌了 currentColor、${uncovered.length} 档登在 backlog；`
-  + `${declared.length} 条 currentColor 选择器分支逐条反查（${Object.keys(registry.declared).length} 条算不出实心档、已登记）；`
-  + `另有 ${opaqueValues.size} 块面解不出颜色，逐条登在 opaque`,
+  + `${byRing.currentColor} 档灌了 currentColor、${byRing.off} 档由登了记的关环规则关掉、${byRing.backlog} 档登在 backlog；`
+  + `另有 ${nonSolidTiers.size} 档非实心档（${[...nonSolidTiers.values()].filter(t => t.seeThrough).length} 档透出祖先），`
+  + `${declared.length} 条 currentColor 规则逐条反查（${Object.keys(registry.declared).length} 条算不出实心档、已登记）；`
+  + `${ringless.length} 条关环规则、${unfocusableFaces.size} 块不接焦点的实心面、${opaqueValues.size} 块解不出颜色的面逐条登记；`
+  + `${droppedTotal} 条面声明没进判定面（${Object.entries(dropped).filter(([, n]) => n).map(([k, n]) => `${k} ${n}`).join('、')}）`,
 )

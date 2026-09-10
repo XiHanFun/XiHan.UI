@@ -632,10 +632,6 @@
     line-height: var(--xh-leading-normal);
   }
 
-  [data-scope='cascader'][data-part='input']:focus-visible {
-    outline: none;
-  }
-
   [data-scope='cascader'][data-part='input'][hidden] {
     display: none;
   }

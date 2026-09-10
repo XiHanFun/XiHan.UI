@@ -67,6 +67,11 @@
     --xh-_ring-color: currentColor;
   }
 
+  /* 复制成功那一段把字换成成功色，面仍是实心语气底；环取面配对的那支前景色 */
+  [data-scope='clipboard'][data-part='root'][data-variant='solid'] [data-scope='clipboard'][data-part='copy-trigger'][data-copied]:focus-visible {
+    --xh-_ring-color: var(--xh-clipboard-copy-trigger-fg, var(--xh-_clipboard-copy-trigger-fg));
+  }
+
   [data-scope='clipboard'][data-part='root'][data-variant='subtle'] {
     --xh-_clipboard-copy-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_clipboard-copy-trigger-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));

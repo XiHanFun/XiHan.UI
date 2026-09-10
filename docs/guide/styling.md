@@ -190,6 +190,8 @@ CSS 的级联顺序由 `@layer` 声明的**首次出现顺序**决定，与 `@im
 
 **环仍然不随语气。** `currentColor` 取的是那块面配对的前景色（实心底上就是 `--xh-tone-on` 那一支），不是语气色本体——语气色本体当环色，warning 压白底只有 2.70:1、success 3.04:1，够不到 3:1。没有实心面的那些档一律是 `--xh-ring-focus` 一支色。判据看的是「环压着的那块面」，不是「组件是什么语气」。
 
+**过了线的面不为统一而灌。** 淡底、透空的面这些非实心档一律吃默认环；一条 `currentColor` 规则罩到了非实心档（同一个部件的另一个形态、失效档、只读档），门禁判红，把选择器收窄到实心那一档，而不是登记豁免。
+
 自己写皮肤时，灌之前核三件事：
 
 1. **面画在谁身上**。画在祖先上时（透空的关闭钮坐在标签那块实心底上）规则写成后代选择器，槽仍然灌在拿焦点的那个节点上。
@@ -258,7 +260,7 @@ theme.setPreference({ brand: brandId("acme") });
 | `check-token-refs` | 皮肤引用了令牌产物里不存在的令牌名。孤儿引用不报错也不降级——整条声明在计算值阶段静默失效 |
 | `check-shared-slots` | 同一个字面量在两个以上组件里当默认值。那是一条没被命名的设计决策，应当先立语义令牌 |
 | `check-disabled-contrast` | 禁用态的前景色令牌上又叠 `opacity`。两种手段同时用会把对比度压到读不出字 |
-| `check-focus-ring-surface` | 可聚焦部件的面压着环不到 3:1，那一档却没把 `--xh-_ring-color` 灌成 `currentColor`。键盘焦点落在那块面上等于没画 |
+| `check-focus-ring-surface` | 可聚焦部件的面压着环不到 3:1，那一档却没把 `--xh-_ring-color` 灌成 `currentColor`。键盘焦点落在那块面上等于没画。反过来 `currentColor` 罩到非实心档、`:focus-visible` 里关掉环（`outline: none` / `outline-width: 0`）却没登记环由谁画、画了实心面却不接焦点也没登记的部件，同样判红；聚焦规则把环色写成透明的直接判红——失效档只豁免对比度，环不许消失 |
 | `check-overlay-strategy` | 浮层的坐标系在机器、`connect`、皮肤三处不一致 |
 | `check-part-wiring` | 解剖里声明、`connect` 里产出、适配器却没接线的部件。皮肤为它写了规则却匹配不到任何元素 |
 | stylelint | 常规 CSS 规范 |

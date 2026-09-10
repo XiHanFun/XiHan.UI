@@ -112,8 +112,14 @@
      那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
      形态写在壳上、面画在触发器上，所以这条是后代选择器，环落在拿焦点的那颗钮上 */
   [data-scope='float-button'][data-part='root'][data-variant='solid']
-    [data-scope='float-button'][data-part='trigger']:focus-visible {
+    [data-scope='float-button'][data-part='trigger']:not([data-disabled]):focus-visible {
     --xh-_ring-color: currentColor;
+  }
+
+  /* 置灰只换字色、面仍是实心语气底：环取面配对的那支前景色，不取被换掉的置灰色 */
+  [data-scope='float-button'][data-part='root'][data-variant='solid']
+    [data-scope='float-button'][data-part='trigger'][data-disabled]:focus-visible {
+    --xh-_ring-color: var(--xh-float-button-fg, var(--xh-_float-button-fg));
   }
 
   [data-scope='float-button'][data-part='root'][data-variant='subtle'] {

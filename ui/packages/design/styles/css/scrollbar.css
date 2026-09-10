@@ -135,7 +135,7 @@
   }
 
   /* 面是实心的中性色，环色与面同族，画在面里就看不出来；环改取这一档配对的墨色 */
-  [data-scope='scrollbar'][data-part='thumb']:focus-visible {
+  [data-scope='scrollbar'][data-part='thumb']:not([data-disabled]):focus-visible {
     --xh-_ring-color: currentColor;
   }
 

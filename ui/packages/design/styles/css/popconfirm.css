@@ -280,7 +280,7 @@
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
      那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
      悬停与按下两档的底更深，环跟着这块面的前景色走才在三档上都读得出来 */
-  [data-scope='popconfirm'][data-part='cancel-trigger']:focus-visible {
+  [data-scope='popconfirm'][data-part='cancel-trigger']:is(:hover, :active):focus-visible {
     --xh-_ring-color: currentColor;
   }
 
