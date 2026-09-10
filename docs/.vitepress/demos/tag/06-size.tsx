@@ -1,22 +1,28 @@
-// 尺寸 | size 只改内边距、间距与字号，不写就是缺省档；关闭钮的命中区不跟着缩
+// 尺寸 | size 换内边距、间距、字号与行框，不写就是缺省档；同一档有没有关闭钮都一样高，lg 档的关闭钮跟着放大
 import type { ReactNode } from "react";
 import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from "@xihan-ui/react";
+import { Fragment } from "react";
+
+const sizes = [
+  { size: "sm", label: "小" },
+  { size: undefined, label: "缺省" },
+  { size: "lg", label: "大" },
+] as const;
 
 export default function Demo(): ReactNode {
   return (
     <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px" }}>
-      <XhTagRoot variant="subtle" size="sm" closable>
-        <XhTagLabel>小</XhTagLabel>
-        <XhTagCloseTrigger />
-      </XhTagRoot>
-      <XhTagRoot variant="subtle" closable>
-        <XhTagLabel>缺省</XhTagLabel>
-        <XhTagCloseTrigger />
-      </XhTagRoot>
-      <XhTagRoot variant="subtle" size="lg" closable>
-        <XhTagLabel>大</XhTagLabel>
-        <XhTagCloseTrigger />
-      </XhTagRoot>
+      {sizes.map(item => (
+        <Fragment key={item.label}>
+          <XhTagRoot variant="subtle" size={item.size}>
+            <XhTagLabel>{item.label}</XhTagLabel>
+          </XhTagRoot>
+          <XhTagRoot variant="subtle" size={item.size} closable>
+            <XhTagLabel>{item.label}</XhTagLabel>
+            <XhTagCloseTrigger />
+          </XhTagRoot>
+        </Fragment>
+      ))}
     </div>
   );
 }

@@ -9,11 +9,12 @@
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-tag-icon-size, var(--xh-glyph-size-text));
 
-    /* 尺寸档只换这四个私有槽，下面的声明从它们取值 */
+    /* 尺寸档只换这五个私有槽，下面的声明从它们取值；行框是文字与关闭钮共用的那一格高，取指示符档 */
     --xh-_tag-gap: var(--xh-space-1);
     --xh-_tag-px: var(--xh-space-2);
-    --xh-_tag-py: var(--xh-space-0_5);
-    --xh-_tag-font-size: var(--xh-text-caption-size);
+    --xh-_tag-py: var(--xh-space-1);
+    --xh-_tag-font-size: var(--xh-text-secondary-size);
+    --xh-_tag-line-h: var(--xh-control-indicator-md);
 
     display: inline-flex;
     align-items: center;
@@ -28,7 +29,9 @@
     color: var(--xh-tag-fg, var(--xh-fg-default));
     font-size: var(--xh-tag-font-size, var(--xh-_tag-font-size));
     font-weight: var(--xh-tag-font-weight, var(--xh-font-weight-medium));
-    line-height: var(--xh-leading-none);
+    /* 行框与关闭钮同一个高，有没有关闭钮同档标签一样高；
+       作者把字调得比这一格还大时行框跟着字走，label 的截断不会剪掉字的上下沿 */
+    line-height: max(calc(var(--xh-leading-none) * 1em), var(--xh-_tag-line-h));
     /* 随文排时与正文基线对齐 */
     vertical-align: middle;
   }
@@ -52,7 +55,7 @@
     align-items: center;
     justify-content: center;
     flex: none;
-    /* 命中区取标签内移除钮的指示符尺寸，不随标签档位缩小 */
+    /* 命中区与文字的行框同一个数：作者槽 → 本档的行框 → 不分档的指示符；sm / md 是中档，lg 档放大一级 */
     block-size: var(--xh-tag-close-size, var(--xh-control-indicator-size));
     inline-size: var(--xh-tag-close-size, var(--xh-control-indicator-size));
     /* 命中区比字形大一圈，往内收一格才不会在标签右缘留出一块空白 */
@@ -151,18 +154,20 @@
   }
 
   /* —— 尺寸 —— */
-  /* 标签是随文排的标记，不占控件行高，档位走间距与字号而不是 control-h */
+  /* 标签是随文排的标记，不占控件行高，档位走间距、字号与行框而不是 control-h */
   [data-scope='tag'][data-part='root'][data-size='sm'] {
     --xh-_tag-gap: var(--xh-space-0_5);
     --xh-_tag-px: var(--xh-space-1_5);
-    --xh-_tag-py: var(--xh-space-0);
+    --xh-_tag-py: var(--xh-space-0_5);
+    --xh-_tag-font-size: var(--xh-text-caption-size);
   }
 
+  /* 行框与关闭钮一起上到指示符的大档，竖向内衬沿用中档 */
   [data-scope='tag'][data-part='root'][data-size='lg'] {
     --xh-_tag-gap: var(--xh-space-1_5);
     --xh-_tag-px: var(--xh-space-3);
-    --xh-_tag-py: var(--xh-space-1);
-    --xh-_tag-font-size: var(--xh-text-secondary-size);
+    --xh-_tag-font-size: var(--xh-text-body-size);
+    --xh-_tag-line-h: var(--xh-control-indicator-lg);
   }
 
   /* —— 禁用 —— */

@@ -322,6 +322,7 @@
     --xh-control-gap-md: var(--xh-space-1_5);
     --xh-control-gap-lg: var(--xh-space-2);
     --xh-control-action-size: 20px;
+    --xh-control-indicator-size: var(--xh-control-indicator-md);
     --xh-control-indicator-sm: 10px;
     --xh-control-indicator-md: 14px;
     --xh-control-indicator-lg: 18px;

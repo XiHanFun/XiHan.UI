@@ -1,21 +1,24 @@
-<!-- 尺寸 | size 只改内边距、间距与字号，不写就是缺省档；关闭钮的命中区不跟着缩 -->
+<!-- 尺寸 | size 换内边距、间距、字号与行框，不写就是缺省档；同一档有没有关闭钮都一样高，lg 档的关闭钮跟着放大 -->
 <script setup lang="ts">
 import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
+
+const sizes = [
+  { size: "sm", label: "小" },
+  { size: undefined, label: "缺省" },
+  { size: "lg", label: "大" },
+] as const;
 </script>
 
 <template>
   <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
-    <XhTagRoot variant="subtle" size="sm" closable>
-      <XhTagLabel>小</XhTagLabel>
-      <XhTagCloseTrigger />
-    </XhTagRoot>
-    <XhTagRoot variant="subtle" closable>
-      <XhTagLabel>缺省</XhTagLabel>
-      <XhTagCloseTrigger />
-    </XhTagRoot>
-    <XhTagRoot variant="subtle" size="lg" closable>
-      <XhTagLabel>大</XhTagLabel>
-      <XhTagCloseTrigger />
-    </XhTagRoot>
+    <template v-for="item in sizes" :key="item.label">
+      <XhTagRoot variant="subtle" :size="item.size">
+        <XhTagLabel>{{ item.label }}</XhTagLabel>
+      </XhTagRoot>
+      <XhTagRoot variant="subtle" :size="item.size" closable>
+        <XhTagLabel>{{ item.label }}</XhTagLabel>
+        <XhTagCloseTrigger />
+      </XhTagRoot>
+    </template>
   </div>
 </template>
