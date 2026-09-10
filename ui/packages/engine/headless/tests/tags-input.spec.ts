@@ -52,6 +52,7 @@ function spread(el: HTMLElement, props: Record<string, unknown>): void {
   }
 }
 
+/** 一枚标签的节点：preview 是 tag 的 root、text 是 tag 的 label、del 是 tag 的 close-trigger。 */
 interface ItemNodes {
   item: HTMLElement
   preview: HTMLElement
@@ -416,6 +417,39 @@ describe('connectTagsInput 属性输出', () => {
     expect(n.editInput.getAttribute('aria-label')).toBe('Edit vue')
   })
 
+  it('预览、文字与删除钮就是库里的 tag：戴 tag 的 scope，本组件不再有自己的那三个部件', () => {
+    const h = mount({ defaultValue: ['vue'] })
+    const n = h.nodes('vue')
+    expect([n.preview.getAttribute('data-scope'), n.preview.getAttribute('data-part')]).toEqual(['tag', 'root'])
+    expect([n.text.getAttribute('data-scope'), n.text.getAttribute('data-part')]).toEqual(['tag', 'label'])
+    expect([n.del.getAttribute('data-scope'), n.del.getAttribute('data-part')]).toEqual(['tag', 'close-trigger'])
+    // 关闭钮开着、留在原地
+    expect(n.del.hasAttribute('hidden')).toBe(false)
+    expect(n.del.hasAttribute('disabled')).toBe(false)
+    expect(n.del.getAttribute('data-disabled')).toBeNull()
+    // 状态标记留在本组件的 item 上，tag 的 root 不带
+    expect(n.item.getAttribute('data-highlighted')).toBeNull()
+    expect(n.preview.hasAttribute('data-highlighted')).toBe(false)
+    expect(n.preview.hasAttribute('data-editing')).toBe(false)
+    for (const part of ['item-preview', 'item-text', 'item-delete-trigger'])
+      expect(document.querySelector(`[data-scope="tags-input"][data-part="${part}"]`)).toBeNull()
+  })
+
+  it('tone / size 从控件传到每枚标签上；形态按控件的面派——subtle 控件里是描边标签，其余（含缺省）是淡底标签', () => {
+    const plain = mount({ defaultValue: ['vue'] }).nodes('vue').preview
+    expect(plain.getAttribute('data-variant')).toBe('subtle')
+    expect(plain.getAttribute('data-tone')).toBeNull()
+    expect(plain.getAttribute('data-size')).toBeNull()
+
+    const subtle = mount({ defaultValue: ['vue'], variant: 'subtle', tone: 'danger', size: 'lg' }).nodes('vue').preview
+    expect(subtle.getAttribute('data-variant')).toBe('outline')
+    expect(subtle.getAttribute('data-tone')).toBe('danger')
+    expect(subtle.getAttribute('data-size')).toBe('lg')
+
+    expect(mount({ defaultValue: ['vue'], variant: 'ghost' }).nodes('vue').preview.getAttribute('data-variant')).toBe('subtle')
+    expect(mount({ defaultValue: ['vue'], variant: 'outline' }).nodes('vue').preview.getAttribute('data-variant')).toBe('subtle')
+  })
+
   it('translations 覆盖默认英文文案', () => {
     const h = mount({
       defaultValue: ['vue'],
@@ -432,6 +466,8 @@ describe('connectTagsInput 属性输出', () => {
     const n = h.nodes('vue')
     expect(n.editInput.hasAttribute('hidden')).toBe(true)
     expect(n.preview.hasAttribute('hidden')).toBe(false)
+    // 预览露不露面就是 tag 的展开态
+    expect(n.preview.getAttribute('data-state')).toBe('open')
   })
 
   it('清空按钮：没东西可清时只打 hidden 收起，有标签或有文本就露出', () => {
@@ -733,12 +769,29 @@ describe('删除按钮与清空按钮的焦点去处', () => {
     expect(event.defaultPrevented).toBe(true)
   })
 
-  it('禁用时删除按钮落成原生 disabled（浏览器根本不派 click）', () => {
+  it('禁用时删除按钮落成原生 disabled（浏览器根本不派 click），整枚标签一起标 data-disabled', () => {
     const h = mount({ defaultValue: ['a'], disabled: true })
-    expect(h.nodes('a').del.hasAttribute('disabled')).toBe(true)
+    const n = h.nodes('a')
+    expect(n.del.hasAttribute('disabled')).toBe(true)
+    expect(n.del.getAttribute('data-disabled')).toBe('')
+    // 留在原地，不收起
+    expect(n.del.hasAttribute('hidden')).toBe(false)
+    expect(n.preview.getAttribute('data-disabled')).toBe('')
     // 直接派事件才碰得到守卫那一路
-    click(h.nodes('a').del)
+    click(n.del)
     expect(h.value()).toEqual(['a'])
+  })
+
+  it('只读时删除按钮同样留位、原生 disabled，但标签本身不置灰；直接派 click 不动值', () => {
+    const h = mount({ defaultValue: ['a'], readOnly: true })
+    const n = h.nodes('a')
+    expect(n.del.hasAttribute('disabled')).toBe(true)
+    expect(n.del.getAttribute('data-disabled')).toBe('')
+    expect(n.del.hasAttribute('hidden')).toBe(false)
+    expect(n.preview.getAttribute('data-disabled')).toBeNull()
+    click(n.del)
+    expect(h.value()).toEqual(['a'])
+    expect(h.stateOf()).toBe('idle')
   })
 
   it('清空按钮清掉标签与文本；正持有焦点时焦点交回输入框', () => {
@@ -765,7 +818,9 @@ describe('就地编辑', () => {
     const n = h.nodes('vue')
     n.preview.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
     expect(h.stateOf()).toBe('editing')
+    // 预览是 tag 的 root，收起走 tag 的 open=false：hidden 与 data-state 一起翻
     expect(n.preview.hasAttribute('hidden')).toBe(true)
+    expect(n.preview.getAttribute('data-state')).toBe('closed')
     expect(n.editInput.hasAttribute('hidden')).toBe(false)
     expect(n.item.getAttribute('data-editing')).toBe('')
     // 编辑框从原值起步，而不是空着

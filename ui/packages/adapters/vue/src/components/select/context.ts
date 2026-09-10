@@ -51,7 +51,7 @@ export function useSelectGroupContext(): SelectGroupContext {
   return ctx
 }
 
-/** 标签自报的值，供 item-delete-trigger 复用同一份声明。 */
+/** 标签自报的值，供标签里的删除钮复用同一份声明。 */
 export interface SelectTagContext {
   value: () => string
 }

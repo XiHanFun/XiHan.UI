@@ -110,14 +110,15 @@
   }
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='tag'][data-part='root'][data-variant='solid']:focus-visible {
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     置灰那档的底已换成静默色、字换成置灰色，不在其列：环退回默认那一支 */
+  [data-scope='tag'][data-part='root'][data-variant='solid']:not([data-disabled]):focus-visible {
     --xh-_ring-color: currentColor;
   }
 
   /* 关闭钮自己的面是透空的，环压着的是标签那块实心底；它的字色就是那块底上的前景色，
      环跟着取过来 */
-  [data-scope='tag'][data-part='root'][data-variant='solid']
+  [data-scope='tag'][data-part='root'][data-variant='solid']:not([data-disabled])
     [data-scope='tag'][data-part='close-trigger']:focus-visible {
     --xh-_ring-color: currentColor;
   }

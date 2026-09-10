@@ -433,6 +433,11 @@ describe('json-viewer 的不冒泡事件按 DOM 语义送达', () => {
   })
 })
 
+/** 一枚标签是 tag 的 root，戴 tag 的 scope；按 row 角色认出列表里的那些。 */
+function tagGroupItems(): HTMLElement[] {
+  return [...document.querySelectorAll<HTMLElement>('[data-scope="tag-group"][data-part="list"] > [data-scope="tag"][data-part="root"][role="row"]')]
+}
+
 describe('tag-group 的不冒泡事件按 DOM 语义送达', () => {
   const TREE = (
     <XhTagGroupRoot selectionMode="multiple">
@@ -451,12 +456,12 @@ describe('tag-group 的不冒泡事件按 DOM 语义送达', () => {
     await fire(list, new Event('focus'))
 
     expect(list.getAttribute('tabindex')).toBe('-1')
-    expect(parts('tag-group', 'item')[0]!.getAttribute('tabindex')).toBe('0')
+    expect(tagGroupItems()[0]!.getAttribute('tabindex')).toBe('0')
   })
 
   it('标签自己得焦：锚点改记它，roving tabindex 跟着换人', async () => {
     await mount(TREE)
-    const [first, second] = parts('tag-group', 'item')
+    const [first, second] = tagGroupItems()
 
     await fire(second!, new Event('focus'))
 

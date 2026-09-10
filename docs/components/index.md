@@ -95,12 +95,12 @@
 | [分格输入](./pin-input) | `pin-input` | 6 | 6 | 11 |
 | [单选组](./radio-group) | `radio-group` | 6 | 4 | 7 |
 | [评分](./rating) | `rating` | 6 | 5 | 9 |
-| [选择器](./select) | `select` | 21 | 15 | 20 |
+| [选择器](./select) | `select` | 20 | 15 | 20 |
 | [签名板](./signature-pad) | `signature-pad` | 8 | 1 | 6 |
 | [滑块](./slider) | `slider` | 11 | 6 | 11 |
 | [开关](./switch) | `switch` | 5 | 1 | 11 |
-| [标签组](./tag-group) | `tag-group` | 7 | 10 | 4 |
-| [标签输入](./tags-input) | `tags-input` | 12 | 13 | 12 |
+| [标签组](./tag-group) | `tag-group` | 4 | 10 | 4 |
+| [标签输入](./tags-input) | `tags-input` | 9 | 13 | 12 |
 | [文本输入](./text-field) | `text-field` | 8 | 1 | 16 |
 | [时间输入](./time-field) | `time-field` | 7 | 9 | 9 |
 | [时间选择器](./time-picker) | `time-picker` | 14 | 24 | 11 |
@@ -134,7 +134,7 @@
 | [二维码](./qr-code) | `qr-code` | 2 | 0 | 8 |
 | [统计数值](./statistic) | `statistic` | 6 | 0 | 6 |
 | [表格](./table) | `table` | 23 | 18 | 24 |
-| [标签](./tag) | `tag` | 3 | 1 | 6 |
+| [标签](./tag) | `tag` | 3 | 1 | 7 |
 | [时间线](./timeline) | `timeline` | 9 | 0 | 6 |
 | [计时器](./timer) | `timer` | 5 | 1 | 7 |
 | [时间戳](./timestamp) | `timestamp` | 1 | 0 | 4 |

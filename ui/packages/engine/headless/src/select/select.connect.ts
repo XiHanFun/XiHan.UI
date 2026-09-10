@@ -1,10 +1,10 @@
-import type { ControlVariant, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { TagApi, TagVariant } from '../tag'
+import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { TagApi } from '../tag'
 import type { SelectApi, SelectItemProps, SelectNodeMeta, SelectSchema } from './select.types'
 import { contains, dataAttr, focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { overlayPositioned } from '../shared/overlay'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
-import { connectStaticTag } from '../tag'
+import { connectStaticTag, tagVariantForControl } from '../tag'
 import { selectAnatomy, selectItemQuery, selectItemText } from './select.anatomy'
 import { SELECT_DEFAULT_MAX_TAG_COUNT, SELECT_DEFAULT_PLACEMENT } from './select.machine'
 
@@ -40,15 +40,6 @@ function anchorWidthVar(width: number | undefined): Record<string, string> {
   return {
     '--xh-_select-anchor-w': width != null ? `${width}px` : '',
   }
-}
-
-/**
- * 标签的形态按控件的面派，不照抄控件的形态：outline / ghost 与缺省（即 outline）的面是画布色或透明，
- * 摆淡底标签；subtle 的面本身就是淡底，摆描边标签才看得出是一枚标签。
- * 形态恒有值，语气才有落点——tag 的语气规则都挂在形态之下。
- */
-function tagVariantOf(variant: ControlVariant | undefined): TagVariant {
-  return variant === 'subtle' ? 'outline' : 'subtle'
 }
 
 export function connectSelect<T extends PropTypes>(
@@ -100,20 +91,36 @@ export function connectSelect<T extends PropTypes>(
   // roving tabindex 与方向键起点共用这一个锚点；收起时为 null（条目此刻不可达）
   const highlighted = context.get('highlightedValue') ?? null
   const disabled = !!prop('disabled')
-  // 标签与 +N 套的是库里的 tag：语气、尺寸与禁用从本控件传下去，形态按控件的面派，不给关闭钮（触发器是按钮，按钮不能套按钮）。
-  // 显隐受控在这里——标签在不在只看选中值在不在；关不掉的标签没有任何能改状态的事件，不建机器
-  const staticTag = (open: boolean): TagApi<T> => connectStaticTag(
-    { variant: tagVariantOf(prop('variant')), tone: prop('tone'), size: prop('size'), disabled, closable: false, open },
-    { get: () => open, set: () => {} },
+  const deleteItemLabel = prop('translations')?.deleteItem ?? ((label: string) => `Delete ${label}`)
+  const readOnly = !!prop('readOnly')
+  const tagAxes = { variant: tagVariantForControl(prop('variant')), tone: prop('tone'), size: prop('size'), disabled, readOnly }
+  // 标签与 +N 套的是库里的 tag：语气、尺寸、禁用与只读从本控件传下去，形态按控件的面派。
+  // 显隐受控在这里——标签在不在只看选中值在不在，不建机器。
+  // 值标签一枚一份，关闭钮即删除钮：受控 open 下按它只发 onOpenChange，摘值从这里回到机器；
+  // 摆在触发器里时不渲那颗钮（按钮不能套按钮），root 的产出不看 closable
+  const hostedTag = (v: string): TagApi<T> => connectStaticTag(
+    {
+      ...tagAxes,
+      closable: true,
+      open: true,
+      translations: { close: deleteItemLabel(tagLabel(v)) },
+      onOpenChange: ({ open }) => {
+        if (!open)
+          send({ type: 'VALUE.SET', value: value.filter(x => x !== v) })
+      },
+    },
+    { get: () => true, set: () => {} },
     normalize,
   )
-  const tag = staticTag(true)
-  // +N 那一枚：没有折起的标签时就是收起态，hidden 由 tag 给
-  const overflowTag = staticTag(overflowCount > 0)
+  // +N 那一枚不可关闭：没有折起的标签时就是收起态，hidden 由 tag 给
+  const overflowTag = connectStaticTag(
+    { ...tagAxes, closable: false, open: overflowCount > 0 },
+    { get: () => overflowCount > 0, set: () => {} },
+    normalize,
+  )
   const loading = !!prop('loading')
   // 集合交给库时相位由库判；条目手写时库数不出有几条
   const counted = prop('collection') != null
-  const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
   // 只读与禁用都改不了选中值，区别在于禁用连浮层都展不开
   const interactive = !disabled && !readOnly
@@ -301,7 +308,7 @@ export function connectSelect<T extends PropTypes>(
     }),
     // 标签本体就是 tag 的 root（data-scope="tag"），只多一个 data-value 记它代表哪个选中值
     getTagProps: ({ value: v }) => ({
-      ...tag.getRootProps() as Record<string, unknown>,
+      ...hostedTag(v).getRootProps() as Record<string, unknown>,
       'data-value': v,
     }) as T['element'],
     // 折起来的那些合成一枚：也是 tag 的 root，data-count 记折了几枚；没有折起的就整个收起，不留空位
@@ -310,17 +317,10 @@ export function connectSelect<T extends PropTypes>(
       'data-count': String(overflowCount),
     }) as T['element'],
     // 两种标签的文字都落在 tag 的 label 上，截断规则挂在那一层
-    getTagLabelProps: () => tag.getLabelProps(),
-    getItemDeleteTriggerProps: ({ value: v }) => normalize.button({
-      ...parts['item-delete-trigger'].attrs,
-      'type': 'button',
-      'aria-label': (prop('translations')?.deleteItem ?? ((label: string) => `Delete ${label}`))(tagLabel(v)),
-      'data-disabled': dataAttr(disabled),
-      'onClick': () => {
-        if (interactive)
-          send({ type: 'VALUE.SET', value: value.filter(x => x !== v) })
-      },
-    }),
+    getTagLabelProps: () => overflowTag.getLabelProps(),
+    // 删除钮就是所在标签那份 tag 的 close-trigger：可及名、禁用与点按都由 tag 给，
+    // 只读时点按送到机器的 VALUE.SET 被 isReadOnly 守卫挡下
+    getItemDeleteTriggerProps: ({ value: v }) => hostedTag(v).getCloseTriggerProps(),
     // 清空按钮是 trigger 的兄弟节点（按钮不能套按钮），点按只清值不碰开合
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,

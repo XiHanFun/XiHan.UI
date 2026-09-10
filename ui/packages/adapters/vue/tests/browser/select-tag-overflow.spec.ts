@@ -1,7 +1,8 @@
 // 多选把选中项摆成标签时，触发器是一行控件：标签越选越多，盒不许被撑高，也不许让标签冲出盒外。
 // 摆不下的折成 +N 那一枚；行还是装不下时各枚标签缩短带省略号，+N 始终看得见。
 // 标签与 +N 都是库里的 tag（data-scope="tag"）：样子归 tag.css，档位跟着控件的 size 走，
-// tag.css 的覆盖槽写在 select 的根上照样生效。
+// tag.css 的覆盖槽写在 select 的根上照样生效。触发器外那枚标签里的删除钮就是 tag 的 close-trigger，
+// 尺寸、圆角与禁用色也全由 tag.css 画，select.css 不再有自己的删除钮规则。
 //
 // 只有真实浏览器量得出来：盒高、标签的右缘与盒的右缘都是布局结果，jsdom 不排版。
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
@@ -13,6 +14,7 @@ import {
   XhSelectControl,
   XhSelectIndicator,
   XhSelectItem,
+  XhSelectItemDeleteTrigger,
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectList,
@@ -23,6 +25,7 @@ import {
   XhSelectTagList,
   XhSelectTrigger,
   XhSelectValueText,
+  XhTagCloseTrigger,
   XhTagRoot,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
@@ -55,13 +58,16 @@ interface MountOptions {
   size?: SizeTier
   variant?: ControlVariant
   tone?: Tone
+  disabled?: boolean
   style?: string
+  /** 触发器外再摆一排带删除钮的标签（按钮不能套按钮，删除钮只能放在触发器外）。 */
+  deletable?: boolean
 }
 
 /** 没给的入参不落到 props 上：根组件的这几个 prop 声明了 default，显式传 undefined 过不了类型。 */
 function given(opts: MountOptions): Record<string, unknown> {
   const out: Record<string, unknown> = {}
-  for (const key of ['maxTagCount', 'size', 'variant', 'tone'] as const) {
+  for (const key of ['maxTagCount', 'size', 'variant', 'tone', 'disabled'] as const) {
     if (opts[key] !== undefined)
       out[key] = opts[key]
   }
@@ -98,6 +104,9 @@ async function mountTags(picked: number, width: number, opts: MountOptions = {})
             h(XhSelectItem, { key: o.value, value: o.value }, () => [h(XhSelectItemText, () => o.label), h(XhSelectItemIndicator)]),
           ))),
         ]),
+        ...(opts.deletable
+          ? [h('div', { 'data-testid': 'row' }, bag.tags.map(t => h(XhSelectTag, { key: t.value, value: t.value }, () => [t.label, h(XhSelectItemDeleteTrigger)])))]
+          : []),
       ],
     }),
   })
@@ -126,6 +135,11 @@ function overflowTag(): HTMLElement {
   if (!el)
     throw new Error('挂载树里没有 +N 那一枚')
   return el
+}
+
+/** 触发器外那排标签里的删除钮，文档序：就是 tag 的 close-trigger。 */
+function deleteTriggers(): HTMLButtonElement[] {
+  return Array.from(host?.querySelectorAll<HTMLButtonElement>(`[data-testid='row'] ${TAG_ROOT} [data-scope='tag'][data-part='close-trigger']`) ?? [])
 }
 
 /** 标签文字所在的 label：截断落在这一层。 */
@@ -363,5 +377,62 @@ describe('多选标签：形态按控件的面派，语气在标签上有落点'
     }
     // 标签的轮廓与盒的面不是同一个颜色，摆在盒里看得见
     expect(expected.border).not.toBe(box.bg)
+  })
+})
+
+/** 独立渲染一枚同档的可关闭 tag，读它关闭钮的几何与颜色：select 里的删除钮得与它逐值一样。 */
+function referenceCloseTrigger(size: SizeTier | undefined, disabled = false): { width: number, height: number, radius: string, color: string } {
+  const probe = document.createElement('div')
+  document.body.append(probe)
+  const ref = createApp({ setup: () => () => h(XhTagRoot, { size, closable: true, disabled }, () => ['参照', h(XhTagCloseTrigger)]) })
+  ref.mount(probe)
+  const el = probe.querySelector<HTMLElement>(`[data-scope='tag'][data-part='close-trigger']`)!
+  const cs = getComputedStyle(el)
+  const out = { width: rect(el).width, height: rect(el).height, radius: cs.borderTopLeftRadius, color: cs.color }
+  ref.unmount()
+  probe.remove()
+  return out
+}
+
+describe('多选标签：触发器外的删除钮就是 tag 的 close-trigger，样子归 tag.css', () => {
+  it('渲出来的节点戴 tag 的 scope；select 自己没有删除钮部件', async () => {
+    await mountTags(3, 600, { deletable: true })
+    const buttons = deleteTriggers()
+    expect(buttons).toHaveLength(3)
+    expect(host!.querySelector(`[data-scope='select'][data-part='item-delete-trigger']`)).toBeNull()
+    // 触发器里的标签不渲钮
+    expect(part('trigger').querySelector(`[data-scope='tag'][data-part='close-trigger']`)).toBeNull()
+  })
+
+  it.each<SizeTier | undefined>(['sm', undefined, 'lg'])('size=%s：删除钮与独立渲染的同档 tag 的关闭钮一样大、同圆角，命中区是不分档的指示符尺寸', async (size) => {
+    await mountTags(3, 600, { deletable: true, size })
+    const expected = referenceCloseTrigger(size)
+    const indicator = tokenPx('--xh-control-indicator-size')
+    for (const button of deleteTriggers()) {
+      expect(rect(button).width, size ?? 'md').toBeCloseTo(expected.width, 0)
+      expect(rect(button).height, size ?? 'md').toBeCloseTo(expected.height, 0)
+      expect(Math.round(rect(button).height), size ?? 'md').toBe(indicator)
+      expect(getComputedStyle(button).borderTopLeftRadius, size ?? 'md').toBe(expected.radius)
+    }
+  })
+
+  it('tag.css 的关闭钮覆盖槽写在外层照样生效：--xh-tag-close-size 换掉命中区尺寸', async () => {
+    await mountTags(3, 600, { deletable: true, style: '--xh-tag-close-size: 37px;' })
+    for (const button of deleteTriggers()) {
+      expect(rect(button).width).toBeCloseTo(37, 0)
+      expect(rect(button).height).toBeCloseTo(37, 0)
+    }
+  })
+
+  it('禁用：删除钮留在原地、原生 disabled，字色与独立渲染的禁用 tag 的关闭钮一样是失效色', async () => {
+    await mountTags(3, 600, { deletable: true, disabled: true })
+    const expected = referenceCloseTrigger(undefined, true)
+    for (const button of deleteTriggers()) {
+      expect(button.disabled).toBe(true)
+      expect(button.hidden).toBe(false)
+      expect(getComputedStyle(button).display).not.toBe('none')
+      expect(rect(button).width).toBeGreaterThan(0)
+      expect(getComputedStyle(button).color).toBe(expected.color)
+    }
   })
 })

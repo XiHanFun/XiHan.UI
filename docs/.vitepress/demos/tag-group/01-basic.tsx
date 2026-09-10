@@ -1,4 +1,4 @@
-// 基础用法 | 一排可摘标签：整组只占一个 Tab 位，方向键走标签，Delete 或 Backspace 摘掉
+// 基础用法 | 一排可摘标签，每一枚都是库里的 tag：整组只占一个 Tab 位，方向键走标签，Delete 或 Backspace 摘掉，那颗叉就是 tag 的 close-trigger
 import type { ReactNode } from "react";
 import { XhTagGroupRoot } from "@xihan-ui/react";
 import { useState } from "react";

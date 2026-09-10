@@ -9116,14 +9116,15 @@
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='tag'][data-part='root'][data-variant='solid']:focus-visible {
+   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+   置灰那档的底已换成静默色、字换成置灰色，不在其列：环退回默认那一支 */
+[data-scope='tag'][data-part='root'][data-variant='solid']:not([data-disabled]):focus-visible {
   --xh-_ring-color: currentColor;
 }
 
 /* 关闭钮自己的面是透空的，环压着的是标签那块实心底；它的字色就是那块底上的前景色，
    环跟着取过来 */
-[data-scope='tag'][data-part='root'][data-variant='solid']
+[data-scope='tag'][data-part='root'][data-variant='solid']:not([data-disabled])
   [data-scope='tag'][data-part='close-trigger']:focus-visible {
   --xh-_ring-color: currentColor;
 }
@@ -26962,7 +26963,8 @@
 }
 
 /* 行里的标签：行装不下时各自缩短，截断落在 tag 自己的 label 上；弹性子项默认最小尺寸是内容尺寸，
-   不归零则长标签把行撑破、省略号永远轮不到。+N 那一枚（带 data-count）不缩，始终完整可见 */
+   不归零则长标签把行撑破、省略号永远轮不到。+N 那一枚（带 data-count）不缩，始终完整可见。
+   标签里的删除钮是 tag 的 close-trigger，样子全归 tag.css，这里不画 */
 [data-scope='select'][data-part='tag-list'] > [data-scope='tag'][data-part='root'] {
   flex: 0 1 auto;
   min-inline-size: 0;
@@ -26970,45 +26972,6 @@
 
 [data-scope='select'][data-part='tag-list'] > [data-scope='tag'][data-part='root'][data-count] {
   flex: none;
-}
-
-/* 标签内的删除钮：与指示符同尺寸的小钮，贴着标签文字；标签摆在触发器外时才用得上 */
-[data-scope='select'][data-part='item-delete-trigger'] {
-  display: inline-grid;
-  place-items: center;
-  inline-size: var(--xh-select-item-delete-size, var(--xh-control-indicator-size));
-  block-size: var(--xh-select-item-delete-size, var(--xh-control-indicator-size));
-  padding: 0;
-  border: none;
-  border-radius: var(--xh-select-item-delete-radius, var(--xh-shape-inset));
-  background: none;
-  color: var(--xh-select-item-delete-fg, var(--xh-fg-subtle));
-  font-size: inherit;
-  cursor: pointer;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
-}
-
-[data-scope='select'][data-part='item-delete-trigger'][hidden] {
-  display: none;
-}
-
-[data-scope='select'][data-part='item-delete-trigger']:hover {
-  background: var(--xh-select-item-delete-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-select-item-delete-fg-hover, var(--xh-fg-default));
-}
-
-[data-scope='select'][data-part='item-delete-trigger']:active {
-  background: var(--xh-select-item-delete-bg-active, var(--xh-bg-subtle-active));
-  scale: var(--xh-motion-scale-press);
-}
-
-[data-scope='select'][data-part='item-delete-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-_select-ring);
-  outline-offset: var(--xh-ring-offset);
-}
-
-[data-scope='select'][data-part='item-delete-trigger'][data-disabled] {
-  color: var(--xh-fg-disabled);
 }
 
 /* 环画在盒上，按钮自己不再画：两圈套着的环读起来像两个控件 */
@@ -27300,17 +27263,6 @@
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
 [data-scope='select'][data-part='clear-trigger']:empty::before {
-  content: '';
-  display: inline-block;
-  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  vertical-align: var(--xh-glyph-baseline-shift);
-  background-color: currentColor;
-  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
-  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
-}
-
-[data-scope='select'][data-part='item-delete-trigger']:empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -30268,30 +30220,10 @@
   outline: none;
 }
 
-/* 一枚标签，观感与 tag 同源：缺省态是 md 档、无语气，三轴规则只在它之上叠加 */
-[data-scope='tag-group'][data-part='item'] {
-  /* 作者塞进标签里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-tag-group-item-icon-size, var(--xh-glyph-size-text));
-
-  /* 尺寸档只换这四个私有槽，下面的声明从它们取值；间距那个沿继承流给标签里那一格用 */
-  --xh-_tag-group-gap: var(--xh-space-1);
-  --xh-_tag-group-item-px: var(--xh-space-2);
-  --xh-_tag-group-item-py: var(--xh-space-0_5);
-  --xh-_tag-group-item-font-size: var(--xh-text-caption-size);
-
-  display: inline-flex;
-  align-items: center;
-  /* 一行放不下时标签自己截断，而不是把整行撑破 */
-  max-inline-size: 100%;
-  padding-inline: var(--xh-tag-group-item-px, var(--xh-_tag-group-item-px));
-  padding-block: var(--xh-tag-group-item-py, var(--xh-_tag-group-item-py));
-  border: var(--xh-stroke-thin) solid transparent;
-  border-radius: var(--xh-tag-group-item-radius, var(--xh-shape-control));
-  background: var(--xh-tag-group-item-bg, var(--xh-bg-subtle));
-  color: var(--xh-tag-group-item-fg, var(--xh-fg-default));
-  font-size: var(--xh-tag-group-item-font-size, var(--xh-_tag-group-item-font-size));
-  font-weight: var(--xh-tag-group-item-font-weight, var(--xh-font-weight-medium));
-  line-height: var(--xh-leading-none);
+/* 一枚标签就是 tag 的 root（data-scope="tag"）：形态、语气、尺寸、置灰、截断、摘除钮的样子全归 tag.css。
+   这里只管它在集合里的那几件事：可点、锚点、选中、只读。
+   标签这时是拿焦点的那个节点，按下与松手之间要有回应；选中与锚点的过渡也挂在这一层 */
+[data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root'] {
   user-select: none;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -30299,238 +30231,64 @@
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
-/* 标签可以按需收起（过滤掉的那些），有 display 就得补这条 */
-[data-scope='tag-group'][data-part='item'][hidden] {
-  display: none;
-}
-
-/* 带摘除钮的标签把行末内边距收窄：那颗叉自带的命中区替它撑住右缘留白，
-   不收窄的话叉与标签右缘之间会多出一格空当 */
-[data-scope='tag-group'][data-part='item'][data-deletable] {
-  padding-inline-end: var(--xh-tag-group-item-px-deletable, var(--xh-space-1_5));
-}
-
 /* 参与选中的标签才是点击目标，只是标记的那些不给手势暗示 */
-[data-scope='tag-group'][data-part='item'][data-selectable] {
+[data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root'][data-selectable] {
   cursor: pointer;
 }
 
 /* 按下去要有回应：整枚轻微下压，松手即弹回。置灰的不压 */
-[data-scope='tag-group'][data-part='item'][data-selectable]:not([data-disabled]):active {
+[data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root'][data-selectable]:not([data-disabled]):active {
   scale: var(--xh-motion-scale-press);
 }
 
-/* 悬停与键盘锚点共用中性灰轻档：data-highlighted 跟的是连接层记的焦点标签，
-   与选中互相独立 */
-[data-scope='tag-group'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+/* 悬停与键盘锚点共用中性灰轻档：data-highlighted 跟的是连接层记的焦点标签，与选中互相独立。
+   实心标签不进这里：它的字是实心底上配对的那支前景色，换成灰底就读不出来了；
+   实心档在这两档里面不换，回执落在按压与聚焦环上 */
+[data-scope='tag-group'][data-part='list']
+  > [data-scope='tag'][data-part='root']:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) {
   background: var(--xh-tag-group-item-bg-hover, var(--xh-bg-subtle-hover));
 }
 
-[data-scope='tag-group'][data-part='item']:focus:not(:focus-visible) {
+[data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root']:focus:not(:focus-visible) {
   outline: none;
 }
 
 /* 只读整组都改不动，但不是禁用：颜色照常，只把「可点」这个暗示收回来。
    排掉禁用项是因为这条选择器权重高过 pointer 层那条，不排就会把 not-allowed 覆盖回 default */
 [data-scope='tag-group'][data-part='root'][data-readonly]
-  [data-scope='tag-group'][data-part='item']:not([data-disabled]) {
+  [data-scope='tag-group'][data-part='list']
+  > [data-scope='tag'][data-part='root']:not([data-disabled]) {
   cursor: default;
 }
 
-/* 标签里那一格：文字与摘除钮排在一条线上，间距档由标签的私有槽给 */
+/* —— 选中 —— */
+/* 选中是这一排里「这几枚被挑中了」，靠边框接手，底色整条通道留给悬停与键盘锚点，两者因此能同时看见。
+   置灰的标签不进这里：它的边与字都已退成置灰色。实心档另有一条：它的面本身就是那族色，
+   语气色的描边与正文色的字压在上面都读不出来 */
+[data-scope='tag-group'][data-part='list']
+  > [data-scope='tag'][data-part='root'][data-selected]:not([data-disabled]):not([data-variant='solid']) {
+  border-color: var(--xh-tag-group-item-border-selected, var(--xh-_tone, var(--xh-bg-brand)));
+  color: var(--xh-tag-group-item-fg-selected, var(--xh-_tone-fg, var(--xh-fg-brand-strong)));
+}
+
+/* 实心标签选中：字不换（仍是 tag.css 给的面配对前景色，作者的 --xh-tag-fg 照旧生效），
+   描边取字色，在实心底上描出一圈；环由 tag.css 取 currentColor，跟着字走 */
+[data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root'][data-variant='solid'][data-selected]:not([data-disabled]) {
+  border-color: var(--xh-tag-group-item-border-selected, currentColor);
+}
+
+/* 标签里那一格：文字与摘除钮排在一条线上。它是 tag 根与 tag 的 label / close-trigger 之间的一层，
+   间距照抄所在标签的那一档，有它与没它标签长得一样 */
 [data-scope='tag-group'][data-part='cell'] {
   display: inline-flex;
   align-items: center;
   /* 弹性子项默认最小尺寸是内容尺寸，不归零则长文本把标签撑破、省略号轮不上 */
   min-inline-size: 0;
-  gap: var(--xh-tag-group-cell-gap, var(--xh-_tag-group-gap));
+  gap: inherit;
 }
 
 [data-scope='tag-group'][data-part='cell'][hidden] {
   display: none;
-}
-
-/* 标签文字过长时截断，摘除钮才始终留在标签里 */
-[data-scope='tag-group'][data-part='item-text'] {
-  overflow: hidden;
-  min-inline-size: 0;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-[data-scope='tag-group'][data-part='item-delete-trigger'] {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  /* 命中区取标签内移除钮的指示符尺寸，不随标签档位缩小 */
-  block-size: var(--xh-tag-group-item-delete-size, var(--xh-control-indicator-size));
-  inline-size: var(--xh-tag-group-item-delete-size, var(--xh-control-indicator-size));
-  /* 命中区比字形大一圈，往内收一格才不会在标签右缘留出一块空白 */
-  margin-inline-end: calc(-1 * var(--xh-space-1));
-  border: 0;
-  border-radius: var(--xh-tag-group-item-delete-radius, var(--xh-shape-inset));
-  background: transparent;
-  /* 叉取标签自己的文字色：实心底上是浅字、淡底上是深字，不必逐形态各写一遍 */
-  color: var(--xh-tag-group-item-delete-fg, currentColor);
-  /* 按钮不继承字族字号，不接回来的话标签里会突然冒出一段系统 UI 字体 */
-  font: inherit;
-  line-height: var(--xh-leading-none);
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
-}
-
-/* 这一枚不开放摘除时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半 */
-[data-scope='tag-group'][data-part='item-delete-trigger'][hidden] {
-  display: none;
-}
-
-[data-scope='tag-group'][data-part='item-delete-trigger']:hover:not(:disabled) {
-  /* 底色从当前前景色调出来：标签的实心 / 淡底 / 描边各形态下都压得住 */
-  background: var(--xh-tag-group-item-delete-bg-hover, color-mix(in oklab, currentColor 14%, transparent));
-}
-
-[data-scope='tag-group'][data-part='item-delete-trigger']:not(:disabled):active {
-  background: var(--xh-tag-group-item-delete-bg-active, color-mix(in oklab, currentColor 22%, transparent));
-  scale: var(--xh-motion-scale-press);
-}
-
-[data-scope='tag-group'][data-part='item-delete-trigger']:disabled {
-  color: var(--xh-fg-disabled);
-}
-
-/* —— 形态 —— */
-/* 形态只决定颜色怎么用。每个形态拆成两条：先是没写语气时的基线配色，
-   再是写了语气时的覆盖。语气槽会沿继承流下来，覆盖那条必须带 [data-tone] 限定，
-   否则一枚没写语气的标签只要落在带 data-tone 的容器里就会跟着染色。
-   实心档还在顶边画一条极浅的内高光，把整块底衬出厚度 */
-[data-scope='tag-group'][data-part='item'][data-variant='solid'] {
-  --xh-_tag-group-item-highlight: var(--xh-_highlight-brand);
-
-  border-color: transparent;
-  background: var(--xh-tag-group-item-bg, var(--xh-bg-brand));
-  color: var(--xh-tag-group-item-fg, var(--xh-fg-on-brand));
-  box-shadow: var(--xh-tag-group-item-shadow, var(--xh-_tag-group-item-highlight));
-}
-
-/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-   标签里那颗叉自己透空，环紧挨着的仍是标签这块实心底，跟着走同一条。
-   置灰那档的底已经换成静默色、字换成置灰色，不在其列 */
-[data-scope='tag-group'][data-part='item'][data-variant='solid']:not([data-disabled]):focus-visible,
-[data-scope='tag-group'][data-part='item'][data-variant='solid']:not([data-disabled])
-  [data-scope='tag-group'][data-part='item-delete-trigger']:focus-visible {
-  --xh-_ring-color: currentColor;
-}
-
-/* 选中档把字换成语气正文色，面仍是实心语气底；环取面配对的那支前景色 */
-[data-scope='tag-group'][data-part='item'][data-variant='solid'][data-state='checked']:not([data-disabled]):focus-visible,
-[data-scope='tag-group'][data-part='item'][data-variant='solid'][data-state='checked']:not([data-disabled])
-  [data-scope='tag-group'][data-part='item-delete-trigger']:focus-visible {
-  --xh-_ring-color: var(--xh-tag-group-item-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-}
-
-/* 没写语气的实心标签在轻档里把底换成中性灰，字仍是实心档那一支浅字，
-   环跟着字走就糊在灰底上；这两档把环收回默认那一支。
-   写了语气的实心标签不进这里——它的底由下面那条语气规则压回实心色 */
-[data-scope='tag-group'][data-part='item'][data-variant='solid']:not([data-tone]):not([data-disabled]):is(:hover, [data-highlighted]):focus-visible,
-[data-scope='tag-group'][data-part='item'][data-variant='solid']:not([data-tone]):not([data-disabled]):is(:hover, [data-highlighted])
-  [data-scope='tag-group'][data-part='item-delete-trigger']:focus-visible {
-  --xh-_ring-color: var(--xh-ring-focus);
-}
-
-[data-scope='tag-group'][data-part='item'][data-variant='solid'][data-tone] {
-  --xh-_tag-group-item-highlight: var(--xh-_highlight-tone);
-
-  background: var(--xh-tag-group-item-bg, var(--xh-_tone, var(--xh-bg-brand)));
-  color: var(--xh-tag-group-item-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-}
-
-[data-scope='tag-group'][data-part='item'][data-variant='subtle'] {
-  border-color: transparent;
-  background: var(--xh-tag-group-item-bg, var(--xh-bg-subtle));
-  color: var(--xh-tag-group-item-fg, var(--xh-fg-default));
-}
-
-[data-scope='tag-group'][data-part='item'][data-variant='subtle'][data-tone] {
-  background: var(--xh-tag-group-item-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle)));
-  color: var(--xh-tag-group-item-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
-}
-
-[data-scope='tag-group'][data-part='item'][data-variant='outline'] {
-  border-color: var(--xh-tag-group-item-border, var(--xh-border-default));
-  background: transparent;
-  color: var(--xh-tag-group-item-fg, var(--xh-fg-default));
-}
-
-/* 描边档的边就是这枚标签的全部轮廓，走「可操作区边界」那一支 */
-[data-scope='tag-group'][data-part='item'][data-variant='outline'][data-tone] {
-  border-color: var(--xh-tag-group-item-border, var(--xh-_tone-border-control, var(--xh-border-default)));
-  color: var(--xh-tag-group-item-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
-}
-
-/* —— 选中 —— */
-/* 排在形态之后：选中是这一排里「这几枚被挑中了」，靠边框接手，
-   底色整条通道留给悬停与键盘锚点，两者因此能同时看见 */
-[data-scope='tag-group'][data-part='item'][data-state='checked'] {
-  border-color: var(--xh-tag-group-item-border-selected, var(--xh-_tone, var(--xh-bg-brand)));
-  color: var(--xh-tag-group-item-fg-selected, var(--xh-_tone-fg, var(--xh-fg-brand-strong)));
-}
-
-/* —— 尺寸 —— */
-/* 标签是随文排的标记，不占控件行高，档位走间距与字号而不是 control-h */
-[data-scope='tag-group'][data-part='item'][data-size='sm'] {
-  --xh-_tag-group-gap: var(--xh-space-0_5);
-  --xh-_tag-group-item-px: var(--xh-space-1_5);
-  --xh-_tag-group-item-py: var(--xh-space-0);
-}
-
-[data-scope='tag-group'][data-part='item'][data-size='lg'] {
-  --xh-_tag-group-gap: var(--xh-space-1_5);
-  --xh-_tag-group-item-px: var(--xh-space-3);
-  --xh-_tag-group-item-py: var(--xh-space-1);
-  --xh-_tag-group-item-font-size: var(--xh-text-secondary-size);
-}
-
-/* —— 禁用 —— */
-/* 排在形态与选中之后，靠源序压过它们给的配色。第二条选择器专为写了语气的标签而设：
-   语气覆盖那几条比第一条多一个属性，不把 [data-tone] 一起写上，
-   禁用的标签会留着语气实心底、只有文字变灰，底上几乎看不见字 */
-[data-scope='tag-group'][data-part='item'][data-disabled],
-[data-scope='tag-group'][data-part='item'][data-tone][data-disabled] {
-  border-color: var(--xh-tag-group-item-border-disabled, var(--xh-border-subtle));
-  background: var(--xh-tag-group-item-bg-disabled, var(--xh-bg-muted));
-  color: var(--xh-fg-disabled);
-  /* 底已经退成置灰色，实心档那条内高光跟着收掉 */
-  box-shadow: none;
-}
-
-/*
- * 打印：底色被丢掉，实心与淡底两档的底一起没了。实心档配的是实心底上的前景色，
- * 底一没那行字就落在白纸上。两档在纸上都退成描边档：字色回到正文色，轮廓由边框接手。
- */
-@media print {
-  [data-scope='tag-group'][data-part='item']:not([data-disabled]),
-  [data-scope='tag-group'][data-part='item'][data-variant][data-tone]:not([data-disabled]) {
-    border-color: currentColor;
-    background: none;
-    color: var(--xh-fg-default);
-    box-shadow: none;
-  }
-}
-
-/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
-[data-scope='tag-group'][data-part='item-delete-trigger']:empty::before {
-  content: '';
-  display: inline-block;
-  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  vertical-align: var(--xh-glyph-baseline-shift);
-  background-color: currentColor;
-  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
-  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
 /* styles/tags-input.css */
@@ -30545,13 +30303,17 @@
   /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
   --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-md));
 
-  /* 尺寸档只换这六个私有槽，标题、框、输入框与标签都从 root 继承它们，
-     换档不必给每个部件各写一条选择器 */
+  /* 尺寸档只换这九个私有槽，标题、框、输入框与就地编辑框都从 root 继承它们，
+     换档不必给每个部件各写一条选择器。标签本身是 tag，档位由 data-size 传下去，不走这些槽；
+     就地编辑框的四个槽照 tag 那一档的行框、内衬与字号写，换进换出时与标签一样高 */
   --xh-_tags-input-control-h: var(--xh-control-h-md);
   --xh-_tags-input-control-px: var(--xh-control-px-md);
   --xh-_tags-input-control-gap: var(--xh-control-gap-md);
   --xh-_tags-input-input-font-size: var(--xh-control-font-md);
   --xh-_tags-input-item-font-size: var(--xh-control-caption-md);
+  --xh-_tags-input-item-py: var(--xh-space-1);
+  --xh-_tags-input-item-px: var(--xh-space-2);
+  --xh-_tags-input-item-line-h: var(--xh-control-indicator-md);
   --xh-_tags-input-label-font-size: var(--xh-control-font-md);
   /* 形态档只换这四个私有槽，缺省这一份就是描边式（描边 + 画布底 + 一档落影） */
   --xh-_tags-input-control-bg: var(--xh-bg-canvas);
@@ -30563,7 +30325,7 @@
   --xh-_tags-input-control-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_tags-input-control-bg));
   /* 一档静态落影把框从页面里抬起一层，与描边一起画出框的边界 */
   --xh-_tags-input-control-shadow: var(--xh-elevation-raised);
-  /* 聚焦环与标签块的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
+  /* 聚焦环与反白标签的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
   --xh-_tags-input-ring: var(--xh-ring-focus);
   --xh-_tags-input-accent: var(--xh-_tone, var(--xh-bg-brand));
   --xh-_tags-input-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
@@ -30618,6 +30380,8 @@
   --xh-_tags-input-control-gap: var(--xh-control-gap-sm);
   --xh-_tags-input-input-font-size: var(--xh-control-font-sm);
   --xh-_tags-input-item-font-size: var(--xh-control-caption-sm);
+  --xh-_tags-input-item-py: var(--xh-space-0_5);
+  --xh-_tags-input-item-px: var(--xh-space-1_5);
   --xh-_tags-input-label-font-size: var(--xh-control-font-sm);
 }
 
@@ -30628,6 +30392,8 @@
   --xh-_tags-input-control-gap: var(--xh-control-gap-lg);
   --xh-_tags-input-input-font-size: var(--xh-control-font-lg);
   --xh-_tags-input-item-font-size: var(--xh-control-caption-lg);
+  --xh-_tags-input-item-px: var(--xh-space-3);
+  --xh-_tags-input-item-line-h: var(--xh-control-indicator-lg);
   --xh-_tags-input-label-font-size: var(--xh-control-font-lg);
 }
 
@@ -30759,141 +30525,57 @@
   -webkit-text-fill-color: var(--xh-tags-input-input-autofill-fg, var(--xh-fg-default));
 }
 
-/* 一个标签一颗胶囊。inline-size 交给内容决定，长标签由 item-text 截断 */
+/* 一个标签一个条目。条目只是壳：可见的胶囊是里面 tag 的 root（就地编辑时换成 item-input），
+   样子全归 tag.css，这里只管它在行里怎么占位——不缩、不超过一行；
+   长标签由壳的上限压住，截断落在 tag 自己的 label 上 */
 [data-scope='tags-input'][data-part='item'] {
   display: inline-flex;
   flex: none;
   align-items: center;
   max-inline-size: 100%;
-  border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-pill));
-  background: var(--xh-tags-input-item-bg, var(--xh-bg-subtle));
-  color: var(--xh-tags-input-item-fg, var(--xh-fg-default));
-  font-size: var(--xh-tags-input-item-font-size, var(--xh-_tags-input-item-font-size));
-  line-height: var(--xh-leading-none);
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='tags-input'][data-part='item'][hidden] {
   display: none;
 }
 
+/* 双击标签是进就地编辑，不是选字：选区一闪再换成编辑框，看起来像点错了 */
+[data-scope='tags-input'][data-part='item'] > [data-scope='tag'][data-part='root'] {
+  user-select: none;
+}
+
 /* 光标走到这颗标签上（退格第一下、方向键）：整颗反白，与"删掉它"这件事对得上。
+   反白画在 tag 的 root 上，描边一并收成透明——描边档的标签反白后不留一圈异色边；
    禁用态下不给高亮：那时候本来就走不进标签 */
-[data-scope='tags-input'][data-part='item'][data-highlighted]:not([data-disabled]) {
+[data-scope='tags-input'][data-part='item'][data-highlighted]:not([data-disabled]) > [data-scope='tag'][data-part='root'] {
+  border-color: transparent;
   background: var(--xh-tags-input-item-bg-highlight, var(--xh-_tags-input-accent));
   color: var(--xh-tags-input-item-fg-highlight, var(--xh-_tags-input-accent-fg));
 }
 
-/* 标签不是原生控件，禁用同样只能靠 data-disabled */
-[data-scope='tags-input'][data-part='item'][data-disabled] {
-  color: var(--xh-fg-disabled);
-}
-
-/* 就地编辑时整颗胶囊让位给编辑框：底色撤掉，免得输入框外面套一圈灰底 */
-[data-scope='tags-input'][data-part='item'][data-editing] {
-  background: transparent;
-}
-
-[data-scope='tags-input'][data-part='item-preview'] {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--xh-tags-input-item-gap, var(--xh-space-1));
-  max-inline-size: 100%;
-  padding-block: var(--xh-tags-input-item-py, var(--xh-space-0_5));
-  padding-inline: var(--xh-tags-input-item-px, var(--xh-space-2));
-  user-select: none;
-}
-
-/* 就地编辑时连接层给的是 hidden 属性；上面那条 display 会把 UA 规则盖掉，
-   少了这条预览会和编辑框叠在一起 */
-[data-scope='tags-input'][data-part='item-preview'][hidden] {
-  display: none;
-}
-
-/* 长标签截断而不是把整行撑开：胶囊挤爆一行会把输入框顶到看不见的地方 */
-[data-scope='tags-input'][data-part='item-text'] {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-/* 删除按钮画成胶囊里的小圆钮，与文字同一行，尺寸取控件指示件档（随密度收） */
-[data-scope='tags-input'][data-part='item-delete-trigger'] {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--xh-tags-input-delete-size, var(--xh-control-indicator-size));
-  block-size: var(--xh-tags-input-delete-size, var(--xh-control-indicator-size));
-  padding: 0;
-  border: 0;
-  border-radius: var(--xh-tags-input-delete-radius, var(--xh-shape-inset));
-  background: var(--xh-tags-input-delete-bg, transparent);
-  color: var(--xh-tags-input-delete-fg, var(--xh-fg-muted));
-  font-family: inherit;
-  font-size: var(--xh-tags-input-delete-font-size, var(--xh-text-caption-size));
-  line-height: var(--xh-leading-none);
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
-}
-
-[data-scope='tags-input'][data-part='item-delete-trigger'][hidden] {
-  display: none;
-}
-
-/* 整颗标签反白时按钮跟着改色，否则灰字压在品牌底色上会看不清 */
-[data-scope='tags-input'][data-part='item-delete-trigger'][data-highlighted]:not(:disabled) {
-  color: var(--xh-tags-input-delete-fg-highlight, var(--xh-_tags-input-accent-fg));
-}
-
-[data-scope='tags-input'][data-part='item-delete-trigger']:hover:not(:disabled) {
-  background: var(--xh-tags-input-delete-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-tags-input-delete-fg-hover, var(--xh-fg-default));
-}
-
-[data-scope='tags-input'][data-part='item-delete-trigger']:active:not(:disabled) {
-  background: var(--xh-tags-input-delete-bg-active, var(--xh-bg-subtle-active));
-  scale: var(--xh-motion-scale-press);
-}
-
-/* 按钮不占 Tab 位（tabindex=-1），正常操作走不到这里；
-   留着焦点环是给程序化聚焦兜底——删完把焦点交回输入框之前，它确实短暂持有过焦点 */
-[data-scope='tags-input'][data-part='item-delete-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-  outline-offset: var(--xh-ring-offset);
-}
-
-/* 整颗标签反白成实心语气底时环压在那块面上，环色与面同族就看不出来；
-   环改取按钮自己的前景色——上面那条反白规则已经把它换成配对的那支色。
-   偏移仍取上一条的取值：outline-offset 不在 outline 简写里 */
-[data-scope='tags-input'][data-part='item'][data-highlighted]:not([data-disabled]) [data-scope='tags-input'][data-part='item-delete-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid currentColor;
-}
-
-/* 按钮是单体控件，禁用走原生 disabled */
-[data-scope='tags-input'][data-part='item-delete-trigger']:disabled {
-  background: transparent;
-  color: var(--xh-fg-disabled);
+/* 反白的面是实心语气底，环压上去与面同族看不出来；叉自己的面是透空的，环取它的字色——
+   上面那条反白规则已经把它换成配对的那支色 */
+[data-scope='tags-input'][data-part='item'][data-highlighted]:not([data-disabled]) > [data-scope='tag'][data-part='root']
+  [data-scope='tag'][data-part='close-trigger']:focus-visible {
+  --xh-_ring-color: currentColor;
 }
 
 /* 就地编辑框：尺寸对齐胶囊，看起来像是在原地把标签改了，而不是另开一个框。
+   阶梯照 tag 的档走：行框取指示符档，竖向内衬、横向内衬与字号随档从 root 的私有槽取。
    不声明 display —— 收起态靠 UA 的 [hidden]{display:none} 就够，
    自己加一条 display 反而要再补一条 [hidden] 规则去抵消它 */
 [data-scope='tags-input'][data-part='item-input'] {
   max-inline-size: 100%;
-  padding-block: var(--xh-tags-input-item-py, var(--xh-space-0_5));
-  padding-inline: var(--xh-tags-input-item-px, var(--xh-space-2));
+  padding-block: var(--xh-tags-input-item-py, var(--xh-_tags-input-item-py));
+  padding-inline: var(--xh-tags-input-item-px, var(--xh-_tags-input-item-px));
   border: var(--xh-stroke-thin) solid var(--xh-tags-input-item-input-border, var(--xh-border-control));
-  border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-pill));
+  border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-control));
   background: var(--xh-tags-input-item-input-bg, var(--xh-bg-canvas));
   color: var(--xh-tags-input-item-input-fg, var(--xh-fg-default));
   font-family: inherit;
   font-size: var(--xh-tags-input-item-font-size, var(--xh-_tags-input-item-font-size));
-  line-height: var(--xh-leading-none);
+  /* 行框不低于胶囊里那一行的高，编辑框与它换掉的标签一样高，换进换出时行不跳 */
+  line-height: max(calc(var(--xh-leading-none) * 1em), var(--xh-_tags-input-item-line-h));
 }
 
 /* 它是真正持有焦点的那个节点，环画在自己身上；
@@ -30963,16 +30645,6 @@
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
-[data-scope='tags-input'][data-part='item-delete-trigger']:empty::before {
-  content: '';
-  display: inline-block;
-  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  vertical-align: var(--xh-glyph-baseline-shift);
-  background-color: currentColor;
-  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
-  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
-}
 /* 计数：排在控件行下面靠尾端的一行小字，与标题分列 root 的两端 */
 [data-scope='tags-input'][data-part='count'] {
   align-self: flex-end;

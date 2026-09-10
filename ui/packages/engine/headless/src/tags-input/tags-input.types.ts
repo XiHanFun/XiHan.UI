@@ -18,7 +18,7 @@ export type TagsInputBlurBehavior = 'add' | 'clear'
 
 /** 读屏用的文案，默认英文。 */
 export interface TagsInputTranslations {
-  /** 删除按钮的 aria-label：按钮里通常只有一个叉，读屏念不出删的是哪一个标签。 */
+  /** 删除钮（tag 的 close-trigger）的 aria-label：钮里通常只有一个叉，读屏念不出删的是哪一个标签。 */
   deleteItem: (value: string) => string
   /** 就地编辑框的 aria-label：它没有可见标题，不给名字读屏只会念"编辑框"。 */
   editTagInput: (value: string) => string
@@ -184,8 +184,11 @@ export interface TagsInputApi<T extends PropTypes = PropTypes> {
   getControlProps: () => T['element']
   getInputProps: () => T['input']
   getItemProps: (item: TagsInputItemProps) => T['element']
+  /** 标签的预览：就是库里 tag 的 root（data-scope="tag"），就地编辑时收起；双击进编辑态。 */
   getItemPreviewProps: (item: TagsInputItemProps) => T['element']
+  /** 标签文字：tag 的 label，截断落在这一层。 */
   getItemTextProps: (item: TagsInputItemProps) => T['element']
+  /** 删除钮：所在标签那份 tag 的 close-trigger，不占 Tab 位；禁用与只读时留位、原生 disabled。 */
   getItemDeleteTriggerProps: (item: TagsInputItemProps) => T['button']
   getItemInputProps: (item: TagsInputItemProps) => T['input']
   getClearTriggerProps: () => T['button']

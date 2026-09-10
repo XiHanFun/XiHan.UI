@@ -1,9 +1,18 @@
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { TagApi, TagSchema } from './tag.types'
+import type { ControlVariant, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { TagApi, TagSchema, TagVariant } from './tag.types'
 import { dataAttr } from '@xihan-ui/core'
 import { tagAnatomy } from './tag.anatomy'
 
 const parts = tagAnatomy.build()
+
+/**
+ * 控件面到标签形态的映射：subtle 的面本身是淡底，摆描边标签才看得出是一枚标签；
+ * outline / ghost 与缺省（即 outline）的面是画布色或透明，摆淡底标签。
+ * 形态恒有值，语气才有落点——tag 的语气规则都挂在形态之下。
+ */
+export function tagVariantForControl(variant: ControlVariant | undefined): TagVariant {
+  return variant === 'subtle' ? 'outline' : 'subtle'
+}
 
 /** 标签的 props：机器路从 service 读，快路直接收一份。 */
 type TagProps = TagSchema['props']
@@ -23,8 +32,8 @@ function buildTagApi<T extends PropTypes>(
   // 标签默认不给关闭钮：多数标签只是身份标记，摘不摘得掉由作者说了算
   const closable = prop('closable') ?? false
   const disabled = !!prop('disabled')
-  // 禁用的标签摘不掉：关闭钮仍在位置上，但按不动
-  const canClose = closable && !disabled
+  // 禁用或只读的标签摘不掉：关闭钮仍在位置上，但按不动；只读不落到 root，标签本身不置灰
+  const canClose = closable && !disabled && !prop('readOnly')
 
   const setOpen = (next: boolean): void => {
     if (next !== open)

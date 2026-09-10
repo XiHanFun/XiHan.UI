@@ -341,7 +341,8 @@
   }
 
   /* 行里的标签：行装不下时各自缩短，截断落在 tag 自己的 label 上；弹性子项默认最小尺寸是内容尺寸，
-     不归零则长标签把行撑破、省略号永远轮不到。+N 那一枚（带 data-count）不缩，始终完整可见 */
+     不归零则长标签把行撑破、省略号永远轮不到。+N 那一枚（带 data-count）不缩，始终完整可见。
+     标签里的删除钮是 tag 的 close-trigger，样子全归 tag.css，这里不画 */
   [data-scope='select'][data-part='tag-list'] > [data-scope='tag'][data-part='root'] {
     flex: 0 1 auto;
     min-inline-size: 0;
@@ -349,45 +350,6 @@
 
   [data-scope='select'][data-part='tag-list'] > [data-scope='tag'][data-part='root'][data-count] {
     flex: none;
-  }
-
-  /* 标签内的删除钮：与指示符同尺寸的小钮，贴着标签文字；标签摆在触发器外时才用得上 */
-  [data-scope='select'][data-part='item-delete-trigger'] {
-    display: inline-grid;
-    place-items: center;
-    inline-size: var(--xh-select-item-delete-size, var(--xh-control-indicator-size));
-    block-size: var(--xh-select-item-delete-size, var(--xh-control-indicator-size));
-    padding: 0;
-    border: none;
-    border-radius: var(--xh-select-item-delete-radius, var(--xh-shape-inset));
-    background: none;
-    color: var(--xh-select-item-delete-fg, var(--xh-fg-subtle));
-    font-size: inherit;
-    cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
-  }
-
-  [data-scope='select'][data-part='item-delete-trigger'][hidden] {
-    display: none;
-  }
-
-  [data-scope='select'][data-part='item-delete-trigger']:hover {
-    background: var(--xh-select-item-delete-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-select-item-delete-fg-hover, var(--xh-fg-default));
-  }
-
-  [data-scope='select'][data-part='item-delete-trigger']:active {
-    background: var(--xh-select-item-delete-bg-active, var(--xh-bg-subtle-active));
-    scale: var(--xh-motion-scale-press);
-  }
-
-  [data-scope='select'][data-part='item-delete-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-_select-ring);
-    outline-offset: var(--xh-ring-offset);
-  }
-
-  [data-scope='select'][data-part='item-delete-trigger'][data-disabled] {
-    color: var(--xh-fg-disabled);
   }
 
   /* 环画在盒上，按钮自己不再画：两圈套着的环读起来像两个控件 */
@@ -679,17 +641,6 @@
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
   [data-scope='select'][data-part='clear-trigger']:empty::before {
-    content: '';
-    display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    vertical-align: var(--xh-glyph-baseline-shift);
-    background-color: currentColor;
-    -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-close) center / contain no-repeat;
-  }
-
-  [data-scope='select'][data-part='item-delete-trigger']:empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));

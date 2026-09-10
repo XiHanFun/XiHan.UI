@@ -1,6 +1,8 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { TagApi } from '../tag'
 import type { TagsInputApi, TagsInputItemProps, TagsInputSchema } from './tags-input.types'
-import { contains, dataAttr, isComposingEvent, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { contains, dataAttr, isComposingEvent, ITEM_VALUE_ATTR, mergeProps } from '@xihan-ui/core'
+import { connectStaticTag, tagVariantForControl } from '../tag'
 import { tagsInputAnatomy, tagsInputEditInputId } from './tags-input.anatomy'
 import { appendTags, isAtMax, isOverflow, splitTags, tagsDelimiter } from './tags-input.machine'
 
@@ -87,13 +89,47 @@ export function connectTagsInput<T extends PropTypes>(
     return index >= 0 && index + 1 < count ? value[index + 1]! : null
   }
 
-  // item / item-preview / item-text / item-input 共用同一份状态标记，样式层各处一致
+  // item 与 item-input 共用同一份状态标记，样式层各处一致
   const stateAttrs = (item: TagsInputItemProps): Record<string, string | undefined> => ({
     'data-highlighted': dataAttr(highlightedValue === item.value),
     'data-editing': dataAttr(editedValue === item.value),
     'data-disabled': dataAttr(disabled),
     'data-readonly': dataAttr(readOnly),
   })
+
+  // 标签的预览套的是库里的 tag：语气、尺寸、禁用与只读从本控件传下去，形态按控件的面派。
+  // 显隐受控在这里——预览露不露面只看这一枚是不是正被就地编辑，不建机器。
+  // 关闭钮即删除钮：受控 open 下按它只发 onOpenChange，摘值从这里回到机器；
+  // 禁用与只读都由 tag 挡在钮上，这里不再守一次
+  const hostedTag = (item: TagsInputItemProps): TagApi<T> => {
+    const open = editedValue !== item.value
+    return connectStaticTag(
+      {
+        variant: tagVariantForControl(prop('variant')),
+        tone: prop('tone'),
+        size: prop('size'),
+        disabled,
+        readOnly,
+        closable: true,
+        open,
+        translations: { close: label.deleteItem(item.value) },
+        onOpenChange: ({ open: next }) => {
+          if (next)
+            return
+          // 判据是焦点当下正落在这一枚里：删完钮就没了，焦点会掉到 body 上。
+          // 输入框必须在送事件之前先拿到，删完整块节点离开文档后就找不到了
+          const active = scope.getActiveElement()
+          const restore = active?.closest<HTMLElement>(parts.item.selector)?.getAttribute(ITEM_VALUE_ATTR) === item.value
+            ? scope.getById(ids.input)
+            : null
+          send({ type: 'TAG.DELETE', value: item.value })
+          restore?.focus()
+        },
+      },
+      { get: () => open, set: () => {} },
+      normalize,
+    )
+  }
 
   // root 与 control 报同一组闸门与容量标记：作者的边框、计数提示常挂在其中任一层上
   const surfaceAttrs = (): Record<string, string | undefined> => ({
@@ -317,49 +353,33 @@ export function connectTagsInput<T extends PropTypes>(
       [ITEM_VALUE_ATTR]: item.value,
     }),
 
-    getItemPreviewProps: item => normalize.element({
-      ...parts['item-preview'].attrs,
-      ...stateAttrs(item),
-      // 就地编辑时让位给编辑框，收起而不是卸载
-      hidden: editedValue === item.value || undefined,
-      onDblclick: () => {
-        if (canEditTags)
-          send({ type: 'TAG.EDIT', value: item.value })
-      },
-    }),
+    // 预览就是 tag 的 root（data-scope="tag"）：就地编辑时由 tag 按 open=false 收起而不是卸载
+    getItemPreviewProps: item => mergeProps<T['element']>(
+      hostedTag(item).getRootProps(),
+      normalize.element({
+        onDblclick: () => {
+          if (canEditTags)
+            send({ type: 'TAG.EDIT', value: item.value })
+        },
+      }),
+    ),
 
-    getItemTextProps: item => normalize.element({
-      ...parts['item-text'].attrs,
-      ...stateAttrs(item),
-    }),
+    // 标签文字落在 tag 的 label 上，截断规则挂在那一层
+    getItemTextProps: item => hostedTag(item).getLabelProps(),
 
-    getItemDeleteTriggerProps: item => normalize.button({
-      ...parts['item-delete-trigger'].attrs,
-      'type': 'button',
-      // 按钮里通常只有一个叉，不给名字读屏念不出删的是哪一个
-      'aria-label': label.deleteItem(item.value),
-      // 不占 Tab 位：标签一多每个都占停靠点会让 Tab 没法用，键盘那一路走方向键与 Backspace/Delete
-      'tabindex': -1,
-      // 单体按钮用原生 disabled：改不动的时候不该能被激活
-      'disabled': !editable || undefined,
-      'onPointerDown': (event: PointerEvent) => {
-        // 只认主键，右键留给上下文菜单
-        if (event.button !== 0)
-          return
-        // 焦点留在输入框，删完还能接着打字
-        event.preventDefault()
-      },
-      'onClick': (event: MouseEvent) => {
-        if (!editable)
-          return
-        const el = event.currentTarget as HTMLElement
-        // 判据是本节点当下正持有焦点：删完按钮就没了，焦点会掉到 body 上。
-        // 输入框必须在送事件之前先拿到，删完整块节点离开文档后就找不到 root 了
-        const restore = holdsFocus(el) ? inputOf(el) : null
-        send({ type: 'TAG.DELETE', value: item.value })
-        restore?.focus()
-      },
-    }),
+    // 删除钮就是所在标签那份 tag 的 close-trigger：可及名、禁用与点按都由 tag 给。
+    // 不占 Tab 位：标签一多每个都占停靠点会让 Tab 没法用，键盘那一路走方向键与 Backspace/Delete
+    getItemDeleteTriggerProps: item => mergeProps<T['button']>(
+      hostedTag(item).getCloseTriggerProps(),
+      normalize.button({
+        tabindex: -1,
+        onPointerDown: (event: PointerEvent) => {
+          // 只认主键，右键留给上下文菜单；焦点留在输入框，删完还能接着打字
+          if (event.button === 0)
+            event.preventDefault()
+        },
+      }),
+    ),
 
     getItemInputProps: item => normalize.input({
       ...parts['item-input'].attrs,

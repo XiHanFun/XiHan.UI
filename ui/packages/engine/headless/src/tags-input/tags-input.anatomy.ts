@@ -2,7 +2,7 @@ import type { Scope } from '@xihan-ui/core'
 import { createAnatomy } from '@xihan-ui/core'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
-// 一个标签底下分两套：item-preview 是平常那一套（文本 + 删除按钮），
+// 一个标签底下分两套：预览是库里 tag 的 root（文字落在 tag 的 label，删除钮是 tag 的 close-trigger），
 // item-input 是就地编辑时才露面的输入框。两者常挂、靠 hidden 互斥，绝不卸载作者写的节点。
 export const tagsInputAnatomy = createAnatomy('tags-input', [
   'root',
@@ -10,9 +10,6 @@ export const tagsInputAnatomy = createAnatomy('tags-input', [
   'control',
   'input',
   'item',
-  'item-preview',
-  'item-text',
-  'item-delete-trigger',
   'item-input',
   'clear-trigger',
   'count',

@@ -7,9 +7,8 @@
     "image-viewer [data-part='prev-trigger'][data-scope='image-viewer']": "面是半透明的（neutral-950 兑 transparent 55%），压在使用者的图片上，静态算不出对比度",
     "popconfirm [data-part='cancel-trigger'][data-scope='popconfirm']:is(:hover, :active)": "规则只罩 :is(:hover, :active) 两档：那两档的面 bg-subtle-hover 2.97、bg-subtle-active 2.52 在线下，本脚本不收 :hover / :active 的面；常态的淡底 3.40 过线，吃默认环",
     "segmented [data-part='root'][data-scope='segmented']:has([data-scope='segmented'][data-part='indicator']:not([hidden])) [data-part='item'][data-scope='segmented'][data-state='checked']": "选中段自己的面是透空的，环内侧是压在它底下、与它同一块矩形的指示器实心底（写了 data-tone 时默认环压上去 1.08-2.89）；本脚本只看部件自己那条 background，看不见被压在下面的兄弟节点",
-    "tag [data-part='root'][data-scope='tag'][data-variant='solid'] [data-part='close-trigger'][data-scope='tag']": "关闭钮自己的面是透空的，环压着的是标签根那块实心语气底；本脚本按部件自己那条面规则算，看不到祖先铺的底",
-    "tag-group [data-part='item'][data-scope='tag-group'][data-variant='solid']:not([data-disabled]) [data-part='item-delete-trigger'][data-scope='tag-group']": "叉自己的面是透空的，环内侧是标签那块实心底（默认环压上去 1.37-2.89）；本脚本只看部件自己那条 background，透空的面透出祖先那一层算不出来",
-    "tags-input [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='item-delete-trigger'][data-scope='tags-input']": "叉自己的面是透明的，环内侧是整颗标签反白后的实心语气底（默认环压上去 1.00-2.89）；本脚本只看部件自己那条 background，透空的面透出祖先那一层算不出来",
+    "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='root'][data-scope='tag'] [data-part='close-trigger'][data-scope='tag']": "叉（tag 的 close-trigger）自己的面是透空的，环内侧是整颗标签（tag 的 root）反白后的实心语气底（默认环压上去 1.00-2.89）；本脚本只看部件自己那条 background，透空的面透出祖先那一层算不出来",
+    "tag [data-part='root'][data-scope='tag'][data-variant='solid']:not([data-disabled]) [data-part='close-trigger'][data-scope='tag']": "关闭钮自己的面是透空的，环压着的是标签根那块实心语气底；本脚本按部件自己那条面规则算，看不到祖先铺的底",
     "transfer [data-part='item-checkbox'][data-scope='transfer'][data-state='checked']": "连接层给这颗把手发 aria-hidden: true，焦点落不上去，这条 :focus-visible 规则画不出来",
     "tree [data-indeterminate][data-part='branch-checkbox'][data-scope='tree']": "连接层给这颗把手发 aria-hidden: true 与 tabindex: -1，并在 pointerdown 里拦掉默认聚焦，焦点落不上去",
     "tree [data-indeterminate][data-part='item-checkbox'][data-scope='tree']": "连接层给这颗把手发 aria-hidden: true 与 tabindex: -1，并在 pointerdown 里拦掉默认聚焦，焦点落不上去",
@@ -113,7 +112,7 @@
     "separator [root]": "分隔线，不接焦点",
     "slider [range]": "滑杆的已选区间，焦点落在拇指上",
     "slider [track]": "滑杆的轨道，焦点落在拇指上",
-    "tags-input [item]": "标签本体不接焦点：键盘走到它身上由 data-highlighted 反白，焦点仍在输入框；删除钮另有自己的环",
+    "tags-input [root]": "这块面是反白的标签本体，画在条目里 tag 的 root 上（选择器主体戴 tag 的 scope，本脚本按皮肤文件记成 tags-input 的 root）：标签本体不接焦点，键盘走到它身上由 data-highlighted 反白，焦点仍在输入框；里面的删除钮另有自己的环",
     "toolbar [separator]": "工具条分隔线，不接焦点",
     "tooltip [content]": "提示气泡不接焦点，只随触发器悬停或聚焦出现",
     "tour [progress-dot]": "步骤指示点，纯展示不接焦点"
@@ -395,20 +394,6 @@
     "tag [data-part='root'][data-scope='tag'][data-variant='solid']": {
       "parts": [
         "root"
-      ],
-      "ratio": 1.36,
-      "ring": "currentColor"
-    },
-    "tag-group [data-part='item'][data-scope='tag-group'][data-tone][data-variant='solid']": {
-      "parts": [
-        "item"
-      ],
-      "ratio": 1,
-      "ring": "currentColor"
-    },
-    "tag-group [data-part='item'][data-scope='tag-group'][data-variant='solid']": {
-      "parts": [
-        "item"
       ],
       "ratio": 1.36,
       "ring": "currentColor"

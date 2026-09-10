@@ -28,6 +28,8 @@ export interface TagSchema extends MachineSchema {
     closable?: boolean
     /** 标签禁用：关闭钮不可用，点击不改显隐。 */
     disabled?: boolean
+    /** 只读：关闭钮留在原地但按不动，标签本身不置灰。 */
+    readOnly?: boolean
     /** 受控显隐；缺省该 prop 即非受控。 */
     open?: boolean
     /** 非受控初始显隐，默认显示。 */

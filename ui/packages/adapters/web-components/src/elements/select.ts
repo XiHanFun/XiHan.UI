@@ -26,9 +26,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * value-text / overflow-tag 里作者写了内容就归作者，元素不再改写。
  *
  * tag 与 overflow-tag 两个角色节点接的是库里 tag 的 root（DOM 上带 data-scope="tag"，吃 tag 那份皮肤）：
- * 语气、尺寸与禁用从本元素传下去，形态按控件的面派（outline / ghost / 缺省摆淡底标签，subtle 摆描边标签），不可关闭。
+ * 语气、尺寸与禁用从本元素传下去，形态按控件的面派（outline / ghost / 缺省摆淡底标签，subtle 摆描边标签）。
  * 节点里只有文字时元素替它包一层 tag 的 label（截断落在那一层），
- * 作者自己写了子节点就原样放行。
+ * 作者自己写了子节点就原样放行。item-delete-trigger 接的是所在标签那份 tag 的 close-trigger。
  *
  * @customElement xh-select
  * @attr {string} value - 受控选中值；缺省该属性即非受控。多选集合请写 property，属性只递得进单值
@@ -62,7 +62,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart clear-trigger - 清空按钮：盒里 trigger 的兄弟节点，不占 Tab 位；清不了（无值 / 禁用 / 只读）时带 hidden，点完焦点送回 trigger；可及名走 translations.clearTrigger
  * @csspart tag-list - 触发器里的标签行：可见标签与 overflow-tag 放在它里面；无选中时带 hidden，value-text 回来显示占位文字
  * @csspart tag - 多选标签，须自带 value 属性标识选中值；接的是 tag 的 root（data-scope="tag"），语气、尺寸与禁用随本元素、形态按控件的面派；放触发器里是纯展示，放外面配 item-delete-trigger 可删
- * @csspart item-delete-trigger - 标签删除按钮，须放在 tag 里；点按摘掉所在标签的选中值，可及名走 translations.deleteItem
+ * @csspart item-delete-trigger - 标签删除按钮，须放在 tag 里；接的是所在标签那份 tag 的 close-trigger（data-scope="tag"），禁用时留位、原生 disabled；点按摘掉所在标签的选中值，可及名走 translations.deleteItem
  * @csspart overflow-tag - 折起的标签合成的那一枚，同样接 tag 的 root，带 data-count：留空即由元素填入 +N（文字走 translations.overflowTag），作者写了内容则归作者；没有折起的标签时带 hidden
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - 浮层外壳（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
@@ -78,11 +78,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart hidden-select - 表单影子，须是原生 select 空壳；选项由元素按当前值补齐（多选时开原生 multiple），省略该节点即不参与表单
  */
 export class XhSelectElement extends XhElement {
-  // tag / overflow-tag 两个角色节点接的是 tag 的 root，归 tag 那套 scope 管，不在本元素的解剖里
+  // tag / overflow-tag 接的是 tag 的 root，item-delete-trigger 接的是 tag 的 close-trigger：三个作者名都归 tag 那套 scope 管，不在本元素的解剖里
   static override partContract = {
     anatomy: selectAnatomy,
     meta: selectMeta,
-    delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag'] }],
+    delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }],
   }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
@@ -364,6 +364,7 @@ export class XhSelectElement extends XhElement {
       if (label)
         this.spreader.spread(label, tagLabelProps)
     }
+    // 删除钮是所在标签那份 tag 的 close-trigger：身份取所在 tag 的 value 属性
     for (const el of this.getParts('item-delete-trigger')) {
       const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
       this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)

@@ -312,9 +312,9 @@ function contexts(): Context[] {
       // 没写状态属性的那条是缺省档，配方自己挂出来就是它，不另算上下文
       if (!recipe || recipe.chain.every(c => c.attrs.length === 0))
         continue
-      const anchor = recipe.chain[recipe.chain.length - 1]!
-      const attrs = recipe.chain.flatMap(c => c.attrs.map(([k, v]) => (v ? `${k.replace('data-', '')}=${v}` : k.replace('data-', '')))).join(' ')
-      const label = `${recipe.scope}/${anchor.part} ${attrs}`
+      // 带状态的每一节各写成 scope/部件 加状态，属性写在祖先上的上下文才分得清是哪一层的
+      const describe = (c: Compound) => `${c.scope ?? recipe.scope}/${c.part} ${c.attrs.map(([k, v]) => (v ? `${k.replace('data-', '')}=${v}` : k.replace('data-', ''))).join(' ')}`
+      const label = recipe.chain.filter(c => c.attrs.length).map(describe).join(' > ')
       const signature = `${recipe.scope}|${recipe.signature}`
       if (!bySignature.has(signature))
         bySignature.set(signature, { scope: recipe.scope, chain: recipe.chain, label, signature })
@@ -327,6 +327,28 @@ function contexts(): Context[] {
 
 /** 真实组件里这个部件渲染成什么标签，没测到就用 div。 */
 const tags = new Map<string, string>()
+/**
+ * 部件在哪些别家 scope 里面出现过、又在哪些里面拿到过焦点：同一个部件套进不同宿主时焦点模型可以不同
+ * （tag 的 root 在 tag-group 里接焦点，在 tags-input 里不接）。只有「出现过却没拿到焦点」才算不接。
+ */
+const seenUnder = new Map<string, Set<string>>()
+const focusHosts = new Map<string, Set<string>>()
+
+function hostsOf(el: HTMLElement, scope: string): string[] {
+  const out: string[] = []
+  for (let up = el.parentElement?.closest<HTMLElement>('[data-scope]'); up; up = up.parentElement?.closest<HTMLElement>('[data-scope]') ?? null) {
+    if (up.dataset.scope !== scope)
+      out.push(up.dataset.scope!)
+  }
+  return out
+}
+
+function record(map: Map<string, Set<string>>, key: string, hosts: readonly string[]): void {
+  if (!map.has(key))
+    map.set(key, new Set())
+  for (const host of hosts)
+    map.get(key)!.add(host)
+}
 /** 谁套得住谁：部件 → 真实组件里出现在它外面的那些部件。 */
 const ancestors = new Map<string, Set<string>>()
 
@@ -350,11 +372,20 @@ function paintPage(): void {
   document.body.style.color = 'var(--xh-fg-default)'
 }
 
-/** 链子里没有本 scope 的 root 时补一层在最外面：私有槽多半声明在 root 上。 */
+/**
+ * 链子里出现的每个 scope 都得有自己的 root，没有的补一层在最外面：私有槽多半声明在 root 上，
+ * 宿主把面画在内嵌部件上时（tags-input 反白 tag 的 root），面的取值声明在宿主的 root 上。
+ * 按各 scope 在链子里首次出现的次序从外往里补。
+ */
 function withRoot(chain: Compound[], scope: string): Compound[] {
-  return chain.some(c => (c.scope ?? scope) === scope && c.part === 'root')
-    ? chain
-    : [{ scope, part: 'root', attrs: [], nots: [], pseudos: [], synthetic: true }, ...chain]
+  const scopes: string[] = []
+  for (const c of chain) {
+    const at = c.scope ?? scope
+    if (!scopes.includes(at))
+      scopes.push(at)
+  }
+  const missing = scopes.filter(at => !chain.some(c => (c.scope ?? scope) === at && c.part === 'root'))
+  return [...missing.map(at => ({ scope: at, part: 'root', attrs: [], nots: [], pseudos: [], synthetic: true })), ...chain]
 }
 
 /** 两节落在同一个节点上：属性合在一起。 */
@@ -466,12 +497,14 @@ function reproduces(recipe: Recipe, target: HTMLElement): boolean {
   }
 }
 
+/** 撤环的规则只从样式表里筛一次：每档都重走一遍全部样式表，两千多档下来是整份判据最贵的一段。 */
+let ringOffRules: CSSStyleRule[] | null = null
+
 /** 撤环的规则里，命中这个节点的那些分支（焦点伪类摘掉后比对），写成静态门禁的键。 */
 function ringOffKeys(target: HTMLElement): string[] {
+  ringOffRules ??= unconditionalRules().filter(rule => turnsRingOff(rule.style))
   const keys = new Set<string>()
-  for (const rule of unconditionalRules()) {
-    if (!turnsRingOff(rule.style))
-      continue
+  for (const rule of ringOffRules) {
     for (const branch of splitTop(rule.selectorText, ch => ch === ',')) {
       let hit = false
       try {
@@ -564,6 +597,8 @@ function harvestFocusable(): Set<string> {
           const scope = el.dataset.scope!
           for (let up = el.parentElement?.closest<HTMLElement>('[data-scope][data-part]'); up; up = up.parentElement?.closest<HTMLElement>('[data-scope][data-part]') ?? null)
             nest(`${up.dataset.scope}/${up.dataset.part}`, `${scope}/${el.dataset.part}`)
+          const hosts = hostsOf(el, scope)
+          record(seenUnder, `${scope}/${el.dataset.part}`, hosts)
           if (!el.matches('a[href],button,input,select,textarea,[tabindex]'))
             continue
           if (el.hasAttribute('inert') || el.closest('[inert]'))
@@ -572,6 +607,7 @@ function harvestFocusable(): Set<string> {
           found.add(key)
           if (!tags.has(key))
             tags.set(key, el.tagName.toLowerCase())
+          record(focusHosts, key, hosts)
         }
       }
       catch {}
@@ -645,6 +681,26 @@ const isTrigger = (part: string) => part === 'trigger' || part.endsWith('-trigge
 function takesFocus(scope: string, part: string): boolean {
   const key = `${scope}/${part}`
   return focusable.has(key) || named.has(key) || skinFocus.has(key) || isTrigger(part)
+}
+
+/**
+ * 这棵树里的主语在这几层宿主里面接不接焦点：树里出现了别家 scope 的祖先时，
+ * 真实组件里在那个 scope 里面采到过它、却从没采到它拿焦点，这一档的环就从来画不出来。
+ * 只判在别处采到过拿焦点的部件（焦点模型确实随宿主变的那些）；
+ * 没在那家里面采到过的也不判（套件的夹具不一定把两家组合在一起）。
+ */
+function takesFocusWithin(chain: readonly Compound[], scope: string, part: string): boolean {
+  const key = `${scope}/${part}`
+  const seen = seenUnder.get(key)
+  const hosts = focusHosts.get(key)
+  if (!seen || !hosts)
+    return true
+  for (const c of chain.slice(0, -1)) {
+    const at = c.scope ?? scope
+    if (at !== scope && !c.synthetic && seen.has(at) && !hosts.has(at))
+      return false
+  }
+  return true
 }
 
 // ── 档位表 ──
@@ -734,6 +790,10 @@ function buildTiers(): Tier[] {
       drop(recipe.branch, `部件不接焦点：${recipe.scope}/${recipe.part}`)
       continue
     }
+    if (!takesFocusWithin(recipe.chain, recipe.scope, recipe.part)) {
+      drop(recipe.branch, `部件在这处宿主里不接焦点：${recipe.scope}/${recipe.part}`)
+      continue
+    }
     const { target, focusTarget } = mount(recipe, [], null)
     if (!reproduces(recipe, target)) {
       drop(recipe.branch, '挂出来对不上')
@@ -760,6 +820,12 @@ function buildTiers(): Tier[] {
       if (!reproduces(recipe, inner))
         return false
       const label = `${recipe.branch} ⟵ ${contexts.map(c => c.label).join(' + ')}`
+      // 上下文把别家的祖先带了进来：主语在那家里面得接过焦点
+      if (!takesFocusWithin(assemble(recipe, contexts), recipe.scope, recipe.part)) {
+        if (!seen.has(paint))
+          drop(label, `部件在这处宿主里不接焦点：${recipe.scope}/${recipe.part}`)
+        return false
+      }
       // 套上这层上下文之后焦点还落不落得上去（藏起来的浮层壳会把整棵子树按下去）
       innerFocus.focus()
       if (document.activeElement !== innerFocus) {
@@ -853,105 +919,65 @@ function settle(): void {
 }
 
 /** 键盘锚点轻档的底是 --xh-bg-subtle-hover（浅色 neutral-200），默认环 brand-500 压上去 2.95。 */
-const 轻档的灰底 = '键盘锚点轻档的底是 --xh-bg-subtle-hover（浅色 neutral-200），默认环 brand-500 压上去 2.95；静态门禁把 :is(:hover, [data-highlighted]) 整支当悬停档，看不见这块面，给它灌 currentColor 会多出一条算不出实心档的规则。过线要换这一档的面或给它一支专用环色'
-/** 实心标签进轻档后底换成灰底、字仍是浅字，两支环色都不到线。 */
-const 实心标签的轻档 = '实心标签进键盘锚点轻档后底换成 --xh-bg-subtle-hover（浅色 neutral-200），字仍是实心档那支 fg-on-brand：默认环 2.95，currentColor 只有 1.26。过线要换这一档的面'
-/** 标签反白后删除叉的字没跟着换，环取到的是那支灰。 */
-const 删除叉的灰字 = '连接层不给删除叉发 data-highlighted，皮肤里 [item-delete-trigger][data-highlighted] 那条换色规则从不命中：标签反白成实心语气底后叉仍是 fg-muted 的灰字，currentColor 环取到的就是这支灰（浅色 neutral 语气下与面同色）。过线要在连接层给叉带上 stateAttrs，或把换色规则改锚在标签的 data-highlighted 上'
+const 轻档的灰底 = '键盘锚点轻档的底是 --xh-bg-subtle-hover（浅色 neutral-200），默认环 brand-500 压上去 2.95；这块面由 tag-group.css 铺在组里的 tag 根上（实心档不进轻档）。静态门禁把 :is(:hover, [data-highlighted]) 整支当悬停档，看不见这块面，给它灌 currentColor 会多出一条算不出实心档的规则。过线要换这一档的面或给它一支专用环色'
 
 /**
  * 明知不达标、且换环色那一行救不回来的档。键是档位标签，值写一句差在哪、过线要动什么。
  * 两侧反查：登记的档必须仍挂得出来、仍在画环、也仍然不达标，三条有一条不成立即判登记过期。
  */
-/** 删除钮在实心标签里：select 只传 subtle / outline，solid 档挂不出来。 */
-const 删除钮在实心标签里 = 'select 的连接层只把 subtle / outline 传给标签，solid 是 tag.css 有规则、在 select 里却挂不出来的档；判据从夹具学到 tag/root 套着 select/item-delete-trigger 之后把那条上下文也套了上来。删除钮退役成 tag 自己的 close-trigger 后这一档随之消失'
-
 const KNOWN = new Map<string, string>([
-  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid · 无语气 · light', 删除钮在实心标签里],
-  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid · 无语气 · dark', 删除钮在实心标签里],
-  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · brand · light', 删除钮在实心标签里],
-  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · brand · dark', 删除钮在实心标签里],
-  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · neutral · light', 删除钮在实心标签里],
-  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · neutral · dark', 删除钮在实心标签里],
-  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · danger · light', 删除钮在实心标签里],
-  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · danger · dark', 删除钮在实心标签里],
-  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · success · light', 删除钮在实心标签里],
-  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · success · dark', 删除钮在实心标签里],
-  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · warning · light', 删除钮在实心标签里],
-  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · warning · dark', 删除钮在实心标签里],
-  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · info · light', 删除钮在实心标签里],
-  ['select/item-delete-trigger · 基础档 · 上下文 tag/root variant=solid tone · info · dark', 删除钮在实心标签里],
-  ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted + tag-group/item state=checked · brand · light', 轻档的灰底],
-  ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted + tag-group/item state=checked · danger · light', 轻档的灰底],
-  ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted + tag-group/item state=checked · info · light', 轻档的灰底],
-  ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted + tag-group/item state=checked · neutral · light', 轻档的灰底],
-  ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted + tag-group/item state=checked · success · light', 轻档的灰底],
-  ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted + tag-group/item state=checked · warning · light', 轻档的灰底],
-  ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · brand · light', 轻档的灰底],
-  ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · danger · light', 轻档的灰底],
-  ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · info · light', 轻档的灰底],
-  ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · neutral · light', 轻档的灰底],
-  ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · success · light', 轻档的灰底],
-  ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · warning · light', 轻档的灰底],
-  ['tag-group/item · variant=outline · 上下文 tag-group/item highlighted · 无语气 · light', 轻档的灰底],
-  ['tag-group/item · variant=solid · 上下文 tag-group/item highlighted + tag-group/item state=checked · brand · light', 实心标签的轻档],
-  ['tag-group/item · variant=solid · 上下文 tag-group/item highlighted + tag-group/item state=checked · danger · light', 实心标签的轻档],
-  ['tag-group/item · variant=solid · 上下文 tag-group/item highlighted + tag-group/item state=checked · info · light', 实心标签的轻档],
-  ['tag-group/item · variant=solid · 上下文 tag-group/item highlighted + tag-group/item state=checked · neutral · light', 实心标签的轻档],
-  ['tag-group/item · variant=solid · 上下文 tag-group/item highlighted + tag-group/item state=checked · success · light', 实心标签的轻档],
-  ['tag-group/item · variant=solid · 上下文 tag-group/item highlighted + tag-group/item state=checked · warning · light', 实心标签的轻档],
-  ['tag-group/item · variant=subtle · 上下文 tag-group/item highlighted + tag-group/item state=checked · brand · light', 轻档的灰底],
-  ['tag-group/item · variant=subtle · 上下文 tag-group/item highlighted + tag-group/item state=checked · danger · light', 轻档的灰底],
-  ['tag-group/item · variant=subtle · 上下文 tag-group/item highlighted + tag-group/item state=checked · info · light', 轻档的灰底],
-  ['tag-group/item · variant=subtle · 上下文 tag-group/item highlighted + tag-group/item state=checked · neutral · light', 轻档的灰底],
-  ['tag-group/item · variant=subtle · 上下文 tag-group/item highlighted + tag-group/item state=checked · success · light', 轻档的灰底],
-  ['tag-group/item · variant=subtle · 上下文 tag-group/item highlighted + tag-group/item state=checked · warning · light', 轻档的灰底],
-  ['tag-group/item · variant=subtle · 上下文 tag-group/item highlighted · 无语气 · light', 轻档的灰底],
-  ['tag-group/item · 基础档 · 上下文 tag-group/item highlighted + tag-group/item state=checked · brand · light', 轻档的灰底],
-  ['tag-group/item · 基础档 · 上下文 tag-group/item highlighted + tag-group/item state=checked · danger · light', 轻档的灰底],
-  ['tag-group/item · 基础档 · 上下文 tag-group/item highlighted + tag-group/item state=checked · info · light', 轻档的灰底],
-  ['tag-group/item · 基础档 · 上下文 tag-group/item highlighted + tag-group/item state=checked · neutral · light', 轻档的灰底],
-  ['tag-group/item · 基础档 · 上下文 tag-group/item highlighted + tag-group/item state=checked · success · light', 轻档的灰底],
-  ['tag-group/item · 基础档 · 上下文 tag-group/item highlighted + tag-group/item state=checked · warning · light', 轻档的灰底],
-  ['tag-group/item · 基础档 · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · brand · light', 轻档的灰底],
-  ['tag-group/item · 基础档 · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · danger · light', 轻档的灰底],
-  ['tag-group/item · 基础档 · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · info · light', 轻档的灰底],
-  ['tag-group/item · 基础档 · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · neutral · light', 轻档的灰底],
-  ['tag-group/item · 基础档 · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · success · light', 轻档的灰底],
-  ['tag-group/item · 基础档 · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · warning · light', 轻档的灰底],
-  ['tag-group/item · 基础档 · 上下文 tag-group/item highlighted + tag-group/item variant=solid · 无语气 · light', 实心标签的轻档],
-  ['tag-group/item · 基础档 · 上下文 tag-group/item highlighted · 无语气 · light', 轻档的灰底],
-  ['tag-group/item-delete-trigger · variant=solid · 上下文 tag-group/item highlighted + tag-group/item state=checked · brand · light', 实心标签的轻档],
-  ['tag-group/item-delete-trigger · variant=solid · 上下文 tag-group/item highlighted + tag-group/item state=checked · danger · light', 实心标签的轻档],
-  ['tag-group/item-delete-trigger · variant=solid · 上下文 tag-group/item highlighted + tag-group/item state=checked · info · light', 实心标签的轻档],
-  ['tag-group/item-delete-trigger · variant=solid · 上下文 tag-group/item highlighted + tag-group/item state=checked · neutral · light', 实心标签的轻档],
-  ['tag-group/item-delete-trigger · variant=solid · 上下文 tag-group/item highlighted + tag-group/item state=checked · success · light', 实心标签的轻档],
-  ['tag-group/item-delete-trigger · variant=solid · 上下文 tag-group/item highlighted + tag-group/item state=checked · warning · light', 实心标签的轻档],
-  ['tag-group/item-delete-trigger · 基础档 · 上下文 tag-group/item highlighted + tag-group/item state=checked · brand · light', 轻档的灰底],
-  ['tag-group/item-delete-trigger · 基础档 · 上下文 tag-group/item highlighted + tag-group/item state=checked · danger · light', 轻档的灰底],
-  ['tag-group/item-delete-trigger · 基础档 · 上下文 tag-group/item highlighted + tag-group/item state=checked · info · light', 轻档的灰底],
-  ['tag-group/item-delete-trigger · 基础档 · 上下文 tag-group/item highlighted + tag-group/item state=checked · neutral · light', 轻档的灰底],
-  ['tag-group/item-delete-trigger · 基础档 · 上下文 tag-group/item highlighted + tag-group/item state=checked · success · light', 轻档的灰底],
-  ['tag-group/item-delete-trigger · 基础档 · 上下文 tag-group/item highlighted + tag-group/item state=checked · warning · light', 轻档的灰底],
-  ['tag-group/item-delete-trigger · 基础档 · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · brand · light', 轻档的灰底],
-  ['tag-group/item-delete-trigger · 基础档 · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · danger · light', 轻档的灰底],
-  ['tag-group/item-delete-trigger · 基础档 · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · info · light', 轻档的灰底],
-  ['tag-group/item-delete-trigger · 基础档 · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · neutral · light', 轻档的灰底],
-  ['tag-group/item-delete-trigger · 基础档 · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · success · light', 轻档的灰底],
-  ['tag-group/item-delete-trigger · 基础档 · 上下文 tag-group/item highlighted + tag-group/item variant=outline tone · warning · light', 轻档的灰底],
-  ['tag-group/item-delete-trigger · 基础档 · 上下文 tag-group/item highlighted + tag-group/item variant=solid · 无语气 · light', 实心标签的轻档],
-  ['tag-group/item-delete-trigger · 基础档 · 上下文 tag-group/item highlighted · 无语气 · light', 轻档的灰底],
-  ['tags-input/item-delete-trigger · 基础档 · 上下文 tags-input/item highlighted · brand · dark', 删除叉的灰字],
-  ['tags-input/item-delete-trigger · 基础档 · 上下文 tags-input/item highlighted · brand · light', 删除叉的灰字],
-  ['tags-input/item-delete-trigger · 基础档 · 上下文 tags-input/item highlighted · danger · dark', 删除叉的灰字],
-  ['tags-input/item-delete-trigger · 基础档 · 上下文 tags-input/item highlighted · danger · light', 删除叉的灰字],
-  ['tags-input/item-delete-trigger · 基础档 · 上下文 tags-input/item highlighted · info · dark', 删除叉的灰字],
-  ['tags-input/item-delete-trigger · 基础档 · 上下文 tags-input/item highlighted · info · light', 删除叉的灰字],
-  ['tags-input/item-delete-trigger · 基础档 · 上下文 tags-input/item highlighted · neutral · light', 删除叉的灰字],
-  ['tags-input/item-delete-trigger · 基础档 · 上下文 tags-input/item highlighted · success · dark', 删除叉的灰字],
-  ['tags-input/item-delete-trigger · 基础档 · 上下文 tags-input/item highlighted · success · light', 删除叉的灰字],
-  ['tags-input/item-delete-trigger · 基础档 · 上下文 tags-input/item highlighted · warning · dark', 删除叉的灰字],
-  ['tags-input/item-delete-trigger · 基础档 · 上下文 tags-input/item highlighted · warning · light', 删除叉的灰字],
+  ['tag/close-trigger · 基础档 · 上下文 tag/root highlighted + tag/root selected · brand · light', 轻档的灰底],
+  ['tag/close-trigger · 基础档 · 上下文 tag/root highlighted + tag/root selected · danger · light', 轻档的灰底],
+  ['tag/close-trigger · 基础档 · 上下文 tag/root highlighted + tag/root selected · info · light', 轻档的灰底],
+  ['tag/close-trigger · 基础档 · 上下文 tag/root highlighted + tag/root selected · neutral · light', 轻档的灰底],
+  ['tag/close-trigger · 基础档 · 上下文 tag/root highlighted + tag/root selected · success · light', 轻档的灰底],
+  ['tag/close-trigger · 基础档 · 上下文 tag/root highlighted + tag/root selected · warning · light', 轻档的灰底],
+  ['tag/close-trigger · 基础档 · 上下文 tag/root highlighted · 无语气 · light', 轻档的灰底],
+  ['tag/close-trigger · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · brand · light', 轻档的灰底],
+  ['tag/close-trigger · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · danger · light', 轻档的灰底],
+  ['tag/close-trigger · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · info · light', 轻档的灰底],
+  ['tag/close-trigger · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · neutral · light', 轻档的灰底],
+  ['tag/close-trigger · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · success · light', 轻档的灰底],
+  ['tag/close-trigger · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · warning · light', 轻档的灰底],
+  ['tag/root · variant=outline · 上下文 tag/root highlighted + tag/root selected · brand · light', 轻档的灰底],
+  ['tag/root · variant=outline · 上下文 tag/root highlighted + tag/root selected · danger · light', 轻档的灰底],
+  ['tag/root · variant=outline · 上下文 tag/root highlighted + tag/root selected · info · light', 轻档的灰底],
+  ['tag/root · variant=outline · 上下文 tag/root highlighted + tag/root selected · neutral · light', 轻档的灰底],
+  ['tag/root · variant=outline · 上下文 tag/root highlighted + tag/root selected · success · light', 轻档的灰底],
+  ['tag/root · variant=outline · 上下文 tag/root highlighted + tag/root selected · warning · light', 轻档的灰底],
+  ['tag/root · variant=outline · 上下文 tag/root highlighted · 无语气 · light', 轻档的灰底],
+  ['tag/root · variant=outline · 上下文 tag/root variant=outline tone + tag/root highlighted · brand · light', 轻档的灰底],
+  ['tag/root · variant=outline · 上下文 tag/root variant=outline tone + tag/root highlighted · danger · light', 轻档的灰底],
+  ['tag/root · variant=outline · 上下文 tag/root variant=outline tone + tag/root highlighted · info · light', 轻档的灰底],
+  ['tag/root · variant=outline · 上下文 tag/root variant=outline tone + tag/root highlighted · neutral · light', 轻档的灰底],
+  ['tag/root · variant=outline · 上下文 tag/root variant=outline tone + tag/root highlighted · success · light', 轻档的灰底],
+  ['tag/root · variant=outline · 上下文 tag/root variant=outline tone + tag/root highlighted · warning · light', 轻档的灰底],
+  ['tag/root · variant=subtle · 上下文 tag/root highlighted + tag/root selected · brand · light', 轻档的灰底],
+  ['tag/root · variant=subtle · 上下文 tag/root highlighted + tag/root selected · danger · light', 轻档的灰底],
+  ['tag/root · variant=subtle · 上下文 tag/root highlighted + tag/root selected · info · light', 轻档的灰底],
+  ['tag/root · variant=subtle · 上下文 tag/root highlighted + tag/root selected · neutral · light', 轻档的灰底],
+  ['tag/root · variant=subtle · 上下文 tag/root highlighted + tag/root selected · success · light', 轻档的灰底],
+  ['tag/root · variant=subtle · 上下文 tag/root highlighted + tag/root selected · warning · light', 轻档的灰底],
+  ['tag/root · variant=subtle · 上下文 tag/root highlighted · 无语气 · light', 轻档的灰底],
+  ['tag/root · variant=subtle · 上下文 tag/root variant=subtle tone + tag/root highlighted · brand · light', 轻档的灰底],
+  ['tag/root · variant=subtle · 上下文 tag/root variant=subtle tone + tag/root highlighted · danger · light', 轻档的灰底],
+  ['tag/root · variant=subtle · 上下文 tag/root variant=subtle tone + tag/root highlighted · info · light', 轻档的灰底],
+  ['tag/root · variant=subtle · 上下文 tag/root variant=subtle tone + tag/root highlighted · neutral · light', 轻档的灰底],
+  ['tag/root · variant=subtle · 上下文 tag/root variant=subtle tone + tag/root highlighted · success · light', 轻档的灰底],
+  ['tag/root · variant=subtle · 上下文 tag/root variant=subtle tone + tag/root highlighted · warning · light', 轻档的灰底],
+  ['tag/root · 基础档 · 上下文 tag/root highlighted + tag/root selected · brand · light', 轻档的灰底],
+  ['tag/root · 基础档 · 上下文 tag/root highlighted + tag/root selected · danger · light', 轻档的灰底],
+  ['tag/root · 基础档 · 上下文 tag/root highlighted + tag/root selected · info · light', 轻档的灰底],
+  ['tag/root · 基础档 · 上下文 tag/root highlighted + tag/root selected · neutral · light', 轻档的灰底],
+  ['tag/root · 基础档 · 上下文 tag/root highlighted + tag/root selected · success · light', 轻档的灰底],
+  ['tag/root · 基础档 · 上下文 tag/root highlighted + tag/root selected · warning · light', 轻档的灰底],
+  ['tag/root · 基础档 · 上下文 tag/root highlighted · 无语气 · light', 轻档的灰底],
+  ['tag/root · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · brand · light', 轻档的灰底],
+  ['tag/root · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · danger · light', 轻档的灰底],
+  ['tag/root · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · info · light', 轻档的灰底],
+  ['tag/root · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · neutral · light', 轻档的灰底],
+  ['tag/root · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · success · light', 轻档的灰底],
+  ['tag/root · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · warning · light', 轻档的灰底],
 ])
 
 /** 静态门禁登记表里撤了环的那些档；分区还没建时是空表，撤环的档一律判红。 */
@@ -980,24 +1006,31 @@ const sorted = <T>(obj: Record<string, T>): Record<string, T> => Object.fromEntr
 /** 一个规范键量出来的结果：面压默认环的最低比值（取最低的那一档的主题与语气）、环撤没撤。 */
 interface Measured { ratio: number, theme: string, tone: string | null, ringOff: boolean }
 
-let measuredAll: Map<string, Measured> | null = null
+/** 每个主题量过的结果，按主题各存一份：两千多档一口气量完会撞上单条用例的时限，按主题拆成两条量。 */
+const measuredByTheme = new Map<string, Map<string, Measured>>()
 
 /**
- * 每一档挂出来、落焦、量一遍，按规范键收：同一个键多档（语气、主题）只留比值最低的。
+ * 把一个主题下的每一档挂出来、落焦、量一遍，按规范键收：同一个键多档（语气）只留比值最低的。
  * 面在落焦之后读：有的档的面由 :focus-visible 那条规则铺。
+ * 主题只切一次：切一次主题整份文档重算一遍样式，逐档来回翻要翻两千多次。
  */
-function measureAll(): Map<string, Measured> {
-  if (measuredAll)
-    return measuredAll
+function measureTheme(theme: string): Map<string, Measured> {
+  const cached = measuredByTheme.get(theme)
+  if (cached)
+    return cached
   const out = new Map<string, Measured>()
+  document.documentElement.dataset.theme = theme
+  paintPage()
+  // 默认环色只随主题变，一轮里解一次
+  const ring = resolve('var(--xh-ring-focus)')
   for (const tier of tiers) {
-    document.documentElement.dataset.theme = tier.theme
-    paintPage()
+    if (tier.theme !== theme)
+      continue
     const { target, focusTarget } = mount(tier.recipe, tier.contexts, tier.tone)
     focus(focusTarget)
     const ringOff = ringOffKeys(target).length > 0
     const stack = insideStack(target)
-    const ratio = round(contrast(composite([...stack, resolve('var(--xh-ring-focus)')]), composite(stack)))
+    const ratio = round(contrast(composite([...stack, ring]), composite(stack)))
     for (const key of canonicalKeys(tier.key)) {
       const prev = out.get(key)
       if (!prev || ratio < prev.ratio)
@@ -1007,7 +1040,20 @@ function measureAll(): Map<string, Measured> {
   host?.remove()
   host = null
   delete document.documentElement.dataset.theme
-  measuredAll = out
+  measuredByTheme.set(theme, out)
+  return out
+}
+
+/** 两个主题合起来：同一个键只留比值最低的那一档。 */
+function measureAll(): Map<string, Measured> {
+  const out = new Map<string, Measured>()
+  for (const theme of THEMES) {
+    for (const [key, m] of measureTheme(theme)) {
+      const prev = out.get(key)
+      if (!prev || m.ratio < prev.ratio)
+        out.set(key, m)
+    }
+  }
   return out
 }
 
@@ -1053,6 +1099,10 @@ describe('聚焦环压着的那块面', () => {
       await commands.writeFile(DROPPED_FILE, `${JSON.stringify(computed, null, 2)}\n`)
     const problems = diffRegistry(computed, droppedRegistry as Record<string, string>, (a, b) => a === b)
     expect(problems, `${DROPPED_FILE} 与本次推导对不上（VITE_FOCUS_RING_UPDATE=1 重跑可重写）：\n${problems.join('\n')}`).toEqual([])
+  })
+
+  it.each(THEMES)('把 %s 主题下的每一档挂出来量一遍', (theme) => {
+    expect(measureTheme(theme).size, '这个主题下一档都没量到').toBeGreaterThan(0)
   })
 
   it('本侧算出的实心档，按静态门禁的键登记且两侧对得上', async () => {

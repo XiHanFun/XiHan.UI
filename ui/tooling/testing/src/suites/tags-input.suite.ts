@@ -9,6 +9,8 @@ const APG = 'https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/'
 const HTML_SPEC = 'https://html.spec.whatwg.org/multipage/input.html#text-(type=text)-state-and-search-state-(type=search)'
 
 const SEL = (part: string): string => `[data-scope="tags-input"][data-part="${part}"]`
+/** 标签里的部件：预览是 tag 的 root、文字是 tag 的 label、删除钮是 tag 的 close-trigger，都戴 tag 的 scope。 */
+const TAG_SEL = (part: string): string => `${SEL('item')} [data-scope="tag"][data-part="${part}"]`
 
 function inputEl(doc: Document): HTMLInputElement {
   const el = doc.querySelector<HTMLInputElement>(SEL('input'))
@@ -77,7 +79,53 @@ function caretToStart(doc: Document): void {
   el.setSelectionRange?.(0, 0)
 }
 
+/** 标签里的部件，文档序；戴 tag 的 scope，进不了本组件的快照。 */
+function tagParts(doc: Document, part: string): HTMLElement[] {
+  return [...doc.querySelectorAll<HTMLElement>(TAG_SEL(part))]
+}
+
+/** 逐枚核对标签里某个部件的属性：null 表示断言该属性缺失。 */
+function assertTagParts(doc: Document, part: string, expected: readonly Record<string, string | null>[]): void {
+  const els = tagParts(doc, part)
+  if (els.length !== expected.length)
+    throw new Error(`标签里的 ${part} 应有 ${expected.length} 个，实际 ${els.length} 个`)
+  els.forEach((el, i) => {
+    for (const [name, want] of Object.entries(expected[i]!)) {
+      const got = el.getAttribute(name)
+      if (got !== want)
+        throw new Error(`第 ${i} 枚标签的 ${part} 的 ${name}：期望 ${JSON.stringify(want)}，实际 ${JSON.stringify(got)}`)
+    }
+  })
+}
+
+/** 本组件不再有自己的预览、文字与删除钮部件。 */
+function assertNoOwnTagParts(doc: Document): void {
+  for (const part of ['item-preview', 'item-text', 'item-delete-trigger']) {
+    if (doc.querySelector(SEL(part)))
+      throw new Error(`${part} 不该再戴 tags-input 的 scope`)
+  }
+}
+
+/** 删除钮戴 tag 的 scope，声明式 click 步找不到它，照 click 步的动作直接点。 */
+function clickDeleteTrigger(doc: Document, index = 0): void {
+  const el = tagParts(doc, 'close-trigger')[index]
+  if (!el)
+    throw new Error(`找不到第 ${index} 枚标签的删除钮`)
+  el.focus?.()
+  el.click()
+}
+
+/** 预览戴 tag 的 scope，声明式 dblclick 步找不到它，照 dblclick 步的动作直接派。 */
+function dblclickPreview(doc: Document, index = 0): void {
+  const el = tagParts(doc, 'root')[index]
+  if (!el)
+    throw new Error(`找不到第 ${index} 枚标签的预览`)
+  el.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }))
+}
+
 // 一个标签一套节点：预览（文本 + 删除按钮）与就地编辑框互斥收起，两者都常挂不卸载。
+// item-preview / item-text / item-delete-trigger 是作者侧的写法名，渲出来是 tag 的 root / label / close-trigger
+// （data-scope="tag"），不进本组件的解剖。
 function tag(value: string): FixtureNode {
   return {
     part: 'item',
@@ -185,27 +233,41 @@ export const tagsInputSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '带标签：每个标签自报 data-value，删除按钮不占 Tab 位且自带名字，编辑框收起',
+      name: '带标签：每个标签自报 data-value；预览是 tag 的 root、删除钮是 tag 的 close-trigger，不占 Tab 位且自带名字，编辑框收起',
       spec: { apg: APG },
       fixture: withTags('vue', 'react'),
       props: { defaultValue: ['vue', 'react'], name: 'stack' },
       initial: {
-        counts: { 'item': 2, 'item-preview': 2, 'item-text': 2, 'item-delete-trigger': 2, 'item-input': 2 },
+        counts: { 'item': 2, 'item-input': 2 },
         parts: {
           'root': { 'data-empty': null },
           'item[0]': { 'data-value': 'vue', 'data-highlighted': null, 'data-editing': null },
           'item[1]': { 'data-value': 'react' },
-          // 标签不各占 Tab 停靠点；键盘那一路走方向键 + 退格
-          'item-delete-trigger[0]': { 'type': 'button', 'tabindex': '-1', 'aria-label': 'Delete vue', 'disabled': null },
-          'item-delete-trigger[1]': { 'aria-label': 'Delete react' },
           // 不编辑时编辑框收起（不卸载），预览露出
           'item-input[0]': { 'hidden': '', 'aria-label': 'Edit vue', 'id': '@self' },
-          'item-preview[0]': { hidden: null },
           'hidden-input': { name: 'stack' },
         },
       },
       steps: [
-        nativeActivation('tags-input', 'item-delete-trigger'),
+        nativeActivation('tag', 'close-trigger'),
+        {
+          kind: 'raw',
+          why: '预览、文字与删除钮戴 tag 的 scope，进不了本组件的快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertNoOwnTagParts(doc)
+            // 预览露出、展示态；状态标记留在本组件的 item 上，tag 的 root 不带
+            assertTagParts(doc, 'root', [
+              { 'data-state': 'open', 'hidden': null, 'data-disabled': null, 'data-highlighted': null, 'data-editing': null },
+              { 'data-state': 'open', 'hidden': null, 'data-disabled': null },
+            ])
+            assertTagParts(doc, 'label', [{}, {}])
+            // 标签不各占 Tab 停靠点；键盘那一路走方向键 + 退格
+            assertTagParts(doc, 'close-trigger', [
+              { 'type': 'button', 'tabindex': '-1', 'aria-label': 'Delete vue', 'disabled': null, 'hidden': null, 'data-disabled': null },
+              { 'type': 'button', 'tabindex': '-1', 'aria-label': 'Delete react' },
+            ])
+          },
+        },
         {
           kind: 'raw',
           why: 'hidden-input 的 value 是 property 不是属性，进不了归一化快照',
@@ -407,9 +469,10 @@ export const tagsInputSuite: ConformanceSuite = {
       props: { defaultValue: ['vue', 'react'] },
       steps: [
         {
-          // click 步骤会先 focus 再 click：按钮持有过焦点，删完必须把焦点交回去
-          kind: 'click',
-          part: 'item-delete-trigger[1]',
+          // 照 click 步的动作先 focus 再 click：按钮持有过焦点，删完必须把焦点交回去
+          kind: 'raw',
+          why: '删除钮戴 tag 的 scope，声明式 click 步找不到它',
+          run: ({ doc }) => clickDeleteTrigger(doc, 1),
           expect: {
             activeElement: { part: 'input', exact: true },
             events: [{ type: 'value-change', detail: { value: ['vue'] } }],
@@ -452,13 +515,17 @@ export const tagsInputSuite: ConformanceSuite = {
       props: { defaultValue: ['vue'], editable: true },
       steps: [
         {
-          kind: 'dblclick',
-          part: 'item-preview',
+          kind: 'raw',
+          why: '预览戴 tag 的 scope，声明式 dblclick 步找不到它；收起态也只能直接读 DOM',
+          run: async (ctx) => {
+            dblclickPreview(ctx.doc)
+            await ctx.flush()
+            // 预览与编辑框互斥收起，两者都留在文档里；预览的收起就是 tag 的 open=false
+            assertTagParts(ctx.doc, 'root', [{ 'hidden': '', 'data-state': 'closed' }])
+          },
           expect: {
             parts: {
               'item': [{ 'data-editing': '' }],
-              // 预览与编辑框互斥收起，两者都留在文档里
-              'item-preview': [{ hidden: '' }],
               'item-input': [{ hidden: null }],
             },
           },
@@ -472,12 +539,16 @@ export const tagsInputSuite: ConformanceSuite = {
             activeElement: { part: 'input', exact: true },
             parts: {
               'item': [{ 'data-editing': null }],
-              'item-preview': [{ hidden: null }],
               'item-input': [{ hidden: '' }],
             },
             // 撤销这一路一个字都不该改
             events: [],
           },
+        },
+        {
+          kind: 'raw',
+          why: '预览戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => assertTagParts(doc, 'root', [{ 'hidden': null, 'data-state': 'open' }]),
         },
       ],
     },
@@ -529,12 +600,18 @@ export const tagsInputSuite: ConformanceSuite = {
       props: { defaultValue: ['vue'] },
       steps: [
         {
-          kind: 'dblclick',
-          part: 'item-preview',
+          kind: 'raw',
+          why: '预览戴 tag 的 scope，声明式 dblclick 步找不到它',
+          run: ({ doc }) => dblclickPreview(doc),
           expect: {
             parts: { 'item': [{ 'data-editing': null }], 'item-input': [{ hidden: '' }] },
             events: [],
           },
+        },
+        {
+          kind: 'raw',
+          why: '预览戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => assertTagParts(doc, 'root', [{ 'hidden': null, 'data-state': 'open' }]),
         },
       ],
     },
@@ -609,7 +686,7 @@ export const tagsInputSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '禁用：输入框与各按钮都落成原生 disabled，直接派事件也改不了值',
+      name: '禁用：输入框与各按钮都落成原生 disabled，整枚标签置灰、删除钮留位，直接派事件也改不了值',
       spec: { apg: APG },
       fixture: withTags('vue'),
       props: { defaultValue: ['vue'], disabled: true },
@@ -618,33 +695,111 @@ export const tagsInputSuite: ConformanceSuite = {
           'root': { 'data-disabled': '' },
           'control': { 'aria-disabled': 'true', 'data-disabled': '' },
           'input': { disabled: '' },
-          'item-delete-trigger': [{ disabled: '' }],
+          'item': [{ 'data-disabled': '' }],
           'clear-trigger': { hidden: '', disabled: null },
           // 禁用的控件不该提交出值
           'hidden-input': { disabled: '' },
         },
       },
       steps: [
+        {
+          kind: 'raw',
+          why: '预览与删除钮戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertTagParts(doc, 'root', [{ 'data-disabled': '', 'hidden': null }])
+            assertTagParts(doc, 'close-trigger', [{ 'disabled': '', 'data-disabled': '', 'hidden': null }])
+          },
+        },
         // 禁用按钮上 el.click() 被激活行为短路不派事件，直接派发才碰得到 connect 的守卫
-        dispatchClickOnDisabled('tags-input', 'item-delete-trigger', { events: [] }),
+        dispatchClickOnDisabled('tag', 'close-trigger', { events: [] }),
         dispatchClickOnDisabled('tags-input', 'clear-trigger', { events: [] }),
       ],
     },
     {
-      name: '只读：仍可聚焦与复制，但加删改都走不通',
+      name: '只读：仍可聚焦与复制，但加删改都走不通；删除钮留位、原生 disabled，标签本身不置灰',
       spec: { apg: APG },
       fixture: withTags('vue'),
       props: { defaultValue: ['vue'], readOnly: true },
       initial: {
         parts: {
-          'root': { 'data-readonly': '' },
-          'input': { readonly: '', disabled: null },
-          'item-delete-trigger': [{ disabled: '' }],
+          root: { 'data-readonly': '' },
+          input: { readonly: '', disabled: null },
+          item: [{ 'data-readonly': '', 'data-disabled': null }],
         },
       },
       steps: [
+        {
+          kind: 'raw',
+          why: '预览与删除钮戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertTagParts(doc, 'root', [{ 'data-disabled': null, 'hidden': null }])
+            assertTagParts(doc, 'close-trigger', [{ 'disabled': '', 'data-disabled': '', 'hidden': null }])
+          },
+        },
+        dispatchClickOnDisabled('tag', 'close-trigger', { events: [] }),
         { kind: 'focus', part: 'input' },
         { kind: 'key', key: 'Backspace', expect: { parts: { item: [{ 'data-highlighted': null }] }, events: [] } },
+      ],
+    },
+    {
+      name: '标签：tone / size 由控件传到每枚标签上；形态按控件的面派——subtle 控件里是描边标签，其余（含缺省）是淡底标签',
+      spec: { apg: APG },
+      fixture: withTags('vue', 'react'),
+      props: { defaultValue: ['vue', 'react'], variant: 'subtle', tone: 'danger', size: 'lg' },
+      initial: {
+        parts: { root: { 'data-variant': 'subtle', 'data-tone': 'danger', 'data-size': 'lg' } },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '预览戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => assertTagParts(doc, 'root', [
+            { 'data-variant': 'outline', 'data-tone': 'danger', 'data-size': 'lg' },
+            { 'data-variant': 'outline', 'data-tone': 'danger', 'data-size': 'lg' },
+          ]),
+        },
+        { kind: 'setProps', props: { variant: 'ghost', tone: 'success', size: 'sm' } },
+        {
+          kind: 'raw',
+          why: '同上',
+          run: ({ doc }) => assertTagParts(doc, 'root', [
+            { 'data-variant': 'subtle', 'data-tone': 'success', 'data-size': 'sm' },
+            { 'data-variant': 'subtle', 'data-tone': 'success', 'data-size': 'sm' },
+          ]),
+        },
+      ],
+    },
+    {
+      name: '标签：控件缺省即 outline，不写 variant 与写 outline 的标签一样是淡底档；tone / size 不写就不带',
+      spec: { apg: APG },
+      fixture: withTags('vue'),
+      props: { defaultValue: ['vue'] },
+      steps: [
+        {
+          kind: 'raw',
+          why: '预览戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => assertTagParts(doc, 'root', [{ 'data-variant': 'subtle', 'data-tone': null, 'data-size': null }]),
+        },
+        { kind: 'setProps', props: { variant: 'outline' } },
+        {
+          kind: 'raw',
+          why: '同上',
+          run: ({ doc }) => assertTagParts(doc, 'root', [{ 'data-variant': 'subtle', 'data-tone': null, 'data-size': null }]),
+        },
+      ],
+    },
+    {
+      name: '标签：删除钮的可及名走本控件的 translations.deleteItem，由宿主传到 tag 的 close-trigger 上；编辑框的名字走 translations.editTagInput',
+      spec: { apg: APG },
+      fixture: withTags('vue', 'react'),
+      props: { defaultValue: ['vue', 'react'], translations: { deleteItem: (v: string) => `移除${v}`, editTagInput: (v: string) => `改写${v}` } },
+      initial: { parts: { 'item-input[0]': { 'aria-label': '改写vue' }, 'item-input[1]': { 'aria-label': '改写react' } } },
+      steps: [
+        {
+          kind: 'raw',
+          why: '删除钮戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => assertTagParts(doc, 'close-trigger', [{ 'aria-label': '移除vue' }, { 'aria-label': '移除react' }]),
+        },
       ],
     },
     {
@@ -654,8 +809,9 @@ export const tagsInputSuite: ConformanceSuite = {
       props: { value: ['vue', 'react'] },
       steps: [
         {
-          kind: 'click',
-          part: 'item-delete-trigger[0]',
+          kind: 'raw',
+          why: '删除钮戴 tag 的 scope，声明式 click 步找不到它',
+          run: ({ doc }) => clickDeleteTrigger(doc, 0),
           expect: {
             parts: { root: { 'data-empty': null } },
             events: [{ type: 'value-change', detail: { value: ['react'] } }],

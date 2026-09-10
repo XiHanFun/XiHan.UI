@@ -98,6 +98,7 @@ export const XhTagGroupList = defineComponent({
   },
 })
 
+/** 一枚标签：渲出来是 tag 的 root（data-scope="tag"），组把行角色、Tab 停靠点、选中与锚点叠在它上面。 */
 export const XhTagGroupItem = defineComponent({
   name: 'XhTagGroupItem',
   props: {
@@ -150,6 +151,7 @@ export const XhTagGroupCell = defineComponent({
   },
 })
 
+/** 标签文字：渲出来是 tag 的 label。 */
 export const XhTagGroupItemText = defineComponent({
   name: 'XhTagGroupItemText',
   setup(_, { slots }) {
@@ -159,6 +161,7 @@ export const XhTagGroupItemText = defineComponent({
   },
 })
 
+/** 摘除钮：渲出来是所在标签那份 tag 的 close-trigger，不占 Tab 位；整组没开放摘除时收起。 */
 export const XhTagGroupItemDeleteTrigger = defineComponent({
   name: 'XhTagGroupItemDeleteTrigger',
   setup(_, { slots }) {

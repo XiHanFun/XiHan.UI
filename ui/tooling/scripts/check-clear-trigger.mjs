@@ -10,6 +10,7 @@
 // ③ 浮层角落关闭钮：--xh-<c>-close-size → --xh-control-h-sm，--xh-<c>-close-radius → --xh-shape-control；
 //    字形颜色也得留使用者槽——常态一个、悬停换色的再一个，写死语义令牌等于这颗叉的颜色改不动。
 // ④ 标签内移除钮：尺寸基准 --xh-control-indicator-size，圆角 --xh-shape-inset；行级删除钮同 ①的尺寸基准。
+//    库里只有 tag 画这颗钮：select / tags-input / tag-group 里的标签就是 tag，删除钮是它的 close-trigger。
 // 四类都要有 :active 按压反馈（走 --xh-motion-scale-press）与 [hidden]{display:none}。
 import { readFile } from 'node:fs/promises'
 
@@ -34,7 +35,7 @@ const CLOSE_PART = { notification: 'item-close-trigger' }
  */
 const CLOSE_FG_EXCEPTION = { 'image-viewer': '看图时整块 chrome 盖住页面，叉的颜色随那层继承（color: inherit），自己不定前景' }
 /** ④ 标签内移除钮（组件 → 部件）与行级删除钮。 */
-const CHIP_REMOVE = { 'tag': 'close-trigger', 'tags-input': 'item-delete-trigger', 'select': 'item-delete-trigger' }
+const CHIP_REMOVE = { tag: 'close-trigger' }
 const ROW_DELETE = { 'file-upload': 'item-delete-trigger', 'field-array': 'item-delete-trigger' }
 
 const problems = []

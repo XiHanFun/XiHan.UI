@@ -11,7 +11,7 @@ export const tagKeyboard: KeyboardTable = {
     {
       id: 'tag.kbd.close',
       keys: ['Enter', 'Space'],
-      when: 'focus 在 close-trigger 上，且 closable 且未禁用',
+      when: 'focus 在 close-trigger 上，且 closable 且未禁用、非只读',
       does: '收起标签并通知 open=false；关闭钮是原生 button，这两个键由平台翻成 click',
     },
   ],

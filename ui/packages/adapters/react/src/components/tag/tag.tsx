@@ -18,6 +18,8 @@ export interface XhTagRootProps extends ComponentPropsWithRef<'span'> {
   /** 是否给出关闭钮；不传由 connect 决定缺省，传 false 才真的关掉。 */
   closable?: boolean
   disabled?: boolean
+  /** 只读：关闭钮留在原地但按不动，标签本身不置灰。 */
+  readOnly?: boolean
   /** 受控显隐；缺省该 prop 即非受控。 */
   open?: boolean
   /** 非受控初始显隐，默认显示。 */
@@ -47,6 +49,7 @@ function MachineTagRoot({
   size,
   closable,
   disabled,
+  readOnly,
   open,
   defaultOpen,
   translations,
@@ -60,6 +63,7 @@ function MachineTagRoot({
     size,
     closable,
     disabled,
+    readOnly,
     open,
     defaultOpen,
     translations,
@@ -75,6 +79,7 @@ function StaticTagRoot({
   size,
   closable,
   disabled,
+  readOnly,
   open,
   defaultOpen,
   translations,
@@ -88,6 +93,7 @@ function StaticTagRoot({
     size,
     closable,
     disabled,
+    readOnly,
     open,
     defaultOpen,
     translations,

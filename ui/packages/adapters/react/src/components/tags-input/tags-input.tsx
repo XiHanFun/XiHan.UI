@@ -245,6 +245,7 @@ export function XhTagsInputItem({ value, children, ...rest }: XhTagsInputItemPro
 }
 
 export interface XhTagsInputItemPreviewProps extends ComponentPropsWithRef<'span'> {}
+/** 标签的预览：渲的是库里 tag 的 root（data-scope="tag"），就地编辑时由 tag 收起。 */
 export function XhTagsInputItemPreview({ children, ...rest }: XhTagsInputItemPreviewProps): ReactNode {
   const ctx = useTagsInputContext()
   const item = useTagsInputItemContext()
@@ -256,6 +257,7 @@ export function XhTagsInputItemPreview({ children, ...rest }: XhTagsInputItemPre
 }
 
 export interface XhTagsInputItemTextProps extends ComponentPropsWithRef<'span'> {}
+/** 标签文字：渲的是 tag 的 label，截断落在这一层。 */
 export function XhTagsInputItemText({ children, ...rest }: XhTagsInputItemTextProps): ReactNode {
   const ctx = useTagsInputContext()
   const item = useTagsInputItemContext()
@@ -267,6 +269,7 @@ export function XhTagsInputItemText({ children, ...rest }: XhTagsInputItemTextPr
 }
 
 export interface XhTagsInputItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 删除钮：渲的是所在标签那份 tag 的 close-trigger，不占 Tab 位；禁用与只读时留位、原生 disabled。 */
 export function XhTagsInputItemDeleteTrigger({ children, ...rest }: XhTagsInputItemDeleteTriggerProps): ReactNode {
   const ctx = useTagsInputContext()
   const item = useTagsInputItemContext()

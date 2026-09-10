@@ -257,22 +257,27 @@ function tagGroupTree(values: readonly string[]): ReactNode {
   )
 }
 
+/** 一枚标签是 tag 的 root，戴 tag 的 scope；按 row 角色认出列表里的那些。 */
+function tagGroupItems(): HTMLElement[] {
+  return [...document.querySelectorAll<HTMLElement>('[data-scope="tag-group"][data-part="list"] > [data-scope="tag"][data-part="root"][role="row"]')]
+}
+
 describe('tag-group 的焦点落点如实上报', () => {
   it('持有焦点的标签被摘掉：焦点锚点当场清空，列表重新兜底进 Tab 序列', async () => {
     await mount(tagGroupTree(['vue', 'react']))
-    const [, second] = parts('tag-group', 'item')
+    const [, second] = tagGroupItems()
     await focus(second!)
     expect(parts('tag-group', 'list')[0]!.getAttribute('tabindex')).toBe('-1')
 
     await rerender(tagGroupTree(['vue']))
 
-    expect(parts('tag-group', 'item')).toHaveLength(1)
+    expect(tagGroupItems()).toHaveLength(1)
     expect(parts('tag-group', 'list')[0]!.getAttribute('tabindex')).toBe('0')
   })
 
   it('持有焦点的标签换了身份：锚点跟着改记新值', async () => {
     await mount(tagGroupTree(['vue', 'react']))
-    const [, second] = parts('tag-group', 'item')
+    const [, second] = tagGroupItems()
     await focus(second!)
     expect(second!.getAttribute('tabindex')).toBe('0')
 
@@ -280,7 +285,7 @@ describe('tag-group 的焦点落点如实上报', () => {
     // 那个锚点没有标签认领，整排标签于是一个 Tab 停靠点都没有
     await rerender(tagGroupTree(['vue', 'svelte']))
 
-    const items = parts('tag-group', 'item')
+    const items = tagGroupItems()
     expect(items[1]!.getAttribute('data-value')).toBe('svelte')
     expect(items[1]!.getAttribute('tabindex')).toBe('0')
   })
