@@ -1,7 +1,7 @@
 // Scope：宿主 DOM 环境抽象，core 对 document/window 的访问统一经此。
 import type { IdGenerator } from './id-generator'
 import type { FocusableElement } from './types'
-import { isDocument, isShadowRoot } from './guards'
+import { isDocument, isShadowRoot, isWindow } from './guards'
 
 export interface Scope {
   /** 本 scope 的实例级唯一 id，构造时求值一次。 */
@@ -35,20 +35,34 @@ export function getActiveElementDeep(root: Document | ShadowRoot): FocusableElem
 export function createScope(node: Element | null | undefined, idGenerator: IdGenerator): Scope {
   const id = idGenerator.scopeId()
 
+  const getAmbientDocument = (): Document => {
+    if (typeof document === 'undefined' || !isDocument(document))
+      throw new Error('[xh] Scope 没有锚点，且宿主未提供有效的全局 Document')
+    return document
+  }
+
   const getRootNode = (): Document | ShadowRoot => {
     const root = node?.getRootNode?.()
     if (root && (isDocument(root) || isShadowRoot(root)))
       return root as Document | ShadowRoot
-    return node?.ownerDocument ?? document
+    return node?.ownerDocument ?? getAmbientDocument()
   }
 
   const getDoc = (): Document => {
     const root = getRootNode()
+    const ownerDocument = node?.ownerDocument
+    if (ownerDocument && root === ownerDocument)
+      return ownerDocument
     return isDocument(root) ? root : root.ownerDocument
   }
 
-  const getWin = (): Window & typeof globalThis =>
-    (getDoc().defaultView as Window & typeof globalThis) ?? window
+  const getWin = (): Window & typeof globalThis => {
+    const doc = getDoc()
+    const win = doc.defaultView
+    if (!isWindow(win) || win.document !== doc)
+      throw new Error('[xh] Scope 的 Document 没有活动 Window')
+    return win as Window & typeof globalThis
+  }
 
   return {
     id,
