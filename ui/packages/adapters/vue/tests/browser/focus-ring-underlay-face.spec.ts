@@ -202,7 +202,7 @@ describe('环内侧那块面不长在部件自己身上', () => {
   it('判据前提：指示器与选中段占同一块矩形，选中段自己透空', () => {
     const { item, indicator } = 分段(null)
     const a = item.getBoundingClientRect()
-    const b = indicator.getBoundingClientRect()
+    const b = indicator!.getBoundingClientRect()
     expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     for (const [名, x, y] of [['left', a.left, b.left], ['top', a.top, b.top], ['width', a.width, b.width], ['height', a.height, b.height]] as const)
       expect(Math.abs(x - y), `指示器与选中段的 ${名} 对不上`).toBeLessThan(1)

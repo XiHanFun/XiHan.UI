@@ -2133,8 +2133,14 @@
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
    形态写在壳上、面画在触发器上，所以这条是后代选择器，环落在拿焦点的那颗钮上 */
 [data-scope='float-button'][data-part='root'][data-variant='solid']
-  [data-scope='float-button'][data-part='trigger']:focus-visible {
+  [data-scope='float-button'][data-part='trigger']:not([data-disabled]):focus-visible {
   --xh-_ring-color: currentColor;
+}
+
+/* 置灰只换字色、面仍是实心语气底：环取面配对的那支前景色，不取被换掉的置灰色 */
+[data-scope='float-button'][data-part='root'][data-variant='solid']
+  [data-scope='float-button'][data-part='trigger'][data-disabled]:focus-visible {
+  --xh-_ring-color: var(--xh-float-button-fg, var(--xh-_float-button-fg));
 }
 
 [data-scope='float-button'][data-part='root'][data-variant='subtle'] {
@@ -7546,7 +7552,7 @@
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
    悬停与按下两档的底更深，环跟着这块面的前景色走才在三档上都读得出来 */
-[data-scope='popconfirm'][data-part='cancel-trigger']:focus-visible {
+[data-scope='popconfirm'][data-part='cancel-trigger']:is(:hover, :active):focus-visible {
   --xh-_ring-color: currentColor;
 }
 
@@ -7833,7 +7839,7 @@
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='prompt-input'][data-part='submit-trigger']:focus-visible {
+[data-scope='prompt-input'][data-part='submit-trigger']:not([data-mode='stop']):focus-visible {
   --xh-_ring-color: currentColor;
 }
 
@@ -14229,10 +14235,6 @@
   line-height: var(--xh-leading-normal);
 }
 
-[data-scope='cascader'][data-part='input']:focus-visible {
-  outline: none;
-}
-
 [data-scope='cascader'][data-part='input'][hidden] {
   display: none;
 }
@@ -14951,6 +14953,11 @@
    形态写在 root 上、拿焦点的是按钮，规则因此写成后代 */
 [data-scope='clipboard'][data-part='root'][data-variant='solid'] [data-scope='clipboard'][data-part='copy-trigger']:focus-visible {
   --xh-_ring-color: currentColor;
+}
+
+/* 复制成功那一段把字换成成功色，面仍是实心语气底；环取面配对的那支前景色 */
+[data-scope='clipboard'][data-part='root'][data-variant='solid'] [data-scope='clipboard'][data-part='copy-trigger'][data-copied]:focus-visible {
+  --xh-_ring-color: var(--xh-clipboard-copy-trigger-fg, var(--xh-_clipboard-copy-trigger-fg));
 }
 
 [data-scope='clipboard'][data-part='root'][data-variant='subtle'] {
@@ -26563,7 +26570,7 @@
 }
 
 /* 面是实心的中性色，环色与面同族，画在面里就看不出来；环改取这一档配对的墨色 */
-[data-scope='scrollbar'][data-part='thumb']:focus-visible {
+[data-scope='scrollbar'][data-part='thumb']:not([data-disabled]):focus-visible {
   --xh-_ring-color: currentColor;
 }
 
@@ -28340,7 +28347,7 @@
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='splitter'][data-part='resize-trigger']:focus-visible {
+[data-scope='splitter'][data-part='resize-trigger']:not([data-disabled]):focus-visible {
   --xh-_ring-color: currentColor;
 }
 
@@ -28756,7 +28763,7 @@
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='switch'][data-part='root']:focus-visible {
+[data-scope='switch'][data-part='root']:not([data-readonly][data-state='checked']):focus-visible {
   --xh-_ring-color: currentColor;
 }
 
@@ -29295,6 +29302,12 @@
 [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']):not([data-disabled]):focus-visible,
 [data-scope='table'][data-part='column-visibility-trigger'][data-state='checked']:not([data-disabled]):focus-visible {
   --xh-_ring-color: currentColor;
+}
+
+/* 半选档的前景是透明的（勾藏起来、横杠由伪元素画），currentColor 取到的是透明；
+   环直接取面配对的那支前景色 */
+[data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate']:not([data-disabled]):focus-visible {
+  --xh-_ring-color: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
 }
 
 /* 未选中时勾不出现，但盒子还在：它是边框画出来的空框 */
@@ -30448,6 +30461,13 @@
 [data-scope='tag-group'][data-part='item'][data-variant='solid']:not([data-disabled])
   [data-scope='tag-group'][data-part='item-delete-trigger']:focus-visible {
   --xh-_ring-color: currentColor;
+}
+
+/* 选中档把字换成语气正文色，面仍是实心语气底；环取面配对的那支前景色 */
+[data-scope='tag-group'][data-part='item'][data-variant='solid'][data-state='checked']:not([data-disabled]):focus-visible,
+[data-scope='tag-group'][data-part='item'][data-variant='solid'][data-state='checked']:not([data-disabled])
+  [data-scope='tag-group'][data-part='item-delete-trigger']:focus-visible {
+  --xh-_ring-color: var(--xh-tag-group-item-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
 }
 
 /* 没写语气的实心标签在轻档里把底换成中性灰，字仍是实心档那一支浅字，
@@ -32105,8 +32125,13 @@
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='time-picker'][data-part='preset'][data-state='checked']:focus-visible {
+[data-scope='time-picker'][data-part='preset'][data-state='checked']:not([data-disabled]):focus-visible {
   --xh-_ring-color: currentColor;
+}
+
+/* 置灰只换字色、面仍是实心底：环取面配对的那支前景色，不取被换掉的置灰色 */
+[data-scope='time-picker'][data-part='preset'][data-state='checked'][data-disabled]:focus-visible {
+  --xh-_ring-color: var(--xh-time-picker-preset-fg-checked, var(--xh-_time-picker-accent-fg));
 }
 
 [data-scope='time-picker'][data-part='preset'][data-state='checked']:hover:not([data-disabled]) {
@@ -32199,8 +32224,13 @@
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
    没选中的格底是透空或淡底，不在这一条里，环走公共层的默认色 */
-[data-scope='time-picker'][data-part='item'][data-state='checked']:focus-visible {
+[data-scope='time-picker'][data-part='item'][data-state='checked']:not([data-disabled]):focus-visible {
   --xh-_ring-color: currentColor;
+}
+
+/* 置灰只换字色、面仍是实心底：环取面配对的那支前景色，不取被换掉的置灰色 */
+[data-scope='time-picker'][data-part='item'][data-state='checked'][data-disabled]:focus-visible {
+  --xh-_ring-color: var(--xh-time-picker-item-fg-checked, var(--xh-_time-picker-accent-fg));
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），

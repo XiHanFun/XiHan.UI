@@ -206,6 +206,13 @@
     --xh-_ring-color: currentColor;
   }
 
+  /* 选中档把字换成语气正文色，面仍是实心语气底；环取面配对的那支前景色 */
+  [data-scope='tag-group'][data-part='item'][data-variant='solid'][data-state='checked']:not([data-disabled]):focus-visible,
+  [data-scope='tag-group'][data-part='item'][data-variant='solid'][data-state='checked']:not([data-disabled])
+    [data-scope='tag-group'][data-part='item-delete-trigger']:focus-visible {
+    --xh-_ring-color: var(--xh-tag-group-item-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+  }
+
   /* 没写语气的实心标签在轻档里把底换成中性灰，字仍是实心档那一支浅字，
      环跟着字走就糊在灰底上；这两档把环收回默认那一支。
      写了语气的实心标签不进这里——它的底由下面那条语气规则压回实心色 */

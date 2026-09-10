@@ -363,6 +363,12 @@
     --xh-_ring-color: currentColor;
   }
 
+  /* 半选档的前景是透明的（勾藏起来、横杠由伪元素画），currentColor 取到的是透明；
+     环直接取面配对的那支前景色 */
+  [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate']:not([data-disabled]):focus-visible {
+    --xh-_ring-color: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
+  }
+
   /* 未选中时勾不出现，但盒子还在：它是边框画出来的空框 */
   [data-scope='table'][data-part='select-all-trigger'][data-state='unchecked'],
   [data-scope='table'][data-part='column-visibility-trigger'][data-state='unchecked'],
