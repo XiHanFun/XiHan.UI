@@ -13,6 +13,11 @@
     "gap-md": { "$type": "dimension", "$value": "{space.1_5}" },
     "gap-lg": { "$type": "dimension", "$value": "{space.2}" },
     "action-size": { "$type": "dimension", "$value": "20px" },
+    "indicator-size": {
+      "$description": "别名在 :root 上解析成像素后按计算值继承，子树上的 compact 收不动它；这里再声明一次，让它在挂了 compact 的那棵子树上重新解析成收紧后的中档。",
+      "$type": "dimension",
+      "$value": "{control.indicator-md}"
+    },
     "indicator-sm": { "$type": "dimension", "$value": "10px" },
     "indicator-md": { "$type": "dimension", "$value": "14px" },
     "indicator-lg": { "$type": "dimension", "$value": "18px" }
