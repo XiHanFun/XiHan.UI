@@ -631,7 +631,7 @@
   /* 选中统一由末端对号表达；不铺选中底、不增重，悬停与键盘焦点继续独立铺中性底。 */
   [data-scope='select'][data-part='item'][data-state='checked'] {
     color: var(--xh-select-item-fg-selected, var(--xh-select-item-fg, var(--xh-material-frosted-fg)));
-    font-weight: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-normal));
+    font-weight: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
   }
 
   [data-scope='select'][data-part='item']:focus:not(:focus-visible) {

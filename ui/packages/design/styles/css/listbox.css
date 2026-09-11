@@ -245,7 +245,7 @@
   /* 与下拉选项一致：单选、多选只用对号表达选中，正文颜色和字重保持稳定。 */
   [data-scope='listbox'][data-part='item'][data-state='checked'] {
     color: var(--xh-listbox-item-fg-selected, var(--xh-listbox-item-fg, var(--xh-fg-default)));
-    font-weight: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-normal));
+    font-weight: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-regular));
   }
 
   [data-scope='listbox'][data-part='item']:focus:not(:focus-visible) {
