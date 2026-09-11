@@ -48,13 +48,13 @@ function byTestId(id: string): HTMLElement {
   return element
 }
 
-async function mountSelect(): Promise<void> {
+async function mountSelect(multiple = true): Promise<void> {
   host = document.createElement('div')
   document.body.append(host)
   app = createApp({
     render: () => h(XhSelectRoot, {
       collection: OPTIONS,
-      multiple: true,
+      multiple,
       open: true,
       value: ['alpha'],
       placement: 'bottom-start',
@@ -162,7 +162,7 @@ describe('选择器分组与选项反馈', () => {
     expect(Number.parseFloat(secondGroup.paddingBlockStart)).toBeGreaterThan(0)
   })
 
-  it('选中行是不透明实体面，键盘焦点环与勾选标记同时保留', async () => {
+  it('键盘聚焦铺中性实体面，焦点环与勾选标记同时保留', async () => {
     await mountSelect()
     const selected = byTestId('selected')
     await userEvent.tab()
@@ -175,6 +175,30 @@ describe('选择器分组与选项反馈', () => {
     expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
     expect(style.outlineStyle).toBe('solid')
     expect(Number.parseFloat(style.outlineWidth)).toBeGreaterThan(0)
+    expect(getComputedStyle(indicator).visibility).toBe('visible')
+  })
+
+  it.each([false, true])('multiple=%s：选中只显示对号，移走高亮后不留蓝底或强调文字', async (multiple) => {
+    await mountSelect(multiple)
+    const selected = byTestId('selected')
+    const plain = byTestId('plain')
+    selected.style.transition = 'none'
+    plain.style.transition = 'none'
+    const indicator = selected.querySelector<HTMLElement>(`[data-part='item-indicator']`)!
+    const plainIndicator = plain.querySelector<HTMLElement>(`[data-part='item-indicator']`)!
+    await userEvent.hover(plain)
+    plain.focus()
+    await nextTick()
+    expect(selected.getAttribute('data-state')).toBe('checked')
+    expect(colorAlpha(getComputedStyle(selected).backgroundColor)).toBe(0)
+    expect(getComputedStyle(selected).color).toBe(getComputedStyle(plain).color)
+    expect(getComputedStyle(selected).fontWeight).toBe(getComputedStyle(plain).fontWeight)
+    expect(getComputedStyle(indicator).visibility).toBe('visible')
+    expect(getComputedStyle(plainIndicator).visibility).toBe('hidden')
+    const highlighted = getComputedStyle(plain).backgroundColor
+    await userEvent.hover(selected)
+    await nextTick()
+    expect(getComputedStyle(selected).backgroundColor).toBe(highlighted)
     expect(getComputedStyle(indicator).visibility).toBe('visible')
   })
 

@@ -13483,7 +13483,6 @@
     "--xh-select-indicator-fg",
     "--xh-select-item-bg-hover",
     "--xh-select-item-bg-pressed",
-    "--xh-select-item-bg-selected",
     "--xh-select-item-fg",
     "--xh-select-item-fg-selected",
     "--xh-select-item-font-size",
