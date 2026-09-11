@@ -6403,6 +6403,9 @@
               "name": "--xh-checkbox-border-checked"
             },
             {
+              "name": "--xh-checkbox-border-hover"
+            },
+            {
               "name": "--xh-checkbox-border-invalid"
             },
             {
@@ -6410,6 +6413,9 @@
             },
             {
               "name": "--xh-checkbox-fg-invalid"
+            },
+            {
+              "name": "--xh-checkbox-highlight"
             },
             {
               "name": "--xh-checkbox-icon-size"
@@ -6430,7 +6436,25 @@
               "name": "--xh-checkbox-label-gap"
             },
             {
+              "name": "--xh-checkbox-label-leading"
+            },
+            {
               "name": "--xh-checkbox-radius"
+            },
+            {
+              "name": "--xh-checkbox-shadow"
+            },
+            {
+              "name": "--xh-checkbox-shadow-disabled"
+            },
+            {
+              "name": "--xh-checkbox-shadow-hover"
+            },
+            {
+              "name": "--xh-checkbox-shadow-pressed"
+            },
+            {
+              "name": "--xh-checkbox-shadow-readonly"
             }
           ]
         }
