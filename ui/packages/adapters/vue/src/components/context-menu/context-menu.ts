@@ -10,7 +10,8 @@ import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { provideMenu, provideMenuChain, useMenuContext } from '../menu/context'
-import { useMenu } from '../menu/use-menu'
+import { menuHoverParentOf } from '../menu/hover-branches'
+import { useMenuWithHoverParent } from '../menu/use-menu'
 import {
   provideContextMenu,
   provideContextMenuChain,
@@ -256,7 +257,7 @@ export const XhContextMenuSub = defineComponent({
   setup(props, { slots }) {
     const parent = useContextMenuContext()
     const chain = useContextMenuChain()
-    const sub = useMenu(
+    const sub = useMenuWithHoverParent(
       {
         ...props,
         submenu: true,
@@ -266,12 +267,18 @@ export const XhContextMenuSub = defineComponent({
       },
       undefined,
       details => chain.notifySelect(details),
+      menuHoverParentOf(parent.service),
     )
     // 子树内的 XhMenu 系部件都归子机器
     provideMenu(sub)
     // 子层里还能再嵌一层 XhMenuSub：那一层要往上找选中汇总的链，
     // 而链只在 XhMenuRoot 里 provide 过，右键菜单这一支得自己接上
-    provideMenuChain({ notifySelect: details => chain.notifySelect(details) })
+    provideMenuChain({
+      notifySelect: (details) => {
+        sub.api.value.setOpen(false)
+        chain.notifySelect(details)
+      },
+    })
     provideContextMenuSub({ parent, value: props.value, disabled: props.disabled })
     // 父层收起（Escape、外点、选中）时本层跟着收，层层传导
     watch(() => parent.api.value.open, (open) => {

@@ -16,6 +16,8 @@ export interface MenuRefs {
   getFloatingEl: () => HTMLElement | null
   /** 焦点域容器、消解层节点，同时是条目集合的查询容器。 */
   getContentEl: () => HTMLElement | null
+  /** 逻辑后代菜单经 Portal 搬离本层 content 后的悬停区域；仅供悬停树判定。 */
+  getHoverBranches: () => readonly HTMLElement[]
   /** 连打检索的缓冲区，收起时清空。 */
   typeahead: Typeahead
 }

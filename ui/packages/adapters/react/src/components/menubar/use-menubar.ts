@@ -9,6 +9,7 @@ import { useXhConfig } from '../../config/config'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
+import { registerMenuHoverOwner, useMenuHoverBranches } from '../menu/hover-branches'
 
 /** 按 value 登记角色节点，浮层三件套据此取到当前展开那一项。 */
 export type MenubarPartRegistry = (value: string, el: HTMLElement | null) => void
@@ -33,6 +34,7 @@ export function useMenubar(props: MenubarSchema['props']): MenubarContext {
   const scope = useReactScope()
   const xhConfig = useXhConfig()
   const rootRef = useRef<HTMLElement | null>(null)
+  const hoverBranches = useMenuHoverBranches()
 
   // 普通 Map 而非状态，这三份表只在事件与效应里被机器读
   const registry = useMemo(() => {
@@ -91,6 +93,7 @@ export function useMenubar(props: MenubarSchema['props']): MenubarContext {
   }, [config, registry])
 
   const service = useMachine(menubarMachine, () => props, { scope, onCreate })
+  registerMenuHoverOwner(service, hoverBranches)
 
   const portalContainer = useCallback(
     () => xhConfig.portalContainer?.() ?? config?.portalContainer() ?? null,

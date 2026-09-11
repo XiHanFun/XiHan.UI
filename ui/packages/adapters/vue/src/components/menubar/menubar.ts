@@ -11,7 +11,8 @@ import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { provideMenu, provideMenuChain, useMenuContext } from '../menu/context'
-import { useMenu } from '../menu/use-menu'
+import { menuHoverParentOf } from '../menu/hover-branches'
+import { useMenuWithHoverParent } from '../menu/use-menu'
 import {
   provideMenubar,
   provideMenubarChain,
@@ -437,7 +438,7 @@ export const XhMenubarSub = defineComponent({
       throw new Error('[xh] MenubarSub 必须用在 XhMenubarPositioner 内')
     const chain = useMenubarChain()
     // 子层跑的是一台子菜单模式的 menu 机器：菜单栏那台是单机器单锚点，装不下第二层
-    const sub = useMenu(
+    const sub = useMenuWithHoverParent(
       {
         ...props,
         submenu: true,
@@ -448,12 +449,16 @@ export const XhMenubarSub = defineComponent({
       undefined,
       // 菜单栏的选中要带菜单身份，子层只知道条目值，在这里补上
       details => chain.notifySelect({ menu: owner.menu.value.value, value: details.value }),
+      menuHoverParentOf(parent.service),
     )
     // 子树内的 XhMenu 系部件都归子机器
     provideMenu(sub)
     // 子层里还能再嵌一层 XhMenuSub：那一层要往上找选中汇总的链
     provideMenuChain({
-      notifySelect: details => chain.notifySelect({ menu: owner.menu.value.value, value: details.value }),
+      notifySelect: (details) => {
+        sub.api.value.setOpen(false)
+        chain.notifySelect({ menu: owner.menu.value.value, value: details.value })
+      },
     })
     provideMenubarSub({ parent, value: props.value, disabled: props.disabled })
     // 所属那张菜单收起时本层跟着收，层层传导

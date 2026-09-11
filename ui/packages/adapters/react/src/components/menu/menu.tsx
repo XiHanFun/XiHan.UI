@@ -26,7 +26,8 @@ import {
   useMenuItemContext,
   useMenuSubContext,
 } from './context'
-import { useMenu } from './use-menu'
+import { menuHoverParentOf } from './hover-branches'
+import { useMenu, useMenuWithHoverParent } from './use-menu'
 
 type MenuProps = MenuSchema['props']
 
@@ -300,7 +301,7 @@ export interface XhMenuSubProps {
 export function XhMenuSub({ value, disabled, children, ...props }: XhMenuSubProps): ReactNode {
   const parent = useMenuContext()
   const chain = useMenuChain()
-  const ctx = useMenu({
+  const ctx = useMenuWithHoverParent({
     ...props,
     disabled,
     submenu: true,
@@ -309,7 +310,7 @@ export function XhMenuSub({ value, disabled, children, ...props }: XhMenuSubProp
     size: props.size ?? parent.service.prop('size'),
     // 子层的选中汇到根：根发 select 并关根，各级随父关闭级联收起
     onSelect: details => chain.notifySelect(details),
-  } as MenuProps)
+  } as MenuProps, menuHoverParentOf(parent.service))
 
   const handle = useMemo(() => ({ parent, value, disabled }), [parent, value, disabled])
 
@@ -317,6 +318,13 @@ export function XhMenuSub({ value, disabled, children, ...props }: XhMenuSubProp
   const parentOpen = parent.api.open
   const setOpenRef = useRef(ctx.api.setOpen)
   setOpenRef.current = ctx.api.setOpen
+  // 后代已经先完成自己的收起；这一层随后收起再上报祖先，保证共享层栈按叶到根释放。
+  const descendantChain = useMemo<MenuChain>(() => ({
+    notifySelect: (details) => {
+      setOpenRef.current(false)
+      chain.notifySelect(details)
+    },
+  }), [chain])
   useEffect(() => {
     if (!parentOpen)
       setOpenRef.current(false)
@@ -324,9 +332,11 @@ export function XhMenuSub({ value, disabled, children, ...props }: XhMenuSubProp
 
   return (
     <MenuProvider value={ctx}>
-      <MenuSubProvider value={handle}>
-        {renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })}
-      </MenuSubProvider>
+      <MenuChainProvider value={descendantChain}>
+        <MenuSubProvider value={handle}>
+          {renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })}
+        </MenuSubProvider>
+      </MenuChainProvider>
     </MenuProvider>
   )
 }

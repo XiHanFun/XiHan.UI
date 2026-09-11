@@ -1,15 +1,17 @@
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
 import type { MenuApi, MenuSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
+import type { MenuHoverBranchParent } from './hover-branches'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectMenu, menuMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
+import { createMenuHoverBranches, registerMenuHoverOwner } from './hover-branches'
 
 export interface MenuContext {
   service: Service<MenuSchema>
@@ -23,19 +25,26 @@ export interface MenuContext {
   portalTarget: ComputedRef<string | Element>
 }
 
-export function useMenu(
+function useMenuImpl(
   props: MenuSchema['props'],
   onOpenChange?: MenuSchema['props']['onOpenChange'],
   onSelect?: MenuSchema['props']['onSelect'],
+  hoverParent?: MenuHoverBranchParent,
 ): MenuContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
+  const hoverBranches = createMenuHoverBranches(hoverParent)
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const service = useMachine(menuMachine, () => ({ ...props, onOpenChange, onSelect }), scope)
+  registerMenuHoverOwner(service, hoverBranches)
+  const releaseParentBranch = hoverParent?.registerHoverBranch(
+    () => service.state.get() === 'open' ? positionerRef.value : null,
+  )
+  onBeforeUnmount(() => releaseParentBranch?.())
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
   let config: RuntimeConfig | null = null
@@ -62,6 +71,7 @@ export function useMenu(
     service.refs.set('getAnchorEl', () => triggerRef.value)
     service.refs.set('getFloatingEl', () => positionerRef.value)
     service.refs.set('getContentEl', () => contentRef.value)
+    service.refs.set('getHoverBranches', hoverBranches.getHoverBranches)
   }
 
   const api = computed(() => connectMenu(service, vueNormalize))
@@ -71,4 +81,23 @@ export function useMenu(
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
   return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget }
+}
+
+/** 公开 composable：建立一棵独立菜单树。 */
+export function useMenu(
+  props: MenuSchema['props'],
+  onOpenChange?: MenuSchema['props']['onOpenChange'],
+  onSelect?: MenuSchema['props']['onSelect'],
+): MenuContext {
+  return useMenuImpl(props, onOpenChange, onSelect)
+}
+
+/** 组合部件内部入口：把 Portal 子菜单登记到既有逻辑悬停树。 */
+export function useMenuWithHoverParent(
+  props: MenuSchema['props'],
+  onOpenChange: MenuSchema['props']['onOpenChange'] | undefined,
+  onSelect: MenuSchema['props']['onSelect'] | undefined,
+  hoverParent: MenuHoverBranchParent,
+): MenuContext {
+  return useMenuImpl(props, onOpenChange, onSelect, hoverParent)
 }

@@ -24,7 +24,8 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { MenuChainProvider, MenuProvider, useMenuContext } from '../menu/context'
-import { useMenu } from '../menu/use-menu'
+import { menuHoverParentOf } from '../menu/hover-branches'
+import { useMenuWithHoverParent } from '../menu/use-menu'
 import {
   ContextMenuChainProvider,
   ContextMenuGroupProvider,
@@ -344,7 +345,7 @@ export interface XhContextMenuSubProps {
 export function XhContextMenuSub({ value, disabled, children, ...props }: XhContextMenuSubProps): ReactNode {
   const parent = useContextMenuContext()
   const chain = useContextMenuChain()
-  const sub = useMenu({
+  const sub = useMenuWithHoverParent({
     ...props,
     disabled,
     submenu: true,
@@ -352,17 +353,20 @@ export function XhContextMenuSub({ value, disabled, children, ...props }: XhCont
     tone: props.tone ?? parent.service.prop('tone'),
     size: props.size ?? parent.service.prop('size'),
     onSelect: details => chain.notifySelect(details),
-  })
+  }, menuHoverParentOf(parent.service))
 
   const handle = useMemo(() => ({ parent, value, disabled }), [parent, value, disabled])
-  // 子层里还能再嵌一层 XhMenuSub：那一层要往上找选中汇总的链，
-  // 而链只在 XhMenuRoot 里给过，右键菜单这一支得自己接上
-  const menuChain = useMemo(() => ({ notifySelect: chain.notifySelect }), [chain])
-
   // 父层收起（Escape、外点、选中）时本层跟着收，层层传导
   const parentOpen = parent.api.open
   const setOpenRef = useRef(sub.api.setOpen)
   setOpenRef.current = sub.api.setOpen
+  // 后代先收自己，再由这一层收起并把选择上报到右键菜单根。
+  const menuChain = useMemo(() => ({
+    notifySelect: (details: { value: string }) => {
+      setOpenRef.current(false)
+      chain.notifySelect(details)
+    },
+  }), [chain])
   useEffect(() => {
     if (!parentOpen)
       setOpenRef.current(false)

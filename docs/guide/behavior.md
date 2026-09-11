@@ -45,7 +45,7 @@ useHoverIntent({
 
 Vue 与 React 包装在 DOM 提交后解析 `getTriggerEl()`：节点为 `null` 时表示这一帧没有绑定目标，旧绑定会立即释放；节点重新出现、换代或三个计时参数变化时自动重建。Vue 的 `getContentEl` 与意图回调读取当前响应式选项，React 读取最近一次已提交选项；浮层内容或普通回调换代都不会取消正在进行的安全三角会话。
 
-直接使用 core 的 `trackHoverIntent()` 时传入创建时已经在场的 `trigger` 元素。该元素是明确的创建快照，订阅期间不得跨 Document 移动；需要换触发器时先调用 cleanup 再重建。浮层 content 可以动态换代，但必须始终与 trigger 属于同一 Document；安全三角会按原离开点和新面板位置重算。所有计时器与文档监听都取自 trigger 创建时所属的活动 Window；非法数值、离线 Document 或跨 Document content 会直接报错。
+直接使用 core 的 `trackHoverIntent()` 时传入创建时已经在场的 `trigger` 元素。该元素是明确的创建快照，订阅期间不得跨 Document 移动；需要换触发器时先调用 cleanup 再重建。浮层 content 可以动态换代，但必须始终与 trigger 属于同一 Document；安全三角会按原离开点和新面板位置重算。多级浮层经 Portal 分离时，用 `getHoverBranches` 显式返回属于同一悬停树的后代区域；它们必须是同一 Document 的原生 `HTMLElement`，不会按全局浮层顺序猜测归属。所有计时器与文档监听都取自 trigger 创建时所属的活动 Window；非法数值、离线 Document、跨 Document content 或 branch 会直接报错。
 
 另有 `useScrollTracker` / `useStickToBottom` / `useTypeahead`，接法同上。`useStickToBottom` 除状态外还交出句柄上的两个动作——「回到底部」按钮要的就是前者：
 

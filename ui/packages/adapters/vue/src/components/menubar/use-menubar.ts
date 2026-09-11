@@ -9,6 +9,7 @@ import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
+import { createMenuHoverBranches, registerMenuHoverOwner } from '../menu/hover-branches'
 
 /** 按 value 登记角色节点，浮层三件套据此取到当前展开那一项。 */
 export type MenubarPartRegistry = (value: string, el: HTMLElement | null) => void
@@ -31,6 +32,7 @@ export function useMenubar(
 ): MenubarContext {
   const xhConfig = useXhConfig()
   const rootRef = ref<HTMLElement | null>(null)
+  const hoverBranches = createMenuHoverBranches()
   // 普通 Map 而非响应式，这三份表只在事件与效应里被机器读
   const triggers = new Map<string, HTMLElement>()
   const positioners = new Map<string, HTMLElement>()
@@ -39,6 +41,7 @@ export function useMenubar(
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const service = useMachine(menubarMachine, () => ({ ...props, onValueChange, onSelect }), scope)
+  registerMenuHoverOwner(service, hoverBranches)
 
   const put = (table: Map<string, HTMLElement>): MenubarPartRegistry => (value, el) => {
     if (el)

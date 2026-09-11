@@ -10,6 +10,7 @@ import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
+import { createMenuHoverBranches, registerMenuHoverOwner } from '../menu/hover-branches'
 
 export interface ContextMenuContext {
   service: Service<ContextMenuSchema>
@@ -32,10 +33,12 @@ export function useContextMenu(
   const triggerRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
+  const hoverBranches = createMenuHoverBranches()
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const service = useMachine(contextMenuMachine, () => ({ ...props, onOpenChange, onSelect }), scope)
+  registerMenuHoverOwner(service, hoverBranches)
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
   let config: RuntimeConfig | null = null
