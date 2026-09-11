@@ -58,6 +58,30 @@ describe('createRuntimeConfig · reducedMotion', () => {
   })
 })
 
+describe('createRuntimeConfig · scrollRoot', () => {
+  it('默认注入必填函数，返回 null 明确表示页面滚动', () => {
+    const config = createRuntimeConfig()
+
+    expect(typeof config.scrollRoot).toBe('function')
+    expect(config.scrollRoot()).toBeNull()
+  })
+
+  it('显式 scrollRoot 函数保持原身份与返回目标', () => {
+    const root = document.createElement('div')
+    document.body.append(root)
+    const scrollRoot = () => root
+    const config = createRuntimeConfig({ scrollRoot })
+
+    expect(config.scrollRoot).toBe(scrollRoot)
+    expect(config.scrollRoot()).toBe(root)
+  })
+
+  it('显式非函数值明确失败，不把 null 配置解释为页面', () => {
+    expect(() => createRuntimeConfig({ scrollRoot: null as unknown as () => HTMLElement | null }))
+      .toThrow(/scrollRoot 必须是函数/)
+  })
+})
+
 describe('createRuntimeConfig · 显式 scope 的所属窗口', () => {
   function iframeScope(): { frame: HTMLIFrameElement, win: Window, doc: Document, scope: ReturnType<typeof createScope> } {
     const frame = document.createElement('iframe')
