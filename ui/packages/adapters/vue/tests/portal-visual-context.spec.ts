@@ -64,7 +64,7 @@ afterEach(() => {
 })
 
 describe('vue Portal 的局部视觉环境', () => {
-  it('真实 Popover 逐项继承来源六轴，不复制尚未存在的透明度轴', async () => {
+  it('真实 Popover 逐项继承来源七轴与自定义属性', async () => {
     await mount(() => h('section', {
       'data-theme': 'dark',
       'data-brand': 'acme',
@@ -73,6 +73,7 @@ describe('vue Portal 的局部视觉环境', () => {
       'data-motion': 'reduce',
       'data-transparency': 'reduce',
       'dir': 'rtl',
+      'style': '--business-color: rebeccapurple',
     }, [popover('first')]))
 
     const shell = shellOf('first')
@@ -81,8 +82,9 @@ describe('vue Portal 的局部视觉环境', () => {
     expect(shell.getAttribute('data-density')).toBe('compact')
     expect(shell.getAttribute('data-contrast')).toBe('more')
     expect(shell.getAttribute('data-motion')).toBe('reduce')
+    expect(shell.getAttribute('data-transparency')).toBe('reduce')
     expect(shell.getAttribute('dir')).toBe('rtl')
-    expect(shell.hasAttribute('data-transparency')).toBe(false)
+    expect(shell.style.getPropertyValue('--business-color')).toBe('rebeccapurple')
   })
 
   it('popover 与 Dialog 都经过实例壳，两个局部主题互不串值', async () => {
