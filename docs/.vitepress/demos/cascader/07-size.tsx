@@ -7,6 +7,7 @@ import {
   XhCascaderControl,
   XhCascaderIndicator,
   XhCascaderItem,
+  XhCascaderItemIndicator,
   XhCascaderItemText,
   XhCascaderLabel,
   XhCascaderPositioner,
@@ -63,6 +64,7 @@ export default function Demo(): ReactNode {
                       {lv.items.map(node => (
                         <XhCascaderItem key={node.value} value={node.value}>
                           <XhCascaderItemText>{node.label}</XhCascaderItemText>
+                          <XhCascaderItemIndicator />
                         </XhCascaderItem>
                       ))}
                     </XhCascaderColumn>

@@ -18,6 +18,11 @@
 - `changeOnSelect` 决定中间层能不能直接作为结果。
 - `expandTrigger` 可改成悬停展开。
 - 多选时 `cascade` 与 `checkedStrategy` 一对：前者决定勾父带不带子，后者决定回显给出哪一层。
+- 单选、多选、列项和搜索结果统一用末端对号表示选中；级联半选保留横线。选中正文不换色、不加粗，
+  悬停、键盘高亮、焦点与展开路径只使用中性底，不叠加品牌选中面。
+- 搜索结果与列项从同一份级联聚合读取 `checked` / `indeterminate`，所以 `all` / `parent` / `child`
+  只改变提交值的收敛形式，不会让同一节点在两种视图中显示成不同状态。半选候选同步输出
+  `aria-checked="mixed"`；整控件禁用时，候选不再保留虚假高亮。
 - 子节点可按需加载；长列表只渲可视区。
 - 后端字段名不一致时在进组件前转一道，组件只认 `label` / `value` / `children`。
 - 空（`empty`）与在途（`loading`）两个相位各有部件；`loading` 为真时浮层报 `aria-busy`，空态让位。
@@ -198,7 +203,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `indicator` | 'open' \| 'closed' |
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
-| `search-item` | 'checked' \| 'unchecked' |
+| `search-item` | 'checked' \| 'indeterminate' \| 'unchecked' |
 | `column` | 'open' \| 'closed' |
 | `footer` | 'open' \| 'closed' |
 
@@ -323,6 +328,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `search-list` | `aria-label` | translations.searchList |
 | `search-list` | `aria-multiselectable` | 'true' \| 'false' |
 | `search-list` | `role` | 'listbox' |
+| `search-item` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |
 | `search-item` | `aria-disabled` | 'true' \| 'false' |
 | `search-item` | `aria-selected` | 'true' \| 'false' |
 | `search-item` | `role` | 'option' |
@@ -388,7 +394,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `search-list` | `data-empty` | ''（条件成立时才出现） |
 | `search-item` | `data-disabled` | ''（条件成立时才出现） |
 | `search-item` | `data-highlighted` | ''（条件成立时才出现） |
-| `search-item` | `data-state` | 'checked' \| 'unchecked' |
+| `search-item` | `data-state` | 'checked' \| 'indeterminate' \| 'unchecked' |
 | `column` | `data-level` | String(column.level) |
 | `column` | `data-state` | 'open' \| 'closed' |
 | `group` | `data-disabled` | ''（条件成立时才出现） |
@@ -413,7 +419,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 
 ## RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
 
 ## 组合
 
@@ -423,6 +429,10 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 
 - 层数控制在三层，第四层开始用户就迷路了。
 - 回显要给完整路径，不只给末级名字——"朝阳区"在好几个省都有。
+- 自定义列项应同时组合 `item-text` 与 `item-indicator`；标记部件留空即可由皮肤按选中或半选状态画
+  对号或横线。自动生成的搜索结果会复用同一组标记尺寸和颜色槽。
+- 定制 `--xh-cascader-item-fg-selected`、`--xh-cascader-item-selected-font-weight`、
+  `--xh-cascader-item-bg-active` 时要同时核对列视图与搜索视图；默认值刻意保持正文和路径中性。
 
 ## 反模式
 
