@@ -22229,19 +22229,22 @@
 
 /* 悬停与键盘锚点共用中性灰轻档：data-highlighted 跟的是连接层记的焦点条目，
    与选中互相独立 */
-[data-scope='listbox'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+[data-scope='listbox'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted], :focus-visible) {
   background: var(--xh-listbox-item-bg-hover, var(--xh-bg-subtle));
 }
 
-/* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
-   两者因此能同时看见 */
+/* 与下拉选项一致：单选、多选只用对号表达选中，正文颜色和字重保持稳定。 */
 [data-scope='listbox'][data-part='item'][data-state='checked'] {
-  color: var(--xh-listbox-item-fg-selected, var(--xh-_tone-fg, var(--xh-fg-brand-strong)));
-  font-weight: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-medium));
+  color: var(--xh-listbox-item-fg-selected, var(--xh-listbox-item-fg, var(--xh-fg-default)));
+  font-weight: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-normal));
 }
 
 [data-scope='listbox'][data-part='item']:focus:not(:focus-visible) {
   outline: none;
+}
+
+[data-scope='listbox'][data-part='item']:focus-visible {
+  transition-property: color;
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
@@ -22265,7 +22268,9 @@
   flex: none;
   align-items: center;
   justify-content: center;
+  margin-inline-start: auto;
   inline-size: var(--xh-listbox-item-indicator-size, var(--xh-control-indicator-size));
+  block-size: var(--xh-listbox-item-indicator-size, var(--xh-control-indicator-size));
   color: var(--xh-listbox-item-indicator-fg, var(--xh-_listbox-accent));
   visibility: hidden;
 }
