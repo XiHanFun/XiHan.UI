@@ -6,11 +6,14 @@ const VISUAL_ATTRIBUTES = [
   'data-density',
   'data-contrast',
   'data-motion',
+  'data-transparency',
   'dir',
 ] as const
 
 type VisualAttribute = typeof VISUAL_ATTRIBUTES[number]
 type AttributeSnapshot = ReadonlyMap<VisualAttribute, string | null>
+type CustomPropertySnapshot = Readonly<{ value: string, priority: string }>
+type CustomPropertySnapshots = ReadonlyMap<string, CustomPropertySnapshot>
 
 export interface PortalVisualBridgeOptions {
   /** Portal 在逻辑组件树里的来源节点；逐轴从它向 composed 祖先查最近显式声明。 */
@@ -20,9 +23,9 @@ export interface PortalVisualBridgeOptions {
 }
 
 export interface PortalVisualBridge {
-  /** 立即重新读取来源祖先链；普通属性与换父由内建观察器自动调用。 */
+  /** 立即重新读取来源祖先链；视觉属性、自定义属性与换父由内建观察器自动调用。 */
   sync: () => void
-  /** 停止观察并把壳上的六个视觉属性精确还原到接管前。 */
+  /** 停止观察并把壳上的视觉属性与自定义属性精确还原到接管前。 */
   dispose: () => void
 }
 
@@ -53,6 +56,36 @@ function applyAttributes(element: Element, values: AttributeSnapshot): void {
   }
 }
 
+function styleOf(element: Element): CSSStyleDeclaration | null {
+  return 'style' in element ? (element as HTMLElement).style : null
+}
+
+function snapshotCustomProperties(element: Element, names: Iterable<string>): Map<string, CustomPropertySnapshot> {
+  const style = styleOf(element)
+  const values = new Map<string, CustomPropertySnapshot>()
+  if (!style)
+    return values
+  for (const name of names) {
+    values.set(name, {
+      value: style.getPropertyValue(name),
+      priority: style.getPropertyPriority(name),
+    })
+  }
+  return values
+}
+
+function restoreCustomProperties(element: Element, values: CustomPropertySnapshots): void {
+  const style = styleOf(element)
+  if (!style)
+    return
+  for (const [name, snapshot] of values) {
+    if (snapshot.value)
+      style.setProperty(name, snapshot.value, snapshot.priority)
+    else
+      style.removeProperty(name)
+  }
+}
+
 /** 穿过 ShadowRoot 回到 host；普通 Light DOM 直接取 parentElement。 */
 function composedParent(element: Element): Element | null {
   if (element.assignedSlot)
@@ -79,7 +112,66 @@ function visualSnapshot(source: Element): Map<VisualAttribute, string | null> {
 }
 
 /**
- * 观察当前 composed 祖先链：属性变化重算各轴；childList 接住来源或任一祖先换父。
+ * CSS 自定义属性会随 Portal 断开普通级联。计算样式列出规则里声明的名字；祖先的
+ * inline 样式补给 jsdom 不枚举继承自定义属性的实现。普通计算样式绝不复制。
+ */
+function visualCustomProperties(source: Element): Map<string, string> {
+  const values = new Map<string, string>()
+  const view = source.ownerDocument.defaultView
+  const computed = view?.getComputedStyle(source)
+  if (computed) {
+    for (let index = 0; index < computed.length; index++) {
+      const name = computed.item(index)
+      if (!name.startsWith('--'))
+        continue
+      const value = computed.getPropertyValue(name)
+      if (value)
+        values.set(name, value)
+    }
+  }
+
+  for (let node: Element | null = source; node; node = composedParent(node)) {
+    const style = styleOf(node)
+    if (!style)
+      continue
+    for (let index = 0; index < style.length; index++) {
+      const name = style.item(index)
+      if (!name.startsWith('--'))
+        continue
+      const value = computed?.getPropertyValue(name) || style.getPropertyValue(name)
+      if (value)
+        values.set(name, value)
+    }
+  }
+  return values
+}
+
+function applyCustomProperties(
+  element: Element,
+  values: ReadonlyMap<string, string>,
+  initial: Map<string, CustomPropertySnapshot>,
+  applied: Set<string>,
+): void {
+  const style = styleOf(element)
+  if (!style)
+    return
+  for (const [name, value] of values) {
+    if (!initial.has(name))
+      initial.set(name, snapshotCustomProperties(element, [name]).get(name)!)
+    if (style.getPropertyValue(name) !== value || style.getPropertyPriority(name))
+      style.setProperty(name, value)
+    applied.add(name)
+  }
+  for (const name of [...applied]) {
+    if (values.has(name))
+      continue
+    restoreCustomProperties(element, new Map([[name, initial.get(name)!]]))
+    applied.delete(name)
+  }
+}
+
+/**
+ * 观察当前 composed 祖先链：属性或自定义属性变化重算环境；childList 接住来源或任一祖先换父。
  * ShadowRoot 本身也观察 childList，否则来源恰为 shadow 根直接子节点时，移出不会命中 host。
  */
 function observationsFor(source: Element): ObservationPlan {
@@ -93,7 +185,7 @@ function observationsFor(source: Element): ObservationPlan {
       seen.add(node)
       out.push({
         node,
-        options: { attributes: true, attributeFilter: [...VISUAL_ATTRIBUTES], childList: true },
+        options: { attributes: true, childList: true },
       })
     }
     const root = node.getRootNode()
@@ -112,7 +204,7 @@ function collectedError(primary: unknown, rollback: unknown[], message: string):
 /**
  * 把逻辑来源最近显式声明的视觉环境投影到单个 Portal 壳。
  *
- * 只桥接仓库当前真实消费的六个 DOM 轴；CSS 自定义属性、计算样式与尚未存在的透明度 DOM 轴不复制。
+ * 桥接七个视觉 DOM 轴，以及来源解析出的 CSS 自定义属性；普通计算样式不会被复制。
  */
 export function createPortalVisualBridge(options: PortalVisualBridgeOptions): PortalVisualBridge {
   const { source, shell } = options
@@ -124,6 +216,8 @@ export function createPortalVisualBridge(options: PortalVisualBridgeOptions): Po
     throw new Error('[xh] Portal 视觉环境需要来源 Document 的 MutationObserver')
 
   const initial = snapshotAttributes(shell)
+  let initialCustom = new Map<string, CustomPropertySnapshot>()
+  let appliedCustom = new Set<string>()
   let observed: ObservationPlan = { entries: [], slots: [] }
   let attachedSlots: HTMLSlotElement[] = []
   let disposed = false
@@ -150,9 +244,14 @@ export function createPortalVisualBridge(options: PortalVisualBridgeOptions): Po
     if (source.ownerDocument !== doc || shell.ownerDocument !== doc)
       throw new Error('[xh] Portal 视觉环境同步期间来源或实例壳切换了 Document')
     const before = snapshotAttributes(shell)
+    const nextCustom = visualCustomProperties(source)
+    const beforeCustom = snapshotCustomProperties(shell, new Set([...appliedCustom, ...nextCustom.keys()]))
+    const initialCustomBefore = new Map(initialCustom)
+    const appliedCustomBefore = new Set(appliedCustom)
     const nextObserved = observationsFor(source)
     try {
       applyAttributes(shell, visualSnapshot(source))
+      applyCustomProperties(shell, nextCustom, initialCustom, appliedCustom)
       observe(nextObserved)
       observed = nextObserved
     }
@@ -160,6 +259,14 @@ export function createPortalVisualBridge(options: PortalVisualBridgeOptions): Po
       const rollbackErrors: unknown[] = []
       try {
         applyAttributes(shell, before)
+      }
+      catch (rollbackError) {
+        rollbackErrors.push(rollbackError)
+      }
+      try {
+        restoreCustomProperties(shell, beforeCustom)
+        initialCustom = initialCustomBefore
+        appliedCustom = appliedCustomBefore
       }
       catch (rollbackError) {
         rollbackErrors.push(rollbackError)
@@ -209,6 +316,12 @@ export function createPortalVisualBridge(options: PortalVisualBridgeOptions): Po
     catch (rollbackError) {
       rollbackErrors.push(rollbackError)
     }
+    try {
+      restoreCustomProperties(shell, initialCustom)
+    }
+    catch (rollbackError) {
+      rollbackErrors.push(rollbackError)
+    }
     throw collectedError(error, rollbackErrors, '[xh] Portal 视觉环境初始化与回滚同时失败')
   }
 
@@ -223,6 +336,7 @@ export function createPortalVisualBridge(options: PortalVisualBridgeOptions): Po
         slot.removeEventListener('slotchange', onSlotChange)
       attachedSlots = []
       applyAttributes(shell, initial)
+      restoreCustomProperties(shell, initialCustom)
     },
   }
 }

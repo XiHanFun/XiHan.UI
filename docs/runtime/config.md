@@ -108,8 +108,8 @@ provideXhConfig({ translations: { dialog: { close: "Close" } } });
 
 **主题不在这里。** 那几家的 ConfigProvider 同时管主题，这里的主题是 CSS 令牌层的事：换主题是改 CSS 自定义属性、切 `data-theme` 这类属性，跟着 DOM 继承走，局部主题天然可嵌套，与这份配置无关。
 
-Vue 与 React 的浮层搬到 Portal 时，每个实例会把逻辑来源最近声明的 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion` 和 `dir` 投影到自己的无盒壳；共享 Portal 根不带这些属性。同一落点里的两个局部主题因此互不覆盖。来源没有声明的轴继续继承显式 `portalContainer`，但任意业务 CSS 自定义属性不会被复制；要让业务变量跨 Portal，应把它声明在目标容器或全局主题层。
+Vue 与 React 的浮层搬到 Portal 时，每个实例会把逻辑来源最近声明的 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency` 和 `dir` 投影到自己的无盒壳，并复制来源解析出的 CSS 自定义属性；共享 Portal 根不带这些属性。同一落点里的两个局部主题因此互不覆盖。来源没有声明的轴与变量继续继承显式 `portalContainer`，普通计算样式不会被复制。
 
 Web Components 的普通声明式浮层仍在 Light DOM 原位。多级 Menu 是明确例外：展开的 submenu positioner 会进入所属 Document 的运行时 Portal，以免父菜单的磨砂采样建立 fixed 包含块；它同样使用独占无盒壳桥接上述视觉轴，关闭或断连后恢复作者原位置。
 
-`shape` 是组件自身形态，不是主题环境轴；透明度目前只有系统 `prefers-reduced-transparency` 媒体路径，尚未建立 `data-transparency` DOM 轴，所以 Portal 不会复制一个没有消费方的属性。
+`shape` 是组件自身形态，不是主题环境轴。系统 `prefers-reduced-transparency` 媒体路径在同一浏览器中天然同时作用于来源与 Portal；`data-transparency` 则是业务可显式声明并由实例壳继承的视觉轴，是否消费由业务皮肤决定。

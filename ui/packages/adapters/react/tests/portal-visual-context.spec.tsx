@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { act, StrictMode, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -60,7 +60,7 @@ afterEach(() => {
 })
 
 describe('react Portal 的局部视觉环境', () => {
-  it('把来源最近声明的六个真实轴写到实例壳，不复制透明度伪轴', () => {
+  it('把来源最近声明的七个视觉轴与自定义属性写到实例壳', () => {
     mount(
       <section
         data-theme="dark"
@@ -70,6 +70,7 @@ describe('react Portal 的局部视觉环境', () => {
         data-motion="reduce"
         data-transparency="reduce"
         dir="rtl"
+        style={{ '--business-color': 'rebeccapurple' } as CSSProperties}
       >
         <XhPortal><span data-testid="first">内容</span></XhPortal>
       </section>,
@@ -80,8 +81,9 @@ describe('react Portal 的局部视觉环境', () => {
     expect(shell.getAttribute('data-density')).toBe('compact')
     expect(shell.getAttribute('data-contrast')).toBe('more')
     expect(shell.getAttribute('data-motion')).toBe('reduce')
+    expect(shell.getAttribute('data-transparency')).toBe('reduce')
     expect(shell.getAttribute('dir')).toBe('rtl')
-    expect(shell.hasAttribute('data-transparency')).toBe(false)
+    expect(shell.style.getPropertyValue('--business-color')).toBe('rebeccapurple')
   })
 
   it('两个局部主题在同一个 body 落点各有自己的实例壳', () => {

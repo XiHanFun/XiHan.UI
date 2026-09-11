@@ -3,7 +3,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { createPortalVisualBridge } from '../src/kernel/structure/portal-visual-bridge'
 
-const AXES = ['data-theme', 'data-brand', 'data-density', 'data-contrast', 'data-motion', 'dir'] as const
+const AXES = ['data-theme', 'data-brand', 'data-density', 'data-contrast', 'data-motion', 'data-transparency', 'dir'] as const
 
 function fixture(doc: Document = document): { outer: HTMLElement, inner: HTMLElement, source: HTMLElement, shell: HTMLElement } {
   const outer = doc.createElement('section')
@@ -26,7 +26,7 @@ afterEach(() => {
 })
 
 describe('portal 视觉环境桥', () => {
-  it('六个真实 DOM 轴逐项取最近显式声明，不复制计算样式或尚不存在的透明度轴', () => {
+  it('七个视觉 DOM 轴逐项取最近显式声明，并桥接来源自定义属性', () => {
     const { outer, inner, source, shell } = fixture()
     outer.setAttribute('data-theme', 'dark')
     outer.setAttribute('data-brand', 'acme')
@@ -45,21 +45,26 @@ describe('portal 视觉环境桥', () => {
       'data-density': 'comfortable',
       'data-contrast': 'more',
       'data-motion': 'reduce',
+      'data-transparency': 'reduce',
       'dir': 'rtl',
     })
-    expect(shell.hasAttribute('data-transparency')).toBe(false)
-    expect(shell.style.getPropertyValue('--business-color')).toBe('')
+    expect(shell.getAttribute('data-transparency')).toBe('reduce')
+    expect(shell.style.getPropertyValue('--business-color')).toBe('red')
     bridge.dispose()
   })
 
-  it('来源未声明的轴留空，使实例壳继续继承业务显式目标', () => {
+  it('来源未声明的轴与自定义属性留空，使实例壳继续继承业务显式目标', () => {
     const { source, shell } = fixture()
     const target = document.createElement('aside')
     target.setAttribute('data-theme', 'dark')
+    shell.style.setProperty('--business-color', 'target')
     target.append(shell)
+    source.style.color = 'red'
     document.body.append(target)
     const bridge = createPortalVisualBridge({ source, shell })
     expect(shell.hasAttribute('data-theme')).toBe(false)
+    expect(shell.style.getPropertyValue('--business-color')).toBe('target')
+    expect(shell.style.color).toBe('')
     bridge.dispose()
   })
 
@@ -70,6 +75,7 @@ describe('portal 视觉环境桥', () => {
     document.body.append(other)
     outer.setAttribute('data-theme', 'dark')
     inner.setAttribute('data-density', 'compact')
+    outer.style.setProperty('--business-color', 'first')
     const bridge = createPortalVisualBridge({ source, shell })
 
     outer.setAttribute('data-theme', 'light')
@@ -77,10 +83,16 @@ describe('portal 视觉环境桥', () => {
     await settleMutations()
     expect(shell.getAttribute('data-theme')).toBe('light')
     expect(shell.hasAttribute('data-density')).toBe(false)
+    expect(shell.style.getPropertyValue('--business-color')).toBe('first')
+
+    outer.style.setProperty('--business-color', 'second')
+    await settleMutations()
+    expect(shell.style.getPropertyValue('--business-color')).toBe('second')
 
     other.append(source)
     await settleMutations()
     expect(shell.getAttribute('data-theme')).toBe('light')
+    expect(shell.style.getPropertyValue('--business-color')).toBe('')
     other.setAttribute('data-theme', 'dark')
     await settleMutations()
     expect(shell.getAttribute('data-theme')).toBe('dark')
@@ -165,22 +177,40 @@ describe('portal 视觉环境桥', () => {
     b.dispose()
   })
 
-  it('dispose 幂等停止跟随，并精确还原接管前的壳属性', async () => {
+  it('dispose 幂等停止跟随，并精确还原接管前的壳属性与自定义属性', async () => {
     const { outer, source, shell } = fixture()
     outer.setAttribute('data-theme', 'dark')
     shell.setAttribute('data-theme', 'legacy')
     shell.setAttribute('dir', 'ltr')
+    shell.style.setProperty('--business-color', 'legacy')
+    outer.style.setProperty('--business-color', 'source')
     const bridge = createPortalVisualBridge({ source, shell })
     expect(shell.getAttribute('data-theme')).toBe('dark')
     expect(shell.hasAttribute('dir')).toBe(false)
+    expect(shell.style.getPropertyValue('--business-color')).toBe('source')
 
     bridge.dispose()
     bridge.dispose()
     expect(shell.getAttribute('data-theme')).toBe('legacy')
     expect(shell.getAttribute('dir')).toBe('ltr')
+    expect(shell.style.getPropertyValue('--business-color')).toBe('legacy')
     outer.setAttribute('data-theme', 'light')
     await settleMutations()
     expect(shell.getAttribute('data-theme')).toBe('legacy')
+  })
+
+  it('桥接样式表声明的自定义属性，不复制普通计算样式', () => {
+    const style = document.createElement('style')
+    style.textContent = '.portal-source { --business-color: rebeccapurple; color: red; }'
+    document.head.append(style)
+    const { source, shell } = fixture()
+    source.className = 'portal-source'
+
+    const bridge = createPortalVisualBridge({ source, shell })
+    expect(shell.style.getPropertyValue('--business-color')).toBe('rebeccapurple')
+    expect(shell.style.color).toBe('')
+    bridge.dispose()
+    style.remove()
   })
 
   it('拒绝跨 Document 来源与壳，不把主页面视觉环境写进 iframe', () => {

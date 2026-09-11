@@ -21,14 +21,16 @@ afterEach(() => {
 })
 
 describe('web Components 浮层的局部视觉环境', () => {
-  it('声明式浮层保持 Light DOM 原位结构，六轴沿真实祖先链自然继承', async () => {
+  it('声明式浮层保持 Light DOM 原位结构，七轴与自定义属性沿真实祖先链自然继承', async () => {
     const region = document.createElement('section')
     region.setAttribute('data-theme', 'dark')
     region.setAttribute('data-brand', 'acme')
     region.setAttribute('data-density', 'compact')
     region.setAttribute('data-contrast', 'more')
     region.setAttribute('data-motion', 'reduce')
+    region.setAttribute('data-transparency', 'reduce')
     region.setAttribute('dir', 'rtl')
+    region.style.setProperty('--business-color', 'rebeccapurple')
     const host = popover()
     region.append(host)
     document.body.append(region)
@@ -41,7 +43,9 @@ describe('web Components 浮层的局部视觉环境', () => {
     expect(positioner.closest('[data-density]')).toBe(region)
     expect(positioner.closest('[data-contrast]')).toBe(region)
     expect(positioner.closest('[data-motion]')).toBe(region)
+    expect(positioner.closest('[data-transparency]')).toBe(region)
     expect(positioner.closest('[dir]')).toBe(region)
+    expect(positioner.style.getPropertyValue('--business-color')).toBe('')
     expect(document.querySelector('[data-xh-portal-shell]')).toBeNull()
   })
 
