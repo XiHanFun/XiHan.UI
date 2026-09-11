@@ -1,4 +1,4 @@
-import type { Orientation, Service } from '@xihan-ui/core'
+import type { Orientation, Scope, Service } from '@xihan-ui/core'
 import type { ScrollbarApi, ScrollbarSchema } from '@xihan-ui/headless'
 import type { ComputedRef, MaybeRefOrGetter, Ref, VNode } from 'vue'
 import { createScope } from '@xihan-ui/core'
@@ -27,6 +27,8 @@ export interface ScrollbarsOptions {
   axes?: readonly Orientation[]
   /** 露面时机、尺寸档、方向这些，逐帧现读。 */
   props?: MaybeRefOrGetter<ScrollbarsProps>
+  /** 已有宿主 Scope 时与它共用，避免 iframe / ShadowRoot 中另回 ambient Document。 */
+  scope?: Scope
 }
 
 export interface ScrollbarsHandle {
@@ -48,7 +50,7 @@ const DEFAULT_AXES: readonly Orientation[] = ['vertical']
 
 export function useScrollbars(options: ScrollbarsOptions): ScrollbarsHandle {
   const axes = options.axes ?? DEFAULT_AXES
-  const scope = createScope(null, createVueIdGenerator())
+  const scope = options.scope ?? createScope(null, createVueIdGenerator())
   const bars: Bar[] = []
 
   /**

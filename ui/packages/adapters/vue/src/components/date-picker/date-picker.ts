@@ -15,7 +15,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, mergeProps } from 'vue'
+import { computed, defineComponent, h, mergeProps, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotPaints } from '../../runtime/slot-content'
@@ -31,7 +31,7 @@ import {
   useDatePickerPanelContext,
   useDatePickerSegmentGroupContext,
 } from './context'
-import { useDatePicker } from './use-date-picker'
+import { useDatePickerWithRoot } from './use-date-picker'
 
 type DatePickerProps = DatePickerSchema['props']
 
@@ -157,6 +157,7 @@ export const XhDatePickerRoot = defineComponent({
     default?: (props: DatePickerRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
+    const rootRef = ref<HTMLElement | null>(null)
     const notifyValue: DatePickerProps['onValueChange'] = (details) => {
       emit('value-change', details)
       emit('update:value', details.value)
@@ -171,15 +172,15 @@ export const XhDatePickerRoot = defineComponent({
       emit('active-view-change', details)
       emit('update:activeView', details.activeView)
     }
-    const ctx = useDatePicker(withXhConfig('date-picker', props) as DatePickerProps, {
+    const ctx = useDatePickerWithRoot(withXhConfig('date-picker', props) as DatePickerProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
       onFocusedValueChange: notifyFocus,
       onActiveViewChange: notifyActiveView,
-    })
+    }, rootRef)
     provideDatePicker(ctx)
     // 网格与段位由作者照插槽里的 weeks / segments 自行渲染
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: rootRef }, slots.default?.({
       open: ctx.api.value.open,
       value: ctx.api.value.value,
       valueAsString: ctx.api.value.valueAsString,
@@ -303,14 +304,22 @@ export const XhDatePickerPositioner = defineComponent({
   setup(_, { slots, attrs }) {
     const ctx = useDatePickerContext()
     // 浮层面板的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
-    const bars = useScrollbars({ scrollable: () => ctx.contentRef.value })
+    const bars = useScrollbars({ scrollable: () => ctx.contentRef.value, scope: ctx.services.root.scope })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-    return () => h(XhPortal, { to: ctx.portalTarget.value, source: ctx.controlRef }, () => [
-      h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
-        ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
-      }, [...(slots.default?.() ?? []), ...bars.render()]),
-    ])
+    return () => {
+      const target = ctx.portalTarget.value
+      return h(XhPortal, {
+        to: target,
+        source: ctx.controlRef,
+        // SSR 与客户端首帧都还没有真实 root：保持同一原地结构，绑定 Scope 后再搬运。
+        disabled: typeof target === 'string',
+      }, () => [
+        h('div', {
+          ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+          ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
+        }, [...(slots.default?.() ?? []), ...bars.render()]),
+      ])
+    }
   },
 })
 
