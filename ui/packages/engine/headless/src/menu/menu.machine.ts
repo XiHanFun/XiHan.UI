@@ -154,8 +154,12 @@ export const menuMachine = createMachine({
         flush(() => {
           if (disposed)
             return
+          const trigger = refs.get('getAnchorEl')()
+          // 无渲染器或锚点未在场时没有可观察目标；下次状态效应建立时重新解析。
+          if (!trigger)
+            return
           cleanup = trackHoverIntent({
-            getTriggerEl: () => refs.get('getAnchorEl')(),
+            trigger,
             getContentEl: () => refs.get('getContentEl')(),
             openDelay: prop('hoverOpenDelay'),
             closeDelay: prop('hoverCloseDelay'),

@@ -308,8 +308,12 @@ export const sideNavMachine = createMachine({
         flush(() => {
           if (disposed)
             return
+          const trigger = refs.get('getPopoutAnchorEl')()
+          // 无渲染器或锚点未在场时没有可观察目标；下次状态效应建立时重新解析。
+          if (!trigger)
+            return
           cleanup = trackHoverIntent({
-            getTriggerEl: () => refs.get('getPopoutAnchorEl')(),
+            trigger,
             getContentEl: () => refs.get('getPopoutContentEl')(),
             onOpenIntent: () => {},
             onCloseIntent: () => {

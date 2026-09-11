@@ -157,6 +157,10 @@ const { api } = useAccordion(
 
 `useMachine(machine, props, scope)` 把它包起来。props 传的是 getter 而不是对象，每次展开成新对象让机器的身份缓存失效——这样在模板里原地改某个 prop 也收得到。
 
+## 行为原语
+
+`@xihan-ui/vue/behavior` 单独提供滚动锁、悬停意图、滚动观察、贴底和连敲检索的 Vue 包装。`useHoverIntent` 到 mounted 后才读取模板 ref，并持续观察 trigger 与三个计时参数；trigger 暂时为 `null` 时释放旧绑定，节点重新出现后再建立。content getter 与回调现读当前响应式选项，不会因浮层内容挂载或普通闭包换代重启安全三角。选项对象本身也可传 ref 或 getter；显式类型使用该子入口的 `UseHoverIntentOptions`。
+
 ## 背景层
 
 Vue 侧的视觉适配在**单独的子入口**，不引就不会把 WebGL 引擎打进包：

@@ -1,15 +1,14 @@
 // @xihan-ui/react/behavior —— 行为原语的 React 包装。
 //
-// @xihan-ui/core 里的原语都是框架无关的：收一份配置与几个元素 getter，
-// 返回一个要自己释放的句柄。接进 React 无非是把释放挂到效应的清理上，
-// 于是这些包装只做那一件事，不改原语的语义、也不加新概念。
+// @xihan-ui/core 里的原语都是框架无关的：收一份配置与 DOM 输入，返回一个要自己
+// 释放的句柄。React 包装把建立、节点换代与释放对齐到提交生命周期，不改原语语义。
 //
 // 与主入口分开：自建浮层才用得上这一层，不用的应用不必把它压进主入口的体积。
 // 需要层栈仪式的那几个（消解层、焦点域、背景失活）不在这里——
 // 它们要按顺序接四五个东西，接错的表现是「点子菜单父层跟着关」这种不报错的怪症，
 // 那种场景请直接用库里现成的浮层组件。
 import type {
-  HoverIntentOptions,
+  HoverIntentOptions as CoreHoverIntentOptions,
   RuntimeConfig,
   ScrollMetrics,
   ScrollTrackerOptions,
@@ -26,6 +25,7 @@ import {
   trackHoverIntent,
 } from '@xihan-ui/core'
 import { useEffect, useRef, useState } from 'react'
+import { useIsomorphicLayoutEffect } from './runtime/layout-effect'
 
 /**
  * 按需加解滚动锁。锁是引用计数的，多处同时锁不会互相踩。
@@ -49,14 +49,71 @@ export function useScrollLock(active: boolean, config: RuntimeConfig): void {
  * 悬停意图：进触发器停够时长才报开，离开时按安全三角判断是不是正朝浮层去。
  * 用于自建的悬停浮层，省掉「斜着划向子菜单半路就关了」那类手写延时。
  */
-export function useHoverIntent(options: HoverIntentOptions): void {
+export interface UseHoverIntentOptions extends Omit<CoreHoverIntentOptions, 'trigger'> {
+  /** 当前悬停宿主；节点暂时不渲染时返回 null。 */
+  getTriggerEl: () => HTMLElement | null
+}
+
+interface HoverIntentBinding {
+  trigger: HTMLElement
+  ownerDocument: Document
+  openDelay: number | undefined
+  closeDelay: number | undefined
+  buffer: number | undefined
+  stop: () => void
+}
+
+export function useHoverIntent(options: UseHoverIntentOptions): void {
   const latest = useRef(options)
-  latest.current = options
-  useEffect(() => {
-    const stop = trackHoverIntent(latest.current)
-    return () => stop()
-    // 选项里全是取值器与回调，每渲染都是新的；跟着它走会每帧重挂一次监听
-  }, [])
+  const binding = useRef<HoverIntentBinding | null>(null)
+
+  const release = (): void => {
+    binding.current?.stop()
+    binding.current = null
+  }
+
+  // 每次已提交渲染后比较真正决定绑定身份的值；回调与 content getter 由 latest 转发，
+  // 不会为普通闭包换代取消正在进行的悬停计时。
+  useIsomorphicLayoutEffect(() => {
+    latest.current = options
+    const trigger = options.getTriggerEl()
+    // null 表示这一帧没有可绑定节点；后续提交出现节点时会重新建立。
+    if (trigger === null) {
+      release()
+      return
+    }
+    const previous = binding.current
+    const ownerDocument = trigger.ownerDocument
+    if (previous
+      && previous.trigger === trigger
+      && previous.ownerDocument === ownerDocument
+      && Object.is(previous.openDelay, options.openDelay)
+      && Object.is(previous.closeDelay, options.closeDelay)
+      && Object.is(previous.buffer, options.buffer)) {
+      return
+    }
+
+    release()
+    const stop = trackHoverIntent({
+      trigger,
+      getContentEl: () => latest.current.getContentEl(),
+      openDelay: options.openDelay,
+      closeDelay: options.closeDelay,
+      buffer: options.buffer,
+      onOpenIntent: () => latest.current.onOpenIntent(),
+      onCloseIntent: () => latest.current.onCloseIntent(),
+    })
+    binding.current = {
+      trigger,
+      ownerDocument,
+      openDelay: options.openDelay,
+      closeDelay: options.closeDelay,
+      buffer: options.buffer,
+      stop,
+    }
+  })
+
+  useIsomorphicLayoutEffect(() => () => release(), [])
 }
 
 /** 观察滚动容器的位置与尺寸，值变了才回调。返回最近一次量到的值。 */
