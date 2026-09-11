@@ -337,8 +337,12 @@ export function connectTagGroup<T extends PropTypes>(
 
     // 摘除钮就是所在标签那份 tag 的 close-trigger：可及名、禁用、收起与点按都由 tag 给。
     // 不占 Tab 位：一排十枚标签，逐枚摘除钮各占一个停靠点时 Tab 就没法用了；
-    // 键盘那一路走方向键选中标签再按 Delete / Backspace
+    // 键盘那一路走方向键选中标签再按 Delete / Backspace。
+    // click 先截断冒泡，再执行 tag 的删除逻辑：否则同一次点击会继续撞上 item 的选择处理器。
     getItemDeleteTriggerProps: item => mergeProps<T['button']>(
+      normalize.button({
+        onClick: (event: MouseEvent) => event.stopPropagation(),
+      }),
       hostedTag(item).getCloseTriggerProps(),
       normalize.button({
         tabindex: -1,

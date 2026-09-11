@@ -280,6 +280,22 @@ describe('摘除钮是 tag 的 close-trigger', () => {
     expect(document.activeElement).toBe(h.nodes('react').item)
   })
 
+  it('多选项的摘除 click 不冒泡成标签选择，只产生一次移除后的值变化', () => {
+    const h = mount({
+      selectionMode: 'multiple',
+      deletable: true,
+      defaultValue: ['vue', 'svelte'],
+    })
+
+    h.nodes('vue').del.click()
+
+    expect(h.values).toEqual([{ value: ['svelte'] }])
+    expect(h.deletes).toEqual([{ value: 'vue' }])
+    expect(h.api().value).toEqual(['svelte'])
+    expect(h.nodes('vue').item.hasAttribute('data-selected')).toBe(false)
+    expect(h.nodes('svelte').item.hasAttribute('data-selected')).toBe(true)
+  })
+
   it('主键按下被拦下（不夺焦），右键按下不拦', () => {
     const h = mount({ deletable: true })
     const del = h.nodes('vue').del
