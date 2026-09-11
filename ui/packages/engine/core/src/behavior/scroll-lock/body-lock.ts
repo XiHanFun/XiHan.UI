@@ -1,5 +1,5 @@
-import type { Disposable, RuntimeConfig } from '../../kernel'
-import { createPerDocumentRegistry, isHTMLElement } from '../../kernel'
+import type { Cleanup, Disposable, RuntimeConfig } from '../../kernel'
+import { createPerDocumentRegistry, isDocument, isHTMLElement, isWindow } from '../../kernel'
 
 export interface ScrollLockOptions {
   config: RuntimeConfig
@@ -10,194 +10,256 @@ export type ScrollLockHandle = Disposable
 /** 加锁期间把让出来的滚动条宽度写在文档根上，供 fixed 定位的元素让位。 */
 const GUTTER_VAR = '--xh-scroll-lock-gutter'
 
-/** 探测滚动根时往下走的层数与看过的节点数上限。 */
-const PROBE_DEPTH = 6
-const PROBE_NODES = 64
+interface InlineValue {
+  readonly value: string
+  readonly priority: string
+}
 
-/** 候选滚动根在两个轴上至少要铺到视口的这个比例。 */
-const PROBE_COVERAGE = 0.5
+interface LockTarget {
+  readonly el: HTMLElement
+  readonly page: boolean
+}
+
+interface LockEpoch extends LockTarget {
+  readonly cleanups: Cleanup[]
+}
 
 interface LockState {
   count: number
-  /** 当前锁住的元素，未加锁时为 null。 */
-  el: HTMLElement | null
-  /** 是否走整页那一路（body 变 fixed）。 */
-  page: boolean
-  savedScrollY: number
-  savedScrollTop: number
-  saved: {
-    position: string
-    top: string
-    width: string
-    overflow: string
-    boxSizing: string
-    paddingInlineEnd: string
-  }
-  onViewportChange: (() => void) | null
+  epoch: LockEpoch | null
+  transitioning: boolean
 }
 
 const registry = createPerDocumentRegistry<LockState>(() => ({
   count: 0,
-  el: null,
-  page: true,
-  savedScrollY: 0,
-  savedScrollTop: 0,
-  saved: { position: '', top: '', width: '', overflow: '', boxSizing: '', paddingInlineEnd: '' },
-  onViewportChange: null,
+  epoch: null,
+  transitioning: false,
 }))
 
-/** 元素代表的是整页滚动。 */
-function isPageRoot(el: Element, doc: Document): boolean {
-  return el === doc.body || el === doc.documentElement || el === doc.scrollingElement
-}
-
-/** 元素沿块轴自己能滚：overflow 允许滚，且内容确实溢出。 */
-function isBlockScrollable(el: Element, win: Window): boolean {
-  const overflowY = win.getComputedStyle(el).overflowY
-  if (overflowY !== 'auto' && overflowY !== 'scroll' && overflowY !== 'overlay')
-    return false
-  return el.scrollHeight > el.clientHeight
-}
-
-/**
- * 从 body 逐层往下找滚动根，取最外层「块轴可滚且两个轴都铺满半个视口以上」的元素。
- * 铺满这条判据把侧栏、局部列表这类能滚但不是根的容器挡在外面。
- */
-function probeScrollRoot(doc: Document, win: Window): HTMLElement | null {
-  const minWidth = win.innerWidth * PROBE_COVERAGE
-  const minHeight = win.innerHeight * PROBE_COVERAGE
-  let level: Element[] = doc.body ? Array.from(doc.body.children) : []
-  let seen = 0
-
-  for (let depth = 0; depth < PROBE_DEPTH && level.length > 0; depth += 1) {
-    const next: Element[] = []
-    for (const el of level) {
-      if (seen >= PROBE_NODES)
-        return null
-      seen += 1
-      if (isHTMLElement(el) && el.clientWidth >= minWidth && el.clientHeight >= minHeight && isBlockScrollable(el, win))
-        return el
-      next.push(...el.children)
+function collectCleanups(cleanups: Cleanup[]): unknown[] {
+  const errors: unknown[] = []
+  while (cleanups.length) {
+    try {
+      cleanups.pop()!()
     }
-    level = next
+    catch (error) {
+      errors.push(error)
+    }
   }
-  return null
+  return errors
 }
 
-/** 解析加锁目标：注入的滚动根优先，其次整页，再次探测，都没有就回落 body。 */
-function resolveTarget(doc: Document, win: Window, config: RuntimeConfig): { el: HTMLElement, page: boolean } {
-  const injected = config.scrollRoot?.() ?? null
-  if (injected)
-    return isPageRoot(injected, doc) ? { el: doc.body, page: true } : { el: injected, page: false }
-
-  const root = doc.scrollingElement ?? doc.documentElement
-  if (root.scrollHeight > root.clientHeight)
-    return { el: doc.body, page: true }
-
-  const probed = probeScrollRoot(doc, win)
-  return probed ? { el: probed, page: false } : { el: doc.body, page: true }
+function throwCollectedErrors(errors: unknown[], message: string): void {
+  if (errors.length === 1)
+    throw errors[0]
+  if (errors.length > 1)
+    throw new AggregateError(errors, message, { cause: errors[0] })
 }
 
-/** 量加锁后会消失的那条滚动条有多宽；加锁后它已经没了，只能在加锁前调用。 */
-function measureGutter(el: HTMLElement, page: boolean, doc: Document, win: Window): number {
+function throwWithCleanup(primary: unknown, cleanupErrors: unknown[], message: string): never {
+  if (!cleanupErrors.length)
+    throw primary
+  throw new AggregateError([primary, ...cleanupErrors], message, { cause: primary })
+}
+
+function inlineValue(style: CSSStyleDeclaration, property: string): InlineValue {
+  return {
+    value: style.getPropertyValue(property),
+    priority: style.getPropertyPriority(property),
+  }
+}
+
+function sameInlineValue(left: InlineValue, right: InlineValue): boolean {
+  return left.value === right.value && left.priority === right.priority
+}
+
+/** 只还原仍等于本轮锁写入值的声明，保留业务在锁期间主动改过的样式。 */
+function setOwnedStyle(
+  cleanups: Cleanup[],
+  style: CSSStyleDeclaration,
+  property: string,
+  value: string,
+  priority = 'important',
+): void {
+  const before = inlineValue(style, property)
+  let applied = { value, priority }
+  cleanups.push(() => {
+    if (sameInlineValue(inlineValue(style, property), applied))
+      style.setProperty(property, before.value, before.priority)
+  })
+  try {
+    style.setProperty(property, value, priority)
+  }
+  catch (error) {
+    // 宿主包装器可能先完成原生写入再抛错；尽力读取已提交结果，且绝不遮蔽主异常。
+    try {
+      applied = inlineValue(style, property)
+    }
+    catch {}
+    throw error
+  }
+  // 以宿主实际接受的标准化结果为准；严格浏览器会保留 important，测试宿主也可如实降级。
+  applied = inlineValue(style, property)
+}
+
+function resolveRealm(config: RuntimeConfig): { doc: Document, win: Window & typeof globalThis } {
+  const doc = config.scope.getDoc()
+  const win = config.scope.getWin()
+  if (!isDocument(doc) || !isWindow(win) || doc.defaultView !== win || win.document !== doc)
+    throw new Error('[xh] ScrollLock 的 Scope Document 与 Window 不一致')
+  return { doc, win }
+}
+
+function pageTarget(doc: Document): LockTarget {
+  const body = doc.body
+  if (!isHTMLElement(body) || body.ownerDocument !== doc || !body.isConnected)
+    throw new Error('[xh] ScrollLock 的页面目标需要已连接的原生 Document.body')
+  return { el: body, page: true }
+}
+
+/** null、body、documentElement 与 scrollingElement 都归一为同一个页面目标。 */
+function resolveTarget(config: RuntimeConfig, doc: Document): LockTarget {
+  const resolveScrollRoot = config.scrollRoot
+  if (typeof resolveScrollRoot !== 'function')
+    throw new TypeError('[xh] ScrollLock 的 RuntimeConfig.scrollRoot 必须是函数')
+  const requested: unknown = resolveScrollRoot()
+  if (requested === null
+    || requested === doc.body
+    || requested === doc.documentElement
+    || requested === doc.scrollingElement) {
+    return pageTarget(doc)
+  }
+  if (!isHTMLElement(requested))
+    throw new TypeError('[xh] ScrollLock 的 scrollRoot 必须返回原生 HTMLElement 或 null')
+  if (requested.ownerDocument !== doc)
+    throw new Error('[xh] ScrollLock 的 scrollRoot 必须属于 Scope Document')
+  if (!requested.isConnected)
+    throw new Error('[xh] ScrollLock 的 scrollRoot 必须已连接到 Scope Document')
+  return { el: requested, page: false }
+}
+
+/** 量加锁后会消失的那条滚动条有多宽；只能在写入 overflow:hidden 前调用。 */
+function measureGutter(target: LockTarget, doc: Document, win: Window): number {
+  const { el, page } = target
+  const gutterOwner = page ? doc.documentElement : el
+  const style = win.getComputedStyle(gutterOwner)
+  if (/(?:^|\s)stable(?:\s|$)/.test(style.getPropertyValue('scrollbar-gutter')))
+    return 0
   if (page) {
-    const root = doc.scrollingElement ?? doc.documentElement
-    if (root.scrollHeight <= root.clientHeight)
-      return 0
     return Math.max(0, win.innerWidth - doc.documentElement.clientWidth)
   }
-  if (el.scrollHeight <= el.clientHeight)
-    return 0
-  const style = win.getComputedStyle(el)
   const border = (Number.parseFloat(style.borderLeftWidth) || 0) + (Number.parseFloat(style.borderRightWidth) || 0)
   return Math.max(0, el.offsetWidth - el.clientWidth - border)
 }
 
-function applyLock(doc: Document, state: LockState, config: RuntimeConfig): void {
-  const win = doc.defaultView ?? window
-  const { el, page } = resolveTarget(doc, win, config)
-  const gutter = measureGutter(el, page, doc, win)
+function createEpoch(target: LockTarget, doc: Document, win: Window & typeof globalThis): LockEpoch {
+  const { el, page } = target
+  if (page && typeof win.scrollTo !== 'function')
+    throw new Error('[xh] ScrollLock 所属 Window 不支持 scrollTo')
 
-  state.el = el
-  state.page = page
-  state.savedScrollY = win.scrollY
-  state.savedScrollTop = el.scrollTop
-  state.saved = {
-    position: el.style.position,
-    top: el.style.top,
-    width: el.style.width,
-    overflow: el.style.overflow,
-    boxSizing: el.style.boxSizing,
-    paddingInlineEnd: el.style.paddingInlineEnd,
-  }
-
+  const scrollX = page ? win.scrollX : el.scrollLeft
+  const scrollY = page ? win.scrollY : el.scrollTop
+  const gutter = measureGutter(target, doc, win)
   const padding = Number.parseFloat(win.getComputedStyle(el).paddingInlineEnd) || 0
-  if (page) {
-    el.style.position = 'fixed'
-    el.style.top = `-${state.savedScrollY}px`
-    el.style.width = '100%'
-    // 补的内距要从 width:100% 里扣掉，才抵得住滚动条让出的那段
-    el.style.boxSizing = 'border-box'
-  }
-  el.style.overflow = 'hidden'
-  if (gutter > 0)
-    el.style.paddingInlineEnd = `${padding + gutter}px`
-  doc.documentElement.style.setProperty(GUTTER_VAR, `${gutter}px`)
+  const cleanups: Cleanup[] = []
 
-  if (!page)
-    return
-
-  // 旋屏 / 视口变化时重算负 top
-  const recalc = (): void => {
-    el.style.top = `-${state.savedScrollY}px`
+  try {
+    if (page) {
+      // 先压滚动恢复，样式恢复会在它之前按 LIFO 完成。
+      cleanups.push(() => win.scrollTo({ left: scrollX, top: scrollY, behavior: 'instant' }))
+      setOwnedStyle(cleanups, el.style, 'position', 'fixed')
+      setOwnedStyle(cleanups, el.style, 'top', `${-scrollY}px`)
+      setOwnedStyle(cleanups, el.style, 'left', `${-scrollX}px`)
+      setOwnedStyle(cleanups, el.style, 'width', '100%')
+      setOwnedStyle(cleanups, el.style, 'box-sizing', 'border-box')
+    }
+    else {
+      cleanups.push(() => {
+        el.scrollLeft = scrollX
+      })
+      cleanups.push(() => {
+        el.scrollTop = scrollY
+      })
+    }
+    setOwnedStyle(cleanups, el.style, 'overflow', 'hidden')
+    if (gutter > 0)
+      setOwnedStyle(cleanups, el.style, 'padding-inline-end', `${padding + gutter}px`)
+    setOwnedStyle(cleanups, doc.documentElement.style, GUTTER_VAR, `${gutter}px`)
   }
-  state.onViewportChange = recalc
-  win.addEventListener('orientationchange', recalc)
-  win.visualViewport?.addEventListener('resize', recalc)
+  catch (setupError) {
+    throwWithCleanup(
+      setupError,
+      collectCleanups(cleanups),
+      '[xh] ScrollLock 初始化与回滚同时失败',
+    )
+  }
+
+  return { ...target, cleanups }
 }
 
-function releaseLock(doc: Document, state: LockState): void {
-  const win = doc.defaultView ?? window
-  const el = state.el
-  if (!el)
-    return
-  el.style.position = state.saved.position
-  el.style.top = state.saved.top
-  el.style.width = state.saved.width
-  el.style.overflow = state.saved.overflow
-  el.style.boxSizing = state.saved.boxSizing
-  el.style.paddingInlineEnd = state.saved.paddingInlineEnd
-  doc.documentElement.style.removeProperty(GUTTER_VAR)
-  if (state.onViewportChange) {
-    win.removeEventListener('orientationchange', state.onViewportChange)
-    win.visualViewport?.removeEventListener('resize', state.onViewportChange)
-    state.onViewportChange = null
-  }
-  if (state.page)
-    win.scrollTo(0, state.savedScrollY)
-  else
-    el.scrollTop = state.savedScrollTop
-  state.el = null
+function releaseEpoch(epoch: LockEpoch): void {
+  throwCollectedErrors(
+    collectCleanups(epoch.cleanups),
+    '[xh] ScrollLock 最终释放出现多个异常',
+  )
 }
 
-/** 加一把滚动锁。多层叠加走引用计数，只有第一次真正加锁、最后一次真正解锁。 */
-export function acquireScrollLock(o: ScrollLockOptions): ScrollLockHandle {
-  const doc = o.config.scope.getDoc()
+/** 加一把滚动锁。相同 Document 与规范化目标共享；同一时刻混用不同目标会明确失败。 */
+export function acquireScrollLock(options: ScrollLockOptions): ScrollLockHandle {
+  const { config } = options
+  const { doc, win } = resolveRealm(config)
   const state = registry.get(doc)
+  if (state.transitioning)
+    throw new Error('[xh] ScrollLock 正在切换当前 Document 的锁定 epoch')
+
+  let epoch: LockEpoch
+  state.transitioning = true
+  try {
+    const target = resolveTarget(config, doc)
+    const current = state.epoch
+    if (state.count > 0) {
+      if (!current)
+        throw new Error('[xh] ScrollLock 引用计数与当前 epoch 不一致')
+      if (current.el !== target.el || current.page !== target.page)
+        throw new Error('[xh] 同一 Document 的 ScrollLock 不能同时锁定不同目标')
+      epoch = current
+      state.count += 1
+    }
+    else {
+      if (current)
+        throw new Error('[xh] ScrollLock 空闲状态不能保留旧 epoch')
+      epoch = createEpoch(target, doc, win)
+      state.epoch = epoch
+      state.count = 1
+    }
+  }
+  finally {
+    state.transitioning = false
+  }
+
   let disposed = false
-
-  if (state.count === 0)
-    applyLock(doc, state, o.config)
-  state.count += 1
-
   return {
     dispose() {
       if (disposed)
         return
+      if (state.transitioning)
+        throw new Error('[xh] ScrollLock 正在切换当前 Document 的锁定 epoch')
       disposed = true
+      if (state.epoch !== epoch || state.count <= 0)
+        throw new Error('[xh] ScrollLock 句柄与当前 epoch 不一致')
       state.count -= 1
-      if (state.count === 0)
-        releaseLock(doc, state)
+      if (state.count > 0)
+        return
+
+      // 先发布终态，再完整尝试本轮全部清理；异常也不会复活句柄或 epoch。
+      state.epoch = null
+      state.transitioning = true
+      try {
+        releaseEpoch(epoch)
+      }
+      finally {
+        state.transitioning = false
+      }
     },
   }
 }

@@ -8,7 +8,7 @@ import { createCounterIdGenerator, createScope } from '../src/kernel'
 
 function fakeConfig(): RuntimeConfig {
   const scope = createScope(document.body, createCounterIdGenerator())
-  return { scope } as RuntimeConfig
+  return { scope, scrollRoot: () => null } as RuntimeConfig
 }
 
 afterEach(() => {

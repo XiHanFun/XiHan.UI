@@ -21,8 +21,8 @@ export interface RuntimeConfig {
   /** 是否减弱动效：应用级 override 优先，其次系统 prefers-reduced-motion；供 Presence 短路。 */
   readonly reducedMotion: () => boolean
   readonly layerRegistry: LayerRegistry
-  /** 滚动根解析器；返回 null 表示交给滚动锁自行探测。 */
-  readonly scrollRoot?: () => HTMLElement | null
+  /** 滚动根解析器；返回 null 明确表示锁定页面滚动。 */
+  readonly scrollRoot: () => HTMLElement | null
 }
 
 function resolveScopeRealm(scope: Scope): { doc: Document, win: Window & typeof globalThis } {
@@ -68,6 +68,10 @@ export function createRuntimeConfig(partial: Partial<RuntimeConfig> = {}): Runti
     ?? getLayerRegistry(scopedDocument)
   if (layerRegistry.ownerDocument !== scopedDocument)
     throw new Error('[xh] createRuntimeConfig 的 layerRegistry 必须属于 scope Document')
+  const requestedScrollRoot = partial.scrollRoot
+  const scrollRoot = requestedScrollRoot === undefined ? () => null : requestedScrollRoot
+  if (typeof scrollRoot !== 'function')
+    throw new TypeError('[xh] createRuntimeConfig 的 scrollRoot 必须是函数')
 
   return {
     scope,
@@ -77,7 +81,7 @@ export function createRuntimeConfig(partial: Partial<RuntimeConfig> = {}): Runti
     locale: resolveLocale(partial.locale, scope),
     portalContainer: partial.portalContainer
       ?? (() => defaultPortalContainer(scopedDocument)),
-    scrollRoot: partial.scrollRoot ?? (() => null),
+    scrollRoot,
     reducedMotion:
       partial.reducedMotion
       ?? (() => resolveMotionPreference(scopedWindow) === 'reduce'),
