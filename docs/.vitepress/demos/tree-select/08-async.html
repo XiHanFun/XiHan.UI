@@ -1,4 +1,4 @@
-<!-- 异步加载子节点 | 展开某个分支才去要它的子节点：先摆一行禁用占位，数据回来就地换掉，显示文本随之取到新 label -->
+<!-- 首次全量加载与空集合 | 第一次展开才取整棵树；正式 Loading/Empty 与候选树互斥，状态文字不进入选值或键盘导航，底部按钮可重放有数据与零集合响应 -->
 <xh-tree-select id="tree-select-async" placeholder="选一个城市">
   <div data-xh-part="root" style="max-inline-size: 320px">
     <span data-xh-part="label">投放城市</span>
@@ -10,33 +10,12 @@
     </div>
     <div data-xh-part="positioner">
       <div data-xh-part="content">
-        <div data-xh-part="tree">
-          <div data-xh-part="branch" value="east">
-            <div data-xh-part="branch-control">
-              <span data-xh-part="branch-trigger"></span>
-              <span data-xh-part="branch-text">华东</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="branch-content">
-              <div data-xh-part="item" value="east-pending">
-                <span data-xh-part="item-indicator"></span>
-                <span data-xh-part="item-text">加载中…</span>
-              </div>
-            </div>
-          </div>
-          <div data-xh-part="branch" value="north">
-            <div data-xh-part="branch-control">
-              <span data-xh-part="branch-trigger"></span>
-              <span data-xh-part="branch-text">华北</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="branch-content">
-              <div data-xh-part="item" value="north-pending">
-                <span data-xh-part="item-indicator"></span>
-                <span data-xh-part="item-text">加载中…</span>
-              </div>
-            </div>
-          </div>
+        <div data-xh-part="tree"></div>
+        <div data-xh-part="loading">正在加载城市…</div>
+        <div data-xh-part="empty">暂无可选城市</div>
+        <div data-xh-part="footer">
+          <button type="button" data-load-mode="cities">加载城市</button>
+          <button type="button" data-load-mode="empty">加载空集合</button>
         </div>
       </div>
     </div>
@@ -46,63 +25,109 @@
 
 <script type="module">
   const treeSelect = document.getElementById("tree-select-async");
+  const tree = treeSelect.querySelector('[data-xh-part="tree"]');
+  const readout = document.getElementById("tree-select-async-value");
+  const buttons = [...treeSelect.querySelectorAll("[data-load-mode]")];
 
-  // 占位行也是一个真节点：它得在树数据里，方向键才走得到它
-  const pending = (owner) => [{ value: `${owner}-pending`, label: "加载中…", disabled: true }];
-
-  const collection = [
-    { value: "east", label: "华东", children: pending("east") },
-    { value: "north", label: "华北", children: pending("north") },
+  const CITY_TREE = [
+    {
+      value: "east",
+      label: "华东",
+      children: [
+        { value: "east-shanghai", label: "上海" },
+        { value: "east-hangzhou", label: "杭州" },
+        { value: "east-nanjing", label: "南京" },
+      ],
+    },
+    {
+      value: "north",
+      label: "华北",
+      children: [
+        { value: "north-beijing", label: "北京" },
+        { value: "north-tianjin", label: "天津" },
+      ],
+    },
   ];
-  const cities = { east: ["上海", "杭州", "南京"], north: ["北京", "天津"] };
 
-  treeSelect.collection = collection;
-  treeSelect.expandedValue = [];
-
-  // 数据回来后就地换掉那一枝的标记，节点身份写在 value 属性上
-  function renderBranch(value) {
-    const branch = treeSelect.querySelector(`[data-xh-part="branch"][value="${value}"]`);
-    const content = branch.querySelector('[data-xh-part="branch-content"]');
-    const rows = collection.find((node) => node.value === value).children;
-    content.replaceChildren(
-      ...rows.map((row) => {
-        const item = document.createElement("div");
-        item.dataset.xhPart = "item";
-        item.setAttribute("value", row.value);
-        const indicator = document.createElement("span");
-        indicator.dataset.xhPart = "item-indicator";
-        const text = document.createElement("span");
-        text.dataset.xhPart = "item-text";
-        text.textContent = row.label;
-        item.append(indicator, text);
-        return item;
-      }),
-    );
+  function part(tag, name, text) {
+    const node = document.createElement(tag);
+    node.dataset.xhPart = name;
+    if (text !== undefined)
+      node.textContent = text;
+    return node;
   }
 
-  const loaded = new Set();
+  function renderRegion(region) {
+    const branch = part("div", "branch");
+    branch.setAttribute("value", region.value);
 
-  function fetchChildren(value) {
-    if (loaded.has(value)) return;
-    loaded.add(value);
-    setTimeout(() => {
-      const branch = collection.find((node) => node.value === value);
-      branch.children = cities[value].map((name, index) => ({
-        value: `${value}-${index}`,
-        label: name,
-      }));
-      treeSelect.collection = [...collection];
-      renderBranch(value);
+    const control = part("div", "branch-control");
+    control.append(
+      part("span", "branch-trigger"),
+      part("span", "branch-text", region.label),
+      part("span", "item-indicator"),
+    );
+
+    const content = part("div", "branch-content");
+    for (const city of region.children) {
+      const item = part("div", "item");
+      item.setAttribute("value", city.value);
+      item.append(
+        part("span", "item-indicator"),
+        part("span", "item-text", city.label),
+      );
+      content.append(item);
+    }
+
+    branch.append(control, content);
+    return branch;
+  }
+
+  let requested = false;
+  let timer;
+
+  function load(mode) {
+    if (timer !== undefined)
+      window.clearTimeout(timer);
+    treeSelect.loading = true;
+    treeSelect.value = [];
+    treeSelect.expandedValue = [];
+    tree.replaceChildren();
+    treeSelect.collection = [];
+    readout.textContent = "（无）";
+    for (const button of buttons)
+      button.disabled = true;
+
+    timer = window.setTimeout(() => {
+      timer = undefined;
+      const result = mode === "cities" ? CITY_TREE : [];
+      tree.replaceChildren(...result.map(renderRegion));
+      treeSelect.collection = result;
+      treeSelect.loading = false;
+      for (const button of buttons)
+        button.disabled = false;
     }, 800);
   }
 
-  treeSelect.addEventListener("expanded-value-change", (event) => {
-    treeSelect.expandedValue = event.detail.value;
-    for (const value of event.detail.value) fetchChildren(value);
+  treeSelect.collection = [];
+  treeSelect.expandedValue = [];
+
+  treeSelect.addEventListener("open-change", (event) => {
+    if (!event.detail.open || requested)
+      return;
+    requested = true;
+    load("cities");
   });
 
-  const readout = document.getElementById("tree-select-async-value");
+  for (const button of buttons)
+    button.addEventListener("click", () => load(button.dataset.loadMode));
+
+  treeSelect.addEventListener("expanded-value-change", (event) => {
+    treeSelect.expandedValue = event.detail.value;
+  });
+
   treeSelect.addEventListener("value-change", (event) => {
+    treeSelect.value = event.detail.value;
     readout.textContent = event.detail.value.join("、") || "（无）";
   });
 </script>
