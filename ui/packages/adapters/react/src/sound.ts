@@ -8,44 +8,36 @@
 //   withToastSound   给命令式反馈服务配上声音，调用点一行都不用改
 //   getSoundPlayer   自己拿播放器，接偏好开关或调音面板
 
-import type { ToastType } from '@xihan-ui/headless'
-import type { SoundPlayer } from '@xihan-ui/sound'
+import type { DialogSoundServiceOptions, SoundPlayer, ToastSoundServiceOptions } from '@xihan-ui/sound'
 import type { RefCallback } from 'react'
 import type { DialogService } from './services/dialog-service'
-import type { ToastCreateOptions, ToastService } from './services/toast-service'
-import { createSoundPlayer } from '@xihan-ui/sound'
+import type { ToastService } from './services/toast-service'
+import { createSharedSoundPlayerController, withDialogSoundService, withToastSoundService } from '@xihan-ui/sound'
 import { useCallback, useRef } from 'react'
 
-let shared: SoundPlayer | null = null
-/** 共享播放器是自己建的还是外面塞进来的：只有自己建的才由本模块销毁。 */
-let sharedIsOwn = false
+export type { DialogSoundKey, SoundChoice } from '@xihan-ui/sound'
+
+const shared = createSharedSoundPlayerController()
 
 /**
  * 取共享播放器，没有就建一个默认的。
  * 播放器本身很轻，音频上下文要等第一次真的发声才建，取了不用不花代价。
  */
 export function getSoundPlayer(): SoundPlayer {
-  if (!shared) {
-    shared = createSoundPlayer()
-    sharedIsOwn = true
-  }
-  return shared
+  return shared.getPlayer()
 }
 
 /** 换成自己配置的播放器（换主题、接用户偏好）。自动建的那个会被销毁。 */
 export function setSoundPlayer(player: SoundPlayer): void {
-  if (shared && sharedIsOwn && shared !== player)
-    shared.dispose()
-  shared = player
-  sharedIsOwn = false
+  shared.setPlayer(player)
 }
 
 /** 首次用户手势时解锁音频上下文，返回撤销函数。 */
-function attachUnlock(player: SoundPlayer): () => void {
+function attachUnlock(unlock: () => void): () => void {
   if (typeof document === 'undefined')
     return () => undefined
   const listener = (): void => {
-    player.unlock()
+    unlock()
     document.removeEventListener('pointerdown', listener)
     document.removeEventListener('keydown', listener)
   }
@@ -57,28 +49,9 @@ function attachUnlock(player: SoundPlayer): () => void {
   }
 }
 
-/** 语义名，或 null 表示这一类不出声。 */
-export type SoundChoice = string | null
-
-export interface ToastSoundOptions {
+export interface ToastSoundOptions extends Omit<ToastSoundServiceOptions, 'player' | 'attachUnlock'> {
   /** 用哪个播放器，默认共享播放器。 */
   player?: SoundPlayer
-  /** 通知类型 → 语义名。只写要改的那几个，其余沿用默认。 */
-  sounds?: Partial<Record<ToastType, SoundChoice>>
-  /**
-   * 首次用户手势时解锁音频上下文，默认开。
-   * 通知常来自拦截器或推送这类非手势场景，不解锁就发不出声。
-   */
-  autoUnlock?: boolean
-}
-
-const TOAST_SOUNDS: Record<ToastType, SoundChoice> = {
-  info: 'info',
-  success: 'success',
-  warning: 'warning',
-  error: 'error',
-  // 加载中只是个过渡态，收尾时才有值得报的结果
-  loading: null,
 }
 
 /**
@@ -93,69 +66,15 @@ const TOAST_SOUNDS: Record<ToastType, SoundChoice> = {
  * 改个文案不该响。
  */
 export function withToastSound(service: ToastService, options: ToastSoundOptions = {}): ToastService {
-  const player = options.player ?? getSoundPlayer()
-  const sounds = { ...TOAST_SOUNDS, ...options.sounds }
-  const detachUnlock = options.autoUnlock === false ? () => undefined : attachUnlock(player)
-
-  const play = (type: ToastType | undefined): void => {
-    const name = sounds[type ?? 'info']
-    if (name)
-      player.play(name)
-  }
-
-  return {
-    ...service,
-    create: (opts?: ToastCreateOptions) => {
-      play(opts?.type)
-      return service.create(opts)
-    },
-    update: (id, opts) => {
-      if (opts.type)
-        play(opts.type)
-      service.update(id, opts)
-    },
-    info: (message, opts) => {
-      play('info')
-      return service.info(message, opts)
-    },
-    success: (message, opts) => {
-      play('success')
-      return service.success(message, opts)
-    },
-    warning: (message, opts) => {
-      play('warning')
-      return service.warning(message, opts)
-    },
-    error: (message, opts) => {
-      play('error')
-      return service.error(message, opts)
-    },
-    loading: (message, opts) => {
-      play('loading')
-      return service.loading(message, opts)
-    },
-    dispose: () => {
-      detachUnlock()
-      service.dispose()
-    },
-  }
+  return withToastSoundService(service, {
+    ...options,
+    player: options.player ?? getSoundPlayer(),
+    attachUnlock,
+  })
 }
 
-/** 对话框服务的发声档：confirm 是征询，其余四档带类型语气。 */
-export type DialogSoundKey = 'confirm' | 'info' | 'success' | 'warning' | 'error'
-
-export interface DialogSoundOptions {
+export interface DialogSoundOptions extends Omit<DialogSoundServiceOptions, 'player' | 'attachUnlock'> {
   player?: SoundPlayer
-  sounds?: Partial<Record<DialogSoundKey, SoundChoice>>
-  autoUnlock?: boolean
-}
-
-const DIALOG_SOUNDS: Record<DialogSoundKey, SoundChoice> = {
-  confirm: 'open',
-  info: 'info',
-  success: 'success',
-  warning: 'warning',
-  error: 'error',
 }
 
 /**
@@ -163,43 +82,11 @@ const DIALOG_SOUNDS: Record<DialogSoundKey, SoundChoice> = {
  * （按钮那一下与随后的通知已经把结果说清楚了）。
  */
 export function withDialogSound(service: DialogService, options: DialogSoundOptions = {}): DialogService {
-  const player = options.player ?? getSoundPlayer()
-  const sounds = { ...DIALOG_SOUNDS, ...options.sounds }
-  const detachUnlock = options.autoUnlock === false ? () => undefined : attachUnlock(player)
-
-  const play = (key: DialogSoundKey): void => {
-    const name = sounds[key]
-    if (name)
-      player.play(name)
-  }
-
-  return {
-    ...service,
-    confirm: (opts) => {
-      play('confirm')
-      return service.confirm(opts)
-    },
-    info: (opts) => {
-      play('info')
-      return service.info(opts)
-    },
-    success: (opts) => {
-      play('success')
-      return service.success(opts)
-    },
-    warning: (opts) => {
-      play('warning')
-      return service.warning(opts)
-    },
-    error: (opts) => {
-      play('error')
-      return service.error(opts)
-    },
-    dispose: () => {
-      detachUnlock()
-      service.dispose()
-    },
-  }
+  return withDialogSoundService(service, {
+    ...options,
+    player: options.player ?? getSoundPlayer(),
+    attachUnlock,
+  })
 }
 
 export interface SoundPressOptions {

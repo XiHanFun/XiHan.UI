@@ -10,6 +10,9 @@
 export { isAudioSupported } from './engine/context'
 // 播放器
 export { createSoundPlayer } from './player'
+// 服务装饰器
+export { createSharedSoundPlayerController, createSoundServiceController, withDialogSoundService, withToastSoundService } from './service'
+export type { DialogSoundKey, DialogSoundServiceOptions, DialogSoundServicePort, SharedSoundPlayerController, SoundChoice, SoundServiceController, SoundServiceControllerOptions, SoundUnlockAttacher, ToastSoundKey, ToastSoundServiceOptions, ToastSoundServicePort } from './service'
 // 配方
 export { clampSpec, FREQ_MAX, FREQ_MIN, MAX_ENVELOPE_POINTS, MAX_LAYERS, MAX_TIME, specDuration } from './spec'
 // 主题
