@@ -12518,14 +12518,11 @@
   --xh-_bg-hover: var(--xh-button-bg-hover, var(--xh-bg-subtle-hover));
   --xh-_bg-active: var(--xh-button-bg-active, var(--xh-bg-subtle-active));
   --xh-_fg: var(--xh-button-fg, var(--xh-fg-default));
-
-  /* 实心面顶边的一条内高光，把整块底衬出厚度。形态那几条各自给值，没有实心底的形态给 none；
-     没写形态时跟着按钮组走——组把形态写在自己身上，段上并没有 data-variant */
-  --xh-_button-highlight: var(--xh-_button-group-highlight, none);
-
-  /* 悬停那一档的投影：有实心底的面抬起一层，换底之外再多一条回执。
-     组里的段共边焊成一条，由组把这个槽收回常态那一档 */
-  --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-elevation-raised));
+  --xh-_button-border: var(--xh-material-soft-border);
+  --xh-_button-edge: var(--xh-material-soft-highlight);
+  --xh-_button-shadow-rest: var(--xh-material-soft-shadow);
+  --xh-_button-shadow-hover: var(--xh-elevation-raised);
+  --xh-_button-shadow-active: none;
 
   /* 圆角档的落点：没写 data-shape 时取常规控件圆角，与不写这一项时逐值相同。
      进了按钮组的段仍以组给的 0 为准——组把段的圆角收成直角，两端再补回来 */
@@ -12535,17 +12532,24 @@
      它自己显式写了 size 时特异性更高，仍以作者写的为准 */
   --xh-icon-size: var(--xh-button-icon-size, var(--xh-glyph-size-md));
 
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--xh-button-gap, var(--xh-_button-group-gap, var(--xh-control-gap-md)));
   block-size: var(--xh-button-h, var(--xh-_button-group-h, var(--xh-control-h-md)));
   padding-inline: var(--xh-button-px, var(--xh-_button-group-px, var(--xh-control-px-md)));
-  border: var(--xh-stroke-thin) solid transparent;
+  border: var(--xh-stroke-thin) solid var(--xh-_button-border);
   border-radius: var(--xh-button-radius, var(--xh-_button-radius));
-  background: var(--xh-_bg);
+  /* 顶光与底色分层，pressed 可以只撤光照而不改盒尺寸。 */
+  background-color: var(--xh-_bg);
+  background-image: linear-gradient(
+    to bottom,
+    var(--xh-_button-edge) 0 var(--xh-stroke-thin),
+    transparent var(--xh-stroke-thin)
+  );
   color: var(--xh-_fg);
-  box-shadow: var(--xh-button-shadow, var(--xh-_button-highlight));
+  box-shadow: var(--xh-button-shadow, var(--xh-_button-shadow-rest));
   font-size: var(--xh-button-font-size, var(--xh-_button-group-font-size, var(--xh-text-label-size)));
   font-weight: var(--xh-button-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
@@ -12553,7 +12557,7 @@
   cursor: pointer;
   user-select: none;
   transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
@@ -12562,18 +12566,20 @@
 /* 置灰与挂起都要挡掉悬停/按下的换底：挂起走的是 aria-disabled 而非原生 disabled，
    :hover 与 :active 照样命中；原生 disabled 的那颗浏览器也仍然给 :hover */
 [data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):hover {
-  background: var(--xh-_bg-hover);
+  background-color: var(--xh-_bg-hover);
   box-shadow: var(--xh-button-shadow-hover, var(--xh-_button-shadow-hover));
 }
 
 /* 换底之外再压一档：四档形态都是独立控件盒，缩放只动按钮自己 */
 [data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):active {
-  background: var(--xh-_bg-active);
+  --xh-_button-edge: transparent;
+
+  background-color: var(--xh-_bg-active);
+  box-shadow: var(--xh-_button-shadow-active);
   scale: var(--xh-motion-scale-press);
 }
 
-[data-scope='button'][data-part='root'][data-disabled],
-[data-scope='button'][data-part='root'][data-loading] {
+[data-scope='button'][data-part='root'][data-disabled] {
   opacity: var(--xh-state-disabled-opacity);
 }
 
@@ -12589,9 +12595,12 @@
   --xh-_bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
   --xh-_bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
   --xh-_fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
-  --xh-_button-highlight: var(--xh-_highlight-tone);
+  --xh-_button-border: transparent;
+  --xh-_button-edge: transparent;
+  --xh-_button-shadow-rest: var(--xh-_highlight-tone), var(--xh-material-soft-shadow);
   /* 抬起时把顶边那条高光一并列出来：只写投影会把常态的高光顶掉，面在悬停那一帧变薄 */
   --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-_highlight-tone), var(--xh-elevation-raised));
+  --xh-_button-shadow-active: var(--xh-_highlight-tone);
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
@@ -12608,6 +12617,18 @@
   --xh-_ring-color: currentColor;
 }
 
+/* 实心面保留高对比的内环，再用独立边框补一圈品牌反馈；不覆盖按钮本身的 box-shadow。 */
+[data-scope='button'][data-part='root'][data-variant='solid']:focus-visible::before,
+[data-scope='button-group'][data-part='root'][data-variant='solid']
+  [data-scope='button'][data-part='root']:not([data-variant]):focus-visible::before {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * (var(--xh-ring-width) + var(--xh-stroke-thin)));
+  border: var(--xh-ring-width) solid var(--xh-ring-focus);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
 /* 另外三档的面不是实心底，高光在上面只会显脏；显式清掉，
    免得整组写了实心形态时那条高光顺着继承流漏到组里写了别的形态的段上 */
 [data-scope='button'][data-part='root'][data-variant='subtle'] {
@@ -12615,7 +12636,11 @@
   --xh-_bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
   --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_button-highlight: none;
+  --xh-_button-border: var(--xh-material-soft-border);
+  --xh-_button-edge: var(--xh-material-soft-highlight);
+  --xh-_button-shadow-rest: var(--xh-material-soft-shadow);
+  --xh-_button-shadow-hover: var(--xh-elevation-raised);
+  --xh-_button-shadow-active: none;
 }
 
 [data-scope='button'][data-part='root'][data-variant='outline'] {
@@ -12623,11 +12648,14 @@
   --xh-_bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
   --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_button-highlight: none;
+  --xh-_button-border: var(--xh-_tone-border-control, var(--xh-border-control));
+  --xh-_button-edge: transparent;
+  --xh-_button-shadow-rest: none;
   /* 面是透空的，抬起来只会在页面上留一圈没有面的影子；这一档的回执由浮出的底色给 */
   --xh-_button-shadow-hover: none;
+  --xh-_button-shadow-active: none;
 
-  border-color: var(--xh-_tone-border-control, var(--xh-border-control));
+  border-color: var(--xh-_button-border);
 }
 
 [data-scope='button'][data-part='root'][data-variant='ghost'] {
@@ -12635,15 +12663,30 @@
   --xh-_bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
   --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_button-highlight: none;
+  --xh-_button-border: transparent;
+  --xh-_button-edge: transparent;
+  --xh-_button-shadow-rest: none;
   /* 同 outline：没有实心底可抬 */
   --xh-_button-shadow-hover: none;
+  --xh-_button-shadow-active: none;
 }
 
-/* 置灰与挂起时收掉高光：底色已经被压暗，再留一条亮线就成了噪点。
-   写在形态之后：与形态那几条同权重，靠后写压得住 */
-[data-scope='button'][data-part='root']:is([data-disabled], [data-loading]) {
-  --xh-_button-highlight: none;
+/* 一条按钮组里的段不能各画一圈外影；组已有自己的高光槽，显式写在段上的 variant 仍由上面各档决定。 */
+:where([data-scope='button-group'][data-part='root'])
+  [data-scope='button'][data-part='root']:not([data-variant]) {
+  --xh-_button-border: transparent;
+  --xh-_button-edge: transparent;
+  --xh-_button-shadow-rest: var(--xh-_button-group-highlight, none);
+  --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, none);
+  --xh-_button-shadow-active: var(--xh-_button-group-highlight, none);
+}
+
+/* 禁用是静止态：撤掉光照与海拔，再由 disabled opacity 统一退后。loading 保持完整表面与前景。 */
+[data-scope='button'][data-part='root'][data-disabled] {
+  --xh-_button-edge: transparent;
+  --xh-_button-shadow-rest: none;
+  --xh-_button-shadow-hover: none;
+  --xh-_button-shadow-active: none;
 }
 
 /* —— 圆角 ——
@@ -12690,26 +12733,66 @@
   inline-size: 100%;
 }
 
+[data-scope='button'][data-part='label'],
+[data-scope='button'][data-part='prefix'],
+[data-scope='button'][data-part='suffix'],
 [data-scope='button'][data-part='indicator'] {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: inherit;
+}
+
+[data-scope='button'][data-part='label'] {
+  min-inline-size: 0;
+}
+
+[data-scope='button'][data-part='prefix'],
+[data-scope='button'][data-part='suffix'],
+[data-scope='button'][data-part='indicator'] {
+  flex: none;
+  line-height: 0;
+}
+
+[data-scope='button'][data-part='prefix'] > svg,
+[data-scope='button'][data-part='suffix'] > svg,
+[data-scope='button'][data-part='indicator'],
+[data-scope='button'][data-part='indicator'] > svg {
+  inline-size: var(--xh-icon-size);
+  block-size: var(--xh-icon-size);
+}
+
+/* indicator 常驻即可原位占宽：非在途只隐藏绘制，在途才旋转；皮肤不猜缺失节点、不生成替代 spinner。 */
+[data-scope='button'][data-part='indicator'] {
+  visibility: hidden;
+}
+
+[data-scope='button'][data-part='root'][data-loading] [data-scope='button'][data-part='indicator'] {
+  visibility: visible;
   animation: xh-spin var(--xh-button-spin-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 减少动效：指示器停转，"还在忙"由按钮自身的挂起样式与指示器图标继续表达。
    两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
 @media (prefers-reduced-motion: reduce) {
-  [data-scope='button'][data-part='indicator'] {
+  [data-scope='button'][data-part='root'][data-loading] [data-scope='button'][data-part='indicator'] {
     animation: none;
   }
 }
 
-:where([data-motion='reduce']) [data-scope='button'][data-part='indicator'] {
+:where([data-motion='reduce'])
+  [data-scope='button'][data-part='root'][data-loading]
+  [data-scope='button'][data-part='indicator'] {
   animation: none;
 }
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-[data-scope='button'][data-part='root'][hidden] {
+[data-scope='button'][data-part='root'][hidden],
+[data-scope='button'][data-part='label'][hidden],
+[data-scope='button'][data-part='prefix'][hidden],
+[data-scope='button'][data-part='suffix'][hidden],
+[data-scope='button'][data-part='indicator'][hidden] {
   display: none;
 }
 
@@ -12730,12 +12813,29 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 装饰顶光会被系统丢弃，明确撤掉；实心面的外环交给系统 Highlight。 */
+  [data-scope='button'][data-part='root'] {
+    background-image: none;
+  }
+
+  [data-scope='button'][data-part='root'][data-variant='solid']:focus-visible::before,
+  [data-scope='button-group'][data-part='root'][data-variant='solid']
+    [data-scope='button'][data-part='root']:not([data-variant]):focus-visible::before {
+    border-color: Highlight;
+  }
+}
+
 @media print {
   /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
      取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份
      :where([data-motion='reduce']) 的钩子版本与它成对，打印没有对应的钩子可配，
      并成一条之后这层配对关系在文本上就断了。 */
-  [data-scope='button'][data-part='indicator'] {
+  [data-scope='button'][data-part='root'] {
+    box-shadow: none;
+  }
+
+  [data-scope='button'][data-part='root'][data-loading] [data-scope='button'][data-part='indicator'] {
     animation: none;
   }
 }
