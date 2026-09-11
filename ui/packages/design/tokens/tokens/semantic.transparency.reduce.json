@@ -2,6 +2,10 @@
   "$description": "系统要求减少透明时，磨砂材质在原作用域原位换成实体面；尺寸、层级与交互语义不变。",
   "material": {
     "frosted": {
+      "compact": {
+        "alpha": { "$type": "number", "$value": "{alpha.opaque}" },
+        "backdrop": { "$type": "string", "$value": "none" }
+      },
       "bg": { "$type": "color", "$value": "{bg.surface}" },
       "backdrop": { "$type": "string", "$value": "none" },
       "border": { "$type": "color", "$value": "{border.default}" },
