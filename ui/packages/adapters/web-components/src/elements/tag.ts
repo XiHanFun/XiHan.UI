@@ -18,7 +18,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * （Enter/Space 的激活由平台负责），收起时用内联 style.display 隐藏 root。
  *
  * @customElement xh-tag
- * @attr {'solid'|'subtle'|'outline'} variant - 形态，决定颜色怎么用
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定颜色怎么用
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定用哪族颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} closable - 是否给出关闭钮，缺省为假；为假时该钮同时被禁用与收起

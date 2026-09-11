@@ -1,7 +1,7 @@
 import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 形态。取值与 tag.css 的选择器一一对应。 */
-export type TagVariant = 'outline' | 'solid' | 'subtle'
+export type TagVariant = 'ghost' | 'outline' | 'solid' | 'subtle'
 
 export interface TagOpenChangeDetails {
   open: boolean
@@ -18,7 +18,7 @@ export interface TagTranslations {
 
 export interface TagSchema extends MachineSchema {
   props: {
-    /** 形态：solid / subtle / outline，决定颜色怎么用。 */
+    /** 形态：solid / subtle / outline / ghost，决定颜色怎么用。 */
     variant?: TagVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
     tone?: Tone

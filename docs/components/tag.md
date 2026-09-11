@@ -18,8 +18,13 @@
 
 ## 特性
 
-- 形态 · 语气 · 尺寸三轴与其余组件同源。语气挂在形态之下：不写 `variant` 时底色与文字色取自组件令牌，语气不落色，要染色就把形态写上（宿主套标签时由宿主给定形态）。尺寸档走间距、字号与行框，不占控件行高；同档标签有没有关闭钮都一样高，缺省档放进缺省档控件的行高里不撑高。缺省档（26px）高过 14px 正文行（21px）：随文排、紧凑表格的状态列、下拉候选里的标签写 `size="sm"`（22px），库内示例都是这么用的。
-- `closable` 给出关闭钮，显隐可受控（`open` / `defaultOpen` / `open-change`）。
+- 形态 · 语气 · 尺寸三轴与其余组件同源。四种形态是 solid / subtle / outline / ghost：
+  缺省与 subtle 使用 M1 compact surface，solid 强调身份，outline 只留轮廓，ghost 完全融入父表面。
+  语气挂在显式形态之下；不写 `variant` 时保持中性 M1。尺寸档走间距、字号与行框，不占控件行高；
+  同档标签有没有关闭钮都一样高，缺省档放进缺省档控件的行高里不撑高。缺省档（26px）高过
+  14px 正文行（21px）：随文排、紧凑表格的状态列、下拉候选里的标签写 `size="sm"`（22px）。
+- `closable` 给出关闭钮，显隐可受控（`open` / `defaultOpen` / `open-change`）。叉保持 16px 视觉盒，
+  透明命中层扩到随文动作的 24px；不会为了命中面积撑高标签。
 - `disabled` 让标签留在原地但摘不掉，宽度不会因禁用而跳变。
 - `readOnly` 只锁关闭钮：钮留在原地但按不动，标签本身不置灰；宿主整体只读时逐枚传下来即可。
 - Vue 侧默认插槽里只有文字时自动包一层 `label`，截断规则直接生效。
@@ -88,7 +93,7 @@ readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `TagVariant` |  | 形态：solid / subtle / outline，决定颜色怎么用。 |
+| `variant` | `TagVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `closable` | `boolean` |  | 是否给出关闭钮，默认 false。false 时该钮同时被禁用与收起。 |

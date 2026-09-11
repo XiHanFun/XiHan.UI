@@ -77,7 +77,7 @@ function buildTagApi<T extends PropTypes>(
         // 作者把这份 props 摊到非按钮节点上时原生 disabled 不生效，守卫得自己带
         if (!canClose)
           return
-        port.set(false)
+        setOpen(false)
       },
     }),
   }
