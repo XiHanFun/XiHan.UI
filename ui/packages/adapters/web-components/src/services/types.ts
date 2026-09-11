@@ -128,6 +128,11 @@ export interface NotificationService {
 /** 对话框正文：给串走 description 部件（读屏的 aria-describedby 接在它上面）。 */
 export type DialogBody = string | ((body: HTMLElement) => void)
 
+/** 动作异常保留原始原因；可见文案由 actionErrorText 提供。 */
+export interface DialogActionError {
+  cause: unknown
+}
+
 export interface ConfirmOptions {
   title: string
   content?: DialogBody
@@ -137,8 +142,10 @@ export interface ConfirmOptions {
   badge?: 'info' | 'success' | 'warning' | 'error'
   okText?: string
   cancelText?: string
-  /** Promise 拒绝时对话框保持打开。 */
-  onOk?: () => void | Promise<unknown>
+  /** false 阻止关闭；抛错或 Promise 拒绝进入 actionError，保持打开。 */
+  onOk?: () => boolean | void | Promise<unknown>
+  /** 动作失败通知；通知自身失败时拒绝所属请求。 */
+  onActionError?: (error: DialogActionError) => void | Promise<void>
 }
 
 /** 单按钮告知框的入参：没有取消钮，徽记由预设档自己定，其余同 confirm。 */
@@ -149,9 +156,13 @@ export interface DialogServiceOptions extends ServiceHostOptions {
   okText?: string
   /** 取消钮文案，缺省 Cancel。 */
   cancelText?: string
+  /** 动作失败时的安全提示，与按钮文案相同由调用方提供本地化文字。 */
+  actionErrorText?: string
 }
 
 export interface DialogService {
+  /** 当前请求的动作异常，重试、关闭和切换请求时清空。 */
+  readonly actionError: DialogActionError | null
   /** 确认走 onOk 后 resolve true；取消/Esc resolve false。 */
   confirm: (options: ConfirmOptions) => Promise<boolean>
   info: (options: AlertOptions) => Promise<void>

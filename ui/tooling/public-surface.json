@@ -268,6 +268,7 @@
       "DatePickerRootSlotProps",
       "DatePickerSegmentSlotProps",
       "DescriptionsContext",
+      "DialogActionError",
       "DialogBody",
       "DialogContext",
       "DialogRootSlotProps",
@@ -2578,6 +2579,7 @@
       "DatePickerRootSlotProps",
       "DatePickerSegmentSlotProps",
       "DescriptionsContext",
+      "DialogActionError",
       "DialogBody",
       "DialogContext",
       "DialogRootSlotProps",
@@ -3962,6 +3964,7 @@
     "@xihan-ui/web-components": [
       "AlertOptions",
       "ConfirmOptions",
+      "DialogActionError",
       "DialogBody",
       "DialogService",
       "DialogServiceOptions",
