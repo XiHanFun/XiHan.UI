@@ -388,6 +388,9 @@ describe('深色 × 高对比取的是深色高对比档', () => {
     ['--xh-material-soft-highlight', 'oklch(0 0 0 / 0)'],
     ['--xh-material-frosted-highlight', 'oklch(0 0 0 / 0)'],
     ['--xh-material-frosted-backdrop', 'none'],
+    ['--xh-material-frosted-compact-alpha', '1'],
+    ['--xh-material-frosted-compact-backdrop', 'none'],
+    ['--xh-material-frosted-compact-shadow', 'none'],
   ])
 
   it('非装饰令牌的最终取值与浅色档逐条不同，共同关闭的装饰高光单独对账', () => {

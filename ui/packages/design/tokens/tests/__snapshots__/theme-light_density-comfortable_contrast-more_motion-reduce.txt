@@ -155,6 +155,9 @@
 --xh-material-frosted-backdrop: none
 --xh-material-frosted-bg: oklch(1 0 0)  ← var(--xh-bg-surface)
 --xh-material-frosted-border: oklch(0.556 0.006 258)  ← var(--xh-border-subtle)
+--xh-material-frosted-compact-alpha: 1  ← var(--xh-alpha-opaque)
+--xh-material-frosted-compact-backdrop: none
+--xh-material-frosted-compact-shadow: none
 --xh-material-frosted-fg: oklch(0.145 0.005 258)  ← var(--xh-fg-default)
 --xh-material-frosted-fg-muted: oklch(0.439 0.006 258)  ← var(--xh-fg-muted)
 --xh-material-frosted-focus-surface: oklch(1 0 0)  ← var(--xh-bg-surface)

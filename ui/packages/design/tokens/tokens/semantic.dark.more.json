@@ -18,6 +18,11 @@
     },
     "frosted": {
       "$description": "深色高对比档同样实体化，不让浅色高对比别名穿进深色作用域。",
+      "compact": {
+        "alpha": { "$type": "number", "$value": "{alpha.opaque}" },
+        "backdrop": { "$type": "string", "$value": "none" },
+        "shadow": { "$type": "shadow", "$value": "none" }
+      },
       "bg": { "$type": "color", "$value": "{bg.surface}" },
       "backdrop": { "$type": "string", "$value": "none" },
       "border": { "$type": "color", "$value": "{border.subtle}" },

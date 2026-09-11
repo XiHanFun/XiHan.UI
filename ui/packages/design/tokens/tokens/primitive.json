@@ -339,6 +339,7 @@
   "alpha": {
     "$description": "材质 tint 与光学层共用的不透明度阶梯；正文和关键图标不消费这一组。",
     "opaque": { "$type": "number", "$value": 1 },
+    "ultra-high": { "$description": "紧凑反白 M2 的高遮蔽档；0.92 仍有 tone 在最坏底色上低于 4.5:1，0.94 才全部达标。", "$type": "number", "$value": 0.94 },
     "high": { "$type": "number", "$value": 0.88 },
     "medium": { "$type": "number", "$value": 0.76 },
     "low": { "$type": "number", "$value": 0.48 },

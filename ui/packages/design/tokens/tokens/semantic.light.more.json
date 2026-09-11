@@ -18,6 +18,11 @@
     },
     "frosted": {
       "$description": "高对比档把磨砂面实体化并取消滤镜，高频背景不再参与最终对比度。",
+      "compact": {
+        "alpha": { "$type": "number", "$value": "{alpha.opaque}" },
+        "backdrop": { "$type": "string", "$value": "none" },
+        "shadow": { "$type": "shadow", "$value": "none" }
+      },
       "bg": { "$type": "color", "$value": "{bg.surface}" },
       "backdrop": { "$type": "string", "$value": "none" },
       "border": { "$type": "color", "$value": "{border.subtle}" },

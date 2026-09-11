@@ -16,6 +16,9 @@ const REQUIRED_RECIPE = [
   'material.frosted.backdrop',
   'material.frosted.bg',
   'material.frosted.border',
+  'material.frosted.compact.alpha',
+  'material.frosted.compact.backdrop',
+  'material.frosted.compact.shadow',
   'material.frosted.fg',
   'material.frosted.fg-muted',
   'material.frosted.focus-surface',
@@ -74,10 +77,11 @@ function themeTokens(theme: 'light' | 'dark', more = false, extra?: string): Tok
 }
 
 describe('m2 Frosted Surface 材质令牌', () => {
-  it('alpha 与 blur 只有一套有序原语，m2 使用 high/md 档', () => {
+  it('alpha 与 blur 只有一套有序原语，标准与紧凑 M2 各取明确档位', () => {
     const primitive = flatten(load('primitive.json'))
     expect([...primitive.entries()].filter(([name]) => name.startsWith('alpha.')).map(([name, token]) => [name, token.value])).toEqual([
       ['alpha.opaque', '1'],
+      ['alpha.ultra-high', '0.94'],
       ['alpha.high', '0.88'],
       ['alpha.medium', '0.76'],
       ['alpha.low', '0.48'],
@@ -105,8 +109,56 @@ describe('m2 Frosted Surface 材质令牌', () => {
     expect(parseColorToOklch(resolve('material.frosted.border', tokens)).a).toBeLessThanOrEqual(0.16)
     expect(parseColorToOklch(resolve('material.frosted.highlight', tokens)).a).toBeLessThanOrEqual(0.52)
     expect(resolve('material.frosted.backdrop', tokens)).toBe('blur(16px) saturate(108%)')
+    expect(Number(resolve('material.frosted.compact.alpha', tokens))).toBe(0.94)
+    expect(resolve('material.frosted.compact.backdrop', tokens)).toBe('blur(8px) saturate(104%)')
     expect(resolve('material.frosted.shadow', tokens).split(',')).toHaveLength(2)
     expect(resolve('material.frosted.shadow', tokens)).not.toContain('inset')
+    const compactShadow = resolve('material.frosted.compact.shadow', tokens)
+    expect(compactShadow.split(',')).toHaveLength(2)
+    expect(compactShadow).toContain('0 6px 16px -8px')
+    expect(compactShadow).not.toContain('inset')
+  })
+
+  it('紧凑投影按亮暗主题独立取值，且外扩小于标准 M2', () => {
+    const light = themeTokens('light')
+    const dark = themeTokens('dark')
+    const lightCompact = resolve('material.frosted.compact.shadow', light)
+    const darkCompact = resolve('material.frosted.compact.shadow', dark)
+    expect(lightCompact).not.toBe(darkCompact)
+    expect(resolve('material.frosted.shadow', light)).toContain('28px')
+    expect(resolve('material.frosted.shadow', dark)).toContain('28px')
+    expect(lightCompact).not.toContain('28px')
+    expect(darkCompact).not.toContain('28px')
+  })
+
+  it.each(['light', 'dark'] as const)('%s 紧凑 alpha 托住六种反白 tone 与默认反白正文', (theme) => {
+    const tokens = themeTokens(theme)
+    const alpha = Number(resolve('material.frosted.compact.alpha', tokens))
+    const pairs = [
+      [resolve('fg.default', tokens), resolve('bg.surface', tokens), 'default'],
+      [resolve('bg.brand', tokens), resolve('fg.on-brand', tokens), 'brand'],
+      [resolve('color.neutral.600', tokens), resolve('color.neutral.0', tokens), 'neutral'],
+      [resolve('color.danger.600', tokens), resolve('color.neutral.0', tokens), 'danger'],
+      [resolve('color.success.600', tokens), resolve('color.neutral.950', tokens), 'success'],
+      [resolve('color.warning.600', tokens), resolve('color.neutral.950', tokens), 'warning'],
+      [resolve('color.info.600', tokens), resolve('color.neutral.950', tokens), 'info'],
+    ] as const
+    const backdrops = [
+      '#000000',
+      '#ffffff',
+      '#808080',
+      resolve('bg.page', tokens),
+      resolve('color.brand.500', tokens),
+    ]
+
+    for (const [solid, foreground, name] of pairs) {
+      const color = parseColorToOklch(solid)
+      const surface = `oklch(${color.l} ${color.c} ${color.h} / ${alpha})`
+      for (const backdrop of backdrops) {
+        expect(contrastRatio(foreground, surface, backdrop), `${theme} ${name} / ${backdrop}`)
+          .toBeGreaterThanOrEqual(4.5)
+      }
+    }
   })
 
   it.each(['light', 'dark'] as const)('%s tint 在最不利纯色与高频背景上仍托住不透明文字', (theme) => {
@@ -143,6 +195,9 @@ describe('m2 Frosted Surface 材质令牌', () => {
       'material.frosted.backdrop',
       'material.frosted.bg',
       'material.frosted.border',
+      'material.frosted.compact.alpha',
+      'material.frosted.compact.backdrop',
+      'material.frosted.compact.shadow',
       'material.frosted.focus-surface',
       'material.frosted.highlight',
       'material.frosted.separator',
@@ -151,6 +206,9 @@ describe('m2 Frosted Surface 材质令牌', () => {
     const bg = resolve('material.frosted.bg', tokens)
     expect(parseColorToOklch(bg).a).toBe(1)
     expect(resolve('material.frosted.backdrop', tokens)).toBe('none')
+    expect(Number(resolve('material.frosted.compact.alpha', tokens))).toBe(1)
+    expect(resolve('material.frosted.compact.backdrop', tokens)).toBe('none')
+    expect(resolve('material.frosted.compact.shadow', tokens)).toBe('none')
     expect(contrastRatio(resolve('material.frosted.border', tokens), bg)).toBeGreaterThanOrEqual(4.5)
     expect(parseColorToOklch(resolve('material.frosted.highlight', tokens)).a).toBe(0)
   })
@@ -161,6 +219,8 @@ describe('m2 Frosted Surface 材质令牌', () => {
       'material.frosted.backdrop',
       'material.frosted.bg',
       'material.frosted.border',
+      'material.frosted.compact.alpha',
+      'material.frosted.compact.backdrop',
       'material.frosted.focus-surface',
       'material.frosted.highlight',
       'material.frosted.separator',
@@ -171,6 +231,12 @@ describe('m2 Frosted Surface 材质令牌', () => {
         const tokens = themeTokens(theme, false, extra)
         expect(parseColorToOklch(resolve('material.frosted.bg', tokens)).a).toBe(1)
         expect(resolve('material.frosted.backdrop', tokens)).toBe('none')
+        expect(Number(resolve('material.frosted.compact.alpha', tokens))).toBe(1)
+        expect(resolve('material.frosted.compact.backdrop', tokens)).toBe('none')
+        if (extra === 'semantic.print.json')
+          expect(resolve('material.frosted.compact.shadow', tokens)).toBe('none')
+        else
+          expect(resolve('material.frosted.compact.shadow', tokens)).not.toBe('none')
         expect(parseColorToOklch(resolve('material.frosted.highlight', tokens)).a).toBe(0)
       }
     }
@@ -184,5 +250,8 @@ describe('m2 Frosted Surface 材质令牌', () => {
     expect(forced.get('material.frosted.fg-muted')?.value).toBe('CanvasText')
     expect(forced.get('material.frosted.backdrop')?.value).toBe('none')
     expect(forced.get('material.frosted.shadow')?.value).toBe('none')
+    expect(forced.get('material.frosted.compact.alpha')?.value).toBe('{alpha.opaque}')
+    expect(forced.get('material.frosted.compact.backdrop')?.value).toBe('none')
+    expect(forced.get('material.frosted.compact.shadow')?.value).toBe('none')
   })
 })

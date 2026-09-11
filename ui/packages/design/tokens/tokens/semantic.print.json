@@ -32,6 +32,11 @@
     },
     "frosted": {
       "$description": "打印时磨砂面变成普通实体内容面，不打印滤镜、高光或投影。",
+      "compact": {
+        "alpha": { "$type": "number", "$value": "{alpha.opaque}" },
+        "backdrop": { "$type": "string", "$value": "none" },
+        "shadow": { "$type": "shadow", "$value": "none" }
+      },
       "bg": { "$type": "color", "$value": "{bg.surface}" },
       "backdrop": { "$type": "string", "$value": "none" },
       "border": { "$type": "color", "$value": "{border.default}" },

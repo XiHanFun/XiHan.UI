@@ -85,6 +85,12 @@
     },
     "frosted": {
       "$description": "深色 M2 使用独立 tint 与光照，不由浅色值反色。",
+      "compact": {
+        "$description": "深色紧凑反白提示面的独立光学尺度。",
+        "alpha": { "$type": "number", "$value": "{alpha.ultra-high}" },
+        "backdrop": { "$type": "string", "$value": "blur({blur.sm}) saturate(104%)" },
+        "shadow": { "$description": "深色小浮层的贴面与短距环境层；不重复绘制内高光。", "$type": "shadow", "$value": "0 1px 2px -1px oklch(0 0 0 / 0.38), 0 6px 16px -8px oklch(0 0 0 / 0.46)" }
+      },
       "bg": { "$type": "color", "$value": "oklch(0.19 0.008 258 / {alpha.high})" },
       "backdrop": { "$type": "string", "$value": "blur({blur.md}) saturate(108%)" },
       "border": { "$type": "color", "$value": "oklch(1 0 0 / 0.16)" },
