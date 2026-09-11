@@ -1,11 +1,11 @@
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TreeNodeMeta, TreeVisibleNode } from '../tree'
-import type { TreeSelectApi, TreeSelectSchema } from './tree-select.types'
+import type { TreeSelectApi, TreeSelectBranchLoadSnapshot, TreeSelectSchema } from './tree-select.types'
 import { cascadeState, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/core'
 import { overlayPositioned } from '../shared/overlay'
 import { flattenTree, indexTree } from '../tree'
 import { treeSelectAnatomy } from './tree-select.anatomy'
-import { TREE_SELECT_DEFAULT_PLACEMENT, treeSelectNodeEls } from './tree-select.machine'
+import { findTreeSelectNode, isTreeSelectLazyBranch, resolveTreeSelectCollection, TREE_SELECT_DEFAULT_PLACEMENT, treeSelectNodeEls } from './tree-select.machine'
 
 const parts = treeSelectAnatomy.build()
 
@@ -46,7 +46,10 @@ export function connectTreeSelect<T extends PropTypes>(
   const open = state.get() === 'open'
   const ids = scope.ids('tree-select', 'label', 'trigger', 'value-text', 'content', 'tree')
 
-  const collection = prop('collection') ?? []
+  const sourceCollection = prop('collection') ?? []
+  // 异步分支的成功结果只活在 headless context；所有派生状态必须看这份有效树，
+  // 不能让适配器各自拼 children，否则级联、键盘与三端首帧会分叉。
+  const collection = resolveTreeSelectCollection(sourceCollection, context.get('loadedChildren'))
   const expandedValue = context.get('expandedValue')
   const value = context.get('value')
   const multiple = !!prop('multiple')
@@ -83,6 +86,12 @@ export function connectTreeSelect<T extends PropTypes>(
   const isSelected = (v: string): boolean => (cascaded ? cascaded.checked.has(v) : value.includes(v))
   const isIndeterminate = (v: string): boolean => cascaded?.indeterminate.has(v) ?? false
   const isExpanded = (v: string): boolean => expandedValue.includes(v)
+  const branchLoadState = (v: string): TreeSelectBranchLoadSnapshot | null => {
+    const node = findTreeSelectNode(sourceCollection, v)
+    if (!node || !isTreeSelectLazyBranch(node))
+      return null
+    return context.get('branchLoads')[v] ?? { status: 'idle' as const }
+  }
   // 控件级禁用向下传导，节点也可在 collection 里单独禁用
   const isDisabled = (v: string): boolean => disabled || !!metaOf(v)?.disabled
 
@@ -126,6 +135,8 @@ export function connectTreeSelect<T extends PropTypes>(
   const branchState = (v: string): Record<string, string | undefined> => ({
     ...nodeState(v),
     'data-state': isExpanded(v) ? 'open' : 'closed',
+    'data-loading': dataAttr(branchLoadState(v)?.status === 'loading'),
+    'data-error': dataAttr(branchLoadState(v)?.status === 'error'),
   })
 
   /** 从节点内的元素向上找最近的 branch 容器。 */
@@ -188,6 +199,7 @@ export function connectTreeSelect<T extends PropTypes>(
     isSelected,
     isIndeterminate,
     isExpanded,
+    branchLoadState,
     setOpen: (next) => {
       if (next !== open)
         send(next ? { type: 'OPEN', focus: 'selected' } : { type: 'CLOSE' })
@@ -196,6 +208,7 @@ export function connectTreeSelect<T extends PropTypes>(
     setExpandedValue: next => send({ type: 'EXPANDED.SET', value: next }),
     expand: v => send({ type: 'BRANCH.EXPAND', value: v }),
     collapse: v => send({ type: 'BRANCH.COLLAPSE', value: v }),
+    retryBranch: v => send({ type: 'BRANCH.RETRY', value: v }),
     select: v => send({ type: 'NODE.SELECT', value: v }),
     clear: () => send({ type: 'VALUE.CLEAR' }),
 
@@ -537,6 +550,7 @@ export function connectTreeSelect<T extends PropTypes>(
       ...nodeAttrs(node.value),
       ...branchState(node.value),
       'aria-expanded': isExpanded(node.value) ? 'true' : 'false',
+      'aria-busy': branchLoadState(node.value)?.status === 'loading' ? 'true' : undefined,
       // 分支裹着整棵子树，可及名字显式取 collection 的 label（缺省退回 value）
       'aria-label': metaOf(node.value)?.label,
       'onFocus': () => send({ type: 'NODE.FOCUS', value: node.value }),

@@ -1,5 +1,5 @@
 import type { ControlVariant, Direction, Placement, Service, Size, Tone } from '@xihan-ui/core'
-import type { TreeNode, TreeSelectApi, TreeSelectSchema } from '@xihan-ui/headless'
+import type { TreeSelectApi, TreeSelectNode, TreeSelectSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo, useRef } from 'react'
@@ -66,7 +66,8 @@ function useNodeFocusReport(
 }
 
 export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  collection?: TreeNode[]
+  collection?: TreeSelectNode[]
+  loadChildren?: TreeSelectProps['loadChildren']
   /** 标题文字。给了它就不必再写 label 部件。 */
   label?: ReactNode
   /** 自动渲染树里是否带清空按钮；手写部件不看它，写了节点即可清。 */
@@ -104,6 +105,7 @@ export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>
 
 export function XhTreeSelectRoot({
   collection,
+  loadChildren,
   label,
   clearable,
   value,
@@ -138,6 +140,7 @@ export function XhTreeSelectRoot({
 }: XhTreeSelectRootProps): ReactNode {
   const ctx = useTreeSelect(withXhConfig('tree-select', {
     collection,
+    loadChildren,
     clearable,
     value,
     defaultValue,
@@ -470,8 +473,8 @@ export function XhTreeSelectHiddenInput({ ...rest }: XhTreeSelectHiddenInputProp
 function noop(): void {}
 
 /** 按 collection 递归铺节点：带 children 的落成 branch，其余落成 item。 */
-function renderNodes(nodes: readonly TreeNode[]): ReactNode[] {
-  return nodes.map(node => node.children
+function renderNodes(nodes: readonly TreeSelectNode[]): ReactNode[] {
+  return nodes.map(node => (node.children || node.hasChildren)
     ? (
         <XhTreeSelectBranch key={node.value} value={node.value}>
           <XhTreeSelectBranchControl>
@@ -479,7 +482,7 @@ function renderNodes(nodes: readonly TreeNode[]): ReactNode[] {
             <XhTreeSelectBranchText>{node.label ?? node.value}</XhTreeSelectBranchText>
             <XhTreeSelectItemIndicator />
           </XhTreeSelectBranchControl>
-          <XhTreeSelectBranchContent>{renderNodes(node.children)}</XhTreeSelectBranchContent>
+          <XhTreeSelectBranchContent>{renderNodes(node.children ?? [])}</XhTreeSelectBranchContent>
         </XhTreeSelectBranch>
       )
     : (
@@ -495,7 +498,7 @@ function renderNodes(nodes: readonly TreeNode[]): ReactNode[] {
  * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
  */
 function DefaultTree(props: {
-  collection: readonly TreeNode[]
+  collection: readonly TreeSelectNode[]
   label?: ReactNode
   clearable?: boolean
 }): ReactNode {

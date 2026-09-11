@@ -1,6 +1,6 @@
-import type { PositionResult } from '@xihan-ui/core'
+import type { ActionFn, PositionResult } from '@xihan-ui/core'
 import type { TreeVisibleNode } from '../tree'
-import type { TreeSelectFocusIntent, TreeSelectSchema } from './tree-select.types'
+import type { TreeSelectBranchLoadSnapshot, TreeSelectFocusIntent, TreeSelectNode, TreeSelectSchema } from './tree-select.types'
 import { cascadeToggle, collapseChecked, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
@@ -33,6 +33,115 @@ function unique(values: readonly string[]): string[] {
 /** 数组按元素比：受控时 cell 每次读都产出新数组，默认的 Object.is 恒不相等。 */
 function sameValues(a: string[], b: string[] | undefined): boolean {
   return !!b && a.length === b.length && a.every((v, i) => v === b[i])
+}
+
+/** 节点是懒分支的唯一判据：明确有孩子但孩子尚未在 collection 里。 */
+export function isTreeSelectLazyBranch(node: TreeSelectNode): boolean {
+  return node.hasChildren === true && node.children === undefined
+}
+
+export function findTreeSelectNode(nodes: readonly TreeSelectNode[], value: string): TreeSelectNode | null {
+  for (const node of nodes) {
+    if (node.value === value)
+      return node
+    if (node.children) {
+      const found = findTreeSelectNode(node.children, value)
+      if (found)
+        return found
+    }
+  }
+  return null
+}
+
+/**
+ * 给 connect 与动作共用的有效树。只在懒分支上补 children=[]，所以空目录与叶子不会混淆；
+ * 取回的数据留在 context，宿主无需为了单个分支结果重建 collection。
+ */
+export function resolveTreeSelectCollection(
+  collection: readonly TreeSelectNode[],
+  loadedChildren: Readonly<Record<string, TreeSelectNode[]>>,
+): TreeSelectNode[] {
+  return collection.map((node) => {
+    if (node.children === undefined && !isTreeSelectLazyBranch(node))
+      return node
+    const source = node.children ?? loadedChildren[node.value] ?? []
+    const children = resolveTreeSelectCollection(source, loadedChildren)
+    if (node.children && children.length === node.children.length && children.every((child, index) => child === node.children![index]))
+      return node
+    return { ...node, children }
+  })
+}
+
+type TreeSelectActionParams = Parameters<ActionFn<TreeSelectSchema>>[0]
+
+function setBranchLoad(
+  context: TreeSelectActionParams['context'],
+  value: string,
+  snapshot: TreeSelectBranchLoadSnapshot,
+): void {
+  context.set('branchLoads', { ...context.get('branchLoads'), [value]: snapshot })
+}
+
+function clearBranchLoad(context: TreeSelectActionParams['context'], value: string): void {
+  const current = context.get('branchLoads')
+  if (!(value in current))
+    return
+  const { [value]: _, ...rest } = current
+  context.set('branchLoads', rest)
+}
+
+function beginBranchLoad(params: TreeSelectActionParams, value: string, force: boolean): void {
+  const { context, prop, refs } = params
+  const loadChildren = prop('loadChildren')
+  const node = findTreeSelectNode(prop('collection') ?? [], value)
+  if (!loadChildren || !node || !isTreeSelectLazyBranch(node))
+    return
+  if (value in context.get('loadedChildren'))
+    return
+
+  const controllers = refs.get('branchLoadControllers')
+  const previous = controllers.get(value)
+  if (previous && !force)
+    return
+  previous?.controller.abort()
+
+  const token = ++refs.get('branchLoadSequence').n
+  const controller = new AbortController()
+  controllers.set(value, { controller, token })
+  setBranchLoad(context, value, { status: 'loading' })
+
+  const current = (): boolean => {
+    const entry = controllers.get(value)
+    return entry?.controller === controller
+      && entry.token === token
+      && isTreeSelectLazyBranch(findTreeSelectNode(prop('collection') ?? [], value) ?? ({ value } as TreeSelectNode))
+  }
+
+  Promise.resolve()
+    .then(() => loadChildren({ node, signal: controller.signal }))
+    .then((children) => {
+      if (!current() || controller.signal.aborted)
+        return
+      controllers.delete(value)
+      context.set('loadedChildren', { ...context.get('loadedChildren'), [value]: children ? [...children] : [] })
+      clearBranchLoad(context, value)
+    })
+    .catch((error: unknown) => {
+      if (!current() || controller.signal.aborted)
+        return
+      controllers.delete(value)
+      setBranchLoad(context, value, { status: 'error', error })
+    })
+}
+
+function lazyBranchValues(nodes: readonly TreeSelectNode[], values = new Set<string>()): Set<string> {
+  for (const node of nodes) {
+    if (isTreeSelectLazyBranch(node))
+      values.add(node.value)
+    if (node.children)
+      lazyBranchValues(node.children, values)
+  }
+  return values
 }
 
 /**
@@ -91,6 +200,8 @@ export const treeSelectMachine = createMachine({
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
     focusIntent: cell<TreeSelectFocusIntent>(() => ({ defaultValue: 'selected' })),
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
+    branchLoads: cell(() => ({ defaultValue: {} })),
+    loadedChildren: cell(() => ({ defaultValue: {} })),
   }),
   refs: () => ({
     config: null,
@@ -100,22 +211,30 @@ export const treeSelectMachine = createMachine({
     getFloatingEl: () => null,
     getContentEl: () => null,
     typeahead: createTypeahead(),
+    branchLoadControllers: new Map(),
+    branchLoadSequence: { n: 0 },
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   // 开合受控时用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.* 无条件回写；
   // 值与展开集合受控走 cell。
-  watch: ({ track, prop, action }) => {
+  watch: ({ track, prop, context, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
+    // 外部删掉或补齐分支时，运输中的旧请求必须失效，不能把结果写回已不存在的数据树。
+    track([() => prop('collection')], () => action(['syncBranchLoads']))
+    // 受控 expandedValue、初始 defaultExpandedValue 与 API 改写共用这一个入口。
+    track([context.dep('expandedValue')], () => action(['loadExpandedBranches']))
   },
+  effects: ['trackBranchLoads'],
   // 这几件事与开合无关，两个状态里都得认；展开态另行声明的 NODE.SELECT 会盖过这里那一条。
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { actions: ['clearValue'] },
     'EXPANDED.SET': { actions: ['setExpanded'] },
-    'BRANCH.EXPAND': { actions: ['expandBranch'] },
+    'BRANCH.EXPAND': { actions: ['loadExpandedBranch', 'expandBranch'] },
     'BRANCH.COLLAPSE': { actions: ['collapseBranch'] },
-    'BRANCH.TOGGLE': { actions: ['toggleBranch'] },
+    'BRANCH.TOGGLE': { actions: ['loadExpandedBranch', 'toggleBranch'] },
+    'BRANCH.RETRY': { actions: ['retryBranch'] },
     'NODE.FOCUS': { actions: ['setFocusedValue'] },
     'NODE.SELECT': { actions: ['selectNode'] },
   },
@@ -171,6 +290,29 @@ export const treeSelectMachine = createMachine({
     actions: {
       resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
 
+      syncBranchLoads: (params) => {
+        const { context, prop, refs } = params
+        const live = lazyBranchValues(prop('collection') ?? [])
+        const controllers = refs.get('branchLoadControllers')
+        for (const [value, entry] of [...controllers]) {
+          if (!live.has(value)) {
+            entry.controller.abort()
+            controllers.delete(value)
+          }
+        }
+        const prune = <T>(record: Record<string, T>): Record<string, T> => Object.fromEntries(
+          Object.entries(record).filter(([value]) => live.has(value)),
+        )
+        const loads = prune(context.get('branchLoads'))
+        const children = prune(context.get('loadedChildren'))
+        if (Object.keys(loads).length !== Object.keys(context.get('branchLoads')).length)
+          context.set('branchLoads', loads)
+        if (Object.keys(children).length !== Object.keys(context.get('loadedChildren')).length)
+          context.set('loadedChildren', children)
+        for (const value of context.get('expandedValue'))
+          beginBranchLoad(params, value, false)
+      },
+
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
 
@@ -214,7 +356,10 @@ export const treeSelectMachine = createMachine({
           // 无 DOM 环境：锚点留空，状态转移不受影响
           if (!content)
             return
-          const rows = flattenTree(prop('collection') ?? [], context.get('expandedValue'))
+          const rows = flattenTree(
+            resolveTreeSelectCollection(prop('collection') ?? [], context.get('loadedChildren')),
+            context.get('expandedValue'),
+          )
           const els = treeSelectNodeEls(content, rows)
           const intent = context.get('focusIntent')
           const selected = context.get('value')
@@ -260,7 +405,7 @@ export const treeSelectMachine = createMachine({
         if (prop('multiple')) {
           // 级联：整枝传导后按收敛策略落对外值；朴素切换只动被点的那一个
           if (prop('cascade')) {
-            const roots = prop('collection') ?? []
+            const roots = resolveTreeSelectCollection(prop('collection') ?? [], context.get('loadedChildren'))
             const state = cascadeToggle(roots, current, e.value)
             context.set('value', collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child'))
             return
@@ -286,6 +431,26 @@ export const treeSelectMachine = createMachine({
         if (e.type !== 'EXPANDED.SET')
           return
         context.set('expandedValue', unique(e.value))
+      },
+
+      // 在真正写入 expandedValue 前看旧值：重复 expand 与收起动作都不会悄悄再发请求。
+      loadExpandedBranch: (params) => {
+        const e = params.event.current()
+        if (e.type !== 'BRANCH.EXPAND' && e.type !== 'BRANCH.TOGGLE')
+          return
+        if (!params.context.get('expandedValue').includes(e.value))
+          beginBranchLoad(params, e.value, false)
+      },
+
+      retryBranch: (params) => {
+        const e = params.event.current()
+        if (e.type === 'BRANCH.RETRY')
+          beginBranchLoad(params, e.value, true)
+      },
+
+      loadExpandedBranches: (params) => {
+        for (const value of params.context.get('expandedValue'))
+          beginBranchLoad(params, value, false)
       },
 
       expandBranch: ({ context, event }) => {
@@ -317,6 +482,13 @@ export const treeSelectMachine = createMachine({
       },
     },
     effects: {
+      // 组件卸载时中止所有请求；回调仍可能异步排队，但 token/controller 判据会拒绝它们。
+      trackBranchLoads: ({ refs }) => () => {
+        for (const { controller } of refs.get('branchLoadControllers').values())
+          controller.abort()
+        refs.get('branchLoadControllers').clear()
+      },
+
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
       trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
         // 无引擎时不定位，其余照常

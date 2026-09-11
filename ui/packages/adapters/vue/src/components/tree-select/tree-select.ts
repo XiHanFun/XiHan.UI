@@ -1,5 +1,5 @@
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { TreeNode, TreeSelectApi, TreeSelectNodeProps, TreeSelectSchema } from '@xihan-ui/headless'
+import type { TreeSelectApi, TreeSelectNode, TreeSelectNodeProps, TreeSelectSchema } from '@xihan-ui/headless'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TreeSelectContext } from './use-tree-select'
@@ -61,7 +61,8 @@ export const XhTreeSelectRoot = defineComponent({
   name: 'XhTreeSelectRoot',
   // 有 connect 兜底的 prop 一律 default: undefined
   props: {
-    collection: { type: Array as PropType<TreeNode[]>, default: undefined },
+    collection: { type: Array as PropType<TreeSelectNode[]>, default: undefined },
+    loadChildren: { type: Function as PropType<TreeSelectProps['loadChildren']>, default: undefined },
     /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
     label: { type: String, default: undefined },
     /** 自动渲染树里是否带清空按钮；手写部件不看它，写了节点即可清。 */
@@ -410,15 +411,15 @@ export const XhTreeSelectHiddenInput = defineComponent({
 })
 
 /** 按 collection 递归铺节点：带 children 的落成 branch，其余落成 item。 */
-function renderNodes(nodes: readonly TreeNode[]): VNode[] {
-  return nodes.map(node => node.children
+function renderNodes(nodes: readonly TreeSelectNode[]): VNode[] {
+  return nodes.map(node => (node.children || node.hasChildren)
     ? h(XhTreeSelectBranch, { key: node.value, value: node.value }, () => [
         h(XhTreeSelectBranchControl, null, () => [
           h(XhTreeSelectBranchTrigger),
           h(XhTreeSelectBranchText, null, () => node.label ?? node.value),
           h(XhTreeSelectItemIndicator),
         ]),
-        h(XhTreeSelectBranchContent, null, () => renderNodes(node.children!)),
+        h(XhTreeSelectBranchContent, null, () => renderNodes(node.children ?? [])),
       ])
     : h(XhTreeSelectItem, { key: node.value, value: node.value }, () => [
         h(XhTreeSelectItemIndicator),
@@ -431,7 +432,7 @@ function renderNodes(nodes: readonly TreeNode[]): VNode[] {
  * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
  */
 function renderDefaultTree(
-  collection: readonly TreeNode[],
+  collection: readonly TreeSelectNode[],
   label: (VNode | string)[] | null,
   clearable: boolean,
 ): VNode[] {

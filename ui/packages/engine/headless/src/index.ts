@@ -256,8 +256,8 @@ export type { TransferApi, TransferCheckState, TransferFilter, TransferGroupProp
 
 export { connectTree, flattenTree, indexTree, isSelfOrDescendant, isTreeDropAllowed, treeAnatomy, treeBranchQuery, treeItemQuery, treeKeyboard, treeMachine, treeMeta, treeMoveCommand, treeMoveIntentFromKey, treeMoveOf } from './tree'
 export type { TreeApi, TreeExpandedValueChangeDetails, TreeFocusModel, TreeMove, TreeNode, TreeNodeMeta, TreeNodeProps, TreeRefs, TreeSchema, TreeSelectionChangeDetails, TreeTranslations, TreeVariant, TreeVisibleNode } from './tree'
-export { connectTreeSelect, findTreeSelectNodeEl, TREE_SELECT_DEFAULT_PLACEMENT, treeSelectAnatomy, treeSelectBranchQuery, treeSelectItemQuery, treeSelectKeyboard, treeSelectMachine, treeSelectMeta, treeSelectNodeEls } from './tree-select'
-export type { TreeSelectApi, TreeSelectExpandedValueChangeDetails, TreeSelectFocusIntent, TreeSelectNodeProps, TreeSelectOpenChangeDetails, TreeSelectRefs, TreeSelectSchema, TreeSelectTranslations, TreeSelectValueChangeDetails } from './tree-select'
+export { connectTreeSelect, findTreeSelectNode, findTreeSelectNodeEl, isTreeSelectLazyBranch, resolveTreeSelectCollection, TREE_SELECT_DEFAULT_PLACEMENT, treeSelectAnatomy, treeSelectBranchQuery, treeSelectItemQuery, treeSelectKeyboard, treeSelectMachine, treeSelectMeta, treeSelectNodeEls } from './tree-select'
+export type { TreeSelectApi, TreeSelectBranchLoadSnapshot, TreeSelectBranchLoadStatus, TreeSelectExpandedValueChangeDetails, TreeSelectFocusIntent, TreeSelectLoadChildrenRequest, TreeSelectNode, TreeSelectNodeProps, TreeSelectOpenChangeDetails, TreeSelectRefs, TreeSelectSchema, TreeSelectTranslations, TreeSelectValueChangeDetails } from './tree-select'
 export { connectTruncate, isTruncateOverflowing, resolveTruncateLines, TRUNCATE_DEFAULT_LINES, truncateAnatomy, truncateKeyboard, truncateMachine, truncateMeta } from './truncate'
 export type { TruncateApi, TruncateMetrics, TruncateOpenChangeDetails, TruncateOverflowChangeDetails, TruncateRefs, TruncateSchema, TruncateTranslations } from './truncate'
 export type { HeadlessComponent, NormalizeProps, PropTypes } from './types'

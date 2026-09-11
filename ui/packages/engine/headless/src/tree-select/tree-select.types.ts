@@ -2,6 +2,29 @@ import type { CascadeStrategy, Cleanup, ControlVariant, Direction, Layer, Machin
 import type { TreeNode, TreeVisibleNode } from '../tree'
 
 /**
+ * TreeSelect 专用节点。`hasChildren` 在未给 `children` 时声明这是一个尚未取回子项的分支；
+ * 已给 children 时它没有额外作用。取回后的子项由 headless 暂存，不需要宿主重写整棵 collection。
+ */
+export interface TreeSelectNode extends Omit<TreeNode, 'children'> {
+  children?: TreeSelectNode[]
+  hasChildren?: boolean
+}
+
+export type TreeSelectBranchLoadStatus = 'idle' | 'loading' | 'error'
+
+/** 分支异步相位；error 只在失败态出现，保留原始 cause 供宿主诊断。 */
+export interface TreeSelectBranchLoadSnapshot {
+  status: TreeSelectBranchLoadStatus
+  error?: unknown
+}
+
+/** 一次分支取数。signal 会在重试、节点从 collection 移除或组件卸载时中止。 */
+export interface TreeSelectLoadChildrenRequest {
+  node: TreeSelectNode
+  signal: AbortSignal
+}
+
+/**
  * 展开那一刻焦点落在哪一行：
  * - selected 停在首个「可见的」选中节点（它藏在收起的分支里时退回首个可停留行；无选中则
  *   不落锚点，焦点歇在 content 上——指针打开走这条，不能有节点看着像被选中）
@@ -28,6 +51,10 @@ export interface TreeSelectRefs {
    * 放模块变量会让同页两个选择器共用一个缓冲。
    */
   typeahead: Typeahead
+  /** 仍在途的分支请求；只放运行时资源，不进入可渲染 context。 */
+  branchLoadControllers: Map<string, { controller: AbortController, token: number }>
+  /** 每次开新请求递增，用于拒绝过期回调。实例私有，不能放模块变量。 */
+  branchLoadSequence: { n: number }
 }
 
 export interface TreeSelectOpenChangeDetails {
@@ -65,8 +92,13 @@ export interface TreeSelectTranslations {
 
 export interface TreeSelectSchema extends MachineSchema {
   props: {
-    /** 树数据，层级元信息与显示文本的唯一事实源。缺省为空树。 */
-    collection?: TreeNode[]
+    /** 树数据，层级元信息与显示文本的唯一事实源。`hasChildren` 且未给 children 是懒分支；已给 children 时它优先。缺省为空树。 */
+    collection?: TreeSelectNode[]
+    /**
+     * 取回 `hasChildren: true` 分支的直接子项。首次展开自动调用，失败后用 api.retryBranch
+     * 显式重试。旧请求的兑现或拒绝不会覆盖更新的一轮，也不会写回已移除的分支。
+     */
+    loadChildren?: (request: TreeSelectLoadChildrenRequest) => Promise<TreeSelectNode[] | undefined | void> | TreeSelectNode[] | undefined | void
     /**
      * 选中值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。
      * 单选写成裸串是简写，内部一律归一成数组。
@@ -139,6 +171,10 @@ export interface TreeSelectSchema extends MachineSchema {
     focusIntent: TreeSelectFocusIntent
     /** 关闭时是否把焦点归还 trigger；Tab 与层外交互关闭时为 false。 */
     returnFocus: boolean
+    /** 异步分支的当前相位；成功后的子项单独存放，避免把 transport state 混进数据树。 */
+    branchLoads: Record<string, TreeSelectBranchLoadSnapshot>
+    /** 已成功取回的直接子项，按父节点 value 建表。 */
+    loadedChildren: Record<string, TreeSelectNode[]>
   }
   computed: Record<string, never>
   refs: TreeSelectRefs
@@ -163,6 +199,8 @@ export interface TreeSelectSchema extends MachineSchema {
     | { type: 'BRANCH.EXPAND', value: string }
     | { type: 'BRANCH.COLLAPSE', value: string }
     | { type: 'BRANCH.TOGGLE', value: string }
+    /** 失败后显式开始新一轮；会使仍在途的旧轮失效。 */
+    | { type: 'BRANCH.RETRY', value: string }
     | { type: 'FORM.RESET' }
   tag: never
   guard: 'isOpenControlled' | 'isMultiple'
@@ -183,14 +221,18 @@ export interface TreeSelectSchema extends MachineSchema {
     | 'expandBranch'
     | 'collapseBranch'
     | 'toggleBranch'
+    | 'loadExpandedBranch'
+    | 'retryBranch'
+    | 'syncBranchLoads'
+    | 'loadExpandedBranches'
     | 'resetToDefault'
-  effect: 'trackPosition' | 'trackLayer'
+  effect: 'trackPosition' | 'trackLayer' | 'trackBranchLoads'
 }
 
 export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   open: boolean
-  /** 作者给的原始树数据。 */
-  collection: readonly TreeNode[]
+  /** 当前有效树：含 headless 已成功取回的懒分支子项。 */
+  collection: readonly TreeSelectNode[]
   /**
    * 当前可见行序列（收起分支的子树不在其中）。
    * 方向键、Home/End 与连打检索都在它上面走，不是在原始树上走。
@@ -215,11 +257,15 @@ export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   /** 级联模式下该分支是否半选（有效叶后代有勾有不勾）；非级联恒 false。 */
   isIndeterminate: (value: string) => boolean
   isExpanded: (value: string) => boolean
+  /** 非懒分支返回 null；懒分支即使尚未请求也返回 idle。 */
+  branchLoadState: (value: string) => TreeSelectBranchLoadSnapshot | null
   setOpen: (next: boolean) => void
   setValue: (next: string[]) => void
   setExpandedValue: (next: string[]) => void
   expand: (value: string) => void
   collapse: (value: string) => void
+  /** 失败后重新取该分支；非懒分支与未知 value 不产生副作用。 */
+  retryBranch: (value: string) => void
   /** 单选替换、多选切换，与点节点同一语义。 */
   select: (value: string) => void
   clear: () => void
