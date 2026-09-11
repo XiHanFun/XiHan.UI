@@ -13314,6 +13314,7 @@
     "--xh-prompt-input-input-autofill-fg",
     "--xh-prompt-input-input-fg",
     "--xh-prompt-input-input-font-size",
+    "--xh-prompt-input-input-radius",
     "--xh-prompt-input-max-h",
     "--xh-prompt-input-p",
     "--xh-prompt-input-placeholder-fg",

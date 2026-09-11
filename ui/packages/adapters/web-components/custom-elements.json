@@ -34479,6 +34479,9 @@
               "name": "--xh-prompt-input-input-font-size"
             },
             {
+              "name": "--xh-prompt-input-input-radius"
+            },
+            {
               "name": "--xh-prompt-input-max-h"
             },
             {

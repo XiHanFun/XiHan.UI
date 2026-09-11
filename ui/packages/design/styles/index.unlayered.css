@@ -316,14 +316,15 @@
   /* 尺寸档只换这一个私有槽，按钮从壳继承，换档不必给每个部件各写一条选择器 */
   --xh-_back-top-size: var(--xh-control-h-md);
 
-  /* 形态的落点：没写 data-variant 时这六支保持缺省档的取值，按钮读的是
-     「使用者令牌 → 这六支 → 语义令牌」三级，使用者令牌永远排在形态之前 */
-  --xh-_back-top-bg: var(--xh-bg-surface-raised);
+  /* 缺省面与浮动动作钮同属 M3 通透玻璃：背景、边缘、顶光、投影与磨砂从一份配方取，
+     高对比、减少透明度、打印和强制色才能沿同一令牌通道降级。显式 variant 只覆写动作色。 */
+  --xh-_back-top-bg: var(--xh-material-glass-bg);
   --xh-_back-top-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_back-top-bg-active: var(--xh-bg-subtle-active);
-  --xh-_back-top-fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_back-top-border: var(--xh-border-control);
-  --xh-_back-top-border-hover: var(--xh-border-control-hover);
+  --xh-_back-top-fg: var(--xh-material-glass-fg);
+  --xh-_back-top-border: var(--xh-material-glass-border);
+  --xh-_back-top-border-hover: var(--xh-material-glass-border);
+  --xh-_back-top-shadow: var(--xh-material-glass-shadow);
 
   position: fixed;
   /* 贴边与安全区取大的一头：底部横条与圆角压住的那一段由系统给出，贴边比它窄时钮会被切掉一角。
@@ -389,6 +390,18 @@
   --xh-_back-top-border-hover: transparent;
 }
 
+/* 缺省档与 FloatButton 共用玻璃顶光；显式形态各有自己的语义表面，不能误铺 blur。 */
+[data-scope='back-top'][data-part='root']:not([data-variant])
+  [data-scope='back-top'][data-part='trigger'] {
+  background-image: linear-gradient(
+    to bottom,
+    var(--xh-material-glass-highlight) 0 var(--xh-stroke-thin),
+    transparent var(--xh-stroke-thin)
+  );
+  -webkit-backdrop-filter: var(--xh-material-glass-backdrop);
+  backdrop-filter: var(--xh-material-glass-backdrop);
+}
+
 /* 圆形按钮：里面通常只放一个箭头图标，宽高同取一档尺寸。
    整件只有这一颗按钮，槽名与其余十二个一样不带部件段（照 float-button 的 --xh-float-button-size） */
 [data-scope='back-top'][data-part='trigger'] {
@@ -401,10 +414,10 @@
   border: var(--xh-stroke-thin) solid var(--xh-back-top-border, var(--xh-_back-top-border));
   border-radius: var(--xh-back-top-radius, var(--xh-shape-pill));
   /* 使用者令牌排在形态之前：写了覆盖钩子就以它为准，没写才按 data-variant 那一档取值 */
-  background: var(--xh-back-top-bg, var(--xh-_back-top-bg));
+  background-color: var(--xh-back-top-bg, var(--xh-_back-top-bg));
   color: var(--xh-back-top-fg, var(--xh-_back-top-fg));
-  /* 浮在内容之上，靠投影与页面拉开层次 */
-  box-shadow: var(--xh-back-top-shadow, var(--xh-elevation-sheet));
+  /* 缺省走 M3 柔和浮影；使用者已有的 shadow 槽仍排在配方前面。 */
+  box-shadow: var(--xh-back-top-shadow, var(--xh-_back-top-shadow));
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -416,14 +429,21 @@
 @media (hover: hover) {
   [data-scope='back-top'][data-part='trigger']:hover {
     border-color: var(--xh-back-top-border-hover, var(--xh-_back-top-border-hover));
-    background: var(--xh-back-top-bg-hover, var(--xh-_back-top-bg-hover));
+    background-color: var(--xh-back-top-bg-hover, var(--xh-_back-top-bg-hover));
   }
 }
 
 /* 换底之外再压一档：钮浮在内容之上，缩放不牵动页面排版 */
 [data-scope='back-top'][data-part='trigger']:active {
-  background: var(--xh-back-top-bg-active, var(--xh-_back-top-bg-active));
+  background-color: var(--xh-back-top-bg-active, var(--xh-_back-top-bg-active));
   scale: var(--xh-motion-scale-press);
+}
+
+/* 透明面上的内收环不能依赖页面底色：键盘聚焦时改铺 M3 实体 focus surface，
+   公共焦点环在该面上已满足对比；不改滚动行为或按钮盒模型。 */
+[data-scope='back-top'][data-part='root']:not([data-variant])
+  [data-scope='back-top'][data-part='trigger']:focus-visible {
+  background-color: var(--xh-material-glass-focus-surface);
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -2067,14 +2087,15 @@
   --xh-_float-button-size: var(--xh-control-h-lg);
   --xh-_float-button-radius: var(--xh-float-button-radius, var(--xh-shape-pill));
 
-  /* 形态的落点：没写 data-variant 时这六支保持缺省档的取值，触发器读的是
-     「使用者令牌 → 这六支 → 语义令牌」三级，使用者令牌永远排在形态之前 */
-  --xh-_float-button-bg: var(--xh-bg-surface-raised);
+  /* 缺省面是 M3 通透玻璃：背景、边缘、顶光、投影与磨砂全部从同一份配方取，
+     高对比、减少透明度、打印和强制色便能一起降级。显式 variant 只覆写必要的动作色。 */
+  --xh-_float-button-bg: var(--xh-material-glass-bg);
   --xh-_float-button-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_float-button-bg-active: var(--xh-bg-subtle-active);
-  --xh-_float-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_float-button-border: var(--xh-border-control);
-  --xh-_float-button-border-hover: var(--xh-border-control-hover);
+  --xh-_float-button-fg: var(--xh-material-glass-fg);
+  --xh-_float-button-border: var(--xh-material-glass-border);
+  --xh-_float-button-border-hover: var(--xh-material-glass-border);
+  --xh-_float-button-shadow: var(--xh-material-glass-shadow);
 
   position: fixed;
   z-index: var(--xh-float-button-layer, var(--xh-layer-sticky));
@@ -2178,6 +2199,18 @@
   --xh-_float-button-border-hover: transparent;
 }
 
+/* 缺省档留住 M3 顶光；实心、淡色、描边和透空形态各有自身表面，不能把玻璃高光误铺上去。 */
+[data-scope='float-button'][data-part='root']:not([data-variant])
+  [data-scope='float-button'][data-part='trigger'] {
+  background-image: linear-gradient(
+    to bottom,
+    var(--xh-material-glass-highlight) 0 var(--xh-stroke-thin),
+    transparent var(--xh-stroke-thin)
+  );
+  -webkit-backdrop-filter: var(--xh-material-glass-backdrop);
+  backdrop-filter: var(--xh-material-glass-backdrop);
+}
+
 /* —— 触发器 —— */
 /* 里面通常只放一个图标，宽高同取一档尺寸 */
 [data-scope='float-button'][data-part='trigger'] {
@@ -2191,10 +2224,10 @@
   border: var(--xh-stroke-thin) solid var(--xh-float-button-border, var(--xh-_float-button-border));
   border-radius: var(--xh-_float-button-radius);
   /* 使用者令牌排在形态之前：写了覆盖钩子就以它为准，没写才按 data-variant 那一档取值 */
-  background: var(--xh-float-button-bg, var(--xh-_float-button-bg));
+  background-color: var(--xh-float-button-bg, var(--xh-_float-button-bg));
   color: var(--xh-float-button-fg, var(--xh-_float-button-fg));
-  /* 浮在内容之上，靠投影与页面拉开层次 */
-  box-shadow: var(--xh-float-button-shadow, var(--xh-elevation-sheet));
+  /* 缺省走 M3 柔和浮影；使用者已有的 shadow 槽仍排在配方前面。 */
+  box-shadow: var(--xh-float-button-shadow, var(--xh-_float-button-shadow));
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -2206,14 +2239,21 @@
 @media (hover: hover) {
   [data-scope='float-button'][data-part='trigger']:not([data-disabled]):hover {
     border-color: var(--xh-float-button-border-hover, var(--xh-_float-button-border-hover));
-    background: var(--xh-float-button-bg-hover, var(--xh-_float-button-bg-hover));
+    background-color: var(--xh-float-button-bg-hover, var(--xh-_float-button-bg-hover));
   }
 }
 
 /* 换底之外再压一档：钮浮在内容之上，缩放不牵动页面排版 */
 [data-scope='float-button'][data-part='trigger']:not([data-disabled]):active {
-  background: var(--xh-float-button-bg-active, var(--xh-_float-button-bg-active));
+  background-color: var(--xh-float-button-bg-active, var(--xh-_float-button-bg-active));
   scale: var(--xh-motion-scale-press);
+}
+
+/* 透明面上的内收环没有稳定的底可量对比：键盘聚焦时铺 M3 配方提供的实体 focus surface。
+   这个面与公共焦点环已有足够对比，继续吃库环；不改盒模型，也不影响鼠标或触摸激活。 */
+[data-scope='float-button'][data-part='root']:not([data-variant])
+  [data-scope='float-button'][data-part='trigger']:focus-visible {
+  background-color: var(--xh-material-glass-focus-surface);
 }
 
 /* 禁用只换颜色，不叠不透明度：两者同时用只会互相抵消，把字压到读不出来 */
@@ -2424,13 +2464,21 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  /* 面板底下没有遮罩，压着的是任意页面内容：这条描边是它与背景之间唯一的边界，
-     取 border-default 与同样无遮罩的气泡卡片一档，别退到更淡的 border-subtle */
-  border: var(--xh-stroke-thin) solid var(--xh-floating-panel-border, var(--xh-border-default));
+  /* 默认态是 M3 desktop surface：背景、边缘、高光、投影与光学采样同出一张配方。
+     作者既有的面板槽仍排在外层；没有覆写时才落进这套玻璃令牌。 */
+  border: var(--xh-stroke-thin) solid var(--xh-floating-panel-border, var(--xh-material-glass-border));
   border-radius: var(--xh-floating-panel-radius, var(--xh-shape-surface));
-  background: var(--xh-floating-panel-bg, var(--xh-bg-surface));
-  color: var(--xh-floating-panel-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-floating-panel-shadow, var(--xh-elevation-sheet));
+  background:
+    linear-gradient(
+      to bottom,
+      var(--xh-material-glass-highlight) 0 var(--xh-stroke-thin),
+      transparent var(--xh-stroke-thin)
+    ),
+    var(--xh-floating-panel-bg, var(--xh-material-glass-bg));
+  color: var(--xh-floating-panel-fg, var(--xh-material-glass-fg));
+  box-shadow: var(--xh-floating-panel-shadow, var(--xh-material-glass-shadow));
+  -webkit-backdrop-filter: var(--xh-material-glass-backdrop);
+  backdrop-filter: var(--xh-material-glass-backdrop);
   /* 铺满那一档要把投影整个撤掉，海拔的这一跳跟着过渡走 */
   transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -2465,8 +2513,8 @@
   gap: var(--xh-floating-panel-header-gap, var(--xh-control-gap-sm));
   padding-block: var(--xh-floating-panel-header-py, var(--xh-space-2));
   padding-inline: var(--xh-floating-panel-header-px, var(--xh-space-3));
-  border-block-end: var(--xh-stroke-thin) solid var(--xh-floating-panel-header-border, var(--xh-border-subtle));
-  background: var(--xh-floating-panel-header-bg, var(--xh-bg-subtle));
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-floating-panel-header-border, var(--xh-material-glass-separator));
+  background: var(--xh-floating-panel-header-bg, var(--xh-material-glass-bg));
 }
 
 [data-scope='floating-panel'][data-part='header'][hidden] {
@@ -2482,7 +2530,7 @@
   line-height: var(--xh-leading-tight);
   white-space: nowrap;
   text-overflow: ellipsis;
-  color: var(--xh-floating-panel-title-fg, var(--xh-fg-default));
+  color: var(--xh-floating-panel-title-fg, var(--xh-material-glass-fg));
 }
 
 /* 拖拽把手铺满标题栏剩下的横向空间：只给一小块纹理的话很难抓住 */
@@ -2596,7 +2644,7 @@
   justify-content: center;
   border: 0;
   background: transparent;
-  color: var(--xh-floating-panel-action-fg, var(--xh-fg-muted));
+  color: var(--xh-floating-panel-action-fg, var(--xh-material-glass-fg-muted));
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -2648,10 +2696,26 @@
   --xh-_ring-color: currentColor;
 }
 
+/* 玻璃会透入宿主背景，键盘焦点先落到配方给出的实体隔离底；
+   高对比、减透明、强制色与打印都由同一令牌在原位收敛。 */
+[data-scope='floating-panel'][data-part='window-state-trigger']:focus-visible,
+[data-scope='floating-panel'][data-part='close-trigger']:focus-visible {
+  background: var(--xh-material-glass-focus-surface);
+  color: var(--xh-material-glass-fg);
+  transition-property: color, scale;
+}
+
 /* 只换前景不叠 opacity：叠了之后禁用文字的对比度会掉到读不出来 */
 [data-scope='floating-panel'][data-part='window-state-trigger'][data-disabled] {
   background: transparent;
   color: var(--xh-fg-disabled);
+}
+
+@media (forced-colors: active) {
+  /* 强制色不会绘制背景图层；直接撤掉顶边装饰，边界与文字改由 glass 的系统色令牌接手。 */
+  [data-scope='floating-panel'][data-part='content'] {
+    background-image: none;
+  }
 }
 
 [data-scope='floating-panel'][data-part='body'] {
@@ -7795,7 +7859,7 @@
 }
 
 /* 边框画在 root 上，内部 textarea 无边框；align-items: flex-end 让按钮随输入框长高贴着底边。
-   一档落影把输入框从它上方的内容里抬起来，与卡片同一档。
+   默认外壳消费 M3 浮动玻璃；输入区仍使用实体阅读底，文字不会直接压在透入的复杂背景上。
    三个视觉轴都落在 root 上：形态管底与描边怎么画，语气管用哪族颜色，尺寸管高度与字号 */
 [data-scope='prompt-input'][data-part='root'] {
   transition:
@@ -7810,13 +7874,17 @@
   --xh-_prompt-input-submit-px: var(--xh-control-px-md);
   /* 皮肤画的兜底字形与作者塞进来的图标读同一把尺，随尺寸档一起换 */
   --xh-icon-size: var(--xh-prompt-input-icon-size, var(--xh-glyph-size-md));
-  /* 形态缺省档：不写 data-variant 时按描边式走 */
-  --xh-_prompt-input-bg: var(--xh-bg-surface);
-  --xh-_prompt-input-bg-hover: var(--xh-bg-subtle);
-  --xh-_prompt-input-border: var(--xh-border-control);
-  --xh-_prompt-input-border-hover: var(--xh-border-control-hover);
+  /* 默认 M3 外壳完整消费 tint、边缘、顶光、阴影与磨砂；辅助模式由同源令牌原位实体化。 */
+  --xh-_prompt-input-bg: var(--xh-material-glass-bg);
+  --xh-_prompt-input-bg-hover: var(--xh-material-glass-bg);
+  --xh-_prompt-input-border: var(--xh-material-glass-border);
+  --xh-_prompt-input-border-hover: var(--xh-material-glass-border);
   --xh-_prompt-input-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
-  --xh-_prompt-input-shadow: var(--xh-elevation-raised);
+  --xh-_prompt-input-shadow: var(--xh-material-glass-shadow);
+  --xh-_prompt-input-backdrop: var(--xh-material-glass-backdrop);
+  --xh-_prompt-input-highlight: var(--xh-material-glass-highlight);
+  --xh-_prompt-input-surface: var(--xh-prompt-input-bg, var(--xh-_prompt-input-bg));
+  --xh-_prompt-input-border-color: var(--xh-prompt-input-border, var(--xh-_prompt-input-border));
 
   /* 整框内衬的当前值，随尺寸档与 --xh-prompt-input-p 一起变。
      附件条与动作行由作者写在 root 里、不是本组件的部件，它们靠读这一支对齐同一条内衬线 */
@@ -7827,10 +7895,18 @@
   gap: var(--xh-prompt-input-gap, var(--xh-_prompt-input-gap));
   /* 整框的内衬走控件内边距尺的小档，密度收紧时随之收窄 */
   padding: var(--xh-prompt-input-p, var(--xh-_prompt-input-px));
-  border: var(--xh-stroke-thin) solid var(--xh-prompt-input-border, var(--xh-_prompt-input-border));
+  border: var(--xh-stroke-thin) solid var(--xh-_prompt-input-border-color);
   border-radius: var(--xh-prompt-input-radius, var(--xh-shape-surface));
-  background: var(--xh-prompt-input-bg, var(--xh-_prompt-input-bg));
+  background:
+    linear-gradient(
+      to bottom,
+      var(--xh-_prompt-input-highlight) 0 var(--xh-stroke-thin),
+      transparent var(--xh-stroke-thin)
+    ),
+    var(--xh-_prompt-input-surface);
   box-shadow: var(--xh-prompt-input-shadow, var(--xh-_prompt-input-shadow));
+  -webkit-backdrop-filter: var(--xh-_prompt-input-backdrop);
+  backdrop-filter: var(--xh-_prompt-input-backdrop);
 }
 
 /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -7848,13 +7924,13 @@
 /* 指针停在框上：描边与底一起换。这是一块要打字的大面，只挪一圈 1px 的描边读不出来。
    摘掉持有焦点的那一档：打字时指针多半就停在框上，不摘的话语气色的聚焦描边一直被压着 */
 [data-scope='prompt-input'][data-part='root']:hover:not([data-disabled], :focus-within) {
-  border-color: var(--xh-prompt-input-border-hover, var(--xh-_prompt-input-border-hover));
-  background: var(--xh-prompt-input-bg-hover, var(--xh-_prompt-input-bg-hover));
+  --xh-_prompt-input-border-color: var(--xh-prompt-input-border-hover, var(--xh-_prompt-input-border-hover));
+  --xh-_prompt-input-surface: var(--xh-prompt-input-bg-hover, var(--xh-_prompt-input-bg-hover));
 }
 
 /* 焦点环画在整个框上；用 focus-within 使焦点落在发送按钮时同样点亮 */
 [data-scope='prompt-input'][data-part='root']:focus-within {
-  border-color: var(--xh-prompt-input-border-focus, var(--xh-_prompt-input-border-focus));
+  --xh-_prompt-input-border-color: var(--xh-prompt-input-border-focus, var(--xh-_prompt-input-border-focus));
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
 }
@@ -7862,7 +7938,9 @@
 /* 禁用态只换光标与底色；文字由 textarea 与按钮各自走 fg-disabled，
    整框不再压 opacity——两者叠起来会压到读不出 */
 [data-scope='prompt-input'][data-part='root'][data-disabled] {
-  background: var(--xh-prompt-input-bg-disabled, var(--xh-bg-subtle));
+  --xh-_prompt-input-surface: var(--xh-prompt-input-bg-disabled, var(--xh-bg-subtle));
+  --xh-_prompt-input-backdrop: none;
+  --xh-_prompt-input-highlight: transparent;
 }
 
 /* —— 尺寸 —— */
@@ -7901,6 +7979,8 @@
   --xh-_prompt-input-bg-hover: var(--xh-bg-subtle);
   --xh-_prompt-input-border: var(--xh-border-control);
   --xh-_prompt-input-border-hover: var(--xh-border-control-hover);
+  --xh-_prompt-input-backdrop: none;
+  --xh-_prompt-input-highlight: transparent;
 }
 
 /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
@@ -7910,6 +7990,8 @@
   --xh-_prompt-input-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_prompt-input-border: transparent;
   --xh-_prompt-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+  --xh-_prompt-input-backdrop: none;
+  --xh-_prompt-input-highlight: transparent;
 }
 
 /* 无框：底与常态描边透明，聚焦时浮出描边。落影一并收掉——底都不画了，
@@ -7920,6 +8002,8 @@
   --xh-_prompt-input-border: transparent;
   --xh-_prompt-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_prompt-input-shadow: none;
+  --xh-_prompt-input-backdrop: none;
+  --xh-_prompt-input-highlight: transparent;
 }
 
 /* 输入行承接单行写法下落在 root 上的那份几何：输入框与按钮并排、按钮贴着底边。
@@ -7934,7 +8018,8 @@
   display: none;
 }
 
-/* 无边框透明底，融进 root 的框里；min-inline-size: 0 防止长内容把弹性子项撑出容器 */
+/* 输入区使用 M3 的实体隔离底：玻璃外壳可以透景，长文本阅读与焦点对比不能依赖透入背景。
+   min-inline-size: 0 防止长内容把弹性子项撑出容器。 */
 [data-scope='prompt-input'][data-part='input'] {
   flex: 1;
   min-inline-size: 0;
@@ -7947,8 +8032,9 @@
   padding-block: calc((var(--xh-_prompt-input-h) - 1lh) / 2);
   padding-inline: 0;
   border: 0;
-  background: transparent;
-  color: var(--xh-prompt-input-input-fg, var(--xh-fg-default));
+  border-radius: var(--xh-prompt-input-input-radius, var(--xh-shape-inset));
+  background: var(--xh-material-glass-focus-surface);
+  color: var(--xh-prompt-input-input-fg, var(--xh-material-glass-fg));
   /* 表单控件默认不继承页面字族，显式继承 */
   font-family: inherit;
   font-size: var(--xh-prompt-input-input-font-size, var(--xh-_prompt-input-font-size));
@@ -7980,15 +8066,15 @@
    不去拉长 transition 把系统底推迟显现：那只是把它藏起来，减弱动效通道一关过渡就当场露出。
    两个选择器名分写两条：一条选择器列表里只要有一个名字不被认识，整条规则就被丢弃。
    框的底画在 root 上，input 本身是透明分段，所以铺的是 root 那一档的底；
-   取不透明的面令牌而不是 --xh-_prompt-input-bg：后者在 ghost 档下是透明的，铺了等于没铺。 */
+   取 M3 实体阅读底而不是 --xh-_prompt-input-bg：后者在 ghost 档下是透明的，铺了等于没铺。 */
 [data-scope='prompt-input'][data-part='input']:autofill {
-  box-shadow: inset 0 0 0 100vmax var(--xh-prompt-input-input-autofill-bg, var(--xh-bg-canvas));
-  -webkit-text-fill-color: var(--xh-prompt-input-input-autofill-fg, var(--xh-fg-default));
+  box-shadow: inset 0 0 0 100vmax var(--xh-prompt-input-input-autofill-bg, var(--xh-material-glass-focus-surface));
+  -webkit-text-fill-color: var(--xh-prompt-input-input-autofill-fg, var(--xh-material-glass-fg));
 }
 
 [data-scope='prompt-input'][data-part='input']:-webkit-autofill {
-  box-shadow: inset 0 0 0 100vmax var(--xh-prompt-input-input-autofill-bg, var(--xh-bg-canvas));
-  -webkit-text-fill-color: var(--xh-prompt-input-input-autofill-fg, var(--xh-fg-default));
+  box-shadow: inset 0 0 0 100vmax var(--xh-prompt-input-input-autofill-bg, var(--xh-material-glass-focus-surface));
+  -webkit-text-fill-color: var(--xh-prompt-input-input-autofill-fg, var(--xh-material-glass-fg));
 }
 
 /* 私有变量槽位，send 与 stop 两个身份只换这几个配色值 */
@@ -8088,6 +8174,13 @@
   vertical-align: var(--xh-glyph-baseline-shift);
   border-radius: var(--xh-prompt-input-stop-mark-radius, var(--xh-shape-inset));
   background-color: currentColor;
+}
+
+@media (forced-colors: active) {
+  /* 强制色会丢掉渐变图层；实体材质底、边框与焦点环仍由同源 M3 令牌和系统色表达。 */
+  [data-scope='prompt-input'][data-part='root'] {
+    background-image: none;
+  }
 }
 
 /* styles/qr-code.css */

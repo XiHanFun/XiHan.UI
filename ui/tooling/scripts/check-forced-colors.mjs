@@ -75,6 +75,8 @@ const EXEMPT = {
  * 承载信息的那几份（色相带、删除行的斜纹、半颗星、扫光裁进字形）各自带 forced-colors 块。
  */
 const DECORATIVE = {
+  'back-top.css': 'M3 顶光只表达玻璃厚度；触发器本身的系统背景、边框与公共焦点环仍保留操作边界',
+  'float-button.css': 'M3 顶光只用来表达玻璃厚度；触发器本身的系统背景、边框与焦点环仍保留操作边界',
   'image-cropper.css': '三分参考线是构图辅助，裁切框自己的描边与四角把手在这一档里都还在',
   'loading-bar.css': '进度段末端那道亮边是装饰，进度本身由 range 的底色与 root 上的 aria-valuenow 表出',
 }

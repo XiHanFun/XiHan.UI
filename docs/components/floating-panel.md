@@ -20,6 +20,7 @@
 - 三种形态：常规、收拢（只留标题栏）、铺满（占满视口），由 `windowState` 一个值表达，可受控。
 - 位置与尺寸各自成对（`position` / `defaultPosition`、`dimensions` / `defaultDimensions`），两态齐全。
 - 八个改尺把手在节点上自报守的是哪条边，西边与北边的把手会同时改位置。
+- 默认皮肤使用 M3 桌面玻璃面：描边、顶边高光、投影与光学采样同出一张配方；高对比、减少透明、强制色与打印时原位收敛为实体面，标题栏按钮键盘聚焦时先铺实体隔离底。
 - 键盘全程可达：拖拽把手上方向键平移、Shift 快移、Enter / Space 送回初始落点；改尺把手上方向键推边；Esc 关闭。
 - `minSize` / `maxSize` 在每一处入口都生效——拖、推、`setDimensions` 走的是同一个夹取函数。
 - 内建默认矩形挂载时按视口夹一次：先收尺寸再推落点，窄屏上面板与右侧那几个改尺把手不会落在屏外。写了 `defaultPosition` / `defaultDimensions` 就照写的来。
@@ -221,6 +222,8 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 ## 样式
 
 默认皮肤 `@xihan-ui/styles/floating-panel.css` 按部件选择：`[data-scope="floating-panel"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ## 数据属性
 
