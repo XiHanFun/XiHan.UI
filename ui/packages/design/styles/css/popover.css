@@ -105,11 +105,20 @@
     overflow-y: auto;
     padding-block: var(--xh-popover-py, var(--xh-_popover-pad));
     padding-inline: var(--xh-popover-px, var(--xh-_popover-pad));
-    border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-popover-radius, var(--xh-shape-surface));
-    background: var(--xh-popover-bg, var(--xh-bg-surface));
-    color: var(--xh-popover-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-popover-shadow, var(--xh-elevation-floating));
+    /* 顶光只占内侧一像素；透明 tint 是底层，正文自己保持不透明。 */
+    background:
+      linear-gradient(
+        to bottom,
+        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),
+        transparent var(--xh-stroke-thin)
+      ),
+      var(--xh-popover-bg, var(--xh-material-frosted-bg));
+    color: var(--xh-popover-fg, var(--xh-material-frosted-fg));
+    box-shadow: var(--xh-popover-shadow, var(--xh-material-frosted-shadow));
+    -webkit-backdrop-filter: var(--xh-popover-backdrop, var(--xh-material-frosted-backdrop));
+    backdrop-filter: var(--xh-popover-backdrop, var(--xh-material-frosted-backdrop));
     pointer-events: auto;
     /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
     transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
@@ -153,13 +162,13 @@
     margin: 0;
     font-size: var(--xh-popover-title-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-popover-title-font-weight, var(--xh-font-weight-semibold));
-    color: var(--xh-popover-title-fg, var(--xh-fg-default));
+    color: var(--xh-popover-title-fg, var(--xh-material-frosted-fg));
   }
 
   [data-scope='popover'][data-part='description'] {
     margin: 0;
     font-size: var(--xh-text-body-size);
-    color: var(--xh-popover-description-fg, var(--xh-fg-muted));
+    color: var(--xh-popover-description-fg, var(--xh-material-frosted-fg-muted));
   }
 
   /* 关闭按钮是绝对定位的，不占流内宽度：标题得自己让出右上角那块，
@@ -183,7 +192,7 @@
     border: 0;
     border-radius: var(--xh-popover-close-radius, var(--xh-shape-control));
     background: transparent;
-    color: var(--xh-popover-close-fg, var(--xh-fg-muted));
+    color: var(--xh-popover-close-fg, var(--xh-material-frosted-fg-muted));
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -205,6 +214,14 @@
     scale: var(--xh-motion-scale-press);
   }
 
+  /* 品牌环往内收时先落在这一小块实体隔离底上，不直接与不断变化的模糊背景比对。 */
+  [data-scope='popover'][data-part='close-trigger']:focus-visible {
+    background: var(--xh-popover-close-bg-focus, var(--xh-material-frosted-focus-surface));
+    color: var(--xh-popover-close-fg-focus, var(--xh-material-frosted-fg));
+    /* 隔离底随焦点立即出现，不从透明背景渐变而短暂丢失环对比度。 */
+    transition-property: color, scale;
+  }
+
   /* 箭头的底色与描边色，几何在 overlay-arrow.css。
      交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
   [data-scope='popover'][data-part='arrow'] {
@@ -214,8 +231,8 @@
     --xh-_overlay-arrow-x: var(--xh-_popover-arrow-x);
     --xh-_overlay-arrow-y: var(--xh-_popover-arrow-y);
 
-    background: var(--xh-popover-bg, var(--xh-bg-surface));
-    border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-border-default));
+    background: var(--xh-popover-bg, var(--xh-material-frosted-bg));
+    border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-material-frosted-border));
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -239,6 +256,13 @@
       content: '';
       position: absolute;
       inset: calc(-1 * var(--xh-space-2));
+    }
+  }
+
+  @media (forced-colors: active) {
+    /* 系统色接管边界与正文；装饰顶光在这一档没有信息价值，明确撤掉背景图层。 */
+    [data-scope='popover'][data-part='content'] {
+      background-image: none;
     }
   }
 
