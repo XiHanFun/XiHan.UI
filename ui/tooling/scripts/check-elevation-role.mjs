@@ -18,6 +18,8 @@ const STYLES_DIR = 'packages/design/styles/css'
 const ROLE = /--xh-elevation-(raised|lifted|floating|sheet)\b/
 // M1 是内容面贴地接触影，独立于浮层海拔；只允许在已登记的消费部件使用。
 const MATERIAL_SOFT = /--xh-material-soft-shadow\b/
+// M2 是锚定浮层的材质配方，海拔等价于 floating；单列名字才能拦住组件退回普通实体投影。
+const MATERIAL_FROSTED = /--xh-material-frosted-shadow\b/
 /**
  * 使用者槽包着角色令牌：var(--xh-<组件>-…, var(--xh-elevation-<role>))。
  * 允许套多层：加法式改名把新槽名排在外层、旧名留在它的兜底位上，链因此不止一层。
@@ -62,7 +64,7 @@ const EXPECTED = {
   // 摊开的页码面板是锚在省略号上的浮层：有 positioner、有 pop-in 进场、吃 --xh-overlay-max-h
   'pagination': { content: ['floating'] },
   'popconfirm': { content: ['floating'] },
-  'popover': { content: ['floating'] },
+  'popover': { content: ['frosted'] },
   'select': { content: ['floating'] },
   'side-nav': { 'branch-content': ['floating'] },
   // 拇指静止时是 raised，带 data-dragging 的那一档走 lifted：跟着手走的元素抬高一档，
@@ -96,13 +98,17 @@ for (const file of files) {
       if (/^var\((?:--xh-[a-z0-9-]+,\s*var\()*--xh-_[\w-]+\)+$/.test(value))
         continue
       checked++
-      const role = MATERIAL_SOFT.test(value) ? 'soft' : value.match(ROLE)?.[1]
+      const role = MATERIAL_SOFT.test(value)
+        ? 'soft'
+        : MATERIAL_FROSTED.test(value)
+          ? 'frosted'
+          : value.match(ROLE)?.[1]
       if (!role) {
         problems.push(`${file}  ${selector.slice(0, 60)}  ${decl[1]}: ${value.slice(0, 60)}  —— 没走 --xh-elevation-raised / floating / sheet`)
         continue
       }
       if (decl[1] === 'box-shadow' && !SLOTTED.test(value)
-        && !/^var\(--xh-[a-z][a-z0-9-]*,\s*var\(--xh-material-soft-shadow\)\)$/.test(value)) {
+        && !/^var\(--xh-[a-z][a-z0-9-]*,\s*var\(--xh-material-(?:soft|frosted)-shadow\)\)$/.test(value)) {
         problems.push(`${file}  ${selector.slice(0, 60)}  box-shadow: ${value.slice(0, 60)}  —— 没给使用者留 --xh-<组件>-…-shadow 槽`)
       }
       // 这条规则落在哪个部件上：取选择器里最后一个 data-part，那才是被样式作用的那个
@@ -144,7 +150,7 @@ if (problems.length) {
   console.error('[check-elevation-role] ✗ 海拔没按角色走：')
   for (const p of problems)
     console.error(`  ${p}`)
-  console.error('静态抬起面 raised · 锚定浮层 floating · 遮罩式与通知 sheet；原语 --xh-shadow-* 只该由令牌层引用。')
+  console.error('静态抬起面 raised · M1 内容面 soft · 锚定浮层 floating/frosted · 遮罩式与通知 sheet；原语 --xh-shadow-* 只该由令牌层引用。')
   process.exit(1)
 }
 
