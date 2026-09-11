@@ -15,16 +15,16 @@ border-top-width: 1px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 1px
-border-top-color: oklch(0.922 0.002 258)
+border-top-color: oklch(0.145 0.005 258 / 0.14)
 border-right-color: oklch(0.145 0.005 258)
 border-bottom-color: oklch(0.145 0.005 258)
-border-left-color: oklch(0.922 0.002 258)
+border-left-color: oklch(0.145 0.005 258 / 0.14)
 min-height: 0px
 font-size: 16px
 line-height: normal
 font-weight: 400
 color: oklch(0.145 0.005 258)
-background-color: oklch(1 0 0)
+background-color: oklch(0.99 0.003 258 / 0.88)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
@@ -50,20 +50,20 @@ border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
 border-left-width: 1px
-border-top-color: oklch(0.922 0.002 258)
-border-right-color: oklch(0.922 0.002 258)
-border-bottom-color: oklch(0.922 0.002 258)
-border-left-color: oklch(0.922 0.002 258)
+border-top-color: oklch(0.145 0.005 258 / 0.14)
+border-right-color: oklch(0.145 0.005 258 / 0.14)
+border-bottom-color: oklch(0.145 0.005 258 / 0.14)
+border-left-color: oklch(0.145 0.005 258 / 0.14)
 min-height: 0px
 font-size: 16px
 line-height: normal
 font-weight: 400
 color: oklch(0.145 0.005 258)
-background-color: oklch(1 0 0)
+background-color: oklch(0.99 0.003 258 / 0.88)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
-animation-name: xh-pop-out
+animation-name: xh-overlay-slide-out
 animation-duration: 0.12s
 animation-timing-function: cubic-bezier(0.4, 0, 1, 1)
 outline-width: 3px
@@ -147,10 +147,10 @@ padding-bottom: 0px
 padding-left: 0px
 row-gap: normal
 column-gap: normal
-border-top-left-radius: 0px
-border-top-right-radius: 0px
-border-bottom-right-radius: 0px
-border-bottom-left-radius: 0px
+border-top-left-radius: 9999px
+border-top-right-radius: 9999px
+border-bottom-right-radius: 9999px
+border-bottom-left-radius: 9999px
 border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
@@ -164,7 +164,7 @@ font-size: 16px
 line-height: normal
 font-weight: 400
 color: oklch(0.145 0.005 258)
-background-color: oklch(0.922 0.002 258)
+background-color: oklch(0.145 0.005 258 / 0.12)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
