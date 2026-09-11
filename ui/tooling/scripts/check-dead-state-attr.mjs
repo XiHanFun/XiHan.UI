@@ -110,6 +110,7 @@ const HOOKS = {
   'transfer:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
   'tree:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
   'tree-select:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
+  'tree-select:data-error': '懒分支失败不预设错误文案或重试按钮；这一位留给作者结构接线，默认皮肤不伪造局部错误面',
   // 只读：观感落在真正的输入件身上
   'field:data-readonly': '只读的观感落在各输入件自己身上（text-field.css:155 那一类），这一层只往下传状态',
   'field-array:data-readonly': '行数改不动的观感落在三个把手的 aria-disabled 上，行里控件的只读由作者自己置，这一层只往下传状态',

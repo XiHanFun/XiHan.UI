@@ -151,6 +151,7 @@
     "data-drawing": "signature-pad 的笔正落在画布上。",
     "data-editing": "tags-input 的这枚标签正在原地改文字。",
     "data-empty": "没有值或没有条目：输入族一个字没填、集合没有数据、面板没有内容。",
+    "data-error": "异步动作或局部数据源已失败、尚可由作者重试：TreeSelect 懒分支的取子项失败。它与 data-invalid 的校验失败不同，也不复用 tool-call 已落定时专用的 data-errored。",
     "data-errored": "tool-call 这次调用跑砸了：阶段落在 output-error。与 data-settled 成对。",
     "data-expandable": "truncate 的文本超出了容器，给得出展开入口。",
     "data-expanded": "diff-view 的这段折叠间隙已经展开。",
