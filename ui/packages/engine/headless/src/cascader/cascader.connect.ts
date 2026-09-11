@@ -19,6 +19,7 @@ import {
   cascaderSearchCandidates,
   cascaderStepSearch,
 } from './cascader.search'
+import { assertCascaderPath, encodeCascaderPath } from './cascader.value'
 
 const parts = cascaderAnatomy.build()
 
@@ -256,8 +257,20 @@ export function connectCascader<T extends PropTypes>(
     },
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     setActivePath: next => send({ type: 'PATH.SET', path: next }),
-    select: path => send({ type: 'ITEM.SELECT', path }),
+    select: (path) => {
+      assertCascaderPath(path)
+      send({ type: 'ITEM.SELECT', path })
+    },
     clear: () => send({ type: 'VALUE.CLEAR' }),
+
+    getHiddenInputProps: input => normalize.input({
+      type: 'hidden',
+      ...parts['hidden-input'].attrs,
+      name: prop('name'),
+      form: prop('form'),
+      value: encodeCascaderPath(input.path),
+      disabled: disabled || undefined,
+    }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,

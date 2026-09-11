@@ -83,6 +83,8 @@ export const XhCascaderRoot = defineComponent({
     collection: { type: Array as PropType<CascaderNode[]>, default: undefined },
     value: { type: Array as PropType<CascaderValue>, default: undefined },
     defaultValue: { type: Array as PropType<CascaderValue>, default: undefined },
+    name: { type: String, default: undefined },
+    form: { type: String, default: undefined },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     expandTrigger: { type: String as PropType<CascaderExpandTrigger>, default: undefined },
@@ -131,7 +133,7 @@ export const XhCascaderRoot = defineComponent({
     })
     provideCascader(ctx)
 
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [slots.default?.({
       open: ctx.api.value.open,
       // levels 每层一列、层内节点各一条目，供作者渲染；columns 只读当前展开的列
       levels: ctx.api.value.levels,
@@ -151,7 +153,10 @@ export const XhCascaderRoot = defineComponent({
       setActivePath: ctx.api.value.setActivePath,
       select: ctx.api.value.select,
       clear: ctx.api.value.clear,
-    }))
+    }), ...ctx.api.value.value.map(path => h('input', {
+      ...ctx.api.value.getHiddenInputProps({ path }) as Record<string, unknown>,
+      key: JSON.stringify(path),
+    }))])
   },
 })
 

@@ -62,6 +62,8 @@ export interface XhCascaderRootProps extends RootElementProps {
   collection?: CascaderNode[]
   value?: CascaderValue
   defaultValue?: CascaderValue
+  name?: string
+  form?: string
   open?: boolean
   defaultOpen?: boolean
   expandTrigger?: CascaderExpandTrigger
@@ -93,6 +95,8 @@ export function XhCascaderRoot({
   collection,
   value,
   defaultValue,
+  name,
+  form,
   open,
   defaultOpen,
   expandTrigger,
@@ -124,6 +128,8 @@ export function XhCascaderRoot({
     collection,
     value,
     defaultValue,
+    name,
+    form,
     open,
     defaultOpen,
     expandTrigger,
@@ -152,7 +158,7 @@ export function XhCascaderRoot({
   const api = ctx.api
   return (
     <CascaderProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>, { ref: ctx.rootRef })}>
         {renderSlot(children, {
           open: api.open,
           // levels 每层一列、层内节点各一条目，供作者渲染；columns 只读当前展开的列
@@ -174,6 +180,7 @@ export function XhCascaderRoot({
           select: api.select,
           clear: api.clear,
         })}
+        {api.value.map(path => <input key={JSON.stringify(path)} {...api.getHiddenInputProps({ path }) as Record<string, unknown>} />)}
       </div>
     </CascaderProvider>
   )

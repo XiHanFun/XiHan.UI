@@ -73,7 +73,7 @@
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [级联选择](./cascader) | `cascader` | 21 | 25 | 16 |
+| [级联选择](./cascader) | `cascader` | 22 | 25 | 16 |
 | [复选框](./checkbox) | `checkbox` | 5 | 1 | 8 |
 | [复选框组](./checkbox-group) | `checkbox-group` | 7 | 3 | 9 |
 | [颜色选择器](./color-picker) | `color-picker` | 18 | 10 | 10 |

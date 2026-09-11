@@ -3,6 +3,7 @@ import { createAnatomy } from '@xihan-ui/core'
 
 export const cascaderAnatomy = createAnatomy('cascader', [
   'root',
+  'hidden-input',
   'label',
   'control',
   'trigger',

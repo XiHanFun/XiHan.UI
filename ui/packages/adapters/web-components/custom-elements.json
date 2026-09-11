@@ -4577,6 +4577,10 @@
               "name": "root"
             },
             {
+              "description": "宿主自动生成的逐路径原生表单出口，无需作者手写",
+              "name": "hidden-input"
+            },
+            {
               "description": "标题（aria-labelledby 目标）",
               "name": "label"
             },
@@ -4690,6 +4694,24 @@
               "type": {
                 "text": "CascaderValue | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "form"
             },
             {
               "kind": "field",
@@ -4887,6 +4909,16 @@
               "type": {
                 "text": "CascaderSchema['props']['translations'] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "formInputs",
+              "type": {
+                "text": "HTMLInputElement[]"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "[]"
             },
             {
               "kind": "field",
@@ -5222,6 +5254,22 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "原生字段名，每条选中路径作为 JSON 字符串数组独立提交",
+              "name": "name",
+              "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "关联的原生表单 ID，指定后覆盖祖先归属",
+              "name": "form",
+              "fieldName": "form"
+            },
             {
               "type": {
                 "text": "boolean | undefined"

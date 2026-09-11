@@ -17,6 +17,11 @@
 
 - `changeOnSelect` 决定中间层能不能直接作为结果。
 - `expandTrigger` 可改成悬停展开。
+- `name` 开启原生表单提交；每条已选路径生成一个同名隐藏字段，单选和多选均按 JSON 字符串数组编码，例如 `["华东","a,b"]`。通过 `FormData.getAll(name)` 取得各路径 JSON，再逐项解析；`separator` 只影响显示文字。
+- `value` / `defaultValue` 保留单路径字符串数组简写与路径集合两种正式写法；`setValue` 接收路径集合。路径必须非空且每段都是字符串，非法结构直接报错；零选中用 `[]`，不使用 `[[]]`，不猜测逗号字符串或隐式转换数字。
+- 异步候选尚未加载时仍保留已知选值，结构校验不以当前 `collection` 是否包含该路径为条件。
+- 三端根组件自动装配原生字段，零路径没有字段。`form` 指定同一文档或影子树内的表单 ID；无效 ID 不回退祖先。整体 `disabled` 不提交，只读已选值仍提交。
+- `form.reset()` 还原 `defaultValue`，保留当前浏览列、搜索和实际焦点，不主动关闭面板。受控值未声明默认值时保持业务数据；声明默认值时只通知重置意图，由业务回写。
 - 多选时 `cascade` 与 `checkedStrategy` 一对：前者决定勾父带不带子，后者决定回显给出哪一层。
 - 单选、多选、列项和搜索结果统一用末端对号表示选中；级联半选保留横线。选中正文不换色、不加粗，
   悬停、键盘高亮、焦点与展开路径只使用中性底，不叠加品牌选中面。
@@ -143,7 +148,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="cascader"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · `column` · `group` · `group-label` · `item` · `item-text` · `item-indicator` · `empty` · `loading` · `footer`
+`data-scope="cascader"`：`root` · `hidden-input` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · `column` · `group` · `group-label` · `item` · `item-text` · `item-indicator` · `empty` · `loading` · `footer`
 
 ## Props
 
@@ -152,6 +157,8 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `collection` | `CascaderNode[]` |  | 树数据，层级元信息与显示文本的唯一事实源。缺省为空树。 |
 | `value` | `CascaderValue` |  | 选中路径。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 单条路径是简写，内部一律归一成路径集合。 |
 | `defaultValue` | `CascaderValue` |  |  |
+| `name` | `string` |  | 原生字段名，每条选中路径提交一项 JSON 字符串数组。 |
+| `form` | `string` |  | 关联的原生表单 ID；指定后覆盖祖先表单归属。 |
 | `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `expandTrigger` | `CascaderExpandTrigger` |  | 子列由什么展开，默认 click。 |
@@ -215,7 +222,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `ITEM.EXPAND` · `ITEM.LOST` · `ITEM.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `PATH.SET` · `INPUT.CHANGE` · `SEARCH.HIGHLIGHT`
+**事件**：`FORM.RESET` · `OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `ITEM.EXPAND` · `ITEM.LOST` · `ITEM.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `PATH.SET` · `INPUT.CHANGE` · `SEARCH.HIGHLIGHT`
 
 **判据**：`isOpenControlled` · `isMultiple` · `staysOpenOnSelect`
 
@@ -256,6 +263,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `select` | `(path: string[]) => void` | 选中一条路径，与点条目同一语义（分支是否落值仍看 changeOnSelect）。 |
 | `clear` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
+| `getHiddenInputProps` | `(props: { path: readonly string[] }) => T['input']` | 每条路径独立编码，适配器按 value 渲染重复同名字段。 |
 | `getLabelProps` | `() => T['element']` |  |
 | `getControlProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |

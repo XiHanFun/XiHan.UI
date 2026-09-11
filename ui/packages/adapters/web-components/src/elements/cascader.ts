@@ -47,6 +47,8 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * `el.value = ['zhejiang','hangzhou']`）。
  *
  * @customElement xh-cascader
+ * @attr {string} name - 原生字段名，每条选中路径作为 JSON 字符串数组独立提交
+ * @attr {string} form - 关联的原生表单 ID，指定后覆盖祖先归属
  * @attr {boolean} open - 受控开合；缺省该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {'click'|'hover'} expand-trigger - 子列由点还是悬停展开，默认 click
@@ -71,6 +73,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @fires value-change - 选中路径集合变化；detail 为 `{ value: string[][] }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）
+ * @csspart hidden-input - 宿主自动生成的逐路径原生表单出口，无需作者手写
  * @csspart label - 标题（aria-labelledby 目标）
  * @csspart control - 触发按钮与清空按钮的收纳容器：描边、底色与聚焦环都落在这一层
  * @csspart trigger - role=combobox 的触发按钮，同时是定位锚点，须是原生 button
@@ -101,6 +104,8 @@ export class XhCascaderElement extends XhElement {
     collection: { attribute: false },
     value: { attribute: false },
     defaultValue: { attribute: false },
+    name: { converter: STRING_CONVERTER },
+    form: { converter: STRING_CONVERTER },
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     expandTrigger: { converter: STRING_CONVERTER, attribute: 'expand-trigger' },
@@ -128,6 +133,8 @@ export class XhCascaderElement extends XhElement {
   declare collection?: CascaderNode[]
   declare value?: CascaderValue
   declare defaultValue?: CascaderValue
+  declare name?: string
+  declare form?: string
   declare open?: boolean
   declare defaultOpen?: boolean
   declare expandTrigger?: CascaderExpandTrigger
@@ -150,6 +157,8 @@ export class XhCascaderElement extends XhElement {
   declare loop?: boolean
   declare direction?: Direction
   declare translations?: CascaderSchema['props']['translations']
+
+  private readonly formInputs: HTMLInputElement[] = []
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly cascaderScope = createScope(null, this.idGen)
@@ -202,6 +211,8 @@ export class XhCascaderElement extends XhElement {
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
+      name: this.name,
+      form: this.form,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       expandTrigger: this.expandTrigger,
@@ -377,6 +388,20 @@ export class XhCascaderElement extends XhElement {
   protected wire(): void {
     const api = connectCascader(this.ctrl.service, wcNormalize)
 
+    // 每条完整路径一个原生字段，空集合没有空字段；自动节点不进入作者部件发现。
+    while (this.formInputs.length > api.value.length) {
+      const input = this.formInputs.pop()!
+      this.spreader.release(input)
+      input.remove()
+    }
+    for (let index = 0; index < api.value.length; index++) {
+      const input = this.formInputs[index] ?? this.ownerDocument.createElement('input')
+      this.formInputs[index] = input
+      this.spreader.spread(input, api.getHiddenInputProps({ path: api.value[index]! }) as Record<string, unknown>)
+      if (input.parentElement !== this)
+        this.append(input)
+    }
+
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)
       if (el)
@@ -474,6 +499,11 @@ export class XhCascaderElement extends XhElement {
   }
 
   override disconnectedCallback(): void {
+    for (const input of this.formInputs) {
+      this.spreader.release(input)
+      input.remove()
+    }
+    this.formInputs.length = 0
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()

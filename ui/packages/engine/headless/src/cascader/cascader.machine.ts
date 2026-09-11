@@ -1,6 +1,6 @@
 import type { PositionResult } from '@xihan-ui/core'
 import type { CascaderFocusIntent, CascaderNodeMeta, CascaderSchema, CascaderValue } from './cascader.types'
-import { cascadeToggle, collapseChecked, itemValue, queryItems, setup } from '@xihan-ui/core'
+import { cascadeToggle, collapseChecked, itemValue, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition } from '../shared/overlay-shell'
@@ -14,6 +14,7 @@ import {
   cascaderStepColumn,
   cascaderTruncatePath,
 } from './cascader.columns'
+import { assertCascaderPath } from './cascader.value'
 
 const { createMachine } = setup<CascaderSchema>()
 
@@ -30,15 +31,23 @@ export const CASCADER_DEFAULT_SEPARATOR = ' / '
 function toPaths(input: CascaderValue | undefined): string[][] | undefined {
   if (input === undefined)
     return undefined
+  if (!Array.isArray(input))
+    throw new TypeError('[xh] Cascader 值必须是字符串路径或路径数组')
   if (input.length === 0)
     return []
-  if (Array.isArray(input[0]))
-    return (input as readonly (readonly string[])[]).map(path => [...path])
-  return [[...(input as readonly string[])]]
+  const paths = Array.isArray(input[0]) ? input : [input]
+  return Array.from(paths, (path) => {
+    assertCascaderPath(path)
+    return [...path]
+  })
 }
 
 /** 归一选中集合：单选截到长度 ≤ 1，多选按路径内容去重。 */
 function normalizeSelection(next: readonly (readonly string[])[], multiple: boolean): string[][] {
+  if (!Array.isArray(next))
+    throw new TypeError('[xh] Cascader 选中集合必须是路径数组')
+  for (const path of next)
+    assertCascaderPath(path)
   if (!multiple)
     return next.slice(0, 1).map(path => [...path])
   const seen = new Set<string>()
@@ -110,6 +119,7 @@ export const cascaderMachine = createMachine({
   },
   // 与开合无关、两个状态都认的事件；展开态另行声明的 ITEM.SELECT 会盖过这里那一条
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { actions: ['clearValue'] },
     'PATH.SET': { actions: ['setActivePath'] },
@@ -177,6 +187,8 @@ export const cascaderMachine = createMachine({
       },
     },
     actions: {
+      // 只还原表单值，保持当前浏览位置与实际 DOM 焦点，不擅自关闭受控浮层。
+      resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
 
@@ -314,8 +326,9 @@ export const cascaderMachine = createMachine({
 
       selectPath: ({ context, prop, event }) => {
         const e = event.current()
-        if (e.type !== 'ITEM.SELECT' || e.path.length === 0)
+        if (e.type !== 'ITEM.SELECT')
           return
+        assertCascaderPath(e.path)
         const meta = cascaderNodeAt(prop('collection') ?? [], e.path)
         // 分支只有在 changeOnSelect 或级联勾选打开时才落值；否则点分支纯粹是展开子列
         if (meta?.branch && !prop('changeOnSelect') && !(prop('multiple') && prop('cascade')))

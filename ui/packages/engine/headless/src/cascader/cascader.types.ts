@@ -156,6 +156,10 @@ export interface CascaderSchema extends MachineSchema {
      */
     value?: CascaderValue
     defaultValue?: CascaderValue
+    /** 原生字段名，每条选中路径提交一项 JSON 字符串数组。 */
+    name?: string
+    /** 关联的原生表单 ID；指定后覆盖祖先表单归属。 */
+    form?: string
     /** 展开态。给定即受控：内部不再自改，只发 onOpenChange。 */
     open?: boolean
     defaultOpen?: boolean
@@ -231,6 +235,7 @@ export interface CascaderSchema extends MachineSchema {
   refs: CascaderRefs
   state: 'open' | 'closed'
   event:
+    | { type: 'FORM.RESET' }
     | { type: 'OPEN', focus?: CascaderFocusIntent }
     | { type: 'TOGGLE', focus?: CascaderFocusIntent }
     | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' }
@@ -262,6 +267,7 @@ export interface CascaderSchema extends MachineSchema {
   tag: never
   guard: 'isOpenControlled' | 'isMultiple' | 'staysOpenOnSelect'
   action:
+    | 'resetToDefault'
     | 'invokeOnOpen'
     | 'invokeOnClose'
     | 'syncOpen'
@@ -333,6 +339,8 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   select: (path: string[]) => void
   clear: () => void
   getRootProps: () => T['element']
+  /** 每条路径独立编码，适配器按 value 渲染重复同名字段。 */
+  getHiddenInputProps: (props: { path: readonly string[] }) => T['input']
   getLabelProps: () => T['element']
   getControlProps: () => T['element']
   getTriggerProps: () => T['button']
