@@ -22838,6 +22838,35 @@
 }
 
 /* styles/menubar.css */
+/* 每份浮层皮肤独立携带同名关键帧，单独引入 menubar.css 时动画也完整。 */
+@keyframes xh-overlay-slide-in {
+  from {
+    opacity: 0;
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes xh-overlay-slide-out {
+  from {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  to {
+    opacity: 0;
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='menubar'] {
   --xh-menubar-skin: 1;
@@ -22943,6 +22972,14 @@
   /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
   --xh-_menubar-available-w: 100vw;
+  /* WC 子菜单仍可能住在父 positioner 内；先截断父层方向，避免斜向继承。 */
+  --xh-_overlay-enter-up: 0;
+  --xh-_overlay-enter-down: 0;
+  --xh-_overlay-enter-left: 0;
+  --xh-_overlay-enter-right: 0;
+
+  /* 自绘滚动条轨道保持透明，避免在磨砂面右缘叠出一条实体灰带。 */
+  --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
   z-index: var(--xh-menubar-layer, var(--xh-layer-popover));
@@ -22953,6 +22990,23 @@
 /* 锚点被滚出可视区：整个浮层随之收起 */
 [data-scope='menubar'][data-part='positioner'][data-hidden] {
   visibility: hidden;
+}
+
+/* 物理 placement 与定位引擎同口径，不随书写方向翻转。 */
+[data-scope='menubar'][data-part='positioner'][data-placement^='top'] {
+  --xh-_overlay-enter-down: 1;
+}
+
+[data-scope='menubar'][data-part='positioner'][data-placement^='bottom'] {
+  --xh-_overlay-enter-up: 1;
+}
+
+[data-scope='menubar'][data-part='positioner'][data-placement^='left'] {
+  --xh-_overlay-enter-right: 1;
+}
+
+[data-scope='menubar'][data-part='positioner'][data-placement^='right'] {
+  --xh-_overlay-enter-left: 1;
 }
 
 /* —— 尺寸 —— */
@@ -22996,6 +23050,7 @@
 }
 
 [data-scope='menubar'][data-part='content'] {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--xh-menubar-content-gap, var(--xh-list-option-gap));
@@ -23007,14 +23062,28 @@
   max-block-size: min(var(--xh-menubar-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menubar-available-h));
   padding-block: var(--xh-menubar-content-py, var(--xh-surface-pad-xs));
   padding-inline: var(--xh-menubar-content-px, var(--xh-surface-pad-xs));
-  border: var(--xh-stroke-thin) solid var(--xh-menubar-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-menubar-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-menubar-content-radius, var(--xh-shape-surface));
-  background: var(--xh-menubar-content-bg, var(--xh-bg-surface));
-  color: var(--xh-menubar-content-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-menubar-content-shadow, var(--xh-elevation-floating));
+  background: var(--xh-menubar-content-bg, var(--xh-material-frosted-bg));
+  color: var(--xh-menubar-content-fg, var(--xh-material-frosted-fg));
+  box-shadow: var(--xh-menubar-content-shadow, var(--xh-material-frosted-shadow));
+  -webkit-backdrop-filter: var(--xh-menubar-backdrop, var(--xh-material-frosted-backdrop));
+  backdrop-filter: var(--xh-menubar-backdrop, var(--xh-material-frosted-backdrop));
   /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
   overflow-y: auto;
   pointer-events: auto;
+}
+
+/* 顶光叠在真实四边 border 内侧；强制色撤掉装饰后，完整轮廓仍然存在。 */
+[data-scope='menubar'][data-part='content']::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: var(--xh-stroke-thin);
+  border-radius: inherit;
+  background: var(--xh-menubar-highlight, var(--xh-material-frosted-highlight));
+  pointer-events: none;
 }
 
 /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位。
@@ -23028,21 +23097,20 @@
   outline: none;
 }
 
-/* 展开时轻微涨开。只在切换到别张菜单时不重播——那由 data-state 的翻转天然保证：
-   一张关一张开，动画各跑各的 */
+/* 首开从锚点一侧淡入短移，不缩放整张菜单面。 */
 [data-scope='menubar'][data-part='content'][data-state='open'] {
   /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
-  will-change: opacity, scale;
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  will-change: opacity, translate;
+  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
-/* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来 */
+/* 末收向锚点一侧淡出；forwards 防止动画完成到真正隐藏之间闪回原样。 */
 [data-scope='menubar'][data-part='content'][data-state='closed'] {
-  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  will-change: opacity, translate;
+  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
-/* 在一排入口间换张时两侧都瞬时：交叉淡变读起来就是闪烁，且退场关键帧从不透明度 1
-   起跳，打断未播完的进场还会亮一下。原生菜单栏的成规——首开有进场、末收有退场、
+/* 在一排入口间换张时两侧都瞬时：交叉淡变读起来就是闪烁。原生菜单栏的成规——首开有进场、末收有退场、
    换张不播。没有动画时退场闸门当场落定，收起即藏 */
 [data-scope='menubar'][data-part='content'][data-instant] {
   animation: none;
@@ -23064,7 +23132,7 @@
   display: block;
   padding-block: var(--xh-menubar-group-label-py, var(--xh-space-1));
   padding-inline: var(--xh-menubar-group-label-px, var(--xh-_menubar-item-px));
-  color: var(--xh-menubar-group-label-fg, var(--xh-fg-subtle));
+  color: var(--xh-menubar-group-label-fg, var(--xh-material-frosted-fg-muted));
   font-size: var(--xh-menubar-group-label-font-size, var(--xh-text-caption-size));
   font-weight: var(--xh-menubar-group-label-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
@@ -23076,13 +23144,15 @@
 }
 
 [data-scope='menubar'][data-part='item'] {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--xh-menubar-item-gap, var(--xh-_menubar-item-gap));
+  column-gap: var(--xh-menubar-item-gap, var(--xh-_menubar-item-gap));
   padding-block: var(--xh-menubar-item-py, var(--xh-_menubar-item-py));
   padding-inline: var(--xh-menubar-item-px, var(--xh-_menubar-item-px));
+  border-inline-start: var(--xh-stroke-thick) solid transparent;
   border-radius: var(--xh-menubar-item-radius, var(--xh-shape-control));
-  color: var(--xh-menubar-item-fg, var(--xh-fg-default));
+  color: var(--xh-menubar-item-fg, var(--xh-material-frosted-fg));
   font-size: var(--xh-menubar-item-font-size, var(--xh-_menubar-font-size));
   line-height: var(--xh-menubar-item-leading, var(--xh-leading-normal));
   white-space: nowrap;
@@ -23103,22 +23173,26 @@
   background: var(--xh-menubar-item-bg-hover, var(--xh-bg-subtle));
 }
 
-/* 打开子菜单的触发条目是展开路径，走品牌淡底加粗强档。
+[data-scope='menubar'][data-part='item']:not([data-disabled]):active {
+  background: var(--xh-menubar-item-bg-pressed, var(--xh-bg-subtle-active));
+}
+
+/* 打开子菜单的触发条目是展开路径，走品牌淡底与始端指示强档，不改变字重。
    必须排在轻档之后：悬停或焦点回到它身上时同特指度靠书写顺序压过轻档 */
 [data-scope='menubar'][data-part='item']:not([data-disabled])[data-state='open'] {
   background: var(--xh-menubar-item-bg-active, var(--xh-_menubar-item-active-bg));
-  font-weight: var(--xh-menubar-item-active-font-weight, var(--xh-font-weight-semibold));
+  border-inline-start-color: var(--xh-menubar-item-path-indicator, var(--xh-_tone, var(--xh-bg-brand)));
 }
 
 /* 带子菜单的条目行尾画右向小箭头：不点开也看得出还有下一级。
-   位置靠 margin 顶到行尾，图形取兜底字形令牌 */
+   箭头固定在最后一条显式轨，图形取兜底字形令牌 */
 [data-scope='menubar'][data-part='item'][aria-haspopup='menu']::after {
   content: '';
-  flex: none;
-  margin-inline-start: auto;
+  grid-column: -2 / -1;
+  grid-row: 1;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  background-color: currentColor;
+  background-color: var(--xh-menubar-submenu-indicator-fg, var(--xh-material-frosted-fg-muted));
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
   mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
 }
@@ -23135,11 +23209,12 @@
 
 [data-scope='menubar'][data-part='item'][data-disabled] {
   color: var(--xh-fg-disabled);
+  cursor: not-allowed;
 }
 
 [data-scope='menubar'][data-part='item-text'] {
-  display: block;
-  flex: 1;
+  grid-column: 1;
+  min-inline-size: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -23149,13 +23224,15 @@
   display: none;
 }
 
-/* 标记位（勾选符号 / 图标 / 快捷键提示）：定宽占位，切换内容不引起行宽抖动 */
+/* 标记位（勾选符号 / 图标）：定宽占位，切换内容不引起行宽抖动 */
 [data-scope='menubar'][data-part='item-indicator'] {
   display: inline-flex;
-  flex: none;
+  grid-column: 1;
+  grid-row: 1;
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-menubar-item-indicator-size, var(--xh-control-indicator-size));
+  block-size: var(--xh-menubar-item-indicator-size, var(--xh-control-indicator-size));
   color: var(--xh-menubar-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)));
 }
 
@@ -23169,8 +23246,10 @@
 
 /* 副文本另起一行：整行占满，把条目的一行内容折成两行 */
 [data-scope='menubar'][data-part='item-description'] {
-  flex: 1 0 100%;
-  color: var(--xh-menubar-item-description-fg, var(--xh-fg-muted));
+  grid-column: 1 / -1;
+  grid-row: 2;
+  min-inline-size: 0;
+  color: var(--xh-menubar-item-description-fg, var(--xh-material-frosted-fg-muted));
   font-size: var(--xh-menubar-item-description-font-size, var(--xh-text-caption-size));
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -23185,9 +23264,68 @@
   color: var(--xh-fg-disabled);
 }
 
-/* 带副文本的条目改成两行排布：主文字与标记位在上一行，副文本占满下一行 */
-[data-scope='menubar'][data-part='item']:has([data-scope='menubar'][data-part='item-description']) {
-  flex-wrap: wrap;
+/* 当前菜单层出现直属 indicator 时，所有同层条目统一预留首列；别张菜单与子菜单不参与。 */
+[data-scope='menubar'][data-part='content']:has(
+  > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
+  > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
+) > [data-scope='menubar'][data-part='item'],
+[data-scope='menubar'][data-part='content']:has(
+  > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
+  > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
+) > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] {
+  grid-template-columns:
+    var(--xh-menubar-item-leading-size, var(--xh-menubar-item-indicator-size, var(--xh-control-indicator-size)))
+    minmax(0, 1fr)
+    auto;
+}
+
+/* item-text 可缺省；空占位认领首列，裸匿名内容便会自动落入正文列。 */
+[data-scope='menubar'][data-part='content']:has(
+  > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
+  > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
+) > [data-scope='menubar'][data-part='item']::before,
+[data-scope='menubar'][data-part='content']:has(
+  > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
+  > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
+) > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item']::before {
+  content: '';
+  grid-column: 1;
+  grid-row: 1;
+  inline-size: var(--xh-menubar-item-leading-size, var(--xh-menubar-item-indicator-size, var(--xh-control-indicator-size)));
+}
+
+[data-scope='menubar'][data-part='content']:has(
+  > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
+  > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
+) > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-text'],
+[data-scope='menubar'][data-part='content']:has(
+  > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
+  > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
+) > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-text'] {
+  grid-column: 2;
+}
+
+[data-scope='menubar'][data-part='content']:has(
+  > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
+  > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
+) > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-description'],
+[data-scope='menubar'][data-part='content']:has(
+  > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
+  > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
+) > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-description'] {
+  grid-column: 2 / -1;
+}
+
+[data-scope='menubar'][data-part='content']:has(
+  > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
+  > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
+) > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='group-label'] {
+  padding-inline-start: calc(
+    var(--xh-menubar-group-label-px, var(--xh-_menubar-item-px))
+    + var(--xh-stroke-thick)
+    + var(--xh-menubar-group-label-leading-size, var(--xh-menubar-item-indicator-size, var(--xh-control-indicator-size)))
+    + var(--xh-menubar-group-label-leading-gap, var(--xh-menubar-item-gap, var(--xh-_menubar-item-gap)))
+  );
 }
 
 /* 箭头的底色与描边色，几何在 overlay-arrow.css。
@@ -23199,8 +23337,8 @@
   --xh-_overlay-arrow-x: var(--xh-_menubar-arrow-x);
   --xh-_overlay-arrow-y: var(--xh-_menubar-arrow-y);
 
-  background: var(--xh-menubar-content-bg, var(--xh-bg-surface));
-  border: var(--xh-stroke-thin) solid var(--xh-menubar-border, var(--xh-border-default));
+  background: var(--xh-menubar-content-bg, var(--xh-material-frosted-bg));
+  border: var(--xh-stroke-thin) solid var(--xh-menubar-border, var(--xh-material-frosted-border));
 }
 
 /* 分隔线横跨菜单，与菜单栏自身的 orientation 无关：菜单永远是一列条目。
@@ -23208,7 +23346,8 @@
 [data-scope='menubar'][data-part='separator'] {
   block-size: var(--xh-menubar-separator-thickness, var(--xh-stroke-thin));
   margin-block: var(--xh-menubar-separator-my, var(--xh-space-0_5));
-  background: var(--xh-menubar-separator-color, var(--xh-border-default));
+  border-radius: var(--xh-menubar-separator-radius, var(--xh-shape-pill));
+  background: var(--xh-menubar-separator-color, var(--xh-material-frosted-separator));
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -23221,31 +23360,6 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-}
-
-/* 自带前缀独占一个名字，不动公共的那份关键帧 */
-@keyframes xh-pop-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-  }
-
-  to {
-    opacity: 1;
-    scale: 1;
-  }
-}
-
-@keyframes xh-pop-out {
-  from {
-    opacity: 1;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    scale: var(--xh-motion-scale-exit);
-  }
 }
 
 @media print {

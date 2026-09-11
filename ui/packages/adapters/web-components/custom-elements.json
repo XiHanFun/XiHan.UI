@@ -27686,6 +27686,9 @@
               "name": "--xh-menubar-arrow-size"
             },
             {
+              "name": "--xh-menubar-backdrop"
+            },
+            {
               "name": "--xh-menubar-bg"
             },
             {
@@ -27731,22 +27734,31 @@
               "name": "--xh-menubar-group-label-font-weight"
             },
             {
+              "name": "--xh-menubar-group-label-leading-gap"
+            },
+            {
+              "name": "--xh-menubar-group-label-leading-size"
+            },
+            {
               "name": "--xh-menubar-group-label-px"
             },
             {
               "name": "--xh-menubar-group-label-py"
             },
             {
-              "name": "--xh-menubar-icon-size"
+              "name": "--xh-menubar-highlight"
             },
             {
-              "name": "--xh-menubar-item-active-font-weight"
+              "name": "--xh-menubar-icon-size"
             },
             {
               "name": "--xh-menubar-item-bg-active"
             },
             {
               "name": "--xh-menubar-item-bg-hover"
+            },
+            {
+              "name": "--xh-menubar-item-bg-pressed"
             },
             {
               "name": "--xh-menubar-item-description-fg"
@@ -27771,6 +27783,12 @@
             },
             {
               "name": "--xh-menubar-item-leading"
+            },
+            {
+              "name": "--xh-menubar-item-leading-size"
+            },
+            {
+              "name": "--xh-menubar-item-path-indicator"
             },
             {
               "name": "--xh-menubar-item-px"
@@ -27809,7 +27827,13 @@
               "name": "--xh-menubar-separator-my"
             },
             {
+              "name": "--xh-menubar-separator-radius"
+            },
+            {
               "name": "--xh-menubar-separator-thickness"
+            },
+            {
+              "name": "--xh-menubar-submenu-indicator-fg"
             },
             {
               "name": "--xh-menubar-trigger-bg-active"

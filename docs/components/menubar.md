@@ -18,6 +18,12 @@
 - 一张菜单展开后，指针移到相邻入口即直接换张展开，不必先关再开。
 - 禁用走 `aria-disabled` 而非原生 `disabled`：禁用的入口仍聚焦得上、仍是方向键的起点。
 - `orientation` 竖排时上下键在入口之间走，左右键改为展开本项的菜单。
+- 顶层控制条保持轻量导航表面；每张弹出菜单使用 M2 磨砂材质，箭头与面板同色同边界且不重复模糊。
+- 菜单条目的悬停/键盘锚点、按下和打开路径是三档反馈；打开路径用始端色线表达，不改变字重。
+- 同一张菜单只要提供了 `item-indicator`，直属条目与组标题就统一留出标记列；正文、说明和裸内容
+  从同一列开始并截断，子菜单箭头固定在末列，不会被另一张菜单或嵌套子菜单反向撑开。
+- 首次展开与最终收起沿实际 placement 短移淡变，不缩放整张面；在顶层入口之间换张仍保持瞬时交接，
+  避免两张菜单交叉动画造成闪烁。
 
 ## 示例
 
@@ -265,11 +271,11 @@ XhMenubarSub 在菜单栏的一张菜单里再嵌一层：触发条目双重身�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-menubar-arrow-size` · `--xh-menubar-bg` · `--xh-menubar-border` · `--xh-menubar-content-bg` · `--xh-menubar-content-fg` · `--xh-menubar-content-gap` · `--xh-menubar-content-px` · `--xh-menubar-content-py` · `--xh-menubar-content-radius` · `--xh-menubar-content-shadow` · `--xh-menubar-fg` · `--xh-menubar-gap` · `--xh-menubar-group-gap` · `--xh-menubar-group-label-fg` · `--xh-menubar-group-label-font-size` · `--xh-menubar-group-label-font-weight` · `--xh-menubar-group-label-px` · `--xh-menubar-group-label-py` · `--xh-menubar-icon-size` · `--xh-menubar-item-active-font-weight` · `--xh-menubar-item-bg-active` · `--xh-menubar-item-bg-hover` · `--xh-menubar-item-description-fg` · `--xh-menubar-item-description-font-size` · `--xh-menubar-item-fg` · `--xh-menubar-item-font-size` · `--xh-menubar-item-gap` · `--xh-menubar-item-indicator-fg` · `--xh-menubar-item-indicator-size` · `--xh-menubar-item-leading` · `--xh-menubar-item-px` · `--xh-menubar-item-py` · `--xh-menubar-item-radius` · `--xh-menubar-layer` · `--xh-menubar-max-h` · `--xh-menubar-max-w` · `--xh-menubar-min-w` · `--xh-menubar-px` · `--xh-menubar-py` · `--xh-menubar-radius` · `--xh-menubar-separator-color` · `--xh-menubar-separator-my` · `--xh-menubar-separator-thickness` · `--xh-menubar-trigger-bg-active` · `--xh-menubar-trigger-bg-hover` · `--xh-menubar-trigger-font-size` · `--xh-menubar-trigger-gap` · `--xh-menubar-trigger-px` · `--xh-menubar-trigger-py` · `--xh-menubar-trigger-radius`
+`--xh-menubar-arrow-size` · `--xh-menubar-backdrop` · `--xh-menubar-bg` · `--xh-menubar-border` · `--xh-menubar-content-bg` · `--xh-menubar-content-fg` · `--xh-menubar-content-gap` · `--xh-menubar-content-px` · `--xh-menubar-content-py` · `--xh-menubar-content-radius` · `--xh-menubar-content-shadow` · `--xh-menubar-fg` · `--xh-menubar-gap` · `--xh-menubar-group-gap` · `--xh-menubar-group-label-fg` · `--xh-menubar-group-label-font-size` · `--xh-menubar-group-label-font-weight` · `--xh-menubar-group-label-leading-gap` · `--xh-menubar-group-label-leading-size` · `--xh-menubar-group-label-px` · `--xh-menubar-group-label-py` · `--xh-menubar-highlight` · `--xh-menubar-icon-size` · `--xh-menubar-item-bg-active` · `--xh-menubar-item-bg-hover` · `--xh-menubar-item-bg-pressed` · `--xh-menubar-item-description-fg` · `--xh-menubar-item-description-font-size` · `--xh-menubar-item-fg` · `--xh-menubar-item-font-size` · `--xh-menubar-item-gap` · `--xh-menubar-item-indicator-fg` · `--xh-menubar-item-indicator-size` · `--xh-menubar-item-leading` · `--xh-menubar-item-leading-size` · `--xh-menubar-item-path-indicator` · `--xh-menubar-item-px` · `--xh-menubar-item-py` · `--xh-menubar-item-radius` · `--xh-menubar-layer` · `--xh-menubar-max-h` · `--xh-menubar-max-w` · `--xh-menubar-min-w` · `--xh-menubar-px` · `--xh-menubar-py` · `--xh-menubar-radius` · `--xh-menubar-separator-color` · `--xh-menubar-separator-my` · `--xh-menubar-separator-radius` · `--xh-menubar-separator-thickness` · `--xh-menubar-submenu-indicator-fg` · `--xh-menubar-trigger-bg-active` · `--xh-menubar-trigger-bg-hover` · `--xh-menubar-trigger-font-size` · `--xh-menubar-trigger-gap` · `--xh-menubar-trigger-px` · `--xh-menubar-trigger-py` · `--xh-menubar-trigger-radius`
 
 ## 动效
 
-关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -286,7 +292,13 @@ XhMenubarSub 在菜单栏的一张菜单里再嵌一层：触发条目双重身�
 ## 最佳实践
 
 - 入口名用单个名词，宽度尽量接近，避免展开时整排跳动。
-- 常用命令在菜单里也标出快捷键，否则用户学不会绕开菜单栏。
+- 有标记位的菜单应给同层条目都保留 `item-indicator` 节点并用 `hidden` 切换内容，避免运行期增删节点
+  让整张菜单的正文列来回移动。
+
+### 当前边界
+
+- 当前 anatomy 没有独立的 shortcut、trailing、checkbox/radio item 或单条 danger tone 部件；任意子节点
+  可以显示附加内容，但没有稳定部件名、对齐轨和可访问合同，不能把临时 span 或 CSS 伪元素当成公开 API。
 
 ## 反模式
 

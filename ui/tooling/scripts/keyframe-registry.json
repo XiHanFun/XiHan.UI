@@ -362,22 +362,26 @@
       "content": "from{opacity:0;translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;translate:0 0}",
       "definedIn": [
         "context-menu.css",
-        "menu.css"
+        "menu.css",
+        "menubar.css"
       ],
       "consumers": [
         "context-menu",
-        "menu"
+        "menu",
+        "menubar"
       ]
     },
     "xh-overlay-slide-out": {
       "content": "from{opacity:1;translate:0 0}to{opacity:0;translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}",
       "definedIn": [
         "context-menu.css",
-        "menu.css"
+        "menu.css",
+        "menubar.css"
       ],
       "consumers": [
         "context-menu",
-        "menu"
+        "menu",
+        "menubar"
       ]
     },
     "xh-pop-in": {
@@ -388,7 +392,6 @@
         "context-menu.css",
         "float-button.css",
         "floating-panel.css",
-        "menubar.css",
         "navigation-menu.css",
         "pagination.css",
         "side-nav.css"
@@ -398,7 +401,6 @@
         "color-picker",
         "float-button",
         "floating-panel",
-        "menubar",
         "navigation-menu",
         "pagination",
         "side-nav"
@@ -416,7 +418,6 @@
         "floating-panel.css",
         "hover-card.css",
         "mention.css",
-        "menubar.css",
         "navigation-menu.css",
         "pagination.css",
         "popconfirm.css",
@@ -437,7 +438,6 @@
         "floating-panel",
         "hover-card",
         "mention",
-        "menubar",
         "navigation-menu",
         "pagination",
         "popconfirm",
