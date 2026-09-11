@@ -63,6 +63,8 @@ export const XhTransferRoot = defineComponent({
     collection: { type: Array as PropType<TransferItem[]>, default: undefined },
     value: { type: Array as PropType<string[]>, default: undefined },
     defaultValue: { type: Array as PropType<string[]>, default: undefined },
+    name: { type: String, default: undefined },
+    form: { type: String, default: undefined },
     selection: { type: Array as PropType<string[]>, default: undefined },
     defaultSelection: { type: Array as PropType<string[]>, default: undefined },
     searchable: Boolean,
@@ -102,7 +104,7 @@ export const XhTransferRoot = defineComponent({
       onSelectionChange: notifySelection,
     })
     provideTransfer(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [slots.default?.({
       value: ctx.api.value.value,
       selection: ctx.api.value.selection,
       sourceItems: ctx.api.value.visibleItems('source'),
@@ -115,7 +117,10 @@ export const XhTransferRoot = defineComponent({
       toggle: ctx.api.value.toggle,
       toggleAll: ctx.api.value.toggleAll,
       move: ctx.api.value.move,
-    }))
+    }), ...ctx.api.value.value.map(value => h('input', {
+      ...ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown>,
+      key: value,
+    }))])
   },
 })
 

@@ -1,6 +1,6 @@
 import type { ContextFacade, Params, PropFn } from '@xihan-ui/core'
 import type { TransferSchema, TransferSide } from './transfer.types'
-import { applySelection, setup } from '@xihan-ui/core'
+import { applySelection, resetDeclaredValue, setup } from '@xihan-ui/core'
 import {
   transferCheckedValues,
   transferIsCheckable,
@@ -94,6 +94,9 @@ export const transferMachine = createMachine({
     targetFocusedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
+  on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
+  },
   states: {
     idle: {
       // 省略 target：只跑 actions，不换状态
@@ -111,6 +114,13 @@ export const transferMachine = createMachine({
   },
   implementations: {
     actions: {
+      resetToDefault: (params) => {
+        resetDeclaredValue(params, 'value', 'value', 'defaultValue')
+        resetDeclaredValue(params, 'selection', 'selection', 'defaultSelection')
+        for (const key of ['selectionAnchor', 'selectionBaseline', 'sourceQuery', 'targetQuery', 'sourceFocusedValue', 'targetFocusedValue'] as const)
+          params.context.reset(key)
+      },
+
       setValue: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'VALUE.SET')
