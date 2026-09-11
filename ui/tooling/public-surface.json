@@ -4570,7 +4570,6 @@
       "dataState",
       "declaredItemDisabled",
       "declaresFormReset",
-      "dispatchCancelable",
       "easing",
       "ensurePortalRoot",
       "ensureStateIndex",
