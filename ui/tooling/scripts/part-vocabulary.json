@@ -486,6 +486,7 @@
       "calendar"
     ],
     "hidden-input": [
+      "cascader",
       "checkbox",
       "checkbox-group",
       "color-picker",
@@ -504,6 +505,7 @@
       "time-field",
       "time-picker",
       "toggle-group",
+      "transfer",
       "tree-select"
     ],
     "hidden-select": [
