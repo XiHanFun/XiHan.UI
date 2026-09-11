@@ -19,7 +19,7 @@ const ROLE = /--xh-elevation-(raised|lifted|floating|sheet)\b/
 // M1 是内容面贴地接触影，独立于浮层海拔；只允许在已登记的消费部件使用。
 const MATERIAL_SOFT = /--xh-material-soft-shadow\b/
 // M2 是锚定浮层的材质配方，海拔等价于 floating；单列名字才能拦住组件退回普通实体投影。
-const MATERIAL_FROSTED = /--xh-material-frosted-shadow\b/
+const MATERIAL_FROSTED = /--xh-material-frosted-(?:compact-)?shadow\b/
 /**
  * 使用者槽包着角色令牌：var(--xh-<组件>-…, var(--xh-elevation-<role>))。
  * 允许套多层：加法式改名把新槽名排在外层、旧名留在它的兜底位上，链因此不止一层。
@@ -74,7 +74,7 @@ const EXPECTED = {
   'tag': { root: ['soft'] },
   'time-picker': { content: ['floating'] },
   'toast': { root: ['sheet'] },
-  'tooltip': { content: ['floating'] },
+  'tooltip': { content: ['frosted'] },
   'tour': { content: ['sheet'] },
   'tree-select': { content: ['floating'] },
 }
@@ -110,7 +110,7 @@ for (const file of files) {
         continue
       }
       if (decl[1] === 'box-shadow' && !SLOTTED.test(value)
-        && !/^var\(--xh-[a-z][a-z0-9-]*,\s*var\(--xh-material-(?:soft|frosted)-shadow\)\)$/.test(value)) {
+        && !/^var\(--xh-[a-z][a-z0-9-]*,\s*var\(--xh-material-(?:soft|frosted(?:-compact)?)-shadow\)\)$/.test(value)) {
         problems.push(`${file}  ${selector.slice(0, 60)}  box-shadow: ${value.slice(0, 60)}  —— 没给使用者留 --xh-<组件>-…-shadow 槽`)
       }
       // 这条规则落在哪个部件上：取选择器里最后一个 data-part，那才是被样式作用的那个

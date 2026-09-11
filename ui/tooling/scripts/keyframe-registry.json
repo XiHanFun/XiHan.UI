@@ -338,7 +338,6 @@
         "popover.css",
         "select.css",
         "time-picker.css",
-        "tooltip.css",
         "tour.css",
         "tree-select.css"
       ],
@@ -353,7 +352,6 @@
         "popover",
         "select",
         "time-picker",
-        "tooltip",
         "tour",
         "tree-select"
       ]
@@ -363,12 +361,14 @@
       "definedIn": [
         "context-menu.css",
         "menu.css",
-        "menubar.css"
+        "menubar.css",
+        "tooltip.css"
       ],
       "consumers": [
         "context-menu",
         "menu",
-        "menubar"
+        "menubar",
+        "tooltip"
       ]
     },
     "xh-overlay-slide-out": {
@@ -376,12 +376,14 @@
       "definedIn": [
         "context-menu.css",
         "menu.css",
-        "menubar.css"
+        "menubar.css",
+        "tooltip.css"
       ],
       "consumers": [
         "context-menu",
         "menu",
-        "menubar"
+        "menubar",
+        "tooltip"
       ]
     },
     "xh-pop-in": {
@@ -425,7 +427,6 @@
         "select.css",
         "side-nav.css",
         "time-picker.css",
-        "tooltip.css",
         "tour.css",
         "tree-select.css"
       ],
@@ -445,7 +446,6 @@
         "select",
         "side-nav",
         "time-picker",
-        "tooltip",
         "tour",
         "tree-select"
       ]

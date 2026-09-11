@@ -48,7 +48,6 @@ const COLOR_LITERAL_OK = new Set(['color-picker.css'])
 const FOREGROUND_PROP = /^\s*(?:color|-webkit-text-fill-color)\s*:/
 const BG_AS_FOREGROUND_OK = {
   'heatmap.css': '提示气泡是反白的实心面，字色取的就是面色',
-  'tooltip.css': '同上：一行字的反色气泡',
 }
 const roleSwaps = []
 const roleOkSeen = new Set()

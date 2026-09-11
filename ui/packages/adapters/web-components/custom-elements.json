@@ -51046,13 +51046,22 @@
               "name": "--xh-tooltip-arrow-size"
             },
             {
+              "name": "--xh-tooltip-backdrop"
+            },
+            {
               "name": "--xh-tooltip-bg"
+            },
+            {
+              "name": "--xh-tooltip-border"
             },
             {
               "name": "--xh-tooltip-fg"
             },
             {
               "name": "--xh-tooltip-font-size"
+            },
+            {
+              "name": "--xh-tooltip-highlight"
             },
             {
               "name": "--xh-tooltip-layer"
