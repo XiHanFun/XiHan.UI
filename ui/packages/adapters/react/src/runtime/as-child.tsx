@@ -1,7 +1,7 @@
-import type { ReactElement, ReactNode, Ref } from 'react'
-import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
+import type { ReactElement, ReactNode } from 'react'
+import { isEventHandlerKey } from '@xihan-ui/core'
 import { Children, cloneElement, Fragment, isValidElement } from 'react'
-import { mergeReactProps } from './merge-props'
+import { mergePartProps, mergeReactProps } from './merge-props'
 
 /**
  * asChild：部件不再渲染自己的包裹元素，把该挂的属性合到作者给的那个子节点上。
@@ -10,14 +10,16 @@ import { mergeReactProps } from './merge-props'
  * <button>——那是非法嵌套，浏览器会拆开它，事件与焦点都不对。asChild 是唯一的正解。
  */
 
-/** 滤掉字符串与布尔，片段展开，只留能挂属性的元素。 */
-function attributable(children: ReactNode): ReactElement[] {
+/** 只忽略空白与空占位；片段展开后不得夹带会被丢弃的可见文本。 */
+function attributable(children: ReactNode, scope: string): ReactElement[] {
   const out: ReactElement[] = []
   for (const node of Children.toArray(children)) {
-    if (!isValidElement(node))
+    if (typeof node === 'string' && node.trim() === '')
       continue
+    if (!isValidElement(node))
+      throw new Error(`[xh] ${scope} asChild 需要恰好一个可挂载子节点，不能包含非空文本或其他不可挂载内容`)
     if (node.type === Fragment) {
-      out.push(...attributable((node.props as { children?: ReactNode }).children))
+      out.push(...attributable((node.props as { children?: ReactNode }).children, scope))
       continue
     }
     out.push(node)
@@ -36,23 +38,16 @@ export function carriesOwnAnatomy(node: ReactElement): boolean {
  * @param children 作者给的内容
  * @param props 部件该挂的属性（含 ref）
  * @param scope 部件所属组件名，只用于诊断文案
- * @returns 合并后的元素；子节点不合规时返回 null，由调用方退回默认渲染
+ * @returns 合并后的元素；子节点不合规时抛错
  */
 export function mergeIntoChild(
   children: ReactNode,
   props: Record<string, unknown>,
   scope: string,
-): ReactElement | null {
-  const candidates = attributable(children)
-  if (candidates.length !== 1) {
-    reportDiagnostic({
-      code: DIAGNOSTIC_CODES.warn,
-      level: 'warn',
-      scope,
-      message: `asChild 需要恰好一个子节点，实际是 ${candidates.length} 个；已退回默认渲染。`,
-    })
-    return null
-  }
+): ReactElement {
+  const candidates = attributable(children, scope)
+  if (candidates.length !== 1)
+    throw new Error(`[xh] ${scope} asChild 需要恰好一个可挂载子节点，实际是 ${candidates.length} 个`)
   const child = candidates[0]!
 
   // 子节点自带解剖标记时不覆盖它，只落接线属性；否则整套属性都给它
@@ -71,10 +66,12 @@ export function mergeIntoChild(
   //
   // ref 两边都要拿到节点：React 19 里 ref 是普通 prop，直接后盖前会让作者那一份收不到。
   const childProps = child.props as Record<string, unknown>
-  const merged = mergeReactProps(
-    { ...childProps, ref: (child as { ref?: Ref<unknown> }).ref },
-    own,
-  )
+  const merged = mergeReactProps(childProps, own)
+  const events = mergePartProps(own, childProps)
+  for (const key of Object.keys(events)) {
+    if (isEventHandlerKey(key))
+      merged[key] = events[key]
+  }
   return cloneElement(child, merged)
 }
 
@@ -84,7 +81,7 @@ export interface AsChildProps {
 }
 
 /**
- * 部件的渲染出口：开了 asChild 且子节点合规就合到子节点上，否则按 fallback 渲染。
+ * 部件的渲染出口：开启 asChild 后必须提供合法子节点，否则抛错；未开启时用默认元素。
  * 合并顺序与不开 asChild 时一致，两条路产出的属性相同。
  */
 export function renderAsChild(
@@ -94,10 +91,7 @@ export function renderAsChild(
   scope: string,
   fallback: (props: Record<string, unknown>, children: ReactNode) => ReactElement,
 ): ReactNode {
-  if (asChild) {
-    const merged = mergeIntoChild(children, props, scope)
-    if (merged)
-      return merged
-  }
+  if (asChild)
+    return mergeIntoChild(children, props, scope)
   return fallback(props, children)
 }

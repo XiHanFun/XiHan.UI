@@ -59,6 +59,8 @@ export function mergePartProps<T extends Dict>(part: Partial<T>, author: Partial
       const b = ours as (...args: unknown[]) => void
       merged[key] = (...args: unknown[]) => {
         a(...args)
+        if ((args[0] as { defaultPrevented?: boolean } | null | undefined)?.defaultPrevented)
+          return
         b(...args)
       }
     }

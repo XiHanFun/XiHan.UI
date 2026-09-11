@@ -1,6 +1,7 @@
-import type { VNode } from 'vue'
-import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
+import type { VNode, VNodeChild } from 'vue'
+import { isEventHandlerKey } from '@xihan-ui/core'
 import { cloneVNode, Comment, Fragment, Text } from 'vue'
+import { mergePartProps } from './merge-props'
 
 /**
  * asChild：部件不再渲染自己的包裹元素，把该挂的属性合到作者给的那个子节点上。
@@ -9,14 +10,30 @@ import { cloneVNode, Comment, Fragment, Text } from 'vue'
  * <button>——那是非法嵌套，浏览器会拆开它，事件与焦点都不对。asChild 是唯一的正解。
  */
 
-/** 滤掉注释与纯文本，片段展开，只留能挂属性的节点。 */
-function attributable(nodes: readonly VNode[]): VNode[] {
+/** 只忽略注释、空白与空占位；片段内的可见文本同样必须明确拒绝。 */
+function attributable(nodes: readonly VNodeChild[], scope: string): VNode[] {
   const out: VNode[] = []
   for (const node of nodes) {
-    if (node.type === Comment || node.type === Text)
+    if (node == null || typeof node === 'boolean')
       continue
+    if (Array.isArray(node)) {
+      out.push(...attributable(node, scope))
+      continue
+    }
+    if (typeof node === 'string' || typeof node === 'number') {
+      if (typeof node === 'string' && node.trim() === '')
+        continue
+      throw new Error(`[xh] ${scope} asChild 需要恰好一个可挂载子节点，不能包含非空文本`)
+    }
+    if (node.type === Comment)
+      continue
+    if (node.type === Text) {
+      if (String(node.children ?? '').trim() === '')
+        continue
+      throw new Error(`[xh] ${scope} asChild 需要恰好一个可挂载子节点，不能包含非空文本`)
+    }
     if (node.type === Fragment && Array.isArray(node.children))
-      out.push(...attributable(node.children as VNode[]))
+      out.push(...attributable(node.children as VNodeChild[], scope))
     else
       out.push(node)
   }
@@ -43,19 +60,12 @@ function unwrapElement(value: unknown): unknown {
  * @param nodes 默认插槽产出
  * @param props 部件该挂的属性（含 ref）
  * @param scope 部件所属组件名，只用于诊断文案
- * @returns 合并后的节点；子节点不合规时返回 null，由调用方退回默认渲染
+ * @returns 合并后的节点；子节点不合规时抛错
  */
-export function mergeIntoChild(nodes: readonly VNode[] | undefined, props: Record<string, unknown>, scope: string): VNode | null {
-  const candidates = attributable(nodes ?? [])
-  if (candidates.length !== 1) {
-    reportDiagnostic({
-      code: DIAGNOSTIC_CODES.warn,
-      level: 'warn',
-      scope,
-      message: `asChild 需要恰好一个子节点，实际是 ${candidates.length} 个；已退回默认渲染。`,
-    })
-    return null
-  }
+export function mergeIntoChild(nodes: readonly VNode[] | undefined, props: Record<string, unknown>, scope: string): VNode {
+  const candidates = attributable(nodes ?? [], scope)
+  if (candidates.length !== 1)
+    throw new Error(`[xh] ${scope} asChild 需要恰好一个可挂载子节点，实际是 ${candidates.length} 个`)
   const child = candidates[0]!
 
   // 子节点自带解剖标记时不覆盖它，只落接线属性；否则整套属性都给它
@@ -74,5 +84,12 @@ export function mergeIntoChild(nodes: readonly VNode[] | undefined, props: Recor
   // cloneVNode 把子节点自己的同名处理器排在传进来这一份的前面，也就是作者先跑、部件后跑；
   // 传进来的 props 已经把写在部件上的那一份按同一个先后合过（mergePartProps），
   // 所以写在子节点上还是写在部件上，作者的处理器都在部件之前。
-  return cloneVNode(child, merged, true)
+  const cloned = cloneVNode(child, merged, true)
+  // cloneVNode 默认无条件串接事件；改用作者可取消的部件合并，其他属性和双方 ref 保留。
+  const events = mergePartProps(merged, child.props ?? {})
+  for (const key of Object.keys(events)) {
+    if (isEventHandlerKey(key))
+      cloned.props![key] = events[key]
+  }
+  return cloned
 }

@@ -54,7 +54,9 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@
 </XhDialogTrigger>
 ```
 
-props 合并的顺序是子元素在先、部件在后：同名事件处理器两边都会跑，作者那个先跑。
+同名事件先运行作者处理器；作者调用 `preventDefault()` 后，不再运行部件内部动作。这条规则同时适用于写在部件和 `asChild` 子元素上的处理器。普通回调仍保留全部参数，ref 的登记和清理不受事件取消影响。
+
+`asChild` 必须包含恰好一个可挂载子元素，Fragment 会展开后检查，仅忽略空白和条件占位。零个或多个元素、元素旁并列的非空文本或数字都会明确报错，不会生成默认按钮或丢弃可见内容。迁移时请把内容放到一个实际宿主中；确实需要默认按钮时移除 `asChild`。ref 遵循 React 19 的普通 props 合同。
 
 ## 组合式函数
 
