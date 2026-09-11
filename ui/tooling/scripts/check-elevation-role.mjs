@@ -74,7 +74,7 @@ const EXPECTED = {
   'slider': { thumb: ['raised', 'lifted'] },
   'switch': { thumb: ['soft', 'raised'] },
   'tag': { root: ['soft'] },
-  'time-picker': { content: ['floating'] },
+  'time-picker': { content: ['frosted'] },
   'toast': { root: ['sheet'] },
   'tooltip': { content: ['frosted'] },
   'tour': { content: ['sheet'] },
