@@ -26400,6 +26400,9 @@
               "name": "--xh-mention-content-max-w"
             },
             {
+              "name": "--xh-mention-content-min-h"
+            },
+            {
               "name": "--xh-mention-content-min-w"
             },
             {
@@ -26415,12 +26418,6 @@
               "name": "--xh-mention-content-shadow"
             },
             {
-              "name": "--xh-mention-empty-bg"
-            },
-            {
-              "name": "--xh-mention-empty-border"
-            },
-            {
               "name": "--xh-mention-empty-fg"
             },
             {
@@ -26431,12 +26428,6 @@
             },
             {
               "name": "--xh-mention-empty-py"
-            },
-            {
-              "name": "--xh-mention-empty-radius"
-            },
-            {
-              "name": "--xh-mention-empty-shadow"
             },
             {
               "name": "--xh-mention-input-autofill-bg"
@@ -26532,12 +26523,6 @@
               "name": "--xh-mention-layer"
             },
             {
-              "name": "--xh-mention-loading-bg"
-            },
-            {
-              "name": "--xh-mention-loading-border"
-            },
-            {
               "name": "--xh-mention-loading-fg"
             },
             {
@@ -26548,12 +26533,6 @@
             },
             {
               "name": "--xh-mention-loading-py"
-            },
-            {
-              "name": "--xh-mention-loading-radius"
-            },
-            {
-              "name": "--xh-mention-loading-shadow"
             },
             {
               "name": "--xh-mention-placeholder-fg"

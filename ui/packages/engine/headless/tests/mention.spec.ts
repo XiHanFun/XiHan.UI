@@ -663,6 +663,38 @@ describe('公开 API 与无障碍属性', () => {
 })
 
 describe('异步候选', () => {
+  it('loading 只在零可见候选时显示；hidden 候选不留高亮或不可见回车目标', async () => {
+    const m = mount({ loading: true })
+    type(m.input, '@')
+    await tick()
+    const loadingProps = (): Record<string, unknown> => m.api().getLoadingProps() as Record<string, unknown>
+
+    expect(m.content.getAttribute('aria-busy')).toBe('true')
+    expect(loadingProps().hidden).toBe(true)
+    expect(m.highlighted()).toBe('lilei')
+
+    for (const value of ALL)
+      m.item(value).hidden = true
+    m.send({ type: 'ITEMS.SYNC' })
+    expect(m.api().empty).toBe(true)
+    expect(m.highlighted()).toBeNull()
+    expect(m.input.hasAttribute('aria-activedescendant')).toBe(false)
+    expect(loadingProps().hidden).toBeUndefined()
+
+    m.item('lilei').dispatchEvent(new MouseEvent('pointermove', { bubbles: true }))
+    click(m.item('lilei'))
+    expect(m.highlighted()).toBeNull()
+    expect(m.value()).toBe('@')
+    expect(m.state()).toBe('open')
+
+    press(m.input, 'ArrowDown')
+    expect(m.highlighted()).toBeNull()
+    const enter = press(m.input, 'Enter')
+    expect(enter.defaultPrevented).toBe(false)
+    expect(m.value()).toBe('@')
+    expect(m.state()).toBe('closed')
+  })
+
   it('查询串变了先交出去，候选晚一拍到也接得住', async () => {
     vi.useFakeTimers()
     try {

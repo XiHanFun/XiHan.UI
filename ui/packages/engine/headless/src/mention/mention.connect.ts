@@ -48,6 +48,7 @@ export function connectMention<T extends PropTypes>(
   const trigger = context.get('trigger')
   // 高亮不承载焦点，只经 aria-activedescendant 上报；收起时为 null
   const highlighted = context.get('highlightedValue') ?? null
+  const itemCount = context.get('itemCount')
   const disabled = !!prop('disabled')
   const loading = !!prop('loading')
   const readOnly = !!prop('readOnly')
@@ -68,8 +69,8 @@ export function connectMention<T extends PropTypes>(
     disabled: !!node.disabled,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
-  // 没给 collection 时条目是作者自己铺的，组件无从判空
-  const empty = nodes !== undefined && collection.length === 0
+  // itemCount 尚未结算时不抢跑空态；结算后按真实可见 DOM 判断，手写 hidden 项也不会冒充候选。
+  const empty = open && itemCount === 0
 
   const isHighlighted = (v: string): boolean => highlighted === v
 
@@ -89,7 +90,8 @@ export function connectMention<T extends PropTypes>(
    * 候选集合只在事件那一刻读，顺序即文档序。
    * 渲染期不得调用：那里 Vue 读到上一帧、WC 读到本帧。
    */
-  const items = (): HTMLElement[] => queryItems(refs.get('getContentEl')(), mentionItemQuery)
+  const items = (): HTMLElement[] =>
+    queryItems(refs.get('getContentEl')(), mentionItemQuery).filter(item => !item.hidden)
 
   /** 移高亮。焦点不动，但列表要跟着滚，否则长列表里高亮会跑出可视区。 */
   const highlightBy = (intent: NavIntent): void => {
@@ -316,7 +318,8 @@ export function connectMention<T extends PropTypes>(
       ...parts.loading.attrs,
       'role': 'status',
       'data-state': stateAttr,
-      'hidden': !(open && loading) || undefined,
+      // 已有可见候选时列表原样留着，只由 aria-busy 报刷新；零候选才显示状态文字。
+      'hidden': !(open && loading && itemCount === 0) || undefined,
     }),
 
     getItemProps: item => normalize.element({
@@ -333,13 +336,14 @@ export function connectMention<T extends PropTypes>(
       'aria-disabled': itemDisabled(item) ? 'true' : 'false',
       // 不给 tabindex：焦点恒在输入框
       'onClick': (event: MouseEvent) => {
-        if (disabled || itemDisabled(item))
+        const el = event.currentTarget as HTMLElement
+        if (disabled || itemDisabled(item) || el.hidden)
           return
-        send({ type: 'ITEM.SELECT', value: item.value, label: mentionItemText(event.currentTarget as HTMLElement) })
+        send({ type: 'ITEM.SELECT', value: item.value, label: mentionItemText(el) })
       },
       // 指针划过即高亮：不同步的话，鼠标停在 A 上、回车却插进了键盘高亮的 B
-      'onPointerMove': () => {
-        if (!disabled && !itemDisabled(item) && highlighted !== item.value)
+      'onPointerMove': (event: PointerEvent) => {
+        if (!(event.currentTarget as HTMLElement).hidden && !disabled && !itemDisabled(item) && highlighted !== item.value)
           send({ type: 'ITEM.HIGHLIGHT', value: item.value })
       },
     }),

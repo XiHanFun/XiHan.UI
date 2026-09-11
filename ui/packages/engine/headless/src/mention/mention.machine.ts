@@ -20,9 +20,14 @@ function sameTrigger(a: MentionTrigger | null, b: MentionTrigger | null | undefi
   return a.index === b.index && a.prefix === b.prefix && a.query === b.query
 }
 
+/** 只认当前可见候选；hidden 项不进入计数、导航或 aria-activedescendant。 */
+function visibleItems(content: HTMLElement): HTMLElement[] {
+  return queryItems(content, mentionItemQuery).filter(item => !item.hidden)
+}
+
 /** 取容器里首个可停留的候选值。 */
 function firstItemValue(content: HTMLElement): string | null {
-  return itemValue(navigateItems(queryItems(content, mentionItemQuery), null, 'first'))
+  return itemValue(navigateItems(visibleItems(content), null, 'first'))
 }
 
 /**
@@ -158,7 +163,7 @@ export const mentionMachine = createMachine({
           const content = refs.get('getContentEl')()
           if (!content)
             return
-          const items = queryItems(content, mentionItemQuery)
+          const items = visibleItems(content)
           context.set('itemCount', items.length)
           const highlighted = context.get('highlightedValue')
           // 高亮被筛掉就改停到首条，不留一个指向不存在 id 的 aria-activedescendant
@@ -172,7 +177,7 @@ export const mentionMachine = createMachine({
         const content = refs.get('getContentEl')()
         if (!content)
           return
-        const items = queryItems(content, mentionItemQuery)
+        const items = visibleItems(content)
         context.set('itemCount', items.length)
         const highlighted = context.get('highlightedValue')
         if (highlighted != null && !items.some(el => itemValue(el) === highlighted))
