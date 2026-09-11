@@ -48,6 +48,8 @@ export const DIAGNOSTIC_CODES = {
 
 `machine.error` 的 `detail.machineCode` 是状态机错误码。机器崩溃或正常停机清理失败时，`detail.reason` 保留实际上报的原始或聚合异常对象；同时发生 cleanup 与 exit 异常时，它与调用方捕获的 `AggregateError` 是同一个对象，可以继续读取 `errors` 与 `cause`。
 
+状态机实现引用属于执行前置条件。`UNKNOWN_ACTION`、`UNKNOWN_GUARD`、`UNKNOWN_EFFECT` 在创建机器时拒绝静态缺项；动态列表或实现内部引用缺项时使用 `MISSING_ACTION`、`MISSING_GUARD`、`MISSING_EFFECT`。后三种错误在开发与生产都会先投递 `machine.error`；没有其他停机异常时，其 `detail.reason` 与随后抛出的 `MachineError` 是同一个对象，存在其他停机异常时则由后续崩溃记录携带聚合结果。服务同时进入 `Stopped`。诊断阈值只控制记录是否送达，不会把错误改成继续执行、guard 的 `false` 或部分 effect。
+
 三条 `wc.*` 是 Web Components 适配器的部件契约校验，也是日常最容易撞上的三条——手写 DOM 时漏一个 `data-xh-part` 或者写错名字，通道会明确告诉你哪个节点、哪个部件。
 
 ## 用法

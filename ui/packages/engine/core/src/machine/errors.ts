@@ -39,18 +39,33 @@ export class MachineError extends Error {
   }
 }
 
-/** 投递进诊断通道，dev 下额外抛出；prod 下不抛，由订阅方决定怎么处置。 */
-export function raiseMachineError(code: MachineErrorCode, message: string, machineName?: string): void {
+function reportMachineError(
+  code: MachineErrorCode,
+  message: string,
+  machineName?: string,
+  includeReason = false,
+): MachineError {
   const error = new MachineError(code, message, machineName)
   reportDiagnostic({
     code: DIAGNOSTIC_CODES.machineError,
     level: 'error',
     message: error.message,
     scope: machineName,
-    detail: { machineCode: code },
+    detail: includeReason ? { machineCode: code, reason: error } : { machineCode: code },
   })
+  return error
+}
+
+/** 投递进诊断通道，dev 下额外抛出；prod 下不抛，由订阅方决定怎么处置。 */
+export function raiseMachineError(code: MachineErrorCode, message: string, machineName?: string): void {
+  const error = reportMachineError(code, message, machineName)
   if (isDev())
     throw error
+}
+
+/** 投递进诊断通道后始终抛出同一个错误，用于任何环境都不能继续的机器契约。 */
+export function throwMachineError(code: MachineErrorCode, message: string, machineName?: string): never {
+  throw reportMachineError(code, message, machineName, true)
 }
 
 function describeMachineFailure(reason: unknown): string {

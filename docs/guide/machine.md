@@ -52,7 +52,11 @@ export const accordionMachine = createMachine({
 | `watch` | 追踪外部值变化并触发动作，受控回写走这里 |
 | `implementations` | `actions` / `guards` / `effects` 的具名实现 |
 
-**具名实现是硬约束。** `states` 里只能出现动作名、守卫名、副作用名的字符串；裸内联函数会在 `createMachine` 时直接抛 `MachineError`（守卫只放行 `and` / `or` / `not` 组合子的产物）。开发模式下还会自检：转移表里引用了 `implementations` 里不存在的名字，同样报错。这条约束换来的是——状态图是可静态分析的数据，测试能算转移覆盖率，而不是一堆闭包。
+**具名实现是硬约束。** `states` 里只能出现动作名、守卫名、副作用名的字符串；裸内联函数会在 `createMachine` 时直接抛 `MachineError`（守卫只放行 `and` / `or` / `not` 组合子的产物）。`createMachine` 在开发与生产模式都会检查静态列表并递归审计组合 guard：转移表里引用了 `implementations` 里不存在的名字，同样报错。实现必须是对应分组自身的数据属性函数；原型链成员、访问器和非函数值都不构成实现，审计也不会为了检查而调用 getter。这条约束换来的是——状态图是可静态分析的数据，测试能算转移覆盖率，而不是一堆闭包。
+
+函数形态的 `entry`、`exit`、`effects` 以及实现内部调用的 `action()`、`guard()` 只能在运行时得知名字。运行时会先解析整份 action 或 effect 列表，再通过自有数据属性一次取得全部函数快照，之后才执行 action 或初始化 effect；任一名字缺失都会用 `MISSING_ACTION`、`MISSING_GUARD` 或 `MISSING_EFFECT` 上报、停止服务并抛出原错误，开发与生产行为一致。缺失 guard 不会按 `false` 继续选择分支，缺失 action 不会被跳过，列表后部缺失 effect 也不会让前部 effect 先取得资源。缺项发生在 effect 初始化中且 cleanup 也失败时，抛出的 `AggregateError` 同时保留缺项错误与全部回滚异常。
+
+`inspect` 只观察这些运行事件，不参与错误决策；观察器自身抛错会被隔离，不能遮蔽 `MISSING_*`、阻止停机或替换诊断中的原错误对象。
 
 ## 受控与非受控：`cell`
 
@@ -118,6 +122,8 @@ states: {
 副作用拿得到 `refs`（宿主注入的 DOM 取值器与运行时配置）、`send`、`flush`，返回一个清理函数。`setTimeoutEffect` / `setIntervalEffect` 是两个现成的定时器 effect 工厂。
 
 同一状态节点的一批 effect 在执行前会先建立在途路径登记，整批成功后才保留为活动批次。如果后一项初始化抛错或挂载期间丢失路径所有权，在途登记会被摘除，本批已取得的 cleanup 会立即按资源取得逆序全部回滚；某项 cleanup 抛错不会阻断其余回滚。无回滚异常时保留原初初始化异常；回滚也失败时通过 `AggregateError` 同时携带初始化异常和全部回滚异常。最外层的 `MachineError` 会把这份原始异常链保留在 `cause` 中。
+
+事务只能回滚 effect 已经返回给服务的 cleanup。单个 effect 如果在返回前已取得多项资源，它自身必须在内部初始化抛错时逆序回滚；服务无法释放从未交出的句柄。
 
 成功挂载的 cleanup 同样按资源取得逆序执行。每条状态路径只能存在一份活动 effect 登记，返回 `void` 的 effect 也会占用该路径；重复挂载会抛出 `DUPLICATE_EFFECT_PATH` 不变式错误，而不是把两批 cleanup 隐式合并。退出状态时，服务会先从清理表摘除该路径，再调用 cleanup，因此 cleanup 抛错也不会在崩溃停机时被重复执行。
 
