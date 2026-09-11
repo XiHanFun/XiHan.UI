@@ -1,5 +1,5 @@
 import type { Layer, LayerRegistry } from '../src/kernel'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { isInside, shouldDismiss } from '../src/behavior'
 
 let layerSeq = 0
@@ -40,6 +40,37 @@ describe('isInside', () => {
   })
   it('全不命中 → 外部', () => {
     expect(isInside(fakeEvent([{ x: 1 }]), layer)).toEqual({ inside: false, onSurface: false })
+  })
+
+  it('命中层节点后不读取 branch 与 surface getter', () => {
+    const branches = vi.fn((): Element[] => {
+      throw new Error('不应读取 branch')
+    })
+    const surfaces = vi.fn((): Element[] => {
+      throw new Error('不应读取 surface')
+    })
+    const direct: Layer = {
+      ...fakeLayer(node),
+      branches,
+      surfaces,
+    }
+
+    expect(isInside(fakeEvent([node]), direct)).toEqual({ inside: true, onSurface: false })
+    expect(branches).not.toHaveBeenCalled()
+    expect(surfaces).not.toHaveBeenCalled()
+  })
+
+  it('命中 branch 后不读取 surface getter', () => {
+    const surfaces = vi.fn((): Element[] => {
+      throw new Error('不应读取 surface')
+    })
+    const direct: Layer = {
+      ...fakeLayer(node, [branch]),
+      surfaces,
+    }
+
+    expect(isInside(fakeEvent([branch]), direct)).toEqual({ inside: true, onSurface: false })
+    expect(surfaces).not.toHaveBeenCalled()
   })
 })
 

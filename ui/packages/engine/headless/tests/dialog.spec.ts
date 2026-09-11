@@ -132,7 +132,7 @@ function makeDismissHarness(initial: DialogSchema['props'] = {}): DismissHarness
   return harness
 }
 
-/** 展开并等到消解层的监听器注册上（它延后一拍，避开打开自己的那次交互）。 */
+/** 展开并等到消解参与者武装；Hub 监听同步在场，参与资格延后一拍以避开打开事件。 */
 async function open(h: DismissHarness): Promise<void> {
   h.service.send({ type: 'OPEN' })
   await new Promise(resolve => setTimeout(resolve, 0))

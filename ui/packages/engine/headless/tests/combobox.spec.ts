@@ -530,7 +530,7 @@ describe('键盘', () => {
     const h = mount()
     press(h.input, 'ArrowDown')
     expect(h.api().highlightedValue).toBe('apple')
-    // 消解层的监听器延后一拍注册（免得开自己的那次交互立刻把自己关掉）
+    // Hub 监听同步在场；本层参与者延后一拍武装（免得打开事件立刻把自己关掉）
     await tick()
 
     const first = press(h.input, 'Escape')

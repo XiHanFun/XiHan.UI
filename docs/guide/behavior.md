@@ -110,9 +110,13 @@ const layer = createDismissLayer({
 
 DismissableLayer 的监听 Document、`CustomEvent`、微任务与动画帧均取自 `config.scope` 的同一个 Window，`config.layerRegistry.ownerDocument` 也必须逐字指向该 Document。传入的 layer 必须已经登记在这份注册表里；动态 `layer.node()` 可以暂时为 `null`，非空时必须是真实 HTMLElement 且属于该 Document。从其他窗口返回节点会立即报错，不会把一张文档里的交互票派到另一张文档。所属 Window 缺少 `CustomEvent`、`queueMicrotask` 或动画帧能力时创建即失败，不借 ambient 全局。
 
-三类 Document 监听器在创建期间同步注册，随后只用一枚所属 Window 的微任务把交互置为已武装，以避开打开浮层的同一次 pointerdown。任一 `addEventListener` 或排微任务失败都会在创建返回前按逆序撤掉已经触及的监听，使上层浮层初始化事务能继续回滚 Layer；`dispose()` 同样先进入终态，再按动画帧、focus、pointer、keydown 的顺序尝试全部清理。单项清理异常原样抛出，多项异常按发生顺序放进 `AggregateError`，`cause` 保留首错。
+同一 Document 的所有 DismissableLayer 共用一套 Hub 和三类捕获监听；每一份显式 LayerRegistry 按对象身份形成独立 lane，不同应用或子树的自定义层栈互不干扰。同一 lane 的同一 Layer 只能有一个参与者，重复创建会明确失败。首个参与者同步事务化安装 keydown、pointerdown、focusin，最后一个参与者释放时才按 focus、pointer、keydown 逆序完整卸载；每个参与者仍延后一枚所属 Window 的微任务武装，以避开打开浮层的同一次 pointerdown。派发期间最后一个参与者离场时，Hub 把卸载延到整次路由的 `finally`，回调里同步建立的新参与者会复用原 Hub，不会出现两套 Document 监听。
 
-首次读取动态节点也属于初始化事务：getter 让 layer 退栈或成功改变后再恢复栈内容都会在注册监听前失败；失败登记由 LayerRegistry 补偿回原 snapshot 时可以继续。每次表决会再次固定当时的冻结层栈快照与动态节点。DOM 事件监听器、选项回调或通用 interact 回调只要改变了层栈快照或节点，这张旧票就不能再提交关闭；即使层栈随后恢复成相同内容也一样。登记通知失败且 LayerRegistry 成功补偿回原快照时，原票仍有效。层栈与节点身份保持不变时，提交前还会在同一快照上重算 branches 与 surfaces，表决期间刚纳入 branch 的目标不会被误判成层外。pointer 建立焦点抑制帧后，票据复核与 `onDismiss` 共用同一异常边界；任一步骤失败都会先撤帧，主异常始终排在首位并作为聚合异常的 `cause`。
+pointer 与 focus 先为本次事件冻结一份 composed path，并在执行任何业务回调前冻结所有 lane 的 LayerRegistry snapshot。每条 lane 从事件开始时的真实栈顶向下生成纯计划：命中层内部即停；命中 surface 时计划关闭该层后停止；没有 DismissableLayer 参与者、参与者尚未武装或节点尚未在场时都是屏障。计划阶段每次读取 node、branches 或 surfaces 后都会复核原 snapshot；getter 改变层栈时整条 lane 当场作废，不再读取更低层 getter。执行每个候选前都会确认当前栈严格等于原计划对应的前缀、候选确为真实栈顶、参与者 token 与动态节点仍相同；DOM 表决、选项表决与 interact 表决之后逐阶段复核。票被否决、回调改变 snapshot/node、动态 branch 把原目标纳入层内，都会停止该 lane；动态 surface 命中会关闭其所属层，随后停止，不继续触碰更低层。
+
+`onDismiss` 完整返回后，只有候选 Layer 确实退栈、当前栈严格变成下一段计划前缀时，pointer/focus 才继续处理下一层。受控组件只发关闭意图却未退栈、关闭开关让 `onDismiss` 原地返回、额外移除旧层或登记新层都会形成屏障。正常逐层退栈产生的新冻结 snapshot 会成为下一候选的 stage token；成功变更后再恢复相同内容仍不能冒充原 snapshot，失败登记由 LayerRegistry 补偿回原对象则保持有效。Escape 每条 lane 只处理事件开始时的原始栈顶，一次按键不会沿栈连续关闭。
+
+Hub 带整次 Document 派发级重入锁，回调同步派出的 pointer/focus/keydown 不会嵌套进入第二轮。某条 registry lane 的 getter、表决或关闭回调抛错时，其他 lane 仍照常执行；末尾单错原样抛出，多错按 lane 与清理的发生顺序聚合，首错保留为 `cause`。Hub 与参与者的 add、queue、动画帧和 remove 都使用所属 Window/Document，并遵守先终态、LIFO、全量尝试的清理规则。
 
 ## 焦点域
 

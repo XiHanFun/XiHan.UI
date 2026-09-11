@@ -1,5 +1,6 @@
 import type { Layer, LayerRegistry } from '../../kernel'
 import { DATA_INERT_EXEMPT } from '../../kernel'
+import { dismissPathIncludes } from './route'
 
 export interface InsideResult {
   inside: boolean
@@ -19,13 +20,11 @@ function isInInertExempt(e: Event): boolean {
 /** 对已经解析好的层节点判断目标属于层内 / 层的表面 / 层外。 */
 function isInsideResolved(e: Event, layer: Layer, node: HTMLElement | null): InsideResult {
   const path = e.composedPath()
-  if (node && path.includes(node))
+  if (node !== null && path.includes(node))
     return { inside: true, onSurface: false }
-  if (layer.branches().some(b => path.includes(b)))
+  if (dismissPathIncludes(path, layer.branches()))
     return { inside: true, onSurface: false }
-  if (layer.surfaces().some(s => path.includes(s)))
-    return { inside: false, onSurface: true }
-  return { inside: false, onSurface: false }
+  return { inside: false, onSurface: dismissPathIncludes(path, layer.surfaces()) }
 }
 
 /** 用事件的合成路径判断目标属于层内 / 层的表面 / 层外（穿透 portal 与 shadow）。 */
@@ -33,11 +32,8 @@ export function isInside(e: Event, layer: Layer): InsideResult {
   return isInsideResolved(e, layer, layer.node())
 }
 
-/**
- * 在一份固定层栈快照上仲裁；目标层节点同样由调用方固定，避免一次交互前后读取到两代节点。
- * 仅供 DismissableLayer 的交互票据使用，不进入公开导出面。
- */
-export function shouldDismissInSnapshot(
+/** 在一份固定层栈快照上仲裁；目标层节点同样固定，避免一次计算读到两代节点。 */
+function shouldDismissInSnapshot(
   e: Event,
   layers: readonly Layer[],
   layer: Layer,
