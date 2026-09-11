@@ -3,7 +3,7 @@ import type { TextFieldApi, TextFieldInputHost, TextFieldSchema, TextFieldType }
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { autoSizeTextarea } from '@xihan-ui/headless'
-import { defineComponent, h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { defineComponent, h, onBeforeUnmount, onMounted, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { provideTextField, useTextFieldContext } from './context'
@@ -105,25 +105,14 @@ export const XhTextFieldInput = defineComponent({
       if (el.value && el.value !== next)
         autoSizeTextarea(el.value, false)
       el.value = next
-      if (next)
-        autoSizeTextarea(next, ctx.api.value.autoSize)
     }
     const syncAutoSize = (): void => {
       if (el.value)
         autoSizeTextarea(el.value, ctx.api.value.autoSize)
     }
-    // 程序化写值（setValue / 表单重置 / 受控回写）不触发 input 事件，量高在渲染后补一次
-    watch(() => {
-      const autoSize = ctx.api.value.autoSize
-      return [
-        ctx.api.value.value,
-        props.as,
-        autoSize === true,
-        typeof autoSize === 'object' ? autoSize.minRows : undefined,
-        typeof autoSize === 'object' ? autoSize.maxRows : undefined,
-      ] as const
-    }, syncAutoSize, { flush: 'post' })
+    // 模板 ref 赋值时节点尚未接入 Document；挂载及更新提交后再量，程序化写值与配置变化也走这条。
     onMounted(syncAutoSize)
+    onUpdated(syncAutoSize)
     onBeforeUnmount(() => {
       if (el.value)
         autoSizeTextarea(el.value, false)
