@@ -2,7 +2,7 @@
 import type { Scope } from '../../scope'
 import type { Cleanup } from '../../types'
 import { DATA_INERT_EXEMPT } from '../../constants'
-import { isHTMLElement } from '../../guards'
+import { isElement, isHTMLElement } from '../../guards'
 import { getLayerRegistry } from '../../structure/layer-registry'
 import { getInertRegistry } from './inert-registry'
 
@@ -25,7 +25,13 @@ export interface HideOutsideOptions {
  */
 export function hideOutside(getTargets: () => Element[], scope: Scope, options: HideOutsideOptions = {}): Cleanup {
   const doc = scope.getDoc()
+  const win = scope.getWin()
   const body = doc.body
+  if (!body)
+    throw new Error('[xh] hideOutside 的 Document 没有 body')
+  const MutationObserver = win.MutationObserver
+  if (typeof MutationObserver !== 'function')
+    throw new Error('[xh] hideOutside 所属 Window 不支持 MutationObserver')
   const inert = getInertRegistry(doc)
   const exemptSelector = [...DEFAULT_EXEMPT_SELECTORS, ...(options.exemptSelectors ?? [])].join(',')
 
@@ -69,6 +75,8 @@ export function hideOutside(getTargets: () => Element[], scope: Scope, options: 
   /** 按当前 targets 重算应罩住的集合，与已持有的集合做差分，多退少补。 */
   const sync = (): void => {
     const targets = getTargets()
+    if (targets.some(target => !isElement(target) || target.ownerDocument !== doc))
+      throw new Error('[xh] hideOutside 的 target 必须属于 Scope 的 Document')
     // 豁免节点与 target 一样要留出通路：它们的祖先只递归、不整块 inert
     const exempt = exemptNodes()
     const chain = chainOf([...targets, ...exempt])
@@ -100,27 +108,34 @@ export function hideOutside(getTargets: () => Element[], scope: Scope, options: 
     walked = nextWalked
   }
 
-  sync()
-
   /** 增删的节点里是否带豁免标记（含其后代）。 */
   const touchesExempt = (nodes: NodeList): boolean =>
     Array.from(nodes).some(node =>
-      node instanceof Element && (node.matches(exemptSelector) || node.querySelector(exemptSelector) != null),
+      isElement(node) && (node.matches(exemptSelector) || node.querySelector(exemptSelector) != null),
     )
 
   // 祖先链任一层增删子节点、豁免节点增删、层栈变动都重算一次；其余链外子树要么整块已
   // inert、要么在 target 内，它们的变动改不了结果，回调里筛一遍就跳过。
-  // 构造器从被观测节点自己的文档取：跨 iframe 时全局的那个来自另一个 window，
-  // 拿它去观测别的文档里的节点，回调一次都不会来
-  const observer = new (body.ownerDocument?.defaultView ?? window).MutationObserver((records) => {
+  // 构造器严格取自 Scope Window：跨 iframe 时使用 ambient 构造器不会收到目标文档的变更。
+  const observer = new MutationObserver((records) => {
     if (records.some(record =>
       walked.has(record.target) || touchesExempt(record.addedNodes) || touchesExempt(record.removedNodes),
     )) {
       sync()
     }
   })
-  observer.observe(body, { childList: true, subtree: true })
-  const unsubscribe = getLayerRegistry(doc).subscribe(() => sync())
+  let unsubscribe: Cleanup = () => {}
+  try {
+    observer.observe(body, { childList: true, subtree: true })
+    unsubscribe = getLayerRegistry(doc).subscribe(() => sync())
+    sync()
+  }
+  catch (error) {
+    observer.disconnect()
+    unsubscribe()
+    for (const el of Array.from(held)) release(el)
+    throw error
+  }
 
   let disposed = false
   return () => {

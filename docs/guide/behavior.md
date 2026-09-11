@@ -164,6 +164,8 @@ const restore = hideOutside(() => [contentEl, ...branches, ...registry.elementsA
 
 带 `data-xh-inert-exempt` 的元素默认豁免。
 
+`hideOutside` 的目标、`body`、层栈、`MutationObserver` 与 inert 引用计数严格属于 Scope 的同一 Document。iframe 与画中画窗口中的后挂节点会由各自 Window 的观察器重新计算；从其他窗口 adopt 进来的豁免节点也按当前所属 Document 生效。目标来自其他 Document、Document 没有活动 Window 或宿主缺少 `MutationObserver` 时会明确报错，初始化失败不会留下半施加的 inert 状态。
+
 ## 进出场
 
 退场动画和「什么时候可以从 DOM 里摘掉」是一对老问题。`presence` 用**租约**解决：

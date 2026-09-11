@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import type { Cleanup } from '../src/kernel/types'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { hideOutside } from '../src/kernel/capability/a11y/hide-outside'
 import { getInertRegistry } from '../src/kernel/capability/a11y/inert-registry'
 import { DATA_INERT_EXEMPT } from '../src/kernel/constants'
@@ -20,9 +20,9 @@ function countOf(el: Element): number {
 }
 
 /** 等 MutationObserver 的微任务与一轮宏任务。 */
-async function flush(): Promise<void> {
+async function flush(win: Window = window): Promise<void> {
   await Promise.resolve()
-  await new Promise(resolve => setTimeout(resolve, 0))
+  await new Promise(resolve => win.setTimeout(resolve, 0))
 }
 
 interface Overlay {
@@ -92,6 +92,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+  vi.unstubAllGlobals()
   for (const fn of cleanups.splice(0).reverse()) fn()
   document.body.innerHTML = ''
   setDiagnosticsConsoleOutput(true)
@@ -486,5 +487,168 @@ describe('hideOutside 豁免标记在任意深度都留出通路', () => {
     expect(inertOf(page)).toBe(false)
     expect(inertOf(app)).toBe(false)
     expect(countOf(page)).toBe(0)
+  })
+})
+
+describe('hideOutside 的所属 realm', () => {
+  function setupForeignDocument(): {
+    frame: HTMLIFrameElement
+    doc: Document
+    win: Window & typeof globalThis
+    app: HTMLElement
+    page: HTMLElement
+    content: HTMLElement
+  } {
+    const frame = document.createElement('iframe')
+    document.body.appendChild(frame)
+    const doc = frame.contentDocument!
+    const win = frame.contentWindow! as Window & typeof globalThis
+    const app = doc.createElement('main')
+    const page = doc.createElement('div')
+    app.appendChild(page)
+    const content = doc.createElement('div')
+    doc.body.append(app, content)
+    return { frame, doc, win, app, page, content }
+  }
+
+  it('iframe 的 inert 背景深处后挂豁免节点时重新留出通路', async () => {
+    const { frame, doc, win, app, page, content } = setupForeignDocument()
+    const scope = createScope(content, createCounterIdGenerator())
+    const cleanup = hideOutside(() => [content], scope)
+    expect(inertOf(app)).toBe(true)
+    const exempt = doc.createElement('div')
+    exempt.setAttribute(DATA_INERT_EXEMPT, '')
+    app.appendChild(exempt)
+
+    await flush(win)
+    expect(inertOf(app)).toBe(false)
+    expect(inertOf(page)).toBe(true)
+    expect(inertOf(exempt)).toBe(false)
+    cleanup()
+    frame.remove()
+  })
+
+  it('从另一 Window adopt 的后挂豁免节点同样触发重算', async () => {
+    const { frame, win, app, page, content } = setupForeignDocument()
+    const sourceFrame = document.createElement('iframe')
+    document.body.appendChild(sourceFrame)
+    const source = sourceFrame.contentDocument!.createElement('div')
+    source.setAttribute(DATA_INERT_EXEMPT, '')
+    const exempt = app.ownerDocument.adoptNode(source)
+    const scope = createScope(content, createCounterIdGenerator())
+    const cleanup = hideOutside(() => [content], scope)
+    expect(inertOf(app)).toBe(true)
+    app.appendChild(exempt)
+
+    await flush(win)
+    expect(inertOf(app)).toBe(false)
+    expect(inertOf(page)).toBe(true)
+    expect(inertOf(exempt)).toBe(false)
+    cleanup()
+    sourceFrame.remove()
+    frame.remove()
+  })
+
+  it('顶层 DOM globals 缺失时仍使用显式 Scope 的所属 realm', async () => {
+    const { frame, doc, win, app, content } = setupForeignDocument()
+    const scope = createScope(content, createCounterIdGenerator())
+    vi.stubGlobal('document', undefined)
+    vi.stubGlobal('window', undefined)
+    vi.stubGlobal('Node', undefined)
+    vi.stubGlobal('Element', undefined)
+    vi.stubGlobal('HTMLElement', undefined)
+    const cleanup = hideOutside(() => [content], scope)
+    const exempt = doc.createElement('div')
+    exempt.setAttribute(DATA_INERT_EXEMPT, '')
+    app.appendChild(exempt)
+
+    await flush(win)
+    expect(inertOf(app)).toBe(false)
+    expect(inertOf(exempt)).toBe(false)
+    cleanup()
+    vi.unstubAllGlobals()
+    frame.remove()
+  })
+
+  it('离线 Document 与缺少 MutationObserver 的 Window 明确失败', () => {
+    const offline = document.implementation.createHTMLDocument('offline')
+    const offlineContent = offline.createElement('div')
+    offline.body.appendChild(offlineContent)
+    const offlineScope = createScope(offlineContent, createCounterIdGenerator())
+    expect(() => hideOutside(() => [offlineContent], offlineScope)).toThrow(/没有活动 Window/)
+
+    const { frame, win, content } = setupForeignDocument()
+    const scope = createScope(content, createCounterIdGenerator())
+    Object.defineProperty(win, 'MutationObserver', { configurable: true, value: undefined })
+    expect(() => hideOutside(() => [content], scope)).toThrow(/MutationObserver/)
+    frame.remove()
+  })
+
+  it('观察器启动失败时不留下 inert 或层栈订阅', () => {
+    const { frame, win, app, content } = setupForeignDocument()
+    const scope = createScope(content, createCounterIdGenerator())
+    const registry = getLayerRegistry(content.ownerDocument)
+    class FailingMutationObserver {
+      disconnect(): void {}
+      observe(): void {
+        throw new Error('observe failed')
+      }
+
+      takeRecords(): MutationRecord[] {
+        return []
+      }
+    }
+    Object.defineProperty(win, 'MutationObserver', {
+      configurable: true,
+      value: FailingMutationObserver,
+    })
+
+    expect(() => hideOutside(() => [content], scope)).toThrow('observe failed')
+    expect(inertOf(app)).toBe(false)
+    const node = content.ownerDocument.createElement('div')
+    const registration = registry.register({
+      kind: 'modal',
+      node: () => node,
+      branches: () => [],
+      isModal: () => true,
+      setModal: () => {},
+      surfaces: () => [],
+    })
+    expect(inertOf(app)).toBe(false)
+    registration.dispose()
+    frame.remove()
+  })
+
+  it('拒绝来自其他 Document 的 target 且不留下 inert', () => {
+    const { frame, app, content } = setupForeignDocument()
+    const otherFrame = document.createElement('iframe')
+    document.body.appendChild(otherFrame)
+    const foreignTarget = otherFrame.contentDocument!.createElement('div')
+    otherFrame.contentDocument!.body.appendChild(foreignTarget)
+    const scope = createScope(content, createCounterIdGenerator())
+
+    expect(() => hideOutside(() => [foreignTarget], scope)).toThrow(/必须属于 Scope 的 Document/)
+    expect(inertOf(app)).toBe(false)
+    const registry = getLayerRegistry(content.ownerDocument)
+    const registration = registry.register({
+      kind: 'modal',
+      node: () => content,
+      branches: () => [],
+      isModal: () => true,
+      setModal: () => {},
+      surfaces: () => [],
+    })
+    registration.dispose()
+    otherFrame.remove()
+    frame.remove()
+  })
+
+  it('document 没有 body 时明确失败', () => {
+    const { frame, doc, content } = setupForeignDocument()
+    const scope = createScope(content, createCounterIdGenerator())
+    doc.body.remove()
+
+    expect(() => hideOutside(() => [content], scope)).toThrow(/Document 没有 body/)
+    frame.remove()
   })
 })
