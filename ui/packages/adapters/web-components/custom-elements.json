@@ -18537,7 +18537,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-form>` —— Light-DOM 行为宿主：作者写 root（必须是原生 `<form>`）与\nfield-group / error-summary / error-summary-item / submit-trigger / reset-trigger 角色节点，\n元素跑 form 机器并把 connect 产出打上去。\n\n提交只有一条路：`<form>` 自己的 submit 事件。回车的隐式提交、`type=submit` 按钮、\n以及命令式的 `submit()` 全部汇到那里，连接层一律 preventDefault——页面永不刷新，\n校验与回调都由组件收口。\n\n值与错误都是「表」：元素不去收割原生控件里的值（那要替作者猜 checkbox / 多选 / 数字的类型），\n而是由作者经 `values` 属性或 `setFieldValue()` 写进来。校验函数同样由作者给。\n\n每个字段用一个 field-group 包住并用 `value` 属性自报字段名：错误摘要的链接指向它，\n提交失败后的焦点也落进它——落点按**文档序**取第一个出错的字段，而不是错误表的键序。",
+          "description": "`<xh-form>` —— Light-DOM 行为宿主：作者写 root（必须是原生 `<form>`）与\nfield-group / error-summary / error-summary-item / submit-trigger / reset-trigger 角色节点，\n元素跑 form 机器并把 connect 产出打上去。\n\n提交只有一条路：`<form>` 自己的 submit 事件。回车的隐式提交、`type=submit` 按钮、\n以及命令式的 `submit()` 全部汇到那里，连接层一律 preventDefault——页面永不刷新，\n校验与回调都由组件收口。\n\n值与错误都是「表」：元素不去收割原生控件里的值（那要替作者猜 checkbox / 多选 / 数字的类型），\n而是由作者经 `values` 属性或 `setFieldValue()` 写进来。校验函数同样由作者给。\n\n每个字段用一个 field-group 包住并用 `name` 属性自报字符串字段：错误摘要的链接指向它，\n提交失败后的焦点也落进它——落点按**文档序**取第一个出错的字段，而不是错误表的键序。",
           "name": "XhFormElement",
           "cssParts": [
             {
@@ -18545,7 +18545,7 @@
               "name": "root"
             },
             {
-              "description": "单个字段的容器，须自带 value 属性标识字段名；带 id 供摘要链接指向。 grid 排布下再写个 `span` 属性（1 至 4，或 full 占满整行）就是这一格占多宽，落成 data-span； 运行期改写它不触发重新接线，需作者自行 requestUpdate。 组里的 `<xh-field>` 由表单驱动 invalid/required/disabled，作者显式设的会被顶掉",
+              "description": "单个字段的容器，须自带 name 标识字符串字段；数组路径写严格 JSON `data-path`；带 id 供摘要链接指向。 grid 排布下再写个 `span` 属性（1 至 4，或 full 占满整行）就是这一格占多宽，落成 data-span； 运行期改写它不触发重新接线，需作者自行 requestUpdate。 组里的 `<xh-field>` 由表单驱动 invalid/required/disabled，作者显式设的会被顶掉",
               "name": "field-group"
             },
             {
@@ -18553,7 +18553,7 @@
               "name": "error-summary"
             },
             {
-              "description": "摘要里的一条，须是原生 `<a>` 且自带 value 属性标识字段名；无对应错误时带 hidden",
+              "description": "摘要里的一条，须是原生 `<a>` 且用 name 或严格 JSON `data-path` 标识字段；无对应错误时带 hidden",
               "name": "error-summary-item"
             },
             {
@@ -18765,7 +18765,7 @@
                 {
                   "name": "name",
                   "type": {
-                    "text": "string"
+                    "text": "FormPath"
                   }
                 },
                 {
@@ -18789,7 +18789,7 @@
                 {
                   "name": "name",
                   "type": {
-                    "text": "string"
+                    "text": "FormPath"
                   }
                 },
                 {
@@ -18843,7 +18843,7 @@
                 {
                   "name": "name",
                   "type": {
-                    "text": "string"
+                    "text": "FormPath"
                   }
                 }
               ],
@@ -18861,7 +18861,7 @@
                 {
                   "name": "name",
                   "type": {
-                    "text": "string"
+                    "text": "FormPath"
                   }
                 }
               ]
@@ -18878,7 +18878,7 @@
                 {
                   "name": "name",
                   "type": {
-                    "text": "string"
+                    "text": "FormPath"
                   }
                 }
               ],
@@ -18888,7 +18888,7 @@
               "kind": "field",
               "name": "errorNames",
               "type": {
-                "text": "string[]"
+                "text": "FormPath[]"
               },
               "description": "出错的字段名，插入顺序。",
               "readonly": true
@@ -27115,7 +27115,7 @@
               "kind": "field",
               "name": "portal",
               "type": {
-                "text": "MenuPortalLease | null"
+                "text": "PortalLease | null"
               },
               "privacy": "private",
               "default": "null"
@@ -52108,6 +52108,17 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "ensureExit",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "OverlayExit"
+                }
+              },
+              "description": "退场闸门建一次，并在机器挂载前把同一份 Presence 交给 Headless。"
             },
             {
               "kind": "field",
