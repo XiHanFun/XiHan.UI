@@ -59,7 +59,7 @@ const EXPECTED = {
   'layout': { sider: ['sheet'] },
   'mention': { content: ['floating'], empty: ['floating'], loading: ['floating'] },
   'menu': { content: ['frosted'] },
-  'menubar': { content: ['floating'] },
+  'menubar': { content: ['frosted'] },
   'navigation-menu': { content: ['floating'], viewport: ['floating'] },
   'notification': { item: ['sheet'] },
   // 摊开的页码面板是锚在省略号上的浮层：有 positioner、有 pop-in 进场、吃 --xh-overlay-max-h

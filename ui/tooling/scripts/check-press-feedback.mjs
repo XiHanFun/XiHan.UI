@@ -115,7 +115,7 @@ const PRESSABLE = {
   // 展开与导航的触发钮
   'accordion': ['trigger'],
   'collapsible': ['trigger'],
-  'menubar': ['trigger'],
+  'menubar': ['trigger', { part: 'item', feedback: 'surface' }],
   'navigation-menu': ['trigger'],
   'tabs': ['trigger'],
   // 表格里的勾选与展开把手，以及表尾那颗「取下一页」
@@ -144,7 +144,6 @@ const PRESSABLE = {
  */
 const NO_PRESS = {
   // 列表族条目：一行文字，按下的回执走高亮档（悬停中性灰、展开路径品牌淡底）
-  'menubar:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'listbox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'select:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'combobox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
