@@ -54,7 +54,7 @@ const EXPECTED = {
   'float-button': { trigger: ['sheet'] },
   'floating-panel': { content: ['sheet'] },
   'heatmap': { tooltip: ['floating'] },
-  'hover-card': { content: ['floating'] },
+  'hover-card': { content: ['frosted'] },
   // 覆盖档的侧栏是盖在内容之上、带遮罩的一面，与抽屉同档；占位档的侧栏不画投影
   'layout': { sider: ['sheet'] },
   'mention': { content: ['floating'], empty: ['floating'], loading: ['floating'] },
