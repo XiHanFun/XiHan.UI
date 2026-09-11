@@ -1,7 +1,7 @@
 import type { DialogSchema } from './dialog.types'
-import { acquireScrollLock, createDismissLayer, createFocusScope, hideOutside, setup, warn } from '@xihan-ui/core'
+import { createDismissLayer, createFocusScope, setup, warn } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
-import { setupLayerTransaction } from '../shared/overlay-shell'
+import { createModalLayerResources, setupLayerTransaction } from '../shared/overlay-shell'
 
 const { createMachine } = setup<DialogSchema>()
 
@@ -24,6 +24,7 @@ export const dialogMachine = createMachine({
     config: null,
     registerLayer: null,
     presence: null,
+    syncModalResources: null,
     getContentEl: () => null,
     getTriggerEl: () => null,
     branches: () => [],
@@ -33,7 +34,10 @@ export const dialogMachine = createMachine({
   // 资源由机器生命周期持有；逻辑关闭之后继续保留，等 Presence 真正退出再释放。
   effects: ['trackOverlay'],
   // 受控时用户事件只发意图回调；宿主写回 open 后由这条 watch 派发 CONTROLLED.* 回写状态。
-  watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
+  watch: ({ track, prop, action }) => {
+    track([() => prop('open')], () => action(['syncOpen']))
+    track([() => prop('modal')], () => action(['syncModalResources']))
+  },
   states: {
     closed: {
       on: {
@@ -77,6 +81,7 @@ export const dialogMachine = createMachine({
           return
         send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
+      syncModalResources: ({ refs }) => refs.get('syncModalResources')?.(),
     },
     effects: {
       trackOverlay: ({ refs, prop, scope, send, flush, state, track }) => {
@@ -89,10 +94,8 @@ export const dialogMachine = createMachine({
         let reactivateFocus: (() => void) | undefined
         let resourcePolicy: string | undefined
         const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer, run) => {
-          // 开场快照：滚动锁与背景失活装配一次就定了，事后补不回来
-          const modal = prop('modal') ?? true
           const role = prop('role') ?? 'dialog'
-          resourcePolicy = `${modal}:${role}`
+          resourcePolicy = role
           const getContentEl = refs.get('getContentEl')
 
           const dismiss = createDismissLayer({
@@ -124,8 +127,8 @@ export const dialogMachine = createMachine({
             layer,
             container: getContentEl,
             // 退出内容已经 inert，保留焦点域归还资格但不向失活内容反复拉焦点。
-            trapped: () => modal && state.get() === 'open',
-            loop: modal,
+            trapped: () => (prop('modal') ?? true) && state.get() === 'open',
+            loop: () => prop('modal') ?? true,
             initialFocus: () => {
               const selector = prop('initialFocus')
               // 给了选择器就只认它；还没匹配上回 null，把机会留给下一帧重试
@@ -149,36 +152,32 @@ export const dialogMachine = createMachine({
             focus.dispose()
           })
 
-          if (modal) {
-            const lock = acquireScrollLock({ config })
-            defer(() => lock.dispose())
-
+          const modalResources = createModalLayerResources({
+            config,
+            layer,
+            enabled: () => prop('modal') ?? true,
             // 栈中位于本层之上的层一并算作目标：内层浮层 portal 到 body 之后也是 body 的
             // 直接子元素，不排除会被本层的 MutationObserver 打上 inert
-            const getTargets = (): Element[] => [
+            targets: () => [
               getContentEl(),
               ...refs.get('branches')(),
               ...config.layerRegistry.elementsAbove(layer),
-            ].filter(Boolean) as Element[]
-
-            // 背景失活推迟到宿主提交那一帧之后：进入 open 时 content 尚未渲染，
-            // 此刻 targets 为空会导致背景永不 inert
-            let hidden: (() => void) | undefined
-            let alive = true
-            // flush 可能排队后同步抛错，先登记存活闸门才能让事务回滚挡住迟到回调
-            defer(() => {
-              alive = false
-              hidden?.()
-            })
-            flush(() => {
-              if (!alive)
-                return
-              run(() => {
-                if (getTargets().length)
-                  hidden = hideOutside(getTargets, config)
-              })
-            })
+            ].filter(Boolean) as Element[],
+            flush,
+            run,
+          })
+          defer(modalResources.dispose)
+          const syncModalResources = (): void => {
+            // 退场期间保留关闭时的策略；重新展开或展开中改值才切换。
+            if (state.get() === 'open')
+              modalResources.sync()
           }
+          refs.set('syncModalResources', syncModalResources)
+          defer(() => {
+            if (refs.get('syncModalResources') === syncModalResources)
+              refs.set('syncModalResources', null)
+          })
+          syncModalResources()
         })
 
         const presence = refs.get('presence')
@@ -203,8 +202,8 @@ export const dialogMachine = createMachine({
           let reopening = open && !lastOpen && release !== undefined
           lastOpen = open
           if (open) {
-            // 政策改变后不能继续复用旧的锁页与焦点约束；普通重开仍保留原资源。
-            if (reopening && resourcePolicy !== `${prop('modal') ?? true}:${prop('role') ?? 'dialog'}`) {
+            // 退场中角色改变后需重建初始焦点语义；modal 本身由共享资源控制器原位切换。
+            if (reopening && resourcePolicy !== (prop('role') ?? 'dialog')) {
               const cleanup = release
               release = undefined
               cleanup?.()
@@ -212,6 +211,7 @@ export const dialogMachine = createMachine({
             }
             // 退场中重开沿用原资源，旧租约由 Presence 撤销，不重复登记或抢回焦点。
             release ??= acquire()
+            refs.get('syncModalResources')?.()
             presence?.update(true)
             if (reopening) {
               const activate = reactivateFocus

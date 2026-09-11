@@ -47,10 +47,17 @@ describe('connectDialog', () => {
   })
 
   it('alertdialog role + 非模态显式 aria-modal="false"', () => {
-    const content = connectDialog(makeService({ role: 'alertdialog', modal: false }), normalizeProps).getContentProps() as Record<string, unknown>
+    const api = connectDialog(makeService({ role: 'alertdialog', modal: false }), normalizeProps)
+    const content = api.getContentProps() as Record<string, unknown>
     expect(content.role).toBe('alertdialog')
     // 省略与显式 false 在读屏那里不是一回事：前者是"没说"，后者是"明确说了不是模态"
     expect(content['aria-modal']).toBe('false')
+    expect((api.getBackdropProps() as Record<string, unknown>).hidden).toBe(true)
+  })
+
+  it('默认模态不隐藏 backdrop', () => {
+    const backdrop = connectDialog(makeService(), normalizeProps).getBackdropProps() as Record<string, unknown>
+    expect(backdrop.hidden).toBeUndefined()
   })
 
   it('trigger 的 aria-haspopup / aria-expanded / aria-controls', () => {

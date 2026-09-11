@@ -1,5 +1,5 @@
 import type { Anchor, Cleanup, DismissReason, Layer, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
-import { createDismissLayer, createFocusScope } from '@xihan-ui/core'
+import { acquireScrollLock, createDismissLayer, createFocusScope, hideOutside } from '@xihan-ui/core'
 
 // 「浮层 + 候选导航」这一族组件的外壳：进入展开态时定位、入层栈、挂消解层与焦点域，
 // 退出时逆序拆。各家不同的那几处（锚点怎么解析、焦点落在哪、归还给谁）由调用方交回调进来。
@@ -101,6 +101,99 @@ export interface OverlayLayerOptions {
 
 type DeferOverlayCleanup = (cleanup: Cleanup) => void
 type RunOverlaySetup = <T>(setup: () => T) => T
+
+export interface ModalLayerResourcesOptions {
+  config: RuntimeConfig
+  /** 当前层；用于保留位于本层之上的嵌套浮层。 */
+  layer: Layer
+  /** 当前是否采用模态策略，可在展开生命周期内变化。 */
+  enabled: () => boolean
+  /** 背景失活时保留的当前层节点、分支和嵌套层。 */
+  targets: () => Element[]
+  /** 等宿主把浮层节点提交到 DOM 后再建立背景失活。 */
+  flush: (fn: () => void) => void
+  /** 复用外层事务的失败回滚边界。 */
+  run: RunOverlaySetup
+}
+
+export interface ModalLayerResources {
+  /** 按最新 enabled 值取得或释放模态资源。 */
+  sync: () => void
+  dispose: Cleanup
+}
+
+/**
+ * 管理一层可动态切换的模态资源：滚动锁与背景失活必须同进同退。
+ * 层登记、消解层与焦点域仍由调用方持有，不因 modal 改值而重建。
+ */
+export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalLayerResources {
+  let disposed = false
+  let release: Cleanup | undefined
+
+  const acquire = (): void => {
+    const lock = o.run(() => acquireScrollLock({ config: o.config }))
+    let hidden: Cleanup | undefined
+    let alive = true
+    const cleanup = (): void => {
+      if (!alive)
+        return
+      alive = false
+      const errors: unknown[] = []
+      try {
+        hidden?.()
+      }
+      catch (error) {
+        errors.push(error)
+      }
+      try {
+        lock.dispose()
+      }
+      catch (error) {
+        errors.push(error)
+      }
+      if (errors.length === 1)
+        throw errors[0]
+      if (errors.length > 1)
+        throw new AggregateError(errors, '[xh] 模态浮层资源清理出现多个异常', { cause: errors[0] })
+    }
+    release = cleanup
+
+    o.flush(() => {
+      if (disposed || !alive || release !== cleanup || !o.enabled())
+        return
+      o.run(() => {
+        const targets = o.targets()
+        if (targets.length)
+          hidden = hideOutside(o.targets, o.config)
+      })
+    })
+  }
+
+  const sync = (): void => {
+    if (disposed)
+      return
+    if (o.enabled()) {
+      if (!release)
+        acquire()
+      return
+    }
+    const cleanup = release
+    release = undefined
+    cleanup?.()
+  }
+
+  return {
+    sync,
+    dispose() {
+      if (disposed)
+        return
+      disposed = true
+      const cleanup = release
+      release = undefined
+      cleanup?.()
+    },
+  }
+}
 
 /**
  * 以 layer 登记为第一项资源执行同步初始化。setup 抛错时立即逆序回滚；成功时返回同一份

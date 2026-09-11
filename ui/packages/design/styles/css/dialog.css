@@ -91,6 +91,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    /* 全屏定位层只负责排版，不截获页面指针；模态拦截由 backdrop 承担。 */
+    pointer-events: none;
     /* 这段内衬是面板与视口边之间的全部距离，与安全区取大的一头：
        刘海、圆角与底部横条压住的那一段由系统给出，内衬比它窄时面板的一角会被切掉。
        桌面上 env() 恒为 0，取值与内衬槽完全一致。安全区只有物理方向的四个名字，
@@ -112,6 +114,9 @@
        positioner 又不是必需部件，content 才是这层浮层恒在的最外层，且它会被 portal 到 body，
        选择器只认得它自己身上那一份 data-size。 */
     --xh-_dialog-max-w: var(--xh-overlay-sheet-w-md);
+
+    /* positioner 不吃指针，面板自身恢复交互。 */
+    pointer-events: auto;
 
     position: relative;
     inline-size: 100%;

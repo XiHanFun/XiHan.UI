@@ -15,8 +15,8 @@ export interface FocusScopeOptions {
   config: RuntimeConfig
   layer: Layer
   container: () => HTMLElement | null
-  /** Tab 到边界回绕；与 trapped 正交。 */
-  loop?: boolean
+  /** Tab 到边界回绕；与 trapped 正交，可在生命周期内变化。 */
+  loop?: boolean | (() => boolean)
   /** 焦点不能通过键盘/指针/程序方式逃逸；可在生命周期内变化。 */
   trapped: () => boolean
   branches?: () => Element[]
@@ -485,7 +485,8 @@ export function createFocusScope(o: FocusScopeOptions): Disposable & { reactivat
 
   // —— Tab 边界回绕 ——
   function onKeyDown(e: KeyboardEvent): void {
-    if (disposed || paused || !o.loop || e.key !== 'Tab')
+    const loop = typeof o.loop === 'function' ? o.loop() : o.loop
+    if (disposed || paused || !loop || e.key !== 'Tab')
       return
     const el2 = container()
     if (!el2)

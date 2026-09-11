@@ -84,10 +84,11 @@ export const XhDialogContent = defineComponent({
       if (!ctx.rendered.value)
         return null
       const api = ctx.api.value
+      const backdrop = api.getBackdropProps() as Record<string, unknown>
       return h(XhPortal, { to: ctx.portalTarget.value }, () => [
-        api.open || ctx.rendered.value
+        !backdrop.hidden
           ? h('div', {
-              ...api.getBackdropProps() as Record<string, unknown>,
+              ...backdrop,
               ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
             })
           : null,

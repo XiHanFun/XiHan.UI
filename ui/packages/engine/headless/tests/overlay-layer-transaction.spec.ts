@@ -3,9 +3,55 @@
 import type { RuntimeConfig } from '@xihan-ui/core'
 import { createCounterIdGenerator, createLayerRegistry, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { describe, expect, it, vi } from 'vitest'
-import { setupLayerTransaction, trackOverlayLayer } from '../src/shared/overlay-shell'
+import { createModalLayerResources, setupLayerTransaction, trackOverlayLayer } from '../src/shared/overlay-shell'
 
 describe('浮层资源初始化事务', () => {
+  it('展开生命周期内切换模态策略时同步取得和释放锁页与背景失活', () => {
+    const outside = document.createElement('button')
+    const content = document.createElement('div')
+    document.body.append(outside, content)
+    const config = createRuntimeConfig()
+    let enabled = false
+    let modal!: ReturnType<typeof createModalLayerResources>
+    const cleanup = setupLayerTransaction(
+      () => config.layerRegistry.register({
+        kind: 'modal',
+        node: () => content,
+        branches: () => [],
+        isModal: () => enabled,
+        setModal: () => {},
+        surfaces: () => [],
+      }),
+      (layer, defer, run) => {
+        modal = createModalLayerResources({
+          config,
+          layer,
+          enabled: () => enabled,
+          targets: () => [content],
+          flush: task => task(),
+          run,
+        })
+        defer(modal.dispose)
+        modal.sync()
+      },
+    )
+
+    expect(document.body.style.overflow).not.toBe('hidden')
+    expect(outside.inert).not.toBe(true)
+    enabled = true
+    modal.sync()
+    expect(document.body.style.overflow).toBe('hidden')
+    expect(outside.inert).toBe(true)
+    enabled = false
+    modal.sync()
+    expect(document.body.style.overflow).not.toBe('hidden')
+    expect(outside.inert).not.toBe(true)
+
+    cleanup()
+    outside.remove()
+    content.remove()
+  })
+
   it('成功初始化后按依赖逆序清理且重复调用幂等', () => {
     const order: string[] = []
     const cleanup = setupLayerTransaction(

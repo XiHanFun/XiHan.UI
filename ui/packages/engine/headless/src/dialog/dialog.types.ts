@@ -11,6 +11,8 @@ export interface DialogRefs {
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
   presence: PresenceHandle | null
+  /** 展开期间 modal 改值时同步滚动锁与背景失活。 */
+  syncModalResources: (() => void) | null
   getContentEl: () => HTMLElement | null
   getTriggerEl: () => HTMLElement | null
   branches: () => Element[]
@@ -64,7 +66,7 @@ export interface DialogSchema extends MachineSchema {
     | { type: 'CONTROLLED.CLOSE' }
   tag: never
   guard: 'isOpenControlled'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'syncModalResources'
   effect: 'trackOverlay'
 }
 
