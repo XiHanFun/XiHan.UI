@@ -68,6 +68,8 @@ export function connectDrawer<T extends PropTypes>(
       'id': ids.content,
       'role': role,
       'tabindex': -1,
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 非模态时显式写 "false"，不能省略：读屏对"未声明"与"声明为非模态"处理不同
       'aria-modal': modal ? 'true' : 'false',
       'aria-labelledby': ids.title,

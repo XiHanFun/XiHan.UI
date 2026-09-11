@@ -48,6 +48,7 @@ export const XhDrawerRoot = defineComponent({
   emits: {
     'open-change': (_details: PayloadOf<DrawerProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<DrawerProps, 'onOpenChange'>['open']) => true,
+    'exit-complete': () => true,
   },
   slots: Object as SlotsType<{
     default?: (props: DrawerRootSlotProps) => VNode[]
@@ -59,7 +60,7 @@ export const XhDrawerRoot = defineComponent({
     }
     // 容器一处给定，两件事都从它派生：contained 交给机器（皮肤据此把遮罩与定位层
     // 从 fixed 换成 absolute），同一个值又是 Teleport 的落点，两边不会各说各话
-    const ctx = useDrawer(withXhConfig('drawer', props) as DrawerProps, notify, () => props.container)
+    const ctx = useDrawer(withXhConfig('drawer', props) as DrawerProps, notify, () => props.container, () => emit('exit-complete'))
     provideDrawer(ctx)
     // root 是真实节点，content 会被 portal 到 body，data-side 挂在这里供页面内的部分读取
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
@@ -113,6 +114,7 @@ export const XhDrawerContent = defineComponent({
         h('div', api.getPositionerProps() as Record<string, unknown>, [
           h('div', {
             ...mergeProps(api.getContentProps() as Record<string, unknown>, attrs),
+            hidden: !ctx.rendered.value || undefined,
             ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
           }, slots.default?.()),
         ]),

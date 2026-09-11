@@ -30,6 +30,8 @@ export const dialogMachine = createMachine({
     partScope: 'dialog',
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // 资源由机器生命周期持有；逻辑关闭之后继续保留，等 Presence 真正退出再释放。
+  effects: ['trackOverlay'],
   // 受控时用户事件只发意图回调；宿主写回 open 后由这条 watch 派发 CONTROLLED.* 回写状态。
   watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
   states: {
@@ -48,8 +50,6 @@ export const dialogMachine = createMachine({
       },
     },
     open: {
-      // 进入 open：按固定顺序装配 dismiss → focus → scroll，最后推迟一帧挂背景失活。
-      effects: ['trackOverlay'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
@@ -79,17 +79,20 @@ export const dialogMachine = createMachine({
       },
     },
     effects: {
-      trackOverlay: ({ refs, prop, scope, send, flush }) => {
+      trackOverlay: ({ refs, prop, scope, send, flush, state, track }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
         // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
         if (!config || !registerLayer)
           return undefined
 
-        return setupLayerTransaction(registerLayer, (layer, defer, run) => {
+        let reactivateFocus: (() => void) | undefined
+        let resourcePolicy: string | undefined
+        const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer, run) => {
           // 开场快照：滚动锁与背景失活装配一次就定了，事后补不回来
           const modal = prop('modal') ?? true
           const role = prop('role') ?? 'dialog'
+          resourcePolicy = `${modal}:${role}`
           const getContentEl = refs.get('getContentEl')
 
           const dismiss = createDismissLayer({
@@ -97,7 +100,7 @@ export const dialogMachine = createMachine({
             layer,
             // 两个开关都现读 prop，展开中途改也立刻生效
             onEscapeKeyDown: (e) => {
-              if (!(prop('closeOnEscape') ?? true))
+              if (state.get() !== 'open' || !(prop('closeOnEscape') ?? true))
                 e.preventDefault()
             },
             onInteractOutside: (e) => {
@@ -106,7 +109,7 @@ export const dialogMachine = createMachine({
               const allowed = (prop('role') ?? 'dialog') === 'alertdialog'
                 ? false
                 : prop('closeOnInteractOutside') ?? prop('modal') ?? true
-              if (!allowed)
+              if (state.get() !== 'open' || !allowed)
                 e.preventDefault()
             },
             onDismiss: reason =>
@@ -120,7 +123,8 @@ export const dialogMachine = createMachine({
             config,
             layer,
             container: getContentEl,
-            trapped: () => modal,
+            // 退出内容已经 inert，保留焦点域归还资格但不向失活内容反复拉焦点。
+            trapped: () => modal && state.get() === 'open',
             loop: modal,
             initialFocus: () => {
               const selector = prop('initialFocus')
@@ -138,7 +142,12 @@ export const dialogMachine = createMachine({
             // 组件名取自 refs：抽屉跑同一台机器，它的部件 id 挂在 drawer 名下
             restoreTarget: () => scope.getById<HTMLElement>(scope.partId(refs.get('partScope'), 'trigger')),
           })
-          defer(() => focus.dispose())
+          reactivateFocus = focus.reactivate
+          defer(() => {
+            if (reactivateFocus === focus.reactivate)
+              reactivateFocus = undefined
+            focus.dispose()
+          })
 
           if (modal) {
             const lock = acquireScrollLock({ config })
@@ -171,6 +180,68 @@ export const dialogMachine = createMachine({
             })
           }
         })
+
+        const presence = refs.get('presence')
+        let disposed = false
+        let release: (() => void) | undefined
+        let lastOpen = false
+
+        const finish = (): void => {
+          if (disposed || state.get() === 'open' || !release)
+            return
+          const cleanup = release
+          release = undefined
+          cleanup()
+          if (!disposed && state.get() !== 'open' && !release)
+            prop('onExitComplete')?.()
+        }
+        const offExit = presence?.onExitComplete(finish)
+        const sync = (): void => {
+          if (disposed)
+            return
+          const open = state.get() === 'open'
+          let reopening = open && !lastOpen && release !== undefined
+          lastOpen = open
+          if (open) {
+            // 政策改变后不能继续复用旧的锁页与焦点约束；普通重开仍保留原资源。
+            if (reopening && resourcePolicy !== `${prop('modal') ?? true}:${prop('role') ?? 'dialog'}`) {
+              const cleanup = release
+              release = undefined
+              cleanup?.()
+              reopening = false
+            }
+            // 退场中重开沿用原资源，旧租约由 Presence 撤销，不重复登记或抢回焦点。
+            release ??= acquire()
+            presence?.update(true)
+            if (reopening) {
+              const activate = reactivateFocus
+              flush(() => scope.getWin().requestAnimationFrame(() => {
+                if (!disposed && state.get() === 'open' && release && reactivateFocus === activate)
+                  activate?.()
+              }))
+            }
+          }
+          else if (!presence || !presence.rendered) {
+            finish()
+          }
+        }
+        try {
+          track([() => state.get()], sync)
+          sync()
+        }
+        catch (error) {
+          disposed = true
+          offExit?.()
+          release?.()
+          throw error
+        }
+        return () => {
+          disposed = true
+          offExit?.()
+          const cleanup = release
+          release = undefined
+          cleanup?.()
+        }
       },
     },
   },

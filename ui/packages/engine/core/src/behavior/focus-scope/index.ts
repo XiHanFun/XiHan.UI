@@ -69,7 +69,7 @@ function dispatchAutoFocus(
   return !event.defaultPrevented
 }
 
-export function createFocusScope(o: FocusScopeOptions): Disposable {
+export function createFocusScope(o: FocusScopeOptions): Disposable & { reactivate: () => void } {
   const { config, layer, container } = o
   const scope = config.scope
   const doc = scope.getDoc()
@@ -551,6 +551,27 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
   }
 
   return {
+    // 失活后恢复同一个焦点域，不重复派发挂载事件或重建归还资格。
+    reactivate() {
+      if (disposed || paused || hasNewerScope(documentScopes, mountSeq) || !mountFocusAllowed || activeFocusWithinScope())
+        return
+      const el = container()
+      if (!el?.isConnected)
+        return
+      const candidates = [
+        ...(lastFocused?.isConnected && isInScope(lastFocused) ? [lastFocused] : []),
+        ...removeLinks(getTabbables(el)),
+        el,
+      ]
+      for (const target of new Set(candidates)) {
+        // focus 事件可同步打开更新的域，不能继续抢下一候选。
+        if (disposed || paused || hasNewerScope(documentScopes, mountSeq))
+          return
+        focusSafely(target)
+        if (activeFocusWithinScope())
+          return
+      }
+    },
     dispose() {
       if (disposed)
         return

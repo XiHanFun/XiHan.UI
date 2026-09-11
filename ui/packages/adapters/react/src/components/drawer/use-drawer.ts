@@ -45,6 +45,7 @@ export function useDrawer(
     layer,
     node: () => contentRef.current,
     surfaces: () => [backdropRef.current].filter(Boolean) as Element[],
+    additionalExitNodes: () => [backdropRef.current],
     container,
     refs: (service) => {
       service.refs.set('getContentEl', (() => contentRef.current) as never)

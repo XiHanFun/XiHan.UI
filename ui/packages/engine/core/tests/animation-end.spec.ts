@@ -30,6 +30,30 @@ function stubStyle(node: HTMLElement, style: Partial<CSSStyleDeclaration>): void
       return { animationName: 'none', animationDuration: '0s', animationDelay: '0s', display: 'block', ...style } as CSSStyleDeclaration
     return realGetComputedStyle(el as HTMLElement, pseudo)
   }) as typeof window.getComputedStyle)
+  // 模拟浏览器实际创建的 CSSAnimation；事件仅用于兑现此测试动画的 finished。
+  const finished = new Promise<Animation>((resolve, reject) => {
+    node.addEventListener('animationend', (event) => {
+      if (event.target === node && (event as AnimationEvent).animationName === style.animationName)
+        resolve({} as Animation)
+    })
+    node.addEventListener('animationcancel', (event) => {
+      if (event.target === node && (event as AnimationEvent).animationName === style.animationName)
+        reject(new Error('动画已取消'))
+    })
+  })
+  Object.defineProperty(node, 'getAnimations', {
+    configurable: true,
+    value: () => [{
+      animationName: style.animationName,
+      playState: 'running',
+      effect: { getComputedTiming: () => ({ endTime: 200 }) },
+      finished,
+    }],
+  })
+}
+
+async function settle(): Promise<void> {
+  await new Promise(resolve => setTimeout(resolve, 0))
 }
 
 function mount(): HTMLElement {
@@ -67,7 +91,7 @@ describe('attachCssExit', () => {
     expect(p.rendered, 'display:none 却申领了租约，退场会永久挂住').toBe(false)
   })
 
-  it('真有动画时申领租约，animationend 到达才卸载', () => {
+  it('真有动画时申领租约，animationend 到达才卸载', async () => {
     const el = mount()
     stubStyle(el, { animationName: 'xh-dialog-out', animationDuration: '0.2s' })
     const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange: () => {} })
@@ -76,12 +100,13 @@ describe('attachCssExit', () => {
     expect(p.rendered, '动画期间要留在 DOM 里').toBe(true)
 
     el.dispatchEvent(animationEvent('animationend', 'xh-dialog-out'))
+    await settle()
     expect(p.rendered).toBe(false)
   })
 
   // 收起发生在进场还没播完时,进场那支会先抛一个 animationcancel。拿它当退场结束,
   // 退场就一帧都不播——开得越快关,收得越突然
-  it('进场被打断抛出的 animationcancel 不算退场结束', () => {
+  it('进场被打断抛出的 animationcancel 不算退场结束', async () => {
     const el = mount()
     stubStyle(el, { animationName: 'xh-pop-out', animationDuration: '0.12s' })
     const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange: () => {} })
@@ -90,16 +115,16 @@ describe('attachCssExit', () => {
 
     // 进场那支被取消:名字对不上,租约不该归还
     el.dispatchEvent(animationEvent('animationcancel', 'xh-pop-in'))
+    await settle()
     expect(p.rendered, '进场那支的取消不该把退场收掉').toBe(true)
 
     // 退场那支真的结束了才算数
     el.dispatchEvent(animationEvent('animationend', 'xh-pop-out'))
+    await settle()
     expect(p.rendered).toBe(false)
   })
 
-  // 动画可能被作者中途换掉、被 UA 跳过、或压根没触发，届时 animationend 同样不来。
-  // 租约必须有回收路径，否则一次意外就把组件钉死
-  it('animationend 迟迟不来时，兜底票到期自行归还', () => {
+  it('超过声明时长也不猜测完成，实际动画取消后才归还', async () => {
     vi.useFakeTimers()
     const el = mount()
     stubStyle(el, { animationName: 'xh-dialog-out', animationDuration: '0.2s', animationDelay: '0.1s' })
@@ -108,9 +133,11 @@ describe('attachCssExit', () => {
     p.update(false)
     expect(p.rendered).toBe(true)
 
-    // 时长 200ms + 延迟 100ms + 余量，过了就该自己归还
-    vi.advanceTimersByTime(600)
-    expect(p.rendered, '兜底票没生效，租约永久挂住').toBe(false)
+    vi.advanceTimersByTime(10000)
+    expect(p.rendered, '暂停或被业务延长的动画不能按声明时长提前结束').toBe(true)
+    el.dispatchEvent(animationEvent('animationcancel', 'xh-dialog-out'))
+    await vi.runAllTimersAsync()
+    expect(p.rendered).toBe(false)
   })
 
   it('子元素冒泡上来的 animationend 不算数', () => {

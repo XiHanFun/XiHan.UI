@@ -34,6 +34,7 @@ export const XhDialogRoot = defineComponent({
   emits: {
     'open-change': (_details: PayloadOf<DialogProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<DialogProps, 'onOpenChange'>['open']) => true,
+    'exit-complete': () => true,
   },
   slots: Object as SlotsType<{
     default?: (props: DialogRootSlotProps) => VNode[]
@@ -43,7 +44,7 @@ export const XhDialogRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useDialog(withXhConfig('dialog', props) as DialogProps, notify)
+    const ctx = useDialog(withXhConfig('dialog', props) as DialogProps, notify, () => emit('exit-complete'))
     provideDialog(ctx)
     return () => slots.default?.({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
   },
@@ -93,6 +94,7 @@ export const XhDialogContent = defineComponent({
         h('div', api.getPositionerProps() as Record<string, unknown>, [
           h('div', {
             ...mergeProps(api.getContentProps() as Record<string, unknown>, attrs),
+            hidden: !ctx.rendered.value || undefined,
             ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
           }, slots.default?.()),
         ]),

@@ -16,6 +16,7 @@
 
 - `side` 决定从哪一边出来；`contained` 让它只占据某个容器而不是整个视口。
 - 可以拖边缘改厚度。
+- 关闭时内容立即失活并退出可访问树；面板与遮罩全部完成退场后释放模态资源并发出 `onExitComplete` / `exit-complete`。退场中重开不会被旧完成关闭，卸载立即清理。
 - 关闭前可以拦截（有未保存改动时先问一句）。
 
 ## 示例
@@ -101,6 +102,7 @@ header / body / footer 把面板切成三段：头与尾定在原处，只有正
 | `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。落在 backdrop 上，只换那一层的底色与模糊。 |
 | `translations` | `Partial<DrawerTranslations>` |  |  |
 | `onOpenChange` | `(details: DrawerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `onExitComplete` | `() => void` |  | 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 |
 
 ## 事件
 
@@ -108,6 +110,7 @@ header / body / footer 把面板切成三段：头与尾定在原处，只有正
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
+| `exit-complete` | `CustomEvent` | 退出完成且本层资源已释放 |
 | `open-change` | `DrawerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ## 插槽
@@ -180,6 +183,7 @@ header / body / footer 把面板切成三段：头与尾定在原处，只有正
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-labelledby` | `title` 部件的 id |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | props.role |

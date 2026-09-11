@@ -38,6 +38,8 @@ export interface UseOverlayOptions {
   surfaces?: () => Element[]
   /** 退场动画从哪个节点上探测；不给就用落点节点。 */
   exitNode?: () => HTMLElement | null
+  /** 同一浮层需要一起等完的其他表面，例如 Dialog 遮罩。 */
+  additionalExitNodes?: () => Array<HTMLElement | null>
   /** 各家自己要交给机器的 refs；config、registerLayer 与 presence 由本层交。 */
   refs?: (service: Service<MachineSchema>, config: RuntimeConfig) => void
   /** 作者写在实例上的浮层容器。 */
@@ -70,14 +72,16 @@ export function useOverlay(options: UseOverlayOptions): OverlayWiring {
       // 宿主把滚动搬进内容容器时 body 本身不滚，加锁会是空操作；这条把真正在滚的那层交给滚动锁
       scrollRoot: () => scrollRoot.current?.() ?? null,
     })
-    const presence = createPresence({ config, open: initialOpen, onRenderedChange: setRendered })
-    return { config, presence }
-  }, [scope, idGenerator, initialOpen])
+    return { config, presence: null as PresenceHandle | null }
+  }, [scope, idGenerator])
 
   const onCreate = useCallback((service: Service<MachineSchema>): (() => void) => {
     if (!parts)
       return () => {}
-    const { config, presence } = parts
+    const { config } = parts
+    // StrictMode 重建机器时必须重新建立已销毁的 Presence，不能继续使用旧租约容器。
+    const presence = createPresence({ config, open: latest.current.initialOpen, onRenderedChange: setRendered })
+    parts.presence = presence
     // 只提供注册函数，入栈出栈由机器的效应按展开态驱动
     const registerLayer = (): ReturnType<RuntimeConfig['layerRegistry']['register']> =>
       config.layerRegistry.register({
@@ -89,27 +93,51 @@ export function useOverlay(options: UseOverlayOptions): OverlayWiring {
     service.refs.set('registerLayer', registerLayer as never)
     service.refs.set('presence', presence as never)
     latest.current.refs?.(service, config)
-    return () => presence.dispose()
+    return () => {
+      presence.dispose()
+      if (parts.presence === presence)
+        parts.presence = null
+    }
   }, [parts])
 
   // data-state 落到 DOM 之后再驱动进出场：早于提交驱动，退场探测读到的还是上一帧的
   // animationName，量不到这次的动画
-  const detachExit = useRef<(() => void) | undefined>(undefined)
+  const observed = useRef<{ presence: PresenceHandle | null, nodes: Map<HTMLElement, () => void> }>({ presence: null, nodes: new Map() })
   useIsomorphicLayoutEffect(() => {
     const open = latest.current.isOpen()
-    if (!parts) {
+    const presence = parts?.presence
+    if (!presence) {
       setRendered(open)
       return
     }
-    parts.presence.update(open)
-    const node = (latest.current.exitNode ?? latest.current.node)()
-    detachExit.current?.()
-    detachExit.current = node ? attachCssExit(node, parts.presence) : undefined
+    if (open)
+      presence.update(true)
+    if (observed.current.presence !== presence) {
+      for (const detach of observed.current.nodes.values()) detach()
+      observed.current.nodes.clear()
+      observed.current.presence = presence
+    }
+    const nodes = new Set([
+      (latest.current.exitNode ?? latest.current.node)(),
+      ...latest.current.additionalExitNodes?.() ?? [],
+    ].filter((node): node is HTMLElement => node !== null))
+    for (const node of nodes) {
+      if (!observed.current.nodes.has(node))
+        observed.current.nodes.set(node, attachCssExit(node, presence))
+    }
+    for (const [node, detach] of observed.current.nodes) {
+      if (!nodes.has(node)) {
+        observed.current.nodes.delete(node)
+        detach()
+      }
+    }
+    presence.update(open)
   })
 
   useEffect(() => () => {
-    detachExit.current?.()
-    detachExit.current = undefined
+    for (const detach of observed.current.nodes.values()) detach()
+    observed.current.nodes.clear()
+    observed.current.presence = null
   }, [])
 
   const portalContainer = useCallback(

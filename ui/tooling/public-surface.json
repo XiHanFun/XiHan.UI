@@ -9113,6 +9113,7 @@
       "defaultOpen",
       "initialFocus",
       "modal",
+      "onExitComplete",
       "onOpenChange",
       "open",
       "restoreFocus",
@@ -9150,6 +9151,7 @@
       "contained",
       "defaultOpen",
       "modal",
+      "onExitComplete",
       "onOpenChange",
       "open",
       "restoreFocus",
@@ -15190,6 +15192,7 @@
         "variant"
       ],
       "events": [
+        "exit-complete",
         "open-change"
       ]
     },
@@ -15234,6 +15237,7 @@
         "variant"
       ],
       "events": [
+        "exit-complete",
         "open-change"
       ]
     },
