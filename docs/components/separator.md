@@ -122,7 +122,7 @@ variant 三档换深浅，dashed 画虚线（横竖各自成立），粗细与�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-separator-align-length` · `--xh-separator-color` · `--xh-separator-content-fg` · `--xh-separator-content-font-size` · `--xh-separator-dash-gap` · `--xh-separator-dash-length` · `--xh-separator-gap` · `--xh-separator-thickness`
+`--xh-separator-align-length` · `--xh-separator-color` · `--xh-separator-content-fg` · `--xh-separator-content-font-size` · `--xh-separator-dash-gap` · `--xh-separator-dash-length` · `--xh-separator-gap` · `--xh-separator-radius` · `--xh-separator-thickness`
 
 ## 动效
 

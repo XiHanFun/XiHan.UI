@@ -20519,6 +20519,9 @@
               "name": "--xh-hover-card-arrow-size"
             },
             {
+              "name": "--xh-hover-card-backdrop"
+            },
+            {
               "name": "--xh-hover-card-bg"
             },
             {
@@ -32661,7 +32664,13 @@
               "name": "--xh-popconfirm-action-radius"
             },
             {
+              "name": "--xh-popconfirm-action-shadow"
+            },
+            {
               "name": "--xh-popconfirm-arrow-size"
+            },
+            {
+              "name": "--xh-popconfirm-backdrop"
             },
             {
               "name": "--xh-popconfirm-bg"
@@ -32673,7 +32682,13 @@
               "name": "--xh-popconfirm-cancel-bg"
             },
             {
+              "name": "--xh-popconfirm-cancel-bg-focus"
+            },
+            {
               "name": "--xh-popconfirm-cancel-fg"
+            },
+            {
+              "name": "--xh-popconfirm-cancel-fg-focus"
             },
             {
               "name": "--xh-popconfirm-confirm-bg"
@@ -33091,6 +33106,9 @@
               "name": "--xh-popover-arrow-size"
             },
             {
+              "name": "--xh-popover-backdrop"
+            },
+            {
               "name": "--xh-popover-bg"
             },
             {
@@ -33100,10 +33118,16 @@
               "name": "--xh-popover-close-bg-active"
             },
             {
+              "name": "--xh-popover-close-bg-focus"
+            },
+            {
               "name": "--xh-popover-close-bg-hover"
             },
             {
               "name": "--xh-popover-close-fg"
+            },
+            {
+              "name": "--xh-popover-close-fg-focus"
             },
             {
               "name": "--xh-popover-close-fg-hover"
@@ -39062,6 +39086,9 @@
             },
             {
               "name": "--xh-separator-gap"
+            },
+            {
+              "name": "--xh-separator-radius"
             },
             {
               "name": "--xh-separator-thickness"
@@ -46097,6 +46124,15 @@
               "readonly": true,
               "default": "new WeakMap<HTMLElement, boolean>()",
               "description": "首次见到该节点时若已有内容则判为归作者，之后一概不碰。"
+            },
+            {
+              "kind": "field",
+              "name": "autoSizeEl",
+              "type": {
+                "text": "HTMLTextAreaElement | null"
+              },
+              "privacy": "private",
+              "default": "null"
             },
             {
               "kind": "method",
