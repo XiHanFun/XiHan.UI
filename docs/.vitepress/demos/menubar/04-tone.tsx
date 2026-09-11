@@ -1,4 +1,4 @@
-// 语气 | tone 换的是高亮底色，静止态一样：悬停到 trigger 上、或展开菜单后把焦点移到条目上才显现
+// 语气 | 普通菜单行与展开项保持中性灰；tone 作用于触发器反馈和显式标记，不给展开项铺品牌色
 import type { ReactNode } from "react";
 import { XhMenubarRoot } from "@xihan-ui/react";
 

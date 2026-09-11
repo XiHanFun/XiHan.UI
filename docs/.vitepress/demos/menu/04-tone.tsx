@@ -1,4 +1,4 @@
-// 语气 | tone 决定条目高亮用哪族颜色；静止态看不出来，展开后悬停条目、或用方向键把焦点移上去才显现
+// 语气 | 普通菜单行与展开项保持中性灰；tone 作用于触发器反馈和显式标记，不给展开项铺品牌色
 import type { ReactNode } from "react";
 import { XhMenuRoot } from "@xihan-ui/react";
 

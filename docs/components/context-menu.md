@@ -19,10 +19,10 @@
 - `typeahead` 决定展开后的可打印字符是拿去检索还是放行给页面。
 - `longPressDelay` 是触摸端按住多久算触发。
 - `root` 的插槽给出锚点坐标与 `openAt`，可以从任意位置弹出。
-- 浮层使用 M2 磨砂表面；条目悬停/键盘锚点、按下和打开路径是三档实体反馈，打开路径用
-  始端色线标识，不改变文字字重。
-- 同一层只要提供了 `item-indicator`，直属条目与组标题就统一留出 leading 列；长文字和说明
-  从正文列开始并截断，子菜单箭头固定在末列。嵌套子菜单有自己的列，不会反向撑开父层。
+- 浮层使用 M2 磨砂表面；条目悬停/键盘锚点与打开路径使用同一中性淡底，按下加深一档。
+  打开二级菜单不加色条、不改字重，也不使用品牌蓝底。
+- 条目使用 flex 主行并保留作者的实际插槽顺序：图标、`item-text`、任意快捷键节点和子菜单箭头
+  可以同排；`item-text` 占剩余空间并截断，只有 `item-description` 独占第二行。
 - 面板落位后从锚点一侧淡入短移，退出沿原方向收回；四向跟实际 placement 走，不缩放整张菜单。
 
 ## 示例
@@ -47,7 +47,7 @@ group 用 value 跟自己的 group-label 配对，item-indicator 是纯装饰的
 
 ### 语气
 
-tone 决定条目高亮与标记位用哪族颜色；高亮静止态看不出来，右键弹出后悬停条目、或用方向键把焦点移上去才显现
+普通菜单行与展开项保持中性灰；tone 作用于触发器反馈和显式标记，不给展开项铺品牌色
 
 <XhDemo src="context-menu/04-tone" />
 
@@ -248,7 +248,7 @@ XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-context-menu-arrow-size` · `--xh-context-menu-backdrop` · `--xh-context-menu-border` · `--xh-context-menu-content-bg` · `--xh-context-menu-content-fg` · `--xh-context-menu-content-gap` · `--xh-context-menu-content-px` · `--xh-context-menu-content-py` · `--xh-context-menu-content-radius` · `--xh-context-menu-content-shadow` · `--xh-context-menu-group-gap` · `--xh-context-menu-group-label-fg` · `--xh-context-menu-group-label-font-size` · `--xh-context-menu-group-label-font-weight` · `--xh-context-menu-group-label-px` · `--xh-context-menu-group-label-py` · `--xh-context-menu-highlight` · `--xh-context-menu-icon-size` · `--xh-context-menu-item-bg-active` · `--xh-context-menu-item-bg-hover` · `--xh-context-menu-item-bg-pressed` · `--xh-context-menu-item-description-fg` · `--xh-context-menu-item-description-font-size` · `--xh-context-menu-item-fg` · `--xh-context-menu-item-font-size` · `--xh-context-menu-item-gap` · `--xh-context-menu-item-indicator-fg` · `--xh-context-menu-item-indicator-size` · `--xh-context-menu-item-leading` · `--xh-context-menu-item-leading-size` · `--xh-context-menu-item-path-indicator` · `--xh-context-menu-item-px` · `--xh-context-menu-item-py` · `--xh-context-menu-item-radius` · `--xh-context-menu-layer` · `--xh-context-menu-max-h` · `--xh-context-menu-max-w` · `--xh-context-menu-min-w` · `--xh-context-menu-separator-color` · `--xh-context-menu-separator-my` · `--xh-context-menu-separator-radius` · `--xh-context-menu-separator-thickness` · `--xh-context-menu-submenu-indicator-fg` · `--xh-context-menu-trigger-bg-pressing`
+`--xh-context-menu-arrow-size` · `--xh-context-menu-backdrop` · `--xh-context-menu-border` · `--xh-context-menu-content-bg` · `--xh-context-menu-content-fg` · `--xh-context-menu-content-gap` · `--xh-context-menu-content-px` · `--xh-context-menu-content-py` · `--xh-context-menu-content-radius` · `--xh-context-menu-content-shadow` · `--xh-context-menu-group-gap` · `--xh-context-menu-group-label-fg` · `--xh-context-menu-group-label-font-size` · `--xh-context-menu-group-label-font-weight` · `--xh-context-menu-group-label-px` · `--xh-context-menu-group-label-py` · `--xh-context-menu-highlight` · `--xh-context-menu-icon-size` · `--xh-context-menu-item-bg-active` · `--xh-context-menu-item-bg-hover` · `--xh-context-menu-item-bg-pressed` · `--xh-context-menu-item-description-fg` · `--xh-context-menu-item-description-font-size` · `--xh-context-menu-item-fg` · `--xh-context-menu-item-font-size` · `--xh-context-menu-item-gap` · `--xh-context-menu-item-indicator-fg` · `--xh-context-menu-item-indicator-size` · `--xh-context-menu-item-leading` · `--xh-context-menu-item-px` · `--xh-context-menu-item-py` · `--xh-context-menu-item-radius` · `--xh-context-menu-layer` · `--xh-context-menu-max-h` · `--xh-context-menu-max-w` · `--xh-context-menu-min-w` · `--xh-context-menu-separator-color` · `--xh-context-menu-separator-my` · `--xh-context-menu-separator-radius` · `--xh-context-menu-separator-thickness` · `--xh-context-menu-submenu-indicator-fg` · `--xh-context-menu-trigger-bg-pressing`
 
 ## 动效
 
@@ -270,13 +270,12 @@ XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份
 
 - 菜单里的每条命令都要在别处有可见入口，右键只是快捷方式。
 - 条目控制在十条以内，超过就分组。
-- 有标记位时，同层条目应都保留 `item-indicator` 节点并用 `hidden` 切换内容，避免运行期增删节点
-  让整层正文列来回移动。
+- 图标与快捷键按实际需要写入对应条目，不必为了别的条目有 indicator 而给整层补空占位。
 
 ### 当前边界
 
-- 当前 anatomy 没有独立的 shortcut、trailing 或单条 danger tone 部件；任意子节点可以显示附加内容，
-  但没有稳定的部件名与列合同，不能把临时 span 当成公开 API。
+- 当前没有独立的 shortcut、trailing 或单条 danger tone 部件。快捷键提示可由作者节点显示，
+  并按顺序参与 flex 主行；提示不会自动注册键盘动作。
 
 ## 反模式
 
