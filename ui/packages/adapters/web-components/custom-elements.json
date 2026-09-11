@@ -10715,10 +10715,17 @@
             },
             {
               "kind": "field",
-              "name": "submenuChildren",
+              "name": "submenuBridges",
               "privacy": "private",
               "readonly": true,
-              "default": "new Map<HTMLElement, MenuSubmenuChild>()"
+              "default": "new Map<HTMLElement, MenuSubmenuChild>()",
+              "description": "子菜单 trigger 的 WC 属性铺设桥；逻辑树由 headless 节点维护。"
+            },
+            {
+              "kind": "field",
+              "name": "menuTree",
+              "privacy": "private",
+              "readonly": true
             },
             {
               "kind": "field",
@@ -10728,7 +10735,7 @@
               },
               "privacy": "private",
               "readonly": true,
-              "default": "{ registerSubmenu: child => this.registerSubmenu(child), }"
+              "default": "{ tree: this.menuTree, registerSubmenu: child => this.registerSubmenu(child), }"
             },
             {
               "kind": "field",
@@ -13488,19 +13495,31 @@
               "name": "--xh-dialog-backdrop-blur"
             },
             {
+              "name": "--xh-dialog-backdrop-filter"
+            },
+            {
               "name": "--xh-dialog-backdrop-layer"
             },
             {
               "name": "--xh-dialog-bg"
             },
             {
+              "name": "--xh-dialog-border"
+            },
+            {
               "name": "--xh-dialog-close-bg-active"
+            },
+            {
+              "name": "--xh-dialog-close-bg-focus"
             },
             {
               "name": "--xh-dialog-close-bg-hover"
             },
             {
               "name": "--xh-dialog-close-fg"
+            },
+            {
+              "name": "--xh-dialog-close-fg-focus"
             },
             {
               "name": "--xh-dialog-close-fg-hover"
@@ -13510,6 +13529,15 @@
             },
             {
               "name": "--xh-dialog-close-size"
+            },
+            {
+              "name": "--xh-dialog-content-backdrop-filter"
+            },
+            {
+              "name": "--xh-dialog-content-lens-bg"
+            },
+            {
+              "name": "--xh-dialog-content-lens-depth"
             },
             {
               "name": "--xh-dialog-description-fg"
@@ -13530,10 +13558,19 @@
               "name": "--xh-dialog-gap"
             },
             {
+              "name": "--xh-dialog-header-bg"
+            },
+            {
               "name": "--xh-dialog-header-gap"
             },
             {
+              "name": "--xh-dialog-header-lens-depth"
+            },
+            {
               "name": "--xh-dialog-header-pb"
+            },
+            {
+              "name": "--xh-dialog-highlight"
             },
             {
               "name": "--xh-dialog-icon-size"
@@ -13570,6 +13607,9 @@
             },
             {
               "name": "--xh-dialog-radius"
+            },
+            {
+              "name": "--xh-dialog-separator"
             },
             {
               "name": "--xh-dialog-shadow"
@@ -16144,6 +16184,15 @@
             },
             {
               "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
               "name": "controlId",
               "privacy": "public",
               "type": {
@@ -16153,12 +16202,38 @@
             },
             {
               "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
               "name": "fieldScope",
               "type": {
                 "text": "Scope"
               },
               "privacy": "private",
               "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "Form 发现 Light DOM 控件后调用；状态优先级仍由 headless 真源计算。"
             },
             {
               "kind": "method",
@@ -16195,6 +16270,14 @@
               "description": "禁用标注，只落 data-disabled，不代作者写原生 disabled",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读标注：控件上 aria-readonly=true，仍保留焦点与提交语义",
+              "name": "read-only",
+              "fieldName": "readOnly"
             },
             {
               "type": {
@@ -26995,11 +27078,11 @@
             },
             {
               "kind": "field",
-              "name": "submenuChildren",
+              "name": "submenuBridges",
               "privacy": "private",
               "readonly": true,
               "default": "new Map<HTMLElement, MenuSubmenuChild>()",
-              "description": "直属子菜单触发条目由父机补齐 item 身份；嵌套 xh-* 子树不会被 discoverParts 越权扫描。"
+              "description": "直属子菜单触发条目由父机补齐 item 身份；这里只保留 WC 的属性铺设桥。"
             },
             {
               "kind": "field",
@@ -27039,13 +27122,19 @@
             },
             {
               "kind": "field",
+              "name": "menuTree",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "submenuOwner",
               "type": {
                 "text": "MenuSubmenuOwner"
               },
               "privacy": "private",
               "readonly": true,
-              "default": "{ registerSubmenu: child => this.registerSubmenu(child), }"
+              "default": "{ tree: this.menuTree, registerSubmenu: child => this.registerSubmenu(child), }"
             },
             {
               "kind": "field",
@@ -27074,25 +27163,6 @@
               "name": "dispatchSelect",
               "privacy": "private",
               "readonly": true
-            },
-            {
-              "kind": "method",
-              "name": "acceptDescendantSelection",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "details",
-                  "type": {
-                    "text": "MenuSelectDetails"
-                  }
-                }
-              ],
-              "description": "叶菜单已先退栈；每个逻辑祖先同步收起自己，再把同一选择继续交给上一层。"
             },
             {
               "kind": "field",
@@ -27189,16 +27259,6 @@
                   }
                 }
               ]
-            },
-            {
-              "kind": "method",
-              "name": "openSubmenuBranches",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "readonly HTMLElement[]"
-                }
-              }
             },
             {
               "kind": "method",
@@ -27822,10 +27882,17 @@
             },
             {
               "kind": "field",
-              "name": "submenuChildren",
+              "name": "submenuBridges",
               "privacy": "private",
               "readonly": true,
-              "default": "new Map<HTMLElement, MenuSubmenuChild>()"
+              "default": "new Map<HTMLElement, MenuSubmenuChild>()",
+              "description": "子菜单 trigger 的 WC 属性铺设桥；逻辑树由 headless 节点维护。"
+            },
+            {
+              "kind": "field",
+              "name": "menuTree",
+              "privacy": "private",
+              "readonly": true
             },
             {
               "kind": "field",
@@ -27835,7 +27902,7 @@
               },
               "privacy": "private",
               "readonly": true,
-              "default": "{ registerSubmenu: child => this.registerSubmenu(child), }"
+              "default": "{ tree: this.menuTree, registerSubmenu: child => this.registerSubmenu(child), }"
             },
             {
               "kind": "field",
@@ -33551,6 +33618,25 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "ensureExit",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "OverlayExit"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "open",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "description": "机器挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。"
             },
             {
               "kind": "field",
@@ -46688,6 +46774,32 @@
               "default": "new MachineController<TextFieldSchema>(this, textFieldMachine, () => this.machineProps())"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "Form 或 Field 发现此 Light-DOM 控件后调用；不是公开的业务写值入口。"
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -53202,8 +53314,17 @@
               "name": "collection",
               "privacy": "public",
               "type": {
-                "text": "TreeNode[] | undefined"
+                "text": "TreeSelectNode[] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "loadChildren",
+              "privacy": "public",
+              "type": {
+                "text": "TreeSelectSchema['props']['loadChildren'] | undefined"
+              },
+              "description": "懒分支的取数函数；只能作为 property 设置。"
             },
             {
               "kind": "field",
