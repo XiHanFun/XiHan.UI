@@ -242,14 +242,16 @@ export interface PresenceHandle {
   readonly rendered: boolean; // 渲染状态：DOM 还该留着吗
   readonly state: "open" | "closed"; // 直接绑到 data-state
 
-  claimExit: (reason: string, timeoutMs?: number) => ExitLease;
+  claimExit: (reason: string) => ExitLease;
   onBeforeExit: (fn: () => void) => Cleanup;
   onExitComplete: (fn: () => void) => Cleanup;
   update: (open: boolean) => void;
 }
 ```
 
-关闭时先同步触发 `onBeforeExit`，动画探测器在此**申领租约**；所有租约归还之前 `rendered` 保持 `true`，DOM 不摘。退场中途又被打开则 `cancel()` 租约，不卸载。租约带超时，动画事件没来也不会永远卡住。
+关闭时先同步触发 `onBeforeExit`，动画探测器在此**申领租约**；所有租约归还之前 `rendered` 保持 `true`，DOM 不摘。退场中途又被打开则取消旧租约，不卸载。租约不设猜测时限：CSS 观察器等待浏览器实际创建的有限动画对象完成或取消，同名的多个动画也分别计入；没有实际动画对象时不等待，无限装饰动画不阻塞退出。自定义动画租约由创建方明确完成或取消。
+
+Dialog 与共用其机器的 Drawer 在逻辑关闭时立即给内容设置 `inert` 和 `aria-hidden`，保持浮层登记、滚动锁与背景失活直到内容及遮罩完成退场，然后通知 `onExitComplete`（Vue/Web Components 为 `exit-complete`）。退场中重开保留原资源，旧完成不影响新状态；必要时通过原焦点域的 `reactivate()` 恢复域内焦点，不重复派发挂载自动聚焦通知。卸载立即释放资源，不等 CSS。
 
 适配器必须在 `data-state` **已提交到 DOM 之后**才调 `update(open)`——先改属性再让 CSS 过渡起跑，顺序反了动画不会播。
 

@@ -42,6 +42,7 @@ export function useDialog(props: DialogSchema['props']): DialogContext {
     layer,
     node: () => contentRef.current,
     surfaces: () => [backdropRef.current].filter(Boolean) as Element[],
+    additionalExitNodes: () => [backdropRef.current],
     refs: (service) => {
       service.refs.set('getContentEl', (() => contentRef.current) as never)
       service.refs.set('getTriggerEl', (() => null) as never)

@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 // side-nav 折叠态的子级弹出：顶层分支换装浮层触发（悬停/点按/方向键），
 // 面板内选中叶子落值并收面板；平铺态与 collapsedPopout=false 不受影响。
+import { installCssAnimationMock } from '@xihan-ui/testing'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
 import {
@@ -139,10 +140,16 @@ describe('side-nav 折叠态弹出', () => {
 
     // jsdom 不把样式表里的 animation 算进 getComputedStyle：给收起态的面板伪造一支退场动画，退场闸门才申领得到租约
     const native = window.getComputedStyle
+    const animations = new Map<Element, ReturnType<typeof installCssAnimationMock>>()
+    cleanup.push(() => {
+      for (const mock of animations.values()) mock.restore()
+    })
     const spy = vi.spyOn(window, 'getComputedStyle').mockImplementation((target, pseudo) => {
       const style = native.call(window, target, pseudo)
       if (target.getAttribute('data-part') !== 'branch-content' || target.getAttribute('data-state') !== 'closed')
         return style
+      if (!animations.has(target))
+        animations.set(target, installCssAnimationMock(target, 'xh-pop-out'))
       return new Proxy(style, {
         get(t, key) {
           if (key === 'animationName')

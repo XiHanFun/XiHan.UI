@@ -82,6 +82,51 @@ function open(h: Harness, extra: Partial<Parameters<typeof createFocusScope>[0]>
   return scope
 }
 
+describe('保留焦点域的重新激活', () => {
+  it('恢复原焦点而不重复派发挂载通知，销毁后不抢焦点', () => {
+    const h = setup()
+    let trapped = true
+    const mounted = vi.fn()
+    const scope = open(h, { trapped: () => trapped, onMountAutoFocus: mounted })
+    h.buttons[2]!.focus()
+    trapped = false
+    h.outside.focus()
+    trapped = true
+    scope.reactivate()
+    expect(document.activeElement).toBe(h.buttons[2])
+    expect(mounted).toHaveBeenCalledTimes(1)
+    scope.dispose()
+    h.outside.focus()
+    scope.reactivate()
+    expect(document.activeElement).toBe(h.outside)
+  })
+
+  it('旧控件被禁用后聚焦可用控件，不停在不可聚焦节点', () => {
+    const h = setup()
+    let trapped = true
+    const scope = open(h, { trapped: () => trapped })
+    h.buttons[2]!.focus()
+    trapped = false
+    h.outside.focus()
+    h.buttons[2]!.disabled = true
+    trapped = true
+    scope.reactivate()
+    expect(document.activeElement).toBe(h.buttons[0])
+  })
+
+  it('更新焦点域已接管时不抢回旧域', () => {
+    const h = setup()
+    let trapped = true
+    const scope = open(h, { trapped: () => trapped })
+    trapped = false
+    const other = setup()
+    open(other)
+    trapped = true
+    scope.reactivate()
+    expect(document.activeElement).toBe(other.buttons[0])
+  })
+})
+
 describe('挂载自动聚焦', () => {
   it('给了 initialFocus 就聚焦它', async () => {
     const h = setup()

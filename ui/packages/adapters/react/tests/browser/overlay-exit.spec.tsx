@@ -5,12 +5,14 @@
 // use-overlay，折叠族（tool-call / reasoning）走 use-overlay-exit，两条闸门各有各的接线。
 import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
-import { act } from 'react'
+import { getLayerRegistry } from '@xihan-ui/core'
+import { act, StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   XhDatePickerCalendar,
   XhDatePickerContent,
+  XhDatePickerControl,
   XhDatePickerPositioner,
   XhDatePickerRoot,
   XhDialogCloseTrigger,
@@ -48,6 +50,106 @@ import {
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
+let root: Root | null = null
+let host: HTMLElement | null = null
+
+function installLongExit(scope: string): void {
+  const style = document.createElement('style')
+  style.textContent = `
+    @keyframes test-exit-fade { from { opacity: 1 } to { opacity: 0 } }
+    @keyframes test-exit-move { from { translate: 0 0 } to { translate: 0 8px } }
+    @keyframes test-exit-shine { from { outline-color: transparent } to { outline-color: transparent } }
+    [data-scope='${scope}'][data-part='content'][data-state='closed'] {
+      animation: test-exit-fade 60s linear forwards, test-exit-move 60s linear forwards, test-exit-shine 60s linear infinite;
+    }
+    [data-scope='${scope}'][data-part='backdrop'][data-state='closed'] { animation: test-exit-fade 60s linear forwards }
+  `
+  document.body.append(style)
+}
+
+function finiteAnimations(node: HTMLElement): Animation[] {
+  return node.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
+}
+
+describe.each(['dialog', 'drawer'] as const)('%s 的行为资源退出合同', (scope) => {
+  it('等完内容全部有限动画和遮罩，退出期间内容与背景保持失活', async () => {
+    installLongExit(scope)
+    const outside = document.createElement('button')
+    document.body.append(outside)
+    const completed: number[] = []
+    const onExitComplete = () => completed.push(getLayerRegistry(document).list().length)
+    const setOpen = await mount(open => scope === 'dialog'
+      ? (
+          <XhDialogRoot open={open} onExitComplete={onExitComplete}>
+            <XhDialogContent>
+              <XhDialogTitle>标题</XhDialogTitle>
+              <button type="button">内部</button>
+            </XhDialogContent>
+          </XhDialogRoot>
+        )
+      : (
+          <XhDrawerRoot open={open} onExitComplete={onExitComplete}>
+            <XhDrawerContent>
+              <XhDrawerTitle>标题</XhDrawerTitle>
+              <button type="button">内部</button>
+            </XhDrawerContent>
+          </XhDrawerRoot>
+        ))
+    await setOpen(false)
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const content = part(scope, 'content')
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    const action = content.querySelector('button')!
+    // 先释放进入时已有的焦点，再验证失活节点不能重新取得焦点。
+    action.blur()
+    action.focus()
+    expect(document.activeElement).not.toBe(action)
+    expect(outside.inert).toBe(true)
+    expect(document.body.style.overflow).toBe('hidden')
+    const animations = finiteAnimations(content)
+    expect(animations).toHaveLength(2)
+    animations[0]!.finish()
+    await settle()
+    expect(completed).toEqual([])
+    animations[1]!.finish()
+    await settle()
+    expect(completed).toEqual([])
+    for (const animation of finiteAnimations(part(scope, 'backdrop'))) animation.finish()
+    await settle()
+    expect(completed).toEqual([0])
+    expect(outside.inert).toBe(false)
+    expect(query(scope, 'content')).toBeNull()
+  })
+
+  it('strictMode 重开撤销旧退出，卸载立即释放且不误发完成', async () => {
+    installLongExit(scope)
+    const completed: number[] = []
+    const onExitComplete = () => completed.push(getLayerRegistry(document).list().length)
+    const setOpen = await mount(open => (
+      <StrictMode>
+        {scope === 'dialog'
+          ? <XhDialogRoot open={open} onExitComplete={onExitComplete}><XhDialogContent><XhDialogTitle>标题</XhDialogTitle></XhDialogContent></XhDialogRoot>
+          : <XhDrawerRoot open={open} onExitComplete={onExitComplete}><XhDrawerContent><XhDrawerTitle>标题</XhDrawerTitle></XhDrawerContent></XhDrawerRoot>}
+      </StrictMode>
+    ))
+    await setOpen(false)
+    const old = finiteAnimations(part(scope, 'content'))
+    await setOpen(true)
+    for (const animation of old) animation.cancel()
+    await settle()
+    expect(part(scope, 'content').inert).toBe(false)
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    expect(completed).toEqual([])
+    await setOpen(false)
+    await inAct(() => root!.unmount())
+    root = null
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+    expect(completed).toEqual([])
+  })
+})
+
 const globals = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }
 
 /** 只在这一段里开 act 环境标记：退场动画结束派的状态更新在 act 之外，不受它管。 */
@@ -61,9 +163,6 @@ async function inAct(fn: () => void | Promise<void>): Promise<void> {
     globals.IS_REACT_ACT_ENVIRONMENT = previous
   }
 }
-
-let root: Root | null = null
-let host: HTMLElement | null = null
 
 afterEach(async () => {
   if (root) {
@@ -400,7 +499,7 @@ describe('select 退场', () => {
 
     const closing = part('select', 'content')
     expect(getComputedStyle(closing).display, 'content 收起态不能是 display:none').not.toBe('none')
-    expectPlaying(closing, 'xh-pop-out')
+    expectPlaying(closing, 'xh-overlay-slide-out')
   })
 
   it('动画结束后才落成内联收起', async () => {
@@ -419,6 +518,7 @@ describe('date-picker 退场', () => {
   /** 两张日历并排的面板：content 靠 :has 认出第二张才横排。 */
   const tree = (open: boolean): ReactNode => (
     <XhDatePickerRoot open={open}>
+      <XhDatePickerControl />
       <XhDatePickerPositioner>
         <XhDatePickerContent>
           <XhDatePickerCalendar index={0} />
@@ -439,7 +539,7 @@ describe('date-picker 退场', () => {
 
     const closing = part('date-picker', 'content')
     expect(getComputedStyle(closing).display, '退场帧若退回 block，两张日历会竖着堆起来闪一下').toBe('flex')
-    expectPlaying(closing, 'xh-pop-out')
+    expectPlaying(closing, 'xh-overlay-slide-out')
   })
 
   it('动画结束后才落成内联收起', async () => {
@@ -516,6 +616,19 @@ describe('tool-call 收起', () => {
       <XhToolCallContent>正文</XhToolCallContent>
     </XhToolCallRoot>
   )
+
+  it('严格模式重建后仍能结清退出租约，再次展开和关闭也正常', async () => {
+    const setOpen = await mount(open => <StrictMode>{tree(open)}</StrictMode>)
+    for (let round = 0; round < 2; round++) {
+      await setOpen(false)
+      const content = part('tool-call', 'content')
+      for (const animation of content.getAnimations()) animation.finish()
+      await settle()
+      expect(content.style.display).toBe('none')
+      await setOpen(true)
+      expect(content.style.display).not.toBe('none')
+    }
+  })
 
   it('收起后 content 仍在布局里，并且真的在播收拢动画', async () => {
     const setOpen = await mount(tree)

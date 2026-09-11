@@ -40,6 +40,7 @@ export interface XhDrawerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'c
   contained?: boolean
   translations?: DrawerProps['translations']
   onOpenChange?: DrawerProps['onOpenChange']
+  onExitComplete?: DrawerProps['onExitComplete']
   children?: SlotChildren<DrawerRootSlotProps>
 }
 
@@ -57,6 +58,7 @@ export function XhDrawerRoot({
   contained,
   translations,
   onOpenChange,
+  onExitComplete,
   children,
   container,
   ...rest
@@ -75,6 +77,7 @@ export function XhDrawerRoot({
     contained,
     translations,
     onOpenChange,
+    onExitComplete,
   }) as DrawerProps, container)
   const api = ctx.api
   // root 是真实节点，content 会被搬到浮层落点，data-side 挂在这里供页面内的部分读取
@@ -87,7 +90,7 @@ export function XhDrawerRoot({
   )
 }
 
-XhDrawerRoot.xhEvents = ['open-change'] as const
+XhDrawerRoot.xhEvents = ['open-change', 'exit-complete'] as const
 
 export interface XhDrawerTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 
@@ -117,6 +120,7 @@ export function XhDrawerContent({ children, ...rest }: XhDrawerContentProps): Re
       <div {...api.getPositionerProps() as Record<string, unknown>}>
         <div
           {...mergeReactProps(api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}
+          hidden={!ctx.rendered || undefined}
           ref={(el: HTMLDivElement | null) => { ctx.contentRef.current = el }}
         >
           {children}

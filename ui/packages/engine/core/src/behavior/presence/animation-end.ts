@@ -1,68 +1,75 @@
 import type { Cleanup } from '../../kernel'
-import type { PresenceHandle } from './index'
+import type { ExitLease, PresenceHandle } from './index'
 
-/** 逗号分隔的时长串里取最长的一段，单位统一成毫秒。 */
-function longestMs(value: string): number {
-  let max = 0
-  for (const raw of value.split(',')) {
-    const text = raw.trim()
-    const num = Number.parseFloat(text)
-    if (Number.isNaN(num))
-      continue
-    max = Math.max(max, text.endsWith('ms') ? num : num * 1000)
-  }
-  return max
-}
-
-/** 兜底票的时长：算出来的时长加延迟，再留一点余量给合成器。 */
-function exitTimeoutMs(style: CSSStyleDeclaration): number {
-  const total = longestMs(style.animationDuration) + longestMs(style.animationDelay)
-  return Math.max(total, 0) + 200
-}
-
-// 把一个 DOM 节点的 CSS 退场动画接到 presence 的退出租约上：
-// 关闭时读 animationName，若有退场动画则申领租约，动画结束后归还。
+// 浏览器实际创建的有限 CSS 动画才持有退出租约；不根据声明时长猜测动画已经结束。
 export function attachCssExit(
   node: HTMLElement,
   presence: PresenceHandle,
   opts: { win?: Window } = {},
 ): Cleanup {
-  const win = opts.win ?? node.ownerDocument.defaultView ?? window
+  const win = opts.win ?? node.ownerDocument.defaultView
+  if (!win)
+    throw new Error('[xh] CSS 退出动画需要节点所属的 Window')
 
-  return presence.onBeforeExit(() => {
+  let disposed = false
+  let active: ExitLease | undefined
+  const sample = (): void => {
+    if (disposed)
+      return
     const style = win.getComputedStyle(node)
     const name = style.animationName
-    if (!name || name === 'none')
+    if (!name || name === 'none' || style.display === 'none' || style.contentVisibility === 'hidden')
       return
+    if (typeof node.getAnimations !== 'function')
+      throw new Error('[xh] CSS 退出动画要求宿主支持 Element.getAnimations')
 
-    // 不生成盒子的元素不播动画，animationend 永远不会来。而 animationName 照常算得出，
-    // 光看它就申领租约会把 presence 永久钉在退场态——收起态被皮肤 display:none 的组件
-    // 正好走这条路，遮罩会一直盖在页面上。
-    if (style.display === 'none' || style.contentVisibility === 'hidden')
+    const names = new Set(name.split(',').map(value => value.trim()))
+    const animations = node.getAnimations().filter((animation) => {
+      if (!('animationName' in animation) || !names.has(String(animation.animationName)))
+        return false
+      const effect = animation.effect
+      if (!effect)
+        return false
+      const timing = effect.getComputedTiming()
+      // 无限装饰动画不阻塞关闭；已结束、被取消或没有有效时长的动画也不再持有租约。
+      return Number.isFinite(timing.endTime)
+        && Number(timing.endTime) > 0
+        && animation.playState !== 'finished'
+        && animation.playState !== 'idle'
+    })
+    if (!animations.length)
       return
+    const lease = presence.claimExit('css-animation')
+    active = lease
+    if (lease.settled)
+      return
+    // finished 在正常结束时兑现、取消时拒绝；两种都代表该动画不再占用退出表面。
+    // 绑定动画对象身份，重开后旧动画的迟到结果不会完成新一轮租约。
+    void Promise.allSettled(animations.map(animation => animation.finished)).then(() => {
+      win.queueMicrotask(() => {
+        if (disposed || lease.settled || active !== lease)
+          return
+        active = undefined
+        lease.done()
+      })
+    })
+  }
+  const off = presence.onBeforeExit(sample)
+  // 退出过程中真实节点被替换时，新节点先领取自己的租约，再让旧节点撤销观察。
+  if (!presence.open && presence.rendered)
+    sample()
 
-    // 这一轮退场认哪几支动画。收起发生在进场还没播完时，进场那支会先抛一个 animationcancel；
-    // 不认名字就会把它当成「退场结束了」，于是退场一帧都不播——开得越快关，越是收得越突然。
-    const exiting = new Set(name.split(',').map(part => part.trim()).filter(Boolean))
-
-    // 动画也可能被作者中途换掉或从没触发，届时 animationend 同样不来。
-    // 按算出来的时长给一张兜底票，过期即归还——租约不能没有回收路径。
-    const lease = presence.claimExit('css-animation', exitTimeoutMs(style))
-    function cleanup(): void {
-      node.removeEventListener('animationend', finish)
-      node.removeEventListener('animationcancel', finish)
-    }
-    function finish(e: AnimationEvent): void {
-      // 只吃自己的动画，不吃子元素冒泡上来的
-      if (e.target !== node)
-        return
-      // 也只吃这一轮退场那几支：进场被打断时抛的那个 cancel 不算数
-      if (!exiting.has(e.animationName))
-        return
-      cleanup()
-      lease.done()
-    }
-    node.addEventListener('animationend', finish)
-    node.addEventListener('animationcancel', finish)
-  })
+  return () => {
+    if (disposed)
+      return
+    disposed = true
+    off()
+    const lease = active
+    active = undefined
+    // 宿主节点已经退出观察，等同于该表面的动画取消；卸载 Presence 会先结清租约。
+    if (presence.open)
+      lease?.cancel()
+    else
+      lease?.done()
+  }
 }

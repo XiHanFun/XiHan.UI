@@ -48,6 +48,8 @@ export interface DialogSchema extends MachineSchema {
     translations?: Partial<DialogTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: DialogOpenChangeDetails) => void
+    /** 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 */
+    onExitComplete?: () => void
   }
   context: Record<string, never>
   computed: Record<string, never>

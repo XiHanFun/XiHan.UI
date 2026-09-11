@@ -19,6 +19,7 @@
 - 焦点进入时落在 `initialFocus`，关闭后归还触发器。
 - `closeOnEscape` 与 `closeOnInteractOutside` 各自可关——填了一半的表单不该点一下外面就没了。
 - 内容区可以内部滚动，标题栏可以拖动挪窗口。
+- 关闭时内容立即失活并退出可访问树，内容与遮罩的有限退场动画全部完成后再释放模态资源，并发出 `onExitComplete` / `exit-complete`。重开撤销旧退出，卸载立即清理。
 - 另有命令式服务，业务代码一次调用即弹出。
 - 命令式服务与声明式组件共用 `Header / Body / Footer` 三段：标题和徽记在 Header，字符串、函数正文及取值表单在 Body，操作按钮在 Footer。长内容只滚动 Body，头尾保留在面板内。
 - 命令式服务的 `onOk` 返回 `false` 只阻止关闭；同步抛错或 Promise 拒绝会保持对话框打开，设置独立 `service.actionError` 并触发 `onActionError({ cause })`。`cause` 保留原始异常，不直接转成用户提示。

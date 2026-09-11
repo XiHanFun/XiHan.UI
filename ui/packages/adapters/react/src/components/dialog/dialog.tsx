@@ -29,6 +29,7 @@ export interface XhDialogRootProps {
   variant?: OverlayBackdropVariant
   translations?: DialogProps['translations']
   onOpenChange?: DialogProps['onOpenChange']
+  onExitComplete?: DialogProps['onExitComplete']
   children?: SlotChildren<DialogRootSlotProps>
 }
 
@@ -41,7 +42,7 @@ export function XhDialogRoot({ children, ...props }: XhDialogRootProps): ReactNo
   )
 }
 
-XhDialogRoot.xhEvents = ['open-change'] as const
+XhDialogRoot.xhEvents = ['open-change', 'exit-complete'] as const
 
 export interface XhDialogTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 
@@ -79,6 +80,7 @@ export function XhDialogContent({ children, container, ...rest }: XhDialogConten
       <div {...api.getPositionerProps() as Record<string, unknown>}>
         <div
           {...mergeReactProps(api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}
+          hidden={!ctx.rendered || undefined}
           ref={(el: HTMLDivElement | null) => {
             ctx.contentRef.current = el
           }}

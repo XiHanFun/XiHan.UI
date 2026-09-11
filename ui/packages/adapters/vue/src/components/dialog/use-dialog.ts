@@ -24,13 +24,14 @@ export interface DialogContext {
 export function useDialog(
   props: DialogSchema['props'],
   onOpenChange?: DialogSchema['props']['onOpenChange'],
+  onExitComplete?: DialogSchema['props']['onExitComplete'],
 ): DialogContext {
   const contentRef = ref<HTMLElement | null>(null)
   const backdropRef = ref<HTMLElement | null>(null)
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(dialogMachine, () => ({ ...props, onOpenChange }), scope)
+  const service = useMachine(dialogMachine, () => ({ ...props, onOpenChange, onExitComplete }), scope)
 
   // 初值取状态而不是 false：presence 只在有 DOM 时才建，服务端拿不到它。
   // 服务端算不出 rendered 就只发一个空占位，客户端水合时补出整棵子树 = mismatch。
@@ -75,15 +76,25 @@ export function useDialog(
     watch(() => service.state.get() === 'open', open => presence.update(open), { flush: 'post' })
 
     // content 就位后把它的 CSS 退场动画接到 presence 退出租约，无动画时关闭即卸载
-    let detachExit: (() => void) | undefined
-    watch(contentRef, (el) => {
-      detachExit?.()
-      detachExit = el ? attachCssExit(el, presence) : undefined
+    const tracked = new Map<HTMLElement, Cleanup>()
+    watch([contentRef, backdropRef], (nodes) => {
+      const next = new Set(nodes.filter((node): node is HTMLElement => node !== null))
+      for (const node of next) {
+        if (!tracked.has(node))
+          tracked.set(node, attachCssExit(node, presence))
+      }
+      for (const [node, detach] of tracked) {
+        if (!next.has(node)) {
+          tracked.delete(node)
+          detach()
+        }
+      }
     }, { flush: 'post' })
 
     onBeforeUnmount(() => {
-      detachExit?.()
       presence.dispose()
+      for (const detach of tracked.values()) detach()
+      tracked.clear()
     })
   }
 

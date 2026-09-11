@@ -29,6 +29,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'sm'|'md'|'lg'} size - 尺寸：只换 content 的最大宽度，落在 content 上
  * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只换 backdrop 的底色与模糊
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires exit-complete - 退出完成且本层资源已释放
  * @csspart trigger - 触发按钮
  * @csspart backdrop - 遮罩层
  * @csspart positioner - 浮层定位容器
@@ -100,6 +101,7 @@ export class XhDialogElement extends XhElement {
       variant: this.variant,
       translations: this.translations,
       onOpenChange: this.notify,
+      onExitComplete: () => this.dispatchEvent(new CustomEvent('exit-complete', { bubbles: true, composed: true })),
     }
   }
 
@@ -115,11 +117,11 @@ export class XhDialogElement extends XhElement {
   }
 
   /** 退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。 */
-  private ensureExit(): OverlayExit {
+  private ensureExit(open: boolean): OverlayExit {
     this.ensureConfig()
     this.exit ??= createOverlayExit({
       config: this.config!,
-      open: this.ctrl.service.state.get() === 'open',
+      open,
       onExitComplete: () => this.requestUpdate(),
     })
     return this.exit
@@ -143,7 +145,7 @@ export class XhDialogElement extends XhElement {
     this.ensureConfig()
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', null)
+    svc.refs.set('presence', this.ensureExit(svc.state.get() === 'open').presence)
     svc.refs.set('getContentEl', () => this.contentNode)
     svc.refs.set('getTriggerEl', () => this.getPart('trigger'))
     svc.refs.set('branches', () => [])
@@ -176,8 +178,8 @@ export class XhDialogElement extends XhElement {
 
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
-    const exit = this.ensureExit()
-    exit.track(this.contentNode)
+    const exit = this.ensureExit(open)
+    exit.track(this.contentNode, this.backdropNode)
     exit.update(open)
     const visible = exit.visible
 

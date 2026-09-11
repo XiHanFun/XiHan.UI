@@ -13340,6 +13340,14 @@
                   "text": "OverlayExit"
                 }
               },
+              "parameters": [
+                {
+                  "name": "open",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
               "description": "退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。"
             },
             {
@@ -13378,6 +13386,13 @@
             }
           ],
           "events": [
+            {
+              "name": "exit-complete",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "退出完成且本层资源已释放"
+            },
             {
               "description": "open 状态变化；detail 为 `{ open: boolean }`",
               "name": "open-change",
@@ -14529,6 +14544,14 @@
                   "text": "OverlayExit"
                 }
               },
+              "parameters": [
+                {
+                  "name": "open",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
               "description": "退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。"
             },
             {
@@ -14567,6 +14590,13 @@
             }
           ],
           "events": [
+            {
+              "name": "exit-complete",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "退出完成且本层资源已释放"
+            },
             {
               "description": "open 状态变化；detail 为 `{ open: boolean }`",
               "name": "open-change",

@@ -50,6 +50,8 @@ export function connectDialog<T extends PropTypes>(
       'id': ids.content,
       'role': role,
       'tabindex': -1,
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 显式写 false 而非省略：读屏对未声明与声明为非模态处理不同
       'aria-modal': modal ? 'true' : 'false',
       'aria-labelledby': ids.title,

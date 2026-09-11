@@ -1,6 +1,7 @@
 import type { SideNavNode } from '@xihan-ui/headless'
 import type { AttrExpectation, ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { sideNavAnatomy, sideNavKeyboard } from '@xihan-ui/headless'
+import { installCssAnimationMock } from '../conformance/css-animation-mock'
 import { nativeActivation } from './shared/native-activation'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation/'
@@ -166,6 +167,7 @@ function singleSideNavTabStop(): StepWithExpect {
 
 /** 原生的 getComputedStyle，伪造退场动画期间暂存，结束后放回。 */
 let nativeComputedStyle: Window['getComputedStyle'] | null = null
+const animationMocks = new Map<Element, ReturnType<typeof installCssAnimationMock>>()
 
 /**
  * 给收起态的定位层伪造一支退场动画：无头 DOM 不把样式表里的 animation 算进
@@ -178,6 +180,8 @@ function fakePopOutAnimation(on: boolean): StepWithExpect {
     run: ({ doc }) => {
       const win = doc.defaultView!
       if (!on) {
+        for (const mock of animationMocks.values()) mock.restore()
+        animationMocks.clear()
         if (nativeComputedStyle)
           win.getComputedStyle = nativeComputedStyle
         nativeComputedStyle = null
@@ -192,6 +196,8 @@ function fakePopOutAnimation(on: boolean): StepWithExpect {
           && el.getAttribute('data-state') === 'closed'
         if (!exiting)
           return style
+        if (!animationMocks.has(el))
+          animationMocks.set(el, installCssAnimationMock(el, 'xh-pop-out'))
         return new Proxy(style, {
           get(target, key) {
             if (key === 'animationName')
