@@ -42736,7 +42736,25 @@
               "name": "--xh-switch-bg-checked-readonly"
             },
             {
+              "name": "--xh-switch-border"
+            },
+            {
+              "name": "--xh-switch-border-checked"
+            },
+            {
+              "name": "--xh-switch-border-checked-readonly"
+            },
+            {
               "name": "--xh-switch-border-invalid"
+            },
+            {
+              "name": "--xh-switch-fg"
+            },
+            {
+              "name": "--xh-switch-fg-checked"
+            },
+            {
+              "name": "--xh-switch-fg-checked-readonly"
             },
             {
               "name": "--xh-switch-label-fg"
@@ -42763,10 +42781,31 @@
               "name": "--xh-switch-thumb"
             },
             {
+              "name": "--xh-switch-thumb-border"
+            },
+            {
+              "name": "--xh-switch-thumb-fg"
+            },
+            {
+              "name": "--xh-switch-thumb-highlight"
+            },
+            {
+              "name": "--xh-switch-thumb-press-stretch"
+            },
+            {
               "name": "--xh-switch-thumb-radius"
             },
             {
               "name": "--xh-switch-thumb-shadow"
+            },
+            {
+              "name": "--xh-switch-thumb-shadow-disabled"
+            },
+            {
+              "name": "--xh-switch-thumb-shadow-hover"
+            },
+            {
+              "name": "--xh-switch-thumb-shadow-pressed"
             },
             {
               "name": "--xh-switch-thumb-shadow-readonly"
