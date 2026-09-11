@@ -338,8 +338,7 @@
         "popover.css",
         "select.css",
         "time-picker.css",
-        "tour.css",
-        "tree-select.css"
+        "tour.css"
       ],
       "consumers": [
         "cascader",
@@ -351,8 +350,7 @@
         "popconfirm",
         "popover",
         "time-picker",
-        "tour",
-        "tree-select"
+        "tour"
       ]
     },
     "xh-overlay-slide-in": {
@@ -362,14 +360,16 @@
         "menu.css",
         "menubar.css",
         "select.css",
-        "tooltip.css"
+        "tooltip.css",
+        "tree-select.css"
       ],
       "consumers": [
         "context-menu",
         "menu",
         "menubar",
         "select",
-        "tooltip"
+        "tooltip",
+        "tree-select"
       ]
     },
     "xh-overlay-slide-out": {
@@ -379,14 +379,16 @@
         "menu.css",
         "menubar.css",
         "select.css",
-        "tooltip.css"
+        "tooltip.css",
+        "tree-select.css"
       ],
       "consumers": [
         "context-menu",
         "menu",
         "menubar",
         "select",
-        "tooltip"
+        "tooltip",
+        "tree-select"
       ]
     },
     "xh-pop-in": {
@@ -430,8 +432,7 @@
         "select.css",
         "side-nav.css",
         "time-picker.css",
-        "tour.css",
-        "tree-select.css"
+        "tour.css"
       ],
       "consumers": [
         "cascader",
@@ -448,8 +449,7 @@
         "popover",
         "side-nav",
         "time-picker",
-        "tour",
-        "tree-select"
+        "tour"
       ]
     },
     "xh-popconfirm-rotate": {
