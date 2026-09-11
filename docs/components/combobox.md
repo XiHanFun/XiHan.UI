@@ -21,6 +21,8 @@
 - `openOnClick` 决定点击输入框是否直接展开候选。
 - 清空钮有值才出现，出现即顶替展开钮那一格，盒的宽度不随有没有值跳动；展开的入口始终是输入框（打字、方向键、`openOnClick`）。
 - 输入宿主可以换成多行。
+- 原生表单按每个选中值生成一个同名隐藏字段；`['a,b', 'c']` 用 `FormData.getAll(name)` 读取为两个原值，不使用逗号拼接。零选中没有提交项，禁用不提交，只读仍提交。
+- 声明 `HiddenInput` 部件才参与原生表单。`form` 可指定外部表单 ID，提交与重置使用同一所有者；显式 ID 不存在时不回退祖先表单。非受控 reset 恢复 `defaultValue`，受控值由业务响应重置请求。
 - 三种非条目相位各有部件：空（`empty`）与在途（`loading`）。取数期间在途占位顶上来，空态让位，两者不同屏。
 - `content` 始终是候选与状态共用的唯一浮层表面；`empty`/`loading` 保持为 `role=listbox` 外的同级 `role=status`，只在零候选时把状态文字覆盖到该表面，不再各画一张卡。已有候选进入 loading 时列表原样保留，只由 `aria-busy` 报后台刷新，不产生不可见却仍能提交的活动项。
 - 自动结构没有收到 `empty` 文案时不绘制无文字的空面；需要展开后解释空结果时必须显式提供文案，不由组件猜一条通用提示。
@@ -143,7 +145,8 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `defaultInputValue` | `string` |  |  |
 | `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
-| `name` | `string` |  | 表单字段名；给了 hidden-input 才带 name 并参与提交。多选按逗号拼成一串。 |
+| `name` | `string` |  | 表单字段名；hidden-input 按选中值逐个生成同名字段，不使用分隔符编码。 |
+| `form` | `string` |  | 原生表单 ID；显式关联外部表单，提交与 reset 使用同一所有者。 |
 | `multiple` | `boolean` |  |  |
 | `disabled` | `boolean` |  | 整个控件禁用：输入框与两个按钮都用原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：文字可选可复制，但展开、选中、清空一概不发生。 |
@@ -247,7 +250,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `getItemIndicatorProps` | `(props: ComboboxItemProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 与 content 是兄弟，同样不进 role=listbox。 |
-| `getHiddenInputProps` | `() => T['input']` | 表单影子：选中值随表单提交。给了 name 才带 name，不给就不参与提交。 |
+| `getHiddenInputProps` | `(props: { value: string }) => T['input']` | 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。 |
 
 ## 键盘
 
@@ -369,6 +372,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 - 异步候选要有在途与空态两种反馈，用户才知道是在找还是没有。
 - 允许自由文本时仍要提供空态说明，并明确提示 Enter 会使用当前文字；空态不会伪造成一个可选项。
 - 高亮匹配片段用[文本高亮](./highlight)，让用户看清为什么这条被选出来。
+- 无头用法需要按 `api.value` 遍历，为每个值调用 `api.getHiddenInputProps({ value })` 并渲染原生 input；旧的无参调用与 CSV 提交合同已删除。Vue/React 的 `HiddenInput` 部件自动铺开，Web Components 仍只需声明一个原生 `input[data-xh-part="hidden-input"]`，额外字段由宿主管理。
 
 ## 反模式
 

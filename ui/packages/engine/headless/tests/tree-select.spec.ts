@@ -252,7 +252,9 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     spread(positioner, api.getPositionerProps() as Record<string, unknown>)
     spread(content, api.getContentProps() as Record<string, unknown>)
     spread(treeEl, api.getTreeProps() as Record<string, unknown>)
-    spread(hiddenInput, api.getHiddenInputProps() as Record<string, unknown>)
+    spread(hiddenInput, api.value.length
+      ? api.getHiddenInputProps({ value: api.value[0]! }) as Record<string, unknown>
+      : { type: 'hidden', name: undefined, disabled: true, value: '' })
     for (const [value, b] of branches) {
       const node = { value }
       spread(b.branch, api.getBranchProps(node) as Record<string, unknown>)
@@ -427,14 +429,19 @@ describe('选中值与显示文本', () => {
     expect(multi.value()).toEqual(['index', 'license'])
   })
 
-  it('表单出口：name 缺省即不参与提交，值按逗号拼成一串，整控件禁用则不提交', () => {
+  it('单值表单出口：name 缺省不参与提交，整控件禁用则不提交', () => {
     const h = mount({ multiple: true, defaultValue: ['index', 'license'] })
     expect(h.hiddenInput.getAttribute('type')).toBe('hidden')
     expect(h.hiddenInput.getAttribute('name')).toBeNull()
-    expect(h.hiddenInput.value).toBe('index,license')
+    expect(h.hiddenInput.value).toBe('index')
 
     h.setProps({ name: 'dir' })
     expect(h.hiddenInput.getAttribute('name')).toBe('dir')
+    expect(h.api().value.map(value => h.api().getHiddenInputProps({ value })))
+      .toEqual([
+        expect.objectContaining({ type: 'hidden', name: 'dir', value: 'index' }),
+        expect.objectContaining({ type: 'hidden', name: 'dir', value: 'license' }),
+      ])
     h.setProps({ disabled: true })
     expect(h.hiddenInput.hasAttribute('disabled')).toBe(true)
   })

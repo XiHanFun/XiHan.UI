@@ -12,6 +12,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_
 import { connectTreeSelect, treeSelectAnatomy, treeSelectMachine, treeSelectMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
+import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -64,7 +65,8 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {boolean} loop - 上下键走到首尾回绕，默认关；写 loop="true" 打开
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
- * @attr {string} name - 表单字段名；给了 hidden-input 才参与提交（多选按逗号拼成一串）
+ * @attr {string} name - 表单字段名；每个选中值提交为一个同名字段
+ * @attr {string} form - 显式关联的原生表单 ID，提交与 reset 使用同一所有者
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
@@ -122,6 +124,7 @@ export class XhTreeSelectElement extends XhElement {
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     name: { converter: STRING_CONVERTER },
+    form: { converter: STRING_CONVERTER },
   }
 
   declare collection?: TreeNode[]
@@ -149,6 +152,7 @@ export class XhTreeSelectElement extends XhElement {
   declare loop?: boolean
   declare direction?: Direction
   declare name?: string
+  declare form?: string
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly treeSelectScope = createScope(null, this.idGen)
@@ -159,6 +163,7 @@ export class XhTreeSelectElement extends XhElement {
 
   /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
   private readonly ownsValueText = new WeakMap<HTMLElement, boolean>()
+  private readonly hiddenInputs = createRepeatedHiddenInputs(this.spreader)
 
   private readonly notifyValue = (details: TreeSelectValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -218,6 +223,7 @@ export class XhTreeSelectElement extends XhElement {
       loop: this.loop,
       dir: this.direction,
       name: this.name,
+      form: this.form,
       onValueChange: this.notifyValue,
       onExpandedValueChange: this.notifyExpanded,
       onOpenChange: this.notifyOpen,
@@ -268,6 +274,7 @@ export class XhTreeSelectElement extends XhElement {
    * 判据是「焦点已不在浮层内」且离场的正是持有锚点的那个节点。
    */
   protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
+    this.hiddenInputs.release(nodes)
     const { context, getStatus, scope, send } = this.ctrl.service
     // 机器已停机则跳过
     if (getStatus() !== 'Started')
@@ -329,7 +336,8 @@ export class XhTreeSelectElement extends XhElement {
     put('empty', api.getEmptyProps() as Record<string, unknown>)
     put('loading', api.getLoadingProps() as Record<string, unknown>)
     // 表单出口可缺省
-    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+    this.hiddenInputs.sync(this.getPart('hidden-input'), api.value.map(value =>
+      api.getHiddenInputProps({ value }) as Record<string, unknown>))
 
     // 属性先落，再填显示文字
     const valueText = this.getPart('value-text')

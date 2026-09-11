@@ -45,6 +45,8 @@ export interface XhComboboxRootProps extends RootElementProps {
   defaultOpen?: boolean
   /** 表单字段名；给了 hidden-input 才带 name 并参与提交。 */
   name?: string
+  /** 显式关联的原生表单 ID。 */
+  form?: string
   multiple?: boolean
   disabled?: boolean
   readOnly?: boolean
@@ -83,6 +85,7 @@ export function XhComboboxRoot({
   open,
   defaultOpen,
   name,
+  form,
   multiple,
   disabled,
   readOnly,
@@ -117,6 +120,7 @@ export function XhComboboxRoot({
     open,
     defaultOpen,
     name,
+    form,
     multiple,
     disabled,
     readOnly,
@@ -360,17 +364,18 @@ export interface XhComboboxHiddenInputProps extends Omit<ComponentPropsWithRef<'
 /** 表单出口，不写这个部件即不参与表单提交。 */
 export function XhComboboxHiddenInput({ ...rest }: XhComboboxHiddenInputProps): ReactNode {
   const ctx = useComboboxContext()
-  return (
+  return ctx.api.value.map(value => (
     <input
+      key={value}
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps() as Record<string, unknown>,
+        ctx.api.getHiddenInputProps({ value }) as Record<string, unknown>,
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；节点是 hidden，这个出口不会被调用
         { onChange: noop },
         rest as Record<string, unknown>,
       )}
     />
-  )
+  ))
 }
 
 export interface XhComboboxEmptyProps extends ComponentPropsWithRef<'div'> {}

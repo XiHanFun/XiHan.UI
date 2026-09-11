@@ -514,14 +514,15 @@ export function connectCombobox<T extends PropTypes>(
       'hidden': !(open && loading && itemCount === 0) || undefined,
     }),
 
-    getHiddenInputProps: () => normalize.input({
+    getHiddenInputProps: input => normalize.input({
       // type 先于 value 写入：改 type 会重置输入的值
       type: 'hidden',
       ...parts['hidden-input'].attrs,
       // name 缺省即不产出该属性，此时不参与提交
       name: prop('name'),
-      // 多选按逗号拼成一串，与 tree-select 同法
-      value: value.join(','),
+      form: prop('form'),
+      // 每个选中值对应一个同名原生控件，值内的逗号保持原样。
+      value: input.value,
       // 单体控件用原生 disabled，禁用时不提交值
       disabled: disabled || undefined,
     }),

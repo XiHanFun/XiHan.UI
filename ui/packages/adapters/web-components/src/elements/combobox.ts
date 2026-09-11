@@ -16,6 +16,7 @@ import { comboboxAnatomy, comboboxMachine, comboboxMeta, connectCombobox } from 
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
+import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -76,7 +77,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item-indicator - 候选选中标记（aria-hidden）
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
- * @attr {string} name - 表单字段名；给了 hidden-input 才参与提交（多选按逗号拼成一串）
+ * @attr {string} name - 表单字段名；每个选中值提交为一个同名字段
+ * @attr {string} form - 显式关联的原生表单 ID，提交与 reset 使用同一所有者
  * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
  * @csspart empty - 无匹配项提示；须放在 positioner 里当 content 的兄弟（列表内只允许 option 与 group）
  * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
@@ -91,6 +93,7 @@ export class XhComboboxElement extends XhElement {
     // 文案对象只走 property
     translations: { attribute: false },
     name: { converter: STRING_CONVERTER },
+    form: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     inputValue: { converter: STRING_CONVERTER, attribute: 'input-value' },
@@ -132,6 +135,7 @@ export class XhComboboxElement extends XhElement {
   declare loading?: boolean
   declare loop?: boolean
   declare name?: string
+  declare form?: string
   declare placeholder?: string
   declare allowCustomValue?: boolean
   declare openOnClick?: boolean
@@ -177,6 +181,7 @@ export class XhComboboxElement extends XhElement {
 
   /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
+  private readonly hiddenInputs = createRepeatedHiddenInputs(this.spreader)
 
   private machineProps(): Partial<ComboboxSchema['props']> {
     return {
@@ -195,6 +200,7 @@ export class XhComboboxElement extends XhElement {
       loading: this.loading ?? false,
       loop: this.loop,
       name: this.name,
+      form: this.form,
       placeholder: this.placeholder,
       allowCustomValue: this.allowCustomValue ?? false,
       openOnClick: this.openOnClick ?? false,
@@ -259,6 +265,10 @@ export class XhComboboxElement extends XhElement {
     return this.getParts(name).filter(el => owner.contains(el))
   }
 
+  protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
+    this.hiddenInputs.release(nodes)
+  }
+
   protected wire(): void {
     const api = connectCombobox(this.ctrl.service, wcNormalize)
 
@@ -280,7 +290,8 @@ export class XhComboboxElement extends XhElement {
     put('content', api.getContentProps() as Record<string, unknown>)
     put('empty', api.getEmptyProps() as Record<string, unknown>)
     put('loading', api.getLoadingProps() as Record<string, unknown>)
-    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+    this.hiddenInputs.sync(this.getPart('hidden-input'), api.value.map(value =>
+      api.getHiddenInputProps({ value }) as Record<string, unknown>))
 
     for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }

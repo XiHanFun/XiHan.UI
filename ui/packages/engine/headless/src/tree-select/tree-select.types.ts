@@ -117,6 +117,8 @@ export interface TreeSelectSchema extends MachineSchema {
     dir?: Direction
     /** 表单字段名。给定后表单出口才带 name，选中值随表单一并提交。 */
     name?: string
+    /** 原生表单 ID；显式关联外部表单，提交与 reset 使用同一所有者。 */
+    form?: string
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: TreeSelectValueChangeDetails) => void
     /** 展开集合变化意图回调；语义同上。 */
@@ -252,6 +254,6 @@ export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   getLoadingProps: () => T['element']
   /** 浮层底部的操作区：放在 content 里、tree 的兄弟，不入树的拥有关系，方向键也走不到。 */
   getFooterProps: () => T['element']
-  /** 表单出口：一份 type=hidden 的原生 input，选中值按逗号拼成一串随表单提交。 */
-  getHiddenInputProps: () => T['input']
+  /** 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。 */
+  getHiddenInputProps: (props: { value: string }) => T['input']
 }

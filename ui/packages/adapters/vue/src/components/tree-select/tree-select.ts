@@ -89,6 +89,7 @@ export const XhTreeSelectRoot = defineComponent({
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     name: { type: String, default: undefined },
+    form: { type: String, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
   emits: {
@@ -396,10 +397,15 @@ export const XhTreeSelectFooter = defineComponent({
 
 export const XhTreeSelectHiddenInput = defineComponent({
   name: 'XhTreeSelectHiddenInput',
-  setup() {
+  inheritAttrs: false,
+  setup(_, { attrs }) {
     const ctx = useTreeSelectContext()
     // 表单出口，不写这个部件即不参与表单提交
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => ctx.api.value.value.map(value => h('input', {
+      ...ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown>,
+      ...attrs,
+      key: value,
+    }))
   },
 })
 

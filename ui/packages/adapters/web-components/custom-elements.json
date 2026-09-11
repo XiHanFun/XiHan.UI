@@ -8701,6 +8701,15 @@
             },
             {
               "kind": "field",
+              "name": "form",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "form"
+            },
+            {
+              "kind": "field",
               "name": "placeholder",
               "privacy": "public",
               "type": {
@@ -8873,6 +8882,12 @@
               "description": "作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读"
             },
             {
+              "kind": "field",
+              "name": "hiddenInputs",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -8936,6 +8951,24 @@
                   "name": "name",
                   "type": {
                     "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
                   }
                 }
               ]
@@ -9155,9 +9188,17 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了 hidden-input 才参与提交（多选按逗号拼成一串）",
+              "description": "表单字段名；每个选中值提交为一个同名字段",
               "name": "name",
               "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "显式关联的原生表单 ID，提交与 reset 使用同一所有者",
+              "name": "form",
+              "fieldName": "form"
             }
           ],
           "superclass": {
@@ -53245,6 +53286,15 @@
             },
             {
               "kind": "field",
+              "name": "form",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "form"
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -53293,6 +53343,12 @@
               "readonly": true,
               "default": "new WeakMap<HTMLElement, boolean>()",
               "description": "value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。"
+            },
+            {
+              "kind": "field",
+              "name": "hiddenInputs",
+              "privacy": "private",
+              "readonly": true
             },
             {
               "kind": "field",
@@ -53631,9 +53687,17 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了 hidden-input 才参与提交（多选按逗号拼成一串）",
+              "description": "表单字段名；每个选中值提交为一个同名字段",
               "name": "name",
               "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "显式关联的原生表单 ID，提交与 reset 使用同一所有者",
+              "name": "form",
+              "fieldName": "form"
             }
           ],
           "superclass": {

@@ -15,6 +15,8 @@
 ## 特性
 
 - 选中与展开两套值各自可受控。
+- 原生表单按每个选中值生成一个同名隐藏字段；`['a,b', 'c']` 用 `FormData.getAll(name)` 读取为两个原值，不使用逗号拼接。零选中没有提交项，禁用不提交，只读仍提交。
+- 声明 `HiddenInput` 部件才参与原生表单。`form` 可指定外部表单 ID，提交与重置使用同一所有者；显式 ID 不存在时不回退祖先表单。非受控 reset 恢复 `defaultValue`，受控值由业务响应重置请求。
 - 单选、多选、分支与叶子统一用末端对号表示选中，级联半选使用横线；正文保持正常颜色和字重，
   中性底只用于悬停和键盘高亮。展开箭头位于行首，与选择标记分开。
 - `cascade` 与 `checkedStrategy` 决定勾选是否带子级、回显给哪一层。
@@ -148,6 +150,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
 | `name` | `string` |  | 表单字段名。给定后表单出口才带 name，选中值随表单一并提交。 |
+| `form` | `string` |  | 原生表单 ID；显式关联外部表单，提交与 reset 使用同一所有者。 |
 | `onValueChange` | `(details: TreeSelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onExpandedValueChange` | `(details: TreeSelectExpandedValueChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
 | `onOpenChange` | `(details: TreeSelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -247,7 +250,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 里、tree 的兄弟。 给了 collection 时由连接层按条数收放；节点手写时不写 hidden，露不露面归作者。 |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 给了 collection 时由连接层按条数收放；节点手写时只按 loading 收放。 |
 | `getFooterProps` | `() => T['element']` | 浮层底部的操作区：放在 content 里、tree 的兄弟，不入树的拥有关系，方向键也走不到。 |
-| `getHiddenInputProps` | `() => T['input']` | 表单出口：一份 type=hidden 的原生 input，选中值按逗号拼成一串随表单提交。 |
+| `getHiddenInputProps` | `(props: { value: string }) => T['input']` | 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。 |
 
 ## 键盘
 
@@ -373,6 +376,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 ## 最佳实践
 
 - 大树一定要开浮层内过滤，逐级展开找一个节点非常慢。
+- 无头用法需要按 `api.value` 遍历，为每个值调用 `api.getHiddenInputProps({ value })` 并渲染原生 input；旧的无参调用与 CSV 提交合同已删除。Vue/React 的 `HiddenInput` 部件自动铺开，Web Components 仍只需声明一个原生 `input[data-xh-part="hidden-input"]`，额外字段由宿主管理。
 - 明确"只能选叶子"还是"分支也能选"，并在界面上让分支看起来点得动或点不动。
 - 自定义 `branch-control` 与 `item` 均应包含 `item-indicator`，分支标记直接读取所属分支的选择与半选状态，
   不另写一套状态判定或自绘复选框。Vue / React 自动结构已提供此部件。
