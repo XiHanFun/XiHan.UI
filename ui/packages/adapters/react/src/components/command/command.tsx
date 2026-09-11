@@ -4,7 +4,7 @@ import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { COMMAND_UNGROUPED, resolveCommandGroups } from '@xihan-ui/headless'
-import { Fragment, useMemo } from 'react'
+import { Fragment, useCallback, useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
@@ -162,12 +162,22 @@ export function XhCommandInput({ ...rest }: XhCommandInputProps): ReactNode {
 export interface XhCommandListProps extends ComponentPropsWithRef<'div'> {}
 export function XhCommandList({ children, ...rest }: XhCommandListProps): ReactNode {
   const ctx = useCommandContext()
+  const listRef = useCallback((el: HTMLDivElement | null): void => {
+    if (ctx.listRef.current === el)
+      return
+    ctx.listRef.current = el
+    // 首次提交前仍由初始化端口读取引用；运行中的换代须通知效应撤旧重绑。
+    if (ctx.service.getStatus() === 'Started') {
+      ctx.service.refs.set('getListEl', () => el)
+      ctx.service.refs.get('syncListVisibility')?.()
+    }
+  }, [ctx.listRef, ctx.service])
   return (
     <div
       {...mergeReactProps(
         ctx.api.getListProps() as Record<string, unknown>,
         rest as Record<string, unknown>,
-        { ref: (el: HTMLDivElement | null) => { ctx.listRef.current = el } },
+        { ref: listRef },
       )}
     >
       {children}

@@ -76,6 +76,12 @@ export function useCommand(
     service.refs.set('getListEl', () => listRef.value)
     service.refs.set('getInputEl', () => inputRef.value)
 
+    // List 在展开期间换代时重新发布引用，让依赖该端口的效应撤旧重绑。
+    watch(listRef, (list) => {
+      service.refs.set('getListEl', () => list)
+      service.refs.get('syncListVisibility')?.()
+    }, { flush: 'post' })
+
     // data-state 提交到 DOM 之后再驱动 presence，让退场探测读到正确的 animationName
     watch(() => service.state.get() === 'open', open => presence.update(open), { flush: 'post' })
 

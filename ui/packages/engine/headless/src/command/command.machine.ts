@@ -3,6 +3,7 @@ import { acquireScrollLock, createDismissLayer, createFocusScope, hideOutside, s
 import { closeReasonOf } from '../shared/close-reason'
 import { setupLayerTransaction } from '../shared/overlay-shell'
 import { flattenCommandGroups, navigateCommandResults, resolveCommandGroups } from './command.filter'
+import { hiddenCommandValues } from './command.visibility'
 
 const { createMachine } = setup<CommandSchema>()
 
@@ -34,6 +35,8 @@ export const commandMachine = createMachine({
     })),
     // 锚点只服务 aria-activedescendant 与确认键的落点，焦点全程留在检索框
     highlightedValue: cell<string | null>(() => ({ defaultValue: null })),
+    // 与 collection 独立：仅镜像已挂载条目的显式 hidden，不以“找不到 DOM”推断隐藏。
+    hiddenValues: cell<string[]>(() => ({ defaultValue: [] })),
   }),
   refs: () => ({
     config: null,
@@ -41,6 +44,7 @@ export const commandMachine = createMachine({
     presence: null,
     getContentEl: () => null,
     getListEl: () => null,
+    syncListVisibility: null,
     getInputEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
@@ -54,6 +58,7 @@ export const commandMachine = createMachine({
     // 指不着了才补挑一次。不无条件重挑——宿主在模板里就地造数组时这条 watch 每帧都跳，
     // 无条件重挑会把方向键刚挪过去的锚点一次次拽回首条
     track([() => prop('collection')], () => action(['highlightIfDangling']))
+    track([context.dep('hiddenValues')], () => action(['highlightVisibleIfDangling']))
   },
   on: {
     'INPUT.SET': { actions: ['setInputValue'] },
@@ -78,7 +83,7 @@ export const commandMachine = createMachine({
       entry: ['resetInputValue', 'highlightFirst'],
       exit: ['clearHighlightedValue'],
       // 进入 open：按固定顺序装配 dismiss → focus → scroll，最后推迟一帧挂背景失活
-      effects: ['trackOverlay'],
+      effects: ['trackOverlay', 'trackItemVisibility'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
@@ -155,6 +160,18 @@ export const commandMachine = createMachine({
         context.set('highlightedValue', navigateCommandResults(results, null, 'first', true)?.value ?? null)
       },
 
+      // 在 DOM 提交后按新的 hidden 镜像重核；不能拿上一帧 hidden 阻止检索结果重新出现。
+      highlightVisibleIfDangling: ({ context, prop, state }) => {
+        if (state.get() !== 'open')
+          return
+        const hidden = new Set(context.get('hiddenValues'))
+        const results = commandResults(prop, context.get('inputValue')).filter(item => !hidden.has(item.value))
+        const current = context.get('highlightedValue')
+        if (current != null && results.some(item => item.value === current && !item.disabled))
+          return
+        context.set('highlightedValue', navigateCommandResults(results, null, 'first', true)?.value ?? null)
+      },
+
       /** 选中通知；条目自报禁用的在连接层就被挡下，走不到这里。 */
       invokeOnSelect: ({ prop, event }) => {
         const e = event.current()
@@ -163,6 +180,58 @@ export const commandMachine = createMachine({
       },
     },
     effects: {
+      trackItemVisibility: ({ refs, context, flush }) => {
+        let alive = true
+        let observer: MutationObserver | undefined
+        let observedList: HTMLElement | null = null
+        const sync = (): void => {
+          if (!alive)
+            return
+          const next = [...hiddenCommandValues(observedList)].sort()
+          const previous = context.get('hiddenValues')
+          if (next.length !== previous.length || next.some((value, index) => value !== previous[index]))
+            context.set('hiddenValues', next)
+        }
+        const rebind = (): void => {
+          if (!alive)
+            return
+          const list = refs.get('getListEl')()
+          if (list === observedList) {
+            if (!list)
+              sync()
+            return
+          }
+          observer?.disconnect()
+          observer = undefined
+          observedList = list
+          // 纯逻辑运行不要求挂载 DOM；已有列表必须使用它所属的 Window。
+          if (!list) {
+            sync()
+            return
+          }
+          const win = list.ownerDocument.defaultView
+          if (!win)
+            throw new Error('[xh] Command 列表缺少所属 Window')
+          observer = new win.MutationObserver(sync)
+          observer.observe(list, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden', 'data-scope', 'data-part', 'data-value'] })
+          sync()
+        }
+        const dispose = (): void => {
+          alive = false
+          observer?.disconnect()
+          if (refs.get('syncListVisibility') === rebind)
+            refs.set('syncListVisibility', null)
+        }
+        refs.set('syncListVisibility', rebind)
+        try {
+          flush(rebind)
+        }
+        catch (error) {
+          dispose()
+          throw error
+        }
+        return dispose
+      },
       trackOverlay: ({ refs, prop, scope, send, flush }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')

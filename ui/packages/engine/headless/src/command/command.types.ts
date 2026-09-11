@@ -18,6 +18,8 @@ export interface CommandRefs {
   presence: PresenceHandle | null
   getContentEl: () => HTMLElement | null
   getListEl: () => HTMLElement | null
+  /** 私有接线：List 提交或释放后通知当前可见性效应重新绑定。 */
+  syncListVisibility: (() => void) | null
   getInputEl: () => HTMLInputElement | null
 }
 
@@ -126,6 +128,8 @@ export interface CommandSchema extends MachineSchema {
     inputValue: string
     /** 键盘锚点，不承载焦点，只经 aria-activedescendant 上报；收起时为 null。 */
     highlightedValue: string | null
+    /** 已挂载条目的显式 hidden 镜像；未挂载的虚拟候选不在其中。 */
+    hiddenValues: string[]
   }
   computed: Record<string, never>
   refs: CommandRefs
@@ -154,8 +158,9 @@ export interface CommandSchema extends MachineSchema {
     | 'clearHighlightedValue'
     | 'highlightFirst'
     | 'highlightIfDangling'
+    | 'highlightVisibleIfDangling'
     | 'invokeOnSelect'
-  effect: 'trackOverlay'
+  effect: 'trackOverlay' | 'trackItemVisibility'
 }
 
 export interface CommandItemProps {
