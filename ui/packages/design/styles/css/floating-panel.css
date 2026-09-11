@@ -112,13 +112,21 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    /* 面板底下没有遮罩，压着的是任意页面内容：这条描边是它与背景之间唯一的边界，
-       取 border-default 与同样无遮罩的气泡卡片一档，别退到更淡的 border-subtle */
-    border: var(--xh-stroke-thin) solid var(--xh-floating-panel-border, var(--xh-border-default));
+    /* 默认态是 M3 desktop surface：背景、边缘、高光、投影与光学采样同出一张配方。
+       作者既有的面板槽仍排在外层；没有覆写时才落进这套玻璃令牌。 */
+    border: var(--xh-stroke-thin) solid var(--xh-floating-panel-border, var(--xh-material-glass-border));
     border-radius: var(--xh-floating-panel-radius, var(--xh-shape-surface));
-    background: var(--xh-floating-panel-bg, var(--xh-bg-surface));
-    color: var(--xh-floating-panel-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-floating-panel-shadow, var(--xh-elevation-sheet));
+    background:
+      linear-gradient(
+        to bottom,
+        var(--xh-material-glass-highlight) 0 var(--xh-stroke-thin),
+        transparent var(--xh-stroke-thin)
+      ),
+      var(--xh-floating-panel-bg, var(--xh-material-glass-bg));
+    color: var(--xh-floating-panel-fg, var(--xh-material-glass-fg));
+    box-shadow: var(--xh-floating-panel-shadow, var(--xh-material-glass-shadow));
+    -webkit-backdrop-filter: var(--xh-material-glass-backdrop);
+    backdrop-filter: var(--xh-material-glass-backdrop);
     /* 铺满那一档要把投影整个撤掉，海拔的这一跳跟着过渡走 */
     transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -153,8 +161,8 @@
     gap: var(--xh-floating-panel-header-gap, var(--xh-control-gap-sm));
     padding-block: var(--xh-floating-panel-header-py, var(--xh-space-2));
     padding-inline: var(--xh-floating-panel-header-px, var(--xh-space-3));
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-floating-panel-header-border, var(--xh-border-subtle));
-    background: var(--xh-floating-panel-header-bg, var(--xh-bg-subtle));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-floating-panel-header-border, var(--xh-material-glass-separator));
+    background: var(--xh-floating-panel-header-bg, var(--xh-material-glass-bg));
   }
 
   [data-scope='floating-panel'][data-part='header'][hidden] {
@@ -170,7 +178,7 @@
     line-height: var(--xh-leading-tight);
     white-space: nowrap;
     text-overflow: ellipsis;
-    color: var(--xh-floating-panel-title-fg, var(--xh-fg-default));
+    color: var(--xh-floating-panel-title-fg, var(--xh-material-glass-fg));
   }
 
   /* 拖拽把手铺满标题栏剩下的横向空间：只给一小块纹理的话很难抓住 */
@@ -284,7 +292,7 @@
     justify-content: center;
     border: 0;
     background: transparent;
-    color: var(--xh-floating-panel-action-fg, var(--xh-fg-muted));
+    color: var(--xh-floating-panel-action-fg, var(--xh-material-glass-fg-muted));
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -336,10 +344,26 @@
     --xh-_ring-color: currentColor;
   }
 
+  /* 玻璃会透入宿主背景，键盘焦点先落到配方给出的实体隔离底；
+     高对比、减透明、强制色与打印都由同一令牌在原位收敛。 */
+  [data-scope='floating-panel'][data-part='window-state-trigger']:focus-visible,
+  [data-scope='floating-panel'][data-part='close-trigger']:focus-visible {
+    background: var(--xh-material-glass-focus-surface);
+    color: var(--xh-material-glass-fg);
+    transition-property: color, scale;
+  }
+
   /* 只换前景不叠 opacity：叠了之后禁用文字的对比度会掉到读不出来 */
   [data-scope='floating-panel'][data-part='window-state-trigger'][data-disabled] {
     background: transparent;
     color: var(--xh-fg-disabled);
+  }
+
+  @media (forced-colors: active) {
+    /* 强制色不会绘制背景图层；直接撤掉顶边装饰，边界与文字改由 glass 的系统色令牌接手。 */
+    [data-scope='floating-panel'][data-part='content'] {
+      background-image: none;
+    }
   }
 
   [data-scope='floating-panel'][data-part='body'] {

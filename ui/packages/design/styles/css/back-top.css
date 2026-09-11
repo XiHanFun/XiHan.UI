@@ -13,14 +13,15 @@
     /* 尺寸档只换这一个私有槽，按钮从壳继承，换档不必给每个部件各写一条选择器 */
     --xh-_back-top-size: var(--xh-control-h-md);
 
-    /* 形态的落点：没写 data-variant 时这六支保持缺省档的取值，按钮读的是
-       「使用者令牌 → 这六支 → 语义令牌」三级，使用者令牌永远排在形态之前 */
-    --xh-_back-top-bg: var(--xh-bg-surface-raised);
+    /* 缺省面与浮动动作钮同属 M3 通透玻璃：背景、边缘、顶光、投影与磨砂从一份配方取，
+       高对比、减少透明度、打印和强制色才能沿同一令牌通道降级。显式 variant 只覆写动作色。 */
+    --xh-_back-top-bg: var(--xh-material-glass-bg);
     --xh-_back-top-bg-hover: var(--xh-bg-subtle-hover);
     --xh-_back-top-bg-active: var(--xh-bg-subtle-active);
-    --xh-_back-top-fg: var(--xh-_tone-fg, var(--xh-fg-default));
-    --xh-_back-top-border: var(--xh-border-control);
-    --xh-_back-top-border-hover: var(--xh-border-control-hover);
+    --xh-_back-top-fg: var(--xh-material-glass-fg);
+    --xh-_back-top-border: var(--xh-material-glass-border);
+    --xh-_back-top-border-hover: var(--xh-material-glass-border);
+    --xh-_back-top-shadow: var(--xh-material-glass-shadow);
 
     position: fixed;
     /* 贴边与安全区取大的一头：底部横条与圆角压住的那一段由系统给出，贴边比它窄时钮会被切掉一角。
@@ -86,6 +87,18 @@
     --xh-_back-top-border-hover: transparent;
   }
 
+  /* 缺省档与 FloatButton 共用玻璃顶光；显式形态各有自己的语义表面，不能误铺 blur。 */
+  [data-scope='back-top'][data-part='root']:not([data-variant])
+    [data-scope='back-top'][data-part='trigger'] {
+    background-image: linear-gradient(
+      to bottom,
+      var(--xh-material-glass-highlight) 0 var(--xh-stroke-thin),
+      transparent var(--xh-stroke-thin)
+    );
+    -webkit-backdrop-filter: var(--xh-material-glass-backdrop);
+    backdrop-filter: var(--xh-material-glass-backdrop);
+  }
+
   /* 圆形按钮：里面通常只放一个箭头图标，宽高同取一档尺寸。
      整件只有这一颗按钮，槽名与其余十二个一样不带部件段（照 float-button 的 --xh-float-button-size） */
   [data-scope='back-top'][data-part='trigger'] {
@@ -98,10 +111,10 @@
     border: var(--xh-stroke-thin) solid var(--xh-back-top-border, var(--xh-_back-top-border));
     border-radius: var(--xh-back-top-radius, var(--xh-shape-pill));
     /* 使用者令牌排在形态之前：写了覆盖钩子就以它为准，没写才按 data-variant 那一档取值 */
-    background: var(--xh-back-top-bg, var(--xh-_back-top-bg));
+    background-color: var(--xh-back-top-bg, var(--xh-_back-top-bg));
     color: var(--xh-back-top-fg, var(--xh-_back-top-fg));
-    /* 浮在内容之上，靠投影与页面拉开层次 */
-    box-shadow: var(--xh-back-top-shadow, var(--xh-elevation-sheet));
+    /* 缺省走 M3 柔和浮影；使用者已有的 shadow 槽仍排在配方前面。 */
+    box-shadow: var(--xh-back-top-shadow, var(--xh-_back-top-shadow));
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -113,14 +126,21 @@
   @media (hover: hover) {
     [data-scope='back-top'][data-part='trigger']:hover {
       border-color: var(--xh-back-top-border-hover, var(--xh-_back-top-border-hover));
-      background: var(--xh-back-top-bg-hover, var(--xh-_back-top-bg-hover));
+      background-color: var(--xh-back-top-bg-hover, var(--xh-_back-top-bg-hover));
     }
   }
 
   /* 换底之外再压一档：钮浮在内容之上，缩放不牵动页面排版 */
   [data-scope='back-top'][data-part='trigger']:active {
-    background: var(--xh-back-top-bg-active, var(--xh-_back-top-bg-active));
+    background-color: var(--xh-back-top-bg-active, var(--xh-_back-top-bg-active));
     scale: var(--xh-motion-scale-press);
+  }
+
+  /* 透明面上的内收环不能依赖页面底色：键盘聚焦时改铺 M3 实体 focus surface，
+     公共焦点环在该面上已满足对比；不改滚动行为或按钮盒模型。 */
+  [data-scope='back-top'][data-part='root']:not([data-variant])
+    [data-scope='back-top'][data-part='trigger']:focus-visible {
+    background-color: var(--xh-material-glass-focus-surface);
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

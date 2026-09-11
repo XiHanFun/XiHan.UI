@@ -24,6 +24,7 @@
 - 自动长高是两行 CSS，不进状态机；引擎不支持时退化成 `rows` 定的固定行数。
 - 两种排布同一份皮肤：直接把输入框与按钮放进 root 就是单行；套一层输入行，root 翻成竖排，
   输入行上下两侧就能再放附件条与动作行。
+- 默认皮肤用 M3 浮动玻璃做外壳；textarea 保持同配方的实体阅读底，复杂背景不会透到输入文字下。
 - 发送按钮留空时皮肤画兜底字形：发送身份一枚上箭头，停止身份一枚圆角方块；
   塞进自己的图标或文案即盖掉它。
 
@@ -202,10 +203,13 @@ tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受
 - 输入框的可访问名**只在给了 `translations.input` 时才发**：无条件发会盖掉作者自己的
   `<label for>` 与 `aria-label`。
 - 按钮的可访问名随身份翻面，读屏念到的与屏幕上看到的是同一件事。
+- 焦点仍由整框的 `:focus-within` 环表达；高对比、减少透明度、强制色与打印时 M3 令牌会原位换成实体表面。
 
 ## 样式
 
 默认皮肤 `@xihan-ui/styles/prompt-input.css` 按部件选择：`[data-scope="prompt-input"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ## 数据属性
 
@@ -225,7 +229,7 @@ tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-prompt-input-bg` · `--xh-prompt-input-bg-disabled` · `--xh-prompt-input-bg-hover` · `--xh-prompt-input-border` · `--xh-prompt-input-border-focus` · `--xh-prompt-input-border-hover` · `--xh-prompt-input-gap` · `--xh-prompt-input-icon-size` · `--xh-prompt-input-input-autofill-bg` · `--xh-prompt-input-input-autofill-fg` · `--xh-prompt-input-input-fg` · `--xh-prompt-input-input-font-size` · `--xh-prompt-input-max-h` · `--xh-prompt-input-p` · `--xh-prompt-input-placeholder-fg` · `--xh-prompt-input-radius` · `--xh-prompt-input-row-gap` · `--xh-prompt-input-send-bg` · `--xh-prompt-input-send-bg-active` · `--xh-prompt-input-send-bg-hover` · `--xh-prompt-input-send-bg-off` · `--xh-prompt-input-send-fg` · `--xh-prompt-input-shadow` · `--xh-prompt-input-stop-bg` · `--xh-prompt-input-stop-bg-active` · `--xh-prompt-input-stop-bg-hover` · `--xh-prompt-input-stop-fg` · `--xh-prompt-input-stop-mark-radius` · `--xh-prompt-input-stop-mark-size` · `--xh-prompt-input-submit-font-size` · `--xh-prompt-input-submit-font-weight` · `--xh-prompt-input-submit-px` · `--xh-prompt-input-submit-radius` · `--xh-prompt-input-submit-shadow`
+`--xh-prompt-input-bg` · `--xh-prompt-input-bg-disabled` · `--xh-prompt-input-bg-hover` · `--xh-prompt-input-border` · `--xh-prompt-input-border-focus` · `--xh-prompt-input-border-hover` · `--xh-prompt-input-gap` · `--xh-prompt-input-icon-size` · `--xh-prompt-input-input-autofill-bg` · `--xh-prompt-input-input-autofill-fg` · `--xh-prompt-input-input-fg` · `--xh-prompt-input-input-font-size` · `--xh-prompt-input-input-radius` · `--xh-prompt-input-max-h` · `--xh-prompt-input-p` · `--xh-prompt-input-placeholder-fg` · `--xh-prompt-input-radius` · `--xh-prompt-input-row-gap` · `--xh-prompt-input-send-bg` · `--xh-prompt-input-send-bg-active` · `--xh-prompt-input-send-bg-hover` · `--xh-prompt-input-send-bg-off` · `--xh-prompt-input-send-fg` · `--xh-prompt-input-shadow` · `--xh-prompt-input-stop-bg` · `--xh-prompt-input-stop-bg-active` · `--xh-prompt-input-stop-bg-hover` · `--xh-prompt-input-stop-fg` · `--xh-prompt-input-stop-mark-radius` · `--xh-prompt-input-stop-mark-size` · `--xh-prompt-input-submit-font-size` · `--xh-prompt-input-submit-font-weight` · `--xh-prompt-input-submit-px` · `--xh-prompt-input-submit-radius` · `--xh-prompt-input-submit-shadow`
 
 ## 动效
 
