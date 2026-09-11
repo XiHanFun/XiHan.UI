@@ -10,10 +10,17 @@ export const XH_FALLBACK_LOCALE = 'en-US'
  * 给了 scope 就问它所属的那个 window，没给才问全局。
  */
 export function hostLocale(scope?: Scope): string | undefined {
-  if (!scope && isSSR())
+  try {
+    if (!scope && isSSR())
+      return undefined
+    // 显式 Scope 读不到 Window 时不借 ambient realm；宿主语言本来就是可缺省输入。
+    const win = scope ? scope.getWin() : window
+    const tag = win.navigator?.language
+    return typeof tag === 'string' && tag !== '' ? tag : undefined
+  }
+  catch {
     return undefined
-  const tag = (scope?.getWin() ?? window).navigator?.language
-  return typeof tag === 'string' && tag !== '' ? tag : undefined
+  }
 }
 
 /** 语言标记的解析链：显式给的 → 宿主语言 → en-US。 */
