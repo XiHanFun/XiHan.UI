@@ -126,6 +126,10 @@ pointer 与 focus 先为本次事件冻结一份 composed path，并在执行任
 
 原生事件到达 Document bubble 且在进入 Hub 前尚未 `defaultPrevented` 时，Hub 才复核 capture 计划。registry 必须仍是原来的空快照，fallback 列表、所选 token 以及为选出它而读过的启用状态也必须逐项相同；capture 后新注册或新启用出口、dispose 后重建、Layer 空栈成功经历非空再回空，都会让旧计划失效。失败 Layer 登记补偿回同一 snapshot 则保持有效。同一 lane 每次只调最新的一个出口；它不释放时会持续占位，释放发生在 capture 之后时本键也不会降级到旧出口。不同 registry lane 各自执行一个，某个 fallback 收到同一原生 `KeyboardEvent` 后调用 `preventDefault()` 不会反向否决其他 lane。目标节点在事件到达 Document bubble 前调用 `preventDefault()` 或阻止传播，则全部 fallback 都不执行。
 
+触摸在 pointerdown 时只建立关闭候选，不立即派发层外票；匹配 pointerup 仅标记触摸完成，随后同目标的 click 才提交原计划。鼠标与笔仍在 pointerdown 时处理。触摸提交的 `detail.originalEvent` 仍为最初的 PointerEvent，click 只作为内部完成证据。
+
+滚动、指针取消、长按菜单、新指针、窗口失焦、文档可见性变化或新的键盘交互会取消候选。参与者、节点或 Layer 快照失效也不会提交；等待期间焦点事件不抢先关闭浮层。这条路径没有固定超时或 pointerup 自动关闭，某一 registry lane 校验抛错只剔除该 lane，其余有效 lane 仍可完成 click。
+
 Hub 在每个 capture 或 bubble 处理阶段持有重入锁，getter、表决、关闭或 fallback 回调同步派出的事件不会嵌套进入该阶段；原事件的 target 阶段仍按浏览器传播模型正常运行。某条 registry lane 的 getter、表决或关闭回调抛错时，其他 lane 仍照常执行；末尾单错原样抛出，多错按 lane 与清理的发生顺序聚合，首错保留为 `cause`。Hub 的 add、queue、动画帧和 remove 都使用所属 Window/Document，并遵守先终态、LIFO、全量尝试的清理规则。
 
 ## 焦点域
