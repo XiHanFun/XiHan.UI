@@ -31,6 +31,12 @@ function flatten(obj: unknown, path: string[] = []): FlatToken[] {
   return out
 }
 
+/** 与令牌生成器相同：字面值原样保留，DTCG 引用逐处转成 CSS var()。 */
+function toCssValue(value: string): string {
+  return value.replace(/\{([^}]+)\}/g, (_, path: string) =>
+    `var(--xh-${path.trim().replace(/\./g, '-')})`)
+}
+
 const screen = [
   ...flatten(loadJson('semantic.base.json')),
   ...flatten(loadJson('semantic.light.json')),
@@ -70,11 +76,20 @@ describe('semantic.print.json', () => {
   })
 
   it('只碰海拔角色与材质的绘制效果', () => {
-    // 打印档只取消屏幕上的投影与装饰高光，不在这里另造一套正文色或尺寸。
+    const materialPrint = new Set([
+      'material-soft-highlight',
+      'material-soft-shadow',
+      'material-frosted-bg',
+      'material-frosted-backdrop',
+      'material-frosted-border',
+      'material-frosted-highlight',
+      'material-frosted-shadow',
+      'material-frosted-separator',
+    ])
+    // 打印档只取消屏幕光效并把透明面实体化，不在这里另造正文色或尺寸。
     for (const t of print) {
       const allowed = t.name.startsWith('elevation-')
-        || t.name === 'material-soft-highlight'
-        || t.name === 'material-soft-shadow'
+        || materialPrint.has(t.name)
       expect(allowed, t.name).toBe(true)
     }
   })
@@ -108,7 +123,7 @@ describe('tokens.css 产物', () => {
   it('print 块里每一条都在产物里对得上', () => {
     const block = printBlock()
     for (const t of print)
-      expect(block, t.name).toContain(`--xh-${t.name}: ${t.value};`)
+      expect(block, t.name).toContain(`--xh-${t.name}: ${toCssValue(t.value)};`)
   })
 
   it('落点只有 [data-scope]，不碰 :root', () => {

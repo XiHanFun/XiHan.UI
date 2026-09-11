@@ -267,6 +267,8 @@ const SEMANTIC_SOURCES = [
   'semantic.light.more.json',
   'semantic.dark.json',
   'semantic.dark.more.json',
+  'semantic.transparency.reduce.json',
+  'semantic.forced-colors.json',
   'semantic.reduce.json',
   'semantic.print.json',
 ]
@@ -345,11 +347,16 @@ describe('快照的前提', () => {
     }
   })
 
-  it('被跳过的 @media 只有减弱动效与打印这两个', () => {
+  it('被跳过的 @media 都有独立源测试看守', () => {
     // 别的 @media 块会成为解析盲区：那一档的取值不进这 16 格，快照照样绿。
-    // 这两个各有一份逐条对齐的用例看着（reduce.spec / print.spec），
-    // 第三个冒出来时这里判红，逼着它要么进轴、要么也配一份自己的用例。
-    expect(mediaConditions).toEqual(['(prefers-reduced-motion: reduce)', 'print'])
+    // 四个分别由 material-frosted.spec / reduce.spec / print.spec 对账；
+    // 新条件冒出来时这里判红，逼着它要么进轴、要么也配一份自己的用例。
+    expect(mediaConditions).toEqual([
+      '(prefers-reduced-transparency: reduce)',
+      '(forced-colors: active)',
+      '(prefers-reduced-motion: reduce)',
+      'print',
+    ])
   })
 
   it('不带 data-theme 的默认档与浅色档逐条同名同值', () => {
@@ -377,7 +384,11 @@ describe('快照的前提', () => {
 describe('深色 × 高对比取的是深色高对比档', () => {
   const darkMore = flatten(loadJson('semantic.dark.more.json'))
   const cell = { density: 'comfortable', contrast: 'more', motion: 'default' } as const
-  const sharedDecoration = new Set(['--xh-material-soft-highlight'])
+  const sharedDecoration = new Map([
+    ['--xh-material-soft-highlight', 'oklch(0 0 0 / 0)'],
+    ['--xh-material-frosted-highlight', 'oklch(0 0 0 / 0)'],
+    ['--xh-material-frosted-backdrop', 'none'],
+  ])
 
   it('非装饰令牌的最终取值与浅色档逐条不同，共同关闭的装饰高光单独对账', () => {
     const dark = cascade({ ...cell, theme: 'dark' })
@@ -387,7 +398,7 @@ describe('深色 × 高对比取的是深色高对比档', () => {
       const darkValue = resolveValue(dark.raw.get(t.name)!, dark.raw)
       const lightValue = resolveValue(light.raw.get(t.name)!, light.raw)
       if (sharedDecoration.has(t.name)) {
-        expect(darkValue, t.name).toBe('oklch(0 0 0 / 0)')
+        expect(darkValue, t.name).toBe(sharedDecoration.get(t.name))
         expect(lightValue, t.name).toBe(darkValue)
       }
       else {

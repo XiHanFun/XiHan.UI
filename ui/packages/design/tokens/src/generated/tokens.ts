@@ -77,6 +77,18 @@ export const tokens = {
   "--xh-leading-tight": "1.25",
   "--xh-leading-normal": "1.5",
   "--xh-leading-relaxed": "1.625",
+  "--xh-alpha-opaque": "1",
+  "--xh-alpha-high": "0.88",
+  "--xh-alpha-medium": "0.76",
+  "--xh-alpha-low": "0.48",
+  "--xh-alpha-ultra-low": "0.16",
+  "--xh-blur-none": "0px",
+  "--xh-blur-xs": "4px",
+  "--xh-blur-sm": "8px",
+  "--xh-blur-md": "16px",
+  "--xh-blur-lg": "24px",
+  "--xh-blur-xl": "32px",
+  "--xh-blur-2xl": "48px",
   "--xh-shadow-sm": "0 1px 1px -0.5px oklch(0.145 0.005 258 / 0.05), 0 2px 3px -1.5px oklch(0.145 0.005 258 / 0.04), 0 3px 6px -3px oklch(0.145 0.005 258 / 0.03)",
   "--xh-shadow-md": "0 1px 2px -0.5px oklch(0.145 0.005 258 / 0.06), 0 4px 8px -2px oklch(0.145 0.005 258 / 0.08), 0 10px 20px -6px oklch(0.145 0.005 258 / 0.07)",
   "--xh-shadow-lg": "0 1px 3px -0.5px oklch(0.145 0.005 258 / 0.08), 0 8px 16px -4px oklch(0.145 0.005 258 / 0.1), 0 20px 40px -12px oklch(0.145 0.005 258 / 0.12)",
@@ -354,7 +366,16 @@ export const tokens = {
   "--xh-material-soft-separator": "var(--xh-border-subtle)",
   "--xh-material-soft-fg": "var(--xh-fg-default)",
   "--xh-material-soft-fg-muted": "var(--xh-fg-muted)",
-  "--xh-material-soft-focus-surface": "var(--xh-material-soft-bg)"
+  "--xh-material-soft-focus-surface": "var(--xh-material-soft-bg)",
+  "--xh-material-frosted-bg": "oklch(0.99 0.003 258 / var(--xh-alpha-high))",
+  "--xh-material-frosted-backdrop": "blur(var(--xh-blur-md)) saturate(108%)",
+  "--xh-material-frosted-border": "oklch(0.145 0.005 258 / 0.14)",
+  "--xh-material-frosted-highlight": "oklch(1 0 0 / 0.52)",
+  "--xh-material-frosted-shadow": "0 2px 4px -2px oklch(0.145 0.005 258 / 0.1), 0 12px 28px -12px oklch(0.145 0.005 258 / 0.16)",
+  "--xh-material-frosted-separator": "oklch(0.145 0.005 258 / 0.12)",
+  "--xh-material-frosted-fg": "var(--xh-fg-default)",
+  "--xh-material-frosted-fg-muted": "var(--xh-fg-muted)",
+  "--xh-material-frosted-focus-surface": "var(--xh-bg-surface)"
 } as const
 
 export type TokenName = keyof typeof tokens
