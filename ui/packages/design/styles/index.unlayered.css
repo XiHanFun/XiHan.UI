@@ -24283,6 +24283,8 @@
   --xh-_number-field-font-size: var(--xh-control-font-md);
   --xh-_number-field-label-font-size: var(--xh-control-font-md);
   --xh-_number-field-trigger-font-size: var(--xh-control-font-md);
+  /* 内嵌动作比输入盒小一档；compact 会经 action-size 同步收紧。 */
+  --xh-_number-field-trigger-size: var(--xh-control-action-size);
 
   /* 盒子的圆角 */
   --xh-_number-field-radius: var(--xh-shape-control);
@@ -24347,6 +24349,8 @@
   --xh-_number-field-font-size: var(--xh-control-font-lg);
   --xh-_number-field-label-font-size: var(--xh-control-font-lg);
   --xh-_number-field-trigger-font-size: var(--xh-control-font-lg);
+  /* lg 盒给动作多一档面积，仍比 40px 输入盒内收；compact 下 box-sm 同步变成 28px。 */
+  --xh-_number-field-trigger-size: var(--xh-control-box-sm);
 }
 
 /* —— 形态 —— */
@@ -24548,7 +24552,7 @@
   /* 一道发丝线走 border 而不是底色：高对比档下底色被系统换成面色，线会整条消失，
      边框那一档系统换的是边色，线还在 */
   border-inline-start: var(--xh-stroke-thin) solid
-    var(--xh-number-field-trigger-divider, var(--xh-border-default));
+    var(--xh-number-field-trigger-divider, var(--xh-material-soft-separator));
 }
 
 /* 钮排在输入之前：线落在钮与输入之间那道间隙的正中。
@@ -24687,8 +24691,8 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-number-field-trigger-size, var(--xh-control-action-size));
-  block-size: var(--xh-number-field-trigger-size, var(--xh-control-action-size));
+  inline-size: var(--xh-number-field-trigger-size, var(--xh-_number-field-trigger-size));
+  block-size: var(--xh-number-field-trigger-size, var(--xh-_number-field-trigger-size));
   padding: 0;
   border: var(--xh-stroke-thin) solid var(--xh-number-field-trigger-border, var(--xh-_number-field-trigger-border));
   border-radius: var(--xh-number-field-trigger-radius, var(--xh-shape-control));
@@ -24763,6 +24767,20 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
   mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
+}
+
+/* 粗指针直接放大真实按钮盒：两枚 flex 子项各占自己的矩形，命中区不靠伪元素伸进 input，
+   即使输入被窄容器压缩，两边也不会重叠。comfortable 为 48px，compact 为 44px。 */
+@media (pointer: coarse) {
+  [data-scope='number-field'][data-part='control'] {
+    min-block-size: var(--xh-number-field-touch-target-size, var(--xh-control-box-lg));
+  }
+
+  [data-scope='number-field'][data-part='increment-trigger'],
+  [data-scope='number-field'][data-part='decrement-trigger'] {
+    min-inline-size: var(--xh-number-field-touch-target-size, var(--xh-control-box-lg));
+    min-block-size: var(--xh-number-field-touch-target-size, var(--xh-control-box-lg));
+  }
 }
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。

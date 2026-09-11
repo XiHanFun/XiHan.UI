@@ -30577,6 +30577,9 @@
               "name": "--xh-number-field-placeholder-fg"
             },
             {
+              "name": "--xh-number-field-touch-target-size"
+            },
+            {
               "name": "--xh-number-field-trigger-bg"
             },
             {

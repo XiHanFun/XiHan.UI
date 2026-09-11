@@ -115,7 +115,7 @@ describe('数字输入的加减钮分隔线', () => {
     const line = divider('decrement-trigger')
     expect(px(line.width)).toBe(1)
     expect(px(line.borderInlineStartWidth)).toBe(1)
-    expect(line.borderInlineStartColor).toBe(tokenColor('--xh-border-default'))
+    expect(line.borderInlineStartColor).toBe(tokenColor('--xh-material-soft-separator'))
     // 底色通道不参与：高对比档会把底色换成面色，线得挂在边框那一档上
     expect(line.backgroundColor).toBe('rgba(0, 0, 0, 0)')
   })

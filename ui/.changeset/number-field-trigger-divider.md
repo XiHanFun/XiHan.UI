@@ -10,7 +10,7 @@
 
 线画在钮的 `::after` 上、绝对定位，**不占位、不推布局**——控件高、钮高、钮与输入之间的间隙三个数改前改后逐值不变。侧别全走逻辑属性，RTL 下自动换边；盒里没有输入框时一条线也不画。
 
-用 `border-inline-start` 画而不是铺底色：高对比档下系统会把 `background` 换成面色、线整条消失，而边框色那一档系统换的是边色，线还在。
+用 `border-inline-start` 画而不是铺底色，默认颜色取 `--xh-material-soft-separator`：它与 M1 Field Chrome 的层级相符；高对比档下系统会把边框替换为系统边色，线仍然可见。
 
 新增两个使用者覆盖槽 `--xh-number-field-trigger-divider`（颜色）与 `--xh-number-field-trigger-divider-h`（长度）。
 

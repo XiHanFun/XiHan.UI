@@ -159,6 +159,14 @@
       "px": 28,
       "why": "通知卡片右上角的叉，手指直接落上去"
     },
+    "number-field:decrement-trigger": {
+      "px": 24,
+      "why": "数字输入的减量按钮，手指直接落上去"
+    },
+    "number-field:increment-trigger": {
+      "px": 24,
+      "why": "数字输入的增量按钮，手指直接落上去"
+    },
     "pagination:item": {
       "px": 32,
       "why": "页码格，手指直接落上去"
