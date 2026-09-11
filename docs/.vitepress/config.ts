@@ -6,6 +6,35 @@ import { writeLlmsAssets } from "./gen-llms.mjs";
 
 const require = createRequire(import.meta.url);
 
+interface DocsPackageManifest {
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+}
+
+// 文档站直接 link: 的本地包以 package.json 为真源；新增示例依赖时无需再手抄一份排除表。
+const docsPackage = require("../package.json") as DocsPackageManifest;
+
+const linkedXihanPackages = Object.entries({
+  ...docsPackage.dependencies,
+  ...docsPackage.devDependencies,
+})
+  .filter(
+    ([name, source]) =>
+      name.startsWith("@xihan-ui/") && source.startsWith("link:"),
+  )
+  .map(([name]) => name);
+
+// 这些包由上面的本地入口传递引用，自己不在 docs/package.json 里；同样不能进入预打包缓存。
+const transitiveXihanPackages = [
+  "@xihan-ui/backgrounds",
+  "@xihan-ui/pointer",
+  "@xihan-ui/position",
+  "@xihan-ui/tokens",
+];
+const localXihanOptimizeExclusions = [
+  ...new Set([...linkedXihanPackages, ...transitiveXihanPackages]),
+].sort();
+
 // 渲染页面阶段组件抛的异常被 Vue 接住后只打进 console.error，构建仍退出 0：
 // 出错的示例在静态页里整块缺失，而流水线什么都看不见。这里把这一路的异常收下来，
 // buildEnd 时一并抛出，让构建真的失败。
@@ -382,22 +411,8 @@ export default defineConfig({
     // 改了库的源码它不会失效——本地构建会拿着旧产物继续渲染而且什么都不说。
     // 排除掉，示例渲染的永远是当前代码；传递依赖也要列全，漏一个它就带着旧代码进缓存
     optimizeDeps: {
-      exclude: [
-        "@xihan-ui/vue",
-        "@xihan-ui/web-components",
-        "@xihan-ui/web-components/define",
-        "@xihan-ui/styles",
-        "@xihan-ui/headless",
-        "@xihan-ui/core",
-        "@xihan-ui/position",
-        "@xihan-ui/pointer",
-        "@xihan-ui/code-highlight",
-        "@xihan-ui/sound",
-        "@xihan-ui/vue/sound",
-        "@xihan-ui/motion",
-        "@xihan-ui/animations",
-        "@xihan-ui/icons",
-      ],
+      // Vite 对包名做前缀匹配：排除 @xihan-ui/react 会连同 react/sound 等公开子路径一起排除。
+      exclude: localXihanOptimizeExclusions,
     },
   },
   themeConfig: {
