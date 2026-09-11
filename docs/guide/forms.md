@@ -43,6 +43,8 @@ checkbox 与 switch 的根是 `<button>`，而 HTML 的内容模型禁止 button
 
 重置桥按事件目标的原生 HTMLElement 品牌与 `form` 节点名识别表单，不依赖顶层 `HTMLFormElement` 构造器。因此组件与表单位于 iframe 中，或表单从另一 Window adopt 到当前 Document 后，仍会跟随所属表单重置；普通元素派发的同名事件不会冒充表单。
 
+对于正式提供 `form` 属性的组件，重置桥优先按该 ID 查找组件所属 Document 或 ShadowRoot 中的表单；未提供时才关联最近的祖先表单。空 ID、目标不存在或目标不是表单时均不关联其他表单。关联在重置发生时读取，因此目标表单延后创建或属性变更不需要重新挂载组件；取消原生 `reset` 事件仍会取消组件重置。此规则不使未声明 `form` 的组件自动获得该公共属性。
+
 ```vue
 <form>
   <XhRadioGroupRoot name="plan" default-value="standard">…</XhRadioGroupRoot>

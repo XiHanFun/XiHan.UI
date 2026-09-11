@@ -9,6 +9,81 @@ afterEach(() => {
 })
 
 describe('form reset bridge 的表单品牌', () => {
+  it('显式外部表单覆盖祖先，动态改目标与缺席目标按当前属性解析', () => {
+    const ancestor = document.createElement('form')
+    const first = document.createElement('form')
+    const second = document.createElement('form')
+    first.id = 'first'
+    second.id = 'second'
+    const anchor = document.createElement('div')
+    anchor.id = 'not-a-form'
+    ancestor.append(anchor)
+    document.body.append(ancestor, first, second)
+    let formId: string | undefined = 'first'
+    const onReset = vi.fn()
+    const bridge = createFormResetBridge({ getNode: () => anchor, getFormId: () => formId, onReset })
+
+    ancestor.reset()
+    expect(onReset).not.toHaveBeenCalled()
+    first.reset()
+    expect(onReset).toHaveBeenCalledTimes(1)
+    formId = 'second'
+    first.reset()
+    expect(onReset).toHaveBeenCalledTimes(1)
+    second.reset()
+    expect(onReset).toHaveBeenCalledTimes(2)
+    for (const missing of ['', 'missing', 'not-a-form']) {
+      formId = missing
+      ancestor.reset()
+      first.reset()
+      second.reset()
+    }
+    expect(onReset).toHaveBeenCalledTimes(2)
+    formId = undefined
+    ancestor.reset()
+    expect(onReset).toHaveBeenCalledTimes(3)
+    bridge.dispose()
+    ancestor.reset()
+    expect(onReset).toHaveBeenCalledTimes(3)
+  })
+
+  it('外部表单重置被取消时不回调，目标尚未创建时不回退祖先', () => {
+    const ancestor = document.createElement('form')
+    const anchor = document.createElement('div')
+    ancestor.append(anchor)
+    document.body.append(ancestor)
+    const onReset = vi.fn()
+    const bridge = createFormResetBridge({ getNode: () => anchor, getFormId: () => 'late', onReset })
+    ancestor.reset()
+    const late = document.createElement('form')
+    late.id = 'late'
+    document.body.append(late)
+    late.addEventListener('reset', event => event.preventDefault())
+    late.reset()
+    expect(onReset).not.toHaveBeenCalled()
+    bridge.dispose()
+  })
+
+  it('显式表单 ID 在组件所属的影子树解析', () => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    const shadow = host.attachShadow({ mode: 'open' })
+    const localForm = document.createElement('form')
+    localForm.id = 'same-id'
+    const outerForm = document.createElement('form')
+    outerForm.id = 'same-id'
+    document.body.append(outerForm)
+    const anchor = document.createElement('div')
+    shadow.append(localForm, anchor)
+    const onReset = vi.fn()
+    const bridge = createFormResetBridge({ getNode: () => anchor, getFormId: () => 'same-id', onReset })
+    outerForm.reset()
+    expect(onReset).not.toHaveBeenCalled()
+    localForm.reset()
+    expect(onReset).toHaveBeenCalledTimes(1)
+    bridge.dispose()
+  })
+
   it('iframe 表单的 reset 能到达所属组件', () => {
     const frame = document.createElement('iframe')
     document.body.appendChild(frame)
