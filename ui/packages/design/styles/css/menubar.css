@@ -189,9 +189,6 @@
        悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话哪张开着就认不出来了。
        聚焦环不在其列，它恒是 --xh-ring-focus */
     --xh-_menubar-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-
-    /* 打开子菜单的触发条目走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底 */
-    --xh-_menubar-item-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
   }
 
   [data-scope='menubar'][data-size='sm']:is([data-part='root'], [data-part='positioner']) {
@@ -307,13 +304,11 @@
   }
 
   [data-scope='menubar'][data-part='item'] {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    display: flex;
     align-items: center;
-    column-gap: var(--xh-menubar-item-gap, var(--xh-_menubar-item-gap));
+    gap: var(--xh-menubar-item-gap, var(--xh-_menubar-item-gap));
     padding-block: var(--xh-menubar-item-py, var(--xh-_menubar-item-py));
     padding-inline: var(--xh-menubar-item-px, var(--xh-_menubar-item-px));
-    border-inline-start: var(--xh-stroke-thick) solid transparent;
     border-radius: var(--xh-menubar-item-radius, var(--xh-shape-control));
     color: var(--xh-menubar-item-fg, var(--xh-material-frosted-fg));
     font-size: var(--xh-menubar-item-font-size, var(--xh-_menubar-font-size));
@@ -340,19 +335,19 @@
     background: var(--xh-menubar-item-bg-pressed, var(--xh-bg-subtle-active));
   }
 
-  /* 打开子菜单的触发条目是展开路径，走品牌淡底与始端指示强档，不改变字重。
+  /* 打开子菜单的触发条目只用中性淡底表达路径，不增装饰、不改变字重。
      必须排在轻档之后：悬停或焦点回到它身上时同特指度靠书写顺序压过轻档 */
   [data-scope='menubar'][data-part='item']:not([data-disabled])[data-state='open'] {
-    background: var(--xh-menubar-item-bg-active, var(--xh-_menubar-item-active-bg));
-    border-inline-start-color: var(--xh-menubar-item-path-indicator, var(--xh-_tone, var(--xh-bg-brand)));
+    background: var(--xh-menubar-item-bg-active, var(--xh-bg-subtle));
   }
 
   /* 带子菜单的条目行尾画右向小箭头：不点开也看得出还有下一级。
-     箭头固定在最后一条显式轨，图形取兜底字形令牌 */
+     description 按 order 独占下一行，箭头仍留在主行末端 */
   [data-scope='menubar'][data-part='item'][aria-haspopup='menu']::after {
     content: '';
-    grid-column: -2 / -1;
-    grid-row: 1;
+    flex: none;
+    order: 1;
+    margin-inline-start: auto;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     background-color: var(--xh-menubar-submenu-indicator-fg, var(--xh-material-frosted-fg-muted));
@@ -376,7 +371,7 @@
   }
 
   [data-scope='menubar'][data-part='item-text'] {
-    grid-column: 1;
+    flex: 1;
     min-inline-size: 0;
     overflow: hidden;
     white-space: nowrap;
@@ -387,11 +382,10 @@
     display: none;
   }
 
-  /* 标记位（勾选符号 / 图标）：定宽占位，切换内容不引起行宽抖动 */
+  /* 标记位（勾选符号 / 图标）按作者写入的位置留在主行，不为没写的条目强制占列。 */
   [data-scope='menubar'][data-part='item-indicator'] {
     display: inline-flex;
-    grid-column: 1;
-    grid-row: 1;
+    flex: none;
     align-items: center;
     justify-content: center;
     inline-size: var(--xh-menubar-item-indicator-size, var(--xh-control-indicator-size));
@@ -409,8 +403,8 @@
 
   /* 副文本另起一行：整行占满，把条目的一行内容折成两行 */
   [data-scope='menubar'][data-part='item-description'] {
-    grid-column: 1 / -1;
-    grid-row: 2;
+    flex: 1 0 100%;
+    order: 2;
     min-inline-size: 0;
     color: var(--xh-menubar-item-description-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-menubar-item-description-font-size, var(--xh-text-caption-size));
@@ -427,68 +421,9 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 当前菜单层出现直属 indicator 时，所有同层条目统一预留首列；别张菜单与子菜单不参与。 */
-  [data-scope='menubar'][data-part='content']:has(
-    > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
-    > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
-  ) > [data-scope='menubar'][data-part='item'],
-  [data-scope='menubar'][data-part='content']:has(
-    > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
-    > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
-  ) > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] {
-    grid-template-columns:
-      var(--xh-menubar-item-leading-size, var(--xh-menubar-item-indicator-size, var(--xh-control-indicator-size)))
-      minmax(0, 1fr)
-      auto;
-  }
-
-  /* item-text 可缺省；空占位认领首列，裸匿名内容便会自动落入正文列。 */
-  [data-scope='menubar'][data-part='content']:has(
-    > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
-    > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
-  ) > [data-scope='menubar'][data-part='item']::before,
-  [data-scope='menubar'][data-part='content']:has(
-    > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
-    > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
-  ) > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item']::before {
-    content: '';
-    grid-column: 1;
-    grid-row: 1;
-    inline-size: var(--xh-menubar-item-leading-size, var(--xh-menubar-item-indicator-size, var(--xh-control-indicator-size)));
-  }
-
-  [data-scope='menubar'][data-part='content']:has(
-    > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
-    > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
-  ) > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-text'],
-  [data-scope='menubar'][data-part='content']:has(
-    > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
-    > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
-  ) > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-text'] {
-    grid-column: 2;
-  }
-
-  [data-scope='menubar'][data-part='content']:has(
-    > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
-    > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
-  ) > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-description'],
-  [data-scope='menubar'][data-part='content']:has(
-    > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
-    > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
-  ) > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-description'] {
-    grid-column: 2 / -1;
-  }
-
-  [data-scope='menubar'][data-part='content']:has(
-    > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator'],
-    > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-scope='menubar'][data-part='item-indicator']
-  ) > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='group-label'] {
-    padding-inline-start: calc(
-      var(--xh-menubar-group-label-px, var(--xh-_menubar-item-px))
-      + var(--xh-stroke-thick)
-      + var(--xh-menubar-group-label-leading-size, var(--xh-menubar-item-indicator-size, var(--xh-control-indicator-size)))
-      + var(--xh-menubar-group-label-leading-gap, var(--xh-menubar-item-gap, var(--xh-_menubar-item-gap)))
-    );
+  /* 没有说明时主行不允许无意换行；有说明才开启第二行。任意图标/快捷键仍保留作者的 DOM 顺序。 */
+  [data-scope='menubar'][data-part='item']:has(> [data-scope='menubar'][data-part='item-description']) {
+    flex-wrap: wrap;
   }
 
   /* 箭头的底色与描边色，几何在 overlay-arrow.css。

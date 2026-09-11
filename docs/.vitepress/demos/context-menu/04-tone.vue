@@ -1,4 +1,4 @@
-<!-- 语气 | tone 决定条目高亮与标记位用哪族颜色；高亮静止态看不出来，右键弹出后悬停条目、或用方向键把焦点移上去才显现 -->
+<!-- 语气 | 普通菜单行与展开项保持中性灰；tone 作用于触发器反馈和显式标记，不给展开项铺品牌色 -->
 <script setup lang="ts">
 import { XhContextMenuRoot } from "@xihan-ui/vue";
 

@@ -1,4 +1,4 @@
-// ContextMenu 的 M2 表面、Collection Item 列与四向短位移动效依赖完整 CSS 级联，只在真实 Chromium 验证。
+// ContextMenu 的 M2 表面、作者任意 slot 行与四向短位移动效依赖完整 CSS 级联，只在真实 Chromium 验证。
 import type { App } from 'vue'
 import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -49,12 +49,14 @@ async function mountContextMenu(): Promise<void> {
             h(XhContextMenuGroupLabel, null, () => h('span', { 'data-testid': 'label-ink' }, '常用操作')),
             h(XhContextMenuItem, { value: 'detail' }, () => [
               h(XhContextMenuItemIndicator, null, () => '✓'),
+              h('span', { 'data-testid': 'item-icon' }, '✂'),
               h(
                 XhContextMenuItemText,
                 { 'data-testid': 'item-text' },
-                () => '一段需要在固定正文列里截断的很长右键菜单命令文字',
+                () => '一段需要在主行剩余空间里截断的很长右键菜单命令文字',
               ),
-              h(XhContextMenuItemDescription, { 'data-testid': 'description' }, () => '说明文字也从正文列开始'),
+              h('kbd', { 'data-testid': 'shortcut' }, 'Ctrl+X'),
+              h(XhContextMenuItemDescription, { 'data-testid': 'description' }, () => '说明文字独占第二行'),
             ]),
             h(XhContextMenuItem, { 'value': 'raw', 'data-testid': 'raw-item' }, () => [
               h('span', { 'data-testid': 'raw-text' }, '没有 item-text 部件的普通内容'),
@@ -140,28 +142,40 @@ describe('右键菜单 M2 表面', () => {
   })
 })
 
-describe('右键菜单条目列与反馈', () => {
-  it('标记、正文、说明、裸内容与组标题对齐，长文字在正文列真实截断', async () => {
+describe('右键菜单 flex 行与反馈', () => {
+  it('作者图标、正文与快捷键保持原顺序同排，只有 description 独占第二行', async () => {
     await mountContextMenu()
+    const item = byTestId('item-text').parentElement!
+    const icon = byTestId('item-icon')
     const text = byTestId('item-text')
-    const x = text.getBoundingClientRect().left
+    const shortcut = byTestId('shortcut')
+    const description = byTestId('description')
+    const center = (element: Element): number => {
+      const rect = element.getBoundingClientRect()
+      return rect.top + rect.height / 2
+    }
 
-    expect(byTestId('description').getBoundingClientRect().left).toBeCloseTo(x, 0)
-    expect(byTestId('raw-text').getBoundingClientRect().left).toBeCloseTo(x, 0)
-    expect(byTestId('label-ink').getBoundingClientRect().left).toBeCloseTo(x, 0)
+    expect(getComputedStyle(item).display).toBe('flex')
+    expect([...item.children].map(node => (node as HTMLElement).dataset.testid ?? node.tagName.toLowerCase()))
+      .toEqual(['span', 'item-icon', 'item-text', 'shortcut', 'description'])
+    expect(center(icon)).toBeCloseTo(center(text), 0)
+    expect(center(shortcut)).toBeCloseTo(center(text), 0)
+    expect(description.getBoundingClientRect().top).toBeGreaterThanOrEqual(text.getBoundingClientRect().bottom)
+    expect(shortcut.getBoundingClientRect().left).toBeGreaterThan(text.getBoundingClientRect().left)
     expect(text.scrollWidth).toBeGreaterThan(text.clientWidth)
     expect(getComputedStyle(text).overflow).toBe('hidden')
+    expect(getComputedStyle(byTestId('raw-item')).display).toBe('flex')
   })
 
-  it('hover、pressed 与打开路径分档，子菜单箭头占末列且 disabled 不显示 pointer', async () => {
+  it('hover、pressed 与中性打开背景分档，子菜单箭头停在主行末端', async () => {
     await mountContextMenu()
     const raw = byTestId('raw-item')
     const rest = getComputedStyle(raw).backgroundColor
+    raw.style.transition = 'none'
     await userEvent.hover(raw)
     const hovered = getComputedStyle(raw).backgroundColor
     expect(hovered).not.toBe(rest)
 
-    raw.style.transition = 'none'
     let pressed = ''
     raw.addEventListener('pointerdown', () => {
       pressed = getComputedStyle(raw).backgroundColor
@@ -171,10 +185,11 @@ describe('右键菜单条目列与反馈', () => {
 
     const submenu = byTestId('submenu')
     const arrow = getComputedStyle(submenu, '::after')
-    expect(arrow.gridColumnStart).toBe('-2')
-    expect(arrow.gridColumnEnd).toBe('-1')
+    expect(arrow.gridColumnStart).toBe('auto')
+    expect(arrow.order).toBe('1')
     expect(getComputedStyle(submenu).fontWeight).toBe(getComputedStyle(raw).fontWeight)
-    expect(getComputedStyle(submenu).borderInlineStartColor).not.toBe('transparent')
+    expect(getComputedStyle(submenu).borderInlineStartWidth).toBe('0px')
+    expect(getComputedStyle(submenu).backgroundColor).toBe(hovered)
     expect(getComputedStyle(byTestId('disabled')).cursor).toBe('not-allowed')
   })
 })

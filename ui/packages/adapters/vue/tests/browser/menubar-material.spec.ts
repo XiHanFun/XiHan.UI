@@ -1,4 +1,5 @@
 import type { App } from 'vue'
+import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
@@ -47,8 +48,10 @@ async function mountMenubar(): Promise<void> {
             h(XhMenubarGroupLabel, null, () => h('span', { 'data-testid': 'label-ink' }, '常用操作')),
             h(XhMenubarItem, { value: 'detail' }, () => [
               h(XhMenubarItemIndicator, null, () => '✓'),
-              h(XhMenubarItemText, { 'data-testid': 'item-text' }, () => '一段需要在固定正文列里截断的很长菜单命令文字'),
-              h(XhMenubarItemDescription, { 'data-testid': 'description' }, () => '说明文字也从正文列开始'),
+              h('span', { 'data-testid': 'item-icon' }, '✂'),
+              h(XhMenubarItemText, { 'data-testid': 'item-text' }, () => '一段需要在主行剩余空间里截断的很长菜单命令文字'),
+              h('kbd', { 'data-testid': 'shortcut' }, 'Ctrl+X'),
+              h(XhMenubarItemDescription, { 'data-testid': 'description' }, () => '说明文字独占第二行'),
             ]),
             h(XhMenubarItem, { 'value': 'raw', 'data-testid': 'raw-item' }, () => [
               h('span', { 'data-testid': 'raw-text' }, '没有 item-text 部件的普通内容'),
@@ -72,12 +75,13 @@ async function mountMenubar(): Promise<void> {
   submenu.setAttribute('data-state', 'open')
 }
 
-afterEach(() => {
+afterEach(async () => {
   app?.unmount()
   host?.remove()
   document.getElementById('xh-portal-root')?.remove()
   app = null
   host = null
+  await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
 })
 
 describe('menubar M2 菜单面与条目几何', () => {
@@ -93,30 +97,44 @@ describe('menubar M2 菜单面与条目几何', () => {
     expect(getComputedStyle(part('separator')).borderRadius).not.toBe('0px')
   })
 
-  it('indicator、正文、说明、裸内容和组标题落在稳定列，长文字真实截断', async () => {
+  it('作者图标、正文与快捷键保持原顺序同排，只有 description 独占第二行', async () => {
     await mountMenubar()
+    const item = byTestId('item-text').parentElement!
+    const icon = byTestId('item-icon')
     const text = byTestId('item-text')
     const description = byTestId('description')
-    const raw = byTestId('raw-text')
-    const label = byTestId('label-ink')
-    const x = text.getBoundingClientRect().left
+    const shortcut = byTestId('shortcut')
+    const center = (element: Element): number => {
+      const rect = element.getBoundingClientRect()
+      return rect.top + rect.height / 2
+    }
 
-    expect(description.getBoundingClientRect().left).toBeCloseTo(x, 0)
-    expect(raw.getBoundingClientRect().left).toBeCloseTo(x, 0)
-    expect(label.getBoundingClientRect().left).toBeCloseTo(x, 0)
+    expect(getComputedStyle(item).display).toBe('flex')
+    expect([...item.children].map(node => (node as HTMLElement).dataset.testid ?? node.tagName.toLowerCase()))
+      .toEqual(['span', 'item-icon', 'item-text', 'shortcut', 'description'])
+    expect(center(icon)).toBeCloseTo(center(text), 0)
+    expect(center(shortcut)).toBeCloseTo(center(text), 0)
+    expect(description.getBoundingClientRect().top).toBeGreaterThanOrEqual(text.getBoundingClientRect().bottom)
+    expect(shortcut.getBoundingClientRect().left).toBeGreaterThan(text.getBoundingClientRect().left)
     expect(text.scrollWidth).toBeGreaterThan(text.clientWidth)
     expect(getComputedStyle(text).overflow).toBe('hidden')
+    expect(getComputedStyle(byTestId('raw-item')).display).toBe('flex')
   })
 
-  it('子菜单箭头固定末轨，打开路径不改字重，禁用条目不再显示 pointer', async () => {
+  it('子菜单箭头停在主行末端，展开背景保持中性且无始端色条', async () => {
     await mountMenubar()
     const submenu = byTestId('submenu')
     const arrow = getComputedStyle(submenu, '::after')
+    const raw = byTestId('raw-item')
+    raw.style.transition = 'none'
+    await userEvent.hover(raw)
+    const hovered = getComputedStyle(raw).backgroundColor
 
-    expect(arrow.gridColumnStart).toBe('-2')
-    expect(arrow.gridColumnEnd).toBe('-1')
-    expect(getComputedStyle(submenu).fontWeight).toBe(getComputedStyle(byTestId('raw-item')).fontWeight)
-    expect(getComputedStyle(submenu).borderInlineStartColor).not.toBe('transparent')
+    expect(arrow.gridColumnStart).toBe('auto')
+    expect(arrow.order).toBe('1')
+    expect(getComputedStyle(submenu).fontWeight).toBe(getComputedStyle(raw).fontWeight)
+    expect(getComputedStyle(submenu).borderInlineStartWidth).toBe('0px')
+    expect(getComputedStyle(submenu).backgroundColor).toBe(hovered)
     expect(getComputedStyle(byTestId('disabled')).cursor).toBe('not-allowed')
   })
 

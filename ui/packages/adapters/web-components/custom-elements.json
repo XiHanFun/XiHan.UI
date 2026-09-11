@@ -10874,12 +10874,6 @@
               "name": "--xh-context-menu-item-leading"
             },
             {
-              "name": "--xh-context-menu-item-leading-size"
-            },
-            {
-              "name": "--xh-context-menu-item-path-indicator"
-            },
-            {
               "name": "--xh-context-menu-item-px"
             },
             {
@@ -27074,12 +27068,6 @@
               "name": "--xh-menu-group-label-font-weight"
             },
             {
-              "name": "--xh-menu-group-label-leading-gap"
-            },
-            {
-              "name": "--xh-menu-group-label-leading-size"
-            },
-            {
               "name": "--xh-menu-group-label-px"
             },
             {
@@ -27123,12 +27111,6 @@
             },
             {
               "name": "--xh-menu-item-leading"
-            },
-            {
-              "name": "--xh-menu-item-leading-size"
-            },
-            {
-              "name": "--xh-menu-item-path-indicator"
             },
             {
               "name": "--xh-menu-item-px"
@@ -27734,12 +27716,6 @@
               "name": "--xh-menubar-group-label-font-weight"
             },
             {
-              "name": "--xh-menubar-group-label-leading-gap"
-            },
-            {
-              "name": "--xh-menubar-group-label-leading-size"
-            },
-            {
               "name": "--xh-menubar-group-label-px"
             },
             {
@@ -27783,12 +27759,6 @@
             },
             {
               "name": "--xh-menubar-item-leading"
-            },
-            {
-              "name": "--xh-menubar-item-leading-size"
-            },
-            {
-              "name": "--xh-menubar-item-path-indicator"
             },
             {
               "name": "--xh-menubar-item-px"
