@@ -20,6 +20,9 @@
 - `cascade` 与 `checkedStrategy` 决定勾选是否带子级、回显给哪一层。
 - 支持只挑叶子不挑分支、浮层内关键词过滤、子节点异步加载。
 - 空（`empty`）与在途（`loading`）两个相位各有部件；`loading` 为真时树报 `aria-busy`，空态让位。
+- 输入框保持实体；浮层使用 M2 磨砂材质、内侧顶光和四向短位移，不缩放树中文字。
+  树、空态与加载态共用一个外壳，底部操作使用同材质分隔线；增强对比度时材质自动实体化。
+  面板宽度受定位后的可用空间约束，即使触发器更宽也不会强行撑大面板。
 
 ## 示例
 
@@ -353,7 +356,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 
 ## 动效
 
-关键帧 `xh-overlay-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

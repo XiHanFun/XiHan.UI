@@ -78,7 +78,7 @@ const EXPECTED = {
   'toast': { root: ['sheet'] },
   'tooltip': { content: ['frosted'] },
   'tour': { content: ['sheet'] },
-  'tree-select': { content: ['floating'] },
+  'tree-select': { content: ['frosted'] },
 }
 
 /** 见到的 `组件/部件/角色`，用于反查死登记。 */
