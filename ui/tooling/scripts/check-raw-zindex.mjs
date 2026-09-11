@@ -35,6 +35,7 @@ const IN_COMPONENT_STACKING = {
   'resizable.css': { reason: '把手压在容器边上，四个角再抬一层盖住相邻两条边', isolatedBy: 'root' },
   'table.css': { reason: '粘性列抬到普通单元格之上，表内的列间层序', isolatedBy: 'root' },
   'toggle-group.css': { reason: '条目的边框重叠与选中态抬升，组内三档', isolatedBy: 'root' },
+  'tooltip.css': { reason: '隔离的 content 内，负一层着色面位于正文后方且不参与页面层序', isolatedBy: 'content', levels: new Set(['-1']) },
   'watermark.css': { reason: '水印压在内容之上，容器内的两层', isolatedBy: 'root' },
 }
 
@@ -173,7 +174,7 @@ for (const file of files) {
       continue
     }
 
-    const numbers = value.match(/\d+/g) ?? []
+    const numbers = value.match(/-?\d+/g) ?? []
     if (numbers.length === 0) {
       problems.push(`${at}  —— 既没引层序令牌，也不是层号`)
       continue
@@ -182,8 +183,9 @@ for (const file of files) {
       problems.push(`${at}  —— 三位数层号一律走 --xh-layer-*`)
       continue
     }
-    if (!numbers.every(n => SMALL.has(n))) {
-      problems.push(`${at}  —— 只有 0/1/2 算组件内堆叠，别的层号走 --xh-layer-*`)
+    const allowedLevels = IN_COMPONENT_STACKING[file]?.levels ?? SMALL
+    if (!numbers.every(n => allowedLevels.has(n))) {
+      problems.push(`${at}  —— 组件内层号必须属于已登记的 ${[...allowedLevels].join('/')}，其他层号走 --xh-layer-*`)
       continue
     }
     if (!(file in IN_COMPONENT_STACKING)) {
