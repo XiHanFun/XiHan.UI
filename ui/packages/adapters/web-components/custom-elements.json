@@ -38774,6 +38774,9 @@
               "name": "--xh-select-action-size"
             },
             {
+              "name": "--xh-select-content-backdrop"
+            },
+            {
               "name": "--xh-select-content-bg"
             },
             {
@@ -38781,6 +38784,9 @@
             },
             {
               "name": "--xh-select-content-fg"
+            },
+            {
+              "name": "--xh-select-content-highlight"
             },
             {
               "name": "--xh-select-content-max-h"
@@ -38897,6 +38903,9 @@
               "name": "--xh-select-group-label-py"
             },
             {
+              "name": "--xh-select-group-separator-color"
+            },
+            {
               "name": "--xh-select-group-spacing"
             },
             {
@@ -38907,6 +38916,12 @@
             },
             {
               "name": "--xh-select-item-bg-hover"
+            },
+            {
+              "name": "--xh-select-item-bg-pressed"
+            },
+            {
+              "name": "--xh-select-item-bg-selected"
             },
             {
               "name": "--xh-select-item-fg"
