@@ -1,12 +1,10 @@
 @layer xihan.motion {
   /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
      动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-  /* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
-     四个都没写就退回原地缩放 */
-  @keyframes xh-overlay-pop-in {
+  /* 进退场沿落位方向短距离移动，不缩放文字与选中标记。 */
+  @keyframes xh-overlay-slide-in {
     from {
       opacity: 0;
-      scale: var(--xh-motion-scale-enter);
       translate:
         calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
         calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
@@ -14,20 +12,21 @@
 
     to {
       opacity: 1;
-      scale: 1;
       translate: 0 0;
     }
   }
 
-  @keyframes xh-pop-out {
+  @keyframes xh-overlay-slide-out {
     from {
       opacity: 1;
-      scale: 1;
+      translate: 0 0;
     }
 
     to {
       opacity: 0;
-      scale: var(--xh-motion-scale-exit);
+      translate:
+        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
     }
   }
 }
@@ -49,6 +48,11 @@
     /* 输入框实测宽度，由定位引擎经内联自定义属性写进来，内容层拿它当最小宽的下界；
        引擎没算（尚未落位 / 无引擎）时为 0，max 取静态档，等于不抬宽 */
     --xh-_combobox-anchor-w: 0px;
+    /* 每层使用自身落位方向，不继承外层弹窗留下的方向。 */
+    --xh-_overlay-enter-up: 0;
+    --xh-_overlay-enter-down: 0;
+    --xh-_overlay-enter-left: 0;
+    --xh-_overlay-enter-right: 0;
 
     /* 候选列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在列表右缘糊一条竖灰带 */
     --xh-scrollbar-track-bg: transparent;
@@ -71,26 +75,20 @@
     display: none;
   }
 
-  /* 缩放原点与进场位移按落定的那一侧给：浮层从贴着盒的那条边涨开、沿主轴退让一小段。
-     两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
-     origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+  /* placement 与位移同为物理方向，不随书写方向翻转。 */
   [data-scope='combobox'][data-part='positioner'][data-placement^='top'] {
-    --xh-_overlay-origin-y: 100%;
     --xh-_overlay-enter-down: 1;
   }
 
   [data-scope='combobox'][data-part='positioner'][data-placement^='bottom'] {
-    --xh-_overlay-origin-y: 0;
     --xh-_overlay-enter-up: 1;
   }
 
   [data-scope='combobox'][data-part='positioner'][data-placement^='left'] {
-    --xh-_overlay-origin-x: 100%;
     --xh-_overlay-enter-right: 1;
   }
 
   [data-scope='combobox'][data-part='positioner'][data-placement^='right'] {
-    --xh-_overlay-origin-x: 0;
     --xh-_overlay-enter-left: 1;
   }
 
@@ -422,6 +420,7 @@
   }
 
   [data-scope='combobox'][data-part='content'] {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--xh-combobox-content-gap, var(--xh-list-option-gap));
@@ -439,15 +438,27 @@
     max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-max-h)), var(--xh-_combobox-available-h));
     padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
     padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));
-    border: var(--xh-stroke-thin) solid var(--xh-combobox-content-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-combobox-content-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-combobox-content-radius, var(--xh-shape-surface));
-    background: var(--xh-combobox-content-bg, var(--xh-bg-surface));
-    color: var(--xh-combobox-content-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-combobox-content-shadow, var(--xh-elevation-floating));
+    background: var(--xh-combobox-content-bg, var(--xh-material-frosted-bg));
+    color: var(--xh-combobox-content-fg, var(--xh-material-frosted-fg));
+    box-shadow: var(--xh-combobox-content-shadow, var(--xh-material-frosted-shadow));
+    -webkit-backdrop-filter: var(--xh-combobox-content-backdrop, var(--xh-material-frosted-backdrop));
+    backdrop-filter: var(--xh-combobox-content-backdrop, var(--xh-material-frosted-backdrop));
     overflow-y: auto;
     pointer-events: auto;
-    /* 进退场的缩放锚在贴着盒的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
-    transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
+  }
+
+  /* 顶光只沿表面上边缘绘制，不参与列表布局、不拦截候选交互。 */
+  [data-scope='combobox'][data-part='content']::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: var(--xh-stroke-thin);
+    border-radius: inherit;
+    background: var(--xh-combobox-content-highlight, var(--xh-material-frosted-highlight));
+    pointer-events: none;
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -463,15 +474,15 @@
   }
 
   [data-scope='combobox'][data-part='content'][data-state='open'] {
-    animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
     /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, scale, translate;
+    will-change: opacity, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
      免得动画结束到真收起之间闪一下原样 */
   [data-scope='combobox'][data-part='content'][data-state='closed'] {
-    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='combobox'][data-part='group'] {
@@ -494,7 +505,7 @@
     display: block;
     padding-block: var(--xh-combobox-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-combobox-group-label-px, var(--xh-control-px-md));
-    color: var(--xh-combobox-group-label-fg, var(--xh-fg-subtle));
+    color: var(--xh-combobox-group-label-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-combobox-group-label-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-combobox-group-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
@@ -512,7 +523,7 @@
     padding-block: var(--xh-combobox-item-py, var(--xh-_combobox-item-py));
     padding-inline: var(--xh-combobox-item-px, var(--xh-_combobox-item-px));
     border-radius: var(--xh-combobox-item-radius, var(--xh-shape-control));
-    color: var(--xh-combobox-item-fg, var(--xh-fg-default));
+    color: var(--xh-combobox-item-fg, var(--xh-material-frosted-fg));
     font-size: var(--xh-combobox-item-font-size, var(--xh-_combobox-font-size));
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
     line-height: var(--xh-combobox-item-leading, var(--xh-leading-normal));
@@ -538,7 +549,7 @@
   /* 单选、多选统一由末端对号表达选中；正文不换品牌色、不增重，
      中性底整条通道留给 data-highlighted。两个状态叠加时仍能同时看见。 */
   [data-scope='combobox'][data-part='item'][data-state='checked'] {
-    color: var(--xh-combobox-item-fg-selected, var(--xh-combobox-item-fg, var(--xh-fg-default)));
+    color: var(--xh-combobox-item-fg-selected, var(--xh-combobox-item-fg, var(--xh-material-frosted-fg)));
     font-weight: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-regular));
   }
 
@@ -601,13 +612,15 @@
 
   /* 空态提示保持为 listbox 的同级 role=status；它只承载文字，表面由同格 content 统一绘制。 */
   [data-scope='combobox'][data-part='empty'] {
+    /* 与带滤镜的 content 同属定位绘制层，按 DOM 顺序将状态文字画在表面之上。 */
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     grid-area: 1 / 1;
     padding-block: var(--xh-combobox-empty-py, var(--xh-space-3));
     padding-inline: var(--xh-combobox-empty-px, var(--xh-control-px-md));
-    color: var(--xh-combobox-empty-fg, var(--xh-fg-subtle));
+    color: var(--xh-combobox-empty-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-combobox-empty-font-size, var(--xh-_combobox-font-size));
     line-height: var(--xh-leading-none);
     text-align: center;
@@ -621,13 +634,14 @@
 
   /* 在途占位与空态占同一个表面、两者不同屏；同样只承载状态文字。 */
   [data-scope='combobox'][data-part='loading'] {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     grid-area: 1 / 1;
     padding-block: var(--xh-combobox-loading-py, var(--xh-space-3));
     padding-inline: var(--xh-combobox-loading-px, var(--xh-control-px-md));
-    color: var(--xh-combobox-loading-fg, var(--xh-fg-subtle));
+    color: var(--xh-combobox-loading-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-combobox-loading-font-size, var(--xh-_combobox-font-size));
     line-height: var(--xh-leading-none);
     text-align: center;

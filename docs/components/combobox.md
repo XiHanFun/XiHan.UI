@@ -27,6 +27,8 @@
 - 单选、多选统一由候选末端的对号表示选中；正文保持正常颜色和字重，选中本身不铺品牌底。
 - 指针与键盘导航通过同一 `data-highlighted` 中性底表达，输入框继续持有焦点；选中与高亮叠加时，对号和中性底同时保留。
 - 候选内容按作者给出的 DOM 顺序排布；正式 `item-text` 占据剩余宽度并负责长文省略，`item-indicator` 固定在逻辑末端。
+- 候选浮层统一使用 M2 磨砂表面、细顶光和边界阴影，输入框保持原有实体表面；空态和在途文字共用材质前景，不新增第二层背景或滤镜。
+- 进退场按实际落位方向淡入淡出并短距离移动，不缩放列表和文字；嵌套层独立决定方向。局部主题随 Portal 传递，增强对比度和减少透明度由材质令牌切为实体表面，减弱动效归零位移。
 
 ## 示例
 
@@ -348,7 +350,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 
 ## 动效
 
-关键帧 `xh-overlay-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
