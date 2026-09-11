@@ -11,9 +11,6 @@ import { spinArc } from './glyph'
 import { partNode } from './host'
 import { defineFeedbackElements } from './register'
 
-/** 关到再开之间留出退场窗口，动效走完再放下一个。 */
-const EXIT_WINDOW_MS = 250
-
 interface Spec {
   title: string
   content?: DialogBody
@@ -102,7 +99,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   let busy = false
   let actionError: DialogActionError | null = null
   let disposed = false
-  let advanceTimer: ReturnType<typeof setTimeout> | null = null
+  let exiting: Spec | null = null
 
   if (!hostFailure) {
     try {
@@ -189,22 +186,23 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     spec.resolve(okPressed)
   }
 
-  /** 退场窗口走完再清当前项、放下一个；程序化关闭与元素侧关闭都汇到这里，只挂一只表。 */
-  function scheduleAdvance(): void {
-    if (advanceTimer)
+  /** 只接受本次退出的真实完成通知；旧请求的迟到通知不能清掉新请求。 */
+  function finishExit(spec: Spec | null): void {
+    if (!spec || disposed || current !== spec || exiting !== spec || dialog.open)
       return
-    advanceTimer = setTimeout(() => {
-      advanceTimer = null
-      current = null
-      busy = false
-      next()
-    }, EXIT_WINDOW_MS)
+    exiting = null
+    current = null
+    busy = false
+    next()
   }
 
   function close(okPressed: boolean): void {
+    const spec = current
+    if (!spec)
+      return
     settle(okPressed)
+    exiting = spec
     dialog.open = false
-    scheduleAdvance()
   }
 
   // 元素侧的关闭（Esc 等）从这里回来：未定的一律按取消结
@@ -212,11 +210,11 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     const detail = (event as CustomEvent<{ open: boolean }>).detail
     if (detail?.open)
       return
-    settle(false)
-    dialog.open = false
-    scheduleAdvance()
+    close(false)
   }
   dialog.addEventListener('open-change', onOpenChange)
+  const onExitComplete = (): void => finishExit(exiting)
+  dialog.addEventListener('exit-complete', onExitComplete)
 
   const onCancel = (): void => {
     if (!busy)
@@ -268,8 +266,8 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
             spec.settled = true
             spec.reject(notificationCause)
             actionError = null
+            exiting = spec
             dialog.open = false
-            scheduleAdvance()
           }
         }
         return
@@ -325,14 +323,12 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     error: alert('error', 'danger'),
     dispose: () => {
       disposed = true
-      if (advanceTimer) {
-        clearTimeout(advanceTimer)
-        advanceTimer = null
-      }
+      exiting = null
       settle(false)
       for (const spec of queue.splice(0))
         spec.resolve(false)
       dialog.removeEventListener('open-change', onOpenChange)
+      dialog.removeEventListener('exit-complete', onExitComplete)
       cancelRoot.removeEventListener('click', onCancel)
       okRoot.removeEventListener('click', onOk)
       dialog.remove()

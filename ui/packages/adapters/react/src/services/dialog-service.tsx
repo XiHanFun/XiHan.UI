@@ -121,9 +121,6 @@ interface Spec {
   settled: boolean
 }
 
-/** 关到再开之间留出退场窗口，动效走完再放下一个。 */
-const EXIT_WINDOW_MS = 250
-
 function toneOfBadge(badge: NonNullable<Spec['badge']>): Tone {
   return badge === 'error' ? 'danger' : badge
 }
@@ -165,7 +162,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
 
   const queue: Spec[] = []
   let disposed = false
-  let advanceTimer: ReturnType<typeof setTimeout> | null = null
+  let exiting: Spec | null = null
 
   function next(): void {
     if (disposed || current || queue.length === 0)
@@ -185,34 +182,34 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     current.resolve(ok)
   }
 
-  /** 退场窗口走完再清当前项、放下一个；程序化关闭与机器侧关闭都汇到这里，只挂一只表。 */
-  function scheduleAdvance(): void {
-    if (advanceTimer)
+  /** 只接受本次退出的真实完成通知；旧请求的迟到通知不能清掉新请求。 */
+  function finishExit(spec: Spec | null): void {
+    if (!spec || disposed || current !== spec || exiting !== spec || open)
       return
-    advanceTimer = setTimeout(() => {
-      advanceTimer = null
-      current = null
-      busy = false
-      notify()
+    exiting = null
+    current = null
+    busy = false
+    if (queue.length)
       next()
-    }, EXIT_WINDOW_MS)
+    else
+      notify()
   }
 
   function close(ok: boolean): void {
+    const spec = current
+    if (!spec)
+      return
     settle(ok)
+    exiting = spec
     open = false
     notify()
-    scheduleAdvance()
   }
 
   // 机器侧的关闭（Esc 等）从这里回来：未定的一律按取消结
   function onOpenChange(details: { open: boolean }): void {
     if (details.open)
       return
-    settle(false)
-    open = false
-    notify()
-    scheduleAdvance()
+    close(false)
   }
 
   async function ok(): Promise<void> {
@@ -251,9 +248,9 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
             spec.settled = true
             spec.reject(notificationCause)
             actionError = null
+            exiting = spec
             open = false
             notify()
-            scheduleAdvance()
           }
         }
         return
@@ -300,6 +297,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
           closeOnEscape={!busy}
           closeOnInteractOutside={false}
           initialFocus={spec?.initialFocus}
+          onExitComplete={() => finishExit(spec)}
         >
           {spec
             ? (
@@ -425,10 +423,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     setConfig: next => configSource.set(next),
     dispose: () => {
       disposed = true
-      if (advanceTimer) {
-        clearTimeout(advanceTimer)
-        advanceTimer = null
-      }
+      exiting = null
       // 队里没结的一律按取消结掉，调用方的 await 不会永远挂着
       settle(false)
       for (const spec of queue.splice(0, queue.length)) {
