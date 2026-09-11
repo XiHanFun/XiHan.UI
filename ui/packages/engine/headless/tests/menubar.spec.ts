@@ -815,7 +815,7 @@ describe('menubar 收起出口', () => {
     press(c.trigger('file'), 'ArrowDown')
     await frames()
     expect(focused()).toBe('item:new')
-    // 消解层挂在 document 上，且延后一拍才注册
+    // Document Hub 同步挂监听，本层参与者延后一拍才武装
     await flushed()
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
     expect(c.value()).toBeNull()

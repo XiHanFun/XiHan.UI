@@ -548,7 +548,7 @@ describe('开合', () => {
     const h = open({ defaultValue: '09:30' })
     h.trigger.click()
     expect(h.state()).toBe('open')
-    // 消解层同步挂监听、延后一枚微任务武装（免得打开自己的那次交互立刻把自己关掉），得让出一拍
+    // Document Hub 同步挂监听，本层参与者延后一枚微任务武装（免得打开事件立刻关掉自己），得让出一拍
     await new Promise(resolve => setTimeout(resolve, 0))
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
     expect(h.state()).toBe('closed')
