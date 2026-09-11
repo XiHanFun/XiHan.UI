@@ -857,6 +857,31 @@
     }
   }
 
+  /* 减少透明的 DOM 钩子：与系统媒体路径同源。打在局部主题上时，Portal 可把这一轴带到实例壳。 */
+  :where([data-transparency='reduce']) {
+    --xh-material-elevated-bg: var(--xh-bg-surface);
+    --xh-material-elevated-backdrop: none;
+    --xh-material-elevated-border: var(--xh-border-default);
+    --xh-material-elevated-highlight: oklch(0 0 0 / 0);
+    --xh-material-elevated-separator: var(--xh-border-subtle);
+    --xh-material-elevated-fg-muted: var(--xh-fg-muted);
+    --xh-material-elevated-focus-surface: var(--xh-bg-surface);
+    --xh-material-glass-bg: var(--xh-bg-surface);
+    --xh-material-glass-backdrop: none;
+    --xh-material-glass-border: var(--xh-border-subtle);
+    --xh-material-glass-highlight: oklch(0 0 0 / 0);
+    --xh-material-glass-separator: var(--xh-border-subtle);
+    --xh-material-glass-fg-muted: var(--xh-fg-muted);
+    --xh-material-frosted-compact-alpha: var(--xh-alpha-opaque);
+    --xh-material-frosted-compact-backdrop: none;
+    --xh-material-frosted-bg: var(--xh-bg-surface);
+    --xh-material-frosted-backdrop: none;
+    --xh-material-frosted-border: var(--xh-border-default);
+    --xh-material-frosted-highlight: oklch(0 0 0 / 0);
+    --xh-material-frosted-separator: var(--xh-border-subtle);
+    --xh-material-frosted-focus-surface: var(--xh-bg-surface);
+  }
+
   /* 系统强制色拥有最终决定权；组件仍消费同一组材质名，不另开 forced-color 私有分支。 */
   @media (forced-colors: active) {
     :where(:root), :where([data-theme]), :where([data-scope]) {

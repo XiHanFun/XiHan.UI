@@ -1,4 +1,4 @@
-# theme=dark density=compact contrast=more motion=default
+# theme=dark density=compact contrast=more motion=default transparency=default
 # color-scheme: dark
 # 命中的取值块，按 tokens.css 的书写顺序：
 #   [1] :where(:root)

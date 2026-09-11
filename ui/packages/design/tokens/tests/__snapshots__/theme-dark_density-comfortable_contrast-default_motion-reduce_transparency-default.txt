@@ -1,4 +1,4 @@
-# theme=dark density=comfortable contrast=default motion=reduce
+# theme=dark density=comfortable contrast=default motion=reduce transparency=default
 # color-scheme: dark
 # 命中的取值块，按 tokens.css 的书写顺序：
 #   [1] :where(:root)
@@ -6,7 +6,7 @@
 #   [4] :where(:root)
 #   [6] :where([data-theme='dark'])
 #   [7] :where([data-contrast='default'])
-#   [9] :where([data-motion='reduce'])
+#   [10] :where([data-motion='reduce'])
 
 --xh-bg-brand: oklch(0.623 0.214 258)  ← var(--xh-color-brand-500)
 --xh-bg-brand-active: oklch(0.809 0.105 258)  ← var(--xh-color-brand-300)

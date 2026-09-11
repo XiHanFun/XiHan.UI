@@ -34,6 +34,17 @@ function resolve(name: string, values: Values): string {
 }
 
 describe('浮动玻璃 M3 材质', () => {
+  it('data-transparency=reduce 与系统减少透明同源', () => {
+    const css = readFileSync(join(import.meta.dirname, '..', 'tokens.css'), 'utf8')
+    const hookStart = css.indexOf(':where([data-transparency=\'reduce\'])')
+    const mediaStart = css.indexOf('@media (prefers-reduced-transparency: reduce)')
+    expect(hookStart).toBeGreaterThan(mediaStart)
+    const hook = css.slice(hookStart, css.indexOf('}', hookStart))
+    expect(hook).toContain('--xh-material-glass-bg: var(--xh-bg-surface);')
+    expect(hook).toContain('--xh-material-glass-backdrop: none;')
+    expect(hook).toContain('--xh-material-glass-highlight: oklch(0 0 0 / 0);')
+  })
+
   it.each(['light', 'dark'] as const)('%s：完整配方与复杂背景上的不透明文字', (theme) => {
     const values = load('primitive.json', 'semantic.base.json', `semantic.${theme}.json`)
     const surface = resolve('material.glass.bg', values)
