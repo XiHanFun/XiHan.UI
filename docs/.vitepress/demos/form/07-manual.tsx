@@ -36,7 +36,7 @@ export default function Demo(): ReactNode {
     >
       {({ values, setFieldError, clearErrors }) => (
         <>
-          <XhFormFieldGroup value="password">
+          <XhFormFieldGroup name="password">
             {({ value, error, invalid, setValue }) => (
               <XhFieldRoot invalid={invalid} required>
                 <XhFieldLabel>密码</XhFieldLabel>
@@ -52,7 +52,7 @@ export default function Demo(): ReactNode {
             )}
           </XhFormFieldGroup>
 
-          <XhFormFieldGroup value="confirm">
+          <XhFormFieldGroup name="confirm">
             {({ value, error, invalid, setValue }) => (
               <XhFieldRoot invalid={invalid} required>
                 <XhFieldLabel>确认密码</XhFieldLabel>

@@ -106,7 +106,7 @@ describe('字段标签左置：一行高的兜底', () => {
       () => h(
         XhFormRoot,
         { layout: 'horizontal' as const, labelWidth: 96 },
-        () => h(XhFormFieldGroup, { value: 'username' }, () => h(XhFieldRoot, null, () => [
+        () => h(XhFormFieldGroup, { name: 'username' }, () => h(XhFieldRoot, null, () => [
           h(XhFieldLabel, null, () => '用户名'),
           h(XhFieldControl, null, () => h('input')),
         ])),

@@ -38,7 +38,7 @@ function mountForm(formProps: Record<string, unknown>, fieldProps: Record<string
         default: (slot: { submit: () => void }) => {
           doSubmit = slot.submit
           return [
-            h(XhFormFieldGroup, { value: 'user' }, () => [
+            h(XhFormFieldGroup, { name: 'user' }, () => [
               h(XhFieldRoot, fieldProps, () => [
                 h(XhFieldLabel, () => '用户名'),
                 h(XhFieldControl, () => [h('input')]),

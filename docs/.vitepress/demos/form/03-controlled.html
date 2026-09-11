@@ -1,7 +1,7 @@
 <!-- 受控值表 | 传了 values 就由宿主说了算：组件内部不再落值，只发变更通知；页面别处也能直接改这张表 -->
 <xh-form id="form-controlled">
   <form data-xh-part="root" style="inline-size: 260px">
-    <div data-xh-part="field-group" value="host">
+    <div data-xh-part="field-group" name="host">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">主机</label>
@@ -11,7 +11,7 @@
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="port">
+    <div data-xh-part="field-group" name="port">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">端口</label>

@@ -20,7 +20,7 @@ const values = ref<Record<string, unknown>>({ ...defaults });
     :default-values="defaults"
     style="inline-size: 260px;"
   >
-    <XhFormFieldGroup v-slot="{ value, setValue }" value="host">
+    <XhFormFieldGroup v-slot="{ value, setValue }" name="host">
       <XhFieldRoot>
         <XhFieldLabel>主机</XhFieldLabel>
         <XhFieldControl>
@@ -29,7 +29,7 @@ const values = ref<Record<string, unknown>>({ ...defaults });
       </XhFieldRoot>
     </XhFormFieldGroup>
 
-    <XhFormFieldGroup v-slot="{ value, setValue }" value="port">
+    <XhFormFieldGroup v-slot="{ value, setValue }" name="port">
       <XhFieldRoot>
         <XhFieldLabel>端口</XhFieldLabel>
         <XhFieldControl>

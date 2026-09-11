@@ -48,7 +48,7 @@ export default function Demo(): ReactNode {
         style={{ inlineSize: "100%", maxInlineSize: "460px" }}
       >
         {fields.map(f => (
-          <XhFormFieldGroup key={f.name} value={f.name}>
+          <XhFormFieldGroup key={f.name} name={f.name}>
             {({ value, setValue }) => (
               <XhFieldRoot>
                 <XhFieldLabel>{f.label}</XhFieldLabel>

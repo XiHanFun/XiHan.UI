@@ -35,7 +35,7 @@ function validate(values: Record<string, unknown>) {
     :validate="validate"
     style="inline-size: 320px;"
   >
-    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="password">
+    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="password">
       <XhFieldRoot :invalid="invalid" required>
         <XhFieldLabel>密码</XhFieldLabel>
         <XhFieldControl>
@@ -49,7 +49,7 @@ function validate(values: Record<string, unknown>) {
       </XhFieldRoot>
     </XhFormFieldGroup>
 
-    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="confirm">
+    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="confirm">
       <XhFieldRoot :invalid="invalid" required>
         <XhFieldLabel>确认密码</XhFieldLabel>
         <XhFieldControl>

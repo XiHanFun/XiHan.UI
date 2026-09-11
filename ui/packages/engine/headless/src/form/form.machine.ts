@@ -1,10 +1,12 @@
 import type { Params } from '@xihan-ui/core'
 import type { FormErrors } from './form.errors'
+import type { FormPath } from './form.path'
 import type { FormSchema, FormValidateOn, FormValidationErrorDetails, FormValues } from './form.types'
 import { focusFirst, focusSafely, getTabbables, queryItems, setup } from '@xihan-ui/core'
 import { formFieldGroupQuery, formFieldName } from './form.anatomy'
 import { firstFormErrorName, formErrorNames, mergeFormErrors, normalizeFormErrors, sameFormErrors } from './form.errors'
 import { runFormRules } from './form.rules'
+import { cloneFormPathRecord, formPathKey, getFormPathValue, sameFormPathRecords, setFormPathValue } from './form.path'
 
 const { createMachine, guards } = setup<FormSchema>()
 const { not } = guards
@@ -18,10 +20,8 @@ export function formValidateOn(mode: FormValidateOn | undefined): FormValidateOn
 }
 
 /** 写一个字段的值，返回新表；值没变就原样返回同一份引用。 */
-export function setFormFieldValue(values: FormValues, name: string, value: unknown): FormValues {
-  if (Object.hasOwn(values, name) && Object.is(values[name], value))
-    return values
-  return { ...values, [name]: value }
+export function setFormFieldValue(values: FormValues, name: FormPath, value: unknown): FormValues {
+  return setFormPathValue(values, name, value)
 }
 
 /**
@@ -31,10 +31,7 @@ export function setFormFieldValue(values: FormValues, name: string, value: unkno
 export function sameFormValues(a: FormValues, b: FormValues | undefined): boolean {
   if (!b)
     return false
-  const keys = Object.keys(a)
-  if (keys.length !== Object.keys(b).length)
-    return false
-  return keys.every(key => Object.hasOwn(b, key) && Object.is(a[key], b[key]))
+  return sameFormPathRecords(a, b)
 }
 
 /**
@@ -43,12 +40,12 @@ export function sameFormValues(a: FormValues, b: FormValues | undefined): boolea
  * 只在事件那一刻调用，此时两个适配器看到的是同一份活 DOM。渲染期不得调用：
  * 那里 Vue 读到的是上一帧、WC 读到的是本帧，两侧会分叉。
  */
-export function formFieldOrder(root: HTMLElement | null): string[] {
-  const out: string[] = []
+export function formFieldOrder(root: HTMLElement | null): FormPath[] {
+  const out: FormPath[] = []
   for (const el of queryItems(root, formFieldGroupQuery)) {
     const name = formFieldName(el)
     // 同一个字段拆成好几块渲染时只算最靠前的那一处
-    if (name != null && !out.includes(name))
+    if (name != null && !out.some(path => formPathKey(path) === formPathKey(name)))
       out.push(name)
   }
   return out
@@ -60,8 +57,9 @@ export function formFieldOrder(root: HTMLElement | null): string[] {
  * 落点是容器里第一个可聚焦控件；控件全禁用或作者没放控件时退回容器自身
  * （它带着 tabindex=-1）。返回是否找到了这个字段的容器。
  */
-export function focusFormField(root: HTMLElement | null, name: string): boolean {
-  const group = queryItems(root, formFieldGroupQuery).find(el => formFieldName(el) === name)
+export function focusFormField(root: HTMLElement | null, name: FormPath): boolean {
+  const key = formPathKey(name)
+  const group = queryItems(root, formFieldGroupQuery).find(el => formFieldName(el) != null && formPathKey(formFieldName(el)!) === key)
   if (!group)
     return false
   if (!focusFirst(getTabbables(group)))
@@ -81,23 +79,23 @@ function discardValidation({ context, refs }: Params<FormSchema>): void {
 }
 
 /** 同字段只保留最新任务；任务持有值快照，删除后即使 Promise 完成也不能写回。 */
-function beginValidation(params: Params<FormSchema>, values: FormValues, field: string | null): { pending: () => void, complete: () => boolean } {
+function beginValidation(params: Params<FormSchema>, values: FormValues, field: FormPath | null): { pending: () => void, complete: () => boolean } {
   const running = params.refs.get('validation')
-  const task = { values: { ...values }, pending: false }
-  running.set(field, task)
+  const task = { values: cloneFormPathRecord(values), pending: false }
+  running.set(field == null ? null : formPathKey(field), task)
   params.context.set('validationError', null)
   syncValidating(params)
   return {
     pending: (): void => {
-      if (running.get(field) !== task)
+      if (running.get(field == null ? null : formPathKey(field)) !== task)
         return
       task.pending = true
       syncValidating(params)
     },
     complete: (): boolean => {
-      if (running.get(field) !== task)
+      if (running.get(field == null ? null : formPathKey(field)) !== task)
         return false
-      running.delete(field)
+      running.delete(field == null ? null : formPathKey(field))
       syncValidating(params)
       return sameFormValues(task.values, params.context.get('values'))
     },
@@ -108,7 +106,7 @@ function beginValidation(params: Params<FormSchema>, values: FormValues, field: 
 function executeValidation(
   params: Params<FormSchema>,
   values: FormValues,
-  field: string | null,
+  field: FormPath | null,
   validate: () => FormErrors | Promise<FormErrors>,
   apply: (errors: FormErrors) => void,
 ): void {
@@ -117,7 +115,7 @@ function executeValidation(
     if (!task.complete())
       return
     discardValidation(params)
-    const details: FormValidationErrorDetails = { cause, values: { ...values }, field }
+    const details: FormValidationErrorDetails = { cause, values: cloneFormPathRecord(values), field: Array.isArray(field) ? [...field] : field }
     params.context.set('validationError', details)
     params.prop('onValidationError')?.(details)
   }
@@ -143,26 +141,29 @@ function executeValidation(
 }
 
 /** 跑一次校验（可能读取整表），但只把当前字段写回错误表。 */
-function validateOneField(params: Params<FormSchema>, values: FormValues, name: string): void {
+function validateOneField(params: Params<FormSchema>, values: FormValues, name: FormPath): void {
   const validate = params.prop('validate')
   const rules = params.prop('rules')
-  if (!validate && !rules?.[name])
+  const rule = getFormPathValue(rules, name)
+  if (!validate && !rule)
     return
   const settle = (all: FormErrors): void => {
     // 这一条的来源改记成「校验算出来的」：接下来再编辑这个字段不该把它抹掉
     const validated = params.refs.get('validatedErrors')
-    if (all[name])
-      validated.add(name)
+    const key = formPathKey(name)
+    const error = getFormPathValue(all, name)
+    if (error)
+      validated.add(key)
     else
-      validated.delete(name)
-    params.context.set('errors', mergeFormErrors(params.context.get('errors'), { [name]: all[name] }))
+      validated.delete(key)
+    params.context.set('errors', mergeFormErrors(params.context.get('errors'), setFormPathValue({}, name, error)))
   }
   executeValidation(
     params,
     values,
     name,
     () => runFormRules(
-      rules?.[name] ? { [name]: rules[name]! } : undefined,
+      rule ? setFormPathValue({}, name, rule) : undefined,
       validate,
       values,
       params.prop('validateMessages'),
@@ -184,7 +185,7 @@ export const formMachine = createMachine({
   context: ({ prop, cell }) => ({
     values: cell<FormValues>(() => ({
       value: prop('values'),
-      defaultValue: prop('defaultValues') ?? {},
+      defaultValue: cloneFormPathRecord(prop('defaultValues')),
       isEqual: sameFormValues,
       onChange: values => prop('onValuesChange')?.({ values }),
     })),
@@ -297,9 +298,9 @@ export const formMachine = createMachine({
        */
       clearExternalFieldError: ({ context, event, refs }) => {
         const e = event.current()
-        if (e.type !== 'FIELD.SET' || refs.get('validatedErrors').has(e.name))
+        if (e.type !== 'FIELD.SET' || refs.get('validatedErrors').has(formPathKey(e.name)))
           return
-        context.set('errors', mergeFormErrors(context.get('errors'), { [e.name]: undefined }))
+        context.set('errors', mergeFormErrors(context.get('errors'), setFormPathValue({}, e.name, undefined)))
       },
 
       validateChangedField: (params) => {
@@ -338,7 +339,7 @@ export const formMachine = createMachine({
             const validated = refs.get('validatedErrors')
             validated.clear()
             for (const name of formErrorNames(errors))
-              validated.add(name)
+              validated.add(formPathKey(name))
           }
           context.set('errors', errors)
           send(formErrorNames(errors).length > 0
@@ -403,8 +404,8 @@ export const formMachine = createMachine({
         if (e.type !== 'ERROR.SET')
           return
         // 命令式写进来的这条归库外，哪怕它顶掉的是校验刚算出来的同名错误
-        refs.get('validatedErrors').delete(e.name)
-        context.set('errors', mergeFormErrors(context.get('errors'), { [e.name]: e.message }))
+        refs.get('validatedErrors').delete(formPathKey(e.name))
+        context.set('errors', mergeFormErrors(context.get('errors'), setFormPathValue({}, e.name, e.message)))
       },
 
       clearErrors: ({ context, refs }) => {
@@ -425,7 +426,7 @@ export const formMachine = createMachine({
         discardValidation(params)
         // 落回去的是 defaultErrors，那份归库外
         refs.get('validatedErrors').clear()
-        context.set('values', { ...(prop('defaultValues') ?? {}) })
+        context.set('values', cloneFormPathRecord(prop('defaultValues')))
         context.set('errors', normalizeFormErrors(prop('defaultErrors')))
       },
     },

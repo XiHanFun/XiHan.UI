@@ -10,6 +10,7 @@ import {
   XhTextFieldInput,
   XhTextFieldRoot,
 } from '../src'
+import { formPathKey } from '@xihan-ui/headless'
 
 afterEach(() => {
   document.body.innerHTML = ''
@@ -22,7 +23,7 @@ function mountTextField(props: Record<string, boolean> = {}, wrapped = false) {
       readOnly: true,
       rules: { email: { required: true } },
       errors: { email: '格式不对' },
-    }, () => h(XhFormFieldGroup, { value: 'email' }, () => {
+    }, () => h(XhFormFieldGroup, { name: 'email' }, () => {
       const text = h(XhTextFieldRoot, props, () => h(XhTextFieldInput))
       return wrapped ? h(XhFieldRoot, null, () => h(XhFieldControl, null, () => text)) : text
     })),
@@ -30,6 +31,14 @@ function mountTextField(props: Record<string, boolean> = {}, wrapped = false) {
 }
 
 describe('form control context 接线', () => {
+  it('FieldGroup 用 name 接收数组路径，并把它稳定写成路径身份', () => {
+    const path = ['users', 0, 'email'] as const
+    const view = mount(defineComponent({
+      setup: () => () => h(XhFormRoot, null, () => h(XhFormFieldGroup, { name: path })),
+    }))
+    expect(view.find('[data-part="field-group"]').attributes('data-form-path')).toBe(formPathKey(path))
+  })
+
   it.each([
     ['直接控件', false],
     ['Field 包装控件', true],

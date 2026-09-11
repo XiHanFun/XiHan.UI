@@ -25,7 +25,7 @@ export default function Demo(): ReactNode {
         validateOn="blur"
         style={{ inlineSize: "240px" }}
       >
-        <XhFormFieldGroup value="port">
+        <XhFormFieldGroup name="port">
           {({ value, error, invalid, setValue }) => (
             <XhFieldRoot invalid={invalid}>
               <XhFieldLabel>端口（失焦校验）</XhFieldLabel>
@@ -49,7 +49,7 @@ export default function Demo(): ReactNode {
         validateOn="change"
         style={{ inlineSize: "240px" }}
       >
-        <XhFormFieldGroup value="port">
+        <XhFormFieldGroup name="port">
           {({ value, error, invalid, setValue }) => (
             <XhFieldRoot invalid={invalid}>
               <XhFieldLabel>端口（改动即校验）</XhFieldLabel>

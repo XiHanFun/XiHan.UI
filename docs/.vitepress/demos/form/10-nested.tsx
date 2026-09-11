@@ -59,10 +59,10 @@ export default function Demo(): ReactNode {
         {({ errorCount }) => (
           <>
             <span>{`共 ${errorCount} 处需要修改`}</span>
-            <XhFormErrorSummaryItem value="user.name">{({ error }) => `姓名：${error ?? ""}`}</XhFormErrorSummaryItem>
-            <XhFormErrorSummaryItem value="user.email">{({ error }) => `邮箱：${error ?? ""}`}</XhFormErrorSummaryItem>
+            <XhFormErrorSummaryItem name="user.name">{({ error }) => `姓名：${error ?? ""}`}</XhFormErrorSummaryItem>
+            <XhFormErrorSummaryItem name="user.email">{({ error }) => `邮箱：${error ?? ""}`}</XhFormErrorSummaryItem>
             {model.hobbies.map((_, index) => (
-              <XhFormErrorSummaryItem key={index} value={hobbyName(index)}>
+              <XhFormErrorSummaryItem key={index} name={hobbyName(index)}>
                 {({ error }) => `爱好 ${index + 1}：${error ?? ""}`}
               </XhFormErrorSummaryItem>
             ))}
@@ -70,7 +70,7 @@ export default function Demo(): ReactNode {
         )}
       </XhFormErrorSummary>
 
-      <XhFormFieldGroup value="user.name">
+      <XhFormFieldGroup name="user.name">
         {({ error, invalid }) => (
           <XhFieldRoot invalid={invalid} required>
             <XhFieldLabel>姓名</XhFieldLabel>
@@ -86,7 +86,7 @@ export default function Demo(): ReactNode {
         )}
       </XhFormFieldGroup>
 
-      <XhFormFieldGroup value="user.email">
+      <XhFormFieldGroup name="user.email">
         {({ error, invalid }) => (
           <XhFieldRoot invalid={invalid} required>
             <XhFieldLabel>邮箱</XhFieldLabel>
@@ -103,7 +103,7 @@ export default function Demo(): ReactNode {
       </XhFormFieldGroup>
 
       {model.hobbies.map((row, index) => (
-        <XhFormFieldGroup key={index} value={hobbyName(index)}>
+        <XhFormFieldGroup key={index} name={hobbyName(index)}>
           {({ error, invalid }) => (
             <XhFieldRoot invalid={invalid} required>
               <XhFieldLabel>{`爱好 ${index + 1}`}</XhFieldLabel>

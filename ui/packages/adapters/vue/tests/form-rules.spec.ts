@@ -50,7 +50,7 @@ function mountForm(props: Record<string, unknown>): Mounted {
         default: (slot: SlotApi) => {
           latest = slot
           return [
-            h(XhFormFieldGroup, { value: 'user' }, () => []),
+            h(XhFormFieldGroup, { name: 'user' }, () => []),
             h(XhFormSubmitTrigger, () => '提交'),
           ]
         },

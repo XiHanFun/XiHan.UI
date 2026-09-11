@@ -23,7 +23,7 @@ export default function Demo(): ReactNode {
         defaultValues={defaults}
         style={{ inlineSize: "260px" }}
       >
-        <XhFormFieldGroup value="host">
+        <XhFormFieldGroup name="host">
           {({ value, setValue }) => (
             <XhFieldRoot>
               <XhFieldLabel>主机</XhFieldLabel>
@@ -37,7 +37,7 @@ export default function Demo(): ReactNode {
           )}
         </XhFormFieldGroup>
 
-        <XhFormFieldGroup value="port">
+        <XhFormFieldGroup name="port">
           {({ value, setValue }) => (
             <XhFieldRoot>
               <XhFieldLabel>端口</XhFieldLabel>

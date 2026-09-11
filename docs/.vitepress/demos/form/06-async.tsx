@@ -44,7 +44,7 @@ export default function Demo(): ReactNode {
     >
       {({ validating }) => (
         <>
-          <XhFormFieldGroup value="username">
+          <XhFormFieldGroup name="username">
             {({ value, error, invalid, setValue }) => (
               <XhFieldRoot invalid={invalid} required>
                 <XhFieldLabel>用户名</XhFieldLabel>

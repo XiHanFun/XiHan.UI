@@ -49,7 +49,7 @@ export default function Demo(): ReactNode {
   return (
     <XhFormRoot validate={validate} style={{ inlineSize: "320px" }} onSubmit={onSubmit}>
       {rows.map((row, index) => (
-        <XhFormFieldGroup key={row.id} value={fieldName(row.id)}>
+        <XhFormFieldGroup key={row.id} name={fieldName(row.id)}>
           {({ value, error, invalid, setValue }) => (
             <>
               <XhFieldRoot invalid={invalid}>

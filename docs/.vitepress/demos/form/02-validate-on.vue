@@ -24,7 +24,7 @@ function validate(values: Record<string, unknown>) {
     validate-on="blur"
     style="inline-size: 240px;"
   >
-    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="port">
+    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="port">
       <XhFieldRoot :invalid="invalid">
         <XhFieldLabel>端口（失焦校验）</XhFieldLabel>
         <XhFieldControl>
@@ -43,7 +43,7 @@ function validate(values: Record<string, unknown>) {
     validate-on="change"
     style="inline-size: 240px;"
   >
-    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="port">
+    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="port">
       <XhFieldRoot :invalid="invalid">
         <XhFieldLabel>端口（改动即校验）</XhFieldLabel>
         <XhFieldControl>

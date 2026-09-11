@@ -56,7 +56,7 @@ export default function Demo(): ReactNode {
       onSubmit={onSubmit}
     >
       {fields.map(f => (
-        <XhFormFieldGroup key={f.name} value={f.name}>
+        <XhFormFieldGroup key={f.name} name={f.name}>
           {({ value, setValue }) => (
             // Field 不接任何校验 props：invalid、必填星号与错误文案全部从表单上下文自取
             <XhFieldRoot>

@@ -53,7 +53,7 @@ export default function Demo(): ReactNode {
       style={{ inlineSize: "320px" }}
       onSubmit={onSubmit}
     >
-      <XhFormFieldGroup value="email">
+      <XhFormFieldGroup name="email">
         {({ value, error, invalid, setValue }) => (
           <XhFieldRoot
             invalid={invalid}

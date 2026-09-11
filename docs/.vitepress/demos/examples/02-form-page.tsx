@@ -163,9 +163,9 @@ export default function Demo(): ReactNode {
           {({ errorCount }) => (
             <>
               <span>{`共 ${errorCount} 处需要修改`}</span>
-              <XhFormErrorSummaryItem value="title">{({ error }) => error}</XhFormErrorSummaryItem>
-              <XhFormErrorSummaryItem value="detail">{({ error }) => error}</XhFormErrorSummaryItem>
-              <XhFormErrorSummaryItem value="agree">{({ error }) => error}</XhFormErrorSummaryItem>
+              <XhFormErrorSummaryItem name="title">{({ error }) => error}</XhFormErrorSummaryItem>
+              <XhFormErrorSummaryItem name="detail">{({ error }) => error}</XhFormErrorSummaryItem>
+              <XhFormErrorSummaryItem name="agree">{({ error }) => error}</XhFormErrorSummaryItem>
             </>
           )}
         </XhFormErrorSummary>
@@ -173,7 +173,7 @@ export default function Demo(): ReactNode {
         <XhFieldsetRoot style={groupStyle}>
           <XhFieldsetLegend>问题本身</XhFieldsetLegend>
 
-          <XhFormFieldGroup value="title">
+          <XhFormFieldGroup name="title">
             {({ value, error, invalid, setValue }) => (
               <XhFieldRoot invalid={invalid} required>
                 <XhFieldLabel>标题</XhFieldLabel>
@@ -189,7 +189,7 @@ export default function Demo(): ReactNode {
             )}
           </XhFormFieldGroup>
 
-          <XhFormFieldGroup value="detail">
+          <XhFormFieldGroup name="detail">
             {({ value, error, invalid, setValue }) => (
               <XhFieldRoot invalid={invalid} required>
                 <XhFieldLabel>详细描述</XhFieldLabel>
@@ -213,7 +213,7 @@ export default function Demo(): ReactNode {
           </XhFormFieldGroup>
 
           <div style={rowStyle}>
-            <XhFormFieldGroup value="priority">
+            <XhFormFieldGroup name="priority">
               {({ value, setValue }) => (
                 <XhSelectRoot
                   collection={priorities}
@@ -225,7 +225,7 @@ export default function Demo(): ReactNode {
               )}
             </XhFormFieldGroup>
 
-            <XhFormFieldGroup value="amount">
+            <XhFormFieldGroup name="amount">
               {({ value, setValue }) => (
                 <XhNumberFieldRoot
                   value={String(value ?? "")}
@@ -244,7 +244,7 @@ export default function Demo(): ReactNode {
             </XhFormFieldGroup>
           </div>
 
-          <XhFormFieldGroup value="kind">
+          <XhFormFieldGroup name="kind">
             {({ value, setValue }) => (
               <XhRadioGroupRoot
                 collection={kinds}
@@ -255,7 +255,7 @@ export default function Demo(): ReactNode {
             )}
           </XhFormFieldGroup>
 
-          <XhFormFieldGroup value="labels">
+          <XhFormFieldGroup name="labels">
             {({ value, setValue }) => (
               <XhTagsInputRoot
                 value={value as string[]}
@@ -282,7 +282,7 @@ export default function Demo(): ReactNode {
             )}
           </XhFormFieldGroup>
 
-          <XhFormFieldGroup value="impact">
+          <XhFormFieldGroup name="impact">
             {({ value, setValue }) => (
               <XhSliderRoot
                 value={value as number[]}
@@ -311,7 +311,7 @@ export default function Demo(): ReactNode {
         <XhFieldsetRoot style={groupStyle}>
           <XhFieldsetLegend>提交之前</XhFieldsetLegend>
 
-          <XhFormFieldGroup value="notify">
+          <XhFormFieldGroup name="notify">
             {({ value, setValue }) => (
               <label style={checkStyle}>
                 <XhSwitch
@@ -323,7 +323,7 @@ export default function Demo(): ReactNode {
             )}
           </XhFormFieldGroup>
 
-          <XhFormFieldGroup value="agree">
+          <XhFormFieldGroup name="agree">
             {({ value, error, invalid, setValue }) => (
               <XhFieldRoot invalid={invalid} required>
                 <label style={checkStyle}>

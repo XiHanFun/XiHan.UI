@@ -1,7 +1,7 @@
 <!-- 跨字段规则与手动入口 | validate 拿到的是整张值表，可以写两个字段互相约束的规则；setFieldError 与 clearErrors 随时能单独动一条 -->
 <xh-form id="form-manual">
   <form data-xh-part="root" style="inline-size: 320px">
-    <div data-xh-part="field-group" value="password">
+    <div data-xh-part="field-group" name="password">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">密码</label>
@@ -11,7 +11,7 @@
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="confirm">
+    <div data-xh-part="field-group" name="confirm">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">确认密码</label>
