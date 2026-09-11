@@ -52907,7 +52907,7 @@
               "name": "item-text"
             },
             {
-              "description": "叶子选中标记（aria-hidden）",
+              "description": "叶子与分支共用的选中或半选标记（aria-hidden）",
               "name": "item-indicator"
             },
             {

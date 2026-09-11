@@ -60,6 +60,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
               <XhTreeSelectBranchControl>
                 <XhTreeSelectBranchTrigger />
                 <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
+                <XhTreeSelectItemIndicator />
               </XhTreeSelectBranchControl>
               <XhTreeSelectBranchContent>
                 <XhTreeSelectItem value="guide">

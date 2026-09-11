@@ -114,9 +114,6 @@
     /* 强调色随语气走，只落在勾选标记上；没写 data-tone 时退回品牌色 */
     --xh-_tree-select-accent: var(--xh-_tone, var(--xh-fg-brand));
 
-    /* 选中行的文字色随语气走，没写 data-tone 时退回品牌强调色 */
-    --xh-_tree-select-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
-
     /* 聚焦环恒用固定环色；校验失败时换成告警环色 */
     --xh-_tree-select-ring: var(--xh-ring-focus);
   }
@@ -528,17 +525,11 @@
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 分支行的首格是展开箭头，叶子行没有这一格。作者摆了 item-indicator 时由它顶着，
-     没摆（如勾选档首位直接是作者自己的方框）就由行盒自己补出这一格的宽度，
-     否则叶子会比同级分支往行首缩一格，层级关系读不出来。
-     这里不带 tree.css 那条规则的 [data-orientation] 前提：tree-select 的连接层
-     不发这个属性，带上就一条都不命中 */
-  [data-scope='tree-select'][data-part='item']:not(
-      :has(> [data-scope='tree-select'][data-part='item-indicator'])
-    ) {
+  /* 叶子保留分支箭头的首格；选中标记独立固定在行尾，不再同时承担层级缩进。 */
+  [data-scope='tree-select'][data-part='item'] {
     padding-inline-start: calc(
       var(--xh-tree-select-item-px, var(--xh-_tree-select-row-px)) +
-        var(--xh-tree-select-item-indicator-size, var(--xh-control-indicator-size)) +
+        var(--xh-tree-select-branch-indicator-size, var(--xh-control-indicator-size)) +
         var(--xh-tree-select-item-gap, var(--xh-_tree-select-gap))
     );
   }
@@ -550,17 +541,22 @@
 
   /* 悬停与键盘锚点共用中性灰轻档：data-highlighted 跟的是连接层记的焦点行，
      与选中互相独立，键盘落焦另有聚焦环标记位置 */
-  [data-scope='tree-select'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]),
-  [data-scope='tree-select'][data-part='branch-control']:not([data-disabled]):is(:hover, [data-highlighted]) {
+  [data-scope='tree-select'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted], :focus-visible),
+  [data-scope='tree-select'][data-part='branch-control']:not([data-disabled]):is(:hover, [data-highlighted]),
+  [data-scope='tree-select'][data-part='branch']:not([data-disabled]):focus-visible > [data-part='branch-control'] {
     background: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
   }
 
-  /* 选中只换文字色与字重，配合行首那格 ✓ 标记；底色整条通道留给高亮，
-     两者因此能同时看见 */
+  /* 叶子与分支统一用末端对号表示选中，正文不变色、不加粗。 */
   [data-scope='tree-select'][data-part='item'][data-selected],
   [data-scope='tree-select'][data-part='branch-control'][data-selected] {
-    color: var(--xh-tree-select-item-fg-selected, var(--xh-_tree-select-selected-fg));
-    font-weight: var(--xh-tree-select-item-selected-font-weight, var(--xh-font-weight-medium));
+    color: var(--xh-tree-select-item-fg-selected, var(--xh-tree-select-item-fg, var(--xh-fg-default)));
+    font-weight: var(--xh-tree-select-item-selected-font-weight, var(--xh-font-weight-regular));
+  }
+
+  [data-scope='tree-select'][data-part='item']:focus-visible,
+  [data-scope='tree-select'][data-part='branch']:focus-visible > [data-part='branch-control'] {
+    transition-property: color;
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled：节点仍要可聚焦（它还得当方向键的起点），
@@ -585,9 +581,12 @@
   [data-scope='tree-select'][data-part='item-indicator'] {
     display: inline-flex;
     flex: none;
+    order: 1;
     align-items: center;
     justify-content: center;
+    margin-inline-start: auto;
     inline-size: var(--xh-tree-select-item-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-tree-select-item-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-tree-select-item-indicator-fg, var(--xh-_tree-select-accent));
     visibility: hidden;
   }
@@ -596,7 +595,7 @@
     display: none;
   }
 
-  [data-scope='tree-select'][data-part='item-indicator'][data-selected] {
+  [data-scope='tree-select'][data-part='item-indicator']:is([data-selected], [data-indeterminate]) {
     visibility: visible;
   }
 
@@ -680,6 +679,11 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  }
+
+  [data-scope='tree-select'][data-part='item-indicator'][data-indeterminate]:not([data-selected]):empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-minus);
+    mask-image: var(--xh-glyph-mark-minus);
   }
 
   [data-scope='tree-select'][data-part='branch-trigger']:empty::before,

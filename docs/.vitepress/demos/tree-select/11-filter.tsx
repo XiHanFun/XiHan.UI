@@ -126,6 +126,7 @@ export default function Demo(): ReactNode {
                 <XhTreeSelectBranchControl>
                   <XhTreeSelectBranchTrigger />
                   <XhTreeSelectBranchText>{region.label}</XhTreeSelectBranchText>
+                  <XhTreeSelectItemIndicator />
                 </XhTreeSelectBranchControl>
                 <XhTreeSelectBranchContent>
                   {region.children.map(city => (

@@ -72,6 +72,7 @@ export default function Demo(): ReactNode {
                 <XhTreeSelectBranchControl>
                   <XhTreeSelectBranchTrigger />
                   <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
+                  <XhTreeSelectItemIndicator />
                 </XhTreeSelectBranchControl>
                 <XhTreeSelectBranchContent>
                   <XhTreeSelectItem value="guide">
@@ -86,6 +87,7 @@ export default function Demo(): ReactNode {
                     <XhTreeSelectBranchControl>
                       <XhTreeSelectBranchTrigger />
                       <XhTreeSelectBranchText>i18n</XhTreeSelectBranchText>
+                      <XhTreeSelectItemIndicator />
                     </XhTreeSelectBranchControl>
                     <XhTreeSelectBranchContent>
                       <XhTreeSelectItem value="zh">

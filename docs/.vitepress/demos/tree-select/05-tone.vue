@@ -62,6 +62,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
               <XhTreeSelectBranchControl>
                 <XhTreeSelectBranchTrigger />
                 <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
+                <XhTreeSelectItemIndicator />
               </XhTreeSelectBranchControl>
               <XhTreeSelectBranchContent>
                 <XhTreeSelectItem value="guide">

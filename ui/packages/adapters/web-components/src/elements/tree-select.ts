@@ -80,7 +80,7 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @csspart tree - role=tree 容器，没有锚点时的 Tab 兜底位与落焦点
  * @csspart item - role=treeitem 叶子，须自带 value 属性标识身份
  * @csspart item-text - 叶子文本
- * @csspart item-indicator - 叶子选中标记（aria-hidden）
+ * @csspart item-indicator - 叶子与分支共用的选中或半选标记（aria-hidden）
  * @csspart branch - role=treeitem 分支，须自带 value 属性；它裹着自己的 branch-content
  * @csspart branch-control - 分支可点行（点它只改选中值，展开归箭头与左右方向键）
  * @csspart branch-trigger - 展开箭头（aria-hidden 且不占 Tab 位，只切换展开态）
@@ -346,7 +346,7 @@ export class XhTreeSelectElement extends XhElement {
     }
     putAll('item', ITEM_SELECTOR, node => api.getItemProps(node))
     putAll('item-text', ITEM_SELECTOR, node => api.getItemTextProps(node))
-    putAll('item-indicator', ITEM_SELECTOR, node => api.getItemIndicatorProps(node))
+    putAll('item-indicator', `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`, node => api.getItemIndicatorProps(node))
     putAll('branch', BRANCH_SELECTOR, node => api.getBranchProps(node))
     putAll('branch-control', BRANCH_SELECTOR, node => api.getBranchControlProps(node))
     putAll('branch-trigger', BRANCH_SELECTOR, node => api.getBranchTriggerProps(node))

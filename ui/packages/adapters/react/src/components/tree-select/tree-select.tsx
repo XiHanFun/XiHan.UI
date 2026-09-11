@@ -472,6 +472,7 @@ function renderNodes(nodes: readonly TreeNode[]): ReactNode[] {
           <XhTreeSelectBranchControl>
             <XhTreeSelectBranchTrigger />
             <XhTreeSelectBranchText>{node.label ?? node.value}</XhTreeSelectBranchText>
+            <XhTreeSelectItemIndicator />
           </XhTreeSelectBranchControl>
           <XhTreeSelectBranchContent>{renderNodes(node.children)}</XhTreeSelectBranchContent>
         </XhTreeSelectBranch>

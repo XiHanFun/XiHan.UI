@@ -23,6 +23,7 @@
             <div data-xh-part="branch-control">
               <span data-xh-part="branch-trigger"></span>
               <span data-xh-part="branch-text">华东</span>
+              <span data-xh-part="item-indicator"></span>
             </div>
             <div data-xh-part="branch-content">
               <div data-xh-part="item" value="sh">
@@ -43,6 +44,7 @@
             <div data-xh-part="branch-control">
               <span data-xh-part="branch-trigger"></span>
               <span data-xh-part="branch-text">华北</span>
+              <span data-xh-part="item-indicator"></span>
             </div>
             <div data-xh-part="branch-content">
               <div data-xh-part="item" value="bj">
@@ -59,6 +61,7 @@
             <div data-xh-part="branch-control">
               <span data-xh-part="branch-trigger"></span>
               <span data-xh-part="branch-text">华南</span>
+              <span data-xh-part="item-indicator"></span>
             </div>
             <div data-xh-part="branch-content">
               <div data-xh-part="item" value="gz">
@@ -133,7 +136,11 @@
         const branch = part("div", "branch");
         branch.setAttribute("value", region.value);
         const control = part("div", "branch-control");
-        control.append(part("span", "branch-trigger"), part("span", "branch-text", region.label));
+        control.append(
+          part("span", "branch-trigger"),
+          part("span", "branch-text", region.label),
+          part("span", "item-indicator"),
+        );
         const content = part("div", "branch-content");
         content.append(
           ...region.children.map((city) => {

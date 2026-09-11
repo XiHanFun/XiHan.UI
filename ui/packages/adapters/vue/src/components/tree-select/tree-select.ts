@@ -410,6 +410,7 @@ function renderNodes(nodes: readonly TreeNode[]): VNode[] {
         h(XhTreeSelectBranchControl, null, () => [
           h(XhTreeSelectBranchTrigger),
           h(XhTreeSelectBranchText, null, () => node.label ?? node.value),
+          h(XhTreeSelectItemIndicator),
         ]),
         h(XhTreeSelectBranchContent, null, () => renderNodes(node.children!)),
       ])
