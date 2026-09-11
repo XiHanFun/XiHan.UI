@@ -47,6 +47,8 @@ const CROSS_PART = {
   'cascader.column': ['search-list', 'empty'],
   // 搜索候选与列内条目排的是同一套行度量，空态文字与条目同一档字号
   'cascader.item': ['search-item', 'empty'],
+  // 搜索候选由组件自动生成，没有独立 indicator 节点；末端伪元素与列项对号必须共用尺寸和颜色
+  'cascader.item-indicator': ['search-item'],
   // 勾选框画在全选格上，checkbox-group 没有单独的 indicator 节点承载它
   'checkbox-group.indicator': ['select-all-trigger'],
   // --xh-code-view-line-height 是整块代码的行距，line 只是它头一个词，与行部件无关

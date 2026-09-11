@@ -74,12 +74,6 @@
     /* 强调色随语气走，只落在勾选标记上；没写 data-tone 时退回品牌色 */
     --xh-_cascader-accent: var(--xh-_tone, var(--xh-fg-brand));
 
-    /* 选中条目的文字色随语气走，没写 data-tone 时退回品牌强调色 */
-    --xh-_cascader-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
-
-    /* 展开路径的底色：随语气走淡底，没写 data-tone 时退回品牌淡底 */
-    --xh-_cascader-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-
     /* 聚焦环恒用固定环色；校验失败时换成告警环色 */
     --xh-_cascader-ring: var(--xh-ring-focus);
   }
@@ -508,30 +502,33 @@
     animation-delay: calc(5 * var(--xh-motion-stagger-step));
   }
 
-  /* 底色分两档、靠色相分家：悬停与键盘锚点是中性灰轻档，展开路径是品牌淡底加粗。
-     hover 恒中性灰、不接语气槽——两档同色相的话路径就认不出来了。
-     悬停展开把路径挪走后留在原地的锚点降回轻档，每列至多一条路径高亮 */
-  [data-scope='cascader'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+  /* 列项与搜索结果共用一档中性反馈；选中由对号承担，不借背景或文字强调。 */
+  [data-scope='cascader'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted], :focus-visible) {
     background: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
   }
 
-  /* 必须排在轻档之后：锚点走到路径上时同特指度靠书写顺序压过轻档 */
-  [data-scope='cascader'][data-part='item']:not([data-disabled])[data-in-path] {
-    background: var(--xh-cascader-item-bg-active, var(--xh-_cascader-active-bg));
-    font-weight: var(--xh-cascader-item-active-font-weight, var(--xh-font-weight-semibold));
+  /* 键盘焦点的实体中性底要当帧落下，避免背景过渡期间焦点位置发虚。 */
+  [data-scope='cascader'][data-part='item']:focus-visible {
+    transition-property: color;
   }
 
-  /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色强档归展开路径、轻档归悬停，
-     三者因此能同时看见 */
-  [data-scope='cascader']:is([data-part='item'], [data-part='search-item'])[data-state='checked'] {
-    color: var(--xh-cascader-item-fg-selected, var(--xh-_cascader-selected-fg));
-    font-weight: var(--xh-cascader-item-selected-font-weight, var(--xh-font-weight-medium));
+  /* 展开路径只保留同一中性底与正常字重，不叠品牌底，也不把路径误读成已选择。 */
+  [data-scope='cascader'][data-part='item']:not([data-disabled])[data-in-path] {
+    background: var(--xh-cascader-item-bg-active, var(--xh-bg-subtle));
+    font-weight: var(--xh-cascader-item-active-font-weight, var(--xh-font-weight-regular));
+  }
+
+  /* 单选、多选与搜索结果都由末端对号表示选中；正文保留常态颜色与字重。 */
+  [data-scope='cascader'][data-part='item'][data-state='checked'] {
+    color: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-fg-default)));
+    font-weight: var(--xh-cascader-item-selected-font-weight, var(--xh-font-weight-regular));
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
      所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
   [data-scope='cascader'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
+    cursor: not-allowed;
   }
 
   /* 分支条目行尾画右向小箭头：不点开也看得出还有下一级。位置由 item-text 的 flex:1 顶到行尾。
@@ -548,7 +545,12 @@
   }
 
   [data-scope='cascader'][data-part='item'][data-branch][data-disabled]::after {
-    border-color: var(--xh-fg-disabled);
+    background-color: var(--xh-fg-disabled);
+  }
+
+  [data-scope='cascader'][data-part='item'][data-branch]:dir(rtl)::after {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-left);
+    mask-image: var(--xh-glyph-mark-chevron-left);
   }
 
   [data-scope='cascader'][data-part='item-text'] {
@@ -565,7 +567,9 @@
     flex: none;
     align-items: center;
     justify-content: center;
+    margin-inline-start: auto;
     inline-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-cascader-item-indicator-fg, var(--xh-_cascader-accent));
     visibility: hidden;
   }
@@ -679,8 +683,15 @@
 
   /* 候选与列内条目同一套行度量，虚拟高亮与悬停同用轻档 */
   [data-scope='cascader'][data-part='search-item'] {
+    position: relative;
     padding-block: var(--xh-cascader-item-py, var(--xh-_cascader-row-py));
     padding-inline: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
+    /* 搜索结果没有独立 indicator 部件，末端为同一枚皮肤对号预留固定轨。 */
+    padding-inline-end: calc(
+      var(--xh-cascader-item-px, var(--xh-_cascader-row-px)) +
+        var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size)) +
+        var(--xh-cascader-item-gap, var(--xh-_cascader-gap))
+    );
     overflow: hidden;
     border-radius: var(--xh-cascader-item-radius, var(--xh-shape-control));
     color: var(--xh-cascader-item-fg, var(--xh-fg-default));
@@ -690,15 +701,60 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='cascader'][data-part='search-item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+  [data-scope='cascader'][data-part='search-item']:not([data-disabled]):is(
+      :hover,
+      [data-highlighted],
+      :focus-visible
+    ) {
     background: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
+  }
+
+  [data-scope='cascader'][data-part='search-item']:focus-visible {
+    transition-property: color;
+  }
+
+  [data-scope='cascader'][data-part='search-item'][data-state='checked'] {
+    color: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-fg-default)));
+    font-weight: var(--xh-cascader-item-selected-font-weight, var(--xh-font-weight-regular));
   }
 
   [data-scope='cascader'][data-part='search-item'][data-disabled] {
     color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 自动生成的搜索结果复用 item-indicator 的尺寸、颜色和对号字形，不新增第二套作者槽。 */
+  [data-scope='cascader'][data-part='search-item']::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
+    inline-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
+    translate: 0 -50%;
+    background-color: var(--xh-cascader-item-indicator-fg, var(--xh-_cascader-accent));
+    visibility: hidden;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  }
+
+  [data-scope='cascader'][data-part='search-item'][data-state='checked']::after {
+    visibility: visible;
+  }
+
+  [data-scope='cascader'][data-part='search-item'][data-state='indeterminate']::after {
+    visibility: visible;
+    -webkit-mask-image: var(--xh-glyph-mark-minus);
+    mask-image: var(--xh-glyph-mark-minus);
+  }
+
+  [data-scope='cascader'][data-part='search-item'][data-disabled]::after {
+    background-color: var(--xh-fg-disabled);
   }
 
   [data-scope='cascader'][data-part='search-item'][hidden] {
