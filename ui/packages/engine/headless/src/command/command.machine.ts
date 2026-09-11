@@ -235,7 +235,7 @@ export const commandMachine = createMachine({
                 return
               run(() => {
                 if (getTargets().length)
-                  hidden = hideOutside(getTargets, config.scope)
+                  hidden = hideOutside(getTargets, config)
               })
             })
           }

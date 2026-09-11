@@ -5,7 +5,7 @@ import { PORTAL_ROOT_ID } from '../src/kernel/constants'
 import { createCounterIdGenerator } from '../src/kernel/id-generator'
 import { createRuntimeConfig } from '../src/kernel/runtime-config'
 import { createScope } from '../src/kernel/scope'
-import { getLayerRegistry } from '../src/kernel/structure/layer-registry'
+import { createLayerRegistry, getLayerRegistry } from '../src/kernel/structure/layer-registry'
 
 const originalMatchMedia = window.matchMedia
 
@@ -74,6 +74,7 @@ describe('createRuntimeConfig · 显式 scope 的所属窗口', () => {
     const config = createRuntimeConfig({ scope })
 
     expect(config.layerRegistry).toBe(getLayerRegistry(doc))
+    expect(config.layerRegistry.ownerDocument).toBe(doc)
     expect(config.layerRegistry).not.toBe(getLayerRegistry(document))
   })
 
@@ -97,8 +98,8 @@ describe('createRuntimeConfig · 显式 scope 的所属窗口', () => {
   })
 
   it('显式结构与动效配置压过 scope 派生默认', () => {
-    const { scope } = iframeScope()
-    const overrideRegistry = getLayerRegistry(document.implementation.createHTMLDocument('override'))
+    const { doc, scope } = iframeScope()
+    const overrideRegistry = createLayerRegistry(doc)
     const overridePortal = document.createElement('div')
     const config = createRuntimeConfig({
       scope,
@@ -110,6 +111,16 @@ describe('createRuntimeConfig · 显式 scope 的所属窗口', () => {
     expect(config.layerRegistry).toBe(overrideRegistry)
     expect(config.portalContainer()).toBe(overridePortal)
     expect(config.reducedMotion()).toBe(false)
+  })
+
+  it('拒绝不属于 scope Document 的显式 layerRegistry', () => {
+    const { scope } = iframeScope()
+    const foreignRegistry = createLayerRegistry(document)
+
+    expect(() => createRuntimeConfig({
+      scope,
+      layerRegistry: foreignRegistry,
+    })).toThrow(/layerRegistry 必须属于 scope Document/)
   })
 
   it('全局 motion override 仍压过 scope 窗口的媒体查询', () => {

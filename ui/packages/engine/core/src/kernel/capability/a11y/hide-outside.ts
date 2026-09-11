@@ -1,9 +1,8 @@
 // hideOutside：沿每个 target 到 body 的祖先链逐层把其余兄弟设 inert，使背景失活。
-import type { Scope } from '../../scope'
+import type { RuntimeConfig } from '../../runtime-config'
 import type { Cleanup } from '../../types'
 import { DATA_INERT_EXEMPT } from '../../constants'
 import { isElement, isHTMLElement } from '../../guards'
-import { getLayerRegistry } from '../../structure/layer-registry'
 import { getInertRegistry } from './inert-registry'
 
 /** 默认豁免选择器。 */
@@ -21,10 +20,19 @@ export interface HideOutsideOptions {
  * @param getTargets 每次重算时求值一次；必须包含所有 branch 节点与栈中位于自己之上
  * 的层，漏传会误伤 portal 出去的嵌套浮层。晚于本次调用才挂载的节点也要能被算进来，
  * 所以取的是函数而不是数组。
+ * @param config 提供同一运行时的 Scope 与 LayerRegistry；层栈变化会触发重算。
+ * @param options 背景失活选项。
  * @returns Cleanup：撤销本次施加的全部 inert 要求并停止监控，重复调用只生效一次。
  */
-export function hideOutside(getTargets: () => Element[], scope: Scope, options: HideOutsideOptions = {}): Cleanup {
+export function hideOutside(
+  getTargets: () => Element[],
+  config: Pick<RuntimeConfig, 'scope' | 'layerRegistry'>,
+  options: HideOutsideOptions = {},
+): Cleanup {
+  const { scope, layerRegistry } = config
   const doc = scope.getDoc()
+  if (layerRegistry.ownerDocument !== doc)
+    throw new Error('[xh] hideOutside 的 layerRegistry 必须属于 Scope 的 Document')
   const win = scope.getWin()
   const body = doc.body
   if (!body)
@@ -127,7 +135,7 @@ export function hideOutside(getTargets: () => Element[], scope: Scope, options: 
   let unsubscribe: Cleanup = () => {}
   try {
     observer.observe(body, { childList: true, subtree: true })
-    unsubscribe = getLayerRegistry(doc).subscribe(() => sync())
+    unsubscribe = layerRegistry.subscribe(() => sync())
     sync()
   }
   catch (error) {

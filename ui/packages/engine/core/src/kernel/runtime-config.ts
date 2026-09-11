@@ -66,6 +66,8 @@ export function createRuntimeConfig(partial: Partial<RuntimeConfig> = {}): Runti
   const { doc: scopedDocument, win: scopedWindow } = resolveScopeRealm(scope)
   const layerRegistry = partial.layerRegistry
     ?? getLayerRegistry(scopedDocument)
+  if (layerRegistry.ownerDocument !== scopedDocument)
+    throw new Error('[xh] createRuntimeConfig 的 layerRegistry 必须属于 scope Document')
 
   return {
     scope,
