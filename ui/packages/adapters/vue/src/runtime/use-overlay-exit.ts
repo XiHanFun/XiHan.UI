@@ -24,6 +24,8 @@ export interface OverlayExitOptions {
   isOpen: () => boolean
   /** content 节点，退场动画从它身上探测。 */
   contentRef: Ref<HTMLElement | null>
+  /** Presence 建立后交给需要共用退出生命周期的 Headless 机器；卸载时回传 null。 */
+  onPresence?: (presence: PresenceHandle | null) => void
 }
 
 /**
@@ -53,6 +55,7 @@ export function useOverlayExit(options: OverlayExitOptions): Ref<boolean> {
         visible.value = rendered
       },
     })
+    options.onPresence?.(presence)
     visible.value = presence.rendered
 
     // data-state 提交到 DOM 之后再驱动 presence，让退场探测读到正确的 animationName
@@ -87,6 +90,7 @@ export function useOverlayExit(options: OverlayExitOptions): Ref<boolean> {
     stopContent?.()
     detach?.()
     presence?.dispose()
+    options.onPresence?.(null)
   })
 
   return visible
