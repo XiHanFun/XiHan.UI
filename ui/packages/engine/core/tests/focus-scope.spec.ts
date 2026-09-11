@@ -791,6 +791,39 @@ describe('哨兵', () => {
 })
 
 describe('卸载归还', () => {
+  it.each(['document', 'iframe', 'closed-shadow'] as const)('动态 Scope 锚点卸载后仍按创建时所属 %s 清理遗留焦点', async (kind) => {
+    let doc = document
+    let root: HTMLElement | ShadowRoot = document.body
+    if (kind === 'iframe') {
+      const frame = document.createElement('iframe')
+      document.body.appendChild(frame)
+      doc = frame.contentDocument!
+      root = doc.body
+    }
+    else if (kind === 'closed-shadow') {
+      const host = doc.createElement('div')
+      doc.body.appendChild(host)
+      root = host.attachShadow({ mode: 'closed' })
+    }
+    const h = setup(1, doc, root)
+    let anchor: HTMLElement | null = h.outside
+    const dynamicScope = createScope(() => anchor, createCounterIdGenerator())
+    const config = createRuntimeConfig({ scope: dynamicScope, layerRegistry: h.registry })
+    h.outside.focus()
+    const focus = open(h, { config })
+    await frames(2, doc.defaultView!)
+    const activeRoot = kind === 'closed-shadow' ? root as ShadowRoot : doc
+    expect(activeRoot.activeElement).toBe(h.buttons[0])
+
+    focus.dispose()
+    anchor = null
+    h.outside.remove()
+    // Scope 自身的严格合同不变；已释放域的异步清理必须不再向它询问 DOM。
+    expect(() => dynamicScope.getActiveElement()).toThrow('Scope 的动态锚点尚未就绪')
+    await frames(2, doc.defaultView!)
+    expect(activeRoot.activeElement).toBe(kind === 'closed-shadow' ? null : doc.body)
+  })
+
   it('焦点回到创建前持有它的那个元素', async () => {
     const h = setup()
     h.outside.focus()
