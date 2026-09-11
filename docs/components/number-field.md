@@ -17,8 +17,17 @@
 - `step` 与 `largeStep` 分别对应方向键和 PageUp / PageDown。
 - 长按加减钮连续步进，首跳延时与间隔都可调。
 - `parse` / `format` 一对，用来接固定小数位、千分位、货币符号或自定义换算。
-- 越界的值在提交时机被夹回区间。
+- 越界的值在失焦规范化时被夹回区间。
 - `prefix` / `suffix` 在框内摆货币符、单位或图标，两段对读屏隐藏。
+- `control` 是输入、前后缀与两颗动作共用的唯一 Field Chrome；内嵌动作保持透明，只用短分隔线、
+  悬停底与按压缩放报告边界和操作状态，不增加侧条或品牌色展开底。
+- comfortable 下 `sm` / `md` / `lg` 控件高为 28 / 32 / 40px，动作盒为 24 / 24 / 32px；compact
+  下分别为 24 / 28 / 36px 与 20 / 20 / 28px。数字使用等宽字形，前缀、数值和后缀共用中线。
+- 粗指针环境会把真实加减按钮与控件高度扩到 comfortable 48px、compact 44px；命中区由 flex
+  子项本身承担，不用伪元素伸进输入区，两颗按钮及输入区互不重叠。
+- Tab 只停在 `spinbutton` 输入框，聚焦环由整个 `control` 统一绘制；加减钮退出 Tab 序列，但仍可由
+  指针和公开 API 操作。到达 `min` / `max` 时只禁用对应方向，`disabled` / `readOnly` 才同时锁住两侧。
+- 分隔线长度为控件高度的一半，颜色默认取 M1 柔和分隔色；位置使用逻辑属性，RTL 下自动换边。
 
 ## 示例
 
@@ -258,13 +267,17 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-number-field-affix-fg` · `--xh-number-field-affix-fg-disabled` · `--xh-number-field-affix-font-size` · `--xh-number-field-control-bg` · `--xh-number-field-control-bg-disabled` · `--xh-number-field-control-bg-hover` · `--xh-number-field-control-bg-readonly` · `--xh-number-field-control-border` · `--xh-number-field-control-border-focus` · `--xh-number-field-control-border-hover` · `--xh-number-field-control-border-invalid` · `--xh-number-field-control-gap` · `--xh-number-field-control-h` · `--xh-number-field-control-min-w` · `--xh-number-field-control-px` · `--xh-number-field-control-radius` · `--xh-number-field-control-shadow` · `--xh-number-field-gap` · `--xh-number-field-icon-size` · `--xh-number-field-input-align` · `--xh-number-field-input-autofill-bg` · `--xh-number-field-input-autofill-fg` · `--xh-number-field-input-bg` · `--xh-number-field-input-bg-disabled` · `--xh-number-field-input-bg-hover` · `--xh-number-field-input-bg-readonly` · `--xh-number-field-input-border` · `--xh-number-field-input-border-focus` · `--xh-number-field-input-border-hover` · `--xh-number-field-input-border-invalid` · `--xh-number-field-input-fg` · `--xh-number-field-input-font-size` · `--xh-number-field-input-h` · `--xh-number-field-input-px` · `--xh-number-field-input-radius` · `--xh-number-field-input-shadow` · `--xh-number-field-input-w` · `--xh-number-field-label-fg` · `--xh-number-field-label-fg-disabled` · `--xh-number-field-label-font-size` · `--xh-number-field-label-font-weight` · `--xh-number-field-placeholder-fg` · `--xh-number-field-trigger-bg` · `--xh-number-field-trigger-bg-active` · `--xh-number-field-trigger-bg-disabled` · `--xh-number-field-trigger-bg-hover` · `--xh-number-field-trigger-border` · `--xh-number-field-trigger-border-disabled` · `--xh-number-field-trigger-border-hover` · `--xh-number-field-trigger-divider` · `--xh-number-field-trigger-divider-h` · `--xh-number-field-trigger-fg` · `--xh-number-field-trigger-fg-hover` · `--xh-number-field-trigger-font-size` · `--xh-number-field-trigger-radius` · `--xh-number-field-trigger-size`
+`--xh-number-field-affix-fg` · `--xh-number-field-affix-fg-disabled` · `--xh-number-field-affix-font-size` · `--xh-number-field-control-bg` · `--xh-number-field-control-bg-disabled` · `--xh-number-field-control-bg-hover` · `--xh-number-field-control-bg-readonly` · `--xh-number-field-control-border` · `--xh-number-field-control-border-focus` · `--xh-number-field-control-border-hover` · `--xh-number-field-control-border-invalid` · `--xh-number-field-control-gap` · `--xh-number-field-control-h` · `--xh-number-field-control-min-w` · `--xh-number-field-control-px` · `--xh-number-field-control-radius` · `--xh-number-field-control-shadow` · `--xh-number-field-gap` · `--xh-number-field-icon-size` · `--xh-number-field-input-align` · `--xh-number-field-input-autofill-bg` · `--xh-number-field-input-autofill-fg` · `--xh-number-field-input-bg` · `--xh-number-field-input-bg-disabled` · `--xh-number-field-input-bg-hover` · `--xh-number-field-input-bg-readonly` · `--xh-number-field-input-border` · `--xh-number-field-input-border-focus` · `--xh-number-field-input-border-hover` · `--xh-number-field-input-border-invalid` · `--xh-number-field-input-fg` · `--xh-number-field-input-font-size` · `--xh-number-field-input-h` · `--xh-number-field-input-px` · `--xh-number-field-input-radius` · `--xh-number-field-input-shadow` · `--xh-number-field-input-w` · `--xh-number-field-label-fg` · `--xh-number-field-label-fg-disabled` · `--xh-number-field-label-font-size` · `--xh-number-field-label-font-weight` · `--xh-number-field-placeholder-fg` · `--xh-number-field-touch-target-size` · `--xh-number-field-trigger-bg` · `--xh-number-field-trigger-bg-active` · `--xh-number-field-trigger-bg-disabled` · `--xh-number-field-trigger-bg-hover` · `--xh-number-field-trigger-border` · `--xh-number-field-trigger-border-disabled` · `--xh-number-field-trigger-border-hover` · `--xh-number-field-trigger-divider` · `--xh-number-field-trigger-divider-h` · `--xh-number-field-trigger-fg` · `--xh-number-field-trigger-fg-hover` · `--xh-number-field-trigger-font-size` · `--xh-number-field-trigger-radius` · `--xh-number-field-trigger-size`
 
 ## 动效
 
 `background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## 响应式
+
+皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ## RTL
 
@@ -278,6 +291,17 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 
 - 给出 `min` / `max`，让键盘用户按住方向键时有个尽头。
 - 显示格式与提交值分开：显示可以带千分位，提交的是纯数值。
+- 自定义加减钮尺寸时同步检查窄容器与粗指针；真实动作盒不能覆盖输入区，也不能彼此相交。
+
+### 当前边界
+
+- 默认解析使用严格的 `Number()` 语义，不识别本地化小数分隔符；需要千分位、逗号小数或单位时，
+  显式提供互逆的 `parse` / `format`。组件不会猜测 locale。
+- 空串与非法文本会以原串保留，失焦不会把它们悄悄改成另一个数；此时调用步进会从 `min`（有值时）
+  或 `0` 开始。业务校验和错误文案由表单层明确提供。
+- 长按当前按固定节奏重复：默认先等 300ms，再每 50ms 步进一次；尚未提供加速曲线。
+- 输入使用 `type="text"` 与 `inputmode="decimal"`，组件不接管滚轮，避免页面滚动时意外改值。
+- 当前标准组合是水平排列的减号、输入与加号；上下堆叠动作尚未纳入既有 anatomy，不能只靠皮肤伪造。
 
 ## 反模式
 

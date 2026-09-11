@@ -13006,6 +13006,7 @@
     "--xh-number-field-label-font-size",
     "--xh-number-field-label-font-weight",
     "--xh-number-field-placeholder-fg",
+    "--xh-number-field-touch-target-size",
     "--xh-number-field-trigger-bg",
     "--xh-number-field-trigger-bg-active",
     "--xh-number-field-trigger-bg-disabled",
