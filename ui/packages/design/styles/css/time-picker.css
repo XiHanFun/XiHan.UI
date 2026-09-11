@@ -456,6 +456,10 @@
     opacity: 1;
   }
 
+  [data-scope='time-picker'][data-part='preset'][hidden] {
+    display: none;
+  }
+
   /* 键盘焦点出现时中性底立即落定，焦点环不会先压在透明面上。 */
   [data-scope='time-picker'][data-part='preset']:focus-visible {
     transition-property: color;
