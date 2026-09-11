@@ -61,7 +61,7 @@ export const buttonGroupSuite: ConformanceSuite = {
       },
     },
     {
-      name: '只有根一个角色节点：组内每一段是作者自己的按钮',
+      name: 'root 是唯一必需角色：未渲染可选 separator 时只有 root',
       spec: { apg: APG },
       initial: {
         order: ['root'],
