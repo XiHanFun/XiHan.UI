@@ -30,14 +30,14 @@ import { useIsomorphicLayoutEffect } from './runtime/layout-effect'
 /**
  * 按需加解滚动锁。锁是引用计数的，多处同时锁不会互相踩。
  *
- * 锁哪个元素由 `config.scrollRoot?.()` 决定；宿主把滚动搬进了内容容器
+ * 锁哪个元素由 `config.scrollRoot()` 决定；宿主把滚动搬进了内容容器
  * （body 自己不滚）时必须在配置里注入，否则锁到的是不滚的那个。
  */
 export function useScrollLock(active: boolean, config: RuntimeConfig): void {
   // 配置每渲染都可能是新对象，锁只跟着开关走：现读那一份，别让它成为解锁重锁的理由
   const latest = useRef(config)
   latest.current = config
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!active)
       return
     const handle = acquireScrollLock({ config: latest.current })

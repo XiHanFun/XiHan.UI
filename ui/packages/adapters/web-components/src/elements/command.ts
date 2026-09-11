@@ -14,6 +14,7 @@ import type {
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled } from '@xihan-ui/core'
 import { commandAnatomy, commandMachine, commandMeta, connectCommand } from '@xihan-ui/headless'
+import { resolveXhConfig } from '../config'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -240,8 +241,15 @@ export class XhCommandElement extends XhElement {
   private ensureConfig(): void {
     if (this.config)
       return
-    // scrollRoot 交给运行期配置自行探测；面板锁的是页面主滚动层
-    this.config = createRuntimeConfig({ scope: this.commandScope, idGenerator: this.idGen })
+    // scrollRoot 每次现读：全局配置、最近的 <xh-config> 与元素搬家都按打开当刻解析
+    this.config = createRuntimeConfig({
+      scope: this.commandScope,
+      idGenerator: this.idGen,
+      scrollRoot: () => {
+        const scrollRoot = resolveXhConfig(this).scrollRoot
+        return scrollRoot === undefined ? null : scrollRoot()
+      },
+    })
   }
 
   // 只交注册函数，层的入栈出栈由机器的 trackOverlay 效应跟着展开态做。

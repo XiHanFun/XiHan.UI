@@ -86,7 +86,7 @@ provideXhConfig({ translations: { dialog: { close: "Close" } } });
 </script>
 ```
 
-`locale` 与 `size` 两条属性写在标签上就行；`translations` 是对象、`scrollRoot` 是函数，只能走 property。子树里每个元素都沿祖先链解析，跑机器的与不跑机器的一视同仁；`scrollRoot` 由 `xh-dialog` / `xh-drawer` / `xh-image-viewer` 开模态时现读，改了下一次打开就生效。`<xh-config>` 自己不渲染任何东西，也不接线任何角色节点——它是 `display: contents`，布局上完全让开。
+`locale` 与 `size` 两条属性写在标签上就行；`translations` 是对象、`scrollRoot` 是函数，只能走 property。子树里每个元素都沿祖先链解析，跑机器的与不跑机器的一视同仁；`scrollRoot` 由 `xh-dialog` / `xh-drawer` / `xh-image-viewer` / `xh-command` 开模态时现读，改了下一次打开就生效。`<xh-config>` 自己不渲染任何东西，也不接线任何角色节点——它是 `display: contents`，布局上完全让开。
 
 `setXhConfig` 是**整份替换**（不深合并），想改一处就把整份拿去改；`<xh-config>` 之间以及它与全局那份之间才是逐键合并。
 

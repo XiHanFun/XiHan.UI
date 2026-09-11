@@ -30,7 +30,7 @@ import { onMounted, onScopeDispose, ref, toValue, watch } from 'vue'
 /**
  * 按需加解滚动锁。锁是引用计数的，多处同时锁不会互相踩。
  *
- * 锁哪个元素由 `config.scrollRoot?.()` 决定；宿主把滚动搬进了内容容器
+ * 锁哪个元素由 `config.scrollRoot()` 决定；宿主把滚动搬进了内容容器
  * （body 自己不滚）时必须在配置里注入，否则锁到的是不滚的那个。
  */
 export function useScrollLock(
@@ -38,21 +38,29 @@ export function useScrollLock(
   config: MaybeRefOrGetter<RuntimeConfig>,
 ): void {
   let handle: { dispose: () => void } | null = null
+  let stopWatching: (() => void) | null = null
   const release = (): void => {
-    handle?.dispose()
+    const current = handle
     handle = null
+    current?.dispose()
   }
-  watch(
-    () => toValue(active),
-    (on) => {
-      if (on && !handle)
-        handle = acquireScrollLock({ config: toValue(config) })
-      else if (!on)
-        release()
-    },
-    { immediate: true },
-  )
-  onScopeDispose(release)
+  onMounted(() => {
+    stopWatching = watch(
+      () => toValue(active),
+      (on) => {
+        if (on && !handle)
+          handle = acquireScrollLock({ config: toValue(config) })
+        else if (!on)
+          release()
+      },
+      { immediate: true, flush: 'post' },
+    )
+  })
+  onScopeDispose(() => {
+    stopWatching?.()
+    stopWatching = null
+    release()
+  })
 }
 
 /**
