@@ -92,6 +92,92 @@ describe('scope 的宿主解析', () => {
     expect(scope.isShadow()).toBe(false)
   })
 
+  it('动态锚点未就绪时明确失败，不借 ambient document；id 派生仍保持稳定', () => {
+    const anchor: Element | null = null
+    const scope = createScope(() => anchor, createCounterIdGenerator())
+    const id = scope.id
+    const partId = scope.partId('date-picker', 'content')
+
+    expect(() => scope.getRootNode()).toThrow('[xh] Scope 的动态锚点尚未就绪')
+    expect(() => scope.getDoc()).toThrow('[xh] Scope 的动态锚点尚未就绪')
+    expect(() => scope.getWin()).toThrow('[xh] Scope 的动态锚点尚未就绪')
+    expect(() => scope.getById('target')).toThrow('[xh] Scope 的动态锚点尚未就绪')
+    expect(scope.id).toBe(id)
+    expect(scope.partId('date-picker', 'content')).toBe(partId)
+  })
+
+  it('动态锚点返回非 Element 时明确拒绝，不把相似对象或 Document 当宿主', () => {
+    const documentSource = (() => document) as unknown as () => Element
+    const objectSource = (() => ({ ownerDocument: document })) as unknown as () => Element
+
+    expect(() => createScope(documentSource, createCounterIdGenerator()).getDoc())
+      .toThrow('[xh] Scope 的动态锚点必须返回 Element')
+    expect(() => createScope(objectSource, createCounterIdGenerator()).getDoc())
+      .toThrow('[xh] Scope 的动态锚点必须返回 Element')
+  })
+
+  it('动态锚点就位后逐次读取真实 Document、Window、root、查询与计算样式', () => {
+    const mainTarget = document.createElement('div')
+    mainTarget.id = 'target'
+    document.body.appendChild(mainTarget)
+
+    const frame = document.createElement('iframe')
+    document.body.appendChild(frame)
+    const frameDocument = frame.contentDocument!
+    const frameWindow = frame.contentWindow!
+    const host = frameDocument.createElement('div')
+    frameDocument.body.appendChild(host)
+    const shadow = host.attachShadow({ mode: 'open' })
+    const frameTarget = frameDocument.createElement('button')
+    frameTarget.id = 'target'
+    frameTarget.style.color = 'rgb(12, 34, 56)'
+    shadow.appendChild(frameTarget)
+
+    let anchor: Element | null = mainTarget
+    const scope = createScope(() => anchor, createCounterIdGenerator())
+    const id = scope.id
+
+    expect(scope.getRootNode()).toBe(document)
+    expect(scope.getDoc()).toBe(document)
+    expect(scope.getWin()).toBe(window)
+    expect(scope.getById('target')).toBe(mainTarget)
+
+    anchor = frameTarget
+    frameTarget.focus()
+    expect(scope.getRootNode()).toBe(shadow)
+    expect(scope.getDoc()).toBe(frameDocument)
+    expect(scope.getWin()).toBe(frameWindow)
+    expect(scope.getById('target')).toBe(frameTarget)
+    expect(scope.getActiveElement()).toBe(frameTarget)
+    expect(scope.getComputedStyle(frameTarget).color).toBe('rgb(12, 34, 56)')
+    expect(scope.isShadow()).toBe(true)
+    expect(scope.id).toBe(id)
+
+    anchor = null
+    expect(() => scope.getDoc()).toThrow('[xh] Scope 的动态锚点尚未就绪')
+  })
+
+  it('动态锚点被 adopt 后不缓存旧 realm，立即按新的 ownerDocument 解析', () => {
+    const frame = document.createElement('iframe')
+    document.body.appendChild(frame)
+    const frameDocument = frame.contentDocument!
+    const moving = frameDocument.createElement('div')
+    moving.id = 'moving'
+    frameDocument.body.appendChild(moving)
+
+    const scope = createScope(() => moving, createCounterIdGenerator())
+    expect(scope.getDoc()).toBe(frameDocument)
+    expect(scope.getWin()).toBe(frame.contentWindow)
+    expect(scope.getById('moving')).toBe(moving)
+
+    document.adoptNode(moving)
+    document.body.appendChild(moving)
+    expect(scope.getRootNode()).toBe(document)
+    expect(scope.getDoc()).toBe(document)
+    expect(scope.getWin()).toBe(window)
+    expect(scope.getById('moving')).toBe(moving)
+  })
+
   it('节点在 shadow root 里时认 shadow root', () => {
     const host = document.createElement('div')
     document.body.appendChild(host)
