@@ -69,6 +69,8 @@ export { bindLayerVisual, createLayerRegistry, getLayerRegistry, LAYER_VISUAL_PR
 export type { PerDocumentRegistry } from './structure/per-document-registry'
 export { createPerDocumentRegistry } from './structure/per-document-registry'
 // 结构：portal 落点
+export type { PortalLease, PortalLeaseOptions } from './structure/portal-lease'
+export { createPortalLease } from './structure/portal-lease'
 export { ensurePortalRoot } from './structure/portal-root'
 export type { PortalVisualBridge, PortalVisualBridgeOptions } from './structure/portal-visual-bridge'
 export { createPortalVisualBridge } from './structure/portal-visual-bridge'

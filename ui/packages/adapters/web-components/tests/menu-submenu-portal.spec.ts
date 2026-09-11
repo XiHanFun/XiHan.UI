@@ -118,6 +118,26 @@ describe('web Components Menu 子菜单 Portal', () => {
     expect(shell?.isConnected).toBe(false)
   })
 
+  it('重复开合每次领取新的物理租约，不遗留旧壳或旧作者落点', async () => {
+    const handles = mount()
+    const originalParent = handles.positioner.parentNode
+    await settle()
+    await openSubmenu(handles)
+    const firstShell = handles.positioner.parentElement!
+
+    handles.trigger.click()
+    await settle()
+    expect(handles.positioner.parentNode).toBe(originalParent)
+    expect(firstShell.isConnected).toBe(false)
+
+    handles.trigger.click()
+    await settle()
+    const secondShell = handles.positioner.parentElement!
+    expect(secondShell.dataset.xhPortalShell).toBe('')
+    expect(secondShell).not.toBe(firstShell)
+    expect(secondShell.parentElement?.id).toBe('xh-portal-root')
+  })
+
   it('positioner 在 Portal 中时新增角色节点仍由原宿主接线', async () => {
     const handles = mount()
     await settle()

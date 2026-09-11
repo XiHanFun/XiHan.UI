@@ -1,8 +1,8 @@
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PortalVisualBridge, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PortalLease, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { MenuNode, MenuOpenChangeDetails, MenuSchema, MenuSelectDetails, MenuTranslations } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
-import { createCounterIdGenerator, createPortalVisualBridge, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { createCounterIdGenerator, createPortalLease, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectMenu, createMenuTreeNode, menuAnatomy, menuMachine, menuMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
@@ -19,14 +19,6 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
 // 缺省为真的开关（方向键回绕）只有三态才关得掉。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
-
-interface MenuPortalLease {
-  readonly source: HTMLElement
-  readonly positioner: HTMLElement
-  readonly placeholder: Comment
-  readonly shell: HTMLElement
-  readonly bridge: PortalVisualBridge
-}
 
 /**
  * `<xh-menu>` —— Light-DOM 行为宿主：用户写 trigger/positioner/content/item/group/... 角色节点，
@@ -112,7 +104,7 @@ export class XhMenuElement extends XhElement {
   private parentTriggerOwner: MenuSubmenuOwner | null = null
   private parentTrigger: HTMLElement | null = null
   private parentRegistration: MenuSubmenuRegistration | null = null
-  private portal: MenuPortalLease | null = null
+  private portal: PortalLease | null = null
 
   private readonly menuTree = createMenuTreeNode({
     getPositioner: () => this.getPart('positioner'),
@@ -251,71 +243,32 @@ export class XhMenuElement extends XhElement {
   }
 
   protected override externalPartRoots(): readonly HTMLElement[] {
-    return this.portal ? [this.portal.positioner] : []
+    return this.portal?.roots ?? []
   }
 
   private mountPositionerPortal(positioner: HTMLElement, source: HTMLElement): void {
-    if (this.portal?.positioner === positioner) {
+    if (this.portal?.roots[0] === positioner) {
       if (this.portal.source === source)
         return
       this.restorePositionerPortal()
     }
     if (this.portal)
       throw new Error('[xh] Menu 子菜单的 Portal positioner 在单次展开期不得换代')
-    if (positioner.ownerDocument !== source.ownerDocument || positioner.ownerDocument !== this.ownerDocument)
-      throw new Error('[xh] Menu 子菜单的 Portal 来源、positioner 与宿主必须属于同一 Document')
-    const parent = positioner.parentNode
-    if (!parent)
-      throw new Error('[xh] Menu 子菜单的 positioner 必须先挂入作者结构再搬到 Portal')
     this.ensureConfig()
     const target = this.config!.portalContainer()
     if (!target)
       throw new Error('[xh] Menu 子菜单需要显式可用的 Portal 容器')
-    if (target.ownerDocument !== this.ownerDocument || !target.isConnected)
-      throw new Error('[xh] Menu 子菜单的 Portal 容器必须连接在同一 Document')
-
-    const placeholder = this.ownerDocument.createComment('xh-menu-positioner')
-    const shell = this.ownerDocument.createElement('div')
-    shell.dataset.xhPortalShell = ''
-    shell.style.display = 'contents'
-    setMenuSubmenuOwner(shell, this.submenuOwner)
-    parent.insertBefore(placeholder, positioner)
-    let bridge: PortalVisualBridge | null = null
-    try {
-      target.appendChild(shell)
-      bridge = createPortalVisualBridge({ source, shell })
+    this.portal = createPortalLease({
+      source,
+      target,
+      roots: [positioner],
       // 先公布所有权，再移动：嵌套自定义元素重连时可沿 Portal 壳找回逻辑父级。
-      this.portal = { source, positioner, placeholder, shell, bridge }
-      shell.appendChild(positioner)
-      this.requestUpdate()
-    }
-    catch (error) {
-      this.portal = null
-      const cleanupErrors: unknown[] = []
-      try {
-        bridge?.dispose()
-      }
-      catch (cleanupError) {
-        cleanupErrors.push(cleanupError)
-      }
-      try {
-        if (placeholder.parentNode)
-          placeholder.replaceWith(positioner)
-      }
-      catch (cleanupError) {
-        cleanupErrors.push(cleanupError)
-      }
-      try {
-        setMenuSubmenuOwner(shell, null)
-        shell.remove()
-      }
-      catch (cleanupError) {
-        cleanupErrors.push(cleanupError)
-      }
-      if (cleanupErrors.length)
-        throw new AggregateError([error, ...cleanupErrors], '[xh] Menu 子菜单 Portal 初始化与回滚同时失败', { cause: error })
-      throw error
-    }
+      onShellReady: (shell) => {
+        setMenuSubmenuOwner(shell, this.submenuOwner)
+        return () => setMenuSubmenuOwner(shell, null)
+      },
+    })
+    this.requestUpdate()
   }
 
   private restorePositionerPortal(): void {
@@ -323,34 +276,13 @@ export class XhMenuElement extends XhElement {
     if (!portal)
       return
     this.portal = null
-    const errors: unknown[] = []
     try {
-      portal.bridge.dispose()
+      portal.release()
     }
-    catch (error) {
-      errors.push(error)
+    finally {
+      if (this.isConnected)
+        this.requestUpdate()
     }
-    try {
-      if (!portal.placeholder.parentNode)
-        throw new Error('[xh] Menu 子菜单的 Portal 占位节点已被移除，无法恢复作者结构')
-      portal.placeholder.replaceWith(portal.positioner)
-    }
-    catch (error) {
-      errors.push(error)
-    }
-    try {
-      setMenuSubmenuOwner(portal.shell, null)
-      portal.shell.remove()
-    }
-    catch (error) {
-      errors.push(error)
-    }
-    if (this.isConnected)
-      this.requestUpdate()
-    if (errors.length === 1)
-      throw errors[0]
-    if (errors.length > 1)
-      throw new AggregateError(errors, '[xh] Menu 子菜单 Portal 恢复出现多个异常', { cause: errors[0] })
   }
 
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
