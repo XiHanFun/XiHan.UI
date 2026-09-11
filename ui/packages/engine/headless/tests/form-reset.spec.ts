@@ -28,8 +28,9 @@ import { treeSelectMachine } from '../src/tree-select'
 
 function start<T extends MachineSchema>(machine: MachineConfig<T>, props: object): Service<T> {
   const runtime = createVanillaRuntime()
-  // 同一个对象原样返回：原地改字段即可模拟宿主写回
-  const service = createService(machine, { props: () => props as never, runtime })
+  // 与三个适配器一致，每次返回当前属性快照；机器按对象身份缓存归一化结果，
+  // 原地修改同一个裸对象再原样返回不能模拟真实宿主的属性更新。
+  const service = createService(machine, { props: () => ({ ...props }) as never, runtime })
   runtime.start()
   return service
 }
@@ -168,6 +169,7 @@ describe('落点按当下 props 重算', () => {
     const s = start(textFieldMachine, props)
     s.send({ type: 'VALUE.SET', value: '乙' } as never)
     props.defaultValue = '丙'
+    expect(s.context.get('value' as never)).toBe('乙')
     reset(s)
     expect(s.context.get('value' as never)).toBe('丙')
   })
