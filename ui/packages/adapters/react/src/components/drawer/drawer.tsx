@@ -111,12 +111,17 @@ export function XhDrawerContent({ children, ...rest }: XhDrawerContentProps): Re
   if (!ctx.rendered)
     return null
   const api = ctx.api
+  const backdrop = api.getBackdropProps() as Record<string, unknown>
   return (
     <XhPortal container={ctx.portalContainer}>
-      <div
-        {...api.getBackdropProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.backdropRef.current = el }}
-      />
+      {!backdrop.hidden
+        ? (
+            <div
+              {...backdrop}
+              ref={(el: HTMLDivElement | null) => { ctx.backdropRef.current = el }}
+            />
+          )
+        : null}
       <div {...api.getPositionerProps() as Record<string, unknown>}>
         <div
           {...mergeReactProps(api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}

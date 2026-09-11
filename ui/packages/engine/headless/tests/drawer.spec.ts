@@ -213,6 +213,16 @@ describe('connectDrawer 属性输出', () => {
     s.send({ type: 'OPEN' })
     expect((connectDrawer(s, normalizeProps).getBackdropProps() as Record<string, unknown>)['data-state']).toBe('open')
   })
+
+  it('非模态 backdrop 带 hidden，模态 backdrop 保持可用', () => {
+    const plain = connectDrawer(makeService({ modal: false, defaultOpen: true }), normalizeProps)
+      .getBackdropProps() as Record<string, unknown>
+    expect(plain.hidden).toBe(true)
+
+    const modal = connectDrawer(makeService({ modal: true, defaultOpen: true }), normalizeProps)
+      .getBackdropProps() as Record<string, unknown>
+    expect(modal.hidden).toBeUndefined()
+  })
 })
 
 describe('drawer 关闭来路落进 onOpenChange 的 reason', () => {

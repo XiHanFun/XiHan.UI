@@ -151,7 +151,12 @@ export const wcDrawerSuite: ConformanceSuite = {
         {
           kind: 'settle',
           until: { activeElement: 'content' },
-          expect: { parts: { content: { 'aria-modal': 'false' } } },
+          expect: {
+            parts: {
+              backdrop: { hidden: '' },
+              content: { 'aria-modal': 'false' },
+            },
+          },
         },
       ],
     },
