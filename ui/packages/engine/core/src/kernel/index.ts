@@ -70,6 +70,8 @@ export type { PerDocumentRegistry } from './structure/per-document-registry'
 export { createPerDocumentRegistry } from './structure/per-document-registry'
 // 结构：portal 落点
 export { ensurePortalRoot } from './structure/portal-root'
+export type { PortalVisualBridge, PortalVisualBridgeOptions } from './structure/portal-visual-bridge'
+export { createPortalVisualBridge } from './structure/portal-visual-bridge'
 // 类型与生命周期
 export type { ActionVariant, Cleanup, ControlVariant, Dict, Direction, Disposable, FocusableElement, MaybeBooleanish, Orientation, OverlayBackdropVariant, OverlayCloseReason, Size, Tone } from './types'
 export { toCleanup } from './types'

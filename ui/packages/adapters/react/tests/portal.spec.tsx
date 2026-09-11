@@ -27,7 +27,8 @@ describe('浮层落点', () => {
   it('缺省搬到 body', () => {
     mount(<XhPortal><span data-testid="paint">x</span></XhPortal>)
     const node = document.querySelector('[data-testid="paint"]')!
-    expect(node.parentElement).toBe(document.body)
+    expect(node.parentElement?.dataset.xhPortalShell).toBe('')
+    expect(node.parentElement?.parentElement).toBe(document.body)
     expect(host!.contains(node)).toBe(false)
   })
 
@@ -48,7 +49,8 @@ describe('浮层落点', () => {
       )
     }
     mount(<Probe />)
-    expect(firstPaintParent).toBe(document.body)
+    expect((firstPaintParent as Element | null)?.getAttribute('data-xh-portal-shell')).toBe('')
+    expect((firstPaintParent as Element | null)?.parentElement).toBe(document.body)
   })
 
   it('实例上写了容器就搬到那儿', () => {
@@ -56,6 +58,6 @@ describe('浮层落点', () => {
     tank.dataset.testid = 'tank'
     document.body.append(tank)
     mount(<XhPortal container={() => tank}><span data-testid="paint">x</span></XhPortal>)
-    expect(document.querySelector('[data-testid="paint"]')!.parentElement).toBe(tank)
+    expect(document.querySelector('[data-testid="paint"]')!.parentElement?.parentElement).toBe(tank)
   })
 })

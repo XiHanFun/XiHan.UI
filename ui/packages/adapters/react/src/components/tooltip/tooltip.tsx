@@ -68,7 +68,7 @@ export interface XhTooltipPositionerProps extends ComponentPropsWithRef<'div'> {
 export function XhTooltipPositioner({ children, container, ...rest }: XhTooltipPositionerProps): ReactNode {
   const ctx = useTooltipContext()
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

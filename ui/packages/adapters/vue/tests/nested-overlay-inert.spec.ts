@@ -5,8 +5,8 @@ import { createApp, h, nextTick } from 'vue'
 import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger, XhDrawerContent, XhDrawerRoot, XhDrawerTitle, XhDrawerTrigger } from '../src'
 
 /**
- * 外层模态浮层给 body 的其它直接子元素打 inert 让背景失活；内层浮层 Teleport 到 body
- * 之后也是 body 的直接子元素，会被外层的 MutationObserver 一并打上 inert——看得见、点不动。
+ * 外层模态浮层给 body 的其它直接子元素打 inert 让背景失活；内层浮层 Teleport 到共享根的
+ * 独立实例壳后，会被外层的 MutationObserver 一并接住——壳不能被误罩得看得见、点不动。
  * 判据钉的是：栈中位于自己之上的层不受自己的 inert 管辖。
  *
  * jsdom 不实现 inert，hideOutside 走 `el.inert = true`，落成 expando 属性。
@@ -14,6 +14,14 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger, XhDrawer
 
 function inertOf(el: Element): boolean {
   return (el as unknown as { inert?: boolean }).inert === true
+}
+
+function hasInertAncestor(el: Element): boolean {
+  for (let node: Element | null = el; node; node = node.parentElement) {
+    if (inertOf(node))
+      return true
+  }
+  return false
 }
 
 async function tick(): Promise<void> {
@@ -104,7 +112,7 @@ describe.each(['dialog', 'drawer'] as const)('%s 套自己', (kind) => {
       expect(inertOf(inner)).toBe(false)
       expect(document.querySelector('#inner-button')?.closest('[inert]')).toBe(null)
       // 内层在栈顶：外层反过来要被内层的 hideOutside 罩住
-      expect(inertOf(outer)).toBe(true)
+      expect(hasInertAncestor(outer)).toBe(true)
     }
     finally {
       m.unmount()

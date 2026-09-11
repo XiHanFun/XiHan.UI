@@ -193,7 +193,7 @@ export function XhMenubarPositioner({ value, container, children, ...rest }: XhM
   const setEl = useMenubarPart(ctx.registerPositioner, value)
   return (
     <MenubarMenuProvider value={menu}>
-      <XhPortal container={container ?? ctx.portalContainer}>
+      <XhPortal container={container ?? ctx.portalContainer} source={ctx.rootRef}>
         <div
           {...mergeReactProps(
             ctx.api.getPositionerProps(menu) as Record<string, unknown>,

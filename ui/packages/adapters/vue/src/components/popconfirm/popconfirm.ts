@@ -2,9 +2,10 @@ import type { Placement, Size } from '@xihan-ui/core'
 import type { PopconfirmApi, PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmProps } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, mergeProps, Teleport } from 'vue'
+import { defineComponent, h, mergeProps } from 'vue'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
+import { XhPortal } from '../../runtime/portal'
 import { providePopconfirm, usePopconfirmContext } from './context'
 import { usePopconfirm } from './use-popconfirm'
 
@@ -95,7 +96,7 @@ export const XhPopconfirmPositioner = defineComponent({
   setup(_, { slots, attrs }) {
     const ctx = usePopconfirmContext()
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: ctx.portalTarget.value, source: ctx.triggerRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },

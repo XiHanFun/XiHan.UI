@@ -140,7 +140,8 @@ describe('摊开省略号', () => {
     // 留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     expect(host!.contains(positioner())).toBe(false)
     // 落点是库统一的那一个，不是 body 本身
-    expect(positioner().parentElement?.id).toBe('xh-portal-root')
+    expect(positioner().parentElement?.hasAttribute('data-xh-portal-shell')).toBe(true)
+    expect(positioner().parentElement?.parentElement?.id).toBe('xh-portal-root')
     expect(document.body.contains(positioner())).toBe(true)
   })
 

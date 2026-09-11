@@ -2,10 +2,11 @@ import type { OverlayBackdropVariant, Size } from '@xihan-ui/core'
 import type { DialogApi, DialogSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, mergeProps, Teleport } from 'vue'
+import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
+import { XhPortal } from '../../runtime/portal'
 import { provideDialog, useDialogContext } from './context'
 import { useDialog } from './use-dialog'
 
@@ -82,7 +83,7 @@ export const XhDialogContent = defineComponent({
       if (!ctx.rendered.value)
         return null
       const api = ctx.api.value
-      return h(Teleport, { to: ctx.portalTarget.value }, [
+      return h(XhPortal, { to: ctx.portalTarget.value }, () => [
         api.open || ctx.rendered.value
           ? h('div', {
               ...api.getBackdropProps() as Record<string, unknown>,

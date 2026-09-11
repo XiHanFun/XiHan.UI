@@ -8,8 +8,9 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, mergeProps, Teleport } from 'vue'
+import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { XhPortal } from '../../runtime/portal'
 import { provideFloatingPanel, useFloatingPanelContext } from './context'
 import { useFloatingPanel } from './use-floating-panel'
 
@@ -109,7 +110,7 @@ export const XhFloatingPanelPositioner = defineComponent({
   setup(_, { slots, attrs }) {
     const ctx = useFloatingPanelContext()
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: ctx.portalTarget.value }, () => [
       h(
         'div',
         {

@@ -3,10 +3,11 @@ import type { imageViewerCounterText as counterTextFn, ImageViewerApi, ImageView
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { imageViewerCounterText } from '@xihan-ui/headless'
-import { defineComponent, h, mergeProps, Teleport } from 'vue'
+import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
+import { XhPortal } from '../../runtime/portal'
 import { provideImageViewer, useImageViewerContext } from './context'
 import { useImageViewer } from './use-image-viewer'
 
@@ -138,7 +139,7 @@ export const XhImageViewerContent = defineComponent({
       if (!ctx.rendered.value)
         return null
       const api = ctx.api.value
-      return h(Teleport, { to: ctx.portalTarget.value }, [
+      return h(XhPortal, { to: ctx.portalTarget.value }, () => [
         h('div', {
           ...api.getBackdropProps() as Record<string, unknown>,
           ref: (el: unknown) => {
