@@ -201,9 +201,9 @@ describe('dismissableLayer Hub 故障隔离', () => {
     const runtimeError = captureRuntimeError(pointerDown) as AggregateError
 
     expect(runtimeError).toBeInstanceOf(AggregateError)
-    expect(runtimeError.errors).toEqual([callbackError, focusError, keyError])
+    expect(runtimeError.errors).toEqual([callbackError, keyError, focusError, keyError])
     expect(runtimeError.cause).toBe(callbackError)
-    expect(order).toEqual(['focusin', 'pointerdown', 'keydown'])
+    expect(order).toEqual(['keydown', 'focusin', 'pointerdown', 'keydown'])
   })
 
   it('已有参与者时新 lane 的 queue 失败只回滚自己，不拆共享 Hub', async () => {

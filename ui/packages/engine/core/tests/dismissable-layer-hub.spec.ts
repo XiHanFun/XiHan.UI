@@ -135,7 +135,7 @@ afterEach(() => {
 })
 
 describe('dismissableLayer Document Hub', () => {
-  it('同一 Document 的多个 registry 与参与者只安装一套三类监听，最后释放才逆序卸载', async () => {
+  it('同一 Document 的多个 registry 与参与者只安装四个监听，最后释放才逆序卸载', async () => {
     const add = vi.spyOn(document, 'addEventListener')
     const remove = vi.spyOn(document, 'removeEventListener')
     const firstRegistry = createLayerRegistry(document)
@@ -144,11 +144,11 @@ describe('dismissableLayer Document Hub', () => {
     const second = participant(secondRegistry, 'second', { autoPop: false })
     await arm()
 
-    expect(add.mock.calls.map(([type]) => type)).toEqual(['keydown', 'pointerdown', 'focusin'])
+    expect(add.mock.calls.map(([type]) => type)).toEqual(['keydown', 'pointerdown', 'focusin', 'keydown'])
     first.dismiss.dispose()
     expect(remove).not.toHaveBeenCalled()
     second.dismiss.dispose()
-    expect(remove.mock.calls.map(([type]) => type)).toEqual(['focusin', 'pointerdown', 'keydown'])
+    expect(remove.mock.calls.map(([type]) => type)).toEqual(['keydown', 'focusin', 'pointerdown', 'keydown'])
   })
 
   it('同一 registry 的层外 pointer 严格按栈顶到栈底连续退栈', async () => {
@@ -187,18 +187,18 @@ describe('dismissableLayer Document Hub', () => {
     const foreign = participant(createLayerRegistry(frameDocument), 'frame')
     await arm()
 
-    expect(mainAdd.mock.calls.map(([type]) => type)).toEqual(['keydown', 'pointerdown', 'focusin'])
-    expect(frameAdd.mock.calls.map(([type]) => type)).toEqual(['keydown', 'pointerdown', 'focusin'])
+    expect(mainAdd.mock.calls.map(([type]) => type)).toEqual(['keydown', 'pointerdown', 'focusin', 'keydown'])
+    expect(frameAdd.mock.calls.map(([type]) => type)).toEqual(['keydown', 'pointerdown', 'focusin', 'keydown'])
 
     pointerDown(outside())
     expect(main.reasons).toEqual(['pointer-down-outside'])
     expect(foreign.reasons).toEqual([])
-    expect(mainRemove.mock.calls.map(([type]) => type)).toEqual(['focusin', 'pointerdown', 'keydown'])
+    expect(mainRemove.mock.calls.map(([type]) => type)).toEqual(['keydown', 'focusin', 'pointerdown', 'keydown'])
     expect(frameRemove).not.toHaveBeenCalled()
 
     pointerDown(outside(frameDocument))
     expect(foreign.reasons).toEqual(['pointer-down-outside'])
-    expect(frameRemove.mock.calls.map(([type]) => type)).toEqual(['focusin', 'pointerdown', 'keydown'])
+    expect(frameRemove.mock.calls.map(([type]) => type)).toEqual(['keydown', 'focusin', 'pointerdown', 'keydown'])
   })
 
   it('层外 focus 同样按栈顶到栈底连续退栈', async () => {
@@ -806,7 +806,7 @@ describe('dismissableLayer Document Hub', () => {
 
     pointerDown(outside())
 
-    expect(add.mock.calls.map(([type]) => type)).toEqual(['keydown', 'pointerdown', 'focusin'])
+    expect(add.mock.calls.map(([type]) => type)).toEqual(['keydown', 'pointerdown', 'focusin', 'keydown'])
     expect(remove).not.toHaveBeenCalled()
     await arm()
     pointerDown(outside())

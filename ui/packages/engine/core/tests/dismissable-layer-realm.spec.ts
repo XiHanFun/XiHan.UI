@@ -159,7 +159,7 @@ describe('dismissableLayer 的所属 realm', () => {
     })
     cleanups.push(() => h.frame.remove(), h.disposeLayer)
 
-    expect(add.mock.calls.map(([type]) => type)).toEqual(['keydown', 'pointerdown', 'focusin'])
+    expect(add.mock.calls.map(([type]) => type)).toEqual(['keydown', 'pointerdown', 'focusin', 'keydown'])
     expect(queue).toHaveBeenCalledTimes(1)
     expect(timer).not.toHaveBeenCalled()
     h.doc.dispatchEvent(new h.win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
@@ -320,7 +320,7 @@ describe('dismissableLayer 的所属 realm', () => {
 
     expect(registrationError).toBeInstanceOf(AggregateError)
     expect(h.registry.list()).toBe(before)
-    expect(add.mock.calls.map(([type]) => type)).toEqual(['keydown', 'pointerdown', 'focusin'])
+    expect(add.mock.calls.map(([type]) => type)).toEqual(['keydown', 'pointerdown', 'focusin', 'keydown'])
   })
 
   it('动态 layer node 跨 Document 时在首次交互明确失败', async () => {
@@ -839,7 +839,7 @@ describe('dismissableLayer 的所属 realm', () => {
     cleanups.push(() => h.frame.remove(), h.disposeLayer)
 
     expect(caught).toEqual({ threw: true, error: setupError })
-    expect(order).toEqual(['focusin', 'pointerdown', 'keydown'])
+    expect(order).toEqual(['keydown', 'focusin', 'pointerdown', 'keydown'])
     queued()
     h.doc.dispatchEvent(new h.win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
     expect(onDismiss).not.toHaveBeenCalled()
@@ -873,9 +873,9 @@ describe('dismissableLayer 的所属 realm', () => {
 
     expect(caught.threw).toBe(true)
     expect(caught.error).toBeInstanceOf(AggregateError)
-    expect((caught.error as AggregateError).errors).toEqual([setupError, focusError, keyError])
+    expect((caught.error as AggregateError).errors).toEqual([setupError, keyError, focusError, keyError])
     expect((caught.error as AggregateError).cause).toBe(setupError)
-    expect(order).toEqual(['focusin', 'pointerdown', 'keydown'])
+    expect(order).toEqual(['keydown', 'focusin', 'pointerdown', 'keydown'])
   })
 
   it.each([undefined, null])('dispose 的唯一 cleanup 即使抛出 %s 也原样上抛并继续清理', async (failure) => {
@@ -900,7 +900,7 @@ describe('dismissableLayer 的所属 realm', () => {
 
     expect(caught.threw).toBe(true)
     expect(Object.is(caught.error, failure)).toBe(true)
-    expect(order).toEqual(['focusin', 'pointerdown', 'keydown'])
+    expect(order).toEqual(['keydown', 'focusin', 'pointerdown', 'keydown'])
     expect(() => dismiss.dispose()).not.toThrow()
   })
 
@@ -941,9 +941,9 @@ describe('dismissableLayer 的所属 realm', () => {
 
     expect(caught.threw).toBe(true)
     expect(caught.error).toBeInstanceOf(AggregateError)
-    expect((caught.error as AggregateError).errors).toEqual([frameError, focusError, pointerError, keyError])
+    expect((caught.error as AggregateError).errors).toEqual([frameError, keyError, focusError, pointerError, keyError])
     expect((caught.error as AggregateError).cause).toBe(frameError)
-    expect(order).toEqual(['raf', 'focusin', 'pointerdown', 'keydown'])
+    expect(order).toEqual(['raf', 'keydown', 'focusin', 'pointerdown', 'keydown'])
     expect(() => dismiss.dispose()).not.toThrow()
   })
 })

@@ -90,7 +90,7 @@ export interface LayerRegistry {
 ## 消隐层
 
 ```ts
-import { createDismissLayer } from "@xihan-ui/core";
+import { createDismissLayer, createEscapeFallback } from "@xihan-ui/core";
 
 const layer = createDismissLayer({
   config, // RuntimeConfig：scope + 层注册表 + 豁免配置
@@ -101,6 +101,12 @@ const layer = createDismissLayer({
   onFocusOutside: (e) => {},
   onInteractOutside: (e) => {}, // 上面两者任一发生时也派发一次
 });
+
+const fallback = createEscapeFallback({
+  config,
+  isEnabled: () => sheetOpen,
+  onEscape: (event) => closeSheet(event),
+});
 ```
 
 两条约束：
@@ -110,13 +116,17 @@ const layer = createDismissLayer({
 
 DismissableLayer 的监听 Document、`CustomEvent`、微任务与动画帧均取自 `config.scope` 的同一个 Window，`config.layerRegistry.ownerDocument` 也必须逐字指向该 Document。传入的 layer 必须已经登记在这份注册表里；动态 `layer.node()` 可以暂时为 `null`，非空时必须是真实 HTMLElement 且属于该 Document。从其他窗口返回节点会立即报错，不会把一张文档里的交互票派到另一张文档。所属 Window 缺少 `CustomEvent`、`queueMicrotask` 或动画帧能力时创建即失败，不借 ambient 全局。
 
-同一 Document 的所有 DismissableLayer 共用一套 Hub 和三类捕获监听；每一份显式 LayerRegistry 按对象身份形成独立 lane，不同应用或子树的自定义层栈互不干扰。同一 lane 的同一 Layer 只能有一个参与者，重复创建会明确失败。首个参与者同步事务化安装 keydown、pointerdown、focusin，最后一个参与者释放时才按 focus、pointer、keydown 逆序完整卸载；每个参与者仍延后一枚所属 Window 的微任务武装，以避开打开浮层的同一次 pointerdown。派发期间最后一个参与者离场时，Hub 把卸载延到整次路由的 `finally`，回调里同步建立的新参与者会复用原 Hub，不会出现两套 Document 监听。
+同一 Document 的 DismissableLayer 与 EscapeFallback 共用一套 Hub；每一份显式 LayerRegistry 按对象身份形成独立 lane，不同应用或子树的自定义层栈互不干扰。同一 lane 的同一 Layer 只能有一个消解参与者，重复创建会明确失败。首个租约同步事务化安装四个监听：keydown capture、pointerdown capture、focusin capture、keydown bubble；最后一个租约释放时按 keydown bubble、focus、pointer、keydown capture 的严格逆序完整卸载。DismissableLayer 参与者仍延后一枚所属 Window 的微任务武装，以避开打开浮层的同一次 pointerdown；EscapeFallback 注册后同步生效。派发处理期间最后一个租约离场时，Hub 把卸载延到当前处理阶段的 `finally`，回调里同步建立的新租约会复用原 Hub，不会出现两套 Document 监听。
 
 pointer 与 focus 先为本次事件冻结一份 composed path，并在执行任何业务回调前冻结所有 lane 的 LayerRegistry snapshot。每条 lane 从事件开始时的真实栈顶向下生成纯计划：命中层内部即停；命中 surface 时计划关闭该层后停止；没有 DismissableLayer 参与者、参与者尚未武装或节点尚未在场时都是屏障。计划阶段每次读取 node、branches 或 surfaces 后都会复核原 snapshot；getter 改变层栈时整条 lane 当场作废，不再读取更低层 getter。执行每个候选前都会确认当前栈严格等于原计划对应的前缀、候选确为真实栈顶、参与者 token 与动态节点仍相同；DOM 表决、选项表决与 interact 表决之后逐阶段复核。票被否决、回调改变 snapshot/node、动态 branch 把原目标纳入层内，都会停止该 lane；动态 surface 命中会关闭其所属层，随后停止，不继续触碰更低层。
 
 `onDismiss` 完整返回后，只有候选 Layer 确实退栈、当前栈严格变成下一段计划前缀时，pointer/focus 才继续处理下一层。受控组件只发关闭意图却未退栈、关闭开关让 `onDismiss` 原地返回、额外移除旧层或登记新层都会形成屏障。正常逐层退栈产生的新冻结 snapshot 会成为下一候选的 stage token；成功变更后再恢复相同内容仍不能冒充原 snapshot，失败登记由 LayerRegistry 补偿回原对象则保持有效。Escape 每条 lane 只处理事件开始时的原始栈顶，一次按键不会沿栈连续关闭。
 
-Hub 带整次 Document 派发级重入锁，回调同步派出的 pointer/focus/keydown 不会嵌套进入第二轮。某条 registry lane 的 getter、表决或关闭回调抛错时，其他 lane 仍照常执行；末尾单错原样抛出，多错按 lane 与清理的发生顺序聚合，首错保留为 `cause`。Hub 与参与者的 add、queue、动画帧和 remove 都使用所属 Window/Document，并遵守先终态、LIFO、全量尝试的清理规则。
+`createEscapeFallback()` 给同一 lane 的空层栈提供 Escape 后备出口，适合覆盖侧栏这类不登记为 Layer 的界面。keydown capture 会在任何 Layer getter、表决或业务回调前冻结全部 lane 的 registry snapshot 与 fallback token snapshot；当时只要 lane 存在任意 Layer，该 lane 的本次按键就已消费，即使 Layer 没有消解参与者、尚未武装、否决关闭或同步退栈，bubble 也不会接着调用 fallback。空栈 lane 从最新 token 反向查找第一个 `isEnabled()` 为真的出口，最新出口已启用后不会再读取更早 getter。
+
+原生事件到达 Document bubble 且在进入 Hub 前尚未 `defaultPrevented` 时，Hub 才复核 capture 计划。registry 必须仍是原来的空快照，fallback 列表、所选 token 以及为选出它而读过的启用状态也必须逐项相同；capture 后新注册或新启用出口、dispose 后重建、Layer 空栈成功经历非空再回空，都会让旧计划失效。失败 Layer 登记补偿回同一 snapshot 则保持有效。同一 lane 每次只调最新的一个出口；它不释放时会持续占位，释放发生在 capture 之后时本键也不会降级到旧出口。不同 registry lane 各自执行一个，某个 fallback 收到同一原生 `KeyboardEvent` 后调用 `preventDefault()` 不会反向否决其他 lane。目标节点在事件到达 Document bubble 前调用 `preventDefault()` 或阻止传播，则全部 fallback 都不执行。
+
+Hub 在每个 capture 或 bubble 处理阶段持有重入锁，getter、表决、关闭或 fallback 回调同步派出的事件不会嵌套进入该阶段；原事件的 target 阶段仍按浏览器传播模型正常运行。某条 registry lane 的 getter、表决或关闭回调抛错时，其他 lane 仍照常执行；末尾单错原样抛出，多错按 lane 与清理的发生顺序聚合，首错保留为 `cause`。Hub 的 add、queue、动画帧和 remove 都使用所属 Window/Document，并遵守先终态、LIFO、全量尝试的清理规则。
 
 ## 焦点域
 
