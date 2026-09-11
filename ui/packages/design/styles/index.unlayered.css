@@ -620,9 +620,12 @@
   --xh-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
 }
 
-/* 段的描边归组画（两个适配器各一条选择器：Vue 的段就是直接子节点，WC 的段在行为宿主里面）：合边本来就是组的事，按钮那边没有描边色的槽位可以流 */
-[data-scope='button-group'][data-part='root'][data-variant='outline'] > *,
-[data-scope='button-group'][data-part='root'][data-variant='outline'] > * [data-scope='button'][data-part='root'] {
+/* 未声明形态的段由组画 outline 描边；显式 solid/subtle/ghost 仍按自己的边界来。
+   两个适配器各一条选择器：Vue/React 的 Button 是直接子节点，WC 的 Button 在行为宿主里面。 */
+[data-scope='button-group'][data-part='root'][data-variant='outline']
+  > [data-scope='button'][data-part='root']:not([data-variant]),
+[data-scope='button-group'][data-part='root'][data-variant='outline']
+  > * > [data-scope='button'][data-part='root']:not([data-variant]) {
   border-color: var(--xh-_tone-border-control, var(--xh-border-control));
 }
 
@@ -651,6 +654,15 @@
 [data-scope='button-group'][data-part='root'] > *:hover,
 [data-scope='button-group'][data-part='root'] > *:focus-within {
   z-index: 1;
+}
+
+/* 独立 Button 按下时缩一档；组内段却靠共边重叠一像素，单段缩放会同时撕开两侧接缝。
+   组内仍保留 active 换底与撤高光，只把会改变外轮廓几何的 scale 收掉。 */
+[data-scope='button-group'][data-part='root']
+  > [data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):active,
+[data-scope='button-group'][data-part='root']
+  > * > [data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):active {
+  scale: none;
 }
 
 /* —— 两端圆角 —— */
