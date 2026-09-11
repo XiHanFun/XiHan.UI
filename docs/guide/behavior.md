@@ -76,13 +76,19 @@ export interface Layer {
   readonly node: () => HTMLElement | null; // 层的根节点
   readonly branches: () => Element[]; // 逻辑属于本层、DOM 却在别处的节点
   readonly isModal: () => boolean;
-  readonly setModal: (value: boolean) => void;
   readonly surfaces: () => Element[]; // 点了就该关本层的表面，如遮罩
+  readonly visuals?: () => Element[]; // 特殊结构显式声明真正消费 z-index 的宿主
 }
 
 export interface LayerRegistry {
   readonly ownerDocument: Document;
   // register / list / top / elementsAbove / subscribe ...
+  visualOf(layer: Layer): {
+    visualIndex: number;
+    visualLane: number;
+    visualLayer: string;
+  };
+  sync(layer: Layer): void; // isModal 等动态 getter 改值后显式通知
 }
 ```
 
@@ -92,6 +98,13 @@ export interface LayerRegistry {
 - **`surfaces`（表面）**——遮罩这类点了就该关的元素。它属于本层，但点它的语义是关闭而不是「点在层内」。
 
 默认情况下同一 Document 共用一个注册表；自定义注册表也会在创建时固化唯一的 `ownerDocument`，公共记录本身被冻结。不同 Document（iframe、画中画窗口）的注册表不能混用。
+
+视觉层级不再由各组件各自拿静态 `z-index` 猜。注册表按当前 Document 的逻辑栈派生
+`visualIndex`，再让 `kind` 与实时 `isModal()` 占用该序号内的 `visualLane`；后登记层的序号
+权重大于 lane，所以嵌套 popover 一定高于所属 modal，后来打开的 modal 也能压住更早的
+popover。公共绑定把 `visualLayer` 写入私有 `--xh-_layer`，皮肤仍以公开
+`--xh-<component>-layer` 为第一优先级，再回落这份私有值和旧全局令牌。动态 modal 通过
+`sync(layer)` 发布同一冻结快照，不改写 Layer，也不在适配器保留 `setModal` 空实现。
 
 `list()` 与订阅回调拿到的都是冻结状态快照，Layer 记录本身也被冻结；节点、分支和模态性仍由记录里的 getter 返回当前值。注册与释放会固定这一轮的订阅者名单并通知完所有人，单个订阅者抛错不会截断后续通知，多项异常会按订阅顺序聚合。
 

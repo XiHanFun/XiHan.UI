@@ -46,7 +46,6 @@ export function useNavigationMenu(props: NavigationMenuSchema['props']): Navigat
       node: () => rootRef.current,
       branches: () => [],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     service.refs.set('config', config)

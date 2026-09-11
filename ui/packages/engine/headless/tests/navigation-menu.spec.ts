@@ -353,7 +353,6 @@ describe('navigationMenu 收起', () => {
         node: () => list,
         branches: () => [],
         isModal: () => false,
-        setModal: () => {},
         surfaces: () => [],
       })
       return {

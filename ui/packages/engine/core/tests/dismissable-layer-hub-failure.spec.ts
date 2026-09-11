@@ -38,7 +38,6 @@ function entry(
     node: () => node,
     branches: () => [],
     isModal: () => false,
-    setModal: () => {},
     surfaces: () => [],
   })
   const reasons: DismissReason[] = []
@@ -129,7 +128,6 @@ describe('dismissableLayer Hub 故障隔离', () => {
       },
       branches: () => [],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     const firstDismiss = createDismissLayer({
@@ -223,7 +221,6 @@ describe('dismissableLayer Hub 故障隔离', () => {
       node: () => node,
       branches: () => [],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     cleanups.push(() => node.remove(), registration.dispose)

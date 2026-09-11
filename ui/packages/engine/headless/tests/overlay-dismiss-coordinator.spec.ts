@@ -43,7 +43,6 @@ function mountPopover(config: RuntimeConfig, initial: PopoverSchema['props'] = {
     node: () => content,
     branches: () => [anchor, floating],
     isModal: () => false,
-    setModal: () => {},
     surfaces: () => [],
   }))
   service.refs.set('getAnchorEl', () => anchor)
@@ -76,7 +75,6 @@ function mountControlledDialog(
     node: () => content,
     branches: () => [],
     isModal: () => false,
-    setModal: () => {},
     surfaces: () => [backdrop],
   }))
   service.refs.set('getContentEl', () => content)
@@ -109,7 +107,6 @@ function mountTour(config: RuntimeConfig): { service: Service<TourSchema>, backd
     node: () => content,
     branches: () => [],
     isModal: () => true,
-    setModal: () => {},
     surfaces: () => [backdrop],
   }))
   service.refs.set('getContentEl', () => content)
@@ -136,7 +133,6 @@ function mountPagination(config: RuntimeConfig): MachineHarness<PaginationSchema
     node: () => content,
     branches: () => [anchor, floating],
     isModal: () => false,
-    setModal: () => {},
     surfaces: () => [],
   }))
   service.refs.set('getAnchorEl', () => anchor)

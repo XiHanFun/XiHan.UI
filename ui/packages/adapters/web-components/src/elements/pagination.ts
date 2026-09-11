@@ -191,7 +191,6 @@ export class XhPaginationElement extends XhElement {
       // 浮层壳一并记上：页码列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
       branches: () => [...this.getParts('ellipsis-trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
   }
@@ -204,7 +203,6 @@ export class XhPaginationElement extends XhElement {
       node: () => this.pageSizeNodes?.content ?? null,
       branches: () => [this.pageSizeNodes?.trigger].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
   }

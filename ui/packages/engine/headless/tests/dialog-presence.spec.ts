@@ -35,7 +35,6 @@ function fixture(options: { animated?: boolean, reducedMotion?: boolean } = {}) 
     branches: () => [],
     surfaces: () => [],
     isModal: () => true,
-    setModal: () => {},
   }))
   service.refs.set('config', config)
   service.refs.set('registerLayer', register)

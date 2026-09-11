@@ -118,7 +118,6 @@ function makeDismissHarness(initial: DialogSchema['props'] = {}): DismissHarness
     node: () => content,
     branches: () => [],
     isModal: () => props.modal ?? true,
-    setModal: () => {},
     surfaces: () => [backdrop],
   }))
   service.refs.set('getContentEl', () => content)

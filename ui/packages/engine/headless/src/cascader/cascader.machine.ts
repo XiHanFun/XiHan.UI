@@ -393,10 +393,11 @@ export const cascaderMachine = createMachine({
       // 层的入栈出栈与消解层、焦点域绑在同一个效应里：三者生命周期必须完全一致。
       // 层只在展开期间入栈——消解层只让栈顶响应 Escape，若层在挂载期就注册、与开合无关地
       // 常驻栈里，同页后挂载的那个会永久占着栈顶，把它下面每一层的 Escape 都堵死。
-      trackLayer: ({ refs, context, send }) => trackOverlayLayer({
+      trackLayer: ({ refs, context, send, flush }) => trackOverlayLayer({
         // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
         config: refs.get('config'),
         registerLayer: refs.get('registerLayer'),
+        flush,
         onDismiss: (reason) => {
           // Escape 分两拍：搜索词还在就先清词回列视图，词已空才收浮层
           if (reason === 'escape-key' && context.get('inputValue') !== '') {

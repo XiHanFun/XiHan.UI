@@ -151,7 +151,6 @@ function mount(initial: Partial<Props> = {}): Harness {
     // 输入行记为本层分支：点触发器算层内交互，开合交给它自己切换
     branches: () => [control],
     isModal: () => false,
-    setModal: () => {},
     surfaces: () => [],
   }))
   service.refs.set('getAnchorEl', () => control)

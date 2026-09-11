@@ -43,7 +43,6 @@ function fixture(initial: PopoverSchema['props'] = { defaultOpen: true, modal: t
     node: () => content,
     branches: () => [trigger, positioner],
     isModal: () => service.prop('modal') ?? false,
-    setModal: () => {},
     surfaces: () => [],
   }))
   service.refs.set('config', config)
@@ -72,7 +71,6 @@ describe('popover 完整模态资源', () => {
       node: () => nested,
       branches: () => [],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     expect(nested.inert).not.toBe(true)
@@ -142,7 +140,6 @@ describe('popover 完整模态资源', () => {
         node: () => document.createElement('div'),
         branches: () => [],
         isModal: () => false,
-        setModal: () => {},
         surfaces: () => [],
       })
       return {

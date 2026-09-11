@@ -47,7 +47,6 @@ export function useSideNav(props: SideNavSchema['props']): SideNavContext {
       // 触发按钮记为本层分支，点它算层内交互
       branches: () => [popoutEl('trigger')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
 

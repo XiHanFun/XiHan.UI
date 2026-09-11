@@ -277,9 +277,10 @@ export const mentionMachine = createMachine({
 
       // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape。
       // 焦点全程留在输入框，因此不给焦点域
-      trackLayer: ({ refs, send }) => trackOverlayLayer({
+      trackLayer: ({ refs, send, flush }) => trackOverlayLayer({
         config: refs.get('config'),
         registerLayer: refs.get('registerLayer'),
+        flush,
         onDismiss: (reason) => {
           // Escape 要记下这一处，与点外面收起不是一回事
           if (reason === 'escape-key') {

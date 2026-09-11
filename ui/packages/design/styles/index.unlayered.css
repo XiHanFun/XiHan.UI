@@ -6248,7 +6248,7 @@
   position: fixed;
   /* listbox 与同级状态文字占同一个格；content 始终是唯一拥有材质的表面。 */
   display: grid;
-  z-index: var(--xh-mention-layer, var(--xh-layer-popover));
+  z-index: var(--xh-mention-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -7447,7 +7447,7 @@
   --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
-  z-index: var(--xh-popconfirm-layer, var(--xh-layer-popover));
+  z-index: var(--xh-popconfirm-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -13960,7 +13960,7 @@
   --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
-  z-index: var(--xh-cascader-layer, var(--xh-layer-popover));
+  z-index: var(--xh-cascader-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针，交互只发生在 content 里 */
   pointer-events: none;
 }
@@ -16370,7 +16370,7 @@
   --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
-  z-index: var(--xh-color-picker-layer, var(--xh-layer-popover));
+  z-index: var(--xh-color-picker-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -16852,7 +16852,7 @@
   position: fixed;
   /* listbox 与同级 status 占同一个格：content 始终是唯一表面，状态文字叠在它上面。 */
   display: grid;
-  z-index: var(--xh-combobox-layer, var(--xh-layer-popover));
+  z-index: var(--xh-combobox-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针，交互只发生在 content 与 empty 上 */
   pointer-events: none;
 }
@@ -17576,7 +17576,7 @@
 [data-scope='command'][data-part='backdrop'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-command-backdrop-layer, var(--xh-layer-modal));
+  z-index: var(--xh-command-backdrop-layer, var(--xh-_layer, var(--xh-layer-modal)));
   background: var(--xh-command-backdrop-bg, var(--xh-bg-overlay));
 }
 
@@ -17605,10 +17605,12 @@
 [data-scope='command'][data-part='positioner'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-command-layer, var(--xh-layer-modal));
+  z-index: var(--xh-command-layer, var(--xh-_layer, var(--xh-layer-modal)));
   display: flex;
   align-items: flex-start;
   justify-content: center;
+  /* 全屏定位层只负责排版，不截获页面指针；模态拦截由 backdrop 承担。 */
+  pointer-events: none;
   padding-block-start: max(var(--xh-command-inset-block-start, var(--xh-space-8)), env(safe-area-inset-top));
   padding-block-end: max(var(--xh-command-positioner-pb, var(--xh-space-4)), env(safe-area-inset-bottom));
   padding-inline: max(
@@ -17636,6 +17638,8 @@
   box-shadow: var(--xh-command-shadow, var(--xh-elevation-sheet));
   /* 条目的高亮底色是方角，滚到两端时会探出面板的圆角 */
   overflow: hidden;
+  /* positioner 不吃指针，面板自身恢复交互。 */
+  pointer-events: auto;
   /* 进退场的缩放锚在面板顶缘：它是从上方落下来的 */
   transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 0);
 }
@@ -17947,7 +17951,7 @@
   --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
-  z-index: var(--xh-context-menu-layer, var(--xh-layer-popover));
+  z-index: var(--xh-context-menu-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -18659,7 +18663,7 @@
   --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
-  z-index: var(--xh-date-picker-layer, var(--xh-layer-popover));
+  z-index: var(--xh-date-picker-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针，交互只发生在 content 里 */
   pointer-events: none;
 }
@@ -19474,7 +19478,7 @@
 [data-scope='dialog'][data-part='backdrop'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-dialog-backdrop-layer, var(--xh-layer-modal));
+  z-index: var(--xh-dialog-backdrop-layer, var(--xh-_layer, var(--xh-layer-modal)));
   background: var(--xh-dialog-backdrop-bg, var(--xh-bg-overlay));
 }
 
@@ -19500,10 +19504,12 @@
 [data-scope='dialog'][data-part='positioner'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-dialog-layer, var(--xh-layer-modal));
+  z-index: var(--xh-dialog-layer, var(--xh-_layer, var(--xh-layer-modal)));
   display: flex;
   align-items: center;
   justify-content: center;
+  /* 全屏定位层只负责排版，不截获页面指针；模态拦截由 backdrop 承担。 */
+  pointer-events: none;
   /* 这段内衬是面板与视口边之间的全部距离，与安全区取大的一头：
      刘海、圆角与底部横条压住的那一段由系统给出，内衬比它窄时面板的一角会被切掉。
      桌面上 env() 恒为 0，取值与内衬槽完全一致。安全区只有物理方向的四个名字，
@@ -19525,6 +19531,9 @@
      positioner 又不是必需部件，content 才是这层浮层恒在的最外层，且它会被 portal 到 body，
      选择器只认得它自己身上那一份 data-size。 */
   --xh-_dialog-max-w: var(--xh-overlay-sheet-w-md);
+
+  /* positioner 不吃指针，面板自身恢复交互。 */
+  pointer-events: auto;
 
   position: relative;
   inline-size: 100%;
@@ -19950,7 +19959,7 @@
 [data-scope='drawer'][data-part='backdrop'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-drawer-backdrop-layer, var(--xh-layer-drawer));
+  z-index: var(--xh-drawer-backdrop-layer, var(--xh-_layer, var(--xh-layer-drawer)));
   background: var(--xh-drawer-backdrop-bg, var(--xh-bg-overlay));
 }
 
@@ -19997,7 +20006,7 @@
 [data-scope='drawer'][data-part='positioner'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-drawer-layer, var(--xh-layer-drawer));
+  z-index: var(--xh-drawer-layer, var(--xh-_layer, var(--xh-layer-drawer)));
   pointer-events: none;
 }
 
@@ -20017,7 +20026,7 @@
   --xh-_drawer-size: var(--xh-overlay-drawer-w-md);
 
   position: fixed;
-  z-index: var(--xh-drawer-layer, var(--xh-layer-drawer));
+  z-index: var(--xh-drawer-layer, var(--xh-_layer, var(--xh-layer-drawer)));
   display: flex;
   flex-direction: column;
   gap: var(--xh-drawer-gap, var(--xh-stack-gap-md));
@@ -21632,7 +21641,7 @@
   --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
-  z-index: var(--xh-hover-card-layer, var(--xh-layer-popover));
+  z-index: var(--xh-hover-card-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针：trigger 与 content 之间那段间隙要能点得穿，
      指针穿行的判定全靠 content 自己的进出事件 */
   pointer-events: none;
@@ -22010,7 +22019,7 @@
 [data-scope='image-viewer'][data-part='backdrop'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-image-viewer-backdrop-layer, var(--xh-layer-modal));
+  z-index: var(--xh-image-viewer-backdrop-layer, var(--xh-_layer, var(--xh-layer-modal)));
   /* 看片要压住页面底色，遮罩比普通对话框更深 */
   background: var(--xh-image-viewer-backdrop-bg, color-mix(in oklab, var(--xh-color-neutral-950) 78%, transparent));
 }
@@ -22036,7 +22045,7 @@
 [data-scope='image-viewer'][data-part='positioner'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-image-viewer-layer, var(--xh-layer-modal));
+  z-index: var(--xh-image-viewer-layer, var(--xh-_layer, var(--xh-layer-modal)));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -22893,7 +22902,7 @@
   --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
-  z-index: var(--xh-menu-layer, var(--xh-layer-popover));
+  z-index: var(--xh-menu-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -23354,7 +23363,7 @@
   --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
-  z-index: var(--xh-menubar-layer, var(--xh-layer-popover));
+  z-index: var(--xh-menubar-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -24049,7 +24058,7 @@
 /* 面板贴着自己那一项落位：横排从 trigger 底下长出来 */
 [data-scope='navigation-menu'][data-part='content'] {
   position: absolute;
-  z-index: var(--xh-navigation-menu-layer, var(--xh-layer-popover));
+  z-index: var(--xh-navigation-menu-layer, var(--xh-_layer, var(--xh-layer-popover)));
   inset-block-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
   inset-inline-start: 0;
   display: flex;
@@ -24190,7 +24199,7 @@
    两处共用一个槽的话调了一处另一处跟着走，差值就再也调不开 */
 [data-scope='navigation-menu'][data-part='viewport'] {
   position: absolute;
-  z-index: var(--xh-navigation-menu-layer, var(--xh-layer-popover));
+  z-index: var(--xh-navigation-menu-layer, var(--xh-_layer, var(--xh-layer-popover)));
   inset-block-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
   inset-inline-start: 0;
   display: block;
@@ -25474,7 +25483,7 @@
   --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
-  z-index: var(--xh-pagination-layer, var(--xh-layer-popover));
+  z-index: var(--xh-pagination-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针：省略位与面板之间那段间隙要能点得穿 */
   pointer-events: none;
 }
@@ -25899,7 +25908,7 @@
   --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
-  z-index: var(--xh-popover-layer, var(--xh-layer-popover));
+  z-index: var(--xh-popover-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -27688,7 +27697,7 @@
   --xh-_overlay-enter-right: 0;
 
   position: fixed;
-  z-index: var(--xh-select-layer, var(--xh-layer-popover));
+  z-index: var(--xh-select-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -28671,7 +28680,7 @@
   --xh-_side-nav-available-w: 100vw;
 
   position: fixed;
-  z-index: var(--xh-side-nav-popout-layer, var(--xh-layer-popover));
+  z-index: var(--xh-side-nav-popout-layer, var(--xh-_layer, var(--xh-layer-popover)));
   pointer-events: auto;
 }
 
@@ -32504,7 +32513,7 @@
   --xh-_overlay-enter-right: 0;
 
   position: fixed;
-  z-index: var(--xh-time-picker-layer, var(--xh-layer-popover));
+  z-index: var(--xh-time-picker-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针，交互只发生在 content 里 */
   pointer-events: none;
 }
@@ -34858,7 +34867,7 @@
   position: fixed;
   inset-block-start: 0;
   inset-inline-start: 0;
-  z-index: var(--xh-tooltip-layer, var(--xh-layer-tooltip));
+  z-index: var(--xh-tooltip-layer, var(--xh-_layer, var(--xh-layer-tooltip)));
   /* 浮层不承载交互：指针必须能穿过去点到底下的东西 */
   pointer-events: none;
 }
@@ -35123,7 +35132,7 @@
 [data-scope='tour'][data-part='backdrop'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-tour-backdrop-layer, var(--xh-layer-modal));
+  z-index: var(--xh-tour-backdrop-layer, var(--xh-_layer, var(--xh-layer-modal)));
   background: var(--xh-tour-backdrop-bg, var(--xh-bg-overlay));
 }
 
@@ -35143,7 +35152,7 @@
    这里只管长相：一圈描边 + 一片铺满视口的投影当暗幕，中间那块因此是亮的——
    这就是"洞"。不吃指针：它盖在目标上面，吃了的话目标就再也点不动了 */
 [data-scope='tour'][data-part='spotlight'] {
-  z-index: var(--xh-tour-spotlight-layer, var(--xh-layer-modal));
+  z-index: var(--xh-tour-spotlight-layer, var(--xh-_layer, var(--xh-layer-modal)));
   pointer-events: none;
   border-radius: var(--xh-tour-spotlight-radius, var(--xh-shape-surface));
   box-shadow:
@@ -35190,7 +35199,7 @@
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
   --xh-_tour-available-w: 100vw;
 
-  z-index: var(--xh-tour-positioner-layer, var(--xh-layer-popover));
+  z-index: var(--xh-tour-positioner-layer, var(--xh-_layer, var(--xh-layer-popover)));
   pointer-events: none;
 }
 
@@ -36708,7 +36717,7 @@
   --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
-  z-index: var(--xh-tree-select-layer, var(--xh-layer-popover));
+  z-index: var(--xh-tree-select-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针，交互只发生在 content 里 */
   pointer-events: none;
 }

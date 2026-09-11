@@ -192,7 +192,6 @@ describe('layout 覆盖档的消解', () => {
       node: () => node,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [],
     })
     cleanups.push(() => {
@@ -220,7 +219,6 @@ describe('layout 覆盖档的消解', () => {
       node: () => node,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [],
     })
     cleanups.push(() => {
@@ -248,7 +246,6 @@ describe('layout 覆盖档的消解', () => {
       node: () => node,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [],
     })
     cleanups.push(() => {
@@ -423,7 +420,6 @@ describe('layout 覆盖档的消解', () => {
       node: () => node,
       branches: () => [],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     const dismissRef: { value: Disposable | null } = { value: null }

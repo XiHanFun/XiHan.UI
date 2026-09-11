@@ -428,7 +428,7 @@ export const colorPickerMachine = createMachine({
       },
 
       // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape
-      trackLayer: ({ refs, send }) => {
+      trackLayer: ({ refs, send, flush }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
         // 无 DOM 环境不挂副作用，状态机照常转移
@@ -456,7 +456,7 @@ export const colorPickerMachine = createMachine({
             restoreTarget: () => refs.get('getAnchorEl')(),
           })
           defer(() => focus.dispose())
-        })
+        }, { registry: config.layerRegistry, flush })
       },
 
       // 跟手交给指针会话：监听挂在文档上，挂在取色区上指针一离开就断，系统收走指针也会收尾

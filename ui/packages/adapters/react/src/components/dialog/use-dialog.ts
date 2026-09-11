@@ -33,7 +33,6 @@ export function useDialog(props: DialogSchema['props']): DialogContext {
     kind: 'modal',
     branches: () => [],
     isModal: () => modalRef.current ?? true,
-    setModal: () => {},
   }), [])
 
   const overlay = useOverlay({

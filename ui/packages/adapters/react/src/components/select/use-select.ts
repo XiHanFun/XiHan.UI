@@ -38,7 +38,6 @@ export function useSelect(props: SelectSchema['props']): SelectContext {
     // trigger 记为本层分支，点它算层内交互
     branches: () => [triggerRef.current].filter(Boolean) as Element[],
     isModal: () => false,
-    setModal: () => {},
   }), [])
 
   const overlay = useOverlay({

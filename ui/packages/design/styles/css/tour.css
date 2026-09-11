@@ -103,7 +103,7 @@
   [data-scope='tour'][data-part='backdrop'] {
     position: fixed;
     inset: 0;
-    z-index: var(--xh-tour-backdrop-layer, var(--xh-layer-modal));
+    z-index: var(--xh-tour-backdrop-layer, var(--xh-_layer, var(--xh-layer-modal)));
     background: var(--xh-tour-backdrop-bg, var(--xh-bg-overlay));
   }
 
@@ -123,7 +123,7 @@
      这里只管长相：一圈描边 + 一片铺满视口的投影当暗幕，中间那块因此是亮的——
      这就是"洞"。不吃指针：它盖在目标上面，吃了的话目标就再也点不动了 */
   [data-scope='tour'][data-part='spotlight'] {
-    z-index: var(--xh-tour-spotlight-layer, var(--xh-layer-modal));
+    z-index: var(--xh-tour-spotlight-layer, var(--xh-_layer, var(--xh-layer-modal)));
     pointer-events: none;
     border-radius: var(--xh-tour-spotlight-radius, var(--xh-shape-surface));
     box-shadow:
@@ -170,7 +170,7 @@
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
     --xh-_tour-available-w: 100vw;
 
-    z-index: var(--xh-tour-positioner-layer, var(--xh-layer-popover));
+    z-index: var(--xh-tour-positioner-layer, var(--xh-_layer, var(--xh-layer-popover)));
     pointer-events: none;
   }
 

@@ -80,7 +80,6 @@ export function useMenubar(
       // 整条菜单栏记为本层分支，点 trigger 与掠过换菜单都算层内交互
       branches: () => [rootRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 菜单不带遮罩，没有可点关闭的表面
       surfaces: () => [],
     })

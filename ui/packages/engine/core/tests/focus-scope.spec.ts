@@ -58,7 +58,6 @@ function setup(buttonCount = 3, doc: Document = document, root: HTMLElement | Sh
     node: () => container,
     branches: () => [],
     isModal: () => true,
-    setModal: () => {},
     surfaces: () => [],
   })
   const config = createRuntimeConfig({
@@ -286,7 +285,6 @@ describe('挂载自动聚焦', () => {
           node: () => upperContainer,
           branches: () => [],
           isModal: () => true,
-          setModal: () => {},
           surfaces: () => [],
         })
         disposeUpperLayer = upper.dispose
@@ -348,7 +346,6 @@ describe('逃逸抢回', () => {
       node: () => h.outside,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [],
     })
     cleanups.push(upper.dispose)
@@ -528,7 +525,6 @@ describe('焦点节点移除恢复', () => {
       node: () => h.outside,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [],
     })
     cleanups.push(upper.dispose)
@@ -559,7 +555,6 @@ describe('焦点节点移除恢复', () => {
         node: () => upperContainer,
         branches: () => [],
         isModal: () => true,
-        setModal: () => {},
         surfaces: () => [],
       })
       disposeUpper = upper.dispose
@@ -582,7 +577,6 @@ describe('焦点节点移除恢复', () => {
       node: () => h.outside,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [],
     })
     h.outside.focus()
@@ -988,7 +982,6 @@ describe('卸载归还', () => {
           node: () => upperContainer,
           branches: () => [],
           isModal: () => true,
-          setModal: () => {},
           surfaces: () => [],
         })
         disposeUpperLayer = upper.dispose
@@ -1028,7 +1021,6 @@ describe('卸载归还', () => {
           node: () => upperContainer,
           branches: () => [],
           isModal: () => true,
-          setModal: () => {},
           surfaces: () => [],
         })
         disposeUpperLayer = upper.dispose

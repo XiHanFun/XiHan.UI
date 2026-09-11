@@ -195,7 +195,7 @@ export const tooltipMachine = createMachine({
         }
       },
       /** 浮层可见期间把层压入消解栈，不建焦点域、不锁滚动。 */
-      trackLayer: ({ refs, send }) => {
+      trackLayer: ({ refs, send, flush }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
         // 无 DOM 环境（纯逻辑测试 / SSR）：状态机照常转移，不挂副作用
@@ -209,7 +209,7 @@ export const tooltipMachine = createMachine({
             onDismiss: reason => send({ type: reason === 'escape-key' ? 'ESCAPE' : 'CLOSE' }),
           })
           defer(() => dismiss.dispose())
-        })
+        }, { registry: config.layerRegistry, flush })
       },
     },
   },

@@ -143,7 +143,6 @@ function mount(initial: Partial<Props> = {}, options: Options = {}): Harness {
       node: () => content,
       branches: () => [input],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     return {

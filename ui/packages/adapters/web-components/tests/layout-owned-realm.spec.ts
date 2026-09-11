@@ -56,7 +56,6 @@ describe('xh-layout 的运行时层栈与所属 Document', () => {
       node: () => layerNode,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [],
     })
 
@@ -95,7 +94,6 @@ describe('xh-layout 的运行时层栈与所属 Document', () => {
       node: () => layerNode,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [],
     })
 

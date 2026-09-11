@@ -233,7 +233,6 @@ export class XhComboboxElement extends XhElement {
       // 浮层壳一并记上：候选列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
       branches: () => [this.getPart('control'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 列表不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })

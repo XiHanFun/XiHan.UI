@@ -161,7 +161,6 @@ function mount(initial: Partial<Props> = {}, options: Options = {}): Harness {
       // 整个输入行记为本层分支：点它算层内交互，开合交给输入框与触发按钮自己切换
       branches: () => [control],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     return {

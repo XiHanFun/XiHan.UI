@@ -66,7 +66,6 @@ function dialogHarness(): Harness {
     node: () => content,
     branches: () => [],
     isModal: () => true,
-    setModal: () => {},
     surfaces: () => [],
   }))
   service.refs.set('getContentEl', () => content)
@@ -95,7 +94,6 @@ function drawerHarness(): Harness {
     node: () => content,
     branches: () => [],
     isModal: () => true,
-    setModal: () => {},
     surfaces: () => [],
   }))
   service.refs.set('getContentEl', () => content)
@@ -124,7 +122,6 @@ function popoverHarness(): Harness {
     node: () => content,
     branches: () => [],
     isModal: () => false,
-    setModal: () => {},
     surfaces: () => [],
   }))
   service.refs.set('getAnchorEl', () => trigger)
@@ -158,7 +155,6 @@ function imageViewerHarness(): Harness {
     node: () => content,
     branches: () => [],
     isModal: () => true,
-    setModal: () => {},
     surfaces: () => [],
   }))
   service.refs.set('getContentEl', () => content)

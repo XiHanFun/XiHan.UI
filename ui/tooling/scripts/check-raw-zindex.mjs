@@ -6,7 +6,7 @@
 // 而层序令牌一改，写死的那个不跟着走。
 // 直引层序令牌则是另一种写死：使用者要把某一处单独抬高或压低，只能改全局层序令牌，
 // 一改所有同角色的一起动。覆盖槽 `--xh-<组件>-…-layer` 把这个口子留出来，
-// 默认值才落到 `--xh-layer-<角色>`。
+// 默认值可先读逻辑栈写入的私有 `--xh-_layer`，再回落 `--xh-layer-<角色>`。
 //
 // 定位层 / 遮罩层再多受一条：它们排的是页面级层序，不许退回组件内的 0/1/2。
 import { readdir, readFile } from 'node:fs/promises'
@@ -153,9 +153,9 @@ for (const file of files) {
     // 改的是这个槽；直引层序令牌就只剩「改全局、同角色的一起动」一条路。
     // 这一条对所有部件生效，不看名字——名字表只用来加严（见 LAYERED_PARTS）
     if (/--xh-layer-/.test(value)) {
-      const slot = value.match(/^var\(\s*(--xh-[a-z0-9-]+)\s*,\s*var\(\s*--xh-layer-[a-z-]+\s*\)\s*\)$/)
+      const slot = value.match(/^var\(\s*(--xh-[a-z0-9-]+)\s*,\s*(?:var\(\s*--xh-_layer\s*,\s*var\(\s*--xh-layer-[a-z-]+\s*\)\s*\)|var\(\s*--xh-layer-[a-z-]+\s*\))\s*\)$/)
       if (!slot) {
-        problems.push(`${at}  —— ${where}要写成 var(--xh-${comp}-…-layer, var(--xh-layer-<角色>))，直引层序令牌没给使用者留覆盖槽`)
+        problems.push(`${at}  —— ${where}要写成公开槽 → --xh-_layer → --xh-layer-<角色> 的层级链`)
         continue
       }
       if (!slot[1].startsWith(`--xh-${comp}-`) || !slot[1].endsWith('-layer')) {

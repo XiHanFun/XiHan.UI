@@ -142,7 +142,6 @@ export class XhPopoverElement extends XhElement {
       // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉
       branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => this.ctrl.service.prop('modal') ?? false,
-      setModal: () => {},
       // 非模态浮层不自带遮罩，没有"点它就该关本层"的表面
       surfaces: () => [],
     })

@@ -154,7 +154,6 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
       node: () => content,
       branches: () => [trigger],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     return {

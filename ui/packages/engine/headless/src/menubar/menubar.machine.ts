@@ -325,10 +325,11 @@ export const menubarMachine = createMachine({
         },
       }),
       // 层、消解层与焦点域同生共死，仅在有菜单展开期间入栈
-      trackLayer: ({ refs, context, send }) => trackOverlayLayer({
+      trackLayer: ({ refs, context, send, flush }) => trackOverlayLayer({
         // 无 DOM 环境时不挂副作用
         config: refs.get('config'),
         registerLayer: refs.get('registerLayer'),
+        flush,
         onDismiss: overlayCloseOnDismiss(send),
         // 焦点域用于把焦点送进刚展开的菜单，仅键盘入口（focusIntent 非 none）才建
         focusScope: context.get('focusIntent') === 'none'

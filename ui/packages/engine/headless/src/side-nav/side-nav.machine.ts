@@ -249,7 +249,7 @@ export const sideNavMachine = createMachine({
       },
       // 层、消解层与焦点域同生共死；层只在弹出期间入栈。
       // 悬停打开（落焦端 'none'）不建焦点域：指针路过不抢别处的焦点
-      trackPopoutLayer: ({ refs, context, send }) => {
+      trackPopoutLayer: ({ refs, context, send, flush }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
         if (!config || !registerLayer)
@@ -282,7 +282,7 @@ export const sideNavMachine = createMachine({
             hasFocusScope = true
             defer(() => focus.dispose())
           }
-        })
+        }, { registry: config.layerRegistry, flush })
 
         let disposed = false
         return () => {

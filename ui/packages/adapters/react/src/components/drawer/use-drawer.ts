@@ -36,7 +36,6 @@ export function useDrawer(
     kind: 'modal',
     branches: () => [],
     isModal: () => modalRef.current ?? true,
-    setModal: () => {},
   }), [])
 
   const overlay = useOverlay({

@@ -177,7 +177,6 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
         // 触发区记为本层分支：在它身上再右键算层内交互，只挪锚点而不先关一次
         branches: () => [trigger],
         isModal: () => false,
-        setModal: () => {},
         surfaces: () => [],
       })
       return {

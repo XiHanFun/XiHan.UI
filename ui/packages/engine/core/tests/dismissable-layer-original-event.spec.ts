@@ -39,7 +39,6 @@ function createHarness(): Harness {
     node: () => content,
     branches: () => [],
     isModal: () => false,
-    setModal: () => {},
     surfaces: () => [],
   })
   const config = createRuntimeConfig({ scope, idGenerator, layerRegistry: registry })

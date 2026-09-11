@@ -51,7 +51,6 @@ export function useSelect(
       // trigger 记为本层分支，点它算层内交互
       branches: () => [triggerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
 

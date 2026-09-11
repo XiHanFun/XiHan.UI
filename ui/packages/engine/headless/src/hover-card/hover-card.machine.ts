@@ -205,7 +205,7 @@ export const hoverCardMachine = createMachine({
         }
       },
       /** 浮层可见期间把层压入消解栈，不建焦点域、不锁滚动。 */
-      trackLayer: ({ refs, send }) => {
+      trackLayer: ({ refs, send, flush }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
         if (!config || !registerLayer)
@@ -221,7 +221,7 @@ export const hoverCardMachine = createMachine({
             }),
           })
           defer(() => dismiss.dispose())
-        })
+        }, { registry: config.layerRegistry, flush })
       },
     },
   },

@@ -48,7 +48,6 @@ export function useContextMenu(props: ContextMenuSchema['props']): ContextMenuCo
     // 浮层壳一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
     branches: () => [triggerRef.current, positionerRef.current].filter(Boolean) as Element[],
     isModal: () => false,
-    setModal: () => {},
   }), [])
 
   const overlay = useOverlay({

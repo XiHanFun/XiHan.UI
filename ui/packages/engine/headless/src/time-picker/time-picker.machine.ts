@@ -546,7 +546,7 @@ export const timePickerMachine = createMachine({
       // 层与消解层、焦点域绑在同一个效应里，三者生命周期必须一致；
       // 层只在展开期间入栈，常驻会占死栈顶把下面各层的 Escape 堵死
       trackLayer: (params) => {
-        const { refs, context, send } = params
+        const { refs, context, send, flush } = params
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
         // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
@@ -606,7 +606,7 @@ export const timePickerMachine = createMachine({
             restoreTarget: () => refs.get('getTriggerEl')(),
           })
           defer(() => focus.dispose())
-        })
+        }, { registry: config.layerRegistry, flush })
       },
     },
   },

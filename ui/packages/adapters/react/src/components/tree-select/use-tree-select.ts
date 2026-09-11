@@ -39,7 +39,6 @@ export function useTreeSelect(props: TreeSelectSchema['props']): TreeSelectConte
     // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
     branches: () => [triggerRef.current, positionerRef.current].filter(Boolean) as Element[],
     isModal: () => false,
-    setModal: () => {},
   }), [])
 
   const overlay = useOverlay({

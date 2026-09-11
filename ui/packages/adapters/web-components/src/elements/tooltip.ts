@@ -125,7 +125,6 @@ export class XhTooltipElement extends XhElement {
       // trigger 记为本层分支，点它算层内交互
       branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
   }

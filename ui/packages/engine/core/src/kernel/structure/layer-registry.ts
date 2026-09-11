@@ -7,6 +7,26 @@ import { createPerDocumentRegistry } from './per-document-registry'
 
 export type LayerKind = 'modal' | 'popover' | 'inline'
 
+/** 同一 Document 内由逻辑栈派生的视觉层级。 */
+export interface LayerVisual {
+  /** 当前逻辑栈中的零基序号；释放下层后会随新快照收紧。 */
+  readonly visualIndex: number
+  /** kind 与当前模态性共同决定的槽内 lane。 */
+  readonly visualLane: number
+  /** 可直接写入 CSS z-index 自定义属性的值。 */
+  readonly visualLayer: string
+}
+
+/** Core 写给皮肤的统一私有视觉层级槽。 */
+export const LAYER_VISUAL_PROPERTY = '--xh-_layer'
+
+const VISUAL_STRIDE = 8
+const KIND_LANE: Readonly<Record<LayerKind, number>> = Object.freeze({
+  inline: 0,
+  popover: 2,
+  modal: 4,
+})
+
 export interface Layer {
   readonly id: string
   readonly kind: LayerKind
@@ -16,9 +36,10 @@ export interface Layer {
   readonly branches: () => Element[]
   /** 模态性，生命周期内可变。 */
   readonly isModal: () => boolean
-  readonly setModal: (v: boolean) => void
   /** 点击即应关闭本层的表面，如 backdrop。 */
   readonly surfaces: () => Element[]
+  /** 应消费视觉层级的宿主节点；缺省由 node、同 scope 父节点与 surfaces 推出。 */
+  readonly visuals?: () => Element[]
 }
 
 export interface LayerRegistry {
@@ -29,6 +50,10 @@ export interface LayerRegistry {
   list: () => readonly Layer[]
   top: () => Layer | undefined
   indexOf: (layer: Layer) => number
+  /** 读取当前快照为该层派生的视觉序号、lane 与 CSS 值。 */
+  visualOf: (layer: Layer) => LayerVisual
+  /** isModal 等动态 getter 改变后显式发布同一快照，让视觉消费者重新读取。 */
+  sync: (layer: Layer) => void
   /** 给定 DOM 节点，返回它归属的最高层。 */
   layerOf: (node: Node) => { layer: Layer, via: 'node' | 'branch' | 'surface' } | undefined
   /** 栈中位于给定层之上的各层的全部节点（node + branches + surfaces）。 */
@@ -163,6 +188,30 @@ export function createLayerRegistry(doc: Document): LayerRegistry {
     return { layer, dispose }
   })
 
+  const indexOf = (layer: Layer): number => layers.indexOf(layer)
+
+  const visualOf: LayerRegistry['visualOf'] = (layer) => {
+    const visualIndex = indexOf(layer)
+    if (visualIndex === -1)
+      throw new Error(`[xh] LayerRegistry 无法读取未登记层的视觉层级: ${layer.id}`)
+    const visualLane = KIND_LANE[layer.kind] + (layer.isModal() ? 1 : 0)
+    return Object.freeze({
+      visualIndex,
+      visualLane,
+      // 逻辑序号占高位，kind/modal 只占当前序号内的 lane；后来登记的 modal
+      // 因此仍高于更早的 popover，嵌套 popover 也必然高于所属 modal。
+      visualLayer: `calc(var(--xh-layer-modal, 1100) + ${visualIndex * VISUAL_STRIDE + visualLane})`,
+    })
+  }
+
+  const sync: LayerRegistry['sync'] = layer => runChange(() => {
+    if (indexOf(layer) === -1)
+      throw new Error(`[xh] LayerRegistry 无法同步未登记的层: ${layer.id}`)
+    const result = notify([...subs], layers, '动态同步')
+    if (result.found)
+      throw result.error
+  })
+
   const layerOf: LayerRegistry['layerOf'] = (node) => {
     for (let i = layers.length - 1; i >= 0; i--) {
       const layer = layers[i]!
@@ -196,7 +245,9 @@ export function createLayerRegistry(doc: Document): LayerRegistry {
     register,
     list: () => layers,
     top: () => layers[layers.length - 1],
-    indexOf: layer => layers.indexOf(layer),
+    indexOf,
+    visualOf,
+    sync,
     layerOf,
     elementsAbove,
     subscribe: (fn) => {
@@ -205,6 +256,131 @@ export function createLayerRegistry(doc: Document): LayerRegistry {
     },
   }
   return Object.freeze(publicRegistry)
+}
+
+interface InlineStyleTarget extends Element {
+  readonly style: CSSStyleDeclaration
+}
+
+interface PreviousLayerStyle {
+  readonly value: string
+  readonly priority: string
+  applied: string
+}
+
+export interface LayerVisualBindingOptions {
+  registry: LayerRegistry
+  layer: Layer
+  /** 框架提交调度；不给时同步写入。 */
+  flush?: (fn: () => void) => void
+}
+
+function hasInlineStyle(element: Element): element is InlineStyleTarget {
+  return 'style' in element
+}
+
+/**
+ * 把 Registry 派生的视觉层级写入本层宿主；栈变化、动态 modal 与节点换代均走同一同步入口。
+ */
+export function bindLayerVisual(options: LayerVisualBindingOptions): Cleanup {
+  const { registry, layer } = options
+  const initialNode = layer.node()
+  if (initialNode && registry.ownerDocument !== initialNode.ownerDocument)
+    throw new Error('[xh] Layer 视觉绑定的 Registry 与节点必须属于同一 Document')
+
+  let active = true
+  let queued = false
+  const applied = new Map<InlineStyleTarget, PreviousLayerStyle>()
+
+  const targets = (): InlineStyleTarget[] => {
+    const explicit = layer.visuals?.()
+    const values: Element[] = explicit ? [...explicit] : []
+    if (!explicit) {
+      const node = layer.node()
+      if (node) {
+        values.push(node)
+        const parent = node.parentElement
+        if (parent && parent.dataset.scope === node.dataset.scope)
+          values.push(parent)
+      }
+      // branches 里通常还含 trigger；trigger 不是视觉层宿主，不能把私有层变量写上去。
+      // 标准浮层的 positioner 是 content 的同 scope 直属父节点，特殊结构可显式给 visuals。
+      values.push(...layer.surfaces())
+    }
+    return [...new Set(values)].filter((element): element is InlineStyleTarget => {
+      if (element.ownerDocument !== registry.ownerDocument)
+        throw new Error('[xh] Layer 视觉宿主必须属于 Registry 的 Document')
+      return hasInlineStyle(element)
+    })
+  }
+
+  const restore = (element: InlineStyleTarget, previous: PreviousLayerStyle): void => {
+    if (element.style.getPropertyValue(LAYER_VISUAL_PROPERTY) !== previous.applied)
+      return
+    if (previous.value)
+      element.style.setProperty(LAYER_VISUAL_PROPERTY, previous.value, previous.priority)
+    else
+      element.style.removeProperty(LAYER_VISUAL_PROPERTY)
+  }
+
+  const apply = (): void => {
+    queued = false
+    if (!active)
+      return
+    const visualLayer = registry.visualOf(layer).visualLayer
+    const next = new Set(targets())
+    for (const element of next) {
+      let previous = applied.get(element)
+      if (!previous) {
+        previous = {
+          value: element.style.getPropertyValue(LAYER_VISUAL_PROPERTY),
+          priority: element.style.getPropertyPriority(LAYER_VISUAL_PROPERTY),
+          applied: visualLayer,
+        }
+        applied.set(element, previous)
+      }
+      previous.applied = visualLayer
+      element.style.setProperty(LAYER_VISUAL_PROPERTY, visualLayer)
+    }
+    for (const [element, previous] of applied) {
+      if (next.has(element))
+        continue
+      applied.delete(element)
+      restore(element, previous)
+    }
+  }
+
+  const schedule = (): void => {
+    if (!active || queued)
+      return
+    queued = true
+    if (options.flush)
+      options.flush(apply)
+    else
+      apply()
+  }
+
+  const unsubscribe = registry.subscribe(schedule)
+  try {
+    schedule()
+  }
+  catch (error) {
+    active = false
+    unsubscribe()
+    for (const [element, previous] of applied)
+      restore(element, previous)
+    applied.clear()
+    throw error
+  }
+  return () => {
+    if (!active)
+      return
+    active = false
+    unsubscribe()
+    for (const [element, previous] of applied)
+      restore(element, previous)
+    applied.clear()
+  }
 }
 
 const registry = createPerDocumentRegistry(createLayerRegistry)

@@ -216,7 +216,7 @@ export const paginationMachine = createMachine({
         }
       },
       /** 摊开期间把层压入消解栈：Escape 与点外面都能收起。不建焦点域、不锁滚动。 */
-      trackLayer: ({ refs, send }) => {
+      trackLayer: ({ refs, send, flush }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
         if (!config || !registerLayer)
@@ -229,7 +229,7 @@ export const paginationMachine = createMachine({
             onDismiss: () => send({ type: 'ELLIPSIS.CLOSE' }),
           })
           defer(() => dismiss.dispose())
-        })
+        }, { registry: config.layerRegistry, flush })
       },
     },
     actions: {

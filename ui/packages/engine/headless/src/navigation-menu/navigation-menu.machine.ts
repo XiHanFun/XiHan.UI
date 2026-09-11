@@ -156,7 +156,7 @@ export const navigationMenuMachine = createMachine({
        * 层的进出栈跟着展开项走：有面板展开就入栈，都收起就出栈。
        * 常驻栈会占死栈顶、堵掉下层浮层的 Escape，所以只在展开期间在场。
        */
-      syncLayer: ({ refs, context, scope, send, action }) => {
+      syncLayer: ({ refs, context, scope, send, action, flush }) => {
         const open = (context.get('value') ?? null) != null
         const live = refs.get('layerDispose') != null
         if (open === live)
@@ -194,7 +194,7 @@ export const navigationMenuMachine = createMachine({
             },
           })
           defer(() => dismiss.dispose())
-        })
+        }, { registry: config.layerRegistry, flush })
         refs.set('layerDispose', cleanup)
       },
       dropLayer: ({ refs }) => {

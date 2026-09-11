@@ -10,7 +10,6 @@ function fakeLayer(node: object, branches: object[] = [], surfaces: object[] = [
     node: () => node as HTMLElement,
     branches: () => branches as Element[],
     isModal: () => true,
-    setModal: () => {},
     surfaces: () => surfaces as Element[],
   }
 }

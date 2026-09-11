@@ -49,7 +49,6 @@ function openOverlay(node: HTMLElement = document.createElement('div')): Overlay
     node: () => node,
     branches: () => [],
     isModal: () => true,
-    setModal: () => {},
     surfaces: () => [],
   })
   const unhide = hideOutside(
@@ -252,7 +251,6 @@ describe('hideOutside 跟随层栈重算', () => {
       node: () => lowerNode,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [],
     })
     cleanups.push(lower.dispose)
@@ -268,7 +266,6 @@ describe('hideOutside 跟随层栈重算', () => {
       node: () => upperNode,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [],
     })
     cleanups.push(unrelated.dispose)
@@ -279,7 +276,6 @@ describe('hideOutside 跟随层栈重算', () => {
       node: () => upperNode,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [],
     })
     cleanups.push(upper.dispose)
@@ -722,7 +718,6 @@ describe('hideOutside 的所属 realm', () => {
       node: () => node,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [],
     })
     expect(inertOf(app)).toBe(false)
@@ -749,7 +744,6 @@ describe('hideOutside 的所属 realm', () => {
       node: () => content,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [],
     })
     registration.dispose()

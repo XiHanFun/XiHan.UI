@@ -214,7 +214,6 @@ export class XhSelectElement extends XhElement {
       // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
       branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 列表不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })

@@ -160,7 +160,6 @@ export class XhSideNavElement extends XhElement {
       // 触发按钮记为本层分支，点它算层内交互
       branches: () => [this.findPopoutPart(svc, 'branch-trigger')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
   }

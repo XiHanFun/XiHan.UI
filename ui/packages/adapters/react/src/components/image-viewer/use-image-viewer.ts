@@ -22,7 +22,6 @@ function layer(): Omit<Layer, 'id' | 'node' | 'surfaces'> {
     kind: 'modal',
     branches: () => [],
     isModal: () => true,
-    setModal: () => {},
   }
 }
 

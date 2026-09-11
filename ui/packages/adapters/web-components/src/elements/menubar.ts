@@ -247,7 +247,6 @@ export class XhMenubarElement extends XhElement {
       // 开合归菜单栏自己切换。
       branches: () => [this.getPart('root')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 菜单不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })

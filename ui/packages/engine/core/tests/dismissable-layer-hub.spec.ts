@@ -59,7 +59,6 @@ function participant(
     node: () => nodeGetter ? nodeGetter(node) : node,
     branches: branches ?? (() => []),
     isModal: () => false,
-    setModal: () => {},
     surfaces: surfaces ?? (() => []),
   })
   let dismissDispose = (): void => {}
@@ -272,7 +271,6 @@ describe('dismissableLayer Document Hub', () => {
       node: () => topNode,
       branches: () => [],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     cleanups.push(() => topNode.remove(), top.dispose)
@@ -375,7 +373,6 @@ describe('dismissableLayer Document Hub', () => {
           node: () => node,
           branches: () => [],
           isModal: () => false,
-          setModal: () => {},
           surfaces: () => [],
         })
         disposeNew = () => {
@@ -569,7 +566,6 @@ describe('dismissableLayer Document Hub', () => {
         },
         branches: readBranches,
         isModal: () => false,
-        setModal: () => {},
         surfaces: () => [],
       })
       current = createDismissLayer({
@@ -631,7 +627,6 @@ describe('dismissableLayer Document Hub', () => {
       },
       branches: () => [],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     node.addEventListener(EV_POINTER_DOWN_OUTSIDE, () => {
@@ -782,7 +777,6 @@ describe('dismissableLayer Document Hub', () => {
       node: () => node,
       branches: () => [],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     let current: Disposable | null = null
@@ -825,7 +819,6 @@ describe('dismissableLayer Document Hub', () => {
           node: () => node,
           branches: () => [],
           isModal: () => false,
-          setModal: () => {},
           surfaces: () => [],
         })
         cleanups.push(() => node.remove(), registration.dispose)
@@ -854,7 +847,6 @@ describe('dismissableLayer Document Hub', () => {
             node: () => extra,
             branches: () => [],
             isModal: () => false,
-            setModal: () => {},
             surfaces: () => [],
           })
           disposeExtra = () => {
@@ -894,7 +886,6 @@ describe('dismissableLayer Document Hub', () => {
             node: () => extra,
             branches: () => [],
             isModal: () => false,
-            setModal: () => {},
             surfaces: () => [],
           })
           disposeExtra = () => {

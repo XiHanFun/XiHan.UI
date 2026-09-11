@@ -137,7 +137,6 @@ export class XhHoverCardElement extends XhElement {
       branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       // 悬停卡片从不模态：不陷焦点、不锁滚动、没有自带遮罩
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
   }
