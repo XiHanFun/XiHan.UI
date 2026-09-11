@@ -144,10 +144,10 @@ function assertValueText(doc: Document, expected: string): void {
 }
 
 /** 一起读表单出口的 name 与 value：name 反射成属性，value 只落 DOM property。 */
-function assertHiddenInput(doc: Document, name: string, value: string): void {
-  const el = doc.querySelector<HTMLInputElement>(`${SCOPE}[data-part="hidden-input"]`)
-  const actual = el ? ([el.name, el.value] as const) : null
-  const expected = [name, value] as const
+function assertHiddenInput(doc: Document, name: string, values: readonly string[]): void {
+  const inputs = [...doc.querySelectorAll<HTMLInputElement>(`${SCOPE}[data-part="hidden-input"]`)]
+  const actual = inputs.filter(el => !el.disabled).map(el => [el.name, el.value])
+  const expected = values.map(value => [name, value])
   if (JSON.stringify(actual) !== JSON.stringify(expected))
     throw new Error(`表单出口的 name/value 不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
 }
@@ -188,7 +188,6 @@ export const treeSelectSuite: ConformanceSuite = {
           'value-text',
           'indicator',
           'clear-trigger',
-          'hidden-input',
           'positioner',
           'content',
           'tree',
@@ -234,7 +233,7 @@ export const treeSelectSuite: ConformanceSuite = {
           'positioner': 1,
           'content': 1,
           'tree': 1,
-          'hidden-input': 1,
+          'hidden-input': 0,
           'branch': 3,
           'branch-control': 3,
           'branch-trigger': 3,
@@ -364,8 +363,6 @@ export const treeSelectSuite: ConformanceSuite = {
           'item[2]': { 'aria-disabled': 'true', 'data-disabled': '', 'data-value': 'readme', 'disabled': null },
           'item[3]': { 'aria-level': '1', 'aria-posinset': '3', 'aria-setsize': '3', 'data-value': 'license' },
           'item-indicator[0]': { 'aria-hidden': 'true', 'data-selected': null },
-          // 表单出口对键盘与读屏都不存在
-          'hidden-input': { type: 'hidden', name: 'dir', disabled: null },
         },
         activeElement: null,
       },
@@ -376,7 +373,7 @@ export const treeSelectSuite: ConformanceSuite = {
           why: '显示文字与表单值都不进属性快照，只能直接读 DOM',
           run: ({ doc }) => {
             assertValueText(doc, '请选择')
-            assertHiddenInput(doc, 'dir', '')
+            assertHiddenInput(doc, 'dir', [])
           },
         },
       ],
@@ -662,7 +659,7 @@ export const treeSelectSuite: ConformanceSuite = {
           why: '显示文字与表单值都不进属性快照，只能直接读 DOM',
           run: ({ doc }) => {
             assertValueText(doc, 'Index')
-            assertHiddenInput(doc, 'dir', 'index')
+            assertHiddenInput(doc, 'dir', ['index'])
           },
         },
         {
@@ -1077,7 +1074,7 @@ export const treeSelectSuite: ConformanceSuite = {
           why: '显示文字与表单值都不进属性快照，只能直接读 DOM',
           run: ({ doc }) => {
             assertValueText(doc, '请选择')
-            assertHiddenInput(doc, 'dir', '')
+            assertHiddenInput(doc, 'dir', [])
           },
         },
       ],
@@ -1112,7 +1109,7 @@ export const treeSelectSuite: ConformanceSuite = {
         {
           kind: 'raw',
           why: '表单值不进属性快照，只能直接读 DOM',
-          run: ({ doc }) => assertHiddenInput(doc, 'dir', ''),
+          run: ({ doc }) => assertHiddenInput(doc, 'dir', []),
         },
         // 没值了再按不吞键、不发事件
         { kind: 'key', key: 'Delete', expect: { parts: { item: itemsSelected() }, events: [] } },
@@ -1214,7 +1211,7 @@ export const treeSelectSuite: ConformanceSuite = {
           why: '显示文字与表单值都不进属性快照，只能直接读 DOM',
           run: ({ doc }) => {
             assertValueText(doc, 'License')
-            assertHiddenInput(doc, 'dir', 'license')
+            assertHiddenInput(doc, 'dir', ['license'])
           },
         },
       ],

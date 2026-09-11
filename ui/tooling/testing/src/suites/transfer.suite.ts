@@ -189,6 +189,7 @@ export const transferSuite: ConformanceSuite = {
           'item[7]',
           'item-checkbox[7]',
           'item-text[7]',
+          'hidden-input',
         ],
         counts: {
           'root': 1,
@@ -205,6 +206,7 @@ export const transferSuite: ConformanceSuite = {
           'item-checkbox': 8,
           'to-target-trigger': 1,
           'to-source-trigger': 1,
+          'hidden-input': 1,
         },
         parts: {
           'root': { 'data-disabled': null, 'data-one-way': null, 'dir': null },
