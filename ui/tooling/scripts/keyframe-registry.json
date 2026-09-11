@@ -330,7 +330,6 @@
     "xh-overlay-pop-in": {
       "content": "from{opacity:0;scale:var(--xh-motion-scale-enter);translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;scale:1;translate:0 0}",
       "definedIn": [
-        "combobox.css",
         "command.css",
         "date-picker.css",
         "hover-card.css",
@@ -341,7 +340,6 @@
         "tour.css"
       ],
       "consumers": [
-        "combobox",
         "command",
         "date-picker",
         "hover-card",
@@ -356,6 +354,7 @@
       "definedIn": [
         "cascader.css",
         "color-picker.css",
+        "combobox.css",
         "context-menu.css",
         "menu.css",
         "menubar.css",
@@ -367,6 +366,7 @@
       "consumers": [
         "cascader",
         "color-picker",
+        "combobox",
         "context-menu",
         "menu",
         "menubar",
@@ -381,6 +381,7 @@
       "definedIn": [
         "cascader.css",
         "color-picker.css",
+        "combobox.css",
         "context-menu.css",
         "menu.css",
         "menubar.css",
@@ -392,6 +393,7 @@
       "consumers": [
         "cascader",
         "color-picker",
+        "combobox",
         "context-menu",
         "menu",
         "menubar",
@@ -422,7 +424,6 @@
     "xh-pop-out": {
       "content": "from{opacity:1;scale:1}to{opacity:0;scale:var(--xh-motion-scale-exit)}",
       "definedIn": [
-        "combobox.css",
         "command.css",
         "context-menu.css",
         "date-picker.css",
@@ -438,7 +439,6 @@
         "tour.css"
       ],
       "consumers": [
-        "combobox",
         "command",
         "date-picker",
         "floating-panel",
