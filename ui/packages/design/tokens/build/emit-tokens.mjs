@@ -193,6 +193,11 @@ ${await declarations(transparencyReduce, '      ')}
     }
   }
 
+  /* 减少透明的 DOM 钩子：与系统媒体路径同源。打在局部主题上时，Portal 可把这一轴带到实例壳。 */
+  :where([data-transparency='reduce']) {
+${await declarations(transparencyReduce, '    ')}
+  }
+
   /* 系统强制色拥有最终决定权；组件仍消费同一组材质名，不另开 forced-color 私有分支。 */
   @media (forced-colors: active) {
     :where(:root), :where([data-theme]), :where([data-scope]) {

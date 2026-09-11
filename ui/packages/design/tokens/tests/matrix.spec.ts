@@ -1,4 +1,4 @@
-// 四条轴笛卡尔积 16 格，每格一份「解析后的语义令牌最终取值」快照。
+// 五条轴笛卡尔积 32 格，每格一份「解析后的语义令牌最终取值」快照。
 // 这一层不渲染组件、不开浏览器，只把 tokens.css 的取值块按层叠顺序算一遍，秒级，可以每次改动都跑。
 //
 // 它守的是漂移。逐条断言只钉得住写下那天想到的那几支：改一支原语、动一个覆盖档、
@@ -27,6 +27,7 @@ const AXES = {
   density: ['comfortable', 'compact'],
   contrast: ['default', 'more'],
   motion: ['default', 'reduce'],
+  transparency: ['default', 'reduce'],
 } as const
 
 type Axis = keyof typeof AXES
@@ -34,7 +35,7 @@ type Combination = { [K in Axis]: typeof AXES[K][number] }
 
 /**
  * 属性选择器到轴的映射。tokens.css 里出现表外的 data-* 时直接抛：
- * 认不出的属性如果当成「不命中」放过去，那一档的取值就永远不进这 16 格，
+ * 认不出的属性如果当成「不命中」放过去，那一档的取值就永远不进这 32 格，
  * 快照会一直绿着，而它守的那份取值根本没人算过。
  */
 const ATTR_TO_AXIS: Record<string, Axis> = {
@@ -42,6 +43,7 @@ const ATTR_TO_AXIS: Record<string, Axis> = {
   'data-density': 'density',
   'data-contrast': 'contrast',
   'data-motion': 'motion',
+  'data-transparency': 'transparency',
 }
 
 function combinations(): Combination[] {
@@ -49,8 +51,10 @@ function combinations(): Combination[] {
   for (const theme of AXES.theme) {
     for (const density of AXES.density) {
       for (const contrast of AXES.contrast) {
-        for (const motion of AXES.motion)
-          out.push({ theme, density, contrast, motion })
+        for (const motion of AXES.motion) {
+          for (const transparency of AXES.transparency)
+            out.push({ theme, density, contrast, motion, transparency })
+        }
       }
     }
   }
@@ -58,11 +62,11 @@ function combinations(): Combination[] {
 }
 
 function idOf(c: Combination): string {
-  return `theme-${c.theme}_density-${c.density}_contrast-${c.contrast}_motion-${c.motion}`
+  return `theme-${c.theme}_density-${c.density}_contrast-${c.contrast}_motion-${c.motion}_transparency-${c.transparency}`
 }
 
 function titleOf(c: Combination): string {
-  return `theme=${c.theme} density=${c.density} contrast=${c.contrast} motion=${c.motion}`
+  return `theme=${c.theme} density=${c.density} contrast=${c.contrast} motion=${c.motion} transparency=${c.transparency}`
 }
 
 /* ---------- 解析 tokens.css ---------- */
@@ -100,8 +104,8 @@ interface Parsed { blocks: Block[], mediaConditions: string[] }
  * 逐行扫 tokens.css。产物的形状是固定的：一行一条声明，选择器与开花括号同行，
  * 注释独占整行，所以这里不引 CSS 解析器。
  *
- * @media 块整块跳过：减弱动效那一档在这 16 格里走的是 data-motion 钩子，
- * @media 那份与钩子块同源同值（由 reduce.spec 逐条对齐）。跳过的条件会被记下来判断是不是只有这一个。
+ * @media 块整块跳过：减弱动效和减少透明在矩阵中各走对应的 DOM 钩子，
+ * 媒体路径与钩子块同源同值。跳过的条件会被记下来判断是不是只有登记的辅助媒体。
  */
 function parse(source: string): Parsed {
   const blocks: Block[] = []
@@ -409,10 +413,10 @@ describe('快照的前提', () => {
 
 // 深色 + 高对比必须选择深色候选，不能仅凭内层 contrast 属性取浅色高对比值。
 // 主题候选或选择标记解析错了，这一格会静默取到浅色档的边界色，
-// 而 16 份快照仍然各不相同、看不出问题。
+// 而 32 份快照仍然各不相同、看不出问题。
 describe('深色 × 高对比取的是深色高对比档', () => {
   const darkMore = flatten(loadJson('semantic.dark.more.json'))
-  const cell = { density: 'comfortable', contrast: 'more', motion: 'default' } as const
+  const cell = { density: 'comfortable', contrast: 'more', motion: 'default', transparency: 'default' } as const
   const sharedDecoration = new Map([
     ['--xh-material-elevated-highlight', 'oklch(0 0 0 / 0)'],
     ['--xh-material-elevated-backdrop', 'none'],

@@ -1,11 +1,13 @@
-# theme=dark density=comfortable contrast=more motion=default
+# theme=dark density=compact contrast=more motion=default transparency=reduce
 # color-scheme: dark
 # 命中的取值块，按 tokens.css 的书写顺序：
 #   [1] :where(:root)
 #   [2] :where(:root), :where([data-density='comfortable'])
+#   [3] :where([data-density='compact'])
 #   [4] :where(:root)
 #   [6] :where([data-theme='dark'])
 #   [8] :where([data-contrast='more'])
+#   [9] :where([data-transparency='reduce'])
 
 --xh-bg-brand: oklch(0.623 0.214 258)  ← var(--xh-color-brand-500)
 --xh-bg-brand-active: oklch(0.809 0.105 258)  ← var(--xh-color-brand-300)
@@ -30,30 +32,30 @@
 --xh-border-strong: oklch(0.87 0.003 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-strong)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong))
 --xh-border-subtle: oklch(0.65 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-subtle)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-subtle))
 --xh-caret-duration: 1000ms
---xh-control-action-size: 24px
---xh-control-box-lg: 48px
---xh-control-box-md: 40px
---xh-control-box-sm: 32px
+--xh-control-action-size: 20px
+--xh-control-box-lg: 44px
+--xh-control-box-md: 36px
+--xh-control-box-sm: 28px
 --xh-control-caption-lg: 0.875rem  ← var(--xh-font-size-md)
 --xh-control-caption-md: 0.8125rem  ← var(--xh-font-size-sm)
 --xh-control-caption-sm: 0.75rem  ← var(--xh-font-size-xs)
 --xh-control-font-lg: 1rem  ← var(--xh-font-size-lg)
 --xh-control-font-md: 0.875rem  ← var(--xh-font-size-md)
 --xh-control-font-sm: 0.8125rem  ← var(--xh-font-size-sm)
---xh-control-gap-lg: 12px  ← var(--xh-space-3)
---xh-control-gap-md: 8px  ← var(--xh-space-2)
+--xh-control-gap-lg: 8px  ← var(--xh-space-2)
+--xh-control-gap-md: 6px  ← var(--xh-space-1_5)
 --xh-control-gap-sm: 4px  ← var(--xh-space-1)
---xh-control-h-lg: 40px
---xh-control-h-md: 32px
---xh-control-h-sm: 28px
---xh-control-indicator-lg: 20px
---xh-control-indicator-md: 16px
---xh-control-indicator-size: 16px  ← var(--xh-control-indicator-md)
---xh-control-indicator-sm: 12px
+--xh-control-h-lg: 36px
+--xh-control-h-md: 28px
+--xh-control-h-sm: 24px
+--xh-control-indicator-lg: 18px
+--xh-control-indicator-md: 14px
+--xh-control-indicator-size: 14px  ← var(--xh-control-indicator-md)
+--xh-control-indicator-sm: 10px
 --xh-control-min-w: 12rem
---xh-control-px-lg: 16px  ← var(--xh-space-4)
---xh-control-px-md: 12px  ← var(--xh-space-3)
---xh-control-px-sm: 8px  ← var(--xh-space-2)
+--xh-control-px-lg: 12px  ← var(--xh-space-3)
+--xh-control-px-md: 8px  ← var(--xh-space-2)
+--xh-control-px-sm: 6px  ← var(--xh-space-1_5)
 --xh-diff-added-bg: oklch(0.3 0.05 150)
 --xh-diff-added-fg: oklch(0.86 0.12 150)
 --xh-diff-removed-bg: oklch(0.3 0.05 25)
@@ -77,7 +79,7 @@
 --xh-fg-subtle: oklch(0.65 0.006 258)  ← var(--xh-color-neutral-450)
 --xh-fg-success: oklch(0.723 0.171 149)  ← var(--xh-color-success-500)
 --xh-fg-warning: oklch(0.795 0.161 86)  ← var(--xh-color-warning-500)
---xh-field-py: 8px  ← var(--xh-space-2)
+--xh-field-py: 6px  ← var(--xh-space-1_5)
 --xh-glyph-baseline-shift: -0.125em
 --xh-glyph-mark-arrow-down: url("data:image/svg+xml,…")  sha256:a07f0e76013b
 --xh-glyph-mark-arrow-up: url("data:image/svg+xml,…")  sha256:9ed79f28ca55
@@ -136,50 +138,50 @@
 --xh-layout-col-min-md: 18rem
 --xh-layout-col-min-sm: 14rem
 --xh-layout-col-min-xs: 10rem
---xh-layout-gap-lg: 16px  ← var(--xh-space-4)
---xh-layout-gap-md: 12px  ← var(--xh-space-3)
---xh-layout-gap-sm: 8px  ← var(--xh-space-2)
---xh-layout-gap-xl: 24px  ← var(--xh-space-6)
+--xh-layout-gap-lg: 12px  ← var(--xh-space-3)
+--xh-layout-gap-md: 10px  ← var(--xh-space-2_5)
+--xh-layout-gap-sm: 6px  ← var(--xh-space-1_5)
+--xh-layout-gap-xl: 20px  ← var(--xh-space-5)
 --xh-layout-gap-xs: 4px  ← var(--xh-space-1)
---xh-list-item-px-lg: 20px  ← var(--xh-space-5)
---xh-list-item-px-md: 16px  ← var(--xh-space-4)
---xh-list-item-px-sm: 12px  ← var(--xh-space-3)
---xh-list-item-py-lg: 16px  ← var(--xh-space-4)
---xh-list-item-py-md: 12px  ← var(--xh-space-3)
---xh-list-item-py-sm: 8px  ← var(--xh-space-2)
+--xh-list-item-px-lg: 16px  ← var(--xh-space-4)
+--xh-list-item-px-md: 12px  ← var(--xh-space-3)
+--xh-list-item-px-sm: 8px  ← var(--xh-space-2)
+--xh-list-item-py-lg: 12px  ← var(--xh-space-3)
+--xh-list-item-py-md: 8px  ← var(--xh-space-2)
+--xh-list-item-py-sm: 6px  ← var(--xh-space-1_5)
 --xh-list-option-gap: 2px  ← var(--xh-space-0_5)
---xh-list-option-py-lg: 8px  ← var(--xh-space-2)
---xh-list-option-py-md: 6px  ← var(--xh-space-1_5)
---xh-list-option-py-sm: 4px  ← var(--xh-space-1)
---xh-material-elevated-backdrop: none  ← var(--xh-_contrast-use-default, blur(var(--xh-blur-xl)) saturate(108%)) var(--xh-_contrast-use-more, none)
---xh-material-elevated-bg: oklch(0.208 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface))
---xh-material-elevated-border: oklch(0.65 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle))
+--xh-list-option-py-lg: 6px  ← var(--xh-space-1_5)
+--xh-list-option-py-md: 4px  ← var(--xh-space-1)
+--xh-list-option-py-sm: 2px  ← var(--xh-space-0_5)
+--xh-material-elevated-backdrop: none
+--xh-material-elevated-bg: oklch(0.208 0.006 258)  ← var(--xh-bg-surface)
+--xh-material-elevated-border: oklch(0.708 0.005 258)  ← var(--xh-border-default)
 --xh-material-elevated-fg: oklch(0.985 0 0)  ← var(--xh-fg-default)
---xh-material-elevated-fg-muted: oklch(0.708 0.005 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-fg-muted)) var(--xh-_contrast-use-more, var(--xh-fg-muted))
+--xh-material-elevated-fg-muted: oklch(0.708 0.005 258)  ← var(--xh-fg-muted)
 --xh-material-elevated-focus-surface: oklch(0.208 0.006 258)  ← var(--xh-bg-surface)
---xh-material-elevated-highlight: oklch(0 0 0 / 0)  ← var(--xh-_contrast-use-default, oklch(1 0 0 / 0.32)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0))
---xh-material-elevated-separator: oklch(0.65 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle))
+--xh-material-elevated-highlight: oklch(0 0 0 / 0)
+--xh-material-elevated-separator: oklch(0.65 0.006 258)  ← var(--xh-border-subtle)
 --xh-material-elevated-shadow: none  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-shadow)) var(--xh-_contrast-use-more, none)
---xh-material-frosted-backdrop: none  ← var(--xh-_contrast-use-default, blur(var(--xh-blur-md)) saturate(108%)) var(--xh-_contrast-use-more, none)
---xh-material-frosted-bg: oklch(0.208 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface))
---xh-material-frosted-border: oklch(0.65 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle))
---xh-material-frosted-compact-alpha: 1  ← var(--xh-_contrast-use-default, var(--xh-alpha-ultra-high)) var(--xh-_contrast-use-more, var(--xh-alpha-opaque))
---xh-material-frosted-compact-backdrop: none  ← var(--xh-_contrast-use-default, blur(var(--xh-blur-sm)) saturate(104%)) var(--xh-_contrast-use-more, none)
+--xh-material-frosted-backdrop: none
+--xh-material-frosted-bg: oklch(0.208 0.006 258)  ← var(--xh-bg-surface)
+--xh-material-frosted-border: oklch(0.708 0.005 258)  ← var(--xh-border-default)
+--xh-material-frosted-compact-alpha: 1  ← var(--xh-alpha-opaque)
+--xh-material-frosted-compact-backdrop: none
 --xh-material-frosted-compact-shadow: none  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-compact-shadow)) var(--xh-_contrast-use-more, none)
 --xh-material-frosted-fg: oklch(0.985 0 0)  ← var(--xh-fg-default)
 --xh-material-frosted-fg-muted: oklch(0.708 0.005 258)  ← var(--xh-fg-muted)
---xh-material-frosted-focus-surface: oklch(0.208 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-bg-surface)) var(--xh-_contrast-use-more, var(--xh-bg-surface))
---xh-material-frosted-highlight: oklch(0 0 0 / 0)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0))
---xh-material-frosted-separator: oklch(0.65 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle))
+--xh-material-frosted-focus-surface: oklch(0.208 0.006 258)  ← var(--xh-bg-surface)
+--xh-material-frosted-highlight: oklch(0 0 0 / 0)
+--xh-material-frosted-separator: oklch(0.65 0.006 258)  ← var(--xh-border-subtle)
 --xh-material-frosted-shadow: 0 2px 4px -2px oklch(0 0 0 / 0.42), 0 12px 28px -12px oklch(0 0 0 / 0.52)
---xh-material-glass-backdrop: none  ← var(--xh-_contrast-use-default, blur(var(--xh-blur-lg)) saturate(112%)) var(--xh-_contrast-use-more, none)
---xh-material-glass-bg: oklch(0.208 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface))
---xh-material-glass-border: oklch(0.65 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle))
+--xh-material-glass-backdrop: none
+--xh-material-glass-bg: oklch(0.208 0.006 258)  ← var(--xh-bg-surface)
+--xh-material-glass-border: oklch(0.65 0.006 258)  ← var(--xh-border-subtle)
 --xh-material-glass-fg: oklch(0.985 0 0)  ← var(--xh-fg-default)
---xh-material-glass-fg-muted: oklch(0.708 0.005 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-fg-muted)) var(--xh-_contrast-use-more, var(--xh-fg-muted))
+--xh-material-glass-fg-muted: oklch(0.708 0.005 258)  ← var(--xh-fg-muted)
 --xh-material-glass-focus-surface: oklch(0.208 0.006 258)  ← var(--xh-bg-surface)
---xh-material-glass-highlight: oklch(0 0 0 / 0)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0))
---xh-material-glass-separator: oklch(0.65 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle))
+--xh-material-glass-highlight: oklch(0 0 0 / 0)
+--xh-material-glass-separator: oklch(0.65 0.006 258)  ← var(--xh-border-subtle)
 --xh-material-glass-shadow: none  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-shadow)) var(--xh-_contrast-use-more, none)
 --xh-material-soft-backdrop: none
 --xh-material-soft-bg: oklch(0.22 0.006 258)
@@ -217,12 +219,12 @@
 --xh-overlay-drawer-w-lg: 28rem
 --xh-overlay-drawer-w-md: 20rem
 --xh-overlay-drawer-w-sm: 16rem
---xh-overlay-max-h: 16rem
+--xh-overlay-max-h: 14rem
 --xh-overlay-max-w: 20rem
 --xh-overlay-max-w-lg: 24rem
 --xh-overlay-max-w-sm: 16rem
 --xh-overlay-max-w-xl: 48rem
---xh-overlay-menu-max-h: 20rem
+--xh-overlay-menu-max-h: 17rem
 --xh-overlay-menu-min-w: 10rem
 --xh-overlay-min-w: 12rem
 --xh-overlay-sheet-w-lg: 48rem
@@ -236,39 +238,39 @@
 --xh-scrollbar-thickness-lg: 14px
 --xh-scrollbar-thickness-md: 10px
 --xh-scrollbar-thickness-sm: 6px
---xh-section-py: 20px  ← var(--xh-section-py-md)
---xh-section-py-lg: 32px  ← var(--xh-space-8)
---xh-section-py-md: 20px  ← var(--xh-space-5)
---xh-section-py-sm: 16px  ← var(--xh-space-4)
+--xh-section-py: 16px  ← var(--xh-section-py-md)
+--xh-section-py-lg: 24px  ← var(--xh-space-6)
+--xh-section-py-md: 16px  ← var(--xh-space-4)
+--xh-section-py-sm: 12px  ← var(--xh-space-3)
 --xh-shape-control: 6px  ← var(--xh-radius-md)
 --xh-shape-inset: 4px  ← var(--xh-radius-sm)
 --xh-shape-pill: 9999px  ← var(--xh-radius-full)
 --xh-shape-surface: 8px  ← var(--xh-radius-lg)
 --xh-shimmer-duration: 1600ms
 --xh-spin-duration: 640ms
---xh-stack-gap-lg: 24px  ← var(--xh-space-6)
---xh-stack-gap-md: 16px  ← var(--xh-space-4)
---xh-stack-gap-sm: 8px  ← var(--xh-space-2)
+--xh-stack-gap-lg: 20px  ← var(--xh-space-5)
+--xh-stack-gap-md: 12px  ← var(--xh-space-3)
+--xh-stack-gap-sm: 6px  ← var(--xh-space-1_5)
 --xh-state-disabled-opacity: 0.5
 --xh-state-dragging-opacity: 0.6
 --xh-surface-action-inset: 12px  ← var(--xh-space-3)
---xh-surface-pad-lg: 16px  ← var(--xh-space-4)
---xh-surface-pad-md: 12px  ← var(--xh-space-3)
---xh-surface-pad-sm: 8px  ← var(--xh-space-2)
+--xh-surface-pad-lg: 12px  ← var(--xh-space-3)
+--xh-surface-pad-md: 8px  ← var(--xh-space-2)
+--xh-surface-pad-sm: 6px  ← var(--xh-space-1_5)
 --xh-surface-pad-xs: 4px  ← var(--xh-space-1)
---xh-surface-px-md: 16px  ← var(--xh-space-4)
---xh-surface-px-sm: 16px  ← var(--xh-space-4)
---xh-surface-py-md: 20px  ← var(--xh-space-5)
---xh-surface-py-sm: 12px  ← var(--xh-space-3)
---xh-switch-track-h-lg: 28px
---xh-switch-track-h-md: 22px
---xh-switch-track-h-sm: 18px
+--xh-surface-px-md: 12px  ← var(--xh-space-3)
+--xh-surface-px-sm: 12px  ← var(--xh-space-3)
+--xh-surface-py-md: 16px  ← var(--xh-space-4)
+--xh-surface-py-sm: 8px  ← var(--xh-space-2)
+--xh-switch-track-h-lg: 24px
+--xh-switch-track-h-md: 20px
+--xh-switch-track-h-sm: 16px
 --xh-syntax-keyword: oklch(0.82 0.14 300)
 --xh-syntax-number: oklch(0.85 0.12 75)
 --xh-syntax-string: oklch(0.85 0.12 165)
---xh-table-cell-py-lg: 12px  ← var(--xh-space-3)
---xh-table-cell-py-md: 8px  ← var(--xh-space-2)
---xh-table-cell-py-sm: 4px  ← var(--xh-space-1)
+--xh-table-cell-py-lg: 8px  ← var(--xh-space-2)
+--xh-table-cell-py-md: 6px  ← var(--xh-space-1_5)
+--xh-table-cell-py-sm: 2px  ← var(--xh-space-0_5)
 --xh-text-body-leading: 1.5  ← var(--xh-leading-normal)
 --xh-text-body-size: 0.875rem  ← var(--xh-font-size-md)
 --xh-text-body-weight: 400  ← var(--xh-font-weight-regular)
@@ -286,7 +288,7 @@
 --xh-text-secondary-size: 0.8125rem  ← var(--xh-font-size-sm)
 --xh-track-thickness: 6px
 --xh-track-thumb-size: 18px
---xh-viewport-h-lg: 24rem
---xh-viewport-h-md: 16rem
---xh-viewport-h-sm: 12rem
---xh-viewport-max-h: 24rem
+--xh-viewport-h-lg: 20rem
+--xh-viewport-h-md: 14rem
+--xh-viewport-h-sm: 10rem
+--xh-viewport-max-h: 20rem
