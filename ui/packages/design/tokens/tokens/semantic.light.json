@@ -255,6 +255,18 @@
         "$type": "color",
         "$value": "{material.soft.bg}"
       }
+    },
+    "frosted": {
+      "$description": "M2 轻透磨砂面，只给导航和锚定轻浮层。文字与图标使用独立不透明前景。",
+      "bg": { "$type": "color", "$value": "oklch(0.99 0.003 258 / {alpha.high})" },
+      "backdrop": { "$description": "固定半径与轻饱和，不在交互期间动画滤镜。", "$type": "string", "$value": "blur({blur.md}) saturate(108%)" },
+      "border": { "$type": "color", "$value": "oklch(0.145 0.005 258 / 0.14)" },
+      "highlight": { "$type": "color", "$value": "oklch(1 0 0 / 0.52)" },
+      "shadow": { "$description": "锚定浮层的贴面层与环境层，不含 inset 高光。", "$type": "shadow", "$value": "0 2px 4px -2px oklch(0.145 0.005 258 / 0.1), 0 12px 28px -12px oklch(0.145 0.005 258 / 0.16)" },
+      "separator": { "$type": "color", "$value": "oklch(0.145 0.005 258 / 0.12)" },
+      "fg": { "$type": "color", "$value": "{fg.default}" },
+      "fg-muted": { "$type": "color", "$value": "{fg.muted}" },
+      "focus-surface": { "$description": "焦点环的实体隔离底；组件必须真正把它画在获焦控制上。", "$type": "color", "$value": "{bg.surface}" }
     }
   }
 }

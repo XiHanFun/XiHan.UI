@@ -82,6 +82,18 @@
       "fg": { "$type": "color", "$value": "{fg.default}" },
       "fg-muted": { "$type": "color", "$value": "{fg.muted}" },
       "focus-surface": { "$type": "color", "$value": "{material.soft.bg}" }
+    },
+    "frosted": {
+      "$description": "深色 M2 使用独立 tint 与光照，不由浅色值反色。",
+      "bg": { "$type": "color", "$value": "oklch(0.19 0.008 258 / {alpha.high})" },
+      "backdrop": { "$type": "string", "$value": "blur({blur.md}) saturate(108%)" },
+      "border": { "$type": "color", "$value": "oklch(1 0 0 / 0.16)" },
+      "highlight": { "$type": "color", "$value": "oklch(1 0 0 / 0.14)" },
+      "shadow": { "$description": "深色锚定浮层的贴面层与环境层，不重复画内高光。", "$type": "shadow", "$value": "0 2px 4px -2px oklch(0 0 0 / 0.42), 0 12px 28px -12px oklch(0 0 0 / 0.52)" },
+      "separator": { "$type": "color", "$value": "oklch(1 0 0 / 0.12)" },
+      "fg": { "$type": "color", "$value": "{fg.default}" },
+      "fg-muted": { "$type": "color", "$value": "{fg.muted}" },
+      "focus-surface": { "$type": "color", "$value": "{bg.surface}" }
     }
   }
 }

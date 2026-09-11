@@ -336,6 +336,24 @@
       "$value": 1.625
     }
   },
+  "alpha": {
+    "$description": "材质 tint 与光学层共用的不透明度阶梯；正文和关键图标不消费这一组。",
+    "opaque": { "$type": "number", "$value": 1 },
+    "high": { "$type": "number", "$value": 0.88 },
+    "medium": { "$type": "number", "$value": 0.76 },
+    "low": { "$type": "number", "$value": 0.48 },
+    "ultra-low": { "$type": "number", "$value": 0.16 }
+  },
+  "blur": {
+    "$description": "backdrop-filter 的统一采样半径；组件只能经材质配方消费，不直接挑档。",
+    "none": { "$type": "dimension", "$value": "0px" },
+    "xs": { "$type": "dimension", "$value": "4px" },
+    "sm": { "$type": "dimension", "$value": "8px" },
+    "md": { "$description": "M2 Frosted Surface 的标准半径。", "$type": "dimension", "$value": "16px" },
+    "lg": { "$type": "dimension", "$value": "24px" },
+    "xl": { "$type": "dimension", "$value": "32px" },
+    "2xl": { "$type": "dimension", "$value": "48px" }
+  },
   "shadow": {
     "$description": "四档投影，每档三层：贴边层画出面与底的交界、主层给出方向、环境层铺开大范围的暗。投影色是中性色阶最暗那一档的色相与彩度（oklch(0.145 0.005 258)）而不是纯黑，落在带色的底上不会把底色抽成灰。",
     "sm": {

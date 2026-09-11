@@ -15,6 +15,15 @@
       "border": { "$type": "color", "$value": "{border.subtle}" },
       "highlight": { "$type": "color", "$value": "oklch(0 0 0 / 0)" },
       "separator": { "$type": "color", "$value": "{border.subtle}" }
+    },
+    "frosted": {
+      "$description": "高对比档把磨砂面实体化并取消滤镜，高频背景不再参与最终对比度。",
+      "bg": { "$type": "color", "$value": "{bg.surface}" },
+      "backdrop": { "$type": "string", "$value": "none" },
+      "border": { "$type": "color", "$value": "{border.subtle}" },
+      "highlight": { "$type": "color", "$value": "oklch(0 0 0 / 0)" },
+      "separator": { "$type": "color", "$value": "{border.subtle}" },
+      "focus-surface": { "$type": "color", "$value": "{bg.surface}" }
     }
   }
 }

@@ -92,10 +92,12 @@ async function main() {
   const dark = flatten(await load('semantic.dark.json'))
   const lightMore = flatten(await load('semantic.light.more.json'))
   const darkMore = flatten(await load('semantic.dark.more.json'))
+  const transparencyReduce = flatten(await load('semantic.transparency.reduce.json'))
+  const forcedColors = flatten(await load('semantic.forced-colors.json'))
   const reduce = flatten(await load('semantic.reduce.json'))
   const print = flatten(await load('semantic.print.json'))
 
-  for (const e of [...primitive, ...base, ...compact, ...light, ...dark, ...lightMore, ...darkMore, ...reduce, ...print])
+  for (const e of [...primitive, ...base, ...compact, ...light, ...dark, ...lightMore, ...darkMore, ...transparencyReduce, ...forcedColors, ...reduce, ...print])
     declared.add(e.name)
 
   // —— tokens.css ——
@@ -147,6 +149,20 @@ ${await declarations(lightMore)}
 ${await declarations(darkMore)}
   }
 
+  /* 减少透明：直接打到主题边界与组件作用域，避免祖先上已经解析的材质别名盖过实体替代。 */
+  @media (prefers-reduced-transparency: reduce) {
+    :where(:root), :where([data-theme]), :where([data-scope]) {
+${await declarations(transparencyReduce, '      ')}
+    }
+  }
+
+  /* 系统强制色拥有最终决定权；组件仍消费同一组材质名，不另开 forced-color 私有分支。 */
+  @media (forced-colors: active) {
+    :where(:root), :where([data-theme]), :where([data-scope]) {
+${await declarations(forcedColors, '      ')}
+    }
+  }
+
   /* 减弱动效：排在全部取值块之后，同为零特指度时靠书写顺序压过基线。
      皮肤不必各写各的 @media——只要幅度与时长都引这几个语义令牌，降级自动穿透 */
   @media (prefers-reduced-motion: reduce) {
@@ -189,7 +205,7 @@ export type TokenName = keyof typeof tokens
   await mkdir(join(ROOT, 'src', 'generated'), { recursive: true })
   await writeFile(join(ROOT, 'src', 'generated', 'tokens.ts'), generatedTs)
 
-  console.log(`[emit-tokens] primitive ${primitive.length} · base ${base.length} · compact ${compact.length} · light ${light.length} · dark ${dark.length} · reduce ${reduce.length} · print ${print.length} → tokens.css / tokens.json / src/generated/tokens.ts`)
+  console.log(`[emit-tokens] primitive ${primitive.length} · base ${base.length} · compact ${compact.length} · light ${light.length} · dark ${dark.length} · transparency ${transparencyReduce.length} · forced-colors ${forcedColors.length} · reduce ${reduce.length} · print ${print.length} → tokens.css / tokens.json / src/generated/tokens.ts`)
 }
 
 main()
