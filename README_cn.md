@@ -4,7 +4,7 @@
 
 <p><b>快速、轻量、高效、用心的框架无关跨端组件库</b></p>
 
-<p>以 Headless Core 为核心，提供 Vue 3 与 Web Components 双端适配，构建可组合、可访问、可主题化的现代 UI 基础设施</p>
+<p>以 Headless Core 为核心，提供 Vue 3、React 19 与 Web Components 三端适配，构建可组合、可访问、可主题化的现代 UI 基础设施</p>
 
 <p><a href="./README.md">English</a> | <b>简体中文</b></p>
 
@@ -32,11 +32,11 @@
 
 ## 简介
 
-XiHan.UI 以框架无关的 Headless Core 为核心：一个组件的状态、交互与无障碍逻辑沉在无头内核里，各框架只写一层薄适配器。同一份 `connect()` 产出在 Vue 与 Web Components 两端跑同一套一致性测试，逐步推进用例并比对归一化后的 DOM，以此证明「框架无关」不是口号。属于曦寒懿（XiHanFun）开源生态的组件层，拥有底座、组件、应用的完整生态。
+XiHan.UI 以框架无关的 Headless Core 为核心：一个组件的状态、交互与无障碍逻辑沉在无头内核里，各框架只写一层薄适配器。Vue、React 与 Web Components 对同一份 `connect()` 产出运行共享一致性套件，逐步推进用例并比对归一化后的 DOM。属于曦寒懿（XiHanFun）开源生态的组件层，拥有底座、组件、应用的完整生态。
 
 ## 特性
 
-- **框架无关** - 状态与无障碍逻辑住在无头内核，Vue 与 Web Components 两端行为一致
+- **框架无关** - 状态与无障碍逻辑住在无头内核，Vue、React 与 Web Components 共享同一份组件合同
 - **126 个组件** - 覆盖通用、布局、导航、数据录入、数据展示、反馈、浮层、AI 对话八组
 - **近乎零依赖** - 运行时第三方依赖只有 `@internationalized/date`；浮层定位、指针会话、代码着色、流式 Markdown 均为自研
 - **构建期样式** - 令牌从 DTCG 源产出 CSS 变量，皮肤按 `@layer` 分层，运行时不做 CSS-in-JS
@@ -54,7 +54,7 @@ pnpm add @xihan-ui/vue @xihan-ui/tokens @xihan-ui/styles
 
 ## 使用
 
-两个适配器共用同一份令牌与皮肤，在入口处各引一次：
+三个适配器共用同一份令牌与皮肤，在入口处各引一次：
 
 ```ts
 import { createThemeController } from '@xihan-ui/tokens/runtime'
@@ -82,7 +82,29 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@
 </template>
 ```
 
-Web Components：元素不生成结构，作者写带 `data-xh-part` 的 Light-DOM 子节点，元素把 `connect()` 产出打上去。
+React 19：
+
+```bash
+pnpm add @xihan-ui/react @xihan-ui/tokens @xihan-ui/styles
+```
+
+```tsx
+import { XhDialogCloseTrigger, XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@xihan-ui/react'
+
+export function Example() {
+  return (
+    <XhDialogRoot>
+      <XhDialogTrigger>打开对话框</XhDialogTrigger>
+      <XhDialogContent>
+        <XhDialogTitle>确认操作</XhDialogTitle>
+        <XhDialogCloseTrigger>关闭</XhDialogCloseTrigger>
+      </XhDialogContent>
+    </XhDialogRoot>
+  )
+}
+```
+
+Web Components：作者写带 `data-xh-part` 的 Light-DOM 子节点，元素应用 `connect()` 产出，并按各组件合同补充内部部件。
 
 ```ts
 import { defineXhElements } from '@xihan-ui/web-components/define'
@@ -115,7 +137,7 @@ defineXhElements()
 
 包一览、目录布局与开发命令见 [ui/README_cn.md](./ui/README_cn.md)。
 
-要在本地看组件跑起来，先 `cd ui && pnpm build`，再起文档站——每个组件页的示例引的都是真实组件，Vue 与 Web Components 两套写法并排：
+要在本地看组件跑起来，先 `cd ui && pnpm build`，再起文档站；站内提供使用真实组件的 Vue、React 与 Web Components 示例：
 
 ```bash
 cd docs
@@ -127,7 +149,7 @@ pnpm dev
 
 ## 覆盖范围
 
-库里有的：126 个组件的内核与双适配器、默认皮肤、设计令牌与主题运行时、跨适配器一致性套件、真实 Chromium 里的无障碍扫描与浮层定位契约、文档站。
+库里有的：126 个组件的内核与三个适配器、默认皮肤、设计令牌与主题运行时、跨适配器一致性套件、真实 Chromium 里的无障碍扫描与浮层定位契约、文档站。
 
 库里没有的：内建语言包（组件文案只内建英文，中文等要自备 `translations`，全局注入口已就绪）、令牌浏览器、AI 组件族的 MarkdownStream / Reasoning 与 ToolCall 折叠 / 工具审批、企业业务组件。
 
