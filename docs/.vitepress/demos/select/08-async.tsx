@@ -1,4 +1,4 @@
-// 异步加载选项 | 首次展开才去取数据：open-change 报出展开意图，数据到达前用一条禁用条目占位
+// 异步加载选项 | 首次展开才去取数据：open-change 报出展开意图，数据到达前使用正式加载状态
 import type { ReactNode } from "react";
 import {
   XhSelectContent,
@@ -9,6 +9,7 @@ import {
   XhSelectItemText,
   XhSelectLabel,
   XhSelectList,
+  XhSelectLoading,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -48,6 +49,7 @@ export default function Demo(): ReactNode {
     <>
       <XhSelectRoot
         value={value}
+        loading={loading}
         onValueChange={details => setValue(details.value)}
         placeholder="请选择"
         onOpenChange={onOpenChange}
@@ -62,13 +64,6 @@ export default function Demo(): ReactNode {
         <XhSelectPositioner>
           <XhSelectContent>
             <XhSelectList>
-              {loading
-                ? (
-                    <XhSelectItem value="loading" disabled>
-                      <XhSelectItemText>加载中…</XhSelectItemText>
-                    </XhSelectItem>
-                  )
-                : null}
               {songs.map(s => (
                 <XhSelectItem key={s.value} value={s.value}>
                   <XhSelectItemText>{s.label}</XhSelectItemText>
@@ -76,6 +71,7 @@ export default function Demo(): ReactNode {
                 </XhSelectItem>
               ))}
             </XhSelectList>
+            <XhSelectLoading>加载中…</XhSelectLoading>
           </XhSelectContent>
         </XhSelectPositioner>
       </XhSelectRoot>

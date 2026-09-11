@@ -1,4 +1,4 @@
-<!-- 异步加载选项 | 首次展开才去取数据：open-change 报出展开意图，数据到达前用一条禁用条目占位 -->
+<!-- 异步加载选项 | 首次展开才去取数据：open-change 报出展开意图，数据到达前使用正式加载状态 -->
 <xh-select id="select-async" placeholder="请选择">
   <div data-xh-part="root">
     <span data-xh-part="label">曲目</span>
@@ -10,11 +10,8 @@
     </div>
     <div data-xh-part="positioner">
       <div data-xh-part="content">
-        <div data-xh-part="list">
-          <div data-xh-part="item" value="loading" aria-disabled="true">
-            <span data-xh-part="item-text">加载中…</span>
-          </div>
-        </div>
+        <div data-xh-part="list"></div>
+        <div data-xh-part="loading">加载中…</div>
       </div>
     </div>
   </div>
@@ -37,6 +34,7 @@
   select.addEventListener("open-change", (event) => {
     if (!event.detail.open || requested) return;
     requested = true;
+    select.loading = true;
     window.setTimeout(() => {
       list.replaceChildren(
         ...songs.map(([value, label]) => {
@@ -52,6 +50,7 @@
           return item;
         }),
       );
+      select.loading = false;
     }, 800);
   });
 

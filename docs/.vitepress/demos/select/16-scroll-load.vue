@@ -1,4 +1,4 @@
-<!-- 滚动加载 | 浮层的滚动容器就是 content：滚动事件直接落在它身上，滚到底就把下一页并进选项 -->
+<!-- 滚动加载 | list 承担选项滚动：滚到底追加下一页，独立加载状态不会混入可选项 -->
 <script setup lang="ts">
 import {
   XhSelectContent,
@@ -9,6 +9,7 @@ import {
   XhSelectItemText,
   XhSelectLabel,
   XhSelectList,
+  XhSelectLoading,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -37,7 +38,7 @@ const picked = ref<string[]>([]);
 
 // 距底不足 8px 视为触底，取下一页
 function onScroll(event: Event): void {
-  const el = event.target as HTMLElement;
+  const el = event.currentTarget as HTMLElement;
   if (loading.value || tickets.value.length >= TOTAL)
     return;
   if (el.scrollTop + el.clientHeight < el.scrollHeight - 8)
@@ -51,7 +52,7 @@ function onScroll(event: Event): void {
 </script>
 
 <template>
-  <XhSelectRoot v-model:value="picked" placeholder="请选择">
+  <XhSelectRoot v-model:value="picked" :loading="loading" placeholder="请选择">
     <XhSelectLabel>工单</XhSelectLabel>
     <XhSelectControl>
       <XhSelectTrigger>
@@ -60,16 +61,14 @@ function onScroll(event: Event): void {
       </XhSelectTrigger>
     </XhSelectControl>
     <XhSelectPositioner>
-      <XhSelectContent @scroll="onScroll">
-        <XhSelectList>
+      <XhSelectContent>
+        <XhSelectList @scroll="onScroll">
           <XhSelectItem v-for="t in tickets" :key="t.value" :value="t.value">
             <XhSelectItemText>{{ t.label }}</XhSelectItemText>
             <XhSelectItemIndicator />
           </XhSelectItem>
-          <XhSelectItem v-if="loading" value="loading" disabled>
-            <XhSelectItemText>加载中…</XhSelectItemText>
-          </XhSelectItem>
         </XhSelectList>
+        <XhSelectLoading>加载中…</XhSelectLoading>
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>

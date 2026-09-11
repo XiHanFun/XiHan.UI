@@ -1,4 +1,4 @@
-<!-- 异步加载选项 | 首次展开才去取数据：open-change 报出展开意图，数据到达前用一条禁用条目占位 -->
+<!-- 异步加载选项 | 首次展开才去取数据：open-change 报出展开意图，数据到达前使用正式加载状态 -->
 <script setup lang="ts">
 import {
   XhSelectContent,
@@ -9,6 +9,7 @@ import {
   XhSelectItemText,
   XhSelectLabel,
   XhSelectList,
+  XhSelectLoading,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -45,7 +46,7 @@ function onOpenChange(details: { open: boolean }): void {
 </script>
 
 <template>
-  <XhSelectRoot v-model:value="value" placeholder="请选择" @open-change="onOpenChange">
+  <XhSelectRoot v-model:value="value" :loading="loading" placeholder="请选择" @open-change="onOpenChange">
     <XhSelectLabel>曲目</XhSelectLabel>
     <XhSelectControl>
       <XhSelectTrigger>
@@ -56,14 +57,12 @@ function onOpenChange(details: { open: boolean }): void {
     <XhSelectPositioner>
       <XhSelectContent>
         <XhSelectList>
-          <XhSelectItem v-if="loading" value="loading" disabled>
-            <XhSelectItemText>加载中…</XhSelectItemText>
-          </XhSelectItem>
           <XhSelectItem v-for="s in songs" :key="s.value" :value="s.value">
             <XhSelectItemText>{{ s.label }}</XhSelectItemText>
             <XhSelectItemIndicator />
           </XhSelectItem>
         </XhSelectList>
+        <XhSelectLoading>加载中…</XhSelectLoading>
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>

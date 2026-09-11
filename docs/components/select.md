@@ -74,7 +74,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 异步加载选项
 
-首次展开才去取数据：open-change 报出展开意图，数据到达前用一条禁用条目占位
+首次展开才去取数据：open-change 报出展开意图，数据到达前使用正式加载状态
 
 <XhDemo src="select/08-async" />
 
@@ -122,7 +122,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 滚动加载
 
-浮层的滚动容器就是 content：滚动事件直接落在它身上，滚到底就把下一页并进选项
+list 承担选项滚动：滚到底追加下一页，独立加载状态不会混入可选项
 
 <XhDemo src="select/16-scroll-load" />
 
