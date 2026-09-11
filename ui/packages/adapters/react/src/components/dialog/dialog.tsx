@@ -65,12 +65,13 @@ export function XhDialogContent({ children, container, ...rest }: XhDialogConten
   if (!ctx.rendered)
     return null
   const api = ctx.api
+  const backdrop = api.getBackdropProps() as Record<string, unknown>
   return (
     <XhPortal container={container ?? ctx.portalContainer}>
-      {api.open || ctx.rendered
+      {!backdrop.hidden
         ? (
             <div
-              {...api.getBackdropProps() as Record<string, unknown>}
+              {...backdrop}
               ref={(el: HTMLDivElement | null) => {
                 ctx.backdropRef.current = el
               }}

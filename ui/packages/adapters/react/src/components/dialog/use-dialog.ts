@@ -21,6 +21,8 @@ export function useDialog(props: DialogSchema['props']): DialogContext {
   const scope = useReactScope()
   const contentRef = useRef<HTMLElement | null>(null)
   const backdropRef = useRef<HTMLElement | null>(null)
+  const modalRef = useRef(props.modal)
+  modalRef.current = props.modal
 
   // 机器还没建出来，首帧的展开态先按 props 算：与 initialState 同一条判定
   const initialOpen = (props.open ?? props.defaultOpen) ?? false
@@ -30,9 +32,9 @@ export function useDialog(props: DialogSchema['props']): DialogContext {
   const layer = useCallback((): Omit<Layer, 'id' | 'node' | 'surfaces'> => ({
     kind: 'modal',
     branches: () => [],
-    isModal: () => props.modal ?? true,
+    isModal: () => modalRef.current ?? true,
     setModal: () => {},
-  }), [props.modal])
+  }), [])
 
   const overlay = useOverlay({
     scope,

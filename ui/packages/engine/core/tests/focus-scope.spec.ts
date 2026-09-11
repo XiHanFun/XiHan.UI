@@ -806,6 +806,20 @@ describe('tab 边界回绕', () => {
     tab()
     expect(document.activeElement).toBe(h.buttons[2])
   })
+
+  it('loop getter 在生命周期内切换后立即改变边界行为', async () => {
+    const h = setup()
+    let loop = false
+    open(h, { loop: () => loop })
+    await frames(2)
+    h.buttons[2]!.focus()
+    tab()
+    expect(document.activeElement).toBe(h.buttons[2])
+
+    loop = true
+    tab()
+    expect(document.activeElement).toBe(h.buttons[0])
+  })
 })
 
 describe('哨兵', () => {

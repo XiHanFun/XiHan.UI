@@ -179,7 +179,8 @@ export class XhDialogElement extends XhElement {
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const exit = this.ensureExit(open)
-    exit.track(this.contentNode, this.backdropNode)
+    const modal = this.machineProps().modal ?? true
+    exit.track(this.contentNode, modal ? this.backdropNode : null)
     exit.update(open)
     const visible = exit.visible
 
@@ -188,7 +189,7 @@ export class XhDialogElement extends XhElement {
     if (positioner)
       this.setPartHidden(positioner, !visible)
     if (this.backdropNode)
-      this.setPartHidden(this.backdropNode, !visible)
+      this.setPartHidden(this.backdropNode, !visible || !modal)
     // positioner 不是必需部件，content 自己也要收起
     this.setPartHidden(this.contentNode, !visible)
   }
