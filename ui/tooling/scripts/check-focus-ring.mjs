@@ -12,38 +12,33 @@
 // 那条由 check-focus-ring-surface 管，本份只查三件走没走令牌。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { declarations, stripComments } from './lib/css-declarations.mjs'
 
 const STYLES = 'packages/design/styles/css'
 
 // 允许的写法：直接引令牌，或由令牌算出来（往内收的负偏移）
 const TOKEN_DRIVEN = /var\(--xh-[a-z-]+\)/
 
-/**
- * outline 简写里的粗细与颜色、以及 outline-offset 的值。
- *
- * 冒号后不写 \s*：它与 [^;]+ 能吃同一批字符，两边可交换的前缀会让引擎在不匹配时逐位回溯。
- * 值统一交给下面的 trim 归一，正则只负责切出来。
- */
-const DECLS = [
-  { prop: 'outline-width', re: /^\s*outline-width:([^;]+);/gm },
-  { prop: 'outline-color', re: /^\s*outline-color:([^;]+);/gm },
-  { prop: 'outline-offset', re: /^\s*outline-offset:([^;]+);/gm },
-  { prop: 'outline', re: /^\s*outline:([^;]+);/gm },
-]
+const OUTLINE_PROPS = new Set(['outline-width', 'outline-color', 'outline-offset', 'outline'])
+// 只在明确的系统强制色媒体下使用这些系统墨色；普通主题仍必须走令牌。
+const SYSTEM_INK = new Set(['canvastext', 'graytext', 'highlight'])
+const FORCED_COLORS = /^@media\s*\(\s*forced-colors\s*:\s*active\s*\)$/i
 
 const offenders = []
 
 for (const file of (await readdir(STYLES)).filter(f => f.endsWith('.css'))) {
-  const src = (await readFile(join(STYLES, file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '')
-  for (const { prop, re } of DECLS) {
-    for (const m of src.matchAll(re)) {
-      const value = m[1].trim()
-      // outline: none / 0 是「明确不画环」，不是环的取值
-      if (prop === 'outline' && /^(?:none|0)$/.test(value))
-        continue
-      if (!TOKEN_DRIVEN.test(value))
-        offenders.push(`${file}: ${prop}: ${value}`)
-    }
+  const src = stripComments(await readFile(join(STYLES, file), 'utf8'))
+  for (const { prop, value: raw, selectors } of declarations(src)) {
+    if (!OUTLINE_PROPS.has(prop))
+      continue
+    const value = raw.trim()
+    // outline: none / 0 是「明确不画环」，不是环的取值。
+    if (prop === 'outline' && /^(?:none|0)$/.test(value))
+      continue
+    if (prop === 'outline-color' && SYSTEM_INK.has(value.toLowerCase()) && selectors.some(s => FORCED_COLORS.test(s.trim())))
+      continue
+    if (!TOKEN_DRIVEN.test(value))
+      offenders.push(`${file}: ${prop}: ${value}`)
   }
 }
 
@@ -118,4 +113,4 @@ if (offenders.length || borderFocus.length) {
   process.exit(1)
 }
 
-console.log(`[check-focus-ring] 通过：聚焦环的粗细、颜色与偏移全部走令牌；带描边的输入部件聚焦时描边色都走 --xh-border-control-focus（另接 ${usedInputLike.size} 家非标准部件名）`)
+console.log(`[check-focus-ring] 通过：聚焦环的粗细与偏移走令牌，颜色仅在明确系统强制色媒体内使用系统墨色；带描边的输入部件聚焦时描边色都走 --xh-border-control-focus（另接 ${usedInputLike.size} 家非标准部件名）`)
