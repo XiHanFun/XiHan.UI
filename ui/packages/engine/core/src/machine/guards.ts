@@ -10,19 +10,30 @@ export interface GuardCombinators<T extends MachineSchema> {
   not: (expr: GuardExpr<T>) => GuardFn<T>
 }
 
-function mark<T extends MachineSchema>(fn: GuardFn<T>, op: string, args: unknown[]): GuardFn<T> {
-  return Object.defineProperty(fn, COMBINATOR, { value: { op, args }, enumerable: false })
+function mark<T extends MachineSchema>(fn: GuardFn<T>, op: string, args: readonly unknown[]): GuardFn<T> {
+  const metadata = Object.freeze({ op, args })
+  return Object.defineProperty(fn, COMBINATOR, { value: metadata, enumerable: false })
 }
 
 /** 某个 guard 值是否是组合子产物。 */
 export function isCombinator(v: unknown): boolean {
-  return typeof v === 'function' && COMBINATOR in (v as object)
+  return typeof v === 'function' && Object.hasOwn(v, COMBINATOR)
 }
 
 export function createGuards<T extends MachineSchema>(): GuardCombinators<T> {
   return {
-    and: (...exprs) => mark<T>(params => exprs.every(e => params.guard(e)), 'and', exprs),
-    or: (...exprs) => mark<T>(params => exprs.some(e => params.guard(e)), 'or', exprs),
-    not: expr => mark<T>(params => !params.guard(expr), 'not', [expr]),
+    and: (...exprs) => {
+      const args = Object.freeze([...exprs])
+      return mark<T>(params => args.every(e => params.guard(e)), 'and', args)
+    },
+    or: (...exprs) => {
+      const args = Object.freeze([...exprs])
+      return mark<T>(params => args.some(e => params.guard(e)), 'or', args)
+    },
+    not: (expr) => {
+      const arg = expr
+      const args = Object.freeze([arg])
+      return mark<T>(params => !params.guard(arg), 'not', args)
+    },
   }
 }
