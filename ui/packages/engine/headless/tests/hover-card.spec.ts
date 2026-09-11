@@ -355,7 +355,7 @@ describe('hoverCard 收起的其它出口', () => {
     vi.advanceTimersByTime(10)
     expect(c.state()).toBe('visible.open')
 
-    // 消解层的监听器是延后注册的（避开打开自己的那一次交互）
+    // 消解层同步挂监听、延后一枚微任务武装（避开打开自己的那一次交互）
     await vi.advanceTimersByTimeAsync(1)
     // 焦点不在卡片里：keydown 落在文档上，trigger/content 的处理器一个也收不到
     expect(c.root.contains(document.activeElement)).toBe(false)

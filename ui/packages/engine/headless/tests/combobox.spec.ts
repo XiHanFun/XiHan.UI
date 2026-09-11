@@ -264,7 +264,7 @@ function type(input: HTMLInputElement, text: string): void {
   input.dispatchEvent(new Event('input', { bubbles: true }))
 }
 
-/** flush 在 vanilla 运行时是 queueMicrotask；消解层的监听器注册还要过一个 setTimeout。 */
+/** flush 在 vanilla 运行时是一枚微任务；消解层的交互再等一枚微任务武装。 */
 function tick(): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, 0))
 }

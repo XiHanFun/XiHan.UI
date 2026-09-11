@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // 浮层 effect 先登记 layer；后续任何同步初始化失败都必须把已取得资源逆序回滚。
 import type { RuntimeConfig } from '@xihan-ui/core'
-import { createLayerRegistry } from '@xihan-ui/core'
+import { createCounterIdGenerator, createLayerRegistry, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { describe, expect, it, vi } from 'vitest'
 import { setupLayerTransaction, trackOverlayLayer } from '../src/shared/overlay-shell'
 
@@ -205,4 +205,59 @@ describe('浮层资源初始化事务', () => {
     expect(disposeLayer).toHaveBeenCalledTimes(1)
     expect(registry.list()).toEqual([])
   })
+
+  it.each(['add-then-throw', 'queue-then-throw'] as const)(
+    '消解层的 %s 同步失败会回流外壳并撤销 layer',
+    (failureAt) => {
+      const frame = document.createElement('iframe')
+      document.body.append(frame)
+      const doc = frame.contentDocument!
+      const win = frame.contentWindow! as Window & typeof globalThis
+      const node = doc.createElement('div')
+      doc.body.append(node)
+      const idGenerator = createCounterIdGenerator()
+      const scope = createScope(node, idGenerator)
+      const registry = createLayerRegistry(doc)
+      const config = createRuntimeConfig({ scope, idGenerator, layerRegistry: registry })
+      const failure = new Error(failureAt)
+      let queued: (() => void) | undefined
+
+      if (failureAt === 'add-then-throw') {
+        const nativeAdd = doc.addEventListener.bind(doc)
+        vi.spyOn(doc, 'addEventListener').mockImplementation((type, listener, options) => {
+          nativeAdd(type, listener, options)
+          if (type === 'pointerdown')
+            throw failure
+        })
+      }
+      else {
+        vi.spyOn(win, 'queueMicrotask').mockImplementation((callback) => {
+          queued = callback
+          throw failure
+        })
+      }
+
+      try {
+        expect(() => trackOverlayLayer({
+          config,
+          registerLayer: () => registry.register({
+            kind: 'popover',
+            node: () => node,
+            branches: () => [],
+            isModal: () => false,
+            setModal: () => {},
+            surfaces: () => [],
+          }),
+          onDismiss: () => {},
+        })).toThrow(failure)
+        expect(registry.list()).toEqual([])
+        queued?.()
+        expect(registry.list()).toEqual([])
+      }
+      finally {
+        vi.restoreAllMocks()
+        frame.remove()
+      }
+    },
+  )
 })

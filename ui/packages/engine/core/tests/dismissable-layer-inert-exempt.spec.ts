@@ -23,7 +23,7 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-/** 消解层的监听器排在微任务与 0ms 定时器上，装好之前发事件没人接。 */
+/** 消解层同步挂监听，一枚所属 Window 的微任务后才武装；此前的事件会被忽略。 */
 async function settle(): Promise<void> {
   await new Promise(resolve => setTimeout(resolve, 1))
 }
