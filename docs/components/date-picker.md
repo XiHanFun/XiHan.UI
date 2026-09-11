@@ -355,7 +355,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 
 ## 响应式
 
-皮肤按视口分档：`max-width: 767px` · `min-width: 768px`。
+皮肤按视口分档：`min-width: 768px` · `width < 768px`。
 
 ## RTL
 

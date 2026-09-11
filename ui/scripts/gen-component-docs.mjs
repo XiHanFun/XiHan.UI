@@ -356,7 +356,7 @@ function skinTraits(id) {
     transitions: transitions.length > 0,
     transitionProps: transitionProps(transitions),
     // 视口断点与容器查询是响应式；输入能力与渲染模式各自是另一回事，不混进那一节
-    viewportQueries: queries.filter(q => /(?:min|max)-(?:width|height|inline-size|block-size)/.test(q)),
+    viewportQueries: queries.filter(q => /\b(?:(?:min|max)-)?(?:width|height|inline-size|block-size)\s*[:<>=]|[<>=]\s*(?:width|height|inline-size|block-size)\b/.test(q)),
     inputQueries: queries.filter(q => /(?:any-)?(?:pointer|hover)\s*:/.test(q)),
     forcedColors: queries.some(q => q.includes('forced-colors')),
     reduceMotion: css.includes('prefers-reduced-motion'),
