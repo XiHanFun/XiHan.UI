@@ -155,7 +155,6 @@ const HOOKS = {
   'timestamp:data-format': '按日期、时间还是两者一起渲染，换的是文本不是外观',
   'tour:data-last': '走到末步。末步换的是按钮文案不是外观',
   'transfer:data-one-way': '单向还是双向。少一组钮由 hidden 承载',
-  'tree-select:data-indeterminate': '解剖里没有勾选框部件，三态没有可画的地方；选中与否由 data-selected 表出',
 }
 
 /** 去掉注释，注释里的选择器不算数。 */
