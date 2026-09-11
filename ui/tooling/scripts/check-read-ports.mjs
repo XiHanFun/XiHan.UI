@@ -99,7 +99,7 @@ const PENDING = {
   'pagination': ['pageSizeOptions', 'count', 'openEllipsis', 'previousPage', 'nextPage', 'goToPrevPage', 'goToNextPage'],
   'password-input': ['value', 'empty', 'visible', 'capsLock', 'inputType', 'setValue', 'setVisible', 'toggleVisibility'],
   'pin-input': ['value', 'valueAsString', 'complete', 'length', 'focusedIndex', 'setValue', 'clear'],
-  'popconfirm': ['open', 'pending', 'setOpen', 'confirm', 'cancel'],
+  'popconfirm': ['open', 'setOpen', 'confirm', 'cancel'],
   'popover': ['open', 'setOpen'],
   'prompt-input': ['value', 'isComposing', 'canSubmit', 'loading', 'disabled', 'setValue', 'submit', 'stop'],
   'question-flow': ['status', 'submitted', 'index', 'count', 'current', 'isFirst', 'isLast', 'canAdvance', 'allowSkip', 'counter', 'announcement', 'answers', 'notes', 'goTo', 'next', 'prev', 'skip', 'submit', 'toggleOption', 'setNote'],
