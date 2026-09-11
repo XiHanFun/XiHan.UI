@@ -5,7 +5,7 @@
 //
 // 队列要长在页面结构里（比如通知中心那一栏自己排版）时，直接写 `<xh-notification>`，
 // 那是另一条路，两者不共享队列。
-import type { NotificationPlacement, ResolvedNotification } from '@xihan-ui/headless'
+import type { NotificationOptions, NotificationPlacement, ResolvedNotification } from '@xihan-ui/headless'
 import type { XhNotificationElement, XhNotificationItemElement } from '../elements/notification'
 import type {
   NotificationCreateOptions,
@@ -13,7 +13,7 @@ import type {
   NotificationService,
   NotificationServiceOptions,
 } from './types'
-import { NOTIFICATION_PLACEMENT, NOTIFICATION_PLACEMENTS } from '@xihan-ui/headless'
+import { createFeedbackServiceController, NOTIFICATION_PLACEMENT, NOTIFICATION_PLACEMENTS } from '@xihan-ui/headless'
 import { createServiceHolder, partNode, reportServiceFailure } from './host'
 import { defineFeedbackElements } from './register'
 
@@ -40,11 +40,12 @@ export function createNotificationService(options: NotificationServiceOptions = 
   const groups = new Map<NotificationPlacement, HTMLElement>()
   const nodes = new Map<string, XhNotificationItemElement>()
   const shapes = new Map<string, string>()
-  // 行内动作的回调按 id 存这儿：队列记录只放可搬运的纯数据，回调进不去
-  const actions = new Map<string, () => void>()
-  let pausedAll = false
-  let disposed = false
   let mounted = true
+  const controller = createFeedbackServiceController<NotificationOptions, Partial<NotificationOptions>>({
+    name: 'notification',
+    dismissOnUnmounted: false,
+    onStateChange: () => render(),
+  })
 
   queue.placement = queueProps.placement
   queue.max = queueProps.max
@@ -64,6 +65,14 @@ export function createNotificationService(options: NotificationServiceOptions = 
   catch (error) {
     mounted = reportServiceFailure('notification', error)
     release()
+  }
+  if (mounted) {
+    controller.attach({
+      create: opts => queue.create(opts),
+      update: (id, opts) => queue.updateItem(id, opts),
+      dismiss: id => queue.dismiss(id),
+      dismissAll: () => queue.dismissAll(),
+    })
   }
 
   /**
@@ -120,15 +129,16 @@ export function createNotificationService(options: NotificationServiceOptions = 
     node.removeDelay = item.removeDelay
     node.closable = item.closable
     node.pauseOnPageIdle = item.pauseOnPageIdle
-    node.paused = pausedAll
+    node.paused = controller.state.paused
     node.translations = translations
     return node
   }
 
   function render(): void {
-    if (!mounted || disposed)
+    if (!mounted)
       return
     const items = queue.visibleNotifications
+    controller.syncItems(items.map(item => item.id))
     const living = new Set(items.map(item => item.id))
     for (const [id, node] of nodes) {
       if (living.has(id))
@@ -161,7 +171,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
   const onStatus = (event: Event): void => {
     const detail = (event as CustomEvent<{ id: string, status: string }>).detail
     if (detail?.status === 'unmounted')
-      actions.delete(detail.id)
+      controller.unmounted(detail.id)
   }
   const onPress = (event: Event): void => {
     const el = event.target as Element | null
@@ -169,30 +179,16 @@ export function createNotificationService(options: NotificationServiceOptions = 
       return
     const id = (el as XhNotificationItemElement).itemId
     if (id)
-      actions.get(id)?.()
+      controller.invokeAction(id)
   }
   queue.addEventListener('items-change', onItems)
   queue.addEventListener('status-change', onStatus)
   queue.addEventListener('action', onPress)
 
-  /**
-   * 宿主没建起来时命令一律空转：把消息丢掉好过让调用点（推送回调、拦截器）连锁崩掉。
-   * 已卸载则是另一回事——那是调用方拿着一个死服务在用，明说好过静默吞掉。
-   */
-  const alive = (): boolean => {
-    if (disposed)
-      throw new Error('notification 服务已卸载')
-    return mounted
-  }
-
   /** 入队一条；回调另存一张表，队列记录里只留文案。 */
   const create = (opts: NotificationCreateOptions = {}): string => {
-    if (!alive())
-      return ''
     const { onAction, ...record } = opts
-    const id = queue.create(record)
-    if (onAction)
-      actions.set(id, onAction)
+    const id = controller.create(record, onAction)
     render()
     return id
   }
@@ -200,48 +196,32 @@ export function createNotificationService(options: NotificationServiceOptions = 
   const sugar = (type: NotificationCreateOptions['type']) =>
     (title: string, opts: NotificationMessageOptions = {}): string => create({ ...opts, type, title })
 
-  /** 整摞一起按住/放开：卡片的 paused 每帧从这里取。 */
-  const setPaused = (next: boolean): void => {
-    if (!alive())
-      return
-    pausedAll = next
-    render()
-  }
-
   return {
     create,
     update: (id, opts) => {
-      if (alive()) {
-        queue.updateItem(id, opts)
-        render()
-      }
+      controller.update(id, opts)
+      render()
     },
     dismiss: (id) => {
-      if (alive()) {
-        actions.delete(id)
-        queue.dismiss(id)
-        render()
-      }
+      controller.dismiss(id)
+      render()
     },
     dismissAll: () => {
-      if (alive()) {
-        actions.clear()
-        queue.dismissAll()
-        render()
-      }
+      controller.dismissAll()
+      render()
     },
     info: sugar('info'),
     success: sugar('success'),
     warning: sugar('warning'),
     error: sugar('error'),
-    pauseAll: () => setPaused(true),
-    resumeAll: () => setPaused(false),
+    pauseAll: controller.pauseAll,
+    resumeAll: controller.resumeAll,
     dispose: () => {
-      disposed = true
+      mounted = false
       queue.removeEventListener('items-change', onItems)
       queue.removeEventListener('status-change', onStatus)
       queue.removeEventListener('action', onPress)
-      actions.clear()
+      controller.dispose()
       nodes.clear()
       shapes.clear()
       groups.clear()

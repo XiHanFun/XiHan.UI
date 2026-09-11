@@ -4,12 +4,13 @@
 // 摞落在哪儿是整个服务的口径，因此库里没有对应的自定义元素；
 // 队列跑的是 notification 那台队列机器，上限、挤条与合并计数全库一份实现。
 import type { Service } from '@xihan-ui/core'
-import type { NotificationApi, NotificationSchema, ToastRecord, ToastType } from '@xihan-ui/headless'
+import type { NotificationApi, NotificationSchema, ToastOptions, ToastRecord, ToastType } from '@xihan-ui/headless'
 import type { XhToastElement } from '../elements/toast'
 import type { ToastCreateOptions, ToastMessageOptions, ToastPromiseOptions, ToastService, ToastServiceOptions } from './types'
 import { createService, DATA_INERT_EXEMPT } from '@xihan-ui/core'
 import {
   connectNotification,
+  createFeedbackServiceController,
   NOTIFICATION_MAX,
   notificationMachine,
   TOAST_DURATION,
@@ -73,14 +74,14 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   group.setAttribute(DATA_INERT_EXEMPT, '')
   holder.appendChild(group)
 
-  // 行内动作的回调按 id 存这儿：队列记录只放可搬运的纯数据，回调进不去
-  const actions = new Map<string, () => void>()
   const nodes = new Map<string, XhToastElement>()
   // 这一条当下渲染成了什么形状；变了才重搭子节点，没变只刷属性
   const shapes = new Map<string, string>()
-  let pausedAll = false
-  let seq = 0
-  let disposed = false
+  const controller = createFeedbackServiceController<ToastOptions, Partial<ToastOptions>>({
+    name: 'toast',
+    idPrefix: 'toast',
+    onStateChange: () => render(),
+  })
 
   const machineProps = (): Partial<NotificationSchema['props']> => withXhConfig('notification', {
     placement,
@@ -105,6 +106,14 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   }
 
   const api = (): NotificationApi | null => (service ? connectNotification(service, wcNormalize) : null)
+  if (service) {
+    controller.attach({
+      create: opts => api()!.create(opts),
+      update: (id, opts) => api()!.update(id, opts),
+      dismiss: id => api()!.dismiss(id),
+      dismissAll: () => api()!.dismissAll(),
+    })
+  }
 
   function ensureNode(item: ToastRecord): XhToastElement {
     // 到点自己走的默认不出叉，多一颗叉就多一个「要不要点」的判断；
@@ -141,16 +150,17 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     node.removeDelay = item.removeDelay ?? defaults.removeDelay
     node.closable = closable
     node.pauseOnPageIdle = defaults.pauseOnPageIdle
-    node.paused = pausedAll
+    node.paused = controller.state.paused
     node.translations = toastTranslations
     return node
   }
 
   /** 队列里没有的节点撤掉，剩下的按记录刷一遍属性并排到该在的位置。 */
   function render(): void {
-    if (!service || disposed)
+    if (!service)
       return
     const items = visibleNotifications(service.context.get('items'), max, placement)
+    controller.syncItems(items.map(item => item.id))
     const living = new Set(items.map(item => item.id))
     for (const [id, node] of nodes) {
       if (living.has(id))
@@ -174,11 +184,6 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     }
   }
 
-  function remove(id: string): void {
-    actions.delete(id)
-    api()?.dismiss(id)
-  }
-
   /** 走完退场的那条从队列里删掉。 */
   const onStatus = (event: Event): void => {
     const el = event.target as Element | null
@@ -186,7 +191,7 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
       return
     const detail = (event as CustomEvent<{ id: string, status: string }>).detail
     if (detail?.status === 'unmounted')
-      remove(detail.id)
+      controller.unmounted(detail.id)
   }
   /** 行内动作按 id 现查那张回调表。 */
   const onPress = (event: Event): void => {
@@ -195,49 +200,25 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
       return
     const detail = (event as CustomEvent<{ id: string }>).detail
     if (detail?.id)
-      actions.get(detail.id)?.()
+      controller.invokeAction(detail.id)
   }
   group.addEventListener('status-change', onStatus)
   group.addEventListener('action', onPress)
 
-  /**
-   * 宿主没建起来时命令一律空转：把提示丢掉好过让调用点（拦截器、store）连锁崩掉。
-   * 已卸载则是另一回事——那是调用方拿着一个死服务在用，明说好过静默吞掉。
-   */
-  const alive = (): boolean => {
-    if (disposed)
-      throw new Error('toast 服务已卸载')
-    return service != null
-  }
-
   /** 入队一条；回调另存一张表，队列记录里只留文案。 */
   const create = (opts: ToastCreateOptions = {}): string => {
     const { onAction, ...record } = opts
-    const id = api()!.create({ ...record, id: record.id ?? `toast-${++seq}` })
-    if (onAction)
-      actions.set(id, onAction)
-    return id
+    return controller.create(record, onAction)
   }
 
   const sugar = (type: ToastType) => (message: string, opts: ToastMessageOptions = {}): string =>
-    alive() ? create({ ...opts, type, title: message }) : ''
+    create({ ...opts, type, title: message })
 
   return {
-    create: opts => (alive() ? create(opts) : ''),
-    update: (id, opts) => {
-      if (alive())
-        api()!.update(id, opts)
-    },
-    dismiss: (id) => {
-      if (alive())
-        remove(id)
-    },
-    dismissAll: () => {
-      if (alive()) {
-        actions.clear()
-        api()!.dismissAll()
-      }
-    },
+    create,
+    update: controller.update,
+    dismiss: controller.dismiss,
+    dismissAll: controller.dismissAll,
     info: sugar('info'),
     success: sugar('success'),
     warning: sugar('warning'),
@@ -246,41 +227,23 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     promise: <T>(input: Promise<T> | (() => Promise<T>), opts: ToastPromiseOptions<T>): Promise<T> => {
       const { loading, success, error, ...rest } = opts
       const running = typeof input === 'function' ? input() : input
-      if (!alive())
-        return running
-      const id = create({ ...rest, type: 'loading', title: loading })
-      return running.then(
-        (value) => {
-          if (!disposed)
-            api()?.update(id, { type: 'success', title: typeof success === 'function' ? success(value) : success })
-          return value
-        },
-        (reason: unknown) => {
-          if (!disposed)
-            api()?.update(id, { type: 'error', title: typeof error === 'function' ? error(reason) : error })
-          throw reason
-        },
+      const { onAction, ...record } = rest
+      return controller.trackPromise(
+        running,
+        { ...record, type: 'loading', title: loading },
+        value => ({ type: 'success', title: typeof success === 'function' ? success(value) : success }),
+        reason => ({ type: 'error', title: typeof error === 'function' ? error(reason) : error }),
+        onAction,
       )
     },
-    pauseAll: () => {
-      if (alive()) {
-        pausedAll = true
-        render()
-      }
-    },
-    resumeAll: () => {
-      if (alive()) {
-        pausedAll = false
-        render()
-      }
-    },
+    pauseAll: controller.pauseAll,
+    resumeAll: controller.resumeAll,
     dispose: () => {
-      disposed = true
       group.removeEventListener('status-change', onStatus)
       group.removeEventListener('action', onPress)
+      controller.dispose()
       runtime.unmount()
       service = null
-      actions.clear()
       nodes.clear()
       shapes.clear()
       group.remove()

@@ -1,3 +1,5 @@
+export { createFeedbackServiceController } from './feedback-service.controller'
+export type { FeedbackServiceController, FeedbackServiceControllerOptions, FeedbackServiceControllerState, FeedbackServiceQueue, FeedbackServiceRecord } from './feedback-service.controller'
 export { notificationAnatomy } from './notification.anatomy'
 export { connectNotification, connectNotificationItem } from './notification.connect'
 export { notificationKeyboard } from './notification.keyboard'

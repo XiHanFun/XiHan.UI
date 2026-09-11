@@ -10,9 +10,9 @@ import type {
 } from '@xihan-ui/headless'
 import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
-import type { NotificationContext } from '../components/notification/context'
 import type { XhConfigSource } from './service-config'
 import { ensurePortalRoot } from '@xihan-ui/core'
+import { createFeedbackServiceController } from '@xihan-ui/headless'
 import { Fragment, useSyncExternalStore } from 'react'
 import {
   XhNotificationItem,
@@ -137,11 +137,6 @@ export function createNotificationService(options: NotificationServiceOptions = 
   if (!target)
     ensurePortalRoot(document).append(holder)
 
-  let ctx: NotificationContext | null = null
-  // 行内动作的回调按 id 存这儿：队列记录只放可搬运的纯数据，回调进不去
-  const actions = new Map<string, () => void>()
-  let pausedAll = false
-
   // 宿主树在组件树之外，暂停一类的状态只能自己存一份并推给它重渲
   let version = 0
   const subs = new Set<() => void>()
@@ -153,23 +148,28 @@ export function createNotificationService(options: NotificationServiceOptions = 
     subs.add(fn)
     return () => void subs.delete(fn)
   }
+  const controller = createFeedbackServiceController<NotificationOptions, Partial<NotificationOptions>>({
+    name: 'notification',
+    onStateChange: notify,
+  })
 
   const readTranslations = (): Partial<NotificationTranslations> | undefined =>
     typeof queueProps.translations === 'function' ? queueProps.translations() : queueProps.translations
-
-  const remove = (id: string): void => {
-    actions.delete(id)
-    ctx?.dismiss(id)
-  }
 
   function Host(): ReactNode {
     useSyncExternalStore(subscribe, () => version, () => version)
     // props 每帧现展开：文案是取值函数时才跟得上运行期切语言
     const inner = useNotification({ ...queueProps, translations: readTranslations() })
-    ctx = inner
+    controller.attach({
+      create: opts => inner.create(opts),
+      update: (id, opts) => inner.update(id, opts),
+      dismiss: id => inner.dismiss(id),
+      dismissAll: () => inner.dismissAll(),
+    })
     // 部件不经上下文取队列：本服务自己收 status-change 把走完退场的那条删掉，
     // 卡片与队列之间因此没有第二条隐式链路
     const api = inner.api
+    controller.syncItems(api.visibleNotifications.map(item => item.id))
     return (
       <XhConfigProvider config={configSource.read()}>
         <div {...api.getRootProps() as Record<string, unknown>}>
@@ -181,9 +181,9 @@ export function createNotificationService(options: NotificationServiceOptions = 
                   <DefaultCard
                     item={item}
                     translations={readTranslations()}
-                    paused={pausedAll}
-                    onUnmounted={remove}
-                    onAction={id => actions.get(id)?.()}
+                    paused={controller.state.paused}
+                    onUnmounted={controller.unmounted}
+                    onAction={controller.invokeAction}
                   />
                 </Fragment>
               ))}
@@ -195,30 +195,14 @@ export function createNotificationService(options: NotificationServiceOptions = 
   }
 
   const root: Root | null = mountServiceHost(holder, <Host />, 'notification')
-  const mounted = root != null
+  if (!root)
+    controller.attach(null)
   const stopConfig = configSource.subscribe(notify)
-  let disposed = false
-
-  /**
-   * 宿主没挂起来时命令一律空转：把消息丢掉好过让调用点（推送回调、拦截器）连锁崩掉。
-   * 已卸载则是另一回事——那是调用方拿着一个死服务在用，明说好过静默吞掉。
-   */
-  const use = (): NotificationContext | null => {
-    if (disposed)
-      throw new Error('notification 服务已卸载')
-    return mounted ? ctx : null
-  }
 
   /** 入队一条；回调另存一张表，队列记录里只留文案。 */
   const create = (opts: NotificationCreateOptions = {}): string => {
-    const queue = use()
-    if (!queue)
-      return ''
     const { onAction, ...record } = opts
-    const id = queue.create(record)
-    if (onAction)
-      actions.set(id, onAction)
-    return id
+    return controller.create(record, onAction)
   }
 
   const sugar = (type: NotificationOptions['type']) =>
@@ -227,40 +211,20 @@ export function createNotificationService(options: NotificationServiceOptions = 
 
   return {
     create,
-    update: (id, opts) => use()?.update(id, opts),
-    dismiss: (id) => {
-      if (use())
-        remove(id)
-    },
-    dismissAll: () => {
-      if (use()) {
-        actions.clear()
-        ctx?.dismissAll()
-      }
-    },
+    update: controller.update,
+    dismiss: controller.dismiss,
+    dismissAll: controller.dismissAll,
     info: sugar('info'),
     success: sugar('success'),
     warning: sugar('warning'),
     error: sugar('error'),
-    pauseAll: () => {
-      if (use()) {
-        pausedAll = true
-        notify()
-      }
-    },
-    resumeAll: () => {
-      if (use()) {
-        pausedAll = false
-        notify()
-      }
-    },
+    pauseAll: controller.pauseAll,
+    resumeAll: controller.resumeAll,
     setConfig: next => configSource.set(next),
     dispose: () => {
       stopConfig()
       root?.unmount()
-      disposed = true
-      ctx = null
-      actions.clear()
+      controller.dispose()
       if (!target)
         holder.remove()
     },
