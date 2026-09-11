@@ -6,6 +6,12 @@
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='time-picker'][data-part='positioner'] {
+    /* 每个浮层独立声明方向，避免嵌套浮层继承祖先的进场位移。 */
+    --xh-_overlay-enter-up: 0;
+    --xh-_overlay-enter-down: 0;
+    --xh-_overlay-enter-left: 0;
+    --xh-_overlay-enter-right: 0;
+
     position: fixed;
     z-index: var(--xh-time-picker-layer, var(--xh-layer-popover));
     /* 空壳不吃指针，交互只发生在 content 里 */
@@ -17,26 +23,20 @@
     visibility: hidden;
   }
 
-  /* 缩放原点与进场位移按落定的那一侧给：面板从贴着锚点的那条边涨开、沿主轴退让一小段。
-     两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
-     origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+  /* 短位移沿实际落位的物理方向，不随书写方向翻转。 */
   [data-scope='time-picker'][data-part='positioner'][data-placement^='top'] {
-    --xh-_overlay-origin-y: 100%;
     --xh-_overlay-enter-down: 1;
   }
 
   [data-scope='time-picker'][data-part='positioner'][data-placement^='bottom'] {
-    --xh-_overlay-origin-y: 0;
     --xh-_overlay-enter-up: 1;
   }
 
   [data-scope='time-picker'][data-part='positioner'][data-placement^='left'] {
-    --xh-_overlay-origin-x: 100%;
     --xh-_overlay-enter-right: 1;
   }
 
   [data-scope='time-picker'][data-part='positioner'][data-placement^='right'] {
-    --xh-_overlay-origin-x: 0;
     --xh-_overlay-enter-left: 1;
   }
 
@@ -344,21 +344,34 @@
   /* 几列并排：整体高度由列自己撑，滚动发生在列里而不是整个面板上——
      整面板滚会让时列与分列一起走，挑分的时候时就看不见了 */
   [data-scope='time-picker'][data-part='content'] {
+    position: relative;
     display: flex;
     align-items: stretch;
     padding-block: var(--xh-time-picker-content-py, var(--xh-space-1));
     padding-inline: var(--xh-time-picker-content-px, var(--xh-space-1));
     /* 列自己定高，面板整体不该再长过页内滚动面那一档 */
     max-block-size: var(--xh-time-picker-content-max-h, var(--xh-viewport-h-lg));
-    border: var(--xh-stroke-thin) solid var(--xh-time-picker-content-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-time-picker-content-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-time-picker-content-radius, var(--xh-shape-surface));
-    background: var(--xh-time-picker-content-bg, var(--xh-bg-surface));
-    color: var(--xh-time-picker-content-fg, var(--xh-fg-default));
+    background: var(--xh-time-picker-content-bg, var(--xh-material-frosted-bg));
+    color: var(--xh-time-picker-content-fg, var(--xh-material-frosted-fg));
     font-variant-numeric: tabular-nums;
-    box-shadow: var(--xh-time-picker-content-shadow, var(--xh-elevation-floating));
-    /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
-    transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
+    box-shadow: var(--xh-time-picker-content-shadow, var(--xh-material-frosted-shadow));
+    -webkit-backdrop-filter: var(--xh-time-picker-content-backdrop, var(--xh-material-frosted-backdrop));
+    backdrop-filter: var(--xh-time-picker-content-backdrop, var(--xh-material-frosted-backdrop));
     pointer-events: auto;
+  }
+
+  /* 顶光由唯一表面绘制，不占列内空间，也不拦截选项点击。 */
+  [data-scope='time-picker'][data-part='content']::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: var(--xh-stroke-thin);
+    border-radius: inherit;
+    background: var(--xh-time-picker-content-highlight, var(--xh-material-frosted-highlight));
+    pointer-events: none;
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -374,14 +387,14 @@
 
   [data-scope='time-picker'][data-part='content'][data-state='open'] {
     /* 只在展开态挂着：随状态属性一起消失，不长期占着合成层 */
-    will-change: opacity, scale, translate;
-    animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    will-change: opacity, translate;
+    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
      免得动画结束到真收起之间闪一下原样 */
   [data-scope='time-picker'][data-part='content'][data-state='closed'] {
-    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 快捷选项也是一列，与时分秒那几列并排，排在行内起始一侧 */
@@ -393,7 +406,7 @@
     max-block-size: var(--xh-time-picker-preset-group-h, var(--xh-viewport-h-sm));
     padding-inline: var(--xh-time-picker-preset-group-px, var(--xh-space-1));
     overflow-y: auto;
-    border-inline-end: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-border-subtle));
+    border-inline-end: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-material-frosted-separator));
     scrollbar-width: thin;
   }
 
@@ -495,7 +508,7 @@
   }
 
   [data-scope='time-picker'][data-part='column'] + [data-scope='time-picker'][data-part='column'] {
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-border-subtle));
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-material-frosted-separator));
   }
 
   /* 焦点落在列上有两种情形：指针打开、这一段还空着、还没有任何格当锚点，或整列被界裁空。
@@ -642,11 +655,10 @@
 }
 
 @layer xihan.motion {
-  /* 进场从锚点那一侧冒出来：位移的两个分量由 placement 写进私有槽，没写就退回原地缩放 */
-  @keyframes xh-overlay-pop-in {
+  /* 与选择器共用短位移动作；独立引入本皮肤时也提供完整关键帧。 */
+  @keyframes xh-overlay-slide-in {
     from {
       opacity: 0;
-      scale: var(--xh-motion-scale-enter);
       translate:
         calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
         calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
@@ -654,20 +666,21 @@
 
     to {
       opacity: 1;
-      scale: 1;
       translate: 0 0;
     }
   }
 
-  @keyframes xh-pop-out {
+  @keyframes xh-overlay-slide-out {
     from {
       opacity: 1;
-      scale: 1;
+      translate: 0 0;
     }
 
     to {
       opacity: 0;
-      scale: var(--xh-motion-scale-exit);
+      translate:
+        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
     }
   }
 

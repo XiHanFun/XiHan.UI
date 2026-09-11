@@ -338,7 +338,6 @@
         "popconfirm.css",
         "popover.css",
         "select.css",
-        "time-picker.css",
         "tour.css"
       ],
       "consumers": [
@@ -349,7 +348,6 @@
         "mention",
         "popconfirm",
         "popover",
-        "time-picker",
         "tour"
       ]
     },
@@ -361,6 +359,7 @@
         "menu.css",
         "menubar.css",
         "select.css",
+        "time-picker.css",
         "tooltip.css",
         "tree-select.css"
       ],
@@ -370,6 +369,7 @@
         "menu",
         "menubar",
         "select",
+        "time-picker",
         "tooltip",
         "tree-select"
       ]
@@ -382,6 +382,7 @@
         "menu.css",
         "menubar.css",
         "select.css",
+        "time-picker.css",
         "tooltip.css",
         "tree-select.css"
       ],
@@ -391,6 +392,7 @@
         "menu",
         "menubar",
         "select",
+        "time-picker",
         "tooltip",
         "tree-select"
       ]
@@ -432,7 +434,6 @@
         "popover.css",
         "select.css",
         "side-nav.css",
-        "time-picker.css",
         "tour.css"
       ],
       "consumers": [
@@ -448,7 +449,6 @@
         "popconfirm",
         "popover",
         "side-nav",
-        "time-picker",
         "tour"
       ]
     },
