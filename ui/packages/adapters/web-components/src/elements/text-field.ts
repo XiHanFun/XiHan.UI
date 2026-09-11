@@ -155,6 +155,7 @@ export class XhTextFieldElement extends XhElement {
 
   /** 首次见到该节点时若已有内容则判为归作者，之后一概不碰。 */
   private readonly ownsText = new WeakMap<HTMLElement, boolean>()
+  private autoSizeEl: HTMLTextAreaElement | null = null
 
   private fillOwnedText(el: HTMLElement, text: string): void {
     let owned = this.ownsText.get(el)
@@ -183,8 +184,12 @@ export class XhTextFieldElement extends XhElement {
     const host = inputEl?.tagName === 'TEXTAREA' ? 'textarea' as const : 'input' as const
     put('input', api.getInputProps({ as: host }) as Record<string, unknown>)
     // 程序化写值不触发 input 事件，spread 后补量一次
-    if (host === 'textarea' && inputEl)
-      autoSizeTextarea(inputEl as HTMLTextAreaElement, api.autoSize)
+    const nextAutoSizeEl = host === 'textarea' && inputEl ? inputEl as HTMLTextAreaElement : null
+    if (this.autoSizeEl && this.autoSizeEl !== nextAutoSizeEl)
+      autoSizeTextarea(this.autoSizeEl, false)
+    this.autoSizeEl = nextAutoSizeEl
+    if (this.autoSizeEl)
+      autoSizeTextarea(this.autoSizeEl, api.autoSize)
     put('prefix', api.getPrefixProps() as Record<string, unknown>)
     put('suffix', api.getSuffixProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
@@ -199,5 +204,27 @@ export class XhTextFieldElement extends XhElement {
     // 收起清空按钮只写 hidden 属性是不够的：作者层给这个 part 声明的任何一条 display
     // 都会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住
     this.setPartHidden(this.getPart('clear-trigger'), !api.canClear)
+  }
+
+  override disconnectedCallback(): void {
+    const errors: unknown[] = []
+    try {
+      if (this.autoSizeEl)
+        autoSizeTextarea(this.autoSizeEl, false)
+    }
+    catch (error) {
+      errors.push(error)
+    }
+    this.autoSizeEl = null
+    try {
+      super.disconnectedCallback()
+    }
+    catch (error) {
+      errors.push(error)
+    }
+    if (errors.length === 1)
+      throw errors[0]
+    if (errors.length > 1)
+      throw new AggregateError(errors, '[xh] TextField autoSize 与元素断开清理同时失败', { cause: errors[0] })
   }
 }

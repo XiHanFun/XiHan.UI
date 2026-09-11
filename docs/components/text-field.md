@@ -16,7 +16,12 @@
 
 - `type` 覆盖 `text` / `password` / `email` / `tel` / `url` / `search`。
 - `clearable` 给出清空按钮，`maxLength` 给出字数上限。
-- 多行时可自动长高。
+- 输入部件用 `as="textarea"` 切到多行；`autoSize` 为 `true` 时随内容长高，也可用
+  `{ minRows, maxRows }` 限定行数。两个边界给值时必须是大于等于 1 的有限整数，且
+  `minRows` 不得大于 `maxRows`；无效配置会明确失败，不会夹取或沿用旧配置。
+- 自动高度会跟随输入、程序化写值与运行期配置变化重新测量。关闭 `autoSize`、换回单行、
+  替换输入节点或卸载组件时，会归还启用前的 `block-size` 与 `overflow-y` 内联声明及其 priority；
+  作者原本没有写的声明才会被移除。
 - `prefix` / `suffix` 在框内摆货币符、单位或图标，两段对读屏隐藏。
 - `showCount` 显出字数部件，数字取 `count` 与 `maxLength`，顶到上限时换色。
 - 输入组、限制可输入字符由作者组合，组件不预设。

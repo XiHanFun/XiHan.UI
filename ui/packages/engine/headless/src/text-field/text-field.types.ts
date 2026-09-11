@@ -16,7 +16,9 @@ export type TextFieldType = 'text' | 'password' | 'email' | 'tel' | 'url' | 'sea
 
 /** 自动高度的行数界限；不给即完全跟内容走。 */
 export interface TextFieldAutoSize {
+  /** 最少行数；给值时必须是大于等于 1 的有限整数。 */
   minRows?: number
+  /** 最多行数；给值时必须是大于等于 1 的有限整数，且不得小于 minRows。 */
   maxRows?: number
 }
 
