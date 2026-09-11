@@ -289,7 +289,25 @@ export class XhCommandElement extends XhElement {
     return this.getParts(name).filter(el => owner.contains(el))
   }
 
+  private visibilityList: HTMLElement | null = null
+
+  protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
+    if (!this.visibilityList || !nodes.includes(this.visibilityList))
+      return
+    this.visibilityList = null
+    if (this.ctrl.service.getStatus() === 'Started') {
+      this.ctrl.service.refs.set('getListEl', () => null)
+      this.ctrl.service.refs.get('syncListVisibility')?.()
+    }
+  }
+
   protected wire(): void {
+    const list = this.getPart('list')
+    if (list !== this.visibilityList) {
+      this.visibilityList = list
+      this.ctrl.service.refs.set('getListEl', () => list)
+      this.ctrl.service.refs.get('syncListVisibility')?.()
+    }
     const api = connectCommand(this.ctrl.service, wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {

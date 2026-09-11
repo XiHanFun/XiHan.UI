@@ -17642,6 +17642,15 @@
   overflow-y: auto;
 }
 
+/* 没有可见命令时不保留列表的上下内距；只排除列表内部 hidden 祖先，退场中的外壳不影响判断。 */
+[data-scope='command'][data-part='list']:not(:has(
+  [data-scope='command'][data-part='item']:not([hidden]):not(
+    [data-scope='command'][data-part='list'] [hidden] *
+  )
+)) {
+  display: none;
+}
+
 /* 列表从不承载焦点（焦点恒在检索框，锚点走 aria-activedescendant），
    可滚动容器在某些浏览器里会被自动塞进 Tab 序列，落焦时不画环 */
 [data-scope='command'][data-part='list']:focus-visible {
@@ -17762,6 +17771,12 @@
   font-size: var(--xh-command-loading-font-size, var(--xh-_command-font-size));
   line-height: var(--xh-leading-none);
   text-align: center;
+}
+
+/* 未提供状态内容时不渲染一块纯留白，提示文案仍由作者明确提供。 */
+[data-scope='command'][data-part='empty']:empty,
+[data-scope='command'][data-part='loading']:empty {
+  display: none;
 }
 
 /* 取数在途：列表压暗一档，与在途占位一起说明这块正在变 */

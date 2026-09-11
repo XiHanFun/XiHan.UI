@@ -9868,6 +9868,33 @@
               "description": "取 owner 子树内指定名字的角色节点。"
             },
             {
+              "kind": "field",
+              "name": "visibilityList",
+              "type": {
+                "text": "HTMLElement | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ]
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
