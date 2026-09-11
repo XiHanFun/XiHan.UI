@@ -13477,6 +13477,7 @@
     "--xh-separator-dash-gap",
     "--xh-separator-dash-length",
     "--xh-separator-gap",
+    "--xh-separator-radius",
     "--xh-separator-thickness",
     "--xh-side-nav-collapsed-w",
     "--xh-side-nav-fg",
