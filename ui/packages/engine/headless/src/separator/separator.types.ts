@@ -1,6 +1,6 @@
 import type { PropTypes } from '@xihan-ui/core'
 
-/** 线怎么画：默认线 / 弱线 / 强线。三档只换深浅，与语气无关。 */
+/** 线怎么画：材质自适应默认线 / 低对比弱线 / 高对比强线。与业务语气无关。 */
 export type SeparatorVariant = 'default' | 'strong' | 'subtle'
 
 /** 分节文字落在哪一侧。仅在渲染了 content 时生效。 */
@@ -8,7 +8,7 @@ export type SeparatorAlign = 'center' | 'end' | 'start'
 
 export interface SeparatorProps {
   orientation?: 'horizontal' | 'vertical'
-  /** 装饰性分隔：仅视觉分组，不进无障碍树（role=none，无 aria-orientation）。 */
+  /** 装饰性分隔：仅视觉分组，root 通过 role=none + aria-hidden 完整退出无障碍树。 */
   decorative?: boolean
   /** 线怎么画，缺省 default；缺省档不输出 data-variant。 */
   variant?: SeparatorVariant

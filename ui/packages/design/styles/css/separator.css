@@ -9,12 +9,13 @@
    * 各自取用：换档只改槽，画在哪个节点上互不影响。
    */
   [data-scope='separator'][data-part='root'] {
-    --xh-_separator-color: var(--xh-separator-color, var(--xh-border-default));
+    --xh-_separator-color: var(--xh-separator-color, var(--xh-material-frosted-separator));
     --xh-_separator-dash: var(--xh-separator-dash-length, var(--xh-space-1_5));
     --xh-_separator-dash-gap: var(--xh-separator-dash-gap, var(--xh-space-1_5));
     --xh-_separator-paint: var(--xh-_separator-color);
 
     border: 0;
+    border-radius: var(--xh-separator-radius, var(--xh-shape-pill));
     background: var(--xh-_separator-paint);
   }
 
@@ -33,7 +34,7 @@
      三档只换线的深浅，缺省档写在上面的基础规则里。使用者槽排在档值前面，
      写了 --xh-separator-color 的那一条仍然压过档值 */
   [data-scope='separator'][data-part='root'][data-variant='subtle'] {
-    --xh-_separator-color: var(--xh-separator-color, var(--xh-border-subtle));
+    --xh-_separator-color: var(--xh-separator-color, var(--xh-material-soft-separator));
   }
 
   [data-scope='separator'][data-part='root'][data-variant='strong'] {
@@ -79,6 +80,7 @@
   /* 两条线等分剩下的地方；粗细与颜色跟 root 单节点时同源 */
   [data-scope='separator'][data-part='line'] {
     flex: 1 1 0;
+    border-radius: var(--xh-separator-radius, var(--xh-shape-pill));
     background: var(--xh-_separator-paint);
   }
 

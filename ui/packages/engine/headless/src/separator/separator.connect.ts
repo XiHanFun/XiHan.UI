@@ -18,6 +18,7 @@ export function connectSeparator<T extends PropTypes>(
       ...parts.root.attrs,
       // 装饰性分隔退出无障碍树；语义分隔才暴露 separator 与朝向
       'role': decorative ? 'none' : 'separator',
+      'aria-hidden': decorative ? true : undefined,
       'aria-orientation': (!decorative && orientation === 'vertical') ? 'vertical' : undefined,
       'data-orientation': orientation,
       // 缺省档不写属性：皮肤的基础规则就是缺省档
