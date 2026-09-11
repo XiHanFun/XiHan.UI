@@ -144,6 +144,8 @@
     display: flex;
     align-items: flex-start;
     justify-content: center;
+    /* 全屏定位层只负责排版，不截获页面指针；模态拦截由 backdrop 承担。 */
+    pointer-events: none;
     padding-block-start: max(var(--xh-command-inset-block-start, var(--xh-space-8)), env(safe-area-inset-top));
     padding-block-end: max(var(--xh-command-positioner-pb, var(--xh-space-4)), env(safe-area-inset-bottom));
     padding-inline: max(
@@ -171,6 +173,8 @@
     box-shadow: var(--xh-command-shadow, var(--xh-elevation-sheet));
     /* 条目的高亮底色是方角，滚到两端时会探出面板的圆角 */
     overflow: hidden;
+    /* positioner 不吃指针，面板自身恢复交互。 */
+    pointer-events: auto;
     /* 进退场的缩放锚在面板顶缘：它是从上方落下来的 */
     transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 0);
   }
