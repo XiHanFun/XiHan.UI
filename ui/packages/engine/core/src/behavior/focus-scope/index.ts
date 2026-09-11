@@ -343,7 +343,9 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
       if (branch.ownerDocument === doc)
         addRoot(branch)
     }
-    addRoot(scope.getRootNode())
+    // 本域的 Document 已在创建时固定；动态锚点可先于延迟清理卸载。
+    // 容器与分支的 ShadowRoot 仍按真实节点取，包含无法从 document 深挖的闭合根。
+    roots.add(doc)
 
     for (const root of roots) {
       const active = getActiveElementDeep(root)
@@ -575,7 +577,7 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
         }
         // 原持有者已离场。不能靠 body.focus()——body 不在各引擎一致的可聚焦集合里，
         // 那样焦点会留在这个已经关掉的层里（WC 侧节点常驻，尤其明显）。显式松手。
-        const active = scope.getActiveElement()
+        const active = activeFocusWithinScope()
         if (active && isInScope(active))
           active.blur()
       })
