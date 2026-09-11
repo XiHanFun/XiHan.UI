@@ -8,5 +8,13 @@
     "control-hover": { "$type": "color", "$value": "{color.neutral.300}" },
     "invalid": { "$type": "color", "$value": "{color.danger.400}" },
     "at-limit": { "$type": "color", "$value": "{color.warning.400}" }
+  },
+  "material": {
+    "soft": {
+      "$description": "深色高对比档独立重映射 M1 边界；高光归零，由明确边界承担轮廓。",
+      "border": { "$type": "color", "$value": "{border.subtle}" },
+      "highlight": { "$type": "color", "$value": "oklch(0 0 0 / 0)" },
+      "separator": { "$type": "color", "$value": "{border.subtle}" }
+    }
   }
 }

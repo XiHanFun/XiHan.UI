@@ -210,5 +210,51 @@
       "$type": "color",
       "$value": "oklch(0.5 0.2 300)"
     }
+  },
+  "material": {
+    "$description": "材质配方是组件皮肤的单一视觉入口；组件不再分别拼背景、边界和投影。M1 Soft Surface 保持不透明，不使用 backdrop blur，适合 Card 等内容容器。",
+    "soft": {
+      "bg": {
+        "$description": "M1 柔和面的实体底。略低于纯白表面，靠细微明度差而不是透明度分层。",
+        "$type": "color",
+        "$value": "oklch(0.995 0.001 258)"
+      },
+      "backdrop": {
+        "$description": "M1 不模糊背后内容；消费方可直接把本令牌交给 backdrop-filter。",
+        "$type": "string",
+        "$value": "none"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "{border.subtle}"
+      },
+      "highlight": {
+        "$description": "M1 顶边或内边高光；只画在独立光学层，不改变正文透明度。",
+        "$type": "color",
+        "$value": "oklch(1 0 0 / 0.72)"
+      },
+      "shadow": {
+        "$description": "M1 的贴面层与环境层；不含 inset 高光，避免消费方组合 highlight 时重复画边。",
+        "$type": "shadow",
+        "$value": "0 1px 1px -0.5px oklch(0.145 0.005 258 / 0.04), 0 4px 10px -6px oklch(0.145 0.005 258 / 0.05)"
+      },
+      "separator": {
+        "$type": "color",
+        "$value": "{border.subtle}"
+      },
+      "fg": {
+        "$type": "color",
+        "$value": "{fg.default}"
+      },
+      "fg-muted": {
+        "$type": "color",
+        "$value": "{fg.muted}"
+      },
+      "focus-surface": {
+        "$description": "计算焦点环对比度时使用的最终实体底，不让组件拿页面底代替。",
+        "$type": "color",
+        "$value": "{material.soft.bg}"
+      }
+    }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "$description": "打印档。纸上没有光源：投影印出来是一片脏灰，多数引擎还会连同底色一起丢弃，剩下的只是一圈把面与面糊在一起的脏边。四支海拔角色在打印时一律取消。只重映射角色，不动 shadow.* 原语——原语在屏幕档仍要按原值发出。",
+  "$description": "打印档。纸上没有屏幕光源：投影与材质高光会变成脏灰或无意义亮边。海拔角色和材质绘制效果在打印时取消，只重映射语义角色，不动 shadow.* 原语。",
   "elevation": {
     "raised": {
       "$type": "shadow",
@@ -16,6 +16,19 @@
     "sheet": {
       "$type": "shadow",
       "$value": "none"
+    }
+  },
+  "material": {
+    "soft": {
+      "$description": "纸面不保留装饰高光和接触影，结构只靠内容与分隔线。",
+      "highlight": {
+        "$type": "color",
+        "$value": "oklch(0 0 0 / 0)"
+      },
+      "shadow": {
+        "$type": "shadow",
+        "$value": "none"
+      }
     }
   }
 }
