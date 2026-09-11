@@ -179,9 +179,25 @@ export function connectCascader<T extends PropTypes>(
     ? cascaderFilterCandidates(cascaderSearchCandidates(collection, !!prop('changeOnSelect')), inputValue)
         .map(candidate => ({ ...candidate, key: cascaderPathKey(candidate.path) }))
     : []
-  // 高亮只落在可选候选上：禁用整条的候选轮不到它，aria-activedescendant 也就不会指过去
-  const searchHighlightIndex = cascaderResolveSearchHighlight(searchResults, context.get('searchIndex'))
+  // 高亮只落在可选候选上：禁用整条的候选轮不到它；整控件禁用时即使宿主强制保持
+  // open，候选也没有虚假的活动项。只读仍可浏览，所以不在这里排除。
+  const searchHighlightIndex = disabled
+    ? -1
+    : cascaderResolveSearchHighlight(searchResults, context.get('searchIndex'))
   const searchItemId = (key: string): string => scope.partId('cascader', `search-item-${key}`)
+
+  /** 搜索结果与列项复用同一份级联聚合；checkedStrategy 只改变值的收敛形态，不改变视觉状态。 */
+  const searchItemState = (path: readonly string[]): 'checked' | 'indeterminate' | 'unchecked' => {
+    if (cascadeOn) {
+      const value = path.at(-1)
+      if (value != null && cascaded?.indeterminate.has(value))
+        return 'indeterminate'
+      if (value != null && cascaded?.checked.has(value))
+        return 'checked'
+      return 'unchecked'
+    }
+    return selectedKeys.has(cascaderPathKey(path)) ? 'checked' : 'unchecked'
+  }
 
   /** 选中一条候选：与点列内条目同一语义；只读与禁用改不了选中值，禁用整条也不认。 */
   const selectSearchResult = (result: CascaderSearchResult | undefined): void => {
@@ -585,20 +601,25 @@ export function connectCascader<T extends PropTypes>(
       const key = cascaderPathKey(path)
       const index = searchResults.findIndex(result => result.key === key)
       const result = index >= 0 ? searchResults[index] : undefined
+      const selectionState = searchItemState(path)
+      const searchDisabled = disabled || !!result?.disabled
       return normalize.element({
         ...parts['search-item'].attrs,
         'id': searchItemId(key),
         'role': 'option',
-        'aria-selected': selectedKeys.has(key) ? 'true' : 'false',
-        'aria-disabled': result?.disabled ? 'true' : 'false',
-        'data-state': selectedKeys.has(key) ? 'checked' : 'unchecked',
+        'aria-selected': selectionState === 'checked' ? 'true' : 'false',
+        'aria-checked': cascadeOn
+          ? selectionState === 'checked' ? 'true' : selectionState === 'indeterminate' ? 'mixed' : 'false'
+          : undefined,
+        'aria-disabled': searchDisabled ? 'true' : 'false',
+        'data-state': selectionState,
         // 不在当前候选里（词换了）整个藏掉：WC 的候选节点常驻 DOM，靠这条过滤
         'hidden': !searching || index < 0 || undefined,
         'data-highlighted': dataAttr(index >= 0 && index === searchHighlightIndex),
-        'data-disabled': dataAttr(!!result?.disabled),
+        'data-disabled': dataAttr(searchDisabled),
         'onClick': () => selectSearchResult(result),
         'onPointerMove': () => {
-          if (index >= 0 && index !== searchHighlightIndex && !result?.disabled)
+          if (index >= 0 && index !== searchHighlightIndex && !searchDisabled)
             send({ type: 'SEARCH.HIGHLIGHT', index })
         },
       })
