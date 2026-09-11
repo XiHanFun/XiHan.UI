@@ -1,5 +1,5 @@
 import type { Placement, Size } from '@xihan-ui/core'
-import type { PopconfirmApi, PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmProps } from '@xihan-ui/headless'
+import type { PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmProps } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, mergeProps } from 'vue'
@@ -9,10 +9,10 @@ import { XhPortal } from '../../runtime/portal'
 import { providePopconfirm, usePopconfirmContext } from './context'
 import { usePopconfirm } from './use-popconfirm'
 
-/** 默认插槽的载荷：浮层开合与异步确认挂起两个状态，以及开合、确认、取消三个动作。 */
+/** 默认插槽的载荷：开合、确认事务状态与三个动作。 */
 export type PopconfirmRootSlotProps = Pick<
   PopconfirmApi,
-  'open' | 'pending' | 'setOpen' | 'confirm' | 'cancel'
+  'open' | 'pending' | 'actionError' | 'setOpen' | 'confirm' | 'cancel'
 >
 
 export const XhPopconfirmRoot = defineComponent({
@@ -27,7 +27,7 @@ export const XhPopconfirmRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
     /**
      * 确认回调走函数 prop 而非 emit：emit 拿不到监听函数的返回值，而异步门就吃它——
-     * 返回 Promise 即挂起（浮层等兑现才收、确认按钮转圈），落空留在原地。
+     * 返回 thenable 即挂起（浮层等兑现才收、确认按钮转圈），拒绝留在原地并派 confirm-error。
      * 模板里照旧写 @confirm，Vue 会把它落到这个 prop 上。
      */
     onConfirm: { type: Function as PropType<PopconfirmNotifiers['onConfirm']>, default: undefined },
@@ -36,6 +36,7 @@ export const XhPopconfirmRoot = defineComponent({
   emits: {
     'open-change': (_details: PayloadOf<PopconfirmProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<PopconfirmProps, 'onOpenChange'>['open']) => true,
+    'confirm-error': (_details: PopconfirmConfirmErrorDetails) => true,
     'cancel': () => true,
   },
   slots: Object as SlotsType<{
@@ -48,6 +49,7 @@ export const XhPopconfirmRoot = defineComponent({
         emit('update:open', details.open)
       },
       onConfirm: () => props.onConfirm?.(),
+      onConfirmError: details => emit('confirm-error', details),
       onCancel: () => { emit('cancel') },
     }
     const ctx = usePopconfirm(props as PopconfirmOverlayProps, notify)
@@ -55,6 +57,7 @@ export const XhPopconfirmRoot = defineComponent({
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       open: ctx.api.value.open,
       pending: ctx.api.value.pending,
+      actionError: ctx.api.value.actionError,
       setOpen: ctx.api.value.setOpen,
       confirm: ctx.api.value.confirm,
       cancel: ctx.api.value.cancel,

@@ -13,13 +13,19 @@
 
 ## 特性
 
-- 确认按钮支持异步：在途期间进 pending 并拦住关闭，失败保持打开。
+- 确认按钮支持同步返回和任意 thenable：调用业务前即占用事务，兑现后收起；同步抛错、
+  `then` 读取失败或拒绝都会保持打开，并通过 `actionError` 与 `confirm-error` 原样暴露 `cause`。
+- pending 期间重复确认、触发器切换、`setOpen(false)`、Escape 与层外交互都不会关闭。
+  取消仍可立即终止组件的等待并收起；它不会假装取消业务 Promise，迟到的兑现或拒绝会按事务票据丢弃。
+- 受控宿主把 `open` 写成 `false` 属于事实状态，会终止当前确认事务；此后重新写成 `true` 是新会话，
+  旧 thenable 的结算不会关闭它或写入错误。
+- 浮层是非模态 `dialog`：不陷焦点、不锁滚动、不隐藏页面其它内容。
 - 位置、尺寸、语气三轴。
 - 内容与箭头使用和 Popover 同源的 M2 磨砂表面：边界、顶光、背景模糊与投影保持连续；
   强制颜色模式会撤掉装饰顶光，由系统色接管边界。
 - 标题、说明与末行操作按固定节奏排布，长文案可在可用宽度内断行。确认是实心主操作，
   取消是 soft 次操作；两颗按钮都有接触高光、按压回执、明确的不透明聚焦底与粗指针命中区。
-- pending 时在确认文案之前显示 spinner；挂起时按钮不再响应 hover / active 换面，
+- pending 时在确认文案之前显示 spinner，并以 `aria-busy` / `aria-disabled` 报告状态；挂起时按钮不再响应 hover / active 换面，
   减弱动效下以静止点线圆环表达在途。
 
 ## 示例
@@ -80,7 +86,8 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
 | `onCancel` | `() => void` |  | 点了取消按钮，随后浮层收起；挂起中的确认结果随之作废。Escape 与层外交互只发 onOpenChange，不发这条。 |
-| `onConfirm` | `() => void \| Promise<unknown>` |  | 点了确认按钮。返回 Promise 即挂起确认门：浮层等它兑现才收起、 确认按钮转圈且再点无效，落空（reject）则留在原地不收。同步返回照旧立即收起。 |
+| `onConfirm` | `() => void \| PromiseLike<unknown>` |  | 点了确认按钮。返回 thenable 即挂起确认门：浮层等它兑现才收起、 确认按钮转圈且再点无效，拒绝则留在原地并报告确认错误。同步返回照旧立即收起。 |
+| `onConfirmError` | `(details: PopconfirmConfirmErrorDetails) => void` |  | 确认回调同步抛出或 thenable 拒绝；details.cause 是未经包装的原始原因。 |
 | `onOpenChange` | `(details: PopoverOpenChangeDetails) => void` |  | open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `open` | `boolean` |  |  |
 | `placement` | `Placement` |  |  |
@@ -93,7 +100,8 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `PopoverOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
-| `confirm` | `` | 点了确认按钮；随后浮层收起。异步门走 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () =&gt; Promise` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，落空留在原地），confirm 事件照发只作通知 |
+| `confirm` | `` | 点了确认按钮；随后浮层收起。异步门走 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () =&gt; thenable` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知 |
+| `confirm-error` | `PopconfirmConfirmErrorDetails` | 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因 |
 | `cancel` | `` | 点了取消按钮；随后浮层收起 |
 
 ## 插槽
@@ -123,6 +131,7 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | --- | --- | --- |
 | `open` | `boolean` |  |
 | `pending` | `boolean` | 异步确认进行中：确认按钮转圈、再点无效。 |
+| `actionError` | `PopconfirmConfirmErrorDetails \| null` | 最近一次有效确认动作的错误；新确认或取消时清空。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `confirm` | `() => void` | 发确认意图并请求收起；异步确认挂起期间再调无效。 |
 | `cancel` | `() => void` | 发取消意图并请求收起。 |
@@ -138,14 +147,14 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 
 ## 键盘
 
-规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/#keyboardinteraction)
+规格出处：[W3C APG](https://www.w3.org/TR/wai-aria-1.2/#dialog)
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | focus in trigger | 切换开合，展开时把焦点移入 content |
-| `Enter` / `Space` | focus in confirm-trigger | 发确认意图并收起浮层 |
-| `Enter` / `Space` | focus in cancel-trigger | 发取消意图并收起浮层 |
-| `Escape` | open | 收起浮层并把焦点还给 trigger；不发确认也不发取消 |
+| `Enter` / `Space` | focus in confirm-trigger | 发确认意图；同步成功或 thenable 兑现后收起 |
+| `Enter` / `Space` | focus in cancel-trigger | 终止组件等待，发取消意图并收起浮层 |
+| `Escape` | open and not pending | 收起浮层并把焦点还给 trigger；不发确认也不发取消 |
 
 ## 无障碍
 
@@ -158,8 +167,9 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `content` | `aria-describedby` | `description` 部件的 id |
 | `content` | `aria-labelledby` | `title` 部件的 id |
-| `content` | `role` | 'alertdialog' |
+| `content` | `role` | 'dialog' |
 | `confirm-trigger` | `aria-busy` | 'true' \| undefined |
+| `confirm-trigger` | `aria-disabled` | 'true' \| undefined |
 | `arrow` | `aria-hidden` | 'true' |
 
 ## 样式
