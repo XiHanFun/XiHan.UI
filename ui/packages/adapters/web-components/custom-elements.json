@@ -10575,6 +10575,23 @@
             },
             {
               "kind": "field",
+              "name": "submenuChildren",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Map<HTMLElement, MenuSubmenuChild>()"
+            },
+            {
+              "kind": "field",
+              "name": "submenuOwner",
+              "type": {
+                "text": "MenuSubmenuOwner"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "{ registerSubmenu: child => this.registerSubmenu(child), }"
+            },
+            {
+              "kind": "field",
               "name": "notifyOpen",
               "privacy": "private",
               "readonly": true
@@ -10584,6 +10601,42 @@
               "name": "notifySelect",
               "privacy": "private",
               "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "wireSubmenuChild",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "child",
+                  "type": {
+                    "text": "MenuSubmenuChild"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "registerSubmenu",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "MenuSubmenuRegistration"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "child",
+                  "type": {
+                    "text": "MenuSubmenuChild"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
@@ -26775,6 +26828,60 @@
             },
             {
               "kind": "field",
+              "name": "submenuChildren",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Map<HTMLElement, MenuSubmenuChild>()",
+              "description": "直属子菜单触发条目由父机补齐 item 身份；嵌套 xh-* 子树不会被 discoverParts 越权扫描。"
+            },
+            {
+              "kind": "field",
+              "name": "parentTriggerOwner",
+              "type": {
+                "text": "MenuSubmenuOwner | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "parentTrigger",
+              "type": {
+                "text": "HTMLElement | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "parentRegistration",
+              "type": {
+                "text": "MenuSubmenuRegistration | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "portal",
+              "type": {
+                "text": "MenuPortalLease | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "submenuOwner",
+              "type": {
+                "text": "MenuSubmenuOwner"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "{ registerSubmenu: child => this.registerSubmenu(child), }"
+            },
+            {
+              "kind": "field",
               "name": "exit",
               "type": {
                 "text": "OverlayExit | null"
@@ -26794,6 +26901,31 @@
               "name": "notifySelect",
               "privacy": "private",
               "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "dispatchSelect",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "acceptDescendantSelection",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "details",
+                  "type": {
+                    "text": "MenuSelectDetails"
+                  }
+                }
+              ],
+              "description": "叶菜单已先退栈；每个逻辑祖先同步收起自己，再把同一选择继续交给上一层。"
             },
             {
               "kind": "field",
@@ -26830,6 +26962,114 @@
             {
               "kind": "method",
               "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wireSubmenuChild",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "child",
+                  "type": {
+                    "text": "MenuSubmenuChild"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "registerSubmenu",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "MenuSubmenuRegistration"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "child",
+                  "type": {
+                    "text": "MenuSubmenuChild"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "syncParentTrigger",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "trigger",
+                  "type": {
+                    "text": "HTMLElement | null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "openSubmenuBranches",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "mountPositionerPortal",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "positioner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "source",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "restorePositionerPortal",
               "privacy": "private",
               "return": {
                 "type": {
@@ -27258,16 +27498,6 @@
             },
             {
               "kind": "field",
-              "name": "exitConfig",
-              "type": {
-                "text": "ReturnType<typeof createRuntimeConfig> | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "闸门只用到 reducedMotion，本元素别处不需要 config，建一份共用即可。"
-            },
-            {
-              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -27425,6 +27655,23 @@
             },
             {
               "kind": "field",
+              "name": "submenuChildren",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Map<HTMLElement, MenuSubmenuChild>()"
+            },
+            {
+              "kind": "field",
+              "name": "submenuOwner",
+              "type": {
+                "text": "MenuSubmenuOwner"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "{ registerSubmenu: child => this.registerSubmenu(child), }"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -27434,6 +27681,60 @@
               "name": "notifySelect",
               "privacy": "private",
               "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "wireSubmenuChild",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "child",
+                  "type": {
+                    "text": "MenuSubmenuChild"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "submenuOwnerValue",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "trigger",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "registerSubmenu",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "MenuSubmenuRegistration"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "child",
+                  "type": {
+                    "text": "MenuSubmenuChild"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",

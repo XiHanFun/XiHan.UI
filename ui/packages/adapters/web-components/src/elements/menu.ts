@@ -1,7 +1,8 @@
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PortalVisualBridge, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { MenuNode, MenuOpenChangeDetails, MenuSchema, MenuSelectDetails, MenuTranslations } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
+import { createCounterIdGenerator, createPortalVisualBridge, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectMenu, menuAnatomy, menuMachine, menuMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
@@ -9,6 +10,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { findMenuSubmenuOwner, setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -17,6 +19,14 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
 // 缺省为真的开关（方向键回绕）只有三态才关得掉。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+
+interface MenuPortalLease {
+  readonly source: HTMLElement
+  readonly positioner: HTMLElement
+  readonly placeholder: Comment
+  readonly shell: HTMLElement
+  readonly bridge: PortalVisualBridge
+}
 
 /**
  * `<xh-menu>` —— Light-DOM 行为宿主：用户写 trigger/positioner/content/item/group/... 角色节点，
@@ -94,9 +104,20 @@ export class XhMenuElement extends XhElement {
   declare hoverCloseDelay?: number
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly menuScope = createScope(null, this.idGen)
+  private readonly menuScope = createScope(this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
+  /** 直属子菜单触发条目由父机补齐 item 身份；嵌套 xh-* 子树不会被 discoverParts 越权扫描。 */
+  private readonly submenuChildren = new Map<HTMLElement, MenuSubmenuChild>()
+  private parentTriggerOwner: MenuSubmenuOwner | null = null
+  private parentTrigger: HTMLElement | null = null
+  private parentRegistration: MenuSubmenuRegistration | null = null
+  private portal: MenuPortalLease | null = null
+
+  private readonly submenuOwner: MenuSubmenuOwner = {
+    registerSubmenu: child => this.registerSubmenu(child),
+  }
+
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
 
@@ -105,7 +126,32 @@ export class XhMenuElement extends XhElement {
   }
 
   private readonly notifySelect = (details: MenuSelectDetails): void => {
+    if (!this.submenu) {
+      this.dispatchSelect(details)
+      return
+    }
+    const registration = this.parentRegistration
+    if (!registration)
+      throw new Error('[xh] Menu 子菜单选择时缺少逻辑父菜单')
+    registration.select(details)
+  }
+
+  private readonly dispatchSelect = (details: MenuSelectDetails): void => {
     this.dispatchEvent(new CustomEvent('select', { detail: details, bubbles: true, composed: true }))
+  }
+
+  /** 叶菜单已先退栈；每个逻辑祖先同步收起自己，再把同一选择继续交给上一层。 */
+  private acceptDescendantSelection(details: MenuSelectDetails): void {
+    if (!this.submenu) {
+      this.dispatchSelect(details)
+      this.ctrl.service.send({ type: 'CLOSE' })
+      return
+    }
+    this.ctrl.service.send({ type: 'CLOSE' })
+    const registration = this.parentRegistration
+    if (!registration)
+      throw new Error('[xh] Menu 子菜单选择链缺少逻辑父菜单')
+    registration.select(details)
   }
 
   private readonly ctrl = new MachineController<MenuSchema>(
@@ -153,6 +199,182 @@ export class XhMenuElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.menuScope, idGenerator: this.idGen })
   }
 
+  private wireSubmenuChild(child: MenuSubmenuChild): void {
+    const api = connectMenu(this.ctrl.service, wcNormalize)
+    this.spreader.spread(child.trigger, api.getItemProps({
+      value: child.trigger.getAttribute('value') ?? '',
+      disabled: child.getDisabled(),
+    }) as Record<string, unknown>)
+  }
+
+  private registerSubmenu(child: MenuSubmenuChild): MenuSubmenuRegistration {
+    if (this.submenuChildren.has(child.trigger))
+      throw new Error('[xh] 同一父菜单的同一子菜单 trigger 只能登记一次')
+    this.submenuChildren.set(child.trigger, child)
+    this.wireSubmenuChild(child)
+    this.requestUpdate()
+    let active = true
+    const assertCurrent = (): void => {
+      if (!active || this.submenuChildren.get(child.trigger) !== child)
+        throw new Error('[xh] Menu 子菜单逻辑所有权已经释放')
+    }
+    return {
+      sync: () => {
+        assertCurrent()
+        this.wireSubmenuChild(child)
+      },
+      select: (details) => {
+        assertCurrent()
+        this.acceptDescendantSelection(details)
+      },
+      dispose: () => {
+        if (!active)
+          return
+        active = false
+        if (this.submenuChildren.get(child.trigger) !== child)
+          return
+        this.submenuChildren.delete(child.trigger)
+        this.spreader.release(child.trigger)
+        this.requestUpdate()
+      },
+    }
+  }
+
+  private syncParentTrigger(trigger: HTMLElement | null): void {
+    const owner = this.submenu && trigger ? findMenuSubmenuOwner(this) : null
+    if (owner === this.parentTriggerOwner && trigger === this.parentTrigger)
+      return
+    this.parentRegistration?.dispose()
+    this.parentRegistration = null
+    this.parentTriggerOwner = owner
+    this.parentTrigger = trigger
+    if (owner && trigger) {
+      this.parentRegistration = owner.registerSubmenu({
+        trigger,
+        getPositioner: () => this.getPart('positioner'),
+        getHoverBranches: () => this.openSubmenuBranches(),
+        isOpen: () => this.ctrl.service.state.get() === 'open',
+        getDisabled: () => this.disabled,
+      })
+    }
+  }
+
+  private openSubmenuBranches(): readonly HTMLElement[] {
+    const branches: HTMLElement[] = []
+    for (const child of this.submenuChildren.values()) {
+      if (!child.isOpen())
+        continue
+      const positioner = child.getPositioner()
+      if (positioner)
+        branches.push(positioner)
+      branches.push(...child.getHoverBranches())
+    }
+    return Object.freeze(branches)
+  }
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal ? [this.portal.positioner] : []
+  }
+
+  private mountPositionerPortal(positioner: HTMLElement, source: HTMLElement): void {
+    if (this.portal?.positioner === positioner) {
+      if (this.portal.source === source)
+        return
+      this.restorePositionerPortal()
+    }
+    if (this.portal)
+      throw new Error('[xh] Menu 子菜单的 Portal positioner 在单次展开期不得换代')
+    if (positioner.ownerDocument !== source.ownerDocument || positioner.ownerDocument !== this.ownerDocument)
+      throw new Error('[xh] Menu 子菜单的 Portal 来源、positioner 与宿主必须属于同一 Document')
+    const parent = positioner.parentNode
+    if (!parent)
+      throw new Error('[xh] Menu 子菜单的 positioner 必须先挂入作者结构再搬到 Portal')
+    this.ensureConfig()
+    const target = this.config!.portalContainer()
+    if (!target)
+      throw new Error('[xh] Menu 子菜单需要显式可用的 Portal 容器')
+    if (target.ownerDocument !== this.ownerDocument || !target.isConnected)
+      throw new Error('[xh] Menu 子菜单的 Portal 容器必须连接在同一 Document')
+
+    const placeholder = this.ownerDocument.createComment('xh-menu-positioner')
+    const shell = this.ownerDocument.createElement('div')
+    shell.dataset.xhPortalShell = ''
+    shell.style.display = 'contents'
+    setMenuSubmenuOwner(shell, this.submenuOwner)
+    parent.insertBefore(placeholder, positioner)
+    let bridge: PortalVisualBridge | null = null
+    try {
+      target.appendChild(shell)
+      bridge = createPortalVisualBridge({ source, shell })
+      // 先公布所有权，再移动：嵌套自定义元素重连时可沿 Portal 壳找回逻辑父级。
+      this.portal = { source, positioner, placeholder, shell, bridge }
+      shell.appendChild(positioner)
+      this.requestUpdate()
+    }
+    catch (error) {
+      this.portal = null
+      const cleanupErrors: unknown[] = []
+      try {
+        bridge?.dispose()
+      }
+      catch (cleanupError) {
+        cleanupErrors.push(cleanupError)
+      }
+      try {
+        if (placeholder.parentNode)
+          placeholder.replaceWith(positioner)
+      }
+      catch (cleanupError) {
+        cleanupErrors.push(cleanupError)
+      }
+      try {
+        setMenuSubmenuOwner(shell, null)
+        shell.remove()
+      }
+      catch (cleanupError) {
+        cleanupErrors.push(cleanupError)
+      }
+      if (cleanupErrors.length)
+        throw new AggregateError([error, ...cleanupErrors], '[xh] Menu 子菜单 Portal 初始化与回滚同时失败', { cause: error })
+      throw error
+    }
+  }
+
+  private restorePositionerPortal(): void {
+    const portal = this.portal
+    if (!portal)
+      return
+    this.portal = null
+    const errors: unknown[] = []
+    try {
+      portal.bridge.dispose()
+    }
+    catch (error) {
+      errors.push(error)
+    }
+    try {
+      if (!portal.placeholder.parentNode)
+        throw new Error('[xh] Menu 子菜单的 Portal 占位节点已被移除，无法恢复作者结构')
+      portal.placeholder.replaceWith(portal.positioner)
+    }
+    catch (error) {
+      errors.push(error)
+    }
+    try {
+      setMenuSubmenuOwner(portal.shell, null)
+      portal.shell.remove()
+    }
+    catch (error) {
+      errors.push(error)
+    }
+    if (this.isConnected)
+      this.requestUpdate()
+    if (errors.length === 1)
+      throw errors[0]
+    if (errors.length > 1)
+      throw new AggregateError(errors, '[xh] Menu 子菜单 Portal 恢复出现多个异常', { cause: errors[0] })
+  }
+
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
   // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
@@ -180,6 +402,7 @@ export class XhMenuElement extends XhElement {
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
+    svc.refs.set('getHoverBranches', () => this.openSubmenuBranches())
   }
 
   /**
@@ -189,6 +412,7 @@ export class XhMenuElement extends XhElement {
    * 定位是 flush 推迟的（那时 partMap 已就位），这里只为锚点补上时机。
    */
   override connectedCallback(): void {
+    setMenuSubmenuOwner(this, this.submenuOwner)
     this.refreshParts()
     super.connectedCallback()
   }
@@ -226,6 +450,15 @@ export class XhMenuElement extends XhElement {
     }
     // 子菜单形态的触发器是父菜单里的一条 item（双重身份），身份取节点自报的 value
     const triggerEl = this.getPart('trigger')
+    this.syncParentTrigger(triggerEl)
+    const positionerEl = this.getPart('positioner')
+    if (!this.submenu && this.portal)
+      this.restorePositionerPortal()
+    if (this.submenu && api.open) {
+      if (!triggerEl || !positionerEl)
+        throw new Error('[xh] 展开的 Menu 子菜单必须同时具备 trigger 与 positioner')
+      this.mountPositionerPortal(positionerEl, triggerEl)
+    }
     if (this.submenu && triggerEl) {
       this.spreader.spread(triggerEl, api.getSubmenuTriggerProps({ value: triggerEl.getAttribute('value') ?? '' }) as Record<string, unknown>)
     }
@@ -249,6 +482,9 @@ export class XhMenuElement extends XhElement {
       })
       this.spreader.spread(el, props as Record<string, unknown>)
     }
+    for (const child of this.submenuChildren.values())
+      this.wireSubmenuChild(child)
+    this.parentRegistration?.sync()
 
     // 条目子部件的身份取所属条目自报的 value，与条目本身同一份声明
     const ownerItem = (el: HTMLElement): { value: string, disabled?: boolean } => {
@@ -296,15 +532,20 @@ export class XhMenuElement extends XhElement {
     this.exit.track(content)
     this.exit.update(api.open)
     this.setPartHidden(content, !this.exit.visible)
+    if (this.portal && !this.exit.visible)
+      this.restorePositionerPortal()
 
     this.bars.wire()
   }
 
   override disconnectedCallback(): void {
+    setMenuSubmenuOwner(this, null)
+    this.syncParentTrigger(null)
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()
     this.exit = null
+    this.restorePositionerPortal()
     if (this.ctrl.service.state.get() !== 'open')
       this.setPartHidden(this.getPart('content'), true)
     // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
