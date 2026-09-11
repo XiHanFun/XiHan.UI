@@ -22,6 +22,10 @@
 - 自动高度会跟随输入、程序化写值与运行期配置变化重新测量。关闭 `autoSize`、换回单行、
   替换输入节点或卸载组件时，会归还启用前的 `block-size` 与 `overflow-y` 内联声明及其 priority；
   作者原本没有写的声明才会被移除。
+- 自动高度把一只隐藏 textarea 临时挂到输入框所属 Document，以复制后的排版与宽度计算值取得真实
+  内容高度和单行高度，换算 `minRows` / `maxRows`；`line-height: normal` 不按字号猜测。`content-box` 与 `border-box`
+  分别按自己的声明盒计算内距和边框。量高要求 textarea 已连接到带 Window 的 Document，且当前只接受
+  `writing-mode: horizontal-tb`；其他书写模式会明确失败，不会把物理纵向滚动尺寸误当成逻辑块尺寸。
 - `prefix` / `suffix` 在框内摆货币符、单位或图标，两段对读屏隐藏。
 - `showCount` 显出字数部件，数字取 `count` 与 `maxLength`，顶到上限时换色。
 - 输入组、限制可输入字符由作者组合，组件不预设。
@@ -156,7 +160,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | `maxLength` | `number` |  | 字符数上限。同时落成原生 maxlength 与机器侧的截断，两道都要。 |
 | `clearable` | `boolean` |  | 开启清空能力：有值时显出清空按钮、Escape 接管。关掉时按钮带 hidden 收起。 |
 | `showCount` | `boolean` |  | 显出字数部件：关掉时 count 部件带 hidden 收起。 |
-| `autoSize` | `boolean \| TextFieldAutoSize` |  | 多行宿主的自动高度：跟内容长高；对象形态钉行数上下限，顶到 maxRows 后内部滚动。 |
+| `autoSize` | `boolean \| TextFieldAutoSize` |  | 多行宿主的自动高度：按横向书写的真实行盒跟内容长高；对象形态钉行数上下限。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的底与描边怎么画。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 |

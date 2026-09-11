@@ -24,13 +24,18 @@ afterEach(() => {
 
 describe('web components TextField textarea autoSize', () => {
   it('property 值与配置变化会重量，关闭和断开都归还作者内联样式', async () => {
-    vi.spyOn(window, 'getComputedStyle').mockReturnValue({
-      lineHeight: '10px',
-      fontSize: '10px',
-      paddingBlockStart: '0px',
-      paddingBlockEnd: '0px',
-      borderBlockStartWidth: '0px',
-      borderBlockEndWidth: '0px',
+    const getComputedStyle = vi.spyOn(window, 'getComputedStyle').mockReturnValue({
+      getPropertyValue: (property: string) => ({
+        'border-bottom-width': '0px',
+        'border-top-width': '0px',
+        'box-sizing': 'border-box',
+        'font-size': '10px',
+        'line-height': '10px',
+        'padding-bottom': '0px',
+        'padding-top': '0px',
+        'width': '180px',
+        'writing-mode': 'horizontal-tb',
+      })[property] ?? '',
     } as CSSStyleDeclaration)
     vi.spyOn(HTMLTextAreaElement.prototype, 'scrollHeight', 'get').mockImplementation(function (this: HTMLTextAreaElement) {
       return this.value.length * 10
@@ -51,6 +56,9 @@ describe('web components TextField textarea autoSize', () => {
     field.value = 'abcdefgh'
     await settle(field)
     expect(textarea.style.blockSize).toBe('80px')
+    const stableMeasurementCount = getComputedStyle.mock.calls.length
+    await settle(field)
+    expect(getComputedStyle).toHaveBeenCalledTimes(stableMeasurementCount)
 
     field.autoSize = { maxRows: 3 }
     await settle(field)

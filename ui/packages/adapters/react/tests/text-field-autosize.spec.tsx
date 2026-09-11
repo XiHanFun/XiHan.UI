@@ -26,12 +26,17 @@ beforeEach(() => {
   document.body.append(host)
   root = createRoot(host)
   vi.spyOn(window, 'getComputedStyle').mockReturnValue({
-    lineHeight: '10px',
-    fontSize: '10px',
-    paddingBlockStart: '0px',
-    paddingBlockEnd: '0px',
-    borderBlockStartWidth: '0px',
-    borderBlockEndWidth: '0px',
+    getPropertyValue: (property: string) => ({
+      'border-bottom-width': '0px',
+      'border-top-width': '0px',
+      'box-sizing': 'border-box',
+      'font-size': '10px',
+      'line-height': '10px',
+      'padding-bottom': '0px',
+      'padding-top': '0px',
+      'width': '180px',
+      'writing-mode': 'horizontal-tb',
+    })[property] ?? '',
   } as CSSStyleDeclaration)
   vi.spyOn(HTMLTextAreaElement.prototype, 'scrollHeight', 'get').mockImplementation(function (this: HTMLTextAreaElement) {
     return this.value.length * 10

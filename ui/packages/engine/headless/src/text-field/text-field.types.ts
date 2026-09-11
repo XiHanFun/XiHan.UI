@@ -49,7 +49,7 @@ export interface TextFieldSchema extends MachineSchema {
     clearable?: boolean
     /** 显出字数部件：关掉时 count 部件带 hidden 收起。 */
     showCount?: boolean
-    /** 多行宿主的自动高度：跟内容长高；对象形态钉行数上下限，顶到 maxRows 后内部滚动。 */
+    /** 多行宿主的自动高度：按横向书写的真实行盒跟内容长高；对象形态钉行数上下限。 */
     autoSize?: boolean | TextFieldAutoSize
     /** 形态：outline / subtle / ghost，决定输入框的底与描边怎么画。 */
     variant?: ControlVariant
