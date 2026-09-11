@@ -158,7 +158,7 @@ export type { PasswordInputApi, PasswordInputSchema, PasswordInputTranslations, 
 export { connectPinInput, firstEmptyPinIndex, isPinComplete, padPinValue, PIN_INPUT_LENGTH, pinFocusTarget, pinInputAnatomy, pinInputKeyboard, pinInputMachine, pinInputMeta, pinLength, samePinValue, sanitizePin } from './pin-input'
 export type { PinInputApi, PinInputInputProps, PinInputSchema, PinInputTranslations, PinInputType, PinInputValueChangeDetails } from './pin-input'
 export { connectPopconfirm, POPCONFIRM_DEFAULT_PLACEMENT, popconfirmAnatomy, popconfirmKeyboard, popconfirmMeta } from './popconfirm'
-export type { PopconfirmApi, PopconfirmIntents, PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmPendingChannel, PopconfirmProps, PopconfirmTranslations } from './popconfirm'
+export type { PopconfirmActionErrorChannel, PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmIntents, PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmPendingChannel, PopconfirmProps, PopconfirmTranslations } from './popconfirm'
 export { connectPopover, POPOVER_DEFAULT_PLACEMENT, popoverAnatomy, popoverKeyboard, popoverMachine, popoverMeta } from './popover'
 export type { PopoverApi, PopoverOpenChangeDetails, PopoverRefs, PopoverSchema, PopoverTranslations } from './popover'
 export { connectProgress, PROGRESS_VIEW, progressAnatomy, progressKeyboard, progressMeta, progressRing } from './progress'

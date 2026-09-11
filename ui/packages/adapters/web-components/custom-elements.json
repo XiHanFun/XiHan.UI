@@ -32339,7 +32339,7 @@
               "name": "positioner"
             },
             {
-              "description": "浮层内容（role=alertdialog；焦点域与消解层的根节点），收起时带 hidden",
+              "description": "非模态浮层内容（role=dialog；焦点域与消解层的根节点），收起时带 hidden",
               "name": "content"
             },
             {
@@ -32489,9 +32489,9 @@
               "kind": "field",
               "name": "confirmAction",
               "type": {
-                "text": "() => void | Promise<unknown> | undefined"
+                "text": "() => void | PromiseLike<unknown> | undefined"
               },
-              "description": "异步确认动作：事件拿不到监听函数的返回值，异步门走这个属性——\n返回 Promise 即挂起（浮层等兑现才收、确认按钮转圈），落空留在原地。\nconfirm 事件照发，只作通知。"
+              "description": "异步确认动作：事件拿不到监听函数的返回值，异步门走这个属性——\n返回 thenable 即挂起（浮层等兑现才收、确认按钮转圈），拒绝留在原地。\nconfirm 事件照发，只作通知。"
             },
             {
               "kind": "field",
@@ -32505,13 +32505,41 @@
             },
             {
               "kind": "field",
+              "name": "actionErrorState",
+              "type": {
+                "text": "PopconfirmConfirmErrorDetails | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "最近一次有效确认动作的错误。"
+            },
+            {
+              "kind": "field",
+              "name": "pending",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "只读确认事务状态；确认按钮同样以 data-loading / aria-busy 暴露。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "actionError",
+              "type": {
+                "text": "PopconfirmConfirmErrorDetails | null"
+              },
+              "description": "最近一次有效确认错误；新确认或取消时清空。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "intents",
               "type": {
                 "text": "PopconfirmIntents"
               },
               "privacy": "private",
               "readonly": true,
-              "default": "{ onConfirm: () => { this.dispatchEvent(new CustomEvent('confirm', { bubbles: true, composed: true })) return this.confirmAction?.() }, onCancel: () => { this.dispatchEvent(new CustomEvent('cancel', { bubbles: true, composed: true })) }, onPendingChange: (next) => { this.pendingState = next this.requestUpdate() }, }"
+              "default": "{ onConfirm: () => { this.dispatchEvent(new CustomEvent('confirm', { bubbles: true, composed: true })) return this.confirmAction?.() }, onConfirmError: (details) => { this.dispatchEvent(new CustomEvent<PopconfirmConfirmErrorDetails>('confirm-error', { detail: details, bubbles: true, composed: true })) }, onCancel: () => { this.dispatchEvent(new CustomEvent('cancel', { bubbles: true, composed: true })) }, onPendingChange: (next) => { this.pendingState = next this.requestUpdate() }, onActionErrorChange: (next) => { this.actionErrorState = next this.requestUpdate() }, }"
             },
             {
               "kind": "field",
@@ -32584,8 +32612,15 @@
               }
             },
             {
-              "description": "点了确认按钮；随后浮层收起。异步门走 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () => Promise` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，落空留在原地），confirm 事件照发只作通知",
+              "description": "点了确认按钮；随后浮层收起。异步门走 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () => thenable` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知",
               "name": "confirm"
+            },
+            {
+              "description": "确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因",
+              "name": "confirm-error",
+              "type": {
+                "text": "PopconfirmConfirmErrorDetails"
+              }
             },
             {
               "description": "点了取消按钮；随后浮层收起",

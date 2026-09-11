@@ -2,7 +2,7 @@ import type { ConformanceSuite } from '../conformance/types'
 import { popconfirmAnatomy, popconfirmKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
 
-const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/'
+const DIALOG_SPEC = 'https://www.w3.org/TR/wai-aria-1.2/#dialog'
 
 // 气泡确认跑 popover 机器，浮层那套（content 常驻 DOM、靠 hidden 显隐；位置由引擎异步回填、
 // 快照不采集 style）与 popover 一致；这里额外锁住确认/取消两颗按钮的答复语义。
@@ -37,7 +37,7 @@ export const popconfirmSuite: ConformanceSuite = {
     {
       // Enter / Space 由平台的按钮激活行为翻成 click，三颗按钮都不自己接这两个键
       name: 'Enter / Space：三颗按钮都是原生 <button type="button">，激活交给平台',
-      spec: { apg: `${APG}#keyboardinteraction` },
+      spec: { apg: DIALOG_SPEC },
       covers: ['popconfirm.kbd.toggle-on-trigger', 'popconfirm.kbd.confirm', 'popconfirm.kbd.cancel'],
       steps: [
         nativeActivation('popconfirm', 'trigger'),
@@ -46,8 +46,8 @@ export const popconfirmSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '初始收起：trigger aria-expanded=false，content 是带 hidden 的 alertdialog',
-      spec: { apg: APG },
+      name: '初始收起：trigger aria-expanded=false，content 是带 hidden 的非模态 dialog',
+      spec: { apg: DIALOG_SPEC },
       initial: {
         order: ['root', 'trigger', 'positioner', 'content', 'title', 'description', 'cancel-trigger', 'confirm-trigger', 'arrow'],
         counts: {
@@ -71,7 +71,7 @@ export const popconfirmSuite: ConformanceSuite = {
             'data-state': 'closed',
           },
           'content': {
-            'role': 'alertdialog',
+            'role': 'dialog',
             'tabindex': '-1',
             'hidden': '',
             'data-state': 'closed',
@@ -90,7 +90,7 @@ export const popconfirmSuite: ConformanceSuite = {
     },
     {
       name: '点击 trigger 展开：content 去掉 hidden，根与触发器同步翻到 open，派发 open-change',
-      spec: { apg: APG },
+      spec: { apg: DIALOG_SPEC },
       steps: [
         {
           kind: 'click',
@@ -104,7 +104,7 @@ export const popconfirmSuite: ConformanceSuite = {
                 'data-state': 'open',
               },
               content: {
-                'role': 'alertdialog',
+                'role': 'dialog',
                 'hidden': null,
                 'data-state': 'open',
                 'aria-labelledby': '@part(title)',
@@ -118,7 +118,7 @@ export const popconfirmSuite: ConformanceSuite = {
     },
     {
       name: '展开后焦点落在取消按钮：文档序第一个可聚焦元素就是那条退路',
-      spec: { apg: APG },
+      spec: { apg: DIALOG_SPEC },
       steps: [
         { kind: 'click', part: 'trigger' },
         {
@@ -130,7 +130,7 @@ export const popconfirmSuite: ConformanceSuite = {
     },
     {
       name: '点确认：收起浮层，焦点归还 trigger',
-      spec: { apg: APG },
+      spec: { apg: DIALOG_SPEC },
       steps: [
         { kind: 'click', part: 'trigger' },
         // 等焦点真进了浮层再点，否则后面的「归还」是从没离开过的假阳性
@@ -161,7 +161,7 @@ export const popconfirmSuite: ConformanceSuite = {
     },
     {
       name: '点取消：同样收起浮层，焦点归还 trigger',
-      spec: { apg: APG },
+      spec: { apg: DIALOG_SPEC },
       steps: [
         { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { activeElement: 'cancel-trigger' } },
@@ -190,7 +190,7 @@ export const popconfirmSuite: ConformanceSuite = {
     },
     {
       name: 'Escape 收起：焦点归还 trigger，只发 open-change',
-      spec: { apg: `${APG}#keyboardinteraction` },
+      spec: { apg: DIALOG_SPEC },
       covers: ['popconfirm.kbd.escape'],
       steps: [
         { kind: 'click', part: 'trigger' },
@@ -216,7 +216,7 @@ export const popconfirmSuite: ConformanceSuite = {
     },
     {
       name: '尺寸只落在 content 上：root 与 positioner 都不带这一轴',
-      spec: { apg: APG },
+      spec: { apg: DIALOG_SPEC },
       props: { size: 'sm' },
       initial: {
         parts: {

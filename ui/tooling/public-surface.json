@@ -5490,7 +5490,9 @@
       "PinInputTranslations",
       "PinInputType",
       "PinInputValueChangeDetails",
+      "PopconfirmActionErrorChannel",
       "PopconfirmApi",
+      "PopconfirmConfirmErrorDetails",
       "PopconfirmIntents",
       "PopconfirmNotifiers",
       "PopconfirmOverlayProps",
@@ -9733,6 +9735,7 @@
       "offset",
       "onCancel",
       "onConfirm",
+      "onConfirmError",
       "onOpenChange",
       "open",
       "placement",
@@ -15866,6 +15869,7 @@
       "events": [
         "cancel",
         "confirm",
+        "confirm-error",
         "open-change"
       ]
     },

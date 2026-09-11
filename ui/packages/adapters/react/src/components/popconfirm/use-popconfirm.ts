@@ -1,5 +1,5 @@
 import type { Layer, Service } from '@xihan-ui/core'
-import type { PopconfirmApi, PopconfirmIntents, PopconfirmNotifiers, PopconfirmOverlayProps, PopoverSchema } from '@xihan-ui/headless'
+import type { PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmIntents, PopconfirmNotifiers, PopconfirmOverlayProps, PopoverSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import { connectPopconfirm, popoverMachine } from '@xihan-ui/headless'
@@ -33,6 +33,11 @@ export function usePopconfirm(
   const serviceRef = useRef<Service<PopoverSchema> | null>(null)
 
   const initialOpen = (props.open ?? props.defaultOpen) ?? false
+  // 事务状态既要进 React 渲染，也要同步落 ref：确认回调返回 thenable 的同一拍里，
+  // Escape / 层外交互就可能到达机器，不能等下一轮渲染才开始拦截。
+  const [pending, setPendingState] = useState(false)
+  const pendingRef = useRef(false)
+  const [actionError, setActionError] = useState<PopconfirmConfirmErrorDetails | null>(null)
 
   const layer = useCallback((): Omit<Layer, 'id' | 'node' | 'surfaces'> => ({
     kind: 'popover',
@@ -68,8 +73,8 @@ export function usePopconfirm(
     defaultOpen: props.defaultOpen,
     placement: props.placement,
     offset: props.offset,
-    closeOnEscape: props.closeOnEscape,
-    closeOnInteractOutside: props.closeOnInteractOutside,
+    closeOnEscape: pendingRef.current ? false : props.closeOnEscape,
+    closeOnInteractOutside: pendingRef.current ? false : props.closeOnInteractOutside,
     size: props.size,
     onOpenChange: notify?.onOpenChange,
   }), {
@@ -78,17 +83,20 @@ export function usePopconfirm(
   })
   serviceRef.current = service
 
-  // 异步确认的挂起布尔住在这儿，connect 只发变化意图
-  const [pending, setPending] = useState(false)
-
   // 每次点击现读 notify，宿主换回调也立刻生效；onConfirm 的返回值原样透传，异步门靠它
   const notifyRef = useRef(notify)
   notifyRef.current = notify
   const intents: PopconfirmIntents = {
     onConfirm: () => notifyRef.current?.onConfirm?.(),
+    onConfirmError: details => notifyRef.current?.onConfirmError?.(details),
     onCancel: () => { notifyRef.current?.onCancel?.() },
     pending,
-    onPendingChange: setPending,
+    onPendingChange: (next) => {
+      pendingRef.current = next
+      setPendingState(next)
+    },
+    actionError,
+    onActionErrorChange: setActionError,
   }
 
   return {

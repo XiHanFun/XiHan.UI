@@ -10,10 +10,10 @@ import { renderSlot } from '../../runtime/slot-content'
 import { PopconfirmProvider, usePopconfirmContext } from './context'
 import { usePopconfirm } from './use-popconfirm'
 
-/** 函数式 children 的载荷：浮层开合与异步确认挂起两个状态，以及开合、确认、取消三个动作。 */
+/** 函数式 children 的载荷：开合、确认事务状态与三个动作。 */
 export type PopconfirmRootSlotProps = Pick<
   PopconfirmApi,
-  'open' | 'pending' | 'setOpen' | 'confirm' | 'cancel'
+  'open' | 'pending' | 'actionError' | 'setOpen' | 'confirm' | 'cancel'
 >
 
 /** 根上自有的那些取值；onCancel 与原生的同名事件含义不同，由这里接管。 */
@@ -29,10 +29,12 @@ export interface XhPopconfirmRootProps extends RootElementProps {
   size?: Size
   onOpenChange?: PopconfirmNotifiers['onOpenChange']
   /**
-   * 点了确认。返回 Promise 即挂起确认门：浮层等它兑现才收起、确认按钮转圈且再点无效，
-   * 落空（reject）则留在原地不收。同步返回照旧立即收起。
+   * 点了确认。返回 thenable 即挂起确认门：浮层等它兑现才收起、确认按钮转圈且再点无效，
+   * 拒绝则留在原地并经 onConfirmError 报告。同步返回照旧立即收起。
    */
   onConfirm?: PopconfirmNotifiers['onConfirm']
+  /** 确认动作失败；details.cause 保留同步抛出或 thenable 拒绝时的原始原因。 */
+  onConfirmError?: PopconfirmNotifiers['onConfirmError']
   /** 点了取消，随后浮层收起；Escape 与层外交互只发 onOpenChange，不发这条。 */
   onCancel?: PopconfirmNotifiers['onCancel']
   children?: SlotChildren<PopconfirmRootSlotProps>
@@ -48,11 +50,12 @@ export function XhPopconfirmRoot({
   size,
   onOpenChange,
   onConfirm,
+  onConfirmError,
   onCancel,
   children,
   ...rest
 }: XhPopconfirmRootProps): ReactNode {
-  const notify: PopconfirmNotifiers = { onOpenChange, onConfirm, onCancel }
+  const notify: PopconfirmNotifiers = { onOpenChange, onConfirm, onConfirmError, onCancel }
   const ctx = usePopconfirm({
     open,
     defaultOpen,
@@ -68,6 +71,7 @@ export function XhPopconfirmRoot({
         {renderSlot(children, {
           open: ctx.api.open,
           pending: ctx.api.pending,
+          actionError: ctx.api.actionError,
           setOpen: ctx.api.setOpen,
           confirm: ctx.api.confirm,
           cancel: ctx.api.cancel,
@@ -77,7 +81,7 @@ export function XhPopconfirmRoot({
   )
 }
 
-XhPopconfirmRoot.xhEvents = ['open-change'] as const
+XhPopconfirmRoot.xhEvents = ['open-change', 'confirm-error'] as const
 
 export interface XhPopconfirmTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 export function XhPopconfirmTrigger({ children, asChild, ...rest }: XhPopconfirmTriggerProps): ReactNode {

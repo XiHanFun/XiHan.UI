@@ -1,5 +1,5 @@
 import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size } from '@xihan-ui/core'
-import type { PopconfirmIntents, PopoverOpenChangeDetails, PopoverSchema } from '@xihan-ui/headless'
+import type { PopconfirmConfirmErrorDetails, PopconfirmIntents, PopoverOpenChangeDetails, PopoverSchema } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectPopconfirm, popconfirmAnatomy, popconfirmMeta, popoverMachine } from '@xihan-ui/headless'
@@ -34,13 +34,14 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires confirm - 点了确认按钮；随后浮层收起。异步门走 confirmAction 属性：
- *   事件拿不到监听函数的返回值，给元素赋 `confirmAction = () => Promise` 即挂起确认门
- *   （浮层等兑现才收、确认按钮转圈，落空留在原地），confirm 事件照发只作通知
+ *   事件拿不到监听函数的返回值，给元素赋 `confirmAction = () => thenable` 即挂起确认门
+ *   （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知
+ * @fires confirm-error - 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因
  * @fires cancel - 点了取消按钮；随后浮层收起
  * @csspart root - 框住触发器的根容器，承载 data-state
  * @csspart trigger - 触发按钮（aria-haspopup/aria-expanded/aria-controls 所在），同时是定位锚点
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
- * @csspart content - 浮层内容（role=alertdialog；焦点域与消解层的根节点），收起时带 hidden
+ * @csspart content - 非模态浮层内容（role=dialog；焦点域与消解层的根节点），收起时带 hidden
  * @csspart title - 标题（aria-labelledby 目标）
  * @csspart description - 问题正文（aria-describedby 目标）
  * @csspart confirm-trigger - 确认按钮
@@ -82,24 +83,43 @@ export class XhPopconfirmElement extends XhElement {
 
   /**
    * 异步确认动作：事件拿不到监听函数的返回值，异步门走这个属性——
-   * 返回 Promise 即挂起（浮层等兑现才收、确认按钮转圈），落空留在原地。
+   * 返回 thenable 即挂起（浮层等兑现才收、确认按钮转圈），拒绝留在原地。
    * confirm 事件照发，只作通知。
    */
-  declare confirmAction?: () => void | Promise<unknown>
+  declare confirmAction?: () => void | PromiseLike<unknown>
 
   /** 异步确认的挂起布尔；变化时重打属性。 */
   private pendingState = false
+  /** 最近一次有效确认动作的错误。 */
+  private actionErrorState: PopconfirmConfirmErrorDetails | null = null
+
+  /** 只读确认事务状态；确认按钮同样以 data-loading / aria-busy 暴露。 */
+  get pending(): boolean {
+    return this.pendingState
+  }
+
+  /** 最近一次有效确认错误；新确认或取消时清空。 */
+  get actionError(): PopconfirmConfirmErrorDetails | null {
+    return this.actionErrorState
+  }
 
   private readonly intents: PopconfirmIntents = {
     onConfirm: () => {
       this.dispatchEvent(new CustomEvent('confirm', { bubbles: true, composed: true }))
       return this.confirmAction?.()
     },
+    onConfirmError: (details) => {
+      this.dispatchEvent(new CustomEvent<PopconfirmConfirmErrorDetails>('confirm-error', { detail: details, bubbles: true, composed: true }))
+    },
     onCancel: () => {
       this.dispatchEvent(new CustomEvent('cancel', { bubbles: true, composed: true }))
     },
     onPendingChange: (next) => {
       this.pendingState = next
+      this.requestUpdate()
+    },
+    onActionErrorChange: (next) => {
+      this.actionErrorState = next
       this.requestUpdate()
     },
   }
@@ -117,8 +137,8 @@ export class XhPopconfirmElement extends XhElement {
       defaultOpen: this.defaultOpen ?? false,
       placement: this.placement,
       offset: this.offset,
-      closeOnEscape: this.closeOnEscape,
-      closeOnInteractOutside: this.closeOnInteractOutside,
+      closeOnEscape: this.pendingState ? false : this.closeOnEscape,
+      closeOnInteractOutside: this.pendingState ? false : this.closeOnInteractOutside,
       size: this.size,
       onOpenChange: this.notify,
     }
@@ -170,7 +190,11 @@ export class XhPopconfirmElement extends XhElement {
 
   protected wire(): void {
     // 挂起布尔按 wire 那一刻现读
-    const api = connectPopconfirm(this.ctrl.service, { ...this.intents, pending: this.pendingState }, wcNormalize)
+    const api = connectPopconfirm(this.ctrl.service, {
+      ...this.intents,
+      pending: this.pendingState,
+      actionError: this.actionErrorState,
+    }, wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)
@@ -208,6 +232,9 @@ export class XhPopconfirmElement extends XhElement {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
+    // 断开即结束这次可交互会话；业务 Promise 不取消，旧服务的事务票据会让其迟到结果失效。
+    this.pendingState = false
+    this.actionErrorState = null
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()
     this.exit = null
