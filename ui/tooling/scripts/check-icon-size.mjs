@@ -22,6 +22,19 @@ const PORTAL_EXEMPT = {
   'side-nav': '折叠态弹出面板里没有兜底字形，也没有图标槽；根上这条只服务留在原地的行图标',
 }
 
+/**
+ * 这些是皮肤固定绘制的选择状态，不是可由 XhIcon 替换的空槽兜底。
+ * 标记宽高与预留轨共用专用公开尺寸槽，不能随字段展开图标的尺寸一并放大。
+ */
+const STATUS_MARKS = {
+  'cascader:search-item': '--xh-cascader-item-indicator-size',
+  'date-picker:preset': '--xh-date-picker-preset-check-size',
+  'date-picker:time-item': '--xh-date-picker-time-item-check-size',
+  'time-picker:preset': '--xh-time-picker-preset-check-size',
+  'time-picker:item': '--xh-time-picker-item-check-size',
+}
+const statusMarksSeen = new Set()
+
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
 const problems = []
 const exemptSeen = new Set()
@@ -58,10 +71,25 @@ for (const file of files) {
     if (!/mask: var\(--xh-glyph-mark-/.test(rule[2]))
       continue
     const size = rule[2].match(/inline-size:([^;]+);/)?.[1]?.trim()
+    const selector = rule[1].replace(/\s+/g, ' ').trim()
+    const part = [...selector.matchAll(/\[data-part='([\w-]+)'\]/g)].at(-1)?.[1]
+    const mark = `${name}:${part}`
+    if (mark in STATUS_MARKS && /::after\b/.test(selector) && !selector.includes(':empty')) {
+      statusMarksSeen.add(mark)
+      const blockSize = rule[2].match(/block-size:([^;]+);/)?.[1]?.trim()
+      if (!size?.startsWith(`var(${STATUS_MARKS[mark]},`) || size !== blockSize)
+        problems.push(`${file} ${part} 的状态标记必须用 ${STATUS_MARKS[mark]} 同时控制宽高`)
+      continue
+    }
     if (!size || !/--xh-icon-size/.test(size))
       problems.push(`${file}  ${rule[1].replace(/\s+/g, ' ').trim().slice(0, 70)}  兜底字形的盒没按 --xh-icon-size 量（现在是 ${size ?? '没写'}）`)
   }
   wired++
+}
+
+for (const mark of Object.keys(STATUS_MARKS)) {
+  if (!statusMarksSeen.has(mark))
+    problems.push(`${mark} 登记了专用状态标记，但实际规则已不存在`)
 }
 
 if (problems.length) {
@@ -77,4 +105,4 @@ for (const name of Object.keys(PORTAL_EXEMPT)) {
     problems.push(`${name}.css  登记在 PORTAL_EXEMPT 里却没被扫到——名单过期了`)
 }
 
-console.log(`[check-icon-size] 通过：${wired} 份画兜底字形的皮肤都接了 --xh-icon-size，兜底盒与作者图标同一把尺；${portaled} 个浮层族里这把尺够得着被搬走的那一侧（有意不流进去的 ${exemptSeen.size} 个）`)
+console.log(`[check-icon-size] 通过：${wired} 份皮肤的兜底字形与作者图标同一把尺，${statusMarksSeen.size} 处固定选择标记共用各自轨道尺寸；${portaled} 个浮层族的图标尺可达（有意不流入的 ${exemptSeen.size} 个）`)
