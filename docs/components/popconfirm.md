@@ -15,6 +15,12 @@
 
 - 确认按钮支持异步：在途期间进 pending 并拦住关闭，失败保持打开。
 - 位置、尺寸、语气三轴。
+- 内容与箭头使用和 Popover 同源的 M2 磨砂表面：边界、顶光、背景模糊与投影保持连续；
+  强制颜色模式会撤掉装饰顶光，由系统色接管边界。
+- 标题、说明与末行操作按固定节奏排布，长文案可在可用宽度内断行。确认是实心主操作，
+  取消是 soft 次操作；两颗按钮都有接触高光、按压回执、明确的不透明聚焦底与粗指针命中区。
+- pending 时在确认文案之前显示 spinner；挂起时按钮不再响应 hover / active 换面，
+  减弱动效下以静止点线圆环表达在途。
 
 ## 示例
 
@@ -160,6 +166,8 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 
 默认皮肤 `@xihan-ui/styles/popconfirm.css` 按部件选择：`[data-scope="popconfirm"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ## 数据属性
 
 由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
@@ -182,15 +190,19 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-popconfirm-action-px` · `--xh-popconfirm-action-radius` · `--xh-popconfirm-arrow-size` · `--xh-popconfirm-bg` · `--xh-popconfirm-border` · `--xh-popconfirm-cancel-bg` · `--xh-popconfirm-cancel-fg` · `--xh-popconfirm-confirm-bg` · `--xh-popconfirm-confirm-fg` · `--xh-popconfirm-confirm-shadow` · `--xh-popconfirm-description-fg` · `--xh-popconfirm-fg` · `--xh-popconfirm-gap` · `--xh-popconfirm-layer` · `--xh-popconfirm-loading-duration` · `--xh-popconfirm-max-h` · `--xh-popconfirm-max-w` · `--xh-popconfirm-px` · `--xh-popconfirm-py` · `--xh-popconfirm-radius` · `--xh-popconfirm-shadow` · `--xh-popconfirm-title-fg` · `--xh-popconfirm-title-font-size` · `--xh-popconfirm-title-font-weight`
+`--xh-popconfirm-action-px` · `--xh-popconfirm-action-radius` · `--xh-popconfirm-action-shadow` · `--xh-popconfirm-arrow-size` · `--xh-popconfirm-backdrop` · `--xh-popconfirm-bg` · `--xh-popconfirm-border` · `--xh-popconfirm-cancel-bg` · `--xh-popconfirm-cancel-bg-focus` · `--xh-popconfirm-cancel-fg` · `--xh-popconfirm-cancel-fg-focus` · `--xh-popconfirm-confirm-bg` · `--xh-popconfirm-confirm-fg` · `--xh-popconfirm-confirm-shadow` · `--xh-popconfirm-description-fg` · `--xh-popconfirm-fg` · `--xh-popconfirm-gap` · `--xh-popconfirm-layer` · `--xh-popconfirm-loading-duration` · `--xh-popconfirm-max-h` · `--xh-popconfirm-max-w` · `--xh-popconfirm-px` · `--xh-popconfirm-py` · `--xh-popconfirm-radius` · `--xh-popconfirm-shadow` · `--xh-popconfirm-title-fg` · `--xh-popconfirm-title-font-size` · `--xh-popconfirm-title-font-weight`
 
 ## 动效
 
-关键帧 `xh-overlay-pop-in` · `xh-pop-out` · `xh-popconfirm-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-pop-in` · `xh-pop-out` · `xh-popconfirm-rotate` 随皮肤自带，不引用别处文件里的名字；`background-color` · `border-color` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+## 响应式
+
+皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ## RTL
 
