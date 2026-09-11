@@ -9,13 +9,12 @@ function withHiddenInput(base: FixtureNode): FixtureNode {
 }
 
 /** value 只落 DOM property、进不了归一化快照，表单出口只能直接读 DOM。 */
-function assertHiddenInput(doc: Document, expected: readonly [string, string, boolean]): void {
-  const el = doc.querySelector<HTMLInputElement>('[data-scope="combobox"][data-part="hidden-input"]')
-  if (!el)
-    throw new Error('找不到 hidden-input 部件')
-  const actual = [el.name, el.value, el.disabled] as const
-  if (JSON.stringify(actual) !== JSON.stringify(expected))
-    throw new Error(`表单影子期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+function assertHiddenInput(doc: Document, expected: readonly [string, readonly string[], boolean]): void {
+  const inputs = [...doc.querySelectorAll<HTMLInputElement>('[data-scope="combobox"][data-part="hidden-input"]')]
+  const actual = inputs.map(el => [el.name, el.value, el.disabled])
+  const fields = expected[1].map(value => [expected[0], value, expected[2]])
+  if (JSON.stringify(actual) !== JSON.stringify(fields))
+    throw new Error(`表单字段期望 ${JSON.stringify(fields)}，实际 ${JSON.stringify(actual)}`)
 }
 
 const INPUT = '[data-scope="combobox"][data-part="input"]'
@@ -795,7 +794,7 @@ export const comboboxSuite: ConformanceSuite = {
     {
       // 影子只在本用例的 fixture 里出现：作者不写这个部件就不该有它，
       // 其余用例的 order / counts 因此一条都不用改
-      name: '表单影子：给了 name 才带 name，多选按逗号拼成一串，禁用时不提交',
+      name: '表单影子：给了 name 才带 name，多选逐值生成同名字段，禁用时不提交',
       spec: { apg: APG },
       fixture: withHiddenInput,
       props: { name: 'fruit', defaultValue: 'apple' },
@@ -808,7 +807,7 @@ export const comboboxSuite: ConformanceSuite = {
         {
           kind: 'raw',
           why: 'value 只落 DOM property，进不了归一化快照',
-          run: ({ doc }) => assertHiddenInput(doc, ['fruit', 'apple', false]),
+          run: ({ doc }) => assertHiddenInput(doc, ['fruit', ['apple'], false]),
         },
         {
           kind: 'setProps',
@@ -816,13 +815,13 @@ export const comboboxSuite: ConformanceSuite = {
         },
         {
           kind: 'raw',
-          why: '多选拼成一串，与 tree-select 同法',
-          run: ({ doc }) => assertHiddenInput(doc, ['fruit', 'apple,banana', false]),
+          why: '每个选中值独立提交，不再使用逗号拼接',
+          run: ({ doc }) => assertHiddenInput(doc, ['fruit', ['apple', 'banana'], false]),
         },
         {
           kind: 'setProps',
           props: { disabled: true },
-          expect: { parts: { 'hidden-input': { disabled: '' } } },
+          expect: { parts: { 'hidden-input[0]': { disabled: '' }, 'hidden-input[1]': { disabled: '' } } },
         },
       ],
     },
