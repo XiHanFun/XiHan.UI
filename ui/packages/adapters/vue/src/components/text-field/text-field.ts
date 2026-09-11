@@ -3,7 +3,7 @@ import type { TextFieldApi, TextFieldInputHost, TextFieldSchema, TextFieldType }
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { autoSizeTextarea } from '@xihan-ui/headless'
-import { defineComponent, h, onMounted, ref, watch } from 'vue'
+import { defineComponent, h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { provideTextField, useTextFieldContext } from './context'
@@ -100,21 +100,39 @@ export const XhTextFieldInput = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     const ctx = useTextFieldContext()
     const el = ref<HTMLTextAreaElement | null>(null)
+    const setInputRef = (node: unknown): void => {
+      const next = props.as === 'textarea' ? node as HTMLTextAreaElement | null : null
+      if (el.value && el.value !== next)
+        autoSizeTextarea(el.value, false)
+      el.value = next
+      if (next)
+        autoSizeTextarea(next, ctx.api.value.autoSize)
+    }
+    const syncAutoSize = (): void => {
+      if (el.value)
+        autoSizeTextarea(el.value, ctx.api.value.autoSize)
+    }
     // 程序化写值（setValue / 表单重置 / 受控回写）不触发 input 事件，量高在渲染后补一次
-    watch(() => [ctx.api.value.value, props.as], () => {
-      if (props.as === 'textarea' && el.value)
-        autoSizeTextarea(el.value, ctx.api.value.autoSize)
-    }, { flush: 'post' })
-    onMounted(() => {
-      if (props.as === 'textarea' && el.value)
-        autoSizeTextarea(el.value, ctx.api.value.autoSize)
+    watch(() => {
+      const autoSize = ctx.api.value.autoSize
+      return [
+        ctx.api.value.value,
+        props.as,
+        autoSize === true,
+        typeof autoSize === 'object' ? autoSize.minRows : undefined,
+        typeof autoSize === 'object' ? autoSize.maxRows : undefined,
+      ] as const
+    }, syncAutoSize, { flush: 'post' })
+    onMounted(syncAutoSize)
+    onBeforeUnmount(() => {
+      if (el.value)
+        autoSizeTextarea(el.value, false)
+      el.value = null
     })
     // 自己渲染宿主节点，label 的 for 指向它
     return () => h(props.as, fieldLabel.value({
       ...ctx.api.value.getInputProps({ as: props.as }) as Record<string, unknown>,
-      ref: (node: unknown) => {
-        el.value = props.as === 'textarea' ? node as HTMLTextAreaElement : null
-      },
+      ref: setInputRef,
       ...fieldWiring.value,
     }))
   },
