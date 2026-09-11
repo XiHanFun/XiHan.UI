@@ -43,6 +43,18 @@ function type(props: { onInput?: unknown }, value: string): void {
   (props.onInput as (e: { target: { value: string } }) => void)({ target: { value } })
 }
 
+/** Node 测试不依赖原生 KeyboardEvent；连接层只读取这些字段。 */
+function key(props: { onKeyDown?: unknown }, value: string): void {
+  (props.onKeyDown as (event: Record<string, unknown>) => void)({
+    key: value,
+    ctrlKey: false,
+    metaKey: false,
+    altKey: false,
+    repeat: false,
+    preventDefault() {},
+  })
+}
+
 // ── 过滤：纯函数那一层 ──
 
 describe('命令清单的过滤与归组', () => {
@@ -247,6 +259,61 @@ describe('commandMachine 受控', () => {
 })
 
 describe('commandMachine 与连接层的边界', () => {
+  it('活动候选与 aria-activedescendant 同步 aria-selected，其余项保持 false 且没有持久状态', () => {
+    const c = makeCommand({ defaultOpen: true })
+    const item = (value: string): Record<string, unknown> =>
+      c.api().getItemProps({ value }) as unknown as Record<string, unknown>
+
+    expect(item('users')['aria-selected']).toBe('true')
+    expect(item('roles')['aria-selected']).toBe('false')
+    expect(item('export')['aria-selected']).toBe('false')
+    expect(item('users')['data-state']).toBeUndefined()
+    expect(c.api().getInputProps()['aria-activedescendant']).toBe(item('users').id)
+
+    key(c.api().getInputProps(), 'ArrowDown')
+    expect(item('users')['aria-selected']).toBe('false')
+    expect(item('roles')['aria-selected']).toBe('false')
+    expect(item('export')['aria-selected']).toBe('true')
+    expect(c.api().getInputProps()['aria-activedescendant']).toBe(item('export').id)
+  })
+
+  it('指针可移动活动候选，禁用项不接管；过滤为空或关闭后全部回到 false', () => {
+    const c = makeCommand({ defaultOpen: true })
+    const item = (value: string): Record<string, unknown> =>
+      c.api().getItemProps({ value }) as unknown as Record<string, unknown>
+    const move = (value: string): void => {
+      (item(value).onPointerMove as (event: { currentTarget: object }) => void)({ currentTarget: {} })
+    }
+
+    move('export')
+    expect(item('export')['aria-selected']).toBe('true')
+    move('roles')
+    expect(item('export')['aria-selected']).toBe('true')
+    expect(item('roles')['aria-selected']).toBe('false')
+
+    type(c.api().getInputProps(), '没有这条命令')
+    expect(c.api().getInputProps()['aria-activedescendant']).toBeUndefined()
+    expect(item('users')['aria-selected']).toBe('false')
+    expect(item('roles')['aria-selected']).toBe('false')
+    expect(item('export')['aria-selected']).toBe('false')
+
+    c.api().setOpen(false)
+    expect(item('users')['aria-selected']).toBe('false')
+  })
+
+  it('执行只消费当前活动候选：保持展开时仍为活动项，关闭时不留下持久选中', () => {
+    const kept = makeCommand({ defaultOpen: true, closeOnSelect: false })
+    kept.api().select('users')
+    expect(kept.api().getItemProps({ value: 'users' })['aria-selected']).toBe('true')
+    expect(kept.api().getItemProps({ value: 'users' })['data-state']).toBeUndefined()
+
+    const closed = makeCommand({ defaultOpen: true })
+    closed.api().select('users')
+    expect(closed.state()).toBe('closed')
+    expect(closed.api().getInputProps()['aria-activedescendant']).toBeUndefined()
+    expect(closed.api().getItemProps({ value: 'users' })['aria-selected']).toBe('false')
+  })
+
   it('锚点所指的命令被筛掉时当场作废，不留悬空的 aria-activedescendant', () => {
     const c = makeCommand({ defaultOpen: true })
     // 清单换成不含当前锚点的另一份：锚点还留在 context 里，连接层要挡住它
