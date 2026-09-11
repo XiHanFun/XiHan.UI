@@ -106,7 +106,13 @@ const layer = createDismissLayer({
 两条约束：
 
 - **只有栈顶层响应 `Escape`。** 否则一次按键会把整摞层全关掉。
-- **四个回调都是可取消的表决票。** 它们收到的是 `cancelable` 的 `CustomEvent`，`preventDefault()` 即否决本次关闭，原生事件在 `detail.originalEvent` 里。这让「表单没填完时按 Esc 先弹确认」这类需求不必绕开组件实现。
+- **四个回调都是可取消的表决票。** 它们收到的是 `cancelable` 的 `CustomEvent`，`preventDefault()` 即否决本次关闭。Escape 票把原生 keydown 放在 `detail.originalEvent`；Pointer、Focus 与 Interact 票当前只提供取消语义，不承诺原事件字段。这让「表单没填完时按 Esc 先弹确认」这类需求不必绕开组件实现。
+
+DismissableLayer 的监听 Document、`CustomEvent`、微任务与动画帧均取自 `config.scope` 的同一个 Window，`config.layerRegistry.ownerDocument` 也必须逐字指向该 Document。传入的 layer 必须已经登记在这份注册表里；动态 `layer.node()` 可以暂时为 `null`，非空时必须是真实 HTMLElement 且属于该 Document。从其他窗口返回节点会立即报错，不会把一张文档里的交互票派到另一张文档。所属 Window 缺少 `CustomEvent`、`queueMicrotask` 或动画帧能力时创建即失败，不借 ambient 全局。
+
+三类 Document 监听器在创建期间同步注册，随后只用一枚所属 Window 的微任务把交互置为已武装，以避开打开浮层的同一次 pointerdown。任一 `addEventListener` 或排微任务失败都会在创建返回前按逆序撤掉已经触及的监听，使上层浮层初始化事务能继续回滚 Layer；`dispose()` 同样先进入终态，再按动画帧、focus、pointer、keydown 的顺序尝试全部清理。单项清理异常原样抛出，多项异常按发生顺序放进 `AggregateError`，`cause` 保留首错。
+
+首次读取动态节点也属于初始化事务：getter 让 layer 退栈或成功改变后再恢复栈内容都会在注册监听前失败；失败登记由 LayerRegistry 补偿回原 snapshot 时可以继续。每次表决会再次固定当时的冻结层栈快照与动态节点。DOM 事件监听器、选项回调或通用 interact 回调只要改变了层栈快照或节点，这张旧票就不能再提交关闭；即使层栈随后恢复成相同内容也一样。登记通知失败且 LayerRegistry 成功补偿回原快照时，原票仍有效。层栈与节点身份保持不变时，提交前还会在同一快照上重算 branches 与 surfaces，表决期间刚纳入 branch 的目标不会被误判成层外。pointer 建立焦点抑制帧后，票据复核与 `onDismiss` 共用同一异常边界；任一步骤失败都会先撤帧，主异常始终排在首位并作为聚合异常的 `cause`。
 
 ## 焦点域
 

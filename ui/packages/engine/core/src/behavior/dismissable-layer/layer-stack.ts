@@ -16,10 +16,9 @@ function isInInertExempt(e: Event): boolean {
   return false
 }
 
-/** 用事件的合成路径判断目标属于层内 / 层的表面 / 层外（穿透 portal 与 shadow）。 */
-export function isInside(e: Event, layer: Layer): InsideResult {
+/** 对已经解析好的层节点判断目标属于层内 / 层的表面 / 层外。 */
+function isInsideResolved(e: Event, layer: Layer, node: HTMLElement | null): InsideResult {
   const path = e.composedPath()
-  const node = layer.node()
   if (node && path.includes(node))
     return { inside: true, onSurface: false }
   if (layer.branches().some(b => path.includes(b)))
@@ -29,18 +28,26 @@ export function isInside(e: Event, layer: Layer): InsideResult {
   return { inside: false, onSurface: false }
 }
 
+/** 用事件的合成路径判断目标属于层内 / 层的表面 / 层外（穿透 portal 与 shadow）。 */
+export function isInside(e: Event, layer: Layer): InsideResult {
+  return isInsideResolved(e, layer, layer.node())
+}
+
 /**
- * 从栈顶向下：连续未命中的层都应被消解，遇到第一个命中层即停止。
- * 落在 inert 豁免子树里的交互一律不消解任何层。
- * 返回给定层此刻是否应被这次外部交互消解。
+ * 在一份固定层栈快照上仲裁；目标层节点同样由调用方固定，避免一次交互前后读取到两代节点。
+ * 仅供 DismissableLayer 的交互票据使用，不进入公开导出面。
  */
-export function shouldDismiss(e: Event, registry: Pick<LayerRegistry, 'list'>, layer: Layer): boolean {
+export function shouldDismissInSnapshot(
+  e: Event,
+  layers: readonly Layer[],
+  layer: Layer,
+  layerNode: HTMLElement | null,
+): boolean {
   if (isInInertExempt(e))
     return false
-  const layers = registry.list()
   for (let i = layers.length - 1; i >= 0; i--) {
     const current = layers[i]!
-    const { inside, onSurface } = isInside(e, current)
+    const { inside, onSurface } = isInsideResolved(e, current, current === layer ? layerNode : current.node())
     if (inside)
       return false
     if (current === layer)
@@ -49,4 +56,13 @@ export function shouldDismiss(e: Event, registry: Pick<LayerRegistry, 'list'>, l
       return false
   }
   return false
+}
+
+/**
+ * 从栈顶向下：连续未命中的层都应被消解，遇到第一个命中层即停止。
+ * 落在 inert 豁免子树里的交互一律不消解任何层。
+ * 返回给定层此刻是否应被这次外部交互消解。
+ */
+export function shouldDismiss(e: Event, registry: Pick<LayerRegistry, 'list'>, layer: Layer): boolean {
+  return shouldDismissInSnapshot(e, registry.list(), layer, layer.node())
 }
