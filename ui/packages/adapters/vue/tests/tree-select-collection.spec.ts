@@ -66,7 +66,7 @@ function mountFromCollection(value: string[], portal: HTMLElement = newPortal(),
   }), { attachTo: document.body })
 }
 
-/** 手写全套部件，节点只报 value，文本与禁用交给 collection */
+/** 手写全套部件，节点只报 value；分支与叶子都包含正式 item-indicator，文本与禁用交给 collection。 */
 function mountFromParts(value: string[], portal: HTMLElement = newPortal(), clearable = false) {
   return mount(defineComponent({
     setup() {
@@ -88,6 +88,7 @@ function mountFromParts(value: string[], portal: HTMLElement = newPortal(), clea
               h(XhTreeSelectBranchControl, () => [
                 h(XhTreeSelectBranchTrigger),
                 h(XhTreeSelectBranchText, () => 'docs'),
+                h(XhTreeSelectItemIndicator),
               ]),
               h(XhTreeSelectBranchContent, () => [
                 h(XhTreeSelectItem, { value: 'guide' }, () => [
@@ -104,6 +105,7 @@ function mountFromParts(value: string[], portal: HTMLElement = newPortal(), clea
               h(XhTreeSelectBranchControl, () => [
                 h(XhTreeSelectBranchTrigger),
                 h(XhTreeSelectBranchText, () => 'empty'),
+                h(XhTreeSelectItemIndicator),
               ]),
               h(XhTreeSelectBranchContent, () => []),
             ]),
@@ -151,6 +153,7 @@ describe('tree-select 的 collection', () => {
       'branch-control',
       'branch-trigger',
       'branch-text',
+      'item-indicator',
       'branch-content',
       'item',
       'item-indicator',
@@ -162,6 +165,7 @@ describe('tree-select 的 collection', () => {
       'branch-control',
       'branch-trigger',
       'branch-text',
+      'item-indicator',
       'branch-content',
       'item',
       'item-indicator',
