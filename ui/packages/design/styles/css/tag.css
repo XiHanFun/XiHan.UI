@@ -23,10 +23,11 @@
     gap: var(--xh-tag-gap, var(--xh-_tag-gap));
     padding-inline: var(--xh-tag-px, var(--xh-_tag-px));
     padding-block: var(--xh-tag-py, var(--xh-_tag-py));
-    border: var(--xh-stroke-thin) solid transparent;
+    border: var(--xh-stroke-thin) solid var(--xh-tag-border, var(--xh-material-soft-border));
     border-radius: var(--xh-tag-radius, var(--xh-shape-control));
-    background: var(--xh-tag-bg, var(--xh-bg-subtle));
-    color: var(--xh-tag-fg, var(--xh-fg-default));
+    background: var(--xh-tag-bg, var(--xh-material-soft-bg));
+    box-shadow: var(--xh-tag-shadow, var(--xh-material-soft-shadow));
+    color: var(--xh-tag-fg, var(--xh-material-soft-fg));
     font-size: var(--xh-tag-font-size, var(--xh-_tag-font-size));
     font-weight: var(--xh-tag-font-weight, var(--xh-font-weight-medium));
     /* 行框不低于关闭钮，有没有关闭钮同档标签一样高；
@@ -54,6 +55,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    position: relative;
     flex: none;
     /* 命中区：作者槽 → 不分档的指示符，三档同一个数，与库里其它标签内的移除钮同一把尺；行框比它高的档里钮居中 */
     block-size: var(--xh-tag-close-size, var(--xh-control-indicator-size));
@@ -72,6 +74,15 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  }
+
+  /* 视觉盒保持 16px，透明命中层扩到随文动作的 24px，不把整枚标签撑高。 */
+  [data-scope='tag'][data-part='close-trigger']::after {
+    position: absolute;
+    inset: calc(
+      (var(--xh-control-action-size) - var(--xh-tag-close-size, var(--xh-control-indicator-size))) / -2
+    );
+    content: '';
   }
 
   /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半 */
@@ -131,9 +142,9 @@
   }
 
   [data-scope='tag'][data-part='root'][data-variant='subtle'] {
-    border-color: transparent;
-    background: var(--xh-tag-bg, var(--xh-bg-subtle));
-    color: var(--xh-tag-fg, var(--xh-fg-default));
+    border-color: var(--xh-tag-border, var(--xh-material-soft-border));
+    background: var(--xh-tag-bg, var(--xh-material-soft-bg));
+    color: var(--xh-tag-fg, var(--xh-material-soft-fg));
   }
 
   [data-scope='tag'][data-part='root'][data-variant='subtle'][data-tone] {
@@ -144,6 +155,7 @@
   [data-scope='tag'][data-part='root'][data-variant='outline'] {
     border-color: var(--xh-tag-border, var(--xh-border-default));
     background: transparent;
+    box-shadow: none;
     color: var(--xh-tag-fg, var(--xh-fg-default));
   }
 
@@ -151,6 +163,17 @@
      兑了底色的 --xh-_tone-border 六族都在 1.44-2.18，当轮廓看不清 */
   [data-scope='tag'][data-part='root'][data-variant='outline'][data-tone] {
     border-color: var(--xh-tag-border, var(--xh-_tone-border-control, var(--xh-border-default)));
+    color: var(--xh-tag-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
+  }
+
+  [data-scope='tag'][data-part='root'][data-variant='ghost'] {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    color: var(--xh-tag-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='tag'][data-part='root'][data-variant='ghost'][data-tone] {
     color: var(--xh-tag-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
   }
 

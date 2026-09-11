@@ -91,6 +91,8 @@ describe('connectTag 三轴', () => {
     expect(label['data-variant']).toBeUndefined()
     expect(label['data-tone']).toBeUndefined()
     expect(label['data-size']).toBeUndefined()
+
+    expect(makeTag({ variant: 'ghost' }).api().getRootProps()['data-variant']).toBe('ghost')
   })
 
   it('root 不带 role：标签是展示节点，交互只在关闭钮上', () => {
@@ -204,6 +206,19 @@ describe('connectTag 只读', () => {
     expect(api.getRootProps()['data-disabled']).toBeUndefined()
 
     press(close)
+    expect(seen).toEqual([])
+  })
+
+  it('快路已关闭时再次触发 close 不重复发相同受控意图', () => {
+    const seen: TagOpenChangeDetails[] = []
+    const api = connectStaticTag(
+      { closable: true, open: false, onOpenChange: details => seen.push(details) },
+      { get: () => false, set: () => {} },
+      normalizeProps,
+    )
+
+    press(api.getCloseTriggerProps())
+
     expect(seen).toEqual([])
   })
 })

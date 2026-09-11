@@ -58,6 +58,17 @@ export const tagSuite: ConformanceSuite = {
       },
     },
     {
+      name: 'ghost：第四种公开形态逐字落到 root，关闭钮仍保持原生按钮合同',
+      spec: { adr: 'tag-four-variants' },
+      props: { variant: 'ghost', closable: true },
+      initial: {
+        parts: {
+          'root': { 'data-variant': 'ghost' },
+          'close-trigger': { type: 'button', disabled: null, hidden: null },
+        },
+      },
+    },
+    {
       name: 'closable：关闭钮解禁并露面，root 不受影响',
       spec: { apg: APG },
       props: { closable: true },
