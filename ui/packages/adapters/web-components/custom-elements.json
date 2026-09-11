@@ -5447,6 +5447,9 @@
               "name": "--xh-cascader-column-py"
             },
             {
+              "name": "--xh-cascader-content-backdrop"
+            },
+            {
               "name": "--xh-cascader-content-bg"
             },
             {
@@ -5454,6 +5457,9 @@
             },
             {
               "name": "--xh-cascader-content-fg"
+            },
+            {
+              "name": "--xh-cascader-content-highlight"
             },
             {
               "name": "--xh-cascader-content-max-w"
@@ -8277,6 +8283,9 @@
               "name": "--xh-color-picker-checker"
             },
             {
+              "name": "--xh-color-picker-content-backdrop"
+            },
+            {
               "name": "--xh-color-picker-content-bg"
             },
             {
@@ -8287,6 +8296,9 @@
             },
             {
               "name": "--xh-color-picker-content-gap"
+            },
+            {
+              "name": "--xh-color-picker-content-highlight"
             },
             {
               "name": "--xh-color-picker-content-px"
@@ -9180,6 +9192,9 @@
               "name": "--xh-combobox-action-size"
             },
             {
+              "name": "--xh-combobox-content-backdrop"
+            },
+            {
               "name": "--xh-combobox-content-bg"
             },
             {
@@ -9190,6 +9205,9 @@
             },
             {
               "name": "--xh-combobox-content-gap"
+            },
+            {
+              "name": "--xh-combobox-content-highlight"
             },
             {
               "name": "--xh-combobox-content-max-h"
@@ -12631,6 +12649,9 @@
               "name": "--xh-date-picker-confirm-trigger-shadow"
             },
             {
+              "name": "--xh-date-picker-content-backdrop"
+            },
+            {
               "name": "--xh-date-picker-content-bg"
             },
             {
@@ -12638,6 +12659,9 @@
             },
             {
               "name": "--xh-date-picker-content-fg"
+            },
+            {
+              "name": "--xh-date-picker-content-highlight"
             },
             {
               "name": "--xh-date-picker-content-px"
@@ -26436,6 +26460,9 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-mention-content-backdrop"
+            },
+            {
               "name": "--xh-mention-content-bg"
             },
             {
@@ -26446,6 +26473,9 @@
             },
             {
               "name": "--xh-mention-content-gap"
+            },
+            {
+              "name": "--xh-mention-content-highlight"
             },
             {
               "name": "--xh-mention-content-max-h"
@@ -48158,6 +48188,9 @@
               "name": "--xh-time-picker-column-px"
             },
             {
+              "name": "--xh-time-picker-content-backdrop"
+            },
+            {
               "name": "--xh-time-picker-content-bg"
             },
             {
@@ -48165,6 +48198,9 @@
             },
             {
               "name": "--xh-time-picker-content-fg"
+            },
+            {
+              "name": "--xh-time-picker-content-highlight"
             },
             {
               "name": "--xh-time-picker-content-max-h"
@@ -53644,6 +53680,9 @@
               "name": "--xh-tree-select-branch-indicator-size"
             },
             {
+              "name": "--xh-tree-select-content-backdrop"
+            },
+            {
               "name": "--xh-tree-select-content-bg"
             },
             {
@@ -53651,6 +53690,9 @@
             },
             {
               "name": "--xh-tree-select-content-fg"
+            },
+            {
+              "name": "--xh-tree-select-content-highlight"
             },
             {
               "name": "--xh-tree-select-content-max-h"
