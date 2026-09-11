@@ -65,9 +65,9 @@ disabled 连键盘入口都没有；readOnly 照常展开浏览但值改不动�
 
 <XhDemo src="tree-select/07-state" />
 
-### 异步加载子节点
+### 首次全量加载与空集合
 
-展开某个分支才去要它的子节点：先摆一行禁用占位，数据回来就地换掉，显示文本随之取到新 label
+第一次展开才取整棵树；正式 Loading/Empty 与候选树互斥，状态文字不进入选值或键盘导航，底部按钮可重放有数据与零集合响应
 
 <XhDemo src="tree-select/08-async" />
 
