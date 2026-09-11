@@ -145,7 +145,7 @@ describe('tree-select 的 collection', () => {
         provideXhConfig({ portalContainer: () => portal })
         return () => h(XhTreeSelectRoot, {
           collection: [{ value: 'remote', label: '远程目录', hasChildren: true }],
-          loadChildren: () => new Promise((done) => { resolve = done }),
+          loadChildren: () => new Promise<{ value: string, label: string }[]>((done) => { resolve = done }),
         })
       },
     }), { attachTo: document.body })
