@@ -212,6 +212,48 @@
     }
   },
   "material": {
+    "glass": {
+      "$description": "M3 浮动玻璃：独立光学层与不透明文字；不用于表单或密集表格的默认背景。",
+      "bg": {
+        "$type": "color",
+        "$value": "oklch(0.99 0.003 258 / {alpha.medium})"
+      },
+      "backdrop": {
+        "$description": "固定光学采样，仅用于浮动创作表面；不要动画滤镜或叠加多层采样。",
+        "$type": "string",
+        "$value": "blur({blur.lg}) saturate(112%)"
+      },
+      "fg": {
+        "$type": "color",
+        "$value": "{fg.default}"
+      },
+      "focus-surface": {
+        "$description": "获焦控件必须实际绘制的实体隔离底。",
+        "$type": "color",
+        "$value": "{bg.surface}"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "oklch(0.145 0.005 258 / 0.24)"
+      },
+      "highlight": {
+        "$type": "color",
+        "$value": "oklch(1 0 0 / 0.3)"
+      },
+      "shadow": {
+        "$type": "shadow",
+        "$value": "0 3px 6px -3px oklch(0.145 0.005 258 / 0.12), 0 16px 40px -14px oklch(0.145 0.005 258 / 0.18)"
+      },
+      "separator": {
+        "$type": "color",
+        "$value": "oklch(0.145 0.005 258 / 0.18)"
+      },
+      "fg-muted": {
+        "$description": "提高次要文字保护，覆盖最不利背景合成。",
+        "$type": "color",
+        "$value": "{color.neutral.700}"
+      }
+    },
     "$description": "材质配方是组件皮肤的单一视觉入口；组件不再分别拼背景、边界和投影。M1 Soft Surface 保持不透明，不使用 backdrop blur，适合 Card 等内容容器。",
     "soft": {
       "bg": {

@@ -1,6 +1,44 @@
 {
   "$description": "系统强制色下不保留透明采样或装饰光照；M2 使用系统 Canvas/CanvasText，确保浏览器高对比调色板拥有最终决定权。",
   "material": {
+    "glass": {
+      "bg": {
+        "$type": "color",
+        "$value": "Canvas"
+      },
+      "backdrop": {
+        "$type": "string",
+        "$value": "none"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "CanvasText"
+      },
+      "highlight": {
+        "$type": "color",
+        "$value": "transparent"
+      },
+      "shadow": {
+        "$type": "shadow",
+        "$value": "none"
+      },
+      "separator": {
+        "$type": "color",
+        "$value": "CanvasText"
+      },
+      "fg": {
+        "$type": "color",
+        "$value": "CanvasText"
+      },
+      "fg-muted": {
+        "$type": "color",
+        "$value": "CanvasText"
+      },
+      "focus-surface": {
+        "$type": "color",
+        "$value": "Canvas"
+      }
+    },
     "frosted": {
       "compact": {
         "alpha": { "$type": "number", "$value": "{alpha.opaque}" },
