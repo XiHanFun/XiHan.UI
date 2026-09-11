@@ -116,6 +116,8 @@ import { useHoverIntent, useScrollLock, useScrollTracker, useStickToBottom, useT
 
 `useHoverIntent` 在布局提交期读取 `getTriggerEl()`，因此已渲染元素的 ref 已经就位，下一次指针输入不会落在旧节点上。本次提交未渲染 trigger 时释放绑定；节点换代或 `openDelay`、`closeDelay`、`buffer` 改变时重建。content getter 和两个意图回调只更新已提交引用，不会为了普通闭包换代取消挂起计时。需要显式标注选项时，从这个子入口导入 `UseHoverIntentOptions`，不要再借用 core 的元素快照类型。
 
+`useScrollLock` 在布局 effect 中加锁，首帧绘制前就生效，服务端不执行 DOM 副作用。锁跟随 active 而不是配置对象身份；关闭再开启时读取最新配置，StrictMode 清理与重建保持一致。
+
 ## 背景层
 
 React 侧的视觉适配也在**单独的子入口**，不引就不会把 WebGL 引擎打进包：
