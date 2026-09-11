@@ -2,7 +2,8 @@
 // XhFieldControl 合并属性时的角色标记归属：子节点是裸控件就把 field/control 标上去，
 // 子节点自带角色标记（组件根、或写了 data-scope 的元素）则只落 id 与 aria-*。
 import { afterEach, describe, expect, it } from 'vitest'
-import { createApp, defineComponent, h } from 'vue'
+import { createApp, createSSRApp, createTextVNode, defineComponent, Fragment, h } from 'vue'
+import { renderToString } from 'vue/server-renderer'
 import { useFieldControl, XhFieldControl, XhFieldLabel, XhFieldRoot, XhSwitch } from '../src'
 
 let cleanup: Array<() => void> = []
@@ -87,5 +88,35 @@ describe('控件藏在薄封装里', () => {
     expect(input.id).not.toBe('')
     expect(label.getAttribute('for')).toBe(input.id)
     expect(input.getAttribute('aria-labelledby')).toBe(label.id)
+  })
+})
+
+describe('字段控件的显式组合合同', () => {
+  it.each(['empty', 'multiple', 'mixed'])('%s 结构必须报错，不能静默省略字段接线', async (shape) => {
+    const nodes = shape === 'empty'
+      ? []
+      : shape === 'multiple'
+        ? [h('input'), h('input')]
+        : [createTextVNode('不能丢弃的内容'), h('input')]
+    const app = createSSRApp(() => h(XhFieldRoot, null, () => h(XhFieldControl, null, () => nodes)))
+    await expect(renderToString(app)).rejects.toThrow(/field.*asChild/)
+  })
+
+  it('单控件 Fragment 接收字段属性，不把属性落到片段上', async () => {
+    const app = createSSRApp(() => h(XhFieldRoot, { required: true }, () =>
+      h(XhFieldControl, null, () => h(Fragment, null, [h('input')]))))
+    const html = await renderToString(app)
+    expect(html).toMatch(/<input[^>]*data-scope="field"/)
+    expect(html).toMatch(/<input[^>]*aria-required="true"/)
+  })
+
+  it('显式 asChild=false 允许作者自行分配多个节点', async () => {
+    const app = createSSRApp(() => h(XhFieldRoot, null, () =>
+      h(XhFieldControl, { asChild: false }, {
+        default: (props: Record<string, unknown>) => [h('span', '说明'), h('input', props)],
+      })))
+    const html = await renderToString(app)
+    expect(html).toContain('说明')
+    expect(html).toMatch(/<input[^>]*data-scope="field"/)
   })
 })
