@@ -177,9 +177,9 @@ outline-color: rgb(0, 0, 0)
 
 [item]
 padding-top: 6px
-padding-right: 12px
+padding-right: 32px
 padding-bottom: 6px
-padding-left: 12px
+padding-left: 32px
 row-gap: normal
 column-gap: normal
 border-top-left-radius: 6px
