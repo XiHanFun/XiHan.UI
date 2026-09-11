@@ -47,7 +47,7 @@ const EXPECTED = {
   'combobox': { content: ['floating'], empty: ['floating'], loading: ['floating'] },
   // 命令面板是盖在页面上、带遮罩的一面，与对话框同档
   'command': { content: ['sheet'] },
-  'context-menu': { content: ['floating'] },
+  'context-menu': { content: ['frosted'] },
   'date-picker': { content: ['floating'] },
   'dialog': { content: ['sheet'] },
   'drawer': { content: ['sheet'] },
