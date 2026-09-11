@@ -104,7 +104,6 @@
     "context-menu [separator]": "菜单分隔线，不接焦点",
     "icon-wrapper [root]": "图标底座是装饰容器，不接焦点",
     "loading-bar [range]": "顶部进度细带的已完成段，纯展示不接焦点",
-    "menu [separator]": "菜单分隔线，不接焦点",
     "menubar [separator]": "菜单分隔线，不接焦点",
     "password-input [strength-meter]": "强度条的轨道，纯展示不接焦点",
     "progress [range]": "进度条的已完成段，纯展示不接焦点",

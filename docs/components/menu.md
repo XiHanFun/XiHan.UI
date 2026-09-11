@@ -20,6 +20,8 @@
 - `content` 里可以直接放任意节点；不是 `item` 就不进方向键行程，也选不中。
 - 子菜单触发条目双重身份：父层方向键照常走、右方向键进子层、子层左方向键退回。
 - 条目可按 `group` 分组，组标题写在 `group-label` 上，两者以 `aria-labelledby` 相认；分组不改变方向键行程。
+- 浮层使用 M2 磨砂表面；条目悬停/键盘锚点、按下和打开路径是三档独立反馈，打开路径不靠加粗文字表达。
+- 同一层只要提供了 `item-indicator`，所有条目与组标题就统一留出标记列；长文字在正文列截断，子菜单箭头固定在末列。
 
 ## 示例
 
@@ -265,11 +267,11 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-menu-arrow-size` · `--xh-menu-border` · `--xh-menu-content-bg` · `--xh-menu-content-fg` · `--xh-menu-content-gap` · `--xh-menu-content-px` · `--xh-menu-content-py` · `--xh-menu-content-radius` · `--xh-menu-content-shadow` · `--xh-menu-group-gap` · `--xh-menu-group-label-fg` · `--xh-menu-group-label-font-size` · `--xh-menu-group-label-font-weight` · `--xh-menu-group-label-px` · `--xh-menu-group-label-py` · `--xh-menu-icon-size` · `--xh-menu-item-active-font-weight` · `--xh-menu-item-bg-active` · `--xh-menu-item-bg-hover` · `--xh-menu-item-description-fg` · `--xh-menu-item-description-font-size` · `--xh-menu-item-fg` · `--xh-menu-item-font-size` · `--xh-menu-item-gap` · `--xh-menu-item-indicator-fg` · `--xh-menu-item-indicator-size` · `--xh-menu-item-leading` · `--xh-menu-item-px` · `--xh-menu-item-py` · `--xh-menu-item-radius` · `--xh-menu-layer` · `--xh-menu-max-h` · `--xh-menu-max-w` · `--xh-menu-min-w` · `--xh-menu-separator-color` · `--xh-menu-separator-my` · `--xh-menu-separator-thickness` · `--xh-menu-trigger-bg-active`
+`--xh-menu-arrow-size` · `--xh-menu-backdrop` · `--xh-menu-border` · `--xh-menu-content-bg` · `--xh-menu-content-fg` · `--xh-menu-content-gap` · `--xh-menu-content-px` · `--xh-menu-content-py` · `--xh-menu-content-radius` · `--xh-menu-content-shadow` · `--xh-menu-group-gap` · `--xh-menu-group-label-fg` · `--xh-menu-group-label-font-size` · `--xh-menu-group-label-font-weight` · `--xh-menu-group-label-leading-gap` · `--xh-menu-group-label-leading-size` · `--xh-menu-group-label-px` · `--xh-menu-group-label-py` · `--xh-menu-highlight` · `--xh-menu-icon-size` · `--xh-menu-item-bg-active` · `--xh-menu-item-bg-hover` · `--xh-menu-item-bg-pressed` · `--xh-menu-item-description-fg` · `--xh-menu-item-description-font-size` · `--xh-menu-item-fg` · `--xh-menu-item-font-size` · `--xh-menu-item-gap` · `--xh-menu-item-indicator-fg` · `--xh-menu-item-indicator-size` · `--xh-menu-item-leading` · `--xh-menu-item-leading-size` · `--xh-menu-item-path-indicator` · `--xh-menu-item-px` · `--xh-menu-item-py` · `--xh-menu-item-radius` · `--xh-menu-layer` · `--xh-menu-max-h` · `--xh-menu-max-w` · `--xh-menu-min-w` · `--xh-menu-separator-color` · `--xh-menu-separator-my` · `--xh-menu-separator-radius` · `--xh-menu-separator-thickness` · `--xh-menu-submenu-indicator-fg` · `--xh-menu-trigger-bg-active`
 
 ## 动效
 
-关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -287,6 +289,12 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 
 - 破坏性命令与其余条目之间隔一道[分隔线](./separator)，并放在最后。
 - 悬停触发只在指针环境有意义，触摸与键盘恒靠点击那条路径。
+- 有标记的菜单应给同层条目都保留 `item-indicator` 节点，用 `hidden` 切换绘制；条件增删节点会让整层正文列重新排版。
+
+### 当前边界
+
+- 当前 anatomy 尚无 checkbox item、radio group/item、shortcut、trailing 和单条 danger tone。这些需要明确的行为、可访问语义和三端部件，不能用任意 span 或 CSS 伪元素冒充；后续以独立 API 功能提交补齐。
+- Menubar 与 ContextMenu 仍消费各自现有皮肤；它们会按逐组件提交迁入同一 M2/Collection Item 配方，本次 Menu 迁移不声明两者已经完成。
 
 ## 反模式
 

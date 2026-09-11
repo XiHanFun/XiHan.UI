@@ -58,7 +58,7 @@ const EXPECTED = {
   // 覆盖档的侧栏是盖在内容之上、带遮罩的一面，与抽屉同档；占位档的侧栏不画投影
   'layout': { sider: ['sheet'] },
   'mention': { content: ['floating'], empty: ['floating'], loading: ['floating'] },
-  'menu': { content: ['floating'] },
+  'menu': { content: ['frosted'] },
   'menubar': { content: ['floating'] },
   'navigation-menu': { content: ['floating'], viewport: ['floating'] },
   'notification': { item: ['sheet'] },
