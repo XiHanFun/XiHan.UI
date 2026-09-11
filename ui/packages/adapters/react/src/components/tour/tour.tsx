@@ -133,7 +133,7 @@ export function XhTourBackdrop({ children, ...rest }: XhTourBackdropProps): Reac
           rest as Record<string, unknown>,
           {
             // 收起跟着退场闸门走：遮罩的淡出与气泡的退场并行播
-            hidden: (!ctx.visible || !ctx.showBackdrop) || undefined,
+            hidden: (!ctx.rendered || !ctx.showBackdrop) || undefined,
             ref: (el: HTMLDivElement | null) => { ctx.backdropRef.current = el },
           },
         )}
@@ -155,7 +155,10 @@ export function XhTourSpotlight({ ...rest }: XhTourSpotlightProps): ReactNode {
           ctx.api.getSpotlightProps() as Record<string, unknown>,
           rest as Record<string, unknown>,
           // 收起跟着退场闸门走：高亮框的退场与气泡并行播；居中步照常不画
-          { hidden: (!ctx.visible || !ctx.api.anchored) || undefined },
+          {
+            hidden: (!ctx.rendered || !ctx.api.anchored) || undefined,
+            ref: (el: HTMLDivElement | null) => { ctx.spotlightRef.current = el },
+          },
         )}
       />
     </XhPortal>
@@ -174,7 +177,7 @@ export function XhTourPositioner({ children, ...rest }: XhTourPositionerProps): 
           rest as Record<string, unknown>,
           {
             // 定位层收起跟着退场闸门走：它先 display:none 的话，里面气泡的退场一帧都播不出来
-            hidden: !ctx.visible || undefined,
+            hidden: !ctx.rendered || undefined,
             ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el },
           },
         )}
@@ -196,7 +199,7 @@ export function XhTourContent({ children, ...rest }: XhTourContentProps): ReactN
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
-          style: ctx.visible ? undefined : { display: 'none' },
+          style: ctx.rendered ? undefined : { display: 'none' },
           ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el },
         },
       )}

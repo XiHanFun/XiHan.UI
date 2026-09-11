@@ -181,6 +181,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `backdrop` | `aria-hidden` | 'true' |
 | `spotlight` | `aria-hidden` | 'true' |
 | `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-labelledby` | `title` 部件的 id |
 | `content` | `aria-modal` | 'true' |
 | `content` | `role` | 'dialog' |

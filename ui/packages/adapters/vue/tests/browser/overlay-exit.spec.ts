@@ -18,6 +18,12 @@ import {
   XhFloatingPanelTitle,
   XhImageViewerContent,
   XhImageViewerRoot,
+  XhTourBackdrop,
+  XhTourContent,
+  XhTourPositioner,
+  XhTourRoot,
+  XhTourSpotlight,
+  XhTourTitle,
 } from '../../src'
 // 皮肤要一起加载：这里查的就是皮肤给出的 animationName 与 display
 import '@xihan-ui/tokens/tokens.css'
@@ -200,6 +206,68 @@ describe('image-viewer 退场', () => {
     expect(getLayerRegistry(document).list()).toHaveLength(0)
     expect(outside.inert).toBe(false)
     expect(part('image-viewer', 'content')).toBeNull()
+  })
+})
+
+describe('tour 退出资源', () => {
+  it('气泡、遮罩与聚光灯全部完成前保留 Layer，但不接入 Tour 没有的背景资源', async () => {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes test-tour-exit { from { opacity: 1 } to { opacity: 0 } }
+      @keyframes test-tour-move { from { translate: 0 0 } to { translate: 0 8px } }
+      [data-scope='tour'][data-part='content'][data-state='closed'] {
+        animation: test-tour-exit 60s linear forwards, test-tour-move 60s linear forwards;
+      }
+      [data-scope='tour'][data-part='backdrop'][data-state='closed'],
+      [data-scope='tour'][data-part='spotlight'][data-state='closed'] {
+        animation: test-tour-exit 60s linear forwards;
+      }
+    `
+    document.body.append(style)
+    const target = document.createElement('button')
+    target.id = 'tour-exit-target'
+    document.body.append(target)
+    const open = mount(value => h(XhTourRoot, {
+      open: value,
+      steps: [{ id: 'one', target: '#tour-exit-target', title: '第一步' }],
+    }, {
+      default: () => [
+        h(XhTourBackdrop),
+        h(XhTourSpotlight),
+        h(XhTourPositioner, null, () => [h(XhTourContent, null, () => [h(XhTourTitle)])]),
+      ],
+    }))
+    await settle()
+
+    open.value = false
+    await settle()
+    const content = part('tour', 'content')!
+    const backdrop = part('tour', 'backdrop')!
+    const spotlight = part('tour', 'spotlight')!
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    expect(target.inert).toBe(false)
+    expect(document.body.style.overflow).not.toBe('hidden')
+
+    const finite = (node: HTMLElement): Animation[] => node.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
+    const contentAnimations = finite(content)
+    expect(contentAnimations).toHaveLength(2)
+    contentAnimations[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    contentAnimations[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    for (const animation of finite(backdrop)) animation.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    for (const animation of finite(spotlight)) animation.finish()
+    await settle()
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    await settle()
+
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+    expect(content.style.display).toBe('none')
   })
 })
 

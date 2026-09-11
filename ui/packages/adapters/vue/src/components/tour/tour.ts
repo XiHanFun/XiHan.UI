@@ -123,6 +123,7 @@ export const XhTourSpotlight = defineComponent({
         ...mergeProps(ctx.api.value.getSpotlightProps() as Record<string, unknown>, attrs),
         // 收起跟着退场闸门走：高亮框的退场与气泡并行播；居中步照常不画
         hidden: (!ctx.visible.value || !ctx.api.value.anchored) || undefined,
+        ref: (el: unknown) => { ctx.spotlightRef.value = el as HTMLElement },
       }),
     ])
   },
