@@ -107,7 +107,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改一个就是四处同时破坏。
 
 ::: warning `data-xh-part` 是 `data-xh-` 前缀里唯一的例外
-其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt` 等 8 个）是库自用标记，**排除**在承诺之外。但 `data-xh-part` 不是——它是 Web Components 适配器唯一的作者输入 API：你写 `data-xh-part="trigger"` 是**声明**，元素接线后往同一节点打上 `data-scope` + `data-part` 是**事实**。皮肤匹配后者，你永远不该手写后者。
+其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt` 等 9 个）是库自用标记，**排除**在承诺之外。但 `data-xh-part` 不是——它是 Web Components 适配器唯一的作者输入 API：你写 `data-xh-part="trigger"` 是**声明**，元素接线后往同一节点打上 `data-scope` + `data-part` 是**事实**。皮肤匹配后者，你永远不该手写后者。
 :::
 
 ### requiredParts 的方向是反的

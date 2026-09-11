@@ -58,7 +58,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {boolean} disabled - 整个控件禁用：trigger 用原生 disabled，浮层展不开
  * @attr {boolean} read-only - 只读：浮层照常展开、列照常浏览，但选中值改不动、也清不掉
  * @attr {boolean} invalid - 校验失败标注
- * @attr {boolean} loading - 候选还在取：浮层报 aria-busy，在途占位顶上来、空态占位让位
+ * @attr {boolean} loading - 候选还在取：浮层报 aria-busy；当前视图无候选时在途占位顶上来
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -82,7 +82,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart input - 搜索框（content 顶部）；没开 searchable 时带 hidden。上下键走候选、Enter 选中、Escape 先清词
  * @csspart search-list - 候选列表容器；不在搜索视图时带 hidden，无候选时带 data-empty
  * @csspart search-item - 一条候选，须用 value 属性写整条路径的 JSON 数组串（如 value='["a","b"]'）；词换了不匹配的带 hidden
- * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来；文案归作者
+ * @csspart loading - 在途占位，与空态占位同一个位置；标记里没写就由元素补一个并填 translations.loading，作者写了则归作者
  * @csspart empty - 空态占位：搜索无候选或 collection 为空时露面，其余时候带 hidden。标记里没写就由元素在 content 末尾补一个并填缺省文案；写了就用作者那份，文案也归作者
  * @csspart column - role=listbox 的一列，须自带 level 属性标识它是第几列；砍掉时带 hidden
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份；条目挂在它里面
@@ -163,6 +163,12 @@ export class XhCascaderElement extends XhElement {
 
   /** 空态占位的文案是否归元素填，判定同 ownsValueText。 */
   private readonly ownsEmptyText = new WeakMap<HTMLElement, boolean>()
+
+  /** 在途占位的文案是否归元素填，判定同 ownsValueText。 */
+  private readonly ownsLoadingText = new WeakMap<HTMLElement, boolean>()
+
+  /** 元素自己补出的 Loading；作者运行期加入正式部件时用它精确撤掉自动节点。 */
+  private readonly generatedLoading = new WeakSet<HTMLElement>()
 
   private readonly notifyValue = (details: CascaderValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -341,6 +347,33 @@ export class XhCascaderElement extends XhElement {
     return el
   }
 
+  /**
+   * 取在途占位；作者没写就补一枚。作者运行期加入自己的 Loading 时移除自动节点，
+   * 始终只保留一枚状态部件，不靠文案内容猜所有权。
+   */
+  private ensureLoading(): HTMLElement | null {
+    const loadings = this.getParts('loading')
+    const authored = loadings.find(el => !this.generatedLoading.has(el))
+    if (authored) {
+      for (const generated of loadings) {
+        if (this.generatedLoading.has(generated))
+          generated.remove()
+      }
+      return authored
+    }
+    if (loadings[0])
+      return loadings[0]
+    const content = this.getPart('content')
+    if (!content)
+      return null
+    const el = this.ownerDocument.createElement('div')
+    el.setAttribute(PART_ATTR, 'loading')
+    el.setAttribute('data-xh-cascader-auto-loading', '')
+    this.generatedLoading.add(el)
+    content.append(el)
+    return el
+  }
+
   protected wire(): void {
     const api = connectCascader(this.ctrl.service, wcNormalize)
 
@@ -361,13 +394,19 @@ export class XhCascaderElement extends XhElement {
     put('input', api.getInputProps() as Record<string, unknown>)
     put('search-list', api.getSearchListProps() as Record<string, unknown>)
     put('footer', api.getFooterProps() as Record<string, unknown>)
-    put('loading', api.getLoadingProps() as Record<string, unknown>)
 
     // 空态占位标记里没写就补一个：露不露面归连接层，文案按当前视图取无匹配或无数据
     const empty = this.ensureEmpty()
     if (empty) {
       this.spreader.spread(empty, api.getEmptyProps() as Record<string, unknown>)
       this.fillOwnedText(this.ownsEmptyText, empty, api.searching ? api.translations.noMatch : api.translations.empty)
+    }
+
+    // Content 与 Vue / React 一样完整装配两种状态；作者写了 Loading 时只接线并保留作者文案。
+    const loading = this.ensureLoading()
+    if (loading) {
+      this.spreader.spread(loading, api.getLoadingProps() as Record<string, unknown>)
+      this.fillOwnedText(this.ownsLoadingText, loading, api.translations.loading)
     }
 
     // 候选是多实例 part：身份用 value 属性自报整条路径（JSON 数组串，与 cascaderPathKey 同构）

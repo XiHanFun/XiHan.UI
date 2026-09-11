@@ -4621,7 +4621,7 @@
               "name": "search-item"
             },
             {
-              "description": "在途占位，与空态占位同一个位置，取数期间顶上来；文案归作者",
+              "description": "在途占位，与空态占位同一个位置；标记里没写就由元素补一个并填 translations.loading，作者写了则归作者",
               "name": "loading"
             },
             {
@@ -4949,6 +4949,22 @@
             },
             {
               "kind": "field",
+              "name": "ownsLoadingText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "在途占位的文案是否归元素填，判定同 ownsValueText。"
+            },
+            {
+              "kind": "field",
+              "name": "generatedLoading",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakSet<HTMLElement>()",
+              "description": "元素自己补出的 Loading；作者运行期加入正式部件时用它精确撤掉自动节点。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -5169,6 +5185,17 @@
             },
             {
               "kind": "method",
+              "name": "ensureLoading",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "description": "取在途占位；作者没写就补一枚。作者运行期加入自己的 Loading 时移除自动节点，\n始终只保留一枚状态部件，不靠文案内容猜所有权。"
+            },
+            {
+              "kind": "method",
               "name": "wire",
               "privacy": "protected",
               "return": {
@@ -5287,7 +5314,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "候选还在取：浮层报 aria-busy，在途占位顶上来、空态占位让位",
+              "description": "候选还在取：浮层报 aria-busy；当前视图无候选时在途占位顶上来",
               "name": "loading",
               "fieldName": "loading"
             },

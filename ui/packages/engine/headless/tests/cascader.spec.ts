@@ -1084,6 +1084,7 @@ describe('roving tabindex 与 ARIA 骨架', () => {
 
 describe('空态占位', () => {
   const emptyProps = (h: Harness): Record<string, unknown> => h.api().getEmptyProps() as Record<string, unknown>
+  const loadingProps = (h: Harness): Record<string, unknown> => h.api().getLoadingProps() as Record<string, unknown>
 
   it('collection 为空：content 标 data-empty，占位露面', () => {
     const h = mount({ collection: [], defaultOpen: true })
@@ -1095,6 +1096,21 @@ describe('空态占位', () => {
     const h = mount({ defaultOpen: true })
     expect(h.content.hasAttribute('data-empty')).toBe(false)
     expect(emptyProps(h).hidden).toBe(true)
+  })
+
+  it('首次取数且当前视图无候选：Loading 出面、Empty 让位，两者都是独立状态区', () => {
+    const h = mount({ collection: [], defaultOpen: true, loading: true })
+    expect(h.content.getAttribute('aria-busy')).toBe('true')
+    expect(emptyProps(h)).toMatchObject({ role: 'status', hidden: true })
+    expect(loadingProps(h)).toMatchObject({ role: 'status', hidden: undefined })
+  })
+
+  it('已有候选或祖先列时加载只报 aria-busy，不用状态块盖掉可操作内容', () => {
+    const h = mount({ defaultOpen: true, loading: true })
+    expect(h.content.getAttribute('aria-busy')).toBe('true')
+    expect(loadingProps(h).hidden).toBe(true)
+    expect(h.column(0).hasAttribute('hidden')).toBe(false)
+    expect(h.item('zhejiang').item.hasAttribute('hidden')).toBe(false)
   })
 
   it('搜索视图看候选：无匹配时露面且候选列表标 data-empty，有匹配即收起', () => {
@@ -1109,9 +1125,9 @@ describe('空态占位', () => {
 
   it('文案默认英文，translations 逐键覆盖', () => {
     const h = mount()
-    expect(h.api().translations).toEqual({ empty: 'No data', noMatch: 'No matches', column: 'Options', searchInput: 'Search', searchList: 'Search results', clearTrigger: 'Clear' })
-    h.setProps({ translations: { empty: '暂无数据', clearTrigger: '清空' } })
-    expect(h.api().translations).toEqual({ empty: '暂无数据', noMatch: 'No matches', column: 'Options', searchInput: 'Search', searchList: 'Search results', clearTrigger: '清空' })
+    expect(h.api().translations).toEqual({ empty: 'No data', noMatch: 'No matches', loading: 'Loading', column: 'Options', searchInput: 'Search', searchList: 'Search results', clearTrigger: 'Clear' })
+    h.setProps({ translations: { empty: '暂无数据', loading: '正在加载', clearTrigger: '清空' } })
+    expect(h.api().translations).toEqual({ empty: '暂无数据', noMatch: 'No matches', loading: '正在加载', column: 'Options', searchInput: 'Search', searchList: 'Search results', clearTrigger: '清空' })
     expect(h.clear.getAttribute('aria-label')).toBe('清空')
   })
 })

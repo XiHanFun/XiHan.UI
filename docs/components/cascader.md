@@ -25,7 +25,9 @@
   `aria-checked="mixed"`；整控件禁用时，候选不再保留虚假高亮。
 - 子节点可按需加载；长列表只渲可视区。
 - 后端字段名不一致时在进组件前转一道，组件只认 `label` / `value` / `children`。
-- 空（`empty`）与在途（`loading`）两个相位各有部件；`loading` 为真时浮层报 `aria-busy`，空态让位。
+- 空（`empty`）与在途（`loading`）两个相位都由 `content` 自动装配；首次取数且当前视图没有候选时显示
+  `translations.loading`，作者显式写 `loading` 部件即可替换默认内容且不会重复。已有候选或祖先列时仍保留
+  可操作内容，只在浮层上报 `aria-busy`；加载不会把可用列清空。
 
 ## 示例
 
@@ -159,7 +161,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 用原生 disabled，浮层展不开。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开与浏览，但选中值改不动、也清不掉。 |
 | `invalid` | `boolean` |  | 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 |
-| `loading` | `boolean` |  | 候选还在取：浮层报 aria-busy，在途占位顶上来、空态占位让位。 |
+| `loading` | `boolean` |  | 候选还在取：浮层报 aria-busy；当前视图无候选时在途占位顶上来。 |
 | `translations` | `Partial<CascaderTranslations>` |  | 空态占位的文案覆盖，默认英文。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色怎么用。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中用哪族颜色。 |
@@ -264,7 +266,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `getSearchListProps` | `() => T['element']` | 候选列表容器；不在搜索视图时带 hidden。 |
 | `getSearchItemProps` | `(props: CascaderSearchItemProps) => T['element']` | 一条候选：身份是整条路径；点按选中（与点列内条目同一语义）。 |
 | `getEmptyProps` | `() => T['element']` | 空态占位：当前视图没有条目（搜索无候选，或根列没有条目）时露面，其余时候带 hidden。 |
-| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 文案归作者，连接层只管收放。 |
+| `getLoadingProps` | `() => T['element']` | 在途占位：当前视图无候选且正在取数时顶上来；已有候选或祖先列时只保留 aria-busy。 适配器自动提供缺省部件，作者显式写部件即可替换它。 |
 | `getFooterProps` | `() => T['element']` | 浮层底部的操作区：放在 content 里、与列并列，不入任何一列的拥有关系，方向键也走不到。 |
 | `getGroupProps` | `(props: CascaderGroupProps) => T['element']` | 分组容器：role=group，条目挂在它里面；分组标题经 aria-labelledby 关联。 |
 | `getGroupLabelProps` | `(props: CascaderGroupProps) => T['element']` | 分组标题：不是条目、不进导航，只作为本组的可及名字。 |
@@ -346,6 +348,8 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
 | `item-indicator` | `aria-hidden` | 'true' |
+| `empty` | `role` | 'status' |
+| `loading` | `role` | 'status' |
 
 ## 样式
 

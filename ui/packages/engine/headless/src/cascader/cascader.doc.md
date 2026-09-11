@@ -25,7 +25,9 @@
   `aria-checked="mixed"`；整控件禁用时，候选不再保留虚假高亮。
 - 子节点可按需加载；长列表只渲可视区。
 - 后端字段名不一致时在进组件前转一道，组件只认 `label` / `value` / `children`。
-- 空（`empty`）与在途（`loading`）两个相位各有部件；`loading` 为真时浮层报 `aria-busy`，空态让位。
+- 空（`empty`）与在途（`loading`）两个相位都由 `content` 自动装配；首次取数且当前视图没有候选时显示
+  `translations.loading`，作者显式写 `loading` 部件即可替换默认内容且不会重复。已有候选或祖先列时仍保留
+  可操作内容，只在浮层上报 `aria-busy`；加载不会把可用列清空。
 
 ## 组合
 
