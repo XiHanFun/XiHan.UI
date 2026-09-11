@@ -61,6 +61,7 @@ const files = [
             <XhTreeSelectBranchControl>
               <XhTreeSelectBranchTrigger />
               <XhTreeSelectBranchText>{{ dir.label }}</XhTreeSelectBranchText>
+              <XhTreeSelectItemIndicator />
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem

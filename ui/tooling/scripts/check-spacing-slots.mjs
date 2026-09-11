@@ -89,8 +89,8 @@ const CROSS_PART = {
   // 工具名用等宽字族，摘要行里跟着它排；耗时与错误行与状态标签同一档字号
   'tool-call.label': ['summary'],
   'tool-call.status': ['duration', 'error'],
-  // 叶子行没摆指示符时由行盒自己补出首格，补的宽度就是那格本该有的部件的宽度
-  'tree-select.item-indicator': ['item'],
+  // 叶子为同级分支的展开箭头保留首格；对号独立位于末端，箭头尺寸覆盖后缩进也需同值。
+  'tree-select.branch-indicator': ['item'],
 }
 
 /** 注释挖空但保留换行。 */

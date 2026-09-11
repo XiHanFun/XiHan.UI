@@ -69,6 +69,7 @@ const expanded = ref<string[]>(["docs"]);
             <XhTreeSelectBranchControl>
               <XhTreeSelectBranchTrigger />
               <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
+              <XhTreeSelectItemIndicator />
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem value="guide">
@@ -83,6 +84,7 @@ const expanded = ref<string[]>(["docs"]);
                 <XhTreeSelectBranchControl>
                   <XhTreeSelectBranchTrigger />
                   <XhTreeSelectBranchText>i18n</XhTreeSelectBranchText>
+                  <XhTreeSelectItemIndicator />
                 </XhTreeSelectBranchControl>
                 <XhTreeSelectBranchContent>
                   <XhTreeSelectItem value="zh">

@@ -110,6 +110,7 @@ function onOpenChange(details: { open: boolean }): void {
             <XhTreeSelectBranchControl>
               <XhTreeSelectBranchTrigger />
               <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
+              <XhTreeSelectItemIndicator />
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem value="guide">
@@ -120,6 +121,7 @@ function onOpenChange(details: { open: boolean }): void {
                 <XhTreeSelectBranchControl>
                   <XhTreeSelectBranchTrigger />
                   <XhTreeSelectBranchText>i18n</XhTreeSelectBranchText>
+                  <XhTreeSelectItemIndicator />
                 </XhTreeSelectBranchControl>
                 <XhTreeSelectBranchContent>
                   <XhTreeSelectItem value="zh">
@@ -139,6 +141,7 @@ function onOpenChange(details: { open: boolean }): void {
             <XhTreeSelectBranchControl>
               <XhTreeSelectBranchTrigger />
               <XhTreeSelectBranchText>assets</XhTreeSelectBranchText>
+              <XhTreeSelectItemIndicator />
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem value="logo">

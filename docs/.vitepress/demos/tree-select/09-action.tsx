@@ -63,6 +63,7 @@ export default function Demo(): ReactNode {
                     <XhTreeSelectBranchControl>
                       <XhTreeSelectBranchTrigger />
                       <XhTreeSelectBranchText>{dir.label}</XhTreeSelectBranchText>
+                      <XhTreeSelectItemIndicator />
                     </XhTreeSelectBranchControl>
                     <XhTreeSelectBranchContent>
                       {dir.children.map(file => (

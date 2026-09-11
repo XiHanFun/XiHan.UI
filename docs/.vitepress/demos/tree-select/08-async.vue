@@ -95,6 +95,7 @@ function onExpandedValueChange(details: { value: string[] }): void {
             <XhTreeSelectBranchControl>
               <XhTreeSelectBranchTrigger />
               <XhTreeSelectBranchText>{{ region.label }}</XhTreeSelectBranchText>
+              <XhTreeSelectItemIndicator />
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem

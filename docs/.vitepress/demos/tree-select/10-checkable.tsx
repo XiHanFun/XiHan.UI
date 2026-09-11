@@ -1,8 +1,6 @@
 // 级联勾选与回显策略 | multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；对外值按 checked-strategy 收敛，parent 档整组选满只报组名
-import type { CSSProperties, ReactNode } from "react";
-import { CheckIcon, MinusIcon } from "@xihan-ui/icons";
+import type { ReactNode } from "react";
 import {
-  XhIcon,
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
   XhTreeSelectBranchControl,
@@ -12,6 +10,7 @@ import {
   XhTreeSelectControl,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
+  XhTreeSelectItemIndicator,
   XhTreeSelectItemText,
   XhTreeSelectLabel,
   XhTreeSelectPositioner,
@@ -42,19 +41,6 @@ const collection = [
   },
 ];
 
-const boxStyle: CSSProperties = {
-  display: "inline-flex",
-  flex: "none",
-  alignItems: "center",
-  justifyContent: "center",
-  inlineSize: "1rem",
-  blockSize: "1rem",
-  border: "1px solid var(--xh-border-strong)",
-  borderRadius: "3px",
-  fontSize: "0.75rem",
-  lineHeight: "1",
-};
-
 export default function Demo(): ReactNode {
   const [value, setValue] = useState<string[]>(["user:view"]);
 
@@ -70,7 +56,7 @@ export default function Demo(): ReactNode {
         checkedStrategy="parent"
         style={{ maxInlineSize: "340px" }}
       >
-        {({ isSelected, isIndeterminate }) => (
+        {() => (
           <>
             <XhTreeSelectLabel>权限</XhTreeSelectLabel>
             <XhTreeSelectControl>
@@ -87,21 +73,13 @@ export default function Demo(): ReactNode {
                     <XhTreeSelectBranch key={group.value} value={group.value}>
                       <XhTreeSelectBranchControl>
                         <XhTreeSelectBranchTrigger />
-                        <span aria-hidden="true" style={boxStyle}>
-                          {isSelected(group.value)
-                            ? <XhIcon icon={CheckIcon} />
-                            : isIndeterminate(group.value)
-                              ? <XhIcon icon={MinusIcon} />
-                              : null}
-                        </span>
+                        <XhTreeSelectItemIndicator />
                         <XhTreeSelectBranchText>{group.label}</XhTreeSelectBranchText>
                       </XhTreeSelectBranchControl>
                       <XhTreeSelectBranchContent>
                         {group.children.map(item => (
                           <XhTreeSelectItem key={item.value} value={item.value}>
-                            <span aria-hidden="true" style={boxStyle}>
-                              {isSelected(item.value) ? <XhIcon icon={CheckIcon} /> : null}
-                            </span>
+                            <XhTreeSelectItemIndicator />
                             <XhTreeSelectItemText>{item.label}</XhTreeSelectItemText>
                           </XhTreeSelectItem>
                         ))}

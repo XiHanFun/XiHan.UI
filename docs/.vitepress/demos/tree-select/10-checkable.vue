@@ -1,8 +1,6 @@
 <!-- 级联勾选与回显策略 | multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；对外值按 checked-strategy 收敛，parent 档整组选满只报组名 -->
 <script setup lang="ts">
-import { CheckIcon, MinusIcon } from "@xihan-ui/icons";
 import {
-  XhIcon,
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
   XhTreeSelectBranchControl,
@@ -12,6 +10,7 @@ import {
   XhTreeSelectControl,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
+  XhTreeSelectItemIndicator,
   XhTreeSelectItemText,
   XhTreeSelectLabel,
   XhTreeSelectPositioner,
@@ -43,24 +42,10 @@ const collection = [
 ];
 
 const value = ref<string[]>(["user:view"]);
-
-const boxStyle = {
-  display: "inline-flex",
-  flex: "none",
-  alignItems: "center",
-  justifyContent: "center",
-  inlineSize: "1rem",
-  blockSize: "1rem",
-  border: "1px solid var(--xh-border-strong)",
-  borderRadius: "3px",
-  fontSize: "0.75rem",
-  lineHeight: "1",
-};
 </script>
 
 <template>
   <XhTreeSelectRoot
-    v-slot="{ isSelected, isIndeterminate }"
     v-model:value="value"
     :collection="collection"
     :default-expanded-value="['user', 'order']"
@@ -87,10 +72,7 @@ const boxStyle = {
           >
             <XhTreeSelectBranchControl>
               <XhTreeSelectBranchTrigger />
-              <span aria-hidden="true" :style="boxStyle">
-                <XhIcon v-if="isSelected(group.value)" :icon="CheckIcon" />
-                <XhIcon v-else-if="isIndeterminate(group.value)" :icon="MinusIcon" />
-              </span>
+              <XhTreeSelectItemIndicator />
               <XhTreeSelectBranchText>{{ group.label }}</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
@@ -99,9 +81,7 @@ const boxStyle = {
                 :key="item.value"
                 :value="item.value"
               >
-                <span aria-hidden="true" :style="boxStyle">
-                  <XhIcon v-if="isSelected(item.value)" :icon="CheckIcon" />
-                </span>
+                <XhTreeSelectItemIndicator />
                 <XhTreeSelectItemText>{{ item.label }}</XhTreeSelectItemText>
               </XhTreeSelectItem>
             </XhTreeSelectBranchContent>
