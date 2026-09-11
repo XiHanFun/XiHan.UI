@@ -464,13 +464,12 @@ export {
 export { useCommand } from './components/command/use-command'
 export type { CommandContext } from './components/command/use-command'
 export {
-  useContextMenuChain,
   useContextMenuContext,
   useContextMenuGroupContext,
   useContextMenuItemContext,
   useContextMenuSubContext,
 } from './components/context-menu/context'
-export type { ContextMenuChain, ContextMenuSubHandle } from './components/context-menu/context'
+export type { ContextMenuSubHandle } from './components/context-menu/context'
 export {
   XhContextMenuArrow,
   XhContextMenuContent,
@@ -1226,13 +1225,12 @@ export type {
 export { useMention } from './components/mention/use-mention'
 export type { MentionContext } from './components/mention/use-mention'
 export {
-  useMenuChain,
   useMenuContext,
   useMenuGroupContext,
   useMenuItemContext,
   useMenuSubContext,
 } from './components/menu/context'
-export type { MenuChain, MenuSubHandle } from './components/menu/context'
+export type { MenuSubHandle } from './components/menu/context'
 export {
   XhMenuArrow,
   XhMenuContent,
@@ -1270,14 +1268,13 @@ export type {
 export { useMenu } from './components/menu/use-menu'
 export type { MenuContext } from './components/menu/use-menu'
 export {
-  useMenubarChain,
   useMenubarContext,
   useMenubarGroupContext,
   useMenubarItemContext,
   useMenubarMenuContext,
   useMenubarSubContext,
 } from './components/menubar/context'
-export type { MenubarChain, MenubarSubHandle } from './components/menubar/context'
+export type { MenubarSubHandle } from './components/menubar/context'
 export {
   XhMenubarArrow,
   XhMenubarContent,

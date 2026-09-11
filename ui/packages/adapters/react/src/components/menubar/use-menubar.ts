@@ -1,15 +1,14 @@
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { MenubarApi, MenubarSchema } from '@xihan-ui/headless'
+import type { MenubarApi, MenubarSchema, MenuTreeNode } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import { createRuntimeConfig } from '@xihan-ui/core'
-import { connectMenubar, menubarMachine } from '@xihan-ui/headless'
+import { connectMenubar, createMenuTreeNode, menubarMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { useCallback, useMemo, useRef } from 'react'
 import { useXhConfig } from '../../config/config'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
-import { registerMenuHoverOwner, useMenuHoverBranches } from '../menu/hover-branches'
 
 /** 按 value 登记角色节点，浮层三件套据此取到当前展开那一项。 */
 export type MenubarPartRegistry = (value: string, el: HTMLElement | null) => void
@@ -23,6 +22,8 @@ export interface MenubarContext {
   registerTrigger: MenubarPartRegistry
   registerPositioner: MenubarPartRegistry
   registerContent: MenubarPartRegistry
+  /** 子菜单经 Portal 分离后的逻辑父节点。 */
+  tree: MenuTreeNode
   /** 运行时配置；服务端没有 DOM 时为 null。每张菜单的退场闸门从它拿 reduce 档。 */
   config: RuntimeConfig | null
   /** 浮层搬到哪儿：全局配置 > 运行时配置 > body。 */
@@ -34,7 +35,9 @@ export function useMenubar(props: MenubarSchema['props']): MenubarContext {
   const scope = useReactScope()
   const xhConfig = useXhConfig()
   const rootRef = useRef<HTMLElement | null>(null)
-  const hoverBranches = useMenuHoverBranches()
+  const serviceRef = useRef<Service<MenubarSchema> | null>(null)
+  const latestProps = useRef(props)
+  latestProps.current = props
 
   // 普通 Map 而非状态，这三份表只在事件与效应里被机器读
   const registry = useMemo(() => {
@@ -62,6 +65,21 @@ export function useMenubar(props: MenubarSchema['props']): MenubarContext {
     () => (typeof document === 'undefined' ? null : createRuntimeConfig({ scope, idGenerator })),
     [scope, idGenerator],
   )
+
+  const tree = useMemo(() => createMenuTreeNode({
+    getPositioner: () => {
+      const value = serviceRef.current?.context.get('value') ?? null
+      return value == null ? null : registry.positioners.get(value) ?? null
+    },
+    isOpen: () => serviceRef.current?.state.get() === 'open',
+    close: () => serviceRef.current?.send({ type: 'CLOSE' }),
+    isRoot: () => true,
+    onRootSelect: (details) => {
+      const menu = serviceRef.current?.context.get('value') ?? null
+      if (menu != null)
+        latestProps.current.onSelect?.({ menu, value: details.value })
+    },
+  }), [registry])
 
   // 机器的挂载效应会立刻读 refs，交在 onCreate 里才赶得上
   const onCreate = useCallback((service: Service<MenubarSchema>) => {
@@ -93,7 +111,7 @@ export function useMenubar(props: MenubarSchema['props']): MenubarContext {
   }, [config, registry])
 
   const service = useMachine(menubarMachine, () => props, { scope, onCreate })
-  registerMenuHoverOwner(service, hoverBranches)
+  serviceRef.current = service
 
   const portalContainer = useCallback(
     () => xhConfig.portalContainer?.() ?? config?.portalContainer() ?? null,
@@ -108,6 +126,7 @@ export function useMenubar(props: MenubarSchema['props']): MenubarContext {
     registerTrigger: registry.registerTrigger,
     registerPositioner: registry.registerPositioner,
     registerContent: registry.registerContent,
+    tree,
     config,
     portalContainer,
   }

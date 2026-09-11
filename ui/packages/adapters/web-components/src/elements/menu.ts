@@ -3,7 +3,7 @@ import type { MenuNode, MenuOpenChangeDetails, MenuSchema, MenuSelectDetails, Me
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createPortalVisualBridge, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectMenu, menuAnatomy, menuMachine, menuMeta } from '@xihan-ui/headless'
+import { connectMenu, createMenuTreeNode, menuAnatomy, menuMachine, menuMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -107,14 +107,23 @@ export class XhMenuElement extends XhElement {
   private readonly menuScope = createScope(this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
-  /** 直属子菜单触发条目由父机补齐 item 身份；嵌套 xh-* 子树不会被 discoverParts 越权扫描。 */
-  private readonly submenuChildren = new Map<HTMLElement, MenuSubmenuChild>()
+  /** 直属子菜单触发条目由父机补齐 item 身份；这里只保留 WC 的属性铺设桥。 */
+  private readonly submenuBridges = new Map<HTMLElement, MenuSubmenuChild>()
   private parentTriggerOwner: MenuSubmenuOwner | null = null
   private parentTrigger: HTMLElement | null = null
   private parentRegistration: MenuSubmenuRegistration | null = null
   private portal: MenuPortalLease | null = null
 
+  private readonly menuTree = createMenuTreeNode({
+    getPositioner: () => this.getPart('positioner'),
+    isOpen: () => this.ctrl.service.state.get() === 'open',
+    close: () => this.ctrl.service.send({ type: 'CLOSE' }),
+    isRoot: () => !this.submenu,
+    onRootSelect: details => this.dispatchSelect(details),
+  })
+
   private readonly submenuOwner: MenuSubmenuOwner = {
+    tree: this.menuTree,
     registerSubmenu: child => this.registerSubmenu(child),
   }
 
@@ -126,32 +135,11 @@ export class XhMenuElement extends XhElement {
   }
 
   private readonly notifySelect = (details: MenuSelectDetails): void => {
-    if (!this.submenu) {
-      this.dispatchSelect(details)
-      return
-    }
-    const registration = this.parentRegistration
-    if (!registration)
-      throw new Error('[xh] Menu 子菜单选择时缺少逻辑父菜单')
-    registration.select(details)
+    this.menuTree.select(details)
   }
 
   private readonly dispatchSelect = (details: MenuSelectDetails): void => {
     this.dispatchEvent(new CustomEvent('select', { detail: details, bubbles: true, composed: true }))
-  }
-
-  /** 叶菜单已先退栈；每个逻辑祖先同步收起自己，再把同一选择继续交给上一层。 */
-  private acceptDescendantSelection(details: MenuSelectDetails): void {
-    if (!this.submenu) {
-      this.dispatchSelect(details)
-      this.ctrl.service.send({ type: 'CLOSE' })
-      return
-    }
-    this.ctrl.service.send({ type: 'CLOSE' })
-    const registration = this.parentRegistration
-    if (!registration)
-      throw new Error('[xh] Menu 子菜单选择链缺少逻辑父菜单')
-    registration.select(details)
   }
 
   private readonly ctrl = new MachineController<MenuSchema>(
@@ -208,14 +196,22 @@ export class XhMenuElement extends XhElement {
   }
 
   private registerSubmenu(child: MenuSubmenuChild): MenuSubmenuRegistration {
-    if (this.submenuChildren.has(child.trigger))
+    if (this.submenuBridges.has(child.trigger))
       throw new Error('[xh] 同一父菜单的同一子菜单 trigger 只能登记一次')
-    this.submenuChildren.set(child.trigger, child)
-    this.wireSubmenuChild(child)
+    const releaseTree = this.menuTree.registerChild(child.tree)
+    this.submenuBridges.set(child.trigger, child)
+    try {
+      this.wireSubmenuChild(child)
+    }
+    catch (error) {
+      this.submenuBridges.delete(child.trigger)
+      releaseTree()
+      throw error
+    }
     this.requestUpdate()
     let active = true
     const assertCurrent = (): void => {
-      if (!active || this.submenuChildren.get(child.trigger) !== child)
+      if (!active || this.submenuBridges.get(child.trigger) !== child)
         throw new Error('[xh] Menu 子菜单逻辑所有权已经释放')
     }
     return {
@@ -223,17 +219,14 @@ export class XhMenuElement extends XhElement {
         assertCurrent()
         this.wireSubmenuChild(child)
       },
-      select: (details) => {
-        assertCurrent()
-        this.acceptDescendantSelection(details)
-      },
       dispose: () => {
         if (!active)
           return
         active = false
-        if (this.submenuChildren.get(child.trigger) !== child)
+        releaseTree()
+        if (this.submenuBridges.get(child.trigger) !== child)
           return
-        this.submenuChildren.delete(child.trigger)
+        this.submenuBridges.delete(child.trigger)
         this.spreader.release(child.trigger)
         this.requestUpdate()
       },
@@ -251,25 +244,10 @@ export class XhMenuElement extends XhElement {
     if (owner && trigger) {
       this.parentRegistration = owner.registerSubmenu({
         trigger,
-        getPositioner: () => this.getPart('positioner'),
-        getHoverBranches: () => this.openSubmenuBranches(),
-        isOpen: () => this.ctrl.service.state.get() === 'open',
+        tree: this.menuTree,
         getDisabled: () => this.disabled,
       })
     }
-  }
-
-  private openSubmenuBranches(): readonly HTMLElement[] {
-    const branches: HTMLElement[] = []
-    for (const child of this.submenuChildren.values()) {
-      if (!child.isOpen())
-        continue
-      const positioner = child.getPositioner()
-      if (positioner)
-        branches.push(positioner)
-      branches.push(...child.getHoverBranches())
-    }
-    return Object.freeze(branches)
   }
 
   protected override externalPartRoots(): readonly HTMLElement[] {
@@ -402,7 +380,7 @@ export class XhMenuElement extends XhElement {
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
-    svc.refs.set('getHoverBranches', () => this.openSubmenuBranches())
+    svc.refs.set('getHoverBranches', this.menuTree.getHoverBranches)
   }
 
   /**
@@ -482,7 +460,7 @@ export class XhMenuElement extends XhElement {
       })
       this.spreader.spread(el, props as Record<string, unknown>)
     }
-    for (const child of this.submenuChildren.values())
+    for (const child of this.submenuBridges.values())
       this.wireSubmenuChild(child)
     this.parentRegistration?.sync()
 

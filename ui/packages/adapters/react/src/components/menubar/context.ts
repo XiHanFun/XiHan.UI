@@ -1,4 +1,4 @@
-import type { MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarSelectDetails } from '@xihan-ui/headless'
+import type { MenubarContentProps, MenubarGroupProps, MenubarItemProps } from '@xihan-ui/headless'
 import type { MenubarContext } from './use-menubar'
 import { createContext, useContext } from 'react'
 
@@ -45,22 +45,6 @@ export function useMenubarGroupContext(): MenubarGroupProps {
   if (!group)
     throw new Error('XhMenubar 的分组标题要放在 XhMenubarGroup 里')
   return group
-}
-
-/** 选中链：子菜单任意层级的选中都汇到根——先发根的 select，再关掉整条菜单栏。 */
-export interface MenubarChain {
-  notifySelect: (details: MenubarSelectDetails) => void
-}
-
-const ChainCtx = createContext<MenubarChain | undefined>(undefined)
-
-export const MenubarChainProvider = ChainCtx
-
-export function useMenubarChain(): MenubarChain {
-  const chain = useContext(ChainCtx)
-  if (!chain)
-    throw new Error('XhMenubarSub 要放在 XhMenubarRoot 里')
-  return chain
 }
 
 /** 子菜单触发条目要同时够到父菜单栏与本子菜单，这里存父层句柄与它在父层里的身份。 */

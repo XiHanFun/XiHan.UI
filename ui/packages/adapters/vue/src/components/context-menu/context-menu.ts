@@ -9,16 +9,13 @@ import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
-import { provideMenu, provideMenuChain, useMenuContext } from '../menu/context'
-import { menuHoverParentOf } from '../menu/hover-branches'
-import { useMenuWithHoverParent } from '../menu/use-menu'
+import { provideMenu, useMenuContext } from '../menu/context'
+import { useMenuWithParent } from '../menu/use-menu'
 import {
   provideContextMenu,
-  provideContextMenuChain,
   provideContextMenuGroup,
   provideContextMenuItem,
   provideContextMenuSub,
-  useContextMenuChain,
   useContextMenuContext,
   useContextMenuGroupContext,
   useContextMenuItemContext,
@@ -80,13 +77,6 @@ export const XhContextMenuRoot = defineComponent({
       },
       get point() {
         return ctx.api.value.point
-      },
-    })
-    // 子菜单任意层级的选中都汇到根：先发根的 select 再关根，各级随父关闭级联收起
-    provideContextMenuChain({
-      notifySelect: (details) => {
-        emit('select', details)
-        ctx.api.value.setOpen(false)
       },
     })
     return () => h(
@@ -256,8 +246,7 @@ export const XhContextMenuSub = defineComponent({
   }>,
   setup(props, { slots }) {
     const parent = useContextMenuContext()
-    const chain = useContextMenuChain()
-    const sub = useMenuWithHoverParent(
+    const sub = useMenuWithParent(
       {
         ...props,
         submenu: true,
@@ -266,19 +255,10 @@ export const XhContextMenuSub = defineComponent({
         size: props.size ?? parent.service.prop('size'),
       },
       undefined,
-      details => chain.notifySelect(details),
-      menuHoverParentOf(parent.service),
+      parent.tree,
     )
     // 子树内的 XhMenu 系部件都归子机器
     provideMenu(sub)
-    // 子层里还能再嵌一层 XhMenuSub：那一层要往上找选中汇总的链，
-    // 而链只在 XhMenuRoot 里 provide 过，右键菜单这一支得自己接上
-    provideMenuChain({
-      notifySelect: (details) => {
-        sub.api.value.setOpen(false)
-        chain.notifySelect(details)
-      },
-    })
     provideContextMenuSub({ parent, value: props.value, disabled: props.disabled })
     // 父层收起（Escape、外点、选中）时本层跟着收，层层传导
     watch(() => parent.api.value.open, (open) => {

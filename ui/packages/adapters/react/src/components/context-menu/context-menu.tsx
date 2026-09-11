@@ -12,7 +12,6 @@ import type {
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
-import type { ContextMenuChain } from './context'
 import { mergeProps } from '@xihan-ui/core'
 import { Fragment, useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
@@ -23,16 +22,13 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
-import { MenuChainProvider, MenuProvider, useMenuContext } from '../menu/context'
-import { menuHoverParentOf } from '../menu/hover-branches'
-import { useMenuWithHoverParent } from '../menu/use-menu'
+import { MenuProvider, useMenuContext } from '../menu/context'
+import { useMenuWithParent } from '../menu/use-menu'
 import {
-  ContextMenuChainProvider,
   ContextMenuGroupProvider,
   ContextMenuItemProvider,
   ContextMenuProvider,
   ContextMenuSubProvider,
-  useContextMenuChain,
   useContextMenuContext,
   useContextMenuGroupContext,
   useContextMenuItemContext,
@@ -110,17 +106,6 @@ export function XhContextMenuRoot({
     onSelect,
   }) as ContextMenuProps)
 
-  // 子菜单任意层级的选中都汇到根：先发根的 select 再关根，各级随父关闭级联收起。
-  // 取值器每帧换、链只建一次：拿 ref 转一道，别让它成为重建的理由
-  const latest = useRef({ onSelect, api: ctx.api })
-  latest.current = { onSelect, api: ctx.api }
-  const chain = useMemo<ContextMenuChain>(() => ({
-    notifySelect: (details) => {
-      latest.current.onSelect?.(details)
-      latest.current.api.setOpen(false)
-    },
-  }), [])
-
   const body = children != null
     ? renderSlot(children, {
         open: ctx.api.open,
@@ -134,9 +119,7 @@ export function XhContextMenuRoot({
 
   return (
     <ContextMenuProvider value={ctx}>
-      <ContextMenuChainProvider value={chain}>
-        <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
-      </ContextMenuChainProvider>
+      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
     </ContextMenuProvider>
   )
 }
@@ -344,29 +327,20 @@ export interface XhContextMenuSubProps {
  */
 export function XhContextMenuSub({ value, disabled, children, ...props }: XhContextMenuSubProps): ReactNode {
   const parent = useContextMenuContext()
-  const chain = useContextMenuChain()
-  const sub = useMenuWithHoverParent({
+  const sub = useMenuWithParent({
     ...props,
     disabled,
     submenu: true,
     dir: props.dir ?? parent.service.prop('dir'),
     tone: props.tone ?? parent.service.prop('tone'),
     size: props.size ?? parent.service.prop('size'),
-    onSelect: details => chain.notifySelect(details),
-  }, menuHoverParentOf(parent.service))
+  }, parent.tree)
 
   const handle = useMemo(() => ({ parent, value, disabled }), [parent, value, disabled])
   // 父层收起（Escape、外点、选中）时本层跟着收，层层传导
   const parentOpen = parent.api.open
   const setOpenRef = useRef(sub.api.setOpen)
   setOpenRef.current = sub.api.setOpen
-  // 后代先收自己，再由这一层收起并把选择上报到右键菜单根。
-  const menuChain = useMemo(() => ({
-    notifySelect: (details: { value: string }) => {
-      setOpenRef.current(false)
-      chain.notifySelect(details)
-    },
-  }), [chain])
   useEffect(() => {
     if (!parentOpen)
       setOpenRef.current(false)
@@ -374,11 +348,9 @@ export function XhContextMenuSub({ value, disabled, children, ...props }: XhCont
 
   return (
     <MenuProvider value={sub}>
-      <MenuChainProvider value={menuChain}>
-        <ContextMenuSubProvider value={handle}>
-          {renderSlot(children, { open: sub.api.open, setOpen: sub.api.setOpen })}
-        </ContextMenuSubProvider>
-      </MenuChainProvider>
+      <ContextMenuSubProvider value={handle}>
+        {renderSlot(children, { open: sub.api.open, setOpen: sub.api.setOpen })}
+      </ContextMenuSubProvider>
     </MenuProvider>
   )
 }

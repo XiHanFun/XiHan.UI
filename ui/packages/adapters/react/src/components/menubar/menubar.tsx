@@ -3,7 +3,6 @@ import type { MenuApi, MenubarApi, MenubarContentProps, MenubarGroupProps, Menub
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
-import type { MenubarChain } from './context'
 import type { MenubarPartRegistry } from './use-menubar'
 import { mergeProps } from '@xihan-ui/core'
 import { Fragment, useCallback, useEffect, useMemo, useRef } from 'react'
@@ -15,17 +14,14 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
-import { MenuChainProvider, MenuProvider, useMenuContext } from '../menu/context'
-import { menuHoverParentOf } from '../menu/hover-branches'
-import { useMenuWithHoverParent } from '../menu/use-menu'
+import { MenuProvider, useMenuContext } from '../menu/context'
+import { useMenuWithParent } from '../menu/use-menu'
 import {
-  MenubarChainProvider,
   MenubarGroupProvider,
   MenubarItemProvider,
   MenubarMenuProvider,
   MenubarProvider,
   MenubarSubProvider,
-  useMenubarChain,
   useMenubarContext,
   useMenubarGroupContext,
   useMenubarItemContext,
@@ -119,18 +115,6 @@ export function XhMenubarRoot({
   // onFocusOut 归到的 onBlur 本就是冒泡的 focusout，不动它
   const bind = useNativeEvents(ctx.api.getRootProps() as Record<string, unknown>, ['onFocus'])
 
-  // 子菜单任意层级的选中都汇到这里：先发根的 select，再关掉整条菜单栏。
-  // 关根用 setValue(null) —— 菜单栏是「当前展开哪一项」的模型，没有 setOpen。
-  // 取值器每帧换、链只建一次：拿 ref 转一道，别让它成为重建的理由
-  const latest = useRef({ onSelect, api: ctx.api })
-  latest.current = { onSelect, api: ctx.api }
-  const chain = useMemo<MenubarChain>(() => ({
-    notifySelect: (details) => {
-      latest.current.onSelect?.(details)
-      latest.current.api.setValue(null)
-    },
-  }), [])
-
   const body = children != null
     ? renderSlot(children, { value: ctx.api.value, open: ctx.api.open, setValue: ctx.api.setValue })
     : collection
@@ -139,18 +123,16 @@ export function XhMenubarRoot({
 
   return (
     <MenubarProvider value={ctx}>
-      <MenubarChainProvider value={chain}>
-        <div
-          {...mergeReactProps(
-            bind.attrs,
-            rest as Record<string, unknown>,
-            { ref: bind.ref },
-            { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
-          )}
-        >
-          {body}
-        </div>
-      </MenubarChainProvider>
+      <div
+        {...mergeReactProps(
+          bind.attrs,
+          rest as Record<string, unknown>,
+          { ref: bind.ref },
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
+      >
+        {body}
+      </div>
     </MenubarProvider>
   )
 }
@@ -399,36 +381,22 @@ export function XhMenubarSub({ value, disabled, children, ...props }: XhMenubarS
   const owner = useMenubarMenuContext()
   if (!owner)
     throw new Error('XhMenubarSub 要放在 XhMenubarPositioner 里')
-  const chain = useMenubarChain()
   const ownerValue = owner.value
-  // 菜单栏的选中要带菜单身份，子层只知道条目值，在这里补上
-  const notifySelect = useCallback(
-    (details: { value: string }) => chain.notifySelect({ menu: ownerValue, value: details.value }),
-    [chain, ownerValue],
-  )
   // 子层跑的是一台子菜单模式的 menu 机器：菜单栏那台是单机器单锚点，装不下第二层
-  const sub = useMenuWithHoverParent({
+  const sub = useMenuWithParent({
     ...props,
     disabled,
     submenu: true,
     dir: props.dir ?? parent.service.prop('dir'),
     tone: props.tone ?? parent.service.prop('tone'),
     size: props.size ?? parent.service.prop('size'),
-    onSelect: notifySelect,
-  } as MenuProps, menuHoverParentOf(parent.service))
+  } as MenuProps, parent.tree)
 
   const handle = useMemo(() => ({ parent, value, disabled }), [parent, value, disabled])
   // 所属那张菜单收起时本层跟着收，层层传导
   const ownerOpen = parent.api.isOpen(ownerValue)
   const setOpenRef = useRef(sub.api.setOpen)
   setOpenRef.current = sub.api.setOpen
-  // 后代先收自己，再由这一层收起并把选择上报到 Menubar 根。
-  const menuChain = useMemo(() => ({
-    notifySelect: (details: { value: string }) => {
-      setOpenRef.current(false)
-      notifySelect(details)
-    },
-  }), [notifySelect])
   useEffect(() => {
     if (!ownerOpen)
       setOpenRef.current(false)
@@ -436,11 +404,9 @@ export function XhMenubarSub({ value, disabled, children, ...props }: XhMenubarS
 
   return (
     <MenuProvider value={sub}>
-      <MenuChainProvider value={menuChain}>
-        <MenubarSubProvider value={handle}>
-          {renderSlot(children, { open: sub.api.open, setOpen: sub.api.setOpen })}
-        </MenubarSubProvider>
-      </MenuChainProvider>
+      <MenubarSubProvider value={handle}>
+        {renderSlot(children, { open: sub.api.open, setOpen: sub.api.setOpen })}
+      </MenubarSubProvider>
     </MenuProvider>
   )
 }

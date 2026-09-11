@@ -1,23 +1,21 @@
 import type { Cleanup } from '@xihan-ui/core'
-import type { MenuSelectDetails } from '@xihan-ui/headless'
+import type { MenuTreeNode } from '@xihan-ui/headless'
 
 export interface MenuSubmenuChild {
   readonly trigger: HTMLElement
-  readonly getPositioner: () => HTMLElement | null
-  readonly getHoverBranches: () => readonly HTMLElement[]
-  readonly isOpen: () => boolean
+  /** 菜单行为由 headless 节点统一维护；本桥只负责宿主元素接线。 */
+  readonly tree: MenuTreeNode
   readonly getDisabled: () => boolean | undefined
 }
 
 export interface MenuSubmenuRegistration {
   /** 父机在子机属性之后重铺一次，确保跨 scope 的父 item 身份胜出。 */
   sync: () => void
-  /** 叶层已收起后，把选择沿逻辑链逐层交给根。 */
-  select: (details: MenuSelectDetails) => void
   dispose: Cleanup
 }
 
 export interface MenuSubmenuOwner {
+  readonly tree: MenuTreeNode
   registerSubmenu: (child: MenuSubmenuChild) => MenuSubmenuRegistration
 }
 

@@ -1,9 +1,8 @@
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { MenuApi, MenuSchema } from '@xihan-ui/headless'
+import type { MenuApi, MenuSchema, MenuTreeNode } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
-import type { MenuHoverBranchParent } from './hover-branches'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectMenu, menuMachine } from '@xihan-ui/headless'
+import { connectMenu, createMenuTreeNode, menuMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
@@ -11,7 +10,6 @@ import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
-import { createMenuHoverBranches, registerMenuHoverOwner } from './hover-branches'
 
 export interface MenuContext {
   service: Service<MenuSchema>
@@ -19,6 +17,8 @@ export interface MenuContext {
   triggerRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
+  /** Portal 之外的逻辑父子、悬停区域与选择收链由 headless 节点统一维护。 */
+  tree: MenuTreeNode
   /** 此刻该不该渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
   /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
@@ -29,22 +29,30 @@ function useMenuImpl(
   props: MenuSchema['props'],
   onOpenChange?: MenuSchema['props']['onOpenChange'],
   onSelect?: MenuSchema['props']['onSelect'],
-  hoverParent?: MenuHoverBranchParent,
+  treeParent?: MenuTreeNode,
 ): MenuContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
-  const hoverBranches = createMenuHoverBranches(hoverParent)
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(menuMachine, () => ({ ...props, onOpenChange, onSelect }), scope)
-  registerMenuHoverOwner(service, hoverBranches)
-  const releaseParentBranch = hoverParent?.registerHoverBranch(
-    () => service.state.get() === 'open' ? positionerRef.value : null,
-  )
-  onBeforeUnmount(() => releaseParentBranch?.())
+  let service: Service<MenuSchema> | null = null
+  const tree = createMenuTreeNode({
+    getPositioner: () => positionerRef.value,
+    isOpen: () => service?.state.get() === 'open',
+    close: () => service?.send({ type: 'CLOSE' }),
+    isRoot: () => !(service?.prop('submenu') ?? props.submenu),
+    onRootSelect: details => onSelect?.(details),
+  })
+  service = useMachine(menuMachine, () => ({
+    ...props,
+    onOpenChange,
+    onSelect: treeParent ? tree.select : onSelect,
+  }), scope)
+  const releaseParent = treeParent?.registerChild(tree)
+  onBeforeUnmount(() => releaseParent?.())
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
   let config: RuntimeConfig | null = null
@@ -71,7 +79,7 @@ function useMenuImpl(
     service.refs.set('getAnchorEl', () => triggerRef.value)
     service.refs.set('getFloatingEl', () => positionerRef.value)
     service.refs.set('getContentEl', () => contentRef.value)
-    service.refs.set('getHoverBranches', hoverBranches.getHoverBranches)
+    service.refs.set('getHoverBranches', tree.getHoverBranches)
   }
 
   const api = computed(() => connectMenu(service, vueNormalize))
@@ -80,7 +88,7 @@ function useMenuImpl(
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget }
+  return { visible, service, api, triggerRef, positionerRef, contentRef, tree, portalTarget }
 }
 
 /** 公开 composable：建立一棵独立菜单树。 */
@@ -92,12 +100,11 @@ export function useMenu(
   return useMenuImpl(props, onOpenChange, onSelect)
 }
 
-/** 组合部件内部入口：把 Portal 子菜单登记到既有逻辑悬停树。 */
-export function useMenuWithHoverParent(
+/** 组合部件内部入口：把子菜单连接到 headless 逻辑树。 */
+export function useMenuWithParent(
   props: MenuSchema['props'],
   onOpenChange: MenuSchema['props']['onOpenChange'] | undefined,
-  onSelect: MenuSchema['props']['onSelect'] | undefined,
-  hoverParent: MenuHoverBranchParent,
+  treeParent: MenuTreeNode,
 ): MenuContext {
-  return useMenuImpl(props, onOpenChange, onSelect, hoverParent)
+  return useMenuImpl(props, onOpenChange, undefined, treeParent)
 }

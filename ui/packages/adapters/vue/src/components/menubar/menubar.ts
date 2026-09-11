@@ -10,17 +10,14 @@ import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
-import { provideMenu, provideMenuChain, useMenuContext } from '../menu/context'
-import { menuHoverParentOf } from '../menu/hover-branches'
-import { useMenuWithHoverParent } from '../menu/use-menu'
+import { provideMenu, useMenuContext } from '../menu/context'
+import { useMenuWithParent } from '../menu/use-menu'
 import {
   provideMenubar,
-  provideMenubarChain,
   provideMenubarGroup,
   provideMenubarItem,
   provideMenubarMenu,
   provideMenubarSub,
-  useMenubarChain,
   useMenubarContext,
   useMenubarGroupContext,
   useMenubarItemContext,
@@ -87,14 +84,6 @@ export const XhMenubarRoot = defineComponent({
     const notifySelect: MenubarProps['onSelect'] = details => emit('select', details)
     const ctx = useMenubar(withXhConfig('menubar', props) as MenubarProps, notifyValue, notifySelect)
     provideMenubar(ctx)
-    // 子菜单任意层级的选中都汇到这里：先发根的 select，再关掉整条菜单栏。
-    // 关根用 setValue(null) —— 菜单栏是「当前展开哪一项」的模型，没有 setOpen
-    provideMenubarChain({
-      notifySelect: (details) => {
-        emit('select', details)
-        ctx.api.value.setValue(null)
-      },
-    })
     return () => h('div', {
       ...ctx.api.value.getRootProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
@@ -436,9 +425,8 @@ export const XhMenubarSub = defineComponent({
     const owner = useMenubarMenuContext()
     if (!owner)
       throw new Error('[xh] MenubarSub 必须用在 XhMenubarPositioner 内')
-    const chain = useMenubarChain()
     // 子层跑的是一台子菜单模式的 menu 机器：菜单栏那台是单机器单锚点，装不下第二层
-    const sub = useMenuWithHoverParent(
+    const sub = useMenuWithParent(
       {
         ...props,
         submenu: true,
@@ -447,19 +435,10 @@ export const XhMenubarSub = defineComponent({
         size: props.size ?? parent.service.prop('size'),
       },
       undefined,
-      // 菜单栏的选中要带菜单身份，子层只知道条目值，在这里补上
-      details => chain.notifySelect({ menu: owner.menu.value.value, value: details.value }),
-      menuHoverParentOf(parent.service),
+      parent.tree,
     )
     // 子树内的 XhMenu 系部件都归子机器
     provideMenu(sub)
-    // 子层里还能再嵌一层 XhMenuSub：那一层要往上找选中汇总的链
-    provideMenuChain({
-      notifySelect: (details) => {
-        sub.api.value.setOpen(false)
-        chain.notifySelect({ menu: owner.menu.value.value, value: details.value })
-      },
-    })
     provideMenubarSub({ parent, value: props.value, disabled: props.disabled })
     // 所属那张菜单收起时本层跟着收，层层传导
     watch(() => parent.api.value.isOpen(owner.menu.value.value), (open) => {

@@ -9,9 +9,8 @@ import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
-import { provideMenu, provideMenuChain, provideMenuGroup, provideMenuItem, provideMenuSub, useMenuChain, useMenuContext, useMenuGroupContext, useMenuItemContext, useMenuSubContext } from './context'
-import { menuHoverParentOf } from './hover-branches'
-import { useMenu, useMenuWithHoverParent } from './use-menu'
+import { provideMenu, provideMenuGroup, provideMenuItem, provideMenuSub, useMenuContext, useMenuGroupContext, useMenuItemContext, useMenuSubContext } from './context'
+import { useMenu, useMenuWithParent } from './use-menu'
 
 type MenuProps = MenuSchema['props']
 
@@ -62,13 +61,6 @@ export const XhMenuRoot = defineComponent({
     const notifySelect: MenuProps['onSelect'] = details => emit('select', details)
     const ctx = useMenu(withXhConfig('menu', props) as MenuProps, notifyOpen, notifySelect)
     provideMenu(ctx)
-    // 任意层级子菜单的选中都汇到根：先发根的 select 再关根，各级随父关闭级联收起
-    provideMenuChain({
-      notifySelect: (details) => {
-        emit('select', details)
-        ctx.api.value.setOpen(false)
-      },
-    })
     return () => (slots.default
       ? slots.default({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
       : props.collection
@@ -207,8 +199,7 @@ export const XhMenuSub = defineComponent({
   }>,
   setup(props, { slots }) {
     const parent = useMenuContext()
-    const chain = useMenuChain()
-    const ctx = useMenuWithHoverParent(
+    const ctx = useMenuWithParent(
       {
         ...props,
         submenu: true,
@@ -217,19 +208,10 @@ export const XhMenuSub = defineComponent({
         size: props.size ?? parent.service.prop('size'),
       } as MenuProps,
       undefined,
-      // 子层的选中汇到根：根发 select 并关根，各级随父关闭级联收起
-      details => chain.notifySelect(details),
-      menuHoverParentOf(parent.service),
+      parent.tree,
     )
     // 覆盖菜单上下文：本子树内的部件都归子机器
     provideMenu(ctx)
-    // 后代先收自己，再由当前层收起并继续上报，保证共享层栈按叶到根释放。
-    provideMenuChain({
-      notifySelect: (details) => {
-        ctx.api.value.setOpen(false)
-        chain.notifySelect(details)
-      },
-    })
     provideMenuSub({ parent, value: props.value, disabled: props.disabled })
     // 父层收起（Escape、外点、选中）时本层跟着收，层层传导
     watch(() => parent.api.value.open, (open) => {
