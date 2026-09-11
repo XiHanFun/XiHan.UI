@@ -61,8 +61,8 @@ export type { DatePickerApi, DatePickerFieldApi, DatePickerFocusChangeDetails, D
 
 export { connectDescriptions, descriptionsAnatomy, descriptionsKeyboard, descriptionsMeta } from './descriptions'
 export type { DescriptionsApi, DescriptionsColumns, DescriptionsItemProps, DescriptionsPlacement, DescriptionsProps, DescriptionsTranslations } from './descriptions'
-export { connectDialog, dialogAnatomy, dialogKeyboard, dialogMachine, dialogMeta } from './dialog'
-export type { DialogApi, DialogOpenChangeDetails, DialogRefs, DialogSchema, DialogTranslations } from './dialog'
+export { connectDialog, createDialogServiceController, dialogAnatomy, dialogKeyboard, dialogMachine, dialogMeta } from './dialog'
+export type { DialogApi, DialogOpenChangeDetails, DialogRefs, DialogSchema, DialogServiceActionError, DialogServiceController, DialogServiceControllerOptions, DialogServiceControllerSpec, DialogServiceControllerState, DialogServiceRequest, DialogTranslations } from './dialog'
 export { computeTextDiff, connectDiffView, diffStats, diffViewAnatomy, diffViewEmptyText, diffViewKeyboard, diffViewMachine, diffViewMeta, parseUnifiedPatch } from './diff-view'
 export type { ComputeTextDiffOptions, DiffChange, DiffHunk, DiffLine, DiffModel, DiffSide, DiffViewApi, DiffViewCellProps, DiffViewExpandedValueChangeDetails, DiffViewGapProps, DiffViewInlineChangeProps, DiffViewMode, DiffViewRow, DiffViewRowProps, DiffViewSchema, DiffViewSegment, DiffViewTranslations } from './diff-view'
 export { connectDownloadTrigger, DOWNLOAD_TRIGGER_FILE_NAME, DOWNLOAD_TRIGGER_MIME_TYPE, DOWNLOAD_TRIGGER_REVOKE_DELAY, downloadTriggerAnatomy, downloadTriggerKeyboard, downloadTriggerMachine, downloadTriggerMeta, resolveDownloadData, resolveDownloadFileName, saveDownload, toDownloadBlob } from './download-trigger'

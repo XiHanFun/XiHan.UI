@@ -3,9 +3,11 @@
 // 避开多层模态叠加。onOk 返回 Promise 时确认钮自动进入 pending 并拦住关闭，
 // 失败保持打开以便重试或取消。
 import type { Tone } from '@xihan-ui/core'
+import type { DialogServiceControllerSpec, DialogServiceControllerState } from '@xihan-ui/headless'
 import type { App, MaybeRefOrGetter, VNodeChild } from 'vue'
 import type { XhConfig } from '../config/config'
 import { ensurePortalRoot } from '@xihan-ui/core'
+import { createDialogServiceController } from '@xihan-ui/headless'
 import { createApp, defineComponent, h, reactive, shallowRef, toRaw, toValue } from 'vue'
 import { XhButton, XhButtonIndicator, XhButtonLabel } from '../components/button'
 import { XhDialogBody, XhDialogContent, XhDialogDescription, XhDialogFooter, XhDialogHeader, XhDialogIndicator, XhDialogRoot, XhDialogTitle } from '../components/dialog/dialog'
@@ -90,7 +92,7 @@ export interface DialogService {
   dispose: () => void
 }
 
-interface Spec {
+interface Spec extends DialogServiceControllerSpec {
   title: string
   content?: DialogBody
   tone: Tone
@@ -102,14 +104,10 @@ interface Spec {
   /** 返回 false 阻止本次确认；异常由独立错误状态报告。 */
   onOk?: () => unknown
   onActionError?: (error: DialogActionError) => void | Promise<void>
-  attempt: number
   /** 取值型弹窗的正文与那份可写的值，两边同一个对象。 */
   body?: (value: object) => VNodeChild
   value?: object
   initialFocus?: string
-  resolve: (ok: boolean) => void
-  reject: (cause: unknown) => void
-  settled: boolean
 }
 
 export function createDialogService(options: DialogServiceOptions = {}): DialogService {
@@ -131,115 +129,21 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     hostFailure = { cause }
   }
 
-  // 当前项单独放 shallowRef：进 reactive 会把 Spec 里那几个 MaybeRefOrGetter 的 Ref 分支解包掉
-  const current = shallowRef<Spec | null>(null)
-  const actionError = shallowRef<DialogActionError | null>(null)
-  const state = reactive({
-    open: false,
-    busy: false,
+  // 整份核心快照放 shallowRef：Spec 里的 MaybeRefOrGetter 不能被 reactive 深层解包。
+  let publishState: (next: DialogServiceControllerState<Spec>) => void = () => {}
+  const controller = createDialogServiceController<Spec>({
+    onStateChange: next => publishState(next),
   })
-  const queue: Spec[] = []
-  let disposed = false
-  let exiting: Spec | null = null
-
-  function next(): void {
-    if (disposed || current.value || queue.length === 0)
-      return
-    current.value = queue.shift()!
-    actionError.value = null
-    state.busy = false
-    state.open = true
-  }
-
-  function settle(ok: boolean): void {
-    const spec = current.value
-    if (!spec || spec.settled)
-      return
-    spec.settled = true
-    actionError.value = null
-    spec.resolve(ok)
-  }
-
-  /** 只接受本次退出的真实完成通知；旧请求的迟到通知不能清掉新请求。 */
-  function finishExit(spec: Spec | null): void {
-    if (!spec || disposed || current.value !== spec || exiting !== spec || state.open)
-      return
-    exiting = null
-    current.value = null
-    state.busy = false
-    next()
-  }
-
-  function close(ok: boolean): void {
-    const spec = current.value
-    if (!spec)
-      return
-    settle(ok)
-    exiting = spec
-    state.open = false
-  }
+  const state = shallowRef(controller.state)
+  publishState = next => void (state.value = next)
+  if (hostFailure)
+    controller.fail(hostFailure.cause)
 
   // 机器侧的关闭（Esc 等）从这里回来：未定的一律按取消结
   function onOpenChange(open: boolean): void {
     if (open)
       return
-    close(false)
-  }
-
-  async function ok(): Promise<void> {
-    const spec = current.value
-    if (!spec || spec.settled || state.busy || disposed || hostFailure)
-      return
-    const attempt = ++spec.attempt
-    const active = (): boolean => !disposed && !hostFailure && current.value === spec && !spec.settled && spec.attempt === attempt
-    actionError.value = null
-    if (spec.onOk) {
-      state.busy = true
-      try {
-        // false 只表示业务不放行，不与动作异常混用。
-        const verdict = await spec.onOk()
-        if (!active())
-          return
-        if (verdict === false) {
-          state.busy = false
-          return
-        }
-      }
-      catch (cause) {
-        if (!active())
-          return
-        state.busy = false
-        const error = { cause }
-        actionError.value = error
-        try {
-          await spec.onActionError?.(error)
-        }
-        catch (notificationCause) {
-          if (active()) {
-            spec.settled = true
-            spec.reject(notificationCause)
-            actionError.value = null
-            exiting = spec
-            state.open = false
-          }
-        }
-        return
-      }
-      state.busy = false
-    }
-    if (active())
-      close(true)
-  }
-
-  function request(spec: Omit<Spec, 'resolve' | 'reject' | 'settled' | 'attempt'>): Promise<boolean> {
-    if (hostFailure)
-      return Promise.reject(hostFailure.cause)
-    if (disposed)
-      return Promise.reject(new Error('dialog 服务已卸载'))
-    return new Promise<boolean>((resolve, reject) => {
-      queue.push({ ...spec, resolve, reject, settled: false, attempt: 0 })
-      next()
-    })
+    controller.close(false)
   }
 
   const Host = defineComponent({
@@ -247,18 +151,20 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     setup() {
       configSource.provide()
       return () => {
-        if (hostFailure)
+        const serviceState = state.value
+        if (serviceState.failure)
           return null
-        const spec = current.value
+        const request = serviceState.current
+        const spec = request?.spec
         return h(XhDialogRoot, {
-          'open': state.open,
+          'open': serviceState.open,
           'onUpdate:open': onOpenChange,
           'modal': true,
           'role': 'alertdialog',
-          'closeOnEscape': !state.busy,
+          'closeOnEscape': !serviceState.busy,
           'closeOnInteractOutside': false,
           'initialFocus': spec?.initialFocus,
-          'onExitComplete': () => finishExit(spec),
+          'onExitComplete': () => controller.finishExit(request),
         }, () => spec
           ? h(XhDialogContent, null, () => [
               h(XhDialogHeader, null, () => [
@@ -271,15 +177,15 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
                   ? h(XhDialogDescription, () => spec.content as string)
                   : typeof spec.content === 'function' ? spec.content() : null,
                 spec.body && spec.value ? spec.body(spec.value) : null,
-                actionError.value ? h('p', { role: 'alert', style: { color: 'var(--xh-fg-danger)' } }, toValue(options.actionErrorText) ?? 'Action failed. Please try again.') : null,
+                serviceState.actionError ? h('p', { role: 'alert', style: { color: 'var(--xh-fg-danger)' } }, toValue(options.actionErrorText) ?? 'Action failed. Please try again.') : null,
               ]),
               h(XhDialogFooter, null, () => [
                 spec.showCancel
-                  ? h(XhButton, { variant: 'ghost', disabled: state.busy, onClick: () => close(false) }, () => toValue(spec.cancelText))
+                  ? h(XhButton, { variant: 'ghost', disabled: serviceState.busy, onClick: () => controller.close(false) }, () => toValue(spec.cancelText))
                   : null,
-                h(XhButton, { variant: 'solid', tone: spec.tone, loading: state.busy, onClick: ok }, () => [
-                  state.busy ? h(XhButtonIndicator, () => spinArc()) : null,
-                  h(XhButtonLabel, () => (state.busy ? `${toValue(spec.okText)}…` : toValue(spec.okText))),
+                h(XhButton, { variant: 'solid', tone: spec.tone, loading: serviceState.busy, onClick: controller.confirmCurrent }, () => [
+                  serviceState.busy ? h(XhButtonIndicator, () => spinArc()) : null,
+                  h(XhButtonLabel, () => (serviceState.busy ? `${toValue(spec.okText)}…` : toValue(spec.okText))),
                 ]),
               ]),
             ])
@@ -295,17 +201,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   const app: App = createApp(Host)
   let mounted = false
   function failHost(cause: unknown): void {
-    hostFailure = { cause }
-    const pending = current.value ? [current.value, ...queue.splice(0)] : queue.splice(0)
-    for (const spec of pending) {
-      if (!spec.settled) {
-        spec.settled = true
-        spec.reject(cause)
-      }
-    }
-    actionError.value = null
-    state.open = false
-    state.busy = false
+    controller.fail(cause)
   }
   app.config.errorHandler = failHost
   if (!hostFailure) {
@@ -319,7 +215,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   }
 
   const alert = (badge: NonNullable<Spec['badge']>, tone: Tone) => async (opts: AlertOptions): Promise<void> => {
-    await request({
+    await controller.request({
       title: opts.title,
       content: opts.content,
       tone,
@@ -333,8 +229,8 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   }
 
   return {
-    get actionError() { return actionError.value },
-    confirm: opts => request({
+    get actionError() { return controller.state.actionError },
+    confirm: opts => controller.request({
       title: opts.title,
       content: opts.content,
       tone: opts.tone ?? 'brand',
@@ -348,7 +244,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     prompt: <T extends object>(opts: PromptOptions<T>): Promise<T | null> => {
       // body 与 onOk 拿的是同一份可写代理：正文里改了什么，确认时就读到什么
       const value = reactive({ ...opts.initialValue }) as T
-      return request({
+      return controller.request({
         title: opts.title,
         tone: opts.tone ?? 'brand',
         okText: opts.okText ?? defaults.okText,
@@ -368,11 +264,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     error: alert('error', 'danger'),
     setConfig: next => configSource.set(next),
     dispose: () => {
-      disposed = true
-      exiting = null
-      settle(false)
-      for (const spec of queue.splice(0))
-        spec.resolve(false)
+      controller.dispose()
       if (mounted)
         app.unmount()
       if (!options.target)

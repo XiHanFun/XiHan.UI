@@ -3,11 +3,13 @@
 // 避开多层模态叠加。onOk 返回 Promise 时确认钮自动进入 pending 并拦住关闭，
 // 失败保持打开以便重试或取消。
 import type { Tone } from '@xihan-ui/core'
+import type { DialogServiceControllerSpec } from '@xihan-ui/headless'
 import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
 import type { XhConfig } from '../config/config'
 import type { XhConfigSource } from './service-config'
 import { ensurePortalRoot } from '@xihan-ui/core'
+import { createDialogServiceController } from '@xihan-ui/headless'
 import { Component, useSyncExternalStore } from 'react'
 import { flushSync } from 'react-dom'
 import { createRoot } from 'react-dom/client'
@@ -99,7 +101,7 @@ export interface DialogService {
   dispose: () => void
 }
 
-interface Spec {
+interface Spec extends DialogServiceControllerSpec {
   title: string
   content?: DialogBody
   tone: Tone
@@ -111,14 +113,10 @@ interface Spec {
   /** 返回 false 阻止本次确认；异常由独立错误状态报告。 */
   onOk?: () => unknown
   onActionError?: (error: DialogActionError) => void | Promise<void>
-  attempt: number
   /** 取值型弹窗的正文与那份值。 */
   body?: (value: object, set: (patch: object) => void) => ReactNode
   value?: object
   initialFocus?: string
-  resolve: (ok: boolean) => void
-  reject: (cause: unknown) => void
-  settled: boolean
 }
 
 function toneOfBadge(badge: NonNullable<Spec['badge']>): Tone {
@@ -144,11 +142,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     hostFailure = { cause }
   }
 
-  // 宿主树不在 React 的组件树里，状态只能自己存一份并推给它重渲
-  let current: Spec | null = null
-  let open = false
-  let busy = false
-  let actionError: DialogActionError | null = null
+  // 宿主树不在 React 的组件树里，核心状态变化通过端口推给它重渲。
   let version = 0
   const subs = new Set<() => void>()
   const notify = (): void => {
@@ -160,144 +154,45 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     return () => void subs.delete(fn)
   }
 
-  const queue: Spec[] = []
-  let disposed = false
-  let exiting: Spec | null = null
-
-  function next(): void {
-    if (disposed || current || queue.length === 0)
-      return
-    current = queue.shift()!
-    actionError = null
-    busy = false
-    open = true
-    notify()
-  }
-
-  function settle(ok: boolean): void {
-    if (!current || current.settled)
-      return
-    current.settled = true
-    actionError = null
-    current.resolve(ok)
-  }
-
-  /** 只接受本次退出的真实完成通知；旧请求的迟到通知不能清掉新请求。 */
-  function finishExit(spec: Spec | null): void {
-    if (!spec || disposed || current !== spec || exiting !== spec || open)
-      return
-    exiting = null
-    current = null
-    busy = false
-    if (queue.length)
-      next()
-    else
-      notify()
-  }
-
-  function close(ok: boolean): void {
-    const spec = current
-    if (!spec)
-      return
-    settle(ok)
-    exiting = spec
-    open = false
-    notify()
-  }
+  const controller = createDialogServiceController<Spec>({ onStateChange: notify })
+  if (hostFailure)
+    controller.fail(hostFailure.cause)
 
   // 机器侧的关闭（Esc 等）从这里回来：未定的一律按取消结
   function onOpenChange(details: { open: boolean }): void {
     if (details.open)
       return
-    close(false)
-  }
-
-  async function ok(): Promise<void> {
-    const spec = current
-    if (!spec || spec.settled || busy || disposed || hostFailure)
-      return
-    const attempt = ++spec.attempt
-    const active = (): boolean => !disposed && !hostFailure && current === spec && !spec.settled && spec.attempt === attempt
-    actionError = null
-    if (spec.onOk) {
-      busy = true
-      notify()
-      try {
-        // false 只表示业务不放行，不与动作异常混用。
-        const verdict = await spec.onOk()
-        if (!active())
-          return
-        if (verdict === false) {
-          busy = false
-          notify()
-          return
-        }
-      }
-      catch (cause) {
-        if (!active())
-          return
-        busy = false
-        const error = { cause }
-        actionError = error
-        notify()
-        try {
-          await spec.onActionError?.(error)
-        }
-        catch (notificationCause) {
-          if (active()) {
-            spec.settled = true
-            spec.reject(notificationCause)
-            actionError = null
-            exiting = spec
-            open = false
-            notify()
-          }
-        }
-        return
-      }
-      busy = false
-      notify()
-    }
-    if (active())
-      close(true)
-  }
-
-  function request(spec: Omit<Spec, 'resolve' | 'reject' | 'settled' | 'attempt'>): Promise<boolean> {
-    if (hostFailure)
-      return Promise.reject(hostFailure.cause)
-    if (disposed)
-      return Promise.reject(new Error('dialog 服务已卸载'))
-    return new Promise<boolean>((resolve, reject) => {
-      queue.push({ ...spec, resolve, reject, settled: false, attempt: 0 })
-      next()
-    })
+    controller.close(false)
   }
 
   /** 取值型弹窗改值：就地写回那份值再推一次重渲。 */
   function patchValue(patch: object): void {
-    if (!current?.value)
+    const spec = controller.state.current?.spec
+    if (!spec?.value)
       return
-    Object.assign(current.value, patch)
+    Object.assign(spec.value, patch)
     notify()
   }
 
   function Host(): ReactNode {
     useSyncExternalStore(subscribe, () => version, () => version)
-    if (hostFailure)
+    const serviceState = controller.state
+    if (serviceState.failure)
       return null
     const config: XhConfig = configSource.read()
-    const spec = current
+    const request = serviceState.current
+    const spec = request?.spec
     return (
       <XhConfigProvider config={config}>
         <XhDialogRoot
-          open={open}
+          open={serviceState.open}
           onOpenChange={onOpenChange}
           modal
           role="alertdialog"
-          closeOnEscape={!busy}
+          closeOnEscape={!serviceState.busy}
           closeOnInteractOutside={false}
           initialFocus={spec?.initialFocus}
-          onExitComplete={() => finishExit(spec)}
+          onExitComplete={() => controller.finishExit(request)}
         >
           {spec
             ? (
@@ -312,15 +207,15 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
                       ? <XhDialogDescription>{spec.content}</XhDialogDescription>
                       : typeof spec.content === 'function' ? spec.content() : null}
                     {spec.body && spec.value ? spec.body(spec.value, patchValue) : null}
-                    {actionError ? <p role="alert" style={{ color: 'var(--xh-fg-danger)' }}>{textOf(options.actionErrorText ?? 'Action failed. Please try again.')}</p> : null}
+                    {serviceState.actionError ? <p role="alert" style={{ color: 'var(--xh-fg-danger)' }}>{textOf(options.actionErrorText ?? 'Action failed. Please try again.')}</p> : null}
                   </XhDialogBody>
                   <XhDialogFooter>
                     {spec.showCancel
-                      ? <XhButton variant="ghost" disabled={busy} onClick={() => close(false)}>{textOf(spec.cancelText)}</XhButton>
+                      ? <XhButton variant="ghost" disabled={serviceState.busy} onClick={() => controller.close(false)}>{textOf(spec.cancelText)}</XhButton>
                       : null}
-                    <XhButton variant="solid" tone={spec.tone} loading={busy} onClick={ok}>
-                      {busy ? <XhButtonIndicator>{spinArc()}</XhButtonIndicator> : null}
-                      <XhButtonLabel>{busy ? `${textOf(spec.okText)}…` : textOf(spec.okText)}</XhButtonLabel>
+                    <XhButton variant="solid" tone={spec.tone} loading={serviceState.busy} onClick={controller.confirmCurrent}>
+                      {serviceState.busy ? <XhButtonIndicator>{spinArc()}</XhButtonIndicator> : null}
+                      <XhButtonLabel>{serviceState.busy ? `${textOf(spec.okText)}…` : textOf(spec.okText)}</XhButtonLabel>
                     </XhButton>
                   </XhDialogFooter>
                 </XhDialogContent>
@@ -333,17 +228,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
 
   let root: Root | null = null
   function failHost(cause: unknown): void {
-    hostFailure = { cause }
-    const pending = current ? [current, ...queue.splice(0)] : queue.splice(0)
-    for (const spec of pending) {
-      if (!spec.settled) {
-        spec.settled = true
-        spec.reject(cause)
-      }
-    }
-    actionError = null
-    open = false
-    busy = false
+    controller.fail(cause)
   }
   // 渲染失败也必须结算服务 Promise，不能让 React 卸载子树后留下永远等待的请求。
   class ServiceBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
@@ -373,7 +258,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   const stopConfig = configSource.subscribe(notify)
 
   const alert = (badge: NonNullable<Spec['badge']>, tone: Tone) => async (opts: AlertOptions): Promise<void> => {
-    await request({
+    await controller.request({
       title: opts.title,
       content: opts.content,
       tone,
@@ -387,8 +272,8 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   }
 
   return {
-    get actionError() { return actionError },
-    confirm: opts => request({
+    get actionError() { return controller.state.actionError },
+    confirm: opts => controller.request({
       title: opts.title,
       content: opts.content,
       tone: opts.tone ?? 'brand',
@@ -402,7 +287,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     prompt: <T extends object>(opts: PromptOptions<T>): Promise<T | null> => {
       // body 与 onOk 拿的是同一份值：正文里改了什么，确认时就读到什么
       const value = { ...opts.initialValue } as T
-      return request({
+      return controller.request({
         title: opts.title,
         tone: opts.tone ?? 'brand',
         okText: opts.okText ?? defaults.okText,
@@ -422,16 +307,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     error: alert('error', 'danger'),
     setConfig: next => configSource.set(next),
     dispose: () => {
-      disposed = true
-      exiting = null
-      // 队里没结的一律按取消结掉，调用方的 await 不会永远挂着
-      settle(false)
-      for (const spec of queue.splice(0, queue.length)) {
-        if (!spec.settled) {
-          spec.settled = true
-          spec.resolve(false)
-        }
-      }
+      controller.dispose()
       stopConfig()
       root?.unmount()
       if (!options.target)
