@@ -2,6 +2,8 @@
 
 `@xihan-ui/position` 负责一件事：把一个浮层放到锚点旁边正确的位置，并在页面变化时持续跟住。它是自研实现，零第三方运行时依赖。
 
+默认共享箭头皮肤只作用于 `context-menu`、`hover-card`、`menu`、`menubar`、`popconfirm`、`popover`、`tour`、`tooltip` 自身的 `arrow` 部件。业务或其他组件使用同名 `data-part="arrow"` 不会获得浮层定位、旋转或描边裁剪。
+
 ## 端口与实现是分开的
 
 定位能力在 `@xihan-ui/core` 里以**端口**形式声明，`@xihan-ui/position` 只是它的一个实现：

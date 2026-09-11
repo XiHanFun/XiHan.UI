@@ -17,6 +17,8 @@ import { join } from 'node:path'
 const STYLES = 'packages/design/styles/css'
 const INDEX = 'packages/design/styles/index.css'
 const SHARED = 'overlay-arrow.css'
+const ARROW_SCOPES = ['context-menu', 'hover-card', 'menu', 'menubar', 'popconfirm', 'popover', 'tour', 'tooltip']
+const ARROW_SELECTOR = `:where(${ARROW_SCOPES.map(scope => `[data-scope='${scope}']`).join(', ')})[data-part='arrow']`
 const TOKENS = 'packages/design/tokens/tokens.json'
 const OVERLAY_TS = 'packages/engine/headless/src/shared/overlay.ts'
 
@@ -53,13 +55,13 @@ function evalConst(source, name) {
 const ALLOW = [
   {
     file: SHARED,
-    selector: '[data-part=\'arrow\'][data-placement^=\'bottom\']',
+    selector: `${ARROW_SELECTOR}[data-placement^='bottom']`,
     property: 'inset-inline-start',
     reason: '行内轴上的箭头中心：定位引擎在 RTL 下已把 arrow-x 镜像成逻辑量，逻辑量配逻辑属性才对得上',
   },
   {
     file: SHARED,
-    selector: '[data-part=\'arrow\'][data-placement^=\'top\']',
+    selector: `${ARROW_SELECTOR}[data-placement^='top']`,
     property: 'inset-inline-start',
     reason: '同上，上下两侧共用行内轴那根落点',
   },
@@ -156,7 +158,20 @@ if (radiusPx != null && jsPadding != null && jsPadding !== radiusPx)
 
 // 共享皮肤的方块要吃统一尺寸槽并转 45°，否则 JS 按对角线算的钳位对不上画出来的形状
 const sharedCss = await readFile(join(STYLES, SHARED), 'utf8')
-const arrowRule = rulesOf(sharedCss).find(r => r.selector === '[data-part=\'arrow\']')
+const arrowRules = rulesOf(sharedCss)
+for (const rule of arrowRules) {
+  if (!rule.selector.startsWith(ARROW_SELECTOR))
+    errors.push(`${SHARED}:${rule.line} 箭头规则必须限定到正式浮层 scope，不能影响同名业务部件`)
+}
+const consumers = []
+for (const file of files) {
+  const css = await readFile(join(STYLES, file), 'utf8')
+  if (/--xh-_overlay-arrow-size\s*:/.test(css))
+    consumers.push(file.replace(/\.css$/, ''))
+}
+if (consumers.sort().join() !== [...ARROW_SCOPES].sort().join())
+  errors.push('共享箭头的 scope 清单与实际尺寸槽消费方不一致')
+const arrowRule = arrowRules.find(r => r.selector === ARROW_SELECTOR)
 if (!arrowRule) {
   errors.push(`${SHARED} 里找不到 [data-part='arrow'] 规则`)
 }
