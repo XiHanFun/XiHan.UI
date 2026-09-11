@@ -9,6 +9,11 @@ export interface HoverIntentOptions {
   trigger: HTMLElement
   /** 浮层内容；关着时返回 null，此时离开触发器直接按关意图处理。 */
   getContentEl: () => HTMLElement | null
+  /**
+   * 逻辑上属于同一悬停树、但经 Portal 搬到内容节点之外的后代区域。
+   * 每次跨区时现读；只能登记同一 Document 的原生 HTMLElement。
+   */
+  getHoverBranches?: () => readonly HTMLElement[]
   /** 进触发器到报开的延时（ms），默认 100。 */
   openDelay?: number
   /** 离开到报关的延时（ms），也是安全三角里的停滞上限，默认 300。 */
@@ -44,18 +49,18 @@ export function trackHoverIntent(options: HoverIntentOptions): () => void {
 
   let openTimer: number | null = null
   let closeTimer: number | null = null
-  let polygon: HoverPoint[] | null = null
+  let polygons: readonly HoverPoint[][] = []
   let travelOrigin: HoverPoint | null = null
+  let travelSource: HTMLElement | null = null
   let travelCleanup: (() => void) | null = null
-  let content: HTMLElement | null = null
-  let contentCleanup: (() => void) | null = null
+  let regionCleanups = new Map<HTMLElement, () => void>()
   let disposed = false
 
-  const releaseContent = (): void => {
-    const cleanup = contentCleanup
-    contentCleanup = null
-    content = null
-    cleanup?.()
+  const releaseRegions = (): void => {
+    const cleanups = [...regionCleanups.values()].reverse()
+    regionCleanups = new Map()
+    for (const cleanup of cleanups)
+      cleanup()
   }
 
   const assertTriggerDocument = (): void => {
@@ -95,8 +100,9 @@ export function trackHoverIntent(options: HoverIntentOptions): () => void {
 
   const cancelCloseSession = (): void => {
     clearCloseTimer()
-    polygon = null
+    polygons = []
     travelOrigin = null
+    travelSource = null
     stopTravel()
   }
 
@@ -105,8 +111,9 @@ export function trackHoverIntent(options: HoverIntentOptions): () => void {
     try {
       closeTimer = win.setTimeout(() => {
         closeTimer = null
-        polygon = null
+        polygons = []
         travelOrigin = null
+        travelSource = null
         stopTravel()
         if (disposed)
           return
@@ -126,87 +133,175 @@ export function trackHoverIntent(options: HoverIntentOptions): () => void {
       options.onCloseIntent()
   }
 
-  /** 浮层节点每次现取；换代时先验证新节点，再原子替换旧监听。 */
-  const syncContent = (): void => {
-    const next = readContent()
+  const readBranches = (nextContent: HTMLElement | null): readonly HTMLElement[] => {
+    const read = options.getHoverBranches
+    const raw = read === undefined ? [] : read()
     if (disposed)
-      return
-    if (next === content)
-      return
+      return Object.freeze([])
+    if (!Array.isArray(raw))
+      throw new TypeError('[xh] trackHoverIntent 的 getHoverBranches 必须返回只读数组')
+    const unique: HTMLElement[] = []
+    const seen = new Set<HTMLElement>()
+    for (const branch of raw) {
+      if (!isHTMLElement(branch) || branch.ownerDocument !== doc)
+        throw new Error('[xh] trackHoverIntent 的 hover branch 必须是同一 Document 中的原生 HTMLElement')
+      if (branch === trigger || branch === nextContent || seen.has(branch))
+        continue
+      seen.add(branch)
+      unique.push(branch)
+    }
+    return Object.freeze(unique)
+  }
 
-    let nextPolygon: HoverPoint[] | null = null
-    if (travelOrigin && next) {
-      const rect = next.getBoundingClientRect()
-      nextPolygon = safeTriangle(
-        travelOrigin,
+  const bindRegion = (region: HTMLElement): (() => void) => {
+    let active = true
+    const cleanup = (): void => {
+      if (!active)
+        return
+      active = false
+      region.removeEventListener('pointerleave', onRegionLeave)
+      region.removeEventListener('pointerenter', onRegionEnter)
+    }
+    try {
+      region.addEventListener('pointerenter', onRegionEnter)
+      region.addEventListener('pointerleave', onRegionLeave)
+      return cleanup
+    }
+    catch (error) {
+      try {
+        cleanup()
+      }
+      catch (cleanupError) {
+        throw new AggregateError([error, cleanupError], '[xh] trackHoverIntent 区域监听初始化与回滚同时失败', { cause: error })
+      }
+      throw error
+    }
+  }
+
+  const recomputePolygons = (): void => {
+    if (!travelOrigin) {
+      polygons = []
+      return
+    }
+    const targets = [trigger, ...regionCleanups.keys()].filter(node => node !== travelSource)
+    polygons = targets.map((target) => {
+      const rect = target.getBoundingClientRect()
+      return safeTriangle(
+        travelOrigin!,
         { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
         buffer,
       )
-    }
-
-    let nextCleanup: (() => void) | null = null
-    if (next) {
-      next.addEventListener('pointerenter', onContentEnter)
-      try {
-        next.addEventListener('pointerleave', onContentLeave)
-      }
-      catch (error) {
-        next.removeEventListener('pointerenter', onContentEnter)
-        throw error
-      }
-      nextCleanup = () => {
-        next.removeEventListener('pointerenter', onContentEnter)
-        next.removeEventListener('pointerleave', onContentLeave)
-      }
-    }
-
-    contentCleanup?.()
-    content = next
-    contentCleanup = nextCleanup
-    if (travelOrigin)
-      polygon = nextPolygon
+    })
   }
 
-  function onContentEnter(event: PointerEvent): void {
+  /** 主内容与 Portal 分支每次现取；新增监听全部成功后才替换旧快照。 */
+  const syncRegions = (): void => {
+    const nextContent = readContent()
+    if (disposed)
+      return
+    const nextBranches = readBranches(nextContent)
+    if (disposed)
+      return
+    const desired = new Set<HTMLElement>()
+    if (nextContent)
+      desired.add(nextContent)
+    for (const branch of nextBranches)
+      desired.add(branch)
+
+    const pending = new Map<HTMLElement, () => void>()
+    try {
+      for (const region of desired) {
+        if (!regionCleanups.has(region))
+          pending.set(region, bindRegion(region))
+      }
+    }
+    catch (error) {
+      const cleanupErrors: unknown[] = []
+      for (const cleanup of [...pending.values()].reverse()) {
+        try {
+          cleanup()
+        }
+        catch (cleanupError) {
+          cleanupErrors.push(cleanupError)
+        }
+      }
+      if (cleanupErrors.length)
+        throw new AggregateError([error, ...cleanupErrors], '[xh] trackHoverIntent 区域换代与回滚同时失败', { cause: error })
+      throw error
+    }
+    if (disposed) {
+      for (const cleanup of [...pending.values()].reverse())
+        cleanup()
+      return
+    }
+
+    const nextCleanups = new Map<HTMLElement, () => void>()
+    for (const region of desired)
+      nextCleanups.set(region, regionCleanups.get(region) ?? pending.get(region)!)
+    for (const [region, cleanup] of [...regionCleanups].reverse()) {
+      if (!desired.has(region))
+        cleanup()
+    }
+    regionCleanups = nextCleanups
+    recomputePolygons()
+  }
+
+  const containsRegion = (target: EventTarget | null): boolean => {
+    if (!isElement(target))
+      return false
+    if (trigger.contains(target))
+      return true
+    for (const region of regionCleanups.keys()) {
+      if (region.contains(target))
+        return true
+    }
+    return false
+  }
+
+  function onRegionEnter(event: PointerEvent): void {
     assertTriggerDocument()
-    syncContent()
-    if (disposed || event.currentTarget !== content)
+    syncRegions()
+    if (disposed || !isHTMLElement(event.currentTarget) || !regionCleanups.has(event.currentTarget))
       return
     cancelCloseSession()
     clearOpenTimer()
   }
 
-  function onContentLeave(event: PointerEvent): void {
+  function onRegionLeave(event: PointerEvent): void {
     assertTriggerDocument()
-    syncContent()
-    if (disposed || event.currentTarget !== content)
+    syncRegions()
+    if (disposed || !isHTMLElement(event.currentTarget) || !regionCleanups.has(event.currentTarget))
       return
-    if (isElement(event.relatedTarget) && trigger.contains(event.relatedTarget)) {
+    if (containsRegion(event.relatedTarget)) {
       cancelCloseSession()
       return
     }
-    travelOrigin = null
-    polygon = null
-    stopTravel()
+    travelOrigin = { x: event.clientX, y: event.clientY }
+    travelSource = event.currentTarget
+    recomputePolygons()
+    watchTravel()
     scheduleClose()
   }
 
   /** 离开后盯全文档的指针：在三角里就续命，出了三角立即报关。 */
-  const watchTravel = (): void => {
+  function watchTravel(): void {
     stopTravel()
     const onMove = (event: PointerEvent): void => {
       assertTriggerDocument()
-      syncContent()
-      if (disposed || !polygon)
+      syncRegions()
+      if (disposed || !travelOrigin)
+        return
+      // 目标正处于换代空窗时保留既有停滞计时；下一次移动会现读重新出现的区域。
+      if (polygons.length === 0)
         return
       const point = { x: event.clientX, y: event.clientY }
       const path = event.composedPath()
-      // 到站（进浮层或回触发器）。
-      if ((content && path.includes(content)) || path.includes(trigger)) {
+      // 到站（进主内容、任一显式 Portal 分支或回触发器）。
+      if (path.some(target => containsRegion(target))) {
         cancelCloseSession()
         return
       }
-      if (pointInPolygon(point, polygon)) {
+      if (polygons.some(polygon => pointInPolygon(point, polygon))) {
         scheduleClose()
         return
       }
@@ -218,7 +313,7 @@ export function trackHoverIntent(options: HoverIntentOptions): () => void {
 
   const onTriggerEnter = (): void => {
     assertTriggerDocument()
-    syncContent()
+    syncRegions()
     if (disposed)
       return
     cancelCloseSession()
@@ -234,31 +329,43 @@ export function trackHoverIntent(options: HoverIntentOptions): () => void {
 
   const onTriggerLeave = (event: PointerEvent): void => {
     assertTriggerDocument()
-    syncContent()
+    syncRegions()
     if (disposed)
       return
     clearOpenTimer()
     // 直接进了浮层：交给浮层的 enter 收口，路径上有它就不折腾三角
-    if (content && isElement(event.relatedTarget) && content.contains(event.relatedTarget)) {
+    if (containsRegion(event.relatedTarget)) {
       cancelCloseSession()
       return
     }
-    if (!content) {
+    if (regionCleanups.size === 0) {
       travelOrigin = null
-      polygon = null
+      travelSource = null
+      polygons = []
       stopTravel()
       scheduleClose()
       return
     }
-    const rect = content.getBoundingClientRect()
     travelOrigin = { x: event.clientX, y: event.clientY }
-    polygon = safeTriangle(travelOrigin, { x: rect.x, y: rect.y, width: rect.width, height: rect.height }, buffer)
+    travelSource = trigger
+    recomputePolygons()
     watchTravel()
     scheduleClose()
   }
 
-  // 先验证并绑定初始 content；任何初始化错误都不能留下半组监听。
-  syncContent()
+  // 先验证并绑定初始 content/branches；任何初始化错误都不能留下半组监听。
+  try {
+    syncRegions()
+  }
+  catch (error) {
+    try {
+      releaseRegions()
+    }
+    catch (cleanupError) {
+      throw new AggregateError([error, cleanupError], '[xh] trackHoverIntent 初始化与回滚同时失败', { cause: error })
+    }
+    throw error
+  }
   try {
     trigger.addEventListener('pointerenter', onTriggerEnter)
     trigger.addEventListener('pointerleave', onTriggerLeave)
@@ -266,7 +373,7 @@ export function trackHoverIntent(options: HoverIntentOptions): () => void {
   catch (error) {
     trigger.removeEventListener('pointerenter', onTriggerEnter)
     trigger.removeEventListener('pointerleave', onTriggerLeave)
-    releaseContent()
+    releaseRegions()
     throw error
   }
 
@@ -276,7 +383,7 @@ export function trackHoverIntent(options: HoverIntentOptions): () => void {
     disposed = true
     trigger.removeEventListener('pointerenter', onTriggerEnter)
     trigger.removeEventListener('pointerleave', onTriggerLeave)
-    releaseContent()
+    releaseRegions()
     clearOpenTimer()
     cancelCloseSession()
   }

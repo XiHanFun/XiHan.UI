@@ -9,6 +9,7 @@ import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
+import { registerMenuHoverOwner, useMenuHoverBranches } from '../menu/hover-branches'
 
 export interface ContextMenuContext extends OverlayWiring {
   service: Service<ContextMenuSchema>
@@ -28,6 +29,7 @@ export function useContextMenu(props: ContextMenuSchema['props']): ContextMenuCo
   const positionerRef = useRef<HTMLElement | null>(null)
   const contentRef = useRef<HTMLElement | null>(null)
   const serviceRef = useRef<Service<ContextMenuSchema> | null>(null)
+  const hoverBranches = useMenuHoverBranches()
 
   const initialOpen = (props.open ?? props.defaultOpen) ?? false
 
@@ -61,6 +63,7 @@ export function useContextMenu(props: ContextMenuSchema['props']): ContextMenuCo
     onCreate: overlay.onCreate as never,
   })
   serviceRef.current = service
+  registerMenuHoverOwner(service, hoverBranches)
 
   return {
     ...overlay,

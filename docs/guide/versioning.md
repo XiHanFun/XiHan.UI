@@ -187,7 +187,7 @@ brand  neutral  success  warning  danger  info
 | 全局令牌 · 语义层 | 179 | `--xh-bg-brand`、`--xh-fg-on-brand`、`--xh-control-h-md`、`--xh-shape-control`。主题定制的正门，见 [设计令牌与主题](./theme) |
 | 组件覆盖槽 | 3439（覆盖 125 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，你在 `:root` 里设它就改了这个组件 |
 | 语气轴槽 | 12 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。**这是自定义语气的唯一机制**——你写 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读这批槽的 58 份皮肤都会跟着走。虽然带下划线前缀，但按受约束处理 |
-| 关键帧名 | 62 | `xh-pop-in`、`xh-fade-out`、`xh-spinner-rotate`。关键帧逐皮肤自带，你在 `xihan.overrides` 层里重定义同名关键帧就换掉了那段动画（规范 §8.7 约束 3）——所以改名与删名同样是 major |
+| 关键帧名 | 64 | `xh-pop-in`、`xh-fade-out`、`xh-spinner-rotate`。关键帧逐皮肤自带，你在 `xihan.overrides` 层里重定义同名关键帧就换掉了那段动画（规范 §8.7 约束 3）——所以改名与删名同样是 major |
 | 跨包内联属性 | 2 | `--xh-_truncate-lines`、`--xh-_float-button-offset`。由 headless 写进内联 `style`，皮肤必须读。**换整套皮肤时不读这两条，`truncate` 不截断、`float-button` 贴边，且不报任何错** |
 | `@xihan-ui/styles` 的 CSS 子路径 | 140 | `.`、`./index.css`、`./index.unlayered.css`，与 137 条 `.css`——126 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./undefined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css` |
 | `@xihan-ui/tokens` 的 CSS 子路径 | 2 | `./tokens.css`、`./tokens.json` |

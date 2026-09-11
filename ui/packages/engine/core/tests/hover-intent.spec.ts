@@ -82,10 +82,15 @@ describe('trackHoverIntent', () => {
   let closeIntent: ReturnType<typeof vi.fn<() => void>>
   let dispose: (() => void) | null = null
 
-  function mount(opts: { openDelay?: number, closeDelay?: number } = {}): void {
+  function mount(opts: {
+    openDelay?: number
+    closeDelay?: number
+    getHoverBranches?: () => readonly HTMLElement[]
+  } = {}): void {
     dispose = trackHoverIntent({
       trigger,
       getContentEl: () => content,
+      getHoverBranches: opts.getHoverBranches,
       openDelay: opts.openDelay ?? 100,
       closeDelay: opts.closeDelay ?? 300,
       onOpenIntent: openIntent,
@@ -189,6 +194,37 @@ describe('trackHoverIntent', () => {
     pointer('pointerleave', content!, 200, 200)
     vi.advanceTimersByTime(300)
     expect(closeIntent).toHaveBeenCalledTimes(1)
+  })
+
+  it('portal 后代分支与主内容构成同一悬停树，跨入、内部移动和返回都不关闭', () => {
+    content = mountContent({ x: 0, y: 0, width: 80, height: 80 })
+    const branch = mountContent({ x: 100, y: 0, width: 80, height: 80 })
+    mount({ getHoverBranches: () => [branch] })
+
+    pointer('pointerleave', content, 80, 40, branch)
+    pointer('pointerenter', branch, 100, 40, content)
+    pointer('pointermove', branch, 140, 40)
+    vi.advanceTimersByTime(1000)
+    expect(closeIntent).not.toHaveBeenCalled()
+
+    pointer('pointerleave', branch, 100, 40, content)
+    pointer('pointerenter', content, 80, 40, branch)
+    vi.advanceTimersByTime(1000)
+    expect(closeIntent).not.toHaveBeenCalled()
+  })
+
+  it('主内容到 Portal 后代的间隙使用安全多边形，到达分支后撤销关闭', () => {
+    content = mountContent({ x: 0, y: 0, width: 80, height: 80 })
+    const branch = mountContent({ x: 100, y: 0, width: 80, height: 80 })
+    mount({ getHoverBranches: () => [branch] })
+
+    pointer('pointerleave', content, 80, 40)
+    pointer('pointermove', document, 90, 40)
+    vi.advanceTimersByTime(299)
+    expect(closeIntent).not.toHaveBeenCalled()
+    pointer('pointerenter', branch, 100, 40)
+    vi.advanceTimersByTime(1000)
+    expect(closeIntent).not.toHaveBeenCalled()
   })
 
   it('拆除后一切静默', () => {
@@ -423,6 +459,24 @@ describe('trackHoverIntent 所属 realm 与资源生命周期', () => {
       onOpenIntent: () => {},
       onCloseIntent: () => {},
     })).toThrow(/content.*同一 Document/)
+    expect(add).not.toHaveBeenCalled()
+
+    expect(() => track({
+      trigger,
+      getContentEl: () => null,
+      getHoverBranches: () => [content],
+      onOpenIntent: () => {},
+      onCloseIntent: () => {},
+    } as never)).toThrow(/hover branch.*同一 Document/)
+    expect(add).not.toHaveBeenCalled()
+
+    expect(() => track({
+      trigger,
+      getContentEl: () => null,
+      getHoverBranches: () => null,
+      onOpenIntent: () => {},
+      onCloseIntent: () => {},
+    } as never)).toThrow(/getHoverBranches.*只读数组/)
     expect(add).not.toHaveBeenCalled()
 
     expect(() => track({

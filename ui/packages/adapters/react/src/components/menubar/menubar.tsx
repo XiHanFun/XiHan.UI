@@ -16,7 +16,8 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { MenuChainProvider, MenuProvider, useMenuContext } from '../menu/context'
-import { useMenu } from '../menu/use-menu'
+import { menuHoverParentOf } from '../menu/hover-branches'
+import { useMenuWithHoverParent } from '../menu/use-menu'
 import {
   MenubarChainProvider,
   MenubarGroupProvider,
@@ -406,7 +407,7 @@ export function XhMenubarSub({ value, disabled, children, ...props }: XhMenubarS
     [chain, ownerValue],
   )
   // 子层跑的是一台子菜单模式的 menu 机器：菜单栏那台是单机器单锚点，装不下第二层
-  const sub = useMenu({
+  const sub = useMenuWithHoverParent({
     ...props,
     disabled,
     submenu: true,
@@ -414,16 +415,20 @@ export function XhMenubarSub({ value, disabled, children, ...props }: XhMenubarS
     tone: props.tone ?? parent.service.prop('tone'),
     size: props.size ?? parent.service.prop('size'),
     onSelect: notifySelect,
-  } as MenuProps)
+  } as MenuProps, menuHoverParentOf(parent.service))
 
   const handle = useMemo(() => ({ parent, value, disabled }), [parent, value, disabled])
-  // 子层里还能再嵌一层 XhMenuSub：那一层要往上找选中汇总的链
-  const menuChain = useMemo(() => ({ notifySelect }), [notifySelect])
-
   // 所属那张菜单收起时本层跟着收，层层传导
   const ownerOpen = parent.api.isOpen(ownerValue)
   const setOpenRef = useRef(sub.api.setOpen)
   setOpenRef.current = sub.api.setOpen
+  // 后代先收自己，再由这一层收起并把选择上报到 Menubar 根。
+  const menuChain = useMemo(() => ({
+    notifySelect: (details: { value: string }) => {
+      setOpenRef.current(false)
+      notifySelect(details)
+    },
+  }), [notifySelect])
   useEffect(() => {
     if (!ownerOpen)
       setOpenRef.current(false)

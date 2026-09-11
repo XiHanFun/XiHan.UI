@@ -2,13 +2,16 @@ import type { Layer, Service } from '@xihan-ui/core'
 import type { MenuApi, MenuSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import type { OverlayWiring } from '../../runtime/use-overlay'
+import type { MenuHoverBranchParent } from './hover-branches'
 import { connectMenu, menuMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { useCallback, useRef } from 'react'
+import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
+import { registerMenuHoverOwner, useMenuHoverBranches } from './hover-branches'
 
 export interface MenuContext extends OverlayWiring {
   service: Service<MenuSchema>
@@ -21,13 +24,24 @@ export interface MenuContext extends OverlayWiring {
   contentRef: RefObject<HTMLElement | null>
 }
 
-export function useMenu(props: MenuSchema['props']): MenuContext {
+function useMenuImpl(props: MenuSchema['props'], hoverParent?: MenuHoverBranchParent): MenuContext {
   const idGenerator = useReactIdGenerator()
   const scope = useReactScope()
   const triggerRef = useRef<HTMLElement | null>(null)
   const positionerRef = useRef<HTMLElement | null>(null)
   const contentRef = useRef<HTMLElement | null>(null)
   const serviceRef = useRef<Service<MenuSchema> | null>(null)
+  const hoverBranches = useMenuHoverBranches(hoverParent)
+  const readPositioner = useCallback(
+    () => serviceRef.current?.state.get() === 'open' ? positionerRef.current : null,
+    [],
+  )
+  const registerWithParent = hoverParent?.registerHoverBranch
+
+  useIsomorphicLayoutEffect(
+    () => registerWithParent?.(readPositioner),
+    [readPositioner, registerWithParent],
+  )
 
   const initialOpen = (props.open ?? props.defaultOpen) ?? false
 
@@ -53,6 +67,7 @@ export function useMenu(props: MenuSchema['props']): MenuContext {
       service.refs.set('getAnchorEl', (() => triggerRef.current) as never)
       service.refs.set('getFloatingEl', (() => positionerRef.current) as never)
       service.refs.set('getContentEl', (() => contentRef.current) as never)
+      service.refs.set('getHoverBranches', hoverBranches.getHoverBranches as never)
     },
   })
 
@@ -61,6 +76,7 @@ export function useMenu(props: MenuSchema['props']): MenuContext {
     onCreate: overlay.onCreate as never,
   })
   serviceRef.current = service
+  registerMenuHoverOwner(service, hoverBranches)
 
   return {
     ...overlay,
@@ -70,4 +86,17 @@ export function useMenu(props: MenuSchema['props']): MenuContext {
     positionerRef,
     contentRef,
   }
+}
+
+/** 公开 hook：建立一棵独立菜单树。 */
+export function useMenu(props: MenuSchema['props']): MenuContext {
+  return useMenuImpl(props)
+}
+
+/** 组合部件内部入口：把 Portal 子菜单登记到既有逻辑悬停树。 */
+export function useMenuWithHoverParent(
+  props: MenuSchema['props'],
+  hoverParent: MenuHoverBranchParent,
+): MenuContext {
+  return useMenuImpl(props, hoverParent)
 }

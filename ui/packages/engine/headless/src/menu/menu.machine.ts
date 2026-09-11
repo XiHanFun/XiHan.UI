@@ -35,6 +35,7 @@ export const menuMachine = createMachine({
     getAnchorEl: () => null,
     getFloatingEl: () => null,
     getContentEl: () => null,
+    getHoverBranches: () => [],
     typeahead: createTypeahead(),
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
@@ -161,6 +162,7 @@ export const menuMachine = createMachine({
           cleanup = trackHoverIntent({
             trigger,
             getContentEl: () => refs.get('getContentEl')(),
+            getHoverBranches: () => refs.get('getHoverBranches')(),
             openDelay: prop('hoverOpenDelay'),
             closeDelay: prop('hoverCloseDelay'),
             onOpenIntent: () => send({ type: 'OPEN', focus: 'none' }),
