@@ -19,7 +19,10 @@ import {
   XhButtonLabel,
   XhButtonPrefix,
   XhDialogContent,
+  XhDialogBody,
   XhDialogDescription,
+  XhDialogFooter,
+  XhDialogHeader,
   XhDialogRoot,
   XhDialogTitle,
   XhDialogTrigger,
@@ -219,11 +222,15 @@ const FIXTURES: Record<string, () => VNode[]> = {
   ],
 
   'dialog': () => [
-    h(XhDialogRoot, { open: true, translations: { close: 'Close' } }, () => [
+    h(XhDialogRoot, { open: true, variant: 'blur', translations: { close: 'Close' } }, () => [
       h(XhDialogTrigger, { asChild: true }, () => h(XhButton, null, () => 'Open dialog')),
       h(XhDialogContent, null, () => [
-        h(XhDialogTitle, null, () => 'Confirm publish'),
-        h(XhDialogDescription, null, () => 'Once published this page is visible to everyone.'),
+        h(XhDialogHeader, null, () => [
+          h(XhDialogTitle, null, () => 'Confirm publish'),
+          h(XhDialogDescription, null, () => 'Once published this page is visible to everyone.'),
+        ]),
+        h(XhDialogBody, null, () => h('p', 'The protected body stays readable over the page.')),
+        h(XhDialogFooter, null, () => h(XhButton, null, () => 'Publish')),
       ]),
     ]),
   ],

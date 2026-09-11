@@ -19482,9 +19482,11 @@
   background: var(--xh-dialog-backdrop-bg, var(--xh-bg-overlay));
 }
 
-/* 同一层底色之上再糊背后的页面 */
+/* 同一层 dim 之上再做一层短半径采样。默认 opaque 的语义不变；只有作者显式选 blur
+   才会启用。保留既有 blur 槽，新的完整 filter 槽可覆盖整个表达。 */
 [data-scope='dialog'][data-part='backdrop'][data-variant='blur'] {
-  backdrop-filter: blur(var(--xh-dialog-backdrop-blur, var(--xh-overlay-backdrop-blur)));
+  -webkit-backdrop-filter: var(--xh-dialog-backdrop-filter, blur(var(--xh-dialog-backdrop-blur, var(--xh-overlay-backdrop-blur))));
+  backdrop-filter: var(--xh-dialog-backdrop-filter, blur(var(--xh-dialog-backdrop-blur, var(--xh-overlay-backdrop-blur))));
 }
 
 /* 去掉底色，只留下这一层吃指针：交互外关闭与滚动锁定照旧 */
@@ -19543,10 +19545,28 @@
   gap: var(--xh-dialog-gap, var(--xh-stack-gap-md));
   padding-block: var(--xh-dialog-py, var(--xh-surface-py-md));
   padding-inline: var(--xh-dialog-px, var(--xh-surface-px-md));
+  border: var(--xh-stroke-thin) solid var(--xh-dialog-border, var(--xh-material-elevated-border));
   border-radius: var(--xh-dialog-radius, var(--xh-shape-surface));
-  background: var(--xh-dialog-bg, var(--xh-bg-surface));
-  color: var(--xh-dialog-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-dialog-shadow, var(--xh-elevation-sheet));
+  /* M4 把正文区压到高遮蔽 tint；顶部从较通透的 M3 lens 平滑过渡，
+     让标题保留空间感而不把长正文也放进透明区。两层都先留组件公开槽。 */
+  background:
+    linear-gradient(
+      to bottom,
+      var(--xh-dialog-highlight, var(--xh-material-elevated-highlight)) 0 var(--xh-stroke-thin),
+      transparent var(--xh-stroke-thin)
+    ),
+    linear-gradient(
+      to bottom,
+      var(--xh-dialog-header-bg, var(--xh-material-glass-bg)),
+      var(
+        --xh-dialog-bg,
+        var(--xh-material-elevated-bg)
+      ) var(--xh-dialog-header-lens-depth, calc(var(--xh-dialog-py, var(--xh-surface-py-md)) + var(--xh-control-h-md)))
+    );
+  color: var(--xh-dialog-fg, var(--xh-material-elevated-fg));
+  box-shadow: var(--xh-dialog-shadow, var(--xh-material-elevated-shadow));
+  -webkit-backdrop-filter: var(--xh-dialog-backdrop-filter, var(--xh-material-elevated-backdrop));
+  backdrop-filter: var(--xh-dialog-backdrop-filter, var(--xh-material-elevated-backdrop));
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 drawer 一致：
@@ -19601,6 +19621,12 @@
   flex-direction: column;
   gap: var(--xh-dialog-header-gap, var(--xh-stack-gap-sm));
   padding-block-end: var(--xh-dialog-header-pb, var(--xh-space-2));
+}
+
+/* 三段结构出现时，分隔线走 M4 令牌；无 body / footer 的轻量对话框不会凭空多一条线。 */
+[data-scope='dialog'][data-part='content']:has([data-scope='dialog'][data-part='body'])
+  [data-scope='dialog'][data-part='header'] {
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-dialog-separator, var(--xh-material-elevated-separator));
 }
 
 /* 语气徽记：圆底与字形两层。圆底是这个节点自己（底色、直径、圆角），字形走下面那条
@@ -19666,6 +19692,11 @@
   padding-block-start: var(--xh-dialog-footer-pt, var(--xh-space-2));
 }
 
+[data-scope='dialog'][data-part='content']:has([data-scope='dialog'][data-part='footer'])
+  [data-scope='dialog'][data-part='footer'] {
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-dialog-separator, var(--xh-material-elevated-separator));
+}
+
 /* 声明过 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
 [data-scope='dialog'][data-part='header'][hidden],
 [data-scope='dialog'][data-part='body'][hidden],
@@ -19677,13 +19708,13 @@
   margin: 0;
   font-size: var(--xh-dialog-title-font-size, var(--xh-text-heading-3-size));
   font-weight: var(--xh-dialog-title-font-weight, var(--xh-text-heading-3-weight));
-  color: var(--xh-dialog-title-fg, var(--xh-fg-default));
+  color: var(--xh-dialog-title-fg, var(--xh-material-elevated-fg));
 }
 
 [data-scope='dialog'][data-part='description'] {
   margin: 0;
   font-size: var(--xh-dialog-description-font-size, var(--xh-text-body-size));
-  color: var(--xh-dialog-description-fg, var(--xh-fg-muted));
+  color: var(--xh-dialog-description-fg, var(--xh-material-elevated-fg-muted));
 }
 
 /* 关闭按钮是绝对定位的，不占流内宽度：标题得自己让出右上角那块，
@@ -19705,7 +19736,7 @@
   border: 0;
   border-radius: var(--xh-dialog-close-radius, var(--xh-shape-control));
   background: transparent;
-  color: var(--xh-dialog-close-fg, var(--xh-fg-muted));
+  color: var(--xh-dialog-close-fg, var(--xh-material-elevated-fg-muted));
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -19725,6 +19756,13 @@
 [data-scope='dialog'][data-part='close-trigger']:active {
   background: var(--xh-dialog-close-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+}
+
+/* 内收的焦点环先落到实体隔离底，不直接压在随背景变化的玻璃上。 */
+[data-scope='dialog'][data-part='close-trigger']:focus-visible {
+  background: var(--xh-dialog-close-bg-focus, var(--xh-material-elevated-focus-surface));
+  color: var(--xh-dialog-close-fg-focus, var(--xh-material-elevated-fg));
+  transition-property: color, scale;
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -19756,6 +19794,26 @@
 [data-scope='dialog'][data-part='positioner'][hidden],
 [data-scope='dialog'][data-part='indicator'][hidden] {
   display: none;
+}
+
+/* 光学效果只在常规档存在：主题高对比、系统减少透明度与强制色均把 blur 的遮罩原位实体化。 */
+:where([data-contrast='more']) [data-scope='dialog'][data-part='backdrop'][data-variant='blur'] {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+@media (prefers-contrast: more), (prefers-reduced-transparency: reduce), (forced-colors: active) {
+  [data-scope='dialog'][data-part='backdrop'][data-variant='blur'] {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 强制色会接管渐变；改回同名实体 M4 底，保留 Canvas / CanvasText 的轮廓与正文。 */
+  [data-scope='dialog'][data-part='content'] {
+    background: var(--xh-dialog-bg, var(--xh-material-elevated-bg));
+  }
 }
 
 @media print {
