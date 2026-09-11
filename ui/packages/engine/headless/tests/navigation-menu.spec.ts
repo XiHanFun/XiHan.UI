@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { NavigationMenuSchema, NavigationMenuValueChangeDetails } from '../src/navigation-menu'
-import { createService, normalizeProps } from '@xihan-ui/core'
+import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
@@ -332,6 +332,54 @@ describe('navigationMenu 收起', () => {
     c.links[0]!.dispatchEvent(event)
     expect(c.value()).toBeNull()
     expect(event.defaultPrevented).toBe(false)
+  })
+
+  it('层 cleanup 抛错后仍能在下次展开时重新登记', () => {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({})
+    const service = createService(navigationMenuMachine, { props: () => props.get(), runtime })
+    const config = createRuntimeConfig()
+    const list = document.createElement('ul')
+    document.body.appendChild(list)
+    let registrations = 0
+    let failNextCleanup = true
+
+    service.refs.set('getListEl', () => list)
+    service.refs.set('config', config)
+    service.refs.set('registerLayer', () => {
+      registrations += 1
+      const registration = config.layerRegistry.register({
+        kind: 'popover',
+        node: () => list,
+        branches: () => [],
+        isModal: () => false,
+        setModal: () => {},
+        surfaces: () => [],
+      })
+      return {
+        layer: registration.layer,
+        dispose: () => {
+          registration.dispose()
+          if (failNextCleanup) {
+            failNextCleanup = false
+            throw new Error('layer cleanup failed')
+          }
+        },
+      }
+    })
+    runtime.start()
+    const api = () => connectNavigationMenu(service, normalizeProps)
+
+    api().setValue('products')
+    expect(registrations).toBe(1)
+    expect(() => api().setValue(null)).toThrow('layer cleanup failed')
+    expect(service.refs.get('layerDispose')).toBeNull()
+
+    api().setValue('docs')
+    expect(registrations).toBe(2)
+
+    runtime.stop()
+    list.remove()
   })
 })
 

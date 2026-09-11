@@ -9,6 +9,7 @@ import type {
 } from './time-picker.types'
 import { createDismissLayer, createFocusScope, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
+import { setupLayerTransaction } from '../shared/overlay-shell'
 import {
   appendSegmentDigit,
   clearTimeSegment,
@@ -552,65 +553,60 @@ export const timePickerMachine = createMachine({
         if (!config || !registerLayer)
           return undefined
 
-        const { layer, dispose: disposeLayer } = registerLayer()
+        return setupLayerTransaction(registerLayer, (layer, defer) => {
+          const dismiss = createDismissLayer({
+            config,
+            layer,
+            onDismiss: reason =>
+              send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
+          })
+          defer(() => dismiss.dispose())
 
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: reason =>
-            send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
+          const focus = createFocusScope({
+            config,
+            layer,
+            // 每次读最新 ref，容器晚一拍就位也能命中
+            container: () => refs.get('getContentEl')(),
+            // 浮层不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
+            trapped: () => false,
+            loop: false,
+            // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测按文档序取 content 的可 tab 后代，
+            // 作者放在列前面的输入框会把焦点抢走，而键盘处理器挂在 content 上，方向键就此失灵。
+            // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试
+            initialFocus: () => {
+              const content = refs.get('getContentEl')()
+              if (!content)
+                return null
+              // 点输入行展开：焦点本来就在某个段位上，把它原样交回去——
+              // 焦点域一拿到非空落点就认账，既不搬走焦点，也不会退回去聚焦浮层里头一个可聚焦元素
+              if (!context.get('moveFocusIn')) {
+                const anchor = refs.get('getAnchorEl')()
+                const active = config.scope.getActiveElement()
+                if (anchor && active instanceof HTMLElement && anchor.contains(active))
+                  return active
+              }
+              const unit = context.get('focusedColumn')
+              const value = context.get('focusedItem')
+              if (unit != null && value != null)
+                return findTimePickerItem(content, unit, value)
+              // 判据与 setInitialFocusedItem 同一条：只有「指针入口且首列那一段还空着」才真的没有锚点。
+              // 其余情形是本轮该有锚点却还没挑出来（效应先于 entry 动作挂载），
+              // 返回 null 让焦点域重试，别滑到列上定死——落焦一旦成功就不再重试
+              const first = currentColumns(params)[0]
+              const empty = !first || segmentNumber(currentDraft(params), first.unit, currentHourCycle(params)) == null
+              if (!first || !empty || context.get('focusIntent') !== 'selected')
+                return null
+              // 确实不该有锚点：焦点落到首列，它是 role=listbox 且有名字，
+              // 读屏据此进焦点模式，此刻也正认领着 Tab 位
+              return findTimePickerColumn(content, first.unit)
+            },
+            restoreFocus: () => context.get('returnFocus'),
+            // 归还落点显式给触发器：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+            // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
+            restoreTarget: () => refs.get('getTriggerEl')(),
+          })
+          defer(() => focus.dispose())
         })
-
-        const focus = createFocusScope({
-          config,
-          layer,
-          // 每次读最新 ref，容器晚一拍就位也能命中
-          container: () => refs.get('getContentEl')(),
-          // 浮层不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
-          trapped: () => false,
-          loop: false,
-          // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测按文档序取 content 的可 tab 后代，
-          // 作者放在列前面的输入框会把焦点抢走，而键盘处理器挂在 content 上，方向键就此失灵。
-          // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试
-          initialFocus: () => {
-            const content = refs.get('getContentEl')()
-            if (!content)
-              return null
-            // 点输入行展开：焦点本来就在某个段位上，把它原样交回去——
-            // 焦点域一拿到非空落点就认账，既不搬走焦点，也不会退回去聚焦浮层里头一个可聚焦元素
-            if (!context.get('moveFocusIn')) {
-              const anchor = refs.get('getAnchorEl')()
-              const active = config.scope.getActiveElement()
-              if (anchor && active instanceof HTMLElement && anchor.contains(active))
-                return active
-            }
-            const unit = context.get('focusedColumn')
-            const value = context.get('focusedItem')
-            if (unit != null && value != null)
-              return findTimePickerItem(content, unit, value)
-            // 判据与 setInitialFocusedItem 同一条：只有「指针入口且首列那一段还空着」才真的没有锚点。
-            // 其余情形是本轮该有锚点却还没挑出来（效应先于 entry 动作挂载），
-            // 返回 null 让焦点域重试，别滑到列上定死——落焦一旦成功就不再重试
-            const first = currentColumns(params)[0]
-            const empty = !first || segmentNumber(currentDraft(params), first.unit, currentHourCycle(params)) == null
-            if (!first || !empty || context.get('focusIntent') !== 'selected')
-              return null
-            // 确实不该有锚点：焦点落到首列，它是 role=listbox 且有名字，
-            // 读屏据此进焦点模式，此刻也正认领着 Tab 位
-            return findTimePickerColumn(content, first.unit)
-          },
-          restoreFocus: () => context.get('returnFocus'),
-          // 归还落点显式给触发器：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
-          restoreTarget: () => refs.get('getTriggerEl')(),
-        })
-
-        // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈
-        return () => {
-          focus.dispose()
-          dismiss.dispose()
-          disposeLayer()
-        }
       },
     },
   },

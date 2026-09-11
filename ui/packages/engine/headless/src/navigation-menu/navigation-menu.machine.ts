@@ -1,6 +1,7 @@
 import type { Transition } from '@xihan-ui/core'
 import type { NavigationMenuIndicatorRect, NavigationMenuSchema } from './navigation-menu.types'
 import { contains, createDismissLayer, focusItem, itemValue, queryItems, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { setupLayerTransaction } from '../shared/overlay-shell'
 import { navigationMenuTriggerQuery } from './navigation-menu.anatomy'
 
 const { createMachine } = setup<NavigationMenuSchema>()
@@ -179,27 +180,27 @@ export const navigationMenuMachine = createMachine({
             .find(el => itemValue(el) === current) ?? null
         }
 
-        const { layer, dispose: disposeLayer } = registerLayer()
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: (reason) => {
-            // Escape 把焦点归还给刚被收起的那个 trigger，焦点本就在导航外时不去抢。
-            // 落点要在收起之前查，收起之后 value 就没了
-            const holdsFocus = contains(layer.node(), scope.getActiveElement())
-            const trigger = reason === 'escape-key' && holdsFocus ? openTrigger() : null
-            send({ type: 'DISMISS' })
-            focusItem(trigger)
-          },
+        const cleanup = setupLayerTransaction(registerLayer, (layer, defer) => {
+          const dismiss = createDismissLayer({
+            config,
+            layer,
+            onDismiss: (reason) => {
+              // Escape 把焦点归还给刚被收起的那个 trigger，焦点本就在导航外时不去抢。
+              // 落点要在收起之前查，收起之后 value 就没了
+              const holdsFocus = contains(layer.node(), scope.getActiveElement())
+              const trigger = reason === 'escape-key' && holdsFocus ? openTrigger() : null
+              send({ type: 'DISMISS' })
+              focusItem(trigger)
+            },
+          })
+          defer(() => dismiss.dispose())
         })
-        refs.set('layerDispose', () => {
-          dismiss.dispose()
-          disposeLayer()
-        })
+        refs.set('layerDispose', cleanup)
       },
       dropLayer: ({ refs }) => {
-        refs.get('layerDispose')?.()
+        const cleanup = refs.get('layerDispose')
         refs.set('layerDispose', null)
+        cleanup?.()
       },
 
       /** 量指示条；同步与推迟各量一遍，后者补上 WC 侧首帧才写入的身份标记。 */

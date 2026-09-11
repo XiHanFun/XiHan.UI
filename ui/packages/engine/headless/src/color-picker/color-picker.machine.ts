@@ -6,6 +6,7 @@ import type { ColorPickerDragTarget, ColorPickerSchema } from './color-picker.ty
 import { createDismissLayer, createFocusScope, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
+import { setupLayerTransaction } from '../shared/overlay-shell'
 import {
   COLOR_PICKER_FALLBACK,
   colorPickerApplyInput,
@@ -434,33 +435,28 @@ export const colorPickerMachine = createMachine({
         if (!config || !registerLayer)
           return undefined
 
-        const { layer, dispose: disposeLayer } = registerLayer()
+        return setupLayerTransaction(registerLayer, (layer, defer) => {
+          const dismiss = createDismissLayer({
+            config,
+            layer,
+            onDismiss: () => send({ type: 'CLOSE' }),
+          })
+          defer(() => dismiss.dispose())
 
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: () => send({ type: 'CLOSE' }),
+          // 展开即把焦点送进浮层；非模态，Tab 走得出去后由消解层判定是否收起
+          const focus = createFocusScope({
+            config,
+            layer,
+            container: () => refs.get('getContentEl')(),
+            trapped: () => false,
+            loop: false,
+            restoreFocus: () => true,
+            // 归还落点显式给触发器：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+            // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
+            restoreTarget: () => refs.get('getAnchorEl')(),
+          })
+          defer(() => focus.dispose())
         })
-
-        // 展开即把焦点送进浮层；非模态，Tab 走得出去后由消解层判定是否收起
-        const focus = createFocusScope({
-          config,
-          layer,
-          container: () => refs.get('getContentEl')(),
-          trapped: () => false,
-          loop: false,
-          restoreFocus: () => true,
-          // 归还落点显式给触发器：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
-          restoreTarget: () => refs.get('getAnchorEl')(),
-        })
-
-        // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈
-        return () => {
-          focus.dispose()
-          dismiss.dispose()
-          disposeLayer()
-        }
       },
 
       // 跟手交给指针会话：监听挂在文档上，挂在取色区上指针一离开就断，系统收走指针也会收尾

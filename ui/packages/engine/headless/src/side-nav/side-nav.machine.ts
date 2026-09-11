@@ -2,6 +2,7 @@ import type { PositionResult } from '@xihan-ui/core'
 import type { SideNavNode, SideNavSchema } from './side-nav.types'
 import { createDismissLayer, createFocusScope, navigateItems, setup, trackHoverIntent } from '@xihan-ui/core'
 import { OVERLAY_OFFSET } from '../shared/overlay'
+import { setupLayerTransaction } from '../shared/overlay-shell'
 import { indexTree } from '../tree'
 
 const { createMachine } = setup<SideNavSchema>()
@@ -254,16 +255,18 @@ export const sideNavMachine = createMachine({
         if (!config || !registerLayer)
           return undefined
 
-        const { layer, dispose: disposeLayer } = registerLayer()
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: reason =>
-            send({ type: 'POPOUT.CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
-        })
+        let hasFocusScope = false
+        const disposeResources = setupLayerTransaction(registerLayer, (layer, defer) => {
+          const dismiss = createDismissLayer({
+            config,
+            layer,
+            onDismiss: reason =>
+              send({ type: 'POPOUT.CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
+          })
+          defer(() => dismiss.dispose())
 
-        const focus = context.get('popoutIntent') === 'first'
-          ? createFocusScope({
+          if (context.get('popoutIntent') === 'first') {
+            const focus = createFocusScope({
               config,
               layer,
               container: () => refs.get('getPopoutContentEl')(),
@@ -276,15 +279,20 @@ export const sideNavMachine = createMachine({
               },
               restoreFocus: () => context.get('popoutReturnFocus'),
             })
-          : null
+            hasFocusScope = true
+            defer(() => focus.dispose())
+          }
+        })
 
+        let disposed = false
         return () => {
-          focus?.dispose()
-          dismiss.dispose()
-          disposeLayer()
+          if (disposed)
+            return
+          disposed = true
+          disposeResources()
           // 指针打开的会话没建焦点域，但键盘可能中途进过面板：归还承诺在这里兑现。
           // 归还标记随关闭动作落值、拆除晚一帧才读得到，与焦点域的返还同节拍
-          if (!focus) {
+          if (!hasFocusScope) {
             const anchorEl = refs.get('getPopoutAnchorEl')()
             const content = refs.get('getPopoutContentEl')()
             const doc = content?.ownerDocument

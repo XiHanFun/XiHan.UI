@@ -1,6 +1,7 @@
 import type { DialogSchema } from './dialog.types'
 import { acquireScrollLock, createDismissLayer, createFocusScope, hideOutside, setup, warn } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
+import { setupLayerTransaction } from '../shared/overlay-shell'
 
 const { createMachine } = setup<DialogSchema>()
 
@@ -85,97 +86,91 @@ export const dialogMachine = createMachine({
         if (!config || !registerLayer)
           return undefined
 
-        // 层只在展开期间入栈：只有栈顶响应 Escape，常驻的层会堵死其下各层
-        const { layer, dispose: disposeLayer } = registerLayer()
+        return setupLayerTransaction(registerLayer, (layer, defer, run) => {
+          // 开场快照：滚动锁与背景失活装配一次就定了，事后补不回来
+          const modal = prop('modal') ?? true
+          const role = prop('role') ?? 'dialog'
+          const getContentEl = refs.get('getContentEl')
 
-        // 开场快照：滚动锁与背景失活装配一次就定了，事后补不回来
-        const modal = prop('modal') ?? true
-        const role = prop('role') ?? 'dialog'
-        const getContentEl = refs.get('getContentEl')
-        const disposers: Array<() => void> = []
-
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          // 两个开关都现读 prop，展开中途改也立刻生效
-          onEscapeKeyDown: (e) => {
-            if (!(prop('closeOnEscape') ?? true))
-              e.preventDefault()
-          },
-          onInteractOutside: (e) => {
+          const dismiss = createDismissLayer({
+            config,
+            layer,
+            // 两个开关都现读 prop，展开中途改也立刻生效
+            onEscapeKeyDown: (e) => {
+              if (!(prop('closeOnEscape') ?? true))
+                e.preventDefault()
+            },
+            onInteractOutside: (e) => {
             // 缺省值依赖 role 与 modal，这两项也一并现读：
             // alertdialog 一律不许点外面关，其余回落 modal
-            const allowed = (prop('role') ?? 'dialog') === 'alertdialog'
-              ? false
-              : prop('closeOnInteractOutside') ?? prop('modal') ?? true
-            if (!allowed)
-              e.preventDefault()
-          },
-          onDismiss: reason =>
-            send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
-        })
-        disposers.push(() => dismiss.dispose())
-
-        // 焦点域无条件建，modal 只决定陷不陷焦点；放进 if (modal) 会让非模态
-        // 既不初始聚焦也不归还焦点，restoreFocus 失效
-        const focus = createFocusScope({
-          config,
-          layer,
-          container: getContentEl,
-          trapped: () => modal,
-          loop: modal,
-          initialFocus: () => {
-            const selector = prop('initialFocus')
-            // 给了选择器就只认它；还没匹配上回 null，把机会留给下一帧重试
-            if (selector !== undefined)
-              return queryInContent(getContentEl(), selector)
-            // alertdialog 焦点落在 content 容器本身，不预选按钮；
-            // 普通 dialog 交给 tabbable 探测选首个可聚焦元素
-            return role === 'alertdialog' ? getContentEl() : null
-          },
-          restoreFocus: () => prop('restoreFocus') ?? true,
-          // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上。
-          // 按 connect 给 trigger 落的 id 现取，没有 trigger 的用法回 null，归还照旧走快照。
-          // 组件名取自 refs：抽屉跑同一台机器，它的部件 id 挂在 drawer 名下
-          restoreTarget: () => scope.getById<HTMLElement>(scope.partId(refs.get('partScope'), 'trigger')),
-        })
-        disposers.push(() => focus.dispose())
-
-        if (modal) {
-          const lock = acquireScrollLock({ config })
-          disposers.push(() => lock.dispose())
-
-          // 栈中位于本层之上的层一并算作目标：内层浮层 portal 到 body 之后也是 body 的
-          // 直接子元素，不排除会被本层的 MutationObserver 打上 inert
-          const getTargets = (): Element[] => [
-            getContentEl(),
-            ...refs.get('branches')(),
-            ...config.layerRegistry.elementsAbove(layer),
-          ].filter(Boolean) as Element[]
-
-          // 背景失活推迟到宿主提交那一帧之后：进入 open 时 content 尚未渲染，
-          // 此刻 targets 为空会导致背景永不 inert
-          let hidden: (() => void) | undefined
-          let alive = true
-          flush(() => {
-            if (!alive)
-              return
-            if (getTargets().length)
-              hidden = hideOutside(getTargets, config.scope)
+              const allowed = (prop('role') ?? 'dialog') === 'alertdialog'
+                ? false
+                : prop('closeOnInteractOutside') ?? prop('modal') ?? true
+              if (!allowed)
+                e.preventDefault()
+            },
+            onDismiss: reason =>
+              send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
           })
-          // flush 回调可能在效应拆除之后才跑，用存活标志挡住
-          disposers.push(() => {
-            alive = false
-            hidden?.()
-          })
-        }
+          defer(() => dismiss.dispose())
 
-        // 逆序拆：先撤依赖层的订阅，最后才把层本身移出栈
-        return () => {
-          for (let i = disposers.length - 1; i >= 0; i--) disposers[i]!()
-          disposeLayer()
-        }
+          // 焦点域无条件建，modal 只决定陷不陷焦点；放进 if (modal) 会让非模态
+          // 既不初始聚焦也不归还焦点，restoreFocus 失效
+          const focus = createFocusScope({
+            config,
+            layer,
+            container: getContentEl,
+            trapped: () => modal,
+            loop: modal,
+            initialFocus: () => {
+              const selector = prop('initialFocus')
+              // 给了选择器就只认它；还没匹配上回 null，把机会留给下一帧重试
+              if (selector !== undefined)
+                return queryInContent(getContentEl(), selector)
+              // alertdialog 焦点落在 content 容器本身，不预选按钮；
+              // 普通 dialog 交给 tabbable 探测选首个可聚焦元素
+              return role === 'alertdialog' ? getContentEl() : null
+            },
+            restoreFocus: () => prop('restoreFocus') ?? true,
+            // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+            // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上。
+            // 按 connect 给 trigger 落的 id 现取，没有 trigger 的用法回 null，归还照旧走快照。
+            // 组件名取自 refs：抽屉跑同一台机器，它的部件 id 挂在 drawer 名下
+            restoreTarget: () => scope.getById<HTMLElement>(scope.partId(refs.get('partScope'), 'trigger')),
+          })
+          defer(() => focus.dispose())
+
+          if (modal) {
+            const lock = acquireScrollLock({ config })
+            defer(() => lock.dispose())
+
+            // 栈中位于本层之上的层一并算作目标：内层浮层 portal 到 body 之后也是 body 的
+            // 直接子元素，不排除会被本层的 MutationObserver 打上 inert
+            const getTargets = (): Element[] => [
+              getContentEl(),
+              ...refs.get('branches')(),
+              ...config.layerRegistry.elementsAbove(layer),
+            ].filter(Boolean) as Element[]
+
+            // 背景失活推迟到宿主提交那一帧之后：进入 open 时 content 尚未渲染，
+            // 此刻 targets 为空会导致背景永不 inert
+            let hidden: (() => void) | undefined
+            let alive = true
+            // flush 可能排队后同步抛错，先登记存活闸门才能让事务回滚挡住迟到回调
+            defer(() => {
+              alive = false
+              hidden?.()
+            })
+            flush(() => {
+              if (!alive)
+                return
+              run(() => {
+                if (getTargets().length)
+                  hidden = hideOutside(getTargets, config.scope)
+              })
+            })
+          }
+        })
       },
     },
   },

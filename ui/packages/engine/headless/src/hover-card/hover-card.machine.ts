@@ -2,6 +2,7 @@ import type { PositionResult, Transition } from '@xihan-ui/core'
 import type { HoverCardSchema } from './hover-card.types'
 import { createDismissLayer, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
+import { setupLayerTransaction } from '../shared/overlay-shell'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */
 export const HOVER_CARD_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
@@ -210,21 +211,17 @@ export const hoverCardMachine = createMachine({
         if (!config || !registerLayer)
           return undefined
 
-        const { layer, dispose: disposeLayer } = registerLayer()
-
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: reason => send({
-            type: 'CLOSE',
-            src: reason === 'escape-key' ? 'esc' : 'interact-outside',
-          }),
+        return setupLayerTransaction(registerLayer, (layer, defer) => {
+          const dismiss = createDismissLayer({
+            config,
+            layer,
+            onDismiss: reason => send({
+              type: 'CLOSE',
+              src: reason === 'escape-key' ? 'esc' : 'interact-outside',
+            }),
+          })
+          defer(() => dismiss.dispose())
         })
-
-        return () => {
-          dismiss.dispose()
-          disposeLayer()
-        }
       },
     },
   },

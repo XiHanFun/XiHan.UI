@@ -73,6 +73,8 @@ export interface Layer {
 
 注册表还给出 `elementsAbove(layer)`：栈中位于该层之上的各层的全部节点（`node` + `branches` + `surfaces`）。背景失活要用它把上层排除在自己的管辖之外。
 
+单个 Headless 浮层 layer effect 会把“登记 layer → 建消解层 → 建焦点域 → 加滚动锁/背景失活”放在同一初始化事务里。同步步骤与宿主 `flush` 后才执行的背景失活都经过事务守卫；任一步抛错都会把已经取得的资源按逆序全部释放，最后移除 layer。effect 成功后交给机器的也是同一份幂等逆序 cleanup。单项清理失败原样抛出，多项失败则聚合报告，且两者都会继续清完其余项，避免错误层永久占着栈顶。
+
 ## 消隐层
 
 ```ts

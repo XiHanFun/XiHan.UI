@@ -3,6 +3,7 @@ import type { ImageViewerImageStatus, ImageViewerItem, ImageViewerRefs, ImageVie
 import { acquireScrollLock, createDismissLayer, createFocusScope, hideOutside, setup } from '@xihan-ui/core'
 import { createMultiPointerSession, pinchChange, pinchSnapshot, resolveSessionDoc } from '@xihan-ui/pointer'
 import { closeReasonOf } from '../shared/close-reason'
+import { setupLayerTransaction } from '../shared/overlay-shell'
 
 const { createMachine } = setup<ImageViewerSchema>()
 
@@ -285,69 +286,66 @@ export const imageViewerMachine = createMachine({
         if (!config || !registerLayer)
           return undefined
 
-        const { layer, dispose: disposeLayer } = registerLayer()
-        const getContentEl = refs.get('getContentEl')
-        const disposers: Array<() => void> = []
+        return setupLayerTransaction(registerLayer, (layer, defer, run) => {
+          const getContentEl = refs.get('getContentEl')
 
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          // 两个开关都现读 prop，展开中途改也立刻生效
-          onEscapeKeyDown: (e) => {
-            if (!(prop('closeOnEscape') ?? true))
-              e.preventDefault()
-          },
-          onInteractOutside: (e) => {
-            if (!(prop('closeOnInteractOutside') ?? true))
-              e.preventDefault()
-          },
-          onDismiss: reason =>
-            send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
+          const dismiss = createDismissLayer({
+            config,
+            layer,
+            // 两个开关都现读 prop，展开中途改也立刻生效
+            onEscapeKeyDown: (e) => {
+              if (!(prop('closeOnEscape') ?? true))
+                e.preventDefault()
+            },
+            onInteractOutside: (e) => {
+              if (!(prop('closeOnInteractOutside') ?? true))
+                e.preventDefault()
+            },
+            onDismiss: reason =>
+              send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
+          })
+          defer(() => dismiss.dispose())
+
+          const focus = createFocusScope({
+            config,
+            layer,
+            container: getContentEl,
+            trapped: () => true,
+            loop: true,
+            restoreFocus: () => prop('restoreFocus') ?? true,
+            // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+            // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上。
+            // 按 connect 给 trigger 落的 id 现取，程序化展开（没有 trigger）时回 null，归还照旧走快照
+            restoreTarget: () => scope.getById<HTMLElement>(scope.partId('image-viewer', 'trigger')),
+          })
+          defer(() => focus.dispose())
+
+          const lock = acquireScrollLock({ config })
+          defer(() => lock.dispose())
+
+          const getTargets = (): Element[] => [
+            getContentEl(),
+            ...config.layerRegistry.elementsAbove(layer),
+          ].filter(Boolean) as Element[]
+
+          // 背景失活推迟到宿主提交那一帧之后：进入 open 时 content 尚未渲染，
+          // 此刻 targets 为空会导致背景永不 inert
+          let hidden: (() => void) | undefined
+          let alive = true
+          // flush 可能排队后同步抛错，先登记存活闸门才能让事务回滚挡住迟到回调
+          defer(() => {
+            alive = false
+            hidden?.()
+          })
+          flush(() => {
+            if (!alive)
+              return
+            run(() => {
+              if (getTargets().length)
+                hidden = hideOutside(getTargets, config.scope)
+            })
+          })
         })
-        disposers.push(() => dismiss.dispose())
-
-        const focus = createFocusScope({
-          config,
-          layer,
-          container: getContentEl,
-          trapped: () => true,
-          loop: true,
-          restoreFocus: () => prop('restoreFocus') ?? true,
-          // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上。
-          // 按 connect 给 trigger 落的 id 现取，程序化展开（没有 trigger）时回 null，归还照旧走快照
-          restoreTarget: () => scope.getById<HTMLElement>(scope.partId('image-viewer', 'trigger')),
-        })
-        disposers.push(() => focus.dispose())
-
-        const lock = acquireScrollLock({ config })
-        disposers.push(() => lock.dispose())
-
-        const getTargets = (): Element[] => [
-          getContentEl(),
-          ...config.layerRegistry.elementsAbove(layer),
-        ].filter(Boolean) as Element[]
-
-        // 背景失活推迟到宿主提交那一帧之后：进入 open 时 content 尚未渲染，
-        // 此刻 targets 为空会导致背景永不 inert
-        let hidden: (() => void) | undefined
-        let alive = true
-        flush(() => {
-          if (!alive)
-            return
-          if (getTargets().length)
-            hidden = hideOutside(getTargets, config.scope)
-        })
-        disposers.push(() => {
-          alive = false
-          hidden?.()
-        })
-
-        // 逆序拆：先撤依赖层的订阅，最后才把层本身移出栈
-        return () => {
-          for (let i = disposers.length - 1; i >= 0; i--) disposers[i]!()
-          disposeLayer()
-        }
       },
     },
   },
