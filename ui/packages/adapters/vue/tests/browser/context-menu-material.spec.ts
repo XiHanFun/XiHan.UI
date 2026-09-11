@@ -112,6 +112,9 @@ afterEach(async () => {
 describe('右键菜单 M2 表面', () => {
   it('content、arrow 与 separator 和 Menu 采用同一材质值', async () => {
     await mountContextMenu()
+    // 比较正常候选导航态；容器自己接收键盘焦点时有独立实体保护面。
+    byTestId('item-text').parentElement!.focus()
+    await nextTick()
     const contextContent = getComputedStyle(part('content'))
     const menuContentNode = menuProbe('content')
     menuContentNode.dataset.testMenuProbe = ''

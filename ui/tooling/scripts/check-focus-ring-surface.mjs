@@ -276,28 +276,51 @@ function parseAlpha(text) {
   return t.endsWith('%') ? Number.parseFloat(t) / 100 : Number(t)
 }
 
+/** 先按 CSS 的空值与 initial 语义展开变量，包含并列的正式主题候选。 */
+function resolveColorVars(expr, scope, trail) {
+  let result = ''
+  let cursor = 0
+  while (cursor < expr.length) {
+    const start = expr.indexOf('var(', cursor)
+    if (start < 0) {
+      result += expr.slice(cursor)
+      break
+    }
+    result += expr.slice(cursor, start)
+    const body = inner(expr.slice(start), 3)
+    const [name, ...fallback] = splitArgs(body)
+    if (trail.includes(name))
+      throw new Error(`令牌循环引用：${[...trail, name].join(' → ')}`)
+    const map = scope.find(map => map.has(name))
+    const value = map?.get(name)
+    if (value === undefined || value.trim() === 'initial') {
+      if (!fallback.length)
+        throw new Error(`令牌未定义或无效：${name}`)
+      result += resolveColorVars(fallback.join(','), scope, trail)
+    }
+    else {
+      result += resolveColorVars(value, scope, [...trail, name])
+    }
+    cursor = start + body.length + 5
+  }
+  return result.trim()
+}
+
 /** 把一个值求成带 alpha 的 oklab {L,a,b,alpha}；scope 是按优先级排好的若干 Map。 */
 function evaluate(expr, scope, trail = []) {
   expr = expr.trim()
-  if (expr.startsWith('var(')) {
-    const [name, ...fallback] = splitArgs(inner(expr, 3))
-    if (trail.includes(name))
-      throw new Error(`令牌循环引用：${[...trail, name].join(' → ')}`)
-    for (const map of scope) {
-      if (map.has(name))
-        return evaluate(map.get(name), scope, [...trail, name])
-    }
-    if (fallback.length)
-      return evaluate(fallback.join(','), scope, trail)
-    throw new Error(`令牌未定义：${name}`)
-  }
+  if (expr.includes('var('))
+    return evaluate(resolveColorVars(expr, scope, trail), scope, trail)
   if (/^transparent$/i.test(expr))
     return { L: 0, a: 0, b: 0, alpha: 0 }
   if (expr.startsWith('oklch(')) {
     const [body, alphaText] = inner(expr, 5).split('/')
     const [L, C, H] = body.trim().split(/\s+/).map(Number)
+    const alpha = parseAlpha(alphaText)
+    if (![L, C, H, alpha].every(Number.isFinite))
+      throw new Error(`颜色分量必须可解析为有限数值：${expr}`)
     const h = (H || 0) * Math.PI / 180
-    return { L, a: C * Math.cos(h), b: C * Math.sin(h), alpha: parseAlpha(alphaText) }
+    return { L, a: C * Math.cos(h), b: C * Math.sin(h), alpha }
   }
   if (expr.startsWith('color-mix(')) {
     const [space, p1, p2] = splitArgs(inner(expr, 9))
@@ -1368,6 +1391,13 @@ for (const key of Object.keys(registry.declared)) {
 
 // 面解不出颜色的，同样逐条登记：不登记就等于这一档从此没人再想起来
 for (const [key, { at, hint }] of opaqueValues) {
+  const frostedContent = /^([a-z-]+) \[content\] var\(--xh-material-frosted-bg\)$/.exec(key)
+  if (frostedContent) {
+    const comp = frostedContent[1]
+    const ringlessKey = `${comp} [data-part='content'][data-scope='${comp}']${comp === 'context-menu' ? ':not([tabindex=\'0\'])' : ''}`
+    if (!ringless.some(rule => rule.key === ringlessKey) || !registry.ringless[ringlessKey])
+      problems.push(`${key} 的透明外壳解释必须对应实际且已登记的 content 关环规则，不能跳过真正可聚焦控件`)
+  }
   if (!(key in registry.opaque)) {
     problems.push(
       `${at} ${key} —— 这块面本脚本解不出颜色（半透明、渐变、或使用者传进来的色值），`

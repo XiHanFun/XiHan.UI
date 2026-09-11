@@ -180,6 +180,15 @@
      真正的收起由宿主在退场结束后落成内联 display:none（Vue 那边直接不渲染）。
      其余声明了 display 的角色节点仍补 [hidden]，那几处没有退场动画。 */
 
+  /* 空菜单自身接收键盘焦点时实际铺实体底，焦点环不依赖背后的图片。 */
+  [data-scope='context-menu'][data-part='content'][tabindex='0']:focus-visible {
+    background: var(--xh-material-frosted-focus-surface);
+  }
+
+  [data-scope='context-menu'][data-part='content'][tabindex='0']:focus-visible [data-scope='context-menu'][data-part='arrow'] {
+    background: var(--xh-material-frosted-focus-surface);
+  }
+
   [data-scope='context-menu'][data-part='content']:not([tabindex='0']):focus-visible {
     outline: none;
   }
