@@ -66,12 +66,38 @@ const demos: Demo[] = Object.entries(RAW)
   .sort((a, b) => a.id.localeCompare(b.id))
 
 // innerHTML 收下的 <script> 不会执行，逐个重建成新节点才跑得起来（与文档站同一做法）
-function reviveScripts(host: HTMLElement): void {
+async function reviveScripts(host: HTMLElement): Promise<void> {
   for (const stale of Array.from(host.querySelectorAll('script'))) {
     const script = document.createElement('script')
     for (const attr of Array.from(stale.attributes)) script.setAttribute(attr.name, attr.value)
     script.textContent = stale.textContent
-    stale.replaceWith(script)
+    if (script.type !== 'module')
+      throw new Error('示例脚本必须使用 type="module"')
+    // 此验证环境的内联模块没有可靠 load 通知；显式完成事件保证求值结束后才允许清场。
+    const completed = `xh-demo-module-${crypto.randomUUID()}`
+    if (!script.src)
+      script.textContent += `\n;document.dispatchEvent(new Event(${JSON.stringify(completed)}));`
+    await new Promise<void>((resolve, reject) => {
+      const listeners = new AbortController()
+      const ready = (): void => {
+        listeners.abort()
+        resolve()
+      }
+      const failed = (event: ErrorEvent): void => {
+        listeners.abort()
+        reject(event.error ?? new Error(event.message))
+      }
+      const options = { once: true, signal: listeners.signal }
+      document.addEventListener(completed, ready, options)
+      window.addEventListener('error', failed, options)
+      if (script.src)
+        script.addEventListener('load', ready, options)
+      script.addEventListener('error', () => {
+        listeners.abort()
+        reject(new Error(`示例模块加载失败：${script.src || '内联模块'}`))
+      }, options)
+      stale.replaceWith(script)
+    })
   }
 }
 
@@ -187,7 +213,7 @@ describe('自定义元素版示例', () => {
       stage = document.createElement('div')
       document.body.append(stage)
       stage.innerHTML = demo.html
-      reviveScripts(stage)
+      await reviveScripts(stage)
       await settle(stage)
 
       const hosts = Array.from(stage.querySelectorAll('*')).filter(el =>
