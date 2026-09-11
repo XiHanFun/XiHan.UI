@@ -13316,6 +13316,12 @@
   padding-block-start: var(--xh-_card-pad);
 }
 
+@media (forced-colors: active) {
+  [data-scope='card'][data-part='root'] {
+    background-image: none;
+  }
+}
+
 [data-scope='card'][data-part='root'][data-split] [data-scope='card'][data-part='header'] {
   padding-block-end: var(--xh-_card-pad);
 }
