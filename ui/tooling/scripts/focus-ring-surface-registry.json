@@ -417,27 +417,6 @@
       "ratio": 1,
       "ring": "off"
     },
-    "time-picker [data-part=:is(positioner,root)][data-scope='time-picker'] [data-highlighted][data-part='item'][data-scope='time-picker'][data-state='checked']:not([data-disabled])": {
-      "parts": [
-        "item"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "time-picker [data-part=:is(positioner,root)][data-scope='time-picker'] [data-part='item'][data-scope='time-picker'][data-state='checked']": {
-      "parts": [
-        "item"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "time-picker [data-part=:is(positioner,root)][data-scope='time-picker'] [data-part='preset'][data-scope='time-picker'][data-state='checked']": {
-      "parts": [
-        "preset"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
     "time-picker [data-part=:is(positioner,root)][data-scope='time-picker'] [data-part='segment'][data-scope='time-picker']": {
       "parts": [
         "segment"
