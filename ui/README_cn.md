@@ -6,7 +6,7 @@
 
 框架无关的组件库：状态机与无障碍逻辑沉在无头内核，各框架只写一层薄适配器。
 
-126 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤。
+126 个组件，每个都有 headless 内核、Vue 与 React 组件、自定义元素与默认皮肤。
 
 > 17 个公开包锁步发版，全部发布在 npm，文档站在 https://ui.docs.xihanfun.com。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩四条（共用表里 tag 与 select 的禁用标签对比度、prompt-input 归作者的可访问名、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。
 

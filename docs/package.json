@@ -4,7 +4,7 @@
   "version": "1.1.0",
   "private": true,
   "packageManager": "pnpm@11.7.0",
-  "description": "XiHan.UI document site. Framework-agnostic design system runtime with Vue and Web Components adapters.",
+  "description": "XiHan.UI 文档站：框架无关的设计系统运行时，提供 Vue、React 与 Web Components 三端适配器。",
   "author": {
     "name": "XiHanFun"
   },
