@@ -112,9 +112,6 @@ interface Spec {
   settled: boolean
 }
 
-/** 关到再开之间留出退场窗口，动效走完再放下一个。 */
-const EXIT_WINDOW_MS = 250
-
 export function createDialogService(options: DialogServiceOptions = {}): DialogService {
   if (typeof document === 'undefined')
     throw new Error('createDialogService 需要 document；SSR 里请等到客户端再创建')
@@ -143,7 +140,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   })
   const queue: Spec[] = []
   let disposed = false
-  let advanceTimer: ReturnType<typeof setTimeout> | null = null
+  let exiting: Spec | null = null
 
   function next(): void {
     if (disposed || current.value || queue.length === 0)
@@ -163,31 +160,30 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     spec.resolve(ok)
   }
 
-  /** 退场窗口走完再清当前项、放下一个；程序化关闭与机器侧关闭都汇到这里，只挂一只表。 */
-  function scheduleAdvance(): void {
-    if (advanceTimer)
+  /** 只接受本次退出的真实完成通知；旧请求的迟到通知不能清掉新请求。 */
+  function finishExit(spec: Spec | null): void {
+    if (!spec || disposed || current.value !== spec || exiting !== spec || state.open)
       return
-    advanceTimer = setTimeout(() => {
-      advanceTimer = null
-      current.value = null
-      state.busy = false
-      next()
-    }, EXIT_WINDOW_MS)
+    exiting = null
+    current.value = null
+    state.busy = false
+    next()
   }
 
   function close(ok: boolean): void {
+    const spec = current.value
+    if (!spec)
+      return
     settle(ok)
+    exiting = spec
     state.open = false
-    scheduleAdvance()
   }
 
   // 机器侧的关闭（Esc 等）从这里回来：未定的一律按取消结
   function onOpenChange(open: boolean): void {
     if (open)
       return
-    settle(false)
-    state.open = false
-    scheduleAdvance()
+    close(false)
   }
 
   async function ok(): Promise<void> {
@@ -223,8 +219,8 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
             spec.settled = true
             spec.reject(notificationCause)
             actionError.value = null
+            exiting = spec
             state.open = false
-            scheduleAdvance()
           }
         }
         return
@@ -262,6 +258,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
           'closeOnEscape': !state.busy,
           'closeOnInteractOutside': false,
           'initialFocus': spec?.initialFocus,
+          'onExitComplete': () => finishExit(spec),
         }, () => spec
           ? h(XhDialogContent, null, () => [
               h(XhDialogHeader, null, () => [
@@ -372,10 +369,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     setConfig: next => configSource.set(next),
     dispose: () => {
       disposed = true
-      if (advanceTimer) {
-        clearTimeout(advanceTimer)
-        advanceTimer = null
-      }
+      exiting = null
       settle(false)
       for (const spec of queue.splice(0))
         spec.resolve(false)

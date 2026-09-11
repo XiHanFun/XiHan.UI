@@ -358,7 +358,7 @@ describe('createDialogService', () => {
     expect(document.body.textContent).toContain('第一问')
     expect(document.body.textContent).not.toContain('第二问')
     okButton().click()
-    await wait(350)
+    await tick()
     expect(document.body.textContent).toContain('第二问')
     cancelButton().click()
     await tick()

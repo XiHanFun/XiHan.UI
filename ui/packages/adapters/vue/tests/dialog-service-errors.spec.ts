@@ -134,9 +134,6 @@ describe('命令对话框显式异常', () => {
       second = service!.confirm({ title: '新请求' })
     })
     await expect(first).resolves.toBe(false)
-    await change(async () => {
-      await new Promise(resolve => setTimeout(resolve, 280))
-    })
     await flush()
     await change(() => rejectNotification(new Error('旧通知失败')))
     await flush()
