@@ -32014,6 +32014,9 @@
               "name": "--xh-password-input-caps-lock-fg"
             },
             {
+              "name": "--xh-password-input-caps-lock-fg-disabled"
+            },
+            {
               "name": "--xh-password-input-caps-lock-font-size"
             },
             {
@@ -32165,6 +32168,12 @@
             },
             {
               "name": "--xh-password-input-trigger-size"
+            },
+            {
+              "name": "--xh-password-input-visibility-trigger-separator-color"
+            },
+            {
+              "name": "--xh-password-input-visibility-trigger-separator-h"
             }
           ]
         }

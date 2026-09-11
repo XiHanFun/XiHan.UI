@@ -21,6 +21,8 @@
 - `autoComplete` 缺省 `current-password`，注册表单要显式改成 `new-password`。
 - `strength` 给 0–4 五档就显出强度条；打分算法归调用方，组件只把档位画出来。
 - 形态 · 语气 · 尺寸三轴与[文本输入](./text-field)同源，并排放不会差一档。
+- 一体式 `control` 保持实体 Field Chrome；显隐动作与输入/状态区之间有半高语义分隔，三尺寸和 compact 密度使用同一比例。
+- 自动填充按当前形态、只读或禁用状态重画实体底与文字，不让浏览器注入的颜色把框切成异色段。
 
 ## 示例
 
@@ -212,6 +214,8 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 
 默认皮肤 `@xihan-ui/styles/password-input.css` 按部件选择：`[data-scope="password-input"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ## 数据属性
 
 由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
@@ -241,11 +245,11 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-password-input-caps-lock-fg` · `--xh-password-input-caps-lock-font-size` · `--xh-password-input-control-bg` · `--xh-password-input-control-bg-disabled` · `--xh-password-input-control-bg-hover` · `--xh-password-input-control-bg-readonly` · `--xh-password-input-control-border` · `--xh-password-input-control-border-focus` · `--xh-password-input-control-border-hover` · `--xh-password-input-control-border-invalid` · `--xh-password-input-control-gap` · `--xh-password-input-control-h` · `--xh-password-input-control-min-w` · `--xh-password-input-control-px` · `--xh-password-input-control-radius` · `--xh-password-input-control-shadow` · `--xh-password-input-gap` · `--xh-password-input-icon-size` · `--xh-password-input-input-autofill-bg` · `--xh-password-input-input-autofill-fg` · `--xh-password-input-input-bg` · `--xh-password-input-input-bg-disabled` · `--xh-password-input-input-bg-hover` · `--xh-password-input-input-bg-readonly` · `--xh-password-input-input-border` · `--xh-password-input-input-border-focus` · `--xh-password-input-input-border-hover` · `--xh-password-input-input-border-invalid` · `--xh-password-input-input-fg` · `--xh-password-input-input-font-size` · `--xh-password-input-input-h` · `--xh-password-input-input-min-w` · `--xh-password-input-input-px` · `--xh-password-input-input-radius` · `--xh-password-input-input-shadow` · `--xh-password-input-label-fg` · `--xh-password-input-label-fg-disabled` · `--xh-password-input-label-font-size` · `--xh-password-input-label-font-weight` · `--xh-password-input-placeholder-fg` · `--xh-password-input-strength-fg` · `--xh-password-input-strength-radius` · `--xh-password-input-strength-thickness` · `--xh-password-input-strength-track` · `--xh-password-input-trigger-bg` · `--xh-password-input-trigger-bg-active` · `--xh-password-input-trigger-bg-hover` · `--xh-password-input-trigger-fg` · `--xh-password-input-trigger-fg-hover` · `--xh-password-input-trigger-font-size` · `--xh-password-input-trigger-radius` · `--xh-password-input-trigger-size`
+`--xh-password-input-caps-lock-fg` · `--xh-password-input-caps-lock-fg-disabled` · `--xh-password-input-caps-lock-font-size` · `--xh-password-input-control-bg` · `--xh-password-input-control-bg-disabled` · `--xh-password-input-control-bg-hover` · `--xh-password-input-control-bg-readonly` · `--xh-password-input-control-border` · `--xh-password-input-control-border-focus` · `--xh-password-input-control-border-hover` · `--xh-password-input-control-border-invalid` · `--xh-password-input-control-gap` · `--xh-password-input-control-h` · `--xh-password-input-control-min-w` · `--xh-password-input-control-px` · `--xh-password-input-control-radius` · `--xh-password-input-control-shadow` · `--xh-password-input-gap` · `--xh-password-input-icon-size` · `--xh-password-input-input-autofill-bg` · `--xh-password-input-input-autofill-fg` · `--xh-password-input-input-bg` · `--xh-password-input-input-bg-disabled` · `--xh-password-input-input-bg-hover` · `--xh-password-input-input-bg-readonly` · `--xh-password-input-input-border` · `--xh-password-input-input-border-focus` · `--xh-password-input-input-border-hover` · `--xh-password-input-input-border-invalid` · `--xh-password-input-input-fg` · `--xh-password-input-input-font-size` · `--xh-password-input-input-h` · `--xh-password-input-input-min-w` · `--xh-password-input-input-px` · `--xh-password-input-input-radius` · `--xh-password-input-input-shadow` · `--xh-password-input-label-fg` · `--xh-password-input-label-fg-disabled` · `--xh-password-input-label-font-size` · `--xh-password-input-label-font-weight` · `--xh-password-input-placeholder-fg` · `--xh-password-input-strength-fg` · `--xh-password-input-strength-radius` · `--xh-password-input-strength-thickness` · `--xh-password-input-strength-track` · `--xh-password-input-trigger-bg` · `--xh-password-input-trigger-bg-active` · `--xh-password-input-trigger-bg-hover` · `--xh-password-input-trigger-fg` · `--xh-password-input-trigger-fg-hover` · `--xh-password-input-trigger-font-size` · `--xh-password-input-trigger-radius` · `--xh-password-input-trigger-size` · `--xh-password-input-visibility-trigger-separator-color` · `--xh-password-input-visibility-trigger-separator-h`
 
 ## 动效
 
-`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -264,8 +268,14 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 - 大写锁定提示这个节点也得由作者写出来（元素不生成结构），写成空壳即可，文字由组件填。Vue 侧这些由组件代劳，作者不会写错。
 - 明文只在用户主动切开时出现，别默认 `defaultVisible`：屏幕背后有别人。
 - 切换钮别在切开后消失或换位置：它承着焦点，一动键盘用户就丢了位置。
+- `readOnly` 只禁止改值，不禁止显隐：用户仍可聚焦、复制和核对已有密码；`disabled` 才同时禁用输入与显隐动作。
 - 大写锁定提示只提示，不拦提交：它是键盘的物理状态，用户可能就是要打大写。
 - 注册表单把 `autoComplete` 写成 `new-password`，否则密码管理器会把旧密码填进来。
+
+### 当前边界
+
+- anatomy 尚无正式的 prefix/suffix 部件；`control` 中的作者节点目前只按统一 gap 排布，不承诺前后缀语义或专门状态。需要时应以独立三端部件提交，不能用 CSS 猜任意子节点职责。
+- `control` 在 meta 中仍是可选部件，但共享 Field Chrome、组合焦点环与本次动作分隔都以它为边界；无 `control` 的结构只是独立输入框和按钮。是否把它提升为必需部件属于后续公共结构合同变更。
 
 ## 反模式
 
