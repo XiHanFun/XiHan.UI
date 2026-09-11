@@ -46,6 +46,8 @@ export const DIAGNOSTIC_CODES = {
 
 这份清单与 `@xihan-ui/core` 里的码表逐条对账，不会漏码，可以直接照它写分流。
 
+`machine.error` 的 `detail.machineCode` 是状态机错误码。机器崩溃或正常停机清理失败时，`detail.reason` 保留实际上报的原始或聚合异常对象；同时发生 cleanup 与 exit 异常时，它与调用方捕获的 `AggregateError` 是同一个对象，可以继续读取 `errors` 与 `cause`。
+
 三条 `wc.*` 是 Web Components 适配器的部件契约校验，也是日常最容易撞上的三条——手写 DOM 时漏一个 `data-xh-part` 或者写错名字，通道会明确告诉你哪个节点、哪个部件。
 
 ## 用法

@@ -21,7 +21,7 @@ import type {
 } from './types'
 // 解释器：把 machine 定义与注入的响应式宿主组合成可运行的 service。
 // 事件走同步 FIFO 队列 + run-to-completion，转移走六阶段编排。
-import { callAll, createCounterIdGenerator, createScope, isDev } from '../kernel'
+import { createCounterIdGenerator, createScope, isDev } from '../kernel'
 import { MachineError, raiseMachineError, reportMachineCrash } from './errors'
 import {
   choose,
@@ -32,13 +32,33 @@ import {
   resolveToLeaf,
 } from './transitions'
 
-const INIT_STATE = '__init__'
 const EVENT_LOOP_LIMIT = 1e4
+const NO_STOP_REASON = Symbol('no-stop-reason')
+const ROOT_EFFECT_PATH = Symbol('root-effect-path')
 
 interface Tracker {
   deps: Dep[]
   fn: () => void
   last: unknown[]
+}
+
+interface EffectDisposer {
+  dispose: () => unknown[]
+}
+
+type EffectPath = string | typeof ROOT_EFFECT_PATH
+
+type CollectedError
+  = | { found: false }
+    | { found: true, error: unknown }
+
+function describeThrown(error: unknown): string {
+  try {
+    return error instanceof Error ? error.message : String(error)
+  }
+  catch {
+    return '<无法格式化的异常>'
+  }
 }
 
 export function createService<T extends MachineSchema>(
@@ -176,53 +196,144 @@ export function createService<T extends MachineSchema>(
   }
 
   // —— effect 表 ——
-  const effects = new Map<string, VoidFunction>()
-  function mountEffects(path: string, spec: EffectsOrFn<T> | undefined): void {
-    const cleanups: VoidFunction[] = []
-    for (const name of resolveList(spec, currentEvent)) {
-      const impl = machine.implementations?.effects?.[name as Slice<T, 'effect'> & string]
-      if (!impl) {
-        failClosed('MISSING_EFFECT', name)
-        continue
+  const effects = new Map<EffectPath, EffectDisposer>()
+
+  function drainEffectCleanups(cleanups: VoidFunction[]): unknown[] {
+    const errors: unknown[] = []
+    while (cleanups.length) {
+      try {
+        cleanups.pop()!()
       }
-      const cleanup = impl(paramsFor(currentEvent))
-      if (typeof cleanup === 'function')
-        cleanups.push(cleanup)
+      catch (error) {
+        errors.push(error)
+      }
     }
-    if (cleanups.length) {
-      const prev = effects.get(path)
-      effects.set(path, callAll(prev, ...cleanups) as VoidFunction)
-    }
+    return errors
   }
-  function teardownAllEffects(): void {
-    for (const cleanup of effects.values()) cleanup()
+
+  function collectedError(errors: unknown[], message: string): CollectedError {
+    if (errors.length === 1)
+      return { found: true, error: errors[0] }
+    if (errors.length > 1)
+      return { found: true, error: new AggregateError(errors, message, { cause: errors[0] }) }
+    return { found: false }
+  }
+
+  function throwCollectedErrors(errors: unknown[], message: string): void {
+    const result = collectedError(errors, message)
+    if (result.found)
+      throw result.error
+  }
+
+  function rollbackEffectBatch(cleanups: VoidFunction[], setupError: unknown): never {
+    const rollbackErrors = drainEffectCleanups(cleanups)
+    if (!rollbackErrors.length)
+      throw setupError
+    throw new AggregateError(
+      [setupError, ...rollbackErrors],
+      '[xh] 状态机 effect 初始化与回滚同时失败',
+      { cause: setupError },
+    )
+  }
+
+  function mountEffects(path: EffectPath, spec: EffectsOrFn<T> | undefined): boolean {
+    if (effects.has(path)) {
+      const pathLabel = path === ROOT_EFFECT_PATH ? '<machine-root>' : path
+      throw new MachineError(
+        'DUPLICATE_EFFECT_PATH',
+        `effect path "${pathLabel}" is already mounted`,
+        machine.name,
+      )
+    }
+    const cleanups: VoidFunction[] = []
+    const effect: EffectDisposer = {
+      dispose: () => drainEffectCleanups(cleanups),
+    }
+    effects.set(path, effect)
+
+    let names: string[] = []
+    try {
+      names = resolveList(spec, currentEvent)
+      for (const name of names) {
+        if (status === 'Stopped' || effects.get(path) !== effect)
+          break
+        const impl = machine.implementations?.effects?.[name as Slice<T, 'effect'> & string]
+        if (!impl) {
+          failClosed('MISSING_EFFECT', name)
+          continue
+        }
+        const cleanup = impl(paramsFor(currentEvent))
+        if (typeof cleanup === 'function')
+          cleanups.push(cleanup)
+      }
+    }
+    catch (setupError) {
+      if (effects.get(path) === effect)
+        effects.delete(path)
+      rollbackEffectBatch(cleanups, setupError)
+    }
+
+    if (status === 'Stopped' || effects.get(path) !== effect) {
+      if (effects.get(path) === effect)
+        effects.delete(path)
+      throwCollectedErrors(effect.dispose(), '[xh] 状态机 effect 挂载中断期间清理出现多个异常')
+      return false
+    }
+
+    if (!names.length && effects.get(path) === effect)
+      effects.delete(path)
+    return true
+  }
+
+  function disposeMountedEffect(path: string): void {
+    const effect = effects.get(path)
+    effects.delete(path)
+    if (effect)
+      throwCollectedErrors(effect.dispose(), '[xh] 状态机 effect 清理出现多个异常')
+  }
+
+  function teardownAllEffects(): unknown[] {
+    const mounted = [...effects.values()].reverse()
     effects.clear()
+    return mounted.flatMap(effect => effect.dispose())
   }
 
   // —— 六阶段编排 ——
-  function choreograph(from: string, to: string, t: Transition<T>): void {
-    const { exiting, entering } = getExitEnterStates(machine, from, to, t.reenter)
+  function choreograph(from: string | null, to: string, t: Transition<T>): void {
+    const initializing = from === null
+    const { exiting, entering } = initializing
+      ? { exiting: [], entering: getStateChain(machine, to) }
+      : getExitEnterStates(machine, from, to, t.reenter)
     try {
-      for (const item of exiting) {
-        const cleanup = effects.get(item.path)
-        if (cleanup)
-          cleanup()
-        effects.delete(item.path)
-      }
+      for (const item of exiting)
+        disposeMountedEffect(item.path)
       for (const item of exiting) runActions(item.node.exit, currentEvent)
       runActions(t.actions, currentEvent)
-      for (const item of entering) mountEffects(item.path, item.node.effects)
-      if (from === INIT_STATE) {
-        runActions(machine.entry, currentEvent)
-        mountEffects(INIT_STATE, machine.effects)
+      for (const item of entering) {
+        if (!mountEffects(item.path, item.node.effects))
+          return
       }
-      for (const item of entering) runActions(item.node.entry, currentEvent)
-      previousState = from === INIT_STATE ? undefined : (from as T['state'])
+      if (initializing) {
+        runActions(machine.entry, currentEvent)
+        if (status === 'Stopped' || !mountEffects(ROOT_EFFECT_PATH, machine.effects))
+          return
+      }
+      for (const item of entering) {
+        runActions(item.node.entry, currentEvent)
+        if (status === 'Stopped')
+          return
+      }
+      previousState = initializing ? undefined : (from as T['state'])
       currentState = to
       stateCell.set(to)
     }
     catch (err) {
-      stop(new MachineError('MACHINE_CRASHED', `choreograph ${from}→${to} threw: ${(err as Error).message}`, machine.name))
+      stop(new MachineError(
+        'MACHINE_CRASHED',
+        `choreograph ${initializing ? '<initial>' : from}→${to} threw: ${describeThrown(err)}`,
+        machine.name,
+        { cause: err },
+      ))
     }
   }
 
@@ -288,6 +399,8 @@ export function createService<T extends MachineSchema>(
     runtime.track(deps, () => enqueueTracker(tracker))
   }
   function enqueueTracker(tracker: Tracker): void {
+    if (status === 'Stopped')
+      return
     pendingTrackers.add(tracker)
     // 挂载前不冲刷，累积到 onMount 的 resync + drain 里统一消费
     if (!draining && status === 'Started')
@@ -327,28 +440,88 @@ export function createService<T extends MachineSchema>(
   })
 
   // —— 生命周期 ——
-  function stop(reason?: unknown): void {
+  function stop(reason: unknown | typeof NO_STOP_REASON = NO_STOP_REASON): void {
     if (status !== 'Started') {
       status = 'Stopped'
+      queue.length = 0
+      pendingTrackers.clear()
+      if (reason !== NO_STOP_REASON) {
+        reportMachineCrash(reason, machine.name)
+        throw reason
+      }
       return
     }
-    teardownAllEffects()
-    runActions(machine.exit, currentEvent)
     status = 'Stopped'
-    if (reason) {
-      reportMachineCrash(reason, machine.name)
-      if (isDev())
-        throw reason
+    queue.length = 0
+    pendingTrackers.clear()
+
+    const lifecycleErrors: unknown[] = []
+    try {
+      lifecycleErrors.push(...teardownAllEffects())
+    }
+    catch (error) {
+      lifecycleErrors.push(error)
+    }
+    try {
+      runActions(machine.exit, currentEvent)
+    }
+    catch (error) {
+      lifecycleErrors.push(error)
+    }
+
+    if (reason !== NO_STOP_REASON) {
+      const crashResult = collectedError(
+        [reason, ...lifecycleErrors],
+        '[xh] 状态机崩溃与停止清理同时出现异常',
+      )
+      if (!crashResult.found)
+        return
+      reportMachineCrash(crashResult.error, machine.name)
+      if (lifecycleErrors.length || isDev())
+        throw crashResult.error
+      return
+    }
+    const lifecycleResult = collectedError(lifecycleErrors, '[xh] 状态机停止清理出现多个异常')
+    if (lifecycleResult.found) {
+      reportMachineCrash(lifecycleResult.error, machine.name)
+      throw lifecycleResult.error
     }
   }
 
   runtime.onMount(() => {
     if (runtime.isServer)
       return
+    if (status === 'Started') {
+      const invariant = new MachineError(
+        'DUPLICATE_SERVICE_MOUNT',
+        'service mount hook was invoked more than once',
+        machine.name,
+      )
+      stop(new MachineError(
+        'MACHINE_CRASHED',
+        `mount threw: ${invariant.message}`,
+        machine.name,
+        { cause: invariant },
+      ))
+      return
+    }
+    if (status === 'Stopped')
+      return
+
     status = 'Started'
-    resyncTrackers()
-    choreograph(INIT_STATE, initialStateValue, {} as Transition<T>)
-    drainTrackers()
+    draining = true
+    try {
+      resyncTrackers()
+      choreograph(null, initialStateValue, {} as Transition<T>)
+      if (status === 'Started')
+        drainTrackers()
+    }
+    finally {
+      draining = false
+      stepGuard = 0
+    }
+    if (status === 'Started' && queue.length)
+      drain()
   })
   runtime.onCleanup(() => stop())
 
