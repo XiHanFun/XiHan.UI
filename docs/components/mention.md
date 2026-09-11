@@ -25,6 +25,8 @@
 - 候选还在取且当前没有可见项时由 `loading` 顶上来，空态让位；已有候选时列表保持可见可操作，只由 `aria-busy` 报后台刷新。
 - 带 `hidden` 的候选不参与计数、高亮、方向键或 Enter；全部隐藏后会清掉 `aria-activedescendant`，不会提交不可见旧项。
 - `name` 让整段正文随表单提交，表单重置回落到 `defaultValue`。
+- 正文输入保持实体，唯一候选面使用 M2 磨砂与细顶光；空态和加载文字位于材质上方，不另画框。
+  浮层使用四向短位移，不缩放文字；增强对比度切为实体，减弱动效取消位移。
 
 ## 示例
 
@@ -257,7 +259,7 @@ variant 换正文框的描边与底色，候选面板不受影响
 
 ## 动效
 
-关键帧 `xh-overlay-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

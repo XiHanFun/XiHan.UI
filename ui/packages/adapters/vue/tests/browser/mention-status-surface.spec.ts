@@ -69,12 +69,13 @@ function finishAnimations(element: HTMLElement): void {
     animation.finish()
 }
 
-function mountMention(withStatus = true, hiddenCandidate = false) {
+function mountMention(withStatus = true, hiddenCandidate = false, theme: 'light' | 'dark' = 'light') {
   const collection = ref<MentionNode[]>(hiddenCandidate ? [{ value: 'hidden', label: '隐藏候选' }] : [])
   const loading = ref(false)
   const value = ref('')
 
   host = document.createElement('div')
+  host.dataset.theme = theme
   document.body.append(host)
   app = createApp({
     render: () => h(XhMentionRoot, {
@@ -125,6 +126,58 @@ afterEach(() => {
 })
 
 describe('mention 单一状态表面', () => {
+  it.each(['light', 'dark'] as const)('%s：输入实体、候选面磨砂，状态文字保持在面板上方', async (theme) => {
+    const state = mountMention(true, false, theme)
+    await typeMention('@nobody')
+    const content = byTestId('content')
+    const empty = byTestId('empty')
+    finishAnimations(content)
+    expect(alpha(getComputedStyle(byTestId('input')).backgroundColor)).toBe(255)
+    expect(getComputedStyle(byTestId('input')).backdropFilter).toBe('none')
+    expect(getComputedStyle(content).backdropFilter).toContain('blur(16px)')
+    expect(alpha(getComputedStyle(content).backgroundColor)).toBeLessThan(255)
+    expect(alpha(getComputedStyle(content, '::before').backgroundColor)).toBeGreaterThan(0)
+    // 临时允许命中状态层以核验实际绘制顺序，避免只有几何正确、文字却被材质壳覆盖。
+    empty.style.pointerEvents = 'auto'
+    const rect = empty.getBoundingClientRect()
+    expect(document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)).toBe(empty)
+    state.loading.value = true
+    await settle()
+    const loading = byTestId('loading')
+    loading.style.pointerEvents = 'auto'
+    const loadingRect = loading.getBoundingClientRect()
+    expect(document.elementFromPoint(loadingRect.left + loadingRect.width / 2, loadingRect.top + loadingRect.height / 2)).toBe(loading)
+    const positioner = content.parentElement!
+    positioner.dataset.contrast = 'more'
+    expect(getComputedStyle(content).backdropFilter).toBe('none')
+    expect(alpha(getComputedStyle(content).backgroundColor)).toBe(255)
+    expect(alpha(getComputedStyle(content, '::before').backgroundColor)).toBe(0)
+  })
+
+  it('窄空间下壳和状态层共同收窄，嵌套方向隔离并支持减弱动效', async () => {
+    mountMention()
+    await typeMention('@none')
+    const content = byTestId('content')
+    finishAnimations(content)
+    const outer = content.parentElement!
+    outer.style.setProperty('--xh-_mention-available-w', '140px')
+    content.style.setProperty('--xh-mention-content-min-w', '300px')
+    expect(content.getBoundingClientRect().width).toBeLessThanOrEqual(140)
+    expectSameRect(content, byTestId('empty'))
+    outer.dataset.placement = 'bottom-start'
+    const inner = document.createElement('div')
+    inner.dataset.scope = 'mention'
+    inner.dataset.part = 'positioner'
+    inner.dataset.placement = 'top-start'
+    outer.append(inner)
+    expect(['up', 'down', 'left', 'right'].map(side =>
+      getComputedStyle(inner).getPropertyValue(`--xh-_overlay-enter-${side}`).trim())).toEqual(['0', '1', '0', '0'])
+    outer.dataset.motion = 'reduce'
+    expect(getComputedStyle(content).animationDuration).toBe('0.001s')
+    expect(getComputedStyle(content).scale).toBe('none')
+    expect(getComputedStyle(content).getPropertyValue('--xh-motion-distance-sm').trim()).toBe('0px')
+  })
+
   it('零候选与 loading 共用唯一 content 表面，候选到达后状态层让位', async () => {
     const state = mountMention()
     await typeMention('@li')
@@ -193,7 +246,7 @@ describe('mention 单一状态表面', () => {
     expect(input.getAttribute('aria-expanded')).toBe('false')
     expect(content.getAttribute('data-state')).toBe('closed')
     expect(getComputedStyle(content).display).not.toBe('none')
-    expect(getComputedStyle(content).animationName).toBe('xh-pop-out')
+    expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-out')
     expect(content.getBoundingClientRect().height).toBeGreaterThanOrEqual(minimum * 0.9)
   })
 })
