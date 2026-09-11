@@ -18,6 +18,11 @@
 - `selectionMode` 支持单选与区间；区间的两端各有自己的 `name`。
 - `isDateUnavailable` 逐日判断可选性。
 - `presets` 在浮层里排出一列快捷选项（今天 / 近 7 天 / 本月），点一下整份写进去。
+- 快捷项与 `showTime` 的时 / 分 / 秒选项统一由逻辑末端对号表示持久选值；正文保持普通颜色和字重，
+  悬停与键盘焦点才铺中性底。日期格、范围连片和预览仍由内嵌 Calendar 的独立状态表达。
+- 时间数字两侧保留等宽标记轨，数字保持在整行数学中心；RTL 只把对号翻到另一侧，不移动数字。
+- 禁用态同步压低正文与对号，并停止 hover 反馈；forced-colors 下对号改用系统前景色，禁用标记使用
+  `GrayText`，与公共选中轮廓形成两条独立通道。
 - `closeOnSelect` 决定选完就关还是等确认。
 
 ## 示例
@@ -283,6 +288,8 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 
 默认皮肤 `@xihan-ui/styles/date-picker.css` 按部件选择：`[data-scope="date-picker"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ## 数据属性
 
 由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
@@ -334,11 +341,11 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-date-picker-action-bg` · `--xh-date-picker-action-bg-active` · `--xh-date-picker-action-bg-hover` · `--xh-date-picker-action-fg` · `--xh-date-picker-action-fg-hover` · `--xh-date-picker-action-font-size` · `--xh-date-picker-action-radius` · `--xh-date-picker-action-size` · `--xh-date-picker-calendar-gap` · `--xh-date-picker-column-divider` · `--xh-date-picker-confirm-trigger-bg` · `--xh-date-picker-confirm-trigger-bg-active` · `--xh-date-picker-confirm-trigger-bg-hover` · `--xh-date-picker-confirm-trigger-fg` · `--xh-date-picker-confirm-trigger-h` · `--xh-date-picker-confirm-trigger-px` · `--xh-date-picker-confirm-trigger-radius` · `--xh-date-picker-confirm-trigger-shadow` · `--xh-date-picker-content-bg` · `--xh-date-picker-content-border` · `--xh-date-picker-content-fg` · `--xh-date-picker-content-px` · `--xh-date-picker-content-py` · `--xh-date-picker-content-radius` · `--xh-date-picker-content-shadow` · `--xh-date-picker-control-bg` · `--xh-date-picker-control-bg-disabled` · `--xh-date-picker-control-bg-hover` · `--xh-date-picker-control-bg-readonly` · `--xh-date-picker-control-border` · `--xh-date-picker-control-border-focus` · `--xh-date-picker-control-border-hover` · `--xh-date-picker-control-border-invalid` · `--xh-date-picker-control-fg` · `--xh-date-picker-control-gap` · `--xh-date-picker-control-h` · `--xh-date-picker-control-min-w` · `--xh-date-picker-control-px` · `--xh-date-picker-control-radius` · `--xh-date-picker-control-shadow` · `--xh-date-picker-font-size` · `--xh-date-picker-gap` · `--xh-date-picker-icon-size` · `--xh-date-picker-label-fg` · `--xh-date-picker-label-fg-disabled` · `--xh-date-picker-label-font-size` · `--xh-date-picker-label-font-weight` · `--xh-date-picker-layer` · `--xh-date-picker-max-h` · `--xh-date-picker-panel-divider` · `--xh-date-picker-panel-gap` · `--xh-date-picker-preset-bg-hover` · `--xh-date-picker-preset-bg-selected` · `--xh-date-picker-preset-fg-disabled` · `--xh-date-picker-preset-fg-selected` · `--xh-date-picker-preset-group-gap` · `--xh-date-picker-preset-group-h` · `--xh-date-picker-preset-group-padding` · `--xh-date-picker-preset-px` · `--xh-date-picker-preset-py` · `--xh-date-picker-preset-radius` · `--xh-date-picker-time-column-gap` · `--xh-date-picker-time-column-h` · `--xh-date-picker-time-column-padding` · `--xh-date-picker-time-item-bg-hover` · `--xh-date-picker-time-item-bg-selected` · `--xh-date-picker-time-item-fg-selected` · `--xh-date-picker-time-item-px` · `--xh-date-picker-time-item-py` · `--xh-date-picker-time-item-radius`
+`--xh-date-picker-action-bg` · `--xh-date-picker-action-bg-active` · `--xh-date-picker-action-bg-hover` · `--xh-date-picker-action-fg` · `--xh-date-picker-action-fg-hover` · `--xh-date-picker-action-font-size` · `--xh-date-picker-action-radius` · `--xh-date-picker-action-size` · `--xh-date-picker-calendar-gap` · `--xh-date-picker-column-divider` · `--xh-date-picker-confirm-trigger-bg` · `--xh-date-picker-confirm-trigger-bg-active` · `--xh-date-picker-confirm-trigger-bg-hover` · `--xh-date-picker-confirm-trigger-fg` · `--xh-date-picker-confirm-trigger-h` · `--xh-date-picker-confirm-trigger-px` · `--xh-date-picker-confirm-trigger-radius` · `--xh-date-picker-confirm-trigger-shadow` · `--xh-date-picker-content-bg` · `--xh-date-picker-content-border` · `--xh-date-picker-content-fg` · `--xh-date-picker-content-px` · `--xh-date-picker-content-py` · `--xh-date-picker-content-radius` · `--xh-date-picker-content-shadow` · `--xh-date-picker-control-bg` · `--xh-date-picker-control-bg-disabled` · `--xh-date-picker-control-bg-hover` · `--xh-date-picker-control-bg-readonly` · `--xh-date-picker-control-border` · `--xh-date-picker-control-border-focus` · `--xh-date-picker-control-border-hover` · `--xh-date-picker-control-border-invalid` · `--xh-date-picker-control-fg` · `--xh-date-picker-control-gap` · `--xh-date-picker-control-h` · `--xh-date-picker-control-min-w` · `--xh-date-picker-control-px` · `--xh-date-picker-control-radius` · `--xh-date-picker-control-shadow` · `--xh-date-picker-font-size` · `--xh-date-picker-gap` · `--xh-date-picker-icon-size` · `--xh-date-picker-label-fg` · `--xh-date-picker-label-fg-disabled` · `--xh-date-picker-label-font-size` · `--xh-date-picker-label-font-weight` · `--xh-date-picker-layer` · `--xh-date-picker-max-h` · `--xh-date-picker-panel-divider` · `--xh-date-picker-panel-gap` · `--xh-date-picker-preset-bg-hover` · `--xh-date-picker-preset-check-fg` · `--xh-date-picker-preset-check-size` · `--xh-date-picker-preset-fg-disabled` · `--xh-date-picker-preset-fg-selected` · `--xh-date-picker-preset-group-gap` · `--xh-date-picker-preset-group-h` · `--xh-date-picker-preset-group-padding` · `--xh-date-picker-preset-px` · `--xh-date-picker-preset-py` · `--xh-date-picker-preset-radius` · `--xh-date-picker-time-column-gap` · `--xh-date-picker-time-column-h` · `--xh-date-picker-time-column-padding` · `--xh-date-picker-time-item-bg-hover` · `--xh-date-picker-time-item-check-fg` · `--xh-date-picker-time-item-check-size` · `--xh-date-picker-time-item-fg-selected` · `--xh-date-picker-time-item-px` · `--xh-date-picker-time-item-py` · `--xh-date-picker-time-item-radius`
 
 ## 动效
 
-关键帧 `xh-overlay-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -360,6 +367,8 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 
 - 区间选择要显示已选天数，用户在挑的往往是"多长"而不是"哪两天"。
 - 不可选的日子要给出原因（已约满、超出范围），只置灰用户会反复点。
+- 自定义快捷项或时间项时，用 `--xh-date-picker-*-check-size` / `*-check-fg` 调整末端对号；不要重新
+  给持久选中铺品牌底，否则会与悬停、焦点以及 Calendar 的日期范围视觉混为一层。
 
 ## 反模式
 

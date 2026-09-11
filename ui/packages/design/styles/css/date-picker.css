@@ -69,17 +69,15 @@
     /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
     --xh-_date-picker-control-shadow: var(--xh-elevation-raised);
 
-    /* 聚焦环、时间列选中与确认按钮随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，
+    /* 聚焦环、选中对号与确认按钮随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，
        退回原来的焦点色与品牌色 */
     --xh-_date-picker-ring: var(--xh-ring-focus);
     --xh-_date-picker-accent: var(--xh-_tone, var(--xh-bg-brand));
     --xh-_date-picker-accent-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
     --xh-_date-picker-accent-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
     --xh-_date-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
-    --xh-_date-picker-accent-subtle: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-    /* 淡底上的字与实心底上的字是两档：--xh-_tone-fg 是语气层为淡底配的那一档，
-       没写 data-tone 时退到 fg-brand-strong——fg-brand（600）压在 brand-100 上只有 4.21 */
-    --xh-_date-picker-accent-subtle-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+    /* 对号画在普通面上，取语气前景角色，不能拿确认按钮的实心背景色充当前景。 */
+    --xh-_date-picker-check-fg: var(--xh-_tone, var(--xh-fg-brand));
     /* 确认按钮是面板里唯一的实心块，顶边画一条极浅的内高光把它衬出厚度 */
     --xh-_date-picker-confirm-highlight: inset 0 var(--xh-stroke-thin) 0 0
       color-mix(in oklab, var(--xh-_date-picker-accent-fg) 14%, transparent);
@@ -487,30 +485,68 @@
 
   [data-scope='date-picker'][data-part='preset'] {
     /* 横着排那一档不许被压扁：条目文本本来就不折行 */
+    position: relative;
     flex: none;
     padding-block: var(--xh-date-picker-preset-py, var(--xh-space-1));
     padding-inline: var(--xh-date-picker-preset-px, var(--xh-space-3));
+    /* 对号的末端轨始终留着，切换选中时文字与整列宽度都不移动。 */
+    padding-inline-end: calc(
+      var(--xh-date-picker-preset-px, var(--xh-space-3)) +
+        var(--xh-date-picker-preset-check-size, var(--xh-glyph-size-sm)) +
+        var(--xh-space-1)
+    );
     border-radius: var(--xh-date-picker-preset-radius, var(--xh-shape-control));
     font-size: var(--xh-text-secondary-size);
     line-height: var(--xh-leading-normal);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 悬停与键盘锚点共用中性轻档，命中那一条才走品牌淡底——两档靠色相分家；禁用的不响应悬停 */
-  [data-scope='date-picker'][data-part='preset']:hover:not([data-disabled]) {
+  /* 悬停与键盘焦点共用中性底；持久选中只由末端对号表达。 */
+  [data-scope='date-picker'][data-part='preset']:not([data-disabled]):is(:hover, :focus-visible) {
     background: var(--xh-date-picker-preset-bg-hover, var(--xh-bg-subtle));
   }
 
+  [data-scope='date-picker'][data-part='preset']:focus-visible {
+    transition-property: color;
+  }
+
   [data-scope='date-picker'][data-part='preset'][data-state='checked'] {
-    background: var(--xh-date-picker-preset-bg-selected, var(--xh-_date-picker-accent-subtle));
-    color: var(--xh-date-picker-preset-fg-selected, var(--xh-_date-picker-accent-subtle-fg));
-    font-weight: var(--xh-font-weight-medium);
+    color: var(--xh-date-picker-preset-fg-selected, inherit);
+    font-weight: var(--xh-font-weight-regular);
+  }
+
+  [data-scope='date-picker'][data-part='preset']::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: var(--xh-date-picker-preset-px, var(--xh-space-3));
+    inline-size: var(--xh-date-picker-preset-check-size, var(--xh-glyph-size-sm));
+    block-size: var(--xh-date-picker-preset-check-size, var(--xh-glyph-size-sm));
+    translate: 0 -50%;
+    background-color: var(--xh-date-picker-preset-check-fg, var(--xh-_date-picker-check-fg));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  }
+
+  [data-scope='date-picker'][data-part='preset'][data-state='checked']::after {
+    opacity: 1;
   }
 
   [data-scope='date-picker'][data-part='preset'][data-disabled] {
     color: var(--xh-date-picker-preset-fg-disabled, var(--xh-fg-disabled));
+    cursor: not-allowed;
+  }
+
+  [data-scope='date-picker'][data-part='preset'][data-disabled]::after {
+    background-color: var(--xh-date-picker-preset-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* —— showTime：时间列贴在日历右侧、逐列滚动，确认按钮收口 ——
@@ -531,24 +567,70 @@
   }
 
   [data-scope='date-picker'][data-part='time-item'] {
+    position: relative;
     padding-block: var(--xh-date-picker-time-item-py, var(--xh-space-1));
-    padding-inline: var(--xh-date-picker-time-item-px, var(--xh-space-3));
+    /* 左右两轨等宽：末端放对号，起始端留同宽空轨，数字仍在整行数学中心。 */
+    padding-inline: calc(
+      var(--xh-date-picker-time-item-px, var(--xh-space-3)) +
+        var(--xh-date-picker-time-item-check-size, var(--xh-glyph-size-sm)) +
+        var(--xh-space-1)
+    );
     border-radius: var(--xh-date-picker-time-item-radius, var(--xh-shape-control));
     font-size: var(--xh-text-secondary-size);
     line-height: var(--xh-leading-normal);
+    font-variant-numeric: tabular-nums;
     text-align: center;
     cursor: pointer;
     user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='date-picker'][data-part='time-item']:hover {
+  [data-scope='date-picker'][data-part='time-column']:not([aria-disabled='true']) [data-part='time-item']:is(
+      :hover,
+      :focus-visible
+    ) {
     background: var(--xh-date-picker-time-item-bg-hover, var(--xh-bg-subtle));
   }
 
+  [data-scope='date-picker'][data-part='time-item']:focus-visible {
+    transition-property: color;
+  }
+
   [data-scope='date-picker'][data-part='time-item'][data-state='checked'] {
-    background: var(--xh-date-picker-time-item-bg-selected, var(--xh-_date-picker-accent-subtle));
-    color: var(--xh-date-picker-time-item-fg-selected, var(--xh-_date-picker-accent-subtle-fg));
-    font-weight: var(--xh-font-weight-medium);
+    color: var(--xh-date-picker-time-item-fg-selected, inherit);
+    font-weight: var(--xh-font-weight-regular);
+  }
+
+  [data-scope='date-picker'][data-part='time-item']::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    /* 标记留在原内衬位置，新增的 marker + gap 正好隔开正文与对号。 */
+    inset-inline-end: var(--xh-date-picker-time-item-px, var(--xh-space-3));
+    inline-size: var(--xh-date-picker-time-item-check-size, var(--xh-glyph-size-sm));
+    block-size: var(--xh-date-picker-time-item-check-size, var(--xh-glyph-size-sm));
+    translate: 0 -50%;
+    background-color: var(--xh-date-picker-time-item-check-fg, var(--xh-_date-picker-check-fg));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  }
+
+  [data-scope='date-picker'][data-part='time-item'][data-state='checked']::after {
+    opacity: 1;
+  }
+
+  [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item'] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item']::after {
+    background-color: var(--xh-fg-disabled);
   }
 
   /* 槽名统一按部件取 --xh-date-picker-confirm-trigger-* */
@@ -612,6 +694,25 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-calendar) center / contain no-repeat;
     mask: var(--xh-glyph-mark-calendar) center / contain no-repeat;
+  }
+
+  @media (forced-colors: active) {
+    /* 系统接管底色后仍保住末端对号；禁用标记改用系统失效色。 */
+    [data-scope='date-picker'][data-part='preset']::after,
+    [data-scope='date-picker'][data-part='time-item']::after {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+    }
+
+    [data-scope='date-picker'][data-part='preset'][data-disabled]::after,
+    [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item']::after {
+      background-color: GrayText;
+    }
+
+    [data-scope='date-picker'][data-part='preset'][data-disabled],
+    [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item'] {
+      color: GrayText;
+    }
   }
 }
 

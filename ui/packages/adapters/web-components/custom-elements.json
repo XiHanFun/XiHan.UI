@@ -12700,7 +12700,10 @@
               "name": "--xh-date-picker-preset-bg-hover"
             },
             {
-              "name": "--xh-date-picker-preset-bg-selected"
+              "name": "--xh-date-picker-preset-check-fg"
+            },
+            {
+              "name": "--xh-date-picker-preset-check-size"
             },
             {
               "name": "--xh-date-picker-preset-fg-disabled"
@@ -12739,7 +12742,10 @@
               "name": "--xh-date-picker-time-item-bg-hover"
             },
             {
-              "name": "--xh-date-picker-time-item-bg-selected"
+              "name": "--xh-date-picker-time-item-check-fg"
+            },
+            {
+              "name": "--xh-date-picker-time-item-check-size"
             },
             {
               "name": "--xh-date-picker-time-item-fg-selected"
