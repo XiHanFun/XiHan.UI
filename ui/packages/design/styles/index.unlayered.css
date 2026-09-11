@@ -32256,12 +32256,12 @@
   /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
   --xh-_time-picker-control-shadow: var(--xh-elevation-raised);
 
-  /* 聚焦环、段位反白与列里的选中随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，
-     退回原来的焦点色与品牌色 */
+  /* 聚焦环、段位反白与选中对号随语气走。段位需要实底与反白两支；
+     对号是画在普通表面上的前景色，不借用背景色角色。 */
   --xh-_time-picker-ring: var(--xh-ring-focus);
   --xh-_time-picker-accent: var(--xh-_tone, var(--xh-bg-brand));
-  --xh-_time-picker-accent-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
   --xh-_time-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  --xh-_time-picker-check-fg: var(--xh-_tone, var(--xh-fg-brand));
 }
 
 /* 与文本框、时间输入同一套堆叠：标签一行、控件一行 */
@@ -32597,45 +32597,72 @@
 }
 
 [data-scope='time-picker'][data-part='preset'] {
+  position: relative;
+  display: flex;
+  align-items: center;
   padding-block: var(--xh-time-picker-preset-py, var(--xh-space-1));
-  padding-inline: var(--xh-time-picker-preset-px, var(--xh-space-3));
+  padding-inline-start: var(--xh-time-picker-preset-px, var(--xh-space-3));
+  padding-inline-end: calc(
+    var(--xh-time-picker-preset-px, var(--xh-space-3))
+    + var(--xh-time-picker-preset-check-size, var(--xh-glyph-size-sm))
+    + var(--xh-space-1)
+  );
   border-radius: var(--xh-time-picker-preset-radius, var(--xh-shape-control));
+  color: var(--xh-time-picker-preset-fg, var(--xh-fg-default));
   font-size: var(--xh-text-secondary-size);
   line-height: var(--xh-leading-normal);
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 悬停与键盘锚点共用中性轻档，命中那一条才走品牌底；禁用的不响应悬停 */
-[data-scope='time-picker'][data-part='preset']:hover:not([data-disabled]) {
+/* 对号是 preset 自身的正式选中出口：全部条目恒留末端轨，不依赖作者补节点。 */
+[data-scope='time-picker'][data-part='preset']::after {
+  content: '';
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: var(--xh-time-picker-preset-px, var(--xh-space-3));
+  inline-size: var(--xh-time-picker-preset-check-size, var(--xh-glyph-size-sm));
+  block-size: var(--xh-time-picker-preset-check-size, var(--xh-glyph-size-sm));
+  background-color: var(--xh-time-picker-preset-check-fg, var(--xh-_time-picker-check-fg));
+  opacity: 0;
+  translate: 0 -50%;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  pointer-events: none;
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* preset 用真实 DOM 焦点导航；hover 与 focus-visible 共用中性实体底。 */
+[data-scope='time-picker'][data-part='preset']:not([data-disabled]):is(:hover, :focus-visible) {
   background: var(--xh-time-picker-preset-bg-hover, var(--xh-bg-subtle));
 }
 
-/* 命中的那一条与选中的格子同一副实心底：同一份浮层里两种「选中」不该长成两个样 */
+/* 命中只显示对号；正文不反白、不增重，底色通道留给临时交互状态。 */
 [data-scope='time-picker'][data-part='preset'][data-state='checked'] {
-  background: var(--xh-time-picker-preset-bg-checked, var(--xh-_time-picker-accent));
-  color: var(--xh-time-picker-preset-fg-checked, var(--xh-_time-picker-accent-fg));
-  font-weight: var(--xh-font-weight-medium);
+  color: var(--xh-time-picker-preset-fg-checked, var(--xh-time-picker-preset-fg, var(--xh-fg-default)));
+  font-weight: var(--xh-font-weight-regular);
 }
 
-/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='time-picker'][data-part='preset'][data-state='checked']:not([data-disabled]):focus-visible {
-  --xh-_ring-color: currentColor;
+[data-scope='time-picker'][data-part='preset'][data-state='checked']::after {
+  opacity: 1;
 }
 
-/* 置灰只换字色、面仍是实心底：环取面配对的那支前景色，不取被换掉的置灰色 */
-[data-scope='time-picker'][data-part='preset'][data-state='checked'][data-disabled]:focus-visible {
-  --xh-_ring-color: var(--xh-time-picker-preset-fg-checked, var(--xh-_time-picker-accent-fg));
-}
-
-[data-scope='time-picker'][data-part='preset'][data-state='checked']:hover:not([data-disabled]) {
-  background: var(--xh-time-picker-preset-bg-checked-hover, var(--xh-_time-picker-accent-hover));
+/* 键盘焦点出现时中性底立即落定，焦点环不会先压在透明面上。 */
+[data-scope='time-picker'][data-part='preset']:focus-visible {
+  transition-property: color;
 }
 
 [data-scope='time-picker'][data-part='preset'][data-disabled] {
   color: var(--xh-time-picker-preset-fg-disabled, var(--xh-fg-disabled));
+  cursor: not-allowed;
+}
+
+[data-scope='time-picker'][data-part='preset'][data-disabled]::after {
+  background-color: var(--xh-fg-disabled);
 }
 
 /* 一列一个滚动区：列与列之间用细分隔线，视觉上"时 | 分 | 秒"三栏分明 */
@@ -32674,12 +32701,18 @@
 }
 
 [data-scope='time-picker'][data-part='item'] {
+  position: relative;
   display: flex;
   flex: none;
   align-items: center;
   justify-content: center;
   padding-block: var(--xh-time-picker-item-py, var(--xh-list-option-py-md));
-  padding-inline: var(--xh-time-picker-item-px, var(--xh-_time-picker-item-px));
+  /* 两侧留同宽轨：对号绝对落在末端，数字仍在整格的数学中心。 */
+  padding-inline: calc(
+    var(--xh-time-picker-item-px, var(--xh-_time-picker-item-px))
+    + var(--xh-time-picker-item-check-size, var(--xh-glyph-size-sm))
+    + var(--xh-space-1)
+  );
   border-radius: var(--xh-time-picker-item-radius, var(--xh-shape-control));
   color: var(--xh-time-picker-item-fg, var(--xh-fg-default));
   font-size: var(--xh-time-picker-item-font-size, var(--xh-_time-picker-font-size));
@@ -32698,41 +32731,65 @@
   display: none;
 }
 
+[data-scope='time-picker'][data-part='item']::after {
+  content: '';
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: var(--xh-time-picker-item-px, var(--xh-_time-picker-item-px));
+  inline-size: var(--xh-time-picker-item-check-size, var(--xh-glyph-size-sm));
+  block-size: var(--xh-time-picker-item-check-size, var(--xh-glyph-size-sm));
+  background-color: var(--xh-time-picker-item-check-fg, var(--xh-_time-picker-check-fg));
+  opacity: 0;
+  translate: 0 -50%;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  pointer-events: none;
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
 /* 悬停与键盘锚点共用中性灰轻档；焦点所在与选中互相独立：可以停在一个没被选中的格上 */
 [data-scope='time-picker'][data-part='item'][data-highlighted]:not([data-disabled]),
-[data-scope='time-picker'][data-part='item']:hover:not([data-disabled]) {
+[data-scope='time-picker'][data-part='item']:not([data-disabled]):is(:hover, :focus-visible) {
   background: var(--xh-time-picker-item-bg-hover, var(--xh-bg-subtle));
 }
 
+/* 选中只画对号，正文与静止底保持普通态。 */
 [data-scope='time-picker'][data-part='item'][data-state='checked'] {
-  background: var(--xh-time-picker-item-bg-checked, var(--xh-_time-picker-accent));
-  color: var(--xh-time-picker-item-fg-checked, var(--xh-_time-picker-accent-fg));
-  font-weight: var(--xh-time-picker-item-weight-checked, var(--xh-font-weight-medium));
+  color: var(--xh-time-picker-item-fg-checked, var(--xh-time-picker-item-fg, var(--xh-fg-default)));
+  font-weight: var(--xh-time-picker-item-weight-checked, var(--xh-font-weight-regular));
 }
 
-/* 选中格上再落焦点或悬停时，底色留在品牌色一侧：上面那条中性轻档的选择器更具体，
-   不写这条就只有底色被换走、文字仍是品牌底上的反白色 */
-[data-scope='time-picker'][data-part='item'][data-state='checked'][data-highlighted]:not([data-disabled]),
-[data-scope='time-picker'][data-part='item'][data-state='checked']:hover:not([data-disabled]) {
-  background: var(--xh-time-picker-item-bg-checked-hover, var(--xh-_time-picker-accent-hover));
+[data-scope='time-picker'][data-part='item'][data-state='checked']::after {
+  opacity: 1;
 }
 
-/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-   没选中的格底是透空或淡底，不在这一条里，环走公共层的默认色 */
-[data-scope='time-picker'][data-part='item'][data-state='checked']:not([data-disabled]):focus-visible {
-  --xh-_ring-color: currentColor;
-}
-
-/* 置灰只换字色、面仍是实心底：环取面配对的那支前景色，不取被换掉的置灰色 */
-[data-scope='time-picker'][data-part='item'][data-state='checked'][data-disabled]:focus-visible {
-  --xh-_ring-color: var(--xh-time-picker-item-fg-checked, var(--xh-_time-picker-accent-fg));
+[data-scope='time-picker'][data-part='item']:focus-visible {
+  transition-property: color;
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
    所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
 [data-scope='time-picker'][data-part='item'][data-disabled] {
   color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+[data-scope='time-picker'][data-part='item'][data-disabled]::after {
+  background-color: var(--xh-fg-disabled);
+}
+
+@media (forced-colors: active) {
+  /* mask 保留对号轮廓，系统色接管墨色；关闭自动调整避免伪元素底被系统抹成透明。 */
+  [data-scope='time-picker'][data-part='preset']::after,
+  [data-scope='time-picker'][data-part='item']::after {
+    background-color: CanvasText;
+    forced-color-adjust: none;
+  }
+
+  [data-scope='time-picker'][data-part='preset'][data-disabled]::after,
+  [data-scope='time-picker'][data-part='item'][data-disabled]::after {
+    background-color: GrayText;
+  }
 }
 
 /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底

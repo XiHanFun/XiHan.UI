@@ -17,6 +17,8 @@
 - `max` 直接把界外的格从列里裁掉；分列还会随已选的时再裁一遍。
 - `isTimeUnavailable` 逐格判断可选性。
 - 浮层里可以放"此刻"与确认按钮。
+- 快捷选项与时/分/秒列都从当前值恢复持久选中，并统一在逻辑末端显示对号；选中正文保持普通颜色与字重，不铺品牌底。
+- 悬停、键盘高亮与可见焦点使用中性实体底，与选中对号可以同时存在。数字格在左右保留等宽标记轨，选中和 RTL 都不会把数字推离中心。
 
 ## 示例
 
@@ -301,6 +303,8 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 
 默认皮肤 `@xihan-ui/styles/time-picker.css` 按部件选择：`[data-scope="time-picker"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ## 数据属性
 
 由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
@@ -353,11 +357,11 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-time-picker-action-bg` · `--xh-time-picker-action-bg-active` · `--xh-time-picker-action-bg-hover` · `--xh-time-picker-action-fg` · `--xh-time-picker-action-fg-hover` · `--xh-time-picker-action-font-size` · `--xh-time-picker-action-radius` · `--xh-time-picker-action-size` · `--xh-time-picker-column-divider` · `--xh-time-picker-column-gap` · `--xh-time-picker-column-h` · `--xh-time-picker-column-min-w` · `--xh-time-picker-column-px` · `--xh-time-picker-content-bg` · `--xh-time-picker-content-border` · `--xh-time-picker-content-fg` · `--xh-time-picker-content-max-h` · `--xh-time-picker-content-px` · `--xh-time-picker-content-py` · `--xh-time-picker-content-radius` · `--xh-time-picker-content-shadow` · `--xh-time-picker-control-bg` · `--xh-time-picker-control-bg-disabled` · `--xh-time-picker-control-bg-hover` · `--xh-time-picker-control-bg-readonly` · `--xh-time-picker-control-border` · `--xh-time-picker-control-border-focus` · `--xh-time-picker-control-border-hover` · `--xh-time-picker-control-border-invalid` · `--xh-time-picker-control-fg` · `--xh-time-picker-control-gap` · `--xh-time-picker-control-h` · `--xh-time-picker-control-min-w` · `--xh-time-picker-control-px` · `--xh-time-picker-control-radius` · `--xh-time-picker-control-shadow` · `--xh-time-picker-font-size` · `--xh-time-picker-gap` · `--xh-time-picker-icon-size` · `--xh-time-picker-item-bg-checked` · `--xh-time-picker-item-bg-checked-hover` · `--xh-time-picker-item-bg-hover` · `--xh-time-picker-item-fg` · `--xh-time-picker-item-fg-checked` · `--xh-time-picker-item-font-size` · `--xh-time-picker-item-px` · `--xh-time-picker-item-py` · `--xh-time-picker-item-radius` · `--xh-time-picker-item-weight-checked` · `--xh-time-picker-label-fg` · `--xh-time-picker-label-fg-disabled` · `--xh-time-picker-label-font-size` · `--xh-time-picker-label-font-weight` · `--xh-time-picker-layer` · `--xh-time-picker-placeholder-fg` · `--xh-time-picker-preset-bg-checked` · `--xh-time-picker-preset-bg-checked-hover` · `--xh-time-picker-preset-bg-hover` · `--xh-time-picker-preset-fg-checked` · `--xh-time-picker-preset-fg-disabled` · `--xh-time-picker-preset-group-gap` · `--xh-time-picker-preset-group-h` · `--xh-time-picker-preset-group-px` · `--xh-time-picker-preset-px` · `--xh-time-picker-preset-py` · `--xh-time-picker-preset-radius` · `--xh-time-picker-segment-bg-focus` · `--xh-time-picker-segment-bg-hover` · `--xh-time-picker-segment-fg-focus` · `--xh-time-picker-segment-px` · `--xh-time-picker-segment-radius`
+`--xh-time-picker-action-bg` · `--xh-time-picker-action-bg-active` · `--xh-time-picker-action-bg-hover` · `--xh-time-picker-action-fg` · `--xh-time-picker-action-fg-hover` · `--xh-time-picker-action-font-size` · `--xh-time-picker-action-radius` · `--xh-time-picker-action-size` · `--xh-time-picker-column-divider` · `--xh-time-picker-column-gap` · `--xh-time-picker-column-h` · `--xh-time-picker-column-min-w` · `--xh-time-picker-column-px` · `--xh-time-picker-content-bg` · `--xh-time-picker-content-border` · `--xh-time-picker-content-fg` · `--xh-time-picker-content-max-h` · `--xh-time-picker-content-px` · `--xh-time-picker-content-py` · `--xh-time-picker-content-radius` · `--xh-time-picker-content-shadow` · `--xh-time-picker-control-bg` · `--xh-time-picker-control-bg-disabled` · `--xh-time-picker-control-bg-hover` · `--xh-time-picker-control-bg-readonly` · `--xh-time-picker-control-border` · `--xh-time-picker-control-border-focus` · `--xh-time-picker-control-border-hover` · `--xh-time-picker-control-border-invalid` · `--xh-time-picker-control-fg` · `--xh-time-picker-control-gap` · `--xh-time-picker-control-h` · `--xh-time-picker-control-min-w` · `--xh-time-picker-control-px` · `--xh-time-picker-control-radius` · `--xh-time-picker-control-shadow` · `--xh-time-picker-font-size` · `--xh-time-picker-gap` · `--xh-time-picker-icon-size` · `--xh-time-picker-item-bg-hover` · `--xh-time-picker-item-check-fg` · `--xh-time-picker-item-check-size` · `--xh-time-picker-item-fg` · `--xh-time-picker-item-fg-checked` · `--xh-time-picker-item-font-size` · `--xh-time-picker-item-px` · `--xh-time-picker-item-py` · `--xh-time-picker-item-radius` · `--xh-time-picker-item-weight-checked` · `--xh-time-picker-label-fg` · `--xh-time-picker-label-fg-disabled` · `--xh-time-picker-label-font-size` · `--xh-time-picker-label-font-weight` · `--xh-time-picker-layer` · `--xh-time-picker-placeholder-fg` · `--xh-time-picker-preset-bg-hover` · `--xh-time-picker-preset-check-fg` · `--xh-time-picker-preset-check-size` · `--xh-time-picker-preset-fg` · `--xh-time-picker-preset-fg-checked` · `--xh-time-picker-preset-fg-disabled` · `--xh-time-picker-preset-group-gap` · `--xh-time-picker-preset-group-h` · `--xh-time-picker-preset-group-px` · `--xh-time-picker-preset-px` · `--xh-time-picker-preset-py` · `--xh-time-picker-preset-radius` · `--xh-time-picker-segment-bg-focus` · `--xh-time-picker-segment-bg-hover` · `--xh-time-picker-segment-fg-focus` · `--xh-time-picker-segment-px` · `--xh-time-picker-segment-radius`
 
 ## 动效
 
-关键帧 `xh-overlay-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -375,6 +379,7 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 
 - 把不可选的时段裁掉而不是置灰，列会短很多、也更快找到。
 - 打开时把浮层滚到当前值那一格。
+- 自定义格内文案要保持简短；对号由皮肤在固定轨中绘制，不要在插槽里再画第二份选中底或勾选标记。
 
 ## 反模式
 

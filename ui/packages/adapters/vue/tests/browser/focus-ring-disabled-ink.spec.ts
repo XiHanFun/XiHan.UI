@@ -1,4 +1,4 @@
-// 失效档的聚焦环不取被压过的前景墨。
+// 失效档的聚焦环不取被压过的前景墨；中性选中档同样使用公共环。
 //
 // 实心面那几档把 --xh-_ring-color 灌成 currentColor，环随面自己的前景色走。
 // 同一个部件进了失效档时前景被换掉——行换成灰档、勾选把手换成透明（勾要藏起来）——
@@ -144,8 +144,12 @@ const 实心档: Tier[] = [
       data-state="checked" data-anchor></button>`),
     达标: true,
   },
+]
+
+/* TimePicker 选中改由对号表达，落焦时铺中性实体底，不再属于反白实心面。 */
+const 中性选中档: Tier[] = [
   {
-    名: 'time-picker/item 选中',
+    名: 'time-picker/item 对号选中',
     markup: `<div data-scope="time-picker" data-part="content">
       <div data-scope="time-picker" data-part="column">
         <div data-scope="time-picker" data-part="item" data-state="checked"
@@ -201,6 +205,12 @@ describe('失效档的聚焦环', () => {
     // 选中行的面（bg-subtle-active）与默认环之间浅色 2.52、深色 2.89，换环色换不出 3:1，
     // 过线要换这一档的面；这条在过线那天变红，好把它挪进上面那组
     expect(m.环压面).toBeLessThan(3)
+  })
+
+  it.each(逐档(中性选中档))('$label：中性焦点面使用公共环且过 3:1', async ({ markup, theme }) => {
+    const m = await measure(markup, theme)
+    expect(m.环).toBe(m.默认环)
+    expect(m.环压面, `环压面算出 ${m.环压面.toFixed(2)}`).toBeGreaterThanOrEqual(3)
   })
 
   it.each(逐档(实心档))('$label：没失效的实心档仍取面自己的前景色', async ({ markup, theme }) => {

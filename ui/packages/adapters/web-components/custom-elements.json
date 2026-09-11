@@ -48218,13 +48218,13 @@
               "name": "--xh-time-picker-icon-size"
             },
             {
-              "name": "--xh-time-picker-item-bg-checked"
-            },
-            {
-              "name": "--xh-time-picker-item-bg-checked-hover"
-            },
-            {
               "name": "--xh-time-picker-item-bg-hover"
+            },
+            {
+              "name": "--xh-time-picker-item-check-fg"
+            },
+            {
+              "name": "--xh-time-picker-item-check-size"
             },
             {
               "name": "--xh-time-picker-item-fg"
@@ -48266,13 +48266,16 @@
               "name": "--xh-time-picker-placeholder-fg"
             },
             {
-              "name": "--xh-time-picker-preset-bg-checked"
-            },
-            {
-              "name": "--xh-time-picker-preset-bg-checked-hover"
-            },
-            {
               "name": "--xh-time-picker-preset-bg-hover"
+            },
+            {
+              "name": "--xh-time-picker-preset-check-fg"
+            },
+            {
+              "name": "--xh-time-picker-preset-check-size"
+            },
+            {
+              "name": "--xh-time-picker-preset-fg"
             },
             {
               "name": "--xh-time-picker-preset-fg-checked"
