@@ -18,6 +18,10 @@ import {
 
 type OutsideKind = 'pointer' | 'focus'
 
+type OutsideEventOptions
+  = | { readonly kind: 'pointer', readonly event: PointerEvent }
+    | { readonly kind: 'focus', readonly event: FocusEvent }
+
 interface Lane {
   readonly registry: LayerRegistry
   readonly participants: Map<Layer, Participant>
@@ -183,8 +187,8 @@ class DismissHub {
       this.routeEscapeCapture(event)
   }
 
-  readonly onPointerDown = (event: PointerEvent): void => this.routeEvent('pointer', event)
-  readonly onFocusIn = (event: FocusEvent): void => this.routeEvent('focus', event)
+  readonly onPointerDown = (event: PointerEvent): void => this.routeEvent({ kind: 'pointer', event })
+  readonly onFocusIn = (event: FocusEvent): void => this.routeEvent({ kind: 'focus', event })
   readonly onKeydownBubble = (event: KeyboardEvent): void => {
     if (event.key === 'Escape')
       this.routeEscapeBubble(event)
@@ -594,23 +598,41 @@ class DismissHub {
 
   private voteOutside(
     stage: CandidateStage,
-    kind: OutsideKind,
+    options: OutsideEventOptions,
     path: readonly EventTarget[],
   ): DismissPathHit | null {
     const { participant } = stage.candidate
-    const specificType = kind === 'pointer' ? EV_POINTER_DOWN_OUTSIDE : EV_FOCUS_OUTSIDE
-    const specificCallback = kind === 'pointer'
-      ? participant.options.onPointerDownOutside
-      : participant.options.onFocusOutside
-    const specific = new this.win.CustomEvent(specificType, { bubbles: false, cancelable: true, detail: {} })
-    if (!this.dispatchVote(stage, kind, specific, specificCallback))
+    let specific: CustomEvent<{ originalEvent: PointerEvent | FocusEvent }>
+    if (options.kind === 'pointer') {
+      const pointerVote = new this.win.CustomEvent(EV_POINTER_DOWN_OUTSIDE, {
+        bubbles: false,
+        cancelable: true,
+        detail: { originalEvent: options.event },
+      })
+      if (!this.dispatchVote(stage, options.kind, pointerVote, participant.options.onPointerDownOutside))
+        return null
+      specific = pointerVote
+    }
+    else {
+      const focusVote = new this.win.CustomEvent(EV_FOCUS_OUTSIDE, {
+        bubbles: false,
+        cancelable: true,
+        detail: { originalEvent: options.event },
+      })
+      if (!this.dispatchVote(stage, options.kind, focusVote, participant.options.onFocusOutside))
+        return null
+      specific = focusVote
+    }
+    const interact = new this.win.CustomEvent(EV_INTERACT_OUTSIDE, {
+      bubbles: false,
+      cancelable: true,
+      detail: { originalEvent: options.event },
+    })
+    if (!this.dispatchVote(stage, options.kind, interact, participant.options.onInteractOutside))
       return null
-    const interact = new this.win.CustomEvent(EV_INTERACT_OUTSIDE, { bubbles: false, cancelable: true, detail: {} })
-    if (!this.dispatchVote(stage, kind, interact, participant.options.onInteractOutside))
+    if (specific.defaultPrevented || interact.defaultPrevented || !this.stageIsCurrent(stage, options.kind))
       return null
-    if (specific.defaultPrevented || interact.defaultPrevented || !this.stageIsCurrent(stage, kind))
-      return null
-    const hit = this.readStageHit(stage, kind, path)
+    const hit = this.readStageHit(stage, options.kind, path)
     return hit !== null && hit !== 'inside' ? hit : null
   }
 
@@ -740,7 +762,8 @@ class DismissHub {
     }
   }
 
-  private executeOutside(plan: LanePlan, kind: OutsideKind, path: readonly EventTarget[]): void {
+  private executeOutside(plan: LanePlan, options: OutsideEventOptions, path: readonly EventTarget[]): void {
+    const { kind } = options
     let expectedSnapshot = plan.snapshot
     for (const candidate of plan.candidates) {
       const stage = this.beginStage(plan, candidate, expectedSnapshot, kind)
@@ -749,7 +772,7 @@ class DismissHub {
       const stageHit = this.stageOutsideHit(stage, kind, path)
       if (stageHit === null)
         return
-      const finalHit = this.voteOutside(stage, kind, path)
+      const finalHit = this.voteOutside(stage, options, path)
       if (finalHit === null)
         return
       const nextSnapshot = this.dismissOutside(plan, stage, kind)
@@ -857,9 +880,10 @@ class DismissHub {
     throwCollectedErrors(errors, '[xh] EscapeFallback Hub 多条 lane 处理失败')
   }
 
-  private routeEvent(kind: OutsideKind, event: PointerEvent | FocusEvent): void {
+  private routeEvent(options: OutsideEventOptions): void {
     if (this.dispatching)
       return
+    const { kind, event } = options
     this.dispatching = true
     const errors: unknown[] = []
     try {
@@ -902,7 +926,7 @@ class DismissHub {
           }
           for (const plan of plans) {
             try {
-              this.executeOutside(plan, kind, path)
+              this.executeOutside(plan, options, path)
             }
             catch (error) {
               errors.push(error)
