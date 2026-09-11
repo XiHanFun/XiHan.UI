@@ -1,7 +1,7 @@
 // Scope：宿主 DOM 环境抽象，core 对 document/window 的访问统一经此。
 import type { IdGenerator } from './id-generator'
 import type { FocusableElement } from './types'
-import { isDocument, isShadowRoot, isWindow } from './guards'
+import { isDocument, isElement, isShadowRoot, isWindow } from './guards'
 
 export interface Scope {
   /** 本 scope 的实例级唯一 id，构造时求值一次。 */
@@ -31,9 +31,30 @@ export function getActiveElementDeep(root: Document | ShadowRoot): FocusableElem
   return active
 }
 
-/** 创建 scope。node 为空时回退到全局 document。 */
-export function createScope(node: Element | null | undefined, idGenerator: IdGenerator): Scope {
+/**
+ * 创建 scope。静态空锚点保留既有语义，回退到全局 document；节点 getter 用于框架 setup
+ * 早于真实 DOM 就位的场景，返回空时明确失败，不借 ambient realm 猜宿主。
+ */
+export function createScope(node: Element | null | undefined, idGenerator: IdGenerator): Scope
+export function createScope(getNode: () => Element | null | undefined, idGenerator: IdGenerator): Scope
+export function createScope(
+  source: Element | null | undefined | (() => Element | null | undefined),
+  idGenerator: IdGenerator,
+): Scope {
   const id = idGenerator.scopeId()
+  const dynamic = typeof source === 'function'
+
+  /** 每次操作只读一次 getter，避免同一次 realm 推导混入两个节点快照。 */
+  const readNode = (): Element | null | undefined => {
+    if (!dynamic)
+      return source as Element | null | undefined
+    const node = (source as () => Element | null | undefined)()
+    if (node == null)
+      throw new Error('[xh] Scope 的动态锚点尚未就绪')
+    if (!isElement(node))
+      throw new TypeError('[xh] Scope 的动态锚点必须返回 Element')
+    return node
+  }
 
   const getAmbientDocument = (): Document => {
     if (typeof document === 'undefined' || !isDocument(document))
@@ -41,15 +62,18 @@ export function createScope(node: Element | null | undefined, idGenerator: IdGen
     return document
   }
 
-  const getRootNode = (): Document | ShadowRoot => {
+  const rootNodeOf = (node: Element | null | undefined): Document | ShadowRoot => {
     const root = node?.getRootNode?.()
     if (root && (isDocument(root) || isShadowRoot(root)))
       return root as Document | ShadowRoot
     return node?.ownerDocument ?? getAmbientDocument()
   }
 
+  const getRootNode = (): Document | ShadowRoot => rootNodeOf(readNode())
+
   const getDoc = (): Document => {
-    const root = getRootNode()
+    const node = readNode()
+    const root = rootNodeOf(node)
     const ownerDocument = node?.ownerDocument
     if (ownerDocument && root === ownerDocument)
       return ownerDocument
