@@ -331,7 +331,6 @@
       "content": "from{opacity:0;scale:var(--xh-motion-scale-enter);translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;scale:1;translate:0 0}",
       "definedIn": [
         "command.css",
-        "date-picker.css",
         "hover-card.css",
         "mention.css",
         "popconfirm.css",
@@ -341,7 +340,6 @@
       ],
       "consumers": [
         "command",
-        "date-picker",
         "hover-card",
         "mention",
         "popconfirm",
@@ -356,6 +354,7 @@
         "color-picker.css",
         "combobox.css",
         "context-menu.css",
+        "date-picker.css",
         "menu.css",
         "menubar.css",
         "select.css",
@@ -368,6 +367,7 @@
         "color-picker",
         "combobox",
         "context-menu",
+        "date-picker",
         "menu",
         "menubar",
         "select",
@@ -383,6 +383,7 @@
         "color-picker.css",
         "combobox.css",
         "context-menu.css",
+        "date-picker.css",
         "menu.css",
         "menubar.css",
         "select.css",
@@ -395,6 +396,7 @@
         "color-picker",
         "combobox",
         "context-menu",
+        "date-picker",
         "menu",
         "menubar",
         "select",
@@ -426,7 +428,6 @@
       "definedIn": [
         "command.css",
         "context-menu.css",
-        "date-picker.css",
         "floating-panel.css",
         "hover-card.css",
         "mention.css",
@@ -440,7 +441,6 @@
       ],
       "consumers": [
         "command",
-        "date-picker",
         "floating-panel",
         "hover-card",
         "mention",

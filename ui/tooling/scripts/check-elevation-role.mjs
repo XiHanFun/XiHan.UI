@@ -49,7 +49,7 @@ const EXPECTED = {
   // 命令面板是盖在页面上、带遮罩的一面，与对话框同档
   'command': { content: ['sheet'] },
   'context-menu': { content: ['frosted'] },
-  'date-picker': { content: ['floating'] },
+  'date-picker': { content: ['frosted'] },
   'dialog': { content: ['sheet'] },
   'drawer': { content: ['sheet'] },
   'float-button': { trigger: ['sheet'] },

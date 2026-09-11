@@ -13,6 +13,12 @@
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
     --xh-_date-picker-available-w: 100vw;
 
+    /* 每个浮层独立声明方向，避免继承祖先浮层的进场位移。 */
+    --xh-_overlay-enter-up: 0;
+    --xh-_overlay-enter-down: 0;
+    --xh-_overlay-enter-left: 0;
+    --xh-_overlay-enter-right: 0;
+
     /* 面板的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊出一条竖灰带 */
     --xh-scrollbar-track-bg: transparent;
 
@@ -27,26 +33,20 @@
     visibility: hidden;
   }
 
-  /* 缩放原点与进场位移按落定的那一侧给：面板从贴着锚点的那条边涨开、沿主轴退让一小段。
-     两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
-     origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+  /* 短位移按实际落位的物理方向给，不随书写方向翻转。 */
   [data-scope='date-picker'][data-part='positioner'][data-placement^='top'] {
-    --xh-_overlay-origin-y: 100%;
     --xh-_overlay-enter-down: 1;
   }
 
   [data-scope='date-picker'][data-part='positioner'][data-placement^='bottom'] {
-    --xh-_overlay-origin-y: 0;
     --xh-_overlay-enter-up: 1;
   }
 
   [data-scope='date-picker'][data-part='positioner'][data-placement^='left'] {
-    --xh-_overlay-origin-x: 100%;
     --xh-_overlay-enter-right: 1;
   }
 
   [data-scope='date-picker'][data-part='positioner'][data-placement^='right'] {
-    --xh-_overlay-origin-x: 0;
     --xh-_overlay-enter-left: 1;
   }
 
@@ -327,26 +327,39 @@
   }
 
   [data-scope='date-picker'][data-part='content'] {
+    position: relative;
     display: block;
     /* 行内轴只有落位后的可用宽度这一个上限：不夹住，浮层就会被定位层的包含块压窄，
        网格轨道跟着缩到比日期钮还窄，相邻两颗日期钮互相盖住 */
     max-inline-size: var(--xh-_date-picker-available-w);
     padding-block: var(--xh-date-picker-content-py, var(--xh-space-3));
     padding-inline: var(--xh-date-picker-content-px, var(--xh-space-3));
-    border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-date-picker-content-radius, var(--xh-shape-surface));
-    background: var(--xh-date-picker-content-bg, var(--xh-bg-surface));
-    color: var(--xh-date-picker-content-fg, var(--xh-fg-default));
+    background: var(--xh-date-picker-content-bg, var(--xh-material-frosted-bg));
+    color: var(--xh-date-picker-content-fg, var(--xh-material-frosted-fg));
     /* 日历是定高结构：六行日期加表头本来就有固定高度，上限走页内滚动面那一档；
        可用高度是定位引擎算出的视口余量，视口真放不下时再收一截 */
     max-block-size: min(var(--xh-date-picker-max-h, var(--xh-viewport-h-lg)), var(--xh-_date-picker-available-h));
     /* 两轴都滚：块轴放不下时面板内自己竖滚，行内轴放不下时面板内自己横滚，
        日历那几块保持各自的天然宽度，不被压 */
     overflow: auto;
-    /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
-    transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
-    box-shadow: var(--xh-date-picker-content-shadow, var(--xh-elevation-floating));
+    box-shadow: var(--xh-date-picker-content-shadow, var(--xh-material-frosted-shadow));
+    -webkit-backdrop-filter: var(--xh-date-picker-content-backdrop, var(--xh-material-frosted-backdrop));
+    backdrop-filter: var(--xh-date-picker-content-backdrop, var(--xh-material-frosted-backdrop));
     pointer-events: auto;
+  }
+
+  /* 顶光由唯一浮层表面绘制，不占日历空间，也不拦截操作。 */
+  [data-scope='date-picker'][data-part='content']::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: var(--xh-stroke-thin);
+    border-radius: inherit;
+    background: var(--xh-date-picker-content-highlight, var(--xh-material-frosted-highlight));
+    pointer-events: none;
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -363,14 +376,14 @@
 
   [data-scope='date-picker'][data-part='content'][data-state='open'] {
     /* 只在展开态挂着：随状态属性一起消失，不长期占着合成层 */
-    will-change: opacity, scale, translate;
-    animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    will-change: opacity, translate;
+    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
      免得动画结束到真收起之间闪一下原样 */
   [data-scope='date-picker'][data-part='content'][data-state='closed'] {
-    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 内嵌日历的挂载点同时充当日历的根节点：日历那份样式的 root 规则落在
@@ -416,7 +429,7 @@
      手机档两张月历折行堆叠，线画在块起始边 */
   [data-scope='date-picker'][data-part='calendar'] + [data-scope='date-picker'][data-part='calendar'] {
     padding-block-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-date-picker-panel-divider, var(--xh-border-subtle));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-date-picker-panel-divider, var(--xh-material-frosted-separator));
   }
 
   /* 平板起两张月历并排放得下，线改画在行内起始边 */
@@ -425,7 +438,7 @@
       padding-block-start: 0;
       padding-inline-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
       border-block-start: none;
-      border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-panel-divider, var(--xh-border-subtle));
+      border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-panel-divider, var(--xh-material-frosted-separator));
     }
   }
 
@@ -473,7 +486,7 @@
     padding: var(--xh-date-picker-preset-group-padding, var(--xh-space-1));
     overflow-x: auto;
     overflow-y: hidden;
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-border-subtle));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-material-frosted-separator));
   }
 
   /* 平板起：换成贴在日历行内起始一侧的竖列，滚动轴与分隔线一起转过来 */
@@ -483,7 +496,7 @@
       flex-direction: column;
       overflow: auto;
       border-block-end: none;
-      border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-border-subtle));
+      border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-material-frosted-separator));
     }
   }
 
@@ -567,7 +580,7 @@
     block-size: var(--xh-date-picker-time-column-h, var(--xh-viewport-h-sm));
     padding: var(--xh-date-picker-time-column-padding, var(--xh-space-1));
     overflow-y: auto;
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-border-subtle));
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-material-frosted-separator));
   }
 
   [data-scope='date-picker'][data-part='time-column'][hidden] {
@@ -730,11 +743,10 @@
 }
 
 @layer xihan.motion {
-  /* 进场从锚点那一侧冒出来：位移的两个分量由 placement 写进私有槽，没写就退回原地缩放 */
-  @keyframes xh-overlay-pop-in {
+  /* 与选择器共用短位移动作；独立引入本皮肤时也提供完整关键帧。 */
+  @keyframes xh-overlay-slide-in {
     from {
       opacity: 0;
-      scale: var(--xh-motion-scale-enter);
       translate:
         calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
         calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
@@ -742,20 +754,21 @@
 
     to {
       opacity: 1;
-      scale: 1;
       translate: 0 0;
     }
   }
 
-  @keyframes xh-pop-out {
+  @keyframes xh-overlay-slide-out {
     from {
       opacity: 1;
-      scale: 1;
+      translate: 0 0;
     }
 
     to {
       opacity: 0;
-      scale: var(--xh-motion-scale-exit);
+      translate:
+        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
     }
   }
 
