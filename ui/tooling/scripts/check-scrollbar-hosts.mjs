@@ -16,6 +16,8 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 
+import ts from 'typescript'
+
 import { ADAPTERS, reactCovered, reactProgress } from './lib/adapters.mjs'
 
 const VUE = ADAPTERS.vue.components
@@ -244,9 +246,44 @@ function resolveParts(src, text, seen = new Set()) {
   return { parts: [...new Set(parts)], unresolved: [...new Set(unresolved)] }
 }
 
-/** 层分支那一行，没注册层时没有。 */
-function branchesLine(src) {
-  return /branches\s*:(.*)/.exec(src)?.[1] ?? null
+/** 只读取真正的层注册配置；同名变量、形参和后代悬停所有权不属于 LayerRegistry。 */
+function registeredLayers(src) {
+  const source = ts.createSourceFile('scrollbar-host.ts', src, ts.ScriptTarget.Latest, true)
+  const layers = []
+  function visit(node) {
+    if (ts.isCallExpression(node)
+      && ts.isPropertyAccessExpression(node.expression)
+      && node.expression.name.text === 'register'
+      && ts.isPropertyAccessExpression(node.expression.expression)
+      && node.expression.expression.name.text === 'layerRegistry') {
+      const options = node.arguments[0]
+      const property = (name) => {
+        if (!options || !ts.isObjectLiteralExpression(options))
+          return null
+        const found = options.properties.find(member => ts.isPropertyAssignment(member)
+          && (ts.isIdentifier(member.name) || ts.isStringLiteral(member.name))
+          && member.name.text === name)
+        return found?.initializer.getText(source) ?? null
+      }
+      layers.push({ node: property('node'), branches: property('branches') })
+    }
+    ts.forEachChild(node, visit)
+  }
+  visit(source)
+  return layers
+}
+
+/** 一个组件可注册多个独立浮层；仅核 node 指向本次自绘滚动层或其壳的注册。 */
+function checkLayerBranches(src, label, shell, scrollables, reference) {
+  const layers = registeredLayers(src)
+  if (!layers.length)
+    return []
+  const hosts = [...new Set([shell, ...scrollables])]
+  const ownLayers = layers.filter(layer => hosts.some(part => reference(part).test(layer.node ?? '')))
+  if (!ownLayers.length)
+    return [`${label}：已有 LayerRegistry 注册，但读不出哪个 node 对应自绘滚动宿主 ${hosts.join(' / ')}；须显式核对该层的壳接线`]
+  return ownLayers.filter(layer => !reference(shell).test(layer.branches ?? ''))
+    .map(() => `${label}：层注册的 branches 要把 ${shell} 记进去，否则按住条子会把浮层消解掉`)
 }
 
 /** `branch-content` → `branchContent`：Vue 那侧的 ref 名按这个规则从 part 名派生。 */
@@ -356,13 +393,9 @@ for (const [comp, { block, src }] of wcHosts) {
 
   // 规则⑥：条子是 content 的兄弟，浮层不把壳记进层分支，按住条子那一下就被判成层外交互
   const shellPart = shells[0]
-  const wcBranches = branchesLine(src)
-  if (wcBranches !== null && !wcBranches.includes(`getPart('${shellPart}')`))
-    problems.push(`${comp}：WC 侧的 branches 要把 ${shellPart} 记进去，否则按住条子会把浮层消解掉`)
+  problems.push(...checkLayerBranches(src, `${comp}：WC 侧`, shellPart, scrollables, part => new RegExp(`\\bgetPart\\(\\s*['"]${part}['"]\\s*\\)`)))
   for (const { file, src: vueSrc } of vueSources.get(comp) ?? []) {
-    const line = branchesLine(vueSrc)
-    if (line !== null && !line.includes(`${camel(shellPart)}Ref`))
-      problems.push(`${file}：branches 要把 ${camel(shellPart)}Ref 记进去，否则按住条子会把浮层消解掉`)
+    problems.push(...checkLayerBranches(vueSrc, file, shellPart, scrollables, part => new RegExp(`\\b${camel(part)}Ref\\b`)))
   }
 
   const css = await read(join(STYLES, `${comp}.css`))
