@@ -49,6 +49,8 @@
     --xh-scrollbar-track-bg: transparent;
 
     position: fixed;
+    /* listbox 与同级状态文字占同一个格；content 始终是唯一拥有材质的表面。 */
+    display: grid;
     z-index: var(--xh-mention-layer, var(--xh-layer-popover));
     /* 空壳不吃指针，交互只发生在 content 上 */
     pointer-events: none;
@@ -57,6 +59,10 @@
   /* 输入框被滚出可视区：整个浮层随之收起 */
   [data-scope='mention'][data-part='positioner'][data-hidden] {
     visibility: hidden;
+  }
+
+  [data-scope='mention'][data-part='positioner'][hidden] {
+    display: none;
   }
 
   /* 缩放原点与进场位移按落定的那一侧给：列表从贴着输入框的那条边涨开、沿主轴退让一小段。
@@ -271,9 +277,12 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-mention-content-gap, var(--xh-list-option-gap));
+    grid-area: 1 / 1;
     min-inline-size: var(--xh-mention-content-min-w, var(--xh-overlay-min-w));
     /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
     max-inline-size: min(var(--xh-mention-content-max-w, var(--xh-overlay-max-w)), var(--xh-_mention-available-w));
+    /* 状态文字先隐藏时仍保留完整退场面，不塌回一条空边。 */
+    min-block-size: var(--xh-mention-content-min-h, var(--xh-_mention-h));
     max-block-size: min(var(--xh-mention-content-max-h, var(--xh-overlay-max-h)), var(--xh-_mention-available-h));
     padding-block: var(--xh-mention-content-py, var(--xh-space-1));
     padding-inline: var(--xh-mention-content-px, var(--xh-space-1));
@@ -293,12 +302,6 @@
      [hidden]{display:none}——退场动画得先能播。presence 读的是 content 的 animationName，
      真正的收起由宿主在退场结束后落成内联 display:none（Vue 那边直接不渲染）。
      其余声明了 display 的角色节点仍补 [hidden]，那几处没有退场动画。 */
-
-  /* 宿主把候选全筛没了：浮层还开着，但这一副框壳没有内容可框，整个让位。
-     组件不替宿主判空——「没有匹配项」要不要说话、说什么，是宿主的事 */
-  [data-scope='mention'][data-part='content']:empty {
-    display: none;
-  }
 
   /* 列表从不承载焦点（焦点恒在输入框，高亮走 aria-activedescendant），
      可滚动容器在某些浏览器里会被自动塞进 Tab 序列，落焦时不画环 */
@@ -378,15 +381,14 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 空态与候选面板同形：它是 content 的兄弟节点，两者只会有一个显出来 */
+  /* 空态保持为 listbox 的同级 role=status，只把文字叠到 content 的唯一表面。 */
   [data-scope='mention'][data-part='empty'] {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-area: 1 / 1;
     padding-block: var(--xh-mention-empty-py, var(--xh-space-3));
     padding-inline: var(--xh-mention-empty-px, var(--xh-_mention-item-px));
-    border: var(--xh-stroke-thin) solid var(--xh-mention-empty-border, var(--xh-border-default));
-    border-radius: var(--xh-mention-empty-radius, var(--xh-shape-surface));
-    background: var(--xh-mention-empty-bg, var(--xh-bg-surface));
-    box-shadow: var(--xh-mention-empty-shadow, var(--xh-elevation-floating));
     color: var(--xh-mention-empty-fg, var(--xh-fg-subtle));
     font-size: var(--xh-mention-empty-font-size, var(--xh-_mention-font-size));
     line-height: var(--xh-leading-none);
@@ -397,15 +399,14 @@
     display: none;
   }
 
-  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
+  /* 在途占位与空态同格、两者不同屏；它同样不重复绘制表面。 */
   [data-scope='mention'][data-part='loading'] {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-area: 1 / 1;
     padding-block: var(--xh-mention-loading-py, var(--xh-space-3));
     padding-inline: var(--xh-mention-loading-px, var(--xh-_mention-item-px));
-    border: var(--xh-stroke-thin) solid var(--xh-mention-loading-border, var(--xh-border-default));
-    border-radius: var(--xh-mention-loading-radius, var(--xh-shape-surface));
-    background: var(--xh-mention-loading-bg, var(--xh-bg-surface));
-    box-shadow: var(--xh-mention-loading-shadow, var(--xh-elevation-floating));
     color: var(--xh-mention-loading-fg, var(--xh-fg-subtle));
     font-size: var(--xh-mention-loading-font-size, var(--xh-_mention-font-size));
     line-height: var(--xh-leading-none);
@@ -414,6 +415,22 @@
 
   [data-scope='mention'][data-part='loading'][hidden] {
     display: none;
+  }
+
+  [data-scope='mention'][data-part='empty']:empty,
+  [data-scope='mention'][data-part='loading']:empty {
+    display: none;
+  }
+
+  /* 手写结构可以把全部候选留在 DOM 里只加 hidden；没有可见 item 也没有状态文案时，
+     打开的空 listbox 不画无意义框。closed 不命中，content 仍能完成 Presence 退场。 */
+  [data-scope='mention'][data-part='positioner']:not(:has(
+    > [data-scope='mention'][data-part='empty']:not([hidden]):not(:empty),
+    > [data-scope='mention'][data-part='loading']:not([hidden]):not(:empty)
+  )) > [data-scope='mention'][data-part='content'][data-state='open']:not(:has(
+    > [data-scope='mention'][data-part='item']:not([hidden])
+  )) {
+    visibility: hidden;
   }
 
   @media print {

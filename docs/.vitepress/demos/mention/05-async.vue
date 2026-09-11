@@ -1,6 +1,15 @@
-<!-- 异步候选 | 查询串每变一次就重新去远端查一遍，等结果的这段时间浮层里空着 -->
+<!-- 异步候选 | 查询串每变一次就重新去远端查一遍，加载、空结果和候选共用一张浮层表面 -->
 <script setup lang="ts">
-import { XhMentionRoot } from "@xihan-ui/vue";
+import {
+  XhMentionContent,
+  XhMentionEmpty,
+  XhMentionInput,
+  XhMentionItem,
+  XhMentionItemText,
+  XhMentionLoading,
+  XhMentionPositioner,
+  XhMentionRoot,
+} from "@xihan-ui/vue";
 import { ref } from "vue";
 
 interface Person {
@@ -42,9 +51,21 @@ function onQuery(details: { query: string | null }): void {
   <XhMentionRoot
     v-model:value="text"
     :collection="options"
+    :loading="loading"
     placeholder="输入 @ 再打两个字试试"
     :translations="{ input: '正文', content: '提及谁' }"
     @query-change="onQuery"
-  />
+  >
+    <XhMentionInput />
+    <XhMentionPositioner>
+      <XhMentionContent>
+        <XhMentionItem v-for="person in options" :key="person.value" :value="person.value">
+          <XhMentionItemText>{{ person.label }}</XhMentionItemText>
+        </XhMentionItem>
+      </XhMentionContent>
+      <XhMentionEmpty>没有匹配的人选</XhMentionEmpty>
+      <XhMentionLoading>查询中…</XhMentionLoading>
+    </XhMentionPositioner>
+  </XhMentionRoot>
   <p>{{ loading ? "查询中…" : `候选 ${options.length} 条` }}</p>
 </template>

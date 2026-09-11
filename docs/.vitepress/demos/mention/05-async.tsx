@@ -1,6 +1,15 @@
-// 异步候选 | 查询串每变一次就重新去远端查一遍，等结果的这段时间浮层里空着
+// 异步候选 | 查询串每变一次就重新去远端查一遍，加载、空结果和候选共用一张浮层表面
 import type { ReactNode } from "react";
-import { XhMentionRoot } from "@xihan-ui/react";
+import {
+  XhMentionContent,
+  XhMentionEmpty,
+  XhMentionInput,
+  XhMentionItem,
+  XhMentionItemText,
+  XhMentionLoading,
+  XhMentionPositioner,
+  XhMentionRoot,
+} from "@xihan-ui/react";
 import { useRef, useState } from "react";
 
 interface Person {
@@ -44,10 +53,24 @@ export default function Demo(): ReactNode {
         value={text}
         onValueChange={details => setText(details.value)}
         collection={options}
+        loading={loading}
         placeholder="输入 @ 再打两个字试试"
         translations={{ input: "正文", content: "提及谁" }}
         onQueryChange={onQuery}
-      />
+      >
+        <XhMentionInput />
+        <XhMentionPositioner>
+          <XhMentionContent>
+            {options.map(person => (
+              <XhMentionItem key={person.value} value={person.value}>
+                <XhMentionItemText>{person.label}</XhMentionItemText>
+              </XhMentionItem>
+            ))}
+          </XhMentionContent>
+          <XhMentionEmpty>没有匹配的人选</XhMentionEmpty>
+          <XhMentionLoading>查询中…</XhMentionLoading>
+        </XhMentionPositioner>
+      </XhMentionRoot>
       <p>{loading ? "查询中…" : `候选 ${options.length} 条`}</p>
     </>
   );

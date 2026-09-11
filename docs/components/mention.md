@@ -21,7 +21,9 @@
 - 正文可受控，选中时另有回调。
 - `label` 部件给输入框一个点得动的标题；给了 `translations.input` 时仍走 `aria-label`。
 - 给了 `collection` 却一条都不剩时显出 `empty` 部件。
-- 候选还在取时改由 `loading` 部件顶上来，空态让位；候选面板同时报 `aria-busy`。
+- `content` 是候选、空态与加载态共用的唯一浮层表面；`empty`/`loading` 保持为 listbox 外的同级 `role=status`，只在零可见候选时把文字覆盖到该表面。自动结构保留既有 `No results`，手写结构没有状态文案时不画空框。
+- 候选还在取且当前没有可见项时由 `loading` 顶上来，空态让位；已有候选时列表保持可见可操作，只由 `aria-busy` 报后台刷新。
+- 带 `hidden` 的候选不参与计数、高亮、方向键或 Enter；全部隐藏后会清掉 `aria-activedescendant`，不会提交不可见旧项。
 - `name` 让整段正文随表单提交，表单重置回落到 `defaultValue`。
 
 ## 示例
@@ -52,7 +54,7 @@
 
 ### 异步候选
 
-查询串每变一次就重新去远端查一遍，等结果的这段时间浮层里空着
+查询串每变一次就重新去远端查一遍，加载、空结果和候选共用一张浮层表面
 
 <XhDemo src="mention/05-async" />
 
@@ -251,7 +253,7 @@ variant 换正文框的描边与底色，候选面板不受影响
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-mention-content-bg` · `--xh-mention-content-border` · `--xh-mention-content-fg` · `--xh-mention-content-gap` · `--xh-mention-content-max-h` · `--xh-mention-content-max-w` · `--xh-mention-content-min-w` · `--xh-mention-content-px` · `--xh-mention-content-py` · `--xh-mention-content-radius` · `--xh-mention-content-shadow` · `--xh-mention-empty-bg` · `--xh-mention-empty-border` · `--xh-mention-empty-fg` · `--xh-mention-empty-font-size` · `--xh-mention-empty-px` · `--xh-mention-empty-py` · `--xh-mention-empty-radius` · `--xh-mention-empty-shadow` · `--xh-mention-input-autofill-bg` · `--xh-mention-input-autofill-fg` · `--xh-mention-input-bg` · `--xh-mention-input-bg-disabled` · `--xh-mention-input-bg-hover` · `--xh-mention-input-bg-readonly` · `--xh-mention-input-border` · `--xh-mention-input-border-focus` · `--xh-mention-input-border-hover` · `--xh-mention-input-border-invalid` · `--xh-mention-input-fg` · `--xh-mention-input-font-size` · `--xh-mention-input-h` · `--xh-mention-input-min-w` · `--xh-mention-input-px` · `--xh-mention-input-radius` · `--xh-mention-input-shadow` · `--xh-mention-item-bg-hover` · `--xh-mention-item-fg` · `--xh-mention-item-font-size` · `--xh-mention-item-gap` · `--xh-mention-item-leading` · `--xh-mention-item-px` · `--xh-mention-item-py` · `--xh-mention-item-radius` · `--xh-mention-label-fg` · `--xh-mention-label-fg-disabled` · `--xh-mention-label-font-size` · `--xh-mention-label-font-weight` · `--xh-mention-label-gap` · `--xh-mention-layer` · `--xh-mention-loading-bg` · `--xh-mention-loading-border` · `--xh-mention-loading-fg` · `--xh-mention-loading-font-size` · `--xh-mention-loading-px` · `--xh-mention-loading-py` · `--xh-mention-loading-radius` · `--xh-mention-loading-shadow` · `--xh-mention-placeholder-fg`
+`--xh-mention-content-bg` · `--xh-mention-content-border` · `--xh-mention-content-fg` · `--xh-mention-content-gap` · `--xh-mention-content-max-h` · `--xh-mention-content-max-w` · `--xh-mention-content-min-h` · `--xh-mention-content-min-w` · `--xh-mention-content-px` · `--xh-mention-content-py` · `--xh-mention-content-radius` · `--xh-mention-content-shadow` · `--xh-mention-empty-fg` · `--xh-mention-empty-font-size` · `--xh-mention-empty-px` · `--xh-mention-empty-py` · `--xh-mention-input-autofill-bg` · `--xh-mention-input-autofill-fg` · `--xh-mention-input-bg` · `--xh-mention-input-bg-disabled` · `--xh-mention-input-bg-hover` · `--xh-mention-input-bg-readonly` · `--xh-mention-input-border` · `--xh-mention-input-border-focus` · `--xh-mention-input-border-hover` · `--xh-mention-input-border-invalid` · `--xh-mention-input-fg` · `--xh-mention-input-font-size` · `--xh-mention-input-h` · `--xh-mention-input-min-w` · `--xh-mention-input-px` · `--xh-mention-input-radius` · `--xh-mention-input-shadow` · `--xh-mention-item-bg-hover` · `--xh-mention-item-fg` · `--xh-mention-item-font-size` · `--xh-mention-item-gap` · `--xh-mention-item-leading` · `--xh-mention-item-px` · `--xh-mention-item-py` · `--xh-mention-item-radius` · `--xh-mention-label-fg` · `--xh-mention-label-fg-disabled` · `--xh-mention-label-font-size` · `--xh-mention-label-font-weight` · `--xh-mention-label-gap` · `--xh-mention-layer` · `--xh-mention-loading-fg` · `--xh-mention-loading-font-size` · `--xh-mention-loading-px` · `--xh-mention-loading-py` · `--xh-mention-placeholder-fg`
 
 ## 动效
 
@@ -274,6 +276,7 @@ variant 换正文框的描边与底色，候选面板不受影响
 
 - 候选按最近使用排序：@ 的对象高度重复。
 - 插入后的引用要能整体删除，别让用户一个字一个字退。
+- 异步示例应显式组合 `empty` 与 `loading`，不要用外部文字代替浮层内的正式状态，也不要把状态伪造成 option。
 
 ## 反模式
 
