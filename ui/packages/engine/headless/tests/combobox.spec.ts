@@ -678,6 +678,23 @@ describe('候选集合变化：空态与悬空高亮', () => {
     expect(h.emptyEl.hasAttribute('hidden')).toBe(true)
   })
 
+  it('loading 只在零候选时显示状态层；已有候选继续可见并仅由 listbox 报 busy', () => {
+    const h = mount({ defaultOpen: true, loading: true })
+    const loadingProps = (): Record<string, unknown> => h.api().getLoadingProps() as Record<string, unknown>
+
+    expect(h.content.getAttribute('aria-busy')).toBe('true')
+    expect(loadingProps().hidden).toBe(true)
+    press(h.input, 'ArrowDown')
+    expect(h.api().highlightedValue).toBe('apple')
+
+    h.setItems([])
+    expect(h.api().highlightedValue).toBeNull()
+    expect(h.input.hasAttribute('aria-activedescendant')).toBe(false)
+    expect(loadingProps().hidden).toBeUndefined()
+    press(h.input, 'ArrowDown')
+    expect(h.api().highlightedValue).toBeNull()
+  })
+
   it('高亮项被筛掉即摘掉：留着会让 aria-activedescendant 指向不存在的 id', () => {
     const h = mount()
     press(h.input, 'ArrowDown')

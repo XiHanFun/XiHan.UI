@@ -509,7 +509,9 @@ export function connectCombobox<T extends PropTypes>(
       ...parts.loading.attrs,
       'role': 'status',
       'data-state': stateAttr,
-      'hidden': !(open && loading) || undefined,
+      // 已有候选时列表原样留着，只由 aria-busy 报后台刷新；零候选才用状态文字占据表面。
+      // itemCount 尚未结算时不抢跑，避免首帧把真实候选盖住。
+      'hidden': !(open && loading && itemCount === 0) || undefined,
     }),
 
     getHiddenInputProps: () => normalize.input({

@@ -16770,6 +16770,8 @@
   --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
+  /* listbox 与同级 status 占同一个格：content 始终是唯一表面，状态文字叠在它上面。 */
+  display: grid;
   z-index: var(--xh-combobox-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 与 empty 上 */
   pointer-events: none;
@@ -16778,6 +16780,11 @@
 /* 锚点被滚出可视区：整个浮层随之收起 */
 [data-scope='combobox'][data-part='positioner'][data-hidden] {
   visibility: hidden;
+}
+
+/* 作者显式收起整层时让位；连接层自己的退场只操作 content，不会命中这条。 */
+[data-scope='combobox'][data-part='positioner'][hidden] {
+  display: none;
 }
 
 /* 缩放原点与进场位移按落定的那一侧给：浮层从贴着盒的那条边涨开、沿主轴退让一小段。
@@ -17133,6 +17140,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--xh-combobox-content-gap, var(--xh-list-option-gap));
+  grid-area: 1 / 1;
   /* 下界跟着输入框走，面板不窄于它；可用宽度的夹取写在这一侧：
      min-inline-size 恒压过 max-inline-size，锚点比可用区还宽时只夹 max 等于没夹 */
   min-inline-size: min(
@@ -17141,6 +17149,8 @@
   );
   /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
   max-inline-size: min(var(--xh-combobox-content-max-w, var(--xh-overlay-max-w)), var(--xh-_combobox-available-w));
+  /* 空列表也保留完整状态面的高度；empty/loading 先隐藏时，Presence 退场不会塌成细边条。 */
+  min-block-size: var(--xh-combobox-content-min-h, var(--xh-_combobox-h));
   max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-max-h)), var(--xh-_combobox-available-h));
   padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
   padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));
@@ -17304,21 +17314,19 @@
   color: var(--xh-fg-disabled);
 }
 
-/* 空态提示是列表之外的一句状态播报（role=status），不进 role=listbox。
-   它与 content 是兄弟，因此要自带浮层的那身皮，否则会光秃秃地飘在页面上 */
+/* 空态提示保持为 listbox 的同级 role=status；它只承载文字，表面由同格 content 统一绘制。 */
 [data-scope='combobox'][data-part='empty'] {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-area: 1 / 1;
   padding-block: var(--xh-combobox-empty-py, var(--xh-space-3));
   padding-inline: var(--xh-combobox-empty-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-combobox-empty-border, var(--xh-border-default));
-  border-radius: var(--xh-combobox-empty-radius, var(--xh-shape-surface));
-  background: var(--xh-combobox-empty-bg, var(--xh-bg-surface));
   color: var(--xh-combobox-empty-fg, var(--xh-fg-subtle));
   font-size: var(--xh-combobox-empty-font-size, var(--xh-_combobox-font-size));
   line-height: var(--xh-leading-none);
-  box-shadow: var(--xh-combobox-empty-shadow, var(--xh-elevation-floating));
   text-align: center;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 /* 漏了这条，候选一有结果空态提示就永远撤不下去（上面那条 display 盖掉了 UA 的 [hidden] 规则） */
@@ -17326,24 +17334,37 @@
   display: none;
 }
 
-/* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
+/* 在途占位与空态占同一个表面、两者不同屏；同样只承载状态文字。 */
 [data-scope='combobox'][data-part='loading'] {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-area: 1 / 1;
   padding-block: var(--xh-combobox-loading-py, var(--xh-space-3));
   padding-inline: var(--xh-combobox-loading-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-combobox-loading-border, var(--xh-border-default));
-  border-radius: var(--xh-combobox-loading-radius, var(--xh-shape-surface));
-  background: var(--xh-combobox-loading-bg, var(--xh-bg-surface));
   color: var(--xh-combobox-loading-fg, var(--xh-fg-subtle));
   font-size: var(--xh-combobox-loading-font-size, var(--xh-_combobox-font-size));
   line-height: var(--xh-leading-none);
-  box-shadow: var(--xh-combobox-loading-shadow, var(--xh-elevation-floating));
   text-align: center;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 [data-scope='combobox'][data-part='loading'][hidden] {
   display: none;
+}
+
+/* 自动结构没收到状态文案时，空 status 不生成盒；打开着的空 listbox 也不画无意义表面。
+   closed 不命中：有文案的空态刚关闭时，content 仍要作为 Presence 宿主完成退场。 */
+[data-scope='combobox'][data-part='empty']:empty,
+[data-scope='combobox'][data-part='loading']:empty {
+  display: none;
+}
+
+[data-scope='combobox'][data-part='positioner']:not(:has(
+  > [data-scope='combobox'][data-part='empty']:not([hidden]):not(:empty),
+  > [data-scope='combobox'][data-part='loading']:not([hidden]):not(:empty)
+)) > [data-scope='combobox'][data-part='content'][data-state='open']:empty {
+  visibility: hidden;
 }
 
 @media print {

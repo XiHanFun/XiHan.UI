@@ -9171,6 +9171,9 @@
               "name": "--xh-combobox-content-max-w"
             },
             {
+              "name": "--xh-combobox-content-min-h"
+            },
+            {
               "name": "--xh-combobox-content-min-w"
             },
             {
@@ -9234,12 +9237,6 @@
               "name": "--xh-combobox-control-shadow"
             },
             {
-              "name": "--xh-combobox-empty-bg"
-            },
-            {
-              "name": "--xh-combobox-empty-border"
-            },
-            {
               "name": "--xh-combobox-empty-fg"
             },
             {
@@ -9250,12 +9247,6 @@
             },
             {
               "name": "--xh-combobox-empty-py"
-            },
-            {
-              "name": "--xh-combobox-empty-radius"
-            },
-            {
-              "name": "--xh-combobox-empty-shadow"
             },
             {
               "name": "--xh-combobox-gap"
@@ -9345,12 +9336,6 @@
               "name": "--xh-combobox-layer"
             },
             {
-              "name": "--xh-combobox-loading-bg"
-            },
-            {
-              "name": "--xh-combobox-loading-border"
-            },
-            {
               "name": "--xh-combobox-loading-fg"
             },
             {
@@ -9361,12 +9346,6 @@
             },
             {
               "name": "--xh-combobox-loading-py"
-            },
-            {
-              "name": "--xh-combobox-loading-radius"
-            },
-            {
-              "name": "--xh-combobox-loading-shadow"
             },
             {
               "name": "--xh-combobox-placeholder-fg"
