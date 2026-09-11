@@ -40,6 +40,7 @@ export function connectListbox<T extends PropTypes>(
     disabled: !!node.disabled,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+  const empty = counted && collection.length === 0
 
   const isSelected = (v: string): boolean => value.includes(v)
   /** 条目禁用：整列禁用一票通过，其次看部件上写的，再没有就回 collection 里查。 */
@@ -55,8 +56,9 @@ export function connectListbox<T extends PropTypes>(
 
   const groupLabelId = (group: string): string => scope.partId(listboxAnatomy.name, `group-label:${group}`)
 
-  /** 按文档序现读条目集合；仅在事件回调中调用。 */
-  const items = (content: HTMLElement): HTMLElement[] => queryItems(content, listboxItemQuery)
+  /** 按文档序现读可见条目；hidden 条目或 hidden 分组不参与导航、连打与全选。 */
+  const items = (content: HTMLElement): HTMLElement[] =>
+    queryItems(content, listboxItemQuery).filter(item => item.closest('[hidden]') == null)
 
   /** 事件目标所在的列表容器。 */
   const contentOf = (el: HTMLElement): HTMLElement | null => el.closest<HTMLElement>(parts.content.selector)
@@ -170,9 +172,11 @@ export function connectListbox<T extends PropTypes>(
       'aria-invalid': invalid ? 'true' : 'false',
       // 取数在途的播报归列表本体：两个相位占位自己不带 role
       'aria-busy': loading ? 'true' : undefined,
+      // 零候选不保留一副空框；状态文案由 content 外的 empty / loading 承接。
+      'hidden': empty || undefined,
       // 焦点在列表外时容器进 Tab 序列，onFocus 再转投给条目。
       // 判据只能用 focusedValue：anchor 可能指向一个不存在的条目，那时没有条目认领 tabindex=0
-      'tabindex': focusedValue == null ? 0 : -1,
+      'tabindex': !empty && focusedValue == null ? 0 : -1,
       'data-orientation': orientation,
       'data-disabled': dataAttr(listDisabled),
       'data-readonly': dataAttr(readOnly),

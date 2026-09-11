@@ -90,6 +90,18 @@
     display: none;
   }
 
+  /* 手写结构按真正的条目判断，空白文本与分组标题都不算候选。
+     只排除 content 内部的 hidden 祖先；外层浮层退场时不改变本列表的几何。
+     禁用条目仍是有效内容，不参与此处排除。 */
+  [data-scope='listbox'][data-part='content']:not(:has(
+    [data-scope='listbox'][data-part='item']:not([hidden]):not([data-scope='listbox'][data-part='content'] [hidden] *)
+  )),
+  [data-scope='listbox'][data-part='group']:not(:has(
+    [data-scope='listbox'][data-part='item']:not([hidden]):not([data-scope='listbox'][data-part='content'] [hidden] *)
+  )) {
+    display: none;
+  }
+
   /* 横向列表沿主轴排，此时高度由内容决定，再压最大高度只会白留一条滚动条 */
   [data-scope='listbox'][data-part='content'][data-orientation='horizontal'] {
     flex-direction: row;
@@ -112,8 +124,13 @@
     display: none;
   }
 
-  /* 组间留白只加在后继分组上：首组顶上已经有 content 的内边距，再加一层会显得头重 */
-  [data-scope='listbox'][data-part='group'] + [data-scope='listbox'][data-part='group'] {
+  /* 只在两个有可见条目的分组之间留白；已收起的空组不能把首组额外向下推。 */
+  [data-scope='listbox'][data-part='group']:has(
+    [data-scope='listbox'][data-part='item']:not([hidden]):not([data-scope='listbox'][data-part='content'] [hidden] *)
+  )
+    ~ [data-scope='listbox'][data-part='group']:has(
+      [data-scope='listbox'][data-part='item']:not([hidden]):not([data-scope='listbox'][data-part='content'] [hidden] *)
+    ) {
     margin-block-start: var(--xh-listbox-group-spacing, var(--xh-space-1_5));
   }
 
@@ -139,7 +156,7 @@
   }
 
   /* 空态占位：待在 root 里、content 的兄弟（列表框只许拥有 option 与 group）。
-     它只画一句居中的次要文字，盒仍归 content；无条目时要连列表框一起收掉就自己给 content 写 hidden */
+     它只画作者提供的居中文字；零候选的 content 自身收起，不再留下空描边或留白。 */
   [data-scope='listbox'][data-part='empty'] {
     display: block;
     padding-block: var(--xh-listbox-empty-py, var(--xh-space-3));
