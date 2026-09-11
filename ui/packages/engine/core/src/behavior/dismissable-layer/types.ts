@@ -8,10 +8,12 @@ export interface DismissLayerOptions {
   onDismiss: (reason: DismissReason) => void
   /** 收到 Escape 时的表决票：preventDefault 即这次别关。原生 keydown 在 detail.originalEvent 里。 */
   onEscapeKeyDown?: (e: CustomEvent<{ originalEvent: KeyboardEvent }>) => void
-  onPointerDownOutside?: (e: CustomEvent) => void
-  onFocusOutside?: (e: CustomEvent) => void
-  /** 上面两者任一发生时也派发一次。 */
-  onInteractOutside?: (e: CustomEvent) => void
+  /** 收到层外 pointerdown 时的表决票；原生 pointerdown 保持身份放在 detail.originalEvent。 */
+  onPointerDownOutside?: (e: CustomEvent<{ originalEvent: PointerEvent }>) => void
+  /** 收到层外 focusin 时的表决票；原生 focusin 保持身份放在 detail.originalEvent。 */
+  onFocusOutside?: (e: CustomEvent<{ originalEvent: FocusEvent }>) => void
+  /** 上面两者任一发生时也派发一次，并保留对应的原生事件。 */
+  onInteractOutside?: (e: CustomEvent<{ originalEvent: PointerEvent | FocusEvent }>) => void
 }
 
 /** 空 LayerRegistry lane 在 Escape 冒泡阶段执行的后备出口。 */

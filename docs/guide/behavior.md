@@ -112,7 +112,7 @@ const fallback = createEscapeFallback({
 两条约束：
 
 - **只有栈顶层响应 `Escape`。** 否则一次按键会把整摞层全关掉。
-- **四个回调都是可取消的表决票。** 它们收到的是 `cancelable` 的 `CustomEvent`，`preventDefault()` 即否决本次关闭。Escape 票把原生 keydown 放在 `detail.originalEvent`；Pointer、Focus 与 Interact 票当前只提供取消语义，不承诺原事件字段。这让「表单没填完时按 Esc 先弹确认」这类需求不必绕开组件实现。
+- **四个回调都是可取消的表决票。** 它们收到的是 `cancelable` 的 `CustomEvent`，`preventDefault()` 即否决本次关闭。四种票均通过 `detail.originalEvent` 保留同一原生事件对象：Escape 为 KeyboardEvent，Pointer 为 PointerEvent，Focus 为 FocusEvent，Interact 为 PointerEvent 或 FocusEvent。DOM 监听与选项回调收到同一张可取消票；specific 与 interact 两票送达后统一检查取消结果。这让「表单没填完时按 Esc 先弹确认」这类需求不必绕开组件实现。
 
 DismissableLayer 的监听 Document、`CustomEvent`、微任务与动画帧均取自 `config.scope` 的同一个 Window，`config.layerRegistry.ownerDocument` 也必须逐字指向该 Document。传入的 layer 必须已经登记在这份注册表里；动态 `layer.node()` 可以暂时为 `null`，非空时必须是真实 HTMLElement 且属于该 Document。从其他窗口返回节点会立即报错，不会把一张文档里的交互票派到另一张文档。所属 Window 缺少 `CustomEvent`、`queueMicrotask` 或动画帧能力时创建即失败，不借 ambient 全局。
 
