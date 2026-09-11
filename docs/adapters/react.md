@@ -114,6 +114,8 @@ import { useHoverIntent, useScrollLock, useScrollTracker, useStickToBottom, useT
 
 自建浮层才用得上。不用的应用不必把它压进主入口的体积。
 
+`useHoverIntent` 在布局提交期读取 `getTriggerEl()`，因此已渲染元素的 ref 已经就位，下一次指针输入不会落在旧节点上。本次提交未渲染 trigger 时释放绑定；节点换代或 `openDelay`、`closeDelay`、`buffer` 改变时重建。content getter 和两个意图回调只更新已提交引用，不会为了普通闭包换代取消挂起计时。需要显式标注选项时，从这个子入口导入 `UseHoverIntentOptions`，不要再借用 core 的元素快照类型。
+
 ## 背景层
 
 React 侧的视觉适配也在**单独的子入口**，不引就不会把 WebGL 引擎打进包：
