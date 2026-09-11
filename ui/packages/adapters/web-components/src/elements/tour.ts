@@ -168,7 +168,18 @@ export class XhTourElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.tourScope, idGenerator: this.idGen })
   }
 
-  // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
+  /** 退场闸门建一次，并在机器挂载前把同一份 Presence 交给 Headless。 */
+  private ensureExit(): OverlayExit {
+    this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: this.ctrl.service.state.get() === 'open',
+      onExitComplete: () => this.requestUpdate(),
+    })
+    return this.exit
+  }
+
+  // 只交注册函数、不在连接期注册：层的入栈出栈由机器的 trackOverlay 效应与 Presence 共同负责。
   // 连接期就注册会让层常驻栈里占着栈顶，把同页其它层的 Escape 堵死。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
@@ -187,6 +198,7 @@ export class XhTourElement extends XhElement {
     this.ensureConfig()
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.ensureExit().presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
@@ -279,15 +291,33 @@ export class XhTourElement extends XhElement {
     // 收起跟着退场闸门走：presence 读 content 的 animationName 决定要不要多留一会儿，
     // 遮罩、高亮框与定位层与气泡一起收——定位层先 display:none 的话里面的退场一帧都播不出来。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
-    this.ensureConfig()
-    this.exit ??= createOverlayExit({
-      config: this.config!,
-      open: api.open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    this.exit.track(this.contentNode)
-    this.exit.update(api.open)
-    const visible = this.exit.visible
+    const exit = this.ensureExit()
+    const positioner = this.getPart('positioner')
+    const spotlight = this.getPart('spotlight')
+    // 本轮逻辑已收起、但上一帧 Presence 仍在时，connect 会先给这些节点落 hidden。
+    // 先撤掉它再让 Presence 采样，UA 的 [hidden] 才不会把真实退场动画压成 display:none。
+    // positioner 是 content 的祖先，也必须一并留住；showBackdrop / anchored 为假时不把本来就不存在的表面拉出来。
+    if (exit.visible) {
+      if (positioner) {
+        positioner.toggleAttribute('hidden', false)
+        this.setPartHidden(positioner, false)
+      }
+      if (this.contentNode) {
+        this.contentNode.toggleAttribute('hidden', false)
+        this.setPartHidden(this.contentNode, false)
+      }
+      if (this.backdropNode && (this.showBackdrop ?? true)) {
+        this.backdropNode.toggleAttribute('hidden', false)
+        this.setPartHidden(this.backdropNode, false)
+      }
+      if (spotlight && api.anchored) {
+        spotlight.toggleAttribute('hidden', false)
+        this.setPartHidden(spotlight, false)
+      }
+    }
+    exit.track(this.contentNode, this.backdropNode, spotlight)
+    exit.update(api.open)
+    const visible = exit.visible
     const hiddenOf: Record<string, boolean> = {
       backdrop: !visible || !(this.showBackdrop ?? true),
       spotlight: !visible || !api.anchored,

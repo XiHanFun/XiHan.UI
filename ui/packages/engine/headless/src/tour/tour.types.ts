@@ -1,4 +1,5 @@
 import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 /** 一步引导的声明。整份清单由作者给出，组件只按下标取用，不反查 DOM。 */
 export interface TourStep {
@@ -44,6 +45,8 @@ export interface TourRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 视觉退场的租约真源；逻辑关闭后由它决定何时真正归还层、消解与焦点资源。 */
+  presence: PresenceHandle | null
   /** 浮层定位引擎；缺省即不产出位置结果。 */
   position: PositionEnginePort | null
   /** 被定位的浮层容器，通常是 positioner。 */
@@ -159,7 +162,7 @@ export interface TourSchema extends MachineSchema {
     | 'reanchorPosition'
     | 'clearGeometry'
     | 'scrollTargetIntoView'
-  effect: 'trackPosition' | 'trackSpotlight' | 'trackLayer'
+  effect: 'trackPosition' | 'trackSpotlight' | 'trackOverlay'
 }
 
 export interface TourApi<T extends PropTypes = PropTypes> {

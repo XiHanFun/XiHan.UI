@@ -24,6 +24,8 @@ export interface OverlayExitOptions {
   isOpen: () => boolean
   /** content 节点，退场动画从它身上探测。 */
   contentRef: Ref<HTMLElement | null>
+  /** 与 content 共同决定退出完成的其他真实视觉节点。 */
+  additionalExitRefs?: Array<Ref<HTMLElement | null>>
   /** Presence 建立后交给需要共用退出生命周期的 Headless 机器；卸载时回传 null。 */
   onPresence?: (presence: PresenceHandle | null) => void
 }
@@ -36,7 +38,7 @@ export function useOverlayExit(options: OverlayExitOptions): Ref<boolean> {
   const { isOpen, contentRef } = options
   const visible = ref(isOpen())
   let presence: PresenceHandle | null = null
-  let detach: (() => void) | undefined
+  const tracked = new Map<HTMLElement, () => void>()
   let stopOpen: (() => void) | undefined
   let stopContent: (() => void) | undefined
 
@@ -62,9 +64,18 @@ export function useOverlayExit(options: OverlayExitOptions): Ref<boolean> {
     stopOpen = watch(isOpen, open => presence?.update(open), { flush: 'post' })
 
     // 延迟配置到挂载期才就绪时 content 已经存在，immediate 负责补上首次 attach。
-    stopContent = watch(contentRef, (el) => {
-      detach?.()
-      detach = el ? attachCssExit(el, presence!) : undefined
+    stopContent = watch([contentRef, ...(options.additionalExitRefs ?? [])], (nodes) => {
+      const next = new Set(nodes.filter((node): node is HTMLElement => node !== null))
+      for (const node of next) {
+        if (!tracked.has(node))
+          tracked.set(node, attachCssExit(node, presence!))
+      }
+      for (const [node, detach] of tracked) {
+        if (!next.has(node)) {
+          tracked.delete(node)
+          detach()
+        }
+      }
     }, { flush: 'post', immediate: true })
   }
 
@@ -88,7 +99,8 @@ export function useOverlayExit(options: OverlayExitOptions): Ref<boolean> {
   onBeforeUnmount(() => {
     stopOpen?.()
     stopContent?.()
-    detach?.()
+    for (const detach of tracked.values()) detach()
+    tracked.clear()
     presence?.dispose()
     options.onPresence?.(null)
   })

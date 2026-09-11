@@ -158,6 +158,9 @@ export function connectTour<T extends PropTypes>(
       'data-state': stateAttr,
       'data-step': stepAttr,
       'data-placement': placement,
+      // 逻辑收起时先退出交互与可访问树；Presence 仅延后视觉节点与行为资源的释放。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
       'onKeydown': (event: KeyboardEvent) => {
