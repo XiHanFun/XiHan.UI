@@ -1,4 +1,6 @@
+import type { IdGenerator, RuntimeConfig, Service } from '@xihan-ui/core'
 import type { LayoutBreakpoint, LayoutSchema, LayoutSiderBreakpointDetails, LayoutSiderCollapsedChangeDetails, LayoutSiderPlacement, LayoutSiderPresentation } from '@xihan-ui/headless'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectLayout, layoutAnatomy, layoutMachine, layoutMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -75,6 +77,10 @@ export class XhLayoutElement extends XhElement {
   declare siderFixed?: boolean
   declare bordered?: boolean
 
+  private readonly idGen: IdGenerator = createCounterIdGenerator()
+  private readonly layoutScope = createScope(this, this.idGen)
+  private config: RuntimeConfig | null = null
+
   private readonly notify = (details: LayoutSiderCollapsedChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('sider-collapsed-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -83,7 +89,22 @@ export class XhLayoutElement extends XhElement {
     this.dispatchEvent(new CustomEvent('sider-breakpoint', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly ctrl = new MachineController<LayoutSchema>(this, layoutMachine, () => this.machineProps())
+  private readonly ctrl = new MachineController<LayoutSchema>(
+    this,
+    layoutMachine,
+    () => this.machineProps(),
+    { scope: this.layoutScope, onBuilt: svc => this.injectRefs(svc) },
+  )
+
+  private ensureConfig(): void {
+    this.config ??= createRuntimeConfig({ scope: this.layoutScope, idGenerator: this.idGen })
+  }
+
+  /** 覆盖式侧栏的 Escape 层级判断必须在机器挂载前接入本元素所在 Document 的运行时。 */
+  private injectRefs(svc: Service<LayoutSchema>): void {
+    this.ensureConfig()
+    svc.refs.set('config', this.config)
+  }
 
   private machineProps(): Partial<LayoutSchema['props']> {
     return {
@@ -119,5 +140,12 @@ export class XhLayoutElement extends XhElement {
     put('content', api.getContentProps() as Record<string, unknown>)
     put('footer', api.getFooterProps() as Record<string, unknown>)
     put('sider-trigger', api.getSiderTriggerProps() as Record<string, unknown>)
+  }
+
+  override disconnectedCallback(): void {
+    // 先丢弃旧运行时再卸载：cleanup 即使抛错也不会把旧 Document 配置带进重连，
+    // 正常重连则由 onBuilt 按元素新的 ownerDocument 重建。
+    this.config = null
+    super.disconnectedCallback()
   }
 }

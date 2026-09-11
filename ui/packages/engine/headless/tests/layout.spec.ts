@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 // 覆盖档要真 DOM：断点跟随读的是文档元素上的断点令牌，Escape 挂在 document 上。
+import type { LayerRegistry, RuntimeConfig, Scope } from '@xihan-ui/core'
 import type { LayoutSchema, LayoutSiderCollapsedChangeDetails } from '../src/layout'
-import { createService, getLayerRegistry, normalizeProps } from '@xihan-ui/core'
+import { createCounterIdGenerator, createLayerRegistry, createRuntimeConfig, createScope, createService, getLayerRegistry, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
 import { connectLayout, layoutMachine } from '../src/layout'
@@ -10,11 +11,18 @@ import { resolveSiderPresentation } from '../src/layout/layout.machine'
 
 type Props = LayoutSchema['props']
 
+function makeRuntimeConfig(layerRegistry?: LayerRegistry): RuntimeConfig {
+  const idGenerator = createCounterIdGenerator()
+  const scope = createScope(document.body, idGenerator)
+  return createRuntimeConfig({ scope, idGenerator, layerRegistry })
+}
+
 /** props 走 signal：改 prop 要真的惊动 watch。 */
-function makeLayout(initial: Props = {}) {
+function makeLayout(initial: Props = {}, config: RuntimeConfig = makeRuntimeConfig(), serviceScope: Scope = config.scope) {
   const runtime = createVanillaRuntime()
   const props = runtime.signal<Props>(initial)
-  const service = createService(layoutMachine, { props: () => props.get(), runtime })
+  const service = createService(layoutMachine, { props: () => props.get(), runtime, scope: serviceScope })
+  service.refs.set('config', config)
   runtime.start()
   return {
     state: () => service.state.get(),
@@ -136,6 +144,16 @@ describe('layout 覆盖档的属性', () => {
 })
 
 describe('layout 覆盖档的消解', () => {
+  it('挂载前未注入 RuntimeConfig 时明确失败', () => {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({ siderPresentation: 'sheet' })
+    const idGenerator = createCounterIdGenerator()
+    const scope = createScope(document.body, idGenerator)
+    createService(layoutMachine, { props: () => props.get(), runtime, scope })
+
+    expect(() => runtime.start()).toThrow('[xh] Layout 覆盖式侧栏缺少 RuntimeConfig')
+  })
+
   it('点遮罩收起侧栏，并通知一次', () => {
     const seen: LayoutSiderCollapsedChangeDetails[] = []
     const l = makeLayout({ siderPresentation: 'sheet', onSiderCollapsedChange: d => seen.push(d) })
@@ -162,7 +180,36 @@ describe('layout 覆盖档的消解', () => {
     expect(inline.state()).toBe('expanded')
   })
 
-  it('层栈上有浮层时 Escape 归浮层：侧栏不跟着一起收', () => {
+  it('显式自定义层栈上有浮层时 Escape 归浮层：侧栏等上层退栈后再收', () => {
+    const registry = createLayerRegistry(document)
+    const l = makeLayout({ siderPresentation: 'sheet' }, makeRuntimeConfig(registry))
+    cleanups.push(l.stop)
+
+    const node = document.createElement('div')
+    document.body.append(node)
+    const { dispose } = registry.register({
+      kind: 'modal',
+      node: () => node,
+      branches: () => [],
+      isModal: () => true,
+      setModal: () => {},
+      surfaces: () => [],
+    })
+    cleanups.push(() => {
+      dispose()
+      node.remove()
+    })
+
+    escape()
+    expect(l.state()).toBe('expanded')
+
+    // 浮层退栈后这一键才轮到侧栏
+    dispose()
+    escape()
+    expect(l.state()).toBe('collapsed')
+  })
+
+  it('默认层栈上有浮层时同样先让上层响应 Escape', () => {
     const l = makeLayout({ siderPresentation: 'sheet' })
     cleanups.push(l.stop)
 
@@ -184,10 +231,48 @@ describe('layout 覆盖档的消解', () => {
     escape()
     expect(l.state()).toBe('expanded')
 
-    // 浮层退栈后这一键才轮到侧栏
     dispose()
     escape()
     expect(l.state()).toBe('collapsed')
+  })
+
+  it('默认层栈不会干扰使用自定义层栈的侧栏', () => {
+    const registry = createLayerRegistry(document)
+    const l = makeLayout({ siderPresentation: 'sheet' }, makeRuntimeConfig(registry))
+    cleanups.push(l.stop)
+
+    const node = document.createElement('div')
+    document.body.append(node)
+    const { dispose } = getLayerRegistry(document).register({
+      kind: 'modal',
+      node: () => node,
+      branches: () => [],
+      isModal: () => true,
+      setModal: () => {},
+      surfaces: () => [],
+    })
+    cleanups.push(() => {
+      dispose()
+      node.remove()
+    })
+
+    escape()
+    expect(l.state()).toBe('collapsed')
+  })
+
+  it('配置、层栈与机器 Scope 跨 Document 时明确失败', () => {
+    const frame = document.createElement('iframe')
+    document.body.append(frame)
+    cleanups.push(() => frame.remove())
+
+    const frameIdGenerator = createCounterIdGenerator()
+    const frameScope = createScope(frame.contentDocument!.body, frameIdGenerator)
+    const frameConfig = createRuntimeConfig({ scope: frameScope, idGenerator: frameIdGenerator })
+    const mainIdGenerator = createCounterIdGenerator()
+    const mainScope = createScope(document.body, mainIdGenerator)
+
+    expect(() => makeLayout({ siderPresentation: 'sheet' }, frameConfig, mainScope))
+      .toThrow('[xh] Layout 的 RuntimeConfig、LayerRegistry 与机器 Scope 必须属于同一 Document')
   })
 
   it('收起之后 Escape 不再往下发：收起态没有可收的东西', () => {

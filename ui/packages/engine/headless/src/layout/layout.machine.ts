@@ -1,5 +1,5 @@
 import type { LayoutBreakpoint, LayoutSchema, LayoutSiderPresentation } from './layout.types'
-import { getLayerRegistry, setup } from '@xihan-ui/core'
+import { setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<LayoutSchema>()
 
@@ -22,6 +22,9 @@ export const layoutMachine = createMachine({
   name: 'layout',
   context: ({ cell }) => ({
     siderNarrow: cell<boolean>(() => ({ defaultValue: false })),
+  }),
+  refs: () => ({
+    config: null,
   }),
   initialState: ({ prop }) => ((prop('siderCollapsed') ?? prop('defaultSiderCollapsed')) ? 'collapsed' : 'expanded'),
   watch: ({ track, prop, action }) => track([() => prop('siderCollapsed')], () => action(['syncSiderCollapsed'])),
@@ -111,9 +114,14 @@ export const layoutMachine = createMachine({
        * 且此刻没有浮层在层栈上——对话框、下拉这些叠在骨架之上，Escape 先归它们，
        * 一次按键不该既关掉浮层又把侧栏一起收走。
        */
-      dismissSiderSheet: ({ prop, context, send, scope }) => {
+      dismissSiderSheet: ({ prop, context, send, scope, refs }) => {
+        const config = refs.get('config')
+        if (!config)
+          throw new Error('[xh] Layout 覆盖式侧栏缺少 RuntimeConfig')
         const doc = scope.getDoc()
-        const registry = getLayerRegistry(doc)
+        if (config.scope.getDoc() !== doc || config.layerRegistry.ownerDocument !== doc)
+          throw new Error('[xh] Layout 的 RuntimeConfig、LayerRegistry 与机器 Scope 必须属于同一 Document')
+        const registry = config.layerRegistry
         const onKeydown = (event: KeyboardEvent): void => {
           if (event.key !== 'Escape' || event.defaultPrevented)
             return

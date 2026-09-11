@@ -1,4 +1,4 @@
-import type { MachineSchema, PropTypes } from '@xihan-ui/core'
+import type { MachineSchema, PropTypes, RuntimeConfig } from '@xihan-ui/core'
 
 /** 侧栏挂在行首还是行尾。 */
 export type LayoutSiderPlacement = 'start' | 'end'
@@ -16,6 +16,12 @@ export interface LayoutSiderCollapsedChangeDetails {
 export interface LayoutSiderBreakpointDetails {
   /** 视口宽度是否已达到 siderBreakpoint 那一档；为假即窄屏，侧栏已按折叠宽显示。 */
   matched: boolean
+}
+
+/** 适配器在机器挂载前注入的宿主运行时。 */
+export interface LayoutRefs {
+  /** Escape 层级判断所用的 Scope 与 LayerRegistry，二者必须属于机器 Scope 的同一 Document。 */
+  config: RuntimeConfig | null
 }
 
 export interface LayoutSchema extends MachineSchema {
@@ -64,7 +70,7 @@ export interface LayoutSchema extends MachineSchema {
     siderNarrow: boolean
   }
   computed: Record<string, never>
-  refs: Record<string, never>
+  refs: LayoutRefs
   state: 'expanded' | 'collapsed'
   event:
     | { type: 'SIDER.COLLAPSE' }

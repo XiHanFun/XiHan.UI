@@ -29,6 +29,11 @@
   与 `siderBreakpoint` 配着写就是「宽屏占一列、窄屏覆盖」——跨档时侧栏跟着开合，
   进覆盖档收起、回占位档展开，走的仍是 `siderCollapsed` 那条通道。
 - 覆盖档下点遮罩或按 Escape 收起侧栏，`sider-trigger` 照旧是把它唤出来的那个控件。
+- Escape 的让位判据读取当前组件 `RuntimeConfig.layerRegistry`：对话框、菜单等上层浮层仍在时侧栏保持展开，
+  上层退栈后下一次 Escape 才收侧栏。自定义 LayerRegistry 与同一 Document 的默认注册表互不干扰。
+- 直接使用 headless 机器时，要在 mount 前把与机器 Scope 属于同一 Document 的 `RuntimeConfig`
+  写进 `LayoutRefs.config`；缺失或跨 Document 混接都会明确失败。Vue、React 与 Web Components
+  适配器已经完成这段接线。
 - 覆盖档不锁焦点、不把背后的内容标成惰性：它是骨架里的一段，不是模态浮层。要模态用[抽屉](./drawer)。
 - 遮罩渲染在侧栏之前：两层同一个层号，谁盖谁由文档序决定。
 - 覆盖档下侧栏贴死视口，内衬与安全区取大的一头，所以 `--xh-layout-sider-padding` 在这一档要写单值（`max()` 收不了简写的多值）。
