@@ -1,5 +1,5 @@
-import type { Anchor, Cleanup, DismissReason, Layer, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
-import { acquireScrollLock, createDismissLayer, createFocusScope, hideOutside } from '@xihan-ui/core'
+import type { Anchor, Cleanup, DismissReason, Layer, LayerRegistry, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
+import { acquireScrollLock, bindLayerVisual, createDismissLayer, createFocusScope, hideOutside } from '@xihan-ui/core'
 
 // 「浮层 + 候选导航」这一族组件的外壳：进入展开态时定位、入层栈、挂消解层与焦点域，
 // 退出时逆序拆。各家不同的那几处（锚点怎么解析、焦点落在哪、归还给谁）由调用方交回调进来。
@@ -93,6 +93,8 @@ export interface OverlayLayerOptions {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄。缺省即不挂副作用。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 等宿主提交浮层节点后写入 Registry 派生的视觉层级。 */
+  flush?: (fn: () => void) => void
   /** 消解层的回报怎么翻成事件。 */
   onDismiss: (reason: DismissReason) => void
   /** 要焦点域就把各家不同的那几项交进来；不给即不挂，焦点留在组件原处。 */
@@ -101,6 +103,11 @@ export interface OverlayLayerOptions {
 
 type DeferOverlayCleanup = (cleanup: Cleanup) => void
 type RunOverlaySetup = <T>(setup: () => T) => T
+
+export interface LayerTransactionVisualOptions {
+  registry: LayerRegistry
+  flush: (fn: () => void) => void
+}
 
 export interface ModalLayerResourcesOptions {
   config: RuntimeConfig
@@ -175,11 +182,14 @@ export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalL
     if (o.enabled()) {
       if (!release)
         acquire()
-      return
     }
-    const cleanup = release
-    release = undefined
-    cleanup?.()
+    else {
+      const cleanup = release
+      release = undefined
+      cleanup?.()
+    }
+    // 模态资源与视觉 lane 读取同一份 enabled/isModal 事实；适配器无需另写回层对象。
+    o.config.layerRegistry.sync(o.layer)
   }
 
   return {
@@ -202,6 +212,7 @@ export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalL
 export function setupLayerTransaction(
   registerLayer: () => { layer: Layer, dispose: Cleanup },
   setup: (layer: Layer, defer: DeferOverlayCleanup, run: RunOverlaySetup) => void,
+  visual?: LayerTransactionVisualOptions,
 ): Cleanup {
   const registration = registerLayer()
   const cleanups: Cleanup[] = [registration.dispose]
@@ -255,6 +266,16 @@ export function setupLayerTransaction(
   }
 
   try {
+    if (visual) {
+      defer(bindLayerVisual({
+        registry: visual.registry,
+        layer: registration.layer,
+        flush: task => visual.flush(() => {
+          if (!disposed)
+            run(task)
+        }),
+      }))
+    }
     setup(registration.layer, defer, run)
     accepting = false
     return dispose
@@ -295,7 +316,7 @@ export function trackOverlayLayer(o: OverlayLayerOptions): Cleanup | undefined {
       })
       defer(() => focus.dispose())
     }
-  })
+  }, { registry: config.layerRegistry, flush: o.flush ?? (task => task()) })
 }
 
 /** 消解层的标准映射：Escape 与层外交互都收起，只在关闭原因上分开。 */

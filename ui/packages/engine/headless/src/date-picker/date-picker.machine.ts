@@ -520,10 +520,11 @@ export const datePickerMachine = createMachine({
 
       // 层的入栈出栈与消解层、焦点域同生命周期，绑在同一个效应里。
       // 层只能在展开期间入栈：消解层只让栈顶响应 Escape，常驻栈里会堵死其下各层的 Escape。
-      trackLayer: ({ refs, context, send }) => trackOverlayLayer({
+      trackLayer: ({ refs, context, send, flush }) => trackOverlayLayer({
         // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
         config: refs.get('config'),
         registerLayer: refs.get('registerLayer'),
+        flush,
         onDismiss: overlayCloseOnDismiss(send),
         focusScope: {
           // 每次读最新 ref，容器晚一拍就位也能命中

@@ -48,7 +48,6 @@ function setup(): Harness {
     node: () => content,
     branches: () => [],
     isModal: () => true,
-    setModal: () => {},
     surfaces: () => [],
   })
   cleanups.push(dispose)

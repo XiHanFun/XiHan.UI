@@ -217,7 +217,7 @@ export const popoverMachine = createMachine({
               refs.set('syncModalResources', null)
           })
           syncModalResources()
-        })
+        }, { registry: config.layerRegistry, flush })
 
         const presence = refs.get('presence')
         let disposed = false

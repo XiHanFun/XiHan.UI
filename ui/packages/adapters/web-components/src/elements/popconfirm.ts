@@ -161,7 +161,6 @@ export class XhPopconfirmElement extends XhElement {
       // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，浮层等于关不掉。
       branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 气泡确认不自带遮罩，没有"点它就该关本层"的表面
       surfaces: () => [],
     })

@@ -63,8 +63,8 @@ export { createRuntimeConfig } from './runtime-config'
 export type { Scope } from './scope'
 export { createScope, getActiveElementDeep } from './scope'
 // 结构：层栈
-export type { Layer, LayerKind, LayerRegistry } from './structure/layer-registry'
-export { createLayerRegistry, getLayerRegistry } from './structure/layer-registry'
+export type { Layer, LayerKind, LayerRegistry, LayerVisual, LayerVisualBindingOptions } from './structure/layer-registry'
+export { bindLayerVisual, createLayerRegistry, getLayerRegistry, LAYER_VISUAL_PROPERTY } from './structure/layer-registry'
 
 export type { PerDocumentRegistry } from './structure/per-document-registry'
 export { createPerDocumentRegistry } from './structure/per-document-registry'

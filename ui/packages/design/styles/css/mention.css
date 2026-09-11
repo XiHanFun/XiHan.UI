@@ -54,7 +54,7 @@
     position: fixed;
     /* listbox 与同级状态文字占同一个格；content 始终是唯一拥有材质的表面。 */
     display: grid;
-    z-index: var(--xh-mention-layer, var(--xh-layer-popover));
+    z-index: var(--xh-mention-layer, var(--xh-_layer, var(--xh-layer-popover)));
     /* 空壳不吃指针，交互只发生在 content 上 */
     pointer-events: none;
   }

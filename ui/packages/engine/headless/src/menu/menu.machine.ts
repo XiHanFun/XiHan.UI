@@ -210,10 +210,11 @@ export const menuMachine = createMachine({
       // 层、消解层与焦点域绑在同一个效应里，三者生命周期必须一致。层只在展开期间入栈——
       // 消解层只让栈顶响应 Escape，层若在挂载期就注册、与开合无关地常驻栈里，
       // 同页后挂载的那个会永久占着栈顶，把它下面每一层的 Escape 都堵死
-      trackLayer: ({ refs, context, send }) => trackOverlayLayer({
+      trackLayer: ({ refs, context, send, flush }) => trackOverlayLayer({
         // 无 DOM 环境时不挂副作用
         config: refs.get('config'),
         registerLayer: refs.get('registerLayer'),
+        flush,
         onDismiss: overlayCloseOnDismiss(send),
         focusScope: {
           // 每次读最新 ref，容器晚一拍就位也能命中

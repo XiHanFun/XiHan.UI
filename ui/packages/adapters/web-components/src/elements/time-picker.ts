@@ -226,7 +226,6 @@ export class XhTimePickerElement extends XhElement {
       // 整个输入行记为本层分支：点触发器算层内交互，开合交给它自己切换。
       branches: () => [this.getPart('control')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 浮层不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })

@@ -64,7 +64,6 @@ export function usePagination(props: PaginationSchema['props']): PaginationConte
         branches: () => [ellipsisRef.current, positionerRef.current].filter(Boolean) as Element[],
         // 摊开的页码是非模态的：不陷焦点、不锁滚动、无遮罩
         isModal: () => false,
-        setModal: () => {},
         surfaces: () => [],
       })
       service.refs.set('config', config)
@@ -85,7 +84,6 @@ export function usePagination(props: PaginationSchema['props']): PaginationConte
         node: () => pageSizeContentRef.current,
         branches: () => [pageSizeTriggerRef.current].filter(Boolean) as Element[],
         isModal: () => false,
-        setModal: () => {},
         surfaces: () => [],
       })
       service.refs.set('config', config)

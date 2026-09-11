@@ -436,10 +436,11 @@ export const comboboxMachine = createMachine({
 
       // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape。
       // 列表不接管焦点，因此不给焦点域；焦点离开整个组件由输入框的 blur 上报（INPUT.BLUR）
-      trackLayer: ({ refs, send }) => trackOverlayLayer({
+      trackLayer: ({ refs, send, flush }) => trackOverlayLayer({
         // 无 DOM 环境不挂副作用，状态机照常转移
         config: refs.get('config'),
         registerLayer: refs.get('registerLayer'),
+        flush,
         onDismiss: (reason) => {
           // Escape 走两拍（先清高亮再收起），所以不复用 CLOSE
           if (reason === 'escape-key') {

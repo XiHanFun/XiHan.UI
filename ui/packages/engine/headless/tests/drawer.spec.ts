@@ -306,7 +306,6 @@ function makeDomHarness(props: DrawerSchema['props'] = {}): DomHarness {
     node: () => (committed ? content : null),
     branches: () => [],
     isModal: () => props.modal ?? true,
-    setModal: () => {},
     surfaces: () => [],
   }))
   service.refs.set('presence', null)
@@ -486,7 +485,6 @@ function makeDismissHarness(initial: DrawerSchema['props'] = {}): DismissHarness
     node: () => content,
     branches: () => [],
     isModal: () => props.modal ?? true,
-    setModal: () => {},
     surfaces: () => [backdrop],
   }))
   service.refs.set('getContentEl', () => content)

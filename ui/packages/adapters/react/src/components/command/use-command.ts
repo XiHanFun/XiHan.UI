@@ -35,7 +35,6 @@ export function useCommand(props: CommandSchema['props']): CommandContext {
     kind: 'modal',
     branches: () => [],
     isModal: () => modalRef.current ?? true,
-    setModal: () => {},
   }), [])
 
   const overlay = useOverlay({

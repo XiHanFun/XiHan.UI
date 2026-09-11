@@ -48,7 +48,6 @@ function harness(options: HarnessOptions = {}): Harness {
     node: () => resolveNode(),
     branches: () => [],
     isModal: () => false,
-    setModal: () => {},
     surfaces: () => [],
   })
   const config = createRuntimeConfig({ scope, idGenerator, layerRegistry: registry })
@@ -281,7 +280,6 @@ describe('dismissableLayer 触摸 click 提交', () => {
       node: () => h.other,
       branches: () => [],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     transient.dispose()

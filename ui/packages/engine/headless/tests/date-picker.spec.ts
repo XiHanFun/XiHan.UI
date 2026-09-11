@@ -213,7 +213,6 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
       // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，等于关不掉
       branches: () => [control],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     return {

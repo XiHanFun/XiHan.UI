@@ -167,7 +167,6 @@ export class XhImageViewerElement extends XhElement {
       node: () => this.contentNode,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [this.backdropNode].filter(Boolean) as Element[],
     })
   }

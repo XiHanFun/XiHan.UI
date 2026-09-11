@@ -145,7 +145,7 @@
     --xh-scrollbar-track-bg: transparent;
 
     position: fixed;
-    z-index: var(--xh-menubar-layer, var(--xh-layer-popover));
+    z-index: var(--xh-menubar-layer, var(--xh-_layer, var(--xh-layer-popover)));
     /* 空壳不吃指针，交互只发生在 content 上 */
     pointer-events: none;
   }

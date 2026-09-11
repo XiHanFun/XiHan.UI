@@ -57,7 +57,6 @@ export function useCommand(
       node: () => contentRef.value,
       branches: () => [],
       isModal: () => props.modal ?? true,
-      setModal: () => {},
       surfaces: () => [backdropRef.value].filter(Boolean) as Element[],
     })
     const presence: PresenceHandle = createPresence({

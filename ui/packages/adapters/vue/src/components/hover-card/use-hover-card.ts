@@ -61,7 +61,6 @@ export function useHoverCard(
       branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
       // 悬停卡片非模态：不陷焦点、不锁滚动、无遮罩
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
 

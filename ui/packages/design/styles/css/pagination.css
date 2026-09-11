@@ -266,7 +266,7 @@
     --xh-scrollbar-track-bg: transparent;
 
     position: fixed;
-    z-index: var(--xh-pagination-layer, var(--xh-layer-popover));
+    z-index: var(--xh-pagination-layer, var(--xh-_layer, var(--xh-layer-popover)));
     /* 空壳不吃指针：省略位与面板之间那段间隙要能点得穿 */
     pointer-events: none;
   }

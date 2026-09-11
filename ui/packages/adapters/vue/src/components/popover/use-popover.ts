@@ -50,7 +50,6 @@ export function usePopover(
       // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉
       branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => props.modal ?? false,
-      setModal: () => {},
       surfaces: () => [],
     })
 

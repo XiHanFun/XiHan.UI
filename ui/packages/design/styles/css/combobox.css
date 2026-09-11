@@ -60,7 +60,7 @@
     position: fixed;
     /* listbox 与同级 status 占同一个格：content 始终是唯一表面，状态文字叠在它上面。 */
     display: grid;
-    z-index: var(--xh-combobox-layer, var(--xh-layer-popover));
+    z-index: var(--xh-combobox-layer, var(--xh-_layer, var(--xh-layer-popover)));
     /* 空壳不吃指针，交互只发生在 content 与 empty 上 */
     pointer-events: none;
   }

@@ -48,7 +48,6 @@ function realmHarness(): RealmHarness {
     node: () => nodeGetter(),
     branches: () => currentBranches,
     isModal: () => true,
-    setModal: () => {},
     surfaces: () => [],
   })
   const config = createRuntimeConfig({
@@ -257,7 +256,6 @@ describe('dismissableLayer 的所属 realm', () => {
           node: () => null,
           branches: () => [],
           isModal: () => true,
-          setModal: () => {},
           surfaces: () => [],
         })
         registration.dispose()
@@ -296,7 +294,6 @@ describe('dismissableLayer 的所属 realm', () => {
             node: () => null,
             branches: () => [],
             isModal: () => true,
-            setModal: () => {},
             surfaces: () => [],
           })
         }
@@ -477,7 +474,6 @@ describe('dismissableLayer 的所属 realm', () => {
           node: () => next,
           branches: () => [],
           isModal: () => true,
-          setModal: () => {},
           surfaces: () => [],
         }).dispose
       },
@@ -504,7 +500,6 @@ describe('dismissableLayer 的所属 realm', () => {
           node: () => next,
           branches: () => [],
           isModal: () => true,
-          setModal: () => {},
           surfaces: () => [],
         })
         dispose()
@@ -543,7 +538,6 @@ describe('dismissableLayer 的所属 realm', () => {
             node: () => next,
             branches: () => [],
             isModal: () => true,
-            setModal: () => {},
             surfaces: () => [],
           })
         }
@@ -604,7 +598,6 @@ describe('dismissableLayer 的所属 realm', () => {
         node: () => next,
         branches: () => [],
         isModal: () => true,
-        setModal: () => {},
         surfaces: () => [],
       })
       disposeNext = () => {

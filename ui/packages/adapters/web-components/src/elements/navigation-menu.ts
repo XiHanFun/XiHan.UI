@@ -163,7 +163,6 @@ export class XhNavigationMenuElement extends XhElement {
       node: () => this.getPart('root'),
       branches: () => [],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
   }

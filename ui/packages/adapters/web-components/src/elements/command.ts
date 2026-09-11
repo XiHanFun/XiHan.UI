@@ -260,7 +260,6 @@ export class XhCommandElement extends XhElement {
       node: () => this.getPart('content'),
       branches: () => [],
       isModal: () => this.modal ?? true,
-      setModal: () => {},
       surfaces: () => [this.getPart('backdrop')].filter(Boolean) as Element[],
     })
   }

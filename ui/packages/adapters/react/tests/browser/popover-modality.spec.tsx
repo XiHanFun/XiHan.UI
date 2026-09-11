@@ -37,6 +37,10 @@ function content(): HTMLElement {
   return document.querySelector<HTMLElement>(`[data-scope='popover'][data-part='content']`)!
 }
 
+function positioner(): HTMLElement {
+  return document.querySelector<HTMLElement>(`[data-scope='popover'][data-part='positioner']`)!
+}
+
 async function render(open: boolean, modal: boolean): Promise<void> {
   await inAct(() => {
     root!.render(
@@ -80,11 +84,19 @@ describe('popover 模态资源', () => {
     expect(document.activeElement).toBe(outside)
     expect(document.body.style.overflow).not.toBe('hidden')
     expect(getLayerRegistry(document).top()?.isModal()).toBe(false)
+    const nonModalLayer = Number(getComputedStyle(positioner()).zIndex)
+    expect(Number.isFinite(nonModalLayer)).toBe(true)
+    expect(positioner().style.getPropertyValue('--xh-_layer')).toContain('+ 2)')
 
     await render(true, true)
     expect(outside.inert).toBe(true)
     expect(document.body.style.overflow).toBe('hidden')
     expect(getLayerRegistry(document).top()?.isModal()).toBe(true)
+    expect(Number(getComputedStyle(positioner()).zIndex)).toBe(nonModalLayer + 1)
+    expect(positioner().style.getPropertyValue('--xh-_layer')).toContain('+ 3)')
+    positioner().style.setProperty('--xh-popover-layer', '7777')
+    expect(getComputedStyle(positioner()).zIndex).toBe('7777')
+    positioner().style.removeProperty('--xh-popover-layer')
     outside.blur()
     outside.focus()
     expect(document.activeElement).not.toBe(outside)
@@ -98,7 +110,6 @@ describe('popover 模态资源', () => {
       node: () => nested,
       branches: () => [],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     expect(nested.inert).toBe(false)

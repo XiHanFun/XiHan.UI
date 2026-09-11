@@ -76,7 +76,6 @@ export function usePagination(
       branches: () => [ellipsisRef.value, positionerRef.value].filter(Boolean) as Element[],
       // 摊开的页码是非模态的：不陷焦点、不锁滚动、无遮罩
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
 
@@ -86,7 +85,6 @@ export function usePagination(
       node: () => pageSizeContentRef.value,
       branches: () => [pageSizeTriggerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
 

@@ -45,7 +45,6 @@ function makeDomHarness(initial: ImageViewerSchema['props'] = {}): DomHarness {
     node: () => content,
     branches: () => [],
     isModal: () => true,
-    setModal: () => {},
     surfaces: () => [backdrop],
   }))
   service.refs.set('getContentEl', () => content)

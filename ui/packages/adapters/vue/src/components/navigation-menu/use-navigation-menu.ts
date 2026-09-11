@@ -42,7 +42,6 @@ export function useNavigationMenu(
       node: () => rootRef.value,
       branches: () => [],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
 

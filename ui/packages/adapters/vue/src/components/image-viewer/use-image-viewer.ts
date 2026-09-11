@@ -52,7 +52,6 @@ export function useImageViewer(
       node: () => contentRef.value,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [backdropRef.value].filter(Boolean) as Element[],
     })
     const presence: PresenceHandle = createPresence({

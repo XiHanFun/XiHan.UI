@@ -45,7 +45,6 @@ export function usePopconfirm(
     branches: () => [triggerRef.current].filter(Boolean) as Element[],
     // 气泡确认不陷焦点、不锁滚动、无遮罩
     isModal: () => false,
-    setModal: () => {},
   }), [])
 
   const overlay = useOverlay({

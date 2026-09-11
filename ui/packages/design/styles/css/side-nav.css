@@ -225,7 +225,7 @@
     --xh-_side-nav-available-w: 100vw;
 
     position: fixed;
-    z-index: var(--xh-side-nav-popout-layer, var(--xh-layer-popover));
+    z-index: var(--xh-side-nav-popout-layer, var(--xh-_layer, var(--xh-layer-popover)));
     pointer-events: auto;
   }
 

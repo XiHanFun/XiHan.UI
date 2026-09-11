@@ -111,7 +111,7 @@
   [data-scope='command'][data-part='backdrop'] {
     position: fixed;
     inset: 0;
-    z-index: var(--xh-command-backdrop-layer, var(--xh-layer-modal));
+    z-index: var(--xh-command-backdrop-layer, var(--xh-_layer, var(--xh-layer-modal)));
     background: var(--xh-command-backdrop-bg, var(--xh-bg-overlay));
   }
 
@@ -140,7 +140,7 @@
   [data-scope='command'][data-part='positioner'] {
     position: fixed;
     inset: 0;
-    z-index: var(--xh-command-layer, var(--xh-layer-modal));
+    z-index: var(--xh-command-layer, var(--xh-_layer, var(--xh-layer-modal)));
     display: flex;
     align-items: flex-start;
     justify-content: center;

@@ -345,7 +345,7 @@ export const imageViewerMachine = createMachine({
                 hidden = hideOutside(getTargets, config)
             })
           })
-        })
+        }, { registry: config.layerRegistry, flush })
       },
     },
   },

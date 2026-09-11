@@ -177,7 +177,6 @@ export class XhTourElement extends XhElement {
       node: () => this.contentNode,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       // 遮罩是"点它就该关本层"的表面；关不关仍由 closeOnInteractOutside 说了算（缺省不关）
       surfaces: () => [this.backdropNode].filter(Boolean) as Element[],
     })

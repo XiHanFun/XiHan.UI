@@ -16,18 +16,16 @@ import { DIAGNOSTIC_CODES } from '../src/kernel/diagnostics/codes'
 import { createCounterIdGenerator } from '../src/kernel/id-generator'
 import { createRuntimeConfig } from '../src/kernel/runtime-config'
 import { createScope } from '../src/kernel/scope'
-import { createLayerRegistry } from '../src/kernel/structure/layer-registry'
+import { bindLayerVisual, createLayerRegistry, LAYER_VISUAL_PROPERTY } from '../src/kernel/structure/layer-registry'
 
 const cleanups: Array<() => void> = []
 
 function layerInput(): Omit<Layer, 'id'> {
-  let modal = false
   return {
     kind: 'popover',
     node: () => null,
     branches: () => [],
-    isModal: () => modal,
-    setModal: value => void (modal = value),
+    isModal: () => false,
     surfaces: () => [],
   }
 }
@@ -99,8 +97,137 @@ describe('layer registry 快照', () => {
     expect(() => {
       (registration.layer as { kind: Layer['kind'] }).kind = 'modal'
     }).toThrow(TypeError)
-    registration.layer.setModal(true)
-    expect(registration.layer.isModal()).toBe(true)
+    expect(registration.layer.kind).toBe('popover')
+    expect(registration.layer.isModal()).toBe(false)
+  })
+})
+
+describe('layer registry 视觉层级', () => {
+  it('按 Document 内逻辑栈排序，kind 与 modal 只占各自序号内的 lane', () => {
+    const registry = createLayerRegistry(document)
+    const inline = registry.register({ ...layerInput(), kind: 'inline' })
+    const popover = registry.register(layerInput())
+    const modal = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true })
+    const nested = registry.register(layerInput())
+
+    expect(registry.visualOf(inline.layer)).toEqual({
+      visualIndex: 0,
+      visualLane: 0,
+      visualLayer: 'calc(var(--xh-layer-modal, 1100) + 0)',
+    })
+    expect(registry.visualOf(popover.layer)).toEqual({
+      visualIndex: 1,
+      visualLane: 2,
+      visualLayer: 'calc(var(--xh-layer-modal, 1100) + 10)',
+    })
+    expect(registry.visualOf(modal.layer)).toEqual({
+      visualIndex: 2,
+      visualLane: 5,
+      visualLayer: 'calc(var(--xh-layer-modal, 1100) + 21)',
+    })
+    expect(registry.visualOf(nested.layer)).toEqual({
+      visualIndex: 3,
+      visualLane: 2,
+      visualLayer: 'calc(var(--xh-layer-modal, 1100) + 26)',
+    })
+  })
+
+  it('动态 modal 通过显式 sync 重算 lane，并向订阅者发布同一冻结快照', () => {
+    const registry = createLayerRegistry(document)
+    let modal = false
+    const registration = registry.register({ ...layerInput(), isModal: () => modal })
+    const snapshots: Array<readonly Layer[]> = []
+    registry.subscribe(snapshot => snapshots.push(snapshot))
+
+    expect(registry.visualOf(registration.layer).visualLane).toBe(2)
+    modal = true
+    registry.sync(registration.layer)
+
+    expect(registry.visualOf(registration.layer).visualLane).toBe(3)
+    expect(snapshots).toEqual([registry.list()])
+    expect(Object.isFrozen(snapshots[0])).toBe(true)
+  })
+
+  it('不同 Document 的视觉序号完全隔离', () => {
+    const otherDocument = document.implementation.createHTMLDocument('other')
+    const first = createLayerRegistry(document)
+    const second = createLayerRegistry(otherDocument)
+    const a = first.register(layerInput())
+    const b = second.register(layerInput())
+
+    expect(first.visualOf(a.layer).visualIndex).toBe(0)
+    expect(second.visualOf(b.layer).visualIndex).toBe(0)
+    first.register(layerInput())
+    expect(second.visualOf(b.layer).visualIndex).toBe(0)
+  })
+
+  it('视觉绑定随注册释放收紧序号，并在释放时恢复作者原值', () => {
+    const registry = createLayerRegistry(document)
+    const lowerNode = document.createElement('div')
+    const upperNode = document.createElement('div')
+    lowerNode.style.setProperty(LAYER_VISUAL_PROPERTY, '作者值')
+    const lower = registry.register({ ...layerInput(), node: () => lowerNode })
+    const stopLower = bindLayerVisual({ registry, layer: lower.layer })
+    const upper = registry.register({ ...layerInput(), node: () => upperNode })
+    const stopUpper = bindLayerVisual({ registry, layer: upper.layer })
+
+    expect(lowerNode.style.getPropertyValue(LAYER_VISUAL_PROPERTY)).toBe('calc(var(--xh-layer-modal, 1100) + 2)')
+    expect(upperNode.style.getPropertyValue(LAYER_VISUAL_PROPERTY)).toBe('calc(var(--xh-layer-modal, 1100) + 10)')
+
+    stopLower()
+    lower.dispose()
+    expect(lowerNode.style.getPropertyValue(LAYER_VISUAL_PROPERTY)).toBe('作者值')
+    expect(upperNode.style.getPropertyValue(LAYER_VISUAL_PROPERTY)).toBe('calc(var(--xh-layer-modal, 1100) + 2)')
+
+    stopUpper()
+    upper.dispose()
+    expect(upperNode.style.getPropertyValue(LAYER_VISUAL_PROPERTY)).toBe('')
+  })
+
+  it('视觉节点换代时恢复旧节点，并把同一层级写到新节点', () => {
+    const registry = createLayerRegistry(document)
+    const first = document.createElement('div')
+    const second = document.createElement('div')
+    first.style.setProperty(LAYER_VISUAL_PROPERTY, '旧节点作者值')
+    let current = first
+    const registration = registry.register({ ...layerInput(), node: () => current })
+    const stop = bindLayerVisual({ registry, layer: registration.layer })
+
+    expect(first.style.getPropertyValue(LAYER_VISUAL_PROPERTY)).toContain('calc(')
+    current = second
+    registry.sync(registration.layer)
+
+    expect(first.style.getPropertyValue(LAYER_VISUAL_PROPERTY)).toBe('旧节点作者值')
+    expect(second.style.getPropertyValue(LAYER_VISUAL_PROPERTY)).toBe(registry.visualOf(registration.layer).visualLayer)
+
+    stop()
+    registration.dispose()
+    expect(second.style.getPropertyValue(LAYER_VISUAL_PROPERTY)).toBe('')
+  })
+
+  it('缺省视觉目标不污染 trigger 分支，特殊结构可以显式指定宿主', () => {
+    const registry = createLayerRegistry(document)
+    const content = document.createElement('div')
+    const trigger = document.createElement('button')
+    const special = document.createElement('div')
+    const regular = registry.register({ ...layerInput(), node: () => content, branches: () => [trigger] })
+    const stopRegular = bindLayerVisual({ registry, layer: regular.layer })
+
+    expect(content.style.getPropertyValue(LAYER_VISUAL_PROPERTY)).not.toBe('')
+    expect(trigger.style.getPropertyValue(LAYER_VISUAL_PROPERTY)).toBe('')
+
+    const explicit = registry.register({
+      ...layerInput(),
+      node: () => content,
+      visuals: () => [special],
+    })
+    const stopExplicit = bindLayerVisual({ registry, layer: explicit.layer })
+    expect(special.style.getPropertyValue(LAYER_VISUAL_PROPERTY)).toBe(registry.visualOf(explicit.layer).visualLayer)
+
+    stopExplicit()
+    explicit.dispose()
+    stopRegular()
+    regular.dispose()
   })
 })
 

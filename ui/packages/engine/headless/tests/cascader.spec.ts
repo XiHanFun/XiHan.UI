@@ -359,7 +359,6 @@ function mount(initial: Partial<Props> = {}, options: Options = {}): Harness {
       // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换
       branches: () => [trigger],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     return {

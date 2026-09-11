@@ -56,7 +56,6 @@ export function useCombobox(
       // 浮层壳一并记上：候选列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
       branches: () => [controlRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
 

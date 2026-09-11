@@ -232,7 +232,6 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
         node: () => (currentValue() == null ? null : contents.get(currentValue()!) ?? null),
         branches: () => [root],
         isModal: () => false,
-        setModal: () => {},
         surfaces: () => [],
       })
       return {

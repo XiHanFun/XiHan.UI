@@ -44,7 +44,6 @@ export function useCombobox(props: ComboboxSchema['props']): ComboboxContext {
     // 浮层壳一并记上：候选列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
     branches: () => [controlRef.current, positionerRef.current].filter(Boolean) as Element[],
     isModal: () => false,
-    setModal: () => {},
   }), [])
 
   const overlay = useOverlay({

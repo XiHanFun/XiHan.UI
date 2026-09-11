@@ -180,7 +180,7 @@
   /* 面板贴着自己那一项落位：横排从 trigger 底下长出来 */
   [data-scope='navigation-menu'][data-part='content'] {
     position: absolute;
-    z-index: var(--xh-navigation-menu-layer, var(--xh-layer-popover));
+    z-index: var(--xh-navigation-menu-layer, var(--xh-_layer, var(--xh-layer-popover)));
     inset-block-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
     inset-inline-start: 0;
     display: flex;
@@ -321,7 +321,7 @@
      两处共用一个槽的话调了一处另一处跟着走，差值就再也调不开 */
   [data-scope='navigation-menu'][data-part='viewport'] {
     position: absolute;
-    z-index: var(--xh-navigation-menu-layer, var(--xh-layer-popover));
+    z-index: var(--xh-navigation-menu-layer, var(--xh-_layer, var(--xh-layer-popover)));
     inset-block-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
     inset-inline-start: 0;
     display: block;

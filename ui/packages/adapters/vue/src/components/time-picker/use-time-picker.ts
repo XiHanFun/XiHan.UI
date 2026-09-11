@@ -51,7 +51,6 @@ export function useTimePicker(
       // 整个输入行记为本层分支，点触发器算层内交互
       branches: () => [controlRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
 

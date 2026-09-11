@@ -210,7 +210,6 @@ export class XhColorPickerElement extends XhElement {
       // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
       branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 浮层不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })

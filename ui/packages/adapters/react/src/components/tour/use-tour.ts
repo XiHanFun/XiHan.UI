@@ -53,7 +53,6 @@ export function useTour(props: TourSchema['props']): TourContext {
       node: () => contentRef.current,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       // 遮罩登记为可点关闭的表面，是否真关由 closeOnInteractOutside 决定
       surfaces: () => [backdropRef.current].filter(Boolean) as Element[],
     })

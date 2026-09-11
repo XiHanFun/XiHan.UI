@@ -135,7 +135,6 @@ export class XhDialogElement extends XhElement {
       node: () => this.contentNode,
       branches: () => [],
       isModal: () => this.machineProps().modal ?? true,
-      setModal: () => {},
       surfaces: () => [this.backdropNode].filter(Boolean) as Element[],
     })
   }

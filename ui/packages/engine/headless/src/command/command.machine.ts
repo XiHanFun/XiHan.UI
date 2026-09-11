@@ -302,7 +302,7 @@ export const commandMachine = createMachine({
               refs.set('syncModalResources', null)
           })
           syncModalResources()
-        })
+        }, { registry: config.layerRegistry, flush })
       },
     },
   },

@@ -35,7 +35,6 @@ function layer(registry: LayerRegistry): { layer: Layer, dispose: () => void } {
     node: () => node,
     branches: () => [],
     isModal: () => false,
-    setModal: () => {},
     surfaces: () => [],
   })
   cleanups.push(() => node.remove(), registration.dispose)
@@ -357,7 +356,6 @@ describe('escape fallback Hub 路由', () => {
           node: () => node,
           branches: () => [],
           isModal: () => false,
-          setModal: () => {},
           surfaces: () => [],
         })
       }

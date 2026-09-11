@@ -19,7 +19,6 @@ describe('浮层资源初始化事务', () => {
         node: () => content,
         branches: () => [],
         isModal: () => enabled,
-        setModal: () => {},
         surfaces: () => [],
       }),
       (layer, defer, run) => {
@@ -223,7 +222,6 @@ describe('浮层资源初始化事务', () => {
         node: () => document.createElement('div'),
         branches: () => [],
         isModal: () => false,
-        setModal: () => {},
         surfaces: () => [],
       })
       return {
@@ -291,7 +289,6 @@ describe('浮层资源初始化事务', () => {
             node: () => node,
             branches: () => [],
             isModal: () => false,
-            setModal: () => {},
             surfaces: () => [],
           }),
           onDismiss: () => {},

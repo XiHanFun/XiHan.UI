@@ -342,10 +342,11 @@ export const treeSelectMachine = createMachine({
 
       // 层与消解层、焦点域绑在同一个效应里，三者生命周期必须一致；
       // 层只在展开期间入栈，常驻会占死栈顶把下面各层的 Escape 堵死。
-      trackLayer: ({ refs, context, send }) => trackOverlayLayer({
+      trackLayer: ({ refs, context, send, flush }) => trackOverlayLayer({
         // 无 DOM 环境：状态机照常转移，不挂副作用
         config: refs.get('config'),
         registerLayer: refs.get('registerLayer'),
+        flush,
         onDismiss: overlayCloseOnDismiss(send),
         focusScope: {
           // 每次读最新 ref，容器晚一拍就位也能命中

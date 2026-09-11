@@ -109,7 +109,6 @@ function wireLayer(card: ReturnType<typeof makeCard>): string[] {
       // trigger 记为本层分支：点它算层内交互
       branches: () => [card.trigger],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     return {

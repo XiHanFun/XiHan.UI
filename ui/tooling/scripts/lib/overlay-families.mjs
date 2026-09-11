@@ -51,7 +51,7 @@ export const NO_SKIN_RULE = {
  * 没有 positioner 部件、面板由皮肤 position: absolute 排布的浮层，连同理由。
  * 按解剖发现不到它们，三道门禁都用 verifySkinPositioned 逐项核实登记理由仍成立：
  * 解剖没有 positioner、connect 不碰定位引擎、皮肤 content 是 absolute 且层级走 --xh-layer-popover
- * （直接引用或经 --xh-<名>-layer 槽兜底）。
+ * （直接引用或经公开槽、逻辑层私有槽兜底）。
  */
 export const SKIN_POSITIONED = {
   'navigation-menu': '面板贴着自己那一项落在列表下方，由皮肤 position: absolute 排布，不需要 flip / shift',
@@ -91,13 +91,13 @@ export async function verifySkinPositioned(name) {
   }
   else {
     const rule = contentRule(css, name)
-    const layer = new RegExp(`z-index:\\s*var\\((?:--xh-${name}-layer,\\s*var\\(--xh-layer-popover\\)|--xh-layer-popover)\\)`)
+    const layer = new RegExp(`z-index:\\s*var\\((?:--xh-${name}-layer,\\s*var\\(--xh-_layer,\\s*var\\(--xh-layer-popover\\)\\)|--xh-${name}-layer,\\s*var\\(--xh-layer-popover\\)|--xh-layer-popover)\\)`)
     if (rule == null)
       errs.push('皮肤里找不到 content 规则')
     else if (!/position:\s*absolute/.test(rule))
       errs.push('皮肤的 content 不是 position: absolute')
     else if (!layer.test(rule))
-      errs.push(`皮肤的 content 层级没走 --xh-layer-popover（允许 var(--xh-${name}-layer, var(--xh-layer-popover)) 或 var(--xh-layer-popover)）`)
+      errs.push(`皮肤的 content 层级没走公开槽 → --xh-_layer → --xh-layer-popover 的层级链`)
   }
   return errs
 }
