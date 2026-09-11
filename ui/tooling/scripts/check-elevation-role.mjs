@@ -16,6 +16,8 @@ import { join } from 'node:path'
 const STYLES_DIR = 'packages/design/styles/css'
 
 const ROLE = /--xh-elevation-(raised|lifted|floating|sheet)\b/
+// M1 是内容面贴地接触影，独立于浮层海拔；只允许在已登记的消费部件使用。
+const MATERIAL_SOFT = /--xh-material-soft-shadow\b/
 /**
  * 使用者槽包着角色令牌：var(--xh-<组件>-…, var(--xh-elevation-<role>))。
  * 允许套多层：加法式改名把新槽名排在外层、旧名留在它的兜底位上，链因此不止一层。
@@ -36,6 +38,7 @@ const SLOTTED = /^var\((?:--xh-[a-z][a-z0-9-]*,\s*var\()+--xh-elevation-(?:raise
  */
 const EXPECTED = {
   'back-top': { trigger: ['sheet'] },
+  'card': { root: ['soft', 'raised', 'lifted'] },
   'cascader': { content: ['floating'] },
   'color-picker': { content: ['floating'] },
   'combobox': { content: ['floating'], empty: ['floating'], loading: ['floating'] },
@@ -93,13 +96,15 @@ for (const file of files) {
       if (/^var\((?:--xh-[a-z0-9-]+,\s*var\()*--xh-_[\w-]+\)+$/.test(value))
         continue
       checked++
-      const role = value.match(ROLE)?.[1]
+      const role = MATERIAL_SOFT.test(value) ? 'soft' : value.match(ROLE)?.[1]
       if (!role) {
         problems.push(`${file}  ${selector.slice(0, 60)}  ${decl[1]}: ${value.slice(0, 60)}  —— 没走 --xh-elevation-raised / floating / sheet`)
         continue
       }
-      if (decl[1] === 'box-shadow' && !SLOTTED.test(value))
+      if (decl[1] === 'box-shadow' && !SLOTTED.test(value)
+        && !/^var\(--xh-[a-z][a-z0-9-]*,\s*var\(--xh-material-soft-shadow\)\)$/.test(value)) {
         problems.push(`${file}  ${selector.slice(0, 60)}  box-shadow: ${value.slice(0, 60)}  —— 没给使用者留 --xh-<组件>-…-shadow 槽`)
+      }
       // 这条规则落在哪个部件上：取选择器里最后一个 data-part，那才是被样式作用的那个
       const part = [...selector.matchAll(/\[data-part='([a-z0-9-]+)'\]/g)].map(m => m[1]).at(-1)
       if (!part)

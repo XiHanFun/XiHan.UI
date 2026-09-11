@@ -13196,10 +13196,18 @@
   flex-direction: column;
   /* 封面要被圆角裁住，所以根自己收边 */
   overflow: hidden;
-  border: var(--xh-stroke-thin) solid transparent;
+  border: var(--xh-stroke-thin) solid var(--xh-material-soft-border);
   border-radius: var(--xh-card-radius, var(--xh-shape-surface));
-  background: var(--xh-card-bg, var(--xh-bg-surface));
-  color: var(--xh-card-fg, var(--xh-fg-default));
+  /* 一像素顶光与实体底分层画：打印/高对比只需把 highlight 归零，不会留下无效 shadow 列表。 */
+  background:
+    linear-gradient(
+      to bottom,
+      var(--xh-material-soft-highlight) 0 var(--xh-stroke-thin),
+      transparent var(--xh-stroke-thin)
+    ),
+    var(--xh-card-bg, var(--xh-material-soft-bg));
+  color: var(--xh-card-fg, var(--xh-material-soft-fg));
+  box-shadow: var(--xh-card-shadow, var(--xh-material-soft-shadow));
   /* 各段的内边距由根上这一个槽位统一给，换档只改这里 */
   --xh-_card-pad: var(--xh-space-4);
 }
@@ -13210,7 +13218,9 @@
 }
 
 [data-scope='card'][data-part='root'][data-variant='subtle'] {
+  border-color: transparent;
   background: var(--xh-card-bg, var(--xh-bg-subtle));
+  box-shadow: none;
 }
 
 [data-scope='card'][data-part='root'][data-variant='elevated'] {
@@ -13218,7 +13228,9 @@
 }
 
 [data-scope='card'][data-part='root'][data-variant='ghost'] {
+  border-color: transparent;
   background: transparent;
+  box-shadow: none;
 }
 
 /* —— 尺寸 —— */
@@ -13236,7 +13248,7 @@
 @media (hover: hover) {
   [data-scope='card'][data-part='root'][data-hoverable]:hover {
     border-color: var(--xh-card-border-hover, var(--xh-border-strong));
-    box-shadow: var(--xh-card-shadow-hover, var(--xh-elevation-raised));
+    box-shadow: var(--xh-card-shadow-hover, var(--xh-elevation-lifted));
   }
 }
 
@@ -13273,7 +13285,7 @@
 }
 
 [data-scope='card'][data-part='description'] {
-  color: var(--xh-card-description-fg, var(--xh-fg-muted));
+  color: var(--xh-card-description-fg, var(--xh-material-soft-fg-muted));
   font-size: var(--xh-card-description-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-normal);
 }
@@ -13300,7 +13312,7 @@
 /* 分隔线画在下一段的上边，段与段之间才只有一条 */
 [data-scope='card'][data-part='root'][data-split] [data-scope='card'][data-part='body'],
 [data-scope='card'][data-part='root'][data-split] [data-scope='card'][data-part='footer'] {
-  border-block-start: var(--xh-stroke-thin) solid var(--xh-card-divider, var(--xh-border-subtle));
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-card-divider, var(--xh-material-soft-separator));
   padding-block-start: var(--xh-_card-pad);
 }
 
