@@ -350,7 +350,6 @@
         "mention",
         "popconfirm",
         "popover",
-        "select",
         "time-picker",
         "tour",
         "tree-select"
@@ -362,12 +361,14 @@
         "context-menu.css",
         "menu.css",
         "menubar.css",
+        "select.css",
         "tooltip.css"
       ],
       "consumers": [
         "context-menu",
         "menu",
         "menubar",
+        "select",
         "tooltip"
       ]
     },
@@ -377,12 +378,14 @@
         "context-menu.css",
         "menu.css",
         "menubar.css",
+        "select.css",
         "tooltip.css"
       ],
       "consumers": [
         "context-menu",
         "menu",
         "menubar",
+        "select",
         "tooltip"
       ]
     },
@@ -443,7 +446,6 @@
         "pagination",
         "popconfirm",
         "popover",
-        "select",
         "side-nav",
         "time-picker",
         "tour",

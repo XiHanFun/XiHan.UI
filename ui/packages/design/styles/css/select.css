@@ -1,4 +1,33 @@
 @layer xihan.motion {
+  /* 菜单族共用同一份短位移动作；本皮肤自带定义，单独引入 select.css 时也不会丢动画。 */
+  @keyframes xh-overlay-slide-in {
+    from {
+      opacity: 0;
+      translate:
+        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes xh-overlay-slide-out {
+    from {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    to {
+      opacity: 0;
+      translate:
+        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
+    }
+  }
+
   /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
      动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
   /* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
@@ -49,6 +78,11 @@
     /* 触发器实测宽度，由定位引擎经内联自定义属性写进来，内容层拿它当最小宽的下界；
        引擎没算（尚未落位 / 无引擎）时为 0，max 取静态档，等于不抬宽 */
     --xh-_select-anchor-w: 0px;
+    /* WC 嵌套层仍在父层 DOM 内；先截断父 positioner 的方向，再按本层 placement 开一侧。 */
+    --xh-_overlay-enter-up: 0;
+    --xh-_overlay-enter-down: 0;
+    --xh-_overlay-enter-left: 0;
+    --xh-_overlay-enter-right: 0;
 
     position: fixed;
     z-index: var(--xh-select-layer, var(--xh-layer-popover));
@@ -61,26 +95,20 @@
     visibility: hidden;
   }
 
-  /* 缩放原点与进场位移按落定的那一侧给：浮层从贴着盒的那条边涨开、沿主轴退让一小段。
-     两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
-     origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+  /* 进场位移按落定的一侧给。placement 与 translate 都是物理量，不随书写方向翻。 */
   [data-scope='select'][data-part='positioner'][data-placement^='top'] {
-    --xh-_overlay-origin-y: 100%;
     --xh-_overlay-enter-down: 1;
   }
 
   [data-scope='select'][data-part='positioner'][data-placement^='bottom'] {
-    --xh-_overlay-origin-y: 0;
     --xh-_overlay-enter-up: 1;
   }
 
   [data-scope='select'][data-part='positioner'][data-placement^='left'] {
-    --xh-_overlay-origin-x: 100%;
     --xh-_overlay-enter-right: 1;
   }
 
   [data-scope='select'][data-part='positioner'][data-placement^='right'] {
-    --xh-_overlay-origin-x: 0;
     --xh-_overlay-enter-left: 1;
   }
 
@@ -109,6 +137,7 @@
        没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
     --xh-_select-ring: var(--xh-ring-focus);
     --xh-_select-accent: var(--xh-_tone, var(--xh-fg-brand));
+    --xh-_select-item-selected-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
     --xh-_select-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
   }
 
@@ -415,6 +444,7 @@
   /* 浮层外壳：描边、底色、阴影与整体尺寸归它。它自己不滚——滚的是里面的 list，
      底部操作区因此留在视口里，不随条目滚走 */
   [data-scope='select'][data-part='content'] {
+    position: relative;
     display: flex;
     flex-direction: column;
     /* 下界跟着触发器走，面板不窄于它；可用宽度的夹取写在这一侧：
@@ -428,16 +458,28 @@
     max-block-size: min(var(--xh-select-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_select-available-h));
     padding-block: var(--xh-select-content-py, var(--xh-space-1));
     padding-inline: var(--xh-select-content-px, var(--xh-space-1));
-    border: var(--xh-stroke-thin) solid var(--xh-select-content-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-select-content-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-select-content-radius, var(--xh-shape-surface));
-    background: var(--xh-select-content-bg, var(--xh-bg-surface));
-    color: var(--xh-select-content-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-select-content-shadow, var(--xh-elevation-floating));
+    background: var(--xh-select-content-bg, var(--xh-material-frosted-bg));
+    color: var(--xh-select-content-fg, var(--xh-material-frosted-fg));
+    box-shadow: var(--xh-select-content-shadow, var(--xh-material-frosted-shadow));
+    -webkit-backdrop-filter: var(--xh-select-content-backdrop, var(--xh-material-frosted-backdrop));
+    backdrop-filter: var(--xh-select-content-backdrop, var(--xh-material-frosted-backdrop));
     /* 条目的悬停底色是方角，滚到两端时会探出外壳的圆角 */
     overflow: hidden;
     pointer-events: auto;
-    /* 进退场的缩放锚在贴着盒的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
-    transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
+  }
+
+  /* 顶光单独叠在真实四边 border 内侧；强制色归零后轮廓仍在。 */
+  [data-scope='select'][data-part='content']::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: var(--xh-stroke-thin);
+    border-radius: inherit;
+    background: var(--xh-select-content-highlight, var(--xh-material-frosted-highlight));
+    pointer-events: none;
   }
 
   /* 列表框本体：只管滚动，留白归外壳。
@@ -461,8 +503,8 @@
     gap: var(--xh-select-footer-gap, var(--xh-space-2));
     padding-block: var(--xh-select-footer-py, var(--xh-space-2));
     padding-inline: var(--xh-select-footer-px, var(--xh-space-2));
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-select-footer-border, var(--xh-border-subtle));
-    color: var(--xh-select-footer-fg, var(--xh-fg-muted));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-select-footer-border, var(--xh-material-frosted-separator));
+    color: var(--xh-select-footer-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-select-footer-font-size, var(--xh-text-secondary-size));
   }
 
@@ -482,15 +524,16 @@
   }
 
   [data-scope='select'][data-part='content'][data-state='open'] {
-    animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
     /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, scale, translate;
+    will-change: opacity, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
      免得动画结束到真收起之间闪一下原样 */
   [data-scope='select'][data-part='content'][data-state='closed'] {
-    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    will-change: opacity, translate;
   }
 
   /* 空态占位：待在 content 里、list 的兄弟；盒与阴影归 content，这里只画一句居中的次要文字 */
@@ -499,7 +542,7 @@
     flex: none;
     padding-block: var(--xh-select-empty-py, var(--xh-space-3));
     padding-inline: var(--xh-select-empty-px, var(--xh-_select-item-px));
-    color: var(--xh-select-empty-fg, var(--xh-fg-subtle));
+    color: var(--xh-select-empty-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-select-empty-font-size, var(--xh-_select-font-size));
     line-height: var(--xh-leading-none);
     text-align: center;
@@ -516,7 +559,7 @@
     flex: none;
     padding-block: var(--xh-select-loading-py, var(--xh-space-3));
     padding-inline: var(--xh-select-loading-px, var(--xh-_select-item-px));
-    color: var(--xh-select-loading-fg, var(--xh-fg-subtle));
+    color: var(--xh-select-loading-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-select-loading-font-size, var(--xh-_select-font-size));
     line-height: var(--xh-leading-none);
     text-align: center;
@@ -536,9 +579,11 @@
     display: none;
   }
 
-  /* 组间留白只加在后继分组上：首组顶上已经有 list 的内边距，再加一层会显得头重 */
+  /* 后继分组用一条实体细线分段；既有 spacing 槽改管线后的内距，总节奏不另造一套。 */
   [data-scope='select'][data-part='group'] + [data-scope='select'][data-part='group'] {
-    margin-block-start: var(--xh-select-group-spacing, var(--xh-space-1_5));
+    padding-block-start: var(--xh-select-group-spacing, var(--xh-space-1_5));
+    border-block-start: var(--xh-stroke-thin) solid
+      var(--xh-select-group-separator-color, var(--xh-material-frosted-separator));
   }
 
   /* 分组标题不是选项、进不了导航，画成小号次要文字，
@@ -547,7 +592,7 @@
     display: block;
     padding-block: var(--xh-select-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-select-group-label-px, var(--xh-_select-item-px));
-    color: var(--xh-select-group-label-fg, var(--xh-fg-subtle));
+    color: var(--xh-select-group-label-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-select-group-label-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-select-group-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
@@ -565,7 +610,7 @@
     padding-block: var(--xh-select-item-py, var(--xh-_select-item-py));
     padding-inline: var(--xh-select-item-px, var(--xh-_select-item-px));
     border-radius: var(--xh-select-item-radius, var(--xh-shape-control));
-    color: var(--xh-select-item-fg, var(--xh-fg-default));
+    color: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
     font-size: var(--xh-select-item-font-size, var(--xh-_select-font-size));
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
     line-height: var(--xh-select-item-leading, var(--xh-leading-normal));
@@ -582,9 +627,14 @@
     background: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
   }
 
-  /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
-     两者因此能同时看见 */
+  [data-scope='select'][data-part='item']:not([data-disabled]):active {
+    background: var(--xh-select-item-bg-pressed, var(--xh-bg-subtle-active));
+  }
+
+  /* 选中给一块不透明品牌淡底：焦点环压在稳定实体面上，复杂背景不会从透明处穿进来。
+     规则排在 hover/highlight 后，选中行聚焦时仍以环与勾选标记叠加表达两种状态。 */
   [data-scope='select'][data-part='item'][data-state='checked'] {
+    background: var(--xh-select-item-bg-selected, var(--xh-_select-item-selected-bg));
     color: var(--xh-select-item-fg-selected, var(--xh-_select-item-selected-fg));
     font-weight: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-medium));
   }
@@ -596,10 +646,11 @@
   /* 禁用走 aria-disabled 而非原生 disabled，条目仍可聚焦，样式由 data-disabled 表达 */
   [data-scope='select'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
+    cursor: not-allowed;
   }
 
   [data-scope='select'][data-part='item-text'] {
-    flex: 1;
+    flex: 1 1 auto;
     /* 弹性子项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
     min-inline-size: 0;
     overflow: hidden;
@@ -613,7 +664,9 @@
     flex: none;
     align-items: center;
     justify-content: center;
+    margin-inline-start: auto;
     inline-size: var(--xh-select-item-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-select-item-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-select-item-indicator-fg, var(--xh-_select-accent));
     visibility: hidden;
   }
@@ -632,6 +685,10 @@
 
   [data-scope='select'][data-part='item-indicator'][data-state='checked'] {
     visibility: visible;
+  }
+
+  [data-scope='select'][data-part='item-indicator'][data-disabled] {
+    color: var(--xh-fg-disabled);
   }
 
   /* 表单影子：视觉隐藏但留在布局与表单里，原生校验提示需要一个可定位的框 */

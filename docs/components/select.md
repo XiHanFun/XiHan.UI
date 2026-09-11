@@ -21,6 +21,12 @@
 - 浮层里可以有分组、底部操作区与滚动加载。
 - 三种非条目相位各有部件：空（`empty`）与在途（`loading`）。`loading` 为真时列表报 `aria-busy`，在途占位顶上来、空态让位。
 - 大量选项时列表可以只渲可视区。
+- 触发盒保持实体 Field Chrome，选项浮层使用 M2 磨砂表面；面板落位后按实际 placement 从锚点一侧
+  淡入短移，退出沿原方向收回，不缩放整张列表。
+- 选项按作者给出的 DOM 顺序排布；正式 `item-text` 弹性占据剩余宽度并负责长文省略，
+  `item-indicator` 固定在逻辑末端。选中行有不透明的品牌淡底、强调文字和勾选标记；键盘焦点
+  继续用独立焦点环叠加表达，复杂页面背景不会从选中底透进来。
+- 相邻分组之间自动画材质分隔线，分组标题、空态、加载态与 footer 使用浮层的次要前景节奏。
 
 ## 示例
 
@@ -386,11 +392,11 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-select-action-bg` · `--xh-select-action-bg-active` · `--xh-select-action-bg-hover` · `--xh-select-action-fg` · `--xh-select-action-fg-hover` · `--xh-select-action-font-size` · `--xh-select-action-radius` · `--xh-select-action-size` · `--xh-select-content-bg` · `--xh-select-content-border` · `--xh-select-content-fg` · `--xh-select-content-max-h` · `--xh-select-content-max-w` · `--xh-select-content-min-w` · `--xh-select-content-px` · `--xh-select-content-py` · `--xh-select-content-radius` · `--xh-select-content-shadow` · `--xh-select-control-bg` · `--xh-select-control-bg-disabled` · `--xh-select-control-bg-hover` · `--xh-select-control-bg-readonly` · `--xh-select-control-border` · `--xh-select-control-border-focus` · `--xh-select-control-border-hover` · `--xh-select-control-border-invalid` · `--xh-select-control-gap` · `--xh-select-control-h` · `--xh-select-control-min-w` · `--xh-select-control-px` · `--xh-select-control-radius` · `--xh-select-control-shadow` · `--xh-select-empty-fg` · `--xh-select-empty-font-size` · `--xh-select-empty-px` · `--xh-select-empty-py` · `--xh-select-footer-border` · `--xh-select-footer-fg` · `--xh-select-footer-font-size` · `--xh-select-footer-gap` · `--xh-select-footer-px` · `--xh-select-footer-py` · `--xh-select-gap` · `--xh-select-group-gap` · `--xh-select-group-label-fg` · `--xh-select-group-label-font-size` · `--xh-select-group-label-font-weight` · `--xh-select-group-label-px` · `--xh-select-group-label-py` · `--xh-select-group-spacing` · `--xh-select-icon-size` · `--xh-select-indicator-fg` · `--xh-select-item-bg-hover` · `--xh-select-item-fg` · `--xh-select-item-fg-selected` · `--xh-select-item-font-size` · `--xh-select-item-font-weight-selected` · `--xh-select-item-gap` · `--xh-select-item-indicator-fg` · `--xh-select-item-indicator-size` · `--xh-select-item-leading` · `--xh-select-item-px` · `--xh-select-item-py` · `--xh-select-item-radius` · `--xh-select-label-fg` · `--xh-select-label-fg-disabled` · `--xh-select-label-font-size` · `--xh-select-label-font-weight` · `--xh-select-layer` · `--xh-select-list-gap` · `--xh-select-loading-fg` · `--xh-select-loading-font-size` · `--xh-select-loading-px` · `--xh-select-loading-py` · `--xh-select-placeholder-fg` · `--xh-select-tag-list-gap` · `--xh-select-trigger-fg` · `--xh-select-trigger-font-size` · `--xh-select-trigger-gap`
+`--xh-select-action-bg` · `--xh-select-action-bg-active` · `--xh-select-action-bg-hover` · `--xh-select-action-fg` · `--xh-select-action-fg-hover` · `--xh-select-action-font-size` · `--xh-select-action-radius` · `--xh-select-action-size` · `--xh-select-content-backdrop` · `--xh-select-content-bg` · `--xh-select-content-border` · `--xh-select-content-fg` · `--xh-select-content-highlight` · `--xh-select-content-max-h` · `--xh-select-content-max-w` · `--xh-select-content-min-w` · `--xh-select-content-px` · `--xh-select-content-py` · `--xh-select-content-radius` · `--xh-select-content-shadow` · `--xh-select-control-bg` · `--xh-select-control-bg-disabled` · `--xh-select-control-bg-hover` · `--xh-select-control-bg-readonly` · `--xh-select-control-border` · `--xh-select-control-border-focus` · `--xh-select-control-border-hover` · `--xh-select-control-border-invalid` · `--xh-select-control-gap` · `--xh-select-control-h` · `--xh-select-control-min-w` · `--xh-select-control-px` · `--xh-select-control-radius` · `--xh-select-control-shadow` · `--xh-select-empty-fg` · `--xh-select-empty-font-size` · `--xh-select-empty-px` · `--xh-select-empty-py` · `--xh-select-footer-border` · `--xh-select-footer-fg` · `--xh-select-footer-font-size` · `--xh-select-footer-gap` · `--xh-select-footer-px` · `--xh-select-footer-py` · `--xh-select-gap` · `--xh-select-group-gap` · `--xh-select-group-label-fg` · `--xh-select-group-label-font-size` · `--xh-select-group-label-font-weight` · `--xh-select-group-label-px` · `--xh-select-group-label-py` · `--xh-select-group-separator-color` · `--xh-select-group-spacing` · `--xh-select-icon-size` · `--xh-select-indicator-fg` · `--xh-select-item-bg-hover` · `--xh-select-item-bg-pressed` · `--xh-select-item-bg-selected` · `--xh-select-item-fg` · `--xh-select-item-fg-selected` · `--xh-select-item-font-size` · `--xh-select-item-font-weight-selected` · `--xh-select-item-gap` · `--xh-select-item-indicator-fg` · `--xh-select-item-indicator-size` · `--xh-select-item-leading` · `--xh-select-item-px` · `--xh-select-item-py` · `--xh-select-item-radius` · `--xh-select-label-fg` · `--xh-select-label-fg-disabled` · `--xh-select-label-font-size` · `--xh-select-label-font-weight` · `--xh-select-layer` · `--xh-select-list-gap` · `--xh-select-loading-fg` · `--xh-select-loading-font-size` · `--xh-select-loading-px` · `--xh-select-loading-py` · `--xh-select-placeholder-fg` · `--xh-select-tag-list-gap` · `--xh-select-trigger-fg` · `--xh-select-trigger-font-size` · `--xh-select-trigger-gap`
 
 ## 动效
 
-关键帧 `xh-overlay-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -409,6 +415,14 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 
 - 触发器的宽度固定，别随选中项的长度变——整行布局会跟着抖。
 - 选项超过约二十条就该加搜索，也就是换成[组合框](./combobox)。
+- 多选标签直接复用 Tag 的 M1 表面；调整标签外观应使用 `--xh-tag-*` 覆盖槽，不要在 Select 里重画。
+- 自定义选项里的图标、头像、正文和尾部提示按作者 DOM 顺序写；需要截断的正文放进 `item-text`，
+  不要靠皮肤猜测任意 span 的职责。
+
+### 当前边界
+
+- 当前 anatomy 尚无独立 `separator`、`viewport`、`scroll-up-button` 或 `scroll-down-button`。本次只在
+  相邻 `group` 之间提供自动分隔，`list` 继续同时承担滚动视口；这些新部件需要独立行为与三端 API。
 
 ## 反模式
 

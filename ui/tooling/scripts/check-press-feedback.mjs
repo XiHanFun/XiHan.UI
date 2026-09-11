@@ -60,7 +60,7 @@ const PRESSABLE = {
   'text-field': ['clear-trigger'],
   // 标签里的删除钮是 tag 的 close-trigger，按压归 tag.css
   'tags-input': ['clear-trigger'],
-  'select': ['clear-trigger'],
+  'select': ['clear-trigger', { part: 'item', feedback: 'surface' }],
   'date-field': ['clear-trigger'],
   'time-field': ['clear-trigger'],
   'file-upload': ['clear-trigger', 'item-delete-trigger', 'trigger'],
@@ -145,7 +145,6 @@ const PRESSABLE = {
 const NO_PRESS = {
   // 列表族条目：一行文字，按下的回执走高亮档（悬停中性灰、展开路径品牌淡底）
   'listbox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'select:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'combobox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'command:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'cascader:item': '列表行的按下回执走高亮档，缩放会抖动整列',
