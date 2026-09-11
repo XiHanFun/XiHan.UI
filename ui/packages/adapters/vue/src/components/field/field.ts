@@ -1,8 +1,8 @@
-import type { FieldProps } from '@xihan-ui/headless'
 import type { SlotsType, VNode } from 'vue'
 import { defineComponent, h } from 'vue'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { useOptionalFormContext, useOptionalFormField } from '../form/context'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideField, useFieldContext } from './context'
 import { useField } from './use-field'
 
@@ -18,27 +18,7 @@ export const XhFieldRoot = defineComponent({
     controlId: { type: String, default: undefined },
   },
   setup(props, { slots }) {
-    const form = useOptionalFormContext()
-    const handle = useOptionalFormField()
-    // getter 透传保住响应性：props 与表单 api 谁变都会带动 connect 重算
-    const merged: FieldProps = {
-      get invalid() {
-        return props.invalid ?? (form && handle ? form.api.value.isFieldInvalid(handle.name()) : undefined)
-      },
-      get required() {
-        return props.required ?? (form && handle ? form.api.value.isFieldRequired(handle.name()) : undefined)
-      },
-      get disabled() {
-        return props.disabled ?? (form && handle ? form.api.value.disabled : undefined)
-      },
-      get readOnly() {
-        return props.readOnly ?? (form && handle ? form.api.value.readOnly : undefined)
-      },
-      get controlId() {
-        return props.controlId
-      },
-    }
-    const ctx = useField(merged)
+    const ctx = useField(useFormControlProps(props))
     provideField(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

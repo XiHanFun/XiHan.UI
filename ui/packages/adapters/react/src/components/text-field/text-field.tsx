@@ -9,6 +9,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { TextFieldProvider, useTextFieldContext } from './context'
 import { useTextField } from './use-text-field'
 
@@ -68,7 +69,7 @@ export function XhTextFieldRoot({
   children,
   ...rest
 }: XhTextFieldRootProps): ReactNode {
-  const ctx = useTextField(withXhConfig('text-field', {
+  const ctx = useTextField(withXhConfig('text-field', useFormControlProps({
     value,
     defaultValue,
     type,
@@ -87,7 +88,7 @@ export function XhTextFieldRoot({
     size,
     translations,
     onValueChange,
-  }) as TextFieldProps)
+  })) as TextFieldProps)
   const api = ctx.api
   return (
     <TextFieldProvider value={ctx}>
@@ -176,8 +177,8 @@ export function XhTextFieldInput({ as = 'input', ...rest }: XhTextFieldInputProp
 
   const props = mergeReactProps(
     fieldLabel({
-      ...ctx.api.getInputProps({ as }) as Record<string, unknown>,
       ...fieldWiring,
+      ...ctx.api.getInputProps({ as }) as Record<string, unknown>,
     }),
     rest as Record<string, unknown>,
     {

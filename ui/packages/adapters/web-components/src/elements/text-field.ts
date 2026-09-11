@@ -1,6 +1,6 @@
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { TextFieldSchema, TextFieldType, TextFieldValueChangeDetails } from '@xihan-ui/headless'
-import { autoSizeTextarea, connectTextField, textFieldAnatomy, textFieldMachine, textFieldMeta } from '@xihan-ui/headless'
+import type { FormControlState, TextFieldSchema, TextFieldType, TextFieldValueChangeDetails } from '@xihan-ui/headless'
+import { autoSizeTextarea, connectTextField, resolveFormControlState, textFieldAnatomy, textFieldMachine, textFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -98,17 +98,30 @@ export class XhTextFieldElement extends XhElement {
   }
 
   private readonly ctrl = new MachineController<TextFieldSchema>(this, textFieldMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** Form 或 Field 发现此 Light-DOM 控件后调用；不是公开的业务写值入口。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<TextFieldSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      required: this.required,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
       type: this.type,
       placeholder: this.placeholder,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      required: this.required ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      required: control.required,
+      invalid: control.invalid,
       name: this.name,
       maxLength: this.maxLength,
       clearable: this.clearable ?? false,

@@ -1,3 +1,5 @@
+export { resolveFormControlState } from './form-control'
+export type { FormControlState, ResolvedFormControlState } from './form-control'
 export {
   FORM_FIELD_NAME_ATTR,
   formAnatomy,

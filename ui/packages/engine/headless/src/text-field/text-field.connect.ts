@@ -102,6 +102,8 @@ export function connectTextField<T extends PropTypes>(
       'aria-labelledby': ids.label,
       // 显式 true/false：省略是没说，显式 false 是明确说了不是
       'aria-invalid': invalid ? 'true' : 'false',
+      'aria-readonly': readOnly ? 'true' : 'false',
+      'aria-required': prop('required') ? 'true' : 'false',
       // 皮肤只认 data-*、不认标签名，多行宿主的排版靠这一条认出来
       'data-multiline': dataAttr((input.as ?? 'input') === 'textarea'),
       'data-auto-resize': dataAttr((input.as ?? 'input') === 'textarea' && !!autoSize),
