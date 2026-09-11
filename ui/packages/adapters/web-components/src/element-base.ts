@@ -29,7 +29,7 @@ function touchesParts(record: MutationRecord): boolean {
  * 角色节点上属于作者的"声明"（与机器写上去的"状态"分属两侧），改了就等于换了一个条目，必须重新接线。
  * 只盯这几个而不是所有属性：wire() 每帧都往角色节点写 aria- 与 data-，全量观察等于自己触发自己。
  */
-const AUTHORED_ATTRS = ['value', 'disabled', 'aria-disabled'] as const
+const AUTHORED_ATTRS = ['value', 'name', 'data-path', 'disabled', 'aria-disabled'] as const
 
 function rewritesDeclaration(record: MutationRecord): boolean {
   if (record.type !== 'attributes' || !record.attributeName)
