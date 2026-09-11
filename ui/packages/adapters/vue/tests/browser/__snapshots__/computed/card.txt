@@ -190,16 +190,16 @@ border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
 border-left-width: 1px
-border-top-color: rgba(0, 0, 0, 0)
-border-right-color: rgba(0, 0, 0, 0)
-border-bottom-color: rgba(0, 0, 0, 0)
-border-left-color: rgba(0, 0, 0, 0)
+border-top-color: oklch(0.967 0.001 258)
+border-right-color: oklch(0.967 0.001 258)
+border-bottom-color: oklch(0.967 0.001 258)
+border-left-color: oklch(0.967 0.001 258)
 min-height: 0px
 font-size: 16px
 line-height: normal
 font-weight: 400
 color: oklch(0.145 0.005 258)
-background-color: oklch(1 0 0)
+background-color: oklch(0.995 0.001 258)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease

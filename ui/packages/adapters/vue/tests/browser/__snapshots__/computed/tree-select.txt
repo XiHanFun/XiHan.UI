@@ -389,7 +389,7 @@ outline-color: oklch(0.439 0.006 258)
 padding-top: 6px
 padding-right: 12px
 padding-bottom: 6px
-padding-left: 12px
+padding-left: 36px
 row-gap: 8px
 column-gap: 8px
 border-top-left-radius: 6px

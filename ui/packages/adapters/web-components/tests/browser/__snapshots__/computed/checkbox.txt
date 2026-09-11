@@ -19,15 +19,15 @@ border-top-color: oklch(1 0 0)
 border-right-color: oklch(1 0 0)
 border-bottom-color: oklch(1 0 0)
 border-left-color: oklch(1 0 0)
-min-height: 0px
+min-height: auto
 font-size: 12px
 line-height: 12px
 font-weight: 400
 color: oklch(1 0 0)
 background-color: rgba(0, 0, 0, 0)
-transition-property: all
-transition-duration: 0s
-transition-timing-function: ease
+transition-property: opacity, scale
+transition-duration: 0.12s, 0.12s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease
@@ -59,10 +59,10 @@ font-size: 16px
 line-height: normal
 font-weight: 400
 color: oklch(1 0 0)
-background-color: oklch(1 0 0)
-transition-property: background, border-color, scale
-transition-duration: 0.12s, 0.12s, 0.12s
-transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
+background-color: oklch(0.995 0.001 258)
+transition-property: background-color, border-color, box-shadow, scale
+transition-duration: 0.12s, 0.12s, 0.12s, 0.12s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease
