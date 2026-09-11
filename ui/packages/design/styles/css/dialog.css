@@ -140,16 +140,16 @@
       ),
       linear-gradient(
         to bottom,
-        var(--xh-dialog-header-bg, var(--xh-material-glass-bg)),
+        var(--xh-dialog-content-lens-bg, var(--xh-dialog-header-bg, var(--xh-material-glass-bg))),
         var(
           --xh-dialog-bg,
           var(--xh-material-elevated-bg)
-        ) var(--xh-dialog-header-lens-depth, calc(var(--xh-dialog-py, var(--xh-surface-py-md)) + var(--xh-control-h-md)))
+        ) var(--xh-dialog-content-lens-depth, var(--xh-dialog-header-lens-depth, calc(var(--xh-dialog-py, var(--xh-surface-py-md)) + var(--xh-control-h-md))))
       );
     color: var(--xh-dialog-fg, var(--xh-material-elevated-fg));
     box-shadow: var(--xh-dialog-shadow, var(--xh-material-elevated-shadow));
-    -webkit-backdrop-filter: var(--xh-dialog-backdrop-filter, var(--xh-material-elevated-backdrop));
-    backdrop-filter: var(--xh-dialog-backdrop-filter, var(--xh-material-elevated-backdrop));
+    -webkit-backdrop-filter: var(--xh-dialog-content-backdrop-filter, var(--xh-dialog-backdrop-filter, var(--xh-material-elevated-backdrop)));
+    backdrop-filter: var(--xh-dialog-content-backdrop-filter, var(--xh-dialog-backdrop-filter, var(--xh-material-elevated-backdrop)));
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 drawer 一致：
@@ -291,13 +291,13 @@
     margin: 0;
     font-size: var(--xh-dialog-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-dialog-title-font-weight, var(--xh-text-heading-3-weight));
-    color: var(--xh-dialog-title-fg, var(--xh-material-elevated-fg));
+    color: var(--xh-dialog-title-fg, var(--xh-fg-default));
   }
 
   [data-scope='dialog'][data-part='description'] {
     margin: 0;
     font-size: var(--xh-dialog-description-font-size, var(--xh-text-body-size));
-    color: var(--xh-dialog-description-fg, var(--xh-material-elevated-fg-muted));
+    color: var(--xh-dialog-description-fg, var(--xh-fg-muted));
   }
 
   /* 关闭按钮是绝对定位的，不占流内宽度：标题得自己让出右上角那块，
@@ -319,7 +319,7 @@
     border: 0;
     border-radius: var(--xh-dialog-close-radius, var(--xh-shape-control));
     background: transparent;
-    color: var(--xh-dialog-close-fg, var(--xh-material-elevated-fg-muted));
+    color: var(--xh-dialog-close-fg, var(--xh-fg-muted));
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
