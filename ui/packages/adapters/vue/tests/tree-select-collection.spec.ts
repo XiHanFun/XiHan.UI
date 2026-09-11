@@ -137,6 +137,35 @@ function partsOf(...roots: Element[]): (string | null)[] {
 }
 
 describe('tree-select 的 collection', () => {
+  it('hasChildren 懒分支仍铺成 branch；取回子项后由 headless 有效树驱动重渲', async () => {
+    const portal = newPortal()
+    let resolve: (nodes: { value: string, label: string }[]) => void = () => {}
+    const w = mount(defineComponent({
+      setup() {
+        provideXhConfig({ portalContainer: () => portal })
+        return () => h(XhTreeSelectRoot, {
+          collection: [{ value: 'remote', label: '远程目录', hasChildren: true }],
+          loadChildren: () => new Promise((done) => { resolve = done }),
+        })
+      },
+    }), { attachTo: document.body })
+
+    const branch = portal.querySelector<HTMLElement>('[data-part="branch"]')!
+    expect(branch).not.toBeNull()
+    portal.querySelector<HTMLElement>('[data-part="branch-trigger"]')!.click()
+    await nextTick()
+    expect(branch.getAttribute('aria-busy')).toBe('true')
+
+    resolve([{ value: 'fetched', label: '已取回' }])
+    await Promise.resolve()
+    await Promise.resolve()
+    await new Promise(resolve => setTimeout(resolve, 0))
+    await nextTick()
+    expect([...portal.querySelectorAll('[data-part="item-text"]')].map(el => el.textContent)).toEqual(['已取回'])
+    expect(branch.hasAttribute('data-loading')).toBe(false)
+    w.unmount()
+  })
+
   it('不写插槽时按数据铺开整套部件，带 children 的落成 branch', () => {
     const portal = newPortal()
     const w = mountFromCollection([], portal)

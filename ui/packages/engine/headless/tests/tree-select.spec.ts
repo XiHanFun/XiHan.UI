@@ -1226,6 +1226,98 @@ describe('浮层定位', () => {
   })
 })
 
+describe('treeSelect 懒分支', () => {
+  it('首次展开在 headless 开请求，成功结果成为有效树而不是由适配器拼接', async () => {
+    const loadChildren = vi.fn(async () => [{ value: 'leaf', label: 'Leaf' }])
+    const h = mount({
+      collection: [{ value: 'root', label: 'Root', hasChildren: true }],
+      loadChildren,
+    })
+
+    h.api().expand('root')
+    expect(h.api().branchLoadState('root')).toEqual({ status: 'loading' })
+    expect((h.api().getBranchProps({ value: 'root' }) as Record<string, unknown>)['aria-busy']).toBe('true')
+    await tick()
+
+    expect(loadChildren).toHaveBeenCalledTimes(1)
+    expect(h.api().branchLoadState('root')).toEqual({ status: 'idle' })
+    expect(h.api().collection).toEqual([{ value: 'root', label: 'Root', hasChildren: true, children: [{ value: 'leaf', label: 'Leaf' }] }])
+    expect(h.api().visibleNodes.map(node => node.value)).toEqual(['root', 'leaf'])
+  })
+
+  it('失败保留 cause；重试使旧请求中止，旧结果不能覆盖新一轮', async () => {
+    let rejectFirst: (error: unknown) => void = () => {}
+    let resolveSecond: (children: { value: string }[]) => void = () => {}
+    const loadChildren = vi.fn()
+      .mockImplementationOnce(({ signal }: { signal: AbortSignal }) => new Promise<never>((_, reject) => {
+        rejectFirst = reject
+        signal.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')))
+      }))
+      .mockImplementationOnce(() => new Promise<{ value: string }[]>((resolve) => { resolveSecond = resolve }))
+    const h = mount({ collection: [{ value: 'root', hasChildren: true }], loadChildren })
+
+    h.api().expand('root')
+    await tick()
+    rejectFirst(new Error('offline'))
+    await tick()
+    expect(h.api().branchLoadState('root')?.status).toBe('error')
+
+    h.api().retryBranch('root')
+    await tick()
+    expect(loadChildren).toHaveBeenCalledTimes(2)
+    resolveSecond([{ value: 'fresh' }])
+    await tick()
+
+    expect(h.api().branchLoadState('root')).toEqual({ status: 'idle' })
+    expect(h.api().collection[0]?.children?.map(node => node.value)).toEqual(['fresh'])
+  })
+
+  it('不理会中止的 loader 即使晚到，也不能用旧成功结果覆盖重试', async () => {
+    let resolveFirst: (children: { value: string }[]) => void = () => {}
+    let resolveSecond: (children: { value: string }[]) => void = () => {}
+    const loadChildren = vi.fn()
+      .mockImplementationOnce(() => new Promise<{ value: string }[]>((done) => { resolveFirst = done }))
+      .mockImplementationOnce(() => new Promise<{ value: string }[]>((done) => { resolveSecond = done }))
+    const h = mount({ collection: [{ value: 'root', hasChildren: true }], loadChildren })
+
+    h.api().expand('root')
+    await tick()
+    h.api().retryBranch('root')
+    await tick()
+    resolveFirst([{ value: 'stale' }])
+    await tick()
+    expect(h.api().branchLoadState('root')).toEqual({ status: 'loading' })
+
+    resolveSecond([{ value: 'current' }])
+    await tick()
+    expect(h.api().collection[0]?.children?.map(node => node.value)).toEqual(['current'])
+  })
+
+  it('外部移除懒分支会中止请求，延迟兑现不写回已失效 collection', async () => {
+    let resolve: (children: { value: string }[]) => void = () => {}
+    let signal: AbortSignal | undefined
+    const h = mount({
+      collection: [{ value: 'root', hasChildren: true }],
+      loadChildren: ({ signal: next }) => {
+        signal = next
+        return new Promise<{ value: string }[]>((done) => {
+          resolve = done
+        })
+      },
+    })
+
+    h.api().expand('root')
+    await tick()
+    h.setProps({ collection: [] })
+    expect(signal?.aborted).toBe(true)
+    resolve([{ value: 'stale' }])
+    await tick()
+
+    expect(h.api().collection).toEqual([])
+    expect(h.api().branchLoadState('root')).toBeNull()
+  })
+})
+
 describe('浮层的层与消解', () => {
   it('escape 收起且把关闭原因报成 esc', async () => {
     const onOpenChange = vi.fn()

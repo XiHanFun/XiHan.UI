@@ -1,7 +1,7 @@
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
-  TreeNode,
   TreeSelectExpandedValueChangeDetails,
+  TreeSelectNode,
   TreeSelectNodeProps,
   TreeSelectOpenChangeDetails,
   TreeSelectSchema,
@@ -114,6 +114,7 @@ export class XhTreeSelectElement extends XhElement {
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
+    loadChildren: { attribute: false },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -127,7 +128,9 @@ export class XhTreeSelectElement extends XhElement {
     form: { converter: STRING_CONVERTER },
   }
 
-  declare collection?: TreeNode[]
+  declare collection?: TreeSelectNode[]
+  /** 懒分支的取数函数；只能作为 property 设置。 */
+  declare loadChildren?: TreeSelectSchema['props']['loadChildren']
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare expandedValue?: string[]
@@ -199,6 +202,7 @@ export class XhTreeSelectElement extends XhElement {
   private machineProps(): Partial<TreeSelectSchema['props']> {
     return {
       collection: this.collection,
+      loadChildren: this.loadChildren,
       value: this.value,
       defaultValue: this.defaultValue,
       expandedValue: this.expandedValue,

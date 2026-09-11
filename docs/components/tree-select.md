@@ -20,11 +20,13 @@
 - 单选、多选、分支与叶子统一用末端对号表示选中，级联半选使用横线；正文保持正常颜色和字重，
   中性底只用于悬停和键盘高亮。展开箭头位于行首，与选择标记分开。
 - `cascade` 与 `checkedStrategy` 决定勾选是否带子级、回显给哪一层。
-- 支持只挑叶子不挑分支、浮层内关键词过滤、子节点异步加载。
+- 支持只挑叶子不挑分支、浮层内关键词过滤、子节点异步加载：节点用 `hasChildren: true` 声明懒分支，首次展开由 `loadChildren({ node, signal })` 取直接子项；失败保留 cause，`api.retryBranch(value)` 才会重试。重试、节点移除和卸载都会作废旧请求，旧回调不能覆盖有效树。
 - 空（`empty`）与在途（`loading`）两个相位各有部件；`loading` 为真时树报 `aria-busy`，空态让位。
 - 输入框保持实体；浮层使用 M2 磨砂材质、内侧顶光和四向短位移，不缩放树中文字。
   树、空态与加载态共用一个外壳，底部操作使用同材质分隔线；增强对比度时材质自动实体化。
   面板宽度受定位后的可用空间约束，即使触发器更宽也不会强行撑大面板。
+- 仅 `{ hasChildren: true, children: undefined }` 触发 `loadChildren({ node, signal })`；`children: []` 是已知为空目录，永不请求。成功子项、可见行、键盘导航与级联选择由 headless 的同一有效树计算，三端不各自缓存结果。
+- 失败态不会降级为空态：`api.branchLoadState(value)` 公开 `idle` / `loading` / `error` 与原始 cause，`api.retryBranch(value)` 才开启新一轮。重试、从 collection 移除该节点、或组件卸载都会中止并作废旧请求；即使旧 Promise 随后兑现或拒绝，也不能覆盖当前结果。加载中的 `branch` 带 `aria-busy="true"` 和 `data-loading`，失败带 `data-error`，自定义结构可据此放置提示与重试控件。
 
 ## 示例
 
@@ -126,7 +128,8 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `TreeNode[]` |  | 树数据，层级元信息与显示文本的唯一事实源。缺省为空树。 |
+| `collection` | `TreeSelectNode[]` |  | 树数据，层级元信息与显示文本的唯一事实源。`hasChildren` 且未给 children 是懒分支；已给 children 时它优先。缺省为空树。 |
+| `loadChildren` | `(request: TreeSelectLoadChildrenRequest) => Promise<TreeSelectNode[] \| undefined \| void> \| TreeSelectNode[] \| undefined \| void` |  | 取回 `hasChildren: true` 分支的直接子项。首次展开自动调用，失败后用 api.retryBranch 显式重试。旧请求的兑现或拒绝不会覆盖更新的一轮，也不会写回已移除的分支。 |
 | `value` | `string \| string[]` |  | 选中值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 单选写成裸串是简写，内部一律归一成数组。 |
 | `defaultValue` | `string \| string[]` |  |  |
 | `expandedValue` | `string[]` |  | 展开集合。给定即受控，语义同上。 |
@@ -195,7 +198,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `NODE.FOCUS` · `NODE.LOST` · `NODE.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `FORM.RESET`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `NODE.FOCUS` · `NODE.LOST` · `NODE.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `BRANCH.RETRY` · `FORM.RESET`
 
 **判据**：`isOpenControlled` · `isMultiple`
 
@@ -206,7 +209,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `collection` | `readonly TreeNode[]` | 作者给的原始树数据。 |
+| `collection` | `readonly TreeSelectNode[]` | 当前有效树：含 headless 已成功取回的懒分支子项。 |
 | `visibleNodes` | `readonly TreeVisibleNode[]` | 当前可见行序列（收起分支的子树不在其中）。 方向键、Home/End 与连打检索都在它上面走，不是在原始树上走。 |
 | `value` | `string[]` | 选中集合；单选下长度 ≤ 1，形状不随模式变。 |
 | `expandedValue` | `string[]` |  |
@@ -221,11 +224,13 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `isSelected` | `(value: string) => boolean` |  |
 | `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代有勾有不勾）；非级联恒 false。 |
 | `isExpanded` | `(value: string) => boolean` |  |
+| `branchLoadState` | `(value: string) => TreeSelectBranchLoadSnapshot \| null` | 非懒分支返回 null；懒分支即使尚未请求也返回 idle。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[]) => void` |  |
 | `setExpandedValue` | `(next: string[]) => void` |  |
 | `expand` | `(value: string) => void` |  |
 | `collapse` | `(value: string) => void` |  |
+| `retryBranch` | `(value: string) => void` | 失败后重新取该分支；非懒分支与未知 value 不产生副作用。 |
 | `select` | `(value: string) => void` | 单选替换、多选切换，与点节点同一语义。 |
 | `clear` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
@@ -297,6 +302,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `tree` | `aria-multiselectable` | 'true' \| 'false' |
 | `tree` | `role` | 'tree' |
 | `item-indicator` | `aria-hidden` | 'true' |
+| `branch` | `aria-busy` | 'true' \| undefined |
 | `branch` | `aria-expanded` | 'true' \| 'false' |
 | `branch` | `aria-label` | metaOf(node.value)?.label |
 | `branch-trigger` | `aria-hidden` | 'true' |
