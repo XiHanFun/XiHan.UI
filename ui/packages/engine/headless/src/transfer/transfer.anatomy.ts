@@ -6,6 +6,7 @@ import { createAnatomy } from '@xihan-ui/core'
 // 则两侧共用同一个 part 名（panel-header / list / item ……），由 data-side 区分。
 export const transferAnatomy = createAnatomy('transfer', [
   'root',
+  'hidden-input',
   'source-panel',
   'target-panel',
   'panel-header',

@@ -58,6 +58,8 @@ export interface XhTransferRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   collection?: TransferItem[]
   value?: string[]
   defaultValue?: string[]
+  name?: string
+  form?: string
   selection?: string[]
   defaultSelection?: string[]
   searchable?: boolean
@@ -81,6 +83,8 @@ export function XhTransferRoot({
   collection,
   value,
   defaultValue,
+  name,
+  form,
   selection,
   defaultSelection,
   searchable,
@@ -104,6 +108,8 @@ export function XhTransferRoot({
     collection,
     value,
     defaultValue,
+    name,
+    form,
     selection,
     defaultSelection,
     searchable,
@@ -124,7 +130,7 @@ export function XhTransferRoot({
   const api = ctx.api
   return (
     <TransferProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>, { ref: ctx.rootRef })}>
         {renderSlot(children, {
           value: api.value,
           selection: api.selection,
@@ -139,6 +145,7 @@ export function XhTransferRoot({
           toggleAll: api.toggleAll,
           move: api.move,
         })}
+        {api.value.map(value => <input key={value} {...api.getHiddenInputProps({ value }) as Record<string, unknown>} />)}
       </div>
     </TransferProvider>
   )

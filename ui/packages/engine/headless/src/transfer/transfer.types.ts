@@ -72,6 +72,10 @@ export interface TransferSchema extends MachineSchema {
      */
     value?: string[]
     defaultValue?: string[]
+    /** 原生表单字段名；目标侧每个值提交一个同名字段。 */
+    name?: string
+    /** 原生表单 ID；显式指定时覆盖祖先表单归属。 */
+    form?: string
     /** 两侧合起来被勾中的值（用于搬运）。给定即受控，语义同上。 */
     selection?: string[]
     defaultSelection?: string[]
@@ -125,6 +129,7 @@ export interface TransferSchema extends MachineSchema {
   /** 没有开合、没有异步，机器只有一个状态，逻辑全在 context 与 actions。 */
   state: 'idle'
   event:
+    | { type: 'FORM.RESET' }
     /** 整体改写 target 侧集合（外部 setValue 走它）。 */
     | { type: 'VALUE.SET', value: string[] }
     /** 整体改写勾选集合。 */
@@ -142,6 +147,7 @@ export interface TransferSchema extends MachineSchema {
   tag: never
   guard: never
   action:
+    | 'resetToDefault'
     | 'setValue'
     | 'setSelection'
     | 'toggleItem'
@@ -184,6 +190,8 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   /** 程序化搬运；焦点安排不在这里做，那要知道是哪个节点触发的。 */
   move: (to: TransferSide) => void
   getRootProps: () => T['element']
+  /** 单个目标值的原生出口；适配器按 value 数组逐项渲染，空集合不提交字段。 */
+  getHiddenInputProps: (props: { value: string }) => T['input']
   getPanelProps: (props: TransferPanelProps) => T['element']
   getPanelHeaderProps: (props: TransferPanelProps) => T['element']
   getPanelTitleProps: (props: TransferPanelProps) => T['element']

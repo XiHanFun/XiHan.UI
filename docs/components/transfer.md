@@ -18,6 +18,10 @@
 - `oneWay` 单向搬运：只能往目标搬，搬完不再退回。
 - 一万条时只渲可视区。
 - 每一侧的空（`empty`）与在途（`loading`）各有部件；`loading` 为真时两侧列表报 `aria-busy`，空态让位。
+- 设置 `name` 后，目标侧每个值以一个同名原生字段提交；源侧勾选 `selection` 不参与提交。三端自动装配隐藏出口，无需手写节点。
+- 值内逗号保留原样，使用 `new FormData(form).getAll(name)` 读取数组；目标为空时没有该字段，显式选中的空字符串则是一个有效字段值。
+- `form` 可指定同一文档或影子树内的原生表单 ID；指定无效 ID 时不关联其他表单。整体 `disabled` 不提交，只读和禁用条目已经存在的目标值仍提交。
+- 原生 `form.reset()` 恢复 `defaultValue` 与 `defaultSelection`，清理搜索与导航状态。受控值没有声明默认值时保持业务数据；声明默认值时只通知重置意图，由业务回写受控值。
 
 ## 示例
 
@@ -95,7 +99,7 @@ tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="transfer"`：`root` · **`source-panel`** · **`target-panel`** · `panel-header` · `panel-title` · `panel-count` · `search` · **`list`** · `group` · `group-label` · `item` · `item-text` · `item-checkbox` · `empty` · `loading` · **`to-target-trigger`** · `to-source-trigger` · `select-all-trigger`
+`data-scope="transfer"`：`root` · `hidden-input` · **`source-panel`** · **`target-panel`** · `panel-header` · `panel-title` · `panel-count` · `search` · **`list`** · `group` · `group-label` · `item` · `item-text` · `item-checkbox` · `empty` · `loading` · **`to-target-trigger`** · `to-source-trigger` · `select-all-trigger`
 
 ## Props
 
@@ -104,6 +108,8 @@ tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两�
 | `collection` | `TransferItem[]` |  | 条目全集，元信息的唯一事实源。缺省为空。 |
 | `value` | `string[]` |  | 落在 target 侧的值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
+| `name` | `string` |  | 原生表单字段名；目标侧每个值提交一个同名字段。 |
+| `form` | `string` |  | 原生表单 ID；显式指定时覆盖祖先表单归属。 |
 | `selection` | `string[]` |  | 两侧合起来被勾中的值（用于搬运）。给定即受控，语义同上。 |
 | `defaultSelection` | `string[]` |  |  |
 | `searchable` | `boolean` |  | 每侧带一个搜索框；关掉时搜索框仍在 DOM 里但带 hidden，且搜索串一律按空处理。 |
@@ -150,7 +156,7 @@ tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两�
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `SEARCH.SET` · `ITEM.FOCUS` · `LIST.BLUR`
+**事件**：`FORM.RESET` · `VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `SEARCH.SET` · `ITEM.FOCUS` · `LIST.BLUR`
 
 ## connect API
 
@@ -180,6 +186,7 @@ tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两�
 | `toggleAll` | `(side: TransferSide) => void` |  |
 | `move` | `(to: TransferSide) => void` | 程序化搬运；焦点安排不在这里做，那要知道是哪个节点触发的。 |
 | `getRootProps` | `() => T['element']` |  |
+| `getHiddenInputProps` | `(props: { value: string }) => T['input']` | 单个目标值的原生出口；适配器按 value 数组逐项渲染，空集合不提交字段。 |
 | `getPanelProps` | `(props: TransferPanelProps) => T['element']` |  |
 | `getPanelHeaderProps` | `(props: TransferPanelProps) => T['element']` |  |
 | `getPanelTitleProps` | `(props: TransferPanelProps) => T['element']` |  |

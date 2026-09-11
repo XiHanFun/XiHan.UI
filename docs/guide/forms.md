@@ -120,10 +120,10 @@ const controlProps = useFieldControl();
 
 ## 哪些组件参与
 
-27 个：checkbox、checkbox-group、color-picker、combobox、date-field、date-picker、editable、
-file-upload、image-cropper、number-field、password-input、pin-input、radio-group、rating、
+28 个：checkbox、checkbox-group、color-picker、combobox、date-field、date-picker、editable、field-array、
+file-upload、image-cropper、mention、number-field、password-input、pin-input、radio-group、rating、
 segmented、select、signature-pad、slider、switch、tags-input、text-field、time-field、
-time-picker、tree-select。
+time-picker、toggle-group、transfer、tree-select。
 
 新加的表单组件忘了接重置会被门禁拦下：判据的分母是从源码里扫出来的（`types` 的 props 里有
 `name?: string` 即表单字段），不是手写名单。

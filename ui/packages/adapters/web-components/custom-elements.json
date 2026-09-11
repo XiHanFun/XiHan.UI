@@ -52293,6 +52293,10 @@
               "name": "root"
             },
             {
+              "description": "宿主自动装配的重复字段出口，无需作者手写",
+              "name": "hidden-input"
+            },
+            {
               "description": "左侧面板容器，其内的角色节点一律归左侧",
               "name": "source-panel"
             },
@@ -52394,6 +52398,24 @@
               "type": {
                 "text": "string[] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "form"
             },
             {
               "kind": "field",
@@ -52519,6 +52541,16 @@
             },
             {
               "kind": "field",
+              "name": "formInputs",
+              "type": {
+                "text": "HTMLInputElement[]"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "[]"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -52635,6 +52667,22 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "原生表单字段名，目标侧每个值提交一个同名字段",
+              "name": "name",
+              "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "原生表单 ID，显式指定时覆盖祖先表单归属",
+              "name": "form",
+              "fieldName": "form"
+            },
             {
               "type": {
                 "text": "boolean | undefined"
