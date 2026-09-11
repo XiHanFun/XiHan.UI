@@ -2,6 +2,7 @@ import type { PositionResult, PropFn, Scope } from '@xihan-ui/core'
 import type { TourSchema, TourSpotlightRect, TourStep } from './tour.types'
 import { canTakeFocus, createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
+import { setupLayerTransaction } from '../shared/overlay-shell'
 import { sameTourSpotlight, tourSpotlightBox } from './tour.spotlight'
 
 const { createMachine } = setup<TourSchema>()
@@ -312,49 +313,44 @@ export const tourMachine = createMachine({
         if (!config || !registerLayer)
           return undefined
 
-        const { layer, dispose: disposeLayer } = registerLayer()
         const getContentEl = refs.get('getContentEl')
+        return setupLayerTransaction(registerLayer, (layer, defer) => {
+          const dismiss = createDismissLayer({
+            config,
+            layer,
+            // 两个开关都现读 prop，引导中途改也立刻生效
+            onDismiss: (reason) => {
+              if (reason === 'escape-key') {
+                if (prop('closeOnEscape') ?? true)
+                  // Escape 走放弃这条路而不是单纯关闭，onSkip 要发出去
+                  send({ type: 'SKIP' })
+                return
+              }
+              // 指针落在层外、焦点跑到层外都归这一条；closeOnInteractOutside 缺省 false
+              if (prop('closeOnInteractOutside') ?? false)
+                send({ type: 'CLOSE', src: 'interact-outside' })
+            },
+          })
+          defer(() => dismiss.dispose())
 
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          // 两个开关都现读 prop，引导中途改也立刻生效
-          onDismiss: (reason) => {
-            if (reason === 'escape-key') {
-              if (prop('closeOnEscape') ?? true)
-                // Escape 走放弃这条路而不是单纯关闭，onSkip 要发出去
-                send({ type: 'SKIP' })
-              return
-            }
-            // 指针落在层外、焦点跑到层外都归这一条；closeOnInteractOutside 缺省 false
-            if (prop('closeOnInteractOutside') ?? false)
-              send({ type: 'CLOSE', src: 'interact-outside' })
-          },
+          const focus = createFocusScope({
+            config,
+            layer,
+            // 每次读最新 ref，容器晚一拍就位也能命中
+            container: () => getContentEl(),
+            // 与 aria-modal 一致，焦点陷在浮层里，否则 Tab 一下就到了遮罩背后的页面
+            trapped: () => true,
+            loop: true,
+            // 焦点落在 content 容器本身而不是第一个按钮：读屏念完整段文案，Enter/Space 归下一步管。
+            // 容器还没显形时回 null，回非空会被当成焦点已安排好
+            initialFocus: () => {
+              const el = getContentEl()
+              return canTakeFocus(el, scope) ? el : null
+            },
+            restoreFocus: () => true,
+          })
+          defer(() => focus.dispose())
         })
-
-        const focus = createFocusScope({
-          config,
-          layer,
-          // 每次读最新 ref，容器晚一拍就位也能命中
-          container: () => getContentEl(),
-          // 与 aria-modal 一致，焦点陷在浮层里，否则 Tab 一下就到了遮罩背后的页面
-          trapped: () => true,
-          loop: true,
-          // 焦点落在 content 容器本身而不是第一个按钮：读屏念完整段文案，Enter/Space 归下一步管。
-          // 容器还没显形时回 null，回非空会被当成焦点已安排好
-          initialFocus: () => {
-            const el = getContentEl()
-            return canTakeFocus(el, scope) ? el : null
-          },
-          restoreFocus: () => true,
-        })
-
-        // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈
-        return () => {
-          focus.dispose()
-          dismiss.dispose()
-          disposeLayer()
-        }
       },
     },
   },

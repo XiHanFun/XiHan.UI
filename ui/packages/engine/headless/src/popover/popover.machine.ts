@@ -3,6 +3,7 @@ import type { PopoverSchema } from './popover.types'
 import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
+import { setupLayerTransaction } from '../shared/overlay-shell'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */
 export const POPOVER_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
@@ -141,47 +142,42 @@ export const popoverMachine = createMachine({
         if (!config || !registerLayer)
           return undefined
 
-        const { layer, dispose: disposeLayer } = registerLayer()
+        return setupLayerTransaction(registerLayer, (layer, defer) => {
+          const dismiss = createDismissLayer({
+            config,
+            layer,
+            // 关不关在这里判定：两个开关都现读 prop，开合中途改也立刻生效
+            onDismiss: (reason) => {
+              const escape = reason === 'escape-key'
+              const allowed = escape
+                ? (prop('closeOnEscape') ?? true)
+                : (prop('closeOnInteractOutside') ?? true)
+              if (!allowed)
+                return
+              send({ type: 'CLOSE', src: escape ? 'esc' : 'interact-outside' })
+            },
+          })
+          defer(() => dismiss.dispose())
 
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          // 关不关在这里判定：两个开关都现读 prop，开合中途改也立刻生效
-          onDismiss: (reason) => {
-            const escape = reason === 'escape-key'
-            const allowed = escape
-              ? (prop('closeOnEscape') ?? true)
-              : (prop('closeOnInteractOutside') ?? true)
-            if (!allowed)
-              return
-            send({ type: 'CLOSE', src: escape ? 'esc' : 'interact-outside' })
-          },
+          const focus = createFocusScope({
+            config,
+            layer,
+            // 每次读最新 ref，容器晚一拍就位也能命中
+            container: () => refs.get('getContentEl')(),
+            // 非模态浮层不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
+            trapped: () => prop('modal') ?? false,
+            loop: prop('modal') ?? false,
+            // 缺省返回 null，落点仍由焦点域的 Tab 序列探测决定；
+            // 浮层里排着集合的组合件填这一条把落点收口（见 getInitialFocusEl）。
+            // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
+            initialFocus: () => refs.get('getInitialFocusEl')(),
+            restoreFocus: () => context.get('returnFocus'),
+            // 归还落点显式给锚点：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+            // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
+            restoreTarget: () => refs.get('getAnchorEl')(),
+          })
+          defer(() => focus.dispose())
         })
-
-        const focus = createFocusScope({
-          config,
-          layer,
-          // 每次读最新 ref，容器晚一拍就位也能命中
-          container: () => refs.get('getContentEl')(),
-          // 非模态浮层不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
-          trapped: () => prop('modal') ?? false,
-          loop: prop('modal') ?? false,
-          // 缺省返回 null，落点仍由焦点域的 Tab 序列探测决定；
-          // 浮层里排着集合的组合件填这一条把落点收口（见 getInitialFocusEl）。
-          // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
-          initialFocus: () => refs.get('getInitialFocusEl')(),
-          restoreFocus: () => context.get('returnFocus'),
-          // 归还落点显式给锚点：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
-          restoreTarget: () => refs.get('getAnchorEl')(),
-        })
-
-        // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈
-        return () => {
-          focus.dispose()
-          dismiss.dispose()
-          disposeLayer()
-        }
       },
     },
   },

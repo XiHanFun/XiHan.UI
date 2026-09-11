@@ -99,6 +99,79 @@ export interface OverlayLayerOptions {
   focusScope?: OverlayFocusScopeSpec | null
 }
 
+type DeferOverlayCleanup = (cleanup: Cleanup) => void
+type RunOverlaySetup = <T>(setup: () => T) => T
+
+/**
+ * 以 layer 登记为第一项资源执行同步初始化。setup 抛错时立即逆序回滚；成功时返回同一份
+ * 幂等逆序 cleanup。这样 effect 尚未把 cleanup 交给机器前也不会留下半初始化层。
+ */
+export function setupLayerTransaction(
+  registerLayer: () => { layer: Layer, dispose: Cleanup },
+  setup: (layer: Layer, defer: DeferOverlayCleanup, run: RunOverlaySetup) => void,
+): Cleanup {
+  const registration = registerLayer()
+  const cleanups: Cleanup[] = [registration.dispose]
+  let accepting = true
+  let disposed = false
+
+  const dispose = (): void => {
+    if (disposed)
+      return
+    disposed = true
+    const errors: unknown[] = []
+    while (cleanups.length) {
+      try {
+        cleanups.pop()!()
+      }
+      catch (error) {
+        errors.push(error)
+      }
+    }
+    if (errors.length === 1)
+      throw errors[0]
+    if (errors.length > 1)
+      throw new AggregateError(errors, '[xh] 浮层资源清理出现多个异常')
+  }
+
+  const defer: DeferOverlayCleanup = (cleanup) => {
+    if (!accepting)
+      throw new Error('[xh] 浮层初始化完成后不能再登记 cleanup')
+    cleanups.push(cleanup)
+  }
+
+  const rollback = (setupError: unknown): never => {
+    try {
+      dispose()
+    }
+    catch (rollbackError) {
+      throw new AggregateError([setupError, rollbackError], '[xh] 浮层初始化与回滚同时失败')
+    }
+    throw setupError
+  }
+
+  const run: RunOverlaySetup = (task) => {
+    if (disposed)
+      throw new Error('[xh] 浮层资源已释放，不能继续初始化')
+    try {
+      return task()
+    }
+    catch (setupError) {
+      return rollback(setupError)
+    }
+  }
+
+  try {
+    setup(registration.layer, defer, run)
+    accepting = false
+    return dispose
+  }
+  catch (setupError) {
+    accepting = false
+    return rollback(setupError)
+  }
+}
+
 /**
  * 层效应的主体：入层栈 → 挂消解层 → 挂焦点域，拆时逆序。
  *
@@ -110,13 +183,13 @@ export function trackOverlayLayer(o: OverlayLayerOptions): Cleanup | undefined {
   if (!config || !registerLayer)
     return undefined
 
-  const { layer, dispose: disposeLayer } = registerLayer()
+  return setupLayerTransaction(registerLayer, (layer, defer) => {
+    const dismiss = createDismissLayer({ config, layer, onDismiss: o.onDismiss })
+    defer(() => dismiss.dispose())
 
-  const dismiss = createDismissLayer({ config, layer, onDismiss: o.onDismiss })
-
-  const spec = o.focusScope
-  const focus = spec
-    ? createFocusScope({
+    const spec = o.focusScope
+    if (spec) {
+      const focus = createFocusScope({
         config,
         layer,
         container: spec.container,
@@ -127,14 +200,9 @@ export function trackOverlayLayer(o: OverlayLayerOptions): Cleanup | undefined {
         restoreFocus: spec.restoreFocus,
         restoreTarget: spec.restoreTarget,
       })
-    : null
-
-  // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈
-  return () => {
-    focus?.dispose()
-    dismiss.dispose()
-    disposeLayer()
-  }
+      defer(() => focus.dispose())
+    }
+  })
 }
 
 /** 消解层的标准映射：Escape 与层外交互都收起，只在关闭原因上分开。 */

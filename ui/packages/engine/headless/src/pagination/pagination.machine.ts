@@ -4,6 +4,7 @@ import type { PaginationEllipsisSide } from './pagination.range'
 import type { PaginationSchema, PaginationTranslations } from './pagination.types'
 import { createDismissLayer, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
+import { setupLayerTransaction } from '../shared/overlay-shell'
 import { clampPage, normalizePageSize, pageForResize, pageSizeOptionsOf, totalPagesOf } from './pagination.range'
 
 const { createMachine } = setup<PaginationSchema>()
@@ -221,17 +222,14 @@ export const paginationMachine = createMachine({
         if (!config || !registerLayer)
           return undefined
 
-        const { layer, dispose: disposeLayer } = registerLayer()
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: () => send({ type: 'ELLIPSIS.CLOSE' }),
+        return setupLayerTransaction(registerLayer, (layer, defer) => {
+          const dismiss = createDismissLayer({
+            config,
+            layer,
+            onDismiss: () => send({ type: 'ELLIPSIS.CLOSE' }),
+          })
+          defer(() => dismiss.dispose())
         })
-
-        return () => {
-          dismiss.dispose()
-          disposeLayer()
-        }
       },
     },
     actions: {
