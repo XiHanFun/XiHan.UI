@@ -217,6 +217,29 @@ function searchFixture(base: FixtureNode, candidates: readonly FixtureNode[] = S
   }
 }
 
+/** 在 content 末尾放一枚作者 Loading；用来证明自动装配会让位而不是生成第二枚。 */
+function authoredLoadingFixture(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: base.children!.map((child) => {
+      if (child.part !== 'positioner')
+        return child
+      const content = child.children![0]!
+      return {
+        ...child,
+        children: [{
+          ...content,
+          children: [
+            ...content.children!,
+            // 普通作者包装是合法内容；适配器必须按最近 Content 的所有权登记，不能只看直接子组件类型。
+            { tag: 'section', children: [{ part: 'loading', text: '作者正在读取地区' }] },
+          ],
+        }],
+      }
+    }),
+  }
+}
+
 /** 「浙江」那一支的四条命中候选，按 cascaderSearchCandidates 的树序；末条整条禁用。 */
 const XIHU = ['zhejiang', 'hangzhou', 'xihu']
 const YUHANG = ['zhejiang', 'hangzhou', 'yuhang']
@@ -1498,6 +1521,67 @@ export const cascaderSuite: ConformanceSuite = {
           expect: { parts: { content: { hidden: '' }, trigger: { 'aria-expanded': 'false' } } },
         },
       ],
+    },
+    {
+      name: '首次加载：Content 自动装配唯一 Loading，Empty 让位并使用翻译文案',
+      spec: { adr: 'cascader-loading-surface' },
+      props: {
+        collection: [],
+        loading: true,
+        translations: { loading: '正在读取地区' },
+      },
+      expect: {
+        counts: { empty: 1, loading: 1 },
+        parts: {
+          content: { 'aria-busy': 'true', 'data-empty': '', 'hidden': null },
+          empty: { role: 'status', hidden: '' },
+          loading: { role: 'status', hidden: null },
+        },
+      },
+      // 与本套件的键盘用例一样从收起态进入，等焦点域完成挂载再比较稳定状态。
+      steps: [{ kind: 'click', part: 'trigger' }, { kind: 'settle', until: { activeElement: 'column[0]' } }, {
+        kind: 'raw',
+        why: '状态文案不进属性快照，直接读取唯一 Loading 的可见文本',
+        run: ({ doc }) => {
+          const loadings = doc.querySelectorAll<HTMLElement>(`${SCOPE}[data-part="loading"]`)
+          if (loadings.length !== 1 || loadings[0]!.textContent?.trim() !== '正在读取地区')
+            throw new Error(`首次加载应只有一枚翻译后的 Loading，实际 ${loadings.length} 枚`)
+        },
+      }],
+    },
+    {
+      name: '作者显式 Loading：自动装配让位，作者内容不被默认翻译覆盖',
+      spec: { adr: 'cascader-loading-surface' },
+      fixture: authoredLoadingFixture,
+      props: { collection: [], loading: true },
+      expect: {
+        counts: { empty: 1, loading: 1 },
+        parts: { loading: { role: 'status', hidden: null } },
+      },
+      steps: [{ kind: 'click', part: 'trigger' }, { kind: 'settle', until: { activeElement: 'column[0]' } }, {
+        kind: 'raw',
+        why: '作者内容不进属性快照，直接证明它没有被默认 Loading 替换或并排重复',
+        run: ({ doc }) => {
+          const loadings = doc.querySelectorAll<HTMLElement>(`${SCOPE}[data-part="loading"]`)
+          if (loadings.length !== 1 || loadings[0]!.textContent?.trim() !== '作者正在读取地区')
+            throw new Error(`作者 Loading 应原样保留且只有一枚，实际 ${loadings.length} 枚`)
+        },
+      }],
+    },
+    {
+      name: '后台刷新：已有候选与祖先列保持可用，Loading 状态块不额外占列',
+      spec: { adr: 'cascader-loading-surface' },
+      props: props({ loading: true }),
+      steps: [{ kind: 'click', part: 'trigger' }, { kind: 'settle', until: { activeElement: 'column[0]' } }],
+      expect: {
+        counts: { loading: 1 },
+        parts: {
+          'content': { 'aria-busy': 'true', 'data-empty': null, 'hidden': null },
+          'loading': { role: 'status', hidden: '' },
+          'column[0]': { hidden: null },
+          'item[0]': { hidden: null },
+        },
+      },
     },
   ],
 }

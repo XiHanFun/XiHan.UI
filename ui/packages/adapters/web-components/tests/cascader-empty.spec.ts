@@ -72,14 +72,16 @@ function empty(el: HTMLElement): HTMLElement {
 }
 
 describe('标记里没写空态占位', () => {
-  it('元素补一个出来，挂在 content 末尾并带上解剖标记', async () => {
+  it('元素在 content 末尾补齐空态与加载部件，并带上解剖标记', async () => {
     const el = mount()
     await settle(el)
 
     expect(empties(el)).toHaveLength(1)
     const node = empty(el)
     expect(node.parentElement?.getAttribute('data-xh-part')).toBe('content')
-    expect(node.parentElement?.lastElementChild).toBe(node)
+    const loading = node.nextElementSibling
+    expect(loading?.getAttribute('data-part')).toBe('loading')
+    expect(node.parentElement?.lastElementChild).toBe(loading)
     expect(node.getAttribute('data-scope')).toBe('cascader')
     expect(node.getAttribute('data-part')).toBe('empty')
   })

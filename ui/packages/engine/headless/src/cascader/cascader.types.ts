@@ -90,6 +90,8 @@ export interface CascaderTranslations {
   empty: string
   /** 搜索无匹配（候选为空）时的占位文案。 */
   noMatch: string
+  /** 首次取数且当前视图没有候选时的在途文案。 */
+  loading: string
   /** 没有父条目可指的列（根列与收起的那几列）的兜底名字，两个名字部件都没渲染时才出面。 */
   column: string
   /** 检索框的可及名字：字段标签名的是整个控件，浮层里这个框要自己一句。 */
@@ -178,7 +180,7 @@ export interface CascaderSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 */
     invalid?: boolean
-    /** 候选还在取：浮层报 aria-busy，在途占位顶上来、空态占位让位。 */
+    /** 候选还在取：浮层报 aria-busy；当前视图无候选时在途占位顶上来。 */
     loading?: boolean
     /** 空态占位的文案覆盖，默认英文。 */
     translations?: Partial<CascaderTranslations>
@@ -348,8 +350,8 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   /** 空态占位：当前视图没有条目（搜索无候选，或根列没有条目）时露面，其余时候带 hidden。 */
   getEmptyProps: () => T['element']
   /**
-   * 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。
-   * 文案归作者，连接层只管收放。
+   * 在途占位：当前视图无候选且正在取数时顶上来；已有候选或祖先列时只保留 aria-busy。
+   * 适配器自动提供缺省部件，作者显式写部件即可替换它。
    */
   getLoadingProps: () => T['element']
   /** 浮层底部的操作区：放在 content 里、与列并列，不入任何一列的拥有关系，方向键也走不到。 */

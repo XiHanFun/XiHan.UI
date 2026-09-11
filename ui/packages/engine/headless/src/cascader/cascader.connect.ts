@@ -217,6 +217,7 @@ export function connectCascader<T extends PropTypes>(
   const translations: CascaderTranslations = {
     empty: prop('translations')?.empty ?? 'No data',
     noMatch: prop('translations')?.noMatch ?? 'No matches',
+    loading: prop('translations')?.loading ?? 'Loading',
     column: prop('translations')?.column ?? 'Options',
     searchInput: prop('translations')?.searchInput ?? 'Search',
     searchList: prop('translations')?.searchList ?? 'Search results',
@@ -628,13 +629,17 @@ export function connectCascader<T extends PropTypes>(
     // 空态占位：搜索视图看候选、列视图看根列，哪边有条目就藏起来
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
+      // 空态文字不属于任一 listbox，作为礼貌状态区单独播报。
+      role: 'status',
       hidden: loading || (searching ? searchResults.length > 0 : collection.length > 0) || undefined,
     }),
 
-    // 在途占位：与空态占位同一个位置，两者不同屏
+    // 在途占位只接管当前视图确实没有候选的首次加载。已有候选或祖先列时保持它们可用，
+    // content 上的 aria-busy 已足以表达后台刷新，不再往列尾额外塞一块状态区。
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
-      hidden: !loading || undefined,
+      role: 'status',
+      hidden: !(loading && (searching ? searchResults.length === 0 : collection.length === 0)) || undefined,
     }),
 
     // 浮层底部的操作区：作者往里放「清空」「确定」这类按钮。

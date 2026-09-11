@@ -18,7 +18,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
-import { provideCascader, provideCascaderGroup, provideCascaderItem, useCascaderContext, useCascaderGroupContext, useCascaderItemContext } from './context'
+import { provideCascader, provideCascaderContent, provideCascaderGroup, provideCascaderItem, useCascaderContentContext, useCascaderContext, useCascaderGroupContext, useCascaderItemContext } from './context'
 import { useCascader } from './use-cascader'
 
 type CascaderProps = CascaderSchema['props']
@@ -241,13 +241,57 @@ export const XhCascaderPositioner = defineComponent({
   },
 })
 
+export const XhCascaderLoading = defineComponent({
+  name: 'XhCascaderLoading',
+  setup(_, { slots }) {
+    const ctx = useCascaderContext()
+    const content = useCascaderContentContext()
+    const unregister = content.registerLoading()
+    onBeforeUnmount(unregister)
+    // 在途占位：作者没写内容时使用 Cascader 自己的翻译合同。
+    return () => h(
+      'div',
+      ctx.api.value.getLoadingProps() as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.translations.loading,
+    )
+  },
+})
+
+/** 放在作者插槽之后挂载；隔着普通元素或业务组件的 Loading 已在 setup 阶段登记。 */
+const XhCascaderAutoLoading = defineComponent({
+  name: 'XhCascaderAutoLoading',
+  setup() {
+    const ctx = useCascaderContext()
+    const content = useCascaderContentContext()
+    return () => content.authoredLoadingCount.value > 0
+      ? null
+      : h('div', {
+          ...ctx.api.value.getLoadingProps() as Record<string, unknown>,
+          'data-xh-cascader-auto-loading': '',
+        }, ctx.api.value.translations.loading)
+  },
+})
+
 export const XhCascaderContent = defineComponent({
   name: 'XhCascaderContent',
   setup(_, { slots }) {
     const ctx = useCascaderContext()
+    const authoredLoadingCount = ref(0)
+    const registerLoading = (): (() => void) => {
+      authoredLoadingCount.value += 1
+      let active = true
+      return () => {
+        if (!active)
+          return
+        active = false
+        authoredLoadingCount.value -= 1
+      }
+    }
+    provideCascaderContent({ authoredLoadingCount, registerLoading })
     // 收起时只隐藏不卸载；跨列的键盘导航也在这一层处理
     return () => {
       const api = ctx.api.value
+      const children = slots.default?.() ?? []
       return h('div', {
         ...api.getContentProps() as Record<string, unknown>,
         // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
@@ -255,24 +299,16 @@ export const XhCascaderContent = defineComponent({
         style: ctx.visible.value ? undefined : { display: 'none' },
         ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
       }, [
-        slots.default?.(),
+        children,
         // 空态占位常挂在列后，露不露面归连接层；empty 插槽可换内容，缺省文案按视图取无匹配或无数据
         h(
           'div',
           api.getEmptyProps() as Record<string, unknown>,
           slots.empty ? slots.empty() : (api.searching ? api.translations.noMatch : api.translations.empty),
         ),
+        h(XhCascaderAutoLoading),
       ])
     }
-  },
-})
-
-export const XhCascaderLoading = defineComponent({
-  name: 'XhCascaderLoading',
-  setup(_, { slots }) {
-    const ctx = useCascaderContext()
-    // 在途占位：与空态占位同一个位置，取数期间顶上来；文案归作者
-    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
   },
 })
 
