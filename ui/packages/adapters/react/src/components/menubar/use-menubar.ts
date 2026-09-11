@@ -17,6 +17,8 @@ export interface MenubarContext {
   service: Service<MenubarSchema>
   api: MenubarApi
   rootRef: RefObject<HTMLElement | null>
+  /** 对应菜单的真实触发器；Portal 在提交期读取这只逻辑锚点。 */
+  getTrigger: (value: string) => HTMLElement | null
   registerTrigger: MenubarPartRegistry
   registerPositioner: MenubarPartRegistry
   registerContent: MenubarPartRegistry
@@ -99,6 +101,7 @@ export function useMenubar(props: MenubarSchema['props']): MenubarContext {
     service,
     api: connectMenubar(service, reactNormalize),
     rootRef,
+    getTrigger: value => registry.triggers.get(value) ?? null,
     registerTrigger: registry.registerTrigger,
     registerPositioner: registry.registerPositioner,
     registerContent: registry.registerContent,

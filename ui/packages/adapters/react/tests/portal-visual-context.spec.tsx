@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 
 import type { ReactNode } from 'react'
-import { act, useRef, useState } from 'react'
+import { act, StrictMode, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   XhButton,
   XhButtonGroup,
@@ -12,6 +12,13 @@ import {
   XhPopoverRoot,
   XhPopoverTrigger,
   XhPortal,
+  XhSelectContent,
+  XhSelectItem,
+  XhSelectItemText,
+  XhSelectList,
+  XhSelectPositioner,
+  XhSelectRoot,
+  XhSelectTrigger,
   XhToolbarItem,
   XhToolbarRoot,
   XhTooltipContent,
@@ -49,6 +56,7 @@ afterEach(() => {
   document.querySelectorAll('[data-testid="portal-target"]').forEach(node => node.remove())
   host = null
   root = null
+  vi.restoreAllMocks()
 })
 
 describe('react Portal 的局部视觉环境', () => {
@@ -121,6 +129,52 @@ describe('react Portal 的局部视觉环境', () => {
     expect(shellOf('first').getAttribute('data-theme')).toBe('dark')
     act(() => swap())
     expect(shellOf('first').getAttribute('data-theme')).toBe('light')
+  })
+
+  it('显式来源是祖先 host ref 时让完整提交先附着它，再在绘制前建桥', () => {
+    function Probe(): ReactNode {
+      const source = useRef<HTMLElement | null>(null)
+      return (
+        <section ref={source} data-theme="dark">
+          <XhPortal source={source}><span data-testid="first">内容</span></XhPortal>
+        </section>
+      )
+    }
+
+    mount(<StrictMode><Probe /></StrictMode>)
+    expect(shellOf('first').getAttribute('data-theme')).toBe('dark')
+    expect(host!.querySelector('template[data-xh-portal-source]')).toBeNull()
+  })
+
+  it('显式来源在一次完整提交后仍为空会明确失败，不改走来源标记', () => {
+    const missing = { current: null }
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    expect(() => mount(
+      <XhPortal source={missing}><span data-testid="first">内容</span></XhPortal>,
+    )).toThrow(/来源标记或实例壳未挂载/)
+    expect(host!.querySelector('template[data-xh-portal-source]')).toBeNull()
+  })
+
+  it('select 使用先提交的真实 trigger 作为来源，首帧挂载不再撞空 root ref', () => {
+    mount(
+      <XhSelectRoot data-theme="light" open collection={[{ value: 'a', label: '甲' }]}>
+        <XhSelectTrigger data-theme="dark">选择</XhSelectTrigger>
+        <XhSelectPositioner>
+          <XhSelectContent>
+            <XhSelectList>
+              <XhSelectItem value="a"><XhSelectItemText>甲</XhSelectItemText></XhSelectItem>
+            </XhSelectList>
+          </XhSelectContent>
+        </XhSelectPositioner>
+      </XhSelectRoot>,
+    )
+
+    const content = document.querySelector<HTMLElement>('[data-scope="select"][data-part="content"]')!
+    const shell = content.parentElement?.parentElement
+    expect(shell?.hasAttribute('data-xh-portal-shell')).toBe(true)
+    expect(shell?.getAttribute('data-theme')).toBe('dark')
+    expect(host!.querySelector('template[data-xh-portal-source]')).toBeNull()
   })
 
   it('来源没声明的轴留给业务显式 portalContainer 继承', () => {

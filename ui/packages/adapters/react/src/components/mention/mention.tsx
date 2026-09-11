@@ -186,7 +186,7 @@ export function XhMentionPositioner({ children, container, ...rest }: XhMentionP
   // 候选列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current })
   return (
-    <XhPortal container={container ?? ctx.portalContainer} source={ctx.rootRef}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.inputRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,
