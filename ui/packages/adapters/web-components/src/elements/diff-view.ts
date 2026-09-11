@@ -1,6 +1,6 @@
 import type { CodeToken, Size } from '@xihan-ui/core'
-import type { DiffLine, DiffModel, DiffSide, DiffViewApi, DiffViewExpandedValueChangeDetails, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
-import { connectDiffView, diffViewAnatomy, diffViewMachine, diffViewMeta } from '@xihan-ui/headless'
+import type { DiffLine, DiffModel, DiffViewApi, DiffViewExpandedValueChangeDetails, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
+import { connectDiffView, diffViewAnatomy, diffViewMachine, diffViewMeta, diffViewSides } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -11,11 +11,6 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 // 三态：属性缺席是 undefined，写了就是 true，显式 "false" 才是 false
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
-
-/** 单栏只有一列，恒为旧侧；并排两列都铺。 */
-function sidesOf(view: DiffViewMode): readonly DiffSide[] {
-  return view === 'split' ? ['old', 'new'] : ['old']
-}
 
 /** 词级片段的指纹：进重铺签名，片段变了才会重铺。 */
 function segmentKey(line: DiffLine): string {
@@ -137,7 +132,7 @@ export class XhDiffViewElement extends XhElement {
       this.#painted = undefined
       return
     }
-    const sides = sidesOf(api.view)
+    const sides = diffViewSides(api.view)
     const signature = `${api.view}|${api.rows
       .map(row => (row.kind === 'gap'
         ? `g${row.gapId}:${row.hiddenCount}:${api.expandedValue.includes(row.gapId!) ? 1 : 0}`

@@ -1,6 +1,7 @@
 import type { Direction, Size } from '@xihan-ui/core'
 import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerVariant, JsonViewerView } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
+import { groupJsonViewerNodesByParent } from '@xihan-ui/headless'
 import { useCallback, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -9,19 +10,6 @@ import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useJsonViewer } from './use-json-viewer'
 
 type JsonViewerProps = JsonViewerSchema['props']
-
-/** 可见行按父路径分组，铺 DOM 时逐层取用。 */
-function groupByParent(nodes: readonly JsonViewerNode[]): Map<string | null, JsonViewerNode[]> {
-  const out = new Map<string | null, JsonViewerNode[]>()
-  for (const node of nodes) {
-    const list = out.get(node.parent)
-    if (list)
-      list.push(node)
-    else
-      out.set(node.parent, [node])
-  }
-  return out
-}
 
 interface RowsProps {
   api: JsonViewerApi
@@ -87,7 +75,7 @@ function JsonViewerTree({ api, keepLayer }: { api: JsonViewerApi, keepLayer: (el
   // 挂的是冒泡的 focusin，行得焦也会把它叫起来，那一下会把焦点从行抢回锚点上。
   // 同一节点上的 onFocusOut 归到 React 的 onBlur，留在合成事件那一档不动
   const bind = useNativeEvents(api.getTreeProps() as Record<string, unknown>, ['onFocus'])
-  const groups = groupByParent(api.visibleNodes)
+  const groups = groupJsonViewerNodesByParent(api.visibleNodes)
   return (
     <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, { ref: keepLayer })}>
       <JsonRows api={api} groups={groups} parent={null} />

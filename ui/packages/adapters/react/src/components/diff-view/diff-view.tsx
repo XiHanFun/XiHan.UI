@@ -2,6 +2,7 @@ import type { CodeToken, Size } from '@xihan-ui/core'
 import type { DiffChange, DiffModel, DiffSide, DiffViewApi, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { diffViewSides } from '@xihan-ui/headless'
 import { Fragment } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -16,11 +17,6 @@ export type DiffViewRootSlotProps = Pick<
   DiffViewApi,
   'view' | 'rows' | 'expandedValue' | 'stats' | 'truncated' | 'truncatedLines' | 'isEmpty' | 'toggleGap' | 'setExpandedValue'
 >
-
-/** 单栏只有一列，恒为旧侧；并排两列都铺。 */
-function sidesOf(view: DiffViewMode): readonly DiffSide[] {
-  return view === 'split' ? ['old', 'new'] : ['old']
-}
 
 /** 着色记号逐个铺成 span。 */
 function renderTokens(api: DiffViewApi, tokens: readonly CodeToken[]): ReactNode[] {
@@ -157,7 +153,7 @@ export interface XhDiffViewBodyProps extends ComponentPropsWithRef<'div'> {}
 export function XhDiffViewBody({ children, ...rest }: XhDiffViewBodyProps): ReactNode {
   const ctx = useDiffViewContext()
   const { api } = ctx
-  const sides = sidesOf(api.view)
+  const sides = diffViewSides(api.view)
   return (
     <div {...mergeReactProps(api.getBodyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {api.rows.map((row) => {

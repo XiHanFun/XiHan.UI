@@ -11,6 +11,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   connectJsonViewer,
   flattenJson,
+  groupJsonViewerNodesByParent,
   jsonChildPath,
   jsonExpandedPathsToDepth,
   jsonValueText,
@@ -36,6 +37,32 @@ const VALUE = {
 function path(...keys: readonly string[]): string {
   return keys.reduce<string>((acc, key) => jsonChildPath(acc, key), ROOT)
 }
+
+describe('groupJsonViewerNodesByParent', () => {
+  it('空输入返回空 Map，且每次调用都建立独立投影', () => {
+    const first = groupJsonViewerNodesByParent([])
+    const second = groupJsonViewerNodesByParent([])
+    expect(first).toEqual(new Map())
+    expect(first).not.toBe(second)
+  })
+
+  it('保留父路径首次出现顺序、组内输入顺序与节点身份', () => {
+    const nodes = flattenJson({ a: { x: 1, y: 2 }, b: 3 }, {
+      expandedValue: [ROOT, path('a')],
+    })
+    const groups = groupJsonViewerNodesByParent(nodes)
+    expect([...groups.keys()]).toEqual([null, ROOT, path('a')])
+    expect(groups.get(ROOT)?.map(node => node.value)).toEqual([path('a'), path('b')])
+    expect(groups.get(path('a'))?.map(node => node.value)).toEqual([path('a', 'x'), path('a', 'y')])
+    expect(groups.get(ROOT)?.[0]).toBe(nodes[1])
+  })
+
+  it('不要求父节点在输入中存在，局部数据仍按声明路径分组', () => {
+    const [root] = flattenJson(null)
+    const orphan: JsonViewerNode = { ...root!, value: '$["orphan"]', parent: '$["missing"]' }
+    expect(groupJsonViewerNodesByParent([orphan]).get('$["missing"]')).toEqual([orphan])
+  })
+})
 
 const listeners = new WeakMap<HTMLElement, Map<string, EventListener>>()
 
@@ -156,14 +183,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     spread(root, api.getRootProps() as Record<string, unknown>)
     spread(treeEl, api.getTreeProps() as Record<string, unknown>)
 
-    const children = new Map<string | null, JsonViewerNode[]>()
-    for (const node of api.visibleNodes) {
-      const list = children.get(node.parent)
-      if (list)
-        list.push(node)
-      else
-        children.set(node.parent, [node])
-    }
+    const children = groupJsonViewerNodesByParent(api.visibleNodes)
 
     const paint = (container: HTMLElement, nodes: readonly JsonViewerNode[]): void => {
       const wanted: HTMLElement[] = []

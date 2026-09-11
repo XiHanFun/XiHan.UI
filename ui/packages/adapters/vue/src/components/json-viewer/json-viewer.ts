@@ -2,25 +2,13 @@ import type { Direction, Size } from '@xihan-ui/core'
 import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerVariant, JsonViewerView } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { groupJsonViewerNodesByParent } from '@xihan-ui/headless'
 import { defineComponent, h, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useJsonViewer } from './use-json-viewer'
 
 type JsonViewerProps = JsonViewerSchema['props']
-
-/** 可见行按父路径分组，铺 DOM 时逐层取用。 */
-function groupByParent(nodes: readonly JsonViewerNode[]): Map<string | null, JsonViewerNode[]> {
-  const out = new Map<string | null, JsonViewerNode[]>()
-  for (const node of nodes) {
-    const list = out.get(node.parent)
-    if (list)
-      list.push(node)
-    else
-      out.set(node.parent, [node])
-  }
-  return out
-}
 
 function renderRows(
   api: JsonViewerApi,
@@ -140,7 +128,7 @@ export const XhJsonViewerRoot = defineComponent({
         ])
       }
 
-      const children = groupByParent(api.visibleNodes)
+      const children = groupJsonViewerNodesByParent(api.visibleNodes)
       return h('div', api.getRootProps() as Record<string, unknown>, [
         h('div', { ...api.getTreeProps() as Record<string, unknown>, ref: keepLayer }, renderRows(api, children, null)),
         renderEmpty(api),

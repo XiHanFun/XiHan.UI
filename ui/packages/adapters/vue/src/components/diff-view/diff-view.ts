@@ -2,6 +2,7 @@ import type { CodeToken, Size } from '@xihan-ui/core'
 import type { DiffChange, DiffModel, DiffSide, DiffViewApi, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { diffViewSides } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideDiffView, useDiffViewContext } from './context'
@@ -14,11 +15,6 @@ export type DiffViewRootSlotProps = Pick<
   DiffViewApi,
   'view' | 'rows' | 'expandedValue' | 'stats' | 'truncated' | 'truncatedLines' | 'isEmpty' | 'toggleGap' | 'setExpandedValue'
 >
-
-/** 单栏只有一列，恒为旧侧；并排两列都铺。 */
-function sidesOf(view: DiffViewMode): readonly DiffSide[] {
-  return view === 'split' ? ['old', 'new'] : ['old']
-}
 
 export const XhDiffViewRoot = defineComponent({
   name: 'XhDiffViewRoot',
@@ -110,7 +106,7 @@ export const XhDiffViewBody = defineComponent({
     // 行是模型算出来的派生结构，作者写不出 N 行，由组件铺
     return () => {
       const api = ctx.api.value
-      const sides = sidesOf(api.view)
+      const sides = diffViewSides(api.view)
       return h('div', api.getBodyProps() as Record<string, unknown>, [
         ...api.rows.map((row) => {
           if (row.kind === 'gap') {

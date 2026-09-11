@@ -12,6 +12,8 @@ export {
   jsonViewerMachine,
 } from './json-viewer.machine'
 export { jsonViewerMeta } from './json-viewer.meta'
+export { groupJsonViewerNodesByParent } from './json-viewer.projection'
+export type { JsonViewerNodesByParent } from './json-viewer.projection'
 export type {
   JsonViewerApi,
   JsonViewerExpandedValueChangeDetails,
