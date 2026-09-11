@@ -42,6 +42,7 @@ export const XhComboboxRoot = defineComponent({
     defaultOpen: Boolean,
     /** 表单字段名；给了 hidden-input 才带 name 并参与提交 */
     name: { type: String, default: undefined },
+    form: { type: String, default: undefined },
     multiple: Boolean,
     disabled: Boolean,
     readOnly: Boolean,
@@ -284,10 +285,15 @@ export const XhComboboxItemIndicator = defineComponent({
 
 export const XhComboboxHiddenInput = defineComponent({
   name: 'XhComboboxHiddenInput',
-  setup() {
+  inheritAttrs: false,
+  setup(_, { attrs }) {
     const ctx = useComboboxContext()
     // 表单出口，不写这个部件即不参与表单提交
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => ctx.api.value.value.map(value => h('input', {
+      ...ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown>,
+      ...attrs,
+      key: value,
+    }))
   },
 })
 

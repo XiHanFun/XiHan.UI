@@ -116,8 +116,10 @@ export interface ComboboxSchema extends MachineSchema {
     open?: boolean
     defaultOpen?: boolean
     /** 多选：选中是集合，选中后列表不收起、输入串清空以便接着筛。 */
-    /** 表单字段名；给了 hidden-input 才带 name 并参与提交。多选按逗号拼成一串。 */
+    /** 表单字段名；hidden-input 按选中值逐个生成同名字段，不使用分隔符编码。 */
     name?: string
+    /** 原生表单 ID；显式关联外部表单，提交与 reset 使用同一所有者。 */
+    form?: string
     multiple?: boolean
     /** 整个控件禁用：输入框与两个按钮都用原生 disabled。 */
     disabled?: boolean
@@ -275,8 +277,8 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
    * 与 content 是兄弟，同样不进 role=listbox。
    */
   getLoadingProps: () => T['element']
-  /** 表单影子：选中值随表单提交。给了 name 才带 name，不给就不参与提交。 */
-  getHiddenInputProps: () => T['input']
+  /** 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。 */
+  getHiddenInputProps: (props: { value: string }) => T['input']
 }
 
 /** 读屏用的文案。 */
