@@ -77,6 +77,12 @@ describe('semantic.print.json', () => {
 
   it('只碰海拔角色与材质的绘制效果', () => {
     const materialPrint = new Set([
+      'material-elevated-bg',
+      'material-elevated-backdrop',
+      'material-elevated-border',
+      'material-elevated-highlight',
+      'material-elevated-shadow',
+      'material-elevated-separator',
       'material-glass-bg',
       'material-glass-backdrop',
       'material-glass-border',

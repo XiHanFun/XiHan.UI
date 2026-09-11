@@ -71,6 +71,48 @@
     "sheet": { "$type": "shadow", "$value": "0 1px 3px -0.5px oklch(0 0 0 / 0.6), 0 8px 16px -4px oklch(0 0 0 / 0.5), 0 20px 40px -12px oklch(0 0 0 / 0.45), 0 0 0 1px oklch(1 0 0 / 0.08)" }
   },
   "material": {
+    "elevated": {
+      "$description": "深色 M4 采用独立深色 tint 与三层黑色投影，不由浅色配方反色。",
+      "bg": {
+        "$type": "color",
+        "$value": "oklch(0.19 0.008 258 / 0.92)"
+      },
+      "backdrop": {
+        "$description": "只由最外层模态壳采样，内层不得重复 backdrop-filter。",
+        "$type": "string",
+        "$value": "blur({blur.xl}) saturate(108%)"
+      },
+      "fg": {
+        "$type": "color",
+        "$value": "{fg.default}"
+      },
+      "focus-surface": {
+        "$type": "color",
+        "$value": "{bg.surface}"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "oklch(1 0 0 / 0.28)"
+      },
+      "highlight": {
+        "$type": "color",
+        "$value": "oklch(1 0 0 / 0.32)"
+      },
+      "shadow": {
+        "$description": "近距 contact、中距 ambient 与远距 sheet 三层投影；不含 inset 高光。",
+        "$type": "shadow",
+        "$value": "0 2px 4px -2px oklch(0 0 0 / 0.5), 0 12px 28px -12px oklch(0 0 0 / 0.55), 0 32px 64px -20px oklch(0 0 0 / 0.6)"
+      },
+      "separator": {
+        "$type": "color",
+        "$value": "oklch(1 0 0 / 0.2)"
+      },
+      "fg-muted": {
+        "$description": "提高次要文字亮度，抵抗亮色背景透入。",
+        "$type": "color",
+        "$value": "{color.neutral.300}"
+      }
+    },
     "glass": {
       "$description": "深色 M3 使用独立深色 tint，提高次要文字亮度以抵抗亮背景透入。",
       "bg": {

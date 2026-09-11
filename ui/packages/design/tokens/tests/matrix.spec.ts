@@ -414,6 +414,9 @@ describe('深色 × 高对比取的是深色高对比档', () => {
   const darkMore = flatten(loadJson('semantic.dark.more.json'))
   const cell = { density: 'comfortable', contrast: 'more', motion: 'default' } as const
   const sharedDecoration = new Map([
+    ['--xh-material-elevated-highlight', 'oklch(0 0 0 / 0)'],
+    ['--xh-material-elevated-backdrop', 'none'],
+    ['--xh-material-elevated-shadow', 'none'],
     ['--xh-material-glass-highlight', 'oklch(0 0 0 / 0)'],
     ['--xh-material-glass-backdrop', 'none'],
     ['--xh-material-glass-shadow', 'none'],
