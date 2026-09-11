@@ -73,6 +73,7 @@ const BOX_AREA_PARTS = new Set(['control', 'input', 'trigger', 'value-text', 'se
 const OUTSIDE_BOX = {
   'list': 'select 的列表在浮层里撑满面板高度',
   'item-text': '条目正文撑满条目宽度，把条目右侧的选中标记顶到最右',
+  'item-indicator': '浮层选项的选择标记属于列表行，在作者正文未使用 item-text 时仍应对齐逻辑末端',
   'branch-text': 'tree-select 树枝的文字撑满枝宽',
   'empty': 'cascader 空态铺满面板',
 }
