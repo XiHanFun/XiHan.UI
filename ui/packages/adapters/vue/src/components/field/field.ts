@@ -1,15 +1,10 @@
 import type { FieldProps } from '@xihan-ui/headless'
 import type { SlotsType, VNode } from 'vue'
-import { cloneVNode, Comment, defineComponent, h, Text } from 'vue'
-import { carriesOwnAnatomy } from '../../runtime/as-child'
+import { defineComponent, h } from 'vue'
+import { mergeIntoChild } from '../../runtime/as-child'
 import { useOptionalFormContext, useOptionalFormField } from '../form/context'
 import { provideField, useFieldContext } from './context'
 import { useField } from './use-field'
-
-/** 滤掉注释与纯文本节点，只留能挂属性的节点。 */
-function attributable(nodes: readonly VNode[]): VNode[] {
-  return nodes.filter(node => node.type !== Comment && node.type !== Text)
-}
 
 export const XhFieldRoot = defineComponent({
   name: 'XhFieldRoot',
@@ -90,13 +85,10 @@ export const XhFieldControl = defineComponent({
       const controlProps = ctx.api.value.getControlProps() as Record<string, unknown>
       // control props 经 slot props 交给作者，控件节点由作者渲染
       const children = slots.default?.(controlProps) ?? []
-      const nodes = attributable(children)
-      // 关了 asChild、或不止一个节点：都视为作者已用 slot props 自行接线
-      if (!props.asChild || nodes.length !== 1)
+      // 手工接线必须显式关闭 asChild，不能根据无效结构猜测作者意图。
+      if (!props.asChild)
         return children
-      const node = nodes[0]!
-      // 单个节点合并属性；它自带角色标记时不覆盖，只落接线属性
-      return cloneVNode(node, carriesOwnAnatomy(node) ? wiringOnly(controlProps) : controlProps)
+      return mergeIntoChild(children, controlProps, 'field/control')
     }
   },
 })
