@@ -12072,6 +12072,9 @@
     "--xh-dialog-close-fg-hover",
     "--xh-dialog-close-radius",
     "--xh-dialog-close-size",
+    "--xh-dialog-content-backdrop-filter",
+    "--xh-dialog-content-lens-bg",
+    "--xh-dialog-content-lens-depth",
     "--xh-dialog-description-fg",
     "--xh-dialog-description-font-size",
     "--xh-dialog-fg",
@@ -15353,6 +15356,7 @@
         "control-id",
         "disabled",
         "invalid",
+        "read-only",
         "required"
       ],
       "events": []
