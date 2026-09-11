@@ -10,7 +10,6 @@ import { createApp, defineComponent, h, reactive, shallowRef, toRaw, toValue } f
 import { XhButton, XhButtonIndicator, XhButtonLabel } from '../components/button'
 import { XhDialogBody, XhDialogContent, XhDialogDescription, XhDialogFooter, XhDialogHeader, XhDialogIndicator, XhDialogRoot, XhDialogTitle } from '../components/dialog/dialog'
 import { spinArc } from './glyph'
-import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
 
 /**
@@ -22,6 +21,11 @@ import { createServiceConfig } from './service-config'
  */
 export type DialogBody = string | (() => VNodeChild)
 
+/** 动作异常保留原始原因；可见文案由 actionErrorText 提供。 */
+export interface DialogActionError {
+  cause: unknown
+}
+
 export interface ConfirmOptions {
   title: string
   content?: DialogBody
@@ -31,8 +35,10 @@ export interface ConfirmOptions {
   badge?: 'info' | 'success' | 'warning' | 'error'
   okText?: MaybeRefOrGetter<string>
   cancelText?: MaybeRefOrGetter<string>
-  /** Promise 拒绝时对话框保持打开。 */
-  onOk?: () => void | Promise<unknown>
+  /** false 阻止关闭；抛错或 Promise 拒绝进入 actionError，保持打开。 */
+  onOk?: () => boolean | void | Promise<unknown>
+  /** 动作失败通知；通知自身失败时拒绝所属请求。 */
+  onActionError?: (error: DialogActionError) => void | Promise<void>
 }
 
 /** 单按钮告知框的入参：没有取消钮，徽记由预设档自己定，其余同 confirm。 */
@@ -46,7 +52,7 @@ export interface PromptOptions<T extends object> extends Omit<ConfirmOptions, 'o
   body: (value: T) => VNodeChild
   /** 落焦到哪个节点，CSS 选择器。 */
   initialFocus?: string
-  /** 返回 false（或拒绝）表示校验没过，弹窗保持打开。 */
+  /** false 只阻止关闭；抛错或拒绝进入独立动作异常，弹窗保持打开。 */
   onOk?: (value: T) => boolean | void | Promise<boolean | void>
 }
 
@@ -55,6 +61,8 @@ export interface DialogServiceOptions {
   okText?: MaybeRefOrGetter<string>
   /** 取消钮文案，缺省 Cancel。 */
   cancelText?: MaybeRefOrGetter<string>
+  /** 动作失败时的安全提示，支持与按钮文案相同的响应式来源。 */
+  actionErrorText?: MaybeRefOrGetter<string>
   /**
    * 喂给对话框子树的全局配置（locale / translations / size / portalContainer）。
    * 本服务自带宿主应用，接不到组件树里的 provideXhConfig，要让它跟应用同语言就从这里给；
@@ -66,6 +74,8 @@ export interface DialogServiceOptions {
 }
 
 export interface DialogService {
+  /** 当前请求的动作异常，重试、关闭和切换请求时清空。 */
+  readonly actionError: DialogActionError | null
   /** 确认走 onOk 后 resolve true；取消/Esc resolve false。 */
   confirm: (options: ConfirmOptions) => Promise<boolean>
   info: (options: AlertOptions) => Promise<void>
@@ -89,13 +99,16 @@ interface Spec {
   showCancel: boolean
   /** 标题旁的类型徽记（预设档用），confirm 不带。 */
   badge?: 'info' | 'success' | 'warning' | 'error'
-  /** 返回 false 表示不放行；confirm 那一路的返回值不参与判定。 */
+  /** 返回 false 阻止本次确认；异常由独立错误状态报告。 */
   onOk?: () => unknown
+  onActionError?: (error: DialogActionError) => void | Promise<void>
+  attempt: number
   /** 取值型弹窗的正文与那份可写的值，两边同一个对象。 */
   body?: (value: object) => VNodeChild
   value?: object
   initialFocus?: string
   resolve: (ok: boolean) => void
+  reject: (cause: unknown) => void
   settled: boolean
 }
 
@@ -110,11 +123,20 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   const defaults = { okText: options.okText ?? 'OK', cancelText: options.cancelText ?? 'Cancel' }
   const configSource = createServiceConfig(options.config)
   const holder = options.target ?? document.createElement('div')
-  if (!options.target)
-    ensurePortalRoot(document).appendChild(holder)
+  let hostFailure: { cause: unknown } | null = null
+  try {
+    if (!options.target)
+      ensurePortalRoot(document).appendChild(holder)
+    if (holder.nodeType !== 1 || holder.ownerDocument !== document || !holder.isConnected)
+      throw new Error('DialogService target 必须是当前文档中已连接的元素')
+  }
+  catch (cause) {
+    hostFailure = { cause }
+  }
 
   // 当前项单独放 shallowRef：进 reactive 会把 Spec 里那几个 MaybeRefOrGetter 的 Ref 分支解包掉
   const current = shallowRef<Spec | null>(null)
+  const actionError = shallowRef<DialogActionError | null>(null)
   const state = reactive({
     open: false,
     busy: false,
@@ -127,6 +149,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     if (disposed || current.value || queue.length === 0)
       return
     current.value = queue.shift()!
+    actionError.value = null
     state.busy = false
     state.open = true
   }
@@ -136,6 +159,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     if (!spec || spec.settled)
       return
     spec.settled = true
+    actionError.value = null
     spec.resolve(ok)
   }
 
@@ -168,34 +192,56 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
 
   async function ok(): Promise<void> {
     const spec = current.value
-    if (!spec || state.busy)
+    if (!spec || spec.settled || state.busy || disposed || hostFailure)
       return
+    const attempt = ++spec.attempt
+    const active = (): boolean => !disposed && !hostFailure && current.value === spec && !spec.settled && spec.attempt === attempt
+    actionError.value = null
     if (spec.onOk) {
       state.busy = true
       try {
-        // 取值型弹窗的 onOk 收 false 表示校验没过，对话框保持打开；
-        // confirm 的 onOk 签名不吃 false，语义不受影响
+        // false 只表示业务不放行，不与动作异常混用。
         const verdict = await spec.onOk()
+        if (!active())
+          return
         if (verdict === false) {
           state.busy = false
           return
         }
       }
-      catch (err) {
+      catch (cause) {
+        if (!active())
+          return
         state.busy = false
-        console.error('[xh] confirm onOk 失败，对话框保持打开', err)
+        const error = { cause }
+        actionError.value = error
+        try {
+          await spec.onActionError?.(error)
+        }
+        catch (notificationCause) {
+          if (active()) {
+            spec.settled = true
+            spec.reject(notificationCause)
+            actionError.value = null
+            state.open = false
+            scheduleAdvance()
+          }
+        }
         return
       }
       state.busy = false
     }
-    close(true)
+    if (active())
+      close(true)
   }
 
-  function request(spec: Omit<Spec, 'resolve' | 'settled'>): Promise<boolean> {
+  function request(spec: Omit<Spec, 'resolve' | 'reject' | 'settled' | 'attempt'>): Promise<boolean> {
+    if (hostFailure)
+      return Promise.reject(hostFailure.cause)
     if (disposed)
       return Promise.reject(new Error('dialog 服务已卸载'))
-    return new Promise<boolean>((resolve) => {
-      queue.push({ ...spec, resolve, settled: false })
+    return new Promise<boolean>((resolve, reject) => {
+      queue.push({ ...spec, resolve, reject, settled: false, attempt: 0 })
       next()
     })
   }
@@ -205,6 +251,8 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     setup() {
       configSource.provide()
       return () => {
+        if (hostFailure)
+          return null
         const spec = current.value
         return h(XhDialogRoot, {
           'open': state.open,
@@ -226,6 +274,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
                   ? h(XhDialogDescription, () => spec.content as string)
                   : typeof spec.content === 'function' ? spec.content() : null,
                 spec.body && spec.value ? spec.body(spec.value) : null,
+                actionError.value ? h('p', { role: 'alert', style: { color: 'var(--xh-fg-danger)' } }, toValue(options.actionErrorText) ?? 'Action failed. Please try again.') : null,
               ]),
               h(XhDialogFooter, null, () => [
                 spec.showCancel
@@ -247,7 +296,30 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   }
 
   const app: App = createApp(Host)
-  const mounted = mountServiceHost(app, holder, 'dialog')
+  let mounted = false
+  function failHost(cause: unknown): void {
+    hostFailure = { cause }
+    const pending = current.value ? [current.value, ...queue.splice(0)] : queue.splice(0)
+    for (const spec of pending) {
+      if (!spec.settled) {
+        spec.settled = true
+        spec.reject(cause)
+      }
+    }
+    actionError.value = null
+    state.open = false
+    state.busy = false
+  }
+  app.config.errorHandler = failHost
+  if (!hostFailure) {
+    try {
+      app.mount(holder)
+      mounted = true
+    }
+    catch (cause) {
+      failHost(cause)
+    }
+  }
 
   const alert = (badge: NonNullable<Spec['badge']>, tone: Tone) => async (opts: AlertOptions): Promise<void> => {
     await request({
@@ -259,10 +331,12 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
       showCancel: false,
       badge,
       onOk: opts.onOk,
+      onActionError: opts.onActionError,
     })
   }
 
   return {
+    get actionError() { return actionError.value },
     confirm: opts => request({
       title: opts.title,
       content: opts.content,
@@ -272,6 +346,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
       showCancel: true,
       badge: opts.badge,
       onOk: opts.onOk,
+      onActionError: opts.onActionError,
     }),
     prompt: <T extends object>(opts: PromptOptions<T>): Promise<T | null> => {
       // body 与 onOk 拿的是同一份可写代理：正文里改了什么，确认时就读到什么
@@ -287,6 +362,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
         body: v => opts.body(v as T),
         value,
         onOk: opts.onOk ? () => opts.onOk!(value) : undefined,
+        onActionError: opts.onActionError,
       }).then(ok => (ok ? { ...toRaw(value) } as T : null))
     },
     info: alert('info', 'info'),

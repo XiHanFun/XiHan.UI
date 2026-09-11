@@ -2563,6 +2563,7 @@ export { createDialogService } from './services/dialog-service'
 export type {
   AlertOptions,
   ConfirmOptions,
+  DialogActionError,
   DialogBody,
   DialogService,
   DialogServiceOptions,

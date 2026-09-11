@@ -15,6 +15,7 @@ export { createToastService } from './services/toast-service'
 export type {
   AlertOptions,
   ConfirmOptions,
+  DialogActionError,
   DialogBody,
   DialogService,
   DialogServiceOptions,

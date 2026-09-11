@@ -5,9 +5,10 @@
 import type { Tone } from '@xihan-ui/core'
 import type { XhButtonElement } from '../elements/button'
 import type { XhDialogElement } from '../elements/dialog'
-import type { AlertOptions, ConfirmOptions, DialogBody, DialogService, DialogServiceOptions } from './types'
+import type { AlertOptions, ConfirmOptions, DialogActionError, DialogBody, DialogService, DialogServiceOptions } from './types'
+import { ensurePortalRoot } from '@xihan-ui/core'
 import { spinArc } from './glyph'
-import { createServiceHolder, partNode, reportServiceFailure } from './host'
+import { partNode } from './host'
 import { defineFeedbackElements } from './register'
 
 /** 关到再开之间留出退场窗口，动效走完再放下一个。 */
@@ -23,7 +24,10 @@ interface Spec {
   /** 标题旁的类型徽记（预设档用），confirm 不带。 */
   badge?: 'info' | 'success' | 'warning' | 'error'
   onOk?: () => unknown
+  onActionError?: (error: DialogActionError) => void | Promise<void>
+  attempt: number
   resolve: (ok: boolean) => void
+  reject: (cause: unknown) => void
   settled: boolean
 }
 
@@ -35,10 +39,23 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   if (typeof document === 'undefined')
     throw new Error('createDialogService 需要 document；SSR 里请等到客户端再创建')
 
-  defineFeedbackElements()
-
   const defaults = { okText: options.okText ?? 'OK', cancelText: options.cancelText ?? 'Cancel' }
-  const { holder, release } = createServiceHolder(options.target)
+  const holder = options.target ?? document.createElement('div')
+  const release = (): void => {
+    if (!options.target)
+      holder.remove()
+  }
+  let hostFailure: { cause: unknown } | null = null
+  try {
+    defineFeedbackElements()
+    if (!options.target)
+      ensurePortalRoot(document).appendChild(holder)
+    if (holder.nodeType !== 1 || holder.ownerDocument !== document || !holder.isConnected)
+      throw new Error('DialogService target 必须是当前文档中已连接的元素')
+  }
+  catch (cause) {
+    hostFailure = { cause }
+  }
 
   const dialog = document.createElement('xh-dialog') as XhDialogElement
   // 告知类弹窗一律 alertdialog：点外面不关，得明确按一下才算读过
@@ -54,6 +71,10 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   const title = partNode('div', 'title')
   const body = partNode('div', 'body')
   const description = partNode('div', 'description')
+  const errorMessage = document.createElement('p')
+  errorMessage.setAttribute('role', 'alert')
+  errorMessage.style.color = 'var(--xh-fg-danger)'
+  errorMessage.hidden = true
   const footer = partNode('div', 'footer')
   const cancel = document.createElement('xh-button') as XhButtonElement
   const cancelRoot = partNode('button', 'root')
@@ -64,7 +85,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   const okLabel = partNode('span', 'label')
 
   header.append(indicator, title)
-  body.append(description)
+  body.append(description, errorMessage)
   cancelRoot.append(cancelLabel)
   cancel.append(cancelRoot)
   cancel.variant = 'ghost'
@@ -79,19 +100,21 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   const queue: Spec[] = []
   let current: Spec | null = null
   let busy = false
+  let actionError: DialogActionError | null = null
   let disposed = false
-  let mounted = true
   let advanceTimer: ReturnType<typeof setTimeout> | null = null
 
-  try {
-    holder.appendChild(dialog)
-  }
-  catch (error) {
-    mounted = reportServiceFailure('dialog', error)
-    release()
+  if (!hostFailure) {
+    try {
+      holder.appendChild(dialog)
+    }
+    catch (cause) {
+      hostFailure = { cause }
+      release()
+    }
   }
 
-  function paint(): void {
+  function paintContent(): void {
     const spec = current
     if (!spec)
       return
@@ -117,17 +140,44 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     ok.loading = busy
     okIndicator.replaceChildren(...(busy ? [spinArc()] : []))
     okLabel.textContent = busy ? `${spec.okText}…` : spec.okText
+    errorMessage.hidden = actionError === null
+    errorMessage.textContent = actionError ? options.actionErrorText ?? 'Action failed. Please try again.' : ''
     // 忙的时候 Esc 也拦住：正在提交的那一下不该被一个按键撤销
     dialog.closeOnEscape = !busy
+  }
+
+  function failHost(cause: unknown): void {
+    hostFailure = { cause }
+    const pending = current ? [current, ...queue.splice(0)] : queue.splice(0)
+    for (const spec of pending) {
+      if (!spec.settled) {
+        spec.settled = true
+        spec.reject(cause)
+      }
+    }
+    actionError = null
+    busy = false
+    dialog.open = false
+  }
+
+  function paint(): void {
+    try {
+      paintContent()
+    }
+    catch (cause) {
+      failHost(cause)
+    }
   }
 
   function next(): void {
     if (disposed || current || queue.length === 0)
       return
     current = queue.shift()!
+    actionError = null
     busy = false
     paint()
-    dialog.open = true
+    if (!hostFailure)
+      dialog.open = true
   }
 
   function settle(okPressed: boolean): void {
@@ -135,6 +185,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     if (!spec || spec.settled)
       return
     spec.settled = true
+    actionError = null
     spec.resolve(okPressed)
   }
 
@@ -179,39 +230,64 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
 
   async function confirmCurrent(): Promise<void> {
     const spec = current
-    if (!spec || busy)
+    if (!spec || spec.settled || busy || disposed || hostFailure)
       return
+    const attempt = ++spec.attempt
+    const active = (): boolean => !disposed && !hostFailure && current === spec && !spec.settled && spec.attempt === attempt
+    actionError = null
     if (spec.onOk) {
       busy = true
       paint()
+      if (!active())
+        return
       try {
         // 返回 false 表示不放行，对话框保持打开
         const verdict = await spec.onOk()
+        if (!active())
+          return
         if (verdict === false) {
           busy = false
           paint()
           return
         }
       }
-      catch (error) {
+      catch (cause) {
+        if (!active())
+          return
         busy = false
+        const error = { cause }
+        actionError = error
         paint()
-        console.error('[xh] confirm onOk 失败，对话框保持打开', error)
+        if (!active())
+          return
+        try {
+          await spec.onActionError?.(error)
+        }
+        catch (notificationCause) {
+          if (active()) {
+            spec.settled = true
+            spec.reject(notificationCause)
+            actionError = null
+            dialog.open = false
+            scheduleAdvance()
+          }
+        }
         return
       }
       busy = false
       paint()
     }
-    close(true)
+    if (active())
+      close(true)
   }
 
-  function request(spec: Omit<Spec, 'resolve' | 'settled'>): Promise<boolean> {
+  function request(spec: Omit<Spec, 'resolve' | 'reject' | 'settled' | 'attempt'>): Promise<boolean> {
+    if (hostFailure)
+      return Promise.reject(hostFailure.cause)
     if (disposed)
       return Promise.reject(new Error('dialog 服务已卸载'))
-    if (!mounted)
-      return Promise.resolve(false)
-    return new Promise<boolean>((resolve) => {
-      queue.push({ ...spec, resolve, settled: false })
+    return new Promise<boolean>((resolve, reject) => {
+      queue.push({ ...spec, resolve, reject, settled: false, attempt: 0 })
       next()
     })
   }
@@ -226,10 +302,12 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
       showCancel: false,
       badge,
       onOk: opts.onOk,
+      onActionError: opts.onActionError,
     })
   }
 
   return {
+    get actionError() { return actionError },
     confirm: (opts: ConfirmOptions) => request({
       title: opts.title,
       content: opts.content,
@@ -239,6 +317,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
       showCancel: true,
       badge: opts.badge,
       onOk: opts.onOk,
+      onActionError: opts.onActionError,
     }),
     info: alert('info', 'info'),
     success: alert('success', 'success'),
