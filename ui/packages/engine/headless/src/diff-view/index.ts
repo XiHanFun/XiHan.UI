@@ -5,6 +5,8 @@ export { diffViewMachine } from './diff-view.machine'
 export { diffViewMeta } from './diff-view.meta'
 export { computeTextDiff, diffStats, parseUnifiedPatch } from './diff-view.model'
 export type { ComputeTextDiffOptions, DiffChange, DiffHunk, DiffLine, DiffModel } from './diff-view.model'
+export { diffViewSides } from './diff-view.projection'
+export type { DiffViewSides } from './diff-view.projection'
 export type {
   DiffSide,
   DiffViewApi,

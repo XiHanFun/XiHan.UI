@@ -3,7 +3,7 @@ import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
 // 直接从组件目录导入，不经包主入口
-import { computeTextDiff, connectDiffView, diffStats, diffViewMachine, parseUnifiedPatch } from '../src/diff-view'
+import { computeTextDiff, connectDiffView, diffStats, diffViewMachine, diffViewSides, parseUnifiedPatch } from '../src/diff-view'
 
 type Props = DiffViewSchema['props']
 type Dict = Record<string, unknown>
@@ -15,6 +15,17 @@ function makeDiffView(initial: Props = {}) {
   runtime.start()
   return connectDiffView(service, normalizeProps)
 }
+
+describe('diffViewSides', () => {
+  it('unified 只投影旧侧，split 稳定投影旧侧再新侧', () => {
+    expect(diffViewSides('unified')).toEqual(['old'])
+    expect(diffViewSides('split')).toEqual(['old', 'new'])
+  })
+
+  it('每次调用返回独立数组，消费方改动一份不会污染下一次投影', () => {
+    expect(diffViewSides('split')).not.toBe(diffViewSides('split'))
+  })
+})
 
 describe('computeTextDiff', () => {
   it('一行改一处：删一行、增一行，两侧行号各自推进', () => {

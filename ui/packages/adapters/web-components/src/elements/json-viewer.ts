@@ -1,6 +1,6 @@
 import type { Direction, Size } from '@xihan-ui/core'
 import type { JsonViewerApi, JsonViewerExpandedValueChangeDetails, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerVariant } from '@xihan-ui/headless'
-import { connectJsonViewer, jsonViewerAnatomy, jsonViewerMachine, jsonViewerMeta } from '@xihan-ui/headless'
+import { connectJsonViewer, groupJsonViewerNodesByParent, jsonViewerAnatomy, jsonViewerMachine, jsonViewerMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -37,19 +37,6 @@ interface JsonRow {
   text?: HTMLElement
   preview?: HTMLElement
   content?: HTMLElement
-}
-
-/** 可见行按父路径分组，铺 DOM 时逐层取用。 */
-function groupByParent(nodes: readonly JsonViewerNode[]): Map<string | null, JsonViewerNode[]> {
-  const out = new Map<string | null, JsonViewerNode[]>()
-  for (const node of nodes) {
-    const list = out.get(node.parent)
-    if (list)
-      list.push(node)
-    else
-      out.set(node.parent, [node])
-  }
-  return out
 }
 
 /** 顺序已经对上的节点一个都不碰：移动一个节点等于把它摘下来再插回去，焦点会跟着掉。 */
@@ -329,7 +316,7 @@ export class XhJsonViewerElement extends XhElement {
     this.adopt(root, tree, this.textEl)
     this.spreader.spread(tree, api.getTreeProps() as Record<string, unknown>)
 
-    const children = groupByParent(api.visibleNodes)
+    const children = groupJsonViewerNodesByParent(api.visibleNodes)
     const alive = new Set<string>()
     this.paint(tree, children.get(null) ?? [], children, api, alive)
     // 收起或换了数据之后不再出现的行，缓存里也不留
