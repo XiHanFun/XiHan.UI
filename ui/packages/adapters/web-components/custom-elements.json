@@ -38945,9 +38945,6 @@
               "name": "--xh-select-item-bg-pressed"
             },
             {
-              "name": "--xh-select-item-bg-selected"
-            },
-            {
               "name": "--xh-select-item-fg"
             },
             {

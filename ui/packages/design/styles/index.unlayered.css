@@ -27293,12 +27293,9 @@
   /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
   --xh-_select-control-shadow: var(--xh-elevation-raised);
 
-  /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
-     没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
+  /* 聚焦环恒用固定环色；语气只落在勾选标记上，单选与多选正文使用同一颜色。 */
   --xh-_select-ring: var(--xh-ring-focus);
   --xh-_select-accent: var(--xh-_tone, var(--xh-fg-brand));
-  --xh-_select-item-selected-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-  --xh-_select-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 }
 
 [data-scope='select'][data-part='root'] {
@@ -27783,7 +27780,7 @@
 }
 
 /* 悬停与键盘锚点共用中性灰轻档：条目本身承载焦点，不另画描边 */
-[data-scope='select'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+[data-scope='select'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted], :focus-visible) {
   background: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
 }
 
@@ -27791,16 +27788,19 @@
   background: var(--xh-select-item-bg-pressed, var(--xh-bg-subtle-active));
 }
 
-/* 选中给一块不透明品牌淡底：焦点环压在稳定实体面上，复杂背景不会从透明处穿进来。
-   规则排在 hover/highlight 后，选中行聚焦时仍以环与勾选标记叠加表达两种状态。 */
+/* 选中统一由末端对号表达；不铺选中底、不增重，悬停与键盘焦点继续独立铺中性底。 */
 [data-scope='select'][data-part='item'][data-state='checked'] {
-  background: var(--xh-select-item-bg-selected, var(--xh-_select-item-selected-bg));
-  color: var(--xh-select-item-fg-selected, var(--xh-_select-item-selected-fg));
-  font-weight: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-medium));
+  color: var(--xh-select-item-fg-selected, var(--xh-select-item-fg, var(--xh-material-frosted-fg)));
+  font-weight: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-normal));
 }
 
 [data-scope='select'][data-part='item']:focus:not(:focus-visible) {
   outline: none;
+}
+
+/* 键盘环出现时同步铺实中性底，避免背景过渡期间降低环与玻璃面的对比。 */
+[data-scope='select'][data-part='item']:focus-visible {
+  transition-property: color;
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled，条目仍可聚焦，样式由 data-disabled 表达 */
