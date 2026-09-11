@@ -16160,26 +16160,30 @@
 }
 
 /* styles/color-picker.css */
-@keyframes xh-pop-in {
+@keyframes xh-overlay-slide-in {
   from {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
   }
 
   to {
     opacity: 1;
-    scale: 1;
+    translate: 0 0;
   }
 }
-@keyframes xh-pop-out {
+@keyframes xh-overlay-slide-out {
   from {
     opacity: 1;
-    scale: 1;
+    translate: 0 0;
   }
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-exit);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
   }
 }
 
@@ -16343,6 +16347,11 @@
   /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，内容层据此夹住行内轴；
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
   --xh-_color-picker-available-w: 100vw;
+  /* 每个面板按自身落位方向进入，截断祖先浮层方向的继承。 */
+  --xh-_overlay-enter-up: 0;
+  --xh-_overlay-enter-down: 0;
+  --xh-_overlay-enter-left: 0;
+  --xh-_overlay-enter-right: 0;
 
   /* 面板的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊出一条竖灰带 */
   --xh-scrollbar-track-bg: transparent;
@@ -16353,12 +16362,29 @@
   pointer-events: none;
 }
 
+[data-scope='color-picker'][data-part='positioner'][data-placement^='top'] {
+  --xh-_overlay-enter-down: 1;
+}
+
+[data-scope='color-picker'][data-part='positioner'][data-placement^='bottom'] {
+  --xh-_overlay-enter-up: 1;
+}
+
+[data-scope='color-picker'][data-part='positioner'][data-placement^='left'] {
+  --xh-_overlay-enter-right: 1;
+}
+
+[data-scope='color-picker'][data-part='positioner'][data-placement^='right'] {
+  --xh-_overlay-enter-left: 1;
+}
+
 /* 锚点被滚出可视区：整个浮层随之收起 */
 [data-scope='color-picker'][data-part='positioner'][data-hidden] {
   visibility: hidden;
 }
 
 [data-scope='color-picker'][data-part='content'] {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--xh-color-picker-content-gap, var(--xh-space-3));
@@ -16369,24 +16395,38 @@
   padding-inline: var(--xh-color-picker-content-px, var(--xh-space-3));
   max-block-size: min(var(--xh-color-picker-max-h, var(--xh-viewport-h-md)), var(--xh-_color-picker-available-h));
   overflow-y: auto;
-  border: var(--xh-stroke-thin) solid var(--xh-color-picker-content-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-color-picker-content-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-color-picker-content-radius, var(--xh-shape-surface));
-  background: var(--xh-color-picker-content-bg, var(--xh-bg-surface));
-  color: var(--xh-color-picker-content-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-color-picker-content-shadow, var(--xh-elevation-floating));
+  background: var(--xh-color-picker-content-bg, var(--xh-material-frosted-bg));
+  color: var(--xh-color-picker-content-fg, var(--xh-material-frosted-fg));
+  box-shadow: var(--xh-color-picker-content-shadow, var(--xh-material-frosted-shadow));
+  -webkit-backdrop-filter: var(--xh-color-picker-content-backdrop, var(--xh-material-frosted-backdrop));
+  backdrop-filter: var(--xh-color-picker-content-backdrop, var(--xh-material-frosted-backdrop));
   pointer-events: auto;
+}
+
+/* 顶光只覆盖壳的上沿，色域、轨道与色板保持原色，也不拦截指针。 */
+[data-scope='color-picker'][data-part='content']::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: var(--xh-stroke-thin);
+  border-radius: inherit;
+  background: var(--xh-color-picker-content-highlight, var(--xh-material-frosted-highlight));
+  pointer-events: none;
 }
 
 /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='color-picker'][data-part='content'][data-state='open'] {
-  will-change: opacity, scale;
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  will-change: opacity, translate;
+  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到真收起之间闪一下原样 */
 [data-scope='color-picker'][data-part='content'][data-state='closed'] {
-  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 浮层本身只是个容器（tabindex=-1 是焦点域的兜底落点），落焦时不画环 */
@@ -16678,11 +16718,10 @@
 
 /* 任何 display 都会盖掉 UA 的 [hidden]{display:none}：
    凡是被赋了 display 的角色节点都要显式让位，漏一处收起态就失效。
-   连接层当下只往 content 上写 hidden，其余几处是给作者自己收起某一块留的后路。 */
+   content 的收起交给 presence：退场结束后由适配器写内联 display:none，避免截断动画。 */
 [data-scope='color-picker'][data-part='root'][hidden],
 [data-scope='color-picker'][data-part='trigger'][hidden],
 [data-scope='color-picker'][data-part='swatch'][hidden],
-[data-scope='color-picker'][data-part='content'][hidden],
 [data-scope='color-picker'][data-part='saturation-area'][hidden],
 [data-scope='color-picker'][data-part='area-thumb'][hidden],
 [data-scope='color-picker'][data-part='channel-slider'][hidden],

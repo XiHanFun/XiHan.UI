@@ -355,6 +355,7 @@
       "content": "from{opacity:0;translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;translate:0 0}",
       "definedIn": [
         "cascader.css",
+        "color-picker.css",
         "context-menu.css",
         "menu.css",
         "menubar.css",
@@ -365,6 +366,7 @@
       ],
       "consumers": [
         "cascader",
+        "color-picker",
         "context-menu",
         "menu",
         "menubar",
@@ -378,6 +380,7 @@
       "content": "from{opacity:1;translate:0 0}to{opacity:0;translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}",
       "definedIn": [
         "cascader.css",
+        "color-picker.css",
         "context-menu.css",
         "menu.css",
         "menubar.css",
@@ -388,6 +391,7 @@
       ],
       "consumers": [
         "cascader",
+        "color-picker",
         "context-menu",
         "menu",
         "menubar",
@@ -400,7 +404,6 @@
     "xh-pop-in": {
       "content": "from{opacity:0;scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
       "definedIn": [
-        "color-picker.css",
         "context-menu.css",
         "float-button.css",
         "floating-panel.css",
@@ -409,7 +412,6 @@
         "side-nav.css"
       ],
       "consumers": [
-        "color-picker",
         "float-button",
         "floating-panel",
         "navigation-menu",
@@ -420,7 +422,6 @@
     "xh-pop-out": {
       "content": "from{opacity:1;scale:1}to{opacity:0;scale:var(--xh-motion-scale-exit)}",
       "definedIn": [
-        "color-picker.css",
         "combobox.css",
         "command.css",
         "context-menu.css",
@@ -437,7 +438,6 @@
         "tour.css"
       ],
       "consumers": [
-        "color-picker",
         "combobox",
         "command",
         "date-picker",
