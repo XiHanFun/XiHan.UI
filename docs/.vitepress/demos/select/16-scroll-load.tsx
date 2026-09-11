@@ -1,4 +1,4 @@
-// 滚动加载 | 浮层的滚动容器就是 content：滚动事件直接落在它身上，滚到底就把下一页并进选项
+// 滚动加载 | list 承担选项滚动：滚到底追加下一页，独立加载状态不会混入可选项
 import type { ReactNode, UIEvent } from "react";
 import {
   XhSelectContent,
@@ -9,6 +9,7 @@ import {
   XhSelectItemText,
   XhSelectLabel,
   XhSelectList,
+  XhSelectLoading,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -57,6 +58,7 @@ export default function Demo(): ReactNode {
     <>
       <XhSelectRoot
         value={picked}
+        loading={loading}
         onValueChange={details => setPicked(details.value)}
         placeholder="请选择"
       >
@@ -68,22 +70,16 @@ export default function Demo(): ReactNode {
           </XhSelectTrigger>
         </XhSelectControl>
         <XhSelectPositioner>
-          <XhSelectContent onScroll={onScroll}>
-            <XhSelectList>
+          <XhSelectContent>
+            <XhSelectList onScroll={onScroll}>
               {tickets.map(t => (
                 <XhSelectItem key={t.value} value={t.value}>
                   <XhSelectItemText>{t.label}</XhSelectItemText>
                   <XhSelectItemIndicator />
                 </XhSelectItem>
               ))}
-              {loading
-                ? (
-                    <XhSelectItem value="loading" disabled>
-                      <XhSelectItemText>加载中…</XhSelectItemText>
-                    </XhSelectItem>
-                  )
-                : null}
             </XhSelectList>
+            <XhSelectLoading>加载中…</XhSelectLoading>
           </XhSelectContent>
         </XhSelectPositioner>
       </XhSelectRoot>
