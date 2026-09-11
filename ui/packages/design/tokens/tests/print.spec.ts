@@ -1,7 +1,7 @@
-// print 档是打印时取消投影的唯一通道：皮肤把 box-shadow 引到三支海拔角色上，取消就自动穿透，
+// print 档是打印时取消海拔投影与材质光效的唯一通道：皮肤只消费语义角色，取消会自动穿透，
 // 不必逐组件写 @media，也不必去跟皮肤里那条 box-shadow 比特指度——拆层版本里两者按特指度
-// 重新竞争，皮肤选择器最深到六个属性，靠层序取胜的写法在那一份里会静默失效。
-// 这里盯住三件事：覆盖面不漏、落点只在库节点、以及它没有顺手把 shadow.* 原语一起改掉。
+// 重新竞争，皮肤选择器最深到六个属性，靠层序取胜的写法会静默失效。
+// 这里盯住覆盖面、落点和边界：只改屏幕绘制效果，不顺手改 primitive、正文色或尺寸。
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -31,7 +31,11 @@ function flatten(obj: unknown, path: string[] = []): FlatToken[] {
   return out
 }
 
-const base = flatten(loadJson('semantic.base.json'))
+const screen = [
+  ...flatten(loadJson('semantic.base.json')),
+  ...flatten(loadJson('semantic.light.json')),
+  ...flatten(loadJson('semantic.dark.json')),
+]
 const print = flatten(loadJson('semantic.print.json'))
 const css = readFileSync(join(ROOT, 'tokens.css'), 'utf8')
 
@@ -54,35 +58,38 @@ function printBlock(): string {
 
 describe('semantic.print.json', () => {
   it('每一项都对应基线里的同名令牌', () => {
-    const baseNames = new Set(base.map(t => t.name))
+    const baseNames = new Set(screen.map(t => t.name))
     for (const t of print)
       expect(baseNames.has(t.name), t.name).toBe(true)
   })
 
   it('每一项的取值都与基线不同（等值覆盖是死重）', () => {
-    const baseByName = new Map(base.map(t => [t.name, t.value]))
+    const baseByName = new Map(screen.map(t => [t.name, t.value]))
     for (const t of print)
       expect(t.value, t.name).not.toBe(baseByName.get(t.name))
   })
 
-  it('只碰海拔角色令牌', () => {
-    // 打印档改的是「这块面在纸上还画不画投影」。越界改到颜色或尺寸上，屏幕档就有一整套
-    // 从没人看过的取值——它只在打印时生效，没有任何一格快照算得到它
-    for (const t of print)
-      expect(t.name.startsWith('elevation-'), t.name).toBe(true)
+  it('只碰海拔角色与材质的绘制效果', () => {
+    // 打印档只取消屏幕上的投影与装饰高光，不在这里另造一套正文色或尺寸。
+    for (const t of print) {
+      const allowed = t.name.startsWith('elevation-')
+        || t.name === 'material-soft-highlight'
+        || t.name === 'material-soft-shadow'
+      expect(allowed, t.name).toBe(true)
+    }
   })
 
   it('基线里每一支海拔角色都被覆盖到', () => {
     const covered = new Set(print.map(t => t.name))
-    const shouldCover = base.filter(t => t.name.startsWith('elevation-'))
+    const shouldCover = screen.filter(t => t.name.startsWith('elevation-'))
     expect(shouldCover.length).toBeGreaterThan(0)
     for (const t of shouldCover)
       expect(covered.has(t.name), `${t.name} 是海拔角色，但打印档没有取消它`).toBe(true)
   })
 
-  it('取消写成 none 而不是零偏移的空阴影', () => {
+  it('投影取消写成 none，而不是零偏移的空阴影', () => {
     // `0 0 0 0 transparent` 仍然是一层阴影，合成器照样为它开一层；none 是整条不画
-    for (const t of print)
+    for (const t of print.filter(token => token.type === 'shadow'))
       expect(t.value, t.name).toBe('none')
   })
 })

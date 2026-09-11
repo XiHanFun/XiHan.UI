@@ -69,5 +69,19 @@
     "lifted": { "$description": "深色档同样落在两档中间：三层的偏移与模糊照浅色档的几何，主层不透明度 0.4→0.45→0.5。", "$type": "shadow", "$value": "0 1px 2px -0.5px oklch(0 0 0 / 0.45), 0 3px 6px -2px oklch(0 0 0 / 0.42), 0 6px 12px -5px oklch(0 0 0 / 0.36), inset 0 1px 0 0 oklch(1 0 0 / 0.06)" },
     "floating": { "$type": "shadow", "$value": "0 1px 2px -0.5px oklch(0 0 0 / 0.5), 0 4px 8px -2px oklch(0 0 0 / 0.45), 0 10px 20px -6px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.06)" },
     "sheet": { "$type": "shadow", "$value": "0 1px 3px -0.5px oklch(0 0 0 / 0.6), 0 8px 16px -4px oklch(0 0 0 / 0.5), 0 20px 40px -12px oklch(0 0 0 / 0.45), 0 0 0 1px oklch(1 0 0 / 0.08)" }
+  },
+  "material": {
+    "$description": "深色材质独立取值，不由浅色配方反色。M1 Soft Surface 保持实体，避免正文背后的复杂图像透入。",
+    "soft": {
+      "bg": { "$description": "比深色 surface 略抬高的一层实体底。", "$type": "color", "$value": "oklch(0.22 0.006 258)" },
+      "backdrop": { "$type": "string", "$value": "none" },
+      "border": { "$type": "color", "$value": "{border.subtle}" },
+      "highlight": { "$description": "深色面只留极弱的顶部入射光，不绕四边画亮框。", "$type": "color", "$value": "oklch(1 0 0 / 0.07)" },
+      "shadow": { "$description": "深色 M1 的贴面层与环境层，不含重复的内高光。", "$type": "shadow", "$value": "0 1px 1px -0.5px oklch(0 0 0 / 0.28), 0 4px 10px -6px oklch(0 0 0 / 0.24)" },
+      "separator": { "$type": "color", "$value": "{border.subtle}" },
+      "fg": { "$type": "color", "$value": "{fg.default}" },
+      "fg-muted": { "$type": "color", "$value": "{fg.muted}" },
+      "focus-surface": { "$type": "color", "$value": "{material.soft.bg}" }
+    }
   }
 }

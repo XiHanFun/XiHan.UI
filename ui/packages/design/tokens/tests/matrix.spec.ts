@@ -231,6 +231,12 @@ function resolveValue(value: string, raw: Map<string, string>, seen: string[] = 
   })
 }
 
+/** DTCG 源值到生成器写进 CSS 的值：既支持整支引用，也支持字面值和内嵌引用。 */
+function toCssValue(value: string): string {
+  return value.replace(/\{([^}]+)\}/g, (_, path: string) =>
+    `var(--xh-${path.trim().replace(/\./g, '-')})`)
+}
+
 /* ---------- 语义层的名单 ---------- */
 
 function loadJson(name: string): Record<string, unknown> {
@@ -371,20 +377,28 @@ describe('快照的前提', () => {
 describe('深色 × 高对比取的是深色高对比档', () => {
   const darkMore = flatten(loadJson('semantic.dark.more.json'))
   const cell = { density: 'comfortable', contrast: 'more', motion: 'default' } as const
+  const sharedDecoration = new Set(['--xh-material-soft-highlight'])
 
-  it('这一格的边界取值与浅色高对比档逐条不同', () => {
+  it('非装饰令牌的最终取值与浅色档逐条不同，共同关闭的装饰高光单独对账', () => {
     const dark = cascade({ ...cell, theme: 'dark' })
     const light = cascade({ ...cell, theme: 'light' })
     expect(darkMore.length).toBeGreaterThan(0)
-    for (const t of darkMore)
-      expect(dark.raw.get(t.name), t.name).not.toBe(light.raw.get(t.name))
+    for (const t of darkMore) {
+      const darkValue = resolveValue(dark.raw.get(t.name)!, dark.raw)
+      const lightValue = resolveValue(light.raw.get(t.name)!, light.raw)
+      if (sharedDecoration.has(t.name)) {
+        expect(darkValue, t.name).toBe('oklch(0 0 0 / 0)')
+        expect(lightValue, t.name).toBe(darkValue)
+      }
+      else {
+        expect(darkValue, t.name).not.toBe(lightValue)
+      }
+    }
   })
 
-  it('这一格的边界取值逐条对上 semantic.dark.more.json', () => {
+  it('这一格的声明逐条对上 semantic.dark.more.json 的字面值与引用', () => {
     const { raw } = cascade({ ...cell, theme: 'dark' })
-    for (const t of darkMore) {
-      const expected = `var(--xh-${t.value.slice(1, -1).replace(/\./g, '-')})`
-      expect(raw.get(t.name), t.name).toBe(expected)
-    }
+    for (const t of darkMore)
+      expect(raw.get(t.name), t.name).toBe(toCssValue(t.value))
   })
 })

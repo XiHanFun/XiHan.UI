@@ -150,6 +150,15 @@
 --xh-list-option-py-lg: 8px  ← var(--xh-space-2)
 --xh-list-option-py-md: 6px  ← var(--xh-space-1_5)
 --xh-list-option-py-sm: 4px  ← var(--xh-space-1)
+--xh-material-soft-backdrop: none
+--xh-material-soft-bg: oklch(0.995 0.001 258)
+--xh-material-soft-border: oklch(0.967 0.001 258)  ← var(--xh-border-subtle)
+--xh-material-soft-fg: oklch(0.145 0.005 258)  ← var(--xh-fg-default)
+--xh-material-soft-fg-muted: oklch(0.439 0.006 258)  ← var(--xh-fg-muted)
+--xh-material-soft-focus-surface: oklch(0.995 0.001 258)  ← var(--xh-material-soft-bg)
+--xh-material-soft-highlight: oklch(1 0 0 / 0.72)
+--xh-material-soft-separator: oklch(0.967 0.001 258)  ← var(--xh-border-subtle)
+--xh-material-soft-shadow: 0 1px 1px -0.5px oklch(0.145 0.005 258 / 0.04), 0 4px 10px -6px oklch(0.145 0.005 258 / 0.05)
 --xh-measure-prose: 32rem
 --xh-motion-distance-md: 8px  ← var(--xh-space-2)
 --xh-motion-distance-sm: 4px  ← var(--xh-space-1)

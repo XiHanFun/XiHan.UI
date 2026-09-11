@@ -418,6 +418,15 @@
     --xh-syntax-string: oklch(0.52 0.13 165);
     --xh-syntax-number: oklch(0.5 0.13 70);
     --xh-syntax-keyword: oklch(0.5 0.2 300);
+    --xh-material-soft-bg: oklch(0.995 0.001 258);
+    --xh-material-soft-backdrop: none;
+    --xh-material-soft-border: var(--xh-border-subtle);
+    --xh-material-soft-highlight: oklch(1 0 0 / 0.72);
+    --xh-material-soft-shadow: 0 1px 1px -0.5px oklch(0.145 0.005 258 / 0.04), 0 4px 10px -6px oklch(0.145 0.005 258 / 0.05);
+    --xh-material-soft-separator: var(--xh-border-subtle);
+    --xh-material-soft-fg: var(--xh-fg-default);
+    --xh-material-soft-fg-muted: var(--xh-fg-muted);
+    --xh-material-soft-focus-surface: var(--xh-material-soft-bg);
   }
 
   /* mode 轴 · 浅色显式取值块 */
@@ -471,6 +480,15 @@
     --xh-syntax-string: oklch(0.52 0.13 165);
     --xh-syntax-number: oklch(0.5 0.13 70);
     --xh-syntax-keyword: oklch(0.5 0.2 300);
+    --xh-material-soft-bg: oklch(0.995 0.001 258);
+    --xh-material-soft-backdrop: none;
+    --xh-material-soft-border: var(--xh-border-subtle);
+    --xh-material-soft-highlight: oklch(1 0 0 / 0.72);
+    --xh-material-soft-shadow: 0 1px 1px -0.5px oklch(0.145 0.005 258 / 0.04), 0 4px 10px -6px oklch(0.145 0.005 258 / 0.05);
+    --xh-material-soft-separator: var(--xh-border-subtle);
+    --xh-material-soft-fg: var(--xh-fg-default);
+    --xh-material-soft-fg-muted: var(--xh-fg-muted);
+    --xh-material-soft-focus-surface: var(--xh-material-soft-bg);
   }
 
   /* mode 轴 · 深色取值块（color-scheme 必须在此，嵌套深色区才能拿到深色原生控件） */
@@ -528,6 +546,15 @@
     --xh-elevation-lifted: 0 1px 2px -0.5px oklch(0 0 0 / 0.45), 0 3px 6px -2px oklch(0 0 0 / 0.42), 0 6px 12px -5px oklch(0 0 0 / 0.36), inset 0 1px 0 0 oklch(1 0 0 / 0.06);
     --xh-elevation-floating: 0 1px 2px -0.5px oklch(0 0 0 / 0.5), 0 4px 8px -2px oklch(0 0 0 / 0.45), 0 10px 20px -6px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.06);
     --xh-elevation-sheet: 0 1px 3px -0.5px oklch(0 0 0 / 0.6), 0 8px 16px -4px oklch(0 0 0 / 0.5), 0 20px 40px -12px oklch(0 0 0 / 0.45), 0 0 0 1px oklch(1 0 0 / 0.08);
+    --xh-material-soft-bg: oklch(0.22 0.006 258);
+    --xh-material-soft-backdrop: none;
+    --xh-material-soft-border: var(--xh-border-subtle);
+    --xh-material-soft-highlight: oklch(1 0 0 / 0.07);
+    --xh-material-soft-shadow: 0 1px 1px -0.5px oklch(0 0 0 / 0.28), 0 4px 10px -6px oklch(0 0 0 / 0.24);
+    --xh-material-soft-separator: var(--xh-border-subtle);
+    --xh-material-soft-fg: var(--xh-fg-default);
+    --xh-material-soft-fg-muted: var(--xh-fg-muted);
+    --xh-material-soft-focus-surface: var(--xh-material-soft-bg);
   }
 
   /* contrast 轴 · 高对比档。三块全是 :where()（特指度 0），谁在后面谁赢，
@@ -540,6 +567,9 @@
     --xh-border-control-hover: var(--xh-color-neutral-700);
     --xh-border-invalid: var(--xh-color-danger-700);
     --xh-border-at-limit: var(--xh-color-warning-800);
+    --xh-material-soft-border: var(--xh-border-subtle);
+    --xh-material-soft-highlight: oklch(0 0 0 / 0);
+    --xh-material-soft-separator: var(--xh-border-subtle);
   }
 
   :where([data-theme='dark'][data-contrast='more']) {
@@ -550,6 +580,9 @@
     --xh-border-control-hover: var(--xh-color-neutral-300);
     --xh-border-invalid: var(--xh-color-danger-400);
     --xh-border-at-limit: var(--xh-color-warning-400);
+    --xh-material-soft-border: var(--xh-border-subtle);
+    --xh-material-soft-highlight: oklch(0 0 0 / 0);
+    --xh-material-soft-separator: var(--xh-border-subtle);
   }
 
   /* 减弱动效：排在全部取值块之后，同为零特指度时靠书写顺序压过基线。
@@ -587,7 +620,7 @@
     --xh-motion-scale-drag: 1;
   }
 
-  /* 打印：四支海拔角色取消。皮肤消费的是 var(--xh-<组件>-…-shadow, var(--xh-elevation-<角色>))，
+  /* 打印：海拔投影与材质光效取消。皮肤消费的是语义角色，
      角色变 none 就整层不画，皮肤一处都不用改，也不必跟皮肤里的 box-shadow 比特指度——
      那条路走不通：拆层版本里两者按特指度重新竞争，皮肤选择器最深到六个属性，赢不过。
      落点是 [data-scope] 而不是 :root：宿主页面自己的投影归宿主决定，本库只管自己的节点。
@@ -598,6 +631,8 @@
       --xh-elevation-lifted: none;
       --xh-elevation-floating: none;
       --xh-elevation-sheet: none;
+      --xh-material-soft-highlight: oklch(0 0 0 / 0);
+      --xh-material-soft-shadow: none;
     }
   }
 }
