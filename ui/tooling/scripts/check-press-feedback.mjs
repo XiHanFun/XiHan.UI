@@ -134,7 +134,7 @@ const PRESSABLE = {
   'reasoning': ['trigger'],
   'tool-call': ['trigger'],
   // 触屏上代替右键的长按：等待期的回执落在 data-pressing 上
-  'context-menu': [{ part: 'trigger', attr: 'data-pressing' }],
+  'context-menu': [{ part: 'trigger', attr: 'data-pressing' }, { part: 'item', feedback: 'surface' }],
 }
 
 /**
@@ -145,7 +145,6 @@ const PRESSABLE = {
 const NO_PRESS = {
   // 列表族条目：一行文字，按下的回执走高亮档（悬停中性灰、展开路径品牌淡底）
   'menubar:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'context-menu:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'listbox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'select:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'combobox:item': '列表行的按下回执走高亮档，缩放会抖动整列',

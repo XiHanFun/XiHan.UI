@@ -361,18 +361,22 @@
     "xh-overlay-slide-in": {
       "content": "from{opacity:0;translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;translate:0 0}",
       "definedIn": [
+        "context-menu.css",
         "menu.css"
       ],
       "consumers": [
+        "context-menu",
         "menu"
       ]
     },
     "xh-overlay-slide-out": {
       "content": "from{opacity:1;translate:0 0}to{opacity:0;translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}",
       "definedIn": [
+        "context-menu.css",
         "menu.css"
       ],
       "consumers": [
+        "context-menu",
         "menu"
       ]
     },
@@ -392,7 +396,6 @@
       "consumers": [
         "cascader",
         "color-picker",
-        "context-menu",
         "float-button",
         "floating-panel",
         "menubar",
@@ -430,7 +433,6 @@
         "color-picker",
         "combobox",
         "command",
-        "context-menu",
         "date-picker",
         "floating-panel",
         "hover-card",
