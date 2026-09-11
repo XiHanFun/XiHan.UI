@@ -123,6 +123,9 @@ export function connectImageViewer<T extends PropTypes>(
       'aria-modal': 'true',
       // 当前图的 alt 就是最贴切的名字，没有再退到通用文案
       'aria-label': currentItem?.alt ?? label.content,
+      // 逻辑关闭先让内容退出交互与可访问树；Presence 仅负责延后视觉树和模态资源的释放。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       'data-state': stateAttr,
       'hidden': !open || undefined,
       'tabindex': -1,

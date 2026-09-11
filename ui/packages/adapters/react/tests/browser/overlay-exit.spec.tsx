@@ -428,6 +428,43 @@ describe('image-viewer 退场', () => {
 
     expect(query('image-viewer', 'content'), '动画结束后应当卸载').toBeNull()
   })
+
+  it('内容和遮罩的全部退出租约完成前保留模态资源，完成后才通知', async () => {
+    installLongExit('image-viewer')
+    const outside = document.createElement('button')
+    document.body.append(outside)
+    const setOpen = await mount(open => (
+      <XhImageViewerRoot
+        open={open}
+        collection={[{ src: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=' }]}
+      >
+        <XhImageViewerContent><button type="button">内部</button></XhImageViewerContent>
+      </XhImageViewerRoot>
+    ))
+
+    await setOpen(false)
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const content = part('image-viewer', 'content')
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    expect(outside.inert).toBe(true)
+    expect(document.body.style.overflow).toBe('hidden')
+
+    const contentAnimations = finiteAnimations(content)
+    expect(contentAnimations).toHaveLength(2)
+    contentAnimations[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    contentAnimations[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    for (const animation of finiteAnimations(part('image-viewer', 'backdrop'))) animation.finish()
+    await settle()
+
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+    expect(outside.inert).toBe(false)
+    expect(query('image-viewer', 'content')).toBeNull()
+  })
 })
 
 describe('popover 退场', () => {

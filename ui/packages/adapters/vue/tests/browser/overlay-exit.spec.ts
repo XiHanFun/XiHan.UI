@@ -1,6 +1,7 @@
 // 退场动画只能在真实浏览器里验：jsdom 不把样式表里的 animation 简写算进
 // getComputedStyle（animationName 恒为空串），退场探测那条路在 jsdom 里天然走不到。
 import type { App, Ref } from 'vue'
+import { getLayerRegistry } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
 import {
@@ -135,7 +136,7 @@ describe('dialog 退场', () => {
 
 describe('image-viewer 退场', () => {
   it('收起后 content 留在 DOM 里并在播淡出', async () => {
-    const open = mount(value => h(XhImageViewerRoot, { open: value, items: [{ src: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=' }] }, {
+    const open = mount(value => h(XhImageViewerRoot, { open: value, collection: [{ src: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=' }] }, {
       default: () => h(XhImageViewerContent),
     }))
     await settle()
@@ -150,6 +151,55 @@ describe('image-viewer 退场', () => {
     expect(closing, '退场动画播完之前 content 不能被卸载').not.toBeNull()
     expect(getComputedStyle(closing!).display, 'content 收起态不能是 display:none').not.toBe('none')
     expect(getComputedStyle(closing!).animationName).toBe('xh-fade-out')
+  })
+
+  it('内容与遮罩均完成退出前保留模态资源，完成后才发 exit-complete', async () => {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes test-image-viewer-exit { from { opacity: 1 } to { opacity: 0 } }
+      @keyframes test-image-viewer-move { from { translate: 0 0 } to { translate: 0 8px } }
+      [data-scope='image-viewer'][data-part='content'][data-state='closed'] {
+        animation: test-image-viewer-exit 60s linear forwards, test-image-viewer-move 60s linear forwards;
+      }
+      [data-scope='image-viewer'][data-part='backdrop'][data-state='closed'] {
+        animation: test-image-viewer-exit 60s linear forwards;
+      }
+    `
+    document.body.append(style)
+    const outside = document.createElement('button')
+    document.body.append(outside)
+    const open = mount(value => h(XhImageViewerRoot, {
+      open: value,
+      collection: [{ src: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=' }],
+    }, {
+      default: () => h(XhImageViewerContent, null, { default: () => h('button', '内部') }),
+    }))
+    await settle()
+
+    open.value = false
+    await settle()
+    const content = part('image-viewer', 'content')!
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    expect(outside.inert).toBe(true)
+    expect(document.body.style.overflow).toBe('hidden')
+
+    const finite = content.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
+    expect(finite).toHaveLength(2)
+    finite[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    finite[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    for (const animation of part('image-viewer', 'backdrop')!.getAnimations()) animation.finish()
+    await settle()
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    await settle()
+
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+    expect(outside.inert).toBe(false)
+    expect(part('image-viewer', 'content')).toBeNull()
   })
 })
 

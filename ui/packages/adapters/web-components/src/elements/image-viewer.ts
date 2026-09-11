@@ -176,6 +176,7 @@ export class XhImageViewerElement extends XhElement {
     this.ensureConfig()
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.ensureExit().presence)
     svc.refs.set('getContentEl', () => this.contentNode)
   }
 
@@ -226,7 +227,7 @@ export class XhImageViewerElement extends XhElement {
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const exit = this.ensureExit()
-    exit.track(this.contentNode)
+    exit.track(this.contentNode, this.backdropNode)
     exit.update(open)
     const visible = exit.visible
 
