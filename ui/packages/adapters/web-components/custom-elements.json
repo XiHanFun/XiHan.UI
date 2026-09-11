@@ -23448,6 +23448,30 @@
             },
             {
               "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "layoutScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -23463,7 +23487,36 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<LayoutSchema>(this, layoutMachine, () => this.machineProps())"
+              "default": "new MachineController<LayoutSchema>( this, layoutMachine, () => this.machineProps(), { scope: this.layoutScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<LayoutSchema>"
+                  }
+                }
+              ],
+              "description": "覆盖式侧栏的 Escape 层级判断必须在机器挂载前接入本元素所在 Document 的运行时。"
             },
             {
               "kind": "method",

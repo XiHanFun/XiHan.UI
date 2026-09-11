@@ -118,7 +118,7 @@ export type { InputGroupApi, InputGroupProps, InputGroupTranslations } from './i
 export { connectJsonViewer, flattenJson, JSON_VIEWER_ROOT_PATH, jsonChildPath, jsonExpandedPathsToDepth, jsonText, jsonValueText, jsonValueType, jsonViewerAnatomy, jsonViewerBranchQuery, jsonViewerItemQuery, jsonViewerKeyboard, jsonViewerMachine, jsonViewerMeta } from './json-viewer'
 export type { JsonViewerApi, JsonViewerExpandedValueChangeDetails, JsonViewerFlattenOptions, JsonViewerNode, JsonViewerNodeProps, JsonViewerSchema, JsonViewerTranslations, JsonViewerValueType, JsonViewerVariant, JsonViewerView, JsonViewerWalkOptions } from './json-viewer'
 export { connectLayout, layoutAnatomy, layoutKeyboard, layoutMachine, layoutMeta } from './layout'
-export type { LayoutApi, LayoutBreakpoint, LayoutSchema, LayoutSiderBreakpointDetails, LayoutSiderCollapsedChangeDetails, LayoutSiderPlacement, LayoutSiderPresentation, LayoutTranslations } from './layout'
+export type { LayoutApi, LayoutBreakpoint, LayoutRefs, LayoutSchema, LayoutSiderBreakpointDetails, LayoutSiderCollapsedChangeDetails, LayoutSiderPlacement, LayoutSiderPresentation, LayoutTranslations } from './layout'
 export { connectList, listAnatomy, listKeyboard, listMeta } from './list'
 export type { ListApi, ListProps, ListTranslations } from './list'
 export { connectListbox, listboxAnatomy, listboxItemQuery, listboxItemText, listboxKeyboard, listboxMachine, listboxMeta } from './listbox'

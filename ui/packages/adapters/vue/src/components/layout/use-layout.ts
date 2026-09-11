@@ -1,6 +1,6 @@
 import type { LayoutApi, LayoutSchema } from '@xihan-ui/headless'
 import type { ComputedRef } from 'vue'
-import { createScope } from '@xihan-ui/core'
+import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectLayout, layoutMachine } from '@xihan-ui/headless'
 import { computed } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -20,6 +20,9 @@ export function useLayout(
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const service = useMachine(layoutMachine, () => ({ ...props, onSiderCollapsedChange, onSiderBreakpoint }), scope)
+  // 覆盖式侧栏与浮层必须读取同一运行时层栈；服务端没有 DOM，不挂 Escape 副作用。
+  if (typeof document !== 'undefined')
+    service.refs.set('config', createRuntimeConfig({ scope, idGenerator: idGen }))
   const api = computed(() => connectLayout(service, vueNormalize))
   return { api }
 }
