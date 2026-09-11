@@ -13,9 +13,15 @@
 
 ## 特性
 
-- `loading` 表达在途：受控时宿主不写回就不翻，请求失败界面自然停在原状态。
-- 轨道内可以写文案、滑块上可以放标记。
+- `loading` 表达在途并锁住用户再次切换：按钮保持可聚焦，以 `aria-busy` 和滑块内指示器报告状态；
+  受控宿主仍可写回 `checked` 完成事务，失败时保持原值。它不会把 loading 假装成 disabled。
 - `readOnly` 与 `disabled` 分开：只读仍可聚焦。
+- 轨道保持实体表单控件：未选中用中性底和明确内边界，选中用实心语气色，只读选中回到中性底；
+  不使用 backdrop 或透明玻璃。
+- 滑块使用 M1 实体底、细边、顶光和接触影；指针悬停轻抬，按住时沿行进方向拉长并在释放时回圆。
+  loading、只读与禁用不产生可操作的悬停/按压假反馈。
+- 键盘聚焦环在明暗主题和开关两态都与轨道达到 3:1；RTL 会反转滑块行程，三尺寸与密度轴保持同一比例。
+- 减弱动效会取消按压拉伸并让 loading 圆环停转，以静止点线继续表达在途。
 
 ## 示例
 
@@ -185,6 +191,8 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 默认皮肤 `@xihan-ui/styles/switch.css` 按部件选择：`[data-scope="switch"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ## 数据属性
 
 由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
@@ -212,17 +220,21 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-switch-bg` · `--xh-switch-bg-checked` · `--xh-switch-bg-checked-readonly` · `--xh-switch-border-invalid` · `--xh-switch-label-fg` · `--xh-switch-label-fg-disabled` · `--xh-switch-label-font-size` · `--xh-switch-label-gap` · `--xh-switch-loading-duration` · `--xh-switch-loading-fg` · `--xh-switch-radius` · `--xh-switch-thumb` · `--xh-switch-thumb-radius` · `--xh-switch-thumb-shadow` · `--xh-switch-thumb-shadow-readonly` · `--xh-switch-track-h-lg` · `--xh-switch-track-h-md` · `--xh-switch-track-h-sm`
+`--xh-switch-bg` · `--xh-switch-bg-checked` · `--xh-switch-bg-checked-readonly` · `--xh-switch-border` · `--xh-switch-border-checked` · `--xh-switch-border-checked-readonly` · `--xh-switch-border-invalid` · `--xh-switch-fg` · `--xh-switch-fg-checked` · `--xh-switch-fg-checked-readonly` · `--xh-switch-label-fg` · `--xh-switch-label-fg-disabled` · `--xh-switch-label-font-size` · `--xh-switch-label-gap` · `--xh-switch-loading-duration` · `--xh-switch-loading-fg` · `--xh-switch-radius` · `--xh-switch-thumb` · `--xh-switch-thumb-border` · `--xh-switch-thumb-fg` · `--xh-switch-thumb-highlight` · `--xh-switch-thumb-press-stretch` · `--xh-switch-thumb-radius` · `--xh-switch-thumb-shadow` · `--xh-switch-thumb-shadow-disabled` · `--xh-switch-thumb-shadow-hover` · `--xh-switch-thumb-shadow-pressed` · `--xh-switch-thumb-shadow-readonly` · `--xh-switch-track-h-lg` · `--xh-switch-track-h-md` · `--xh-switch-track-h-sm`
 
 ## 动效
 
-关键帧 `xh-switch-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `box-shadow` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-switch-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `box-shadow` · `inline-size` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ## 响应式
 
-皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
 
 ## 组合
 
@@ -232,6 +244,14 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 - 标签写这项设置本身（"邮件通知"），不写动作（"开启邮件通知"）——开关的状态已经说明了开还是关。
 - 异步提交时用 `loading` 并保持受控，别先翻再回滚。
+- 自定义轨道与滑块颜色时同时验证未选中边界、选中底和聚焦环；只换一支底色可能让暗色主题失去边界。
+
+### 当前边界
+
+- `label` 目前只直接拿到 disabled 状态，loading / readonly 光标需由皮肤读取内部 root；后续应由连接层把两轴
+  同步到 label，去掉关系选择器并让所有硬底线浏览器得到同一反馈。
+- React / Vue 的紧凑 `XhSwitch` 把默认插槽固定为轨道外标签，没有暴露轨道内容或 thumb 插槽；只有 Web Components
+  的 Light DOM 能给 thumb 写作者内容。若要三端支持开关内文案或自定义标记，应以独立部件 API 一起补齐。
 
 ## 反模式
 

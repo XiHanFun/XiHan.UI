@@ -71,6 +71,7 @@ const EXPECTED = {
   // 拇指静止时是 raised，带 data-dragging 的那一档走 lifted：跟着手走的元素抬高一档，
   // 又不与下拉面板同深
   'slider': { thumb: ['raised', 'lifted'] },
+  'switch': { thumb: ['soft', 'raised'] },
   'tag': { root: ['soft'] },
   'time-picker': { content: ['floating'] },
   'toast': { root: ['sheet'] },
