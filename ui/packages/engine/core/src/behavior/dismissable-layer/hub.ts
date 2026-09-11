@@ -80,6 +80,22 @@ interface LanePlan extends LaneCapture {
   readonly candidates: readonly PlannedCandidate[]
 }
 
+interface OutsidePlanSet {
+  readonly path: readonly EventTarget[]
+  readonly plans: readonly LanePlan[]
+}
+
+interface TouchPending {
+  readonly pointer: PointerEvent
+  readonly pointerId: number
+  readonly isPrimary: boolean
+  readonly path: readonly EventTarget[]
+  plans: readonly LanePlan[]
+  readonly listenerCleanups: Cleanup[]
+  active: boolean
+  completed: boolean
+}
+
 interface CandidateStage {
   readonly candidate: PlannedCandidate
   readonly snapshot: readonly Layer[]
@@ -177,6 +193,7 @@ class DismissHub {
   readonly lanes = new Map<LayerRegistry, Lane>()
   readonly listenerCleanups: Cleanup[] = []
   readonly escapePlans = new WeakMap<KeyboardEvent, readonly EscapeLanePlan[]>()
+  touchPending: TouchPending | null = null
   leaseCount = 0
   dispatching = false
   teardownPending = false
@@ -185,10 +202,12 @@ class DismissHub {
   readonly onKeydownCapture = (event: KeyboardEvent): void => {
     if (event.key === 'Escape')
       this.routeEscapeCapture(event)
+    else if (this.touchPending)
+      this.routeTouchInterruption(this.touchPending)
   }
 
-  readonly onPointerDown = (event: PointerEvent): void => this.routeEvent({ kind: 'pointer', event })
-  readonly onFocusIn = (event: FocusEvent): void => this.routeEvent({ kind: 'focus', event })
+  readonly onPointerDown = (event: PointerEvent): void => this.routePointerDown(event)
+  readonly onFocusIn = (event: FocusEvent): void => this.routeFocusIn(event)
   readonly onKeydownBubble = (event: KeyboardEvent): void => {
     if (event.key === 'Escape')
       this.routeEscapeBubble(event)
@@ -240,9 +259,14 @@ class DismissHub {
   }
 
   addParticipant(options: DismissLayerOptions, resolveNode: () => HTMLElement | null): Disposable {
-    const lane = this.getOrCreateLane(options.config.layerRegistry)
-    if (lane.participants.has(options.layer))
+    const registry = options.config.layerRegistry
+    if (this.lanes.get(registry)?.participants.has(options.layer))
       throw new Error('[xh] 同一 LayerRegistry 的同一 Layer 只能创建一个 DismissableLayer')
+    throwCollectedErrors(
+      this.cancelTouchPending(),
+      '[xh] DismissableLayer 新参与者登记前取消触摸计划失败',
+    )
+    const lane = this.getOrCreateLane(registry)
 
     const participant: Participant = {
       hub: this,
@@ -322,7 +346,7 @@ class DismissHub {
     if (lane.participants.get(participant.layer) !== participant)
       return []
     lane.participants.delete(participant.layer)
-    return this.releaseLease(lane)
+    return [...this.cancelTouchPending(), ...this.releaseLease(lane)]
   }
 
   private disposeFallback(fallback: EscapeFallbackToken): void {
@@ -360,10 +384,208 @@ class DismissHub {
     this.teardownPending = false
     if (hubs.get(this.doc) === this)
       hubs.delete(this.doc)
+    const errors = this.cancelTouchPending()
     if (!this.installed)
-      return []
+      return errors
     this.installed = false
-    return drainCleanups(this.listenerCleanups)
+    errors.push(...drainCleanups(this.listenerCleanups))
+    return errors
+  }
+
+  private cancelTouchPending(expected?: TouchPending): unknown[] {
+    const pending = this.touchPending
+    if (!pending || (expected && pending !== expected))
+      return []
+    this.touchPending = null
+    pending.active = false
+    pending.completed = false
+    return drainCleanups(pending.listenerCleanups)
+  }
+
+  private armTouchPending(
+    pointer: PointerEvent,
+    path: readonly EventTarget[],
+    plans: readonly LanePlan[],
+  ): void {
+    const pending: TouchPending = {
+      pointer,
+      pointerId: pointer.pointerId,
+      isPrimary: pointer.isPrimary,
+      path,
+      plans,
+      listenerCleanups: [],
+      active: false,
+      completed: false,
+    }
+    const onPointerUp = (event: PointerEvent): void => this.routeTouchPointerUp(pending, event)
+    const onPointerCancel = (): void => this.routeTouchInterruption(pending)
+    const onScroll = (): void => this.routeTouchInterruption(pending)
+    const onContextMenu = (): void => this.routeTouchInterruption(pending)
+    const onVisibilityChange = (): void => this.routeTouchInterruption(pending)
+    const onClick = (event: MouseEvent): void => this.routeTouchClick(pending, event)
+    const onBlur = (): void => this.routeTouchInterruption(pending)
+    const addDocumentListener = (
+      type: string,
+      listener: EventListener,
+      options?: boolean | AddEventListenerOptions,
+    ): void => {
+      pending.listenerCleanups.push(() => this.doc.removeEventListener(type, listener, options))
+      this.doc.addEventListener(type, listener, options)
+    }
+    try {
+      addDocumentListener('pointerup', onPointerUp as EventListener, true)
+      addDocumentListener('pointercancel', onPointerCancel, true)
+      addDocumentListener('scroll', onScroll, true)
+      addDocumentListener('contextmenu', onContextMenu)
+      addDocumentListener('visibilitychange', onVisibilityChange)
+      addDocumentListener('click', onClick as EventListener)
+      pending.listenerCleanups.push(() => this.win.removeEventListener('blur', onBlur))
+      this.win.addEventListener('blur', onBlur)
+      pending.active = true
+      this.touchPending = pending
+    }
+    catch (setupError) {
+      pending.active = false
+      throwWithCleanup(
+        setupError,
+        drainCleanups(pending.listenerCleanups),
+        '[xh] DismissableLayer 触摸提交监听初始化与回滚同时失败',
+      )
+    }
+  }
+
+  private touchPlanIsCurrent(pending: TouchPending, plan: LanePlan): boolean {
+    if (!pending.active || this.touchPending !== pending)
+      return false
+    const snapshot = plan.lane.registry.list()
+    if (!pending.active || this.touchPending !== pending)
+      return false
+    assertFrozenSnapshot(snapshot)
+    if (snapshot !== plan.snapshot)
+      return false
+    for (const candidate of plan.candidates) {
+      if (!participantTokenIsCurrent(candidate.participant, 'pointer'))
+        return false
+      const node = candidate.participant.resolveNode()
+      if (!pending.active || this.touchPending !== pending)
+        return false
+      if (node !== candidate.node || !participantTokenIsCurrent(candidate.participant, 'pointer'))
+        return false
+    }
+    const current = plan.lane.registry.list()
+    if (!pending.active || this.touchPending !== pending)
+      return false
+    assertFrozenSnapshot(current)
+    return plan.candidates.length > 0 && current === snapshot
+  }
+
+  private collectCurrentTouchPlans(pending: TouchPending, errors: unknown[]): readonly LanePlan[] {
+    const valid: LanePlan[] = []
+    for (const plan of pending.plans) {
+      if (!pending.active || this.touchPending !== pending)
+        break
+      try {
+        if (this.touchPlanIsCurrent(pending, plan))
+          valid.push(plan)
+      }
+      catch (error) {
+        errors.push(error)
+      }
+    }
+    const plans = Object.freeze(valid)
+    if (pending.active && this.touchPending === pending)
+      pending.plans = plans
+    return plans
+  }
+
+  private touchPointerMatches(pending: TouchPending, event: PointerEvent): boolean {
+    return event.pointerType === 'touch'
+      && event.pointerId === pending.pointerId
+      && event.isPrimary === pending.isPrimary
+  }
+
+  private touchClickMatches(pending: TouchPending, event: MouseEvent, path: readonly EventTarget[]): boolean {
+    if (!pending.completed || path[0] !== pending.path[0] || !path.includes(this.doc))
+      return false
+    const pointerLike = event as MouseEvent & Partial<Pick<PointerEvent, 'isPrimary' | 'pointerId' | 'pointerType'>>
+    if (pointerLike.pointerType && pointerLike.pointerType !== 'touch')
+      return false
+    if (typeof pointerLike.isPrimary === 'boolean' && pointerLike.isPrimary !== pending.isPrimary)
+      return false
+    return typeof pointerLike.pointerId !== 'number' || pointerLike.pointerId === pending.pointerId
+  }
+
+  private routeTouchInterruption(expected: TouchPending): void {
+    if (this.dispatching || this.touchPending !== expected)
+      return
+    this.dispatching = true
+    const errors = this.cancelTouchPending(expected)
+    this.finishDispatch(errors)
+    throwCollectedErrors(errors, '[xh] DismissableLayer 取消触摸计划失败')
+  }
+
+  private routeTouchPointerUp(pending: TouchPending, event: PointerEvent): void {
+    if (this.dispatching || this.touchPending !== pending)
+      return
+    this.dispatching = true
+    const errors: unknown[] = []
+    try {
+      let current = false
+      try {
+        const plans = this.touchPointerMatches(pending, event)
+          ? this.collectCurrentTouchPlans(pending, errors)
+          : Object.freeze([])
+        current = plans.length > 0 && pending.active && this.touchPending === pending
+      }
+      catch (error) {
+        errors.push(error)
+      }
+      if (current)
+        pending.completed = true
+      else
+        errors.push(...this.cancelTouchPending(pending))
+    }
+    finally {
+      this.finishDispatch(errors)
+    }
+    throwCollectedErrors(errors, '[xh] DismissableLayer 触摸 pointerup 校验失败')
+  }
+
+  private routeTouchClick(pending: TouchPending, event: MouseEvent): void {
+    if (this.dispatching || this.touchPending !== pending)
+      return
+    this.dispatching = true
+    const errors: unknown[] = []
+    try {
+      let path: readonly EventTarget[] | null = null
+      let current = false
+      let plans: readonly LanePlan[] = Object.freeze([])
+      try {
+        path = Object.freeze([...event.composedPath()])
+        if (this.touchClickMatches(pending, event, path))
+          plans = this.collectCurrentTouchPlans(pending, errors)
+        current = plans.length > 0 && pending.active && this.touchPending === pending
+      }
+      catch (error) {
+        errors.push(error)
+      }
+      errors.push(...this.cancelTouchPending(pending))
+      if (current) {
+        const options: OutsideEventOptions = { kind: 'pointer', event: pending.pointer }
+        for (const plan of plans) {
+          try {
+            this.executeOutside(plan, options, pending.path)
+          }
+          catch (error) {
+            errors.push(error)
+          }
+        }
+      }
+    }
+    finally {
+      this.finishDispatch(errors)
+    }
+    throwCollectedErrors(errors, '[xh] DismissableLayer 触摸 click 提交失败')
   }
 
   private captureLane(lane: Lane): LaneCapture {
@@ -807,6 +1029,7 @@ class DismissHub {
     this.dispatching = true
     const errors: unknown[] = []
     try {
+      errors.push(...this.cancelTouchPending())
       const captures: EscapeLaneCapture[] = []
       for (const lane of Array.from(this.lanes.values())) {
         try {
@@ -880,59 +1103,117 @@ class DismissHub {
     throwCollectedErrors(errors, '[xh] EscapeFallback Hub 多条 lane 处理失败')
   }
 
-  private routeEvent(options: OutsideEventOptions): void {
-    if (this.dispatching)
-      return
+  private planOutsideEvent(options: OutsideEventOptions, errors: unknown[]): OutsidePlanSet | null {
     const { kind, event } = options
-    this.dispatching = true
-    const errors: unknown[] = []
+    let path: readonly EventTarget[] | null = null
     try {
-      let path: readonly EventTarget[] | null = null
+      path = Object.freeze([...event.composedPath()])
+    }
+    catch (error) {
+      errors.push(error)
+    }
+
+    const captures: LaneCapture[] = []
+    for (const lane of Array.from(this.lanes.values())) {
       try {
-        path = Object.freeze([...event.composedPath()])
+        captures.push(this.captureLane(lane))
       }
       catch (error) {
         errors.push(error)
       }
+    }
 
-      const captures: LaneCapture[] = []
-      for (const lane of Array.from(this.lanes.values())) {
-        try {
-          captures.push(this.captureLane(lane))
-        }
-        catch (error) {
-          errors.push(error)
+    if (!path)
+      return null
+    let inertExempt = false
+    try {
+      inertExempt = pathIsInertExempt(path)
+    }
+    catch (error) {
+      errors.push(error)
+      return null
+    }
+    const plans: LanePlan[] = []
+    for (const capture of captures) {
+      try {
+        plans.push(this.planOutside(capture, path, kind, inertExempt))
+      }
+      catch (error) {
+        errors.push(error)
+      }
+    }
+    return Object.freeze({ path, plans: Object.freeze(plans) })
+  }
+
+  private executeOutsidePlans(
+    routing: OutsidePlanSet,
+    options: OutsideEventOptions,
+    errors: unknown[],
+  ): void {
+    for (const plan of routing.plans) {
+      try {
+        this.executeOutside(plan, options, routing.path)
+      }
+      catch (error) {
+        errors.push(error)
+      }
+    }
+  }
+
+  private routePointerDown(event: PointerEvent): void {
+    if (this.dispatching)
+      return
+    this.dispatching = true
+    const errors: unknown[] = []
+    try {
+      errors.push(...this.cancelTouchPending())
+      const options: OutsideEventOptions = { kind: 'pointer', event }
+      const routing = this.planOutsideEvent(options, errors)
+      if (routing && event.pointerType === 'touch') {
+        if (event.isPrimary && routing.plans.some(plan => plan.candidates.length > 0)) {
+          try {
+            this.armTouchPending(event, routing.path, routing.plans)
+          }
+          catch (error) {
+            errors.push(error)
+          }
         }
       }
+      else if (routing) {
+        this.executeOutsidePlans(routing, options, errors)
+      }
+    }
+    finally {
+      this.finishDispatch(errors)
+    }
+    throwCollectedErrors(errors, '[xh] DismissableLayer Hub 多条 lane 处理失败')
+  }
 
-      if (path) {
-        let inertExempt = false
+  private routeFocusIn(event: FocusEvent): void {
+    if (this.dispatching)
+      return
+    this.dispatching = true
+    const errors: unknown[] = []
+    try {
+      let suppress = false
+      const pending = this.touchPending
+      if (pending) {
         try {
-          inertExempt = pathIsInertExempt(path)
+          suppress = this.collectCurrentTouchPlans(pending, errors).length > 0
+            && pending.active
+            && this.touchPending === pending
         }
         catch (error) {
           errors.push(error)
-          path = null
         }
-        if (path) {
-          const plans: LanePlan[] = []
-          for (const capture of captures) {
-            try {
-              plans.push(this.planOutside(capture, path, kind, inertExempt))
-            }
-            catch (error) {
-              errors.push(error)
-            }
-          }
-          for (const plan of plans) {
-            try {
-              this.executeOutside(plan, options, path)
-            }
-            catch (error) {
-              errors.push(error)
-            }
-          }
-        }
+        if (!suppress)
+          errors.push(...this.cancelTouchPending(pending))
+      }
+      if (!suppress) {
+        const options: OutsideEventOptions = { kind: 'focus', event }
+        const routing = this.planOutsideEvent(options, errors)
+        if (routing)
+          this.executeOutsidePlans(routing, options, errors)
       }
     }
     finally {
