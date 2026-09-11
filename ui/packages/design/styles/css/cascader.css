@@ -9,6 +9,11 @@
     /* 落定那一侧的可用宽度，由定位引擎经内联自定义属性写进来，列区据此夹住行内轴；
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
     --xh-_cascader-available-w: 100vw;
+    /* 当前浮层只接受自己的落位方向，不叠加祖先的位移。 */
+    --xh-_overlay-enter-up: 0;
+    --xh-_overlay-enter-down: 0;
+    --xh-_overlay-enter-left: 0;
+    --xh-_overlay-enter-right: 0;
 
     /* 列区的自绘条浮在内容之上：轨道不上底色，实色轨道会在列区下缘糊出一条灰带 */
     --xh-scrollbar-track-bg: transparent;
@@ -24,26 +29,20 @@
     visibility: hidden;
   }
 
-  /* 缩放原点与进场位移按落定的那一侧给：列区从贴着盒的那条边涨开、沿主轴退让一小段。
-     两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
-     origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+  /* 位移遵循实际落位的物理方向，不随书写方向翻转。 */
   [data-scope='cascader'][data-part='positioner'][data-placement^='top'] {
-    --xh-_overlay-origin-y: 100%;
     --xh-_overlay-enter-down: 1;
   }
 
   [data-scope='cascader'][data-part='positioner'][data-placement^='bottom'] {
-    --xh-_overlay-origin-y: 0;
     --xh-_overlay-enter-up: 1;
   }
 
   [data-scope='cascader'][data-part='positioner'][data-placement^='left'] {
-    --xh-_overlay-origin-x: 100%;
     --xh-_overlay-enter-right: 1;
   }
 
   [data-scope='cascader'][data-part='positioner'][data-placement^='right'] {
-    --xh-_overlay-origin-x: 0;
     --xh-_overlay-enter-left: 1;
   }
 
@@ -340,22 +339,35 @@
   /* 级联的骨架就在这一条上：列沿书写方向并排，一层一列。
      横向随列数增减，因此不设固定宽度，只给每列自己的宽度 */
   [data-scope='cascader'][data-part='content'] {
+    position: relative;
     display: flex;
     flex-direction: row;
     align-items: stretch;
     /* 静态档与落位后的可用宽度取小：列多起来时外框自己就宽过了可用区，
        盒内不产生溢出，下面那条 overflow-x 便一直没事可做，最右那一列落在屏外点不到 */
     max-inline-size: min(var(--xh-cascader-content-max-w, var(--xh-overlay-max-w-xl)), var(--xh-_cascader-available-w));
-    border: var(--xh-stroke-thin) solid var(--xh-cascader-content-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-cascader-content-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-cascader-content-radius, var(--xh-shape-surface));
-    background: var(--xh-cascader-content-bg, var(--xh-bg-surface));
-    color: var(--xh-cascader-content-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-cascader-content-shadow, var(--xh-elevation-floating));
+    background: var(--xh-cascader-content-bg, var(--xh-material-frosted-bg));
+    color: var(--xh-cascader-content-fg, var(--xh-material-frosted-fg));
+    box-shadow: var(--xh-cascader-content-shadow, var(--xh-material-frosted-shadow));
+    -webkit-backdrop-filter: var(--xh-cascader-content-backdrop, var(--xh-material-frosted-backdrop));
+    backdrop-filter: var(--xh-cascader-content-backdrop, var(--xh-material-frosted-backdrop));
     /* 列多到放不下时整体横向滚动；纵向溢出归每一列自己 */
     overflow-x: auto;
     pointer-events: auto;
-    /* 进退场的缩放锚在贴着盒的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
-    transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
+  }
+
+  /* 唯一外壳的内侧顶光；列和状态部件不另画材质面。 */
+  [data-scope='cascader'][data-part='content']::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: var(--xh-stroke-thin);
+    border-radius: inherit;
+    background: var(--xh-cascader-content-highlight, var(--xh-material-frosted-highlight));
+    pointer-events: none;
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -370,15 +382,15 @@
   }
 
   [data-scope='cascader'][data-part='content'][data-state='open'] {
-    animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
     /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, scale, translate;
+    will-change: opacity, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
      免得动画结束到真收起之间闪一下原样 */
   [data-scope='cascader'][data-part='content'][data-state='closed'] {
-    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 一列：宽度由内容撑出、设下限防塌，高度定死——切换展开路径时浮层不上下跳动，
@@ -404,7 +416,7 @@
   /* 分隔线画在列的起始缘，且第一列不画：这样列数增减时线永远只出现在列与列之间。
      用逻辑属性，rtl 下自动跑到另一侧 */
   [data-scope='cascader'][data-part='column'] + [data-scope='cascader'][data-part='column'] {
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-cascader-column-divider, var(--xh-border-subtle));
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-cascader-column-divider, var(--xh-material-frosted-separator));
   }
 
   [data-scope='cascader'][data-part='column']:not([tabindex='0']):focus-visible {
@@ -433,7 +445,7 @@
     display: block;
     padding-block: var(--xh-cascader-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-cascader-group-label-px, var(--xh-_cascader-row-px));
-    color: var(--xh-cascader-group-label-fg, var(--xh-fg-subtle));
+    color: var(--xh-cascader-group-label-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-cascader-group-label-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-cascader-group-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
@@ -456,7 +468,7 @@
     padding-block: var(--xh-cascader-item-py, var(--xh-_cascader-row-py));
     padding-inline: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
     border-radius: var(--xh-cascader-item-radius, var(--xh-shape-control));
-    color: var(--xh-cascader-item-fg, var(--xh-fg-default));
+    color: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
     font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
     line-height: var(--xh-cascader-item-leading, var(--xh-leading-normal));
@@ -474,10 +486,10 @@
     display: none;
   }
 
-  /* 一列开幕：条目自上而下逐条冒出来。列从 hidden 转回来、或换了展开路径把另一批条目放出来时，
+  /* 一列开幕：条目自上而下逐条淡入。列从 hidden 转回来、或换了展开路径把另一批条目放出来时，
      这段动画重新起跑。backwards 让每条在自己那份延迟里保持起始帧 */
   [data-scope='cascader'][data-part='column'] [data-part='item'] {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) backwards;
   }
 
   /* 交错的间隔：第二条起逐级往后推，第六条起统一钉在第五级，条目再多也不会拖出一条越来越慢的尾巴。
@@ -520,7 +532,7 @@
 
   /* 单选、多选与搜索结果都由末端对号表示选中；正文保留常态颜色与字重。 */
   [data-scope='cascader'][data-part='item'][data-state='checked'] {
-    color: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-fg-default)));
+    color: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
     font-weight: var(--xh-cascader-item-selected-font-weight, var(--xh-font-weight-regular));
   }
 
@@ -626,7 +638,7 @@
     padding-block: var(--xh-cascader-input-py, var(--xh-space-2));
     padding-inline: var(--xh-cascader-input-px, var(--xh-control-px-md));
     border: none;
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-search-divider, var(--xh-border-subtle));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-search-divider, var(--xh-material-frosted-separator));
     border-start-start-radius: inherit;
     border-start-end-radius: inherit;
     background: none;
@@ -694,7 +706,7 @@
     );
     overflow: hidden;
     border-radius: var(--xh-cascader-item-radius, var(--xh-shape-control));
-    color: var(--xh-cascader-item-fg, var(--xh-fg-default));
+    color: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
     font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
     line-height: var(--xh-cascader-item-leading, var(--xh-leading-normal));
     text-overflow: ellipsis;
@@ -719,7 +731,7 @@
   }
 
   [data-scope='cascader'][data-part='search-item'][data-state='checked'] {
-    color: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-fg-default)));
+    color: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
     font-weight: var(--xh-cascader-item-selected-font-weight, var(--xh-font-weight-regular));
   }
 
@@ -775,7 +787,7 @@
     min-inline-size: var(--xh-cascader-column-min-w, 7rem);
     min-block-size: var(--xh-cascader-empty-min-h, 5rem);
     padding: var(--xh-cascader-empty-p, var(--xh-space-3));
-    color: var(--xh-cascader-empty-fg, var(--xh-fg-subtle));
+    color: var(--xh-cascader-empty-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
   }
 
@@ -792,7 +804,7 @@
     min-inline-size: var(--xh-cascader-loading-min-w, var(--xh-cascader-column-min-w, 7rem));
     min-block-size: var(--xh-cascader-loading-min-h, 5rem);
     padding: var(--xh-cascader-loading-p, var(--xh-space-3));
-    color: var(--xh-cascader-loading-fg, var(--xh-fg-subtle));
+    color: var(--xh-cascader-loading-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-cascader-loading-font-size, var(--xh-_cascader-font-size));
   }
 
@@ -855,14 +867,10 @@
 }
 
 @layer xihan.motion {
-  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-  /* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
-     四个都没写就退回原地缩放 */
-  @keyframes xh-overlay-pop-in {
+  /* 关键帧随皮肤自带，独立引入时仍有完整的短位移动效。 */
+  @keyframes xh-overlay-slide-in {
     from {
       opacity: 0;
-      scale: var(--xh-motion-scale-enter);
       translate:
         calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
         calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
@@ -870,33 +878,32 @@
 
     to {
       opacity: 1;
-      scale: 1;
       translate: 0 0;
     }
   }
 
-  /* 列里的条目原地涨开，不带方向位移：浮层壳已经沿主轴挪过一段，条目再挪一次就是两段位移 */
-  @keyframes xh-pop-in {
+  /* 浮层已经移动，列项只淡入，不再对文字叠加缩放。 */
+  @keyframes xh-fade-in {
     from {
       opacity: 0;
-      scale: var(--xh-motion-scale-enter);
     }
 
     to {
       opacity: 1;
-      scale: 1;
     }
   }
 
-  @keyframes xh-pop-out {
+  @keyframes xh-overlay-slide-out {
     from {
       opacity: 1;
-      scale: 1;
+      translate: 0 0;
     }
 
     to {
       opacity: 0;
-      scale: var(--xh-motion-scale-exit);
+      translate:
+        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
     }
   }
 

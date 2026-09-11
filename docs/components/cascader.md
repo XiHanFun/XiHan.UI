@@ -28,6 +28,8 @@
 - 空（`empty`）与在途（`loading`）两个相位都由 `content` 自动装配；首次取数且当前视图没有候选时显示
   `translations.loading`，作者显式写 `loading` 部件即可替换默认内容且不会重复。已有候选或祖先列时仍保留
   可操作内容，只在浮层上报 `aria-busy`；加载不会把可用列清空。
+- 输入框保持实体；浮层使用 M2 磨砂材质与内侧顶光，列间和搜索框分隔线使用同一材质语义。
+  浮层按实际落位方向短距离进出，列项只淡入；减弱动效时取消位移，增强对比度时改为实体表面。
 
 ## 示例
 
@@ -417,7 +419,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 
 ## 动效
 
-关键帧 `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-fade-in` · `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
