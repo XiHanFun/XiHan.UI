@@ -18617,6 +18617,7 @@
   --xh-_date-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
   /* 对号画在普通面上，取语气前景角色，不能拿确认按钮的实心背景色充当前景。 */
   --xh-_date-picker-check-fg: var(--xh-_tone, var(--xh-fg-brand));
+  --xh-_date-picker-time-item-check-size: var(--xh-glyph-size-sm);
   /* 确认按钮是面板里唯一的实心块，顶边画一条极浅的内高光把它衬出厚度 */
   --xh-_date-picker-confirm-highlight: inset 0 var(--xh-stroke-thin) 0 0
     color-mix(in oklab, var(--xh-_date-picker-accent-fg) 14%, transparent);
@@ -18654,6 +18655,13 @@
   --xh-_date-picker-gap: var(--xh-control-gap-lg);
   --xh-_date-picker-font-size: var(--xh-control-font-lg);
   --xh-_date-picker-label-font-size: var(--xh-control-font-lg);
+}
+
+/* 375px 复合面板要同时容下日历与时/分两列；手机档用正式小指示符，平板起恢复16px。 */
+@media (width < 768px) {
+  [data-scope='date-picker']:is([data-part='root'], [data-part='positioner']) {
+    --xh-_date-picker-time-item-check-size: var(--xh-control-indicator-sm);
+  }
 }
 
 /* —— 形态 —— */
@@ -19105,14 +19113,15 @@
 }
 
 [data-scope='date-picker'][data-part='time-item'] {
+  --xh-_date-picker-time-item-rail: max(
+    var(--xh-date-picker-time-item-px, var(--xh-space-3)),
+    calc(var(--xh-date-picker-time-item-check-size, var(--xh-_date-picker-time-item-check-size)) + var(--xh-space-1))
+  );
+
   position: relative;
   padding-block: var(--xh-date-picker-time-item-py, var(--xh-space-1));
   /* 左右两轨等宽：末端放对号，起始端留同宽空轨，数字仍在整行数学中心。 */
-  padding-inline: calc(
-    var(--xh-date-picker-time-item-px, var(--xh-space-3)) +
-      var(--xh-date-picker-time-item-check-size, var(--xh-glyph-size-sm)) +
-      var(--xh-space-1)
-  );
+  padding-inline: var(--xh-_date-picker-time-item-rail);
   border-radius: var(--xh-date-picker-time-item-radius, var(--xh-shape-control));
   font-size: var(--xh-text-secondary-size);
   line-height: var(--xh-leading-normal);
@@ -19145,10 +19154,14 @@
   content: '';
   position: absolute;
   inset-block-start: 50%;
-  /* 标记留在原内衬位置，新增的 marker + gap 正好隔开正文与对号。 */
-  inset-inline-end: var(--xh-date-picker-time-item-px, var(--xh-space-3));
-  inline-size: var(--xh-date-picker-time-item-check-size, var(--xh-glyph-size-sm));
-  block-size: var(--xh-date-picker-time-item-check-size, var(--xh-glyph-size-sm));
+  /* 标记占轨道末端，内缘与正文之间恒留一档间隙；与 padding 读同一个 rail，避免重叠。 */
+  inset-inline-end: calc(
+    var(--xh-_date-picker-time-item-rail) -
+      var(--xh-date-picker-time-item-check-size, var(--xh-_date-picker-time-item-check-size)) -
+      var(--xh-space-1)
+  );
+  inline-size: var(--xh-date-picker-time-item-check-size, var(--xh-_date-picker-time-item-check-size));
+  block-size: var(--xh-date-picker-time-item-check-size, var(--xh-_date-picker-time-item-check-size));
   translate: 0 -50%;
   background-color: var(--xh-date-picker-time-item-check-fg, var(--xh-_date-picker-check-fg));
   opacity: 0;

@@ -215,14 +215,14 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
     }
   })
 
-  it('compact 下两类对号仍使用同族 16px 字形档，数字保持居中', async () => {
+  it('compact 手机档时间对号随小指示符收至 10px，preset 保持 16px，数字仍居中', async () => {
     await mountDatePicker('ltr', false, 'compact')
     const selectedTime = timeItem('hour', '09')
     const timeMarker = checkStyle(selectedTime)
     const presetMarker = checkStyle(byTestId('selected-preset'))
 
-    expect(Number.parseFloat(timeMarker.width)).toBe(16)
-    expect(Number.parseFloat(timeMarker.height)).toBe(16)
+    expect(Number.parseFloat(timeMarker.width)).toBe(10)
+    expect(Number.parseFloat(timeMarker.height)).toBe(10)
     expect(Number.parseFloat(presetMarker.width)).toBe(16)
     expect(center(textRect(selectedTime))).toBeCloseTo(center(selectedTime.getBoundingClientRect()), 0)
   })
