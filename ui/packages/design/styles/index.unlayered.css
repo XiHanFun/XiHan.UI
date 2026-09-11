@@ -7390,11 +7390,20 @@
   overflow-y: auto;
   padding-block: var(--xh-popconfirm-py, var(--xh-_popconfirm-pad));
   padding-inline: var(--xh-popconfirm-px, var(--xh-_popconfirm-pad));
-  border: var(--xh-stroke-thin) solid var(--xh-popconfirm-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-popconfirm-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-popconfirm-radius, var(--xh-shape-surface));
-  background: var(--xh-popconfirm-bg, var(--xh-bg-surface));
-  color: var(--xh-popconfirm-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-popconfirm-shadow, var(--xh-elevation-floating));
+  /* 与 Popover 共用 M2 配方：透明 tint 在底层，内侧一像素顶光只表达材质厚度。 */
+  background:
+    linear-gradient(
+      to bottom,
+      var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),
+      transparent var(--xh-stroke-thin)
+    ),
+    var(--xh-popconfirm-bg, var(--xh-material-frosted-bg));
+  color: var(--xh-popconfirm-fg, var(--xh-material-frosted-fg));
+  box-shadow: var(--xh-popconfirm-shadow, var(--xh-material-frosted-shadow));
+  -webkit-backdrop-filter: var(--xh-popconfirm-backdrop, var(--xh-material-frosted-backdrop));
+  backdrop-filter: var(--xh-popconfirm-backdrop, var(--xh-material-frosted-backdrop));
   pointer-events: auto;
   /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
   transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
@@ -7445,16 +7454,21 @@
 
 [data-scope='popconfirm'][data-part='title'] {
   margin: 0;
+  min-inline-size: 0;
   font-size: var(--xh-popconfirm-title-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-popconfirm-title-font-weight, var(--xh-font-weight-semibold));
-  color: var(--xh-popconfirm-title-fg, var(--xh-fg-default));
+  line-height: var(--xh-leading-tight);
+  overflow-wrap: anywhere;
+  color: var(--xh-popconfirm-title-fg, var(--xh-material-frosted-fg));
 }
 
 [data-scope='popconfirm'][data-part='description'] {
   margin: 0;
+  min-inline-size: 0;
   font-size: var(--xh-text-body-size);
   line-height: var(--xh-leading-normal);
-  color: var(--xh-popconfirm-description-fg, var(--xh-fg-muted));
+  overflow-wrap: anywhere;
+  color: var(--xh-popconfirm-description-fg, var(--xh-material-frosted-fg-muted));
 }
 
 /* 箭头的底色与描边色，几何在 overlay-arrow.css。
@@ -7466,8 +7480,8 @@
   --xh-_overlay-arrow-x: var(--xh-_popconfirm-arrow-x);
   --xh-_overlay-arrow-y: var(--xh-_popconfirm-arrow-y);
 
-  background: var(--xh-popconfirm-bg, var(--xh-bg-surface));
-  border: var(--xh-stroke-thin) solid var(--xh-popconfirm-border, var(--xh-border-default));
+  background: var(--xh-popconfirm-bg, var(--xh-material-frosted-bg));
+  border: var(--xh-stroke-thin) solid var(--xh-popconfirm-border, var(--xh-material-frosted-border));
 }
 
 /* —— 两颗按钮 —— */
@@ -7475,20 +7489,35 @@
    --xh-popconfirm-action-radius 一致 */
 [data-scope='popconfirm'][data-part='confirm-trigger'],
 [data-scope='popconfirm'][data-part='cancel-trigger'] {
+  --xh-_popconfirm-action-border: var(--xh-material-soft-border);
+  --xh-_popconfirm-action-edge: var(--xh-material-soft-highlight);
+  --xh-_popconfirm-action-shadow: var(--xh-popconfirm-action-shadow, var(--xh-material-soft-shadow));
+
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   block-size: var(--xh-control-h-sm);
   padding-inline: var(--xh-popconfirm-action-px, var(--xh-control-px-sm));
-  border: var(--xh-stroke-thin) solid transparent;
+  border: var(--xh-stroke-thin) solid var(--xh-_popconfirm-action-border);
   border-radius: var(--xh-popconfirm-action-radius, var(--xh-shape-control));
+  background-image: linear-gradient(
+    to bottom,
+    var(--xh-_popconfirm-action-edge) 0 var(--xh-stroke-thin),
+    transparent var(--xh-stroke-thin)
+  );
+  box-shadow: var(--xh-_popconfirm-action-shadow);
   font-size: var(--xh-text-secondary-size);
   font-weight: var(--xh-text-label-weight);
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   cursor: pointer;
+  user-select: none;
   transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
@@ -7506,16 +7535,27 @@
 [data-scope='popconfirm'][data-part='confirm-trigger'] {
   /* 实心底顶边一条极浅的内高光，把这块面衬出厚度；换语气时高光跟着换 */
   --xh-_popconfirm-confirm-highlight: var(--xh-_highlight-tone);
+  --xh-_popconfirm-action-border: transparent;
+  --xh-_popconfirm-action-edge: transparent;
+  --xh-_popconfirm-action-shadow: var(--xh-popconfirm-confirm-shadow,
+    var(
+      --xh-popconfirm-action-shadow,
+      var(--xh-_popconfirm-confirm-highlight), var(--xh-material-soft-shadow)
+    )
+  );
 
-  background: var(--xh-popconfirm-confirm-bg, var(--xh-_tone, var(--xh-bg-brand)));
+  background-color: var(--xh-popconfirm-confirm-bg, var(--xh-_tone, var(--xh-bg-brand)));
   color: var(--xh-popconfirm-confirm-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-  box-shadow: var(--xh-popconfirm-confirm-shadow, var(--xh-_popconfirm-confirm-highlight));
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
    那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
 [data-scope='popconfirm'][data-part='confirm-trigger']:focus-visible {
   --xh-_ring-color: currentColor;
+
+  /* 聚焦面显式落回不透明实心底，环不与上层装饰渐变或背后的 M2 采样比较。 */
+  background-color: var(--xh-popconfirm-confirm-bg, var(--xh-_tone, var(--xh-bg-brand)));
+  background-image: none;
 }
 
 /* 异步确认挂起：按钮转圈、指针摆「在途」；不是禁用，焦点与对比度都保持 */
@@ -7534,19 +7574,29 @@
   animation: xh-popconfirm-rotate var(--xh-popconfirm-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
-[data-scope='popconfirm'][data-part='confirm-trigger']:hover {
-  background: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
+[data-scope='popconfirm'][data-part='confirm-trigger']:not([data-loading]):hover {
+  --xh-_popconfirm-action-shadow: var(--xh-popconfirm-confirm-shadow,
+    var(
+      --xh-popconfirm-action-shadow,
+      var(--xh-_popconfirm-confirm-highlight), var(--xh-elevation-raised)
+    )
+  );
+
+  background-color: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
 }
 
-[data-scope='popconfirm'][data-part='confirm-trigger']:active {
-  background: var(--xh-_tone-active, var(--xh-bg-brand-active));
+[data-scope='popconfirm'][data-part='confirm-trigger']:not([data-loading]):active {
+  --xh-_popconfirm-action-edge: transparent;
+
+  background-color: var(--xh-_tone-active, var(--xh-bg-brand-active));
+  box-shadow: var(--xh-_popconfirm-confirm-highlight);
   scale: var(--xh-motion-scale-press);
 }
 
 /* 取消是次要出口，用淡底中性色，不参与语气 */
 [data-scope='popconfirm'][data-part='cancel-trigger'] {
-  background: var(--xh-popconfirm-cancel-bg, var(--xh-bg-subtle));
-  color: var(--xh-popconfirm-cancel-fg, var(--xh-fg-default));
+  background-color: var(--xh-popconfirm-cancel-bg, var(--xh-material-soft-bg));
+  color: var(--xh-popconfirm-cancel-fg, var(--xh-material-soft-fg));
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
@@ -7556,12 +7606,23 @@
   --xh-_ring-color: currentColor;
 }
 
+[data-scope='popconfirm'][data-part='cancel-trigger']:focus-visible {
+  background-color: var(--xh-popconfirm-cancel-bg-focus, var(--xh-material-soft-focus-surface));
+  background-image: none;
+  color: var(--xh-popconfirm-cancel-fg-focus, var(--xh-material-soft-fg));
+  /* 隔离底立即出现，避免渐变途中短暂失去焦点环对比。 */
+  transition-property: border-color, box-shadow, color, scale;
+}
+
 [data-scope='popconfirm'][data-part='cancel-trigger']:hover {
-  background: var(--xh-bg-subtle-hover);
+  background-color: var(--xh-bg-subtle-hover);
 }
 
 [data-scope='popconfirm'][data-part='cancel-trigger']:active {
-  background: var(--xh-bg-subtle-active);
+  --xh-_popconfirm-action-edge: transparent;
+
+  background-color: var(--xh-bg-subtle-active);
+  box-shadow: none;
   scale: var(--xh-motion-scale-press);
 }
 
@@ -7579,6 +7640,26 @@
   border-style: dotted;
   border-color: currentColor;
   animation: none;
+}
+
+/* 两颗小操作钮保持原视觉盒，粗指针命中区只沿块轴扩到 44px，不挤压内容与彼此间距。 */
+@media (pointer: coarse) {
+  [data-scope='popconfirm'][data-part='confirm-trigger']::after,
+  [data-scope='popconfirm'][data-part='cancel-trigger']::after {
+    content: '';
+    position: absolute;
+    inset-block: -8px;
+    inset-inline: 0;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 系统色接管内容与操作边界；装饰顶光在这一档没有额外信息。 */
+  [data-scope='popconfirm'][data-part='content'],
+  [data-scope='popconfirm'][data-part='confirm-trigger'],
+  [data-scope='popconfirm'][data-part='cancel-trigger'] {
+    background-image: none;
+  }
 }
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。

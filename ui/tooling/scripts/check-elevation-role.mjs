@@ -64,7 +64,7 @@ const EXPECTED = {
   'notification': { item: ['sheet'] },
   // 摊开的页码面板是锚在省略号上的浮层：有 positioner、有 pop-in 进场、吃 --xh-overlay-max-h
   'pagination': { content: ['floating'] },
-  'popconfirm': { content: ['floating'] },
+  'popconfirm': { 'content': ['frosted'], 'confirm-trigger': ['soft', 'raised'], 'cancel-trigger': ['soft'] },
   'popover': { content: ['frosted'] },
   'select': { content: ['floating'] },
   'side-nav': { 'branch-content': ['floating'] },
