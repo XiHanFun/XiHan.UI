@@ -24,8 +24,14 @@ export function mergePartProps(part: Props, author: Props): Props {
       continue
     const theirs = handlers(author[key])
     const ours = handlers(part[key])
-    if (theirs.length > 0 && ours.length > 0)
-      merged[key] = [...theirs, ...ours]
+    if (theirs.length > 0 && ours.length > 0) {
+      // 保留数组形态，让 Vue 继续处理每个回调的异常及 stopImmediatePropagation。
+      merged[key] = [...theirs, ...ours.map(handler => (...args: unknown[]) => {
+        if ((args[0] as { defaultPrevented?: boolean } | null | undefined)?.defaultPrevented)
+          return
+        (handler as (...args: unknown[]) => void)(...args)
+      })]
+    }
   }
   return merged
 }
