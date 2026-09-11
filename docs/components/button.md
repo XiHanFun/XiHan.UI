@@ -19,6 +19,7 @@
 - 形态 · 语气 · 尺寸三轴正交，任意组合都成立。
 - 载入态用 `aria-disabled` 加事件拦截表达，按钮仍能聚焦，读屏也仍念得到名字。
 - `prefix` / `suffix` 两个图元部件自带 `aria-hidden`，读屏念到的只有 `label`。
+- 默认与 `subtle` 使用实体 M1 柔和面；`solid` 是高遮蔽语气面，不使用磨砂或背景模糊。
 - 皮肤认的是 `data-scope` 与 `data-part`，不是标签名。
 
 ## 示例
@@ -159,6 +160,8 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 
 默认皮肤 `@xihan-ui/styles/button.css` 按部件选择：`[data-scope="button"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ## 数据属性
 
 由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
@@ -182,7 +185,7 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 
 ## 动效
 
-关键帧 `xh-spin` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-spin` 随皮肤自带，不引用别处文件里的名字；`background-color` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
@@ -204,7 +207,8 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 
 - 只放图标时必须给 `aria-label`——按钮此时没有任何可见文字，名字只能由它来给。
 - 一个视图里 `solid` + `brand` 只留一个，主动作唯一才排得出主次。
-- 载入期间保留原有宽度，别让指示器把按钮撑窄或撑宽，指针会跟着跑掉。
+- 载入指示器需要作者提供真实图形，皮肤不会猜测并补画。要保持宽度，就让 `indicator` 常驻；皮肤在非载入态用 `visibility` 隐藏它，只在 `loading` 时显示并旋转。
+- 不要在 `loading` 时条件插入或移除 label、prefix、suffix；按钮保留原内容与完整表面，只停掉交互。
 
 ## 反模式
 

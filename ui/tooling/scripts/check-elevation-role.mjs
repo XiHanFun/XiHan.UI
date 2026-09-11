@@ -40,6 +40,7 @@ const SLOTTED = /^var\((?:--xh-[a-z][a-z0-9-]*,\s*var\()+--xh-elevation-(?:raise
  */
 const EXPECTED = {
   'back-top': { trigger: ['sheet'] },
+  'button': { root: ['soft', 'raised'] },
   'card': { root: ['soft', 'raised', 'lifted'] },
   'cascader': { content: ['floating'] },
   'color-picker': { content: ['floating'] },
