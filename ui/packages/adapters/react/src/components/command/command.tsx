@@ -124,12 +124,17 @@ export function XhCommandContent({ children, container, ...rest }: XhCommandCont
   if (!ctx.rendered)
     return null
   const api = ctx.api
+  const backdrop = api.getBackdropProps() as Record<string, unknown>
   return (
     <XhPortal container={container ?? ctx.portalContainer}>
-      <div
-        {...api.getBackdropProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.backdropRef.current = el }}
-      />
+      {!backdrop.hidden
+        ? (
+            <div
+              {...backdrop}
+              ref={(el: HTMLDivElement | null) => { ctx.backdropRef.current = el }}
+            />
+          )
+        : null}
       <div {...api.getPositionerProps() as Record<string, unknown>}>
         <div
           {...mergeReactProps(

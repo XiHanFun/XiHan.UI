@@ -158,12 +158,15 @@ export const XhCommandContent = defineComponent({
       if (!ctx.rendered.value)
         return null
       const api = ctx.api.value
+      const backdrop = api.getBackdropProps() as Record<string, unknown>
       // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
       return h(XhPortal, { to: ctx.portalTarget.value }, () => [
-        h('div', {
-          ...api.getBackdropProps() as Record<string, unknown>,
-          ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
-        }),
+        !backdrop.hidden
+          ? h('div', {
+              ...backdrop,
+              ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
+            })
+          : null,
         h('div', api.getPositionerProps() as Record<string, unknown>, [
           h('div', {
             ...mergeProps(api.getContentProps() as Record<string, unknown>, attrs),

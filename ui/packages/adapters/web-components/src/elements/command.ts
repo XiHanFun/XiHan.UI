@@ -356,9 +356,10 @@ export class XhCommandElement extends XhElement {
     this.exit.track(this.getPart('content'))
     this.exit.update(api.open)
     const visible = this.exit.visible
+    const modal = this.modal ?? true
 
     // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖
-    this.setPartHidden(this.getPart('backdrop'), !visible)
+    this.setPartHidden(this.getPart('backdrop'), !visible || !modal)
     this.setPartHidden(this.getPart('positioner'), !visible)
     // positioner 不是必需部件，content 自己也要收起
     this.setPartHidden(this.getPart('content'), !visible)

@@ -259,6 +259,16 @@ describe('commandMachine 受控', () => {
 })
 
 describe('commandMachine 与连接层的边界', () => {
+  it('非模态显式 aria-modal="false" 并隐藏 backdrop，默认模态保留遮罩', () => {
+    const nonModal = makeCommand({ modal: false }).api()
+    expect(nonModal.getContentProps()['aria-modal']).toBe('false')
+    expect(nonModal.getBackdropProps().hidden).toBe(true)
+
+    const modal = makeCommand().api()
+    expect(modal.getContentProps()['aria-modal']).toBe('true')
+    expect(modal.getBackdropProps().hidden).toBeUndefined()
+  })
+
   it('活动候选与 aria-activedescendant 同步 aria-selected，其余项保持 false 且没有持久状态', () => {
     const c = makeCommand({ defaultOpen: true })
     const item = (value: string): Record<string, unknown> =>

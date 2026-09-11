@@ -26,16 +26,17 @@ export function useCommand(props: CommandSchema['props']): CommandContext {
   const listRef = useRef<HTMLElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const serviceRef = useRef<Service<CommandSchema> | null>(null)
+  const modalRef = useRef(props.modal)
+  modalRef.current = props.modal
 
   const initialOpen = (props.open ?? props.defaultOpen) ?? false
-  const modal = props.modal
 
   const layer = useCallback((): Omit<Layer, 'id' | 'node' | 'surfaces'> => ({
     kind: 'modal',
     branches: () => [],
-    isModal: () => modal ?? true,
+    isModal: () => modalRef.current ?? true,
     setModal: () => {},
-  }), [modal])
+  }), [])
 
   const overlay = useOverlay({
     scope,

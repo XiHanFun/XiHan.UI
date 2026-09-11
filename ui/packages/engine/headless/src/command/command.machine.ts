@@ -1,7 +1,7 @@
 import type { CommandNodeMeta, CommandSchema } from './command.types'
-import { acquireScrollLock, createDismissLayer, createFocusScope, hideOutside, setup } from '@xihan-ui/core'
+import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
-import { setupLayerTransaction } from '../shared/overlay-shell'
+import { createModalLayerResources, setupLayerTransaction } from '../shared/overlay-shell'
 import { flattenCommandGroups, navigateCommandResults, resolveCommandGroups } from './command.filter'
 import { hiddenCommandValues } from './command.visibility'
 
@@ -42,6 +42,7 @@ export const commandMachine = createMachine({
     config: null,
     registerLayer: null,
     presence: null,
+    syncModalResources: null,
     getContentEl: () => null,
     getListEl: () => null,
     syncListVisibility: null,
@@ -51,6 +52,8 @@ export const commandMachine = createMachine({
   watch: ({ track, prop, context, action }) => {
     // 受控时用户事件只发意图；宿主写回 open 后由这条 watch 派发 CONTROLLED.* 回写状态
     track([() => prop('open')], () => action(['syncOpen']))
+    // 模态策略是展开生命周期内可变的；核心机器统一切换行为资源。
+    track([() => prop('modal')], () => action(['syncModalResources']))
     // 检索串一变结果就换了一批，锚点跟着钉回首条。
     // 挂在 watch 上而不是转移上：受控检索串要等宿主写回才真的变，那一拍才是结果换掉的时刻
     track([context.dep('inputValue')], () => action(['highlightFirst']))
@@ -178,6 +181,7 @@ export const commandMachine = createMachine({
         if (e.type === 'ITEM.SELECT')
           prop('onSelect')?.({ value: e.value, label: e.label })
       },
+      syncModalResources: ({ refs }) => refs.get('syncModalResources')?.(),
     },
     effects: {
       trackItemVisibility: ({ refs, context, flush }) => {
@@ -240,8 +244,6 @@ export const commandMachine = createMachine({
           return undefined
 
         return setupLayerTransaction(registerLayer, (layer, defer, run) => {
-          // 开场快照：滚动锁与背景失活装配一次就定了，事后补不回来
-          const modal = prop('modal') ?? true
           const getContentEl = refs.get('getContentEl')
 
           const dismiss = createDismissLayer({
@@ -267,8 +269,8 @@ export const commandMachine = createMachine({
             config,
             layer,
             container: getContentEl,
-            trapped: () => modal,
-            loop: modal,
+            trapped: () => prop('modal') ?? true,
+            loop: () => prop('modal') ?? true,
             // 开场焦点落在检索框上：面板一露面就能直接打字
             initialFocus: () => refs.get('getInputEl')(),
             restoreFocus: () => prop('restoreFocus') ?? true,
@@ -279,35 +281,27 @@ export const commandMachine = createMachine({
           })
           defer(() => focus.dispose())
 
-          if (modal) {
-            const lock = acquireScrollLock({ config })
-            defer(() => lock.dispose())
-
+          const modalResources = createModalLayerResources({
+            config,
+            layer,
+            enabled: () => prop('modal') ?? true,
             // 栈中位于本层之上的层一并算作目标：内层浮层搬到落点之后也是它的
             // 直接子元素，不排除会被本层的 MutationObserver 打上 inert
-            const getTargets = (): Element[] => [
+            targets: () => [
               getContentEl(),
               ...config.layerRegistry.elementsAbove(layer),
-            ].filter(Boolean) as Element[]
-
-            // 背景失活推迟到宿主提交那一帧之后：进入 open 时 content 尚未渲染，
-            // 此刻 targets 为空会导致背景永不 inert
-            let hidden: (() => void) | undefined
-            let alive = true
-            // flush 可能排队后同步抛错，先登记存活闸门才能让事务回滚挡住迟到回调
-            defer(() => {
-              alive = false
-              hidden?.()
-            })
-            flush(() => {
-              if (!alive)
-                return
-              run(() => {
-                if (getTargets().length)
-                  hidden = hideOutside(getTargets, config)
-              })
-            })
-          }
+            ].filter(Boolean) as Element[],
+            flush,
+            run,
+          })
+          defer(modalResources.dispose)
+          const syncModalResources = (): void => modalResources.sync()
+          refs.set('syncModalResources', syncModalResources)
+          defer(() => {
+            if (refs.get('syncModalResources') === syncModalResources)
+              refs.set('syncModalResources', null)
+          })
+          syncModalResources()
         })
       },
     },

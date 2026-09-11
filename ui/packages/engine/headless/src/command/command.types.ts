@@ -16,6 +16,8 @@ export interface CommandRefs {
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
   presence: PresenceHandle | null
+  /** 展开期间 modal 改值时同步焦点约束、滚动锁与背景失活。 */
+  syncModalResources: (() => void) | null
   getContentEl: () => HTMLElement | null
   getListEl: () => HTMLElement | null
   /** 私有接线：List 提交或释放后通知当前可见性效应重新绑定。 */
@@ -160,6 +162,7 @@ export interface CommandSchema extends MachineSchema {
     | 'highlightIfDangling'
     | 'highlightVisibleIfDangling'
     | 'invokeOnSelect'
+    | 'syncModalResources'
   effect: 'trackOverlay' | 'trackItemVisibility'
 }
 
