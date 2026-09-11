@@ -21023,11 +21023,20 @@
   overflow-y: auto;
   padding-block: var(--xh-hover-card-py, var(--xh-_hover-card-pad));
   padding-inline: var(--xh-hover-card-px, var(--xh-_hover-card-pad));
-  border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-material-frosted-border));
   border-radius: var(--xh-hover-card-radius, var(--xh-shape-surface));
-  background: var(--xh-hover-card-bg, var(--xh-bg-surface));
-  color: var(--xh-hover-card-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-hover-card-shadow, var(--xh-elevation-floating));
+  /* 与气泡族共用 M2：顶光只占一像素，正文保持实体，只在内容层采样一次背景。 */
+  background:
+    linear-gradient(
+      to bottom,
+      var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),
+      transparent var(--xh-stroke-thin)
+    ),
+    var(--xh-hover-card-bg, var(--xh-material-frosted-bg));
+  color: var(--xh-hover-card-fg, var(--xh-material-frosted-fg));
+  box-shadow: var(--xh-hover-card-shadow, var(--xh-material-frosted-shadow));
+  -webkit-backdrop-filter: var(--xh-hover-card-backdrop, var(--xh-material-frosted-backdrop));
+  backdrop-filter: var(--xh-hover-card-backdrop, var(--xh-material-frosted-backdrop));
   pointer-events: auto;
   /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
   transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
@@ -21090,8 +21099,14 @@
   --xh-_overlay-arrow-x: var(--xh-_hover-card-arrow-x);
   --xh-_overlay-arrow-y: var(--xh-_hover-card-arrow-y);
 
-  background: var(--xh-hover-card-bg, var(--xh-bg-surface));
-  border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-border-default));
+  background: var(--xh-hover-card-bg, var(--xh-material-frosted-bg));
+  border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-material-frosted-border));
+}
+
+@media (forced-colors: active) {
+  [data-scope='hover-card'][data-part='content'] {
+    background-image: none;
+  }
 }
 
 @media print {

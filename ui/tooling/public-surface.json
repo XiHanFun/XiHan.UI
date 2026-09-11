@@ -12438,6 +12438,7 @@
     "--xh-hotkeys-key-shadow",
     "--xh-hotkeys-separator-fg",
     "--xh-hover-card-arrow-size",
+    "--xh-hover-card-backdrop",
     "--xh-hover-card-bg",
     "--xh-hover-card-border",
     "--xh-hover-card-description-fg",

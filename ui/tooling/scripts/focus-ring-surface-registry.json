@@ -21,7 +21,8 @@
     "image-viewer [next-trigger] color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent)": "面是半透明的，压在使用者的图片上，静态算不出对比度",
     "image-viewer [prev-trigger] color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent)": "面是半透明的，压在使用者的图片上，静态算不出对比度",
     "popover [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-popover-bg, var(--xh-material-frosted-bg))": "M2 内容面含半透明 tint 与装饰顶光，最终底色随页面背景变化；content 自身的程序化焦点环已关闭，内建关闭钮聚焦时实际铺不透明 focus-surface，任意作者控件由各自皮肤保证焦点面。",
-    "toggle-group [item] color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted))": "禁用且按下那一档，色由私有槽掺进 color-mix 里，本脚本只解整条 var() 链、不进函数实参；失效控件本就在 SC 1.4.11 的豁免里"
+    "toggle-group [item] color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted))": "禁用且按下那一档，色由私有槽掺进 color-mix 里，本脚本只解整条 var() 链、不进函数实参；失效控件本就在 SC 1.4.11 的豁免里",
+    "hover-card [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-hover-card-bg, var(--xh-material-frosted-bg))": "M2 预览面含透明底与顶光，content 的程序化聚焦已明确关环；预览默认没有内建交互控件，作者若组合控件，其实体焦点面由各自皮肤提供。"
   },
   "ringless": {
     "calendar [data-part='grid'][data-scope='calendar']": "网格自己不落焦，焦点永远在某一格上，环长在格上",
