@@ -21,7 +21,7 @@ async function mount(hostAttrs: string, groupAttrs = ''): Promise<{ root: HTMLEl
   document.body.innerHTML = `
     <xh-form ${hostAttrs}>
       <form data-xh-part="root">
-        <div data-xh-part="field-group" value="name" ${groupAttrs}></div>
+        <div data-xh-part="field-group" name="name" ${groupAttrs}></div>
       </form>
     </xh-form>
   `

@@ -4,11 +4,11 @@
     <!-- 摘要只在提交失败后显形；条目一次全写上，谁露面由当下的错误表决定 -->
     <div data-xh-part="error-summary">
       <span id="form-basic-count">共 0 处需要修改</span>
-      <a data-xh-part="error-summary-item" value="email"></a>
-      <a data-xh-part="error-summary-item" value="nickname"></a>
+      <a data-xh-part="error-summary-item" name="email"></a>
+      <a data-xh-part="error-summary-item" name="nickname"></a>
     </div>
 
-    <div data-xh-part="field-group" value="email">
+    <div data-xh-part="field-group" name="email">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">邮箱</label>
@@ -18,7 +18,7 @@
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="nickname">
+    <div data-xh-part="field-group" name="nickname">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">昵称</label>

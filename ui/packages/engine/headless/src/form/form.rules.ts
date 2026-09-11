@@ -2,8 +2,10 @@
 // 语义：非 required 规则对空值放行（空值只由 required 拦）；一个字段按规则声明序首败即停；
 // 文案取 rule.message → 表单 validateMessages 模板 → 内置模板，模板里 {name}/{min}/{max} 现场代入。
 import type { FormErrorPatch, FormErrors } from './form.errors'
+import type { FormPath } from './form.path'
 import type { FormRule, FormRules, FormRuleType, FormValidateMessages, FormValues } from './form.types'
 import { normalizeFormErrors } from './form.errors'
+import { formPathEntries, getFormPathValue, setFormPathValue } from './form.path'
 
 const DEFAULT_MESSAGES: Required<Omit<FormValidateMessages, 'type'>> & { type: Record<FormRuleType, string> } = {
   required: '{name} is required',
@@ -106,7 +108,7 @@ export function runFieldRules(
   rules: FormRule | FormRule[],
   value: unknown,
   values: FormValues,
-  name: string,
+  name: FormPath,
   messages: FormValidateMessages | undefined,
 ): string | undefined | Promise<string | undefined> {
   const list = Array.isArray(rules) ? rules : [rules]
@@ -123,7 +125,7 @@ export function runFieldRules(
   }
 
   const checkSync = (rule: FormRule): string | undefined | 'validator' => {
-    const slots = { name, min: rule.min, max: rule.max }
+    const slots = { name: typeof name === 'string' ? name : JSON.stringify(name), min: rule.min, max: rule.max }
     if (rule.required && isEmptyFormValue(value))
       return messageOf(rule, 'required', slots)
     // 非必填规则对空值放行：空不空归 required 管
@@ -182,16 +184,16 @@ export function runFormRules(
   values: FormValues,
   messages: FormValidateMessages | undefined,
 ): FormErrors | Promise<FormErrors> {
-  const ruleOutcomes: Record<string, string | undefined> = {}
+  let ruleOutcomes: FormErrorPatch = {}
   const pending: Array<Promise<void>> = []
   let custom: FormErrorPatch | Promise<FormErrorPatch> | undefined
   try {
-    for (const name of Object.keys(rules ?? {})) {
-      const out = runFieldRules(rules![name]!, values[name], values, name, messages)
+    for (const [name, rule] of formPathEntries(rules)) {
+      const out = runFieldRules(rule, getFormPathValue(values, name), values, name, messages)
       if (out instanceof Promise)
-        pending.push(out.then((message) => { ruleOutcomes[name] = message }))
+        pending.push(out.then((message) => { ruleOutcomes = setFormPathValue(ruleOutcomes, name, message) }))
       else
-        ruleOutcomes[name] = out
+        ruleOutcomes = setFormPathValue(ruleOutcomes, name, out)
     }
     custom = validate?.(values)
   }
@@ -203,11 +205,10 @@ export function runFormRules(
   }
 
   const merge = (customErrors: FormErrorPatch | undefined): FormErrors => {
-    const out = normalizeFormErrors(customErrors)
-    for (const name of Object.keys(ruleOutcomes)) {
-      const message = ruleOutcomes[name]
-      if (message !== undefined)
-        out[name] = message
+    let out = normalizeFormErrors(customErrors)
+    for (const [name, message] of formPathEntries(ruleOutcomes)) {
+      if (typeof message === 'string' && message !== '')
+        out = setFormPathValue(out, name, message)
       // 规则说没错但 validate 报了错：保留 validate 的那条（跨字段规则常写在那儿）
     }
     return out

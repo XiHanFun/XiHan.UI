@@ -8,6 +8,7 @@ import {
   XhTextFieldInput,
   XhTextFieldRoot,
 } from '../src'
+import { formPathKey } from '@xihan-ui/headless'
 
 function renderTextField(props: Record<string, boolean> = {}, wrapped = false) {
   const text = <XhTextFieldRoot {...props}><XhTextFieldInput /></XhTextFieldRoot>
@@ -18,7 +19,7 @@ function renderTextField(props: Record<string, boolean> = {}, wrapped = false) {
       rules={{ email: { required: true } }}
       errors={{ email: '格式不对' }}
     >
-      <XhFormFieldGroup value="email">
+      <XhFormFieldGroup name="email">
         {wrapped ? <XhFieldRoot><XhFieldControl>{text}</XhFieldControl></XhFieldRoot> : text}
       </XhFormFieldGroup>
     </XhFormRoot>,
@@ -26,6 +27,12 @@ function renderTextField(props: Record<string, boolean> = {}, wrapped = false) {
 }
 
 describe('form control context 接线', () => {
+  it('FieldGroup 用 name 接收数组路径，并把它稳定写成路径身份', () => {
+    const path = ['users', 0, 'email'] as const
+    const view = render(<XhFormRoot><XhFormFieldGroup name={path} /></XhFormRoot>)
+    expect(view.container.querySelector('[data-part="field-group"]')?.getAttribute('data-form-path')).toBe(formPathKey(path))
+  })
+
   it.each([
     ['直接控件', false],
     ['Field 包装控件', true],

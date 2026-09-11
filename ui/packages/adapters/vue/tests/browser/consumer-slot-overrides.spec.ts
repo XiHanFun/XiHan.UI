@@ -455,7 +455,7 @@ describe('分页省略位划过换底', () => {
 function FORM(): unknown {
   return h(XhFormRoot, { defaultErrors: { name: '必填' } }, () => [
     h(XhFormErrorSummary, null, () => [
-      h(XhFormErrorSummaryItem, { value: 'name' }, () => '必填'),
+      h(XhFormErrorSummaryItem, { name: 'name' }, () => '必填'),
     ]),
   ])
 }

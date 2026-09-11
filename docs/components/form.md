@@ -19,7 +19,7 @@
 - `validating` 表示仍有有效异步校验；任何字段变值、受控值更新、重置或卸载都会撤销旧快照的写回与提交资格，不自动重提。
 - 校验器抛错或拒绝 Promise 时，`validationError` 保存 `{ cause, values, field }`，并发出 `validation-error` 事件（React/内核为 `onValidationError`）；`field=null` 表示整表提交。执行异常不会转换成字段错误或触发成功提交。
 - 新校验、变值或重置会清除旧异常；重试由业务显式调用 `submit()`，不自动重试。Vue 默认插槽、React 函数式 children、Web Components 的 `validationError` 只读属性都能读取该状态。
-- 嵌套模型走路径字段名，字段值表与业务模型形状一致。
+- 字段身份是 `FormPath`：字符串（包括 `user.email`）永远是一整个键；只有显式数组（如 `['users', 0, 'email']`）才表示路径。数组路径由 `getFormPathValue` / `setFormPathValue` 读写，绝不经数组的逗号字符串落进 `Record`；`formPathKey` 用于稳定 DOM 身份，`formPathDisplay` 用于诊断文案。
 - `FormFieldGroup` 里的 TextField 会继承本字段的 `invalid` / `required` 以及整表的
   `disabled` / `readOnly`；没有写这四个实例属性才继承，显式写 `false` 可以顶掉最近状态。
   Field 再包一层时，状态继续落到 TextField 真正可聚焦的 input，而不是只停在包装节点。
@@ -200,7 +200,7 @@ columns 给列数、窄视口自动收成一列；字段自报 span 跨列，spa
 | --- | --- | --- |
 | `values` | `FormValues` | 当下的值表。 |
 | `errors` | `FormErrors` | 当下的错误表（已清理）。 |
-| `errorNames` | `string[]` | 出错的字段名，插入顺序。 |
+| `errorNames` | `FormPath[]` | 出错的字段名，插入顺序。 |
 | `errorCount` | `number` |  |
 | `invalid` | `boolean` | 错误表非空。与"提交失败过"无关，挂载时作者塞进来的错误也算。 |
 | `submitFailed` | `boolean` | 上一次提交被拦下了：错误摘要据此显形。 |
@@ -210,13 +210,13 @@ columns 给列数、窄视口自动收成一列；字段自报 span 跨列，spa
 | `readOnly` | `boolean` |  |
 | `validateOn` | `FormValidateOn` |  |
 | `layout` | `FormLayout` | 当下的排布档。 |
-| `getFieldId` | `(name: string) => string` | 字段容器的 DOM id；错误摘要的链接指向它。 |
-| `getFieldValue` | `(name: string) => unknown` |  |
-| `getFieldError` | `(name: string) => string \| undefined` | 该字段此刻的错误文案；没错时为 undefined。 |
-| `isFieldInvalid` | `(name: string) => boolean` |  |
-| `isFieldRequired` | `(name: string) => boolean` | 该字段的规则里声明了 required：字段的必填标记从这里推。 |
-| `setFieldValue` | `(name: string, value: unknown) => void` | 写一个字段的值；禁用或只读时不动。 |
-| `setFieldError` | `(name: string, message?: string) => void` | 写一个字段的错误；不给文案（或给空串）即清掉这一条。 |
+| `getFieldId` | `(name: FormPath) => string` | 字段容器的 DOM id；错误摘要的链接指向它。 |
+| `getFieldValue` | `(name: FormPath) => unknown` |  |
+| `getFieldError` | `(name: FormPath) => string \| undefined` | 该字段此刻的错误文案；没错时为 undefined。 |
+| `isFieldInvalid` | `(name: FormPath) => boolean` |  |
+| `isFieldRequired` | `(name: FormPath) => boolean` | 该字段的规则里声明了 required：字段的必填标记从这里推。 |
+| `setFieldValue` | `(name: FormPath, value: unknown) => void` | 写一个字段的值；禁用或只读时不动。 |
+| `setFieldError` | `(name: FormPath, message?: string) => void` | 写一个字段的错误；不给文案（或给空串）即清掉这一条。 |
 | `clearErrors` | `() => void` |  |
 | `submit` | `() => void` | 走完整的校验与提交流程，与用户按提交键同一条路。 |
 | `reset` | `() => void` | 值与错误都回到初始；禁用或只读时不动。 |

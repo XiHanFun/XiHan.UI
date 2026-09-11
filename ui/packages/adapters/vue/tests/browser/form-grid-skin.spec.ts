@@ -31,7 +31,7 @@ function mount(rootProps: Record<string, unknown>, spans: Array<FormFieldSpan | 
     setup: () => () => h(
       XhFormRoot,
       { ...rootProps, style: 'inline-size: 600px' },
-      () => spans.map((span, i) => h(XhFormFieldGroup, { key: i, value: `f${i}`, span }, () => [])),
+      () => spans.map((span, i) => h(XhFormFieldGroup, { key: i, name: `f${i}`, span }, () => [])),
     ) as never,
   })
   app.mount(host)

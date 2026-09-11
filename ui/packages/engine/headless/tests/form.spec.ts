@@ -1,14 +1,16 @@
 // @vitest-environment jsdom
 import type { Service } from '@xihan-ui/core'
-import type { FormErrors, FormInvalidDetails, FormSchema } from '../src/form/index'
+import type { FormErrorPatch, FormErrors, FormInvalidDetails, FormSchema } from '../src/form/index'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it, vi } from 'vitest'
 import {
   connectForm,
+  createFormPathRecord,
   firstFormErrorName,
   focusFormField,
   formFieldOrder,
+  formPathKey,
   formMachine,
   mergeFormErrors,
   normalizeFormErrors,
@@ -536,6 +538,37 @@ describe('formMachine 受控', () => {
 // ——————————————————————————— connect ———————————————————————————
 
 describe('connectForm 结构与标注', () => {
+  it('字符串点号保持单键，数组路径走独立的无歧义存储与 DOM 身份', () => {
+    const path = ['profile', 0, 'email'] as const
+    const s = makeService({ defaultValues: { 'profile.email': '单键' } })
+    s.api().setFieldValue(path, '数组路径')
+
+    expect(s.api().getFieldValue('profile.email')).toBe('单键')
+    expect(s.api().getFieldValue(path)).toBe('数组路径')
+    s.api().setFieldValue('profile.email', '更新单键')
+    expect(s.api().getFieldValue(path)).toBe('数组路径')
+    expect(s.api().getFieldId('profile.email')).not.toBe(s.api().getFieldId(path))
+    expect((s.api().getFieldGroupProps({ name: path }) as Dict)['data-form-path']).toBe(formPathKey(path))
+
+    s.api().setFieldError(path, '邮箱无效')
+    expect(s.api().getFieldError(path)).toBe('邮箱无效')
+    expect(s.api().getFieldError('profile.email')).toBeUndefined()
+  })
+
+  it('数组路径经过重置与异步校验快照仍保留完整身份', async () => {
+    const path = ['users', 0, 'email'] as const
+    const values = createFormPathRecord([[path, 'seed']])
+    let settle: ((errors: FormErrorPatch) => void) | undefined
+    const s = makeService({ defaultValues: values, validate: () => new Promise<FormErrorPatch>((resolve) => { settle = resolve }) })
+    s.api().submit()
+    settle?.({})
+    await microtask()
+    expect(s.api().getFieldValue(path)).toBe('seed')
+    s.api().setFieldValue(path, 'typed')
+    s.api().reset()
+    expect(s.api().getFieldValue(path)).toBe('seed')
+  })
+
   it('root 带 novalidate 与全套状态位', () => {
     const root = makeService().api().getRootProps() as Dict
     expect(root['data-scope']).toBe('form')
@@ -588,8 +621,8 @@ describe('connectForm 结构与标注', () => {
     const item = api.getErrorSummaryItemProps({ name: 'email' }) as Dict
     expect(group.id).toBe(api.getFieldId('email'))
     expect(item.href).toBe(`#${group.id as string}`)
-    expect(group['data-name']).toBe('email')
-    expect(item['data-name']).toBe('email')
+    expect(group['data-form-path']).toBe(formPathKey('email'))
+    expect(item['data-form-path']).toBe(formPathKey('email'))
     // 容器带 -1：控件全禁用时焦点至少落得到这块区域上
     expect(group.tabindex).toBe(-1)
   })
@@ -736,7 +769,7 @@ function makeDomHarness(props: Props = {}, names: string[] = ['email', 'password
     const group = document.createElement('div')
     group.setAttribute('data-scope', 'form')
     group.setAttribute('data-part', 'field-group')
-    group.setAttribute('data-name', name)
+    group.setAttribute('data-form-path', formPathKey(name))
     group.tabIndex = -1
     const input = document.createElement('input')
     input.disabled = disabledFields.includes(name)

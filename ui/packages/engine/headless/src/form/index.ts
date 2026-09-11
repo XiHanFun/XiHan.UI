@@ -1,5 +1,7 @@
 export { resolveFormControlState } from './form-control'
 export type { FormControlState, ResolvedFormControlState } from './form-control'
+export { cloneFormPathRecord, createFormPathRecord, formPathDisplay, formPathEntries, formPathKey, getFormPathValue, hasFormPathValue, setFormPathValue } from './form.path'
+export type { FormPath, FormPathKey, FormPathRecord, FormPathSegment } from './form.path'
 export {
   FORM_FIELD_NAME_ATTR,
   formAnatomy,

@@ -23,7 +23,7 @@ export default function Demo(): ReactNode {
     <>
       {/* 整表禁用：两颗按钮自带原生 disabled，控件那一侧的 disabled 由自己落 */}
       <XhFormRoot disabled defaultValues={{ token: "xh-0f2a" }} style={{ inlineSize: "260px" }}>
-        <XhFormFieldGroup value="token">
+        <XhFormFieldGroup name="token">
           {({ value, setValue }) => (
             <XhFieldRoot disabled>
               <XhFieldLabel>接入令牌</XhFieldLabel>
@@ -52,7 +52,7 @@ export default function Demo(): ReactNode {
         style={{ inlineSize: "260px" }}
         onSubmit={onSubmit}
       >
-        <XhFormFieldGroup value="token">
+        <XhFormFieldGroup name="token">
           {({ value, setValue }) => (
             <XhFieldRoot>
               <XhFieldLabel>接入令牌</XhFieldLabel>

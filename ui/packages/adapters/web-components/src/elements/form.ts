@@ -7,6 +7,7 @@ import type {
   FormErrorPatch,
   FormErrorsChangeDetails,
   FormFieldSpan,
+  FormPath,
   FormInvalidDetails,
   FormSchema,
   FormSubmitDetails,
@@ -64,16 +65,21 @@ function fieldSpanOf(el: HTMLElement): FormFieldSpan | undefined {
 }
 
 /**
- * 字段容器与摘要条目自报的字段名，取作者写的 `value` 属性。
- *
- * 刻意不叫 `name`：那是原生表单控件的属性，落在 div / a 上没有含义，
- * 而且 Vue 侧它会被声明成 prop 而不落进 DOM，两个适配器的快照会当场分叉。
- * 也不自创一个 `field`：宿主基类只观察 value / disabled / aria-disabled 这几个
- * 「作者声明」属性，用别的名字的话，列表复用节点时的原地改名在 WC 侧不会重新接线——
- * 节点上会留着上一个字段的 id 与 data-name，摘要里的链接就此指错人。
+ * 字段容器与摘要条目以 `name` 声明字符串路径。数组路径必须是严格 JSON 的
+ * `data-path`：不猜点号、不接收逗号拼接，改动又由宿主基类观察并重接线。
  */
-function fieldNameOf(el: HTMLElement): string {
-  return el.getAttribute('value') ?? ''
+function fieldPathOf(el: HTMLElement): FormPath {
+  const raw = el.getAttribute('data-path')
+  if (raw != null) {
+    try {
+      const parsed: unknown = JSON.parse(raw)
+      if (Array.isArray(parsed) && parsed.length > 0 && parsed.every(segment => typeof segment === 'string' || (typeof segment === 'number' && Number.isFinite(segment))))
+        return parsed as FormPath
+    }
+    catch { /* 在下面给出稳定错误 */ }
+    throw new TypeError('[xh] <xh-form> 的 data-path 必须是非空 string/number 数组 JSON')
+  }
+  return el.getAttribute('name') ?? ''
 }
 
 interface FormControlHost extends HTMLElement {
@@ -92,7 +98,7 @@ interface FormControlHost extends HTMLElement {
  * 值与错误都是「表」：元素不去收割原生控件里的值（那要替作者猜 checkbox / 多选 / 数字的类型），
  * 而是由作者经 `values` 属性或 `setFieldValue()` 写进来。校验函数同样由作者给。
  *
- * 每个字段用一个 field-group 包住并用 `value` 属性自报字段名：错误摘要的链接指向它，
+ * 每个字段用一个 field-group 包住并用 `name` 属性自报字符串字段：错误摘要的链接指向它，
  * 提交失败后的焦点也落进它——落点按**文档序**取第一个出错的字段，而不是错误表的键序。
  *
  * @customElement xh-form
@@ -109,12 +115,12 @@ interface FormControlHost extends HTMLElement {
  * @fires invalid - 校验不通过时派发；detail 为 `{ errors, values }`
  * @fires validation-error - 校验器执行异常；detail 为 `{ cause, values, field }`，field 为 null 表示整表提交
  * @csspart root - 表单根容器，必须是原生 `<form>`（承载 data-state/data-disabled/data-readonly/data-invalid）
- * @csspart field-group - 单个字段的容器，须自带 value 属性标识字段名；带 id 供摘要链接指向。
+ * @csspart field-group - 单个字段的容器，须自带 name 标识字符串字段；数组路径写严格 JSON `data-path`；带 id 供摘要链接指向。
  *   grid 排布下再写个 `span` 属性（1 至 4，或 full 占满整行）就是这一格占多宽，落成 data-span；
  *   运行期改写它不触发重新接线，需作者自行 requestUpdate。
  *   组里的 `<xh-field>` 由表单驱动 invalid/required/disabled，作者显式设的会被顶掉
  * @csspart error-summary - role=alert 的错误汇总（一次提交失败里唯一打断朗读的活区），提交失败且仍有错误时才显形
- * @csspart error-summary-item - 摘要里的一条，须是原生 `<a>` 且自带 value 属性标识字段名；无对应错误时带 hidden
+ * @csspart error-summary-item - 摘要里的一条，须是原生 `<a>` 且用 name 或严格 JSON `data-path` 标识字段；无对应错误时带 hidden
  * @csspart submit-trigger - 提交键，须是原生 button（连接层写成 type=submit）
  * @csspart reset-trigger - 重置键，须是原生 button（连接层写成 type=reset）
  */
@@ -223,12 +229,12 @@ export class XhFormElement extends XhElement {
   }
 
   /** 写一个字段的值；禁用或只读时不动。 */
-  setFieldValue(name: string, value: unknown): void {
+  setFieldValue(name: FormPath, value: unknown): void {
     this.commands().setFieldValue(name, value)
   }
 
   /** 写一个字段的错误；不给文案（或给空串）即清掉这一条。 */
-  setFieldError(name: string, message?: string): void {
+  setFieldError(name: FormPath, message?: string): void {
     this.commands().setFieldError(name, message)
   }
 
@@ -247,21 +253,21 @@ export class XhFormElement extends XhElement {
   }
 
   /** 字段容器的 DOM id：作者要把它落到自己的控件上时取这里，别自己拼。 */
-  getFieldId(name: string): string {
+  getFieldId(name: FormPath): string {
     return this.commands().getFieldId(name)
   }
 
-  getFieldValue(name: string): unknown {
+  getFieldValue(name: FormPath): unknown {
     return this.commands().getFieldValue(name)
   }
 
   /** 该字段此刻的错误文案；没错时为 undefined。 */
-  getFieldError(name: string): string | undefined {
+  getFieldError(name: FormPath): string | undefined {
     return this.commands().getFieldError(name)
   }
 
   /** 出错的字段名，插入顺序。 */
-  get errorNames(): string[] {
+  get errorNames(): FormPath[] {
     return this.commands().errorNames
   }
 
@@ -297,9 +303,9 @@ export class XhFormElement extends XhElement {
     put('submit-trigger', api.getSubmitTriggerProps() as Record<string, unknown>)
     put('reset-trigger', api.getResetTriggerProps() as Record<string, unknown>)
 
-    // 字段容器与摘要条目都是多实例 part，逐个打：身份取作者写的 value 属性
+    // 字段容器与摘要条目都是多实例 part，逐个打：身份取 name 或严格 data-path。
     for (const el of this.getParts('field-group')) {
-      const name = fieldNameOf(el)
+      const name = fieldPathOf(el)
       this.spreader.spread(el, api.getFieldGroupProps({ name, span: fieldSpanOf(el) }) as Record<string, unknown>)
       const state: FormControlState = {
         disabled: api.disabled,
@@ -317,10 +323,11 @@ export class XhFormElement extends XhElement {
     }
 
     for (const el of this.getParts('error-summary-item')) {
-      this.spreader.spread(el, api.getErrorSummaryItemProps({ name: fieldNameOf(el) }) as Record<string, unknown>)
+      const name = fieldPathOf(el)
+      this.spreader.spread(el, api.getErrorSummaryItemProps({ name }) as Record<string, unknown>)
       // Light DOM 常驻，WC 自管可见性：作者层若给条目声明了 display，
       // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来
-      this.setPartHidden(el, api.getFieldError(fieldNameOf(el)) === undefined)
+      this.setPartHidden(el, api.getFieldError(name) === undefined)
     }
 
     this.setPartHidden(this.getPart('error-summary'), !(api.submitFailed && api.invalid))

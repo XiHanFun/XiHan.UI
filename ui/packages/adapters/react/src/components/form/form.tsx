@@ -3,6 +3,7 @@ import type {
   FormColumns,
   FormErrorPatch,
   FormFieldSpan,
+  FormPath,
   FormSchema,
   FormValidateOn,
   FormValues,
@@ -38,7 +39,7 @@ export type FormRootSlotProps = Pick<
 
 /** 字段容器函数式 children 的载荷：这一个字段的名字、值、错误与控件 id，以及写值的命令。 */
 export interface FormFieldGroupSlotProps {
-  name: string
+  name: FormPath
   value: unknown
   error: string | undefined
   invalid: boolean
@@ -51,7 +52,7 @@ export type FormErrorSummarySlotProps = Pick<FormApi, 'errors' | 'errorNames' | 
 
 /** 错误摘要单条函数式 children 的载荷：这一条指向的字段名与它的错误文案。 */
 export interface FormErrorSummaryItemSlotProps {
-  name: string
+  name: FormPath
   error: string | undefined
 }
 
@@ -159,33 +160,33 @@ export function XhFormRoot({
 XhFormRoot.xhEvents = ['submit'] as const
 
 export interface XhFormFieldGroupProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 字段名，与 values / errors 表里的键一致。 */
-  value: string
+  /** 字段路径；字符串含点仍是单键，数组才表示层级。 */
+  name: FormPath
   /** grid 排布下这一格占多宽：1 至 4 跨这么多列，'full' 占满整行；不写占一列。 */
   span?: FormFieldSpan
   children?: SlotChildren<FormFieldGroupSlotProps>
 }
 
-export function XhFormFieldGroup({ value, span, children, ...rest }: XhFormFieldGroupProps): ReactNode {
+export function XhFormFieldGroup({ name, span, children, ...rest }: XhFormFieldGroupProps): ReactNode {
   const ctx = useFormContext()
   const api = ctx.api
   // 后代 Field 据此从表单上下文自取校验态，省掉逐字段搬运
-  const handle = useMemo(() => ({ name: value }), [value])
+  const handle = useMemo(() => ({ name }), [name])
   return (
     <FormFieldProvider value={handle}>
       <div
         {...mergeReactProps(
-          api.getFieldGroupProps({ name: value, span }) as Record<string, unknown>,
+          api.getFieldGroupProps({ name, span }) as Record<string, unknown>,
           rest as Record<string, unknown>,
         )}
       >
         {renderSlot(children, {
-          name: value,
-          value: api.getFieldValue(value),
-          error: api.getFieldError(value),
-          invalid: api.isFieldInvalid(value),
-          controlId: api.getFieldId(value),
-          setValue: (next: unknown) => ctx.setFieldValue(value, next),
+          name,
+          value: api.getFieldValue(name),
+          error: api.getFieldError(name),
+          invalid: api.isFieldInvalid(name),
+          controlId: api.getFieldId(name),
+          setValue: (next: unknown) => ctx.setFieldValue(name, next),
         })}
       </div>
     </FormFieldProvider>
@@ -210,22 +211,22 @@ export function XhFormErrorSummary({ children, ...rest }: XhFormErrorSummaryProp
 }
 
 export interface XhFormErrorSummaryItemProps extends Omit<ComponentPropsWithRef<'a'>, 'children'> {
-  /** 这一条指向哪个字段。 */
-  value: string
+  /** 这一条指向哪个字段路径。 */
+  name: FormPath
   children?: SlotChildren<FormErrorSummaryItemSlotProps>
 }
 
 /** 渲染为原生 a，href 指向字段容器的 id。 */
-export function XhFormErrorSummaryItem({ value, children, ...rest }: XhFormErrorSummaryItemProps): ReactNode {
+export function XhFormErrorSummaryItem({ name, children, ...rest }: XhFormErrorSummaryItemProps): ReactNode {
   const api = useFormContext().api
   return (
     <a
       {...mergeReactProps(
-        api.getErrorSummaryItemProps({ name: value }) as Record<string, unknown>,
+        api.getErrorSummaryItemProps({ name }) as Record<string, unknown>,
         rest as Record<string, unknown>,
       )}
     >
-      {renderSlot(children, { name: value, error: api.getFieldError(value) })}
+      {renderSlot(children, { name, error: api.getFieldError(name) })}
     </a>
   )
 }

@@ -49,7 +49,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 <template>
   <XhFormRoot :validate="validate" style="inline-size: 320px;" @submit="onSubmit">
     <template v-for="(row, index) in rows" :key="row.id">
-      <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" :value="fieldName(row.id)">
+      <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" :name="fieldName(row.id)">
         <XhFieldRoot :invalid="invalid">
           <XhFieldLabel>标签 {{ index + 1 }}</XhFieldLabel>
           <XhFieldControl>

@@ -41,13 +41,13 @@ export default function Demo(): ReactNode {
         {({ errorCount }) => (
           <>
             <span>{`共 ${errorCount} 处需要修改`}</span>
-            <XhFormErrorSummaryItem value="email">{({ error }) => error}</XhFormErrorSummaryItem>
-            <XhFormErrorSummaryItem value="nickname">{({ error }) => error}</XhFormErrorSummaryItem>
+            <XhFormErrorSummaryItem name="email">{({ error }) => error}</XhFormErrorSummaryItem>
+            <XhFormErrorSummaryItem name="nickname">{({ error }) => error}</XhFormErrorSummaryItem>
           </>
         )}
       </XhFormErrorSummary>
 
-      <XhFormFieldGroup value="email">
+      <XhFormFieldGroup name="email">
         {({ value, error, invalid, setValue }) => (
           <XhFieldRoot invalid={invalid} required>
             <XhFieldLabel>邮箱</XhFieldLabel>
@@ -64,7 +64,7 @@ export default function Demo(): ReactNode {
         )}
       </XhFormFieldGroup>
 
-      <XhFormFieldGroup value="nickname">
+      <XhFormFieldGroup name="nickname">
         {({ value, error, invalid, setValue }) => (
           <XhFieldRoot invalid={invalid} required>
             <XhFieldLabel>昵称</XhFieldLabel>

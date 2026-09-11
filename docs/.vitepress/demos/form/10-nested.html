@@ -4,13 +4,13 @@
     <!-- 摘要条目按路径名指过去，点一下焦点落进对应的字段容器 -->
     <div data-xh-part="error-summary">
       <span id="form-nested-count">共 0 处需要修改</span>
-      <a data-xh-part="error-summary-item" value="user.name"></a>
-      <a data-xh-part="error-summary-item" value="user.email"></a>
-      <a data-xh-part="error-summary-item" value="hobbies[0].hobby"></a>
-      <a data-xh-part="error-summary-item" value="hobbies[1].hobby"></a>
+      <a data-xh-part="error-summary-item" name="user.name"></a>
+      <a data-xh-part="error-summary-item" name="user.email"></a>
+      <a data-xh-part="error-summary-item" name="hobbies[0].hobby"></a>
+      <a data-xh-part="error-summary-item" name="hobbies[1].hobby"></a>
     </div>
 
-    <div data-xh-part="field-group" value="user.name">
+    <div data-xh-part="field-group" name="user.name">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">姓名</label>
@@ -21,7 +21,7 @@
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="user.email">
+    <div data-xh-part="field-group" name="user.email">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">邮箱</label>
@@ -31,7 +31,7 @@
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="hobbies[0].hobby">
+    <div data-xh-part="field-group" name="hobbies[0].hobby">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">爱好 1</label>
@@ -41,7 +41,7 @@
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="hobbies[1].hobby">
+    <div data-xh-part="field-group" name="hobbies[1].hobby">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">爱好 2</label>

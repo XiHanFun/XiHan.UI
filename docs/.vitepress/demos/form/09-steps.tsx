@@ -78,7 +78,7 @@ export default function Demo(): ReactNode {
 
           {/* 上一步的字段容器这会儿并没渲染，值仍留在值表里 */}
           {current.fields.map(field => (
-            <XhFormFieldGroup key={field.name} value={field.name}>
+            <XhFormFieldGroup key={field.name} name={field.name}>
               {({ value, error, invalid, setValue }) => (
                 <XhFieldRoot invalid={invalid} required>
                   <XhFieldLabel>{field.label}</XhFieldLabel>

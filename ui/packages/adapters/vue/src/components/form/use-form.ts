@@ -1,5 +1,5 @@
 import type { Service } from '@xihan-ui/core'
-import type { FormApi, FormSchema } from '@xihan-ui/headless'
+import type { FormApi, FormPath, FormSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createScope } from '@xihan-ui/core'
 import { connectForm, formMachine } from '@xihan-ui/headless'
@@ -24,8 +24,8 @@ export interface FormContext {
   service: Service<FormSchema>
   /** `<form>` 节点，字段容器的查询范围与落焦起点。 */
   rootRef: Ref<HTMLElement | null>
-  setFieldValue: (name: string, value: unknown) => void
-  setFieldError: (name: string, message?: string) => void
+  setFieldValue: (name: FormPath, value: unknown) => void
+  setFieldError: (name: FormPath, message?: string) => void
   clearErrors: () => void
   submit: () => void
   reset: () => void
