@@ -491,6 +491,25 @@ export const tagGroupSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '选择与摘除并存：点已选项的摘除钮只删除，不冒泡成第二次选择',
+      spec: { adr: 'tag-group-delete-selection-boundary' },
+      props: {
+        selectionMode: 'multiple',
+        deletable: true,
+        defaultValue: ['vue', 'svelte'],
+      },
+      steps: [
+        tags({ items: selectedMarks('vue', 'svelte') }),
+        clickDeleteTrigger(0, {
+          events: [
+            { type: 'value-change', detail: { value: ['svelte'] } },
+            { type: 'item-delete', detail: { value: 'vue' } },
+          ],
+        }),
+        tags({ items: selectedMarks('svelte') }),
+      ],
+    },
+    {
       name: '摘除钮的可及名走本组的 translations.deleteItem：由宿主传到 tag 的 close-trigger 上，不是 tag 自己的「关闭」',
       spec: { apg: `${APG}#roles_states_properties` },
       props: { deletable: true, translations: { deleteItem: (text: string) => `移除${text}` } },
