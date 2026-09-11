@@ -1116,6 +1116,76 @@ describe('空态占位', () => {
   })
 })
 
+describe('搜索候选与列项共用选择状态', () => {
+  const searchProps = (h: Harness, path: string[]): Record<string, unknown> =>
+    h.api().getSearchItemProps({ path }) as Record<string, unknown>
+
+  it.each([
+    { strategy: 'all', expected: ['zhejiang/hangzhou', 'zhejiang/hangzhou/xihu', 'zhejiang/hangzhou/yuhang'] },
+    { strategy: 'parent', expected: ['zhejiang/hangzhou'] },
+    { strategy: 'child', expected: ['zhejiang/hangzhou/xihu', 'zhejiang/hangzhou/yuhang'] },
+  ] as const)('$strategy 收敛值仍让分支与叶候选显示 checked', ({ strategy, expected }) => {
+    const h = mount({
+      multiple: true,
+      cascade: true,
+      checkedStrategy: strategy,
+      changeOnSelect: true,
+      searchable: true,
+      defaultOpen: true,
+    })
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'zhejiang' })
+    click(h.item('hangzhou').item)
+    expect(h.value().map(path => path.join('/'))).toEqual(expected)
+
+    h.send({ type: 'INPUT.CHANGE', value: 'Hangzhou' })
+    for (const path of [
+      ['zhejiang', 'hangzhou'],
+      ['zhejiang', 'hangzhou', 'xihu'],
+      ['zhejiang', 'hangzhou', 'yuhang'],
+    ]) {
+      const props = searchProps(h, path)
+      expect(props['data-state']).toBe('checked')
+      expect(props['aria-selected']).toBe('true')
+      expect(props['aria-checked']).toBe('true')
+    }
+  })
+
+  it('部分级联同时让列项与可搜索分支报告 indeterminate / mixed', () => {
+    const h = mount({
+      multiple: true,
+      cascade: true,
+      checkedStrategy: 'child',
+      changeOnSelect: true,
+      searchable: true,
+      defaultOpen: true,
+      defaultValue: [['zhejiang', 'hangzhou', 'xihu']],
+    })
+    h.send({ type: 'INPUT.CHANGE', value: 'Zhejiang' })
+
+    expect(h.item('zhejiang').item.getAttribute('data-state')).toBe('indeterminate')
+    const props = searchProps(h, ['zhejiang'])
+    expect(props['data-state']).toBe('indeterminate')
+    expect(props['aria-selected']).toBe('false')
+    expect(props['aria-checked']).toBe('mixed')
+  })
+
+  it('节点禁用与整控件禁用都传给搜索候选，整控件禁用时不保留虚假高亮', () => {
+    const nodeDisabled = mount({ searchable: true, defaultOpen: true })
+    nodeDisabled.send({ type: 'INPUT.CHANGE', value: 'Wenzhou' })
+    const nodeProps = searchProps(nodeDisabled, ['zhejiang', 'wenzhou'])
+    expect(nodeProps['aria-disabled']).toBe('true')
+    expect(nodeProps['data-disabled']).toBe('')
+
+    nodeDisabled.setProps({ disabled: true })
+    nodeDisabled.send({ type: 'INPUT.CHANGE', value: 'Xihu' })
+    const props = searchProps(nodeDisabled, ['zhejiang', 'hangzhou', 'xihu'])
+    expect(nodeDisabled.api().searchHighlightIndex).toBe(-1)
+    expect(props['aria-disabled']).toBe('true')
+    expect(props['data-disabled']).toBe('')
+    expect(props['data-highlighted']).toBeUndefined()
+  })
+})
+
 /** 记账用的假定位引擎：每次 attach 的入参原样收下，撤订阅也记一笔。 */
 function fakeEngine(): {
   port: PositionEnginePort
