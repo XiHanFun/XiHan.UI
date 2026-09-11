@@ -6,7 +6,7 @@
 // 快照钉的是全部——任何一支在任何一格里的最终取值变了，都会 diff 出来。
 //
 // 取值块全是零特指度的 :where()，谁在后面谁赢，块序本身就是取值的一部分：
-// 深色 + 高对比那一格先被浅色高对比块覆盖一次，再被深色高对比块盖回来。
+// 主题候选与对比度选择标记独立继承，在轴边界共同决定公开值。
 // 所以这里不按「档」去合并 JSON 源，而是照 tokens.css 里的书写顺序逐块套用：
 // 合并顺序自己写一套的话，写错了会把错的取值固化进快照，之后再没人发现。
 import { createHash } from 'node:crypto'
@@ -168,7 +168,7 @@ function parse(source: string): Parsed {
     }
 
     // 产物里一条声明就是「名: 值;」，只隔一个空格。排版变了这里会抛，不会静默漏掉一条
-    const decl = /^([\w-]+): (.+);$/.exec(line)
+    const decl = /^([\w-]+): (.*);$/.exec(line)
     if (!decl)
       throw new Error(`认不出的一行：${line}`)
     if (!current)
@@ -219,16 +219,45 @@ function cascade(combo: Combination): Resolved {
   return { raw, applied, colorScheme }
 }
 
-/** var(--xh-a) 逐层展开到字面值。环引用会把栈撑爆，所以自己带一份路径判环。 */
+/** 展开 CSS var()，包含嵌套候选、空白值及 initial 的保证无效值语义。 */
 function resolveValue(value: string, raw: Map<string, string>, seen: string[] = []): string {
-  return value.replace(/var\(\s*(--[\w-]+)\s*\)/g, (_, name: string) => {
+  let output = ''
+  let cursor = 0
+  while (cursor < value.length) {
+    const start = value.indexOf('var(', cursor)
+    if (start < 0) {
+      output += value.slice(cursor)
+      break
+    }
+    output += value.slice(cursor, start)
+    let depth = 1
+    let end = start + 4
+    let comma = -1
+    for (; end < value.length && depth > 0; end++) {
+      if (value[end] === '(')
+        depth++
+      else if (value[end] === ')')
+        depth--
+      else if (value[end] === ',' && depth === 1 && comma < 0)
+        comma = end
+    }
+    if (depth !== 0)
+      throw new Error(`未闭合的 var：${value}`)
+    const name = value.slice(start + 4, comma < 0 ? end - 1 : comma).trim()
     if (seen.includes(name))
       throw new Error(`令牌引用成环：${[...seen, name].join(' → ')}`)
     const next = raw.get(name)
-    if (next === undefined)
-      throw new Error(`引用了未声明的 ${name}`)
-    return resolveValue(next, raw, [...seen, name])
-  })
+    if (next === undefined || next === 'initial') {
+      if (comma < 0)
+        throw new Error(`引用了未声明或无效的 ${name}`)
+      output += resolveValue(value.slice(comma + 1, end - 1), raw, seen)
+    }
+    else {
+      output += resolveValue(next, raw, [...seen, name])
+    }
+    cursor = end
+  }
+  return output.trim()
 }
 
 /** DTCG 源值到生成器写进 CSS 的值：既支持整支引用，也支持字面值和内嵌引用。 */
@@ -378,13 +407,16 @@ describe('快照的前提', () => {
   })
 })
 
-// 深色 + 高对比是唯一被覆盖两次的一格：浅色高对比块无条件命中（它只写 [data-contrast='more']），
-// 深色高对比块排在它后面把边界一族盖回来。层叠顺序解析错了，这一格会静默取到浅色档的边界色，
+// 深色 + 高对比必须选择深色候选，不能仅凭内层 contrast 属性取浅色高对比值。
+// 主题候选或选择标记解析错了，这一格会静默取到浅色档的边界色，
 // 而 16 份快照仍然各不相同、看不出问题。
 describe('深色 × 高对比取的是深色高对比档', () => {
   const darkMore = flatten(loadJson('semantic.dark.more.json'))
   const cell = { density: 'comfortable', contrast: 'more', motion: 'default' } as const
   const sharedDecoration = new Map([
+    ['--xh-material-glass-highlight', 'oklch(0 0 0 / 0)'],
+    ['--xh-material-glass-backdrop', 'none'],
+    ['--xh-material-glass-shadow', 'none'],
     ['--xh-material-soft-highlight', 'oklch(0 0 0 / 0)'],
     ['--xh-material-frosted-highlight', 'oklch(0 0 0 / 0)'],
     ['--xh-material-frosted-backdrop', 'none'],
@@ -410,9 +442,9 @@ describe('深色 × 高对比取的是深色高对比档', () => {
     }
   })
 
-  it('这一格的声明逐条对上 semantic.dark.more.json 的字面值与引用', () => {
+  it('这一格的最终取值逐条对上 semantic.dark.more.json 的字面值与引用', () => {
     const { raw } = cascade({ ...cell, theme: 'dark' })
     for (const t of darkMore)
-      expect(raw.get(t.name), t.name).toBe(toCssValue(t.value))
+      expect(resolveValue(raw.get(t.name)!, raw), t.name).toBe(resolveValue(toCssValue(t.value), raw))
   })
 })

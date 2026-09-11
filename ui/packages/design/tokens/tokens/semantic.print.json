@@ -19,6 +19,32 @@
     }
   },
   "material": {
+    "glass": {
+      "bg": {
+        "$type": "color",
+        "$value": "{bg.surface}"
+      },
+      "backdrop": {
+        "$type": "string",
+        "$value": "none"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "{border.subtle}"
+      },
+      "highlight": {
+        "$type": "color",
+        "$value": "oklch(0 0 0 / 0)"
+      },
+      "separator": {
+        "$type": "color",
+        "$value": "{border.subtle}"
+      },
+      "shadow": {
+        "$type": "shadow",
+        "$value": "none"
+      }
+    },
     "soft": {
       "$description": "纸面不保留装饰高光和接触影，结构只靠内容与分隔线。",
       "highlight": {
