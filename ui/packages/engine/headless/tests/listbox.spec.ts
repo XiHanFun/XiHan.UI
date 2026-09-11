@@ -609,19 +609,33 @@ describe('连打检索', () => {
 describe('集合相位三件套', () => {
   it('给了 collection：空态与在途两个占位按条数与 loading 收放，永不同屏', () => {
     const h = mount({ collection: [] })
+    expect(h.content.hidden).toBe(true)
+    expect(h.content.tabIndex).toBe(-1)
     // 一条都没有、也不在取：只有空态露面
     expect((h.api().getEmptyProps() as Record<string, unknown>).hidden).toBeUndefined()
     expect((h.api().getLoadingProps() as Record<string, unknown>).hidden).toBe(true)
 
     h.setProps({ loading: true })
+    expect(h.content.hidden).toBe(true)
     // 取数在途：空态让位，在途顶上来
     expect((h.api().getEmptyProps() as Record<string, unknown>).hidden).toBe(true)
     expect((h.api().getLoadingProps() as Record<string, unknown>).hidden).toBeUndefined()
 
     h.setProps({ loading: false, collection: [{ value: 'apple' }] })
+    expect(h.content.hidden).toBe(false)
+    expect(h.content.tabIndex).toBe(0)
     // 有条目可看：两个占位都退场
     expect((h.api().getEmptyProps() as Record<string, unknown>).hidden).toBe(true)
     expect((h.api().getLoadingProps() as Record<string, unknown>).hidden).toBe(true)
+  })
+
+  it('hidden 分组不参与键盘导航与多选全选，禁用条目也不被错误纳入选择', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    h.groupEl('common').hidden = true
+    h.content.focus()
+    expect(focused()).toBe('durian')
+    press(h.item('durian'), 'a', { ctrlKey: true })
+    expect(h.value()).toEqual(['durian'])
   })
 
   it('没给 collection：空态的显隐归作者，在途仍按 loading 收放', () => {
