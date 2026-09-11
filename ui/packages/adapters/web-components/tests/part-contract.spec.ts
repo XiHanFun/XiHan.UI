@@ -64,6 +64,28 @@ function codes(code: string): DiagnosticRecord[] {
 }
 
 describe('角色节点契约', () => {
+  it.each(['cascader', 'tree-select'])('%s 的空态和加载态不要求虚构列项', async (component) => {
+    for (const phase of ['empty', 'loading']) {
+      const host = document.createElement(`xh-${component}`) as Updatable & { collection: unknown[] }
+      host.collection = []
+      if (phase === 'loading')
+        host.setAttribute('loading', '')
+      const content = part('content')
+      if (component === 'tree-select')
+        content.append(part('tree'))
+      const state = part(phase)
+      state.textContent = phase === 'empty' ? '没有数据' : '加载中'
+      content.append(state)
+      host.append(part('trigger', 'button'), content)
+      document.body.append(host)
+      await host.updateComplete
+      await host.updateComplete
+      expect(codes(DIAGNOSTIC_CODES.wcMissingPart)).toEqual([])
+      expect(state.getAttribute('data-scope')).toBe(component)
+      host.remove()
+    }
+  })
+
   it('每个元素类都声明了契约，且必需 part 落在解剖内', () => {
     const contract = XhDialogElement.partContract
     expect(contract).toBeDefined()
