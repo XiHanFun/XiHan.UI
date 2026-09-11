@@ -18,6 +18,7 @@ import type { XhConfig } from '../config/config'
 import { DATA_INERT_EXEMPT, ensurePortalRoot } from '@xihan-ui/core'
 import {
   connectNotification,
+  createFeedbackServiceController,
   NOTIFICATION_MAX,
   notificationMachine,
   TOAST_DURATION,
@@ -184,24 +185,14 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   if (!target)
     ensurePortalRoot(document).appendChild(holder)
 
-  // 队列跑 notification 那台队列机器：上限、挤条与合并计数全库一份实现，
-  // 这一摞只是它的另一个渲染端（落位由服务档一次定好，不逐条各去一处）
-  let queue: {
-    create: (opts: ToastOptions) => string
-    update: (id: string, opts: Partial<ToastOptions>) => void
-    dismiss: (id: string) => void
-    dismissAll: () => void
-  } | null = null
-
-  // 行内动作的回调按 id 存这儿：队列记录只放可搬运的纯数据，回调进不去
-  const actions = new Map<string, () => void>()
-  const pausedAll = shallowRef(false)
-  let seq = 0
-
-  const remove = (id: string): void => {
-    actions.delete(id)
-    queue?.dismiss(id)
-  }
+  let publishState: (paused: boolean) => void = () => {}
+  const controller = createFeedbackServiceController<ToastOptions, Partial<ToastOptions>>({
+    name: 'toast',
+    idPrefix: 'toast',
+    onStateChange: state => publishState(state.paused),
+  })
+  const pausedAll = shallowRef(controller.state.paused)
+  publishState = paused => void (pausedAll.value = paused)
 
   const Host = defineComponent({
     name: 'XhToastServiceHost',
@@ -219,83 +210,63 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
       // 渲染读原始记录而不是 connect 补齐后的那份：条子的 closable 缺省是
       // 「到点自己走的不出叉」，与通知卡片的恒出叉不是同一条规则
       const items = computed(() => visibleNotifications(service.context.get('items'), max, placement))
-      queue = {
+      controller.attach({
         create: opts => api.value.create(opts),
         update: (id, opts) => api.value.update(id, opts),
         dismiss: id => api.value.dismiss(id),
         dismissAll: () => api.value.dismissAll(),
+      })
+      return () => {
+        controller.syncItems(items.value.map(item => item.id))
+        return h(
+          'div',
+          // 摞没有对应的容器组件，属性直接从解剖里取
+          {
+            ...parts.group.attrs,
+            'data-placement': placement,
+            'data-count': items.value.length,
+            'style': { gap: `${gap}px` },
+            // 模态浮层给背景施加 inert 时跳过这一摞：轻提示画在遮罩之上，
+            // 一并罩住就成了看得见、点不动、读屏也跳过
+            [DATA_INERT_EXEMPT]: '',
+            // 队列空着时整面定位面撤掉：留着白白多一个罩住整块视口的合成层
+            'hidden': items.value.length === 0 || undefined,
+          },
+          // 按队列身份 id 给 key，避免节点被就地复用
+          items.value.map(toast => h(Fragment, { key: toast.id }, [
+            defaultToast(
+              toast,
+              defaults,
+              toValue(toastTranslations),
+              pausedAll.value,
+              controller.unmounted,
+              controller.invokeAction,
+            ),
+          ])),
+        )
       }
-      return () => h(
-        'div',
-        // 摞没有对应的容器组件，属性直接从解剖里取
-        {
-          ...parts.group.attrs,
-          'data-placement': placement,
-          'data-count': items.value.length,
-          'style': { gap: `${gap}px` },
-          // 模态浮层给背景施加 inert 时跳过这一摞：轻提示画在遮罩之上，
-          // 一并罩住就成了看得见、点不动、读屏也跳过
-          [DATA_INERT_EXEMPT]: '',
-          // 队列空着时整面定位面撤掉：留着白白多一个罩住整块视口的合成层
-          'hidden': items.value.length === 0 || undefined,
-        },
-        // 按队列身份 id 给 key，避免节点被就地复用
-        items.value.map(toast => h(Fragment, { key: toast.id }, [
-          defaultToast(
-            toast,
-            defaults,
-            toValue(toastTranslations),
-            pausedAll.value,
-            remove,
-            id => actions.get(id)?.(),
-          ),
-        ])),
-      )
     },
   })
 
   const app: App = createApp(Host)
   const mounted = mountServiceHost(app, holder, 'toast')
-  let disposed = false
-
-  /**
-   * 宿主没挂起来时命令一律空转：把提示丢掉好过让调用点（拦截器、store）连锁崩掉。
-   * 已卸载则是另一回事——那是调用方拿着一个死服务在用，明说好过静默吞掉。
-   */
-  const alive = (): boolean => {
-    if (disposed)
-      throw new Error('toast 服务已卸载')
-    return mounted && queue != null
-  }
+  if (!mounted)
+    controller.attach(null)
 
   /** 入队一条；回调另存一张表，队列记录里只留文案。 */
   const create = (opts: ToastCreateOptions = {}): string => {
     const { onAction, ...record } = opts
-    const id = queue!.create({ ...record, id: record.id ?? `toast-${++seq}` })
-    if (onAction)
-      actions.set(id, onAction)
-    return id
+    return controller.create(record, onAction)
   }
 
   const sugar = (type: ToastType) => (message: string, opts: ToastMessageOptions = {}): string =>
-    alive() ? create({ ...opts, type, title: message }) : ''
+    create({ ...opts, type, title: message })
 
   return {
-    create: opts => (alive() ? create(opts) : ''),
-    update: (id, opts) => {
-      if (alive())
-        queue!.update(id, opts)
-    },
-    dismiss: (id) => {
-      if (alive())
-        remove(id)
-    },
-    dismissAll: () => {
-      if (alive()) {
-        actions.clear()
-        queue!.dismissAll()
-      }
-    },
+    create,
+    update: controller.update,
+    dismiss: controller.dismiss,
+    dismissAll: controller.dismissAll,
     info: sugar('info'),
     success: sugar('success'),
     warning: sugar('warning'),
@@ -304,37 +275,22 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     promise: <T>(input: Promise<T> | (() => Promise<T>), opts: ToastPromiseOptions<T>): Promise<T> => {
       const { loading, success, error, ...rest } = opts
       const running = typeof input === 'function' ? input() : input
-      if (!alive())
-        return running
-      const id = create({ ...rest, type: 'loading', title: loading })
-      return running.then(
-        (value) => {
-          if (!disposed)
-            queue!.update(id, { type: 'success', title: typeof success === 'function' ? success(value) : success })
-          return value
-        },
-        (reason: unknown) => {
-          if (!disposed)
-            queue!.update(id, { type: 'error', title: typeof error === 'function' ? error(reason) : error })
-          throw reason
-        },
+      const { onAction, ...record } = rest
+      return controller.trackPromise(
+        running,
+        { ...record, type: 'loading', title: loading },
+        value => ({ type: 'success', title: typeof success === 'function' ? success(value) : success }),
+        reason => ({ type: 'error', title: typeof error === 'function' ? error(reason) : error }),
+        onAction,
       )
     },
-    pauseAll: () => {
-      if (alive())
-        pausedAll.value = true
-    },
-    resumeAll: () => {
-      if (alive())
-        pausedAll.value = false
-    },
+    pauseAll: controller.pauseAll,
+    resumeAll: controller.resumeAll,
     setConfig: next => configSource.set(next),
     dispose: () => {
       if (mounted)
         app.unmount()
-      disposed = true
-      queue = null
-      actions.clear()
+      controller.dispose()
       if (!target)
         holder.remove()
     },
