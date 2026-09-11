@@ -113,7 +113,6 @@
     "slider [track]": "滑杆的轨道，焦点落在拇指上",
     "tags-input [root]": "这块面是反白的标签本体，画在条目里 tag 的 root 上（选择器主体戴 tag 的 scope，本脚本按皮肤文件记成 tags-input 的 root）：标签本体不接焦点，键盘走到它身上由 data-highlighted 反白，焦点仍在输入框；里面的删除钮另有自己的环",
     "toolbar [separator]": "工具条分隔线，不接焦点",
-    "tooltip [content]": "提示气泡不接焦点，只随触发器悬停或聚焦出现",
     "tour [progress-dot]": "步骤指示点，纯展示不接焦点"
   },
   "solid": {

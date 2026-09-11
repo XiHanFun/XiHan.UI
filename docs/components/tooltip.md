@@ -18,6 +18,8 @@
 - `openDelay` / `closeDelay` 防止指针路过时一路闪。
 - 聚焦也能触发，键盘用户拿得到。
 - 语气与尺寸两轴。
+- 默认保持反白的小型 M2 表面，与承载操作的 Popover 分开；六种语气都使用高遮蔽 tint 与不透明文字，箭头和气泡同色同边。
+- 进退场只做侧向短移与透明度，120ms 内完成，不缩放文字和箭头。
 
 ## 示例
 
@@ -171,6 +173,8 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 
 默认皮肤 `@xihan-ui/styles/tooltip.css` 按部件选择：`[data-scope="tooltip"][data-part="trigger"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ## 数据属性
 
 由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
@@ -192,11 +196,11 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tooltip-arrow-size` · `--xh-tooltip-bg` · `--xh-tooltip-fg` · `--xh-tooltip-font-size` · `--xh-tooltip-layer` · `--xh-tooltip-max-w` · `--xh-tooltip-px` · `--xh-tooltip-py` · `--xh-tooltip-radius` · `--xh-tooltip-shadow` · `--xh-tooltip-trigger-gap`
+`--xh-tooltip-arrow-size` · `--xh-tooltip-backdrop` · `--xh-tooltip-bg` · `--xh-tooltip-border` · `--xh-tooltip-fg` · `--xh-tooltip-font-size` · `--xh-tooltip-highlight` · `--xh-tooltip-layer` · `--xh-tooltip-max-w` · `--xh-tooltip-px` · `--xh-tooltip-py` · `--xh-tooltip-radius` · `--xh-tooltip-shadow` · `--xh-tooltip-trigger-gap`
 
 ## 动效
 
-关键帧 `xh-overlay-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -213,7 +217,13 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 ## 最佳实践
 
 - 一句话讲完，超过一行就该换别的形式。
+- 必须显示较长的单句时让它在最大宽度内换行；连续长词也会断行，不会把浮层撑出窄屏。
 - 图标按钮的可及名字要写在按钮上（`aria-label`），提示只是视觉补充。
+
+### 当前边界
+
+- 当前尚无 TooltipProvider，多个目标间的统一 delay、skip-delay、同组互斥与触发器滚动关闭仍是后续独立行为功能；本次不以样式模拟这些时序。
+- 共享浮层位移原语当前最小档是 4px；Tooltip 先与 Menu 使用同一 `xh-overlay-slide-in/out` 定义。规格中的 2px 需要新增公共 motion distance 档后统一接入，不能局部改写现有语义令牌。
 
 ## 反模式
 
