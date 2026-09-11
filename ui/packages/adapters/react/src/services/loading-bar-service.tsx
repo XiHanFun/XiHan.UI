@@ -7,7 +7,7 @@ import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
 import type { XhConfigSource } from './service-config'
 import { ensurePortalRoot } from '@xihan-ui/core'
-import { connectLoadingBar, loadingBarMachine } from '@xihan-ui/headless'
+import { connectLoadingBar, createLoadingBarServiceController, loadingBarMachine } from '@xihan-ui/headless'
 import { useSyncExternalStore } from 'react'
 import { XhConfigProvider } from '../config/config'
 import { reactNormalize } from '../runtime/normalize-props'
@@ -70,15 +70,7 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
 
   const configSource = createServiceConfig(config)
 
-  // 在途计数而不是布尔开关：并发请求里第一个回来时其余还在跑，
-  // 布尔开关会把条子提前收掉。
-  const state: { pending: number, tone: Tone, value: number | undefined } = {
-    pending: 0,
-    tone,
-    value: undefined,
-  }
-
-  // 宿主树在组件树之外，状态只能自己存一份并推给它重渲
+  // 宿主树在组件树之外，核心状态变化通过端口推给它重渲。
   let version = 0
   const subs = new Set<() => void>()
   const notify = (): void => {
@@ -89,9 +81,11 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
     subs.add(fn)
     return () => void subs.delete(fn)
   }
+  const controller = createLoadingBarServiceController({ tone, errorTone, onStateChange: notify })
 
   function Host(): ReactNode {
     useSyncExternalStore(subscribe, () => version, () => version)
+    const state = controller.state
     // 直接从 api 渲染那三层，不走部件组件：这棵子树固定且全归服务自己拥有，
     // 经上下文传 api 什么也没换来，却把「跨模块上下文必须对得上」加成了一条本可以没有的前提
     const service = useMachine(loadingBarMachine, () => ({
@@ -115,45 +109,19 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
 
   const root: Root | null = mountServiceHost(holder, <Host />, 'loading-bar')
   const mounted = root != null
+  if (!mounted)
+    controller.dispose()
   const stopConfig = configSource.subscribe(notify)
 
-  const settle = (nextTone: Tone): void => {
-    if (!mounted)
-      return
-    state.pending = 0
-    state.tone = nextTone
-    state.value = undefined
-    notify()
-  }
-
   return {
-    // 宿主没挂起来时整体惰化：状态一动不动，残骸也就不会被叫醒
-    start: () => {
-      if (!mounted)
-        return
-      state.tone = tone
-      state.value = undefined
-      state.pending += 1
-      notify()
-    },
-    finish: () => {
-      if (!mounted)
-        return
-      state.pending = Math.max(0, state.pending - 1)
-      if (state.pending === 0)
-        state.value = undefined
-      notify()
-    },
-    error: () => settle(errorTone),
-    finishAll: () => settle(tone),
-    set: (value) => {
-      if (!mounted)
-        return
-      state.value = value
-      notify()
-    },
+    start: controller.start,
+    finish: controller.finish,
+    error: controller.error,
+    finishAll: controller.finishAll,
+    set: controller.set,
     setConfig: next => configSource.set(next),
     dispose: () => {
+      controller.dispose()
       stopConfig()
       root?.unmount()
       if (!target)
