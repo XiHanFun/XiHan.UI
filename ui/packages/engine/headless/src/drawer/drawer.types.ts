@@ -28,6 +28,10 @@ export interface DrawerSchema extends Omit<DialogSchema, 'props'> {
   props: {
     open?: boolean
     defaultOpen?: boolean
+    /**
+     * 是否启用模态约束，默认 true。false 时不提供遮罩，页面其余部分保持可交互；
+     * 展开期间可以切换，滚动锁、背景失活与焦点陷阱会同步更新。
+     */
     modal?: boolean
     /**
      * 浮层挂在某个局部容器里而不是视口：遮罩与定位层从 fixed 换成 absolute，

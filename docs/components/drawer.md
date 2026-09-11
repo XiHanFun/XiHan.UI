@@ -15,6 +15,7 @@
 ## 特性
 
 - `side` 决定从哪一边出来；`contained` 让它只占据某个容器而不是整个视口。
+- `modal=false` 时不渲染遮罩，定位层也不截获页面指针；页面可以与抽屉并行交互。展开期间切换 `modal`，滚动锁、背景失活与焦点陷阱会同步切换。
 - 可以拖边缘改厚度。
 - 关闭时内容立即失活并退出可访问树；面板与遮罩全部完成退场后释放模态资源并发出 `onExitComplete` / `exit-complete`。退场中重开不会被旧完成关闭，卸载立即清理。
 - 关闭前可以拦截（有未保存改动时先问一句）。
@@ -91,7 +92,7 @@ header / body / footer 把面板切成三段：头与尾定在原处，只有正
 | --- | --- | --- | --- |
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
-| `modal` | `boolean` |  |  |
+| `modal` | `boolean` |  | 是否启用模态约束，默认 true。false 时不提供遮罩，页面其余部分保持可交互； 展开期间可以切换，滚动锁、背景失活与焦点陷阱会同步更新。 |
 | `contained` | `boolean` |  | 浮层挂在某个局部容器里而不是视口：遮罩与定位层从 fixed 换成 absolute， 于是只罩住那个容器、不再盖满整屏。 挂到哪个容器是适配器的事（Vue 由 root 的 container 决定，WC 本就是 Light DOM、 作者写在哪就在哪），这里只表达「按局部容器画」这一件事。 |
 | `side` | `DrawerSide` |  | 从哪条边滑出，默认 'right'。只影响输出的 data-side，不参与状态转移。 |
 | `role` | `'dialog' \| 'alertdialog'` |  |  |
