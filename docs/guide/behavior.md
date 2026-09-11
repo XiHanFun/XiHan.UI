@@ -4,7 +4,7 @@
 
 配套的层栈与背景失活也在 `@xihan-ui/core` 里（它们是结构原语，比行为更底层）。
 
-`createScope(node, idGenerator)` 从节点自己的 realm 解析 Document、Window、Element 与 ShadowRoot。传入 iframe 或画中画窗口中的节点时，`getRootNode/getDoc/getWin` 不会因当前页面的 `instanceof` 失败而回落到主文档。把这份显式 Scope 传给 `createRuntimeConfig({ scope })` 后，默认 locale、LayerRegistry、PortalRoot 与 reduced-motion 都从该 Scope 的 document/window 派生；显式传入的配置仍然优先。
+`createScope(node, idGenerator)` 从节点自己的 realm 解析 Document、Window、Element 与 ShadowRoot。传入 iframe 或画中画窗口中的节点时，`getRootNode/getDoc/getWin` 不会因当前页面的 `instanceof` 失败而回落到主文档。把这份显式 Scope 传给 `createRuntimeConfig({ scope })` 后，默认 locale、LayerRegistry、PortalRoot 与 reduced-motion 都从该 Scope 的 document/window 派生；显式传入的配置仍然优先，其中 `layerRegistry.ownerDocument` 必须与 Scope Document 相同。
 
 无全局 DOM 时必须提供有效 Scope；只提供 layer registry 不会得到一个伪造的空 Scope。Scope 的 root、document、window 必须互相归属，离线 Document 没有活动 Window 时直接报错。默认 PortalRoot 保持惰性创建，但 Document 没有 body 时会给出明确错误；需要其他容器就显式传 `portalContainer`。
 
@@ -63,6 +63,11 @@ export interface Layer {
   readonly setModal: (value: boolean) => void;
   readonly surfaces: () => Element[]; // 点了就该关本层的表面，如遮罩
 }
+
+export interface LayerRegistry {
+  readonly ownerDocument: Document;
+  // register / list / top / elementsAbove / subscribe ...
+}
 ```
 
 两个概念值得单独说：
@@ -70,7 +75,7 @@ export interface Layer {
 - **`branches`（分支）**——嵌套 portal 出去的子层。菜单开在对话框里、子菜单再 portal 到 body，DOM 上它们是兄弟，逻辑上是父子。漏登记分支会让「点子菜单」被判成「点了外面」，父层跟着关掉。
 - **`surfaces`（表面）**——遮罩这类点了就该关的元素。它属于本层，但点它的语义是关闭而不是「点在层内」。
 
-同一文档共用一个注册表；不同文档（iframe、画中画窗口）各有一份。
+默认情况下同一 Document 共用一个注册表；自定义注册表也会在创建时固化唯一的 `ownerDocument`，公共记录本身被冻结。不同 Document（iframe、画中画窗口）的注册表不能混用。
 
 `list()` 与订阅回调拿到的都是冻结状态快照，Layer 记录本身也被冻结；节点、分支和模态性仍由记录里的 getter 返回当前值。注册与释放会固定这一轮的订阅者名单并通知完所有人，单个订阅者抛错不会截断后续通知，多项异常会按订阅顺序聚合。
 
@@ -166,18 +171,24 @@ lock.dispose();
 ```ts
 import { hideOutside } from "@xihan-ui/core";
 
-const restore = hideOutside(() => [contentEl, ...branches, ...registry.elementsAbove(layer)], scope, {
+const restore = hideOutside(() => [
+  contentEl,
+  ...branches,
+  ...config.layerRegistry.elementsAbove(layer),
+], config, {
   exemptSelectors: [".my-portal-root"],
 });
 ```
 
 给 `body` 下除目标与豁免节点外的直接子元素加 `inert`，背景内容对读屏与键盘一并消失。
 
-第一个参数取的是函数而不是数组：施加 `inert` 的时机横跨整个展开期（`MutationObserver` 盯着后来新增到 `body` 的节点），晚于调用时刻才挂载的节点必须也能被算进目标。**目标必须包含全部分支节点，以及栈中位于自己之上的层**（`registry.elementsAbove(layer)`），漏传会把 portal 出去的嵌套浮层一起 inert 掉——看得见、点不动。
+第一个参数取的是函数而不是数组：施加 `inert` 的时机横跨整个展开期（`MutationObserver` 盯着后来新增到 `body` 的节点），晚于调用时刻才挂载的节点必须也能被算进目标。**目标必须包含全部分支节点，以及栈中位于自己之上的层**（`config.layerRegistry.elementsAbove(layer)`），漏传会把 portal 出去的嵌套浮层一起 inert 掉——看得见、点不动。
+
+第二个参数必须同时提供 Scope 和计算 `elementsAbove` 的同一份 `LayerRegistry`，通常直接传 `RuntimeConfig`。`hideOutside` 只订阅该实例的层栈变化，并校验注册表的 `ownerDocument` 与 Scope Document 相同；自定义注册表、iframe 与画中画窗口都不再暗中切换到按 Document 获取的默认注册表。
 
 带 `data-xh-inert-exempt` 的元素默认豁免。
 
-`hideOutside` 的目标、`body`、层栈、`MutationObserver` 与 inert 引用计数严格属于 Scope 的同一 Document。iframe 与画中画窗口中的后挂节点会由各自 Window 的观察器重新计算；从其他窗口 adopt 进来的豁免节点也按当前所属 Document 生效。目标来自其他 Document、Document 没有活动 Window 或宿主缺少 `MutationObserver` 时会明确报错，初始化失败不会留下半施加的 inert 状态。
+`hideOutside` 的目标、`body`、层栈、`MutationObserver` 与 inert 引用计数严格属于 Scope 的同一 Document。iframe 与画中画窗口中的后挂节点会由各自 Window 的观察器重新计算；从其他窗口 adopt 进来的豁免节点也按当前所属 Document 生效。注册表或目标来自其他 Document、Document 没有活动 Window 或宿主缺少 `MutationObserver` 时会明确报错，初始化失败不会留下半施加的 inert 状态。
 
 ## 进出场
 

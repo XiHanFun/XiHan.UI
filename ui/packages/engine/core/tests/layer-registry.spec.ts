@@ -16,7 +16,7 @@ import { DIAGNOSTIC_CODES } from '../src/kernel/diagnostics/codes'
 import { createCounterIdGenerator } from '../src/kernel/id-generator'
 import { createRuntimeConfig } from '../src/kernel/runtime-config'
 import { createScope } from '../src/kernel/scope'
-import { createLayerRegistry, getLayerRegistry } from '../src/kernel/structure/layer-registry'
+import { createLayerRegistry } from '../src/kernel/structure/layer-registry'
 
 const cleanups: Array<() => void> = []
 
@@ -63,6 +63,18 @@ afterEach(() => {
 })
 
 describe('layer registry 快照', () => {
+  it('固化唯一归属的 Document 与注册表公共记录', () => {
+    const registry = createLayerRegistry(document)
+    const otherDocument = document.implementation.createHTMLDocument('other')
+
+    expect(registry.ownerDocument).toBe(document)
+    expect(Object.isFrozen(registry)).toBe(true)
+    expect(() => {
+      (registry as { ownerDocument: Document }).ownerDocument = otherDocument
+    }).toThrow(TypeError)
+    expect(registry.ownerDocument).toBe(document)
+  })
+
   it('list 与订阅者取得冻结快照，旧快照不会随新状态改变', () => {
     const registry = createLayerRegistry(document)
     const empty = registry.list()
@@ -437,7 +449,7 @@ describe('layer registry 真实订阅者补偿', () => {
     background.setAttribute('aria-hidden', 'false')
     document.body.append(background, lowerNode, upperNode)
 
-    const registry = getLayerRegistry(document)
+    const registry = createLayerRegistry(document)
     const lower = registry.register({
       ...layerInput(),
       kind: 'modal',
@@ -447,7 +459,10 @@ describe('layer registry 真实订阅者补偿', () => {
     cleanups.push(lower.dispose)
     const cleanupHide = hideOutside(
       () => [lowerNode, ...registry.elementsAbove(lower.layer)],
-      createScope(lowerNode, createCounterIdGenerator()),
+      {
+        scope: createScope(lowerNode, createCounterIdGenerator()),
+        layerRegistry: registry,
+      },
     )
     cleanups.push(cleanupHide)
     const inert = getInertRegistry(document)

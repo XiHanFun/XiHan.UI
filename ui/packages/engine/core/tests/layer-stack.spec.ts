@@ -19,8 +19,8 @@ function fakeEvent(path: object[]): Event {
   return { composedPath: () => path } as unknown as Event
 }
 
-function fakeRegistry(layers: Layer[]): LayerRegistry {
-  return { list: () => layers } as unknown as LayerRegistry
+function fakeRegistry(layers: Layer[]): Pick<LayerRegistry, 'list'> {
+  return { list: () => layers }
 }
 
 describe('isInside', () => {

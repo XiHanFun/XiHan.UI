@@ -34,7 +34,7 @@ export function isInside(e: Event, layer: Layer): InsideResult {
  * 落在 inert 豁免子树里的交互一律不消解任何层。
  * 返回给定层此刻是否应被这次外部交互消解。
  */
-export function shouldDismiss(e: Event, registry: LayerRegistry, layer: Layer): boolean {
+export function shouldDismiss(e: Event, registry: Pick<LayerRegistry, 'list'>, layer: Layer): boolean {
   if (isInInertExempt(e))
     return false
   const layers = registry.list()

@@ -22,6 +22,8 @@ export interface Layer {
 }
 
 export interface LayerRegistry {
+  /** 该层栈唯一归属的 Document。 */
+  readonly ownerDocument: Document
   register: (layer: Omit<Layer, 'id'>) => { layer: Layer, dispose: Cleanup }
   /** 按创建序返回冻结快照；索引即层级。 */
   list: () => readonly Layer[]
@@ -35,7 +37,7 @@ export interface LayerRegistry {
   subscribe: (fn: (layers: readonly Layer[]) => void) => Cleanup
 }
 
-export function createLayerRegistry(_doc: Document): LayerRegistry {
+export function createLayerRegistry(doc: Document): LayerRegistry {
   type Subscriber = (layers: readonly Layer[]) => void
   type CollectedError = { found: false } | { found: true, error: unknown }
 
@@ -189,7 +191,8 @@ export function createLayerRegistry(_doc: Document): LayerRegistry {
     return out
   }
 
-  return {
+  const publicRegistry: LayerRegistry = {
+    ownerDocument: doc,
     register,
     list: () => layers,
     top: () => layers[layers.length - 1],
@@ -201,6 +204,7 @@ export function createLayerRegistry(_doc: Document): LayerRegistry {
       return () => void subs.delete(fn)
     },
   }
+  return Object.freeze(publicRegistry)
 }
 
 const registry = createPerDocumentRegistry(createLayerRegistry)

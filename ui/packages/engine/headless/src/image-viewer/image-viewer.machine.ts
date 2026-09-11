@@ -342,7 +342,7 @@ export const imageViewerMachine = createMachine({
               return
             run(() => {
               if (getTargets().length)
-                hidden = hideOutside(getTargets, config.scope)
+                hidden = hideOutside(getTargets, config)
             })
           })
         })
