@@ -1,6 +1,16 @@
 {
   "$description": "系统要求减少透明时，磨砂材质在原作用域原位换成实体面；尺寸、层级与交互语义不变。",
   "material": {
+    "elevated": {
+      "$description": "减少透明度时保持同一 M4 层级和尺寸，仅把光学表面原位改为实体；三层投影保留以维持模态深度。",
+      "bg": { "$type": "color", "$value": "{bg.surface}" },
+      "backdrop": { "$type": "string", "$value": "none" },
+      "border": { "$type": "color", "$value": "{border.default}" },
+      "highlight": { "$type": "color", "$value": "oklch(0 0 0 / 0)" },
+      "separator": { "$type": "color", "$value": "{border.subtle}" },
+      "fg-muted": { "$type": "color", "$value": "{fg.muted}" },
+      "focus-surface": { "$type": "color", "$value": "{bg.surface}" }
+    },
     "glass": {
       "bg": {
         "$type": "color",
