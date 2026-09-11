@@ -10,7 +10,7 @@ import type { XhConfigSource } from './service-config'
 import { ensurePortalRoot } from '@xihan-ui/core'
 import { useSyncExternalStore } from 'react'
 import { XhButton, XhButtonIndicator, XhButtonLabel } from '../components/button'
-import { XhDialogContent, XhDialogDescription, XhDialogIndicator, XhDialogRoot, XhDialogTitle } from '../components/dialog/dialog'
+import { XhDialogBody, XhDialogContent, XhDialogDescription, XhDialogFooter, XhDialogHeader, XhDialogIndicator, XhDialogRoot, XhDialogTitle } from '../components/dialog/dialog'
 import { XhConfigProvider } from '../config/config'
 import { spinArc } from './glyph'
 import { mountServiceHost } from './mount-host'
@@ -253,16 +253,18 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
           {spec
             ? (
                 <XhDialogContent>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--xh-control-gap-md)' }}>
+                  <XhDialogHeader>
                     {spec.badge ? <XhDialogIndicator data-tone={toneOfBadge(spec.badge)} /> : null}
                     <XhDialogTitle>{spec.title}</XhDialogTitle>
-                  </div>
-                  {/* 串走 description（读屏的 aria-describedby 接在它上面），渲染函数直接摊开 */}
-                  {typeof spec.content === 'string'
-                    ? <XhDialogDescription>{spec.content}</XhDialogDescription>
-                    : typeof spec.content === 'function' ? spec.content() : null}
-                  {spec.body && spec.value ? spec.body(spec.value, patchValue) : null}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--xh-control-gap-md)' }}>
+                  </XhDialogHeader>
+                  <XhDialogBody>
+                    {/* 串走 description，函数正文与 prompt 表单也在唯一滚动区内。 */}
+                    {typeof spec.content === 'string'
+                      ? <XhDialogDescription>{spec.content}</XhDialogDescription>
+                      : typeof spec.content === 'function' ? spec.content() : null}
+                    {spec.body && spec.value ? spec.body(spec.value, patchValue) : null}
+                  </XhDialogBody>
+                  <XhDialogFooter>
                     {spec.showCancel
                       ? <XhButton variant="ghost" disabled={busy} onClick={() => close(false)}>{textOf(spec.cancelText)}</XhButton>
                       : null}
@@ -270,7 +272,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
                       {busy ? <XhButtonIndicator>{spinArc()}</XhButtonIndicator> : null}
                       <XhButtonLabel>{busy ? `${textOf(spec.okText)}…` : textOf(spec.okText)}</XhButtonLabel>
                     </XhButton>
-                  </div>
+                  </XhDialogFooter>
                 </XhDialogContent>
               )
             : null}

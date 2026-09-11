@@ -20,6 +20,7 @@
 - `closeOnEscape` 与 `closeOnInteractOutside` 各自可关——填了一半的表单不该点一下外面就没了。
 - 内容区可以内部滚动，标题栏可以拖动挪窗口。
 - 另有命令式服务，业务代码一次调用即弹出。
+- 命令式服务与声明式组件共用 `Header / Body / Footer` 三段：标题和徽记在 Header，字符串、函数正文及取值表单在 Body，操作按钮在 Footer。长内容只滚动 Body，头尾保留在面板内。
 
 ## 组合
 

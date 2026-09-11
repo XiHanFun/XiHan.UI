@@ -8,7 +8,7 @@ import type { XhConfig } from '../config/config'
 import { ensurePortalRoot } from '@xihan-ui/core'
 import { createApp, defineComponent, h, reactive, shallowRef, toRaw, toValue } from 'vue'
 import { XhButton, XhButtonIndicator, XhButtonLabel } from '../components/button'
-import { XhDialogContent, XhDialogDescription, XhDialogIndicator, XhDialogRoot, XhDialogTitle } from '../components/dialog/dialog'
+import { XhDialogBody, XhDialogContent, XhDialogDescription, XhDialogFooter, XhDialogHeader, XhDialogIndicator, XhDialogRoot, XhDialogTitle } from '../components/dialog/dialog'
 import { spinArc } from './glyph'
 import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
@@ -216,16 +216,18 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
           'initialFocus': spec?.initialFocus,
         }, () => spec
           ? h(XhDialogContent, null, () => [
-              h('div', { style: { display: 'flex', alignItems: 'center', gap: 'var(--xh-control-gap-md)' } }, [
+              h(XhDialogHeader, null, () => [
                 spec.badge ? h(XhDialogIndicator, { 'data-tone': toneOfBadge(spec.badge) }) : null,
                 h(XhDialogTitle, () => spec.title),
               ]),
-              // 串走 description（读屏的 aria-describedby 接在它上面），渲染函数直接摊开
-              typeof spec.content === 'string'
-                ? h(XhDialogDescription, () => spec.content as string)
-                : typeof spec.content === 'function' ? spec.content() : null,
-              spec.body && spec.value ? spec.body(spec.value) : null,
-              h('div', { style: { display: 'flex', justifyContent: 'flex-end', gap: 'var(--xh-control-gap-md)' } }, [
+              h(XhDialogBody, null, () => [
+                // 串走 description，函数正文与 prompt 表单也在唯一滚动区内。
+                typeof spec.content === 'string'
+                  ? h(XhDialogDescription, () => spec.content as string)
+                  : typeof spec.content === 'function' ? spec.content() : null,
+                spec.body && spec.value ? spec.body(spec.value) : null,
+              ]),
+              h(XhDialogFooter, null, () => [
                 spec.showCancel
                   ? h(XhButton, { variant: 'ghost', disabled: state.busy, onClick: () => close(false) }, () => toValue(spec.cancelText))
                   : null,
