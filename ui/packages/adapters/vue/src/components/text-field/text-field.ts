@@ -6,6 +6,7 @@ import { autoSizeTextarea } from '@xihan-ui/headless'
 import { defineComponent, h, onBeforeUnmount, onMounted, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideTextField, useTextFieldContext } from './context'
 import { useTextField } from './use-text-field'
 
@@ -28,10 +29,11 @@ export const XhTextFieldRoot = defineComponent({
     defaultValue: { type: String, default: undefined },
     type: { type: String as PropType<TextFieldType>, default: undefined },
     placeholder: { type: String, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    required: Boolean,
-    invalid: Boolean,
+    // undefined 才表示「本实例没说」，Form/Field 才能安全地下传状态；false 是显式顶掉继承。
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     name: { type: String, default: undefined },
     maxLength: { type: Number, default: undefined },
     clearable: Boolean,
@@ -55,7 +57,7 @@ export const XhTextFieldRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useTextField(withXhConfig('text-field', props) as TextFieldProps, notify)
+    const ctx = useTextField(withXhConfig('text-field', useFormControlProps(props)) as TextFieldProps, notify)
     provideTextField(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,
@@ -120,9 +122,9 @@ export const XhTextFieldInput = defineComponent({
     })
     // 自己渲染宿主节点，label 的 for 指向它
     return () => h(props.as, fieldLabel.value({
+      ...fieldWiring.value,
       ...ctx.api.value.getInputProps({ as: props.as }) as Record<string, unknown>,
       ref: setInputRef,
-      ...fieldWiring.value,
     }))
   },
 })

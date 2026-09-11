@@ -3,6 +3,7 @@ import type {
   FormColumnCount,
   FormColumns,
   FormColumnsByBreakpoint,
+  FormControlState,
   FormErrorPatch,
   FormErrorsChangeDetails,
   FormFieldSpan,
@@ -73,6 +74,10 @@ function fieldSpanOf(el: HTMLElement): FormFieldSpan | undefined {
  */
 function fieldNameOf(el: HTMLElement): string {
   return el.getAttribute('value') ?? ''
+}
+
+interface FormControlHost extends HTMLElement {
+  setFormControlState: (state: FormControlState | undefined) => void
 }
 
 /**
@@ -296,12 +301,18 @@ export class XhFormElement extends XhElement {
     for (const el of this.getParts('field-group')) {
       const name = fieldNameOf(el)
       this.spreader.spread(el, api.getFieldGroupProps({ name, span: fieldSpanOf(el) }) as Record<string, unknown>)
-      // Form-Field 打通：组里的 xh-field 由表单驱动校验态与必填标记，
-      // 表单不禁用时 disabled 交还元素自己的缺省
-      for (const field of el.querySelectorAll<HTMLElement & { invalid?: boolean, required?: boolean, disabled?: boolean }>('xh-field')) {
-        field.invalid = api.isFieldInvalid(name)
-        field.required = api.isFieldRequired(name) || undefined
-        field.disabled = api.disabled || undefined
+      const state: FormControlState = {
+        disabled: api.disabled,
+        readOnly: api.readOnly,
+        required: api.isFieldRequired(name),
+        invalid: api.isFieldInvalid(name),
+      }
+      // 表单只发现 Light-DOM 控件并交出最近状态；实例优先级与实际交互都由控件机器处理。
+      for (const control of el.querySelectorAll<FormControlHost>('xh-field, xh-text-field')) {
+        // Field 自己会再把已合并状态交给其内的 TextField，避免 Form 越过 Field 覆盖最近继承源。
+        if (control.tagName === 'XH-TEXT-FIELD' && control.closest('xh-field'))
+          continue
+        control.setFormControlState(state)
       }
     }
 

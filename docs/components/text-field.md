@@ -28,6 +28,8 @@
   `writing-mode: horizontal-tb`；其他书写模式会明确失败，不会把物理纵向滚动尺寸误当成逻辑块尺寸。
 - `prefix` / `suffix` 在框内摆货币符、单位或图标，两段对读屏隐藏。
 - `showCount` 显出字数部件，数字取 `count` 与 `maxLength`，顶到上限时换色。
+- 放在 FormFieldGroup 里时，未声明的 `disabled` / `readOnly` / `required` / `invalid` 会从最近的
+  Field 或 Form 继承；实例显式写 `false` 仍以实例为准。Field 的标签、说明和错误描述链保持挂到 input。
 - 输入组、限制可输入字符由作者组合，组件不预设。
 
 ## 示例
@@ -240,6 +242,8 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | `prefix` | `aria-hidden` | 'true' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-labelledby` | `label` 部件的 id |
+| `input` | `aria-readonly` | 'true' \| 'false' |
+| `input` | `aria-required` | 'true' \| 'false' |
 | `suffix` | `aria-hidden` | 'true' |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
 | `count` | `aria-hidden` | 'true' |

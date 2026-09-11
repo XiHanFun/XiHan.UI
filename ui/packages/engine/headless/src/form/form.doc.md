@@ -20,6 +20,9 @@
 - 校验器抛错或拒绝 Promise 时，`validationError` 保存 `{ cause, values, field }`，并发出 `validation-error` 事件（React/内核为 `onValidationError`）；`field=null` 表示整表提交。执行异常不会转换成字段错误或触发成功提交。
 - 新校验、变值或重置会清除旧异常；重试由业务显式调用 `submit()`，不自动重试。Vue 默认插槽、React 函数式 children、Web Components 的 `validationError` 只读属性都能读取该状态。
 - 嵌套模型走路径字段名，字段值表与业务模型形状一致。
+- `FormFieldGroup` 里的 TextField 会继承本字段的 `invalid` / `required` 以及整表的
+  `disabled` / `readOnly`；没有写这四个实例属性才继承，显式写 `false` 可以顶掉最近状态。
+  Field 再包一层时，状态继续落到 TextField 真正可聚焦的 input，而不是只停在包装节点。
 - 错误汇总（`error-summary`）把所有错误列在一处，每条都能点回对应字段。
 - "提醒但不拦下"是一档独立行为：警告级的问题不阻断提交。
 

@@ -1,10 +1,10 @@
-import type { FieldProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
 import { useOptionalFormContext, useOptionalFormField } from '../form/context'
+import { useFormControlProps } from '../form/use-form-control'
 import { FieldProvider, useFieldContext } from './context'
 import { useField } from './use-field'
 
@@ -37,17 +37,7 @@ export function XhFieldRoot({
   children,
   ...rest
 }: XhFieldRootProps): ReactNode {
-  const form = useOptionalFormContext()
-  const handle = useOptionalFormField()
-  const bound = form && handle ? { api: form.api, name: handle.name } : null
-  const merged: FieldProps = {
-    invalid: invalid ?? (bound ? bound.api.isFieldInvalid(bound.name) : undefined),
-    required: required ?? (bound ? bound.api.isFieldRequired(bound.name) : undefined),
-    disabled: disabled ?? (bound ? bound.api.disabled : undefined),
-    readOnly: readOnly ?? (bound ? bound.api.readOnly : undefined),
-    controlId,
-  }
-  const ctx = useField(merged)
+  const ctx = useField(useFormControlProps({ invalid, required, disabled, readOnly, controlId }))
   return (
     <FieldProvider value={ctx}>
       <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
