@@ -216,6 +216,7 @@ describe('iframe 运行时 realm', () => {
     expect(content.ownerDocument).toBe(doc)
     expect(part(doc, 'control').ownerDocument).toBe(doc)
     expect(part(doc, 'positioner').closest('[data-xh-portal-shell]')?.ownerDocument).toBe(doc)
+    await expect.poll(() => content.contains(doc.activeElement)).toBe(true)
   })
 
   it('显式同 Document portal 保持合法', async () => {
@@ -225,6 +226,7 @@ describe('iframe 运行时 realm', () => {
     expect(content.ownerDocument).toBe(doc)
     expect(target).not.toBeNull()
     expect(part(doc, 'positioner').parentElement?.parentElement).toBe(target)
+    await expect.poll(() => content.contains(doc.activeElement)).toBe(true)
   })
 })
 

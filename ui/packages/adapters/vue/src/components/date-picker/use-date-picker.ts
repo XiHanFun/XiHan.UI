@@ -131,7 +131,6 @@ function createDatePickerContext(
     root.refs.set('position', createPositionEngine())
     root.refs.set('getAnchorEl', () => controlRef.value)
     root.refs.set('getFloatingEl', () => positionerRef.value)
-    root.refs.set('getContentEl', () => contentRef.value)
   }
 
   // 跨月后的焦点落点要等重渲，日历机器推迟一拍再从这里取网格现查
@@ -154,6 +153,18 @@ function createDatePickerContext(
       throw new TypeError('[xh] DatePicker 的运行时 portalContainer 必须返回 Element')
     return defaultTarget
   })
+
+  if (typeof document !== 'undefined') {
+    root.refs.set('getContentEl', () => {
+      const content = contentRef.value
+      if (!content || !rootRef)
+        return content
+      // 首次 mounted 时正文仍可能原地挂载，随后 Teleport 搬运会丢失刚取得的焦点。
+      // 以真正进入目标容器为就绪事实，焦点域沿既有挂载流程等待，不提前聚焦临时位置。
+      const target = portalTarget.value
+      return typeof target !== 'string' && target.contains(content) ? content : null
+    })
+  }
 
   return { visible, api, services, controlRef, positionerRef, contentRef, gridRef, portalTarget }
 }

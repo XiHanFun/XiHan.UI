@@ -21,7 +21,7 @@ function picker(): VNode {
     h(XhDatePickerRoot, { open: true }, () => [
       h(XhDatePickerControl),
       h(XhDatePickerPositioner, null, () => [
-        h(XhDatePickerContent, null, () => h('span', { 'data-testid': 'hydrated-date-panel' }, '水合日期面板')),
+        h(XhDatePickerContent, null, () => h('button', { 'data-testid': 'hydrated-date-panel' }, '水合日期面板')),
       ]),
     ]),
   ])
@@ -71,6 +71,7 @@ describe('date-picker 服务端 hydration', () => {
       expect(shell?.getAttribute('data-theme')).toBe('dark')
       expect(shell?.getAttribute('data-density')).toBe('compact')
       expect(shell?.getAttribute('dir')).toBe('rtl')
+      await vi.waitFor(() => expect(document.activeElement).toBe(copies[0]))
 
       expect(registry.list()).toHaveLength(1)
       expect(registry.top()?.node()).toBe(content)
