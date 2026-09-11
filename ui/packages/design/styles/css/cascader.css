@@ -836,6 +836,22 @@
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
     mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   }
+
+  @media (forced-colors: active) {
+    /* 蒙版底色会被系统改成 Canvas 而消失；明确用系统前景保住箭头、对号与半选横线。 */
+    [data-scope='cascader'][data-part='item'][data-branch]::after,
+    [data-scope='cascader'][data-part='item-indicator']:empty::before,
+    [data-scope='cascader'][data-part='search-item']::after {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+    }
+
+    [data-scope='cascader'][data-part='item'][data-branch][data-disabled]::after,
+    [data-scope='cascader'][data-part='item-indicator'][data-disabled]:empty::before,
+    [data-scope='cascader'][data-part='search-item'][data-disabled]::after {
+      background-color: GrayText;
+    }
+  }
 }
 
 @layer xihan.motion {
