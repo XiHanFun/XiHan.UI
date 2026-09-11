@@ -39,6 +39,7 @@ export interface LayoutSchema extends MachineSchema {
     /**
      * 侧栏的自适应断点：视口窄于这一档时侧栏按折叠宽显示。
      * 只换宽度不改折叠态——折叠态归 siderCollapsed 那条通道，两者互不干扰。
+     * 运行期换档会重绑媒体查询；需要所属 Window.matchMedia 与对应断点令牌。
      */
     siderBreakpoint?: LayoutBreakpoint
     /**
@@ -60,7 +61,7 @@ export interface LayoutSchema extends MachineSchema {
     /** 折叠态变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
     onSiderCollapsedChange?: (details: LayoutSiderCollapsedChangeDetails) => void
     /**
-     * 断点跨过去时发一次，挂载时也发一次当前值。
+     * 断点跨过去时发一次，挂载或更换档位时也发一次当前值。
      * 窄屏要把侧栏换成抽屉的，接这条：组件自己只换宽度。
      */
     onSiderBreakpoint?: (details: LayoutSiderBreakpointDetails) => void

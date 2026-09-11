@@ -95,13 +95,13 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 | `siderWidth` | `string` |  | 展开时侧栏的宽度，任意 CSS 长度；不写则用皮肤里的档位。 |
 | `siderCollapsedWidth` | `string` |  | 折叠时侧栏的宽度，任意 CSS 长度；不写则用皮肤里的档位。 |
 | `siderPlacement` | `LayoutSiderPlacement` |  | 侧栏挂在行首还是行尾，缺省 start。 |
-| `siderBreakpoint` | `LayoutBreakpoint` |  | 侧栏的自适应断点：视口窄于这一档时侧栏按折叠宽显示。 只换宽度不改折叠态——折叠态归 siderCollapsed 那条通道，两者互不干扰。 |
+| `siderBreakpoint` | `LayoutBreakpoint` |  | 侧栏的自适应断点：视口窄于这一档时侧栏按折叠宽显示。 只换宽度不改折叠态——折叠态归 siderCollapsed 那条通道，两者互不干扰。 运行期换档会重绑媒体查询；需要所属 Window.matchMedia 与对应断点令牌。 |
 | `siderPresentation` | `LayoutSiderPresentation` |  | 侧栏呈现形态，缺省 inline（在骨架里占一列）。 sheet 是覆盖档：侧栏移出画外，展开时盖在内容之上并铺一层遮罩，内容因此占满整宽。 同时写了 siderBreakpoint 时它只在未达那一档时成立——宽屏照旧占一列，窄屏才覆盖， 且跨档时侧栏跟着开合（进覆盖档收起、回占位档展开），走的是 siderCollapsed 那条通道。 覆盖档不锁焦点、不把背后的内容标成惰性：它是骨架里的一段，不是模态浮层。 |
 | `headerFixed` | `boolean` |  | 头吸顶：滚动时头钉在滚动容器的上沿。只落标记，钉住的实现归皮肤。 |
 | `siderFixed` | `boolean` |  | 侧栏吸附：滚动时侧栏钉在滚动容器的上沿，头也吸顶时让开头那一条。只落标记，钉住的实现归皮肤。 |
 | `bordered` | `boolean` |  | 在头、侧栏、脚与内容之间画分隔线。 |
 | `onSiderCollapsedChange` | `(details: LayoutSiderCollapsedChangeDetails) => void` |  | 折叠态变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
-| `onSiderBreakpoint` | `(details: LayoutSiderBreakpointDetails) => void` |  | 断点跨过去时发一次，挂载时也发一次当前值。 窄屏要把侧栏换成抽屉的，接这条：组件自己只换宽度。 |
+| `onSiderBreakpoint` | `(details: LayoutSiderBreakpointDetails) => void` |  | 断点跨过去时发一次，挂载或更换档位时也发一次当前值。 窄屏要把侧栏换成抽屉的，接这条：组件自己只换宽度。 |
 
 ## 事件
 
@@ -202,6 +202,10 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 - `siderBreakpoint` 给一档（`sm` / `md` / `lg` / `xl`），视口窄于这一档时侧栏按折叠宽显示。
   它只换宽度、不改折叠态：折叠态归 `siderCollapsed` 那条通道，两者互不干扰。
 - 断点跨过去时发 `onSiderBreakpoint`，挂载时也发一次当前值。要在窄屏改换别的排布，接这个回调。
+- 运行期修改 `siderBreakpoint` 会立即切换媒体查询、报告新档位当前值；移除该属性会解除观察并清除窄屏标记，保留当前折叠态。
+  `siderPresentation` 切到 `sheet` 时立即应用当前断点，受控折叠态仍由宿主写回。
+  断点令牌在属性更新和媒体查询事件时重新读取，单独修改 CSSOM 不会主动触发重绑。
+  已指定断点却缺少令牌或所属 Window 的 `matchMedia` 会明确报错；同步失败会解除监听，不再沿用旧档位，需以有效属性更新重新建立。
 - `siderPresentation="sheet"` 是覆盖档：侧栏移出画外，展开时盖在内容之上并铺一层遮罩，内容占满整宽。
   与 `siderBreakpoint` 配着写就是「宽屏占一列、窄屏覆盖」——跨档时侧栏跟着开合，
   进覆盖档收起、回占位档展开，走的仍是 `siderCollapsed` 那条通道。

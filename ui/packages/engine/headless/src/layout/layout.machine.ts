@@ -1,5 +1,6 @@
 import type { LayoutBreakpoint, LayoutSchema, LayoutSiderPresentation } from './layout.types'
 import { createEscapeFallback, setup } from '@xihan-ui/core'
+import { trackSiderBreakpoint } from './layout.breakpoint'
 
 const { createMachine } = setup<LayoutSchema>()
 
@@ -77,37 +78,7 @@ export const layoutMachine = createMachine({
       },
     },
     effects: {
-      /**
-       * 跟住 siderBreakpoint 那一档的媒体查询，跨过去发一次、挂载时也发一次当前值。
-       * 档位的像素宽度取自断点令牌，JS 里不另抄一份；令牌样式表没引入时这条不跑。
-       * 档位在挂载时读一次。
-       */
-      trackSiderBreakpoint: ({ prop, context, send, scope }) => {
-        const tier = prop('siderBreakpoint')
-        if (!tier)
-          return undefined
-        const win = scope.getWin()
-        if (typeof win.matchMedia !== 'function')
-          return undefined
-        const width = scope.getComputedStyle(scope.getDoc().documentElement)
-          .getPropertyValue(`--xh-breakpoint-${tier}`)
-          .trim()
-        if (!width)
-          return undefined
-        const query = win.matchMedia(`(min-width: ${width})`)
-        const notify = (): void => {
-          const matched = query.matches
-          context.set('siderNarrow', !matched)
-          prop('onSiderBreakpoint')?.({ matched })
-          // 覆盖档跨档时跟着开合：进覆盖档先收起，免得一挂上来就盖住内容；回占位档还原成展开。
-          // 走的是 siderCollapsed 那条通道，受控宿主照常收到回调、由它说了算
-          if (prop('siderPresentation') === 'sheet')
-            send(matched ? { type: 'SIDER.EXPAND' } : { type: 'SIDER.COLLAPSE' })
-        }
-        notify()
-        query.addEventListener('change', notify)
-        return () => query.removeEventListener('change', notify)
-      },
+      trackSiderBreakpoint,
       /**
        * 覆盖档的 Escape 后备出口。Hub 在 capture 阶段先让 Layer 消费本次按键，
        * 只有这条 lane 当时为空且票据一直有效，才在 bubble 阶段收起最近展开的侧栏。
