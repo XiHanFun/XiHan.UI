@@ -1,6 +1,7 @@
 import type { Cleanup, Direction, IdGenerator, Layer, Orientation, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { MenubarItemProps, MenubarNode, MenubarSchema, MenubarSelectDetails, MenubarTranslations, MenubarValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
+import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectMenubar, menubarAnatomy, menubarMachine, menubarMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
@@ -8,6 +9,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -64,8 +66,6 @@ function authorDisabled(el: HTMLElement): boolean {
 export class XhMenubarElement extends XhElement {
   /** 逐个 content 一份退场闸门：一个菜单一份，它们各开各的。 */
   private readonly exits = new Map<HTMLElement, OverlayExit>()
-  /** 闸门只用到 reducedMotion，本元素别处不需要 config，建一份共用即可。 */
-  private exitConfig: ReturnType<typeof createRuntimeConfig> | null = null
 
   static override partContract = { anatomy: menubarAnatomy, meta: menubarMeta }
 
@@ -105,9 +105,14 @@ export class XhMenubarElement extends XhElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // trigger 与 content 按 value 逐对互指的 id 由 scope 派生
-  private readonly barScope = createScope(null, this.idGen)
+  private readonly barScope = createScope(this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
+  private readonly submenuChildren = new Map<HTMLElement, MenuSubmenuChild>()
+
+  private readonly submenuOwner: MenuSubmenuOwner = {
+    registerSubmenu: child => this.registerSubmenu(child),
+  }
 
   private readonly notifyValue = (details: MenubarValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -115,6 +120,58 @@ export class XhMenubarElement extends XhElement {
 
   private readonly notifySelect = (details: MenubarSelectDetails): void => {
     this.dispatchEvent(new CustomEvent('select', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private wireSubmenuChild(child: MenuSubmenuChild): void {
+    const api = connectMenubar(this.ctrl.service, wcNormalize)
+    this.spreader.spread(child.trigger, api.getItemProps({
+      value: child.trigger.getAttribute('value') ?? '',
+      disabled: child.getDisabled(),
+    }) as Record<string, unknown>)
+  }
+
+  private submenuOwnerValue(trigger: HTMLElement): string {
+    const content = trigger.closest<HTMLElement>('[data-xh-part="content"][value]')
+    const value = content?.getAttribute('value')
+    if (!value)
+      throw new Error('[xh] Menubar 子菜单 trigger 必须位于带 value 的所属 content 内')
+    return value
+  }
+
+  private registerSubmenu(child: MenuSubmenuChild): MenuSubmenuRegistration {
+    if (this.submenuChildren.has(child.trigger))
+      throw new Error('[xh] 同一 Menubar 的同一子菜单 trigger 只能登记一次')
+    // 创建期即验证所属菜单身份，不把结构错误拖到第一次选择。
+    this.submenuOwnerValue(child.trigger)
+    this.submenuChildren.set(child.trigger, child)
+    this.wireSubmenuChild(child)
+    this.requestUpdate()
+    let active = true
+    const assertCurrent = (): void => {
+      if (!active || this.submenuChildren.get(child.trigger) !== child)
+        throw new Error('[xh] Menubar 子菜单逻辑所有权已经释放')
+    }
+    return {
+      sync: () => {
+        assertCurrent()
+        this.wireSubmenuChild(child)
+      },
+      select: (details) => {
+        assertCurrent()
+        this.notifySelect({ menu: this.submenuOwnerValue(child.trigger), value: details.value })
+        this.ctrl.service.send({ type: 'VALUE.SET', value: null })
+      },
+      dispose: () => {
+        if (!active)
+          return
+        active = false
+        if (this.submenuChildren.get(child.trigger) !== child)
+          return
+        this.submenuChildren.delete(child.trigger)
+        this.spreader.release(child.trigger)
+        this.requestUpdate()
+      },
+    }
   }
 
   private readonly ctrl = new MachineController<MenubarSchema>(
@@ -192,6 +249,7 @@ export class XhMenubarElement extends XhElement {
 
   /** 提前发现一次角色节点：default-value 时机器在 hostConnected 当场要去 content 里挑焦点锚点。 */
   override connectedCallback(): void {
+    setMenuSubmenuOwner(this, this.submenuOwner)
     this.refreshParts()
     super.connectedCallback()
   }
@@ -246,7 +304,7 @@ export class XhMenubarElement extends XhElement {
       let gate = this.exits.get(el)
       if (!gate) {
         gate = createOverlayExit({
-          config: this.exitConfig ??= createRuntimeConfig(),
+          config: this.config!,
           open,
           onExitComplete: () => this.requestUpdate(),
         })
@@ -278,6 +336,8 @@ export class XhMenubarElement extends XhElement {
       for (const description of this.partsIn(el, 'item-description'))
         this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
     }
+    for (const child of this.submenuChildren.values())
+      this.wireSubmenuChild(child)
 
     // 箭头跟着它所在那张菜单的 positioner 走，身份取 positioner 自报的 value
     for (const el of this.getParts('positioner')) {
@@ -292,6 +352,7 @@ export class XhMenubarElement extends XhElement {
   }
 
   override disconnectedCallback(): void {
+    setMenuSubmenuOwner(this, null)
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起
     for (const [el, gate] of this.exits) {

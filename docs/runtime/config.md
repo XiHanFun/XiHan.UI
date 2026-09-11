@@ -24,7 +24,7 @@ provideXhConfig({
 | `locale` | `string` | BCP 47 语言标记，喂给日期时间系组件（`calendar` / `date-*` / `time-*`）。它只管这几个组件的日期时间格式，不换文案。 |
 | `translations` | `XhTranslationOverrides` | 按组件 id 分组的文案覆盖。每个组件的可覆盖键就是它 `<Pascal>Translations` 里的字段，组件页的 Props 表里能查到。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | 尺寸档的默认值，落到每个声明了三轴 `size` 的组件上——跑机器的与不跑机器的（按钮、徽标、空状态这些）都算。它与 `data-density` 是两条独立的轴：`size` 换的是控件高度与字号档，密度只收紧间距。`floating-panel` 的 `size` 是一对像素数、同名不同义，不受它影响。 |
-| `portalContainer` | `() => Element \| null` | 浮层默认挂到哪个容器；返回 `null` 即挂 `body`。实例上写了容器的以实例为准。仅 Vue 适配器有——Web Components 是 Light DOM，浮层不搬运。 |
+| `portalContainer` | `() => Element \| null` | 浮层默认挂到哪个容器；返回 `null` 即挂 `body`。实例上写了容器的以实例为准。Vue 与 React 可配置；Web Components 暂不公开该配置，Menu 子菜单固定使用所属 Document 的运行时 Portal 根。 |
 | `scrollRoot` | `() => HTMLElement \| null` | 真正在滚的那个元素。宿主把滚动搬进内容容器（`body` 本身不滚）时必须给，否则模态浮层加的滚动锁是空操作、背后照样能滚。返回 `null` 明确锁定页面，不自动探测后代滚动容器；同一 Document 的并行锁必须指向同一规范化目标。 |
 
 **方向不在这里。** `dir` 走 DOM：写在 `<html dir="rtl">` 或任意祖先上即可，行为层从计算样式读它，皮肤里的 `[dir='rtl']` 规则也跟着走。往这份配置里再加一个 JS 侧的 `dir` 只会多一条对不上的通道。
@@ -101,6 +101,8 @@ provideXhConfig({ translations: { dialog: { close: "Close" } } });
 
 **主题不在这里。** 那几家的 ConfigProvider 同时管主题，这里的主题是 CSS 令牌层的事：换主题是改 CSS 自定义属性、切 `data-theme` 这类属性，跟着 DOM 继承走，局部主题天然可嵌套，与这份配置无关。
 
-Vue 与 React 的浮层搬到 Portal 时，每个实例会把逻辑来源最近声明的 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion` 和 `dir` 投影到自己的无盒壳；共享 Portal 根不带这些属性。同一落点里的两个局部主题因此互不覆盖。来源没有声明的轴继续继承显式 `portalContainer`，但任意业务 CSS 自定义属性不会被复制；要让业务变量跨 Portal，应把它声明在目标容器或全局主题层。Web Components 的声明式浮层仍在 Light DOM 原位，直接沿真实祖先链继承。
+Vue 与 React 的浮层搬到 Portal 时，每个实例会把逻辑来源最近声明的 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion` 和 `dir` 投影到自己的无盒壳；共享 Portal 根不带这些属性。同一落点里的两个局部主题因此互不覆盖。来源没有声明的轴继续继承显式 `portalContainer`，但任意业务 CSS 自定义属性不会被复制；要让业务变量跨 Portal，应把它声明在目标容器或全局主题层。
+
+Web Components 的普通声明式浮层仍在 Light DOM 原位。多级 Menu 是明确例外：展开的 submenu positioner 会进入所属 Document 的运行时 Portal，以免父菜单的磨砂采样建立 fixed 包含块；它同样使用独占无盒壳桥接上述视觉轴，关闭或断连后恢复作者原位置。
 
 `shape` 是组件自身形态，不是主题环境轴；透明度目前只有系统 `prefers-reduced-transparency` 媒体路径，尚未建立 `data-transparency` DOM 轴，所以 Portal 不会复制一个没有消费方的属性。

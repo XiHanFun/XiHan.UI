@@ -1,6 +1,7 @@
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { ContextMenuItemProps, ContextMenuNode, ContextMenuOpenChangeDetails, ContextMenuSchema, ContextMenuSelectDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
+import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectContextMenu, contextMenuAnatomy, contextMenuMachine, contextMenuMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
@@ -9,6 +10,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -91,11 +93,16 @@ export class XhContextMenuElement extends XhElement {
   declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly menuScope = createScope(null, this.idGen)
+  private readonly menuScope = createScope(this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly submenuChildren = new Map<HTMLElement, MenuSubmenuChild>()
+
+  private readonly submenuOwner: MenuSubmenuOwner = {
+    registerSubmenu: child => this.registerSubmenu(child),
+  }
 
   private readonly notifyOpen = (details: ContextMenuOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
@@ -103,6 +110,48 @@ export class XhContextMenuElement extends XhElement {
 
   private readonly notifySelect = (details: ContextMenuSelectDetails): void => {
     this.dispatchEvent(new CustomEvent('select', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private wireSubmenuChild(child: MenuSubmenuChild): void {
+    const api = connectContextMenu(this.ctrl.service, wcNormalize)
+    this.spreader.spread(child.trigger, api.getItemProps({
+      value: child.trigger.getAttribute('value') ?? '',
+      disabled: child.getDisabled(),
+    }) as Record<string, unknown>)
+  }
+
+  private registerSubmenu(child: MenuSubmenuChild): MenuSubmenuRegistration {
+    if (this.submenuChildren.has(child.trigger))
+      throw new Error('[xh] 同一 ContextMenu 的同一子菜单 trigger 只能登记一次')
+    this.submenuChildren.set(child.trigger, child)
+    this.wireSubmenuChild(child)
+    this.requestUpdate()
+    let active = true
+    const assertCurrent = (): void => {
+      if (!active || this.submenuChildren.get(child.trigger) !== child)
+        throw new Error('[xh] ContextMenu 子菜单逻辑所有权已经释放')
+    }
+    return {
+      sync: () => {
+        assertCurrent()
+        this.wireSubmenuChild(child)
+      },
+      select: (details) => {
+        assertCurrent()
+        this.notifySelect(details)
+        this.ctrl.service.send({ type: 'CLOSE' })
+      },
+      dispose: () => {
+        if (!active)
+          return
+        active = false
+        if (this.submenuChildren.get(child.trigger) !== child)
+          return
+        this.submenuChildren.delete(child.trigger)
+        this.spreader.release(child.trigger)
+        this.requestUpdate()
+      },
+    }
   }
 
   private readonly ctrl = new MachineController<ContextMenuSchema>(
@@ -183,6 +232,7 @@ export class XhContextMenuElement extends XhElement {
    * 定位是 flush 推迟的（那时 partMap 已就位），这里只为锚点补上时机。
    */
   override connectedCallback(): void {
+    setMenuSubmenuOwner(this, this.submenuOwner)
     this.refreshParts()
     super.connectedCallback()
   }
@@ -251,6 +301,8 @@ export class XhContextMenuElement extends XhElement {
       for (const description of this.partsIn(el, 'item-description'))
         this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
     }
+    for (const child of this.submenuChildren.values())
+      this.wireSubmenuChild(child)
 
     // 分隔线也是多实例 part，但不带身份、不入导航，属性对每个都一样
     for (const el of this.getParts('separator'))
@@ -277,6 +329,7 @@ export class XhContextMenuElement extends XhElement {
   }
 
   override disconnectedCallback(): void {
+    setMenuSubmenuOwner(this, null)
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()

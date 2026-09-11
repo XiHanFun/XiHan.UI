@@ -10,7 +10,7 @@ import { setMotionOverride } from '@xihan-ui/motion'
 
 export type { XhTranslationOverrides }
 
-/** 与 Vue 适配器同一份字段；WC 是 Light DOM，浮层不搬运，没有 portalContainer。 */
+/** 与 Vue 适配器同一份字段；WC 暂不公开 portalContainer，Menu 子菜单使用内部运行时 Portal。 */
 export type XhConfig = XhConfigBase
 
 let current: XhConfig = {}

@@ -107,6 +107,12 @@ document.querySelector("xh-dialog")
 
 展开时还回作者原本的内联值而不是清成空串——后者会把你写在该节点上的 `style="display:grid"` 一并抹掉，且再也回不来。
 
+## 多级菜单的 Portal 所有权
+
+`<xh-menu submenu>` 仍由作者在父 Menu、ContextMenu 或 Menubar 的 Light DOM 中声明。展开时只有它的 `positioner` 会搬到所属 Document 的 `#xh-portal-root`：父菜单的磨砂 `backdrop-filter` 因此不会把 fixed 子层困在局部包含块。每层有自己的无盒 Portal 壳，壳会桥接触发条目祖先上的主题、品牌、密度、对比度、动效与文字方向。
+
+搬运不会转移行为所有权。子菜单宿主继续观察并接线 positioner 里的动态部件，父宿主通过内部逻辑 owner 给 trigger 补齐父层 item 身份；末级选择按叶到根关闭，并只由根派发一次 `select`。关闭、断连或 trigger 换代时，positioner 会恢复到原占位。展开期间应持有部件引用或从 `ownerDocument` 查询，不能假设 `submenu.querySelector(...)` 仍能找到已搬走的 positioner。
+
 ## 升级前
 
 自定义元素在 JS 到达之前不会升级，那段时间 `data-scope` / `data-part` 都还没打上，浮层内容会以裸文本堆在页面流里。`@xihan-ui/styles` 的 `undefined.css` 用 `:not(:defined)` 配合作者写的 `data-xh-part` 先把浮层子树收起来，见[皮肤与样式分层](../guide/styling#升级前的形态)。
