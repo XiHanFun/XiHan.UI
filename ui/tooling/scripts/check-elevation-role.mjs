@@ -20,6 +20,8 @@ const ROLE = /--xh-elevation-(raised|lifted|floating|sheet)\b/
 const MATERIAL_SOFT = /--xh-material-soft-shadow\b/
 // M2 是锚定浮层的材质配方，海拔等价于 floating；单列名字才能拦住组件退回普通实体投影。
 const MATERIAL_FROSTED = /--xh-material-frosted-(?:compact-)?shadow\b/
+// M4 是 sheet 级遮罩式高层面；当前只允许 Dialog/content 消费，后续迁移必须逐件登记。
+const MATERIAL_ELEVATED = /--xh-material-elevated-shadow\b/
 /**
  * 使用者槽包着角色令牌：var(--xh-<组件>-…, var(--xh-elevation-<role>))。
  * 允许套多层：加法式改名把新槽名排在外层、旧名留在它的兜底位上，链因此不止一层。
@@ -102,21 +104,28 @@ for (const file of files) {
       if (/^var\((?:--xh-[a-z0-9-]+,\s*var\()*--xh-_[\w-]+\)+$/.test(value))
         continue
       checked++
+      // 这条规则落在哪个部件上：取选择器里最后一个 data-part，那才是被样式作用的那个
+      const part = [...selector.matchAll(/\[data-part='([a-z0-9-]+)'\]/g)].map(m => m[1]).at(-1)
+      const isElevated = MATERIAL_ELEVATED.test(value)
+      if (isElevated && (comp !== 'dialog' || part !== 'content')) {
+        problems.push(`${file}  ${selector.slice(0, 60)}  M4 Elevated Glass 尚未登记给 ${comp} 的 ${part ?? '未知部件'}`)
+        continue
+      }
       const role = MATERIAL_SOFT.test(value)
         ? 'soft'
         : MATERIAL_FROSTED.test(value)
           ? 'frosted'
-          : value.match(ROLE)?.[1]
+          : isElevated
+            ? 'sheet'
+            : value.match(ROLE)?.[1]
       if (!role) {
         problems.push(`${file}  ${selector.slice(0, 60)}  ${decl[1]}: ${value.slice(0, 60)}  —— 没走 --xh-elevation-raised / floating / sheet`)
         continue
       }
       if (decl[1] === 'box-shadow' && !SLOTTED.test(value)
-        && !/^var\(--xh-[a-z][a-z0-9-]*,\s*var\(--xh-material-(?:soft|frosted(?:-compact)?)-shadow\)\)$/.test(value)) {
+        && !/^var\(--xh-[a-z][a-z0-9-]*,\s*var\(--xh-material-(?:soft|frosted(?:-compact)?|elevated)-shadow\)\)$/.test(value)) {
         problems.push(`${file}  ${selector.slice(0, 60)}  box-shadow: ${value.slice(0, 60)}  —— 没给使用者留 --xh-<组件>-…-shadow 槽`)
       }
-      // 这条规则落在哪个部件上：取选择器里最后一个 data-part，那才是被样式作用的那个
-      const part = [...selector.matchAll(/\[data-part='([a-z0-9-]+)'\]/g)].map(m => m[1]).at(-1)
       if (!part)
         continue
       seenRoles.add(`${comp}/${part}/${role}`)
