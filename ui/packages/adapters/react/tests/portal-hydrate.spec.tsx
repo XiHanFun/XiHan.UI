@@ -15,7 +15,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { XhPortal } from '../src'
 
 /** 服务端直出的形状：内容就地，没有搬走。 */
-const SERVER_HTML = '<div><span data-part="content">正文</span></div>'
+const SERVER_HTML = '<div><template data-xh-portal-source=""></template><div data-xh-portal-shell="" style="display:contents"><span data-part="content">正文</span></div></div>'
 
 let host: HTMLElement | null = null
 
@@ -50,7 +50,7 @@ describe('浮层的水合', () => {
     const tree = <div><XhPortal deferUntilMounted><span data-part="content">正文</span></XhPortal></div>
     const { errors, root } = hydrateWith(tree)
     expect(errors).toEqual([])
-    expect(document.querySelector('[data-part="content"]')!.parentElement).toBe(document.body)
+    expect(document.querySelector('[data-part="content"]')!.parentElement?.parentElement).toBe(document.body)
     act(() => root.unmount())
   })
 
@@ -60,7 +60,7 @@ describe('浮层的水合', () => {
     // 真正会伤人的是重影：服务端那份留在原地、客户端又在 body 上渲一份，正文出现两遍
     const found = document.querySelectorAll('[data-part="content"]')
     expect(found).toHaveLength(1)
-    expect(found[0]!.parentElement).toBe(document.body)
+    expect(found[0]!.parentElement?.parentElement).toBe(document.body)
     expect(errors).toEqual([])
     act(() => root.unmount())
   })

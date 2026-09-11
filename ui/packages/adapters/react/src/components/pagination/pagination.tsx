@@ -277,7 +277,7 @@ export function XhPaginationPageSizeSelect({ container, ...rest }: XhPaginationP
           </div>
         </div>
       </div>
-      <XhPortal container={container ?? ctx.portalContainer}>
+      <XhPortal container={container ?? ctx.portalContainer} source={ctx.pageSizeTriggerRef}>
         <div
           {...mergeReactProps(
             select.getPositionerProps() as Record<string, unknown>,
@@ -316,7 +316,7 @@ export function XhPaginationPositioner({ children, container, ...rest }: XhPagin
   // 折叠页码列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current })
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.ellipsisRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

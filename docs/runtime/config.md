@@ -100,3 +100,7 @@ provideXhConfig({ translations: { dialog: { close: "Close" } } });
 | Semi Design `<LocaleProvider>` | `provideXhConfig()` 的 `locale` 与 `translations` |
 
 **主题不在这里。** 那几家的 ConfigProvider 同时管主题，这里的主题是 CSS 令牌层的事：换主题是改 CSS 自定义属性、切 `data-theme` 这类属性，跟着 DOM 继承走，局部主题天然可嵌套，与这份配置无关。
+
+Vue 与 React 的浮层搬到 Portal 时，每个实例会把逻辑来源最近声明的 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion` 和 `dir` 投影到自己的无盒壳；共享 Portal 根不带这些属性。同一落点里的两个局部主题因此互不覆盖。来源没有声明的轴继续继承显式 `portalContainer`，但任意业务 CSS 自定义属性不会被复制；要让业务变量跨 Portal，应把它声明在目标容器或全局主题层。Web Components 的声明式浮层仍在 Light DOM 原位，直接沿真实祖先链继承。
+
+`shape` 是组件自身形态，不是主题环境轴；透明度目前只有系统 `prefers-reduced-transparency` 媒体路径，尚未建立 `data-transparency` DOM 轴，所以 Portal 不会复制一个没有消费方的属性。

@@ -4,10 +4,11 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { MenubarPartRegistry } from './use-menubar'
 import { createRuntimeConfig } from '@xihan-ui/core'
-import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
+import { XhPortal } from '../../runtime/portal'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { provideMenu, provideMenuChain, useMenuContext } from '../menu/context'
 import { useMenu } from '../menu/use-menu'
@@ -177,7 +178,7 @@ export const XhMenubarPositioner = defineComponent({
     provideMenubarMenu({ menu })
     const setEl = useMenubarPart(ctx.registerPositioner, () => props.value)
     // 每张菜单各搬各的定位层到 portal 落点，逃开祖先的层叠上下文
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: ctx.portalTarget.value, source: ctx.rootRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps(menu.value) as Record<string, unknown>, attrs),
         ref: (el: unknown) => setEl(el as HTMLElement | null),

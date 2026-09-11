@@ -2,8 +2,9 @@ import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type { PaginationApi, PaginationEllipsisSide, PaginationPageSizeChangeDetails, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, mergeProps, Teleport } from 'vue'
+import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { providePagination, usePaginationContext } from './context'
 import { usePagination } from './use-pagination'
@@ -215,7 +216,7 @@ export const XhPaginationPageSizeSelect = defineComponent({
             ]),
           ]),
         ]),
-        h(Teleport, { to: ctx.portalTarget.value }, [
+        h(XhPortal, { to: ctx.portalTarget.value, source: ctx.pageSizeTriggerRef }, () => [
           h('div', {
             ...select.getPositionerProps() as Record<string, unknown>,
             ref: (el: unknown) => { ctx.pageSizePositionerRef.value = el as HTMLElement },
@@ -251,7 +252,7 @@ export const XhPaginationPositioner = defineComponent({
     // 折叠页码列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
     const bars = useScrollbars({ scrollable: () => ctx.contentRef.value })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: ctx.portalTarget.value, source: ctx.ellipsisRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },

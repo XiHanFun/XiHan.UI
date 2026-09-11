@@ -2,8 +2,9 @@ import type { Size, Tone } from '@xihan-ui/core'
 import type { SideNavApi, SideNavNode, SideNavSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, ref, Teleport } from 'vue'
+import { defineComponent, h, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { XhPortal } from '../../runtime/portal'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { provideSideNav, provideSideNavNode, useSideNavContext, useSideNavNodeContext } from './context'
 import { useSideNav } from './use-side-nav'
@@ -194,7 +195,7 @@ export const XhSideNavBranchContent = defineComponent({
         hidden,
         ref: (el: unknown) => { panelRef.value = el as HTMLElement | null },
       }, slots.default?.())
-      return h(Teleport, { to: ctx.portalTarget.value }, [
+      return h(XhPortal, { to: ctx.portalTarget.value }, () => [
         h('div', {
           ...ctx.api.value.getPopoutPositionerProps({ value: node.value }) as Record<string, unknown>,
           hidden,

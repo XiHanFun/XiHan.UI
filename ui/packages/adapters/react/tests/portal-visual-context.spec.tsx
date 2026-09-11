@@ -1,0 +1,164 @@
+// @vitest-environment jsdom
+
+import type { ReactNode } from 'react'
+import { act, useRef, useState } from 'react'
+import { createRoot } from 'react-dom/client'
+import { afterEach, describe, expect, it } from 'vitest'
+import {
+  XhButton,
+  XhButtonGroup,
+  XhPopoverContent,
+  XhPopoverPositioner,
+  XhPopoverRoot,
+  XhPopoverTrigger,
+  XhPortal,
+  XhToolbarItem,
+  XhToolbarRoot,
+  XhTooltipContent,
+  XhTooltipPositioner,
+  XhTooltipRoot,
+  XhTooltipTrigger,
+} from '../src'
+
+let host: HTMLElement | null = null
+let root: ReturnType<typeof createRoot> | null = null
+
+function mount(node: ReactNode): void {
+  ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
+  host = document.createElement('div')
+  document.body.append(host)
+  root = createRoot(host)
+  act(() => root!.render(node))
+}
+
+function shellOf(testId: string): HTMLElement {
+  const shell = document.querySelector<HTMLElement>(`[data-testid='${testId}']`)?.parentElement
+  if (!shell?.hasAttribute('data-xh-portal-shell'))
+    throw new Error(`${testId} 不在 Portal 实例壳里`)
+  return shell
+}
+
+async function settleMutations(): Promise<void> {
+  await Promise.resolve()
+  await Promise.resolve()
+}
+
+afterEach(() => {
+  act(() => root?.unmount())
+  host?.remove()
+  document.querySelectorAll('[data-testid="portal-target"]').forEach(node => node.remove())
+  host = null
+  root = null
+})
+
+describe('react Portal 的局部视觉环境', () => {
+  it('把来源最近声明的六个真实轴写到实例壳，不复制透明度伪轴', () => {
+    mount(
+      <section
+        data-theme="dark"
+        data-brand="acme"
+        data-density="compact"
+        data-contrast="more"
+        data-motion="reduce"
+        data-transparency="reduce"
+        dir="rtl"
+      >
+        <XhPortal><span data-testid="first">内容</span></XhPortal>
+      </section>,
+    )
+    const shell = shellOf('first')
+    expect(shell.getAttribute('data-theme')).toBe('dark')
+    expect(shell.getAttribute('data-brand')).toBe('acme')
+    expect(shell.getAttribute('data-density')).toBe('compact')
+    expect(shell.getAttribute('data-contrast')).toBe('more')
+    expect(shell.getAttribute('data-motion')).toBe('reduce')
+    expect(shell.getAttribute('dir')).toBe('rtl')
+    expect(shell.hasAttribute('data-transparency')).toBe(false)
+  })
+
+  it('两个局部主题在同一个 body 落点各有自己的实例壳', () => {
+    mount(
+      <>
+        <section data-theme="dark"><XhPortal><span data-testid="first">甲</span></XhPortal></section>
+        <section data-theme="light"><XhPortal><span data-testid="second">乙</span></XhPortal></section>
+      </>,
+    )
+    expect(shellOf('first')).not.toBe(shellOf('second'))
+    expect(shellOf('first').getAttribute('data-theme')).toBe('dark')
+    expect(shellOf('second').getAttribute('data-theme')).toBe('light')
+  })
+
+  it('来源祖先运行期换轴与移除声明后异步同步', async () => {
+    mount(<section data-testid="source" data-theme="dark"><XhPortal><span data-testid="first">内容</span></XhPortal></section>)
+    const source = host!.querySelector<HTMLElement>('[data-testid="source"]')!
+    source.setAttribute('data-theme', 'light')
+    source.setAttribute('data-density', 'compact')
+    await settleMutations()
+    expect(shellOf('first').getAttribute('data-theme')).toBe('light')
+    expect(shellOf('first').getAttribute('data-density')).toBe('compact')
+
+    source.removeAttribute('data-theme')
+    await settleMutations()
+    expect(shellOf('first').hasAttribute('data-theme')).toBe(false)
+  })
+
+  it('同一 source ref 换成另一枚宿主节点时在该次提交重绑', () => {
+    let swap!: () => void
+    function Probe(): ReactNode {
+      const [second, setSecond] = useState(false)
+      const source = useRef<HTMLElement | null>(null)
+      swap = () => setSecond(value => !value)
+      return (
+        <>
+          <section data-theme={second ? 'light' : 'dark'}>
+            <span key={second ? 'second' : 'first'} ref={source} />
+          </section>
+          <XhPortal source={source}><span data-testid="first">内容</span></XhPortal>
+        </>
+      )
+    }
+    mount(<Probe />)
+    expect(shellOf('first').getAttribute('data-theme')).toBe('dark')
+    act(() => swap())
+    expect(shellOf('first').getAttribute('data-theme')).toBe('light')
+  })
+
+  it('来源没声明的轴留给业务显式 portalContainer 继承', () => {
+    const target = document.createElement('aside')
+    target.dataset.testid = 'portal-target'
+    target.setAttribute('data-theme', 'dark')
+    document.body.append(target)
+    mount(<XhPortal container={() => target}><span data-testid="first">内容</span></XhPortal>)
+    const shell = shellOf('first')
+    expect(shell.parentElement).toBe(target)
+    expect(shell.hasAttribute('data-theme')).toBe(false)
+  })
+
+  it('已有锚点的 Popover/Tooltip 不生成 marker，不改变 ButtonGroup 与 Toolbar 的直接子项', () => {
+    mount(
+      <>
+        <XhButtonGroup>
+          <XhButton>前一项</XhButton>
+          <XhPopoverRoot open>
+            <XhPopoverTrigger asChild><XhButton>末项</XhButton></XhPopoverTrigger>
+            <XhPopoverPositioner><XhPopoverContent>气泡</XhPopoverContent></XhPopoverPositioner>
+          </XhPopoverRoot>
+        </XhButtonGroup>
+        <XhToolbarRoot>
+          <XhTooltipRoot open>
+            <XhTooltipTrigger asChild><XhToolbarItem value="tip">提示项</XhToolbarItem></XhTooltipTrigger>
+            <XhTooltipPositioner><XhTooltipContent>提示</XhTooltipContent></XhTooltipPositioner>
+          </XhTooltipRoot>
+          <XhToolbarItem value="plain">普通项</XhToolbarItem>
+        </XhToolbarRoot>
+      </>,
+    )
+
+    const group = document.querySelector<HTMLElement>('[data-scope="button-group"][data-part="root"]')!
+    expect([...group.children].map(node => node.getAttribute('data-scope'))).toEqual(['button', 'button'])
+    expect(group.lastElementChild?.textContent).toBe('末项')
+    const toolbar = document.querySelector<HTMLElement>('[data-scope="toolbar"][data-part="root"]')!
+    expect(toolbar.querySelector(':scope > template[data-xh-portal-source]')).toBeNull()
+    expect(toolbar.querySelectorAll(':scope > [data-scope="toolbar"][data-part="item"]')).toHaveLength(2)
+  })
+})

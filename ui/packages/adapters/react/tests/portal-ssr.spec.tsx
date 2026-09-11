@@ -11,6 +11,8 @@ describe('浮层的服务端直出', () => {
     const html = renderToStaticMarkup(
       <div id="host"><XhPortal><span data-part="content">正文</span></XhPortal></div>,
     )
+    expect(html).toContain('data-xh-portal-source=""')
+    expect(html).toContain('data-xh-portal-shell=""')
     expect(html).toContain('data-part="content"')
     expect(html).toContain('正文')
   })

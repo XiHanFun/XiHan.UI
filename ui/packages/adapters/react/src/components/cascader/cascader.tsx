@@ -251,7 +251,7 @@ export function XhCascaderPositioner({ children, container, ...rest }: XhCascade
     props: () => ({ dir: (ctx.api.getPositionerProps() as { dir?: Direction }).dir }),
   })
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

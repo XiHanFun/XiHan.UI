@@ -10,6 +10,22 @@
 
 `createScope(null, ...)` 本身保持惰性，便于在 CSR 中先建立机器再挂载组件节点；这份 Scope 始终表示 ambient Document，不会在之后改绑节点。真正读取 root/document 时若宿主没有有效全局 Document，会抛出稳定错误。传入离线 Document 的节点时 `getDoc()` 仍返回该 Document，但 `getWin()` 明确失败，不会借用主页面 Window 伪造一组混合 realm。
 
+## Portal 的视觉环境
+
+Vue 浮层与 React `XhPortal` 为每个实例建立独立的 `display: contents` 容器，把逻辑来源的视觉环境带到浮层落点。主题、品牌、密度、对比度、动效和方向分别读取最近的显式声明，因此局部深色示例里的弹层仍是深色，同一落点下的其他实例不受影响。来源没有声明的轴继续继承落点容器。
+
+框架外可使用 `createPortalVisualBridge({ source, shell })`：`source` 是逻辑来源元素，`shell` 是该实例独占的容器，两者必须属于同一 Document。返回的 `sync()` 可立即重读，`dispose()` 停止观察并恢复接管前的容器属性。普通属性变化、祖先移动及 Shadow DOM 插槽重新分配会在 MutationObserver 或 slotchange 通知后同步；需要同一调用栈内更新时显式调用 `sync()`。
+
+```ts
+import { createPortalVisualBridge } from "@xihan-ui/core";
+
+const bridge = createPortalVisualBridge({ source, shell });
+// 卸载该实例时释放观察与属性。
+bridge.dispose();
+```
+
+桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`dir`。组件自身的 `data-shape`、任意 CSS 变量和计算样式不复制；自定义样式需显式作用于浮层容器。Web Components 声明式浮层当前仍在原树中，通过原生继承取得这些视觉轴。
+
 ## 在 Vue 里用
 
 原语都是框架无关的：收一份配置与几个元素 getter，返回一个要自己释放的句柄。接进 Vue 无非是把释放挂到作用域结束，这层包装收在 `@xihan-ui/vue/behavior`：
