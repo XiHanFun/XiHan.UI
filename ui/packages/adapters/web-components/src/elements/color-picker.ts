@@ -328,7 +328,7 @@ export class XhColorPickerElement extends XhElement {
 
     // Light DOM 常驻，WC 自管可见性：作者层若给 content 声明了 display，
     // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。
-    // 本包的样式自带 [hidden]{display:none} 压得住，但宿主不能指望作者装了这份样式
+    // 可见性统一由 presence 驱动，不依赖作者是否引入默认皮肤。
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     this.ensureConfig()

@@ -44,7 +44,7 @@ const EXPECTED = {
   'card': { root: ['soft', 'raised', 'lifted'] },
   'checkbox': { root: ['soft', 'raised'] },
   'cascader': { content: ['frosted'] },
-  'color-picker': { content: ['floating'] },
+  'color-picker': { content: ['frosted'] },
   'combobox': { content: ['floating'] },
   // 命令面板是盖在页面上、带遮罩的一面，与对话框同档
   'command': { content: ['sheet'] },
