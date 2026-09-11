@@ -42,6 +42,7 @@ const EXPECTED = {
   'back-top': { trigger: ['sheet'] },
   'button': { root: ['soft', 'raised'] },
   'card': { root: ['soft', 'raised', 'lifted'] },
+  'checkbox': { root: ['soft', 'raised'] },
   'cascader': { content: ['floating'] },
   'color-picker': { content: ['floating'] },
   'combobox': { content: ['floating'], empty: ['floating'], loading: ['floating'] },
