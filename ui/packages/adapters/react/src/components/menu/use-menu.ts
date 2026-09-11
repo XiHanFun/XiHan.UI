@@ -1,17 +1,15 @@
 import type { Layer, Service } from '@xihan-ui/core'
-import type { MenuApi, MenuSchema } from '@xihan-ui/headless'
+import type { MenuApi, MenuSchema, MenuTreeNode } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import type { OverlayWiring } from '../../runtime/use-overlay'
-import type { MenuHoverBranchParent } from './hover-branches'
-import { connectMenu, menuMachine } from '@xihan-ui/headless'
+import { connectMenu, createMenuTreeNode, menuMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
-import { useCallback, useRef } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
-import { registerMenuHoverOwner, useMenuHoverBranches } from './hover-branches'
 
 export interface MenuContext extends OverlayWiring {
   service: Service<MenuSchema>
@@ -22,25 +20,30 @@ export interface MenuContext extends OverlayWiring {
   positionerRef: RefObject<HTMLElement | null>
   /** 焦点域容器、消解层节点，也是条目集合的查询容器。 */
   contentRef: RefObject<HTMLElement | null>
+  /** Portal 之外的逻辑父子、悬停区域与选择收链由 headless 节点统一维护。 */
+  tree: MenuTreeNode
 }
 
-function useMenuImpl(props: MenuSchema['props'], hoverParent?: MenuHoverBranchParent): MenuContext {
+function useMenuImpl(props: MenuSchema['props'], treeParent?: MenuTreeNode): MenuContext {
   const idGenerator = useReactIdGenerator()
   const scope = useReactScope()
   const triggerRef = useRef<HTMLElement | null>(null)
   const positionerRef = useRef<HTMLElement | null>(null)
   const contentRef = useRef<HTMLElement | null>(null)
   const serviceRef = useRef<Service<MenuSchema> | null>(null)
-  const hoverBranches = useMenuHoverBranches(hoverParent)
-  const readPositioner = useCallback(
-    () => serviceRef.current?.state.get() === 'open' ? positionerRef.current : null,
-    [],
-  )
-  const registerWithParent = hoverParent?.registerHoverBranch
+  const latestProps = useRef(props)
+  latestProps.current = props
+  const tree = useMemo(() => createMenuTreeNode({
+    getPositioner: () => positionerRef.current,
+    isOpen: () => serviceRef.current?.state.get() === 'open',
+    close: () => serviceRef.current?.send({ type: 'CLOSE' }),
+    isRoot: () => !(serviceRef.current?.prop('submenu') ?? latestProps.current.submenu),
+    onRootSelect: details => latestProps.current.onSelect?.(details),
+  }), [])
 
   useIsomorphicLayoutEffect(
-    () => registerWithParent?.(readPositioner),
-    [readPositioner, registerWithParent],
+    () => treeParent?.registerChild(tree),
+    [treeParent, tree],
   )
 
   const initialOpen = (props.open ?? props.defaultOpen) ?? false
@@ -67,16 +70,15 @@ function useMenuImpl(props: MenuSchema['props'], hoverParent?: MenuHoverBranchPa
       service.refs.set('getAnchorEl', (() => triggerRef.current) as never)
       service.refs.set('getFloatingEl', (() => positionerRef.current) as never)
       service.refs.set('getContentEl', (() => contentRef.current) as never)
-      service.refs.set('getHoverBranches', hoverBranches.getHoverBranches as never)
+      service.refs.set('getHoverBranches', tree.getHoverBranches as never)
     },
   })
 
-  const service = useMachine(menuMachine, () => props, {
+  const service = useMachine(menuMachine, () => treeParent ? { ...props, onSelect: tree.select } : props, {
     scope,
     onCreate: overlay.onCreate as never,
   })
   serviceRef.current = service
-  registerMenuHoverOwner(service, hoverBranches)
 
   return {
     ...overlay,
@@ -85,6 +87,7 @@ function useMenuImpl(props: MenuSchema['props'], hoverParent?: MenuHoverBranchPa
     triggerRef,
     positionerRef,
     contentRef,
+    tree,
   }
 }
 
@@ -93,10 +96,10 @@ export function useMenu(props: MenuSchema['props']): MenuContext {
   return useMenuImpl(props)
 }
 
-/** 组合部件内部入口：把 Portal 子菜单登记到既有逻辑悬停树。 */
-export function useMenuWithHoverParent(
+/** 组合部件内部入口：把子菜单连接到 headless 逻辑树。 */
+export function useMenuWithParent(
   props: MenuSchema['props'],
-  hoverParent: MenuHoverBranchParent,
+  treeParent: MenuTreeNode,
 ): MenuContext {
-  return useMenuImpl(props, hoverParent)
+  return useMenuImpl(props, treeParent)
 }

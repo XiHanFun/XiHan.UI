@@ -1,15 +1,14 @@
 import type { Layer, Service } from '@xihan-ui/core'
-import type { ContextMenuApi, ContextMenuSchema } from '@xihan-ui/headless'
+import type { ContextMenuApi, ContextMenuSchema, MenuTreeNode } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import type { OverlayWiring } from '../../runtime/use-overlay'
-import { connectContextMenu, contextMenuMachine } from '@xihan-ui/headless'
+import { connectContextMenu, contextMenuMachine, createMenuTreeNode } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
-import { useCallback, useRef } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
-import { registerMenuHoverOwner, useMenuHoverBranches } from '../menu/hover-branches'
 
 export interface ContextMenuContext extends OverlayWiring {
   service: Service<ContextMenuSchema>
@@ -20,6 +19,8 @@ export interface ContextMenuContext extends OverlayWiring {
   positionerRef: RefObject<HTMLElement | null>
   /** 焦点域容器、消解层节点，也是条目集合的查询容器。 */
   contentRef: RefObject<HTMLElement | null>
+  /** 子菜单经 Portal 分离后的逻辑父节点。 */
+  tree: MenuTreeNode
 }
 
 export function useContextMenu(props: ContextMenuSchema['props']): ContextMenuContext {
@@ -29,7 +30,15 @@ export function useContextMenu(props: ContextMenuSchema['props']): ContextMenuCo
   const positionerRef = useRef<HTMLElement | null>(null)
   const contentRef = useRef<HTMLElement | null>(null)
   const serviceRef = useRef<Service<ContextMenuSchema> | null>(null)
-  const hoverBranches = useMenuHoverBranches()
+  const latestProps = useRef(props)
+  latestProps.current = props
+  const tree = useMemo(() => createMenuTreeNode({
+    getPositioner: () => positionerRef.current,
+    isOpen: () => serviceRef.current?.state.get() === 'open',
+    close: () => serviceRef.current?.send({ type: 'CLOSE' }),
+    isRoot: () => true,
+    onRootSelect: details => latestProps.current.onSelect?.(details),
+  }), [])
 
   const initialOpen = (props.open ?? props.defaultOpen) ?? false
 
@@ -63,7 +72,6 @@ export function useContextMenu(props: ContextMenuSchema['props']): ContextMenuCo
     onCreate: overlay.onCreate as never,
   })
   serviceRef.current = service
-  registerMenuHoverOwner(service, hoverBranches)
 
   return {
     ...overlay,
@@ -72,5 +80,6 @@ export function useContextMenu(props: ContextMenuSchema['props']): ContextMenuCo
     triggerRef,
     positionerRef,
     contentRef,
+    tree,
   }
 }

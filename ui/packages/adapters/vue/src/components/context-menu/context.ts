@@ -50,24 +50,6 @@ export function useContextMenuGroupContext(): ContextMenuGroupContext {
   return ctx
 }
 
-/** 选中链：子菜单任意层级的选中都汇到根——先发根的 select，再关根，各级随父关闭级联收起。 */
-export interface ContextMenuChain {
-  notifySelect: (details: { value: string }) => void
-}
-
-const CHAIN_KEY: InjectionKey<ContextMenuChain> = Symbol.for('xh-context-menu-chain')
-
-export function provideContextMenuChain(chain: ContextMenuChain): void {
-  provide(CHAIN_KEY, chain)
-}
-
-export function useContextMenuChain(): ContextMenuChain {
-  const chain = inject(CHAIN_KEY, null)
-  if (!chain)
-    throw new Error('[xh] ContextMenuSub 必须用在 XhContextMenuRoot 内')
-  return chain
-}
-
 /** 子菜单触发条目要同时够到父右键菜单与本子菜单，这里存父层句柄与它在父层里的身份。 */
 export interface ContextMenuSubHandle {
   parent: ContextMenuContext

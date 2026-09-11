@@ -1,15 +1,14 @@
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { MenubarApi, MenubarSchema } from '@xihan-ui/headless'
+import type { MenubarApi, MenubarSchema, MenuTreeNode } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectMenubar, menubarMachine } from '@xihan-ui/headless'
+import { connectMenubar, createMenuTreeNode, menubarMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
-import { createMenuHoverBranches, registerMenuHoverOwner } from '../menu/hover-branches'
 
 /** 按 value 登记角色节点，浮层三件套据此取到当前展开那一项。 */
 export type MenubarPartRegistry = (value: string, el: HTMLElement | null) => void
@@ -21,6 +20,8 @@ export interface MenubarContext {
   registerTrigger: MenubarPartRegistry
   registerPositioner: MenubarPartRegistry
   registerContent: MenubarPartRegistry
+  /** 子菜单经 Portal 分离后的逻辑父节点。 */
+  tree: MenuTreeNode
   /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
 }
@@ -32,7 +33,6 @@ export function useMenubar(
 ): MenubarContext {
   const xhConfig = useXhConfig()
   const rootRef = ref<HTMLElement | null>(null)
-  const hoverBranches = createMenuHoverBranches()
   // 普通 Map 而非响应式，这三份表只在事件与效应里被机器读
   const triggers = new Map<string, HTMLElement>()
   const positioners = new Map<string, HTMLElement>()
@@ -40,8 +40,22 @@ export function useMenubar(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(menubarMachine, () => ({ ...props, onValueChange, onSelect }), scope)
-  registerMenuHoverOwner(service, hoverBranches)
+  let service: Service<MenubarSchema> | null = null
+  const tree = createMenuTreeNode({
+    getPositioner: () => {
+      const value = service?.context.get('value') ?? null
+      return value == null ? null : positioners.get(value) ?? null
+    },
+    isOpen: () => service?.state.get() === 'open',
+    close: () => service?.send({ type: 'CLOSE' }),
+    isRoot: () => true,
+    onRootSelect: (details) => {
+      const menu = service?.context.get('value') ?? null
+      if (menu != null)
+        onSelect?.({ menu, value: details.value })
+    },
+  })
+  service = useMachine(menubarMachine, () => ({ ...props, onValueChange, onSelect }), scope)
 
   const put = (table: Map<string, HTMLElement>): MenubarPartRegistry => (value, el) => {
     if (el)
@@ -92,6 +106,7 @@ export function useMenubar(
     registerTrigger: put(triggers),
     registerPositioner: put(positioners),
     registerContent: put(contents),
+    tree,
     portalTarget,
   }
 }

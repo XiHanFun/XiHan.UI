@@ -1,4 +1,4 @@
-import type { ContextMenuGroupProps, ContextMenuItemProps, ContextMenuSelectDetails } from '@xihan-ui/headless'
+import type { ContextMenuGroupProps, ContextMenuItemProps } from '@xihan-ui/headless'
 import type { ContextMenuContext } from './use-context-menu'
 import { createContext, useContext } from 'react'
 
@@ -35,22 +35,6 @@ export function useContextMenuGroupContext(): ContextMenuGroupProps {
   if (!group)
     throw new Error('XhContextMenu 的分组标题要放在 XhContextMenuGroup 里')
   return group
-}
-
-/** 选中链：子菜单任意层级的选中都汇到根——先发根的 select，再关根，各级随父关闭级联收起。 */
-export interface ContextMenuChain {
-  notifySelect: (details: ContextMenuSelectDetails) => void
-}
-
-const ChainCtx = createContext<ContextMenuChain | undefined>(undefined)
-
-export const ContextMenuChainProvider = ChainCtx
-
-export function useContextMenuChain(): ContextMenuChain {
-  const chain = useContext(ChainCtx)
-  if (!chain)
-    throw new Error('XhContextMenuSub 要放在 XhContextMenuRoot 里')
-  return chain
 }
 
 /** 子菜单触发条目要同时够到父右键菜单与本子菜单，这里存父层句柄与它在父层里的身份。 */

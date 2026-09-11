@@ -235,8 +235,8 @@ export {
 export type { CommandRootSlotProps } from './components/command/command'
 export { useCommand } from './components/command/use-command'
 export type { CommandContext } from './components/command/use-command'
-export { provideContextMenuChain, provideContextMenuSub, useContextMenuChain, useContextMenuSubContext } from './components/context-menu/context'
-export type { ContextMenuChain, ContextMenuSubHandle } from './components/context-menu/context'
+export { provideContextMenuSub, useContextMenuSubContext } from './components/context-menu/context'
+export type { ContextMenuSubHandle } from './components/context-menu/context'
 export {
   XhContextMenuArrow,
   XhContextMenuContent,
@@ -553,8 +553,8 @@ export { XhMentionContent, XhMentionEmpty, XhMentionInput, XhMentionItem, XhMent
 export type { MentionRootSlotProps } from './components/mention/mention'
 export { useMention } from './components/mention/use-mention'
 export type { MentionContext } from './components/mention/use-mention'
-export { provideMenu, provideMenuChain, provideMenuGroup, provideMenuSub, useMenuChain, useMenuContext, useMenuGroupContext, useMenuSubContext } from './components/menu/context'
-export type { MenuChain, MenuGroupContext, MenuSubHandle } from './components/menu/context'
+export { provideMenu, provideMenuGroup, provideMenuSub, useMenuContext, useMenuGroupContext, useMenuSubContext } from './components/menu/context'
+export type { MenuGroupContext, MenuSubHandle } from './components/menu/context'
 export {
   XhMenuArrow,
   XhMenuContent,
@@ -574,8 +574,8 @@ export {
 export type { MenuRootSlotProps, MenuSubSlotProps } from './components/menu/menu'
 export { useMenu } from './components/menu/use-menu'
 export type { MenuContext } from './components/menu/use-menu'
-export { provideMenubarChain, provideMenubarSub, useMenubarChain, useMenubarSubContext } from './components/menubar/context'
-export type { MenubarChain, MenubarSubHandle } from './components/menubar/context'
+export { provideMenubarSub, useMenubarSubContext } from './components/menubar/context'
+export type { MenubarSubHandle } from './components/menubar/context'
 export {
   XhMenubarArrow,
   XhMenubarContent,

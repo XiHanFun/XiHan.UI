@@ -3,7 +3,7 @@ import type { MenubarItemProps, MenubarNode, MenubarSchema, MenubarSelectDetails
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectMenubar, menubarAnatomy, menubarMachine, menubarMeta } from '@xihan-ui/headless'
+import { connectMenubar, createMenuTreeNode, menubarAnatomy, menubarMachine, menubarMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -108,9 +108,23 @@ export class XhMenubarElement extends XhElement {
   private readonly barScope = createScope(this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
-  private readonly submenuChildren = new Map<HTMLElement, MenuSubmenuChild>()
+  /** 子菜单 trigger 的 WC 属性铺设桥；逻辑树由 headless 节点维护。 */
+  private readonly submenuBridges = new Map<HTMLElement, MenuSubmenuChild>()
+
+  private readonly menuTree = createMenuTreeNode({
+    getPositioner: () => this.partFor('positioner', this.openValue()),
+    isOpen: () => this.ctrl.service.state.get() === 'open',
+    close: () => this.ctrl.service.send({ type: 'CLOSE' }),
+    isRoot: () => true,
+    onRootSelect: (details) => {
+      const menu = this.openValue()
+      if (menu != null)
+        this.notifySelect({ menu, value: details.value })
+    },
+  })
 
   private readonly submenuOwner: MenuSubmenuOwner = {
+    tree: this.menuTree,
     registerSubmenu: child => this.registerSubmenu(child),
   }
 
@@ -139,16 +153,24 @@ export class XhMenubarElement extends XhElement {
   }
 
   private registerSubmenu(child: MenuSubmenuChild): MenuSubmenuRegistration {
-    if (this.submenuChildren.has(child.trigger))
+    if (this.submenuBridges.has(child.trigger))
       throw new Error('[xh] 同一 Menubar 的同一子菜单 trigger 只能登记一次')
     // 创建期即验证所属菜单身份，不把结构错误拖到第一次选择。
     this.submenuOwnerValue(child.trigger)
-    this.submenuChildren.set(child.trigger, child)
-    this.wireSubmenuChild(child)
+    const releaseTree = this.menuTree.registerChild(child.tree)
+    this.submenuBridges.set(child.trigger, child)
+    try {
+      this.wireSubmenuChild(child)
+    }
+    catch (error) {
+      this.submenuBridges.delete(child.trigger)
+      releaseTree()
+      throw error
+    }
     this.requestUpdate()
     let active = true
     const assertCurrent = (): void => {
-      if (!active || this.submenuChildren.get(child.trigger) !== child)
+      if (!active || this.submenuBridges.get(child.trigger) !== child)
         throw new Error('[xh] Menubar 子菜单逻辑所有权已经释放')
     }
     return {
@@ -156,18 +178,14 @@ export class XhMenubarElement extends XhElement {
         assertCurrent()
         this.wireSubmenuChild(child)
       },
-      select: (details) => {
-        assertCurrent()
-        this.notifySelect({ menu: this.submenuOwnerValue(child.trigger), value: details.value })
-        this.ctrl.service.send({ type: 'VALUE.SET', value: null })
-      },
       dispose: () => {
         if (!active)
           return
         active = false
-        if (this.submenuChildren.get(child.trigger) !== child)
+        releaseTree()
+        if (this.submenuBridges.get(child.trigger) !== child)
           return
-        this.submenuChildren.delete(child.trigger)
+        this.submenuBridges.delete(child.trigger)
         this.spreader.release(child.trigger)
         this.requestUpdate()
       },
@@ -336,7 +354,7 @@ export class XhMenubarElement extends XhElement {
       for (const description of this.partsIn(el, 'item-description'))
         this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
     }
-    for (const child of this.submenuChildren.values())
+    for (const child of this.submenuBridges.values())
       this.wireSubmenuChild(child)
 
     // 箭头跟着它所在那张菜单的 positioner 走，身份取 positioner 自报的 value

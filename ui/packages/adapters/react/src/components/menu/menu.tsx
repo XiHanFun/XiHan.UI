@@ -3,7 +3,6 @@ import type { MenuApi, MenuGroupProps, MenuItemProps, MenuNode, MenuNodeMeta, Me
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
-import type { MenuChain } from './context'
 import { mergeProps } from '@xihan-ui/core'
 import { Fragment, useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
@@ -15,19 +14,16 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import {
-  MenuChainProvider,
   MenuGroupProvider,
   MenuItemProvider,
   MenuProvider,
   MenuSubProvider,
-  useMenuChain,
   useMenuContext,
   useMenuGroupContext,
   useMenuItemContext,
   useMenuSubContext,
 } from './context'
-import { menuHoverParentOf } from './hover-branches'
-import { useMenu, useMenuWithHoverParent } from './use-menu'
+import { useMenu, useMenuWithParent } from './use-menu'
 
 type MenuProps = MenuSchema['props']
 
@@ -72,28 +68,13 @@ export function XhMenuRoot({
 }: XhMenuRootProps): ReactNode {
   const ctx = useMenu(withXhConfig('menu', props) as MenuProps)
 
-  // 任意层级子菜单的选中都汇到根：先发根的 select 再关根，各级随父关闭级联收起。
-  // 取值器每帧换、链只建一次：拿 ref 转一道，别让它成为重建的理由
-  const latest = useRef({ onSelect: props.onSelect, api: ctx.api })
-  latest.current = { onSelect: props.onSelect, api: ctx.api }
-  const chain = useMemo<MenuChain>(() => ({
-    notifySelect: (details) => {
-      latest.current.onSelect?.(details)
-      latest.current.api.setOpen(false)
-    },
-  }), [])
-
   const body = children != null
     ? renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })
     : props.collection
       ? <DefaultTree collection={ctx.api.collection} trigger={trigger} triggerAsChild={triggerAsChild} renderItem={renderItem} />
       : null
 
-  return (
-    <MenuProvider value={ctx}>
-      <MenuChainProvider value={chain}>{body}</MenuChainProvider>
-    </MenuProvider>
-  )
+  return <MenuProvider value={ctx}>{body}</MenuProvider>
 }
 
 XhMenuRoot.xhEvents = ['open-change', 'select'] as const
@@ -300,17 +281,14 @@ export interface XhMenuSubProps {
  */
 export function XhMenuSub({ value, disabled, children, ...props }: XhMenuSubProps): ReactNode {
   const parent = useMenuContext()
-  const chain = useMenuChain()
-  const ctx = useMenuWithHoverParent({
+  const ctx = useMenuWithParent({
     ...props,
     disabled,
     submenu: true,
     dir: props.dir ?? parent.service.prop('dir'),
     tone: props.tone ?? parent.service.prop('tone'),
     size: props.size ?? parent.service.prop('size'),
-    // 子层的选中汇到根：根发 select 并关根，各级随父关闭级联收起
-    onSelect: details => chain.notifySelect(details),
-  } as MenuProps, menuHoverParentOf(parent.service))
+  } as MenuProps, parent.tree)
 
   const handle = useMemo(() => ({ parent, value, disabled }), [parent, value, disabled])
 
@@ -318,13 +296,6 @@ export function XhMenuSub({ value, disabled, children, ...props }: XhMenuSubProp
   const parentOpen = parent.api.open
   const setOpenRef = useRef(ctx.api.setOpen)
   setOpenRef.current = ctx.api.setOpen
-  // 后代已经先完成自己的收起；这一层随后收起再上报祖先，保证共享层栈按叶到根释放。
-  const descendantChain = useMemo<MenuChain>(() => ({
-    notifySelect: (details) => {
-      setOpenRef.current(false)
-      chain.notifySelect(details)
-    },
-  }), [chain])
   useEffect(() => {
     if (!parentOpen)
       setOpenRef.current(false)
@@ -332,11 +303,9 @@ export function XhMenuSub({ value, disabled, children, ...props }: XhMenuSubProp
 
   return (
     <MenuProvider value={ctx}>
-      <MenuChainProvider value={descendantChain}>
-        <MenuSubProvider value={handle}>
-          {renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })}
-        </MenuSubProvider>
-      </MenuChainProvider>
+      <MenuSubProvider value={handle}>
+        {renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })}
+      </MenuSubProvider>
     </MenuProvider>
   )
 }

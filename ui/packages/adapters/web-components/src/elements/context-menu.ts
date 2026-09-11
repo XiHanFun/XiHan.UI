@@ -3,7 +3,7 @@ import type { ContextMenuItemProps, ContextMenuNode, ContextMenuOpenChangeDetail
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectContextMenu, contextMenuAnatomy, contextMenuMachine, contextMenuMeta } from '@xihan-ui/headless'
+import { connectContextMenu, contextMenuAnatomy, contextMenuMachine, contextMenuMeta, createMenuTreeNode } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -98,9 +98,19 @@ export class XhContextMenuElement extends XhElement {
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
-  private readonly submenuChildren = new Map<HTMLElement, MenuSubmenuChild>()
+  /** 子菜单 trigger 的 WC 属性铺设桥；逻辑树由 headless 节点维护。 */
+  private readonly submenuBridges = new Map<HTMLElement, MenuSubmenuChild>()
+
+  private readonly menuTree = createMenuTreeNode({
+    getPositioner: () => this.getPart('positioner'),
+    isOpen: () => this.ctrl.service.state.get() === 'open',
+    close: () => this.ctrl.service.send({ type: 'CLOSE' }),
+    isRoot: () => true,
+    onRootSelect: details => this.notifySelect(details),
+  })
 
   private readonly submenuOwner: MenuSubmenuOwner = {
+    tree: this.menuTree,
     registerSubmenu: child => this.registerSubmenu(child),
   }
 
@@ -121,14 +131,22 @@ export class XhContextMenuElement extends XhElement {
   }
 
   private registerSubmenu(child: MenuSubmenuChild): MenuSubmenuRegistration {
-    if (this.submenuChildren.has(child.trigger))
+    if (this.submenuBridges.has(child.trigger))
       throw new Error('[xh] 同一 ContextMenu 的同一子菜单 trigger 只能登记一次')
-    this.submenuChildren.set(child.trigger, child)
-    this.wireSubmenuChild(child)
+    const releaseTree = this.menuTree.registerChild(child.tree)
+    this.submenuBridges.set(child.trigger, child)
+    try {
+      this.wireSubmenuChild(child)
+    }
+    catch (error) {
+      this.submenuBridges.delete(child.trigger)
+      releaseTree()
+      throw error
+    }
     this.requestUpdate()
     let active = true
     const assertCurrent = (): void => {
-      if (!active || this.submenuChildren.get(child.trigger) !== child)
+      if (!active || this.submenuBridges.get(child.trigger) !== child)
         throw new Error('[xh] ContextMenu 子菜单逻辑所有权已经释放')
     }
     return {
@@ -136,18 +154,14 @@ export class XhContextMenuElement extends XhElement {
         assertCurrent()
         this.wireSubmenuChild(child)
       },
-      select: (details) => {
-        assertCurrent()
-        this.notifySelect(details)
-        this.ctrl.service.send({ type: 'CLOSE' })
-      },
       dispose: () => {
         if (!active)
           return
         active = false
-        if (this.submenuChildren.get(child.trigger) !== child)
+        releaseTree()
+        if (this.submenuBridges.get(child.trigger) !== child)
           return
-        this.submenuChildren.delete(child.trigger)
+        this.submenuBridges.delete(child.trigger)
         this.spreader.release(child.trigger)
         this.requestUpdate()
       },
@@ -301,7 +315,7 @@ export class XhContextMenuElement extends XhElement {
       for (const description of this.partsIn(el, 'item-description'))
         this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
     }
-    for (const child of this.submenuChildren.values())
+    for (const child of this.submenuBridges.values())
       this.wireSubmenuChild(child)
 
     // 分隔线也是多实例 part，但不带身份、不入导航，属性对每个都一样
