@@ -139,6 +139,8 @@ for (const file of files) {
     if (!scrolls)
       continue
     for (const selector of rule.selectors) {
+      if (/::(?:before|after)\b/.test(selector))
+        continue
       const part = lastPart(selector)
       if (part == null)
         continue
@@ -150,6 +152,9 @@ for (const file of files) {
   // 二、面板上的高度声明：基础块与带状态的块都算，同一属性后写的覆盖先写的
   for (const rule of rules) {
     for (const selector of rule.selectors) {
+      // 顶边高光等伪元素有自己的发丝高度，不是宿主滚动面板的高度。
+      if (/::(?:before|after)\b/.test(selector))
+        continue
       const part = lastPart(selector)
       if (part == null || !panels.has(part))
         continue
