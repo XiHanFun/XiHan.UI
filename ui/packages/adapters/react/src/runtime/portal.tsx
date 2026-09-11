@@ -36,7 +36,7 @@ export function usePortalTarget(container: PortalContainer, deferUntilMounted = 
 
 export interface XhPortalProps {
   container?: PortalContainer
-  /** 已有的逻辑来源节点；给了就不生成来源标记，适合 Toolbar/ButtonGroup 内的锚定浮层。 */
+  /** 已有的逻辑来源节点；给了就不生成来源标记。祖先 ref 会等当前提交附着完成后再建桥。 */
   source?: { readonly current: Element | null }
   /**
    * 首帧就地渲染、等挂载后的效应再搬，用来与服务端标记对齐。缺省为假。
@@ -64,6 +64,9 @@ function PortalWithVisualBridge({ target, source, children }: {
 }): ReactNode {
   const sourceRef = useRef<HTMLTemplateElement | null>(null)
   const shellRef = useRef<HTMLDivElement | null>(null)
+  // 祖先 host ref 在子组件的首轮 layout effect 之后才附着。显式 source 只让这一轮提交完成一次；
+  // 下一次同步提交仍为空就按真实缺失报错，不改用 marker/body，也不带着未桥接的壳继续。
+  const [sourceCommitProbe, setSourceCommitProbe] = useState(0)
   const bridgeRef = useRef<{
     source: Element
     shell: HTMLElement
@@ -73,8 +76,17 @@ function PortalWithVisualBridge({ target, source, children }: {
   useIsomorphicLayoutEffect(() => {
     const sourceNode = target ? (source?.current ?? sourceRef.current) : null
     const shell = shellRef.current
-    if (target && (!sourceNode || !shell))
+    if (target && !shell)
       throw new Error('[xh] Portal 视觉环境的来源标记或实例壳未挂载')
+    if (target && !sourceNode) {
+      if (source && sourceCommitProbe === 0) {
+        setSourceCommitProbe(1)
+        return
+      }
+      throw new Error('[xh] Portal 视觉环境的来源标记或实例壳未挂载')
+    }
+    if (sourceCommitProbe !== 0)
+      setSourceCommitProbe(0)
     const current = bridgeRef.current
     if (sourceNode && shell && current?.source === sourceNode && current.shell === shell)
       return

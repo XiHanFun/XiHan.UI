@@ -14,6 +14,8 @@ import { useOverlayExit } from '../../runtime/use-overlay-exit'
 export interface PaginationContext {
   api: PaginationApi
   service: Service<PaginationSchema>
+  /** 稳定的视觉来源：省略位尚未出现时，浮层壳仍从真实 Pagination 根继承局部轴。 */
+  rootRef: RefObject<HTMLElement | null>
   /** 摊开的那个省略位，定位锚点。 */
   ellipsisRef: RefObject<HTMLElement | null>
   /** 被定位的浮层。 */
@@ -36,6 +38,7 @@ export function usePagination(props: PaginationSchema['props']): PaginationConte
   const idGenerator = useReactIdGenerator()
   const scope = useReactScope()
   const xhConfig = useXhConfig()
+  const rootRef = useRef<HTMLElement | null>(null)
   const ellipsisRef = useRef<HTMLElement | null>(null)
   const positionerRef = useRef<HTMLElement | null>(null)
   const contentRef = useRef<HTMLElement | null>(null)
@@ -119,6 +122,7 @@ export function usePagination(props: PaginationSchema['props']): PaginationConte
   return {
     api,
     service,
+    rootRef,
     ellipsisRef,
     positionerRef,
     contentRef,

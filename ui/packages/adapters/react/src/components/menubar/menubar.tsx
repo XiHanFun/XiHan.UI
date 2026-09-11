@@ -1,6 +1,6 @@
 import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
 import type { MenuApi, MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema, MenubarTranslations, MenuSchema } from '@xihan-ui/headless'
-import type { ComponentPropsWithRef, ReactNode } from 'react'
+import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import type { MenubarChain } from './context'
@@ -191,9 +191,15 @@ export function XhMenubarPositioner({ value, container, children, ...rest }: XhM
   const ctx = useMenubarContext()
   const menu = useMemo<MenubarContentProps>(() => ({ value }), [value])
   const setEl = useMenubarPart(ctx.registerPositioner, value)
+  const getTrigger = ctx.getTrigger
+  const source = useMemo<RefObject<HTMLElement | null>>(() => ({
+    get current() {
+      return getTrigger(value)
+    },
+  }), [getTrigger, value])
   return (
     <MenubarMenuProvider value={menu}>
-      <XhPortal container={container ?? ctx.portalContainer} source={ctx.rootRef}>
+      <XhPortal container={container ?? ctx.portalContainer} source={source}>
         <div
           {...mergeReactProps(
             ctx.api.getPositionerProps(menu) as Record<string, unknown>,

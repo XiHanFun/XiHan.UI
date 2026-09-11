@@ -2,7 +2,7 @@ import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type { PaginationApi, PaginationEllipsisSide, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -104,9 +104,19 @@ export function XhPaginationRoot({
   }
   const ctx = usePagination(withXhConfig('pagination', machineProps) as PaginationProps)
   const api = ctx.api
+  // 稳定回调避免 Portal 为祖先 source 补一次提交时把已附着的根 ref 先清空再重挂。
+  const setRootRef = useCallback((el: HTMLElement | null) => {
+    ctx.rootRef.current = el
+  }, [ctx.rootRef])
   return (
     <PaginationProvider value={ctx}>
-      <nav {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <nav
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: setRootRef },
+        )}
+      >
         {renderSlot(children, {
           page: api.page,
           pageSize: api.pageSize,
@@ -316,7 +326,7 @@ export function XhPaginationPositioner({ children, container, ...rest }: XhPagin
   // 折叠页码列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current })
   return (
-    <XhPortal container={container ?? ctx.portalContainer} source={ctx.ellipsisRef}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.rootRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,
