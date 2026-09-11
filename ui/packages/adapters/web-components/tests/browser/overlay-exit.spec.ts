@@ -143,6 +143,60 @@ describe.each(['dialog', 'drawer'] as const)('wc %s 的行为资源退出合同'
   })
 })
 
+const IMAGE_VIEWER = `
+  <xh-image-viewer open>
+    <button data-xh-part="trigger">开</button>
+    <div data-xh-part="backdrop"></div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content"><img data-xh-part="image"><button>内部</button></div>
+    </div>
+  </xh-image-viewer>
+`
+
+describe('wc image-viewer 的行为资源退出合同', () => {
+  it('内容和遮罩均完成退出租约前保留模态资源', async () => {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes test-image-viewer-exit { from { opacity: 1 } to { opacity: 0 } }
+      @keyframes test-image-viewer-move { from { translate: 0 0 } to { translate: 0 8px } }
+      [data-scope='image-viewer'][data-part='content'][data-state='closed'] {
+        animation: test-image-viewer-exit 60s linear forwards, test-image-viewer-move 60s linear forwards;
+      }
+      [data-scope='image-viewer'][data-part='backdrop'][data-state='closed'] {
+        animation: test-image-viewer-exit 60s linear forwards;
+      }
+    `
+    document.body.append(style)
+    const outside = document.createElement('button')
+    document.body.append(outside)
+    const element = mount(IMAGE_VIEWER)
+    await settle()
+
+    element.setAttribute('open', 'false')
+    await settle()
+    const content = part('image-viewer', 'content')!
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    expect(outside.inert).toBe(true)
+    expect(document.body.style.overflow).toBe('hidden')
+
+    const finite = content.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
+    expect(finite).toHaveLength(2)
+    finite[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    finite[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    for (const animation of part('image-viewer', 'backdrop')!.getAnimations()) animation.finish()
+    await settle()
+
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+    expect(outside.inert).toBe(false)
+    expect(content.style.display).toBe('none')
+  })
+})
+
 describe('wc dialog 退场', () => {
   it('收起后 content 不立刻被写成 display:none，而是在播退场动画', async () => {
     const el = mount(DIALOG)

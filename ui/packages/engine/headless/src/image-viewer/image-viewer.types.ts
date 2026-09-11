@@ -1,4 +1,5 @@
 import type { Cleanup, Layer, MachineSchema, OverlayBackdropVariant, OverlayCloseReason, PropTypes, RuntimeConfig } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { MultiPointerSession, PinchSnapshot, TrackedPoint } from '@xihan-ui/pointer'
 
 /** 一张待看的图。 */
@@ -45,6 +46,8 @@ export interface ImageViewerRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 视觉退场的租约真源；逻辑关闭后由它决定何时真正归还模态资源。 */
+  presence: PresenceHandle | null
   getContentEl: () => HTMLElement | null
   /** 平移中的指针会话：起点与起始平移量；不在拖拽中为 null。 */
   /** 单指平移的基准：按下那一刻的指针位置与当时的偏移。 */

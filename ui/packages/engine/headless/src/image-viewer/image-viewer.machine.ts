@@ -1,9 +1,9 @@
 import type { PinchSnapshot, TrackedPoint } from '@xihan-ui/pointer'
 import type { ImageViewerImageStatus, ImageViewerItem, ImageViewerRefs, ImageViewerSchema, ImageViewerTransform } from './image-viewer.types'
-import { acquireScrollLock, createDismissLayer, createFocusScope, hideOutside, setup } from '@xihan-ui/core'
+import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { createMultiPointerSession, pinchChange, pinchSnapshot, resolveSessionDoc } from '@xihan-ui/pointer'
 import { closeReasonOf } from '../shared/close-reason'
-import { setupLayerTransaction } from '../shared/overlay-shell'
+import { createModalLayerResources, setupLayerTransaction } from '../shared/overlay-shell'
 
 const { createMachine } = setup<ImageViewerSchema>()
 
@@ -71,12 +71,15 @@ export const imageViewerMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     getContentEl: () => null,
     panSession: null,
     pinchSession: null,
     gesture: null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // 退出期间模态资源不能跟着逻辑状态立即拆：Presence 的所有视觉租约清空后才释放。
+  effects: ['trackOverlay'],
   watch: ({ track, prop, context, action }) => {
     // 受控时用户事件只发意图回调；宿主写回 open 后由这里派发 CONTROLLED.* 无条件回写
     track([() => prop('open')], () => action(['syncOpen']))
@@ -96,7 +99,7 @@ export const imageViewerMachine = createMachine({
     open: {
       // 每次展开都从基准态看起
       entry: ['resetTransform', 'resetImageStatus'],
-      effects: ['trackOverlay', 'trackPointers'],
+      effects: ['trackPointers'],
       exit: ['pointersEnd'],
       on: {
         'CLOSE': [
@@ -279,26 +282,26 @@ export const imageViewerMachine = createMachine({
         }
       },
 
-      trackOverlay: ({ refs, prop, scope, send, flush }) => {
+      trackOverlay: ({ refs, prop, scope, send, flush, state, track }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
         // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
         if (!config || !registerLayer)
           return undefined
 
-        return setupLayerTransaction(registerLayer, (layer, defer, run) => {
+        let reactivateFocus: (() => void) | undefined
+        const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer, run) => {
           const getContentEl = refs.get('getContentEl')
-
           const dismiss = createDismissLayer({
             config,
             layer,
-            // 两个开关都现读 prop，展开中途改也立刻生效
+            // 逻辑关闭后的退场帧仍在层栈里，不能再次消解或重复发 close 意图。
             onEscapeKeyDown: (e) => {
-              if (!(prop('closeOnEscape') ?? true))
+              if (state.get() !== 'open' || !(prop('closeOnEscape') ?? true))
                 e.preventDefault()
             },
             onInteractOutside: (e) => {
-              if (!(prop('closeOnInteractOutside') ?? true))
+              if (state.get() !== 'open' || !(prop('closeOnInteractOutside') ?? true))
                 e.preventDefault()
             },
             onDismiss: reason =>
@@ -310,42 +313,85 @@ export const imageViewerMachine = createMachine({
             config,
             layer,
             container: getContentEl,
-            trapped: () => true,
+            trapped: () => state.get() === 'open',
             loop: true,
             restoreFocus: () => prop('restoreFocus') ?? true,
-            // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-            // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上。
-            // 按 connect 给 trigger 落的 id 现取，程序化展开（没有 trigger）时回 null，归还照旧走快照
+            // 指针打开时浏览器未必会把焦点留在 trigger；优先归还给语义触发器。
             restoreTarget: () => scope.getById<HTMLElement>(scope.partId('image-viewer', 'trigger')),
           })
-          defer(() => focus.dispose())
-
-          const lock = acquireScrollLock({ config })
-          defer(() => lock.dispose())
-
-          const getTargets = (): Element[] => [
-            getContentEl(),
-            ...config.layerRegistry.elementsAbove(layer),
-          ].filter(Boolean) as Element[]
-
-          // 背景失活推迟到宿主提交那一帧之后：进入 open 时 content 尚未渲染，
-          // 此刻 targets 为空会导致背景永不 inert
-          let hidden: (() => void) | undefined
-          let alive = true
-          // flush 可能排队后同步抛错，先登记存活闸门才能让事务回滚挡住迟到回调
+          reactivateFocus = focus.reactivate
           defer(() => {
-            alive = false
-            hidden?.()
+            if (reactivateFocus === focus.reactivate)
+              reactivateFocus = undefined
+            focus.dispose()
           })
-          flush(() => {
-            if (!alive)
-              return
-            run(() => {
-              if (getTargets().length)
-                hidden = hideOutside(getTargets, config)
-            })
+
+          const modalResources = createModalLayerResources({
+            config,
+            layer,
+            enabled: () => true,
+            targets: () => [
+              getContentEl(),
+              ...config.layerRegistry.elementsAbove(layer),
+            ].filter(Boolean) as Element[],
+            flush,
+            run,
           })
+          defer(modalResources.dispose)
+          modalResources.sync()
         }, { registry: config.layerRegistry, flush })
+
+        const presence = refs.get('presence')
+        let disposed = false
+        let release: (() => void) | undefined
+        let lastOpen = false
+
+        const finish = (): void => {
+          if (disposed || state.get() === 'open' || !release)
+            return
+          const cleanup = release
+          release = undefined
+          cleanup()
+        }
+        const offExit = presence?.onExitComplete(finish)
+        const sync = (): void => {
+          if (disposed)
+            return
+          const open = state.get() === 'open'
+          const reopening = open && !lastOpen && release !== undefined
+          lastOpen = open
+          if (open) {
+            // 重开沿用原 layer/focus scope；Presence 会撤销旧视觉租约。
+            release ??= acquire()
+            if (reopening) {
+              const activate = reactivateFocus
+              flush(() => scope.getWin().requestAnimationFrame(() => {
+                if (!disposed && state.get() === 'open' && release && reactivateFocus === activate)
+                  activate?.()
+              }))
+            }
+          }
+          else if (!presence || !presence.rendered) {
+            finish()
+          }
+        }
+        try {
+          track([() => state.get()], sync)
+          sync()
+        }
+        catch (error) {
+          disposed = true
+          offExit?.()
+          release?.()
+          throw error
+        }
+        return () => {
+          disposed = true
+          offExit?.()
+          const cleanup = release
+          release = undefined
+          cleanup?.()
+        }
       },
     },
   },
