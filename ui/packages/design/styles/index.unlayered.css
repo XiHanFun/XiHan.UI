@@ -14748,6 +14748,22 @@
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
+@media (forced-colors: active) {
+  /* 蒙版底色会被系统改成 Canvas 而消失；明确用系统前景保住箭头、对号与半选横线。 */
+  [data-scope='cascader'][data-part='item'][data-branch]::after,
+  [data-scope='cascader'][data-part='item-indicator']:empty::before,
+  [data-scope='cascader'][data-part='search-item']::after {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='cascader'][data-part='item'][data-branch][data-disabled]::after,
+  [data-scope='cascader'][data-part='item-indicator'][data-disabled]:empty::before,
+  [data-scope='cascader'][data-part='search-item'][data-disabled]::after {
+    background-color: GrayText;
+  }
+}
+
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
 /* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
