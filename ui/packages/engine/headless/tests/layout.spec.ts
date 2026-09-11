@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 // 覆盖档要真 DOM：断点跟随读的是文档元素上的断点令牌，Escape 挂在 document 上。
-import type { LayerRegistry, RuntimeConfig, Scope } from '@xihan-ui/core'
+import type { Disposable, LayerRegistry, RuntimeConfig, Scope } from '@xihan-ui/core'
 import type { LayoutSchema, LayoutSiderCollapsedChangeDetails } from '../src/layout'
-import { createCounterIdGenerator, createLayerRegistry, createRuntimeConfig, createScope, createService, getLayerRegistry, normalizeProps } from '@xihan-ui/core'
+import { createCounterIdGenerator, createDismissLayer, createLayerRegistry, createRuntimeConfig, createScope, createService, getLayerRegistry, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
 import { connectLayout, layoutMachine } from '../src/layout'
@@ -282,6 +282,170 @@ describe('layout 覆盖档的消解', () => {
     escape()
     escape()
     expect(seen).toEqual([{ collapsed: true }])
+  })
+
+  it('同一 lane 的两个覆盖侧栏按最近展开顺序一键收一个', () => {
+    const config = makeRuntimeConfig(createLayerRegistry(document))
+    const first = makeLayout({ siderPresentation: 'sheet' }, config)
+    const second = makeLayout({ siderPresentation: 'sheet' }, config)
+    cleanups.push(first.stop, second.stop)
+
+    escape()
+    expect(first.state()).toBe('expanded')
+    expect(second.state()).toBe('collapsed')
+
+    escape()
+    expect(first.state()).toBe('collapsed')
+  })
+
+  it('最近的受控覆盖侧栏未写回时持续占位，释放后下一键才轮到下层', () => {
+    const config = makeRuntimeConfig(createLayerRegistry(document))
+    const lowerSeen: LayoutSiderCollapsedChangeDetails[] = []
+    const topSeen: LayoutSiderCollapsedChangeDetails[] = []
+    const lower = makeLayout({
+      siderPresentation: 'sheet',
+      onSiderCollapsedChange: details => lowerSeen.push(details),
+    }, config)
+    const top = makeLayout({
+      siderPresentation: 'sheet',
+      siderCollapsed: false,
+      onSiderCollapsedChange: details => topSeen.push(details),
+    }, config)
+    cleanups.push(lower.stop, top.stop)
+
+    escape()
+    escape()
+    expect(top.state()).toBe('expanded')
+    expect(topSeen).toEqual([{ collapsed: true }, { collapsed: true }])
+    expect(lower.state()).toBe('expanded')
+    expect(lowerSeen).toEqual([])
+
+    top.setProps({ siderCollapsed: true })
+    expect(top.state()).toBe('collapsed')
+    escape()
+    expect(lower.state()).toBe('collapsed')
+    expect(lowerSeen).toEqual([{ collapsed: true }])
+  })
+
+  it('最新 inline fallback 被动态跳过，较早的覆盖侧栏仍可收起', () => {
+    const config = makeRuntimeConfig(createLayerRegistry(document))
+    const sheet = makeLayout({ siderPresentation: 'sheet' }, config)
+    const inline = makeLayout({}, config)
+    cleanups.push(sheet.stop, inline.stop)
+
+    escape()
+
+    expect(inline.state()).toBe('expanded')
+    expect(sheet.state()).toBe('collapsed')
+  })
+
+  it('fallback 每次读取当前 siderPresentation，运行期切到覆盖档后立即生效', () => {
+    const l = makeLayout()
+    cleanups.push(l.stop)
+
+    escape()
+    expect(l.state()).toBe('expanded')
+
+    l.setProps({ siderPresentation: 'sheet' })
+    escape()
+    expect(l.state()).toBe('collapsed')
+  })
+
+  it('expanded 覆盖侧栏运行期切回 inline 后，fallback 立即停用', () => {
+    const l = makeLayout({ siderPresentation: 'sheet' })
+    cleanups.push(l.stop)
+
+    l.setProps({ siderPresentation: 'inline' })
+    escape()
+
+    expect(l.state()).toBe('expanded')
+  })
+
+  it('受控覆盖侧栏按既有媒体查询结果动态启停 fallback，未写回时持续占位', () => {
+    const viewport = stubViewport(1024)
+    cleanups.push(viewport.restore)
+    cleanups.push(stubBreakpointToken('md', '768px'))
+    const breakpoints: boolean[] = []
+    const collapsed: LayoutSiderCollapsedChangeDetails[] = []
+    const l = makeLayout({
+      siderPresentation: 'sheet',
+      siderBreakpoint: 'md',
+      siderCollapsed: false,
+      onSiderBreakpoint: details => breakpoints.push(details.matched),
+      onSiderCollapsedChange: details => collapsed.push(details),
+    })
+    cleanups.push(l.stop)
+
+    escape()
+    expect(l.state()).toBe('expanded')
+    expect(collapsed).toEqual([])
+
+    viewport.resize(375)
+    expect(l.state()).toBe('expanded')
+    expect(collapsed).toEqual([{ collapsed: true }])
+    escape()
+    expect(l.state()).toBe('expanded')
+    expect(collapsed).toEqual([{ collapsed: true }, { collapsed: true }])
+
+    viewport.resize(1024)
+    escape()
+    expect(l.state()).toBe('expanded')
+    expect(collapsed).toEqual([{ collapsed: true }, { collapsed: true }])
+    expect(breakpoints).toEqual([true, false, true])
+  })
+
+  it('同一 Escape 会分别收起不同 registry lane 的一个覆盖侧栏', () => {
+    const first = makeLayout(
+      { siderPresentation: 'sheet' },
+      makeRuntimeConfig(createLayerRegistry(document)),
+    )
+    const second = makeLayout(
+      { siderPresentation: 'sheet' },
+      makeRuntimeConfig(createLayerRegistry(document)),
+    )
+    cleanups.push(first.stop, second.stop)
+
+    escape()
+
+    expect(first.state()).toBe('collapsed')
+    expect(second.state()).toBe('collapsed')
+  })
+
+  it('上层 Layer 在 capture 同步退栈也消费本键，下一键才收覆盖侧栏', async () => {
+    const registry = createLayerRegistry(document)
+    const config = makeRuntimeConfig(registry)
+    const l = makeLayout({ siderPresentation: 'sheet' }, config)
+    cleanups.push(l.stop)
+    const node = document.createElement('div')
+    document.body.append(node)
+    const registration = registry.register({
+      kind: 'popover',
+      node: () => node,
+      branches: () => [],
+      isModal: () => false,
+      setModal: () => {},
+      surfaces: () => [],
+    })
+    const dismissRef: { value: Disposable | null } = { value: null }
+    const dismiss = createDismissLayer({
+      config,
+      layer: registration.layer,
+      onDismiss: () => {
+        dismissRef.value!.dispose()
+        registration.dispose()
+      },
+    })
+    dismissRef.value = dismiss
+    cleanups.push(() => node.remove(), registration.dispose, dismiss.dispose)
+    await Promise.resolve()
+    await Promise.resolve()
+
+    escape()
+    expect(registry.list()).toEqual([])
+    expect(l.state()).toBe('expanded')
+
+    escape()
+    expect(l.state()).toBe('collapsed')
   })
 })
 

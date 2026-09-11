@@ -1,6 +1,6 @@
 import type { Cleanup, Disposable, Layer, LayerRegistry } from '../../kernel'
 import type { DismissPathHit, DismissRouteEntry, DismissRouteReadiness } from './route'
-import type { DismissLayerOptions, DismissReason } from './types'
+import type { DismissLayerOptions, DismissReason, EscapeFallbackOptions } from './types'
 import {
   DATA_INERT_EXEMPT,
   EV_ESCAPE_KEY_DOWN,
@@ -21,6 +21,7 @@ type OutsideKind = 'pointer' | 'focus'
 interface Lane {
   readonly registry: LayerRegistry
   readonly participants: Map<Layer, Participant>
+  fallbacks: readonly EscapeFallbackToken[]
 }
 
 interface Participant {
@@ -38,6 +39,30 @@ interface Participant {
 interface LaneCapture {
   readonly lane: Lane
   readonly snapshot: readonly Layer[]
+}
+
+interface EscapeFallbackToken {
+  readonly hub: DismissHub
+  readonly lane: Lane
+  readonly isEnabled: () => boolean
+  readonly onEscape: (event: KeyboardEvent) => void
+  active: boolean
+}
+
+interface EscapeLaneCapture extends LaneCapture {
+  readonly fallbackSnapshot: readonly EscapeFallbackToken[]
+}
+
+interface EscapeFallbackState {
+  readonly token: EscapeFallbackToken
+  readonly enabled: boolean
+}
+
+interface EscapeLanePlan extends EscapeLaneCapture {
+  /** capture 时存在任意 Layer；该 lane 的本次 Escape 已被上层消费。 */
+  readonly consumed: boolean
+  readonly fallbackStates: readonly EscapeFallbackState[]
+  readonly fallback: EscapeFallbackToken | null
 }
 
 interface PlannedCandidate {
@@ -147,18 +172,23 @@ function sameParticipant(lane: Lane, participant: Participant): boolean {
 class DismissHub {
   readonly lanes = new Map<LayerRegistry, Lane>()
   readonly listenerCleanups: Cleanup[] = []
-  participantCount = 0
+  readonly escapePlans = new WeakMap<KeyboardEvent, readonly EscapeLanePlan[]>()
+  leaseCount = 0
   dispatching = false
   teardownPending = false
   installed = false
 
-  readonly onKeydown = (event: KeyboardEvent): void => {
+  readonly onKeydownCapture = (event: KeyboardEvent): void => {
     if (event.key === 'Escape')
-      this.routeEvent('escape', event)
+      this.routeEscapeCapture(event)
   }
 
   readonly onPointerDown = (event: PointerEvent): void => this.routeEvent('pointer', event)
   readonly onFocusIn = (event: FocusEvent): void => this.routeEvent('focus', event)
+  readonly onKeydownBubble = (event: KeyboardEvent): void => {
+    if (event.key === 'Escape')
+      this.routeEscapeBubble(event)
+  }
 
   constructor(
     readonly doc: Document,
@@ -169,12 +199,14 @@ class DismissHub {
 
   private installListeners(): void {
     try {
-      this.listenerCleanups.push(() => this.doc.removeEventListener('keydown', this.onKeydown, true))
-      this.doc.addEventListener('keydown', this.onKeydown, true)
+      this.listenerCleanups.push(() => this.doc.removeEventListener('keydown', this.onKeydownCapture, true))
+      this.doc.addEventListener('keydown', this.onKeydownCapture, true)
       this.listenerCleanups.push(() => this.doc.removeEventListener('pointerdown', this.onPointerDown, true))
       this.doc.addEventListener('pointerdown', this.onPointerDown, true)
       this.listenerCleanups.push(() => this.doc.removeEventListener('focusin', this.onFocusIn, true))
       this.doc.addEventListener('focusin', this.onFocusIn, true)
+      this.listenerCleanups.push(() => this.doc.removeEventListener('keydown', this.onKeydownBubble))
+      this.doc.addEventListener('keydown', this.onKeydownBubble)
       this.installed = true
     }
     catch (setupError) {
@@ -190,12 +222,21 @@ class DismissHub {
     return this.lanes.get(registry)?.participants.has(layer) ?? false
   }
 
-  addParticipant(options: DismissLayerOptions, resolveNode: () => HTMLElement | null): Disposable {
-    let lane = this.lanes.get(options.config.layerRegistry)
+  private getOrCreateLane(registry: LayerRegistry): Lane {
+    let lane = this.lanes.get(registry)
     if (!lane) {
-      lane = { registry: options.config.layerRegistry, participants: new Map() }
-      this.lanes.set(lane.registry, lane)
+      lane = {
+        registry,
+        participants: new Map(),
+        fallbacks: Object.freeze([]),
+      }
+      this.lanes.set(registry, lane)
     }
+    return lane
+  }
+
+  addParticipant(options: DismissLayerOptions, resolveNode: () => HTMLElement | null): Disposable {
+    const lane = this.getOrCreateLane(options.config.layerRegistry)
     if (lane.participants.has(options.layer))
       throw new Error('[xh] 同一 LayerRegistry 的同一 Layer 只能创建一个 DismissableLayer')
 
@@ -211,12 +252,12 @@ class DismissHub {
       justDismissedFrame: null,
     }
     lane.participants.set(participant.layer, participant)
-    this.participantCount += 1
+    this.leaseCount += 1
     this.teardownPending = false
 
     try {
       this.win.queueMicrotask(() => {
-        if (sameParticipant(lane!, participant) && lane!.registry.list().includes(participant.layer))
+        if (sameParticipant(lane, participant) && lane.registry.list().includes(participant.layer))
           participant.armed = true
       })
     }
@@ -232,6 +273,27 @@ class DismissHub {
 
     return {
       dispose: () => this.disposeParticipant(participant),
+    }
+  }
+
+  addFallback(
+    registry: LayerRegistry,
+    isEnabled: () => boolean,
+    onEscape: (event: KeyboardEvent) => void,
+  ): Disposable {
+    const lane = this.getOrCreateLane(registry)
+    const fallback: EscapeFallbackToken = {
+      hub: this,
+      lane,
+      isEnabled,
+      onEscape,
+      active: true,
+    }
+    lane.fallbacks = Object.freeze([...lane.fallbacks, fallback])
+    this.leaseCount += 1
+    this.teardownPending = false
+    return {
+      dispose: () => this.disposeFallback(fallback),
     }
   }
 
@@ -256,10 +318,32 @@ class DismissHub {
     if (lane.participants.get(participant.layer) !== participant)
       return []
     lane.participants.delete(participant.layer)
-    this.participantCount -= 1
-    if (lane.participants.size === 0)
+    return this.releaseLease(lane)
+  }
+
+  private disposeFallback(fallback: EscapeFallbackToken): void {
+    if (!fallback.active)
+      return
+    fallback.active = false
+    const { lane } = fallback
+    const index = lane.fallbacks.indexOf(fallback)
+    if (index < 0)
+      return
+    lane.fallbacks = Object.freeze([
+      ...lane.fallbacks.slice(0, index),
+      ...lane.fallbacks.slice(index + 1),
+    ])
+    throwCollectedErrors(
+      this.releaseLease(lane),
+      '[xh] EscapeFallback 清理出现多个异常',
+    )
+  }
+
+  private releaseLease(lane: Lane): unknown[] {
+    this.leaseCount -= 1
+    if (lane.participants.size === 0 && lane.fallbacks.length === 0 && this.lanes.get(lane.registry) === lane)
       this.lanes.delete(lane.registry)
-    if (this.participantCount !== 0)
+    if (this.leaseCount !== 0)
       return []
     if (this.dispatching) {
       this.teardownPending = true
@@ -284,6 +368,79 @@ class DismissHub {
     const snapshot = lane.registry.list()
     assertFrozenSnapshot(snapshot)
     return Object.freeze({ lane, snapshot })
+  }
+
+  private captureEscapeLane(lane: Lane): EscapeLaneCapture {
+    const fallbackSnapshot = lane.fallbacks
+    if (!Object.isFrozen(fallbackSnapshot))
+      throw new Error('[xh] EscapeFallback lane 必须持有冻结 token 快照')
+    return Object.freeze({ ...this.captureLane(lane), fallbackSnapshot })
+  }
+
+  private escapeCaptureIsCurrent(capture: EscapeLaneCapture): boolean {
+    return this.lanes.get(capture.lane.registry) === capture.lane
+      && capture.lane.registry.list() === capture.snapshot
+      && capture.lane.fallbacks === capture.fallbackSnapshot
+  }
+
+  private planEscapeFallback(capture: EscapeLaneCapture): EscapeLanePlan | null {
+    if (capture.snapshot.length > 0) {
+      return Object.freeze({
+        ...capture,
+        consumed: true,
+        fallbackStates: Object.freeze([]),
+        fallback: null,
+      })
+    }
+    if (!this.escapeCaptureIsCurrent(capture))
+      return null
+
+    const fallbackStates: EscapeFallbackState[] = []
+    let fallback: EscapeFallbackToken | null = null
+    for (let index = capture.fallbackSnapshot.length - 1; index >= 0; index--) {
+      const token = capture.fallbackSnapshot[index]!
+      if (!token.active || token.hub !== this || token.lane !== capture.lane)
+        return null
+      const isEnabled = token.isEnabled
+      const enabled = isEnabled()
+      if (!this.escapeCaptureIsCurrent(capture) || !token.active)
+        return null
+      fallbackStates.push(Object.freeze({ token, enabled }))
+      if (enabled) {
+        fallback = token
+        break
+      }
+    }
+    return Object.freeze({
+      ...capture,
+      consumed: false,
+      fallbackStates: Object.freeze(fallbackStates),
+      fallback,
+    })
+  }
+
+  private executeEscapeFallback(plan: EscapeLanePlan, event: KeyboardEvent): void {
+    if (plan.consumed || plan.fallback === null || !this.escapeCaptureIsCurrent(plan))
+      return
+
+    let fallback: EscapeFallbackToken | null = null
+    for (const state of plan.fallbackStates) {
+      const { token } = state
+      if (!token.active || token.hub !== this || token.lane !== plan.lane)
+        return
+      const isEnabled = token.isEnabled
+      const enabled = isEnabled()
+      if (!this.escapeCaptureIsCurrent(plan) || !token.active || enabled !== state.enabled)
+        return
+      if (enabled) {
+        fallback = token
+        break
+      }
+    }
+    if (fallback !== plan.fallback || !fallback.active)
+      return
+    const onEscape = fallback.onEscape
+    onEscape(event)
   }
 
   private planOutside(
@@ -518,7 +675,8 @@ class DismissHub {
     let primaryError: unknown
     try {
       observing = true
-      stage.candidate.participant.options.onDismiss(reason)
+      const onDismiss = stage.candidate.participant.options.onDismiss
+      onDismiss(reason)
     }
     catch (error) {
       primaryFound = true
@@ -608,24 +766,109 @@ class DismissHub {
     if (!candidate)
       return
     const stage = this.beginStage(plan, candidate, plan.snapshot, 'escape')
-    if (stage && this.voteEscape(stage, event))
-      candidate.participant.options.onDismiss('escape-key')
+    if (stage && this.voteEscape(stage, event)) {
+      const onDismiss = candidate.participant.options.onDismiss
+      onDismiss('escape-key')
+    }
   }
 
-  private routeEvent(kind: 'escape' | OutsideKind, event: KeyboardEvent | PointerEvent | FocusEvent): void {
+  private finishDispatch(errors: unknown[]): void {
+    if (this.leaseCount === 0 && this.teardownPending)
+      errors.push(...this.teardown())
+    this.dispatching = false
+  }
+
+  private routeEscapeCapture(event: KeyboardEvent): void {
+    if (this.dispatching)
+      return
+    this.dispatching = true
+    const errors: unknown[] = []
+    try {
+      const captures: EscapeLaneCapture[] = []
+      for (const lane of Array.from(this.lanes.values())) {
+        try {
+          captures.push(this.captureEscapeLane(lane))
+        }
+        catch (error) {
+          errors.push(error)
+        }
+      }
+
+      const fallbackPlans: EscapeLanePlan[] = []
+      for (const capture of captures) {
+        try {
+          const plan = this.planEscapeFallback(capture)
+          if (plan)
+            fallbackPlans.push(plan)
+        }
+        catch (error) {
+          errors.push(error)
+        }
+      }
+      this.escapePlans.set(event, Object.freeze(fallbackPlans))
+
+      const layerPlans: LanePlan[] = []
+      for (const capture of captures) {
+        try {
+          layerPlans.push(this.planEscape(capture))
+        }
+        catch (error) {
+          errors.push(error)
+        }
+      }
+      for (const plan of layerPlans) {
+        try {
+          this.executeEscape(plan, event)
+        }
+        catch (error) {
+          errors.push(error)
+        }
+      }
+    }
+    finally {
+      this.finishDispatch(errors)
+    }
+    throwCollectedErrors(errors, '[xh] DismissableLayer Hub 多条 lane 处理失败')
+  }
+
+  private routeEscapeBubble(event: KeyboardEvent): void {
+    const plans = this.escapePlans.get(event)
+    if (!plans || this.dispatching)
+      return
+    this.escapePlans.delete(event)
+    if (event.defaultPrevented)
+      return
+
+    this.dispatching = true
+    const errors: unknown[] = []
+    try {
+      for (const plan of plans) {
+        try {
+          this.executeEscapeFallback(plan, event)
+        }
+        catch (error) {
+          errors.push(error)
+        }
+      }
+    }
+    finally {
+      this.finishDispatch(errors)
+    }
+    throwCollectedErrors(errors, '[xh] EscapeFallback Hub 多条 lane 处理失败')
+  }
+
+  private routeEvent(kind: OutsideKind, event: PointerEvent | FocusEvent): void {
     if (this.dispatching)
       return
     this.dispatching = true
     const errors: unknown[] = []
     try {
       let path: readonly EventTarget[] | null = null
-      if (kind !== 'escape') {
-        try {
-          path = Object.freeze([...event.composedPath()])
-        }
-        catch (error) {
-          errors.push(error)
-        }
+      try {
+        path = Object.freeze([...event.composedPath()])
+      }
+      catch (error) {
+        errors.push(error)
       }
 
       const captures: LaneCapture[] = []
@@ -638,26 +881,7 @@ class DismissHub {
         }
       }
 
-      if (kind === 'escape') {
-        const plans: LanePlan[] = []
-        for (const capture of captures) {
-          try {
-            plans.push(this.planEscape(capture))
-          }
-          catch (error) {
-            errors.push(error)
-          }
-        }
-        for (const plan of plans) {
-          try {
-            this.executeEscape(plan, event as KeyboardEvent)
-          }
-          catch (error) {
-            errors.push(error)
-          }
-        }
-      }
-      else if (path) {
+      if (path) {
         let inertExempt = false
         try {
           inertExempt = pathIsInertExempt(path)
@@ -688,9 +912,7 @@ class DismissHub {
       }
     }
     finally {
-      if (this.participantCount === 0 && this.teardownPending)
-        errors.push(...this.teardown())
-      this.dispatching = false
+      this.finishDispatch(errors)
     }
     throwCollectedErrors(errors, '[xh] DismissableLayer Hub 多条 lane 处理失败')
   }
@@ -751,4 +973,23 @@ export function registerDismissLayer(options: DismissLayerOptions): Disposable {
 
   const hub = getOrCreateHub(doc, win)
   return hub.addParticipant(options, resolveNode)
+}
+
+export function registerEscapeFallback(options: EscapeFallbackOptions): Disposable {
+  const { config } = options
+  const isEnabled = options.isEnabled
+  const onEscape = options.onEscape
+  if (typeof isEnabled !== 'function' || typeof onEscape !== 'function')
+    throw new TypeError('[xh] EscapeFallback 的 isEnabled 与 onEscape 必须是函数')
+  const registry = config.layerRegistry
+  const doc = config.scope.getDoc()
+  const win = config.scope.getWin()
+  if (registry.ownerDocument !== doc)
+    throw new Error('[xh] EscapeFallback 的 LayerRegistry 与 Scope 必须属于同一 Document')
+  if (doc.defaultView !== win || win.document !== doc)
+    throw new Error('[xh] EscapeFallback 的 Scope Document 与 Window 不一致')
+  assertFrozenSnapshot(registry.list())
+
+  const hub = getOrCreateHub(doc, win)
+  return hub.addFallback(registry, isEnabled, onEscape)
 }

@@ -1,5 +1,5 @@
 import type { LayoutBreakpoint, LayoutSchema, LayoutSiderPresentation } from './layout.types'
-import { setup } from '@xihan-ui/core'
+import { createEscapeFallback, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<LayoutSchema>()
 
@@ -109,10 +109,8 @@ export const layoutMachine = createMachine({
         return () => query.removeEventListener('change', notify)
       },
       /**
-       * 覆盖档的 Escape：盖在内容之上的那一层按 Escape 收起。
-       * 两道闸门：侧栏得真按覆盖档摆着（占位档下它是骨架的一列，Escape 与它无关），
-       * 且此刻没有浮层在层栈上——对话框、下拉这些叠在骨架之上，Escape 先归它们，
-       * 一次按键不该既关掉浮层又把侧栏一起收走。
+       * 覆盖档的 Escape 后备出口。Hub 在 capture 阶段先让 Layer 消费本次按键，
+       * 只有这条 lane 当时为空且票据一直有效，才在 bubble 阶段收起最近展开的侧栏。
        */
       dismissSiderSheet: ({ prop, context, send, scope, refs }) => {
         const config = refs.get('config')
@@ -121,23 +119,16 @@ export const layoutMachine = createMachine({
         const doc = scope.getDoc()
         if (config.scope.getDoc() !== doc || config.layerRegistry.ownerDocument !== doc)
           throw new Error('[xh] Layout 的 RuntimeConfig、LayerRegistry 与机器 Scope 必须属于同一 Document')
-        const registry = config.layerRegistry
-        const onKeydown = (event: KeyboardEvent): void => {
-          if (event.key !== 'Escape' || event.defaultPrevented)
-            return
-          if (registry.top())
-            return
-          const presentation = resolveSiderPresentation(
+        const fallback = createEscapeFallback({
+          config,
+          isEnabled: () => resolveSiderPresentation(
             prop('siderPresentation'),
             prop('siderBreakpoint'),
             context.get('siderNarrow'),
-          )
-          if (presentation !== 'sheet')
-            return
-          send({ type: 'SIDER.COLLAPSE' })
-        }
-        doc.addEventListener('keydown', onKeydown)
-        return () => doc.removeEventListener('keydown', onKeydown)
+          ) === 'sheet',
+          onEscape: () => send({ type: 'SIDER.COLLAPSE' }),
+        })
+        return fallback.dispose
       },
     },
   },
