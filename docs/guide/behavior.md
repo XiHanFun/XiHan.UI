@@ -57,10 +57,11 @@ export type LayerKind = "modal" | "popover" | "inline";
 export interface Layer {
   readonly id: string;
   readonly kind: LayerKind;
-  node: () => HTMLElement | null; // 层的根节点
-  branches: () => Element[]; // 逻辑属于本层、DOM 却在别处的节点
-  isModal: () => boolean;
-  surfaces: () => Element[]; // 点了就该关本层的表面，如遮罩
+  readonly node: () => HTMLElement | null; // 层的根节点
+  readonly branches: () => Element[]; // 逻辑属于本层、DOM 却在别处的节点
+  readonly isModal: () => boolean;
+  readonly setModal: (value: boolean) => void;
+  readonly surfaces: () => Element[]; // 点了就该关本层的表面，如遮罩
 }
 ```
 
@@ -70,6 +71,12 @@ export interface Layer {
 - **`surfaces`（表面）**——遮罩这类点了就该关的元素。它属于本层，但点它的语义是关闭而不是「点在层内」。
 
 同一文档共用一个注册表；不同文档（iframe、画中画窗口）各有一份。
+
+`list()` 与订阅回调拿到的都是冻结状态快照，Layer 记录本身也被冻结；节点、分支和模态性仍由记录里的 getter 返回当前值。注册与释放会固定这一轮的订阅者名单并通知完所有人，单个订阅者抛错不会截断后续通知，多项异常会按订阅顺序聚合。
+
+登记与释放采用不同提交点。`register()` 的通知失败表示登记失败：注册表先恢复登记前的同一份快照，再向见过临时新状态的同一批订阅者发布补偿通知；中途退订的人仍会收到补偿，中途新增的人不会凭空收到补偿。变更通知和补偿通知都失败时，两阶段异常会一起上抛，失败登记已经分配的 layer id 不会复用。`dispose()` 会先在旧状态上报告非栈顶诊断，再永久移除 Layer、终结 cleanup，并发布通知；即使诊断输出或通知抛错，移除也不会撤销，两个阶段的异常会完整聚合。这样不会把已经释放且上层不再持有 cleanup 的 Layer 复活；重复释放保持幂等。
+
+订阅回调可以读取当前快照、订阅或退订，但不能同步嵌套调用 `register()`，也不能释放仍在注册表里的 Layer。嵌套状态变更会明确抛错，避免外层通知观察到一半又被另一轮变更改写；已经成功终结的 cleanup 仍可重复调用并保持无操作。
 
 注册表还给出 `elementsAbove(layer)`：栈中位于该层之上的各层的全部节点（`node` + `branches` + `surfaces`）。背景失活要用它把上层排除在自己的管辖之外。
 
