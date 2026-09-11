@@ -1,4 +1,5 @@
 import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 export interface PopoverTranslations {
   close: string
@@ -9,6 +10,10 @@ export interface PopoverRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 视觉退场与行为资源共享的 Presence；缺省时关闭立即释放。 */
+  presence: PresenceHandle | null
+  /** 展开期间 modal 改值时同步滚动锁与背景失活。 */
+  syncModalResources: (() => void) | null
   /** 浮层定位引擎；缺省即不产出位置结果。 */
   position: PositionEnginePort | null
   /** 定位锚点，通常是 trigger。 */
@@ -70,7 +75,7 @@ export interface PopoverSchema extends MachineSchema {
     | { type: 'CONTROLLED.CLOSE' }
   tag: never
   guard: 'isOpenControlled'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'setReturnFocus' | 'syncOpen'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'setReturnFocus' | 'syncOpen' | 'syncModalResources'
   effect: 'trackPosition' | 'trackLayer'
 }
 

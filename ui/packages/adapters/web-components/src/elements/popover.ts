@@ -119,6 +119,17 @@ export class XhPopoverElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.popoverScope, idGenerator: this.idGen })
   }
 
+  /** 机器挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。 */
+  private ensureExit(open: boolean): OverlayExit {
+    this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open,
+      onExitComplete: () => this.requestUpdate(),
+    })
+    return this.exit
+  }
+
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
   // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
@@ -130,7 +141,7 @@ export class XhPopoverElement extends XhElement {
       // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，浮层等于关不掉。
       // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉
       branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
-      isModal: () => this.modal ?? false,
+      isModal: () => this.ctrl.service.prop('modal') ?? false,
       setModal: () => {},
       // 非模态浮层不自带遮罩，没有"点它就该关本层"的表面
       surfaces: () => [],
@@ -142,6 +153,7 @@ export class XhPopoverElement extends XhElement {
     this.ensureConfig()
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.ensureExit(svc.state.get() === 'open').presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -187,15 +199,11 @@ export class XhPopoverElement extends XhElement {
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const content = this.getPart('content')
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
-      config: this.config!,
-      open: api.open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    this.exit.track(content)
-    this.exit.update(api.open)
+    const exit = this.ensureExit(api.open)
+    exit.track(content)
+    exit.update(api.open)
     if (content)
-      this.setPartHidden(content, !this.exit.visible)
+      this.setPartHidden(content, !exit.visible)
 
     this.bars.wire()
   }

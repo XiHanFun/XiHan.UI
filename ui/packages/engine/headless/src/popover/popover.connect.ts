@@ -84,6 +84,9 @@ export function connectPopover<T extends PropTypes>(
       'id': ids.content,
       'role': 'dialog',
       'tabindex': -1,
+      // Presence 会把收起内容留到动画结束；这段期间必须先退出焦点树与交互树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       'aria-modal': modal ? 'true' : 'false',
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,

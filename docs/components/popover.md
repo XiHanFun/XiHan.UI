@@ -16,7 +16,7 @@
 ## 特性
 
 - `placement` 只是首选位，空间不够时定位引擎自动翻面。
-- `modal` 可选：需要锁住下层时打开。
+- `modal` 可选：需要锁住下层时打开；展开期间可动态切换，模态档会锁住页面滚动并让背景失活。
 - 可以与触发器同宽，也可以落在指针位置。
 - `end` 这类对齐是逻辑方向，跟着书写方向走，不是左右。
 
@@ -193,6 +193,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-labelledby` | `title` 部件的 id |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | 'dialog' |
@@ -250,6 +251,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 ## 最佳实践
 
 - 打开后焦点进浮层，Escape 关闭并归还焦点。
+- 模态浮层关闭时，滚动锁与背景失活会保留到真实退场动画结束；退场内容自身立即退出焦点与交互树。
 - 内容控制在一屏内，需要滚动就说明该换[抽屉](./drawer)了。
 
 ## 反模式
