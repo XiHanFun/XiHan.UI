@@ -27017,6 +27017,9 @@
               "name": "--xh-menu-arrow-size"
             },
             {
+              "name": "--xh-menu-backdrop"
+            },
+            {
               "name": "--xh-menu-border"
             },
             {
@@ -27053,22 +27056,31 @@
               "name": "--xh-menu-group-label-font-weight"
             },
             {
+              "name": "--xh-menu-group-label-leading-gap"
+            },
+            {
+              "name": "--xh-menu-group-label-leading-size"
+            },
+            {
               "name": "--xh-menu-group-label-px"
             },
             {
               "name": "--xh-menu-group-label-py"
             },
             {
-              "name": "--xh-menu-icon-size"
+              "name": "--xh-menu-highlight"
             },
             {
-              "name": "--xh-menu-item-active-font-weight"
+              "name": "--xh-menu-icon-size"
             },
             {
               "name": "--xh-menu-item-bg-active"
             },
             {
               "name": "--xh-menu-item-bg-hover"
+            },
+            {
+              "name": "--xh-menu-item-bg-pressed"
             },
             {
               "name": "--xh-menu-item-description-fg"
@@ -27093,6 +27105,12 @@
             },
             {
               "name": "--xh-menu-item-leading"
+            },
+            {
+              "name": "--xh-menu-item-leading-size"
+            },
+            {
+              "name": "--xh-menu-item-path-indicator"
             },
             {
               "name": "--xh-menu-item-px"
@@ -27122,7 +27140,13 @@
               "name": "--xh-menu-separator-my"
             },
             {
+              "name": "--xh-menu-separator-radius"
+            },
+            {
               "name": "--xh-menu-separator-thickness"
+            },
+            {
+              "name": "--xh-menu-submenu-indicator-fg"
             },
             {
               "name": "--xh-menu-trigger-bg-active"

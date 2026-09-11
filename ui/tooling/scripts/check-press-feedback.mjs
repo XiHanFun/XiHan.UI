@@ -17,12 +17,13 @@
 // 可点的是选择器末尾那个复合体（主体）；主体戴着别的组件的 scope 时，说明这份皮肤把可点加在了
 // 内嵌的别家部件上（tag-group 给 tag 的 root），键写成「宿主:scope/部件」，登记时照抄。
 //
-// 两种形态：
+// 三种形态：
 // ① 即时按压（多数）：反馈落在 :active 上，缩放量走令牌。
 // ② 长按等待（登记成 { part, attr }）：要按满一段时间才生效的操作，反馈由连接层打的
 //    状态属性驱动。这一支不能靠 :active——手指按住不动时 :active 会被滚动接管等原因
 //    提前撤掉，而等待期恰恰是最需要回执的那几百毫秒；也不比缩放，因为这类触发区往往是
 //    作者的整块内容，缩放它会把作者自己的排版一起抖起来。改比底色。
+// ③ 列表行的即时换面：显式登记 feedback: 'surface'，只检查本部件的换底与过渡，禁止改变按压几何。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -31,9 +32,10 @@ const HEADLESS = 'packages/engine/headless/src'
 
 /**
  * 该有按压反馈的控件，连同它的部件名（一个组件可以登记多个部件）。
- * 字符串条目按形态①查；`{ part, attr }` 条目按形态②查。
+ * 字符串按形态①查，`{ part, attr }` 按②查，`{ part, feedback: 'surface' }` 按③查。
  */
 const PRESSABLE = {
+  'menu': [{ part: 'item', feedback: 'surface' }],
   // 按钮形的控件本体：整颗就是点击目标
   'button': ['root'],
   'download-trigger': ['root'],
@@ -142,7 +144,6 @@ const PRESSABLE = {
  */
 const NO_PRESS = {
   // 列表族条目：一行文字，按下的回执走高亮档（悬停中性灰、展开路径品牌淡底）
-  'menu:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'menubar:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'context-menu:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'listbox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
@@ -209,6 +210,8 @@ for (const [name, parts] of Object.entries(PRESSABLE)) {
   for (const part of parts) {
     if (typeof part === 'string')
       checkPart(name, part, css)
+    else if (part.feedback === 'surface')
+      checkSurfacePart(name, part.part, css)
     else
       checkHeldPart(name, part.part, part.attr, css)
   }
@@ -332,6 +335,20 @@ function checkPart(name, part, css) {
   }
 }
 
+/** 列表行用换面表达按下，几何保持不变；只有显式登记的部件走这条合同。 */
+function checkSurfacePart(name, part, css) {
+  const active = new RegExp(`${partSelector(part)}[^{]*:active(?::not\\([^)]*\\))?\\s*\\{([^}]*)\\}`)
+  const match = css.match(active)
+  const surface = match?.[1].match(/(?:^|;)\s*background(?:-color)?\s*:\s*([^;]+)/)
+  if (!surface || /^(?:none|transparent)$/.test(surface[1].trim()))
+    problems.push(`${name} 的 ${part} 没有明确的 :active 换面`)
+  if (match && /(?:^|;)\s*(?:scale|translate|transform)\s*:/.test(match[1]))
+    problems.push(`${name} 的 ${part} 登记为换面反馈，却在按下时改变几何`)
+  const rules = [...css.matchAll(new RegExp(`${partSelector(part)}[^{]*\\{([^}]*)\\}`, 'g'))]
+  if (!rules.some(rule => /transition:[^;]*\bbackground(?:-color)?\b/.test(rule[1])))
+    problems.push(`${name} 的 ${part} 没把换面写进本部件的 transition`)
+}
+
 /** 形态②：反馈规则挂在状态属性上，且换的是底色。 */
 function checkHeldPart(name, part, attr, css) {
   const held = new RegExp(`\\[data-part='${part}'\\](?:\\[[^\\]]+\\])*\\[${attr}\\][^{]*\\{([^}]*)\\}`)
@@ -360,10 +377,11 @@ if (problems.length) {
 }
 
 const pressable = Object.values(PRESSABLE).flat()
-const held = pressable.filter(part => typeof part !== 'string').length
+const held = pressable.filter(part => typeof part !== 'string' && 'attr' in part).length
+const surfaces = pressable.filter(part => typeof part !== 'string' && part.feedback === 'surface').length
 console.log(
   `[check-press-feedback] 通过：皮肤里 ${clickable.length} 个可点部件全部定性过`
   + `（登记 ${registered.size} 个）——${pressable.length} 个按下去有回应`
-  + `（其中长按等待 ${held} 个比底色，其余比缩放且缩放量都走令牌）`
+  + `（长按等待 ${held} 个比底色，即时换面 ${surfaces} 个保持几何，其余缩放走令牌）`
   + `，${Object.keys(NO_PRESS).length} 个判定为不给按压反馈`,
 )
