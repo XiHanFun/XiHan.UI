@@ -16687,11 +16687,9 @@
   /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
   --xh-_combobox-control-shadow: var(--xh-elevation-raised);
 
-  /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
-     没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
+  /* 聚焦环恒用固定环色；语气只落在勾选标记上，单选与多选正文使用同一颜色。 */
   --xh-_combobox-ring: var(--xh-ring-focus);
   --xh-_combobox-accent: var(--xh-_tone, var(--xh-fg-brand));
-  --xh-_combobox-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 }
 
 [data-scope='combobox'][data-part='root'] {
@@ -17102,17 +17100,18 @@
   background: var(--xh-combobox-item-bg-hover, var(--xh-bg-subtle));
 }
 
-/* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
-   两者因此能同时看见 */
+/* 单选、多选统一由末端对号表达选中；正文不换品牌色、不增重，
+   中性底整条通道留给 data-highlighted。两个状态叠加时仍能同时看见。 */
 [data-scope='combobox'][data-part='item'][data-state='checked'] {
-  color: var(--xh-combobox-item-fg-selected, var(--xh-_combobox-item-selected-fg));
-  font-weight: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-medium));
+  color: var(--xh-combobox-item-fg-selected, var(--xh-combobox-item-fg, var(--xh-fg-default)));
+  font-weight: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-regular));
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
    所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
 [data-scope='combobox'][data-part='item'][data-disabled] {
   color: var(--xh-fg-disabled);
+  cursor: not-allowed;
 }
 
 [data-scope='combobox'][data-part='item-text'] {
@@ -17135,6 +17134,8 @@
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-combobox-item-indicator-size, var(--xh-control-indicator-size));
+  block-size: var(--xh-combobox-item-indicator-size, var(--xh-control-indicator-size));
+  margin-inline-start: auto;
   color: var(--xh-combobox-item-indicator-fg, var(--xh-_combobox-accent));
   visibility: hidden;
 }
