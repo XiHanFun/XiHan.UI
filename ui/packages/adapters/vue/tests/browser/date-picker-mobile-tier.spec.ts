@@ -7,8 +7,9 @@
 // 位置一律读 offsetTop / offsetLeft：面板展开时正播缩放动画，
 // getBoundingClientRect 会把那一帧的缩放算进去，布局偏移量不受它影响。
 import type { App, VNode } from 'vue'
-import { afterEach, describe, expect, it } from 'vitest'
-import { createApp, h } from 'vue'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { createApp, defineComponent, h, nextTick, ref } from 'vue'
 import {
   XhDatePickerCalendar,
   XhDatePickerCell,
@@ -30,6 +31,11 @@ import {
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from '../../src'
+import {
+  assertDatePickerRootDocument,
+  resolveDatePickerPortalTarget,
+  useDatePickerWithRoot,
+} from '../../src/components/date-picker/use-date-picker'
 import { provideXhConfig } from '../../src/config/config'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -42,8 +48,10 @@ const DESKTOP = 1280
 let frame: HTMLIFrameElement | null = null
 let app: App | null = null
 
+type PortalMode = 'same-document' | 'default'
+
 /** 在给定宽度的 iframe 里挂一个展开着的日期选择器，返回它的文档。 */
-function mountAt(width: number, render: () => VNode): Document {
+function mountAt(width: number, render: () => VNode, portal: PortalMode = 'same-document'): Document {
   frame = document.createElement('iframe')
   frame.style.cssText = `width: ${width}px; height: 900px; border: 0`
   document.body.append(frame)
@@ -59,12 +67,33 @@ function mountAt(width: number, render: () => VNode): Document {
 
   app = createApp({
     setup() {
-      // 浮层默认搬去主文档的落点，那样引擎会按宿主视口算；改挂 iframe 的 body
-      provideXhConfig({ portalContainer: () => doc.body })
-      return () => render()
+      const portalRef = ref<HTMLElement | null>(null)
+      if (portal === 'default')
+        return () => render()
+
+      // 目标是 DatePicker 的同级节点，而且在它之后提交 ref。Scope 初始化不得提前读取这个 getter。
+      provideXhConfig({
+        portalContainer: () => {
+          const target = portalRef.value
+          if (!target)
+            throw new Error('portalContainer 在兄弟目标 ref 就绪前被读取')
+          return target
+        },
+      })
+      return () => h('div', [
+        render(),
+        h('div', { 'ref': portalRef, 'data-date-picker-portal-target': '' }),
+      ])
     },
   })
-  app.mount(host)
+  try {
+    app.mount(host)
+  }
+  catch (error) {
+    // 挂载期明确拒绝的配置没有形成可卸载应用；保留 iframe 给 afterEach 清理。
+    app = null
+    throw error
+  }
   return doc
 }
 
@@ -178,10 +207,34 @@ function presetShape(): VNode {
   })
 }
 
+describe('iframe 运行时 realm', () => {
+  it('未配置 portal 时从真实根节点取得 iframe Document，初始 open 正常注册并落位', async () => {
+    const doc = mountAt(PHONE, rangeShape, 'default')
+    const initialContent = doc.querySelector<HTMLElement>(`[data-scope='date-picker'][data-part='content']`)
+    expect(initialContent?.ownerDocument).toBe(doc)
+    const content = await contentAt(doc)
+    expect(content.ownerDocument).toBe(doc)
+    expect(part(doc, 'control').ownerDocument).toBe(doc)
+    expect(part(doc, 'positioner').closest('[data-xh-portal-shell]')?.ownerDocument).toBe(doc)
+  })
+
+  it('显式同 Document portal 保持合法', async () => {
+    const doc = mountAt(PHONE, rangeShape, 'same-document')
+    const content = await contentAt(doc)
+    const target = doc.querySelector<HTMLElement>('[data-date-picker-portal-target]')
+    expect(content.ownerDocument).toBe(doc)
+    expect(target).not.toBeNull()
+    expect(part(doc, 'positioner').parentElement?.parentElement).toBe(target)
+  })
+})
+
 describe('区间两张月历', () => {
   it(`${PHONE}px 下第二张落到第一张下面`, async () => {
     const doc = mountAt(PHONE, rangeShape)
-    await contentAt(doc)
+    const content = await contentAt(doc)
+    // Scope 来自真实根节点；显式 portal 只选同一 Document 内的落点，严格 Layer 注册已完成。
+    expect(content.ownerDocument).toBe(doc)
+    expect(part(doc, 'control').ownerDocument).toBe(doc)
     const calendars = parts(doc, 'calendar')
     const first = calendars[0]!
     const second = calendars[1]!
@@ -342,5 +395,122 @@ describe('快捷选项', () => {
     expect(style.flexDirection).toBe('column')
     expect(group.offsetTop).toBe(calendar.offsetTop)
     expect(calendar.offsetLeft).toBeGreaterThanOrEqual(group.offsetLeft + group.offsetWidth)
+  })
+})
+
+describe('无效 realm 配置的事务清理', () => {
+  it('冻结创建时 Document，拒绝 null、伪节点、跨文档与换根；随后正常实例无残留层或迟到异常', async () => {
+    const invalidFrame = document.createElement('iframe')
+    document.body.append(invalidFrame)
+    const invalidDocument = invalidFrame.contentDocument
+    if (!invalidDocument)
+      throw new Error('无效配置夹具没有 iframe Document')
+    for (const node of document.querySelectorAll('style, link[rel="stylesheet"]'))
+      invalidDocument.head.append(node.cloneNode(true))
+    const invalidRuntime = createRuntimeConfig({
+      scope: createScope(invalidDocument.body, createCounterIdGenerator()),
+    })
+
+    expect(() => resolveDatePickerPortalTarget(invalidRuntime, () => null))
+      .toThrow('[xh] DatePicker 的 portalContainer 必须返回 Element')
+    expect(() => resolveDatePickerPortalTarget(invalidRuntime, () => ({}) as Element))
+      .toThrow('[xh] DatePicker 的 portalContainer 必须返回 Element')
+    expect(() => resolveDatePickerPortalTarget(invalidRuntime, () => document.body))
+      .toThrow('[xh] DatePicker 的 portalContainer 必须与组件根属于同一 Document')
+    expect(() => assertDatePickerRootDocument(invalidRuntime.layerRegistry.ownerDocument, document.body))
+      .toThrow('[xh] DatePicker 根节点不能在运行期切换 Document')
+    expect(invalidRuntime.layerRegistry.list()).toHaveLength(0)
+
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const failedHost = invalidDocument.createElement('div')
+    const recoveredHost = invalidDocument.createElement('div')
+    invalidDocument.body.append(failedHost, recoveredHost)
+    const portalConfig = ref<{ portalContainer: () => Element | null }>({
+      portalContainer: () => invalidDocument.body,
+    })
+    const captured: unknown[] = []
+    const RealmHarness = defineComponent({
+      setup() {
+        const rootRef = ref<HTMLElement | null>(null)
+        const ctx = useDatePickerWithRoot({ open: true, locale: 'zh-CN' } as any, {}, rootRef)
+        return () => {
+          const target = ctx.portalTarget.value
+          return h('div', {
+            ...ctx.api.value.getRootProps() as Record<string, unknown>,
+            'ref': rootRef,
+            'data-resolved-portal': typeof target === 'string' ? target : 'element',
+          }, [
+            h('div', {
+              ...ctx.api.value.getControlProps() as Record<string, unknown>,
+              ref: ctx.controlRef,
+            }),
+            h('div', {
+              ...ctx.api.value.getPositionerProps() as Record<string, unknown>,
+              ref: ctx.positionerRef,
+            }, [
+              h('div', {
+                ...ctx.api.value.getContentProps() as Record<string, unknown>,
+                ref: ctx.contentRef,
+              }),
+            ]),
+          ])
+        }
+      },
+    })
+    const failedApp = createApp({
+      setup() {
+        provideXhConfig(portalConfig)
+        return () => h(RealmHarness)
+      },
+    })
+    failedApp.config.errorHandler = cause => captured.push(cause)
+    let failedMounted = false
+    let recoveredApp: App | null = null
+    try {
+      failedApp.mount(failedHost)
+      failedMounted = true
+      await nextTick()
+      warning.mockClear()
+      expect(invalidRuntime.layerRegistry.list()).toHaveLength(1)
+
+      // 已挂载实例运行期收到跨 Document 目标时明确失败；应用仍可完成自身事务清场。
+      portalConfig.value = { portalContainer: () => document.body }
+      await nextTick()
+      expect(warning).not.toHaveBeenCalled()
+      expect(captured).toHaveLength(1)
+      expect(captured[0]).toBeInstanceOf(Error)
+      expect((captured[0] as Error).message)
+        .toBe('[xh] DatePicker 的 portalContainer 必须与组件根属于同一 Document')
+      failedApp.unmount()
+      failedMounted = false
+      expect(warning).not.toHaveBeenCalled()
+      expect(invalidRuntime.layerRegistry.list()).toHaveLength(0)
+      expect(failedHost.querySelector(`[data-scope='date-picker']`)).toBeNull()
+
+      // 失败清场后在同一 Document 重新挂载，验证共享 registry 没有残留层或迟到任务。
+      recoveredApp = createApp({ render: rangeShape })
+      recoveredApp.mount(recoveredHost)
+      await contentAt(invalidDocument)
+      expect(warning).not.toHaveBeenCalled()
+      expect(invalidRuntime.layerRegistry.list()).toHaveLength(1)
+      await new Promise<void>(resolve => invalidDocument.defaultView!.requestAnimationFrame(() => resolve()))
+      recoveredApp.unmount()
+      recoveredApp = null
+      expect(invalidRuntime.layerRegistry.list()).toHaveLength(0)
+      expect(recoveredHost.querySelector(`[data-scope='date-picker']`)).toBeNull()
+      expect(invalidDocument.querySelector(`[data-scope='date-picker'][data-part='content']`)).toBeNull()
+      await new Promise<void>(resolve => invalidDocument.defaultView!.requestAnimationFrame(() => resolve()))
+      expect(captured).toHaveLength(1)
+      expect(error).not.toHaveBeenCalled()
+    }
+    finally {
+      recoveredApp?.unmount()
+      if (failedMounted)
+        failedApp.unmount()
+      error.mockRestore()
+      warning.mockRestore()
+      invalidFrame.remove()
+    }
   })
 })
