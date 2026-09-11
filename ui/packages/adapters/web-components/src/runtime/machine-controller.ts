@@ -67,6 +67,7 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
       return
     this.formReset = createFormResetBridge({
       getNode: () => host,
+      getFormId: () => this.service.prop('form') as string | undefined,
       onReset: () => {
         if (this.service.getStatus() === 'Started')
           this.service.send({ type: FORM_RESET_EVENT } as T['event'])

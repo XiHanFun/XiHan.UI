@@ -18,6 +18,7 @@ export function attachFormReset<T extends MachineSchema>(service: Service<T>): v
   onMounted(() => {
     bridge = createFormResetBridge({
       getNode: () => instance.vnode.el as Node | null,
+      getFormId: () => service.prop('form') as string | undefined,
       onReset: () => {
         if (service.getStatus() === 'Started')
           service.send({ type: FORM_RESET_EVENT } as T['event'])
