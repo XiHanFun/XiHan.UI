@@ -164,7 +164,7 @@ export const commandSuite: ConformanceSuite = {
           item: [
             {
               'role': 'option',
-              'aria-selected': 'false',
+              'aria-selected': 'true',
               'aria-disabled': 'false',
               'id': '@self',
               'data-value': 'page-users',
@@ -176,8 +176,8 @@ export const commandSuite: ConformanceSuite = {
               'disabled': null,
               'hidden': null,
             },
-            { 'aria-disabled': 'true', 'data-value': 'page-roles', 'data-disabled': '', 'disabled': null, 'hidden': null },
-            { 'aria-disabled': 'false', 'data-value': 'action-export', 'data-highlighted': null, 'hidden': null },
+            { 'aria-selected': 'false', 'aria-disabled': 'true', 'data-value': 'page-roles', 'data-disabled': '', 'disabled': null, 'hidden': null },
+            { 'aria-selected': 'false', 'aria-disabled': 'false', 'data-value': 'action-export', 'data-highlighted': null, 'hidden': null },
           ],
           // 有命令剩下时空态让位，取数不在途时在途占位也让位
           empty: { 'role': 'status', 'hidden': '', 'data-state': 'open' },
@@ -210,10 +210,10 @@ export const commandSuite: ConformanceSuite = {
           expect: {
             parts: {
               'input': { 'aria-activedescendant': '@part(item[2])' },
-              'item[0]': { 'data-highlighted': null },
+              'item[0]': { 'data-highlighted': null, 'aria-selected': 'false' },
               // 禁用的那条永远不落锚点
-              'item[1]': { 'data-highlighted': null },
-              'item[2]': { 'data-highlighted': '' },
+              'item[1]': { 'data-highlighted': null, 'aria-selected': 'false' },
+              'item[2]': { 'data-highlighted': '', 'aria-selected': 'true' },
             },
             // 这是命令面板与列表框的分水岭：焦点不搬到条目上
             activeElement: { part: 'input', exact: true },
@@ -225,8 +225,48 @@ export const commandSuite: ConformanceSuite = {
           expect: {
             parts: {
               'input': { 'aria-activedescendant': '@part(item[0])' },
-              'item[0]': { 'data-highlighted': '' },
-              'item[2]': { 'data-highlighted': null },
+              'item[0]': { 'data-highlighted': '', 'aria-selected': 'true' },
+              'item[2]': { 'data-highlighted': null, 'aria-selected': 'false' },
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: '指针移动活动候选：aria-activedescendant、aria-selected 与中性高亮同步，禁用项不接管',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: OPEN,
+      steps: [
+        {
+          kind: 'raw',
+          why: '活动候选由原生 pointermove 建立，声明式步骤没有指针移动动作',
+          async run({ doc, flush }) {
+            const items = doc.querySelectorAll<HTMLElement>('[data-scope="command"][data-part="item"]')
+            items[2]!.dispatchEvent(new PointerEvent('pointermove', { bubbles: true }))
+            await flush()
+          },
+          expect: {
+            parts: {
+              'input': { 'aria-activedescendant': '@part(item[2])' },
+              'item[0]': { 'data-highlighted': null, 'aria-selected': 'false' },
+              'item[1]': { 'data-highlighted': null, 'aria-selected': 'false' },
+              'item[2]': { 'data-highlighted': '', 'aria-selected': 'true', 'data-state': null },
+            },
+          },
+        },
+        {
+          kind: 'raw',
+          why: '禁用条目的 pointermove 必须由连接层守卫，不能靠测试工具跳过派发',
+          async run({ doc, flush }) {
+            const items = doc.querySelectorAll<HTMLElement>('[data-scope="command"][data-part="item"]')
+            items[1]!.dispatchEvent(new PointerEvent('pointermove', { bubbles: true }))
+            await flush()
+          },
+          expect: {
+            parts: {
+              'input': { 'aria-activedescendant': '@part(item[2])' },
+              'item[1]': { 'aria-selected': 'false' },
+              'item[2]': { 'aria-selected': 'true' },
             },
           },
         },
@@ -242,12 +282,12 @@ export const commandSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'End',
-          expect: { parts: { 'input': { 'aria-activedescendant': '@part(item[2])' }, 'item[2]': { 'data-highlighted': '' } } },
+          expect: { parts: { 'input': { 'aria-activedescendant': '@part(item[2])' }, 'item[0]': { 'aria-selected': 'false' }, 'item[2]': { 'data-highlighted': '', 'aria-selected': 'true' } } },
         },
         {
           kind: 'key',
           key: 'Home',
-          expect: { parts: { 'input': { 'aria-activedescendant': '@part(item[0])' }, 'item[0]': { 'data-highlighted': '' } } },
+          expect: { parts: { 'input': { 'aria-activedescendant': '@part(item[0])' }, 'item[0]': { 'data-highlighted': '', 'aria-selected': 'true' }, 'item[2]': { 'aria-selected': 'false' } } },
         },
       ],
     },
@@ -261,7 +301,10 @@ export const commandSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'Enter',
-          expect: { events: [{ type: 'select', detail: { value: 'page-users', label: '用户管理' } }] },
+          expect: {
+            parts: { 'item[0]': { 'aria-selected': 'true', 'data-state': null } },
+            events: [{ type: 'select', detail: { value: 'page-users', label: '用户管理' } }],
+          },
         },
         {
           // 按住不放时浏览器连发的 keydown 带 repeat=true，那是同一次按下，不该再执行一遍。
@@ -308,7 +351,11 @@ export const commandSuite: ConformanceSuite = {
           kind: 'click',
           part: 'item[1]',
           expect: {
-            parts: { trigger: { 'data-state': 'open' } },
+            parts: {
+              'trigger': { 'data-state': 'open' },
+              'item[0]': { 'aria-selected': 'true' },
+              'item[1]': { 'aria-selected': 'false' },
+            },
             events: [],
           },
         },
@@ -329,9 +376,9 @@ export const commandSuite: ConformanceSuite = {
           },
           expect: {
             parts: {
-              'item[0]': { hidden: '' },
-              'item[1]': { hidden: '' },
-              'item[2]': { 'hidden': null, 'data-highlighted': '' },
+              'item[0]': { 'hidden': '', 'aria-selected': 'false' },
+              'item[1]': { 'hidden': '', 'aria-selected': 'false' },
+              'item[2]': { 'hidden': null, 'data-highlighted': '', 'aria-selected': 'true' },
               // 分组里一条都没剩下，整组收起
               'group': { hidden: '' },
               'input': { 'aria-activedescendant': '@part(item[2])' },
@@ -354,9 +401,9 @@ export const commandSuite: ConformanceSuite = {
           },
           expect: {
             parts: {
-              'item[0]': { hidden: '' },
-              'item[1]': { hidden: '' },
-              'item[2]': { hidden: '' },
+              'item[0]': { 'hidden': '', 'aria-selected': 'false' },
+              'item[1]': { 'hidden': '', 'aria-selected': 'false' },
+              'item[2]': { 'hidden': '', 'aria-selected': 'false' },
               'empty': { hidden: null, role: 'status' },
               'input': { 'aria-activedescendant': null },
             },

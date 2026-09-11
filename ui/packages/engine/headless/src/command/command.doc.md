@@ -19,7 +19,8 @@
 - 内置过滤：清单交进来，按检索串逐词筛、按 `group` 归组，空组自动丢掉。`keywords` 让一条命令同时认英文名、拼音与旧称。
 - 过滤可以关掉（`filter` 置否），改由调用方自己筛——远端检索走这一档。
 - 面板是模态浮层：陷焦点、锁滚动、背景失活，Escape 与点击遮罩收起，收起后焦点还给触发按钮。
-- 焦点全程在检索框，锚点经 `aria-activedescendant` 报给读屏；打字后锚点自动钉回首条。
+- 焦点全程在检索框，锚点经 `aria-activedescendant` 报给读屏；活动候选同步 `aria-selected=true`，其余候选显式为 `false`，打字后锚点自动钉回首条。
+- 这里的 `aria-selected` 遵循 [WAI-ARIA 组合框规范](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)中“选中随焦点移动”的模式，只描述当前活动建议；命令执行后不会留下持久选中状态，视觉也不画对号或选中底。
 - 两种非条目相位各有部件：空（`empty`）与在途（`loading`）。取数期间在途占位顶上来，空态让位，两者不同屏。
 - `closeOnSelect` 决定选中后收不收；连着执行多条命令时关掉它。
 

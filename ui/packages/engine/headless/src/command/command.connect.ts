@@ -243,8 +243,9 @@ export function connectCommand<T extends PropTypes>(
       // aria-activedescendant 要指得到它，所以每条命令都得有个稳定 id
       'id': itemId(item.value),
       'role': 'option',
-      // 命令面板里没有「选中状态」这条线，选完即执行；显式写 false 而非省略
-      'aria-selected': 'false',
+      // 命令没有持久选值；这里是 APG combobox 的 selection-follows-focus：
+      // aria-activedescendant 指到哪一条，哪一条就向读屏报 selected，其余显式为 false。
+      'aria-selected': highlighted === item.value ? 'true' : 'false',
       // 集合条目一律 aria-disabled，原生 disabled 不派发 click，点击就走不到守卫里
       'aria-disabled': itemDisabled(item) ? 'true' : 'false',
       // 不给 tabindex：焦点恒在检索框
