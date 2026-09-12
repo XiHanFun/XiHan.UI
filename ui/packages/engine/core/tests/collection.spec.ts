@@ -1,7 +1,25 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { indexOfValue, isItemDisabled, navigateItems, queryItems } from '../src/behavior/collection/items'
+import { indexOfValue, isItemDisabled, navigateItems, normalizeItemIndex, queryItems } from '../src/behavior/collection/items'
 import { navIntentFromKey, stepIndex } from '../src/behavior/collection/navigate'
+
+describe('normalizeItemIndex', () => {
+  it.each([
+    [0, 0],
+    ['2', 2],
+    ['', 0],
+    [null, 0],
+    [undefined, 0],
+    ['invalid', 0],
+    ['Infinity', 0],
+  ])('将 %j 归一为 %j', (raw, expected) => {
+    expect(normalizeItemIndex(raw)).toBe(expected)
+  })
+
+  it('允许调用方指定非法值的回退下标', () => {
+    expect(normalizeItemIndex('invalid', -1)).toBe(-1)
+  })
+})
 
 describe('navIntentFromKey', () => {
   it('轴限制：横向列表放行上下键（返回 null，调用方不得 preventDefault）', () => {

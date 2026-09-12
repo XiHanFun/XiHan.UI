@@ -1,6 +1,6 @@
 import type { Direction, IdGenerator, Orientation, Service } from '@xihan-ui/core'
 import type { SplitterPanelProps, SplitterSchema, SplitterSizesChangeDetails, SplitterSizesChangeEndDetails } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
+import { createCounterIdGenerator, createScope, normalizeItemIndex } from '@xihan-ui/core'
 import { connectSplitter, splitterAnatomy, splitterMachine, splitterMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -150,8 +150,7 @@ export class XhSplitterElement extends XhElement {
    * 写不出数字（没写、写错）时退回 0。
    */
   private partIndex(el: HTMLElement): number {
-    const raw = Number(el.getAttribute('index'))
-    return Number.isFinite(raw) ? raw : 0
+    return normalizeItemIndex(el.getAttribute('index'))
   }
 
   protected wire(): void {

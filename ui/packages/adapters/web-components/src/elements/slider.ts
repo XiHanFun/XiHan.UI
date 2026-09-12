@@ -1,6 +1,6 @@
 import type { Direction, IdGenerator, Orientation, Service, Size, Tone } from '@xihan-ui/core'
 import type { SliderSchema, SliderValueChangeDetails, SliderValueChangeEndDetails, SliderValueTextDetails } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
+import { createCounterIdGenerator, createScope, normalizeItemIndex } from '@xihan-ui/core'
 import { connectSlider, sliderAnatomy, sliderMachine, sliderMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -170,8 +170,7 @@ export class XhSliderElement extends XhElement {
    * 写不出数字（没写、写错）时退回 0，单滑块因此不必写。
    */
   private thumbIndex(el: HTMLElement): number {
-    const raw = Number(el.getAttribute('index'))
-    return Number.isFinite(raw) ? raw : 0
+    return normalizeItemIndex(el.getAttribute('index'))
   }
 
   /** 值气泡的文字是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
