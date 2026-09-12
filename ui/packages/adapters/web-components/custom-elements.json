@@ -6759,7 +6759,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-clipboard>` —— Light-DOM 行为宿主，跑 clipboard 机器并把 connect 产出打到角色节点上。\n\n复制走 `navigator.clipboard.writeText`（要求安全上下文）：在途为 copying，成功转 copied，\n失败回 idle 并派 `copy-error`。\n\n两个 indicator 都常挂，各自用 `copied` 属性声明属于哪一侧，由宿主按状态互斥收起。",
+          "description": "`<xh-clipboard>` —— Light-DOM 行为宿主，跑 clipboard 机器并把 connect 产出打到角色节点上。\n\n复制走 `navigator.clipboard.writeText`（要求安全上下文）：在途为 copying，成功转 copied，\n失败回 idle 并派 `copy-error`。\n\n两个 indicator 都常挂，各自用 `copied` 属性声明所属状态，并共享同一格布局宽度。",
           "name": "XhClipboardElement",
           "cssParts": [
             {
@@ -6985,6 +6985,9 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-clipboard-control-active-layer"
+            },
+            {
               "name": "--xh-clipboard-control-gap"
             },
             {
@@ -7040,6 +7043,9 @@
             },
             {
               "name": "--xh-clipboard-indicator-fg-copied"
+            },
+            {
+              "name": "--xh-clipboard-indicator-gap"
             },
             {
               "name": "--xh-clipboard-input-autofill-bg"

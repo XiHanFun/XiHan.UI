@@ -15928,10 +15928,21 @@
 }
 
 /* styles/clipboard.css */
-/* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
 @keyframes xh-clipboard-rotate {
   to {
     rotate: 360deg;
+  }
+}
+
+@keyframes xh-clipboard-loading-reveal {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes xh-clipboard-loading-hide {
+  to {
+    opacity: 0;
   }
 }
 
@@ -15944,12 +15955,13 @@
 [data-scope='clipboard'][data-part='root'] {
   /* 形态的落点：没写 data-variant 时这六支保持缺省档的取值，复制按钮读的是
      「使用者令牌 → 这六支 → 语义令牌」三级，使用者令牌永远排在形态之前 */
-  --xh-_clipboard-copy-trigger-bg: var(--xh-bg-canvas);
+  --xh-_clipboard-copy-trigger-bg: var(--xh-bg-subtle);
   --xh-_clipboard-copy-trigger-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_clipboard-copy-trigger-bg-active: var(--xh-bg-subtle-active);
   --xh-_clipboard-copy-trigger-fg: var(--xh-fg-default);
   --xh-_clipboard-copy-trigger-border: var(--xh-border-control);
   --xh-_clipboard-copy-trigger-border-hover: var(--xh-border-control-hover);
+  --xh-_clipboard-copy-trigger-shadow-hover: none;
 
   /* 输入框与按钮同取一档高度，换尺寸只改这一个私有槽 */
   --xh-_clipboard-h: var(--xh-control-h-md);
@@ -15958,6 +15970,7 @@
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-clipboard-gap, var(--xh-space-1));
+  isolation: isolate;
 
   /* 父容器给不出这么宽时整件跟着收，不越出父容器 */
   max-inline-size: 100%;
@@ -15985,6 +15998,7 @@
   --xh-_clipboard-copy-trigger-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
   --xh-_clipboard-copy-trigger-border: transparent;
   --xh-_clipboard-copy-trigger-border-hover: transparent;
+  --xh-_clipboard-copy-trigger-shadow-hover: var(--xh-elevation-raised);
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
@@ -16047,11 +16061,11 @@
   display: none;
 }
 
-/* 输入框与按钮并排，两者各自把高度对齐即可成一体 */
+/* 输入框与复制按钮共享一条连续轮廓。 */
 [data-scope='clipboard'][data-part='control'] {
   display: inline-flex;
   align-items: center;
-  gap: var(--xh-clipboard-control-gap, var(--xh-control-gap-md));
+  gap: var(--xh-clipboard-control-gap, 0);
 }
 
 [data-scope='clipboard'][data-part='control'][hidden] {
@@ -16079,6 +16093,11 @@
   text-overflow: ellipsis;
 }
 
+[data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='input']:not(:last-child) {
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
+
 [data-scope='clipboard'][data-part='input']:focus-visible {
   border-color: var(--xh-clipboard-input-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
 }
@@ -16100,7 +16119,8 @@
 }
 
 [data-scope='clipboard'][data-part='copy-trigger'] {
-  display: inline-flex;
+  display: inline-grid;
+  position: relative;
   flex: none;
   align-items: center;
   justify-content: center;
@@ -16110,7 +16130,7 @@
   padding-block: 0;
   border: var(--xh-stroke-thin) solid var(--xh-clipboard-copy-trigger-border, var(--xh-_clipboard-copy-trigger-border));
   border-radius: var(--xh-clipboard-copy-trigger-radius, var(--xh-shape-control));
-  /* 使用者令牌排在形态之前：写了覆盖钩子就以它为准，没写才按 data-variant 那一档取值 */
+  /* 使用者令牌排在变体之前：写了覆盖钩子就以它为准，没写才按 data-variant 那一档取值 */
   background: var(--xh-clipboard-copy-trigger-bg, var(--xh-_clipboard-copy-trigger-bg));
   color: var(--xh-clipboard-copy-trigger-fg, var(--xh-_clipboard-copy-trigger-fg));
   font-family: inherit;
@@ -16128,6 +16148,20 @@
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
+[data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='copy-trigger']:not(:first-child) {
+  position: relative;
+  margin-inline-start: calc(-1 * var(--xh-stroke-thin));
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+}
+
+[data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='input']:focus-visible,
+[data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='copy-trigger']:focus-visible,
+[data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='copy-trigger']:hover {
+  position: relative;
+  z-index: var(--xh-clipboard-control-active-layer, 1);
+}
+
 /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
 [data-scope='clipboard'][data-part='copy-trigger'][hidden] {
   display: none;
@@ -16137,7 +16171,7 @@
 [data-scope='clipboard'][data-part='copy-trigger']:hover {
   border-color: var(--xh-clipboard-copy-trigger-border-hover, var(--xh-_clipboard-copy-trigger-border-hover));
   background: var(--xh-clipboard-copy-trigger-bg-hover, var(--xh-_clipboard-copy-trigger-bg-hover));
-  box-shadow: var(--xh-clipboard-copy-trigger-shadow-hover, var(--xh-elevation-raised));
+  box-shadow: var(--xh-clipboard-copy-trigger-shadow-hover, var(--xh-_clipboard-copy-trigger-shadow-hover));
 }
 
 /* 换底之外再压一档：复制钮按下时缩放 */
@@ -16146,37 +16180,52 @@
   scale: var(--xh-motion-scale-press);
 }
 
-/* 写入在途：指针换成 progress，同时在按钮里转一枚圆环。
-   不压透明度：那既没有令牌也没有覆盖槽，深色档下压出来的灰还会掉到读不清；
-   圆环与下载键那一档同形，在途在全库读起来是同一件事 */
-[data-scope='clipboard'][data-part='copy-trigger'][data-state='copying'] {
+/* 连续控件内按下只换底色，不缩开输入框与按钮之间的接缝。 */
+[data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='copy-trigger']:active {
+  scale: none;
+}
+
+/* 快速写入不显示瞬时圆环；超过一个 micro 周期后才平滑换成加载状态。 */
+[data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true'] {
   cursor: progress;
 }
 
-[data-scope='clipboard'][data-part='copy-trigger'][data-state='copying']::before {
+[data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']::before {
   content: '';
-  flex: none;
+  position: absolute;
+  inset: 0;
   inline-size: 1em;
   block-size: 1em;
+  margin: auto;
   border: var(--xh-stroke-thin) solid transparent;
   border-block-start-color: currentColor;
   border-radius: var(--xh-shape-pill);
-  animation: xh-clipboard-rotate var(--xh-clipboard-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+  opacity: 0;
+  animation:
+    xh-clipboard-rotate var(--xh-clipboard-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
+    xh-clipboard-loading-reveal var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
 }
 
-/* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
-   两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+[data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']
+  > [data-scope='clipboard'][data-part='indicator']:not([data-copied]) {
+  animation: xh-clipboard-loading-hide var(--xh-motion-duration-micro) var(--xh-motion-ease-enter)
+    var(--xh-motion-duration-micro) forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  [data-scope='clipboard'][data-part='copy-trigger'][data-state='copying']::before {
-    border-style: dotted;
-    border-color: currentColor;
+  [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']::before {
+    animation: none;
+  }
+
+  [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']
+    > [data-scope='clipboard'][data-part='indicator']:not([data-copied]) {
     animation: none;
   }
 }
 
-:where([data-motion='reduce']) [data-scope='clipboard'][data-part='copy-trigger'][data-state='copying']::before {
-  border-style: dotted;
-  border-color: currentColor;
+:where([data-motion='reduce']) [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']::before,
+:where([data-motion='reduce']) [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']
+  > [data-scope='clipboard'][data-part='indicator']:not([data-copied]) {
   animation: none;
 }
 
@@ -16186,21 +16235,45 @@
   color: var(--xh-clipboard-copy-trigger-fg-copied, var(--xh-fg-success));
 }
 
+[data-scope='clipboard'][data-part='root'][data-variant='solid'] [data-scope='clipboard'][data-part='copy-trigger'][data-copied] {
+  border-color: transparent;
+  color: var(--xh-clipboard-copy-trigger-fg, var(--xh-_clipboard-copy-trigger-fg));
+}
+
 [data-scope='clipboard'][data-part='indicator'] {
   display: inline-flex;
   flex: none;
+  grid-area: 1 / 1;
   align-items: center;
   justify-content: center;
+  gap: var(
+    --xh-clipboard-indicator-gap,
+    var(--xh-clipboard-copy-trigger-gap, var(--xh-control-gap-sm))
+  );
+  visibility: hidden;
 }
 
-/* 两个指示器靠 hidden 互斥显隐；上面给了 display，这条不补的话收起态当场失效 */
+/* 作者仍可用原生 hidden 收起整个指示器。 */
 [data-scope='clipboard'][data-part='indicator'][hidden] {
   display: none;
+}
+
+[data-scope='clipboard'][data-part='indicator']:not([data-copied]),
+[data-scope='clipboard'][data-part='root'][data-state='copied'] [data-scope='clipboard'][data-part='indicator'][data-copied] {
+  visibility: visible;
+}
+
+[data-scope='clipboard'][data-part='root'][data-state='copied'] [data-scope='clipboard'][data-part='indicator']:not([data-copied]) {
+  visibility: hidden;
 }
 
 /* 成功那一侧的图标用成功色；平时那侧跟着按钮的文字色走 */
 [data-scope='clipboard'][data-part='indicator'][data-copied] {
   color: var(--xh-clipboard-indicator-fg-copied, var(--xh-fg-success));
+}
+
+[data-scope='clipboard'][data-part='root'][data-variant='solid'] [data-scope='clipboard'][data-part='indicator'][data-copied] {
+  color: inherit;
 }
 
 /*

@@ -103,7 +103,7 @@ export const XhClipboardIndicator = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useClipboardContext()
-    // 节点常挂，靠 hidden 显隐
+    // 节点常挂并叠在同一格，切换时保持按钮宽度
     return () => h(
       'span',
       ctx.api.value.getIndicatorProps({ copied: props.copied }) as Record<string, unknown>,

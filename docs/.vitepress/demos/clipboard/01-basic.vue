@@ -1,6 +1,6 @@
-<!-- 基础用法 | 展示框是只读不是禁用：聚焦即全选，键盘用户照样能用 Ctrl / Cmd + C 自己带走 -->
+<!-- 基础用法 | 复制安装命令 -->
 <script setup lang="ts">
-import { CheckIcon } from "@xihan-ui/icons";
+import { CheckIcon, ClipboardIcon } from "@xihan-ui/icons";
 import {
   XhClipboardControl,
   XhClipboardCopyTrigger,
@@ -11,17 +11,16 @@ import {
   XhIcon,
 } from "@xihan-ui/vue";
 
-const apiToken = "xh_live_9f2c7a41b6d84e05";
+const command = "pnpm add @xihan-ui/vue @xihan-ui/styles";
 </script>
 
 <template>
-  <XhClipboardRoot :value="apiToken">
-    <XhClipboardLabel>接口密钥</XhClipboardLabel>
+  <XhClipboardRoot :value="command">
+    <XhClipboardLabel>安装命令</XhClipboardLabel>
     <XhClipboardControl>
       <XhClipboardInput />
       <XhClipboardCopyTrigger>
-        <!-- 两个指示器都常挂 DOM、靠 hidden 互斥显隐，来回切按钮不抖宽 -->
-        <XhClipboardIndicator>复制</XhClipboardIndicator>
+        <XhClipboardIndicator><XhIcon :icon="ClipboardIcon" /> 复制</XhClipboardIndicator>
         <XhClipboardIndicator copied><XhIcon :icon="CheckIcon" /> 已复制</XhClipboardIndicator>
       </XhClipboardCopyTrigger>
     </XhClipboardControl>

@@ -94,7 +94,7 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 | 自定义元素 | `<xh-infinite-scroll>` |
 | Vue 组件 | `XhInfiniteScrollLoadMoreTrigger` `XhInfiniteScrollRoot` `XhInfiniteScrollSentinel` |
 | 组合式函数 | `useInfiniteScroll` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `infiniteScrollMachine` |
 | 皮肤 | `@xihan-ui/styles/infinite-scroll.css` |
 
 ### Props
@@ -125,6 +125,8 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 ### 状态
 
 以下名称仅用于内部状态机。
+
+**状态**：`idle` · `loading` · `paused`
 
 **事件**：`SENTINEL.ENTER` · `LOAD` · `MODE.SYNC`
 

@@ -32,9 +32,9 @@ export interface ClipboardSchema extends MachineSchema {
     timeout?: number
     /** 禁用：复制按钮点不动，作者调 api.copy() 也不动（守卫在机器层）。 */
     disabled?: boolean
-    /** 形态：solid / subtle / outline / ghost，决定复制按钮的颜色怎么用。 */
+    /** 变体：solid / subtle / outline / ghost。 */
     variant?: ActionVariant
-    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    /** 颜色：brand / neutral / success / warning / danger / info。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size

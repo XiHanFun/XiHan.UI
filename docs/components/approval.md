@@ -108,7 +108,7 @@ variant 换这块闸门怎么与正文分开，size 换标题、条目与按钮�
 | 自定义元素 | `<xh-approval>` |
 | Vue 组件 | `XhApprovalApproveTrigger` `XhApprovalDenyTrigger` `XhApprovalDescription` `XhApprovalFooter` `XhApprovalGroup` `XhApprovalItem` `XhApprovalItemIndicator` `XhApprovalItemText` `XhApprovalLiveRegion` `XhApprovalNote` `XhApprovalResult` `XhApprovalRoot` `XhApprovalTimer` `XhApprovalTitle` |
 | 组合式函数 | `useApproval` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `approvalMachine` |
 | 皮肤 | `@xihan-ui/styles/approval.css` |
 
 ### Props
@@ -161,16 +161,18 @@ variant 换这块闸门怎么与正文分开，size 换标题、条目与按钮�
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | state.get() |
+| `root` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `item` | 'checked' \| 'unchecked' |
 | `item-indicator` | 'checked' \| 'unchecked' |
-| `note` | state.get() |
-| `timer` | state.get() |
-| `result` | state.get() |
-| `approve-trigger` | state.get() |
-| `deny-trigger` | state.get() |
+| `note` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `timer` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `result` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `approve-trigger` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `deny-trigger` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 
 以下名称仅用于内部状态机。
+
+**状态**：`pending` · `approved` · `denied` · `expired`
 
 **事件**：`APPROVE` · `DENY` · `SCOPE.TOGGLE` · `SCOPE.SET` · `NOTE.SET` · `after.timeout` · `CONTROLLED.PENDING` · `CONTROLLED.APPROVE` · `CONTROLLED.DENY` · `CONTROLLED.EXPIRE` · `REQUEST.RESET`
 
@@ -271,7 +273,7 @@ variant 换这块闸门怎么与正文分开，size 换标题、条目与按钮�
 | --- | --- | --- |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
-| `root` | `data-state` | state.get() |
+| `root` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
@@ -279,13 +281,13 @@ variant 换这块闸门怎么与正文分开，size 换标题、条目与按钮�
 | `item` | `data-value` | item.value |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-value` | item.value |
-| `note` | `data-state` | state.get() |
-| `timer` | `data-state` | state.get() |
-| `result` | `data-state` | state.get() |
+| `note` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `timer` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `result` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `approve-trigger` | `data-loading` | ''（条件成立时才出现） |
-| `approve-trigger` | `data-state` | state.get() |
+| `approve-trigger` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `deny-trigger` | `data-loading` | ''（条件成立时才出现） |
-| `deny-trigger` | `data-state` | state.get() |
+| `deny-trigger` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

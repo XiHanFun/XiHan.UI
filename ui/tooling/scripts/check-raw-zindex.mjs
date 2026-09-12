@@ -29,6 +29,7 @@ const HEADLESS = 'packages/engine/headless/src'
 const IN_COMPONENT_STACKING = {
   'avatar-group.css': { reason: '头像相互压边，靠悬停项抬一层盖住相邻头像', isolatedBy: 'root' },
   'button-group.css': { reason: '相邻段的边框重叠，靠悬停段抬一层盖住邻段边框', isolatedBy: 'root' },
+  'clipboard.css': { reason: '输入框与复制按钮共边，靠聚焦或悬停项抬一层覆盖接缝', isolatedBy: 'root' },
   'heatmap.css': { reason: '行首那一列钉住时抬到格子之上，详情条再抬一层压住它', isolatedBy: 'root' },
   'image-viewer.css': { reason: '工具条与关闭钮压在图上，浮层内部的两层', isolatedBy: 'content' },
   'input-group.css': { reason: '相邻段的边框重叠，靠悬停或聚焦的那一段抬一层盖住邻段边框', isolatedBy: 'root' },

@@ -134,7 +134,7 @@ export interface XhClipboardIndicatorProps extends ComponentPropsWithRef<'span'>
   /** 这个标记属于哪一侧：true = 复制成功后的对钩，false（默认）= 平时的复制图标。 */
   copied?: boolean
 }
-/** 节点常挂，靠 hidden 显隐。 */
+/** 节点常挂并叠在同一格，切换时保持按钮宽度。 */
 export function XhClipboardIndicator({ copied = false, children, ...rest }: XhClipboardIndicatorProps): ReactNode {
   const ctx = useClipboardContext()
   return (

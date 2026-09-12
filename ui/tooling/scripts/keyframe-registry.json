@@ -46,6 +46,24 @@
         "approval"
       ]
     },
+    "xh-clipboard-loading-hide": {
+      "content": "to{opacity:0}",
+      "definedIn": [
+        "clipboard.css"
+      ],
+      "consumers": [
+        "clipboard"
+      ]
+    },
+    "xh-clipboard-loading-reveal": {
+      "content": "to{opacity:1}",
+      "definedIn": [
+        "clipboard.css"
+      ],
+      "consumers": [
+        "clipboard"
+      ]
+    },
     "xh-clipboard-rotate": {
       "content": "to{rotate:360deg}",
       "definedIn": [

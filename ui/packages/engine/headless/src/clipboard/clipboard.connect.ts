@@ -73,6 +73,7 @@ export function connectClipboard<T extends PropTypes>(
       ...parts['copy-trigger'].attrs,
       // 不给 type 会在 form 里变成 submit，Enter 直接提交表单
       'type': 'button',
+      'aria-busy': status === 'copying' ? 'true' : undefined,
       // 单体原生控件用原生 disabled：它本就不该被聚焦，也不该派 click
       'disabled': disabled || undefined,
       // 按钮里只放一个图标时没有可见文字，可及名字只能由这里给。
@@ -85,16 +86,14 @@ export function connectClipboard<T extends PropTypes>(
     }),
 
     /**
-     * 两侧指示器常挂 + hidden 收起，不卸载。
+     * 两侧指示器常挂并叠在同一格，非当前侧仅从视觉与无障碍树中收起，保留宽度避免切换抖动。
      * 这里的 data-copied 是调用方声明的所属侧，与 root / trigger 上表示当前状态的同名属性不同义。
      */
     getIndicatorProps: indicator => normalize.element({
       ...parts.indicator.attrs,
-      // 不发 aria-hidden：解剖里没有单独的 label，钮上写的字就装在这里，
-      // 藏起来等于把按钮的可及名一起藏掉
       'data-state': status,
       'data-copied': dataAttr(indicator.copied),
-      'hidden': indicator.copied !== copied || undefined,
+      'aria-hidden': indicator.copied !== copied || undefined,
     }),
 
     // 复制成功的文字回执：换色与换图标读屏都拿不到，这一处是唯一的通道
