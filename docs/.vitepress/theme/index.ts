@@ -1,5 +1,6 @@
 import Theme from "vitepress/theme";
 import { h } from "vue";
+import XhComponentCard from "./XhComponentCard.vue";
 import XhDemo from "./XhDemo.vue";
 import XhDocsScrollbars from "./XhDocsScrollbars.vue";
 import XhFrameworkSwitch from "./XhFrameworkSwitch.vue";
@@ -33,6 +34,7 @@ export default {
     Theme.enhanceApp?.(ctx);
 
     // 组件页由生成器产出，示例统一写成 <XhDemo src="..." />，这里全局注册
+    ctx.app.component("XhComponentCard", XhComponentCard);
     ctx.app.component("XhDemo", XhDemo);
   },
 };

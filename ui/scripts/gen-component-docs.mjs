@@ -1116,33 +1116,17 @@ function renderComponent(entry, category) {
 }
 
 function renderIndex() {
-  const total = manifest.categories.reduce((a, c) => a + c.components.length, 0)
-  const renderless = manifest.categories.flatMap(c => c.components).filter(c => c.renderless).length
   const L = []
   L.push('# 组件总览', '')
-  L.push(
-    `${total} 个组件都提供**无头内核**（\`@xihan-ui/headless\`）、**Vue 组件**（\`@xihan-ui/vue\`）与**自定义元素**（\`@xihan-ui/web-components\`）；其中 ${total - renderless} 个视觉组件另有**默认皮肤**（\`@xihan-ui/styles\`），${renderless} 个 renderless 行为组件不伪造视觉层。内核是唯一的行为定义，适配器不重新实现逻辑。`,
-    '',
-  )
-  L.push(
-    '每页统一为：用法 · 组件结构 · 示例 · 设计指引 · API 参考 · 无障碍 · 样式参考。'
-    + 'API、ARIA、数据属性与 CSS 变量从源码生成；适用场景和设计约束与组件源码同放。'
-    + '某一节没有内容时整节不出现，不留空标题。',
-    '',
-  )
-  L.push('不是组件、但同样由本库提供的东西——全局配置、命令式的对话框与轻提示、流式 Markdown 渲染、代码着色——收在[服务与运行时](../runtime/)。', '')
+  L.push('浏览 XiHan.UI 提供的组件。', '')
   for (const c of manifest.categories) {
     L.push(`## ${c.label}`, '')
-    L.push(c.description, '')
-    L.push('| 组件 | 标识 | 部件数 | 键盘条目 | 示例 |', '| --- | --- | --- | --- | --- |')
+    L.push('<div class="xh-component-grid">', '')
     for (const entry of c.components) {
-      const rt = runtimeMeta(entry.id)
-      const n = demos(entry.id).length
-      L.push(
-        `| [${entry.name}](./${entry.id}) | ${code(entry.id)} | ${rt.parts.length} | ${rt.keyboard.rows.length} | ${n || '—'} |`,
-      )
+      const renderless = entry.renderless ? ' renderless' : ''
+      L.push(`<XhComponentCard src="${entry.id}" name="${pascal(entry.id)}" label="${entry.name}" href="/components/${entry.id}"${renderless} />`)
     }
-    L.push('')
+    L.push('', '</div>', '')
   }
   return L.join('\n')
 }

@@ -42,6 +42,12 @@
 
 <XhDemo src="button-group/04-variant-tone" />
 
+### 图标与标签
+
+组合图标按钮与文字按钮
+
+<XhDemo src="button-group/05-icon-label" />
+
 ## 设计指引
 
 ### 何时使用
