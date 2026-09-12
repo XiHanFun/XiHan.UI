@@ -15,7 +15,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * 复制走 `navigator.clipboard.writeText`（要求安全上下文）：在途为 copying，成功转 copied，
  * 失败回 idle 并派 `copy-error`。
  *
- * 两个 indicator 都常挂，各自用 `copied` 属性声明属于哪一侧，由宿主按状态互斥收起。
+ * 两个 indicator 都常挂，各自用 `copied` 属性声明所属状态，并共享同一格布局宽度。
  *
  * @customElement xh-clipboard
  * @attr {string} value - 要复制的文本；缺省即复制空串
@@ -113,8 +113,6 @@ export class XhClipboardElement extends XhElement {
     for (const el of this.getParts('indicator')) {
       const indicator = { copied: el.hasAttribute('copied') }
       this.spreader.spread(el, api.getIndicatorProps(indicator) as Record<string, unknown>)
-      // 用内联 display 收起非当前侧
-      this.setPartHidden(el, indicator.copied !== api.copied)
     }
   }
 }

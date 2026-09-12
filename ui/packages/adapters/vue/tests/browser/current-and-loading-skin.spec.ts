@@ -172,17 +172,22 @@ describe('取数与写入在途的转圈', () => {
     expect(beforeOf(root, 'animation-duration')).toBe('3s')
   })
 
-  it('复制钮写入在途：转圈接上了，此前那道裸 opacity 已经不在', async () => {
+  it('复制钮写入在途：圆环延迟出现，不闪动快速写入', async () => {
     await mount(() => h(XhClipboardRoot, { value: 'xh' }, () => [
       h(XhClipboardControl, null, () => [h(XhClipboardCopyTrigger, null, () => '复制')]),
     ]))
     const trigger = part('clipboard', 'copy-trigger')
     // 写剪贴板要真实权限，headless 下拿不到；这一档皮肤本来就只认属性，直接把状态摆上去
     trigger.setAttribute('data-state', 'copying')
+    trigger.setAttribute('aria-busy', 'true')
     expect(styleOf(trigger, 'cursor')).toBe('progress')
     expect(styleOf(trigger, 'opacity')).toBe('1')
-    expect(beforeOf(trigger, 'animation-name')).toBe('xh-clipboard-rotate')
+    expect(beforeOf(trigger, 'animation-name')).toContain('xh-clipboard-rotate')
+    expect(beforeOf(trigger, 'animation-name')).toContain('xh-clipboard-loading-reveal')
+    expect(beforeOf(trigger, 'opacity')).toBe('0')
     expect(Number.parseFloat(beforeOf(trigger, 'width'))).toBeGreaterThan(0)
+    await new Promise<void>(resolve => setTimeout(resolve, 300))
+    expect(Number.parseFloat(beforeOf(trigger, 'opacity'))).toBeGreaterThan(0.9)
   })
 })
 

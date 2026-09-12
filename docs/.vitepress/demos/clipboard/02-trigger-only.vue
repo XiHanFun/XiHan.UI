@@ -1,16 +1,14 @@
-<!-- 只要一颗按钮 | 必备部件只有 root 与 trigger：文本已经在页面上时，展示框与标题都可以省掉 -->
+<!-- 独立按钮 | 内容已在页面中展示时，只保留复制按钮 -->
 <script setup lang="ts">
-import { XhClipboardCopyTrigger, XhClipboardIndicator, XhClipboardRoot } from "@xihan-ui/vue";
-
-const install = "pnpm add @xihan-ui/vue @xihan-ui/styles";
+import { CheckIcon, ClipboardIcon } from "@xihan-ui/icons";
+import { XhClipboardCopyTrigger, XhClipboardIndicator, XhClipboardRoot, XhIcon } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <code style="font-size: 13px;">{{ install }}</code>
-  <XhClipboardRoot :value="install" :timeout="1500">
+  <XhClipboardRoot value="https://xihan.dev">
     <XhClipboardCopyTrigger>
-      <XhClipboardIndicator>复制安装命令</XhClipboardIndicator>
-      <XhClipboardIndicator copied>已复制</XhClipboardIndicator>
+      <XhClipboardIndicator><XhIcon :icon="ClipboardIcon" /> 复制链接</XhClipboardIndicator>
+      <XhClipboardIndicator copied><XhIcon :icon="CheckIcon" /> 已复制</XhClipboardIndicator>
     </XhClipboardCopyTrigger>
   </XhClipboardRoot>
 </template>

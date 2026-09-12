@@ -9,11 +9,12 @@ import {
 </script>
 
 <template>
-  <XhClipboardRoot value="https://xihan.dev">
+  <XhClipboardRoot value="pnpm add @xihan-ui/vue">
     <XhClipboardControl>
       <XhClipboardInput />
       <XhClipboardCopyTrigger>
         <XhClipboardIndicator>复制</XhClipboardIndicator>
+        <XhClipboardIndicator copied>已复制</XhClipboardIndicator>
       </XhClipboardCopyTrigger>
     </XhClipboardControl>
   </XhClipboardRoot>

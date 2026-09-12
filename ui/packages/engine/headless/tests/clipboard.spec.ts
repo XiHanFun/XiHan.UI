@@ -391,6 +391,18 @@ describe('connectClipboard 结构与标注', () => {
 
     fire(trigger, 'onClick', {})
     expect(c.state()).toBe('copying')
+    expect((c.api().getCopyTriggerProps() as Dict)['aria-busy']).toBe('true')
+  })
+
+  it('只在写入途中报告 aria-busy', async () => {
+    teardowns.push(installClipboard(async () => {}))
+    const c = makeClipboard({ value: 'abc' })
+    expect((c.api().getCopyTriggerProps() as Dict)['aria-busy']).toBeUndefined()
+
+    c.service.send({ type: 'COPY.TRIGGER' })
+    expect((c.api().getCopyTriggerProps() as Dict)['aria-busy']).toBe('true')
+    await settleWrite()
+    expect((c.api().getCopyTriggerProps() as Dict)['aria-busy']).toBeUndefined()
   })
 
   it('copied 期间 root 与 trigger 一起出 data-copied', async () => {
@@ -414,20 +426,20 @@ describe('connectClipboard 结构与标注', () => {
     const idleIcon = () => c.api().getIndicatorProps({ copied: false }) as Dict
     const copiedIcon = () => c.api().getIndicatorProps({ copied: true }) as Dict
 
-    expect(idleIcon().hidden).toBeUndefined()
-    expect(copiedIcon().hidden).toBe(true)
+    expect(idleIcon()['aria-hidden']).toBeUndefined()
+    expect(copiedIcon()['aria-hidden']).toBe(true)
     // 声明侧的 data-copied 恒等于调用方自报的那一侧，与当前状态无关
     expect(idleIcon()['data-copied']).toBeUndefined()
     expect(copiedIcon()['data-copied']).toBe('')
 
     c.service.send({ type: 'COPY.TRIGGER' })
     // 写入在途时仍是"未复制"那一侧在台前：还没成功就不该先亮对钩
-    expect(idleIcon().hidden).toBeUndefined()
-    expect(copiedIcon().hidden).toBe(true)
+    expect(idleIcon()['aria-hidden']).toBeUndefined()
+    expect(copiedIcon()['aria-hidden']).toBe(true)
 
     await settleWrite()
-    expect(idleIcon().hidden).toBe(true)
-    expect(copiedIcon().hidden).toBeUndefined()
+    expect(idleIcon()['aria-hidden']).toBe(true)
+    expect(copiedIcon()['aria-hidden']).toBeUndefined()
     expect(copiedIcon()['data-state']).toBe('copied')
   })
 

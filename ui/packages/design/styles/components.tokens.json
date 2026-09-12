@@ -8022,6 +8022,27 @@
       "description": "checkbox-group 的 select-all-trigger 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-clipboard-control-active-layer",
+      "component": "clipboard",
+      "part": [
+        "control",
+        "copy-trigger",
+        "input"
+      ],
+      "property": [
+        "z-index"
+      ],
+      "state": [
+        "focus-visible",
+        "hover"
+      ],
+      "defaultToken": [
+        "1"
+      ],
+      "visibility": "public",
+      "description": "clipboard 的 control、copy-trigger、input 部件 z-index 覆盖槽。"
+    },
+    {
       "name": "--xh-clipboard-control-gap",
       "component": "clipboard",
       "part": [
@@ -8034,7 +8055,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-gap-md"
+        "0"
       ],
       "visibility": "public",
       "description": "clipboard 的 control 部件 gap 覆盖槽。"
@@ -8246,7 +8267,8 @@
       "name": "--xh-clipboard-copy-trigger-gap",
       "component": "clipboard",
       "part": [
-        "copy-trigger"
+        "copy-trigger",
+        "indicator"
       ],
       "property": [
         "gap"
@@ -8258,7 +8280,7 @@
         "--xh-control-gap-sm"
       ],
       "visibility": "public",
-      "description": "clipboard 的 copy-trigger 部件 gap 覆盖槽。"
+      "description": "clipboard 的 copy-trigger、indicator 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-copy-trigger-h",
@@ -8327,7 +8349,7 @@
         "hover"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "--xh-_clipboard-copy-trigger-shadow-hover"
       ],
       "visibility": "public",
       "description": "clipboard 的 copy-trigger 部件 box-shadow 覆盖槽。"
@@ -8367,6 +8389,24 @@
       ],
       "visibility": "public",
       "description": "clipboard 的 indicator 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-clipboard-indicator-gap",
+      "component": "clipboard",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-clipboard-copy-trigger-gap"
+      ],
+      "visibility": "public",
+      "description": "clipboard 的 indicator 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-input-autofill-bg",
@@ -8632,7 +8672,7 @@
         "animation"
       ],
       "state": [
-        "state=copying"
+        "default"
       ],
       "defaultToken": [
         "--xh-spin-duration"

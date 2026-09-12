@@ -2,6 +2,8 @@ import type { XhClipboardElement } from '../../src/elements/clipboard'
 import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defineXhElements } from '../../src/define'
+import '@xihan-ui/tokens/tokens.css'
+import '@xihan-ui/styles'
 
 defineXhElements()
 
@@ -24,7 +26,10 @@ async function mount(): Promise<XhClipboardElement> {
   host.innerHTML = `
     <xh-clipboard value="secret" timeout="0">
       <div data-xh-part="root">
-        <button data-xh-part="copy-trigger">复制</button>
+        <button data-xh-part="copy-trigger">
+          <span data-xh-part="indicator">复制</span>
+          <span data-xh-part="indicator" copied>已复制</span>
+        </button>
       </div>
     </xh-clipboard>
   `
@@ -47,6 +52,22 @@ afterEach(() => {
 })
 
 describe('web components Clipboard 浏览器合同', () => {
+  it('两个指示器共享宽度，复制成功时按钮不位移', async () => {
+    installClipboard(async () => {})
+    const root = await mount()
+    const button = trigger(root)
+    const indicators = [...button.querySelectorAll<HTMLElement>(`[data-part='indicator']`)]
+    const width = button.getBoundingClientRect().width
+
+    expect(indicators.map(indicator => getComputedStyle(indicator).display)).toEqual(['flex', 'flex'])
+    expect(indicators.map(indicator => getComputedStyle(indicator).visibility)).toEqual(['visible', 'hidden'])
+    await userEvent.click(button)
+    await settle()
+    expect(state(root)).toBe('copied')
+    expect(button.getBoundingClientRect().width).toBeCloseTo(width, 4)
+    expect(indicators.map(indicator => getComputedStyle(indicator).visibility)).toEqual(['hidden', 'visible'])
+  })
+
   it('权限拒绝保留原始 DOMException，并从 copying 回到 idle', async () => {
     const reason = new DOMException('Permission denied', 'NotAllowedError')
     installClipboard(() => Promise.reject(reason))

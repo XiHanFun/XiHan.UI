@@ -1,6 +1,6 @@
 # Clipboard 剪贴板
 
-把一段文本交给系统剪贴板，并把这次写入的结果如实报出来。
+用于复制纯文本并反馈复制状态。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/clipboard" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-展示框是只读不是禁用：聚焦即全选，键盘用户照样能用 Ctrl / Cmd + C 自己带走
+复制安装命令
 
 <XhDemo src="clipboard/01-basic" />
 
@@ -24,56 +24,58 @@
 
 ## 示例
 
-### 只要一颗按钮
+### 独立按钮
 
-必备部件只有 root 与 trigger：文本已经在页面上时，展示框与标题都可以省掉
+内容已在页面中展示时，只保留复制按钮
 
 <XhDemo src="clipboard/02-trigger-only" />
 
-### 状态与失败
+### 变体
 
-写入是异步的也真的会失败：按下先进 copying，写成功才翻成 copied，失败一律退回 idle 并把原因报出来
+设置复制按钮的外观
 
-<XhDemo src="clipboard/03-status" />
+<XhDemo src="clipboard/03-variant" />
 
-### 形态、语气与尺寸
+### 尺寸
 
-三轴都打在 root 上：变体换复制钮的用色方式，语气换色族，尺寸连输入框一起换档
+使用小、中、大三档尺寸
 
-<XhDemo src="clipboard/04-variant-tone-size" />
+<XhDemo src="clipboard/04-size" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 页面上有需要原样带走的字符串：接口密钥、邀请链接、命令行、错误追踪号。
+- 复制命令、链接、密钥或标识符。
+- 需要在复制前让用户核对内容。
 
 ### 何时不用
 
-- 要复制的是富文本或图片：本组件只处理纯文本。
-- 内容需要用户先编辑再带走：用[文本输入](./text-field)。
+- 复制富文本或图片。
+- 内容需要先编辑时，使用[文本输入](./text-field)。
 
 ### 特性
 
-- 展示框是只读不是禁用：聚焦即全选，键盘用户照样能自己按 Ctrl / Cmd + C 带走。
-- 写入是异步的也真的会失败：按下先进 `copying`，写成功才翻 `copied`，失败一律退回 `idle` 并把原因报出来。
-- 必备部件只有 `root` 与 `trigger`：文本已经在页面上时，展示框与标题都可以省掉。
-- `timeout` 决定成功指示保持多久，非正数即不自动回落。
+- 只读输入框在聚焦时自动选中文本。
+- 复制状态依次为 `idle`、`copying` 与 `copied`。
+- `timeout` 控制成功状态的停留时间。
+- 输入框、标签与状态提示均可按场景省略。
 
 ### 组合
 
-- 与[代码视图](./code-view)搭配：代码视图负责显示，剪贴板负责带走。
-- 成功提示也可以改用[轻提示](./toast)，此时把 `indicator` 省掉。
+- 与[代码视图](./code-view)组合复制代码。
+- 使用 `indicator` 切换复制前后的图标或文字。
 
 ### 最佳实践
 
-- 复制失败要留可见的兜底路径——展示框就是那条路径，别为了好看把它藏掉。
-- 触发器上的文字随状态换（复制 / 已复制），别只换图标颜色。
+- 保留可见文本，让用户可以核对并手动复制。
+- 复制按钮使用明确的可访问名称。
+- 成功反馈应短暂且不改变控件尺寸。
 
 ### 反模式
 
-- 假定复制一定成功：非安全上下文、权限被拒、浏览器策略都会让它失败。
-- 用它复制用户看不见的内容：用户无法核对自己带走了什么。
+- 不要将复制成功作为同步结果处理。
+- 不要复制用户无法核对的隐藏内容。
 
 ## API 参考
 
@@ -84,7 +86,7 @@
 | 自定义元素 | `<xh-clipboard>` |
 | Vue 组件 | `XhClipboardControl` `XhClipboardCopyTrigger` `XhClipboardIndicator` `XhClipboardInput` `XhClipboardLabel` `XhClipboardRoot` `XhClipboardStatus` |
 | 组合式函数 | `useClipboard` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `clipboardMachine` |
 | 皮肤 | `@xihan-ui/styles/clipboard.css` |
 
 ### Props
@@ -94,8 +96,8 @@
 | `value` | `string` |  | 要复制的文本；缺省即复制空串。 |
 | `timeout` | `number` |  | 复制成功后指示器保持多久（毫秒），默认 3000；&lt;=0 或非有限数表示不自动回落。 |
 | `disabled` | `boolean` |  | 禁用：复制按钮点不动，作者调 api.copy() 也不动（守卫在机器层）。 |
-| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定复制按钮的颜色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<ClipboardTranslations>` |  |  |
 | `onStatusChange` | `(details: ClipboardStatusChangeDetails) => void` |  | 状态每次落位时通知一次；挂载那一刻的 idle 是初始态，不通知。 |
@@ -124,15 +126,17 @@
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | state.get() |
-| `label` | state.get() |
-| `control` | state.get() |
-| `input` | state.get() |
-| `copy-trigger` | state.get() |
-| `indicator` | state.get() |
-| `status` | state.get() |
+| `root` | 'idle' \| 'copying' \| 'copied' |
+| `label` | 'idle' \| 'copying' \| 'copied' |
+| `control` | 'idle' \| 'copying' \| 'copied' |
+| `input` | 'idle' \| 'copying' \| 'copied' |
+| `copy-trigger` | 'idle' \| 'copying' \| 'copied' |
+| `indicator` | 'idle' \| 'copying' \| 'copied' |
+| `status` | 'idle' \| 'copying' \| 'copied' |
 
 以下名称仅用于内部状态机。
+
+**状态**：`idle` · `copying` · `copied`
 
 **事件**：`COPY.TRIGGER` · `COPY.SUCCESS` · `COPY.ERROR` · `after.timeout`
 
@@ -173,7 +177,9 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `input` | `aria-labelledby` | `label` 部件的 id |
+| `copy-trigger` | `aria-busy` | 'true' \| undefined |
 | `copy-trigger` | `aria-label` | translations?.copy |
+| `indicator` | `aria-hidden` | indicator.copied !== copied \|\| undefined |
 | `status` | `aria-atomic` | 'true' |
 | `status` | `aria-live` | 'polite' |
 | `status` | `role` | 'status' |
@@ -193,18 +199,18 @@
 | `root` | `data-copied` | ''（条件成立时才出现） |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
-| `root` | `data-state` | state.get() |
+| `root` | `data-state` | 'idle' \| 'copying' \| 'copied' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
-| `label` | `data-state` | state.get() |
-| `control` | `data-state` | state.get() |
-| `input` | `data-state` | state.get() |
+| `label` | `data-state` | 'idle' \| 'copying' \| 'copied' |
+| `control` | `data-state` | 'idle' \| 'copying' \| 'copied' |
+| `input` | `data-state` | 'idle' \| 'copying' \| 'copied' |
 | `copy-trigger` | `data-copied` | ''（条件成立时才出现） |
 | `copy-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `copy-trigger` | `data-state` | state.get() |
+| `copy-trigger` | `data-state` | 'idle' \| 'copying' \| 'copied' |
 | `indicator` | `data-copied` | ''（条件成立时才出现） |
-| `indicator` | `data-state` | state.get() |
-| `status` | `data-state` | state.get() |
+| `indicator` | `data-state` | 'idle' \| 'copying' \| 'copied' |
+| `status` | `data-state` | 'idle' \| 'copying' \| 'copied' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -213,7 +219,8 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-clipboard-control-gap` | `control` | `gap` | `default` | `--xh-control-gap-md` | clipboard 的 control 部件 gap 覆盖槽。 |
+| `--xh-clipboard-control-active-layer` | `control`<br>`copy-trigger`<br>`input` | `z-index` | `focus-visible`<br>`hover` | `1` | clipboard 的 control、copy-trigger、input 部件 z-index 覆盖槽。 |
+| `--xh-clipboard-control-gap` | `control` | `gap` | `default` | `0` | clipboard 的 control 部件 gap 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-bg` | `copy-trigger` | `background` | `default` | `--xh-_clipboard-copy-trigger-bg` | clipboard 的 copy-trigger 部件 background 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-bg-active` | `copy-trigger` | `background` | `active` | `--xh-_clipboard-copy-trigger-bg-active` | clipboard 的 copy-trigger 部件 background 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-bg-disabled` | `copy-trigger` | `background` | `disabled` | `--xh-bg-muted` | clipboard 的 copy-trigger 部件 background 覆盖槽。 |
@@ -225,13 +232,14 @@
 | `--xh-clipboard-copy-trigger-fg` | `copy-trigger`<br>`root` | `--xh-_ring-color`<br>`color` | `copied`<br>`default`<br>`focus-visible`<br>`variant=solid` | `--xh-_clipboard-copy-trigger-fg` | clipboard 的 copy-trigger、root 部件 --xh-_ring-color、color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-fg-copied` | `copy-trigger` | `color` | `copied` | `--xh-fg-success` | clipboard 的 copy-trigger 部件 color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-font-size` | `copy-trigger` | `font-size` | `default` | `--xh-text-body-size` | clipboard 的 copy-trigger 部件 font-size 覆盖槽。 |
-| `--xh-clipboard-copy-trigger-gap` | `copy-trigger` | `gap` | `default` | `--xh-control-gap-sm` | clipboard 的 copy-trigger 部件 gap 覆盖槽。 |
+| `--xh-clipboard-copy-trigger-gap` | `copy-trigger`<br>`indicator` | `gap` | `default` | `--xh-control-gap-sm` | clipboard 的 copy-trigger、indicator 部件 gap 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-h` | `copy-trigger` | `block-size` | `default` | `--xh-_clipboard-h` | clipboard 的 copy-trigger 部件 block-size 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-px` | `copy-trigger` | `padding-inline` | `default` | `--xh-_clipboard-px` | clipboard 的 copy-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-radius` | `copy-trigger` | `border-radius` | `default` | `--xh-shape-control` | clipboard 的 copy-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-clipboard-copy-trigger-shadow-hover` | `copy-trigger` | `box-shadow` | `hover` | `--xh-elevation-raised` | clipboard 的 copy-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-clipboard-copy-trigger-shadow-hover` | `copy-trigger` | `box-shadow` | `hover` | `--xh-_clipboard-copy-trigger-shadow-hover` | clipboard 的 copy-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-clipboard-gap` | `root` | `gap` | `default` | `--xh-space-1` | clipboard 的 root 部件 gap 覆盖槽。 |
 | `--xh-clipboard-indicator-fg-copied` | `indicator` | `color` | `copied` | `--xh-fg-success` | clipboard 的 indicator 部件 color 覆盖槽。 |
+| `--xh-clipboard-indicator-gap` | `indicator` | `gap` | `default` | `--xh-clipboard-copy-trigger-gap` | clipboard 的 indicator 部件 gap 覆盖槽。 |
 | `--xh-clipboard-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-subtle` | clipboard 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-clipboard-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | clipboard 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-clipboard-input-bg` | `input` | `background` | `default` | `--xh-bg-subtle` | clipboard 的 input 部件 background 覆盖槽。 |
@@ -246,12 +254,12 @@
 | `--xh-clipboard-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | clipboard 的 label 部件 color 覆盖槽。 |
 | `--xh-clipboard-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | clipboard 的 label 部件 font-size 覆盖槽。 |
 | `--xh-clipboard-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | clipboard 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-clipboard-loading-duration` | `copy-trigger` | `animation` | `state=copying` | `--xh-spin-duration` | clipboard 的 copy-trigger 部件 animation 覆盖槽。 |
+| `--xh-clipboard-loading-duration` | `copy-trigger` | `animation` | `default` | `--xh-spin-duration` | clipboard 的 copy-trigger 部件 animation 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-clipboard-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-clipboard-loading-hide` · `xh-clipboard-loading-reveal` · `xh-clipboard-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

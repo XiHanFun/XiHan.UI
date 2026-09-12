@@ -104,7 +104,7 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | 自定义元素 | `<xh-question-flow>` |
 | Vue 组件 | `XhQuestionFlowCounter` `XhQuestionFlowFooter` `XhQuestionFlowGroup` `XhQuestionFlowItem` `XhQuestionFlowItemIndicator` `XhQuestionFlowItemText` `XhQuestionFlowLiveRegion` `XhQuestionFlowNextTrigger` `XhQuestionFlowNote` `XhQuestionFlowPrevTrigger` `XhQuestionFlowPrompt` `XhQuestionFlowQuestion` `XhQuestionFlowResult` `XhQuestionFlowRoot` `XhQuestionFlowSkipTrigger` `XhQuestionFlowSubmitTrigger` `XhQuestionFlowTrack` `XhQuestionFlowViewport` |
 | 组合式函数 | `useQuestionFlow` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `questionFlowMachine` |
 | 皮肤 | `@xihan-ui/styles/question-flow.css` |
 
 ### Props
@@ -161,13 +161,15 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | state.get() |
+| `root` | 'answering' \| 'submitted' |
 | `item` | 'checked' \| 'unchecked' |
 | `item-indicator` | 'checked' \| 'unchecked' |
 | `item-text` | 'checked' \| 'unchecked' |
-| `result` | state.get() |
+| `result` | 'answering' \| 'submitted' |
 
 以下名称仅用于内部状态机。
+
+**状态**：`answering` · `submitted`
 
 **事件**：`OPTION.TOGGLE` · `NOTE.SET` · `GOTO` · `NEXT` · `PREV` · `SKIP` · `SUBMIT` · `VIEWPORT.MEASURE` · `after.autoAdvance` · `CONTROLLED.ANSWERING` · `CONTROLLED.SUBMITTED`
 
@@ -289,7 +291,7 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
-| `root` | `data-state` | state.get() |
+| `root` | `data-state` | 'answering' \| 'submitted' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `question` | `data-current` | ''（条件成立时才出现） |
@@ -302,7 +304,7 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-value` | item.value |
 | `submit-trigger` | `data-mode` | 'send' \| 'continue' |
-| `result` | `data-state` | state.get() |
+| `result` | `data-state` | 'answering' \| 'submitted' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

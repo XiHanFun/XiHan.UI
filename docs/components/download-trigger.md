@@ -102,7 +102,7 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 | 自定义元素 | `<xh-download-trigger>` |
 | Vue 组件 | `XhDownloadTrigger` |
 | 组合式函数 | `useDownloadTrigger` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `downloadTriggerMachine` |
 | 皮肤 | `@xihan-ui/styles/download-trigger.css` |
 
 ### Props
@@ -143,9 +143,11 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | state.get() |
+| `root` | 'idle' \| 'preparing' |
 
 以下名称仅用于内部状态机。
+
+**状态**：`idle` · `preparing`
 
 **事件**：`DOWNLOAD.TRIGGER` · `DOWNLOAD.SUCCESS` · `DOWNLOAD.ERROR`
 
@@ -201,7 +203,7 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
-| `root` | `data-state` | state.get() |
+| `root` | `data-state` | 'idle' \| 'preparing' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 

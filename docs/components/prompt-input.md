@@ -137,7 +137,7 @@ tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受
 | 自定义元素 | `<xh-prompt-input>` |
 | Vue 组件 | `XhPromptInputControl` `XhPromptInputInput` `XhPromptInputRoot` `XhPromptInputSubmitTrigger` |
 | 组合式函数 | `usePromptInput` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `promptInputMachine` |
 | 皮肤 | `@xihan-ui/styles/prompt-input.css` |
 
 ### Props
@@ -183,9 +183,11 @@ tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受
 
 | 部件 | 取值 |
 | --- | --- |
-| `input` | state.get() |
+| `input` | 'empty' \| 'editing' \| 'disabled' |
 
 以下名称仅用于内部状态机。
+
+**状态**：`empty` · `editing` · `disabled`
 
 **事件**：`VALUE.SET` · `COMPOSITION.START` · `COMPOSITION.END` · `KEY.SUBMIT` · `SUBMIT` · `STOP` · `CONTROLLED.DISABLE` · `CONTROLLED.ENABLE` · `CONTROLLED.VALUE.EMPTY` · `CONTROLLED.VALUE.FILLED`
 
@@ -260,7 +262,7 @@ tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
-| `input` | `data-state` | state.get() |
+| `input` | `data-state` | 'empty' \| 'editing' \| 'disabled' |
 | `submit-trigger` | `data-mode` | 'stop' \| 'send' |
 
 <!-- xh-component-tokens:start -->

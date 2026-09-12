@@ -125,7 +125,7 @@ tone 换淡底与回退字的配色族；不写 tone 就是中性缺省，直径
 | 自定义元素 | `<xh-avatar>` |
 | Vue 组件 | `XhAvatarFallback` `XhAvatarImage` `XhAvatarRoot` |
 | 组合式函数 | `useAvatar` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `avatarMachine` |
 | 皮肤 | `@xihan-ui/styles/avatar.css` |
 
 ### Props
@@ -152,11 +152,13 @@ tone 换淡底与回退字的配色族；不写 tone 就是中性缺省，直径
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | state.get() |
-| `image` | state.get() |
-| `fallback` | state.get() |
+| `root` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `image` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `fallback` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
 
 以下名称仅用于内部状态机。
+
+**状态**：`idle` · `loading` · `loaded` · `error`
 
 **事件**：`SRC.CHANGE` · `IMAGE.LOAD` · `IMAGE.ERROR`
 
@@ -195,10 +197,10 @@ tone 换淡底与回退字的配色族；不写 tone 就是中性缺省，直径
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
-| `root` | `data-state` | state.get() |
+| `root` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
 | `root` | `data-tone` | props.tone |
-| `image` | `data-state` | state.get() |
-| `fallback` | `data-state` | state.get() |
+| `image` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `fallback` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

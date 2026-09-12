@@ -94,7 +94,7 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 | 自定义元素 | `<xh-loading-bar>` |
 | Vue 组件 | `XhLoadingBarPeg` `XhLoadingBarRange` `XhLoadingBarRoot` `XhLoadingBarTrack` |
 | 组合式函数 | `useLoadingBar` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `loadingBarMachine` |
 | 皮肤 | `@xihan-ui/styles/loading-bar.css` |
 
 ### Props
@@ -136,12 +136,14 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | state.get() |
-| `track` | state.get() |
-| `range` | state.get() |
-| `peg` | state.get() |
+| `root` | 'idle' \| 'loading' \| 'finishing' |
+| `track` | 'idle' \| 'loading' \| 'finishing' |
+| `range` | 'idle' \| 'loading' \| 'finishing' |
+| `peg` | 'idle' \| 'loading' \| 'finishing' |
 
 以下名称仅用于内部状态机。
+
+**状态**：`idle` · `loading` · `finishing`
 
 **事件**：`LOADING.START` · `LOADING.END` · `TRICKLE.SYNC` · `after.trickleSpeed` · `after.fadeDuration`
 
@@ -194,11 +196,11 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-indeterminate` | ''（条件成立时才出现） |
-| `root` | `data-state` | state.get() |
+| `root` | `data-state` | 'idle' \| 'loading' \| 'finishing' |
 | `root` | `data-tone` | props.tone |
-| `track` | `data-state` | state.get() |
-| `range` | `data-state` | state.get() |
-| `peg` | `data-state` | state.get() |
+| `track` | `data-state` | 'idle' \| 'loading' \| 'finishing' |
+| `range` | `data-state` | 'idle' \| 'loading' \| 'finishing' |
+| `peg` | `data-state` | 'idle' \| 'loading' \| 'finishing' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

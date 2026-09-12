@@ -107,7 +107,7 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 | 自定义元素 | `<xh-image>` |
 | Vue 组件 | `XhImageFallback` `XhImageImage` `XhImagePlaceholder` `XhImageRoot` |
 | 组合式函数 | `useImage` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `imageMachine` |
 | 皮肤 | `@xihan-ui/styles/image.css` |
 
 ### Props
@@ -141,12 +141,14 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | state.get() |
-| `image` | state.get() |
-| `placeholder` | state.get() |
-| `fallback` | state.get() |
+| `root` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `image` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `placeholder` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `fallback` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
 
 以下名称仅用于内部状态机。
+
+**状态**：`idle` · `loading` · `loaded` · `error`
 
 **事件**：`SRC.CHANGE` · `IMAGE.LOAD` · `IMAGE.ERROR` · `after.fallbackDelay`
 
@@ -195,10 +197,10 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-state` | state.get() |
-| `image` | `data-state` | state.get() |
-| `placeholder` | `data-state` | state.get() |
-| `fallback` | `data-state` | state.get() |
+| `root` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `image` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `placeholder` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `fallback` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

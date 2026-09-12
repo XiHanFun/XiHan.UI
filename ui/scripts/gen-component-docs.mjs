@@ -629,32 +629,38 @@ function typeText(node, sf) {
   return node.getText(sf).replace(/\s*\n\s*/g, ' ').replace(/\s{2,}/g, ' ')
 }
 
-/** 联合类型字面量成员，非联合则返回 null */
+/** 联合类型字面量成员；类型别名经检查器展开后再读取。 */
 function unionMembers(node, sf) {
   if (!node)
     return null
   if (ts.isLiteralTypeNode(node) && ts.isStringLiteral(node.literal)) {
     return [node.literal.text]
   }
-  if (!ts.isUnionTypeNode(node))
-    return null
   const out = []
-  for (const t of node.types) {
-    if (ts.isLiteralTypeNode(t) && ts.isStringLiteral(t.literal)) {
-      out.push(t.literal.text)
-    }
-    else if (ts.isTypeLiteralNode(t)) {
-      // 事件写成 { type: 'TOGGLE'; ... } 的对象联合，取 type 字面量
-      const typeProp = t.members.find(
-        mm => ts.isPropertySignature(mm) && mm.name?.getText(sf) === 'type',
-      )
-      const lit = typeProp?.type
-      if (lit && ts.isLiteralTypeNode(lit) && ts.isStringLiteral(lit.literal)) {
-        out.push(lit.literal.text)
+  if (ts.isUnionTypeNode(node)) {
+    for (const t of node.types) {
+      if (ts.isLiteralTypeNode(t) && ts.isStringLiteral(t.literal)) {
+        out.push(t.literal.text)
+      }
+      else if (ts.isTypeLiteralNode(t)) {
+        // 事件写成 { type: 'TOGGLE'; ... } 的对象联合，取 type 字面量
+        const typeProp = t.members.find(
+          mm => ts.isPropertySignature(mm) && mm.name?.getText(sf) === 'type',
+        )
+        const lit = typeProp?.type
+        if (lit && ts.isLiteralTypeNode(lit) && ts.isStringLiteral(lit.literal)) {
+          out.push(lit.literal.text)
+        }
       }
     }
   }
-  return out.length ? out : null
+  if (out.length)
+    return out
+
+  const resolved = checker.getTypeFromTypeNode(node)
+  const candidates = resolved.isUnion() ? resolved.types : [resolved]
+  const values = candidates.flatMap(type => type.isStringLiteral() ? [type.value] : [])
+  return values.length ? values : null
 }
 
 function typeMeta(id) {
