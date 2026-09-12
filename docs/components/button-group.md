@@ -165,7 +165,7 @@
 | `--xh-button-group-separator-opacity-disabled` | `separator` | `opacity` | `disabled` | `0.36` | button-group 的 separator 部件 opacity 覆盖槽。 |
 | `--xh-button-group-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | button-group 的 separator 部件 border-radius 覆盖槽。 |
 | `--xh-button-group-separator-size` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-_button-group-h` | button-group 的 separator 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-button-group-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | button-group 的 separator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-button-group-separator-thickness` | `separator` | `block-size`<br>`inline-size`<br>`margin-block-start`<br>`margin-inline-start` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | button-group 的 separator 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

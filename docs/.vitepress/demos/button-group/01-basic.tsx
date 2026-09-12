@@ -3,11 +3,11 @@ import type { ReactNode } from "react";
 import { Fragment } from "react";
 import { XhButton, XhButtonGroup, XhButtonGroupSeparator } from "@xihan-ui/react";
 
-const views = ["日", "周", "月"];
+const views = ["照片", "视频", "更多"];
 
 export default function Demo(): ReactNode {
   return (
-    <XhButtonGroup variant="solid">
+    <XhButtonGroup variant="subtle">
       {views.map((view, index) => (
         <Fragment key={view}>
           {index > 0 && <XhButtonGroupSeparator />}

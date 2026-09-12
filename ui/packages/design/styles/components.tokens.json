@@ -3797,7 +3797,9 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "margin-block-start",
+        "margin-inline-start"
       ],
       "state": [
         "orientation=horizontal",
@@ -3807,7 +3809,7 @@
         "--xh-stroke-thin"
       ],
       "visibility": "public",
-      "description": "button-group 的 separator 部件 block-size、inline-size 覆盖槽。"
+      "description": "button-group 的 separator 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-calendar-cell-bg-hover",
