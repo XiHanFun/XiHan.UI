@@ -3,13 +3,13 @@ import type { TreeSelectApi, TreeSelectNode, TreeSelectNodeProps, TreeSelectSche
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TreeSelectContext } from './use-tree-select'
-import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
-import { provideTreeSelect, provideTreeSelectNode, useTreeSelectContext, useTreeSelectNodeContext } from './context'
+import { provideTreeSelect, provideTreeSelectContent, provideTreeSelectNode, useTreeSelectContentContext, useTreeSelectContext, useTreeSelectNodeContext } from './context'
 import { useTreeSelect } from './use-tree-select'
 
 type TreeSelectProps = TreeSelectSchema['props']
@@ -22,22 +22,27 @@ export type TreeSelectRootSlotProps = Pick<
   | 'expandedValue'
   | 'visibleNodes'
   | 'focusedValue'
+  | 'empty'
+  | 'loading'
   | 'displayText'
   | 'canClear'
   | 'isSelected'
   | 'isIndeterminate'
   | 'isExpanded'
+  | 'branchLoadState'
   | 'setOpen'
   | 'setValue'
   | 'setExpandedValue'
   | 'expand'
   | 'collapse'
+  | 'retryBranch'
   | 'select'
   | 'clear'
 >
 
 /** 本节点持有焦点时，value 变更重报焦点节点，卸载时上报焦点丢失 */
 function reportNodeFocus(ctx: TreeSelectContext, el: Ref<HTMLElement | null>, value: () => string): void {
+  let registered: string | null = null
   watch(value, (next, prev) => {
     if (next === prev)
       return
@@ -46,12 +51,25 @@ function reportNodeFocus(ctx: TreeSelectContext, el: Ref<HTMLElement | null>, va
       return
     if (el.value && service.scope.getActiveElement() === el.value)
       service.send({ type: 'NODE.FOCUS', value: next })
+    if (registered !== null) {
+      service.send({ type: 'NODE.UNMOUNT', value: prev })
+      service.send({ type: 'NODE.MOUNT', value: next })
+      registered = next
+    }
   })
+  onMounted(() => queueMicrotask(() => {
+    if (ctx.service.getStatus() !== 'Started')
+      return
+    registered = value()
+    ctx.service.send({ type: 'NODE.MOUNT', value: registered })
+  }))
   onBeforeUnmount(() => {
     const { service } = ctx
     // 整组一起卸载时根部件先停机，此刻送事件会在 dev 下抛
     if (service.getStatus() !== 'Started')
       return
+    if (registered !== null)
+      service.send({ type: 'NODE.UNMOUNT', value: registered })
     // 按「本节点当下正持有焦点」判定，不按 value 比对
     if (el.value && service.scope.getActiveElement() === el.value)
       service.send({ type: 'NODE.LOST' })
@@ -98,6 +116,9 @@ export const XhTreeSelectRoot = defineComponent({
     'value-change': (_details: PayloadOf<TreeSelectProps, 'onValueChange'>) => true,
     'expanded-value-change': (_details: PayloadOf<TreeSelectProps, 'onExpandedValueChange'>) => true,
     'open-change': (_details: PayloadOf<TreeSelectProps, 'onOpenChange'>) => true,
+    'branch-load-start': (_details: PayloadOf<TreeSelectProps, 'onBranchLoadStart'>) => true,
+    'branch-load': (_details: PayloadOf<TreeSelectProps, 'onBranchLoad'>) => true,
+    'branch-load-error': (_details: PayloadOf<TreeSelectProps, 'onBranchLoadError'>) => true,
     'update:value': (_value: PayloadOf<TreeSelectProps, 'onValueChange'>['value']) => true,
     'update:expandedValue': (_value: PayloadOf<TreeSelectProps, 'onExpandedValueChange'>['value']) => true,
     'update:open': (_open: PayloadOf<TreeSelectProps, 'onOpenChange'>['open']) => true,
@@ -119,10 +140,16 @@ export const XhTreeSelectRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
+    const notifyBranchLoadStart: TreeSelectProps['onBranchLoadStart'] = details => emit('branch-load-start', details)
+    const notifyBranchLoad: TreeSelectProps['onBranchLoad'] = details => emit('branch-load', details)
+    const notifyBranchLoadError: TreeSelectProps['onBranchLoadError'] = details => emit('branch-load-error', details)
     const ctx = useTreeSelect(withXhConfig('tree-select', useFormControlProps(props)) as TreeSelectProps, {
       onValueChange: notifyValue,
       onExpandedValueChange: notifyExpanded,
       onOpenChange: notifyOpen,
+      onBranchLoadStart: notifyBranchLoadStart,
+      onBranchLoad: notifyBranchLoad,
+      onBranchLoadError: notifyBranchLoadError,
     })
     provideTreeSelect(ctx)
 
@@ -133,16 +160,20 @@ export const XhTreeSelectRoot = defineComponent({
           expandedValue: ctx.api.value.expandedValue,
           visibleNodes: ctx.api.value.visibleNodes,
           focusedValue: ctx.api.value.focusedValue,
+          empty: ctx.api.value.empty,
+          loading: ctx.api.value.loading,
           displayText: ctx.api.value.displayText,
           canClear: ctx.api.value.canClear,
           isSelected: ctx.api.value.isSelected,
           isIndeterminate: ctx.api.value.isIndeterminate,
           isExpanded: ctx.api.value.isExpanded,
+          branchLoadState: ctx.api.value.branchLoadState,
           setOpen: ctx.api.value.setOpen,
           setValue: ctx.api.value.setValue,
           setExpandedValue: ctx.api.value.setExpandedValue,
           expand: ctx.api.value.expand,
           collapse: ctx.api.value.collapse,
+          retryBranch: ctx.api.value.retryBranch,
           select: ctx.api.value.select,
           clear: ctx.api.value.clear,
         })
@@ -246,10 +277,56 @@ export const XhTreeSelectPositioner = defineComponent({
   },
 })
 
+const XhTreeSelectAutoEmpty = defineComponent({
+  name: 'XhTreeSelectAutoEmpty',
+  setup() {
+    const ctx = useTreeSelectContext()
+    const content = useTreeSelectContentContext()
+    return () => content.authoredEmptyCount.value > 0
+      ? null
+      : h('div', {
+          ...ctx.api.value.getEmptyProps() as Record<string, unknown>,
+          'data-xh-tree-select-auto-empty': '',
+        }, ctx.api.value.translations.empty)
+  },
+})
+
+const XhTreeSelectAutoLoading = defineComponent({
+  name: 'XhTreeSelectAutoLoading',
+  setup() {
+    const ctx = useTreeSelectContext()
+    const content = useTreeSelectContentContext()
+    return () => content.authoredLoadingCount.value > 0
+      ? null
+      : h('div', {
+          ...ctx.api.value.getLoadingProps() as Record<string, unknown>,
+          'data-xh-tree-select-auto-loading': '',
+        }, ctx.api.value.translations.loading)
+  },
+})
+
 export const XhTreeSelectContent = defineComponent({
   name: 'XhTreeSelectContent',
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
+    const authoredEmptyCount = ref(0)
+    const authoredLoadingCount = ref(0)
+    const register = (count: Ref<number>): (() => void) => {
+      count.value += 1
+      let active = true
+      return () => {
+        if (!active)
+          return
+        active = false
+        count.value -= 1
+      }
+    }
+    provideTreeSelectContent({
+      authoredEmptyCount,
+      authoredLoadingCount,
+      registerEmpty: () => register(authoredEmptyCount),
+      registerLoading: () => register(authoredLoadingCount),
+    })
     // 收起时只隐藏不卸载
     return () => h('div', {
       ...ctx.api.value.getContentProps() as Record<string, unknown>,
@@ -257,7 +334,7 @@ export const XhTreeSelectContent = defineComponent({
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
-    }, slots.default?.())
+    }, [slots.default?.(), h(XhTreeSelectAutoEmpty), h(XhTreeSelectAutoLoading)])
   },
 })
 
@@ -306,6 +383,17 @@ export const XhTreeSelectItemIndicator = defineComponent({
   },
 })
 
+function renderBranchFeedback(ctx: TreeSelectContext, node: TreeSelectNodeProps): VNode[] {
+  if (ctx.api.value.branchLoadState(node.value) == null)
+    return []
+  return [
+    h('div', ctx.api.value.getBranchLoadingProps(node) as Record<string, unknown>, ctx.api.value.translations.loading),
+    h('div', ctx.api.value.getBranchErrorProps(node) as Record<string, unknown>, ctx.api.value.translations.branchError),
+    h('button', ctx.api.value.getBranchRetryTriggerProps(node) as Record<string, unknown>, ctx.api.value.translations.retry),
+    h('div', ctx.api.value.getBranchEmptyProps(node) as Record<string, unknown>, ctx.api.value.translations.branchEmpty),
+  ]
+}
+
 export const XhTreeSelectBranch = defineComponent({
   name: 'XhTreeSelectBranch',
   props: {
@@ -321,7 +409,7 @@ export const XhTreeSelectBranch = defineComponent({
     return () => h(
       'div',
       { ...ctx.api.value.getBranchProps(node.value) as Record<string, unknown>, ref: el },
-      slots.default?.(),
+      [slots.default?.(), ...renderBranchFeedback(ctx, node.value)],
     )
   },
 })
@@ -372,13 +460,50 @@ export const XhTreeSelectBranchContent = defineComponent({
   },
 })
 
+export const XhTreeSelectBranchLoading = defineComponent({
+  name: 'XhTreeSelectBranchLoading',
+  setup(_, { slots }) {
+    const ctx = useTreeSelectContext()
+    const { node } = useTreeSelectNodeContext()
+    return () => h('div', ctx.api.value.getBranchLoadingProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.loading)
+  },
+})
+
+export const XhTreeSelectBranchError = defineComponent({
+  name: 'XhTreeSelectBranchError',
+  setup(_, { slots }) {
+    const ctx = useTreeSelectContext()
+    const { node } = useTreeSelectNodeContext()
+    return () => h('div', ctx.api.value.getBranchErrorProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.branchError)
+  },
+})
+
+export const XhTreeSelectBranchRetryTrigger = defineComponent({
+  name: 'XhTreeSelectBranchRetryTrigger',
+  setup(_, { slots }) {
+    const ctx = useTreeSelectContext()
+    const { node } = useTreeSelectNodeContext()
+    return () => h('button', ctx.api.value.getBranchRetryTriggerProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.retry)
+  },
+})
+
+export const XhTreeSelectBranchEmpty = defineComponent({
+  name: 'XhTreeSelectBranchEmpty',
+  setup(_, { slots }) {
+    const ctx = useTreeSelectContext()
+    const { node } = useTreeSelectNodeContext()
+    return () => h('div', ctx.api.value.getBranchEmptyProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.branchEmpty)
+  },
+})
+
 export const XhTreeSelectEmpty = defineComponent({
   name: 'XhTreeSelectEmpty',
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
-    // 空态占位：写在 content 里、tree 的兄弟，不进 role=tree 的拥有关系。
-    // 给了 collection 时收放归连接层，节点手写时归作者
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+    const content = useTreeSelectContentContext()
+    const unregister = content.registerEmpty()
+    onBeforeUnmount(unregister)
+    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.empty)
   },
 })
 
@@ -386,8 +511,10 @@ export const XhTreeSelectLoading = defineComponent({
   name: 'XhTreeSelectLoading',
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
-    // 在途占位：与空态占位同一个位置，取数期间顶上来
-    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
+    const content = useTreeSelectContentContext()
+    const unregister = content.registerLoading()
+    onBeforeUnmount(unregister)
+    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.loading)
   },
 })
 

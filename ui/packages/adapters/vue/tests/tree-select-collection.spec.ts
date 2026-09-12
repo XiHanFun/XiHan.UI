@@ -2,7 +2,7 @@
 import type { TreeNode } from '@xihan-ui/headless'
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { defineComponent, h, nextTick } from 'vue'
+import { defineComponent, h, nextTick, ref } from 'vue'
 import {
   provideXhConfig,
   XhTreeSelectBranch,
@@ -13,11 +13,13 @@ import {
   XhTreeSelectClearTrigger,
   XhTreeSelectContent,
   XhTreeSelectControl,
+  XhTreeSelectEmpty,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
   XhTreeSelectItemText,
   XhTreeSelectLabel,
+  XhTreeSelectLoading,
   XhTreeSelectPositioner,
   XhTreeSelectRoot,
   XhTreeSelectTree,
@@ -166,6 +168,55 @@ describe('tree-select 的 collection', () => {
     w.unmount()
   })
 
+  it('collection 与手写节点共用 Headless 自动空态，节点增删即时同步', async () => {
+    const collection = mount(XhTreeSelectRoot, { props: { collection: [], defaultOpen: true }, attachTo: document.body })
+    const automatic = document.querySelector<HTMLElement>('[data-xh-tree-select-auto-empty]')!
+    expect(automatic.textContent).toBe('No data')
+    expect(automatic.hidden).toBe(false)
+    collection.unmount()
+
+    const shown = ref(false)
+    const manual = mount(defineComponent({
+      setup: () => () => h(XhTreeSelectRoot, { defaultOpen: true }, () => [
+        h(XhTreeSelectTrigger, () => '选择'),
+        h(XhTreeSelectPositioner, null, () => h(XhTreeSelectContent, null, () => h(
+          XhTreeSelectTree,
+          null,
+          () => shown.value ? [h(XhTreeSelectItem, { value: 'manual' }, () => '手写')] : [],
+        ))),
+      ]),
+    }), { attachTo: document.body })
+    await nextTick()
+    expect(document.querySelector<HTMLElement>('[data-xh-tree-select-auto-empty]')!.hidden).toBe(false)
+    shown.value = true
+    await nextTick()
+    await nextTick()
+    expect(document.querySelector<HTMLElement>('[data-xh-tree-select-auto-empty]')!.hidden).toBe(true)
+    shown.value = false
+    await nextTick()
+    await nextTick()
+    expect(document.querySelector<HTMLElement>('[data-xh-tree-select-auto-empty]')!.hidden).toBe(false)
+    manual.unmount()
+  })
+
+  it('作者 Empty/Loading 在子 setup 阶段登记，同次提交不出现重复 status', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h(XhTreeSelectRoot, { defaultOpen: true }, () => [
+        h(XhTreeSelectTrigger, () => '选择'),
+        h(XhTreeSelectPositioner, null, () => h(XhTreeSelectContent, null, () => [
+          h(XhTreeSelectTree),
+          h(XhTreeSelectEmpty, null, () => '作者空态'),
+          h(XhTreeSelectLoading, null, () => '作者加载'),
+        ])),
+      ]),
+    }), { attachTo: document.body })
+    expect(document.querySelectorAll('[data-part="empty"]')).toHaveLength(1)
+    expect(document.querySelectorAll('[data-part="loading"]')).toHaveLength(1)
+    expect(document.querySelector('[data-xh-tree-select-auto-empty]')).toBeNull()
+    expect(document.querySelector('[data-xh-tree-select-auto-loading]')).toBeNull()
+    w.unmount()
+  })
+
   it('不写插槽时按数据铺开整套部件，带 children 的落成 branch', () => {
     const portal = newPortal()
     const w = mountFromCollection([], portal)
@@ -199,6 +250,8 @@ describe('tree-select 的 collection', () => {
       'item',
       'item-indicator',
       'item-text',
+      'empty',
+      'loading',
     ])
     w.unmount()
   })

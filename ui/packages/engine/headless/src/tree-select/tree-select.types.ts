@@ -11,18 +11,37 @@ export interface TreeSelectNode extends Omit<TreeNode, 'children'> {
   hasChildren?: boolean
 }
 
-export type TreeSelectBranchLoadStatus = 'idle' | 'loading' | 'error'
+export type TreeSelectBranchLoadStatus = 'idle' | 'loading' | 'loaded' | 'error'
 
-/** 分支异步相位；error 只在失败态出现，保留原始 cause 供宿主诊断。 */
-export interface TreeSelectBranchLoadSnapshot {
-  status: TreeSelectBranchLoadStatus
-  error?: unknown
-}
+/** 分支异步相位；成功空结果与失败是两个独立终态，不能互相降级。 */
+export type TreeSelectBranchLoadSnapshot
+  = | { status: 'idle' }
+    | { status: 'loading' }
+    | { status: 'loaded', empty: boolean }
+    | { status: 'error', error: unknown }
 
 /** 一次分支取数。signal 会在重试、节点从 collection 移除或组件卸载时中止。 */
 export interface TreeSelectLoadChildrenRequest {
   node: TreeSelectNode
   signal: AbortSignal
+}
+
+export interface TreeSelectBranchLoadStartDetails {
+  value: string
+  node: TreeSelectNode
+  reason: 'expand' | 'retry'
+}
+
+export interface TreeSelectBranchLoadDetails {
+  value: string
+  node: TreeSelectNode
+  children: TreeSelectNode[]
+}
+
+export interface TreeSelectBranchLoadErrorDetails {
+  value: string
+  node: TreeSelectNode
+  error: unknown
 }
 
 /**
@@ -55,9 +74,11 @@ export interface TreeSelectRefs {
    */
   typeahead: Typeahead
   /** 仍在途的分支请求；只放运行时资源，不进入可渲染 context。 */
-  branchLoadControllers: Map<string, { controller: AbortController, token: number }>
+  branchLoadControllers: Map<string, { controller: AbortController, token: number, node: TreeSelectNode }>
   /** 每次开新请求递增，用于拒绝过期回调。实例私有，不能放模块变量。 */
   branchLoadSequence: { n: number }
+  /** load 状态与成功 children 所属的原始节点对象；同 value 换节点时据此作废旧结果。 */
+  branchLoadOwners: Map<string, TreeSelectNode>
 }
 
 export interface TreeSelectOpenChangeDetails {
@@ -91,6 +112,16 @@ export interface TreeSelectTranslations {
   tree: string
   /** 清空按钮的可及名字，缺省 'Clear'。 */
   clearTrigger: string
+  /** 整棵树没有节点时的缺省文案。 */
+  empty: string
+  /** 外部整树或懒分支正在加载时的缺省文案。 */
+  loading: string
+  /** 懒分支加载失败时的缺省文案。 */
+  branchError: string
+  /** 懒分支失败后的重试按钮文案。 */
+  retry: string
+  /** 懒分支成功返回空数组时的缺省文案。 */
+  branchEmpty: string
 }
 
 export interface TreeSelectSchema extends MachineSchema {
@@ -160,6 +191,12 @@ export interface TreeSelectSchema extends MachineSchema {
     onExpandedValueChange?: (details: TreeSelectExpandedValueChangeDetails) => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: TreeSelectOpenChangeDetails) => void
+    /** 一轮有效分支请求开始；retry 与首次展开由 reason 区分。 */
+    onBranchLoadStart?: (details: TreeSelectBranchLoadStartDetails) => void
+    /** 一轮有效分支请求成功；children 为空仍是成功，不转换成错误或全局空态。 */
+    onBranchLoad?: (details: TreeSelectBranchLoadDetails) => void
+    /** 一轮有效分支请求失败；保留 loader 给出的原始 error。 */
+    onBranchLoadError?: (details: TreeSelectBranchLoadErrorDetails) => void
   }
   context: {
     /** 定位引擎回填的最新结果；connect 只读它，不碰 DOM 也不调引擎。 */
@@ -178,6 +215,8 @@ export interface TreeSelectSchema extends MachineSchema {
     branchLoads: Record<string, TreeSelectBranchLoadSnapshot>
     /** 已成功取回的直接子项，按父节点 value 建表。 */
     loadedChildren: Record<string, TreeSelectNode[]>
+    /** 三端只上报实际挂载的 item/branch 数量；手写节点是否为空由 Headless 据此判断。 */
+    renderedNodeCount: number
   }
   computed: Record<string, never>
   refs: TreeSelectRefs
@@ -204,6 +243,9 @@ export interface TreeSelectSchema extends MachineSchema {
     | { type: 'BRANCH.TOGGLE', value: string }
     /** 失败后显式开始新一轮；会使仍在途的旧轮失效。 */
     | { type: 'BRANCH.RETRY', value: string }
+    | { type: 'NODE.MOUNT', value: string }
+    | { type: 'NODE.UNMOUNT', value: string }
+    | { type: 'NODES.SYNC', values: string[] }
     | { type: 'FORM.RESET' }
   tag: never
   guard: 'isOpenControlled' | 'isMultiple'
@@ -228,6 +270,9 @@ export interface TreeSelectSchema extends MachineSchema {
     | 'retryBranch'
     | 'syncBranchLoads'
     | 'loadExpandedBranches'
+    | 'resumeBranchLoads'
+    | 'syncRenderedNodes'
+    | 'cancelBranchLoads'
     | 'resetToDefault'
   effect: 'trackPosition' | 'trackLayer' | 'trackBranchLoads'
 }
@@ -250,6 +295,11 @@ export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   displayText: string
   /** 焦点锚点；收起、或它已被收起而不可见时为 null。 */
   focusedValue: string | null
+  /** 整树当前是否没有任何节点；collection 与手写节点统一由 Headless 判定。 */
+  empty: boolean
+  /** 外部整树 loading 状态。懒分支 loading 由 branchLoadState 单独表达。 */
+  loading: boolean
+  translations: TreeSelectTranslations
   multiple: boolean
   disabled: boolean
   readOnly: boolean
@@ -291,14 +341,18 @@ export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   getBranchIndicatorProps: (props: TreeSelectNodeProps) => T['element']
   getBranchTextProps: (props: TreeSelectNodeProps) => T['element']
   getBranchContentProps: (props: TreeSelectNodeProps) => T['element']
+  getBranchLoadingProps: (props: TreeSelectNodeProps) => T['element']
+  getBranchErrorProps: (props: TreeSelectNodeProps) => T['element']
+  getBranchRetryTriggerProps: (props: TreeSelectNodeProps) => T['button']
+  getBranchEmptyProps: (props: TreeSelectNodeProps) => T['element']
   /**
    * 空态占位：放在 content 里、tree 的兄弟。
-   * 给了 collection 时由连接层按条数收放；节点手写时不写 hidden，露不露面归作者。
+   * collection 与手写节点都由连接层按 Headless 空态收放；作者可换内容，不必自己重算。
    */
   getEmptyProps: () => T['element']
   /**
    * 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。
-   * 给了 collection 时由连接层按条数收放；节点手写时只按 loading 收放。
+   * collection 与手写节点都由连接层按 Headless 空态收放。
    */
   getLoadingProps: () => T['element']
   /** 浮层底部的操作区：放在 content 里、tree 的兄弟，不入树的拥有关系，方向键也走不到。 */

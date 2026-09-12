@@ -2,7 +2,7 @@ import type { ControlVariant, Direction, Placement, Service, Size, Tone } from '
 import type { TreeSelectApi, TreeSelectNode, TreeSelectSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -12,7 +12,7 @@ import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
-import { TreeSelectNodeProvider, TreeSelectProvider, useTreeSelectContext, useTreeSelectNodeContext } from './context'
+import { TreeSelectContentProvider, TreeSelectNodeProvider, TreeSelectProvider, useTreeSelectContentContext, useTreeSelectContext, useTreeSelectNodeContext } from './context'
 import { useTreeSelect } from './use-tree-select'
 
 type TreeSelectProps = TreeSelectSchema['props']
@@ -25,16 +25,20 @@ export type TreeSelectRootSlotProps = Pick<
   | 'expandedValue'
   | 'visibleNodes'
   | 'focusedValue'
+  | 'empty'
+  | 'loading'
   | 'displayText'
   | 'canClear'
   | 'isSelected'
   | 'isIndeterminate'
   | 'isExpanded'
+  | 'branchLoadState'
   | 'setOpen'
   | 'setValue'
   | 'setExpandedValue'
   | 'expand'
   | 'collapse'
+  | 'retryBranch'
   | 'select'
   | 'clear'
 >
@@ -64,6 +68,15 @@ function useNodeFocusReport(
     if (el.current && service.scope.getActiveElement() === el.current)
       service.send({ type: 'NODE.LOST' })
   }, [service, el])
+
+  useIsomorphicLayoutEffect(() => {
+    if (service.getStatus() === 'Started')
+      service.send({ type: 'NODE.MOUNT', value })
+    return () => {
+      if (service.getStatus() === 'Started')
+        service.send({ type: 'NODE.UNMOUNT', value })
+    }
+  }, [service, value])
 }
 
 export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
@@ -101,6 +114,9 @@ export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>
   onValueChange?: TreeSelectProps['onValueChange']
   onExpandedValueChange?: TreeSelectProps['onExpandedValueChange']
   onOpenChange?: TreeSelectProps['onOpenChange']
+  onBranchLoadStart?: TreeSelectProps['onBranchLoadStart']
+  onBranchLoad?: TreeSelectProps['onBranchLoad']
+  onBranchLoadError?: TreeSelectProps['onBranchLoadError']
   children?: SlotChildren<TreeSelectRootSlotProps>
 }
 
@@ -136,6 +152,9 @@ export function XhTreeSelectRoot({
   onValueChange,
   onExpandedValueChange,
   onOpenChange,
+  onBranchLoadStart,
+  onBranchLoad,
+  onBranchLoadError,
   children,
   ...rest
 }: XhTreeSelectRootProps): ReactNode {
@@ -170,6 +189,9 @@ export function XhTreeSelectRoot({
     onValueChange,
     onExpandedValueChange,
     onOpenChange,
+    onBranchLoadStart,
+    onBranchLoad,
+    onBranchLoadError,
   })) as TreeSelectProps)
   const api = ctx.api
 
@@ -180,16 +202,20 @@ export function XhTreeSelectRoot({
         expandedValue: api.expandedValue,
         visibleNodes: api.visibleNodes,
         focusedValue: api.focusedValue,
+        empty: api.empty,
+        loading: api.loading,
         displayText: api.displayText,
         canClear: api.canClear,
         isSelected: api.isSelected,
         isIndeterminate: api.isIndeterminate,
         isExpanded: api.isExpanded,
+        branchLoadState: api.branchLoadState,
         setOpen: api.setOpen,
         setValue: api.setValue,
         setExpandedValue: api.setExpandedValue,
         expand: api.expand,
         collapse: api.collapse,
+        retryBranch: api.retryBranch,
         select: api.select,
         clear: api.clear,
       })
@@ -212,7 +238,7 @@ export function XhTreeSelectRoot({
   )
 }
 
-XhTreeSelectRoot.xhEvents = ['value-change', 'expanded-value-change', 'open-change'] as const
+XhTreeSelectRoot.xhEvents = ['value-change', 'expanded-value-change', 'open-change', 'branch-load-start', 'branch-load', 'branch-load-error'] as const
 
 export interface XhTreeSelectLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeSelectLabel({ children, ...rest }: XhTreeSelectLabelProps): ReactNode {
@@ -302,24 +328,64 @@ export function XhTreeSelectPositioner({ children, container, ...rest }: XhTreeS
 }
 
 export interface XhTreeSelectContentProps extends ComponentPropsWithRef<'div'> {}
+
+function TreeSelectAutoEmpty({ content }: { content: ReturnType<typeof useTreeSelectContentContext> }): ReactNode {
+  const ctx = useTreeSelectContext()
+  if (content.renderRegistration.authoredEmpty || content.authoredEmptyCount > 0)
+    return null
+  return <div {...ctx.api.getEmptyProps() as Record<string, unknown>} data-xh-tree-select-auto-empty="">{ctx.api.translations.empty}</div>
+}
+
+function TreeSelectAutoLoading({ content }: { content: ReturnType<typeof useTreeSelectContentContext> }): ReactNode {
+  const ctx = useTreeSelectContext()
+  if (content.renderRegistration.authoredLoading || content.authoredLoadingCount > 0)
+    return null
+  return <div {...ctx.api.getLoadingProps() as Record<string, unknown>} data-xh-tree-select-auto-loading="">{ctx.api.translations.loading}</div>
+}
+
 /** 收起时只隐藏不卸载。 */
 export function XhTreeSelectContent({ children, ...rest }: XhTreeSelectContentProps): ReactNode {
   const ctx = useTreeSelectContext()
+  const [authoredEmptyCount, setAuthoredEmptyCount] = useState(0)
+  const [authoredLoadingCount, setAuthoredLoadingCount] = useState(0)
+  const register = useCallback((setCount: (update: (count: number) => number) => void) => {
+    let active = true
+    setCount(count => count + 1)
+    return () => {
+      if (!active)
+        return
+      active = false
+      setCount(count => count - 1)
+    }
+  }, [])
+  const registerEmpty = useCallback(() => register(setAuthoredEmptyCount), [register])
+  const registerLoading = useCallback(() => register(setAuthoredLoadingCount), [register])
+  const content = {
+    renderRegistration: { authoredEmpty: false, authoredLoading: false },
+    authoredEmptyCount,
+    authoredLoadingCount,
+    registerEmpty,
+    registerLoading,
+  }
   return (
-    <div
-      {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
-        {
-          // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
-          // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
-          style: ctx.rendered ? undefined : { display: 'none' },
-          ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el },
-        },
-      )}
-    >
-      {children}
-    </div>
+    <TreeSelectContentProvider value={content}>
+      <div
+        {...mergeReactProps(
+          ctx.api.getContentProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          {
+            // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
+            // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
+            style: ctx.rendered ? undefined : { display: 'none' },
+            ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el },
+          },
+        )}
+      >
+        {children}
+        <TreeSelectAutoEmpty content={content} />
+        <TreeSelectAutoLoading content={content} />
+      </div>
+    </TreeSelectContentProvider>
   )
 }
 
@@ -391,6 +457,7 @@ export function XhTreeSelectBranch({ value, children, ...rest }: XhTreeSelectBra
         )}
       >
         {children}
+        <TreeSelectBranchFeedback />
       </div>
     </TreeSelectNodeProvider>
   )
@@ -432,18 +499,67 @@ export function XhTreeSelectBranchContent({ children, ...rest }: XhTreeSelectBra
   return <div {...mergeReactProps(ctx.api.getBranchContentProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
 }
 
+export interface XhTreeSelectBranchLoadingProps extends ComponentPropsWithRef<'div'> {}
+export function XhTreeSelectBranchLoading({ children, ...rest }: XhTreeSelectBranchLoadingProps): ReactNode {
+  const ctx = useTreeSelectContext()
+  const node = useTreeSelectNodeContext()
+  return <div {...mergeReactProps(ctx.api.getBranchLoadingProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.loading}</div>
+}
+
+export interface XhTreeSelectBranchErrorProps extends ComponentPropsWithRef<'div'> {}
+export function XhTreeSelectBranchError({ children, ...rest }: XhTreeSelectBranchErrorProps): ReactNode {
+  const ctx = useTreeSelectContext()
+  const node = useTreeSelectNodeContext()
+  return <div {...mergeReactProps(ctx.api.getBranchErrorProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.branchError}</div>
+}
+
+export interface XhTreeSelectBranchRetryTriggerProps extends ComponentPropsWithRef<'button'> {}
+export function XhTreeSelectBranchRetryTrigger({ children, ...rest }: XhTreeSelectBranchRetryTriggerProps): ReactNode {
+  const ctx = useTreeSelectContext()
+  const node = useTreeSelectNodeContext()
+  return <button {...mergeReactProps(ctx.api.getBranchRetryTriggerProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.retry}</button>
+}
+
+export interface XhTreeSelectBranchEmptyProps extends ComponentPropsWithRef<'div'> {}
+export function XhTreeSelectBranchEmpty({ children, ...rest }: XhTreeSelectBranchEmptyProps): ReactNode {
+  const ctx = useTreeSelectContext()
+  const node = useTreeSelectNodeContext()
+  return <div {...mergeReactProps(ctx.api.getBranchEmptyProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.branchEmpty}</div>
+}
+
+function TreeSelectBranchFeedback(): ReactNode {
+  const ctx = useTreeSelectContext()
+  const node = useTreeSelectNodeContext()
+  if (ctx.api.branchLoadState(node.value) == null)
+    return null
+  return (
+    <>
+      <XhTreeSelectBranchLoading />
+      <XhTreeSelectBranchError />
+      <XhTreeSelectBranchRetryTrigger />
+      <XhTreeSelectBranchEmpty />
+    </>
+  )
+}
+
 export interface XhTreeSelectEmptyProps extends ComponentPropsWithRef<'div'> {}
 /** 空态占位：写在 content 里、tree 的兄弟，不进 role=tree 的拥有关系。 */
 export function XhTreeSelectEmpty({ children, ...rest }: XhTreeSelectEmptyProps): ReactNode {
   const ctx = useTreeSelectContext()
-  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  const content = useTreeSelectContentContext()
+  content.renderRegistration.authoredEmpty = true
+  useIsomorphicLayoutEffect(() => content.registerEmpty(), [content.registerEmpty])
+  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.empty}</div>
 }
 
 export interface XhTreeSelectLoadingProps extends ComponentPropsWithRef<'div'> {}
 /** 在途占位：与空态占位同一个位置，取数期间顶上来。 */
 export function XhTreeSelectLoading({ children, ...rest }: XhTreeSelectLoadingProps): ReactNode {
   const ctx = useTreeSelectContext()
-  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  const content = useTreeSelectContentContext()
+  content.renderRegistration.authoredLoading = true
+  useIsomorphicLayoutEffect(() => content.registerLoading(), [content.registerLoading])
+  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.loading}</div>
 }
 
 export interface XhTreeSelectFooterProps extends ComponentPropsWithRef<'div'> {}

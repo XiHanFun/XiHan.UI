@@ -7,6 +7,7 @@ const APG_COMBOBOX = 'https://www.w3.org/WAI/ARIA/apg/patterns/combobox/'
 const APG_TREE = 'https://www.w3.org/WAI/ARIA/apg/patterns/treeview/'
 
 const SCOPE = '[data-scope="tree-select"]'
+const BRANCH_LOAD_ERROR = new Error('offline')
 
 /**
  * 树数据：层级元信息、显示文本与节点禁用的事实源。
@@ -221,6 +222,8 @@ export const treeSelectSuite: ConformanceSuite = {
           'item[3]',
           'item-indicator[3]',
           'item-text[3]',
+          'empty',
+          'loading',
         ],
         counts: {
           'root': 1,
@@ -243,6 +246,8 @@ export const treeSelectSuite: ConformanceSuite = {
           'item': 4,
           'item-text': 4,
           'item-indicator': 4,
+          'empty': 1,
+          'loading': 1,
         },
         parts: {
           'root': {
@@ -374,6 +379,130 @@ export const treeSelectSuite: ConformanceSuite = {
           run: ({ doc }) => {
             assertValueText(doc, '请选择')
             assertHiddenInput(doc, 'dir', [])
+          },
+        },
+      ],
+    },
+    {
+      name: 'collection 真实空树自动露出 empty；外部 loading 与它不同屏',
+      spec: { apg: APG_TREE },
+      props: { collection: [], defaultOpen: true },
+      initial: {
+        parts: {
+          tree: { 'data-empty': '' },
+          empty: { role: 'status', hidden: null },
+          loading: { role: 'status', hidden: '' },
+        },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { loading: true },
+          expect: {
+            parts: {
+              tree: { 'data-empty': null, 'aria-busy': 'true' },
+              empty: { hidden: '' },
+              loading: { hidden: null },
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: '懒分支在途：默认结构公开 loading，开始事件带分支与原因',
+      spec: { apg: APG_TREE },
+      props: {
+        collection: [{ value: 'docs', label: 'Docs', hasChildren: true }],
+        defaultOpen: true,
+        loadChildren: () => new Promise(() => {}),
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'branch-trigger[2]',
+          expect: {
+            parts: {
+              'branch[2]': { 'aria-busy': 'true', 'data-loading': '', 'data-load-state': 'loading' },
+              'branch-loading': { role: 'status', hidden: null },
+              'branch-error': { hidden: '' },
+              'branch-retry-trigger': { hidden: '' },
+              'branch-empty': { hidden: '' },
+            },
+            events: [{
+              type: 'branch-load-start',
+              detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, reason: 'expand' },
+            }, { type: 'expanded-value-change', detail: { value: ['docs'] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '懒分支失败与重试：error/retry 结构和事件不降级成空态',
+      spec: { apg: APG_TREE },
+      covers: ['tree-select.kbd.retry'],
+      props: {
+        collection: [{ value: 'docs', label: 'Docs', hasChildren: true }],
+        defaultOpen: true,
+        loadChildren: () => Promise.reject(BRANCH_LOAD_ERROR),
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'branch-trigger[2]',
+          expect: {
+            parts: {
+              'branch[2]': { 'data-error': '', 'data-load-state': 'error', 'data-empty': null },
+              'branch-loading': { hidden: '' },
+              'branch-error': { role: 'alert', hidden: null },
+              'branch-retry-trigger': { 'type': 'button', 'aria-label': 'Retry', 'hidden': null },
+              'branch-empty': { hidden: '' },
+            },
+            events: [
+              { type: 'branch-load-start', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, reason: 'expand' } },
+              { type: 'expanded-value-change', detail: { value: ['docs'] } },
+              { type: 'branch-load-error', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, error: BRANCH_LOAD_ERROR } },
+            ],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Enter',
+          expect: {
+            parts: { 'branch[2]': { 'data-error': '', 'data-load-state': 'error' } },
+            events: [
+              { type: 'branch-load-start', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, reason: 'retry' } },
+              { type: 'branch-load-error', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, error: BRANCH_LOAD_ERROR } },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      name: '懒分支成功空结果：loaded empty 独立于失败和整树空态',
+      spec: { apg: APG_TREE },
+      props: {
+        collection: [{ value: 'docs', label: 'Docs', hasChildren: true }],
+        defaultOpen: true,
+        loadChildren: async () => [],
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'branch-trigger[2]',
+          expect: {
+            parts: {
+              'tree': { 'data-empty': null },
+              'branch[2]': { 'data-empty': '', 'data-error': null, 'data-load-state': 'loaded' },
+              'branch-loading': { hidden: '' },
+              'branch-error': { hidden: '' },
+              'branch-retry-trigger': { hidden: '' },
+              'branch-empty': { role: 'status', hidden: null },
+            },
+            events: [
+              { type: 'branch-load-start', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, reason: 'expand' } },
+              { type: 'expanded-value-change', detail: { value: ['docs'] } },
+              { type: 'branch-load', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, children: [] } },
+            ],
           },
         },
       ],

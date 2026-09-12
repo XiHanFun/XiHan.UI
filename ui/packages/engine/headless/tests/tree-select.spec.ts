@@ -152,7 +152,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   const props = runtime.signal<Partial<Props>>({ collection: COLLECTION, ...initial })
   // 作者标记镜像的是机器手上的那份 collection：两边不同源的话，
   // 摊平算出来的可见行在 DOM 里一个也找不到，用例会假绿
-  const collection = props.get().collection!
+  const collection = props.get().collection ?? []
 
   const idGen = createCounterIdGenerator()
   const scope = createScope(null, idGen)
@@ -1240,10 +1240,15 @@ describe('浮层定位', () => {
 
 describe('treeSelect 懒分支', () => {
   it('首次展开在 headless 开请求，成功结果成为有效树而不是由适配器拼接', async () => {
+    const onBranchLoadStart = vi.fn()
+    const onBranchLoad = vi.fn()
     const loadChildren = vi.fn(async () => [{ value: 'leaf', label: 'Leaf' }])
     const h = mount({
       collection: [{ value: 'root', label: 'Root', hasChildren: true }],
+      defaultOpen: true,
       loadChildren,
+      onBranchLoadStart,
+      onBranchLoad,
     })
 
     h.api().expand('root')
@@ -1252,7 +1257,9 @@ describe('treeSelect 懒分支', () => {
     await tick()
 
     expect(loadChildren).toHaveBeenCalledTimes(1)
-    expect(h.api().branchLoadState('root')).toEqual({ status: 'idle' })
+    expect(onBranchLoadStart).toHaveBeenCalledWith(expect.objectContaining({ value: 'root', reason: 'expand' }))
+    expect(onBranchLoad).toHaveBeenCalledWith(expect.objectContaining({ value: 'root', children: [{ value: 'leaf', label: 'Leaf' }] }))
+    expect(h.api().branchLoadState('root')).toEqual({ status: 'loaded', empty: false })
     expect(h.api().collection).toEqual([{ value: 'root', label: 'Root', hasChildren: true, children: [{ value: 'leaf', label: 'Leaf' }] }])
     expect(h.api().visibleNodes.map(node => node.value)).toEqual(['root', 'leaf'])
   })
@@ -1266,13 +1273,15 @@ describe('treeSelect 懒分支', () => {
         signal.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')))
       }))
       .mockImplementationOnce(() => new Promise<{ value: string }[]>((resolve) => { resolveSecond = resolve }))
-    const h = mount({ collection: [{ value: 'root', hasChildren: true }], loadChildren })
+    const onBranchLoadError = vi.fn()
+    const h = mount({ collection: [{ value: 'root', hasChildren: true }], defaultOpen: true, loadChildren, onBranchLoadError })
 
     h.api().expand('root')
     await tick()
     rejectFirst(new Error('offline'))
     await tick()
     expect(h.api().branchLoadState('root')?.status).toBe('error')
+    expect(onBranchLoadError).toHaveBeenCalledWith(expect.objectContaining({ value: 'root', error: expect.any(Error) }))
 
     h.api().retryBranch('root')
     await tick()
@@ -1280,7 +1289,7 @@ describe('treeSelect 懒分支', () => {
     resolveSecond([{ value: 'fresh' }])
     await tick()
 
-    expect(h.api().branchLoadState('root')).toEqual({ status: 'idle' })
+    expect(h.api().branchLoadState('root')).toEqual({ status: 'loaded', empty: false })
     expect(h.api().collection[0]?.children?.map(node => node.value)).toEqual(['fresh'])
   })
 
@@ -1290,7 +1299,7 @@ describe('treeSelect 懒分支', () => {
     const loadChildren = vi.fn()
       .mockImplementationOnce(() => new Promise<{ value: string }[]>((done) => { resolveFirst = done }))
       .mockImplementationOnce(() => new Promise<{ value: string }[]>((done) => { resolveSecond = done }))
-    const h = mount({ collection: [{ value: 'root', hasChildren: true }], loadChildren })
+    const h = mount({ collection: [{ value: 'root', hasChildren: true }], defaultOpen: true, loadChildren })
 
     h.api().expand('root')
     await tick()
@@ -1310,6 +1319,7 @@ describe('treeSelect 懒分支', () => {
     let signal: AbortSignal | undefined
     const h = mount({
       collection: [{ value: 'root', hasChildren: true }],
+      defaultOpen: true,
       loadChildren: ({ signal: next }) => {
         signal = next
         return new Promise<{ value: string }[]>((done) => {
@@ -1327,6 +1337,134 @@ describe('treeSelect 懒分支', () => {
 
     expect(h.api().collection).toEqual([])
     expect(h.api().branchLoadState('root')).toBeNull()
+  })
+
+  it('分支收起会中止在途请求，迟到结果无效；再次展开开启新请求', async () => {
+    const pending: Array<{ signal: AbortSignal, resolve: (children: { value: string }[]) => void }> = []
+    const loadChildren = vi.fn(({ signal }: { signal: AbortSignal }) => new Promise<{ value: string }[]>((resolve) => {
+      pending.push({ signal, resolve })
+    }))
+    const h = mount({ collection: [{ value: 'root', hasChildren: true }], defaultOpen: true, loadChildren })
+
+    h.api().expand('root')
+    await tick()
+    h.api().collapse('root')
+    expect(pending[0]!.signal.aborted).toBe(true)
+    expect(h.api().branchLoadState('root')).toEqual({ status: 'idle' })
+    pending[0]!.resolve([{ value: 'stale' }])
+    await tick()
+    expect(h.api().collection[0]?.children).toEqual([])
+
+    h.api().expand('root')
+    await tick()
+    expect(loadChildren).toHaveBeenCalledTimes(2)
+    pending[1]!.resolve([{ value: 'fresh' }])
+    await tick()
+    expect(h.api().collection[0]?.children?.map(node => node.value)).toEqual(['fresh'])
+  })
+
+  it('整浮层收起同样中止请求，重新展开后由展开集合恢复新一轮', async () => {
+    const pending: Array<{ signal: AbortSignal, resolve: (children: { value: string }[]) => void }> = []
+    const h = mount({
+      collection: [{ value: 'root', hasChildren: true }],
+      defaultOpen: true,
+      defaultExpandedValue: ['root'],
+      loadChildren: ({ signal }) => new Promise((resolve) => { pending.push({ signal, resolve }) }),
+    })
+    await tick()
+    h.api().setOpen(false)
+    expect(pending[0]!.signal.aborted).toBe(true)
+    pending[0]!.resolve([{ value: 'stale' }])
+    await tick()
+    expect(h.api().collection[0]?.children).toEqual([])
+
+    h.api().setOpen(true)
+    await tick()
+    expect(pending).toHaveLength(2)
+  })
+
+  it('同 value 节点对象换代会作废旧请求与旧结果', async () => {
+    let resolveOld: (children: { value: string }[]) => void = () => {}
+    const oldNode = { value: 'root', hasChildren: true }
+    const newNode = { value: 'root', hasChildren: true }
+    const loadChildren = vi.fn()
+      .mockImplementationOnce(({ signal }: { signal: AbortSignal }) => new Promise<{ value: string }[]>((resolve) => {
+        resolveOld = resolve
+        expect(signal.aborted).toBe(false)
+      }))
+      .mockImplementationOnce(() => Promise.resolve([{ value: 'fresh' }]))
+    const h = mount({ collection: [oldNode], defaultOpen: true, loadChildren })
+    h.api().expand('root')
+    await tick()
+    h.setProps({ collection: [newNode] })
+    resolveOld([{ value: 'stale' }])
+    await tick()
+    expect(loadChildren).toHaveBeenCalledTimes(2)
+    expect(h.api().collection[0]?.children?.map(node => node.value)).toEqual(['fresh'])
+  })
+
+  it('成功空数组是 loaded empty；失败与缺 loader 都保持独立错误结构', async () => {
+    const h = mount({
+      collection: [{ value: 'root', hasChildren: true }],
+      defaultOpen: true,
+      loadChildren: () => [],
+    })
+    h.api().expand('root')
+    await tick()
+    expect(h.api().branchLoadState('root')).toEqual({ status: 'loaded', empty: true })
+    expect((h.api().getBranchEmptyProps({ value: 'root' }) as Record<string, unknown>).hidden).toBeUndefined()
+    expect((h.api().getBranchErrorProps({ value: 'root' }) as Record<string, unknown>).hidden).toBe(true)
+
+    const onBranchLoadError = vi.fn()
+    const missing = mount({ collection: [{ value: 'missing', hasChildren: true }], defaultOpen: true, onBranchLoadError })
+    missing.api().expand('missing')
+    expect(missing.api().branchLoadState('missing')?.status).toBe('error')
+    expect((missing.api().getBranchRetryTriggerProps({ value: 'missing' }) as Record<string, unknown>).hidden).toBeUndefined()
+    expect(onBranchLoadError).toHaveBeenCalledWith(expect.objectContaining({ value: 'missing', error: expect.any(Error) }))
+  })
+
+  it('取回的子项仍可声明下一层懒分支，身份继续由 Headless 递归追踪', async () => {
+    const loadChildren = vi.fn(({ node }: { node: { value: string } }) => node.value === 'root'
+      ? [{ value: 'nested', hasChildren: true }]
+      : [{ value: 'leaf' }])
+    const h = mount({
+      collection: [{ value: 'root', hasChildren: true }],
+      defaultOpen: true,
+      loadChildren,
+    })
+    h.api().expand('root')
+    await tick()
+    h.api().expand('nested')
+    await tick()
+    expect(loadChildren).toHaveBeenCalledTimes(2)
+    expect(h.api().branchLoadState('nested')).toEqual({ status: 'loaded', empty: false })
+    expect(h.api().collection[0]?.children?.[0]?.children?.map(node => node.value)).toEqual(['leaf'])
+  })
+})
+
+describe('treeSelect 自动空态', () => {
+  it('collection 空树与外部 loading 不同屏', () => {
+    const empty = mount({ collection: [] })
+    expect(empty.api().empty).toBe(true)
+    expect((empty.api().getEmptyProps() as Record<string, unknown>).hidden).toBeUndefined()
+    expect((empty.api().getLoadingProps() as Record<string, unknown>).hidden).toBe(true)
+
+    const loading = mount({ collection: [], loading: true })
+    expect((loading.api().getEmptyProps() as Record<string, unknown>).hidden).toBe(true)
+    expect((loading.api().getLoadingProps() as Record<string, unknown>).hidden).toBeUndefined()
+  })
+
+  it('手写节点由三端上报挂载事实，增删后的空态只在 Headless 判', () => {
+    const h = mount({ collection: undefined })
+    expect(h.api().empty).toBe(true)
+    h.send({ type: 'NODE.MOUNT', value: 'manual' })
+    expect(h.api().empty).toBe(false)
+    h.send({ type: 'NODE.UNMOUNT', value: 'manual' })
+    expect(h.api().empty).toBe(true)
+    h.send({ type: 'NODES.SYNC', values: ['a', 'a', 'b'] })
+    expect(h.api().empty).toBe(false)
+    h.send({ type: 'NODES.SYNC', values: [] })
+    expect(h.api().empty).toBe(true)
   })
 })
 

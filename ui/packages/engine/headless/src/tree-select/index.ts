@@ -5,7 +5,10 @@ export { findTreeSelectNode, findTreeSelectNodeEl, isTreeSelectLazyBranch, resol
 export { treeSelectMeta } from './tree-select.meta'
 export type {
   TreeSelectApi,
+  TreeSelectBranchLoadDetails,
+  TreeSelectBranchLoadErrorDetails,
   TreeSelectBranchLoadSnapshot,
+  TreeSelectBranchLoadStartDetails,
   TreeSelectBranchLoadStatus,
   TreeSelectExpandedValueChangeDetails,
   TreeSelectFocusIntent,
