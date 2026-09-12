@@ -1,0 +1,1 @@
+import{fG as e}from"./theme.DCKLS07e.js";import{d as o,o as t,c as r,E as a,k as s}from"./framework.BpF7DVZ1.js";const c={style:{width:"100%",display:"grid",gap:"12px"}},l=o({__name:"01-basic",setup(n){return(p,i)=>(t(),r("div",c,[a(s(e),{value:30}),a(s(e),{value:72}),a(s(e),{value:3,max:4})]))}});export{l as default};

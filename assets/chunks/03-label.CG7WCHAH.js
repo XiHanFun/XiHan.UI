@@ -1,1 +1,0 @@
-import{jE as t,eP as n}from"./theme.D9gHp_UI.js";import{d as l,o as s,c as o,E as e,w as r,k as a,F as c}from"./framework.BpF7DVZ1.js";const u=l({__name:"03-label",setup(p){return(_,m)=>(s(),o(c,null,[e(a(n),{label:"正在加载数据"},{default:r(()=>[e(a(t))]),_:1}),e(a(n),{translations:{label:"正在提交表单"}},{default:r(()=>[e(a(t))]),_:1})],64))}});export{u as default};

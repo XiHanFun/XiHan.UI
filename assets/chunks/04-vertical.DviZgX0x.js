@@ -1,1 +1,0 @@
-import{eF as a}from"./theme.D9gHp_UI.js";import{d as o,o as t,b as l,k as c}from"./framework.BpF7DVZ1.js";const u=o({__name:"04-vertical",setup(r){const e=[{value:"compact",label:"紧凑"},{value:"cozy",label:"适中"},{value:"comfortable",label:"宽松"}];return(n,s)=>(t(),l(c(a),{collection:e,orientation:"vertical","default-value":"cozy","aria-label":"行高"}))}});export{u as default};

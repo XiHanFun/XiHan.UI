@@ -1,0 +1,1 @@
+import{jn as o,jo as n,jp as r}from"./theme.DCKLS07e.js";import{d as s,o as i,b as u,w as e,E as t,k as a}from"./framework.BpF7DVZ1.js";const p=s({__name:"01-basic",setup(c){return(l,_)=>(i(),u(a(r),{style:{"max-inline-size":"22rem"}},{default:e(()=>[t(a(o),null,{default:e(()=>[t(a(n))]),_:1})]),_:1}))}});export{p as default};
