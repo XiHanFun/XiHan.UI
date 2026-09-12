@@ -1,6 +1,6 @@
 import type { PropTypes, Size, Tone } from '@xihan-ui/core'
 
-/** 形态。取值与 typography.css 的选择器一一对应。 */
+/** 文本变体。 */
 export type TypographyVariant = 'code' | 'muted' | 'strong'
 
 /** 标题字号档位，1 最大、6 最小。 */
@@ -31,11 +31,11 @@ export interface TypographyHeadingProps {
   level?: TypographyLevel | string
 }
 
-/** 行内文字自报形态与语气，connect 据此产出属性。 */
+/** 行内文字属性。 */
 export interface TypographyTextProps {
-  /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+  /** 颜色：brand / neutral / success / warning / danger / info。 */
   tone?: Tone
-  /** 形态：muted 弱化 / strong 加重 / code 等宽。 */
+  /** 变体：muted 弱化 / strong 强调 / code 等宽。 */
   variant?: TypographyVariant
   /** 字重：regular / medium / semibold / bold，只作用在这一段行内文字上。 */
   weight?: TypographyWeight

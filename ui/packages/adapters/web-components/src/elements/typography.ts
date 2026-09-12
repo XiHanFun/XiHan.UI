@@ -22,7 +22,7 @@ function authorValue<T extends string = string>(el: HTMLElement, name: string): 
  *
  * 标签全由作者写：`<h2 data-xh-part="heading">`、`<p data-xh-part="paragraph">`、
  * `<span data-xh-part="text">`、`<a data-xh-part="link">`，皮肤认的是 data-scope + data-part。
- * 标题的字号档位取节点上的 `level`，行内文字的形态、语气与字重取节点上的 `variant`、`tone` 与 `weight`。
+ * 标题的字号档位取节点上的 `level`，行内文字的变体、颜色与字重取节点上的 `variant`、`tone` 与 `weight`。
  * 运行期改写这四个属性不触发重新接线，需作者自行 requestUpdate。
  *
  * @customElement xh-typography
@@ -32,7 +32,7 @@ function authorValue<T extends string = string>(el: HTMLElement, name: string): 
  * @csspart root - 正文块容器，管段间距与最大行宽，承载 data-size / data-align / data-weight
  * @csspart heading - 标题，写 level="1".."6" 换字号档位
  * @csspart paragraph - 段落
- * @csspart text - 行内文字，写 variant="muted|strong|code" 换形态、tone 换语气色、weight 换字重
+ * @csspart text - 行内文字，支持变体、颜色和字重
  * @csspart link - 行内链接
  * @csspart prose - 富文本容器，外来的 HTML 铺进来按标签上样式
  */

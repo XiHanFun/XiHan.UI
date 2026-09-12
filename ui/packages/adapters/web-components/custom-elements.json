@@ -57566,7 +57566,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-typography>` —— Light-DOM 行为宿主，无状态机，把 connectTypography 产出打到各角色节点。\n\n标签全由作者写：`<h2 data-xh-part=\"heading\">`、`<p data-xh-part=\"paragraph\">`、\n`<span data-xh-part=\"text\">`、`<a data-xh-part=\"link\">`，皮肤认的是 data-scope + data-part。\n标题的字号档位取节点上的 `level`，行内文字的形态、语气与字重取节点上的 `variant`、`tone` 与 `weight`。\n运行期改写这四个属性不触发重新接线，需作者自行 requestUpdate。",
+          "description": "`<xh-typography>` —— Light-DOM 行为宿主，无状态机，把 connectTypography 产出打到各角色节点。\n\n标签全由作者写：`<h2 data-xh-part=\"heading\">`、`<p data-xh-part=\"paragraph\">`、\n`<span data-xh-part=\"text\">`、`<a data-xh-part=\"link\">`，皮肤认的是 data-scope + data-part。\n标题的字号档位取节点上的 `level`，行内文字的变体、颜色与字重取节点上的 `variant`、`tone` 与 `weight`。\n运行期改写这四个属性不触发重新接线，需作者自行 requestUpdate。",
           "name": "XhTypographyElement",
           "cssParts": [
             {
@@ -57582,7 +57582,7 @@
               "name": "paragraph"
             },
             {
-              "description": "行内文字，写 variant=\"muted|strong|code\" 换形态、tone 换语气色、weight 换字重",
+              "description": "行内文字，支持变体、颜色和字重",
               "name": "text"
             },
             {

@@ -1,6 +1,6 @@
 # Typography 排印
 
-一块正文的排版容器：管住段间距与最大行宽，标题、段落与行内文字各自拿自己的字号、字重与行高。
+用于组织标题、正文和富文本内容。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/typography" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-root 管段间距与最大行宽，标题与段落各自拿字号、字重、行高
+组合标题和正文
 
 <XhDemo src="typography/01-basic" />
 
@@ -24,33 +24,33 @@ root 管段间距与最大行宽，标题与段落各自拿字号、字重、行
 
 ## 示例
 
-### 标题档位
+### 标题层级
 
-level 只换字号档位，用哪个标签由作者定；不传 level 即默认档
+设置标题的视觉层级
 
 <XhDemo src="typography/02-heading-level" />
 
-### 行内文字
+### 文本变体
 
-variant 换形态：muted 弱化、strong 加重、code 等宽
+设置正文、辅助、强调、代码和链接样式
 
 <XhDemo src="typography/03-text" />
 
 ### 颜色
 
-tone 决定这一段行内文字用哪族颜色，与 variant 是两个轴，可以一起写
+使用语义颜色
 
 <XhDemo src="typography/04-tone" />
 
 ### 尺寸
 
-size 换的是整块正文的字号与段间距，不传 size 即默认档
+设置正文大小
 
 <XhDemo src="typography/05-size" />
 
 ### 富文本
 
-prose 收外来的整段 HTML：节点由内容自己带，样式按标签给
+排版外部 HTML 内容
 
 <XhDemo src="typography/06-prose" />
 
@@ -58,36 +58,35 @@ prose 收外来的整段 HTML：节点由内容自己带，样式按标签给
 
 ### 何时使用
 
-- 渲染一段较长的正文：文章、说明、条款、AI 回复。
-- 需要标题层级与段落节奏一致，而不想逐处写字号。
+- 展示文章、说明、条款或消息正文。
+- 统一标题层级、段落间距和行宽。
 
 ### 何时不用
 
-- 只是一行标签或一句提示：直接写文本，别套整套排版。
-- 要把长文本裁成几行：用[文本截断](./truncate)。
-- 要渲染 Markdown：用 `@xihan-ui/markdown`，它产出的节点套一层 `prose` 部件即得排版。
+- 单行标签或简短提示直接使用文本。
+- 需要限制长文本行数时，使用[文本截断](./truncate)。
+- Markdown 内容使用 `@xihan-ui/markdown` 渲染后放入 `prose`。
 
 ### 特性
 
-- `root` 管段间距与最大行宽；`level` 只换标题字号档位，用哪个标签由作者定。
-- 行内文字三种形态：`muted` 弱化、`strong` 加重、`code` 等宽；与语气、字重是三条轴，可以一起写。
-- `link` 是一个独立部件，链接样式不必另写。
-- `prose` 收外来的整段 HTML：节点由内容自己带，标题、段落、列表、代码块、引用、表格按标签上样式。
-- `align` 与 `weight` 落在 `root` 上，整块正文一起换；`weight` 也能只写在一段行内文字上。
+- 支持六档标题层级和三档正文尺寸。
+- 支持弱化、强调、代码等文本变体。
+- 支持链接、语义颜色、对齐和字重。
+- `prose` 可直接排版外部 HTML 内容。
 
 ### 组合
 
-- 与[文本高亮](./highlight)配合做检索命中标记；与[代码视图](./code-view)配合放整段代码。
+- 可与[文本高亮](./highlight)和[代码视图](./code-view)组合使用。
 
 ### 最佳实践
 
-- 最大行宽交给 `root`，别让正文横贯整个宽屏——一行超过约四十个汉字就很难回到下一行的行首。
-- 标题层级按文档结构选标签，视觉大小用 `level` 单独调，两件事分开。
+- 使用 `root` 控制正文最大行宽。
+- 根据文档结构选择标题标签，使用 `level` 调整视觉大小。
 
 ### 反模式
 
-- 为了字大就用 `<h1>`：读屏用户按标题跳转时会撞见错的结构。
-- 在正文块里塞交互控件却不留间距，点击目标会挤在一起。
+- 不要仅为了放大文字而改变标题语义。
+- 不要在正文中密集放置交互控件。
 
 ## API 参考
 
