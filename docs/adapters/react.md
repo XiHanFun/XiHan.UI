@@ -70,11 +70,24 @@ const { api, service } = useDialog({ open, onOpenChange });
 
 ## 全局配置
 
-`XhConfigProvider` 往下喂 locale、文案覆盖、尺寸与浮层落点：
+`XhConfigProvider` 往下喂 locale、文案覆盖、尺寸、浮层落点与七轴视觉环境：
 
 ```tsx
 <XhConfigProvider config={{ locale: "zh-CN", size: "sm" }}>
   <App />
+</XhConfigProvider>
+```
+
+视觉环境必须显式绑定 DOM 根，不会猜测 Provider 对应哪枚元素。嵌套 Provider 自动继承外层控制器，局部 motion 只投影当前根，不改全局 JS override：
+
+```tsx
+<XhConfigProvider config={{
+  visualEnvironment: {
+    root: workspaceElement,
+    initial: { mode: "dark", density: "compact", motion: "reduce" },
+  },
+}}>
+  <Workspace />
 </XhConfigProvider>
 ```
 

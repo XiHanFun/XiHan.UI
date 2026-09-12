@@ -14,13 +14,13 @@ afterEach(() => {
 describe('applyThemeAttrs', () => {
   it('写全五属性，仅在变化时触碰 DOM', () => {
     const el = document.createElement('div')
-    applyThemeAttrs(el, { mode: 'dark', brand: brandId('xihan'), density: 'comfortable', dir: 'ltr', contrast: 'base' })
+    applyThemeAttrs(el, { mode: 'dark', brand: brandId('xihan'), density: 'comfortable', dir: 'ltr', contrast: 'default' })
     expect(el.getAttribute('data-theme')).toBe('dark')
     expect(el.getAttribute('data-brand')).toBe('xihan')
     expect(el.getAttribute('dir')).toBe('ltr')
 
     const spy = vi.spyOn(el, 'setAttribute')
-    applyThemeAttrs(el, { mode: 'dark', brand: brandId('xihan'), density: 'comfortable', dir: 'ltr', contrast: 'base' })
+    applyThemeAttrs(el, { mode: 'dark', brand: brandId('xihan'), density: 'comfortable', dir: 'ltr', contrast: 'default' })
     expect(spy).not.toHaveBeenCalled() // 值未变，不触碰 DOM
   })
 })
@@ -39,14 +39,16 @@ describe('createThemeController', () => {
   })
 
   it('偏好持久化到 storage', () => {
-    const c1 = createThemeController({ storageKey: 'xh-theme', initial: { density: 'compact' } })
+    const onStorageError = vi.fn()
+    const c1 = createThemeController({ storageKey: 'xh-theme', onStorageError, initial: { density: 'compact' } })
     c1.setPreference({ mode: 'dark' })
     c1.dispose()
 
     // 新控制器从 storage 恢复
-    const c2 = createThemeController({ storageKey: 'xh-theme' })
+    const c2 = createThemeController({ storageKey: 'xh-theme', onStorageError })
     expect(c2.getState().mode).toBe('dark')
     expect(c2.getState().density).toBe('compact')
+    expect(onStorageError).not.toHaveBeenCalled()
     c2.dispose()
   })
 })

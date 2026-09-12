@@ -1,10 +1,56 @@
 import type { EnvSignals } from '../src/runtime'
 import { describe, expect, it } from 'vitest'
-import { BASELINE_THEME, brandId, resolveTheme, toThemeAttrs } from '../src/runtime'
+import {
+  BASELINE_THEME,
+  BASELINE_VISUAL_ENVIRONMENT,
+  brandId,
+  resolveTheme,
+  resolveVisualEnvironment,
+  toThemeAttrs,
+  toVisualEnvironmentAttrs,
+} from '../src/runtime'
 
-function fakeEnv(mode: 'light' | 'dark' = 'dark', contrast: 'base' | 'more' = 'more'): EnvSignals {
-  return { systemMode: () => mode, systemContrast: () => contrast, subscribe: () => () => {} }
+function fakeEnv(mode: 'light' | 'dark' = 'dark', contrast: 'default' | 'more' = 'more'): EnvSignals {
+  return {
+    systemMode: () => mode,
+    systemContrast: () => contrast,
+    systemMotion: () => 'reduce',
+    systemTransparency: () => 'reduce',
+    subscribe: () => () => {},
+  }
 }
+
+describe('resolveVisualEnvironment', () => {
+  it('空偏好取七轴基线，system 只解析平台支持的四轴', () => {
+    expect(resolveVisualEnvironment({}, fakeEnv())).toEqual(BASELINE_VISUAL_ENVIRONMENT)
+    expect(resolveVisualEnvironment({
+      mode: 'system',
+      contrast: 'system',
+      motion: 'system',
+      transparency: 'system',
+    }, fakeEnv())).toMatchObject({ mode: 'dark', contrast: 'more', motion: 'reduce', transparency: 'reduce' })
+  })
+
+  it('七轴一次投影成 PortalVisualBridge 的完整属性面', () => {
+    expect(toVisualEnvironmentAttrs({
+      mode: 'dark',
+      brand: brandId('acme'),
+      density: 'compact',
+      dir: 'rtl',
+      contrast: 'more',
+      motion: 'reduce',
+      transparency: 'reduce',
+    })).toEqual({
+      'data-theme': 'dark',
+      'data-brand': 'acme',
+      'data-density': 'compact',
+      'data-contrast': 'more',
+      'data-motion': 'reduce',
+      'data-transparency': 'reduce',
+      'dir': 'rtl',
+    })
+  })
+})
 
 describe('resolveTheme', () => {
   it('空偏好 → 基线', () => {

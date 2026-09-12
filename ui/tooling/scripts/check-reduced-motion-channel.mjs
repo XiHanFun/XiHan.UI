@@ -1,16 +1,18 @@
 #!/usr/bin/env node
-// 门禁：减弱动效只有一条探测通道。
+// 门禁：减弱动效只有两处基础层系统信号源。
 //
-// 应用级 override（setMotionOverride）只有 @xihan-ui/motion 的 resolveMotionPreference 看得见；
-// 谁自己去 matchMedia('(prefers-reduced-motion: reduce)') 就绕开了它——作者在配置里写了
-// motion: 'reduce'，这一处照样转、照样滚。所以系统偏好的探测只允许写在 motion 包的
-// reduced-motion.ts 里，其余源码一律经它读。
+// motion 包不能依赖同为 level 1 的 design/tokens：前者维护 JS override/Presence 通道，后者维护
+// VisualEnvironmentController 的七轴 DOM/父作用域解析。两处各自持有一个系统信号源，应用根再经
+// 显式 motionSink 汇合；适配器与组件不得出现第三份探测。
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const PACKAGES = 'packages'
-const ALLOWED = 'packages/engine/motion/src/reduced-motion.ts'
-const PATTERN = /matchMedia\(\s*['"`]\(prefers-reduced-motion/g
+const ALLOWED = new Set([
+  'packages/design/tokens/src/runtime/env.ts',
+  'packages/engine/motion/src/reduced-motion.ts',
+])
+const PATTERN = /\(prefers-reduced-motion:/g
 const EXT = /\.(?:ts|tsx|js|mjs|vue)$/
 
 /** 递归收集 packages/<组>/<包>/src 下的源码文件。 */
@@ -43,15 +45,15 @@ for (const group of await readdir(PACKAGES)) {
 }
 
 const offenders = []
-let allowedHits = 0
+const allowedHits = new Map([...ALLOWED].map(file => [file, 0]))
 for (const file of files) {
   const text = await readFile(file, 'utf8')
   const hits = [...text.matchAll(PATTERN)]
   if (hits.length === 0)
     continue
   const normalized = file.replaceAll('\\', '/')
-  if (normalized === ALLOWED) {
-    allowedHits += hits.length
+  if (ALLOWED.has(normalized)) {
+    allowedHits.set(normalized, hits.length)
     continue
   }
   for (const hit of hits) {
@@ -60,16 +62,17 @@ for (const file of files) {
   }
 }
 
-if (allowedHits === 0) {
-  console.error(`[check-reduced-motion-channel] ${ALLOWED} 里没有 prefers-reduced-motion 探测，通道本身不见了`)
+const missing = [...allowedHits].filter(([, hits]) => hits === 0).map(([file]) => file)
+if (missing.length) {
+  console.error(`[check-reduced-motion-channel] 基础系统信号源缺失：${missing.join('、')}`)
   process.exit(1)
 }
 
 if (offenders.length) {
-  console.error('[check-reduced-motion-channel] 以下位置自己探测 prefers-reduced-motion，绕开了 resolveMotionPreference：')
+  console.error('[check-reduced-motion-channel] 以下位置新增了第三份 prefers-reduced-motion 信号源：')
   for (const o of offenders) console.error(`  ${o}`)
-  console.error('  改用 @xihan-ui/motion 的 resolveMotionPreference / onMotionPreferenceChange')
+  console.error('  JS 行为改用 @xihan-ui/motion；DOM 视觉环境改用 @xihan-ui/tokens/runtime')
   process.exit(1)
 }
 
-console.log(`[check-reduced-motion-channel] 通过：扫描 ${files.length} 个源码文件，prefers-reduced-motion 探测只在 ${ALLOWED}`)
+console.log(`[check-reduced-motion-channel] 通过：扫描 ${files.length} 个源码文件，系统信号只在 ${[...ALLOWED].join('、')}`)

@@ -41,75 +41,95 @@ primitive  ──►  semantic  ──►  组件私有槽
 
 令牌源是 DTCG 格式的 JSON（`packages/design/tokens/tokens/`），产物由构建脚本生成，`tokens.css` / `tokens.json` / `src/generated/tokens.ts` 三份都入库。产物与源是否同步由 CI 重跑生成后比对，改源忘了跑生成会被拦下。
 
-## 主题运行时
+## 七轴视觉环境运行时
+
+`VisualEnvironmentController` 是 mode、brand、density、dir、contrast、motion、transparency 的唯一状态与 DOM 投影入口。一次 `setPreference` 同步提交同一 scope 的完整七轴：
 
 ```ts
-import { createThemeController } from "@xihan-ui/tokens/runtime";
+import { setMotionOverride } from "@xihan-ui/motion";
+import {
+  brandId,
+  createMotionOverrideSink,
+  createVisualEnvironmentController,
+} from "@xihan-ui/tokens/runtime";
 
-const theme = createThemeController({
-  root: document.documentElement, // 默认就是它
-  storageKey: "app-theme", // 传了才持久化
-  initial: { mode: "system", density: "comfortable" },
+const visual = createVisualEnvironmentController({
+  root: document.documentElement,
+  storageKey: "app-visual-environment",
+  onStorageError: detail => reportStorageFailure(detail),
+  motionSink: createMotionOverrideSink(setMotionOverride),
+  initial: {
+    mode: "system",
+    brand: brandId("xihan"),
+    density: "comfortable",
+    dir: "ltr",
+    contrast: "system",
+    motion: "system",
+    transparency: "system",
+  },
 });
 
-theme.getState(); // 已定型的五维状态
-theme.getPreference(); // 用户提交的意图（可能含 undefined / 'system'）
-theme.setPreference({ mode: "dark" });
-theme.subscribe((state) => {});
-theme.dispose();
+visual.setPreference({ mode: "dark", density: "compact" });
+visual.getState();
+visual.subscribe(state => console.log(state));
+visual.dispose();
 ```
 
-它把状态投影成根元素上的五个属性：
+启用 `storageKey` 必须同时给 `onStorageError`。解析失败、隐私模式或配额不足会明确回调；控制器继续维护内存状态，但不会把持久化失败伪装成成功。
+
+根控制器的 `motionSink` 是显式依赖注入：它把解析后的 motion 同步到 Presence、平滑滚动和 JS 动画。只有 `documentElement` 根作用域允许传；局部控制器只改当前 DOM scope，不能隐式污染全局 JS override。
+
+七轴状态会投影成 Portal 可桥接的完整属性面：
 
 ```html
-<html data-theme="dark" data-brand="xihan" data-density="comfortable" data-contrast="base" dir="ltr">
+<html data-theme="dark" data-brand="xihan" data-density="compact" data-contrast="more" data-motion="reduce" data-transparency="reduce" dir="rtl">
 ```
 
-## 偏好与状态是两回事
+## 偏好、状态与系统轴
 
-这是这套设计的关键区分：
-
-| | 偏好 `ThemePreference` | 状态 `ThemeState` |
+| | `VisualEnvironmentPreference` | `VisualEnvironmentState` |
 | --- | --- | --- |
-| 含义 | 用户/服务端提交的**意图** | 已完全定型的**事实** |
-| 可以是 `undefined` | 可以，表示继承父作用域 | 不可以，五个维度全部非空 |
-| 可以是 `'system'` | 可以（仅 `mode` 与 `contrast`） | 不可以，已折算成具体值 |
+| 含义 | 用户或服务端提交的意图 | 已完全定型的事实 |
+| `undefined` | 清除本层覆盖，继承父控制器 | 不存在，七轴全部非空 |
+| `'system'` | 仅 mode / contrast / motion / transparency 合法 | 不存在，已解析成具体值 |
 
-```ts
-interface ThemePreference {
-  mode?: "light" | "dark" | "system";
-  brand?: BrandId;
-  density?: "comfortable" | "compact";
-  dir?: "ltr" | "rtl";
-  contrast?: "base" | "more" | "system";
-}
-```
+brand、density、dir 没有平台媒体查询，因此不接受伪造的 `system`。其余四轴分别读取 `prefers-color-scheme`、`prefers-contrast`、`prefers-reduced-motion`、`prefers-reduced-transparency`。没有 `window` / `matchMedia` 的 SSR 环境使用浅色、默认对比度、默认动效和默认透明度，不猜测客户端偏好。
 
-只有 `mode` 与 `contrast` 接受 `'system'`，因为只有这两维有对应的媒体查询（`prefers-color-scheme`、`prefers-contrast`）。折算规则很简单：`undefined` 取父作用域值，`'system'` 读媒体查询，其余原样。
+基线七轴为 light、xihan、comfortable、ltr、default、default、default。`contrast='default'` 是显式恢复常规对比度的正式值；旧的 `base` 不再接受。
 
-基线是浅色、`xihan` 品牌、`comfortable` 密度、`base` 对比度、`ltr`。
-
-## 五个维度各管什么
-
-| 维度 | 说明 |
+| DOM 轴 | 说明 |
 | --- | --- |
 | `data-theme` | 明暗两值各有整套语义取值 |
-| `data-contrast='more'` | 明暗两档各有一组边框 / 描边加强取值 |
-| `data-brand` | 注册后生效：`registerBrand(id, 种子色)` 注入该 id 的原语取值块，切到这个品牌即换色（见[换品牌色](./styling#换品牌色)）；不注册就切只写属性、不改视觉 |
-| `data-density='compact'` | 收的是盒子：控件高度、内距、间隙、区块留白整档收紧；字号与字形不动，可读性不随密度掉。属性可挂在任意子树上做局部密集区 |
-| `dir` | 布局层通过逻辑属性天然支持 |
+| `data-brand` | 注册品牌梯度后切换品牌色 |
+| `data-density='compact'` | 收紧控件高度、内距与间隙，不缩字号和字形 |
+| `dir` | 由逻辑属性驱动 LTR / RTL 布局 |
+| `data-contrast` | `more` 加强边界；`default` 显式回到常规档 |
+| `data-motion` | `reduce` 触发局部 CSS 动效降级 |
+| `data-transparency` | `reduce` 把玻璃材质切成实体配方 |
 
-## 服务端渲染
+## 父作用域、Portal 与回收
 
-运行时在 `document` / `window` 缺席时自动走 SSR 分支：不读媒体查询、不写 DOM，一律回退到浅色与基线对比度。
+局部控制器通过 `parent` 明确继承。父状态变化时，子控制器只重算没有本地偏好的轴；`setPreference({ motion: undefined })` 会删除本层覆盖，立即恢复继承。dispose 会退订父作用域和系统媒体，并把根元素七个属性精确还原到接管前。
 
-要让首屏不闪，请在服务端直接把五个属性渲染到 `<html>` 上——客户端的控制器会读到相同的偏好并算出相同的状态，属性值一致时它不会触碰 DOM。
+```ts
+const page = createVisualEnvironmentController({
+  root: document.documentElement,
+  initial: { mode: "dark", motion: "system" },
+});
+const editor = createVisualEnvironmentController({
+  root: document.querySelector("#editor")!,
+  parent: page,
+  initial: { density: "compact", transparency: "reduce" },
+});
+```
 
-## 局部主题
+React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvironment` 接受带显式 root 的控制器选项；嵌套 Provider 自动接父控制器。Web Components 的 `<xh-config>` 自身就是局部 scope，可直接设置 `mode`、`brand`、`density`、`direction`、`contrast`、`motion`、`transparency`。物理 Portal 仍由 Core 的 VisualBridge 桥接已解析七轴，适配器不另存一份视觉状态。
 
-`applyThemeAttrs(el, state)` 可以把一份状态写到任意元素上，用于「侧栏永远深色」这类局部反转。属性写在哪一层，令牌就在哪一层重新解析——因为令牌块的选择器是 `:where([data-theme='dark'])` 而不是 `:root`，嵌套生效。
+## 五轴旧视图
 
-`color-scheme` 声明也写在深色取值块里，所以嵌套的深色区域里原生控件（滚动条、日期选择器）同样是深色的。
+`createThemeController`、`resolveTheme` 与 `applyThemeAttrs` 继续存在，但只是新控制器的明确五轴视图：没有独立 resolver、媒体查询或持久化实现。新代码应使用七轴控制器；独立的 `applyThemeAttrs` 只写五轴，控制器则始终维护完整七轴 DOM 合同。
+
+`color-scheme` 声明写在深色取值块里，所以嵌套深色区域的原生控件也会跟随。SSR 首屏应直接输出七个已解析属性，避免客户端接管前闪烁。
 
 ## 柔和材质配方
 

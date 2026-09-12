@@ -23,6 +23,22 @@ import {
 
 没有插件，不需要 `app.use()`。按名字 import 即可，`sideEffects: false` 让打包器摇掉没用到的部分。
 
+## 配置与视觉环境
+
+`provideXhConfig` 接收响应式配置。七轴视觉环境必须显式给出对应 DOM 根；嵌套 provide 自动接父控制器，局部 motion 不改全局 JS override：
+
+```ts
+provideXhConfig({
+  locale: "zh-CN",
+  visualEnvironment: {
+    root: workspaceElement,
+    initial: { mode: "dark", density: "compact", motion: "reduce" },
+  },
+});
+```
+
+物理 Portal 会由 Core 从该根桥接已解析七轴到实例壳，Vue 适配器不复制视觉状态。
+
 ## 事件与 v-model
 
 值类组件同时发两个事件：

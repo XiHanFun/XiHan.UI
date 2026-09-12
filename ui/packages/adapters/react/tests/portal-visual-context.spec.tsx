@@ -1,12 +1,13 @@
 // @vitest-environment jsdom
 
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { act, StrictMode, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   XhButton,
   XhButtonGroup,
+  XhConfigProvider,
   XhPopoverContent,
   XhPopoverPositioner,
   XhPopoverRoot,
@@ -30,10 +31,10 @@ import {
 let host: HTMLElement | null = null
 let root: ReturnType<typeof createRoot> | null = null
 
-function mount(node: ReactNode): void {
+function mount(node: ReactNode, parent: HTMLElement = document.body): void {
   ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
   host = document.createElement('div')
-  document.body.append(host)
+  parent.append(host)
   root = createRoot(host)
   act(() => root!.render(node))
 }
@@ -53,6 +54,7 @@ async function settleMutations(): Promise<void> {
 afterEach(() => {
   act(() => root?.unmount())
   host?.remove()
+  document.body.innerHTML = ''
   document.querySelectorAll('[data-testid="portal-target"]').forEach(node => node.remove())
   host = null
   root = null
@@ -60,21 +62,32 @@ afterEach(() => {
 })
 
 describe('react Portal 的局部视觉环境', () => {
-  it('把来源最近声明的七个视觉轴与自定义属性写到实例壳', () => {
+  it('provider 的单一七轴设置经来源 scope 桥接到实例壳', async () => {
+    const scope = document.createElement('section')
+    scope.style.setProperty('--business-color', 'rebeccapurple')
+    document.body.append(scope)
     mount(
-      <section
-        data-theme="dark"
-        data-brand="acme"
-        data-density="compact"
-        data-contrast="more"
-        data-motion="reduce"
-        data-transparency="reduce"
-        dir="rtl"
-        style={{ '--business-color': 'rebeccapurple' } as CSSProperties}
+      <XhConfigProvider
+        config={{
+          visualEnvironment: {
+            root: scope,
+            initial: {
+              mode: 'dark',
+              brand: 'acme' as never,
+              density: 'compact',
+              contrast: 'more',
+              motion: 'reduce',
+              transparency: 'reduce',
+              dir: 'rtl',
+            },
+          },
+        }}
       >
         <XhPortal><span data-testid="first">内容</span></XhPortal>
-      </section>,
+      </XhConfigProvider>,
+      scope,
     )
+    await settleMutations()
     const shell = shellOf('first')
     expect(shell.getAttribute('data-theme')).toBe('dark')
     expect(shell.getAttribute('data-brand')).toBe('acme')

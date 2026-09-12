@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 // 全局配置注入的取值优先级：实例 props > provideXhConfig > 组件内建默认。
+import type { XhConfig } from '../src'
 import { getMotionOverride, setMotionOverride } from '@xihan-ui/motion'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, defineComponent, h, nextTick, ref } from 'vue'
@@ -22,19 +23,39 @@ function mount(setup: () => () => unknown): HTMLElement {
 afterEach(() => {
   for (const un of mounted) un()
   mounted = []
+  document.body.innerHTML = ''
   setMotionOverride(null)
 })
 
 describe('provideXhConfig · motion', () => {
-  it('写了 motion 就设应用级 override', () => {
+  it('七轴绑定投影到显式 root，局部 motion 不改全局 override', () => {
+    const scope = document.createElement('section')
+    document.body.append(scope)
+    setMotionOverride('no-preference')
     mount(() => {
-      provideXhConfig({ motion: 'reduce' })
+      provideXhConfig({
+        visualEnvironment: {
+          root: scope,
+          initial: {
+            mode: 'dark',
+            density: 'compact',
+            dir: 'rtl',
+            contrast: 'more',
+            motion: 'reduce',
+            transparency: 'reduce',
+          },
+        },
+      })
       return () => h('div')
     })
-    expect(getMotionOverride()).toBe('reduce')
+    expect(scope.getAttribute('data-theme')).toBe('dark')
+    expect(scope.getAttribute('data-density')).toBe('compact')
+    expect(scope.getAttribute('data-motion')).toBe('reduce')
+    expect(scope.getAttribute('data-transparency')).toBe('reduce')
+    expect(getMotionOverride()).toBe('no-preference')
   })
 
-  it('没写 motion 不碰别处设好的 override', () => {
+  it('没有视觉绑定时不碰别处设好的 override', () => {
     setMotionOverride('reduce')
     mount(() => {
       provideXhConfig({ locale: 'en' })
@@ -43,16 +64,23 @@ describe('provideXhConfig · motion', () => {
     expect(getMotionOverride()).toBe('reduce')
   })
 
-  it('配置是 ref 时改 motion 跟着变', async () => {
-    const config = ref<{ motion?: 'reduce' | 'no-preference' }>({ motion: 'reduce' })
+  it('配置是 ref 时七轴一起重投影', async () => {
+    const scope = document.createElement('section')
+    document.body.append(scope)
+    const config = ref<XhConfig>({
+      visualEnvironment: { root: scope, initial: { mode: 'dark' as const, motion: 'reduce' as const } },
+    })
     mount(() => {
       provideXhConfig(config)
       return () => h('div')
     })
-    expect(getMotionOverride()).toBe('reduce')
-    config.value = { motion: 'no-preference' }
+    expect(scope.getAttribute('data-theme')).toBe('dark')
+    config.value = {
+      visualEnvironment: { root: scope, initial: { mode: 'light' as const, motion: 'default' as const } },
+    }
     await nextTick()
-    expect(getMotionOverride()).toBe('no-preference')
+    expect(scope.getAttribute('data-theme')).toBe('light')
+    expect(scope.getAttribute('data-motion')).toBe('default')
   })
 })
 

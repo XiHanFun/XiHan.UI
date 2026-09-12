@@ -166,9 +166,9 @@ for (const name of components) {
 // —— 四、XhConfig 的每个字段都要有人真读 ——
 // 声明了字段、合并也正确，但没有任何组件读它，配置就是死的：scrollRoot 曾在 WC 侧一直如此。
 //
-// 扫描面是各适配器 src 下的全部 .ts / .tsx，config 那一份也在内——各侧真正把 motion 交给
-// setMotionOverride 的接线点就写在那几个 config 文件里，按文件名把它们排除，等于把要查的
-// 东西本身排除在外：删掉接线，判据照样绿。
+// 扫描面是各适配器 src 下的全部 .ts / .tsx，config 那一份也在内——visualEnvironment
+// 委托 tokens controller 的接线点就写在那几个 config 文件里，按文件名把它们排除，等于把
+// 要查的东西本身排除在外：删掉接线，判据照样绿。
 
 /**
  * 去掉注释，字符串与模板串里的 `//` 不动。

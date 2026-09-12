@@ -24,7 +24,7 @@ const bridge = createPortalVisualBridge({ source, shell });
 bridge.dispose();
 ```
 
-桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`dir`。组件自身的 `data-shape`、任意 CSS 变量和计算样式不复制；自定义样式需显式作用于浮层容器。Web Components 声明式浮层当前仍在原树中，通过原生继承取得这些视觉轴。
+桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency`、`dir`。三端物理 Portal 都从逻辑来源的 composed 祖先逐轴取最近显式声明，并把七轴与公开自定义属性投影到实例壳；来源变化、跨 realm 与退场回收均由 Core 桥接生命周期处理。
 
 ## 在 Vue 里用
 
