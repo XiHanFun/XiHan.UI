@@ -6,7 +6,6 @@ import type {
   CalendarView,
   DateFieldSegmentState,
   DatePickerApi,
-  DatePickerFieldApi,
   DatePickerPreset,
   DatePickerPresetState,
   DatePickerSchema,
@@ -15,6 +14,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { datePickerFieldAt, resolveDatePickerFieldIndex, resolveDatePickerPanelIndex } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
@@ -42,17 +42,7 @@ type DatePickerProps = DatePickerSchema['props']
  */
 function usePanelIndex(props: { index?: number | string }): ComputedRef<number> {
   const panel = useDatePickerPanelContext()
-  return computed(() => {
-    if (props.index === undefined || props.index === '')
-      return panel.index.value
-    const n = Math.trunc(Number(props.index))
-    return Number.isFinite(n) && n >= 0 ? n : panel.index.value
-  })
-}
-
-/** 按组号取那一组分段输入；非区间模式下终点那组缺席。 */
-function fieldOf(api: DatePickerApi, index: 0 | 1): DatePickerFieldApi | null {
-  return index === 1 ? api.fieldEnd : api.field
+  return computed(() => resolveDatePickerPanelIndex(props.index, panel.index.value))
 }
 
 /** 默认插槽的载荷：选择器的开合与选中值、内嵌日历的展示数据、两组段位，以及改写值的句柄。 */
@@ -232,7 +222,7 @@ export const XhDatePickerSegmentGroup = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useDatePickerContext()
-    const index = computed<0 | 1>(() => (Number(props.index) === 1 ? 1 : 0))
+    const index = computed<0 | 1>(() => resolveDatePickerFieldIndex(props.index))
     // 组内的段位与隐藏输入据此认领起止
     provideDatePickerSegmentGroup({ index })
     // role=group 的分段容器，也是换段时的查询边界
@@ -259,7 +249,7 @@ export const XhDatePickerSegment = defineComponent({
     const ctx = useDatePickerContext()
     const group = useDatePickerSegmentGroupContext()
     return () => {
-      const field = fieldOf(ctx.api.value, group.index.value)
+      const field = datePickerFieldAt(ctx.api.value, group.index.value)
       // 非区间模式下写在终点组里的段位无处落脚，不渲染
       if (!field)
         return null
@@ -650,8 +640,8 @@ export const XhDatePickerHiddenInput = defineComponent({
     const ctx = useDatePickerContext()
     const group = useDatePickerSegmentGroupContext()
     return () => {
-      const index = props.index === undefined ? group.index.value : (Number(props.index) === 1 ? 1 : 0)
-      const field = fieldOf(ctx.api.value, index)
+      const index = props.index === undefined ? group.index.value : resolveDatePickerFieldIndex(props.index)
+      const field = datePickerFieldAt(ctx.api.value, index)
       // 非区间模式下终点那份没有可提交的值，不渲染
       if (!field)
         return null

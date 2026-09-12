@@ -25,6 +25,8 @@ export {
   datePickerPresetValue,
   datePickerPresetYear,
 } from './date-picker.presets'
+export { datePickerFieldAt, resolveDatePickerFieldIndex, resolveDatePickerPanelIndex } from './date-picker.projection'
+export type { DatePickerFieldIndex, DatePickerIndexInput } from './date-picker.projection'
 export {
   datePickerDatePart,
   datePickerJoinDateTime,
