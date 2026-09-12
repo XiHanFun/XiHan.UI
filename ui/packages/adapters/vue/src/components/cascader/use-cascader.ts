@@ -65,7 +65,12 @@ export function useCascader(
 
   const api = computed(() => connectCascader(service, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
-  const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+  const visible = useOverlayExit({
+    config,
+    isOpen: () => api.value.open,
+    contentRef,
+    onPresence: presence => service.refs.set('presence', presence),
+  })
   // 先问全局配置的落点，没有才落 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 

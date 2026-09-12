@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
 import type { Anchor, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
+import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
 import type { ComboboxApi, ComboboxSchema } from '../src/combobox'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { comboboxMachine, connectCombobox } from '../src/combobox'
@@ -65,6 +67,8 @@ function spread(el: HTMLElement, props: Record<string, unknown>): void {
 
 interface Harness {
   api: () => ComboboxApi
+  config: RuntimeConfig
+  presence: PresenceHandle | null
   root: HTMLElement
   control: HTMLElement
   positioner: HTMLElement
@@ -94,6 +98,8 @@ interface Options {
   position?: PositionEnginePort
   /** 本层被移出层栈时调一次，用来记拆除顺序。 */
   onLayerDispose?: () => void
+  /** 注入真实 Presence，验证行为资源延迟到视觉退场完成后释放。 */
+  withPresence?: boolean
 }
 
 const runtimes: VanillaRuntime[] = []
@@ -153,7 +159,11 @@ function mount(initial: Partial<Props> = {}, options: Options = {}): Harness {
   })
 
   const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+  const presence = options.withPresence
+    ? createPresence({ config, open: (initial.open ?? initial.defaultOpen) ?? false, onRenderedChange: () => {} })
+    : null
   service.refs.set('config', config)
+  service.refs.set('presence', presence)
   service.refs.set('registerLayer', () => {
     const handle = config.layerRegistry.register({
       kind: 'popover',
@@ -216,6 +226,8 @@ function mount(initial: Partial<Props> = {}, options: Options = {}): Harness {
 
   return {
     api: () => connectCombobox(service, normalizeProps),
+    config,
+    presence,
     root,
     control,
     positioner,
@@ -997,6 +1009,40 @@ describe('comboboxCombobox 浮层定位', () => {
     await tick()
     expect(h.state()).toBe('open')
     expect(h.position()).toBeNull()
+  })
+})
+
+describe('combobox 真实退场资源', () => {
+  it('逻辑关闭立即失活，Layer 等 Presence 完成才释放；中途重开复用原登记', () => {
+    const h = mount({ defaultOpen: true }, { withPresence: true })
+    const presence = h.presence!
+    const original = h.config.layerRegistry.list()[0]
+    expect(original).toBeDefined()
+
+    const leases: ExitLease[] = []
+    const stopExit = presence.onBeforeExit(() => {
+      leases.push(presence.claimExit(`combobox exit ${leases.length + 1}`))
+    })
+    h.send({ type: 'CLOSE' })
+    const closing = h.api().getContentProps() as Record<string, unknown>
+    expect(closing.inert).toBe(true)
+    expect(closing['aria-hidden']).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+    presence.update(false)
+    expect(leases).toHaveLength(1)
+
+    h.send({ type: 'OPEN' })
+    expect(leases[0]!.settled).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+
+    h.send({ type: 'CLOSE' })
+    presence.update(false)
+    expect(leases).toHaveLength(2)
+    leases[1]!.done()
+    expect(h.config.layerRegistry.list()).toHaveLength(0)
+
+    stopExit()
+    presence.dispose()
   })
 })
 

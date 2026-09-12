@@ -1,4 +1,5 @@
 import type { CascadeStrategy, Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 /**
  * 树数据，层级、显示文本与条目禁用的唯一事实源。
@@ -107,6 +108,8 @@ export interface CascaderRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 视觉退场与行为资源共享的 Presence；缺省时关闭立即释放。 */
+  presence: PresenceHandle | null
   /** 浮层定位引擎；缺省即不产出位置结果。 */
   position: PositionEnginePort | null
   /** 定位锚点，取 trigger；清空按钮按完也把焦点还给它。 */

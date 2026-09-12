@@ -1,4 +1,5 @@
-import type { Anchor, Cleanup, DismissReason, Layer, LayerRegistry, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
+import type { Anchor, Cleanup, Dep, DismissReason, Layer, LayerRegistry, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import { acquireScrollLock, bindLayerVisual, createDismissLayer, createFocusScope, hideOutside } from '@xihan-ui/core'
 
 // 「浮层 + 候选导航」这一族组件的外壳：进入展开态时定位、入层栈、挂消解层与焦点域，
@@ -85,6 +86,8 @@ export interface OverlayFocusScopeSpec {
   restoreFocus?: () => boolean
   /** 归还焦点的落点，缺省回落到建域前的焦点持有者。 */
   restoreTarget?: () => HTMLElement | null
+  /** 资源保留期间逻辑重开时使用；建立焦点域时给句柄，释放时归还 null。 */
+  onReactivate?: (reactivate: (() => void) | null) => void
 }
 
 /** 层效应的入参。 */
@@ -97,6 +100,8 @@ export interface OverlayLayerOptions {
   flush?: (fn: () => void) => void
   /** 消解层的回报怎么翻成事件。 */
   onDismiss: (reason: DismissReason) => void
+  /** 逻辑层是否仍打开；退场期间为 false 时只占栈顶屏蔽下层，不再重复发关闭意图。 */
+  active?: () => boolean
   /** 要焦点域就把各家不同的那几项交进来；不给即不挂，焦点留在组件原处。 */
   focusScope?: OverlayFocusScopeSpec | null
 }
@@ -286,6 +291,81 @@ export function setupLayerTransaction(
   }
 }
 
+/** Presence 与行为资源共享生命周期时的输入。 */
+export interface PresenceResourceOptions {
+  /** 视觉 Presence；缺省（SSR/纯逻辑宿主）时逻辑关闭立即释放。 */
+  presence: PresenceHandle | null
+  /** 当前逻辑展开态，也是机器 tracker 的依赖。 */
+  open: Dep
+  /** 注册机器 tracker。 */
+  track: (deps: Dep[], fn: () => void) => void
+  /** 获取本轮 Layer、DismissableLayer 与可选 FocusScope 等行为资源。 */
+  acquire: () => Cleanup | undefined
+  /** 退场尚未完成便重开时调用；用于恢复被失活的焦点域。 */
+  onReopen?: () => void
+}
+
+/**
+ * 让浮层行为资源跟 Presence 的真实退场共享一份租约：
+ * - 展开时至多 acquire 一次；
+ * - 逻辑关闭但 Presence 仍 rendered 时继续持有；
+ * - 退出完成后释放；
+ * - 中途重开复用原资源，并通知调用方恢复需重新激活的能力。
+ */
+export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
+  let disposed = false
+  let release: Cleanup | undefined
+  let lastOpen = false
+
+  const finish = (): void => {
+    if (disposed || o.open() || !release)
+      return
+    const cleanup = release
+    release = undefined
+    cleanup()
+  }
+  const offExit = o.presence?.onExitComplete(finish)
+  const sync = (): void => {
+    if (disposed)
+      return
+    const open = Boolean(o.open())
+    const reopening = open && !lastOpen && release !== undefined
+    lastOpen = open
+    if (open) {
+      o.presence?.update(true)
+      release ??= o.acquire()
+      if (reopening)
+        o.onReopen?.()
+      return
+    }
+    if (!o.presence || !o.presence.rendered)
+      finish()
+  }
+
+  try {
+    o.track([o.open], sync)
+    sync()
+  }
+  catch (error) {
+    disposed = true
+    offExit?.()
+    const cleanup = release
+    release = undefined
+    cleanup?.()
+    throw error
+  }
+
+  return () => {
+    if (disposed)
+      return
+    disposed = true
+    offExit?.()
+    const cleanup = release
+    release = undefined
+    cleanup?.()
+  }
+}
+
 /**
  * 层效应的主体：入层栈 → 挂消解层 → 挂焦点域，拆时逆序。
  *
@@ -298,7 +378,22 @@ export function trackOverlayLayer(o: OverlayLayerOptions): Cleanup | undefined {
     return undefined
 
   return setupLayerTransaction(registerLayer, (layer, defer) => {
-    const dismiss = createDismissLayer({ config, layer, onDismiss: o.onDismiss })
+    const dismiss = createDismissLayer({
+      config,
+      layer,
+      onEscapeKeyDown: (event) => {
+        if (o.active && !o.active())
+          event.preventDefault()
+      },
+      onInteractOutside: (event) => {
+        if (o.active && !o.active())
+          event.preventDefault()
+      },
+      onDismiss: (reason) => {
+        if (!o.active || o.active())
+          o.onDismiss(reason)
+      },
+    })
     defer(() => dismiss.dispose())
 
     const spec = o.focusScope
@@ -314,7 +409,11 @@ export function trackOverlayLayer(o: OverlayLayerOptions): Cleanup | undefined {
         restoreFocus: spec.restoreFocus,
         restoreTarget: spec.restoreTarget,
       })
-      defer(() => focus.dispose())
+      spec.onReactivate?.(focus.reactivate)
+      defer(() => {
+        spec.onReactivate?.(null)
+        focus.dispose()
+      })
     }
   }, { registry: config.layerRegistry, flush: o.flush ?? (task => task()) })
 }

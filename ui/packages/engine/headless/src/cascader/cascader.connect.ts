@@ -433,6 +433,9 @@ export function connectCascader<T extends PropTypes>(
       'aria-busy': loading ? 'true' : undefined,
       // 根列没有条目（collection 为空）：皮肤据此把列让位给空态占位
       'data-empty': dataAttr(collection.length === 0),
+      // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
       'onKeyDown': (event: KeyboardEvent) => {
