@@ -23,7 +23,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { calendarAnatomy, calendarMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldEndProps, datePickerFieldProps, datePickerMachine, datePickerMeta, resolveFormControlState } from '@xihan-ui/headless'
+import { calendarAnatomy, calendarMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldAt, datePickerFieldEndProps, datePickerFieldProps, datePickerMachine, datePickerMeta, resolveDatePickerPanelIndex, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -65,10 +65,7 @@ function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentPro
 /** 取作者写在段位上的 index，缺席或写坏了退回组内文档序。 */
 function declaredIndex(el: HTMLElement, position: number): number {
   const raw = el.getAttribute('index')
-  if (raw == null || raw.trim() === '')
-    return position
-  const parsed = Number(raw)
-  return Number.isFinite(parsed) ? Math.trunc(parsed) : position
+  return resolveDatePickerPanelIndex(raw == null ? undefined : raw.trim(), position)
 }
 
 /**
@@ -558,7 +555,7 @@ export class XhDatePickerElement extends XhElement {
     const hiddenInputs = this.hiddenInputGroups(segmentGroups)
     for (const index of [0, 1] as const) {
       // 非区间模式没有终点那一组，作者多写的 segment-group、段位与隐藏输入一概不接线
-      const field = index === 0 ? api.field : api.fieldEnd
+      const field = datePickerFieldAt(api, index)
       if (!field)
         continue
       const segmentGroup = segmentGroups[index]

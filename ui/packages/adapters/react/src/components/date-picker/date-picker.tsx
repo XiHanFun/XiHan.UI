@@ -5,7 +5,6 @@ import type {
   CalendarView,
   DateFieldSegmentState,
   DatePickerApi,
-  DatePickerFieldApi,
   DatePickerPreset,
   DatePickerPresetState,
   DatePickerSchema,
@@ -15,6 +14,7 @@ import type {
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import type { DatePickerGroupIndex } from './context'
+import { datePickerFieldAt, resolveDatePickerFieldIndex, resolveDatePickerPanelIndex } from '@xihan-ui/headless'
 import { useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -46,15 +46,7 @@ function noop(): void {}
  */
 function usePanelIndex(index: number | string | undefined): number {
   const panel = useDatePickerPanelContext()
-  if (index === undefined || index === '')
-    return panel
-  const n = Math.trunc(Number(index))
-  return Number.isFinite(n) && n >= 0 ? n : panel
-}
-
-/** 按组号取那一组分段输入；非区间模式下终点那组缺席。 */
-function fieldOf(api: DatePickerApi, index: DatePickerGroupIndex): DatePickerFieldApi | null {
-  return index === 1 ? api.fieldEnd : api.field
+  return resolveDatePickerPanelIndex(index, panel)
 }
 
 /** 函数式 children 的载荷：选择器的开合与选中值、内嵌日历的展示数据、两组段位，以及改写值的句柄。 */
@@ -301,7 +293,7 @@ export interface XhDatePickerSegmentGroupProps extends ComponentPropsWithRef<'di
 /** role=group 的分段容器，也是换段时的查询边界。 */
 export function XhDatePickerSegmentGroup({ index = 0, children, ...rest }: XhDatePickerSegmentGroupProps): ReactNode {
   const ctx = useDatePickerContext()
-  const group: DatePickerGroupIndex = Number(index) === 1 ? 1 : 0
+  const group: DatePickerGroupIndex = resolveDatePickerFieldIndex(index)
   return (
     // 组内的段位与隐藏输入据此认领起止
     <DatePickerSegmentGroupProvider value={group}>
@@ -323,7 +315,7 @@ export interface XhDatePickerSegmentProps extends Omit<ComponentPropsWithRef<'di
 export function XhDatePickerSegment({ index, segment, children, ...rest }: XhDatePickerSegmentProps): ReactNode {
   const ctx = useDatePickerContext()
   const group = useDatePickerSegmentGroupContext()
-  const field = fieldOf(ctx.api, group)
+  const field = datePickerFieldAt(ctx.api, group)
   // 落点由连接层算：按下标还是按段名是同一条路，适配器这边不重写一份
   const declared = segment != null ? { segment } : { index: Math.trunc(Number(index)) }
   const state = field?.segmentOf(declared)
@@ -688,8 +680,8 @@ export interface XhDatePickerHiddenInputProps extends Omit<ComponentPropsWithRef
 export function XhDatePickerHiddenInput({ index, ...rest }: XhDatePickerHiddenInputProps): ReactNode {
   const ctx = useDatePickerContext()
   const group = useDatePickerSegmentGroupContext()
-  const at: DatePickerGroupIndex = index === undefined ? group : (Number(index) === 1 ? 1 : 0)
-  const field = fieldOf(ctx.api, at)
+  const at: DatePickerGroupIndex = index === undefined ? group : resolveDatePickerFieldIndex(index)
+  const field = datePickerFieldAt(ctx.api, at)
   // 非区间模式下终点那份没有可提交的值，不渲染
   if (!field)
     return null
