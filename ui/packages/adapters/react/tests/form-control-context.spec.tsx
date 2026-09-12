@@ -3,22 +3,30 @@ import { formPathKey } from '@xihan-ui/headless'
 import { describe, expect, it } from 'vitest'
 import {
   XhCheckbox,
+  XhDateFieldRoot,
+  XhDateFieldSegment,
   XhFieldControl,
   XhFieldRoot,
   XhFormFieldGroup,
   XhFormRoot,
   XhNumberFieldInput,
   XhNumberFieldRoot,
+  XhPasswordInputInput,
+  XhPasswordInputRoot,
+  XhPinInputInput,
+  XhPinInputRoot,
   XhRadioGroupRoot,
   XhSwitch,
   XhTextFieldInput,
   XhTextFieldRoot,
+  XhTimeFieldRoot,
+  XhTimeFieldSegment,
 } from '../src'
 
 type ControlState = Partial<Record<'disabled' | 'readOnly' | 'required' | 'invalid', boolean>>
-type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField'
+type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField']
+const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField']
 
 function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'Checkbox')
@@ -27,7 +35,15 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
     return <XhSwitch {...props} />
   if (kind === 'RadioGroup')
     return <XhRadioGroupRoot {...props} collection={[{ value: 'a', label: '甲' }]} />
-  return <XhNumberFieldRoot {...props}><XhNumberFieldInput /></XhNumberFieldRoot>
+  if (kind === 'NumberField')
+    return <XhNumberFieldRoot {...props}><XhNumberFieldInput /></XhNumberFieldRoot>
+  if (kind === 'PasswordInput')
+    return <XhPasswordInputRoot {...props}><XhPasswordInputInput /></XhPasswordInputRoot>
+  if (kind === 'PinInput')
+    return <XhPinInputRoot {...props} length={1}><XhPinInputInput index={0} /></XhPinInputRoot>
+  if (kind === 'DateField')
+    return <XhDateFieldRoot {...props} segments={['year']}><XhDateFieldSegment segment="year" /></XhDateFieldRoot>
+  return <XhTimeFieldRoot {...props} granularity="hour"><XhTimeFieldSegment segment="hour" /></XhTimeFieldRoot>
 }
 
 function renderAtomicControl(kind: AtomicControl, instance: ControlState = {}, field?: ControlState) {
@@ -42,12 +58,20 @@ function renderAtomicControl(kind: AtomicControl, instance: ControlState = {}, f
 }
 
 function expectAtomicState(container: HTMLElement, kind: AtomicControl, enabled: boolean): void {
-  if (kind === 'NumberField') {
+  if (kind === 'NumberField' || kind === 'PasswordInput' || kind === 'PinInput') {
     const input = container.querySelector('input')!
     expect(input.disabled).toBe(enabled)
     expect(input.readOnly).toBe(enabled)
     expect(input.required).toBe(enabled)
     expect(input.getAttribute('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'DateField' || kind === 'TimeField') {
+    const segment = container.querySelector<HTMLElement>('[role="spinbutton"]')!
+    expect(segment.getAttribute('aria-disabled')).toBe(String(enabled))
+    expect(segment.getAttribute('aria-readonly')).toBe(String(enabled))
+    expect(segment.getAttribute('aria-required')).toBe(String(enabled))
+    expect(segment.getAttribute('aria-invalid')).toBe(String(enabled))
     return
   }
   const root = container.querySelector<HTMLElement>(kind === 'RadioGroup' ? '[role="radiogroup"]' : `button[role="${kind === 'Checkbox' ? 'checkbox' : 'switch'}"]`)!

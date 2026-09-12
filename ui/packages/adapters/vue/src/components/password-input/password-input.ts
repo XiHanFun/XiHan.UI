@@ -5,6 +5,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { providePasswordInput, usePasswordInputContext } from './context'
 import { usePasswordInput } from './use-password-input'
 
@@ -57,7 +58,7 @@ export const XhPasswordInputRoot = defineComponent({
       emit('update:visible', details.visible)
     }
     const ctx = usePasswordInput(
-      withXhConfig('password-input', props) as PasswordInputProps,
+      withXhConfig('password-input', useFormControlProps(props)) as PasswordInputProps,
       { onValueChange, onVisibilityChange },
     )
     providePasswordInput(ctx)
@@ -101,7 +102,7 @@ export const XhPasswordInputInput = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     const ctx = usePasswordInputContext()
     // 原生 <input>：光标、选区与撤销都归浏览器，label 的 for 也指着它
-    return () => h('input', fieldLabel.value({ ...ctx.api.value.getInputProps() as Record<string, unknown>, ...fieldWiring.value }))
+    return () => h('input', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getInputProps() as Record<string, unknown> }))
   },
 })
 

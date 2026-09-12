@@ -4,6 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideTimeField, useTimeFieldContext } from './context'
 import { useTimeField } from './use-time-field'
 
@@ -27,11 +28,11 @@ export const XhTimeFieldRoot = defineComponent({
     // 缺省值由 connect 给出，这里一律 default: undefined
     hourCycle: { type: Number as PropType<TimeHourCycle>, default: undefined },
     granularity: { type: String as PropType<TimeGranularity>, default: undefined },
-    disabled: Boolean,
+    disabled: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<TimeFieldProps['translations']>, default: undefined },
-    readOnly: Boolean,
-    invalid: Boolean,
-    required: Boolean,
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
     name: { type: String, default: undefined },
     placeholder: { type: String, default: undefined },
     variant: { type: String as PropType<ControlVariant>, default: undefined },
@@ -51,7 +52,7 @@ export const XhTimeFieldRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useTimeField(withXhConfig('time-field', props) as TimeFieldProps, { onValueChange })
+    const ctx = useTimeField(withXhConfig('time-field', useFormControlProps(props)) as TimeFieldProps, { onValueChange })
     provideTimeField(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

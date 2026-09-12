@@ -12,4 +12,8 @@ export const FORM_CONTROL_HOST_SELECTOR = [
   'xh-switch',
   'xh-radio-group',
   'xh-number-field',
+  'xh-password-input',
+  'xh-pin-input',
+  'xh-date-field',
+  'xh-time-field',
 ].join(', ')

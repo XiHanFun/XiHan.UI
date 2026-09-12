@@ -1,6 +1,6 @@
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { TimeFieldSchema, TimeFieldValueChangeDetails, TimeGranularity, TimeHourCycle, TimeSegmentType } from '@xihan-ui/headless'
-import { connectTimeField, timeFieldAnatomy, timeFieldMachine, timeFieldMeta } from '@xihan-ui/headless'
+import type { FormControlState, TimeFieldSchema, TimeFieldValueChangeDetails, TimeGranularity, TimeHourCycle, TimeSegmentType } from '@xihan-ui/headless'
+import { connectTimeField, resolveFormControlState, timeFieldAnatomy, timeFieldMachine, timeFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -109,8 +109,21 @@ export class XhTimeFieldElement extends XhElement {
 
   // time-field 机器无副作用：不需要 config/layer/refs，controller 只带 props。
   private readonly ctrl = new MachineController<TimeFieldSchema>(this, timeFieldMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<TimeFieldSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+      required: this.required,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
@@ -119,11 +132,11 @@ export class XhTimeFieldElement extends XhElement {
       locale: this.locale,
       hourCycle: this.hourCycle,
       granularity: this.granularity,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       translations: this.translations,
-      required: this.required ?? false,
+      required: control.required,
       name: this.name,
       placeholder: this.placeholder,
       variant: this.variant,

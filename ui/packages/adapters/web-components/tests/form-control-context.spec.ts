@@ -19,9 +19,9 @@ function textField(markup = ''): string {
     </xh-text-field>`
 }
 
-type AtomicControl = 'checkbox' | 'switch' | 'radio-group' | 'number-field'
+type AtomicControl = 'checkbox' | 'switch' | 'radio-group' | 'number-field' | 'password-input' | 'pin-input' | 'date-field' | 'time-field'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['checkbox', 'switch', 'radio-group', 'number-field']
+const ATOMIC_CONTROLS: AtomicControl[] = ['checkbox', 'switch', 'radio-group', 'number-field', 'password-input', 'pin-input', 'date-field', 'time-field']
 
 function atomicControl(kind: AtomicControl, markup = ''): string {
   if (kind === 'checkbox') {
@@ -35,16 +35,35 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
       <div data-xh-part="item" value="a"><input data-xh-part="hidden-input"><span data-xh-part="indicator"></span><span data-xh-part="item-text">甲</span></div>
     </div></xh-radio-group>`
   }
-  return `<xh-number-field ${markup}><div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div></xh-number-field>`
+  if (kind === 'number-field')
+    return `<xh-number-field ${markup}><div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div></xh-number-field>`
+  if (kind === 'password-input')
+    return `<xh-password-input ${markup}><div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div></xh-password-input>`
+  if (kind === 'pin-input')
+    return `<xh-pin-input ${markup} length="1"><div data-xh-part="root"><input data-xh-part="input" index="0"></div></xh-pin-input>`
+  if (kind === 'date-field')
+    return `<xh-date-field ${markup} segments="year"><div data-xh-part="root"><div data-xh-part="segment" segment="year"></div></div></xh-date-field>`
+  return `<xh-time-field ${markup} granularity="hour"><div data-xh-part="root"><span data-xh-part="segment" segment="hour"></span></div></xh-time-field>`
 }
 
 async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabled: boolean): Promise<void> {
-  if (kind === 'number-field') {
-    const input = form.querySelector('xh-number-field input') as HTMLInputElement
+  if (kind === 'number-field' || kind === 'password-input' || kind === 'pin-input') {
+    const input = form.querySelector(`xh-${kind} input`) as HTMLInputElement
     await vi.waitFor(() => expect(input.disabled).toBe(enabled))
     expect(input.readOnly).toBe(enabled)
     expect(input.required).toBe(enabled)
     expect(input.getAttribute('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'date-field' || kind === 'time-field') {
+    let segment: HTMLElement | null = null
+    await vi.waitFor(() => {
+      segment = form.querySelector<HTMLElement>(`xh-${kind} [role="spinbutton"]`)
+      expect(segment?.getAttribute('aria-disabled')).toBe(String(enabled))
+    })
+    expect(segment!.getAttribute('aria-readonly')).toBe(String(enabled))
+    expect(segment!.getAttribute('aria-required')).toBe(String(enabled))
+    expect(segment!.getAttribute('aria-invalid')).toBe(String(enabled))
     return
   }
   let root: HTMLElement | null = null

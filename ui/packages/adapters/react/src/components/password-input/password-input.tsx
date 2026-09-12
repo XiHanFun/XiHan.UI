@@ -6,6 +6,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { PasswordInputProvider, usePasswordInputContext } from './context'
 import { usePasswordInput } from './use-password-input'
 
@@ -86,7 +87,7 @@ export function XhPasswordInputRoot({
     onValueChange,
     onVisibilityChange,
   }
-  const ctx = usePasswordInput(withXhConfig('password-input', machineProps) as PasswordInputProps)
+  const ctx = usePasswordInput(withXhConfig('password-input', useFormControlProps(machineProps)) as PasswordInputProps)
   const api = ctx.api
   return (
     <PasswordInputProvider value={ctx}>
@@ -148,8 +149,8 @@ export function XhPasswordInputInput({ ...rest }: XhPasswordInputInputProps): Re
     <input
       {...mergeReactProps(
         fieldLabel({
-          ...ctx.api.getInputProps() as Record<string, unknown>,
           ...fieldWiring,
+          ...ctx.api.getInputProps() as Record<string, unknown>,
         }),
         rest as Record<string, unknown>,
       )}
