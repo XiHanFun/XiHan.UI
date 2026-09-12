@@ -1,4 +1,4 @@
-<!-- 极简排布 | 页码序列不渲染也行，只留上一页 / 下一页与一行位置回显；先后顺序归作者 -->
+<!-- 简洁模式 | 只显示上一页、当前页与下一页 -->
 <script setup lang="ts">
 import {
   XhPaginationNextTrigger,
@@ -16,7 +16,6 @@ const page = ref(2);
     v-model:page="page"
     :count="1000"
     :page-size="10"
-    style="inline-size: 100%"
   >
     <XhPaginationPrevTrigger />
     <span>{{ current }} / {{ totalPages }}</span>

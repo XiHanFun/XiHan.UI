@@ -1,6 +1,6 @@
 # Pagination 分页
 
-把一份很长的结果切成一页一页，并给出当前位置与去处。
+用于在分页结果之间导航。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/pagination" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-count 给的是总条数不是总页数；页码序列由 root 的插槽交出来，作者照着渲染 item 与省略号
+在页码之间导航
 
 <XhDemo src="pagination/01-basic" />
 
@@ -24,63 +24,33 @@ count 给的是总条数不是总页数；页码序列由 root 的插槽交出�
 
 ## 示例
 
-### 受控与切片
-
-传了 page 就由宿主说了算；当前页决定从整份数据里切出哪一段
-
-<XhDemo src="pagination/02-controlled" />
-
-### 两侧页数
-
-sibling-count 决定当前页两侧各留几页，序列长度恒定，切页时省略号左右挪、按钮不抖
-
-<XhDemo src="pagination/03-sibling-count" />
-
-### 读屏文案
-
-translations 换掉 nav 地标名与各按钮的 aria-label，默认是英文
-
-<XhDemo src="pagination/04-translations" />
-
-### 颜色
-
-tone 换的是当前页选中态的底色与文字色，这里预置第 3 页为当前页
-
-<XhDemo src="pagination/05-tone" />
-
 ### 尺寸
 
-size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一页与省略号一并跟着变
+适配不同的界面密度
 
 <XhDemo src="pagination/06-size" />
 
-### 极简排布
+### 简洁模式
 
-页码序列不渲染也行，只留上一页 / 下一页与一行位置回显；先后顺序归作者
+只显示上一页、当前页与下一页
 
 <XhDemo src="pagination/07-simple" />
 
 ### 快速跳页
 
-输入框按 Enter 调插槽给的 setPage；越界页码由它夹回合法区间
+输入页码后按 Enter 跳转
 
 <XhDemo src="pagination/08-jumper" />
 
 ### 每页条数
 
-控制器就是库里的下拉：档位从 page-size-options 来、档位文字取 translations.pageSizeOption，换档时页码跟着换算，改档前第一条仍留在页内
+调整每页展示数量
 
 <XhDemo src="pagination/09-page-size" />
 
-### 整组禁用
+### 展开省略位
 
-分页自己没有禁用开关：裹一层 disabled 的 fieldset，里面的按钮统一失效并脱出 Tab 序
-
-<XhDemo src="pagination/10-disabled" />
-
-### 摊开省略号
-
-折进去的那几页悬停即摊开，点一下也摊开——纯悬停会把键盘用户挡在外面，而这几页除了这里没有别的入口；Escape 或点外面收起
+查看被折叠的页码
 
 <XhDemo src="pagination/11-ellipsis-expand" />
 
@@ -88,36 +58,36 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 
 ### 何时使用
 
-- 结果集很大且用户需要跳到确定的位置、或需要可分享的页码地址。
-- 需要知道一共有多少条。
+- 结果总数已知，需要跳转到指定页。
+- 用户需要确认当前位置与剩余页数。
 
 ### 何时不用
 
-- 内容是时间流、用户只关心"再来一些"：用[无限滚动](./infinite-scroll)。
-- 结果条数很少：一次全给。
+- 连续加载的内容流，使用[无限滚动](./infinite-scroll)。
+- 数据量较少，无需分页。
 
 ### 特性
 
-- `count` 给的是总条数不是总页数。
-- 页码序列由 `root` 的插槽交出来，作者照着渲染条目与省略号；不渲染序列也行，只留上一页 / 下一页。
-- `siblingCount` 决定当前页两侧各留几页，序列长度恒定，切页时省略号左右挪、按钮不抖。
-- `dir` 只作用于排版："上一页"永远是 `page - 1`，不随书写方向翻转。
-- 换 `pageSize` 后总页数重算，越界的当前页被夹回末页。
+- `count` 表示总条数，`pageSize` 表示每页条数。
+- `siblingCount` 控制当前页两侧展示的页码数量。
+- 支持上一页、下一页、跳页、每页数量与可展开省略位。
+- 更改 `pageSize` 后自动重算总页数并校正当前页。
 
 ### 组合
 
-- 与[表格](./table)、[列表](./list)配合；整组禁用时裹一层 `disabled` 的 `fieldset`。
-- 每页条数那个控制器就是[下拉选择](./select)：`page-size-select` 是挂载点，里头的角色节点带的是 `data-scope="select"`，吃 select 那份皮肤。档位来自 `pageSizeOptions`，每一档的文字取 `translations.pageSizeOption`，控件的可及名取 `translations.pageSizeSelect`。
+- `summary` 显示当前结果范围。
+- `jumper` 用于输入页码并按 Enter 跳转。
+- `page-size-select` 提供每页数量选择。
 
 ### 最佳实践
 
-- 把当前页写进地址，用户刷新或分享才回得到原处。
-- 数据在途时不要把分页整个卸载，否则每次翻页布局都跳一下。
+- 将当前页同步到地址，便于刷新和分享。
+- 数据加载期间保留分页器，避免布局跳动。
 
 ### 反模式
 
-- 已知总数却不显示，用户无法判断还要翻多久。
-- 把 `count` 当成总页数传进来：序列会短一大截。
+- 不要将 `count` 当作总页数。
+- 不要在结果很少时使用分页。
 
 ## API 参考
 

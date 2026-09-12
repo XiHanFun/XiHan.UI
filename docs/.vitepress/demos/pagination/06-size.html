@@ -1,7 +1,7 @@
-<!-- 尺寸 | size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一页与省略号一并跟着变 -->
-<div id="pagination-size" style="inline-size: 100%; display: grid; gap: 16px">
+<!-- 尺寸 | 适配不同的界面密度 -->
+<div id="pagination-size" style="inline-size: min(720px, 100%); display: grid; gap: 16px">
   <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 60px; flex: none">sm</span>
+    <span style="inline-size: 40px; flex: none; color: var(--xh-fg-muted)">小</span>
     <xh-pagination count="200" page-size="10" default-page="4" size="sm">
       <nav data-xh-part="root">
         <button data-xh-part="prev-trigger"></button>
@@ -18,7 +18,7 @@
   </div>
 
   <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 60px; flex: none">缺省</span>
+    <span style="inline-size: 40px; flex: none; color: var(--xh-fg-muted)">中</span>
     <xh-pagination count="200" page-size="10" default-page="4">
       <nav data-xh-part="root">
         <button data-xh-part="prev-trigger"></button>
@@ -35,7 +35,7 @@
   </div>
 
   <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 60px; flex: none">lg</span>
+    <span style="inline-size: 40px; flex: none; color: var(--xh-fg-muted)">大</span>
     <xh-pagination count="200" page-size="10" default-page="4" size="lg">
       <nav data-xh-part="root">
         <button data-xh-part="prev-trigger"></button>
@@ -53,7 +53,6 @@
 </div>
 
 <script type="module">
-  // 三档各自一台，页码序列都从各自的元素上取，不共用也不自己算
   for (const host of document.querySelectorAll(
     "#pagination-size xh-pagination",
   )) {
