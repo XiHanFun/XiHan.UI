@@ -1,12 +1,12 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { FormApi, FormColumns, FormColumnsByBreakpoint, FormFieldSpan, FormSchema } from './form.types'
 import type { FormPath } from './form.path'
+import type { FormApi, FormColumns, FormColumnsByBreakpoint, FormFieldSpan, FormSchema } from './form.types'
 import { contains, dataAttr } from '@xihan-ui/core'
 import { FORM_FIELD_NAME_ATTR, formAnatomy, formFieldId } from './form.anatomy'
 import { formErrorNames } from './form.errors'
 import { formValidateOn } from './form.machine'
-import { hasRequiredRule } from './form.rules'
 import { formPathKey, getFormPathValue } from './form.path'
+import { hasRequiredRule } from './form.rules'
 
 const parts = formAnatomy.build()
 
@@ -88,7 +88,7 @@ export function connectForm<T extends PropTypes>(
     getFieldValue: name => getFormPathValue(values, name),
     getFieldError: fieldError,
     isFieldInvalid: name => fieldError(name) !== undefined,
-    isFieldRequired: name => hasRequiredRule(getFormPathValue(prop('rules'), name)),
+    isFieldRequired: name => hasRequiredRule(getFormPathValue(service.refs.get('rules'), name)),
     setFieldValue: (name, value) => send({ type: 'FIELD.SET', name, value }),
     setFieldError: (name, message) => send({ type: 'ERROR.SET', name, message }),
     clearErrors: () => send({ type: 'ERRORS.CLEAR' }),

@@ -1,8 +1,9 @@
-import type { FieldArrayApi, FieldArrayItemProps, FieldArraySchema, FieldArrayTranslations } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArrayItemProps, FieldArraySchema, FieldArrayTranslations, FormPath } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useOptionalFormContext } from '../form/context'
 import { provideFieldArray, provideFieldArrayItem, useFieldArrayContext, useFieldArrayItemContext } from './context'
 import { useFieldArray } from './use-field-array'
 
@@ -40,7 +41,7 @@ export const XhFieldArrayRoot = defineComponent({
     disabled: Boolean,
     readOnly: Boolean,
     invalid: Boolean,
-    name: { type: String, default: undefined },
+    name: { type: [String, Array] as PropType<FormPath>, default: undefined },
     translations: { type: Object as PropType<Partial<FieldArrayTranslations>>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸数组
@@ -52,11 +53,12 @@ export const XhFieldArrayRoot = defineComponent({
     default?: (props: FieldArrayRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
+    const form = useOptionalFormContext()
     const onValueChange: FieldArrayProps['onValueChange'] = (details) => {
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useFieldArray(withXhConfig('field-array', props) as FieldArrayProps, { onValueChange })
+    const ctx = useFieldArray(withXhConfig('field-array', props) as FieldArrayProps, { onValueChange }, form?.service)
     provideFieldArray(ctx)
     // items 里每一项都带 key，作者铺行时直接 :key="row.key"
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({

@@ -1,10 +1,12 @@
 // @vitest-environment jsdom
 import type { FieldArraySchema } from '../src/field-array'
+import type { FormSchema } from '../src/form'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { connectFieldArray, fieldArrayMachine, fieldArrayTriggerId } from '../src/field-array'
 import { atRowMax, atRowMin, moveRow, rowBound, sameRows } from '../src/field-array/field-array.machine'
+import { connectForm, createFormPathRecord, formMachine, formPathKey, getFormPathValue } from '../src/form'
 
 type Props = FieldArraySchema['props']
 
@@ -12,6 +14,13 @@ function makeService(props: Props = {}) {
   const runtime = createVanillaRuntime()
   // 同一个对象原样返回：service 按返回值身份缓存 props，原地改字段即可模拟宿主写回
   const service = createService(fieldArrayMachine, { props: () => props, runtime })
+  runtime.start()
+  return service
+}
+
+function makeFormService(props: FormSchema['props'] = {}) {
+  const runtime = createVanillaRuntime()
+  const service = createService(formMachine, { props: () => props, runtime })
   runtime.start()
   return service
 }
@@ -269,5 +278,123 @@ describe('焦点：把手离场或换位之后接得住', () => {
     api(service).remove(0)
     await settle()
     expect(document.activeElement).toBe(els.add)
+  })
+})
+
+describe('接入 FormPath：行号变更只在 Headless 真源迁移', () => {
+  it('字符串 name 只作为一个路径段，点号与方括号绝不被自行拆解', () => {
+    const dotted = makeService({ name: 'user.email', defaultValue: ['甲'] })
+    const bracketed = makeService({ name: 'users[0]', defaultValue: ['乙'] })
+    expect(api(dotted).items[0]?.name).toEqual(['user.email', 0])
+    expect(api(bracketed).items[0]?.name).toEqual(['users[0]', 0])
+  })
+
+  it('追加行只扩展父数组，已有子路径与同名字符串字段保持原身份', () => {
+    const users = ['users'] as const
+    const email = ['users', 0, 'email'] as const
+    const form = makeFormService({
+      defaultValues: createFormPathRecord([
+        [users, [{ id: 'a' }]],
+        [email, 'a@example.com'],
+        ['users[0].email', '字符串字段'],
+      ]),
+      rules: createFormPathRecord([[email, { required: true }]]),
+    })
+    const rows = makeService({ name: users, createItem: () => ({ id: 'b' }) })
+    rows.refs.set('form', form)
+
+    expect(api(rows).items[0]?.name).toEqual(['users', 0])
+    api(rows).add()
+    const formApi = connectForm(form, normalizeProps)
+    expect(api(rows).value).toEqual([{ id: 'a' }, { id: 'b' }])
+    expect(formApi.getFieldValue(email)).toBe('a@example.com')
+    expect(formApi.getFieldValue('users[0].email')).toBe('字符串字段')
+    expect(formApi.isFieldRequired(email)).toBe(true)
+  })
+
+  it('删除中间行时，值、规则、错误与已验证错误标记一起收缩，字符串字段绝不被误判为路径', () => {
+    const users = ['users'] as const
+    const firstEmail = ['users', 0, 'email'] as const
+    const removedEmail = ['users', 1, 'email'] as const
+    const lastEmail = ['users', 2, 'email'] as const
+    const form = makeFormService({
+      defaultValues: createFormPathRecord([
+        [users, [{ id: 'a' }, { id: 'b' }, { id: 'c' }]],
+        [firstEmail, 'a@example.com'],
+        [removedEmail, 'b@example.com'],
+        [lastEmail, 'c@example.com'],
+        ['users[1].email', '字符串字段不参与数组迁移'],
+      ]),
+      rules: createFormPathRecord([
+        [firstEmail, { required: true }],
+        [removedEmail, { required: true }],
+        [lastEmail, { required: true }],
+      ]),
+    })
+    const rows = makeService({ name: users, movable: true })
+    rows.refs.set('form', form)
+
+    form.send({ type: 'ERROR.SET', name: removedEmail, message: '将被删除' })
+    form.send({ type: 'ERROR.SET', name: lastEmail, message: '应前移' })
+    form.refs.get('validatedErrors').add(formPathKey(lastEmail))
+
+    api(rows).remove(1)
+    const formApi = connectForm(form, normalizeProps)
+
+    expect(api(rows).value).toEqual([{ id: 'a' }, { id: 'c' }])
+    expect(getFormPathValue(formApi.values, users)).toEqual([{ id: 'a' }, { id: 'c' }])
+    expect(getFormPathValue(formApi.values, firstEmail)).toBe('a@example.com')
+    // 被删行的路径由接位行占用，原有 b 的值已不存在。
+    expect(getFormPathValue(formApi.values, removedEmail)).toBe('c@example.com')
+    expect(formApi.getFieldValue('users[1].email')).toBe('字符串字段不参与数组迁移')
+    expect(formApi.getFieldError(['users', 1, 'email'])).toBe('应前移')
+    expect(formApi.isFieldRequired(['users', 1, 'email'])).toBe(true)
+
+    // 标记若仍留在旧下标，下一次编辑会把迁移后的校验错误当成库外错误清掉。
+    form.send({ type: 'FIELD.SET', name: ['users', 1, 'email'], value: 'next@example.com' })
+    expect(formApi.getFieldError(['users', 1, 'email'])).toBe('应前移')
+  })
+
+  it('换序时，进行中的异步校验与执行异常快照跟随同一行写回新路径', async () => {
+    const users = ['users'] as const
+    const original = ['users', 2, 'email'] as const
+    const moved = ['users', 0, 'email'] as const
+    let resolveValidator: ((message: string | undefined) => void) | undefined
+    const form = makeFormService({
+      defaultValues: createFormPathRecord([
+        [users, [{ id: 'a' }, { id: 'b' }, { id: 'c' }]],
+        [['users', 0, 'email'], 'a@example.com'],
+        [['users', 1, 'email'], 'b@example.com'],
+        [original, 'c@example.com'],
+      ]),
+      validateOn: 'change',
+      rules: createFormPathRecord([[
+        original,
+        { required: true, validator: () => new Promise<string | undefined>((resolve) => { resolveValidator = resolve }) },
+      ]]),
+    })
+    const rows = makeService({ name: users, movable: true })
+    rows.refs.set('form', form)
+
+    form.send({ type: 'FIELD.SET', name: original, value: 'changed@example.com' })
+    expect(form.refs.get('validation').get(formPathKey(original))?.pending).toBe(true)
+
+    form.context.set('validationError', {
+      cause: new Error('旧行异常'),
+      values: form.context.get('values'),
+      field: [...original],
+    })
+    api(rows).move(2, 0)
+
+    const task = form.refs.get('validation').get(formPathKey(moved))
+    expect(task?.field).toEqual(moved)
+    expect(getFormPathValue(task?.values, moved)).toBe('changed@example.com')
+    expect(connectForm(form, normalizeProps).validationError?.field).toEqual(moved)
+    expect(connectForm(form, normalizeProps).isFieldRequired(moved)).toBe(true)
+
+    resolveValidator?.('异步错误')
+    await settle()
+    await settle()
+    expect(connectForm(form, normalizeProps).getFieldError(moved)).toBe('异步错误')
   })
 })

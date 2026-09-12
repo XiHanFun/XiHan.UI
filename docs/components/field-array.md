@@ -17,7 +17,10 @@
 - `movable` 给出上移下移。
 - `createItem` 决定新增一行时的初值。
 - 一行里可以放多个字段。
-- `name` 给整份数组一个字段名，每行经 `item.name` 拿到 `名字[下标]` 写到自己的控件上。
+- `name` 是 `FormPath`。嵌套在 Form 里时自动读取该路径的数组值，每行经 `item.name`
+  拿到显式数组路径；点号与方括号从不被猜成层级。
+- 在 Form 内新增、删除、换序会一并迁移该数组子字段的 values、rules、errors、异步
+  validation 与已验证错误标记；字符串字段绝不参与数组下标迁移。
 - `readOnly` 让行数改不动，`invalid` 把校验状态传到每一行。
 - `item-label` 承载行前的行号或名目。
 
@@ -82,7 +85,7 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | `disabled` | `boolean` |  | 禁用：新增、删除、换序三路都按不动。 |
 | `readOnly` | `boolean` |  | 只读：行数改不动（新增、删除、换序都按不动），行里的控件仍由作者自己置只读。 |
 | `invalid` | `boolean` |  | 校验失败标注：落到根与每一行上。 |
-| `name` | `string` |  | 整份数组的表单字段名。给了之后每一行经 `item.name` 拿到 `名字[下标]`， 作者把它写到行里自己的控件上，整份数组才提交得出去。 |
+| `name` | `FormPath` |  | 整份数组的表单字段名。嵌套在 Form 中时会自动接入其值、规则、错误与校验真源； 每一行经 `item.name` 拿到显式数组 FormPath，绝不拼接字符串下标。 |
 | `translations` | `Partial<FieldArrayTranslations>` |  |  |
 | `onValueChange` | `(details: FieldArrayValueChangeDetails) => void` |  |  |
 

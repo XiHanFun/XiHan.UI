@@ -6,6 +6,14 @@ export type FormPathSegment = string | number
 export type FormPath = string | readonly FormPathSegment[]
 export type FormPathKey = string
 
+/** 一组可变行发生的结构变更；下标永远指向变更前的数组。 */
+export type FormArrayMutation
+  = | { type: 'insert', index: number }
+    | { type: 'remove', index: number }
+    | { type: 'move', from: number, to: number }
+  /** 整份替换时按位置保留仍在范围内的子字段，截掉越界行。 */
+    | { type: 'replace', length: number }
+
 interface PathEntry<T> {
   path: readonly FormPathSegment[]
   value: T
@@ -41,6 +49,74 @@ export function formPathDisplay(path: FormPath): string {
     return path
   validArrayPath(path)
   return JSON.stringify(path)
+}
+
+/**
+ * FieldArray 的第 index 行子字段路径。
+ *
+ * 父字段即使是字符串，也只把它作为数组路径的一个段，而不解析其中的点或方括号；
+ * 因而 `user.email` 仍是一个段，不会与 `['user', 'email']` 混淆。
+ */
+export function formArrayItemPath(name: FormPath, index: number): readonly FormPathSegment[] {
+  if (!Number.isInteger(index) || index < 0)
+    throw new TypeError('[xh] FieldArray 行下标必须是非负整数')
+  return [...(typeof name === 'string' ? [name] : name), index]
+}
+
+function arrayPrefix(name: FormPath): readonly FormPathSegment[] {
+  return typeof name === 'string' ? [name] : name
+}
+
+function sameSegments(a: readonly FormPathSegment[], b: readonly FormPathSegment[]): boolean {
+  return a.length === b.length && a.every((segment, index) => Object.is(segment, b[index]))
+}
+
+/**
+ * 把一条显式数组路径按某个 FieldArray 的结构变更改写。
+ *
+ * 字符串字段永远不参加：它们没有可解释的下标。父字段自身也不改；只有其数组子字段
+ * 的第一层数字下标会迁移。删掉的行返回 null，调用方据此删除关联状态。
+ */
+export function rebaseFormArrayPath(path: FormPath, name: FormPath, mutation: FormArrayMutation): FormPath | null {
+  if (typeof path === 'string')
+    return path
+  const prefix = arrayPrefix(name)
+  if (path.length <= prefix.length || !sameSegments(path.slice(0, prefix.length), prefix))
+    return path
+  const current = path[prefix.length]
+  if (typeof current !== 'number' || !Number.isInteger(current) || current < 0)
+    return path
+
+  let next = current
+  switch (mutation.type) {
+    case 'insert':
+      if (current >= mutation.index)
+        next++
+      break
+    case 'remove':
+      if (current === mutation.index)
+        return null
+      if (current > mutation.index)
+        next--
+      break
+    case 'move':
+      if (current === mutation.from)
+        next = mutation.to
+      else if (mutation.from < mutation.to && current > mutation.from && current <= mutation.to)
+        next--
+      else if (mutation.to < mutation.from && current >= mutation.to && current < mutation.from)
+        next++
+      break
+    case 'replace':
+      if (current >= mutation.length)
+        return null
+      break
+  }
+  if (next === current)
+    return path
+  const out = [...path]
+  out[prefix.length] = next
+  return out
 }
 
 function entriesOf<T>(record: FormPathRecord<T>): ReadonlyMap<FormPathKey, PathEntry<T>> {
@@ -131,6 +207,30 @@ export function cloneFormPathRecord<T>(record: FormPathRecord<T> | undefined): F
   if (entries.size)
     Object.defineProperty(out, PATH_ENTRIES, { value: new Map(entries) })
   return out
+}
+
+/**
+ * 迁移一张路径表中某个 FieldArray 的子字段。没有任何命中的字段时保留原引用，
+ * 以免受控宿主收到无意义的更新。
+ */
+export function rebaseFormPathRecord<T>(
+  record: FormPathRecord<T>,
+  name: FormPath,
+  mutation: FormArrayMutation,
+): FormPathRecord<T> {
+  let changed = false
+  const next: Array<readonly [FormPath, T]> = []
+  for (const [path, value] of formPathEntries(record)) {
+    const mapped = rebaseFormArrayPath(path, name, mutation)
+    if (mapped === null) {
+      changed = true
+      continue
+    }
+    if (formPathKey(mapped) !== formPathKey(path))
+      changed = true
+    next.push([mapped, value])
+  }
+  return changed ? createFormPathRecord(next) : record
 }
 
 export function sameFormPathRecords<T>(a: FormPathRecord<T>, b: FormPathRecord<T> | undefined): boolean {
