@@ -1,14 +1,15 @@
-<!-- 竖排 | orientation 换掉方向键收哪一对键：竖排认上下键，左右键原样放行给页面 -->
-<xh-tabs default-value="general" orientation="vertical">
-  <div data-xh-part="root" style="inline-size: 100%">
-    <div data-xh-part="list">
-      <button data-xh-part="trigger" value="general">通用</button>
-      <button data-xh-part="trigger" value="appearance">外观</button>
-      <button data-xh-part="trigger" value="advanced">高级</button>
+<!-- 垂直布局 | 用于侧栏式内容导航 -->
+<xh-tabs default-value="account" orientation="vertical" variant="line">
+  <div data-xh-part="root">
+    <div data-xh-part="list" aria-label="账户设置">
+      <button data-xh-part="trigger" value="account">账户</button>
+      <button data-xh-part="trigger" value="security">安全</button>
+      <button data-xh-part="trigger" value="notifications">通知</button>
+      <div data-xh-part="indicator"></div>
     </div>
 
-    <div data-xh-part="content" value="general">通用设置面板</div>
-    <div data-xh-part="content" value="appearance">外观设置面板</div>
-    <div data-xh-part="content" value="advanced">高级设置面板</div>
+    <div data-xh-part="content" value="account">管理账户资料与偏好。</div>
+    <div data-xh-part="content" value="security">配置密码与登录验证。</div>
+    <div data-xh-part="content" value="notifications">设置消息通知方式。</div>
   </div>
 </xh-tabs>

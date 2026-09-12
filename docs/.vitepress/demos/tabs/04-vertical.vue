@@ -1,21 +1,25 @@
-<!-- 竖排 | orientation 换掉方向键收哪一对键：竖排认上下键，左右键原样放行给页面 -->
+<!-- 垂直布局 | 用于侧栏式内容导航 -->
 <script setup lang="ts">
-import { XhTabsRoot } from "@xihan-ui/vue";
-
-const tabs = [
-  { value: "general", label: "通用" },
-  { value: "appearance", label: "外观" },
-  { value: "advanced", label: "高级" },
-];
+import {
+  XhTabsContent,
+  XhTabsIndicator,
+  XhTabsList,
+  XhTabsRoot,
+  XhTabsTrigger,
+} from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhTabsRoot
-    :collection="tabs"
-    default-value="general"
-    orientation="vertical"
-    style="inline-size: 100%"
-  >
-    <template #panel="node">{{ node.label }}设置面板</template>
+  <XhTabsRoot default-value="account" orientation="vertical" variant="line">
+    <XhTabsList aria-label="账户设置">
+      <XhTabsTrigger value="account">账户</XhTabsTrigger>
+      <XhTabsTrigger value="security">安全</XhTabsTrigger>
+      <XhTabsTrigger value="notifications">通知</XhTabsTrigger>
+      <XhTabsIndicator />
+    </XhTabsList>
+
+    <XhTabsContent value="account">管理账户资料与偏好。</XhTabsContent>
+    <XhTabsContent value="security">配置密码与登录验证。</XhTabsContent>
+    <XhTabsContent value="notifications">设置消息通知方式。</XhTabsContent>
   </XhTabsRoot>
 </template>

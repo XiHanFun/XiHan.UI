@@ -2,7 +2,7 @@ import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } fro
 import type { MultiPointerSession } from '@xihan-ui/pointer'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 
-/** 形态。line 是缺省档，皮肤里没有它的选择器，根规则画的就是它。 */
+/** 视觉变体。segment 是缺省档，line 用于次级导航。 */
 export type TabsVariant = 'line' | 'card' | 'segment'
 
 export interface TabsValueChangeDetails {
@@ -76,7 +76,7 @@ export interface TabsSchema extends MachineSchema {
     activationMode?: TabsActivationMode
     /** 方向键走到尽头是否回绕，默认 true。 */
     loop?: boolean
-    /** 形态：line / card / segment，决定选中态怎么画。缺省是 line。 */
+    /** 变体：line / card / segment，决定选中态怎么画。缺省是 segment。 */
     variant?: TabsVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
     tone?: Tone

@@ -1,19 +1,14 @@
-<!-- 基础用法 | default-value 指定初始选中项，禁用的标签方向键会跳过；面板常挂，靠 hidden 显隐 -->
+<!-- 基础用法 | 在并列内容之间切换 -->
 <xh-tabs default-value="overview">
-  <div data-xh-part="root" style="inline-size: 100%">
-    <div data-xh-part="list">
+  <div data-xh-part="root">
+    <div data-xh-part="list" aria-label="项目视图">
       <button data-xh-part="trigger" value="overview">概览</button>
-      <button data-xh-part="trigger" value="usage">用法</button>
-      <button data-xh-part="trigger" value="api" aria-disabled="true">
-        API（禁用）
-      </button>
+      <button data-xh-part="trigger" value="analytics">分析</button>
+      <button data-xh-part="trigger" value="reports">报告</button>
     </div>
-    <div data-xh-part="content" value="overview">
-      概览面板：默认 automatic，方向键移动焦点时顺带切换选中。
-    </div>
-    <div data-xh-part="content" value="usage">
-      用法面板：面板不做懒挂载，切走再切回来，里面的滚动位置与表单态都还在。
-    </div>
-    <div data-xh-part="content" value="api">API 面板。</div>
+
+    <div data-xh-part="content" value="overview">查看项目概览与近期活动。</div>
+    <div data-xh-part="content" value="analytics">分析访问趋势与关键指标。</div>
+    <div data-xh-part="content" value="reports">浏览已生成的项目报告。</div>
   </div>
 </xh-tabs>

@@ -1,32 +1,34 @@
-<!-- 形态 | variant 只改选中态怎么画，切换行为与键盘操作三档一致；不写 variant 即 line 档 -->
+<!-- 变体 | 区分主要、次级与卡片式导航 -->
 <script setup lang="ts">
-import { XhTabsRoot } from "@xihan-ui/vue";
+import {
+  XhTabsContent,
+  XhTabsIndicator,
+  XhTabsList,
+  XhTabsRoot,
+  XhTabsTrigger,
+} from "@xihan-ui/vue";
 
-// 第一档不写 variant，用 undefined 表达 line 缺省
 const variants = [
-  { variant: undefined, label: "line（缺省）" },
-  { variant: "card", label: "card" },
-  { variant: "segment", label: "segment" },
-] as const;
-
-const tabs = [
-  { value: "overview", label: "概览" },
-  { value: "usage", label: "用法" },
-  { value: "api", label: "API" },
+  { value: undefined, label: "主要" },
+  { value: "line", label: "次级" },
+  { value: "card", label: "卡片" },
 ];
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 24px; inline-size: 100%">
-    <div v-for="v in variants" :key="v.label">
-      <div style="margin-block-end: 8px; font-size: 12px">{{ v.label }}</div>
-      <XhTabsRoot
-        :variant="v.variant"
-        :collection="tabs"
-        default-value="overview"
-        style="inline-size: 100%"
-      >
-        <template #panel="node">{{ node.label }}面板</template>
+  <div style="display: grid; gap: 16px; inline-size: min(560px, 100%)">
+    <div v-for="variant in variants" :key="variant.label" style="display: grid; gap: 6px">
+      <span style="color: var(--xh-fg-muted)">{{ variant.label }}</span>
+      <XhTabsRoot default-value="overview" :variant="variant.value">
+        <XhTabsList :aria-label="`${variant.label}标签页`">
+          <XhTabsTrigger value="overview">概览</XhTabsTrigger>
+          <XhTabsTrigger value="analytics">分析</XhTabsTrigger>
+          <XhTabsTrigger value="reports">报告</XhTabsTrigger>
+          <XhTabsIndicator />
+        </XhTabsList>
+        <XhTabsContent value="overview">查看项目概览。</XhTabsContent>
+        <XhTabsContent value="analytics">查看项目分析。</XhTabsContent>
+        <XhTabsContent value="reports">查看项目报告。</XhTabsContent>
       </XhTabsRoot>
     </div>
   </div>
