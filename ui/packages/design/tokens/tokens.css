@@ -62,9 +62,9 @@
     --xh-space-2_5: 10px;
     --xh-radius-none: 0px;
     --xh-radius-sm: 4px;
-    --xh-radius-md: 6px;
-    --xh-radius-lg: 8px;
-    --xh-radius-xl: 12px;
+    --xh-radius-md: 8px;
+    --xh-radius-lg: 12px;
+    --xh-radius-xl: 16px;
     --xh-radius-full: 9999px;
     --xh-font-family-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     --xh-font-size-xs: 0.75rem;
@@ -124,8 +124,8 @@
 
   /* 非模式语义（密度等轴的基线合并写法） */
   :where(:root), :where([data-density='comfortable']) {
-    --xh-control-h-sm: 28px;
-    --xh-control-h-md: 32px;
+    --xh-control-h-sm: 32px;
+    --xh-control-h-md: 36px;
     --xh-control-h-lg: 40px;
     --xh-control-box-sm: 32px;
     --xh-control-box-md: 40px;
@@ -347,8 +347,8 @@
   /* density 轴 · compact 档：只覆盖收紧的盒尺寸。排在基线合并块之后，
      同为零特指度时靠书写顺序压过基线；嵌套换档靠元素自身声明压过继承 */
   :where([data-density='compact']) {
-    --xh-control-h-sm: 24px;
-    --xh-control-h-md: 28px;
+    --xh-control-h-sm: 28px;
+    --xh-control-h-md: 32px;
     --xh-control-h-lg: 36px;
     --xh-control-box-sm: 28px;
     --xh-control-box-md: 36px;
