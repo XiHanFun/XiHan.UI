@@ -1138,7 +1138,6 @@ const TABLE = [
   ['docs/guide/versioning.md', /注册 (\d+) \+ `xh-background`/, '自定义元素数'],
   ['docs/guide/versioning.md', /调它就注册全部 (\d+) 个元素/, '自定义元素数'],
   ['docs/guide/versioning.md', /看它在不在上表列的那 (\d+) 个全局令牌里/, '全局令牌数'],
-  ['docs/index.md', /· (\d+) 个组件 ·/, '组件数'],
   ['docs/index.md', /键盘规格表，共 (\d+) 条/, '键盘规格条数'],
   ['docs/introduction.md', /当前提供 \*\*(\d+) 个组件\*\*/, '组件数'],
   ['docs/introduction.md', /键盘规格表\*\*（共 (\d+) 条）/, '键盘规格条数'],

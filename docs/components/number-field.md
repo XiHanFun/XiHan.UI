@@ -42,13 +42,13 @@
 
 <XhDemo src="number-field/04-disabled" />
 
-### 形态
+### 变体
 
 variant 只改皮肤怎么用颜色，加减与键盘行为三档完全一致
 
 <XhDemo src="number-field/05-variant" />
 
-### 语气
+### 颜色
 
 tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
 

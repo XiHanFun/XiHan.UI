@@ -42,7 +42,7 @@ orientation="vertical" 把入口排成一列、面板改从侧边长出来，方
 
 <XhDemo src="navigation-menu/04-vertical" />
 
-### 语气
+### 颜色
 
 tone 换的是入口的高亮底与指示条、当前链接的文字色，静止态一样：悬停到入口上、或用方向键把焦点移过去才显现
 

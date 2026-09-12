@@ -42,13 +42,13 @@ orientation 换掉方向键收哪一对键：竖排认上下键，左右键原�
 
 <XhDemo src="tabs/04-vertical" />
 
-### 形态
+### 变体
 
 variant 只改选中态怎么画，切换行为与键盘操作三档一致；不写 variant 即 line 档
 
 <XhDemo src="tabs/05-variant" />
 
-### 语气
+### 颜色
 
 tone 决定选中态用哪族颜色，与 variant 正交；这里固定 card 形态只看语气的差别
 

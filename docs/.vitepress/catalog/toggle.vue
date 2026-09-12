@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { XhToggle } from "@xihan-ui/vue";
+import { HeartIcon } from "@xihan-ui/icons";
+import { XhIcon, XhToggle } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhToggle default-pressed>加粗</XhToggle>
+  <XhToggle><XhIcon :icon="HeartIcon" />点赞</XhToggle>
 </template>

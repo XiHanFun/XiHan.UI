@@ -36,7 +36,7 @@ root 是 nav 地标，translations.root 换掉它的 aria-label，同页有多�
 
 <XhDemo src="breadcrumb/03-translations" />
 
-### 语气
+### 颜色
 
 tone 换的是当前项的文字色，以及可点那几层悬停时的文字色；末级预置为当前项
 

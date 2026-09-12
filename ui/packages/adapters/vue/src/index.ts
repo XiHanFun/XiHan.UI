@@ -56,7 +56,7 @@ export {
 export { useBreadcrumb } from './components/breadcrumb/use-breadcrumb'
 export type { BreadcrumbContext } from './components/breadcrumb/use-breadcrumb'
 export { XhButton, XhButtonIndicator, XhButtonLabel, XhButtonPrefix, XhButtonSuffix } from './components/button'
-export { XhButtonGroup, XhButtonGroupSeparator } from './components/button-group/button-group'
+export { XhButtonGroup } from './components/button-group/button-group'
 export {
   XhCalendarCell,
   XhCalendarCellTrigger,
@@ -1027,7 +1027,6 @@ export {
   XhToggleGroupHiddenInput,
   XhToggleGroupItem,
   XhToggleGroupRoot,
-  XhToggleGroupSeparator,
 } from './components/toggle-group/toggle-group'
 export { useToggleGroup } from './components/toggle-group/use-toggle-group'
 export type { ToggleGroupContext } from './components/toggle-group/use-toggle-group'

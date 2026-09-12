@@ -1,4 +1,4 @@
-import type { ActionVariant, IdGenerator, Layer, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { ActionVariant, Direction, IdGenerator, Layer, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
   CollapsibleOpenChangeDetails,
   FloatButtonAppearance,
@@ -35,6 +35,7 @@ const TRISTATE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? 
  * @attr {boolean} open - 受控展开；缺省该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} disabled - 禁用触发器
+ * @attr {'ltr'|'rtl'} dir - 文字方向
  * @attr {'top-start'|'top-end'|'bottom-start'|'bottom-end'} placement - 钉在哪一角，默认 bottom-end
  * @attr {number} offset - 距那两条边的距离（px），默认 24
  * @attr {'circle'|'square'} shape - 触发器外形，默认 circle
@@ -55,6 +56,7 @@ export class XhFloatButtonElement extends XhElement {
     open: { converter: TRISTATE_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     disabled: { type: Boolean },
+    direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     shape: { converter: STRING_CONVERTER },
@@ -69,6 +71,7 @@ export class XhFloatButtonElement extends XhElement {
   declare open?: boolean
   declare defaultOpen?: boolean
   declare disabled?: boolean
+  declare direction?: Direction
   declare placement?: FloatButtonPlacement
   declare offset?: number
   declare shape?: FloatButtonShape
@@ -98,6 +101,7 @@ export class XhFloatButtonElement extends XhElement {
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       disabled: this.disabled ?? false,
+      dir: this.direction,
       expandTrigger: this.expandTrigger,
       onOpenChange: this.notify,
     }

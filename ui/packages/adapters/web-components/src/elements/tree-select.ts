@@ -5,6 +5,7 @@ import type {
   TreeSelectBranchLoadErrorDetails,
   TreeSelectBranchLoadSnapshot,
   TreeSelectBranchLoadStartDetails,
+  TreeSelectApi,
   TreeSelectExpandedValueChangeDetails,
   TreeSelectNode,
   TreeSelectNodeProps,
@@ -225,6 +226,21 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     () => this.machineProps(),
     { scope: this.treeSelectScope, onBuilt: svc => this.injectRefs(svc) },
   )
+
+  private api(): TreeSelectApi | null {
+    const service = this.ctrl.service as Service<TreeSelectSchema> | undefined
+    return service ? connectTreeSelect(service, wcNormalize) : null
+  }
+
+  /** 当前整树是否为空；机器尚未建起时为 false。 */
+  get isEmpty(): boolean {
+    return this.api()?.empty ?? false
+  }
+
+  /** 当前是否显示整树加载态；与作者传入的 loading 属性分开。 */
+  get currentLoading(): boolean {
+    return this.api()?.loading ?? false
+  }
 
   /**
    * 树的自绘条：与 content 同级挂在已经 fixed 的 positioner 上。

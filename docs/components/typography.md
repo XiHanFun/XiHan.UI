@@ -36,7 +36,7 @@ variant 换形态：muted 弱化、strong 加重、code 等宽
 
 <XhDemo src="typography/03-text" />
 
-### 语气
+### 颜色
 
 tone 决定这一段行内文字用哪族颜色，与 variant 是两个轴，可以一起写
 

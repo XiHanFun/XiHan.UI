@@ -12,6 +12,8 @@
     "brand-hover": { "$type": "color", "$value": "{color.brand.400}" },
     "brand-active": { "$type": "color", "$value": "{color.brand.300}" },
     "brand-subtle": { "$type": "color", "$value": "{color.brand.950}" },
+    "brand-subtle-hover": { "$type": "color", "$value": "color-mix(in oklab, {bg.brand} 20%, {bg.surface})" },
+    "brand-subtle-active": { "$type": "color", "$value": "color-mix(in oklab, {bg.brand} 28%, {bg.surface})" },
     "overlay": { "$type": "color", "$value": "oklch(0 0 0 / 0.6)" },
     "scrollbar-track": { "$type": "color", "$value": "{color.neutral.900}" }
   },

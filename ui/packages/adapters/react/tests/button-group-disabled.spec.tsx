@@ -6,7 +6,7 @@
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, describe, expect, it } from 'vitest'
-import { XhButton, XhButtonGroup, XhButtonGroupSeparator } from '../src'
+import { XhButton, XhButtonGroup } from '../src'
 
 let host: HTMLElement | null = null
 let root: ReturnType<typeof createRoot> | null = null
@@ -20,16 +20,15 @@ afterEach(async () => {
   host = null
 })
 
-async function render(groupDisabled: boolean | undefined): Promise<void> {
+async function render(groupDisabled: boolean | undefined, separators?: boolean): Promise<void> {
   host = document.createElement('div')
   document.body.append(host)
   root = createRoot(host)
   ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
   await act(async () => {
     root!.render(
-      <XhButtonGroup disabled={groupDisabled}>
+      <XhButtonGroup disabled={groupDisabled} separators={separators}>
         <XhButton>日</XhButton>
-        <XhButtonGroupSeparator />
         <XhButton disabled>周</XhButton>
       </XhButtonGroup>,
     )
@@ -57,11 +56,16 @@ describe('按钮组的禁用传到组内每一段', () => {
 
   it('段间装饰线跟着整组的排布走，读屏不念', async () => {
     await render(true)
-    const separator = document.querySelector('[data-scope="button-group"][data-part="separator"]')!
+    const separator = document.querySelector('[data-xh-button-group-separator]')!
     expect(separator.localName).toBe('span')
     expect(separator.getAttribute('aria-hidden')).toBe('true')
     // 画的是这条线自己的朝向：横排的组里它是一条竖线
     expect(separator.getAttribute('data-orientation')).toBe('vertical')
     expect(separator.getAttribute('data-disabled')).toBe('')
+  })
+
+  it('separators=false：不生成分隔线', async () => {
+    await render(undefined, false)
+    expect(document.querySelector('[data-xh-button-group-separator]')).toBeNull()
   })
 })

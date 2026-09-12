@@ -77,10 +77,22 @@
       "tree",
       "tree-select"
     ],
+    "branch-empty": [
+      "tree-select"
+    ],
+    "branch-error": [
+      "tree-select"
+    ],
     "branch-indicator": [
       "json-viewer",
       "side-nav",
       "tree",
+      "tree-select"
+    ],
+    "branch-loading": [
+      "tree-select"
+    ],
+    "branch-retry-trigger": [
       "tree-select"
     ],
     "branch-text": [
@@ -1065,13 +1077,13 @@
       "hover-card",
       "icon",
       "icon-wrapper",
-      "kbd",
-      "kbd-group",
       "image",
       "image-cropper",
       "infinite-scroll",
       "input-group",
       "json-viewer",
+      "kbd",
+      "kbd-group",
       "layout",
       "list",
       "listbox",
@@ -1203,7 +1215,6 @@
     ],
     "separator": [
       "breadcrumb",
-      "button-group",
       "context-menu",
       "kbd-group",
       "menu",
@@ -1212,7 +1223,6 @@
       "steps",
       "tabs",
       "timer",
-      "toggle-group",
       "toolbar"
     ],
     "sider": [

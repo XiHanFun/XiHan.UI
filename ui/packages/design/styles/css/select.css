@@ -315,7 +315,7 @@
     block-size: var(--xh-select-action-size, var(--xh-control-action-size));
     padding: 0;
     border: 0;
-    border-radius: var(--xh-select-action-radius, var(--xh-shape-inset));
+    border-radius: var(--xh-select-action-radius, var(--xh-shape-control));
     background: var(--xh-select-action-bg, transparent);
     color: var(--xh-select-action-fg, var(--xh-fg-muted));
     font-family: inherit;

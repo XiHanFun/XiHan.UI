@@ -66,7 +66,7 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 
 <XhDemo src="listbox/08-phases" />
 
-### 语气
+### 颜色
 
 tone 决定选中条目的勾选标记用哪族颜色，未选中的条目不受影响
 

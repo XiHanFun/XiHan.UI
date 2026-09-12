@@ -30,6 +30,7 @@ export function connectToggleGroup<T extends PropTypes>(
   const dir = prop('dir') ?? 'ltr'
   const loop = prop('loop') ?? true
   const rovingFocus = prop('rovingFocus') ?? true
+  const separators = prop('separators') ?? true
 
   const isSelected = (target: string): boolean => value.includes(target)
   // 组禁用向下传导到每个条目；条目也能单独禁用：部件上写的优先，没写就回 collection 里查
@@ -85,6 +86,8 @@ export function connectToggleGroup<T extends PropTypes>(
     focusedValue,
     multiple,
     disabled: groupDisabled,
+    orientation,
+    separators,
     isSelected,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
 
@@ -158,15 +161,6 @@ export function connectToggleGroup<T extends PropTypes>(
         'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
       })
     },
-
-    // 段间的装饰线：不是条目，方向键跳过它，读屏也不念。
-    // 画的是这条线自己的朝向（横排里是竖线），与 root 的 data-orientation 相反
-    getSeparatorProps: () => normalize.element({
-      ...parts.separator.attrs,
-      'aria-hidden': true,
-      'data-orientation': orientation === 'horizontal' ? 'vertical' : 'horizontal',
-      'data-disabled': dataAttr(groupDisabled),
-    }),
 
     // 表单出口：整组只有一份，提交的就是当前选中值
     getHiddenInputProps: () => normalize.input({

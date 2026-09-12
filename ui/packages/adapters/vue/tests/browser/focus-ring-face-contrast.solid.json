@@ -239,15 +239,15 @@
     "theme": "light",
     "tone": null
   },
-  "toggle-group [data-disabled][data-part='item'][data-scope='toggle-group'][data-state='on']": {
-    "ratio": 1.92,
+  "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='solid'] [data-disabled][data-part='item'][data-scope='toggle-group'][data-state='on']": {
+    "ratio": 2.34,
     "theme": "light",
-    "tone": "neutral"
+    "tone": null
   },
-  "toggle-group [data-part='item'][data-scope='toggle-group'][data-state='on']": {
+  "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='solid'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
     "ratio": 1,
     "theme": "light",
-    "tone": "brand"
+    "tone": null
   },
   "tour [data-part='next-trigger'][data-scope='tour']": {
     "ratio": 1,

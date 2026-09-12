@@ -425,32 +425,18 @@
       "ratio": 1,
       "ring": "off"
     },
-    "toggle-group [data-part='root'][data-scope='toggle-group'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
+    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='solid'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
       "parts": [
         "item"
       ],
       "ratio": 1,
       "ring": "poured"
     },
-    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='ghost'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
+    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='solid']:is(\n    :not([data-tone]),\n    [data-tone='brand']\n  ) [data-part='item'][data-scope='toggle-group'][data-state='on']": {
       "parts": [
         "item"
       ],
-      "ratio": 2.89,
-      "ring": "poured"
-    },
-    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='outline'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
-      "parts": [
-        "item"
-      ],
-      "ratio": 2.89,
-      "ring": "poured"
-    },
-    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='subtle'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
-      "parts": [
-        "item"
-      ],
-      "ratio": 2.89,
+      "ratio": 1,
       "ring": "poured"
     },
     "tour [data-part='next-trigger'][data-scope='tour']": {

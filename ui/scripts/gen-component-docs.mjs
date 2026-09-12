@@ -765,6 +765,14 @@ function demoHead(text) {
   return (text.match(/^<!--([\s\S]*?)-->/) ?? text.match(/^\/\/(.*)/))?.[1] ?? ''
 }
 
+function demoTitle(title) {
+  if (title === '形态' || title === '形态与语气')
+    return '变体'
+  if (title === '语气')
+    return '颜色'
+  return title
+}
+
 function demos(id) {
   const dir = path.join(demosRoot, id)
   if (!fs.existsSync(dir))
@@ -792,7 +800,7 @@ function demos(id) {
     const [title, ...rest] = head.trim().split('|')
     return {
       src: `${id}/${base}`,
-      title: title.trim() || base,
+      title: demoTitle(title.trim()) || base,
       description: prose(rest.join('|').trim()),
     }
   })

@@ -42,7 +42,7 @@ loading 会挡住点击，并给 indicator 部件挂上旋转动画
 
 <XhDemo src="button/04-state" />
 
-### 语气
+### 颜色
 
 tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气都成立
 

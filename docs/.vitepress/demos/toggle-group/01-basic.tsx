@@ -1,14 +1,23 @@
-// 基础用法 | 单选分段控件：root 是 radiogroup、条目是 radio；整组只占一个 Tab 位，进组后四个方向键都能走
+// 基础用法 | 同时切换多个文本格式
 import type { ReactNode } from "react";
-import { XhToggleGroupRoot } from "@xihan-ui/react";
-
-const aligns = [
-  { value: "left", label: "左对齐" },
-  { value: "center", label: "居中" },
-  { value: "right", label: "右对齐" },
-];
+import { BoldIcon, ItalicIcon, StrikethroughIcon, UnderlineIcon } from "@xihan-ui/icons";
+import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/react";
 
 export default function Demo(): ReactNode {
-  // 不传 value 即非受控，default-value 只给初值
-  return <XhToggleGroupRoot collection={aligns} defaultValue="left" />;
+  return (
+    <XhToggleGroupRoot defaultValue={["bold"]} multiple>
+      <XhToggleGroupItem value="bold" aria-label="粗体">
+        <XhIcon icon={BoldIcon} />
+      </XhToggleGroupItem>
+      <XhToggleGroupItem value="italic" aria-label="斜体">
+        <XhIcon icon={ItalicIcon} />
+      </XhToggleGroupItem>
+      <XhToggleGroupItem value="underline" aria-label="下划线">
+        <XhIcon icon={UnderlineIcon} />
+      </XhToggleGroupItem>
+      <XhToggleGroupItem value="strike" aria-label="删除线">
+        <XhIcon icon={StrikethroughIcon} />
+      </XhToggleGroupItem>
+    </XhToggleGroupRoot>
+  );
 }

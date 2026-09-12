@@ -515,6 +515,11 @@
   /* 段与段共边焊成一条，悬停那一档不抬：抬起其中一段，投影会压到左右两段的面上。
      收回常态那一档——实心组仍留着顶边那条高光，其余形态本来就是 none */
   --xh-_button-group-shadow-hover: var(--xh-_button-group-highlight, none);
+  --xh-_group-separator-size: calc(var(--xh-_button-group-h, var(--xh-control-h-md)) / 2);
+  --xh-button-bg: var(--xh-bg-subtle);
+  --xh-button-bg-hover: var(--xh-bg-subtle-hover);
+  --xh-button-bg-active: var(--xh-bg-subtle-active);
+  --xh-button-fg: var(--xh-fg-default);
 
   display: inline-flex;
   align-items: stretch;
@@ -535,7 +540,7 @@
 }
 
 /* 分隔线不参与等分：它有自己的厚度，跟着拉伸就成了一条粗带 */
-[data-scope='button-group'][data-part='root'][data-full-width] > *:not([data-part='separator']) {
+[data-scope='button-group'][data-part='root'][data-full-width] > *:not([data-xh-button-group-separator]) {
   flex: 1;
 }
 
@@ -548,33 +553,33 @@
 /* —— 段间的线 —— */
 /* 装饰性的一条线，读屏不念。段本来靠共边连成一体，插了它就是把一排按钮分成几组。
    朝向是这条线自己的（横排里是竖线），与 root 的排布相反 */
-[data-scope='button-group'][data-part='separator'] {
+[data-scope='button-group'][data-part='root'] > [data-xh-button-group-separator] {
   flex: none;
   align-self: center;
   z-index: 1;
   border-radius: var(--xh-button-group-separator-radius, var(--xh-shape-pill));
   background: var(--xh-button-group-separator-color, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-  opacity: var(--xh-button-group-separator-opacity, 0.24);
+  opacity: var(--xh-button-group-separator-opacity, var(--xh-control-separator-opacity));
   pointer-events: none;
   transition:
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-[data-scope='button-group'][data-part='separator'][data-orientation='vertical'] {
+[data-scope='button-group'][data-part='root'] > [data-xh-button-group-separator][data-orientation='vertical'] {
   inline-size: var(--xh-button-group-separator-thickness, var(--xh-stroke-thin));
   block-size: var(
     --xh-button-group-separator-size,
-    calc(var(--xh-_button-group-h, var(--xh-control-h-md)) / 2)
+    var(--xh-_group-separator-size)
   );
   margin-inline-start: calc(-1 * var(--xh-button-group-separator-thickness, var(--xh-stroke-thin)));
 }
 
-[data-scope='button-group'][data-part='separator'][data-orientation='horizontal'] {
+[data-scope='button-group'][data-part='root'] > [data-xh-button-group-separator][data-orientation='horizontal'] {
   block-size: var(--xh-button-group-separator-thickness, var(--xh-stroke-thin));
   inline-size: var(
     --xh-button-group-separator-size,
-    calc(var(--xh-_button-group-h, var(--xh-control-h-md)) / 2)
+    var(--xh-_group-separator-size)
   );
   margin-block-start: calc(-1 * var(--xh-button-group-separator-thickness, var(--xh-stroke-thin)));
 }
@@ -587,16 +592,20 @@
 
 /* 段都按不动了，段间那条线跟着退到弱边一档；换色按 micro 走一遍，
    与两侧那几段自己的禁用过渡同拍 */
-[data-scope='button-group'][data-part='separator'][data-disabled] {
+[data-scope='button-group'][data-part='root'] > [data-xh-button-group-separator][data-disabled] {
   background: var(--xh-button-group-separator-color-disabled, var(--xh-border-subtle));
-  opacity: var(--xh-button-group-separator-opacity-disabled, 0.36);
+  opacity: var(--xh-button-group-separator-opacity-disabled, var(--xh-control-separator-disabled-opacity));
 }
 
 @media (forced-colors: active) {
   /* 段间那条线画的是一块纯底色，这一档里底色被统一换成 Canvas，线整条消失，
      几组按钮就连成了一长串。换成前景色画回来 */
-  [data-scope='button-group'][data-part='separator'] {
+  [data-scope='button-group'][data-part='root'] > [data-xh-button-group-separator] {
     background: CanvasText;
+  }
+
+  [data-scope='button-group'][data-part='root'][data-variant='outline']::after {
+    border-color: ButtonText;
   }
 }
 
@@ -659,6 +668,20 @@
 [data-scope='button-group'][data-part='root'][data-variant='outline'] {
   --xh-button-group-separator-color: var(--xh-_tone-border-control, var(--xh-border-control));
   --xh-button-group-separator-opacity: 1;
+
+  position: relative;
+  border-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
+}
+
+[data-scope='button-group'][data-part='root'][data-variant='outline']::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  border: var(--xh-stroke-thin) solid
+    var(--xh-button-group-outline-color, var(--xh-_tone-border-control, var(--xh-border-control)));
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 [data-scope='button-group'][data-part='root'][data-variant='ghost'] {
@@ -666,13 +689,12 @@
   --xh-button-group-separator-opacity: 0.16;
 }
 
-/* 未声明形态的段由组画 outline 描边；显式 solid/subtle/ghost 仍按自己的边界来。
-   两个适配器各一条选择器：Vue/React 的 Button 是直接子节点，WC 的 Button 在行为宿主里面。 */
+/* outline 的外框由组根统一绘制，未声明形态的段不再各画一圈边框。 */
 [data-scope='button-group'][data-part='root'][data-variant='outline']
   > [data-scope='button'][data-part='root']:not([data-variant]),
 [data-scope='button-group'][data-part='root'][data-variant='outline']
   > * > [data-scope='button'][data-part='root']:not([data-variant]) {
-  border-color: var(--xh-_tone-border-control, var(--xh-border-control));
+  border-color: transparent;
 }
 
 /* —— 合边 —— */
@@ -686,12 +708,12 @@
    方向跟着 data-orientation 走，横排收 inline 轴、竖排收 block 轴。
    分隔线两侧不合边：那两段本来就是被这条线分开的，再压一次会把线盖掉一半 */
 [data-scope='button-group'][data-part='root'][data-orientation='horizontal']
-  > *:not([data-part='separator']) + *:not([data-part='separator']) {
+  > *:not([data-xh-button-group-separator]) + *:not([data-xh-button-group-separator]) {
   margin-inline-start: calc(-1 * var(--xh-stroke-thin));
 }
 
 [data-scope='button-group'][data-part='root'][data-orientation='vertical']
-  > *:not([data-part='separator']) + *:not([data-part='separator']) {
+  > *:not([data-xh-button-group-separator]) + *:not([data-xh-button-group-separator]) {
   margin-block-start: calc(-1 * var(--xh-stroke-thin));
 }
 
@@ -13338,24 +13360,24 @@
     :not([data-tone]),
     [data-tone='brand']
   ):not([data-scope='button-group'] *) {
-  --xh-action-bg-rest: var(--xh-color-brand-600);
-  --xh-action-bg-hover: var(--xh-color-brand-700);
-  --xh-action-bg-pressed: var(--xh-color-brand-800);
-  --xh-action-fg-rest: var(--xh-color-neutral-0);
-  --xh-action-fg-hover: var(--xh-color-neutral-0);
-  --xh-action-fg-pressed: var(--xh-color-neutral-0);
-  --xh-_button-primary-bg: var(--xh-color-brand-600);
-  --xh-_button-primary-fg: var(--xh-color-neutral-0);
+  --xh-action-bg-rest: var(--xh-action-brand-solid);
+  --xh-action-bg-hover: var(--xh-action-brand-solid-hover);
+  --xh-action-bg-pressed: var(--xh-action-brand-solid-active);
+  --xh-action-fg-rest: var(--xh-action-on-brand-solid);
+  --xh-action-fg-hover: var(--xh-action-on-brand-solid);
+  --xh-action-fg-pressed: var(--xh-action-on-brand-solid);
+  --xh-_button-primary-bg: var(--xh-action-brand-solid);
+  --xh-_button-primary-fg: var(--xh-action-on-brand-solid);
 }
 
 :is([data-theme='dark'] *, [data-theme='dark'])[data-scope='button-group'][data-part='root'][data-variant='solid']:is(
   :not([data-tone]),
   [data-tone='brand']
 ) {
-  --xh-button-bg: var(--xh-color-brand-600);
-  --xh-button-bg-hover: var(--xh-color-brand-700);
-  --xh-button-bg-active: var(--xh-color-brand-800);
-  --xh-button-fg: var(--xh-color-neutral-0);
+  --xh-button-bg: var(--xh-action-brand-solid);
+  --xh-button-bg-hover: var(--xh-action-brand-solid-hover);
+  --xh-button-bg-active: var(--xh-action-brand-solid-active);
+  --xh-button-fg: var(--xh-action-on-brand-solid);
 }
 
 /* 默认按钮与 solid 都是品牌主动作，焦点、禁用和载入不能退回灰色家族缺省面。
@@ -28771,7 +28793,7 @@
   block-size: var(--xh-select-action-size, var(--xh-control-action-size));
   padding: 0;
   border: 0;
-  border-radius: var(--xh-select-action-radius, var(--xh-shape-inset));
+  border-radius: var(--xh-select-action-radius, var(--xh-shape-control));
   background: var(--xh-select-action-bg, transparent);
   color: var(--xh-select-action-fg, var(--xh-fg-muted));
   font-family: inherit;
@@ -34602,14 +34624,14 @@
     --xh-toggle-bg-on-hover,
     var(
       --xh-_tone-subtle-hover,
-      color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface))
+      var(--xh-bg-brand-subtle-hover)
     )
   );
   --xh-_toggle-bg-on-active: var(
     --xh-toggle-bg-on-active,
     var(
       --xh-_tone-subtle-active,
-      color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface))
+      var(--xh-bg-brand-subtle-active)
     )
   );
   --xh-_toggle-fg-on: var(--xh-toggle-fg-on, var(--xh-_tone-fg, var(--xh-fg-brand)));
@@ -34674,10 +34696,10 @@
   :not([data-tone]),
   [data-tone='brand']
 ) {
-  --xh-_toggle-bg-on: var(--xh-color-brand-600);
-  --xh-_toggle-bg-on-hover: var(--xh-color-brand-700);
-  --xh-_toggle-bg-on-active: var(--xh-color-brand-800);
-  --xh-_toggle-fg-on: var(--xh-color-neutral-0);
+  --xh-_toggle-bg-on: var(--xh-action-brand-solid);
+  --xh-_toggle-bg-on-hover: var(--xh-action-brand-solid-hover);
+  --xh-_toggle-bg-on-active: var(--xh-action-brand-solid-active);
+  --xh-_toggle-fg-on: var(--xh-action-on-brand-solid);
 }
 
 [data-scope='toggle'][data-part='root'][data-variant='subtle'] {
@@ -34765,51 +34787,71 @@
   --xh-_toggle-group-px: var(--xh-control-px-md);
   --xh-_toggle-group-gap: var(--xh-control-gap-md);
   --xh-_toggle-group-font-size: var(--xh-control-font-md);
+  --xh-_group-separator-size: calc(var(--xh-_toggle-group-h) / 2);
 
   /* 形态的落点：没写 data-variant 时这十支保持缺省档的取值，段的规则读的是
      「使用者令牌 → 这十支 → 语义令牌」三级，使用者令牌永远排在形态之前。
      未选中那五支管段的壳，选中那五支管当前值那一段 */
-  --xh-_toggle-group-item-bg: var(--xh-bg-canvas);
+  --xh-_toggle-group-item-bg: var(--xh-bg-subtle);
   --xh-_toggle-group-item-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_toggle-group-item-bg-active: var(--xh-bg-subtle-active);
   --xh-_toggle-group-item-fg: var(--xh-fg-default);
-  --xh-_toggle-group-item-border: var(--xh-border-control);
-  --xh-_toggle-group-item-bg-on: var(--xh-_tone, var(--xh-bg-brand));
-  --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
-  --xh-_toggle-group-item-bg-on-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
-  --xh-_toggle-group-item-fg-on: var(--xh-_tone-on, var(--xh-fg-on-brand));
-  --xh-_toggle-group-item-border-on: var(--xh-_tone, var(--xh-bg-brand));
-  /* 选中段是实心底才画内高光；淡底的那几档在自己的形态块里收成 none */
-  --xh-_toggle-group-item-highlight-on: var(--xh-_highlight-tone);
+  --xh-_toggle-group-item-border: transparent;
+  --xh-_toggle-group-item-bg-on: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+  --xh-_toggle-group-item-bg-on-hover: var(
+    --xh-_tone-subtle-hover,
+    var(--xh-bg-brand-subtle-hover)
+  );
+  --xh-_toggle-group-item-bg-on-active: var(
+    --xh-_tone-subtle-active,
+    var(--xh-bg-brand-subtle-active)
+  );
+  --xh-_toggle-group-item-fg-on: var(--xh-_tone-fg, var(--xh-fg-brand));
+  --xh-_toggle-group-item-border-on: transparent;
+  --xh-_toggle-group-item-highlight-on: none;
 
-  /* 一行排不下就折行：每个选项都必须看得见、点得到，硬撑一行会把末尾几段顶出容器。
-     折行的代价是行末与行首那两个角变成直角（两端圆角只补在首末两段上）；
-     不改成横向滚动是因为段与容器等高，容器一旦成为滚动容器，
-     段的焦点环（画在段外侧 2px 处）会被整圈裁掉 */
+  /* 连续分段不能换行；窄容器由作者改为竖排或全宽布局。 */
   display: inline-flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: stretch;
 }
 
 /* —— 形态 ——
    四档与 toggle 一处对一处：未选中那些段长什么样在这里定，选中那一段用哪一档底也在这里定，
    切换仍由 data-state='on' 那一条统一完成。
-   缺省档（没写 data-variant）不进这几块，取值仍是画布底 + 一圈可操作区描边 + 语气实心的选中段 */
+   缺省档（没写 data-variant）使用中性浅底，选中段使用品牌淡底 */
 [data-scope='toggle-group'][data-part='root'][data-variant='solid'] {
   --xh-_toggle-group-item-bg: transparent;
   --xh-_toggle-group-item-border: transparent;
+  --xh-_toggle-group-item-bg-on: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
+  --xh-_toggle-group-item-bg-on-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
+  --xh-_toggle-group-item-fg-on: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  --xh-_toggle-group-item-border-on: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_toggle-group-item-highlight-on: var(--xh-_highlight-tone);
+}
+
+[data-scope='toggle-group'][data-part='root'][data-variant='solid']:is(
+  :not([data-tone]),
+  [data-tone='brand']
+) {
+  --xh-_toggle-group-item-bg-on: var(--xh-action-brand-solid);
+  --xh-_toggle-group-item-bg-on-hover: var(--xh-action-brand-solid-hover);
+  --xh-_toggle-group-item-bg-on-active: var(--xh-action-brand-solid-active);
+  --xh-_toggle-group-item-fg-on: var(--xh-action-on-brand-solid);
+  --xh-_toggle-group-item-border-on: var(--xh-action-brand-solid);
 }
 
 [data-scope='toggle-group'][data-part='root'][data-variant='subtle'] {
-  --xh-_toggle-group-item-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_toggle-group-item-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_toggle-group-item-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_toggle-group-item-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_toggle-group-item-bg: var(--xh-bg-subtle);
+  --xh-_toggle-group-item-bg-hover: var(--xh-bg-subtle-hover);
+  --xh-_toggle-group-item-bg-active: var(--xh-bg-subtle-active);
+  --xh-_toggle-group-item-fg: var(--xh-fg-default);
   --xh-_toggle-group-item-border: transparent;
-  --xh-_toggle-group-item-bg-on: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_toggle-group-item-bg-on-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_toggle-group-item-fg-on: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_toggle-group-item-bg-on: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+  --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-brand-subtle));
+  --xh-_toggle-group-item-bg-on-active: var(--xh-_tone-subtle-active, var(--xh-bg-brand-subtle));
+  --xh-_toggle-group-item-fg-on: var(--xh-_tone-fg, var(--xh-fg-brand));
   --xh-_toggle-group-item-border-on: transparent;
   --xh-_toggle-group-item-highlight-on: none;
 }
@@ -34819,13 +34861,27 @@
   --xh-_toggle-group-item-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
   --xh-_toggle-group-item-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
   --xh-_toggle-group-item-fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_toggle-group-item-border: var(--xh-_tone-border-control, var(--xh-border-control));
-  --xh-_toggle-group-item-bg-on: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_toggle-group-item-bg-on-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_toggle-group-item-fg-on: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_toggle-group-item-border-on: var(--xh-_tone-border-control, var(--xh-border-control));
+  --xh-_toggle-group-item-border: transparent;
+  --xh-_toggle-group-item-bg-on: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+  --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-brand-subtle));
+  --xh-_toggle-group-item-bg-on-active: var(--xh-_tone-subtle-active, var(--xh-bg-brand-subtle));
+  --xh-_toggle-group-item-fg-on: var(--xh-_tone-fg, var(--xh-fg-brand));
+  --xh-_toggle-group-item-border-on: transparent;
   --xh-_toggle-group-item-highlight-on: none;
+
+  position: relative;
+  border-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+}
+
+[data-scope='toggle-group'][data-part='root'][data-variant='outline']::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  border: var(--xh-stroke-thin) solid
+    var(--xh-toggle-group-outline-color, var(--xh-_tone-border-control, var(--xh-border-control)));
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 [data-scope='toggle-group'][data-part='root'][data-variant='ghost'] {
@@ -34834,10 +34890,10 @@
   --xh-_toggle-group-item-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
   --xh-_toggle-group-item-fg: var(--xh-_tone-fg, var(--xh-fg-default));
   --xh-_toggle-group-item-border: transparent;
-  --xh-_toggle-group-item-bg-on: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_toggle-group-item-bg-on-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_toggle-group-item-fg-on: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_toggle-group-item-bg-on: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+  --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-brand-subtle));
+  --xh-_toggle-group-item-bg-on-active: var(--xh-_tone-subtle-active, var(--xh-bg-brand-subtle));
+  --xh-_toggle-group-item-fg-on: var(--xh-_tone-fg, var(--xh-fg-brand));
   --xh-_toggle-group-item-border-on: transparent;
   --xh-_toggle-group-item-highlight-on: none;
 }
@@ -34930,36 +34986,35 @@
    角画在条目上，槽名也带 item 段，与同文件其余条目槽同段 */
 [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
   > [data-scope='toggle-group'][data-part='item']:first-child {
-  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
-  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
 }
 
 [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
   > [data-scope='toggle-group'][data-part='item']:last-child {
-  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
-  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
 }
 
 [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
   > [data-scope='toggle-group'][data-part='item']:first-child {
-  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
-  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
 }
 
 [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
   > [data-scope='toggle-group'][data-part='item']:last-child {
-  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
-  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
 }
 
 [data-scope='toggle-group'][data-part='item']:not([data-disabled]):hover {
   background: var(--xh-_bg-hover);
 }
 
-/* 换底之外再压一档：一段是可独立按下的控件盒，缩放只动这一段。选中段也压 */
+/* 组内按压只换底色，不缩放单段，避免接缝断开。 */
 [data-scope='toggle-group'][data-part='item']:not([data-disabled]):active {
   background: var(--xh-_bg-active);
-  scale: var(--xh-motion-scale-press);
 }
 
 /* 选中态：单选是 role=radio + aria-checked，多选是原生按钮 + aria-pressed，
@@ -34973,7 +35028,7 @@
   --xh-_bg-active: var(--xh-toggle-group-item-bg-on-active, var(--xh-_toggle-group-item-bg-on-active));
   --xh-_fg: var(--xh-toggle-group-item-fg-on, var(--xh-_toggle-group-item-fg-on));
   --xh-_border: var(--xh-toggle-group-item-border-on, var(--xh-_toggle-group-item-border-on));
-  /* 选中的这一段是实心底，顶边画一条极浅的内高光把它衬出厚度；未选中的段是透明底，不画 */
+  /* 只有 solid 形态提供内高光，其余形态在根变量中关闭。 */
   --xh-_toggle-group-highlight: var(--xh-_toggle-group-item-highlight-on);
 
   box-shadow: var(--xh-toggle-group-item-shadow, var(--xh-_toggle-group-highlight));
@@ -34983,9 +35038,9 @@
   z-index: 1;
 }
 
-/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='toggle-group'][data-part='item'][data-state='on']:focus-visible {
+/* 选中面使用配对前景色作为内收焦点环。 */
+[data-scope='toggle-group'][data-part='root'][data-variant='solid']
+  [data-scope='toggle-group'][data-part='item'][data-state='on']:focus-visible {
   --xh-_ring-color: currentColor;
 }
 
@@ -35032,54 +35087,65 @@
 /* —— 段间的线 —— */
 /* 装饰性的一条线，读屏不念。段本来靠共边连成一体，插了它就是把一排开关分成几组。
    朝向是这条线自己的（横排里是竖线），与 root 的排布相反 */
-[data-scope='toggle-group'][data-part='separator'] {
+[data-scope='toggle-group'][data-part='root'] > [data-xh-toggle-group-separator] {
   flex: none;
-  align-self: stretch;
+  align-self: center;
+  z-index: 2;
   border-radius: var(--xh-toggle-group-separator-radius, var(--xh-shape-pill));
-  background: var(--xh-toggle-group-separator-color, var(--xh-border-default));
+  background: var(--xh-toggle-group-separator-color, var(--xh-fg-default));
+  opacity: var(--xh-toggle-group-separator-opacity, var(--xh-control-separator-opacity));
+  pointer-events: none;
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-[data-scope='toggle-group'][data-part='separator'][data-orientation='vertical'] {
+[data-scope='toggle-group'][data-part='root'] > [data-xh-toggle-group-separator][data-orientation='vertical'] {
   inline-size: var(--xh-toggle-group-separator-thickness, var(--xh-stroke-thin));
-  margin-block: var(--xh-toggle-group-separator-inset, var(--xh-space-1));
-  margin-inline: var(--xh-toggle-group-separator-gap, var(--xh-space-1));
+  block-size: var(
+    --xh-toggle-group-separator-size,
+    var(--xh-_group-separator-size)
+  );
+  margin-inline-start: calc(-1 * var(--xh-toggle-group-separator-thickness, var(--xh-stroke-thin)));
 }
 
-[data-scope='toggle-group'][data-part='separator'][data-orientation='horizontal'] {
+[data-scope='toggle-group'][data-part='root'] > [data-xh-toggle-group-separator][data-orientation='horizontal'] {
   block-size: var(--xh-toggle-group-separator-thickness, var(--xh-stroke-thin));
-  margin-block: var(--xh-toggle-group-separator-gap, var(--xh-space-1));
-  margin-inline: var(--xh-toggle-group-separator-inset, var(--xh-space-1));
+  inline-size: var(
+    --xh-toggle-group-separator-size,
+    var(--xh-_group-separator-size)
+  );
+  margin-block-start: calc(-1 * var(--xh-toggle-group-separator-thickness, var(--xh-stroke-thin)));
 }
 
 /* 段都按不动了，段间那条线跟着退到弱边一档 */
-[data-scope='toggle-group'][data-part='separator'][data-disabled] {
+[data-scope='toggle-group'][data-part='root'] > [data-xh-toggle-group-separator][data-disabled] {
   background: var(--xh-toggle-group-separator-color-disabled, var(--xh-border-subtle));
+  opacity: var(--xh-toggle-group-separator-opacity-disabled, var(--xh-control-separator-disabled-opacity));
 }
 
 /* 插了分隔线之后首末两段不再是 root 的首末子节点，圆角改按元素类型认：
    条目是原生 button，分隔线不是。没有分隔线时这两条与上面按子节点认的那几条同值 */
 [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
   > [data-scope='toggle-group'][data-part='item']:first-of-type {
-  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
-  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
 }
 
 [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
   > [data-scope='toggle-group'][data-part='item']:last-of-type {
-  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
-  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
 }
 
 [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
   > [data-scope='toggle-group'][data-part='item']:first-of-type {
-  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
-  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
 }
 
 [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
   > [data-scope='toggle-group'][data-part='item']:last-of-type {
-  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
-  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
 }
 
 /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
@@ -35119,9 +35185,14 @@
 @media (forced-colors: active) {
   /* 段间那条线画的是一块纯底色，这一档里底色被统一换成 Canvas，线整条消失，
      几组开关就连成了一长串。换成前景色画回来 */
-  [data-scope='toggle-group'][data-part='separator'] {
+  [data-scope='toggle-group'][data-part='root'] > [data-xh-toggle-group-separator] {
     background: CanvasText;
   }
+
+  [data-scope='toggle-group'][data-part='root'][data-variant='outline']::after {
+    border-color: ButtonText;
+  }
+
 }
 
 /* styles/tool-call.css */

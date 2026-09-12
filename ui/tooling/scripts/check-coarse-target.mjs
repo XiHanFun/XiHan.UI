@@ -203,6 +203,11 @@ function scanSkin(css, parts, actionParts) {
     const line = lineAt(decl.index)
 
     for (const branch of splitTopLevel(selector)) {
+      // 分组控件的内部装饰线没有 data-part；若继续按“最右 data-part”归属，
+      // 会被误算成可聚焦 root 的 1px 命中盒。它 aria-hidden 且 pointer-events:none，
+      // 不属于命中区门禁的判定面。
+      if (/\[data-xh-(?:button|toggle)-group-separator\]/.test(branch))
+        continue
       const subject = subjectPart(branch)
       const matchedParts = subject == null && branch.includes('[data-xh-action-control]')
         ? [...actionParts]

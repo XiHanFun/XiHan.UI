@@ -1,0 +1,12 @@
+<!-- 受控状态 | 由外部状态控制按下值 -->
+<xh-toggle id="toggle-controlled" pressed="false">
+  <button data-xh-part="root">♡ <span>点赞</span></button>
+</xh-toggle>
+
+<script type="module">
+  const toggle = document.getElementById("toggle-controlled");
+  toggle.addEventListener("pressed-change", (event) => {
+    toggle.pressed = event.detail.pressed;
+    toggle.querySelector("span").textContent = event.detail.pressed ? "已点赞" : "点赞";
+  });
+</script>

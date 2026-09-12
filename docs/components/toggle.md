@@ -12,7 +12,7 @@
 
 ## 用法
 
-切换按钮状态
+切换点赞状态
 
 <XhDemo src="toggle/01-basic" />
 
@@ -24,41 +24,35 @@
 
 ## 示例
 
-### 禁用
+### 变体
 
-保留禁用前的状态
+默认与幽灵外观
 
-<XhDemo src="toggle/02-disabled" />
+<XhDemo src="toggle/02-variant" />
 
-### 形态
+### 仅图标
 
-设置切换按钮外观
+为每个图标按钮提供可访问名称
 
-<XhDemo src="toggle/04-variant" />
-
-### 语气
-
-设置按下状态的颜色
-
-<XhDemo src="toggle/05-tone" />
+<XhDemo src="toggle/03-icon-only" />
 
 ### 尺寸
 
 提供三种尺寸
 
-<XhDemo src="toggle/06-size" />
+<XhDemo src="toggle/04-size" />
 
-### 图标
+### 禁用
 
-支持图标标签和仅图标按钮
+保留禁用前的状态
 
-<XhDemo src="toggle/07-icon" />
+<XhDemo src="toggle/05-disabled" />
 
 ### 受控状态
 
 由外部状态控制按下值
 
-<XhDemo src="toggle/08-events" />
+<XhDemo src="toggle/06-controlled" />
 
 ## 设计指引
 

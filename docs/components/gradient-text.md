@@ -42,7 +42,7 @@ direction 收的是档位，四条边加四个角共八档，逐档对应 CSS �
 
 <XhDemo src="gradient-text/04-partial" />
 
-### 语气
+### 颜色
 
 tone 决定两端取哪族颜色；写了 from / to 就由它们说了算，tone 让位
 

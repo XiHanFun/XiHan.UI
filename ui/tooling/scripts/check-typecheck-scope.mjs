@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 门禁：有 tests/ 的包必须把测试代码也纳入类型检查。
+// 门禁：有 TypeScript 测试的包必须把测试代码也纳入类型检查。
 //
 // 各包的 tsconfig.json 只 include src/**，tsc 从不看 tests/**。改名、删导出、改签名时
 // 测试代码不报错，返工被推到运行时。本脚本按包核四件事：
@@ -41,6 +41,10 @@ for (const dir of await listPackages()) {
     continue
 
   const configPath = posix.join(dir, TEST_CONFIG)
+  const testFiles = (await listFiles(testsDir, 'tests')).filter(f => f.endsWith('.ts'))
+  // 空目录或只放非 TypeScript 夹具时没有类型检查对象，不要求空壳 tsconfig。
+  if (testFiles.length === 0)
+    continue
 
   if (exempt.has(dir)) {
     seenExempt.add(dir)
@@ -49,7 +53,6 @@ for (const dir of await listPackages()) {
     continue
   }
 
-  const testFiles = (await listFiles(testsDir, 'tests')).filter(f => f.endsWith('.ts'))
   checkedPackages++
 
   if (!await exists(configPath)) {

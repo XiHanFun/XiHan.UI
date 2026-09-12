@@ -1,6 +1,6 @@
 # ToggleGroup 切换按钮组
 
-一排连在一起的切换按钮，整组共一个值：单选时是分段控件，多选时是一排可同时按下的工具钮。
+将多个切换按钮组合为单选或多选控件。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/toggle-group" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-单选分段控件：root 是 radiogroup、条目是 radio；整组只占一个 Tab 位，进组后四个方向键都能走
+同时切换多个文本格式
 
 <XhDemo src="toggle-group/01-basic" />
 
@@ -20,86 +20,91 @@
 
 加粗的是必需部件。
 
-`data-scope="toggle-group"`：**`root`** · **`item`** · `separator` · `hidden-input`
+`data-scope="toggle-group"`：**`root`** · **`item`** · `hidden-input`
 
 ## 示例
 
-### 受控与不可清空
+### 受控状态
 
-传了 value 就由宿主说了算；单选组再点一次当前项会清空成 null，disallow-empty 把这一手关掉
+由外部状态控制选中值
 
 <XhDemo src="toggle-group/02-controlled" />
 
 ### 多选
 
-multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + aria-pressed，值也从字符串变成数组
+同时选择多个格式
 
 <XhDemo src="toggle-group/03-multiple" />
 
 ### 禁用
 
-条目一律 aria-disabled 而非原生 disabled：点不动，但焦点落得上去，仍能当方向键的起点
+禁用单个选项
 
 <XhDemo src="toggle-group/04-disabled" />
 
-### 条目增删
+### 方向
 
-条目集合在运行期可增可删，增删后照常接线；删掉的正好是选中项时由宿主把值收拾干净
+水平或垂直排列
 
-<XhDemo src="toggle-group/05-dynamic-items" />
+<XhDemo src="toggle-group/05-orientation" />
 
-### 拦下一次切换
+### 宽度充满
 
-受控时 value-change 是唯一出口：宿主不写回，值就原样不动，条件不满足的那一段永远切不过去
+选项等分可用宽度
 
-<XhDemo src="toggle-group/06-guard" />
+<XhDemo src="toggle-group/06-full-width" />
 
-### 整组换一档尺寸
+### 尺寸
 
-高度、内边距与字号各是一个组件令牌，写在 root 上由整组条目继承，不必逐个条目改
+提供三种尺寸
 
 <XhDemo src="toggle-group/07-size" />
 
-### 形态、语气与尺寸
+### 变体
 
-三轴打在 root 上沿继承流下发给每一段，条目自己不写任何一档
+设置整组外观
 
-<XhDemo src="toggle-group/08-variant-tone-size" />
+<XhDemo src="toggle-group/08-variant" />
+
+### 无分隔线
+
+省略分隔线部件
+
+<XhDemo src="toggle-group/09-without-separator" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 在少数几个互斥项之间切换视图（日 / 周 / 月，列表 / 网格）。
-- 一排可同时开关的格式工具（加粗 / 斜体 / 下划线），此时开 `multiple`。
+- 在少量选项之间切换视图或显示方式。
+- 同时启用多个格式或工具状态。
 
 ### 何时不用
 
-- 选项超过五六个，或需要搜索：用[选择器](./select)。
-- 选项要随表单提交并需要 label 关联：用[单选组](./radio-group)。
-- 各段是动作不是选项：用[按钮组](./button-group)。
+- 选项较多或需要搜索时，使用[选择器](./select)。
+- 选项需要完整表单标签时，使用[单选组](./radio-group)。
+- 各项只执行操作时，使用[按钮组](./button-group)。
 
 ### 特性
 
-- `multiple` 换的是整套 ARIA：单选时 `root` 是 `radiogroup`、条目是 `radio`；多选时 `root` 退回 `group`、条目退回按钮加 `aria-pressed`，值也从字符串变成数组。
-- roving tabindex：整组只占一个 Tab 位，进组后四个方向键都能走，与视觉排布无关。
-- `disallowEmpty` 决定能不能点成空值。
-- 条目一律 `aria-disabled` 而非原生 `disabled`：点不动但焦点落得上去，仍能当方向键的起点。
-- 给了 `collection` 就由它做显示文本与禁用的事实源，条目部件只需报 `value`。
-
-### 组合
-
-- 与[工具栏](./toolbar)嵌套：工具栏管跨组导航，本组管组内。
+- 支持单选和多选模式。
+- 支持受控和非受控状态。
+- 支持水平、垂直、全宽和三种尺寸。
+- 默认在相邻条目之间显示分隔线，可通过 `separators=false` 关闭。
+- 使用 roving tabindex 管理组内键盘导航。
+- `disallowEmpty` 可阻止清空最后一个选中项。
+- `collection` 可统一提供标签和禁用状态。
 
 ### 最佳实践
 
-- 段数固定在二到五段，段宽尽量等长，切换时整条不该变宽。
-- 单选组默认允许点空；表单里当必填项用时把 `disallowEmpty` 打开。
+- 每组使用二到五个简短选项。
+- 同组条目应保持相近宽度。
+- 必须保留一个选中项时启用 `disallowEmpty`。
 
 ### 反模式
 
-- 拿它当[标签页](./tabs)用：标签页有面板关联（`aria-controls`）与相应的读屏语义，切换按钮组没有。
-- 关掉 `rovingFocus` 却不另给导航方式：每段自成一个 Tab 停靠点，键盘用户要按很多次才能走完。
+- 不要用切换按钮组代替带面板关联的标签页。
+- 关闭 roving focus 时，应提供其他组内导航方式。
 
 ## API 参考
 
@@ -108,7 +113,7 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-toggle-group>` |
-| Vue 组件 | `XhToggleGroupHiddenInput` `XhToggleGroupItem` `XhToggleGroupRoot` `XhToggleGroupSeparator` |
+| Vue 组件 | `XhToggleGroupHiddenInput` `XhToggleGroupItem` `XhToggleGroupRoot` |
 | 组合式函数 | `useToggleGroup` |
 | 状态机 | `toggleGroupMachine` |
 | 皮肤 | `@xihan-ui/styles/toggle-group.css` |
@@ -123,10 +128,11 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `multiple` | `boolean` |  | 允许多项同时选中；false 时选中一项即挤掉其余。 |
 | `disabled` | `boolean` |  | 整组禁用：条目全部 aria-disabled，点击与方向键都不生效。 |
 | `disallowEmpty` | `boolean` |  | 不许把值清空：单选模式下点当前选中项不再取消它，多选模式下摘不掉最后一个。 默认 false（可以点成无选中）。 |
-| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定段的底色与描边怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，决定段的底色与描边怎么用。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `fullWidth` | `boolean` |  | 撑满行宽：整组占满可用宽度，每段等分剩余空间。 |
+| `separators` | `boolean` |  | 是否自动在相邻条目之间插入分隔线，默认 true。 |
 | `name` | `string` |  | 表单字段名。给定后隐藏输入才带 name 并参与提交。 |
 | `orientation` | `Orientation` |  | 视觉排布，默认 horizontal。方向键接受的轴与它无关（四个方向键恒响应）。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只改写左右方向键的语义，上下键与之无关。 |
@@ -167,11 +173,12 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
 | `multiple` | `boolean` |  |
 | `disabled` | `boolean` |  |
+| `orientation` | `Orientation` |  |
+| `separators` | `boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
 | `setValue` | `(next: ToggleGroupValue) => void` | 传单值 / 数组 / null 皆可，内部按 multiple 归一。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: ToggleGroupItemProps) => T['button']` |  |
-| `getSeparatorProps` | `() => T['element']` | 段与段之间的装饰竖线，纯视觉、读屏不念。 |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：整组只有一份，提交的就是当前选中值。 |
 
 ## 无障碍
@@ -201,7 +208,6 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-pressed` | 'true' \| 'false' \| undefined |
 | `item` | `role` | undefined \| 'radio' |
-| `separator` | `aria-hidden` | 'true' |
 
 ## 样式参考
 
@@ -225,8 +231,6 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `root` | `data-variant` | props.variant |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'on' \| 'off' |
-| `separator` | `data-disabled` | ''（条件成立时才出现） |
-| `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -256,19 +260,21 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `--xh-toggle-group-item-gap` | `item` | `gap` | `default` | `--xh-_toggle-group-gap` | toggle-group 的 item 部件 gap 覆盖槽。 |
 | `--xh-toggle-group-item-h` | `item` | `block-size` | `default` | `--xh-_toggle-group-h` | toggle-group 的 item 部件 block-size 覆盖槽。 |
 | `--xh-toggle-group-item-px` | `item` | `padding-inline` | `default` | `--xh-_toggle-group-px` | toggle-group 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-toggle-group-item-radius` | `item`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`first-of-type`<br>`last-child`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-shape-control` | toggle-group 的 item、root 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-toggle-group-item-radius` | `item`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`first-of-type`<br>`last-child`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=outline` | `--xh-shape-pill` | toggle-group 的 item、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-toggle-group-item-shadow` | `item` | `box-shadow` | `state=on` | `--xh-_toggle-group-highlight` | toggle-group 的 item 部件 box-shadow 覆盖槽。 |
-| `--xh-toggle-group-separator-color` | `separator` | `background` | `default` | `--xh-border-default` | toggle-group 的 separator 部件 background 覆盖槽。 |
-| `--xh-toggle-group-separator-color-disabled` | `separator` | `background` | `disabled` | `--xh-border-subtle` | toggle-group 的 separator 部件 background 覆盖槽。 |
-| `--xh-toggle-group-separator-gap` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | toggle-group 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
-| `--xh-toggle-group-separator-inset` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | toggle-group 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
-| `--xh-toggle-group-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | toggle-group 的 separator 部件 border-radius 覆盖槽。 |
-| `--xh-toggle-group-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | toggle-group 的 separator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-toggle-group-outline-color` | `root` | `border` | `variant=outline` | `--xh-_tone-border-control` | toggle-group 的 root 部件 border 覆盖槽。 |
+| `--xh-toggle-group-separator-color` | `root` | `background` | `xh-toggle-group-separator` | `--xh-fg-default` | toggle-group 的 root 部件 background 覆盖槽。 |
+| `--xh-toggle-group-separator-color-disabled` | `root` | `background` | `disabled`<br>`xh-toggle-group-separator` | `--xh-border-subtle` | toggle-group 的 root 部件 background 覆盖槽。 |
+| `--xh-toggle-group-separator-opacity` | `root` | `opacity` | `xh-toggle-group-separator` | `--xh-control-separator-opacity` | toggle-group 的 root 部件 opacity 覆盖槽。 |
+| `--xh-toggle-group-separator-opacity-disabled` | `root` | `opacity` | `disabled`<br>`xh-toggle-group-separator` | `--xh-control-separator-disabled-opacity` | toggle-group 的 root 部件 opacity 覆盖槽。 |
+| `--xh-toggle-group-separator-radius` | `root` | `border-radius` | `xh-toggle-group-separator` | `--xh-shape-pill` | toggle-group 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-toggle-group-separator-size` | `root` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical`<br>`xh-toggle-group-separator` | `--xh-_group-separator-size` | toggle-group 的 root 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-toggle-group-separator-thickness` | `root` | `block-size`<br>`inline-size`<br>`margin-block-start`<br>`margin-inline-start` | `orientation=horizontal`<br>`orientation=vertical`<br>`xh-toggle-group-separator` | `--xh-stroke-thin` | toggle-group 的 root 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `border-color` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `box-shadow` · `color` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

@@ -8,8 +8,8 @@ const views = ["日", "周", "月"];
 
 <template>
   <div style="display: flex; align-items: center; gap: 16px">
-    <XhButtonGroup v-for="s in sizes" :key="s" :size="s" variant="outline">
-      <XhButton v-for="v in views" :key="v">{{ v }}</XhButton>
+    <XhButtonGroup v-for="s in sizes" :key="s" :size="s">
+      <XhButton v-for="view in views" :key="view">{{ view }}</XhButton>
     </XhButtonGroup>
   </div>
 </template>

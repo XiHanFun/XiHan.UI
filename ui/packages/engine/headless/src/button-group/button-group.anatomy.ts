@@ -1,5 +1,4 @@
 import { createAnatomy } from '@xihan-ui/core'
 
-// root 是那层容器；separator 是段间的装饰线，可以不渲染。
-// data-part 直接用 kebab-case，与 CSS 选择器一致。
-export const buttonGroupAnatomy = createAnatomy('button-group', ['root', 'separator'])
+// 只有 root 属于作者可组合的部件；段间分隔线由适配器按属性生成。
+export const buttonGroupAnatomy = createAnatomy('button-group', ['root'])

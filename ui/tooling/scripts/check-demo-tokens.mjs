@@ -114,6 +114,15 @@ let decls = 0
 
 const demosPrefix = `${DEMOS.split('\\').join('/')}/`
 
+// 文档壳自己的配色与投影槽不属于组件库令牌，但同样必须先声明后引用。
+// 只收明确的 --xh-doc-* 命名空间，组件示例里的 --xh-* 仍按库公开面严格校验。
+const docLocalDeclared = new Set()
+for await (const file of walk(DOCS)) {
+  const src = await readFile(file, 'utf8')
+  for (const [, name] of src.matchAll(/(--xh-doc-[a-z0-9_-]+)\s*:/g))
+    docLocalDeclared.add(name)
+}
+
 for await (const file of walk(DOCS)) {
   scanned += 1
   const path = file.split('\\').join('/')
@@ -138,7 +147,7 @@ for await (const file of walk(DOCS)) {
       refs += 1
       if (guardPrivate(name, '引用'))
         continue
-      if (declared.has(name) || PLACEHOLDERS.has(name))
+      if (declared.has(name) || docLocalDeclared.has(name) || PLACEHOLDERS.has(name))
         continue
       problems.push(`${where}  ${name}  （引用）`)
     }
@@ -148,7 +157,7 @@ for await (const file of walk(DOCS)) {
       decls += 1
       if (guardPrivate(name, '声明'))
         continue
-      if (declared.has(name) || PLACEHOLDERS.has(name))
+      if (declared.has(name) || docLocalDeclared.has(name) || PLACEHOLDERS.has(name))
         continue
       problems.push(`${where}  ${name}  （声明）`)
     }

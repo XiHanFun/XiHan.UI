@@ -59,6 +59,7 @@ export function connectFloatButton<T extends PropTypes>(
       'data-tone': props.tone,
       'data-size': props.size,
       'data-disabled': dataAttr(disabled),
+      'dir': prop('dir'),
       // 贴边距离写成内联自定义属性：贴的是哪两条边由皮肤按 data-placement 决定，这里只给数
       'style': `--xh-_float-button-offset: ${offset}px`,
       // 悬停展开：进出整个壳才算数，不是只进出触发器——指针得能走到展开的那一组上去

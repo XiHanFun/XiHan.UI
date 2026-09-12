@@ -42,13 +42,13 @@ disabled 与 readOnly 都改不动值，invalid 只把 aria-invalid 标出来、
 
 <XhDemo src="text-field/04-states" />
 
-### 形态
+### 变体
 
 variant 决定底与描边怎么画：描边、淡色填底、无框；输入框没有实心档
 
 <XhDemo src="text-field/05-variant" />
 
-### 语气
+### 颜色
 
 tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，语气的底色差别不必聚焦就看得见
 

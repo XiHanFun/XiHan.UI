@@ -36,7 +36,7 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 
 <XhDemo src="popconfirm/03-size" />
 
-### 语气
+### 颜色
 
 在 content 上写 data-tone，确认按钮跟着换色；语气是共享的一层，不是本组件的 prop
 

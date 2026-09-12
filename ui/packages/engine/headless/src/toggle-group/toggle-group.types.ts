@@ -57,14 +57,16 @@ export interface ToggleGroupSchema extends MachineSchema {
      * 默认 false（可以点成无选中）。
      */
     disallowEmpty?: boolean
-    /** 形态：solid / subtle / outline / ghost，决定段的底色与描边怎么用。 */
+    /** 变体：solid / subtle / outline / ghost，决定段的底色与描边怎么用。 */
     variant?: ActionVariant
-    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    /** 颜色：brand / neutral / success / warning / danger / info。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
     /** 撑满行宽：整组占满可用宽度，每段等分剩余空间。 */
     fullWidth?: boolean
+    /** 是否自动在相邻条目之间插入分隔线，默认 true。 */
+    separators?: boolean
     /** 表单字段名。给定后隐藏输入才带 name 并参与提交。 */
     name?: string
     /** 视觉排布，默认 horizontal。方向键接受的轴与它无关（四个方向键恒响应）。 */
@@ -116,13 +118,13 @@ export interface ToggleGroupApi<T extends PropTypes = PropTypes> {
   focusedValue: string | null
   multiple: boolean
   disabled: boolean
+  orientation: Orientation
+  separators: boolean
   isSelected: (value: string) => boolean
   /** 传单值 / 数组 / null 皆可，内部按 multiple 归一。 */
   setValue: (next: ToggleGroupValue) => void
   getRootProps: () => T['element']
   getItemProps: (props: ToggleGroupItemProps) => T['button']
-  /** 段与段之间的装饰竖线，纯视觉、读屏不念。 */
-  getSeparatorProps: () => T['element']
   /** 表单出口：整组只有一份，提交的就是当前选中值。 */
   getHiddenInputProps: () => T['input']
 }

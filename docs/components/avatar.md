@@ -78,7 +78,7 @@ status-change 在状态落位时通知，过渡态 idle 不通知；没给地址
 
 <XhDemo src="avatar/10-badge" />
 
-### 语气
+### 颜色
 
 tone 换淡底与回退字的配色族；不写 tone 就是中性缺省，直径与字号都不受影响
 

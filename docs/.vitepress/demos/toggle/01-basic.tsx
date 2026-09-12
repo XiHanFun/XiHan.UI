@@ -1,7 +1,13 @@
-// 基础用法 | 切换按钮状态
+// 基础用法 | 切换点赞状态
 import type { ReactNode } from "react";
-import { XhToggle } from "@xihan-ui/react";
+import { HeartIcon } from "@xihan-ui/icons";
+import { XhIcon, XhToggle } from "@xihan-ui/react";
 
 export default function Demo(): ReactNode {
-  return <XhToggle defaultPressed>加粗</XhToggle>;
+  return (
+    <XhToggle>
+      <XhIcon icon={HeartIcon} />
+      点赞
+    </XhToggle>
+  );
 }

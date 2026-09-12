@@ -7,7 +7,7 @@ export const DIAGNOSTIC_CODES = {
   /** 断言不成立。 */
   invariant: 'core.invariant',
   /** 条件告警。 */
-  warn: DIAGNOSTIC_WARN,
+  warn: 'core.warn',
   /** dispose 的层不是栈顶。 */
   layerDisposeNotTop: 'core.layer.dispose-not-top',
   /** 机器抛出 MachineError。 */

@@ -1,4 +1,4 @@
-<!-- 形态与语气 | variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮的色族；预览态不吃这两轴 -->
+<!-- 变体与颜色 | variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮的色族；预览态不吃这两轴 -->
 <script setup lang="ts">
 import {
   XhEditableCancelTrigger,

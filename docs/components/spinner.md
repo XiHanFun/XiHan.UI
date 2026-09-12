@@ -36,7 +36,7 @@ label 部件不写内容时显示解析后的 label，屏幕上看到的与读�
 
 <XhDemo src="spinner/03-label" />
 
-### 语气
+### 颜色
 
 tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到哪儿才看得出来
 
@@ -54,7 +54,7 @@ tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到
 
 <XhDemo src="spinner/06-custom-graphic" />
 
-### 形态
+### 变体
 
 ring 整圈、arc 一段弧、dots 三点；缺省档 ring 不输出 data-variant
 

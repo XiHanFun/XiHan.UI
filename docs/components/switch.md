@@ -36,7 +36,7 @@ disabled 同时挡住指针与键盘，状态机收不到 TOGGLE
 
 <XhDemo src="switch/03-disabled" />
 
-### 语气
+### 颜色
 
 tone 决定选中态轨道用哪族颜色，所以这里都置为开
 

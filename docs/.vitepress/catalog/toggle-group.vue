@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { XhToggleGroupRoot } from "@xihan-ui/vue";
-
-const options = [
-  { value: "left", label: "左" },
-  { value: "center", label: "中" },
-  { value: "right", label: "右" },
-];
+import { BoldIcon, ItalicIcon, UnderlineIcon } from "@xihan-ui/icons";
+import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhToggleGroupRoot :collection="options" default-value="left" />
+  <XhToggleGroupRoot :default-value="['bold']" multiple>
+    <XhToggleGroupItem value="bold" aria-label="粗体"><XhIcon :icon="BoldIcon" /></XhToggleGroupItem>
+    <XhToggleGroupItem value="italic" aria-label="斜体"><XhIcon :icon="ItalicIcon" /></XhToggleGroupItem>
+    <XhToggleGroupItem value="underline" aria-label="下划线"><XhIcon :icon="UnderlineIcon" /></XhToggleGroupItem>
+  </XhToggleGroupRoot>
 </template>
