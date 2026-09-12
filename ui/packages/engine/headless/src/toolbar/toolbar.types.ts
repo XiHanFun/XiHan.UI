@@ -10,7 +10,7 @@ export interface ToolbarItemProps {
   disabled?: boolean
 }
 
-/** 形态：工具条自己画不画一块面。缺省 surface 是描边加底色的一条带，plain 不画。 */
+/** 视觉变体：plain 是缺省档，surface 提供附着式工具面。 */
 export type ToolbarVariant = 'plain' | 'surface'
 
 export interface ToolbarSchema extends MachineSchema {
@@ -26,9 +26,9 @@ export interface ToolbarSchema extends MachineSchema {
     loop?: boolean
     /** 整条禁用：条目全部转 aria-disabled，方向键不再接管。 */
     disabled?: boolean
-    /** 形态：plain / surface，决定工具条自己画不画一块面。缺省 surface。 */
+    /** 变体：plain / surface，决定工具条自己画不画一块面。缺省 plain。 */
     variant?: ToolbarVariant
-    /** 尺寸：sm / md / lg。工具条是布局容器，只换排布尺寸，不带语气。 */
+    /** 尺寸：sm / md / lg，同时调整排布与默认条目尺寸。 */
     size?: Size
   }
   context: {

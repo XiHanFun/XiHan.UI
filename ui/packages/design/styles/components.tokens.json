@@ -60245,12 +60245,10 @@
         "background"
       ],
       "state": [
-        "default",
-        "variant=plain"
+        "default"
       ],
       "defaultToken": [
-        "--xh-bg-surface",
-        "transparent"
+        "--xh-_toolbar-root-bg"
       ],
       "visibility": "public",
       "description": "toolbar 的 root 部件 background 覆盖槽。"
@@ -60268,7 +60266,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-_toolbar-root-bg-disabled"
       ],
       "visibility": "public",
       "description": "toolbar 的 root 部件 background 覆盖槽。"
@@ -60286,7 +60284,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-_toolbar-root-border"
       ],
       "visibility": "public",
       "description": "toolbar 的 root 部件 border 覆盖槽。"
@@ -60346,6 +60344,286 @@
       "description": "toolbar 的 group 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-toolbar-icon-size",
+      "component": "toolbar",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default",
+        "size=lg",
+        "size=sm"
+      ],
+      "defaultToken": [
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 root 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-bg",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-bg-active",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "active",
+        "disabled",
+        "not([data-disabled])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-active"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-bg-disabled",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-bg-hover",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "not([data-disabled])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-bg-pressed",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-bg-pressed-hover",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "not([data-disabled])"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-fg",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "inherit"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-fg-pressed",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand-strong"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-font-size",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_toolbar-item-font-size"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-font-weight",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-gap",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-gap-sm"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-h",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_toolbar-item-h"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 min-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-px",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_toolbar-item-px"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-radius",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-toolbar-px",
       "component": "toolbar",
       "part": [
@@ -60355,12 +60633,10 @@
         "padding-inline"
       ],
       "state": [
-        "default",
-        "variant=plain"
+        "default"
       ],
       "defaultToken": [
-        "--xh-_toolbar-p",
-        "0"
+        "--xh-_toolbar-root-p"
       ],
       "visibility": "public",
       "description": "toolbar 的 root 部件 padding-inline 覆盖槽。"
@@ -60375,12 +60651,10 @@
         "padding-block"
       ],
       "state": [
-        "default",
-        "variant=plain"
+        "default"
       ],
       "defaultToken": [
-        "--xh-_toolbar-p",
-        "0"
+        "--xh-_toolbar-root-p"
       ],
       "visibility": "public",
       "description": "toolbar 的 root 部件 padding-block 覆盖槽。"

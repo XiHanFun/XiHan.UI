@@ -1,6 +1,6 @@
 # Toolbar 工具栏
 
-把一排控件收成一组：整条在 Tab 序列里只占一个位子，条内改用方向键走。
+用于组织一组相关的操作控件。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/toolbar" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-整条在 Tab 序列里只占一个位子，条内改用方向键走；条目是作者自己的按钮，工具条不接管它的点击
+集中常用编辑操作
 
 <XhDemo src="toolbar/01-basic" />
 
@@ -26,43 +26,19 @@
 
 ### 分组
 
-分组只是把一伙控件在视觉上收紧，不是导航里多出来的一层：方向键照样一路走过去
+将相关操作收在一起
 
 <XhDemo src="toolbar/02-group" />
 
-### 竖排
+### 垂直布局
 
-orientation 决定方向键收哪一对键（另一轴原样放行给页面），分隔线的朝向恒与主轴垂直
+按纵向排列工具
 
 <XhDemo src="toolbar/03-vertical" />
 
-### 禁用
+### 附着工具面
 
-禁用走 aria-disabled 而非原生 disabled：禁用项仍聚焦得上、仍能当方向键的起点，只是方向键路过时跳过它
-
-<XhDemo src="toolbar/04-disabled" />
-
-### 尺寸
-
-size 只换整条的内边距与条目间的间距，条目自身的高度与字号归条目的皮肤管
-
-<XhDemo src="toolbar/05-size" />
-
-### 图标条目
-
-只画图标的条目必须自带无障碍名：aria-label 直接写在条目上，透传到那一层 DOM
-
-<XhDemo src="toolbar/06-icon-item" />
-
-### 对齐与分布
-
-工具条只定主轴与条目间距，怎么分布交给 CSS：justify-content 一改，同一条就贴尾、居中或两端摊开
-
-<XhDemo src="toolbar/07-align" />
-
-### 变体
-
-surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时用 plain，浮在内容之上时用 surface
+为悬浮工具条提供完整表面
 
 <XhDemo src="toolbar/08-variant" />
 
@@ -70,34 +46,36 @@ surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时
 
 ### 何时使用
 
-- 编辑器的格式条、表格的操作条、图表的视图控制条。
-- 控件多到逐个 Tab 走过去太慢。
+- 文本编辑、表格操作或画布工具。
+- 相关控件需要统一的方向键导航。
 
 ### 何时不用
 
-- 只有两三个按钮：直接摆，别为此接管键盘。
-- 各控件之间是并列动作而非工具：用[按钮组](./button-group)。
+- 只有少量独立操作时直接使用按钮。
+- 操作必须连接成一个整体时使用[按钮组](./button-group)。
 
 ### 特性
 
-- 条目是作者自己的按钮，工具栏不接管它的点击。
-- 分组只是把一伙控件在视觉上收紧，不是导航里多出来的一层：方向键照样一路走过去。
-- 禁用走 `aria-disabled`：禁用项仍聚焦得上、仍能当方向键的起点，只是方向键路过时跳过它。
-- 工具栏只定主轴与条目间距，怎么分布交给 CSS。
+- 默认 `plain` 变体不绘制工具条外框。
+- `surface` 变体提供带内距、描边和背景的附着式工具面。
+- 默认条目使用无描边工具按钮样式，`aria-pressed` 表示选中状态。
+- 支持水平、垂直、分组、分隔线与整体禁用。
+- 方向键在条目间移动，禁用项会被跳过。
 
 ### 组合
 
-- 条目用[切换按钮](./toggle)、[切换按钮组](./toggle-group)、[菜单](./menu)的触发器；分组之间放[分隔线](./separator)。
+- 使用 `group` 收紧相关操作。
+- 使用 `separator` 区分操作组。
 
 ### 最佳实践
 
-- 只画图标的条目必须自带 `aria-label`。
-- 尺寸只写在条上，条目自身的高度与字号归条目的皮肤管。
+- 仅图标条目必须提供 `aria-label`。
+- 使用 `aria-pressed` 表示可切换工具的当前状态。
 
 ### 反模式
 
-- 在工具栏里放文本输入：方向键会被输入框吃掉，条内导航当场失效。
-- 把整页的所有动作都塞进一条工具栏。
+- 不要在工具栏中放置文本输入控件。
+- 不要将整页所有操作放入同一工具栏。
 
 ## API 参考
 
@@ -119,8 +97,8 @@ surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只改写水平主轴上左右方向键的语义。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
 | `disabled` | `boolean` |  | 整条禁用：条目全部转 aria-disabled，方向键不再接管。 |
-| `variant` | `ToolbarVariant` |  | 形态：plain / surface，决定工具条自己画不画一块面。缺省 surface。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。工具条是布局容器，只换排布尺寸，不带语气。 |
+| `variant` | `ToolbarVariant` |  | 变体：plain / surface，决定工具条自己画不画一块面。缺省 plain。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，同时调整排布与默认条目尺寸。 |
 
 ### 插槽
 
@@ -212,14 +190,29 @@ surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-toolbar-bg` | `root` | `background` | `default`<br>`variant=plain` | `--xh-bg-surface`<br>`transparent` | toolbar 的 root 部件 background 覆盖槽。 |
-| `--xh-toolbar-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-muted` | toolbar 的 root 部件 background 覆盖槽。 |
-| `--xh-toolbar-border` | `root` | `border` | `default` | `--xh-border-default` | toolbar 的 root 部件 border 覆盖槽。 |
+| `--xh-toolbar-bg` | `root` | `background` | `default` | `--xh-_toolbar-root-bg` | toolbar 的 root 部件 background 覆盖槽。 |
+| `--xh-toolbar-bg-disabled` | `root` | `background` | `disabled` | `--xh-_toolbar-root-bg-disabled` | toolbar 的 root 部件 background 覆盖槽。 |
+| `--xh-toolbar-border` | `root` | `border` | `default` | `--xh-_toolbar-root-border` | toolbar 的 root 部件 border 覆盖槽。 |
 | `--xh-toolbar-fg` | `root` | `color` | `default` | `--xh-fg-default` | toolbar 的 root 部件 color 覆盖槽。 |
 | `--xh-toolbar-gap` | `root` | `gap` | `default` | `--xh-_toolbar-gap` | toolbar 的 root 部件 gap 覆盖槽。 |
 | `--xh-toolbar-group-gap` | `group` | `gap` | `default` | `--xh-space-0_5` | toolbar 的 group 部件 gap 覆盖槽。 |
-| `--xh-toolbar-px` | `root` | `padding-inline` | `default`<br>`variant=plain` | `--xh-_toolbar-p`<br>`0` | toolbar 的 root 部件 padding-inline 覆盖槽。 |
-| `--xh-toolbar-py` | `root` | `padding-block` | `default`<br>`variant=plain` | `--xh-_toolbar-p`<br>`0` | toolbar 的 root 部件 padding-block 覆盖槽。 |
+| `--xh-toolbar-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | toolbar 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-toolbar-item-bg` | `item` | `background` | `default` | `transparent` | toolbar 的 item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-active` | `item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | toolbar 的 item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-disabled` | `item` | `background` | `disabled` | `transparent` | toolbar 的 item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-hover` | `item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | toolbar 的 item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-pressed` | `item` | `background` | `default` | `--xh-bg-brand-subtle` | toolbar 的 item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-pressed-hover` | `item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-brand-subtle-hover` | toolbar 的 item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-fg` | `item` | `color` | `default` | `inherit` | toolbar 的 item 部件 color 覆盖槽。 |
+| `--xh-toolbar-item-fg-pressed` | `item` | `color` | `default` | `--xh-fg-brand-strong` | toolbar 的 item 部件 color 覆盖槽。 |
+| `--xh-toolbar-item-font-size` | `item` | `font-size` | `default` | `--xh-_toolbar-item-font-size` | toolbar 的 item 部件 font-size 覆盖槽。 |
+| `--xh-toolbar-item-font-weight` | `item` | `font-weight` | `default` | `--xh-text-label-weight` | toolbar 的 item 部件 font-weight 覆盖槽。 |
+| `--xh-toolbar-item-gap` | `item` | `gap` | `default` | `--xh-control-gap-sm` | toolbar 的 item 部件 gap 覆盖槽。 |
+| `--xh-toolbar-item-h` | `item` | `min-block-size` | `default` | `--xh-_toolbar-item-h` | toolbar 的 item 部件 min-block-size 覆盖槽。 |
+| `--xh-toolbar-item-px` | `item` | `padding-inline` | `default` | `--xh-_toolbar-item-px` | toolbar 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-toolbar-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | toolbar 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-toolbar-px` | `root` | `padding-inline` | `default` | `--xh-_toolbar-root-p` | toolbar 的 root 部件 padding-inline 覆盖槽。 |
+| `--xh-toolbar-py` | `root` | `padding-block` | `default` | `--xh-_toolbar-root-p` | toolbar 的 root 部件 padding-block 覆盖槽。 |
 | `--xh-toolbar-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | toolbar 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-toolbar-separator-color` | `separator` | `background` | `default` | `--xh-border-default` | toolbar 的 separator 部件 background 覆盖槽。 |
 | `--xh-toolbar-separator-gap` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
@@ -230,7 +223,7 @@ surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时
 
 ### 动效
 
-`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
