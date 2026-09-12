@@ -130,6 +130,10 @@ export const truncateMachine = createMachine({
       trackOverflow: ({ refs, scope, send, flush }) => {
         let disposed = false
         let stop: VoidFunction | undefined
+        const requestMeasure = (): void => {
+          if (!disposed)
+            send({ type: 'MEASURE' })
+        }
 
         flush(() => {
           if (disposed)
@@ -140,20 +144,28 @@ export const truncateMachine = createMachine({
           const win = scope.getWin()
           // 盒子变宽变窄会改一行装得下多少字。无布局环境没有 ResizeObserver，退回只靠内容变化触发
           const resize = typeof win.ResizeObserver === 'function'
-            ? new win.ResizeObserver(() => send({ type: 'MEASURE' }))
+            ? new win.ResizeObserver(requestMeasure)
             : null
           resize?.observe(el)
           // 文字换了而盒子尺寸没变时 ResizeObserver 不响：夹住的盒子宽高是定死的，变的只有内容
           const mutate = typeof win.MutationObserver === 'function'
-            ? new win.MutationObserver(() => send({ type: 'MEASURE' }))
+            ? new win.MutationObserver(requestMeasure)
             : null
           // 只盯内容不盯属性：属性是本机器自己写上去的，盯了就成了自己触发自己
           mutate?.observe(el, { characterData: true, childList: true, subtree: true })
-          send({ type: 'MEASURE' })
+          // 字体兑现通常不改变盒子尺寸，也不改文字节点，但字形宽度会变；必须直接订阅所属
+          // Document 的 FontFaceSet。ready 接住首批加载，loadingdone/loadingerror 接住后续批次。
+          const fonts = el.ownerDocument.fonts
+          fonts?.addEventListener('loadingdone', requestMeasure)
+          fonts?.addEventListener('loadingerror', requestMeasure)
+          void fonts?.ready.then(requestMeasure)
+          requestMeasure()
 
           stop = () => {
             resize?.disconnect()
             mutate?.disconnect()
+            fonts?.removeEventListener('loadingdone', requestMeasure)
+            fonts?.removeEventListener('loadingerror', requestMeasure)
           }
         })
 
