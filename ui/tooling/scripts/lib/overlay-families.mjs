@@ -66,6 +66,17 @@ export async function read(path) {
   }
 }
 
+/** 组件皮肤连同它传递引入的 Family Recipe；门禁不能把家族声明误判成组件缺失。 */
+export async function readSkinWithFamilies(name) {
+  const skin = await read(`${SKINS}/${name}.css`)
+  if (!skin)
+    return skin
+  const family = []
+  for (const match of skin.matchAll(/@import\s+['"]\.\.\/family\/([\w-]+\.css)['"]/g))
+    family.push(await read(`packages/design/styles/family/${match[1]}`) ?? '')
+  return `${family.join('\n')}\n${skin}`
+}
+
 /** 取出 [data-scope='<名>'][data-part='content'] 那条规则的声明块。 */
 export function contentRule(css, name) {
   const m = css.match(new RegExp(`\\[data-scope='${name}'\\]\\[data-part='content'\\]\\s*\\{([^}]*)\\}`))

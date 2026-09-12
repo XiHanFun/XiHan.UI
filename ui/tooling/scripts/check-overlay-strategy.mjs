@@ -9,8 +9,8 @@ import {
   NO_SKIN_RULE,
   NOT_ENGINE_POSITIONED,
   read,
+  readSkinWithFamilies,
   SKIN_POSITIONED,
-  SKINS,
   verifySkinPositioned,
 } from './lib/overlay-families.mjs'
 
@@ -24,8 +24,10 @@ import {
  */
 function positionerRule(css) {
   for (const [, selector, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    if (!selector.includes('data-part=\'positioner\']'))
+    if (!selector.includes('data-part=\'positioner\']')
+      && !selector.includes('data-xh-anchored-overlay=\'positioner\']')) {
       continue
+    }
     if (/(?:^|;|\s)position\s*:/.test(body))
       return body
   }
@@ -35,6 +37,8 @@ function positionerRule(css) {
 const problems = []
 const discovered = await discoverFamilies()
 const FAMILIES = discovered.filter(name => !(name in NOT_ENGINE_POSITIONED))
+const overlayProjection = await read(`${HEADLESS}/shared/overlay.ts`)
+const helperProjectsFixed = /function overlayFixedStyle[\s\S]*?position:\s*'fixed'/.test(overlayProjection ?? '')
 
 for (const name of Object.keys(NOT_ENGINE_POSITIONED)) {
   if (!discovered.includes(name))
@@ -50,7 +54,7 @@ for (const name of FAMILIES) {
   const machineOwner = COMPOSED[name] ?? name
   const machine = await read(`${HEADLESS}/${machineOwner}/${machineOwner}.machine.ts`)
   const connect = await read(`${HEADLESS}/${name}/${name}.connect.ts`)
-  const css = await read(`${SKINS}/${name}.css`)
+  const css = await readSkinWithFamilies(name)
 
   if (machine == null)
     problems.push(`${name}：找不到机器（${machineOwner}），没有自己机器的组件要登记进 COMPOSED`)
@@ -60,7 +64,9 @@ for (const name of FAMILIES) {
   if (machine && !machine.includes('strategy: \'fixed\''))
     problems.push(`${name}：机器（${machineOwner}）没给引擎传 strategy: 'fixed'`)
 
-  if (connect && !connect.includes('position: \'fixed\''))
+  const connectProjectsFixed = connect?.includes('position: \'fixed\'')
+    || (helperProjectsFixed && connect?.includes('overlayFixedStyle('))
+  if (connect && !connectProjectsFixed)
     problems.push(`${name}：connect 的 positioner 没产出 position: 'fixed'`)
 
   if (css && name in NO_SKIN_RULE) {

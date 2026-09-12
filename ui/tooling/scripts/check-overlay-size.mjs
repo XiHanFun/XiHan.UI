@@ -47,6 +47,20 @@ const WIDTH_EXEMPT = {
   'floating-panel': '几何由 headless 的 geometry 层给，不经定位引擎的可用区通道。它确实会越界（默认右缘 384 > 375 视口），修法在几何层不在这条通道上',
 }
 
+const overlayProjection = await read(`${HEADLESS}/shared/overlay.ts`)
+const helperProjectsAvailableSpace = overlayProjection?.includes('availableWidth')
+  && overlayProjection.includes('availableHeight')
+  && /const prefix = `--xh-_\$\{scope\}-available-`/.test(overlayProjection)
+
+function connectProjectsSlot(connect, name, axis) {
+  if (!connect || !helperProjectsAvailableSpace)
+    return false
+  const call = connect.match(new RegExp(`overlayAvailableSpaceVars\\(\\s*'${name}'[^\\n]*\\)`))?.[0]
+  if (!call)
+    return false
+  return axis === 'w' || !/,\s*null\s*\)$/.test(call)
+}
+
 /** 一个组件的三段各自成立与否。 */
 async function wiringOf(name, axis = 'h') {
   const machineOwner = COMPOSED[name] ?? name
@@ -57,7 +71,7 @@ async function wiringOf(name, axis = 'h') {
   return {
     machineOwner,
     machine: !!machine?.includes('size: true'),
-    connect: !!connect?.includes(slot),
+    connect: !!connect?.includes(slot) || connectProjectsSlot(connect, name, axis),
     // 声明兜底与消费是两回事：只声明不消费等于白写，只消费不声明则未落位时没有退路
     skinDeclares: !!css?.includes(`${slot}:`),
     skinConsumes: !!css?.includes(`var(${slot})`),
