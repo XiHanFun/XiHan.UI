@@ -1,8 +1,7 @@
-<!-- 受控展开与禁用 | 展开集合交给宿主：一次全展开或全收起，也能按当前路由把该开的那一枝开上；collection 里标了 disabled 的入口方向键跳过，点它也不落值 -->
+<!-- 禁用项 | 保留不可用入口的位置与说明 -->
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";
 import {
-  XhButton,
   XhSideNavBranch,
   XhSideNavBranchContent,
   XhSideNavBranchIndicator,
@@ -14,7 +13,6 @@ import {
   XhSideNavList,
   XhSideNavRoot,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const collection: SideNavNode[] = [
   { value: "dashboard", label: "工作台", href: "#dashboard" },
@@ -43,60 +41,34 @@ const collection: SideNavNode[] = [
 ];
 
 const branches = collection.filter(node => node.children);
-
-const expanded = ref<string[]>(["user"]);
-const value = ref<string | null>("user-list");
-
-// 展开集合归宿主，组件只发意图：这两颗钮改的是同一份状态
-function expandAll() {
-  expanded.value = branches.map(branch => branch.value);
-}
-
-function collapseAll() {
-  expanded.value = [];
-}
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px; justify-items: start">
-    <div style="display: flex; gap: 8px">
-      <XhButton size="sm" variant="outline" @click="expandAll">全部展开</XhButton>
-      <XhButton size="sm" variant="outline" @click="collapseAll">全部收起</XhButton>
-    </div>
-
-    <XhSideNavRoot
-      v-model:value="value"
-      v-model:expanded-value="expanded"
-      :collection="collection"
-      loop
-      style="border: 1px solid var(--xh-border-default); border-radius: 8px"
-    >
-      <XhSideNavList>
-        <XhSideNavItem>
-          <XhSideNavLink value="dashboard">
-            <XhSideNavLinkText>工作台</XhSideNavLinkText>
-          </XhSideNavLink>
-        </XhSideNavItem>
-        <XhSideNavBranch v-for="branch in branches" :key="branch.value" :value="branch.value">
-          <XhSideNavBranchTrigger>
-            <XhSideNavBranchText>{{ branch.label }}</XhSideNavBranchText>
-            <XhSideNavBranchIndicator />
-          </XhSideNavBranchTrigger>
-          <XhSideNavBranchContent>
-            <XhSideNavItem v-for="leaf in branch.children" :key="leaf.value">
-              <XhSideNavLink :value="leaf.value">
-                <XhSideNavLinkText>{{ leaf.label }}</XhSideNavLinkText>
-              </XhSideNavLink>
-            </XhSideNavItem>
-          </XhSideNavBranchContent>
-        </XhSideNavBranch>
-      </XhSideNavList>
-    </XhSideNavRoot>
-
-    <p style="font-size: 13px; opacity: 0.75">
-      展开：{{ expanded.length ? expanded.join("、") : "（全收起）" }} · 选中：{{
-        value ?? "（无）"
-      }}
-    </p>
-  </div>
+  <XhSideNavRoot
+    :collection="collection"
+    default-value="user-list"
+    :default-expanded-value="['user', 'order']"
+    loop
+  >
+    <XhSideNavList>
+      <XhSideNavItem>
+        <XhSideNavLink value="dashboard">
+          <XhSideNavLinkText>工作台</XhSideNavLinkText>
+        </XhSideNavLink>
+      </XhSideNavItem>
+      <XhSideNavBranch v-for="branch in branches" :key="branch.value" :value="branch.value">
+        <XhSideNavBranchTrigger>
+          <XhSideNavBranchText>{{ branch.label }}</XhSideNavBranchText>
+          <XhSideNavBranchIndicator />
+        </XhSideNavBranchTrigger>
+        <XhSideNavBranchContent>
+          <XhSideNavItem v-for="leaf in branch.children" :key="leaf.value">
+            <XhSideNavLink :value="leaf.value">
+              <XhSideNavLinkText>{{ leaf.label }}</XhSideNavLinkText>
+            </XhSideNavLink>
+          </XhSideNavItem>
+        </XhSideNavBranchContent>
+      </XhSideNavBranch>
+    </XhSideNavList>
+  </XhSideNavRoot>
 </template>

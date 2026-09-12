@@ -1,8 +1,9 @@
-// 手风琴与折叠 | accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整体收起，文字部件整个隐藏只剩图标），折叠态下悬停/点按/右方向键在旁侧弹出子级面板，面板内选中即落值收起；collapsedPopout 设为 false 可关掉弹出
+// 折叠模式 | 以图标保留入口，子级在浮层中展开
 import type { SideNavNode } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
+import { SettingsIcon, ShoppingCartIcon, UsersIcon } from "@xihan-ui/icons";
 import {
-  XhButton,
+  XhIcon,
   XhSideNavBranch,
   XhSideNavBranchContent,
   XhSideNavBranchIndicator,
@@ -14,7 +15,6 @@ import {
   XhSideNavList,
   XhSideNavRoot,
 } from "@xihan-ui/react";
-import { useState } from "react";
 
 const collection: SideNavNode[] = [
   {
@@ -37,41 +37,35 @@ const collection: SideNavNode[] = [
   },
 ];
 
-export default function Demo(): ReactNode {
-  const [collapsed, setCollapsed] = useState(false);
+const icons = {
+  user: UsersIcon,
+  order: ShoppingCartIcon,
+  system: SettingsIcon,
+} as const;
 
+export default function Demo(): ReactNode {
   return (
-    <div style={{ display: "grid", gap: "12px", justifyItems: "start" }}>
-      <XhButton variant="outline" onClick={() => setCollapsed(!collapsed)}>
-        {collapsed ? "展开侧栏" : "折叠成图标栏"}
-      </XhButton>
-      <XhSideNavRoot
-        collection={collection}
-        collapsed={collapsed}
-        accordion
-        style={{ border: "1px solid var(--xh-border-default)", borderRadius: "8px" }}
-      >
-        <XhSideNavList>
-          {collection.map(branch => (
-            <XhSideNavBranch key={branch.value} value={branch.value}>
-              <XhSideNavBranchTrigger>
-                <span aria-hidden="true">▦</span>
-                <XhSideNavBranchText>{branch.label}</XhSideNavBranchText>
-                <XhSideNavBranchIndicator />
-              </XhSideNavBranchTrigger>
-              <XhSideNavBranchContent>
-                {branch.children?.map(leaf => (
-                  <XhSideNavItem key={leaf.value}>
-                    <XhSideNavLink value={leaf.value}>
-                      <XhSideNavLinkText>{leaf.label}</XhSideNavLinkText>
-                    </XhSideNavLink>
-                  </XhSideNavItem>
-                ))}
-              </XhSideNavBranchContent>
-            </XhSideNavBranch>
-          ))}
-        </XhSideNavList>
-      </XhSideNavRoot>
-    </div>
+    <XhSideNavRoot collection={collection} collapsed accordion>
+      <XhSideNavList>
+        {collection.map(branch => (
+          <XhSideNavBranch key={branch.value} value={branch.value}>
+            <XhSideNavBranchTrigger>
+              <XhIcon icon={icons[branch.value as keyof typeof icons]} aria-hidden="true" />
+              <XhSideNavBranchText>{branch.label}</XhSideNavBranchText>
+              <XhSideNavBranchIndicator />
+            </XhSideNavBranchTrigger>
+            <XhSideNavBranchContent>
+              {branch.children?.map(leaf => (
+                <XhSideNavItem key={leaf.value}>
+                  <XhSideNavLink value={leaf.value}>
+                    <XhSideNavLinkText>{leaf.label}</XhSideNavLinkText>
+                  </XhSideNavLink>
+                </XhSideNavItem>
+              ))}
+            </XhSideNavBranchContent>
+          </XhSideNavBranch>
+        ))}
+      </XhSideNavList>
+    </XhSideNavRoot>
   );
 }

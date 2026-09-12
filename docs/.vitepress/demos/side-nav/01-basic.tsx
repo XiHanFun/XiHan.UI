@@ -1,7 +1,9 @@
-// 基础用法 | 管理后台侧栏：分支内嵌展开（可多开）、选中落在叶子上并一路点亮祖先枝，方向键上下走行、左右管层级
+// 基础用法 | 组织应用的主要导航入口
 import type { SideNavNode } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
+import { HomeIcon, ShoppingCartIcon, UsersIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhSideNavBranch,
   XhSideNavBranchContent,
   XhSideNavBranchIndicator,
@@ -13,7 +15,6 @@ import {
   XhSideNavList,
   XhSideNavRoot,
 } from "@xihan-ui/react";
-import { useState } from "react";
 
 const collection: SideNavNode[] = [
   { value: "dashboard", label: "工作台", href: "#dashboard" },
@@ -36,44 +37,34 @@ const collection: SideNavNode[] = [
 ];
 
 export default function Demo(): ReactNode {
-  const [value, setValue] = useState<string | null>("user-list");
-
   return (
-    <>
-      <XhSideNavRoot
-        value={value}
-        collection={collection}
-        defaultExpandedValue={["user"]}
-        style={{ border: "1px solid var(--xh-border-default)", borderRadius: "8px" }}
-        onValueChange={details => setValue(details.value)}
-      >
-        <XhSideNavList>
-          <XhSideNavItem>
-            <XhSideNavLink value="dashboard"><XhSideNavLinkText>工作台</XhSideNavLinkText></XhSideNavLink>
-          </XhSideNavItem>
-          {collection.filter(n => n.children).map(branch => (
-            <XhSideNavBranch key={branch.value} value={branch.value}>
-              <XhSideNavBranchTrigger>
-                <XhSideNavBranchText>{branch.label}</XhSideNavBranchText>
-                <XhSideNavBranchIndicator />
-              </XhSideNavBranchTrigger>
-              <XhSideNavBranchContent>
-                {branch.children?.map(leaf => (
-                  <XhSideNavItem key={leaf.value}>
-                    <XhSideNavLink value={leaf.value}>
-                      <XhSideNavLinkText>{leaf.label}</XhSideNavLinkText>
-                    </XhSideNavLink>
-                  </XhSideNavItem>
-                ))}
-              </XhSideNavBranchContent>
-            </XhSideNavBranch>
-          ))}
-        </XhSideNavList>
-      </XhSideNavRoot>
-      <p>
-        选中：
-        {value ?? "（无）"}
-      </p>
-    </>
+    <XhSideNavRoot collection={collection} defaultValue="user-list" defaultExpandedValue={["user"]}>
+      <XhSideNavList>
+        <XhSideNavItem>
+          <XhSideNavLink value="dashboard">
+            <XhIcon icon={HomeIcon} aria-hidden="true" />
+            <XhSideNavLinkText>工作台</XhSideNavLinkText>
+          </XhSideNavLink>
+        </XhSideNavItem>
+        {collection.filter(n => n.children).map(branch => (
+          <XhSideNavBranch key={branch.value} value={branch.value}>
+            <XhSideNavBranchTrigger>
+              <XhIcon icon={branch.value === "user" ? UsersIcon : ShoppingCartIcon} aria-hidden="true" />
+              <XhSideNavBranchText>{branch.label}</XhSideNavBranchText>
+              <XhSideNavBranchIndicator />
+            </XhSideNavBranchTrigger>
+            <XhSideNavBranchContent>
+              {branch.children?.map(leaf => (
+                <XhSideNavItem key={leaf.value}>
+                  <XhSideNavLink value={leaf.value}>
+                    <XhSideNavLinkText>{leaf.label}</XhSideNavLinkText>
+                  </XhSideNavLink>
+                </XhSideNavItem>
+              ))}
+            </XhSideNavBranchContent>
+          </XhSideNavBranch>
+        ))}
+      </XhSideNavList>
+    </XhSideNavRoot>
   );
 }

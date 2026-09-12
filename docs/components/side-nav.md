@@ -1,6 +1,6 @@
 # SideNav 侧栏导航
 
-后台侧边那棵导航树：分支可展开，选中落在叶子上并一路点亮祖先枝。
+用于组织应用的主要导航入口。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/side-nav" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-管理后台侧栏：分支内嵌展开（可多开）、选中落在叶子上并一路点亮祖先枝，方向键上下走行、左右管层级
+组织应用的主要导航入口
 
 <XhDemo src="side-nav/01-basic" />
 
@@ -24,21 +24,21 @@
 
 ## 示例
 
-### 手风琴与折叠
+### 折叠模式
 
-accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整体收起，文字部件整个隐藏只剩图标），折叠态下悬停/点按/右方向键在旁侧弹出子级面板，面板内选中即落值收起；collapsedPopout 设为 false 可关掉弹出
+以图标保留入口，子级在浮层中展开
 
 <XhDemo src="side-nav/02-accordion-collapsed" />
 
-### 语气与尺寸
+### 尺寸
 
-tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两轴都打在 root 上，逐层继承
+适配不同密度的应用侧栏
 
 <XhDemo src="side-nav/03-tone-size" />
 
-### 受控展开与禁用
+### 禁用项
 
-展开集合交给宿主：一次全展开或全收起，也能按当前路由把该开的那一枝开上；collection 里标了 disabled 的入口方向键跳过，点它也不落值
+保留不可用入口的位置与说明
 
 <XhDemo src="side-nav/04-controlled-expand" />
 
@@ -46,35 +46,34 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 
 ### 何时使用
 
-- 管理后台、控制台的主导航，层级两到三层。
-- 侧栏需要折叠成图标栏，且折叠后仍要能进到子级。
+- 管理后台或控制台的主导航。
+- 导航包含分组或可展开的子级。
 
 ### 何时不用
 
-- 导航只有一层：用一列链接就够。
-- 是内容树而不是导航树（文件、组织架构）：用[树](./tree)。
-- 顶部横向导航：用[导航菜单](./navigation-menu)。
+- 顶部横向导航，使用[导航菜单](./navigation-menu)。
+- 文件或组织结构，使用[树](./tree)。
 
 ### 特性
 
-- `collection` 是层级与文本的唯一事实源。
-- `accordion` 让同层只开一枝；不开即可多开。
-- 折叠成图标栏时内嵌展开整体收起、文字由皮肤藏掉；顶层分支换装浮层弹出，悬停 / 点按 / 右方向键在旁侧弹出子级面板，面板内选中即落值收起。
-- 方向键上下走行、左右管层级。
+- 支持分组、嵌套分支与当前项高亮。
+- `accordion` 限制同一层级只展开一个分支。
+- 折叠后保留图标入口，子级在浮层中展示。
+- 方向键上下移动，左右键展开或收起分支。
 
 ### 组合
 
-- 放进[布局](./layout)的 `sider`，折叠开关接布局的折叠态。
+- 放入[布局](./layout)的侧栏区域。
 
 ### 最佳实践
 
-- 层级压到两级，第三级开始用户就记不住路径了。
-- 折叠态一定要留 `collapsedPopout`，否则图标栏进不去子级。
+- 导航层级保持在两到三级。
+- 折叠模式下为每个入口保留清晰图标。
 
 ### 反模式
 
-- 把每个叶子都做成分支（点开只有一项）。
-- 折叠时把整棵树卸载：展开状态与滚动位置全丢。
+- 不要为单个入口创建分支。
+- 不要在折叠时卸载导航树。
 
 ## API 参考
 
@@ -219,9 +218,9 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 | `link` | `aria-disabled` | 'true' \| undefined |
 | `popout-positioner` | `aria-hidden` | !open \|\| undefined |
 
-- `list` 与 `branch-content` 是列表容器（`ul`），直接子节点只能是列表项：分支写 `branch`（`li`），叶子写 `item`（`li`）裹住 `link`（`a`）。链接直接挂在列表下会让列表语义作废。
-- 行文字必须写进 `branch-text` / `link-text`。折叠成图标栏时这段文字被裁到看不见但仍参与播报，它就是按钮与链接在图标栏里唯一的可及名；行里只放图标不写文字，折叠后读屏报不出这一项是什么。
-- 行里的图标是装饰，写 `aria-hidden="true"`，别让它挤进可及名。
+- `list` 与 `branch-content` 使用列表语义。
+- 将文字放入 `branch-text` 或 `link-text`，确保折叠后仍有可访问名称。
+- 装饰图标使用 `aria-hidden="true"`。
 
 ## 样式参考
 
@@ -273,7 +272,7 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 | `--xh-side-nav-collapsed-w` | `root` | `inline-size` | `collapsed` | `56px` | side-nav 的 root 部件 inline-size 覆盖槽。 |
 | `--xh-side-nav-fg` | `root` | `color` | `default` | `--xh-fg-default` | side-nav 的 root 部件 color 覆盖槽。 |
 | `--xh-side-nav-gap` | `branch`<br>`branch-content`<br>`group`<br>`list`<br>`root` | `gap` | `default` | `--xh-space-1` | side-nav 的 branch、branch-content、group、list、root 部件 gap 覆盖槽。 |
-| `--xh-side-nav-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-control-px-md` | side-nav 的 group-label 部件 padding-inline 覆盖槽。 |
+| `--xh-side-nav-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-side-nav-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | side-nav 的 group-label 部件 padding-block 覆盖槽。 |
 | `--xh-side-nav-icon-size` | `positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])` | `--xh-glyph-size-text` | side-nav 的 positioner、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-side-nav-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-space-4` | side-nav 的 branch-content 部件 padding-inline-start 覆盖槽。 |

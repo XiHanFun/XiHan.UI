@@ -1,7 +1,9 @@
-<!-- 基础用法 | 管理后台侧栏：分支内嵌展开（可多开）、选中落在叶子上并一路点亮祖先枝，方向键上下走行、左右管层级 -->
+<!-- 基础用法 | 组织应用的主要导航入口 -->
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";
+import { HomeIcon, ShoppingCartIcon, UsersIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhSideNavBranch,
   XhSideNavBranchContent,
   XhSideNavBranchIndicator,
@@ -13,7 +15,6 @@ import {
   XhSideNavList,
   XhSideNavRoot,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const collection: SideNavNode[] = [
   { value: "dashboard", label: "工作台", href: "#dashboard" },
@@ -34,23 +35,24 @@ const collection: SideNavNode[] = [
     ],
   },
 ];
-
-const value = ref<string | null>("user-list");
 </script>
 
 <template>
   <XhSideNavRoot
-    v-model:value="value"
     :collection="collection"
+    default-value="user-list"
     :default-expanded-value="['user']"
-    style="border: 1px solid var(--xh-border-default); border-radius: 8px"
   >
     <XhSideNavList>
       <XhSideNavItem>
-        <XhSideNavLink value="dashboard"><XhSideNavLinkText>工作台</XhSideNavLinkText></XhSideNavLink>
+        <XhSideNavLink value="dashboard">
+          <XhIcon :icon="HomeIcon" aria-hidden="true" />
+          <XhSideNavLinkText>工作台</XhSideNavLinkText>
+        </XhSideNavLink>
       </XhSideNavItem>
       <XhSideNavBranch v-for="branch in collection.filter((n) => n.children)" :key="branch.value" :value="branch.value">
         <XhSideNavBranchTrigger>
+          <XhIcon :icon="branch.value === 'user' ? UsersIcon : ShoppingCartIcon" aria-hidden="true" />
           <XhSideNavBranchText>{{ branch.label }}</XhSideNavBranchText>
           <XhSideNavBranchIndicator />
         </XhSideNavBranchTrigger>
@@ -64,5 +66,4 @@ const value = ref<string | null>("user-list");
       </XhSideNavBranch>
     </XhSideNavList>
   </XhSideNavRoot>
-  <p>选中：{{ value ?? "（无）" }}</p>
 </template>

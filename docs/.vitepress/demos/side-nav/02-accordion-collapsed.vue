@@ -1,8 +1,9 @@
-<!-- 手风琴与折叠 | accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整体收起，文字部件整个隐藏只剩图标），折叠态下悬停/点按/右方向键在旁侧弹出子级面板，面板内选中即落值收起；collapsedPopout 设为 false 可关掉弹出 -->
+<!-- 折叠模式 | 以图标保留入口，子级在浮层中展开 -->
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";
+import { SettingsIcon, ShoppingCartIcon, UsersIcon } from "@xihan-ui/icons";
 import {
-  XhButton,
+  XhIcon,
   XhSideNavBranch,
   XhSideNavBranchContent,
   XhSideNavBranchIndicator,
@@ -14,7 +15,6 @@ import {
   XhSideNavList,
   XhSideNavRoot,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const collection: SideNavNode[] = [
   {
@@ -37,36 +37,30 @@ const collection: SideNavNode[] = [
   },
 ];
 
-const collapsed = ref(false);
+const icons = {
+  user: UsersIcon,
+  order: ShoppingCartIcon,
+  system: SettingsIcon,
+};
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px; justify-items: start">
-    <XhButton variant="outline" @click="collapsed = !collapsed">
-      {{ collapsed ? "展开侧栏" : "折叠成图标栏" }}
-    </XhButton>
-    <XhSideNavRoot
-      :collection="collection"
-      :collapsed="collapsed"
-      accordion
-      style="border: 1px solid var(--xh-border-default); border-radius: 8px"
-    >
-      <XhSideNavList>
-        <XhSideNavBranch v-for="branch in collection" :key="branch.value" :value="branch.value">
-          <XhSideNavBranchTrigger>
-            <span aria-hidden="true">▦</span>
-            <XhSideNavBranchText>{{ branch.label }}</XhSideNavBranchText>
-            <XhSideNavBranchIndicator />
-          </XhSideNavBranchTrigger>
-          <XhSideNavBranchContent>
-            <XhSideNavItem v-for="leaf in branch.children" :key="leaf.value">
-              <XhSideNavLink :value="leaf.value">
-                <XhSideNavLinkText>{{ leaf.label }}</XhSideNavLinkText>
-              </XhSideNavLink>
-            </XhSideNavItem>
-          </XhSideNavBranchContent>
-        </XhSideNavBranch>
-      </XhSideNavList>
-    </XhSideNavRoot>
-  </div>
+  <XhSideNavRoot :collection="collection" collapsed accordion>
+    <XhSideNavList>
+      <XhSideNavBranch v-for="branch in collection" :key="branch.value" :value="branch.value">
+        <XhSideNavBranchTrigger>
+          <XhIcon :icon="icons[branch.value]" aria-hidden="true" />
+          <XhSideNavBranchText>{{ branch.label }}</XhSideNavBranchText>
+          <XhSideNavBranchIndicator />
+        </XhSideNavBranchTrigger>
+        <XhSideNavBranchContent>
+          <XhSideNavItem v-for="leaf in branch.children" :key="leaf.value">
+            <XhSideNavLink :value="leaf.value">
+              <XhSideNavLinkText>{{ leaf.label }}</XhSideNavLinkText>
+            </XhSideNavLink>
+          </XhSideNavItem>
+        </XhSideNavBranchContent>
+      </XhSideNavBranch>
+    </XhSideNavList>
+  </XhSideNavRoot>
 </template>

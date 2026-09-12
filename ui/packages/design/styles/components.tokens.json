@@ -46241,7 +46241,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-md"
+        "--xh-_side-nav-row-px"
       ],
       "visibility": "public",
       "description": "side-nav 的 group-label 部件 padding-inline 覆盖槽。"
