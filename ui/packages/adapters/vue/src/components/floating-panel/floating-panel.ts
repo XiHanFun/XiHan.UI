@@ -105,12 +105,16 @@ export const XhFloatingPanelTrigger = defineComponent({
 
 export const XhFloatingPanelPositioner = defineComponent({
   name: 'XhFloatingPanelPositioner',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element>, default: undefined },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useFloatingPanelContext()
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
-    return () => h(XhPortal, { to: ctx.portalTarget.value }, () => [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
       h(
         'div',
         {

@@ -172,7 +172,11 @@ export const XhSideNavBranchIndicator = defineComponent({
 
 export const XhSideNavBranchContent = defineComponent({
   name: 'XhSideNavBranchContent',
-  setup(_, { slots }) {
+  props: {
+    /** 本分支弹层的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element>, default: undefined },
+  },
+  setup(props, { slots }) {
     const ctx = useSideNavContext()
     const node = useSideNavNodeContext()
     // 一个弹出面板一份退场闸门：退场动画挂在面板上，从它身上探测。
@@ -213,7 +217,7 @@ export const XhSideNavBranchContent = defineComponent({
         hidden,
         ref: (el: unknown) => { panelRef.value = el as HTMLElement | null },
       }, slots.default?.())
-      return h(XhPortal, { to: ctx.portalTarget.value }, () => [
+      return h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
         h('div', {
           ...ctx.api.value.getPopoutPositionerProps({ value: node.value }) as Record<string, unknown>,
           hidden,

@@ -76,16 +76,20 @@ export const XhDialogTrigger = defineComponent({
 
 export const XhDialogContent = defineComponent({
   name: 'XhDialogContent',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element>, default: undefined },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 content 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useDialogContext()
     return () => {
       if (!ctx.rendered.value)
         return null
       const api = ctx.api.value
       const backdrop = api.getBackdropProps() as Record<string, unknown>
-      return h(XhPortal, { to: ctx.portalTarget.value }, () => [
+      return h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
         !backdrop.hidden
           ? h('div', {
               ...backdrop,

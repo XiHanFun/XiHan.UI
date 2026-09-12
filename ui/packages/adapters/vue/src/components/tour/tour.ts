@@ -47,6 +47,8 @@ export const XhTourRoot = defineComponent({
     spotlightPadding: { type: Number, default: undefined },
     autoScroll: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<TourProps['translations']>, default: undefined },
+    /** 本实例三张 Tour 浮层的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element>, default: undefined },
   },
   // open-change / value-change 携带对象；update:* 携带裸值，支持 v-model:open 与 v-model:value
   emits: {
@@ -72,7 +74,7 @@ export const XhTourRoot = defineComponent({
       },
       onComplete: details => emit('complete', details),
       onSkip: details => emit('skip', details),
-    })
+    }, () => props.container)
     provideTour(ctx)
     // 经插槽暴露状态与走步、放弃等命令，供浮层外的按钮使用
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({

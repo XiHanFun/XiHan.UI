@@ -150,9 +150,13 @@ export const XhCommandTrigger = defineComponent({
 
 export const XhCommandContent = defineComponent({
   name: 'XhCommandContent',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element>, default: undefined },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 content 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useCommandContext()
     return () => {
       if (!ctx.rendered.value)
@@ -160,7 +164,7 @@ export const XhCommandContent = defineComponent({
       const api = ctx.api.value
       const backdrop = api.getBackdropProps() as Record<string, unknown>
       // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-      return h(XhPortal, { to: ctx.portalTarget.value }, () => [
+      return h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
         !backdrop.hidden
           ? h('div', {
               ...backdrop,

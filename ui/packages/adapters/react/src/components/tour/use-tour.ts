@@ -21,7 +21,7 @@ export interface TourContext extends OverlayWiring {
   showBackdrop: boolean
 }
 
-export function useTour(props: TourSchema['props']): TourContext {
+export function useTour(props: TourSchema['props'], container?: () => Element | null): TourContext {
   const idGenerator = useReactIdGenerator()
   const scope = useReactScope()
   const backdropRef = useRef<HTMLElement | null>(null)
@@ -48,6 +48,7 @@ export function useTour(props: TourSchema['props']): TourContext {
     surfaces: () => [backdropRef.current].filter(Boolean) as Element[],
     // 三张视觉表面都可能有独立的退场动画，任何一张未完成都不能归还行为资源。
     additionalExitNodes: () => [backdropRef.current, spotlightRef.current],
+    container,
     refs: (service) => {
       service.refs.set('getFloatingEl', (() => positionerRef.current) as never)
       service.refs.set('getContentEl', (() => contentRef.current) as never)
