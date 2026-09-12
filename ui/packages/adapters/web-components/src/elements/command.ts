@@ -17,10 +17,9 @@ import { commandAnatomy, commandMachine, commandMeta, connectCommand } from '@xi
 import { resolveXhConfig } from '../config'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
-import { PortalLeaseController } from '../runtime/portal-lease-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -71,7 +70,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
  * @csspart footer - 面板底部提示条，作者放什么由作者定
  */
-export class XhCommandElement extends XhElement {
+export class XhCommandElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: commandAnatomy, meta: commandMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -128,7 +130,7 @@ export class XhCommandElement extends XhElement {
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
-  private readonly portal = new PortalLeaseController({
+  private readonly portal = this.createPortalLeaseController({
     name: 'Command 视口',
     config: () => this.config,
     source: () => this,

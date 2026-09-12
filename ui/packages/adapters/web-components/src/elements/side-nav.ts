@@ -1,14 +1,14 @@
 import type { Cleanup, IdGenerator, Layer, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { SideNavExpandedValueChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
+import type { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectSideNav, sideNavAnatomy, sideNavMachine, sideNavMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
-import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -52,7 +52,10 @@ const GROUP_SELECTOR = '[data-xh-part="group"]'
  * @csspart link - 去处链接，须自带 value 属性；选中输出 aria-current="page" 与 data-current
  * @csspart link-text - 链接文字载体，折叠成图标栏时裁到看不见但仍参与播报，是链接在图标栏里的可及名
  */
-export class XhSideNavElement extends XhElement {
+export class XhSideNavElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: sideNavAnatomy, meta: sideNavMeta }
 
   // dir 只占属性名、字段改叫 direction：同名声明会盖掉 HTMLElement 原生反射。
@@ -268,7 +271,7 @@ export class XhSideNavElement extends XhElement {
           open,
           onExitComplete: () => this.requestUpdate(),
         })
-        const portal = new AnchoredPortalController({
+        const portal = this.createAnchoredPortalController({
           name: `SideNav popout ${value}`,
           config: () => this.config,
           source: () => this.findPopoutPart(this.exits.get(el)?.value ?? value, 'branch-trigger'),

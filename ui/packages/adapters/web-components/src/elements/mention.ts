@@ -17,10 +17,9 @@ import { connectMention, mentionAnatomy, mentionMachine, mentionMeta, resolveFor
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
-import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -74,7 +73,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item - role=option 候选，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart item-text - 候选文本，也是插回正文的取字处
  */
-export class XhMentionElement extends XhElement {
+export class XhMentionElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: mentionAnatomy, meta: mentionMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -128,7 +130,7 @@ export class XhMentionElement extends XhElement {
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
-  private readonly portal = new AnchoredPortalController({
+  private readonly portal = this.createAnchoredPortalController({
     name: 'Mention',
     config: () => this.config,
     source: () => this.getPart('input'),

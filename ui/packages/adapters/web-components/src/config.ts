@@ -10,8 +10,10 @@ import { setMotionOverride } from '@xihan-ui/motion'
 
 export type { XhTranslationOverrides }
 
-/** 与 Vue 适配器同一份字段；WC 暂不公开 portalContainer，Menu 子菜单使用内部运行时 Portal。 */
-export type XhConfig = XhConfigBase
+/** Web Components 的应用/子树配置；Portal 容器以 property-only 解析器表达。 */
+export interface XhConfig extends XhConfigBase {
+  portalContainer?: () => Element | null
+}
 
 let current: XhConfig = {}
 const listeners = new Set<() => void>()

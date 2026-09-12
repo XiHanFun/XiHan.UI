@@ -1,16 +1,16 @@
 import type { Cleanup, Direction, IdGenerator, Layer, Orientation, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { MenubarItemProps, MenubarNode, MenubarSchema, MenubarSelectDetails, MenubarTranslations, MenubarValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
+import type { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectMenubar, createMenuTreeNode, menubarAnatomy, menubarMachine, menubarMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
-import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
 import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -64,7 +64,10 @@ function authorDisabled(el: HTMLElement): boolean {
  * @csspart group-label - 分组标题，靠 id 被同组 group 的 aria-labelledby 指着
  * @csspart arrow - 指向锚点的箭头（aria-hidden），须写在同一张菜单的 positioner 里
  */
-export class XhMenubarElement extends XhElement {
+export class XhMenubarElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   /** 逐个 content 一份退场闸门：一个菜单一份，它们各开各的。 */
   private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit, portal: AnchoredPortalController }>()
 
@@ -243,7 +246,7 @@ export class XhMenubarElement extends XhElement {
   }
 
   private createPortal(value: string): AnchoredPortalController {
-    return new AnchoredPortalController({
+    return this.createAnchoredPortalController({
       name: `Menubar ${value}`,
       config: () => this.config,
       source: () => this.partFor('trigger', value),

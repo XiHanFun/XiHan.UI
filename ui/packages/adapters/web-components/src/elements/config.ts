@@ -19,7 +19,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * 与 Vue 适配器的 `provideXhConfig` 是同一件事的两种写法：那边沿组件树找，这边沿 DOM 祖先链找。
  * 逐键合并，本层只覆盖自己写了的那几项——只想改文案的子树不会把外层的 locale 一并抹掉。
  *
- * `translations` 与 `scrollRoot` 是对象与函数，只能走 property；`locale` / `size` / `motion` 属性与 property 都行。
+ * `translations`、`scrollRoot` 与 `portalContainer` 是对象或函数，只能走 property；`locale` / `size` / `motion` 属性与 property 都行。
  * `motion` 写了就调 setMotionOverride（应用级、不分子树）；CSS 侧的 data-motion 钩子由作者自己打。
  *
  * @customElement xh-config
@@ -28,6 +28,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'reduce'|'no-preference'} motion - 应用级动效偏好，写了就覆盖系统的 prefers-reduced-motion
  * @prop {XhTranslationOverrides} translations - 各组件内建文案的覆盖（对象只走 property）
  * @prop {() => HTMLElement | null} scrollRoot - 真正在滚的那个元素，交给滚动锁（函数只走 property）
+ * @prop {() => Element | null} portalContainer - 子树内物理 Portal 的默认目标（函数只走 property）
  */
 export class XhConfigElement extends XhReactiveElement implements XhConfigScope {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -38,6 +39,7 @@ export class XhConfigElement extends XhReactiveElement implements XhConfigScope 
     // 对象与函数只走 property
     translations: { attribute: false },
     scrollRoot: { attribute: false },
+    portalContainer: { attribute: false },
   }
 
   declare locale?: string
@@ -45,6 +47,7 @@ export class XhConfigElement extends XhReactiveElement implements XhConfigScope 
   declare motion?: MotionPreference
   declare translations?: XhTranslationOverrides
   declare scrollRoot?: () => HTMLElement | null
+  declare portalContainer?: () => Element | null
 
   /** 本层声明的那几项；解析器沿祖先链读它，缺席的键交给外层。 */
   get xhConfig(): XhConfig {
@@ -54,6 +57,7 @@ export class XhConfigElement extends XhReactiveElement implements XhConfigScope 
       motion: this.motion,
       translations: this.translations,
       scrollRoot: this.scrollRoot,
+      portalContainer: this.portalContainer,
     }
   }
 

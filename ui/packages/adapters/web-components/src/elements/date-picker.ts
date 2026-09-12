@@ -26,10 +26,9 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { calendarAnatomy, calendarMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldAt, datePickerFieldEndProps, datePickerFieldProps, datePickerMachine, datePickerMeta, resolveDatePickerPanelIndex, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
-import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -157,7 +156,10 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart cell-trigger - 真正可点可聚焦的那一层，承载 aria-disabled 与 roving tabindex
  * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串；区间模式下起止各一份
  */
-export class XhDatePickerElement extends XhElement {
+export class XhDatePickerElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   // 分段输入与日历的 DOM 摊在本元素的 Light DOM 里由本元素接线，它们的角色节点归各自 scope 管
   static override partContract = {
     anatomy: datePickerAnatomy,
@@ -250,7 +252,7 @@ export class XhDatePickerElement extends XhElement {
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
-  private readonly portal = new AnchoredPortalController({
+  private readonly portal = this.createAnchoredPortalController({
     name: 'DatePicker',
     config: () => this.config,
     source: () => this.getPart('control'),

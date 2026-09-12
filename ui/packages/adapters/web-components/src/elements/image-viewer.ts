@@ -5,10 +5,9 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { connectImageViewer, imageViewerAnatomy, imageViewerCounterText, imageViewerMachine, imageViewerMeta } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
-import { PortalLeaseController } from '../runtime/portal-lease-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
@@ -54,7 +53,10 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart counter - 「第 n / 共 m」计数（元素代填）
  * @csspart close-trigger - 关闭
  */
-export class XhImageViewerElement extends XhElement {
+export class XhImageViewerElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: imageViewerAnatomy, meta: imageViewerMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -100,7 +102,7 @@ export class XhImageViewerElement extends XhElement {
   private contentNode: HTMLElement | null = null
   private exit: OverlayExit | null = null
   private backdropNode: HTMLElement | null = null
-  private readonly portal = new PortalLeaseController({
+  private readonly portal = this.createPortalLeaseController({
     name: 'ImageViewer 视口模态',
     config: () => this.config,
     source: () => this,

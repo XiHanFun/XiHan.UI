@@ -7,11 +7,10 @@ import { connectContextMenu, contextMenuAnatomy, contextMenuMachine, contextMenu
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
-import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
 import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
+import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -57,7 +56,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
  * @csspart arrow - 指向锚点的箭头（aria-hidden，data-placement 随实际放置位翻转）
  */
-export class XhContextMenuElement extends XhElement {
+export class XhContextMenuElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: contextMenuAnatomy, meta: contextMenuMeta }
 
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
@@ -115,7 +117,7 @@ export class XhContextMenuElement extends XhElement {
     registerSubmenu: child => this.registerSubmenu(child),
   }
 
-  private readonly portal = new AnchoredPortalController({
+  private readonly portal = this.createAnchoredPortalController({
     name: 'ContextMenu',
     config: () => this.config,
     source: () => this.getPart('trigger'),
