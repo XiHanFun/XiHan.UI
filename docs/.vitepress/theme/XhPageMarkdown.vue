@@ -5,7 +5,11 @@ import { computed } from "vue";
 const { page } = useData();
 
 // 构建期每页都落了一份同路径的 .md（示例已内联成代码块），这里指向它
-const href = computed(() => withBase(`/${page.value.relativePath}`));
+const href = computed(() => withBase(
+  import.meta.env.DEV
+    ? `/__markdown/${page.value.relativePath}`
+    : `/${page.value.relativePath}`,
+));
 </script>
 
 <template>

@@ -166,14 +166,45 @@ function flattenBadges(body) {
   return body.replace(/<Badge[^>]+\btext="([^"]+)"[^>]*\/>/g, "`$1`");
 }
 
+/** 组件总览的预览卡在纯 Markdown 中改为普通链接。 */
+function flattenComponentCards(body) {
+  return body.replace(
+    /<div class="xh-component-grid">([\s\S]*?)<\/div>/g,
+    (_, cards) => cards.trim().replace(
+      /<XhComponentCard\s+src="[^"]+"\s+name="([^"]+)"\s+label="([^"]+)"\s+href="([^"]+)"(?:\s+renderless)?\s*\/>/g,
+      "- [$1 $2]($3)",
+    ),
+  );
+}
+
 /** 一页的机读正文：去 frontmatter、内联示例、压平站点组件。 */
 async function pageText(source) {
   const { frontmatter, body } = splitFrontmatter(source);
-  const text = flattenBadges(await inlineDemos(body)).trim();
+  const text = flattenComponentCards(flattenBadges(await inlineDemos(body))).trim();
   // 首页正文是空的，内容全在 frontmatter 的 hero 与 features 里
   if (!text && frontmatter)
     return `\`\`\`yaml\n${frontmatter.trim()}\n\`\`\``;
   return text;
+}
+
+/** 开发服务器按需生成与生产构建相同的单页 Markdown。 */
+export async function renderPageMarkdown(relativePath) {
+  const normalized = relativePath.replaceAll("\\", "/").replace(/^\/+/, "");
+  if (!normalized.endsWith(".md") || normalized.split("/").includes(".."))
+    return null;
+
+  const source = await readOrNull(join(DOCS, normalized));
+  if (!source)
+    return null;
+
+  const { frontmatter, body } = splitFrontmatter(source);
+  const heading = headingOf(body);
+  const title = heading.title || frontmatterValue(frontmatter, "title") || normalized;
+  return pageBlock({
+    title,
+    url: urlOf(normalized),
+    text: await pageText(source),
+  });
 }
 
 // —— 令牌 ——
