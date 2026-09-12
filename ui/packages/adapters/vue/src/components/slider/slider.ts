@@ -2,6 +2,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { SliderApi, SliderMark, SliderMarkMeta, SliderSchema, SliderValueTextDetails } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { normalizeItemIndex } from '@xihan-ui/core'
 import { computed, defineComponent, h } from 'vue'
 import { provideSlider, provideSliderThumb, useSliderContext, useSliderThumbContext } from './context'
 import { useSlider } from './use-slider'
@@ -138,10 +139,7 @@ export const XhSliderThumb = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useSliderContext()
-    const index = computed(() => {
-      const n = Number(props.index)
-      return Number.isFinite(n) ? n : 0
-    })
+    const index = computed(() => normalizeItemIndex(props.index))
     provideSliderThumb({ index })
     return () => h('div', ctx.api.value.getThumbProps(index.value) as Record<string, unknown>, slots.default?.())
   },

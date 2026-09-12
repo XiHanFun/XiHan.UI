@@ -2,6 +2,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { SliderApi, SliderMark, SliderMarkMeta, SliderSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { normalizeItemIndex } from '@xihan-ui/core'
 import { Fragment } from 'react'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -12,12 +13,6 @@ import { useSlider } from './use-slider'
 type SliderProps = SliderSchema['props']
 
 function noop(): void {}
-
-/** 把作者写的下标收成数字；不是数字就当第一个。 */
-function toIndex(raw: number | string): number {
-  const n = Number(raw)
-  return Number.isFinite(n) ? n : 0
-}
 
 /** 函数式 children 的载荷：当前值、逐个滑块的状态、已选区间与拖动标记，以及整份改值与单个滑块改值。 */
 export type SliderRootSlotProps = Pick<
@@ -222,7 +217,7 @@ export interface XhSliderThumbProps extends ComponentPropsWithRef<'div'> {
 
 export function XhSliderThumb({ index = 0, children, ...rest }: XhSliderThumbProps): ReactNode {
   const ctx = useSliderContext()
-  const at = toIndex(index)
+  const at = normalizeItemIndex(index)
   // 拇指上的 onFocus 是不冒泡的 DOM focus，React 的同名合成事件挂的是冒泡的 focusin：
   // 后代得焦会被算成拇指自己得焦，活动下标于是指错人。装成原生监听器，到达路径才与另外两家一致
   const bind = useNativeEvents(ctx.api.getThumbProps(at) as Record<string, unknown>, ['onFocus'])
