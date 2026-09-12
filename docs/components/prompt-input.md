@@ -1,40 +1,22 @@
-# 提示输入框 <Badge type="info" text="prompt-input" />
+# PromptInput <Badge type="info" text="提示输入框" />
 
 会话界面的输入框：值、输入法、能不能提交，以及发送与停止共用的那一颗按钮。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/prompt-input" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/prompt-input.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/prompt-input" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/prompt-input" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/prompt-input.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- AI 对话、聊天或任何「输入一段话然后提交」的界面。
-- 生成期间要能一键停止。
-
-## 何时不用
-
-- 只是表单里的一个多行文本域：用[文本框](./text-field)配[字段](./field)。
-- 要 @提及或斜杠命令：整个用[提及](./mention)当输入器，见下方的组合。
-
-## 特性
-
-- 发送与停止**原位共用一个节点**：正在按它的用户不会按空。生成期间按钮恒可用，
-  此刻它的语义是停止。
-- `submitKey` 一个 prop 表达三档：`enter` 档 Enter 提交、Shift+Enter 换行、Mod+Enter 也提交；
-  `mod-enter` 档 Enter 换行，只有 Mod+Enter 提交；`none` 档两种按法都换行，
-  键盘一个提交出口都不留，只剩发送按钮与程序化的 `submit()`。
-- 输入法组合期间的 Enter 一律放行，那一下是在确认候选词。
-- 同一个输入框上叠了别的处理器且它已经处理过这一下时，组件让位。
-- 自动长高是两行 CSS，不进状态机；引擎不支持时退化成 `rows` 定的固定行数。
-- 两种排布同一份皮肤：直接把输入框与按钮放进 root 就是单行；套一层输入行，root 翻成竖排，
-  输入行上下两侧就能再放附件条与动作行。
-- 默认皮肤用 M3 浮动玻璃做外壳；textarea 保持同配方的实体阅读底，复杂背景不会透到输入文字下。
-- 发送按钮留空时皮肤画兜底字形：发送身份一枚上箭头，停止身份一枚圆角方块；
-  塞进自己的图标或文案即盖掉它。
-
-## 示例
-
-### 基础用法
+## 用法
 
 Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，那一下是在确认候选词
 
 <XhDemo src="prompt-input/01-basic" />
+
+## 示例
 
 ### 与消息流合成一个对话
 
@@ -89,6 +71,34 @@ root 里除三件外还能放自己的按钮与计数；值的读写归宿主，
 tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受影响
 
 <XhDemo src="prompt-input/10-tone" />
+
+## 设计指引
+
+### 何时使用
+
+- AI 对话、聊天或任何「输入一段话然后提交」的界面。
+- 生成期间要能一键停止。
+
+### 何时不用
+
+- 只是表单里的一个多行文本域：用[文本框](./text-field)配[字段](./field)。
+- 要 @提及或斜杠命令：整个用[提及](./mention)当输入器，见下方的组合。
+
+### 特性
+
+- 发送与停止**原位共用一个节点**：正在按它的用户不会按空。生成期间按钮恒可用，
+  此刻它的语义是停止。
+- `submitKey` 一个 prop 表达三档：`enter` 档 Enter 提交、Shift+Enter 换行、Mod+Enter 也提交；
+  `mod-enter` 档 Enter 换行，只有 Mod+Enter 提交；`none` 档两种按法都换行，
+  键盘一个提交出口都不留，只剩发送按钮与程序化的 `submit()`。
+- 输入法组合期间的 Enter 一律放行，那一下是在确认候选词。
+- 同一个输入框上叠了别的处理器且它已经处理过这一下时，组件让位。
+- 自动长高是两行 CSS，不进状态机；引擎不支持时退化成 `rows` 定的固定行数。
+- 两种排布同一份皮肤：直接把输入框与按钮放进 root 就是单行；套一层输入行，root 翻成竖排，
+  输入行上下两侧就能再放附件条与动作行。
+- 默认皮肤用 M3 浮动玻璃做外壳；textarea 保持同配方的实体阅读底，复杂背景不会透到输入文字下。
+- 发送按钮留空时皮肤画兜底字形：发送身份一枚上箭头，停止身份一枚圆角方块；
+  塞进自己的图标或文案即盖掉它。
 
 ## 产物
 

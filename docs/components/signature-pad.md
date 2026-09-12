@@ -1,34 +1,22 @@
-# 签名板 <Badge type="info" text="signature-pad" />
+# SignaturePad <Badge type="info" text="签名板" />
 
 一块用指针写字的画布：按下落笔、移动成迹、抬笔收一笔，画出来的是可缩放、可直接提交的 SVG。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/signature-pad" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/signature-pad.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/signature-pad" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/signature-pad" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/signature-pad.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 承诺书、回执、验收单上要留一笔手写签名。
-- 交付确认、上门服务签收这类要留下"人到过、看过"的痕迹的场景。
-
-## 何时不用
-
-- 要的是一份已有的签名图片：那是上传，用[文件上传](./file-upload)。
-- 要的是打字签名或姓名核对：那是一行文本，用[文本输入](./text-field)。
-- 要的是在图片上圈画批注：本组件只画自己那块画布，不承载底图。
-
-## 特性
-
-- 笔迹是 SVG 填充路径，放大不糊；每一笔是同一条路径上的一条子路径。
-- 第一笔落下时量一次画布并把这套坐标钉住，画布的 `viewBox` 与导出的 SVG 都写它：容器变宽变窄时，已有笔迹跟着缩放而不是留在原像素上错位。清空后重新量。
-- `drawing` 一组选项调笔画外形：`size` 定粗细，`thinning` 让粗细随压感变，`simulatePressure` 决定压感是取设备值还是按落笔速度算。
-- 带 `name` 即参与表单提交，提交的是一份独立的 SVG 文档；表单重置会把画布清回空。
-- 笔迹变了就发 `draw`，签名定稿就发 `draw-end`——抬笔、点清空、表单重置这三条路径都发。照 `draw-end` 缓存待提交的 SVG 不会拿到过期的那一版。
-- 手划出画布甚至划出窗口都跟手，抬手即收笔；落笔那根指针被捕获，手掌与第二根手指的移动不会被续进这一笔。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一块画布加一条笔迹路径就够了：按下落笔、移动成迹、抬笔收一笔
 
 <XhDemo src="signature-pad/01-basic" />
+
+## 示例
 
 ### 标题、基准线与清空
 
@@ -59,6 +47,28 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 签名定稿时 draw-end 带上一份可直接落库的 SVG；提交前用 empty 拦一道，空签名不该走出客户端
 
 <XhDemo src="signature-pad/06-export" />
+
+## 设计指引
+
+### 何时使用
+
+- 承诺书、回执、验收单上要留一笔手写签名。
+- 交付确认、上门服务签收这类要留下"人到过、看过"的痕迹的场景。
+
+### 何时不用
+
+- 要的是一份已有的签名图片：那是上传，用[文件上传](./file-upload)。
+- 要的是打字签名或姓名核对：那是一行文本，用[文本输入](./text-field)。
+- 要的是在图片上圈画批注：本组件只画自己那块画布，不承载底图。
+
+### 特性
+
+- 笔迹是 SVG 填充路径，放大不糊；每一笔是同一条路径上的一条子路径。
+- 第一笔落下时量一次画布并把这套坐标钉住，画布的 `viewBox` 与导出的 SVG 都写它：容器变宽变窄时，已有笔迹跟着缩放而不是留在原像素上错位。清空后重新量。
+- `drawing` 一组选项调笔画外形：`size` 定粗细，`thinning` 让粗细随压感变，`simulatePressure` 决定压感是取设备值还是按落笔速度算。
+- 带 `name` 即参与表单提交，提交的是一份独立的 SVG 文档；表单重置会把画布清回空。
+- 笔迹变了就发 `draw`，签名定稿就发 `draw-end`——抬笔、点清空、表单重置这三条路径都发。照 `draw-end` 缓存待提交的 SVG 不会拿到过期的那一版。
+- 手划出画布甚至划出窗口都跟手，抬手即收笔；落笔那根指针被捕获，手掌与第二根手指的移动不会被续进这一笔。
 
 ## 产物
 

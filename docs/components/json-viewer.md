@@ -1,40 +1,22 @@
-# JSON 视图 <Badge type="info" text="json-viewer" />
+# JsonViewer <Badge type="info" text="JSON 视图" />
 
 把一份 JSON 摊成可展开的树：键名、值与值类型各自成一块，对象与数组可以逐层收起。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/json-viewer" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/json-viewer.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/json-viewer" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/json-viewer" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/json-viewer.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 调试面板、接口返回体、配置文件的只读呈现。
-- 日志详情里那一大坨结构化字段，直接铺开会淹掉正文。
-
-## 何时不用
-
-- 数据是可编辑的：本组件只读，改值要自己接[表单](./form)与[输入框](./text-field)。
-- 数据只是一段带语法高亮的源码：用[代码视图](./code-view)。
-- 层级数据不是 JSON，键名与类型没有语义：用[树](./tree)——它认的是通用层级数据与选中，本组件认的是 JSON 的类型语义（键名、值形态、逐类型着色、循环引用）。
-- 只有几个字段要平铺展示：用[描述列表](./descriptions)。
-
-## 特性
-
-- 行结构由 `value` 摊出来，作者不写任何行标记：Vue 与自定义元素两侧铺出同一棵 DOM，根容器里原有的内容由组件接管。
-- 自定义渲染器可调用 `groupJsonViewerNodesByParent(nodes)` 把可见行按父路径分组；返回值保留父路径首次出现顺序、组内输入顺序与节点身份。
-- 不给 `value` 就是空视图，一行也不摊；对象内部真有一个值为 `undefined` 的成员时，那一行照常摊出来。
-- 展开集合可受控（`expandedValue` / `defaultExpandedValue`），不受控时按 `defaultExpandedDepth` 现算：数据晚于组件挂载才到（自定义元素常是先升级、再由脚本写 `.value`）也照样算得上，第一次展开或收起之后就固定下来，不再跟着数据走。
-- `maxStringLength` 截长字符串，`maxItems` 折超长数组，`sortKeys` 让对象键按字典序排。
-- 循环引用摊到就停，标成 `[Circular]`，不会无限递归。
-- 每一行带 `data-value-type`，六种值形态各自上色。
-- 尺寸一轴与其余组件同源；`variant` 决定带不带外框，缺省 `surface`。
-- 一行也摊不出来时由 `empty` 那一格说话，文案走 `translations.empty`，作者也可以自己往里写内容。
-- **只认 JSON 能表达的形状**，喂进活对象时呈现是有损的：`Date` / `Map` / `Set` 一律按自有可枚举键摊，因此显示成 `{}`；`undefined` 归 `null` 一档、显示成 `undefined`；`bigint` 归 `number`；函数与 symbol 归 `string`，按各自的字符串形式呈现。要如实展示这些值，先自己转成 JSON 能表达的形状。
-- 自定义元素侧：`value` 属性收的是一段 JSON 文本（解析不了就当一个字符串值展示），对象与数组直接赋 property（`el.value = { … }`）；`expandedValue` / `defaultExpandedValue` / `translations` **没有对应属性，只能走 property**，写成 `expanded-value='["$"]'` 不会生效。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一份 JSON 摊成可展开的树：键名与值各自成块，六种类型各自上色，默认只展开根行
 
 <XhDemo src="json-viewer/01-basic" />
+
+## 示例
 
 ### 默认展开层数
 
@@ -83,6 +65,34 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 一行也摊不出来时空态那一格站出来说话；variant="plain" 去掉外框与底色
 
 <XhDemo src="json-viewer/09-empty" />
+
+## 设计指引
+
+### 何时使用
+
+- 调试面板、接口返回体、配置文件的只读呈现。
+- 日志详情里那一大坨结构化字段，直接铺开会淹掉正文。
+
+### 何时不用
+
+- 数据是可编辑的：本组件只读，改值要自己接[表单](./form)与[输入框](./text-field)。
+- 数据只是一段带语法高亮的源码：用[代码视图](./code-view)。
+- 层级数据不是 JSON，键名与类型没有语义：用[树](./tree)——它认的是通用层级数据与选中，本组件认的是 JSON 的类型语义（键名、值形态、逐类型着色、循环引用）。
+- 只有几个字段要平铺展示：用[描述列表](./descriptions)。
+
+### 特性
+
+- 行结构由 `value` 摊出来，作者不写任何行标记：Vue 与自定义元素两侧铺出同一棵 DOM，根容器里原有的内容由组件接管。
+- 自定义渲染器可调用 `groupJsonViewerNodesByParent(nodes)` 把可见行按父路径分组；返回值保留父路径首次出现顺序、组内输入顺序与节点身份。
+- 不给 `value` 就是空视图，一行也不摊；对象内部真有一个值为 `undefined` 的成员时，那一行照常摊出来。
+- 展开集合可受控（`expandedValue` / `defaultExpandedValue`），不受控时按 `defaultExpandedDepth` 现算：数据晚于组件挂载才到（自定义元素常是先升级、再由脚本写 `.value`）也照样算得上，第一次展开或收起之后就固定下来，不再跟着数据走。
+- `maxStringLength` 截长字符串，`maxItems` 折超长数组，`sortKeys` 让对象键按字典序排。
+- 循环引用摊到就停，标成 `[Circular]`，不会无限递归。
+- 每一行带 `data-value-type`，六种值形态各自上色。
+- 尺寸一轴与其余组件同源；`variant` 决定带不带外框，缺省 `surface`。
+- 一行也摊不出来时由 `empty` 那一格说话，文案走 `translations.empty`，作者也可以自己往里写内容。
+- **只认 JSON 能表达的形状**，喂进活对象时呈现是有损的：`Date` / `Map` / `Set` 一律按自有可枚举键摊，因此显示成 `{}`；`undefined` 归 `null` 一档、显示成 `undefined`；`bigint` 归 `number`；函数与 symbol 归 `string`，按各自的字符串形式呈现。要如实展示这些值，先自己转成 JSON 能表达的形状。
+- 自定义元素侧：`value` 属性收的是一段 JSON 文本（解析不了就当一个字符串值展示），对象与数组直接赋 property（`el.value = { … }`）；`expandedValue` / `defaultExpandedValue` / `translations` **没有对应属性，只能走 property**，写成 `expanded-value='["$"]'` 不会生效。
 
 ## 产物
 

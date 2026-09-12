@@ -1,38 +1,22 @@
-# 代码视图 <Badge type="info" text="code-view" />
+# CodeView <Badge type="info" text="代码视图" />
 
 一段代码的逐行呈现：行号、指定行高亮、超长折叠、文件名，可选语法着色，支持流式追加时的未闭合状态。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/code-view" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/code-view.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/code-view" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/code-view" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/code-view.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- AI 回复、文档、评审意见里展示一段代码，需要行号或要点出某几行。
-- 代码是流式生成的，需要边来边渲，闭合之后再着色。
-- 一段代码很长，默认只想露出前若干行。
-
-## 何时不用
-
-- 只是一小段行内标识：用[排印](./typography)的 `code` 形态。
-- 展示的是运行日志：用[日志](./log)。
-- 要展示改动前后：用[差异视图](./diff-view)。
-
-## 特性
-
-- 逐行切分在连接层完成。一个记号可以横跨多行（未闭合的字符串与块注释就是这样），
-  所以行号与高亮行不是皮肤能反推出来的东西。
-- `complete` 标出这段代码是否已经写完。未闭合时默认不着色——半截代码的词法本来就不稳，
-  每来一个字符整块变一次色比不着色更糟。
-- `highlighter` 是一个着色端口，接哪个着色器由宿主决定；它返回 `null` 是合法结果，退回纯文本。
-  适配器默认接 `@xihan-ui/code-highlight`，那是可选 peer：装了它自动着色，没装就一路纯文本。
-  适配器显式传 `null` 时不会请求默认模块；只有明确的模块缺席会回到纯文本，已安装模块的加载或初始化异常照常抛出。
-- 行号由皮肤用 `attr()` 画出来，因此**复制代码不会带上行号**，读屏也不会逐行念数字。
-- `clamped` 是纯受控的：折叠态通常由外部「全部展开 / 全部折叠」统一持有，内建一份只会跟它打架。
-
-## 示例
-
-### 基础用法
+## 用法
 
 代码原文由宿主给，组件切出逐行结构并铺记号；渲了文件名它就成为代码块的可访问名
 
 <XhDemo src="code-view/01-basic" />
+
+## 示例
 
 ### 行号与高亮行
 
@@ -75,6 +59,32 @@ clamped 是纯受控的：组件只发意图，落不落由宿主决定，好让
 size 换字号、行高与内边距三档，行号槽与折叠钮跟着一起走
 
 <XhDemo src="code-view/08-size" />
+
+## 设计指引
+
+### 何时使用
+
+- AI 回复、文档、评审意见里展示一段代码，需要行号或要点出某几行。
+- 代码是流式生成的，需要边来边渲，闭合之后再着色。
+- 一段代码很长，默认只想露出前若干行。
+
+### 何时不用
+
+- 只是一小段行内标识：用[排印](./typography)的 `code` 形态。
+- 展示的是运行日志：用[日志](./log)。
+- 要展示改动前后：用[差异视图](./diff-view)。
+
+### 特性
+
+- 逐行切分在连接层完成。一个记号可以横跨多行（未闭合的字符串与块注释就是这样），
+  所以行号与高亮行不是皮肤能反推出来的东西。
+- `complete` 标出这段代码是否已经写完。未闭合时默认不着色——半截代码的词法本来就不稳，
+  每来一个字符整块变一次色比不着色更糟。
+- `highlighter` 是一个着色端口，接哪个着色器由宿主决定；它返回 `null` 是合法结果，退回纯文本。
+  适配器默认接 `@xihan-ui/code-highlight`，那是可选 peer：装了它自动着色，没装就一路纯文本。
+  适配器显式传 `null` 时不会请求默认模块；只有明确的模块缺席会回到纯文本，已安装模块的加载或初始化异常照常抛出。
+- 行号由皮肤用 `attr()` 画出来，因此**复制代码不会带上行号**，读屏也不会逐行念数字。
+- `clamped` 是纯受控的：折叠态通常由外部「全部展开 / 全部折叠」统一持有，内建一份只会跟它打架。
 
 ## 产物
 

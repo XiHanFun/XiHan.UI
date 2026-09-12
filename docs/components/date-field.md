@@ -1,31 +1,22 @@
-# 日期输入 <Badge type="info" text="date-field" />
+# DateField <Badge type="info" text="日期输入" />
 
 分段的日期输入框：年、月、日各占一段，方向键加减，不弹日历。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/date-field" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/date-field.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/date-field" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/date-field" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/date-field.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 用户已经知道确切日期（生日、证件有效期），打字比翻日历快。
-- 需要键盘全程可用。
-
-## 何时不用
-
-- 用户需要看着日历挑（选会议时间、看星期几）：用[日期选择器](./date-picker)。
-- 只要时间不要日期：用[时间输入](./time-field)。
-
-## 特性
-
-- 段序随 `locale` 变，不是写死的年月日。不给 `locale` 就跟宿主浏览器语言，读不到才落 `en-US`（月日年）。
-- `min` / `max` 收窄各段的加减范围；越界的初值只做标注、不被改写。
-- `granularity` 决定精确到日还是到分。
-- 段位文本、对外值的写法与段位的拼装都可以换。
-
-## 示例
-
-### 基础用法
+## 用法
 
 三段各是一个可加减的数，整组只占一个 Tab 位，三段填齐才第一次报出值
 
 <XhDemo src="date-field/01-basic" />
+
+## 示例
 
 ### 段序随 locale
 
@@ -98,6 +89,25 @@ value-change 每次带上整份 ISO 串，段位被清掉时它是 null
 segments 决定这份控件由哪几块组成；段位可按段名认领，不必数下标
 
 <XhDemo src="date-field/13-segments" />
+
+## 设计指引
+
+### 何时使用
+
+- 用户已经知道确切日期（生日、证件有效期），打字比翻日历快。
+- 需要键盘全程可用。
+
+### 何时不用
+
+- 用户需要看着日历挑（选会议时间、看星期几）：用[日期选择器](./date-picker)。
+- 只要时间不要日期：用[时间输入](./time-field)。
+
+### 特性
+
+- 段序随 `locale` 变，不是写死的年月日。不给 `locale` 就跟宿主浏览器语言，读不到才落 `en-US`（月日年）。
+- `min` / `max` 收窄各段的加减范围；越界的初值只做标注、不被改写。
+- `granularity` 决定精确到日还是到分。
+- 段位文本、对外值的写法与段位的拼装都可以换。
 
 ## 产物
 

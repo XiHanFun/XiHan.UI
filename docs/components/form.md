@@ -1,39 +1,22 @@
-# 表单 <Badge type="info" text="form" />
+# Form <Badge type="info" text="表单" />
 
 一整张表的值、校验与提交：字段各自录入，表单负责汇总、校验和拦下不合格的提交。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/form" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/form.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/form" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/form" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/form.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 多个字段需要一起提交，且存在跨字段规则。
-- 需要统一的校验时机与错误汇总。
-
-## 何时不用
-
-- 只有一两个立即生效的开关：直接改，别包表单。
-- 只是要一格标签加控件：用[表单字段](./field)。
-
-## 特性
-
-- `validateOn` 决定何时校验：输入时、失焦时还是提交时。
-- 支持异步校验、跨字段规则与手动触发入口。
-- `validating` 表示仍有有效异步校验；任何字段变值、受控值更新、重置或卸载都会撤销旧快照的写回与提交资格，不自动重提。
-- 校验器抛错或拒绝 Promise 时，`validationError` 保存 `{ cause, values, field }`，并发出 `validation-error` 事件（React/内核为 `onValidationError`）；`field=null` 表示整表提交。执行异常不会转换成字段错误或触发成功提交。
-- 新校验、变值或重置会清除旧异常；重试由业务显式调用 `submit()`，不自动重试。Vue 默认插槽、React 函数式 children、Web Components 的 `validationError` 只读属性都能读取该状态。
-- 字段身份是 `FormPath`：字符串（包括 `user.email`）永远是一整个键；只有显式数组（如 `['users', 0, 'email']`）才表示路径。数组路径由 `getFormPathValue` / `setFormPathValue` 读写，绝不经数组的逗号字符串落进 `Record`；`formPathKey` 用于稳定 DOM 身份，`formPathDisplay` 用于诊断文案。
-- 嵌套的 `FieldArray` 以自身 `name` 作为根路径；追加、删除或换序时，Form 在 Headless 层同时迁移其子字段的 values、rules、errors、进行中的 validation 与已验证错误标记。字符串字段没有隐式下标，绝不会被这条迁移改写。
-- `FormFieldGroup` 里的 TextField 会继承本字段的 `invalid` / `required` 以及整表的
-  `disabled` / `readOnly`；没有写这四个实例属性才继承，显式写 `false` 可以顶掉最近状态。
-  Field 再包一层时，状态继续落到 TextField 真正可聚焦的 input，而不是只停在包装节点。
-- 错误汇总（`error-summary`）把所有错误列在一处，每条都能点回对应字段。
-- "提醒但不拦下"是一档独立行为：警告级的问题不阻断提交。
-
-## 示例
-
-### 基础用法
+## 用法
 
 默认只在提交时整表校验：过了发 submit，没过发 invalid、摘要显形并把焦点送到第一个出错的字段
 
 <XhDemo src="form/01-basic" />
+
+## 示例
 
 ### 校验时机
 
@@ -112,6 +95,33 @@ layout 四档：vertical 竖排（默认）、horizontal 标签左置两列（la
 columns 给列数、窄视口自动收成一列；字段自报 span 跨列，span="full" 占满整行且跟着当下列数走
 
 <XhDemo src="form/14-grid" />
+
+## 设计指引
+
+### 何时使用
+
+- 多个字段需要一起提交，且存在跨字段规则。
+- 需要统一的校验时机与错误汇总。
+
+### 何时不用
+
+- 只有一两个立即生效的开关：直接改，别包表单。
+- 只是要一格标签加控件：用[表单字段](./field)。
+
+### 特性
+
+- `validateOn` 决定何时校验：输入时、失焦时还是提交时。
+- 支持异步校验、跨字段规则与手动触发入口。
+- `validating` 表示仍有有效异步校验；任何字段变值、受控值更新、重置或卸载都会撤销旧快照的写回与提交资格，不自动重提。
+- 校验器抛错或拒绝 Promise 时，`validationError` 保存 `{ cause, values, field }`，并发出 `validation-error` 事件（React/内核为 `onValidationError`）；`field=null` 表示整表提交。执行异常不会转换成字段错误或触发成功提交。
+- 新校验、变值或重置会清除旧异常；重试由业务显式调用 `submit()`，不自动重试。Vue 默认插槽、React 函数式 children、Web Components 的 `validationError` 只读属性都能读取该状态。
+- 字段身份是 `FormPath`：字符串（包括 `user.email`）永远是一整个键；只有显式数组（如 `['users', 0, 'email']`）才表示路径。数组路径由 `getFormPathValue` / `setFormPathValue` 读写，绝不经数组的逗号字符串落进 `Record`；`formPathKey` 用于稳定 DOM 身份，`formPathDisplay` 用于诊断文案。
+- 嵌套的 `FieldArray` 以自身 `name` 作为根路径；追加、删除或换序时，Form 在 Headless 层同时迁移其子字段的 values、rules、errors、进行中的 validation 与已验证错误标记。字符串字段没有隐式下标，绝不会被这条迁移改写。
+- `FormFieldGroup` 里的 TextField 会继承本字段的 `invalid` / `required` 以及整表的
+  `disabled` / `readOnly`；没有写这四个实例属性才继承，显式写 `false` 可以顶掉最近状态。
+  Field 再包一层时，状态继续落到 TextField 真正可聚焦的 input，而不是只停在包装节点。
+- 错误汇总（`error-summary`）把所有错误列在一处，每条都能点回对应字段。
+- "提醒但不拦下"是一档独立行为：警告级的问题不阻断提交。
 
 ## 产物
 

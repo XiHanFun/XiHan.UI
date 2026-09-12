@@ -1,31 +1,22 @@
-# 进度条 <Badge type="info" text="progress" />
+# Progress <Badge type="info" text="进度条" />
 
 表示一件事完成了多少。线形、环形与仪表盘三种画法。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/progress" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/progress.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/progress" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/progress" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/progress.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 上传、导出、批处理这类有确定完成度的过程。
-- 用容量、配额这类比例值。
-
-## 何时不用
-
-- 完成度未知：用[加载指示器](./spinner)或[加载条](./loading-bar)的爬升模式。
-- 表示的是步骤而不是比例：用[步骤条](./steps)。
-
-## 特性
-
-- `variant` 三档：线形、环形、仪表盘；仪表盘的缺口角度与位置可调。
-- `indeterminate` 表达"进行中但不知道还剩多少"。
-- `valueText` 决定读屏念出的是什么——"3 个文件中的第 2 个"比"66%"有用得多。
-- 环心可以放文字。
-
-## 示例
-
-### 基础用法
+## 用法
 
 value 与 max 共同决定百分比
 
 <XhDemo src="progress/01-basic" />
+
+## 示例
 
 ### 配文字说明
 
@@ -80,6 +71,25 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 直径、颜色与端点走令牌，线宽走 strokeWidth：它改的是几何，半径跟着往里收
 
 <XhDemo src="progress/10-circle-appearance" />
+
+## 设计指引
+
+### 何时使用
+
+- 上传、导出、批处理这类有确定完成度的过程。
+- 用容量、配额这类比例值。
+
+### 何时不用
+
+- 完成度未知：用[加载指示器](./spinner)或[加载条](./loading-bar)的爬升模式。
+- 表示的是步骤而不是比例：用[步骤条](./steps)。
+
+### 特性
+
+- `variant` 三档：线形、环形、仪表盘；仪表盘的缺口角度与位置可调。
+- `indeterminate` 表达"进行中但不知道还剩多少"。
+- `valueText` 决定读屏念出的是什么——"3 个文件中的第 2 个"比"66%"有用得多。
+- 环心可以放文字。
 
 ## 产物
 

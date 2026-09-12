@@ -1,37 +1,22 @@
-# 可调容器 <Badge type="info" text="resizable" />
+# Resizable <Badge type="info" text="可调容器" />
 
 一块能拖着改尺寸的区域，八条边都能推，键盘也能推。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/resizable" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/resizable.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/resizable" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/resizable" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/resizable.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 尺寸该由用户自己定：可调侧栏、可调卡片、编辑器里的预览区。
-- 尺寸要记下来：`onDimensionsChangeEnd` 就是为此留的，一次调整只发一次。
-
-## 何时不用
-
-- 两块区域按比例分配、一块变大另一块必须变小：那是[分栏](./splitter)，它是守恒的。
-- 只是表格的列宽：[表格](./table)自己就有改宽把手。
-- 浮在页面上、可拖可调的窗口：用[浮动面板](./floating-panel)。
-
-## 特性
-
-- 八条边各一个把手，`edges` 可以只开放其中几条；没开放的边不显示把手。
-- `minWidth` / `maxWidth` / `minHeight` / `maxHeight` 夹住范围，`aspectRatio` 锁宽高比，`step` 吸附到整数倍。
-- 键盘按**屏幕方向**推：推东边时右键变宽、推西边时右键变窄，与拖动完全同义。Home / End 直接推到两端。
-- 两个回调分工明确：`onDimensionsChange` 拖动途中连着发，`onDimensionsChangeEnd` 收尾才发一次，存尺寸用后者。
-- 拖到一半按 Escape 放弃这一次：尺寸与位移退回按下那一刻，`onDimensionsChangeEnd` 不发。
-- **推西边与北边时容器的起点会动**，那段位移写成 root 的 `left` / `top`。皮肤已给
-  `position: relative`，开箱即对——`relative` 的 `left` / `top` 是视觉位移、元素仍占原位，
-  因此对边钉得住。把 root 改成 `static` 会让这两个方向只变尺寸不移位，看起来像是「拖左边、
-  右边在长」；只用东 / 南 / 东南三向时没有这个前提。
-
-## 示例
-
-### 基础用法
+## 用法
 
 八条边各一个把手；拖动改尺寸，Tab 到把手用方向键也能推
 
 <XhDemo src="resizable/01-basic" />
+
+## 示例
 
 ### 只开放部分边
 
@@ -50,6 +35,31 @@ edges 决定哪几条边可调；没开放的边不显示把手
 把手全部退出 Tab 序列，按下也不进调整
 
 <XhDemo src="resizable/04-disabled" />
+
+## 设计指引
+
+### 何时使用
+
+- 尺寸该由用户自己定：可调侧栏、可调卡片、编辑器里的预览区。
+- 尺寸要记下来：`onDimensionsChangeEnd` 就是为此留的，一次调整只发一次。
+
+### 何时不用
+
+- 两块区域按比例分配、一块变大另一块必须变小：那是[分栏](./splitter)，它是守恒的。
+- 只是表格的列宽：[表格](./table)自己就有改宽把手。
+- 浮在页面上、可拖可调的窗口：用[浮动面板](./floating-panel)。
+
+### 特性
+
+- 八条边各一个把手，`edges` 可以只开放其中几条；没开放的边不显示把手。
+- `minWidth` / `maxWidth` / `minHeight` / `maxHeight` 夹住范围，`aspectRatio` 锁宽高比，`step` 吸附到整数倍。
+- 键盘按**屏幕方向**推：推东边时右键变宽、推西边时右键变窄，与拖动完全同义。Home / End 直接推到两端。
+- 两个回调分工明确：`onDimensionsChange` 拖动途中连着发，`onDimensionsChangeEnd` 收尾才发一次，存尺寸用后者。
+- 拖到一半按 Escape 放弃这一次：尺寸与位移退回按下那一刻，`onDimensionsChangeEnd` 不发。
+- **推西边与北边时容器的起点会动**，那段位移写成 root 的 `left` / `top`。皮肤已给
+  `position: relative`，开箱即对——`relative` 的 `left` / `top` 是视觉位移、元素仍占原位，
+  因此对边钉得住。把 root 改成 `static` 会让这两个方向只变尺寸不移位，看起来像是「拖左边、
+  右边在长」；只用东 / 南 / 东南三向时没有这个前提。
 
 ## 产物
 

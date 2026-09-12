@@ -1,33 +1,22 @@
-# 列表框 <Badge type="info" text="listbox" />
+# Listbox <Badge type="info" text="列表框" />
 
 一份直接铺在页面上的可选列表，不带浮层。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/listbox" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/listbox.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/listbox" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/listbox" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/listbox.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 选项需要常驻可见（穿梭框的两侧、设置面板的左栏）。
-- 需要多选、范围选（Shift）与全选（Cmd + A）。
-
-## 何时不用
-
-- 选项要收起来：用[选择器](./select)。
-- 列表只是展示、不可选：用[列表](./list)。
-
-## 特性
-
-- 三种选择模式：单选、多选、以及带 Shift 范围扩展的模式。
-- `typeahead` 连打检索。
-- 定高滚动与三种非条目相位都有对应部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。
-- `loading` 为真时列表报 `aria-busy`，在途占位顶上来、空态占位让位；给了 `collection` 时两者的收放归连接层。
-- `collection` 为空时，列表本体隐藏并退出 Tab 序列；不保留空描边。条目手写时，空白文本、只有标题的空组、带 `hidden` 的条目和分组都不算可见候选；禁用条目仍属于有效内容。
-- `load-more-trigger` 是取下一页的入口：还有没有下一页、点了做什么都归作者，连接层只保证在途与整列禁用两档点不动。
-
-## 示例
-
-### 基础用法
+## 用法
 
 方向键只搬焦点，Enter 或空格才落值；整组只占一个 Tab 位
 
 <XhDemo src="listbox/01-basic" />
+
+## 示例
 
 ### 多选
 
@@ -76,6 +65,27 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 tone 决定选中条目的勾选标记用哪族颜色，未选中的条目不受影响
 
 <XhDemo src="listbox/09-tone" />
+
+## 设计指引
+
+### 何时使用
+
+- 选项需要常驻可见（穿梭框的两侧、设置面板的左栏）。
+- 需要多选、范围选（Shift）与全选（Cmd + A）。
+
+### 何时不用
+
+- 选项要收起来：用[选择器](./select)。
+- 列表只是展示、不可选：用[列表](./list)。
+
+### 特性
+
+- 三种选择模式：单选、多选、以及带 Shift 范围扩展的模式。
+- `typeahead` 连打检索。
+- 定高滚动与三种非条目相位都有对应部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。
+- `loading` 为真时列表报 `aria-busy`，在途占位顶上来、空态占位让位；给了 `collection` 时两者的收放归连接层。
+- `collection` 为空时，列表本体隐藏并退出 Tab 序列；不保留空描边。条目手写时，空白文本、只有标题的空组、带 `hidden` 的条目和分组都不算可见候选；禁用条目仍属于有效内容。
+- `load-more-trigger` 是取下一页的入口：还有没有下一页、点了做什么都归作者，连接层只保证在途与整列禁用两档点不动。
 
 ## 产物
 

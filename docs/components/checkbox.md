@@ -1,39 +1,22 @@
-# 复选框 <Badge type="info" text="checkbox" />
+# Checkbox <Badge type="info" text="复选框" />
 
 一个可以选中、不选中、也可以处于半选的独立开关。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/checkbox" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/checkbox.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/checkbox" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/checkbox" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/checkbox.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 表单里的单项同意、单项开关，且要随表单提交。
-- 需要表达"部分选中"（全选框对应下面几项只勾了一部分）。
-
-## 何时不用
-
-- 开关立即生效、且是一项设置：用[开关](./switch)。
-- 几个互斥项里选一个：用[单选组](./radio-group)。
-- 一组多选项：用[复选框组](./checkbox-group)，它管值的汇总。
-
-## 特性
-
-- 三态：选中、未选中、半选（`indeterminate`）。
-- `hidden-input` 承担表单参与，`name` / `value` 照常提交。
-- `readOnly` 与 `disabled` 不同：只读仍能聚焦、仍被提交。
-- 控制盒保持实体：未选中使用 M1 实体底、明确控制边界、顶部高光和接触影；选中与半选使用满足
-  控件边界对比的实心语气色，不使用玻璃或 backdrop。
-- 勾与半选横杠共用随盒尺寸缩放的光学盒；indicator 常驻，以 120ms 的 opacity / scale 切换，
-  不靠增删节点造成布局抖动。自定义 indicator 插槽走同一状态动画。
-- 悬停方框或可见标签都会让控制盒响应；按下撤掉海拔并轻压，readOnly / disabled 不产生可操作假反馈。
-- 三尺寸和 compact 密度同时调整控制盒、勾形、标签字号与间距；RTL 下方框仍在行内起点，长标签不会压扁方框。
-- 明暗、增强对比和 forced-colors 都保留未选中边界、三态字形与键盘焦点；forced-colors 下 disabled
-  交给系统 `GrayText`，不再叠加半透明。
-
-## 示例
-
-### 基础用法
+## 用法
 
 不传 checked 即为非受控
 
 <XhDemo src="checkbox/01-basic" />
+
+## 示例
 
 ### 三态
 
@@ -76,6 +59,33 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 给了 name 才生出表单影子：勾上才提交，半选按未勾处理，与原生复选框一致
 
 <XhDemo src="checkbox/08-form" />
+
+## 设计指引
+
+### 何时使用
+
+- 表单里的单项同意、单项开关，且要随表单提交。
+- 需要表达"部分选中"（全选框对应下面几项只勾了一部分）。
+
+### 何时不用
+
+- 开关立即生效、且是一项设置：用[开关](./switch)。
+- 几个互斥项里选一个：用[单选组](./radio-group)。
+- 一组多选项：用[复选框组](./checkbox-group)，它管值的汇总。
+
+### 特性
+
+- 三态：选中、未选中、半选（`indeterminate`）。
+- `hidden-input` 承担表单参与，`name` / `value` 照常提交。
+- `readOnly` 与 `disabled` 不同：只读仍能聚焦、仍被提交。
+- 控制盒保持实体：未选中使用 M1 实体底、明确控制边界、顶部高光和接触影；选中与半选使用满足
+  控件边界对比的实心语气色，不使用玻璃或 backdrop。
+- 勾与半选横杠共用随盒尺寸缩放的光学盒；indicator 常驻，以 120ms 的 opacity / scale 切换，
+  不靠增删节点造成布局抖动。自定义 indicator 插槽走同一状态动画。
+- 悬停方框或可见标签都会让控制盒响应；按下撤掉海拔并轻压，readOnly / disabled 不产生可操作假反馈。
+- 三尺寸和 compact 密度同时调整控制盒、勾形、标签字号与间距；RTL 下方框仍在行内起点，长标签不会压扁方框。
+- 明暗、增强对比和 forced-colors 都保留未选中边界、三态字形与键盘焦点；forced-colors 下 disabled
+  交给系统 `GrayText`，不再叠加半透明。
 
 ## 产物
 

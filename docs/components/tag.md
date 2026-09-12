@@ -1,41 +1,23 @@
-# 标签 <Badge type="info" text="tag" />
+# Tag <Badge type="info" text="标签" />
 
 告诉你这是什么：一个分类、一项技能、一个筛选条件。它承载实体身份，可以被摘掉。
 标签说的是「它是什么」，不是「有事情发生了」——后者是[徽标](./badge)的活。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tag" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/tag.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/tag" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/tag" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/tag.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 一条记录挂着的若干分类、技能、关键词。
-- 已生效的筛选条件，用户可以逐条摘掉。
-- 需要用户看清"这是什么"并能把它移除的任何短文本。
-
-## 何时不用
-
-- 提醒用户注意某个东西——未读数、小红点、在线状态：用[徽标](./badge)，它附着在别的元素上、不接交互。
-- 用户要在几个互斥选项里挑一个：用[单选组](./radio-group)或[切换按钮组](./toggle-group)。
-- 用户要自己输入并累积多个值：用[标签输入](./tags-input)，它自带输入框与增删逻辑。
-- 是一整条页面级提示：用[警告提示](./alert)。
-
-## 特性
-
-- 形态 · 语气 · 尺寸三轴与其余组件同源。四种形态是 solid / subtle / outline / ghost：
-  缺省与 subtle 使用 M1 compact surface，solid 强调身份，outline 只留轮廓，ghost 完全融入父表面。
-  语气挂在显式形态之下；不写 `variant` 时保持中性 M1。尺寸档走间距、字号与行框，不占控件行高；
-  同档标签有没有关闭钮都一样高，缺省档放进缺省档控件的行高里不撑高。缺省档（26px）高过
-  14px 正文行（21px）：随文排、紧凑表格的状态列、下拉候选里的标签写 `size="sm"`（22px）。
-- `closable` 给出关闭钮，显隐可受控（`open` / `defaultOpen` / `open-change`）。叉保持 16px 视觉盒，
-  透明命中层扩到随文动作的 24px；不会为了命中面积撑高标签。
-- `disabled` 让标签留在原地但摘不掉，宽度不会因禁用而跳变。
-- `readOnly` 只锁关闭钮：钮留在原地但按不动，标签本身不置灰；宿主整体只读时逐枚传下来即可。
-- Vue 侧默认插槽里只有文字时自动包一层 `label`，截断规则直接生效。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一个标签就是 root 加一段 label 文字；不写 closable 就没有关闭钮
 
 <XhDemo src="tag/01-basic" />
+
+## 示例
 
 ### 形态
 
@@ -72,6 +54,34 @@ size 换内边距、间距、字号与行框，不写就是缺省档；同一档
 readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰；与 disabled 的区别只在标签本体的颜色
 
 <XhDemo src="tag/07-read-only" />
+
+## 设计指引
+
+### 何时使用
+
+- 一条记录挂着的若干分类、技能、关键词。
+- 已生效的筛选条件，用户可以逐条摘掉。
+- 需要用户看清"这是什么"并能把它移除的任何短文本。
+
+### 何时不用
+
+- 提醒用户注意某个东西——未读数、小红点、在线状态：用[徽标](./badge)，它附着在别的元素上、不接交互。
+- 用户要在几个互斥选项里挑一个：用[单选组](./radio-group)或[切换按钮组](./toggle-group)。
+- 用户要自己输入并累积多个值：用[标签输入](./tags-input)，它自带输入框与增删逻辑。
+- 是一整条页面级提示：用[警告提示](./alert)。
+
+### 特性
+
+- 形态 · 语气 · 尺寸三轴与其余组件同源。四种形态是 solid / subtle / outline / ghost：
+  缺省与 subtle 使用 M1 compact surface，solid 强调身份，outline 只留轮廓，ghost 完全融入父表面。
+  语气挂在显式形态之下；不写 `variant` 时保持中性 M1。尺寸档走间距、字号与行框，不占控件行高；
+  同档标签有没有关闭钮都一样高，缺省档放进缺省档控件的行高里不撑高。缺省档（26px）高过
+  14px 正文行（21px）：随文排、紧凑表格的状态列、下拉候选里的标签写 `size="sm"`（22px）。
+- `closable` 给出关闭钮，显隐可受控（`open` / `defaultOpen` / `open-change`）。叉保持 16px 视觉盒，
+  透明命中层扩到随文动作的 24px；不会为了命中面积撑高标签。
+- `disabled` 让标签留在原地但摘不掉，宽度不会因禁用而跳变。
+- `readOnly` 只锁关闭钮：钮留在原地但按不动，标签本身不置灰；宿主整体只读时逐枚传下来即可。
+- Vue 侧默认插槽里只有文字时自动包一层 `label`，截断规则直接生效。
 
 ## 产物
 

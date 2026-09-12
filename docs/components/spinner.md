@@ -1,31 +1,22 @@
-# 加载指示器 <Badge type="info" text="spinner" />
+# Spinner <Badge type="info" text="加载指示器" />
 
 一个不确定时长的等待标记。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/spinner" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/spinner.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/spinner" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/spinner" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/spinner.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 时长未知且没有版面可占位。
-- 局部区域在取数据，或按钮上的在途标记。
-
-## 何时不用
-
-- 版面可预测：用[骨架屏](./skeleton)，它让用户提前看到结构。
-- 进度确定：用[进度条](./progress)。
-- 整页导航：用[加载条](./loading-bar)。
-
-## 特性
-
-- 可以配可见文案，也可以只靠 `translations` 给读屏用。
-- 可以盖住等待中的内容（遮罩形态）。
-- 转圈图形可换。
-
-## 示例
-
-### 基础用法
+## 用法
 
 root 是 role=status 的活区，转圈图形由皮肤画在伪元素上；label 给出这一处在等什么
 
 <XhDemo src="spinner/01-basic" />
+
+## 示例
 
 ### 尺寸
 
@@ -62,6 +53,25 @@ tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到
 ring 整圈、arc 一段弧、dots 三点；缺省档 ring 不输出 data-variant
 
 <XhDemo src="spinner/07-variant" />
+
+## 设计指引
+
+### 何时使用
+
+- 时长未知且没有版面可占位。
+- 局部区域在取数据，或按钮上的在途标记。
+
+### 何时不用
+
+- 版面可预测：用[骨架屏](./skeleton)，它让用户提前看到结构。
+- 进度确定：用[进度条](./progress)。
+- 整页导航：用[加载条](./loading-bar)。
+
+### 特性
+
+- 可以配可见文案，也可以只靠 `translations` 给读屏用。
+- 可以盖住等待中的内容（遮罩形态）。
+- 转圈图形可换。
 
 ## 产物
 

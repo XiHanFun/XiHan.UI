@@ -1,35 +1,22 @@
-# 穿梭框 <Badge type="info" text="transfer" />
+# Transfer <Badge type="info" text="穿梭框" />
 
 左右两栏，把条目从一边搬到另一边。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/transfer" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/transfer.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/transfer" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/transfer" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/transfer.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 从一份候选里挑出一个子集，且用户需要同时看见"没选的"和"已选的"。
-- 已选项的顺序或数量需要一目了然（分配权限、选人）。
-
-## 何时不用
-
-- 候选很少：用[复选框组](./checkbox-group)。
-- 只需要选中不需要对照：用[选择器](./select)的多选。
-
-## 特性
-
-- 两栏都可搜索，`filter` 可自定义匹配规则。
-- `oneWay` 单向搬运：只能往目标搬，搬完不再退回。
-- 一万条时只渲可视区。
-- 每一侧的空（`empty`）与在途（`loading`）各有部件；`loading` 为真时两侧列表报 `aria-busy`，空态让位。
-- 设置 `name` 后，目标侧每个值以一个同名原生字段提交；源侧勾选 `selection` 不参与提交。三端自动装配隐藏出口，无需手写节点。
-- 值内逗号保留原样，使用 `new FormData(form).getAll(name)` 读取数组；目标为空时没有该字段，显式选中的空字符串则是一个有效字段值。
-- `form` 可指定同一文档或影子树内的原生表单 ID；指定无效 ID 时不关联其他表单。整体 `disabled` 不提交，只读和禁用条目已经存在的目标值仍提交。
-- 原生 `form.reset()` 恢复 `defaultValue` 与 `defaultSelection`，清理搜索与导航状态。受控值没有声明默认值时保持业务数据；声明默认值时只通知重置意图，由业务回写受控值。
-
-## 示例
-
-### 基础用法
+## 用法
 
 collection 是条目全集的唯一事实源，value 只装落在右侧的那批
 
 <XhDemo src="transfer/01-basic" />
+
+## 示例
 
 ### 搜索过滤
 
@@ -84,6 +71,29 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两轴打在根上，两侧面板一起走
 
 <XhDemo src="transfer/09-tone-size" />
+
+## 设计指引
+
+### 何时使用
+
+- 从一份候选里挑出一个子集，且用户需要同时看见"没选的"和"已选的"。
+- 已选项的顺序或数量需要一目了然（分配权限、选人）。
+
+### 何时不用
+
+- 候选很少：用[复选框组](./checkbox-group)。
+- 只需要选中不需要对照：用[选择器](./select)的多选。
+
+### 特性
+
+- 两栏都可搜索，`filter` 可自定义匹配规则。
+- `oneWay` 单向搬运：只能往目标搬，搬完不再退回。
+- 一万条时只渲可视区。
+- 每一侧的空（`empty`）与在途（`loading`）各有部件；`loading` 为真时两侧列表报 `aria-busy`，空态让位。
+- 设置 `name` 后，目标侧每个值以一个同名原生字段提交；源侧勾选 `selection` 不参与提交。三端自动装配隐藏出口，无需手写节点。
+- 值内逗号保留原样，使用 `new FormData(form).getAll(name)` 读取数组；目标为空时没有该字段，显式选中的空字符串则是一个有效字段值。
+- `form` 可指定同一文档或影子树内的原生表单 ID；指定无效 ID 时不关联其他表单。整体 `disabled` 不提交，只读和禁用条目已经存在的目标值仍提交。
+- 原生 `form.reset()` 恢复 `defaultValue` 与 `defaultSelection`，清理搜索与导航状态。受控值没有声明默认值时保持业务数据；声明默认值时只通知重置意图，由业务回写受控值。
 
 ## 产物
 

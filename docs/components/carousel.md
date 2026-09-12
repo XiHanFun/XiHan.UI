@@ -1,29 +1,22 @@
-# 走马灯 <Badge type="info" text="carousel" />
+# Carousel <Badge type="info" text="走马灯" />
 
 在同一块区域里轮播若干张内容，一次显示一屏。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/carousel" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/carousel.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/carousel" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/carousel" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/carousel.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 首屏的营销位、图片画廊这类"内容并列且用户不急着全看"的场景。
-
-## 何时不用
-
-- 每一张都重要、都需要被看到：并排铺开或做成[列表](./list)——轮播里第二张之后的点击率极低。
-- 内容是导航入口。
-
-## 特性
-
-- `slidesPerPage` 与 `slidesPerMove` 分开：可以一屏三张、一次挪一张。
-- 支持纵向轨道、指针拖拽、回绕与自动播放。
-- 指示点可以做成悬停即切页。
-
-## 示例
-
-### 基础用法
+## 用法
 
 张数由 slideCount 声明而不是从 DOM 数，页数与指示点数量都由它算出来
 
 <XhDemo src="carousel/01-basic" />
+
+## 示例
 
 ### 受控
 
@@ -72,6 +65,23 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 条目的内联样式只有尺寸与间距，位移之外的表现全归作者：把条目摞起来再按当前页调透明度与缩放，翻页、键盘与指示点一概照旧
 
 <XhDemo src="carousel/09-effect" />
+
+## 设计指引
+
+### 何时使用
+
+- 首屏的营销位、图片画廊这类"内容并列且用户不急着全看"的场景。
+
+### 何时不用
+
+- 每一张都重要、都需要被看到：并排铺开或做成[列表](./list)——轮播里第二张之后的点击率极低。
+- 内容是导航入口。
+
+### 特性
+
+- `slidesPerPage` 与 `slidesPerMove` 分开：可以一屏三张、一次挪一张。
+- 支持纵向轨道、指针拖拽、回绕与自动播放。
+- 指示点可以做成悬停即切页。
 
 ## 产物
 

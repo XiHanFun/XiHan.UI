@@ -1,36 +1,22 @@
-# 日志 <Badge type="info" text="log" />
+# Log <Badge type="info" text="日志" />
 
 一块等宽排版的滚动区域，一行一条，可以自动跟到底部。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/log" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/log.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/log" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/log" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/log.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 构建输出、运行日志、命令行回显。
-- 任意会从底部往下长、希望一直跟到底的内容：内容不必分得出「第几条、谁说的」，
-  一整段往里追加就行。
-
-## 何时不用
-
-- 内容是一段会话，条目有身份、要能逐条遍历：用[消息流](./message-feed)。
-- 展示的是结构化记录、需要筛选排序：用[表格](./table)。
-- 是一段代码：用[代码视图](./code-view)。
-
-## 特性
-
-- 骨架四层：`root` · `viewport` · `content` · `line`；一行写什么由作者定，组件只给身份与等宽排版。
-  另有两个可缺省的部件：`scroll-to-end-trigger` 与 `live-region`。
-- `rows` 按行数定高。
-- 自动跟到底部；用户往上翻时停住跟随，回到底部再恢复。
-- 内置「回到底部」：离底时冒出来，按下去归位并重新粘附。留空时皮肤画一枚向下的字形，
-  往按钮里塞节点即换成自己的图形。
-- 视口自身可聚焦，整块日志占一个 Tab 停靠位，方向键与翻页键交给浏览器滚动。
-
-## 示例
-
-### 基础用法
+## 用法
 
 root / viewport / content / line 四层；一行写什么由作者定，组件只给身份与等宽排版
 
 <XhDemo src="log/01-basic" />
+
+## 示例
 
 ### 按行数定高
 
@@ -67,6 +53,30 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 往上翻一段，右下角那颗钮自己冒出来，按下去归位并重新粘附；输出跑完在播报区念一句结论
 
 <XhDemo src="log/07-scroll-button" />
+
+## 设计指引
+
+### 何时使用
+
+- 构建输出、运行日志、命令行回显。
+- 任意会从底部往下长、希望一直跟到底的内容：内容不必分得出「第几条、谁说的」，
+  一整段往里追加就行。
+
+### 何时不用
+
+- 内容是一段会话，条目有身份、要能逐条遍历：用[消息流](./message-feed)。
+- 展示的是结构化记录、需要筛选排序：用[表格](./table)。
+- 是一段代码：用[代码视图](./code-view)。
+
+### 特性
+
+- 骨架四层：`root` · `viewport` · `content` · `line`；一行写什么由作者定，组件只给身份与等宽排版。
+  另有两个可缺省的部件：`scroll-to-end-trigger` 与 `live-region`。
+- `rows` 按行数定高。
+- 自动跟到底部；用户往上翻时停住跟随，回到底部再恢复。
+- 内置「回到底部」：离底时冒出来，按下去归位并重新粘附。留空时皮肤画一枚向下的字形，
+  往按钮里塞节点即换成自己的图形。
+- 视口自身可聚焦，整块日志占一个 Tab 停靠位，方向键与翻页键交给浏览器滚动。
 
 ## 产物
 

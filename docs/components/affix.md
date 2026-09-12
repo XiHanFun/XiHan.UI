@@ -1,30 +1,22 @@
-# 固钉 <Badge type="info" text="affix" />
+# Affix <Badge type="info" text="固钉" />
 
 滚过判定线就把内容钉在滚动容器可视区的边上；占位盒留在原位，页面不跳。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/affix" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/affix.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/affix" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/affix" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/affix.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 表格的操作栏、表单的提交条、文章的目录，需要滚动时一直可达。
-
-## 何时不用
-
-- 元素从一开始就该钉住：直接写 `position: sticky`，不需要判定线。
-- 要钉的是整块页面骨架（头、侧栏）：用[布局](./layout)的吸顶开关。
-- 需要滚到顶部的按钮：那是[回到顶部](./back-top)。
-
-## 特性
-
-- 占位盒留在原位：吸住的那一刻页面不会突然少一段高度。
-- `offsetTop` 把判定线往下挪，钉住后也在同一位置留出这段高度；给了 `offsetBottom` 就改贴下边。
-- 吸附状态会回调，默认插槽也把它透出来。
-
-## 示例
-
-### 基础用法
+## 用法
 
 滚过判定线就把内容钉在滚动容器可视区的上边；占位盒留在原位，页面不跳
 
 <XhDemo src="affix/01-basic" />
+
+## 示例
 
 ### 让出吸顶栏
 
@@ -43,6 +35,24 @@ offset-top 把判定线往下挪，钉住后也在同一位置留出这段高度
 affix-change 报吸住与松开；默认插槽也把 affixed 透出来
 
 <XhDemo src="affix/04-affix-change" />
+
+## 设计指引
+
+### 何时使用
+
+- 表格的操作栏、表单的提交条、文章的目录，需要滚动时一直可达。
+
+### 何时不用
+
+- 元素从一开始就该钉住：直接写 `position: sticky`，不需要判定线。
+- 要钉的是整块页面骨架（头、侧栏）：用[布局](./layout)的吸顶开关。
+- 需要滚到顶部的按钮：那是[回到顶部](./back-top)。
+
+### 特性
+
+- 占位盒留在原位：吸住的那一刻页面不会突然少一段高度。
+- `offsetTop` 把判定线往下挪，钉住后也在同一位置留出这段高度；给了 `offsetBottom` 就改贴下边。
+- 吸附状态会回调，默认插槽也把它透出来。
 
 ## 产物
 

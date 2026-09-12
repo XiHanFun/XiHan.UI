@@ -1,33 +1,22 @@
-# 按钮组 <Badge type="info" text="button-group" />
+# ButtonGroup <Badge type="info" text="按钮组" />
 
 把一组语义相关的按钮连成一条：相邻两段共用一条边，圆角只留在两端，视觉上是一个控件。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/button-group" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/button-group.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/button-group" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/button-group" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/button-group.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 几个动作属于同一件事，且并列关系明确（保存 / 另存为 / 导出）。
-- 想让整组按钮的档位、形态与语气写一次就够。
-
-## 何时不用
-
-- 组内各段是互斥选项、要选中其中一个：那是[切换按钮组](./toggle-group)——它有选中语义与方向键导航，按钮组两样都没有。
-- 各按钮之间没有语义关联：单独摆开，用间距区分，别硬连成一条。
-
-## 特性
-
-- `root` 是唯一必需部件；需要把一排动作分成小段时，可在按钮之间放可选的装饰性 `separator`。
-  组内按钮仍是作者自己的动作，不是 ButtonGroup 的角色节点。
-- 尺寸、形态、语气写在容器上，沿自定义属性流给组内每一段。
-- 横排在左右两端留圆角，竖排改在上下两端；合边跟着换轴。
-- 段没有声明形态时继承组的形态；显式写在某一段上的 `solid` / `subtle` / `outline` / `ghost`
-  只管该段，组不会用自己的 outline 描边盖过去。组内按压保留换底反馈，但不缩放段盒，以免共边裂开。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一组相关按钮连成一条：相邻两段共用一条边，圆角只留在两端
 
 <XhDemo src="button-group/01-basic" />
+
+## 示例
 
 ### 排布
 
@@ -46,6 +35,27 @@
 形态决定颜色怎么用、语气决定用哪族颜色，两者都写在组上，段自己不重复标注
 
 <XhDemo src="button-group/04-variant-tone" />
+
+## 设计指引
+
+### 何时使用
+
+- 几个动作属于同一件事，且并列关系明确（保存 / 另存为 / 导出）。
+- 想让整组按钮的档位、形态与语气写一次就够。
+
+### 何时不用
+
+- 组内各段是互斥选项、要选中其中一个：那是[切换按钮组](./toggle-group)——它有选中语义与方向键导航，按钮组两样都没有。
+- 各按钮之间没有语义关联：单独摆开，用间距区分，别硬连成一条。
+
+### 特性
+
+- `root` 是唯一必需部件；需要把一排动作分成小段时，可在按钮之间放可选的装饰性 `separator`。
+  组内按钮仍是作者自己的动作，不是 ButtonGroup 的角色节点。
+- 尺寸、形态、语气写在容器上，沿自定义属性流给组内每一段。
+- 横排在左右两端留圆角，竖排改在上下两端；合边跟着换轴。
+- 段没有声明形态时继承组的形态；显式写在某一段上的 `solid` / `subtle` / `outline` / `ghost`
+  只管该段，组不会用自己的 outline 描边盖过去。组内按压保留换底反馈，但不缩放段盒，以免共边裂开。
 
 ## 产物
 

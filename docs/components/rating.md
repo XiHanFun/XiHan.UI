@@ -1,29 +1,22 @@
-# 评分 <Badge type="info" text="rating" />
+# Rating <Badge type="info" text="评分" />
 
 用一排图案表示一个离散的分值。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/rating" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/rating.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/rating" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/rating" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/rating.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 收集或展示满意度、星级这类小范围的主观分值。
-
-## 何时不用
-
-- 分值范围大（0 到 100）：用[滑块](./slider)或[数字输入](./number-field)。
-- 只是展示一个数值：用[统计数值](./statistic)。
-
-## 特性
-
-- `allowHalf` 支持半档，`allowClear` 允许再点一次清空。
-- 悬停预览与实际值分开，`onHoverChange` 单独回调。
-- 图案与颜色都可以换。
-
-## 示例
-
-### 基础用法
+## 用法
 
 不传 value 即为非受控，组件自己维护评分；default-value 只决定初始那一档
 
 <XhDemo src="rating/01-basic" />
+
+## 示例
 
 ### 半星与悬停预览
 
@@ -72,6 +65,23 @@ size 改星的大小与间距，不写即缺省中档
 allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在最低档再往下走一步同样清零；设为 false 关掉
 
 <XhDemo src="rating/09-clearable" />
+
+## 设计指引
+
+### 何时使用
+
+- 收集或展示满意度、星级这类小范围的主观分值。
+
+### 何时不用
+
+- 分值范围大（0 到 100）：用[滑块](./slider)或[数字输入](./number-field)。
+- 只是展示一个数值：用[统计数值](./statistic)。
+
+### 特性
+
+- `allowHalf` 支持半档，`allowClear` 允许再点一次清空。
+- 悬停预览与实际值分开，`onHoverChange` 单独回调。
+- 图案与颜色都可以换。
 
 ## 产物
 

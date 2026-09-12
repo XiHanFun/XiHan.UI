@@ -1,38 +1,22 @@
-# 消息流 <Badge type="info" text="message-feed" />
+# MessageFeed <Badge type="info" text="消息流" />
 
 一段会话的消息序列：粘底跟随、条目集合语义、键盘遍历与一个统一的播报区。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/message-feed" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/message-feed.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/message-feed" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/message-feed" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/message-feed.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- AI 对话或聊天界面的消息列表。
-- 内容会从底部长出来，希望一直跟到底，但用户往上翻时不要被拽回去。
-
-## 何时不用
-
-- 内容不分条，只是一段往下追加的输出（运行日志、命令回显）：用[日志](./log)。
-  两边的粘底、回到底部与播报区是同一套，差别只在要不要条目集合语义与逐条遍历。
-- 只是一列静态卡片：用[列表](./list)。
-- 消息数以万计：本组件不与[虚拟滚动](./virtualizer)组合，键盘遍历要求条目都在活 DOM 里；
-  长会话请配[无限滚动](./infinite-scroll)分批加载并自行截断历史。
-
-## 特性
-
-- 粘底跟随：内容增高时自动到底，用户上滚即解除，滚回底部阈值内自动恢复。
-  往上插入历史消息时会补偿滚动位置，视口不跳。
-- 「回到底部」只看在不在底、不看粘附意图：粘着但内容还没追上时按钮不该冒出来。
-- 整份消息列表只占**一个** Tab 停靠位：`PageDown` / `PageUp` 在消息之间走，
-  `Ctrl+End` / `Ctrl+Home` 一步走到消息流之外（会话界面里通常就是输入框）。
-- 消息内容全部由作者写：气泡、头像、时间、动作条都不是本组件的部件。
-- 新长出来的消息与冒出来的「回到底部」各带一段淡入位移；减弱动效档由令牌层压平，不必另行关闭。
-- 「回到底部」留空时皮肤画一枚向下的字形，往按钮里塞节点即换成自己的图形。
-
-## 示例
-
-### 基础用法
+## 用法
 
 消息内容全由作者写；组件管的是集合语义、粘底与那一个播报区
 
 <XhDemo src="message-feed/01-basic" />
+
+## 示例
 
 ### 粘底跟随与播报
 
@@ -69,6 +53,32 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 消息 id 就是锚点：Vue 侧用 root 插槽给的 scrollToItem / focusItem，自定义元素侧按同一个 id 取节点自己滚
 
 <XhDemo src="message-feed/07-scroll-to" />
+
+## 设计指引
+
+### 何时使用
+
+- AI 对话或聊天界面的消息列表。
+- 内容会从底部长出来，希望一直跟到底，但用户往上翻时不要被拽回去。
+
+### 何时不用
+
+- 内容不分条，只是一段往下追加的输出（运行日志、命令回显）：用[日志](./log)。
+  两边的粘底、回到底部与播报区是同一套，差别只在要不要条目集合语义与逐条遍历。
+- 只是一列静态卡片：用[列表](./list)。
+- 消息数以万计：本组件不与[虚拟滚动](./virtualizer)组合，键盘遍历要求条目都在活 DOM 里；
+  长会话请配[无限滚动](./infinite-scroll)分批加载并自行截断历史。
+
+### 特性
+
+- 粘底跟随：内容增高时自动到底，用户上滚即解除，滚回底部阈值内自动恢复。
+  往上插入历史消息时会补偿滚动位置，视口不跳。
+- 「回到底部」只看在不在底、不看粘附意图：粘着但内容还没追上时按钮不该冒出来。
+- 整份消息列表只占**一个** Tab 停靠位：`PageDown` / `PageUp` 在消息之间走，
+  `Ctrl+End` / `Ctrl+Home` 一步走到消息流之外（会话界面里通常就是输入框）。
+- 消息内容全部由作者写：气泡、头像、时间、动作条都不是本组件的部件。
+- 新长出来的消息与冒出来的「回到底部」各带一段淡入位移；减弱动效档由令牌层压平，不必另行关闭。
+- 「回到底部」留空时皮肤画一枚向下的字形，往按钮里塞节点即换成自己的图形。
 
 ## 产物
 

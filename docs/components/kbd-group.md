@@ -1,31 +1,22 @@
-# 键帽组 <Badge type="info" text="kbd-group" />
+# KbdGroup <Badge type="info" text="键帽组" />
 
 把一组按键按当前平台格式化成完整快捷键提示，不注册任何监听。行为由[快捷键](./hotkeys)负责，单枚说明用[键帽](./kbd)。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/kbd-group" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/kbd-group.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/kbd-group" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/kbd-group" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/kbd-group.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 在菜单、命令面板、按钮提示或快捷键速查表中展示完整组合。
-- 同一份 `keys` 需要在 Mac 与 Windows/Linux 上使用各自熟悉的写法。
-
-## 何时不用
-
-- 注册键盘动作：用[快捷键](./hotkeys)。
-- 只显示一枚键：用[键帽](./kbd)。
-
-## 特性
-
-- Mac 使用符号并连排；其他平台使用文字和统一基线的 `+`。
-- 整组不会为了展示安装全局监听；`disabled` 与 `pressed` 只是显式展示事实。
-- 组合保持为不可拆分的行内单元，多个组合可以在外层自然换行。
-- M1 实体键帽使用等宽字、1px edge、顶部高光和底部 contact shadow。
-
-## 示例
-
-### 平台写法
+## 用法
 
 同一份 keys 两套写法：Mac 出符号且键帽连排，其余平台出单词并用加号连接
 
 <XhDemo src="kbd-group/01-platform" />
+
+## 示例
 
 ### 尺寸
 
@@ -44,6 +35,25 @@ size 换的是字号与键帽的内边距，三档与其余控件同源
 每组内部不拆行，容器只在完整组合之间换行
 
 <XhDemo src="kbd-group/04-wrap" />
+
+## 设计指引
+
+### 何时使用
+
+- 在菜单、命令面板、按钮提示或快捷键速查表中展示完整组合。
+- 同一份 `keys` 需要在 Mac 与 Windows/Linux 上使用各自熟悉的写法。
+
+### 何时不用
+
+- 注册键盘动作：用[快捷键](./hotkeys)。
+- 只显示一枚键：用[键帽](./kbd)。
+
+### 特性
+
+- Mac 使用符号并连排；其他平台使用文字和统一基线的 `+`。
+- 整组不会为了展示安装全局监听；`disabled` 与 `pressed` 只是显式展示事实。
+- 组合保持为不可拆分的行内单元，多个组合可以在外层自然换行。
+- M1 实体键帽使用等宽字、1px edge、顶部高光和底部 contact shadow。
 
 ## 产物
 

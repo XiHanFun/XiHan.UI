@@ -1,30 +1,22 @@
-# 文件上传 <Badge type="info" text="file-upload" />
+# FileUpload <Badge type="info" text="文件上传" />
 
 选择文件、拖放文件，并把已选与已传的文件列出来。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/file-upload" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/file-upload.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/file-upload" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/file-upload" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/file-upload.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 任何需要用户提交文件的地方。
-- 需要预览、限制类型与大小、或选整个目录。
-
-## 何时不用
-
-- 只是展示已有附件、不允许新增：用[列表](./list)。
-
-## 特性
-
-- `maxFiles` / `maxFileSize` / `minFileSize` 越界的当场被拒，`onFileReject` 逐个报出理由。
-- `autoUpload` 决定选完就传还是等提交。
-- `remoteFiles` 用来回显服务器上已有的附件，与本次新选的并列在同一个列表里。
-- 上传生命周期（完成、失败）各有回调；宿主还可以插入自定的准入判断。
-
-## 示例
-
-### 基础用法
+## 用法
 
 投放区自己就是一个大按钮，隐藏输入是必备部件，缺了它选不了文件
 
 <XhDemo src="file-upload/01-basic" />
+
+## 示例
 
 ### 限制与拒收
 
@@ -85,6 +77,24 @@ item-preview 是个空方框，作者往里塞什么都行；塞进去的图会�
 remote-files 装编辑表单里已存在的附件：与本地文件同列渲染（allFiles 远程在前）、占 max-files 名额，删除走 remote-files-change 由宿主落库
 
 <XhDemo src="file-upload/11-remote-files" />
+
+## 设计指引
+
+### 何时使用
+
+- 任何需要用户提交文件的地方。
+- 需要预览、限制类型与大小、或选整个目录。
+
+### 何时不用
+
+- 只是展示已有附件、不允许新增：用[列表](./list)。
+
+### 特性
+
+- `maxFiles` / `maxFileSize` / `minFileSize` 越界的当场被拒，`onFileReject` 逐个报出理由。
+- `autoUpload` 决定选完就传还是等提交。
+- `remoteFiles` 用来回显服务器上已有的附件，与本次新选的并列在同一个列表里。
+- 上传生命周期（完成、失败）各有回调；宿主还可以插入自定的准入判断。
 
 ## 产物
 

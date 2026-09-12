@@ -1,40 +1,22 @@
-# 栅格 <Badge type="info" text="grid" />
+# Grid <Badge type="info" text="栅格" />
 
 二维排布容器：`cols` 定分几列，每一格按文档序依次落格。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/grid" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/grid.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/grid" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/grid" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/grid.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 表单字段、卡片墙、统计面板这类需要列对齐的结构。
-- 列数要随视口换档。
-
-## 何时不用
-
-- 只沿一条轴排：用[弹性布局](./flex)。
-- 每一格的高度由内容决定且不要求行对齐（瀑布流）：栅格做不了，需要另外的实现。
-
-## 特性
-
-- 各列等宽，且每列的下限是 0：长内容不会把自己那列撑宽。
-- `cols` 除了整数也收断点对象，逐档写各自的列数，没写的档沿用比它窄的那一档。
-- `rows` 排出显式行轨道；不写则行数由内容自己撑出来。
-- `minColWidth` 换一条路排列：给一档列宽下限，容器放得下几列就分几列，`cols` 那条轨道表让位。
-  卡片墙用它比逐档写 `cols` 省事。
-- `gap` 管两条轴，`rowGap` 与 `columnGap` 各自只管一条，不写则跟着 `gap` 走。
-- `span` 让一格横跨几列，`offset` 把它前面几列空出来；两者与 `cols` 一样收断点对象，
-  窄屏收成一列时把 `span` 也收回 1，那一格才不会溢出。
-- 四档断点取自令牌：`sm` 640px、`md` 768px、`lg` 1024px、`xl` 1280px。
-- `cols` / `rows` / `span`（含断点对象的每一档）收 1 至 12 的整数，`offset` 收 1 至 11 的整数；
-  范围外的值——0、负数、小数、超过上限——一律按没写算：`cols` 落回一列、`span` 占一列、`offset` 不错列。
-- DOM 上只出得来皮肤有规则接的取值：`data-cols` 恒在 1 至 12 之间，`data-span` 与 `data-offset`
-  要么落在范围内、要么不出现。
-
-## 示例
-
-### 基础用法
+## 用法
 
 二维排布容器：cols 定分几列，gap 走间距档位，每一格按文档序依次落格
 
 <XhDemo src="grid/01-basic" />
+
+## 示例
 
 ### 列数
 
@@ -71,6 +53,34 @@ cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列
 四档断点取自令牌：sm 640px、md 768px、lg 1024px、xl 1280px；自窄到宽依次接管，视口到哪一档就用哪一档的列数
 
 <XhDemo src="grid/07-breakpoints" />
+
+## 设计指引
+
+### 何时使用
+
+- 表单字段、卡片墙、统计面板这类需要列对齐的结构。
+- 列数要随视口换档。
+
+### 何时不用
+
+- 只沿一条轴排：用[弹性布局](./flex)。
+- 每一格的高度由内容决定且不要求行对齐（瀑布流）：栅格做不了，需要另外的实现。
+
+### 特性
+
+- 各列等宽，且每列的下限是 0：长内容不会把自己那列撑宽。
+- `cols` 除了整数也收断点对象，逐档写各自的列数，没写的档沿用比它窄的那一档。
+- `rows` 排出显式行轨道；不写则行数由内容自己撑出来。
+- `minColWidth` 换一条路排列：给一档列宽下限，容器放得下几列就分几列，`cols` 那条轨道表让位。
+  卡片墙用它比逐档写 `cols` 省事。
+- `gap` 管两条轴，`rowGap` 与 `columnGap` 各自只管一条，不写则跟着 `gap` 走。
+- `span` 让一格横跨几列，`offset` 把它前面几列空出来；两者与 `cols` 一样收断点对象，
+  窄屏收成一列时把 `span` 也收回 1，那一格才不会溢出。
+- 四档断点取自令牌：`sm` 640px、`md` 768px、`lg` 1024px、`xl` 1280px。
+- `cols` / `rows` / `span`（含断点对象的每一档）收 1 至 12 的整数，`offset` 收 1 至 11 的整数；
+  范围外的值——0、负数、小数、超过上限——一律按没写算：`cols` 落回一列、`span` 占一列、`offset` 不错列。
+- DOM 上只出得来皮肤有规则接的取值：`data-cols` 恒在 1 至 12 之间，`data-span` 与 `data-offset`
+  要么落在范围内、要么不出现。
 
 ## 产物
 

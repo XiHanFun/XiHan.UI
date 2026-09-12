@@ -1,37 +1,22 @@
-# 思考过程 <Badge type="info" text="reasoning" />
+# Reasoning <Badge type="info" text="思考过程" />
 
 模型「想」的那一段：默认跟着写入自动展开，想完自动收起，用户动手过一次就不再自动。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/reasoning" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/reasoning.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/reasoning" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/reasoning" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/reasoning.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 展示推理模型吐出的思考过程，且它是边想边显示的。
-- 想让读者能回头看「它当时是怎么想的」，但默认不占版面。
-
-## 何时不用
-
-- 展示的是一次工具调用：用[工具调用](./tool-call)，两者共用同一台机器但正文形态不同。
-- 内容不是散文而是结构化数据：那属于工具调用的参数与结果。
-
-## 特性
-
-- 自动开合与[工具调用](./tool-call)是同一台机器：**锁存靠转移的放置位置，不靠一个布尔位**，
-  用户点过一次之后阶段变化就永久够不着自动开合。
-- 「想了多久」由两个时刻算出来，**任一缺席即算不出来**——流被中止时兜底收尾不写结束时刻，
-  推理块会只有起点没有终点，这一档必须接得住。
-- 名字与时长都排在开关里，「思考过程，用时 12 秒」整句自然构成开关的可访问名。
-- 状态文案由组件给：在想时是「在想」那一句，想完把秒数代进 `thoughtFor` 的 `{seconds}`，
-  算不出时长就回落折叠区的名字。名字位不写内容时显示的就是它。
-- 形态三档：`outline` 描边、`subtle` 底色分区（缺省档）、`ghost` 无壳内联——
-  一段回答里穿插好几处思考时用 `ghost`，它不占一块面，开关收成只占文字宽度的一枚小药丸。
-- 开合有动画：展开与收起是行高与内缩同帧动，收起在动画播完之后才真的落成隐藏。
-
-## 示例
-
-### 基础用法
+## 用法
 
 想的时候自动展开、想完自动收起；状态文案由组件按在不在想与时长给出
 
 <XhDemo src="reasoning/01-basic" />
+
+## 示例
 
 ### 无壳内联形态
 
@@ -50,6 +35,31 @@ tone 换指示符与状态文案的色族，size 换标题行与正文的几何�
 open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位；disabled 的那一段开关按不动，停在给定的那一档
 
 <XhDemo src="reasoning/04-controlled" />
+
+## 设计指引
+
+### 何时使用
+
+- 展示推理模型吐出的思考过程，且它是边想边显示的。
+- 想让读者能回头看「它当时是怎么想的」，但默认不占版面。
+
+### 何时不用
+
+- 展示的是一次工具调用：用[工具调用](./tool-call)，两者共用同一台机器但正文形态不同。
+- 内容不是散文而是结构化数据：那属于工具调用的参数与结果。
+
+### 特性
+
+- 自动开合与[工具调用](./tool-call)是同一台机器：**锁存靠转移的放置位置，不靠一个布尔位**，
+  用户点过一次之后阶段变化就永久够不着自动开合。
+- 「想了多久」由两个时刻算出来，**任一缺席即算不出来**——流被中止时兜底收尾不写结束时刻，
+  推理块会只有起点没有终点，这一档必须接得住。
+- 名字与时长都排在开关里，「思考过程，用时 12 秒」整句自然构成开关的可访问名。
+- 状态文案由组件给：在想时是「在想」那一句，想完把秒数代进 `thoughtFor` 的 `{seconds}`，
+  算不出时长就回落折叠区的名字。名字位不写内容时显示的就是它。
+- 形态三档：`outline` 描边、`subtle` 底色分区（缺省档）、`ghost` 无壳内联——
+  一段回答里穿插好几处思考时用 `ghost`，它不占一块面，开关收成只占文字宽度的一枚小药丸。
+- 开合有动画：展开与收起是行高与内缩同帧动，收起在动画播完之后才真的落成隐藏。
 
 ## 产物
 

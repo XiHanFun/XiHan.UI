@@ -1,30 +1,22 @@
-# 虚拟滚动 <Badge type="info" text="virtualizer" />
+# Virtualizer <Badge type="info" text="虚拟滚动" />
 
 只渲染窗口内的条目，列表再长也只画那几十个。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/virtualizer" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/virtualizer.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/virtualizer" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/virtualizer" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/virtualizer.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 条目上千甚至上万。
-- 首屏卡顿的根源是 DOM 节点太多。
-
-## 何时不用
-
-- 条目只有几十上百条：虚拟化带来的复杂度不值得。
-- 需要浏览器的页内查找命中所有条目：没渲染的条目搜不到。
-
-## 特性
-
-- 支持动态高度（量出来而不是猜）、横向列表与多列。
-- `overscan` 决定窗口外多渲几个，滚动时不露白。
-- 可以滚到指定条目。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一万条只渲可视区那几条，root 要有确定高度，条目的主轴尺寸由作者按 estimateSize 自己写
 
 <XhDemo src="virtualizer/01-basic" />
+
+## 示例
 
 ### 动态高度
 
@@ -55,6 +47,24 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 哨兵摆在内容层之后而不是条目之间：窗口外的条目根本没渲染，摆进去的哨兵永远进不了可视区
 
 <XhDemo src="virtualizer/06-composed" />
+
+## 设计指引
+
+### 何时使用
+
+- 条目上千甚至上万。
+- 首屏卡顿的根源是 DOM 节点太多。
+
+### 何时不用
+
+- 条目只有几十上百条：虚拟化带来的复杂度不值得。
+- 需要浏览器的页内查找命中所有条目：没渲染的条目搜不到。
+
+### 特性
+
+- 支持动态高度（量出来而不是猜）、横向列表与多列。
+- `overscan` 决定窗口外多渲几个，滚动时不露白。
+- 可以滚到指定条目。
 
 ## 产物
 

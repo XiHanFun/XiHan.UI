@@ -1,30 +1,22 @@
-# 剪贴板 <Badge type="info" text="clipboard" />
+# Clipboard <Badge type="info" text="剪贴板" />
 
 把一段文本交给系统剪贴板，并把这次写入的结果如实报出来。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/clipboard" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/clipboard.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/clipboard" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/clipboard" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/clipboard.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 页面上有需要原样带走的字符串：接口密钥、邀请链接、命令行、错误追踪号。
-
-## 何时不用
-
-- 要复制的是富文本或图片：本组件只处理纯文本。
-- 内容需要用户先编辑再带走：用[文本输入](./text-field)。
-
-## 特性
-
-- 展示框是只读不是禁用：聚焦即全选，键盘用户照样能自己按 Ctrl / Cmd + C 带走。
-- 写入是异步的也真的会失败：按下先进 `copying`，写成功才翻 `copied`，失败一律退回 `idle` 并把原因报出来。
-- 必备部件只有 `root` 与 `trigger`：文本已经在页面上时，展示框与标题都可以省掉。
-- `timeout` 决定成功指示保持多久，非正数即不自动回落。
-
-## 示例
-
-### 基础用法
+## 用法
 
 展示框是只读不是禁用：聚焦即全选，键盘用户照样能用 Ctrl / Cmd + C 自己带走
 
 <XhDemo src="clipboard/01-basic" />
+
+## 示例
 
 ### 只要一颗按钮
 
@@ -43,6 +35,24 @@
 三轴都打在 root 上：变体换复制钮的用色方式，语气换色族，尺寸连输入框一起换档
 
 <XhDemo src="clipboard/04-variant-tone-size" />
+
+## 设计指引
+
+### 何时使用
+
+- 页面上有需要原样带走的字符串：接口密钥、邀请链接、命令行、错误追踪号。
+
+### 何时不用
+
+- 要复制的是富文本或图片：本组件只处理纯文本。
+- 内容需要用户先编辑再带走：用[文本输入](./text-field)。
+
+### 特性
+
+- 展示框是只读不是禁用：聚焦即全选，键盘用户照样能自己按 Ctrl / Cmd + C 带走。
+- 写入是异步的也真的会失败：按下先进 `copying`，写成功才翻 `copied`，失败一律退回 `idle` 并把原因报出来。
+- 必备部件只有 `root` 与 `trigger`：文本已经在页面上时，展示框与标题都可以省掉。
+- `timeout` 决定成功指示保持多久，非正数即不自动回落。
 
 ## 产物
 

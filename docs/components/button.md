@@ -1,35 +1,22 @@
-# 按钮 <Badge type="info" text="button" />
+# Button <Badge type="info" text="按钮" />
 
 触发一次动作的最小控件：按下去就发生一件事。它不承载值，也不表达持续的开关态。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/button" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/button.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/vue/src/components/button.ts" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/react/src/components/button.tsx" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/button.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 提交表单、执行一次命令、打开浮层。
-- 一屏里有多个动作、需要把主次排出来：形态（variant）与语气（tone）是两条正交的轴，四种形态 × 六种语气都成立。
-- 只放一枚图元的紧凑动作，用 `iconOnly` 收成正方形。
-
-## 何时不用
-
-- 跳到另一个地址：那是链接。浏览器的中键新开、右键菜单与预读只对 `<a>` 生效，写成按钮加跳转全都拿不到。要的是链接外观加按钮质感时，把 `data-scope` / `data-part` 这组契约铺到 `<a>` 上，皮肤照样认。
-- 开关一个持续状态：用[切换按钮](./toggle)，它有 `aria-pressed`。
-- 在几个互斥项里选一个：用[切换按钮组](./toggle-group)或[单选组](./radio-group)。
-
-## 特性
-
-- 形态 · 语气 · 尺寸三轴正交，任意组合都成立。
-- 载入态用 `aria-disabled` 加事件拦截表达，按钮仍能聚焦，读屏也仍念得到名字。
-- `prefix` / `suffix` 两个图元部件自带 `aria-hidden`，读屏念到的只有 `label`。
-- 默认与 `subtle` 使用实体 M1 柔和面；`solid` 是高遮蔽语气面，不使用磨砂或背景模糊。
-- 根节点把普通文字动作 / icon-only 两种稳定视觉角色投影到 `data-xh-action-*`；尺寸数值、状态反馈与粗指针命中区由 Action Control Family Recipe 统一解析，适配器不计算 CSS。
-- 皮肤认的是 `data-scope` 与 `data-part`，不是标签名。
-
-## 示例
-
-### 基础用法
+## 用法
 
 按钮文字直接写在内容里
 
 <XhDemo src="button/01-basic" />
+
+## 示例
 
 ### 变体
 
@@ -90,6 +77,29 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 皮肤认的是 data-scope 与 data-part 这组契约，不是标签名：把契约铺到链接元素上就得到导航型按钮，跳转仍由浏览器原生完成
 
 <XhDemo src="button/11-as-link" />
+
+## 设计指引
+
+### 何时使用
+
+- 提交表单、执行一次命令、打开浮层。
+- 一屏里有多个动作、需要把主次排出来：形态（variant）与语气（tone）是两条正交的轴，四种形态 × 六种语气都成立。
+- 只放一枚图元的紧凑动作，用 `iconOnly` 收成正方形。
+
+### 何时不用
+
+- 跳到另一个地址：那是链接。浏览器的中键新开、右键菜单与预读只对 `<a>` 生效，写成按钮加跳转全都拿不到。要的是链接外观加按钮质感时，把 `data-scope` / `data-part` 这组契约铺到 `<a>` 上，皮肤照样认。
+- 开关一个持续状态：用[切换按钮](./toggle)，它有 `aria-pressed`。
+- 在几个互斥项里选一个：用[切换按钮组](./toggle-group)或[单选组](./radio-group)。
+
+### 特性
+
+- 形态 · 语气 · 尺寸三轴正交，任意组合都成立。
+- 载入态用 `aria-disabled` 加事件拦截表达，按钮仍能聚焦，读屏也仍念得到名字。
+- `prefix` / `suffix` 两个图元部件自带 `aria-hidden`，读屏念到的只有 `label`。
+- 默认与 `subtle` 使用实体 M1 柔和面；`solid` 是高遮蔽语气面，不使用磨砂或背景模糊。
+- 根节点把普通文字动作 / icon-only 两种稳定视觉角色投影到 `data-xh-action-*`；尺寸数值、状态反馈与粗指针命中区由 Action Control Family Recipe 统一解析，适配器不计算 CSS。
+- 皮肤认的是 `data-scope` 与 `data-part`，不是标签名。
 
 ## 产物
 
@@ -180,7 +190,7 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | `root` | `data-xh-action-control` | '' |
 | `root` | `data-xh-action-display` | 'always' |
 | `root` | `data-xh-action-profile` | 'icon' \| 'text' |
-| `root` | `data-xh-action-size` | props.size ?? 'md' |
+| `root` | `data-xh-action-size` | props.size |
 
 <!-- xh-component-tokens:start -->
 ## CSS 变量
@@ -207,13 +217,9 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 
 ## 动效
 
-关键帧 `xh-spin` 随皮肤自带，不引用别处文件里的名字；`background-color` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-spin` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
-
-## 响应式
-
-皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ## RTL
 

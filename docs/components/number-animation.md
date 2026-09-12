@@ -1,29 +1,22 @@
-# 数值动画 <Badge type="info" text="number-animation" />
+# NumberAnimation <Badge type="info" text="数值动画" />
 
 数字从一个值滚动到另一个值。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/number-animation" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/number-animation.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/number-animation" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/number-animation" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/number-animation.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 仪表盘上的关键指标首次出现时，用滚动强调它在变化。
-
-## 何时不用
-
-- 数值频繁变化：每次都滚一遍，用户永远读不到稳定值。
-- 是精确的金额或编号，用户要读取而不是感知趋势。
-
-## 特性
-
-- `precision` 小数位、`separator` 千位分隔。
-- `easing` 与 `duration` 决定滚动的节奏。
-- `live` 决定读屏播报方式——通常应该只播报终值。
-
-## 示例
-
-### 基础用法
+## 用法
 
 挂载即从 from 走到 to，三个尺寸档只改字号；不写 size 就跟着上下文的字号走
 
 <XhDemo src="number-animation/01-basic" />
+
+## 示例
 
 ### 小数位与千位分隔
 
@@ -42,6 +35,23 @@ duration 定跑多久，easing 定快慢怎么分配；同一段距离四档并�
 改 to 就从当前数字接着走向新终点，跑完停下之后再改也照样重新跑；active 翻假即停在当前值
 
 <XhDemo src="number-animation/04-follow-data" />
+
+## 设计指引
+
+### 何时使用
+
+- 仪表盘上的关键指标首次出现时，用滚动强调它在变化。
+
+### 何时不用
+
+- 数值频繁变化：每次都滚一遍，用户永远读不到稳定值。
+- 是精确的金额或编号，用户要读取而不是感知趋势。
+
+### 特性
+
+- `precision` 小数位、`separator` 千位分隔。
+- `easing` 与 `duration` 决定滚动的节奏。
+- `live` 决定读屏播报方式——通常应该只播报终值。
 
 ## 产物
 

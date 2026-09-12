@@ -1,32 +1,22 @@
-# 布局 <Badge type="info" text="layout" />
+# Layout <Badge type="info" text="布局" />
 
 一整页的骨架：头与脚各横贯一行，侧栏与内容并排占中间那一行。少写一段就少一行或少一列。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/layout" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/layout.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/layout" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/layout" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/layout.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 搭一个应用外壳：管理后台、控制台、文档站。
-- 侧栏需要折叠，且折叠时节点仍在（只改宽度，不卸载）。
-
-## 何时不用
-
-- 只是把几个块并排：用[弹性布局](./flex)或[栅格](./grid)。
-- 两块区域之间要由用户拖动分配空间：用[分栏](./splitter)。
-- 侧栏本身是一棵可展开的导航树：布局只出壳，树交给[侧栏导航](./side-nav)。
-
-## 特性
-
-- 七个部件都可选，只写用得上的那几段。
-- 折叠只改宽度，侧栏节点一直在：里面的滚动位置与焦点不会丢。
-- 展开与折叠各一档宽度，两档都接受任意 CSS 长度。
-- `headerFixed` 与 `siderFixed` 各自独立；两个一起用时侧栏自动让开头的高度。
-
-## 示例
-
-### 基础用法
+## 用法
 
 头与脚各横贯一行，侧栏与内容并排占中间那一行；少写一段就少一行或少一列
 
 <XhDemo src="layout/01-basic" />
+
+## 示例
 
 ### 折叠侧栏
 
@@ -69,6 +59,26 @@ header-fixed 让头钉在滚动容器上沿，sider-fixed 让侧栏跟着钉住�
 sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之上；点遮罩或按 Escape 收起
 
 <XhDemo src="layout/08-sider-sheet" />
+
+## 设计指引
+
+### 何时使用
+
+- 搭一个应用外壳：管理后台、控制台、文档站。
+- 侧栏需要折叠，且折叠时节点仍在（只改宽度，不卸载）。
+
+### 何时不用
+
+- 只是把几个块并排：用[弹性布局](./flex)或[栅格](./grid)。
+- 两块区域之间要由用户拖动分配空间：用[分栏](./splitter)。
+- 侧栏本身是一棵可展开的导航树：布局只出壳，树交给[侧栏导航](./side-nav)。
+
+### 特性
+
+- 七个部件都可选，只写用得上的那几段。
+- 折叠只改宽度，侧栏节点一直在：里面的滚动位置与焦点不会丢。
+- 展开与折叠各一档宽度，两档都接受任意 CSS 长度。
+- `headerFixed` 与 `siderFixed` 各自独立；两个一起用时侧栏自动让开头的高度。
 
 ## 产物
 

@@ -1,39 +1,22 @@
-# 右键菜单 <Badge type="info" text="context-menu" />
+# ContextMenu <Badge type="info" text="右键菜单" />
 
 在触发区上右键（触摸端长按）弹出的命令菜单，钉在按下去的那一点上。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/context-menu" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/context-menu.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/context-menu" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/context-menu" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/context-menu.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 一个对象上有多个针对它的命令，且界面上没有位置全部摆出来（表格行、画布节点、文件项）。
-
-## 何时不用
-
-- 命令是主要路径：右键是隐藏入口，新用户找不到。主要动作要有可见的按钮。
-- 触摸端是主要场景：长按有学习成本，且与系统手势冲突。
-- 要选一个值而不是执行命令：用[选择器](./select)，或把[列表框](./listbox)装进[浮层](./popover)。
-
-## 特性
-
-- 没有活动条目、由菜单容器承接键盘焦点时，容器与箭头使用同一实体保护底，避免透明背景影响焦点环对比度；焦点进入条目后恢复常规磨砂外壳。
-
-- `offset` 默认 0——右键菜单要贴着光标。
-- 支持分组、标记位、分隔线与二级子菜单；任意层级选中都发根的 `select` 并整链关闭。
-- `typeahead` 决定展开后的可打印字符是拿去检索还是放行给页面。
-- `longPressDelay` 是触摸端按住多久算触发。
-- `root` 的插槽给出锚点坐标与 `openAt`，可以从任意位置弹出。
-- 浮层使用 M2 磨砂表面；条目悬停/键盘锚点与打开路径使用同一中性淡底，按下加深一档。
-  打开二级菜单不加色条、不改字重，也不使用品牌蓝底。
-- 条目使用 flex 主行并保留作者的实际插槽顺序：图标、`item-text`、任意快捷键节点和子菜单箭头
-  可以同排；`item-text` 占剩余空间并截断，只有 `item-description` 独占第二行。
-- 面板落位后从锚点一侧淡入短移，退出沿原方向收回；四向跟实际 placement 走，不缩放整张菜单。
-
-## 示例
-
-### 基础用法
+## 用法
 
 在触发区上右键（触摸端长按），菜单钉在按下去的那一点上
 
 <XhDemo src="context-menu/01-basic" />
+
+## 示例
 
 ### 分组与标记位
 
@@ -82,6 +65,33 @@ longPressDelay 是触摸端按住多久算触发；typeahead 决定展开后的�
 XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份（父层方向键照常走、右方向键进子层），子层内用 XhMenu 系部件，任意层级选中都发根的 select 并整链关闭
 
 <XhDemo src="context-menu/09-submenu" />
+
+## 设计指引
+
+### 何时使用
+
+- 一个对象上有多个针对它的命令，且界面上没有位置全部摆出来（表格行、画布节点、文件项）。
+
+### 何时不用
+
+- 命令是主要路径：右键是隐藏入口，新用户找不到。主要动作要有可见的按钮。
+- 触摸端是主要场景：长按有学习成本，且与系统手势冲突。
+- 要选一个值而不是执行命令：用[选择器](./select)，或把[列表框](./listbox)装进[浮层](./popover)。
+
+### 特性
+
+- 没有活动条目、由菜单容器承接键盘焦点时，容器与箭头使用同一实体保护底，避免透明背景影响焦点环对比度；焦点进入条目后恢复常规磨砂外壳。
+
+- `offset` 默认 0——右键菜单要贴着光标。
+- 支持分组、标记位、分隔线与二级子菜单；任意层级选中都发根的 `select` 并整链关闭。
+- `typeahead` 决定展开后的可打印字符是拿去检索还是放行给页面。
+- `longPressDelay` 是触摸端按住多久算触发。
+- `root` 的插槽给出锚点坐标与 `openAt`，可以从任意位置弹出。
+- 浮层使用 M2 磨砂表面；条目悬停/键盘锚点与打开路径使用同一中性淡底，按下加深一档。
+  打开二级菜单不加色条、不改字重，也不使用品牌蓝底。
+- 条目使用 flex 主行并保留作者的实际插槽顺序：图标、`item-text`、任意快捷键节点和子菜单箭头
+  可以同排；`item-text` 占剩余空间并截断，只有 `item-description` 独占第二行。
+- 面板落位后从锚点一侧淡入短移，退出沿原方向收回；四向跟实际 placement 走，不缩放整张菜单。
 
 ## 产物
 

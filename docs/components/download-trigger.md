@@ -1,33 +1,22 @@
-# 下载触发器 <Badge type="info" text="download-trigger" />
+# DownloadTrigger <Badge type="info" text="下载触发器" />
 
 把一段数据交给浏览器下载，并把取数这段过程如实报出来。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/download-trigger" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/download-trigger.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/download-trigger" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/download-trigger" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/download-trigger.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 内容已经在前端手里：当前表格导出成 CSV、编辑器里的草稿存成文件、生成好的配置文本。
-- 数据要点了才算：交一个取数函数，点下去才发请求或才开始序列化。
-
-## 何时不用
-
-- 文件在服务端且有稳定地址：直接写一个 `<a href download>` 指过去，让服务端决定文件名与类型，别在前端造一份副本。
-- 内容只是要带走一小段文字：用[剪贴板](./clipboard)，用户不必再去下载目录里翻。
-- 方向反过来是把文件交进来：用[文件上传](./file-upload)。
-
-## 特性
-
-- 数据可以是文本、Blob，或点了才调用的取数函数（可返回 Promise）。
-- 取数在途时状态是 `preparing`，此时再点不会重复发起；无论成败都回到 `idle`，界面上不留"下载中"的假象。
-- 失败会说出来：取数抛出、拒绝，或环境造不出下载，都走 `onDownloadError` 并带上原始原因。
-- 文件名与类型在发起那一刻定死，取数途中宿主改了 prop 也不影响这一次写出的那份。
-- Vue 侧默认插槽拿得到 `{ status, preparing, disabled, fileName, download }`，可据 `preparing` 换掉按钮上的文字；Web Components 侧按钮内容由作者自己写，要跟着状态换文字得自己盯 `data-state`。
-
-## 示例
-
-### 基础用法
+## 用法
 
 内容已经在手里就直接给字符串，点一下即交给浏览器；文件名连同扩展名都由 file-name 说了算
 
 <XhDemo src="download-trigger/01-basic" />
+
+## 示例
 
 ### 按需取数
 
@@ -58,6 +47,27 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 三轴只改按钮外观，取数与落盘那条链一个字都不动
 
 <XhDemo src="download-trigger/06-variant-tone-size" />
+
+## 设计指引
+
+### 何时使用
+
+- 内容已经在前端手里：当前表格导出成 CSV、编辑器里的草稿存成文件、生成好的配置文本。
+- 数据要点了才算：交一个取数函数，点下去才发请求或才开始序列化。
+
+### 何时不用
+
+- 文件在服务端且有稳定地址：直接写一个 `<a href download>` 指过去，让服务端决定文件名与类型，别在前端造一份副本。
+- 内容只是要带走一小段文字：用[剪贴板](./clipboard)，用户不必再去下载目录里翻。
+- 方向反过来是把文件交进来：用[文件上传](./file-upload)。
+
+### 特性
+
+- 数据可以是文本、Blob，或点了才调用的取数函数（可返回 Promise）。
+- 取数在途时状态是 `preparing`，此时再点不会重复发起；无论成败都回到 `idle`，界面上不留"下载中"的假象。
+- 失败会说出来：取数抛出、拒绝，或环境造不出下载，都走 `onDownloadError` 并带上原始原因。
+- 文件名与类型在发起那一刻定死，取数途中宿主改了 prop 也不影响这一次写出的那份。
+- Vue 侧默认插槽拿得到 `{ status, preparing, disabled, fileName, download }`，可据 `preparing` 换掉按钮上的文字；Web Components 侧按钮内容由作者自己写，要跟着状态换文字得自己盯 `data-state`。
 
 ## 产物
 

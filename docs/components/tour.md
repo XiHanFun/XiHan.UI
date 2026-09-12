@@ -1,30 +1,22 @@
-# 引导 <Badge type="info" text="tour" />
+# Tour <Badge type="info" text="引导" />
 
 一串聚光灯步骤，逐个指向界面上的元素并解释它。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tour" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/tour.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/tour" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/tour" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/tour.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 新功能上线、首次进入复杂界面时的一次性介绍。
-
-## 何时不用
-
-- 界面本身不好懂：改界面，别用引导补丁。
-- 用户需要随时查阅的说明：写进帮助或[文字提示](./tooltip)。
-
-## 特性
-
-- 聚光灯把目标从遮罩里挖出来，`spotlightPadding` 决定挖多大。
-- `autoScroll` 把目标滚进视野。
-- 可以有居中的无目标步（开场与结束）。
-- 步序与展开都可受控，另有完成与跳过两个回调。
-
-## 示例
-
-### 基础用法
+## 用法
 
 steps 是唯一事实源，组件只按下标取用；每步的 target 是一个 CSS 选择器，高亮框与浮层都锚在它上面
 
 <XhDemo src="tour/01-basic" />
+
+## 示例
 
 ### 居中步
 
@@ -43,6 +35,24 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 标题与说明之外，正文按当前步的 id 换成自己的一块内容；showBackdrop 关掉那层压暗，引导与页面一起看
 
 <XhDemo src="tour/04-per-step" />
+
+## 设计指引
+
+### 何时使用
+
+- 新功能上线、首次进入复杂界面时的一次性介绍。
+
+### 何时不用
+
+- 界面本身不好懂：改界面，别用引导补丁。
+- 用户需要随时查阅的说明：写进帮助或[文字提示](./tooltip)。
+
+### 特性
+
+- 聚光灯把目标从遮罩里挖出来，`spotlightPadding` 决定挖多大。
+- `autoScroll` 把目标滚进视野。
+- 可以有居中的无目标步（开场与结束）。
+- 步序与展开都可受控，另有完成与跳过两个回调。
 
 ## 产物
 

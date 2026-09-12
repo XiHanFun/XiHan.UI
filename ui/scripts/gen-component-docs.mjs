@@ -546,6 +546,41 @@ function adapterArtifacts(id) {
   return { components, composable, tag, skin }
 }
 
+const sourceBase = 'https://github.com/XiHanFun/XiHan.UI'
+
+function sourceLink(relativePath) {
+  const absolute = path.join(uiRoot, relativePath)
+  const kind = fs.statSync(absolute).isDirectory() ? 'tree' : 'blob'
+  return `${sourceBase}/${kind}/dev/ui/${relativePath.replaceAll('\\', '/')}`
+}
+
+function sourceLinks(id, artifacts) {
+  const links = [
+    ['Headless', sourceLink(`packages/engine/headless/src/${id}`)],
+  ]
+  if (artifacts.skin)
+    links.push(['Styles', sourceLink(`packages/design/styles/css/${id}.css`)])
+
+  const adapterCandidates = [
+    ['Vue', `packages/adapters/vue/src/components/${id}`],
+    ['React', `packages/adapters/react/src/components/${id}`],
+    ['Web Components', `packages/adapters/web-components/src/elements/${id}.ts`],
+  ]
+  for (const [label, relativePath] of adapterCandidates) {
+    const filePath = path.join(uiRoot, relativePath)
+    if (fs.existsSync(filePath)) {
+      links.push([label, sourceLink(relativePath)])
+      continue
+    }
+    const directFile = ['.ts', '.tsx']
+      .map(extension => `${relativePath}${extension}`)
+      .find(candidate => fs.existsSync(path.join(uiRoot, candidate)))
+    if (directFile)
+      links.push([label, sourceLink(directFile)])
+  }
+  return links
+}
+
 // ── 类型元数据 ────────────────────────────────────────────────────────────────
 
 const typeFiles = fs
@@ -788,29 +823,44 @@ function renderComponent(entry, category) {
   /** 人工小节：写了才出，没写这一节整个不出现。 */
   const authored = title => doc?.sections[title]
 
-  push(`# ${name} <Badge type="info" text="${id}" />`, '')
+  push(`# ${pascal(id)} <Badge type="info" text="${name}" />`, '')
   push(
     doc?.overview
     ?? `${category.label}组件。这一节尚未撰写，见 packages/engine/headless/src/${id}/${id}.doc.md。`,
     '',
   )
 
-  for (const title of ['何时使用', '何时不用', '特性']) {
-    const text = authored(title)
-    if (text)
-      push(`## ${title}`, '', text, '')
-  }
+  const links = sourceLinks(id, ad)
+  push('<div class="xh-resource-links">')
+  for (const [label, href] of links)
+    push(`  <a href="${href}" target="_blank" rel="noreferrer">${label}</a>`)
+  push('</div>', '')
 
-  // 示例排在契约之前：看的人先要能照着抄，其次才关心产物与契约。
-  // 每个示例的标题落成 h3，右侧目录逐个索引得到。
+  // 与 HeroUI 一样，首个示例就是 Usage：读者进入页面后先看到可运行结果，再看其余变体。
   if (ex.length) {
-    push('## 示例', '')
-    for (const demo of ex) {
+    const [usage, ...examples] = ex
+    push('## 用法', '')
+    if (usage.description)
+      push(usage.description, '')
+    push(`<XhDemo src="${usage.src}" />`, '')
+
+    if (examples.length)
+      push('## 示例', '')
+    for (const demo of examples) {
       push(`### ${demo.title}`, '')
       if (demo.description)
         push(demo.description, '')
       push(`<XhDemo src="${demo.src}" />`, '')
     }
+  }
+
+  const guidance = ['何时使用', '何时不用', '特性']
+    .map(title => [title, authored(title)])
+    .filter(([, text]) => text)
+  if (guidance.length) {
+    push('## 设计指引', '')
+    for (const [title, text] of guidance)
+      push(`### ${title}`, '', text, '')
   }
 
   // 产物
@@ -1066,7 +1116,7 @@ function renderIndex() {
     '',
   )
   L.push(
-    '本册每个组件一页，页内小节固定：概述 · 何时使用 · 何时不用 · 特性 · 示例 · 产物 · 解剖 · Props · 事件 · 插槽 · 状态 · connect API · 键盘 · 无障碍 · 样式 · 数据属性 · CSS 变量 · 动效 · 响应式 · RTL · 组合 · 最佳实践 · 反模式。'
+    '本册每个组件一页，页内小节固定：概述 · 源码入口 · 用法 · 示例 · 设计指引 · 产物 · 解剖 · Props · 事件 · 插槽 · 状态 · connect API · 键盘 · 无障碍 · 样式 · 数据属性 · CSS 变量 · 动效 · 响应式 · RTL · 组合 · 最佳实践 · 反模式。'
     + '其中契约类的小节由组件源码、连接层与皮肤直接生成，不会与代码对不上；讲取舍的几节与组件源码同放，见各组件目录下的 doc.md。'
     + '某一节没有内容时整节不出现，不留空标题。',
     '',

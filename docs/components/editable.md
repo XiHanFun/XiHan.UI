@@ -1,32 +1,22 @@
-# 就地编辑 <Badge type="info" text="editable" />
+# Editable <Badge type="info" text="就地编辑" />
 
 一段文本平时是只读的展示，点一下就地变成输入框。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/editable" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/editable.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/editable" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/editable" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/editable.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 标题、备注这类偶尔才改的单值，不值得为它单开一个表单。
-- 表格单元格的快速修改。
-
-## 何时不用
-
-- 一次要改很多字段：打开表单或[对话框](./dialog)。
-- 值需要复杂校验或多步确认。
-
-## 特性
-
-- `submitMode` 决定回车、失焦还是显式按钮提交。
-- `activationMode` 决定单击、双击还是只能按编辑按钮进编辑态。
-- 三个回调分开：提交、还原、编辑态变化。
-- `autoResize` 让输入框跟着内容长。
-- 形态 · 语气 · 尺寸三轴与[文本输入](./text-field)同源：形态只改编辑态那个框的底与描边，语气落在聚焦描边与提交钮上。
-
-## 示例
-
-### 基础用法
+## 用法
 
 预览与编辑两态轮流上场：点预览区或按「编辑」进编辑态，preview 不写内容、显示什么由组件填
 
 <XhDemo src="editable/01-basic" />
+
+## 示例
 
 ### 提交方式
 
@@ -63,6 +53,26 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮的色族；预览态不吃这两轴
 
 <XhDemo src="editable/07-variant-tone" />
+
+## 设计指引
+
+### 何时使用
+
+- 标题、备注这类偶尔才改的单值，不值得为它单开一个表单。
+- 表格单元格的快速修改。
+
+### 何时不用
+
+- 一次要改很多字段：打开表单或[对话框](./dialog)。
+- 值需要复杂校验或多步确认。
+
+### 特性
+
+- `submitMode` 决定回车、失焦还是显式按钮提交。
+- `activationMode` 决定单击、双击还是只能按编辑按钮进编辑态。
+- 三个回调分开：提交、还原、编辑态变化。
+- `autoResize` 让输入框跟着内容长。
+- 形态 · 语气 · 尺寸三轴与[文本输入](./text-field)同源：形态只改编辑态那个框的底与描边，语气落在聚焦描边与提交钮上。
 
 ## 产物
 

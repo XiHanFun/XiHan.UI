@@ -1,37 +1,22 @@
-# 浮动面板 <Badge type="info" text="floating-panel" />
+# FloatingPanel <Badge type="info" text="浮动面板" />
 
 一块浮在页面上、能搬走、能改大小、能收拢与铺满的非模态面板。页面照常可读可点，面板停在用户放它的地方。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/floating-panel" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/floating-panel.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/floating-panel" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/floating-panel" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/floating-panel.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 长时间挂着的辅助界面：调试面板、图层属性、正在进行的通话、播放器。
-- 用户需要一边看页面一边改东西，弹窗那种"必须先处理完"的语气不合适。
-- 位置和大小要由用户自己定，并且值得记下来（`onPositionChange` / `onDimensionsChange` / `onWindowStateChange` 就是为此留的）。
-
-## 何时不用
-
-- 必须先处理完才能继续：用[对话框](./dialog)，它会陷住焦点、锁住背景。
-- 从边上滑出的一整块面板：用[抽屉](./drawer)。
-- 挂在某个元素旁边、点别处就收：用[气泡卡片](./popover)。
-- 只是把一块区域分成可拖的几片：用[分栏](./splitter)。
-
-## 特性
-
-- 三种形态：常规、收拢（只留标题栏）、铺满（占满视口），由 `windowState` 一个值表达，可受控。
-- 位置与尺寸各自成对（`position` / `defaultPosition`、`dimensions` / `defaultDimensions`），两态齐全。
-- 八个改尺把手在节点上自报守的是哪条边，西边与北边的把手会同时改位置。
-- 默认皮肤使用 M3 桌面玻璃面：描边、顶边高光、投影与光学采样同出一张配方；高对比、减少透明、强制色与打印时原位收敛为实体面，标题栏按钮键盘聚焦时先铺实体隔离底。
-- 键盘全程可达：拖拽把手上方向键平移、Shift 快移、Enter / Space 送回初始落点；改尺把手上方向键推边；Esc 关闭。
-- `minSize` / `maxSize` 在每一处入口都生效——拖、推、`setDimensions` 走的是同一个夹取函数。
-- 内建默认矩形挂载时按视口夹一次：先收尺寸再推落点，窄屏上面板与右侧那几个改尺把手不会落在屏外。写了 `defaultPosition` / `defaultDimensions` 就照写的来。
-
-## 示例
-
-### 基础用法
+## 用法
 
 点触发器打开面板：标题栏那条把手可以拖，右下角可以改大小，Esc 关闭
 
 <XhDemo src="floating-panel/01-basic" />
+
+## 示例
 
 ### 三种形态
 
@@ -62,6 +47,31 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 把手与几个按钮只有图标，可及名一律走 translations
 
 <XhDemo src="floating-panel/06-translations" />
+
+## 设计指引
+
+### 何时使用
+
+- 长时间挂着的辅助界面：调试面板、图层属性、正在进行的通话、播放器。
+- 用户需要一边看页面一边改东西，弹窗那种"必须先处理完"的语气不合适。
+- 位置和大小要由用户自己定，并且值得记下来（`onPositionChange` / `onDimensionsChange` / `onWindowStateChange` 就是为此留的）。
+
+### 何时不用
+
+- 必须先处理完才能继续：用[对话框](./dialog)，它会陷住焦点、锁住背景。
+- 从边上滑出的一整块面板：用[抽屉](./drawer)。
+- 挂在某个元素旁边、点别处就收：用[气泡卡片](./popover)。
+- 只是把一块区域分成可拖的几片：用[分栏](./splitter)。
+
+### 特性
+
+- 三种形态：常规、收拢（只留标题栏）、铺满（占满视口），由 `windowState` 一个值表达，可受控。
+- 位置与尺寸各自成对（`position` / `defaultPosition`、`dimensions` / `defaultDimensions`），两态齐全。
+- 八个改尺把手在节点上自报守的是哪条边，西边与北边的把手会同时改位置。
+- 默认皮肤使用 M3 桌面玻璃面：描边、顶边高光、投影与光学采样同出一张配方；高对比、减少透明、强制色与打印时原位收敛为实体面，标题栏按钮键盘聚焦时先铺实体隔离底。
+- 键盘全程可达：拖拽把手上方向键平移、Shift 快移、Enter / Space 送回初始落点；改尺把手上方向键推边；Esc 关闭。
+- `minSize` / `maxSize` 在每一处入口都生效——拖、推、`setDimensions` 走的是同一个夹取函数。
+- 内建默认矩形挂载时按视口夹一次：先收尺寸再推落点，窄屏上面板与右侧那几个改尺把手不会落在屏外。写了 `defaultPosition` / `defaultDimensions` 就照写的来。
 
 ## 产物
 

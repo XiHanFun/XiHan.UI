@@ -1,36 +1,22 @@
-# 密码输入 <Badge type="info" text="password-input" />
+# PasswordInput <Badge type="info" text="密码输入" />
 
 一格密码框，带明暗切换钮，并在大写锁定开着时给出提示。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/password-input" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/password-input.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/password-input" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/password-input" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/password-input.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 登录、注册、改密码这类要遮住输入内容的字段。
-- 输错了要能自己核对：切成明文看一眼，再切回去。
-
-## 何时不用
-
-- 只要一格遮起来的输入、不需要明暗切换与大写锁定提示：用[文本输入](./text-field)的 `type="password"` 就够了，少一层结构。
-- 收的是短验证码或一次性密码：用[分格输入](./pin-input)。
-- 要在同一页比较两次输入是否一致：那是表单校验的活儿，交给[表单](./form)与[表单字段](./field)。
-
-## 特性
-
-- 明暗切换在 `visible` / `defaultVisible` 两态齐全，受控与非受控都走同一条路。
-- 切换之后焦点留在切换钮上，框里的光标与选中范围原样放回。
-- 大写锁定提示由按键事件驱动，焦点离开输入框即熄灭。
-- `autoComplete` 缺省 `current-password`，注册表单要显式改成 `new-password`。
-- `strength` 给 0–4 五档就显出强度条；打分算法归调用方，组件只把档位画出来。
-- 形态 · 语气 · 尺寸三轴与[文本输入](./text-field)同源，并排放不会差一档。
-- 一体式 `control` 保持实体 Field Chrome；显隐动作与输入/状态区之间有半高语义分隔，三尺寸和 compact 密度使用同一比例。
-- 自动填充按当前形态、只读或禁用状态重画实体底与文字，不让浏览器注入的颜色把框切成异色段。
-
-## 示例
-
-### 基础用法
+## 用法
 
 root 持有状态，control 是那个视觉盒；不传 value 与 visible 即为非受控，明暗由组件自己管，钮里的图标跟着明暗换
 
 <XhDemo src="password-input/01-basic" />
+
+## 示例
 
 ### 受控
 
@@ -73,6 +59,30 @@ size 只改高度、内边距与字号，标签、切换钮与大写锁定提示
 name 才让它参与提交，auto-complete 写成 new-password 密码管理器才去存新密码而不是填旧的
 
 <XhDemo src="password-input/08-register" />
+
+## 设计指引
+
+### 何时使用
+
+- 登录、注册、改密码这类要遮住输入内容的字段。
+- 输错了要能自己核对：切成明文看一眼，再切回去。
+
+### 何时不用
+
+- 只要一格遮起来的输入、不需要明暗切换与大写锁定提示：用[文本输入](./text-field)的 `type="password"` 就够了，少一层结构。
+- 收的是短验证码或一次性密码：用[分格输入](./pin-input)。
+- 要在同一页比较两次输入是否一致：那是表单校验的活儿，交给[表单](./form)与[表单字段](./field)。
+
+### 特性
+
+- 明暗切换在 `visible` / `defaultVisible` 两态齐全，受控与非受控都走同一条路。
+- 切换之后焦点留在切换钮上，框里的光标与选中范围原样放回。
+- 大写锁定提示由按键事件驱动，焦点离开输入框即熄灭。
+- `autoComplete` 缺省 `current-password`，注册表单要显式改成 `new-password`。
+- `strength` 给 0–4 五档就显出强度条；打分算法归调用方，组件只把档位画出来。
+- 形态 · 语气 · 尺寸三轴与[文本输入](./text-field)同源，并排放不会差一档。
+- 一体式 `control` 保持实体 Field Chrome；显隐动作与输入/状态区之间有半高语义分隔，三尺寸和 compact 密度使用同一比例。
+- 自动填充按当前形态、只读或禁用状态重画实体底与文字，不让浏览器注入的颜色把框切成异色段。
 
 ## 产物
 

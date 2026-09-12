@@ -1,38 +1,23 @@
-# 徽标 <Badge type="info" text="badge" />
+# Badge <Badge type="info" text="徽标" />
 
 提醒你注意某个东西：它有几条未读、处在什么状态、是不是新的。
 徽标说的是「有事情发生了」，不是「这是什么」——后者是[标签](./tag)的活。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/badge" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/badge.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/badge" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/badge" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/badge.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 计数角标：未读消息、购物车件数、待办条数。
-- 小红点：只表示「有新的」，不说有几条。
-- 状态提示：在线 / 离线、进行中、新。
-- 附着在按钮、头像、标签页、菜单项上，报告那个东西的状态。
-
-## 何时不用
-
-- 表达「这是什么」——分类、技能、筛选条件：用[标签](./tag)，它承载实体身份，还能被摘掉。
-- 用户要点它来筛选或删除：徽标不接交互，那是标签的语义。
-- 表达进度：用[进度条](./progress)。
-- 是一个可开关的选项：用[切换按钮](./toggle)。
-
-## 特性
-
-- 语气 · 尺寸两轴与其余组件同源；角标只有一种形态，没有形态轴。
-- `placement` 决定挂在哪个角，四角可选，跟随文字方向。
-- `count` 自己出数字，超过 `max`（默认 99）写成「99+」。
-- 计数为 0 时整枚收起，要显示 0 就开 `showZero`。
-- `dot` 收成一个圆点：只表示「有」，不表示「有几个」。
-- `label` 给读屏一整句：光念「3」听不出是什么的 3。
-
-## 示例
-
-### 计数角标
+## 用法
 
 被标记的东西写进默认插槽，角标自己贴到它的角上；计数、上限截断与 0 值收起都归角标算
 
 <XhDemo src="badge/01-basic" />
+
+## 示例
 
 ### 圆点与落点
 
@@ -51,6 +36,31 @@ tone 决定用哪族颜色——角标现实里主要是未读红点与在线/�
 拆成 Root + Indicator 两件：角标里能自己排版，插槽拿得到算好的计数；不写内容才回落那串数字，showZero 让 0 留在原地
 
 <XhDemo src="badge/04-custom-indicator" />
+
+## 设计指引
+
+### 何时使用
+
+- 计数角标：未读消息、购物车件数、待办条数。
+- 小红点：只表示「有新的」，不说有几条。
+- 状态提示：在线 / 离线、进行中、新。
+- 附着在按钮、头像、标签页、菜单项上，报告那个东西的状态。
+
+### 何时不用
+
+- 表达「这是什么」——分类、技能、筛选条件：用[标签](./tag)，它承载实体身份，还能被摘掉。
+- 用户要点它来筛选或删除：徽标不接交互，那是标签的语义。
+- 表达进度：用[进度条](./progress)。
+- 是一个可开关的选项：用[切换按钮](./toggle)。
+
+### 特性
+
+- 语气 · 尺寸两轴与其余组件同源；角标只有一种形态，没有形态轴。
+- `placement` 决定挂在哪个角，四角可选，跟随文字方向。
+- `count` 自己出数字，超过 `max`（默认 99）写成「99+」。
+- 计数为 0 时整枚收起，要显示 0 就开 `showZero`。
+- `dot` 收成一个圆点：只表示「有」，不表示「有几个」。
+- `label` 给读屏一整句：光念「3」听不出是什么的 3。
 
 ## 产物
 

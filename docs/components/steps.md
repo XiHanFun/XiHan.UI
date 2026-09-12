@@ -1,31 +1,22 @@
-# 步骤条 <Badge type="info" text="steps" />
+# Steps <Badge type="info" text="步骤条" />
 
 把一件事拆成有先后的几步，并标出走到哪一步了。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/steps" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/steps.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/steps" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/steps" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/steps.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 多步表单、开通流程、安装向导，步数固定且顺序明确。
-- 需要让用户看见"还剩几步"。
-
-## 何时不用
-
-- 各段之间没有先后、可以随便切：那是[标签页](./tabs)。
-- 展示已经发生的事件序列：用[时间线](./timeline)。
-
-## 特性
-
-- `count` 是步序的上界，也是读屏"第 k 步，共 n 步"的分母。
-- `linear` 只拦界面上的乱跳（未解锁的入口一律禁用），逐步前进的方法照常可用。
-- 方向键只搬焦点，按 Enter 或空格才切步。
-- "这一步出错了"是宿主自己的数据：在那一步上换掉标记与颜色令牌即可。
-
-## 示例
-
-### 基础用法
+## 用法
 
 不传 value 即为非受控；方向键只搬焦点，按 Enter 或空格才切步，进退方法由 root 的插槽交出来
 
 <XhDemo src="steps/01-basic" />
+
+## 示例
 
 ### 受控
 
@@ -68,6 +59,25 @@ size 换序号圆点的直径与标题、说明的字号，不传 size 即默认
 步序只认下标，「这一步出错了」是宿主自己的数据：在那一步的 item 上换掉标记与颜色令牌
 
 <XhDemo src="steps/08-error-step" />
+
+## 设计指引
+
+### 何时使用
+
+- 多步表单、开通流程、安装向导，步数固定且顺序明确。
+- 需要让用户看见"还剩几步"。
+
+### 何时不用
+
+- 各段之间没有先后、可以随便切：那是[标签页](./tabs)。
+- 展示已经发生的事件序列：用[时间线](./timeline)。
+
+### 特性
+
+- `count` 是步序的上界，也是读屏"第 k 步，共 n 步"的分母。
+- `linear` 只拦界面上的乱跳（未解锁的入口一律禁用），逐步前进的方法照常可用。
+- 方向键只搬焦点，按 Enter 或空格才切步。
+- "这一步出错了"是宿主自己的数据：在那一步上换掉标记与颜色令牌即可。
 
 ## 产物
 

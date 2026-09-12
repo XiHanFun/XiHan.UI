@@ -1,36 +1,22 @@
-# 字段数组 <Badge type="info" text="field-array" />
+# FieldArray <Badge type="info" text="字段数组" />
 
 一组行数可变的录入行：可以加一行、删一行、换顺序。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/field-array" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/field-array.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/field-array" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/field-array" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/field-array.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 联系方式、规格参数、收件人这类"数量由用户决定"的重复字段。
-
-## 何时不用
-
-- 行数固定：直接写几行。
-- 每一行是一个短词：用[标签输入](./tags-input)。
-
-## 特性
-
-- `min` / `max` 约束行数，到下限时删除按钮不可用。
-- `movable` 给出上移下移。
-- `createItem` 决定新增一行时的初值。
-- 一行里可以放多个字段。
-- `name` 是 `FormPath`。嵌套在 Form 里时自动读取该路径的数组值，每行经 `item.name`
-  拿到显式数组路径；点号与方括号从不被猜成层级。
-- 在 Form 内新增、删除、换序会一并迁移该数组子字段的 values、rules、errors、异步
-  validation 与已验证错误标记；字符串字段绝不参与数组下标迁移。
-- `readOnly` 让行数改不动，`invalid` 把校验状态传到每一行。
-- `item-label` 承载行前的行号或名目。
-
-## 示例
-
-### 基础用法
+## 用法
 
 加一行、删一行归组件管；行里放什么控件归作者，写在 item-content 里
 
 <XhDemo src="field-array/01-basic" />
+
+## 示例
 
 ### 行数上下限
 
@@ -55,6 +41,30 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 禁用时三类把手全按不动；从外面加一条走同一条闸门，整份替换值则不受闸门约束
 
 <XhDemo src="field-array/05-disabled-and-api" />
+
+## 设计指引
+
+### 何时使用
+
+- 联系方式、规格参数、收件人这类"数量由用户决定"的重复字段。
+
+### 何时不用
+
+- 行数固定：直接写几行。
+- 每一行是一个短词：用[标签输入](./tags-input)。
+
+### 特性
+
+- `min` / `max` 约束行数，到下限时删除按钮不可用。
+- `movable` 给出上移下移。
+- `createItem` 决定新增一行时的初值。
+- 一行里可以放多个字段。
+- `name` 是 `FormPath`。嵌套在 Form 里时自动读取该路径的数组值，每行经 `item.name`
+  拿到显式数组路径；点号与方括号从不被猜成层级。
+- 在 Form 内新增、删除、换序会一并迁移该数组子字段的 values、rules、errors、异步
+  validation 与已验证错误标记；字符串字段绝不参与数组下标迁移。
+- `readOnly` 让行数改不动，`invalid` 把校验状态传到每一行。
+- `item-label` 承载行前的行号或名目。
 
 ## 产物
 

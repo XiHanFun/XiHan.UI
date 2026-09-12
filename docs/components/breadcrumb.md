@@ -1,30 +1,22 @@
-# 面包屑 <Badge type="info" text="breadcrumb" />
+# Breadcrumb <Badge type="info" text="面包屑" />
 
 把当前位置在层级里的路径摊开，每一层都能点回去。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/breadcrumb" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/breadcrumb.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/breadcrumb" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/breadcrumb" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/breadcrumb.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 层级超过两级且用户可能从搜索或外链直接进到深层。
-- 需要让用户知道"我在哪，上一层是什么"。
-
-## 何时不用
-
-- 站点是扁平的：路径只有一层，写它没有信息量。
-- 用来表达步骤的先后：那是[步骤条](./steps)。
-
-## 特性
-
-- `href` 归作者写；末级只多一个 `current`：它拿到 `aria-current="page"`、点不动、也不占 Tab 位。
-- 中间层级可以折叠成省略号；省略号与分隔符都对读屏隐藏，念出来仍是完整的列表项数。
-- `root` 是 `nav` 地标，`translations.root` 换掉它的 `aria-label`。
-
-## 示例
-
-### 基础用法
+## 用法
 
 href 归作者写，末级只多一个 current：它拿到 aria-current="page"、点不动、也不占 Tab 位
 
 <XhDemo src="breadcrumb/01-basic" />
+
+## 示例
 
 ### 折叠中间层级
 
@@ -55,6 +47,24 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 某一层要换去处时，把菜单整套放进 item 里；面包屑只管这一层的排版
 
 <XhDemo src="breadcrumb/06-dropdown" />
+
+## 设计指引
+
+### 何时使用
+
+- 层级超过两级且用户可能从搜索或外链直接进到深层。
+- 需要让用户知道"我在哪，上一层是什么"。
+
+### 何时不用
+
+- 站点是扁平的：路径只有一层，写它没有信息量。
+- 用来表达步骤的先后：那是[步骤条](./steps)。
+
+### 特性
+
+- `href` 归作者写；末级只多一个 `current`：它拿到 `aria-current="page"`、点不动、也不占 Tab 位。
+- 中间层级可以折叠成省略号；省略号与分隔符都对读屏隐藏，念出来仍是完整的列表项数。
+- `root` 是 `nav` 地标，`translations.root` 换掉它的 `aria-label`。
 
 ## 产物
 

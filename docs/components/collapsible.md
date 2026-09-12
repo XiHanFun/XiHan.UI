@@ -1,29 +1,22 @@
-# 折叠区域 <Badge type="info" text="collapsible" />
+# Collapsible <Badge type="info" text="折叠区域" />
 
 一块可以展开收起的内容，只有一块。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/collapsible" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/collapsible.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/collapsible" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/collapsible" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/collapsible.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 高级选项、补充说明这类默认不需要看见的单块内容。
-
-## 何时不用
-
-- 有好几块并列的可折叠内容：用[手风琴](./accordion)，它管互斥与整组语义。
-- 内容需要浮在页面之上：用[气泡卡片](./popover)。
-
-## 特性
-
-- 触发器与内容通过 `aria-controls` 与 `aria-expanded` 关联。
-- 展开动画由皮肤给，内容高度由组件量出来。
-- 指示符部件空着由皮肤画一枚箭头，塞进图形即以作者的为准，转向两种情形都由皮肤打。
-
-## 示例
-
-### 基础用法
+## 用法
 
 不传 open 即为非受控，defaultOpen 只给初始值，之后由组件自己维护开合
 
 <XhDemo src="collapsible/01-basic" />
+
+## 示例
 
 ### 受控
 
@@ -60,6 +53,23 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 tone 落在触发按钮的展开态上，六种语气各展开一份做对照
 
 <XhDemo src="collapsible/07-tone" />
+
+## 设计指引
+
+### 何时使用
+
+- 高级选项、补充说明这类默认不需要看见的单块内容。
+
+### 何时不用
+
+- 有好几块并列的可折叠内容：用[手风琴](./accordion)，它管互斥与整组语义。
+- 内容需要浮在页面之上：用[气泡卡片](./popover)。
+
+### 特性
+
+- 触发器与内容通过 `aria-controls` 与 `aria-expanded` 关联。
+- 展开动画由皮肤给，内容高度由组件量出来。
+- 指示符部件空着由皮肤画一枚箭头，塞进图形即以作者的为准，转向两种情形都由皮肤打。
 
 ## 产物
 

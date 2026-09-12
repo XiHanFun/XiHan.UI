@@ -1,38 +1,24 @@
-# 字段集 <Badge type="info" text="fieldset" />
+# Fieldset <Badge type="info" text="字段集" />
 
 把若干相关字段收成一组，组标题由 `legend` 给，禁用与无效沿这一组下发。
 
 根节点是原生 `<fieldset>`：整组禁用只写一个属性，浏览器就把组内所有表单控件一并停掉——这是本组件存在的理由，换成 `<div>` 只剩一层灰样式。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/fieldset" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/fieldset.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/fieldset" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/fieldset" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/fieldset.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 一份表单里有几段主题相同的字段（收货信息、发票抬头、通知偏好），需要一个组标题把它们收起来。
-- 需要一次禁用一整段字段，而不是逐个控件写 `disabled`。
-- 一组单选或复选选项需要共用一个问句作为组名。
-
-## 何时不用
-
-- 只有一个控件加一个标签：用[表单字段](./field)，字段管一格，字段集管一组格。
-- 需要整表的值管理与校验：外面套[表单](./form)，字段集只管把一段字段圈起来。
-- 只想在视觉上分段、没有共同的组名与共同的禁用语义：用[分割线](./separator)或[卡片](./card)。
-
-## 特性
-
-- `disabled` 落成原生 `fieldset[disabled]`，组内控件不可聚焦、不可编辑、不参与提交，无需逐个控件接线。
-- 说明文字与错误文案自动派生 `id` 并接进根节点的 `aria-describedby`，作者不写 `id`。
-- 错误文案带 `role="status"` + `aria-live="polite"`，节点常挂、靠 `hidden` 显隐，`invalid` 翻转时读屏排队播报，不打断当前朗读。整表提交失败时打断式播报只由 Form 的错误摘要发出。
-- `invalid` 落成 `data-invalid`，皮肤据此把组标题转成警示色，同时把错误文案接进描述链并显出。
-- `required` 落成 `data-required`，皮肤据此给组标题加星号。
-- `field-group` 把并排的几个字段圈成一段（够宽自动分栏），`actions` 承载组末尾那一行按钮。
-- `disabled` 只连坐原生表单控件：组里 `div` 型控件（滑块、评分这类）要各自接 `disabled`。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一组字段收进原生 fieldset：legend 是这一组的名字，说明文案自动派生 id 并接进 aria-describedby
 
 <XhDemo src="fieldset/01-basic" />
+
+## 示例
 
 ### 整组禁用
 
@@ -57,6 +43,30 @@ required 落成 data-required，皮肤据此给组标题加星号；星号只是
 按 HTML 规范，首个 legend 里的控件不受 fieldset[disabled] 连坐，总开关因此始终可点
 
 <XhDemo src="fieldset/05-legend-switch" />
+
+## 设计指引
+
+### 何时使用
+
+- 一份表单里有几段主题相同的字段（收货信息、发票抬头、通知偏好），需要一个组标题把它们收起来。
+- 需要一次禁用一整段字段，而不是逐个控件写 `disabled`。
+- 一组单选或复选选项需要共用一个问句作为组名。
+
+### 何时不用
+
+- 只有一个控件加一个标签：用[表单字段](./field)，字段管一格，字段集管一组格。
+- 需要整表的值管理与校验：外面套[表单](./form)，字段集只管把一段字段圈起来。
+- 只想在视觉上分段、没有共同的组名与共同的禁用语义：用[分割线](./separator)或[卡片](./card)。
+
+### 特性
+
+- `disabled` 落成原生 `fieldset[disabled]`，组内控件不可聚焦、不可编辑、不参与提交，无需逐个控件接线。
+- 说明文字与错误文案自动派生 `id` 并接进根节点的 `aria-describedby`，作者不写 `id`。
+- 错误文案带 `role="status"` + `aria-live="polite"`，节点常挂、靠 `hidden` 显隐，`invalid` 翻转时读屏排队播报，不打断当前朗读。整表提交失败时打断式播报只由 Form 的错误摘要发出。
+- `invalid` 落成 `data-invalid`，皮肤据此把组标题转成警示色，同时把错误文案接进描述链并显出。
+- `required` 落成 `data-required`，皮肤据此给组标题加星号。
+- `field-group` 把并排的几个字段圈成一段（够宽自动分栏），`actions` 承载组末尾那一行按钮。
+- `disabled` 只连坐原生表单控件：组里 `div` 型控件（滑块、评分这类）要各自接 `disabled`。
 
 ## 产物
 

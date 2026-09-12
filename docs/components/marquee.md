@@ -1,29 +1,22 @@
-# 跑马灯 <Badge type="info" text="marquee" />
+# Marquee <Badge type="info" text="跑马灯" />
 
 内容沿一条轴循环滚动。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/marquee" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/marquee.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/marquee" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/marquee" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/marquee.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 公告条、合作方 logo 墙这类"内容多、位置窄、且不要求逐条读完"的展示。
-
-## 何时不用
-
-- 内容重要且必须读到：滚动的文字读起来很费力，且会滚走。
-- 是一条需要用户处理的通知：用[警告提示](./alert)。
-
-## 特性
-
-- `autoFill` 自动重复内容铺满容器，接缝处不留空。
-- `direction` 换方向，`speed` 调速度；速度按 `--xh-marquee-span` 换算成一圈时长，要逐字对上每秒像素数就把这支槽改到内容的真实长度。
-- `pauseOnHover` 悬停暂停，`paused` 由作者说了算——受控那一档比悬停优先。
-
-## 示例
-
-### 基础用法
+## 用法
 
 窗口只露出一段，轨道在里面往左走；滚动整段在皮肤的 @keyframes 里，用的人不写动画
 
 <XhDemo src="marquee/01-basic" />
+
+## 示例
 
 ### 方向
 
@@ -42,6 +35,23 @@ autoFill 在轨道里铺两份内容，走完一份第二份正好压在起点�
 speed 是每秒像素；pauseOnHover 在指针停下或焦点落进窗口时停住
 
 <XhDemo src="marquee/04-speed-and-pause" />
+
+## 设计指引
+
+### 何时使用
+
+- 公告条、合作方 logo 墙这类"内容多、位置窄、且不要求逐条读完"的展示。
+
+### 何时不用
+
+- 内容重要且必须读到：滚动的文字读起来很费力，且会滚走。
+- 是一条需要用户处理的通知：用[警告提示](./alert)。
+
+### 特性
+
+- `autoFill` 自动重复内容铺满容器，接缝处不留空。
+- `direction` 换方向，`speed` 调速度；速度按 `--xh-marquee-span` 换算成一圈时长，要逐字对上每秒像素数就把这支槽改到内容的真实长度。
+- `pauseOnHover` 悬停暂停，`paused` 由作者说了算——受控那一档比悬停优先。
 
 ## 产物
 

@@ -1,31 +1,22 @@
-# 切换按钮 <Badge type="info" text="toggle" />
+# Toggle <Badge type="info" text="切换按钮" />
 
 一颗有记忆的按钮：按下去留在按下态，再按一下弹回来。状态由 `aria-pressed` 表达。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/toggle" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/toggle.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/toggle" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/toggle" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/toggle.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 开关一项立即生效的格式或视图（加粗、显示网格、静音）。
-- 状态属于工具而不属于表单：它不参与表单提交。
-
-## 何时不用
-
-- 表示一项设置的开与关、且要随表单提交：用[开关](./switch)或[复选框](./checkbox)。
-- 几个选项互斥：用[切换按钮组](./toggle-group)——多个独立的切换按钮各管各的按下态，凑不出互斥。
-- 按下去只发生一次动作、不留状态：那是[按钮](./button)。
-
-## 特性
-
-- 形态 · 语气 · 尺寸三轴与按钮同源。
-- 受控时宿主不写回 `pressed` 值就不动，在途期间来的意图直接丢掉。
-- `disabled` 同时挡住指针与键盘，按下态保持原样。
-
-## 示例
-
-### 基础用法
+## 用法
 
 按下态由 pressed 表达，非受控时组件自己维护
 
 <XhDemo src="toggle/01-basic" />
+
+## 示例
 
 ### 禁用
 
@@ -74,6 +65,25 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 受控的 pressed 不写回就不会动，在途期间来的意图直接丢掉；忙碌反馈由 aria-busy 与一枚转圈补在按钮上
 
 <XhDemo src="toggle/09-pending" />
+
+## 设计指引
+
+### 何时使用
+
+- 开关一项立即生效的格式或视图（加粗、显示网格、静音）。
+- 状态属于工具而不属于表单：它不参与表单提交。
+
+### 何时不用
+
+- 表示一项设置的开与关、且要随表单提交：用[开关](./switch)或[复选框](./checkbox)。
+- 几个选项互斥：用[切换按钮组](./toggle-group)——多个独立的切换按钮各管各的按下态，凑不出互斥。
+- 按下去只发生一次动作、不留状态：那是[按钮](./button)。
+
+### 特性
+
+- 形态 · 语气 · 尺寸三轴与按钮同源。
+- 受控时宿主不写回 `pressed` 值就不动，在途期间来的意图直接丢掉。
+- `disabled` 同时挡住指针与键盘，按下态保持原样。
 
 ## 产物
 

@@ -1,40 +1,22 @@
-# 提及 <Badge type="info" text="mention" />
+# Mention <Badge type="info" text="提及" />
 
 在正文里打一个前缀字符就弹出候选，选中后把引用插进文本。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/mention" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/mention.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/mention" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/mention" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/mention.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 评论、聊天、任务描述里 @ 某个人或 # 某个条目。
-- 需要多种前缀各带一份候选。
-
-## 何时不用
-
-- 整个输入框的值就是选中项：用[组合框](./combobox)。
-- 只是补全普通词汇：用[组合框](./combobox)或原生自动补全。
-- 正文本身要跨行：本组件的输入框是单行的，不提供多行形态。
-
-## 特性
-
-- 单行输入框，与其它输入控件同一档行高与内衬。
-- 多种前缀各自映射一份候选。
-- `onQueryChange` 给出当前查询串，异步候选据此拉取。
-- 正文可受控，选中时另有回调。
-- `label` 部件给输入框一个点得动的标题；给了 `translations.input` 时仍走 `aria-label`。
-- 给了 `collection` 却一条都不剩时显出 `empty` 部件。
-- `content` 是候选、空态与加载态共用的唯一浮层表面；`empty`/`loading` 保持为 listbox 外的同级 `role=status`，只在零可见候选时把文字覆盖到该表面。自动结构保留既有 `No results`，手写结构没有状态文案时不画空框。
-- 候选还在取且当前没有可见项时由 `loading` 顶上来，空态让位；已有候选时列表保持可见可操作，只由 `aria-busy` 报后台刷新。
-- 带 `hidden` 的候选不参与计数、高亮、方向键或 Enter；全部隐藏后会清掉 `aria-activedescendant`，不会提交不可见旧项。
-- `name` 让整段正文随表单提交，表单重置回落到 `defaultValue`。
-- 正文输入保持实体，唯一候选面使用 M2 磨砂与细顶光；空态和加载文字位于材质上方，不另画框。
-  浮层使用四向短位移，不缩放文字；增强对比度切为实体，减弱动效取消位移。
-
-## 示例
-
-### 基础用法
+## 用法
 
 在正文里敲 @ 才开候选，选中的那条被插到光标处，前后文一字不动
 
 <XhDemo src="mention/01-basic" />
+
+## 示例
 
 ### 多种前缀
 
@@ -65,6 +47,34 @@
 variant 换正文框的描边与底色，候选面板不受影响
 
 <XhDemo src="mention/06-variant" />
+
+## 设计指引
+
+### 何时使用
+
+- 评论、聊天、任务描述里 @ 某个人或 # 某个条目。
+- 需要多种前缀各带一份候选。
+
+### 何时不用
+
+- 整个输入框的值就是选中项：用[组合框](./combobox)。
+- 只是补全普通词汇：用[组合框](./combobox)或原生自动补全。
+- 正文本身要跨行：本组件的输入框是单行的，不提供多行形态。
+
+### 特性
+
+- 单行输入框，与其它输入控件同一档行高与内衬。
+- 多种前缀各自映射一份候选。
+- `onQueryChange` 给出当前查询串，异步候选据此拉取。
+- 正文可受控，选中时另有回调。
+- `label` 部件给输入框一个点得动的标题；给了 `translations.input` 时仍走 `aria-label`。
+- 给了 `collection` 却一条都不剩时显出 `empty` 部件。
+- `content` 是候选、空态与加载态共用的唯一浮层表面；`empty`/`loading` 保持为 listbox 外的同级 `role=status`，只在零可见候选时把文字覆盖到该表面。自动结构保留既有 `No results`，手写结构没有状态文案时不画空框。
+- 候选还在取且当前没有可见项时由 `loading` 顶上来，空态让位；已有候选时列表保持可见可操作，只由 `aria-busy` 报后台刷新。
+- 带 `hidden` 的候选不参与计数、高亮、方向键或 Enter；全部隐藏后会清掉 `aria-activedescendant`，不会提交不可见旧项。
+- `name` 让整段正文随表单提交，表单重置回落到 `defaultValue`。
+- 正文输入保持实体，唯一候选面使用 M2 磨砂与细顶光；空态和加载文字位于材质上方，不另画框。
+  浮层使用四向短位移，不缩放文字；增强对比度切为实体，减弱动效取消位移。
 
 ## 产物
 

@@ -1,34 +1,22 @@
-# 时间选择器 <Badge type="info" text="time-picker" />
+# TimePicker <Badge type="info" text="时间选择器" />
 
 带浮层的时间录入：浮层里按时、分、秒分列滚动挑选。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/time-picker" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/time-picker.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/time-picker" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/time-picker" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/time-picker.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 可选时间是离散的（每 15 分钟一档）。
-- 需要限制可选时段（营业时间、可预约时段）。
-
-## 何时不用
-
-- 任意时间都可以、用户会直接打字：用[时间输入](./time-field)。
-
-## 特性
-
-- `step` 分列设定各列的步长。
-- `max` 直接把界外的格从列里裁掉；分列还会随已选的时再裁一遍。
-- `isTimeUnavailable` 逐格判断可选性。
-- 浮层里可以放"此刻"与确认按钮。
-- 快捷选项与时/分/秒列都从当前值恢复持久选中，并统一在逻辑末端显示对号；选中正文保持普通颜色与字重，不铺品牌底。
-- 悬停、键盘高亮与可见焦点使用中性实体底，与选中对号可以同时存在。数字格在左右保留等宽标记轨，选中和 RTL 都不会把数字推离中心。
-- 输入框保持实体表面，浮层采用统一磨砂材质、细顶光和分隔线；时分秒与快捷选项各自滚动，共用一个浮层表面。
-- 浮层按实际弹出方向短距离淡入淡出，不缩放文字与数字；减弱动效和增强对比度沿用主题设置。
-
-## 示例
-
-### 基础用法
+## 用法
 
 点输入行任意处即展开，不必再去点小箭头；段位与列写的是同一个值，段上敲、列里挑，另一边当场跟着改口
 
 <XhDemo src="time-picker/01-basic" />
+
+## 示例
 
 ### 分列步长
 
@@ -89,6 +77,28 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 presets 在列旁边多排一列，点一条整份写进值并收起；时刻在组件外算好再传
 
 <XhDemo src="time-picker/11-presets" />
+
+## 设计指引
+
+### 何时使用
+
+- 可选时间是离散的（每 15 分钟一档）。
+- 需要限制可选时段（营业时间、可预约时段）。
+
+### 何时不用
+
+- 任意时间都可以、用户会直接打字：用[时间输入](./time-field)。
+
+### 特性
+
+- `step` 分列设定各列的步长。
+- `max` 直接把界外的格从列里裁掉；分列还会随已选的时再裁一遍。
+- `isTimeUnavailable` 逐格判断可选性。
+- 浮层里可以放"此刻"与确认按钮。
+- 快捷选项与时/分/秒列都从当前值恢复持久选中，并统一在逻辑末端显示对号；选中正文保持普通颜色与字重，不铺品牌底。
+- 悬停、键盘高亮与可见焦点使用中性实体底，与选中对号可以同时存在。数字格在左右保留等宽标记轨，选中和 RTL 都不会把数字推离中心。
+- 输入框保持实体表面，浮层采用统一磨砂材质、细顶光和分隔线；时分秒与快捷选项各自滚动，共用一个浮层表面。
+- 浮层按实际弹出方向短距离淡入淡出，不缩放文字与数字；减弱动效和增强对比度沿用主题设置。
 
 ## 产物
 

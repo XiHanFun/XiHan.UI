@@ -1,31 +1,22 @@
-# 手风琴 <Badge type="info" text="accordion" />
+# Accordion <Badge type="info" text="手风琴" />
 
 一列可展开的区块，标题常驻、内容按需展开。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/accordion" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/accordion.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/accordion" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/accordion" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/accordion.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 常见问题、设置分组这类"标题足以判断要不要看"的内容。
-- 内容很长，一次全铺开会让页面失去结构。
-
-## 何时不用
-
-- 只有一块内容：用[折叠区域](./collapsible)。
-- 各块内容需要对照着看：直接铺开。
-- 各块是并列视图、同时只看一个：用[标签页](./tabs)。
-
-## 特性
-
-- `multiple` 决定能不能同时展开多项，`collapsible` 决定能不能全部收起。
-- 指示器可以放前也可以放后，图形自定。
-- 可以嵌套；触发区大小由作者决定。
-
-## 示例
-
-### 基础用法
+## 用法
 
 默认单开：展开一项即收起其余，defaultValue 只给初始值，之后由组件自己维护
 
 <XhDemo src="accordion/01-basic" />
+
+## 示例
 
 ### 多项展开
 
@@ -92,6 +83,25 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 plain 不画壳，surface 给整块一层面，bordered 逐条画边；三档只改怎么与页面分开
 
 <XhDemo src="accordion/12-variant" />
+
+## 设计指引
+
+### 何时使用
+
+- 常见问题、设置分组这类"标题足以判断要不要看"的内容。
+- 内容很长，一次全铺开会让页面失去结构。
+
+### 何时不用
+
+- 只有一块内容：用[折叠区域](./collapsible)。
+- 各块内容需要对照着看：直接铺开。
+- 各块是并列视图、同时只看一个：用[标签页](./tabs)。
+
+### 特性
+
+- `multiple` 决定能不能同时展开多项，`collapsible` 决定能不能全部收起。
+- 指示器可以放前也可以放后，图形自定。
+- 可以嵌套；触发区大小由作者决定。
 
 ## 产物
 

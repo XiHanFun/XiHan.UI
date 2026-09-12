@@ -1,33 +1,22 @@
-# 标签页 <Badge type="info" text="tabs" />
+# Tabs <Badge type="info" text="标签页" />
 
 在同一块区域里切换几组并列的内容，同时只显示一组。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tabs" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/tabs.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/tabs" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/tabs" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/tabs.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 内容属于同一个对象的不同侧面（详情 / 权限 / 日志），用户会来回看。
-- 各组内容量相当，且不需要同时对照。
-
-## 何时不用
-
-- 各组需要同时看见或互相对照：并排摆，别切换。
-- 有先后顺序、必须走完：用[步骤条](./steps)。
-- 只是切换一个显示开关：用[切换按钮组](./toggle-group)。
-
-## 特性
-
-- `activationMode` 决定方向键移动焦点时是否顺带切换：内容加载昂贵时改 `manual`，方向键只搬焦点、按 Enter 才切。
-- `variant` 三档（`line` / `card` / `segment`）只改选中态怎么画，切换行为与键盘操作三档一致。
-- 面板常挂，靠 `hidden` 显隐。
-- `root` 按书写顺序渲染子节点：把面板写在标签栏前面，标签栏就落到内容之后。
-- `reorderable` 打开后标签可以拖着换位，键盘走 Alt + 主轴方向键。**只给 `collection` 时代铺的那套标记里没有播报区与拖动把手**：要读屏播报与触屏拖动，得写默认插槽并自己渲 `live-region` 与 `tab-drag-trigger`。
-
-## 示例
-
-### 基础用法
+## 用法
 
 default-value 指定初始选中项，禁用的标签方向键会跳过；面板常挂，靠 hidden 显隐
 
 <XhDemo src="tabs/01-basic" />
+
+## 示例
 
 ### 受控
 
@@ -106,6 +95,27 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 整个标签都是拖动源：按住往旁边拖，落点画成一条线、被拖的标签原地不动；也可以聚焦标签带后按 Alt + 左右键挪一位（竖排是 Alt + 上下键），到首末就不动。库不拥有标签序，只报一次重排好的新顺序连同读屏播报，照它写回数组归使用者
 
 <XhDemo src="tabs/14-reorder" />
+
+## 设计指引
+
+### 何时使用
+
+- 内容属于同一个对象的不同侧面（详情 / 权限 / 日志），用户会来回看。
+- 各组内容量相当，且不需要同时对照。
+
+### 何时不用
+
+- 各组需要同时看见或互相对照：并排摆，别切换。
+- 有先后顺序、必须走完：用[步骤条](./steps)。
+- 只是切换一个显示开关：用[切换按钮组](./toggle-group)。
+
+### 特性
+
+- `activationMode` 决定方向键移动焦点时是否顺带切换：内容加载昂贵时改 `manual`，方向键只搬焦点、按 Enter 才切。
+- `variant` 三档（`line` / `card` / `segment`）只改选中态怎么画，切换行为与键盘操作三档一致。
+- 面板常挂，靠 `hidden` 显隐。
+- `root` 按书写顺序渲染子节点：把面板写在标签栏前面，标签栏就落到内容之后。
+- `reorderable` 打开后标签可以拖着换位，键盘走 Alt + 主轴方向键。**只给 `collection` 时代铺的那套标记里没有播报区与拖动把手**：要读屏播报与触屏拖动，得写默认插槽并自己渲 `live-region` 与 `tab-drag-trigger`。
 
 ## 产物
 

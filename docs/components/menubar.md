@@ -1,38 +1,22 @@
-# 菜单栏 <Badge type="info" text="menubar" />
+# Menubar <Badge type="info" text="菜单栏" />
 
 一排入口各带一张菜单，同时只展开一张——桌面应用顶部那条。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/menubar" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/menubar.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/menubar" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/menubar" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/menubar.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 功能密集的编辑器类界面，命令多到需要按"文件 / 编辑 / 视图"分门别类。
-
-## 何时不用
-
-- 站点导航：那是[导航菜单](./navigation-menu)或[侧栏导航](./side-nav)。
-- 只有一个入口：直接用[菜单](./menu)。
-- 移动端：这排入口在窄屏上放不下，且悬停切换无从谈起。
-
-## 特性
-
-- `value` 是当前展开的那一项，`null` 表示都收起。
-- 一张菜单展开后，指针移到相邻入口即直接换张展开，不必先关再开。
-- 禁用走 `aria-disabled` 而非原生 `disabled`：禁用的入口仍聚焦得上、仍是方向键的起点。
-- `orientation` 竖排时上下键在入口之间走，左右键改为展开本项的菜单。
-- 顶层控制条保持轻量导航表面；每张弹出菜单使用 M2 磨砂材质，箭头与面板同色同边界且不重复模糊。
-- 菜单条目的悬停/键盘锚点与打开路径使用同一中性淡底，按下加深一档；打开二级菜单不加色条、
-  不改字重，也不使用品牌蓝底。顶层当前菜单的 trigger 仍保留自己的导航选中反馈。
-- 条目使用 flex 主行并保留作者的实际插槽顺序：图标、`item-text`、任意快捷键节点和子菜单箭头
-  可以同排；`item-text` 占剩余空间并截断，只有 `item-description` 独占第二行。
-- 首次展开与最终收起沿实际 placement 短移淡变，不缩放整张面；在顶层入口之间换张仍保持瞬时交接，
-  避免两张菜单交叉动画造成闪烁。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一排入口各带一张菜单，同时只展开一张；条目以 value 标识身份，禁用项方向键跳过也选不中
 
 <XhDemo src="menubar/01-basic" />
+
+## 示例
 
 ### 受控
 
@@ -87,6 +71,32 @@ orientation 决定主轴：竖排时上下键在入口之间走，左右键改�
 XhMenubarSub 在菜单栏的一张菜单里再嵌一层：触发条目双重身份（菜单栏的方向键照常走、右方向键进子层），子层内用 XhMenu 系部件，选中带上所属菜单的身份汇到根并关掉整条菜单栏
 
 <XhDemo src="menubar/10-submenu" />
+
+## 设计指引
+
+### 何时使用
+
+- 功能密集的编辑器类界面，命令多到需要按"文件 / 编辑 / 视图"分门别类。
+
+### 何时不用
+
+- 站点导航：那是[导航菜单](./navigation-menu)或[侧栏导航](./side-nav)。
+- 只有一个入口：直接用[菜单](./menu)。
+- 移动端：这排入口在窄屏上放不下，且悬停切换无从谈起。
+
+### 特性
+
+- `value` 是当前展开的那一项，`null` 表示都收起。
+- 一张菜单展开后，指针移到相邻入口即直接换张展开，不必先关再开。
+- 禁用走 `aria-disabled` 而非原生 `disabled`：禁用的入口仍聚焦得上、仍是方向键的起点。
+- `orientation` 竖排时上下键在入口之间走，左右键改为展开本项的菜单。
+- 顶层控制条保持轻量导航表面；每张弹出菜单使用 M2 磨砂材质，箭头与面板同色同边界且不重复模糊。
+- 菜单条目的悬停/键盘锚点与打开路径使用同一中性淡底，按下加深一档；打开二级菜单不加色条、
+  不改字重，也不使用品牌蓝底。顶层当前菜单的 trigger 仍保留自己的导航选中反馈。
+- 条目使用 flex 主行并保留作者的实际插槽顺序：图标、`item-text`、任意快捷键节点和子菜单箭头
+  可以同排；`item-text` 占剩余空间并截断，只有 `item-description` 独占第二行。
+- 首次展开与最终收起沿实际 placement 短移淡变，不缩放整张面；在顶层入口之间换张仍保持瞬时交接，
+  避免两张菜单交叉动画造成闪烁。
 
 ## 产物
 

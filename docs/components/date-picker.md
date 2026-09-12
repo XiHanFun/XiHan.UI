@@ -1,42 +1,22 @@
-# 日期选择器 <Badge type="info" text="date-picker" />
+# DatePicker <Badge type="info" text="日期选择器" />
 
 带日历浮层的日期录入：输入框可以打字，浮层里可以挑。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/date-picker" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/date-picker.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/date-picker" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/date-picker" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/date-picker.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 用户需要看着日历判断（星期几、离今天多远、区间有多长）。
-- 需要选区间，或需要日期加时间。
-
-## 何时不用
-
-- 用户已经知道确切日期且只想打字：用[日期输入](./date-field)。
-- 只要时间：用[时间选择器](./time-picker)。
-
-## 特性
-
-- 五种粒度（周 / 月 / 季度 / 年 / 日）走同一套结构。
-- `selectionMode` 支持单选与区间；区间的两端各有自己的 `name`。
-- `isDateUnavailable` 逐日判断可选性。
-- `presets` 在浮层里排出一列快捷选项（今天 / 近 7 天 / 本月），点一下整份写进去。
-- 快捷项与 `showTime` 的时 / 分 / 秒选项统一由逻辑末端对号表示持久选值；正文保持普通颜色和字重，
-  悬停与键盘焦点才铺中性底。日期格、范围连片和预览仍由内嵌 Calendar 的独立状态表达。
-- 时间数字两侧保留等宽标记轨，数字保持在整行数学中心；RTL 只把对号翻到另一侧，不移动数字。
-  手机复合面板在 comfortable 密度使用 12px 小标记（compact 随同一令牌收至 10px），以容下日历与
-  时 / 分两列；平板起恢复 16px。作者槽仍可显式覆盖。
-- 禁用态同步压低正文与对号，并停止 hover 反馈；forced-colors 下对号改用系统前景色，禁用标记使用
-  `GrayText`，与公共选中轮廓形成两条独立通道。
-- `closeOnSelect` 决定选完就关还是等确认。
-- 输入框保持实体表面，日历浮层采用统一磨砂材质、细顶光与分隔线；内嵌 Calendar 和时间列共用外层表面。
-- 浮层按实际弹出方向短距离淡入淡出，不缩放日期和文字；手机双月历堆叠、时间列与确认按钮布局在退场中保持稳定。
-- 减弱动效、增强对比度沿用主题设置，键盘关闭后归还打开前的焦点。
-
-## 示例
-
-### 基础用法
+## 用法
 
 点输入行任意处即展开，不必再去点小箭头；段位与日历写的是同一个值，改哪边另一边当场跟着改口
 
 <XhDemo src="date-picker/01-basic" />
+
+## 示例
 
 ### 区间选择
 
@@ -91,6 +71,36 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 点输入行本来就展开，这个按钮不是必需的；要它是因为它才带 aria-haspopup / aria-expanded
 
 <XhDemo src="date-picker/10-trigger" />
+
+## 设计指引
+
+### 何时使用
+
+- 用户需要看着日历判断（星期几、离今天多远、区间有多长）。
+- 需要选区间，或需要日期加时间。
+
+### 何时不用
+
+- 用户已经知道确切日期且只想打字：用[日期输入](./date-field)。
+- 只要时间：用[时间选择器](./time-picker)。
+
+### 特性
+
+- 五种粒度（周 / 月 / 季度 / 年 / 日）走同一套结构。
+- `selectionMode` 支持单选与区间；区间的两端各有自己的 `name`。
+- `isDateUnavailable` 逐日判断可选性。
+- `presets` 在浮层里排出一列快捷选项（今天 / 近 7 天 / 本月），点一下整份写进去。
+- 快捷项与 `showTime` 的时 / 分 / 秒选项统一由逻辑末端对号表示持久选值；正文保持普通颜色和字重，
+  悬停与键盘焦点才铺中性底。日期格、范围连片和预览仍由内嵌 Calendar 的独立状态表达。
+- 时间数字两侧保留等宽标记轨，数字保持在整行数学中心；RTL 只把对号翻到另一侧，不移动数字。
+  手机复合面板在 comfortable 密度使用 12px 小标记（compact 随同一令牌收至 10px），以容下日历与
+  时 / 分两列；平板起恢复 16px。作者槽仍可显式覆盖。
+- 禁用态同步压低正文与对号，并停止 hover 反馈；forced-colors 下对号改用系统前景色，禁用标记使用
+  `GrayText`，与公共选中轮廓形成两条独立通道。
+- `closeOnSelect` 决定选完就关还是等确认。
+- 输入框保持实体表面，日历浮层采用统一磨砂材质、细顶光与分隔线；内嵌 Calendar 和时间列共用外层表面。
+- 浮层按实际弹出方向短距离淡入淡出，不缩放日期和文字；手机双月历堆叠、时间列与确认按钮布局在退场中保持稳定。
+- 减弱动效、增强对比度沿用主题设置，键盘关闭后归还打开前的焦点。
 
 ## 产物
 

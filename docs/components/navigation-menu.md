@@ -1,30 +1,22 @@
-# 导航菜单 <Badge type="info" text="navigation-menu" />
+# NavigationMenu <Badge type="info" text="导航菜单" />
 
 站点的主导航：一排入口，展开后是一整块去处面板，面板里是链接不是命令。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/navigation-menu" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/navigation-menu.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/navigation-menu" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/navigation-menu" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/navigation-menu.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 门户、营销站、文档站的顶部导航，每个板块下还有若干去处。
-
-## 何时不用
-
-- 条目是命令（执行一次动作）：用[菜单](./menu)。
-- 后台的层级导航：用[侧栏导航](./side-nav)。
-
-## 特性
-
-- 面板落在同一个 `li` 里、紧跟入口之后，展开时按 Tab 就走得进去。
-- `delayDuration` 防的是指针横穿导航时一路闪出面板；`skipDelayDuration` 是收起后的静默窗口，窗口内再碰任意入口直接展开。
-- 没有下级的去处不必套面板：那一项直接铺成一条 `link`，它不进方向键那一组，按 Tab 一样到得了。
-- 面板整批塞进 `viewport` 后落位归外壳管：几个入口的面板落在同一处，宽窄不同也不再各贴各的入口。
-
-## 示例
-
-### 基础用法
+## 用法
 
 面板落在同一个 li 里、紧跟 trigger 之后，展开时按 Tab 就走得进去，里面的条目是链接不是命令，点了就跳走
 
 <XhDemo src="navigation-menu/01-basic" />
+
+## 示例
 
 ### 受控
 
@@ -79,6 +71,24 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 竖排时面板本就从入口侧边长出来；收窄只是把文字从入口里撤掉、把它挪进面板，指针停上去才露出来
 
 <XhDemo src="navigation-menu/10-collapsed" />
+
+## 设计指引
+
+### 何时使用
+
+- 门户、营销站、文档站的顶部导航，每个板块下还有若干去处。
+
+### 何时不用
+
+- 条目是命令（执行一次动作）：用[菜单](./menu)。
+- 后台的层级导航：用[侧栏导航](./side-nav)。
+
+### 特性
+
+- 面板落在同一个 `li` 里、紧跟入口之后，展开时按 Tab 就走得进去。
+- `delayDuration` 防的是指针横穿导航时一路闪出面板；`skipDelayDuration` 是收起后的静默窗口，窗口内再碰任意入口直接展开。
+- 没有下级的去处不必套面板：那一项直接铺成一条 `link`，它不进方向键那一组，按 Tab 一样到得了。
+- 面板整批塞进 `viewport` 后落位归外壳管：几个入口的面板落在同一处，宽窄不同也不再各贴各的入口。
 
 ## 产物
 

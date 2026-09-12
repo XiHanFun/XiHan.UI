@@ -1,34 +1,22 @@
-# 表单字段 <Badge type="info" text="field" />
+# Field <Badge type="info" text="表单字段" />
 
 把标签、控件、说明与错误文本绑成一组，并把 `id` 与 ARIA 关联接好。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/field" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/field.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/field" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/field" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/field.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 任何一个需要标签的表单控件——这是所有录入组件的外壳。
-- 需要说明文字或错误提示与控件正确关联时。
-
-## 何时不用
-
-- 控件在工具栏或表格里、没有可见标签：给控件本身写 `aria-label`。
-- 需要整表的值管理与校验：外面再套[表单](./form)，字段只管一格。
-
-## 特性
-
-- 标签的 `for`、说明与错误文本的 `aria-describedby`、无效态的 `aria-invalid` 全部自动接上，作者不写 `id`。
-- `disabled` / `readOnly` / `invalid` / `required` 沿字段流给里面的控件。控件实例没写才继承；
-  显式 `false` 顶掉最近的 Field/Form 状态。TextField 收到后会把行为与 ARIA 写到真正的 input，
-  不只停在包装根。
-- 有错误文本时说明文字不会被顶掉，两者可以同时在。
-- 默认把接线属性合到控件槽里唯一的子节点上，这条只适用于「子节点的根就是可聚焦控件」。控件藏在薄封装里时关掉 asChild，由封装内部自取——标签的 for 只对可标注元素生效，指到封装的根上会静默失效。
-- `FieldControl` 的默认 `asChild` 必须提供唯一可挂载子节点，允许包在 Fragment 中；零节点、多个节点或并列非空文本明确报错，不再静默丢失标签和 ARIA 接线。需要手工组织多个节点时显式设置 `asChild=false`，并通过插槽载荷或 `useFieldControl` 绑定真控件。
-
-## 示例
-
-### 基础用法
+## 用法
 
 控件由自己写，Field 只把属性并上去：标题的 for、控件的 id 与描述链（aria-describedby）自动对齐
 
 <XhDemo src="field/01-basic" />
+
+## 示例
 
 ### 无效与必填
 
@@ -65,6 +53,28 @@ Field 的 disabled 只把 data-disabled 铺到各部件上；真正改不动还�
 封装的根不是可聚焦元素时，关掉 asChild、让封装内部用 useFieldControl 自取
 
 <XhDemo src="field/07-wrapper" />
+
+## 设计指引
+
+### 何时使用
+
+- 任何一个需要标签的表单控件——这是所有录入组件的外壳。
+- 需要说明文字或错误提示与控件正确关联时。
+
+### 何时不用
+
+- 控件在工具栏或表格里、没有可见标签：给控件本身写 `aria-label`。
+- 需要整表的值管理与校验：外面再套[表单](./form)，字段只管一格。
+
+### 特性
+
+- 标签的 `for`、说明与错误文本的 `aria-describedby`、无效态的 `aria-invalid` 全部自动接上，作者不写 `id`。
+- `disabled` / `readOnly` / `invalid` / `required` 沿字段流给里面的控件。控件实例没写才继承；
+  显式 `false` 顶掉最近的 Field/Form 状态。TextField 收到后会把行为与 ARIA 写到真正的 input，
+  不只停在包装根。
+- 有错误文本时说明文字不会被顶掉，两者可以同时在。
+- 默认把接线属性合到控件槽里唯一的子节点上，这条只适用于「子节点的根就是可聚焦控件」。控件藏在薄封装里时关掉 asChild，由封装内部自取——标签的 for 只对可标注元素生效，指到封装的根上会静默失效。
+- `FieldControl` 的默认 `asChild` 必须提供唯一可挂载子节点，允许包在 Fragment 中；零节点、多个节点或并列非空文本明确报错，不再静默丢失标签和 ARIA 接线。需要手工组织多个节点时显式设置 `asChild=false`，并通过插槽载荷或 `useFieldControl` 绑定真控件。
 
 ## 产物
 

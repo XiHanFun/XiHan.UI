@@ -1,32 +1,22 @@
-# 卡片 <Badge type="info" text="card" />
+# Card <Badge type="info" text="卡片" />
 
 一块有边界的内容容器：封面、标题、正文与页脚各占一段。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/card" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/card.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/card" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/card" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/card.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 把一组相关信息收成一个可以整体感知的单元。
-- 内容块之间需要视觉边界。
-
-## 何时不用
-
-- 页面上每一块都套卡片：边界失效，只剩噪音。
-- 只是要一条分隔：用[分隔线](./separator)。
-
-## 特性
-
-- 七个部件全部可选，只写用得上的那几段。
-- `split` 在各段之间画线，`hoverable` 给出悬停反馈。
-
-
-默认 outline 使用 M1 柔和实体面：细边、单像素顶光和轻接触影；正文保持不透明，卡片不模糊背后内容。subtle 保留淡底无影，elevated 使用 raised 投影，ghost 保持透明。hoverable 在可悬停设备上提升边界与投影，不移动布局。高对比模式取消装饰高光并增强边界，打印时移除高光与投影。
-
-## 示例
-
-### 基础用法
+## 用法
 
 除了 root，封面、头、身、脚都可选；只写用得上的那几段
 
 <XhDemo src="card/01-basic" />
+
+## 示例
 
 ### 形态
 
@@ -51,6 +41,26 @@ split 在段与段之间画一条分隔线；hoverable 只在能用指针的设�
 封面顶到根的边上、不吃内边距，圆角由根统一裁
 
 <XhDemo src="card/05-cover" />
+
+## 设计指引
+
+### 何时使用
+
+- 把一组相关信息收成一个可以整体感知的单元。
+- 内容块之间需要视觉边界。
+
+### 何时不用
+
+- 页面上每一块都套卡片：边界失效，只剩噪音。
+- 只是要一条分隔：用[分隔线](./separator)。
+
+### 特性
+
+- 七个部件全部可选，只写用得上的那几段。
+- `split` 在各段之间画线，`hoverable` 给出悬停反馈。
+
+
+默认 outline 使用 M1 柔和实体面：细边、单像素顶光和轻接触影；正文保持不透明，卡片不模糊背后内容。subtle 保留淡底无影，elevated 使用 raised 投影，ghost 保持透明。hoverable 在可悬停设备上提升边界与投影，不移动布局。高对比模式取消装饰高光并增强边界，打印时移除高光与投影。
 
 ## 产物
 

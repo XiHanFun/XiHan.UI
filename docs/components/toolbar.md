@@ -1,31 +1,22 @@
-# 工具栏 <Badge type="info" text="toolbar" />
+# Toolbar <Badge type="info" text="工具栏" />
 
 把一排控件收成一组：整条在 Tab 序列里只占一个位子，条内改用方向键走。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/toolbar" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/toolbar.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/toolbar" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/toolbar" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/toolbar.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 编辑器的格式条、表格的操作条、图表的视图控制条。
-- 控件多到逐个 Tab 走过去太慢。
-
-## 何时不用
-
-- 只有两三个按钮：直接摆，别为此接管键盘。
-- 各控件之间是并列动作而非工具：用[按钮组](./button-group)。
-
-## 特性
-
-- 条目是作者自己的按钮，工具栏不接管它的点击。
-- 分组只是把一伙控件在视觉上收紧，不是导航里多出来的一层：方向键照样一路走过去。
-- 禁用走 `aria-disabled`：禁用项仍聚焦得上、仍能当方向键的起点，只是方向键路过时跳过它。
-- 工具栏只定主轴与条目间距，怎么分布交给 CSS。
-
-## 示例
-
-### 基础用法
+## 用法
 
 整条在 Tab 序列里只占一个位子，条内改用方向键走；条目是作者自己的按钮，工具条不接管它的点击
 
 <XhDemo src="toolbar/01-basic" />
+
+## 示例
 
 ### 分组
 
@@ -68,6 +59,25 @@ size 只换整条的内边距与条目间的间距，条目自身的高度与字
 surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时用 plain，浮在内容之上时用 surface
 
 <XhDemo src="toolbar/08-variant" />
+
+## 设计指引
+
+### 何时使用
+
+- 编辑器的格式条、表格的操作条、图表的视图控制条。
+- 控件多到逐个 Tab 走过去太慢。
+
+### 何时不用
+
+- 只有两三个按钮：直接摆，别为此接管键盘。
+- 各控件之间是并列动作而非工具：用[按钮组](./button-group)。
+
+### 特性
+
+- 条目是作者自己的按钮，工具栏不接管它的点击。
+- 分组只是把一伙控件在视觉上收紧，不是导航里多出来的一层：方向键照样一路走过去。
+- 禁用走 `aria-disabled`：禁用项仍聚焦得上、仍能当方向键的起点，只是方向键路过时跳过它。
+- 工具栏只定主轴与条目间距，怎么分布交给 CSS。
 
 ## 产物
 

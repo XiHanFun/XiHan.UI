@@ -1,31 +1,22 @@
-# 文本截断 <Badge type="info" text="truncate" />
+# Truncate <Badge type="info" text="文本截断" />
 
 放不下的文本收成省略号，并把"到底有没有被裁掉"如实报出来。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/truncate" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/truncate.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/truncate" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/truncate" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/truncate.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 表格单元格、列表项、面包屑末段这类宽度不由内容决定的位置。
-- 需要在真被裁掉时才给出完整文本的提示。
-
-## 何时不用
-
-- 文本必须完整可读（价格、编号、错误原因）：换布局，别裁。
-- 要裁的是一整块正文并需要"展开全文"的阅读体验：可以用本组件的 `expandable`，但更长的正文交给[排印](./typography)加自己的折叠。
-
-## 特性
-
-- `lines` 为 1 走单行省略，大于 1 按行数裁、末行收省略号。
-- 溢出结论会实测并在翻面时回调；容器尺寸、正文节点和所属文档的字体加载完成都会触发重量，不靠猜。
-- `expandable` 让整块文字变成一颗按钮，Enter / Space 也按得动。
-- `tooltip` 在真被裁掉时把整段文字交给平台的原生提示。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一行放不下就收成省略号；有没有被裁如实报出来
 
 <XhDemo src="truncate/01-basic" />
+
+## 示例
 
 ### 行数
 
@@ -44,6 +35,25 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 上面套 Tooltip 按 overflow-change 开关，下面用 tooltip 交给平台的原生提示
 
 <XhDemo src="truncate/04-overflow-tooltip" />
+
+## 设计指引
+
+### 何时使用
+
+- 表格单元格、列表项、面包屑末段这类宽度不由内容决定的位置。
+- 需要在真被裁掉时才给出完整文本的提示。
+
+### 何时不用
+
+- 文本必须完整可读（价格、编号、错误原因）：换布局，别裁。
+- 要裁的是一整块正文并需要"展开全文"的阅读体验：可以用本组件的 `expandable`，但更长的正文交给[排印](./typography)加自己的折叠。
+
+### 特性
+
+- `lines` 为 1 走单行省略，大于 1 按行数裁、末行收省略号。
+- 溢出结论会实测并在翻面时回调；容器尺寸、正文节点和所属文档的字体加载完成都会触发重量，不靠猜。
+- `expandable` 让整块文字变成一颗按钮，Enter / Space 也按得动。
+- `tooltip` 在真被裁掉时把整段文字交给平台的原生提示。
 
 ## 产物
 

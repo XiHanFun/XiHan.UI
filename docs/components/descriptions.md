@@ -1,30 +1,22 @@
-# 描述列表 <Badge type="info" text="descriptions" />
+# Descriptions <Badge type="info" text="描述列表" />
 
 成对的标签与值，按列排开。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/descriptions" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/descriptions.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/descriptions" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/descriptions" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/descriptions.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 详情页的属性列表：订单信息、设备参数、用户资料。
-
-## 何时不用
-
-- 数据是多行同构的记录：用[表格](./table)。
-- 只有一两对：直接写。
-
-## 特性
-
-- 语义是 `dt` / `dd`，组件只给身份与排版。
-- `columns` 决定每行几组，不传即每行一组。
-- 标签位置可以在值的上方或左侧；`bordered` 给出外框。
-- 每一格可以写 `span` 横跨几列，上限是当前列数；窄档一行只摆一组时不认这个数。
-
-## 示例
-
-### 基础用法
+## 用法
 
 标签与取值的配对靠 dl / dt / dd 表达，组件只给身份与排版；不传 columns 即每行一组
 
 <XhDemo src="descriptions/01-basic" />
+
+## 示例
 
 ### 列数
 
@@ -55,6 +47,24 @@ size 换的是每格的内边距、组与组的间距与整体字号，不传 si
 一格写 span 横跨几列，上限是当前列数；长文本字段因此不必另开一份描述列表
 
 <XhDemo src="descriptions/06-span" />
+
+## 设计指引
+
+### 何时使用
+
+- 详情页的属性列表：订单信息、设备参数、用户资料。
+
+### 何时不用
+
+- 数据是多行同构的记录：用[表格](./table)。
+- 只有一两对：直接写。
+
+### 特性
+
+- 语义是 `dt` / `dd`，组件只给身份与排版。
+- `columns` 决定每行几组，不传即每行一组。
+- 标签位置可以在值的上方或左侧；`bordered` 给出外框。
+- 每一格可以写 `span` 横跨几列，上限是当前列数；窄档一行只摆一组时不认这个数。
 
 ## 产物
 

@@ -1,30 +1,22 @@
-# 锚点 <Badge type="info" text="anchor" />
+# Anchor <Badge type="info" text="锚点" />
 
 一份跟着滚动位置自己换高亮的目录。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/anchor" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/anchor.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/anchor" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/anchor" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/anchor.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 长文档、设置页、详情页需要一份能跳转也能反映当前位置的目录。
-
-## 何时不用
-
-- 内容分段但互不相邻、需要切换而不是滚动：用[标签页](./tabs)。
-- 只是一组跳转链接、不需要反映当前位置：写普通链接就好。
-
-## 特性
-
-- `offset` 是判定线距容器视口顶边的距离，有吸顶栏就把栏高填进去。
-- 一节都没越过判定线时当前值是 `null`，此时谁都不亮、指示条整条收起——不硬点亮第一项。
-- `scrollElement` 把判定线挂到指定滚动容器上，不给就挂在窗口上。
-- 组件只在点链接时滚动；程序化跳转由宿主自己滚，滚完观察器会把高亮结算过来。
-
-## 示例
-
-### 基础用法
+## 用法
 
 目录跟着滚动位置自己换高亮；scroll-element 把判定线挂到指定滚动容器上，不给就挂在窗口上
 
 <XhDemo src="anchor/01-basic" />
+
+## 示例
 
 ### 受控
 
@@ -73,6 +65,24 @@ size 换条目的字号与左右内边距，不传 size 即默认档
 组件只在点链接时滚动；程序化跳转由宿主自己滚，滚完观察器会把高亮结算过来
 
 <XhDemo src="anchor/09-scroll-to" />
+
+## 设计指引
+
+### 何时使用
+
+- 长文档、设置页、详情页需要一份能跳转也能反映当前位置的目录。
+
+### 何时不用
+
+- 内容分段但互不相邻、需要切换而不是滚动：用[标签页](./tabs)。
+- 只是一组跳转链接、不需要反映当前位置：写普通链接就好。
+
+### 特性
+
+- `offset` 是判定线距容器视口顶边的距离，有吸顶栏就把栏高填进去。
+- 一节都没越过判定线时当前值是 `null`，此时谁都不亮、指示条整条收起——不硬点亮第一项。
+- `scrollElement` 把判定线挂到指定滚动容器上，不给就挂在窗口上。
+- 组件只在点链接时滚动；程序化跳转由宿主自己滚，滚完观察器会把高亮结算过来。
 
 ## 产物
 

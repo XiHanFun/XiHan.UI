@@ -1,29 +1,22 @@
-# 列表 <Badge type="info" text="list" />
+# List <Badge type="info" text="列表" />
 
 一列同构的条目，每条可以有媒体位、标题、描述与操作位。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/list" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/list.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/list" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/list" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/list.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 同构记录的纵向排列：通知、文件、成员。
-- 每条信息量适中，不需要多列对齐。
-
-## 何时不用
-
-- 每条有多个字段需要按列对照：用[表格](./table)。
-- 条目可选：用[列表框](./listbox)。
-
-## 特性
-
-- 六个部件都可选。
-- `split` 在条目之间画线，`bordered` 给外框，`hoverable` 给悬停反馈。
-
-## 示例
-
-### 基础用法
+## 用法
 
 根与条目的标签由使用者定，这里写成 ul 与 li；条目里只写用得上的那几个位
 
 <XhDemo src="list/01-basic" />
+
+## 示例
 
 ### 分隔线
 
@@ -48,6 +41,23 @@ bordered 给整份列表画一圈描边，hoverable 让条目在指针悬停时�
 size 换的是条目的内边距、图文间距与两行文字的字号，不传 size 即默认档
 
 <XhDemo src="list/05-size" />
+
+## 设计指引
+
+### 何时使用
+
+- 同构记录的纵向排列：通知、文件、成员。
+- 每条信息量适中，不需要多列对齐。
+
+### 何时不用
+
+- 每条有多个字段需要按列对照：用[表格](./table)。
+- 条目可选：用[列表框](./listbox)。
+
+### 特性
+
+- 六个部件都可选。
+- `split` 在条目之间画线，`bordered` 给外框，`hoverable` 给悬停反馈。
 
 ## 产物
 

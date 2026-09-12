@@ -1,29 +1,22 @@
-# 图标块 <Badge type="info" text="icon-wrapper" />
+# IconWrapper <Badge type="info" text="图标块" />
 
 给图元配一个定直径的底座：圆形或圆角方形，图元恒在正中。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/icon-wrapper" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/icon-wrapper.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/icon-wrapper" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/icon-wrapper" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/icon-wrapper.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 需要把图标从背景里托出来：功能入口、结果页的状态徽记、列表项的分类标记。
-- 一组图标要在视觉上等宽等高，不受各自图形轮廓影响。
-
-## 何时不用
-
-- 只要一枚裸图元：直接用[图标](./icon)。
-- 底座里放的是人或组织的形象：用[头像](./avatar)。
-
-## 特性
-
-- 底座直径与里面图元的直径同一个 `size` 档一起换。
-- 四种形态只决定底色、描边与前景怎么用，直径与形状一个字不动。
-
-## 示例
-
-### 基础用法
+## 用法
 
 定直径的圆底座，图元在正中；底座换档时里面的图元跟着一起换
 
 <XhDemo src="icon-wrapper/01-basic" />
+
+## 示例
 
 ### 形态
 
@@ -42,6 +35,23 @@
 三档同时换底座直径与图元直径；改形状、改直径都留了槽位
 
 <XhDemo src="icon-wrapper/04-size" />
+
+## 设计指引
+
+### 何时使用
+
+- 需要把图标从背景里托出来：功能入口、结果页的状态徽记、列表项的分类标记。
+- 一组图标要在视觉上等宽等高，不受各自图形轮廓影响。
+
+### 何时不用
+
+- 只要一枚裸图元：直接用[图标](./icon)。
+- 底座里放的是人或组织的形象：用[头像](./avatar)。
+
+### 特性
+
+- 底座直径与里面图元的直径同一个 `size` 档一起换。
+- 四种形态只决定底色、描边与前景怎么用，直径与形状一个字不动。
 
 ## 产物
 
