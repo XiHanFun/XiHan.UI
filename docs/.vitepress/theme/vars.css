@@ -1,113 +1,89 @@
-/**
- * Customize default theme styling by overriding CSS variables:
- * https://github.com/vuejs/vitepress/blob/main/src/client/theme-default/styles/vars.css
- */
-
-/**
- * Colors
- * -------------------------------------------------------------------------- */
-
 :root {
-  --vp-c-gutter: var(--vp-c-divider);
-  --vp-code-block-bg: rgba(125, 125, 125, 0.04);
-  --vp-code-tab-divider: var(--vp-c-divider);
-  --vp-code-copy-code-bg: rgba(125, 125, 125, 0.1);
-  --vp-code-copy-code-hover-bg: rgba(125, 125, 125, 0.2);
-  --vp-c-disabled-bg: rgba(125, 125, 125, 0.2);
+  color-scheme: light;
+  --xh-doc-accent: oklch(0.6204 0.195 253.83);
+  --xh-doc-ink: oklch(0.2103 0.0059 285.89);
+  --xh-doc-muted: oklch(0.5517 0.0138 285.94);
+  --xh-doc-canvas: oklch(0.9702 0 0);
+  --xh-doc-surface: oklch(1 0 0);
+  --xh-doc-surface-2: oklch(0.9524 0.0013 286.37);
+  --xh-doc-surface-3: oklch(0.9373 0.0013 286.37);
+  --xh-doc-border: oklch(0.9 0.004 286.32);
+  --xh-doc-shadow-control:
+    0 2px 4px rgb(0 0 0 / 0.04), 0 1px 2px rgb(0 0 0 / 0.06),
+    0 0 1px rgb(0 0 0 / 0.06);
+  --xh-doc-shadow-surface:
+    0 2px 8px rgb(0 0 0 / 0.04), 0 8px 24px rgb(0 0 0 / 0.04);
+
+  --vp-c-brand-1: var(--xh-doc-accent);
+  --vp-c-brand-2: color-mix(in oklab, var(--xh-doc-accent) 88%, black);
+  --vp-c-brand-3: color-mix(in oklab, var(--xh-doc-accent) 78%, black);
+  --vp-c-brand-soft: color-mix(in oklab, var(--xh-doc-accent) 12%, transparent);
+  --vp-c-brand-soft-up: color-mix(in oklab, var(--xh-doc-accent) 16%, transparent);
+  --vp-c-brand-soft-down: color-mix(in oklab, var(--xh-doc-accent) 20%, transparent);
+
+  --vp-c-bg: var(--xh-doc-canvas);
+  --vp-c-bg-alt: var(--xh-doc-canvas);
+  --vp-c-bg-elv: var(--xh-doc-surface);
+  --vp-c-bg-soft: var(--xh-doc-surface-2);
+  --vp-c-bg-mute: var(--xh-doc-surface-3);
+  --vp-c-text-1: var(--xh-doc-ink);
+  --vp-c-text-2: var(--xh-doc-muted);
+  --vp-c-text-3: color-mix(in oklab, var(--xh-doc-muted) 72%, transparent);
+  --vp-c-divider: var(--xh-doc-border);
+  --vp-c-gutter: var(--xh-doc-border);
+  --vp-c-default-soft: color-mix(in oklab, var(--xh-doc-surface-3) 70%, transparent);
+  --vp-code-block-bg: color-mix(in oklab, var(--xh-doc-surface-2) 72%, transparent);
+  --vp-code-tab-divider: var(--xh-doc-border);
+  --vp-code-copy-code-bg: var(--xh-doc-surface-2);
+  --vp-code-copy-code-hover-bg: var(--xh-doc-surface-3);
+  --vp-c-disabled-bg: color-mix(in oklab, var(--xh-doc-muted) 14%, transparent);
   --vp-code-tab-text-color: var(--vp-c-text-2);
   --vp-code-tab-active-text-color: var(--vp-c-text-1);
   --vp-code-tab-hover-text-color: var(--vp-c-text-1);
   --vp-code-copy-code-active-text: var(--vp-c-text-2);
-  --vp-c-text-dark-3: rgba(56, 56, 56, 0.8);
-  --vp-c-brand-lightest: var(--vp-c-brand);
-  --vp-c-highlight-bg: var(--vp-c-brand-light);
-  --vp-c-highlight-text: var(--vp-c-bg);
+  --vp-font-family-base:
+    Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --vp-font-family-mono:
+    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  --vp-sidebar-width: 240px;
+  --vp-layout-max-width: 1600px;
+
+  --vp-button-brand-border: transparent;
+  --vp-button-brand-text: white;
+  --vp-button-brand-bg: var(--xh-doc-accent);
+  --vp-button-brand-hover-border: transparent;
+  --vp-button-brand-hover-text: white;
+  --vp-button-brand-hover-bg: color-mix(in oklab, var(--xh-doc-accent) 90%, white);
+  --vp-button-brand-active-border: transparent;
+  --vp-button-brand-active-text: white;
+  --vp-button-brand-active-bg: color-mix(in oklab, var(--xh-doc-accent) 84%, black);
+
+  --vp-home-hero-name-color: var(--vp-c-text-1);
+  --vp-home-hero-name-background: none;
+  --vp-home-hero-image-background-image: none;
+  --vp-home-hero-image-filter: none;
+
+  --vp-custom-block-tip-border: var(--vp-c-brand-1);
+  --vp-custom-block-tip-text: var(--vp-c-text-1);
+  --vp-custom-block-tip-bg: var(--vp-c-brand-soft);
 }
 
 .dark {
-  --vp-code-block-bg: rgba(0, 0, 0, 0.2);
-  --vp-c-text-code: #c0cec0;
-  --vp-code-tab-text-color: var(--vp-c-text-dark-2);
-  --vp-code-tab-active-text-color: var(--vp-c-text-dark-1);
-  --vp-code-tab-hover-text-color: var(--vp-c-text-dark-1);
-  --vp-code-copy-code-active-text: var(--vp-c-text-dark-2);
-  --vp-c-text-dark-3: var(--vp-c-text-dark-2);
+  color-scheme: dark;
+  --xh-doc-ink: oklch(0.9911 0 0);
+  --xh-doc-muted: oklch(0.705 0.015 286.067);
+  --xh-doc-canvas: oklch(0.12 0.005 285.823);
+  --xh-doc-surface: oklch(0.2103 0.0059 285.89);
+  --xh-doc-surface-2: oklch(0.257 0.0037 286.14);
+  --xh-doc-surface-3: oklch(0.2721 0.0024 247.91);
+  --xh-doc-border: oklch(0.28 0.006 286.033);
+  --xh-doc-shadow-control: 0 0 1px rgb(255 255 255 / 0.3) inset;
+  --xh-doc-shadow-surface: 0 0 1px rgb(255 255 255 / 0.24) inset;
+  --vp-code-block-bg: color-mix(in oklab, var(--xh-doc-surface) 84%, black);
+  --vp-c-brand-2: color-mix(in oklab, var(--xh-doc-accent) 88%, white);
+  --vp-c-brand-3: color-mix(in oklab, var(--xh-doc-accent) 78%, white);
 }
-
-/**
- * Component: Button
- * -------------------------------------------------------------------------- */
-
-:root {
-  --vp-button-brand-border: var(--vp-c-brand-light);
-  --vp-button-brand-text: var(--vp-c-white);
-  --vp-button-brand-bg: var(--vp-c-brand);
-  --vp-button-brand-hover-border: var(--vp-c-brand-light);
-  --vp-button-brand-hover-text: var(--vp-c-white);
-  --vp-button-brand-hover-bg: var(--vp-c-brand-light);
-  --vp-button-brand-active-border: var(--vp-c-brand-light);
-  --vp-button-brand-active-text: var(--vp-c-white);
-  --vp-button-brand-active-bg: var(--vp-button-brand-bg);
-}
-
-/**
- * Component: Home
- * -------------------------------------------------------------------------- */
-
-:root {
-  --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: -webkit-linear-gradient(
-    120deg,
-    var(--vp-c-brand) 30%,
-    var(--vp-c-brand-next)
-  );
-  --vp-home-hero-image-background-image: linear-gradient(
-    -45deg,
-    var(--vp-c-brand) 30%,
-    var(--vp-c-brand-next)
-  );
-  --vp-home-hero-image-filter: blur(80px);
-}
-
-@media (min-width: 640px) {
-  :root {
-    --vp-home-hero-image-filter: blur(120px);
-  }
-}
-
-@media (min-width: 960px) {
-  :root {
-    --vp-home-hero-image-filter: blur(120px);
-  }
-}
-
-/* Safari has a very bad performance on gradient and filter */
-.browser-safari,
-.browser-firefox {
-  --vp-home-hero-image-background-image: transparent;
-  --vp-home-hero-image-filter: "";
-}
-
-/**
- * Component: Custom Block
- * -------------------------------------------------------------------------- */
-
-:root {
-  --vp-custom-block-tip-border: var(--vp-c-brand);
-  --vp-custom-block-tip-text: var(--vp-c-brand-darker);
-  --vp-custom-block-tip-bg: var(--vp-c-brand-dimm);
-}
-
-.dark {
-  --vp-custom-block-tip-border: var(--vp-c-brand);
-  --vp-custom-block-tip-text: var(--vp-c-brand-lightest);
-  --vp-custom-block-tip-bg: var(--vp-c-brand-dimm);
-}
-
-/**
- * Component: Algolia
- * -------------------------------------------------------------------------- */
 
 .DocSearch {
-  --docsearch-primary-color: var(--vp-c-brand) !important;
+  --docsearch-primary-color: var(--vp-c-brand-1) !important;
 }

@@ -66,7 +66,7 @@ const componentManifest: {
   }[];
 } = require("../../ui/scripts/component-docs.manifest.json");
 
-const title: string = "曦寒视图组件文档";
+const title: string = "XiHan.UI";
 const description: string = "框架无关的设计系统运行时与组件库";
 const keywords: string
   = "曦寒,曦寒懿,视图组件,组件库,设计系统,Vue,Web Components,官方文档,开源,XiHanFun,XiHan.UI";
@@ -204,9 +204,8 @@ const componentsSidebar: DefaultTheme.SidebarItem[] = [
     text: `${category.label}（${category.components.length}）`,
     collapsed: false,
     items: category.components.map(component => ({
-      // 中英并列：中文认得快，英文对得上代码里的标识与导出名。
-      // 侧栏文本走 v-html，英文压成次要样式，中文仍是主视觉
-      text: `${component.name} <span class="xh-sidebar-en">${enName(component.id)}</span>`,
+      // 组件代码、搜索结果与 HeroUI 的参考页都以英文名为主；中文解释留在正文标题与描述。
+      text: enName(component.id),
       link: `/components/${component.id}`,
     })),
   })),
@@ -230,113 +229,35 @@ const nav: DefaultTheme.NavItem[] = [
     activeMatch:
       "^/(introduction|overview|installation|quickstart|npm-package-dependency|faq)$",
   },
-  { text: "核心概念", link: "/guide/anatomy", activeMatch: "/guide/" },
-  { text: "适配器", link: "/adapters/vue", activeMatch: "/adapters/" },
-  { text: "组件参考", link: "/components/", activeMatch: "/components/" },
-  { text: "场景示例", link: "/examples/", activeMatch: "/examples/" },
-  { text: "服务与运行时", link: "/runtime/", activeMatch: "/runtime/" },
+  { text: "组件", link: "/components/", activeMatch: "/components/" },
   {
-    text: "探索未知",
-    items: [
-      {
-        text: "关于我们",
-        items: [
-          {
-            text: "官方网站",
-            link: "https://www.xihanfun.com",
-          },
-          {
-            text: "组织文档",
-            link: "https://docs.xihanfun.com",
-          },
-        ],
-      },
-      {
-        text: "生态文档",
-        items: [
-          {
-            text: "后端 | 开发框架",
-            link: "https://framework.docs.xihanfun.com",
-          },
-          {
-            text: "用例 | 基础应用",
-            link: "https://basicapp.docs.xihanfun.com",
-          },
-        ],
-      },
-      {
-        text: "引用下载",
-        items: [
-          {
-            text: "后端 | nuget",
-            link: "https://www.nuget.org/profiles/XiHanFun",
-          },
-          {
-            text: "前端 | npm",
-            link: "https://www.npmjs.com/org/xihan-ui",
-          },
-        ],
-      },
-      {
-        text: "在线体验",
-        items: [
-          {
-            text: "后端 | 开发框架",
-            link: "https://framework.xihanfun.com",
-          },
-          {
-            text: "前端 | 视图组件",
-            link: "https://ui.xihanfun.com",
-          },
-          {
-            text: "用例 | 基础应用",
-            link: "https://basicapp.xihanfun.com",
-          },
-        ],
-      },
-    ],
+    text: "指南",
+    link: "/guide/anatomy",
+    activeMatch: "^/(guide|adapters|runtime)/",
   },
-  {
-    text: "代码仓库",
-    items: [
-      {
-        text: "Github主库(国际)",
-        link: "https://github.com/XiHanFun/XiHan.UI",
-      },
-      {
-        text: "Gitee同步备库(国内)",
-        link: "https://gitee.com/XiHanFun/XiHan.UI",
-      },
-      {
-        text: "GitCode同步备库(国内)",
-        link: "https://gitcode.com/XiHanFun/XiHan.UI",
-      },
-    ],
-  },
-  {
-    text: "参与贡献",
-    items: [
-      {
-        text: "公约",
-        link: "https://docs.xihanfun.com/cosmos/code-of-conduct",
-      },
-      {
-        text: "指南",
-        link: "https://docs.xihanfun.com/cosmos/contributing",
-      },
-      {
-        text: "贡献者",
-        link: "https://docs.xihanfun.com/cosmos/contributors",
-      },
-      {
-        text: "支持&赞助",
-        link: "https://docs.xihanfun.com/cosmos/sponsor",
-      },
-    ],
-  },
+  { text: "示例", link: "/examples/", activeMatch: "/examples/" },
   {
     text: `v${version}`,
-    items: [{ text: "更新日志", link: "/changelog" }],
+    items: [
+      {
+        text: "项目",
+        items: [
+          { text: "更新日志", link: "/changelog" },
+          { text: "适配器", link: "/adapters/vue" },
+          { text: "服务与运行时", link: "/runtime/" },
+        ],
+      },
+      {
+        text: "社区",
+        items: [
+          { text: "官方网站", link: "https://www.xihanfun.com" },
+          {
+            text: "贡献指南",
+            link: "https://docs.xihanfun.com/cosmos/contributing",
+          },
+        ],
+      },
+    ],
   },
 ];
 
