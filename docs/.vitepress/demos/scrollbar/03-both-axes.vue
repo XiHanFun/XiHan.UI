@@ -1,4 +1,4 @@
-<!-- 横竖两条 | 同一个容器挂两条，gutter 让各自在末端让出交叉口，XhScrollbarCorner 把那一格补上 -->
+<!-- 双轴滚动 | 同时显示横向和纵向滚动条 -->
 <script setup lang="ts">
 import { XhScrollbarCorner, XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -35,7 +35,6 @@ const rows = Array.from({ length: 30 }, (_, r) => Array.from({ length: 12 }, (_,
       </div>
     </div>
 
-    <!-- 交叉口补丁写在其中一条里即可，跟着这一条显隐 -->
     <XhScrollbarRoot :scrollable="box" type="auto" gutter>
       <XhScrollbarTrack>
         <XhScrollbarThumb />

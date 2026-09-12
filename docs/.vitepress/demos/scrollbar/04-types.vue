@@ -1,4 +1,4 @@
-<!-- 五种露面时机 | 缺省的 scroll-hover 滚动或指针进来都露、auto 溢出就露、always 恒露、scroll 只认滚动、hover 只认指针；收起都是淡出 -->
+<!-- 显示方式 | 设置滚动条的显示时机 -->
 <script setup lang="ts">
 import type { ScrollbarType } from "@xihan-ui/headless";
 import { XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from "@xihan-ui/vue";

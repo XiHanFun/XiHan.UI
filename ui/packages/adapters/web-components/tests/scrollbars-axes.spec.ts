@@ -14,6 +14,7 @@ defineXhElements()
 
 interface Updatable extends HTMLElement {
   updateComplete: Promise<unknown>
+  portalContainer?: () => Element | null
   [key: string]: unknown
 }
 
@@ -195,6 +196,8 @@ async function mount(item: Case): Promise<Updatable> {
     el.setAttribute(name, value)
   for (const [name, value] of Object.entries(item.props ?? {}))
     el[name] = value
+  if (item.overlay)
+    el.portalContainer = () => el
   document.body.appendChild(el)
   await settle(el)
   return el

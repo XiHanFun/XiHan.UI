@@ -9,7 +9,10 @@ import { defineXhElements } from '../src/define'
 
 defineXhElements()
 
-interface Updatable extends HTMLElement { updateComplete: Promise<unknown> }
+interface Updatable extends HTMLElement {
+  updateComplete: Promise<unknown>
+  portalContainer?: () => Element | null
+}
 
 beforeEach(() => {
   document.body.innerHTML = ''
@@ -130,6 +133,7 @@ async function mount(host: Host): Promise<Updatable> {
   el.innerHTML = host.markup
   for (const [name, value] of Object.entries(host.attrs ?? {}))
     el.setAttribute(name, value)
+  el.portalContainer = () => el
   document.body.appendChild(el)
   await settle(el)
   await host.open?.(el)

@@ -1,4 +1,4 @@
-<!-- 横向 + 键盘可达 | focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可用 -->
+<!-- 键盘操作 | 让滑块可聚焦 -->
 <script setup lang="ts">
 import { XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -50,6 +50,4 @@ const cells = Array.from({ length: 24 }, (_, i) => `第 ${i + 1} 列`);
       </XhScrollbarTrack>
     </XhScrollbarRoot>
   </div>
-
-  <span style="font-size: 13px">Tab 到滑块上，用左右键 / PageUp / PageDown / Home / End 滚动</span>
 </template>

@@ -1,4 +1,4 @@
-<!-- 横向 + 键盘可达 | focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可用 -->
+<!-- 键盘操作 | 让滑块可聚焦 -->
 <div style="position: relative; inline-size: 320px">
   <div
     id="scrollbar-focusable-box"
@@ -29,8 +29,6 @@
   </xh-scrollbar>
 </div>
 
-<span style="font-size: 13px">Tab 到滑块上，用左右键 / PageUp / PageDown / Home / End 滚动</span>
-
 <script type="module">
   document.getElementById("scrollbar-focusable-row").replaceChildren(
     ...Array.from({ length: 24 }, (_, i) => {
@@ -43,7 +41,5 @@
       return cell;
     }),
   );
-
-  // 文案是对象，只能走 property
   document.getElementById("scrollbar-focusable").translations = { thumb: "横向滚动条" };
 </script>
