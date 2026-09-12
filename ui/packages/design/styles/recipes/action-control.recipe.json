@@ -1,5 +1,5 @@
 {
-  "$description": "Action Control 家族配方：四种视觉 profile 共用一套状态、显示策略与输入能力规则。组件只投影稳定角色，不自行复制交互皮肤。",
+  "$description": "Action Control 家族配方：四种视觉 profile 共用一套平面状态、显示策略与输入能力规则。组件只投影稳定角色，需要品牌实心、描边或海拔时显式映射。",
   "version": 1,
   "order": ["text", "icon", "field-inset", "floating"],
   "sizes": ["xs", "sm", "md", "lg"],
@@ -47,12 +47,12 @@
     }
   },
   "states": {
-    "rest": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-default)", "borderColor": "var(--xh-material-soft-border)", "highlight": "var(--xh-material-soft-highlight)", "shadow": "var(--xh-material-soft-shadow)", "opacity": "1", "cursor": "pointer", "scale": "none" },
-    "hover": { "backgroundColor": "var(--xh-bg-subtle-hover)", "color": "var(--xh-fg-default)", "borderColor": "var(--xh-material-soft-border)", "highlight": "var(--xh-material-soft-highlight)", "shadow": "var(--xh-elevation-raised)", "opacity": "1", "cursor": "pointer", "scale": "none" },
-    "pressed": { "backgroundColor": "var(--xh-bg-subtle-active)", "color": "var(--xh-fg-default)", "borderColor": "var(--xh-material-soft-border)", "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "var(--xh-motion-scale-press)" },
-    "focus-visible": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-default)", "borderColor": "var(--xh-material-soft-border)", "highlight": "var(--xh-material-soft-highlight)", "shadow": "var(--xh-material-soft-shadow)", "opacity": "1", "cursor": "pointer", "scale": "none", "ringColor": "var(--xh-ring-focus)" },
-    "disabled": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-default)", "borderColor": "var(--xh-material-soft-border)", "highlight": "transparent", "shadow": "none", "opacity": "var(--xh-state-disabled-opacity)", "cursor": "not-allowed", "scale": "none" },
-    "loading": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-default)", "borderColor": "var(--xh-material-soft-border)", "highlight": "var(--xh-material-soft-highlight)", "shadow": "var(--xh-material-soft-shadow)", "opacity": "1", "cursor": "progress", "scale": "none" }
+    "rest": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-default)", "borderColor": "transparent", "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "none" },
+    "hover": { "backgroundColor": "var(--xh-bg-subtle-hover)", "color": "var(--xh-fg-default)", "borderColor": "transparent", "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "none" },
+    "pressed": { "backgroundColor": "var(--xh-bg-subtle-active)", "color": "var(--xh-fg-default)", "borderColor": "transparent", "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "var(--xh-motion-scale-press)" },
+    "focus-visible": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-default)", "borderColor": "transparent", "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "none", "ringColor": "var(--xh-ring-focus)" },
+    "disabled": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-default)", "borderColor": "transparent", "highlight": "transparent", "shadow": "none", "opacity": "var(--xh-state-disabled-opacity)", "cursor": "not-allowed", "scale": "none" },
+    "loading": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-default)", "borderColor": "transparent", "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "progress", "scale": "none" }
   },
   "coarsePointer": { "minimumTarget": "44px" },
   "motion": { "duration": "var(--xh-motion-duration-micro)", "easing": "var(--xh-motion-ease-enter)", "pressEasing": "var(--xh-motion-ease-enter-strong)" },
