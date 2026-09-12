@@ -1,4 +1,4 @@
-<!-- 多选 | multiple 下点中即在集合里增删该项、浮层不收起，触发器上的文本把选中项连起来 -->
+<!-- 多选 | 选择多个值 -->
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";
 import { ref } from "vue";

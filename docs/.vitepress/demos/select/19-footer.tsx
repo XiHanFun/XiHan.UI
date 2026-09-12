@@ -1,4 +1,4 @@
-// 浮层底部的操作区 | footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打检索走到
+// 底部操作区 | 固定在滚动列表下方
 import type { ReactNode } from "react";
 import {
   XhButton,

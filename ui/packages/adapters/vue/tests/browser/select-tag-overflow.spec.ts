@@ -342,7 +342,7 @@ function referenceTagPaint(variant: 'subtle' | 'outline', tone?: Tone): Paint {
 }
 
 describe('多选标签：形态按控件的面派，语气在标签上有落点', () => {
-  // 控件缺省即 outline；outline / ghost 的面是画布色或透明，标签摆淡底档
+  // 默认实体面、outline 与 ghost 都使用淡底标签；subtle 面使用描边标签。
   it.each<ControlVariant | undefined>([undefined, 'outline', 'ghost'])('variant=%s + tone=danger：每枚标签与 +N 画得与独立的 subtle+danger tag 一样，语气真的落了色', async (variant) => {
     await mountTags(10, 600, { variant, tone: 'danger' })
     const expected = referenceTagPaint('subtle', 'danger')
@@ -355,13 +355,16 @@ describe('多选标签：形态按控件的面派，语气在标签上有落点'
     }
   })
 
-  it('不写 variant 与写 outline：盒画得一样，标签也画得一样', async () => {
+  it('默认盒与 outline 的边界不同，标签保持同一淡底形态', async () => {
     await mountTags(10, 600, { tone: 'danger' })
     const boxDefault = paintOf(part('control'))
     const tagDefault = paintOf(tags()[0]!)
     teardown()
     await mountTags(10, 600, { variant: 'outline', tone: 'danger' })
-    expect(paintOf(part('control'))).toEqual(boxDefault)
+    const boxOutline = paintOf(part('control'))
+    expect(boxOutline.bg).toBe(boxDefault.bg)
+    expect(boxOutline.fg).toBe(boxDefault.fg)
+    expect(boxOutline.border).not.toBe(boxDefault.border)
     expect(paintOf(tags()[0]!)).toEqual(tagDefault)
   })
 

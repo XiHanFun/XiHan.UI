@@ -1,4 +1,4 @@
-<!-- 命令式聚焦 | 触发器就是你写的那个按钮，focus 与 blur 直接调它 -->
+<!-- 命令式聚焦 | 聚焦触发器 -->
 <script setup lang="ts">
 import {
   XhButton,
@@ -34,9 +34,6 @@ function submit(): void {
     trigger.value?.$el.focus();
 }
 
-function blurTrigger(): void {
-  trigger.value?.$el.blur();
-}
 </script>
 
 <template>
@@ -61,7 +58,6 @@ function blurTrigger(): void {
   </XhSelectRoot>
   <div style="display: flex; gap: 8px; margin-block-start: 8px">
     <XhButton variant="outline" size="sm" @click="submit">提交</XhButton>
-    <XhButton variant="ghost" size="sm" @click="blurTrigger">移开焦点</XhButton>
   </div>
   <p v-if="submitted && picked.length === 0" style="color: var(--xh-fg-danger)">
     还没选优先级，焦点已回到选择器

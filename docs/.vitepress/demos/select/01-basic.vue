@@ -1,9 +1,7 @@
-<!-- 基础用法 | 选中值恒是数组，条目按 value 标识身份；禁用的条目方向键会跳过 -->
+<!-- 基础用法 | 单选 -->
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";
-import { ref } from "vue";
 
-const fruit = ref<string[]>([]);
 const fruits = [
   { value: "apple", label: "苹果" },
   { value: "banana", label: "香蕉" },
@@ -14,6 +12,5 @@ const fruits = [
 </script>
 
 <template>
-  <XhSelectRoot v-model:value="fruit" :collection="fruits" label="水果" placeholder="请选择" />
-  <p>当前值：{{ fruit.length ? fruit.join("、") : "（未选）" }}</p>
+  <XhSelectRoot :collection="fruits" :default-value="['banana']" label="水果" placeholder="请选择" />
 </template>

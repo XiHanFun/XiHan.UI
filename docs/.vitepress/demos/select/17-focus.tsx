@@ -1,4 +1,4 @@
-// 命令式聚焦 | 触发器就是你写的那个按钮，focus 与 blur 直接调它
+// 命令式聚焦 | 聚焦触发器
 import type { ReactNode } from "react";
 import {
   XhButton,
@@ -35,10 +35,6 @@ export default function Demo(): ReactNode {
       trigger.current?.focus();
   }
 
-  function blurTrigger(): void {
-    trigger.current?.blur();
-  }
-
   return (
     <>
       <XhSelectRoot
@@ -68,7 +64,6 @@ export default function Demo(): ReactNode {
       </XhSelectRoot>
       <div style={{ display: "flex", gap: "8px", marginBlockStart: "8px" }}>
         <XhButton variant="outline" size="sm" onClick={submit}>提交</XhButton>
-        <XhButton variant="ghost" size="sm" onClick={blurTrigger}>移开焦点</XhButton>
       </div>
       {submitted && picked.length === 0
         ? (

@@ -123,9 +123,9 @@ describe('select 使用 Collection Item', () => {
     expect(getComputedStyle(item).fontWeight).toBe('400')
     expect(item.getBoundingClientRect().width).toBe(width)
     delete item.dataset.inPath
-    item.dataset.loading = ''
+    item.setAttribute('aria-busy', 'true')
     expect(getComputedStyle(item).cursor).toBe('progress')
-    delete item.dataset.loading
+    item.removeAttribute('aria-busy')
     item.dataset.error = ''
     expect(getComputedStyle(item).color).not.toBe(restColor)
 

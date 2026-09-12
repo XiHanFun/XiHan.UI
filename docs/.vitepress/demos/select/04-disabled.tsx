@@ -1,4 +1,4 @@
-// 禁用 | 根部件的 disabled 把触发器转成原生 disabled，浮层展不开、也不占 Tab 位
+// 禁用 | 禁止展开和聚焦
 import type { ReactNode } from "react";
 import { XhSelectRoot } from "@xihan-ui/react";
 

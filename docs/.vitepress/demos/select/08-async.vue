@@ -1,4 +1,4 @@
-<!-- 异步加载选项 | 首次展开才去取数据：open-change 报出展开意图，数据到达前使用正式加载状态 -->
+<!-- 异步加载 | 展开时加载选项 -->
 <script setup lang="ts">
 import {
   XhSelectContent,

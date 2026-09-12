@@ -7,7 +7,7 @@ const parts = tagAnatomy.build()
 
 /**
  * 控件面到标签形态的映射：subtle 的面本身是淡底，摆描边标签才看得出是一枚标签；
- * outline / ghost 与缺省（即 outline）的面是画布色或透明，摆淡底标签。
+ * 默认实体面、outline 与 ghost 均摆淡底标签。
  * 形态恒有值，语气才有落点——tag 的语气规则都挂在形态之下。
  */
 export function tagVariantForControl(variant: ControlVariant | undefined): TagVariant {

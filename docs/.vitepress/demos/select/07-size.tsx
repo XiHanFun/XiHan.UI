@@ -1,4 +1,4 @@
-// 尺寸 | 盒与浮层条目一起换档，不传 size 即默认档
+// 尺寸 | 小、中、大三档
 import type { ReactNode } from "react";
 import { XhSelectRoot } from "@xihan-ui/react";
 

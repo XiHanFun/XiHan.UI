@@ -1,4 +1,4 @@
-// 多选标签 | 内建标签形态：触发器里的标签行最多摆 maxTagCount 枚（缺省 3），其余合成一枚 +N；每枚标签与 +N 都是库里的 tag（语气与尺寸随控件，形态按控件的面派），触发器里纯展示，触发器外配删除钮即可删，那颗钮就是 tag 的 close-trigger
+// 多选标签 | 超出数量合并为 +N
 import type { ReactNode } from "react";
 import {
   XhSelectContent,

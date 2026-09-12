@@ -1,4 +1,4 @@
-<!-- 校验状态 | 校验结论由宿主给出：invalid 让盒标红并输出 aria-invalid，错误文案用 aria-describedby 挂到触发器上 -->
+<!-- 校验 | 显示无效状态和错误说明 -->
 <script setup lang="ts">
 import {
   XhSelectContent,

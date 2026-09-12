@@ -1,4 +1,4 @@
-<!-- 滚动加载 | list 承担选项滚动：滚到底追加下一页，独立加载状态不会混入可选项 -->
+<!-- 滚动加载 | 到达列表底部加载下一页 -->
 <script setup lang="ts">
 import {
   XhSelectContent,
