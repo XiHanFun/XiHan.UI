@@ -1,4 +1,4 @@
-// 禁用 | 展示状态由作者显式给出，不从 Hotkeys enabled 暗中推导
+// 禁用 | 表示对应动作不可用
 import type { ReactNode } from "react";
 import { XhKbdGroup } from "@xihan-ui/react";
 
