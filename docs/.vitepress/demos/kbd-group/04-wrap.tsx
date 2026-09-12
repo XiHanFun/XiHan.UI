@@ -1,4 +1,4 @@
-// 多组合换行 | 每组内部不拆行，容器只在完整组合之间换行
+// 换行 | 每组内部保持为一个单元
 import type { ReactNode } from "react";
 import { XhKbdGroup } from "@xihan-ui/react";
 

@@ -1504,6 +1504,7 @@ export type ComponentTokenName =
   | '--xh-kbd-group-key-fg-modifier'
   | '--xh-kbd-group-key-font'
   | '--xh-kbd-group-key-font-weight'
+  | '--xh-kbd-group-key-h'
   | '--xh-kbd-group-key-min-w'
   | '--xh-kbd-group-key-px'
   | '--xh-kbd-group-key-py'

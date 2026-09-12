@@ -1,6 +1,6 @@
 # KbdGroup <Badge type="info" text="键帽组" />
 
-把一组按键按当前平台格式化成完整快捷键提示，不注册任何监听。行为由[快捷键](./hotkeys)负责，单枚说明用[键帽](./kbd)。
+显示一组快捷键，不注册键盘监听。键名和连接符按平台格式化。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/kbd-group" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-同一份 keys 两套写法：Mac 出符号且键帽连排，其余平台出单词并用加号连接
+Mac 使用符号，其他平台使用文字
 
 <XhDemo src="kbd-group/01-platform" />
 
@@ -26,19 +26,19 @@
 
 ### 尺寸
 
-size 换的是字号与键帽的内边距，三档与其余控件同源
+小、中、大三档
 
 <XhDemo src="kbd-group/02-size" />
 
 ### 禁用
 
-展示状态由作者显式给出，不从 Hotkeys enabled 暗中推导
+表示对应动作不可用
 
 <XhDemo src="kbd-group/03-disabled" />
 
-### 多组合换行
+### 换行
 
-每组内部不拆行，容器只在完整组合之间换行
+每组内部保持为一个单元
 
 <XhDemo src="kbd-group/04-wrap" />
 
@@ -46,35 +46,35 @@ size 换的是字号与键帽的内边距，三档与其余控件同源
 
 ### 何时使用
 
-- 在菜单、命令面板、按钮提示或快捷键速查表中展示完整组合。
-- 同一份 `keys` 需要在 Mac 与 Windows/Linux 上使用各自熟悉的写法。
+- 在菜单、命令面板和快捷键说明中显示组合键。
+- 同一组按键需要适配 Mac 和其他平台。
 
 ### 何时不用
 
-- 注册键盘动作：用[快捷键](./hotkeys)。
-- 只显示一枚键：用[键帽](./kbd)。
+- 注册快捷键使用[快捷键](./hotkeys)。
+- 单个键使用[键帽](./kbd)。
 
 ### 特性
 
-- Mac 使用符号并连排；其他平台使用文字和统一基线的 `+`。
-- 整组不会为了展示安装全局监听；`disabled` 与 `pressed` 只是显式展示事实。
-- 组合保持为不可拆分的行内单元，多个组合可以在外层自然换行。
-- M1 实体键帽使用等宽字、1px edge、顶部高光和底部 contact shadow。
+- Mac 使用符号连排，其他平台使用 `+` 连接。
+- 整组保持为一个不可拆分的行内单元。
+- `disabled` 和 `pressed` 仅表示展示状态。
+- 键帽使用与 Kbd 相同的尺寸和压感。
 
 ### 组合
 
-- 放在 Menu/ContextMenu/Command 条目末端时用 `margin-inline-start: auto` 对齐。
-- 与 Hotkeys 使用同一份 `keys`，由业务显式组合展示和行为。
+- 可放在 Menu、ContextMenu 和 Command 条目末端。
+- 可与 Hotkeys 共用同一份 `keys`。
 
 ### 最佳实践
 
-- 一律写 `Mod` 作为跨平台主修饰键。
-- 只有对应动作不可用时才设置 `disabled`，不要从行为组件暗中推导视觉状态。
+- 跨平台主修饰键使用 `Mod`。
+- 仅在对应动作不可用时设置 `disabled`。
 
 ### 反模式
 
-- 用 Hotkeys 组件代替 KbdGroup 只为了显示。
-- 手写 `Ctrl+S` 文本，导致 Mac 显示与真实组合不一致。
+- 不要用 Hotkeys 代替 KbdGroup 显示按键。
+- 不要手写平台相关的组合键文本。
 
 ## API 参考
 
@@ -131,8 +131,9 @@ size 换的是字号与键帽的内边距，三档与其余控件同源
 | `key` | `aria-hidden` | 'true' |
 | `separator` | `aria-hidden` | 'true' |
 
-- root 以一个组级 `aria-label` 朗读完整组合，视觉键帽和连接符全部 `aria-hidden`，不会重复念。
-- `keys` 必填且不能为空；无效组合直接报错，不产生无名称图像。
+- root 通过 `aria-label` 朗读完整组合。
+- 子键帽和连接符从无障碍树隐藏。
+- `keys` 不能为空。
 
 ## 样式参考
 
@@ -164,20 +165,21 @@ size 换的是字号与键帽的内边距，三档与其余控件同源
 | `--xh-kbd-group-fg` | `root` | `color` | `default` | `--xh-fg-muted` | kbd-group 的 root 部件 color 覆盖槽。 |
 | `--xh-kbd-group-font-size` | `root` | `font-size` | `default` | `--xh-_kbd-group-font-size` | kbd-group 的 root 部件 font-size 覆盖槽。 |
 | `--xh-kbd-group-gap` | `root` | `gap` | `default` | `--xh-space-0_5` | kbd-group 的 root 部件 gap 覆盖槽。 |
-| `--xh-kbd-group-key-bg` | `key` | `background` | `default` | `--xh-material-soft-bg` | kbd-group 的 key 部件 background 覆盖槽。 |
+| `--xh-kbd-group-key-bg` | `key` | `background-color` | `default` | `--xh-bg-subtle` | kbd-group 的 key 部件 background-color 覆盖槽。 |
 | `--xh-kbd-group-key-bg-disabled` | `key`<br>`root` | `background` | `disabled` | `--xh-bg-muted` | kbd-group 的 key、root 部件 background 覆盖槽。 |
-| `--xh-kbd-group-key-border` | `key` | `border` | `default` | `--xh-material-soft-border` | kbd-group 的 key 部件 border 覆盖槽。 |
+| `--xh-kbd-group-key-border` | `key` | `border` | `default` | `--xh-border-default` | kbd-group 的 key 部件 border 覆盖槽。 |
 | `--xh-kbd-group-key-fg` | `key` | `color` | `default` | `--xh-fg-default` | kbd-group 的 key 部件 color 覆盖槽。 |
-| `--xh-kbd-group-key-fg-disabled` | `key`<br>`root` | `color` | `disabled` | `--xh-fg-subtle` | kbd-group 的 key、root 部件 color 覆盖槽。 |
+| `--xh-kbd-group-key-fg-disabled` | `key`<br>`root` | `color` | `disabled` | `--xh-fg-disabled` | kbd-group 的 key、root 部件 color 覆盖槽。 |
 | `--xh-kbd-group-key-fg-modifier` | `key` | `color` | `modifier` | `--xh-fg-muted` | kbd-group 的 key 部件 color 覆盖槽。 |
 | `--xh-kbd-group-key-font` | `key` | `font-family` | `default` | `--xh-font-family-mono` | kbd-group 的 key 部件 font-family 覆盖槽。 |
 | `--xh-kbd-group-key-font-weight` | `key` | `font-weight` | `default` | `--xh-font-weight-medium` | kbd-group 的 key 部件 font-weight 覆盖槽。 |
-| `--xh-kbd-group-key-min-w` | `key` | `min-inline-size` | `default` | `--xh-control-indicator-size` | kbd-group 的 key 部件 min-inline-size 覆盖槽。 |
+| `--xh-kbd-group-key-h` | `key` | `block-size` | `default` | `--xh-_kbd-group-key-h` | kbd-group 的 key 部件 block-size 覆盖槽。 |
+| `--xh-kbd-group-key-min-w` | `key` | `min-inline-size` | `default` | `--xh-_kbd-group-key-h` | kbd-group 的 key 部件 min-inline-size 覆盖槽。 |
 | `--xh-kbd-group-key-px` | `key` | `padding-inline` | `default` | `--xh-_kbd-group-key-px` | kbd-group 的 key 部件 padding-inline 覆盖槽。 |
-| `--xh-kbd-group-key-py` | `key` | `padding-block` | `default` | `--xh-space-0_5` | kbd-group 的 key 部件 padding-block 覆盖槽。 |
-| `--xh-kbd-group-key-radius` | `key` | `border-radius` | `default` | `--xh-shape-inset` | kbd-group 的 key 部件 border-radius 覆盖槽。 |
-| `--xh-kbd-group-key-shadow` | `key` | `box-shadow` | `default` | `--xh-stroke-thin` | kbd-group 的 key 部件 box-shadow 覆盖槽。 |
-| `--xh-kbd-group-key-shadow-pressed` | `key`<br>`root` | `box-shadow` | `active`<br>`disabled`<br>`is(button, a[href], [role='button'], [role='menuitem'], [role='option'])`<br>`not([data-disabled])`<br>`not([disabled], [aria-disabled='true'])`<br>`pressed` | `--xh-stroke-thin` | kbd-group 的 key、root 部件 box-shadow 覆盖槽。 |
+| `--xh-kbd-group-key-py` | `key` | `padding-block` | `default` | `--xh-space-0` | kbd-group 的 key 部件 padding-block 覆盖槽。 |
+| `--xh-kbd-group-key-radius` | `key` | `border-radius` | `default` | `--xh-shape-control` | kbd-group 的 key 部件 border-radius 覆盖槽。 |
+| `--xh-kbd-group-key-shadow` | `key` | `box-shadow` | `default` | `--xh-_kbd-group-key-shadow-rest` | kbd-group 的 key 部件 box-shadow 覆盖槽。 |
+| `--xh-kbd-group-key-shadow-pressed` | `key`<br>`root` | `box-shadow` | `active`<br>`disabled`<br>`is(button, a[href], [role='button'], [role='menuitem'], [role='option'])`<br>`not([data-disabled])`<br>`not([disabled], [aria-disabled='true'])`<br>`pressed` | `--xh-_kbd-group-key-shadow-pressed` | kbd-group 的 key、root 部件 box-shadow 覆盖槽。 |
 | `--xh-kbd-group-separator-fg` | `separator` | `color` | `default` | `--xh-fg-subtle` | kbd-group 的 separator 部件 color 覆盖槽。 |
 | `--xh-kbd-group-separator-fg-disabled` | `root`<br>`separator` | `color` | `disabled` | `--xh-fg-subtle` | kbd-group 的 root、separator 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
@@ -192,4 +194,4 @@ size 换的是字号与键帽的内边距，三档与其余控件同源
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
-键位顺序保持物理键盘的 LTR 顺序，并用 unicode bidi 隔离，不受周围文本方向重排。
+键位保持 LTR 顺序，不受周围文本方向影响。
