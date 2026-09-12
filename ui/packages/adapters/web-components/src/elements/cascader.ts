@@ -17,6 +17,7 @@ import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
+import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
@@ -162,11 +163,18 @@ export class XhCascaderElement extends XhElement {
   private readonly formInputs: HTMLInputElement[] = []
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly cascaderScope = createScope(null, this.idGen)
+  private readonly cascaderScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = new AnchoredPortalController({
+    name: 'Cascader',
+    config: () => this.config,
+    source: () => this.getPart('trigger'),
+    root: () => this.getPart('positioner'),
+    onChange: () => this.requestUpdate(),
+  })
 
   /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
   private readonly ownsValueText = new WeakMap<HTMLElement, boolean>()
@@ -259,6 +267,10 @@ export class XhCascaderElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.cascaderScope, idGenerator: this.idGen })
   }
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
+  }
+
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
@@ -331,7 +343,7 @@ export class XhCascaderElement extends XhElement {
    */
   private itemOf(el: HTMLElement): CascaderItemProps {
     const owner = el.closest<HTMLElement>(ITEM_SELECTOR)
-    const source = owner && owner !== this && this.contains(owner) ? owner : el
+    const source = owner && owner !== this ? owner : el
     return { value: source.getAttribute('value') ?? '' }
   }
 
@@ -514,9 +526,11 @@ export class XhCascaderElement extends XhElement {
       this.setPartHidden(el, !api.isVisible(this.itemOf(el).value))
 
     this.bars.wire()
+    this.portal.sync(this.exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     for (const input of this.formInputs) {
       this.spreader.release(input)
       input.remove()

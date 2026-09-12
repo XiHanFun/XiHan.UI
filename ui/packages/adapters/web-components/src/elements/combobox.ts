@@ -20,6 +20,7 @@ import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
+import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
@@ -149,11 +150,18 @@ export class XhComboboxElement extends XhElement {
   declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly comboboxScope = createScope(null, this.idGen)
+  private readonly comboboxScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = new AnchoredPortalController({
+    name: 'Combobox',
+    config: () => this.config,
+    source: () => this.getPart('control'),
+    root: () => this.getPart('positioner'),
+    onChange: () => this.requestUpdate(),
+  })
 
   private readonly notifyValue = (details: ComboboxValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -233,6 +241,10 @@ export class XhComboboxElement extends XhElement {
     if (this.config)
       return
     this.config = createRuntimeConfig({ scope: this.comboboxScope, idGenerator: this.idGen })
+  }
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
   }
 
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
@@ -351,9 +363,11 @@ export class XhComboboxElement extends XhElement {
       this.ctrl.service.send({ type: 'ITEMS.SYNC' })
 
     this.bars.wire()
+    this.portal.sync(this.exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()
