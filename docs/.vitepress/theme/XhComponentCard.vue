@@ -11,8 +11,8 @@ const props = defineProps<{
   src: string;
 }>();
 
-const demos = import.meta.glob<{ default: Component }>("../demos/**/01-basic.vue");
-const load = demos[`../demos/${props.src}/01-basic.vue`];
+const previews = import.meta.glob<{ default: Component }>("../catalog/*.vue");
+const load = previews[`../catalog/${props.src}.vue`];
 const demo = load ? defineAsyncComponent(load) : undefined;
 const root = ref<HTMLElement | null>(null);
 const visible = ref(false);
