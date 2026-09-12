@@ -1,7 +1,7 @@
-import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, PortalLease, RuntimeConfig, Service } from '@xihan-ui/core'
 import type { ImageViewerIndexChangeDetails, ImageViewerItem, ImageViewerOpenChangeDetails, ImageViewerSchema, ImageViewerTranslations } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createCounterIdGenerator, createPortalLease, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectImageViewer, imageViewerAnatomy, imageViewerCounterText, imageViewerMachine, imageViewerMeta } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { wcNormalize } from '../dom/normalize'
@@ -93,11 +93,13 @@ export class XhImageViewerElement extends XhElement {
   declare translations?: Partial<ImageViewerTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly viewerScope = createScope(null, this.idGen)
+  // 运行时环境必须始终取宿主当前所属 Document：iframe 创建或 adopt 之后不能继续用构造时的全局 realm。
+  private readonly viewerScope = createScope(() => this, this.idGen)
   private config: RuntimeConfig | null = null
   private contentNode: HTMLElement | null = null
   private exit: OverlayExit | null = null
   private backdropNode: HTMLElement | null = null
+  private portal: PortalLease | null = null
   /** counter 的文本归属：首帧为空才代填，作者写过内容就不碰。 */
   private counterOwned: boolean | null = null
 
@@ -157,6 +159,44 @@ export class XhImageViewerElement extends XhElement {
       onExitComplete: () => this.requestUpdate(),
     })
     return this.exit
+  }
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal?.roots ?? []
+  }
+
+  /**
+   * ImageViewer 始终是视口模态层：backdrop 与 positioner 作为一枚 Core 租约一同搬迁，
+   * 并在退出动画结束、作者换根或宿主断开时按 placeholder 恢复。
+   */
+  private mountViewportPortal(backdrop: HTMLElement, positioner: HTMLElement): void {
+    if (this.portal?.roots[0] === backdrop && this.portal.roots[1] === positioner && this.portal.source === this)
+      return
+    this.restoreViewportPortal()
+    this.ensureConfig()
+    const target = this.config!.portalContainer()
+    if (!target)
+      throw new Error('[xh] ImageViewer 视口模态浮层需要显式可用的 Portal 容器')
+    this.portal = createPortalLease({
+      source: this,
+      target,
+      roots: [backdrop, positioner],
+    })
+    this.requestUpdate()
+  }
+
+  private restoreViewportPortal(): void {
+    const portal = this.portal
+    if (!portal)
+      return
+    this.portal = null
+    try {
+      portal.release()
+    }
+    finally {
+      if (this.isConnected)
+        this.requestUpdate()
+    }
   }
 
   // 只交注册函数，层的入栈出栈由机器的 trackOverlay 效应跟着展开态做。
@@ -231,8 +271,15 @@ export class XhImageViewerElement extends XhElement {
     exit.update(open)
     const visible = exit.visible
 
-    // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖
     const positioner = this.getPart('positioner')
+    // 逻辑关闭后仍由退出租约持有双根，直到内容和遮罩均完成实际退场。
+    // 缺一个根时不做半搬运，仍让既有 Light-DOM 结构正常工作。
+    if ((open || visible) && this.backdropNode && positioner)
+      this.mountViewportPortal(this.backdropNode, positioner)
+    else
+      this.restoreViewportPortal()
+
+    // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖
     if (positioner)
       this.setPartHidden(positioner, !visible)
     if (this.backdropNode)
@@ -246,6 +293,7 @@ export class XhImageViewerElement extends XhElement {
     // 只在机器已经收起时才强收——元素被移动（remove 后立刻 append）时展开态不该被打断
     this.exit?.dispose()
     this.exit = null
+    this.restoreViewportPortal()
     if (this.ctrl.service.state.get() !== 'open')
       this.setPartHidden(this.contentNode, true)
     this.config = null // 重连时 ensureConfig 重建
