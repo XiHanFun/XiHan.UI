@@ -1,26 +1,13 @@
-<!-- 边缘渐隐 | variant="fade" 让还滚得动的那一侧把内容淡出，滚到头即收；带宽跟着 size 走 -->
-<xh-scroll-area id="scroll-area-fade" variant="fade" size="lg">
-  <div data-xh-part="root" style="block-size: 180px; inline-size: 100%; max-inline-size: 320px">
+<!-- 边缘渐隐 | 提示还有更多内容 -->
+<xh-scroll-area variant="fade" size="lg" style="display: contents">
+  <div data-xh-part="root" style="block-size: 180px; inline-size: min(320px, 100%); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
     <div data-xh-part="viewport">
-      <div data-xh-part="content" style="padding: 8px 12px"></div>
-    </div>
-    <div data-xh-part="scrollbar" orientation="vertical">
-      <div data-xh-part="track">
-        <div data-xh-part="thumb"></div>
+      <div data-xh-part="content" style="padding: 12px 16px">
+        <p style="margin: 0; line-height: 30px">概览</p><p style="margin: 0; line-height: 30px">组件</p><p style="margin: 0; line-height: 30px">指南</p><p style="margin: 0; line-height: 30px">示例</p>
+        <p style="margin: 0; line-height: 30px">设计令牌</p><p style="margin: 0; line-height: 30px">无障碍</p><p style="margin: 0; line-height: 30px">主题</p><p style="margin: 0; line-height: 30px">动效</p>
+        <p style="margin: 0; line-height: 30px">国际化</p><p style="margin: 0; line-height: 30px">发布记录</p><p style="margin: 0; line-height: 30px">迁移指南</p><p style="margin: 0; line-height: 30px">常见问题</p>
       </div>
     </div>
+    <div data-xh-part="scrollbar" orientation="vertical"><div data-xh-part="track"><div data-xh-part="thumb"></div></div></div>
   </div>
 </xh-scroll-area>
-
-<script type="module">
-  // 18 行，纵向溢出，两端各铺一道渐隐带
-  const content = document
-    .getElementById("scroll-area-fade")
-    .querySelector('[data-xh-part="content"]');
-  for (let i = 1; i <= 18; i++) {
-    const line = document.createElement("p");
-    line.style.cssText = "margin: 0; line-height: 28px";
-    line.textContent = `第 ${i} 行内容`;
-    content.append(line);
-  }
-</script>

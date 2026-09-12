@@ -1,4 +1,4 @@
-// 基础用法 | root 要有确定高度，视口才量得出溢出；滚动走的是浏览器原生通路，组件只画滚动条
+// 基础用法 | 创建纵向滚动区域
 import type { ReactNode } from "react";
 import {
   XhScrollAreaContent,
@@ -9,18 +9,14 @@ import {
   XhScrollAreaViewport,
 } from "@xihan-ui/react";
 
-const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行内容`);
+const items = ["项目概览", "组件规范", "设计令牌", "无障碍", "交互状态", "主题配置", "构建流程", "发布记录", "迁移指南", "常见问题"];
 
 export default function Demo(): ReactNode {
   return (
-    <XhScrollAreaRoot style={{ blockSize: "180px", inlineSize: "100%", maxInlineSize: "420px" }}>
+    <XhScrollAreaRoot type="always" style={{ blockSize: "180px", inlineSize: "min(360px, 100%)", borderRadius: "var(--xh-shape-surface)", background: "var(--xh-bg-subtle)" }}>
       <XhScrollAreaViewport>
-        <XhScrollAreaContent style={{ padding: "8px 12px" }}>
-          {lines.map(line => (
-            <p key={line} style={{ margin: 0, lineHeight: "24px" }}>
-              {line}
-            </p>
-          ))}
+        <XhScrollAreaContent style={{ padding: "12px 16px" }}>
+          {items.map(item => <div key={item} style={{ paddingBlock: "7px" }}>{item}</div>)}
         </XhScrollAreaContent>
       </XhScrollAreaViewport>
       <XhScrollAreaScrollbar orientation="vertical">
