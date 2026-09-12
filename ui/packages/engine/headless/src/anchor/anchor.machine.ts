@@ -246,24 +246,27 @@ export const anchorMachine = createMachine({
 
         // 推迟一拍再挂，等链接、目标区块与滚动容器 ref 就位
         flush(() => {
-          if (disposed)
-            return
-          const source: EventTarget = refs.get('getScrollEl')() ?? win
-          const onScroll = (): void => resolve()
-          // 窗口尺寸变化后归属与指示条位置都要重算
-          const onResize = (): void => {
+          // React 的祖先 ref 在子组件 layout effect 之后才附着；延到提交后的微任务再解析。
+          win.queueMicrotask(() => {
             if (disposed)
               return
+            const source: EventTarget = refs.get('getScrollEl')() ?? win
+            const onScroll = (): void => resolve()
+            // 窗口尺寸变化后归属与指示条位置都要重算
+            const onResize = (): void => {
+              if (disposed)
+                return
+              resolve()
+              action(['measureIndicator'])
+            }
+            source.addEventListener('scroll', onScroll, { passive: true })
+            win.addEventListener('resize', onResize)
+            detach = (): void => {
+              source.removeEventListener('scroll', onScroll)
+              win.removeEventListener('resize', onResize)
+            }
             resolve()
-            action(['measureIndicator'])
-          }
-          source.addEventListener('scroll', onScroll, { passive: true })
-          win.addEventListener('resize', onResize)
-          detach = (): void => {
-            source.removeEventListener('scroll', onScroll)
-            win.removeEventListener('resize', onResize)
-          }
-          resolve()
+          })
         })
 
         return () => {

@@ -1,10 +1,10 @@
-<!-- 二级目录 | 子链接嵌在父项里的原生列表中，按文档序照常参与结算；父级要不要跟着亮由宿主自己算 -->
+<!-- 嵌套目录 | 展示父级与子级章节 -->
 <div
   style="
     display: grid;
-    grid-template-columns: 160px 1fr;
+    grid-template-columns: minmax(128px, 160px) minmax(0, 1fr);
     gap: 20px;
-    inline-size: 100%;
+    inline-size: min(640px, 100%);
     align-items: start;
   "
 >
@@ -14,7 +14,6 @@
         <ul data-xh-part="list">
           <li data-xh-part="item" style="flex-direction: column; align-items: stretch">
             <a data-xh-part="link" value="anchor-nested-guide">指南</a>
-            <!-- 子级用一层原生 ul 承载：再嵌一个 list 会把指示条的参照系抢走 -->
             <ul style="margin: 0; padding: 0; padding-inline-start: 12px; list-style: none">
               <li data-xh-part="item">
                 <a data-xh-part="link" value="anchor-nested-install">安装</a>
@@ -46,40 +45,39 @@
     style="
       block-size: 240px;
       overflow: auto;
-      padding: 12px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      padding-inline: 12px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
     "
   >
-    <div id="anchor-nested-guide" style="block-size: 140px">
+    <div id="anchor-nested-guide" style="block-size: 140px; padding-block: 12px">
       <strong>指南</strong>
-      <p>这一节的正文。</p>
+      <p style="color: var(--xh-fg-muted)">指南相关内容</p>
     </div>
-    <div id="anchor-nested-install" style="block-size: 140px">
+    <div id="anchor-nested-install" style="block-size: 140px; padding-block: 12px">
       <strong>安装</strong>
-      <p>这一节的正文。</p>
+      <p style="color: var(--xh-fg-muted)">安装相关内容</p>
     </div>
-    <div id="anchor-nested-start" style="block-size: 140px">
+    <div id="anchor-nested-start" style="block-size: 140px; padding-block: 12px">
       <strong>快速开始</strong>
-      <p>这一节的正文。</p>
+      <p style="color: var(--xh-fg-muted)">快速开始相关内容</p>
     </div>
-    <div id="anchor-nested-api" style="block-size: 140px">
+    <div id="anchor-nested-api" style="block-size: 140px; padding-block: 12px">
       <strong>接口</strong>
-      <p>这一节的正文。</p>
+      <p style="color: var(--xh-fg-muted)">接口相关内容</p>
     </div>
-    <div id="anchor-nested-props" style="block-size: 140px">
+    <div id="anchor-nested-props" style="block-size: 140px; padding-block: 12px">
       <strong>属性</strong>
-      <p>这一节的正文。</p>
+      <p style="color: var(--xh-fg-muted)">属性相关内容</p>
     </div>
-    <div id="anchor-nested-events" style="block-size: 140px">
+    <div id="anchor-nested-events" style="block-size: 140px; padding-block: 12px">
       <strong>事件</strong>
-      <p>这一节的正文。</p>
+      <p style="color: var(--xh-fg-muted)">事件相关内容</p>
     </div>
   </div>
 </div>
 
 <script type="module">
-  // 父节与它名下的子节
   const groups = {
     "anchor-nested-guide": ["anchor-nested-install", "anchor-nested-start"],
     "anchor-nested-api": ["anchor-nested-props", "anchor-nested-events"],
@@ -88,7 +86,6 @@
   const template = document.getElementById("anchor-nested-nav");
   const anchor = template.content.firstElementChild;
 
-  // 子节命中时父节一起点亮
   function apply(next) {
     anchor.value = next;
     for (const [parent, children] of Object.entries(groups)) {
@@ -98,7 +95,6 @@
     }
   }
 
-  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
   anchor.scrollElement = document.getElementById("anchor-nested-scroll");
   apply(null);
   template.replaceWith(anchor);

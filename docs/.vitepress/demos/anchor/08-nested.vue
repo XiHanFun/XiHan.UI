@@ -1,4 +1,4 @@
-<!-- 二级目录 | 子链接嵌在父项里的原生列表中，按文档序照常参与结算；父级要不要跟着亮由宿主自己算 -->
+<!-- 嵌套目录 | 展示父级与子级章节 -->
 <script setup lang="ts">
 import {
   XhAnchorIndicator,
@@ -28,7 +28,6 @@ const groups = [
   },
 ];
 
-// 正文区块按文档序摊平，父节与子节共用一份清单
 const sections = computed(() =>
   groups.flatMap(g => [{ value: g.value, label: g.label }, ...g.children]),
 );
@@ -36,7 +35,6 @@ const sections = computed(() =>
 const active = ref<string | null>(null);
 const scrollEl = ref<HTMLElement | null>(null);
 
-// 子节命中时父节一起点亮
 function isGroupActive(group: {
   value: string;
   children: readonly { value: string }[];
@@ -52,9 +50,9 @@ function isGroupActive(group: {
   <div
     style="
       display: grid;
-      grid-template-columns: 160px 1fr;
+      grid-template-columns: minmax(128px, 160px) minmax(0, 1fr);
       gap: 20px;
-      inline-size: 100%;
+      inline-size: min(640px, 100%);
       align-items: start;
     "
   >
@@ -71,7 +69,6 @@ function isGroupActive(group: {
           >
             {{ g.label }}
           </XhAnchorLink>
-          <!-- 子级用一层原生 ul 承载：再嵌一个 XhAnchorList 会把指示条的参照系抢走 -->
           <ul
             style="margin: 0; padding: 0; padding-inline-start: 12px; list-style: none"
           >
@@ -89,19 +86,19 @@ function isGroupActive(group: {
       style="
         block-size: 240px;
         overflow: auto;
-        padding: 12px;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 8px;
+        padding-inline: 12px;
+        border-radius: var(--xh-shape-surface);
+        background: var(--xh-bg-subtle);
       "
     >
       <div
         v-for="s in sections"
         :id="s.value"
         :key="s.value"
-        style="block-size: 140px"
+        style="block-size: 140px; padding-block: 12px"
       >
         <strong>{{ s.label }}</strong>
-        <p>这一节的正文。</p>
+        <p style="color: var(--xh-fg-muted)">{{ s.label }}相关内容</p>
       </div>
     </div>
   </div>

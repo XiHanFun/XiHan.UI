@@ -1,4 +1,4 @@
-// 二级目录 | 子链接嵌在父项里的原生列表中，按文档序照常参与结算；父级要不要跟着亮由宿主自己算
+// 嵌套目录 | 展示父级与子级章节
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhAnchorIndicator,
@@ -7,7 +7,7 @@ import {
   XhAnchorList,
   XhAnchorRoot,
 } from "@xihan-ui/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const groups = [
   {
@@ -28,23 +28,22 @@ const groups = [
   },
 ];
 
-// 正文区块按文档序摊平，父节与子节共用一份清单
 const sections = groups.flatMap(g => [{ value: g.value, label: g.label }, ...g.children]);
 
 const layout: CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "160px 1fr",
+  gridTemplateColumns: "minmax(128px, 160px) minmax(0, 1fr)",
   gap: "20px",
-  inlineSize: "100%",
+  inlineSize: "min(640px, 100%)",
   alignItems: "start",
 };
 
 const scroller: CSSProperties = {
   blockSize: "240px",
   overflow: "auto",
-  padding: "12px",
-  border: "1px solid var(--xh-border-default)",
-  borderRadius: "8px",
+  paddingInline: "12px",
+  borderRadius: "var(--xh-shape-surface)",
+  background: "var(--xh-bg-subtle)",
 };
 
 const subList: CSSProperties = {
@@ -56,9 +55,8 @@ const subList: CSSProperties = {
 
 export default function Demo(): ReactNode {
   const [active, setActive] = useState<string | null>(null);
-  const [scrollEl, setScrollEl] = useState<HTMLElement | null>(null);
+  const scrollEl = useRef<HTMLDivElement>(null);
 
-  // 子节命中时父节一起点亮
   function isGroupActive(group: {
     value: string;
     children: readonly { value: string }[];
@@ -70,7 +68,7 @@ export default function Demo(): ReactNode {
     <div style={layout}>
       <XhAnchorRoot
         value={active}
-        scrollElement={scrollEl}
+        scrollElement={() => scrollEl.current}
         smooth
         onValueChange={details => setActive(details.value)}
       >
@@ -83,7 +81,6 @@ export default function Demo(): ReactNode {
               >
                 {g.label}
               </XhAnchorLink>
-              {/* 子级用一层原生 ul 承载：再嵌一个 XhAnchorList 会把指示条的参照系抢走 */}
               <ul style={subList}>
                 {g.children.map(c => (
                   <XhAnchorItem key={c.value}>
@@ -97,11 +94,11 @@ export default function Demo(): ReactNode {
         </XhAnchorList>
       </XhAnchorRoot>
 
-      <div ref={setScrollEl} style={scroller}>
+      <div ref={scrollEl} style={scroller}>
         {sections.map(s => (
-          <div key={s.value} id={s.value} style={{ blockSize: "140px" }}>
+          <div key={s.value} id={s.value} style={{ blockSize: "140px", paddingBlock: "12px" }}>
             <strong>{s.label}</strong>
-            <p>这一节的正文。</p>
+            <p style={{ color: "var(--xh-fg-muted)" }}>{`${s.label}相关内容`}</p>
           </div>
         ))}
       </div>

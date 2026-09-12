@@ -1,4 +1,4 @@
-// 横排目录 | orientation="horizontal" 只改样式：条目排成一行，轨道与指示条从起始缘挪到底边
+// 横向排列 | 在内容上方显示章节导航
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhAnchorIndicator,
@@ -7,7 +7,7 @@ import {
   XhAnchorList,
   XhAnchorRoot,
 } from "@xihan-ui/react";
-import { useState } from "react";
+import { useRef } from "react";
 
 const sections = [
   { value: "anchor-h-overview", label: "概览" },
@@ -19,17 +19,17 @@ const sections = [
 const scroller: CSSProperties = {
   blockSize: "220px",
   overflow: "auto",
-  padding: "12px",
-  border: "1px solid var(--xh-border-default)",
-  borderRadius: "8px",
+  paddingInline: "12px",
+  borderRadius: "var(--xh-shape-surface)",
+  background: "var(--xh-bg-subtle)",
 };
 
 export default function Demo(): ReactNode {
-  const [scrollEl, setScrollEl] = useState<HTMLElement | null>(null);
+  const scrollEl = useRef<HTMLDivElement>(null);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px", inlineSize: "100%" }}>
-      <XhAnchorRoot scrollElement={scrollEl} orientation="horizontal" smooth>
+    <div style={{ display: "flex", flexDirection: "column", gap: "12px", inlineSize: "min(640px, 100%)" }}>
+      <XhAnchorRoot scrollElement={() => scrollEl.current} orientation="horizontal" smooth>
         <XhAnchorList>
           {sections.map(s => (
             <XhAnchorItem key={s.value}>
@@ -40,11 +40,11 @@ export default function Demo(): ReactNode {
         </XhAnchorList>
       </XhAnchorRoot>
 
-      <div ref={setScrollEl} style={scroller}>
+      <div ref={scrollEl} style={scroller}>
         {sections.map(s => (
-          <div key={s.value} id={s.value} style={{ blockSize: "170px" }}>
+          <div key={s.value} id={s.value} style={{ blockSize: "170px", paddingBlock: "12px" }}>
             <strong>{s.label}</strong>
-            <p>这一节的正文。</p>
+            <p style={{ color: "var(--xh-fg-muted)" }}>{`${s.label}相关内容`}</p>
           </div>
         ))}
       </div>
