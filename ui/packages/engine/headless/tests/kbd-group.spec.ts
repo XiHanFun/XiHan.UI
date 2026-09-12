@@ -17,10 +17,10 @@ describe('connectKbdGroup', () => {
       'data-part': 'root',
     })
     expect(current.getKeyProps({ value: 'Mod' })).toMatchObject({
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-modifier': '',
     })
-    expect(current.getSeparatorProps()).toMatchObject({ 'aria-hidden': 'true' })
+    expect(current.getSeparatorProps()).toMatchObject({ 'aria-hidden': true })
   })
 
   it('mac 连排并收起连接符，其他平台使用加号', () => {

@@ -12,9 +12,9 @@
 
 ## 用法
 
-Mac 使用符号，其他平台使用文字
+显示一组快捷键
 
-<XhDemo src="kbd-group/01-platform" />
+<XhDemo src="kbd-group/01-basic" />
 
 ## 组件结构
 
@@ -23,6 +23,12 @@ Mac 使用符号，其他平台使用文字
 `data-scope="kbd-group"`：**`root`** · `key` · `separator`
 
 ## 示例
+
+### 平台
+
+使用对应平台的修饰键格式
+
+<XhDemo src="kbd-group/02-platform" />
 
 ### 尺寸
 
