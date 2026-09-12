@@ -1,7 +1,6 @@
-import type { MasonryColumns, MasonryGap, MasonryProps } from '@xihan-ui/headless'
+import type { MasonryColumns, MasonryGap, MasonryMeasurement, MasonryProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { queryItems } from '@xihan-ui/core'
-import { connectMasonry, distributeMasonry, masonryItemQuery, resolveMasonryColumns } from '@xihan-ui/headless'
+import { connectMasonry, distributeMasonry, measureMasonry, resolveMasonryColumns, sameMasonryHeights } from '@xihan-ui/headless'
 import { Children, Fragment, isValidElement, useCallback, useRef, useState } from 'react'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -31,11 +30,6 @@ function masonryItems(children: ReactNode): ReactNode[] {
   return out
 }
 
-/** 两遍量到的高度是不是一样。逐位比而不是比引用：每次量都产出新数组，比引用等于每次都判变。 */
-function sameHeights(a: readonly number[], b: readonly number[]): boolean {
-  return a.length === b.length && a.every((value, index) => value === b[index])
-}
-
 export interface XhMasonryProps extends ComponentPropsWithRef<'div'> {
   /**
    * 分几列，不写按三列。也收断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，
@@ -59,30 +53,27 @@ export function XhMasonry({ columns, gap, sequential, children, ...rest }: XhMas
   /** 按作者写的项序排好的实测高度。 */
   const [heights, setHeights] = useState<readonly number[]>([])
 
+  /** Headless 只产出测量快照；是否写入 React 状态仍由适配器决定。 */
+  const publishMeasurement = useCallback((measurement: MasonryMeasurement): void => {
+    setWidth(previous => (previous === measurement.width ? previous : measurement.width))
+    setHeights(previous => (sameMasonryHeights(previous, measurement.heights) ? previous : measurement.heights))
+  }, [])
+
   /** 量一遍容器宽度与每一项的高度。量到的与上一遍一样就不写，否则量一次重排一次没完。 */
   const measure = useCallback((): void => {
     const el = rootRef.current
     if (!el)
       return
-    const nextWidth = el.getBoundingClientRect().width
-    const items = queryItems(el, masonryItemQuery)
-    const nextHeights = Array.from<number>({ length: items.length }).fill(0)
-    for (const node of items) {
-      // 项的原序写在 data-index 上：重排后 DOM 序等于列序，按文档序记高度会对错号
-      const index = Number(node.dataset.index)
-      if (Number.isInteger(index) && index >= 0 && index < nextHeights.length)
-        nextHeights[index] = node.getBoundingClientRect().height
-    }
-    setWidth(previous => (previous === nextWidth ? previous : nextWidth))
-    setHeights(previous => (sameHeights(previous, nextHeights) ? previous : nextHeights))
-  }, [])
+    publishMeasurement(measureMasonry(el))
+  }, [publishMeasurement])
 
   /** 项增删后把观察器挂到新的一批节点上，再量一遍。节点没变就不重挂：重挂会白白多跑一轮回调。 */
   const sync = useCallback((): void => {
     const el = rootRef.current
     if (!el)
       return
-    const next = [el, ...queryItems(el, masonryItemQuery)]
+    const measurement = measureMasonry(el)
+    const next = [el, ...measurement.items]
     const changed = next.length !== observedRef.current.length
       || next.some((node, index) => node !== observedRef.current[index])
     if (observerRef.current && changed) {
@@ -90,8 +81,8 @@ export function XhMasonry({ columns, gap, sequential, children, ...rest }: XhMas
       for (const node of next) observerRef.current.observe(node)
       observedRef.current = next
     }
-    measure()
-  }, [measure])
+    publishMeasurement(measurement)
+  }, [publishMeasurement])
 
   useIsomorphicLayoutEffect(() => {
     const win = rootRef.current?.ownerDocument.defaultView

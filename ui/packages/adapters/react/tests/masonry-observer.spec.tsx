@@ -7,7 +7,7 @@
 import type { ReactNode } from 'react'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { XhMasonry } from '../src'
 
 /** 只记「谁被观察了、断开过几次」，不产出任何尺寸。 */
@@ -54,6 +54,7 @@ afterEach(async () => {
   root = null
   host = null
   globals.ResizeObserver = original
+  vi.restoreAllMocks()
 })
 
 async function mount(tree: ReactNode): Promise<void> {
@@ -78,6 +79,10 @@ function items(): HTMLElement[] {
 
 function rootEl(): HTMLElement {
   return document.querySelector<HTMLElement>('[data-scope="masonry"][data-part="root"]')!
+}
+
+function rect(width: number, height: number): DOMRect {
+  return { bottom: height, height, left: 0, right: width, top: 0, width, x: 0, y: 0, toJSON: () => ({}) }
 }
 
 describe('masonry 的量测观察器', () => {
@@ -134,5 +139,26 @@ describe('masonry 的量测观察器', () => {
 
     expect(observer.disconnects).toBeGreaterThan(before)
     expect(observer.observed).toEqual([])
+  })
+
+  it('按 Headless 测量投影后的作者序高度重排', async () => {
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      if (this.dataset.part === 'root')
+        return rect(800, 0)
+      if (this.dataset.part === 'item')
+        return rect(0, [100, 10, 10][Number(this.dataset.index)] ?? 0)
+      return rect(0, 0)
+    })
+
+    await mount(
+      <XhMasonry columns={2}>
+        <div>甲</div>
+        <div>乙</div>
+        <div>丙</div>
+      </XhMasonry>,
+    )
+
+    const assignment = Object.fromEntries(items().map(item => [item.dataset.index, item.dataset.column]))
+    expect(assignment).toEqual({ 0: '0', 1: '1', 2: '1' })
   })
 })
