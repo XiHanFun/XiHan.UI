@@ -7,20 +7,31 @@
   /* 一条控件带：条目之间留固定间距，分隔线再把它们切成语义上的几段。
      排布只能读 data-orientation——它与 aria-orientation 同源，但样式不该去读 ARIA */
   [data-scope='toolbar'][data-part='root'] {
-    /* 尺寸档只换这两个私有槽：条目之间的间距，与整条的内边距 */
+    /* 尺寸档同时约束工具条排布与默认条目。 */
     --xh-_toolbar-gap: var(--xh-space-1);
     --xh-_toolbar-p: var(--xh-space-1);
+    --xh-_toolbar-item-h: var(--xh-control-h-md);
+    --xh-_toolbar-item-px: var(--xh-control-px-md);
+    --xh-_toolbar-item-font-size: var(--xh-control-font-md);
+    --xh-icon-size: var(--xh-toolbar-icon-size, var(--xh-glyph-size-md));
+
+    /* 缺省 plain：工具条只组织控件，不额外画外框。 */
+    --xh-_toolbar-root-p: 0;
+    --xh-_toolbar-root-border-width: 0;
+    --xh-_toolbar-root-border: transparent;
+    --xh-_toolbar-root-bg: transparent;
+    --xh-_toolbar-root-bg-disabled: transparent;
 
     /* 一行排不下就折行：条目宽度由各自的控件决定，硬撑一行会把整条顶出容器 */
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--xh-toolbar-gap, var(--xh-_toolbar-gap));
-    padding-block: var(--xh-toolbar-py, var(--xh-_toolbar-p));
-    padding-inline: var(--xh-toolbar-px, var(--xh-_toolbar-p));
-    border: var(--xh-stroke-thin) solid var(--xh-toolbar-border, var(--xh-border-default));
+    padding-block: var(--xh-toolbar-py, var(--xh-_toolbar-root-p));
+    padding-inline: var(--xh-toolbar-px, var(--xh-_toolbar-root-p));
+    border: var(--xh-_toolbar-root-border-width) solid var(--xh-toolbar-border, var(--xh-_toolbar-root-border));
     border-radius: var(--xh-toolbar-radius, var(--xh-shape-surface));
-    background: var(--xh-toolbar-bg, var(--xh-bg-surface));
+    background: var(--xh-toolbar-bg, var(--xh-_toolbar-root-bg));
     color: var(--xh-toolbar-fg, var(--xh-fg-default));
     /* 整条置灰与恢复是一次状态切换，底色与字色淡着换，不硬切 */
     transition:
@@ -39,14 +50,22 @@
     flex-wrap: nowrap;
   }
 
-  /* —— 形态 —— */
-  /* surface 档不在这儿：它就是上面那套基础取值，写不写 data-variant 都长一个样。
-     plain 档把整条那块面撤掉，只留排布——嵌在卡片或工具栏里时，两层描边会叠成双框 */
+  /* —— 变体 —— */
   [data-scope='toolbar'][data-part='root'][data-variant='plain'] {
-    padding-block: var(--xh-toolbar-py, 0);
-    padding-inline: var(--xh-toolbar-px, 0);
-    border-color: transparent;
-    background: var(--xh-toolbar-bg, transparent);
+    --xh-_toolbar-root-p: 0;
+    --xh-_toolbar-root-border-width: 0;
+    --xh-_toolbar-root-border: transparent;
+    --xh-_toolbar-root-bg: transparent;
+    --xh-_toolbar-root-bg-disabled: transparent;
+  }
+
+  /* 附着式工具面：用于悬浮工具条或与内容区域分开的独立操作带。 */
+  [data-scope='toolbar'][data-part='root'][data-variant='surface'] {
+    --xh-_toolbar-root-p: var(--xh-_toolbar-p);
+    --xh-_toolbar-root-border-width: var(--xh-stroke-thin);
+    --xh-_toolbar-root-border: var(--xh-border-default);
+    --xh-_toolbar-root-bg: var(--xh-bg-surface);
+    --xh-_toolbar-root-bg-disabled: var(--xh-bg-muted);
   }
 
   /* —— 尺寸 —— */
@@ -55,11 +74,19 @@
   [data-scope='toolbar'][data-part='root'][data-size='sm'] {
     --xh-_toolbar-gap: var(--xh-space-0_5);
     --xh-_toolbar-p: var(--xh-space-0_5);
+    --xh-_toolbar-item-h: var(--xh-control-h-sm);
+    --xh-_toolbar-item-px: var(--xh-control-px-sm);
+    --xh-_toolbar-item-font-size: var(--xh-control-font-sm);
+    --xh-icon-size: var(--xh-toolbar-icon-size, var(--xh-glyph-size-sm));
   }
 
   [data-scope='toolbar'][data-part='root'][data-size='lg'] {
     --xh-_toolbar-gap: var(--xh-space-2);
     --xh-_toolbar-p: var(--xh-space-2);
+    --xh-_toolbar-item-h: var(--xh-control-h-lg);
+    --xh-_toolbar-item-px: var(--xh-control-px-lg);
+    --xh-_toolbar-item-font-size: var(--xh-control-font-lg);
+    --xh-icon-size: var(--xh-toolbar-icon-size, var(--xh-glyph-size-lg));
   }
 
   /* root 会在焦点进条前短暂拿到 tabindex=0，但它的 onFocus 立刻把焦点转投给条目，
@@ -69,7 +96,7 @@
   }
 
   [data-scope='toolbar'][data-part='root'][data-disabled] {
-    background: var(--xh-toolbar-bg-disabled, var(--xh-bg-muted));
+    background: var(--xh-toolbar-bg-disabled, var(--xh-_toolbar-root-bg-disabled));
     color: var(--xh-fg-disabled);
   }
 
@@ -98,14 +125,62 @@
     display: none;
   }
 
-  /* 条目是作者自己的控件（按钮、切换钮、下拉触发器），观感归它自己的皮肤。
-     这里只补一件与导航直接相关的事：禁用光标；焦点环由公共层统一画。
-     刻意不给 display——给了会把条目自身皮肤里的排布盖掉，也就不必补 [hidden] 那条 */
+  /* 默认条目是一枚无描边工具按钮；作者仍可用类名或内联样式完整覆盖。 */
+  [data-scope='toolbar'][data-part='item'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-toolbar-item-gap, var(--xh-control-gap-sm));
+    min-block-size: var(--xh-toolbar-item-h, var(--xh-_toolbar-item-h));
+    padding-block: 0;
+    padding-inline: var(--xh-toolbar-item-px, var(--xh-_toolbar-item-px));
+    border: 0;
+    border-radius: var(--xh-toolbar-item-radius, var(--xh-shape-control));
+    background: var(--xh-toolbar-item-bg, transparent);
+    color: var(--xh-toolbar-item-fg, inherit);
+    font-family: inherit;
+    font-size: var(--xh-toolbar-item-font-size, var(--xh-_toolbar-item-font-size));
+    font-weight: var(--xh-toolbar-item-font-weight, var(--xh-text-label-weight));
+    line-height: var(--xh-leading-none);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='toolbar'][data-part='item']:not([data-disabled]):hover {
+    background: var(--xh-toolbar-item-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='toolbar'][data-part='item']:not([data-disabled]):active {
+    background: var(--xh-toolbar-item-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
+  }
+
+  [data-scope='toolbar'][data-part='item'][aria-pressed='true'] {
+    background: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand-subtle));
+    color: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-brand-strong));
+  }
+
+  [data-scope='toolbar'][data-part='item'][aria-pressed='true']:not([data-disabled]):hover {
+    background: var(--xh-toolbar-item-bg-pressed-hover, var(--xh-bg-brand-subtle-hover));
+  }
 
   /* 集合条目一律 aria-disabled 而非原生 disabled（禁用项仍要能当方向键的起点），
      所以这里读 data-disabled，写 :disabled 永远不命中 */
   [data-scope='toolbar'][data-part='item'][data-disabled] {
+    background: var(--xh-toolbar-item-bg-disabled, transparent);
     color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+    scale: none;
+  }
+
+  [data-scope='toolbar'][data-part='item'][hidden] {
+    display: none;
   }
 
   /* 分隔线画的是它自己的朝向：横排工具条里它是竖线，连接层给的就是 vertical。

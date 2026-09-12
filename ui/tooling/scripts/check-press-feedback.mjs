@@ -120,6 +120,7 @@ const PRESSABLE = {
   'menubar': ['trigger', { part: 'item', feedback: 'surface' }],
   'navigation-menu': ['trigger'],
   'tabs': ['trigger'],
+  'toolbar': ['item'],
   // 表格里的勾选与展开把手，以及表尾那颗「取下一页」
   'table': ['select-all-trigger', 'row-select-trigger', 'column-visibility-trigger', 'expand-trigger', 'load-more-trigger'],
   // 走马灯的翻页钮、播放钮与圆点

@@ -33,7 +33,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写水平主轴上左右方向键的语义，默认 ltr
  * @attr {boolean} loop - 方向键走到尽头回绕，默认开启；写 loop="false" 关掉
  * @attr {boolean} disabled - 整条禁用：条目全转 aria-disabled，方向键不再接管
- * @attr {'plain'|'surface'} variant - 形态，缺省 surface；plain 让工具条不画自己那块面
+ * @attr {'plain'|'surface'} variant - 视觉变体，缺省 plain；surface 提供附着式工具面
  * @attr {'sm'|'md'|'lg'} size - 尺寸：只换条目间距与整条内边距，条目自身的大小归条目
  * @csspart root - role=toolbar 的容器（键盘在此收口，也是 roving tabindex 的兜底位）
  * @csspart group - role=group 的小分组，装一串相关控件

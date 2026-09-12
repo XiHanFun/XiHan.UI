@@ -53462,7 +53462,7 @@
               "type": {
                 "text": "ToolbarVariant | undefined"
               },
-              "description": "形态，缺省 surface；plain 让工具条不画自己那块面",
+              "description": "视觉变体，缺省 plain；surface 提供附着式工具面",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -53499,6 +53499,51 @@
             },
             {
               "name": "--xh-toolbar-group-gap"
+            },
+            {
+              "name": "--xh-toolbar-icon-size"
+            },
+            {
+              "name": "--xh-toolbar-item-bg"
+            },
+            {
+              "name": "--xh-toolbar-item-bg-active"
+            },
+            {
+              "name": "--xh-toolbar-item-bg-disabled"
+            },
+            {
+              "name": "--xh-toolbar-item-bg-hover"
+            },
+            {
+              "name": "--xh-toolbar-item-bg-pressed"
+            },
+            {
+              "name": "--xh-toolbar-item-bg-pressed-hover"
+            },
+            {
+              "name": "--xh-toolbar-item-fg"
+            },
+            {
+              "name": "--xh-toolbar-item-fg-pressed"
+            },
+            {
+              "name": "--xh-toolbar-item-font-size"
+            },
+            {
+              "name": "--xh-toolbar-item-font-weight"
+            },
+            {
+              "name": "--xh-toolbar-item-gap"
+            },
+            {
+              "name": "--xh-toolbar-item-h"
+            },
+            {
+              "name": "--xh-toolbar-item-px"
+            },
+            {
+              "name": "--xh-toolbar-item-radius"
             },
             {
               "name": "--xh-toolbar-px"

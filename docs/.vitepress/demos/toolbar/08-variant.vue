@@ -1,35 +1,21 @@
-<!-- 形态 | surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时用 plain，浮在内容之上时用 surface -->
+<!-- 附着工具面 | 为悬浮工具条提供完整表面 -->
 <script setup lang="ts">
-import { XhToolbarItem, XhToolbarRoot, XhToolbarSeparator } from "@xihan-ui/vue";
-
-const itemStyle = {
-  padding: "4px 10px",
-  borderRadius: "6px",
-  border: "1px solid var(--xh-border-default)",
-  background: "var(--xh-bg-surface)",
-};
+import {
+  XhToolbarGroup,
+  XhToolbarItem,
+  XhToolbarRoot,
+  XhToolbarSeparator,
+} from "@xihan-ui/vue";
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px">
-    <div style="display: flex; flex-direction: column; gap: 6px">
-      <span>surface（缺省）</span>
-      <XhToolbarRoot variant="surface">
-        <XhToolbarItem value="surface-bold" :style="itemStyle">粗体</XhToolbarItem>
-        <XhToolbarItem value="surface-italic" :style="itemStyle">斜体</XhToolbarItem>
-        <XhToolbarSeparator />
-        <XhToolbarItem value="surface-link" :style="itemStyle">链接</XhToolbarItem>
-      </XhToolbarRoot>
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: 6px">
-      <span>plain</span>
-      <XhToolbarRoot variant="plain">
-        <XhToolbarItem value="plain-bold" :style="itemStyle">粗体</XhToolbarItem>
-        <XhToolbarItem value="plain-italic" :style="itemStyle">斜体</XhToolbarItem>
-        <XhToolbarSeparator />
-        <XhToolbarItem value="plain-link" :style="itemStyle">链接</XhToolbarItem>
-      </XhToolbarRoot>
-    </div>
-  </div>
+  <XhToolbarRoot variant="surface" aria-label="快捷操作">
+    <XhToolbarGroup>
+      <XhToolbarItem value="copy" type="button">复制</XhToolbarItem>
+      <XhToolbarItem value="cut" type="button">剪切</XhToolbarItem>
+      <XhToolbarItem value="paste" type="button">粘贴</XhToolbarItem>
+    </XhToolbarGroup>
+    <XhToolbarSeparator />
+    <XhToolbarItem value="more" type="button">更多</XhToolbarItem>
+  </XhToolbarRoot>
 </template>
