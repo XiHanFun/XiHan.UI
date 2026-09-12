@@ -8,6 +8,7 @@ import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
+import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
 import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
 
@@ -65,7 +66,7 @@ function authorDisabled(el: HTMLElement): boolean {
  */
 export class XhMenubarElement extends XhElement {
   /** 逐个 content 一份退场闸门：一个菜单一份，它们各开各的。 */
-  private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit }>()
+  private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit, portal: AnchoredPortalController }>()
 
   static override partContract = { anatomy: menubarAnatomy, meta: menubarMeta }
 
@@ -237,6 +238,24 @@ export class XhMenubarElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.barScope, idGenerator: this.idGen })
   }
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return [...this.exits.values()].flatMap(entry => entry.portal.roots)
+  }
+
+  private createPortal(value: string): AnchoredPortalController {
+    return new AnchoredPortalController({
+      name: `Menubar ${value}`,
+      config: () => this.config,
+      source: () => this.partFor('trigger', value),
+      root: () => this.partFor('positioner', value),
+      onShellReady: (shell) => {
+        setMenuSubmenuOwner(shell, this.submenuOwner)
+        return () => setMenuSubmenuOwner(shell, null)
+      },
+      onChange: () => this.requestUpdate(),
+    })
+  }
+
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
@@ -325,6 +344,7 @@ export class XhMenubarElement extends XhElement {
       if (entry && entry.value !== value) {
         this.ctrl.service.send({ type: 'PRESENCE.SET', value: entry.value, presence: entry.gate.presence, connected: false })
         entry.gate.dispose()
+        entry.portal.dispose()
         this.exits.delete(el)
         entry = undefined
       }
@@ -334,7 +354,7 @@ export class XhMenubarElement extends XhElement {
           open,
           onExitComplete: () => this.requestUpdate(),
         })
-        entry = { value, gate }
+        entry = { value, gate, portal: this.createPortal(value) }
         this.exits.set(el, entry)
         this.ctrl.service.send({ type: 'PRESENCE.SET', value, presence: gate.presence, connected: true })
       }
@@ -342,6 +362,7 @@ export class XhMenubarElement extends XhElement {
       gate.track(el)
       gate.update(open)
       this.setPartHidden(el, !gate.visible)
+      entry.portal.sync(gate.visible)
     }
     // 作者运行期移除 content 时精确注销；若它正是退场 owner，Headless 会立即释放行为资源。
     for (const [el, entry] of this.exits) {
@@ -349,6 +370,7 @@ export class XhMenubarElement extends XhElement {
         continue
       this.ctrl.service.send({ type: 'PRESENCE.SET', value: entry.value, presence: entry.gate.presence, connected: false })
       entry.gate.dispose()
+      entry.portal.dispose()
       this.exits.delete(el)
     }
 
@@ -394,6 +416,7 @@ export class XhMenubarElement extends XhElement {
     // 退场没播完就离场：立刻结清并收起
     for (const [el, entry] of this.exits) {
       entry.gate.dispose()
+      entry.portal.dispose()
       this.setPartHidden(el, true)
     }
     this.exits.clear()

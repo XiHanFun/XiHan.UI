@@ -9,6 +9,7 @@ import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
+import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
 import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
@@ -114,6 +115,18 @@ export class XhContextMenuElement extends XhElement {
     registerSubmenu: child => this.registerSubmenu(child),
   }
 
+  private readonly portal = new AnchoredPortalController({
+    name: 'ContextMenu',
+    config: () => this.config,
+    source: () => this.getPart('trigger'),
+    root: () => this.getPart('positioner'),
+    onShellReady: (shell) => {
+      setMenuSubmenuOwner(shell, this.submenuOwner)
+      return () => setMenuSubmenuOwner(shell, null)
+    },
+    onChange: () => this.requestUpdate(),
+  })
+
   private readonly notifyOpen = (details: ContextMenuOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -207,6 +220,10 @@ export class XhContextMenuElement extends XhElement {
     if (this.config)
       return
     this.config = createRuntimeConfig({ scope: this.menuScope, idGenerator: this.idGen })
+  }
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
   }
 
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
@@ -345,10 +362,12 @@ export class XhContextMenuElement extends XhElement {
     this.setPartHidden(content, !this.exit.visible)
 
     this.bars.wire()
+    this.portal.sync(this.exit.visible)
   }
 
   override disconnectedCallback(): void {
     setMenuSubmenuOwner(this, null)
+    this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()

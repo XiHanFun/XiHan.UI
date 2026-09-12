@@ -126,6 +126,12 @@ function expectThreeLevelsOpen(): void {
   expect(byValue('share-im').getAttribute('aria-expanded')).toBe('true')
   for (const value of ['open', 'share-email', 'share-wecom'])
     expect(getComputedStyle(contentOf(value)).display, value).not.toBe('none')
+  const shells = ['open', 'share-email', 'share-wecom'].map(value => contentOf(value).parentElement?.parentElement)
+  expect(new Set(shells).size).toBe(3)
+  for (const shell of shells) {
+    expect(shell?.dataset.xhPortalShell).toBe('')
+    expect(shell?.parentElement?.id).toBe('xh-portal-root')
+  }
 }
 
 afterEach(async () => {
@@ -207,8 +213,12 @@ describe('web Components Menu 三级真实指针', () => {
     await settle()
     expect(byValue('share-im').getAttribute('aria-expanded')).toBe('false')
     expect(byValue('share').getAttribute('aria-expanded')).toBe('true')
+    const exitingShell = contentOf('share-wecom').parentElement?.parentElement
+    expect(exitingShell?.dataset.xhPortalShell).toBe('')
     // 退场中的子层继续占栈顶，先完成它的视觉退出，下一次 Escape 才轮到父层。
     await finishExit('share-wecom')
+    expect(exitingShell?.isConnected).toBe(false)
+    expect(contentOf('share-email').parentElement?.parentElement?.dataset.xhPortalShell).toBe('')
 
     byValue('share-email').focus()
     await userEvent.keyboard('{Escape}')
