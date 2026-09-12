@@ -1,27 +1,22 @@
-// 折叠侧栏 | 不传 sider-collapsed 即为非受控，把手按下去只改宽度，侧栏节点一直在
+// 折叠侧栏 | 保留侧栏节点并切换宽度
 import type { ReactNode } from "react";
-import {
-  XhLayoutContent,
-  XhLayoutHeader,
-  XhLayoutRoot,
-  XhLayoutSider,
-  XhLayoutSiderTrigger,
-} from "@xihan-ui/react";
+import { XhLayoutContent, XhLayoutHeader, XhLayoutRoot, XhLayoutSider, XhLayoutSiderTrigger } from "@xihan-ui/react";
 
 export default function Demo(): ReactNode {
   return (
-    <XhLayoutRoot
-      bordered
-      style={{ blockSize: "240px", borderRadius: "8px", overflow: "hidden" }}
-    >
+    <XhLayoutRoot bordered style={{ inlineSize: "min(640px, 100%)", blockSize: "240px", borderRadius: "var(--xh-shape-surface)", overflow: "hidden" }}>
       <XhLayoutHeader>
-        <XhLayoutSiderTrigger>切换</XhLayoutSiderTrigger>
-        <span>控制台</span>
+        <XhLayoutSiderTrigger>菜单</XhLayoutSiderTrigger>
+        <strong>控制台</strong>
       </XhLayoutHeader>
-      <XhLayoutSider>导航 · 收藏 · 回收站</XhLayoutSider>
-      <XhLayoutContent>
-        折起来的是宽度不是高度，侧栏里的滚动位置与输入框都留着。
-      </XhLayoutContent>
+      <XhLayoutSider>
+        <div style={{ display: "grid", gap: "12px" }}>
+          <span>概览</span>
+          <span>收藏</span>
+          <span>回收站</span>
+        </div>
+      </XhLayoutSider>
+      <XhLayoutContent>项目动态</XhLayoutContent>
     </XhLayoutRoot>
   );
 }

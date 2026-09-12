@@ -1,26 +1,12 @@
-<!-- 折叠侧栏 | 不传 sider-collapsed 即为非受控，把手按下去只改宽度，侧栏节点一直在 -->
+<!-- 折叠侧栏 | 保留侧栏节点并切换宽度 -->
 <script setup lang="ts">
-import {
-  XhLayoutContent,
-  XhLayoutHeader,
-  XhLayoutRoot,
-  XhLayoutSider,
-  XhLayoutSiderTrigger,
-} from "@xihan-ui/vue";
+import { XhLayoutContent, XhLayoutHeader, XhLayoutRoot, XhLayoutSider, XhLayoutSiderTrigger } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhLayoutRoot
-    bordered
-    style="block-size: 240px; border-radius: 8px; overflow: hidden"
-  >
-    <XhLayoutHeader>
-      <XhLayoutSiderTrigger>切换</XhLayoutSiderTrigger>
-      <span>控制台</span>
-    </XhLayoutHeader>
-    <XhLayoutSider>导航 · 收藏 · 回收站</XhLayoutSider>
-    <XhLayoutContent>
-      折起来的是宽度不是高度，侧栏里的滚动位置与输入框都留着。
-    </XhLayoutContent>
+  <XhLayoutRoot bordered style="inline-size: min(640px, 100%); block-size: 240px; border-radius: var(--xh-shape-surface); overflow: hidden">
+    <XhLayoutHeader><XhLayoutSiderTrigger>菜单</XhLayoutSiderTrigger><strong>控制台</strong></XhLayoutHeader>
+    <XhLayoutSider><div style="display: grid; gap: 12px"><span>概览</span><span>收藏</span><span>回收站</span></div></XhLayoutSider>
+    <XhLayoutContent>项目动态</XhLayoutContent>
   </XhLayoutRoot>
 </template>
