@@ -114,15 +114,15 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       <!-- 摘要只在提交失败后显形，条目一次全写上 -->
       <XhFormErrorSummary v-slot="{ errorCount }">
         <span>共 {{ errorCount }} 处需要修改</span>
-        <XhFormErrorSummaryItem v-slot="{ error }" value="title">{{ error }}</XhFormErrorSummaryItem>
-        <XhFormErrorSummaryItem v-slot="{ error }" value="detail">{{ error }}</XhFormErrorSummaryItem>
-        <XhFormErrorSummaryItem v-slot="{ error }" value="agree">{{ error }}</XhFormErrorSummaryItem>
+        <XhFormErrorSummaryItem v-slot="{ error }" name="title">{{ error }}</XhFormErrorSummaryItem>
+        <XhFormErrorSummaryItem v-slot="{ error }" name="detail">{{ error }}</XhFormErrorSummaryItem>
+        <XhFormErrorSummaryItem v-slot="{ error }" name="agree">{{ error }}</XhFormErrorSummaryItem>
       </XhFormErrorSummary>
 
       <XhFieldsetRoot class="form-page__group">
         <XhFieldsetLegend>问题本身</XhFieldsetLegend>
 
-        <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="title">
+        <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="title">
           <XhFieldRoot :invalid="invalid" required>
             <XhFieldLabel>标题</XhFieldLabel>
             <XhFieldControl>
@@ -136,7 +136,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
           </XhFieldRoot>
         </XhFormFieldGroup>
 
-        <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="detail">
+        <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="detail">
           <XhFieldRoot :invalid="invalid" required>
             <XhFieldLabel>详细描述</XhFieldLabel>
             <XhFieldControl>
@@ -157,7 +157,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
         </XhFormFieldGroup>
 
         <div class="form-page__row">
-          <XhFormFieldGroup v-slot="{ value, setValue }" value="priority">
+          <XhFormFieldGroup v-slot="{ value, setValue }" name="priority">
             <XhSelectRoot
               :collection="priorities"
               :value="(value as string[])"
@@ -167,7 +167,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
             />
           </XhFormFieldGroup>
 
-          <XhFormFieldGroup v-slot="{ value, setValue }" value="amount">
+          <XhFormFieldGroup v-slot="{ value, setValue }" name="amount">
             <XhNumberFieldRoot
               :value="String(value ?? '')"
               :min="1"
@@ -184,7 +184,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
           </XhFormFieldGroup>
         </div>
 
-        <XhFormFieldGroup v-slot="{ value, setValue }" value="kind">
+        <XhFormFieldGroup v-slot="{ value, setValue }" name="kind">
           <XhRadioGroupRoot
             :collection="kinds"
             :value="(value as string)"
@@ -193,7 +193,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
           />
         </XhFormFieldGroup>
 
-        <XhFormFieldGroup v-slot="{ value, setValue }" value="labels">
+        <XhFormFieldGroup v-slot="{ value, setValue }" name="labels">
           <XhTagsInputRoot
             v-slot="{ value: tags }"
             :value="(value as string[])"
@@ -213,7 +213,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
           </XhTagsInputRoot>
         </XhFormFieldGroup>
 
-        <XhFormFieldGroup v-slot="{ value, setValue }" value="impact">
+        <XhFormFieldGroup v-slot="{ value, setValue }" name="impact">
           <XhSliderRoot
             v-slot="{ value: impact }"
             :value="(value as number[])"
@@ -237,14 +237,14 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       <XhFieldsetRoot class="form-page__group">
         <XhFieldsetLegend>提交之前</XhFieldsetLegend>
 
-        <XhFormFieldGroup v-slot="{ value, setValue }" value="notify">
+        <XhFormFieldGroup v-slot="{ value, setValue }" name="notify">
           <label class="form-page__check">
             <XhSwitch :checked="value === true" @update:checked="setValue($event)" />
             有进展就通知我
           </label>
         </XhFormFieldGroup>
 
-        <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="agree">
+        <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="agree">
           <XhFieldRoot :invalid="invalid" required>
             <label class="form-page__check">
               <XhCheckbox

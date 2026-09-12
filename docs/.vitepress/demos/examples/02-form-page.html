@@ -74,12 +74,12 @@
       <!-- 摘要只在提交失败后显形，条目一次全写上 -->
       <div data-xh-part="error-summary">
         <span id="form-page-count">共 0 处需要修改</span>
-        <a data-xh-part="error-summary-item" value="title"></a>
-        <a data-xh-part="error-summary-item" value="detail"></a>
-        <a data-xh-part="error-summary-item" value="agree"></a>
+        <a data-xh-part="error-summary-item" name="title"></a>
+        <a data-xh-part="error-summary-item" name="detail"></a>
+        <a data-xh-part="error-summary-item" name="agree"></a>
       </div>
 
-      <div data-xh-part="field-group" value="title">
+      <div data-xh-part="field-group" name="title">
         <xh-field>
           <div data-xh-part="root">
             <label data-xh-part="label">标题</label>
@@ -89,7 +89,7 @@
         </xh-field>
       </div>
 
-      <div data-xh-part="field-group" value="detail">
+      <div data-xh-part="field-group" name="detail">
         <xh-text-field id="form-page-detail" placeholder="复现步骤、期望结果、实际结果">
           <div data-xh-part="root">
             <label data-xh-part="label">详细描述</label>
@@ -103,7 +103,7 @@
       </div>
 
       <div data-form="row">
-        <div data-xh-part="field-group" value="priority">
+        <div data-xh-part="field-group" name="priority">
           <xh-select id="form-page-priority" placeholder="请选择">
             <div data-xh-part="root">
               <span data-xh-part="label">优先级</span>
@@ -135,7 +135,7 @@
           </xh-select>
         </div>
 
-        <div data-xh-part="field-group" value="amount">
+        <div data-xh-part="field-group" name="amount">
           <xh-number-field id="form-page-amount" min="1" max="99">
             <div data-xh-part="root">
               <label data-xh-part="label">受影响实例</label>
@@ -149,7 +149,7 @@
         </div>
       </div>
 
-      <div data-xh-part="field-group" value="kind">
+      <div data-xh-part="field-group" name="kind">
         <xh-radio-group id="form-page-kind" orientation="horizontal">
           <div data-xh-part="root">
             <span data-xh-part="label">工单类型</span>
@@ -172,7 +172,7 @@
         </xh-radio-group>
       </div>
 
-      <div data-xh-part="field-group" value="labels">
+      <div data-xh-part="field-group" name="labels">
         <xh-tags-input id="form-page-labels" placeholder="回车落一个">
           <div data-xh-part="root">
             <label data-xh-part="label">关联模块</label>
@@ -183,7 +183,7 @@
         </xh-tags-input>
       </div>
 
-      <div data-xh-part="field-group" value="impact">
+      <div data-xh-part="field-group" name="impact">
         <xh-slider id="form-page-impact" min="0" max="100" step="5" large-step="20">
           <div data-xh-part="root">
             <label data-xh-part="label">
@@ -201,7 +201,7 @@
         </xh-slider>
       </div>
 
-      <div data-xh-part="field-group" value="notify">
+      <div data-xh-part="field-group" name="notify">
         <label data-form="check">
           <xh-switch id="form-page-notify">
             <button data-xh-part="root">
@@ -212,7 +212,7 @@
         </label>
       </div>
 
-      <div data-xh-part="field-group" value="agree">
+      <div data-xh-part="field-group" name="agree">
         <label data-form="check">
           <xh-checkbox id="form-page-agree">
             <button data-xh-part="root">
@@ -266,7 +266,7 @@
   host.defaultValues = defaults;
   host.values = values;
 
-  const title = host.querySelector('[data-xh-part="field-group"][value="title"] [data-xh-part="control"]');
+  const title = host.querySelector('[data-xh-part="field-group"][name="title"] [data-xh-part="control"]');
   const detail = document.getElementById("form-page-detail");
   const priority = document.getElementById("form-page-priority");
   const amount = document.getElementById("form-page-amount");
@@ -338,7 +338,7 @@
 
   // 错误文案由作者自己写进字段、控件旁那一行与摘要条目
   function paintErrors(errors) {
-    host.querySelector('[data-xh-part="field-group"][value="title"] [data-xh-part="error-text"]')
+    host.querySelector('[data-xh-part="field-group"][name="title"] [data-xh-part="error-text"]')
       .textContent = errors.title ?? "";
     for (const line of host.querySelectorAll("[data-error]")) {
       const message = errors[line.dataset.error] ?? "";
