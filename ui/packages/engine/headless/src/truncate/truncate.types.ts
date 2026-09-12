@@ -76,7 +76,7 @@ export interface TruncateApi<T extends PropTypes = PropTypes> {
   overflowing: boolean
   /** 程序化展开 / 收回，与点一下走同一条路。 */
   setOpen: (next: boolean) => void
-  /** 手动重量一次：字体到位、外层换了布局这类观察器看不见的变化，由作者补一枪。 */
+  /** 手动测量一次，用于观察器无法感知的布局变化。 */
   measure: () => void
   getRootProps: () => T['element']
 }
