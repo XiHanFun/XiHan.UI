@@ -170,11 +170,26 @@ variant 换触发器的用色方式，size 换直径；缺省档与 lg 同高，
 | `list` | `data-placement` | props.placement |
 | `list` | `data-state` | 'open' \| 'closed' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-float-button-bg` · `--xh-float-button-bg-active` · `--xh-float-button-bg-hover` · `--xh-float-button-border` · `--xh-float-button-border-hover` · `--xh-float-button-fg` · `--xh-float-button-gap` · `--xh-float-button-icon-size` · `--xh-float-button-layer` · `--xh-float-button-radius` · `--xh-float-button-shadow` · `--xh-float-button-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-float-button-bg` | `trigger` | `background-color` | `default` | `--xh-_float-button-bg` | float-button 的 trigger 部件 background-color 覆盖槽。 |
+| `--xh-float-button-bg-active` | `trigger` | `background-color` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-_float-button-bg-active` | float-button 的 trigger 部件 background-color 覆盖槽。 |
+| `--xh-float-button-bg-hover` | `trigger` | `background-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-_float-button-bg-hover` | float-button 的 trigger 部件 background-color 覆盖槽。 |
+| `--xh-float-button-border` | `trigger` | `border` | `default` | `--xh-_float-button-border` | float-button 的 trigger 部件 border 覆盖槽。 |
+| `--xh-float-button-border-hover` | `trigger` | `border-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-_float-button-border-hover` | float-button 的 trigger 部件 border-color 覆盖槽。 |
+| `--xh-float-button-fg` | `root`<br>`trigger` | `--xh-_ring-color`<br>`color` | `default`<br>`disabled`<br>`focus-visible`<br>`variant=solid` | `--xh-_float-button-fg` | float-button 的 root、trigger 部件 --xh-_ring-color、color 覆盖槽。 |
+| `--xh-float-button-gap` | `list`<br>`root` | `gap` | `default` | `--xh-space-2` | float-button 的 list、root 部件 gap 覆盖槽。 |
+| `--xh-float-button-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | float-button 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-float-button-layer` | `root` | `z-index` | `default` | `--xh-layer-sticky` | float-button 的 root 部件 z-index 覆盖槽。 |
+| `--xh-float-button-radius` | `list`<br>`root`<br>`trigger` | `border-radius` | `default`<br>`shape=square` | `--xh-shape-control`<br>`--xh-shape-pill` | float-button 的 list、root、trigger 部件 border-radius 覆盖槽。 |
+| `--xh-float-button-shadow` | `trigger` | `box-shadow` | `default` | `--xh-_float-button-shadow` | float-button 的 trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-float-button-size` | `list`<br>`trigger` | `block-size`<br>`inline-size` | `default` | `--xh-_float-button-size` | float-button 的 list、trigger 部件 block-size、inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

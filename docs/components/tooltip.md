@@ -166,6 +166,7 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `trigger` | `aria-describedby` | `content` 部件的 id \| undefined |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `role` | 'tooltip' |
 | `arrow` | `aria-hidden` | 'true' |
 
@@ -192,11 +193,28 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 | `content` | `data-tone` | props.tone |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-tooltip-arrow-size` · `--xh-tooltip-backdrop` · `--xh-tooltip-bg` · `--xh-tooltip-border` · `--xh-tooltip-fg` · `--xh-tooltip-font-size` · `--xh-tooltip-highlight` · `--xh-tooltip-layer` · `--xh-tooltip-max-w` · `--xh-tooltip-px` · `--xh-tooltip-py` · `--xh-tooltip-radius` · `--xh-tooltip-shadow` · `--xh-tooltip-trigger-gap`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-tooltip-arrow-size` | `arrow` | `--xh-_overlay-arrow-size` | `default` | `--xh-overlay-arrow-size` | tooltip 的 arrow 部件 --xh-_overlay-arrow-size 覆盖槽。 |
+| `--xh-tooltip-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-compact-backdrop` | tooltip 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-tooltip-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-_tooltip-solid` | tooltip 的 arrow、content 部件 background 覆盖槽。 |
+| `--xh-tooltip-border` | `arrow`<br>`content` | `border` | `default` | `--xh-_tooltip-border` | tooltip 的 arrow、content 部件 border 覆盖槽。 |
+| `--xh-tooltip-fg` | `content` | `color` | `default` | `--xh-_tooltip-on` | tooltip 的 content 部件 color 覆盖槽。 |
+| `--xh-tooltip-font-size` | `content` | `font-size` | `default` | `--xh-_tooltip-font-size` | tooltip 的 content 部件 font-size 覆盖槽。 |
+| `--xh-tooltip-highlight` | `content` | `box-shadow` | `default` | `--xh-_tooltip-highlight` | tooltip 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-tooltip-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | tooltip 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-tooltip-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | tooltip 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-tooltip-px` | `content` | `padding-inline` | `default` | `--xh-_tooltip-px` | tooltip 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-tooltip-py` | `content` | `padding-block` | `default` | `--xh-_tooltip-py` | tooltip 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-tooltip-radius` | `content` | `border-radius` | `default` | `--xh-shape-control` | tooltip 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-tooltip-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-compact-shadow` | tooltip 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-tooltip-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-sm` | tooltip 的 trigger 部件 gap 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

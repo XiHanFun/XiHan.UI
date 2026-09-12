@@ -183,11 +183,41 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 | `sider` | `data-presentation` | resolveSiderPresentation( prop('siderPresentation'), … |
 | `sider-trigger` | `data-collapsed` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-layout-bg` · `--xh-layout-border` · `--xh-layout-content-padding` · `--xh-layout-fg` · `--xh-layout-footer-bg` · `--xh-layout-footer-padding` · `--xh-layout-header-bg` · `--xh-layout-header-gap` · `--xh-layout-header-h` · `--xh-layout-header-layer` · `--xh-layout-header-px` · `--xh-layout-scrollport-h` · `--xh-layout-sider-backdrop-bg` · `--xh-layout-sider-backdrop-layer` · `--xh-layout-sider-bg` · `--xh-layout-sider-collapsed-w` · `--xh-layout-sider-layer` · `--xh-layout-sider-padding` · `--xh-layout-sider-shadow` · `--xh-layout-sider-trigger-bg` · `--xh-layout-sider-trigger-bg-active` · `--xh-layout-sider-trigger-bg-hover` · `--xh-layout-sider-trigger-fg` · `--xh-layout-sider-trigger-gap` · `--xh-layout-sider-trigger-px` · `--xh-layout-sider-trigger-radius` · `--xh-layout-sider-w`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-layout-bg` | `root` | `background` | `default` | `--xh-bg-page` | layout 的 root 部件 background 覆盖槽。 |
+| `--xh-layout-border` | `footer`<br>`header`<br>`root`<br>`sider` | `border-block-end`<br>`border-block-start`<br>`border-inline-end`<br>`border-inline-start` | `bordered`<br>`placement=end`<br>`placement=start` | `--xh-border-default` | layout 的 footer、header、root、sider 部件 border-block-end、border-block-start、border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-layout-content-padding` | `content` | `padding` | `default` | `--xh-space-4` | layout 的 content 部件 padding 覆盖槽。 |
+| `--xh-layout-fg` | `root` | `color` | `default` | `--xh-fg-default` | layout 的 root 部件 color 覆盖槽。 |
+| `--xh-layout-footer-bg` | `footer` | `background` | `default` | `--xh-bg-surface` | layout 的 footer 部件 background 覆盖槽。 |
+| `--xh-layout-footer-padding` | `footer` | `padding` | `default` | `--xh-space-3` | layout 的 footer 部件 padding 覆盖槽。 |
+| `--xh-layout-header-bg` | `header` | `background` | `default` | `--xh-bg-surface` | layout 的 header 部件 background 覆盖槽。 |
+| `--xh-layout-header-gap` | `header` | `gap` | `default` | `--xh-space-3` | layout 的 header 部件 gap 覆盖槽。 |
+| `--xh-layout-header-h` | `header`<br>`root`<br>`sider` | `block-size`<br>`grid-template-rows`<br>`inset-block-start`<br>`max-block-size` | `default`<br>`fixed`<br>`header-fixed`<br>`sider-fixed` | `3.5rem` | layout 的 header、root、sider 部件 block-size、grid-template-rows、inset-block-start、max-block-size 覆盖槽。 |
+| `--xh-layout-header-layer` | `header` | `z-index` | `fixed` | `--xh-layer-sticky` | layout 的 header 部件 z-index 覆盖槽。 |
+| `--xh-layout-header-px` | `header` | `padding-inline` | `default` | `--xh-space-4` | layout 的 header 部件 padding-inline 覆盖槽。 |
+| `--xh-layout-scrollport-h` | `sider` | `max-block-size` | `fixed`<br>`presentation=sheet` | `100dvh`<br>`100vh` | layout 的 sider 部件 max-block-size 覆盖槽。 |
+| `--xh-layout-sider-backdrop-bg` | `sider-backdrop` | `background` | `default` | `--xh-bg-overlay` | layout 的 sider-backdrop 部件 background 覆盖槽。 |
+| `--xh-layout-sider-backdrop-layer` | `sider-backdrop` | `z-index` | `default` | `--xh-layer-drawer` | layout 的 sider-backdrop 部件 z-index 覆盖槽。 |
+| `--xh-layout-sider-bg` | `sider` | `background` | `default` | `--xh-bg-subtle` | layout 的 sider 部件 background 覆盖槽。 |
+| `--xh-layout-sider-collapsed-w` | `root`<br>`sider` | `inline-size` | `collapsed`<br>`sider-breakpoint` | `4rem` | layout 的 root、sider 部件 inline-size 覆盖槽。 |
+| `--xh-layout-sider-layer` | `sider` | `z-index` | `presentation=sheet` | `--xh-layer-drawer` | layout 的 sider 部件 z-index 覆盖槽。 |
+| `--xh-layout-sider-padding` | `sider` | `padding`<br>`padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default`<br>`presentation=sheet` | `--xh-space-3` | layout 的 sider 部件 padding、padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
+| `--xh-layout-sider-shadow` | `sider` | `box-shadow` | `presentation=sheet` | `--xh-elevation-sheet` | layout 的 sider 部件 box-shadow 覆盖槽。 |
+| `--xh-layout-sider-trigger-bg` | `sider-trigger` | `background` | `default` | `transparent` | layout 的 sider-trigger 部件 background 覆盖槽。 |
+| `--xh-layout-sider-trigger-bg-active` | `sider-trigger` | `background` | `active` | `--xh-bg-subtle-active` | layout 的 sider-trigger 部件 background 覆盖槽。 |
+| `--xh-layout-sider-trigger-bg-hover` | `sider-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | layout 的 sider-trigger 部件 background 覆盖槽。 |
+| `--xh-layout-sider-trigger-fg` | `sider-trigger` | `color` | `default` | `--xh-fg-default` | layout 的 sider-trigger 部件 color 覆盖槽。 |
+| `--xh-layout-sider-trigger-gap` | `sider-trigger` | `gap` | `default` | `--xh-control-gap-sm` | layout 的 sider-trigger 部件 gap 覆盖槽。 |
+| `--xh-layout-sider-trigger-px` | `sider-trigger` | `padding-inline` | `default` | `--xh-control-px-sm` | layout 的 sider-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-layout-sider-trigger-radius` | `sider-trigger` | `border-radius` | `default` | `--xh-shape-control` | layout 的 sider-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-layout-sider-w` | `root`<br>`sider` | `inline-size` | `@media (min-width: 1024px)`<br>`@media (min-width: 1280px)`<br>`@media (min-width: 640px)`<br>`@media (min-width: 768px)`<br>`default`<br>`presentation=sheet`<br>`sider-breakpoint=lg`<br>`sider-breakpoint=md`<br>`sider-breakpoint=sm`<br>`sider-breakpoint=xl` | `15rem` | layout 的 root、sider 部件 inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

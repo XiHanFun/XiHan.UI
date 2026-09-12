@@ -128,11 +128,32 @@ status 只落成 data-status，皮肤据它给图标区上语气色；画什么�
 | `root` | `data-status` | props.status |
 | `root` | `data-tone` | props.tone |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-empty-state-action-gap` · `--xh-empty-state-description-fg` · `--xh-empty-state-description-font-size` · `--xh-empty-state-description-leading` · `--xh-empty-state-description-max-w` · `--xh-empty-state-fg` · `--xh-empty-state-gap` · `--xh-empty-state-icon-size` · `--xh-empty-state-indicator-fg` · `--xh-empty-state-indicator-font-size` · `--xh-empty-state-media-fg` · `--xh-empty-state-media-size` · `--xh-empty-state-px` · `--xh-empty-state-py` · `--xh-empty-state-title-fg` · `--xh-empty-state-title-font-size` · `--xh-empty-state-title-font-weight` · `--xh-empty-state-title-leading`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-empty-state-action-gap` | `action` | `gap` | `default` | `--xh-space-2` | empty-state 的 action 部件 gap 覆盖槽。 |
+| `--xh-empty-state-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | empty-state 的 description 部件 color 覆盖槽。 |
+| `--xh-empty-state-description-font-size` | `description` | `font-size` | `default` | `--xh-text-body-size` | empty-state 的 description 部件 font-size 覆盖槽。 |
+| `--xh-empty-state-description-leading` | `description` | `line-height` | `default` | `--xh-text-body-leading` | empty-state 的 description 部件 line-height 覆盖槽。 |
+| `--xh-empty-state-description-max-w` | `description` | `max-inline-size` | `default` | `--xh-measure-prose` | empty-state 的 description 部件 max-inline-size 覆盖槽。 |
+| `--xh-empty-state-fg` | `root` | `color` | `default` | `--xh-fg-default` | empty-state 的 root 部件 color 覆盖槽。 |
+| `--xh-empty-state-gap` | `root` | `gap` | `default` | `--xh-_empty-state-gap` | empty-state 的 root 部件 gap 覆盖槽。 |
+| `--xh-empty-state-icon-size` | `indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-_empty-state-icon-size` | empty-state 的 indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
+| `--xh-empty-state-indicator-fg` | `indicator` | `color` | `default` | `--xh-_empty-state-accent` | empty-state 的 indicator 部件 color 覆盖槽。 |
+| `--xh-empty-state-indicator-font-size` | `indicator` | `font-size` | `default` | `--xh-_empty-state-icon-size` | empty-state 的 indicator 部件 font-size 覆盖槽。 |
+| `--xh-empty-state-media-fg` | `media` | `color` | `default` | `--xh-_empty-state-accent` | empty-state 的 media 部件 color 覆盖槽。 |
+| `--xh-empty-state-media-size` | `media` | `block-size` | `default` | `--xh-_empty-state-icon-size` | empty-state 的 media 部件 block-size 覆盖槽。 |
+| `--xh-empty-state-px` | `root` | `padding-inline` | `default` | `--xh-space-6` | empty-state 的 root 部件 padding-inline 覆盖槽。 |
+| `--xh-empty-state-py` | `root` | `padding-block` | `default` | `--xh-_empty-state-py` | empty-state 的 root 部件 padding-block 覆盖槽。 |
+| `--xh-empty-state-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | empty-state 的 title 部件 color 覆盖槽。 |
+| `--xh-empty-state-title-font-size` | `title` | `font-size` | `default` | `--xh-_empty-state-title-size` | empty-state 的 title 部件 font-size 覆盖槽。 |
+| `--xh-empty-state-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | empty-state 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-empty-state-title-leading` | `title` | `line-height` | `default` | `--xh-leading-tight` | empty-state 的 title 部件 line-height 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

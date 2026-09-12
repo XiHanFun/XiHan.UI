@@ -94,11 +94,20 @@
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-icon-wrapper-bg` · `--xh-icon-wrapper-fg` · `--xh-icon-wrapper-glyph-size` · `--xh-icon-wrapper-radius` · `--xh-icon-wrapper-shadow` · `--xh-icon-wrapper-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-icon-wrapper-bg` | `root` | `background` | `default` | `--xh-bg-subtle` | icon-wrapper 的 root 部件 background 覆盖槽。 |
+| `--xh-icon-wrapper-fg` | `root` | `color` | `default` | `--xh-fg-default` | icon-wrapper 的 root 部件 color 覆盖槽。 |
+| `--xh-icon-wrapper-glyph-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | icon-wrapper 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-icon-wrapper-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | icon-wrapper 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-icon-wrapper-shadow` | `root` | `box-shadow` | `variant=solid` | `--xh-_icon-wrapper-highlight` | icon-wrapper 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-icon-wrapper-size` | `root` | `block-size`<br>`inline-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | icon-wrapper 的 root 部件 block-size、inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

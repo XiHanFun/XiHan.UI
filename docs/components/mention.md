@@ -208,6 +208,7 @@ variant 换正文框的描边与底色，候选面板不受影响
 | `input` | `aria-labelledby` | `label` 部件的 id |
 | `input` | `role` | 'combobox' |
 | `content` | `aria-busy` | 'true' \| undefined |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-label` | props.translations.content |
 | `content` | `role` | 'listbox' |
 | `empty` | `role` | 'status' |
@@ -251,11 +252,68 @@ variant 换正文框的描边与底色，候选面板不受影响
 | `empty` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-state` | 'open' \| 'closed' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-mention-content-backdrop` · `--xh-mention-content-bg` · `--xh-mention-content-border` · `--xh-mention-content-fg` · `--xh-mention-content-gap` · `--xh-mention-content-highlight` · `--xh-mention-content-max-h` · `--xh-mention-content-max-w` · `--xh-mention-content-min-h` · `--xh-mention-content-min-w` · `--xh-mention-content-px` · `--xh-mention-content-py` · `--xh-mention-content-radius` · `--xh-mention-content-shadow` · `--xh-mention-empty-fg` · `--xh-mention-empty-font-size` · `--xh-mention-empty-px` · `--xh-mention-empty-py` · `--xh-mention-input-autofill-bg` · `--xh-mention-input-autofill-fg` · `--xh-mention-input-bg` · `--xh-mention-input-bg-disabled` · `--xh-mention-input-bg-hover` · `--xh-mention-input-bg-readonly` · `--xh-mention-input-border` · `--xh-mention-input-border-focus` · `--xh-mention-input-border-hover` · `--xh-mention-input-border-invalid` · `--xh-mention-input-fg` · `--xh-mention-input-font-size` · `--xh-mention-input-h` · `--xh-mention-input-min-w` · `--xh-mention-input-px` · `--xh-mention-input-radius` · `--xh-mention-input-shadow` · `--xh-mention-item-bg-hover` · `--xh-mention-item-fg` · `--xh-mention-item-font-size` · `--xh-mention-item-gap` · `--xh-mention-item-leading` · `--xh-mention-item-px` · `--xh-mention-item-py` · `--xh-mention-item-radius` · `--xh-mention-label-fg` · `--xh-mention-label-fg-disabled` · `--xh-mention-label-font-size` · `--xh-mention-label-font-weight` · `--xh-mention-label-gap` · `--xh-mention-layer` · `--xh-mention-loading-fg` · `--xh-mention-loading-font-size` · `--xh-mention-loading-px` · `--xh-mention-loading-py` · `--xh-mention-placeholder-fg`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-mention-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | mention 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-mention-content-bg` | `content` | `background` | `default` | `--xh-material-frosted-bg` | mention 的 content 部件 background 覆盖槽。 |
+| `--xh-mention-content-border` | `content` | `border` | `default` | `--xh-material-frosted-border` | mention 的 content 部件 border 覆盖槽。 |
+| `--xh-mention-content-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | mention 的 content 部件 color 覆盖槽。 |
+| `--xh-mention-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | mention 的 content 部件 gap 覆盖槽。 |
+| `--xh-mention-content-highlight` | `content` | `background` | `default` | `--xh-material-frosted-highlight` | mention 的 content 部件 background 覆盖槽。 |
+| `--xh-mention-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | mention 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-mention-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | mention 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-mention-content-min-h` | `content` | `min-block-size` | `default` | `--xh-_mention-h` | mention 的 content 部件 min-block-size 覆盖槽。 |
+| `--xh-mention-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-min-w` | mention 的 content 部件 min-inline-size 覆盖槽。 |
+| `--xh-mention-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | mention 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-mention-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | mention 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-mention-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | mention 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-mention-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | mention 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-mention-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | mention 的 empty 部件 color 覆盖槽。 |
+| `--xh-mention-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 empty 部件 font-size 覆盖槽。 |
+| `--xh-mention-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 empty 部件 padding-inline 覆盖槽。 |
+| `--xh-mention-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | mention 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-mention-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-canvas` | mention 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-mention-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | mention 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
+| `--xh-mention-input-bg` | `input` | `background` | `default` | `--xh-_mention-input-bg` | mention 的 input 部件 background 覆盖槽。 |
+| `--xh-mention-input-bg-disabled` | `input` | `background` | `disabled` | `--xh-bg-subtle` | mention 的 input 部件 background 覆盖槽。 |
+| `--xh-mention-input-bg-hover` | `input` | `background` | `hover`<br>`invalid`<br>`not(:disabled, [readonly], [data-invalid])` | `--xh-_mention-input-bg-hover` | mention 的 input 部件 background 覆盖槽。 |
+| `--xh-mention-input-bg-readonly` | `input` | `background` | `default` | `--xh-bg-subtle` | mention 的 input 部件 background 覆盖槽。 |
+| `--xh-mention-input-border` | `input` | `border` | `default` | `--xh-_mention-input-border` | mention 的 input 部件 border 覆盖槽。 |
+| `--xh-mention-input-border-focus` | `input` | `border-color` | `focus-visible` | `--xh-_tone` | mention 的 input 部件 border-color 覆盖槽。 |
+| `--xh-mention-input-border-hover` | `input` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, [readonly], [data-invalid])` | `--xh-_mention-input-border-hover` | mention 的 input 部件 border-color 覆盖槽。 |
+| `--xh-mention-input-border-invalid` | `input` | `border-color` | `invalid` | `--xh-border-invalid` | mention 的 input 部件 border-color 覆盖槽。 |
+| `--xh-mention-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | mention 的 input 部件 color 覆盖槽。 |
+| `--xh-mention-input-font-size` | `input` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 input 部件 font-size 覆盖槽。 |
+| `--xh-mention-input-h` | `input` | `block-size` | `default` | `--xh-_mention-h` | mention 的 input 部件 block-size 覆盖槽。 |
+| `--xh-mention-input-min-w` | `input`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | mention 的 input、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-mention-input-px` | `input` | `padding-inline` | `default` | `--xh-_mention-px` | mention 的 input 部件 padding-inline 覆盖槽。 |
+| `--xh-mention-input-radius` | `input` | `border-radius` | `default` | `--xh-shape-control` | mention 的 input 部件 border-radius 覆盖槽。 |
+| `--xh-mention-input-shadow` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`default` | `--xh-_mention-input-shadow` | mention 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-mention-item-bg-hover` | `item` | `background` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-bg-subtle` | mention 的 item 部件 background 覆盖槽。 |
+| `--xh-mention-item-fg` | `item` | `color` | `default` | `--xh-material-frosted-fg` | mention 的 item 部件 color 覆盖槽。 |
+| `--xh-mention-item-font-size` | `item` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 item 部件 font-size 覆盖槽。 |
+| `--xh-mention-item-gap` | `item` | `gap` | `default` | `--xh-_mention-gap` | mention 的 item 部件 gap 覆盖槽。 |
+| `--xh-mention-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | mention 的 item 部件 line-height 覆盖槽。 |
+| `--xh-mention-item-px` | `item` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-mention-item-py` | `item` | `padding-block` | `default` | `--xh-_mention-item-py` | mention 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-mention-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | mention 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-mention-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | mention 的 label 部件 color 覆盖槽。 |
+| `--xh-mention-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | mention 的 label 部件 color 覆盖槽。 |
+| `--xh-mention-label-font-size` | `label` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 label 部件 font-size 覆盖槽。 |
+| `--xh-mention-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | mention 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-mention-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-1` | mention 的 label 部件 margin-block-end 覆盖槽。 |
+| `--xh-mention-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | mention 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-mention-loading-fg` | `loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | mention 的 loading 部件 color 覆盖槽。 |
+| `--xh-mention-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 loading 部件 font-size 覆盖槽。 |
+| `--xh-mention-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 loading 部件 padding-inline 覆盖槽。 |
+| `--xh-mention-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | mention 的 loading 部件 padding-block 覆盖槽。 |
+| `--xh-mention-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | mention 的 input 部件 color 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

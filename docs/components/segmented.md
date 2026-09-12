@@ -208,11 +208,37 @@ size 换的是段的高度、内边距与字号，指示器跟着量出来的段
 | `root` | `data-tone` | props.tone |
 | `indicator` | `data-value` | context.get('value') |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-segmented-bg` · `--xh-segmented-bg-disabled` · `--xh-segmented-border` · `--xh-segmented-border-invalid` · `--xh-segmented-font-size` · `--xh-segmented-h` · `--xh-segmented-indicator-bg` · `--xh-segmented-indicator-radius` · `--xh-segmented-indicator-shadow` · `--xh-segmented-indicator-shadow-disabled` · `--xh-segmented-item-bg-hover` · `--xh-segmented-item-fg` · `--xh-segmented-item-fg-checked` · `--xh-segmented-item-fg-checked-disabled` · `--xh-segmented-item-fg-hover` · `--xh-segmented-item-font-weight` · `--xh-segmented-item-gap` · `--xh-segmented-item-h` · `--xh-segmented-item-press-scale` · `--xh-segmented-item-px` · `--xh-segmented-item-radius` · `--xh-segmented-radius` · `--xh-segmented-track-padding`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-segmented-bg` | `root` | `background` | `default` | `--xh-bg-subtle` | segmented 的 root 部件 background 覆盖槽。 |
+| `--xh-segmented-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-muted` | segmented 的 root 部件 background 覆盖槽。 |
+| `--xh-segmented-border` | `root` | `border` | `default` | `--xh-border-subtle` | segmented 的 root 部件 border 覆盖槽。 |
+| `--xh-segmented-border-invalid` | `root` | `border-color` | `invalid` | `--xh-border-invalid` | segmented 的 root 部件 border-color 覆盖槽。 |
+| `--xh-segmented-font-size` | `root` | `font-size` | `default` | `--xh-_segmented-font-size` | segmented 的 root 部件 font-size 覆盖槽。 |
+| `--xh-segmented-h` | `item`<br>`root` | `min-block-size` | `orientation=horizontal` | `--xh-_segmented-h` | segmented 的 item、root 部件 min-block-size 覆盖槽。 |
+| `--xh-segmented-indicator-bg` | `indicator` | `background` | `default` | `--xh-_segmented-indicator-bg` | segmented 的 indicator 部件 background 覆盖槽。 |
+| `--xh-segmented-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-inset` | segmented 的 indicator 部件 border-radius 覆盖槽。 |
+| `--xh-segmented-indicator-shadow` | `indicator` | `box-shadow` | `default` | `--xh-elevation-raised` | segmented 的 indicator 部件 box-shadow 覆盖槽。 |
+| `--xh-segmented-indicator-shadow-disabled` | `indicator`<br>`root` | `box-shadow` | `disabled` | `none` | segmented 的 indicator、root 部件 box-shadow 覆盖槽。 |
+| `--xh-segmented-item-bg-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-state='checked'])`<br>`state=checked` | `--xh-bg-subtle-hover` | segmented 的 item 部件 background-color 覆盖槽。 |
+| `--xh-segmented-item-fg` | `item` | `color` | `default` | `--xh-fg-muted` | segmented 的 item 部件 color 覆盖槽。 |
+| `--xh-segmented-item-fg-checked` | `item` | `color` | `state=checked` | `--xh-_segmented-fg-selected` | segmented 的 item 部件 color 覆盖槽。 |
+| `--xh-segmented-item-fg-checked-disabled` | `item` | `color` | `disabled`<br>`state=checked` | `--xh-_segmented-fg-selected` | segmented 的 item 部件 color 覆盖槽。 |
+| `--xh-segmented-item-fg-hover` | `item` | `color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-state='checked'])`<br>`state=checked` | `--xh-fg-default` | segmented 的 item 部件 color 覆盖槽。 |
+| `--xh-segmented-item-font-weight` | `item` | `font-weight` | `default` | `--xh-text-label-weight` | segmented 的 item 部件 font-weight 覆盖槽。 |
+| `--xh-segmented-item-gap` | `item` | `gap` | `default` | `--xh-_segmented-gap` | segmented 的 item 部件 gap 覆盖槽。 |
+| `--xh-segmented-item-h` | `item` | `block-size` | `default` | `--xh-_segmented-h` | segmented 的 item 部件 block-size 覆盖槽。 |
+| `--xh-segmented-item-press-scale` | `item` | `scale` | `active`<br>`disabled`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`readonly` | `--xh-motion-scale-press` | segmented 的 item 部件 scale 覆盖槽。 |
+| `--xh-segmented-item-px` | `item` | `padding-inline` | `default` | `--xh-_segmented-px` | segmented 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-segmented-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | segmented 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-segmented-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | segmented 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-segmented-track-padding` | `item`<br>`root` | `min-block-size`<br>`padding` | `default`<br>`orientation=horizontal` | `--xh-space-0_5` | segmented 的 item、root 部件 min-block-size、padding 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

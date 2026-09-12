@@ -26,11 +26,6 @@
     display: none;
   }
 
-  /* 标签左置：标签列宽的缺省档在这儿，labelWidth 会以行内样式盖过它 */
-  [data-scope='form'][data-part='root'][data-layout='horizontal'] {
-    --xh-form-label-w: 30%;
-  }
-
   /* 横排一行流：字段并肩排，放不下自动折行 */
   [data-scope='form'][data-part='root'][data-layout='inline'] {
     flex-flow: row wrap;

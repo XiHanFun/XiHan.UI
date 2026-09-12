@@ -178,11 +178,46 @@ open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位
 | `duration` | `data-streaming` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-reasoning-bg` · `--xh-reasoning-border` · `--xh-reasoning-content-fg` · `--xh-reasoning-content-font-size` · `--xh-reasoning-content-leading` · `--xh-reasoning-content-pe` · `--xh-reasoning-content-ps` · `--xh-reasoning-duration-fg` · `--xh-reasoning-duration-font-size` · `--xh-reasoning-font-size` · `--xh-reasoning-icon-fg` · `--xh-reasoning-icon-size` · `--xh-reasoning-icon-streaming-fg` · `--xh-reasoning-indicator-fg` · `--xh-reasoning-label-font-weight` · `--xh-reasoning-label-streaming-fg` · `--xh-reasoning-px` · `--xh-reasoning-py` · `--xh-reasoning-radius` · `--xh-reasoning-rail` · `--xh-reasoning-rail-inset` · `--xh-reasoning-rail-width` · `--xh-reasoning-shadow` · `--xh-reasoning-shimmer-duration` · `--xh-reasoning-shimmer-from` · `--xh-reasoning-shimmer-to` · `--xh-reasoning-tone-bar` · `--xh-reasoning-tone-fg` · `--xh-reasoning-trigger-bg-hover` · `--xh-reasoning-trigger-fg` · `--xh-reasoning-trigger-gap` · `--xh-reasoning-trigger-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-reasoning-bg` | `root` | `background` | `default`<br>`variant=outline` | `--xh-bg-subtle`<br>`--xh-bg-surface` | reasoning 的 root 部件 background 覆盖槽。 |
+| `--xh-reasoning-border` | `root` | `border-color` | `variant=outline` | `--xh-border-subtle` | reasoning 的 root 部件 border-color 覆盖槽。 |
+| `--xh-reasoning-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` | reasoning 的 content 部件 color 覆盖槽。 |
+| `--xh-reasoning-content-font-size` | `content` | `font-size` | `default` | `--xh-text-secondary-size` | reasoning 的 content 部件 font-size 覆盖槽。 |
+| `--xh-reasoning-content-leading` | `content` | `line-height` | `default` | `--xh-text-prose-leading` | reasoning 的 content 部件 line-height 覆盖槽。 |
+| `--xh-reasoning-content-pe` | `content` | `padding-inline-end` | `default` | `--xh-reasoning-px` | reasoning 的 content 部件 padding-inline-end 覆盖槽。 |
+| `--xh-reasoning-content-ps` | `content` | `padding-inline-start` | `default` | `--xh-space-3` | reasoning 的 content 部件 padding-inline-start 覆盖槽。 |
+| `--xh-reasoning-duration-fg` | `duration` | `color` | `default` | `--xh-fg-subtle` | reasoning 的 duration 部件 color 覆盖槽。 |
+| `--xh-reasoning-duration-font-size` | `duration` | `font-size` | `default` | `--xh-text-caption-size` | reasoning 的 duration 部件 font-size 覆盖槽。 |
+| `--xh-reasoning-font-size` | `trigger` | `font-size` | `default` | `--xh-_reasoning-font-size` | reasoning 的 trigger 部件 font-size 覆盖槽。 |
+| `--xh-reasoning-icon-fg` | `icon` | `color` | `default` | `--xh-fg-subtle` | reasoning 的 icon 部件 color 覆盖槽。 |
+| `--xh-reasoning-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | reasoning 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-reasoning-icon-streaming-fg` | `icon` | `color` | `streaming` | `--xh-fg-muted` | reasoning 的 icon 部件 color 覆盖槽。 |
+| `--xh-reasoning-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-subtle` | reasoning 的 indicator 部件 color 覆盖槽。 |
+| `--xh-reasoning-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | reasoning 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-reasoning-label-streaming-fg` | `label` | `color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`motion=reduce`<br>`streaming`<br>`where([data-motion='reduce'])` | `--xh-fg-default` | reasoning 的 label 部件 color 覆盖槽。 |
+| `--xh-reasoning-px` | `content`<br>`trigger` | `margin-inline-start`<br>`padding-inline`<br>`padding-inline-end` | `default` | `--xh-_reasoning-px` | reasoning 的 content、trigger 部件 margin-inline-start、padding-inline、padding-inline-end 覆盖槽。 |
+| `--xh-reasoning-py` | `*`<br>`content`<br>`trigger` | `padding-block`<br>`padding-block-end` | `@keyframes xh-reasoning-collapse`<br>`@keyframes xh-reasoning-expand`<br>`default` | `--xh-_reasoning-py` | reasoning 的 *、content、trigger 部件 padding-block、padding-block-end 覆盖槽。 |
+| `--xh-reasoning-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | reasoning 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-reasoning-rail` | `content` | `border-inline-start` | `default` | `--xh-border-subtle` | reasoning 的 content 部件 border-inline-start 覆盖槽。 |
+| `--xh-reasoning-rail-inset` | `content` | `margin-inline-start` | `default` | `--xh-reasoning-px` | reasoning 的 content 部件 margin-inline-start 覆盖槽。 |
+| `--xh-reasoning-rail-width` | `content` | `border-inline-start` | `default` | `--xh-stroke-thin` | reasoning 的 content 部件 border-inline-start 覆盖槽。 |
+| `--xh-reasoning-shadow` | `root` | `box-shadow` | `default`<br>`tone` | `--xh-elevation-raised` | reasoning 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-reasoning-shimmer-duration` | `label` | `animation` | `streaming` | `--xh-shimmer-duration` | reasoning 的 label 部件 animation 覆盖槽。 |
+| `--xh-reasoning-shimmer-from` | `label` | `background-image` | `streaming` | `--xh-fg-subtle` | reasoning 的 label 部件 background-image 覆盖槽。 |
+| `--xh-reasoning-shimmer-to` | `label` | `background-image` | `streaming` | `--xh-fg-default` | reasoning 的 label 部件 background-image 覆盖槽。 |
+| `--xh-reasoning-tone-bar` | `root` | `box-shadow` | `tone` | `--xh-stroke-thick` | reasoning 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-reasoning-tone-fg` | `root` | `box-shadow` | `tone` | `--xh-_tone-soft` | reasoning 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-reasoning-trigger-bg-hover` | `trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | reasoning 的 trigger 部件 background 覆盖槽。 |
+| `--xh-reasoning-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-muted` | reasoning 的 trigger 部件 color 覆盖槽。 |
+| `--xh-reasoning-trigger-gap` | `trigger` | `gap` | `default` | `--xh-space-2` | reasoning 的 trigger 部件 gap 覆盖槽。 |
+| `--xh-reasoning-trigger-radius` | `root`<br>`trigger` | `border-radius` | `variant=ghost` | `--xh-shape-control` | reasoning 的 root、trigger 部件 border-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

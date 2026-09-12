@@ -175,11 +175,28 @@ surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-toolbar-bg` · `--xh-toolbar-bg-disabled` · `--xh-toolbar-border` · `--xh-toolbar-fg` · `--xh-toolbar-gap` · `--xh-toolbar-group-gap` · `--xh-toolbar-px` · `--xh-toolbar-py` · `--xh-toolbar-radius` · `--xh-toolbar-separator-color` · `--xh-toolbar-separator-gap` · `--xh-toolbar-separator-inset` · `--xh-toolbar-separator-radius` · `--xh-toolbar-separator-thickness`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-toolbar-bg` | `root` | `background` | `default`<br>`variant=plain` | `--xh-bg-surface`<br>`transparent` | toolbar 的 root 部件 background 覆盖槽。 |
+| `--xh-toolbar-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-muted` | toolbar 的 root 部件 background 覆盖槽。 |
+| `--xh-toolbar-border` | `root` | `border` | `default` | `--xh-border-default` | toolbar 的 root 部件 border 覆盖槽。 |
+| `--xh-toolbar-fg` | `root` | `color` | `default` | `--xh-fg-default` | toolbar 的 root 部件 color 覆盖槽。 |
+| `--xh-toolbar-gap` | `root` | `gap` | `default` | `--xh-_toolbar-gap` | toolbar 的 root 部件 gap 覆盖槽。 |
+| `--xh-toolbar-group-gap` | `group` | `gap` | `default` | `--xh-space-0_5` | toolbar 的 group 部件 gap 覆盖槽。 |
+| `--xh-toolbar-px` | `root` | `padding-inline` | `default`<br>`variant=plain` | `--xh-_toolbar-p`<br>`0` | toolbar 的 root 部件 padding-inline 覆盖槽。 |
+| `--xh-toolbar-py` | `root` | `padding-block` | `default`<br>`variant=plain` | `--xh-_toolbar-p`<br>`0` | toolbar 的 root 部件 padding-block 覆盖槽。 |
+| `--xh-toolbar-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | toolbar 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-toolbar-separator-color` | `separator` | `background` | `default` | `--xh-border-default` | toolbar 的 separator 部件 background 覆盖槽。 |
+| `--xh-toolbar-separator-gap` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-toolbar-separator-inset` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-toolbar-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | toolbar 的 separator 部件 border-radius 覆盖槽。 |
+| `--xh-toolbar-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | toolbar 的 separator 部件 block-size、inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

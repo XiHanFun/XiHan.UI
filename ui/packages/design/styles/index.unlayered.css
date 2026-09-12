@@ -959,12 +959,7 @@
   --xh-diff-view-skin: 1;
 }
 
-/* 新增与删除的颜色是逐行状态不是组件语气，走各自的语义令牌、不接语气轴 */
 [data-scope='diff-view'][data-part='root'] {
-  --xh-diff-view-added-bg: var(--xh-diff-added-bg);
-  --xh-diff-view-added-fg: var(--xh-diff-added-fg);
-  --xh-diff-view-removed-bg: var(--xh-diff-removed-bg);
-  --xh-diff-view-removed-fg: var(--xh-diff-removed-fg);
   /* 作者塞进部件里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-text));
 
@@ -1015,11 +1010,11 @@
 }
 
 [data-scope='diff-view'][data-part='summary'][data-change='added'] {
-  color: var(--xh-diff-view-added-fg);
+  color: var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
 }
 
 [data-scope='diff-view'][data-part='summary'][data-change='removed'] {
-  color: var(--xh-diff-view-removed-fg);
+  color: var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg));
 }
 
 /* 唯一的 Tab 停靠点；两轴都可能溢出 */
@@ -1054,8 +1049,8 @@
 
 /* 变更类型不只靠颜色：新增行画一条实心色条 */
 [data-scope='diff-view'][data-part='row'][data-change='added'] {
-  background: var(--xh-diff-view-added-bg);
-  box-shadow: inset var(--xh-diff-view-change-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-diff-view-added-fg);
+  background: var(--xh-diff-view-added-bg, var(--xh-diff-added-bg));
+  box-shadow: inset var(--xh-diff-view-change-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
 }
 
 /* 删除行的色条改画斜纹：与新增行的实心条在灰度与高对比度下也分得开。
@@ -1064,13 +1059,13 @@
   background:
     repeating-linear-gradient(
         45deg,
-        var(--xh-diff-view-removed-fg) 0,
-        var(--xh-diff-view-removed-fg) 1.5px,
+        var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg)) 0,
+        var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg)) 1.5px,
         transparent 1.5px,
         transparent 3px
       )
       left / var(--xh-diff-view-change-bar, var(--xh-stroke-thick)) 100% no-repeat,
-    var(--xh-diff-view-removed-bg);
+    var(--xh-diff-view-removed-bg, var(--xh-diff-removed-bg));
 }
 
 /* 点开折叠格才露出来的那几行播一次入场；收起是硬切，不占一段退场窗口 */
@@ -1101,11 +1096,11 @@
 
 /* 行号跟着行的变更类型走：一眼扫下来数字本身就分出了增删 */
 [data-scope='diff-view'][data-part='line-number'][data-change='added'] {
-  color: var(--xh-diff-view-added-fg);
+  color: var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
 }
 
 [data-scope='diff-view'][data-part='line-number'][data-change='removed'] {
-  color: var(--xh-diff-view-removed-fg);
+  color: var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg));
 }
 
 /* 窄档的并排视图：一行的两侧改成上下两段，旧行在上、新行在下。
@@ -1130,11 +1125,11 @@
 }
 
 [data-scope='diff-view'][data-part='line-content'][data-change='added'] {
-  color: var(--xh-diff-view-added-fg);
+  color: var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
 }
 
 [data-scope='diff-view'][data-part='line-content'][data-change='removed'] {
-  color: var(--xh-diff-view-removed-fg);
+  color: var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg));
 }
 
 /* 并排视图里空的那一侧只有底色，没有内容 */
@@ -1178,42 +1173,33 @@
 }
 
 [data-scope='diff-view'][data-part='inline-change'][data-change='added'] {
-  background: color-mix(in oklab, var(--xh-diff-view-added-fg) 18%, transparent);
+  background: color-mix(in oklab, var(--xh-diff-view-added-fg, var(--xh-diff-added-fg)) 18%, transparent);
 }
 
 [data-scope='diff-view'][data-part='inline-change'][data-change='removed'] {
-  background: color-mix(in oklab, var(--xh-diff-view-removed-fg) 18%, transparent);
-}
-
-/* 记号只上色，不带任何盒模型：多一点都会破坏对齐 */
-[data-scope='diff-view'][data-part='root'] {
-  --xh-diff-view-comment-fg: var(--xh-fg-muted);
-  --xh-diff-view-punctuation-fg: var(--xh-fg-subtle);
-  --xh-diff-view-string-fg: var(--xh-syntax-string);
-  --xh-diff-view-number-token-fg: var(--xh-syntax-number);
-  --xh-diff-view-keyword-fg: var(--xh-syntax-keyword);
+  background: color-mix(in oklab, var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg)) 18%, transparent);
 }
 
 [data-scope='diff-view'][data-part='token'][data-kind='comment'] {
-  color: var(--xh-diff-view-comment-fg);
+  color: var(--xh-diff-view-comment-fg, var(--xh-fg-muted));
   font-style: italic;
 }
 
 [data-scope='diff-view'][data-part='token'][data-kind='string'] {
-  color: var(--xh-diff-view-string-fg);
+  color: var(--xh-diff-view-string-fg, var(--xh-syntax-string));
 }
 
 [data-scope='diff-view'][data-part='token'][data-kind='number'] {
-  color: var(--xh-diff-view-number-token-fg);
+  color: var(--xh-diff-view-number-token-fg, var(--xh-syntax-number));
 }
 
 [data-scope='diff-view'][data-part='token'][data-kind='keyword'] {
-  color: var(--xh-diff-view-keyword-fg);
+  color: var(--xh-diff-view-keyword-fg, var(--xh-syntax-keyword));
   font-weight: var(--xh-diff-view-keyword-weight, var(--xh-font-weight-semibold));
 }
 
 [data-scope='diff-view'][data-part='token'][data-kind='punctuation'] {
-  color: var(--xh-diff-view-punctuation-fg);
+  color: var(--xh-diff-view-punctuation-fg, var(--xh-fg-subtle));
 }
 
 /* 折起来的那一行：整行都是展开按钮 */
@@ -4928,13 +4914,6 @@
   --xh-_json-viewer-font-size: var(--xh-control-caption-md);
   --xh-_json-viewer-row-py: var(--xh-space-0_5);
   --xh-_json-viewer-indent: var(--xh-space-4);
-  --xh-json-viewer-key-fg: var(--xh-fg-brand-strong);
-  --xh-json-viewer-punctuation-fg: var(--xh-fg-subtle);
-  --xh-json-viewer-null-fg: var(--xh-fg-subtle);
-  --xh-json-viewer-string-fg: var(--xh-syntax-string);
-  --xh-json-viewer-number-fg: var(--xh-syntax-number);
-  --xh-json-viewer-boolean-fg: var(--xh-syntax-keyword);
-
   /* 两档的自绘条浮在内容之上：轨道不上底色，实色轨道会沿容器边缘糊出一条灰带 */
   --xh-scrollbar-track-bg: transparent;
 
@@ -5061,7 +5040,7 @@
 [data-scope='json-viewer'][data-part='item-key'],
 [data-scope='json-viewer'][data-part='branch-text'] {
   flex: none;
-  color: var(--xh-json-viewer-key-fg);
+  color: var(--xh-json-viewer-key-fg, var(--xh-fg-brand-strong));
   font-weight: var(--xh-json-viewer-key-font-weight, var(--xh-font-weight-medium));
 }
 
@@ -5069,7 +5048,7 @@
 [data-scope='json-viewer'][data-part='item-key']::after,
 [data-scope='json-viewer'][data-part='branch-text']::after {
   content: ':';
-  color: var(--xh-json-viewer-punctuation-fg);
+  color: var(--xh-json-viewer-punctuation-fg, var(--xh-fg-subtle));
 }
 
 /* 弹性子项默认最小尺寸是内容尺寸，不归零则长字符串把行撑破、省略号轮不上 */
@@ -5082,25 +5061,25 @@
 }
 
 [data-scope='json-viewer'][data-part='item-value'][data-value-type='string'] {
-  color: var(--xh-json-viewer-string-fg);
+  color: var(--xh-json-viewer-string-fg, var(--xh-syntax-string));
 }
 
 [data-scope='json-viewer'][data-part='item-value'][data-value-type='number'] {
-  color: var(--xh-json-viewer-number-fg);
+  color: var(--xh-json-viewer-number-fg, var(--xh-syntax-number));
 }
 
 [data-scope='json-viewer'][data-part='item-value'][data-value-type='boolean'] {
-  color: var(--xh-json-viewer-boolean-fg);
+  color: var(--xh-json-viewer-boolean-fg, var(--xh-syntax-keyword));
 }
 
 [data-scope='json-viewer'][data-part='item-value'][data-value-type='null'] {
-  color: var(--xh-json-viewer-null-fg);
+  color: var(--xh-json-viewer-null-fg, var(--xh-fg-subtle));
 }
 
 /* 空对象与空数组只剩一对括号，跟标点同色 */
 [data-scope='json-viewer'][data-part='item-value'][data-value-type='array'],
 [data-scope='json-viewer'][data-part='item-value'][data-value-type='object'] {
-  color: var(--xh-json-viewer-punctuation-fg);
+  color: var(--xh-json-viewer-punctuation-fg, var(--xh-fg-subtle));
 }
 
 /* 循环引用与截断占位不是真数据，排在语气之外用弱化字重表达 */
@@ -16054,36 +16033,27 @@
   --xh-_code-view-font-size: var(--xh-control-font-lg);
 }
 
-/* 语法配色：注释与标点复用既有语义色，三种真需要色相的走 --xh-syntax-* 语法令牌（随主题明暗切换）。 */
-[data-scope='code-view'][data-part='root'] {
-  --xh-code-view-comment-fg: var(--xh-fg-muted);
-  --xh-code-view-punctuation-fg: var(--xh-fg-subtle);
-  --xh-code-view-string-fg: var(--xh-syntax-string);
-  --xh-code-view-number-token-fg: var(--xh-syntax-number);
-  --xh-code-view-keyword-fg: var(--xh-syntax-keyword);
-}
-
 /* 记号本身不带任何布局，只上色：它是行内片段，多一点盒模型都会破坏对齐 */
 [data-scope='code-view'][data-part='token'][data-kind='comment'] {
-  color: var(--xh-code-view-comment-fg);
+  color: var(--xh-code-view-comment-fg, var(--xh-fg-muted));
   font-style: italic;
 }
 
 [data-scope='code-view'][data-part='token'][data-kind='string'] {
-  color: var(--xh-code-view-string-fg);
+  color: var(--xh-code-view-string-fg, var(--xh-syntax-string));
 }
 
 [data-scope='code-view'][data-part='token'][data-kind='number'] {
-  color: var(--xh-code-view-number-token-fg);
+  color: var(--xh-code-view-number-token-fg, var(--xh-syntax-number));
 }
 
 [data-scope='code-view'][data-part='token'][data-kind='keyword'] {
-  color: var(--xh-code-view-keyword-fg);
+  color: var(--xh-code-view-keyword-fg, var(--xh-syntax-keyword));
   font-weight: var(--xh-code-view-keyword-weight, var(--xh-font-weight-semibold));
 }
 
 [data-scope='code-view'][data-part='token'][data-kind='punctuation'] {
-  color: var(--xh-code-view-punctuation-fg);
+  color: var(--xh-code-view-punctuation-fg, var(--xh-fg-subtle));
 }
 
 /*
@@ -20794,7 +20764,7 @@
    整表据此对齐；描述与错误文案跟着控件走第二列 */
 [data-scope='form'][data-part='root'][data-layout='horizontal'] [data-scope='field'][data-part='root'] {
   display: grid;
-  grid-template-columns: var(--xh-form-label-w) minmax(0, 1fr);
+  grid-template-columns: var(--xh-form-label-w, 30%) minmax(0, 1fr);
   column-gap: var(--xh-field-label-gap, var(--xh-space-3));
   align-items: start;
 }
@@ -21368,11 +21338,6 @@
 /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
 [data-scope='form'][data-part='root'][hidden] {
   display: none;
-}
-
-/* 标签左置：标签列宽的缺省档在这儿，labelWidth 会以行内样式盖过它 */
-[data-scope='form'][data-part='root'][data-layout='horizontal'] {
-  --xh-form-label-w: 30%;
 }
 
 /* 横排一行流：字段并肩排，放不下自动折行 */

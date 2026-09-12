@@ -119,11 +119,21 @@
 | `separator` | `data-disabled` | ''（条件成立时才出现） |
 | `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-button-group-radius` · `--xh-button-group-separator-color` · `--xh-button-group-separator-color-disabled` · `--xh-button-group-separator-gap` · `--xh-button-group-separator-inset` · `--xh-button-group-separator-radius` · `--xh-button-group-separator-thickness`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-button-group-radius` | `root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`last-child`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-shape-control` | button-group 的 root 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-button-group-separator-color` | `separator` | `background` | `default` | `--xh-border-default` | button-group 的 separator 部件 background 覆盖槽。 |
+| `--xh-button-group-separator-color-disabled` | `separator` | `background` | `disabled` | `--xh-border-subtle` | button-group 的 separator 部件 background 覆盖槽。 |
+| `--xh-button-group-separator-gap` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | button-group 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-button-group-separator-inset` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | button-group 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-button-group-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | button-group 的 separator 部件 border-radius 覆盖槽。 |
+| `--xh-button-group-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | button-group 的 separator 部件 block-size、inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

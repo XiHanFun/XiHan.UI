@@ -230,11 +230,25 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `item` | `data-state` | 'checked' \| 'unchecked' |
 | `hidden-input` | `data-disabled` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-rating-gap` · `--xh-rating-item-fg` · `--xh-rating-item-fg-highlighted` · `--xh-rating-item-font-size` · `--xh-rating-item-gap` · `--xh-rating-item-radius` · `--xh-rating-label-fg` · `--xh-rating-label-font-size` · `--xh-rating-label-font-weight` · `--xh-rating-value-text-fg` · `--xh-rating-value-text-font-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-rating-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | rating 的 root 部件 gap 覆盖槽。 |
+| `--xh-rating-item-fg` | `item` | `background-image`<br>`color` | `default`<br>`dir(rtl)`<br>`half` | `--xh-fg-subtle` | rating 的 item 部件 background-image、color 覆盖槽。 |
+| `--xh-rating-item-fg-highlighted` | `item` | `background-image`<br>`color` | `@media print`<br>`dir(rtl)`<br>`half`<br>`highlighted` | `--xh-_rating-accent` | rating 的 item 部件 background-image、color 覆盖槽。 |
+| `--xh-rating-item-font-size` | `item` | `font-size` | `default` | `--xh-_rating-item-size` | rating 的 item 部件 font-size 覆盖槽。 |
+| `--xh-rating-item-gap` | `control` | `gap` | `default` | `--xh-_rating-item-gap` | rating 的 control 部件 gap 覆盖槽。 |
+| `--xh-rating-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | rating 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-rating-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | rating 的 label 部件 color 覆盖槽。 |
+| `--xh-rating-label-font-size` | `label` | `font-size` | `default` | `--xh-_rating-font-size` | rating 的 label 部件 font-size 覆盖槽。 |
+| `--xh-rating-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | rating 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-rating-value-text-fg` | `value-text` | `color` | `default` | `--xh-fg-muted` | rating 的 value-text 部件 color 覆盖槽。 |
+| `--xh-rating-value-text-font-size` | `value-text` | `font-size` | `default` | `--xh-_rating-font-size` | rating 的 value-text 部件 font-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

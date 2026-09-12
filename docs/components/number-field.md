@@ -263,11 +263,71 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | `increment-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `decrement-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-number-field-affix-fg` · `--xh-number-field-affix-fg-disabled` · `--xh-number-field-affix-font-size` · `--xh-number-field-control-bg` · `--xh-number-field-control-bg-disabled` · `--xh-number-field-control-bg-hover` · `--xh-number-field-control-bg-readonly` · `--xh-number-field-control-border` · `--xh-number-field-control-border-focus` · `--xh-number-field-control-border-hover` · `--xh-number-field-control-border-invalid` · `--xh-number-field-control-gap` · `--xh-number-field-control-h` · `--xh-number-field-control-min-w` · `--xh-number-field-control-px` · `--xh-number-field-control-radius` · `--xh-number-field-control-shadow` · `--xh-number-field-gap` · `--xh-number-field-icon-size` · `--xh-number-field-input-align` · `--xh-number-field-input-autofill-bg` · `--xh-number-field-input-autofill-fg` · `--xh-number-field-input-bg` · `--xh-number-field-input-bg-disabled` · `--xh-number-field-input-bg-hover` · `--xh-number-field-input-bg-readonly` · `--xh-number-field-input-border` · `--xh-number-field-input-border-focus` · `--xh-number-field-input-border-hover` · `--xh-number-field-input-border-invalid` · `--xh-number-field-input-fg` · `--xh-number-field-input-font-size` · `--xh-number-field-input-h` · `--xh-number-field-input-px` · `--xh-number-field-input-radius` · `--xh-number-field-input-shadow` · `--xh-number-field-input-w` · `--xh-number-field-label-fg` · `--xh-number-field-label-fg-disabled` · `--xh-number-field-label-font-size` · `--xh-number-field-label-font-weight` · `--xh-number-field-placeholder-fg` · `--xh-number-field-touch-target-size` · `--xh-number-field-trigger-bg` · `--xh-number-field-trigger-bg-active` · `--xh-number-field-trigger-bg-disabled` · `--xh-number-field-trigger-bg-hover` · `--xh-number-field-trigger-border` · `--xh-number-field-trigger-border-disabled` · `--xh-number-field-trigger-border-hover` · `--xh-number-field-trigger-divider` · `--xh-number-field-trigger-divider-h` · `--xh-number-field-trigger-fg` · `--xh-number-field-trigger-fg-hover` · `--xh-number-field-trigger-font-size` · `--xh-number-field-trigger-radius` · `--xh-number-field-trigger-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-number-field-affix-fg` | `prefix`<br>`suffix` | `color` | `default` | `--xh-fg-muted` | number-field 的 prefix、suffix 部件 color 覆盖槽。 |
+| `--xh-number-field-affix-fg-disabled` | `prefix`<br>`suffix` | `color` | `disabled` | `--xh-fg-disabled` | number-field 的 prefix、suffix 部件 color 覆盖槽。 |
+| `--xh-number-field-affix-font-size` | `prefix`<br>`suffix` | `font-size` | `default` | `--xh-_number-field-font-size` | number-field 的 prefix、suffix 部件 font-size 覆盖槽。 |
+| `--xh-number-field-control-bg` | `control` | `background` | `default` | `--xh-_number-field-bg` | number-field 的 control 部件 background 覆盖槽。 |
+| `--xh-number-field-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | number-field 的 control 部件 background 覆盖槽。 |
+| `--xh-number-field-control-bg-hover` | `control` | `background` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid])`<br>`readonly` | `--xh-_number-field-bg-hover` | number-field 的 control 部件 background 覆盖槽。 |
+| `--xh-number-field-control-bg-readonly` | `control` | `background` | `readonly` | `--xh-bg-subtle` | number-field 的 control 部件 background 覆盖槽。 |
+| `--xh-number-field-control-border` | `control` | `border` | `default` | `--xh-_number-field-border` | number-field 的 control 部件 border 覆盖槽。 |
+| `--xh-number-field-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])` | `--xh-_number-field-border-focus` | number-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-number-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid])`<br>`readonly` | `--xh-_number-field-border-hover` | number-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-number-field-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | number-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-number-field-control-gap` | `control`<br>`decrement-trigger`<br>`increment-trigger`<br>`input` | `gap`<br>`inset-inline-end`<br>`inset-inline-start` | `default`<br>`has(~ [data-part='input'])`<br>`is([data-part='decrement-trigger'], [data-part='increment-trigger'])` | `--xh-_number-field-gap` | number-field 的 control、decrement-trigger、increment-trigger、input 部件 gap、inset-inline-end、inset-inline-start 覆盖槽。 |
+| `--xh-number-field-control-h` | `control` | `block-size` | `default` | `--xh-_number-field-h` | number-field 的 control 部件 block-size 覆盖槽。 |
+| `--xh-number-field-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | number-field 的 control、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-number-field-control-px` | `control` | `padding-inline` | `default` | `--xh-_number-field-px` | number-field 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-number-field-control-radius` | `control` | `border-radius` | `default` | `--xh-_number-field-radius` | number-field 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-number-field-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_number-field-shadow` | number-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-number-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | number-field 的 root 部件 gap 覆盖槽。 |
+| `--xh-number-field-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | number-field 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-number-field-input-align` | `control`<br>`input` | `text-align` | `default` | `center` | number-field 的 control、input 部件 text-align 覆盖槽。 |
+| `--xh-number-field-input-autofill-bg` | `control`<br>`input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-canvas` | number-field 的 control、input 部件 box-shadow 覆盖槽。 |
+| `--xh-number-field-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | number-field 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
+| `--xh-number-field-input-bg` | `input` | `background` | `default` | `--xh-_number-field-bg` | number-field 的 input 部件 background 覆盖槽。 |
+| `--xh-number-field-input-bg-disabled` | `input` | `background` | `disabled` | `--xh-bg-subtle` | number-field 的 input 部件 background 覆盖槽。 |
+| `--xh-number-field-input-bg-hover` | `input` | `background` | `hover`<br>`invalid`<br>`not(:disabled, [readonly], [data-invalid])` | `--xh-_number-field-bg-hover` | number-field 的 input 部件 background 覆盖槽。 |
+| `--xh-number-field-input-bg-readonly` | `input` | `background` | `default` | `--xh-bg-subtle` | number-field 的 input 部件 background 覆盖槽。 |
+| `--xh-number-field-input-border` | `input` | `border` | `default` | `--xh-_number-field-border` | number-field 的 input 部件 border 覆盖槽。 |
+| `--xh-number-field-input-border-focus` | `input` | `border-color` | `focus-visible` | `--xh-_number-field-border-focus` | number-field 的 input 部件 border-color 覆盖槽。 |
+| `--xh-number-field-input-border-hover` | `input` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, [readonly], [data-invalid])` | `--xh-_number-field-border-hover` | number-field 的 input 部件 border-color 覆盖槽。 |
+| `--xh-number-field-input-border-invalid` | `input` | `border-color` | `invalid` | `--xh-border-invalid` | number-field 的 input 部件 border-color 覆盖槽。 |
+| `--xh-number-field-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | number-field 的 input 部件 color 覆盖槽。 |
+| `--xh-number-field-input-font-size` | `input` | `font-size` | `default` | `--xh-_number-field-font-size` | number-field 的 input 部件 font-size 覆盖槽。 |
+| `--xh-number-field-input-h` | `input` | `block-size` | `default` | `--xh-_number-field-h` | number-field 的 input 部件 block-size 覆盖槽。 |
+| `--xh-number-field-input-px` | `input` | `padding-inline` | `default` | `--xh-_number-field-px` | number-field 的 input 部件 padding-inline 覆盖槽。 |
+| `--xh-number-field-input-radius` | `input` | `border-radius` | `default` | `--xh-_number-field-radius` | number-field 的 input 部件 border-radius 覆盖槽。 |
+| `--xh-number-field-input-shadow` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`default` | `--xh-_number-field-shadow` | number-field 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-number-field-input-w` | `control`<br>`input` | `inline-size` | `default` | `5em` | number-field 的 control、input 部件 inline-size 覆盖槽。 |
+| `--xh-number-field-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | number-field 的 label 部件 color 覆盖槽。 |
+| `--xh-number-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | number-field 的 label 部件 color 覆盖槽。 |
+| `--xh-number-field-label-font-size` | `label` | `font-size` | `default` | `--xh-_number-field-label-font-size` | number-field 的 label 部件 font-size 覆盖槽。 |
+| `--xh-number-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | number-field 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-number-field-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | number-field 的 input 部件 color 覆盖槽。 |
+| `--xh-number-field-touch-target-size` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `min-block-size`<br>`min-inline-size` | `@media (pointer: coarse)` | `--xh-control-box-lg` | number-field 的 control、decrement-trigger、increment-trigger 部件 min-block-size、min-inline-size 覆盖槽。 |
+| `--xh-number-field-trigger-bg` | `decrement-trigger`<br>`increment-trigger` | `background` | `default` | `--xh-_number-field-trigger-bg` | number-field 的 decrement-trigger、increment-trigger 部件 background 覆盖槽。 |
+| `--xh-number-field-trigger-bg-active` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-_number-field-trigger-bg-active` | number-field 的 control、decrement-trigger、increment-trigger 部件 background 覆盖槽。 |
+| `--xh-number-field-trigger-bg-disabled` | `decrement-trigger`<br>`increment-trigger` | `background` | `disabled` | `--xh-bg-muted` | number-field 的 decrement-trigger、increment-trigger 部件 background 覆盖槽。 |
+| `--xh-number-field-trigger-bg-hover` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-_number-field-trigger-bg-hover` | number-field 的 control、decrement-trigger、increment-trigger 部件 background 覆盖槽。 |
+| `--xh-number-field-trigger-border` | `decrement-trigger`<br>`increment-trigger` | `border` | `default` | `--xh-_number-field-trigger-border` | number-field 的 decrement-trigger、increment-trigger 部件 border 覆盖槽。 |
+| `--xh-number-field-trigger-border-disabled` | `decrement-trigger`<br>`increment-trigger` | `border-color` | `disabled` | `--xh-border-subtle` | number-field 的 decrement-trigger、increment-trigger 部件 border-color 覆盖槽。 |
+| `--xh-number-field-trigger-border-hover` | `decrement-trigger`<br>`increment-trigger` | `border-color` | `hover`<br>`not(:disabled)` | `--xh-_number-field-trigger-border-hover` | number-field 的 decrement-trigger、increment-trigger 部件 border-color 覆盖槽。 |
+| `--xh-number-field-trigger-divider` | `control`<br>`decrement-trigger`<br>`increment-trigger`<br>`input` | `border-inline-start` | `has(~ [data-part='input'])`<br>`is([data-part='decrement-trigger'], [data-part='increment-trigger'])` | `--xh-material-soft-separator` | number-field 的 control、decrement-trigger、increment-trigger、input 部件 border-inline-start 覆盖槽。 |
+| `--xh-number-field-trigger-divider-h` | `control`<br>`decrement-trigger`<br>`increment-trigger`<br>`input` | `block-size`<br>`inset-block-start` | `has(~ [data-part='input'])`<br>`is([data-part='decrement-trigger'], [data-part='increment-trigger'])` | `--xh-_number-field-divider-h` | number-field 的 control、decrement-trigger、increment-trigger、input 部件 block-size、inset-block-start 覆盖槽。 |
+| `--xh-number-field-trigger-fg` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `color` | `default` | `--xh-fg-default`<br>`--xh-fg-muted` | number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。 |
+| `--xh-number-field-trigger-fg-hover` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。 |
+| `--xh-number-field-trigger-font-size` | `decrement-trigger`<br>`increment-trigger` | `font-size` | `default` | `--xh-_number-field-trigger-font-size` | number-field 的 decrement-trigger、increment-trigger 部件 font-size 覆盖槽。 |
+| `--xh-number-field-trigger-radius` | `decrement-trigger`<br>`increment-trigger` | `border-radius` | `default` | `--xh-shape-control` | number-field 的 decrement-trigger、increment-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-number-field-trigger-size` | `decrement-trigger`<br>`increment-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-_number-field-trigger-size` | number-field 的 decrement-trigger、increment-trigger 部件 block-size、inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

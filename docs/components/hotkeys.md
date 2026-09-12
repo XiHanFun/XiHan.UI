@@ -161,11 +161,30 @@ enabled 关掉后组合不再触发，键帽也转成不可用的样子
 | `root` | `data-size` | props.size |
 | `key` | `data-modifier` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-hotkeys-fg` · `--xh-hotkeys-font-size` · `--xh-hotkeys-gap` · `--xh-hotkeys-key-bg` · `--xh-hotkeys-key-bg-disabled` · `--xh-hotkeys-key-border` · `--xh-hotkeys-key-fg` · `--xh-hotkeys-key-fg-modifier` · `--xh-hotkeys-key-font` · `--xh-hotkeys-key-font-weight` · `--xh-hotkeys-key-min-w` · `--xh-hotkeys-key-px` · `--xh-hotkeys-key-py` · `--xh-hotkeys-key-radius` · `--xh-hotkeys-key-shadow` · `--xh-hotkeys-separator-fg`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-hotkeys-fg` | `root` | `color` | `default` | `--xh-fg-muted` | hotkeys 的 root 部件 color 覆盖槽。 |
+| `--xh-hotkeys-font-size` | `root` | `font-size` | `default` | `--xh-_hotkeys-font-size` | hotkeys 的 root 部件 font-size 覆盖槽。 |
+| `--xh-hotkeys-gap` | `root` | `gap` | `default` | `--xh-space-0_5` | hotkeys 的 root 部件 gap 覆盖槽。 |
+| `--xh-hotkeys-key-bg` | `key` | `background` | `default` | `--xh-bg-surface` | hotkeys 的 key 部件 background 覆盖槽。 |
+| `--xh-hotkeys-key-bg-disabled` | `key`<br>`root` | `background` | `disabled` | `--xh-bg-muted` | hotkeys 的 key、root 部件 background 覆盖槽。 |
+| `--xh-hotkeys-key-border` | `key` | `border` | `default` | `--xh-border-subtle` | hotkeys 的 key 部件 border 覆盖槽。 |
+| `--xh-hotkeys-key-fg` | `key` | `color` | `default` | `--xh-fg-default` | hotkeys 的 key 部件 color 覆盖槽。 |
+| `--xh-hotkeys-key-fg-modifier` | `key` | `color` | `modifier` | `--xh-fg-muted` | hotkeys 的 key 部件 color 覆盖槽。 |
+| `--xh-hotkeys-key-font` | `key` | `font-family` | `default` | `--xh-font-family-mono` | hotkeys 的 key 部件 font-family 覆盖槽。 |
+| `--xh-hotkeys-key-font-weight` | `key` | `font-weight` | `default` | `--xh-font-weight-medium` | hotkeys 的 key 部件 font-weight 覆盖槽。 |
+| `--xh-hotkeys-key-min-w` | `key` | `min-inline-size` | `default` | `--xh-control-indicator-size` | hotkeys 的 key 部件 min-inline-size 覆盖槽。 |
+| `--xh-hotkeys-key-px` | `key` | `padding-inline` | `default` | `--xh-_hotkeys-key-px` | hotkeys 的 key 部件 padding-inline 覆盖槽。 |
+| `--xh-hotkeys-key-py` | `key` | `padding-block` | `default` | `--xh-space-0_5` | hotkeys 的 key 部件 padding-block 覆盖槽。 |
+| `--xh-hotkeys-key-radius` | `key` | `border-radius` | `default` | `--xh-shape-inset` | hotkeys 的 key 部件 border-radius 覆盖槽。 |
+| `--xh-hotkeys-key-shadow` | `key` | `box-shadow` | `default` | `--xh-elevation-raised` | hotkeys 的 key 部件 box-shadow 覆盖槽。 |
+| `--xh-hotkeys-separator-fg` | `separator` | `color` | `default` | `--xh-fg-subtle` | hotkeys 的 separator 部件 color 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

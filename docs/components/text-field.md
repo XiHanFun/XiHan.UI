@@ -283,11 +283,58 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | `count` | `data-at-max` | ''（条件成立时才出现） |
 | `count` | `data-disabled` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-text-field-action-bg` · `--xh-text-field-action-bg-active` · `--xh-text-field-action-bg-hover` · `--xh-text-field-action-fg` · `--xh-text-field-action-fg-hover` · `--xh-text-field-action-font-size` · `--xh-text-field-action-radius` · `--xh-text-field-action-size` · `--xh-text-field-affix-fg` · `--xh-text-field-affix-fg-disabled` · `--xh-text-field-affix-font-size` · `--xh-text-field-control-bg` · `--xh-text-field-control-bg-disabled` · `--xh-text-field-control-bg-hover` · `--xh-text-field-control-bg-readonly` · `--xh-text-field-control-border` · `--xh-text-field-control-border-at-max` · `--xh-text-field-control-border-focus` · `--xh-text-field-control-border-hover` · `--xh-text-field-control-border-invalid` · `--xh-text-field-control-fg` · `--xh-text-field-control-gap` · `--xh-text-field-control-h` · `--xh-text-field-control-max-h` · `--xh-text-field-control-min-w` · `--xh-text-field-control-px` · `--xh-text-field-control-radius` · `--xh-text-field-control-shadow` · `--xh-text-field-count-fg` · `--xh-text-field-count-fg-at-max` · `--xh-text-field-count-fg-disabled` · `--xh-text-field-count-font-size` · `--xh-text-field-gap` · `--xh-text-field-icon-size` · `--xh-text-field-input-autofill-bg` · `--xh-text-field-input-autofill-fg` · `--xh-text-field-input-fg` · `--xh-text-field-input-font-size` · `--xh-text-field-label-fg` · `--xh-text-field-label-fg-disabled` · `--xh-text-field-label-font-size` · `--xh-text-field-label-font-weight` · `--xh-text-field-placeholder-fg` · `--xh-text-field-textarea-py`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-text-field-action-bg` | `clear-trigger` | `background` | `default` | `transparent` | text-field 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-text-field-action-bg-active` | `clear-trigger` | `background` | `active` | `--xh-bg-subtle-active` | text-field 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-text-field-action-bg-hover` | `clear-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | text-field 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-text-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | text-field 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-text-field-action-fg-hover` | `clear-trigger` | `color` | `hover` | `--xh-fg-default` | text-field 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-text-field-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-_text-field-action-font-size` | text-field 的 clear-trigger 部件 font-size 覆盖槽。 |
+| `--xh-text-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-control` | text-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-text-field-action-size` | `clear-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | text-field 的 clear-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-text-field-affix-fg` | `prefix`<br>`suffix` | `color` | `default` | `--xh-fg-muted` | text-field 的 prefix、suffix 部件 color 覆盖槽。 |
+| `--xh-text-field-affix-fg-disabled` | `prefix`<br>`suffix` | `color` | `disabled` | `--xh-fg-disabled` | text-field 的 prefix、suffix 部件 color 覆盖槽。 |
+| `--xh-text-field-affix-font-size` | `prefix`<br>`suffix` | `font-size` | `default` | `--xh-_text-field-font-size` | text-field 的 prefix、suffix 部件 font-size 覆盖槽。 |
+| `--xh-text-field-control-bg` | `control` | `background` | `default` | `--xh-_text-field-bg` | text-field 的 control 部件 background 覆盖槽。 |
+| `--xh-text-field-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | text-field 的 control 部件 background 覆盖槽。 |
+| `--xh-text-field-control-bg-hover` | `control` | `background` | `at-max`<br>`disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid], [data-at-max])`<br>`readonly` | `--xh-_text-field-bg-hover` | text-field 的 control 部件 background 覆盖槽。 |
+| `--xh-text-field-control-bg-readonly` | `control` | `background` | `readonly` | `--xh-bg-subtle` | text-field 的 control 部件 background 覆盖槽。 |
+| `--xh-text-field-control-border` | `control` | `border` | `default` | `--xh-_text-field-border` | text-field 的 control 部件 border 覆盖槽。 |
+| `--xh-text-field-control-border-at-max` | `control` | `border-color` | `at-max` | `--xh-border-at-limit` | text-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-text-field-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])` | `--xh-_text-field-border-focus` | text-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-text-field-control-border-hover` | `control` | `border-color` | `at-max`<br>`disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid], [data-at-max])`<br>`readonly` | `--xh-_text-field-border-hover` | text-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-text-field-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | text-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-text-field-control-fg` | `control` | `color` | `default` | `--xh-fg-default` | text-field 的 control 部件 color 覆盖槽。 |
+| `--xh-text-field-control-gap` | `control` | `gap` | `default` | `--xh-_text-field-gap` | text-field 的 control 部件 gap 覆盖槽。 |
+| `--xh-text-field-control-h` | `control`<br>`input` | `block-size`<br>`min-block-size` | `default`<br>`has([data-part='input'][data-multiline])`<br>`multiline` | `--xh-_text-field-h` | text-field 的 control、input 部件 block-size、min-block-size 覆盖槽。 |
+| `--xh-text-field-control-max-h` | `control`<br>`input` | `max-block-size` | `auto-resize`<br>`has([data-part='input'][data-multiline][data-auto-resize])`<br>`multiline` | `--xh-viewport-h-sm` | text-field 的 control、input 部件 max-block-size 覆盖槽。 |
+| `--xh-text-field-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | text-field 的 control、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-text-field-control-px` | `control` | `padding-inline` | `default` | `--xh-_text-field-px` | text-field 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-text-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | text-field 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-text-field-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_text-field-shadow` | text-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-text-field-count-fg` | `count` | `color` | `default` | `--xh-fg-muted` | text-field 的 count 部件 color 覆盖槽。 |
+| `--xh-text-field-count-fg-at-max` | `count` | `color` | `at-max` | `--xh-fg-warning` | text-field 的 count 部件 color 覆盖槽。 |
+| `--xh-text-field-count-fg-disabled` | `count` | `color` | `disabled` | `--xh-fg-disabled` | text-field 的 count 部件 color 覆盖槽。 |
+| `--xh-text-field-count-font-size` | `count` | `font-size` | `default` | `--xh-_text-field-action-font-size` | text-field 的 count 部件 font-size 覆盖槽。 |
+| `--xh-text-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | text-field 的 root 部件 gap 覆盖槽。 |
+| `--xh-text-field-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | text-field 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-text-field-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-canvas` | text-field 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-text-field-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | text-field 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
+| `--xh-text-field-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | text-field 的 input 部件 color 覆盖槽。 |
+| `--xh-text-field-input-font-size` | `input` | `font-size` | `default` | `--xh-_text-field-font-size` | text-field 的 input 部件 font-size 覆盖槽。 |
+| `--xh-text-field-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | text-field 的 label 部件 color 覆盖槽。 |
+| `--xh-text-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | text-field 的 label 部件 color 覆盖槽。 |
+| `--xh-text-field-label-font-size` | `label` | `font-size` | `default` | `--xh-_text-field-label-font-size` | text-field 的 label 部件 font-size 覆盖槽。 |
+| `--xh-text-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | text-field 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-text-field-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | text-field 的 input 部件 color 覆盖槽。 |
+| `--xh-text-field-textarea-py` | `input` | `padding-block` | `multiline` | `--xh-space-2` | text-field 的 input 部件 padding-block 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

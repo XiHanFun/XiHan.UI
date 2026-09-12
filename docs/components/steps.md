@@ -231,11 +231,57 @@ size 换序号圆点的直径与标题、说明的字号，不传 size 即默认
 | `separator` | `data-state` | getItemState(item).status |
 | `content` | `data-state` | getItemState(item).status |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-steps-content-fg` · `--xh-steps-content-min-inline-size` · `--xh-steps-content-py` · `--xh-steps-description-fg` · `--xh-steps-description-font-size` · `--xh-steps-gap` · `--xh-steps-icon-size` · `--xh-steps-indicator-bg` · `--xh-steps-indicator-bg-completed` · `--xh-steps-indicator-border` · `--xh-steps-indicator-border-completed` · `--xh-steps-indicator-border-current` · `--xh-steps-indicator-border-disabled` · `--xh-steps-indicator-border-error` · `--xh-steps-indicator-border-warning` · `--xh-steps-indicator-fg` · `--xh-steps-indicator-fg-completed` · `--xh-steps-indicator-fg-current` · `--xh-steps-indicator-fg-disabled` · `--xh-steps-indicator-fg-error` · `--xh-steps-indicator-fg-warning` · `--xh-steps-indicator-font-size` · `--xh-steps-indicator-radius` · `--xh-steps-indicator-shadow` · `--xh-steps-indicator-size` · `--xh-steps-item-gap` · `--xh-steps-item-min-inline-size` · `--xh-steps-list-gap` · `--xh-steps-separator-bg` · `--xh-steps-separator-bg-completed` · `--xh-steps-separator-min-length` · `--xh-steps-separator-radius` · `--xh-steps-separator-thickness` · `--xh-steps-title-fg` · `--xh-steps-title-fg-active` · `--xh-steps-title-fg-error` · `--xh-steps-title-fg-warning` · `--xh-steps-title-font-size` · `--xh-steps-title-font-weight` · `--xh-steps-trigger-bg-hover` · `--xh-steps-trigger-gap` · `--xh-steps-trigger-p` · `--xh-steps-trigger-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-steps-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | steps 的 content 部件 color 覆盖槽。 |
+| `--xh-steps-content-min-inline-size` | `content`<br>`root` | `flex` | `orientation=vertical` | `--xh-measure-prose` | steps 的 content、root 部件 flex 覆盖槽。 |
+| `--xh-steps-content-py` | `content` | `padding-block` | `default` | `--xh-stack-gap-md` | steps 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-steps-description-fg` | `description` | `color` | `default` | `--xh-fg-subtle` | steps 的 description 部件 color 覆盖槽。 |
+| `--xh-steps-description-font-size` | `description` | `font-size` | `default` | `--xh-_steps-caption-font-size` | steps 的 description 部件 font-size 覆盖槽。 |
+| `--xh-steps-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | steps 的 root 部件 gap 覆盖槽。 |
+| `--xh-steps-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | steps 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-steps-indicator-bg` | `indicator` | `background` | `default` | `transparent` | steps 的 indicator 部件 background 覆盖槽。 |
+| `--xh-steps-indicator-bg-completed` | `indicator` | `background` | `state=completed` | `--xh-_steps-accent` | steps 的 indicator 部件 background 覆盖槽。 |
+| `--xh-steps-indicator-border` | `indicator` | `border` | `default` | `--xh-border-control` | steps 的 indicator 部件 border 覆盖槽。 |
+| `--xh-steps-indicator-border-completed` | `indicator` | `border-color` | `state=completed` | `--xh-_steps-accent` | steps 的 indicator 部件 border-color 覆盖槽。 |
+| `--xh-steps-indicator-border-current` | `indicator` | `border-color` | `state=current` | `--xh-_steps-accent` | steps 的 indicator 部件 border-color 覆盖槽。 |
+| `--xh-steps-indicator-border-disabled` | `indicator`<br>`item` | `border-color` | `disabled` | `--xh-border-subtle` | steps 的 indicator、item 部件 border-color 覆盖槽。 |
+| `--xh-steps-indicator-border-error` | `indicator` | `border-color` | `state=error` | `--xh-fg-danger` | steps 的 indicator 部件 border-color 覆盖槽。 |
+| `--xh-steps-indicator-border-warning` | `indicator` | `border-color` | `state=warning` | `--xh-fg-warning` | steps 的 indicator 部件 border-color 覆盖槽。 |
+| `--xh-steps-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | steps 的 indicator 部件 color 覆盖槽。 |
+| `--xh-steps-indicator-fg-completed` | `indicator` | `color` | `state=completed` | `--xh-_steps-on-accent` | steps 的 indicator 部件 color 覆盖槽。 |
+| `--xh-steps-indicator-fg-current` | `indicator` | `color` | `state=current` | `--xh-_steps-accent-text` | steps 的 indicator 部件 color 覆盖槽。 |
+| `--xh-steps-indicator-fg-disabled` | `indicator`<br>`item` | `color` | `disabled` | `--xh-fg-disabled` | steps 的 indicator、item 部件 color 覆盖槽。 |
+| `--xh-steps-indicator-fg-error` | `indicator` | `color` | `state=error` | `--xh-fg-danger` | steps 的 indicator 部件 color 覆盖槽。 |
+| `--xh-steps-indicator-fg-warning` | `indicator` | `color` | `state=warning` | `--xh-fg-warning` | steps 的 indicator 部件 color 覆盖槽。 |
+| `--xh-steps-indicator-font-size` | `indicator` | `font-size` | `default` | `--xh-_steps-caption-font-size` | steps 的 indicator 部件 font-size 覆盖槽。 |
+| `--xh-steps-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | steps 的 indicator 部件 border-radius 覆盖槽。 |
+| `--xh-steps-indicator-shadow` | `indicator` | `box-shadow` | `state=completed` | `--xh-_steps-highlight` | steps 的 indicator 部件 box-shadow 覆盖槽。 |
+| `--xh-steps-indicator-size` | `indicator`<br>`separator` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`orientation=vertical` | `--xh-_steps-indicator-size` | steps 的 indicator、separator 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
+| `--xh-steps-item-gap` | `item` | `gap` | `default` | `--xh-space-2` | steps 的 item 部件 gap 覆盖槽。 |
+| `--xh-steps-item-min-inline-size` | `item` | `min-inline-size` | `not(:last-child)`<br>`orientation=horizontal` | `--xh-layout-col-min-xs` | steps 的 item 部件 min-inline-size 覆盖槽。 |
+| `--xh-steps-list-gap` | `list` | `gap` | `default` | `--xh-space-2` | steps 的 list 部件 gap 覆盖槽。 |
+| `--xh-steps-separator-bg` | `separator` | `background` | `default` | `--xh-border-default` | steps 的 separator 部件 background 覆盖槽。 |
+| `--xh-steps-separator-bg-completed` | `separator` | `background` | `state=completed` | `--xh-_steps-accent` | steps 的 separator 部件 background 覆盖槽。 |
+| `--xh-steps-separator-min-length` | `separator` | `block-size`<br>`min-inline-size` | `default`<br>`orientation=vertical` | `--xh-space-4` | steps 的 separator 部件 block-size、min-inline-size 覆盖槽。 |
+| `--xh-steps-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | steps 的 separator 部件 border-radius 覆盖槽。 |
+| `--xh-steps-separator-thickness` | `separator` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`orientation=vertical` | `--xh-stroke-thick` | steps 的 separator 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
+| `--xh-steps-title-fg` | `title` | `color` | `default` | `--xh-fg-muted` | steps 的 title 部件 color 覆盖槽。 |
+| `--xh-steps-title-fg-active` | `title` | `color` | `is([data-state='current'], [data-state='completed'])`<br>`state=completed`<br>`state=current` | `--xh-fg-default` | steps 的 title 部件 color 覆盖槽。 |
+| `--xh-steps-title-fg-error` | `title` | `color` | `state=error` | `--xh-fg-danger` | steps 的 title 部件 color 覆盖槽。 |
+| `--xh-steps-title-fg-warning` | `title` | `color` | `state=warning` | `--xh-fg-warning` | steps 的 title 部件 color 覆盖槽。 |
+| `--xh-steps-title-font-size` | `title` | `font-size` | `default` | `--xh-_steps-title-font-size` | steps 的 title 部件 font-size 覆盖槽。 |
+| `--xh-steps-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-label-weight` | steps 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-steps-trigger-bg-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | steps 的 trigger 部件 background 覆盖槽。 |
+| `--xh-steps-trigger-gap` | `trigger` | `column-gap` | `default` | `--xh-control-gap-md` | steps 的 trigger 部件 column-gap 覆盖槽。 |
+| `--xh-steps-trigger-p` | `separator`<br>`trigger` | `margin-inline-start`<br>`padding-block`<br>`padding-inline` | `default`<br>`orientation=vertical` | `--xh-control-px-sm`<br>`--xh-space-1` | steps 的 separator、trigger 部件 margin-inline-start、padding-block、padding-inline 覆盖槽。 |
+| `--xh-steps-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | steps 的 trigger 部件 border-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

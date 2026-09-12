@@ -295,6 +295,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
 | `clear-trigger` | `aria-label` | props.translations.clearTrigger |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `tree` | `aria-busy` | 'true' \| undefined |
 | `tree` | `aria-disabled` | 'true' \| 'false' |
 | `tree` | `aria-label` | props.translations.tree |
@@ -357,11 +358,93 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `loading` | `data-state` | 'open' \| 'closed' |
 | `footer` | `data-state` | 'open' \| 'closed' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-tree-select-action-bg` · `--xh-tree-select-action-bg-active` · `--xh-tree-select-action-bg-hover` · `--xh-tree-select-action-fg` · `--xh-tree-select-action-fg-hover` · `--xh-tree-select-action-font-size` · `--xh-tree-select-action-radius` · `--xh-tree-select-action-size` · `--xh-tree-select-branch-content-gap` · `--xh-tree-select-branch-gap` · `--xh-tree-select-branch-indicator-fg` · `--xh-tree-select-branch-indicator-size` · `--xh-tree-select-content-backdrop` · `--xh-tree-select-content-bg` · `--xh-tree-select-content-border` · `--xh-tree-select-content-fg` · `--xh-tree-select-content-highlight` · `--xh-tree-select-content-max-h` · `--xh-tree-select-content-max-w` · `--xh-tree-select-content-min-w` · `--xh-tree-select-content-px` · `--xh-tree-select-content-py` · `--xh-tree-select-content-radius` · `--xh-tree-select-content-shadow` · `--xh-tree-select-control-bg` · `--xh-tree-select-control-bg-disabled` · `--xh-tree-select-control-bg-hover` · `--xh-tree-select-control-bg-readonly` · `--xh-tree-select-control-border` · `--xh-tree-select-control-border-focus` · `--xh-tree-select-control-border-hover` · `--xh-tree-select-control-border-invalid` · `--xh-tree-select-control-fg` · `--xh-tree-select-control-gap` · `--xh-tree-select-control-h` · `--xh-tree-select-control-min-w` · `--xh-tree-select-control-px` · `--xh-tree-select-control-radius` · `--xh-tree-select-control-shadow` · `--xh-tree-select-empty-fg` · `--xh-tree-select-empty-font-size` · `--xh-tree-select-empty-px` · `--xh-tree-select-empty-py` · `--xh-tree-select-footer-border` · `--xh-tree-select-footer-fg` · `--xh-tree-select-footer-font-size` · `--xh-tree-select-footer-gap` · `--xh-tree-select-footer-px` · `--xh-tree-select-footer-py` · `--xh-tree-select-gap` · `--xh-tree-select-icon-size` · `--xh-tree-select-indent` · `--xh-tree-select-indicator-fg` · `--xh-tree-select-item-bg-hover` · `--xh-tree-select-item-fg` · `--xh-tree-select-item-fg-selected` · `--xh-tree-select-item-font-size` · `--xh-tree-select-item-gap` · `--xh-tree-select-item-indicator-fg` · `--xh-tree-select-item-indicator-size` · `--xh-tree-select-item-leading` · `--xh-tree-select-item-px` · `--xh-tree-select-item-py` · `--xh-tree-select-item-radius` · `--xh-tree-select-item-selected-font-weight` · `--xh-tree-select-label-fg` · `--xh-tree-select-label-font-size` · `--xh-tree-select-label-font-weight` · `--xh-tree-select-layer` · `--xh-tree-select-loading-fg` · `--xh-tree-select-loading-font-size` · `--xh-tree-select-loading-px` · `--xh-tree-select-loading-py` · `--xh-tree-select-placeholder-fg` · `--xh-tree-select-tree-gap` · `--xh-tree-select-trigger-fg` · `--xh-tree-select-trigger-font-size` · `--xh-tree-select-trigger-gap` · `--xh-tree-select-value-leading`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-tree-select-action-bg` | `clear-trigger` | `background` | `default` | `transparent` | tree-select 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-tree-select-action-bg-active` | `clear-trigger` | `background` | `active` | `--xh-bg-subtle-active` | tree-select 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-tree-select-action-bg-hover` | `clear-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | tree-select 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-tree-select-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | tree-select 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-tree-select-action-fg-hover` | `clear-trigger` | `color` | `hover` | `--xh-fg-default` | tree-select 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-tree-select-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | tree-select 的 clear-trigger 部件 font-size 覆盖槽。 |
+| `--xh-tree-select-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-control` | tree-select 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-tree-select-action-size` | `clear-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | tree-select 的 clear-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-tree-select-branch-content-gap` | `branch-content` | `gap` | `default` | `--xh-list-option-gap` | tree-select 的 branch-content 部件 gap 覆盖槽。 |
+| `--xh-tree-select-branch-gap` | `branch` | `gap` | `default` | `--xh-list-option-gap` | tree-select 的 branch 部件 gap 覆盖槽。 |
+| `--xh-tree-select-branch-indicator-fg` | `branch-indicator`<br>`branch-trigger` | `color` | `default` | `--xh-fg-subtle` | tree-select 的 branch-indicator、branch-trigger 部件 color 覆盖槽。 |
+| `--xh-tree-select-branch-indicator-size` | `branch-indicator`<br>`branch-trigger`<br>`item` | `inline-size`<br>`padding-inline-start` | `default` | `--xh-control-indicator-size` | tree-select 的 branch-indicator、branch-trigger、item 部件 inline-size、padding-inline-start 覆盖槽。 |
+| `--xh-tree-select-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | tree-select 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-tree-select-content-bg` | `content` | `background` | `default` | `--xh-material-frosted-bg` | tree-select 的 content 部件 background 覆盖槽。 |
+| `--xh-tree-select-content-border` | `content` | `border` | `default` | `--xh-material-frosted-border` | tree-select 的 content 部件 border 覆盖槽。 |
+| `--xh-tree-select-content-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | tree-select 的 content 部件 color 覆盖槽。 |
+| `--xh-tree-select-content-highlight` | `content` | `background` | `default` | `--xh-material-frosted-highlight` | tree-select 的 content 部件 background 覆盖槽。 |
+| `--xh-tree-select-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | tree-select 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-tree-select-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | tree-select 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-tree-select-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-min-w` | tree-select 的 content 部件 min-inline-size 覆盖槽。 |
+| `--xh-tree-select-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | tree-select 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-tree-select-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | tree-select 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-tree-select-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | tree-select 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-tree-select-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | tree-select 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-tree-select-control-bg` | `control` | `background` | `default` | `--xh-_tree-select-bg` | tree-select 的 control 部件 background 覆盖槽。 |
+| `--xh-tree-select-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | tree-select 的 control 部件 background 覆盖槽。 |
+| `--xh-tree-select-control-bg-hover` | `control` | `background` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-_tree-select-bg-hover` | tree-select 的 control 部件 background 覆盖槽。 |
+| `--xh-tree-select-control-bg-readonly` | `control` | `background` | `readonly` | `--xh-bg-subtle` | tree-select 的 control 部件 background 覆盖槽。 |
+| `--xh-tree-select-control-border` | `control` | `border` | `default` | `--xh-_tree-select-border` | tree-select 的 control 部件 border 覆盖槽。 |
+| `--xh-tree-select-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])` | `--xh-_tone` | tree-select 的 control 部件 border-color 覆盖槽。 |
+| `--xh-tree-select-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid])` | `--xh-_tree-select-border-hover` | tree-select 的 control 部件 border-color 覆盖槽。 |
+| `--xh-tree-select-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | tree-select 的 control 部件 border-color 覆盖槽。 |
+| `--xh-tree-select-control-fg` | `control` | `color` | `default` | `--xh-fg-default` | tree-select 的 control 部件 color 覆盖槽。 |
+| `--xh-tree-select-control-gap` | `control` | `gap` | `default` | `--xh-_tree-select-gap` | tree-select 的 control 部件 gap 覆盖槽。 |
+| `--xh-tree-select-control-h` | `control` | `block-size` | `default` | `--xh-_tree-select-h` | tree-select 的 control 部件 block-size 覆盖槽。 |
+| `--xh-tree-select-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | tree-select 的 control、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-tree-select-control-px` | `control` | `padding-inline` | `default` | `--xh-_tree-select-px` | tree-select 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-tree-select-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | tree-select 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-tree-select-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_tree-select-shadow` | tree-select 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-tree-select-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | tree-select 的 empty 部件 color 覆盖槽。 |
+| `--xh-tree-select-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_tree-select-font-size` | tree-select 的 empty 部件 font-size 覆盖槽。 |
+| `--xh-tree-select-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_tree-select-row-px` | tree-select 的 empty 部件 padding-inline 覆盖槽。 |
+| `--xh-tree-select-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | tree-select 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-tree-select-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-frosted-separator` | tree-select 的 footer 部件 border-block-start 覆盖槽。 |
+| `--xh-tree-select-footer-fg` | `footer` | `color` | `default` | `--xh-material-frosted-fg-muted` | tree-select 的 footer 部件 color 覆盖槽。 |
+| `--xh-tree-select-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-secondary-size` | tree-select 的 footer 部件 font-size 覆盖槽。 |
+| `--xh-tree-select-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | tree-select 的 footer 部件 gap 覆盖槽。 |
+| `--xh-tree-select-footer-px` | `footer` | `padding-inline` | `default` | `--xh-space-2` | tree-select 的 footer 部件 padding-inline 覆盖槽。 |
+| `--xh-tree-select-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | tree-select 的 footer 部件 padding-block 覆盖槽。 |
+| `--xh-tree-select-gap` | `root` | `gap` | `default` | `--xh-space-1` | tree-select 的 root 部件 gap 覆盖槽。 |
+| `--xh-tree-select-icon-size` | `positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | tree-select 的 positioner、root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-tree-select-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-space-4` | tree-select 的 branch-content 部件 padding-inline-start 覆盖槽。 |
+| `--xh-tree-select-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | tree-select 的 indicator 部件 color 覆盖槽。 |
+| `--xh-tree-select-item-bg-hover` | `branch`<br>`branch-control`<br>`item` | `background` | `disabled`<br>`focus-visible`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`is(:hover, [data-highlighted], :focus-visible)`<br>`not([data-disabled])` | `--xh-bg-subtle` | tree-select 的 branch、branch-control、item 部件 background 覆盖槽。 |
+| `--xh-tree-select-item-fg` | `branch-control`<br>`item` | `color` | `default`<br>`selected` | `--xh-material-frosted-fg` | tree-select 的 branch-control、item 部件 color 覆盖槽。 |
+| `--xh-tree-select-item-fg-selected` | `branch-control`<br>`item` | `color` | `selected` | `--xh-tree-select-item-fg` | tree-select 的 branch-control、item 部件 color 覆盖槽。 |
+| `--xh-tree-select-item-font-size` | `branch-control`<br>`item` | `font-size` | `default` | `--xh-_tree-select-font-size` | tree-select 的 branch-control、item 部件 font-size 覆盖槽。 |
+| `--xh-tree-select-item-gap` | `branch-control`<br>`item` | `gap`<br>`padding-inline-start` | `default` | `--xh-_tree-select-gap` | tree-select 的 branch-control、item 部件 gap、padding-inline-start 覆盖槽。 |
+| `--xh-tree-select-item-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tree-select-accent` | tree-select 的 item-indicator 部件 color 覆盖槽。 |
+| `--xh-tree-select-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | tree-select 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-tree-select-item-leading` | `branch-control`<br>`item` | `line-height` | `default` | `--xh-leading-normal` | tree-select 的 branch-control、item 部件 line-height 覆盖槽。 |
+| `--xh-tree-select-item-px` | `branch-control`<br>`item` | `padding-inline`<br>`padding-inline-start` | `default` | `--xh-_tree-select-row-px` | tree-select 的 branch-control、item 部件 padding-inline、padding-inline-start 覆盖槽。 |
+| `--xh-tree-select-item-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_tree-select-row-py` | tree-select 的 branch-control、item 部件 padding-block 覆盖槽。 |
+| `--xh-tree-select-item-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `--xh-shape-control` | tree-select 的 branch-control、item 部件 border-radius 覆盖槽。 |
+| `--xh-tree-select-item-selected-font-weight` | `branch-control`<br>`item` | `font-weight` | `selected` | `--xh-font-weight-regular` | tree-select 的 branch-control、item 部件 font-weight 覆盖槽。 |
+| `--xh-tree-select-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | tree-select 的 label 部件 color 覆盖槽。 |
+| `--xh-tree-select-label-font-size` | `label` | `font-size` | `default` | `--xh-_tree-select-label-font-size` | tree-select 的 label 部件 font-size 覆盖槽。 |
+| `--xh-tree-select-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tree-select 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-tree-select-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | tree-select 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-tree-select-loading-fg` | `loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | tree-select 的 loading 部件 color 覆盖槽。 |
+| `--xh-tree-select-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_tree-select-font-size` | tree-select 的 loading 部件 font-size 覆盖槽。 |
+| `--xh-tree-select-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_tree-select-row-px` | tree-select 的 loading 部件 padding-inline 覆盖槽。 |
+| `--xh-tree-select-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | tree-select 的 loading 部件 padding-block 覆盖槽。 |
+| `--xh-tree-select-placeholder-fg` | `value-text` | `color` | `placeholder` | `--xh-fg-subtle` | tree-select 的 value-text 部件 color 覆盖槽。 |
+| `--xh-tree-select-tree-gap` | `tree` | `gap` | `default` | `--xh-list-option-gap` | tree-select 的 tree 部件 gap 覆盖槽。 |
+| `--xh-tree-select-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | tree-select 的 trigger 部件 color 覆盖槽。 |
+| `--xh-tree-select-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_tree-select-font-size` | tree-select 的 trigger 部件 font-size 覆盖槽。 |
+| `--xh-tree-select-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_tree-select-gap` | tree-select 的 trigger 部件 gap 覆盖槽。 |
+| `--xh-tree-select-value-leading` | `value-text` | `line-height` | `default` | `--xh-leading-normal` | tree-select 的 value-text 部件 line-height 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

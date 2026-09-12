@@ -160,6 +160,7 @@ disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样�
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `content` | `aria-describedby` | `description` 部件的 id \| undefined |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-labelledby` | `title` 部件的 id \| `trigger` 部件的 id |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
@@ -190,11 +191,32 @@ disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样�
 | `content` | `data-state` | 'open' \| 'closed' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-hover-card-arrow-size` · `--xh-hover-card-backdrop` · `--xh-hover-card-bg` · `--xh-hover-card-border` · `--xh-hover-card-description-fg` · `--xh-hover-card-fg` · `--xh-hover-card-gap` · `--xh-hover-card-layer` · `--xh-hover-card-max-h` · `--xh-hover-card-max-w` · `--xh-hover-card-px` · `--xh-hover-card-py` · `--xh-hover-card-radius` · `--xh-hover-card-shadow` · `--xh-hover-card-title-fg` · `--xh-hover-card-title-font-size` · `--xh-hover-card-title-font-weight` · `--xh-hover-card-trigger-gap`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-hover-card-arrow-size` | `arrow` | `--xh-_overlay-arrow-size` | `default` | `--xh-overlay-arrow-size` | hover-card 的 arrow 部件 --xh-_overlay-arrow-size 覆盖槽。 |
+| `--xh-hover-card-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | hover-card 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-hover-card-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-material-frosted-bg` | hover-card 的 arrow、content 部件 background 覆盖槽。 |
+| `--xh-hover-card-border` | `arrow`<br>`content` | `border` | `default` | `--xh-material-frosted-border` | hover-card 的 arrow、content 部件 border 覆盖槽。 |
+| `--xh-hover-card-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | hover-card 的 description 部件 color 覆盖槽。 |
+| `--xh-hover-card-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | hover-card 的 content 部件 color 覆盖槽。 |
+| `--xh-hover-card-gap` | `content` | `gap` | `default` | `--xh-space-2` | hover-card 的 content 部件 gap 覆盖槽。 |
+| `--xh-hover-card-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | hover-card 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-hover-card-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | hover-card 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-hover-card-max-w` | `content` | `max-inline-size` | `default` | `--xh-_hover-card-max-w` | hover-card 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-hover-card-px` | `content` | `padding-inline` | `default` | `--xh-_hover-card-pad` | hover-card 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-hover-card-py` | `content` | `padding-block` | `default` | `--xh-_hover-card-pad` | hover-card 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-hover-card-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | hover-card 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-hover-card-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | hover-card 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-hover-card-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | hover-card 的 title 部件 color 覆盖槽。 |
+| `--xh-hover-card-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | hover-card 的 title 部件 font-size 覆盖槽。 |
+| `--xh-hover-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | hover-card 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-hover-card-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-sm` | hover-card 的 trigger 部件 gap 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

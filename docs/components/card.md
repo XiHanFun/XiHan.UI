@@ -102,11 +102,30 @@ split 在段与段之间画一条分隔线；hoverable 只在能用指针的设�
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-card-bg` · `--xh-card-body-pt` · `--xh-card-border` · `--xh-card-border-hover` · `--xh-card-description-fg` · `--xh-card-description-font-size` · `--xh-card-divider` · `--xh-card-fg` · `--xh-card-footer-gap` · `--xh-card-footer-pt` · `--xh-card-header-gap` · `--xh-card-header-pb` · `--xh-card-radius` · `--xh-card-shadow` · `--xh-card-shadow-hover` · `--xh-card-title-font-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-card-bg` | `root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-material-soft-bg` | card 的 root 部件 background 覆盖槽。 |
+| `--xh-card-body-pt` | `body`<br>`header` | `padding-block-start` | `default` | `--xh-space-2` | card 的 body、header 部件 padding-block-start 覆盖槽。 |
+| `--xh-card-border` | `root` | `border-color` | `variant=outline` | `--xh-border-default` | card 的 root 部件 border-color 覆盖槽。 |
+| `--xh-card-border-hover` | `root` | `border-color` | `@media (hover: hover)`<br>`hover`<br>`hoverable` | `--xh-border-strong` | card 的 root 部件 border-color 覆盖槽。 |
+| `--xh-card-description-fg` | `description` | `color` | `default` | `--xh-material-soft-fg-muted` | card 的 description 部件 color 覆盖槽。 |
+| `--xh-card-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | card 的 description 部件 font-size 覆盖槽。 |
+| `--xh-card-divider` | `body`<br>`footer`<br>`root` | `border-block-start` | `split` | `--xh-material-soft-separator` | card 的 body、footer、root 部件 border-block-start 覆盖槽。 |
+| `--xh-card-fg` | `root` | `color` | `default` | `--xh-material-soft-fg` | card 的 root 部件 color 覆盖槽。 |
+| `--xh-card-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | card 的 footer 部件 gap 覆盖槽。 |
+| `--xh-card-footer-pt` | `footer` | `padding-block-start` | `default` | `--xh-space-2` | card 的 footer 部件 padding-block-start 覆盖槽。 |
+| `--xh-card-header-gap` | `header` | `gap` | `default` | `--xh-space-1` | card 的 header 部件 gap 覆盖槽。 |
+| `--xh-card-header-pb` | `header` | `padding-block-end` | `default` | `--xh-space-2` | card 的 header 部件 padding-block-end 覆盖槽。 |
+| `--xh-card-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | card 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-card-shadow` | `root` | `box-shadow` | `default`<br>`variant=elevated` | `--xh-elevation-raised`<br>`--xh-material-soft-shadow` | card 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-card-shadow-hover` | `root` | `box-shadow` | `@media (hover: hover)`<br>`hover`<br>`hoverable` | `--xh-elevation-lifted` | card 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-card-title-font-size` | `root`<br>`title` | `font-size` | `default`<br>`size=lg` | `--xh-control-font-lg`<br>`--xh-text-label-size` | card 的 root、title 部件 font-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
