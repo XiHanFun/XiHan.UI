@@ -81,6 +81,37 @@ describe('action Control 四 profile', () => {
 })
 
 describe('action Control 状态与命中区', () => {
+  it('浅色主按钮在 hover 与 pressed 状态保持浅色前景', async () => {
+    document.documentElement.dataset.theme = 'light'
+    mount(() => h(XhButton, null, () => '按钮'))
+    const button = action()
+    const expected = getComputedStyle(document.documentElement).getPropertyValue('--xh-fg-on-brand').trim()
+
+    expect(getComputedStyle(button).color).toBe(expected)
+    await userEvent.hover(button)
+    expect(getComputedStyle(button).color).toBe(expected)
+
+    const rect = button.getBoundingClientRect()
+    await cdp().send('Input.dispatchMouseEvent', {
+      type: 'mousePressed',
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+      button: 'left',
+      buttons: 1,
+      clickCount: 1,
+    })
+    expect(button.matches(':active')).toBe(true)
+    expect(getComputedStyle(button).color).toBe(expected)
+    await cdp().send('Input.dispatchMouseEvent', {
+      type: 'mouseReleased',
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+      button: 'left',
+      buttons: 0,
+      clickCount: 1,
+    })
+  })
+
   it('未映射品牌、描边或海拔时保持平面中性底', async () => {
     mount(() => h('div'))
     const ready = rawAction('icon', 'sm')
