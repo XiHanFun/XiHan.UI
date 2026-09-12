@@ -1,4 +1,4 @@
-// 多行 | text 写成多行就是多行水印，图样跟着长高；空白行不占位
+// 多行水印 | 显示归属和时间信息
 import type { ReactNode } from "react";
 import { XhWatermarkContent, XhWatermarkRoot } from "@xihan-ui/react";
 
@@ -8,9 +8,9 @@ export default function Demo(): ReactNode {
   return (
     <XhWatermarkRoot text={lines} fontSize={13}>
       <XhWatermarkContent>
-        <div style={{ padding: "32px", lineHeight: 1.9 }}>
-          <p>三行水印按行铺开，每行居中对齐，整块绕图样中心一起倾斜。</p>
-          <p>行距按字号折算，换字号不必再调行距。</p>
+        <div style={{ inlineSize: "320px", padding: "32px", borderRadius: "var(--xh-shape-surface)", background: "var(--xh-bg-subtle)" }}>
+          <strong>设计稿预览</strong>
+          <p style={{ marginBlockEnd: 0 }}>该内容仅供项目成员评审。</p>
         </div>
       </XhWatermarkContent>
     </XhWatermarkRoot>

@@ -1,17 +1,17 @@
-<!-- 角度、疏密与深浅 | rotate 转整块图样，gap 决定两块之间留多少空白，fontSize 与 opacity 决定字多大、印多深 -->
+<!-- 外观 | 设置角度、间距、字号和透明度 -->
 <div style="display: flex; flex-wrap: wrap; gap: 16px">
   <xh-watermark
     text="曦寒"
     style="
       display: block;
       inline-size: 220px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 6px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
     "
   >
     <div data-xh-part="root">
       <div data-xh-part="content">
-        <div style="padding: 16px; block-size: 160px; font-size: 13px">缺省</div>
+        <div style="padding: 16px; block-size: 160px; font-size: 13px">默认</div>
       </div>
     </div>
   </xh-watermark>
@@ -25,14 +25,14 @@
     style="
       display: block;
       inline-size: 220px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 6px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
     "
   >
     <div data-xh-part="root">
       <div data-xh-part="content">
         <div style="padding: 16px; block-size: 160px; font-size: 13px">
-          平着排、印得密
+          紧凑
         </div>
       </div>
     </div>
@@ -47,14 +47,14 @@
     style="
       display: block;
       inline-size: 220px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 6px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
     "
   >
     <div data-xh-part="root">
       <div data-xh-part="content">
         <div style="padding: 16px; block-size: 160px; font-size: 13px">
-          转 45 度、印得疏
+          宽松
         </div>
       </div>
     </div>
