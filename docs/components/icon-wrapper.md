@@ -1,6 +1,6 @@
 # IconWrapper 图标块
 
-给图元配一个定直径的底座：圆形或圆角方形，图元恒在正中。
+为图标提供统一的背景容器。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/icon-wrapper" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-定直径的圆底座，图元在正中；底座换档时里面的图元跟着一起换
+显示带背景的图标
 
 <XhDemo src="icon-wrapper/01-basic" />
 
@@ -26,19 +26,19 @@
 
 ### 变体
 
-四种形态只决定底色、描边与前景怎么用，直径与形状一个字不动
+设置背景和边框样式
 
 <XhDemo src="icon-wrapper/02-variant" />
 
 ### 颜色
 
-换一族颜色只改 tone，形态那一轴一个字不动
+使用语义颜色
 
 <XhDemo src="icon-wrapper/03-tone" />
 
 ### 尺寸
 
-三档同时换底座直径与图元直径；改形状、改直径都留了槽位
+设置图标块大小
 
 <XhDemo src="icon-wrapper/04-size" />
 
@@ -46,31 +46,31 @@
 
 ### 何时使用
 
-- 需要把图标从背景里托出来：功能入口、结果页的状态徽记、列表项的分类标记。
-- 一组图标要在视觉上等宽等高，不受各自图形轮廓影响。
+- 突出功能入口、状态或分类图标。
+- 统一一组图标的视觉尺寸。
 
 ### 何时不用
 
-- 只要一枚裸图元：直接用[图标](./icon)。
-- 底座里放的是人或组织的形象：用[头像](./avatar)。
+- 只需显示图标时，使用[图标](./icon)。
+- 显示人物或组织形象时，使用[头像](./avatar)。
 
 ### 特性
 
-- 底座直径与里面图元的直径同一个 `size` 档一起换。
-- 四种形态只决定底色、描边与前景怎么用，直径与形状一个字不动。
+- 支持三档尺寸。
+- 支持四种变体和六种语义颜色。
 
 ### 组合
 
-- 里面放[图标](./icon)；外面常与[空状态](./empty-state)、[列表](./list)一起用。
+- 通常与[图标](./icon)、[空状态](./empty-state)或[列表](./list)组合使用。
 
 ### 最佳实践
 
-- 一组图标块保持同一档尺寸与同一种形态，只让语气变化。
-- 它本身不可点：要点击就把它放进[按钮](./button)里，别给底座挂事件。
+- 同组图标块使用一致的尺寸和变体。
+- 图标块不承载交互；可点击操作使用[按钮](./button)。
 
 ### 反模式
 
-- 用它替代[徽标](./badge)表达计数：底座是容器，不是数值载体。
+- 不要用图标块替代[徽标](./badge)显示计数。
 
 ## API 参考
 
@@ -87,9 +87,9 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `Size` |  | 尺寸：sm / md / lg，决定底座直径与里面图元的直径。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
-| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定底色、描边与前景怎么用。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
 
 ### connect API
 

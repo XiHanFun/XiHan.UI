@@ -21719,7 +21719,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "形态，决定底色、描边与前景怎么用",
+              "description": "变体",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -21727,7 +21727,7 @@
               "type": {
                 "text": "Tone | undefined"
               },
-              "description": "语气，决定用哪族颜色",
+              "description": "颜色",
               "name": "tone",
               "fieldName": "tone"
             },
@@ -21735,7 +21735,7 @@
               "type": {
                 "text": "Size | undefined"
               },
-              "description": "尺寸，决定底座直径与里面图元的直径",
+              "description": "尺寸",
               "name": "size",
               "fieldName": "size"
             }

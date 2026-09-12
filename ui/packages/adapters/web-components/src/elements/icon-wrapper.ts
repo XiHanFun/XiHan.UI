@@ -10,9 +10,9 @@ import { XhElement } from '../element-base'
  * 根上不写 role、也不写 aria-hidden：里面那个图元是装饰还是信息，由作者按用途声明。
  *
  * @customElement xh-icon-wrapper
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定底色、描边与前景怎么用
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定用哪族颜色
- * @attr {'sm'|'md'|'lg'} size - 尺寸，决定底座直径与里面图元的直径
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @csspart root - 底座容器，承载 data-variant / data-tone / data-size
  */
 export class XhIconWrapperElement extends XhElement {
