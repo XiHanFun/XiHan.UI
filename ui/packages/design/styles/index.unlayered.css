@@ -13322,6 +13322,32 @@
   --xh-action-shadow-hover: none;
 }
 
+/* 深色主题仍使用稳定的深品牌面与浅色文字，避免同一主按钮只因主题变化翻成黑字。 */
+:is([data-theme='dark'] *, [data-theme='dark'])
+  [data-scope='button'][data-part='root']:is(:not([data-variant]), [data-variant='solid']):is(
+    :not([data-tone]),
+    [data-tone='brand']
+  ):not([data-scope='button-group'] *) {
+  --xh-action-bg-rest: var(--xh-color-brand-600);
+  --xh-action-bg-hover: var(--xh-color-brand-700);
+  --xh-action-bg-pressed: var(--xh-color-brand-800);
+  --xh-action-fg-rest: var(--xh-color-neutral-0);
+  --xh-action-fg-hover: var(--xh-color-neutral-0);
+  --xh-action-fg-pressed: var(--xh-color-neutral-0);
+  --xh-_button-primary-bg: var(--xh-color-brand-600);
+  --xh-_button-primary-fg: var(--xh-color-neutral-0);
+}
+
+:is([data-theme='dark'] *, [data-theme='dark'])[data-scope='button-group'][data-part='root'][data-variant='solid']:is(
+  :not([data-tone]),
+  [data-tone='brand']
+) {
+  --xh-button-bg: var(--xh-color-brand-600);
+  --xh-button-bg-hover: var(--xh-color-brand-700);
+  --xh-button-bg-active: var(--xh-color-brand-800);
+  --xh-button-fg: var(--xh-color-neutral-0);
+}
+
 /* 默认按钮与 solid 都是品牌主动作，焦点、禁用和载入不能退回灰色家族缺省面。
    ButtonGroup 的 solid 段从容器继承同名公开槽，仍由一份规则得到相同状态。 */
 [data-scope='button'][data-part='root']:not([data-variant]):not([data-scope='button-group'] *),
