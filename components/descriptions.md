@@ -1,28 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/descriptions
 
-# 描述列表 `descriptions`
+# Descriptions `描述列表`
 
 成对的标签与值，按列排开。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/descriptions" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/descriptions.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/descriptions" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/descriptions" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/descriptions.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 详情页的属性列表：订单信息、设备参数、用户资料。
-
-## 何时不用
-
-- 数据是多行同构的记录：用[表格](./table)。
-- 只有一两对：直接写。
-
-## 特性
-
-- 语义是 `dt` / `dd`，组件只给身份与排版。
-- `columns` 决定每行几组，不传即每行一组。
-- 标签位置可以在值的上方或左侧；`bordered` 给出外框。
-- 每一格可以写 `span` 横跨几列，上限是当前列数。
-
-## 示例
-
-### 基础用法
+## 用法
 
 标签与取值的配对靠 dl / dt / dd 表达，组件只给身份与排版；不传 columns 即每行一组
 
@@ -70,6 +60,8 @@ const order = [
   </dl>
 </xh-descriptions>
 ```
+
+## 示例
 
 ### 列数
 
@@ -435,6 +427,24 @@ import {
 </xh-descriptions>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 详情页的属性列表：订单信息、设备参数、用户资料。
+
+### 何时不用
+
+- 数据是多行同构的记录：用[表格](./table)。
+- 只有一两对：直接写。
+
+### 特性
+
+- 语义是 `dt` / `dd`，组件只给身份与排版。
+- `columns` 决定每行几组，不传即每行一组。
+- 标签位置可以在值的上方或左侧；`bordered` 给出外框。
+- 每一格可以写 `span` 横跨几列，上限是当前列数；窄档一行只摆一组时不认这个数。
+
 ## 产物
 
 | 层 | 值 |
@@ -480,15 +490,37 @@ import {
 
 默认皮肤 `@xihan-ui/styles/descriptions.css` 按部件选择：`[data-scope="descriptions"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-descriptions-bg` · `--xh-descriptions-border` · `--xh-descriptions-divider` · `--xh-descriptions-fg` · `--xh-descriptions-font-size` · `--xh-descriptions-gap` · `--xh-descriptions-item-px` · `--xh-descriptions-item-py` · `--xh-descriptions-label-fg` · `--xh-descriptions-label-font-weight` · `--xh-descriptions-label-gap` · `--xh-descriptions-label-w` · `--xh-descriptions-pair-gap` · `--xh-descriptions-radius` · `--xh-descriptions-value-fg`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-descriptions-bg` | `root` | `background` | `bordered` | `--xh-bg-surface` | descriptions 的 root 部件 background 覆盖槽。 |
+| `--xh-descriptions-border` | `root` | `border` | `bordered` | `--xh-border-default` | descriptions 的 root 部件 border 覆盖槽。 |
+| `--xh-descriptions-divider` | `item`<br>`root` | `border-block-start`<br>`border-inline-start` | `bordered` | `--xh-border-subtle` | descriptions 的 item、root 部件 border-block-start、border-inline-start 覆盖槽。 |
+| `--xh-descriptions-fg` | `root` | `color` | `default` | `--xh-fg-default` | descriptions 的 root 部件 color 覆盖槽。 |
+| `--xh-descriptions-font-size` | `root` | `font-size` | `default` | `--xh-_descriptions-font-size` | descriptions 的 root 部件 font-size 覆盖槽。 |
+| `--xh-descriptions-gap` | `root` | `gap` | `default` | `--xh-_descriptions-gap` | descriptions 的 root 部件 gap 覆盖槽。 |
+| `--xh-descriptions-item-px` | `item`<br>`root` | `padding-inline` | `bordered` | `--xh-_descriptions-px` | descriptions 的 item、root 部件 padding-inline 覆盖槽。 |
+| `--xh-descriptions-item-py` | `item`<br>`root` | `padding-block` | `bordered` | `--xh-_descriptions-py` | descriptions 的 item、root 部件 padding-block 覆盖槽。 |
+| `--xh-descriptions-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | descriptions 的 label 部件 color 覆盖槽。 |
+| `--xh-descriptions-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | descriptions 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-descriptions-label-gap` | `item`<br>`root` | `column-gap` | `@media (min-width: 768px)`<br>`placement=left` | `--xh-_descriptions-label-gap` | descriptions 的 item、root 部件 column-gap 覆盖槽。 |
+| `--xh-descriptions-label-w` | `item`<br>`root` | `grid-template-columns` | `@media (min-width: 768px)`<br>`placement=left` | `--xh-_descriptions-label-w` | descriptions 的 item、root 部件 grid-template-columns 覆盖槽。 |
+| `--xh-descriptions-pair-gap` | `item` | `gap` | `default` | `--xh-_descriptions-pair-gap` | descriptions 的 item 部件 gap 覆盖槽。 |
+| `--xh-descriptions-radius` | `root` | `border-radius` | `bordered` | `--xh-shape-surface` | descriptions 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-descriptions-value-fg` | `value` | `color` | `default` | `--xh-fg-default` | descriptions 的 value 部件 color 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
+## 响应式
+
+皮肤按视口分档：`min-width: 1024px` · `min-width: 768px`。
 
 ## RTL
 

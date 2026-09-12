@@ -1,33 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/input-group
 
-# 输入组 `input-group`
+# InputGroup `输入组`
 
 把输入框与它的前后缀、动作按钮拼成一个盒：相邻两段共用一条边，圆角只留在两端。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/input-group" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/input-group.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/input-group" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/input-group" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/input-group.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 一个输入框需要固定的前后缀说明它填什么（`https://` 打头、`.com` 收尾、单位、币种）。
-- 输入框后面紧跟一个作用在它身上的动作（搜索、复制、提交）。
-- 几个控件填的是同一件事的不同部分（区号 + 号码），想让它们看起来是一个控件。
-
-## 何时不用
-
-- 组内几段是并列的动作、彼此不围绕同一个输入：那是[按钮组](./button-group)。
-- 前后缀要跟着输入内容变、或者本身可点：把它做成组里的一枚[按钮](./button)或[选择器](./select)，
-  别塞进 `item`——`item` 是不可交互的固定文本。
-- 只是想让两个控件挨着：留间距摆开就行，拼成一体会让人以为它们必须一起填。
-
-## 特性
-
-- 两个部件：`root` 是组容器，`item` 是前后缀块；组内的控件是作者自己的节点。
-- 中缝合并：后一段回挪一个描边宽度，两条边叠成一条，组里看不到双线。
-- 圆角只留在首尾两端，中间各段收平；用逻辑角属性写，rtl 下自动换边。
-- 悬停或拿到焦点的那一段抬到最上层，聚焦环不会被邻座的底色和描边切掉一半。
-- 档位跟着组内控件走：组里有 `sm` 的控件，`item` 就是 `sm`；也可以在组上写 `size` 直接指定。
-
-## 示例
-
-### 基础用法
+## 用法
 
 前后缀与输入框拼成一个盒：中缝合成一条，圆角只留在两端
 
@@ -70,6 +55,8 @@ import {
   </div>
 </xh-input-group>
 ```
+
+## 示例
 
 ### 搭动作钮
 
@@ -295,6 +282,29 @@ const summary = computed(() => {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 一个输入框需要固定的前后缀说明它填什么（`https://` 打头、`.com` 收尾、单位、币种）。
+- 输入框后面紧跟一个作用在它身上的动作（搜索、复制、提交）。
+- 几个控件填的是同一件事的不同部分（区号 + 号码），想让它们看起来是一个控件。
+
+### 何时不用
+
+- 组内几段是并列的动作、彼此不围绕同一个输入：那是[按钮组](./button-group)。
+- 前后缀要跟着输入内容变、或者本身可点：把它做成组里的一枚[按钮](./button)或[选择器](./select)，
+  别塞进 `item`——`item` 是不可交互的固定文本。
+- 只是想让两个控件挨着：留间距摆开就行，拼成一体会让人以为它们必须一起填。
+
+### 特性
+
+- 两个部件：`root` 是组容器，`item` 是前后缀块；组内的控件是作者自己的节点。
+- 中缝合并：后一段回挪一个描边宽度，两条边叠成一条，组里看不到双线。
+- 圆角只留在首尾两端，中间各段收平；用逻辑角属性写，rtl 下自动换边。
+- 悬停或拿到焦点的那一段抬到最上层，聚焦环不会被邻座的底色和描边切掉一半。
+- 档位跟着组内控件走：组里有 `sm` 的控件，`item` 就是 `sm`；也可以在组上写 `size` 直接指定。
+
 ## 产物
 
 | 层 | 值 |
@@ -343,11 +353,21 @@ const summary = computed(() => {
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-input-group-item-bg` · `--xh-input-group-item-border` · `--xh-input-group-item-fg` · `--xh-input-group-item-font-size` · `--xh-input-group-item-h` · `--xh-input-group-item-px` · `--xh-input-group-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-input-group-item-bg` | `item` | `background` | `default` | `--xh-bg-subtle` | input-group 的 item 部件 background 覆盖槽。 |
+| `--xh-input-group-item-border` | `item` | `border` | `default` | `--xh-border-control` | input-group 的 item 部件 border 覆盖槽。 |
+| `--xh-input-group-item-fg` | `item` | `color` | `default` | `--xh-fg-muted` | input-group 的 item 部件 color 覆盖槽。 |
+| `--xh-input-group-item-font-size` | `item` | `font-size` | `default` | `--xh-_input-group-font-size` | input-group 的 item 部件 font-size 覆盖槽。 |
+| `--xh-input-group-item-h` | `item` | `block-size` | `default` | `--xh-_input-group-h` | input-group 的 item 部件 block-size 覆盖槽。 |
+| `--xh-input-group-item-px` | `item` | `padding-inline` | `default` | `--xh-_input-group-px` | input-group 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-input-group-radius` | `control`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`is(*, [data-part='control'], [data-part='root'])`<br>`is([data-part='control'], [data-part='root'])`<br>`last-child` | `--xh-shape-control` | input-group 的 control、root 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

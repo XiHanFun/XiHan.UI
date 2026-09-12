@@ -1,1 +1,0 @@
-import{kY as a}from"./theme.DCKLS07e.js";import{d as l,o,b as t,k as r}from"./framework.BpF7DVZ1.js";const p=l({__name:"01-basic",setup(n){const e=[{value:"left",label:"左对齐"},{value:"center",label:"居中"},{value:"right",label:"右对齐"}];return(c,s)=>(o(),t(r(a),{collection:e,"default-value":"left"}))}});export{p as default};

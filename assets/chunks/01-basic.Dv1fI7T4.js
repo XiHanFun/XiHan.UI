@@ -1,1 +1,0 @@
-import{da as e}from"./theme.DCKLS07e.js";import{d as a,o,b as s,w as n,a as r,k as d}from"./framework.BpF7DVZ1.js";const f="曦寒 UI 导出示例：这一行会被写进 notes.txt",_=a({__name:"01-basic",setup(i){return(m,t)=>(o(),s(d(e),{data:f,"file-name":"notes.txt"},{default:n(()=>[...t[0]||(t[0]=[r(" 导出文本 ",-1)])]),_:1}))}});export{_ as default};

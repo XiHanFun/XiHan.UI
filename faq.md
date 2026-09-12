@@ -10,7 +10,7 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 
 ## 到底有多少个组件
 
-**126 个**。每个组件同时有无头内核、Vue 组件、自定义元素与默认皮肤四份产物，本文档的[组件总览](./components/)按分类列全，每个组件一页。
+**128 个**。每个组件同时有无头内核、Vue/React 组件与自定义元素；127 个视觉组件另有默认皮肤，renderless Hotkeys 不伪造视觉层。本文档的[组件总览](./components/)按分类列全，每个组件一页。
 
 ## 组件的 props 有哪些？文档里怎么没有
 
@@ -28,7 +28,7 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 
 目前只有 Vue 与 Web Components 两个适配器。
 
-自定义元素在这些框架里都能直接用（Light DOM，无 Shadow DOM 封装），这是当前的通用路径。要写原生适配器的话需要三样东西：一份 `ReactiveRuntime`（五个口子）、一份 `NormalizeProps`、一层组件包装。`@xihan-ui/core/vanilla` 是这套契约的参考实现。
+自定义元素在这些框架里都能直接用（Light DOM，无 Shadow DOM 封装），这是当前的通用路径；React 另有[原生适配器](/adapters/react)。要写原生适配器的话需要三样东西：一份 `ReactiveRuntime`（五个口子）、一份 `NormalizeProps`、一层组件包装。`@xihan-ui/core/vanilla` 是这套契约的参考实现。
 
 ## 为什么自定义元素要我自己写 HTML
 
@@ -109,4 +109,4 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 ## 还有别的问题
 
 - 源码仓库：[GitHub](https://github.com/XiHanFun/XiHan.UI) · [Gitee](https://gitee.com/XiHanFun/XiHan.UI) · [GitCode](https://gitcode.com/XiHanFun/XiHan.UI)
-- 文档站的组件示例覆盖全部 126 个组件，且 Vue 与自定义元素两套写法并排，行为问题优先在那里复现
+- 文档站的组件示例覆盖全部 128 个组件，且 Vue 与自定义元素两套写法并排，行为问题优先在那里复现

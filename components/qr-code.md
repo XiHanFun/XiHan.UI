@@ -1,28 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/qr-code
 
-# 二维码 `qr-code`
+# QrCode `二维码`
 
 把一段文本画成二维码。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/qr-code" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/qr-code.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/qr-code" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/qr-code" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/qr-code.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 跨设备传递地址、配对码、票据。
-
-## 何时不用
-
-- 用户就在这台设备上：给一条可点的链接。
-- 内容很长：二维码会密到扫不出来，改成短链。
-
-## 特性
-
-- `level` 四档纠错（L / M / Q / H）：越高越能容忍污损，同样的内容也因此占更多模块。
-- `moduleShape` 与 `eyeShape` 换码点与码眼的形状；三种形状的墨都盖住每个模块的格心，读码器按格心取样。
-- `margin` 是静区，`pixelSize` 是边长。
-- 中心可以放 logo，配色可换。
-
-## 示例
-
-### 基础用法
+## 用法
 
 给 value 就画码，版本按内容长度自动选；缺省 M 级纠错、4 个模块的静区
 
@@ -41,6 +31,8 @@ import { XhQrCode } from "@xihan-ui/vue";
   <svg data-xh-part="root"></svg>
 </xh-qr-code>
 ```
+
+## 示例
 
 ### 纠错级别
 
@@ -457,6 +449,24 @@ const text = "https://ui.xihanfun.com";
 </div>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 跨设备传递地址、配对码、票据。
+
+### 何时不用
+
+- 用户就在这台设备上：给一条可点的链接。
+- 内容很长：二维码会密到扫不出来，改成短链。
+
+### 特性
+
+- `level` 四档纠错（L / M / Q / H）：越高越能容忍污损，同样的内容也因此占更多模块。
+- `moduleShape` 与 `eyeShape` 换码点与码眼的形状；三种形状的墨都盖住每个模块的格心，读码器按格心取样。
+- `margin` 是静区，`pixelSize` 是边长。
+- 中心可以放 logo，配色可换。
+
 ## 产物
 
 | 层 | 值 |
@@ -546,11 +556,20 @@ const text = "https://ui.xihanfun.com";
 | `root` | `data-state` | 'empty' |
 | `root` | `data-version` | undefined \| String(version) |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-qr-code-bg` · `--xh-qr-code-eye-fg` · `--xh-qr-code-fg` · `--xh-qr-code-placeholder-bg` · `--xh-qr-code-placeholder-border` · `--xh-qr-code-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-qr-code-bg` | `root` | `background`<br>`fill` | `default`<br>`xh-geom=logo-clear` | `--xh-color-neutral-0` | qr-code 的 root 部件 background、fill 覆盖槽。 |
+| `--xh-qr-code-eye-fg` | `root` | `fill` | `xh-geom=eyes` | `currentColor` | qr-code 的 root 部件 fill 覆盖槽。 |
+| `--xh-qr-code-fg` | `root` | `color` | `default` | `--xh-color-neutral-950` | qr-code 的 root 部件 color 覆盖槽。 |
+| `--xh-qr-code-placeholder-bg` | `root` | `background` | `state=empty`<br>`state=error` | `--xh-bg-subtle` | qr-code 的 root 部件 background 覆盖槽。 |
+| `--xh-qr-code-placeholder-border` | `root` | `box-shadow` | `state=empty`<br>`state=error` | `--xh-border-default` | qr-code 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-qr-code-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | qr-code 的 root 部件 border-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

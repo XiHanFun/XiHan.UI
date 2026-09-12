@@ -1,0 +1,21 @@
+const t=`<!-- 基础用法 | 一组组合的键帽：Mod 在 Mac 上出 ⌘、其余平台出 Ctrl，平台由组件自己测出来 -->
+<div style="display: flex; align-items: center; gap: 8px">
+  <!-- 展示与注册显式组合；两者各自挂载后使用同一平台规则 -->
+  <xh-kbd-group keys="Mod,S">
+    <span data-xh-part="root"></span>
+  </xh-kbd-group>
+  <xh-hotkeys id="hotkeys-basic" keys="Mod,S"></xh-hotkeys>
+  <span id="hotkeys-basic-count">已按下 0 次</span>
+</div>
+
+<script type="module">
+  // 行为宿主不生成任何展示节点，组合命中经 hot-key 事件冒泡出来
+  const host = document.getElementById("hotkeys-basic");
+  const readout = document.getElementById("hotkeys-basic-count");
+  let count = 0;
+  host.addEventListener("hot-key", () => {
+    count += 1;
+    readout.textContent = \`已按下 \${count} 次\`;
+  });
+<\/script>
+`;export{t as default};

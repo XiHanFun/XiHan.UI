@@ -1,31 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/scrollbar
 
-# 滚动条 `scrollbar`
+# Scrollbar `滚动条`
 
 自绘的滚动条，挂在**任意一个**滚动容器上：表格的滚动盒、虚拟滚动的视口、随手一个 `overflow: auto` 的 div 都行。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/scrollbar" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/scrollbar.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/scrollbar" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/scrollbar" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/scrollbar.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 原生滚动条在各平台长得不一样，而设计稿要求一致。
-- 滚动容器不归组件管（表格、虚拟列表、你自己的布局），但滚动条要跟库里其余部分一个样。
-
-## 何时不用
-
-- 容器与滚动条一起要：用[滚动区域](./scroll-area)，它把视口、内容与两条滚动条打包好了。
-- 只是想让原生滚动条细一点：`scrollbar-width: thin` 就够，不必换掉整套交互。
-
-## 特性
-
-- 挂在作者给的滚动容器上，与它是不是本组件的后代无关；挂上后容器带 `data-xh-scrollbar`，原生滚动条的外观自动藏起来。
-- 五种露面时机（`scroll-hover` / `auto` / `always` / `scroll` / `hover`），带收起延时；露出与收起都淡变。
-- 缺省档 `scroll-hover` 浮在内容之上，滚动时与指针进来时露出，两样都停下后收起，全程不占布局宽度（横条不占高度）。
-- 拖滑块、点轨道跳转、RTL 双向换算、滑块像素下限都在库里。
-- `focusable` 打开后滑块进 Tab 序并报 `role="scrollbar"`，方向键与翻页键可用。
-- 触屏（粗指针）上默认交给原生滚动，`forceVisible` 打开才画。
-
-## 示例
-
-### 挂在自己的滚动容器上
+## 用法
 
 滚动容器归你，滚动条只要拿到它；把节点交给 scrollable 即可
 
@@ -104,6 +91,8 @@ const lines = Array.from({ length: 40 }, (_, i) => `第 ${i + 1} 行内容`);
   );
 </script>
 ```
+
+## 示例
 
 ### 横向 + 键盘可达
 
@@ -421,6 +410,27 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 原生滚动条在各平台长得不一样，而设计稿要求一致。
+- 滚动容器不归组件管（表格、虚拟列表、你自己的布局），但滚动条要跟库里其余部分一个样。
+
+### 何时不用
+
+- 容器与滚动条一起要：用[滚动区域](./scroll-area)，它把视口、内容与两条滚动条打包好了。
+- 只是想让原生滚动条细一点：`scrollbar-width: thin` 就够，不必换掉整套交互。
+
+### 特性
+
+- 挂在作者给的滚动容器上，与它是不是本组件的后代无关；挂上后容器带 `data-xh-scrollbar`，原生滚动条的外观自动藏起来。
+- 五种露面时机（`scroll-hover` / `auto` / `always` / `scroll` / `hover`），带收起延时；露出与收起都淡变。
+- 缺省档 `scroll-hover` 浮在内容之上，滚动时与指针进来时露出，两样都停下后收起，全程不占布局宽度（横条不占高度）。
+- 拖滑块、点轨道跳转、RTL 双向换算、滑块像素下限都在库里。
+- `focusable` 打开后滑块进 Tab 序并报 `role="scrollbar"`，方向键与翻页键可用。
+- 触屏（粗指针）上默认交给原生滚动，`forceVisible` 打开才画。
+
 ## 产物
 
 | 层 | 值 |
@@ -580,15 +590,25 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 | `corner` | `data-size` | props.size |
 | `corner` | `data-state` | 'visible' \| 'hidden' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-scrollbar-corner-bg` · `--xh-scrollbar-gutter` · `--xh-scrollbar-thickness-lg` · `--xh-scrollbar-thickness-md` · `--xh-scrollbar-thickness-sm` · `--xh-scrollbar-thumb-bg` · `--xh-scrollbar-thumb-bg-active` · `--xh-scrollbar-thumb-bg-disabled` · `--xh-scrollbar-thumb-bg-hover` · `--xh-scrollbar-thumb-radius` · `--xh-scrollbar-track-bg`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-scrollbar-corner-bg` | `corner` | `background` | `default` | `--xh-scrollbar-track-bg` | scrollbar 的 corner 部件 background 覆盖槽。 |
+| `--xh-scrollbar-thumb-bg` | `thumb` | `background` | `default` | `--xh-fg-scrollbar-thumb` | scrollbar 的 thumb 部件 background 覆盖槽。 |
+| `--xh-scrollbar-thumb-bg-active` | `thumb` | `background` | `dragging` | `--xh-fg-scrollbar-thumb-active` | scrollbar 的 thumb 部件 background 覆盖槽。 |
+| `--xh-scrollbar-thumb-bg-disabled` | `thumb` | `background` | `disabled` | `--xh-border-subtle` | scrollbar 的 thumb 部件 background 覆盖槽。 |
+| `--xh-scrollbar-thumb-bg-hover` | `thumb` | `background` | `hover` | `--xh-fg-scrollbar-thumb-hover` | scrollbar 的 thumb 部件 background 覆盖槽。 |
+| `--xh-scrollbar-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-pill` | scrollbar 的 thumb 部件 border-radius 覆盖槽。 |
+| `--xh-scrollbar-track-bg` | `corner`<br>`track` | `background` | `default` | `--xh-bg-scrollbar-track` | scrollbar 的 corner、track 部件 background 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
-`background` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

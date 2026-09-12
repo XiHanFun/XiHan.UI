@@ -1,30 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/side-nav
 
-# 侧栏导航 `side-nav`
+# SideNav `侧栏导航`
 
 后台侧边那棵导航树：分支可展开，选中落在叶子上并一路点亮祖先枝。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/side-nav" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/side-nav.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/side-nav" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/side-nav" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/side-nav.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 管理后台、控制台的主导航，层级两到三层。
-- 侧栏需要折叠成图标栏，且折叠后仍要能进到子级。
-
-## 何时不用
-
-- 导航只有一层：用一列链接就够。
-- 是内容树而不是导航树（文件、组织架构）：用[树](./tree)。
-- 顶部横向导航：用[导航菜单](./navigation-menu)。
-
-## 特性
-
-- `collection` 是层级与文本的唯一事实源。
-- `accordion` 让同层只开一枝；不开即可多开。
-- 折叠成图标栏时内嵌展开整体收起、文字由皮肤藏掉；顶层分支换装浮层弹出，悬停 / 点按 / 右方向键在旁侧弹出子级面板，面板内选中即落值收起。
-- 方向键上下走行、左右管层级。
-
-## 示例
-
-### 基础用法
+## 用法
 
 管理后台侧栏：分支内嵌展开（可多开）、选中落在叶子上并一路点亮祖先枝，方向键上下走行、左右管层级
 
@@ -187,6 +175,8 @@ const value = ref<string | null>("user-list");
   });
 </script>
 ```
+
+## 示例
 
 ### 手风琴与折叠
 
@@ -848,6 +838,26 @@ function collapseAll() {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 管理后台、控制台的主导航，层级两到三层。
+- 侧栏需要折叠成图标栏，且折叠后仍要能进到子级。
+
+### 何时不用
+
+- 导航只有一层：用一列链接就够。
+- 是内容树而不是导航树（文件、组织架构）：用[树](./tree)。
+- 顶部横向导航：用[导航菜单](./navigation-menu)。
+
+### 特性
+
+- `collection` 是层级与文本的唯一事实源。
+- `accordion` 让同层只开一枝；不开即可多开。
+- 折叠成图标栏时内嵌展开整体收起、文字由皮肤藏掉；顶层分支换装浮层弹出，悬停 / 点按 / 右方向键在旁侧弹出子级面板，面板内选中即落值收起。
+- 方向键上下走行、左右管层级。
+
 ## 产物
 
 | 层 | 值 |
@@ -918,7 +928,7 @@ function collapseAll() {
 
 **状态**：`idle` · `popout`
 
-**事件**：`VALUE.SET` · `LINK.SELECT` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `FOCUS.CLEAR` · `POPOUT.OPEN` · `POPOUT.CLOSE`
+**事件**：`VALUE.SET` · `LINK.SELECT` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `FOCUS.CLEAR` · `POPOUT.OPEN` · `POPOUT.CLOSE` · `PRESENCE.SET`
 
 **判据**：`canChange` · `canPopout`
 
@@ -988,8 +998,10 @@ function collapseAll() {
 | `branch-trigger` | `aria-controls` | `content` 部件的 id |
 | `branch-trigger` | `aria-expanded` | 'true' \| 'false' |
 | `branch-indicator` | `aria-hidden` | 'true' |
+| `branch-content` | `aria-hidden` | !open \|\| undefined |
 | `link` | `aria-current` | 'page' \| undefined |
 | `link` | `aria-disabled` | 'true' \| undefined |
+| `popout-positioner` | `aria-hidden` | !open \|\| undefined |
 
 - `list` 与 `branch-content` 是列表容器（`ul`），直接子节点只能是列表项：分支写 `branch`（`li`），叶子写 `item`（`li`）裹住 `link`（`a`）。链接直接挂在列表下会让列表语义作废。
 - 行文字必须写进 `branch-text` / `link-text`。折叠成图标栏时这段文字被裁到看不见但仍参与播报，它就是按钮与链接在图标栏里唯一的可及名；行里只放图标不写文字，折叠后读屏报不出这一项是什么。
@@ -1033,11 +1045,41 @@ function collapseAll() {
 | `popout-positioner` | `data-state` | 'open' \| 'closed' |
 | `popout-positioner` | `data-tone` | props.tone |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-side-nav-collapsed-w` · `--xh-side-nav-fg` · `--xh-side-nav-gap` · `--xh-side-nav-group-label-px` · `--xh-side-nav-group-label-py` · `--xh-side-nav-icon-size` · `--xh-side-nav-indent` · `--xh-side-nav-link-gap` · `--xh-side-nav-link-h` · `--xh-side-nav-link-px` · `--xh-side-nav-link-radius` · `--xh-side-nav-p` · `--xh-side-nav-popout-bg` · `--xh-side-nav-popout-border` · `--xh-side-nav-popout-layer` · `--xh-side-nav-popout-max-h` · `--xh-side-nav-popout-max-w` · `--xh-side-nav-popout-min-w` · `--xh-side-nav-popout-p` · `--xh-side-nav-popout-radius` · `--xh-side-nav-popout-shadow` · `--xh-side-nav-row-bg-active` · `--xh-side-nav-row-bg-hover` · `--xh-side-nav-row-fg-active` · `--xh-side-nav-row-fg-in-path` · `--xh-side-nav-row-font-weight-active` · `--xh-side-nav-w`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-side-nav-collapsed-w` | `root` | `inline-size` | `collapsed` | `56px` | side-nav 的 root 部件 inline-size 覆盖槽。 |
+| `--xh-side-nav-fg` | `root` | `color` | `default` | `--xh-fg-default` | side-nav 的 root 部件 color 覆盖槽。 |
+| `--xh-side-nav-gap` | `branch`<br>`branch-content`<br>`group`<br>`list`<br>`root` | `gap` | `default` | `--xh-space-1` | side-nav 的 branch、branch-content、group、list、root 部件 gap 覆盖槽。 |
+| `--xh-side-nav-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-control-px-md` | side-nav 的 group-label 部件 padding-inline 覆盖槽。 |
+| `--xh-side-nav-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | side-nav 的 group-label 部件 padding-block 覆盖槽。 |
+| `--xh-side-nav-icon-size` | `positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])` | `--xh-glyph-size-text` | side-nav 的 positioner、root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-side-nav-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-space-4` | side-nav 的 branch-content 部件 padding-inline-start 覆盖槽。 |
+| `--xh-side-nav-link-gap` | `branch-trigger`<br>`link` | `gap` | `default` | `--xh-_side-nav-row-gap` | side-nav 的 branch-trigger、link 部件 gap 覆盖槽。 |
+| `--xh-side-nav-link-h` | `branch-trigger`<br>`link` | `min-block-size` | `default` | `--xh-_side-nav-row-h` | side-nav 的 branch-trigger、link 部件 min-block-size 覆盖槽。 |
+| `--xh-side-nav-link-px` | `branch-trigger`<br>`link` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 branch-trigger、link 部件 padding-inline 覆盖槽。 |
+| `--xh-side-nav-link-radius` | `branch-trigger`<br>`link` | `border-radius` | `default` | `--xh-shape-control` | side-nav 的 branch-trigger、link 部件 border-radius 覆盖槽。 |
+| `--xh-side-nav-p` | `root` | `padding` | `default` | `--xh-space-2` | side-nav 的 root 部件 padding 覆盖槽。 |
+| `--xh-side-nav-popout-bg` | `branch-content` | `background` | `popout` | `--xh-bg-surface` | side-nav 的 branch-content 部件 background 覆盖槽。 |
+| `--xh-side-nav-popout-border` | `branch-content` | `border` | `popout` | `--xh-border-default` | side-nav 的 branch-content 部件 border 覆盖槽。 |
+| `--xh-side-nav-popout-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | side-nav 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-side-nav-popout-max-h` | `branch-content` | `max-block-size` | `popout` | `--xh-overlay-menu-max-h` | side-nav 的 branch-content 部件 max-block-size 覆盖槽。 |
+| `--xh-side-nav-popout-max-w` | `branch-content` | `max-inline-size` | `popout` | `--xh-overlay-max-w` | side-nav 的 branch-content 部件 max-inline-size 覆盖槽。 |
+| `--xh-side-nav-popout-min-w` | `branch-content` | `min-inline-size` | `popout` | `--xh-overlay-menu-min-w` | side-nav 的 branch-content 部件 min-inline-size 覆盖槽。 |
+| `--xh-side-nav-popout-p` | `branch-content` | `padding` | `popout` | `--xh-space-1` | side-nav 的 branch-content 部件 padding 覆盖槽。 |
+| `--xh-side-nav-popout-radius` | `branch-content` | `border-radius` | `popout` | `--xh-shape-surface` | side-nav 的 branch-content 部件 border-radius 覆盖槽。 |
+| `--xh-side-nav-popout-shadow` | `branch-content` | `box-shadow` | `popout` | `--xh-elevation-floating` | side-nav 的 branch-content 部件 box-shadow 覆盖槽。 |
+| `--xh-side-nav-row-bg-active` | `link` | `background` | `current`<br>`disabled`<br>`not([data-disabled])` | `--xh-_side-nav-accent-bg` | side-nav 的 link 部件 background 覆盖槽。 |
+| `--xh-side-nav-row-bg-hover` | `branch-trigger`<br>`link` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])` | `--xh-bg-subtle` | side-nav 的 branch-trigger、link 部件 background 覆盖槽。 |
+| `--xh-side-nav-row-fg-active` | `link` | `color` | `current`<br>`disabled`<br>`not([data-disabled])` | `--xh-_side-nav-accent-fg` | side-nav 的 link 部件 color 覆盖槽。 |
+| `--xh-side-nav-row-fg-in-path` | `branch-trigger` | `color` | `in-path` | `--xh-_side-nav-in-path-fg` | side-nav 的 branch-trigger 部件 color 覆盖槽。 |
+| `--xh-side-nav-row-font-weight-active` | `link` | `font-weight` | `current`<br>`disabled`<br>`not([data-disabled])` | `--xh-font-weight-medium` | side-nav 的 link 部件 font-weight 覆盖槽。 |
+| `--xh-side-nav-w` | `root` | `inline-size` | `default` | `240px` | side-nav 的 root 部件 inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

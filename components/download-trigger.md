@@ -1,31 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/download-trigger
 
-# 下载触发器 `download-trigger`
+# DownloadTrigger `下载触发器`
 
 把一段数据交给浏览器下载，并把取数这段过程如实报出来。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/download-trigger" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/download-trigger.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/download-trigger" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/download-trigger" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/download-trigger.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 内容已经在前端手里：当前表格导出成 CSV、编辑器里的草稿存成文件、生成好的配置文本。
-- 数据要点了才算：交一个取数函数，点下去才发请求或才开始序列化。
-
-## 何时不用
-
-- 文件在服务端且有稳定地址：直接写一个 `<a href download>` 指过去，让服务端决定文件名与类型，别在前端造一份副本。
-- 内容只是要带走一小段文字：用[剪贴板](./clipboard)，用户不必再去下载目录里翻。
-- 方向反过来是把文件交进来：用[文件上传](./file-upload)。
-
-## 特性
-
-- 数据可以是文本、Blob，或点了才调用的取数函数（可返回 Promise）。
-- 取数在途时状态是 `preparing`，此时再点不会重复发起；无论成败都回到 `idle`，界面上不留"下载中"的假象。
-- 失败会说出来：取数抛出、拒绝，或环境造不出下载，都走 `onDownloadError` 并带上原始原因。
-- 文件名与类型在发起那一刻定死，取数途中宿主改了 prop 也不影响这一次写出的那份。
-- Vue 侧默认插槽拿得到 `{ status, preparing, disabled, fileName, download }`，可据 `preparing` 换掉按钮上的文字；Web Components 侧按钮内容由作者自己写，要跟着状态换文字得自己盯 `data-state`。
-
-## 示例
-
-### 基础用法
+## 用法
 
 内容已经在手里就直接给字符串，点一下即交给浏览器；文件名连同扩展名都由 file-name 说了算
 
@@ -51,6 +38,8 @@ const notes = "曦寒 UI 导出示例：这一行会被写进 notes.txt";
   <button data-xh-part="root">导出文本</button>
 </xh-download-trigger>
 ```
+
+## 示例
 
 ### 按需取数
 
@@ -284,6 +273,27 @@ const notes = "曦寒 UI 导出示例：这一行会被写进 notes.txt";
 </xh-download-trigger>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 内容已经在前端手里：当前表格导出成 CSV、编辑器里的草稿存成文件、生成好的配置文本。
+- 数据要点了才算：交一个取数函数，点下去才发请求或才开始序列化。
+
+### 何时不用
+
+- 文件在服务端且有稳定地址：直接写一个 `<a href download>` 指过去，让服务端决定文件名与类型，别在前端造一份副本。
+- 内容只是要带走一小段文字：用[剪贴板](./clipboard)，用户不必再去下载目录里翻。
+- 方向反过来是把文件交进来：用[文件上传](./file-upload)。
+
+### 特性
+
+- 数据可以是文本、Blob，或点了才调用的取数函数（可返回 Promise）。
+- 取数在途时状态是 `preparing`，此时再点不会重复发起；无论成败都回到 `idle`，界面上不留"下载中"的假象。
+- 失败会说出来：取数抛出、拒绝，或环境造不出下载，都走 `onDownloadError` 并带上原始原因。
+- 文件名与类型在发起那一刻定死，取数途中宿主改了 prop 也不影响这一次写出的那份。
+- Vue 侧默认插槽拿得到 `{ status, preparing, disabled, fileName, download }`，可据 `preparing` 换掉按钮上的文字；Web Components 侧按钮内容由作者自己写，要跟着状态换文字得自己盯 `data-state`。
+
 ## 产物
 
 | 层 | 值 |
@@ -396,11 +406,31 @@ const notes = "曦寒 UI 导出示例：这一行会被写进 notes.txt";
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-download-trigger-bg` · `--xh-download-trigger-bg-active` · `--xh-download-trigger-bg-disabled` · `--xh-download-trigger-bg-hover` · `--xh-download-trigger-border` · `--xh-download-trigger-border-disabled` · `--xh-download-trigger-border-hover` · `--xh-download-trigger-fg` · `--xh-download-trigger-font-size` · `--xh-download-trigger-font-weight` · `--xh-download-trigger-gap` · `--xh-download-trigger-h` · `--xh-download-trigger-icon-size` · `--xh-download-trigger-loading-duration` · `--xh-download-trigger-px` · `--xh-download-trigger-radius` · `--xh-download-trigger-shadow-hover`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-download-trigger-bg` | `root` | `background` | `default` | `--xh-_download-trigger-bg` | download-trigger 的 root 部件 background 覆盖槽。 |
+| `--xh-download-trigger-bg-active` | `root` | `background` | `active` | `--xh-_download-trigger-bg-active` | download-trigger 的 root 部件 background 覆盖槽。 |
+| `--xh-download-trigger-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-muted` | download-trigger 的 root 部件 background 覆盖槽。 |
+| `--xh-download-trigger-bg-hover` | `root` | `background` | `hover` | `--xh-_download-trigger-bg-hover` | download-trigger 的 root 部件 background 覆盖槽。 |
+| `--xh-download-trigger-border` | `root` | `border` | `default` | `--xh-_download-trigger-border` | download-trigger 的 root 部件 border 覆盖槽。 |
+| `--xh-download-trigger-border-disabled` | `root` | `border-color` | `disabled` | `--xh-border-control` | download-trigger 的 root 部件 border-color 覆盖槽。 |
+| `--xh-download-trigger-border-hover` | `root` | `border-color` | `hover` | `--xh-_download-trigger-border-hover` | download-trigger 的 root 部件 border-color 覆盖槽。 |
+| `--xh-download-trigger-fg` | `root` | `color` | `default` | `--xh-_download-trigger-fg` | download-trigger 的 root 部件 color 覆盖槽。 |
+| `--xh-download-trigger-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-font-lg`<br>`--xh-control-font-sm`<br>`--xh-text-label-size` | download-trigger 的 root 部件 font-size 覆盖槽。 |
+| `--xh-download-trigger-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | download-trigger 的 root 部件 font-weight 覆盖槽。 |
+| `--xh-download-trigger-gap` | `root` | `gap` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-gap-lg`<br>`--xh-control-gap-md`<br>`--xh-control-gap-sm` | download-trigger 的 root 部件 gap 覆盖槽。 |
+| `--xh-download-trigger-h` | `root` | `block-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | download-trigger 的 root 部件 block-size 覆盖槽。 |
+| `--xh-download-trigger-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | download-trigger 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-download-trigger-loading-duration` | `root` | `animation` | `state=preparing` | `--xh-spin-duration` | download-trigger 的 root 部件 animation 覆盖槽。 |
+| `--xh-download-trigger-px` | `root` | `padding-inline` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-px-lg`<br>`--xh-control-px-md`<br>`--xh-control-px-sm` | download-trigger 的 root 部件 padding-inline 覆盖槽。 |
+| `--xh-download-trigger-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | download-trigger 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-download-trigger-shadow-hover` | `root` | `box-shadow` | `hover` | `--xh-elevation-raised` | download-trigger 的 root 部件 box-shadow 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

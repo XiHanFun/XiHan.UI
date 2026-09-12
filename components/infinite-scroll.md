@@ -1,28 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/infinite-scroll
 
-# 无限滚动 `infinite-scroll`
+# InfiniteScroll `无限滚动`
 
 取下一页的通用触发器，滚动只是默认的触发方式。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/infinite-scroll" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/infinite-scroll.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/infinite-scroll" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/infinite-scroll" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/infinite-scroll.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 时间流、消息列表这类用户只关心"再来一些"的内容。
-
-## 何时不用
-
-- 用户需要跳到确定位置或分享某一页：用[分页](./pagination)。
-- 页面有页脚需要够得着：无限滚动会让页脚永远追不上。
-
-## 特性
-
-- `distance` 是提前量：距底部还有这么远就触发，用户感觉不到等待。
-- `loading` 与 `disabled` 由组件交给宿主，加载提示与结束语都由宿主自己摆。
-- 取完之后关掉即可，不会再触发。
-- `load-more-trigger` 是同一条通路的另一个入口：一颗真按钮，取数中与关掉两段自动停用。
-
-## 示例
-
-### 基础用法
+## 用法
 
 哨兵滚进可视区就派 load，取完把 loading 写回 false
 
@@ -145,6 +135,8 @@ function onLoad(): void {
   });
 </script>
 ```
+
+## 示例
 
 ### 提前量
 
@@ -715,6 +707,24 @@ function onLoad(): void {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 时间流、消息列表这类用户只关心"再来一些"的内容。
+
+### 何时不用
+
+- 用户需要跳到确定位置或分享某一页：用[分页](./pagination)。
+- 页面有页脚需要够得着：无限滚动会让页脚永远追不上。
+
+### 特性
+
+- `distance` 是提前量：距底部还有这么远就触发，用户感觉不到等待。
+- `loading` 与 `disabled` 由组件交给宿主，加载提示与结束语都由宿主自己摆。
+- 取完之后关掉即可，不会再触发。
+- `load-more-trigger` 是同一条通路的另一个入口：一颗真按钮，取数中与关掉两段自动停用。
+
 ## 产物
 
 | 层 | 值 |
@@ -807,11 +817,26 @@ function onLoad(): void {
 | `load-more-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-loading` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-infinite-scroll-load-more-bg` · `--xh-infinite-scroll-load-more-bg-active` · `--xh-infinite-scroll-load-more-bg-hover` · `--xh-infinite-scroll-load-more-border` · `--xh-infinite-scroll-load-more-border-hover` · `--xh-infinite-scroll-load-more-fg` · `--xh-infinite-scroll-load-more-font-size` · `--xh-infinite-scroll-load-more-gap` · `--xh-infinite-scroll-load-more-h` · `--xh-infinite-scroll-load-more-px` · `--xh-infinite-scroll-load-more-radius` · `--xh-infinite-scroll-sentinel-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-infinite-scroll-load-more-bg` | `load-more-trigger` | `background` | `default` | `--xh-bg-canvas` | infinite-scroll 的 load-more-trigger 部件 background 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-bg-active` | `load-more-trigger` | `background` | `active` | `--xh-bg-subtle-active` | infinite-scroll 的 load-more-trigger 部件 background 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-bg-hover` | `load-more-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | infinite-scroll 的 load-more-trigger 部件 background 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-border` | `load-more-trigger` | `border` | `default` | `--xh-border-control` | infinite-scroll 的 load-more-trigger 部件 border 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-border-hover` | `load-more-trigger` | `border-color` | `hover` | `--xh-border-control-hover` | infinite-scroll 的 load-more-trigger 部件 border-color 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-fg` | `load-more-trigger` | `color` | `default` | `--xh-fg-default` | infinite-scroll 的 load-more-trigger 部件 color 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-font-size` | `load-more-trigger` | `font-size` | `default` | `--xh-text-body-size` | infinite-scroll 的 load-more-trigger 部件 font-size 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-gap` | `load-more-trigger` | `gap` | `default` | `--xh-control-gap-md` | infinite-scroll 的 load-more-trigger 部件 gap 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-h` | `load-more-trigger` | `min-block-size` | `default` | `--xh-control-h-md` | infinite-scroll 的 load-more-trigger 部件 min-block-size 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-px` | `load-more-trigger` | `padding-inline` | `default` | `--xh-control-px-md` | infinite-scroll 的 load-more-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-radius` | `load-more-trigger` | `border-radius` | `default` | `--xh-shape-control` | infinite-scroll 的 load-more-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-infinite-scroll-sentinel-size` | `sentinel` | `block-size` | `default` | `--xh-stroke-thin` | infinite-scroll 的 sentinel 部件 block-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

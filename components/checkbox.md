@@ -1,29 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/checkbox
 
-# 复选框 `checkbox`
+# Checkbox `复选框`
 
 一个可以选中、不选中、也可以处于半选的独立开关。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/checkbox" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/checkbox.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/checkbox" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/checkbox" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/checkbox.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 表单里的单项同意、单项开关，且要随表单提交。
-- 需要表达"部分选中"（全选框对应下面几项只勾了一部分）。
-
-## 何时不用
-
-- 开关立即生效、且是一项设置：用[开关](./switch)。
-- 几个互斥项里选一个：用[单选组](./radio-group)。
-- 一组多选项：用[复选框组](./checkbox-group)，它管值的汇总。
-
-## 特性
-
-- 三态：选中、未选中、半选（`indeterminate`）。
-- `hidden-input` 承担表单参与，`name` / `value` 照常提交。
-- `readOnly` 与 `disabled` 不同：只读仍能聚焦、仍被提交。
-
-## 示例
-
-### 基础用法
+## 用法
 
 不传 checked 即为非受控
 
@@ -58,6 +47,8 @@ import { XhCheckbox } from "@xihan-ui/vue";
   </button>
 </xh-checkbox>
 ```
+
+## 示例
 
 ### 三态
 
@@ -507,6 +498,33 @@ function onSubmit(event: Event) {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 表单里的单项同意、单项开关，且要随表单提交。
+- 需要表达"部分选中"（全选框对应下面几项只勾了一部分）。
+
+### 何时不用
+
+- 开关立即生效、且是一项设置：用[开关](./switch)。
+- 几个互斥项里选一个：用[单选组](./radio-group)。
+- 一组多选项：用[复选框组](./checkbox-group)，它管值的汇总。
+
+### 特性
+
+- 三态：选中、未选中、半选（`indeterminate`）。
+- `hidden-input` 承担表单参与，`name` / `value` 照常提交。
+- `readOnly` 与 `disabled` 不同：只读仍能聚焦、仍被提交。
+- 控制盒保持实体：未选中使用 M1 实体底、明确控制边界、顶部高光和接触影；选中与半选使用满足
+  控件边界对比的实心语气色，不使用玻璃或 backdrop。
+- 勾与半选横杠共用随盒尺寸缩放的光学盒；indicator 常驻，以 120ms 的 opacity / scale 切换，
+  不靠增删节点造成布局抖动。自定义 indicator 插槽走同一状态动画。
+- 悬停方框或可见标签都会让控制盒响应；按下撤掉海拔并轻压，readOnly / disabled 不产生可操作假反馈。
+- 三尺寸和 compact 密度同时调整控制盒、勾形、标签字号与间距；RTL 下方框仍在行内起点，长标签不会压扁方框。
+- 明暗、增强对比和 forced-colors 都保留未选中边界、三态字形与键盘焦点；forced-colors 下 disabled
+  交给系统 `GrayText`，不再叠加半透明。
+
 ## 产物
 
 | 层 | 值 |
@@ -614,6 +632,8 @@ function onSubmit(event: Event) {
 
 默认皮肤 `@xihan-ui/styles/checkbox.css` 按部件选择：`[data-scope="checkbox"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ## 数据属性
 
 由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
@@ -637,21 +657,46 @@ function onSubmit(event: Event) {
 | `text` | `data-invalid` | ''（条件成立时才出现） |
 | `text` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-checkbox-bg` · `--xh-checkbox-bg-checked` · `--xh-checkbox-border` · `--xh-checkbox-border-checked` · `--xh-checkbox-border-invalid` · `--xh-checkbox-fg` · `--xh-checkbox-fg-invalid` · `--xh-checkbox-icon-size` · `--xh-checkbox-indicator-fg` · `--xh-checkbox-label-fg` · `--xh-checkbox-label-fg-disabled` · `--xh-checkbox-label-font-size` · `--xh-checkbox-label-gap` · `--xh-checkbox-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-checkbox-bg` | `root` | `background-color` | `default` | `--xh-material-soft-bg` | checkbox 的 root 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-bg-checked` | `root` | `background-color` | `state=checked`<br>`state=indeterminate` | `--xh-_checkbox-accent` | checkbox 的 root 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-border` | `root` | `border`<br>`border-color` | `contrast=more`<br>`default`<br>`state=unchecked`<br>`where([data-contrast='more'])` | `--xh-border-control`<br>`--xh-border-strong` | checkbox 的 root 部件 border、border-color 覆盖槽。 |
+| `--xh-checkbox-border-checked` | `root` | `border-color` | `state=checked`<br>`state=indeterminate` | `--xh-_checkbox-accent` | checkbox 的 root 部件 border-color 覆盖槽。 |
+| `--xh-checkbox-border-hover` | `label`<br>`root` | `border-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-readonly])`<br>`readonly` | `--xh-_checkbox-accent` | checkbox 的 label、root 部件 border-color 覆盖槽。 |
+| `--xh-checkbox-border-invalid` | `root` | `border-color` | `invalid`<br>`state=checked`<br>`state=indeterminate` | `--xh-border-invalid` | checkbox 的 root 部件 border-color 覆盖槽。 |
+| `--xh-checkbox-fg` | `root` | `color` | `default` | `--xh-_checkbox-on-accent` | checkbox 的 root 部件 color 覆盖槽。 |
+| `--xh-checkbox-fg-invalid` | `label`<br>`text` | `color` | `invalid` | `--xh-fg-danger` | checkbox 的 label、text 部件 color 覆盖槽。 |
+| `--xh-checkbox-highlight` | `root` | `background-image` | `default` | `--xh-material-soft-highlight` | checkbox 的 root 部件 background-image 覆盖槽。 |
+| `--xh-checkbox-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_checkbox-glyph` | checkbox 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-checkbox-indicator-fg` | `indicator` | `background-color` | `state=indeterminate` | `--xh-_checkbox-on-accent` | checkbox 的 indicator 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | checkbox 的 label 部件 color 覆盖槽。 |
+| `--xh-checkbox-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | checkbox 的 label 部件 color 覆盖槽。 |
+| `--xh-checkbox-label-font-size` | `label` | `font-size` | `default` | `--xh-_checkbox-label-font-size` | checkbox 的 label 部件 font-size 覆盖槽。 |
+| `--xh-checkbox-label-gap` | `label` | `gap` | `default` | `--xh-_checkbox-label-gap` | checkbox 的 label 部件 gap 覆盖槽。 |
+| `--xh-checkbox-label-leading` | `label` | `line-height` | `default` | `--xh-leading-normal` | checkbox 的 label 部件 line-height 覆盖槽。 |
+| `--xh-checkbox-radius` | `root` | `border-radius` | `default` | `--xh-shape-inset` | checkbox 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-checkbox-shadow` | `root` | `box-shadow` | `default` | `--xh-_checkbox-shadow-rest` | checkbox 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-checkbox-shadow-disabled` | `root` | `box-shadow` | `disabled` | `none` | checkbox 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-checkbox-shadow-hover` | `label`<br>`root` | `box-shadow` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-readonly])`<br>`readonly` | `--xh-_checkbox-shadow-hover` | checkbox 的 label、root 部件 box-shadow 覆盖槽。 |
+| `--xh-checkbox-shadow-pressed` | `root` | `box-shadow` | `active`<br>`disabled`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`readonly` | `none` | checkbox 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-checkbox-shadow-readonly` | `root` | `box-shadow` | `disabled`<br>`not([data-disabled])`<br>`readonly` | `none` | checkbox 的 root 部件 box-shadow 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
-`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `border-color` · `box-shadow` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ## 响应式
 
-皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ## 组合
 
@@ -661,6 +706,12 @@ function onSubmit(event: Event) {
 
 - 标签点得动——把文字放进 `label` 部件，别只让方框可点。
 - 半选只用来表达"下级部分选中"，不要拿它当第三种业务状态。
+- 自定义选中底时要同时验证勾形与底、控制盒与页面、聚焦环与控制盒三组对比，六种 tone 都不能只靠色相区分。
+
+### 当前边界
+
+- Checkbox 当前没有 `loading` 状态、`aria-busy` 或在途 indicator 合同。异步提交需要由业务保留受控值并在旁边
+  显式呈现进度；后续若增加 loading，必须连同是否允许取消、错误暴露和三端事件一起设计，不能只补一枚 spinner。
 
 ## 反模式
 

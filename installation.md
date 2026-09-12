@@ -31,7 +31,7 @@ pnpm add @xihan-ui/code-highlight
 
 除了从 npm 装，还有两条本地路径：
 
-1. **克隆仓库直接开发**——构建库包后把文档站跑起来，126 个组件的示例都是真实组件；
+1. **克隆仓库直接开发**——构建库包后把文档站跑起来，128 个组件的示例都是真实组件；
 2. **本地构建后链接进你的项目**——想跟着仓库最新改动走的话走这条。
 
 ::: warning
@@ -74,7 +74,7 @@ pnpm lint         # oxlint + eslint + stylelint
 pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
 pnpm boundaries   # 分层依赖门禁
-pnpm gate         # 105 项结构门禁
+pnpm gate         # 111 项结构门禁
 pnpm size         # 产物体积棘轮
 ```
 
@@ -110,15 +110,20 @@ cd XiHan.UI/ui && pnpm build
 
 ```ts
 // main.ts
-import { createThemeController } from "@xihan-ui/tokens/runtime";
+import { createVisualEnvironmentController } from "@xihan-ui/tokens/runtime";
 import { createApp } from "vue";
 import App from "./App.vue";
 
 // 皮肤入口自带层序声明与令牌，只引这一行；单独引 tokens.css 是「只要令牌不要皮肤」那条路
 import "@xihan-ui/styles";
 
-// 把主题的五个属性写到 <html> 上，并持久化用户偏好
-createThemeController({ storageKey: "app-theme" });
+// 把七轴视觉环境写到 <html> 上，并显式处理持久化失败
+createVisualEnvironmentController({
+  root: document.documentElement,
+  storageKey: "app-visual-environment",
+  onStorageError: detail => console.error("视觉偏好持久化失败", detail),
+  initial: { mode: "system", motion: "system", transparency: "system" },
+});
 
 createApp(App).mount("#app");
 ```
@@ -142,14 +147,19 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@
 ## 接入原生 / 非 Vue 项目
 
 ```ts
-import { createThemeController } from "@xihan-ui/tokens/runtime";
+import { createVisualEnvironmentController } from "@xihan-ui/tokens/runtime";
 import { defineXhElements } from "@xihan-ui/web-components/define";
 
 import "@xihan-ui/styles";
 
 // 注册全部 xh-* 元素。主入口 import 本身不注册，必须显式调用这一行
 defineXhElements();
-createThemeController({ storageKey: "app-theme" });
+createVisualEnvironmentController({
+  root: document.documentElement,
+  storageKey: "app-visual-environment",
+  onStorageError: detail => console.error("视觉偏好持久化失败", detail),
+  initial: { mode: "system", motion: "system", transparency: "system" },
+});
 ```
 
 之后在 HTML 里直接写标签，结构由你手写、用 `data-xh-part` 标出角色节点：
@@ -220,6 +230,8 @@ if (import.meta.env.DEV) {
 每个 scope 只探一次（探测要读计算样式，逐实例探是真实的强制样式重算），
 用 `MutationObserver` 接住后续进来的节点，返回值是停止函数。全量引入的人开着它也没有额外产出。
 
+传入 `root` 时，元素品牌、计算样式和 MutationObserver 全部取自该 root 所属的 Window，因此 iframe 中的按需皮肤可以独立检查；即使顶层没有 DOM globals，有效的显式 root 仍可工作。显式 root 没有活动 Window，或所属 Window 不提供 MutationObserver 时会直接抛错，不会只扫一次后静默停止持续检查。SSR 中不传 root 仍返回空停止函数。
+
 令牌的机读形式也可直接取用，用于生成 Figma 变量、Tailwind 主题或别的产物：
 
 ```ts
@@ -270,7 +282,7 @@ import "@xihan-ui/styles/index.unlayered.css";
 
 ## 服务端渲染
 
-- 主题运行时在 `document` / `window` 缺席时自动走 SSR 分支：不读媒体查询、不写 DOM，一律回退到浅色与基线对比度。要让首屏不闪，请在服务端把 `data-theme` / `data-brand` / `data-density` / `data-contrast` / `dir` 五个属性直接渲染到 `<html>` 上。
+- 视觉环境运行时在 `document` / `window` 缺席时自动走 SSR 分支：不读媒体查询、不写 DOM，使用七轴基线。要让首屏不闪，请在服务端把 `data-theme` / `data-brand` / `data-density` / `data-contrast` / `data-motion` / `data-transparency` / `dir` 七个属性直接渲染到 `<html>` 上。
 - 自定义元素在 JS 到达之前不会升级。`@xihan-ui/styles` 里的 `undefined.css` 专门处理这段空窗：用 `:not(:defined)` 选中作者写的 `data-xh-part`，先把浮层族的 `content` / `positioner` / `backdrop` / `viewport` 收起来，避免内容以裸文本堆在页面流里被读屏和搜索引擎当作正文。
 
 ## 下一步

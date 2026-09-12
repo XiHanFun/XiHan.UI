@@ -98,6 +98,37 @@ const visual = useBackground({ effect: fluidEffect });
 
 Vue 子入口**不替你注册**内置效果。要在模板里写字符串名（`v-background="'aurora'"`、`effect="nebula"`），先在应用入口调一次 `registerBuiltinEffects()` 或 `registerEffects([...])`。
 
+## 在 React 里用
+
+React 侧的适配同样在**单独的子入口** `@xihan-ui/react/backgrounds`，两种用法：
+
+```tsx
+import { fluidEffect, nebulaEffect } from "@xihan-ui/backgrounds";
+import { useBackground, XhBackground } from "@xihan-ui/react/backgrounds";
+
+function Cover() {
+  const visual = useBackground({ effect: fluidEffect });
+
+  return (
+    <>
+      {/* 1. 组件：children 浮在效果之上，画布 pointer-events: none 不挡交互 */}
+      <XhBackground effect={nebulaEffect} params={{ density: 0.8 }}>
+        <h1>标题浮在效果上</h1>
+      </XhBackground>
+
+      {/* 2. 钩子：自己拿画面实例，接自定义调度或调参面板 */}
+      <div ref={visual.ref} />
+    </>
+  );
+}
+```
+
+没有 Vue 那份的第三种。`v-background` 靠指令这层介质挂到别人的元素上，React 没有这层介质——把 `useBackground` 返回的 `ref` 挂到元素上就是同一件事，挂到别人的组件上也一样，只要那个组件把 `ref` 转给自己的根元素。
+
+`visual.ref` 的身份跨渲染是稳的，直接写 `ref={visual.ref}` 即可；`visual.surface` 是个 ref 对象，读 `.current` 拿画面实例，没有元素挂着时是 `null`。
+
+React 子入口同样**不替你注册**内置效果。要按名字写（`effect="aurora"`），先在应用入口调一次 `registerBuiltinEffects()` 或 `registerEffects([...])`。
+
 ## 在自定义元素里用
 
 同样是单独注册，不引这一行就不会把引擎打进包里：

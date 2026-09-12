@@ -1,67 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/heatmap
 
-# 热力图 `heatmap`
+# Heatmap `热力图`
 
 按网格铺开的强度图：一格是一个观测点，颜色深浅表示它的数值落在第几档。三种形态共用同一套分档、色阶、图例与详情条，只是把格子摊开的方式不同——连续周列的一年日历、按自然月分块的月历、行列由作者给的矩阵。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/heatmap" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/heatmap.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/heatmap" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/heatmap" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/heatmap.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 看一段连续日期上「哪几天多、哪几天少」，以及有没有成片的空档。
-- 看逐月的分布，月与月之间要能对齐着比。
-- 看两条离散坐标交叉出来的强度，比如「星期 × 小时」的活跃度、「品类 × 月份」的销量、相关系数矩阵。
-- 强调节奏与分布，而不是某一格的准确数值。
-
-## 何时不用
-
-- 要挑日期、选区间：用[日历](./calendar)，它才有选中语义与表单出口。
-- 要读准确数字、要排序筛选：用[表格](./table)。
-- 只报一个总量或同比：用[统计数值](./statistic)。
-
-## 特性
-
-- 典型用法是一整年：`calendar` 形态给整年的起止日期，铺出 53 个周列 × 7 行、三百六十几格，一眼看完全年的节奏。下面各条里的取值都是按这个尺度定的。
-- 三种形态由 `variant` 切换，不写即 `calendar`：
-  - `calendar` 连续周列 × 星期行，月份名浮在网格上沿当坐标轴，适合看一整年的节奏；
-  - `month` 按自然月分块，每块是一张真月历，1 号落在它真实的星期几上，适合看逐月的分布——连续周列看不出月界，这是它存在的理由；
-  - `matrix` 行列都由作者用 `rows` / `columns` 给，数据按 `(row, column)` 定位，与日期无关。
-- 矩阵形态的格子两向分开量：宽走 `--xh-heatmap-column-w`、高走 `--xh-heatmap-row-h`，两者都不吃日历那把「一天一个小方块」的 `--xh-heatmap-cell-size`——那把尺是按「一年五十几列」定的，矩阵一行左边还挂着行名，格子照它定高就矮过行名，行高由行名的字定、格子在行里摊成一条。行高不写时是格宽尺的两倍（sm 16px / md 20px / lg 24px），每一档都高过行名那行字；列宽不写时取行高，一格缺省就是正方块。行高不接控件高度那把尺：那把尺是给可点可输的控件在一行里排齐用的，矩阵格子不可交互，接上去密度档一换矩阵就跟着变形。
-- 月份名与星期名跟着 `locale` 走：不给就跟宿主浏览器语言，读不到才落 `en-US`。周首日是另一条，由 `firstDayOfWeek` 定，缺省星期一。
-- 数据收两种形状之一，按有没有 `date` 分辨：日期形态写 `{ date, count }`，矩阵形态写 `{ row, column, value }`。同一格出现多次即累加。
-- 日期只认 ISO 的 `YYYY-MM-DD` 串，加减以 UTC 计，不引日期库。
-- 区间起点不在周首日时会错列，两种日期形态的口径不同：`calendar` 是「排在起点星期几之前的那几行整行往后错一列」，`month` 是「本月首格错到 1 号真实的星期几」。两者都不铺没有日期的占位格。
-- 月份名落在「这个月头一天所在的那一列」上：一列跨两个月时整列归后一个月。1 号极少正好是周首日，按「列里头一天所在的月」分段会让十二个月份名里有九个整体晚一列，读者顺着「2 月」往下看反而错过月初那几天。第 0 列是唯一的例外，它按区间首日所在的月归——起点落在月末（`2024-01-29` 起的近 365 天就是）时那一列只露出上个月末尾几天，跟着末一天走会让头一个月一个名字都不出。代价是这种区间里第二个月的名字排在第 1 列，比它 1 号所在的第 0 列晚一列。
-- 一整年放不下一屏时网格自己横着滚，行首那一列星期名钉在起始缘不跟着走（矩阵形态的行名同理）。钉住的那一列自带 `--xh-bg-surface` 的底色，整块摆在别的底色上（卡片、分区）时要改写 `--xh-heatmap-bg`，否则那一列会是一块补丁。 月历形态例外：月块是换行排开的，宽度永远不超过容器，那一档不当滚动容器，也就没有钉住的那一列。
-- 三张网格的推导都是纯函数（`buildHeatmapGrid` / `buildHeatmapMonthGrid` / `buildHeatmapMatrixGrid`），可以脱离组件单独调用来预生成数据。
-- 格距四周一样宽：数据行的高度钉死成格子的边长，不由行首那一列星期名的字撑开。三档尺寸的横向与纵向格距都是「聚焦环偏移 + 环宽」那一个值（缺省 4px），格子 sm 8px / md 10px / lg 12px。
-- 行首那一列星期名隔行画：只留第 0/2/4/6 行之外的那三行——周首日是星期一时是「二 / 四 / 六」，是星期日时是「一 / 三 / 五」。一行只有 10px 高而字是 12px，七个挨着写会上下叠在一起；隔一行之后每个留下来的字有两行的高度可用。三档尺寸一视同仁，不随档位变。要七行全画就把 `--xh-heatmap-week-day-skip` 改成一个看得见的颜色，比如 `var(--xh-heatmap-label-fg, var(--xh-fg-subtle))`（此时 `sm` 档会挨得很紧）。跳过的是字不是盒子：那几行只是字不上色，节点、文字、盒子与底色都还在——钉住那一列的实色底不能缺四行，缺了格子就从行首透出来，那四行也会不再参与命中测试，鼠标划过行首弹出的是看不见那一格的详情条。
-- 色阶对照条两端各写一个词（缺省 `Less` `More`），一排色块自己说不出哪头是多。文案走 `translations.legendLow` / `legendHigh`，部件是 `legend-label`（`value` 写 `low` 或 `high`）；Vue 侧不写默认插槽时两端自动铺出来，WC 侧从元素的 `legendText` 属性取这两个字。
-- 配色有两条路，缺省是品牌色。一条是 `tone` 语气轴（brand / neutral / success / warning / danger / info），与其余组件共用；另一条是 `palette` 色板轴（green / blue / orange / purple / red / gray），直接按颜色点名。色板只定色阶满档那一端的实心底，0 档的空格底与中间各档的兑法一概不动，也不参与语气层的悬停 / 淡底 / 前景派生——它是装饰性的一条轴，不是第四条语义轴。两个都写时听色板的：色板指名了一个具体颜色，语气只是推得出一个颜色。
-- 档数可调：不给 `thresholds` 就按网格内的最大值均分，给了就以它为准。
-- 要在图外报「总天数 / 空白天数与占比 / 最大值 / 平均值」不必自己再遍历一遍数据：三张网格都带 `max`（最大值）、`total`（总和）与 `emptyCount`（值为 0 的格子数），格子总数从 `cells.size` 读。`emptyCount` 数的是值为 0 的格子：没有数据的日子与写了 0 的日子都算。它不是「色阶第 0 档的格子数」——不给 `thresholds` 时首个下界恒为 1，两个数恰好相等；给了 `thresholds` 之后第 0 档还会收进低于首个下界的那些非零值，两个数不再相等。
-- 悬停或键盘聚焦到某一格就显示详情条，内容由作者写；组件只给身份、位置与这一格的数据（日期或行列、原始值、档位、在色阶里的位置）。
-- 语气与尺寸两轴与其余组件同源；色板轴是热力图独有的。
-- 两个适配器的作者侧写法不同，最终 DOM 一致：Vue 侧不写默认插槽就按形态自动铺开整棵树，另有 `cell` 插槽往每格里塞内容（三种形态都铺，载荷是日历那一格或矩阵那一格，用 `'date' in cell` 分辨）、`tooltip` 插槽写详情条的内容（写了它才铺出详情条）；Web Components 侧元素不生成任何结构，各部件都要作者写进标记，元素只负责按部件名打属性。
-- Web Components 侧铺一整年不必手写三百多个格子：`<xh-heatmap>` 上有 `grid` / `monthGrid` / `matrixGrid` 三个只读属性，分别对应三种形态推导出来的网格（行、列、月份段、星期名、档位标尺都在里面），照着循环生成节点即可——元素一连上就读得到，接线排在这之后，当场铺出来的格子赶得上。每读一次都重算一遍整张网格，取一次存下来用。两个插槽是 Vue 专属，WC 侧靠 `cell-active` 事件自己填详情条。
-- 自己写默认插槽铺网格时，锚点从载荷里的 `focusedCell` / `anchorCell` 读、用 `setFocusedCell` 挪：这一组三形态通用，带 `Date` 的那一组在矩阵形态下恒为 null。
-
-从别的库过来的对号入座表。左边一列是那些库写在 `color-theme` 上的取值，右边两列是本库的两条路——写哪一条都行，同一行的两种写法在缺省主题下产出同一个颜色（`gray` 是唯一的例外，见表下那条）：
-
-| 别处的 `color-theme` | 色板轴（推荐） | 语气轴 | 满档实心底取的原语 |
-| --- | --- | --- | --- |
-| `green` | `palette="green"` | `tone="success"` | `--xh-color-success-600` |
-| `blue` | `palette="blue"` | `tone="info"` | `--xh-color-info-600` |
-| `orange` | `palette="orange"` | `tone="warning"` | `--xh-color-warning-600` |
-| `purple` | `palette="purple"` | 语气轴里没有紫 | `--xh-color-purple-600` |
-| `red` | `palette="red"` | `tone="danger"` | `--xh-color-danger-600` |
-| （多数库没有） | `palette="gray"` | `tone="neutral"` | `--xh-color-neutral-600`；深色态换 `--xh-color-neutral-450` |
-| （多数库的缺省是绿） | 不写 | 不写 | `--xh-bg-brand`，跟着使用者的品牌色走 |
-
-- 灰是唯一按主题换档的一族：五个彩色族的 600 档明度在 0.577–0.705，深色态的空格底（`neutral-800`，明度 0.269）离得够远；中性 600 档只有 0.439，五档摊下来每档只差 0.0425、相邻两档对比度 1.16–1.20，等于看不出分档。因此深色态改取 `neutral-450`（明度 0.65），步长回到 0.095、相邻两档 1.42–1.50，与彩色族齐平；不取更亮的 `neutral-400` 是因为高对比档的 `border-default` 正是那一档，满档格子的描边会与底色同色。`tone="neutral"` 没有这层照顾，要灰色热力图请写 `palette="gray"`。
-- 这七种之外的任何颜色一直都可以直接给：改写 `--xh-heatmap-ink`（满档的实心底）与 `--xh-heatmap-empty`（0 档的空格底），中间各档由这两端在 oklab 里兑出来。这个口子的优先级最高，色板与语气都压不过它。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一整年铺成周列 × 星期行的方格阵，颜色深浅表示当天数值落在第几档
 
@@ -190,6 +141,8 @@ const activity = buildYear(2024);
   root.append(monthRow, gridEl, legend);
 </script>
 ```
+
+## 示例
 
 ### 语气换色
 
@@ -1592,6 +1545,63 @@ const stats = computed(() => {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 看一段连续日期上「哪几天多、哪几天少」，以及有没有成片的空档。
+- 看逐月的分布，月与月之间要能对齐着比。
+- 看两条离散坐标交叉出来的强度，比如「星期 × 小时」的活跃度、「品类 × 月份」的销量、相关系数矩阵。
+- 强调节奏与分布，而不是某一格的准确数值。
+
+### 何时不用
+
+- 要挑日期、选区间：用[日历](./calendar)，它才有选中语义与表单出口。
+- 要读准确数字、要排序筛选：用[表格](./table)。
+- 只报一个总量或同比：用[统计数值](./statistic)。
+
+### 特性
+
+- 典型用法是一整年：`calendar` 形态给整年的起止日期，铺出 53 个周列 × 7 行、三百六十几格，一眼看完全年的节奏。下面各条里的取值都是按这个尺度定的。
+- 三种形态由 `variant` 切换，不写即 `calendar`：
+  - `calendar` 连续周列 × 星期行，月份名浮在网格上沿当坐标轴，适合看一整年的节奏；
+  - `month` 按自然月分块，每块是一张真月历，1 号落在它真实的星期几上，适合看逐月的分布——连续周列看不出月界，这是它存在的理由；
+  - `matrix` 行列都由作者用 `rows` / `columns` 给，数据按 `(row, column)` 定位，与日期无关。
+- 矩阵形态的格子两向分开量：宽走 `--xh-heatmap-column-w`、高走 `--xh-heatmap-row-h`，两者都不吃日历那把「一天一个小方块」的 `--xh-heatmap-cell-size`——那把尺是按「一年五十几列」定的，矩阵一行左边还挂着行名，格子照它定高就矮过行名，行高由行名的字定、格子在行里摊成一条。行高不写时是格宽尺的两倍（sm 16px / md 20px / lg 24px），每一档都高过行名那行字；列宽不写时取行高，一格缺省就是正方块。行高不接控件高度那把尺：那把尺是给可点可输的控件在一行里排齐用的，矩阵格子不可交互，接上去密度档一换矩阵就跟着变形。
+- 月份名与星期名跟着 `locale` 走：不给就跟宿主浏览器语言，读不到才落 `en-US`。周首日是另一条，由 `firstDayOfWeek` 定，缺省星期一。
+- 数据收两种形状之一，按有没有 `date` 分辨：日期形态写 `{ date, count }`，矩阵形态写 `{ row, column, value }`。同一格出现多次即累加。
+- 日期只认 ISO 的 `YYYY-MM-DD` 串，加减以 UTC 计，不引日期库。
+- 区间起点不在周首日时会错列，两种日期形态的口径不同：`calendar` 是「排在起点星期几之前的那几行整行往后错一列」，`month` 是「本月首格错到 1 号真实的星期几」。两者都不铺没有日期的占位格。
+- 月份名落在「这个月头一天所在的那一列」上：一列跨两个月时整列归后一个月。1 号极少正好是周首日，按「列里头一天所在的月」分段会让十二个月份名里有九个整体晚一列，读者顺着「2 月」往下看反而错过月初那几天。第 0 列是唯一的例外，它按区间首日所在的月归——起点落在月末（`2024-01-29` 起的近 365 天就是）时那一列只露出上个月末尾几天，跟着末一天走会让头一个月一个名字都不出。代价是这种区间里第二个月的名字排在第 1 列，比它 1 号所在的第 0 列晚一列。
+- 一整年放不下一屏时网格自己横着滚，行首那一列星期名钉在起始缘不跟着走（矩阵形态的行名同理）。钉住的那一列自带 `--xh-bg-surface` 的底色，整块摆在别的底色上（卡片、分区）时要改写 `--xh-heatmap-bg`，否则那一列会是一块补丁。 月历形态例外：月块是换行排开的，宽度永远不超过容器，那一档不当滚动容器，也就没有钉住的那一列。
+- 三张网格的推导都是纯函数（`buildHeatmapGrid` / `buildHeatmapMonthGrid` / `buildHeatmapMatrixGrid`），可以脱离组件单独调用来预生成数据。
+- 格距四周一样宽：数据行的高度钉死成格子的边长，不由行首那一列星期名的字撑开。三档尺寸的横向与纵向格距是同一个值（缺省 4px），格子 sm 8px / md 10px / lg 12px。
+- 行首那一列星期名隔行画：只留第 0/2/4/6 行之外的那三行——周首日是星期一时是「二 / 四 / 六」，是星期日时是「一 / 三 / 五」。一行只有 10px 高而字是 12px，七个挨着写会上下叠在一起；隔一行之后每个留下来的字有两行的高度可用。三档尺寸一视同仁，不随档位变。要七行全画就把 `--xh-heatmap-week-day-skip` 改成一个看得见的颜色，比如 `var(--xh-heatmap-label-fg, var(--xh-fg-subtle))`（此时 `sm` 档会挨得很紧）。跳过的是字不是盒子：那几行只是字不上色，节点、文字、盒子与底色都还在——钉住那一列的实色底不能缺四行，缺了格子就从行首透出来，那四行也会不再参与命中测试，鼠标划过行首弹出的是看不见那一格的详情条。
+- 色阶对照条两端各写一个词（缺省 `Less` `More`），一排色块自己说不出哪头是多。文案走 `translations.legendLow` / `legendHigh`，部件是 `legend-label`（`value` 写 `low` 或 `high`）；Vue 侧不写默认插槽时两端自动铺出来，WC 侧从元素的 `legendText` 属性取这两个字。
+- 配色有两条路，缺省是品牌色。一条是 `tone` 语气轴（brand / neutral / success / warning / danger / info），与其余组件共用；另一条是 `palette` 色板轴（green / blue / orange / purple / red / gray），直接按颜色点名。色板只定色阶满档那一端的实心底，0 档的空格底与中间各档的兑法一概不动，也不参与语气层的悬停 / 淡底 / 前景派生——它是装饰性的一条轴，不是第四条语义轴。两个都写时听色板的：色板指名了一个具体颜色，语气只是推得出一个颜色。
+- 档数可调：不给 `thresholds` 就按网格内的最大值均分，给了就以它为准。
+- 要在图外报「总天数 / 空白天数与占比 / 最大值 / 平均值」不必自己再遍历一遍数据：三张网格都带 `max`（最大值）、`total`（总和）与 `emptyCount`（值为 0 的格子数），格子总数从 `cells.size` 读。`emptyCount` 数的是值为 0 的格子：没有数据的日子与写了 0 的日子都算。它不是「色阶第 0 档的格子数」——不给 `thresholds` 时首个下界恒为 1，两个数恰好相等；给了 `thresholds` 之后第 0 档还会收进低于首个下界的那些非零值，两个数不再相等。
+- 悬停或键盘聚焦到某一格就显示详情条，内容由作者写；组件只给身份、位置与这一格的数据（日期或行列、原始值、档位、在色阶里的位置）。
+- 语气与尺寸两轴与其余组件同源；色板轴是热力图独有的。
+- 两个适配器的作者侧写法不同，最终 DOM 一致：Vue 侧不写默认插槽就按形态自动铺开整棵树，另有 `cell` 插槽往每格里塞内容（三种形态都铺，载荷是日历那一格或矩阵那一格，用 `'date' in cell` 分辨）、`tooltip` 插槽写详情条的内容（写了它才铺出详情条）；Web Components 侧元素不生成任何结构，各部件都要作者写进标记，元素只负责按部件名打属性。
+- Web Components 侧铺一整年不必手写三百多个格子：`<xh-heatmap>` 上有 `grid` / `monthGrid` / `matrixGrid` 三个只读属性，分别对应三种形态推导出来的网格（行、列、月份段、星期名、档位标尺都在里面），照着循环生成节点即可——元素一连上就读得到，接线排在这之后，当场铺出来的格子赶得上。每读一次都重算一遍整张网格，取一次存下来用。两个插槽是 Vue 专属，WC 侧靠 `cell-active` 事件自己填详情条。
+- 自己写默认插槽铺网格时，锚点从载荷里的 `focusedCell` / `anchorCell` 读、用 `setFocusedCell` 挪：这一组三形态通用，带 `Date` 的那一组在矩阵形态下恒为 null。
+
+从别的库过来的对号入座表。左边一列是那些库写在 `color-theme` 上的取值，右边两列是本库的两条路——写哪一条都行，同一行的两种写法在缺省主题下产出同一个颜色（`gray` 是唯一的例外，见表下那条）：
+
+| 别处的 `color-theme` | 色板轴（推荐） | 语气轴 | 满档实心底取的原语 |
+| --- | --- | --- | --- |
+| `green` | `palette="green"` | `tone="success"` | `--xh-color-success-600` |
+| `blue` | `palette="blue"` | `tone="info"` | `--xh-color-info-600` |
+| `orange` | `palette="orange"` | `tone="warning"` | `--xh-color-warning-600` |
+| `purple` | `palette="purple"` | 语气轴里没有紫 | `--xh-color-purple-600` |
+| `red` | `palette="red"` | `tone="danger"` | `--xh-color-danger-600` |
+| （多数库没有） | `palette="gray"` | `tone="neutral"` | `--xh-color-neutral-600`；深色态换 `--xh-color-neutral-450` |
+| （多数库的缺省是绿） | 不写 | 不写 | `--xh-bg-brand`，跟着使用者的品牌色走 |
+
+- 灰是唯一按主题换档的一族：五个彩色族的 600 档明度在 0.577–0.705，深色态的空格底（`neutral-800`，明度 0.269）离得够远；中性 600 档只有 0.439，五档摊下来每档只差 0.0425、相邻两档对比度 1.16–1.20，等于看不出分档。因此深色态改取 `neutral-450`（明度 0.65），步长回到 0.095、相邻两档 1.42–1.50，与彩色族齐平；不取更亮的 `neutral-400` 是因为高对比档的 `border-default` 正是那一档，满档格子的描边会与底色同色。`tone="neutral"` 没有这层照顾，要灰色热力图请写 `palette="gray"`。
+- 这七种之外的任何颜色一直都可以直接给：改写 `--xh-heatmap-ink`（满档的实心底）与 `--xh-heatmap-empty`（0 档的空格底），中间各档由这两端在 oklab 里兑出来。这个口子的优先级最高，色板与语气都压不过它。
+
 ## 产物
 
 | 层 | 值 |
@@ -1784,11 +1794,46 @@ const stats = computed(() => {
 | `legend-label` | `data-bound` | label.bound |
 | `legend-item` | `data-level` | String(item.level) |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-heatmap-bg` · `--xh-heatmap-block-gap` · `--xh-heatmap-block-inner-gap` · `--xh-heatmap-cell-border` · `--xh-heatmap-cell-radius` · `--xh-heatmap-cell-size` · `--xh-heatmap-column-w` · `--xh-heatmap-empty` · `--xh-heatmap-fg` · `--xh-heatmap-font-size` · `--xh-heatmap-gap` · `--xh-heatmap-grid-gap` · `--xh-heatmap-gutter` · `--xh-heatmap-ink` · `--xh-heatmap-label-fg` · `--xh-heatmap-legend-gap` · `--xh-heatmap-py` · `--xh-heatmap-row-gap` · `--xh-heatmap-row-h` · `--xh-heatmap-sticky-layer` · `--xh-heatmap-title-fg` · `--xh-heatmap-tooltip-bg` · `--xh-heatmap-tooltip-fg` · `--xh-heatmap-tooltip-font-size` · `--xh-heatmap-tooltip-layer` · `--xh-heatmap-tooltip-max-w` · `--xh-heatmap-tooltip-px` · `--xh-heatmap-tooltip-py` · `--xh-heatmap-tooltip-radius` · `--xh-heatmap-tooltip-shadow` · `--xh-heatmap-week-day-skip`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-heatmap-bg` | `root`<br>`row-label`<br>`week-day` | `background` | `default` | `--xh-bg-surface` | heatmap 的 root、row-label、week-day 部件 background 覆盖槽。 |
+| `--xh-heatmap-block-gap` | `grid`<br>`root` | `gap` | `variant=month` | `--xh-_heatmap-gutter` | heatmap 的 grid、root 部件 gap 覆盖槽。 |
+| `--xh-heatmap-block-inner-gap` | `month-block` | `gap` | `default` | `--xh-_heatmap-gap` | heatmap 的 month-block 部件 gap 覆盖槽。 |
+| `--xh-heatmap-cell-bg` | `cell`<br>`legend-item` | `background` | `default` | `--xh-_heatmap-ink` | heatmap 的 cell、legend-item 部件 background 覆盖槽。 |
+| `--xh-heatmap-cell-border` | `cell`<br>`legend-item` | `box-shadow` | `default` | `--xh-border-default` | heatmap 的 cell、legend-item 部件 box-shadow 覆盖槽。 |
+| `--xh-heatmap-cell-radius` | `cell`<br>`legend-item` | `border-radius` | `default` | `--xh-shape-inset` | heatmap 的 cell、legend-item 部件 border-radius 覆盖槽。 |
+| `--xh-heatmap-cell-size` | `cell`<br>`legend-item`<br>`month-label`<br>`root`<br>`row`<br>`week-day` | `block-size`<br>`border`<br>`inline-size`<br>`margin-inline-start` | `@media print`<br>`default`<br>`first-child`<br>`level=1`<br>`level=2`<br>`level=3`<br>`size=lg`<br>`size=sm`<br>`variant=month`<br>`week`<br>`week-day` | `--xh-space-2`<br>`--xh-space-2_5`<br>`--xh-space-3` | heatmap 的 cell、legend-item、month-label、root、row、week-day 部件 block-size、border、inline-size、margin-inline-start 覆盖槽。 |
+| `--xh-heatmap-column-w` | `cell`<br>`column-label`<br>`root` | `inline-size` | `default`<br>`variant=matrix` | `--xh-_heatmap-row-h` | heatmap 的 cell、column-label、root 部件 inline-size 覆盖槽。 |
+| `--xh-heatmap-empty` | `cell`<br>`legend-item`<br>`root` | `background` | `default` | `--xh-bg-subtle` | heatmap 的 cell、legend-item、root 部件 background 覆盖槽。 |
+| `--xh-heatmap-fg` | `root` | `color` | `default` | `--xh-fg-muted` | heatmap 的 root 部件 color 覆盖槽。 |
+| `--xh-heatmap-font-size` | `root` | `font-size` | `default` | `--xh-_heatmap-font-size` | heatmap 的 root 部件 font-size 覆盖槽。 |
+| `--xh-heatmap-gap` | `root` | `gap` | `default` | `--xh-space-2` | heatmap 的 root 部件 gap 覆盖槽。 |
+| `--xh-heatmap-grid-gap` | `grid` | `gap` | `default` | `--xh-_heatmap-gap` | heatmap 的 grid 部件 gap 覆盖槽。 |
+| `--xh-heatmap-gutter` | `grid`<br>`root`<br>`row-label`<br>`week-day` | `gap`<br>`inline-size`<br>`scroll-padding-inline-start` | `default`<br>`size=sm`<br>`variant=month` | `--xh-space-6`<br>`--xh-space-8` | heatmap 的 grid、root、row-label、week-day 部件 gap、inline-size、scroll-padding-inline-start 覆盖槽。 |
+| `--xh-heatmap-ink` | `cell`<br>`legend-item`<br>`root` | `background` | `default`<br>`is([data-theme='dark'] *, [data-theme='dark'])`<br>`palette=blue`<br>`palette=gray`<br>`palette=green`<br>`palette=orange`<br>`palette=purple`<br>`palette=red`<br>`theme=dark`<br>`tone` | `--xh-_tone`<br>`--xh-bg-brand`<br>`--xh-color-danger-600`<br>`--xh-color-info-600`<br>`--xh-color-neutral-450`<br>`--xh-color-neutral-600`<br>`--xh-color-purple-600`<br>`--xh-color-success-600`<br>`--xh-color-warning-600` | heatmap 的 cell、legend-item、root 部件 background 覆盖槽。 |
+| `--xh-heatmap-label-fg` | `column-label`<br>`legend`<br>`month-label`<br>`root`<br>`row-label`<br>`week-day` | `color` | `default`<br>`variant=month`<br>`week-day=0`<br>`week-day=2`<br>`week-day=4`<br>`week-day=6` | `--xh-fg-subtle` | heatmap 的 column-label、legend、month-label、root、row-label、week-day 部件 color 覆盖槽。 |
+| `--xh-heatmap-legend-gap` | `legend` | `gap` | `default` | `--xh-_heatmap-gap` | heatmap 的 legend 部件 gap 覆盖槽。 |
+| `--xh-heatmap-py` | `root` | `padding-block` | `default` | `--xh-_heatmap-gap` | heatmap 的 root 部件 padding-block 覆盖槽。 |
+| `--xh-heatmap-row-gap` | `row` | `gap` | `default` | `--xh-_heatmap-gap` | heatmap 的 row 部件 gap 覆盖槽。 |
+| `--xh-heatmap-row-h` | `cell`<br>`column-label`<br>`root` | `block-size`<br>`inline-size` | `default`<br>`size=lg`<br>`size=sm`<br>`variant=matrix` | `--xh-space-4`<br>`--xh-space-5`<br>`--xh-space-6` | heatmap 的 cell、column-label、root 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-heatmap-sticky-layer` | `row-label`<br>`week-day` | `z-index` | `default` | `1` | heatmap 的 row-label、week-day 部件 z-index 覆盖槽。 |
+| `--xh-heatmap-title-fg` | `month-label`<br>`root` | `color` | `variant=month` | `--xh-fg-default` | heatmap 的 month-label、root 部件 color 覆盖槽。 |
+| `--xh-heatmap-tooltip-bg` | `tooltip` | `background` | `default` | `--xh-fg-default` | heatmap 的 tooltip 部件 background 覆盖槽。 |
+| `--xh-heatmap-tooltip-fg` | `tooltip` | `color` | `default` | `--xh-bg-surface` | heatmap 的 tooltip 部件 color 覆盖槽。 |
+| `--xh-heatmap-tooltip-font-size` | `tooltip` | `font-size` | `default` | `--xh-text-caption-size` | heatmap 的 tooltip 部件 font-size 覆盖槽。 |
+| `--xh-heatmap-tooltip-layer` | `tooltip` | `z-index` | `default` | `2` | heatmap 的 tooltip 部件 z-index 覆盖槽。 |
+| `--xh-heatmap-tooltip-max-w` | `tooltip` | `max-inline-size` | `default` | `--xh-overlay-max-w` | heatmap 的 tooltip 部件 max-inline-size 覆盖槽。 |
+| `--xh-heatmap-tooltip-px` | `tooltip` | `padding-inline` | `default` | `--xh-space-2` | heatmap 的 tooltip 部件 padding-inline 覆盖槽。 |
+| `--xh-heatmap-tooltip-py` | `tooltip` | `padding-block` | `default` | `--xh-space-1` | heatmap 的 tooltip 部件 padding-block 覆盖槽。 |
+| `--xh-heatmap-tooltip-radius` | `tooltip` | `border-radius` | `default` | `--xh-shape-control` | heatmap 的 tooltip 部件 border-radius 覆盖槽。 |
+| `--xh-heatmap-tooltip-shadow` | `tooltip` | `box-shadow` | `default` | `--xh-elevation-floating` | heatmap 的 tooltip 部件 box-shadow 覆盖槽。 |
+| `--xh-heatmap-week-day-skip` | `root`<br>`week-day` | `color` | `week-day=0`<br>`week-day=2`<br>`week-day=4`<br>`week-day=6` | `transparent` | heatmap 的 root、week-day 部件 color 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

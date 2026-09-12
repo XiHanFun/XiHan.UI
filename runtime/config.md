@@ -26,10 +26,17 @@ provideXhConfig({
 | `locale` | `string` | BCP 47 语言标记，喂给日期时间系组件（`calendar` / `date-*` / `time-*`）。它只管这几个组件的日期时间格式，不换文案。 |
 | `translations` | `XhTranslationOverrides` | 按组件 id 分组的文案覆盖。每个组件的可覆盖键就是它 `<Pascal>Translations` 里的字段，组件页的 Props 表里能查到。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | 尺寸档的默认值，落到每个声明了三轴 `size` 的组件上——跑机器的与不跑机器的（按钮、徽标、空状态这些）都算。它与 `data-density` 是两条独立的轴：`size` 换的是控件高度与字号档，密度只收紧间距。`floating-panel` 的 `size` 是一对像素数、同名不同义，不受它影响。 |
-| `portalContainer` | `() => Element \| null` | 浮层默认挂到哪个容器；返回 `null` 即挂 `body`。实例上写了容器的以实例为准。仅 Vue 适配器有——Web Components 是 Light DOM，浮层不搬运。 |
-| `scrollRoot` | `() => HTMLElement \| null` | 真正在滚的那个元素。宿主把滚动搬进内容容器（`body` 本身不滚）时必须给，否则模态浮层加的滚动锁是空操作、背后照样能滚。返回 `null` 即交给滚动锁自行探测。 |
+| `portalContainer` | `() => Element \| null` | 指定同一 Document 内的浮层目标，未配置时由运行时提供默认 Portal。现有组件通常允许返回 `null` 使用默认目标；Vue DatePicker 的严格规则见下文。它不负责切换 Scope，跨 Document 目标会失败。Vue 与 React 可配置；Web Components 暂不公开该配置，Menu 子菜单使用所属 Document 的运行时 Portal 根。 |
+| `scrollRoot` | `() => HTMLElement \| null` | 真正在滚的那个元素。宿主把滚动搬进内容容器（`body` 本身不滚）时必须给，否则模态浮层加的滚动锁是空操作、背后照样能滚。返回 `null` 明确锁定页面，不自动探测后代滚动容器；同一 Document 的并行锁必须指向同一规范化目标。 |
 
 **方向不在这里。** `dir` 走 DOM：写在 `<html dir="rtl">` 或任意祖先上即可，行为层从计算样式读它，皮肤里的 `[dir='rtl']` 规则也跟着走。往这份配置里再加一个 JS 侧的 `dir` 只会多一条对不上的通道。
+
+Vue `DatePicker` 从实际渲染出的根节点建立运行时 Scope：整棵应用挂在 iframe 内时，即使不配置
+`portalContainer`，浮层、LayerRegistry、定位与滚动条也都留在该 iframe Document。显式容器必须属于同一
+Document；该组件需要默认落点时应省略字段，显式 getter 返回 `null` 或其他非 Element 值会失败。组件不会
+为了迁就无效目标改绑来源 Scope，也不会回落主页面的全局 `document`。目标 getter 只会在真实根和同轮
+渲染树中的兄弟 ref 都已提交、浮层真正选择 Portal 落点时读取。初始展开的服务端输出与客户端 hydration
+首帧都先保留来源内结构，运行时就绪后再执行同 Document 搬运。
 
 ## 运行期切语言
 
@@ -88,7 +95,7 @@ provideXhConfig({ translations: { dialog: { close: "Close" } } });
 </script>
 ```
 
-`locale` 与 `size` 两条属性写在标签上就行；`translations` 是对象、`scrollRoot` 是函数，只能走 property。子树里每个元素都沿祖先链解析，跑机器的与不跑机器的一视同仁；`scrollRoot` 由 `xh-dialog` / `xh-drawer` / `xh-image-viewer` 开模态时现读，改了下一次打开就生效。`<xh-config>` 自己不渲染任何东西，也不接线任何角色节点——它是 `display: contents`，布局上完全让开。
+`locale` 与 `size` 两条属性写在标签上就行；`translations` 是对象、`scrollRoot` 是函数，只能走 property。子树里每个元素都沿祖先链解析，跑机器的与不跑机器的一视同仁；`scrollRoot` 由 `xh-dialog` / `xh-drawer` / `xh-image-viewer` / `xh-command` 开模态时现读，改了下一次打开就生效。`<xh-config>` 自己不渲染任何东西，也不接线任何角色节点——它是 `display: contents`，布局上完全让开。
 
 `setXhConfig` 是**整份替换**（不深合并），想改一处就把整份拿去改；`<xh-config>` 之间以及它与全局那份之间才是逐键合并。
 
@@ -102,3 +109,9 @@ provideXhConfig({ translations: { dialog: { close: "Close" } } });
 | Semi Design `<LocaleProvider>` | `provideXhConfig()` 的 `locale` 与 `translations` |
 
 **主题不在这里。** 那几家的 ConfigProvider 同时管主题，这里的主题是 CSS 令牌层的事：换主题是改 CSS 自定义属性、切 `data-theme` 这类属性，跟着 DOM 继承走，局部主题天然可嵌套，与这份配置无关。
+
+Vue 与 React 的浮层搬到 Portal 时，每个实例会把逻辑来源最近声明的 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency` 和 `dir` 投影到自己的无盒壳，并复制来源解析出的 CSS 自定义属性；共享 Portal 根不带这些属性。同一落点里的两个局部主题因此互不覆盖。来源没有声明的轴与变量继续继承显式 `portalContainer`，普通计算样式不会被复制。
+
+Web Components 的普通声明式浮层仍在 Light DOM 原位。多级 Menu 是明确例外：展开的 submenu positioner 会进入所属 Document 的运行时 Portal，以免父菜单的磨砂采样建立 fixed 包含块；它同样使用独占无盒壳桥接上述视觉轴，关闭或断连后恢复作者原位置。
+
+`shape` 是组件自身形态，不是主题环境轴。系统 `prefers-reduced-transparency` 媒体路径在同一浏览器中天然同时作用于来源与 Portal；`data-transparency="reduce"` 是同源的显式视觉轴，令牌层会在该局部范围将材质实体化并由实例壳继承，业务皮肤也可消费它扩展自己的非材质降级。

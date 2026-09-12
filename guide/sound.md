@@ -368,6 +368,43 @@ import { vSound } from "@xihan-ui/vue/sound";
 
 `@xihan-ui/sound` 是**可选** peer：不装它，主入口一行都不引，应用里不会多出一个音频引擎。
 
+## 在 React 里用
+
+React 侧的适配同样放在**单独的子入口** `@xihan-ui/react/sound`。服务那一层与 Vue 完全同名同形：
+
+```ts
+import { createSoundPlayer, softSoundTheme } from "@xihan-ui/sound";
+import { createDialogService, createToastService } from "@xihan-ui/react";
+import { setSoundPlayer, withDialogSound, withToastSound } from "@xihan-ui/react/sound";
+
+// 换主题、接用户偏好；不设置就用一个默认播放器
+setSoundPlayer(createSoundPlayer({ theme: softSoundTheme, enabled: userPrefs.sound }));
+
+export const toast = withToastSound(createToastService());
+export const dialog = withDialogSound(createDialogService());
+
+toast.success("已保存"); // 视觉 + 听觉，返回值与原服务完全一致
+await dialog.confirm({ title: "删除这条记录？" });
+```
+
+默认映射、逐项改写与 `autoUnlock` 的口径与上面那张表一模一样——两侧包的是同一份语义。
+
+给单个元素配声的那一份不一样：指令是 Vue 独有的介质，React 侧对应的是 `useSoundOnPress`，返回一个挂到元素 `ref` 上的回调：
+
+```tsx
+import { useSoundOnPress } from "@xihan-ui/react/sound";
+
+<button ref={useSoundOnPress()}>提交</button>
+<button ref={useSoundOnPress("send")}>发送</button>
+<div ref={useSoundOnPress({ sound: "toggle-on", volume: 0.6 })} />;
+```
+
+监听同样挂在 `click` 上而不是 `pointerdown`：键盘敲 Enter / Space 激活也要响，按下又拖开取消的那种不该响。带 `disabled` / `aria-disabled` / `data-disabled` 的元素不发声。
+
+传进去的值**每次渲染现读**：换语义名、换音量、换播放器都不必解绑重绑，按下那一刻取当前那份。ref 回调本身常驻，React 不会因为重渲染反复解绑重绑。
+
+要给库里的组件配声，把回调挂到它转发出来的 ref 上；组件不转发 ref 时，套一层自己的元素，声音跟着那次点击的冒泡走。
+
 ## 自动播放策略
 
 浏览器要求用户先与页面交互，音频上下文才允许出声。播放器对此的态度：

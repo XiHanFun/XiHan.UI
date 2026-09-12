@@ -1,28 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/avatar
 
-# 头像 `avatar`
+# Avatar `头像`
 
 一个人或一个组织的圆形标识：优先显示图片，取不到就回退到文字或图标。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/avatar" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/avatar.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/avatar" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/avatar" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/avatar.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 列表、评论、成员选择里标识身份。
-
-## 何时不用
-
-- 标识的是一个功能或分类：用[图标块](./icon-wrapper)。
-- 就是一张图：用[图片](./image)。
-
-## 特性
-
-- 加载状态会回调；失败时自动落到 `fallback`。
-- 直径与配色都是组件令牌，可以逐实例覆盖。
-- `tone` 换淡底与回退字的配色族；没写它时用中性缺省。
-- 状态点与角标由作者挂在外面，组件不预设。
-
-## 示例
-
-### 基础用法
+## 用法
 
 图片加载失败或未提供时落到 fallback
 
@@ -59,6 +49,8 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
   </span>
 </xh-avatar>
 ```
+
+## 示例
 
 ### 加载失败回退
 
@@ -1063,6 +1055,24 @@ const tones = [
 </div>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 列表、评论、成员选择里标识身份。
+
+### 何时不用
+
+- 标识的是一个功能或分类：用[图标块](./icon-wrapper)。
+- 就是一张图：用[图片](./image)。
+
+### 特性
+
+- 加载状态会回调；失败时自动落到 `fallback`。
+- 直径与配色都是组件令牌，可以逐实例覆盖。
+- `tone` 换淡底与回退字的配色族；没写它时用中性缺省。
+- 状态点与角标由作者挂在外面，组件不预设。
+
 ## 产物
 
 | 层 | 值 |
@@ -1147,11 +1157,20 @@ const tones = [
 | `image` | `data-state` | state.get() |
 | `fallback` | `data-state` | state.get() |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-avatar-bg` · `--xh-avatar-fg` · `--xh-avatar-font-size` · `--xh-avatar-font-weight` · `--xh-avatar-radius` · `--xh-avatar-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-avatar-bg` | `root` | `background` | `default`<br>`tone` | `--xh-_tone-subtle`<br>`--xh-bg-subtle` | avatar 的 root 部件 background 覆盖槽。 |
+| `--xh-avatar-fg` | `root` | `color` | `default`<br>`tone` | `--xh-_tone-fg`<br>`--xh-fg-muted` | avatar 的 root 部件 color 覆盖槽。 |
+| `--xh-avatar-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-caption-lg`<br>`--xh-control-caption-sm`<br>`--xh-text-secondary-size` | avatar 的 root 部件 font-size 覆盖槽。 |
+| `--xh-avatar-font-weight` | `root` | `font-weight` | `default` | `--xh-font-weight-medium` | avatar 的 root 部件 font-weight 覆盖槽。 |
+| `--xh-avatar-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | avatar 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-avatar-size` | `root` | `block-size`<br>`inline-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | avatar 的 root 部件 block-size、inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

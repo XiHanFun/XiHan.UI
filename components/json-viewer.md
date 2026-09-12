@@ -1,37 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/json-viewer
 
-# JSON 视图 `json-viewer`
+# JsonViewer `JSON 视图`
 
 把一份 JSON 摊成可展开的树：键名、值与值类型各自成一块，对象与数组可以逐层收起。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/json-viewer" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/json-viewer.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/json-viewer" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/json-viewer" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/json-viewer.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 调试面板、接口返回体、配置文件的只读呈现。
-- 日志详情里那一大坨结构化字段，直接铺开会淹掉正文。
-
-## 何时不用
-
-- 数据是可编辑的：本组件只读，改值要自己接[表单](./form)与[输入框](./text-field)。
-- 数据只是一段带语法高亮的源码：用[代码视图](./code-view)。
-- 层级数据不是 JSON，键名与类型没有语义：用[树](./tree)——它认的是通用层级数据与选中，本组件认的是 JSON 的类型语义（键名、值形态、逐类型着色、循环引用）。
-- 只有几个字段要平铺展示：用[描述列表](./descriptions)。
-
-## 特性
-
-- 行结构由 `value` 摊出来，作者不写任何行标记：Vue 与自定义元素两侧铺出同一棵 DOM，根容器里原有的内容由组件接管。
-- 不给 `value` 就是空视图，一行也不摊；对象内部真有一个值为 `undefined` 的成员时，那一行照常摊出来。
-- 展开集合可受控（`expandedValue` / `defaultExpandedValue`），不受控时按 `defaultExpandedDepth` 现算：数据晚于组件挂载才到（自定义元素常是先升级、再由脚本写 `.value`）也照样算得上，第一次展开或收起之后就固定下来，不再跟着数据走。
-- `maxStringLength` 截长字符串，`maxItems` 折超长数组，`sortKeys` 让对象键按字典序排。
-- 循环引用摊到就停，标成 `[Circular]`，不会无限递归。
-- 每一行带 `data-value-type`，六种值形态各自上色。
-- 尺寸一轴与其余组件同源；`variant` 决定带不带外框，缺省 `surface`。
-- 一行也摊不出来时由 `empty` 那一格说话，文案走 `translations.empty`，作者也可以自己往里写内容。
-- **只认 JSON 能表达的形状**，喂进活对象时呈现是有损的：`Date` / `Map` / `Set` 一律按自有可枚举键摊，因此显示成 `{}`；`undefined` 归 `null` 一档、显示成 `undefined`；`bigint` 归 `number`；函数与 symbol 归 `string`，按各自的字符串形式呈现。要如实展示这些值，先自己转成 JSON 能表达的形状。
-- 自定义元素侧：`value` 属性收的是一段 JSON 文本（解析不了就当一个字符串值展示），对象与数组直接赋 property（`el.value = { … }`）；`expandedValue` / `defaultExpandedValue` / `translations` **没有对应属性，只能走 property**，写成 `expanded-value='["$"]'` 不会生效。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一份 JSON 摊成可展开的树：键名与值各自成块，六种类型各自上色，默认只展开根行
 
@@ -66,6 +47,8 @@ const payload = {
   <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 420px"></div>
 </xh-json-viewer>
 ```
+
+## 示例
 
 ### 默认展开层数
 
@@ -502,6 +485,34 @@ function toggle(): void {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 调试面板、接口返回体、配置文件的只读呈现。
+- 日志详情里那一大坨结构化字段，直接铺开会淹掉正文。
+
+### 何时不用
+
+- 数据是可编辑的：本组件只读，改值要自己接[表单](./form)与[输入框](./text-field)。
+- 数据只是一段带语法高亮的源码：用[代码视图](./code-view)。
+- 层级数据不是 JSON，键名与类型没有语义：用[树](./tree)——它认的是通用层级数据与选中，本组件认的是 JSON 的类型语义（键名、值形态、逐类型着色、循环引用）。
+- 只有几个字段要平铺展示：用[描述列表](./descriptions)。
+
+### 特性
+
+- 行结构由 `value` 摊出来，作者不写任何行标记：Vue 与自定义元素两侧铺出同一棵 DOM，根容器里原有的内容由组件接管。
+- 自定义渲染器可调用 `groupJsonViewerNodesByParent(nodes)` 把可见行按父路径分组；返回值保留父路径首次出现顺序、组内输入顺序与节点身份。
+- 不给 `value` 就是空视图，一行也不摊；对象内部真有一个值为 `undefined` 的成员时，那一行照常摊出来。
+- 展开集合可受控（`expandedValue` / `defaultExpandedValue`），不受控时按 `defaultExpandedDepth` 现算：数据晚于组件挂载才到（自定义元素常是先升级、再由脚本写 `.value`）也照样算得上，第一次展开或收起之后就固定下来，不再跟着数据走。
+- `maxStringLength` 截长字符串，`maxItems` 折超长数组，`sortKeys` 让对象键按字典序排。
+- 循环引用摊到就停，标成 `[Circular]`，不会无限递归。
+- 每一行带 `data-value-type`，六种值形态各自上色。
+- 尺寸一轴与其余组件同源；`variant` 决定带不带外框，缺省 `surface`。
+- 一行也摊不出来时由 `empty` 那一格说话，文案走 `translations.empty`，作者也可以自己往里写内容。
+- **只认 JSON 能表达的形状**，喂进活对象时呈现是有损的：`Date` / `Map` / `Set` 一律按自有可枚举键摊，因此显示成 `{}`；`undefined` 归 `null` 一档、显示成 `undefined`；`bigint` 归 `number`；函数与 symbol 归 `string`，按各自的字符串形式呈现。要如实展示这些值，先自己转成 JSON 能表达的形状。
+- 自定义元素侧：`value` 属性收的是一段 JSON 文本（解析不了就当一个字符串值展示），对象与数组直接赋 property（`el.value = { … }`）；`expandedValue` / `defaultExpandedValue` / `translations` **没有对应属性，只能走 property**，写成 `expanded-value='["$"]'` 不会生效。
+
 ## 产物
 
 | 层 | 值 |
@@ -650,11 +661,46 @@ function toggle(): void {
 | `root` | `data-variant` | props.variant |
 | `root` | `data-view` | props.view |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-json-viewer-bg` · `--xh-json-viewer-boolean-fg` · `--xh-json-viewer-border` · `--xh-json-viewer-empty-fg` · `--xh-json-viewer-empty-gap` · `--xh-json-viewer-empty-px` · `--xh-json-viewer-empty-py` · `--xh-json-viewer-fg` · `--xh-json-viewer-font` · `--xh-json-viewer-font-size` · `--xh-json-viewer-icon-size` · `--xh-json-viewer-indent` · `--xh-json-viewer-indicator-fg` · `--xh-json-viewer-indicator-size` · `--xh-json-viewer-key-fg` · `--xh-json-viewer-key-font-weight` · `--xh-json-viewer-max-h` · `--xh-json-viewer-null-fg` · `--xh-json-viewer-number-fg` · `--xh-json-viewer-preview-fg` · `--xh-json-viewer-preview-font-size` · `--xh-json-viewer-punctuation-fg` · `--xh-json-viewer-px` · `--xh-json-viewer-py` · `--xh-json-viewer-radius` · `--xh-json-viewer-row-bg-hover` · `--xh-json-viewer-row-gap` · `--xh-json-viewer-row-px` · `--xh-json-viewer-row-py` · `--xh-json-viewer-row-radius` · `--xh-json-viewer-string-fg` · `--xh-json-viewer-text-fg`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-json-viewer-bg` | `empty`<br>`text`<br>`tree` | `background` | `default` | `--xh-_json-viewer-bg` | json-viewer 的 empty、text、tree 部件 background 覆盖槽。 |
+| `--xh-json-viewer-boolean-fg` | `item-value` | `color` | `value-type=boolean` | `--xh-syntax-keyword` | json-viewer 的 item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-border` | `empty`<br>`text`<br>`tree` | `border` | `default` | `--xh-_json-viewer-border` | json-viewer 的 empty、text、tree 部件 border 覆盖槽。 |
+| `--xh-json-viewer-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | json-viewer 的 empty 部件 color 覆盖槽。 |
+| `--xh-json-viewer-empty-gap` | `empty` | `gap` | `default` | `--xh-space-2` | json-viewer 的 empty 部件 gap 覆盖槽。 |
+| `--xh-json-viewer-empty-px` | `empty` | `padding-inline` | `default` | `--xh-space-4` | json-viewer 的 empty 部件 padding-inline 覆盖槽。 |
+| `--xh-json-viewer-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-6` | json-viewer 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-json-viewer-fg` | `root` | `color` | `default` | `--xh-fg-default` | json-viewer 的 root 部件 color 覆盖槽。 |
+| `--xh-json-viewer-font` | `root`<br>`text` | `font-family` | `default` | `--xh-font-family-mono` | json-viewer 的 root、text 部件 font-family 覆盖槽。 |
+| `--xh-json-viewer-font-size` | `root` | `font-size` | `default` | `--xh-_json-viewer-font-size` | json-viewer 的 root 部件 font-size 覆盖槽。 |
+| `--xh-json-viewer-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | json-viewer 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-json-viewer-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-_json-viewer-indent` | json-viewer 的 branch-content 部件 padding-inline-start 覆盖槽。 |
+| `--xh-json-viewer-indicator-fg` | `branch-trigger` | `color` | `default` | `--xh-fg-subtle` | json-viewer 的 branch-trigger 部件 color 覆盖槽。 |
+| `--xh-json-viewer-indicator-size` | `branch-trigger` | `inline-size` | `default` | `--xh-control-indicator-size` | json-viewer 的 branch-trigger 部件 inline-size 覆盖槽。 |
+| `--xh-json-viewer-key-fg` | `branch-text`<br>`item-key` | `color` | `default` | `--xh-fg-brand-strong` | json-viewer 的 branch-text、item-key 部件 color 覆盖槽。 |
+| `--xh-json-viewer-key-font-weight` | `branch-text`<br>`item-key` | `font-weight` | `default` | `--xh-font-weight-medium` | json-viewer 的 branch-text、item-key 部件 font-weight 覆盖槽。 |
+| `--xh-json-viewer-max-h` | `text`<br>`tree` | `max-block-size` | `default` | `--xh-viewport-max-h` | json-viewer 的 text、tree 部件 max-block-size 覆盖槽。 |
+| `--xh-json-viewer-null-fg` | `item-value` | `color` | `value-type=null` | `--xh-fg-subtle` | json-viewer 的 item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-number-fg` | `item-value` | `color` | `value-type=number` | `--xh-syntax-number` | json-viewer 的 item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-preview-fg` | `preview` | `color` | `default` | `--xh-fg-muted` | json-viewer 的 preview 部件 color 覆盖槽。 |
+| `--xh-json-viewer-preview-font-size` | `preview` | `font-size` | `default` | `--xh-text-caption-size` | json-viewer 的 preview 部件 font-size 覆盖槽。 |
+| `--xh-json-viewer-punctuation-fg` | `branch-text`<br>`item-key`<br>`item-value` | `color` | `default`<br>`value-type=array`<br>`value-type=object` | `--xh-fg-subtle` | json-viewer 的 branch-text、item-key、item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-px` | `text`<br>`tree` | `padding-inline` | `default` | `--xh-space-2` | json-viewer 的 text、tree 部件 padding-inline 覆盖槽。 |
+| `--xh-json-viewer-py` | `text`<br>`tree` | `padding-block` | `default` | `--xh-space-2` | json-viewer 的 text、tree 部件 padding-block 覆盖槽。 |
+| `--xh-json-viewer-radius` | `empty`<br>`text`<br>`tree` | `border-radius` | `default` | `--xh-shape-surface` | json-viewer 的 empty、text、tree 部件 border-radius 覆盖槽。 |
+| `--xh-json-viewer-row-bg-hover` | `branch-control`<br>`item` | `background` | `highlighted`<br>`is(:hover, [data-highlighted])` | `--xh-bg-subtle` | json-viewer 的 branch-control、item 部件 background 覆盖槽。 |
+| `--xh-json-viewer-row-gap` | `branch-control`<br>`item` | `gap` | `default` | `--xh-space-1` | json-viewer 的 branch-control、item 部件 gap 覆盖槽。 |
+| `--xh-json-viewer-row-px` | `branch-control`<br>`item` | `padding-inline` | `default` | `--xh-space-1` | json-viewer 的 branch-control、item 部件 padding-inline 覆盖槽。 |
+| `--xh-json-viewer-row-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_json-viewer-row-py` | json-viewer 的 branch-control、item 部件 padding-block 覆盖槽。 |
+| `--xh-json-viewer-row-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `--xh-shape-inset` | json-viewer 的 branch-control、item 部件 border-radius 覆盖槽。 |
+| `--xh-json-viewer-string-fg` | `item-value` | `color` | `value-type=string` | `--xh-syntax-string` | json-viewer 的 item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-text-fg` | `text` | `color` | `default` | `--xh-fg-default` | json-viewer 的 text 部件 color 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

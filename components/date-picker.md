@@ -1,30 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/date-picker
 
-# 日期选择器 `date-picker`
+# DatePicker `日期选择器`
 
 带日历浮层的日期录入：输入框可以打字，浮层里可以挑。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/date-picker" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/date-picker.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/date-picker" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/date-picker" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/date-picker.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 用户需要看着日历判断（星期几、离今天多远、区间有多长）。
-- 需要选区间，或需要日期加时间。
-
-## 何时不用
-
-- 用户已经知道确切日期且只想打字：用[日期输入](./date-field)。
-- 只要时间：用[时间选择器](./time-picker)。
-
-## 特性
-
-- 五种粒度（周 / 月 / 季度 / 年 / 日）走同一套结构。
-- `selectionMode` 支持单选与区间；区间的两端各有自己的 `name`。
-- `isDateUnavailable` 逐日判断可选性。
-- `presets` 在浮层里排出一列快捷选项（今天 / 近 7 天 / 本月），点一下整份写进去。
-- `closeOnSelect` 决定选完就关还是等确认。
-
-## 示例
-
-### 基础用法
+## 用法
 
 点输入行任意处即展开，不必再去点小箭头；段位与日历写的是同一个值，改哪边另一边当场跟着改口
 
@@ -223,6 +211,8 @@ const value = ref<string[]>([]);
   picker.addEventListener("focused-value-change", paintBody);
 </script>
 ```
+
+## 示例
 
 ### 区间选择
 
@@ -2426,6 +2416,36 @@ const value = ref<string[]>([]);
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 用户需要看着日历判断（星期几、离今天多远、区间有多长）。
+- 需要选区间，或需要日期加时间。
+
+### 何时不用
+
+- 用户已经知道确切日期且只想打字：用[日期输入](./date-field)。
+- 只要时间：用[时间选择器](./time-picker)。
+
+### 特性
+
+- 五种粒度（周 / 月 / 季度 / 年 / 日）走同一套结构。
+- `selectionMode` 支持单选与区间；区间的两端各有自己的 `name`。
+- `isDateUnavailable` 逐日判断可选性。
+- `presets` 在浮层里排出一列快捷选项（今天 / 近 7 天 / 本月），点一下整份写进去。
+- 快捷项与 `showTime` 的时 / 分 / 秒选项统一由逻辑末端对号表示持久选值；正文保持普通颜色和字重，
+  悬停与键盘焦点才铺中性底。日期格、范围连片和预览仍由内嵌 Calendar 的独立状态表达。
+- 时间数字两侧保留等宽标记轨，数字保持在整行数学中心；RTL 只把对号翻到另一侧，不移动数字。
+  手机复合面板在 comfortable 密度使用 12px 小标记（compact 随同一令牌收至 10px），以容下日历与
+  时 / 分两列；平板起恢复 16px。作者槽仍可显式覆盖。
+- 禁用态同步压低正文与对号，并停止 hover 反馈；forced-colors 下对号改用系统前景色，禁用标记使用
+  `GrayText`，与公共选中轮廓形成两条独立通道。
+- `closeOnSelect` 决定选完就关还是等确认。
+- 输入框保持实体表面，日历浮层采用统一磨砂材质、细顶光与分隔线；内嵌 Calendar 和时间列共用外层表面。
+- 浮层按实际弹出方向短距离淡入淡出，不缩放日期和文字；手机双月历堆叠、时间列与确认按钮布局在退场中保持稳定。
+- 减弱动效、增强对比度沿用主题设置，键盘关闭后归还打开前的焦点。
+
 ## 产物
 
 | 层 | 值 |
@@ -2604,6 +2624,7 @@ const value = ref<string[]>([]);
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `trigger` | `aria-labelledby` | `label` 部件的 id |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-labelledby` | `label` 部件的 id |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
@@ -2626,6 +2647,8 @@ const value = ref<string[]>([]);
 ## 样式
 
 默认皮肤 `@xihan-ui/styles/date-picker.css` 按部件选择：`[data-scope="date-picker"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ## 数据属性
 
@@ -2674,19 +2697,100 @@ const value = ref<string[]>([]);
 | `time-item` | `data-unit` | live[at]!.getAttribute('data-unit') as DatePickerTime… |
 | `time-item` | `data-value` | v |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-date-picker-action-bg` · `--xh-date-picker-action-bg-active` · `--xh-date-picker-action-bg-hover` · `--xh-date-picker-action-fg` · `--xh-date-picker-action-fg-hover` · `--xh-date-picker-action-font-size` · `--xh-date-picker-action-radius` · `--xh-date-picker-action-size` · `--xh-date-picker-calendar-gap` · `--xh-date-picker-column-divider` · `--xh-date-picker-confirm-trigger-bg` · `--xh-date-picker-confirm-trigger-bg-active` · `--xh-date-picker-confirm-trigger-bg-hover` · `--xh-date-picker-confirm-trigger-fg` · `--xh-date-picker-confirm-trigger-h` · `--xh-date-picker-confirm-trigger-px` · `--xh-date-picker-confirm-trigger-radius` · `--xh-date-picker-confirm-trigger-shadow` · `--xh-date-picker-content-bg` · `--xh-date-picker-content-border` · `--xh-date-picker-content-fg` · `--xh-date-picker-content-px` · `--xh-date-picker-content-py` · `--xh-date-picker-content-radius` · `--xh-date-picker-content-shadow` · `--xh-date-picker-control-bg` · `--xh-date-picker-control-bg-disabled` · `--xh-date-picker-control-bg-hover` · `--xh-date-picker-control-bg-readonly` · `--xh-date-picker-control-border` · `--xh-date-picker-control-border-focus` · `--xh-date-picker-control-border-hover` · `--xh-date-picker-control-border-invalid` · `--xh-date-picker-control-fg` · `--xh-date-picker-control-gap` · `--xh-date-picker-control-h` · `--xh-date-picker-control-min-w` · `--xh-date-picker-control-px` · `--xh-date-picker-control-radius` · `--xh-date-picker-control-shadow` · `--xh-date-picker-font-size` · `--xh-date-picker-gap` · `--xh-date-picker-icon-size` · `--xh-date-picker-label-fg` · `--xh-date-picker-label-fg-disabled` · `--xh-date-picker-label-font-size` · `--xh-date-picker-label-font-weight` · `--xh-date-picker-layer` · `--xh-date-picker-max-h` · `--xh-date-picker-panel-divider` · `--xh-date-picker-panel-gap` · `--xh-date-picker-preset-bg-hover` · `--xh-date-picker-preset-bg-selected` · `--xh-date-picker-preset-fg-disabled` · `--xh-date-picker-preset-fg-selected` · `--xh-date-picker-preset-group-gap` · `--xh-date-picker-preset-group-h` · `--xh-date-picker-preset-group-padding` · `--xh-date-picker-preset-px` · `--xh-date-picker-preset-py` · `--xh-date-picker-preset-radius` · `--xh-date-picker-time-column-gap` · `--xh-date-picker-time-column-h` · `--xh-date-picker-time-column-padding` · `--xh-date-picker-time-item-bg-hover` · `--xh-date-picker-time-item-bg-selected` · `--xh-date-picker-time-item-fg-selected` · `--xh-date-picker-time-item-px` · `--xh-date-picker-time-item-py` · `--xh-date-picker-time-item-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-date-picker-action-bg` | `clear-trigger`<br>`trigger` | `background` | `default`<br>`disabled` | `transparent` | date-picker 的 clear-trigger、trigger 部件 background 覆盖槽。 |
+| `--xh-date-picker-action-bg-active` | `clear-trigger`<br>`trigger` | `background` | `active`<br>`not(:disabled)`<br>`state=open` | `--xh-bg-subtle-active` | date-picker 的 clear-trigger、trigger 部件 background 覆盖槽。 |
+| `--xh-date-picker-action-bg-hover` | `clear-trigger`<br>`trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | date-picker 的 clear-trigger、trigger 部件 background 覆盖槽。 |
+| `--xh-date-picker-action-fg` | `clear-trigger`<br>`trigger` | `color` | `default` | `--xh-fg-muted` | date-picker 的 clear-trigger、trigger 部件 color 覆盖槽。 |
+| `--xh-date-picker-action-fg-hover` | `clear-trigger`<br>`trigger` | `color` | `hover`<br>`not(:disabled)`<br>`state=open` | `--xh-fg-default` | date-picker 的 clear-trigger、trigger 部件 color 覆盖槽。 |
+| `--xh-date-picker-action-font-size` | `clear-trigger`<br>`trigger` | `font-size` | `default` | `--xh-text-secondary-size` | date-picker 的 clear-trigger、trigger 部件 font-size 覆盖槽。 |
+| `--xh-date-picker-action-radius` | `clear-trigger`<br>`trigger` | `border-radius` | `default` | `--xh-shape-control` | date-picker 的 clear-trigger、trigger 部件 border-radius 覆盖槽。 |
+| `--xh-date-picker-action-size` | `clear-trigger`<br>`trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | date-picker 的 clear-trigger、trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-date-picker-calendar-gap` | `calendar` | `gap` | `default` | `--xh-space-3` | date-picker 的 calendar 部件 gap 覆盖槽。 |
+| `--xh-date-picker-column-divider` | `preset-group`<br>`time-column` | `border-block-end`<br>`border-inline-end`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-material-frosted-separator` | date-picker 的 preset-group、time-column 部件 border-block-end、border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-date-picker-confirm-trigger-bg` | `confirm-trigger` | `background` | `default` | `--xh-_date-picker-accent` | date-picker 的 confirm-trigger 部件 background 覆盖槽。 |
+| `--xh-date-picker-confirm-trigger-bg-active` | `confirm-trigger` | `background` | `active` | `--xh-_date-picker-accent-active` | date-picker 的 confirm-trigger 部件 background 覆盖槽。 |
+| `--xh-date-picker-confirm-trigger-bg-hover` | `confirm-trigger` | `background` | `hover` | `--xh-_date-picker-accent-hover` | date-picker 的 confirm-trigger 部件 background 覆盖槽。 |
+| `--xh-date-picker-confirm-trigger-fg` | `confirm-trigger` | `color` | `default` | `--xh-_date-picker-accent-fg` | date-picker 的 confirm-trigger 部件 color 覆盖槽。 |
+| `--xh-date-picker-confirm-trigger-h` | `confirm-trigger` | `block-size` | `default` | `--xh-control-h-sm` | date-picker 的 confirm-trigger 部件 block-size 覆盖槽。 |
+| `--xh-date-picker-confirm-trigger-px` | `confirm-trigger` | `padding-inline` | `default` | `--xh-control-px-sm` | date-picker 的 confirm-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-date-picker-confirm-trigger-radius` | `confirm-trigger` | `border-radius` | `default` | `--xh-shape-control` | date-picker 的 confirm-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-date-picker-confirm-trigger-shadow` | `confirm-trigger` | `box-shadow` | `default` | `--xh-_date-picker-confirm-highlight` | date-picker 的 confirm-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-date-picker-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | date-picker 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-date-picker-content-bg` | `content` | `background` | `default` | `--xh-material-frosted-bg` | date-picker 的 content 部件 background 覆盖槽。 |
+| `--xh-date-picker-content-border` | `content` | `border` | `default` | `--xh-material-frosted-border` | date-picker 的 content 部件 border 覆盖槽。 |
+| `--xh-date-picker-content-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | date-picker 的 content 部件 color 覆盖槽。 |
+| `--xh-date-picker-content-highlight` | `content` | `background` | `default` | `--xh-material-frosted-highlight` | date-picker 的 content 部件 background 覆盖槽。 |
+| `--xh-date-picker-content-px` | `content` | `padding-inline` | `default` | `--xh-space-3` | date-picker 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-date-picker-content-py` | `content` | `padding-block` | `default` | `--xh-space-3` | date-picker 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-date-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | date-picker 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-date-picker-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | date-picker 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-date-picker-control-bg` | `control` | `background` | `default` | `--xh-_date-picker-control-bg` | date-picker 的 control 部件 background 覆盖槽。 |
+| `--xh-date-picker-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | date-picker 的 control 部件 background 覆盖槽。 |
+| `--xh-date-picker-control-bg-hover` | `control` | `background` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-_date-picker-control-bg-hover` | date-picker 的 control 部件 background 覆盖槽。 |
+| `--xh-date-picker-control-bg-readonly` | `control` | `background` | `readonly` | `--xh-bg-subtle` | date-picker 的 control 部件 background 覆盖槽。 |
+| `--xh-date-picker-control-border` | `control` | `border` | `default` | `--xh-_date-picker-control-border` | date-picker 的 control 部件 border 覆盖槽。 |
+| `--xh-date-picker-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])` | `--xh-_tone` | date-picker 的 control 部件 border-color 覆盖槽。 |
+| `--xh-date-picker-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid])` | `--xh-_date-picker-control-border-hover` | date-picker 的 control 部件 border-color 覆盖槽。 |
+| `--xh-date-picker-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | date-picker 的 control 部件 border-color 覆盖槽。 |
+| `--xh-date-picker-control-fg` | `control` | `color` | `default` | `--xh-fg-default` | date-picker 的 control 部件 color 覆盖槽。 |
+| `--xh-date-picker-control-gap` | `control` | `gap` | `default` | `--xh-_date-picker-gap` | date-picker 的 control 部件 gap 覆盖槽。 |
+| `--xh-date-picker-control-h` | `control` | `block-size` | `default` | `--xh-_date-picker-control-h` | date-picker 的 control 部件 block-size 覆盖槽。 |
+| `--xh-date-picker-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | date-picker 的 control、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-date-picker-control-px` | `control` | `padding-inline` | `default` | `--xh-_date-picker-control-px` | date-picker 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-date-picker-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | date-picker 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-date-picker-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_date-picker-control-shadow` | date-picker 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-date-picker-font-size` | `segment-group` | `font-size` | `default` | `--xh-_date-picker-font-size` | date-picker 的 segment-group 部件 font-size 覆盖槽。 |
+| `--xh-date-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-picker 的 root 部件 gap 覆盖槽。 |
+| `--xh-date-picker-icon-size` | `positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | date-picker 的 positioner、root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-date-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | date-picker 的 label 部件 color 覆盖槽。 |
+| `--xh-date-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | date-picker 的 label 部件 color 覆盖槽。 |
+| `--xh-date-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-_date-picker-label-font-size` | date-picker 的 label 部件 font-size 覆盖槽。 |
+| `--xh-date-picker-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | date-picker 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-date-picker-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | date-picker 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-date-picker-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-lg` | date-picker 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-date-picker-panel-divider` | `calendar` | `border-block-start`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-material-frosted-separator` | date-picker 的 calendar 部件 border-block-start、border-inline-start 覆盖槽。 |
+| `--xh-date-picker-panel-gap` | `calendar`<br>`preset-group` | `padding-block-start`<br>`padding-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-space-3` | date-picker 的 calendar、preset-group 部件 padding-block-start、padding-inline-start 覆盖槽。 |
+| `--xh-date-picker-preset-bg-hover` | `preset` | `background` | `disabled`<br>`is(:hover, :focus-visible)`<br>`not([data-disabled])` | `--xh-bg-subtle` | date-picker 的 preset 部件 background 覆盖槽。 |
+| `--xh-date-picker-preset-check-fg` | `preset` | `background-color` | `default` | `--xh-_date-picker-check-fg` | date-picker 的 preset 部件 background-color 覆盖槽。 |
+| `--xh-date-picker-preset-check-size` | `preset` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default` | `--xh-glyph-size-sm` | date-picker 的 preset 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
+| `--xh-date-picker-preset-fg-disabled` | `preset` | `background-color`<br>`color` | `disabled` | `--xh-fg-disabled` | date-picker 的 preset 部件 background-color、color 覆盖槽。 |
+| `--xh-date-picker-preset-fg-selected` | `preset` | `color` | `state=checked` | `inherit` | date-picker 的 preset 部件 color 覆盖槽。 |
+| `--xh-date-picker-preset-group-gap` | `preset-group` | `gap` | `default` | `--xh-list-option-gap` | date-picker 的 preset-group 部件 gap 覆盖槽。 |
+| `--xh-date-picker-preset-group-h` | `preset-group` | `max-block-size` | `default` | `--xh-viewport-h-lg` | date-picker 的 preset-group 部件 max-block-size 覆盖槽。 |
+| `--xh-date-picker-preset-group-padding` | `preset-group` | `padding` | `default` | `--xh-space-1` | date-picker 的 preset-group 部件 padding 覆盖槽。 |
+| `--xh-date-picker-preset-px` | `preset` | `inset-inline-end`<br>`padding-inline`<br>`padding-inline-end` | `default` | `--xh-space-3` | date-picker 的 preset 部件 inset-inline-end、padding-inline、padding-inline-end 覆盖槽。 |
+| `--xh-date-picker-preset-py` | `preset` | `padding-block` | `default` | `--xh-space-1` | date-picker 的 preset 部件 padding-block 覆盖槽。 |
+| `--xh-date-picker-preset-radius` | `preset` | `border-radius` | `default` | `--xh-shape-control` | date-picker 的 preset 部件 border-radius 覆盖槽。 |
+| `--xh-date-picker-time-column-gap` | `time-column` | `gap` | `default` | `--xh-list-option-gap` | date-picker 的 time-column 部件 gap 覆盖槽。 |
+| `--xh-date-picker-time-column-h` | `time-column` | `block-size` | `default` | `--xh-viewport-h-sm` | date-picker 的 time-column 部件 block-size 覆盖槽。 |
+| `--xh-date-picker-time-column-padding` | `time-column` | `padding` | `default` | `--xh-space-1` | date-picker 的 time-column 部件 padding 覆盖槽。 |
+| `--xh-date-picker-time-item-bg-hover` | `time-column`<br>`time-item` | `background` | `is(:hover, :focus-visible)`<br>`not([aria-disabled='true'])` | `--xh-bg-subtle` | date-picker 的 time-column、time-item 部件 background 覆盖槽。 |
+| `--xh-date-picker-time-item-check-fg` | `time-item` | `background-color` | `default` | `--xh-_date-picker-check-fg` | date-picker 的 time-item 部件 background-color 覆盖槽。 |
+| `--xh-date-picker-time-item-check-size` | `time-item` | `block-size`<br>`inline-size`<br>`inset-inline-end`<br>`padding-inline` | `default` | `--xh-_date-picker-time-item-check-size` | date-picker 的 time-item 部件 block-size、inline-size、inset-inline-end、padding-inline 覆盖槽。 |
+| `--xh-date-picker-time-item-fg-selected` | `time-item` | `color` | `state=checked` | `inherit` | date-picker 的 time-item 部件 color 覆盖槽。 |
+| `--xh-date-picker-time-item-px` | `time-item` | `inset-inline-end`<br>`padding-inline` | `default` | `--xh-space-3` | date-picker 的 time-item 部件 inset-inline-end、padding-inline 覆盖槽。 |
+| `--xh-date-picker-time-item-py` | `time-item` | `padding-block` | `default` | `--xh-space-1` | date-picker 的 time-item 部件 padding-block 覆盖槽。 |
+| `--xh-date-picker-time-item-radius` | `time-item` | `border-radius` | `default` | `--xh-shape-control` | date-picker 的 time-item 部件 border-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
-关键帧 `xh-overlay-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## 响应式
+
+皮肤按视口分档：`min-width: 768px` · `width < 768px`。
 
 ## RTL
 
@@ -2700,6 +2804,8 @@ const value = ref<string[]>([]);
 
 - 区间选择要显示已选天数，用户在挑的往往是"多长"而不是"哪两天"。
 - 不可选的日子要给出原因（已约满、超出范围），只置灰用户会反复点。
+- 自定义快捷项或时间项时，用 `--xh-date-picker-*-check-size` / `*-check-fg` 调整末端对号；不要重新
+  给持久选中铺品牌底，否则会与悬停、焦点以及 Calendar 的日期范围视觉混为一层。
 
 ## 反模式
 

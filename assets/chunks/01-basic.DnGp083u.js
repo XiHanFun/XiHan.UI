@@ -1,0 +1,1 @@
+import{l4 as a}from"./theme.CzGOHWR9.js";import{d as l,o,b as t,k as r}from"./framework.m090XgxO.js";const p=l({__name:"01-basic",setup(n){const e=[{value:"left",label:"左对齐"},{value:"center",label:"居中"},{value:"right",label:"右对齐"}];return(c,s)=>(o(),t(r(a),{collection:e,"default-value":"left"}))}});export{p as default};

@@ -1,27 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/number-animation
 
-# 数值动画 `number-animation`
+# NumberAnimation `数值动画`
 
 数字从一个值滚动到另一个值。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/number-animation" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/number-animation.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/number-animation" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/number-animation" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/number-animation.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 仪表盘上的关键指标首次出现时，用滚动强调它在变化。
-
-## 何时不用
-
-- 数值频繁变化：每次都滚一遍，用户永远读不到稳定值。
-- 是精确的金额或编号，用户要读取而不是感知趋势。
-
-## 特性
-
-- `precision` 小数位、`separator` 千位分隔。
-- `easing` 与 `duration` 决定滚动的节奏。
-- `live` 决定读屏播报方式——通常应该只播报终值。
-
-## 示例
-
-### 基础用法
+## 用法
 
 挂载即从 from 走到 to，三个尺寸档只改字号；不写 size 就跟着上下文的字号走
 
@@ -50,6 +41,8 @@ import { XhNumberAnimation } from "@xihan-ui/vue";
   <span data-xh-part="root"></span>
 </xh-number-animation>
 ```
+
+## 示例
 
 ### 小数位与千位分隔
 
@@ -270,6 +263,23 @@ function next(): void {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 仪表盘上的关键指标首次出现时，用滚动强调它在变化。
+
+### 何时不用
+
+- 数值频繁变化：每次都滚一遍，用户永远读不到稳定值。
+- 是精确的金额或编号，用户要读取而不是感知趋势。
+
+### 特性
+
+- `precision` 小数位、`separator` 千位分隔。
+- `easing` 与 `duration` 决定滚动的节奏。
+- `live` 决定读屏播报方式——通常应该只播报终值。
+
 ## 产物
 
 | 层 | 值 |
@@ -374,11 +384,16 @@ function next(): void {
 | `root` | `data-state` | 'idle' \| 'running' |
 | `root` | `data-tone` | props.tone |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-number-animation-fg` · `--xh-number-animation-font-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-number-animation-fg` | `root` | `color` | `default` | `--xh-_tone-fg` | number-animation 的 root 部件 color 覆盖槽。 |
+| `--xh-number-animation-font-size` | `root` | `font-size` | `default` | `--xh-_number-animation-size` | number-animation 的 root 部件 font-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

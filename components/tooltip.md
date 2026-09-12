@@ -1,29 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/tooltip
 
-# 文字提示 `tooltip`
+# Tooltip `文字提示`
 
 悬停或聚焦时出现的一句纯文字说明。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tooltip" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/tooltip.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/tooltip" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/tooltip" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/tooltip.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 补充说明一个图标按钮是什么、一个截断的文字全文是什么。
-- 内容是纯文字，且没有任何可交互元素。
-
-## 何时不用
-
-- 内容里有按钮或链接：用[气泡卡片](./popover)——提示是够不着的。
-- 信息重要到不能错过：写在界面上，别藏进悬停。
-- 触摸设备是主要场景：那里没有悬停。
-
-## 特性
-
-- `openDelay` / `closeDelay` 防止指针路过时一路闪。
-- 聚焦也能触发，键盘用户拿得到。
-- 语气与尺寸两轴。
-
-## 示例
-
-### 基础用法
+## 用法
 
 悬停或聚焦触发器即出；指针停在提示上也不收起
 
@@ -62,6 +51,8 @@ import {
   </div>
 </xh-tooltip>
 ```
+
+## 示例
 
 ### 朝向
 
@@ -609,6 +600,27 @@ const text = "导出会把当前筛选条件下的全部行写进文件，行数
 </div>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 补充说明一个图标按钮是什么、一个截断的文字全文是什么。
+- 内容是纯文字，且没有任何可交互元素。
+
+### 何时不用
+
+- 内容里有按钮或链接：用[气泡卡片](./popover)——提示是够不着的。
+- 信息重要到不能错过：写在界面上，别藏进悬停。
+- 触摸设备是主要场景：那里没有悬停。
+
+### 特性
+
+- `openDelay` / `closeDelay` 防止指针路过时一路闪。
+- 聚焦也能触发，键盘用户拿得到。
+- 语气与尺寸两轴。
+- 默认保持反白的小型 M2 表面，与承载操作的 Popover 分开；六种语气都使用高遮蔽 tint 与不透明文字，箭头和气泡同色同边。
+- 进退场只做侧向短移与透明度，120ms 内完成，不缩放文字和箭头。
+
 ## 产物
 
 | 层 | 值 |
@@ -704,12 +716,15 @@ const text = "导出会把当前筛选条件下的全部行写进文件，行数
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `trigger` | `aria-describedby` | `content` 部件的 id \| undefined |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `role` | 'tooltip' |
 | `arrow` | `aria-hidden` | 'true' |
 
 ## 样式
 
 默认皮肤 `@xihan-ui/styles/tooltip.css` 按部件选择：`[data-scope="tooltip"][data-part="trigger"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ## 数据属性
 
@@ -728,15 +743,32 @@ const text = "导出会把当前筛选条件下的全部行写进文件，行数
 | `content` | `data-tone` | props.tone |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-tooltip-arrow-size` · `--xh-tooltip-bg` · `--xh-tooltip-fg` · `--xh-tooltip-font-size` · `--xh-tooltip-layer` · `--xh-tooltip-max-w` · `--xh-tooltip-px` · `--xh-tooltip-py` · `--xh-tooltip-radius` · `--xh-tooltip-shadow` · `--xh-tooltip-trigger-gap`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-tooltip-arrow-size` | `arrow` | `--xh-_overlay-arrow-size` | `default` | `--xh-overlay-arrow-size` | tooltip 的 arrow 部件 --xh-_overlay-arrow-size 覆盖槽。 |
+| `--xh-tooltip-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-compact-backdrop` | tooltip 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-tooltip-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-_tooltip-solid` | tooltip 的 arrow、content 部件 background 覆盖槽。 |
+| `--xh-tooltip-border` | `arrow`<br>`content` | `border` | `default` | `--xh-_tooltip-border` | tooltip 的 arrow、content 部件 border 覆盖槽。 |
+| `--xh-tooltip-fg` | `content` | `color` | `default` | `--xh-_tooltip-on` | tooltip 的 content 部件 color 覆盖槽。 |
+| `--xh-tooltip-font-size` | `content` | `font-size` | `default` | `--xh-_tooltip-font-size` | tooltip 的 content 部件 font-size 覆盖槽。 |
+| `--xh-tooltip-highlight` | `content` | `box-shadow` | `default` | `--xh-_tooltip-highlight` | tooltip 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-tooltip-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | tooltip 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-tooltip-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | tooltip 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-tooltip-px` | `content` | `padding-inline` | `default` | `--xh-_tooltip-px` | tooltip 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-tooltip-py` | `content` | `padding-block` | `default` | `--xh-_tooltip-py` | tooltip 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-tooltip-radius` | `content` | `border-radius` | `default` | `--xh-shape-control` | tooltip 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-tooltip-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-compact-shadow` | tooltip 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-tooltip-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-sm` | tooltip 的 trigger 部件 gap 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
-关键帧 `xh-overlay-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -753,7 +785,13 @@ const text = "导出会把当前筛选条件下的全部行写进文件，行数
 ## 最佳实践
 
 - 一句话讲完，超过一行就该换别的形式。
+- 必须显示较长的单句时让它在最大宽度内换行；连续长词也会断行，不会把浮层撑出窄屏。
 - 图标按钮的可及名字要写在按钮上（`aria-label`），提示只是视觉补充。
+
+### 当前边界
+
+- 当前尚无 TooltipProvider，多个目标间的统一 delay、skip-delay、同组互斥与触发器滚动关闭仍是后续独立行为功能；本次不以样式模拟这些时序。
+- 共享浮层位移原语当前最小档是 4px；Tooltip 先与 Menu 使用同一 `xh-overlay-slide-in/out` 定义。规格中的 2px 需要新增公共 motion distance 档后统一接入，不能局部改写现有语义令牌。
 
 ## 反模式
 

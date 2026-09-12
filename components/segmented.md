@@ -1,32 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/segmented
 
-# 分段控制器 `segmented`
+# Segmented `分段控制器`
 
 一排连在一起的互斥选项，选中的那一段底下有一块会滑动的指示器。它是单选组，参与表单提交。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/segmented" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/segmented.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/segmented" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/segmented" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/segmented.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 二到五个平级选项之间切换：视图模式（列表 / 网格）、时间粒度（日 / 周 / 月）、排序方式。
-- 选项少、名字短，且值得一直摊开给用户看——分段控件的价值就在于不用点开就知道有哪几个。
-- 需要随表单一起提交这个选择。
-
-## 何时不用
-
-- 选项超过六个，或选项文字长短悬殊：改用[单选组](./radio-group)竖排，或[选择器](./select)收进浮层。
-- 需要多选，或表达的是按钮的按下态而不是一个字段值：用[切换按钮组](./toggle-group)——它没有 `name`、不参与表单，也没有滑动指示器。
-- 切换的是同一块区域的几屏内容：那是[标签页](./tabs)，它管的是面板的显隐，不是一个值。
-
-## 特性
-
-- 集合入口：给 `collection` 就只交数据，条目文本与禁用都以数据为准；要改结构再写部件。
-- 受控与非受控两态齐全：`value` 给了即受控，只发 `onValueChange` 不自改。
-- 参与表单：给 `name` 后隐藏输入才带上它；宿主表单点重置，选中值回落到 `defaultValue`。隐藏输入只在「只交 `collection`、由组件铺开结构」时自动铺；自己写默认插槽排版的话，得记得放一个隐藏输入部件，否则给了 `name` 也没有任何东西参与提交。
-- 指示器位置由组件量出来，横排竖排、ltr 与 rtl 都是同一条规则。
-- 语气 · 尺寸两轴与其余组件同源；`block` 让整组撑满行宽、各段等分。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一排互斥选项：root 是 radiogroup、每段是 radio；整组只占一个 Tab 位，进组后四个方向键都能走
 
@@ -70,6 +56,8 @@ const ranges = [
   </div>
 </xh-segmented>
 ```
+
+## 示例
 
 ### 受控
 
@@ -562,6 +550,28 @@ function onSubmit(event: Event) {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 二到五个平级选项之间切换：视图模式（列表 / 网格）、时间粒度（日 / 周 / 月）、排序方式。
+- 选项少、名字短，且值得一直摊开给用户看——分段控件的价值就在于不用点开就知道有哪几个。
+- 需要随表单一起提交这个选择。
+
+### 何时不用
+
+- 选项超过六个，或选项文字长短悬殊：改用[单选组](./radio-group)竖排，或[选择器](./select)收进浮层。
+- 需要多选，或表达的是按钮的按下态而不是一个字段值：用[切换按钮组](./toggle-group)——它没有 `name`、不参与表单，也没有滑动指示器。
+- 切换的是同一块区域的几屏内容：那是[标签页](./tabs)，它管的是面板的显隐，不是一个值。
+
+### 特性
+
+- 集合入口：给 `collection` 就只交数据，条目文本与禁用都以数据为准；要改结构再写部件。
+- 受控与非受控两态齐全：`value` 给了即受控，只发 `onValueChange` 不自改。
+- 参与表单：给 `name` 后隐藏输入才带上它；宿主表单点重置，选中值回落到 `defaultValue`。隐藏输入只在「只交 `collection`、由组件铺开结构」时自动铺；自己写默认插槽排版的话，得记得放一个隐藏输入部件，否则给了 `name` 也没有任何东西参与提交。
+- 指示器位置由组件量出来，横排竖排、ltr 与 rtl 都是同一条规则。
+- 语气 · 尺寸两轴与其余组件同源；`block` 让整组撑满行宽、各段等分。
+
 ## 产物
 
 | 层 | 值 |
@@ -698,11 +708,37 @@ function onSubmit(event: Event) {
 | `root` | `data-tone` | props.tone |
 | `indicator` | `data-value` | context.get('value') |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-segmented-bg` · `--xh-segmented-bg-disabled` · `--xh-segmented-border` · `--xh-segmented-border-invalid` · `--xh-segmented-font-size` · `--xh-segmented-h` · `--xh-segmented-indicator-bg` · `--xh-segmented-indicator-radius` · `--xh-segmented-indicator-shadow` · `--xh-segmented-indicator-shadow-disabled` · `--xh-segmented-item-bg-hover` · `--xh-segmented-item-fg` · `--xh-segmented-item-fg-checked` · `--xh-segmented-item-fg-checked-disabled` · `--xh-segmented-item-fg-hover` · `--xh-segmented-item-font-weight` · `--xh-segmented-item-gap` · `--xh-segmented-item-h` · `--xh-segmented-item-press-scale` · `--xh-segmented-item-px` · `--xh-segmented-item-radius` · `--xh-segmented-radius` · `--xh-segmented-track-padding`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-segmented-bg` | `root` | `background` | `default` | `--xh-bg-subtle` | segmented 的 root 部件 background 覆盖槽。 |
+| `--xh-segmented-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-muted` | segmented 的 root 部件 background 覆盖槽。 |
+| `--xh-segmented-border` | `root` | `border` | `default` | `--xh-border-subtle` | segmented 的 root 部件 border 覆盖槽。 |
+| `--xh-segmented-border-invalid` | `root` | `border-color` | `invalid` | `--xh-border-invalid` | segmented 的 root 部件 border-color 覆盖槽。 |
+| `--xh-segmented-font-size` | `root` | `font-size` | `default` | `--xh-_segmented-font-size` | segmented 的 root 部件 font-size 覆盖槽。 |
+| `--xh-segmented-h` | `item`<br>`root` | `min-block-size` | `orientation=horizontal` | `--xh-_segmented-h` | segmented 的 item、root 部件 min-block-size 覆盖槽。 |
+| `--xh-segmented-indicator-bg` | `indicator` | `background` | `default` | `--xh-_segmented-indicator-bg` | segmented 的 indicator 部件 background 覆盖槽。 |
+| `--xh-segmented-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-inset` | segmented 的 indicator 部件 border-radius 覆盖槽。 |
+| `--xh-segmented-indicator-shadow` | `indicator` | `box-shadow` | `default` | `--xh-elevation-raised` | segmented 的 indicator 部件 box-shadow 覆盖槽。 |
+| `--xh-segmented-indicator-shadow-disabled` | `indicator`<br>`root` | `box-shadow` | `disabled` | `none` | segmented 的 indicator、root 部件 box-shadow 覆盖槽。 |
+| `--xh-segmented-item-bg-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-state='checked'])`<br>`state=checked` | `--xh-bg-subtle-hover` | segmented 的 item 部件 background-color 覆盖槽。 |
+| `--xh-segmented-item-fg` | `item` | `color` | `default` | `--xh-fg-muted` | segmented 的 item 部件 color 覆盖槽。 |
+| `--xh-segmented-item-fg-checked` | `item` | `color` | `state=checked` | `--xh-_segmented-fg-selected` | segmented 的 item 部件 color 覆盖槽。 |
+| `--xh-segmented-item-fg-checked-disabled` | `item` | `color` | `disabled`<br>`state=checked` | `--xh-_segmented-fg-selected` | segmented 的 item 部件 color 覆盖槽。 |
+| `--xh-segmented-item-fg-hover` | `item` | `color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-state='checked'])`<br>`state=checked` | `--xh-fg-default` | segmented 的 item 部件 color 覆盖槽。 |
+| `--xh-segmented-item-font-weight` | `item` | `font-weight` | `default` | `--xh-text-label-weight` | segmented 的 item 部件 font-weight 覆盖槽。 |
+| `--xh-segmented-item-gap` | `item` | `gap` | `default` | `--xh-_segmented-gap` | segmented 的 item 部件 gap 覆盖槽。 |
+| `--xh-segmented-item-h` | `item` | `block-size` | `default` | `--xh-_segmented-h` | segmented 的 item 部件 block-size 覆盖槽。 |
+| `--xh-segmented-item-press-scale` | `item` | `scale` | `active`<br>`disabled`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`readonly` | `--xh-motion-scale-press` | segmented 的 item 部件 scale 覆盖槽。 |
+| `--xh-segmented-item-px` | `item` | `padding-inline` | `default` | `--xh-_segmented-px` | segmented 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-segmented-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | segmented 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-segmented-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | segmented 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-segmented-track-padding` | `item`<br>`root` | `min-block-size`<br>`padding` | `default`<br>`orientation=horizontal` | `--xh-space-0_5` | segmented 的 item、root 部件 min-block-size、padding 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

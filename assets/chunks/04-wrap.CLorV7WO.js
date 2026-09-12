@@ -1,0 +1,7 @@
+const p=`<!-- 多组合换行 | 每组内部不拆行，容器只在完整组合之间换行 -->
+<div style="display: flex; flex-wrap: wrap; gap: 12px; inline-size: 180px">
+  <xh-kbd-group keys="Mod,Shift,P"><span data-xh-part="root"></span></xh-kbd-group>
+  <xh-kbd-group keys="Alt,ArrowDown"><span data-xh-part="root"></span></xh-kbd-group>
+  <xh-kbd-group keys="Mod,Enter"><span data-xh-part="root"></span></xh-kbd-group>
+</div>
+`;export{p as default};

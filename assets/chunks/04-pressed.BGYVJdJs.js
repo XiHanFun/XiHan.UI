@@ -1,0 +1,1 @@
+import{gN as t}from"./theme.CzGOHWR9.js";import{d as n,o,c as s,a,E as r,k as p}from"./framework.m090XgxO.js";const i={type:"button",style:{display:"inline-flex","align-items":"center",gap:"8px"}},u=n({__name:"04-pressed",setup(l){return(c,e)=>(o(),s("button",i,[e[0]||(e[0]=a(" 按住我 ",-1)),r(p(t),{value:"Enter"})]))}});export{u as default};

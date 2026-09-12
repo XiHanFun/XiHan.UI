@@ -1,33 +1,20 @@
 来源：https://ui.docs.xihanfun.com/components/tags-input
 
-# 标签输入 `tags-input`
+# TagsInput `标签输入`
 
 在一个输入框里录入一串标签：回车或分隔符成词，每个词是一枚可删的标签。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tags-input" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/tags-input.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/tags-input" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/tags-input" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/tags-input.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 关键词、收件人、技能这类数量不定的短词集合。
-- 需要粘贴一整串自动拆分。
+## 用法
 
-## 何时不用
-
-- 值来自固定清单：用[选择器](./select)的多选。
-- 需要从候选里检索着选：用[组合框](./combobox)的多选。
-
-## 特性
-
-- `delimiter` 与 `addOnPaste` 一起处理粘贴拆分。
-- `editable` 让已有标签双击就地改。
-- `max` 与 `allowOverflow` 一对：超出上限是拒收还是标红。
-- 标签的值可以是对象，不必是字符串。
-- `showCount` 显出计数部件，数字取 `count` 与 `max`，顶到上限与越界各换一档颜色。
-- `required` 经 `aria-required` 上报必填。
-
-## 示例
-
-### 基础用法
-
-框里打字按 Enter 落一个标签；标签由作者按当前值渲染，每个标签自带 value 标识身份
+框里打字按 Enter 落一个标签；标签由作者按当前值渲染，每个标签自带 value 标识身份，预览与删除钮就是库里的 tag
 
 ```vue
 <script setup lang="ts">
@@ -140,6 +127,8 @@ const tags = ref<string[]>(["Vue", "TypeScript"]);
   });
 </script>
 ```
+
+## 示例
 
 ### 上限与粘贴拆分
 
@@ -396,7 +385,7 @@ const tags = ref<string[]>(["前端", "组件库", "无障碍"]);
 
 ### 禁用与只读
 
-disabled 整个控件退出 Tab 序列；read-only 仍可聚焦浏览，但加不进也删不掉
+disabled 整个控件退出 Tab 序列、标签一起置灰；read-only 仍可聚焦浏览，但加不进也删不掉，删除钮留在原地按不动、标签不置灰
 
 ```vue
 <script setup lang="ts">
@@ -491,7 +480,7 @@ import {
 
 ### 形态
 
-variant 只改控件与胶囊的颜色槽位，落标签与删标签的行为三档一致
+variant 只改控件的颜色槽位，标签的形态按控件的面派：subtle 控件里是描边标签，其余是淡底标签；落标签与删标签的行为三档一致
 
 ```vue
 <script setup lang="ts">
@@ -1808,6 +1797,28 @@ function onValueChange(details: { value: string[] }) {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 关键词、收件人、技能这类数量不定的短词集合。
+- 需要粘贴一整串自动拆分。
+
+### 何时不用
+
+- 值来自固定清单：用[选择器](./select)的多选。
+- 需要从候选里检索着选：用[组合框](./combobox)的多选。
+
+### 特性
+
+- `delimiter` 与 `addOnPaste` 一起处理粘贴拆分。
+- 每枚标签都是库里的 tag：预览、文字与删除钮就是它的 root、label 与 close-trigger，语气与尺寸随控件，形态按控件的面派。
+- `editable` 让已有标签双击就地改。
+- `max` 与 `allowOverflow` 一对：超出上限是拒收还是标红。
+- 标签的值可以是对象，不必是字符串。
+- `showCount` 显出计数部件，数字取 `count` 与 `max`，顶到上限与越界各换一档颜色。
+- `required` 经 `aria-required` 上报必填。
+
 ## 产物
 
 | 层 | 值 |
@@ -1822,7 +1833,7 @@ function onValueChange(details: { value: string[] }) {
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="tags-input"`：**`root`** · `label` · **`control`** · **`input`** · `item` · `item-preview` · `item-text` · `item-delete-trigger` · `item-input` · `clear-trigger` · `count` · `hidden-input`
+`data-scope="tags-input"`：**`root`** · `label` · **`control`** · **`input`** · `item` · `item-input` · `clear-trigger` · `count` · `hidden-input`
 
 ## Props
 
@@ -1913,9 +1924,9 @@ function onValueChange(details: { value: string[] }) {
 | `getControlProps` | `() => T['element']` |  |
 | `getInputProps` | `() => T['input']` |  |
 | `getItemProps` | `(item: TagsInputItemProps) => T['element']` |  |
-| `getItemPreviewProps` | `(item: TagsInputItemProps) => T['element']` |  |
-| `getItemTextProps` | `(item: TagsInputItemProps) => T['element']` |  |
-| `getItemDeleteTriggerProps` | `(item: TagsInputItemProps) => T['button']` |  |
+| `getItemPreviewProps` | `(item: TagsInputItemProps) => T['element']` | 标签的预览：就是库里 tag 的 root（data-scope="tag"），就地编辑时收起；双击进编辑态。 |
+| `getItemTextProps` | `(item: TagsInputItemProps) => T['element']` | 标签文字：tag 的 label，截断落在这一层。 |
+| `getItemDeleteTriggerProps` | `(item: TagsInputItemProps) => T['button']` | 删除钮：所在标签那份 tag 的 close-trigger，不占 Tab 位；禁用与只读时留位、原生 disabled。 |
 | `getItemInputProps` | `(item: TagsInputItemProps) => T['input']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getCountProps` | `() => T['element']` | 计数部件：承载 count / max 两个数字，没开 showCount 时带 hidden 收起。 |
@@ -1953,7 +1964,6 @@ function onValueChange(details: { value: string[] }) {
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-labelledby` | `label` 部件的 id |
 | `input` | `aria-required` | 'true' \| 'false' |
-| `item-delete-trigger` | `aria-label` | label.deleteItem(item.value) |
 | `item-input` | `aria-label` | label.editTagInput(item.value) |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
 | `count` | `aria-hidden` | 'true' |
@@ -1979,15 +1989,69 @@ function onValueChange(details: { value: string[] }) {
 | `count` | `data-at-max` | ''（条件成立时才出现） |
 | `count` | `data-disabled` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-tags-input-action-bg` · `--xh-tags-input-action-bg-active` · `--xh-tags-input-action-bg-hover` · `--xh-tags-input-action-fg` · `--xh-tags-input-action-fg-hover` · `--xh-tags-input-action-font-size` · `--xh-tags-input-action-radius` · `--xh-tags-input-action-size` · `--xh-tags-input-control-bg` · `--xh-tags-input-control-bg-disabled` · `--xh-tags-input-control-bg-hover` · `--xh-tags-input-control-bg-readonly` · `--xh-tags-input-control-border` · `--xh-tags-input-control-border-at-max` · `--xh-tags-input-control-border-focus` · `--xh-tags-input-control-border-hover` · `--xh-tags-input-control-border-invalid` · `--xh-tags-input-control-fg` · `--xh-tags-input-control-gap` · `--xh-tags-input-control-h` · `--xh-tags-input-control-min-w` · `--xh-tags-input-control-px` · `--xh-tags-input-control-py` · `--xh-tags-input-control-radius` · `--xh-tags-input-control-shadow` · `--xh-tags-input-count-fg` · `--xh-tags-input-count-fg-at-max` · `--xh-tags-input-count-fg-disabled` · `--xh-tags-input-count-font-size` · `--xh-tags-input-delete-bg` · `--xh-tags-input-delete-bg-active` · `--xh-tags-input-delete-bg-hover` · `--xh-tags-input-delete-fg` · `--xh-tags-input-delete-fg-highlight` · `--xh-tags-input-delete-fg-hover` · `--xh-tags-input-delete-font-size` · `--xh-tags-input-delete-radius` · `--xh-tags-input-delete-size` · `--xh-tags-input-gap` · `--xh-tags-input-icon-size` · `--xh-tags-input-input-autofill-bg` · `--xh-tags-input-input-autofill-fg` · `--xh-tags-input-input-basis` · `--xh-tags-input-input-font-size` · `--xh-tags-input-input-min-w` · `--xh-tags-input-item-bg` · `--xh-tags-input-item-bg-highlight` · `--xh-tags-input-item-fg` · `--xh-tags-input-item-fg-highlight` · `--xh-tags-input-item-font-size` · `--xh-tags-input-item-gap` · `--xh-tags-input-item-input-bg` · `--xh-tags-input-item-input-border` · `--xh-tags-input-item-input-fg` · `--xh-tags-input-item-px` · `--xh-tags-input-item-py` · `--xh-tags-input-item-radius` · `--xh-tags-input-label-fg` · `--xh-tags-input-label-fg-disabled` · `--xh-tags-input-label-font-size` · `--xh-tags-input-label-font-weight` · `--xh-tags-input-placeholder-fg`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-tags-input-action-bg` | `clear-trigger` | `background` | `default` | `transparent` | tags-input 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-tags-input-action-bg-active` | `clear-trigger` | `background` | `active` | `--xh-bg-subtle-active` | tags-input 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-tags-input-action-bg-hover` | `clear-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | tags-input 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-tags-input-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | tags-input 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-tags-input-action-fg-hover` | `clear-trigger` | `color` | `hover` | `--xh-fg-default` | tags-input 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-tags-input-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | tags-input 的 clear-trigger 部件 font-size 覆盖槽。 |
+| `--xh-tags-input-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-control` | tags-input 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-tags-input-action-size` | `clear-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | tags-input 的 clear-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-tags-input-control-bg` | `control` | `background` | `default` | `--xh-_tags-input-control-bg` | tags-input 的 control 部件 background 覆盖槽。 |
+| `--xh-tags-input-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | tags-input 的 control 部件 background 覆盖槽。 |
+| `--xh-tags-input-control-bg-hover` | `control` | `background` | `at-max`<br>`disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid], [data-at-max])`<br>`readonly` | `--xh-_tags-input-control-bg-hover` | tags-input 的 control 部件 background 覆盖槽。 |
+| `--xh-tags-input-control-bg-readonly` | `control` | `background` | `disabled`<br>`not([data-disabled])`<br>`readonly` | `--xh-bg-subtle` | tags-input 的 control 部件 background 覆盖槽。 |
+| `--xh-tags-input-control-border` | `control` | `border` | `default` | `--xh-_tags-input-control-border` | tags-input 的 control 部件 border 覆盖槽。 |
+| `--xh-tags-input-control-border-at-max` | `control` | `border-color` | `at-max` | `--xh-border-at-limit` | tags-input 的 control 部件 border-color 覆盖槽。 |
+| `--xh-tags-input-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])` | `--xh-_tone` | tags-input 的 control 部件 border-color 覆盖槽。 |
+| `--xh-tags-input-control-border-hover` | `control` | `border-color` | `at-max`<br>`disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid], [data-at-max])`<br>`readonly` | `--xh-_tags-input-control-border-hover` | tags-input 的 control 部件 border-color 覆盖槽。 |
+| `--xh-tags-input-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | tags-input 的 control 部件 border-color 覆盖槽。 |
+| `--xh-tags-input-control-fg` | `control` | `color` | `default` | `--xh-fg-default` | tags-input 的 control 部件 color 覆盖槽。 |
+| `--xh-tags-input-control-gap` | `control` | `gap` | `default` | `--xh-_tags-input-control-gap` | tags-input 的 control 部件 gap 覆盖槽。 |
+| `--xh-tags-input-control-h` | `control` | `min-block-size` | `default` | `--xh-_tags-input-control-h` | tags-input 的 control 部件 min-block-size 覆盖槽。 |
+| `--xh-tags-input-control-max-h` | `control` | `max-block-size` | `default` | `--xh-viewport-h-sm` | tags-input 的 control 部件 max-block-size 覆盖槽。 |
+| `--xh-tags-input-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | tags-input 的 control、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-tags-input-control-px` | `control` | `padding-inline` | `default` | `--xh-_tags-input-control-px` | tags-input 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-tags-input-control-py` | `control` | `padding-block` | `default` | `--xh-space-0_5` | tags-input 的 control 部件 padding-block 覆盖槽。 |
+| `--xh-tags-input-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | tags-input 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-tags-input-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_tags-input-control-shadow` | tags-input 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-tags-input-count-fg` | `count` | `color` | `default` | `--xh-fg-muted` | tags-input 的 count 部件 color 覆盖槽。 |
+| `--xh-tags-input-count-fg-at-max` | `count` | `color` | `at-max` | `--xh-fg-warning` | tags-input 的 count 部件 color 覆盖槽。 |
+| `--xh-tags-input-count-fg-disabled` | `count` | `color` | `disabled` | `--xh-fg-disabled` | tags-input 的 count 部件 color 覆盖槽。 |
+| `--xh-tags-input-count-font-size` | `count` | `font-size` | `default` | `--xh-_tags-input-item-font-size` | tags-input 的 count 部件 font-size 覆盖槽。 |
+| `--xh-tags-input-gap` | `root` | `gap` | `default` | `--xh-space-1` | tags-input 的 root 部件 gap 覆盖槽。 |
+| `--xh-tags-input-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | tags-input 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-tags-input-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-canvas` | tags-input 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-tags-input-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | tags-input 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
+| `--xh-tags-input-input-basis` | `input` | `flex` | `default` | `6rem` | tags-input 的 input 部件 flex 覆盖槽。 |
+| `--xh-tags-input-input-font-size` | `input` | `font-size` | `default` | `--xh-_tags-input-input-font-size` | tags-input 的 input 部件 font-size 覆盖槽。 |
+| `--xh-tags-input-input-min-w` | `input` | `min-inline-size` | `default` | `4rem` | tags-input 的 input 部件 min-inline-size 覆盖槽。 |
+| `--xh-tags-input-item-bg-highlight` | `item`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-_tags-input-accent` | tags-input 的 item、root 部件 background 覆盖槽。 |
+| `--xh-tags-input-item-fg-highlight` | `item`<br>`root` | `color` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-_tags-input-accent-fg` | tags-input 的 item、root 部件 color 覆盖槽。 |
+| `--xh-tags-input-item-font-size` | `item-input` | `font-size` | `default` | `--xh-_tags-input-item-font-size` | tags-input 的 item-input 部件 font-size 覆盖槽。 |
+| `--xh-tags-input-item-input-bg` | `item-input` | `background` | `default` | `--xh-bg-canvas` | tags-input 的 item-input 部件 background 覆盖槽。 |
+| `--xh-tags-input-item-input-border` | `item-input` | `border` | `default` | `--xh-border-control` | tags-input 的 item-input 部件 border 覆盖槽。 |
+| `--xh-tags-input-item-input-fg` | `item-input` | `color` | `default` | `--xh-fg-default` | tags-input 的 item-input 部件 color 覆盖槽。 |
+| `--xh-tags-input-item-px` | `item-input` | `padding-inline` | `default` | `--xh-_tags-input-item-px` | tags-input 的 item-input 部件 padding-inline 覆盖槽。 |
+| `--xh-tags-input-item-py` | `item-input` | `padding-block` | `default` | `--xh-_tags-input-item-py` | tags-input 的 item-input 部件 padding-block 覆盖槽。 |
+| `--xh-tags-input-item-radius` | `item-input` | `border-radius` | `default` | `--xh-shape-control` | tags-input 的 item-input 部件 border-radius 覆盖槽。 |
+| `--xh-tags-input-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | tags-input 的 label 部件 color 覆盖槽。 |
+| `--xh-tags-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | tags-input 的 label 部件 color 覆盖槽。 |
+| `--xh-tags-input-label-font-size` | `label` | `font-size` | `default` | `--xh-_tags-input-label-font-size` | tags-input 的 label 部件 font-size 覆盖槽。 |
+| `--xh-tags-input-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tags-input 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-tags-input-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | tags-input 的 input 部件 color 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
-`background` · `border-color` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

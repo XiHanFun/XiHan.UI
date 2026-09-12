@@ -1,30 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/pagination
 
-# 分页 `pagination`
+# Pagination `分页`
 
 把一份很长的结果切成一页一页，并给出当前位置与去处。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/pagination" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/pagination.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/pagination" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/pagination" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/pagination.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 结果集很大且用户需要跳到确定的位置、或需要可分享的页码地址。
-- 需要知道一共有多少条。
-
-## 何时不用
-
-- 内容是时间流、用户只关心"再来一些"：用[无限滚动](./infinite-scroll)。
-- 结果条数很少：一次全给。
-
-## 特性
-
-- `count` 给的是总条数不是总页数。
-- 页码序列由 `root` 的插槽交出来，作者照着渲染条目与省略号；不渲染序列也行，只留上一页 / 下一页。
-- `siblingCount` 决定当前页两侧各留几页，序列长度恒定，切页时省略号左右挪、按钮不抖。
-- `dir` 只作用于排版："上一页"永远是 `page - 1`，不随书写方向翻转。
-- 换 `pageSize` 后总页数重算，越界的当前页被夹回末页。
-
-## 示例
-
-### 基础用法
+## 用法
 
 count 给的是总条数不是总页数；页码序列由 root 的插槽交出来，作者照着渲染 item 与省略号
 
@@ -48,7 +36,7 @@ import {
   >
     <XhPaginationPrevTrigger />
     <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-      <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'">…</XhPaginationEllipsisTrigger>
+      <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'" />
       <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
     </template>
     <XhPaginationNextTrigger />
@@ -71,7 +59,7 @@ import {
     <button data-xh-part="item" value="3">3</button>
     <button data-xh-part="item" value="4">4</button>
     <button data-xh-part="item" value="5">5</button>
-    <button data-xh-part="ellipsis-trigger" side="end">…</button>
+    <button data-xh-part="ellipsis-trigger" side="end"></button>
     <button data-xh-part="item" value="20">20</button>
     <button data-xh-part="next-trigger"></button>
     <span id="pagination-basic-readout" style="flex-basis: 100%">
@@ -98,7 +86,6 @@ import {
       if (item.type === "ellipsis") {
         el.dataset.xhPart = "ellipsis-trigger";
         el.setAttribute("side", item.side);
-        el.textContent = "…";
       } else {
         el.dataset.xhPart = "item";
         el.setAttribute("value", String(item.value));
@@ -113,6 +100,8 @@ import {
   host.addEventListener("page-change", render);
 </script>
 ```
+
+## 示例
 
 ### 受控与切片
 
@@ -147,7 +136,7 @@ const page = ref(1);
 
     <XhPaginationPrevTrigger />
     <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-      <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'">…</XhPaginationEllipsisTrigger>
+      <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'" />
       <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
     </template>
     <XhPaginationNextTrigger />
@@ -237,7 +226,7 @@ import {
   >
     <XhPaginationPrevTrigger />
     <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-      <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'">…</XhPaginationEllipsisTrigger>
+      <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'" />
       <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
     </template>
     <XhPaginationNextTrigger />
@@ -257,13 +246,13 @@ import {
   <nav data-xh-part="root">
     <button data-xh-part="prev-trigger"></button>
     <button data-xh-part="item" value="1">1</button>
-    <button data-xh-part="ellipsis-trigger" side="start">…</button>
+    <button data-xh-part="ellipsis-trigger" side="start"></button>
     <button data-xh-part="item" value="10">10</button>
     <button data-xh-part="item" value="11">11</button>
     <button data-xh-part="item" value="12">12</button>
     <button data-xh-part="item" value="13">13</button>
     <button data-xh-part="item" value="14">14</button>
-    <button data-xh-part="ellipsis-trigger" side="end">…</button>
+    <button data-xh-part="ellipsis-trigger" side="end"></button>
     <button data-xh-part="item" value="50">50</button>
     <button data-xh-part="next-trigger"></button>
   </nav>
@@ -286,7 +275,6 @@ import {
       if (item.type === "ellipsis") {
         el.dataset.xhPart = "ellipsis-trigger";
         el.setAttribute("side", item.side);
-        el.textContent = "…";
       } else {
         el.dataset.xhPart = "item";
         el.setAttribute("value", String(item.value));
@@ -332,7 +320,7 @@ const translations = {
   >
     <XhPaginationPrevTrigger />
     <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-      <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'">…</XhPaginationEllipsisTrigger>
+      <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'" />
       <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
     </template>
     <XhPaginationNextTrigger />
@@ -354,7 +342,7 @@ const translations = {
     <button data-xh-part="item" value="3">3</button>
     <button data-xh-part="item" value="4">4</button>
     <button data-xh-part="item" value="5">5</button>
-    <button data-xh-part="ellipsis-trigger" side="end">…</button>
+    <button data-xh-part="ellipsis-trigger" side="end"></button>
     <button data-xh-part="item" value="8">8</button>
     <button data-xh-part="next-trigger"></button>
   </nav>
@@ -385,7 +373,6 @@ const translations = {
       if (item.type === "ellipsis") {
         el.dataset.xhPart = "ellipsis-trigger";
         el.setAttribute("side", item.side);
-        el.textContent = "…";
       } else {
         el.dataset.xhPart = "item";
         el.setAttribute("value", String(item.value));
@@ -440,7 +427,7 @@ const tones = [
       >
         <XhPaginationPrevTrigger />
         <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-          <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'">…</XhPaginationEllipsisTrigger>
+          <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'" />
           <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
         </template>
         <XhPaginationNextTrigger />
@@ -582,7 +569,7 @@ const sizes = [
       >
         <XhPaginationPrevTrigger />
         <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-          <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'">…</XhPaginationEllipsisTrigger>
+          <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'" />
           <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
         </template>
         <XhPaginationNextTrigger />
@@ -604,7 +591,7 @@ const sizes = [
         <button data-xh-part="item" value="3">3</button>
         <button data-xh-part="item" value="4">4</button>
         <button data-xh-part="item" value="5">5</button>
-        <button data-xh-part="ellipsis-trigger" side="end">…</button>
+        <button data-xh-part="ellipsis-trigger" side="end"></button>
         <button data-xh-part="item" value="20">20</button>
         <button data-xh-part="next-trigger"></button>
       </nav>
@@ -621,7 +608,7 @@ const sizes = [
         <button data-xh-part="item" value="3">3</button>
         <button data-xh-part="item" value="4">4</button>
         <button data-xh-part="item" value="5">5</button>
-        <button data-xh-part="ellipsis-trigger" side="end">…</button>
+        <button data-xh-part="ellipsis-trigger" side="end"></button>
         <button data-xh-part="item" value="20">20</button>
         <button data-xh-part="next-trigger"></button>
       </nav>
@@ -638,7 +625,7 @@ const sizes = [
         <button data-xh-part="item" value="3">3</button>
         <button data-xh-part="item" value="4">4</button>
         <button data-xh-part="item" value="5">5</button>
-        <button data-xh-part="ellipsis-trigger" side="end">…</button>
+        <button data-xh-part="ellipsis-trigger" side="end"></button>
         <button data-xh-part="item" value="20">20</button>
         <button data-xh-part="next-trigger"></button>
       </nav>
@@ -664,7 +651,6 @@ const sizes = [
         if (item.type === "ellipsis") {
           el.dataset.xhPart = "ellipsis-trigger";
           el.setAttribute("side", item.side);
-          el.textContent = "…";
         } else {
           el.dataset.xhPart = "item";
           el.setAttribute("value", String(item.value));
@@ -782,7 +768,7 @@ function jump(setPage: (page: number) => void): void {
   >
     <XhPaginationPrevTrigger />
     <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-      <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'">…</XhPaginationEllipsisTrigger>
+      <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'" />
       <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
     </template>
     <XhPaginationNextTrigger />
@@ -807,11 +793,11 @@ function jump(setPage: (page: number) => void): void {
   <nav data-xh-part="root">
     <button data-xh-part="prev-trigger"></button>
     <button data-xh-part="item" value="1">1</button>
-    <button data-xh-part="ellipsis-trigger" side="start">…</button>
+    <button data-xh-part="ellipsis-trigger" side="start"></button>
     <button data-xh-part="item" value="4">4</button>
     <button data-xh-part="item" value="5">5</button>
     <button data-xh-part="item" value="6">6</button>
-    <button data-xh-part="ellipsis-trigger" side="end">…</button>
+    <button data-xh-part="ellipsis-trigger" side="end"></button>
     <button data-xh-part="item" value="100">100</button>
     <button data-xh-part="next-trigger"></button>
 
@@ -847,7 +833,6 @@ function jump(setPage: (page: number) => void): void {
       if (item.type === "ellipsis") {
         el.dataset.xhPart = "ellipsis-trigger";
         el.setAttribute("side", item.side);
-        el.textContent = "…";
       } else {
         el.dataset.xhPart = "item";
         el.setAttribute("value", String(item.value));
@@ -881,7 +866,7 @@ function jump(setPage: (page: number) => void): void {
 
 ### 每页条数
 
-控制器由库自带：档位从 page-size-options 来，换档时页码跟着换算，改档前第一条仍留在页内
+控制器就是库里的下拉：档位从 page-size-options 来、档位文字取 translations.pageSizeOption，换档时页码跟着换算，改档前第一条仍留在页内
 
 ```vue
 <script setup lang="ts">
@@ -893,6 +878,8 @@ import {
   XhPaginationPrevTrigger,
   XhPaginationRoot,
 } from "@xihan-ui/vue";
+
+const translations = { pageSizeOption: (size: number) => `${size} 条 / 页` };
 </script>
 
 <template>
@@ -902,11 +889,10 @@ import {
     :default-page-size="10"
     :page-size-options="[10, 20, 50]"
     :default-page="8"
+    :translations="translations"
     style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; inline-size: 100%"
   >
-    <XhPaginationPageSizeSelect v-slot="{ options }">
-      <option v-for="o in options" :key="o" :value="String(o)">{{ o }} 条 / 页</option>
-    </XhPaginationPageSizeSelect>
+    <XhPaginationPageSizeSelect />
 
     <XhPaginationPrevTrigger />
     <template v-for="(p, i) in pages" :key="`${p}-${i}`">
@@ -931,20 +917,16 @@ import {
   style="inline-size: 100%"
 >
   <nav data-xh-part="root">
-    <!-- 控制器是原生 select，档位写成 option，长相归作者 -->
-    <select data-xh-part="page-size-select">
-      <option value="10">10 条 / 页</option>
-      <option value="20">20 条 / 页</option>
-      <option value="50">50 条 / 页</option>
-    </select>
+    <!-- 挂载点写一个空 div 就够：里头那套下拉的角色节点由元素自己建 -->
+    <div data-xh-part="page-size-select"></div>
 
     <button data-xh-part="prev-trigger"></button>
     <button data-xh-part="item" value="1">1</button>
-    <button data-xh-part="ellipsis-trigger" side="start">…</button>
+    <button data-xh-part="ellipsis-trigger" side="start"></button>
     <button data-xh-part="item" value="7">7</button>
     <button data-xh-part="item" value="8">8</button>
     <button data-xh-part="item" value="9">9</button>
-    <button data-xh-part="ellipsis-trigger" side="end">…</button>
+    <button data-xh-part="ellipsis-trigger" side="end"></button>
     <button data-xh-part="item" value="20">20</button>
     <button data-xh-part="next-trigger"></button>
     <span id="pagination-page-size-readout" style="flex-basis: 100%">
@@ -959,8 +941,9 @@ import {
   const next = root.querySelector('[data-xh-part="next-trigger"]');
   const readout = document.getElementById("pagination-page-size-readout");
 
-  // 档位表只做取值来源，不决定长相
+  // 档位表只做取值来源，每一档的文字归文案桶
   host.pageSizeOptions = [10, 20, 50];
+  host.translations = { pageSizeOption: (size) => `${size} 条 / 页` };
 
   // 换档之后总页数与页码都变了，两样都从元素上重读；
   // 条目区间也是它给的，末页不满时右端已经收成实际条数
@@ -974,7 +957,6 @@ import {
       if (item.type === "ellipsis") {
         el.dataset.xhPart = "ellipsis-trigger";
         el.setAttribute("side", item.side);
-        el.textContent = "…";
       } else {
         el.dataset.xhPart = "item";
         el.setAttribute("value", String(item.value));
@@ -1044,7 +1026,7 @@ const mutedTokens = {
       >
         <XhPaginationPrevTrigger />
         <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-          <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'">…</XhPaginationEllipsisTrigger>
+          <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'" />
           <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
         </template>
         <XhPaginationNextTrigger />
@@ -1094,7 +1076,7 @@ const mutedTokens = {
         <button data-xh-part="item" value="3">3</button>
         <button data-xh-part="item" value="4">4</button>
         <button data-xh-part="item" value="5">5</button>
-        <button data-xh-part="ellipsis-trigger" side="end">…</button>
+        <button data-xh-part="ellipsis-trigger" side="end"></button>
         <button data-xh-part="item" value="20">20</button>
         <button data-xh-part="next-trigger"></button>
       </nav>
@@ -1146,7 +1128,6 @@ const mutedTokens = {
       if (item.type === "ellipsis") {
         el.dataset.xhPart = "ellipsis-trigger";
         el.setAttribute("side", item.side);
-        el.textContent = "…";
       } else {
         el.dataset.xhPart = "item";
         el.setAttribute("value", String(item.value));
@@ -1212,11 +1193,11 @@ import {
   <nav data-xh-part="root">
     <button data-xh-part="prev-trigger"></button>
     <button data-xh-part="item" value="1">1</button>
-    <button data-xh-part="ellipsis-trigger" side="start">…</button>
+    <button data-xh-part="ellipsis-trigger" side="start"></button>
     <button data-xh-part="item" value="99">99</button>
     <button data-xh-part="item" value="100">100</button>
     <button data-xh-part="item" value="101">101</button>
-    <button data-xh-part="ellipsis-trigger" side="end">…</button>
+    <button data-xh-part="ellipsis-trigger" side="end"></button>
     <button data-xh-part="item" value="200">200</button>
     <button data-xh-part="next-trigger"></button>
 
@@ -1257,7 +1238,6 @@ import {
         const el = document.createElement("button");
         el.dataset.xhPart = "ellipsis-trigger";
         el.setAttribute("side", item.side);
-        el.textContent = "…";
         root.insertBefore(el, next);
       } else {
         root.insertBefore(makeItem(item.value), next);
@@ -1294,6 +1274,26 @@ import {
   });
 </script>
 ```
+
+## 设计指引
+
+### 何时使用
+
+- 结果集很大且用户需要跳到确定的位置、或需要可分享的页码地址。
+- 需要知道一共有多少条。
+
+### 何时不用
+
+- 内容是时间流、用户只关心"再来一些"：用[无限滚动](./infinite-scroll)。
+- 结果条数很少：一次全给。
+
+### 特性
+
+- `count` 给的是总条数不是总页数。
+- 页码序列由 `root` 的插槽交出来，作者照着渲染条目与省略号；不渲染序列也行，只留上一页 / 下一页。
+- `siblingCount` 决定当前页两侧各留几页，序列长度恒定，切页时省略号左右挪、按钮不抖。
+- `dir` 只作用于排版："上一页"永远是 `page - 1`，不随书写方向翻转。
+- 换 `pageSize` 后总页数重算，越界的当前页被夹回末页。
 
 ## 产物
 
@@ -1349,7 +1349,6 @@ import {
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhPaginationContent` | `default` | `{ pages: number[] }` |  |
-| `XhPaginationPageSizeSelect` | `default` | `{ options: number[], label: (size: number) => string }` |  |
 | `XhPaginationRoot` | `default` | `PaginationRootSlotProps` |  |
 | `XhPaginationSummary` | `default` | `{ summaryText: string, start: number, end: number, count: number }` |  |
 
@@ -1401,7 +1400,8 @@ import {
 | `getNextTriggerProps` | `() => T['button']` |  |
 | `getItemProps` | `(props: PaginationItemProps) => T['button']` |  |
 | `getEllipsisTriggerProps` | `(props: PaginationEllipsisTriggerProps) => T['button']` | 省略位：可展开的按钮，摊开后列出被折叠的页码。 |
-| `getPageSizeSelectProps` | `() => T['select']` | 每页条数控制器：绑到一个原生 select 上，档位由作者按 pageSizeOptions 渲染成 option。 |
+| `getPageSizeSelectProps` | `() => T['element']` | 每页条数控制器的挂载点：只管排布的一格，控件本体是内嵌下拉的角色节点。 |
+| `pageSizeSelect` | `SelectApi<T>` | 每页条数那个下拉，整份 select 的 api。档位由 collection 给出（文字取 translations.pageSizeOption），选中值即当前每页条数；作者照它渲染 select 的角色节点。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `closeEllipsis` | `() => void` | 收起摊开的省略位。 |
@@ -1435,7 +1435,7 @@ import {
 | `ellipsis-trigger` | `aria-expanded` | 'true' \| 'false' |
 | `ellipsis-trigger` | `aria-haspopup` | 'true' |
 | `ellipsis-trigger` | `aria-label` | label.ellipsis( (items.find(item =&gt; item.type === 'el… |
-| `page-size-select` | `aria-label` | label.pageSizeSelect |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-label` | label.ellipsis(folded.length) |
 | `content` | `role` | 'group' |
 
@@ -1459,6 +1459,7 @@ import {
 | `item` | `data-current` | ''（条件成立时才出现） |
 | `ellipsis-trigger` | `data-side` | props.side |
 | `ellipsis-trigger` | `data-state` | 'open' \| 'closed' |
+| `page-size-select` | `data-empty` | ''（条件成立时才出现） |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
@@ -1469,11 +1470,49 @@ import {
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-pagination-content-bg` · `--xh-pagination-content-border` · `--xh-pagination-content-max-h` · `--xh-pagination-content-max-w` · `--xh-pagination-content-p` · `--xh-pagination-content-radius` · `--xh-pagination-content-shadow` · `--xh-pagination-ellipsis-trigger-fg` · `--xh-pagination-font-size` · `--xh-pagination-gap` · `--xh-pagination-icon-size` · `--xh-pagination-item-bg` · `--xh-pagination-item-bg-active` · `--xh-pagination-item-bg-hover` · `--xh-pagination-item-bg-selected` · `--xh-pagination-item-bg-selected-active` · `--xh-pagination-item-bg-selected-hover` · `--xh-pagination-item-border-selected` · `--xh-pagination-item-border-selected-active` · `--xh-pagination-item-border-selected-hover` · `--xh-pagination-item-fg` · `--xh-pagination-item-fg-selected` · `--xh-pagination-item-font-weight` · `--xh-pagination-item-h` · `--xh-pagination-item-min-size` · `--xh-pagination-item-px` · `--xh-pagination-item-radius` · `--xh-pagination-item-shadow` · `--xh-pagination-jumper-bg` · `--xh-pagination-jumper-bg-hover` · `--xh-pagination-jumper-border` · `--xh-pagination-jumper-border-hover` · `--xh-pagination-jumper-w` · `--xh-pagination-layer` · `--xh-pagination-page-size-bg` · `--xh-pagination-page-size-bg-hover` · `--xh-pagination-page-size-border` · `--xh-pagination-page-size-border-hover` · `--xh-pagination-summary-fg`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-pagination-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` | pagination 的 content 部件 background 覆盖槽。 |
+| `--xh-pagination-content-border` | `content` | `border` | `default` | `--xh-border-default` | pagination 的 content 部件 border 覆盖槽。 |
+| `--xh-pagination-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | pagination 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-pagination-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | pagination 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-pagination-content-p` | `content` | `padding` | `default` | `--xh-space-1` | pagination 的 content 部件 padding 覆盖槽。 |
+| `--xh-pagination-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | pagination 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-pagination-content-shadow` | `content` | `box-shadow` | `default` | `--xh-elevation-floating` | pagination 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-pagination-ellipsis-trigger-fg` | `ellipsis-trigger` | `color` | `default` | `--xh-fg-subtle` | pagination 的 ellipsis-trigger 部件 color 覆盖槽。 |
+| `--xh-pagination-font-size` | `ellipsis-trigger`<br>`item`<br>`jumper`<br>`next-trigger`<br>`prev-trigger`<br>`summary` | `font-size` | `default` | `--xh-_pagination-font-size` | pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger、summary 部件 font-size 覆盖槽。 |
+| `--xh-pagination-gap` | `content`<br>`root` | `gap` | `default` | `--xh-space-1` | pagination 的 content、root 部件 gap 覆盖槽。 |
+| `--xh-pagination-icon-size` | `positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])` | `--xh-glyph-size-text` | pagination 的 positioner、root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-pagination-item-bg` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `background` | `default` | `transparent` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background 覆盖槽。 |
+| `--xh-pagination-item-bg-active` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `background` | `active`<br>`current`<br>`not(:disabled)`<br>`not([data-current])` | `--xh-bg-subtle-active` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background 覆盖槽。 |
+| `--xh-pagination-item-bg-hover` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `background` | `current`<br>`hover`<br>`not(:disabled)`<br>`not([data-current])` | `--xh-bg-subtle-hover` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background 覆盖槽。 |
+| `--xh-pagination-item-bg-selected` | `item` | `background` | `current` | `--xh-_pagination-selected-bg` | pagination 的 item 部件 background 覆盖槽。 |
+| `--xh-pagination-item-bg-selected-active` | `item` | `background` | `active`<br>`current` | `--xh-_pagination-selected-bg-active` | pagination 的 item 部件 background 覆盖槽。 |
+| `--xh-pagination-item-bg-selected-hover` | `item` | `background` | `current`<br>`hover` | `--xh-_pagination-selected-bg-hover` | pagination 的 item 部件 background 覆盖槽。 |
+| `--xh-pagination-item-border-selected` | `item` | `border-color` | `current` | `--xh-_pagination-selected-bg` | pagination 的 item 部件 border-color 覆盖槽。 |
+| `--xh-pagination-item-border-selected-active` | `item` | `border-color` | `active`<br>`current` | `--xh-_pagination-selected-bg-active` | pagination 的 item 部件 border-color 覆盖槽。 |
+| `--xh-pagination-item-border-selected-hover` | `item` | `border-color` | `current`<br>`hover` | `--xh-_pagination-selected-bg-hover` | pagination 的 item 部件 border-color 覆盖槽。 |
+| `--xh-pagination-item-fg` | `ellipsis-trigger`<br>`item`<br>`jumper`<br>`next-trigger`<br>`prev-trigger` | `color` | `default` | `--xh-fg-default` | pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger 部件 color 覆盖槽。 |
+| `--xh-pagination-item-fg-selected` | `item` | `color` | `current` | `--xh-_pagination-selected-fg` | pagination 的 item 部件 color 覆盖槽。 |
+| `--xh-pagination-item-font-weight` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `font-weight` | `default` | `--xh-text-label-weight` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 font-weight 覆盖槽。 |
+| `--xh-pagination-item-h` | `ellipsis-trigger`<br>`item`<br>`jumper`<br>`next-trigger`<br>`prev-trigger`<br>`summary` | `block-size` | `default` | `--xh-_pagination-item-size` | pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger、summary 部件 block-size 覆盖槽。 |
+| `--xh-pagination-item-min-size` | `ellipsis-trigger`<br>`item`<br>`next-trigger`<br>`prev-trigger` | `min-inline-size` | `default` | `--xh-_pagination-item-size` | pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 min-inline-size 覆盖槽。 |
+| `--xh-pagination-item-px` | `ellipsis-trigger`<br>`item`<br>`jumper`<br>`next-trigger`<br>`prev-trigger` | `padding-inline` | `default` | `--xh-_pagination-item-px` | pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-pagination-item-radius` | `ellipsis-trigger`<br>`item`<br>`jumper`<br>`next-trigger`<br>`prev-trigger` | `border-radius` | `default` | `--xh-shape-control` | pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-pagination-item-shadow` | `item` | `box-shadow` | `current` | `--xh-_pagination-highlight` | pagination 的 item 部件 box-shadow 覆盖槽。 |
+| `--xh-pagination-jumper-bg` | `jumper` | `background` | `default` | `--xh-bg-surface` | pagination 的 jumper 部件 background 覆盖槽。 |
+| `--xh-pagination-jumper-bg-hover` | `jumper` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | pagination 的 jumper 部件 background 覆盖槽。 |
+| `--xh-pagination-jumper-border` | `jumper` | `border` | `default` | `--xh-border-default` | pagination 的 jumper 部件 border 覆盖槽。 |
+| `--xh-pagination-jumper-border-hover` | `jumper` | `border-color` | `hover`<br>`not(:disabled)` | `--xh-border-strong` | pagination 的 jumper 部件 border-color 覆盖槽。 |
+| `--xh-pagination-jumper-w` | `jumper` | `inline-size` | `default` | `--xh-space-8` | pagination 的 jumper 部件 inline-size 覆盖槽。 |
+| `--xh-pagination-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | pagination 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-pagination-summary-fg` | `summary` | `color` | `default` | `--xh-fg-muted` | pagination 的 summary 部件 color 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
@@ -1494,6 +1533,7 @@ import {
 ## 组合
 
 - 与[表格](./table)、[列表](./list)配合；整组禁用时裹一层 `disabled` 的 `fieldset`。
+- 每页条数那个控制器就是[下拉选择](./select)：`page-size-select` 是挂载点，里头的角色节点带的是 `data-scope="select"`，吃 select 那份皮肤。档位来自 `pageSizeOptions`，每一档的文字取 `translations.pageSizeOption`，控件的可及名取 `translations.pageSizeSelect`。
 
 ## 最佳实践
 

@@ -1,32 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/sortable
 
-# 排序 `sortable`
+# Sortable `排序`
 
 让用户拖着重排一列条目，键盘也能完成同一件事。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/sortable" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/sortable.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/sortable" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/sortable" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/sortable.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 顺序本身是数据的一部分：表格列的先后、标签页的排列、收藏项的次序。
-- 顺序要存回后端：`sort` 事件直接给出重排好的 `ids`，接上就能提交。
-
-## 何时不用
-
-- 顺序由数据决定而不由人决定：那是排序规则，不是拖拽。
-- 要把条目拖到**另一个**容器里：本组件只管单个列表内部的重排。
-
-## 特性
-
-- `ids` 是顺序的唯一真源，`sort` 事件回传的 `ids` 已经重排好，可以直接写回。
-- 拖动过程走乐观投影：其余条目实时让位，松手即定，不是拖完才跳一下。
-- 键盘路径默认开着且关不掉：空格拾起、方向键挪、空格放下、Esc 取消，全程有读屏播报。
-- 按下之后要走够 `activationDistance`（默认 5px）才算拖动，因此条目本身仍然可以点击。
-- 拖到容器边缘会自动滚动，视口外的落点够得着。
-- `orientation` 三档：竖排、横排，以及换行网格用的 `both`——网格按最近中心判落点。
-- 写一个 `drop-indicator` 节点（排在末项之后），拖动中会在松手后条目要插进去的那条缝上画一条线；落点回到起点时它自动收起。
-
-## 示例
-
-### 基础用法
+## 用法
 
 ids 是顺序的唯一真源，sort 事件回传的 ids 已经重排好，可直接写回
 
@@ -72,6 +58,8 @@ const ids = ref(["写方案", "评审", "实现", "上线"]);
   </div>
 </xh-sortable>
 ```
+
+## 示例
 
 ### 横排与网格
 
@@ -308,6 +296,28 @@ const ids = ref(["锁定一", "锁定二", "锁定三"]);
 </xh-sortable>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 顺序本身是数据的一部分：表格列的先后、标签页的排列、收藏项的次序。
+- 顺序要存回后端：`sort` 事件直接给出重排好的 `ids`，接上就能提交。
+
+### 何时不用
+
+- 顺序由数据决定而不由人决定：那是排序规则，不是拖拽。
+- 要把条目拖到**另一个**容器里：本组件只管单个列表内部的重排。
+
+### 特性
+
+- `ids` 是顺序的唯一真源，`sort` 事件回传的 `ids` 已经重排好，可以直接写回。
+- 拖动过程走乐观投影：其余条目实时让位，松手即定，不是拖完才跳一下。
+- 键盘路径默认开着且关不掉：空格拾起、方向键挪、空格放下、Esc 取消，全程有读屏播报。
+- 按下之后要走够 `activationDistance`（默认 5px）才算拖动，因此条目本身仍然可以点击。
+- 拖到容器边缘会自动滚动，视口外的落点够得着。
+- `orientation` 三档：竖排、横排，以及换行网格用的 `both`——网格按最近中心判落点。
+- 写一个 `drop-indicator` 节点（排在末项之后），拖动中会在松手后条目要插进去的那条缝上画一条线；落点回到起点时它自动收起。
+
 ## 产物
 
 | 层 | 值 |
@@ -441,11 +451,28 @@ const ids = ref(["锁定一", "锁定二", "锁定三"]);
 | `item-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `drop-indicator` | `data-orientation` | props.orientation |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-sortable-drag-bg-hover` · `--xh-sortable-drag-fg` · `--xh-sortable-drag-fg-disabled` · `--xh-sortable-drag-fg-hover` · `--xh-sortable-drag-grip-h` · `--xh-sortable-drag-grip-w` · `--xh-sortable-drag-radius` · `--xh-sortable-drag-size` · `--xh-sortable-drop-indicator-bg` · `--xh-sortable-drop-indicator-radius` · `--xh-sortable-drop-indicator-size` · `--xh-sortable-gap` · `--xh-sortable-item-opacity-dragging` · `--xh-sortable-item-shadow-dragging`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-sortable-drag-bg-hover` | `item-drag-trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | sortable 的 item-drag-trigger 部件 background 覆盖槽。 |
+| `--xh-sortable-drag-fg` | `item-drag-trigger` | `color` | `default` | `--xh-fg-muted` | sortable 的 item-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-sortable-drag-fg-disabled` | `item-drag-trigger` | `color` | `disabled` | `--xh-fg-disabled` | sortable 的 item-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-sortable-drag-fg-hover` | `item-drag-trigger` | `color` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | sortable 的 item-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-sortable-drag-grip-h` | `item-drag-trigger` | `block-size` | `empty` | `--xh-space-3` | sortable 的 item-drag-trigger 部件 block-size 覆盖槽。 |
+| `--xh-sortable-drag-grip-w` | `item-drag-trigger` | `inline-size` | `empty` | `--xh-space-1` | sortable 的 item-drag-trigger 部件 inline-size 覆盖槽。 |
+| `--xh-sortable-drag-radius` | `item-drag-trigger` | `border-radius` | `default` | `--xh-shape-control` | sortable 的 item-drag-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-sortable-drag-size` | `item-drag-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | sortable 的 item-drag-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-sortable-drop-indicator-bg` | `drop-indicator` | `background` | `default` | `--xh-bg-brand` | sortable 的 drop-indicator 部件 background 覆盖槽。 |
+| `--xh-sortable-drop-indicator-radius` | `drop-indicator` | `border-radius` | `default` | `--xh-shape-pill` | sortable 的 drop-indicator 部件 border-radius 覆盖槽。 |
+| `--xh-sortable-drop-indicator-size` | `drop-indicator` | `block-size`<br>`inline-size` | `orientation=both`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thick` | sortable 的 drop-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-sortable-gap` | `root` | `gap` | `default` | `--xh-space-2` | sortable 的 root 部件 gap 覆盖槽。 |
+| `--xh-sortable-item-opacity-dragging` | `item` | `opacity` | `dragging` | `0.9` | sortable 的 item 部件 opacity 覆盖槽。 |
+| `--xh-sortable-item-shadow-dragging` | `item` | `box-shadow` | `dragging` | `--xh-elevation-raised` | sortable 的 item 部件 box-shadow 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

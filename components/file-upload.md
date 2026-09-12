@@ -1,28 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/file-upload
 
-# 文件上传 `file-upload`
+# FileUpload `文件上传`
 
 选择文件、拖放文件，并把已选与已传的文件列出来。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/file-upload" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/file-upload.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/file-upload" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/file-upload" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/file-upload.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 任何需要用户提交文件的地方。
-- 需要预览、限制类型与大小、或选整个目录。
-
-## 何时不用
-
-- 只是展示已有附件、不允许新增：用[列表](./list)。
-
-## 特性
-
-- `maxFiles` / `maxFileSize` / `minFileSize` 越界的当场被拒，`onFileReject` 逐个报出理由。
-- `autoUpload` 决定选完就传还是等提交。
-- `remoteFiles` 用来回显服务器上已有的附件，与本次新选的并列在同一个列表里。
-- 上传生命周期（完成、失败）各有回调；宿主还可以插入自定的准入判断。
-
-## 示例
-
-### 基础用法
+## 用法
 
 投放区自己就是一个大按钮，隐藏输入是必备部件，缺了它选不了文件
 
@@ -106,6 +96,8 @@ import {
   });
 </script>
 ```
+
+## 示例
 
 ### 限制与拒收
 
@@ -1427,6 +1419,24 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 任何需要用户提交文件的地方。
+- 需要预览、限制类型与大小、或选整个目录。
+
+### 何时不用
+
+- 只是展示已有附件、不允许新增：用[列表](./list)。
+
+### 特性
+
+- `maxFiles` / `maxFileSize` / `minFileSize` 越界的当场被拒，`onFileReject` 逐个报出理由。
+- `autoUpload` 决定选完就传还是等提交。
+- `remoteFiles` 用来回显服务器上已有的附件，与本次新选的并列在同一个列表里。
+- 上传生命周期（完成、失败）各有回调；宿主还可以插入自定的准入判断。
+
 ## 产物
 
 | 层 | 值 |
@@ -1611,11 +1621,88 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 | `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-empty` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-file-upload-clear-bg-active` · `--xh-file-upload-clear-bg-hover` · `--xh-file-upload-clear-fg` · `--xh-file-upload-clear-fg-hover` · `--xh-file-upload-clear-font-size` · `--xh-file-upload-clear-gap` · `--xh-file-upload-clear-h` · `--xh-file-upload-clear-px` · `--xh-file-upload-clear-radius` · `--xh-file-upload-delete-bg-active` · `--xh-file-upload-delete-bg-hover` · `--xh-file-upload-delete-fg` · `--xh-file-upload-delete-fg-hover` · `--xh-file-upload-delete-radius` · `--xh-file-upload-delete-size` · `--xh-file-upload-dropzone-bg` · `--xh-file-upload-dropzone-bg-disabled` · `--xh-file-upload-dropzone-bg-dragging` · `--xh-file-upload-dropzone-bg-hover` · `--xh-file-upload-dropzone-border` · `--xh-file-upload-dropzone-border-dragging` · `--xh-file-upload-dropzone-border-focus` · `--xh-file-upload-dropzone-border-hover` · `--xh-file-upload-dropzone-border-invalid` · `--xh-file-upload-dropzone-fg` · `--xh-file-upload-dropzone-font-size` · `--xh-file-upload-dropzone-gap` · `--xh-file-upload-dropzone-min-h` · `--xh-file-upload-dropzone-px` · `--xh-file-upload-dropzone-py` · `--xh-file-upload-dropzone-radius` · `--xh-file-upload-gap` · `--xh-file-upload-icon-size` · `--xh-file-upload-item-bg` · `--xh-file-upload-item-border` · `--xh-file-upload-item-border-error` · `--xh-file-upload-item-fg` · `--xh-file-upload-item-fg-done` · `--xh-file-upload-item-fg-error` · `--xh-file-upload-item-font-size` · `--xh-file-upload-item-gap` · `--xh-file-upload-item-inner-gap` · `--xh-file-upload-item-progress-fill` · `--xh-file-upload-item-progress-h` · `--xh-file-upload-item-progress-radius` · `--xh-file-upload-item-progress-track` · `--xh-file-upload-item-progress-w` · `--xh-file-upload-item-px` · `--xh-file-upload-item-py` · `--xh-file-upload-item-radius` · `--xh-file-upload-label-fg` · `--xh-file-upload-label-fg-disabled` · `--xh-file-upload-label-font-size` · `--xh-file-upload-label-font-weight` · `--xh-file-upload-preview-bg` · `--xh-file-upload-preview-fg` · `--xh-file-upload-preview-fg-image` · `--xh-file-upload-preview-radius` · `--xh-file-upload-preview-size` · `--xh-file-upload-size-fg` · `--xh-file-upload-size-font-size` · `--xh-file-upload-trigger-bg` · `--xh-file-upload-trigger-bg-active` · `--xh-file-upload-trigger-bg-hover` · `--xh-file-upload-trigger-border` · `--xh-file-upload-trigger-fg` · `--xh-file-upload-trigger-font-size` · `--xh-file-upload-trigger-gap` · `--xh-file-upload-trigger-h` · `--xh-file-upload-trigger-px` · `--xh-file-upload-trigger-radius` · `--xh-file-upload-trigger-shadow-hover`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-file-upload-clear-bg-active` | `clear-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | file-upload 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-file-upload-clear-bg-hover` | `clear-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | file-upload 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-file-upload-clear-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | file-upload 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-file-upload-clear-fg-hover` | `clear-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | file-upload 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-file-upload-clear-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-caption-size` | file-upload 的 clear-trigger 部件 font-size 覆盖槽。 |
+| `--xh-file-upload-clear-gap` | `clear-trigger` | `gap` | `default` | `--xh-control-gap-sm` | file-upload 的 clear-trigger 部件 gap 覆盖槽。 |
+| `--xh-file-upload-clear-h` | `clear-trigger` | `block-size` | `default` | `--xh-control-h-sm` | file-upload 的 clear-trigger 部件 block-size 覆盖槽。 |
+| `--xh-file-upload-clear-px` | `clear-trigger` | `padding-inline` | `default` | `--xh-control-px-sm` | file-upload 的 clear-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-file-upload-clear-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-file-upload-delete-bg-active` | `item-delete-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | file-upload 的 item-delete-trigger 部件 background 覆盖槽。 |
+| `--xh-file-upload-delete-bg-hover` | `item-delete-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | file-upload 的 item-delete-trigger 部件 background 覆盖槽。 |
+| `--xh-file-upload-delete-fg` | `item-delete-trigger` | `color` | `default` | `--xh-fg-muted` | file-upload 的 item-delete-trigger 部件 color 覆盖槽。 |
+| `--xh-file-upload-delete-fg-hover` | `item-delete-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-danger-hover` | file-upload 的 item-delete-trigger 部件 color 覆盖槽。 |
+| `--xh-file-upload-delete-radius` | `item-delete-trigger` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 item-delete-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-file-upload-delete-size` | `item-delete-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | file-upload 的 item-delete-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-file-upload-dropzone-bg` | `dropzone` | `background` | `default` | `--xh-bg-canvas` | file-upload 的 dropzone 部件 background 覆盖槽。 |
+| `--xh-file-upload-dropzone-bg-disabled` | `dropzone` | `background` | `disabled` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
+| `--xh-file-upload-dropzone-bg-dragging` | `dropzone` | `background` | `dragging` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
+| `--xh-file-upload-dropzone-bg-hover` | `dropzone` | `background` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
+| `--xh-file-upload-dropzone-border` | `dropzone` | `border` | `default` | `--xh-border-control` | file-upload 的 dropzone 部件 border 覆盖槽。 |
+| `--xh-file-upload-dropzone-border-dragging` | `dropzone` | `border-color` | `dragging` | `--xh-bg-brand` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
+| `--xh-file-upload-dropzone-border-focus` | `dropzone` | `border-color` | `disabled`<br>`dragging`<br>`focus-visible`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-_tone` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
+| `--xh-file-upload-dropzone-border-hover` | `dropzone` | `border-color` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-border-control-hover` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
+| `--xh-file-upload-dropzone-border-invalid` | `dropzone` | `border-color` | `invalid` | `--xh-border-invalid` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
+| `--xh-file-upload-dropzone-fg` | `dropzone` | `color` | `default` | `--xh-fg-muted` | file-upload 的 dropzone 部件 color 覆盖槽。 |
+| `--xh-file-upload-dropzone-font-size` | `dropzone` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 dropzone 部件 font-size 覆盖槽。 |
+| `--xh-file-upload-dropzone-gap` | `dropzone` | `gap` | `default` | `--xh-space-2` | file-upload 的 dropzone 部件 gap 覆盖槽。 |
+| `--xh-file-upload-dropzone-min-h` | `dropzone` | `min-block-size` | `default` | `8rem` | file-upload 的 dropzone 部件 min-block-size 覆盖槽。 |
+| `--xh-file-upload-dropzone-px` | `dropzone` | `padding-inline` | `default` | `--xh-space-4` | file-upload 的 dropzone 部件 padding-inline 覆盖槽。 |
+| `--xh-file-upload-dropzone-py` | `dropzone` | `padding-block` | `default` | `--xh-space-5` | file-upload 的 dropzone 部件 padding-block 覆盖槽。 |
+| `--xh-file-upload-dropzone-radius` | `dropzone` | `border-radius` | `default` | `--xh-shape-surface` | file-upload 的 dropzone 部件 border-radius 覆盖槽。 |
+| `--xh-file-upload-gap` | `root` | `gap` | `default` | `--xh-space-3` | file-upload 的 root 部件 gap 覆盖槽。 |
+| `--xh-file-upload-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | file-upload 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-file-upload-item-bg` | `item` | `background` | `default` | `--xh-bg-surface` | file-upload 的 item 部件 background 覆盖槽。 |
+| `--xh-file-upload-item-border` | `item` | `border` | `default` | `--xh-border-subtle` | file-upload 的 item 部件 border 覆盖槽。 |
+| `--xh-file-upload-item-border-error` | `item` | `border-color` | `state=error` | `--xh-border-invalid` | file-upload 的 item 部件 border-color 覆盖槽。 |
+| `--xh-file-upload-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | file-upload 的 item 部件 color 覆盖槽。 |
+| `--xh-file-upload-item-fg-done` | `item` | `background-color` | `state=done` | `--xh-fg-success` | file-upload 的 item 部件 background-color 覆盖槽。 |
+| `--xh-file-upload-item-fg-error` | `item` | `color` | `state=error` | `--xh-fg-danger` | file-upload 的 item 部件 color 覆盖槽。 |
+| `--xh-file-upload-item-font-size` | `item` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 item 部件 font-size 覆盖槽。 |
+| `--xh-file-upload-item-gap` | `list` | `gap` | `default` | `--xh-space-2` | file-upload 的 list 部件 gap 覆盖槽。 |
+| `--xh-file-upload-item-inner-gap` | `item` | `gap` | `default` | `--xh-control-gap-md` | file-upload 的 item 部件 gap 覆盖槽。 |
+| `--xh-file-upload-item-name-min-w` | `item-name` | `min-inline-size` | `default` | `--xh-control-min-w` | file-upload 的 item-name 部件 min-inline-size 覆盖槽。 |
+| `--xh-file-upload-item-progress-fill` | `item-progress` | `background` | `state=uploading` | `--xh-bg-brand` | file-upload 的 item-progress 部件 background 覆盖槽。 |
+| `--xh-file-upload-item-progress-h` | `item-progress` | `block-size` | `default` | `--xh-stroke-thick` | file-upload 的 item-progress 部件 block-size 覆盖槽。 |
+| `--xh-file-upload-item-progress-radius` | `item-progress` | `border-radius` | `default` | `--xh-shape-pill` | file-upload 的 item-progress 部件 border-radius 覆盖槽。 |
+| `--xh-file-upload-item-progress-track` | `item-progress` | `background` | `default` | `--xh-bg-subtle` | file-upload 的 item-progress 部件 background 覆盖槽。 |
+| `--xh-file-upload-item-progress-w` | `item-progress` | `inline-size` | `default` | `--xh-control-h-md` | file-upload 的 item-progress 部件 inline-size 覆盖槽。 |
+| `--xh-file-upload-item-px` | `item` | `padding-inline` | `default` | `--xh-space-3` | file-upload 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-file-upload-item-py` | `item` | `padding-block` | `default` | `--xh-space-2` | file-upload 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-file-upload-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-file-upload-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | file-upload 的 label 部件 color 覆盖槽。 |
+| `--xh-file-upload-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | file-upload 的 label 部件 color 覆盖槽。 |
+| `--xh-file-upload-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | file-upload 的 label 部件 font-size 覆盖槽。 |
+| `--xh-file-upload-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | file-upload 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-file-upload-list-max-h` | `list` | `max-block-size` | `default` | `--xh-viewport-h-md` | file-upload 的 list 部件 max-block-size 覆盖槽。 |
+| `--xh-file-upload-preview-bg` | `item-preview` | `background` | `default` | `--xh-bg-subtle` | file-upload 的 item-preview 部件 background 覆盖槽。 |
+| `--xh-file-upload-preview-fg` | `item-preview` | `color` | `default` | `--xh-fg-muted` | file-upload 的 item-preview 部件 color 覆盖槽。 |
+| `--xh-file-upload-preview-fg-image` | `item-preview` | `color` | `file-type=image/` | `--xh-fg-brand` | file-upload 的 item-preview 部件 color 覆盖槽。 |
+| `--xh-file-upload-preview-radius` | `item-preview` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 item-preview 部件 border-radius 覆盖槽。 |
+| `--xh-file-upload-preview-size` | `item-preview` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-md` | file-upload 的 item-preview 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-file-upload-size-fg` | `item-size-text` | `color` | `default` | `--xh-fg-subtle` | file-upload 的 item-size-text 部件 color 覆盖槽。 |
+| `--xh-file-upload-size-font-size` | `item-size-text` | `font-size` | `default` | `--xh-text-caption-size` | file-upload 的 item-size-text 部件 font-size 覆盖槽。 |
+| `--xh-file-upload-trigger-bg` | `trigger` | `background` | `default` | `--xh-bg-surface` | file-upload 的 trigger 部件 background 覆盖槽。 |
+| `--xh-file-upload-trigger-bg-active` | `trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | file-upload 的 trigger 部件 background 覆盖槽。 |
+| `--xh-file-upload-trigger-bg-hover` | `trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | file-upload 的 trigger 部件 background 覆盖槽。 |
+| `--xh-file-upload-trigger-border` | `trigger` | `border` | `default` | `--xh-border-control` | file-upload 的 trigger 部件 border 覆盖槽。 |
+| `--xh-file-upload-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | file-upload 的 trigger 部件 color 覆盖槽。 |
+| `--xh-file-upload-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 trigger 部件 font-size 覆盖槽。 |
+| `--xh-file-upload-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-md` | file-upload 的 trigger 部件 gap 覆盖槽。 |
+| `--xh-file-upload-trigger-h` | `trigger` | `block-size` | `default` | `--xh-control-h-md` | file-upload 的 trigger 部件 block-size 覆盖槽。 |
+| `--xh-file-upload-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-control-px-md` | file-upload 的 trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-file-upload-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 trigger 部件 border-radius 覆盖槽。 |
+| `--xh-file-upload-trigger-shadow-hover` | `trigger` | `box-shadow` | `hover`<br>`not(:disabled)` | `--xh-elevation-raised` | file-upload 的 trigger 部件 box-shadow 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

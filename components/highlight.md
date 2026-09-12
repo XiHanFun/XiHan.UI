@@ -1,28 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/highlight
 
-# 文本高亮 `highlight`
+# Highlight `文本高亮`
 
 把一段文本里命中关键词的片段标出来。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/highlight" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/highlight.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/highlight" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/highlight" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/highlight.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 搜索结果、候选列表里标出为什么这一条被选出来。
-
-## 何时不用
-
-- 需要富文本或代码着色：用[代码视图](./code-view)。
-- 想强调一段固定的话：直接写[排印](./typography)的 `strong`。
-
-## 特性
-
-- `text` 收单个词或一组词。
-- `caseSensitive` 决定是否区分大小写。
-- 命中片段落在 `mark` 部件上，样式归皮肤。
-- `tone` 换命中片段用哪族颜色，落在 `root` 上——一段里有好几个命中，语气是整段的属性。
-
-## 示例
-
-### 基础用法
+## 用法
 
 命中关键词的片段渲染成 `&lt;mark>`，其余是纯文本；整段文本原样拼得回来
 
@@ -47,6 +37,8 @@ const text = "曦寒 UI 是一套框架无关的设计系统运行时，组件�
   <span data-xh-part="root"></span>
 </xh-highlight>
 ```
+
+## 示例
 
 ### 一组关键词
 
@@ -268,6 +260,24 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 </p>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 搜索结果、候选列表里标出为什么这一条被选出来。
+
+### 何时不用
+
+- 需要富文本或代码着色：用[代码视图](./code-view)。
+- 想强调一段固定的话：直接写[排印](./typography)的 `strong`。
+
+### 特性
+
+- `text` 收单个词或一组词。
+- `caseSensitive` 决定是否区分大小写。
+- 命中片段落在 `mark` 部件上，样式归皮肤。
+- `tone` 换命中片段用哪族颜色，落在 `root` 上——一段里有好几个命中，语气是整段的属性。
+
 ## 产物
 
 | 层 | 值 |
@@ -322,11 +332,19 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | `root` | `data-case-sensitive` | ''（条件成立时才出现） |
 | `root` | `data-tone` | props.tone |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-highlight-mark-bg` · `--xh-highlight-mark-fg` · `--xh-highlight-mark-font-weight` · `--xh-highlight-mark-px` · `--xh-highlight-mark-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-highlight-mark-bg` | `mark`<br>`root` | `background` | `default`<br>`tone` | `--xh-_tone-subtle`<br>`--xh-bg-brand-subtle` | highlight 的 mark、root 部件 background 覆盖槽。 |
+| `--xh-highlight-mark-fg` | `mark`<br>`root` | `color` | `default`<br>`tone` | `--xh-_tone-fg`<br>`--xh-fg-brand-strong` | highlight 的 mark、root 部件 color 覆盖槽。 |
+| `--xh-highlight-mark-font-weight` | `mark` | `font-weight` | `default` | `--xh-font-weight-medium` | highlight 的 mark 部件 font-weight 覆盖槽。 |
+| `--xh-highlight-mark-px` | `mark` | `padding-inline` | `default` | `--xh-space-0_5` | highlight 的 mark 部件 padding-inline 覆盖槽。 |
+| `--xh-highlight-mark-radius` | `mark` | `border-radius` | `default` | `--xh-shape-inset` | highlight 的 mark 部件 border-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

@@ -1,0 +1,1 @@
+import{gN as s}from"./theme.CzGOHWR9.js";import{d as a,o,c as r,a as t,E as n,k as p}from"./framework.m090XgxO.js";const i={style:{display:"flex","align-items":"center",gap:"8px"}},f=a({__name:"01-basic",setup(l){return(m,e)=>(o(),r("p",i,[e[0]||(e[0]=t(" 按 ",-1)),n(p(s),{value:"Escape"}),e[1]||(e[1]=t(" 关闭当前面板 ",-1))]))}});export{f as default};

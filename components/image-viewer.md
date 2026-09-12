@@ -1,29 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/image-viewer
 
-# 图片预览 `image-viewer`
+# ImageViewer `图片预览`
 
 点开看大图：全屏浮层里可以缩放、旋转、翻转与翻页。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/image-viewer" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/image-viewer.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/image-viewer" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/image-viewer" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/image-viewer.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 图片细节重要（截图、单据、商品图）。
-- 一组图需要连续浏览。
-
-## 何时不用
-
-- 图本身已经足够大：不必再套一层。
-- 需要的是编辑（裁切、标注）：这是只读的查看器。
-
-## 特性
-
-- `items` 给整组图，`index` 决定当前哪一张，`loop` 决定是否回绕。
-- 缩放步长与上下限可调。
-- 触屏上两指撑开放大、捏合缩小，单指平移；缩放以两指中点为锚。
-- 关闭后焦点归还触发器。
-
-## 示例
-
-### 基础用法
+## 用法
 
 触发器打开全屏看片：滚轮缩放、拖拽平移、工具条给缩放/旋转/翻转/归零，Esc 或点遮罩关闭
 
@@ -117,6 +106,8 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
   ];
 </script>
 ```
+
+## 示例
 
 ### 相册与翻页
 
@@ -460,6 +451,27 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 图片细节重要（截图、单据、商品图）。
+- 一组图需要连续浏览。
+
+### 何时不用
+
+- 图本身已经足够大：不必再套一层。
+- 需要的是编辑（裁切、标注）：这是只读的查看器。
+
+### 特性
+
+- `collection` 给整组图，`index` 决定当前哪一张，`loop` 决定是否回绕。
+- 缩放步长与上下限可调。
+- 触屏上两指撑开放大、捏合缩小，单指平移；缩放以两指中点为锚。
+- 关闭后焦点归还触发器。
+- 逻辑关闭立即退出交互与可访问树；内容和遮罩完成退场后才释放模态资源，重开会撤销旧退场。
+- 底部控件带是一组有名字的控件，每颗钮各占一个 Tab 位；左右方向键与 Home/End 留给翻页，条里条外都一样。
+
 ## 产物
 
 | 层 | 值 |
@@ -570,7 +582,7 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
 | `getContentProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getImageProps` | `() => T['img']` |  |
-| `getToolbarProps` | `() => T['element']` |  |
+| `getToolbarProps` | `() => T['element']` | 底部那条控件带，装缩放、旋转、翻转与归零这几颗钮。 它报的是 `role=group`：一组有名字的控件，每颗钮各占一个 Tab 位。 不报 `role=toolbar`——那个角色承诺条内靠方向键走位，而左右方向键与 Home/End 在这台上是翻页；要那套走位就往这条带里放一个 Toolbar 组件。 |
 | `getZoomInTriggerProps` | `() => T['button']` |  |
 | `getZoomOutTriggerProps` | `() => T['button']` |  |
 | `getRotateLeftTriggerProps` | `() => T['button']` |  |
@@ -611,12 +623,13 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `backdrop` | `aria-hidden` | 'true' |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-label` | currentItem?.alt |
 | `content` | `aria-modal` | 'true' |
 | `content` | `role` | 'dialog' |
 | `viewport` | `aria-busy` | imageStatus === 'loading' \|\| undefined |
 | `toolbar` | `aria-label` | label.toolbar |
-| `toolbar` | `role` | 'toolbar' |
+| `toolbar` | `role` | 'group' |
 | `counter` | `aria-live` | 'polite' |
 
 ## 样式
@@ -646,11 +659,35 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
 | `counter` | `data-index` | String(index + 1) |
 | `counter` | `data-state` | 'open' \| 'closed' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-image-viewer-action-bg-active` · `--xh-image-viewer-action-bg-hover` · `--xh-image-viewer-backdrop-bg` · `--xh-image-viewer-backdrop-blur` · `--xh-image-viewer-backdrop-layer` · `--xh-image-viewer-chrome-bg` · `--xh-image-viewer-close-bg-active` · `--xh-image-viewer-close-bg-hover` · `--xh-image-viewer-close-radius` · `--xh-image-viewer-close-size` · `--xh-image-viewer-counter-padding` · `--xh-image-viewer-fg` · `--xh-image-viewer-icon-size` · `--xh-image-viewer-layer` · `--xh-image-viewer-loading-bg` · `--xh-image-viewer-loading-radius` · `--xh-image-viewer-loading-size` · `--xh-image-viewer-overlay-radius` · `--xh-image-viewer-toolbar-gap` · `--xh-image-viewer-toolbar-padding` · `--xh-image-viewer-toolbar-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-image-viewer-action-bg-active` | `flip-horizontal-trigger`<br>`flip-vertical-trigger`<br>`next-trigger`<br>`prev-trigger`<br>`reset-trigger`<br>`rotate-left-trigger`<br>`rotate-right-trigger`<br>`zoom-in-trigger`<br>`zoom-out-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-color-neutral-950` | image-viewer 的 flip-horizontal-trigger、flip-vertical-trigger、next-trigger、prev-trigger、reset-trigger、rotate-left-trigger、rotate-right-trigger、zoom-in-trigger、zoom-out-trigger 部件 background 覆盖槽。 |
+| `--xh-image-viewer-action-bg-hover` | `flip-horizontal-trigger`<br>`flip-vertical-trigger`<br>`next-trigger`<br>`prev-trigger`<br>`reset-trigger`<br>`rotate-left-trigger`<br>`rotate-right-trigger`<br>`zoom-in-trigger`<br>`zoom-out-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-color-neutral-950` | image-viewer 的 flip-horizontal-trigger、flip-vertical-trigger、next-trigger、prev-trigger、reset-trigger、rotate-left-trigger、rotate-right-trigger、zoom-in-trigger、zoom-out-trigger 部件 background 覆盖槽。 |
+| `--xh-image-viewer-backdrop-bg` | `backdrop` | `background` | `default` | `--xh-color-neutral-950` | image-viewer 的 backdrop 部件 background 覆盖槽。 |
+| `--xh-image-viewer-backdrop-blur` | `backdrop` | `backdrop-filter` | `variant=blur` | `--xh-overlay-backdrop-blur` | image-viewer 的 backdrop 部件 backdrop-filter 覆盖槽。 |
+| `--xh-image-viewer-backdrop-layer` | `backdrop` | `z-index` | `default` | `--xh-_layer` | image-viewer 的 backdrop 部件 z-index 覆盖槽。 |
+| `--xh-image-viewer-chrome-bg` | `close-trigger`<br>`counter`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `background` | `default` | `--xh-color-neutral-950` | image-viewer 的 close-trigger、counter、next-trigger、prev-trigger、toolbar 部件 background 覆盖槽。 |
+| `--xh-image-viewer-close-bg-active` | `close-trigger` | `background` | `active` | `--xh-color-neutral-950` | image-viewer 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-image-viewer-close-bg-hover` | `close-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-color-neutral-950` | image-viewer 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-image-viewer-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | image-viewer 的 close-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-image-viewer-close-size` | `close-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-lg` | image-viewer 的 close-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-image-viewer-counter-padding` | `counter` | `padding` | `default` | `--xh-space-1` | image-viewer 的 counter 部件 padding 覆盖槽。 |
+| `--xh-image-viewer-fg` | `content` | `color` | `default` | `--xh-color-neutral-0` | image-viewer 的 content 部件 color 覆盖槽。 |
+| `--xh-image-viewer-icon-size` | `content` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | image-viewer 的 content 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-image-viewer-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | image-viewer 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-image-viewer-loading-bg` | `viewport` | `background` | `loading` | `--xh-bg-surface-raised` | image-viewer 的 viewport 部件 background 覆盖槽。 |
+| `--xh-image-viewer-loading-radius` | `viewport` | `border-radius` | `loading` | `--xh-shape-surface` | image-viewer 的 viewport 部件 border-radius 覆盖槽。 |
+| `--xh-image-viewer-loading-size` | `viewport` | `block-size`<br>`inline-size` | `loading` | `--xh-control-h-lg` | image-viewer 的 viewport 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-image-viewer-overlay-radius` | `counter`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `border-radius` | `default` | `--xh-shape-pill` | image-viewer 的 counter、next-trigger、prev-trigger、toolbar 部件 border-radius 覆盖槽。 |
+| `--xh-image-viewer-toolbar-gap` | `toolbar` | `gap` | `default` | `--xh-space-1` | image-viewer 的 toolbar 部件 gap 覆盖槽。 |
+| `--xh-image-viewer-toolbar-padding` | `toolbar` | `padding` | `default` | `--xh-space-1_5` | image-viewer 的 toolbar 部件 padding 覆盖槽。 |
+| `--xh-image-viewer-toolbar-radius` | `toolbar` | `border-radius` | `default` | `--xh-shape-control` | image-viewer 的 toolbar 部件 border-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

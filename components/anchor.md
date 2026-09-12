@@ -1,28 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/anchor
 
-# 锚点 `anchor`
+# Anchor `锚点`
 
 一份跟着滚动位置自己换高亮的目录。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/anchor" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/anchor.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/anchor" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/anchor" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/anchor.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 长文档、设置页、详情页需要一份能跳转也能反映当前位置的目录。
-
-## 何时不用
-
-- 内容分段但互不相邻、需要切换而不是滚动：用[标签页](./tabs)。
-- 只是一组跳转链接、不需要反映当前位置：写普通链接就好。
-
-## 特性
-
-- `offset` 是判定线距容器视口顶边的距离，有吸顶栏就把栏高填进去。
-- 一节都没越过判定线时当前值是 `null`，此时谁都不亮、指示条整条收起——不硬点亮第一项。
-- `scrollElement` 把判定线挂到指定滚动容器上，不给就挂在窗口上。
-- 组件只在点链接时滚动；程序化跳转由宿主自己滚，滚完观察器会把高亮结算过来。
-
-## 示例
-
-### 基础用法
+## 用法
 
 目录跟着滚动位置自己换高亮；scroll-element 把判定线挂到指定滚动容器上，不给就挂在窗口上
 
@@ -166,6 +156,8 @@ const scrollEl = ref<HTMLElement | null>(null);
   template.replaceWith(anchor);
 </script>
 ```
+
+## 示例
 
 ### 受控
 
@@ -1514,6 +1506,24 @@ function jumpTo(id: string): void {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 长文档、设置页、详情页需要一份能跳转也能反映当前位置的目录。
+
+### 何时不用
+
+- 内容分段但互不相邻、需要切换而不是滚动：用[标签页](./tabs)。
+- 只是一组跳转链接、不需要反映当前位置：写普通链接就好。
+
+### 特性
+
+- `offset` 是判定线距容器视口顶边的距离，有吸顶栏就把栏高填进去。
+- 一节都没越过判定线时当前值是 `null`，此时谁都不亮、指示条整条收起——不硬点亮第一项。
+- `scrollElement` 把判定线挂到指定滚动容器上，不给就挂在窗口上。
+- 组件只在点链接时滚动；程序化跳转由宿主自己滚，滚完观察器会把高亮结算过来。
+
 ## 产物
 
 | 层 | 值 |
@@ -1620,11 +1630,31 @@ function jumpTo(id: string): void {
 | `indicator` | `data-orientation` | props.orientation |
 | `indicator` | `data-value` | context.get('value') |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-anchor-fg` · `--xh-anchor-font-size` · `--xh-anchor-gap` · `--xh-anchor-gap-horizontal` · `--xh-anchor-indicator-color` · `--xh-anchor-indicator-radius` · `--xh-anchor-indicator-thickness` · `--xh-anchor-leading` · `--xh-anchor-link-bg-hover` · `--xh-anchor-link-fg-current` · `--xh-anchor-link-fg-hover` · `--xh-anchor-link-font-weight-current` · `--xh-anchor-link-max-w` · `--xh-anchor-link-px` · `--xh-anchor-link-py` · `--xh-anchor-link-radius` · `--xh-anchor-track`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-anchor-fg` | `root` | `color` | `default` | `--xh-fg-muted` | anchor 的 root 部件 color 覆盖槽。 |
+| `--xh-anchor-font-size` | `root` | `font-size` | `default` | `--xh-_anchor-font-size` | anchor 的 root 部件 font-size 覆盖槽。 |
+| `--xh-anchor-gap` | `list` | `gap` | `default` | `--xh-space-1` | anchor 的 list 部件 gap 覆盖槽。 |
+| `--xh-anchor-gap-horizontal` | `list` | `gap` | `orientation=horizontal` | `--xh-space-2` | anchor 的 list 部件 gap 覆盖槽。 |
+| `--xh-anchor-indicator-color` | `indicator` | `background` | `default` | `--xh-_anchor-accent` | anchor 的 indicator 部件 background 覆盖槽。 |
+| `--xh-anchor-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | anchor 的 indicator 部件 border-radius 覆盖槽。 |
+| `--xh-anchor-indicator-thickness` | `indicator` | `block-size`<br>`inline-size`<br>`inset-block-end`<br>`inset-inline-start` | `default`<br>`orientation=horizontal` | `--xh-stroke-thick` | anchor 的 indicator 部件 block-size、inline-size、inset-block-end、inset-inline-start 覆盖槽。 |
+| `--xh-anchor-leading` | `root` | `line-height` | `default` | `--xh-leading-normal` | anchor 的 root 部件 line-height 覆盖槽。 |
+| `--xh-anchor-link-bg-hover` | `link` | `background` | `hover` | `--xh-bg-subtle-hover` | anchor 的 link 部件 background 覆盖槽。 |
+| `--xh-anchor-link-fg-current` | `link` | `color` | `current` | `--xh-_anchor-accent-text` | anchor 的 link 部件 color 覆盖槽。 |
+| `--xh-anchor-link-fg-hover` | `link` | `color` | `hover` | `--xh-fg-default` | anchor 的 link 部件 color 覆盖槽。 |
+| `--xh-anchor-link-font-weight-current` | `link` | `font-weight` | `current` | `--xh-font-weight-medium` | anchor 的 link 部件 font-weight 覆盖槽。 |
+| `--xh-anchor-link-max-w` | `link` | `max-inline-size` | `default` | `--xh-nav-link-max-w` | anchor 的 link 部件 max-inline-size 覆盖槽。 |
+| `--xh-anchor-link-px` | `link` | `padding-inline` | `default` | `--xh-_anchor-link-px` | anchor 的 link 部件 padding-inline 覆盖槽。 |
+| `--xh-anchor-link-py` | `link` | `padding-block` | `default` | `--xh-space-1` | anchor 的 link 部件 padding-block 覆盖槽。 |
+| `--xh-anchor-link-radius` | `link` | `border-radius` | `default` | `--xh-shape-control` | anchor 的 link 部件 border-radius 覆盖槽。 |
+| `--xh-anchor-track` | `list` | `border-block-end`<br>`border-inline-start` | `default`<br>`orientation=horizontal` | `--xh-border-default` | anchor 的 list 部件 border-block-end、border-inline-start 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

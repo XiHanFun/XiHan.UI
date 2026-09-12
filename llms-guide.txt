@@ -13,7 +13,7 @@
 
 依赖：`react` 与 `react-dom` 是 peer 依赖，下限 19。这一版只支持 React 19——机器要求「宿主提交完这一帧、DOM 落定之后再跑回调」，`flushSync` 与 `useSyncExternalStore` 的行为是这条契约的地基。
 
-铺开进度：126 个组件里已铺 126 个，组件面与 Vue 侧齐平。登记在 `ui/tooling/scripts/react-coverage.json`，十几张门禁按它决定该核哪些组件——登记多了会核到不存在的组件，登记少了是静默漏检，两侧都判失败。
+铺开进度：128 个组件里已铺 128 个，组件面与 Vue 侧齐平。登记在 `ui/tooling/scripts/react-coverage.json`，十几张门禁按它决定该核哪些组件——登记多了会核到不存在的组件，登记少了是静默漏检，两侧都判失败。
 
 ## 组件命名
 
@@ -63,7 +63,9 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@
 </XhDialogTrigger>
 ```
 
-props 合并的顺序是子元素在先、部件在后：同名事件处理器两边都会跑，作者那个先跑。
+同名事件先运行作者处理器；作者调用 `preventDefault()` 后，不再运行部件内部动作。这条规则同时适用于写在部件和 `asChild` 子元素上的处理器。普通回调仍保留全部参数，ref 的登记和清理不受事件取消影响。
+
+`asChild` 必须包含恰好一个可挂载子元素，Fragment 会展开后检查，仅忽略空白和条件占位。零个或多个元素、元素旁并列的非空文本或数字都会明确报错，不会生成默认按钮或丢弃可见内容。迁移时请把内容放到一个实际宿主中；确实需要默认按钮时移除 `asChild`。ref 遵循 React 19 的普通 props 合同。
 
 ## 组合式函数
 
@@ -77,11 +79,24 @@ const { api, service } = useDialog({ open, onOpenChange });
 
 ## 全局配置
 
-`XhConfigProvider` 往下喂 locale、文案覆盖、尺寸与浮层落点：
+`XhConfigProvider` 往下喂 locale、文案覆盖、尺寸、浮层落点与七轴视觉环境：
 
 ```tsx
 <XhConfigProvider config={{ locale: "zh-CN", size: "sm" }}>
   <App />
+</XhConfigProvider>
+```
+
+视觉环境必须显式绑定 DOM 根，不会猜测 Provider 对应哪枚元素。嵌套 Provider 自动继承外层控制器，局部 motion 只投影当前根，不改全局 JS override：
+
+```tsx
+<XhConfigProvider config={{
+  visualEnvironment: {
+    root: workspaceElement,
+    initial: { mode: "dark", density: "compact", motion: "reduce" },
+  },
+}}>
+  <Workspace />
 </XhConfigProvider>
 ```
 
@@ -123,6 +138,24 @@ import { useHoverIntent, useScrollLock, useScrollTracker, useStickToBottom, useT
 
 自建浮层才用得上。不用的应用不必把它压进主入口的体积。
 
+`useHoverIntent` 在布局提交期读取 `getTriggerEl()`，因此已渲染元素的 ref 已经就位，下一次指针输入不会落在旧节点上。本次提交未渲染 trigger 时释放绑定；节点换代或 `openDelay`、`closeDelay`、`buffer` 改变时重建。content getter 和两个意图回调只更新已提交引用，不会为了普通闭包换代取消挂起计时。需要显式标注选项时，从这个子入口导入 `UseHoverIntentOptions`，不要再借用 core 的元素快照类型。
+
+`useScrollLock` 在布局 effect 中加锁，首帧绘制前就生效，服务端不执行 DOM 副作用。锁跟随 active 而不是配置对象身份；关闭再开启时读取最新配置，StrictMode 清理与重建保持一致。
+
+## 背景层
+
+React 侧的视觉适配也在**单独的子入口**，不引就不会把 WebGL 引擎打进包：
+
+```tsx
+import { useBackground, XhBackground } from "@xihan-ui/react/backgrounds";
+```
+
+`@xihan-ui/backgrounds` 是可选 peer，用之前先装上——不用视觉效果的应用装了本包也不会多出一个引擎。
+
+`XhBackground` 是独立视觉组件，children 浮在效果之上；`useBackground` 把画面实例交到手上，它返回的 `ref` 挂到哪个元素上，效果就铺在哪个元素上。Vue 那份还有第三种写法 `v-background`，React 没有对应物：指令是 Vue 才有的介质，挂 `ref` 就是同一件事。
+
+两种用法见[背景层](../guide/backgrounds#在-react-里用)。
+
 ## 命令式服务
 
 对话框、轻提示、通知、顶部进度条四个服务从组件树之外调起，自带宿主树：
@@ -137,6 +170,16 @@ toast.success("保存好了");
 行为与命令面见[命令式服务](../runtime/services)。React 侧有一处实现上的差别：`createRoot().render()` 是排队的，而 Vue 的 `app.mount()` 当场渲完，所以首帧提交由 `flushSync` 包住——服务建好之后紧接着发的那条命令（拦截器里很常见）不会因为宿主还没渲出来而被丢掉。
 
 宿主树在组件树之外，接不到组件树里的 `XhConfigProvider`。要让它跟应用同语言，从 `config` 选项给，或之后用 `setConfig` 推。
+
+## 声音层
+
+`@xihan-ui/react/sound` 是单独的子入口。`withToastSound` / `withDialogSound` 给上面那两个命令式服务配上声音，调用点一行都不用改；`useSoundOnPress` 给单个元素配声，返回值挂到该元素的 `ref` 上：
+
+```tsx
+import { setSoundPlayer, useSoundOnPress, withToastSound } from "@xihan-ui/react/sound";
+```
+
+Vue 侧同一件事由 `v-sound` 指令做。React 没有指令这一介质，改成一个返回 ref 回调的 hook；两侧的服务包装名与选项完全同名同形。默认映射与开关见[声音层](../guide/sound#在-react-里用)。
 
 ## 服务端渲染
 
@@ -180,9 +223,25 @@ import {
 } from "@xihan-ui/vue";
 ```
 
-只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 915 个导出组件按组件分组列在[组件参考](../components/)里。
+只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 918 个导出组件按组件分组列在[组件参考](../components/)里。
 
 没有插件，不需要 `app.use()`。按名字 import 即可，`sideEffects: false` 让打包器摇掉没用到的部分。
+
+## 配置与视觉环境
+
+`provideXhConfig` 接收响应式配置。七轴视觉环境必须显式给出对应 DOM 根；嵌套 provide 自动接父控制器，局部 motion 不改全局 JS override：
+
+```ts
+provideXhConfig({
+  locale: "zh-CN",
+  visualEnvironment: {
+    root: workspaceElement,
+    initial: { mode: "dark", density: "compact", motion: "reduce" },
+  },
+});
+```
+
+物理 Portal 会由 Core 从该根桥接已解析七轴到实例壳，Vue 适配器不复制视觉状态。
 
 ## 事件与 v-model
 
@@ -213,6 +272,12 @@ emits: {
 ```
 
 具体的绑定名按组件而定：开关是 `v-model:checked`，浮层是 `v-model:open`，输入框是 `v-model:value`。
+
+## asChild 与事件取消
+
+支持 `asChild` 的部件可以把行为接到作者提供的单个子节点上。Fragment 会展开后检查，仅忽略空白、注释和条件占位；零个或多个可挂载子节点、元素旁并列的非空文本或数字都会明确报错，不会生成默认按钮或丢弃可见内容。需要默认按钮时移除 `asChild`，组合多个内容时提供一个实际宿主节点。
+
+作者写在部件或子节点上的事件处理器先执行；调用 `preventDefault()` 后，部件内部动作不再执行。作者的处理器数组仍按原顺序运行，`stopImmediatePropagation()` 仍可停止同节点后续处理器。普通回调保留全部参数，ref 的登记和清理不受事件取消影响。
 
 ## 受控与非受控
 
@@ -318,6 +383,12 @@ const { api } = useAccordion(
 
 `useMachine(machine, props, scope)` 把它包起来。props 传的是 getter 而不是对象，每次展开成新对象让机器的身份缓存失效——这样在模板里原地改某个 prop 也收得到。
 
+## 行为原语
+
+`@xihan-ui/vue/behavior` 单独提供滚动锁、悬停意图、滚动观察、贴底和连敲检索的 Vue 包装。`useHoverIntent` 到 mounted 后才读取模板 ref，并持续观察 trigger 与三个计时参数；trigger 暂时为 `null` 时释放旧绑定，节点重新出现后再建立。content getter 与回调现读当前响应式选项，不会因浮层内容挂载或普通闭包换代重启安全三角。选项对象本身也可传 ref 或 getter；显式类型使用该子入口的 `UseHoverIntentOptions`。
+
+`useScrollLock` 在组件 mounted 后才读取模板 ref，并以 post watcher 跟随 active；释放时先清本地句柄，清理抛错后再次激活仍可建立。active 为真期间不因配置对象更新重锁，关闭再开启才读取新配置。
+
 ## 背景层
 
 Vue 侧的视觉适配在**单独的子入口**，不引就不会把 WebGL 引擎打进包：
@@ -371,7 +442,7 @@ import { setSoundPlayer, vSound, withToastSound } from "@xihan-ui/vue/sound";
 ```ts
 import { defineXhElements } from "@xihan-ui/web-components/define";
 
-defineXhElements(); // 注册全部 128 个 xh-* 元素
+defineXhElements(); // 注册全部 130 个 xh-* 元素
 ```
 
 主入口的 `import` 本身**不注册**，必须显式调这一行。注册是幂等的：同版本重复调直接返回；同标签不同版本、或标签已被非 XiHan.UI 代码占用，都会抛错而不是静默覆盖。无 `customElements` 的环境（SSR）静默跳过。
@@ -383,6 +454,26 @@ import { defineXhBackground } from "@xihan-ui/web-components/backgrounds";
 
 defineXhBackground();
 ```
+
+## 配置与视觉环境
+
+`<xh-config>` 本身就是 Light DOM 局部 scope，七轴一次声明后会投影为 Core Portal 能桥接的标准属性：
+
+```html
+<xh-config
+  mode="dark"
+  brand="acme"
+  density="compact"
+  direction="rtl"
+  contrast="more"
+  motion="reduce"
+  transparency="reduce"
+>
+  <my-workspace></my-workspace>
+</xh-config>
+```
+
+局部 `motion` 只降低该子树的 CSS 动效，不会隐式调用全局 `setMotionOverride`。应用根需要同时驱动 JS 动画时，用 `setXhConfig({ visualEnvironment: { root, initial, motionSink } })` 显式绑定；详见[设计令牌与主题](../guide/theme)。
 
 ## 结构由你写
 
@@ -469,13 +560,19 @@ document.querySelector("xh-dialog")
 
 展开时还回作者原本的内联值而不是清成空串——后者会把你写在该节点上的 `style="display:grid"` 一并抹掉，且再也回不来。
 
+## 多级菜单的 Portal 所有权
+
+`<xh-menu submenu>` 仍由作者在父 Menu、ContextMenu 或 Menubar 的 Light DOM 中声明。展开时只有它的 `positioner` 会搬到所属 Document 的 `#xh-portal-root`：父菜单的磨砂 `backdrop-filter` 因此不会把 fixed 子层困在局部包含块。每层有自己的无盒 Portal 壳，壳会桥接触发条目祖先上的主题、品牌、密度、对比度、动效与文字方向。
+
+搬运不会转移行为所有权。子菜单宿主继续观察并接线 positioner 里的动态部件，父宿主通过内部逻辑 owner 给 trigger 补齐父层 item 身份；末级选择按叶到根关闭，并只由根派发一次 `select`。关闭、断连或 trigger 换代时，positioner 会恢复到原占位。展开期间应持有部件引用或从 `ownerDocument` 查询，不能假设 `submenu.querySelector(...)` 仍能找到已搬走的 positioner。
+
 ## 升级前
 
 自定义元素在 JS 到达之前不会升级，那段时间 `data-scope` / `data-part` 都还没打上，浮层内容会以裸文本堆在页面流里。`@xihan-ui/styles` 的 `undefined.css` 用 `:not(:defined)` 配合作者写的 `data-xh-part` 先把浮层子树收起来，见[皮肤与样式分层](../guide/styling#升级前的形态)。
 
 ## 自定义元素清单
 
-包内附带 `custom-elements.json`（CEM 格式），128 个元素的标签名、属性、事件、CSS part 都在里面。编辑器与框架的自定义元素支持可以直接读它拿到补全与类型提示。
+包内附带 `custom-elements.json`（CEM 格式），130 个元素的标签名、属性、事件、CSS part 都在里面。编辑器与框架的自定义元素支持可以直接读它拿到补全与类型提示。
 
 清单由构建生成，`pnpm gate:cem` 会重跑生成后比对——改了元素忘了重新生成会被拦下。
 
@@ -523,7 +620,7 @@ export const accordionKeyboard: KeyboardTable = {
 };
 ```
 
-每一行有稳定的 `id`、触发按键、生效前置条件、以及效果。全库共 **523 条**，散落在 126 个组件上。
+每一行有稳定的 `id`、触发按键、生效前置条件、以及效果。全库共 **535 条**，散落在 126 个组件上。
 
 规格表由三方共同消费：
 
@@ -561,9 +658,57 @@ export const accordionKeyboard: KeyboardTable = {
 
 顺序不能乱，细节见[行为原语](./behavior)。
 
+## 焦点看得见
+
+环由一份公共皮肤画，全库共用：粗细 `--xh-ring-width`、颜色 `--xh-_ring-color`（默认 `--xh-ring-focus`）、偏移 `--xh-ring-offset`。偏移是**负的一个环宽**——环往元素里收，外沿与元素边框外沿重合，聚焦前后占的地方一样大，不会把周围的东西挤开。
+
+WCAG 2.2 的非文本对比（SC 1.4.11）要求焦点指示器对**相邻颜色**至少 3:1。环内收之后，相邻的是两块色：
+
+- **内侧**——元素自己那块面。这是判定基准。
+- **外侧**——元素坐在什么上面。它随使用者把组件放在哪儿而变，库这边定不了，所以只量不判。
+
+### 实心面上环取 `currentColor`
+
+面是实心的那几档（实心按钮、选中的开关轨道、选中的日历格、拖拽中的滑块……），环色与面同族，贴上去就看不出来——最坏的档量到 1.00:1，即整条环与底完全同色。这些档在各自皮肤的 `:focus-visible` 规则里把环色槽灌成 `currentColor`，环改取**这块面配对的前景色**。那一支色本来就要在这块面上把字读清楚（实心底与它是 4.5:1），拿来画环自然过 3:1。
+
+「灌」按**求值**判，不按字面量判：给 `--xh-_ring-color` 或 `outline-color` 赋值、或在键盘聚焦规则里写 `outline` 简写，值顺着皮肤里的槽摊开、再顺着令牌链解到颜色，在任一主题 × 语气下与库自己的两支环（`--xh-ring-focus`、`--xh-ring-invalid`）都不相等，就是灌；解不出来的（`currentColor`、使用者传进来的色值、没兜底的使用者令牌）同样算。所以写成 `var(--xh-fg-on-brand)` 这类与面配对的前景色令牌（开关选中的轨道就是这么写的，它是 `<button>`、皮肤没给它 `color`）与写 `currentColor` 一样受管；写回 `var(--xh-ring-focus)` 不算灌；直接写 `outline-color`、把属性名写成大写、把规则包进 `@supports` 或 `@media screen` / `@container` 这类静态判不出何时不成立的条件块、写在裸 `:focus` 里、用 `[data-variant]` / `[data-state]` 这类属性存在式选择器罩住几档，都逃不出判定面。库环两支令牌与它们顺着解到底经过的名字（`--xh-color-brand-500` 这些）皮肤里一律不许赋值——在子树上改了它们，库环在那棵子树上就不再是库环。
+
+::: warning 这不是「环开始随语气」
+四条口径要一起看：
+
+- **环不随语气**——`data-tone` 换的是颜色族，环不跟着换。语气色本体当环色够不到 3:1（warning 压白底 2.70:1、success 3.04:1）。没有实心面的那些档一律是 `--xh-ring-focus` 一支色。
+- **实心面上取 `currentColor`**——取的是那块面**配对的前景色**，不是语气色。同一块 danger 实心底上，环是这块底上的字色，不是 danger 本体。
+- **过了线的淡色档不为统一而灌**——淡底、透空的面吃默认环就够看（3.40:1 起），灌上 `currentColor` 反而把品牌色环换成近黑近白，与同族组件分叉。`currentColor` 只贴着实心那一档给，选择器的粒度要与面的粒度对齐。
+- **失效档豁免对比度，但环不许消失**——WCAG 1.4.11 对失效控件不要求 3:1，库里照此不追这个数；但 `color: transparent` 或置灰字与置灰面同色会让 `currentColor` 环整根不见，那不是「对比不足」，是「没有焦点提示」。这类档要么退回默认环，要么另给一支配对前景色。
+
+判据看的是「环压着的那块面」，不是「组件是什么语气」。皮肤怎么写见[皮肤与样式分层](./styling)。
+:::
+
+### 浮层壳接不接焦点
+
+浮层的面板多数只是焦点陷阱的兜底落点（`tabindex=-1`），环长在里面的控件上，皮肤把面板自己那圈环关掉、登在 `ringless` 分区里说明环由谁画。**tour 的气泡是例外**：Enter / Space 落在它身上会推进下一步，它是可操作目标（WCAG 2.4.7），必须有可见焦点——程序化落焦之后吃默认内收环，面是 `--xh-bg-surface`，默认环压上去过线。浏览器态判据 `focus-ring-inset-grpring` 钉住这一条。
+
+### 谁在盯着
+
+| 判据 | 查什么 |
+| --- | --- |
+| `check-focus-ring` | 环的粗细、颜色、偏移写了字面量而不是令牌，主题与全局调整对它无效 |
+| `check-focus-ring-surface` | 静态解出每个可聚焦档的面与环色，面压环不到 3:1 却没灌环色的判红；灌环色的规则（`--xh-_ring-color` / `outline-color` / 聚焦规则里的 `outline` 简写，求值后落在库环之外）罩到非实心档、`:focus-visible` 里关掉环（`outline: none` / `outline-width: 0`）却没登记、画了实心面却不接焦点也没登记的，同样判红；聚焦规则把环色写成透明的直接判红，没有登记表。`@supports` 块里的规则按块内条件成立处理；`@media` 只认纸面、高对比、减动效、粗指针、断点这几种真实媒体条件为条件块，写成别的样子的（`screen` / `all` / 逗号并列 / `not`）与任何 `@container` 一律按成立处理；规则写了、档位没写的属性，存在式一律算罩得到，写了取值的看有没有兄弟档认领 |
+| `focus-ring-inset-grpring` | 浏览器态：环内收之后聚焦前后占位不变、全库只有一种偏移；灌了环色的每条规则（同样按求值认，不按字面量；`@media` 按本页当下的媒体环境现问，`@container` 照收）挂出来落焦量 3:1；tour 气泡落焦有环 |
+| `focus-ring-face-contrast` | 浏览器态：从皮肤推出档位，在真实 Chromium 里逐档量环与面的实测对比 |
+| `focus-ring-disabled-ink` | 浏览器态：失效档吃默认环、不取被压过的前景墨；没失效的实心档仍取面自己的前景色 |
+
+`focus-ring-face-contrast` 只量库画的面：皮肤没给它画面、算出来的底色就是同标签裸元素 UA 底色的部件（菜单的触发器只画展开档，基础档露出来的是原生 `button` 的 `buttonface`）不进档位表——环内侧那块色不是库的，量它量的是 UA。明知不达标、换环色那一行救不回来的档登在 `KNOWN` 里，两侧反查：挂不出这一档、这一档不再画环、或者它已经过了 3:1，三种情况都判登记过期。
+
+两条判据的分母互相认识。静态算出的每档实心档，浏览器态都要挂得出来、量出来也是实心的、环撤没撤两侧一致；浏览器态量出的每档实心档，静态要么算出了同一块面（同键、或覆盖它的档，比值对得上），要么在登记表的 `declared` 里说明了为什么算不出。两边的键先归成同一形态再比（`:is()` 展开、只写了 root 的祖先摘掉），叠出同一份面的组合只量一次、顺着别名找到量过的那一档。对不上的逐条登在 `focus-ring-face-contrast.reconcile.json` 里写明理由，登记的必须仍然对不上、对不上的必须已登记。
+
+静态与浏览器态两条路各有盲区，所以都留着。静态那条跑得快，交互才出现的状态（`[data-dragging]`、`[data-state='picking']`）照样算得到，但看不见「面画在祖先上」「灌了却被另一条规则把 `color` 换掉」「同一档后面又有一条把环色写回默认」这类级联叠加；浏览器态那条量的是实测值、看得全，但 `:hover` / `:active` 叠聚焦量不了——真实指针一动就把浏览器切出键盘模态，`:focus-visible` 当场掉——`::before` 铺的底、真实媒体条件里的面、连接层内联进 `style` 的面（取色器的色板格、裁剪器的图）也都在门外。
+
 ## 浏览器里的自动扫描
 
 一致性套件的 fixture 会被挂进**真实 Chromium**，对初始态与各用例终态跑 axe。终态按形态签名去重，避免同一形态重复扫。
+
+每套 fixture 按根元素的 `data-theme` **明暗各跑一遍**，body 铺 `bg-canvas` / `fg-default` 作底——axe 沿祖先找不到画过底色的元素就按白底算，深色那一遍不铺等于拿深色的字去比白底。
 
 必须在真浏览器里跑：jsdom 没有布局，对比度、目标尺寸、翻面与避让一概演不出来。
 
@@ -576,7 +721,7 @@ pnpm test:browser
 
 扫出的存量问题登记在 `tooling/testing/src/a11y/known.ts` 里。命中已登记的规则不判失败，但**一条都不再命中时判登记过期**——修好了就必须从表里删掉，不许留着一份早已不成立的豁免。
 
-当前共三条。两个适配器共用的两条：`tag` 的禁用标签文字用的是全库统一的 `fg-disabled` / `bg-muted`（2.36:1），按 1.4.3 的失效控件豁免不算违规，但 tag 的 root 没有 axe 认得的禁用语义，所以只有它被扫出来；`prompt-input` 的输入框刻意不无条件发 `aria-label`（那会盖掉作者的 `<label for>`），一致性夹具刻意不给文案以钉住这条契约，扫出来就是一个没有名字的 textarea，真实用法里由作者命名。Web Components 适配器自己的一条：`steps` 的必需子节点由作者手写，可能缺角色要求的直接子节点。全局登记为空。
+当前共四条。两个适配器共用的三条：`tag` 的禁用标签文字用的是全库统一的 `fg-disabled` / `bg-muted`（浅色 2.36:1、深色 1.93:1），按 1.4.3 的失效控件豁免不算违规，但 tag 的 root 没有 axe 认得的禁用语义，所以只有它被扫出来；`select` 摆在触发器外的那枚可删标签同一档（触发器里的标签在原生 disabled 的按钮内，axe 跳过；外面这枚是个没有角色的 span）；`prompt-input` 的输入框刻意不无条件发 `aria-label`（那会盖掉作者的 `<label for>`），一致性夹具刻意不给文案以钉住这条契约，扫出来就是一个没有名字的 textarea，真实用法里由作者命名。Web Components 适配器自己的一条：`steps` 的必需子节点由作者手写，可能缺角色要求的直接子节点。全局登记为空。登记按主题记账：明暗两遍都要命中的写在共用表里，只在一个主题下成立的放 `knownByTheme`，两侧都有过期反查——登记了却已经扫不出来的一样判失败。
 
 ::: warning
 这份表是当前状态的诚实记录，不是「已知可接受」。表里还有条目时，请自行评估这两条对你的合规要求是否可接受。
@@ -593,6 +738,7 @@ pnpm test:browser
 - [组件参考](../components/)：每个组件的完整键盘表
 - [测试与质量门禁](./testing)：三套判据怎么跑
 - [行为原语](./behavior)：焦点域与背景失活
+- [皮肤与样式分层](./styling)：聚焦环在皮肤那侧怎么写
 
 ---
 
@@ -1304,6 +1450,37 @@ const visual = useBackground({ effect: fluidEffect });
 
 Vue 子入口**不替你注册**内置效果。要在模板里写字符串名（`v-background="'aurora'"`、`effect="nebula"`），先在应用入口调一次 `registerBuiltinEffects()` 或 `registerEffects([...])`。
 
+## 在 React 里用
+
+React 侧的适配同样在**单独的子入口** `@xihan-ui/react/backgrounds`，两种用法：
+
+```tsx
+import { fluidEffect, nebulaEffect } from "@xihan-ui/backgrounds";
+import { useBackground, XhBackground } from "@xihan-ui/react/backgrounds";
+
+function Cover() {
+  const visual = useBackground({ effect: fluidEffect });
+
+  return (
+    <>
+      {/* 1. 组件：children 浮在效果之上，画布 pointer-events: none 不挡交互 */}
+      <XhBackground effect={nebulaEffect} params={{ density: 0.8 }}>
+        <h1>标题浮在效果上</h1>
+      </XhBackground>
+
+      {/* 2. 钩子：自己拿画面实例，接自定义调度或调参面板 */}
+      <div ref={visual.ref} />
+    </>
+  );
+}
+```
+
+没有 Vue 那份的第三种。`v-background` 靠指令这层介质挂到别人的元素上，React 没有这层介质——把 `useBackground` 返回的 `ref` 挂到元素上就是同一件事，挂到别人的组件上也一样，只要那个组件把 `ref` 转给自己的根元素。
+
+`visual.ref` 的身份跨渲染是稳的，直接写 `ref={visual.ref}` 即可；`visual.surface` 是个 ref 对象，读 `.current` 拿画面实例，没有元素挂着时是 `null`。
+
+React 子入口同样**不替你注册**内置效果。要按名字写（`effect="aurora"`），先在应用入口调一次 `registerBuiltinEffects()` 或 `registerEffects([...])`。
+
 ## 在自定义元素里用
 
 同样是单独注册，不引这一行就不会把引擎打进包里：
@@ -1380,6 +1557,28 @@ registerEffect(myEffect);
 
 配套的层栈与背景失活也在 `@xihan-ui/core` 里（它们是结构原语，比行为更底层）。
 
+`createScope(node, idGenerator)` 从节点自己的 realm 解析 Document、Window、Element 与 ShadowRoot。传入 iframe 或画中画窗口中的节点时，`getRootNode/getDoc/getWin` 不会因当前页面的 `instanceof` 失败而回落到主文档。把这份显式 Scope 传给 `createRuntimeConfig({ scope })` 后，默认 locale、LayerRegistry、PortalRoot 与 reduced-motion 都从该 Scope 的 document/window 派生；显式传入的配置仍然优先，其中 `layerRegistry.ownerDocument` 必须与 Scope Document 相同。
+
+无全局 DOM 时必须提供有效 Scope；只提供 layer registry 不会得到一个伪造的空 Scope。Scope 的 root、document、window 必须互相归属，离线 Document 没有活动 Window 时直接报错。默认 PortalRoot 保持惰性创建，但 Document 没有 body 时会给出明确错误；需要其他容器就显式传 `portalContainer`。
+
+`createScope(null, ...)` 本身保持惰性，便于在 CSR 中先建立机器再挂载组件节点；这份 Scope 始终表示 ambient Document，不会在之后改绑节点。真正读取 root/document 时若宿主没有有效全局 Document，会抛出稳定错误。传入离线 Document 的节点时 `getDoc()` 仍返回该 Document，但 `getWin()` 明确失败，不会借用主页面 Window 伪造一组混合 realm。
+
+## Portal 的视觉环境
+
+Vue 浮层与 React `XhPortal` 为每个实例建立独立的 `display: contents` 容器，把逻辑来源的视觉环境带到浮层落点。主题、品牌、密度、对比度、动效、透明度和方向分别读取最近的显式声明；来源解析出的 CSS 自定义属性也会投影到实例壳。局部深色或局部令牌覆盖的弹层因此仍保持来源外观，同一落点下的其他实例不受影响。来源没有声明的轴与变量继续继承落点容器。
+
+框架外可使用 `createPortalVisualBridge({ source, shell })`：`source` 是逻辑来源元素，`shell` 是该实例独占的容器，两者必须属于同一 Document。返回的 `sync()` 可立即重读，`dispose()` 停止观察并恢复接管前的容器属性与自定义属性。普通属性、`class` / `style` 改动、祖先移动及 Shadow DOM 插槽重新分配会在 MutationObserver 或 slotchange 通知后同步；需要同一调用栈内更新时显式调用 `sync()`。普通计算样式不会复制。
+
+```ts
+import { createPortalVisualBridge } from "@xihan-ui/core";
+
+const bridge = createPortalVisualBridge({ source, shell });
+// 卸载该实例时释放观察与属性。
+bridge.dispose();
+```
+
+桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency`、`dir`。三端物理 Portal 都从逻辑来源的 composed 祖先逐轴取最近显式声明，并把七轴与公开自定义属性投影到实例壳；来源变化、跨 realm 与退场回收均由 Core 桥接生命周期处理。
+
 ## 在 Vue 里用
 
 原语都是框架无关的：收一份配置与几个元素 getter，返回一个要自己释放的句柄。接进 Vue 无非是把释放挂到作用域结束，这层包装收在 `@xihan-ui/vue/behavior`：
@@ -1396,6 +1595,10 @@ useHoverIntent({
   onCloseIntent: () => (open.value = false),
 });
 ```
+
+Vue 与 React 包装在 DOM 提交后解析 `getTriggerEl()`：节点为 `null` 时表示这一帧没有绑定目标，旧绑定会立即释放；节点重新出现、换代或三个计时参数变化时自动重建。Vue 的 `getContentEl` 与意图回调读取当前响应式选项，React 读取最近一次已提交选项；浮层内容或普通回调换代都不会取消正在进行的安全三角会话。
+
+直接使用 core 的 `trackHoverIntent()` 时传入创建时已经在场的 `trigger` 元素。该元素是明确的创建快照，订阅期间不得跨 Document 移动；需要换触发器时先调用 cleanup 再重建。浮层 content 可以动态换代，但必须始终与 trigger 属于同一 Document；安全三角会按原离开点和新面板位置重算。多级浮层经 Portal 分离时，用 `getHoverBranches` 显式返回属于同一悬停树的后代区域；它们必须是同一 Document 的原生 `HTMLElement`，不会按全局浮层顺序猜测归属。所有计时器与文档监听都取自 trigger 创建时所属的活动 Window；非法数值、离线 Document、跨 Document content 或 branch 会直接报错。
 
 另有 `useScrollTracker` / `useStickToBottom` / `useTypeahead`，接法同上。`useStickToBottom` 除状态外还交出句柄上的两个动作——「回到底部」按钮要的就是前者：
 
@@ -1423,10 +1626,22 @@ export type LayerKind = "modal" | "popover" | "inline";
 export interface Layer {
   readonly id: string;
   readonly kind: LayerKind;
-  node: () => HTMLElement | null; // 层的根节点
-  branches: () => Element[]; // 逻辑属于本层、DOM 却在别处的节点
-  isModal: () => boolean;
-  surfaces: () => Element[]; // 点了就该关本层的表面，如遮罩
+  readonly node: () => HTMLElement | null; // 层的根节点
+  readonly branches: () => Element[]; // 逻辑属于本层、DOM 却在别处的节点
+  readonly isModal: () => boolean;
+  readonly surfaces: () => Element[]; // 点了就该关本层的表面，如遮罩
+  readonly visuals?: () => Element[]; // 特殊结构显式声明真正消费 z-index 的宿主
+}
+
+export interface LayerRegistry {
+  readonly ownerDocument: Document;
+  // register / list / top / elementsAbove / subscribe ...
+  visualOf(layer: Layer): {
+    visualIndex: number;
+    visualLane: number;
+    visualLayer: string;
+  };
+  sync(layer: Layer): void; // isModal 等动态 getter 改值后显式通知
 }
 ```
 
@@ -1435,14 +1650,29 @@ export interface Layer {
 - **`branches`（分支）**——嵌套 portal 出去的子层。菜单开在对话框里、子菜单再 portal 到 body，DOM 上它们是兄弟，逻辑上是父子。漏登记分支会让「点子菜单」被判成「点了外面」，父层跟着关掉。
 - **`surfaces`（表面）**——遮罩这类点了就该关的元素。它属于本层，但点它的语义是关闭而不是「点在层内」。
 
-同一文档共用一个注册表；不同文档（iframe、画中画窗口）各有一份。
+默认情况下同一 Document 共用一个注册表；自定义注册表也会在创建时固化唯一的 `ownerDocument`，公共记录本身被冻结。不同 Document（iframe、画中画窗口）的注册表不能混用。
+
+视觉层级不再由各组件各自拿静态 `z-index` 猜。注册表按当前 Document 的逻辑栈派生
+`visualIndex`，再让 `kind` 与实时 `isModal()` 占用该序号内的 `visualLane`；后登记层的序号
+权重大于 lane，所以嵌套 popover 一定高于所属 modal，后来打开的 modal 也能压住更早的
+popover。公共绑定把 `visualLayer` 写入私有 `--xh-_layer`，皮肤仍以公开
+`--xh-<component>-layer` 为第一优先级，再回落这份私有值和旧全局令牌。动态 modal 通过
+`sync(layer)` 发布同一冻结快照，不改写 Layer，也不在适配器保留 `setModal` 空实现。
+
+`list()` 与订阅回调拿到的都是冻结状态快照，Layer 记录本身也被冻结；节点、分支和模态性仍由记录里的 getter 返回当前值。注册与释放会固定这一轮的订阅者名单并通知完所有人，单个订阅者抛错不会截断后续通知，多项异常会按订阅顺序聚合。
+
+登记与释放采用不同提交点。`register()` 的通知失败表示登记失败：注册表先恢复登记前的同一份快照，再向见过临时新状态的同一批订阅者发布补偿通知；中途退订的人仍会收到补偿，中途新增的人不会凭空收到补偿。变更通知和补偿通知都失败时，两阶段异常会一起上抛，失败登记已经分配的 layer id 不会复用。`dispose()` 会先在旧状态上报告非栈顶诊断，再永久移除 Layer、终结 cleanup，并发布通知；即使诊断输出或通知抛错，移除也不会撤销，两个阶段的异常会完整聚合。这样不会把已经释放且上层不再持有 cleanup 的 Layer 复活；重复释放保持幂等。
+
+订阅回调可以读取当前快照、订阅或退订，但不能同步嵌套调用 `register()`，也不能释放仍在注册表里的 Layer。嵌套状态变更会明确抛错，避免外层通知观察到一半又被另一轮变更改写；已经成功终结的 cleanup 仍可重复调用并保持无操作。
 
 注册表还给出 `elementsAbove(layer)`：栈中位于该层之上的各层的全部节点（`node` + `branches` + `surfaces`）。背景失活要用它把上层排除在自己的管辖之外。
+
+单个 Headless 浮层 layer effect 会把“登记 layer → 建消解层 → 建焦点域 → 加滚动锁/背景失活”放在同一初始化事务里。同步步骤与宿主 `flush` 后才执行的背景失活都经过事务守卫；任一步抛错都会把已经取得的资源按逆序全部释放，最后移除 layer。effect 成功后交给机器的也是同一份幂等逆序 cleanup。单项清理失败原样抛出，多项失败则聚合报告，且两者都会继续清完其余项，避免错误层永久占着栈顶。
 
 ## 消隐层
 
 ```ts
-import { createDismissLayer } from "@xihan-ui/core";
+import { createDismissLayer, createEscapeFallback } from "@xihan-ui/core";
 
 const layer = createDismissLayer({
   config, // RuntimeConfig：scope + 层注册表 + 豁免配置
@@ -1453,12 +1683,36 @@ const layer = createDismissLayer({
   onFocusOutside: (e) => {},
   onInteractOutside: (e) => {}, // 上面两者任一发生时也派发一次
 });
+
+const fallback = createEscapeFallback({
+  config,
+  isEnabled: () => sheetOpen,
+  onEscape: (event) => closeSheet(event),
+});
 ```
 
 两条约束：
 
 - **只有栈顶层响应 `Escape`。** 否则一次按键会把整摞层全关掉。
-- **四个回调都是可取消的表决票。** 它们收到的是 `cancelable` 的 `CustomEvent`，`preventDefault()` 即否决本次关闭，原生事件在 `detail.originalEvent` 里。这让「表单没填完时按 Esc 先弹确认」这类需求不必绕开组件实现。
+- **四个回调都是可取消的表决票。** 它们收到的是 `cancelable` 的 `CustomEvent`，`preventDefault()` 即否决本次关闭。四种票均通过 `detail.originalEvent` 保留同一原生事件对象：Escape 为 KeyboardEvent，Pointer 为 PointerEvent，Focus 为 FocusEvent，Interact 为 PointerEvent 或 FocusEvent。DOM 监听与选项回调收到同一张可取消票；specific 与 interact 两票送达后统一检查取消结果。这让「表单没填完时按 Esc 先弹确认」这类需求不必绕开组件实现。
+
+DismissableLayer 的监听 Document、`CustomEvent`、微任务与动画帧均取自 `config.scope` 的同一个 Window，`config.layerRegistry.ownerDocument` 也必须逐字指向该 Document。传入的 layer 必须已经登记在这份注册表里；动态 `layer.node()` 可以暂时为 `null`，非空时必须是真实 HTMLElement 且属于该 Document。从其他窗口返回节点会立即报错，不会把一张文档里的交互票派到另一张文档。所属 Window 缺少 `CustomEvent`、`queueMicrotask` 或动画帧能力时创建即失败，不借 ambient 全局。
+
+同一 Document 的 DismissableLayer 与 EscapeFallback 共用一套 Hub；每一份显式 LayerRegistry 按对象身份形成独立 lane，不同应用或子树的自定义层栈互不干扰。同一 lane 的同一 Layer 只能有一个消解参与者，重复创建会明确失败。首个租约同步事务化安装四个监听：keydown capture、pointerdown capture、focusin capture、keydown bubble；最后一个租约释放时按 keydown bubble、focus、pointer、keydown capture 的严格逆序完整卸载。DismissableLayer 参与者仍延后一枚所属 Window 的微任务武装，以避开打开浮层的同一次 pointerdown；EscapeFallback 注册后同步生效。派发处理期间最后一个租约离场时，Hub 把卸载延到当前处理阶段的 `finally`，回调里同步建立的新租约会复用原 Hub，不会出现两套 Document 监听。
+
+pointer 与 focus 先为本次事件冻结一份 composed path，并在执行任何业务回调前冻结所有 lane 的 LayerRegistry snapshot。每条 lane 从事件开始时的真实栈顶向下生成纯计划：命中层内部即停；命中 surface 时计划关闭该层后停止；没有 DismissableLayer 参与者、参与者尚未武装或节点尚未在场时都是屏障。计划阶段每次读取 node、branches 或 surfaces 后都会复核原 snapshot；getter 改变层栈时整条 lane 当场作废，不再读取更低层 getter。执行每个候选前都会确认当前栈严格等于原计划对应的前缀、候选确为真实栈顶、参与者 token 与动态节点仍相同；DOM 表决、选项表决与 interact 表决之后逐阶段复核。票被否决、回调改变 snapshot/node、动态 branch 把原目标纳入层内，都会停止该 lane；动态 surface 命中会关闭其所属层，随后停止，不继续触碰更低层。
+
+`onDismiss` 完整返回后，只有候选 Layer 确实退栈、当前栈严格变成下一段计划前缀时，pointer/focus 才继续处理下一层。受控组件只发关闭意图却未退栈、关闭开关让 `onDismiss` 原地返回、额外移除旧层或登记新层都会形成屏障。正常逐层退栈产生的新冻结 snapshot 会成为下一候选的 stage token；成功变更后再恢复相同内容仍不能冒充原 snapshot，失败登记由 LayerRegistry 补偿回原对象则保持有效。Escape 每条 lane 只处理事件开始时的原始栈顶，一次按键不会沿栈连续关闭。
+
+`createEscapeFallback()` 给同一 lane 的空层栈提供 Escape 后备出口，适合覆盖侧栏这类不登记为 Layer 的界面。keydown capture 会在任何 Layer getter、表决或业务回调前冻结全部 lane 的 registry snapshot 与 fallback token snapshot；当时只要 lane 存在任意 Layer，该 lane 的本次按键就已消费，即使 Layer 没有消解参与者、尚未武装、否决关闭或同步退栈，bubble 也不会接着调用 fallback。空栈 lane 从最新 token 反向查找第一个 `isEnabled()` 为真的出口，最新出口已启用后不会再读取更早 getter。
+
+原生事件到达 Document bubble 且在进入 Hub 前尚未 `defaultPrevented` 时，Hub 才复核 capture 计划。registry 必须仍是原来的空快照，fallback 列表、所选 token 以及为选出它而读过的启用状态也必须逐项相同；capture 后新注册或新启用出口、dispose 后重建、Layer 空栈成功经历非空再回空，都会让旧计划失效。失败 Layer 登记补偿回同一 snapshot 则保持有效。同一 lane 每次只调最新的一个出口；它不释放时会持续占位，释放发生在 capture 之后时本键也不会降级到旧出口。不同 registry lane 各自执行一个，某个 fallback 收到同一原生 `KeyboardEvent` 后调用 `preventDefault()` 不会反向否决其他 lane。目标节点在事件到达 Document bubble 前调用 `preventDefault()` 或阻止传播，则全部 fallback 都不执行。
+
+触摸在 pointerdown 时只建立关闭候选，不立即派发层外票；匹配 pointerup 仅标记触摸完成，随后同目标的 click 才提交原计划。鼠标与笔仍在 pointerdown 时处理。触摸提交的 `detail.originalEvent` 仍为最初的 PointerEvent，click 只作为内部完成证据。
+
+滚动、指针取消、长按菜单、新指针、窗口失焦、文档可见性变化或新的键盘交互会取消候选。参与者、节点或 Layer 快照失效也不会提交；等待期间焦点事件不抢先关闭浮层。这条路径没有固定超时或 pointerup 自动关闭，某一 registry lane 校验抛错只剔除该 lane，其余有效 lane 仍可完成 click。
+
+Hub 在每个 capture 或 bubble 处理阶段持有重入锁，getter、表决、关闭或 fallback 回调同步派出的事件不会嵌套进入该阶段；原事件的 target 阶段仍按浏览器传播模型正常运行。某条 registry lane 的 getter、表决或关闭回调抛错时，其他 lane 仍照常执行；末尾单错原样抛出，多错按 lane 与清理的发生顺序聚合，首错保留为 `cause`。Hub 的 add、queue、动画帧和 remove 都使用所属 Window/Document，并遵守先终态、LIFO、全量尝试的清理规则。
 
 ## 焦点域
 
@@ -1481,7 +1735,19 @@ const scope = createFocusScope({
 
 `trapped` 与 `loop` 是两件事：陷住（逃不出去）和回绕（Tab 到末尾回到开头）。模态对话框两者都要；非模态气泡通常只要回绕。
 
+容器上的 `xh.focusScope.mountAutoFocus` / `xh.focusScope.unmountAutoFocus` DOM 事件与两个选项回调收到同一个 `cancelable` `CustomEvent`。成功绑定容器后，每个生命周期只派发一次，DOM 监听器先执行，选项回调随后执行；两条通道都会收到通知。任一通道调用 `preventDefault()`，FocusScope 都不再执行对应的默认聚焦或焦点归还。scope 从未取得容器时不会伪造 body 事件。
+
+`restoreFocus: () => false` 或同一 Document 中更新的焦点域仍在场时，unmount 通知仍会发出，只跳过默认归还。不同 Document 的焦点域互不抑制；跨窗口交接若不应归还，调用方必须用 `preventDefault()` 或 `restoreFocus: () => false` 明确表达。回调抛错会直接暴露；挂载回调抛错时，FocusScope 会先撤销监听、哨兵和层订阅，不留下拿不到句柄的半成品。
+
+挂载回调是同步表决点；要让 FocusScope 在 DOM 稳定后聚焦指定节点，使用 `initialFocus`，它会沿既定帧预算重试。回调取消后自行安排异步焦点时，调度与目标有效性由调用方负责。
+
 非栈顶的焦点域会自动暂停——上面又开了一层时，下面那层不该再抢焦点。
+
+`focusSafely` 与 `focusFirst` 按候选节点所属的 Document/ShadowRoot 判断焦点是否真正落下；可选中文本控件通过严格 HTMLElement 身份与 HTML 节点名识别，不依赖可能因 `adoptNode` 改变的 owner realm 构造器。Shadow DOM 中 `document.activeElement` 只指向 host，不能拿它判断内部候选失败或重复聚焦。
+
+陷焦点域会精确观察最后一个域内焦点的 DOM/ShadowRoot 祖先路径。该路径被移除后，FocusScope 等到所属 Window 的下一动画帧再确认最终焦点；只有域仍在场、仍为活动层、`trapped` 仍开启且业务没有把焦点交给其他有效节点时，才恢复到重新插回的原节点、主容器首个有效项或容器。暂停中的域保留待复核资格，重新取得同一 Document 的焦点所有权后再继续；每次尝试候选后都会重新仲裁，候选的 focus 回调同步打开新层时不会再触碰后续节点。动态 `branches`、closed ShadowRoot 与容器替换走同一判据，普通 DOM 删除不会触发补焦。
+
+公开 `FocusableElement` 统一表示 `Element & HTMLOrSVGElement`，即具备浏览器原生焦点能力的 Element。`getTabbables`、`focusSafely`、`focusFirst`、`focusItem`、Scope 活动元素和 FocusScope 的显式焦点目标都使用这份合同；带 `tabindex` 的 SVG/MathML 不会再被类型系统遗漏。
 
 ## 滚动锁
 
@@ -1494,7 +1760,9 @@ lock.dispose();
 
 锁是**引用计数**的：叠了三层浮层就加了三次，全部释放才真正解锁并还原滚动位置。
 
-**锁哪个元素**由 `config.scrollRoot?.()` 决定。没注入就先看整页，再往下探测真正在滚的那个容器——宿主把滚动搬进了内容容器（`body` 自己不滚）时必须注入，否则锁到的是不滚的那个，浮层背后照样能滚。
+**锁哪个元素**由 `config.scrollRoot()` 明确决定。返回 `null`、`body`、`documentElement` 或 `scrollingElement` 都锁定页面；返回其他节点则锁定该容器，节点必须是所属 Scope Document 内已连接的原生 HTMLElement。内容容器承担滚动时应显式返回它，滚动锁不扫描页面猜测目标。
+
+同一 Document 的并行锁共享同一个规范化目标，混用不同目标会明确失败；最后一把锁释放后，下一次获取可以使用新目标。每轮保存双轴滚动位置、内联样式值与优先级及原 gutter 变量。初始化失败逆序回滚，最终释放先终结状态再尝试全部恢复；业务期间主动改写的样式不会被旧锁覆盖。页面位置按 instant 行为恢复，避免受 smooth 滚动影响。
 
 加锁期间让出来的滚动条宽度写在文档根的 `--xh-scroll-lock-gutter` 上，供 `fixed` 定位的元素让位：
 
@@ -1511,16 +1779,24 @@ lock.dispose();
 ```ts
 import { hideOutside } from "@xihan-ui/core";
 
-const restore = hideOutside(() => [contentEl, ...branches, ...registry.elementsAbove(layer)], scope, {
+const restore = hideOutside(() => [
+  contentEl,
+  ...branches,
+  ...config.layerRegistry.elementsAbove(layer),
+], config, {
   exemptSelectors: [".my-portal-root"],
 });
 ```
 
 给 `body` 下除目标与豁免节点外的直接子元素加 `inert`，背景内容对读屏与键盘一并消失。
 
-第一个参数取的是函数而不是数组：施加 `inert` 的时机横跨整个展开期（`MutationObserver` 盯着后来新增到 `body` 的节点），晚于调用时刻才挂载的节点必须也能被算进目标。**目标必须包含全部分支节点，以及栈中位于自己之上的层**（`registry.elementsAbove(layer)`），漏传会把 portal 出去的嵌套浮层一起 inert 掉——看得见、点不动。
+第一个参数取的是函数而不是数组：施加 `inert` 的时机横跨整个展开期（`MutationObserver` 盯着后来新增到 `body` 的节点），晚于调用时刻才挂载的节点必须也能被算进目标。**目标必须包含全部分支节点，以及栈中位于自己之上的层**（`config.layerRegistry.elementsAbove(layer)`），漏传会把 portal 出去的嵌套浮层一起 inert 掉——看得见、点不动。
+
+第二个参数必须同时提供 Scope 和计算 `elementsAbove` 的同一份 `LayerRegistry`，通常直接传 `RuntimeConfig`。`hideOutside` 只订阅该实例的层栈变化，并校验注册表的 `ownerDocument` 与 Scope Document 相同；自定义注册表、iframe 与画中画窗口都不再暗中切换到按 Document 获取的默认注册表。
 
 带 `data-xh-inert-exempt` 的元素默认豁免。
+
+`hideOutside` 的目标、`body`、层栈、`MutationObserver` 与 inert 引用计数严格属于 Scope 的同一 Document。iframe 与画中画窗口中的后挂节点会由各自 Window 的观察器重新计算；从其他窗口 adopt 进来的豁免节点也按当前所属 Document 生效。注册表或目标来自其他 Document、Document 没有活动 Window 或宿主缺少 `MutationObserver` 时会明确报错，初始化失败不会留下半施加的 inert 状态。
 
 ## 进出场
 
@@ -1532,14 +1808,16 @@ export interface PresenceHandle {
   readonly rendered: boolean; // 渲染状态：DOM 还该留着吗
   readonly state: "open" | "closed"; // 直接绑到 data-state
 
-  claimExit: (reason: string, timeoutMs?: number) => ExitLease;
+  claimExit: (reason: string) => ExitLease;
   onBeforeExit: (fn: () => void) => Cleanup;
   onExitComplete: (fn: () => void) => Cleanup;
   update: (open: boolean) => void;
 }
 ```
 
-关闭时先同步触发 `onBeforeExit`，动画探测器在此**申领租约**；所有租约归还之前 `rendered` 保持 `true`，DOM 不摘。退场中途又被打开则 `cancel()` 租约，不卸载。租约带超时，动画事件没来也不会永远卡住。
+关闭时先同步触发 `onBeforeExit`，动画探测器在此**申领租约**；所有租约归还之前 `rendered` 保持 `true`，DOM 不摘。退场中途又被打开则取消旧租约，不卸载。租约不设猜测时限：CSS 观察器等待浏览器实际创建的有限动画对象完成或取消，同名的多个动画也分别计入；没有实际动画对象时不等待，无限装饰动画不阻塞退出。自定义动画租约由创建方明确完成或取消。
+
+Dialog 与共用其机器的 Drawer 在逻辑关闭时立即给内容设置 `inert` 和 `aria-hidden`，保持浮层登记、滚动锁与背景失活直到内容及遮罩完成退场，然后通知 `onExitComplete`（Vue/Web Components 为 `exit-complete`）。退场中重开保留原资源，旧完成不影响新状态；必要时通过原焦点域的 `reactivate()` 恢复域内焦点，不重复派发挂载自动聚焦通知。卸载立即释放资源，不等 CSS。
 
 适配器必须在 `data-state` **已提交到 DOM 之后**才调 `update(open)`——先改属性再让 CSS 过渡起跑，顺序反了动画不会播。
 
@@ -1602,7 +1880,6 @@ stick.retarget(); // 节点换了就解绑重绑
 | `prefersReducedMotion()` / `onReducedMotionChange()` | 读与订阅「减弱动态效果」系统偏好 |
 | `easing` | 一组具名缓动函数 |
 | `applySelection()` / `toggleSelectAll()` / `rangeBetween()` | 选中集合运算：带锚点的范围选、全选与切换，不碰 DOM |
-| `dispatchCancelable()` | 派发可取消的自定义事件（表决票模式） |
 | `getTabbables()` / `focusFirst()` / `focusSafely()` | 可聚焦元素查询与安全聚焦 |
 
 ## 相关
@@ -1810,6 +2087,10 @@ export const DIAGNOSTIC_CODES = {
 
 这份清单与 `@xihan-ui/core` 里的码表逐条对账，不会漏码，可以直接照它写分流。
 
+`machine.error` 的 `detail.machineCode` 是状态机错误码。机器崩溃或正常停机清理失败时，`detail.reason` 保留实际上报的原始或聚合异常对象；同时发生 cleanup 与 exit 异常时，它与调用方捕获的 `AggregateError` 是同一个对象，可以继续读取 `errors` 与 `cause`。
+
+状态机实现引用属于执行前置条件。`UNKNOWN_ACTION`、`UNKNOWN_GUARD`、`UNKNOWN_EFFECT` 在创建机器时拒绝静态缺项；动态列表或实现内部引用缺项时使用 `MISSING_ACTION`、`MISSING_GUARD`、`MISSING_EFFECT`。后三种错误在开发与生产都会先投递 `machine.error`；没有其他停机异常时，其 `detail.reason` 与随后抛出的 `MachineError` 是同一个对象，存在其他停机异常时则由后续崩溃记录携带聚合结果。服务同时进入 `Stopped`。诊断阈值只控制记录是否送达，不会把错误改成继续执行、guard 的 `false` 或部分 effect。
+
 三条 `wc.*` 是 Web Components 适配器的部件契约校验，也是日常最容易撞上的三条——手写 DOM 时漏一个 `data-xh-part` 或者写错名字，通道会明确告诉你哪个节点、哪个部件。
 
 ## 用法
@@ -1928,6 +2209,10 @@ checkbox 与 switch 的根是 `<button>`，而 HTML 的内容模型禁止 button
 带 `name` 的组件都认表单重置。点 `<button type="reset">`（或调 `form.reset()`），它们各自回到
 自己的默认值，和旁边的原生输入框一起。
 
+重置桥按事件目标的原生 HTMLElement 品牌与 `form` 节点名识别表单，不依赖顶层 `HTMLFormElement` 构造器。因此组件与表单位于 iframe 中，或表单从另一 Window adopt 到当前 Document 后，仍会跟随所属表单重置；普通元素派发的同名事件不会冒充表单。
+
+对于正式提供 `form` 属性的组件，重置桥优先按该 ID 查找组件所属 Document 或 ShadowRoot 中的表单；未提供时才关联最近的祖先表单。空 ID、目标不存在或目标不是表单时均不关联其他表单。关联在重置发生时读取，因此目标表单延后创建或属性变更不需要重新挂载组件；取消原生 `reset` 事件仍会取消组件重置。此规则不使未声明 `form` 的组件自动获得该公共属性。
+
 ```vue
 <form>
   <XhRadioGroupRoot name="plan" default-value="standard">…</XhRadioGroupRoot>
@@ -2003,13 +2288,13 @@ const controlProps = useFieldControl();
 
 ## 哪些组件参与
 
-27 个：checkbox、checkbox-group、color-picker、combobox、date-field、date-picker、editable、
-file-upload、image-cropper、number-field、password-input、pin-input、radio-group、rating、
+29 个：checkbox、cascader、checkbox-group、color-picker、combobox、date-field、date-picker、editable、field-array、
+file-upload、image-cropper、mention、number-field、password-input、pin-input、radio-group、rating、
 segmented、select、signature-pad、slider、switch、tags-input、text-field、time-field、
-time-picker、tree-select。
+time-picker、toggle-group、transfer、tree-select。
 
 新加的表单组件忘了接重置会被门禁拦下：判据的分母是从源码里扫出来的（`types` 的 props 里有
-`name?: string` 即表单字段），不是手写名单。
+`name?:` 即表单字段，字段名既可以是标量字符串也可以是 `FormPath`），不是手写名单。
 
 ---
 
@@ -2023,8 +2308,10 @@ time-picker、tree-select。
 
 - 内建文案（关闭钮的读屏名、分页的翻页说明、上传区的提示、色阶两端的 `Less` / `More` 这类）一律英文，换语言经 `translations`。
 - 日期时间系组件的月份名、星期名、段位先后、周首日与缺省格式串全部由 `locale` 决定，不写死。
-- `locale` 的解析链是**实例 props → 全局配置 → 宿主的 `navigator.language` → `en-US`**，`calendar` / `date-picker` / `date-field` / `heatmap` / `time` 五个都走它。所以中文浏览器里不配任何东西也是中文日期；服务端渲染期读不到宿主语言，落 `en-US`。
+- `locale` 的解析链是**实例 props → 全局配置 → 宿主的 `navigator.language` → `en-US`**，`calendar` / `date-picker` / `date-field` / `heatmap` / `time` 五个都走它。所以中文浏览器里不配任何东西也是中文日期；服务端渲染期或显式 Scope 没有活动 Window 时读不到宿主语言，落 `en-US`，不会借用另一个页面的 Window。
 - 例外一处：`time-picker` / `time-field` 的**小时制**不从宿主推。`hourCycle` 与 `locale` 都不给时恒是 24 时制，要 12 时制就给其中之一。
+
+服务端渲染的应用应在服务端与客户端显式注入同一个 `locale`。如果服务端依赖无 DOM 时的 `en-US`、客户端又依赖 `navigator.language`，两端可能生成不同的月份、星期与段位顺序，形成水合差异。
 
 ::: warning 周首日跟着 locale 走
 一周从周日还是周一起算由 `locale` 定：`en-US` 周日起、`zh-CN` 与多数欧洲语言周一起。
@@ -2343,7 +2630,11 @@ export const accordionMachine = createMachine({
 | `watch` | 追踪外部值变化并触发动作，受控回写走这里 |
 | `implementations` | `actions` / `guards` / `effects` 的具名实现 |
 
-**具名实现是硬约束。** `states` 里只能出现动作名、守卫名、副作用名的字符串；裸内联函数会在 `createMachine` 时直接抛 `MachineError`（守卫只放行 `and` / `or` / `not` 组合子的产物）。开发模式下还会自检：转移表里引用了 `implementations` 里不存在的名字，同样报错。这条约束换来的是——状态图是可静态分析的数据，测试能算转移覆盖率，而不是一堆闭包。
+**具名实现是硬约束。** `states` 里只能出现动作名、守卫名、副作用名的字符串；裸内联函数会在 `createMachine` 时直接抛 `MachineError`（守卫只放行 `and` / `or` / `not` 组合子的产物）。`createMachine` 在开发与生产模式都会检查静态列表并递归审计组合 guard：转移表里引用了 `implementations` 里不存在的名字，同样报错。实现必须是对应分组自身的数据属性函数；原型链成员、访问器和非函数值都不构成实现，审计也不会为了检查而调用 getter。这条约束换来的是——状态图是可静态分析的数据，测试能算转移覆盖率，而不是一堆闭包。
+
+函数形态的 `entry`、`exit`、`effects` 以及实现内部调用的 `action()`、`guard()` 只能在运行时得知名字。运行时会先解析整份 action 或 effect 列表，再通过自有数据属性一次取得全部函数快照，之后才执行 action 或初始化 effect；任一名字缺失都会用 `MISSING_ACTION`、`MISSING_GUARD` 或 `MISSING_EFFECT` 上报、停止服务并抛出原错误，开发与生产行为一致。缺失 guard 不会按 `false` 继续选择分支，缺失 action 不会被跳过，列表后部缺失 effect 也不会让前部 effect 先取得资源。缺项发生在 effect 初始化中且 cleanup 也失败时，抛出的 `AggregateError` 同时保留缺项错误与全部回滚异常。
+
+`inspect` 只观察这些运行事件，不参与错误决策；观察器自身抛错会被隔离，不能遮蔽 `MISSING_*`、阻止停机或替换诊断中的原错误对象。
 
 ## 受控与非受控：`cell`
 
@@ -2407,6 +2698,20 @@ states: {
 ```
 
 副作用拿得到 `refs`（宿主注入的 DOM 取值器与运行时配置）、`send`、`flush`，返回一个清理函数。`setTimeoutEffect` / `setIntervalEffect` 是两个现成的定时器 effect 工厂。
+
+同一状态节点的一批 effect 在执行前会先建立在途路径登记，整批成功后才保留为活动批次。如果后一项初始化抛错或挂载期间丢失路径所有权，在途登记会被摘除，本批已取得的 cleanup 会立即按资源取得逆序全部回滚；某项 cleanup 抛错不会阻断其余回滚。无回滚异常时保留原初初始化异常；回滚也失败时通过 `AggregateError` 同时携带初始化异常和全部回滚异常。最外层的 `MachineError` 会把这份原始异常链保留在 `cause` 中。
+
+事务只能回滚 effect 已经返回给服务的 cleanup。单个 effect 如果在返回前已取得多项资源，它自身必须在内部初始化抛错时逆序回滚；服务无法释放从未交出的句柄。
+
+成功挂载的 cleanup 同样按资源取得逆序执行。每条状态路径只能存在一份活动 effect 登记，返回 `void` 的 effect 也会占用该路径；重复挂载会抛出 `DUPLICATE_EFFECT_PATH` 不变式错误，而不是把两批 cleanup 隐式合并。退出状态时，服务会先从清理表摘除该路径，再调用 cleanup，因此 cleanup 抛错也不会在崩溃停机时被重复执行。
+
+停机一开始就进入 `Stopped`、关闭事件入口并清空待处理事件与 tracker，然后继续清完所有 effect 并运行 machine exit。清理、exit 与原始崩溃同时抛错时，抛出和诊断通道都收到同一份完整聚合异常；正常停机只有 cleanup 或 exit 失败时也遵守同一规则。cleanup 或 exit 里同步调用 `send` 不会再推进机器；服务停止后宿主重复触发 mount 也不会把它复活。
+
+effect 执行前路径就已处于“挂载中”。setup 里同步重入宿主 mount 会在服务边界命中 `DUPLICATE_SERVICE_MOUNT`，并按崩溃停机释放当前全部资源；同一状态路径在机器内部非法重复挂载时才报告 `DUPLICATE_EFFECT_PATH`。setup 里同步停机后，该 effect 迟到返回的 cleanup 会当场按逆序释放，当次 choreography 立即终止，不会再运行后续 entry 或根 effect；这次紧急清理的异常仍会暴露。
+
+首次 mount 的完整 choreography 是一个不可重入的初始化边界。state effect、machine entry、根 effect 与 state entry 全部提交前，其中的 `send` 只会按调用顺序进入 FIFO；提交后先处理挂载前累积的 tracker，再统一消费事件队列。初始化失败或停机会清空该队列，不会用半提交的状态继续转移。初始化来源和根 effect 使用与用户状态路径不相交的内部标识，因此 `__init__` 是合法的用户状态名，也可以与根 effect 同时使用。
+
+状态机允许 JavaScript 抛出任意值。`null`、`undefined` 和其他非 `Error` 值会使用安全格式化的崩溃信息，并在 `MachineError.cause` 中保留原值；即使单个 cleanup 或 exit 抛出 `undefined`，也会被记录为真实异常并向外抛出。抛出值自身无法转为文本时，诊断使用稳定的“无法格式化的异常”文案。
 
 ## 服务与响应式运行时
 
@@ -2799,14 +3104,27 @@ const off = onMotionPreferenceChange(preference => console.log(preference));
 
 这是仓内唯一的探测通道：`@xihan-ui/core` 的 `RuntimeConfig.reducedMotion`（退场租约、贴底滚动）与平滑滚动、`headless` 的数字动画、反馈服务的加载弧线与 `backgrounds` 的画面都经 `resolveMotionPreference` 读，应用级 override 一处设、处处生效。门禁 `check-reduced-motion-channel` 守着：除 motion 包自身外，源码里不许再出现 `matchMedia('(prefers-reduced-motion')`。
 
-### 减弱动效的两步
+### 七轴控制器统一入口
 
-JS 与 CSS 是两条线，应用要减弱动效得各走一步：
+应用根只设置一次视觉环境，解析后的 motion 会同时投影到 DOM，并经显式 sink 驱动 JS 动画、Presence 与平滑滚动：
 
-1. **JS 侧**：在全局配置里写 `motion: 'reduce'`（Vue `provideXhConfig({ motion: 'reduce' })`，WC `setXhConfig({ motion: 'reduce' })` 或 `<xh-config motion="reduce">`），适配器收到就调 `setMotionOverride`；不经配置直接调 `setMotionOverride('reduce')` 也一样。配置里没写这个字段就不碰 override。
-2. **CSS 侧**：把 `data-motion="reduce"` 打到容器上。`tokens.css` 在 `@media (prefers-reduced-motion: reduce)` 之外还生成一份 `:where([data-motion='reduce'])` 块，重映射同一批 `--xh-motion-*` 语义令牌（时长 1ms、位移 0、缩放 1）。打在 `<html>` 上即全局，打在某个容器上即局部。
+```ts
+import { setMotionOverride } from "@xihan-ui/motion";
+import {
+  createMotionOverrideSink,
+  createVisualEnvironmentController,
+} from "@xihan-ui/tokens/runtime";
 
-配置不绑 DOM 节点，所以第二步由作者自己打；系统开了 prefers-reduced-motion 时两条线都自动降级，不必做任何事。
+const visual = createVisualEnvironmentController({
+  root: document.documentElement,
+  motionSink: createMotionOverrideSink(setMotionOverride),
+  initial: { motion: "system" },
+});
+
+visual.setPreference({ motion: "reduce" });
+```
+
+`motionSink` 只允许绑定 `documentElement` 根作用域。局部 VisualEnvironment 仍会写 `data-motion="reduce"`，让该子树的 CSS 令牌降级；它不会改全局 JS override，也不会影响兄弟树。需要直接控制全局 JS 且不使用视觉环境时，仍可显式调用 `setMotionOverride`。
 
 ## 播一段
 
@@ -3011,6 +3329,8 @@ const session = createMultiPointerSession({
 # 浮层定位
 
 `@xihan-ui/position` 负责一件事：把一个浮层放到锚点旁边正确的位置，并在页面变化时持续跟住。它是自研实现，零第三方运行时依赖。
+
+默认共享箭头皮肤只作用于 `context-menu`、`hover-card`、`menu`、`menubar`、`popconfirm`、`popover`、`tour`、`tooltip` 自身的 `arrow` 部件。业务或其他组件使用同名 `data-part="arrow"` 不会获得浮层定位、旋转或描边裁剪。
 
 ## 端口与实现是分开的
 
@@ -3506,6 +3826,43 @@ import { vSound } from "@xihan-ui/vue/sound";
 
 `@xihan-ui/sound` 是**可选** peer：不装它，主入口一行都不引，应用里不会多出一个音频引擎。
 
+## 在 React 里用
+
+React 侧的适配同样放在**单独的子入口** `@xihan-ui/react/sound`。服务那一层与 Vue 完全同名同形：
+
+```ts
+import { createSoundPlayer, softSoundTheme } from "@xihan-ui/sound";
+import { createDialogService, createToastService } from "@xihan-ui/react";
+import { setSoundPlayer, withDialogSound, withToastSound } from "@xihan-ui/react/sound";
+
+// 换主题、接用户偏好；不设置就用一个默认播放器
+setSoundPlayer(createSoundPlayer({ theme: softSoundTheme, enabled: userPrefs.sound }));
+
+export const toast = withToastSound(createToastService());
+export const dialog = withDialogSound(createDialogService());
+
+toast.success("已保存"); // 视觉 + 听觉，返回值与原服务完全一致
+await dialog.confirm({ title: "删除这条记录？" });
+```
+
+默认映射、逐项改写与 `autoUnlock` 的口径与上面那张表一模一样——两侧包的是同一份语义。
+
+给单个元素配声的那一份不一样：指令是 Vue 独有的介质，React 侧对应的是 `useSoundOnPress`，返回一个挂到元素 `ref` 上的回调：
+
+```tsx
+import { useSoundOnPress } from "@xihan-ui/react/sound";
+
+<button ref={useSoundOnPress()}>提交</button>
+<button ref={useSoundOnPress("send")}>发送</button>
+<div ref={useSoundOnPress({ sound: "toggle-on", volume: 0.6 })} />;
+```
+
+监听同样挂在 `click` 上而不是 `pointerdown`：键盘敲 Enter / Space 激活也要响，按下又拖开取消的那种不该响。带 `disabled` / `aria-disabled` / `data-disabled` 的元素不发声。
+
+传进去的值**每次渲染现读**：换语义名、换音量、换播放器都不必解绑重绑，按下那一刻取当前那份。ref 回调本身常驻，React 不会因为重渲染反复解绑重绑。
+
+要给库里的组件配声，把回调挂到它转发出来的 ref 上；组件不转发 ref 时，套一层自己的元素，声音跟着那次点击的冒泡走。
+
 ## 自动播放策略
 
 浏览器要求用户先与页面交互，音频上下文才允许出声。播放器对此的态度：
@@ -3661,7 +4018,7 @@ CSS 的级联顺序由 `@layer` 声明的**首次出现顺序**决定，与 `@im
 
 下拉、日期、文本框这类控件默认带 `min-inline-size: var(--xh-control-min-w)`，缺省 `12rem`（约 192px）。控件放进 flex 或 grid 里天然会被压扁——压到只剩一个箭头就没法用了，先给一条底线比让它塌掉合理。
 
-15 份皮肤吃这条令牌。窄栏场景（两列表单、抽屉里的设置项、表格上方的筛选行）会顶出容器：这条是底线不是宽度，容器再窄它也不让步。要么把它放开、要么给控件所在的栏留够宽度：
+16 份皮肤吃这条令牌（其中 file-upload 拿它当条目里文件名的下限，不是控件宽度）。窄栏场景（两列表单、抽屉里的设置项、表格上方的筛选行）会顶出容器：这条是底线不是宽度，容器再窄它也不让步。要么把它放开、要么给控件所在的栏留够宽度：
 
 ```css
 /* 全局：所有吃这条令牌的控件一起改 */
@@ -3709,6 +4066,80 @@ CSS 的级联顺序由 `@layer` 声明的**首次出现顺序**决定，与 `@im
 
 对比度已经按 WCAG 逐族验过：实心底与 `--xh-tone-on`、淡底三态与 `--xh-tone-fg` 都是 4.5:1，两条非文字档是 3:1。所以自己配色时，字与底请照上表成对取，别把 `--xh-tone-fg` 压到 `--xh-tone-solid` 上。
 
+## 聚焦环与实心面
+
+键盘焦点的环由公共皮肤 `focus.css` 画一份，组件不必自己写 `outline`：
+
+```css
+[data-scope][data-part]:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-_ring-color, var(--xh-ring-focus));
+  outline-offset: var(--xh-ring-offset);
+}
+```
+
+偏移是**负的一个环宽**：环往元素里收，外沿与元素边框外沿重合，聚焦前后占的地方一样大。因此环内侧紧挨着的是**元素自己那块面**。面是实心的那几档，环色与面同族，贴上去就看不出来——最坏的档量到 1.00:1，即整条环与底完全同色。这些档把环色槽灌成 `currentColor`，环改取这块面配对的前景色：
+
+```css
+[data-scope='tag'][data-part='root'][data-variant='solid'] {
+  background: var(--xh-tag-bg, var(--xh-bg-brand));
+  color: var(--xh-tag-fg, var(--xh-fg-on-brand));
+}
+
+[data-scope='tag'][data-part='root'][data-variant='solid']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+```
+
+**环仍然不随语气。** `currentColor` 取的是那块面配对的前景色（实心底上就是 `--xh-tone-on` 那一支），不是语气色本体——语气色本体当环色，warning 压白底只有 2.70:1、success 3.04:1，够不到 3:1。没有实心面的那些档一律是 `--xh-ring-focus` 一支色。判据看的是「环压着的那块面」，不是「组件是什么语气」。
+
+**过了线的面不为统一而灌。** 淡底、透空的面这些非实心档一律吃默认环；一条灌环色的规则罩到了非实心档（同一个部件的另一个形态、失效档、只读档），门禁判红，把选择器收窄到实心那一档，而不是登记豁免。
+
+**「灌」按求值认，不按写法认。** 门禁看的是三条声明——`--xh-_ring-color`、`outline-color`、键盘聚焦规则里的 `outline` 简写——的值求出来是什么：顺着皮肤里的槽摊开、再顺着令牌链解到颜色，在任一主题 × 语气下与库自己的两支环（`--xh-ring-focus`、`--xh-ring-invalid`）都不相等就是灌，解不出来的（`currentColor`、使用者传进来的色值、没兜底的使用者令牌）同样算。所以下面几种写法与写 `currentColor` 受同一套判据管：
+
+```css
+/* 与面配对的前景色令牌：开关选中的轨道是 <button>、皮肤没给它 color，只能这么写 */
+[data-scope='switch'][data-part='root'][data-state='checked']:focus-visible {
+  --xh-_ring-color: var(--xh-_tone-on, var(--xh-fg-on-brand));
+}
+
+/* 不经槽、直接写长手：一样算灌 */
+[data-scope='x'][data-part='y']:focus-visible {
+  outline-color: var(--xh-fg-default);
+}
+
+/* 包进 @supports：块内条件按成立处理，一样算灌 */
+@supports (color: red) {
+  [data-scope='x'][data-part='y']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+}
+
+/* 包进 @media screen / @container：静态判不出它什么时候不成立，按成立处理，一样算灌 */
+@media screen {
+  [data-scope='x'][data-part='y']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+}
+
+/* 写在裸 :focus 里的 outline 简写：:focus 包含键盘落焦，一样算灌；没写颜色那一节等于 currentColor */
+[data-scope='x'][data-part='y']:focus {
+  outline: var(--xh-ring-width) solid var(--xh-fg-default);
+}
+
+/* 没兜底的使用者令牌：值由使用者定，解不出来，一样算灌 */
+[data-scope='x'][data-part='y']:focus-visible {
+  --xh-_ring-color: var(--xh-tag-fg);
+}
+```
+
+显式写回 `var(--xh-ring-focus)`、校验失败换 `var(--xh-ring-invalid)` 不算灌。`@media` 只有纸面、高对比、减动效、粗指针、断点这几种真实媒体条件才算条件块。用 `[data-variant]` / `[data-state]` 这类属性存在式选择器一次罩住几个形态也逃不掉：每个形态各算一档，罩到的非实心档逐档判红——规则写了、档位没写的属性，存在式一律算罩得到（DOM 上多半有这个属性），写了取值的（`[data-state='on']`）看有没有一档兄弟档认领了它。库环两支令牌与它们顺着解到底经过的名字（`--xh-color-brand-500` 这些）皮肤里一律不许赋值。浏览器态的 `focus-ring-inset-grpring` 按同一定义从样式表里读出灌了环色的规则，逐条挂出来落焦量 3:1——静态放行的别名色（比如在实心底上写了同族的 `var(--xh-color-brand-600)`）在那里量出来就是 1:1。
+
+自己写皮肤时，灌之前核三件事：
+
+1. **面画在谁身上**。画在祖先上时（透空的关闭钮坐在标签那块实心底上）规则写成后代选择器，槽仍然灌在拿焦点的那个节点上。
+2. **部件有没有 `color`**。圆点、滑块这类没有字的部件先补一支与面配对的墨色；不补则 `currentColor` 取到继承下来的正文色，或原生控件的 UA 前景色。只有一档要换的把那支色直接写进槽，不绕 `currentColor`。
+3. **面被换走的档要退出**。失效档把面换成置灰底、前景换成置灰色甚至透明（`color: transparent` 会让整条环一起透明），中性轻档把实心底换成灰底。收窄选择器退回默认值，或把槽显式写回 `var(--xh-ring-focus)`。
+
 ## 换品牌色
 
 品牌色的唯一真源是 **原语梯度** `--xh-color-brand-50…950`：语义令牌（`--xh-bg-brand` 等）与语气层（`data-tone='brand'`）都从它取值。所以换品牌色要换整套原语，而不是只改 `--xh-bg-brand`——那只影响没写 `data-tone` 的缺省路径，写了 `data-tone='brand'` 的组件（实心按钮、开关、进度条这些）不会跟着变。
@@ -3716,19 +4147,38 @@ CSS 的级联顺序由 `@layer` 声明的**首次出现顺序**决定，与 `@im
 一枚种子色就够，运行时会派生整套梯度：
 
 ```ts
-import { brandId, createThemeController, registerBrand } from "@xihan-ui/tokens";
+import { brandId, createVisualEnvironmentController, registerBrand } from "@xihan-ui/tokens";
 
 // 注册：从种子色派生 11 档原语，注入 [data-brand='acme'] 取值块
 registerBrand("acme", "#16a34a");
 
-// 切换：品牌是主题五维之一
-const theme = createThemeController({ storageKey: "app-theme" });
-theme.setPreference({ brand: brandId("acme") });
+// 切换：品牌是七轴视觉环境之一
+const visual = createVisualEnvironmentController({ root: document.documentElement });
+visual.setPreference({ brand: brandId("acme") });
 ```
 
-派生只取种子的**色相与彩度**，明度曲线沿用基线——库里所有建立在明度上的对比度保证（实心底白字 4.5:1 这类）对任何种子色都继续成立。种子会被锚定到 600 档（实心底与强调文字的档位）。
+派生只取种子的**色相与彩度**，明度曲线沿用基线——库里所有建立在明度上的对比度保证（实心底白字 4.5:1 这类）对任何种子色都继续成立。种子会被锚定到 600 档（实心底与强调文字的档位），因此种子必须完全不透明；透明品牌色依赖宿主背景，运行时会直接拒绝。
 
 要逐档手调，把整套梯度直接交给 `registerBrand('acme', { 50: '...', ..., 950: '...' })`。SSR 场景用 `brandScaleCss(id, seed)` 拿到取值块字符串，随首屏 HTML 下发，客户端不必再注册。
+
+## 透明颜色与对比度
+
+颜色运行时把 alpha 作为 `Oklch.a` 的必填通道保留。`compositeColors(foreground, backdrop)` 按 CSS source-over 在 sRGB 编码通道合成；WCAG 相对亮度在得到最终像素后再线性化。
+
+```ts
+import { compositeColors, contrastRatio } from "@xihan-ui/tokens";
+
+const page = "oklch(0.97 0.01 250)";
+const glass = "oklch(0.98 0.01 250 / 82%)";
+const renderedGlass = compositeColors(glass, page);
+
+// 背景本身透明时，第三个参数必须给出最终底色。
+const ratio = contrastRatio("oklch(0.2 0.02 250)", glass, page);
+```
+
+`relativeLuminance(transparentColor)` 和缺少最终底色的 `contrastRatio(foreground, transparentBackground)` 会直接抛错，不会假设白底。玻璃位于图片、品牌色或多层 surface 上时，应分别传入实际像素或逐层合成；平均色不能证明每一处文字都满足对比度。
+
+`pickOnColor` 与 `pickAwayColor` 可通过 `{ backdrop: actualBackdrop }` 处理玻璃背景，并会比较自定义 light/dark 候选的真实对比度。没有最终底色时仍会抛错，运行时不会替你猜页面背景。
 
 ## 动画与进出场
 
@@ -3771,6 +4221,7 @@ theme.setPreference({ brand: brandId("acme") });
 | `check-token-refs` | 皮肤引用了令牌产物里不存在的令牌名。孤儿引用不报错也不降级——整条声明在计算值阶段静默失效 |
 | `check-shared-slots` | 同一个字面量在两个以上组件里当默认值。那是一条没被命名的设计决策，应当先立语义令牌 |
 | `check-disabled-contrast` | 禁用态的前景色令牌上又叠 `opacity`。两种手段同时用会把对比度压到读不出字 |
+| `check-focus-ring-surface` | 可聚焦部件的面压着环不到 3:1，那一档却没有一条规则把环色换掉（`--xh-_ring-color` / `outline-color` / 聚焦规则里的 `outline` 简写求值后仍是库环）。键盘焦点落在那块面上等于没画。反过来灌了环色的规则罩到非实心档、`:focus-visible` 里关掉环（`outline: none` / `outline-width: 0`）却没登记环由谁画、画了实心面却不接焦点也没登记的部件，同样判红；聚焦规则把环色写成透明的直接判红——失效档只豁免对比度，环不许消失。`@supports` 块里的规则按块内条件成立处理，`@media` 只认几种真实媒体条件为条件块，其余条件块与 `@container` 一律按成立处理；皮肤里给库环令牌链上的名字赋值直接判红 |
 | `check-overlay-strategy` | 浮层的坐标系在机器、`connect`、皮肤三处不一致 |
 | `check-part-wiring` | 解剖里声明、`connect` 里产出、适配器却没接线的部件。皮肤为它写了规则却匹配不到任何元素 |
 | stylelint | 常规 CSS 规范 |
@@ -3933,9 +4384,45 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 
 基线文件名带浏览器与平台后缀（`…-chromium-linux.png`），入库的只有 `linux` 这一套。带别的平台后缀的文件不该出现——字体守卫会在生成之前就把用例拦下——真见到了直接删，不要提交。
 
+## 视觉样板性能预算
+
+`pnpm visual:performance` 在像素基线同一 Playwright Linux 镜像里运行真实 Chromium，并把报告写到
+`ui/packages/adapters/vue/.vitest-attachments/visual-performance.json`。这条用例不另造展示页：它直接复用
+`visual-baseline.spec.ts` 的 Dialog `variant="blur"` 夹具与 800×520 视口，在对话框后方逐帧移动固定渐变背景，
+让 `backdrop-filter` 参与真实合成。默认透明与 `data-transparency="reduce"` 交替采样，避免先后顺序把机器热态只压到某一档。
+
+设备档固定为 `mcr.microsoft.com/playwright:v1.62.0-noble`、Chromium、800×520@1x、2 CPU、2 GiB，
+并通过 CDP 对渲染进程施加 4× CPU throttle。每档先预热 30 帧，再采 120 帧，重复三轮。预算真源是
+`tooling/scripts/visual-performance-budget.json`；容器镜像版本继续与 `pnpm-workspace.yaml` 的 Playwright catalog 对齐。
+
+报告与门禁包含：
+
+- `requestAnimationFrame` 相邻回调的 p50 / p95 / 最大间隔；每帧都会改变背景绘制位置，这个间隔包含该帧排队、样式、绘制与合成对下一帧的影响，不把纯 JS 计时冒充 GPU 时间；
+- W3C Long Tasks `PerformanceObserver` 给出的长任务数量、最大值与合计时长；
+- 每个可见且计算样式含 `blur(...)` 的 `backdrop-filter` 元素，在视口内裁切后的面积之和。重叠材质逐层计数，因为每一层都要独立取样；`reduce` 档必须严格为 0；
+- 10 次交替挂载/卸载后，强制 GC 前后的 CDP `Memory.getDOMCounters` 差值，作为 documents / DOM nodes / JS listeners 的资源留存代理。
+
+这里不输出伪内存数。浏览器目前没有稳定的标准轨页面内存 API；候选
+`measureUserAgentSpecificMemory()` 仍是 WICG 草案，而且要求跨源隔离。测试页不会为拿到一个数字而伪造隔离条件，
+报告会如实记录候选 API 与 `crossOriginIsolated` 状态，并用上述 DOM 资源留存代理守泄漏。长任务定义见
+[W3C Long Tasks](https://www.w3.org/TR/longtasks-1/)，内存候选 API 的标准状态见
+[WICG Measure Memory](https://wicg.github.io/performance-measure-memory/)。
+
+第一次建立或有意重定预算时，必须先运行：
+
+```bash
+pnpm visual:performance --record
+```
+
+`--record` 只写真实报告、不判断 `limits`。至少检查一份完整报告后，才按实测值与明确余量修改预算真源；常规
+`pnpm visual:performance` 会执行红线。CI 跑后者。像素基线仍由 `pnpm visual:baseline` 守护，这项不自动更新任何 PNG。
+
+包体积不在性能 JSON 里复制数字：JavaScript / 发布产物继续由 `.size-limit.json` 与 `pnpm size` 守护，逐皮肤 CSS
+继续由 `.size-limit.css.json` 与 `check-skin-size` 守护。性能预算门禁反查这两份真源；修改本项不得提高既有阈值。
+
 ## 结构门禁
 
-`pnpm gate` 跑 105 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
+`pnpm gate` 跑 111 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
 
 | 门禁 | 拦什么 |
 | --- | --- |
@@ -3955,11 +4442,14 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 | `check-autofill` | 渲染原生表单控件的输入框没写自动填充规则，或两个手段 / 两个引擎的选择器缺一 |
 | `check-part-wiring` | 解剖声明、`connect` 产出、适配器却不接线的部件 |
 | `check-dead-state-attr` | `connect` 发出的 `data-*` 在**本组件的作用域**里没有一条规则消费——别的组件有同名规则不算数，那条规则永远选不中它。信息钩子逐条登记，登记项过期同样判失败 |
+| `check-skin-parts` | 皮肤选择器里的 `[data-part]` 不在它所属 scope 的解剖里——部件退役后留下的规则永远选不中节点，`surface:update` 还会把它的覆盖槽收回公开面。scope 按选择器现算（逐分支、逐复合：写在 `[data-part]` 前后的 `[data-scope]` 都管这一节，没写的沿用左边最近那一节，`:is()` / `:where()` 里一致的 scope 带回外面，`:not()` / `:has()` 里各算各的），解剖外的名字逐条登记，登记项过期同样判失败；`data-scope` / `data-part` 的属性选择器读不出来的（转义、匹配符不是全等）同样判失败 |
 | `check-breakpoints` | 皮肤 `@media` 里的断点字面量不在令牌清单里（自定义属性在媒体条件里不生效，只能写字面量） |
 | `check-focus-ring` | 聚焦环的粗细、颜色、偏移写了字面量而不是令牌，主题与全局调整对它无效 |
+| `check-focus-ring-surface` | 可聚焦部件的面压着环不到 3:1（算出来的，不是看形态猜的），那一档却没把 `--xh-_ring-color` 灌成 `currentColor`——键盘焦点在那块面上等于没画。`currentColor` 罩到非实心档、`:focus-visible` 里关掉环（`outline: none` / `outline-width: 0`）却没登记环由谁画、画了实心面却不接焦点也没登记的部件，同样判红；聚焦规则把环色写成透明的直接判红，没有登记表 |
 | `check-exports` | 实现了却忘了从包级入口导出，包外拿不到它，而构建与类型检查照过 |
 | `check-package-roles` | 包所在的角色组与它 `package.json` 里的依赖声明对不上 |
 | `check-public-surface` | 公开面基线里有而当前没有的名字——被删了或改名了 |
+| `check-visual-performance-budget` | 固定设备、默认/reduce 场景、真实浏览器入口与既有 JS/CSS 体积真源任一脱节 |
 
 另有分层依赖检查与九项单独的门禁：
 
@@ -3988,7 +4478,7 @@ pnpm gate:llms    # 文档站的机读资产：页数、组件数、令牌数与
 pnpm size
 ```
 
-35 条产物各有上限（gzip 后），涨过线就红。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，要看具体数字请翻那一份，这里不抄。
+37 条产物各有上限（gzip 后），涨过线就红。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，要看具体数字请翻那一份，这里不抄。
 
 ## 相关
 
@@ -4043,75 +4533,143 @@ primitive  ──►  semantic  ──►  组件私有槽
 
 令牌源是 DTCG 格式的 JSON（`packages/design/tokens/tokens/`），产物由构建脚本生成，`tokens.css` / `tokens.json` / `src/generated/tokens.ts` 三份都入库。产物与源是否同步由 CI 重跑生成后比对，改源忘了跑生成会被拦下。
 
-## 主题运行时
+## 七轴视觉环境运行时
+
+`VisualEnvironmentController` 是 mode、brand、density、dir、contrast、motion、transparency 的唯一状态与 DOM 投影入口。一次 `setPreference` 同步提交同一 scope 的完整七轴：
 
 ```ts
-import { createThemeController } from "@xihan-ui/tokens/runtime";
+import { setMotionOverride } from "@xihan-ui/motion";
+import {
+  brandId,
+  createMotionOverrideSink,
+  createVisualEnvironmentController,
+} from "@xihan-ui/tokens/runtime";
 
-const theme = createThemeController({
-  root: document.documentElement, // 默认就是它
-  storageKey: "app-theme", // 传了才持久化
-  initial: { mode: "system", density: "comfortable" },
+const visual = createVisualEnvironmentController({
+  root: document.documentElement,
+  storageKey: "app-visual-environment",
+  onStorageError: detail => reportStorageFailure(detail),
+  motionSink: createMotionOverrideSink(setMotionOverride),
+  initial: {
+    mode: "system",
+    brand: brandId("xihan"),
+    density: "comfortable",
+    dir: "ltr",
+    contrast: "system",
+    motion: "system",
+    transparency: "system",
+  },
 });
 
-theme.getState(); // 已定型的五维状态
-theme.getPreference(); // 用户提交的意图（可能含 undefined / 'system'）
-theme.setPreference({ mode: "dark" });
-theme.subscribe((state) => {});
-theme.dispose();
+visual.setPreference({ mode: "dark", density: "compact" });
+visual.getState();
+visual.subscribe(state => console.log(state));
+visual.dispose();
 ```
 
-它把状态投影成根元素上的五个属性：
+启用 `storageKey` 必须同时给 `onStorageError`。解析失败、隐私模式或配额不足会明确回调；控制器继续维护内存状态，但不会把持久化失败伪装成成功。
+
+根控制器的 `motionSink` 是显式依赖注入：它把解析后的 motion 同步到 Presence、平滑滚动和 JS 动画。只有 `documentElement` 根作用域允许传；局部控制器只改当前 DOM scope，不能隐式污染全局 JS override。
+
+七轴状态会投影成 Portal 可桥接的完整属性面：
 
 ```html
-<html data-theme="dark" data-brand="xihan" data-density="comfortable" data-contrast="base" dir="ltr">
+<html data-theme="dark" data-brand="xihan" data-density="compact" data-contrast="more" data-motion="reduce" data-transparency="reduce" dir="rtl">
 ```
 
-## 偏好与状态是两回事
+## 偏好、状态与系统轴
 
-这是这套设计的关键区分：
-
-| | 偏好 `ThemePreference` | 状态 `ThemeState` |
+| | `VisualEnvironmentPreference` | `VisualEnvironmentState` |
 | --- | --- | --- |
-| 含义 | 用户/服务端提交的**意图** | 已完全定型的**事实** |
-| 可以是 `undefined` | 可以，表示继承父作用域 | 不可以，五个维度全部非空 |
-| 可以是 `'system'` | 可以（仅 `mode` 与 `contrast`） | 不可以，已折算成具体值 |
+| 含义 | 用户或服务端提交的意图 | 已完全定型的事实 |
+| `undefined` | 清除本层覆盖，继承父控制器 | 不存在，七轴全部非空 |
+| `'system'` | 仅 mode / contrast / motion / transparency 合法 | 不存在，已解析成具体值 |
 
-```ts
-interface ThemePreference {
-  mode?: "light" | "dark" | "system";
-  brand?: BrandId;
-  density?: "comfortable" | "compact";
-  dir?: "ltr" | "rtl";
-  contrast?: "base" | "more" | "system";
-}
-```
+brand、density、dir 没有平台媒体查询，因此不接受伪造的 `system`。其余四轴分别读取 `prefers-color-scheme`、`prefers-contrast`、`prefers-reduced-motion`、`prefers-reduced-transparency`。没有 `window` / `matchMedia` 的 SSR 环境使用浅色、默认对比度、默认动效和默认透明度，不猜测客户端偏好。
 
-只有 `mode` 与 `contrast` 接受 `'system'`，因为只有这两维有对应的媒体查询（`prefers-color-scheme`、`prefers-contrast`）。折算规则很简单：`undefined` 取父作用域值，`'system'` 读媒体查询，其余原样。
+基线七轴为 light、xihan、comfortable、ltr、default、default、default。`contrast='default'` 是显式恢复常规对比度的正式值；旧的 `base` 不再接受。
 
-基线是浅色、`xihan` 品牌、`comfortable` 密度、`base` 对比度、`ltr`。
-
-## 五个维度各管什么
-
-| 维度 | 说明 |
+| DOM 轴 | 说明 |
 | --- | --- |
 | `data-theme` | 明暗两值各有整套语义取值 |
-| `data-contrast='more'` | 明暗两档各有一组边框 / 描边加强取值 |
-| `data-brand` | 注册后生效：`registerBrand(id, 种子色)` 注入该 id 的原语取值块，切到这个品牌即换色（见[换品牌色](./styling#换品牌色)）；不注册就切只写属性、不改视觉 |
-| `data-density='compact'` | 收的是盒子：控件高度、内距、间隙、区块留白整档收紧；字号与字形不动，可读性不随密度掉。属性可挂在任意子树上做局部密集区 |
-| `dir` | 布局层通过逻辑属性天然支持 |
+| `data-brand` | 注册品牌梯度后切换品牌色 |
+| `data-density='compact'` | 收紧控件高度、内距与间隙，不缩字号和字形 |
+| `dir` | 由逻辑属性驱动 LTR / RTL 布局 |
+| `data-contrast` | `more` 加强边界；`default` 显式回到常规档 |
+| `data-motion` | `reduce` 触发局部 CSS 动效降级 |
+| `data-transparency` | `reduce` 把玻璃材质切成实体配方 |
 
-## 服务端渲染
+## 父作用域、Portal 与回收
 
-运行时在 `document` / `window` 缺席时自动走 SSR 分支：不读媒体查询、不写 DOM，一律回退到浅色与基线对比度。
+局部控制器通过 `parent` 明确继承。父状态变化时，子控制器只重算没有本地偏好的轴；`setPreference({ motion: undefined })` 会删除本层覆盖，立即恢复继承。dispose 会退订父作用域和系统媒体，并把根元素七个属性精确还原到接管前。
 
-要让首屏不闪，请在服务端直接把五个属性渲染到 `<html>` 上——客户端的控制器会读到相同的偏好并算出相同的状态，属性值一致时它不会触碰 DOM。
+```ts
+const page = createVisualEnvironmentController({
+  root: document.documentElement,
+  initial: { mode: "dark", motion: "system" },
+});
+const editor = createVisualEnvironmentController({
+  root: document.querySelector("#editor")!,
+  parent: page,
+  initial: { density: "compact", transparency: "reduce" },
+});
+```
 
-## 局部主题
+React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvironment` 接受带显式 root 的控制器选项；嵌套 Provider 自动接父控制器。Web Components 的 `<xh-config>` 自身就是局部 scope，可直接设置 `mode`、`brand`、`density`、`direction`、`contrast`、`motion`、`transparency`。物理 Portal 仍由 Core 的 VisualBridge 桥接已解析七轴，适配器不另存一份视觉状态。
 
-`applyThemeAttrs(el, state)` 可以把一份状态写到任意元素上，用于「侧栏永远深色」这类局部反转。属性写在哪一层，令牌就在哪一层重新解析——因为令牌块的选择器是 `:where([data-theme='dark'])` 而不是 `:root`，嵌套生效。
+## 五轴旧视图
 
-`color-scheme` 声明也写在深色取值块里，所以嵌套的深色区域里原生控件（滚动条、日期选择器）同样是深色的。
+`createThemeController`、`resolveTheme` 与 `applyThemeAttrs` 继续存在，但只是新控制器的明确五轴视图：没有独立 resolver、媒体查询或持久化实现。新代码应使用七轴控制器；独立的 `applyThemeAttrs` 只写五轴，控制器则始终维护完整七轴 DOM 合同。
+
+`color-scheme` 声明写在深色取值块里，所以嵌套深色区域的原生控件也会跟随。SSR 首屏应直接输出七个已解析属性，避免客户端接管前闪烁。
+
+## 柔和材质配方
+
+`--xh-material-soft-*` 提供 M1 Soft Surface：完全不透明的背景、无背景模糊、浅色和深色各自的细边、高光与接触投影。它适合 Card 一类内容容器，正文不随表面降低透明度。
+
+| 后缀 | 用途 |
+| --- | --- |
+| `bg` / `backdrop` | 实体底色 / `none` 背景滤镜 |
+| `border` / `highlight` / `shadow` | 外边界、顶部高光与接触投影 |
+| `separator` | 内部分段线 |
+| `fg` / `fg-muted` | 正文与次要文字 |
+| `focus-surface` | 校验焦点环对比度的实际底色 |
+
+高对比档在当前作用域增强边界并取消装饰高光；打印档在组件节点直接取消高光与投影。常规和高对比两档都验证正文至少 4.5:1、焦点环至少 3:1。
+
+## 浮动玻璃材质配方
+
+M3 使用 `--xh-material-glass-*` 的九项配方，面向浮动创作面板、浮动按钮组等独立表面。浅深主题分别设计背景与光照，底色不透明度为 0.76，使用 24px 模糊与 112% 饱和度；次要文字采用更强的明暗对比，以抵抗复杂背景透入。正文和图标保持完全不透明，不应在容器上设置整体 `opacity` 或对正文施加滤镜。
+
+`bg`、`border`、`highlight`、`shadow`、`separator`、`fg`、`fg-muted`、`backdrop`、`focus-surface` 分别控制底色、边界、独立顶光、两段投影、分隔、正文、辅助文字、背景滤镜与获焦控件实体底。高对比和减少透明度模式会改用实体配方；打印及强制色同时取消投影。嵌套区域应复用外壳，不重复叠加背景模糊。
+
+主题与对比度可以分别声明在不同层级：每一层采用最近的 `data-theme` 和 `data-contrast`。子主题不会撤销祖先的高对比度，`data-contrast="default"` 可以局部恢复常规档；兄弟区域互不影响。
+
+## 高层玻璃材质配方
+
+M4 使用 `--xh-material-elevated-*` 的九项配方，供 Dialog、Drawer、Command 一类高层模态表面在后续各自的皮肤迁移中消费；令牌本身不改变任何组件默认外观。浅色档以 0.94 的高遮蔽 tint、深色档以 0.92 的独立深色 tint，配合 32px 模糊和 108% 饱和度保护正文。最外层模态壳才可使用 `backdrop`，body、工具条和嵌套浮层必须复用外层，不得重复采样。
+
+`shadow` 固定为近距 contact、中距 ambient、远距 sheet 三层，`highlight` 独立绘制而不使用 inset 阴影；`fg`、`fg-muted` 与 `focus-surface` 始终不透明。浅色、深色均按黑、白、中灰、红绿蓝、页面及品牌背景计算最终合成对比度：正文与次要文字至少 4.5:1，焦点环对实体隔离底至少 3:1。
+
+高对比、减少透明度与打印会在同一令牌名上改为实体底并关闭背景滤镜和高光；高对比及打印同时取消三层投影，减少透明度保留投影来表达模态层级。强制色改由 `Canvas` / `CanvasText` 决定。M4 不包含动效令牌，减少动效由各组件后续消费既有 motion 语义令牌处理。
+
+## 磨砂材质配方
+
+M2 使用 `--xh-material-frosted-*` 的同名九项配方，适合导航和小型锚定浮层。浅色、深色分别设计底色和光照，常规底色透明度为 0.88，背景采用 16px 模糊与 108% 饱和度；正文与次要文字始终不透明。不要把 backdrop-filter 放在页面根、大滚动区或重叠的多层表面，也不要对模糊半径做动画。
+
+系统减少透明度、高对比、强制颜色与打印模式在原组件位置使用实体底并关闭背景滤镜。焦点环必须搭配 `focus-surface` 对应的实体隔离面；仅计算一个隔离色而没有实际绘制它，不能保证焦点可见。主题校验覆盖纯黑、纯白、中灰、页面及品牌背景上的复合颜色。
+
+### 紧凑磨砂
+
+Tooltip 等小型反白表面使用三支 compact 配方组合现有 M2 边界、前景和高光：
+
+| 配方 | 常规值 |
+| --- | --- |
+| `--xh-material-frosted-compact-alpha` | 0.94，按内置反白与六种 tone 在黑、白、灰、页面和品牌底上验证正文对比度 |
+| `--xh-material-frosted-compact-backdrop` | 8px 模糊、104% 饱和度 |
+| `--xh-material-frosted-compact-shadow` | 明暗独立的两层小投影，最大模糊范围 16px |
+
+高对比、强制颜色和打印分别改为不透明、无模糊、无投影。减少透明时保留小投影来表达浮层位置。组件经这三支配方消费光学参数，不直接选择 alpha 或 blur 原语。
 
 ## 直接取用令牌
 
@@ -4181,15 +4739,15 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 
 ## 一、JS / TS 导出面
 
-17 个包中 16 个出 JS（`@xihan-ui/styles` 只出 CSS），共 30 个带类型的入口。
+17 个包中 16 个出 JS（`@xihan-ui/styles` 只出 CSS），共 32 个带类型的入口。
 
 ### 受约束
 
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
 | 包名 | 17 | 把代码从一个包挪到另一个包 = major |
-| `exports` 子路径 | 30 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）被 Node 与打包器一并挡住，那些路径不是 API |
-| Vue 组件导出 `Xh*` | 918（126 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
+| `exports` 子路径 | 32 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）被 Node 与打包器一并挡住，那些路径不是 API |
+| Vue 组件导出 `Xh*` | 921（126 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
 | Vue 组合式函数 `use<家族>` | 97 | `useSelect`、`useCombobox`。这是「不用我的部件、自己写标记」的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
 | 无头内核 `connect*` | 126 | `connectAccordion` 及其参数顺序、返回的 getter 名 |
@@ -4215,9 +4773,9 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | 类别 | 数量 | 为什么排除是安全的 |
 | --- | --- | --- |
 | `@xihan-ui/headless` 的内部算子与常量 | 625 | `clampRating`、`buildMonthGrid`、`colorPickerHexToRgba`、`CAROUSEL_AUTOPLAY_INTERVAL` 这类。它们是内核实现的一部分，改一次实现就得改一次签名。你需要的默认值应当从组件 props 的文档默认值读，不要 import 一个常量再自己比对 |
-| `@xihan-ui/headless` 的内部伴生类型 | 563 | `*Refs`（机器持有的 DOM 引用袋，40 个）、`ColorPickerHsva`、`CascaderLevel` 等，是上面那批函数的参数与返回类型 |
+| `@xihan-ui/headless` 的内部伴生类型 | 564 | `*Refs`（机器持有的 DOM 引用袋，41 个）、`ColorPickerHsva`、`CascaderLevel` 等，是上面那批函数的参数与返回类型 |
 | `xxxAnatomy` / `xxxMeta` / `xxxKeyboard` 三组导出对象 | 各 126 | **它们描述的 part 名单是受约束的（见第二节），但这三个对象本身的组织方式不是。** 想拿到部件名单，请以组件文档页的解剖表为准，不要 import 这些对象 |
-| Vue 的 `provide*` / `use*Context` 函数 | 112 | [Vue 适配器](../adapters/vue) 早已写明「父子组件之间的 provide / inject 是内部实现，不对外开放」。要下探请用 `use<家族>()` |
+| Vue 的 `provide*` / `use*Context` 函数 | 109 | [Vue 适配器](../adapters/vue) 早已写明「父子组件之间的 provide / inject 是内部实现，不对外开放」。要下探请用 `use<家族>()` |
 | Vue 的 `useTimelineItem` | 1 | 名字看着像组合式函数，实际是 inject 管道，与上一行同类 |
 | 适配器运行时底座 | Vue 3 个、WC 8 个 | `createVueRuntime` / `createVueIdGenerator` / `vueNormalize`；`createLitRuntime` / `createSpreader` / `defineElement` / `discoverParts` / `wcNormalize` / `MachineController` 等。这些是适配器与内核之间的接缝，签名依赖的类型没有从同一个包导出，实际也写不出调用 |
 | WC 的元素类导出 `Xh*Element` | 100 | 只作 `instanceof` 与手动 `customElements.define` 的便利品，**不支持 `extends`**（基类不导出、`wire()` 是 protected abstract）。要拿元素请用 `document.querySelector` |
@@ -4235,14 +4793,14 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
 | `data-scope` 取值（组件身份） | 126 | **受约束**（新增第 127 个组件是 minor） |
-| `data-part` 取值（部件名） | 254 个不同名字 / 945 条「组件 × 部件」配对 | **受约束** |
+| `data-part` 取值（部件名） | 254 个不同名字 / 940 条「组件 × 部件」配对 | **受约束** |
 | `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 254 个 | **受约束** |
-| `meta.requiredParts`（必备部件） | 272 条 | **受约束**（加条目 = major），方向见下 |
+| `meta.requiredParts`（必备部件） | 267 条 | **受约束**（加条目 = major），方向见下 |
 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改一个就是四处同时破坏。
 
 ::: warning `data-xh-part` 是 `data-xh-` 前缀里唯一的例外
-其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt` 等 6 个）是库自用标记，**排除**在承诺之外。但 `data-xh-part` 不是——它是 Web Components 适配器唯一的作者输入 API：你写 `data-xh-part="trigger"` 是**声明**，元素接线后往同一节点打上 `data-scope` + `data-part` 是**事实**。皮肤匹配后者，你永远不该手写后者。
+其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt` 等 9 个）是库自用标记，**排除**在承诺之外。但 `data-xh-part` 不是——它是 Web Components 适配器唯一的作者输入 API：你写 `data-xh-part="trigger"` 是**声明**，元素接线后往同一节点打上 `data-scope` + `data-part` 是**事实**。皮肤匹配后者，你永远不该手写后者。
 :::
 
 ### requiredParts 的方向是反的
@@ -4256,7 +4814,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 199 个不同的 `data-*` 属性名、910 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 200 个不同的 `data-*` 属性名、909 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -4268,7 +4826,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-**样式钩子**——自带皮肤自己就消费了 155 个属性名 / 702 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤照着抄的就是这一组：
+**样式钩子**——自带皮肤自己就消费了 155 个属性名 / 709 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤照着抄的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -4320,9 +4878,9 @@ brand  neutral  success  warning  danger  info
 | `@layer` 名与声明顺序 | 5 | `xihan.reset` → `xihan.tokens` → `xihan.motion` → `xihan.components` → `xihan.overrides`。改名、调序、增删中间层全是 major。`xihan.overrides` 是**故意留空的**，专门给你覆盖用，不会被「清理未使用的层」删掉 |
 | 全局令牌 · 原语层 | 91 | `--xh-color-brand-500`、`--xh-space-4`、`--xh-radius-md`。皮肤里不该直接用它们，但接品牌轴必须写 `--xh-color-brand-*`，所以它们是公开的 |
 | 全局令牌 · 语义层 | 179 | `--xh-bg-brand`、`--xh-fg-on-brand`、`--xh-control-h-md`、`--xh-shape-control`。主题定制的正门，见 [设计令牌与主题](./theme) |
-| 组件覆盖槽 | 3457（覆盖 125 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，你在 `:root` 里设它就改了这个组件 |
+| 组件覆盖槽 | 3486（覆盖 125 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，你在 `:root` 里设它就改了这个组件 |
 | 语气轴槽 | 12 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。**这是自定义语气的唯一机制**——你写 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读这批槽的 58 份皮肤都会跟着走。虽然带下划线前缀，但按受约束处理 |
-| 关键帧名 | 62 | `xh-pop-in`、`xh-fade-out`、`xh-spinner-rotate`。关键帧逐皮肤自带，你在 `xihan.overrides` 层里重定义同名关键帧就换掉了那段动画（规范 §8.7 约束 3）——所以改名与删名同样是 major |
+| 关键帧名 | 64 | `xh-pop-in`、`xh-fade-out`、`xh-spinner-rotate`。关键帧逐皮肤自带，你在 `xihan.overrides` 层里重定义同名关键帧就换掉了那段动画（规范 §8.7 约束 3）——所以改名与删名同样是 major |
 | 跨包内联属性 | 2 | `--xh-_truncate-lines`、`--xh-_float-button-offset`。由 headless 写进内联 `style`，皮肤必须读。**换整套皮肤时不读这两条，`truncate` 不截断、`float-button` 贴边，且不报任何错** |
 | `@xihan-ui/styles` 的 CSS 子路径 | 140 | `.`、`./index.css`、`./index.unlayered.css`，与 137 条 `.css`——126 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./undefined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css` |
 | `@xihan-ui/tokens` 的 CSS 子路径 | 2 | `./tokens.css`、`./tokens.json` |
@@ -4336,7 +4894,7 @@ brand  neutral  success  warning  danger  info
 | `index.unlayered.css` 的内部结构 | — | 它是生成的扁平镜像，**不带 `@layer`**。走这个入口就没有 `xihan.overrides` 这个覆盖槽位，层名承诺不适用 |
 
 ::: warning 命名前缀不能反推归属
-`--xh-field-py` 长得像 `field` 组件的覆盖槽，实际是全局语义令牌，而且 `field.css` 自己都不用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 344 个全局令牌里，不要按前缀猜。
+`--xh-field-py` 长得像 `field` 组件的覆盖槽，实际是全局语义令牌，而且 `field.css` 自己都不用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 397 个全局令牌里，不要按前缀猜。
 :::
 
 ---
@@ -4347,13 +4905,13 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 129（`defineXhElements()` 注册 128 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1207 条声明 / 367 个不同名字 | **受约束**（具体元素上的具体属性名） |
-| attribute 名词汇表本身 | 367 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
-| `CustomEvent` 名 | 83 个名字 / 180 条「元素 × 事件」 | **受约束** |
-| 事件传播语义 | `bubbles: true, composed: true`（165 处中 163 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，免得被祖先 `<form>` 当成自己的提交 |
-| 事件 `detail` 形状 | 165 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
-| `attribute: false` 的 JS 字段 | 187 条（涉及 65 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 这类只能用 JS 赋值，HTML 里表达不出来——**不是每个 property 都有对应 attribute** |
-| 命令式方法 | 47（分布在 16 个元素） | **受约束**，含参数与返回类型 |
+| observed attribute | 1215 条声明 / 368 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| attribute 名词汇表本身 | 368 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
+| `CustomEvent` 名 | 86 个名字 / 184 条「元素 × 事件」 | **受约束** |
+| 事件传播语义 | `bubbles: true, composed: true`（169 处中 167 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，免得被祖先 `<form>` 当成自己的提交 |
+| 事件 `detail` 形状 | 167 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
+| `attribute: false` 的 JS 字段 | 188 条（涉及 66 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 这类只能用 JS 赋值，HTML 里表达不出来——**不是每个 property 都有对应 attribute** |
+| 命令式方法 | 49（分布在 17 个元素） | **受约束**，含参数与返回类型 |
 
 命令式方法全清单：
 
@@ -4514,12 +5072,12 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 
 | 包 | 说明 |
 | --- | --- |
-| `@xihan-ui/vue` | 918 个组件、97 个组合式函数 |
+| `@xihan-ui/vue` | 921 个组件、97 个组合式函数 |
 | `@xihan-ui/react` | 组件与 hooks（铺开中，公开面随批次增长） |
 | `@xihan-ui/web-components` | 129 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
 | `@xihan-ui/styles` | 126 份组件皮肤、5 个层名 |
-| `@xihan-ui/tokens` | 344 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
+| `@xihan-ui/tokens` | 397 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
 | `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约 |
 | `@xihan-ui/position` | `createPositionEngine` 与它的选项；其余 9 个导出是内部算子 |
@@ -4546,12 +5104,12 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 ### 已经焊死的
 
 **六种介质的「改名 = major」现在有门禁兜着。** `pnpm gate:surface` 跑的 `check-public-surface`
-拿一份入库的基线（`ui/tooling/public-surface.json`，13703 个名字）比对当前状态：
+拿一份入库的基线（`ui/tooling/public-surface.json`，13896 个名字）比对当前状态：
 **基线里有而当前没有，就是删了或改名了，构建失败**。新增一律放行，因为那是 minor。
 
-覆盖：包名与 173 条子入口、7198 个导出名、126 个 `data-scope` 与 945 条部件配对、
-126 个组件的 1558 个 prop 名、201 种 `data-*`、32 个 `data-state` 取值、344 个令牌、
-5 个 `@layer` 名、3457 个组件覆盖槽、128 个自定义元素及其 attribute 与事件。
+覆盖：包名与 175 条子入口、7301 个导出名、126 个 `data-scope` 与 940 条部件配对、
+126 个组件的 1570 个 prop 名、202 种 `data-*`、32 个 `data-state` 取值、397 个令牌、
+5 个 `@layer` 名、3486 个组件覆盖槽、128 个自定义元素及其 attribute 与事件。
 
 prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测 `transfer` 的 `items` 改
 `collection`、`splitter` 的 `size` 改 `sizes`）其余门禁全程沉默。它的事实源是无头内核的
@@ -4566,15 +5124,15 @@ prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测
 
 ::: warning 基线锁的名字比本页承诺的范围宽
 基线是「所有能写下来的名字」的机械快照，不区分档位：本页归入**排除**的那些也在里面——
-headless 的 625 个内部算子与常量、563 个伴生类型、`*Anatomy` / `*Meta` / `*Keyboard` 三组导出对象，
+headless 的 625 个内部算子与常量、564 个伴生类型、`*Anatomy` / `*Meta` / `*Keyboard` 三组导出对象，
 以及六个实验包的全部导出。政策允许你随时删改它们，但删了照样撞门禁。
 **行使这份删除权时，先跑 `pnpm surface:update` 推基线**，这不是破坏性变更，
 changeset 里按 patch / minor 写就行——推基线这个动作本身不代表 major。
 :::
 
 **还有三道门禁把「只靠自觉」的条款焊成了机器检查。** `check-css-floor` 守着浏览器硬底线：
-`.browserslistrc` 书面记录地板，拒绝名单拦住 `@container` 这类无兜底的抬底线特性，
-`light-dark()` / `dvh` 必须带级联兜底。`check-version-lock` 守着 17 包锁步：任何一个
+`.browserslistrc` 书面记录地板，拒绝名单拦住 `@scope` 这类无兜底的抬底线特性，
+`light-dark()` / `dvh` / `lh` 必须带级联兜底。`check-version-lock` 守着 17 包锁步：任何一个
 package.json 的 version 与其余不同，门禁直接失败。`check-wiring` 守着检查系统自身：新增的
 check 脚本不接进 `pnpm gate` 就等于没写，死引用同样被拦下。
 
@@ -4590,7 +5148,7 @@ check 脚本不接进 `pnpm gate` 就等于没写，死引用同样被拦下。
 | --- | --- | --- |
 | Vue 作用域插槽载荷 | 带载荷的插槽已声明 `slots:` 选项，`check-slot-types` 门禁四条判据兜着（缺声明 / 键非可选 / 值非函数 / 声明未用）。仅渲染无载荷插槽的部件仍不声明，消费方写错 slot 名不会报 | 无载荷插槽也补声明，或明确「只有带载荷的插槽进契约」 |
 | 移除提示（CSS / `data-*` / attribute / 层名） | 这四种介质没有 IDE 提示：名字被移走之后，消费方那条声明只是静默失配，既不报错也不降级。唯一的告知渠道是更新日志，所以每次移除都在 changeset 里逐条列出旧名与替换写法，供使用者在自己的代码库里全文搜索 | 无 |
-| 浏览器硬底线 | 已落地：`.browserslistrc` 记录硬底线，`check-css-floor` 门禁拒绝抬底线的无兜底特性（`@container` 等），并校验 `light-dark()` / `dvh` 的级联兜底 | 拒绝名单改动时联动本页支持面表格的提醒 |
+| 浏览器硬底线 | 已落地：`.browserslistrc` 记录硬底线，`check-css-floor` 门禁拒绝抬底线的无兜底特性（`@scope` 等），并校验 `light-dark()` / `dvh` / `lh` 的级联兜底 | 拒绝名单改动时联动本页支持面表格的提醒 |
 | 「17 个包必须同版本」 | `check-version-lock` 门禁保证 17 个 package.json 同版本。运行期这一侧只在 dev 有提示：三个适配器启动时调 `checkLockstepVersion`，自身版本与 core 不一致就经诊断通道发一条 `warn`；生产构建里跳过，且只比适配器与 core 两个版本，不是全部 17 个 | 提成 peer，或把运行期比对扩到全部包 |
 
 发现本页写的和实际行为对不上，按缺陷处理——请提 issue，不要当成「政策就是这样」。
@@ -4685,10 +5243,17 @@ provideXhConfig({
 | `locale` | `string` | BCP 47 语言标记，喂给日期时间系组件（`calendar` / `date-*` / `time-*`）。它只管这几个组件的日期时间格式，不换文案。 |
 | `translations` | `XhTranslationOverrides` | 按组件 id 分组的文案覆盖。每个组件的可覆盖键就是它 `<Pascal>Translations` 里的字段，组件页的 Props 表里能查到。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | 尺寸档的默认值，落到每个声明了三轴 `size` 的组件上——跑机器的与不跑机器的（按钮、徽标、空状态这些）都算。它与 `data-density` 是两条独立的轴：`size` 换的是控件高度与字号档，密度只收紧间距。`floating-panel` 的 `size` 是一对像素数、同名不同义，不受它影响。 |
-| `portalContainer` | `() => Element \| null` | 浮层默认挂到哪个容器；返回 `null` 即挂 `body`。实例上写了容器的以实例为准。仅 Vue 适配器有——Web Components 是 Light DOM，浮层不搬运。 |
-| `scrollRoot` | `() => HTMLElement \| null` | 真正在滚的那个元素。宿主把滚动搬进内容容器（`body` 本身不滚）时必须给，否则模态浮层加的滚动锁是空操作、背后照样能滚。返回 `null` 即交给滚动锁自行探测。 |
+| `portalContainer` | `() => Element \| null` | 指定同一 Document 内的浮层目标，未配置时由运行时提供默认 Portal。现有组件通常允许返回 `null` 使用默认目标；Vue DatePicker 的严格规则见下文。它不负责切换 Scope，跨 Document 目标会失败。Vue 与 React 可配置；Web Components 暂不公开该配置，Menu 子菜单使用所属 Document 的运行时 Portal 根。 |
+| `scrollRoot` | `() => HTMLElement \| null` | 真正在滚的那个元素。宿主把滚动搬进内容容器（`body` 本身不滚）时必须给，否则模态浮层加的滚动锁是空操作、背后照样能滚。返回 `null` 明确锁定页面，不自动探测后代滚动容器；同一 Document 的并行锁必须指向同一规范化目标。 |
 
 **方向不在这里。** `dir` 走 DOM：写在 `<html dir="rtl">` 或任意祖先上即可，行为层从计算样式读它，皮肤里的 `[dir='rtl']` 规则也跟着走。往这份配置里再加一个 JS 侧的 `dir` 只会多一条对不上的通道。
+
+Vue `DatePicker` 从实际渲染出的根节点建立运行时 Scope：整棵应用挂在 iframe 内时，即使不配置
+`portalContainer`，浮层、LayerRegistry、定位与滚动条也都留在该 iframe Document。显式容器必须属于同一
+Document；该组件需要默认落点时应省略字段，显式 getter 返回 `null` 或其他非 Element 值会失败。组件不会
+为了迁就无效目标改绑来源 Scope，也不会回落主页面的全局 `document`。目标 getter 只会在真实根和同轮
+渲染树中的兄弟 ref 都已提交、浮层真正选择 Portal 落点时读取。初始展开的服务端输出与客户端 hydration
+首帧都先保留来源内结构，运行时就绪后再执行同 Document 搬运。
 
 ## 运行期切语言
 
@@ -4747,7 +5312,7 @@ provideXhConfig({ translations: { dialog: { close: "Close" } } });
 </script>
 ```
 
-`locale` 与 `size` 两条属性写在标签上就行；`translations` 是对象、`scrollRoot` 是函数，只能走 property。子树里每个元素都沿祖先链解析，跑机器的与不跑机器的一视同仁；`scrollRoot` 由 `xh-dialog` / `xh-drawer` / `xh-image-viewer` 开模态时现读，改了下一次打开就生效。`<xh-config>` 自己不渲染任何东西，也不接线任何角色节点——它是 `display: contents`，布局上完全让开。
+`locale` 与 `size` 两条属性写在标签上就行；`translations` 是对象、`scrollRoot` 是函数，只能走 property。子树里每个元素都沿祖先链解析，跑机器的与不跑机器的一视同仁；`scrollRoot` 由 `xh-dialog` / `xh-drawer` / `xh-image-viewer` / `xh-command` 开模态时现读，改了下一次打开就生效。`<xh-config>` 自己不渲染任何东西，也不接线任何角色节点——它是 `display: contents`，布局上完全让开。
 
 `setXhConfig` 是**整份替换**（不深合并），想改一处就把整份拿去改；`<xh-config>` 之间以及它与全局那份之间才是逐键合并。
 
@@ -4761,6 +5326,12 @@ provideXhConfig({ translations: { dialog: { close: "Close" } } });
 | Semi Design `<LocaleProvider>` | `provideXhConfig()` 的 `locale` 与 `translations` |
 
 **主题不在这里。** 那几家的 ConfigProvider 同时管主题，这里的主题是 CSS 令牌层的事：换主题是改 CSS 自定义属性、切 `data-theme` 这类属性，跟着 DOM 继承走，局部主题天然可嵌套，与这份配置无关。
+
+Vue 与 React 的浮层搬到 Portal 时，每个实例会把逻辑来源最近声明的 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency` 和 `dir` 投影到自己的无盒壳，并复制来源解析出的 CSS 自定义属性；共享 Portal 根不带这些属性。同一落点里的两个局部主题因此互不覆盖。来源没有声明的轴与变量继续继承显式 `portalContainer`，普通计算样式不会被复制。
+
+Web Components 的普通声明式浮层仍在 Light DOM 原位。多级 Menu 是明确例外：展开的 submenu positioner 会进入所属 Document 的运行时 Portal，以免父菜单的磨砂采样建立 fixed 包含块；它同样使用独占无盒壳桥接上述视觉轴，关闭或断连后恢复作者原位置。
+
+`shape` 是组件自身形态，不是主题环境轴。系统 `prefers-reduced-transparency` 媒体路径在同一浏览器中天然同时作用于来源与 Portal；`data-transparency="reduce"` 是同源的显式视觉轴，令牌层会在该局部范围将材质实体化并由实例壳继承，业务皮肤也可消费它扩展自己的非材质降级。
 
 ---
 
@@ -4968,7 +5539,7 @@ const next = await dialog.prompt({
 `prompt` 的 `onOk` 返回 `false` 表示不放行。`confirm` 的 `onOk` 不吃这条——它的返回值不参与判定，只有拒绝才拦住关闭。
 ### 同一时刻只有一个
 
-后来的排队顺次弹出，避开多层模态叠加。关到再开之间留了退场窗口，动效走完才放下一个。
+后来的排队顺次弹出，避开多层模态叠加。当前项的内容与遮罩全部完成有限退场动画后，队列才放出下一项；无动画或减动效时不额外等待固定时间。
 
 ## 轻提示服务
 

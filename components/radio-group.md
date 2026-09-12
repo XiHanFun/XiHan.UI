@@ -1,29 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/radio-group
 
-# 单选组 `radio-group`
+# RadioGroup `单选组`
 
 一组互斥选项共一个值，所有选项同时可见。单个单选钮是这里的 `item` 部件，不另立组件——它脱离组既没有互斥对象，也无法取消选中。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/radio-group" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/radio-group.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/radio-group" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/radio-group" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/radio-group.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 二到五个互斥选项，且各选项的文字值得同时摊开让用户比较。
-
-## 何时不用
-
-- 选项超过五六个：用[选择器](./select)。
-- 选项是并列的视图切换：用[切换按钮组](./toggle-group)或[标签页](./tabs)。
-- 可以多选：用[复选框组](./checkbox-group)。
-
-## 特性
-
-- 整组只占一个 Tab 位，组内靠方向键走——这是原生单选组的行为。
-- `hidden-input` 承担表单参与。
-- `collection` 可数据驱动，也可以逐项写。
-- 与[复选框](./checkbox)的不对称是有意的：一个复选框自己就成立（勾选同意条款），一个单选钮自己不成立，所以复选框另有独立组件、单选钮没有。
-
-## 示例
-
-### 基础用法
+## 用法
 
 组内只有一个 Tab 停靠点，进组后四个方向键都能切换
 
@@ -70,6 +59,8 @@ const plans = [
   </div>
 </xh-radio-group>
 ```
+
+## 示例
 
 ### 受控
 
@@ -539,6 +530,25 @@ const collection = computed(() =>
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 二到五个互斥选项，且各选项的文字值得同时摊开让用户比较。
+
+### 何时不用
+
+- 选项超过五六个：用[选择器](./select)。
+- 选项是并列的视图切换：用[切换按钮组](./toggle-group)或[标签页](./tabs)。
+- 可以多选：用[复选框组](./checkbox-group)。
+
+### 特性
+
+- 整组只占一个 Tab 位，组内靠方向键走——这是原生单选组的行为。
+- `hidden-input` 承担表单参与。
+- `collection` 可数据驱动，也可以逐项写。
+- 与[复选框](./checkbox)的不对称是有意的：一个复选框自己就成立（勾选同意条款），一个单选钮自己不成立，所以复选框另有独立组件、单选钮没有。
+
 ## 产物
 
 | 层 | 值 |
@@ -653,11 +663,30 @@ const collection = computed(() =>
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-radio-group-gap` · `--xh-radio-group-indicator-bg` · `--xh-radio-group-indicator-border` · `--xh-radio-group-indicator-border-checked` · `--xh-radio-group-indicator-border-invalid` · `--xh-radio-group-indicator-dot` · `--xh-radio-group-indicator-radius` · `--xh-radio-group-indicator-size` · `--xh-radio-group-item-fg` · `--xh-radio-group-item-fg-disabled` · `--xh-radio-group-item-font-size` · `--xh-radio-group-item-gap` · `--xh-radio-group-item-radius` · `--xh-radio-group-label-fg` · `--xh-radio-group-label-font-size` · `--xh-radio-group-label-font-weight`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-radio-group-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | radio-group 的 root 部件 gap 覆盖槽。 |
+| `--xh-radio-group-indicator-bg` | `indicator` | `background` | `default` | `--xh-bg-canvas` | radio-group 的 indicator 部件 background 覆盖槽。 |
+| `--xh-radio-group-indicator-border` | `indicator` | `border` | `default` | `--xh-border-control` | radio-group 的 indicator 部件 border 覆盖槽。 |
+| `--xh-radio-group-indicator-border-checked` | `indicator` | `border-color` | `state=checked` | `--xh-_radio-group-accent` | radio-group 的 indicator 部件 border-color 覆盖槽。 |
+| `--xh-radio-group-indicator-border-invalid` | `indicator` | `border-color` | `invalid`<br>`state=checked` | `--xh-border-invalid` | radio-group 的 indicator 部件 border-color 覆盖槽。 |
+| `--xh-radio-group-indicator-dot` | `indicator` | `background` | `default` | `--xh-_radio-group-accent` | radio-group 的 indicator 部件 background 覆盖槽。 |
+| `--xh-radio-group-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | radio-group 的 indicator 部件 border-radius 覆盖槽。 |
+| `--xh-radio-group-indicator-size` | `indicator` | `block-size`<br>`inline-size` | `default` | `--xh-_radio-group-indicator` | radio-group 的 indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-radio-group-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | radio-group 的 item 部件 color 覆盖槽。 |
+| `--xh-radio-group-item-fg-disabled` | `item` | `color` | `disabled` | `--xh-fg-disabled` | radio-group 的 item 部件 color 覆盖槽。 |
+| `--xh-radio-group-item-font-size` | `item` | `font-size` | `default` | `--xh-_radio-group-font-size` | radio-group 的 item 部件 font-size 覆盖槽。 |
+| `--xh-radio-group-item-gap` | `item` | `gap` | `default` | `--xh-_radio-group-item-gap` | radio-group 的 item 部件 gap 覆盖槽。 |
+| `--xh-radio-group-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | radio-group 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-radio-group-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | radio-group 的 label 部件 color 覆盖槽。 |
+| `--xh-radio-group-label-font-size` | `label` | `font-size` | `default` | `--xh-_radio-group-font-size` | radio-group 的 label 部件 font-size 覆盖槽。 |
+| `--xh-radio-group-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | radio-group 的 label 部件 font-weight 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

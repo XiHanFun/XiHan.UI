@@ -1,28 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/checkbox-group
 
-# 复选框组 `checkbox-group`
+# CheckboxGroup `复选框组`
 
 一组多选项共一个值数组，附带全选与半选。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/checkbox-group" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/checkbox-group.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/checkbox-group" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/checkbox-group" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/checkbox-group.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 从若干项里选任意多项，且要随表单提交。
-
-## 何时不用
-
-- 选项很多、需要搜索：用[选择器](./select)的多选或[穿梭框](./transfer)。
-- 选项互斥：用[单选组](./radio-group)。
-
-## 特性
-
-- `collection` 是文本与禁用的事实源；也可以逐项自己写。
-- 全选触发器自动算半选态。
-- `orientation` 换排布；也可以直接把条目放进[栅格](./grid)。
-- 值可以是数字主键，不必强转字符串。
-
-## 示例
-
-### 基础用法
+## 用法
 
 值是字符串数组，各选各的，再点一次即取消；组内有几项就有几个 Tab 停靠点
 
@@ -78,6 +68,8 @@ const items = [
   });
 </script>
 ```
+
+## 示例
 
 ### 全选与半选
 
@@ -797,6 +789,24 @@ const rows = [
 </div>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 从若干项里选任意多项，且要随表单提交。
+
+### 何时不用
+
+- 选项很多、需要搜索：用[选择器](./select)的多选或[穿梭框](./transfer)。
+- 选项互斥：用[单选组](./radio-group)。
+
+### 特性
+
+- `collection` 是文本与禁用的事实源；也可以逐项自己写。
+- 全选触发器自动算半选态。
+- `orientation` 换排布；也可以直接把条目放进[栅格](./grid)。
+- 值可以是数字主键，不必强转字符串。
+
 ## 产物
 
 | 层 | 值 |
@@ -938,11 +948,41 @@ const rows = [
 | `select-all-trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-state` | resolveCheckedState(value, prop('itemValues') ?? []) |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-checkbox-group-gap` · `--xh-checkbox-group-icon-size` · `--xh-checkbox-group-indicator-bg` · `--xh-checkbox-group-indicator-bg-checked` · `--xh-checkbox-group-indicator-border` · `--xh-checkbox-group-indicator-border-checked` · `--xh-checkbox-group-indicator-border-hover` · `--xh-checkbox-group-indicator-border-invalid` · `--xh-checkbox-group-indicator-fg` · `--xh-checkbox-group-indicator-font-size` · `--xh-checkbox-group-indicator-radius` · `--xh-checkbox-group-indicator-size` · `--xh-checkbox-group-item-fg` · `--xh-checkbox-group-item-fg-disabled` · `--xh-checkbox-group-item-font-size` · `--xh-checkbox-group-item-gap` · `--xh-checkbox-group-item-radius` · `--xh-checkbox-group-label-fg` · `--xh-checkbox-group-label-fg-disabled` · `--xh-checkbox-group-label-font-size` · `--xh-checkbox-group-label-font-weight` · `--xh-checkbox-group-select-all-trigger-fg` · `--xh-checkbox-group-select-all-trigger-fg-disabled` · `--xh-checkbox-group-select-all-trigger-font-size` · `--xh-checkbox-group-select-all-trigger-font-weight` · `--xh-checkbox-group-select-all-trigger-gap` · `--xh-checkbox-group-select-all-trigger-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-checkbox-group-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | checkbox-group 的 root 部件 gap 覆盖槽。 |
+| `--xh-checkbox-group-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | checkbox-group 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-checkbox-group-indicator-bg` | `indicator`<br>`select-all-trigger` | `background` | `default` | `--xh-bg-canvas` | checkbox-group 的 indicator、select-all-trigger 部件 background 覆盖槽。 |
+| `--xh-checkbox-group-indicator-bg-checked` | `indicator`<br>`select-all-trigger` | `background` | `is([data-state='checked'], [data-state='indeterminate'])`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-group-accent` | checkbox-group 的 indicator、select-all-trigger 部件 background 覆盖槽。 |
+| `--xh-checkbox-group-indicator-border` | `indicator`<br>`select-all-trigger` | `border` | `default` | `--xh-border-control` | checkbox-group 的 indicator、select-all-trigger 部件 border 覆盖槽。 |
+| `--xh-checkbox-group-indicator-border-checked` | `indicator`<br>`select-all-trigger` | `border-color` | `is([data-state='checked'], [data-state='indeterminate'])`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-group-accent` | checkbox-group 的 indicator、select-all-trigger 部件 border-color 覆盖槽。 |
+| `--xh-checkbox-group-indicator-border-hover` | `indicator`<br>`item` | `border-color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-state='checked'])`<br>`state=checked` | `--xh-border-control-hover` | checkbox-group 的 indicator、item 部件 border-color 覆盖槽。 |
+| `--xh-checkbox-group-indicator-border-invalid` | `indicator`<br>`root` | `border-color` | `invalid` | `--xh-border-invalid` | checkbox-group 的 indicator、root 部件 border-color 覆盖槽。 |
+| `--xh-checkbox-group-indicator-fg` | `indicator`<br>`select-all-trigger` | `background-color`<br>`color` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-group-on-accent` | checkbox-group 的 indicator、select-all-trigger 部件 background-color、color 覆盖槽。 |
+| `--xh-checkbox-group-indicator-font-size` | `indicator`<br>`select-all-trigger` | `font-size` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-group-glyph` | checkbox-group 的 indicator、select-all-trigger 部件 font-size 覆盖槽。 |
+| `--xh-checkbox-group-indicator-radius` | `indicator`<br>`select-all-trigger` | `border-radius` | `default` | `--xh-shape-inset` | checkbox-group 的 indicator、select-all-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-checkbox-group-indicator-size` | `indicator`<br>`select-all-trigger` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-group-box` | checkbox-group 的 indicator、select-all-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
+| `--xh-checkbox-group-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | checkbox-group 的 item 部件 color 覆盖槽。 |
+| `--xh-checkbox-group-item-fg-disabled` | `item` | `color` | `disabled` | `--xh-fg-disabled` | checkbox-group 的 item 部件 color 覆盖槽。 |
+| `--xh-checkbox-group-item-font-size` | `item` | `font-size` | `default` | `--xh-text-label-size` | checkbox-group 的 item 部件 font-size 覆盖槽。 |
+| `--xh-checkbox-group-item-gap` | `item` | `gap` | `default` | `--xh-_checkbox-group-gap` | checkbox-group 的 item 部件 gap 覆盖槽。 |
+| `--xh-checkbox-group-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | checkbox-group 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-checkbox-group-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | checkbox-group 的 label 部件 color 覆盖槽。 |
+| `--xh-checkbox-group-label-fg-disabled` | `label`<br>`root` | `color` | `disabled` | `--xh-fg-subtle` | checkbox-group 的 label、root 部件 color 覆盖槽。 |
+| `--xh-checkbox-group-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | checkbox-group 的 label 部件 font-size 覆盖槽。 |
+| `--xh-checkbox-group-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | checkbox-group 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-checkbox-group-select-all-trigger-fg` | `select-all-trigger` | `color` | `default` | `--xh-fg-default` | checkbox-group 的 select-all-trigger 部件 color 覆盖槽。 |
+| `--xh-checkbox-group-select-all-trigger-fg-disabled` | `select-all-trigger` | `color` | `disabled` | `--xh-fg-disabled` | checkbox-group 的 select-all-trigger 部件 color 覆盖槽。 |
+| `--xh-checkbox-group-select-all-trigger-font-size` | `select-all-trigger` | `font-size` | `default` | `--xh-text-label-size` | checkbox-group 的 select-all-trigger 部件 font-size 覆盖槽。 |
+| `--xh-checkbox-group-select-all-trigger-font-weight` | `select-all-trigger` | `font-weight` | `default` | `--xh-font-weight-medium` | checkbox-group 的 select-all-trigger 部件 font-weight 覆盖槽。 |
+| `--xh-checkbox-group-select-all-trigger-gap` | `select-all-trigger` | `gap` | `default` | `--xh-_checkbox-group-gap` | checkbox-group 的 select-all-trigger 部件 gap 覆盖槽。 |
+| `--xh-checkbox-group-select-all-trigger-radius` | `select-all-trigger` | `border-radius` | `default` | `--xh-shape-control` | checkbox-group 的 select-all-trigger 部件 border-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

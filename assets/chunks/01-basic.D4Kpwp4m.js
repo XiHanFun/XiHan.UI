@@ -1,0 +1,9 @@
+const a=`<!-- 基础用法 | 单枚原生 kbd，只显示键名，不注册快捷键 -->
+<p style="display: flex; align-items: center; gap: 8px">
+  按
+  <xh-kbd value="Escape">
+    <kbd data-xh-part="root"></kbd>
+  </xh-kbd>
+  关闭当前面板
+</p>
+`;export{a as default};

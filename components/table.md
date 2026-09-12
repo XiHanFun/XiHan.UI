@@ -1,31 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/table
 
-# 表格 `table`
+# Table `表格`
 
 多行同构记录按列排开，支持排序、选择、展开与吸顶。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/table" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/table.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/table" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/table" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/table.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 每条记录有多个字段需要按列对照。
-- 需要排序、筛选、批量选择。
-
-## 何时不用
-
-- 每条只有标题和一句描述：用[列表](./list)，表格的列头是额外负担。
-- 移动端窄屏：横滚的表格很难用，考虑换成卡片列表。
-
-## 特性
-
-- 排序、选择、展开三套状态各自可受控。
-- 表头吸顶与列吸附、条纹、密度、边框都是开关。
-- 支持多行表头与表头分组、跨列单元格、树形表格、单元格就地编辑、列过滤、拖拽调列宽。
-- 行数很大时只渲窗口内的行。
-- 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐三样接出来：设置区照 `columnSettings` 渲，藏起来的列也在其中。两块都摆在 `root` 之外——`root` 是 grid 系角色，子节点只能是行与行组。
-- 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页的按钮点了做什么归作者，取数在途时自动停用。
-
-## 示例
-
-### 基础用法
+## 用法
 
 columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只管长相
 
@@ -132,6 +119,8 @@ const rows = members.map(m => ({ id: m.id }));
   table.rows = [{ id: "u1" }, { id: "u2" }, { id: "u3" }, { id: "u4" }];
 </script>
 ```
+
+## 示例
 
 ### 排序
 
@@ -4359,6 +4348,27 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 每条记录有多个字段需要按列对照。
+- 需要排序、筛选、批量选择。
+
+### 何时不用
+
+- 每条只有标题和一句描述：用[列表](./list)，表格的列头是额外负担。
+- 移动端窄屏：横滚的表格很难用，考虑换成卡片列表。
+
+### 特性
+
+- 排序、选择、展开三套状态各自可受控。
+- 表头吸顶与列吸附、条纹、密度、边框都是开关。
+- 支持多行表头与表头分组、跨列单元格、树形表格、单元格就地编辑、列过滤、拖拽调列宽。
+- 行数很大时只渲窗口内的行。
+- 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐三样接出来：设置区照 `columnSettings` 渲，藏起来的列也在其中。两块都摆在 `root` 之外——`root` 是 grid 系角色，子节点只能是行与行组。
+- 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页的按钮点了做什么归作者，取数在途时自动停用。
+
 ## 产物
 
 | 层 | 值 |
@@ -4663,11 +4673,97 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `header-row` | `data-section` | 'header' |
 | `footer-row` | `data-section` | 'footer' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-table-bg` · `--xh-table-border` · `--xh-table-caption-fg` · `--xh-table-caption-font-size` · `--xh-table-caption-font-weight` · `--xh-table-caption-px` · `--xh-table-caption-py` · `--xh-table-cell-gap` · `--xh-table-cell-min-w` · `--xh-table-cell-px` · `--xh-table-cell-py` · `--xh-table-cell-py-lg` · `--xh-table-cell-py-md` · `--xh-table-cell-py-sm` · `--xh-table-column-fg` · `--xh-table-column-font-weight` · `--xh-table-column-list-fg` · `--xh-table-column-list-font-size` · `--xh-table-column-list-gap` · `--xh-table-detail-bg` · `--xh-table-detail-px` · `--xh-table-detail-py` · `--xh-table-drag-fg` · `--xh-table-drag-fg-active` · `--xh-table-drag-fg-disabled` · `--xh-table-drag-grip-h` · `--xh-table-drag-grip-w` · `--xh-table-drag-size` · `--xh-table-dragging-opacity` · `--xh-table-drop-fg` · `--xh-table-drop-inside-bg` · `--xh-table-drop-line` · `--xh-table-expand-fg` · `--xh-table-fg` · `--xh-table-font-size` · `--xh-table-footer-bg` · `--xh-table-footer-font-weight` · `--xh-table-header-bg` · `--xh-table-icon-size` · `--xh-table-load-more-trigger-bg-hover` · `--xh-table-load-more-trigger-fg` · `--xh-table-load-more-trigger-font-size` · `--xh-table-load-more-trigger-gap` · `--xh-table-load-more-trigger-px` · `--xh-table-load-more-trigger-py` · `--xh-table-load-more-trigger-radius` · `--xh-table-loading-duration` · `--xh-table-max-h` · `--xh-table-radius` · `--xh-table-resize-fg` · `--xh-table-resize-fg-active` · `--xh-table-resize-line` · `--xh-table-resize-line-length` · `--xh-table-resize-radius` · `--xh-table-resize-width` · `--xh-table-row-bg` · `--xh-table-row-bg-hover` · `--xh-table-row-bg-selected` · `--xh-table-row-bg-striped` · `--xh-table-row-border` · `--xh-table-row-drag-fg` · `--xh-table-row-drag-fg-active` · `--xh-table-row-drag-fg-disabled` · `--xh-table-row-drag-grip-long` · `--xh-table-row-drag-grip-short` · `--xh-table-row-drag-size` · `--xh-table-sort-fg` · `--xh-table-sort-fg-active` · `--xh-table-sort-gap` · `--xh-table-state-fg` · `--xh-table-state-gap` · `--xh-table-state-min-h` · `--xh-table-state-px` · `--xh-table-state-py` · `--xh-table-sticky-column-layer` · `--xh-table-sticky-header-layer` · `--xh-table-sticky-inset` · `--xh-table-toolbar-fg` · `--xh-table-toolbar-gap` · `--xh-table-toolbar-py` · `--xh-table-trigger-bg-checked` · `--xh-table-trigger-border` · `--xh-table-trigger-border-checked` · `--xh-table-trigger-fg` · `--xh-table-trigger-radius` · `--xh-table-trigger-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-table-bg` | `root` | `background` | `default` | `--xh-bg-surface` | table 的 root 部件 background 覆盖槽。 |
+| `--xh-table-border` | `footer`<br>`header`<br>`root` | `border`<br>`border-block-end`<br>`border-block-start` | `bordered`<br>`default` | `--xh-border-default` | table 的 footer、header、root 部件 border、border-block-end、border-block-start 覆盖槽。 |
+| `--xh-table-caption-fg` | `caption` | `color` | `default` | `--xh-fg-muted` | table 的 caption 部件 color 覆盖槽。 |
+| `--xh-table-caption-font-size` | `caption` | `font-size` | `default` | `--xh-text-label-size` | table 的 caption 部件 font-size 覆盖槽。 |
+| `--xh-table-caption-font-weight` | `caption` | `font-weight` | `default` | `--xh-text-label-weight` | table 的 caption 部件 font-weight 覆盖槽。 |
+| `--xh-table-caption-px` | `caption` | `padding-inline` | `default` | `--xh-space-3` | table 的 caption 部件 padding-inline 覆盖槽。 |
+| `--xh-table-caption-py` | `caption` | `padding-block` | `default` | `--xh-space-2` | table 的 caption 部件 padding-block 覆盖槽。 |
+| `--xh-table-cell-gap` | `cell`<br>`column-header` | `gap` | `default` | `--xh-control-gap-md` | table 的 cell、column-header 部件 gap 覆盖槽。 |
+| `--xh-table-cell-min-w` | `cell`<br>`column-header` | `min-inline-size` | `default` | `3rem` | table 的 cell、column-header 部件 min-inline-size 覆盖槽。 |
+| `--xh-table-cell-px` | `cell`<br>`column-header` | `padding-inline` | `default` | `--xh-control-px-sm` | table 的 cell、column-header 部件 padding-inline 覆盖槽。 |
+| `--xh-table-cell-py` | `cell`<br>`column-header` | `padding-block` | `default` | `--xh-_table-cell-py` | table 的 cell、column-header 部件 padding-block 覆盖槽。 |
+| `--xh-table-column-fg` | `column-header` | `color` | `default` | `--xh-fg-muted` | table 的 column-header 部件 color 覆盖槽。 |
+| `--xh-table-column-font-weight` | `column-header` | `font-weight` | `default` | `--xh-text-label-weight` | table 的 column-header 部件 font-weight 覆盖槽。 |
+| `--xh-table-column-list-fg` | `column-list` | `color` | `default` | `--xh-fg-default` | table 的 column-list 部件 color 覆盖槽。 |
+| `--xh-table-column-list-font-size` | `column-list` | `font-size` | `default` | `--xh-text-secondary-size` | table 的 column-list 部件 font-size 覆盖槽。 |
+| `--xh-table-column-list-gap` | `column-list` | `gap` | `default` | `--xh-_table-column-list-gap` | table 的 column-list 部件 gap 覆盖槽。 |
+| `--xh-table-detail-bg` | `expanded-row` | `background` | `default` | `--xh-bg-subtle` | table 的 expanded-row 部件 background 覆盖槽。 |
+| `--xh-table-detail-px` | `cell`<br>`expanded-row` | `padding-inline` | `default` | `--xh-space-4` | table 的 cell、expanded-row 部件 padding-inline 覆盖槽。 |
+| `--xh-table-detail-py` | `cell`<br>`expanded-row` | `padding-block` | `default` | `--xh-space-3` | table 的 cell、expanded-row 部件 padding-block 覆盖槽。 |
+| `--xh-table-drag-fg` | `column-drag-trigger` | `color` | `default` | `--xh-fg-subtle` | table 的 column-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-table-drag-fg-active` | `column-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | table 的 column-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-table-drag-fg-disabled` | `column-drag-trigger` | `color` | `disabled` | `--xh-fg-disabled` | table 的 column-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-table-drag-grip-h` | `column-drag-trigger` | `block-size` | `empty` | `--xh-space-2` | table 的 column-drag-trigger 部件 block-size 覆盖槽。 |
+| `--xh-table-drag-grip-w` | `column-drag-trigger` | `inline-size` | `empty` | `--xh-space-1` | table 的 column-drag-trigger 部件 inline-size 覆盖槽。 |
+| `--xh-table-drag-size` | `column-drag-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | table 的 column-drag-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-table-dragging-opacity` | `cell`<br>`column-header`<br>`expanded-row`<br>`row` | `opacity` | `dragging` | `--xh-state-dragging-opacity` | table 的 cell、column-header、expanded-row、row 部件 opacity 覆盖槽。 |
+| `--xh-table-drop-fg` | `cell`<br>`column-header`<br>`row` | `background`<br>`box-shadow` | `drop`<br>`drop=after`<br>`drop=before`<br>`drop=inside`<br>`frozen`<br>`is([data-drop='before'], [data-drop='after'])`<br>`not([data-frozen])` | `--xh-bg-brand` | table 的 cell、column-header、row 部件 background、box-shadow 覆盖槽。 |
+| `--xh-table-drop-inside-bg` | `body`<br>`root`<br>`row` | `background` | `disabled`<br>`drop=inside`<br>`not([data-disabled])` | `--xh-bg-brand-subtle` | table 的 body、root、row 部件 background 覆盖槽。 |
+| `--xh-table-drop-line` | `cell`<br>`column-header`<br>`row` | `block-size`<br>`box-shadow`<br>`inline-size` | `drop`<br>`drop=after`<br>`drop=before`<br>`drop=inside`<br>`frozen`<br>`is([data-drop='before'], [data-drop='after'])`<br>`not([data-frozen])` | `--xh-stroke-thick` | table 的 cell、column-header、row 部件 block-size、box-shadow、inline-size 覆盖槽。 |
+| `--xh-table-expand-fg` | `expand-trigger` | `color` | `default` | `--xh-fg-subtle` | table 的 expand-trigger 部件 color 覆盖槽。 |
+| `--xh-table-fg` | `root` | `color` | `default` | `--xh-fg-default` | table 的 root 部件 color 覆盖槽。 |
+| `--xh-table-font-size` | `root` | `font-size` | `default` | `--xh-_table-font-size` | table 的 root 部件 font-size 覆盖槽。 |
+| `--xh-table-footer-bg` | `footer` | `background` | `default` | `--xh-bg-subtle` | table 的 footer 部件 background 覆盖槽。 |
+| `--xh-table-footer-font-weight` | `footer` | `font-weight` | `default` | `--xh-font-weight-medium` | table 的 footer 部件 font-weight 覆盖槽。 |
+| `--xh-table-header-bg` | `column-header`<br>`header` | `background` | `default`<br>`frozen` | `--xh-bg-subtle` | table 的 column-header、header 部件 background 覆盖槽。 |
+| `--xh-table-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | table 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-table-load-more-trigger-bg-hover` | `load-more-trigger` | `background-color` | `hover` | `--xh-bg-subtle` | table 的 load-more-trigger 部件 background-color 覆盖槽。 |
+| `--xh-table-load-more-trigger-fg` | `load-more-trigger` | `color` | `default` | `--xh-fg-brand-strong` | table 的 load-more-trigger 部件 color 覆盖槽。 |
+| `--xh-table-load-more-trigger-font-size` | `load-more-trigger` | `font-size` | `default` | `--xh-_table-font-size` | table 的 load-more-trigger 部件 font-size 覆盖槽。 |
+| `--xh-table-load-more-trigger-gap` | `load-more-trigger` | `gap` | `default` | `--xh-space-2` | table 的 load-more-trigger 部件 gap 覆盖槽。 |
+| `--xh-table-load-more-trigger-px` | `load-more-trigger` | `padding-inline` | `default` | `--xh-space-4` | table 的 load-more-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-table-load-more-trigger-py` | `load-more-trigger` | `padding-block` | `default` | `--xh-space-3` | table 的 load-more-trigger 部件 padding-block 覆盖槽。 |
+| `--xh-table-load-more-trigger-radius` | `load-more-trigger` | `border-radius` | `default` | `--xh-shape-control` | table 的 load-more-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-table-loading-duration` | `loading` | `animation` | `default` | `--xh-shimmer-duration` | table 的 loading 部件 animation 覆盖槽。 |
+| `--xh-table-max-h` | `root` | `max-block-size` | `default` | `--xh-viewport-h-lg` | table 的 root 部件 max-block-size 覆盖槽。 |
+| `--xh-table-radius` | `root` | `border-radius` | `bordered` | `--xh-shape-surface` | table 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-table-resize-fg` | `column-resize-trigger` | `background` | `default` | `--xh-border-default` | table 的 column-resize-trigger 部件 background 覆盖槽。 |
+| `--xh-table-resize-fg-active` | `column-resize-trigger` | `background` | `hover`<br>`resizing` | `--xh-bg-brand` | table 的 column-resize-trigger 部件 background 覆盖槽。 |
+| `--xh-table-resize-line` | `column-resize-trigger` | `inline-size` | `default` | `--xh-stroke-thin` | table 的 column-resize-trigger 部件 inline-size 覆盖槽。 |
+| `--xh-table-resize-line-length` | `column-resize-trigger` | `block-size` | `default` | `60%` | table 的 column-resize-trigger 部件 block-size 覆盖槽。 |
+| `--xh-table-resize-radius` | `column-resize-trigger` | `border-radius` | `default` | `--xh-shape-pill` | table 的 column-resize-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-table-resize-width` | `column-resize-trigger` | `inline-size` | `default` | `--xh-space-2` | table 的 column-resize-trigger 部件 inline-size 覆盖槽。 |
+| `--xh-table-row-bg` | `row` | `background` | `default` | `--xh-bg-surface` | table 的 row 部件 background 覆盖槽。 |
+| `--xh-table-row-bg-hover` | `body`<br>`row` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])` | `--xh-bg-subtle` | table 的 body、row 部件 background 覆盖槽。 |
+| `--xh-table-row-bg-selected` | `row` | `background` | `selected` | `--xh-bg-subtle-active` | table 的 row 部件 background 覆盖槽。 |
+| `--xh-table-row-bg-striped` | `body`<br>`root`<br>`row` | `background` | `striped`<br>`where(:nth-of-type(even)`<br>`where([data-scope='table'][data-part='root'][data-striped] [data-scope='table'][data-part='body'])` | `--xh-bg-subtle` | table 的 body、root、row 部件 background 覆盖槽。 |
+| `--xh-table-row-border` | `body`<br>`cell`<br>`column-header`<br>`expanded-row`<br>`footer`<br>`header`<br>`root`<br>`row` | `border-block-start`<br>`border-inline-end` | `is([data-part='header'], [data-part='body'], [data-part='footer'])`<br>`is([data-part='row'], [data-part='expanded-row'])`<br>`not(:last-child)`<br>`not([hidden])`<br>`split` | `--xh-border-subtle` | table 的 body、cell、column-header、expanded-row、footer、header、root、row 部件 border-block-start、border-inline-end 覆盖槽。 |
+| `--xh-table-row-drag-fg` | `row-drag-trigger` | `color` | `default` | `--xh-fg-subtle` | table 的 row-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-table-row-drag-fg-active` | `row-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | table 的 row-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-table-row-drag-fg-disabled` | `row-drag-trigger` | `color` | `disabled` | `--xh-fg-disabled` | table 的 row-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-table-row-drag-grip-long` | `row-drag-trigger` | `inline-size` | `empty` | `--xh-space-2` | table 的 row-drag-trigger 部件 inline-size 覆盖槽。 |
+| `--xh-table-row-drag-grip-short` | `row-drag-trigger` | `block-size` | `empty` | `--xh-space-1` | table 的 row-drag-trigger 部件 block-size 覆盖槽。 |
+| `--xh-table-row-drag-size` | `row-drag-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | table 的 row-drag-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-table-sort-fg` | `sort-trigger` | `color` | `default` | `--xh-fg-subtle` | table 的 sort-trigger 部件 color 覆盖槽。 |
+| `--xh-table-sort-fg-active` | `sort-trigger` | `color` | `sort-index`<br>`sort=asc`<br>`sort=desc` | `--xh-fg-default` | table 的 sort-trigger 部件 color 覆盖槽。 |
+| `--xh-table-sort-gap` | `sort-trigger` | `gap` | `default` | `--xh-space-1` | table 的 sort-trigger 部件 gap 覆盖槽。 |
+| `--xh-table-state-fg` | `empty`<br>`loading` | `color` | `default` | `--xh-fg-muted` | table 的 empty、loading 部件 color 覆盖槽。 |
+| `--xh-table-state-gap` | `empty`<br>`loading` | `gap` | `default` | `--xh-space-2` | table 的 empty、loading 部件 gap 覆盖槽。 |
+| `--xh-table-state-min-h` | `empty`<br>`loading` | `min-block-size` | `default` | `8rem` | table 的 empty、loading 部件 min-block-size 覆盖槽。 |
+| `--xh-table-state-px` | `empty`<br>`loading` | `padding-inline` | `default` | `--xh-space-4` | table 的 empty、loading 部件 padding-inline 覆盖槽。 |
+| `--xh-table-state-py` | `empty`<br>`loading` | `padding-block` | `default` | `--xh-space-6` | table 的 empty、loading 部件 padding-block 覆盖槽。 |
+| `--xh-table-sticky-column-layer` | `cell`<br>`column-header`<br>`row` | `z-index` | `drop=after`<br>`drop=before`<br>`drop=inside`<br>`frozen`<br>`is([data-drop='before'], [data-drop='after'])` | `1` | table 的 cell、column-header、row 部件 z-index 覆盖槽。 |
+| `--xh-table-sticky-header-layer` | `header` | `z-index` | `fixed` | `--xh-layer-sticky` | table 的 header 部件 z-index 覆盖槽。 |
+| `--xh-table-sticky-inset` | `cell`<br>`column-header` | `inset-inline-end`<br>`inset-inline-start` | `frozen=end`<br>`frozen=start` | `0` | table 的 cell、column-header 部件 inset-inline-end、inset-inline-start 覆盖槽。 |
+| `--xh-table-toolbar-fg` | `toolbar` | `color` | `default` | `--xh-fg-default` | table 的 toolbar 部件 color 覆盖槽。 |
+| `--xh-table-toolbar-gap` | `toolbar` | `gap` | `default` | `--xh-_table-toolbar-gap` | table 的 toolbar 部件 gap 覆盖槽。 |
+| `--xh-table-toolbar-py` | `toolbar` | `padding-block` | `default` | `--xh-space-2` | table 的 toolbar 部件 padding-block 覆盖槽。 |
+| `--xh-table-trigger-bg-checked` | `column-visibility-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `background`<br>`border-color` | `is([data-state='checked'], [data-state='indeterminate'])`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-bg-brand` | table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 background、border-color 覆盖槽。 |
+| `--xh-table-trigger-border` | `column-visibility-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `border` | `default` | `--xh-border-control` | table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 border 覆盖槽。 |
+| `--xh-table-trigger-border-checked` | `column-visibility-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `border-color` | `is([data-state='checked'], [data-state='indeterminate'])`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-table-trigger-bg-checked` | table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 border-color 覆盖槽。 |
+| `--xh-table-trigger-fg` | `column-visibility-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `--xh-_ring-color`<br>`background-color`<br>`color` | `default`<br>`disabled`<br>`focus-visible`<br>`not([data-disabled])`<br>`state=indeterminate` | `--xh-fg-on-brand` | table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 --xh-_ring-color、background-color、color 覆盖槽。 |
+| `--xh-table-trigger-radius` | `column-drag-trigger`<br>`column-visibility-trigger`<br>`expand-trigger`<br>`row-drag-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border-radius` | `default` | `--xh-shape-control` | table 的 column-drag-trigger、column-visibility-trigger、expand-trigger、row-drag-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-table-trigger-size` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 block-size、inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

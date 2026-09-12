@@ -1,38 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/grid
 
-# 栅格 `grid`
+# Grid `栅格`
 
 二维排布容器：`cols` 定分几列，每一格按文档序依次落格。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/grid" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/grid.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/grid" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/grid" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/grid.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 表单字段、卡片墙、统计面板这类需要列对齐的结构。
-- 列数要随视口换档。
-
-## 何时不用
-
-- 只沿一条轴排：用[弹性布局](./flex)。
-- 每一格的高度由内容决定且不要求行对齐（瀑布流）：栅格做不了，需要另外的实现。
-
-## 特性
-
-- 各列等宽，且每列的下限是 0：长内容不会把自己那列撑宽。
-- `cols` 除了整数也收断点对象，逐档写各自的列数，没写的档沿用比它窄的那一档。
-- `rows` 排出显式行轨道；不写则行数由内容自己撑出来。
-- `minColWidth` 换一条路排列：给一档列宽下限，容器放得下几列就分几列，`cols` 那条轨道表让位。
-  卡片墙用它比逐档写 `cols` 省事。
-- `gap` 管两条轴，`rowGap` 与 `columnGap` 各自只管一条，不写则跟着 `gap` 走。
-- `span` 让一格横跨几列，`offset` 把它前面几列空出来；两者与 `cols` 一样收断点对象，
-  窄屏收成一列时把 `span` 也收回 1，那一格才不会溢出。
-- 四档断点取自令牌：`sm` 640px、`md` 768px、`lg` 1024px、`xl` 1280px。
-- `cols` / `rows` / `span`（含断点对象的每一档）收 1 至 12 的整数，`offset` 收 1 至 11 的整数；
-  范围外的值——0、负数、小数、超过上限——一律按没写算：`cols` 落回一列、`span` 占一列、`offset` 不错列。
-- DOM 上只出得来皮肤有规则接的取值：`data-cols` 恒在 1 至 12 之间，`data-span` 与 `data-offset`
-  要么落在范围内、要么不出现。
-
-## 示例
-
-### 基础用法
+## 用法
 
 二维排布容器：cols 定分几列，gap 走间距档位，每一格按文档序依次落格
 
@@ -75,6 +55,8 @@ const cells = ["甲", "乙", "丙", "丁", "戊", "己"];
   </div>
 </xh-grid>
 ```
+
+## 示例
 
 ### 列数
 
@@ -895,6 +877,34 @@ const cells = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "�
 </xh-grid>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 表单字段、卡片墙、统计面板这类需要列对齐的结构。
+- 列数要随视口换档。
+
+### 何时不用
+
+- 只沿一条轴排：用[弹性布局](./flex)。
+- 每一格的高度由内容决定且不要求行对齐（瀑布流）：栅格做不了，需要另外的实现。
+
+### 特性
+
+- 各列等宽，且每列的下限是 0：长内容不会把自己那列撑宽。
+- `cols` 除了整数也收断点对象，逐档写各自的列数，没写的档沿用比它窄的那一档。
+- `rows` 排出显式行轨道；不写则行数由内容自己撑出来。
+- `minColWidth` 换一条路排列：给一档列宽下限，容器放得下几列就分几列，`cols` 那条轨道表让位。
+  卡片墙用它比逐档写 `cols` 省事。
+- `gap` 管两条轴，`rowGap` 与 `columnGap` 各自只管一条，不写则跟着 `gap` 走。
+- `span` 让一格横跨几列，`offset` 把它前面几列空出来；两者与 `cols` 一样收断点对象，
+  窄屏收成一列时把 `span` 也收回 1，那一格才不会溢出。
+- 四档断点取自令牌：`sm` 640px、`md` 768px、`lg` 1024px、`xl` 1280px。
+- `cols` / `rows` / `span`（含断点对象的每一档）收 1 至 12 的整数，`offset` 收 1 至 11 的整数；
+  范围外的值——0、负数、小数、超过上限——一律按没写算：`cols` 落回一列、`span` 占一列、`offset` 不错列。
+- DOM 上只出得来皮肤有规则接的取值：`data-cols` 恒在 1 至 12 之间，`data-span` 与 `data-offset`
+  要么落在范围内、要么不出现。
+
 ## 产物
 
 | 层 | 值 |
@@ -971,11 +981,19 @@ const cells = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "�
 | `item` | `data-span-sm` | span.sm |
 | `item` | `data-span-xl` | span.xl |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-grid-column-gap` · `--xh-grid-columns` · `--xh-grid-gap` · `--xh-grid-row-gap` · `--xh-grid-rows`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-grid-column-gap` | `root` | `column-gap` | `column-gap=lg`<br>`column-gap=md`<br>`column-gap=sm`<br>`column-gap=xl`<br>`column-gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs` | grid 的 root 部件 column-gap 覆盖槽。 |
+| `--xh-grid-columns` | `root` | `grid-template-columns` | `default`<br>`min-col` | `--xh-_grid-col-min`<br>`--xh-_grid-cols` | grid 的 root 部件 grid-template-columns 覆盖槽。 |
+| `--xh-grid-gap` | `root` | `gap` | `default`<br>`gap=lg`<br>`gap=md`<br>`gap=sm`<br>`gap=xl`<br>`gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs`<br>`--xh-space-0` | grid 的 root 部件 gap 覆盖槽。 |
+| `--xh-grid-row-gap` | `root` | `row-gap` | `row-gap=lg`<br>`row-gap=md`<br>`row-gap=sm`<br>`row-gap=xl`<br>`row-gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs` | grid 的 root 部件 row-gap 覆盖槽。 |
+| `--xh-grid-rows` | `root` | `grid-template-rows` | `rows` | `--xh-_grid-rows` | grid 的 root 部件 grid-template-rows 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

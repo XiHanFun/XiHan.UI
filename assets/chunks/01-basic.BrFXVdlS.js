@@ -1,0 +1,55 @@
+const t=`<!-- 基础用法 | count 给的是总条数不是总页数；页码序列由 root 的插槽交出来，作者照着渲染 item 与省略号 -->
+<xh-pagination
+  id="pagination-basic"
+  count="196"
+  page-size="10"
+  style="inline-size: 100%"
+>
+  <nav data-xh-part="root">
+    <button data-xh-part="prev-trigger"></button>
+    <button data-xh-part="item" value="1">1</button>
+    <button data-xh-part="item" value="2">2</button>
+    <button data-xh-part="item" value="3">3</button>
+    <button data-xh-part="item" value="4">4</button>
+    <button data-xh-part="item" value="5">5</button>
+    <button data-xh-part="ellipsis-trigger" side="end"></button>
+    <button data-xh-part="item" value="20">20</button>
+    <button data-xh-part="next-trigger"></button>
+    <span id="pagination-basic-readout" style="flex-basis: 100%">
+      第 1 / 20 页
+    </span>
+  </nav>
+</xh-pagination>
+
+<script type="module">
+  const host = document.getElementById("pagination-basic");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const next = root.querySelector('[data-xh-part="next-trigger"]');
+  const readout = document.getElementById("pagination-basic-readout");
+
+  // 换页就把上一轮的格子摘掉，照元素交出来的 pageItems 重挂：
+  // 几号页、哪里出省略号、省略位算哪一侧，全由它说了算，总页数也不必自己除一遍
+  function render() {
+    for (const node of root.querySelectorAll(
+      '[data-xh-part="item"], [data-xh-part="ellipsis-trigger"]',
+    ))
+      node.remove();
+    for (const item of host.pageItems) {
+      const el = document.createElement("button");
+      if (item.type === "ellipsis") {
+        el.dataset.xhPart = "ellipsis-trigger";
+        el.setAttribute("side", item.side);
+      } else {
+        el.dataset.xhPart = "item";
+        el.setAttribute("value", String(item.value));
+        el.textContent = String(item.value);
+      }
+      root.insertBefore(el, next);
+    }
+    readout.textContent = \`第 \${host.currentPage} / \${host.totalPages} 页\`;
+  }
+
+  // 非受控：事件发出来时页码已经落进元素，直接重读取数口
+  host.addEventListener("page-change", render);
+<\/script>
+`;export{t as default};

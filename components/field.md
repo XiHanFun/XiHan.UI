@@ -1,29 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/field
 
-# 表单字段 `field`
+# Field `表单字段`
 
 把标签、控件、说明与错误文本绑成一组，并把 `id` 与 ARIA 关联接好。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/field" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/field.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/field" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/field" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/field.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 任何一个需要标签的表单控件——这是所有录入组件的外壳。
-- 需要说明文字或错误提示与控件正确关联时。
-
-## 何时不用
-
-- 控件在工具栏或表格里、没有可见标签：给控件本身写 `aria-label`。
-- 需要整表的值管理与校验：外面再套[表单](./form)，字段只管一格。
-
-## 特性
-
-- 标签的 `for`、说明与错误文本的 `aria-describedby`、无效态的 `aria-invalid` 全部自动接上，作者不写 `id`。
-- `disabled` / `readOnly` / `invalid` / `required` 沿字段流给里面的控件。
-- 有错误文本时说明文字不会被顶掉，两者可以同时在。
-- 默认把接线属性合到控件槽里唯一的子节点上，这条只适用于「子节点的根就是可聚焦控件」。控件藏在薄封装里时关掉 asChild，由封装内部自取——标签的 for 只对可标注元素生效，指到封装的根上会静默失效。
-
-## 示例
-
-### 基础用法
+## 用法
 
 控件由自己写，Field 只把属性并上去：标题的 for、控件的 id 与描述链（aria-describedby）自动对齐
 
@@ -52,6 +41,8 @@ import { XhFieldControl, XhFieldDescription, XhFieldLabel, XhFieldRoot } from "@
   </div>
 </xh-field>
 ```
+
+## 示例
 
 ### 无效与必填
 
@@ -402,6 +393,28 @@ const MyInput = defineComponent({
 </xh-field>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 任何一个需要标签的表单控件——这是所有录入组件的外壳。
+- 需要说明文字或错误提示与控件正确关联时。
+
+### 何时不用
+
+- 控件在工具栏或表格里、没有可见标签：给控件本身写 `aria-label`。
+- 需要整表的值管理与校验：外面再套[表单](./form)，字段只管一格。
+
+### 特性
+
+- 标签的 `for`、说明与错误文本的 `aria-describedby`、无效态的 `aria-invalid` 全部自动接上，作者不写 `id`。
+- `disabled` / `readOnly` / `invalid` / `required` 沿字段流给里面的控件。控件实例没写才继承；
+  显式 `false` 顶掉最近的 Field/Form 状态。TextField 收到后会把行为与 ARIA 写到真正的 input，
+  不只停在包装根。
+- 有错误文本时说明文字不会被顶掉，两者可以同时在。
+- 默认把接线属性合到控件槽里唯一的子节点上，这条只适用于「子节点的根就是可聚焦控件」。控件藏在薄封装里时关掉 asChild，由封装内部自取——标签的 for 只对可标注元素生效，指到封装的根上会静默失效。
+- `FieldControl` 的默认 `asChild` 必须提供唯一可挂载子节点，允许包在 Fragment 中；零节点、多个节点或并列非空文本明确报错，不再静默丢失标签和 ARIA 接线。需要手工组织多个节点时显式设置 `asChild=false`，并通过插槽载荷或 `useFieldControl` 绑定真控件。
+
 ## 产物
 
 | 层 | 值 |
@@ -496,11 +509,38 @@ const MyInput = defineComponent({
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `description` | `data-disabled` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-field-control-bg` · `--xh-field-control-bg-disabled` · `--xh-field-control-border` · `--xh-field-control-border-focus` · `--xh-field-control-border-invalid` · `--xh-field-control-fg` · `--xh-field-control-font-size` · `--xh-field-control-h` · `--xh-field-control-px` · `--xh-field-control-radius` · `--xh-field-description-fg` · `--xh-field-description-fg-disabled` · `--xh-field-description-font-size` · `--xh-field-error-fg` · `--xh-field-error-font-size` · `--xh-field-gap` · `--xh-field-label-fg` · `--xh-field-label-fg-disabled` · `--xh-field-label-font-size` · `--xh-field-label-font-weight` · `--xh-field-label-gap` · `--xh-field-label-gap-block` · `--xh-field-label-leading` · `--xh-field-label-star`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-field-control-bg` | `control` | `background` | `default` | `--xh-bg-canvas` | field 的 control 部件 background 覆盖槽。 |
+| `--xh-field-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | field 的 control 部件 background 覆盖槽。 |
+| `--xh-field-control-border` | `control` | `border` | `default` | `--xh-border-control` | field 的 control 部件 border 覆盖槽。 |
+| `--xh-field-control-border-focus` | `control` | `border-color` | `focus-visible` | `--xh-_tone` | field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-field-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-field-control-fg` | `control` | `color` | `default` | `--xh-fg-default` | field 的 control 部件 color 覆盖槽。 |
+| `--xh-field-control-font-size` | `control` | `font-size` | `default` | `--xh-text-body-size` | field 的 control 部件 font-size 覆盖槽。 |
+| `--xh-field-control-h` | `control`<br>`label`<br>`root` | `block-size`<br>`padding-block` | `default`<br>`layout=horizontal` | `--xh-control-h-md` | field 的 control、label、root 部件 block-size、padding-block 覆盖槽。 |
+| `--xh-field-control-px` | `control` | `padding-inline` | `default` | `--xh-control-px-md` | field 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | field 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-field-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | field 的 description 部件 color 覆盖槽。 |
+| `--xh-field-description-fg-disabled` | `description` | `color` | `disabled` | `--xh-fg-subtle` | field 的 description 部件 color 覆盖槽。 |
+| `--xh-field-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | field 的 description 部件 font-size 覆盖槽。 |
+| `--xh-field-error-fg` | `error-text` | `color` | `default` | `--xh-fg-danger` | field 的 error-text 部件 color 覆盖槽。 |
+| `--xh-field-error-font-size` | `description`<br>`error-text`<br>`root` | `block-size`<br>`font-size` | `default`<br>`has(> [data-scope='field'][data-part='error-text'][hidden])`<br>`not(:has(> [data-scope='field'][data-part='description']:not([hidden])` | `--xh-text-secondary-size` | field 的 description、error-text、root 部件 block-size、font-size 覆盖槽。 |
+| `--xh-field-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | field 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
+| `--xh-field-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | field 的 label 部件 color 覆盖槽。 |
+| `--xh-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | field 的 label 部件 color 覆盖槽。 |
+| `--xh-field-label-font-size` | `label`<br>`root` | `font-size`<br>`padding-block` | `default`<br>`layout=horizontal` | `--xh-text-label-size` | field 的 label、root 部件 font-size、padding-block 覆盖槽。 |
+| `--xh-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | field 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-field-label-gap` | `root` | `column-gap` | `layout=horizontal` | `--xh-space-3` | field 的 root 部件 column-gap 覆盖槽。 |
+| `--xh-field-label-gap-block` | `label` | `margin-block-end` | `default` | `--xh-field-gap` | field 的 label 部件 margin-block-end 覆盖槽。 |
+| `--xh-field-label-leading` | `label`<br>`root` | `line-height`<br>`padding-block` | `layout=horizontal` | `--xh-leading-normal` | field 的 label、root 部件 line-height、padding-block 覆盖槽。 |
+| `--xh-field-label-star` | `label`<br>`root` | `color` | `required` | `--xh-fg-danger` | field 的 label、root 部件 color 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

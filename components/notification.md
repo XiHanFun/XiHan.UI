@@ -1,32 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/notification
 
-# 通知 `notification`
+# Notification `通知`
 
 主动推给用户的一条消息：有标题、有正文，可以带操作按钮。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/notification" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/notification.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/notification" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/notification" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/notification.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 系统或他人发起的消息：新评论、审批到达、任务跑完了。
-- 后台完成的长任务：用户当时可能已经在做别的事。
-- 一句话讲不完，需要标题加正文两层的信息。
-
-## 何时不用
-
-- 用户刚点了一下按钮，只要一句结果反馈：用[轻提示](./toast)。
-- 用户必须处理才能继续：用[对话框](./dialog)阻断。
-- 页面内某块区域的常驻状态说明：用[警告提示](./alert)。
-
-## 特性
-
-- 九宫格落位，`placement` 决定这一摞落在哪儿；也可以按条逐个指定。
-- `max` 限制每个位置同时显示几条，超出的挤掉最旧的。
-- 同一个 id 再发一次即就地改写，位置不动，用来做"处理中 → 已完成"。
-- 每条自带计时与暂停：指针停在卡片上、或焦点落进去时不再走表。
-- `duration` 给 0 即常驻不消失，适合需要用户处理的消息。
-
-## 示例
-
-### 基础用法
+## 用法
 
 create 入队并返回 id，队列里的每条由作者渲染成一条通知；退场窗口走完只收起不删，宿主在 status-change 里把它移出队列
 
@@ -174,6 +160,8 @@ const itemTranslations = { close: "关闭" };
   }
 </script>
 ```
+
+## 示例
 
 ### 落位
 
@@ -985,6 +973,28 @@ function pop(create: Create, placement: string, label: string): void {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 系统或他人发起的消息：新评论、审批到达、任务跑完了。
+- 后台完成的长任务：用户当时可能已经在做别的事。
+- 一句话讲不完，需要标题加正文两层的信息。
+
+### 何时不用
+
+- 用户刚点了一下按钮，只要一句结果反馈：用[轻提示](./toast)。
+- 用户必须处理才能继续：用[对话框](./dialog)阻断。
+- 页面内某块区域的常驻状态说明：用[警告提示](./alert)。
+
+### 特性
+
+- 九宫格落位，`placement` 决定这一摞落在哪儿；也可以按条逐个指定。
+- `max` 限制每个位置同时显示几条，默认 5，超出先挤低优先级、同级里挤最旧的；给 `Infinity` 即不限。
+- 同一个 id 再发一次即就地改写，位置不动，用来做"处理中 → 已完成"。
+- 每条自带计时与暂停：指针停在卡片上、或焦点落进去时不再走表。
+- `duration` 给 0 即常驻不消失，适合需要用户处理的消息。
+
 ## 产物
 
 | 层 | 值 |
@@ -1008,7 +1018,7 @@ function pop(create: Create, placement: string, label: string): void {
 | `items` | `NotificationRecord[]` |  | 受控队列：给了就由宿主说了算，内部写入只发 onItemsChange。 |
 | `defaultItems` | `NotificationRecord[]` |  |  |
 | `placement` | `NotificationPlacement` |  | 默认落位，默认 bottom-end。 |
-| `max` | `number` |  | 每个位置最多同时留几条，超出先挤低优先级、同级里挤最旧的。不给即不限。 |
+| `max` | `number` |  | 每个位置最多同时留几条，超出先挤低优先级、同级里挤最旧的。默认 5；给 Infinity 即不限。 |
 | `dedupe` | `NotificationDedupe` |  | 重复怎么算，默认 'id'。 |
 | `gap` | `number` |  | 同一摞内的间距（px），默认 16。 |
 | `duration` | `number` |  | 单条没写 duration 时的默认停留毫秒。 |
@@ -1112,11 +1122,57 @@ function pop(create: Create, placement: string, label: string): void {
 | `item-progress` | `data-state` | toStatus(state.get()) |
 | `item-close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-notification-action-bg` · `--xh-notification-action-bg-active` · `--xh-notification-action-bg-hover` · `--xh-notification-action-border` · `--xh-notification-action-fg` · `--xh-notification-action-font-weight` · `--xh-notification-action-h` · `--xh-notification-action-px` · `--xh-notification-action-radius` · `--xh-notification-close-bg-active` · `--xh-notification-close-bg-hover` · `--xh-notification-close-fg` · `--xh-notification-close-fg-hover` · `--xh-notification-close-inset` · `--xh-notification-close-radius` · `--xh-notification-close-size` · `--xh-notification-description-fg` · `--xh-notification-description-font-size` · `--xh-notification-icon-size` · `--xh-notification-indicator-fg` · `--xh-notification-indicator-size` · `--xh-notification-inset` · `--xh-notification-item-bg` · `--xh-notification-item-border` · `--xh-notification-item-fg` · `--xh-notification-item-font-size` · `--xh-notification-item-gap` · `--xh-notification-item-leading` · `--xh-notification-item-px` · `--xh-notification-item-py` · `--xh-notification-item-radius` · `--xh-notification-item-row-gap` · `--xh-notification-item-shadow` · `--xh-notification-item-w` · `--xh-notification-layer` · `--xh-notification-progress-bg` · `--xh-notification-progress-duration` · `--xh-notification-progress-radius` · `--xh-notification-progress-thickness` · `--xh-notification-title-fg` · `--xh-notification-title-font-size` · `--xh-notification-title-font-weight` · `--xh-notification-title-leading`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-notification-action-bg` | `item-action-trigger` | `background` | `default` | `--xh-bg-subtle` | notification 的 item-action-trigger 部件 background 覆盖槽。 |
+| `--xh-notification-action-bg-active` | `item-action-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | notification 的 item-action-trigger 部件 background 覆盖槽。 |
+| `--xh-notification-action-bg-hover` | `item-action-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | notification 的 item-action-trigger 部件 background 覆盖槽。 |
+| `--xh-notification-action-border` | `item-action-trigger` | `border` | `default` | `--xh-border-default` | notification 的 item-action-trigger 部件 border 覆盖槽。 |
+| `--xh-notification-action-fg` | `item-action-trigger` | `color` | `default` | `--xh-fg-default` | notification 的 item-action-trigger 部件 color 覆盖槽。 |
+| `--xh-notification-action-font-weight` | `item-action-trigger` | `font-weight` | `default` | `--xh-font-weight-medium` | notification 的 item-action-trigger 部件 font-weight 覆盖槽。 |
+| `--xh-notification-action-h` | `item-action-trigger` | `block-size` | `default` | `--xh-control-h-sm` | notification 的 item-action-trigger 部件 block-size 覆盖槽。 |
+| `--xh-notification-action-px` | `item-action-trigger` | `padding-inline` | `default` | `--xh-control-px-sm` | notification 的 item-action-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-notification-action-radius` | `item-action-trigger` | `border-radius` | `default` | `--xh-shape-control` | notification 的 item-action-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-notification-close-bg-active` | `item-close-trigger` | `background` | `active` | `--xh-bg-subtle-active` | notification 的 item-close-trigger 部件 background 覆盖槽。 |
+| `--xh-notification-close-bg-hover` | `item-close-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | notification 的 item-close-trigger 部件 background 覆盖槽。 |
+| `--xh-notification-close-fg` | `item-close-trigger` | `color` | `default` | `--xh-fg-muted` | notification 的 item-close-trigger 部件 color 覆盖槽。 |
+| `--xh-notification-close-fg-hover` | `item-close-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | notification 的 item-close-trigger 部件 color 覆盖槽。 |
+| `--xh-notification-close-inset` | `item`<br>`item-close-trigger`<br>`item-title` | `inset-block-start`<br>`inset-inline-end`<br>`padding-inline-end` | `default`<br>`has([data-part='item-close-trigger'])` | `--xh-surface-action-inset` | notification 的 item、item-close-trigger、item-title 部件 inset-block-start、inset-inline-end、padding-inline-end 覆盖槽。 |
+| `--xh-notification-close-radius` | `item-close-trigger` | `border-radius` | `default` | `--xh-shape-control` | notification 的 item-close-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-notification-close-size` | `item`<br>`item-close-trigger`<br>`item-title` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default`<br>`has([data-part='item-close-trigger'])` | `--xh-control-h-sm` | notification 的 item、item-close-trigger、item-title 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
+| `--xh-notification-description-fg` | `item-description` | `color` | `default` | `--xh-fg-muted` | notification 的 item-description 部件 color 覆盖槽。 |
+| `--xh-notification-description-font-size` | `item-description` | `font-size` | `default` | `--xh-text-secondary-size` | notification 的 item-description 部件 font-size 覆盖槽。 |
+| `--xh-notification-icon-size` | `item` | `--xh-icon-size` | `default` | `--xh-control-indicator-size` | notification 的 item 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-notification-indicator-fg` | `item`<br>`item-indicator` | `color` | `default`<br>`severity=loading` | `--xh-_tone-fg`<br>`--xh-fg-muted` | notification 的 item、item-indicator 部件 color 覆盖槽。 |
+| `--xh-notification-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | notification 的 item-indicator 部件 --xh-icon-size、inline-size 覆盖槽。 |
+| `--xh-notification-inset` | `group` | `padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default` | `--xh-space-6` | notification 的 group 部件 padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
+| `--xh-notification-item-bg` | `item` | `background` | `default` | `--xh-bg-surface-raised` | notification 的 item 部件 background 覆盖槽。 |
+| `--xh-notification-item-border` | `item` | `border` | `default` | `--xh-border-default` | notification 的 item 部件 border 覆盖槽。 |
+| `--xh-notification-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | notification 的 item 部件 color 覆盖槽。 |
+| `--xh-notification-item-font-size` | `item` | `font-size` | `default` | `--xh-text-body-size` | notification 的 item 部件 font-size 覆盖槽。 |
+| `--xh-notification-item-gap` | `item` | `column-gap` | `default` | `--xh-space-3` | notification 的 item 部件 column-gap 覆盖槽。 |
+| `--xh-notification-item-leading` | `item` | `line-height` | `default` | `--xh-text-body-leading` | notification 的 item 部件 line-height 覆盖槽。 |
+| `--xh-notification-item-px` | `item` | `padding-inline` | `default` | `--xh-surface-pad-lg` | notification 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-notification-item-py` | `item` | `padding-block` | `default` | `--xh-surface-pad-lg` | notification 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-notification-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | notification 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-notification-item-row-gap` | `item` | `row-gap` | `default` | `--xh-space-2` | notification 的 item 部件 row-gap 覆盖槽。 |
+| `--xh-notification-item-shadow` | `item` | `box-shadow` | `default` | `--xh-elevation-sheet` | notification 的 item 部件 box-shadow 覆盖槽。 |
+| `--xh-notification-item-w` | `item` | `inline-size` | `default` | `--xh-overlay-max-w-lg` | notification 的 item 部件 inline-size 覆盖槽。 |
+| `--xh-notification-layer` | `group` | `z-index` | `default` | `--xh-layer-toast` | notification 的 group 部件 z-index 覆盖槽。 |
+| `--xh-notification-progress-bg` | `item-progress` | `background` | `default` | `--xh-_tone-soft` | notification 的 item-progress 部件 background 覆盖槽。 |
+| `--xh-notification-progress-duration` | `item-progress` | `animation` | `default` | `--xh-motion-duration-slide` | notification 的 item-progress 部件 animation 覆盖槽。 |
+| `--xh-notification-progress-radius` | `item-progress` | `border-radius` | `default` | `--xh-shape-pill` | notification 的 item-progress 部件 border-radius 覆盖槽。 |
+| `--xh-notification-progress-thickness` | `item-progress` | `block-size` | `default` | `--xh-space-0_5` | notification 的 item-progress 部件 block-size 覆盖槽。 |
+| `--xh-notification-title-fg` | `item-title` | `color` | `default` | `--xh-fg-default` | notification 的 item-title 部件 color 覆盖槽。 |
+| `--xh-notification-title-font-size` | `item-indicator`<br>`item-title` | `block-size`<br>`font-size` | `default` | `--xh-text-label-size` | notification 的 item-indicator、item-title 部件 block-size、font-size 覆盖槽。 |
+| `--xh-notification-title-font-weight` | `item-title` | `font-weight` | `default` | `--xh-font-weight-semibold` | notification 的 item-title 部件 font-weight 覆盖槽。 |
+| `--xh-notification-title-leading` | `item-title` | `line-height` | `default` | `--xh-leading-tight` | notification 的 item-title 部件 line-height 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

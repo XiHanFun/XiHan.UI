@@ -1,32 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/signature-pad
 
-# 签名板 `signature-pad`
+# SignaturePad `签名板`
 
 一块用指针写字的画布：按下落笔、移动成迹、抬笔收一笔，画出来的是可缩放、可直接提交的 SVG。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/signature-pad" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/signature-pad.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/signature-pad" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/signature-pad" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/signature-pad.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 承诺书、回执、验收单上要留一笔手写签名。
-- 交付确认、上门服务签收这类要留下"人到过、看过"的痕迹的场景。
-
-## 何时不用
-
-- 要的是一份已有的签名图片：那是上传，用[文件上传](./file-upload)。
-- 要的是打字签名或姓名核对：那是一行文本，用[文本输入](./text-field)。
-- 要的是在图片上圈画批注：本组件只画自己那块画布，不承载底图。
-
-## 特性
-
-- 笔迹是 SVG 填充路径，放大不糊；每一笔是同一条路径上的一条子路径。
-- 第一笔落下时量一次画布并把这套坐标钉住，画布的 `viewBox` 与导出的 SVG 都写它：容器变宽变窄时，已有笔迹跟着缩放而不是留在原像素上错位。清空后重新量。
-- `drawing` 一组选项调笔画外形：`size` 定粗细，`thinning` 让粗细随压感变，`simulatePressure` 决定压感是取设备值还是按落笔速度算。
-- 带 `name` 即参与表单提交，提交的是一份独立的 SVG 文档；表单重置会把画布清回空。
-- 笔迹变了就发 `draw`，签名定稿就发 `draw-end`——抬笔、点清空、表单重置这三条路径都发。照 `draw-end` 缓存待提交的 SVG 不会拿到过期的那一版。
-- 手划出画布甚至划出窗口都跟手，抬手即收笔；落笔那根指针被捕获，手掌与第二根手指的移动不会被续进这一笔。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一块画布加一条笔迹路径就够了：按下落笔、移动成迹、抬笔收一笔
 
@@ -55,6 +41,8 @@ import { XhSignaturePadControl, XhSignaturePadPath, XhSignaturePadRoot } from "@
   </div>
 </xh-signature-pad>
 ```
+
+## 示例
 
 ### 标题、基准线与清空
 
@@ -375,6 +363,28 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 承诺书、回执、验收单上要留一笔手写签名。
+- 交付确认、上门服务签收这类要留下"人到过、看过"的痕迹的场景。
+
+### 何时不用
+
+- 要的是一份已有的签名图片：那是上传，用[文件上传](./file-upload)。
+- 要的是打字签名或姓名核对：那是一行文本，用[文本输入](./text-field)。
+- 要的是在图片上圈画批注：本组件只画自己那块画布，不承载底图。
+
+### 特性
+
+- 笔迹是 SVG 填充路径，放大不糊；每一笔是同一条路径上的一条子路径。
+- 第一笔落下时量一次画布并把这套坐标钉住，画布的 `viewBox` 与导出的 SVG 都写它：容器变宽变窄时，已有笔迹跟着缩放而不是留在原像素上错位。清空后重新量。
+- `drawing` 一组选项调笔画外形：`size` 定粗细，`thinning` 让粗细随压感变，`simulatePressure` 决定压感是取设备值还是按落笔速度算。
+- 带 `name` 即参与表单提交，提交的是一份独立的 SVG 文档；表单重置会把画布清回空。
+- 笔迹变了就发 `draw`，签名定稿就发 `draw-end`——抬笔、点清空、表单重置这三条路径都发。照 `draw-end` 缓存待提交的 SVG 不会拿到过期的那一版。
+- 手划出画布甚至划出窗口都跟手，抬手即收笔；落笔那根指针被捕获，手掌与第二根手指的移动不会被续进这一笔。
+
 ## 产物
 
 | 层 | 值 |
@@ -515,11 +525,40 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 | `status` | `data-empty` | ''（条件成立时才出现） |
 | `hidden-input` | `data-disabled` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-signature-pad-aspect-ratio` · `--xh-signature-pad-bg` · `--xh-signature-pad-bg-disabled` · `--xh-signature-pad-border` · `--xh-signature-pad-border-drawing` · `--xh-signature-pad-clear-bg` · `--xh-signature-pad-clear-bg-active` · `--xh-signature-pad-clear-bg-disabled` · `--xh-signature-pad-clear-bg-hover` · `--xh-signature-pad-clear-border` · `--xh-signature-pad-clear-fg` · `--xh-signature-pad-clear-gap` · `--xh-signature-pad-clear-h` · `--xh-signature-pad-clear-px` · `--xh-signature-pad-clear-radius` · `--xh-signature-pad-clear-shadow-hover` · `--xh-signature-pad-control-border-invalid` · `--xh-signature-pad-gap` · `--xh-signature-pad-guide-stroke` · `--xh-signature-pad-ink` · `--xh-signature-pad-label-fg` · `--xh-signature-pad-label-font-size` · `--xh-signature-pad-label-font-weight` · `--xh-signature-pad-radius` · `--xh-signature-pad-status-fg` · `--xh-signature-pad-status-font-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-signature-pad-aspect-ratio` | `control` | `aspect-ratio` | `default` | `5 / 2` | signature-pad 的 control 部件 aspect-ratio 覆盖槽。 |
+| `--xh-signature-pad-bg` | `control` | `background` | `default` | `--xh-bg-surface` | signature-pad 的 control 部件 background 覆盖槽。 |
+| `--xh-signature-pad-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-muted` | signature-pad 的 control 部件 background 覆盖槽。 |
+| `--xh-signature-pad-border` | `control` | `border` | `default` | `--xh-border-control` | signature-pad 的 control 部件 border 覆盖槽。 |
+| `--xh-signature-pad-border-drawing` | `control` | `border-color` | `drawing` | `--xh-border-control-hover` | signature-pad 的 control 部件 border-color 覆盖槽。 |
+| `--xh-signature-pad-clear-bg` | `clear-trigger` | `background` | `default` | `--xh-bg-surface` | signature-pad 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-signature-pad-clear-bg-active` | `clear-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | signature-pad 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-signature-pad-clear-bg-disabled` | `clear-trigger` | `background` | `disabled` | `--xh-bg-muted` | signature-pad 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-signature-pad-clear-bg-hover` | `clear-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | signature-pad 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-signature-pad-clear-border` | `clear-trigger` | `border` | `default` | `--xh-border-control` | signature-pad 的 clear-trigger 部件 border 覆盖槽。 |
+| `--xh-signature-pad-clear-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-default` | signature-pad 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-signature-pad-clear-gap` | `clear-trigger` | `gap` | `default` | `--xh-control-gap-sm` | signature-pad 的 clear-trigger 部件 gap 覆盖槽。 |
+| `--xh-signature-pad-clear-h` | `clear-trigger` | `block-size` | `default` | `--xh-control-h-sm` | signature-pad 的 clear-trigger 部件 block-size 覆盖槽。 |
+| `--xh-signature-pad-clear-px` | `clear-trigger` | `padding-inline` | `default` | `--xh-control-px-sm` | signature-pad 的 clear-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-signature-pad-clear-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-control` | signature-pad 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-signature-pad-clear-shadow-hover` | `clear-trigger` | `box-shadow` | `hover`<br>`not(:disabled)` | `--xh-elevation-raised` | signature-pad 的 clear-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-signature-pad-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | signature-pad 的 control 部件 border-color 覆盖槽。 |
+| `--xh-signature-pad-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | signature-pad 的 root 部件 gap 覆盖槽。 |
+| `--xh-signature-pad-guide-stroke` | `guide` | `stroke` | `default` | `--xh-border-control` | signature-pad 的 guide 部件 stroke 覆盖槽。 |
+| `--xh-signature-pad-ink` | `path` | `fill` | `default` | `--xh-fg-default` | signature-pad 的 path 部件 fill 覆盖槽。 |
+| `--xh-signature-pad-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | signature-pad 的 label 部件 color 覆盖槽。 |
+| `--xh-signature-pad-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | signature-pad 的 label 部件 font-size 覆盖槽。 |
+| `--xh-signature-pad-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | signature-pad 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-signature-pad-radius` | `control` | `border-radius` | `default` | `--xh-shape-surface` | signature-pad 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-signature-pad-status-fg` | `status` | `color` | `default` | `--xh-fg-muted` | signature-pad 的 status 部件 color 覆盖槽。 |
+| `--xh-signature-pad-status-font-size` | `status` | `font-size` | `default` | `--xh-text-label-size` | signature-pad 的 status 部件 font-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

@@ -1,0 +1,107 @@
+const t=`<!-- 多选标签 | 内建标签形态：触发器里的标签行最多摆 maxTagCount 枚（缺省 3），其余合成一枚 +N；每枚标签与 +N 都是库里的 tag（语气与尺寸随控件，形态按控件的面派），触发器里纯展示，触发器外配删除钮即可删，那颗钮就是 tag 的 close-trigger -->
+<xh-select id="select-tags" multiple max-tag-count="2" placeholder="请选择">
+  <div data-xh-part="root" style="inline-size: 280px">
+    <span data-xh-part="label">技术栈</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <!-- 占位文字与标签行同时写着：有选中时标签行露面、占位让位，无选中时反过来 -->
+        <span data-xh-part="value-text"></span>
+        <!-- 触发器里的标签只作展示：按钮不能套按钮，这里不放删除钮；tag / overflow-tag 接的都是 tag 的 root，只有文字的由元素包一层 label，+N 那一枚由元素填字 -->
+        <span data-xh-part="tag-list">
+          <span data-xh-part="overflow-tag"></span>
+        </span>
+        <span data-xh-part="indicator"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="vue">
+            <span data-xh-part="item-text">Vue</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="svelte">
+            <span data-xh-part="item-text">Svelte</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="solid">
+            <span data-xh-part="item-text">Solid</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="lit">
+            <span data-xh-part="item-text">Lit</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="preact">
+            <span data-xh-part="item-text">Preact</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 触发器外的可删标签行：删除钮只能放在这里 -->
+    <div
+      id="select-tags-row"
+      style="display: flex; flex-wrap: wrap; gap: 4px; margin-block-start: 6px"
+    ></div>
+  </div>
+</xh-select>
+
+<script type="module">
+  const select = document.getElementById("select-tags");
+  const overflow = select.querySelector('[data-xh-part="overflow-tag"]');
+  const row = document.getElementById("select-tags-row");
+
+  const options = [
+    { value: "vue", label: "Vue" },
+    { value: "svelte", label: "Svelte" },
+    { value: "solid", label: "Solid" },
+    { value: "lit", label: "Lit" },
+    { value: "preact", label: "Preact" },
+  ];
+  select.collection = options;
+
+  let picked = ["vue", "svelte", "solid"];
+
+  // 一枚标签：带删除钮的那一份放在触发器外面
+  function tagOf(value, label, deletable) {
+    const tag = document.createElement("span");
+    tag.setAttribute("data-xh-part", "tag");
+    tag.setAttribute("value", value);
+    tag.textContent = label;
+    if (deletable) {
+      const remove = document.createElement("button");
+      remove.setAttribute("data-xh-part", "item-delete-trigger");
+      tag.append(remove);
+    }
+    return tag;
+  }
+
+  function render() {
+    select.value = picked;
+
+    // 摆得下几枚由组件按 max-tag-count 算好；标签行里 +N 那一枚常挂，标签插在它前面
+    for (const stale of select.querySelectorAll('[data-xh-part="tag-list"] [data-xh-part="tag"]'))
+      stale.remove();
+    overflow.before(...select.tags.map((tag) => tagOf(tag.value, tag.label, false)));
+
+    // 外面这一行不截断，逐个都摆出来，标签文字回自己那份数据里查
+    row.replaceChildren(
+      ...picked.map((value) =>
+        tagOf(
+          value,
+          options.find((option) => option.value === value)?.label ?? value,
+          true,
+        ),
+      ),
+    );
+  }
+
+  select.addEventListener("value-change", (event) => {
+    picked = event.detail.value;
+    render();
+  });
+
+  render();
+<\/script>
+`;export{t as default};

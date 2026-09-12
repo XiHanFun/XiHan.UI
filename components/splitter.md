@@ -1,31 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/splitter
 
-# 分栏 `splitter`
+# Splitter `分栏`
 
 把一块区域拆成几片可拖动的面板，边界由用户自己分配。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/splitter" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/splitter.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/splitter" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/splitter" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/splitter.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 代码编辑器、文件管理器、带预览的编辑界面这类"两边都重要、比例因人而异"的布局。
-- 用户调好的比例需要记下来：`onSizesChangeEnd` 就是为此留的。
-
-## 何时不用
-
-- 比例是固定的：用[栅格](./grid)或[弹性布局](./flex)。
-- 侧栏只有展开与折叠两态：用[布局](./layout)的折叠侧栏。
-
-## 特性
-
-- `panels` 数组的长度决定面板块数，每条分隔条调的是它前面那一块。
-- 两个回调分工明确：`onSizesChange` 拖动途中连着发，`onSizesChangeEnd` 松手才发一次，存布局用后者。
-- 方向键按 `step` 推、Shift 加方向键按 `largeStep` 推；`collapsible` 的面板在分隔条上按 Enter 折叠。
-- 面板里再放一套分栏即可拆出第二根轴，里外两层各管各的尺寸。
-- 拖到一半按 Escape 放弃这一场：布局退回按下那一刻，`onSizesChangeEnd` 不发。
-- `translations` 给整组面板与各条分隔条起名，读屏念到的就不再是一串无名的盒子。
-
-## 示例
-
-### 基础用法
+## 用法
 
 panels 数组的长度决定面板块数，每条分隔条调的是它前面那一块
 
@@ -75,6 +62,8 @@ const panels = [
   </div>
 </xh-splitter>
 ```
+
+## 示例
 
 ### 受控
 
@@ -446,6 +435,27 @@ const gripStyle = {
 </xh-splitter>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 代码编辑器、文件管理器、带预览的编辑界面这类"两边都重要、比例因人而异"的布局。
+- 用户调好的比例需要记下来：`onSizesChangeEnd` 就是为此留的。
+
+### 何时不用
+
+- 比例是固定的：用[栅格](./grid)或[弹性布局](./flex)。
+- 侧栏只有展开与折叠两态：用[布局](./layout)的折叠侧栏。
+
+### 特性
+
+- `panels` 数组的长度决定面板块数，每条分隔条调的是它前面那一块。
+- 两个回调分工明确：`onSizesChange` 拖动途中连着发，`onSizesChangeEnd` 松手才发一次，存布局用后者。
+- 方向键按 `step` 推、Shift 加方向键按 `largeStep` 推；`collapsible` 的面板在分隔条上按 Enter 折叠。
+- 面板里再放一套分栏即可拆出第二根轴，里外两层各管各的尺寸。
+- 拖到一半按 Escape 放弃这一场：布局退回按下那一刻，`onSizesChangeEnd` 不发。
+- `translations` 给整组面板与各条分隔条起名，读屏念到的就不再是一串无名的盒子。
+
 ## 产物
 
 | 层 | 值 |
@@ -573,11 +583,21 @@ const gripStyle = {
 | `resize-trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `resize-trigger` | `data-index` | String(boundary) |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-splitter-disabled-opacity` · `--xh-splitter-radius` · `--xh-splitter-trigger-bg` · `--xh-splitter-trigger-bg-disabled` · `--xh-splitter-trigger-bg-dragging` · `--xh-splitter-trigger-bg-hover` · `--xh-splitter-trigger-thickness`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-splitter-disabled-opacity` | `root` | `opacity` | `disabled` | `0.6` | splitter 的 root 部件 opacity 覆盖槽。 |
+| `--xh-splitter-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | splitter 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-splitter-trigger-bg` | `resize-trigger` | `background` | `default` | `--xh-border-default` | splitter 的 resize-trigger 部件 background 覆盖槽。 |
+| `--xh-splitter-trigger-bg-disabled` | `resize-trigger` | `background` | `disabled` | `--xh-border-subtle` | splitter 的 resize-trigger 部件 background 覆盖槽。 |
+| `--xh-splitter-trigger-bg-dragging` | `resize-trigger` | `background` | `dragging` | `--xh-bg-brand` | splitter 的 resize-trigger 部件 background 覆盖槽。 |
+| `--xh-splitter-trigger-bg-hover` | `resize-trigger` | `background` | `hover` | `--xh-bg-subtle-active` | splitter 的 resize-trigger 部件 background 覆盖槽。 |
+| `--xh-splitter-trigger-thickness` | `resize-trigger` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | splitter 的 resize-trigger 部件 block-size、inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

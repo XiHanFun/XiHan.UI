@@ -1,0 +1,1 @@
+import{db as t}from"./theme.CzGOHWR9.js";import{d as a,o,b as s,w as n,a as r,k as d}from"./framework.m090XgxO.js";const i="曦寒 UI 导出示例：这一行会被写进 notes.txt",_=a({__name:"05-disabled",setup(f){return(l,e)=>(o(),s(d(t),{disabled:"",data:i,"file-name":"notes.txt"},{default:n(()=>[...e[0]||(e[0]=[r(" 导出文本（暂不可用） ",-1)])]),_:1}))}});export{_ as default};

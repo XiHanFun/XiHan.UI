@@ -1,31 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/watermark
 
-# 水印 `watermark`
+# Watermark `水印`
 
 在一块区域上铺一层重复的印记，底下的内容照常点、照常选。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/watermark" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/watermark.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/watermark" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/watermark" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/watermark.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 内部数据页面需要标出归属与责任人，降低截图外传的意愿。
-- 预览稿、样例数据需要标明"非正式"。
-
-## 何时不用
-
-- 当作防泄密手段：它是网页上的一层元素，删得掉。它降低随手外传的意愿，不构成防护。
-- 只是想加个装饰纹理：那是背景。
-
-## 特性
-
-- 印子是一张按文字算出来的 SVG，铺在根的伪元素上，不拦指针事件。
-- `text` 写成多行就是多行水印，图样跟着长高；空行不占位。
-- 文字与图片都空了才落 `data-state="empty"`，整层不画。
-- 颜色走 `--xh-watermark-fg`，深浅主题各自跟着走。
-- `fontFamily` 指定印文字的字体；图样是当图片用的 SVG，取不到页面字体，字体名要写全。
-- `image` 在文字上方印一张图，`imageSize` 给它的像素尺寸（缺省 64 × 64）。
-
-## 示例
-
-### 基础用法
+## 用法
 
 印子是一张按文字算出来的 SVG，铺在根的伪元素上；底下的内容照常点、照常选
 
@@ -60,6 +47,8 @@ import { XhWatermarkContent, XhWatermarkRoot } from "@xihan-ui/vue";
   </div>
 </xh-watermark>
 ```
+
+## 示例
 
 ### 多行
 
@@ -273,6 +262,27 @@ const on = ref(true);
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 内部数据页面需要标出归属与责任人，降低截图外传的意愿。
+- 预览稿、样例数据需要标明"非正式"。
+
+### 何时不用
+
+- 当作防泄密手段：它是网页上的一层元素，删得掉。它降低随手外传的意愿，不构成防护。
+- 只是想加个装饰纹理：那是背景。
+
+### 特性
+
+- 印子是一张按文字算出来的 SVG，铺在根的伪元素上，不拦指针事件。
+- `text` 写成多行就是多行水印，图样跟着长高；空行不占位。
+- 文字与图片都空了才落 `data-state="empty"`，整层不画。
+- 颜色走 `--xh-watermark-fg`，深浅主题各自跟着走。
+- `fontFamily` 指定印文字的字体；图样是当图片用的 SVG，取不到页面字体，字体名要写全。
+- `image` 在文字上方印一张图，`imageSize` 给它的像素尺寸（缺省 64 × 64）。
+
 ## 产物
 
 | 层 | 值 |
@@ -324,11 +334,17 @@ const on = ref(true);
 
 默认皮肤 `@xihan-ui/styles/watermark.css` 按部件选择：`[data-scope="watermark"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-watermark-fg` · `--xh-watermark-image` · `--xh-watermark-tile`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-watermark-fg` | `root` | `background-color` | `state=ready` | `--xh-fg-muted` | watermark 的 root 部件 background-color 覆盖槽。 |
+| `--xh-watermark-image` | `root` | `-webkit-mask-image`<br>`mask-image` | `state=ready` | `none` | watermark 的 root 部件 -webkit-mask-image、mask-image 覆盖槽。 |
+| `--xh-watermark-tile` | `root` | `-webkit-mask-size`<br>`mask-size` | `state=ready` | `auto` | watermark 的 root 部件 -webkit-mask-size、mask-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

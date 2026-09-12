@@ -1,30 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/context-menu
 
-# 右键菜单 `context-menu`
+# ContextMenu `右键菜单`
 
 在触发区上右键（触摸端长按）弹出的命令菜单，钉在按下去的那一点上。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/context-menu" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/context-menu.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/context-menu" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/context-menu" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/context-menu.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 一个对象上有多个针对它的命令，且界面上没有位置全部摆出来（表格行、画布节点、文件项）。
-
-## 何时不用
-
-- 命令是主要路径：右键是隐藏入口，新用户找不到。主要动作要有可见的按钮。
-- 触摸端是主要场景：长按有学习成本，且与系统手势冲突。
-- 要选一个值而不是执行命令：用[选择器](./select)，或把[列表框](./listbox)装进[浮层](./popover)。
-
-## 特性
-
-- `offset` 默认 0——右键菜单要贴着光标。
-- 支持分组、标记位、分隔线与二级子菜单；任意层级选中都发根的 `select` 并整链关闭。
-- `typeahead` 决定展开后的可打印字符是拿去检索还是放行给页面。
-- `longPressDelay` 是触摸端按住多久算触发。
-- `root` 的插槽给出锚点坐标与 `openAt`，可以从任意位置弹出。
-
-## 示例
-
-### 基础用法
+## 用法
 
 在触发区上右键（触摸端长按），菜单钉在按下去的那一点上
 
@@ -105,6 +93,8 @@ function onSelect(details: { value: string }): void {
   });
 </script>
 ```
+
+## 示例
 
 ### 分组与标记位
 
@@ -383,7 +373,7 @@ const open = ref(false);
 
 ### 语气
 
-tone 决定条目高亮与标记位用哪族颜色；高亮静止态看不出来，右键弹出后悬停条目、或用方向键把焦点移上去才显现
+普通菜单行与展开项保持中性灰；tone 作用于触发器反馈和显式标记，不给展开项铺品牌色
 
 ```vue
 <script setup lang="ts">
@@ -879,6 +869,7 @@ import {
   XhContextMenuSeparator,
   XhContextMenuTrigger,
   XhIcon,
+  XhKbdGroup,
 } from "@xihan-ui/vue";
 
 // 描边取 currentColor，图标颜色随条目文字色走，禁用态也一并跟着变淡
@@ -922,10 +913,6 @@ const TrashIcon = {
   ],
 } as const;
 
-// item-text 会撑满剩余宽度，快捷键提示自然被顶到条目末端
-const hintStyle = {
-  color: "var(--xh-fg-muted)",
-};
 </script>
 
 <template>
@@ -941,18 +928,18 @@ const hintStyle = {
           <XhContextMenuItem value="cut">
             <XhIcon :icon="CutIcon" size="sm" />
             <XhContextMenuItemText>剪切</XhContextMenuItemText>
-            <span :style="hintStyle">Ctrl+X</span>
+            <XhKbdGroup :keys="['Mod', 'X']" size="sm" />
           </XhContextMenuItem>
           <XhContextMenuItem value="paste" disabled>
             <XhIcon :icon="PasteIcon" size="sm" />
             <XhContextMenuItemText>粘贴</XhContextMenuItemText>
-            <span :style="hintStyle">Ctrl+V</span>
+            <XhKbdGroup :keys="['Mod', 'V']" size="sm" disabled />
           </XhContextMenuItem>
           <XhContextMenuSeparator />
           <XhContextMenuItem value="delete">
             <XhIcon :icon="TrashIcon" size="sm" />
             <XhContextMenuItemText>删除</XhContextMenuItemText>
-            <span :style="hintStyle">Del</span>
+            <XhKbdGroup :keys="['Delete']" size="sm" />
           </XhContextMenuItem>
         </XhContextMenuContent>
       </XhContextMenuPositioner>
@@ -975,15 +962,15 @@ const hintStyle = {
               <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
             </xh-icon>
             <span data-xh-part="item-text">剪切</span>
-            <!-- item-text 会撑满剩余宽度，快捷键提示自然被顶到条目末端 -->
-            <span style="color: var(--xh-fg-muted)">Ctrl+X</span>
+            <!-- item-text 会撑满剩余宽度，KbdGroup 自然落在条目末端 -->
+            <xh-kbd-group keys="Mod,X" size="sm"><span data-xh-part="root"></span></xh-kbd-group>
           </div>
           <div data-xh-part="item" value="paste" aria-disabled="true">
             <xh-icon size="sm" data-glyph="paste">
               <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
             </xh-icon>
             <span data-xh-part="item-text">粘贴</span>
-            <span style="color: var(--xh-fg-muted)">Ctrl+V</span>
+            <xh-kbd-group keys="Mod,V" size="sm" disabled><span data-xh-part="root"></span></xh-kbd-group>
           </div>
           <div data-xh-part="separator"></div>
           <div data-xh-part="item" value="delete">
@@ -991,7 +978,7 @@ const hintStyle = {
               <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
             </xh-icon>
             <span data-xh-part="item-text">删除</span>
-            <span style="color: var(--xh-fg-muted)">Del</span>
+            <xh-kbd-group keys="Delete" size="sm"><span data-xh-part="root"></span></xh-kbd-group>
           </div>
         </div>
       </div>
@@ -1237,6 +1224,33 @@ const picked = ref("（还没选）");
 </template>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 一个对象上有多个针对它的命令，且界面上没有位置全部摆出来（表格行、画布节点、文件项）。
+
+### 何时不用
+
+- 命令是主要路径：右键是隐藏入口，新用户找不到。主要动作要有可见的按钮。
+- 触摸端是主要场景：长按有学习成本，且与系统手势冲突。
+- 要选一个值而不是执行命令：用[选择器](./select)，或把[列表框](./listbox)装进[浮层](./popover)。
+
+### 特性
+
+- 没有活动条目、由菜单容器承接键盘焦点时，容器与箭头使用同一实体保护底，避免透明背景影响焦点环对比度；焦点进入条目后恢复常规磨砂外壳。
+
+- `offset` 默认 0——右键菜单要贴着光标。
+- 支持分组、标记位、分隔线与二级子菜单；任意层级选中都发根的 `select` 并整链关闭。
+- `typeahead` 决定展开后的可打印字符是拿去检索还是放行给页面。
+- `longPressDelay` 是触摸端按住多久算触发。
+- `root` 的插槽给出锚点坐标与 `openAt`，可以从任意位置弹出。
+- 浮层使用 M2 磨砂表面；条目悬停/键盘锚点与打开路径使用同一中性淡底，按下加深一档。
+  打开二级菜单不加色条、不改字重，也不使用品牌蓝底。
+- 条目使用 flex 主行并保留作者的实际插槽顺序：图标、`item-text`、任意快捷键节点和子菜单箭头
+  可以同排；`item-text` 占剩余空间并截断，只有 `item-description` 独占第二行。
+- 面板落位后从锚点一侧淡入短移，退出沿原方向收回；四向跟实际 placement 走，不缩放整张菜单。
+
 ## 产物
 
 | 层 | 值 |
@@ -1362,6 +1376,7 @@ const picked = ref("（还没选）");
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-haspopup` | 'menu' |
 | `trigger` | `aria-keyshortcuts` | 'Shift+F10' |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-label` | props.translations.content |
 | `content` | `role` | 'menu' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
@@ -1400,15 +1415,60 @@ const picked = ref("（还没选）");
 | `content` | `data-state` | 'open' \| 'closed' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-context-menu-arrow-size` · `--xh-context-menu-border` · `--xh-context-menu-content-bg` · `--xh-context-menu-content-fg` · `--xh-context-menu-content-gap` · `--xh-context-menu-content-px` · `--xh-context-menu-content-py` · `--xh-context-menu-content-radius` · `--xh-context-menu-content-shadow` · `--xh-context-menu-group-gap` · `--xh-context-menu-group-label-fg` · `--xh-context-menu-group-label-font-size` · `--xh-context-menu-group-label-font-weight` · `--xh-context-menu-group-label-px` · `--xh-context-menu-group-label-py` · `--xh-context-menu-icon-size` · `--xh-context-menu-item-active-font-weight` · `--xh-context-menu-item-bg-active` · `--xh-context-menu-item-bg-hover` · `--xh-context-menu-item-description-fg` · `--xh-context-menu-item-description-font-size` · `--xh-context-menu-item-fg` · `--xh-context-menu-item-font-size` · `--xh-context-menu-item-gap` · `--xh-context-menu-item-indicator-fg` · `--xh-context-menu-item-indicator-size` · `--xh-context-menu-item-leading` · `--xh-context-menu-item-px` · `--xh-context-menu-item-py` · `--xh-context-menu-item-radius` · `--xh-context-menu-layer` · `--xh-context-menu-max-h` · `--xh-context-menu-max-w` · `--xh-context-menu-min-w` · `--xh-context-menu-separator-color` · `--xh-context-menu-separator-my` · `--xh-context-menu-separator-thickness` · `--xh-context-menu-trigger-bg-pressing`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-context-menu-arrow-size` | `arrow` | `--xh-_overlay-arrow-size` | `default` | `--xh-overlay-arrow-size` | context-menu 的 arrow 部件 --xh-_overlay-arrow-size 覆盖槽。 |
+| `--xh-context-menu-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | context-menu 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-context-menu-border` | `arrow`<br>`content` | `border` | `default` | `--xh-material-frosted-border` | context-menu 的 arrow、content 部件 border 覆盖槽。 |
+| `--xh-context-menu-content-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-material-frosted-bg` | context-menu 的 arrow、content 部件 background 覆盖槽。 |
+| `--xh-context-menu-content-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | context-menu 的 content 部件 color 覆盖槽。 |
+| `--xh-context-menu-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | context-menu 的 content 部件 gap 覆盖槽。 |
+| `--xh-context-menu-content-px` | `content` | `padding-inline` | `default` | `--xh-surface-pad-xs` | context-menu 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-context-menu-content-py` | `content` | `padding-block` | `default` | `--xh-surface-pad-xs` | context-menu 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-context-menu-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | context-menu 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-context-menu-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | context-menu 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-context-menu-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | context-menu 的 group 部件 gap 覆盖槽。 |
+| `--xh-context-menu-group-label-fg` | `group-label` | `color` | `default` | `--xh-material-frosted-fg-muted` | context-menu 的 group-label 部件 color 覆盖槽。 |
+| `--xh-context-menu-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | context-menu 的 group-label 部件 font-size 覆盖槽。 |
+| `--xh-context-menu-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | context-menu 的 group-label 部件 font-weight 覆盖槽。 |
+| `--xh-context-menu-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_context-menu-item-px` | context-menu 的 group-label 部件 padding-inline 覆盖槽。 |
+| `--xh-context-menu-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | context-menu 的 group-label 部件 padding-block 覆盖槽。 |
+| `--xh-context-menu-highlight` | `content` | `background` | `default` | `--xh-material-frosted-highlight` | context-menu 的 content 部件 background 覆盖槽。 |
+| `--xh-context-menu-icon-size` | `content`<br>`root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | context-menu 的 content、root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-context-menu-item-bg-active` | `item` | `background` | `disabled`<br>`not([data-disabled])`<br>`state=open` | `--xh-bg-subtle` | context-menu 的 item 部件 background 覆盖槽。 |
+| `--xh-context-menu-item-bg-hover` | `item` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])` | `--xh-bg-subtle` | context-menu 的 item 部件 background 覆盖槽。 |
+| `--xh-context-menu-item-bg-pressed` | `item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | context-menu 的 item 部件 background 覆盖槽。 |
+| `--xh-context-menu-item-description-fg` | `item-description` | `color` | `default` | `--xh-material-frosted-fg-muted` | context-menu 的 item-description 部件 color 覆盖槽。 |
+| `--xh-context-menu-item-description-font-size` | `item-description` | `font-size` | `default` | `--xh-text-caption-size` | context-menu 的 item-description 部件 font-size 覆盖槽。 |
+| `--xh-context-menu-item-fg` | `item` | `color` | `default` | `--xh-material-frosted-fg` | context-menu 的 item 部件 color 覆盖槽。 |
+| `--xh-context-menu-item-font-size` | `item` | `font-size` | `default` | `--xh-_context-menu-font-size` | context-menu 的 item 部件 font-size 覆盖槽。 |
+| `--xh-context-menu-item-gap` | `item` | `gap` | `default` | `--xh-_context-menu-item-gap` | context-menu 的 item 部件 gap 覆盖槽。 |
+| `--xh-context-menu-item-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone` | context-menu 的 item-indicator 部件 color 覆盖槽。 |
+| `--xh-context-menu-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | context-menu 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-context-menu-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | context-menu 的 item 部件 line-height 覆盖槽。 |
+| `--xh-context-menu-item-px` | `item` | `padding-inline` | `default` | `--xh-_context-menu-item-px` | context-menu 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-context-menu-item-py` | `item` | `padding-block` | `default` | `--xh-_context-menu-item-py` | context-menu 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-context-menu-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | context-menu 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-context-menu-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | context-menu 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-context-menu-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | context-menu 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-context-menu-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | context-menu 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-context-menu-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-menu-min-w` | context-menu 的 content 部件 min-inline-size 覆盖槽。 |
+| `--xh-context-menu-separator-color` | `separator` | `background` | `default` | `--xh-material-frosted-separator` | context-menu 的 separator 部件 background 覆盖槽。 |
+| `--xh-context-menu-separator-my` | `separator` | `margin-block` | `default` | `--xh-space-0_5` | context-menu 的 separator 部件 margin-block 覆盖槽。 |
+| `--xh-context-menu-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | context-menu 的 separator 部件 border-radius 覆盖槽。 |
+| `--xh-context-menu-separator-thickness` | `separator` | `block-size` | `default` | `--xh-stroke-thin` | context-menu 的 separator 部件 block-size 覆盖槽。 |
+| `--xh-context-menu-submenu-indicator-fg` | `item` | `background-color` | `default` | `--xh-material-frosted-fg-muted` | context-menu 的 item 部件 background-color 覆盖槽。 |
+| `--xh-context-menu-trigger-bg-pressing` | `trigger` | `background` | `pressing` | `--xh-bg-subtle` | context-menu 的 trigger 部件 background 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
-关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -1426,6 +1486,12 @@ const picked = ref("（还没选）");
 
 - 菜单里的每条命令都要在别处有可见入口，右键只是快捷方式。
 - 条目控制在十条以内，超过就分组。
+- 图标与快捷键按实际需要写入对应条目，不必为了别的条目有 indicator 而给整层补空占位。
+
+### 当前边界
+
+- 当前没有独立的 shortcut、trailing 或单条 danger tone 部件。快捷键提示使用作者放入的 [KbdGroup](./kbd-group)，
+  并按顺序参与 flex 主行；提示不会自动注册键盘动作。
 
 ## 反模式
 

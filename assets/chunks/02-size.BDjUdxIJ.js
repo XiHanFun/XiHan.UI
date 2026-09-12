@@ -1,0 +1,1 @@
+import{eQ as e}from"./theme.CzGOHWR9.js";import{d as n,o as r,c as o,E as a,k as s,F as t}from"./framework.m090XgxO.js";const _=n({__name:"02-size",setup(l){return(c,m)=>(r(),o(t,null,[a(s(e),{size:"sm",label:"加载中"}),a(s(e),{label:"加载中"}),a(s(e),{size:"lg",label:"加载中"})],64))}});export{_ as default};

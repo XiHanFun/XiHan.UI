@@ -1,32 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/flex
 
-# 弹性布局 `flex`
+# Flex `弹性布局`
 
 一维排布容器：子项沿一条轴排开，间距走档位，还能在每两项之间放一份分隔符。容器自己不给子项加任何样式。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/flex" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/flex.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/flex" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/flex" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/flex.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 一行按钮、一行图标加文字、一列表单项这类沿单轴排开的结构。
-- 需要控制主轴分布与交叉轴对齐。
-- 需要在相邻两项之间统一放一条竖线、一个点号这类分隔符。
-
-## 何时不用
-
-- 要排成二维网格、需要跨列：用[栅格](./grid)。
-- 只是想切分页面上的两块区域：用[分隔线](./separator)，那是一条有语义的横线，不是排布容器。
-- 只是想在两个元素之间留点空：直接写间距，别为此多套一层容器。
-
-## 特性
-
-- `gap` 收的是档位名不是像素：`xs` / `sm` / `md` / `lg` / `xl` 逐档指向一个间距令牌；不写不留间距。
-- `justify` 管主轴怎么分、`align` 管交叉轴怎么对，两条轴互不相干。
-- 缺省的交叉轴对齐随方向走：横排按中线对齐，竖排拉伸占满。写了 `align` 即以它为准。
-- `inline` 让容器缩到内容宽度，能跟文字排一行。
-- 档位不够用时给 `--xh-flex-gap` 写一个值，它排在所有档位之前。**它是自定义属性，会顺着继承流进嵌套在里面的每一层排布容器，把那些层的档位一并压掉**；只想改一层就写在那一层上。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一维排布容器：子项横着排，间距走档位，容器自己不给子项加任何样式
 
@@ -66,6 +52,8 @@ const boxStyle
   </div>
 </xh-flex>
 ```
+
+## 示例
 
 ### 方向
 
@@ -653,6 +641,28 @@ const actions = ["编辑", "复制", "归档", "删除"];
 </xh-flex>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 一行按钮、一行图标加文字、一列表单项这类沿单轴排开的结构。
+- 需要控制主轴分布与交叉轴对齐。
+- 需要在相邻两项之间统一放一条竖线、一个点号这类分隔符。
+
+### 何时不用
+
+- 要排成二维网格、需要跨列：用[栅格](./grid)。
+- 只是想切分页面上的两块区域：用[分隔线](./separator)，那是一条有语义的横线，不是排布容器。
+- 只是想在两个元素之间留点空：直接写间距，别为此多套一层容器。
+
+### 特性
+
+- `gap` 收的是档位名不是像素：`xs` / `sm` / `md` / `lg` / `xl` 逐档指向一个间距令牌；不写不留间距。
+- `justify` 管主轴怎么分、`align` 管交叉轴怎么对，两条轴互不相干。
+- 缺省的交叉轴对齐随方向走：横排按中线对齐，竖排拉伸占满。写了 `align` 即以它为准。
+- `inline` 让容器缩到内容宽度，能跟文字排一行。
+- 档位不够用时给 `--xh-flex-gap` 写一个值，它排在所有档位之前。**它是自定义属性，会顺着继承流进嵌套在里面的每一层排布容器，把那些层的档位一并压掉**；只想改一层就写在那一层上。
+
 ## 产物
 
 | 层 | 值 |
@@ -731,11 +741,15 @@ const actions = ["编辑", "复制", "归档", "删除"];
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-wrap` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-flex-gap`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-flex-gap` | `root` | `gap` | `default`<br>`gap=lg`<br>`gap=md`<br>`gap=sm`<br>`gap=xl`<br>`gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs`<br>`--xh-space-0` | flex 的 root 部件 gap 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

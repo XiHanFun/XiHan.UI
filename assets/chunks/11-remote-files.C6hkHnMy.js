@@ -1,0 +1,61 @@
+const e=`// 服务器附件回显 | remote-files 装编辑表单里已存在的附件：与本地文件同列渲染（allFiles 远程在前）、占 max-files 名额，删除走 remote-files-change 由宿主落库
+import type { FileUploadRemoteFile } from "@xihan-ui/headless";
+import type { ReactNode } from "react";
+import {
+  XhFileUploadDropzone,
+  XhFileUploadHiddenInput,
+  XhFileUploadItem,
+  XhFileUploadItemDeleteTrigger,
+  XhFileUploadItemName,
+  XhFileUploadItemSizeText,
+  XhFileUploadLabel,
+  XhFileUploadList,
+  XhFileUploadRoot,
+  XhFileUploadTrigger,
+} from "@xihan-ui/react";
+import { useState } from "react";
+
+export default function Demo(): ReactNode {
+  // 编辑场景：这两条是服务端返回的既有附件，不是本地 File
+  const [remoteFiles, setRemoteFiles] = useState<FileUploadRemoteFile[]>([
+    { id: "a1", name: "合同扫描件.pdf", size: 382_000, type: "application/pdf", url: "https://cdn.example.com/a1.pdf" },
+    { id: "a2", name: "报价单.xlsx", size: 51_200, url: "https://cdn.example.com/a2.xlsx" },
+  ]);
+
+  return (
+    <>
+      <XhFileUploadRoot
+        remoteFiles={remoteFiles}
+        onRemoteFilesChange={details => setRemoteFiles(details.files)}
+        maxFiles={4}
+        style={{ maxInlineSize: "420px" }}
+      >
+        {({ allFiles }) => (
+          <>
+            <XhFileUploadLabel>{\`附件（最多 4 个，已有 \${remoteFiles.length} 个在服务器上）\`}</XhFileUploadLabel>
+            <XhFileUploadDropzone>拖进来或点击选择</XhFileUploadDropzone>
+            <XhFileUploadTrigger>选择文件</XhFileUploadTrigger>
+            <XhFileUploadHiddenInput />
+            <XhFileUploadList>
+              {allFiles.map((file, i) => (
+                <XhFileUploadItem
+                  key={"id" in file ? file.id : \`local-\${i}\`}
+                  file={file}
+                >
+                  <XhFileUploadItemName />
+                  <XhFileUploadItemSizeText />
+                  {"url" in file && file.url
+                    ? <a href={file.url} target="_blank" rel="noreferrer">查看</a>
+                    : null}
+                  <XhFileUploadItemDeleteTrigger />
+                </XhFileUploadItem>
+              ))}
+            </XhFileUploadList>
+          </>
+        )}
+      </XhFileUploadRoot>
+      <p>剩余名额与新选文件共享；删除服务器附件只改 remote-files，落库由宿主决定。</p>
+    </>
+  );
+}
+`;export{e as default};

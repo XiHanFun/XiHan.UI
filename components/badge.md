@@ -1,36 +1,19 @@
 来源：https://ui.docs.xihanfun.com/components/badge
 
-# 徽标 `badge`
+# Badge `徽标`
 
 提醒你注意某个东西：它有几条未读、处在什么状态、是不是新的。
 徽标说的是「有事情发生了」，不是「这是什么」——后者是[标签](./tag)的活。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/badge" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/badge.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/badge" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/badge" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/badge.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 计数角标：未读消息、购物车件数、待办条数。
-- 小红点：只表示「有新的」，不说有几条。
-- 状态提示：在线 / 离线、进行中、新。
-- 附着在按钮、头像、标签页、菜单项上，报告那个东西的状态。
-
-## 何时不用
-
-- 表达「这是什么」——分类、技能、筛选条件：用[标签](./tag)，它承载实体身份，还能被摘掉。
-- 用户要点它来筛选或删除：徽标不接交互，那是标签的语义。
-- 表达进度：用[进度条](./progress)。
-- 是一个可开关的选项：用[切换按钮](./toggle)。
-
-## 特性
-
-- 语气 · 尺寸两轴与其余组件同源；角标只有一种形态，没有形态轴。
-- `placement` 决定挂在哪个角，四角可选，跟随文字方向。
-- `count` 自己出数字，超过 `max`（默认 99）写成「99+」。
-- 计数为 0 时整枚收起，要显示 0 就开 `showZero`。
-- `dot` 收成一个圆点：只表示「有」，不表示「有几个」。
-- `label` 给读屏一整句：光念「3」听不出是什么的 3。
-
-## 示例
-
-### 计数角标
+## 用法
 
 被标记的东西写进默认插槽，角标自己贴到它的角上；计数、上限截断与 0 值收起都归角标算
 
@@ -90,6 +73,8 @@ const count = ref(5);
   </xh-badge>
 </div>
 ```
+
+## 示例
 
 ### 圆点与落点
 
@@ -386,6 +371,31 @@ import {
 </div>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 计数角标：未读消息、购物车件数、待办条数。
+- 小红点：只表示「有新的」，不说有几条。
+- 状态提示：在线 / 离线、进行中、新。
+- 附着在按钮、头像、标签页、菜单项上，报告那个东西的状态。
+
+### 何时不用
+
+- 表达「这是什么」——分类、技能、筛选条件：用[标签](./tag)，它承载实体身份，还能被摘掉。
+- 用户要点它来筛选或删除：徽标不接交互，那是标签的语义。
+- 表达进度：用[进度条](./progress)。
+- 是一个可开关的选项：用[切换按钮](./toggle)。
+
+### 特性
+
+- 语气 · 尺寸两轴与其余组件同源；角标只有一种形态，没有形态轴。
+- `placement` 决定挂在哪个角，四角可选，跟随文字方向。
+- `count` 自己出数字，超过 `max`（默认 99）写成「99+」。
+- 计数为 0 时整枚收起，要显示 0 就开 `showZero`。
+- `dot` 收成一个圆点：只表示「有」，不表示「有几个」。
+- `label` 给读屏一整句：光念「3」听不出是什么的 3。
+
 ## 产物
 
 | 层 | 值 |
@@ -465,11 +475,24 @@ import {
 | `indicator` | `data-size` | props.size |
 | `indicator` | `data-tone` | props.tone |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-badge-bg` · `--xh-badge-dot-size` · `--xh-badge-fg` · `--xh-badge-font-size` · `--xh-badge-font-weight` · `--xh-badge-min-size` · `--xh-badge-px` · `--xh-badge-radius` · `--xh-badge-ring` · `--xh-badge-shadow`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-badge-bg` | `indicator` | `background` | `default` | `--xh-_tone` | badge 的 indicator 部件 background 覆盖槽。 |
+| `--xh-badge-dot-size` | `indicator` | `block-size`<br>`inline-size`<br>`min-inline-size` | `dot` | `--xh-_badge-dot` | badge 的 indicator 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
+| `--xh-badge-fg` | `indicator` | `color` | `default` | `--xh-_tone-on` | badge 的 indicator 部件 color 覆盖槽。 |
+| `--xh-badge-font-size` | `indicator` | `font-size` | `default` | `--xh-_badge-font` | badge 的 indicator 部件 font-size 覆盖槽。 |
+| `--xh-badge-font-weight` | `indicator` | `font-weight` | `default` | `--xh-font-weight-medium` | badge 的 indicator 部件 font-weight 覆盖槽。 |
+| `--xh-badge-min-size` | `indicator` | `block-size`<br>`min-inline-size` | `default` | `--xh-_badge-min` | badge 的 indicator 部件 block-size、min-inline-size 覆盖槽。 |
+| `--xh-badge-px` | `indicator` | `padding-inline` | `default` | `--xh-_badge-px` | badge 的 indicator 部件 padding-inline 覆盖槽。 |
+| `--xh-badge-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | badge 的 indicator 部件 border-radius 覆盖槽。 |
+| `--xh-badge-ring` | `indicator` | `border` | `default` | `--xh-bg-surface` | badge 的 indicator 部件 border 覆盖槽。 |
+| `--xh-badge-shadow` | `indicator` | `box-shadow` | `default` | `--xh-_badge-highlight` | badge 的 indicator 部件 box-shadow 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

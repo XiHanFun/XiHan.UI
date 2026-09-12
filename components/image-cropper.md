@@ -1,35 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/image-cropper
 
-# 图片裁切 `image-cropper`
+# ImageCropper `图片裁切`
 
 在一张图上框出要保留的那一块。框可以整体拖动，八个把手各拉一条边或一个角，可锁定宽高比、可设最小尺寸，也能缩放与旋转来看清细节。裁切矩形以源图的自然像素记录，出图那一步由使用者自己决定什么时候做、做成什么。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/image-cropper" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/image-cropper.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/image-cropper" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/image-cropper" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/image-cropper.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 上传头像、封面、缩略图之前，让用户自己决定保留哪一块。
-- 需要固定产出比例（16:9 的封面、1:1 的头像）的图片录入。
-- 需要把裁切结果连同表单一起提交：给了 `name`，矩形会以 `x,y,width,height` 随表单发出去。
-
-## 何时不用
-
-- 只是把图片摆在页面上：用[图片](./image)。
-- 只要放大看清楚、翻页浏览，不改数据：用[图片查看器](./image-viewer)。
-- 只是选文件、还没到框选这一步：用[文件上传](./file-upload)。
-- 要调的是一个一维的量（亮度、缩放倍率本身）：用[滑块](./slider)。
-
-## 特性
-
-- 裁切矩形的单位是源图自然像素，与图片显示多大无关；换一块屏幕、换一个容器宽度，值不变。
-- 缩放与旋转同时作用在图片和裁切框上，两者始终贴合；它们只改呈现，不改裁切矩形与源图像素的对应关系。
-- 指针位移会按当前的缩放与旋转反算回图片坐标系，放大之后拖动依然跟手。
-- 一次拖动的位移从按下那一刻的矩形整体算起，不逐帧累加，长距离拖动不会漂。
-- 锁定宽高比时，拉角由位移更大的那条轴当驱动，另一条边跟着算；拉边则由那条边驱动。
-- 受控与非受控两态齐全：`value` / `defaultValue` 管裁切矩形，`zoom` / `defaultZoom` 管缩放倍率。
-- `onValueChangeEnd` 覆盖指针与键盘两条路：一次指针拖动松手时发一次，一次方向键微调也发一次（一按就是一次改完的操作）。矩形没真的变（在框上原地点一下、顶到图片边界推不动）不发。
-
-## 示例
-
-### 基础用法
+## 用法
 
 在图上框出要保留的那一块：整块可拖动，八个把手各拉一条边或一个角；裁切矩形以源图的自然像素记录
 
@@ -101,6 +84,8 @@ const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"] as const;
   </div>
 </xh-image-cropper>
 ```
+
+## 示例
 
 ### 锁定宽高比
 
@@ -660,6 +645,31 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 </xh-image-cropper>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 上传头像、封面、缩略图之前，让用户自己决定保留哪一块。
+- 需要固定产出比例（16:9 的封面、1:1 的头像）的图片录入。
+- 需要把裁切结果连同表单一起提交：给了 `name`，矩形会以 `x,y,width,height` 随表单发出去。
+
+### 何时不用
+
+- 只是把图片摆在页面上：用[图片](./image)。
+- 只要放大看清楚、翻页浏览，不改数据：用[图片查看器](./image-viewer)。
+- 只是选文件、还没到框选这一步：用[文件上传](./file-upload)。
+- 要调的是一个一维的量（亮度、缩放倍率本身）：用[滑块](./slider)。
+
+### 特性
+
+- 裁切矩形的单位是源图自然像素，与图片显示多大无关；换一块屏幕、换一个容器宽度，值不变。
+- 缩放与旋转同时作用在图片和裁切框上，两者始终贴合；它们只改呈现，不改裁切矩形与源图像素的对应关系。
+- 指针位移会按当前的缩放与旋转反算回图片坐标系，放大之后拖动依然跟手。
+- 一次拖动的位移从按下那一刻的矩形整体算起，不逐帧累加，长距离拖动不会漂。
+- 锁定宽高比时，拉角由位移更大的那条轴当驱动，另一条边跟着算；拉边则由那条边驱动。
+- 受控与非受控两态齐全：`value` / `defaultValue` 管裁切矩形，`zoom` / `defaultZoom` 管缩放倍率。
+- `onValueChangeEnd` 覆盖指针与键盘两条路：一次指针拖动松手时发一次，一次方向键微调也发一次（一按就是一次改完的操作）。矩形没真的变（在框上原地点一下、顶到图片边界推不动）不发。
+
 ## 产物
 
 | 层 | 值 |
@@ -825,11 +835,27 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `zoom-slider` | `data-disabled` | ''（条件成立时才出现） |
 | `rotate-slider` | `data-disabled` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-image-cropper-bg` · `--xh-image-cropper-crop-border` · `--xh-image-cropper-grid-line` · `--xh-image-cropper-handle-bg` · `--xh-image-cropper-handle-bg-resizing` · `--xh-image-cropper-handle-border` · `--xh-image-cropper-handle-radius` · `--xh-image-cropper-handle-size` · `--xh-image-cropper-mask` · `--xh-image-cropper-slider-accent` · `--xh-image-cropper-slider-w` · `--xh-image-cropper-viewport-radius` · `--xh-image-cropper-w`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-image-cropper-bg` | `viewport` | `background` | `default` | `--xh-bg-muted` | image-cropper 的 viewport 部件 background 覆盖槽。 |
+| `--xh-image-cropper-crop-border` | `crop-area` | `border-color` | `default` | `--xh-bg-surface` | image-cropper 的 crop-area 部件 border-color 覆盖槽。 |
+| `--xh-image-cropper-grid-line` | `grid` | `background-image` | `default` | `--xh-border-subtle` | image-cropper 的 grid 部件 background-image 覆盖槽。 |
+| `--xh-image-cropper-handle-bg` | `crop-handle` | `background` | `default` | `--xh-bg-surface` | image-cropper 的 crop-handle 部件 background 覆盖槽。 |
+| `--xh-image-cropper-handle-bg-resizing` | `crop-handle` | `background` | `resizing` | `--xh-bg-brand` | image-cropper 的 crop-handle 部件 background 覆盖槽。 |
+| `--xh-image-cropper-handle-border` | `crop-handle` | `border-color` | `default` | `--xh-border-strong` | image-cropper 的 crop-handle 部件 border-color 覆盖槽。 |
+| `--xh-image-cropper-handle-radius` | `crop-handle` | `border-radius` | `default` | `--xh-shape-inset` | image-cropper 的 crop-handle 部件 border-radius 覆盖槽。 |
+| `--xh-image-cropper-handle-size` | `crop-handle`<br>`root` | `block-size`<br>`inline-size`<br>`inset` | `default` | `--xh-control-indicator-size` | image-cropper 的 crop-handle、root 部件 block-size、inline-size、inset 覆盖槽。 |
+| `--xh-image-cropper-mask` | `crop-area` | `box-shadow` | `default` | `--xh-bg-overlay` | image-cropper 的 crop-area 部件 box-shadow 覆盖槽。 |
+| `--xh-image-cropper-slider-accent` | `rotate-slider`<br>`zoom-slider` | `accent-color` | `default` | `--xh-bg-brand` | image-cropper 的 rotate-slider、zoom-slider 部件 accent-color 覆盖槽。 |
+| `--xh-image-cropper-slider-w` | `rotate-slider`<br>`zoom-slider` | `inline-size` | `default` | `100%` | image-cropper 的 rotate-slider、zoom-slider 部件 inline-size 覆盖槽。 |
+| `--xh-image-cropper-viewport-radius` | `viewport` | `border-radius` | `default` | `--xh-shape-surface` | image-cropper 的 viewport 部件 border-radius 覆盖槽。 |
+| `--xh-image-cropper-w` | `root` | `inline-size` | `default` | `100%` | image-cropper 的 root 部件 inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
@@ -838,6 +864,8 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
 - 裁切矩形描述的是图片像素，坐标恒是物理方向：`x` 永远从图片左边缘算起，方向键的左右也永远对应图片的左右。整页 `dir="rtl"` 时框不会翻到另一侧，组件因此不收 `dir`。
 - 皮肤里裁切框与把手的落点跟着写物理属性，与连接层算出来的那份坐标同一口径，不依赖祖先链上的文字方向。

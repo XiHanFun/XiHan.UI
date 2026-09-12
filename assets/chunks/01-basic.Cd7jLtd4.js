@@ -1,0 +1,1 @@
+import{kW as o}from"./theme.CzGOHWR9.js";import{d as e,o as t,b as a,k as r}from"./framework.m090XgxO.js";const _=e({__name:"01-basic",setup(s){return(n,c)=>(t(),a(r(o),{"auto-start":""}))}});export{_ as default};

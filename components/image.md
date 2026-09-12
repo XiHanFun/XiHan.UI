@@ -1,28 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/image
 
-# 图片 `image`
+# Image `图片`
 
 一张图，带加载状态与失败回退。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/image" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/image.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/image" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/image" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/image.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 任何需要显示远端图片、且要处理加载与失败的地方。
-
-## 何时不用
-
-- 图是纯装饰且不会失败：直接写 `<img>`。
-- 是人的形象：用[头像](./avatar)。
-- 是矢量图元：用[图标](./icon)。
-
-## 特性
-
-- 状态会回调；`fallbackDelay` 避免快速加载时闪一下回退内容。
-- 回退内容可以按状态分流：加载中与失败给不同的东西。
-- 取图时机可以由作者自己决定（懒加载）。
-
-## 示例
-
-### 基础用法
+## 用法
 
 图片与回退内容始终同挂 DOM、靠 hidden 互斥显隐，换人时盒子不塌也不跳
 
@@ -61,6 +51,8 @@ const cover
   </div>
 </xh-image>
 ```
+
+## 示例
 
 ### 回退与状态
 
@@ -1033,6 +1025,24 @@ onBeforeUnmount(() => observer?.disconnect());
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 任何需要显示远端图片、且要处理加载与失败的地方。
+
+### 何时不用
+
+- 图是纯装饰且不会失败：直接写 `<img>`。
+- 是人的形象：用[头像](./avatar)。
+- 是矢量图元：用[图标](./icon)。
+
+### 特性
+
+- 状态会回调；`fallbackDelay` 避免快速加载时闪一下回退内容。
+- 回退内容可以按状态分流：加载中与失败给不同的东西。
+- 取图时机可以由作者自己决定（懒加载）。
+
 ## 产物
 
 | 层 | 值 |
@@ -1135,11 +1145,25 @@ onBeforeUnmount(() => observer?.disconnect());
 | `placeholder` | `data-state` | state.get() |
 | `fallback` | `data-state` | state.get() |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-image-bg` · `--xh-image-fallback-fg` · `--xh-image-fallback-font-size` · `--xh-image-fallback-min-h` · `--xh-image-fit` · `--xh-image-h` · `--xh-image-placeholder-bg` · `--xh-image-placeholder-fg` · `--xh-image-radius` · `--xh-image-ratio` · `--xh-image-w`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-image-bg` | `root` | `background` | `default` | `--xh-bg-subtle` | image 的 root 部件 background 覆盖槽。 |
+| `--xh-image-fallback-fg` | `fallback` | `color` | `default` | `--xh-fg-muted` | image 的 fallback 部件 color 覆盖槽。 |
+| `--xh-image-fallback-font-size` | `fallback` | `font-size` | `default` | `--xh-text-secondary-size` | image 的 fallback 部件 font-size 覆盖槽。 |
+| `--xh-image-fallback-min-h` | `fallback` | `min-block-size` | `default` | `--xh-control-h-lg` | image 的 fallback 部件 min-block-size 覆盖槽。 |
+| `--xh-image-fit` | `image` | `object-fit` | `default` | `cover` | image 的 image 部件 object-fit 覆盖槽。 |
+| `--xh-image-h` | `root` | `block-size` | `default` | `auto` | image 的 root 部件 block-size 覆盖槽。 |
+| `--xh-image-placeholder-bg` | `placeholder` | `background` | `default` | `--xh-bg-subtle-hover` | image 的 placeholder 部件 background 覆盖槽。 |
+| `--xh-image-placeholder-fg` | `placeholder` | `color` | `default` | `--xh-fg-subtle` | image 的 placeholder 部件 color 覆盖槽。 |
+| `--xh-image-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | image 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-image-ratio` | `root` | `aspect-ratio` | `default` | `auto` | image 的 root 部件 aspect-ratio 覆盖槽。 |
+| `--xh-image-w` | `root` | `inline-size` | `default` | `100%` | image 的 root 部件 inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

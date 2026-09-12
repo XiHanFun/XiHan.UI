@@ -43,6 +43,10 @@ checkbox 与 switch 的根是 `<button>`，而 HTML 的内容模型禁止 button
 带 `name` 的组件都认表单重置。点 `<button type="reset">`（或调 `form.reset()`），它们各自回到
 自己的默认值，和旁边的原生输入框一起。
 
+重置桥按事件目标的原生 HTMLElement 品牌与 `form` 节点名识别表单，不依赖顶层 `HTMLFormElement` 构造器。因此组件与表单位于 iframe 中，或表单从另一 Window adopt 到当前 Document 后，仍会跟随所属表单重置；普通元素派发的同名事件不会冒充表单。
+
+对于正式提供 `form` 属性的组件，重置桥优先按该 ID 查找组件所属 Document 或 ShadowRoot 中的表单；未提供时才关联最近的祖先表单。空 ID、目标不存在或目标不是表单时均不关联其他表单。关联在重置发生时读取，因此目标表单延后创建或属性变更不需要重新挂载组件；取消原生 `reset` 事件仍会取消组件重置。此规则不使未声明 `form` 的组件自动获得该公共属性。
+
 ```vue
 <form>
   <XhRadioGroupRoot name="plan" default-value="standard">…</XhRadioGroupRoot>
@@ -118,10 +122,10 @@ const controlProps = useFieldControl();
 
 ## 哪些组件参与
 
-27 个：checkbox、checkbox-group、color-picker、combobox、date-field、date-picker、editable、
-file-upload、image-cropper、number-field、password-input、pin-input、radio-group、rating、
+29 个：checkbox、cascader、checkbox-group、color-picker、combobox、date-field、date-picker、editable、field-array、
+file-upload、image-cropper、mention、number-field、password-input、pin-input、radio-group、rating、
 segmented、select、signature-pad、slider、switch、tags-input、text-field、time-field、
-time-picker、tree-select。
+time-picker、toggle-group、transfer、tree-select。
 
 新加的表单组件忘了接重置会被门禁拦下：判据的分母是从源码里扫出来的（`types` 的 props 里有
-`name?: string` 即表单字段），不是手写名单。
+`name?:` 即表单字段，字段名既可以是标量字符串也可以是 `FormPath`），不是手写名单。

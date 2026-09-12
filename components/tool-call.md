@@ -1,36 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/tool-call
 
-# 工具调用 `tool-call`
+# ToolCall `工具调用`
 
 一次工具调用的卡片：阶段、参数与结果，跑起来自动展开、结束自动收起，用户动手过一次就不再自动。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tool-call" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/tool-call.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/tool-call" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/tool-call" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/tool-call.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- Agent 界面里展示「它正在做什么」：查了什么、传了什么参数、拿回了什么。
-- 一次调用要先经人批准才能执行。
-
-## 何时不用
-
-- 展示的是「思考过程」而不是一次调用：用[思考过程](./reasoning)，两者共用同一台机器但正文形态不同。
-- 只想要一个状态色块：用[徽章](./badge)，配 `toneOfToolCallPhase(phase)` 取语气。
-- 多次调用要一次只展开一张：外面套[手风琴](./accordion)，每格里装一张。
-
-## 特性
-
-- 五档阶段：参数在传、参数齐了、等人批准、已完成、出错了。
-  **「等人批准」不是「在跑」**——协议层的审批只改审批状态、不改工具状态，
-  没有这一档的话等人的调用会被当成在跑。
-- **自动开合的锁存靠转移的放置位置，不靠一个布尔位**：用户点过一次之后，
-  阶段变化在结构上就够不着任何转移，自动开合永久停用。
-- 审批闸门常驻在开关与详情之间，不会被折叠藏起来。
-- 收起走 `hidden` + `inert`：退场动画播完之前内容还在渲染，`inert` 把这段窗口挡在读屏与 Tab 序之外。
-- 开关那一行留了摘要位与耗时位：详情收起时也看得见「查了什么」与「跑了多久」。
-- 耗时由宿主给两个时刻，`toolCallDuration(startTime, endTime)` 折出毫秒数；
-  **组件自己不读时钟也不起定时器**，秒数要跳就由宿主驱动。
-
-## 示例
-
-### 五档阶段
+## 用法
 
 等人批准不是在跑：闸门常驻在开关与详情之间，不会被折叠藏起来
 
@@ -143,6 +125,8 @@ const phases: ToolCallPhase[] = [
   </xh-tool-call>
 </div>
 ```
+
+## 示例
 
 ### 自动开合与锁存
 
@@ -638,6 +622,32 @@ import {
 </div>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- Agent 界面里展示「它正在做什么」：查了什么、传了什么参数、拿回了什么。
+- 一次调用要先经人批准才能执行。
+
+### 何时不用
+
+- 展示的是「思考过程」而不是一次调用：用[思考过程](./reasoning)，两者共用同一台机器但正文形态不同。
+- 只想要一个状态色块：用[徽章](./badge)，配 `toneOfToolCallPhase(phase)` 取语气。
+- 多次调用要一次只展开一张：外面套[手风琴](./accordion)，每格里装一张。
+
+### 特性
+
+- 五档阶段：参数在传、参数齐了、等人批准、已完成、出错了。
+  **「等人批准」不是「在跑」**——协议层的审批只改审批状态、不改工具状态，
+  没有这一档的话等人的调用会被当成在跑。
+- **自动开合的锁存靠转移的放置位置，不靠一个布尔位**：用户点过一次之后，
+  阶段变化在结构上就够不着任何转移，自动开合永久停用。
+- 审批闸门常驻在开关与详情之间，不会被折叠藏起来。
+- 收起走 `hidden` + `inert`：退场动画播完之前内容还在渲染，`inert` 把这段窗口挡在读屏与 Tab 序之外。
+- 开关那一行留了摘要位与耗时位：详情收起时也看得见「查了什么」与「跑了多久」。
+- 耗时由宿主给两个时刻，`toolCallDuration(startTime, endTime)` 折出毫秒数；
+  **组件自己不读时钟也不起定时器**，秒数要跳就由宿主驱动。
+
 ## 产物
 
 | 层 | 值 |
@@ -803,11 +813,53 @@ import {
 | `output` | `data-state` | props.phase |
 | `error` | `data-state` | props.phase |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-tool-call-bg` · `--xh-tool-call-border` · `--xh-tool-call-border-error` · `--xh-tool-call-content-gap` · `--xh-tool-call-duration-fg` · `--xh-tool-call-error-fg` · `--xh-tool-call-font-size` · `--xh-tool-call-icon-size` · `--xh-tool-call-indicator-fg` · `--xh-tool-call-label-font` · `--xh-tool-call-px` · `--xh-tool-call-py` · `--xh-tool-call-radius` · `--xh-tool-call-shadow` · `--xh-tool-call-shimmer-duration` · `--xh-tool-call-status-bg-approval` · `--xh-tool-call-status-bg-done` · `--xh-tool-call-status-bg-error` · `--xh-tool-call-status-fg` · `--xh-tool-call-status-fg-approval` · `--xh-tool-call-status-fg-done` · `--xh-tool-call-status-fg-error` · `--xh-tool-call-status-font-size` · `--xh-tool-call-status-px` · `--xh-tool-call-status-py` · `--xh-tool-call-status-radius` · `--xh-tool-call-status-shimmer-base` · `--xh-tool-call-status-shimmer-sheen` · `--xh-tool-call-summary-bg` · `--xh-tool-call-summary-fg` · `--xh-tool-call-summary-font-size` · `--xh-tool-call-summary-px` · `--xh-tool-call-summary-radius` · `--xh-tool-call-tone-bar` · `--xh-tool-call-tone-fg` · `--xh-tool-call-trigger-bg-hover` · `--xh-tool-call-trigger-fg` · `--xh-tool-call-trigger-gap` · `--xh-tool-call-trigger-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-tool-call-bg` | `root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | tool-call 的 root 部件 background 覆盖槽。 |
+| `--xh-tool-call-border` | `approval`<br>`content`<br>`root` | `border`<br>`border-block-start` | `default` | `--xh-border-subtle` | tool-call 的 approval、content、root 部件 border、border-block-start 覆盖槽。 |
+| `--xh-tool-call-border-error` | `root` | `border-color` | `errored`<br>`has([data-scope='tool-call'][data-state='output-error'])`<br>`state=output-error` | `--xh-border-invalid` | tool-call 的 root 部件 border-color 覆盖槽。 |
+| `--xh-tool-call-content-gap` | `content` | `gap` | `default` | `--xh-space-2` | tool-call 的 content 部件 gap 覆盖槽。 |
+| `--xh-tool-call-duration-fg` | `duration` | `color` | `default` | `--xh-fg-subtle` | tool-call 的 duration 部件 color 覆盖槽。 |
+| `--xh-tool-call-error-fg` | `error` | `color` | `default` | `--xh-fg-danger` | tool-call 的 error 部件 color 覆盖槽。 |
+| `--xh-tool-call-font-size` | `trigger` | `font-size` | `default` | `--xh-_tool-call-font-size` | tool-call 的 trigger 部件 font-size 覆盖槽。 |
+| `--xh-tool-call-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | tool-call 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-tool-call-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-subtle` | tool-call 的 indicator 部件 color 覆盖槽。 |
+| `--xh-tool-call-label-font` | `label`<br>`summary` | `font-family` | `default` | `--xh-font-family-mono` | tool-call 的 label、summary 部件 font-family 覆盖槽。 |
+| `--xh-tool-call-px` | `approval`<br>`content`<br>`trigger` | `padding-inline` | `default` | `--xh-_tool-call-px` | tool-call 的 approval、content、trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-tool-call-py` | `*`<br>`approval`<br>`content`<br>`trigger` | `padding-block` | `@keyframes xh-tool-call-collapse`<br>`@keyframes xh-tool-call-expand`<br>`default` | `--xh-_tool-call-py` | tool-call 的 *、approval、content、trigger 部件 padding-block 覆盖槽。 |
+| `--xh-tool-call-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | tool-call 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-tool-call-shadow` | `root` | `box-shadow` | `default`<br>`tone` | `--xh-elevation-raised` | tool-call 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-tool-call-shimmer-duration` | `root`<br>`status` | `animation` | `loading` | `--xh-shimmer-duration` | tool-call 的 root、status 部件 animation 覆盖槽。 |
+| `--xh-tool-call-status-bg-approval` | `status` | `background` | `state=awaiting-approval` | `--xh-fg-warning` | tool-call 的 status 部件 background 覆盖槽。 |
+| `--xh-tool-call-status-bg-done` | `status` | `background` | `state=output-available` | `--xh-fg-success` | tool-call 的 status 部件 background 覆盖槽。 |
+| `--xh-tool-call-status-bg-error` | `status` | `background` | `state=output-error` | `--xh-fg-danger` | tool-call 的 status 部件 background 覆盖槽。 |
+| `--xh-tool-call-status-fg` | `root`<br>`status` | `color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`loading`<br>`motion=reduce`<br>`where([data-motion='reduce'])` | `--xh-fg-muted` | tool-call 的 root、status 部件 color 覆盖槽。 |
+| `--xh-tool-call-status-fg-approval` | `status` | `color` | `state=awaiting-approval` | `--xh-fg-warning` | tool-call 的 status 部件 color 覆盖槽。 |
+| `--xh-tool-call-status-fg-done` | `status` | `color` | `state=output-available` | `--xh-fg-success` | tool-call 的 status 部件 color 覆盖槽。 |
+| `--xh-tool-call-status-fg-error` | `status` | `color` | `state=output-error` | `--xh-fg-danger` | tool-call 的 status 部件 color 覆盖槽。 |
+| `--xh-tool-call-status-font-size` | `duration`<br>`error`<br>`status` | `font-size` | `default` | `--xh-text-caption-size` | tool-call 的 duration、error、status 部件 font-size 覆盖槽。 |
+| `--xh-tool-call-status-px` | `status` | `padding-inline` | `state=awaiting-approval`<br>`state=output-available`<br>`state=output-error` | `--xh-space-2` | tool-call 的 status 部件 padding-inline 覆盖槽。 |
+| `--xh-tool-call-status-py` | `status` | `padding-block` | `state=awaiting-approval`<br>`state=output-available`<br>`state=output-error` | `--xh-space-0_5` | tool-call 的 status 部件 padding-block 覆盖槽。 |
+| `--xh-tool-call-status-radius` | `status` | `border-radius` | `state=awaiting-approval`<br>`state=output-available`<br>`state=output-error` | `--xh-shape-pill` | tool-call 的 status 部件 border-radius 覆盖槽。 |
+| `--xh-tool-call-status-shimmer-base` | `root`<br>`status` | `background-image` | `loading` | `--xh-fg-subtle` | tool-call 的 root、status 部件 background-image 覆盖槽。 |
+| `--xh-tool-call-status-shimmer-sheen` | `root`<br>`status` | `background-image` | `loading` | `--xh-fg-default` | tool-call 的 root、status 部件 background-image 覆盖槽。 |
+| `--xh-tool-call-summary-bg` | `summary` | `background` | `default` | `--xh-bg-subtle` | tool-call 的 summary 部件 background 覆盖槽。 |
+| `--xh-tool-call-summary-fg` | `summary` | `color` | `default` | `--xh-fg-muted` | tool-call 的 summary 部件 color 覆盖槽。 |
+| `--xh-tool-call-summary-font-size` | `summary` | `font-size` | `default` | `--xh-text-caption-size` | tool-call 的 summary 部件 font-size 覆盖槽。 |
+| `--xh-tool-call-summary-px` | `summary` | `padding-inline` | `default` | `--xh-space-1_5` | tool-call 的 summary 部件 padding-inline 覆盖槽。 |
+| `--xh-tool-call-summary-radius` | `summary` | `border-radius` | `default` | `--xh-shape-control` | tool-call 的 summary 部件 border-radius 覆盖槽。 |
+| `--xh-tool-call-tone-bar` | `root` | `box-shadow` | `tone` | `--xh-stroke-thick` | tool-call 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-tool-call-tone-fg` | `root` | `box-shadow` | `tone` | `--xh-_tone-soft` | tool-call 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-tool-call-trigger-bg-hover` | `trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | tool-call 的 trigger 部件 background 覆盖槽。 |
+| `--xh-tool-call-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | tool-call 的 trigger 部件 color 覆盖槽。 |
+| `--xh-tool-call-trigger-gap` | `trigger` | `gap` | `default` | `--xh-space-2` | tool-call 的 trigger 部件 gap 覆盖槽。 |
+| `--xh-tool-call-trigger-radius` | `root`<br>`trigger` | `border-radius` | `variant=ghost` | `--xh-shape-control` | tool-call 的 root、trigger 部件 border-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

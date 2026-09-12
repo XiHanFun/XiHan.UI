@@ -1,0 +1,74 @@
+const n=`// 外部写值与清空 | 值由宿主持有，按钮直接写值；清空交给组件自带的清空钮，有值才出现；填齐与越界两个判据由组件给出
+import type { ReactNode } from "react";
+import {
+  XhButton,
+  XhDateFieldClearTrigger,
+  XhDateFieldControl,
+  XhDateFieldLabel,
+  XhDateFieldRoot,
+  XhDateFieldSegment,
+  XhDateFieldSegmentGroup,
+} from "@xihan-ui/react";
+import { useState } from "react";
+
+// 相对今天偏移若干天的 ISO 串
+function shift(days: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  const month = \`\${d.getMonth() + 1}\`.padStart(2, "0");
+  const day = \`\${d.getDate()}\`.padStart(2, "0");
+  return \`\${d.getFullYear()}-\${month}-\${day}\`;
+}
+
+const today = shift(0);
+const nextWeek = shift(7);
+
+// 填齐与越界两个判据合成一句话
+function statusText(complete: boolean, outOfRange: boolean): string {
+  if (!complete)
+    return "未填齐";
+  return outOfRange ? "早于今天，收不了件" : "可取件";
+}
+
+export default function Demo(): ReactNode {
+  const [value, setValue] = useState<string | null>(null);
+
+  return (
+    <XhDateFieldRoot
+      value={value}
+      onValueChange={details => setValue(details.value)}
+      min={today}
+      locale="zh-CN"
+    >
+      {({ complete, outOfRange, setValue: writeValue }) => (
+        <>
+          <XhDateFieldLabel>取件日期</XhDateFieldLabel>
+          <XhDateFieldControl>
+            <XhDateFieldSegmentGroup>
+              <XhDateFieldSegment index={0} />
+              <span>年</span>
+              <XhDateFieldSegment index={1} />
+              <span>月</span>
+              <XhDateFieldSegment index={2} />
+              <span>日</span>
+            </XhDateFieldSegmentGroup>
+            {/* 一段都没填时清空钮收起；填了任意一段就出现 */}
+            <XhDateFieldClearTrigger />
+          </XhDateFieldControl>
+
+          <div style={{ display: "flex", gap: "8px" }}>
+            <XhButton size="sm" variant="outline" onClick={() => writeValue(today)}>今天</XhButton>
+            <XhButton size="sm" variant="outline" onClick={() => writeValue(nextWeek)}>
+              七天后
+            </XhButton>
+          </div>
+
+          <span style={{ fontSize: "13px" }}>
+            {statusText(complete, outOfRange)}
+          </span>
+        </>
+      )}
+    </XhDateFieldRoot>
+  );
+}
+`;export{n as default};

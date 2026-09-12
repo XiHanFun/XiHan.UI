@@ -1,1 +1,0 @@
-import{bZ as e}from"./theme.DCKLS07e.js";import{d as o,o as t,b as r,k as a}from"./framework.BpF7DVZ1.js";const s="曦寒 UI 是一套框架无关的设计系统运行时，组件的行为与皮肤各走各的。",m=o({__name:"01-basic",setup(n){return(c,p)=>(t(),r(a(e),{text:s,keyword:"组件"}))}});export{m as default};

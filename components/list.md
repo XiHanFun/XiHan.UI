@@ -1,27 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/list
 
-# 列表 `list`
+# List `列表`
 
 一列同构的条目，每条可以有媒体位、标题、描述与操作位。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/list" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/list.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/list" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/list" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/list.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 同构记录的纵向排列：通知、文件、成员。
-- 每条信息量适中，不需要多列对齐。
-
-## 何时不用
-
-- 每条有多个字段需要按列对照：用[表格](./table)。
-- 条目可选：用[列表框](./listbox)。
-
-## 特性
-
-- 六个部件都可选。
-- `split` 在条目之间画线，`bordered` 给外框，`hoverable` 给悬停反馈。
-
-## 示例
-
-### 基础用法
+## 用法
 
 根与条目的标签由使用者定，这里写成 ul 与 li；条目里只写用得上的那几个位
 
@@ -79,6 +70,8 @@ const people = [
   </ul>
 </xh-list>
 ```
+
+## 示例
 
 ### 分隔线
 
@@ -362,6 +355,23 @@ const sizes = [
 </div>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 同构记录的纵向排列：通知、文件、成员。
+- 每条信息量适中，不需要多列对齐。
+
+### 何时不用
+
+- 每条有多个字段需要按列对照：用[表格](./table)。
+- 条目可选：用[列表框](./listbox)。
+
+### 特性
+
+- 六个部件都可选。
+- `split` 在条目之间画线，`bordered` 给外框，`hoverable` 给悬停反馈。
+
 ## 产物
 
 | 层 | 值 |
@@ -410,11 +420,30 @@ const sizes = [
 
 默认皮肤 `@xihan-ui/styles/list.css` 按部件选择：`[data-scope="list"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-list-action-gap` · `--xh-list-bg` · `--xh-list-border` · `--xh-list-content-gap` · `--xh-list-description-fg` · `--xh-list-description-font-size` · `--xh-list-divider` · `--xh-list-fg` · `--xh-list-item-bg-hover` · `--xh-list-item-gap` · `--xh-list-item-px` · `--xh-list-item-px-lg` · `--xh-list-item-px-md` · `--xh-list-item-px-sm` · `--xh-list-item-py` · `--xh-list-item-py-lg` · `--xh-list-item-py-md` · `--xh-list-item-py-sm` · `--xh-list-radius` · `--xh-list-title-fg` · `--xh-list-title-font-size` · `--xh-list-title-font-weight`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-list-action-gap` | `item-action` | `gap` | `default` | `--xh-space-2` | list 的 item-action 部件 gap 覆盖槽。 |
+| `--xh-list-bg` | `root` | `background` | `bordered` | `--xh-bg-surface` | list 的 root 部件 background 覆盖槽。 |
+| `--xh-list-border` | `root` | `border` | `bordered` | `--xh-border-default` | list 的 root 部件 border 覆盖槽。 |
+| `--xh-list-content-gap` | `item-content` | `gap` | `default` | `--xh-space-1` | list 的 item-content 部件 gap 覆盖槽。 |
+| `--xh-list-description-fg` | `item-description` | `color` | `default` | `--xh-fg-muted` | list 的 item-description 部件 color 覆盖槽。 |
+| `--xh-list-description-font-size` | `item-description` | `font-size` | `default` | `--xh-_list-description-size` | list 的 item-description 部件 font-size 覆盖槽。 |
+| `--xh-list-divider` | `item`<br>`root` | `border-block-start` | `split` | `--xh-border-subtle` | list 的 item、root 部件 border-block-start 覆盖槽。 |
+| `--xh-list-fg` | `root` | `color` | `default` | `--xh-fg-default` | list 的 root 部件 color 覆盖槽。 |
+| `--xh-list-item-bg-hover` | `item`<br>`root` | `background` | `@media (hover: hover)`<br>`hover`<br>`hoverable` | `--xh-bg-subtle` | list 的 item、root 部件 background 覆盖槽。 |
+| `--xh-list-item-gap` | `item` | `gap` | `default` | `--xh-_list-item-gap` | list 的 item 部件 gap 覆盖槽。 |
+| `--xh-list-item-px` | `item` | `padding-inline` | `default` | `--xh-_list-item-px` | list 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-list-item-py` | `item` | `padding-block` | `default` | `--xh-_list-item-py` | list 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-list-radius` | `root` | `border-radius` | `bordered` | `--xh-shape-surface` | list 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-list-title-fg` | `item-title` | `color` | `default` | `--xh-fg-default` | list 的 item-title 部件 color 覆盖槽。 |
+| `--xh-list-title-font-size` | `item-title` | `font-size` | `default` | `--xh-_list-title-size` | list 的 item-title 部件 font-size 覆盖槽。 |
+| `--xh-list-title-font-weight` | `item-title` | `font-weight` | `default` | `--xh-font-weight-medium` | list 的 item-title 部件 font-weight 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

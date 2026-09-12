@@ -1,27 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/card
 
-# 卡片 `card`
+# Card `卡片`
 
 一块有边界的内容容器：封面、标题、正文与页脚各占一段。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/card" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/card.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/card" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/card" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/card.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 把一组相关信息收成一个可以整体感知的单元。
-- 内容块之间需要视觉边界。
-
-## 何时不用
-
-- 页面上每一块都套卡片：边界失效，只剩噪音。
-- 只是要一条分隔：用[分隔线](./separator)。
-
-## 特性
-
-- 七个部件全部可选，只写用得上的那几段。
-- `split` 在各段之间画线，`hoverable` 给出悬停反馈。
-
-## 示例
-
-### 基础用法
+## 用法
 
 除了 root，封面、头、身、脚都可选；只写用得上的那几段
 
@@ -52,6 +43,8 @@ import { XhCardBody, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle } 
   </div>
 </xh-card>
 ```
+
+## 示例
 
 ### 形态
 
@@ -282,6 +275,26 @@ import { XhCardBody, XhCardDescription, XhCardHeader, XhCardMedia, XhCardRoot, X
 </xh-card>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 把一组相关信息收成一个可以整体感知的单元。
+- 内容块之间需要视觉边界。
+
+### 何时不用
+
+- 页面上每一块都套卡片：边界失效，只剩噪音。
+- 只是要一条分隔：用[分隔线](./separator)。
+
+### 特性
+
+- 七个部件全部可选，只写用得上的那几段。
+- `split` 在各段之间画线，`hoverable` 给出悬停反馈。
+
+
+默认 outline 使用 M1 柔和实体面：细边、单像素顶光和轻接触影；正文保持不透明，卡片不模糊背后内容。subtle 保留淡底无影，elevated 使用 raised 投影，ghost 保持透明。hoverable 在可悬停设备上提升边界与投影，不移动布局。高对比模式取消装饰高光并增强边界，打印时移除高光与投影。
+
 ## 产物
 
 | 层 | 值 |
@@ -330,11 +343,32 @@ import { XhCardBody, XhCardDescription, XhCardHeader, XhCardMedia, XhCardRoot, X
 
 默认皮肤 `@xihan-ui/styles/card.css` 按部件选择：`[data-scope="card"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-card-bg` · `--xh-card-body-pt` · `--xh-card-border` · `--xh-card-border-hover` · `--xh-card-description-fg` · `--xh-card-description-font-size` · `--xh-card-divider` · `--xh-card-fg` · `--xh-card-footer-gap` · `--xh-card-footer-pt` · `--xh-card-header-gap` · `--xh-card-header-pb` · `--xh-card-radius` · `--xh-card-shadow` · `--xh-card-shadow-hover` · `--xh-card-title-font-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-card-bg` | `root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-material-soft-bg` | card 的 root 部件 background 覆盖槽。 |
+| `--xh-card-body-pt` | `body`<br>`header` | `padding-block-start` | `default` | `--xh-space-2` | card 的 body、header 部件 padding-block-start 覆盖槽。 |
+| `--xh-card-border` | `root` | `border-color` | `variant=outline` | `--xh-border-default` | card 的 root 部件 border-color 覆盖槽。 |
+| `--xh-card-border-hover` | `root` | `border-color` | `@media (hover: hover)`<br>`hover`<br>`hoverable` | `--xh-border-strong` | card 的 root 部件 border-color 覆盖槽。 |
+| `--xh-card-description-fg` | `description` | `color` | `default` | `--xh-material-soft-fg-muted` | card 的 description 部件 color 覆盖槽。 |
+| `--xh-card-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | card 的 description 部件 font-size 覆盖槽。 |
+| `--xh-card-divider` | `body`<br>`footer`<br>`root` | `border-block-start` | `split` | `--xh-material-soft-separator` | card 的 body、footer、root 部件 border-block-start 覆盖槽。 |
+| `--xh-card-fg` | `root` | `color` | `default` | `--xh-material-soft-fg` | card 的 root 部件 color 覆盖槽。 |
+| `--xh-card-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | card 的 footer 部件 gap 覆盖槽。 |
+| `--xh-card-footer-pt` | `footer` | `padding-block-start` | `default` | `--xh-space-2` | card 的 footer 部件 padding-block-start 覆盖槽。 |
+| `--xh-card-header-gap` | `header` | `gap` | `default` | `--xh-space-1` | card 的 header 部件 gap 覆盖槽。 |
+| `--xh-card-header-pb` | `header` | `padding-block-end` | `default` | `--xh-space-2` | card 的 header 部件 padding-block-end 覆盖槽。 |
+| `--xh-card-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | card 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-card-shadow` | `root` | `box-shadow` | `default`<br>`variant=elevated` | `--xh-elevation-raised`<br>`--xh-material-soft-shadow` | card 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-card-shadow-hover` | `root` | `box-shadow` | `@media (hover: hover)`<br>`hover`<br>`hoverable` | `--xh-elevation-lifted` | card 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-card-title-font-size` | `root`<br>`title` | `font-size` | `default`<br>`size=lg` | `--xh-control-font-lg`<br>`--xh-text-label-size` | card 的 root、title 部件 font-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

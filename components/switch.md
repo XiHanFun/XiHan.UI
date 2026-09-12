@@ -1,27 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/switch
 
-# 开关 `switch`
+# Switch `开关`
 
 一项设置的开与关，翻过去立即生效。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/switch" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/switch.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/switch" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/switch" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/switch.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 设置页里立即生效的开关（通知、深色模式、自动保存）。
-
-## 何时不用
-
-- 值要随表单一起提交：用[复选框](./checkbox)，它是表单控件的原生语义。
-- 是工具栏上的格式按钮：用[切换按钮](./toggle)。
-
-## 特性
-
-- `loading` 表达在途：受控时宿主不写回就不翻，请求失败界面自然停在原状态。
-- 轨道内可以写文案、滑块上可以放标记。
-- `readOnly` 与 `disabled` 分开：只读仍可聚焦。
-
-## 示例
-
-### 基础用法
+## 用法
 
 不传 checked 即为非受控，开关自己维护状态
 
@@ -49,6 +40,8 @@ import { XhSwitch } from "@xihan-ui/vue";
   </button>
 </xh-switch>
 ```
+
+## 示例
 
 ### 受控
 
@@ -644,6 +637,29 @@ function onSubmit(event: Event) {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 设置页里立即生效的开关（通知、深色模式、自动保存）。
+
+### 何时不用
+
+- 值要随表单一起提交：用[复选框](./checkbox)，它是表单控件的原生语义。
+- 是工具栏上的格式按钮：用[切换按钮](./toggle)。
+
+### 特性
+
+- `loading` 表达在途并锁住用户再次切换：按钮保持可聚焦，以 `aria-busy` 和滑块内指示器报告状态；
+  受控宿主仍可写回 `checked` 完成事务，失败时保持原值。它不会把 loading 假装成 disabled。
+- `readOnly` 与 `disabled` 分开：只读仍可聚焦。
+- 轨道保持实体表单控件：未选中用中性底和明确内边界，选中用实心语气色，只读选中回到中性底；
+  不使用 backdrop 或透明玻璃。
+- 滑块使用 M1 实体底、细边、顶光和接触影；指针悬停轻抬，按住时沿行进方向拉长并在释放时回圆。
+  loading、只读与禁用不产生可操作的悬停/按压假反馈。
+- 键盘聚焦环在明暗主题和开关两态都与轨道达到 3:1；RTL 会反转滑块行程，三尺寸与密度轴保持同一比例。
+- 减弱动效会取消按压拉伸并让 loading 圆环停转，以静止点线继续表达在途。
+
 ## 产物
 
 | 层 | 值 |
@@ -744,6 +760,8 @@ function onSubmit(event: Event) {
 
 默认皮肤 `@xihan-ui/styles/switch.css` 按部件选择：`[data-scope="switch"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ## 数据属性
 
 由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
@@ -767,21 +785,56 @@ function onSubmit(event: Event) {
 | `text` | `data-disabled` | ''（条件成立时才出现） |
 | `text` | `data-state` | 'checked' \| 'unchecked' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-switch-bg` · `--xh-switch-bg-checked` · `--xh-switch-bg-checked-readonly` · `--xh-switch-border-invalid` · `--xh-switch-label-fg` · `--xh-switch-label-fg-disabled` · `--xh-switch-label-font-size` · `--xh-switch-label-gap` · `--xh-switch-loading-duration` · `--xh-switch-loading-fg` · `--xh-switch-radius` · `--xh-switch-thumb` · `--xh-switch-thumb-radius` · `--xh-switch-thumb-shadow` · `--xh-switch-thumb-shadow-readonly` · `--xh-switch-track-h-lg` · `--xh-switch-track-h-md` · `--xh-switch-track-h-sm`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-switch-bg` | `root` | `background` | `default` | `--xh-bg-subtle-active` | switch 的 root 部件 background 覆盖槽。 |
+| `--xh-switch-bg-checked` | `root` | `background` | `state=checked` | `--xh-_switch-accent` | switch 的 root 部件 background 覆盖槽。 |
+| `--xh-switch-bg-checked-readonly` | `root` | `background` | `readonly`<br>`state=checked` | `--xh-bg-muted` | switch 的 root 部件 background 覆盖槽。 |
+| `--xh-switch-border` | `root` | `box-shadow` | `contrast=more`<br>`default`<br>`state=unchecked`<br>`where([data-contrast='more'])` | `--xh-border-control`<br>`--xh-border-strong` | switch 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-switch-border-checked` | `root` | `box-shadow` | `state=checked` | `--xh-_switch-accent` | switch 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-switch-border-checked-readonly` | `root` | `box-shadow` | `contrast=more`<br>`readonly`<br>`state=checked`<br>`where([data-contrast='more'])` | `--xh-border-control`<br>`--xh-border-strong` | switch 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-switch-border-invalid` | `root` | `box-shadow` | `invalid` | `--xh-border-invalid` | switch 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-switch-fg` | `root` | `color` | `default` | `--xh-fg-default` | switch 的 root 部件 color 覆盖槽。 |
+| `--xh-switch-fg-checked` | `root` | `color` | `state=checked` | `--xh-_tone-on` | switch 的 root 部件 color 覆盖槽。 |
+| `--xh-switch-fg-checked-readonly` | `root` | `color` | `readonly`<br>`state=checked` | `--xh-fg-default` | switch 的 root 部件 color 覆盖槽。 |
+| `--xh-switch-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | switch 的 label 部件 color 覆盖槽。 |
+| `--xh-switch-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | switch 的 label 部件 color 覆盖槽。 |
+| `--xh-switch-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | switch 的 label 部件 font-size 覆盖槽。 |
+| `--xh-switch-label-gap` | `label` | `gap` | `default` | `--xh-control-gap-md` | switch 的 label 部件 gap 覆盖槽。 |
+| `--xh-switch-loading-duration` | `thumb` | `animation` | `loading` | `--xh-spin-duration` | switch 的 thumb 部件 animation 覆盖槽。 |
+| `--xh-switch-loading-fg` | `thumb` | `border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`loading`<br>`motion=reduce`<br>`where([data-motion='reduce'])` | `--xh-_switch-accent` | switch 的 thumb 部件 border-block-start-color、border-color 覆盖槽。 |
+| `--xh-switch-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | switch 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-switch-thumb` | `thumb` | `background` | `default` | `--xh-material-soft-bg` | switch 的 thumb 部件 background 覆盖槽。 |
+| `--xh-switch-thumb-border` | `thumb` | `border` | `default` | `--xh-material-soft-border` | switch 的 thumb 部件 border 覆盖槽。 |
+| `--xh-switch-thumb-fg` | `thumb` | `color` | `default` | `--xh-material-soft-fg` | switch 的 thumb 部件 color 覆盖槽。 |
+| `--xh-switch-thumb-highlight` | `thumb` | `background` | `default` | `--xh-material-soft-highlight` | switch 的 thumb 部件 background 覆盖槽。 |
+| `--xh-switch-thumb-press-stretch` | `root`<br>`thumb` | `inline-size`<br>`translate` | `active`<br>`disabled`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`state=checked` | `--xh-motion-distance-sm` | switch 的 root、thumb 部件 inline-size、translate 覆盖槽。 |
+| `--xh-switch-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-pill` | switch 的 thumb 部件 border-radius 覆盖槽。 |
+| `--xh-switch-thumb-shadow` | `thumb` | `box-shadow` | `default` | `--xh-material-soft-shadow` | switch 的 thumb 部件 box-shadow 覆盖槽。 |
+| `--xh-switch-thumb-shadow-disabled` | `root`<br>`thumb` | `box-shadow` | `disabled` | `none` | switch 的 root、thumb 部件 box-shadow 覆盖槽。 |
+| `--xh-switch-thumb-shadow-hover` | `root`<br>`thumb` | `box-shadow` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly` | `--xh-elevation-raised` | switch 的 root、thumb 部件 box-shadow 覆盖槽。 |
+| `--xh-switch-thumb-shadow-pressed` | `root`<br>`thumb` | `box-shadow` | `active`<br>`disabled`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly` | `none` | switch 的 root、thumb 部件 box-shadow 覆盖槽。 |
+| `--xh-switch-thumb-shadow-readonly` | `root`<br>`thumb` | `box-shadow` | `readonly` | `none` | switch 的 root、thumb 部件 box-shadow 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
-关键帧 `xh-switch-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `box-shadow` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-switch-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `box-shadow` · `inline-size` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ## 响应式
 
-皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
 
 ## 组合
 
@@ -791,6 +844,14 @@ function onSubmit(event: Event) {
 
 - 标签写这项设置本身（"邮件通知"），不写动作（"开启邮件通知"）——开关的状态已经说明了开还是关。
 - 异步提交时用 `loading` 并保持受控，别先翻再回滚。
+- 自定义轨道与滑块颜色时同时验证未选中边界、选中底和聚焦环；只换一支底色可能让暗色主题失去边界。
+
+### 当前边界
+
+- `label` 目前只直接拿到 disabled 状态，loading / readonly 光标需由皮肤读取内部 root；后续应由连接层把两轴
+  同步到 label，去掉关系选择器并让所有硬底线浏览器得到同一反馈。
+- React / Vue 的紧凑 `XhSwitch` 把默认插槽固定为轨道外标签，没有暴露轨道内容或 thumb 插槽；只有 Web Components
+  的 Light DOM 能给 thumb 写作者内容。若要三端支持开关内文案或自定义标记，应以独立部件 API 一起补齐。
 
 ## 反模式
 

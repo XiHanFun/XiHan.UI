@@ -1,28 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/alert
 
-# 警告提示 `alert`
+# Alert `警告提示`
 
 页面里常驻的一条提示：说明一件与当前上下文有关的事。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/alert" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/alert.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/alert" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/alert" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/alert.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 表单顶部的整体错误、页面级的状态说明、功能公告。
-- 信息需要一直在，直到用户处理或关闭。
-
-## 何时不用
-
-- 只是一次操作的结果反馈：用[轻提示](./toast)——它会自己消失。
-- 需要用户当场做决定并阻断流程：用[对话框](./dialog)。
-- 是一个字段的错误：用[表单字段](./field)的错误文本。
-
-## 特性
-
-- 语气决定用哪族颜色，图标由作者放。
-- `closable` 给出关闭按钮，关闭态可受控。
-
-## 示例
-
-### 基础用法
+## 用法
 
 各部件按需摆放，标题与描述都是可选的
 
@@ -51,6 +41,8 @@ import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
   </xh-alert>
 </div>
 ```
+
+## 示例
 
 ### 语气
 
@@ -307,6 +299,24 @@ import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 </div>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 表单顶部的整体错误、页面级的状态说明、功能公告。
+- 信息需要一直在，直到用户处理或关闭。
+
+### 何时不用
+
+- 只是一次操作的结果反馈：用[轻提示](./toast)——它会自己消失。
+- 需要用户当场做决定并阻断流程：用[对话框](./dialog)。
+- 是一个字段的错误：用[表单字段](./field)的错误文本。
+
+### 特性
+
+- 语气决定用哪族颜色，图标由作者放。
+- `closable` 给出关闭按钮，关闭态可受控。
+
 ## 产物
 
 | 层 | 值 |
@@ -411,11 +421,40 @@ import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 | `root` | `data-tone` | props.tone |
 | `close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-alert-action-gap` · `--xh-alert-bg` · `--xh-alert-border` · `--xh-alert-close-bg-active` · `--xh-alert-close-bg-hover` · `--xh-alert-close-fg` · `--xh-alert-close-fg-hover` · `--xh-alert-close-radius` · `--xh-alert-close-size` · `--xh-alert-content-gap` · `--xh-alert-description-fg` · `--xh-alert-description-font-size` · `--xh-alert-fg` · `--xh-alert-font-size` · `--xh-alert-gap` · `--xh-alert-icon-size` · `--xh-alert-indicator-box` · `--xh-alert-indicator-fg` · `--xh-alert-leading` · `--xh-alert-px` · `--xh-alert-py` · `--xh-alert-radius` · `--xh-alert-title-fg` · `--xh-alert-title-font-size` · `--xh-alert-title-font-weight` · `--xh-alert-title-leading`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-alert-action-gap` | `action` | `gap` | `default` | `--xh-space-2` | alert 的 action 部件 gap 覆盖槽。 |
+| `--xh-alert-bg` | `root` | `background` | `default` | `--xh-_alert-tint` | alert 的 root 部件 background 覆盖槽。 |
+| `--xh-alert-border` | `root` | `border` | `default` | `--xh-_alert-edge` | alert 的 root 部件 border 覆盖槽。 |
+| `--xh-alert-close-bg-active` | `close-trigger` | `background` | `active` | `--xh-_tone-subtle-active` | alert 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-alert-close-bg-hover` | `close-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-_tone-subtle-hover` | alert 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-alert-close-fg` | `close-trigger` | `color` | `default` | `--xh-fg-muted` | alert 的 close-trigger 部件 color 覆盖槽。 |
+| `--xh-alert-close-fg-hover` | `close-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | alert 的 close-trigger 部件 color 覆盖槽。 |
+| `--xh-alert-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | alert 的 close-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-alert-close-size` | `close-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-sm` | alert 的 close-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-alert-content-gap` | `content` | `gap` | `default` | `--xh-space-1` | alert 的 content 部件 gap 覆盖槽。 |
+| `--xh-alert-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | alert 的 description 部件 color 覆盖槽。 |
+| `--xh-alert-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | alert 的 description 部件 font-size 覆盖槽。 |
+| `--xh-alert-fg` | `root` | `color` | `default` | `--xh-fg-default` | alert 的 root 部件 color 覆盖槽。 |
+| `--xh-alert-font-size` | `root` | `font-size` | `default` | `--xh-text-body-size` | alert 的 root 部件 font-size 覆盖槽。 |
+| `--xh-alert-gap` | `root` | `gap` | `default` | `--xh-space-3` | alert 的 root 部件 gap 覆盖槽。 |
+| `--xh-alert-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | alert 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-alert-indicator-box` | `indicator` | `inline-size` | `default` | `--xh-control-indicator-size` | alert 的 indicator 部件 inline-size 覆盖槽。 |
+| `--xh-alert-indicator-fg` | `indicator` | `color` | `default` | `--xh-_tone-fg` | alert 的 indicator 部件 color 覆盖槽。 |
+| `--xh-alert-leading` | `root` | `line-height` | `default` | `--xh-leading-normal` | alert 的 root 部件 line-height 覆盖槽。 |
+| `--xh-alert-px` | `root` | `padding-inline` | `default` | `--xh-surface-px-sm` | alert 的 root 部件 padding-inline 覆盖槽。 |
+| `--xh-alert-py` | `root` | `padding-block` | `default` | `--xh-surface-py-sm` | alert 的 root 部件 padding-block 覆盖槽。 |
+| `--xh-alert-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | alert 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-alert-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | alert 的 title 部件 color 覆盖槽。 |
+| `--xh-alert-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | alert 的 title 部件 font-size 覆盖槽。 |
+| `--xh-alert-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | alert 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-alert-title-leading` | `title` | `line-height` | `default` | `--xh-leading-tight` | alert 的 title 部件 line-height 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

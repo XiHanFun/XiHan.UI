@@ -1,2 +1,0 @@
-import{da as o}from"./theme.DCKLS07e.js";import{d as r,o as s,b as n,w as i,a as m,k as c}from"./framework.BpF7DVZ1.js";const u=r({__name:"02-lazy",setup(p){async function t(){return await new Promise(e=>setTimeout(e,600)),[["日期","订单号","金额"],["2026-08-01","A-1001","128.00"],["2026-08-02","A-1002","96.50"]].map(e=>e.join(",")).join(`
-`)}return(a,e)=>(s(),n(c(o),{data:t,"file-name":"orders.csv","mime-type":"text/csv"},{default:i(()=>[...e[0]||(e[0]=[m(" 导出订单（取数 600 毫秒） ",-1)])]),_:1}))}});export{u as default};

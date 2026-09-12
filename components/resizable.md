@@ -1,35 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/resizable
 
-# 可调容器 `resizable`
+# Resizable `可调容器`
 
 一块能拖着改尺寸的区域，八条边都能推，键盘也能推。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/resizable" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/resizable.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/resizable" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/resizable" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/resizable.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 尺寸该由用户自己定：可调侧栏、可调卡片、编辑器里的预览区。
-- 尺寸要记下来：`onDimensionsChangeEnd` 就是为此留的，一次调整只发一次。
-
-## 何时不用
-
-- 两块区域按比例分配、一块变大另一块必须变小：那是[分栏](./splitter)，它是守恒的。
-- 只是表格的列宽：[表格](./table)自己就有改宽把手。
-- 浮在页面上、可拖可调的窗口：用[浮动面板](./floating-panel)。
-
-## 特性
-
-- 八条边各一个把手，`edges` 可以只开放其中几条；没开放的边不显示把手。
-- `minWidth` / `maxWidth` / `minHeight` / `maxHeight` 夹住范围，`aspectRatio` 锁宽高比，`step` 吸附到整数倍。
-- 键盘按**屏幕方向**推：推东边时右键变宽、推西边时右键变窄，与拖动完全同义。Home / End 直接推到两端。
-- 两个回调分工明确：`onDimensionsChange` 拖动途中连着发，`onDimensionsChangeEnd` 收尾才发一次，存尺寸用后者。
-- 拖到一半按 Escape 放弃这一次：尺寸与位移退回按下那一刻，`onDimensionsChangeEnd` 不发。
-- **推西边与北边时容器的起点会动**，那段位移写成 root 的 `left` / `top`。皮肤已给
-  `position: relative`，开箱即对——`relative` 的 `left` / `top` 是视觉位移、元素仍占原位，
-  因此对边钉得住。把 root 改成 `static` 会让这两个方向只变尺寸不移位，看起来像是「拖左边、
-  右边在长」；只用东 / 南 / 东南三向时没有这个前提。
-
-## 示例
-
-### 基础用法
+## 用法
 
 八条边各一个把手；拖动改尺寸，Tab 到把手用方向键也能推
 
@@ -93,6 +76,8 @@ const EDGES = ["n", "ne", "e", "se", "s", "sw", "w", "nw"] as const;
   });
 </script>
 ```
+
+## 示例
 
 ### 只开放部分边
 
@@ -279,6 +264,31 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 </xh-resizable>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 尺寸该由用户自己定：可调侧栏、可调卡片、编辑器里的预览区。
+- 尺寸要记下来：`onDimensionsChangeEnd` 就是为此留的，一次调整只发一次。
+
+### 何时不用
+
+- 两块区域按比例分配、一块变大另一块必须变小：那是[分栏](./splitter)，它是守恒的。
+- 只是表格的列宽：[表格](./table)自己就有改宽把手。
+- 浮在页面上、可拖可调的窗口：用[浮动面板](./floating-panel)。
+
+### 特性
+
+- 八条边各一个把手，`edges` 可以只开放其中几条；没开放的边不显示把手。
+- `minWidth` / `maxWidth` / `minHeight` / `maxHeight` 夹住范围，`aspectRatio` 锁宽高比，`step` 吸附到整数倍。
+- 键盘按**屏幕方向**推：推东边时右键变宽、推西边时右键变窄，与拖动完全同义。Home / End 直接推到两端。
+- 两个回调分工明确：`onDimensionsChange` 拖动途中连着发，`onDimensionsChangeEnd` 收尾才发一次，存尺寸用后者。
+- 拖到一半按 Escape 放弃这一次：尺寸与位移退回按下那一刻，`onDimensionsChangeEnd` 不发。
+- **推西边与北边时容器的起点会动**，那段位移写成 root 的 `left` / `top`。皮肤已给
+  `position: relative`，开箱即对——`relative` 的 `left` / `top` 是视觉位移、元素仍占原位，
+  因此对边钉得住。把 root 改成 `static` 会让这两个方向只变尺寸不移位，看起来像是「拖左边、
+  右边在长」；只用东 / 南 / 东南三向时没有这个前提。
+
 ## 产物
 
 | 层 | 值 |
@@ -406,11 +416,16 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 | `handle` | `data-edge` | edge |
 | `handle` | `data-resizing` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-resizable-corner` · `--xh-resizable-grip`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-resizable-corner` | `handle` | `block-size`<br>`inline-size`<br>`inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw` | `--xh-space-3` | resizable 的 handle 部件 block-size、inline-size、inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
+| `--xh-resizable-grip` | `handle` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-block-end`<br>`inset-block-start`<br>`inset-inline`<br>`inset-inline-end`<br>`inset-inline-start` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w` | `--xh-space-2` | resizable 的 handle 部件 block-size、inline-size、inset-block、inset-block-end、inset-block-start、inset-inline、inset-inline-end、inset-inline-start 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

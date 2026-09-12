@@ -1,0 +1,39 @@
+const a=`<!-- 尺寸 | size 换内边距、间距、字号与行框，不写就是缺省档；同一档有没有关闭钮都一样高，关闭钮三档同一个尺寸 -->
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+  <xh-tag variant="subtle" size="sm">
+    <span data-xh-part="root">
+      <span data-xh-part="label">小</span>
+    </span>
+  </xh-tag>
+  <xh-tag variant="subtle" size="sm" closable>
+    <span data-xh-part="root">
+      <span data-xh-part="label">小</span>
+      <button data-xh-part="close-trigger"></button>
+    </span>
+  </xh-tag>
+
+  <xh-tag variant="subtle">
+    <span data-xh-part="root">
+      <span data-xh-part="label">缺省</span>
+    </span>
+  </xh-tag>
+  <xh-tag variant="subtle" closable>
+    <span data-xh-part="root">
+      <span data-xh-part="label">缺省</span>
+      <button data-xh-part="close-trigger"></button>
+    </span>
+  </xh-tag>
+
+  <xh-tag variant="subtle" size="lg">
+    <span data-xh-part="root">
+      <span data-xh-part="label">大</span>
+    </span>
+  </xh-tag>
+  <xh-tag variant="subtle" size="lg" closable>
+    <span data-xh-part="root">
+      <span data-xh-part="label">大</span>
+      <button data-xh-part="close-trigger"></button>
+    </span>
+  </xh-tag>
+</div>
+`;export{a as default};

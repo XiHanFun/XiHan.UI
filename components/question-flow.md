@@ -1,41 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/question-flow
 
-# 澄清问卷 `question-flow`
+# QuestionFlow `澄清问卷`
 
 动手之前先问几句：一次一题，人逐题作答，答完一起提交。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/question-flow" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/question-flow.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/question-flow" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/question-flow" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/question-flow.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 需求还差几处没说清，把含糊的地方拆成几道选择题问回去。
-- 一次要问的不止一件事，而每件都只要一两秒就能答完。
-
-## 何时不用
-
-- 只问一件事：那是一个[单选组](./radio-group)或[复选框组](./checkbox-group)，不必套一层问卷。
-- 要人批准一次危险动作：那是闸门，用[审批](./approval)——它的出口只有批准与拒绝两条，
-  没有「跳过」，也没有「答完再说」。
-- 要收一份长表单：字段之间有校验与联动，用[表单](./form)。
-
-## 特性
-
-- **一次只暴露一题**：非当前题对读屏 `aria-hidden`、对键盘 `inert`，里面的可聚焦物另发 `tabindex="-1"`。
-  它们仍留在轨道上，只是走不到——这样卡片高度才有得可量，来回翻页也不必重建 DOM。
-- **高度与位移是量出来的，不是猜的**：机器在活 DOM 上量当前题的盒，把结果写进 context，
-  连接层只把它格式化成两个私有槽（视口高度与轨道位移）。连接层是渲染期纯函数，
-  不查 DOM、不起定时器、不读时钟。
-- **单选自动前进，多选等人点继续**：选中一项后隔一小段自动翻到下一题；连着改主意时，
-  每改一次都从整段延时重新计。**自动前进只走下一题**——末题上它停住，不替人按发送。
-- **一颗按钮两个身份**：不是末题时是「继续」，末题时是「发送」。它原位换 `data-mode` 与可访问名，
-  正在按它的人不会按空。
-- **自由文本与选项同等算数**：写了一句「都不是，我想要……」就算答过了这一题，继续键随之亮起。
-- 进度只播报一次：`counter` 那格 `aria-hidden`，逐题跳动的数字不进活区；
-  换题与交卷由 `announcement` 念一句。
-- 跳过是明路：`allowSkip` 关掉时整颗跳过键收起，而不是留一颗按不动的按钮。
-  末题上跳过即交卷——否则最后一题没有出口，人会被困在那里。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一次一题：单选选中后自动翻到下一题，多选等人点继续，末题上那颗按钮变成发送
 
@@ -266,6 +243,8 @@ const sent = ref("");
   });
 </script>
 ```
+
+## 示例
 
 ### 自由文本与跳过
 
@@ -830,6 +809,37 @@ const questions: QuestionFlowQuestion[] = [
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 需求还差几处没说清，把含糊的地方拆成几道选择题问回去。
+- 一次要问的不止一件事，而每件都只要一两秒就能答完。
+
+### 何时不用
+
+- 只问一件事：那是一个[单选组](./radio-group)或[复选框组](./checkbox-group)，不必套一层问卷。
+- 要人批准一次危险动作：那是闸门，用[审批](./approval)——它的出口只有批准与拒绝两条，
+  没有「跳过」，也没有「答完再说」。
+- 要收一份长表单：字段之间有校验与联动，用[表单](./form)。
+
+### 特性
+
+- **一次只暴露一题**：非当前题对读屏 `aria-hidden`、对键盘 `inert`，里面的可聚焦物另发 `tabindex="-1"`。
+  它们仍留在轨道上，只是走不到——这样卡片高度才有得可量，来回翻页也不必重建 DOM。
+- **高度与位移是量出来的，不是猜的**：机器在活 DOM 上量当前题的盒，把结果写进 context，
+  连接层只把它格式化成两个私有槽（视口高度与轨道位移）。连接层是渲染期纯函数，
+  不查 DOM、不起定时器、不读时钟。
+- **单选自动前进，多选等人点继续**：选中一项后隔一小段自动翻到下一题；连着改主意时，
+  每改一次都从整段延时重新计。**自动前进只走下一题**——末题上它停住，不替人按发送。
+- **一颗按钮两个身份**：不是末题时是「继续」，末题时是「发送」。它原位换 `data-mode` 与可访问名，
+  正在按它的人不会按空。
+- **自由文本与选项同等算数**：写了一句「都不是，我想要……」就算答过了这一题，继续键随之亮起。
+- 进度只播报一次：`counter` 那格 `aria-hidden`，逐题跳动的数字不进活区；
+  换题与交卷由 `announcement` 念一句。
+- 跳过是明路：`allowSkip` 关掉时整颗跳过键收起，而不是留一颗按不动的按钮。
+  末题上跳过即交卷——否则最后一题没有出口，人会被困在那里。
+
 ## 产物
 
 | 层 | 值 |
@@ -1039,11 +1049,91 @@ const questions: QuestionFlowQuestion[] = [
 | `submit-trigger` | `data-mode` | 'send' \| 'continue' |
 | `result` | `data-state` | state.get() |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-question-flow-action-font-size` · `--xh-question-flow-action-font-weight` · `--xh-question-flow-action-gap` · `--xh-question-flow-action-h` · `--xh-question-flow-action-px` · `--xh-question-flow-action-radius` · `--xh-question-flow-bg` · `--xh-question-flow-border` · `--xh-question-flow-counter-fg` · `--xh-question-flow-counter-font-size` · `--xh-question-flow-dot-radius` · `--xh-question-flow-dot-size` · `--xh-question-flow-footer-gap` · `--xh-question-flow-gap` · `--xh-question-flow-group-gap` · `--xh-question-flow-icon-size` · `--xh-question-flow-indicator-bg` · `--xh-question-flow-indicator-bg-checked` · `--xh-question-flow-indicator-border` · `--xh-question-flow-indicator-border-checked` · `--xh-question-flow-indicator-fg` · `--xh-question-flow-indicator-icon-size` · `--xh-question-flow-indicator-radius` · `--xh-question-flow-indicator-radius-single` · `--xh-question-flow-indicator-size` · `--xh-question-flow-item-bg` · `--xh-question-flow-item-bg-hover` · `--xh-question-flow-item-fg` · `--xh-question-flow-item-fg-checked` · `--xh-question-flow-item-font-size` · `--xh-question-flow-item-gap` · `--xh-question-flow-item-px` · `--xh-question-flow-item-py` · `--xh-question-flow-item-radius` · `--xh-question-flow-note-bg` · `--xh-question-flow-note-border` · `--xh-question-flow-note-fg` · `--xh-question-flow-note-font-size` · `--xh-question-flow-note-px` · `--xh-question-flow-note-py` · `--xh-question-flow-note-radius` · `--xh-question-flow-padding` · `--xh-question-flow-placeholder-fg` · `--xh-question-flow-prompt-fg` · `--xh-question-flow-prompt-font-size` · `--xh-question-flow-prompt-font-weight` · `--xh-question-flow-question-gap` · `--xh-question-flow-radius` · `--xh-question-flow-result-bg` · `--xh-question-flow-result-fg` · `--xh-question-flow-result-font-size` · `--xh-question-flow-result-font-weight` · `--xh-question-flow-result-gap` · `--xh-question-flow-result-px` · `--xh-question-flow-result-py` · `--xh-question-flow-result-radius` · `--xh-question-flow-shadow` · `--xh-question-flow-skip-bg` · `--xh-question-flow-skip-bg-hover` · `--xh-question-flow-skip-fg` · `--xh-question-flow-skip-fg-hover` · `--xh-question-flow-step-bg` · `--xh-question-flow-step-bg-hover` · `--xh-question-flow-step-fg` · `--xh-question-flow-step-fg-hover` · `--xh-question-flow-step-padding` · `--xh-question-flow-step-radius` · `--xh-question-flow-step-size` · `--xh-question-flow-submit-bg` · `--xh-question-flow-submit-bg-active` · `--xh-question-flow-submit-bg-hover` · `--xh-question-flow-submit-bg-off` · `--xh-question-flow-submit-fg` · `--xh-question-flow-submit-shadow` · `--xh-question-flow-track-gap` · `--xh-question-flow-track-y` · `--xh-question-flow-viewport-h`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-question-flow-action-font-size` | `skip-trigger`<br>`submit-trigger` | `font-size` | `default` | `--xh-text-label-size` | question-flow 的 skip-trigger、submit-trigger 部件 font-size 覆盖槽。 |
+| `--xh-question-flow-action-font-weight` | `skip-trigger`<br>`submit-trigger` | `font-weight` | `default` | `--xh-text-label-weight` | question-flow 的 skip-trigger、submit-trigger 部件 font-weight 覆盖槽。 |
+| `--xh-question-flow-action-gap` | `skip-trigger`<br>`submit-trigger` | `gap` | `default` | `--xh-space-1` | question-flow 的 skip-trigger、submit-trigger 部件 gap 覆盖槽。 |
+| `--xh-question-flow-action-h` | `skip-trigger`<br>`submit-trigger` | `block-size` | `default` | `--xh-_question-flow-h` | question-flow 的 skip-trigger、submit-trigger 部件 block-size 覆盖槽。 |
+| `--xh-question-flow-action-px` | `skip-trigger`<br>`submit-trigger` | `padding-inline` | `default` | `--xh-_question-flow-px` | question-flow 的 skip-trigger、submit-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-question-flow-action-radius` | `skip-trigger`<br>`submit-trigger` | `border-radius` | `default` | `--xh-shape-control` | question-flow 的 skip-trigger、submit-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-question-flow-bg` | `root` | `background` | `default` | `--xh-_question-flow-bg` | question-flow 的 root 部件 background 覆盖槽。 |
+| `--xh-question-flow-border` | `root` | `border` | `default` | `--xh-_question-flow-border` | question-flow 的 root 部件 border 覆盖槽。 |
+| `--xh-question-flow-counter-fg` | `counter` | `color` | `default` | `--xh-fg-subtle` | question-flow 的 counter 部件 color 覆盖槽。 |
+| `--xh-question-flow-counter-font-size` | `counter` | `font-size` | `default` | `--xh-text-caption-size` | question-flow 的 counter 部件 font-size 覆盖槽。 |
+| `--xh-question-flow-dot-radius` | `item-indicator` | `border-radius` | `empty`<br>`select-mode=single` | `--xh-shape-pill` | question-flow 的 item-indicator 部件 border-radius 覆盖槽。 |
+| `--xh-question-flow-dot-size` | `item-indicator` | `block-size`<br>`inline-size` | `empty`<br>`select-mode=single` | `--xh-question-flow-indicator-size` | question-flow 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-question-flow-footer-gap` | `footer` | `gap` | `default` | `--xh-space-3` | question-flow 的 footer 部件 gap 覆盖槽。 |
+| `--xh-question-flow-gap` | `root` | `gap` | `default` | `--xh-_question-flow-gap` | question-flow 的 root 部件 gap 覆盖槽。 |
+| `--xh-question-flow-group-gap` | `group` | `gap` | `default` | `--xh-space-1` | question-flow 的 group 部件 gap 覆盖槽。 |
+| `--xh-question-flow-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=md`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | question-flow 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-question-flow-indicator-bg` | `item-indicator` | `background` | `default` | `--xh-bg-canvas` | question-flow 的 item-indicator 部件 background 覆盖槽。 |
+| `--xh-question-flow-indicator-bg-checked` | `item-indicator` | `background` | `state=checked` | `--xh-_tone` | question-flow 的 item-indicator 部件 background 覆盖槽。 |
+| `--xh-question-flow-indicator-border` | `item-indicator` | `border` | `default` | `--xh-border-control` | question-flow 的 item-indicator 部件 border 覆盖槽。 |
+| `--xh-question-flow-indicator-border-checked` | `item-indicator` | `border-color` | `state=checked` | `--xh-_tone` | question-flow 的 item-indicator 部件 border-color 覆盖槽。 |
+| `--xh-question-flow-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone-on` | question-flow 的 item-indicator 部件 color 覆盖槽。 |
+| `--xh-question-flow-indicator-icon-size` | `item-indicator` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | question-flow 的 item-indicator 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-question-flow-indicator-radius` | `item-indicator` | `border-radius` | `default` | `--xh-shape-inset` | question-flow 的 item-indicator 部件 border-radius 覆盖槽。 |
+| `--xh-question-flow-indicator-radius-single` | `item-indicator` | `border-radius` | `select-mode=single` | `--xh-shape-pill` | question-flow 的 item-indicator 部件 border-radius 覆盖槽。 |
+| `--xh-question-flow-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default`<br>`empty`<br>`select-mode=single` | `--xh-_question-flow-indicator` | question-flow 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-question-flow-item-bg` | `item` | `background` | `default` | `transparent` | question-flow 的 item 部件 background 覆盖槽。 |
+| `--xh-question-flow-item-bg-hover` | `item` | `background` | `hover` | `--xh-bg-subtle-hover` | question-flow 的 item 部件 background 覆盖槽。 |
+| `--xh-question-flow-item-fg` | `item` | `color` | `default` | `--xh-fg-muted` | question-flow 的 item 部件 color 覆盖槽。 |
+| `--xh-question-flow-item-fg-checked` | `item` | `color` | `state=checked` | `--xh-fg-default` | question-flow 的 item 部件 color 覆盖槽。 |
+| `--xh-question-flow-item-font-size` | `item` | `font-size` | `default` | `--xh-_question-flow-font-size` | question-flow 的 item 部件 font-size 覆盖槽。 |
+| `--xh-question-flow-item-gap` | `item` | `gap` | `default` | `--xh-space-1_5` | question-flow 的 item 部件 gap 覆盖槽。 |
+| `--xh-question-flow-item-px` | `item` | `padding-inline` | `default` | `--xh-space-2` | question-flow 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-question-flow-item-py` | `item` | `padding-block` | `default` | `--xh-space-1` | question-flow 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-question-flow-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | question-flow 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-question-flow-note-bg` | `note` | `background` | `default` | `--xh-bg-surface` | question-flow 的 note 部件 background 覆盖槽。 |
+| `--xh-question-flow-note-border` | `note` | `border` | `default` | `--xh-border-control` | question-flow 的 note 部件 border 覆盖槽。 |
+| `--xh-question-flow-note-fg` | `note` | `color` | `default` | `--xh-fg-default` | question-flow 的 note 部件 color 覆盖槽。 |
+| `--xh-question-flow-note-font-size` | `note` | `font-size` | `default` | `--xh-_question-flow-font-size` | question-flow 的 note 部件 font-size 覆盖槽。 |
+| `--xh-question-flow-note-px` | `note` | `padding-inline` | `default` | `--xh-space-2` | question-flow 的 note 部件 padding-inline 覆盖槽。 |
+| `--xh-question-flow-note-py` | `note` | `padding-block` | `default` | `--xh-space-1_5` | question-flow 的 note 部件 padding-block 覆盖槽。 |
+| `--xh-question-flow-note-radius` | `note` | `border-radius` | `default` | `--xh-shape-control` | question-flow 的 note 部件 border-radius 覆盖槽。 |
+| `--xh-question-flow-padding` | `root` | `padding` | `default` | `--xh-_question-flow-p` | question-flow 的 root 部件 padding 覆盖槽。 |
+| `--xh-question-flow-placeholder-fg` | `note` | `color` | `placeholder` | `--xh-fg-subtle` | question-flow 的 note 部件 color 覆盖槽。 |
+| `--xh-question-flow-prompt-fg` | `prompt` | `color` | `default` | `--xh-fg-default` | question-flow 的 prompt 部件 color 覆盖槽。 |
+| `--xh-question-flow-prompt-font-size` | `prompt` | `font-size` | `default` | `--xh-text-label-size` | question-flow 的 prompt 部件 font-size 覆盖槽。 |
+| `--xh-question-flow-prompt-font-weight` | `prompt` | `font-weight` | `default` | `--xh-text-label-weight` | question-flow 的 prompt 部件 font-weight 覆盖槽。 |
+| `--xh-question-flow-question-gap` | `question` | `gap` | `default` | `--xh-space-2` | question-flow 的 question 部件 gap 覆盖槽。 |
+| `--xh-question-flow-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | question-flow 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-question-flow-result-bg` | `result` | `background` | `default` | `--xh-bg-subtle` | question-flow 的 result 部件 background 覆盖槽。 |
+| `--xh-question-flow-result-fg` | `result` | `color` | `default` | `--xh-fg-success` | question-flow 的 result 部件 color 覆盖槽。 |
+| `--xh-question-flow-result-font-size` | `result` | `font-size` | `default` | `--xh-text-caption-size` | question-flow 的 result 部件 font-size 覆盖槽。 |
+| `--xh-question-flow-result-font-weight` | `result` | `font-weight` | `default` | `--xh-text-label-weight` | question-flow 的 result 部件 font-weight 覆盖槽。 |
+| `--xh-question-flow-result-gap` | `result` | `gap` | `default` | `--xh-space-1_5` | question-flow 的 result 部件 gap 覆盖槽。 |
+| `--xh-question-flow-result-px` | `result` | `padding-inline` | `default` | `--xh-space-2` | question-flow 的 result 部件 padding-inline 覆盖槽。 |
+| `--xh-question-flow-result-py` | `result` | `padding-block` | `default` | `--xh-space-1` | question-flow 的 result 部件 padding-block 覆盖槽。 |
+| `--xh-question-flow-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-pill` | question-flow 的 result 部件 border-radius 覆盖槽。 |
+| `--xh-question-flow-shadow` | `root` | `box-shadow` | `default` | `--xh-elevation-raised` | question-flow 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-question-flow-skip-bg` | `skip-trigger` | `background` | `default` | `transparent` | question-flow 的 skip-trigger 部件 background 覆盖槽。 |
+| `--xh-question-flow-skip-bg-hover` | `skip-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | question-flow 的 skip-trigger 部件 background 覆盖槽。 |
+| `--xh-question-flow-skip-fg` | `skip-trigger` | `color` | `default` | `--xh-fg-muted` | question-flow 的 skip-trigger 部件 color 覆盖槽。 |
+| `--xh-question-flow-skip-fg-hover` | `skip-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | question-flow 的 skip-trigger 部件 color 覆盖槽。 |
+| `--xh-question-flow-step-bg` | `next-trigger`<br>`prev-trigger` | `background` | `default` | `transparent` | question-flow 的 next-trigger、prev-trigger 部件 background 覆盖槽。 |
+| `--xh-question-flow-step-bg-hover` | `next-trigger`<br>`prev-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | question-flow 的 next-trigger、prev-trigger 部件 background 覆盖槽。 |
+| `--xh-question-flow-step-fg` | `next-trigger`<br>`prev-trigger` | `color` | `default` | `--xh-fg-subtle` | question-flow 的 next-trigger、prev-trigger 部件 color 覆盖槽。 |
+| `--xh-question-flow-step-fg-hover` | `next-trigger`<br>`prev-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | question-flow 的 next-trigger、prev-trigger 部件 color 覆盖槽。 |
+| `--xh-question-flow-step-padding` | `next-trigger`<br>`prev-trigger` | `padding` | `default` | `--xh-space-0` | question-flow 的 next-trigger、prev-trigger 部件 padding 覆盖槽。 |
+| `--xh-question-flow-step-radius` | `next-trigger`<br>`prev-trigger` | `border-radius` | `default` | `--xh-shape-inset` | question-flow 的 next-trigger、prev-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-question-flow-step-size` | `next-trigger`<br>`prev-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | question-flow 的 next-trigger、prev-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-question-flow-submit-bg` | `submit-trigger` | `background` | `default` | `--xh-_tone` | question-flow 的 submit-trigger 部件 background 覆盖槽。 |
+| `--xh-question-flow-submit-bg-active` | `submit-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-_tone-active` | question-flow 的 submit-trigger 部件 background 覆盖槽。 |
+| `--xh-question-flow-submit-bg-hover` | `submit-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-_tone-hover` | question-flow 的 submit-trigger 部件 background 覆盖槽。 |
+| `--xh-question-flow-submit-bg-off` | `submit-trigger` | `background` | `disabled` | `--xh-bg-muted` | question-flow 的 submit-trigger 部件 background 覆盖槽。 |
+| `--xh-question-flow-submit-fg` | `submit-trigger` | `color` | `default` | `--xh-_tone-on` | question-flow 的 submit-trigger 部件 color 覆盖槽。 |
+| `--xh-question-flow-submit-shadow` | `submit-trigger` | `box-shadow` | `default` | `--xh-_question-flow-submit-highlight` | question-flow 的 submit-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-question-flow-track-gap` | `track` | `gap` | `default` | `--xh-_question-flow-gap` | question-flow 的 track 部件 gap 覆盖槽。 |
+| `--xh-question-flow-track-y` | `track` | `translate` | `default` | `--xh-_question-flow-track-y` | question-flow 的 track 部件 translate 覆盖槽。 |
+| `--xh-question-flow-viewport-h` | `viewport` | `block-size` | `default` | `--xh-_question-flow-viewport-h` | question-flow 的 viewport 部件 block-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

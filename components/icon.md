@@ -1,30 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/icon
 
-# 图标 `icon`
+# Icon `图标`
 
 画一枚矢量图元，并把"它是装饰还是信息"这件事说清楚。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/icon" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/icon.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/icon" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/icon" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/icon.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 给动作、状态或条目配一枚图形标记。
-- 图形本身就是唯一的信息载体（比如只有图标的按钮里那枚图元）——这时给 `label`。
-
-## 何时不用
-
-- 需要一个带底色的圆形底座：用[图标块](./icon-wrapper)。
-- 图形是照片或插画：用[图片](./image)。
-
-## 特性
-
-- 传的是图标记录本身而不是名字：按名字查表就得把整张表静态引进来，摇树全废。
-- 命名只有两态：给了非空白 `label` 就是 `role="img"` 加 `aria-label`；没给就是 `aria-hidden="true"` 的装饰件。没有第三种。
-- `size` 八档改直径（`text` 跟着相邻文字的字号走，其余七档是固定直径）、`weight` 三档改描边粗细；缺省档 `md` 不落 `data-*`，皮肤的基础规则就是缺省档。
-- `rotate` 只收 90 / 180 / 270 三档，`flip` 沿横轴或纵轴取反；两者同写时叠加，都是静态几何，不带过渡。
-- 图标没有底色，语气只落在前景上。
-
-## 示例
-
-### 基础用法
+## 用法
 
 传的是图标记录本身而不是名字：名字要运行期查表，查表就得把整张表静态引进来，摇树全废
 
@@ -162,6 +150,8 @@ const StarIcon = {
   document.getElementById("icon-basic-check-inline").icon = checkIcon;
 </script>
 ```
+
+## 示例
 
 ### 尺寸与描边
 
@@ -698,6 +688,26 @@ const ArrowIcon = {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 给动作、状态或条目配一枚图形标记。
+- 图形本身就是唯一的信息载体（比如只有图标的按钮里那枚图元）——这时给 `label`。
+
+### 何时不用
+
+- 需要一个带底色的圆形底座：用[图标块](./icon-wrapper)。
+- 图形是照片或插画：用[图片](./image)。
+
+### 特性
+
+- 传的是图标记录本身而不是名字：按名字查表就得把整张表静态引进来，摇树全废。
+- 命名只有两态：给了非空白 `label` 就是 `role="img"` 加 `aria-label`；没给就是 `aria-hidden="true"` 的装饰件。没有第三种。
+- `size` 八档改直径（`text` 跟着相邻文字的字号走，其余七档是固定直径）、`weight` 三档改描边粗细；缺省档 `md` 不落 `data-*`，皮肤的基础规则就是缺省档。
+- `rotate` 只收 90 / 180 / 270 三档，`flip` 沿横轴或纵轴取反；两者同写时叠加，都是静态几何，不带过渡。
+- 图标没有底色，语气只落在前景上。
+
 ## 产物
 
 | 层 | 值 |
@@ -772,11 +782,18 @@ const ArrowIcon = {
 | `root` | `data-tone` | props.tone |
 | `root` | `data-weight` | props.weight |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-icon-fg` · `--xh-icon-shift` · `--xh-icon-size` · `--xh-icon-stroke`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-icon-fg` | `root` | `color` | `default`<br>`tone` | `--xh-_tone-fg`<br>`currentColor` | icon 的 root 部件 color 覆盖槽。 |
+| `--xh-icon-shift` | `root` | `vertical-align` | `default` | `--xh-glyph-baseline-shift` | icon 的 root 部件 vertical-align 覆盖槽。 |
+| `--xh-icon-size` | `autoplay-trigger`<br>`branch-checkbox`<br>`branch-indicator`<br>`branch-trigger`<br>`caps-lock-indicator`<br>`clear-trigger`<br>`close-trigger`<br>`column-visibility-trigger`<br>`decrement-trigger`<br>`ellipsis-trigger`<br>`expand-trigger`<br>`flip-horizontal-trigger`<br>`flip-vertical-trigger`<br>`increment-trigger`<br>`indicator`<br>`item`<br>`item-checkbox`<br>`item-close-trigger`<br>`item-delete-trigger`<br>`item-indicator`<br>`move-down-trigger`<br>`move-up-trigger`<br>`next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger`<br>`root`<br>`rotate-left-trigger`<br>`rotate-right-trigger`<br>`row-select-trigger`<br>`scroll-to-end-trigger`<br>`select-all-trigger`<br>`separator`<br>`sort-trigger`<br>`submit-trigger`<br>`to-source-trigger`<br>`to-target-trigger`<br>`trend`<br>`trigger`<br>`trigger-indicator`<br>`truncation`<br>`visibility-trigger`<br>`window-state-trigger`<br>`zoom-in-trigger`<br>`zoom-out-trigger` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `@media (min-width: 640px)`<br>`branch`<br>`default`<br>`direction`<br>`empty`<br>`indeterminate`<br>`mode=send`<br>`mode=stop`<br>`not([data-selected])`<br>`not([data-state='preparing'])`<br>`selected`<br>`size=2xl`<br>`size=3xl`<br>`size=4xl`<br>`size=lg`<br>`size=md`<br>`size=sm`<br>`size=text`<br>`size=xl`<br>`sort=asc`<br>`sort=desc`<br>`state=checked`<br>`state=completed`<br>`state=done`<br>`state=error`<br>`state=indeterminate`<br>`state=paused`<br>`state=preparing`<br>`state=running`<br>`state=visible` | `--xh-glyph-size-2xl`<br>`--xh-glyph-size-3xl`<br>`--xh-glyph-size-4xl`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm`<br>`--xh-glyph-size-text`<br>`--xh-glyph-size-xl` | icon 的 autoplay-trigger、branch-checkbox、branch-indicator、branch-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、decrement-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
+| `--xh-icon-stroke` | `root` | `stroke-width` | `default`<br>`weight=bold`<br>`weight=light` | `--xh-glyph-stroke-bold`<br>`--xh-glyph-stroke-light`<br>`--xh-glyph-stroke-regular` | icon 的 root 部件 stroke-width 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

@@ -1,27 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/rating
 
-# 评分 `rating`
+# Rating `评分`
 
 用一排图案表示一个离散的分值。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/rating" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/rating.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/rating" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/rating" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/rating.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 收集或展示满意度、星级这类小范围的主观分值。
-
-## 何时不用
-
-- 分值范围大（0 到 100）：用[滑块](./slider)或[数字输入](./number-field)。
-- 只是展示一个数值：用[统计数值](./statistic)。
-
-## 特性
-
-- `allowHalf` 支持半档，`allowClear` 允许再点一次清空。
-- 悬停预览与实际值分开，`onHoverChange` 单独回调。
-- 图案与颜色都可以换。
-
-## 示例
-
-### 基础用法
+## 用法
 
 不传 value 即为非受控，组件自己维护评分；default-value 只决定初始那一档
 
@@ -54,6 +45,8 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
   </div>
 </xh-rating>
 ```
+
+## 示例
 
 ### 半星与悬停预览
 
@@ -654,6 +647,23 @@ const sticky = ref(3);
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 收集或展示满意度、星级这类小范围的主观分值。
+
+### 何时不用
+
+- 分值范围大（0 到 100）：用[滑块](./slider)或[数字输入](./number-field)。
+- 只是展示一个数值：用[统计数值](./statistic)。
+
+### 特性
+
+- `allowHalf` 支持半档，`allowClear` 允许再点一次清空。
+- 悬停预览与实际值分开，`onHoverChange` 单独回调。
+- 图案与颜色都可以换。
+
 ## 产物
 
 | 层 | 值 |
@@ -811,11 +821,25 @@ const sticky = ref(3);
 | `item` | `data-state` | 'checked' \| 'unchecked' |
 | `hidden-input` | `data-disabled` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-rating-gap` · `--xh-rating-item-fg` · `--xh-rating-item-fg-highlighted` · `--xh-rating-item-font-size` · `--xh-rating-item-gap` · `--xh-rating-item-radius` · `--xh-rating-label-fg` · `--xh-rating-label-font-size` · `--xh-rating-label-font-weight` · `--xh-rating-value-text-fg` · `--xh-rating-value-text-font-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-rating-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | rating 的 root 部件 gap 覆盖槽。 |
+| `--xh-rating-item-fg` | `item` | `background-image`<br>`color` | `default`<br>`dir(rtl)`<br>`half` | `--xh-fg-subtle` | rating 的 item 部件 background-image、color 覆盖槽。 |
+| `--xh-rating-item-fg-highlighted` | `item` | `background-image`<br>`color` | `@media print`<br>`dir(rtl)`<br>`half`<br>`highlighted` | `--xh-_rating-accent` | rating 的 item 部件 background-image、color 覆盖槽。 |
+| `--xh-rating-item-font-size` | `item` | `font-size` | `default` | `--xh-_rating-item-size` | rating 的 item 部件 font-size 覆盖槽。 |
+| `--xh-rating-item-gap` | `control` | `gap` | `default` | `--xh-_rating-item-gap` | rating 的 control 部件 gap 覆盖槽。 |
+| `--xh-rating-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | rating 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-rating-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | rating 的 label 部件 color 覆盖槽。 |
+| `--xh-rating-label-font-size` | `label` | `font-size` | `default` | `--xh-_rating-font-size` | rating 的 label 部件 font-size 覆盖槽。 |
+| `--xh-rating-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | rating 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-rating-value-text-fg` | `value-text` | `color` | `default` | `--xh-fg-muted` | rating 的 value-text 部件 color 覆盖槽。 |
+| `--xh-rating-value-text-font-size` | `value-text` | `font-size` | `default` | `--xh-_rating-font-size` | rating 的 value-text 部件 font-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

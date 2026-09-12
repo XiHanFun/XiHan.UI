@@ -1,0 +1,1 @@
+import{ju as o,jv as r,jw as n}from"./theme.CzGOHWR9.js";import{d as s,o as i,b as u,w as e,E as t,k as a}from"./framework.m090XgxO.js";const f=s({__name:"01-basic",setup(c){return(l,_)=>(i(),u(a(n),{style:{"max-inline-size":"22rem"}},{default:e(()=>[t(a(o),null,{default:e(()=>[t(a(r))]),_:1})]),_:1}))}});export{f as default};

@@ -1,37 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/prompt-input
 
-# 提示输入框 `prompt-input`
+# PromptInput `提示输入框`
 
 会话界面的输入框：值、输入法、能不能提交，以及发送与停止共用的那一颗按钮。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/prompt-input" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/prompt-input.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/prompt-input" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/prompt-input" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/prompt-input.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- AI 对话、聊天或任何「输入一段话然后提交」的界面。
-- 生成期间要能一键停止。
-
-## 何时不用
-
-- 只是表单里的一个多行文本域：用[文本框](./text-field)配[字段](./field)。
-- 要 @提及或斜杠命令：整个用[提及](./mention)当输入器，见下方的组合。
-
-## 特性
-
-- 发送与停止**原位共用一个节点**：正在按它的用户不会按空。生成期间按钮恒可用，
-  此刻它的语义是停止。
-- `submitKey` 一个 prop 表达三档：`enter` 档 Enter 提交、Shift+Enter 换行、Mod+Enter 也提交；
-  `mod-enter` 档 Enter 换行，只有 Mod+Enter 提交；`none` 档两种按法都换行，
-  键盘一个提交出口都不留，只剩发送按钮与程序化的 `submit()`。
-- 输入法组合期间的 Enter 一律放行，那一下是在确认候选词。
-- 同一个输入框上叠了别的处理器且它已经处理过这一下时，组件让位。
-- 自动长高是两行 CSS，不进状态机；引擎不支持时退化成 `rows` 定的固定行数。
-- 两种排布同一份皮肤：直接把输入框与按钮放进 root 就是单行；套一层输入行，root 翻成竖排，
-  输入行上下两侧就能再放附件条与动作行。
-- 发送按钮留空时皮肤画兜底字形：发送身份一枚上箭头，停止身份一枚圆角方块；
-  塞进自己的图标或文案即盖掉它。
-
-## 示例
-
-### 基础用法
+## 用法
 
 Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，那一下是在确认候选词
 
@@ -80,6 +61,8 @@ const sent = ref<string[]>([]);
   });
 </script>
 ```
+
+## 示例
 
 ### 与消息流合成一个对话
 
@@ -962,6 +945,34 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- AI 对话、聊天或任何「输入一段话然后提交」的界面。
+- 生成期间要能一键停止。
+
+### 何时不用
+
+- 只是表单里的一个多行文本域：用[文本框](./text-field)配[字段](./field)。
+- 要 @提及或斜杠命令：整个用[提及](./mention)当输入器，见下方的组合。
+
+### 特性
+
+- 发送与停止**原位共用一个节点**：正在按它的用户不会按空。生成期间按钮恒可用，
+  此刻它的语义是停止。
+- `submitKey` 一个 prop 表达三档：`enter` 档 Enter 提交、Shift+Enter 换行、Mod+Enter 也提交；
+  `mod-enter` 档 Enter 换行，只有 Mod+Enter 提交；`none` 档两种按法都换行，
+  键盘一个提交出口都不留，只剩发送按钮与程序化的 `submit()`。
+- 输入法组合期间的 Enter 一律放行，那一下是在确认候选词。
+- 同一个输入框上叠了别的处理器且它已经处理过这一下时，组件让位。
+- 自动长高是两行 CSS，不进状态机；引擎不支持时退化成 `rows` 定的固定行数。
+- 两种排布同一份皮肤：直接把输入框与按钮放进 root 就是单行；套一层输入行，root 翻成竖排，
+  输入行上下两侧就能再放附件条与动作行。
+- 默认皮肤用 M3 浮动玻璃做外壳；textarea 保持同配方的实体阅读底，复杂背景不会透到输入文字下。
+- 发送按钮留空时皮肤画兜底字形：发送身份一枚上箭头，停止身份一枚圆角方块；
+  塞进自己的图标或文案即盖掉它。
+
 ## 产物
 
 | 层 | 值 |
@@ -1075,10 +1086,13 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 - 输入框的可访问名**只在给了 `translations.input` 时才发**：无条件发会盖掉作者自己的
   `<label for>` 与 `aria-label`。
 - 按钮的可访问名随身份翻面，读屏念到的与屏幕上看到的是同一件事。
+- 焦点仍由整框的 `:focus-within` 环表达；高对比、减少透明度、强制色与打印时 M3 令牌会原位换成实体表面。
 
 ## 样式
 
 默认皮肤 `@xihan-ui/styles/prompt-input.css` 按部件选择：`[data-scope="prompt-input"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ## 数据属性
 
@@ -1094,11 +1108,49 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | `input` | `data-state` | state.get() |
 | `submit-trigger` | `data-mode` | 'stop' \| 'send' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-prompt-input-bg` · `--xh-prompt-input-bg-disabled` · `--xh-prompt-input-bg-hover` · `--xh-prompt-input-border` · `--xh-prompt-input-border-focus` · `--xh-prompt-input-border-hover` · `--xh-prompt-input-gap` · `--xh-prompt-input-icon-size` · `--xh-prompt-input-input-autofill-bg` · `--xh-prompt-input-input-autofill-fg` · `--xh-prompt-input-input-fg` · `--xh-prompt-input-input-font-size` · `--xh-prompt-input-max-h` · `--xh-prompt-input-p` · `--xh-prompt-input-placeholder-fg` · `--xh-prompt-input-radius` · `--xh-prompt-input-row-gap` · `--xh-prompt-input-send-bg` · `--xh-prompt-input-send-bg-active` · `--xh-prompt-input-send-bg-hover` · `--xh-prompt-input-send-bg-off` · `--xh-prompt-input-send-fg` · `--xh-prompt-input-shadow` · `--xh-prompt-input-stop-bg` · `--xh-prompt-input-stop-bg-active` · `--xh-prompt-input-stop-bg-hover` · `--xh-prompt-input-stop-fg` · `--xh-prompt-input-stop-mark-radius` · `--xh-prompt-input-stop-mark-size` · `--xh-prompt-input-submit-font-size` · `--xh-prompt-input-submit-font-weight` · `--xh-prompt-input-submit-px` · `--xh-prompt-input-submit-radius` · `--xh-prompt-input-submit-shadow`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-prompt-input-bg` | `root` | `background` | `default` | `--xh-_prompt-input-bg` | prompt-input 的 root 部件 background 覆盖槽。 |
+| `--xh-prompt-input-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-subtle` | prompt-input 的 root 部件 background 覆盖槽。 |
+| `--xh-prompt-input-bg-hover` | `root` | `background` | `disabled`<br>`hover`<br>`not([data-disabled], :focus-within)` | `--xh-_prompt-input-bg-hover` | prompt-input 的 root 部件 background 覆盖槽。 |
+| `--xh-prompt-input-border` | `root` | `border` | `default` | `--xh-_prompt-input-border` | prompt-input 的 root 部件 border 覆盖槽。 |
+| `--xh-prompt-input-border-focus` | `root` | `border` | `focus-within` | `--xh-_prompt-input-border-focus` | prompt-input 的 root 部件 border 覆盖槽。 |
+| `--xh-prompt-input-border-hover` | `root` | `border` | `disabled`<br>`hover`<br>`not([data-disabled], :focus-within)` | `--xh-_prompt-input-border-hover` | prompt-input 的 root 部件 border 覆盖槽。 |
+| `--xh-prompt-input-gap` | `root` | `gap` | `default` | `--xh-_prompt-input-gap` | prompt-input 的 root 部件 gap 覆盖槽。 |
+| `--xh-prompt-input-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=md`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | prompt-input 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-prompt-input-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-material-glass-focus-surface` | prompt-input 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-prompt-input-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-material-glass-fg` | prompt-input 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
+| `--xh-prompt-input-input-fg` | `input` | `color` | `default` | `--xh-material-glass-fg` | prompt-input 的 input 部件 color 覆盖槽。 |
+| `--xh-prompt-input-input-font-size` | `input` | `font-size`<br>`padding-block` | `default` | `--xh-_prompt-input-font-size` | prompt-input 的 input 部件 font-size、padding-block 覆盖槽。 |
+| `--xh-prompt-input-input-radius` | `input` | `border-radius` | `default` | `--xh-shape-inset` | prompt-input 的 input 部件 border-radius 覆盖槽。 |
+| `--xh-prompt-input-max-h` | `input` | `max-block-size` | `default` | `--xh-leading-normal` | prompt-input 的 input 部件 max-block-size 覆盖槽。 |
+| `--xh-prompt-input-p` | `root` | `--xh-prompt-input-computed-px`<br>`padding` | `default` | `--xh-_prompt-input-px` | prompt-input 的 root 部件 --xh-prompt-input-computed-px、padding 覆盖槽。 |
+| `--xh-prompt-input-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | prompt-input 的 input 部件 color 覆盖槽。 |
+| `--xh-prompt-input-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | prompt-input 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-prompt-input-row-gap` | `control` | `gap` | `default` | `--xh-_prompt-input-gap` | prompt-input 的 control 部件 gap 覆盖槽。 |
+| `--xh-prompt-input-send-bg` | `submit-trigger` | `background` | `default` | `--xh-_tone` | prompt-input 的 submit-trigger 部件 background 覆盖槽。 |
+| `--xh-prompt-input-send-bg-active` | `submit-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-_tone-active` | prompt-input 的 submit-trigger 部件 background 覆盖槽。 |
+| `--xh-prompt-input-send-bg-hover` | `submit-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-_tone-hover` | prompt-input 的 submit-trigger 部件 background 覆盖槽。 |
+| `--xh-prompt-input-send-bg-off` | `submit-trigger` | `background` | `disabled` | `--xh-bg-muted` | prompt-input 的 submit-trigger 部件 background 覆盖槽。 |
+| `--xh-prompt-input-send-fg` | `submit-trigger` | `color` | `default` | `--xh-_tone-on` | prompt-input 的 submit-trigger 部件 color 覆盖槽。 |
+| `--xh-prompt-input-shadow` | `root` | `box-shadow` | `default` | `--xh-_prompt-input-shadow` | prompt-input 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-prompt-input-stop-bg` | `submit-trigger` | `background` | `mode=stop` | `--xh-bg-subtle` | prompt-input 的 submit-trigger 部件 background 覆盖槽。 |
+| `--xh-prompt-input-stop-bg-active` | `submit-trigger` | `background` | `active`<br>`mode=stop`<br>`not(:disabled)` | `--xh-bg-subtle-active` | prompt-input 的 submit-trigger 部件 background 覆盖槽。 |
+| `--xh-prompt-input-stop-bg-hover` | `submit-trigger` | `background` | `hover`<br>`mode=stop`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | prompt-input 的 submit-trigger 部件 background 覆盖槽。 |
+| `--xh-prompt-input-stop-fg` | `submit-trigger` | `color` | `mode=stop` | `--xh-fg-default` | prompt-input 的 submit-trigger 部件 color 覆盖槽。 |
+| `--xh-prompt-input-stop-mark-radius` | `submit-trigger` | `border-radius` | `empty`<br>`mode=stop` | `--xh-shape-inset` | prompt-input 的 submit-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-prompt-input-stop-mark-size` | `submit-trigger` | `block-size`<br>`inline-size` | `empty`<br>`mode=stop` | `--xh-icon-size` | prompt-input 的 submit-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-prompt-input-submit-font-size` | `submit-trigger` | `font-size` | `default` | `--xh-text-label-size` | prompt-input 的 submit-trigger 部件 font-size 覆盖槽。 |
+| `--xh-prompt-input-submit-font-weight` | `submit-trigger` | `font-weight` | `default` | `--xh-text-label-weight` | prompt-input 的 submit-trigger 部件 font-weight 覆盖槽。 |
+| `--xh-prompt-input-submit-px` | `submit-trigger` | `padding-inline` | `default` | `--xh-_prompt-input-submit-px` | prompt-input 的 submit-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-prompt-input-submit-radius` | `submit-trigger` | `border-radius` | `default` | `--xh-shape-control` | prompt-input 的 submit-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-prompt-input-submit-shadow` | `submit-trigger` | `box-shadow` | `default` | `--xh-_prompt-input-submit-highlight` | prompt-input 的 submit-trigger 部件 box-shadow 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

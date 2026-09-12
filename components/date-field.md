@@ -1,29 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/date-field
 
-# 日期输入 `date-field`
+# DateField `日期输入`
 
 分段的日期输入框：年、月、日各占一段，方向键加减，不弹日历。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/date-field" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/date-field.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/date-field" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/date-field" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/date-field.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 用户已经知道确切日期（生日、证件有效期），打字比翻日历快。
-- 需要键盘全程可用。
-
-## 何时不用
-
-- 用户需要看着日历挑（选会议时间、看星期几）：用[日期选择器](./date-picker)。
-- 只要时间不要日期：用[时间输入](./time-field)。
-
-## 特性
-
-- 段序随 `locale` 变，不是写死的年月日。不给 `locale` 就跟宿主浏览器语言，读不到才落 `en-US`（月日年）。
-- `min` / `max` 收窄各段的加减范围；越界的初值只做标注、不被改写。
-- `granularity` 决定精确到日还是到分。
-- 段位文本、对外值的写法与段位的拼装都可以换。
-
-## 示例
-
-### 基础用法
+## 用法
 
 三段各是一个可加减的数，整组只占一个 Tab 位，三段填齐才第一次报出值
 
@@ -97,6 +86,8 @@ const value = ref<string | null>(null);
   });
 </script>
 ```
+
+## 示例
 
 ### 段序随 locale
 
@@ -1465,6 +1456,25 @@ const AT: DateSegmentSet = ["year", "month", "day", "hour", "dayPeriod"];
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 用户已经知道确切日期（生日、证件有效期），打字比翻日历快。
+- 需要键盘全程可用。
+
+### 何时不用
+
+- 用户需要看着日历挑（选会议时间、看星期几）：用[日期选择器](./date-picker)。
+- 只要时间不要日期：用[时间输入](./time-field)。
+
+### 特性
+
+- 段序随 `locale` 变，不是写死的年月日。不给 `locale` 就跟宿主浏览器语言，读不到才落 `en-US`（月日年）。
+- `min` / `max` 收窄各段的加减范围；越界的初值只做标注、不被改写。
+- `granularity` 决定精确到日还是到分。
+- 段位文本、对外值的写法与段位的拼装都可以换。
+
 ## 产物
 
 | 层 | 值 |
@@ -1633,11 +1643,50 @@ const AT: DateSegmentSet = ["year", "month", "day", "hour", "dayPeriod"];
 | `segment` | `data-readonly` | ''（条件成立时才出现） |
 | `segment` | `data-segment` | item?.type |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-date-field-action-bg` · `--xh-date-field-action-bg-active` · `--xh-date-field-action-bg-hover` · `--xh-date-field-action-fg` · `--xh-date-field-action-fg-hover` · `--xh-date-field-action-font-size` · `--xh-date-field-action-radius` · `--xh-date-field-action-size` · `--xh-date-field-control-bg` · `--xh-date-field-control-bg-disabled` · `--xh-date-field-control-bg-hover` · `--xh-date-field-control-bg-readonly` · `--xh-date-field-control-border` · `--xh-date-field-control-border-focus` · `--xh-date-field-control-border-hover` · `--xh-date-field-control-border-invalid` · `--xh-date-field-control-fg` · `--xh-date-field-control-gap` · `--xh-date-field-control-h` · `--xh-date-field-control-min-w` · `--xh-date-field-control-px` · `--xh-date-field-control-radius` · `--xh-date-field-control-shadow` · `--xh-date-field-font-size` · `--xh-date-field-gap` · `--xh-date-field-icon-size` · `--xh-date-field-label-fg` · `--xh-date-field-label-fg-disabled` · `--xh-date-field-label-font-size` · `--xh-date-field-label-font-weight` · `--xh-date-field-placeholder-fg` · `--xh-date-field-segment-bg-focus` · `--xh-date-field-segment-fg-focus` · `--xh-date-field-segment-px` · `--xh-date-field-segment-py` · `--xh-date-field-segment-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-date-field-action-bg` | `clear-trigger` | `background` | `default` | `transparent` | date-field 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-date-field-action-bg-active` | `clear-trigger` | `background` | `active` | `--xh-bg-subtle-active` | date-field 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-date-field-action-bg-hover` | `clear-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | date-field 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-date-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | date-field 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-date-field-action-fg-hover` | `clear-trigger` | `color` | `hover` | `--xh-fg-default` | date-field 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-date-field-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | date-field 的 clear-trigger 部件 font-size 覆盖槽。 |
+| `--xh-date-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-control` | date-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-date-field-action-size` | `clear-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | date-field 的 clear-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-date-field-control-bg` | `control` | `background` | `default` | `--xh-_date-field-control-bg` | date-field 的 control 部件 background 覆盖槽。 |
+| `--xh-date-field-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | date-field 的 control 部件 background 覆盖槽。 |
+| `--xh-date-field-control-bg-hover` | `control` | `background` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-_date-field-control-bg-hover` | date-field 的 control 部件 background 覆盖槽。 |
+| `--xh-date-field-control-bg-readonly` | `control` | `background` | `readonly` | `--xh-bg-subtle` | date-field 的 control 部件 background 覆盖槽。 |
+| `--xh-date-field-control-border` | `control` | `border` | `default` | `--xh-_date-field-control-border` | date-field 的 control 部件 border 覆盖槽。 |
+| `--xh-date-field-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])` | `--xh-_tone` | date-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-date-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid])` | `--xh-_date-field-control-border-hover` | date-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-date-field-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | date-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-date-field-control-fg` | `control` | `color` | `default` | `--xh-fg-default` | date-field 的 control 部件 color 覆盖槽。 |
+| `--xh-date-field-control-gap` | `control` | `gap` | `default` | `--xh-_date-field-gap` | date-field 的 control 部件 gap 覆盖槽。 |
+| `--xh-date-field-control-h` | `control` | `block-size` | `default` | `--xh-_date-field-control-h` | date-field 的 control 部件 block-size 覆盖槽。 |
+| `--xh-date-field-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | date-field 的 control、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-date-field-control-px` | `control` | `padding-inline` | `default` | `--xh-_date-field-control-px` | date-field 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-date-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | date-field 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-date-field-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_date-field-control-shadow` | date-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-date-field-font-size` | `control` | `font-size` | `default` | `--xh-_date-field-font-size` | date-field 的 control 部件 font-size 覆盖槽。 |
+| `--xh-date-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-field 的 root 部件 gap 覆盖槽。 |
+| `--xh-date-field-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | date-field 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-date-field-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | date-field 的 label 部件 color 覆盖槽。 |
+| `--xh-date-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | date-field 的 label 部件 color 覆盖槽。 |
+| `--xh-date-field-label-font-size` | `label` | `font-size` | `default` | `--xh-_date-field-label-font-size` | date-field 的 label 部件 font-size 覆盖槽。 |
+| `--xh-date-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | date-field 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-date-field-placeholder-fg` | `segment` | `color` | `placeholder` | `--xh-fg-subtle` | date-field 的 segment 部件 color 覆盖槽。 |
+| `--xh-date-field-segment-bg-focus` | `segment` | `background` | `focus`<br>`focus-visible` | `--xh-_date-field-segment-bg` | date-field 的 segment 部件 background 覆盖槽。 |
+| `--xh-date-field-segment-fg-focus` | `segment` | `color` | `focus`<br>`focus-visible`<br>`placeholder` | `--xh-_date-field-segment-fg` | date-field 的 segment 部件 color 覆盖槽。 |
+| `--xh-date-field-segment-px` | `segment` | `padding-inline` | `default` | `--xh-space-1` | date-field 的 segment 部件 padding-inline 覆盖槽。 |
+| `--xh-date-field-segment-py` | `segment` | `padding-block` | `default` | `--xh-space-0` | date-field 的 segment 部件 padding-block 覆盖槽。 |
+| `--xh-date-field-segment-radius` | `segment` | `border-radius` | `default` | `--xh-shape-inset` | date-field 的 segment 部件 border-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

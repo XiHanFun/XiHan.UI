@@ -1,35 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/code-view
 
-# 代码视图 `code-view`
+# CodeView `代码视图`
 
 一段代码的逐行呈现：行号、指定行高亮、超长折叠、文件名，可选语法着色，支持流式追加时的未闭合状态。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/code-view" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/code-view.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/code-view" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/code-view" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/code-view.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- AI 回复、文档、评审意见里展示一段代码，需要行号或要点出某几行。
-- 代码是流式生成的，需要边来边渲，闭合之后再着色。
-- 一段代码很长，默认只想露出前若干行。
-
-## 何时不用
-
-- 只是一小段行内标识：用[排印](./typography)的 `code` 形态。
-- 展示的是运行日志：用[日志](./log)。
-- 要展示改动前后：用[差异视图](./diff-view)。
-
-## 特性
-
-- 逐行切分在连接层完成。一个记号可以横跨多行（未闭合的字符串与块注释就是这样），
-  所以行号与高亮行不是皮肤能反推出来的东西。
-- `complete` 标出这段代码是否已经写完。未闭合时默认不着色——半截代码的词法本来就不稳，
-  每来一个字符整块变一次色比不着色更糟。
-- `highlighter` 是一个着色端口，接哪个着色器由宿主决定；它返回 `null` 是合法结果，退回纯文本。
-  适配器默认接 `@xihan-ui/code-highlight`，那是可选 peer：装了它自动着色，没装就一路纯文本。
-- 行号由皮肤用 `attr()` 画出来，因此**复制代码不会带上行号**，读屏也不会逐行念数字。
-- `clamped` 是纯受控的：折叠态通常由外部「全部展开 / 全部折叠」统一持有，内建一份只会跟它打架。
-
-## 示例
-
-### 基础用法
+## 用法
 
 代码原文由宿主给，组件切出逐行结构并铺记号；渲了文件名它就成为代码块的可访问名
 
@@ -116,6 +99,8 @@ const sample = `export function createTicker(intervalTime: number) {
   </div>
 </xh-code-view>
 ```
+
+## 示例
 
 ### 行号与高亮行
 
@@ -842,6 +827,32 @@ const sample = `export function clamp(n: number, min: number, max: number) {
 </div>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- AI 回复、文档、评审意见里展示一段代码，需要行号或要点出某几行。
+- 代码是流式生成的，需要边来边渲，闭合之后再着色。
+- 一段代码很长，默认只想露出前若干行。
+
+### 何时不用
+
+- 只是一小段行内标识：用[排印](./typography)的 `code` 形态。
+- 展示的是运行日志：用[日志](./log)。
+- 要展示改动前后：用[差异视图](./diff-view)。
+
+### 特性
+
+- 逐行切分在连接层完成。一个记号可以横跨多行（未闭合的字符串与块注释就是这样），
+  所以行号与高亮行不是皮肤能反推出来的东西。
+- `complete` 标出这段代码是否已经写完。未闭合时默认不着色——半截代码的词法本来就不稳，
+  每来一个字符整块变一次色比不着色更糟。
+- `highlighter` 是一个着色端口，接哪个着色器由宿主决定；它返回 `null` 是合法结果，退回纯文本。
+  适配器默认接 `@xihan-ui/code-highlight`，那是可选 peer：装了它自动着色，没装就一路纯文本。
+  适配器显式传 `null` 时不会请求默认模块；只有明确的模块缺席会回到纯文本，已安装模块的加载或初始化异常照常抛出。
+- 行号由皮肤用 `attr()` 画出来，因此**复制代码不会带上行号**，读屏也不会逐行念数字。
+- `clamped` 是纯受控的：折叠态通常由外部「全部展开 / 全部折叠」统一持有，内建一份只会跟它打架。
+
 ## 产物
 
 | 层 | 值 |
@@ -980,11 +991,50 @@ const sample = `export function clamp(n: number, min: number, max: number) {
 | `token` | `data-kind` | token.kind |
 | `fold-trigger` | `data-state` | 'closed' \| 'open' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-code-view-bg` · `--xh-code-view-border` · `--xh-code-view-comment-fg` · `--xh-code-view-fg` · `--xh-code-view-filename-fg` · `--xh-code-view-fold-bg-hover` · `--xh-code-view-fold-fg` · `--xh-code-view-fold-py` · `--xh-code-view-font` · `--xh-code-view-font-size` · `--xh-code-view-gutter-border` · `--xh-code-view-gutter-gap` · `--xh-code-view-header-border` · `--xh-code-view-header-fg` · `--xh-code-view-header-font-size` · `--xh-code-view-header-gap` · `--xh-code-view-header-h` · `--xh-code-view-header-px` · `--xh-code-view-header-py` · `--xh-code-view-highlight-bar` · `--xh-code-view-highlight-bg` · `--xh-code-view-highlight-fg` · `--xh-code-view-keyword-fg` · `--xh-code-view-keyword-weight` · `--xh-code-view-label-fg` · `--xh-code-view-label-font-size` · `--xh-code-view-line-height` · `--xh-code-view-number-fg` · `--xh-code-view-number-font-size` · `--xh-code-view-number-token-fg` · `--xh-code-view-punctuation-fg` · `--xh-code-view-px` · `--xh-code-view-py` · `--xh-code-view-radius` · `--xh-code-view-shadow` · `--xh-code-view-string-fg`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-code-view-bg` | `root` | `background` | `default` | `--xh-bg-surface` | code-view 的 root 部件 background 覆盖槽。 |
+| `--xh-code-view-border` | `root` | `border` | `default` | `--xh-border-default` | code-view 的 root 部件 border 覆盖槽。 |
+| `--xh-code-view-comment-fg` | `token` | `color` | `kind=comment` | `--xh-fg-muted` | code-view 的 token 部件 color 覆盖槽。 |
+| `--xh-code-view-fg` | `root` | `color` | `default` | `--xh-fg-muted` | code-view 的 root 部件 color 覆盖槽。 |
+| `--xh-code-view-filename-fg` | `filename` | `color` | `default` | `--xh-fg-default` | code-view 的 filename 部件 color 覆盖槽。 |
+| `--xh-code-view-fold-bg-hover` | `fold-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | code-view 的 fold-trigger 部件 background 覆盖槽。 |
+| `--xh-code-view-fold-fg` | `fold-trigger` | `color` | `default` | `--xh-fg-muted` | code-view 的 fold-trigger 部件 color 覆盖槽。 |
+| `--xh-code-view-fold-py` | `fold-trigger` | `padding-block` | `default` | `--xh-space-2` | code-view 的 fold-trigger 部件 padding-block 覆盖槽。 |
+| `--xh-code-view-font` | `code`<br>`filename` | `font-family` | `default` | `--xh-font-family-mono` | code-view 的 code、filename 部件 font-family 覆盖槽。 |
+| `--xh-code-view-font-size` | `root` | `font-size` | `default` | `--xh-_code-view-font-size` | code-view 的 root 部件 font-size 覆盖槽。 |
+| `--xh-code-view-gutter-border` | `line-number` | `border-inline-end` | `default` | `--xh-border-default` | code-view 的 line-number 部件 border-inline-end 覆盖槽。 |
+| `--xh-code-view-gutter-gap` | `line-number` | `padding-inline-end` | `default` | `--xh-space-1` | code-view 的 line-number 部件 padding-inline-end 覆盖槽。 |
+| `--xh-code-view-header-border` | `fold-trigger`<br>`header` | `border-block-end`<br>`border-block-start` | `default` | `--xh-border-subtle` | code-view 的 fold-trigger、header 部件 border-block-end、border-block-start 覆盖槽。 |
+| `--xh-code-view-header-fg` | `header` | `color` | `default` | `--xh-fg-muted` | code-view 的 header 部件 color 覆盖槽。 |
+| `--xh-code-view-header-font-size` | `fold-trigger`<br>`header` | `font-size` | `default` | `--xh-text-secondary-size` | code-view 的 fold-trigger、header 部件 font-size 覆盖槽。 |
+| `--xh-code-view-header-gap` | `header` | `gap` | `default` | `--xh-space-2` | code-view 的 header 部件 gap 覆盖槽。 |
+| `--xh-code-view-header-h` | `header` | `min-block-size` | `default` | `--xh-control-h-lg` | code-view 的 header 部件 min-block-size 覆盖槽。 |
+| `--xh-code-view-header-px` | `header` | `padding-inline` | `default` | `--xh-space-4` | code-view 的 header 部件 padding-inline 覆盖槽。 |
+| `--xh-code-view-header-py` | `header` | `padding-block` | `default` | `--xh-space-2` | code-view 的 header 部件 padding-block 覆盖槽。 |
+| `--xh-code-view-highlight-bar` | `line` | `box-shadow`<br>`outline`<br>`outline-offset` | `@media print`<br>`highlighted` | `--xh-stroke-thick` | code-view 的 line 部件 box-shadow、outline、outline-offset 覆盖槽。 |
+| `--xh-code-view-highlight-bg` | `line` | `background` | `highlighted` | `--xh-bg-brand-subtle` | code-view 的 line 部件 background 覆盖槽。 |
+| `--xh-code-view-highlight-fg` | `line` | `box-shadow` | `highlighted` | `--xh-bg-brand` | code-view 的 line 部件 box-shadow 覆盖槽。 |
+| `--xh-code-view-keyword-fg` | `token` | `color` | `kind=keyword` | `--xh-syntax-keyword` | code-view 的 token 部件 color 覆盖槽。 |
+| `--xh-code-view-keyword-weight` | `token` | `font-weight` | `kind=keyword` | `--xh-font-weight-semibold` | code-view 的 token 部件 font-weight 覆盖槽。 |
+| `--xh-code-view-label-fg` | `lang-label` | `color` | `default` | `--xh-fg-subtle` | code-view 的 lang-label 部件 color 覆盖槽。 |
+| `--xh-code-view-label-font-size` | `lang-label` | `font-size` | `default` | `--xh-text-caption-size` | code-view 的 lang-label 部件 font-size 覆盖槽。 |
+| `--xh-code-view-line-height` | `line`<br>`pre` | `line-height`<br>`min-block-size` | `default` | `--xh-text-code-leading` | code-view 的 line、pre 部件 line-height、min-block-size 覆盖槽。 |
+| `--xh-code-view-number-fg` | `line-number` | `color` | `default` | `--xh-fg-subtle` | code-view 的 line-number 部件 color 覆盖槽。 |
+| `--xh-code-view-number-font-size` | `line-number` | `font-size` | `default` | `--xh-text-caption-size` | code-view 的 line-number 部件 font-size 覆盖槽。 |
+| `--xh-code-view-number-token-fg` | `token` | `color` | `kind=number` | `--xh-syntax-number` | code-view 的 token 部件 color 覆盖槽。 |
+| `--xh-code-view-punctuation-fg` | `token` | `color` | `kind=punctuation` | `--xh-fg-subtle` | code-view 的 token 部件 color 覆盖槽。 |
+| `--xh-code-view-px` | `fold-trigger`<br>`line`<br>`line-content`<br>`line-number`<br>`root` | `padding-inline`<br>`padding-inline-end`<br>`padding-inline-start` | `default`<br>`line-numbers`<br>`not([data-line-numbers])` | `--xh-space-3` | code-view 的 fold-trigger、line、line-content、line-number、root 部件 padding-inline、padding-inline-end、padding-inline-start 覆盖槽。 |
+| `--xh-code-view-py` | `pre` | `padding-block` | `default` | `--xh-space-3` | code-view 的 pre 部件 padding-block 覆盖槽。 |
+| `--xh-code-view-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | code-view 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-code-view-shadow` | `root` | `box-shadow` | `default` | `--xh-elevation-raised` | code-view 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-code-view-string-fg` | `token` | `color` | `kind=string` | `--xh-syntax-string` | code-view 的 token 部件 color 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

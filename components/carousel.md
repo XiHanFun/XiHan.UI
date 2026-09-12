@@ -1,27 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/carousel
 
-# 走马灯 `carousel`
+# Carousel `走马灯`
 
 在同一块区域里轮播若干张内容，一次显示一屏。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/carousel" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/carousel.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/carousel" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/carousel" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/carousel.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 首屏的营销位、图片画廊这类"内容并列且用户不急着全看"的场景。
-
-## 何时不用
-
-- 每一张都重要、都需要被看到：并排铺开或做成[列表](./list)——轮播里第二张之后的点击率极低。
-- 内容是导航入口。
-
-## 特性
-
-- `slidesPerPage` 与 `slidesPerMove` 分开：可以一屏三张、一次挪一张。
-- 支持纵向轨道、指针拖拽、回绕与自动播放。
-- 指示点可以做成悬停即切页。
-
-## 示例
-
-### 基础用法
+## 用法
 
 张数由 slideCount 声明而不是从 DOM 数，页数与指示点数量都由它算出来
 
@@ -101,6 +92,8 @@ const slides = ["第一张", "第二张", "第三张"];
   </div>
 </xh-carousel>
 ```
+
+## 示例
 
 ### 受控
 
@@ -1032,6 +1025,23 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 首屏的营销位、图片画廊这类"内容并列且用户不急着全看"的场景。
+
+### 何时不用
+
+- 每一张都重要、都需要被看到：并排铺开或做成[列表](./list)——轮播里第二张之后的点击率极低。
+- 内容是导航入口。
+
+### 特性
+
+- `slidesPerPage` 与 `slidesPerMove` 分开：可以一屏三张、一次挪一张。
+- 支持纵向轨道、指针拖拽、回绕与自动播放。
+- 指示点可以做成悬停即切页。
+
 ## 产物
 
 | 层 | 值 |
@@ -1209,11 +1219,33 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 | `indicator` | `data-current` | ''（条件成立时才出现） |
 | `indicator` | `data-index` | String(index) |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-carousel-duration` · `--xh-carousel-ease` · `--xh-carousel-gap` · `--xh-carousel-icon-size` · `--xh-carousel-indicator-bg` · `--xh-carousel-indicator-bg-hover` · `--xh-carousel-indicator-bg-selected` · `--xh-carousel-indicator-gap` · `--xh-carousel-indicator-radius` · `--xh-carousel-indicator-size` · `--xh-carousel-trigger-bg` · `--xh-carousel-trigger-bg-active` · `--xh-carousel-trigger-bg-hover` · `--xh-carousel-trigger-border` · `--xh-carousel-trigger-fg` · `--xh-carousel-trigger-radius` · `--xh-carousel-trigger-shadow-hover` · `--xh-carousel-trigger-size` · `--xh-carousel-viewport-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-carousel-duration` | `list` | `transition` | `default` | `--xh-motion-duration-slide` | carousel 的 list 部件 transition 覆盖槽。 |
+| `--xh-carousel-ease` | `list` | `transition` | `default` | `--xh-motion-ease-slide` | carousel 的 list 部件 transition 覆盖槽。 |
+| `--xh-carousel-gap` | `root` | `gap` | `default` | `--xh-space-2` | carousel 的 root 部件 gap 覆盖槽。 |
+| `--xh-carousel-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | carousel 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-carousel-indicator-bg` | `indicator` | `background` | `default` | `--xh-border-control` | carousel 的 indicator 部件 background 覆盖槽。 |
+| `--xh-carousel-indicator-bg-hover` | `indicator` | `background` | `current`<br>`hover`<br>`not([data-current])` | `--xh-fg-subtle` | carousel 的 indicator 部件 background 覆盖槽。 |
+| `--xh-carousel-indicator-bg-selected` | `indicator` | `background` | `current` | `--xh-bg-brand` | carousel 的 indicator 部件 background 覆盖槽。 |
+| `--xh-carousel-indicator-gap` | `indicator-group` | `gap` | `default` | `--xh-space-1` | carousel 的 indicator-group 部件 gap 覆盖槽。 |
+| `--xh-carousel-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | carousel 的 indicator 部件 border-radius 覆盖槽。 |
+| `--xh-carousel-indicator-size` | `indicator` | `block-size`<br>`inline-size` | `default` | `--xh-space-2` | carousel 的 indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-carousel-trigger-bg` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background` | `default` | `--xh-bg-surface` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。 |
+| `--xh-carousel-trigger-bg-active` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。 |
+| `--xh-carousel-trigger-bg-hover` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。 |
+| `--xh-carousel-trigger-border` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `border` | `default` | `--xh-border-control` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border 覆盖槽。 |
+| `--xh-carousel-trigger-fg` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `color` | `default` | `--xh-fg-default` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 color 覆盖槽。 |
+| `--xh-carousel-trigger-radius` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `border-radius` | `default` | `--xh-shape-pill` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-carousel-trigger-shadow-hover` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `box-shadow` | `hover`<br>`not(:disabled)` | `--xh-elevation-raised` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-carousel-trigger-size` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-md` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-carousel-viewport-radius` | `viewport` | `border-radius` | `default` | `--xh-shape-surface` | carousel 的 viewport 部件 border-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

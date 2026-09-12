@@ -1,29 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/toggle
 
-# 切换按钮 `toggle`
+# Toggle `切换按钮`
 
 一颗有记忆的按钮：按下去留在按下态，再按一下弹回来。状态由 `aria-pressed` 表达。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/toggle" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/toggle.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/toggle" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/toggle" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/toggle.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 开关一项立即生效的格式或视图（加粗、显示网格、静音）。
-- 状态属于工具而不属于表单：它不参与表单提交。
-
-## 何时不用
-
-- 表示一项设置的开与关、且要随表单提交：用[开关](./switch)或[复选框](./checkbox)。
-- 几个选项互斥：用[切换按钮组](./toggle-group)——多个独立的切换按钮各管各的按下态，凑不出互斥。
-- 按下去只发生一次动作、不留状态：那是[按钮](./button)。
-
-## 特性
-
-- 形态 · 语气 · 尺寸三轴与按钮同源。
-- 受控时宿主不写回 `pressed` 值就不动，在途期间来的意图直接丢掉。
-- `disabled` 同时挡住指针与键盘，按下态保持原样。
-
-## 示例
-
-### 基础用法
+## 用法
 
 按下态由 pressed 表达，非受控时组件自己维护
 
@@ -60,6 +49,8 @@ const bold = ref(false);
   });
 </script>
 ```
+
+## 示例
 
 ### 禁用
 
@@ -557,6 +548,25 @@ function onPressedChange(details: { pressed: boolean }): void {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 开关一项立即生效的格式或视图（加粗、显示网格、静音）。
+- 状态属于工具而不属于表单：它不参与表单提交。
+
+### 何时不用
+
+- 表示一项设置的开与关、且要随表单提交：用[开关](./switch)或[复选框](./checkbox)。
+- 几个选项互斥：用[切换按钮组](./toggle-group)——多个独立的切换按钮各管各的按下态，凑不出互斥。
+- 按下去只发生一次动作、不留状态：那是[按钮](./button)。
+
+### 特性
+
+- 形态 · 语气 · 尺寸三轴与按钮同源。
+- 受控时宿主不写回 `pressed` 值就不动，在途期间来的意图直接丢掉。
+- `disabled` 同时挡住指针与键盘，按下态保持原样。
+
 ## 产物
 
 | 层 | 值 |
@@ -655,11 +665,27 @@ function onPressedChange(details: { pressed: boolean }): void {
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-toggle-bg` · `--xh-toggle-bg-hover` · `--xh-toggle-bg-on` · `--xh-toggle-fg` · `--xh-toggle-fg-on` · `--xh-toggle-font-size` · `--xh-toggle-font-weight` · `--xh-toggle-gap` · `--xh-toggle-h` · `--xh-toggle-icon-size` · `--xh-toggle-px` · `--xh-toggle-radius` · `--xh-toggle-shadow`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-toggle-bg` | `root` | `background` | `default` | `transparent` | toggle 的 root 部件 background 覆盖槽。 |
+| `--xh-toggle-bg-hover` | `root` | `background` | `hover` | `--xh-bg-subtle-hover` | toggle 的 root 部件 background 覆盖槽。 |
+| `--xh-toggle-bg-on` | `root` | `background` | `hover`<br>`state=on` | `--xh-bg-subtle-active` | toggle 的 root 部件 background 覆盖槽。 |
+| `--xh-toggle-fg` | `root` | `color` | `default` | `--xh-fg-default` | toggle 的 root 部件 color 覆盖槽。 |
+| `--xh-toggle-fg-on` | `root` | `color` | `state=on` | `--xh-fg-default` | toggle 的 root 部件 color 覆盖槽。 |
+| `--xh-toggle-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-font-lg`<br>`--xh-control-font-sm`<br>`--xh-text-label-size` | toggle 的 root 部件 font-size 覆盖槽。 |
+| `--xh-toggle-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | toggle 的 root 部件 font-weight 覆盖槽。 |
+| `--xh-toggle-gap` | `root` | `gap` | `default` | `--xh-control-gap-md` | toggle 的 root 部件 gap 覆盖槽。 |
+| `--xh-toggle-h` | `root` | `block-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | toggle 的 root 部件 block-size 覆盖槽。 |
+| `--xh-toggle-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | toggle 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-toggle-px` | `root` | `padding-inline` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-px-lg`<br>`--xh-control-px-md`<br>`--xh-control-px-sm` | toggle 的 root 部件 padding-inline 覆盖槽。 |
+| `--xh-toggle-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | toggle 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-toggle-shadow` | `root` | `box-shadow` | `disabled`<br>`not([data-disabled])`<br>`state=on`<br>`variant=solid` | `--xh-_toggle-highlight` | toggle 的 root 部件 box-shadow 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

@@ -1,28 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/navigation-menu
 
-# 导航菜单 `navigation-menu`
+# NavigationMenu `导航菜单`
 
 站点的主导航：一排入口，展开后是一整块去处面板，面板里是链接不是命令。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/navigation-menu" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/navigation-menu.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/navigation-menu" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/navigation-menu" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/navigation-menu.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 门户、营销站、文档站的顶部导航，每个板块下还有若干去处。
-
-## 何时不用
-
-- 条目是命令（执行一次动作）：用[菜单](./menu)。
-- 后台的层级导航：用[侧栏导航](./side-nav)。
-
-## 特性
-
-- 面板落在同一个 `li` 里、紧跟入口之后，展开时按 Tab 就走得进去。
-- `delayDuration` 防的是指针横穿导航时一路闪出面板；`skipDelayDuration` 是收起后的静默窗口，窗口内再碰任意入口直接展开。
-- 没有下级的去处不必套面板：那一项直接铺成一条 `link`，它不进方向键那一组，按 Tab 一样到得了。
-- 面板整批塞进 `viewport` 后落位归外壳管：几个入口的面板落在同一处，宽窄不同也不再各贴各的入口。
-
-## 示例
-
-### 基础用法
+## 用法
 
 面板落在同一个 li 里、紧跟 trigger 之后，展开时按 Tab 就走得进去，里面的条目是链接不是命令，点了就跳走
 
@@ -106,6 +96,8 @@ const currentHref = "#/docs/guide";
   </xh-navigation-menu>
 </div>
 ```
+
+## 示例
 
 ### 受控
 
@@ -1182,6 +1174,24 @@ const collapsed = ref(true);
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 门户、营销站、文档站的顶部导航，每个板块下还有若干去处。
+
+### 何时不用
+
+- 条目是命令（执行一次动作）：用[菜单](./menu)。
+- 后台的层级导航：用[侧栏导航](./side-nav)。
+
+### 特性
+
+- 面板落在同一个 `li` 里、紧跟入口之后，展开时按 Tab 就走得进去。
+- `delayDuration` 防的是指针横穿导航时一路闪出面板；`skipDelayDuration` 是收起后的静默窗口，窗口内再碰任意入口直接展开。
+- 没有下级的去处不必套面板：那一项直接铺成一条 `link`，它不进方向键那一组，按 Tab 一样到得了。
+- 面板整批塞进 `viewport` 后落位归外壳管：几个入口的面板落在同一处，宽窄不同也不再各贴各的入口。
+
 ## 产物
 
 | 层 | 值 |
@@ -1241,7 +1251,7 @@ const collapsed = ref(true);
 
 **状态**：`idle` · `opening` · `skipping`
 
-**事件**：`TRIGGER.POINTER` · `TRIGGER.FOCUS` · `TRIGGER.TOGGLE` · `DISMISS` · `VALUE.SET` · `after.delayDuration` · `after.skipDelayDuration`
+**事件**：`TRIGGER.POINTER` · `TRIGGER.FOCUS` · `TRIGGER.TOGGLE` · `DISMISS` · `VALUE.SET` · `PRESENCE.SET` · `after.delayDuration` · `after.skipDelayDuration`
 
 **判据**：`hasValue` · `isCurrent` · `shouldKeepOpen`
 
@@ -1291,10 +1301,12 @@ const collapsed = ref(true);
 | `trigger` | `aria-disabled` | 'true' \| 'false' |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger-indicator` | `aria-hidden` | 'true' |
+| `content` | `aria-hidden` | !isOpen \|\| undefined |
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
 | `content` | `role` | 'group' |
 | `link` | `aria-current` | 'page' \| undefined |
 | `indicator` | `aria-hidden` | 'true' |
+| `viewport` | `aria-hidden` | !open \|\| undefined |
 
 ## 样式
 
@@ -1326,11 +1338,47 @@ const collapsed = ref(true);
 | `viewport` | `data-orientation` | props.orientation |
 | `viewport` | `data-state` | 'open' \| 'closed' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-navigation-menu-content-bg` · `--xh-navigation-menu-content-border` · `--xh-navigation-menu-content-gap` · `--xh-navigation-menu-content-min-w` · `--xh-navigation-menu-content-offset` · `--xh-navigation-menu-content-p` · `--xh-navigation-menu-content-radius` · `--xh-navigation-menu-content-shadow` · `--xh-navigation-menu-fg` · `--xh-navigation-menu-font-size` · `--xh-navigation-menu-gap` · `--xh-navigation-menu-icon-size` · `--xh-navigation-menu-indicator-color` · `--xh-navigation-menu-indicator-radius` · `--xh-navigation-menu-indicator-thickness` · `--xh-navigation-menu-layer` · `--xh-navigation-menu-link-bg-hover` · `--xh-navigation-menu-link-fg` · `--xh-navigation-menu-link-fg-current` · `--xh-navigation-menu-link-font-size` · `--xh-navigation-menu-link-font-weight-current` · `--xh-navigation-menu-link-px` · `--xh-navigation-menu-link-py` · `--xh-navigation-menu-link-radius` · `--xh-navigation-menu-trigger-bg-active` · `--xh-navigation-menu-trigger-bg-hover` · `--xh-navigation-menu-trigger-fg` · `--xh-navigation-menu-trigger-font-weight` · `--xh-navigation-menu-trigger-gap` · `--xh-navigation-menu-trigger-h` · `--xh-navigation-menu-trigger-px` · `--xh-navigation-menu-trigger-radius` · `--xh-navigation-menu-viewport-p`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-navigation-menu-content-bg` | `content`<br>`viewport` | `background` | `default` | `--xh-bg-surface` | navigation-menu 的 content、viewport 部件 background 覆盖槽。 |
+| `--xh-navigation-menu-content-border` | `content`<br>`viewport` | `border` | `default` | `--xh-border-default` | navigation-menu 的 content、viewport 部件 border 覆盖槽。 |
+| `--xh-navigation-menu-content-gap` | `content` | `gap` | `default` | `--xh-space-1` | navigation-menu 的 content 部件 gap 覆盖槽。 |
+| `--xh-navigation-menu-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-menu-min-w` | navigation-menu 的 content 部件 min-inline-size 覆盖槽。 |
+| `--xh-navigation-menu-content-offset` | `content`<br>`viewport` | `inset-block-start`<br>`inset-inline-start` | `default`<br>`orientation=vertical` | `--xh-space-1` | navigation-menu 的 content、viewport 部件 inset-block-start、inset-inline-start 覆盖槽。 |
+| `--xh-navigation-menu-content-p` | `content` | `padding` | `default` | `--xh-surface-pad-xs` | navigation-menu 的 content 部件 padding 覆盖槽。 |
+| `--xh-navigation-menu-content-radius` | `content`<br>`viewport` | `border-radius` | `default` | `--xh-shape-surface` | navigation-menu 的 content、viewport 部件 border-radius 覆盖槽。 |
+| `--xh-navigation-menu-content-shadow` | `content`<br>`viewport` | `box-shadow` | `default` | `--xh-elevation-floating` | navigation-menu 的 content、viewport 部件 box-shadow 覆盖槽。 |
+| `--xh-navigation-menu-fg` | `root` | `color` | `default` | `--xh-fg-default` | navigation-menu 的 root 部件 color 覆盖槽。 |
+| `--xh-navigation-menu-font-size` | `root` | `font-size` | `default` | `--xh-_navigation-menu-font-size` | navigation-menu 的 root 部件 font-size 覆盖槽。 |
+| `--xh-navigation-menu-gap` | `list` | `gap` | `default` | `--xh-space-1` | navigation-menu 的 list 部件 gap 覆盖槽。 |
+| `--xh-navigation-menu-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | navigation-menu 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-navigation-menu-indicator-color` | `indicator` | `background` | `default` | `--xh-_navigation-menu-accent` | navigation-menu 的 indicator 部件 background 覆盖槽。 |
+| `--xh-navigation-menu-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | navigation-menu 的 indicator 部件 border-radius 覆盖槽。 |
+| `--xh-navigation-menu-indicator-thickness` | `indicator` | `block-size`<br>`inline-size`<br>`inset-block-end` | `default`<br>`orientation=vertical` | `--xh-stroke-thick` | navigation-menu 的 indicator 部件 block-size、inline-size、inset-block-end 覆盖槽。 |
+| `--xh-navigation-menu-layer` | `content`<br>`viewport` | `z-index` | `default` | `--xh-_layer` | navigation-menu 的 content、viewport 部件 z-index 覆盖槽。 |
+| `--xh-navigation-menu-link-bg-hover` | `link` | `background` | `hover` | `--xh-_navigation-menu-highlight-bg` | navigation-menu 的 link 部件 background 覆盖槽。 |
+| `--xh-navigation-menu-link-fg` | `link` | `color` | `default` | `--xh-fg-default` | navigation-menu 的 link 部件 color 覆盖槽。 |
+| `--xh-navigation-menu-link-fg-current` | `link` | `color` | `current` | `--xh-_navigation-menu-current-fg` | navigation-menu 的 link 部件 color 覆盖槽。 |
+| `--xh-navigation-menu-link-font-size` | `link` | `font-size` | `default` | `--xh-_navigation-menu-link-font-size` | navigation-menu 的 link 部件 font-size 覆盖槽。 |
+| `--xh-navigation-menu-link-font-weight-current` | `link` | `font-weight` | `current` | `--xh-font-weight-medium` | navigation-menu 的 link 部件 font-weight 覆盖槽。 |
+| `--xh-navigation-menu-link-px` | `link` | `padding-inline` | `default` | `--xh-_navigation-menu-link-px` | navigation-menu 的 link 部件 padding-inline 覆盖槽。 |
+| `--xh-navigation-menu-link-py` | `link` | `padding-block` | `default` | `--xh-_navigation-menu-link-py` | navigation-menu 的 link 部件 padding-block 覆盖槽。 |
+| `--xh-navigation-menu-link-radius` | `link` | `border-radius` | `default` | `--xh-shape-control` | navigation-menu 的 link 部件 border-radius 覆盖槽。 |
+| `--xh-navigation-menu-trigger-bg-active` | `trigger` | `background` | `disabled`<br>`not([data-disabled])`<br>`state=open` | `--xh-_navigation-menu-active-bg` | navigation-menu 的 trigger 部件 background 覆盖槽。 |
+| `--xh-navigation-menu-trigger-bg-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-_navigation-menu-highlight-bg` | navigation-menu 的 trigger 部件 background 覆盖槽。 |
+| `--xh-navigation-menu-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-muted` | navigation-menu 的 trigger 部件 color 覆盖槽。 |
+| `--xh-navigation-menu-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | navigation-menu 的 trigger 部件 font-weight 覆盖槽。 |
+| `--xh-navigation-menu-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_navigation-menu-trigger-gap` | navigation-menu 的 trigger 部件 gap 覆盖槽。 |
+| `--xh-navigation-menu-trigger-h` | `trigger` | `block-size` | `default` | `--xh-_navigation-menu-trigger-h` | navigation-menu 的 trigger 部件 block-size 覆盖槽。 |
+| `--xh-navigation-menu-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_navigation-menu-trigger-px` | navigation-menu 的 trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-navigation-menu-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | navigation-menu 的 trigger 部件 border-radius 覆盖槽。 |
+| `--xh-navigation-menu-viewport-p` | `viewport` | `padding` | `default` | `--xh-space-2` | navigation-menu 的 viewport 部件 padding 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

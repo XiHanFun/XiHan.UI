@@ -1,1 +1,0 @@
-import{g4 as t}from"./theme.DCKLS07e.js";import{d as o,o as s,c as a,t as r,p as n}from"./framework.BpF7DVZ1.js";const m=o({__name:"06-register-only",setup(p){const e=n(0);return t(()=>({keys:["Mod","k"],preventDefault:!0,onHotKey:()=>{e.value+=1}})),(c,l)=>(s(),a("p",null,"按 Mod+K（Mac 上是 ⌘K）：已命中 "+r(e.value)+" 次。这一段没有渲染任何键帽。",1))}});export{m as default};

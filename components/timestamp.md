@@ -1,28 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/timestamp
 
-# 时间戳 `timestamp`
+# Timestamp `时间戳`
 
 把一个时刻渲染成文本，绝对或相对。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/timestamp" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/timestamp.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/timestamp" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/timestamp" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/timestamp.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 展示创建时间、更新时间、事件发生时刻。
-- 需要"n 分钟前"这类相对表述。
-
-## 何时不用
-
-- 需要倒数剩余时长：用[计时器](./timer)。
-- 需要用户选一个时间：用[时间选择器](./time-picker)。
-
-## 特性
-
-- `type` 切绝对与相对；相对分四档（分 / 小时 / 天），超过三十天退回绝对日期。
-- `format` 自定义格式串，只改看到的文本，`datetime` 属性不跟着变。
-- `locale` 只换用词与缺省格式串：`zh` 开头用中文那套，其余英文。不给就跟宿主浏览器语言，读不到才落 `en-US`。
-
-## 示例
-
-### 基础用法
+## 用法
 
 渲染成 &lt;time datetime>：文本给人看，datetime 给机器读，两者取自同一个墙钟
 
@@ -73,6 +63,8 @@ const stamp = new Date(2026, 7, 11, 9, 30, 5).getTime();
   document.getElementById("time-basic-date").value = moment;
 </script>
 ```
+
+## 示例
 
 ### 呈现方式
 
@@ -317,6 +309,24 @@ const moments = [
 </div>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 展示创建时间、更新时间、事件发生时刻。
+- 需要"n 分钟前"这类相对表述。
+
+### 何时不用
+
+- 需要倒数剩余时长：用[计时器](./timer)。
+- 需要用户选一个时间：用[时间选择器](./time-picker)。
+
+### 特性
+
+- `type` 切绝对与相对；相对分四档（分 / 小时 / 天），超过三十天退回绝对日期。
+- `format` 自定义格式串，只改看到的文本，`datetime` 属性不跟着变。
+- `locale` 只换用词与缺省格式串：`zh` 开头用中文那套，其余英文。不给就跟宿主浏览器语言，读不到才落 `en-US`。
+
 ## 产物
 
 | 层 | 值 |
@@ -383,11 +393,16 @@ const moments = [
 | `root` | `data-relative` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'empty' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-timestamp-fg` · `--xh-timestamp-placeholder-fg`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-timestamp-fg` | `root` | `color` | `default` | `--xh-fg-default` | timestamp 的 root 部件 color 覆盖槽。 |
+| `--xh-timestamp-placeholder-fg` | `root` | `color` | `state=empty`<br>`state=invalid` | `--xh-fg-muted` | timestamp 的 root 部件 color 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

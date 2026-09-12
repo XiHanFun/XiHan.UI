@@ -1,3 +1,0 @@
-import{b8 as l,b9 as m,bb as r,bc as i,bd as d}from"./theme.DCKLS07e.js";import{d as c,o,c as s,F as p,B as u,E as e,w as t,k as a}from"./framework.BpF7DVZ1.js";const f={style:{display:"flex","flex-direction":"column",gap:"12px"}},_=`export function clamp(n: number, min: number, max: number) {
-  return Math.min(Math.max(n, min), max)
-}`,V=c({__name:"08-size",setup(h){return(x,b)=>(o(),s("div",f,[(o(),s(p,null,u(["sm","md","lg"],n=>e(a(d),{key:n,size:n,code:_,lang:"typescript",filename:`clamp.${n}.ts`,complete:"",style:{"inline-size":"100%"}},{default:t(()=>[e(a(l),null,{default:t(()=>[e(a(m))]),_:1}),e(a(r),null,{default:t(()=>[e(a(i))]),_:1})]),_:1},8,["size","filename"])),64))]))}});export{V as default};

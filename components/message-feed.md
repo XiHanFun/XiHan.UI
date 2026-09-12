@@ -1,36 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/message-feed
 
-# 消息流 `message-feed`
+# MessageFeed `消息流`
 
 一段会话的消息序列：粘底跟随、条目集合语义、键盘遍历与一个统一的播报区。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/message-feed" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/message-feed.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/message-feed" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/message-feed" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/message-feed.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- AI 对话或聊天界面的消息列表。
-- 内容会从底部长出来，希望一直跟到底，但用户往上翻时不要被拽回去。
-
-## 何时不用
-
-- 内容不分条，只是一段往下追加的输出（运行日志、命令回显）：用[日志](./log)。
-  两边的粘底、回到底部与播报区是同一套，差别只在要不要条目集合语义与逐条遍历。
-- 只是一列静态卡片：用[列表](./list)。
-- 消息数以万计：本组件不与[虚拟滚动](./virtualizer)组合，键盘遍历要求条目都在活 DOM 里；
-  长会话请配[无限滚动](./infinite-scroll)分批加载并自行截断历史。
-
-## 特性
-
-- 粘底跟随：内容增高时自动到底，用户上滚即解除，滚回底部阈值内自动恢复。
-  往上插入历史消息时会补偿滚动位置，视口不跳。
-- 「回到底部」只看在不在底、不看粘附意图：粘着但内容还没追上时按钮不该冒出来。
-- 整份消息列表只占**一个** Tab 停靠位：`PageDown` / `PageUp` 在消息之间走，
-  `Ctrl+End` / `Ctrl+Home` 一步走到消息流之外（会话界面里通常就是输入框）。
-- 消息内容全部由作者写：气泡、头像、时间、动作条都不是本组件的部件。
-- 新长出来的消息与冒出来的「回到底部」各带一段淡入位移；减弱动效档由令牌层压平，不必另行关闭。
-- 「回到底部」留空时皮肤画一枚向下的字形，往按钮里塞节点即换成自己的图形。
-
-## 示例
-
-### 基础用法
+## 用法
 
 消息内容全由作者写；组件管的是集合语义、粘底与那一个播报区
 
@@ -103,6 +85,8 @@ const messages = [
   </div>
 </xh-message-feed>
 ```
+
+## 示例
 
 ### 粘底跟随与播报
 
@@ -907,6 +891,32 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- AI 对话或聊天界面的消息列表。
+- 内容会从底部长出来，希望一直跟到底，但用户往上翻时不要被拽回去。
+
+### 何时不用
+
+- 内容不分条，只是一段往下追加的输出（运行日志、命令回显）：用[日志](./log)。
+  两边的粘底、回到底部与播报区是同一套，差别只在要不要条目集合语义与逐条遍历。
+- 只是一列静态卡片：用[列表](./list)。
+- 消息数以万计：本组件不与[虚拟滚动](./virtualizer)组合，键盘遍历要求条目都在活 DOM 里；
+  长会话请配[无限滚动](./infinite-scroll)分批加载并自行截断历史。
+
+### 特性
+
+- 粘底跟随：内容增高时自动到底，用户上滚即解除，滚回底部阈值内自动恢复。
+  往上插入历史消息时会补偿滚动位置，视口不跳。
+- 「回到底部」只看在不在底、不看粘附意图：粘着但内容还没追上时按钮不该冒出来。
+- 整份消息列表只占**一个** Tab 停靠位：`PageDown` / `PageUp` 在消息之间走，
+  `Ctrl+End` / `Ctrl+Home` 一步走到消息流之外（会话界面里通常就是输入框）。
+- 消息内容全部由作者写：气泡、头像、时间、动作条都不是本组件的部件。
+- 新长出来的消息与冒出来的「回到底部」各带一段淡入位移；减弱动效档由令牌层压平，不必另行关闭。
+- 「回到底部」留空时皮肤画一枚向下的字形，往按钮里塞节点即换成自己的图形。
+
 ## 产物
 
 | 层 | 值 |
@@ -1044,11 +1054,29 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 | `item` | `data-streaming` | ''（条件成立时才出现） |
 | `scroll-to-end-trigger` | `data-state` | 'hidden' \| 'visible' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-message-feed-gap` · `--xh-message-feed-icon-size` · `--xh-message-feed-item-gap` · `--xh-message-feed-item-radius` · `--xh-message-feed-label-fg` · `--xh-message-feed-label-font-size` · `--xh-message-feed-p` · `--xh-message-feed-scroll-to-end-trigger-bg` · `--xh-message-feed-scroll-to-end-trigger-bg-hover` · `--xh-message-feed-scroll-to-end-trigger-border` · `--xh-message-feed-scroll-to-end-trigger-fg` · `--xh-message-feed-scroll-to-end-trigger-inset` · `--xh-message-feed-scroll-to-end-trigger-radius` · `--xh-message-feed-scroll-to-end-trigger-shadow` · `--xh-message-feed-scroll-to-end-trigger-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-message-feed-gap` | `list` | `gap` | `default` | `--xh-_message-feed-gap` | message-feed 的 list 部件 gap 覆盖槽。 |
+| `--xh-message-feed-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | message-feed 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-message-feed-item-gap` | `item` | `gap` | `default` | `--xh-space-1` | message-feed 的 item 部件 gap 覆盖槽。 |
+| `--xh-message-feed-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | message-feed 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-message-feed-label-fg` | `item-label` | `color` | `default` | `--xh-fg-muted` | message-feed 的 item-label 部件 color 覆盖槽。 |
+| `--xh-message-feed-label-font-size` | `item-label` | `font-size` | `default` | `--xh-text-caption-size` | message-feed 的 item-label 部件 font-size 覆盖槽。 |
+| `--xh-message-feed-p` | `list` | `padding` | `default` | `--xh-_message-feed-p` | message-feed 的 list 部件 padding 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `background` | `default` | `--xh-bg-surface-raised` | message-feed 的 scroll-to-end-trigger 部件 background 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-bg-hover` | `scroll-to-end-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | message-feed 的 scroll-to-end-trigger 部件 background 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-border` | `scroll-to-end-trigger` | `border` | `default` | `--xh-border-default` | message-feed 的 scroll-to-end-trigger 部件 border 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-fg` | `scroll-to-end-trigger` | `color` | `default` | `--xh-fg-default` | message-feed 的 scroll-to-end-trigger 部件 color 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-inset` | `scroll-to-end-trigger` | `inset-block-end`<br>`inset-inline-end` | `default` | `--xh-space-4` | message-feed 的 scroll-to-end-trigger 部件 inset-block-end、inset-inline-end 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-radius` | `scroll-to-end-trigger` | `border-radius` | `default` | `--xh-shape-pill` | message-feed 的 scroll-to-end-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-shadow` | `scroll-to-end-trigger` | `box-shadow` | `default` | `--xh-elevation-raised` | message-feed 的 scroll-to-end-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-size` | `scroll-to-end-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-sm` | message-feed 的 scroll-to-end-trigger 部件 block-size、inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

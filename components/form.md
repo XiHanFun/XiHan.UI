@@ -1,30 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/form
 
-# 表单 `form`
+# Form `表单`
 
 一整张表的值、校验与提交：字段各自录入，表单负责汇总、校验和拦下不合格的提交。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/form" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/form.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/form" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/form" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/form.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 多个字段需要一起提交，且存在跨字段规则。
-- 需要统一的校验时机与错误汇总。
-
-## 何时不用
-
-- 只有一两个立即生效的开关：直接改，别包表单。
-- 只是要一格标签加控件：用[表单字段](./field)。
-
-## 特性
-
-- `validateOn` 决定何时校验：输入时、失焦时还是提交时。
-- 支持异步校验、跨字段规则与手动触发入口。
-- 嵌套模型走路径字段名，字段值表与业务模型形状一致。
-- 错误汇总（`error-summary`）把所有错误列在一处，每条都能点回对应字段。
-- "提醒但不拦下"是一档独立行为：警告级的问题不阻断提交。
-
-## 示例
-
-### 基础用法
+## 用法
 
 默认只在提交时整表校验：过了发 submit，没过发 invalid、摘要显形并把焦点送到第一个出错的字段
 
@@ -69,11 +57,11 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     <!-- 摘要只在提交失败后显形；条目一次全写上，谁露面由当下的错误表决定 -->
     <XhFormErrorSummary v-slot="{ errorCount }">
       <span>共 {{ errorCount }} 处需要修改</span>
-      <XhFormErrorSummaryItem v-slot="{ error }" value="email">{{ error }}</XhFormErrorSummaryItem>
-      <XhFormErrorSummaryItem v-slot="{ error }" value="nickname">{{ error }}</XhFormErrorSummaryItem>
+      <XhFormErrorSummaryItem v-slot="{ error }" name="email">{{ error }}</XhFormErrorSummaryItem>
+      <XhFormErrorSummaryItem v-slot="{ error }" name="nickname">{{ error }}</XhFormErrorSummaryItem>
     </XhFormErrorSummary>
 
-    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="email">
+    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="email">
       <XhFieldRoot :invalid="invalid" required>
         <XhFieldLabel>邮箱</XhFieldLabel>
         <XhFieldControl>
@@ -88,7 +76,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       </XhFieldRoot>
     </XhFormFieldGroup>
 
-    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="nickname">
+    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="nickname">
       <XhFieldRoot :invalid="invalid" required>
         <XhFieldLabel>昵称</XhFieldLabel>
         <XhFieldControl>
@@ -117,11 +105,11 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     <!-- 摘要只在提交失败后显形；条目一次全写上，谁露面由当下的错误表决定 -->
     <div data-xh-part="error-summary">
       <span id="form-basic-count">共 0 处需要修改</span>
-      <a data-xh-part="error-summary-item" value="email"></a>
-      <a data-xh-part="error-summary-item" value="nickname"></a>
+      <a data-xh-part="error-summary-item" name="email"></a>
+      <a data-xh-part="error-summary-item" name="nickname"></a>
     </div>
 
-    <div data-xh-part="field-group" value="email">
+    <div data-xh-part="field-group" name="email">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">邮箱</label>
@@ -131,7 +119,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="nickname">
+    <div data-xh-part="field-group" name="nickname">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">昵称</label>
@@ -208,6 +196,8 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 </script>
 ```
 
+## 示例
+
 ### 校验时机
 
 blur 与 change 两种模式下 validate 仍整表跑（校验可能带跨字段规则），但只把当事字段那一条写回错误表
@@ -238,7 +228,7 @@ function validate(values: Record<string, unknown>) {
     validate-on="blur"
     style="inline-size: 240px;"
   >
-    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="port">
+    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="port">
       <XhFieldRoot :invalid="invalid">
         <XhFieldLabel>端口（失焦校验）</XhFieldLabel>
         <XhFieldControl>
@@ -257,7 +247,7 @@ function validate(values: Record<string, unknown>) {
     validate-on="change"
     style="inline-size: 240px;"
   >
-    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="port">
+    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="port">
       <XhFieldRoot :invalid="invalid">
         <XhFieldLabel>端口（改动即校验）</XhFieldLabel>
         <XhFieldControl>
@@ -275,7 +265,7 @@ function validate(values: Record<string, unknown>) {
 <!-- 失焦时校验这一个字段：填的过程中不打断 -->
 <xh-form id="form-validate-blur" validate-on="blur">
   <form data-xh-part="root" style="inline-size: 240px">
-    <div data-xh-part="field-group" value="port">
+    <div data-xh-part="field-group" name="port">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">端口（失焦校验）</label>
@@ -291,7 +281,7 @@ function validate(values: Record<string, unknown>) {
 <!-- 改一个字就校验一次：错误随输入实时消长 -->
 <xh-form id="form-validate-change" validate-on="change">
   <form data-xh-part="root" style="inline-size: 240px">
-    <div data-xh-part="field-group" value="port">
+    <div data-xh-part="field-group" name="port">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">端口（改动即校验）</label>
@@ -369,7 +359,7 @@ const values = ref<Record<string, unknown>>({ ...defaults });
     :default-values="defaults"
     style="inline-size: 260px;"
   >
-    <XhFormFieldGroup v-slot="{ value, setValue }" value="host">
+    <XhFormFieldGroup v-slot="{ value, setValue }" name="host">
       <XhFieldRoot>
         <XhFieldLabel>主机</XhFieldLabel>
         <XhFieldControl>
@@ -378,7 +368,7 @@ const values = ref<Record<string, unknown>>({ ...defaults });
       </XhFieldRoot>
     </XhFormFieldGroup>
 
-    <XhFormFieldGroup v-slot="{ value, setValue }" value="port">
+    <XhFormFieldGroup v-slot="{ value, setValue }" name="port">
       <XhFieldRoot>
         <XhFieldLabel>端口</XhFieldLabel>
         <XhFieldControl>
@@ -398,7 +388,7 @@ const values = ref<Record<string, unknown>>({ ...defaults });
 ```html
 <xh-form id="form-controlled">
   <form data-xh-part="root" style="inline-size: 260px">
-    <div data-xh-part="field-group" value="host">
+    <div data-xh-part="field-group" name="host">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">主机</label>
@@ -408,7 +398,7 @@ const values = ref<Record<string, unknown>>({ ...defaults });
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="port">
+    <div data-xh-part="field-group" name="port">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">端口</label>
@@ -489,7 +479,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 <template>
   <!-- 整表禁用：两颗按钮自带原生 disabled，控件那一侧的 disabled 由自己落 -->
   <XhFormRoot disabled :default-values="{ token: 'xh-0f2a' }" style="inline-size: 260px;">
-    <XhFormFieldGroup v-slot="{ value, setValue }" value="token">
+    <XhFormFieldGroup v-slot="{ value, setValue }" name="token">
       <XhFieldRoot disabled>
         <XhFieldLabel>接入令牌</XhFieldLabel>
         <XhFieldControl>
@@ -516,7 +506,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     style="inline-size: 260px;"
     @submit="onSubmit"
   >
-    <XhFormFieldGroup v-slot="{ value, setValue }" value="token">
+    <XhFormFieldGroup v-slot="{ value, setValue }" name="token">
       <XhFieldRoot>
         <XhFieldLabel>接入令牌</XhFieldLabel>
         <XhFieldControl>
@@ -544,7 +534,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 <!-- 整表禁用：两颗按钮自带原生 disabled，控件那一侧的 disabled 由自己落 -->
 <xh-form id="form-disabled" disabled>
   <form data-xh-part="root" style="inline-size: 260px">
-    <div data-xh-part="field-group" value="token">
+    <div data-xh-part="field-group" name="token">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">接入令牌</label>
@@ -564,7 +554,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 <!-- 只读：重置键置灰、写值不发生，提交仍旧把当下这份值交出去 -->
 <xh-form id="form-readonly" read-only>
   <form data-xh-part="root" style="inline-size: 260px">
-    <div data-xh-part="field-group" value="token">
+    <div data-xh-part="field-group" name="token">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">接入令牌</label>
@@ -669,7 +659,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 <template>
   <XhFormRoot :validate="validate" style="inline-size: 320px;" @submit="onSubmit">
     <template v-for="(row, index) in rows" :key="row.id">
-      <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" :value="fieldName(row.id)">
+      <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" :name="fieldName(row.id)">
         <XhFieldRoot :invalid="invalid">
           <XhFieldLabel>标签 {{ index + 1 }}</XhFieldLabel>
           <XhFieldControl>
@@ -849,7 +839,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     style="inline-size: 320px"
     @submit="onSubmit"
   >
-    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="username">
+    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="username">
       <XhFieldRoot :invalid="invalid" required>
         <XhFieldLabel>用户名</XhFieldLabel>
         <XhFieldControl>
@@ -873,7 +863,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 ```html
 <xh-form id="form-async">
   <form data-xh-part="root" style="inline-size: 320px; display: grid; gap: 12px">
-    <div data-xh-part="field-group" value="username">
+    <div data-xh-part="field-group" name="username">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">用户名</label>
@@ -989,7 +979,7 @@ function validate(values: Record<string, unknown>) {
     :validate="validate"
     style="inline-size: 320px;"
   >
-    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="password">
+    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="password">
       <XhFieldRoot :invalid="invalid" required>
         <XhFieldLabel>密码</XhFieldLabel>
         <XhFieldControl>
@@ -1003,7 +993,7 @@ function validate(values: Record<string, unknown>) {
       </XhFieldRoot>
     </XhFormFieldGroup>
 
-    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="confirm">
+    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="confirm">
       <XhFieldRoot :invalid="invalid" required>
         <XhFieldLabel>确认密码</XhFieldLabel>
         <XhFieldControl>
@@ -1032,7 +1022,7 @@ function validate(values: Record<string, unknown>) {
 ```html
 <xh-form id="form-manual">
   <form data-xh-part="root" style="inline-size: 320px">
-    <div data-xh-part="field-group" value="password">
+    <div data-xh-part="field-group" name="password">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">密码</label>
@@ -1042,7 +1032,7 @@ function validate(values: Record<string, unknown>) {
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="confirm">
+    <div data-xh-part="field-group" name="confirm">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">确认密码</label>
@@ -1176,7 +1166,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     style="inline-size: 320px;"
     @submit="onSubmit"
   >
-    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="email">
+    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="email">
       <XhFieldRoot
         :invalid="invalid"
         :data-tone="!invalid && warning ? 'warning' : undefined"
@@ -1205,7 +1195,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 ```html
 <xh-form id="form-warning">
   <form data-xh-part="root" style="inline-size: 320px">
-    <div data-xh-part="field-group" value="email">
+    <div data-xh-part="field-group" name="email">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">邮箱</label>
@@ -1372,7 +1362,7 @@ function saveDraft(values: Record<string, unknown>) {
 
     <!-- 上一步的字段容器这会儿并没渲染，值仍留在值表里 -->
     <template v-for="field in current.fields" :key="field.name">
-      <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" :value="field.name">
+      <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" :name="field.name">
         <XhFieldRoot :invalid="invalid" required>
           <XhFieldLabel>{{ field.label }}</XhFieldLabel>
           <XhFieldControl>
@@ -1591,16 +1581,16 @@ function onSubmit() {
     <!-- 摘要条目按路径名指过去，点一下焦点落进对应的字段容器 -->
     <XhFormErrorSummary v-slot="{ errorCount }">
       <span>共 {{ errorCount }} 处需要修改</span>
-      <XhFormErrorSummaryItem v-slot="{ error }" value="user.name">姓名：{{ error }}</XhFormErrorSummaryItem>
-      <XhFormErrorSummaryItem v-slot="{ error }" value="user.email">邮箱：{{ error }}</XhFormErrorSummaryItem>
+      <XhFormErrorSummaryItem v-slot="{ error }" name="user.name">姓名：{{ error }}</XhFormErrorSummaryItem>
+      <XhFormErrorSummaryItem v-slot="{ error }" name="user.email">邮箱：{{ error }}</XhFormErrorSummaryItem>
       <template v-for="(row, index) in model.hobbies" :key="index">
-        <XhFormErrorSummaryItem v-slot="{ error }" :value="hobbyName(index)">
+        <XhFormErrorSummaryItem v-slot="{ error }" :name="hobbyName(index)">
           爱好 {{ index + 1 }}：{{ error }}
         </XhFormErrorSummaryItem>
       </template>
     </XhFormErrorSummary>
 
-    <XhFormFieldGroup v-slot="{ error, invalid }" value="user.name">
+    <XhFormFieldGroup v-slot="{ error, invalid }" name="user.name">
       <XhFieldRoot :invalid="invalid" required>
         <XhFieldLabel>姓名</XhFieldLabel>
         <XhFieldControl>
@@ -1611,7 +1601,7 @@ function onSubmit() {
       </XhFieldRoot>
     </XhFormFieldGroup>
 
-    <XhFormFieldGroup v-slot="{ error, invalid }" value="user.email">
+    <XhFormFieldGroup v-slot="{ error, invalid }" name="user.email">
       <XhFieldRoot :invalid="invalid" required>
         <XhFieldLabel>邮箱</XhFieldLabel>
         <XhFieldControl>
@@ -1622,7 +1612,7 @@ function onSubmit() {
     </XhFormFieldGroup>
 
     <template v-for="(row, index) in model.hobbies" :key="index">
-      <XhFormFieldGroup v-slot="{ error, invalid }" :value="hobbyName(index)">
+      <XhFormFieldGroup v-slot="{ error, invalid }" :name="hobbyName(index)">
         <XhFieldRoot :invalid="invalid" required>
           <XhFieldLabel>爱好 {{ index + 1 }}</XhFieldLabel>
           <XhFieldControl>
@@ -1645,13 +1635,13 @@ function onSubmit() {
     <!-- 摘要条目按路径名指过去，点一下焦点落进对应的字段容器 -->
     <div data-xh-part="error-summary">
       <span id="form-nested-count">共 0 处需要修改</span>
-      <a data-xh-part="error-summary-item" value="user.name"></a>
-      <a data-xh-part="error-summary-item" value="user.email"></a>
-      <a data-xh-part="error-summary-item" value="hobbies[0].hobby"></a>
-      <a data-xh-part="error-summary-item" value="hobbies[1].hobby"></a>
+      <a data-xh-part="error-summary-item" name="user.name"></a>
+      <a data-xh-part="error-summary-item" name="user.email"></a>
+      <a data-xh-part="error-summary-item" name="hobbies[0].hobby"></a>
+      <a data-xh-part="error-summary-item" name="hobbies[1].hobby"></a>
     </div>
 
-    <div data-xh-part="field-group" value="user.name">
+    <div data-xh-part="field-group" name="user.name">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">姓名</label>
@@ -1662,7 +1652,7 @@ function onSubmit() {
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="user.email">
+    <div data-xh-part="field-group" name="user.email">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">邮箱</label>
@@ -1672,7 +1662,7 @@ function onSubmit() {
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="hobbies[0].hobby">
+    <div data-xh-part="field-group" name="hobbies[0].hobby">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">爱好 1</label>
@@ -1682,7 +1672,7 @@ function onSubmit() {
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="hobbies[1].hobby">
+    <div data-xh-part="field-group" name="hobbies[1].hobby">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">爱好 2</label>
@@ -1971,7 +1961,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       v-for="f in fields"
       :key="f.name"
       v-slot="{ value, setValue }"
-      :value="f.name"
+      :name="f.name"
     >
       <!-- Field 不接任何校验 props：invalid、必填星号与错误文案全部从表单上下文自取 -->
       <XhFieldRoot>
@@ -1997,7 +1987,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 <xh-form id="form-rules">
   <form data-xh-part="root" style="inline-size: 320px; display: grid; gap: 12px">
     <!-- 字段不接任何校验属性：invalid 与必填星号由表单驱动 -->
-    <div data-xh-part="field-group" value="username">
+    <div data-xh-part="field-group" name="username">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">用户名</label>
@@ -2007,7 +1997,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="email">
+    <div data-xh-part="field-group" name="email">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">邮箱</label>
@@ -2017,7 +2007,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="age">
+    <div data-xh-part="field-group" name="age">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">年龄</label>
@@ -2148,7 +2138,7 @@ const rules = {
         v-for="f in fields"
         :key="f.name"
         v-slot="{ value, setValue }"
-        :value="f.name"
+        :name="f.name"
       >
         <XhFieldRoot>
           <XhFieldLabel>{{ f.label }}</XhFieldLabel>
@@ -2188,7 +2178,7 @@ const rules = {
     label-width="96px"
   >
     <form data-xh-part="root" style="inline-size: 100%; max-inline-size: 460px">
-      <div data-xh-part="field-group" value="username">
+      <div data-xh-part="field-group" name="username">
         <xh-field>
           <div data-xh-part="root">
             <label data-xh-part="label">用户名</label>
@@ -2198,7 +2188,7 @@ const rules = {
         </xh-field>
       </div>
 
-      <div data-xh-part="field-group" value="email">
+      <div data-xh-part="field-group" name="email">
         <xh-field>
           <div data-xh-part="root">
             <label data-xh-part="label">邮箱</label>
@@ -2208,7 +2198,7 @@ const rules = {
         </xh-field>
       </div>
 
-      <div data-xh-part="field-group" value="city">
+      <div data-xh-part="field-group" name="city">
         <xh-field>
           <div data-xh-part="root">
             <label data-xh-part="label">所在城市</label>
@@ -2310,7 +2300,7 @@ const rules = {
       v-for="f in fields"
       :key="f.name"
       v-slot="{ value, setValue }"
-      :value="f.name"
+      :name="f.name"
       :span="f.span"
     >
       <XhFieldRoot>
@@ -2337,7 +2327,7 @@ const rules = {
 ```html
 <xh-form id="form-grid" layout="grid" columns='{"base":1,"md":2}'>
   <form data-xh-part="root" style="inline-size: 100%">
-    <div data-xh-part="field-group" value="name">
+    <div data-xh-part="field-group" name="name">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">姓名</label>
@@ -2347,7 +2337,7 @@ const rules = {
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="phone">
+    <div data-xh-part="field-group" name="phone">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">手机号</label>
@@ -2357,7 +2347,7 @@ const rules = {
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="company">
+    <div data-xh-part="field-group" name="company">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">公司</label>
@@ -2367,7 +2357,7 @@ const rules = {
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="title">
+    <div data-xh-part="field-group" name="title">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">职位</label>
@@ -2377,7 +2367,7 @@ const rules = {
       </xh-field>
     </div>
 
-    <div data-xh-part="field-group" value="address" span="full">
+    <div data-xh-part="field-group" name="address" span="full">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">通讯地址</label>
@@ -2433,6 +2423,33 @@ const rules = {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 多个字段需要一起提交，且存在跨字段规则。
+- 需要统一的校验时机与错误汇总。
+
+### 何时不用
+
+- 只有一两个立即生效的开关：直接改，别包表单。
+- 只是要一格标签加控件：用[表单字段](./field)。
+
+### 特性
+
+- `validateOn` 决定何时校验：输入时、失焦时还是提交时。
+- 支持异步校验、跨字段规则与手动触发入口。
+- `validating` 表示仍有有效异步校验；任何字段变值、受控值更新、重置或卸载都会撤销旧快照的写回与提交资格，不自动重提。
+- 校验器抛错或拒绝 Promise 时，`validationError` 保存 `{ cause, values, field }`，并发出 `validation-error` 事件（React/内核为 `onValidationError`）；`field=null` 表示整表提交。执行异常不会转换成字段错误或触发成功提交。
+- 新校验、变值或重置会清除旧异常；重试由业务显式调用 `submit()`，不自动重试。Vue 默认插槽、React 函数式 children、Web Components 的 `validationError` 只读属性都能读取该状态。
+- 字段身份是 `FormPath`：字符串（包括 `user.email`）永远是一整个键；只有显式数组（如 `['users', 0, 'email']`）才表示路径。数组路径由 `getFormPathValue` / `setFormPathValue` 读写，绝不经数组的逗号字符串落进 `Record`；`formPathKey` 用于稳定 DOM 身份，`formPathDisplay` 用于诊断文案。
+- 嵌套的 `FieldArray` 以自身 `name` 作为根路径；追加、删除或换序时，Form 在 Headless 层同时迁移其子字段的 values、rules、errors、进行中的 validation 与已验证错误标记。字符串字段没有隐式下标，绝不会被这条迁移改写。
+- `FormFieldGroup` 里的 TextField 会继承本字段的 `invalid` / `required` 以及整表的
+  `disabled` / `readOnly`；没有写这四个实例属性才继承，显式写 `false` 可以顶掉最近状态。
+  Field 再包一层时，状态继续落到 TextField 真正可聚焦的 input，而不是只停在包装节点。
+- 错误汇总（`error-summary`）把所有错误列在一处，每条都能点回对应字段。
+- "提醒但不拦下"是一档独立行为：警告级的问题不阻断提交。
+
 ## 产物
 
 | 层 | 值 |
@@ -2471,6 +2488,7 @@ const rules = {
 | `onErrorsChange` | `(details: FormErrorsChangeDetails) => void` |  | 错误表变化意图回调；受控时是唯一出口。 |
 | `onSubmit` | `(details: FormSubmitDetails) => void` |  | 校验通过才调。 |
 | `onInvalid` | `(details: FormInvalidDetails) => void` |  | 校验不通过时调，带上拦下来的整张错误表。 |
+| `onValidationError` | `(details: FormValidationErrorDetails) => void` |  | 校验器抛错或拒绝 Promise 时调用；不触发 onInvalid 或 onSubmit。 |
 
 ## 事件
 
@@ -2482,6 +2500,7 @@ const rules = {
 | `errors-change` | `FormErrorsChangeDetails` | 错误表变化；detail 为 `{ errors }` |
 | `submit` | `FormSubmitDetails` | 校验通过才派发；detail 为 `{ values }` |
 | `invalid` | `FormInvalidDetails` | 校验不通过时派发；detail 为 `{ errors, values }` |
+| `validation-error` | `FormValidationErrorDetails` | 校验器执行异常；detail 为 `{ cause, values, field }`，field 为 null 表示整表提交 |
 
 ## 插槽
 
@@ -2507,9 +2526,9 @@ const rules = {
 
 **状态**：`idle` · `invalid`
 
-**事件**：`SUBMIT` · `RESET` · `VALIDATION.PASS` · `VALIDATION.FAIL` · `FIELD.SET` · `FIELD.BLUR` · `ERROR.SET` · `ERRORS.CLEAR` · `ERROR.FOCUS`
+**事件**：`SUBMIT` · `RESET` · `VALIDATION.PASS` · `VALIDATION.FAIL` · `FIELD.SET` · `FIELD.ARRAY.MUTATE` · `FIELD.BLUR` · `ERROR.SET` · `ERRORS.CLEAR` · `ERROR.FOCUS`
 
-**判据**：`isEnabled` · `isEditable`
+**判据**：`isEnabled` · `isEditable` · `isValidationSnapshotCurrent`
 
 ## connect API
 
@@ -2519,22 +2538,23 @@ const rules = {
 | --- | --- | --- |
 | `values` | `FormValues` | 当下的值表。 |
 | `errors` | `FormErrors` | 当下的错误表（已清理）。 |
-| `errorNames` | `string[]` | 出错的字段名，插入顺序。 |
+| `errorNames` | `FormPath[]` | 出错的字段名，插入顺序。 |
 | `errorCount` | `number` |  |
 | `invalid` | `boolean` | 错误表非空。与"提交失败过"无关，挂载时作者塞进来的错误也算。 |
 | `submitFailed` | `boolean` | 上一次提交被拦下了：错误摘要据此显形。 |
 | `validating` | `boolean` | 异步校验进行中（提交或逐字段都算）。 |
+| `validationError` | `FormValidationErrorDetails \| null` | 校验服务异常；null 表示没有异常，字段错误仍从 errors 读取。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `validateOn` | `FormValidateOn` |  |
 | `layout` | `FormLayout` | 当下的排布档。 |
-| `getFieldId` | `(name: string) => string` | 字段容器的 DOM id；错误摘要的链接指向它。 |
-| `getFieldValue` | `(name: string) => unknown` |  |
-| `getFieldError` | `(name: string) => string \| undefined` | 该字段此刻的错误文案；没错时为 undefined。 |
-| `isFieldInvalid` | `(name: string) => boolean` |  |
-| `isFieldRequired` | `(name: string) => boolean` | 该字段的规则里声明了 required：字段的必填标记从这里推。 |
-| `setFieldValue` | `(name: string, value: unknown) => void` | 写一个字段的值；禁用或只读时不动。 |
-| `setFieldError` | `(name: string, message?: string) => void` | 写一个字段的错误；不给文案（或给空串）即清掉这一条。 |
+| `getFieldId` | `(name: FormPath) => string` | 字段容器的 DOM id；错误摘要的链接指向它。 |
+| `getFieldValue` | `(name: FormPath) => unknown` |  |
+| `getFieldError` | `(name: FormPath) => string \| undefined` | 该字段此刻的错误文案；没错时为 undefined。 |
+| `isFieldInvalid` | `(name: FormPath) => boolean` |  |
+| `isFieldRequired` | `(name: FormPath) => boolean` | 该字段的规则里声明了 required：字段的必填标记从这里推。 |
+| `setFieldValue` | `(name: FormPath, value: unknown) => void` | 写一个字段的值；禁用或只读时不动。 |
+| `setFieldError` | `(name: FormPath, message?: string) => void` | 写一个字段的错误；不给文案（或给空串）即清掉这一条。 |
 | `clearErrors` | `() => void` |  |
 | `submit` | `() => void` | 走完整的校验与提交流程，与用户按提交键同一条路。 |
 | `reset` | `() => void` | 值与错误都回到初始；禁用或只读时不动。 |
@@ -2592,11 +2612,52 @@ const rules = {
 | `submit-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `reset-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-form-field-gap` · `--xh-form-field-invalid-border` · `--xh-form-field-invalid-px` · `--xh-form-gap` · `--xh-form-inline-gap` · `--xh-form-submit-bg` · `--xh-form-submit-bg-active` · `--xh-form-submit-bg-hover` · `--xh-form-submit-border` · `--xh-form-submit-border-active` · `--xh-form-submit-border-hover` · `--xh-form-submit-fg` · `--xh-form-submit-shadow` · `--xh-form-summary-bg` · `--xh-form-summary-border` · `--xh-form-summary-fg` · `--xh-form-summary-font-size` · `--xh-form-summary-gap` · `--xh-form-summary-item-fg-hover` · `--xh-form-summary-item-font-size` · `--xh-form-summary-item-underline-offset` · `--xh-form-summary-px` · `--xh-form-summary-py` · `--xh-form-summary-radius` · `--xh-form-summary-shadow` · `--xh-form-trigger-bg` · `--xh-form-trigger-bg-active` · `--xh-form-trigger-bg-disabled` · `--xh-form-trigger-bg-hover` · `--xh-form-trigger-border` · `--xh-form-trigger-border-disabled` · `--xh-form-trigger-border-hover` · `--xh-form-trigger-fg` · `--xh-form-trigger-font-size` · `--xh-form-trigger-h` · `--xh-form-trigger-px` · `--xh-form-trigger-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-form-field-gap` | `field-group` | `gap` | `default` | `--xh-space-1` | form 的 field-group 部件 gap 覆盖槽。 |
+| `--xh-form-field-invalid-border` | `field-group` | `border-inline-start` | `invalid` | `--xh-border-invalid` | form 的 field-group 部件 border-inline-start 覆盖槽。 |
+| `--xh-form-field-invalid-px` | `field-group` | `padding-inline-start` | `invalid` | `--xh-space-2` | form 的 field-group 部件 padding-inline-start 覆盖槽。 |
+| `--xh-form-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | form 的 root 部件 gap 覆盖槽。 |
+| `--xh-form-inline-gap` | `root` | `column-gap` | `layout=inline` | `--xh-space-4` | form 的 root 部件 column-gap 覆盖槽。 |
+| `--xh-form-label-w` | `root` | `grid-template-columns` | `layout=horizontal` | `30%` | form 的 root 部件 grid-template-columns 覆盖槽。 |
+| `--xh-form-submit-bg` | `submit-trigger` | `background`<br>`border-color` | `not(:disabled)` | `--xh-bg-brand` | form 的 submit-trigger 部件 background、border-color 覆盖槽。 |
+| `--xh-form-submit-bg-active` | `submit-trigger` | `background`<br>`border-color` | `active`<br>`not(:disabled)` | `--xh-bg-brand-active` | form 的 submit-trigger 部件 background、border-color 覆盖槽。 |
+| `--xh-form-submit-bg-hover` | `submit-trigger` | `background`<br>`border-color` | `hover`<br>`not(:disabled)` | `--xh-bg-brand-hover` | form 的 submit-trigger 部件 background、border-color 覆盖槽。 |
+| `--xh-form-submit-border` | `submit-trigger` | `border-color` | `not(:disabled)` | `--xh-form-submit-bg` | form 的 submit-trigger 部件 border-color 覆盖槽。 |
+| `--xh-form-submit-border-active` | `submit-trigger` | `border-color` | `active`<br>`not(:disabled)` | `--xh-form-submit-bg-active` | form 的 submit-trigger 部件 border-color 覆盖槽。 |
+| `--xh-form-submit-border-hover` | `submit-trigger` | `border-color` | `hover`<br>`not(:disabled)` | `--xh-form-submit-bg-hover` | form 的 submit-trigger 部件 border-color 覆盖槽。 |
+| `--xh-form-submit-fg` | `submit-trigger` | `color` | `not(:disabled)` | `--xh-fg-on-brand` | form 的 submit-trigger 部件 color 覆盖槽。 |
+| `--xh-form-submit-shadow` | `submit-trigger` | `box-shadow` | `not(:disabled)` | `--xh-_form-submit-highlight` | form 的 submit-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-form-summary-bg` | `error-summary` | `background` | `default` | `--xh-bg-surface` | form 的 error-summary 部件 background 覆盖槽。 |
+| `--xh-form-summary-border` | `error-summary` | `border` | `default` | `--xh-border-invalid` | form 的 error-summary 部件 border 覆盖槽。 |
+| `--xh-form-summary-fg` | `error-summary` | `color` | `default` | `--xh-fg-danger` | form 的 error-summary 部件 color 覆盖槽。 |
+| `--xh-form-summary-font-size` | `error-summary` | `font-size` | `default` | `--xh-text-body-size` | form 的 error-summary 部件 font-size 覆盖槽。 |
+| `--xh-form-summary-gap` | `error-summary` | `gap` | `default` | `--xh-space-1_5` | form 的 error-summary 部件 gap 覆盖槽。 |
+| `--xh-form-summary-item-fg-hover` | `error-summary-item` | `color` | `hover` | `--xh-fg-danger-hover` | form 的 error-summary-item 部件 color 覆盖槽。 |
+| `--xh-form-summary-item-font-size` | `error-summary-item` | `font-size` | `default` | `--xh-text-secondary-size` | form 的 error-summary-item 部件 font-size 覆盖槽。 |
+| `--xh-form-summary-item-underline-offset` | `error-summary-item` | `text-underline-offset` | `default` | `--xh-space-0_5` | form 的 error-summary-item 部件 text-underline-offset 覆盖槽。 |
+| `--xh-form-summary-px` | `error-summary` | `padding-inline` | `default` | `--xh-control-px-md` | form 的 error-summary 部件 padding-inline 覆盖槽。 |
+| `--xh-form-summary-py` | `error-summary` | `padding-block` | `default` | `--xh-space-3` | form 的 error-summary 部件 padding-block 覆盖槽。 |
+| `--xh-form-summary-radius` | `error-summary` | `border-radius` | `default` | `--xh-shape-surface` | form 的 error-summary 部件 border-radius 覆盖槽。 |
+| `--xh-form-summary-shadow` | `error-summary` | `box-shadow` | `default` | `--xh-elevation-raised` | form 的 error-summary 部件 box-shadow 覆盖槽。 |
+| `--xh-form-trigger-bg` | `reset-trigger`<br>`submit-trigger` | `background` | `default` | `--xh-bg-subtle` | form 的 reset-trigger、submit-trigger 部件 background 覆盖槽。 |
+| `--xh-form-trigger-bg-active` | `reset-trigger`<br>`submit-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | form 的 reset-trigger、submit-trigger 部件 background 覆盖槽。 |
+| `--xh-form-trigger-bg-disabled` | `reset-trigger`<br>`submit-trigger` | `background` | `disabled` | `--xh-bg-muted` | form 的 reset-trigger、submit-trigger 部件 background 覆盖槽。 |
+| `--xh-form-trigger-bg-hover` | `reset-trigger`<br>`submit-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | form 的 reset-trigger、submit-trigger 部件 background 覆盖槽。 |
+| `--xh-form-trigger-border` | `reset-trigger`<br>`submit-trigger` | `border` | `default` | `--xh-border-control` | form 的 reset-trigger、submit-trigger 部件 border 覆盖槽。 |
+| `--xh-form-trigger-border-disabled` | `reset-trigger`<br>`submit-trigger` | `border-color` | `disabled` | `--xh-border-subtle` | form 的 reset-trigger、submit-trigger 部件 border-color 覆盖槽。 |
+| `--xh-form-trigger-border-hover` | `reset-trigger`<br>`submit-trigger` | `border-color` | `hover`<br>`not(:disabled)` | `--xh-border-control-hover` | form 的 reset-trigger、submit-trigger 部件 border-color 覆盖槽。 |
+| `--xh-form-trigger-fg` | `reset-trigger`<br>`submit-trigger` | `color` | `default` | `--xh-fg-default` | form 的 reset-trigger、submit-trigger 部件 color 覆盖槽。 |
+| `--xh-form-trigger-font-size` | `reset-trigger`<br>`submit-trigger` | `font-size` | `default` | `--xh-text-body-size` | form 的 reset-trigger、submit-trigger 部件 font-size 覆盖槽。 |
+| `--xh-form-trigger-h` | `reset-trigger`<br>`submit-trigger` | `block-size` | `default` | `--xh-control-h-md` | form 的 reset-trigger、submit-trigger 部件 block-size 覆盖槽。 |
+| `--xh-form-trigger-px` | `reset-trigger`<br>`submit-trigger` | `padding-inline` | `default` | `--xh-control-px-md` | form 的 reset-trigger、submit-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-form-trigger-radius` | `reset-trigger`<br>`submit-trigger` | `border-radius` | `default` | `--xh-shape-control` | form 的 reset-trigger、submit-trigger 部件 border-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

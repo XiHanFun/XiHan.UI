@@ -1,35 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/scroll-area
 
-# 滚动区域 `scroll-area`
+# ScrollArea `滚动区域`
 
 给一块溢出的内容配一条外观受控的滚动条。滚动本身走的是浏览器原生通路，组件只画滚动条。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/scroll-area" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/scroll-area.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/scroll-area" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/scroll-area" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/scroll-area.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 滚动条的外观要跟站点一致（各平台的原生滚动条长得很不一样）。
-- 需要控制滚动条什么时候露面。
-
-## 何时不用
-
-- 整页滚动：交给浏览器，别套。
-- 内容是长列表且条数很多：用[虚拟滚动](./virtualizer)，只画滚动条解决不了渲染量。
-- 滚到底要继续加载：用[无限滚动](./infinite-scroll)。
-
-## 特性
-
-- 它是视口加两条[滚动条](./scrollbar)的组装：`scrollbar` 挂载点同时是那条滚动条的根，里面照滚动条的写法摆轨道、滑块与交叉口；显隐、拖动、几何全是滚动条那一套。
-- `root` 要有确定高度，视口才量得出溢出。
-- `type` 决定滚动条什么时候露面：缺省的 `scroll-hover` 滚动时或指针进来时露、都停下后收起，`hover` 只认指针，`scroll` 只认滚动，`auto` 溢出就露，`always` 恒露。
-- 只有 `auto` 与 `always` 在视口里占一条道；`scroll-hover` / `hover` / `scroll` 三档浮在内容之上，视口宽度一点不减。
-- `orientation` 关掉的那条轴滚动条恒不显形，视口那一向也不再滚，不留滚不回来的暗格。
-- `variant="fade"` 给内容的边缘加一道渐隐：哪一头还滚得动就淡出哪一侧，滚到头即收。带宽跟着 `size` 走，
-  自绘滚动条不受它影响。两条轴各自到没到头也落成视口上的 `data-at-min-*` / `data-at-max-*`，
-  要自己画「还能往下滚」的提示可以直接接这几个属性。
-- `dir` 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。
-
-## 示例
-
-### 基础用法
+## 用法
 
 root 要有确定高度，视口才量得出溢出；滚动走的是浏览器原生通路，组件只画滚动条
 
@@ -92,6 +75,8 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行内容`);
   }
 </script>
 ```
+
+## 示例
 
 ### 显隐时机
 
@@ -553,6 +538,31 @@ const rows = Array.from({ length: 18 }, (_, i) => `第 ${i + 1} 行内容`);
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 滚动条的外观要跟站点一致（各平台的原生滚动条长得很不一样）。
+- 需要控制滚动条什么时候露面。
+
+### 何时不用
+
+- 整页滚动：交给浏览器，别套。
+- 内容是长列表且条数很多：用[虚拟滚动](./virtualizer)，只画滚动条解决不了渲染量。
+- 滚到底要继续加载：用[无限滚动](./infinite-scroll)。
+
+### 特性
+
+- 它是视口加两条[滚动条](./scrollbar)的组装：`scrollbar` 挂载点同时是那条滚动条的根，里面照滚动条的写法摆轨道、滑块与交叉口；显隐、拖动、几何全是滚动条那一套。
+- `root` 要有确定高度，视口才量得出溢出。
+- `type` 决定滚动条什么时候露面：缺省的 `scroll-hover` 滚动时或指针进来时露、都停下后收起，`hover` 只认指针，`scroll` 只认滚动，`auto` 溢出就露，`always` 恒露。
+- 只有 `auto` 与 `always` 在视口里占一条道；`scroll-hover` / `hover` / `scroll` 三档浮在内容之上，视口宽度一点不减。
+- `orientation` 关掉的那条轴滚动条恒不显形，视口那一向也不再滚，不留滚不回来的暗格。
+- `variant="fade"` 给内容的边缘加一道渐隐：哪一头还滚得动就淡出哪一侧，滚到头即收。带宽跟着 `size` 走，
+  自绘滚动条不受它影响。两条轴各自到没到头也落成视口上的 `data-at-min-*` / `data-at-max-*`，
+  要自己画「还能往下滚」的提示可以直接接这几个属性。
+- `dir` 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。
+
 ## 产物
 
 | 层 | 值 |
@@ -674,11 +684,15 @@ const rows = Array.from({ length: 18 }, (_, i) => `第 ${i + 1} 行内容`);
 | `scrollbar` | `data-state` | 'visible' \| 'hidden' |
 | `corner` | `data-state` | 'visible' \| 'hidden' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-scroll-area-fade-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-scroll-area-fade-size` | `viewport` | `-webkit-mask-image`<br>`mask-image` | `at-max-horizontal`<br>`at-max-vertical`<br>`at-min-horizontal`<br>`at-min-vertical`<br>`not([data-at-max-horizontal])`<br>`not([data-at-max-vertical])`<br>`not([data-at-min-horizontal])`<br>`not([data-at-min-vertical])`<br>`size=lg`<br>`size=sm`<br>`variant=fade` | `--xh-space-4`<br>`--xh-space-6`<br>`--xh-space-8` | scroll-area 的 viewport 部件 -webkit-mask-image、mask-image 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

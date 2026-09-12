@@ -1,31 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/tabs
 
-# 标签页 `tabs`
+# Tabs `标签页`
 
 在同一块区域里切换几组并列的内容，同时只显示一组。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tabs" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/tabs.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/tabs" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/tabs" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/tabs.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 内容属于同一个对象的不同侧面（详情 / 权限 / 日志），用户会来回看。
-- 各组内容量相当，且不需要同时对照。
-
-## 何时不用
-
-- 各组需要同时看见或互相对照：并排摆，别切换。
-- 有先后顺序、必须走完：用[步骤条](./steps)。
-- 只是切换一个显示开关：用[切换按钮组](./toggle-group)。
-
-## 特性
-
-- `activationMode` 决定方向键移动焦点时是否顺带切换：内容加载昂贵时改 `manual`，方向键只搬焦点、按 Enter 才切。
-- `variant` 三档（`line` / `card` / `segment`）只改选中态怎么画，切换行为与键盘操作三档一致。
-- 面板常挂，靠 `hidden` 显隐。
-- `root` 按书写顺序渲染子节点：把面板写在标签栏前面，标签栏就落到内容之后。
-- `reorderable` 打开后标签可以拖着换位，键盘走 Alt + 主轴方向键。**只给 `collection` 时代铺的那套标记里没有播报区与拖动把手**：要读屏播报与触屏拖动，得写默认插槽并自己渲 `live-region` 与 `tab-drag-trigger`。
-
-## 示例
-
-### 基础用法
+## 用法
 
 default-value 指定初始选中项，禁用的标签方向键会跳过；面板常挂，靠 hidden 显隐
 
@@ -80,6 +67,8 @@ const panels: Record<string, string> = {
   </div>
 </xh-tabs>
 ```
+
+## 示例
 
 ### 受控
 
@@ -1407,6 +1396,27 @@ function onTabMove(move: TabMove): void {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 内容属于同一个对象的不同侧面（详情 / 权限 / 日志），用户会来回看。
+- 各组内容量相当，且不需要同时对照。
+
+### 何时不用
+
+- 各组需要同时看见或互相对照：并排摆，别切换。
+- 有先后顺序、必须走完：用[步骤条](./steps)。
+- 只是切换一个显示开关：用[切换按钮组](./toggle-group)。
+
+### 特性
+
+- `activationMode` 决定方向键移动焦点时是否顺带切换：内容加载昂贵时改 `manual`，方向键只搬焦点、按 Enter 才切。
+- `variant` 三档（`line` / `card` / `segment`）只改选中态怎么画，切换行为与键盘操作三档一致。
+- 面板常挂，靠 `hidden` 显隐。
+- `root` 按书写顺序渲染子节点：把面板写在标签栏前面，标签栏就落到内容之后。
+- `reorderable` 打开后标签可以拖着换位，键盘走 Alt + 主轴方向键。**只给 `collection` 时代铺的那套标记里没有播报区与拖动把手**：要读屏播报与触屏拖动，得写默认插槽并自己渲 `live-region` 与 `tab-drag-trigger`。
+
 ## 产物
 
 | 层 | 值 |
@@ -1556,11 +1566,54 @@ function onTabMove(move: TabMove): void {
 | `tab-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `tab-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-tabs-content-fg` · `--xh-tabs-content-py` · `--xh-tabs-drag-fg` · `--xh-tabs-drag-fg-active` · `--xh-tabs-drag-fg-disabled` · `--xh-tabs-drag-grip-long` · `--xh-tabs-drag-grip-short` · `--xh-tabs-drag-radius` · `--xh-tabs-drag-size` · `--xh-tabs-dragging-opacity` · `--xh-tabs-drop-fg` · `--xh-tabs-drop-line` · `--xh-tabs-gap` · `--xh-tabs-indicator-color` · `--xh-tabs-indicator-radius` · `--xh-tabs-indicator-thickness` · `--xh-tabs-list-bg` · `--xh-tabs-list-border` · `--xh-tabs-list-gap` · `--xh-tabs-list-p` · `--xh-tabs-list-radius` · `--xh-tabs-separator-color` · `--xh-tabs-separator-radius` · `--xh-tabs-separator-size` · `--xh-tabs-separator-thickness` · `--xh-tabs-trigger-bg` · `--xh-tabs-trigger-bg-active` · `--xh-tabs-trigger-bg-active-hover` · `--xh-tabs-trigger-bg-hover` · `--xh-tabs-trigger-border` · `--xh-tabs-trigger-border-active` · `--xh-tabs-trigger-fg` · `--xh-tabs-trigger-fg-active` · `--xh-tabs-trigger-font-size` · `--xh-tabs-trigger-font-weight` · `--xh-tabs-trigger-gap` · `--xh-tabs-trigger-h` · `--xh-tabs-trigger-px` · `--xh-tabs-trigger-radius` · `--xh-tabs-trigger-shadow-active`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-tabs-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | tabs 的 content 部件 color 覆盖槽。 |
+| `--xh-tabs-content-py` | `content` | `padding-block` | `default` | `--xh-stack-gap-md` | tabs 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-tabs-drag-fg` | `tab-drag-trigger` | `color` | `default` | `--xh-fg-subtle` | tabs 的 tab-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-tabs-drag-fg-active` | `tab-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | tabs 的 tab-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-tabs-drag-fg-disabled` | `tab-drag-trigger` | `color` | `disabled` | `--xh-fg-disabled` | tabs 的 tab-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-tabs-drag-grip-long` | `root`<br>`tab-drag-trigger` | `block-size`<br>`inline-size` | `empty`<br>`orientation=vertical` | `--xh-space-2` | tabs 的 root、tab-drag-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-tabs-drag-grip-short` | `root`<br>`tab-drag-trigger` | `block-size`<br>`inline-size` | `empty`<br>`orientation=vertical` | `--xh-space-1` | tabs 的 root、tab-drag-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-tabs-drag-radius` | `tab-drag-trigger` | `border-radius` | `default` | `--xh-shape-control` | tabs 的 tab-drag-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-tabs-drag-size` | `tab-drag-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | tabs 的 tab-drag-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-tabs-dragging-opacity` | `trigger` | `opacity` | `dragging` | `--xh-state-dragging-opacity` | tabs 的 trigger 部件 opacity 覆盖槽。 |
+| `--xh-tabs-drop-fg` | `trigger` | `background` | `drop=after`<br>`drop=before`<br>`is([data-drop='before'], [data-drop='after'])` | `--xh-bg-brand` | tabs 的 trigger 部件 background 覆盖槽。 |
+| `--xh-tabs-drop-line` | `root`<br>`trigger` | `block-size`<br>`inline-size` | `drop=after`<br>`drop=before`<br>`is([data-drop='before'], [data-drop='after'])`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thick` | tabs 的 root、trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-tabs-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | tabs 的 root 部件 gap 覆盖槽。 |
+| `--xh-tabs-indicator-color` | `indicator` | `background` | `default` | `--xh-_tabs-accent` | tabs 的 indicator 部件 background 覆盖槽。 |
+| `--xh-tabs-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | tabs 的 indicator 部件 border-radius 覆盖槽。 |
+| `--xh-tabs-indicator-thickness` | `indicator` | `block-size`<br>`inline-size`<br>`inset-block-end`<br>`inset-inline-end` | `default`<br>`orientation=vertical` | `--xh-stroke-thick` | tabs 的 indicator 部件 block-size、inline-size、inset-block-end、inset-inline-end 覆盖槽。 |
+| `--xh-tabs-list-bg` | `list` | `background` | `default` | `--xh-_tabs-list-bg` | tabs 的 list 部件 background 覆盖槽。 |
+| `--xh-tabs-list-border` | `list` | `border-block-end`<br>`border-inline-end` | `default` | `--xh-border-default` | tabs 的 list 部件 border-block-end、border-inline-end 覆盖槽。 |
+| `--xh-tabs-list-gap` | `list` | `gap` | `default` | `--xh-_tabs-list-gap` | tabs 的 list 部件 gap 覆盖槽。 |
+| `--xh-tabs-list-p` | `list` | `padding` | `default` | `--xh-_tabs-list-p` | tabs 的 list 部件 padding 覆盖槽。 |
+| `--xh-tabs-list-radius` | `list` | `border-radius` | `default` | `--xh-_tabs-list-radius` | tabs 的 list 部件 border-radius 覆盖槽。 |
+| `--xh-tabs-separator-color` | `separator` | `background` | `default` | `--xh-border-default` | tabs 的 separator 部件 background 覆盖槽。 |
+| `--xh-tabs-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | tabs 的 separator 部件 border-radius 覆盖槽。 |
+| `--xh-tabs-separator-size` | `separator` | `block-size` | `default` | `--xh-space-4` | tabs 的 separator 部件 block-size 覆盖槽。 |
+| `--xh-tabs-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `default`<br>`orientation=vertical` | `--xh-stroke-thin` | tabs 的 separator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-tabs-trigger-bg` | `trigger` | `background` | `default` | `transparent` | tabs 的 trigger 部件 background 覆盖槽。 |
+| `--xh-tabs-trigger-bg-active` | `trigger` | `background` | `state=active` | `--xh-_tabs-trigger-bg-active` | tabs 的 trigger 部件 background 覆盖槽。 |
+| `--xh-tabs-trigger-bg-active-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`state=active` | `--xh-_tabs-trigger-bg-active-hover` | tabs 的 trigger 部件 background 覆盖槽。 |
+| `--xh-tabs-trigger-bg-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | tabs 的 trigger 部件 background 覆盖槽。 |
+| `--xh-tabs-trigger-border` | `trigger` | `border` | `default` | `--xh-_tabs-trigger-border` | tabs 的 trigger 部件 border 覆盖槽。 |
+| `--xh-tabs-trigger-border-active` | `trigger` | `border-color` | `state=active` | `--xh-_tabs-trigger-border-active` | tabs 的 trigger 部件 border-color 覆盖槽。 |
+| `--xh-tabs-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-muted` | tabs 的 trigger 部件 color 覆盖槽。 |
+| `--xh-tabs-trigger-fg-active` | `trigger` | `color` | `state=active` | `--xh-_tabs-accent-text` | tabs 的 trigger 部件 color 覆盖槽。 |
+| `--xh-tabs-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_tabs-trigger-font-size` | tabs 的 trigger 部件 font-size 覆盖槽。 |
+| `--xh-tabs-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | tabs 的 trigger 部件 font-weight 覆盖槽。 |
+| `--xh-tabs-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-md` | tabs 的 trigger 部件 gap 覆盖槽。 |
+| `--xh-tabs-trigger-h` | `trigger` | `block-size` | `default` | `--xh-_tabs-trigger-h` | tabs 的 trigger 部件 block-size 覆盖槽。 |
+| `--xh-tabs-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_tabs-trigger-px` | tabs 的 trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-tabs-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | tabs 的 trigger 部件 border-radius 覆盖槽。 |
+| `--xh-tabs-trigger-shadow-active` | `trigger` | `box-shadow` | `state=active` | `--xh-_tabs-trigger-shadow-active` | tabs 的 trigger 部件 box-shadow 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

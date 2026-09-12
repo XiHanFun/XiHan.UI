@@ -1,0 +1,134 @@
+const e=`<!-- 首次全量加载与空集合 | 第一次展开才取整棵树；正式 Loading/Empty 与候选树互斥，状态文字不进入选值或键盘导航，底部按钮可重放有数据与零集合响应 -->
+<xh-tree-select id="tree-select-async" placeholder="选一个城市">
+  <div data-xh-part="root" style="max-inline-size: 320px">
+    <span data-xh-part="label">投放城市</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="tree"></div>
+        <div data-xh-part="loading">正在加载城市…</div>
+        <div data-xh-part="empty">暂无可选城市</div>
+        <div data-xh-part="footer">
+          <button type="button" data-load-mode="cities">加载城市</button>
+          <button type="button" data-load-mode="empty">加载空集合</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-tree-select>
+<p>已选：<span id="tree-select-async-value">（无）</span></p>
+
+<script type="module">
+  const treeSelect = document.getElementById("tree-select-async");
+  const tree = treeSelect.querySelector('[data-xh-part="tree"]');
+  const readout = document.getElementById("tree-select-async-value");
+  const buttons = [...treeSelect.querySelectorAll("[data-load-mode]")];
+
+  const CITY_TREE = [
+    {
+      value: "east",
+      label: "华东",
+      children: [
+        { value: "east-shanghai", label: "上海" },
+        { value: "east-hangzhou", label: "杭州" },
+        { value: "east-nanjing", label: "南京" },
+      ],
+    },
+    {
+      value: "north",
+      label: "华北",
+      children: [
+        { value: "north-beijing", label: "北京" },
+        { value: "north-tianjin", label: "天津" },
+      ],
+    },
+  ];
+
+  function part(tag, name, text) {
+    const node = document.createElement(tag);
+    node.dataset.xhPart = name;
+    if (text !== undefined)
+      node.textContent = text;
+    return node;
+  }
+
+  function renderRegion(region) {
+    const branch = part("div", "branch");
+    branch.setAttribute("value", region.value);
+
+    const control = part("div", "branch-control");
+    control.append(
+      part("span", "branch-trigger"),
+      part("span", "branch-text", region.label),
+      part("span", "item-indicator"),
+    );
+
+    const content = part("div", "branch-content");
+    for (const city of region.children) {
+      const item = part("div", "item");
+      item.setAttribute("value", city.value);
+      item.append(
+        part("span", "item-indicator"),
+        part("span", "item-text", city.label),
+      );
+      content.append(item);
+    }
+
+    branch.append(control, content);
+    return branch;
+  }
+
+  let requested = false;
+  let timer;
+
+  function load(mode) {
+    if (timer !== undefined)
+      window.clearTimeout(timer);
+    treeSelect.loading = true;
+    treeSelect.value = [];
+    treeSelect.expandedValue = [];
+    tree.replaceChildren();
+    treeSelect.collection = [];
+    readout.textContent = "（无）";
+    for (const button of buttons)
+      button.disabled = true;
+
+    timer = window.setTimeout(() => {
+      timer = undefined;
+      const result = mode === "cities" ? CITY_TREE : [];
+      tree.replaceChildren(...result.map(renderRegion));
+      treeSelect.collection = result;
+      treeSelect.loading = false;
+      for (const button of buttons)
+        button.disabled = false;
+    }, 800);
+  }
+
+  treeSelect.collection = [];
+  treeSelect.expandedValue = [];
+
+  treeSelect.addEventListener("open-change", (event) => {
+    if (!event.detail.open || requested)
+      return;
+    requested = true;
+    load("cities");
+  });
+
+  for (const button of buttons)
+    button.addEventListener("click", () => load(button.dataset.loadMode));
+
+  treeSelect.addEventListener("expanded-value-change", (event) => {
+    treeSelect.expandedValue = event.detail.value;
+  });
+
+  treeSelect.addEventListener("value-change", (event) => {
+    treeSelect.value = event.detail.value;
+    readout.textContent = event.detail.value.join("、") || "（无）";
+  });
+<\/script>
+`;export{e as default};

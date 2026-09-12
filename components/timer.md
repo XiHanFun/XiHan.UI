@@ -1,35 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/timer
 
-# 计时器 `timer`
+# Timer `计时器`
 
 一段可正可倒的计时：能起、能停、能接着走、能归零。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/timer" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/timer.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/timer" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/timer" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/timer.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 秒表、答题计时、专注计时这类需要用户自己控制起停的场景。
-- 会议或直播的已进行时长。
-- 需要倒着走、并且要在中途暂停的限时任务。
-- 验证码重发倒计时、限时活动、会话即将过期提醒这类只倒数、不需要按钮的场景：走受控通道，只给一个剩余时长。
-
-## 何时不用
-
-- 展示的是一个时刻而不是一段时长：用[时间戳](./timestamp)。
-- 表达任务完成到哪一步：用[进度条](./progress)。
-
-## 特性
-
-- 正着走还是倒着走由 `countdown` 决定，起点 `startMs` 与终点 `targetMs` 两个方向共用。
-- `start` / `pause` / `resume` / `reset` 四个动作齐全，`control` 部件把它们收成一个按钮，按当前状态自动换语义。
-- 时间只从单调时钟的两个时刻相减而来，一拍都不累加，所以停停走走也不会越走越偏。
-- `interval` 只决定数字多久跳一次；到点由另一个精确落在终点上的定时器判定，终点不落在整拍上也不会走过头。
-- 每一段数字是一个 `item` 部件，`unit` 说明它是天、时、分、秒还是毫秒，排版完全交给作者。
-- **受控通道**：给了 `value`（剩余毫秒）或 `active` 即进受控分支——`value` 就是起点、方向锁成倒着走、终点锁成 0，改写它即从新值重新计时；`active` 翻假停在当前值、翻真接着走。受控时起停按钮不再改状态（根上落 `data-controlled`），状态归这两个 prop。
-- `format` 把当前值铺成一串字（`api.text`），`precision` 决定取到哪一位：`0` 到秒、`3` 到毫秒，缺省 `3` 即不量化。
-- `live` 决定时间区的读屏播报档位，缺省 `off`。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一个自己往上走的秒表：不写内容时组件铺开时、分、秒三段，auto-start 让它挂载即开跑
 
@@ -56,6 +39,8 @@ import { XhTimerRoot } from "@xihan-ui/vue";
   </div>
 </xh-timer>
 ```
+
+## 示例
 
 ### 倒着走
 
@@ -435,6 +420,31 @@ function restart(): void {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 秒表、答题计时、专注计时这类需要用户自己控制起停的场景。
+- 会议或直播的已进行时长。
+- 需要倒着走、并且要在中途暂停的限时任务。
+- 验证码重发倒计时、限时活动、会话即将过期提醒这类只倒数、不需要按钮的场景：走受控通道，只给一个剩余时长。
+
+### 何时不用
+
+- 展示的是一个时刻而不是一段时长：用[时间戳](./timestamp)。
+- 表达任务完成到哪一步：用[进度条](./progress)。
+
+### 特性
+
+- 正着走还是倒着走由 `countdown` 决定，起点 `startMs` 与终点 `targetMs` 两个方向共用。
+- `start` / `pause` / `resume` / `reset` 四个动作齐全，`control` 部件把它们收成一个按钮，按当前状态自动换语义。
+- 时间只从单调时钟的两个时刻相减而来，一拍都不累加，所以停停走走也不会越走越偏。
+- `interval` 只决定数字多久跳一次；到点由另一个精确落在终点上的定时器判定，终点不落在整拍上也不会走过头。
+- 每一段数字是一个 `item` 部件，`unit` 说明它是天、时、分、秒还是毫秒，排版完全交给作者。
+- **受控通道**：给了 `value`（剩余毫秒）或 `active` 即进受控分支——`value` 就是起点、方向锁成倒着走、终点锁成 0，改写它即从新值重新计时；`active` 翻假停在当前值、翻真接着走。受控时起停按钮不再改状态（根上落 `data-controlled`），状态归这两个 prop。
+- `format` 把当前值铺成一串字（`api.text`），`precision` 决定取到哪一位：`0` 到秒、`3` 到毫秒，缺省 `3` 即不量化。
+- `live` 决定时间区的读屏播报档位，缺省 `off`。
+
 ## 产物
 
 | 层 | 值 |
@@ -577,11 +587,37 @@ function restart(): void {
 | `item` | `data-unit` | item.unit |
 | `control` | `data-action` | 'pause' \| 'resume' \| 'reset' \| 'start' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-timer-completed-fg` · `--xh-timer-control-bg` · `--xh-timer-control-bg-active` · `--xh-timer-control-bg-disabled` · `--xh-timer-control-bg-hover` · `--xh-timer-control-border` · `--xh-timer-control-border-disabled` · `--xh-timer-control-border-focus` · `--xh-timer-control-border-hover` · `--xh-timer-control-fg` · `--xh-timer-control-gap` · `--xh-timer-control-h` · `--xh-timer-control-px` · `--xh-timer-control-radius` · `--xh-timer-control-shadow-active` · `--xh-timer-control-shadow-hover` · `--xh-timer-digit-font-size` · `--xh-timer-display-fg` · `--xh-timer-fg` · `--xh-timer-gap` · `--xh-timer-item-fg` · `--xh-timer-separator-fg` · `--xh-timer-separator-px`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-timer-completed-fg` | `display` | `color` | `state=completed` | `--xh-fg-muted` | timer 的 display 部件 color 覆盖槽。 |
+| `--xh-timer-control-bg` | `control` | `background` | `default` | `--xh-bg-surface` | timer 的 control 部件 background 覆盖槽。 |
+| `--xh-timer-control-bg-active` | `control` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | timer 的 control 部件 background 覆盖槽。 |
+| `--xh-timer-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-muted` | timer 的 control 部件 background 覆盖槽。 |
+| `--xh-timer-control-bg-hover` | `control` | `background` | `hover` | `--xh-bg-subtle-hover` | timer 的 control 部件 background 覆盖槽。 |
+| `--xh-timer-control-border` | `control` | `border` | `default` | `--xh-border-control` | timer 的 control 部件 border 覆盖槽。 |
+| `--xh-timer-control-border-disabled` | `control` | `border-color` | `disabled` | `--xh-border-subtle` | timer 的 control 部件 border-color 覆盖槽。 |
+| `--xh-timer-control-border-focus` | `control` | `border-color` | `focus-visible` | `--xh-_tone` | timer 的 control 部件 border-color 覆盖槽。 |
+| `--xh-timer-control-border-hover` | `control` | `border-color` | `hover` | `--xh-border-control-hover` | timer 的 control 部件 border-color 覆盖槽。 |
+| `--xh-timer-control-fg` | `control` | `color` | `default` | `--xh-fg-default` | timer 的 control 部件 color 覆盖槽。 |
+| `--xh-timer-control-gap` | `control` | `gap` | `default` | `--xh-_timer-control-gap` | timer 的 control 部件 gap 覆盖槽。 |
+| `--xh-timer-control-h` | `control` | `block-size` | `default` | `--xh-_timer-control-h` | timer 的 control 部件 block-size 覆盖槽。 |
+| `--xh-timer-control-px` | `control` | `padding-inline` | `default` | `--xh-_timer-control-px` | timer 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-timer-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | timer 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-timer-control-shadow-active` | `control` | `box-shadow` | `active`<br>`not(:disabled)` | `none` | timer 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-timer-control-shadow-hover` | `control` | `box-shadow` | `hover`<br>`not(:disabled)` | `--xh-elevation-raised` | timer 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-timer-digit-font-size` | `display` | `font-size` | `default` | `--xh-_timer-digit-size` | timer 的 display 部件 font-size 覆盖槽。 |
+| `--xh-timer-display-fg` | `display` | `color` | `default` | `--xh-fg-default` | timer 的 display 部件 color 覆盖槽。 |
+| `--xh-timer-fg` | `root` | `color` | `default` | `--xh-fg-default` | timer 的 root 部件 color 覆盖槽。 |
+| `--xh-timer-gap` | `root` | `gap` | `default` | `--xh-_timer-gap` | timer 的 root 部件 gap 覆盖槽。 |
+| `--xh-timer-item-fg` | `item` | `color` | `default` | `inherit` | timer 的 item 部件 color 覆盖槽。 |
+| `--xh-timer-separator-fg` | `separator` | `color` | `default` | `--xh-fg-subtle` | timer 的 separator 部件 color 覆盖槽。 |
+| `--xh-timer-separator-px` | `separator` | `padding-inline` | `default` | `--xh-space-0_5` | timer 的 separator 部件 padding-inline 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

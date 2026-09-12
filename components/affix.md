@@ -1,28 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/affix
 
-# 固钉 `affix`
+# Affix `固钉`
 
 滚过判定线就把内容钉在滚动容器可视区的边上；占位盒留在原位，页面不跳。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/affix" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/affix.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/affix" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/affix" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/affix.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 表格的操作栏、表单的提交条、文章的目录，需要滚动时一直可达。
-
-## 何时不用
-
-- 元素从一开始就该钉住：直接写 `position: sticky`，不需要判定线。
-- 要钉的是整块页面骨架（头、侧栏）：用[布局](./layout)的吸顶开关。
-- 需要滚到顶部的按钮：那是[回到顶部](./back-top)。
-
-## 特性
-
-- 占位盒留在原位：吸住的那一刻页面不会突然少一段高度。
-- `offsetTop` 把判定线往下挪，钉住后也在同一位置留出这段高度；给了 `offsetBottom` 就改贴下边。
-- 吸附状态会回调，默认插槽也把它透出来。
-
-## 示例
-
-### 基础用法
+## 用法
 
 滚过判定线就把内容钉在滚动容器可视区的上边；占位盒留在原位，页面不跳
 
@@ -109,6 +99,8 @@ const scrollEl = ref<HTMLElement | null>(null);
   template.replaceWith(affix);
 </script>
 ```
+
+## 示例
 
 ### 让出吸顶栏
 
@@ -422,6 +414,24 @@ function onAffixChange(details: { affixed: boolean }): void {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 表格的操作栏、表单的提交条、文章的目录，需要滚动时一直可达。
+
+### 何时不用
+
+- 元素从一开始就该钉住：直接写 `position: sticky`，不需要判定线。
+- 要钉的是整块页面骨架（头、侧栏）：用[布局](./layout)的吸顶开关。
+- 需要滚到顶部的按钮：那是[回到顶部](./back-top)。
+
+### 特性
+
+- 占位盒留在原位：吸住的那一刻页面不会突然少一段高度。
+- `offsetTop` 把判定线往下挪，钉住后也在同一位置留出这段高度；给了 `offsetBottom` 就改贴下边。
+- 吸附状态会回调，默认插槽也把它透出来。
+
 ## 产物
 
 | 层 | 值 |
@@ -500,11 +510,15 @@ function onAffixChange(details: { affixed: boolean }): void {
 | --- | --- | --- |
 | `content` | `data-fixed` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-affix-layer`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-affix-layer` | `content` | `z-index` | `fixed` | `--xh-layer-sticky` | affix 的 content 部件 z-index 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

@@ -1,29 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/spinner
 
-# 加载指示器 `spinner`
+# Spinner `加载指示器`
 
 一个不确定时长的等待标记。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/spinner" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/spinner.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/spinner" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/spinner" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/spinner.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 时长未知且没有版面可占位。
-- 局部区域在取数据，或按钮上的在途标记。
-
-## 何时不用
-
-- 版面可预测：用[骨架屏](./skeleton)，它让用户提前看到结构。
-- 进度确定：用[进度条](./progress)。
-- 整页导航：用[加载条](./loading-bar)。
-
-## 特性
-
-- 可以配可见文案，也可以只靠 `translations` 给读屏用。
-- 可以盖住等待中的内容（遮罩形态）。
-- 转圈图形可换。
-
-## 示例
-
-### 基础用法
+## 用法
 
 root 是 role=status 的活区，转圈图形由皮肤画在伪元素上；label 给出这一处在等什么
 
@@ -42,6 +31,8 @@ import { XhSpinner } from "@xihan-ui/vue";
   <span data-xh-part="root"></span>
 </xh-spinner>
 ```
+
+## 示例
 
 ### 尺寸
 
@@ -455,6 +446,25 @@ import { XhSpinner } from "@xihan-ui/vue";
 </xh-spinner>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 时长未知且没有版面可占位。
+- 局部区域在取数据，或按钮上的在途标记。
+
+### 何时不用
+
+- 版面可预测：用[骨架屏](./skeleton)，它让用户提前看到结构。
+- 进度确定：用[进度条](./progress)。
+- 整页导航：用[加载条](./loading-bar)。
+
+### 特性
+
+- 可以配可见文案，也可以只靠 `translations` 给读屏用。
+- 可以盖住等待中的内容（遮罩形态）。
+- 转圈图形可换。
+
 ## 产物
 
 | 层 | 值 |
@@ -522,11 +532,23 @@ import { XhSpinner } from "@xihan-ui/vue";
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-spinner-duration` · `--xh-spinner-fg` · `--xh-spinner-gap` · `--xh-spinner-label-fg` · `--xh-spinner-label-size` · `--xh-spinner-radius` · `--xh-spinner-size` · `--xh-spinner-thickness` · `--xh-spinner-track`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-spinner-duration` | `root` | `animation` | `default`<br>`variant=dots` | `--xh-spin-duration` | spinner 的 root 部件 animation 覆盖槽。 |
+| `--xh-spinner-fg` | `root` | `background`<br>`border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`tone`<br>`variant=arc`<br>`variant=dots`<br>`where([data-motion='reduce'])` | `--xh-_tone`<br>`--xh-bg-brand` | spinner 的 root 部件 background、border-block-start-color、border-color 覆盖槽。 |
+| `--xh-spinner-gap` | `root` | `gap` | `default` | `--xh-control-gap-md` | spinner 的 root 部件 gap 覆盖槽。 |
+| `--xh-spinner-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | spinner 的 label 部件 color 覆盖槽。 |
+| `--xh-spinner-label-size` | `label` | `font-size` | `default` | `--xh-text-secondary-size` | spinner 的 label 部件 font-size 覆盖槽。 |
+| `--xh-spinner-radius` | `root` | `border-radius` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-shape-pill` | spinner 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-spinner-size` | `root` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | spinner 的 root 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-spinner-thickness` | `root` | `-webkit-mask`<br>`border`<br>`mask` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-stroke-thick` | spinner 的 root 部件 -webkit-mask、border、mask 覆盖槽。 |
+| `--xh-spinner-track` | `root` | `border` | `default` | `--xh-border-default` | spinner 的 root 部件 border 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

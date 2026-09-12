@@ -1,32 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/mention
 
-# 提及 `mention`
+# Mention `提及`
 
 在正文里打一个前缀字符就弹出候选，选中后把引用插进文本。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/mention" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/mention.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/mention" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/mention" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/mention.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 评论、聊天、任务描述里 @ 某个人或 # 某个条目。
-- 需要多种前缀各带一份候选。
-
-## 何时不用
-
-- 整个输入框的值就是选中项：用[组合框](./combobox)。
-- 只是补全普通词汇：用[组合框](./combobox)或原生自动补全。
-
-## 特性
-
-- 多种前缀各自映射一份候选。
-- `onQueryChange` 给出当前查询串，异步候选据此拉取。
-- 正文可受控，选中时另有回调。
-- `label` 部件给输入框一个点得动的标题；给了 `translations.input` 时仍走 `aria-label`。
-- 给了 `collection` 却一条都不剩时显出 `empty` 部件。
-- 候选还在取时改由 `loading` 部件顶上来，空态让位；候选面板同时报 `aria-busy`。
-- `name` 让整段正文随表单提交，表单重置回落到 `defaultValue`。
-
-## 示例
-
-### 基础用法
+## 用法
 
 在正文里敲 @ 才开候选，选中的那条被插到光标处，前后文一字不动
 
@@ -69,7 +55,7 @@ const filtered = computed(() => {
 ```html
 <xh-mention id="mention-basic" placeholder="写点什么，输入 @ 提及同事">
   <div data-xh-part="root">
-    <textarea data-xh-part="input"></textarea>
+    <input data-xh-part="input" />
     <div data-xh-part="positioner">
       <div data-xh-part="content"></div>
     </div>
@@ -121,6 +107,8 @@ const filtered = computed(() => {
   });
 </script>
 ```
+
+## 示例
 
 ### 多种前缀
 
@@ -178,7 +166,7 @@ function onQuery(details: { query: string | null; prefix: string | null }): void
 ```html
 <xh-mention id="mention-multi-prefix" placeholder="@ 提及同事，# 打标签">
   <div data-xh-part="root">
-    <textarea data-xh-part="input"></textarea>
+    <input data-xh-part="input" />
     <div data-xh-part="positioner">
       <div data-xh-part="content"></div>
     </div>
@@ -300,7 +288,7 @@ const filtered = computed(() => {
 ```html
 <xh-mention id="mention-custom-item">
   <div data-xh-part="root">
-    <textarea data-xh-part="input" aria-label="正文" placeholder="输入 @ 提及同事"></textarea>
+    <input data-xh-part="input" aria-label="正文" placeholder="输入 @ 提及同事" />
     <div data-xh-part="positioner">
       <div data-xh-part="content"></div>
     </div>
@@ -413,7 +401,7 @@ function reset(): void {
 ```html
 <xh-mention id="mention-controlled" value="周会纪要：" tone="brand" placeholder="输入 @ 提及同事">
   <div data-xh-part="root">
-    <textarea data-xh-part="input"></textarea>
+    <input data-xh-part="input" />
     <div data-xh-part="positioner">
       <div data-xh-part="content"></div>
     </div>
@@ -484,11 +472,20 @@ function reset(): void {
 
 ### 异步候选
 
-查询串每变一次就重新去远端查一遍，等结果的这段时间浮层里空着
+查询串每变一次就重新去远端查一遍，加载、空结果和候选共用一张浮层表面
 
 ```vue
 <script setup lang="ts">
-import { XhMentionRoot } from "@xihan-ui/vue";
+import {
+  XhMentionContent,
+  XhMentionEmpty,
+  XhMentionInput,
+  XhMentionItem,
+  XhMentionItemText,
+  XhMentionLoading,
+  XhMentionPositioner,
+  XhMentionRoot,
+} from "@xihan-ui/vue";
 import { ref } from "vue";
 
 interface Person {
@@ -530,10 +527,22 @@ function onQuery(details: { query: string | null }): void {
   <XhMentionRoot
     v-model:value="text"
     :collection="options"
+    :loading="loading"
     placeholder="输入 @ 再打两个字试试"
     :translations="{ input: '正文', content: '提及谁' }"
     @query-change="onQuery"
-  />
+  >
+    <XhMentionInput />
+    <XhMentionPositioner>
+      <XhMentionContent>
+        <XhMentionItem v-for="person in options" :key="person.value" :value="person.value">
+          <XhMentionItemText>{{ person.label }}</XhMentionItemText>
+        </XhMentionItem>
+      </XhMentionContent>
+      <XhMentionEmpty>没有匹配的人选</XhMentionEmpty>
+      <XhMentionLoading>查询中…</XhMentionLoading>
+    </XhMentionPositioner>
+  </XhMentionRoot>
   <p>{{ loading ? "查询中…" : `候选 ${options.length} 条` }}</p>
 </template>
 ```
@@ -541,9 +550,11 @@ function onQuery(details: { query: string | null }): void {
 ```html
 <xh-mention id="mention-async" placeholder="输入 @ 再打两个字试试">
   <div data-xh-part="root">
-    <textarea data-xh-part="input"></textarea>
+    <input data-xh-part="input" />
     <div data-xh-part="positioner">
       <div data-xh-part="content"></div>
+      <div data-xh-part="empty">没有匹配的人选</div>
+      <div data-xh-part="loading">查询中…</div>
     </div>
   </div>
 </xh-mention>
@@ -563,6 +574,8 @@ function onQuery(details: { query: string | null }): void {
   let timer = 0;
 
   mention.translations = { input: "正文", content: "提及谁" };
+  mention.collection = [];
+  mention.loading = false;
 
   function itemNode(person) {
     const item = document.createElement("div");
@@ -577,6 +590,8 @@ function onQuery(details: { query: string | null }): void {
 
   function show(options, loading) {
     content.replaceChildren(...options.map(itemNode));
+    mention.collection = options;
+    mention.loading = loading;
     status.textContent = loading ? "查询中…" : `候选 ${options.length} 条`;
   }
 
@@ -642,7 +657,7 @@ const filtered = computed(() => {
 <div style="display: flex; flex-direction: column; gap: 12px">
   <xh-mention class="mention-variant" variant="outline" placeholder="outline 档，输入 @ 提及同事">
     <div data-xh-part="root">
-      <textarea data-xh-part="input"></textarea>
+      <input data-xh-part="input" />
       <div data-xh-part="positioner">
         <div data-xh-part="content"></div>
       </div>
@@ -651,7 +666,7 @@ const filtered = computed(() => {
 
   <xh-mention class="mention-variant" variant="subtle" placeholder="subtle 档，输入 @ 提及同事">
     <div data-xh-part="root">
-      <textarea data-xh-part="input"></textarea>
+      <input data-xh-part="input" />
       <div data-xh-part="positioner">
         <div data-xh-part="content"></div>
       </div>
@@ -660,7 +675,7 @@ const filtered = computed(() => {
 
   <xh-mention class="mention-variant" variant="ghost" placeholder="ghost 档，输入 @ 提及同事">
     <div data-xh-part="root">
-      <textarea data-xh-part="input"></textarea>
+      <input data-xh-part="input" />
       <div data-xh-part="positioner">
         <div data-xh-part="content"></div>
       </div>
@@ -703,6 +718,34 @@ const filtered = computed(() => {
   }
 </script>
 ```
+
+## 设计指引
+
+### 何时使用
+
+- 评论、聊天、任务描述里 @ 某个人或 # 某个条目。
+- 需要多种前缀各带一份候选。
+
+### 何时不用
+
+- 整个输入框的值就是选中项：用[组合框](./combobox)。
+- 只是补全普通词汇：用[组合框](./combobox)或原生自动补全。
+- 正文本身要跨行：本组件的输入框是单行的，不提供多行形态。
+
+### 特性
+
+- 单行输入框，与其它输入控件同一档行高与内衬。
+- 多种前缀各自映射一份候选。
+- `onQueryChange` 给出当前查询串，异步候选据此拉取。
+- 正文可受控，选中时另有回调。
+- `label` 部件给输入框一个点得动的标题；给了 `translations.input` 时仍走 `aria-label`。
+- 给了 `collection` 却一条都不剩时显出 `empty` 部件。
+- `content` 是候选、空态与加载态共用的唯一浮层表面；`empty`/`loading` 保持为 listbox 外的同级 `role=status`，只在零可见候选时把文字覆盖到该表面。自动结构保留既有 `No results`，手写结构没有状态文案时不画空框。
+- 候选还在取且当前没有可见项时由 `loading` 顶上来，空态让位；已有候选时列表保持可见可操作，只由 `aria-busy` 报后台刷新。
+- 带 `hidden` 的候选不参与计数、高亮、方向键或 Enter；全部隐藏后会清掉 `aria-activedescendant`，不会提交不可见旧项。
+- `name` 让整段正文随表单提交，表单重置回落到 `defaultValue`。
+- 正文输入保持实体，唯一候选面使用 M2 磨砂与细顶光；空态和加载文字位于材质上方，不另画框。
+  浮层使用四向短位移，不缩放文字；增强对比度切为实体，减弱动效取消位移。
 
 ## 产物
 
@@ -806,7 +849,7 @@ const filtered = computed(() => {
 | `close` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` | 标题；`for` 恒写向 input，故须是原生 `&lt;label&gt;`。 |
-| `getInputProps` | `(props?: MentionInputProps) => T['textarea']` | 不传参即多行 textarea。 |
+| `getInputProps` | `() => T['input']` | 单行输入框；正文就写在它身上。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` | 一条候选都没有时显出的空态；有候选时带 hidden 收起。 |
@@ -824,8 +867,8 @@ const filtered = computed(() => {
 | `可打印字符` | open | 查询串跟着变长，过滤由调用方按 onQueryChange 自己做 |
 | `ArrowDown` | open | 高亮移到下一个候选（禁用项跳过、尽头按 loop 回绕），焦点不动 |
 | `ArrowUp` | open | 高亮移到上一个候选（禁用项跳过、尽头按 loop 回绕），焦点不动 |
-| `Enter` | open, 有高亮且未禁用 | 把候选文本插到光标处替换查询串，光标落到插入内容之后，浮层收起；这次回车不换行 |
-| `Enter` | open, 无可提交候选 | 照常换行，只把浮层收起来 |
+| `Enter` | open, 有高亮且未禁用 | 把候选文本插到光标处替换查询串，光标落到插入内容之后，浮层收起；这次回车被吞掉，不落到表单上 |
+| `Enter` | open, 无可提交候选 | 不吞按键，只把浮层收起来；摆在表单里时这次回车照常提交表单 |
 | `Escape` | open | 收起浮层且正文不变；光标不离开这个触发点就不再自动展开 |
 | `Tab` / `Shift+Tab` | open | 收起浮层且不拦按键，焦点按 Tab 序列自然离开 |
 | `ArrowLeft` / `ArrowRight` / `Home` / `End` | 任意时候 | 一律不接管：光标照常移动，触发按新的光标位置重算，挪出查询串即收起 |
@@ -839,13 +882,14 @@ const filtered = computed(() => {
 | `input` | `aria-activedescendant` | `item` 部件的 id \| undefined |
 | `input` | `aria-autocomplete` | 'list' |
 | `input` | `aria-controls` | `content` 部件的 id |
-| `input` | `aria-expanded` | undefined \| 'true' \| 'false' |
+| `input` | `aria-expanded` | 'true' \| 'false' |
 | `input` | `aria-haspopup` | 'listbox' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | props.translations.input |
 | `input` | `aria-labelledby` | `label` 部件的 id |
-| `input` | `role` | undefined \| 'combobox' |
+| `input` | `role` | 'combobox' |
 | `content` | `aria-busy` | 'true' \| undefined |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-label` | props.translations.content |
 | `content` | `role` | 'listbox' |
 | `empty` | `role` | 'status' |
@@ -889,15 +933,72 @@ const filtered = computed(() => {
 | `empty` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-state` | 'open' \| 'closed' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-mention-content-bg` · `--xh-mention-content-border` · `--xh-mention-content-fg` · `--xh-mention-content-gap` · `--xh-mention-content-max-h` · `--xh-mention-content-max-w` · `--xh-mention-content-min-w` · `--xh-mention-content-px` · `--xh-mention-content-py` · `--xh-mention-content-radius` · `--xh-mention-content-shadow` · `--xh-mention-empty-bg` · `--xh-mention-empty-border` · `--xh-mention-empty-fg` · `--xh-mention-empty-font-size` · `--xh-mention-empty-px` · `--xh-mention-empty-py` · `--xh-mention-empty-radius` · `--xh-mention-empty-shadow` · `--xh-mention-input-autofill-bg` · `--xh-mention-input-autofill-fg` · `--xh-mention-input-bg` · `--xh-mention-input-bg-disabled` · `--xh-mention-input-bg-hover` · `--xh-mention-input-bg-readonly` · `--xh-mention-input-border` · `--xh-mention-input-border-focus` · `--xh-mention-input-border-hover` · `--xh-mention-input-border-invalid` · `--xh-mention-input-fg` · `--xh-mention-input-font-size` · `--xh-mention-input-h` · `--xh-mention-input-min-w` · `--xh-mention-input-px` · `--xh-mention-input-py` · `--xh-mention-input-radius` · `--xh-mention-input-shadow` · `--xh-mention-item-bg-hover` · `--xh-mention-item-fg` · `--xh-mention-item-font-size` · `--xh-mention-item-gap` · `--xh-mention-item-leading` · `--xh-mention-item-px` · `--xh-mention-item-py` · `--xh-mention-item-radius` · `--xh-mention-label-fg` · `--xh-mention-label-fg-disabled` · `--xh-mention-label-font-size` · `--xh-mention-label-font-weight` · `--xh-mention-label-gap` · `--xh-mention-layer` · `--xh-mention-loading-bg` · `--xh-mention-loading-border` · `--xh-mention-loading-fg` · `--xh-mention-loading-font-size` · `--xh-mention-loading-px` · `--xh-mention-loading-py` · `--xh-mention-loading-radius` · `--xh-mention-loading-shadow` · `--xh-mention-placeholder-fg`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-mention-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | mention 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-mention-content-bg` | `content` | `background` | `default` | `--xh-material-frosted-bg` | mention 的 content 部件 background 覆盖槽。 |
+| `--xh-mention-content-border` | `content` | `border` | `default` | `--xh-material-frosted-border` | mention 的 content 部件 border 覆盖槽。 |
+| `--xh-mention-content-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | mention 的 content 部件 color 覆盖槽。 |
+| `--xh-mention-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | mention 的 content 部件 gap 覆盖槽。 |
+| `--xh-mention-content-highlight` | `content` | `background` | `default` | `--xh-material-frosted-highlight` | mention 的 content 部件 background 覆盖槽。 |
+| `--xh-mention-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | mention 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-mention-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | mention 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-mention-content-min-h` | `content` | `min-block-size` | `default` | `--xh-_mention-h` | mention 的 content 部件 min-block-size 覆盖槽。 |
+| `--xh-mention-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-min-w` | mention 的 content 部件 min-inline-size 覆盖槽。 |
+| `--xh-mention-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | mention 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-mention-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | mention 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-mention-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | mention 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-mention-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | mention 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-mention-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | mention 的 empty 部件 color 覆盖槽。 |
+| `--xh-mention-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 empty 部件 font-size 覆盖槽。 |
+| `--xh-mention-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 empty 部件 padding-inline 覆盖槽。 |
+| `--xh-mention-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | mention 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-mention-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-canvas` | mention 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-mention-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | mention 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
+| `--xh-mention-input-bg` | `input` | `background` | `default` | `--xh-_mention-input-bg` | mention 的 input 部件 background 覆盖槽。 |
+| `--xh-mention-input-bg-disabled` | `input` | `background` | `disabled` | `--xh-bg-subtle` | mention 的 input 部件 background 覆盖槽。 |
+| `--xh-mention-input-bg-hover` | `input` | `background` | `hover`<br>`invalid`<br>`not(:disabled, [readonly], [data-invalid])` | `--xh-_mention-input-bg-hover` | mention 的 input 部件 background 覆盖槽。 |
+| `--xh-mention-input-bg-readonly` | `input` | `background` | `default` | `--xh-bg-subtle` | mention 的 input 部件 background 覆盖槽。 |
+| `--xh-mention-input-border` | `input` | `border` | `default` | `--xh-_mention-input-border` | mention 的 input 部件 border 覆盖槽。 |
+| `--xh-mention-input-border-focus` | `input` | `border-color` | `focus-visible` | `--xh-_tone` | mention 的 input 部件 border-color 覆盖槽。 |
+| `--xh-mention-input-border-hover` | `input` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, [readonly], [data-invalid])` | `--xh-_mention-input-border-hover` | mention 的 input 部件 border-color 覆盖槽。 |
+| `--xh-mention-input-border-invalid` | `input` | `border-color` | `invalid` | `--xh-border-invalid` | mention 的 input 部件 border-color 覆盖槽。 |
+| `--xh-mention-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | mention 的 input 部件 color 覆盖槽。 |
+| `--xh-mention-input-font-size` | `input` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 input 部件 font-size 覆盖槽。 |
+| `--xh-mention-input-h` | `input` | `block-size` | `default` | `--xh-_mention-h` | mention 的 input 部件 block-size 覆盖槽。 |
+| `--xh-mention-input-min-w` | `input`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | mention 的 input、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-mention-input-px` | `input` | `padding-inline` | `default` | `--xh-_mention-px` | mention 的 input 部件 padding-inline 覆盖槽。 |
+| `--xh-mention-input-radius` | `input` | `border-radius` | `default` | `--xh-shape-control` | mention 的 input 部件 border-radius 覆盖槽。 |
+| `--xh-mention-input-shadow` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`default` | `--xh-_mention-input-shadow` | mention 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-mention-item-bg-hover` | `item` | `background` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-bg-subtle` | mention 的 item 部件 background 覆盖槽。 |
+| `--xh-mention-item-fg` | `item` | `color` | `default` | `--xh-material-frosted-fg` | mention 的 item 部件 color 覆盖槽。 |
+| `--xh-mention-item-font-size` | `item` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 item 部件 font-size 覆盖槽。 |
+| `--xh-mention-item-gap` | `item` | `gap` | `default` | `--xh-_mention-gap` | mention 的 item 部件 gap 覆盖槽。 |
+| `--xh-mention-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | mention 的 item 部件 line-height 覆盖槽。 |
+| `--xh-mention-item-px` | `item` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-mention-item-py` | `item` | `padding-block` | `default` | `--xh-_mention-item-py` | mention 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-mention-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | mention 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-mention-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | mention 的 label 部件 color 覆盖槽。 |
+| `--xh-mention-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | mention 的 label 部件 color 覆盖槽。 |
+| `--xh-mention-label-font-size` | `label` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 label 部件 font-size 覆盖槽。 |
+| `--xh-mention-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | mention 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-mention-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-1` | mention 的 label 部件 margin-block-end 覆盖槽。 |
+| `--xh-mention-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | mention 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-mention-loading-fg` | `loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | mention 的 loading 部件 color 覆盖槽。 |
+| `--xh-mention-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 loading 部件 font-size 覆盖槽。 |
+| `--xh-mention-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 loading 部件 padding-inline 覆盖槽。 |
+| `--xh-mention-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | mention 的 loading 部件 padding-block 覆盖槽。 |
+| `--xh-mention-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | mention 的 input 部件 color 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
-关键帧 `xh-overlay-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -909,12 +1010,14 @@ const filtered = computed(() => {
 
 ## 组合
 
-- 输入宿主可以是[文本输入](./text-field)的多行形态，或 AI 场景里的[提示输入框](./prompt-input)。
+- 正文只有一行，与[文本输入](./text-field)的单行档并排时等高。
+- 要在多行正文里 @ 人：本库现在给不出这样的组件。
 
 ## 最佳实践
 
 - 候选按最近使用排序：@ 的对象高度重复。
 - 插入后的引用要能整体删除，别让用户一个字一个字退。
+- 异步示例应显式组合 `empty` 与 `loading`，不要用外部文字代替浮层内的正式状态，也不要把状态伪造成 option。
 
 ## 反模式
 

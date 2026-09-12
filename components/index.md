@@ -2,9 +2,9 @@
 
 # 组件总览
 
-126 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
+128 个组件都提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）与**自定义元素**（`@xihan-ui/web-components`）；其中 127 个视觉组件另有**默认皮肤**（`@xihan-ui/styles`），1 个 renderless 行为组件不伪造视觉层。内核是唯一的行为定义，适配器不重新实现逻辑。
 
-本册每个组件一页，页内小节固定：概述 · 何时使用 · 何时不用 · 特性 · 示例 · 产物 · 解剖 · Props · 事件 · 插槽 · 状态 · connect API · 键盘 · 无障碍 · 样式 · 数据属性 · CSS 变量 · 动效 · 响应式 · RTL · 组合 · 最佳实践 · 反模式。其中契约类的小节由组件源码、连接层与皮肤直接生成，不会与代码对不上；讲取舍的几节与组件源码同放，见各组件目录下的 doc.md。某一节没有内容时整节不出现，不留空标题。
+本册每个组件一页，页内小节固定：概述 · 源码入口 · 用法 · 示例 · 设计指引 · 产物 · 解剖 · Props · 事件 · 插槽 · 状态 · connect API · 键盘 · 无障碍 · 样式 · 数据属性 · CSS 变量 · 动效 · 响应式 · RTL · 组合 · 最佳实践 · 反模式。其中契约类的小节由组件源码、连接层与皮肤直接生成，不会与代码对不上；讲取舍的几节与组件源码同放，见各组件目录下的 doc.md。某一节没有内容时整节不出现，不留空标题。
 
 不是组件、但同样由本库提供的东西——全局配置、命令式的对话框与轻提示、流式 Markdown 渲染、代码着色——收在[服务与运行时](../runtime/)。
 
@@ -21,7 +21,9 @@
 | [文本截断](./truncate) | `truncate` | 1 | 2 | 4 |
 | [浮动按钮](./float-button) | `float-button` | 3 | 3 | 5 |
 | [渐变文字](./gradient-text) | `gradient-text` | 1 | 0 | 5 |
-| [快捷键](./hotkeys) | `hotkeys` | 3 | 2 | 6 |
+| [快捷键](./hotkeys) | `hotkeys` | 0 | 2 | 4 |
+| [键帽](./kbd) | `kbd` | 1 | 0 | 4 |
+| [键帽组](./kbd-group) | `kbd-group` | 3 | 0 | 4 |
 | [图标](./icon) | `icon` | 2 | 0 | 7 |
 | [图标块](./icon-wrapper) | `icon-wrapper` | 1 | 0 | 4 |
 | [滚动条](./scrollbar) | `scrollbar` | 4 | 7 | 4 |
@@ -75,10 +77,10 @@
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [级联选择](./cascader) | `cascader` | 21 | 14 | 16 |
+| [级联选择](./cascader) | `cascader` | 22 | 25 | 16 |
 | [复选框](./checkbox) | `checkbox` | 5 | 1 | 8 |
 | [复选框组](./checkbox-group) | `checkbox-group` | 7 | 3 | 9 |
-| [颜色选择器](./color-picker) | `color-picker` | 18 | 9 | 10 |
+| [颜色选择器](./color-picker) | `color-picker` | 18 | 10 | 10 |
 | [组合框](./combobox) | `combobox` | 16 | 14 | 14 |
 | [日期输入](./date-field) | `date-field` | 7 | 9 | 13 |
 | [日期选择器](./date-picker) | `date-picker` | 14 | 9 | 10 |
@@ -97,17 +99,17 @@
 | [分格输入](./pin-input) | `pin-input` | 6 | 6 | 11 |
 | [单选组](./radio-group) | `radio-group` | 6 | 4 | 7 |
 | [评分](./rating) | `rating` | 6 | 5 | 9 |
-| [选择器](./select) | `select` | 21 | 15 | 20 |
+| [选择器](./select) | `select` | 20 | 15 | 20 |
 | [签名板](./signature-pad) | `signature-pad` | 8 | 1 | 6 |
 | [滑块](./slider) | `slider` | 11 | 6 | 11 |
 | [开关](./switch) | `switch` | 5 | 1 | 11 |
-| [标签组](./tag-group) | `tag-group` | 7 | 10 | 4 |
-| [标签输入](./tags-input) | `tags-input` | 12 | 13 | 12 |
+| [标签组](./tag-group) | `tag-group` | 4 | 10 | 4 |
+| [标签输入](./tags-input) | `tags-input` | 9 | 13 | 12 |
 | [文本输入](./text-field) | `text-field` | 8 | 1 | 16 |
 | [时间输入](./time-field) | `time-field` | 7 | 9 | 9 |
 | [时间选择器](./time-picker) | `time-picker` | 14 | 24 | 11 |
-| [穿梭框](./transfer) | `transfer` | 18 | 11 | 10 |
-| [树选择](./tree-select) | `tree-select` | 23 | 16 | 13 |
+| [穿梭框](./transfer) | `transfer` | 19 | 11 | 10 |
+| [树选择](./tree-select) | `tree-select` | 27 | 17 | 13 |
 
 ## 数据展示
 
@@ -136,7 +138,7 @@
 | [二维码](./qr-code) | `qr-code` | 2 | 0 | 8 |
 | [统计数值](./statistic) | `statistic` | 6 | 0 | 6 |
 | [表格](./table) | `table` | 23 | 18 | 24 |
-| [标签](./tag) | `tag` | 3 | 1 | 6 |
+| [标签](./tag) | `tag` | 3 | 1 | 7 |
 | [时间线](./timeline) | `timeline` | 9 | 0 | 6 |
 | [计时器](./timer) | `timer` | 5 | 1 | 7 |
 | [时间戳](./timestamp) | `timestamp` | 1 | 0 | 4 |

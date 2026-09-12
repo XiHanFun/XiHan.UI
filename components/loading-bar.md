@@ -1,27 +1,18 @@
 来源：https://ui.docs.xihanfun.com/components/loading-bar
 
-# 加载条 `loading-bar`
+# LoadingBar `加载条`
 
 页面顶部那条细进度线：表示"正在去往别处"或"正在取数据"。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/loading-bar" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/loading-bar.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/loading-bar" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/loading-bar" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/loading-bar.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 路由切换、整页数据刷新这类用户无需等待具体百分比的过程。
-
-## 何时不用
-
-- 进度是确定的且用户关心具体数值：用[进度条](./progress)。
-- 局部区域在加载：用[骨架屏](./skeleton)或[加载指示器](./spinner)。
-
-## 特性
-
-- 不给确定进度时自动爬升（`trickle`）：先快后慢，永远不到 100%，收到完成信号才补满。
-- `minimum` 是起跳位置，让用户立刻看到反应。
-- 可以挂在局部容器上而不只是页面顶部。
-
-## 示例
-
-### 基础用法
+## 用法
 
 条子贴在视口顶边（往页面最上方看）；不给 value 就是不确定进度，宽度自行往前爬，loading 翻 false 才冲到头并淡出
 
@@ -92,6 +83,8 @@ const value = ref(0);
   });
 </script>
 ```
+
+## 示例
 
 ### 确定进度
 
@@ -551,6 +544,23 @@ function reload(): void {
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 路由切换、整页数据刷新这类用户无需等待具体百分比的过程。
+
+### 何时不用
+
+- 进度是确定的且用户关心具体数值：用[进度条](./progress)。
+- 局部区域在加载：用[骨架屏](./skeleton)或[加载指示器](./spinner)。
+
+### 特性
+
+- 不给确定进度时自动爬升（`trickle`）：先快后慢，永远不到 100%，收到完成信号才补满。
+- `minimum` 是起跳位置，让用户立刻看到反应。
+- 可以挂在局部容器上而不只是页面顶部。
+
 ## 产物
 
 | 层 | 值 |
@@ -666,11 +676,21 @@ function reload(): void {
 | `range` | `data-state` | state.get() |
 | `peg` | `data-state` | state.get() |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-loading-bar-fade` · `--xh-loading-bar-layer` · `--xh-loading-bar-peg-fg` · `--xh-loading-bar-peg-w` · `--xh-loading-bar-range` · `--xh-loading-bar-speed` · `--xh-loading-bar-track`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-loading-bar-fade` | `root` | `transition` | `default` | `--xh-motion-duration-exit` | loading-bar 的 root 部件 transition 覆盖槽。 |
+| `--xh-loading-bar-layer` | `root` | `z-index` | `default` | `--xh-layer-sticky` | loading-bar 的 root 部件 z-index 覆盖槽。 |
+| `--xh-loading-bar-peg-fg` | `peg` | `background` | `default` | `--xh-loading-bar-range` | loading-bar 的 peg 部件 background 覆盖槽。 |
+| `--xh-loading-bar-peg-w` | `peg` | `inline-size` | `default` | `--xh-space-8` | loading-bar 的 peg 部件 inline-size 覆盖槽。 |
+| `--xh-loading-bar-range` | `peg`<br>`range` | `background` | `default` | `--xh-_tone-soft` | loading-bar 的 peg、range 部件 background 覆盖槽。 |
+| `--xh-loading-bar-speed` | `range` | `transition` | `default` | `--xh-motion-duration-enter` | loading-bar 的 range 部件 transition 覆盖槽。 |
+| `--xh-loading-bar-track` | `track` | `background` | `default` | `transparent` | loading-bar 的 track 部件 background 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

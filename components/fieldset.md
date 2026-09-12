@@ -1,36 +1,20 @@
 来源：https://ui.docs.xihanfun.com/components/fieldset
 
-# 字段集 `fieldset`
+# Fieldset `字段集`
 
 把若干相关字段收成一组，组标题由 `legend` 给，禁用与无效沿这一组下发。
 
 根节点是原生 `<fieldset>`：整组禁用只写一个属性，浏览器就把组内所有表单控件一并停掉——这是本组件存在的理由，换成 `<div>` 只剩一层灰样式。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/fieldset" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/fieldset.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/fieldset" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/fieldset" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/fieldset.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 一份表单里有几段主题相同的字段（收货信息、发票抬头、通知偏好），需要一个组标题把它们收起来。
-- 需要一次禁用一整段字段，而不是逐个控件写 `disabled`。
-- 一组单选或复选选项需要共用一个问句作为组名。
-
-## 何时不用
-
-- 只有一个控件加一个标签：用[表单字段](./field)，字段管一格，字段集管一组格。
-- 需要整表的值管理与校验：外面套[表单](./form)，字段集只管把一段字段圈起来。
-- 只想在视觉上分段、没有共同的组名与共同的禁用语义：用[分割线](./separator)或[卡片](./card)。
-
-## 特性
-
-- `disabled` 落成原生 `fieldset[disabled]`，组内控件不可聚焦、不可编辑、不参与提交，无需逐个控件接线。
-- 说明文字与错误文案自动派生 `id` 并接进根节点的 `aria-describedby`，作者不写 `id`。
-- 错误文案带 `role="status"` + `aria-live="polite"`，节点常挂、靠 `hidden` 显隐，`invalid` 翻转时读屏排队播报，不打断当前朗读。整表提交失败时打断式播报只由 Form 的错误摘要发出。
-- `invalid` 落成 `data-invalid`，皮肤据此把组标题转成警示色，同时把错误文案接进描述链并显出。
-- `required` 落成 `data-required`，皮肤据此给组标题加星号。
-- `field-group` 把并排的几个字段圈成一段（够宽自动分栏），`actions` 承载组末尾那一行按钮。
-- `disabled` 只连坐原生表单控件：组里 `div` 型控件（滑块、评分这类）要各自接 `disabled`。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一组字段收进原生 fieldset：legend 是这一组的名字，说明文案自动派生 id 并接进 aria-describedby
 
@@ -79,6 +63,8 @@ import { XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot } from "@xihan-
   </fieldset>
 </xh-fieldset>
 ```
+
+## 示例
 
 ### 整组禁用
 
@@ -298,6 +284,30 @@ const enabled = ref(false);
 </script>
 ```
 
+## 设计指引
+
+### 何时使用
+
+- 一份表单里有几段主题相同的字段（收货信息、发票抬头、通知偏好），需要一个组标题把它们收起来。
+- 需要一次禁用一整段字段，而不是逐个控件写 `disabled`。
+- 一组单选或复选选项需要共用一个问句作为组名。
+
+### 何时不用
+
+- 只有一个控件加一个标签：用[表单字段](./field)，字段管一格，字段集管一组格。
+- 需要整表的值管理与校验：外面套[表单](./form)，字段集只管把一段字段圈起来。
+- 只想在视觉上分段、没有共同的组名与共同的禁用语义：用[分割线](./separator)或[卡片](./card)。
+
+### 特性
+
+- `disabled` 落成原生 `fieldset[disabled]`，组内控件不可聚焦、不可编辑、不参与提交，无需逐个控件接线。
+- 说明文字与错误文案自动派生 `id` 并接进根节点的 `aria-describedby`，作者不写 `id`。
+- 错误文案带 `role="status"` + `aria-live="polite"`，节点常挂、靠 `hidden` 显隐，`invalid` 翻转时读屏排队播报，不打断当前朗读。整表提交失败时打断式播报只由 Form 的错误摘要发出。
+- `invalid` 落成 `data-invalid`，皮肤据此把组标题转成警示色，同时把错误文案接进描述链并显出。
+- `required` 落成 `data-required`，皮肤据此给组标题加星号。
+- `field-group` 把并排的几个字段圈成一段（够宽自动分栏），`actions` 承载组末尾那一行按钮。
+- `disabled` 只连坐原生表单控件：组里 `div` 型控件（滑块、评分这类）要各自接 `disabled`。
+
 ## 产物
 
 | 层 | 值 |
@@ -381,11 +391,30 @@ const enabled = ref(false);
 | `field-group` | `data-disabled` | ''（条件成立时才出现） |
 | `actions` | `data-disabled` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-fieldset-actions-gap` · `--xh-fieldset-description-fg` · `--xh-fieldset-description-fg-disabled` · `--xh-fieldset-description-font-size` · `--xh-fieldset-error-fg` · `--xh-fieldset-error-font-size` · `--xh-fieldset-field-group-col-w` · `--xh-fieldset-field-group-gap` · `--xh-fieldset-gap` · `--xh-fieldset-legend-fg` · `--xh-fieldset-legend-fg-disabled` · `--xh-fieldset-legend-fg-invalid` · `--xh-fieldset-legend-font-size` · `--xh-fieldset-legend-font-weight` · `--xh-fieldset-legend-gap` · `--xh-fieldset-legend-star`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-fieldset-actions-gap` | `actions` | `gap` | `default` | `--xh-space-2` | fieldset 的 actions 部件 gap 覆盖槽。 |
+| `--xh-fieldset-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | fieldset 的 description 部件 color 覆盖槽。 |
+| `--xh-fieldset-description-fg-disabled` | `description` | `color` | `disabled` | `--xh-fg-subtle` | fieldset 的 description 部件 color 覆盖槽。 |
+| `--xh-fieldset-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | fieldset 的 description 部件 font-size 覆盖槽。 |
+| `--xh-fieldset-error-fg` | `error-text` | `color` | `default` | `--xh-fg-danger` | fieldset 的 error-text 部件 color 覆盖槽。 |
+| `--xh-fieldset-error-font-size` | `error-text` | `font-size` | `default` | `--xh-text-secondary-size` | fieldset 的 error-text 部件 font-size 覆盖槽。 |
+| `--xh-fieldset-field-group-col-w` | `field-group` | `grid-template-columns` | `default` | `--xh-layout-col-min-sm` | fieldset 的 field-group 部件 grid-template-columns 覆盖槽。 |
+| `--xh-fieldset-field-group-gap` | `field-group` | `gap` | `default` | `--xh-space-3` | fieldset 的 field-group 部件 gap 覆盖槽。 |
+| `--xh-fieldset-gap` | `root` | `gap` | `default` | `--xh-space-4` | fieldset 的 root 部件 gap 覆盖槽。 |
+| `--xh-fieldset-legend-fg` | `legend` | `color` | `default` | `--xh-fg-default` | fieldset 的 legend 部件 color 覆盖槽。 |
+| `--xh-fieldset-legend-fg-disabled` | `legend`<br>`root` | `color` | `disabled` | `--xh-fg-subtle` | fieldset 的 legend、root 部件 color 覆盖槽。 |
+| `--xh-fieldset-legend-fg-invalid` | `legend`<br>`root` | `color` | `invalid` | `--xh-fg-danger` | fieldset 的 legend、root 部件 color 覆盖槽。 |
+| `--xh-fieldset-legend-font-size` | `legend` | `font-size` | `default` | `--xh-text-label-size` | fieldset 的 legend 部件 font-size 覆盖槽。 |
+| `--xh-fieldset-legend-font-weight` | `legend` | `font-weight` | `default` | `--xh-text-label-weight` | fieldset 的 legend 部件 font-weight 覆盖槽。 |
+| `--xh-fieldset-legend-gap` | `legend` | `margin-block-end` | `default` | `--xh-space-2` | fieldset 的 legend 部件 margin-block-end 覆盖槽。 |
+| `--xh-fieldset-legend-star` | `legend`<br>`root` | `color` | `required` | `--xh-fg-danger` | fieldset 的 legend、root 部件 color 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
