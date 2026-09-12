@@ -4,7 +4,7 @@ import { XhCardBody, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle } 
 </script>
 
 <template>
-  <XhCardRoot variant="outline" style="max-inline-size: 360px">
+  <XhCardRoot style="max-inline-size: 360px">
     <XhCardHeader>
       <XhCardTitle>本月账单</XhCardTitle>
       <XhCardDescription>账期 7 月 1 日至 7 月 31 日</XhCardDescription>

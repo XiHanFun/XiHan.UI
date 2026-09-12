@@ -60,7 +60,9 @@ split 在段与段之间画一条分隔线；hoverable 只在能用指针的设�
 - `split` 在各段之间画线，`hoverable` 给出悬停反馈。
 
 
-默认 outline 使用 M1 柔和实体面：细边、单像素顶光和轻接触影；正文保持不透明，卡片不模糊背后内容。subtle 保留淡底无影，elevated 使用 raised 投影，ghost 保持透明。hoverable 在可悬停设备上提升边界与投影，不移动布局。高对比模式取消装饰高光并增强边界，打印时移除高光与投影。
+默认形态使用 HeroUI 式纯净实体面、透明边界和轻接触影；`outline` 提供显式描边，`subtle` 使用淡色底，`elevated` 提升投影层级，`ghost` 保持透明。`hoverable` 会按形态增强边界、底色或投影，不移动布局。高对比模式为有实体边界的形态补足系统描边，打印时移除投影。
+
+标题与正文统一到 14px 基准排版，描述降为 13px 次级字号；相邻的头、身、脚只产生一份 8 / 12 / 16px 纵向间距，单独使用任一部件时仍保留完整内边距。这个间距模型保留 XiHan 的可选部件与 `split` 结构，不采用 HeroUI 将全部内容压进单一 `gap + padding` 容器的做法。
 
 ## 产物
 
@@ -119,27 +121,31 @@ split 在段与段之间画一条分隔线；hoverable 只在能用指针的设�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-card-bg` | `root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-material-soft-bg` | card 的 root 部件 background 覆盖槽。 |
-| `--xh-card-body-pt` | `body`<br>`header` | `padding-block-start` | `default` | `--xh-space-2` | card 的 body、header 部件 padding-block-start 覆盖槽。 |
-| `--xh-card-border` | `root` | `border-color` | `variant=outline` | `--xh-border-default` | card 的 root 部件 border-color 覆盖槽。 |
-| `--xh-card-border-hover` | `root` | `border-color` | `@media (hover: hover)`<br>`hover`<br>`hoverable` | `--xh-border-strong` | card 的 root 部件 border-color 覆盖槽。 |
+| `--xh-card-bg` | `root` | `background`<br>`background-color` | `default`<br>`variant=elevated`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface`<br>`--xh-bg-surface-raised` | card 的 root 部件 background、background-color 覆盖槽。 |
+| `--xh-card-bg-hover` | `root` | `background-color` | `@media (hover: hover)`<br>`hover`<br>`hoverable`<br>`variant=elevated`<br>`variant=ghost`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-subtle-hover`<br>`--xh-bg-surface`<br>`--xh-bg-surface-raised` | card 的 root 部件 background-color 覆盖槽。 |
+| `--xh-card-body-font-size` | `root` | `font-size` | `default` | `--xh-text-body-size` | card 的 root 部件 font-size 覆盖槽。 |
+| `--xh-card-body-line-height` | `root` | `line-height` | `default` | `--xh-text-body-leading` | card 的 root 部件 line-height 覆盖槽。 |
+| `--xh-card-body-pb` | `body` | `padding-block-end` | `not(:last-child)` | `--xh-space-0` | card 的 body 部件 padding-block-end 覆盖槽。 |
+| `--xh-card-body-pt` | `body`<br>`header` | `padding-block-start` | `default` | `--xh-_card-section-gap` | card 的 body、header 部件 padding-block-start 覆盖槽。 |
+| `--xh-card-border` | `root` | `border`<br>`border-color` | `default`<br>`variant=elevated`<br>`variant=ghost`<br>`variant=outline`<br>`variant=subtle` | `--xh-border-default`<br>`transparent` | card 的 root 部件 border、border-color 覆盖槽。 |
+| `--xh-card-border-hover` | `root` | `border-color` | `@media (hover: hover)`<br>`hover`<br>`hoverable`<br>`variant=ghost`<br>`variant=outline`<br>`variant=subtle` | `--xh-border-default`<br>`--xh-border-strong`<br>`transparent` | card 的 root 部件 border-color 覆盖槽。 |
 | `--xh-card-description-fg` | `description` | `color` | `default` | `--xh-material-soft-fg-muted` | card 的 description 部件 color 覆盖槽。 |
 | `--xh-card-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | card 的 description 部件 font-size 覆盖槽。 |
-| `--xh-card-divider` | `body`<br>`footer`<br>`root` | `border-block-start` | `split` | `--xh-material-soft-separator` | card 的 body、footer、root 部件 border-block-start 覆盖槽。 |
-| `--xh-card-fg` | `root` | `color` | `default` | `--xh-material-soft-fg` | card 的 root 部件 color 覆盖槽。 |
+| `--xh-card-divider` | `body`<br>`footer`<br>`root` | `border-block-start` | `split` | `--xh-border-subtle` | card 的 body、footer、root 部件 border-block-start 覆盖槽。 |
+| `--xh-card-fg` | `root` | `color` | `default` | `--xh-fg-default` | card 的 root 部件 color 覆盖槽。 |
 | `--xh-card-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | card 的 footer 部件 gap 覆盖槽。 |
-| `--xh-card-footer-pt` | `footer` | `padding-block-start` | `default` | `--xh-space-2` | card 的 footer 部件 padding-block-start 覆盖槽。 |
+| `--xh-card-footer-pt` | `body`<br>`footer`<br>`header` | `padding-block-start` | `default` | `--xh-_card-section-gap` | card 的 body、footer、header 部件 padding-block-start 覆盖槽。 |
 | `--xh-card-header-gap` | `header` | `gap` | `default` | `--xh-space-1` | card 的 header 部件 gap 覆盖槽。 |
-| `--xh-card-header-pb` | `header` | `padding-block-end` | `default` | `--xh-space-2` | card 的 header 部件 padding-block-end 覆盖槽。 |
+| `--xh-card-header-pb` | `header` | `padding-block-end` | `not(:last-child)` | `--xh-space-0` | card 的 header 部件 padding-block-end 覆盖槽。 |
 | `--xh-card-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | card 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-card-shadow` | `root` | `box-shadow` | `default`<br>`variant=elevated` | `--xh-elevation-raised`<br>`--xh-material-soft-shadow` | card 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-card-shadow-hover` | `root` | `box-shadow` | `@media (hover: hover)`<br>`hover`<br>`hoverable` | `--xh-elevation-lifted` | card 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-card-shadow` | `root` | `box-shadow` | `default`<br>`variant=elevated`<br>`variant=ghost`<br>`variant=outline`<br>`variant=subtle` | `--xh-elevation-lifted`<br>`--xh-elevation-raised`<br>`none` | card 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-card-shadow-hover` | `root` | `box-shadow` | `@media (hover: hover)`<br>`hover`<br>`hoverable`<br>`variant=elevated`<br>`variant=ghost`<br>`variant=subtle` | `--xh-elevation-lifted`<br>`none` | card 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-card-title-font-size` | `root`<br>`title` | `font-size` | `default`<br>`size=lg` | `--xh-control-font-lg`<br>`--xh-text-label-size` | card 的 root、title 部件 font-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ## 动效
 
-`border-color` · `box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `border-color` · `box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

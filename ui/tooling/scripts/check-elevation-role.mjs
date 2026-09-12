@@ -45,7 +45,7 @@ const SLOTTED = /^var\((?:--xh-[a-z][a-z0-9-]*,\s*var\()+--xh-elevation-(?:raise
 const EXPECTED = {
   'back-top': { root: ['glass'] },
   'button': { root: ['soft', 'raised'] },
-  'card': { root: ['soft', 'raised', 'lifted'] },
+  'card': { root: ['raised', 'lifted'] },
   'checkbox': { root: ['soft', 'raised'] },
   'cascader': { content: ['frosted'] },
   'color-picker': { content: ['frosted'] },
