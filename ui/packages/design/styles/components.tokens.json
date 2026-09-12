@@ -58379,16 +58379,40 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "toggle 的 root 部件 background 覆盖槽。"
+      "description": "toggle 的 root 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-toggle-bg-active",
+      "component": "toggle",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "active",
+        "disabled",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-active"
+      ],
+      "visibility": "public",
+      "description": "toggle 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-bg-hover",
@@ -58397,16 +58421,20 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "toggle 的 root 部件 background 覆盖槽。"
+      "description": "toggle 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-bg-on",
@@ -58415,17 +58443,116 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover",
+        "disabled",
+        "focus-visible",
         "state=on"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_tone-subtle"
       ],
       "visibility": "public",
-      "description": "toggle 的 root 部件 background 覆盖槽。"
+      "description": "toggle 的 root 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-toggle-bg-on-active",
+      "component": "toggle",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "active",
+        "disabled",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "state=on"
+      ],
+      "defaultToken": [
+        "--xh-_tone-subtle-active"
+      ],
+      "visibility": "public",
+      "description": "toggle 的 root 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-toggle-bg-on-hover",
+      "component": "toggle",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "state=on"
+      ],
+      "defaultToken": [
+        "--xh-_tone-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "toggle 的 root 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-toggle-border",
+      "component": "toggle",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border",
+        "border-color"
+      ],
+      "state": [
+        "active",
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "toggle 的 root 部件 border、border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-toggle-border-on",
+      "component": "toggle",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border",
+        "border-color"
+      ],
+      "state": [
+        "active",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "state=on"
+      ],
+      "defaultToken": [
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "toggle 的 root 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-toggle-fg",
@@ -58437,7 +58564,14 @@
         "color"
       ],
       "state": [
-        "default"
+        "active",
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -58455,10 +58589,17 @@
         "color"
       ],
       "state": [
+        "active",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
         "state=on"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_tone-fg"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 color 覆盖槽。"
@@ -58473,14 +58614,10 @@
         "font-size"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-control-font-lg",
-        "--xh-control-font-sm",
-        "--xh-text-label-size"
+        "--xh-_action-profile-font-size"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 font-size 覆盖槽。"
@@ -58516,7 +58653,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-gap-md"
+        "--xh-_action-profile-gap"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 gap 覆盖槽。"
@@ -58528,42 +58665,39 @@
         "root"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "inline-size"
       ],
       "state": [
         "default",
-        "size=lg",
-        "size=sm"
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-h-lg",
-        "--xh-control-h-md",
-        "--xh-control-h-sm"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "toggle 的 root 部件 block-size 覆盖槽。"
+      "description": "toggle 的 root 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-toggle-icon-size",
       "component": "toggle",
       "part": [
+        "*",
         "root"
       ],
       "property": [
-        "--xh-icon-size"
+        "--xh-icon-size",
+        "block-size",
+        "inline-size"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-lg",
-        "--xh-glyph-size-md",
-        "--xh-glyph-size-sm"
+        "--xh-_action-profile-glyph-size"
       ],
       "visibility": "public",
-      "description": "toggle 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "toggle 的 *、root 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-toggle-px",
@@ -58575,14 +58709,10 @@
         "padding-inline"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-control-px-lg",
-        "--xh-control-px-md",
-        "--xh-control-px-sm"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 padding-inline 覆盖槽。"
@@ -58600,7 +58730,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-pill"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 border-radius 覆盖槽。"
@@ -58615,13 +58745,17 @@
         "box-shadow"
       ],
       "state": [
+        "active",
         "disabled",
+        "focus-visible",
+        "hover",
+        "loading",
         "not([data-disabled])",
-        "state=on",
-        "variant=solid"
+        "not([data-loading])",
+        "state=on"
       ],
       "defaultToken": [
-        "--xh-_toggle-highlight"
+        "none"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 box-shadow 覆盖槽。"

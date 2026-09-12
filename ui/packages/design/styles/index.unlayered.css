@@ -34585,175 +34585,162 @@
 }
 
 /* styles/toggle.css */
-/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+/* family/action-control.css */
+
 [data-scope='toggle'] {
   --xh-toggle-skin: 1;
 }
 
 [data-scope='toggle'][data-part='root'] {
-  /* 私有槽位：组件令牌 → 语义令牌两级回退，变体只改这几个槽位 */
-  --xh-_bg: var(--xh-toggle-bg, transparent);
-  --xh-_bg-hover: var(--xh-toggle-bg-hover, var(--xh-bg-subtle-hover));
-  --xh-_fg: var(--xh-toggle-fg, var(--xh-fg-default));
+  --xh-_toggle-bg: var(--xh-toggle-bg, var(--xh-bg-subtle));
+  --xh-_toggle-bg-hover: var(--xh-toggle-bg-hover, var(--xh-bg-subtle-hover));
+  --xh-_toggle-bg-active: var(--xh-toggle-bg-active, var(--xh-bg-subtle-active));
+  --xh-_toggle-fg: var(--xh-toggle-fg, var(--xh-fg-default));
+  --xh-_toggle-border: var(--xh-toggle-border, transparent);
+  --xh-_toggle-bg-on: var(--xh-toggle-bg-on, var(--xh-_tone-subtle, var(--xh-bg-brand-subtle)));
+  --xh-_toggle-bg-on-hover: var(
+    --xh-toggle-bg-on-hover,
+    var(
+      --xh-_tone-subtle-hover,
+      color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface))
+    )
+  );
+  --xh-_toggle-bg-on-active: var(
+    --xh-toggle-bg-on-active,
+    var(
+      --xh-_tone-subtle-active,
+      color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface))
+    )
+  );
+  --xh-_toggle-fg-on: var(--xh-toggle-fg-on, var(--xh-_tone-fg, var(--xh-fg-brand)));
+  --xh-_toggle-border-on: var(--xh-toggle-border-on, transparent);
+  --xh-_toggle-highlight-on: transparent;
+  --xh-_toggle-shadow-on: var(--xh-toggle-shadow, none);
+  --xh-action-bg-rest: var(--xh-_toggle-bg);
+  --xh-action-bg-hover: var(--xh-_toggle-bg-hover);
+  --xh-action-bg-pressed: var(--xh-_toggle-bg-active);
+  --xh-action-bg-focus-visible: var(--xh-_toggle-bg);
+  --xh-action-bg-disabled: var(--xh-_toggle-bg);
+  --xh-action-fg-rest: var(--xh-_toggle-fg);
+  --xh-action-fg-hover: var(--xh-_toggle-fg);
+  --xh-action-fg-pressed: var(--xh-_toggle-fg);
+  --xh-action-fg-focus-visible: var(--xh-_toggle-fg);
+  --xh-action-fg-disabled: var(--xh-_toggle-fg);
+  --xh-action-border-rest: var(--xh-_toggle-border);
+  --xh-action-border-hover: var(--xh-_toggle-border);
+  --xh-action-border-pressed: var(--xh-_toggle-border);
+  --xh-action-border-focus-visible: var(--xh-_toggle-border);
+  --xh-action-border-disabled: var(--xh-_toggle-border);
+  --xh-action-highlight-rest: transparent;
+  --xh-action-highlight-hover: transparent;
+  --xh-action-highlight-pressed: transparent;
+  --xh-action-highlight-focus-visible: transparent;
+  --xh-action-highlight-disabled: transparent;
+  --xh-action-shadow-rest: none;
+  --xh-action-shadow-hover: none;
+  --xh-action-shadow-pressed: none;
+  --xh-action-shadow-focus-visible: none;
+  --xh-action-shadow-disabled: none;
+  --xh-action-radius: var(--xh-toggle-radius, var(--xh-shape-pill));
+  --xh-action-visual-size: var(--xh-toggle-h, var(--xh-_action-profile-visual-size));
+  --xh-action-padding-inline: var(--xh-toggle-px, var(--xh-_action-profile-padding-inline));
+  --xh-action-gap: var(--xh-toggle-gap, var(--xh-_action-profile-gap));
+  --xh-action-font-size: var(--xh-toggle-font-size, var(--xh-_action-profile-font-size));
+  --xh-icon-size: var(--xh-toggle-icon-size, var(--xh-_action-profile-glyph-size));
 
-  /* 按下态：强调交给底色。前景不用品牌色——subtle-active 这一档底上任何品牌色都过不了
-     AA（浅色最好的 brand-700 只有 4.37），强调靠底、可读靠前景是更稳的分工 */
-  --xh-_bg-pressed: var(--xh-toggle-bg-on, var(--xh-bg-subtle-active));
-  --xh-_fg-pressed: var(--xh-toggle-fg-on, var(--xh-fg-default));
-
-  /* 作者塞进来的图标跟着这一档尺寸走：xh-icon 的直径读的就是这个继承槽，
-     与旁边的按钮同一把尺。图标自己显式写了 size 时特异性更高，仍以作者写的为准 */
-  --xh-icon-size: var(--xh-toggle-icon-size, var(--xh-glyph-size-md));
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--xh-toggle-gap, var(--xh-control-gap-md));
-  block-size: var(--xh-toggle-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-toggle-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid transparent;
-  border-radius: var(--xh-toggle-radius, var(--xh-shape-control));
-  background: var(--xh-_bg);
-  color: var(--xh-_fg);
-  font-size: var(--xh-toggle-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-toggle-font-weight, var(--xh-text-label-weight));
-  line-height: var(--xh-leading-none);
-  white-space: nowrap;
-  cursor: pointer;
-  user-select: none;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
-[data-scope='toggle'][data-part='root']:hover {
-  background: var(--xh-_bg-hover);
+[data-scope='toggle'] > svg {
+  inline-size: var(--xh-toggle-icon-size, var(--xh-_action-profile-glyph-size));
+  block-size: var(--xh-toggle-icon-size, var(--xh-_action-profile-glyph-size));
+  flex: none;
+  pointer-events: none;
 }
 
-/* 按下去要有回应：整颗轻微下压，松手即弹回。data-state='on' 是选中后的持久态，
-   不承担按下那一瞬的回执。置灰的不压 */
-[data-scope='toggle'][data-part='root']:not([data-disabled]):active {
-  scale: var(--xh-motion-scale-press);
-}
-
-[data-scope='toggle'][data-part='root'][data-disabled] {
-  opacity: var(--xh-state-disabled-opacity);
-}
-
-/* —— 变体 —— */
-/* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的中性配色 */
 [data-scope='toggle'][data-part='root'][data-variant='solid'] {
-  --xh-_bg: transparent;
-  --xh-_bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
-  --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_bg-pressed: var(--xh-_tone, var(--xh-bg-brand));
-  --xh-_fg-pressed: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  --xh-_toggle-bg: transparent;
+  --xh-_toggle-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_toggle-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+  --xh-_toggle-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_toggle-bg-on: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_toggle-bg-on-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
+  --xh-_toggle-bg-on-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
+  --xh-_toggle-fg-on: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  --xh-_toggle-highlight-on: var(--xh-_highlight-tone);
+}
+
+:is([data-theme='dark'] *, [data-theme='dark'])[data-scope='toggle'][data-part='root'][data-variant='solid']:is(
+  :not([data-tone]),
+  [data-tone='brand']
+) {
+  --xh-_toggle-bg-on: var(--xh-color-brand-600);
+  --xh-_toggle-bg-on-hover: var(--xh-color-brand-700);
+  --xh-_toggle-bg-on-active: var(--xh-color-brand-800);
+  --xh-_toggle-fg-on: var(--xh-color-neutral-0);
 }
 
 [data-scope='toggle'][data-part='root'][data-variant='subtle'] {
-  --xh-_bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_toggle-bg: var(--xh-bg-subtle);
+  --xh-_toggle-bg-hover: var(--xh-bg-subtle-hover);
+  --xh-_toggle-bg-active: var(--xh-bg-subtle-active);
+  --xh-_toggle-fg: var(--xh-fg-default);
 }
 
 [data-scope='toggle'][data-part='root'][data-variant='outline'] {
-  --xh-_bg: transparent;
-  --xh-_bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
-  --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
-
-  border-color: var(--xh-_tone-border-control, var(--xh-border-control));
+  --xh-_toggle-bg: transparent;
+  --xh-_toggle-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_toggle-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+  --xh-_toggle-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_toggle-border: var(--xh-_tone-border-control, var(--xh-border-control));
+  --xh-_toggle-border-on: var(--xh-_tone-border-control, var(--xh-border-control));
 }
 
 [data-scope='toggle'][data-part='root'][data-variant='ghost'] {
-  --xh-_bg: transparent;
-  --xh-_bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
-  --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
-  --xh-_bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_toggle-bg: transparent;
+  --xh-_toggle-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_toggle-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+  --xh-_toggle-fg: var(--xh-_tone-fg, var(--xh-fg-default));
 }
 
-/* 按下态排在变体之后：两者特异度相同，后写的那条赢，
-   变体只负责给出按下档的取值，切换由这里一处完成 */
 [data-scope='toggle'][data-part='root'][data-state='on'] {
-  --xh-_bg: var(--xh-_bg-pressed);
-  --xh-_bg-hover: var(--xh-_bg-pressed);
-
-  color: var(--xh-_fg-pressed);
-}
-
-/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='toggle'][data-part='root'][data-state='on']:focus-visible {
-  --xh-_ring-color: currentColor;
-}
-
-/* 只有实心档按下后才是一块实心语气底，顶边画一条极浅的内高光把它衬出厚度；
-   其余三档按下走的是淡底，面上没有厚度可言。置灰时整枚已经压暗，高光一并排除 */
-[data-scope='toggle'][data-part='root'][data-variant='solid'][data-state='on']:not([data-disabled]) {
-  --xh-_toggle-highlight: var(--xh-_highlight-tone);
-
-  box-shadow: var(--xh-toggle-shadow, var(--xh-_toggle-highlight));
-}
-
-/* —— 尺寸 —— */
-[data-scope='toggle'][data-part='root'][data-size='sm'] {
-  --xh-icon-size: var(--xh-toggle-icon-size, var(--xh-glyph-size-sm));
-
-  block-size: var(--xh-toggle-h, var(--xh-control-h-sm));
-  padding-inline: var(--xh-toggle-px, var(--xh-control-px-sm));
-  font-size: var(--xh-toggle-font-size, var(--xh-control-font-sm));
-}
-
-[data-scope='toggle'][data-part='root'][data-size='lg'] {
-  --xh-icon-size: var(--xh-toggle-icon-size, var(--xh-glyph-size-lg));
-
-  block-size: var(--xh-toggle-h, var(--xh-control-h-lg));
-  padding-inline: var(--xh-toggle-px, var(--xh-control-px-lg));
-  font-size: var(--xh-toggle-font-size, var(--xh-control-font-lg));
-}
-
-/* 只有图标：左右内距清零，宽度靠比例跟住当前档的高度——换尺寸档时仍是正方形，
-   不必把档位抄进行内样式。写在尺寸档之后，压得住三档各自的 padding-inline */
-[data-scope='toggle'][data-part='root'][data-icon-only] {
-  padding-inline: 0;
-  aspect-ratio: 1;
+  --xh-action-bg-rest: var(--xh-_toggle-bg-on);
+  --xh-action-bg-hover: var(--xh-_toggle-bg-on-hover);
+  --xh-action-bg-pressed: var(--xh-_toggle-bg-on-active);
+  --xh-action-bg-focus-visible: var(--xh-_toggle-bg-on);
+  --xh-action-bg-disabled: var(--xh-_toggle-bg-on);
+  --xh-action-fg-rest: var(--xh-_toggle-fg-on);
+  --xh-action-fg-hover: var(--xh-_toggle-fg-on);
+  --xh-action-fg-pressed: var(--xh-_toggle-fg-on);
+  --xh-action-fg-focus-visible: var(--xh-_toggle-fg-on);
+  --xh-action-fg-disabled: var(--xh-_toggle-fg-on);
+  --xh-action-border-rest: var(--xh-_toggle-border-on);
+  --xh-action-border-hover: var(--xh-_toggle-border-on);
+  --xh-action-border-pressed: var(--xh-_toggle-border-on);
+  --xh-action-border-focus-visible: var(--xh-_toggle-border-on);
+  --xh-action-border-disabled: var(--xh-_toggle-border-on);
+  --xh-action-highlight-rest: var(--xh-_toggle-highlight-on);
+  --xh-action-highlight-hover: var(--xh-_toggle-highlight-on);
+  --xh-action-highlight-pressed: var(--xh-_toggle-highlight-on);
+  --xh-action-highlight-focus-visible: var(--xh-_toggle-highlight-on);
+  --xh-action-highlight-disabled: transparent;
+  --xh-action-shadow-rest: var(--xh-_toggle-shadow-on);
+  --xh-action-shadow-hover: var(--xh-_toggle-shadow-on);
+  --xh-action-shadow-pressed: var(--xh-_toggle-shadow-on);
+  --xh-action-shadow-focus-visible: var(--xh-_toggle-shadow-on);
+  --xh-action-shadow-disabled: none;
+  --xh-action-ring-color-focus-visible: currentColor;
 }
 
 [data-scope='toggle'][data-part='root'][data-full-width] {
   inline-size: 100%;
 }
 
-/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
-   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='toggle'][data-part='root'][hidden] {
   display: none;
 }
 
-/* 手指落点：命中区由绝对定位的伪元素向块轴两侧外扩，钮的盒一点不动——
-   加高盒子会把同一行里的控件顶得高低不齐。
-   只扩块轴：行内那两边由内距与文字撑开。
-   取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕 */
-@media (pointer: coarse) {
-  [data-scope='toggle'][data-part='root'] {
-    position: relative;
-  }
-
-  [data-scope='toggle'][data-part='root']::after {
-    content: '';
-    position: absolute;
-    inset-block: -8px;
-    inset-inline: 0;
-  }
-}
-
 @media print {
-  /* 打印默认丢底色与投影：按下那一档只换了底（实心档另有一条内高光），落到纸上与没按下的
-     一模一样。改用描边与字重两条印得出来的通道——常态那圈边是透明的，这里把它显出来。 */
   [data-scope='toggle'][data-part='root'][data-state='on'] {
     border-color: currentColor;
     font-weight: var(--xh-font-weight-semibold);

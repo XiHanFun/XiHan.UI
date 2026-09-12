@@ -52566,10 +52566,25 @@
               "name": "--xh-toggle-bg"
             },
             {
+              "name": "--xh-toggle-bg-active"
+            },
+            {
               "name": "--xh-toggle-bg-hover"
             },
             {
               "name": "--xh-toggle-bg-on"
+            },
+            {
+              "name": "--xh-toggle-bg-on-active"
+            },
+            {
+              "name": "--xh-toggle-bg-on-hover"
+            },
+            {
+              "name": "--xh-toggle-border"
+            },
+            {
+              "name": "--xh-toggle-border-on"
             },
             {
               "name": "--xh-toggle-fg"

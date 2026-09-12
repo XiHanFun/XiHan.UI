@@ -1,12 +1,8 @@
-<!-- 基础用法 | 按下态由 pressed 表达，非受控时组件自己维护 -->
+<!-- 基础用法 | 切换按钮状态 -->
 <script setup lang="ts">
 import { XhToggle } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const bold = ref(false);
 </script>
 
 <template>
-  <XhToggle>加粗</XhToggle>
-  <XhToggle v-model:pressed="bold">受控：{{ bold ? "已按下" : "未按下" }}</XhToggle>
+  <XhToggle default-pressed>加粗</XhToggle>
 </template>

@@ -239,16 +239,6 @@
     "theme": "light",
     "tone": null
   },
-  "toggle [data-part='root'][data-scope='toggle'][data-state='on']": {
-    "ratio": 2.89,
-    "theme": "dark",
-    "tone": null
-  },
-  "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='solid']:not([data-disabled])": {
-    "ratio": 1,
-    "theme": "light",
-    "tone": "brand"
-  },
   "toggle-group [data-disabled][data-part='item'][data-scope='toggle-group'][data-state='on']": {
     "ratio": 1.92,
     "theme": "light",

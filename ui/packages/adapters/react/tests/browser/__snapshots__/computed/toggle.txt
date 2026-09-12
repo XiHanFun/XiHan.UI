@@ -7,10 +7,10 @@ padding-bottom: 1px
 padding-left: 12px
 row-gap: 8px
 column-gap: 8px
-border-top-left-radius: 6px
-border-top-right-radius: 6px
-border-bottom-right-radius: 6px
-border-bottom-left-radius: 6px
+border-top-left-radius: 9999px
+border-top-right-radius: 9999px
+border-bottom-right-radius: 9999px
+border-bottom-left-radius: 9999px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
@@ -24,10 +24,10 @@ font-size: 14px
 line-height: 14px
 font-weight: 500
 color: oklch(0.145 0.005 258)
-background-color: rgba(0, 0, 0, 0)
-transition-property: background, box-shadow, scale
-transition-duration: 0.12s, 0.12s, 0.12s
-transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
+background-color: oklch(0.967 0.001 258)
+transition-property: background-color, border-color, box-shadow, opacity, scale
+transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease

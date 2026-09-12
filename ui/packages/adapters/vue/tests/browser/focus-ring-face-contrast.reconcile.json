@@ -4,18 +4,6 @@
       "found": "静态算 2.89:1，本侧量到 5.09:1（light · 无语气）",
       "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"
     },
-    "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='ghost']": {
-      "found": "静态算 2.89:1，本侧（归到 toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='subtle']）量到 3.14:1（light · neutral）",
-      "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"
-    },
-    "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='outline']": {
-      "found": "静态算 2.89:1，本侧（归到 toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='subtle']）量到 3.14:1（light · neutral）",
-      "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"
-    },
-    "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='subtle']": {
-      "found": "静态算 2.89:1，本侧量到 3.14:1（light · neutral）",
-      "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"
-    },
     "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='ghost'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
       "found": "静态算 2.89:1，本侧（归到 toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='subtle'] [data-part='item'][data-scope='toggle-group'][data-state='on']）量到 3.14:1（light · neutral）",
       "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"

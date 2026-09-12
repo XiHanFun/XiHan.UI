@@ -1,4 +1,4 @@
-// 禁用 | disabled 同时挡住指针与键盘，按下态保持原样
+// 禁用 | 保留禁用前的状态
 import type { ReactNode } from "react";
 import { XhToggle } from "@xihan-ui/react";
 
