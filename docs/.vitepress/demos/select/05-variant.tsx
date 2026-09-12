@@ -1,4 +1,4 @@
-// 形态 | variant 只改盒的颜色槽位，浮层与键盘行为三档一致
+// 形态 | outline、subtle 和 ghost
 import type { ReactNode } from "react";
 import { XhSelectRoot } from "@xihan-ui/react";
 

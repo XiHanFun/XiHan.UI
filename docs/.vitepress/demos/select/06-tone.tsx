@@ -1,4 +1,4 @@
-// 语气 | tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
+// 语气 | 六种语气
 import type { ReactNode } from "react";
 import { XhSelectRoot } from "@xihan-ui/react";
 

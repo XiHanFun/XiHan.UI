@@ -77,10 +77,10 @@ padding-bottom: 6px
 padding-left: 12px
 row-gap: 8px
 column-gap: 8px
-border-top-left-radius: 6px
-border-top-right-radius: 6px
-border-bottom-right-radius: 6px
-border-bottom-left-radius: 6px
+border-top-left-radius: 8px
+border-top-right-radius: 8px
+border-bottom-right-radius: 8px
+border-bottom-left-radius: 8px
 border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
@@ -217,10 +217,10 @@ padding-bottom: 0px
 padding-left: 0px
 row-gap: normal
 column-gap: normal
-border-top-left-radius: 6px
-border-top-right-radius: 6px
-border-bottom-right-radius: 6px
-border-bottom-left-radius: 6px
+border-top-left-radius: 8px
+border-top-right-radius: 8px
+border-bottom-right-radius: 8px
+border-bottom-left-radius: 8px
 border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
@@ -252,10 +252,10 @@ padding-bottom: 4px
 padding-left: 4px
 row-gap: normal
 column-gap: normal
-border-top-left-radius: 8px
-border-top-right-radius: 8px
-border-bottom-right-radius: 8px
-border-bottom-left-radius: 8px
+border-top-left-radius: 12px
+border-top-right-radius: 12px
+border-bottom-right-radius: 12px
+border-bottom-left-radius: 12px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
@@ -287,10 +287,10 @@ padding-bottom: 0px
 padding-left: 12px
 row-gap: 8px
 column-gap: 8px
-border-top-left-radius: 6px
-border-top-right-radius: 6px
-border-bottom-right-radius: 6px
-border-bottom-left-radius: 6px
+border-top-left-radius: 8px
+border-top-right-radius: 8px
+border-bottom-right-radius: 8px
+border-bottom-left-radius: 8px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
@@ -315,11 +315,11 @@ outline-width: 3px
 outline-offset: 0px
 outline-color: oklch(0.145 0.005 258)
 
-[hidden-input]
-padding-top: 0px
-padding-right: 0px
-padding-bottom: 0px
-padding-left: 0px
+[empty]
+padding-top: 12px
+padding-right: 12px
+padding-bottom: 12px
+padding-left: 12px
 row-gap: normal
 column-gap: normal
 border-top-left-radius: 0px
@@ -330,15 +330,15 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: rgb(0, 0, 0)
-border-right-color: rgb(0, 0, 0)
-border-bottom-color: rgb(0, 0, 0)
-border-left-color: rgb(0, 0, 0)
+border-top-color: oklch(0.439 0.006 258)
+border-right-color: oklch(0.439 0.006 258)
+border-bottom-color: oklch(0.439 0.006 258)
+border-left-color: oklch(0.439 0.006 258)
 min-height: 0px
-font-size: 16px
-line-height: normal
+font-size: 14px
+line-height: 14px
 font-weight: 400
-color: rgb(0, 0, 0)
+color: oklch(0.439 0.006 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
@@ -348,7 +348,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: rgb(0, 0, 0)
+outline-color: oklch(0.439 0.006 258)
 
 [indicator]
 padding-top: 0px
@@ -392,10 +392,10 @@ padding-bottom: 6px
 padding-left: 36px
 row-gap: 8px
 column-gap: 8px
-border-top-left-radius: 6px
-border-top-right-radius: 6px
-border-bottom-right-radius: 6px
-border-bottom-left-radius: 6px
+border-top-left-radius: 8px
+border-top-right-radius: 8px
+border-bottom-right-radius: 8px
+border-bottom-left-radius: 8px
 border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
@@ -524,6 +524,41 @@ animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
 outline-color: oklch(0.145 0.005 258)
+
+[loading]
+padding-top: 12px
+padding-right: 12px
+padding-bottom: 12px
+padding-left: 12px
+row-gap: normal
+column-gap: normal
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.439 0.006 258)
+border-right-color: oklch(0.439 0.006 258)
+border-bottom-color: oklch(0.439 0.006 258)
+border-left-color: oklch(0.439 0.006 258)
+min-height: 0px
+font-size: 14px
+line-height: 14px
+font-weight: 400
+color: oklch(0.439 0.006 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.439 0.006 258)
 
 [positioner]
 padding-top: 0px

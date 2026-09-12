@@ -41158,6 +41158,9 @@
               "name": "--xh-select-item-bg-pressed"
             },
             {
+              "name": "--xh-select-item-check-fg"
+            },
+            {
               "name": "--xh-select-item-fg"
             },
             {
@@ -41171,9 +41174,6 @@
             },
             {
               "name": "--xh-select-item-gap"
-            },
-            {
-              "name": "--xh-select-item-indicator-fg"
             },
             {
               "name": "--xh-select-item-indicator-size"

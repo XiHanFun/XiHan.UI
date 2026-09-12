@@ -30,6 +30,7 @@ import { join } from 'node:path'
 const SKINS = 'packages/design/styles/css'
 const HEADLESS = 'packages/engine/headless/src'
 const ACTION_RECIPE = 'packages/design/styles/family/action-control.css'
+const COLLECTION_RECIPE = 'packages/design/styles/family/collection-item.css'
 
 /**
  * 该有按压反馈的控件，连同它的部件名（一个组件可以登记多个部件）。
@@ -196,6 +197,7 @@ const NO_PRESS = {
 
 const problems = []
 const actionRecipe = await readFile(ACTION_RECIPE, 'utf8').catch(() => '')
+const collectionRecipe = await readFile(COLLECTION_RECIPE, 'utf8').catch(() => '')
 
 for (const [name, parts] of Object.entries(PRESSABLE)) {
   let css
@@ -210,7 +212,7 @@ for (const [name, parts] of Object.entries(PRESSABLE)) {
     if (typeof part === 'string')
       checkPart(name, part, css, await isActionControlPart(name, part) ? actionRecipe : '')
     else if (part.feedback === 'surface')
-      checkSurfacePart(name, part.part, css)
+      checkSurfacePart(name, part.part, css, await isCollectionItemPart(name, part.part) ? collectionRecipe : '')
     else
       checkHeldPart(name, part.part, part.attr, css)
   }
@@ -226,6 +228,18 @@ async function isActionControlPart(name, part) {
   const next = source.slice(start + getter.length).search(/\bget[A-Z][A-Za-z0-9]*Props\s*[:=]/)
   const body = source.slice(start, next < 0 ? source.length : start + getter.length + next)
   return body.includes('\'data-xh-action-control\':')
+}
+
+/** Headless getter投影 Collection Item 时，换面过渡可以由共享家族提供。 */
+async function isCollectionItemPart(name, part) {
+  const source = await readFile(`${HEADLESS}/${name}/${name}.connect.ts`, 'utf8').catch(() => '')
+  const getter = `get${part.split('-').map(value => value[0].toUpperCase() + value.slice(1)).join('')}Props`
+  const start = source.search(new RegExp(`${getter}\\s*[:=]`))
+  if (start < 0)
+    return false
+  const next = source.slice(start + getter.length).search(/\bget[A-Z][A-Za-z0-9]*Props\s*[:=]/)
+  const body = source.slice(start, next < 0 ? source.length : start + getter.length + next)
+  return body.includes("'data-xh-collection-item':")
 }
 
 for (const key of Object.keys(NO_PRESS)) {
@@ -347,7 +361,7 @@ function checkPart(name, part, css, familyCss = '') {
 }
 
 /** 列表行用换面表达按下，几何保持不变；只有显式登记的部件走这条合同。 */
-function checkSurfacePart(name, part, css) {
+function checkSurfacePart(name, part, css, familyCss = '') {
   const active = new RegExp(`${partSelector(part)}[^{]*:active(?::not\\([^)]*\\))?\\s*\\{([^}]*)\\}`)
   const match = css.match(active)
   const surface = match?.[1].match(/(?:^|;)\s*background(?:-color)?\s*:\s*([^;]+)/)
@@ -356,7 +370,8 @@ function checkSurfacePart(name, part, css) {
   if (match && /(?:^|;)\s*(?:scale|translate|transform)\s*:/.test(match[1]))
     problems.push(`${name} 的 ${part} 登记为换面反馈，却在按下时改变几何`)
   const rules = [...css.matchAll(new RegExp(`${partSelector(part)}[^{]*\\{([^}]*)\\}`, 'g'))]
-  if (!rules.some(rule => /transition:[^;]*\bbackground(?:-color)?\b/.test(rule[1])))
+  const familyTransition = /\[data-xh-collection-item\]\s*\{[\s\S]*?transition:[^;]*\bbackground(?:-color)?\b/.test(familyCss)
+  if (!rules.some(rule => /transition:[^;]*\bbackground(?:-color)?\b/.test(rule[1])) && !familyTransition)
     problems.push(`${name} 的 ${part} 没把换面写进本部件的 transition`)
 }
 

@@ -448,7 +448,8 @@ export class XhSelectElement extends XhPortalHostElement {
 
     // 条目逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled。
     // wire 跑在事件之前，按键时 data-scope/data-part/data-value 已在 DOM 上供方向键与连打检索现查。
-    for (const el of this.getParts('item')) {
+    const items = this.getParts('item')
+    for (const el of items) {
       const item: SelectItemProps = {
         value: el.getAttribute('value') ?? '',
         disabled: this.collection ? this.declaredDisabled(el) : isItemDisabled(el),
@@ -470,6 +471,11 @@ export class XhSelectElement extends XhPortalHostElement {
     exit.update(api.open)
     this.setPartHidden(content, !exit.visible)
     this.portal.sync(exit.visible)
+
+    // 首次键盘展开时，旧帧的 content 仍带 inert，connect 当场 focus 会被浏览器拒绝。
+    // 开态属性与 Portal 都落定后，仅在焦点尚未进入浮层时补到已高亮项；正常行间移动不抢焦点。
+    if (api.open && content && !content.contains(content.ownerDocument.activeElement))
+      items.find(item => item.hasAttribute('data-highlighted'))?.focus()
   }
 
   override disconnectedCallback(): void {

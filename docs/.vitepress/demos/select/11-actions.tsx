@@ -1,4 +1,4 @@
-// 插槽里的操作入口 | 根部件把 open、value 与 setOpen、setValue 交给插槽，浮层之外的按钮据此展开或清空
+// 操作入口 | 通过插槽状态控制开合和值
 import type { ReactNode } from "react";
 import {
   XhButton,
@@ -15,7 +15,6 @@ import {
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/react";
-import { useState } from "react";
 
 const fruits = [
   { value: "apple", label: "苹果" },
@@ -24,15 +23,8 @@ const fruits = [
 ];
 
 export default function Demo(): ReactNode {
-  const [picked, setPicked] = useState<string[]>([]);
-
   return (
-    <>
-      <XhSelectRoot
-        value={picked}
-        onValueChange={details => setPicked(details.value)}
-        placeholder="请选择"
-      >
+    <XhSelectRoot placeholder="请选择">
         {({ open, value, setOpen, setValue }) => (
           <>
             <XhSelectLabel>水果</XhSelectLabel>
@@ -64,11 +56,6 @@ export default function Demo(): ReactNode {
             </div>
           </>
         )}
-      </XhSelectRoot>
-      <p>
-        当前值：
-        {picked[0] ?? "（未选）"}
-      </p>
-    </>
+    </XhSelectRoot>
   );
 }

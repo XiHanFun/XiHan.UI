@@ -1,4 +1,4 @@
-// 选项里的自定义内容 | 条目与触发器显示的内容都由你写：想写什么写什么，选中与键盘行为不变
+// 自定义内容 | 自定义选项和当前值
 import type { ReactNode } from "react";
 import {
   XhAvatarFallback,

@@ -1,4 +1,4 @@
-// 官方组合：浮层 + 列表框 | 值不进表单、只是就地切一个视图参数时用这一套：popover 管开合与定位，listbox 管条目与键盘，没有 hidden-select，也不占 name
+// Popover + Listbox | 不参与表单的选择
 import type { ReactNode } from "react";
 import {
   XhListboxRoot,

@@ -12,7 +12,7 @@
 
 ## 用法
 
-选中值恒是数组，条目按 value 标识身份；禁用的条目方向键会跳过
+单选
 
 <XhDemo src="select/01-basic" />
 
@@ -26,115 +26,115 @@
 
 ### 多选
 
-multiple 下点中即在集合里增删该项、浮层不收起，触发器上的文本把选中项连起来
+选择多个值
 
 <XhDemo src="select/02-multiple" />
 
 ### 受控
 
-传了 value 就由宿主说了算：组件只发 value-change，宿主写回它才变，这里把樱桃挡在门外
+由 value 和 value-change 控制
 
 <XhDemo src="select/03-controlled" />
 
 ### 禁用
 
-根部件的 disabled 把触发器转成原生 disabled，浮层展不开、也不占 Tab 位
+禁止展开和聚焦
 
 <XhDemo src="select/04-disabled" />
 
 ### 形态
 
-variant 只改盒的颜色槽位，浮层与键盘行为三档一致
+outline、subtle 和 ghost
 
 <XhDemo src="select/05-variant" />
 
 ### 语气
 
-tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
+六种语气
 
 <XhDemo src="select/06-tone" />
 
 ### 尺寸
 
-盒与浮层条目一起换档，不传 size 即默认档
+小、中、大三档
 
 <XhDemo src="select/07-size" />
 
-### 异步加载选项
+### 异步加载
 
-首次展开才去取数据：open-change 报出展开意图，数据到达前使用正式加载状态
+展开时加载选项
 
 <XhDemo src="select/08-async" />
 
 ### 宽度
 
-盒与浮层各有自己的宽度槽位，写在根部件上即可；装不下的文本在行内以省略号收口
+分别设置控件和浮层宽度
 
 <XhDemo src="select/09-width" />
 
-### 选项里的自定义内容
+### 自定义内容
 
-条目与触发器显示的内容都由你写：想写什么写什么，选中与键盘行为不变
+自定义选项和当前值
 
 <XhDemo src="select/10-custom-content" />
 
-### 插槽里的操作入口
+### 操作入口
 
-根部件把 open、value 与 setOpen、setValue 交给插槽，浮层之外的按钮据此展开或清空
+通过插槽状态控制开合和值
 
 <XhDemo src="select/11-actions" />
 
 ### 大量选项
 
-浮层高度封顶后自行滚动；敲首字母连打检索直接跳到该字母开头的条目，方向键照常可用
+列表内部滚动并支持连打检索
 
 <XhDemo src="select/12-many-options" />
 
 ### 分组
 
-条目分段展示：group 是 role=group 的段落壳，group-label 是它的可及名字；条目照旧归到同一份集合，方向键与连打检索跨段贯通
+跨分组保持键盘导航
 
 <XhDemo src="select/13-group" />
 
 ### 多选标签
 
-内建标签形态：触发器里的标签行最多摆 maxTagCount 枚（缺省 3），其余合成一枚 +N；每枚标签与 +N 都是库里的 tag（语气与尺寸随控件，形态按控件的面派），触发器里纯展示，触发器外配删除钮即可删，那颗钮就是 tag 的 close-trigger
+超出数量合并为 +N
 
 <XhDemo src="select/14-tags" />
 
-### 校验状态
+### 校验
 
-校验结论由宿主给出：invalid 让盒标红并输出 aria-invalid，错误文案用 aria-describedby 挂到触发器上
+显示无效状态和错误说明
 
 <XhDemo src="select/15-invalid" />
 
 ### 滚动加载
 
-list 承担选项滚动：滚到底追加下一页，独立加载状态不会混入可选项
+到达列表底部加载下一页
 
 <XhDemo src="select/16-scroll-load" />
 
 ### 命令式聚焦
 
-触发器就是你写的那个按钮，focus 与 blur 直接调它
+聚焦触发器
 
 <XhDemo src="select/17-focus" />
 
-### 清空按钮
+### 清空
 
-清空钮是触发器的兄弟节点，一起收在盒里并排（Vue 的 collection 自动渲染加 clearable 即带上它）；有选中才出现、出现即顶替下拉箭头，不占 Tab 位（键盘清空走 Delete / Backspace）；点按清空全部选中、不展开浮层，焦点回到触发器；可及名走 translations.clearTrigger
+有值时显示清空按钮
 
 <XhDemo src="select/18-clear" />
 
-### 浮层底部的操作区
+### 底部操作区
 
-footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打检索走到
+固定在滚动列表下方
 
 <XhDemo src="select/19-footer" />
 
-### 官方组合：浮层 + 列表框
+### Popover + Listbox
 
-值不进表单、只是就地切一个视图参数时用这一套：popover 管开合与定位，listbox 管条目与键盘，没有 hidden-select，也不占 name
+不参与表单的选择
 
 <XhDemo src="select/20-listbox-popover" />
 
@@ -142,56 +142,40 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 
 ### 何时使用
 
-- 选项五个以上、且都能列举出来。
-- 需要多选并把选中项显示成标签。
+- 从已知选项中选择一个或多个值。
+- 需要分组、标签多选或异步加载。
 
 ### 何时不用
 
-- 选项二到五个且都值得同时可见：用[单选组](./radio-group)。
-- 用户需要输入自由文本或搜索候选：用[组合框](./combobox)。
-- 选项是层级的：用[级联选择](./cascader)或[树选择](./tree-select)。
-- 值不随表单提交、只是就地切一个视图参数：把[列表框](./listbox)装进[浮层](./popover)，那一套组合更轻，也不占 `name`。
+- 少量选项使用[单选组](./radio-group)。
+- 可输入或可搜索场景使用[组合框](./combobox)。
+- 层级选项使用[级联选择](./cascader)或[树选择](./tree-select)。
+- 不参与表单的视图切换使用 [Popover](./popover) 与 [Listbox](./listbox)。
 
 ### 特性
 
-- `hidden-select` 承担表单参与。
-- 多选可以把选中项显示成标签行：最多摆 `maxTagCount` 枚（缺省 3），其余合成一枚 +N，触发器始终是一行。每枚标签都是库里的 tag；摆在触发器外时可以配删除钮，那颗钮就是 tag 的 `close-trigger`。
-- 浮层里可以有分组、底部操作区与滚动加载。
-- 三种非条目相位各有部件：空（`empty`）与在途（`loading`）。`loading` 为真时列表报 `aria-busy`，在途占位顶上来、空态让位。
-- 大量选项时列表可以只渲可视区。
-- 触发盒保持实体 Field Chrome，选项浮层使用 M2 磨砂表面；面板落位后按实际 placement 从锚点一侧
-  淡入短移，退出沿原方向收回，不缩放整张列表。
-- 逻辑关闭时列表立即 `inert` 并退出可访问树；Layer、DismissableLayer 与焦点域会保留到
-  content 的全部有限退场动画完成。退场中重开复用原 Layer 并重新激活焦点域，卸载立即释放。
-- 选项按作者给出的 DOM 顺序排布；正式 `item-text` 弹性占据剩余宽度并负责长文省略，
-  `item-indicator` 固定在逻辑末端。单选、多选统一由对号表示选中，正文保持正常颜色和字重；
-  悬停与键盘高亮使用中性底，键盘焦点另有独立焦点环。选中本身不铺品牌底。
-- `item` 由 Headless 投影 Collection Item 的角色、尺寸、selected/checked/disabled 事实；`item-text`
-  与 `item-indicator` 投影固定内容列。三端适配器只展开这些属性，不各自判断视觉状态。
-- 相邻分组之间自动画材质分隔线，分组标题、空态、加载态与 footer 使用浮层的次要前景节奏。
+- 通过 `hidden-select` 参与表单。
+- 多选值可显示为标签，超出 `maxTagCount` 后合并为 `+N`。
+- 支持分组、加载、空状态、底部操作区和滚动加载。
+- 控件使用 Field Chrome，浮层使用 M2 磨砂表面。
+- 选中项保留普通文字，通过末端对号表示状态。
+- 关闭时立即退出交互，资源在退场动画结束后释放。
 
 ### 组合
 
-- 外面套[表单字段](./field)；选项文字过长时里面用[文本截断](./truncate)。
-- **浮层 + 列表框**：值不进表单、只是就地切一个视图参数（排序方式、显示密度）时，用[浮层](./popover)装[列表框](./listbox)——浮层管开合与定位，列表框管条目与键盘，两边各自完整，不必另立组件。这是本库「浮层壳 + 条目层」的官方组合写法，示例见本页「官方组合：浮层 + 列表框」与[列表框](./listbox)页的同一例；要随表单提交、要 `name` 与 `hidden-select` 时才用本组件。
+- 与[表单字段](./field)组合。
+- 不参与表单时使用 [Popover](./popover) 与 [Listbox](./listbox)。
 
 ### 最佳实践
 
-- 触发器的宽度固定，别随选中项的长度变——整行布局会跟着抖。
-- 选项超过约二十条就该加搜索，也就是换成[组合框](./combobox)。
-- 多选标签直接复用 Tag 的 M1 表面；调整标签外观应使用 `--xh-tag-*` 覆盖槽，不要在 Select 里重画。
-- 自定义选项里的图标、头像、正文和尾部提示按作者 DOM 顺序写；需要截断的正文放进 `item-text`，
-  不要靠皮肤猜测任意 span 的职责。
-
-### 当前边界
-
-- 当前 anatomy 尚无独立 `separator`、`viewport`、`scroll-up-button` 或 `scroll-down-button`。本次只在
-  相邻 `group` 之间提供自动分隔，`list` 继续同时承担滚动视口；这些新部件需要独立行为与三端 API。
+- 固定触发器宽度，避免选中值改变布局。
+- 选项较多或需要搜索时使用 Combobox。
+- 自定义内容中的主要文字放在 `item-text` 中。
 
 ### 反模式
 
-- 用它承载动作（"导出"、"删除"）：那是[菜单](./menu)。
-- 异步加载选项时浮层里什么都不显示：给一个加载态或空态。
+- 不要用 Select 承载“导出”“删除”等动作。
+- 异步加载时不要省略加载和空状态。
 
 ## API 参考
 
@@ -449,7 +433,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `--xh-select-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | select 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-select-action-fg-hover` | `clear-trigger` | `color` | `hover` | `--xh-fg-default` | select 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-select-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | select 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-select-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-control` | select 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-select-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` | select 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-select-action-size` | `clear-trigger`<br>`indicator` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | select 的 clear-trigger、indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-select-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | select 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-select-content-bg` | `content` | `background` | `default` | `--xh-material-frosted-bg` | select 的 content 部件 background 覆盖槽。 |
@@ -463,10 +447,10 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `--xh-select-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | select 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-select-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | select 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-select-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | select 的 content 部件 box-shadow 覆盖槽。 |
-| `--xh-select-control-bg` | `control` | `background` | `default` | `--xh-_select-control-bg` | select 的 control 部件 background 覆盖槽。 |
-| `--xh-select-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | select 的 control 部件 background 覆盖槽。 |
-| `--xh-select-control-bg-hover` | `control` | `background` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-_select-control-bg-hover` | select 的 control 部件 background 覆盖槽。 |
-| `--xh-select-control-bg-readonly` | `control` | `background` | `readonly` | `--xh-bg-subtle` | select 的 control 部件 background 覆盖槽。 |
+| `--xh-select-control-bg` | `control` | `background-color` | `default` | `--xh-_select-control-bg` | select 的 control 部件 background-color 覆盖槽。 |
+| `--xh-select-control-bg-disabled` | `control` | `background-color` | `disabled` | `--xh-bg-subtle` | select 的 control 部件 background-color 覆盖槽。 |
+| `--xh-select-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-_select-control-bg-hover` | select 的 control 部件 background-color 覆盖槽。 |
+| `--xh-select-control-bg-readonly` | `control` | `background-color` | `readonly` | `--xh-bg-subtle` | select 的 control 部件 background-color 覆盖槽。 |
 | `--xh-select-control-border` | `control` | `border` | `default` | `--xh-_select-control-border` | select 的 control 部件 border 覆盖槽。 |
 | `--xh-select-control-border-focus` | `control` | `border-color` | `focus-within`<br>`invalid`<br>`not([data-invalid])` | `--xh-_tone` | select 的 control 部件 border-color 覆盖槽。 |
 | `--xh-select-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid])` | `--xh-_select-control-border-hover` | select 的 control 部件 border-color 覆盖槽。 |
@@ -475,7 +459,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `--xh-select-control-h` | `control` | `block-size` | `default` | `--xh-_select-h` | select 的 control 部件 block-size 覆盖槽。 |
 | `--xh-select-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | select 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-select-control-px` | `control` | `padding-inline` | `default` | `--xh-_select-px` | select 的 control 部件 padding-inline 覆盖槽。 |
-| `--xh-select-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | select 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-select-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-surface` | select 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-select-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_select-control-shadow` | select 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-select-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | select 的 empty 部件 color 覆盖槽。 |
 | `--xh-select-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_select-font-size` | select 的 empty 部件 font-size 覆盖槽。 |
@@ -499,13 +483,13 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `--xh-select-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | select 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-select-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | select 的 indicator 部件 color 覆盖槽。 |
 | `--xh-select-item-bg-hover` | `item` | `background-color` | `error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])` | `--xh-bg-subtle` | select 的 item 部件 background-color 覆盖槽。 |
-| `--xh-select-item-bg-pressed` | `item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | select 的 item 部件 background 覆盖槽。 |
+| `--xh-select-item-bg-pressed` | `item` | `background-color` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | select 的 item 部件 background-color 覆盖槽。 |
+| `--xh-select-item-check-fg` | `item` | `color` | `state=checked`<br>`xh-collection-slot=indicator` | `--xh-_select-accent` | select 的 item 部件 color 覆盖槽。 |
 | `--xh-select-item-fg` | `item` | `color` | `default`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])` | `--xh-material-frosted-fg` | select 的 item 部件 color 覆盖槽。 |
 | `--xh-select-item-fg-selected` | `item` | `color` | `default`<br>`highlighted`<br>`is(:focus-visible, [data-highlighted])` | `--xh-select-item-fg` | select 的 item 部件 color 覆盖槽。 |
 | `--xh-select-item-font-size` | `item` | `font-size` | `default` | `--xh-_select-font-size` | select 的 item 部件 font-size 覆盖槽。 |
 | `--xh-select-item-font-weight-selected` | `item` | `font-weight` | `default`<br>`highlighted`<br>`is(:focus-visible, [data-highlighted])` | `--xh-font-weight-regular` | select 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-select-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_select-gap` | select 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
-| `--xh-select-item-indicator-fg` | `item` | `color` | `state=checked`<br>`xh-collection-slot=indicator` | `--xh-_select-accent` | select 的 item 部件 color 覆盖槽。 |
 | `--xh-select-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | select 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-select-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | select 的 item 部件 line-height 覆盖槽。 |
 | `--xh-select-item-px` | `item` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 item 部件 padding-inline 覆盖槽。 |
@@ -530,7 +514,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 
 ### 动效
 
-关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `background-color` · `border-color` · `box-shadow` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

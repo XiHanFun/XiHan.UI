@@ -1,5 +1,5 @@
-<!-- 基础用法 | 选中值恒是数组，条目按 value 标识身份；禁用的条目方向键会跳过 -->
-<xh-select id="select-basic" placeholder="请选择">
+<!-- 基础用法 | 单选 -->
+<xh-select default-value="banana" placeholder="请选择">
   <div data-xh-part="root">
     <span data-xh-part="label">水果</span>
     <div data-xh-part="control">
@@ -36,13 +36,3 @@
     </div>
   </div>
 </xh-select>
-<p>当前值：<span id="select-basic-value">（未选）</span></p>
-
-<script type="module">
-  // 选中值回显在下面那行文字里
-  const select = document.getElementById("select-basic");
-  const readout = document.getElementById("select-basic-value");
-  select.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value.join("、") || "（未选）";
-  });
-</script>

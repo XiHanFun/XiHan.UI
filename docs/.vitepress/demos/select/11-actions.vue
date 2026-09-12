@@ -1,4 +1,4 @@
-<!-- 插槽里的操作入口 | 根部件把 open、value 与 setOpen、setValue 交给插槽，浮层之外的按钮据此展开或清空 -->
+<!-- 操作入口 | 通过插槽状态控制开合和值 -->
 <script setup lang="ts">
 import {
   XhButton,
@@ -15,9 +15,7 @@ import {
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
-const picked = ref<string[]>([]);
 const fruits = [
   { value: "apple", label: "苹果" },
   { value: "banana", label: "香蕉" },
@@ -28,7 +26,6 @@ const fruits = [
 <template>
   <XhSelectRoot
     v-slot="{ open, value, setOpen, setValue }"
-    v-model:value="picked"
     placeholder="请选择"
   >
     <XhSelectLabel>水果</XhSelectLabel>
@@ -57,5 +54,4 @@ const fruits = [
       </XhButton>
     </div>
   </XhSelectRoot>
-  <p>当前值：{{ picked[0] ?? "（未选）" }}</p>
 </template>

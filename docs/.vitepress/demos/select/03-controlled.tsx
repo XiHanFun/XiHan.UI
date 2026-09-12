@@ -1,4 +1,4 @@
-// 受控 | 传了 value 就由宿主说了算：组件只发 value-change，宿主写回它才变，这里把樱桃挡在门外
+// 受控 | 由 value 和 value-change 控制
 import type { ReactNode } from "react";
 import {
   XhSelectContent,
