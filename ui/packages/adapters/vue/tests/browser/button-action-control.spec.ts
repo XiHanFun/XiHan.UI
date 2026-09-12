@@ -148,7 +148,7 @@ describe('action Control 状态与命中区', () => {
     expect(getComputedStyle(loading!).opacity).toBe('1')
   })
 
-  it('粗指针下 text 只扩块轴，icon 才扩双轴；短 ButtonGroup 不产生行内重叠', async () => {
+  it('粗指针下 text 只扩块轴，icon 才扩双轴；短 ButtonGroup 保持连续布局', async () => {
     await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
     mount(() => h(XhButtonGroup, null, () => [
       h(XhButton, null, () => 'A'),
@@ -164,7 +164,7 @@ describe('action Control 状态与命中区', () => {
     expect(Number.parseFloat(firstTarget.minInlineSize) || 0).toBe(0)
     expect(Number.parseFloat(iconTarget.minBlockSize)).toBeGreaterThanOrEqual(44)
     expect(Number.parseFloat(iconTarget.minInlineSize)).toBeGreaterThanOrEqual(44)
-    expect(first!.getBoundingClientRect().right).toBeCloseTo(second!.getBoundingClientRect().left + 1, 1)
+    expect(first!.getBoundingClientRect().right).toBeCloseTo(second!.getBoundingClientRect().left, 1)
   })
 
   it('未命名空间的业务 data-action-control 不会被家族皮肤命中', () => {

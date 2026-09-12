@@ -3716,7 +3716,7 @@
         "xh-button-group-separator"
       ],
       "defaultToken": [
-        "--xh-_tone-on"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "button-group 的 root 部件 background 覆盖槽。"

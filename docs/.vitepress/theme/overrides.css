@@ -54,6 +54,20 @@ body {
   font-weight: 400;
 }
 
+.VPSidebarItem .xh-sidebar-status {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: 0.45em;
+  padding-inline: 0.45em;
+  border-radius: 999px;
+  color: var(--vp-c-brand-1);
+  background: var(--xh-bg-brand-subtle);
+  font-size: 0.72em;
+  font-weight: 600;
+  line-height: 1.5;
+  vertical-align: 0.08em;
+}
+
 .VPSidebarItem.level-1.is-active > .item .xh-sidebar-cn {
   color: inherit;
   opacity: 0.66;

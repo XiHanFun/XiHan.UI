@@ -106,6 +106,21 @@ describe('按钮组共边按压', () => {
 })
 
 describe('按钮组轮廓', () => {
+  it('默认分隔线在浅色按钮面上保持可见', () => {
+    mount(() => h(XhButtonGroup, null, () => [
+      h(XhButton, null, () => '日'),
+      h(XhButton, null, () => '周'),
+      h(XhButton, null, () => '月'),
+    ]))
+
+    const root = host!.querySelector<HTMLElement>(`[data-scope='button-group'][data-part='root']`)!
+    const separator = root.querySelector<HTMLElement>('[data-xh-button-group-separator]')!
+    const separatorStyle = getComputedStyle(separator)
+    expect(separatorStyle.backgroundColor).toBe(getComputedStyle(buttons()[0]!).color)
+    expect(separatorStyle.backgroundColor).not.toBe(getComputedStyle(buttons()[0]!).backgroundColor)
+    expect(Number.parseFloat(separatorStyle.opacity)).toBeGreaterThan(0)
+  })
+
   it('胶囊端点与半高分隔线保持连续轮廓', () => {
     mount(() => h(XhButtonGroup, { variant: 'solid' }, () => [
       h(XhButton, null, () => '日'),

@@ -14,7 +14,7 @@ import { XhElement } from '../element-base'
  * @attr {boolean} full-width - 撑满行宽
  * @attr {boolean} loading - 加载中（aria-disabled，保留焦点并拦截点击）
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 视觉变体
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {'rounded'|'pill'|'square'} shape - 圆角档；缺省跟着控件圆角走
  * @attr {'button'|'a'} as - 根节点写成哪个标签，默认 button；写 a 时不再产出 type 与原生 disabled

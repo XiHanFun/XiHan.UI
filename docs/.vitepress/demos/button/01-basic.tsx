@@ -1,4 +1,4 @@
-// 基础用法 | 按钮文字直接写在内容里
+// 基础用法 | 触发一次操作
 import type { ReactNode } from "react";
 import { XhButton } from "@xihan-ui/react";
 

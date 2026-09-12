@@ -183,7 +183,7 @@
 | --- | --- | --- | --- | --- | --- |
 | `--xh-button-group-outline-color` | `root` | `border` | `variant=outline` | `--xh-_tone-border-control` | button-group 的 root 部件 border 覆盖槽。 |
 | `--xh-button-group-radius` | `root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`last-child`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=outline` | `--xh-shape-pill` | button-group 的 root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
-| `--xh-button-group-separator-color` | `root` | `background` | `xh-button-group-separator` | `--xh-_tone-on` | button-group 的 root 部件 background 覆盖槽。 |
+| `--xh-button-group-separator-color` | `root` | `background` | `xh-button-group-separator` | `--xh-fg-default` | button-group 的 root 部件 background 覆盖槽。 |
 | `--xh-button-group-separator-color-disabled` | `root` | `background` | `disabled`<br>`xh-button-group-separator` | `--xh-border-subtle` | button-group 的 root 部件 background 覆盖槽。 |
 | `--xh-button-group-separator-opacity` | `root` | `opacity` | `xh-button-group-separator` | `--xh-control-separator-opacity` | button-group 的 root 部件 opacity 覆盖槽。 |
 | `--xh-button-group-separator-opacity-disabled` | `root` | `opacity` | `disabled`<br>`xh-button-group-separator` | `--xh-control-separator-disabled-opacity` | button-group 的 root 部件 opacity 覆盖槽。 |

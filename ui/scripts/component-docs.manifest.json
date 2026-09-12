@@ -40,11 +40,13 @@
         },
         {
           "id": "kbd",
-          "name": "键帽"
+          "name": "键帽",
+          "status": "new"
         },
         {
           "id": "kbd-group",
-          "name": "键帽组"
+          "name": "键帽组",
+          "status": "new"
         },
         {
           "id": "icon",
