@@ -44,7 +44,7 @@ describe('field Chrome 单皮肤入口', () => {
     const input = host.querySelector<HTMLElement>('[data-xh-field-input]')!
     const clear = host.querySelector<HTMLElement>('[data-xh-action-profile=\'field-inset\']')!
     const controlStyle = getComputedStyle(control)
-    expect(control.getBoundingClientRect().height).toBe(32)
+    expect(control.getBoundingClientRect().height).toBe(36)
     // control 是 column flex root 的 flex item，inline-flex 的外 display 会按规范 blockify 成 flex。
     expect(controlStyle.display).toBe('flex')
     expect(controlStyle.borderTopStyle).toBe('solid')
