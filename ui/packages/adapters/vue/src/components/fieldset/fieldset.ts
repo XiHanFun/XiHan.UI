@@ -12,7 +12,7 @@ export const XhFieldsetRoot = defineComponent({
     disabled: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<Partial<FieldsetTranslations>>, default: undefined },
+    translations: { type: Object as PropType<Partial<FieldsetTranslations>> },
   },
   setup(props, { slots }) {
     const ctx = useFieldset(withXhConfig('fieldset', props) as FieldsetProps)

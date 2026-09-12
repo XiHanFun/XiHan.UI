@@ -9,9 +9,9 @@ import { provideSeparator, useSeparatorContext } from './context'
 const separatorProps = {
   orientation: { type: String as PropType<'horizontal' | 'vertical'>, default: 'horizontal' },
   decorative: Boolean,
-  variant: { type: String as PropType<SeparatorVariant>, default: undefined },
+  variant: { type: String as PropType<SeparatorVariant> },
   dashed: { type: Boolean, default: undefined },
-  align: { type: String as PropType<SeparatorAlign>, default: undefined },
+  align: { type: String as PropType<SeparatorAlign> },
 } as const
 
 /**

@@ -30,12 +30,12 @@ export const XhSortableRoot = defineComponent({
   name: 'XhSortableRoot',
   props: {
     ids: { type: Array as PropType<string[]>, default: () => [] },
-    orientation: { type: String as PropType<SortableAxis>, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    orientation: { type: String as PropType<SortableAxis> },
+    dir: { type: String as PropType<Direction> },
     disabled: Boolean,
-    activationDistance: { type: Number, default: undefined },
+    activationDistance: { type: Number },
     autoScroll: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<Partial<SortableTranslations>>, default: undefined },
+    translations: { type: Object as PropType<Partial<SortableTranslations>> },
   },
   // sort 携带 { from, to, id, ids }，update:ids 携带重排好的裸数组，可直接 v-model:ids
   emits: {

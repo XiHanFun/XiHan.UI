@@ -12,23 +12,23 @@ type TabsProps = TabsSchema['props']
 
 export const XhTabsRoot = defineComponent({
   name: 'XhTabsRoot',
-  // 全部 default: undefined，缺省值由 connect 决定
+  // 缺省值由 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<TabsNode[]>, default: undefined },
-    value: { type: String as PropType<string | null>, default: undefined },
-    defaultValue: { type: String as PropType<string | null>, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    activationMode: { type: String as PropType<TabsActivationMode>, default: undefined },
+    collection: { type: Array as PropType<TabsNode[]> },
+    value: { type: String as PropType<string | null> },
+    defaultValue: { type: String as PropType<string | null> },
+    orientation: { type: String as PropType<Orientation> },
+    dir: { type: String as PropType<Direction> },
+    activationMode: { type: String as PropType<TabsActivationMode> },
     loop: { type: Boolean, default: undefined },
-    variant: { type: String as PropType<TabsVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    variant: { type: String as PropType<TabsVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
     /** 标签可以拖着换位。整个标签都是拖动源，不另出把手。 */
     reorderable: Boolean,
     /** 标签可关闭：焦点落在标签上按 Delete / Backspace 即发 tab-close。 */
     closable: Boolean,
-    translations: { type: Object as PropType<TabsProps['translations']>, default: undefined },
+    translations: { type: Object as PropType<TabsProps['translations']> },
   },
   // value-change 携带 { value }，update:value 携带裸值
   emits: {

@@ -34,21 +34,21 @@ export type CarouselRootSlotProps = Pick<
 
 export const XhCarouselRoot = defineComponent({
   name: 'XhCarouselRoot',
-  // 缺省值由 connect 给出，这里一律 default: undefined
+  // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    page: { type: Number, default: undefined },
-    defaultPage: { type: Number, default: undefined },
-    slideCount: { type: Number, default: undefined },
-    slidesPerPage: { type: Number, default: undefined },
-    slidesPerMove: { type: Number, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    page: { type: Number },
+    defaultPage: { type: Number },
+    slideCount: { type: Number },
+    slidesPerPage: { type: Number },
+    slidesPerMove: { type: Number },
+    orientation: { type: String as PropType<Orientation> },
+    dir: { type: String as PropType<Direction> },
     loop: { type: Boolean, default: undefined },
     // 布尔或毫秒：true 用默认间隔，数值即间隔
     autoplay: { type: [Boolean, Number] as PropType<boolean | number>, default: undefined },
     allowPointerDrag: { type: Boolean, default: undefined },
-    spacing: { type: String, default: undefined },
-    translations: { type: Object as PropType<Partial<CarouselTranslations>>, default: undefined },
+    spacing: { type: String },
+    translations: { type: Object as PropType<Partial<CarouselTranslations>> },
   },
   // page-change 携带 { page }，update:page 携带裸页码
   emits: {

@@ -7,13 +7,13 @@ import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { provideTypography, useTypographyContext } from './context'
 
-/** 正文块容器，管段间距与最大行宽；缺省值由 connect 给出，这里一律 default: undefined */
+/** 正文块容器，管段间距与最大行宽；缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined */
 export const XhTypographyRoot = defineComponent({
   name: 'XhTypographyRoot',
   props: {
-    size: { type: String as PropType<Size>, default: undefined },
-    align: { type: String as PropType<TypographyAlign>, default: undefined },
-    weight: { type: String as PropType<TypographyWeight>, default: undefined },
+    size: { type: String as PropType<Size> },
+    align: { type: String as PropType<TypographyAlign> },
+    weight: { type: String as PropType<TypographyWeight> },
   },
   setup(props, { slots }) {
     const api = computed(() => connectTypography(withXhConfig('typography', props) as TypographyProps, vueNormalize))
@@ -29,7 +29,7 @@ export const XhTypographyRoot = defineComponent({
 export const XhTypographyHeading = defineComponent({
   name: 'XhTypographyHeading',
   props: {
-    level: { type: [Number, String] as PropType<TypographyLevel | string>, default: undefined },
+    level: { type: [Number, String] as PropType<TypographyLevel | string> },
     as: { type: String, default: 'p' },
   },
   setup(props, { slots }) {
@@ -57,9 +57,9 @@ export const XhTypographyParagraph = defineComponent({
 export const XhTypographyText = defineComponent({
   name: 'XhTypographyText',
   props: {
-    tone: { type: String as PropType<Tone>, default: undefined },
-    variant: { type: String as PropType<TypographyVariant>, default: undefined },
-    weight: { type: String as PropType<TypographyWeight>, default: undefined },
+    tone: { type: String as PropType<Tone> },
+    variant: { type: String as PropType<TypographyVariant> },
+    weight: { type: String as PropType<TypographyWeight> },
     as: { type: String, default: 'span' },
   },
   setup(props, { slots }) {

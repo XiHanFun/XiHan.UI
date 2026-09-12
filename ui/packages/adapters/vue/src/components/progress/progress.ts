@@ -14,14 +14,14 @@ export const XhProgress = defineComponent({
     indeterminate: Boolean,
     max: { type: Number, default: 100 },
     // 缺省值都在 connect 里收口，这边一律不预设
-    variant: { type: String as PropType<ProgressVariant>, default: undefined },
-    strokeWidth: { type: Number, default: undefined },
-    gapDegree: { type: Number, default: undefined },
-    gapPosition: { type: String as PropType<ProgressGapPosition>, default: undefined },
-    valueText: { type: String, default: undefined },
+    variant: { type: String as PropType<ProgressVariant> },
+    strokeWidth: { type: Number },
+    gapDegree: { type: Number },
+    gapPosition: { type: String as PropType<ProgressGapPosition> },
+    valueText: { type: String },
     tone: String as PropType<Tone>,
     size: String as PropType<Size>,
-    semantics: { type: String as PropType<ProgressSemantics>, default: undefined },
+    semantics: { type: String as PropType<ProgressSemantics> },
   },
   setup(props, { slots }) {
     // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理

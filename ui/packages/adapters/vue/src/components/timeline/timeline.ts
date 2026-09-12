@@ -10,11 +10,11 @@ import { provideTimeline, provideTimelineItem, useTimelineContext, useTimelineIt
 /** 根渲染为 ol：事件本来就有先后，列表标记由皮肤抹掉、列表语义由 role 兜住。 */
 export const XhTimelineRoot = defineComponent({
   name: 'XhTimelineRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    orientation: { type: String as PropType<Orientation>, default: undefined },
-    placement: { type: String as PropType<TimelinePlacement>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    orientation: { type: String as PropType<Orientation> },
+    placement: { type: String as PropType<TimelinePlacement> },
+    size: { type: String as PropType<Size> },
   },
   setup(props, { slots }) {
     const api = computed(() => connectTimeline(withXhConfig('timeline', props) as TimelineProps, vueNormalize))
@@ -27,7 +27,7 @@ export const XhTimelineRoot = defineComponent({
 export const XhTimelineItem = defineComponent({
   name: 'XhTimelineItem',
   props: {
-    tone: { type: String as PropType<Tone>, default: undefined },
+    tone: { type: String as PropType<Tone> },
   },
   setup(props, { slots }) {
     const ctx = useTimelineContext()

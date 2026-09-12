@@ -79,35 +79,35 @@ export type CascaderRootSlotProps = Pick<
 
 export const XhCascaderRoot = defineComponent({
   name: 'XhCascaderRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<CascaderNode[]>, default: undefined },
-    value: { type: Array as PropType<CascaderValue>, default: undefined },
-    defaultValue: { type: Array as PropType<CascaderValue>, default: undefined },
-    name: { type: String, default: undefined },
-    form: { type: String, default: undefined },
+    collection: { type: Array as PropType<CascaderNode[]> },
+    value: { type: Array as PropType<CascaderValue> },
+    defaultValue: { type: Array as PropType<CascaderValue> },
+    name: { type: String },
+    form: { type: String },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    expandTrigger: { type: String as PropType<CascaderExpandTrigger>, default: undefined },
+    expandTrigger: { type: String as PropType<CascaderExpandTrigger> },
     changeOnSelect: Boolean,
     multiple: Boolean,
     searchable: { type: Boolean, default: undefined },
     cascade: Boolean,
-    checkedStrategy: { type: String as PropType<CascaderProps['checkedStrategy']>, default: undefined },
+    checkedStrategy: { type: String as PropType<CascaderProps['checkedStrategy']> },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     loading: Boolean,
-    translations: { type: Object as PropType<Partial<CascaderTranslations>>, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    placeholder: { type: String, default: undefined },
-    separator: { type: String, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    translations: { type: Object as PropType<Partial<CascaderTranslations>> },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    placeholder: { type: String },
+    separator: { type: String },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为路径数组，单选时长度 ≤ 1
   emits: {
@@ -227,7 +227,7 @@ export const XhCascaderPositioner = defineComponent({
   name: 'XhCascaderPositioner',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,

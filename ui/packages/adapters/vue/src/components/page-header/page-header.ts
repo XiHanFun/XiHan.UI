@@ -7,14 +7,14 @@ import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { providePageHeader, usePageHeaderContext } from './context'
 
-/** 根节点渲染为 div，缺省值由 connect 给出，这里一律 default: undefined */
+/** 根节点渲染为 div，缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined */
 export const XhPageHeaderRoot = defineComponent({
   name: 'XhPageHeaderRoot',
   props: {
-    size: { type: String as PropType<Size>, default: undefined },
+    size: { type: String as PropType<Size> },
     bordered: Boolean,
     /** 形态：plain / surface / raised。不写即不画面，与写 plain 同一个样子。 */
-    variant: { type: String as PropType<PageHeaderVariant>, default: undefined },
+    variant: { type: String as PropType<PageHeaderVariant> },
   },
   setup(props, { slots }) {
     const api = computed(() => connectPageHeader(withXhConfig('page-header', props) as PageHeaderProps, vueNormalize))

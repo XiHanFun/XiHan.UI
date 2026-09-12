@@ -16,19 +16,19 @@ export type ToastRootSlotProps = Pick<
 
 export const XhToastRoot = /* @__PURE__ */ defineComponent({
   name: 'XhToastRoot',
-  // 缺省值由 connect 与机器给出，这里一律 default: undefined
+  // 缺省值由 connect 与机器给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     // 队列身份，不是 DOM id；不给则回落到实例的 scope id
-    id: { type: String, default: undefined },
-    title: { type: String, default: undefined },
-    type: { type: String as PropType<ToastType>, default: undefined },
-    duration: { type: Number, default: undefined },
-    removeDelay: { type: Number, default: undefined },
+    id: { type: String },
+    title: { type: String },
+    type: { type: String as PropType<ToastType> },
+    duration: { type: Number },
+    removeDelay: { type: Number },
     closable: { type: Boolean, default: undefined },
     pauseOnPageIdle: { type: Boolean, default: undefined },
     // 由宿主整摞一起按住计时；与指针、焦点那几路并存，最后一个松开才继续走
     paused: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<Partial<ToastTranslations>>, default: undefined },
+    translations: { type: Object as PropType<Partial<ToastTranslations>> },
   },
   // status-change 携带 { id, status }，action 携带 { id }
   emits: {

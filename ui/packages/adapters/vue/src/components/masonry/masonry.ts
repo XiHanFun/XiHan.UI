@@ -55,14 +55,13 @@ function masonryItems(nodes: readonly VNode[]): VNode[] {
 
 export const XhMasonry = defineComponent({
   name: 'XhMasonry',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     // 列数由作者声明：兼收字符串以支持模板里写 columns="3"，收对象则是逐档的列数
     columns: {
       type: [Number, String, Object] as PropType<number | string | ColumnsByBreakpoint>,
-      default: undefined,
     },
-    gap: { type: String as PropType<MasonryProps['gap']>, default: undefined },
+    gap: { type: String as PropType<MasonryProps['gap']> },
     sequential: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {

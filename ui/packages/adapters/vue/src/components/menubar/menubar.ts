@@ -51,21 +51,21 @@ export type MenubarRootSlotProps = Pick<MenubarApi, 'value' | 'open' | 'setValue
 /** role=menubar 根节点：trigger 的 roving tabindex 作用域，各菜单浮层也挂在其内 */
 export const XhMenubarRoot = defineComponent({
   name: 'XhMenubarRoot',
-  // 全部 default: undefined，缺省值由机器与 connect 决定
+  // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<MenubarNode[]>, default: undefined },
-    value: { type: String as PropType<string | null>, default: undefined },
-    defaultValue: { type: String as PropType<string | null>, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
+    collection: { type: Array as PropType<MenubarNode[]> },
+    value: { type: String as PropType<string | null> },
+    defaultValue: { type: String as PropType<string | null> },
+    orientation: { type: String as PropType<Orientation> },
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
     disabled: { type: Boolean, default: undefined },
     typeahead: { type: Boolean, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<MenubarProps['translations']>, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<MenubarProps['translations']> },
   },
   // value-change 携带 { value }、select 携带 { menu, value }，update:value 携带裸值
   emits: {
@@ -160,7 +160,7 @@ export const XhMenubarPositioner = defineComponent({
   props: {
     value: { type: String, required: true },
     /** 本实例的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
@@ -184,7 +184,7 @@ export const XhMenubarContent = defineComponent({
   name: 'XhMenubarContent',
   props: {
     // 缺省时沿用外层 positioner 提供的身份，无 positioner 时必填
-    value: { type: String, default: undefined },
+    value: { type: String },
   },
   setup(props, { slots }) {
     const ctx = useMenubarContext()
@@ -416,18 +416,18 @@ export const XhMenubarSub = defineComponent({
     /** 它在所属那张菜单里的条目身份。 */
     value: { type: String, required: true },
     disabled: { type: Boolean, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     loop: { type: Boolean, default: undefined },
     openOnHover: { type: Boolean, default: undefined },
-    hoverOpenDelay: { type: Number, default: undefined },
-    hoverCloseDelay: { type: Number, default: undefined },
+    hoverOpenDelay: { type: Number },
+    hoverCloseDelay: { type: Number },
     /** 文字方向；缺省继承父层。子层被搬到浮层落点，继承不到父层的方向。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
     /** 语气；缺省继承父层。子层是浮层落点下的同级节点，CSS 私有槽继承不到。 */
-    tone: { type: String as PropType<Tone>, default: undefined },
+    tone: { type: String as PropType<Tone> },
     /** 尺寸；缺省继承父层，理由同 tone。 */
-    size: { type: String as PropType<Size>, default: undefined },
+    size: { type: String as PropType<Size> },
   },
   slots: Object as SlotsType<{
     default?: (props: MenubarSubSlotProps) => VNode[]

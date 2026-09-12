@@ -40,22 +40,22 @@ export type ImageViewerRootSlotProps = Pick<
 
 export const XhImageViewerRoot = defineComponent({
   name: 'XhImageViewerRoot',
-  // 缺省值由 connect 与机器给出，这里一律 default: undefined
+  // 缺省值由 connect 与机器给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<ImageViewerItem[]>, default: undefined },
+    collection: { type: Array as PropType<ImageViewerItem[]> },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    index: { type: Number, default: undefined },
-    defaultIndex: { type: Number, default: undefined },
+    index: { type: Number },
+    defaultIndex: { type: Number },
     loop: { type: Boolean, default: undefined },
-    zoomStep: { type: Number, default: undefined },
-    minScale: { type: Number, default: undefined },
-    maxScale: { type: Number, default: undefined },
+    zoomStep: { type: Number },
+    minScale: { type: Number },
+    maxScale: { type: Number },
     closeOnEscape: { type: Boolean, default: undefined },
     closeOnInteractOutside: { type: Boolean, default: undefined },
     restoreFocus: { type: Boolean, default: undefined },
-    variant: { type: String as PropType<OverlayBackdropVariant>, default: undefined },
-    translations: { type: Object as PropType<ImageViewerProps['translations']>, default: undefined },
+    variant: { type: String as PropType<OverlayBackdropVariant> },
+    translations: { type: Object as PropType<ImageViewerProps['translations']> },
   },
   // *-change 携带 details 对象，update:* 携带裸值，支持 v-model:open 与 v-model:index
   emits: {
@@ -133,7 +133,7 @@ export const XhImageViewerContent = defineComponent({
   name: 'XhImageViewerContent',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 content 上
   inheritAttrs: false,

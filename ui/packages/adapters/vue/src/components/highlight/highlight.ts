@@ -13,12 +13,12 @@ import { vueNormalize } from '../../runtime/normalize-props'
  */
 export const XhHighlight = defineComponent({
   name: 'XhHighlight',
-  // 缺省值由 connect 给出，这里一律 default: undefined
+  // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    text: { type: String, default: undefined },
-    keyword: { type: [String, Array] as PropType<string | readonly string[]>, default: undefined },
+    text: { type: String },
+    keyword: { type: [String, Array] as PropType<string | readonly string[]> },
     caseSensitive: Boolean,
-    tone: { type: String as PropType<Tone>, default: undefined },
+    tone: { type: String as PropType<Tone> },
   },
   setup(props) {
     const api = computed(() => connectHighlight({

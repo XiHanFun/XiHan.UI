@@ -16,18 +16,18 @@ export type ToolCallRootSlotProps = Pick<ToolCallApi, 'open' | 'phase' | 'runnin
 export const XhToolCallRoot = defineComponent({
   name: 'XhToolCallRoot',
   props: {
-    phase: { type: String as PropType<ToolCallPhase>, default: undefined },
-    startTime: { type: Number, default: undefined },
-    endTime: { type: Number, default: undefined },
+    phase: { type: String as PropType<ToolCallPhase> },
+    startTime: { type: Number },
+    endTime: { type: Number },
     open: { type: Boolean, default: undefined },
     defaultOpen: { type: Boolean, default: undefined },
     // 用 undefined 而非裸 Boolean，缺省值由机器给出
     autoDisclosure: { type: Boolean, default: undefined },
     disabled: Boolean,
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<ToolCallTranslations>>, default: undefined },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<ToolCallTranslations>> },
   },
   emits: {
     'open-change': (_details: PayloadOf<MachineProps, 'onOpenChange'>) => true,

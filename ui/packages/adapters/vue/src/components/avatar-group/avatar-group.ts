@@ -9,10 +9,10 @@ import { provideAvatarGroup, useAvatarGroupContext } from './context'
 
 export const XhAvatarGroupRoot = defineComponent({
   name: 'XhAvatarGroupRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    max: { type: Number, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    max: { type: Number },
+    size: { type: String as PropType<Size> },
   },
   setup(props, { slots }) {
     const api = computed(() => connectAvatarGroup(withXhConfig('avatar-group', props) as AvatarGroupProps, vueNormalize))

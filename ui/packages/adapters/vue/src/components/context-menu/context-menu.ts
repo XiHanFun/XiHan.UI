@@ -33,20 +33,20 @@ export type ContextMenuSubSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 
 export const XhContextMenuRoot = defineComponent({
   name: 'XhContextMenuRoot',
-  // 缺省值由 connect 与机器给出，这里一律 default: undefined
+  // 缺省值由 connect 与机器给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<ContextMenuNode[]>, default: undefined },
+    collection: { type: Array as PropType<ContextMenuNode[]> },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     loop: { type: Boolean, default: undefined },
     typeahead: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<ContextMenuProps['translations']>, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    longPressDelay: { type: Number, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    translations: { type: Object as PropType<ContextMenuProps['translations']> },
+    dir: { type: String as PropType<Direction> },
+    longPressDelay: { type: Number },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // open-change 携带 { open }、select 携带 { value }，update:open 携带裸布尔
   emits: {
@@ -128,7 +128,7 @@ export const XhContextMenuPositioner = defineComponent({
   name: 'XhContextMenuPositioner',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
@@ -232,18 +232,18 @@ export const XhContextMenuSub = defineComponent({
     /** 它在父右键菜单里的条目身份。 */
     value: { type: String, required: true },
     disabled: { type: Boolean, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     loop: { type: Boolean, default: undefined },
     openOnHover: { type: Boolean, default: undefined },
-    hoverOpenDelay: { type: Number, default: undefined },
+    hoverOpenDelay: { type: Number },
     /** 文字方向；缺省继承父层。子层被搬到浮层落点，继承不到父层的方向。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
     /** 语气；缺省继承父层。子层是浮层落点下的同级节点，CSS 私有槽继承不到。 */
-    tone: { type: String as PropType<Tone>, default: undefined },
+    tone: { type: String as PropType<Tone> },
     /** 尺寸；缺省继承父层，理由同 tone。 */
-    size: { type: String as PropType<Size>, default: undefined },
-    hoverCloseDelay: { type: Number, default: undefined },
+    size: { type: String as PropType<Size> },
+    hoverCloseDelay: { type: Number },
   },
   slots: Object as SlotsType<{
     default?: (props: ContextMenuSubSlotProps) => VNode[]

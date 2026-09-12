@@ -49,31 +49,31 @@ function reportNodeFocus(ctx: TreeContext, el: Ref<HTMLElement | null>, value: (
 
 export const XhTreeRoot = defineComponent({
   name: 'XhTreeRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<TreeNode[]>, default: undefined },
+    collection: { type: Array as PropType<TreeNode[]> },
     /** 外框形态：surface 带描边与底色（缺省），plain 只留行。 */
-    variant: { type: String as PropType<TreeProps['variant']>, default: undefined },
-    expandedValue: { type: Array as PropType<string[]>, default: undefined },
-    defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
-    selection: { type: Array as PropType<string[]>, default: undefined },
-    defaultSelection: { type: Array as PropType<string[]>, default: undefined },
+    variant: { type: String as PropType<TreeProps['variant']> },
+    expandedValue: { type: Array as PropType<string[]> },
+    defaultExpandedValue: { type: Array as PropType<string[]> },
+    selection: { type: Array as PropType<string[]> },
+    defaultSelection: { type: Array as PropType<string[]> },
     multiple: { type: Boolean, default: undefined },
     /** 末端那一层怎么排，默认 vertical；horizontal 让子节点全是叶子的那层并排铺开。 */
-    leafOrientation: { type: String as PropType<TreeProps['leafOrientation']>, default: undefined },
+    leafOrientation: { type: String as PropType<TreeProps['leafOrientation']> },
     cascade: Boolean,
-    checkedStrategy: { type: String as PropType<TreeProps['checkedStrategy']>, default: undefined },
+    checkedStrategy: { type: String as PropType<TreeProps['checkedStrategy']> },
     expandOnClick: { type: Boolean, default: undefined },
     disabled: Boolean,
     loading: Boolean,
     loop: { type: Boolean, default: undefined },
     typeahead: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
     /** 节点可以拖着搬家。整个节点都是拖动源，不另出把手。 */
     nodeDraggable: Boolean,
     /** 这一次搬家许不许。收到的是折算好的落点（搬到哪个父下面的第几位）。不给即都许。 */
-    allowDrop: { type: Function as PropType<TreeProps['allowDrop']>, default: undefined },
-    translations: { type: Object as PropType<TreeProps['translations']>, default: undefined },
+    allowDrop: { type: Function as PropType<TreeProps['allowDrop']> },
+    translations: { type: Object as PropType<TreeProps['translations']> },
   },
   // *-change 携带 { value }，update:* 携带裸集合；回传值恒为数组，单选时长度 ≤ 1
   emits: {

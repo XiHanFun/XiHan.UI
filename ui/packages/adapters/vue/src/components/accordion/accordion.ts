@@ -12,19 +12,19 @@ type AccordionProps = AccordionSchema['props']
 export const XhAccordionRoot = defineComponent({
   name: 'XhAccordionRoot',
   props: {
-    collection: { type: Array as PropType<AccordionNode[]>, default: undefined },
-    value: { type: Array as PropType<string[]>, default: undefined },
-    defaultValue: { type: Array as PropType<string[]>, default: undefined },
+    collection: { type: Array as PropType<AccordionNode[]> },
+    value: { type: Array as PropType<string[]> },
+    defaultValue: { type: Array as PropType<string[]> },
     multiple: Boolean,
     collapsible: Boolean,
     loop: Boolean,
     disabled: Boolean,
-    variant: { type: String as PropType<AccordionVariant>, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
+    variant: { type: String as PropType<AccordionVariant> },
+    orientation: { type: String as PropType<Orientation> },
     // 只改水平轴上左右键的语义，不写进 DOM
-    dir: { type: String as PropType<Direction>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // value-change 携带 { value }，update:value 携带裸数组
   emits: {

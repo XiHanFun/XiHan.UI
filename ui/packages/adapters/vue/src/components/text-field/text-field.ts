@@ -24,25 +24,25 @@ export type TextFieldCountSlotProps = Pick<TextFieldApi, 'count' | 'maxLength' |
 export const XhTextFieldRoot = defineComponent({
   name: 'XhTextFieldRoot',
   props: {
-    // default: undefined 表示非受控
-    value: { type: String, default: undefined },
-    defaultValue: { type: String, default: undefined },
-    type: { type: String as PropType<TextFieldType>, default: undefined },
-    placeholder: { type: String, default: undefined },
+    // 缺席值 undefined 表示非受控
+    value: { type: String },
+    defaultValue: { type: String },
+    type: { type: String as PropType<TextFieldType> },
+    placeholder: { type: String },
     // undefined 才表示「本实例没说」，Form/Field 才能安全地下传状态；false 是显式顶掉继承。
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
-    name: { type: String, default: undefined },
-    maxLength: { type: Number, default: undefined },
+    name: { type: String },
+    maxLength: { type: Number },
     clearable: Boolean,
     showCount: Boolean,
     autoSize: { type: [Boolean, Object] as PropType<TextFieldProps['autoSize']>, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<TextFieldProps['translations']>, default: undefined },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<TextFieldProps['translations']> },
   },
   // value-change 携带 { value }，update:value 携带裸串
   emits: {

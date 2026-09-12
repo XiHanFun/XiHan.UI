@@ -16,14 +16,14 @@ export type ScrollAreaRootSlotProps = Pick<ScrollAreaApi, 'vertical' | 'horizont
 
 export const XhScrollAreaRoot = defineComponent({
   name: 'XhScrollAreaRoot',
-  // 缺省值由 scrollbar 的机器与 connect 给出，这里一律 default: undefined
+  // 缺省值由 scrollbar 的机器与 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    type: { type: String as PropType<ScrollbarType>, default: undefined },
-    hideDelay: { type: Number, default: undefined },
-    orientation: { type: String as PropType<ScrollAreaOrientation>, default: undefined },
-    variant: { type: String as PropType<ScrollAreaVariant>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    type: { type: String as PropType<ScrollbarType> },
+    hideDelay: { type: Number },
+    orientation: { type: String as PropType<ScrollAreaOrientation> },
+    variant: { type: String as PropType<ScrollAreaVariant> },
+    size: { type: String as PropType<Size> },
+    dir: { type: String as PropType<Direction> },
     /** 触屏（粗指针）上也画自绘滚动条；缺省交给原生滚动。 */
     forceVisible: Boolean,
   },

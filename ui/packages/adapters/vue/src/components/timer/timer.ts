@@ -23,20 +23,20 @@ const DEFAULT_UNITS: readonly TimerUnit[] = ['hours', 'minutes', 'seconds']
 
 export const XhTimerRoot = defineComponent({
   name: 'XhTimerRoot',
-  // 全部 default: undefined，缺省值由机器与 connect 决定
+  // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    startMs: { type: Number, default: undefined },
-    targetMs: { type: Number, default: undefined },
+    startMs: { type: Number },
+    targetMs: { type: Number },
     countdown: { type: Boolean, default: undefined },
-    value: { type: Number, default: undefined },
+    value: { type: Number },
     active: { type: Boolean, default: undefined },
     autoStart: { type: Boolean, default: undefined },
-    interval: { type: Number, default: undefined },
-    format: { type: String, default: undefined },
-    precision: { type: Number, default: undefined },
-    live: { type: String as PropType<TimerLive>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<TimerTranslations>>, default: undefined },
+    interval: { type: Number },
+    format: { type: String },
+    precision: { type: Number },
+    live: { type: String as PropType<TimerLive> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<TimerTranslations>> },
   },
   // tick 携带 { value, elapsed }；complete 同形，只在到点那一刻发一次
   emits: {

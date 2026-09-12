@@ -19,14 +19,14 @@ export interface MarkdownStreamBlockSlotProps {
 
 export const XhMarkdownStreamRoot = defineComponent({
   name: 'XhMarkdownStreamRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     blocks: { type: Array as PropType<readonly MarkdownBlock[]>, default: () => [] },
     streaming: Boolean,
-    announce: { type: String as PropType<'off' | 'polite' | 'assertive'>, default: undefined },
+    announce: { type: String as PropType<'off' | 'polite' | 'assertive'> },
     caret: { type: Boolean, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<MarkdownStreamTranslations>>, default: undefined },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<MarkdownStreamTranslations>> },
   },
   slots: Object as SlotsType<{
     default?: (props: MarkdownStreamRootSlotProps) => VNode[]

@@ -21,18 +21,18 @@ export type NumberAnimationSlotProps = Pick<NumberAnimationApi, 'value' | 'text'
  */
 export const XhNumberAnimation = defineComponent({
   name: 'XhNumberAnimation',
-  // 缺省值由机器与 connect 给出，这里一律 default: undefined
+  // 缺省值由机器与 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    from: { type: Number, default: undefined },
-    to: { type: Number, default: undefined },
-    duration: { type: Number, default: undefined },
-    easing: { type: String as PropType<NumberAnimationEasing>, default: undefined },
-    precision: { type: Number, default: undefined },
-    separator: { type: String, default: undefined },
+    from: { type: Number },
+    to: { type: Number },
+    duration: { type: Number },
+    easing: { type: String as PropType<NumberAnimationEasing> },
+    precision: { type: Number },
+    separator: { type: String },
     active: { type: Boolean, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    live: { type: String as PropType<NumberAnimationLive>, default: undefined },
+    size: { type: String as PropType<Size> },
+    tone: { type: String as PropType<Tone> },
+    live: { type: String as PropType<NumberAnimationLive> },
   },
   emits: {
     complete: (_details: PayloadOf<NumberAnimationProps, 'onComplete'>) => true,

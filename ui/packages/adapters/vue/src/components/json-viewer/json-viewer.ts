@@ -60,23 +60,23 @@ function renderRow(
 
 export const XhJsonViewerRoot = defineComponent({
   name: 'XhJsonViewerRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     // 任意形状都收，类型检查交给使用方
     value: { type: null as unknown as PropType<unknown>, default: undefined as unknown },
-    view: { type: String as PropType<JsonViewerView>, default: undefined },
+    view: { type: String as PropType<JsonViewerView> },
     /** 外框形态：surface 带描边与底色（缺省），plain 只留内容。 */
-    variant: { type: String as PropType<JsonViewerVariant>, default: undefined },
-    expandedValue: { type: Array as PropType<string[]>, default: undefined },
-    defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
-    defaultExpandedDepth: { type: Number, default: undefined },
-    maxStringLength: { type: Number, default: undefined },
-    maxItems: { type: Number, default: undefined },
+    variant: { type: String as PropType<JsonViewerVariant> },
+    expandedValue: { type: Array as PropType<string[]> },
+    defaultExpandedValue: { type: Array as PropType<string[]> },
+    defaultExpandedDepth: { type: Number },
+    maxStringLength: { type: Number },
+    maxItems: { type: Number },
     sortKeys: { type: Boolean, default: undefined },
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<JsonViewerTranslations>>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<JsonViewerTranslations>> },
   },
   // 空态那一格的内容：不写即铺 translations 里的兜底文案
   slots: Object as SlotsType<{

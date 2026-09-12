@@ -15,7 +15,7 @@ export const XhFieldRoot = defineComponent({
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     // 控件节点的 id，不占用根节点自己的 DOM id
-    controlId: { type: String, default: undefined },
+    controlId: { type: String },
   },
   setup(props, { slots }) {
     const ctx = useField(useFormControlProps(props))

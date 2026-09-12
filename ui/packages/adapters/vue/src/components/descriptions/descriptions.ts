@@ -9,12 +9,12 @@ import { provideDescriptions, useDescriptionsContext } from './context'
 
 export const XhDescriptionsRoot = defineComponent({
   name: 'XhDescriptionsRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    columns: { type: Number as PropType<DescriptionsColumns>, default: undefined },
+    columns: { type: Number as PropType<DescriptionsColumns> },
     bordered: Boolean,
-    placement: { type: String as PropType<DescriptionsPlacement>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    placement: { type: String as PropType<DescriptionsPlacement> },
+    size: { type: String as PropType<Size> },
     /** 根渲染成哪个标签，默认 dl。 */
     as: { type: String, default: 'dl' },
   },
@@ -39,7 +39,7 @@ export const XhDescriptionsItem = defineComponent({
     /** 每一格渲染成哪个标签，默认 div。 */
     as: { type: String, default: 'div' },
     /** 这一格横跨几列，不写即占一列；上限是根上的 columns。 */
-    span: { type: Number, default: undefined },
+    span: { type: Number },
   },
   setup(props, { slots }) {
     const ctx = useDescriptionsContext()

@@ -11,16 +11,16 @@ import { provideWatermark, useWatermarkContext } from './context'
  */
 export const XhWatermarkRoot = defineComponent({
   name: 'XhWatermarkRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    text: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    rotate: { type: Number, default: undefined },
-    gap: { type: Number, default: undefined },
-    fontSize: { type: Number, default: undefined },
-    opacity: { type: Number, default: undefined },
-    fontFamily: { type: String, default: undefined },
-    image: { type: String, default: undefined },
-    imageSize: { type: Object as PropType<WatermarkImageSize>, default: undefined },
+    text: { type: [String, Array] as PropType<string | string[]> },
+    rotate: { type: Number },
+    gap: { type: Number },
+    fontSize: { type: Number },
+    opacity: { type: Number },
+    fontFamily: { type: String },
+    image: { type: String },
+    imageSize: { type: Object as PropType<WatermarkImageSize> },
   },
   setup(props, { slots }) {
     const api = computed(() => connectWatermark(props as WatermarkProps, vueNormalize))

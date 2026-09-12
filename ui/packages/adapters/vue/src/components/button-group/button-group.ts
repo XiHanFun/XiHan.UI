@@ -12,12 +12,12 @@ type VueButtonGroupApi = ReturnType<typeof connectButtonGroup>
 
 export const XhButtonGroup = defineComponent({
   name: 'XhButtonGroup',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    orientation: { type: String as PropType<'horizontal' | 'vertical'>, default: undefined },
-    variant: { type: String as PropType<ActionVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    orientation: { type: String as PropType<'horizontal' | 'vertical'> },
+    variant: { type: String as PropType<ActionVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
     disabled: { type: Boolean, default: undefined },
     fullWidth: { type: Boolean, default: undefined },
   },

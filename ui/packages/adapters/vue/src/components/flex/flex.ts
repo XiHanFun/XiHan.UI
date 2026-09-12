@@ -58,12 +58,12 @@ function interleave(items: readonly VNode[], split: Slot): VNode[] {
 
 export const XhFlex = defineComponent({
   name: 'XhFlex',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    orientation: { type: String as PropType<FlexProps['orientation']>, default: undefined },
-    align: { type: String as PropType<FlexProps['align']>, default: undefined },
-    justify: { type: String as PropType<FlexProps['justify']>, default: undefined },
-    gap: { type: String as PropType<FlexProps['gap']>, default: undefined },
+    orientation: { type: String as PropType<FlexProps['orientation']> },
+    align: { type: String as PropType<FlexProps['align']> },
+    justify: { type: String as PropType<FlexProps['justify']> },
+    gap: { type: String as PropType<FlexProps['gap']> },
     wrap: Boolean,
     inline: Boolean,
   },

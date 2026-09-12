@@ -24,24 +24,24 @@ export type ListboxRootSlotProps = Pick<
 
 export const XhListboxRoot = defineComponent({
   name: 'XhListboxRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<ListboxNode[]>, default: undefined },
+    collection: { type: Array as PropType<ListboxNode[]> },
     /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
-    label: { type: String, default: undefined },
-    value: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    selectionMode: { type: String as PropType<ListboxSelectionMode>, default: undefined },
+    label: { type: String },
+    value: { type: [String, Array] as PropType<string | string[]> },
+    defaultValue: { type: [String, Array] as PropType<string | string[]> },
+    selectionMode: { type: String as PropType<ListboxSelectionMode> },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     loading: Boolean,
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
     loop: { type: Boolean, default: undefined },
     typeahead: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    orientation: { type: String as PropType<Orientation> },
   },
   // value-change 携带 { value }，update:value 携带裸集合；回传值恒为数组，单选时长度 ≤ 1
   emits: {

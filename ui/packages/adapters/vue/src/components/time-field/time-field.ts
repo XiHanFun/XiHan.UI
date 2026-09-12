@@ -19,25 +19,25 @@ export type TimeFieldRootSlotProps = Pick<
 export const XhTimeFieldRoot = defineComponent({
   name: 'XhTimeFieldRoot',
   props: {
-    // default: undefined 表示非受控
-    value: { type: String, default: undefined },
-    defaultValue: { type: String, default: undefined },
-    min: { type: String, default: undefined },
-    max: { type: String, default: undefined },
-    locale: { type: String, default: undefined },
-    // 缺省值由 connect 给出，这里一律 default: undefined
-    hourCycle: { type: Number as PropType<TimeHourCycle>, default: undefined },
-    granularity: { type: String as PropType<TimeGranularity>, default: undefined },
+    // 缺席值 undefined 表示非受控
+    value: { type: String },
+    defaultValue: { type: String },
+    min: { type: String },
+    max: { type: String },
+    locale: { type: String },
+    // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
+    hourCycle: { type: Number as PropType<TimeHourCycle> },
+    granularity: { type: String as PropType<TimeGranularity> },
     disabled: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<TimeFieldProps['translations']>, default: undefined },
+    translations: { type: Object as PropType<TimeFieldProps['translations']> },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
-    name: { type: String, default: undefined },
-    placeholder: { type: String, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    name: { type: String },
+    placeholder: { type: String },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // value-change 携带 { value }，update:value 携带裸串
   emits: {

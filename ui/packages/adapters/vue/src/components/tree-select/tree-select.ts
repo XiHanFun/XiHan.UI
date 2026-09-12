@@ -78,38 +78,38 @@ function reportNodeFocus(ctx: TreeSelectContext, el: Ref<HTMLElement | null>, va
 
 export const XhTreeSelectRoot = defineComponent({
   name: 'XhTreeSelectRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<TreeSelectNode[]>, default: undefined },
-    loadChildren: { type: Function as PropType<TreeSelectProps['loadChildren']>, default: undefined },
+    collection: { type: Array as PropType<TreeSelectNode[]> },
+    loadChildren: { type: Function as PropType<TreeSelectProps['loadChildren']> },
     /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
-    label: { type: String, default: undefined },
+    label: { type: String },
     /** 自动渲染树里是否带清空按钮；手写部件不看它，写了节点即可清。 */
     clearable: Boolean,
-    value: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    expandedValue: { type: Array as PropType<string[]>, default: undefined },
-    defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
+    value: { type: [String, Array] as PropType<string | string[]> },
+    defaultValue: { type: [String, Array] as PropType<string | string[]> },
+    expandedValue: { type: Array as PropType<string[]> },
+    defaultExpandedValue: { type: Array as PropType<string[]> },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     multiple: Boolean,
     cascade: Boolean,
-    checkedStrategy: { type: String as PropType<TreeSelectProps['checkedStrategy']>, default: undefined },
+    checkedStrategy: { type: String as PropType<TreeSelectProps['checkedStrategy']> },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     loading: Boolean,
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    placeholder: { type: String, default: undefined },
-    translations: { type: Object as PropType<TreeSelectProps['translations']>, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    placeholder: { type: String },
+    translations: { type: Object as PropType<TreeSelectProps['translations']> },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    name: { type: String, default: undefined },
-    form: { type: String, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    name: { type: String },
+    form: { type: String },
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
   emits: {
@@ -253,7 +253,7 @@ export const XhTreeSelectPositioner = defineComponent({
   name: 'XhTreeSelectPositioner',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,

@@ -28,16 +28,16 @@ const INDEX_PROP = { index: { type: [Number, String] as PropType<number | string
 export const XhSplitterRoot = defineComponent({
   name: 'XhSplitterRoot',
   props: {
-    // 布局恒是数组；default: undefined 表示非受控
-    sizes: { type: Array as PropType<number[]>, default: undefined },
-    defaultSizes: { type: Array as PropType<number[]>, default: undefined },
-    panels: { type: Array as PropType<SplitterPanelProps[]>, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    // 布局恒是数组；缺席值 undefined 表示非受控
+    sizes: { type: Array as PropType<number[]> },
+    defaultSizes: { type: Array as PropType<number[]> },
+    panels: { type: Array as PropType<SplitterPanelProps[]> },
+    orientation: { type: String as PropType<Orientation> },
+    dir: { type: String as PropType<Direction> },
     disabled: Boolean,
-    step: { type: Number, default: undefined },
-    largeStep: { type: Number, default: undefined },
-    translations: { type: Object as PropType<Partial<SplitterTranslations>>, default: undefined },
+    step: { type: Number },
+    largeStep: { type: Number },
+    translations: { type: Object as PropType<Partial<SplitterTranslations>> },
   },
   // sizes-change 携带 { sizes }，update:sizes 携带裸数组；sizes-change-end 只在操作收尾时发一次
   emits: {

@@ -20,17 +20,17 @@ export const XhPopconfirmRoot = defineComponent({
   props: {
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     closeOnEscape: { type: Boolean, default: true },
     closeOnInteractOutside: { type: Boolean, default: true },
-    size: { type: String as PropType<Size>, default: undefined },
+    size: { type: String as PropType<Size> },
     /**
      * 确认回调走函数 prop 而非 emit：emit 拿不到监听函数的返回值，而异步门就吃它——
      * 返回 thenable 即挂起（浮层等兑现才收、确认按钮转圈），拒绝留在原地并派 confirm-error。
      * 模板里照旧写 @confirm，Vue 会把它落到这个 prop 上。
      */
-    onConfirm: { type: Function as PropType<PopconfirmNotifiers['onConfirm']>, default: undefined },
+    onConfirm: { type: Function as PropType<PopconfirmNotifiers['onConfirm']> },
   },
   // open-change 携带 { open }，update:open 携带裸布尔；cancel 不带载荷
   emits: {
@@ -96,7 +96,7 @@ export const XhPopconfirmPositioner = defineComponent({
   name: 'XhPopconfirmPositioner',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,

@@ -13,12 +13,12 @@ export type AffixRootSlotProps = Pick<AffixApi, 'affixed'>
 /** 根节点是占位盒：content 吸住时脱流，它留在原位撑住那块空间。 */
 export const XhAffixRoot = defineComponent({
   name: 'XhAffixRoot',
-  // 缺省值由机器与 connect 决定，这里一律 default: undefined
+  // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    offsetTop: { type: Number, default: undefined },
-    offsetBottom: { type: Number, default: undefined },
+    offsetTop: { type: Number },
+    offsetBottom: { type: Number },
     /** 滚动容器，缺省即整页滚动；经 refs 交给观察器。 */
-    target: { type: Object as PropType<HTMLElement | null>, default: undefined },
+    target: { type: Object as PropType<HTMLElement | null> },
   },
   emits: {
     'affix-change': (_details: PayloadOf<AffixProps, 'onAffixChange'>) => true,

@@ -12,21 +12,21 @@ type AnchorProps = AnchorSchema['props']
 /** 根节点渲染为 nav 地标 */
 export const XhAnchorRoot = defineComponent({
   name: 'XhAnchorRoot',
-  // 缺省值由机器与 connect 决定，这里一律 default: undefined
+  // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    value: { type: String as PropType<string | null>, default: undefined },
-    defaultValue: { type: String as PropType<string | null>, default: undefined },
-    collection: { type: Array as PropType<readonly string[]>, default: undefined },
-    offset: { type: Number, default: undefined },
-    bounds: { type: Number, default: undefined },
+    value: { type: String as PropType<string | null> },
+    defaultValue: { type: String as PropType<string | null> },
+    collection: { type: Array as PropType<readonly string[]> },
+    offset: { type: Number },
+    bounds: { type: Number },
     smooth: { type: Boolean, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    translations: { type: Object as PropType<Partial<AnchorTranslations>>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    orientation: { type: String as PropType<Orientation> },
+    dir: { type: String as PropType<Direction> },
+    translations: { type: Object as PropType<Partial<AnchorTranslations>> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
     /** 判定线所依附的滚动容器，缺省挂在窗口上；经 refs 交给观察器。 */
-    scrollElement: { type: Object as PropType<HTMLElement | null>, default: undefined },
+    scrollElement: { type: Object as PropType<HTMLElement | null> },
   },
   // value-change 携带 { value }，update:value 携带裸值
   emits: {

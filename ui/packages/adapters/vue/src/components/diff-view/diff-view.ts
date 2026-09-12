@@ -19,14 +19,14 @@ export type DiffViewRootSlotProps = Pick<
 export const XhDiffViewRoot = defineComponent({
   name: 'XhDiffViewRoot',
   props: {
-    model: { type: Object as PropType<DiffModel>, default: undefined },
-    view: { type: String as PropType<DiffViewMode>, default: undefined },
-    contextLines: { type: Number, default: undefined },
-    expandedValue: { type: Array as PropType<readonly string[]>, default: undefined },
-    defaultExpandedValue: { type: Array as PropType<readonly string[]>, default: undefined },
+    model: { type: Object as PropType<DiffModel> },
+    view: { type: String as PropType<DiffViewMode> },
+    contextLines: { type: Number },
+    expandedValue: { type: Array as PropType<readonly string[]> },
+    defaultExpandedValue: { type: Array as PropType<readonly string[]> },
     wrap: { type: Boolean, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<DiffViewTranslations>>, default: undefined },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<DiffViewTranslations>> },
   },
   emits: {
     'expanded-value-change': (_details: PayloadOf<Props, 'onExpandedValueChange'>) => true,

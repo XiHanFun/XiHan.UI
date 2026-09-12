@@ -9,9 +9,9 @@ import { provideInputGroup, useInputGroupContext } from './context'
 
 export const XhInputGroupRoot = defineComponent({
   name: 'XhInputGroupRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    size: { type: String as PropType<Size>, default: undefined },
+    size: { type: String as PropType<Size> },
   },
   setup(props, { slots }) {
     const api = computed(() => connectInputGroup(withXhConfig('input-group', props) as InputGroupProps, vueNormalize))

@@ -17,17 +17,17 @@ export type HoverCardRootSlotProps = Pick<HoverCardApi, 'open' | 'setOpen'>
 
 export const XhHoverCardRoot = defineComponent({
   name: 'XhHoverCardRoot',
-  // 缺省值由机器与 connect 给出，这里一律 default: undefined
+  // 缺省值由机器与 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
-    openDelay: { type: Number, default: undefined },
-    closeDelay: { type: Number, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
+    openDelay: { type: Number },
+    closeDelay: { type: Number },
+    dir: { type: String as PropType<Direction> },
     disabled: Boolean,
-    size: { type: String as PropType<Size>, default: undefined },
+    size: { type: String as PropType<Size> },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: {
@@ -82,7 +82,7 @@ export const XhHoverCardPositioner = defineComponent({
   name: 'XhHoverCardPositioner',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,

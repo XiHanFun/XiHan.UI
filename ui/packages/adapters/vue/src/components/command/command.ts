@@ -28,14 +28,14 @@ export type CommandRootSlotProps = Pick<
 
 export const XhCommandRoot = defineComponent({
   name: 'XhCommandRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<CommandNode[]>, default: undefined },
-    groups: { type: Array as PropType<CommandGroup[]>, default: undefined },
+    collection: { type: Array as PropType<CommandNode[]> },
+    groups: { type: Array as PropType<CommandGroup[]> },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    inputValue: { type: String, default: undefined },
-    defaultInputValue: { type: String, default: undefined },
+    inputValue: { type: String },
+    defaultInputValue: { type: String },
     /** 内置过滤，默认开；关掉即由调用方自己筛 */
     filter: { type: Boolean, default: undefined },
     caseSensitive: Boolean,
@@ -46,14 +46,14 @@ export const XhCommandRoot = defineComponent({
     restoreFocus: { type: Boolean, default: true },
     loop: { type: Boolean, default: undefined },
     loading: Boolean,
-    placeholder: { type: String, default: undefined },
+    placeholder: { type: String },
     /** 无匹配时的提示语。给了它就不必再写 empty 部件；要放别的内容改用 empty 插槽。 */
-    empty: { type: String, default: undefined },
+    empty: { type: String },
     /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    variant: { type: String as PropType<OverlayBackdropVariant>, default: undefined },
-    translations: { type: Object as PropType<CommandProps['translations']>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    size: { type: String as PropType<Size> },
+    variant: { type: String as PropType<OverlayBackdropVariant> },
+    translations: { type: Object as PropType<CommandProps['translations']> },
   },
   // *-change 携带 details 对象，update:* 携带裸值
   emits: {
@@ -152,7 +152,7 @@ export const XhCommandContent = defineComponent({
   name: 'XhCommandContent',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 content 上
   inheritAttrs: false,

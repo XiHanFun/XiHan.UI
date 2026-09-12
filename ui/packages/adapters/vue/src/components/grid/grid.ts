@@ -13,20 +13,19 @@ type OffsetByBreakpoint = Exclude<GridItemProps['offset'], GridColumnOffset | un
 
 export const XhGridRoot = defineComponent({
   name: 'XhGridRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     // 列数由作者声明：兼收字符串以支持模板里写 cols="3"，收对象则是逐档的列数
     cols: {
       type: [Number, String, Object] as PropType<GridColumnCount | string | ColsByBreakpoint>,
-      default: undefined,
     },
-    rows: { type: [Number, String] as PropType<GridRowCount | string>, default: undefined },
-    minColWidth: { type: String as PropType<GridProps['minColWidth']>, default: undefined },
-    gap: { type: String as PropType<GridProps['gap']>, default: undefined },
-    rowGap: { type: String as PropType<GridProps['rowGap']>, default: undefined },
-    columnGap: { type: String as PropType<GridProps['columnGap']>, default: undefined },
-    align: { type: String as PropType<GridProps['align']>, default: undefined },
-    justifyItems: { type: String as PropType<GridProps['justifyItems']>, default: undefined },
+    rows: { type: [Number, String] as PropType<GridRowCount | string> },
+    minColWidth: { type: String as PropType<GridProps['minColWidth']> },
+    gap: { type: String as PropType<GridProps['gap']> },
+    rowGap: { type: String as PropType<GridProps['rowGap']> },
+    columnGap: { type: String as PropType<GridProps['columnGap']> },
+    align: { type: String as PropType<GridProps['align']> },
+    justifyItems: { type: String as PropType<GridProps['justifyItems']> },
   },
   setup(props, { slots }) {
     const api = computed(() => connectGrid({
@@ -50,11 +49,9 @@ export const XhGridItem = defineComponent({
     // 跨列与错列由每一格自报，同样兼收字符串；收对象则是逐档的跨列 / 错列
     span: {
       type: [Number, String, Object] as PropType<GridColumnCount | string | SpanByBreakpoint>,
-      default: undefined,
     },
     offset: {
       type: [Number, String, Object] as PropType<GridColumnOffset | string | OffsetByBreakpoint>,
-      default: undefined,
     },
   },
   setup(props, { slots }) {

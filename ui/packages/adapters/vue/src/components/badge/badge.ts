@@ -13,15 +13,15 @@ const badgeProps = {
   /** 挂在哪个角上，默认 top-end。 */
   placement: String as PropType<BadgePlacement>,
   /** 计数：给了它角标就自己出数字，超过 max 写成「max+」。 */
-  count: { type: Number, default: undefined },
+  count: { type: Number },
   /** 计数上限，默认 99。 */
-  max: { type: Number, default: undefined },
+  max: { type: Number },
   /** 计数为 0 时是否照样显示，默认不显示。 */
   showZero: { type: Boolean, default: undefined },
   /** 只出一个点，不出数字。 */
   dot: { type: Boolean, default: undefined },
   /** 读屏怎么念这枚角标，例如「3 条未读」。 */
-  label: { type: String, default: undefined },
+  label: { type: String },
 } as const
 
 /**

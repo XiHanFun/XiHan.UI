@@ -22,17 +22,17 @@ export type DownloadTriggerSlotProps = Pick<
  */
 export const XhDownloadTrigger = defineComponent({
   name: 'XhDownloadTrigger',
-  // 缺省值由机器与 connect 给出，这里一律 default: undefined
+  // 缺省值由机器与 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     // 文本与 Blob 是值形态，函数形态点了才调用
-    data: { type: [String, Function, Object] as PropType<DownloadTriggerData>, default: undefined },
-    fileName: { type: String, default: undefined },
-    mimeType: { type: String, default: undefined },
+    data: { type: [String, Function, Object] as PropType<DownloadTriggerData> },
+    fileName: { type: String },
+    mimeType: { type: String },
     disabled: { type: Boolean, default: undefined },
-    variant: { type: String as PropType<ActionVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<DownloadTriggerTranslations>>, default: undefined },
+    variant: { type: String as PropType<ActionVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<DownloadTriggerTranslations>> },
   },
   // download-complete 携带 { fileName }；download-error 携带 { error, fileName }
   emits: {

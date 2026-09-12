@@ -55,34 +55,34 @@ export interface TimePickerPresetsSlotProps {
 
 export const XhTimePickerRoot = defineComponent({
   name: 'XhTimePickerRoot',
-  // 缺省值由 connect 给出，这里一律 default: undefined
+  // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    value: { type: String, default: undefined },
-    defaultValue: { type: String, default: undefined },
+    value: { type: String },
+    defaultValue: { type: String },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    min: { type: String, default: undefined },
-    max: { type: String, default: undefined },
-    locale: { type: String, default: undefined },
-    hourCycle: { type: Number as PropType<TimeHourCycle>, default: undefined },
-    granularity: { type: String as PropType<TimeGranularity>, default: undefined },
-    step: { type: Number, default: undefined },
+    min: { type: String },
+    max: { type: String },
+    locale: { type: String },
+    hourCycle: { type: Number as PropType<TimeHourCycle> },
+    granularity: { type: String as PropType<TimeGranularity> },
+    step: { type: Number },
     /** 快捷选项；给了就在浮层里多出一列，时刻要在自己的 computed 里算好再传。 */
-    presets: { type: Array as PropType<TimePickerPreset[]>, default: undefined },
+    presets: { type: Array as PropType<TimePickerPreset[]> },
     disabled: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<TimePickerProps['translations']>, default: undefined },
-    isTimeUnavailable: { type: Function as PropType<(value: string, unit: TimePickerColumnUnit) => boolean>, default: undefined },
+    translations: { type: Object as PropType<TimePickerProps['translations']> },
+    isTimeUnavailable: { type: Function as PropType<(value: string, unit: TimePickerColumnUnit) => boolean> },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
-    name: { type: String, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    name: { type: String },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
   },
   // *-change 携带 details 对象，update:* 携带裸值
   emits: {
@@ -198,7 +198,7 @@ export const XhTimePickerPositioner = defineComponent({
   name: 'XhTimePickerPositioner',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,

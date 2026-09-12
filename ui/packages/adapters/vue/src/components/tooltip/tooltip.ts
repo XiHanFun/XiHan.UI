@@ -19,15 +19,15 @@ export const XhTooltipRoot = defineComponent({
   props: {
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
-    openDelay: { type: Number, default: undefined },
-    closeDelay: { type: Number, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    openDelay: { type: Number },
+    closeDelay: { type: Number },
     disabled: Boolean,
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // open-change 携带 { open }；update:open 携带裸布尔，支持 v-model:open
   emits: {
@@ -79,7 +79,7 @@ export const XhTooltipPositioner = defineComponent({
   name: 'XhTooltipPositioner',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,

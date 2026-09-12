@@ -10,15 +10,15 @@ type LayoutProps = LayoutSchema['props']
 /** 各段一律渲染成 div：地标（banner / navigation / main / contentinfo）由作者自己标。 */
 export const XhLayoutRoot = defineComponent({
   name: 'XhLayoutRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     siderCollapsed: { type: Boolean, default: undefined },
     defaultSiderCollapsed: Boolean,
-    siderWidth: { type: String, default: undefined },
-    siderCollapsedWidth: { type: String, default: undefined },
-    siderPlacement: { type: String as PropType<LayoutSiderPlacement>, default: undefined },
-    siderBreakpoint: { type: String as PropType<LayoutBreakpoint>, default: undefined },
-    siderPresentation: { type: String as PropType<LayoutSiderPresentation>, default: undefined },
+    siderWidth: { type: String },
+    siderCollapsedWidth: { type: String },
+    siderPlacement: { type: String as PropType<LayoutSiderPlacement> },
+    siderBreakpoint: { type: String as PropType<LayoutBreakpoint> },
+    siderPresentation: { type: String as PropType<LayoutSiderPresentation> },
     headerFixed: Boolean,
     siderFixed: Boolean,
     bordered: Boolean,

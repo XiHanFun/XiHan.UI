@@ -23,18 +23,18 @@ export type VirtualizerRootSlotProps = Pick<
 
 export const XhVirtualizerRoot = defineComponent({
   name: 'XhVirtualizerRoot',
-  // 有机器与 connect 兜底的 prop 一律 default: undefined
+  // 有机器与 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    count: { type: Number, default: undefined },
-    estimateSize: { type: [Number, Function] as PropType<number | ((index: number) => number)>, default: undefined },
-    overscan: { type: Number, default: undefined },
+    count: { type: Number },
+    estimateSize: { type: [Number, Function] as PropType<number | ((index: number) => number)> },
+    overscan: { type: Number },
     horizontal: { type: Boolean, default: undefined },
-    gap: { type: Number, default: undefined },
-    getItemKey: { type: Function as PropType<(index: number) => string | number>, default: undefined },
-    scrollMargin: { type: Number, default: undefined },
-    paddingStart: { type: Number, default: undefined },
-    paddingEnd: { type: Number, default: undefined },
-    lanes: { type: Number, default: undefined },
+    gap: { type: Number },
+    getItemKey: { type: Function as PropType<(index: number) => string | number> },
+    scrollMargin: { type: Number },
+    paddingStart: { type: Number },
+    paddingEnd: { type: Number },
+    lanes: { type: Number },
   },
   // change 携带当前该渲染哪些条目的详情
   emits: {

@@ -22,15 +22,15 @@ function renderNode(node: IconNode): VNode {
  */
 export const XhIcon = defineComponent({
   name: 'XhIcon',
-  // 缺省值由 connect 给出，这里一律 default: undefined
+  // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    icon: { type: Object as PropType<IconRecord>, default: undefined },
-    label: { type: String, default: undefined },
-    size: { type: String as PropType<IconSize>, default: undefined },
-    weight: { type: String as PropType<IconWeight>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    rotate: { type: [Number, String] as PropType<IconRotate | string>, default: undefined },
-    flip: { type: String as PropType<IconFlip>, default: undefined },
+    icon: { type: Object as PropType<IconRecord> },
+    label: { type: String },
+    size: { type: String as PropType<IconSize> },
+    weight: { type: String as PropType<IconWeight> },
+    tone: { type: String as PropType<Tone> },
+    rotate: { type: [Number, String] as PropType<IconRotate | string> },
+    flip: { type: String as PropType<IconFlip> },
   },
   setup(props, { slots }) {
     const ctx = useIcon(withXhConfig('icon', props) as IconProps)

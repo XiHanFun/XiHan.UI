@@ -110,25 +110,25 @@ export type TableToolbarSlotProps = Pick<
 
 export const XhTableRoot = /* @__PURE__ */ defineComponent({
   name: 'XhTableRoot',
-  // 有机器侧兜底的 prop 一律 default: undefined，缺省值由 connect 与机器决定
+  // 有机器侧兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined，缺省值由 connect 与机器决定
   props: {
-    columns: { type: Array as PropType<TableColumnDef[]>, default: undefined },
-    rows: { type: Array as PropType<TableRowDef[]>, default: undefined },
-    sort: { type: Array as PropType<TableSortDescriptor[]>, default: undefined },
-    defaultSort: { type: Array as PropType<TableSortDescriptor[]>, default: undefined },
-    selection: { type: [Array, String] as PropType<TableSelection>, default: undefined },
-    defaultSelection: { type: [Array, String] as PropType<TableSelection>, default: undefined },
-    selectionMode: { type: String as PropType<TableSelectionMode>, default: undefined },
+    columns: { type: Array as PropType<TableColumnDef[]> },
+    rows: { type: Array as PropType<TableRowDef[]> },
+    sort: { type: Array as PropType<TableSortDescriptor[]> },
+    defaultSort: { type: Array as PropType<TableSortDescriptor[]> },
+    selection: { type: [Array, String] as PropType<TableSelection> },
+    defaultSelection: { type: [Array, String] as PropType<TableSelection> },
+    selectionMode: { type: String as PropType<TableSelectionMode> },
     /** 要哪几列前缀列（序号 / 多选 / 展开），按给定顺序插在最前面并占住列号。 */
-    prefixColumns: { type: Array as PropType<TableColumnKind[]>, default: undefined },
+    prefixColumns: { type: Array as PropType<TableColumnKind[]> },
     /** 当前页码与每页条数：只用来算序号，不参与切片。 */
     /** 列偏好：给定即受控。持久化归使用者，库只负责把它算进生效列。 */
-    columnPreference: { type: Object as PropType<TableColumnPreference>, default: undefined },
-    defaultColumnPreference: { type: Object as PropType<TableColumnPreference>, default: undefined },
-    page: { type: Number, default: undefined },
-    pageSize: { type: Number, default: undefined },
-    expandedValue: { type: Array as PropType<string[]>, default: undefined },
-    defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
+    columnPreference: { type: Object as PropType<TableColumnPreference> },
+    defaultColumnPreference: { type: Object as PropType<TableColumnPreference> },
+    page: { type: Number },
+    pageSize: { type: Number },
+    expandedValue: { type: Array as PropType<string[]> },
+    defaultExpandedValue: { type: Array as PropType<string[]> },
     loading: Boolean,
     empty: { type: Boolean, default: undefined },
     stickyHeader: Boolean,
@@ -139,11 +139,11 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
     /** 行可以拖着换位。整行都是拖动源，不另出把手。 */
     rowReorderable: Boolean,
     /** 这一次搬家许不许。收到的是折算好的落点（搬到哪个父下面的第几位）。不给即都许。 */
-    allowRowDrop: { type: Function as PropType<TableProps['allowRowDrop']>, default: undefined },
+    allowRowDrop: { type: Function as PropType<TableProps['allowRowDrop']> },
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<TableProps['translations']>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<TableProps['translations']> },
   },
   // *-change 携带 { value }，update:* 携带裸值以支持 v-model
   emits: {
@@ -279,7 +279,7 @@ export const XhTableColumnVisibilityTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhTableColumnVisibilityTrigger',
   props: {
     /** 列 id。写在列设置区里必给；写在列标题里可省，跟着那一列走。 */
-    value: { type: String, default: undefined },
+    value: { type: String },
   },
   setup(props, { slots }) {
     const ctx = useTableContext()
@@ -335,7 +335,7 @@ export const XhTableRow = /* @__PURE__ */ defineComponent({
   name: 'XhTableRow',
   props: {
     /** 行 id：数据行必给，表头行与脚注行省略。 */
-    value: { type: String, default: undefined },
+    value: { type: String },
   },
   setup(props, { slots }) {
     const ctx = useTableContext()
@@ -385,7 +385,7 @@ export const XhTableCell = /* @__PURE__ */ defineComponent({
     /** 列 id。 */
     value: { type: String, required: true },
     /** 跨列数，从 value 那一列往后算。 */
-    colspan: { type: [String, Number] as PropType<string | number>, default: undefined },
+    colspan: { type: [String, Number] as PropType<string | number> },
   },
   setup(props, { slots }) {
     const ctx = useTableContext()

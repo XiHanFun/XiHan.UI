@@ -12,13 +12,13 @@ export type InfiniteScrollRootSlotProps = Pick<InfiniteScrollApi, 'phase' | 'loa
 /** 根节点是列表的外壳，状态挂在它身上；滚动本身走浏览器原生通路，组件不接管。 */
 export const XhInfiniteScrollRoot = defineComponent({
   name: 'XhInfiniteScrollRoot',
-  // 缺省值由机器与 connect 决定，这里一律 default: undefined
+  // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    distance: { type: Number, default: undefined },
+    distance: { type: Number },
     disabled: { type: Boolean, default: undefined },
     loading: { type: Boolean, default: undefined },
     /** 裁剪出可视区的滚动容器，缺省即整页滚动；distance 的提前量扩的正是这块区域。 */
-    target: { type: Object as PropType<HTMLElement | null>, default: undefined },
+    target: { type: Object as PropType<HTMLElement | null> },
   },
   emits: {
     load: () => true,

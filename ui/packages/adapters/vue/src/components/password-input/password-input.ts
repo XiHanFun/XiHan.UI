@@ -20,23 +20,23 @@ export type PasswordInputRootSlotProps = Pick<
 export const XhPasswordInputRoot = defineComponent({
   name: 'XhPasswordInputRoot',
   props: {
-    // default: undefined 表示非受控
-    value: { type: String, default: undefined },
-    defaultValue: { type: String, default: undefined },
+    // 缺席值 undefined 表示非受控
+    value: { type: String },
+    defaultValue: { type: String },
     visible: { type: Boolean, default: undefined },
     defaultVisible: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
-    name: { type: String, default: undefined },
-    placeholder: { type: String, default: undefined },
-    autoComplete: { type: String, default: undefined },
-    strength: { type: Number, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<PasswordInputTranslations>>, default: undefined },
+    name: { type: String },
+    placeholder: { type: String },
+    autoComplete: { type: String },
+    strength: { type: Number },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<PasswordInputTranslations>> },
   },
   // value-change 携带 { value }，update:value 携带裸串；明暗走 visibility-change 一路
   emits: {

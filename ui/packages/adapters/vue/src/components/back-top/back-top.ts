@@ -15,16 +15,16 @@ export type BackTopRootSlotProps = Pick<BackTopApi, 'visible'>
 /** 根节点是定位壳：把按钮钉在视口一角，收起时整块让位。 */
 export const XhBackTopRoot = defineComponent({
   name: 'XhBackTopRoot',
-  // 缺省值由机器与 connect 决定，这里一律 default: undefined
+  // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    visibilityHeight: { type: Number, default: undefined },
-    behavior: { type: String as PropType<BackTopBehavior>, default: undefined },
-    translations: { type: Object as PropType<Partial<BackTopTranslations>>, default: undefined },
-    variant: { type: String as PropType<ActionVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    visibilityHeight: { type: Number },
+    behavior: { type: String as PropType<BackTopBehavior> },
+    translations: { type: Object as PropType<Partial<BackTopTranslations>> },
+    variant: { type: String as PropType<ActionVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
     /** 滚动容器，缺省即整页滚动；经 refs 交给观察器。 */
-    target: { type: Object as PropType<HTMLElement | null>, default: undefined },
+    target: { type: Object as PropType<HTMLElement | null> },
   },
   emits: {
     'visibility-change': (_details: PayloadOf<BackTopProps, 'onVisibilityChange'>) => true,

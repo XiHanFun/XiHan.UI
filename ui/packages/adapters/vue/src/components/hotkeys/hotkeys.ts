@@ -9,11 +9,11 @@ import { useHotkeys } from './use-hotkeys'
  */
 export const XhHotkeys = defineComponent({
   name: 'XhHotkeys',
-  // 缺省值由 connect 给出，这里一律 default: undefined
+  // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     keys: { type: Array as PropType<string[]>, required: true },
-    platform: { type: String as PropType<HotkeysPlatform>, default: undefined },
-    target: { type: [String, Function] as PropType<HotkeysTarget>, default: undefined },
+    platform: { type: String as PropType<HotkeysPlatform> },
+    target: { type: [String, Function] as PropType<HotkeysTarget> },
     preventDefault: { type: Boolean, default: undefined },
     enabled: { type: Boolean, default: undefined },
   },

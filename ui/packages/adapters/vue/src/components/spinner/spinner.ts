@@ -9,13 +9,13 @@ import { useSpinner } from './use-spinner'
 /** 转圈图形由皮肤画在 root 的伪元素上，这里不生成任何子节点。 */
 export const XhSpinner = defineComponent({
   name: 'XhSpinner',
-  // 缺省值由 connect 给出，这里一律 default: undefined
+  // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    label: { type: String, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    variant: { type: String as PropType<SpinnerVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    translations: { type: Object as PropType<Partial<SpinnerTranslations>>, default: undefined },
+    label: { type: String },
+    size: { type: String as PropType<Size> },
+    variant: { type: String as PropType<SpinnerVariant> },
+    tone: { type: String as PropType<Tone> },
+    translations: { type: Object as PropType<Partial<SpinnerTranslations>> },
   },
   setup(props, { slots }) {
     const ctx = useSpinner(withXhConfig('spinner', props) as SpinnerProps)
