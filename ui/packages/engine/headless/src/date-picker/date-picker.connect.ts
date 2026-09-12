@@ -19,6 +19,7 @@ import {
   parseBoundary,
   segmentMaxDigits,
 } from '../date-field'
+import { sameArray as sameDates } from '../shared/array'
 import { overlayPositioned } from '../shared/overlay'
 import { timePickerColumns } from '../time-picker'
 import { datePickerAnatomy } from './date-picker.anatomy'
@@ -47,11 +48,6 @@ function resolveTranslations(input: Partial<DatePickerTranslations> | undefined)
     minute: input?.minute ?? 'minute',
     second: input?.second ?? 'second',
   }
-}
-
-/** 选中集合与这条快捷选项逐位相同（长度也要一样，只落了起点的区间不算选中）。 */
-function sameDates(a: readonly string[], b: readonly string[]): boolean {
-  return a.length === b.length && a.every((v, i) => v === b[i])
 }
 
 // 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，

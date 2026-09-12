@@ -5,6 +5,7 @@ import type { DatePickerSchema, DatePickerValueSource } from './date-picker.type
 import { getLocalTimeZone, today } from '@internationalized/date'
 import { itemValue, resetDeclaredValue, resolveLocale, setup } from '@xihan-ui/core'
 import { calendarAnatomy, calendarPeriodStart, calendarWeekRange, parseCalendarDate } from '../calendar'
+import { toArray as toValues } from '../shared/array'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { datePickerDatePart, datePickerJoinDateTime, datePickerTimePart } from './date-picker.time'
@@ -39,13 +40,6 @@ export function datePickerSegmentSet(
 
 /** 日期格子的 CSS 选择器，取自日历解剖。 */
 const CELL_TRIGGER_SELECTOR = calendarAnatomy.build()['cell-trigger'].selector
-
-/** 裸串归一为单元素数组；undefined 必须原样透传，受控与否靠它区分。 */
-function toValues(input: string | string[] | undefined): string[] | undefined {
-  if (input === undefined)
-    return undefined
-  return typeof input === 'string' ? [input] : [...input]
-}
 
 /** 按字典序比较 ISO 日期串（YYYY-MM-DD 定长补零，字典序即时间序）。 */
 function compareIso(a: string, b: string): number {

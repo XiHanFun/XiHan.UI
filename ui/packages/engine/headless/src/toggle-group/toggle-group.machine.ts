@@ -1,5 +1,6 @@
 import type { ToggleGroupSchema, ToggleGroupValue } from './toggle-group.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
+import { sameArray } from '../shared/array'
 
 const { createMachine } = setup<ToggleGroupSchema>()
 
@@ -36,7 +37,7 @@ export function toToggleGroupChangeValue(
  * cell 默认的 Object.is 会让版本号每读一次就涨一次、值没变也照发回调。
  */
 export function sameToggleGroupValue(a: readonly string[], b: readonly string[] | undefined): boolean {
-  return b != null && a.length === b.length && a.every((v, i) => v === b[i])
+  return sameArray(a, b)
 }
 
 // 选中集合住在 context 的 cell 里，受控/非受控在 cell 收口，不需要影子事件与受控守卫。

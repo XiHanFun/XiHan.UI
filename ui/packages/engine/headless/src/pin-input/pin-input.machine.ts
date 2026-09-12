@@ -1,6 +1,7 @@
 import type { Params } from '@xihan-ui/core'
 import type { PinInputSchema, PinInputType } from './pin-input.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
+import { sameArray } from '../shared/array'
 
 const { createMachine } = setup<PinInputSchema>()
 
@@ -89,7 +90,7 @@ export function pinFocusTarget(value: readonly string[], index: number): number 
 
 /** 逐格比内容，供 cell 的 isEqual 用。数组每次都是新引用，不比内容的话值没变也会通知一遍。 */
 export function samePinValue(a: readonly string[], b: readonly string[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((char, i) => char === b[i])
+  return sameArray(a, b)
 }
 
 function detailsOf(value: string[]): { value: string[], valueAsString: string } {

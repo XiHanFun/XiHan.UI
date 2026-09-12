@@ -1,4 +1,5 @@
 import { queryItems } from '@xihan-ui/core'
+import { sameArray } from '../shared/array'
 import { masonryItemQuery } from './masonry.anatomy'
 
 /** 框架 Masonry 根的一次 DOM 测量；items 保持当前 DOM 列序，heights 已投影回作者下标。 */
@@ -32,5 +33,5 @@ export function measureMasonry(root: HTMLElement): MasonryMeasurement {
 
 /** 两次测量的作者序高度是否逐位相同；新数组不应导致无意义的响应式重排。 */
 export function sameMasonryHeights(a: readonly number[], b: readonly number[]): boolean {
-  return a.length === b.length && a.every((value, index) => value === b[index])
+  return sameArray(a, b)
 }
