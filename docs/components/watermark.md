@@ -1,4 +1,4 @@
-# Watermark <Badge type="info" text="水印" />
+# Watermark 水印
 
 在一块区域上铺一层重复的印记，底下的内容照常点、照常选。
 

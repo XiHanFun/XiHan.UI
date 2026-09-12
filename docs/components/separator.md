@@ -1,4 +1,4 @@
-# Separator <Badge type="info" text="分隔线" />
+# Separator 分隔线
 
 在两组内容之间画一条线，并说清楚这条线是语义分隔还是纯装饰。
 

@@ -1,4 +1,4 @@
-# Splitter <Badge type="info" text="分栏" />
+# Splitter 分栏
 
 把一块区域拆成几片可拖动的面板，边界由用户自己分配。
 

@@ -1,4 +1,4 @@
-# Drawer <Badge type="info" text="抽屉" />
+# Drawer 抽屉
 
 从屏幕某一边滑出的面板。
 

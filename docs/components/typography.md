@@ -1,4 +1,4 @@
-# Typography <Badge type="info" text="排印" />
+# Typography 排印
 
 一块正文的排版容器：管住段间距与最大行宽，标题、段落与行内文字各自拿自己的字号、字重与行高。
 

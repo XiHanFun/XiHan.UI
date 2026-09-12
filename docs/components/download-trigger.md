@@ -1,4 +1,4 @@
-# DownloadTrigger <Badge type="info" text="下载触发器" />
+# DownloadTrigger 下载触发器
 
 把一段数据交给浏览器下载，并把取数这段过程如实报出来。
 

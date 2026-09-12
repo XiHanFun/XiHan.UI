@@ -1,4 +1,4 @@
-# ScrollArea <Badge type="info" text="滚动区域" />
+# ScrollArea 滚动区域
 
 给一块溢出的内容配一条外观受控的滚动条。滚动本身走的是浏览器原生通路，组件只画滚动条。
 

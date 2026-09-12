@@ -1,4 +1,4 @@
-# Menubar <Badge type="info" text="菜单栏" />
+# Menubar 菜单栏
 
 一排入口各带一张菜单，同时只展开一张——桌面应用顶部那条。
 

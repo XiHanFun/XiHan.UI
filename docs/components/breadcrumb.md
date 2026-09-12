@@ -1,4 +1,4 @@
-# Breadcrumb <Badge type="info" text="面包屑" />
+# Breadcrumb 面包屑
 
 把当前位置在层级里的路径摊开，每一层都能点回去。
 

@@ -1,4 +1,4 @@
-# Toggle <Badge type="info" text="切换按钮" />
+# Toggle 切换按钮
 
 在按下和未按下状态之间切换的按钮。
 

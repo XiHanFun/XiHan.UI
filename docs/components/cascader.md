@@ -1,4 +1,4 @@
-# Cascader <Badge type="info" text="级联选择" />
+# Cascader 级联选择
 
 按层逐列展开的选择器：一列选完展开下一列，值是一条路径。
 

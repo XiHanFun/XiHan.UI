@@ -89,18 +89,12 @@ function frontmatterValue(frontmatter, key) {
   return hit ? hit[1].trim().replace(/^["']|["']$/g, "") : "";
 }
 
-/** 组件页标题后那枚 <Badge text="button" /> 里的组件标识。 */
-function badgeText(line) {
-  const hit = /<Badge[^>]+\btext="([^"]+)"/.exec(line);
-  return hit ? hit[1] : "";
-}
-
-/** 正文首个一级标题的纯文本，连带它后面挂的组件标识。 */
+/** 正文首个一级标题的纯文本。 */
 function headingOf(body) {
   const hit = /^# +(\S.*)$/m.exec(body);
   if (!hit)
     return { title: "", id: "" };
-  return { title: hit[1].replace(/<[^>]+>/g, "").trim(), id: badgeText(hit[1]) };
+  return { title: hit[1].replace(/<[^>]+>/g, "").trim(), id: "" };
 }
 
 /** 一句话描述：首个一级标题之后的第一段，压成单行并截到一句。 */
@@ -278,11 +272,14 @@ export async function writeLlmsAssets(outDir) {
     const source = await readFile(join(DOCS, rel), "utf8");
     const { frontmatter, body } = splitFrontmatter(source);
     const heading = headingOf(body);
+    const componentId = rel.startsWith("components/") && rel !== "components/index.md"
+      ? rel.slice("components/".length, -".md".length)
+      : "";
     pages.push({
       rel,
       section: rel.includes("/") ? rel.slice(0, rel.indexOf("/")) : ".",
       url: urlOf(rel),
-      id: heading.id,
+      id: componentId,
       title: heading.title || frontmatterValue(frontmatter, "title") || rel,
       summary: summaryOf(body) || frontmatterValue(frontmatter, "titleTemplate"),
       text: await pageText(source),
@@ -333,8 +330,7 @@ export async function writeLlmsAssets(outDir) {
   for (const section of sections) {
     index.push(`## ${SECTION_LABELS[section] ?? section}`, "");
     for (const page of pages.filter(page => page.section === section)) {
-      const name = page.id ? `${page.title} ${page.id}` : page.title;
-      index.push(`- [${name}](${page.url})${page.summary ? `: ${page.summary}` : ""}`);
+      index.push(`- [${page.title}](${page.url})${page.summary ? `: ${page.summary}` : ""}`);
     }
     index.push("");
   }

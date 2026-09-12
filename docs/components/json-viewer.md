@@ -1,4 +1,4 @@
-# JsonViewer <Badge type="info" text="JSON 视图" />
+# JsonViewer JSON 视图
 
 把一份 JSON 摊成可展开的树：键名、值与值类型各自成一块，对象与数组可以逐层收起。
 

@@ -1,4 +1,4 @@
-# Collapsible <Badge type="info" text="折叠区域" />
+# Collapsible 折叠区域
 
 一块可以展开收起的内容，只有一块。
 

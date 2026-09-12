@@ -1,4 +1,4 @@
-# Masonry <Badge type="info" text="瀑布流" />
+# Masonry 瀑布流
 
 等宽不等高的一批项，按最短列优先落进若干列，列数可随容器宽度换档。
 

@@ -823,7 +823,12 @@ function renderComponent(entry, category) {
   /** 人工小节：写了才出，没写这一节整个不出现。 */
   const authored = title => doc?.sections[title]
 
-  push(`# ${pascal(id)} <Badge type="info" text="${name}" />`, '')
+  const status = entry.status === 'new'
+    ? ' <Badge type="tip" text="新增" />'
+    : entry.status === 'updated'
+      ? ' <Badge type="warning" text="更新" />'
+      : ''
+  push(`# ${pascal(id)} ${name}${status}`, '')
   push(
     doc?.overview
     ?? `${category.label}组件。这一节尚未撰写，见 packages/engine/headless/src/${id}/${id}.doc.md。`,

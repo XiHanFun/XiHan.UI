@@ -1,4 +1,4 @@
-# NavigationMenu <Badge type="info" text="导航菜单" />
+# NavigationMenu 导航菜单
 
 站点的主导航：一排入口，展开后是一整块去处面板，面板里是链接不是命令。
 

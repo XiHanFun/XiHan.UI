@@ -1,4 +1,4 @@
-# Image <Badge type="info" text="图片" />
+# Image 图片
 
 一张图，带加载状态与失败回退。
 

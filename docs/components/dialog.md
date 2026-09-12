@@ -1,4 +1,4 @@
-# Dialog <Badge type="info" text="对话框" />
+# Dialog 对话框
 
 浮在页面之上的一层，通常需要用户处理完才能回到下面。
 

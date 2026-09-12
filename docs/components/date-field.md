@@ -1,4 +1,4 @@
-# DateField <Badge type="info" text="日期输入" />
+# DateField 日期输入
 
 分段的日期输入框：年、月、日各占一段，方向键加减，不弹日历。
 

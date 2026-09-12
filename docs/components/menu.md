@@ -1,4 +1,4 @@
-# Menu <Badge type="info" text="菜单" />
+# Menu 菜单
 
 由一个触发器弹出的一列命令。选中一条即执行并收起。
 

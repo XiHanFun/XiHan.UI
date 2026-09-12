@@ -1,4 +1,4 @@
-# Scrollbar <Badge type="info" text="滚动条" />
+# Scrollbar 滚动条
 
 自绘的滚动条，挂在**任意一个**滚动容器上：表格的滚动盒、虚拟滚动的视口、随手一个 `overflow: auto` 的 div 都行。
 

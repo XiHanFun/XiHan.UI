@@ -1,4 +1,4 @@
-# TimePicker <Badge type="info" text="时间选择器" />
+# TimePicker 时间选择器
 
 带浮层的时间录入：浮层里按时、分、秒分列滚动挑选。
 

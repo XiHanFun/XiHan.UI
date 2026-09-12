@@ -1,4 +1,4 @@
-# Sortable <Badge type="info" text="排序" />
+# Sortable 排序
 
 让用户拖着重排一列条目，键盘也能完成同一件事。
 

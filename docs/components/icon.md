@@ -1,4 +1,4 @@
-# Icon <Badge type="info" text="图标" />
+# Icon 图标
 
 画一枚矢量图元，并把"它是装饰还是信息"这件事说清楚。
 

@@ -1,4 +1,4 @@
-# Listbox <Badge type="info" text="列表框" />
+# Listbox 列表框
 
 一份直接铺在页面上的可选列表，不带浮层。
 

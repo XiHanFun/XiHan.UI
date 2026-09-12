@@ -1,4 +1,4 @@
-# Approval <Badge type="info" text="审批" />
+# Approval 审批
 
 危险动作执行前的人在环闸门：批准、拒绝，超时按拒绝收口，可带勾选式的授权范围。
 

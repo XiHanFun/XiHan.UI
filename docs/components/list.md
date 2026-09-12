@@ -1,4 +1,4 @@
-# List <Badge type="info" text="列表" />
+# List 列表
 
 一列同构的条目，每条可以有媒体位、标题、描述与操作位。
 

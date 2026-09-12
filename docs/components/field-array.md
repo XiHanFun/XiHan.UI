@@ -1,4 +1,4 @@
-# FieldArray <Badge type="info" text="字段数组" />
+# FieldArray 字段数组
 
 一组行数可变的录入行：可以加一行、删一行、换顺序。
 

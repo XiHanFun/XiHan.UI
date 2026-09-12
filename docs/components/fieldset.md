@@ -1,4 +1,4 @@
-# Fieldset <Badge type="info" text="字段集" />
+# Fieldset 字段集
 
 把若干相关字段收成一组，组标题由 `legend` 给，禁用与无效沿这一组下发。
 

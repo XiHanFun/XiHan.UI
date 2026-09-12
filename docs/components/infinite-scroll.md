@@ -1,4 +1,4 @@
-# InfiniteScroll <Badge type="info" text="无限滚动" />
+# InfiniteScroll 无限滚动
 
 取下一页的通用触发器，滚动只是默认的触发方式。
 

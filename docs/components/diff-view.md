@@ -1,4 +1,4 @@
-# DiffView <Badge type="info" text="差异视图" />
+# DiffView 差异视图
 
 一份改动的逐行呈现：并排或单栏、双侧行号、变更类型的读屏文字，以及远离变更处的折叠。
 

@@ -1,4 +1,4 @@
-# TimeField <Badge type="info" text="时间输入" />
+# TimeField 时间输入
 
 分段的时间输入框：时、分、秒各占一段，方向键加减。
 

@@ -1,4 +1,4 @@
-# InputGroup <Badge type="info" text="输入组" />
+# InputGroup 输入组
 
 把输入框与它的前后缀、动作按钮拼成一个盒：相邻两段共用一条边，圆角只留在两端。
 

@@ -1,4 +1,4 @@
-# Anchor <Badge type="info" text="锚点" />
+# Anchor 锚点
 
 一份跟着滚动位置自己换高亮的目录。
 

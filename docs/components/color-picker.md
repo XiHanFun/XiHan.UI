@@ -1,4 +1,4 @@
-# ColorPicker <Badge type="info" text="颜色选择器" />
+# ColorPicker 颜色选择器
 
 选一个颜色：色域面板加通道滑块，另有预设色板与屏幕取色。
 

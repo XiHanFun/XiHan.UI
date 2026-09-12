@@ -1,4 +1,4 @@
-# Combobox <Badge type="info" text="组合框" />
+# Combobox 组合框
 
 能打字过滤的选择器：输入框加候选浮层，可以只从候选里选，也可以允许自由文本。
 

@@ -1,4 +1,4 @@
-# TreeSelect <Badge type="info" text="树选择" />
+# TreeSelect 树选择
 
 浮层里放一棵树的选择器：层级不规整、深浅不一时用它。
 

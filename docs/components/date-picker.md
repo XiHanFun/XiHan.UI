@@ -1,4 +1,4 @@
-# DatePicker <Badge type="info" text="日期选择器" />
+# DatePicker 日期选择器
 
 带日历浮层的日期录入：输入框可以打字，浮层里可以挑。
 
