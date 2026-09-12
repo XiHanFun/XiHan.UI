@@ -32,4 +32,8 @@ export const FORM_CONTROL_HOST_SELECTOR = [
   'xh-segmented',
   'xh-toggle-group',
   'xh-transfer',
+  'xh-field-array',
+  'xh-file-upload',
+  'xh-image-cropper',
+  'xh-signature-pad',
 ].join(', ')

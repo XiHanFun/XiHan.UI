@@ -4,6 +4,7 @@ import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import { SignaturePadProvider, useSignaturePadContext } from './context'
 import { useSignaturePad } from './use-signature-pad'
 
@@ -44,7 +45,7 @@ export function XhSignaturePadRoot({
   children,
   ...rest
 }: XhSignaturePadRootProps): ReactNode {
-  const ctx = useSignaturePad(withXhConfig('signature-pad', {
+  const ctx = useSignaturePad(withXhConfig('signature-pad', useFormControlProps({
     disabled,
     readOnly,
     required,
@@ -54,7 +55,7 @@ export function XhSignaturePadRoot({
     translations,
     onDraw,
     onDrawEnd,
-  }) as SignaturePadProps)
+  })) as SignaturePadProps)
   const api = ctx.api
   return (
     <SignaturePadProvider value={ctx}>

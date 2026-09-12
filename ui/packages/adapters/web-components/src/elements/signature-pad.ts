@@ -1,6 +1,6 @@
 import type { Service } from '@xihan-ui/core'
-import type { SignaturePadApi, SignaturePadDrawDetails, SignaturePadDrawEndDetails, SignaturePadDrawingOptions, SignaturePadSchema, SignaturePadTranslations } from '@xihan-ui/headless'
-import { connectSignaturePad, signaturePadAnatomy, signaturePadMachine, signaturePadMeta } from '@xihan-ui/headless'
+import type { FormControlState, SignaturePadApi, SignaturePadDrawDetails, SignaturePadDrawEndDetails, SignaturePadDrawingOptions, SignaturePadSchema, SignaturePadTranslations } from '@xihan-ui/headless'
+import { connectSignaturePad, resolveFormControlState, signaturePadAnatomy, signaturePadMachine, signaturePadMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -79,13 +79,26 @@ export class XhSignaturePadElement extends XhElement {
     { onBuilt: svc => this.injectRefs(svc) },
   )
 
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；SignaturePad 消费公开的四条轴。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
   private machineProps(): Partial<SignaturePadSchema['props']> {
-    return {
-      // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect
+    const control = resolveFormControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       required: this.required,
       invalid: this.invalid,
+    }, this.inheritedControl)
+    return {
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      required: control.required,
+      invalid: control.invalid,
       name: this.name,
       drawing: this.drawing,
       translations: this.translations,

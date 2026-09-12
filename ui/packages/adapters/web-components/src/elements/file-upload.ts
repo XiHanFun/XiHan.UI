@@ -10,9 +10,10 @@ import type {
   FileUploadRemoteFilesChangeDetails,
   FileUploadSchema,
   FileUploadTranslations,
+  FormControlState,
 } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { connectFileUpload, fileUploadAnatomy, fileUploadMachine, fileUploadMeta } from '@xihan-ui/headless'
+import { connectFileUpload, fileUploadAnatomy, fileUploadMachine, fileUploadMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -94,8 +95,8 @@ export class XhFileUploadElement extends XhElement {
     maxFiles: { converter: NUMBER_CONVERTER, attribute: 'max-files' },
     maxFileSize: { converter: NUMBER_CONVERTER, attribute: 'max-file-size' },
     minFileSize: { converter: NUMBER_CONVERTER, attribute: 'min-file-size' },
-    disabled: { type: Boolean },
-    invalid: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
+    invalid: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     allowDrop: { converter: BOOLEAN_CONVERTER, attribute: 'allow-drop' },
     directory: { type: Boolean },
@@ -156,7 +157,19 @@ export class XhFileUploadElement extends XhElement {
     { scope: this.uploadScope },
   )
 
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；FileUpload 仅消费公开的禁用、无效两轴。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
   private machineProps(): Partial<FileUploadSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       files: this.files,
       defaultFiles: this.defaultFiles,
@@ -168,8 +181,8 @@ export class XhFileUploadElement extends XhElement {
       maxFiles: this.maxFiles,
       maxFileSize: this.maxFileSize,
       minFileSize: this.minFileSize,
-      disabled: this.disabled ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      invalid: control.invalid,
       name: this.name,
       allowDrop: this.allowDrop,
       directory: this.directory ?? false,

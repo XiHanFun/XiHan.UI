@@ -137,9 +137,9 @@ export const fieldArrayMachine = createMachine({
   },
   implementations: {
     guards: {
-      canAdd: params => !params.prop('disabled') && !params.prop('readOnly') && !params.refs.get('form')?.prop('disabled') && !params.refs.get('form')?.prop('readOnly') && !atRowMax(fieldArrayValue(params).length, rowBound(params.prop('max'))),
-      canRemove: params => !params.prop('disabled') && !params.prop('readOnly') && !params.refs.get('form')?.prop('disabled') && !params.refs.get('form')?.prop('readOnly') && !atRowMin(fieldArrayValue(params).length, rowBound(params.prop('min'))),
-      canMove: params => !params.prop('disabled') && !params.prop('readOnly') && !params.refs.get('form')?.prop('disabled') && !params.refs.get('form')?.prop('readOnly') && !!params.prop('movable'),
+      canAdd: params => !params.prop('disabled') && !params.prop('readOnly') && !atRowMax(fieldArrayValue(params).length, rowBound(params.prop('max'))),
+      canRemove: params => !params.prop('disabled') && !params.prop('readOnly') && !atRowMin(fieldArrayValue(params).length, rowBound(params.prop('min'))),
+      canMove: params => !params.prop('disabled') && !params.prop('readOnly') && !!params.prop('movable'),
     },
     actions: {
       resetToDefault: (params) => {

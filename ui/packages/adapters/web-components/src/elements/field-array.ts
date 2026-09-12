@@ -1,6 +1,6 @@
 import type { Service } from '@xihan-ui/core'
-import type { FieldArrayItemProps, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails, FormPath, FormSchema } from '@xihan-ui/headless'
-import { connectFieldArray, fieldArrayAnatomy, fieldArrayMachine, fieldArrayMeta } from '@xihan-ui/headless'
+import type { FieldArrayItemProps, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails, FormControlState, FormPath, FormSchema } from '@xihan-ui/headless'
+import { connectFieldArray, fieldArrayAnatomy, fieldArrayMachine, fieldArrayMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -92,8 +92,20 @@ export class XhFieldArrayElement extends XhElement {
   // 机器只有一个还焦点的收尾动作（自己经 scope 取节点），不需要 config/layer/定位引擎，
   // 故 controller 只带 props。
   private readonly ctrl = new MachineController<FieldArraySchema>(this, fieldArrayMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；FieldArray 仅消费公开的禁用、只读、无效三轴。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<FieldArraySchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
@@ -101,9 +113,9 @@ export class XhFieldArrayElement extends XhElement {
       max: this.max,
       createItem: this.createItem,
       movable: this.movable ?? false,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       name: this.name,
       translations: this.translations,
       onValueChange: this.notifyValue,
