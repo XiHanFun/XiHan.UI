@@ -1,10 +1,10 @@
-import type { ThemePreference, ThemeState } from './types'
 import type {
+  ThemePreference,
+  ThemeState,
   VisualEnvironmentController,
   VisualEnvironmentStorageError,
-} from './visual-controller'
-import { pickThemeState } from './resolve'
-import { createVisualEnvironmentController } from './visual-controller'
+} from '@xihan-ui/core/visual-environment'
+import { createVisualEnvironmentController, pickThemeState } from '@xihan-ui/core/visual-environment'
 
 type Cleanup = () => void
 

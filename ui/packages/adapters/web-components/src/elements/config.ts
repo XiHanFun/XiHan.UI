@@ -10,10 +10,10 @@ import type {
   VisualEnvironmentController,
   VisualEnvironmentPreference,
   VisualMotion,
-} from '@xihan-ui/tokens/runtime'
+} from '@xihan-ui/core/visual-environment'
 import type { XhConfig, XhConfigScope } from '../config'
 import type { PropertyValues } from '../reactive'
-import { createVisualEnvironmentController } from '@xihan-ui/tokens/runtime'
+import { createVisualEnvironmentController } from '@xihan-ui/core/visual-environment'
 import { notifyXhConfigChange } from '../config'
 import { XhReactiveElement } from '../reactive'
 

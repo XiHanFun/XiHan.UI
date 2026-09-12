@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 门禁：减弱动效只有两处基础层系统信号源。
 //
-// motion 包不能依赖同为 level 1 的 design/tokens：前者维护 JS override/Presence 通道，后者维护
+// motion 包维护 JS override/Presence 通道，core/visual-environment 维护
 // VisualEnvironmentController 的七轴 DOM/父作用域解析。两处各自持有一个系统信号源，应用根再经
 // 显式 motionSink 汇合；适配器与组件不得出现第三份探测。
 import { readdir, readFile, stat } from 'node:fs/promises'
@@ -9,7 +9,7 @@ import { join } from 'node:path'
 
 const PACKAGES = 'packages'
 const ALLOWED = new Set([
-  'packages/design/tokens/src/runtime/env.ts',
+  'packages/engine/core/src/visual-environment/env.ts',
   'packages/engine/motion/src/reduced-motion.ts',
 ])
 const PATTERN = /\(prefers-reduced-motion:/g
@@ -71,7 +71,7 @@ if (missing.length) {
 if (offenders.length) {
   console.error('[check-reduced-motion-channel] 以下位置新增了第三份 prefers-reduced-motion 信号源：')
   for (const o of offenders) console.error(`  ${o}`)
-  console.error('  JS 行为改用 @xihan-ui/motion；DOM 视觉环境改用 @xihan-ui/tokens/runtime')
+  console.error('  JS 行为改用 @xihan-ui/motion；DOM 视觉环境改用 @xihan-ui/core/visual-environment')
   process.exit(1)
 }
 

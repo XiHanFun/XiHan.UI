@@ -60,7 +60,9 @@
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@xihan-ui/core": "workspace:^"
+  },
   "devDependencies": {
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
