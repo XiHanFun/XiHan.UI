@@ -7,6 +7,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   provideCombobox,
   provideComboboxItem,
@@ -44,9 +45,9 @@ export const XhComboboxRoot = defineComponent({
     name: { type: String, default: undefined },
     form: { type: String, default: undefined },
     multiple: Boolean,
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     loading: Boolean,
     loop: { type: Boolean, default: undefined },
     placeholder: { type: String, default: undefined },
@@ -92,7 +93,7 @@ export const XhComboboxRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useCombobox(withXhConfig('combobox', props) as ComboboxProps, {
+    const ctx = useCombobox(withXhConfig('combobox', useFormControlProps(props)) as ComboboxProps, {
       onValueChange: notifyValue,
       onInputValueChange: notifyInputValue,
       onOpenChange: notifyOpen,
@@ -168,9 +169,9 @@ export const XhComboboxInput = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     const ctx = useComboboxContext()
     return () => h(props.as, fieldLabel.value({
+      ...fieldWiring.value,
       ...ctx.api.value.getInputProps({ as: props.as }) as Record<string, unknown>,
       ref: (el: unknown) => { ctx.inputRef.value = el as ComboboxInputEl },
-      ...fieldWiring.value,
     }))
   },
 })

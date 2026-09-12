@@ -1,8 +1,8 @@
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
+import type { FormControlState, SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectSelect, selectAnatomy, selectMachine, selectMeta, tagAnatomy } from '@xihan-ui/headless'
+import { connectSelect, resolveFormControlState, selectAnatomy, selectMachine, selectMeta, tagAnatomy } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -94,11 +94,11 @@ export class XhSelectElement extends XhElement {
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
-    invalid: { type: Boolean },
+    invalid: { converter: BOOLEAN_CONVERTER },
     loading: { type: Boolean },
-    required: { type: Boolean },
+    required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
     placement: { converter: STRING_CONVERTER },
@@ -169,19 +169,31 @@ export class XhSelectElement extends XhElement {
 
   /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<SelectSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+      required: this.required,
+    }, this.inheritedControl)
     return {
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue ?? null,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       loading: this.loading ?? false,
-      required: this.required ?? false,
+      required: control.required,
       name: this.name,
       placeholder: this.placeholder,
       placement: this.placement,

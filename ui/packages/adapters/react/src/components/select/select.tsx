@@ -10,6 +10,7 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotIsPlainText } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   SelectGroupProvider,
   SelectItemProvider,
@@ -99,7 +100,7 @@ export function XhSelectRoot({
   children,
   ...rest
 }: XhSelectRootProps): ReactNode {
-  const ctx = useSelect(withXhConfig('select', {
+  const ctx = useSelect(withXhConfig('select', useFormControlProps({
     collection,
     value,
     defaultValue,
@@ -125,7 +126,7 @@ export function XhSelectRoot({
     size,
     onValueChange,
     onOpenChange,
-  }) as SelectProps)
+  })) as SelectProps)
   const api = ctx.api
 
   // 表单影子由根部件装配：空串选项打底，每个选中值一个 selected 选项，供 required 判定。
@@ -197,7 +198,7 @@ export function XhSelectTrigger({ children, ...rest }: XhSelectTriggerProps): Re
   return (
     <button
       {...mergeReactProps(
-        fieldLabel({ ...ctx.api.getTriggerProps() as Record<string, unknown>, ...fieldWiring }),
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
         rest as Record<string, unknown>,
         { ref: (el: HTMLButtonElement | null) => { ctx.triggerRef.current = el } },
       )}

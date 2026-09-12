@@ -18,6 +18,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideCascader, provideCascaderContent, provideCascaderGroup, provideCascaderItem, useCascaderContentContext, useCascaderContext, useCascaderGroupContext, useCascaderItemContext } from './context'
 import { useCascader } from './use-cascader'
 
@@ -93,9 +94,9 @@ export const XhCascaderRoot = defineComponent({
     searchable: { type: Boolean, default: undefined },
     cascade: Boolean,
     checkedStrategy: { type: String as PropType<CascaderProps['checkedStrategy']>, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     loading: Boolean,
     translations: { type: Object as PropType<Partial<CascaderTranslations>>, default: undefined },
     variant: { type: String as PropType<ControlVariant>, default: undefined },
@@ -127,7 +128,7 @@ export const XhCascaderRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useCascader(withXhConfig('cascader', props) as CascaderProps, {
+    const ctx = useCascader(withXhConfig('cascader', useFormControlProps(props)) as CascaderProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
     })
@@ -186,9 +187,9 @@ export const XhCascaderTrigger = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     const ctx = useCascaderContext()
     return () => h('button', fieldLabel.value({
+      ...fieldWiring.value,
       ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
-      ...fieldWiring.value,
     }), slots.default?.())
   },
 })

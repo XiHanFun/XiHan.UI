@@ -6,6 +6,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideSelect, provideSelectGroup, provideSelectItem, provideSelectTag, useSelectContext, useSelectGroupContext, useSelectItemContext, useSelectTagContext } from './context'
 import { useSelect } from './use-select'
 
@@ -29,14 +30,14 @@ export const XhSelectRoot = defineComponent({
     multiple: Boolean,
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    disabled: Boolean,
+    disabled: { type: Boolean, default: undefined },
     /** 只读：浮层照常展开与浏览，但选中值改不动、也清不掉。 */
     readOnly: { type: Boolean, default: undefined },
     /** 自动渲染树里是否带清空按钮；手写部件不看它，写了节点即可清。 */
     clearable: Boolean,
     invalid: { type: Boolean, default: undefined },
     loading: { type: Boolean, default: undefined },
-    required: Boolean,
+    required: { type: Boolean, default: undefined },
     name: { type: String, default: undefined },
     translations: { type: Object as PropType<SelectProps['translations']>, default: undefined },
     maxTagCount: { type: Number, default: undefined },
@@ -71,7 +72,7 @@ export const XhSelectRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useSelect(withXhConfig('select', props) as SelectProps, notifyValue, notifyOpen)
+    const ctx = useSelect(withXhConfig('select', useFormControlProps(props)) as SelectProps, notifyValue, notifyOpen)
     provideSelect(ctx)
 
     // 表单影子由根部件装配：空串选项打底，每个选中值一个 selected 选项，供 required 判定。
@@ -137,9 +138,9 @@ export const XhSelectTrigger = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     const ctx = useSelectContext()
     return () => h('button', fieldLabel.value({
+      ...fieldWiring.value,
       ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
-      ...fieldWiring.value,
     }), slots.default?.())
   },
 })

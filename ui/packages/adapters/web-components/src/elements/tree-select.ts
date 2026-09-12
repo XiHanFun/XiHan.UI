@@ -1,5 +1,6 @@
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
+  FormControlState,
   TreeSelectExpandedValueChangeDetails,
   TreeSelectNode,
   TreeSelectNodeProps,
@@ -9,7 +10,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTreeSelect, treeSelectAnatomy, treeSelectMachine, treeSelectMeta } from '@xihan-ui/headless'
+import { connectTreeSelect, resolveFormControlState, treeSelectAnatomy, treeSelectMachine, treeSelectMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
@@ -110,7 +111,7 @@ export class XhTreeSelectElement extends XhElement {
     multiple: { type: Boolean },
     cascade: { type: Boolean },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
@@ -199,7 +200,19 @@ export class XhTreeSelectElement extends XhElement {
     props: () => ({ dir: this.direction }),
   })
 
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
   private machineProps(): Partial<TreeSelectSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       collection: this.collection,
       loadChildren: this.loadChildren,
@@ -213,9 +226,9 @@ export class XhTreeSelectElement extends XhElement {
       multiple: this.multiple ?? false,
       cascade: this.cascade,
       checkedStrategy: this.checkedStrategy,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       loading: this.loading ?? false,
       variant: this.variant,
       tone: this.tone,

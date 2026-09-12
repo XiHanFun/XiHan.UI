@@ -9,10 +9,11 @@ import type {
   ComboboxOpenChangeDetails,
   ComboboxSchema,
   ComboboxValueChangeDetails,
+  FormControlState,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled } from '@xihan-ui/core'
-import { comboboxAnatomy, comboboxMachine, comboboxMeta, connectCombobox } from '@xihan-ui/headless'
+import { comboboxAnatomy, comboboxMachine, comboboxMeta, connectCombobox, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -101,7 +102,7 @@ export class XhComboboxElement extends XhElement {
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     multiple: { type: Boolean },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
@@ -182,8 +183,19 @@ export class XhComboboxElement extends XhElement {
   /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
   private readonly hiddenInputs = createRepeatedHiddenInputs(this.spreader)
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<ComboboxSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       collection: this.collection,
       translations: this.translations,
@@ -194,9 +206,9 @@ export class XhComboboxElement extends XhElement {
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       multiple: this.multiple ?? false,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       loading: this.loading ?? false,
       loop: this.loop,
       name: this.name,
