@@ -1,4 +1,4 @@
-// 子节点按需加载 | 先给分支塞一个禁用的占位子节点让子列开得出来，展开到它时才去取真数据换掉占位
+// 懒加载 | 展开分支时加载下一层数据
 import type { ReactNode } from "react";
 import {
   XhCascaderColumn,
@@ -48,7 +48,6 @@ export default function Demo(): ReactNode {
   ]);
   const [loading, setLoading] = useState<string[]>([]);
   const [loaded, setLoaded] = useState<string[]>([]);
-  const [area, setArea] = useState<string[][]>([]);
 
   // 点开或键盘走到这一支时才取它的子节点，取回来把占位那一条整个换掉
   function load(value: string): void {
@@ -67,50 +66,37 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <>
-      <XhCascaderRoot
-        value={area}
-        onValueChange={details => setArea(details.value)}
-        collection={regions}
-        placeholder="请选择地区"
-      >
-        {({ levels }) => (
-          <>
-            <XhCascaderLabel>收货地区</XhCascaderLabel>
-            <XhCascaderControl>
-              <XhCascaderTrigger>
-                <XhCascaderValueText />
-                <XhCascaderIndicator />
-              </XhCascaderTrigger>
-            </XhCascaderControl>
-            <XhCascaderPositioner>
-              <XhCascaderContent>
-                {levels.map(lv => (
-                  <XhCascaderColumn key={lv.level} level={lv.level}>
-                    {lv.items.map(node => (
-                      <XhCascaderItem
-                        key={node.value}
-                        value={node.value}
-                        onClick={() => load(node.value)}
-                        onFocus={() => load(node.value)}
-                      >
-                        <XhCascaderItemText>{node.label}</XhCascaderItemText>
-                        {loading.includes(node.value) && (
-                          <span style={{ flex: "none", color: "var(--xh-fg-subtle)", fontSize: "12px" }}>
-                            取数中
-                          </span>
-                        )}
-                        <XhCascaderItemIndicator />
-                      </XhCascaderItem>
-                    ))}
-                  </XhCascaderColumn>
-                ))}
-              </XhCascaderContent>
-            </XhCascaderPositioner>
-          </>
-        )}
-      </XhCascaderRoot>
-      <p>{`当前路径：${area[0]?.join(" / ") ?? "（未选）"}`}</p>
-    </>
+    <XhCascaderRoot collection={regions} placeholder="请选择地区">
+      {({ levels }) => (
+        <>
+          <XhCascaderLabel>收货地区</XhCascaderLabel>
+          <XhCascaderControl>
+            <XhCascaderTrigger>
+              <XhCascaderValueText />
+              <XhCascaderIndicator />
+            </XhCascaderTrigger>
+          </XhCascaderControl>
+          <XhCascaderPositioner>
+            <XhCascaderContent>
+              {levels.map(lv => (
+                <XhCascaderColumn key={lv.level} level={lv.level}>
+                  {lv.items.map(node => (
+                    <XhCascaderItem
+                      key={node.value}
+                      value={node.value}
+                      onClick={() => load(node.value)}
+                      onFocus={() => load(node.value)}
+                    >
+                      <XhCascaderItemText>{node.label}</XhCascaderItemText>
+                      <XhCascaderItemIndicator />
+                    </XhCascaderItem>
+                  ))}
+                </XhCascaderColumn>
+              ))}
+            </XhCascaderContent>
+          </XhCascaderPositioner>
+        </>
+      )}
+    </XhCascaderRoot>
   );
 }

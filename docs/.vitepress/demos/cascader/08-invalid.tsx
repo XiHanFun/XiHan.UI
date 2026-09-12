@@ -1,4 +1,4 @@
-// 校验状态 | invalid 让 trigger 报 aria-invalid、描边换成错误色；浮层照常展开，判定归宿主，这里是没选就报错
+// 校验状态 | 清晰标记必填错误
 import type { ReactNode } from "react";
 import {
   XhCascaderClearTrigger,
@@ -38,7 +38,6 @@ const departments = [
 
 export default function Demo(): ReactNode {
   const [dept, setDept] = useState<string[][]>([]);
-  // 校验归宿主，组件只负责把这个结论铺成属性
   const invalid = dept.length === 0;
 
   return (

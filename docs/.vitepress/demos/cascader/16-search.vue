@@ -1,4 +1,4 @@
-<!-- 搜索 | searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表替换列视图；上下键走候选、Enter 选中、Escape 先清词再收浮层。无匹配（试试输入「苏州」）时空态占位露面，文案经 translations 覆盖 -->
+<!-- 搜索 | 按完整路径筛选选项 -->
 <script setup lang="ts">
 import {
   XhCascaderColumn,
@@ -16,7 +16,6 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const regions = [
   {
@@ -49,14 +48,11 @@ const regions = [
     ],
   },
 ];
-
-const area = ref<string[][]>([]);
 </script>
 
 <template>
   <XhCascaderRoot
     v-slot="{ levels }"
-    v-model:value="area"
     :collection="regions"
     :translations="{ noMatch: '未找到匹配的地区' }"
     searchable
@@ -82,5 +78,4 @@ const area = ref<string[][]>([]);
       </XhCascaderContent>
     </XhCascaderPositioner>
   </XhCascaderRoot>
-  <p>当前路径：{{ area.length ? area[0].join(" / ") : "（未选）" }}</p>
 </template>

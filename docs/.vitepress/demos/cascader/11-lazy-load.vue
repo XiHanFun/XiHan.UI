@@ -1,4 +1,4 @@
-<!-- 子节点按需加载 | 先给分支塞一个禁用的占位子节点让子列开得出来，展开到它时才去取真数据换掉占位 -->
+<!-- 懒加载 | 展开分支时加载下一层数据 -->
 <script setup lang="ts">
 import {
   XhCascaderColumn,
@@ -65,14 +65,11 @@ function load(value: string) {
     loaded.value = [...loaded.value, value];
   }, 800);
 }
-
-const area = ref<string[][]>([]);
 </script>
 
 <template>
   <XhCascaderRoot
     v-slot="{ levels }"
-    v-model:value="area"
     :collection="regions"
     placeholder="请选择地区"
   >
@@ -94,17 +91,10 @@ const area = ref<string[][]>([]);
             @focus="load(node.value)"
           >
             <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-            <span
-              v-if="loading.includes(node.value)"
-              style="flex: none; color: var(--xh-fg-subtle); font-size: 12px"
-            >
-              取数中
-            </span>
             <XhCascaderItemIndicator />
           </XhCascaderItem>
         </XhCascaderColumn>
       </XhCascaderContent>
     </XhCascaderPositioner>
   </XhCascaderRoot>
-  <p>当前路径：{{ area.length ? area[0].join(" / ") : "（未选）" }}</p>
 </template>

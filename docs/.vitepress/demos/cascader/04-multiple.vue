@@ -1,4 +1,4 @@
-<!-- 多选 | 选中的是一组路径，落值后浮层不收起、焦点留在列里接着挑；再点一次即取消 -->
+<!-- 多选 | 选择多个分类路径 -->
 <script setup lang="ts">
 import {
   XhCascaderClearTrigger,
@@ -66,5 +66,4 @@ const picked = ref<string[][]>([["fruit", "apple"]]);
       </XhCascaderContent>
     </XhCascaderPositioner>
   </XhCascaderRoot>
-  <p>已选 {{ picked.length }} 条：{{ picked.map((p) => p.join("/")).join("、") || "（无）" }}</p>
 </template>
