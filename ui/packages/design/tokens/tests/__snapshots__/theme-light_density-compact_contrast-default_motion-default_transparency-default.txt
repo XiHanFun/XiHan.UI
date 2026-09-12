@@ -44,8 +44,8 @@
 --xh-control-gap-md: 6px  ← var(--xh-space-1_5)
 --xh-control-gap-sm: 4px  ← var(--xh-space-1)
 --xh-control-h-lg: 36px
---xh-control-h-md: 28px
---xh-control-h-sm: 24px
+--xh-control-h-md: 32px
+--xh-control-h-sm: 28px
 --xh-control-indicator-lg: 18px
 --xh-control-indicator-md: 14px
 --xh-control-indicator-size: 14px  ← var(--xh-control-indicator-md)
@@ -201,10 +201,10 @@
 --xh-section-py-lg: 24px  ← var(--xh-space-6)
 --xh-section-py-md: 16px  ← var(--xh-space-4)
 --xh-section-py-sm: 12px  ← var(--xh-space-3)
---xh-shape-control: 6px  ← var(--xh-radius-md)
+--xh-shape-control: 8px  ← var(--xh-radius-md)
 --xh-shape-inset: 4px  ← var(--xh-radius-sm)
 --xh-shape-pill: 9999px  ← var(--xh-radius-full)
---xh-shape-surface: 8px  ← var(--xh-radius-lg)
+--xh-shape-surface: 12px  ← var(--xh-radius-lg)
 --xh-shimmer-duration: 1600ms
 --xh-spin-duration: 640ms
 --xh-stack-gap-lg: 20px  ← var(--xh-space-5)

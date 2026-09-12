@@ -2,11 +2,11 @@
   "control": {
     "h-sm": {
       "$type": "dimension",
-      "$value": "28px"
+      "$value": "32px"
     },
     "h-md": {
       "$type": "dimension",
-      "$value": "32px"
+      "$value": "36px"
     },
     "h-lg": {
       "$type": "dimension",

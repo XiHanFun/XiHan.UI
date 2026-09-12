@@ -19,8 +19,8 @@ export const OVERLAY_OFFSET = 8
  */
 export const OVERLAY_ARROW_SIZE = 8 * Math.SQRT2
 
-/** 箭头中心距浮层两端的最小距离，让开圆角 --xh-shape-surface（8px）。 */
-export const OVERLAY_ARROW_PADDING = 8
+/** 箭头中心距浮层两端的最小距离，让开圆角 --xh-shape-surface（12px）。 */
+export const OVERLAY_ARROW_PADDING = 12
 
 /** 定位结果的最小形状：算出来才有坐标，锚点滚出视区时引擎置 hidden。 */
 export interface OverlayPlacementLike {

@@ -985,7 +985,7 @@ describe('menubar 定位', () => {
     expect(options.strategy).toBe('fixed')
     expect(options.size).toBe(true)
     expect(options.dir).toBeUndefined()
-    expect(options.arrow).toEqual({ size: 8 * Math.SQRT2, padding: 8 })
+    expect(options.arrow).toEqual({ size: 8 * Math.SQRT2, padding: 12 })
   })
 
   it('placement / offset / dir 由 props 覆盖', async () => {
