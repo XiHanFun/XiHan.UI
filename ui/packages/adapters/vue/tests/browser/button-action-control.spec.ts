@@ -48,8 +48,8 @@ afterEach(async () => {
 
 describe('action Control 四 profile', () => {
   it.each([
-    { density: 'comfortable' as const, expected: { 'text': [24, 28, 32, 40], 'icon': [24, 28, 32, 40], 'field-inset': [24, 24, 28, 32], 'floating': [32, 40, 48, 56] } },
-    { density: 'compact' as const, expected: { 'text': [24, 24, 28, 36], 'icon': [24, 24, 28, 36], 'field-inset': [24, 24, 24, 28], 'floating': [28, 36, 44, 52] } },
+    { density: 'comfortable' as const, expected: { 'text': [24, 32, 36, 40], 'icon': [24, 32, 36, 40], 'field-inset': [24, 24, 32, 36], 'floating': [32, 40, 48, 56] } },
+    { density: 'compact' as const, expected: { 'text': [24, 28, 32, 36], 'icon': [24, 28, 32, 36], 'field-inset': [24, 24, 28, 32], 'floating': [28, 36, 44, 52] } },
   ])('$density：四 profile × xs/sm/md/lg 的视觉盒由同一配方解析', ({ density, expected }) => {
     mount(() => h('div'), density)
     const sizes = ['xs', 'sm', 'md', 'lg'] as const
@@ -80,6 +80,23 @@ describe('action Control 四 profile', () => {
 })
 
 describe('action Control 状态与命中区', () => {
+  it('未映射品牌、描边或海拔时保持平面中性底', async () => {
+    mount(() => h('div'))
+    const ready = rawAction('icon', 'sm')
+    const rest = getComputedStyle(ready)
+    const restBg = rest.backgroundColor
+
+    expect(rest.borderTopColor).toBe('rgba(0, 0, 0, 0)')
+    expect(rest.boxShadow).toBe('none')
+    expect(rest.getPropertyValue('--xh-_action-current-highlight').trim()).toBe('transparent')
+
+    await userEvent.hover(ready)
+    const hovered = getComputedStyle(ready)
+    expect(hovered.backgroundColor).not.toBe(restBg)
+    expect(hovered.borderTopColor).toBe('rgba(0, 0, 0, 0)')
+    expect(hovered.boxShadow).toBe('none')
+  })
+
   it('rest/hover/pressed/focus-visible/disabled/loading 使用共享状态且 loading 不整体淡化', async () => {
     mount(() => h('div', null, [
       h(XhButton, { variant: 'subtle' }, () => h(XhButtonLabel, null, () => 'Ready')),
