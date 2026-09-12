@@ -1,0 +1,26 @@
+<!-- 子菜单 | 在菜单栏命令中打开下一层 -->
+<xh-menubar>
+  <div data-xh-part="root" style="background: var(--xh-bg-subtle)">
+    <button data-xh-part="trigger" value="file">文件</button>
+    <button data-xh-part="trigger" value="edit">编辑</button>
+    <div data-xh-part="positioner" value="file">
+      <div data-xh-part="content" value="file">
+        <div data-xh-part="item" value="open">打开</div>
+        <div data-xh-part="item" value="save">保存</div>
+        <div data-xh-part="separator"></div>
+        <xh-menu submenu open-on-hover placement="right-start" style="display: contents">
+          <div data-xh-part="trigger" value="share">发送到</div>
+          <div data-xh-part="positioner">
+            <div data-xh-part="content">
+              <div data-xh-part="item" value="email">邮件</div>
+              <div data-xh-part="item" value="message">消息</div>
+            </div>
+          </div>
+        </xh-menu>
+        <div data-xh-part="separator"></div>
+        <div data-xh-part="item" value="close">关闭</div>
+      </div>
+    </div>
+    <div data-xh-part="positioner" value="edit"><div data-xh-part="content" value="edit"><div data-xh-part="item" value="undo">撤销</div><div data-xh-part="item" value="redo">重做</div></div></div>
+  </div>
+</xh-menubar>
