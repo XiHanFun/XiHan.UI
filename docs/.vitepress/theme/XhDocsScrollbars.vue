@@ -4,20 +4,29 @@ import {
   XhScrollbarThumb,
   XhScrollbarTrack,
 } from "@xihan-ui/vue";
-import { onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 const page = ref<HTMLElement | null>(null);
 const sidebar = ref<HTMLElement | null>(null);
 
+function forwardPageScroll(): void {
+  page.value?.dispatchEvent(new Event("scroll"));
+}
+
 onMounted(() => {
   page.value = document.scrollingElement as HTMLElement | null;
   sidebar.value = document.querySelector<HTMLElement>(".VPSidebar");
+  window.addEventListener("scroll", forwardPageScroll, { passive: true });
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", forwardPageScroll);
 });
 </script>
 
 <template>
   <div v-if="page" class="xh-doc-scrollbar xh-doc-scrollbar--page">
-    <XhScrollbarRoot :scrollable="page" orientation="vertical" type="always" size="sm">
+    <XhScrollbarRoot :scrollable="page" orientation="vertical" type="scroll" size="sm">
       <XhScrollbarTrack>
         <XhScrollbarThumb />
       </XhScrollbarTrack>
@@ -25,7 +34,7 @@ onMounted(() => {
   </div>
 
   <div v-if="sidebar" class="xh-doc-scrollbar xh-doc-scrollbar--sidebar">
-    <XhScrollbarRoot :scrollable="sidebar" orientation="vertical" type="always" size="sm">
+    <XhScrollbarRoot :scrollable="sidebar" orientation="vertical" type="scroll" size="sm">
       <XhScrollbarTrack>
         <XhScrollbarThumb />
       </XhScrollbarTrack>
@@ -53,24 +62,6 @@ onMounted(() => {
 
 .xh-doc-scrollbar--sidebar {
   left: calc(var(--vp-sidebar-width) - var(--xh-scrollbar-thickness-sm));
-}
-
-.xh-doc-scrollbar.xh-doc-scrollbar > [data-scope='scrollbar'][data-part='root'] {
-  visibility: hidden;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    visibility 0s linear var(--xh-motion-duration-micro);
-}
-
-.xh-doc-scrollbar.xh-doc-scrollbar:hover > [data-scope='scrollbar'][data-part='root'],
-.xh-doc-scrollbar.xh-doc-scrollbar:focus-within > [data-scope='scrollbar'][data-part='root'],
-.xh-doc-scrollbar.xh-doc-scrollbar:has([data-dragging]) > [data-scope='scrollbar'][data-part='root'] {
-  visibility: visible;
-  opacity: 1;
-  pointer-events: auto;
-  transition-delay: 0s;
 }
 
 @media (max-width: 959px), (pointer: coarse) {
