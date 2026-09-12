@@ -1,19 +1,18 @@
-<!-- 只注册不显示 | useHotkeys 只安装监听，展示是 Kbd/KbdGroup 的独立职责 -->
+<!-- 组合式函数 | 不渲染组件实例 -->
 <script setup lang="ts">
 import { useHotkeys } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const hits = ref(0);
+const count = ref(0);
 
 useHotkeys(() => ({
-  keys: ["Mod", "k"],
-  preventDefault: true,
+  keys: ["Mod", "K"],
   onHotKey: () => {
-    hits.value += 1;
+    count.value += 1;
   },
 }));
 </script>
 
 <template>
-  <p>按 Mod+K（Mac 上是 ⌘K）：已命中 {{ hits }} 次。这一段没有渲染任何键帽。</p>
+  <output>按下 Mod + K · {{ count ? `已触发 ${count} 次` : "等待输入" }}</output>
 </template>
