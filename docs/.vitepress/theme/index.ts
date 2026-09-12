@@ -1,6 +1,7 @@
 import Theme from "vitepress/theme";
 import { h } from "vue";
 import XhDemo from "./XhDemo.vue";
+import XhDocsScrollbars from "./XhDocsScrollbars.vue";
 import XhFrameworkSwitch from "./XhFrameworkSwitch.vue";
 import XhPageMarkdown from "./XhPageMarkdown.vue";
 // 示例舞台隔离必须排在皮肤之前：两者选择器同权，同权时后来者胜，皮肤在后才盖得住隔离。
@@ -19,6 +20,7 @@ export default {
       "nav-bar-content-before": () => h(XhFrameworkSwitch),
       // 每页正文上方一条取 Markdown 的直链，指向构建期落在同路径的 .md
       "doc-before": () => h(XhPageMarkdown),
+      "layout-bottom": () => h(XhDocsScrollbars),
     });
   },
   enhanceApp(ctx) {

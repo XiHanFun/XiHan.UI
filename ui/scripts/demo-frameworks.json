@@ -7,17 +7,17 @@
       "lang": "vue"
     },
     {
+      "id": "react",
+      "name": "React",
+      "ext": ".tsx",
+      "lang": "tsx"
+    },
+    {
       "id": "web-components",
       "name": "Web Components",
       "ext": ".html",
       "lang": "html",
       "elements": "packages/adapters/web-components/custom-elements.json"
-    },
-    {
-      "id": "react",
-      "name": "React",
-      "ext": ".tsx",
-      "lang": "tsx"
     }
   ],
   "notApplicable": {

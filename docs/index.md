@@ -1,24 +1,24 @@
 ---
 layout: home
-title: XiHan.UI
-titleTemplate: 跨框架无头组件系统
+title: 曦寒视图组件
+titleTemplate: 快速 轻量 高效 用心的框架无关跨端组件库
 
 hero:
-  name: XiHan.UI
-  text: 为每一种前端框架提供同一种体验
-  tagline: 自研无头内核、精致默认样式与 Vue、React、Web Components 三端适配器
+  name: 曦寒视图组件
+  text: 框架无关的跨端组件库
+  tagline: 快速、轻量、高效、用心 · 128 个组件 · 无头内核 + 多适配器
   actions:
     - theme: brand
       text: 快速上手
       link: /quickstart
 
     - theme: alt
-      text: 浏览组件
-      link: /components/
+      text: 组件库简介
+      link: /introduction
 
     - theme: alt
-      text: 设计指南
-      link: /guide/theme
+      text: 架构总览
+      link: /overview
 
 features:
   - title: 无头内核

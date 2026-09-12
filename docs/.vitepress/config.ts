@@ -199,13 +199,17 @@ const examplesSidebar: DefaultTheme.SidebarItem[] = [
 ];
 
 const componentsSidebar: DefaultTheme.SidebarItem[] = [
-  { text: "组件总览", link: "/components/" },
+  {
+    text: "概述",
+    collapsed: false,
+    items: [{ text: "组件总览", link: "/components/" }],
+  },
   ...componentManifest.categories.map(category => ({
     text: `${category.label}（${category.components.length}）`,
     collapsed: false,
     items: category.components.map(component => ({
-      // 组件代码、搜索结果与 HeroUI 的参考页都以英文名为主；中文解释留在正文标题与描述。
-      text: enName(component.id),
+      // 英文名与代码导出一致，中文名作次级识别；两者同排，保持 HeroUI 中文站的扫描方式。
+      text: `${enName(component.id)} <span class="xh-sidebar-cn">${component.name}</span>`,
       link: `/components/${component.id}`,
     })),
   })),
