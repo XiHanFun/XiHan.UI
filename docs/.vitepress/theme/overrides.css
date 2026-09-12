@@ -1,56 +1,278 @@
-.vp-code-group .tabs label {
-  background-color: transparent;
+html {
+  background: var(--vp-c-bg);
 }
 
-table {
-  width: 100% !important;
-  display: table;
-}
-.message a,
-.copyright a,
-.custom-block.tip .custom-block-title {
-  color: var(--vp-c-brand);
+body {
+  letter-spacing: -0.006em;
 }
 
-.VPHero .image-bg {
-  z-index: 1;
-  opacity: 0.8;
-  transition: opacity 1s ease;
+.VPNav {
+  border-bottom: 1px solid color-mix(in oklab, var(--vp-c-divider) 72%, transparent);
+  background: color-mix(in oklab, var(--vp-c-bg) 82%, transparent);
+  backdrop-filter: blur(18px) saturate(1.2);
 }
 
-.VPHero .image-container:hover .image-bg {
-  opacity: 0.2;
-}
-
-/**
- * 文档页全屏布局（对齐 wot-ui 文档站）
- * --------------------------------------------------------------------------
- * 默认主题在 ≥1440px 时会把整站锁进 --vp-layout-max-width（1440px）并左右留白居中，
- * 同时给正文列 .content-container 加 688px 上限。
- *
- * 这里做两件事：
- *   1. 在 ≥1440px 断点把导航栏 / 侧边栏 / 内容区的居中数学还原成 ≥960px 时的基础值，
- *      于是它们贴着视口边缘铺开；
- *   2. 去掉正文列的 688px 上限，让正文、表格、代码块吃满剩余宽度。
- *
- * 只影响带侧边栏的文档页。首页（VPHome）与无侧边栏的独立页不受影响——
- * 它们的容器是写死的 1152px / 1104px，仍然居中，这也是 wot-ui 的做法。
- *
- * 选择器把类名写两遍，是为了在不硬编码 scoped 属性（[data-v-xxxxxx]，其 hash 随版本变化）
- * 的前提下追平默认规则的特异性；本文件下方处理暗色链接时用的是同一套手法。
- */
-
-/* 顶部导航栏铺满视口。默认主题给它 max-width: calc(--vp-layout-max-width - 64px)（1376px 居中），
-   仅在带侧边栏的文档页放开到 100%，于是首页与独立页的导航栏仍是居中的一条。
-   这里统一放开，左右留白交给 .wrapper 自带的 padding。 */
 .VPNavBar .container.container {
   max-width: none;
 }
 
+.VPNavBarTitle .title {
+  gap: 9px;
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: -0.035em;
+}
+
+.VPNavBarTitle .logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.VPNavBarMenuLink,
+.VPNavBarMenuGroup .button {
+  position: relative;
+  padding-inline: 12px;
+  color: var(--vp-c-text-2);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.VPNavBarMenuLink:hover,
+.VPNavBarMenuGroup .button:hover,
+.VPNavBarMenuLink.active,
+.VPNavBarMenuGroup.active .button {
+  color: var(--vp-c-text-1);
+}
+
+.VPNavBarMenuLink.active::after,
+.VPNavBarMenuGroup.active .button::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  bottom: -15px;
+  left: 12px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--vp-c-brand-1);
+}
+
+.VPNavBarSearch .DocSearch-Button {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg-elv);
+  box-shadow: var(--xh-doc-shadow-control);
+}
+
+.VPSidebar {
+  border-inline-end: 1px solid color-mix(in oklab, var(--vp-c-divider) 70%, transparent);
+  background: var(--vp-c-bg);
+}
+
+.VPSidebarItem.level-0 {
+  padding-bottom: 8px;
+}
+
+.VPSidebarItem.level-0 > .item > .text {
+  color: var(--vp-c-text-1);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.VPSidebarItem.level-1 > .item {
+  min-height: 36px;
+  margin: 1px 0;
+  padding: 0 10px;
+  border-radius: 12px;
+}
+
+.VPSidebarItem.level-1 > .item:hover {
+  background: color-mix(in oklab, var(--vp-c-bg-soft) 72%, transparent);
+}
+
+.VPSidebarItem.level-1.is-active > .item {
+  background: var(--vp-c-bg-elv);
+  box-shadow: var(--xh-doc-shadow-control);
+}
+
+.VPSidebarItem.level-1 .text {
+  color: var(--vp-c-text-2);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.VPSidebarItem.level-1.is-active > .item .text {
+  color: var(--vp-c-text-1);
+  font-weight: 500;
+}
+
+.VPDoc {
+  padding-top: 42px;
+}
+
+.VPDoc.has-aside .content-container.content-container {
+  max-width: 736px;
+}
+
+.vp-doc h1 {
+  margin-top: 0;
+  font-size: 32px;
+  line-height: 1.2;
+  font-weight: 720;
+  letter-spacing: -0.035em;
+}
+
+.vp-doc h2 {
+  margin-top: 48px;
+  padding-top: 0;
+  border-top: 0;
+  font-size: 24px;
+  line-height: 1.25;
+  font-weight: 680;
+  letter-spacing: -0.025em;
+}
+
+.vp-doc h3 {
+  margin-top: 34px;
+  font-size: 18px;
+  line-height: 1.35;
+  font-weight: 650;
+}
+
+.vp-doc p,
+.vp-doc li {
+  color: var(--vp-c-text-2);
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.vp-doc strong,
+.vp-doc th {
+  color: var(--vp-c-text-1);
+}
+
+.vp-doc a {
+  color: var(--vp-c-text-1);
+  text-decoration-color: color-mix(in oklab, var(--vp-c-text-1) 35%, transparent);
+  text-underline-offset: 3px;
+}
+
+.vp-doc a:hover {
+  color: var(--vp-c-brand-1);
+}
+
+.vp-doc :not(pre) > code {
+  border-radius: 7px;
+  color: var(--vp-c-text-1);
+  background: var(--vp-c-bg-soft);
+}
+
+.vp-doc div[class*="language-"] {
+  border: 1px solid color-mix(in oklab, var(--vp-c-divider) 76%, transparent);
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+.VPDocAsideOutline .outline-title {
+  color: var(--vp-c-text-2);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.VPDocAsideOutline .outline-link {
+  border-radius: 8px;
+  color: var(--vp-c-text-2);
+  font-size: 12px;
+}
+
+.VPDocAsideOutline .outline-link.active {
+  color: var(--vp-c-text-1);
+}
+
+.pager-link {
+  border-color: transparent !important;
+  border-radius: 16px !important;
+  background: var(--vp-c-bg-soft);
+}
+
+.pager-link:hover {
+  border-color: transparent !important;
+  background: var(--vp-c-bg-elv);
+  box-shadow: var(--xh-doc-shadow-control);
+}
+
+.VPLocalSearchBox .result {
+  padding: 4px !important;
+  border: 1px solid var(--vp-c-divider) !important;
+  border-radius: 12px !important;
+  background: var(--vp-c-bg-elv) !important;
+}
+
+.VPLocalSearchBox .result.selected {
+  background: var(--vp-c-bg-soft) !important;
+}
+
+.VPLocalSearchBox .title-icon {
+  display: none;
+}
+
+.VPLocalSearchBox .excerpt-wrapper {
+  margin-top: 4px;
+}
+
+.message a,
+.copyright a,
+.custom-block.tip .custom-block-title {
+  color: var(--vp-c-brand-1);
+}
+
+.xh-resource-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 28px;
+}
+
+.xh-resource-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 13px;
+  border-radius: 999px;
+  color: var(--vp-c-text-1);
+  background: var(--vp-c-bg-soft);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background-color 150ms ease,
+    transform 200ms ease;
+}
+
+.xh-resource-links a:hover {
+  color: var(--vp-c-text-1);
+  background: var(--vp-c-bg-mute);
+}
+
+.xh-resource-links a:active {
+  transform: scale(0.97);
+}
+
+@media (min-width: 768px) {
+  .VPNavBar .content-body > .VPNavBarSearch {
+    order: -1;
+    flex-grow: 0;
+  }
+
+  .VPNavBar .content-body > .xh-framework {
+    margin-inline: 12px auto;
+  }
+}
+
 @media (min-width: 1440px) {
   .VPSidebar.VPSidebar {
-    padding-left: 32px;
     width: var(--vp-sidebar-width);
+    padding-left: 24px;
   }
 
   .VPContent.has-sidebar.has-sidebar {
@@ -63,12 +285,12 @@ table {
   }
 
   .VPNavBar.has-sidebar .title.title {
-    padding-left: 32px;
     width: var(--vp-sidebar-width);
+    padding-left: 24px;
   }
 
   .VPNavBar.has-sidebar .content.content {
-    padding-right: 32px;
+    padding-right: 24px;
     padding-left: var(--vp-sidebar-width);
   }
 
@@ -77,131 +299,12 @@ table {
   }
 }
 
-/* 正文列不再受 688px 上限约束，铺满侧边栏与右侧目录之间的空间 */
-.VPDoc.has-aside .content-container.content-container {
-  max-width: none;
-}
-
-/**
- * VitePress: Custom fix
- * -------------------------------------------------------------------------- */
-
-/*
-  Use lighter colors for links in dark mode for a11y.
-  Also specify some classes twice to have higher specificity
-  over scoped class data attribute.
-*/
-.dark .vp-doc a,
-.dark .vp-doc a > code,
-.dark .VPNavBarMenuLink.VPNavBarMenuLink:hover,
-.dark .VPNavBarMenuLink.VPNavBarMenuLink.active,
-.dark .link.link:hover,
-.dark .link.link.active,
-.dark .edit-link-button.edit-link-button,
-.dark .pager-link .title {
-  color: var(--vp-c-brand-lighter);
-}
-
-.dark .vp-doc a:hover,
-.dark .vp-doc a > code:hover {
-  color: var(--vp-c-brand-lightest);
-  opacity: 1;
-}
-
-/* Transition by color instead of opacity */
-.dark .vp-doc .custom-block a {
-  transition: color 0.25s;
-}
-
-/* VitePress Search */
-.VPLocalSearchBox .result {
-  --vp-c-bg-search-result: var(--vp-c-bg);
-  background: var(--vp-c-bg-search-result) !important;
-  padding: 4px !important;
-  border: 1px solid var(--vp-c-divider) !important;
-}
-.VPLocalSearchBox .result.selected {
-  --vp-c-bg-search-result: var(--vp-c-bg-soft) !important;
-}
-.VPLocalSearchBox .result .excerpt-gradient-top {
-  background: linear-gradient(
-    var(--vp-c-bg-search-result),
-    transparent
-  ) !important;
-}
-.VPLocalSearchBox .result .excerpt-gradient-bottom {
-  background: linear-gradient(
-    transparent,
-    var(--vp-c-bg-search-result)
-  ) !important;
-}
-.VPLocalSearchBox .title-icon {
-  display: none;
-}
-.VPLocalSearchBox .excerpt-wrapper {
-  margin-top: 4px;
-}
-
-/* 主导航三大板块：标题右上方的版本徽章
-   文案（版本号 + 阶段后缀）与配色来自 .vitepress/versions.ts，随 nav 的 item.text 一同渲染，
-   宽屏导航栏与窄屏汉堡菜单共用同一份标题，这里只负责外观。
-   修饰类与 ReleaseStage 的映射：稳定版 tip、预览/候选版 warning、开发/测试版 danger。 */
-.xh-nav-badge {
-  display: inline-block;
-  margin-left: 4px;
-  transform: translateY(-6px);
-  padding: 0 6px;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  font-size: 10px;
-  line-height: 16px;
-  font-weight: 600;
-  letter-spacing: 0;
-  white-space: nowrap;
-}
-
-.xh-nav-badge--tip {
-  border-color: var(--vp-badge-tip-border);
-  color: var(--vp-badge-tip-text);
-  background-color: var(--vp-badge-tip-bg);
-}
-
-.xh-nav-badge--warning {
-  border-color: var(--vp-badge-warning-border);
-  color: var(--vp-badge-warning-text);
-  background-color: var(--vp-badge-warning-bg);
-}
-
-.xh-nav-badge--danger {
-  border-color: var(--vp-badge-danger-border);
-  color: var(--vp-badge-danger-text);
-  background-color: var(--vp-badge-danger-bg);
-}
-
-/* 侧栏组件项的英文名：压成次要色与小一号字，中文仍是主视觉 */
-.VPSidebarItem .text .xh-sidebar-en {
-  margin-inline-start: 0.35em;
-  color: var(--vp-c-text-3);
-  font-size: 0.92em;
-  font-weight: 400;
-}
-
-/* 选中项整行变主题色，英文也跟着走，否则只有中文亮着显得断开 */
-.VPSidebarItem.is-active > .item .text .xh-sidebar-en {
-  color: inherit;
-  opacity: 0.75;
-}
-
-/* 框架切换器排在搜索框之后：搜索容器默认撑满剩余宽度，切换器接在它后面会被甩到
-   导航菜单旁边，所以先取消撑满，再由切换器把菜单推回右端 */
-@media (min-width: 768px) {
-  .VPNavBar .content-body > .VPNavBarSearch {
-    order: -1;
-    flex-grow: 0;
+@media (max-width: 959px) {
+  .VPDoc {
+    padding-top: 28px;
   }
 
-  .VPNavBar .content-body > .xh-framework {
-    margin-inline-end: auto;
-    margin-inline-start: 12px;
+  .vp-doc h1 {
+    font-size: 29px;
   }
 }
