@@ -9,6 +9,7 @@ import {
   XhContextMenuSeparator,
   XhContextMenuTrigger,
   XhIcon,
+  XhKbdGroup,
 } from "@xihan-ui/react";
 
 // 描边取 currentColor，图标颜色随条目文字色走，禁用态也一并跟着变淡
@@ -52,11 +53,6 @@ const TrashIcon = {
   ],
 } as const;
 
-// item-text 会撑满剩余宽度，快捷键提示自然被顶到条目末端
-const hintStyle = {
-  color: "var(--xh-fg-muted)",
-};
-
 export default function Demo(): ReactNode {
   return (
     <div style={{ inlineSize: "100%", display: "grid", gap: "12px" }}>
@@ -71,18 +67,18 @@ export default function Demo(): ReactNode {
             <XhContextMenuItem value="cut">
               <XhIcon icon={CutIcon} size="sm" />
               <XhContextMenuItemText>剪切</XhContextMenuItemText>
-              <span style={hintStyle}>Ctrl+X</span>
+              <XhKbdGroup keys={["Mod", "X"]} size="sm" />
             </XhContextMenuItem>
             <XhContextMenuItem value="paste" disabled>
               <XhIcon icon={PasteIcon} size="sm" />
               <XhContextMenuItemText>粘贴</XhContextMenuItemText>
-              <span style={hintStyle}>Ctrl+V</span>
+              <XhKbdGroup keys={["Mod", "V"]} size="sm" disabled />
             </XhContextMenuItem>
             <XhContextMenuSeparator />
             <XhContextMenuItem value="delete">
               <XhIcon icon={TrashIcon} size="sm" />
               <XhContextMenuItemText>删除</XhContextMenuItemText>
-              <span style={hintStyle}>Del</span>
+              <XhKbdGroup keys={["Delete"]} size="sm" />
             </XhContextMenuItem>
           </XhContextMenuContent>
         </XhContextMenuPositioner>

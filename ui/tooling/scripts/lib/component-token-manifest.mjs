@@ -279,8 +279,10 @@ function projectedUsages(declaration, consumers, inheritedParts = [], inheritedS
 
 export async function buildComponentTokenManifest(options = {}) {
   const componentDocs = JSON.parse(await readFile(options.componentsPath ?? COMPONENT_DOCS_MANIFEST_PATH, 'utf8'))
-  const componentIds = componentDocs.categories
-    .flatMap(category => category.components.map(component => component.id))
+  const componentEntries = componentDocs.categories.flatMap(category => category.components)
+  const renderless = new Set(componentEntries.filter(component => component.renderless).map(component => component.id))
+  const componentIds = componentEntries
+    .map(component => component.id)
     .sort((a, b) => b.length - a.length || compareText(a, b))
   const designTokens = new Set(Object.keys(JSON.parse(await readFile(options.designTokensPath ?? DESIGN_TOKENS_PATH, 'utf8'))))
   const stylesDir = options.stylesDir ?? STYLES_DIR
@@ -307,6 +309,9 @@ export async function buildComponentTokenManifest(options = {}) {
   }
 
   for (const sourceComponent of componentIds.slice().sort(compareText)) {
+    // renderless family 没有 data-scope 或视觉槽，不应伪造一份空皮肤来满足生成器。
+    if (renderless.has(sourceComponent))
+      continue
     const file = join(stylesDir, `${sourceComponent}.css`)
     let source
     try {

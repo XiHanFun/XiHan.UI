@@ -157,6 +157,8 @@ export interface ConformanceSuite {
   readonly anatomy: Anatomy<string>
   /** 键盘表：覆盖率的分母。 */
   readonly keyboard: KeyboardTable
+  /** 严格必填 props 的最小有效声明，供 SSR/a11y/样式/标签默认夹具共用。 */
+  readonly defaultProps?: Readonly<Record<string, unknown>>
   /** 默认 fixture 结构树。 */
   readonly fixture: FixtureNode
   readonly cases: readonly ConformanceCase[]

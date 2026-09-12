@@ -31,12 +31,12 @@
 
 - 破坏性命令与其余条目之间隔一道[分隔线](./separator)，并放在最后。
 - 悬停触发只在指针环境有意义，触摸与键盘恒靠点击那条路径。
-- 快捷键提示可用作者节点并设置 `margin-inline-start: auto` 推到行尾，不必为了排版补造占位节点。
+- 快捷键提示用[键帽组](./kbd-group)并设置 `margin-inline-start: auto` 推到行尾，不必手写平台文本或补造占位节点。
 
 ### 当前边界
 
 - 当前尚无正式 checkbox item、radio group/item 与单条 danger tone，选择能力需要行为及可访问语义一起交付，不能只画一个勾来代替。
-- 快捷键提示属于作者内容，不会自动注册键盘动作；正式 shortcut/trailing 部件仍待独立实现。
+- KbdGroup 属于作者内容，只负责展示，不会自动注册键盘动作；正式 shortcut/trailing 部件仍待独立实现。
 
 ## 反模式
 

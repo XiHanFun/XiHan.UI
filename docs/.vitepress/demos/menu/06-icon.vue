@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import {
   XhIcon,
+  XhKbdGroup,
   XhMenuContent,
   XhMenuItem,
   XhMenuPositioner,
@@ -47,10 +48,9 @@ const TrashIcon = {
   ],
 } as const;
 
-// 快捷键提示推到条目末端，颜色压暗一档
+// 快捷键提示推到条目末端；平台格式和键帽视觉由 KbdGroup 统一
 const hintStyle = {
   marginInlineStart: "auto",
-  color: "var(--xh-fg-muted)",
 };
 </script>
 
@@ -62,18 +62,18 @@ const hintStyle = {
         <XhMenuItem value="copy">
           <XhIcon :icon="CopyIcon" size="sm" />
           <span>复制</span>
-          <span :style="hintStyle">Ctrl+C</span>
+          <XhKbdGroup :keys="['Mod', 'C']" size="sm" :style="hintStyle" />
         </XhMenuItem>
         <XhMenuItem value="rename">
           <XhIcon :icon="EditIcon" size="sm" />
           <span>重命名</span>
-          <span :style="hintStyle">F2</span>
+          <XhKbdGroup :keys="['F2']" size="sm" :style="hintStyle" />
         </XhMenuItem>
         <XhMenuSeparator />
         <XhMenuItem value="delete">
           <XhIcon :icon="TrashIcon" size="sm" />
           <span>删除</span>
-          <span :style="hintStyle">Del</span>
+          <XhKbdGroup :keys="['Delete']" size="sm" :style="hintStyle" />
         </XhMenuItem>
       </XhMenuContent>
     </XhMenuPositioner>

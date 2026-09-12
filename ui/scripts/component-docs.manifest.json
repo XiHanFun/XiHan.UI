@@ -35,7 +35,16 @@
         },
         {
           "id": "hotkeys",
-          "name": "快捷键"
+          "name": "快捷键",
+          "renderless": true
+        },
+        {
+          "id": "kbd",
+          "name": "键帽"
+        },
+        {
+          "id": "kbd-group",
+          "name": "键帽组"
         },
         {
           "id": "icon",

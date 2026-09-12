@@ -9,7 +9,7 @@ import type { ReactNode } from 'react'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, describe, expect, it } from 'vitest'
-import { XhHotkeys } from '../src'
+import { useHotkeys, XhHotkeys } from '../src'
 
 let host: HTMLElement | null = null
 let root: ReturnType<typeof createRoot> | null = null
@@ -56,6 +56,22 @@ describe('hotkeys 的全局监听', () => {
 
     expect(press()).toBe(true)
     expect(hits).toEqual([['Mod', 'S']])
+    expect(host?.innerHTML).toBe('')
+  })
+
+  it('局部监听只认作者显式 resolver，不创建节点猜父级', async () => {
+    const local = document.createElement('section')
+    document.body.append(local)
+    const hits: string[][] = []
+    await mount(<XhHotkeys keys={['Mod', 'S']} target={() => local} onHotKey={details => hits.push(details.keys)} />)
+
+    expect(press()).toBe(false)
+    const event = new KeyboardEvent('keydown', { key: 's', ctrlKey: true, bubbles: true, cancelable: true })
+    local.dispatchEvent(event)
+    expect(event.defaultPrevented).toBe(true)
+    expect(hits).toEqual([['Mod', 'S']])
+    expect(host?.innerHTML).toBe('')
+    local.remove()
   })
 
   it('卸载后摘干净：这一枚组合还给页面，回调也不再被叫到', async () => {
@@ -70,5 +86,30 @@ describe('hotkeys 的全局监听', () => {
 
     expect(press()).toBe(false)
     expect(hits).toHaveLength(1)
+  })
+
+  it('组合式手动 stop 后重渲也不会重新绑定', async () => {
+    let hits = 0
+    let stop = () => {}
+    function Probe({ enabled }: { enabled: boolean }): null {
+      stop = useHotkeys({
+        keys: ['Mod', 'S'],
+        enabled,
+        onHotKey: () => { hits += 1 },
+      }).stop
+      return null
+    }
+
+    await mount(<Probe enabled />)
+    expect(press()).toBe(true)
+    expect(hits).toBe(1)
+    stop()
+    await act(async () => {
+      root?.render(<Probe enabled={false} />)
+      root?.render(<Probe enabled />)
+    })
+    await settle()
+    expect(press()).toBe(false)
+    expect(hits).toBe(1)
   })
 })

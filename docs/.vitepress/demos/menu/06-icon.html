@@ -8,15 +8,19 @@
           <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
         </xh-icon>
         <span>复制</span>
-        <!-- 快捷键提示推到条目末端，颜色压暗一档 -->
-        <span style="margin-inline-start: auto; color: var(--xh-fg-muted)">Ctrl+C</span>
+        <!-- 快捷键提示推到条目末端；平台格式和键帽视觉由 KbdGroup 统一 -->
+        <xh-kbd-group keys="Mod,C" size="sm" style="margin-inline-start: auto">
+          <span data-xh-part="root"></span>
+        </xh-kbd-group>
       </div>
       <div data-xh-part="item" value="rename">
         <xh-icon size="sm" data-glyph="edit">
           <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
         </xh-icon>
         <span>重命名</span>
-        <span style="margin-inline-start: auto; color: var(--xh-fg-muted)">F2</span>
+        <xh-kbd-group keys="F2" size="sm" style="margin-inline-start: auto">
+          <span data-xh-part="root"></span>
+        </xh-kbd-group>
       </div>
       <div data-xh-part="separator"></div>
       <div data-xh-part="item" value="delete">
@@ -24,7 +28,9 @@
           <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
         </xh-icon>
         <span>删除</span>
-        <span style="margin-inline-start: auto; color: var(--xh-fg-muted)">Del</span>
+        <xh-kbd-group keys="Delete" size="sm" style="margin-inline-start: auto">
+          <span data-xh-part="root"></span>
+        </xh-kbd-group>
       </div>
     </div>
   </div>

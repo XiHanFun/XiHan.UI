@@ -135,7 +135,10 @@
   "highlight": [
     "tone"
   ],
-  "hotkeys": [
+  "kbd": [
+    "size"
+  ],
+  "kbd-group": [
     "size"
   ],
   "hover-card": [

@@ -1,0 +1,90 @@
+@layer xihan.components {
+  [data-scope='kbd'] {
+    --xh-kbd-skin: 1;
+  }
+
+  /* 单枚 M1 实体键帽：薄 edge、顶部高光与贴住承载面的 contact shadow。 */
+  [data-scope='kbd'][data-part='root'] {
+    --xh-_kbd-font-size: var(--xh-control-caption-md);
+    --xh-_kbd-px: var(--xh-space-1);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--xh-kbd-min-w, var(--xh-control-indicator-size));
+    padding-block: var(--xh-kbd-py, var(--xh-space-0_5));
+    padding-inline: var(--xh-kbd-px, var(--xh-_kbd-px));
+    border: var(--xh-stroke-thin) solid var(--xh-kbd-border, var(--xh-material-soft-border));
+    border-radius: var(--xh-kbd-radius, var(--xh-shape-inset));
+    background: var(--xh-kbd-bg, var(--xh-material-soft-bg));
+    box-shadow: var(
+      --xh-kbd-shadow,
+      inset 0 var(--xh-stroke-thin) 0 var(--xh-material-soft-highlight),
+      0 var(--xh-space-0_5) 0 var(--xh-border-control)
+    );
+    color: var(--xh-kbd-fg, var(--xh-fg-default));
+    font-family: var(--xh-kbd-font, var(--xh-font-family-mono));
+    font-size: var(--xh-kbd-font-size, var(--xh-_kbd-font-size));
+    font-weight: var(--xh-kbd-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-leading-none);
+    white-space: nowrap;
+    translate: 0 0;
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      translate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='kbd'][data-part='root'][data-modifier] {
+    color: var(--xh-kbd-fg-modifier, var(--xh-fg-muted));
+  }
+
+  [data-scope='kbd'][data-part='root'][data-disabled] {
+    background: var(--xh-kbd-bg-disabled, var(--xh-bg-muted));
+    box-shadow: none;
+    color: var(--xh-kbd-fg-disabled, var(--xh-fg-subtle));
+  }
+
+  /* pressed 只能来自显式事实，或来自真实可交互 owner 的原生 :active。 */
+  [data-scope='kbd'][data-part='root'][data-pressed]:not([data-disabled]),
+  :is(button, a[href], [role='button'], [role='menuitem'], [role='option']):not([disabled], [aria-disabled='true']):active
+    [data-scope='kbd'][data-part='root']:not([data-disabled]) {
+    box-shadow: var(--xh-kbd-shadow-pressed, inset 0 var(--xh-stroke-thin) 0 var(--xh-material-soft-highlight));
+    translate: 0 var(--xh-stroke-thin);
+  }
+
+  [data-scope='kbd'][data-part='root'][data-size='sm'] {
+    --xh-_kbd-font-size: var(--xh-control-caption-sm);
+    --xh-_kbd-px: var(--xh-space-0_5);
+  }
+
+  [data-scope='kbd'][data-part='root'][data-size='lg'] {
+    --xh-_kbd-font-size: var(--xh-control-caption-lg);
+    --xh-_kbd-px: var(--xh-space-1_5);
+  }
+
+  :where([data-density='compact']) [data-scope='kbd'][data-part='root']:not([data-size]) {
+    --xh-_kbd-font-size: var(--xh-control-caption-sm);
+    --xh-_kbd-px: var(--xh-space-0_5);
+  }
+
+  [data-scope='kbd'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='kbd'][data-part='root'] {
+      border-color: ButtonText;
+      background: Canvas;
+      box-shadow: none;
+      color: CanvasText;
+    }
+
+    [data-scope='kbd'][data-part='root'][data-disabled] {
+      border-color: GrayText;
+      color: GrayText;
+    }
+  }
+}

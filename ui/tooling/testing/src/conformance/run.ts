@@ -32,7 +32,11 @@ export async function recordTrace(
   c: ConformanceCase,
 ): Promise<DomSnapshot[]> {
   const tree = c.fixture ? c.fixture(suite.fixture) : suite.fixture
-  const { root } = await harness.mount({ component: suite.component, props: c.props ?? {}, tree })
+  const { root } = await harness.mount({
+    component: suite.component,
+    props: { ...suite.defaultProps, ...c.props },
+    tree,
+  })
   const ctx: ApplyContext = {
     harness,
     root,

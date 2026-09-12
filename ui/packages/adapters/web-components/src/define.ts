@@ -58,6 +58,8 @@ import { XhImageViewerElement } from './elements/image-viewer'
 import { XhInfiniteScrollElement } from './elements/infinite-scroll'
 import { XhInputGroupElement } from './elements/input-group'
 import { XhJsonViewerElement } from './elements/json-viewer'
+import { XhKbdElement } from './elements/kbd'
+import { XhKbdGroupElement } from './elements/kbd-group'
 import { XhLayoutElement } from './elements/layout'
 import { XhListElement } from './elements/list'
 import { XhListboxElement } from './elements/listbox'
@@ -152,6 +154,8 @@ export function defineXhElements(): void {
   defineElement('xh-heatmap', XhHeatmapElement, VERSION)
   defineElement('xh-highlight', XhHighlightElement, VERSION)
   defineElement('xh-hotkeys', XhHotkeysElement, VERSION)
+  defineElement('xh-kbd', XhKbdElement, VERSION)
+  defineElement('xh-kbd-group', XhKbdGroupElement, VERSION)
   defineElement('xh-icon-wrapper', XhIconWrapperElement, VERSION)
   defineElement('xh-image-cropper', XhImageCropperElement, VERSION)
   defineElement('xh-infinite-scroll', XhInfiniteScrollElement, VERSION)
@@ -314,6 +318,8 @@ export {
   XhImageViewerElement,
   XhInputGroupElement,
   XhJsonViewerElement,
+  XhKbdElement,
+  XhKbdGroupElement,
   XhListboxElement,
   XhLoadingBarElement,
   XhMarkdownStreamElement,

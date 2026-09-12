@@ -494,6 +494,8 @@ export { XhInputGroupItem, XhInputGroupRoot } from './components/input-group/inp
 export { XhJsonViewerRoot } from './components/json-viewer/json-viewer'
 export { useJsonViewer } from './components/json-viewer/use-json-viewer'
 export type { JsonViewerContext } from './components/json-viewer/use-json-viewer'
+export { XhKbdGroup } from './components/kbd-group/kbd-group'
+export { XhKbd } from './components/kbd/kbd'
 export { provideLayout, useLayoutContext } from './components/layout/context'
 export { XhLayoutContent, XhLayoutFooter, XhLayoutHeader, XhLayoutRoot, XhLayoutSider, XhLayoutSiderBackdrop, XhLayoutSiderTrigger } from './components/layout/layout'
 export { useLayout } from './components/layout/use-layout'

@@ -157,7 +157,7 @@ export function runA11y(
         hooks.it('初始态无违规', async () => {
           const report: string[] = []
           applyTheme(document, theme)
-          const ctx = await mount(harness, suite, {}, suite.fixture)
+          const ctx = await mount(harness, suite, suite.defaultProps ?? {}, suite.fixture)
           try {
             await harness.flush()
             await scan(ctx, '初始态：', report)
@@ -176,7 +176,7 @@ export function runA11y(
             const seen = new Set<string>()
             applyTheme(document, theme)
             for (const c of interactive) {
-              const ctx = await mount(harness, suite, c.props ?? {}, c.fixture ? c.fixture(suite.fixture) : suite.fixture)
+              const ctx = await mount(harness, suite, { ...suite.defaultProps, ...c.props }, c.fixture ? c.fixture(suite.fixture) : suite.fixture)
               try {
                 await harness.flush()
                 for (const step of c.steps!) {

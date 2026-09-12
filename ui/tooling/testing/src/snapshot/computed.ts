@@ -143,7 +143,11 @@ export function runComputedSnapshot(
       hooks.it('初始态快照', async () => {
         let snap: ComputedSnapshot
         try {
-          const { root } = await harness.mount({ component: suite.component, props: {}, tree: suite.fixture })
+          const { root } = await harness.mount({
+            component: suite.component,
+            props: suite.defaultProps ?? {},
+            tree: suite.fixture,
+          })
           await harness.flush()
           const doc = root.ownerDocument
           await settleAnimations(doc)

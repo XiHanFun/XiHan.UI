@@ -9,13 +9,13 @@ export const hotkeysKeyboard: KeyboardTable = {
   source: SPEC,
   rows: [
     {
-      id: 'hotkeys.kbd.trigger',
+      id: 'hotkeys.keydown.trigger',
       keys: ['keys 指定的组合'],
       when: 'enabled 未关，且不在输入法组合期',
       does: '触发 onHotKey；preventDefault 开启（默认）时同时拦下浏览器的默认动作',
     },
     {
-      id: 'hotkeys.kbd.typing',
+      id: 'hotkeys.keydown.typing',
       keys: ['keys 指定的组合'],
       when: '组合里没有 Ctrl / Meta / Alt，且按键落在输入框、文本域或可编辑区里',
       does: '不触发也不拦：这类组合与打字撞车，输入优先',

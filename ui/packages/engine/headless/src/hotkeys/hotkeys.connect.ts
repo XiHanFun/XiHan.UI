@@ -1,44 +1,30 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { HotkeySegment } from './hotkeys.keys'
 import type { HotkeysApi, HotkeysProps } from './hotkeys.types'
-import { dataAttr, isComposingEvent } from '@xihan-ui/core'
-import { hotkeysAnatomy } from './hotkeys.anatomy'
-import { formatHotkey, isTypingTarget, matchesHotkey, resolveHotkeysPlatform } from './hotkeys.keys'
-
-const parts = hotkeysAnatomy.build()
+import { isComposingEvent } from '@xihan-ui/core'
+import { formatHotkey, isTypingTarget, matchesHotkey, resolveHotkeysPlatform } from '../shared/hotkey'
 
 /**
- * Hotkeys 无状态机：显示什么、命中不命中，全由 props 算出来。
+ * Hotkeys 无状态机，也不产生 DOM：命中不命中全由 props 算出来。
  *
  * 监听装在哪儿由适配器决定（headless 不碰 document），但要不要接这次按键、
  * 拦不拦默认动作、回调谁，全部收在 handleKeyDown 里，两个适配器不各判一遍。
  *
- * @example
- * // Mac 上铺出 ⌘ 与 S 两枚键帽，其余平台铺出 Ctrl + S
- * connectHotkeys({ keys: ['Mod', 'S'], platform: 'mac' }, normalize)
+ * @example connectHotkeys({ keys: ['Mod', 'S'], platform: 'mac' })
  */
-export function connectHotkeys<T extends PropTypes>(
-  props: HotkeysProps,
-  normalize: NormalizeProps<T>,
-): HotkeysApi<T> {
-  const keys = props.keys ?? []
+export function connectHotkeys(props: HotkeysProps): HotkeysApi {
+  const keys = props.keys
+  if (!Array.isArray(keys) || keys.length === 0 || keys.some(key => typeof key !== 'string' || key === ''))
+    throw new TypeError('[xh] Hotkeys keys 必须是非空且每项均为非空字符串的组合')
   const platform = resolveHotkeysPlatform(props.platform)
   const segments = formatHotkey(keys, platform)
+  if (segments.filter(segment => !segment.modifier).length !== 1)
+    throw new TypeError('[xh] Hotkeys keys 必须且只能包含一枚主键')
   const enabled = props.enabled ?? true
   const preventDefault = props.preventDefault ?? true
   const target = props.target ?? 'document'
-  // Mac 的写法里键帽直接连排，不写连接符；其余平台用加号
-  const separator = platform === 'mac' ? '' : '+'
-
-  const translations = props.translations
-  const names = segments.map(segment => translations?.keyName?.(segment.key) ?? segment.name)
-  const label = translations?.hotkey?.(names) ?? names.join(' + ')
-
+  if (target !== 'document' && typeof target !== 'function')
+    throw new TypeError('[xh] Hotkeys target 只能是 \'document\' 或返回 EventTarget 的函数')
   // 组合里除 Shift 外还有别的修饰键：这类组合与打字撞不上，输入框里也照样接
   const hasCommandModifier = segments.some(segment => segment.modifier && segment.key !== 'Shift')
-
-  const segmentOf = (value: string): HotkeySegment | null =>
-    segments.find(segment => segment.source === value) ?? null
 
   const matches = (event: KeyboardEvent): boolean => {
     // 输入法组合期的按键是给候选框用的，一律不接
@@ -50,13 +36,21 @@ export function connectHotkeys<T extends PropTypes>(
     return matchesHotkey(event, keys, props.platform)
   }
 
+  const resolveTarget = (documentTarget: EventTarget | null): EventTarget | null => {
+    const resolved = target === 'document' ? documentTarget : target()
+    if (resolved == null)
+      return null
+    const candidate = resolved as unknown as { addEventListener?: unknown, removeEventListener?: unknown }
+    if (typeof candidate.addEventListener !== 'function' || typeof candidate.removeEventListener !== 'function')
+      throw new TypeError('[xh] Hotkeys target resolver 必须返回可监听 keydown 的 EventTarget 或 null')
+    return resolved
+  }
+
   return {
-    segments,
     platform,
     enabled,
     target,
-    separator,
-    segmentOf,
+    resolveTarget,
     matches,
 
     handleKeyDown: (event) => {
@@ -66,33 +60,5 @@ export function connectHotkeys<T extends PropTypes>(
         event.preventDefault()
       props.onHotKey?.({ keys: [...keys], event })
     },
-
-    // 一串符号连起来才是一个意思，逐枚念出来没有用：整块当一张图对外，
-    // 名字由 aria-label 给，键帽与连接符因此都不进无障碍树。
-    // 一枚键都翻不出来时不出 role：那会留下一张没有名字的图，读屏只念得出「图像」
-    getRootProps: () => normalize.element({
-      ...parts.root.attrs,
-      'role': segments.length === 0 ? undefined : 'img',
-      'aria-label': segments.length === 0 ? undefined : label,
-      'data-platform': platform,
-      // 监听关掉时组合按不出来，键帽转成不可用的样子
-      'data-disabled': dataAttr(!enabled),
-      'data-size': props.size,
-    }),
-
-    getKeyProps: (key) => {
-      const segment = segmentOf(key.value)
-      return normalize.element({
-        ...parts.key.attrs,
-        // 修饰键与主键在键帽宽度与字重上分开处理
-        'data-modifier': dataAttr(!!segment?.modifier),
-      })
-    },
-
-    // 连接符是排版符号：Mac 的写法里没有它，此时这一格收起来
-    getSeparatorProps: () => normalize.element({
-      ...parts.separator.attrs,
-      hidden: separator === '' || undefined,
-    }),
   }
 }

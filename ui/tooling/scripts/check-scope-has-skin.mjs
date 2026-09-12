@@ -47,19 +47,20 @@ for (const entry of (await readdir(HEADLESS, { withFileTypes: true })).filter(d 
   }
 
   let found = 0
-  src.split('\n').forEach((line, i) => {
-    if (line.trim().startsWith('//'))
-      return
-    for (const [, scope] of line.matchAll(/createAnatomy\(\s*'([a-z][a-z0-9-]*)'/g)) {
-      found += 1
-      const where = `${path}:${i + 1}`
-      const prev = scopes.get(scope)
-      if (prev)
-        problems.push(`${where}  scope '${scope}' 与 ${prev} 重名——一份皮肤只能有一处解剖认领它，改掉其中一个`)
-      else
-        scopes.set(scope, where)
-    }
-  })
+  for (const match of src.matchAll(/createAnatomy\(\s*'([a-z][a-z0-9-]*)'\s*,\s*\[([\s\S]*?)\]/g)) {
+    found += 1
+    const [, scope, parts] = match
+    const line = src.slice(0, match.index).split('\n').length
+    const where = `${path}:${line}`
+    // renderless family 仍保留元数据 anatomy，但不发 data-scope，自然也没有皮肤。
+    if (!parts?.trim())
+      continue
+    const prev = scopes.get(scope)
+    if (prev)
+      problems.push(`${where}  scope '${scope}' 与 ${prev} 重名——一份皮肤只能有一处解剖认领它，改掉其中一个`)
+    else
+      scopes.set(scope, where)
+  }
 
   if (!found)
     problems.push(`${path}  没读到 createAnatomy('<scope>', […])——scope 的真源是解剖，写成别的形状这道门禁就看不见它`)
