@@ -13258,6 +13258,8 @@
   --xh-action-bg-hover: var(--xh-button-bg-hover, var(--xh-bg-brand-hover));
   --xh-action-bg-pressed: var(--xh-button-bg-active, var(--xh-bg-brand-active));
   --xh-action-fg-rest: var(--xh-button-fg, var(--xh-fg-on-brand));
+  --xh-action-fg-hover: var(--xh-button-fg, var(--xh-fg-on-brand));
+  --xh-action-fg-pressed: var(--xh-button-fg, var(--xh-fg-on-brand));
   --xh-action-border-rest: transparent;
   --xh-action-highlight-rest: transparent;
   --xh-action-highlight-pressed: transparent;
@@ -13284,6 +13286,8 @@
   --xh-action-bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
   --xh-action-bg-pressed: var(--xh-_tone-active, var(--xh-bg-brand-active));
   --xh-action-fg-rest: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  --xh-action-fg-hover: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  --xh-action-fg-pressed: var(--xh-_tone-on, var(--xh-fg-on-brand));
   --xh-action-border-rest: transparent;
   --xh-action-highlight-rest: transparent;
   --xh-action-highlight-pressed: var(--xh-_highlight-tone);
@@ -13297,6 +13301,8 @@
   --xh-action-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-action-bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
   --xh-action-fg-rest: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-action-fg-hover: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-action-fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
   --xh-action-border-rest: var(--xh-material-soft-border);
 }
 
@@ -13305,6 +13311,8 @@
   --xh-action-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-action-bg-pressed: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
   --xh-action-fg-rest: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-action-fg-hover: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-action-fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
   --xh-action-border-rest: var(--xh-_tone-border-control, var(--xh-border-control));
   --xh-action-highlight-rest: transparent;
   --xh-action-shadow-rest: none;
@@ -13316,6 +13324,8 @@
   --xh-action-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-action-bg-pressed: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
   --xh-action-fg-rest: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-action-fg-hover: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-action-fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
   --xh-action-border-rest: transparent;
   --xh-action-highlight-rest: transparent;
   --xh-action-shadow-rest: none;

@@ -3452,10 +3452,14 @@
         "color"
       ],
       "state": [
+        "active",
         "default",
         "disabled",
         "focus-visible",
+        "hover",
         "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
         "not([data-scope='button-group'] *)",
         "not([data-variant])",
         "variant",
