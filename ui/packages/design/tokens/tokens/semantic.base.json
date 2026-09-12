@@ -64,6 +64,16 @@
       "$type": "dimension",
       "$value": "{font-size.lg}"
     },
+    "separator-opacity": {
+      "$description": "分组控件内分隔线的默认透明度。",
+      "$type": "number",
+      "$value": 0.16
+    },
+    "separator-disabled-opacity": {
+      "$description": "分组控件禁用时分隔线的透明度。",
+      "$type": "number",
+      "$value": 0.36
+    },
     "caption-sm": {
       "$description": "控件里的次级文字（提示、计数、快捷键、清空钮、标签项）：比同档主文字低一级。",
       "$type": "dimension",
@@ -315,6 +325,25 @@
     "py": {
       "$type": "dimension",
       "$value": "{space.2}"
+    }
+  },
+  "action": {
+    "brand-solid": {
+      "$description": "主动作的稳定品牌底色；不随主题翻转，始终与浅色前景配对。",
+      "$type": "color",
+      "$value": "{color.brand.600}"
+    },
+    "brand-solid-hover": {
+      "$type": "color",
+      "$value": "{color.brand.700}"
+    },
+    "brand-solid-active": {
+      "$type": "color",
+      "$value": "{color.brand.800}"
+    },
+    "on-brand-solid": {
+      "$type": "color",
+      "$value": "{color.neutral.0}"
     }
   },
   "list": {

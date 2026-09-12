@@ -1,19 +1,13 @@
 // 基础用法 | 组合相关操作
 import type { ReactNode } from "react";
-import { XhButton, XhButtonGroup, XhButtonGroupSeparator } from "@xihan-ui/react";
-import { Fragment } from "react";
+import { XhButton, XhButtonGroup } from "@xihan-ui/react";
 
 const views = ["照片", "视频", "更多"];
 
 export default function Demo(): ReactNode {
   return (
-    <XhButtonGroup variant="subtle">
-      {views.map((view, index) => (
-        <Fragment key={view}>
-          {index > 0 && <XhButtonGroupSeparator />}
-          <XhButton>{view}</XhButton>
-        </Fragment>
-      ))}
+    <XhButtonGroup>
+      {views.map(view => <XhButton key={view}>{view}</XhButton>)}
     </XhButtonGroup>
   );
 }

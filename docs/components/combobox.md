@@ -42,13 +42,13 @@ allow-custom-value 让没匹配上候选的输入也能落值，适合标签、�
 
 <XhDemo src="combobox/04-group" />
 
-### 形态
+### 变体
 
 variant 只改输入行的底色与描边用法，取值、过滤与键盘行为都不变
 
 <XhDemo src="combobox/05-variant" />
 
-### 语气
+### 颜色
 
 tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，只看语气这一轴
 

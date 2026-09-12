@@ -49,6 +49,14 @@
       "$type": "color",
       "$value": "{color.brand.100}"
     },
+    "brand-subtle-hover": {
+      "$type": "color",
+      "$value": "color-mix(in oklab, {bg.brand} 20%, {bg.surface})"
+    },
+    "brand-subtle-active": {
+      "$type": "color",
+      "$value": "color-mix(in oklab, {bg.brand} 28%, {bg.surface})"
+    },
     "overlay": {
       "$type": "color",
       "$value": "oklch(0 0 0 / 0.45)"

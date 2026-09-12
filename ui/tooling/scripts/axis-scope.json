@@ -31,7 +31,7 @@
   ],
   "button": [
     "variant",
-    "size"
+    "tone"
   ],
   "button-group": [
     "variant",
@@ -135,12 +135,6 @@
   "highlight": [
     "tone"
   ],
-  "kbd": [
-    "size"
-  ],
-  "kbd-group": [
-    "size"
-  ],
   "hover-card": [
     "size"
   ],
@@ -163,6 +157,12 @@
   ],
   "json-viewer": [
     "variant",
+    "size"
+  ],
+  "kbd": [
+    "size"
+  ],
+  "kbd-group": [
     "size"
   ],
   "layout": [],
@@ -335,10 +335,11 @@
   "toast": [],
   "toggle": [
     "variant",
-    "size"
+    "tone"
   ],
   "toggle-group": [
     "variant",
+    "tone",
     "size"
   ],
   "tool-call": [

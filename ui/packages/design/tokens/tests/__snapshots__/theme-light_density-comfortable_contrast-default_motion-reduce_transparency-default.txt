@@ -7,10 +7,16 @@
 #   [6] :where([data-contrast='default'])
 #   [9] :where([data-motion='reduce'])
 
+--xh-action-brand-solid: oklch(0.546 0.216 258)  ← var(--xh-color-brand-600)
+--xh-action-brand-solid-active: oklch(0.424 0.164 258)  ← var(--xh-color-brand-800)
+--xh-action-brand-solid-hover: oklch(0.488 0.196 258)  ← var(--xh-color-brand-700)
+--xh-action-on-brand-solid: oklch(1 0 0)  ← var(--xh-color-neutral-0)
 --xh-bg-brand: oklch(0.546 0.216 258)  ← var(--xh-color-brand-600)
 --xh-bg-brand-active: oklch(0.424 0.164 258)  ← var(--xh-color-brand-800)
 --xh-bg-brand-hover: oklch(0.488 0.196 258)  ← var(--xh-color-brand-700)
 --xh-bg-brand-subtle: oklch(0.936 0.032 258)  ← var(--xh-color-brand-100)
+--xh-bg-brand-subtle-active: color-mix(in oklab, oklch(0.546 0.216 258) 28%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface))
+--xh-bg-brand-subtle-hover: color-mix(in oklab, oklch(0.546 0.216 258) 20%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface))
 --xh-bg-canvas: oklch(1 0 0)  ← var(--xh-color-neutral-0)
 --xh-bg-muted: oklch(0.967 0.001 258)  ← var(--xh-color-neutral-100)
 --xh-bg-overlay: oklch(0 0 0 / 0.45)
@@ -54,6 +60,8 @@
 --xh-control-px-lg: 16px  ← var(--xh-space-4)
 --xh-control-px-md: 12px  ← var(--xh-space-3)
 --xh-control-px-sm: 8px  ← var(--xh-space-2)
+--xh-control-separator-disabled-opacity: 0.36
+--xh-control-separator-opacity: 0.16
 --xh-diff-added-bg: oklch(0.94 0.05 150)
 --xh-diff-added-fg: oklch(0.44 0.13 150)
 --xh-diff-removed-bg: oklch(0.94 0.05 25)

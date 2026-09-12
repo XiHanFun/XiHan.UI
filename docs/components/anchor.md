@@ -42,7 +42,7 @@ orientation="horizontal" 只改样式：条目排成一行，轨道与指示条�
 
 <XhDemo src="anchor/04-horizontal" />
 
-### 语气
+### 颜色
 
 tone 换的是选中那一节的指示条与文字颜色，这里用 default-value 预置「用法」为选中项
 

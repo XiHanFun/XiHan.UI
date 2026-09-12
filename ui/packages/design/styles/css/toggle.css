@@ -16,14 +16,14 @@
       --xh-toggle-bg-on-hover,
       var(
         --xh-_tone-subtle-hover,
-        color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface))
+        var(--xh-bg-brand-subtle-hover)
       )
     );
     --xh-_toggle-bg-on-active: var(
       --xh-toggle-bg-on-active,
       var(
         --xh-_tone-subtle-active,
-        color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface))
+        var(--xh-bg-brand-subtle-active)
       )
     );
     --xh-_toggle-fg-on: var(--xh-toggle-fg-on, var(--xh-_tone-fg, var(--xh-fg-brand)));
@@ -88,10 +88,10 @@
     :not([data-tone]),
     [data-tone='brand']
   ) {
-    --xh-_toggle-bg-on: var(--xh-color-brand-600);
-    --xh-_toggle-bg-on-hover: var(--xh-color-brand-700);
-    --xh-_toggle-bg-on-active: var(--xh-color-brand-800);
-    --xh-_toggle-fg-on: var(--xh-color-neutral-0);
+    --xh-_toggle-bg-on: var(--xh-action-brand-solid);
+    --xh-_toggle-bg-on-hover: var(--xh-action-brand-solid-hover);
+    --xh-_toggle-bg-on-active: var(--xh-action-brand-solid-active);
+    --xh-_toggle-fg-on: var(--xh-action-on-brand-solid);
   }
 
   [data-scope='toggle'][data-part='root'][data-variant='subtle'] {

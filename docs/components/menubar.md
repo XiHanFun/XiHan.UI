@@ -36,7 +36,7 @@ group 用 value 跟自己的 group-label 配对，item-indicator 是纯装饰的
 
 <XhDemo src="menubar/03-group" />
 
-### 语气
+### 颜色
 
 普通菜单行与展开项保持中性灰；tone 作用于触发器反馈和显式标记，不给展开项铺品牌色
 

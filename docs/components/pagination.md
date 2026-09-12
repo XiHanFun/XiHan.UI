@@ -42,7 +42,7 @@ translations 换掉 nav 地标名与各按钮的 aria-label，默认是英文
 
 <XhDemo src="pagination/04-translations" />
 
-### 语气
+### 颜色
 
 tone 换的是当前页选中态的底色与文字色，这里预置第 3 页为当前页
 

@@ -61,7 +61,7 @@ export const buttonGroupSuite: ConformanceSuite = {
       },
     },
     {
-      name: 'root 是唯一必需角色：未渲染可选 separator 时只有 root',
+      name: 'root 是唯一角色：分隔线由适配器内部生成，不进入部件面',
       spec: { apg: APG },
       initial: {
         order: ['root'],

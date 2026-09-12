@@ -60,7 +60,7 @@ size 只换整条的内边距与条目间的间距，条目自身的高度与字
 
 <XhDemo src="toolbar/07-align" />
 
-### 形态
+### 变体
 
 surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时用 plain，浮在内容之上时用 surface
 

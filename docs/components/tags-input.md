@@ -42,13 +42,13 @@ disabled 整个控件退出 Tab 序列、标签一起置灰；read-only 仍可�
 
 <XhDemo src="tags-input/04-disabled-readonly" />
 
-### 形态
+### 变体
 
 variant 只改控件的颜色槽位，标签的形态按控件的面派：subtle 控件里是描边标签，其余是淡底标签；落标签与删标签的行为三档一致
 
 <XhDemo src="tags-input/05-variant" />
 
-### 语气
+### 颜色
 
 tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
 

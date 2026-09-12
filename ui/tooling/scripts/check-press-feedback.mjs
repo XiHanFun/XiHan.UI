@@ -42,7 +42,7 @@ const PRESSABLE = {
   'button': ['root'],
   'download-trigger': ['root'],
   'toggle': ['root'],
-  'toggle-group': ['item'],
+  'toggle-group': [{ part: 'item', feedback: 'surface' }],
   'segmented': ['item'],
   'back-top': ['trigger'],
   'float-button': ['trigger'],

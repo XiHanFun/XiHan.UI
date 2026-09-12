@@ -77,6 +77,10 @@ const HOOK_ATTRS = {
  * 键写成「组件:属性」，值写清承载它的是哪一条。
  */
 const HOOKS = {
+  'button:data-size': '控件尺寸由同节点的 data-xh-action-size 交给 Action Control 配方；data-size 保留为作者样式钩子',
+  'toggle:data-size': '控件尺寸由同节点的 data-xh-action-size 交给 Action Control 配方；data-size 保留为作者样式钩子',
+  'toggle:data-icon-only': '图标按钮几何由同节点的 data-xh-action-profile=icon 交给 Action Control 配方；data-icon-only 保留为作者样式钩子',
+  'tree-select:data-load-state': '分支的标准视觉分别由 data-loading、data-error、data-empty 与对应状态部件承载；完整状态值保留为作者样式钩子',
   'pagination:data-placement': '省略页码弹层暴露定位引擎实际落点，供自定义皮肤读取；标准皮肤没有箭头，坐标由 positioner 内联值承载',
   'side-nav:data-placement': '侧栏弹出分支暴露定位引擎实际落点，供自定义皮肤读取；标准皮肤没有箭头，坐标由 positioner 内联值承载',
   // 显隐一律由 hidden 承载：收起时留着节点只加 hidden，data-state 是同一件事的同名镜像

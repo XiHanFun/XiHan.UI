@@ -90,7 +90,7 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 
 <XhDemo src="tree/12-range-selection" />
 
-### 形态
+### 变体
 
 variant="plain" 去掉外框与底色，树直接落在页面上；缺省 surface 保持带框的样子
 

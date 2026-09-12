@@ -42,7 +42,7 @@ indicator 的朝向由 data-state 驱动，禁用项点不动、方向键也跳�
 
 <XhDemo src="accordion/04-indicator" />
 
-### 语气
+### 颜色
 
 tone 落在展开态的标题上，六种语气各预置一项展开做对照
 
@@ -84,7 +84,7 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 
 <XhDemo src="accordion/11-custom-icon" />
 
-### 形态
+### 变体
 
 plain 不画壳，surface 给整块一层面，bordered 逐条画边；三档只改怎么与页面分开
 

@@ -101,24 +101,24 @@
       :not([data-tone]),
       [data-tone='brand']
     ):not([data-scope='button-group'] *) {
-    --xh-action-bg-rest: var(--xh-color-brand-600);
-    --xh-action-bg-hover: var(--xh-color-brand-700);
-    --xh-action-bg-pressed: var(--xh-color-brand-800);
-    --xh-action-fg-rest: var(--xh-color-neutral-0);
-    --xh-action-fg-hover: var(--xh-color-neutral-0);
-    --xh-action-fg-pressed: var(--xh-color-neutral-0);
-    --xh-_button-primary-bg: var(--xh-color-brand-600);
-    --xh-_button-primary-fg: var(--xh-color-neutral-0);
+    --xh-action-bg-rest: var(--xh-action-brand-solid);
+    --xh-action-bg-hover: var(--xh-action-brand-solid-hover);
+    --xh-action-bg-pressed: var(--xh-action-brand-solid-active);
+    --xh-action-fg-rest: var(--xh-action-on-brand-solid);
+    --xh-action-fg-hover: var(--xh-action-on-brand-solid);
+    --xh-action-fg-pressed: var(--xh-action-on-brand-solid);
+    --xh-_button-primary-bg: var(--xh-action-brand-solid);
+    --xh-_button-primary-fg: var(--xh-action-on-brand-solid);
   }
 
   :is([data-theme='dark'] *, [data-theme='dark'])[data-scope='button-group'][data-part='root'][data-variant='solid']:is(
     :not([data-tone]),
     [data-tone='brand']
   ) {
-    --xh-button-bg: var(--xh-color-brand-600);
-    --xh-button-bg-hover: var(--xh-color-brand-700);
-    --xh-button-bg-active: var(--xh-color-brand-800);
-    --xh-button-fg: var(--xh-color-neutral-0);
+    --xh-button-bg: var(--xh-action-brand-solid);
+    --xh-button-bg-hover: var(--xh-action-brand-solid-hover);
+    --xh-button-bg-active: var(--xh-action-brand-solid-active);
+    --xh-button-fg: var(--xh-action-on-brand-solid);
   }
 
   /* 默认按钮与 solid 都是品牌主动作，焦点、禁用和载入不能退回灰色家族缺省面。

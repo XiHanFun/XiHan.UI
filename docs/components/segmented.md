@@ -48,7 +48,7 @@ orientation 只改视觉排布，四个方向键与 Home/End 照样都能走
 
 <XhDemo src="segmented/05-disabled" />
 
-### 语气
+### 颜色
 
 tone 决定指示器与选中段文字用哪族颜色，六种语气各一组
 

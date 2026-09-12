@@ -42,7 +42,7 @@ orientation 换成 vertical 后整条控件收成一块，键盘与拖动的方�
 
 <XhDemo src="slider/04-disabled" />
 
-### 语气
+### 颜色
 
 tone 决定已填轨道与滑块用哪族颜色，不写时沿用品牌色
 

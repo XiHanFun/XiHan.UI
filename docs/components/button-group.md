@@ -20,15 +20,15 @@
 
 加粗的是必需部件。
 
-`data-scope="button-group"`：**`root`** · `separator`
+`data-scope="button-group"`：**`root`**
 
 ## 示例
 
-### 方向
+### 变体
 
-水平或垂直排列
+设置整组外观
 
-<XhDemo src="button-group/02-orientation" />
+<XhDemo src="button-group/02-variant" />
 
 ### 尺寸
 
@@ -36,11 +36,11 @@
 
 <XhDemo src="button-group/03-size" />
 
-### 形态与语气
+### 方向
 
-设置整组外观
+水平或垂直排列
 
-<XhDemo src="button-group/04-variant-tone" />
+<XhDemo src="button-group/04-orientation" />
 
 ### 图标与标签
 
@@ -48,12 +48,30 @@
 
 <XhDemo src="button-group/05-icon-label" />
 
+### 宽度充满
+
+按钮等分可用宽度
+
+<XhDemo src="button-group/06-full-width" />
+
+### 禁用
+
+禁用整组按钮
+
+<XhDemo src="button-group/07-disabled" />
+
+### 无分隔线
+
+省略分隔线部件
+
+<XhDemo src="button-group/08-without-separator" />
+
 ## 设计指引
 
 ### 何时使用
 
 - 并列展示作用相近的操作。
-- 统一一组按钮的尺寸、形态和语气。
+- 统一一组按钮的尺寸、变体和颜色。
 
 ### 何时不用
 
@@ -64,8 +82,8 @@
 
 - 支持水平和垂直排列。
 - 自动合并相邻边界，只保留首尾圆角。
-- 支持统一设置尺寸、形态、语气、禁用状态和宽度。
-- 可使用 `separator` 在相邻操作之间显示分隔线。
+- 支持统一设置尺寸、变体、颜色、禁用状态和宽度。
+- 默认在相邻按钮之间显示分隔线，可通过 `separators=false` 关闭。
 - 按下按钮时不缩放，避免组内边界断开。
 
 ### 组合
@@ -78,7 +96,7 @@
 - 每组只放置同一任务下的操作。
 - 操作较多时，保留常用项，其余收纳到菜单中。
 - 窄容器中使用垂直方向，不要让按钮组换行。
-- 尺寸和形态优先设置在按钮组上。
+- 尺寸和变体优先设置在按钮组上。
 
 ### 反模式
 
@@ -92,7 +110,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-button-group>` |
-| Vue 组件 | `XhButtonGroup` `XhButtonGroupSeparator` |
+| Vue 组件 | `XhButtonGroup` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/button-group.css` |
 
@@ -103,9 +121,10 @@
 | `disabled` | `boolean` |  | 整组禁用：适配器把它落到组内每一段的原生 disabled 上，段自己写了禁用的仍然禁用。 |
 | `fullWidth` | `boolean` |  | 撑满行宽：整组占满可用宽度，每段等分剩余空间。 |
 | `orientation` | `'horizontal' \| 'vertical'` |  | 排布：horizontal / vertical，决定相邻两段在哪个轴上合边。 |
+| `separators` | `boolean` |  | 是否自动在相邻按钮之间插入分隔线，默认 true。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，落到根上供皮肤写进组内按钮的高度、内边距与字号槽位。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，落到根上沿继承流给组内每一段。 |
-| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，落到根上供皮肤写进组内按钮的颜色槽位。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info，落到根上沿继承流给组内每一段。 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，落到根上供皮肤写进组内按钮的颜色槽位。 |
 
 ### connect API
 
@@ -113,9 +132,10 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
+| `orientation` | `'horizontal' \| 'vertical'` |  |
 | `disabled` | `boolean` | 整组是否禁用。适配器据此把禁用传给组内每一段——只打 data-* 是假禁用。 |
+| `separators` | `boolean` | 适配器是否自动生成相邻按钮间的分隔线。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getSeparatorProps` | `() => T['element']` | 段与段之间的装饰线，纯视觉、读屏不念。 |
 
 ## 无障碍
 
@@ -132,7 +152,6 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `role` | 'group' |
-| `separator` | `aria-hidden` | 'true' |
 
 ## 样式参考
 
@@ -154,8 +173,6 @@
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
-| `separator` | `data-disabled` | ''（条件成立时才出现） |
-| `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -164,14 +181,15 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-button-group-radius` | `root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`last-child`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-shape-pill` | button-group 的 root 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
-| `--xh-button-group-separator-color` | `separator` | `background` | `default` | `--xh-_tone-on` | button-group 的 separator 部件 background 覆盖槽。 |
-| `--xh-button-group-separator-color-disabled` | `separator` | `background` | `disabled` | `--xh-border-subtle` | button-group 的 separator 部件 background 覆盖槽。 |
-| `--xh-button-group-separator-opacity` | `separator` | `opacity` | `default` | `0.24` | button-group 的 separator 部件 opacity 覆盖槽。 |
-| `--xh-button-group-separator-opacity-disabled` | `separator` | `opacity` | `disabled` | `0.36` | button-group 的 separator 部件 opacity 覆盖槽。 |
-| `--xh-button-group-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | button-group 的 separator 部件 border-radius 覆盖槽。 |
-| `--xh-button-group-separator-size` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-_button-group-h` | button-group 的 separator 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-button-group-separator-thickness` | `separator` | `block-size`<br>`inline-size`<br>`margin-block-start`<br>`margin-inline-start` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | button-group 的 separator 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。 |
+| `--xh-button-group-outline-color` | `root` | `border` | `variant=outline` | `--xh-_tone-border-control` | button-group 的 root 部件 border 覆盖槽。 |
+| `--xh-button-group-radius` | `root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`last-child`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=outline` | `--xh-shape-pill` | button-group 的 root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-button-group-separator-color` | `root` | `background` | `xh-button-group-separator` | `--xh-_tone-on` | button-group 的 root 部件 background 覆盖槽。 |
+| `--xh-button-group-separator-color-disabled` | `root` | `background` | `disabled`<br>`xh-button-group-separator` | `--xh-border-subtle` | button-group 的 root 部件 background 覆盖槽。 |
+| `--xh-button-group-separator-opacity` | `root` | `opacity` | `xh-button-group-separator` | `--xh-control-separator-opacity` | button-group 的 root 部件 opacity 覆盖槽。 |
+| `--xh-button-group-separator-opacity-disabled` | `root` | `opacity` | `disabled`<br>`xh-button-group-separator` | `--xh-control-separator-disabled-opacity` | button-group 的 root 部件 opacity 覆盖槽。 |
+| `--xh-button-group-separator-radius` | `root` | `border-radius` | `xh-button-group-separator` | `--xh-shape-pill` | button-group 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-button-group-separator-size` | `root` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical`<br>`xh-button-group-separator` | `--xh-_group-separator-size` | button-group 的 root 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-button-group-separator-thickness` | `root` | `block-size`<br>`inline-size`<br>`margin-block-start`<br>`margin-inline-start` | `orientation=horizontal`<br>`orientation=vertical`<br>`xh-button-group-separator` | `--xh-stroke-thin` | button-group 的 root 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

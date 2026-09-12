@@ -2855,10 +2855,6 @@
             {
               "description": "组容器，承载 role=group 与 data-orientation / data-variant / data-tone / data-size",
               "name": "root"
-            },
-            {
-              "description": "段间的装饰线，可选；读屏不念",
-              "name": "separator"
             }
           ],
           "members": [
@@ -2927,11 +2923,36 @@
             },
             {
               "kind": "field",
+              "name": "separators",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "separators"
+            },
+            {
+              "kind": "field",
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
               "default": "new WeakMap<Element, boolean>()",
               "description": "作者在标记里写的段禁用，按元素记住头一回见到的那一份。\n整组禁用期间每一段上都被写了 disabled，第二帧起现读分不清是作者写的还是自己上一帧写的，\n解禁时就再也解不开。"
+            },
+            {
+              "kind": "field",
+              "name": "observedRoot",
+              "type": {
+                "text": "HTMLElement | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "segmentObserver",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MutationObserver((records) => { const authoredChange = records.some(record => [...record.addedNodes, ...record.removedNodes] .some(node => node instanceof Element && !node.hasAttribute('data-xh-button-group-separator'))) if (authoredChange) this.requestUpdate() })"
             },
             {
               "kind": "method",
@@ -2942,6 +2963,50 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "observeSegments",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement | null"
+                  }
+                }
+              ],
+              "description": "ButtonGroup 的按钮不是本组件 part，单独观察 root 的直接子节点。"
+            },
+            {
+              "kind": "method",
+              "name": "syncAutomaticSeparators",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "enabled",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "description": "默认补齐相邻按钮间的分隔线。"
             },
             {
               "kind": "method",
@@ -2988,7 +3053,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "形态，决定底色、描边与前景怎么用",
+              "description": "变体，决定底色、描边与前景怎么用",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -2996,7 +3061,7 @@
               "type": {
                 "text": "Tone | undefined"
               },
-              "description": "语气，决定用哪族颜色",
+              "description": "颜色",
               "name": "tone",
               "fieldName": "tone"
             },
@@ -3023,6 +3088,14 @@
               "description": "撑满行宽，每段等分剩余空间",
               "name": "full-width",
               "fieldName": "fullWidth"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "是否自动在相邻按钮之间生成分隔线，默认 true",
+              "name": "separators",
+              "fieldName": "separators"
             }
           ],
           "superclass": {
@@ -3032,6 +3105,9 @@
           "tagName": "xh-button-group",
           "customElement": true,
           "cssProperties": [
+            {
+              "name": "--xh-button-group-outline-color"
+            },
             {
               "name": "--xh-button-group-radius"
             },
@@ -18341,6 +18417,15 @@
             },
             {
               "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
               "name": "placement",
               "privacy": "public",
               "type": {
@@ -18545,6 +18630,14 @@
               "description": "禁用触发器",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向",
+              "name": "dir",
+              "fieldName": "direction"
             },
             {
               "type": {
@@ -51836,10 +51929,6 @@
               "name": "item"
             },
             {
-              "description": "段间的装饰线，可选；读屏不念",
-              "name": "separator"
-            },
-            {
               "description": "表单出口，可选；须是原生 `<input>`",
               "name": "hidden-input"
             }
@@ -51942,6 +52031,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "full-width"
+            },
+            {
+              "kind": "field",
+              "name": "separators",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "separators"
             },
             {
               "kind": "field",
@@ -52117,6 +52215,31 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "syncAutomaticSeparators",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "enabled",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "description": "默认补齐相邻条目间的分隔线，隐藏输入不参与。"
             }
           ],
           "events": [
@@ -52173,7 +52296,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "形态，决定段的底色与描边怎么用",
+              "description": "变体，决定段的底色与描边怎么用",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -52181,7 +52304,7 @@
               "type": {
                 "text": "Tone | undefined"
               },
-              "description": "语气",
+              "description": "颜色",
               "name": "tone",
               "fieldName": "tone"
             },
@@ -52200,6 +52323,14 @@
               "description": "撑满行宽，每段等分剩余空间",
               "name": "full-width",
               "fieldName": "fullWidth"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "是否自动在相邻条目之间生成分隔线，默认 true",
+              "name": "separators",
+              "fieldName": "separators"
             },
             {
               "type": {
@@ -52319,19 +52450,25 @@
               "name": "--xh-toggle-group-item-shadow"
             },
             {
+              "name": "--xh-toggle-group-outline-color"
+            },
+            {
               "name": "--xh-toggle-group-separator-color"
             },
             {
               "name": "--xh-toggle-group-separator-color-disabled"
             },
             {
-              "name": "--xh-toggle-group-separator-gap"
+              "name": "--xh-toggle-group-separator-opacity"
             },
             {
-              "name": "--xh-toggle-group-separator-inset"
+              "name": "--xh-toggle-group-separator-opacity-disabled"
             },
             {
               "name": "--xh-toggle-group-separator-radius"
+            },
+            {
+              "name": "--xh-toggle-group-separator-size"
             },
             {
               "name": "--xh-toggle-group-separator-thickness"
@@ -55784,6 +55921,34 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<TreeSelectSchema>( this, treeSelectMachine, () => this.machineProps(), { scope: this.treeSelectScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "TreeSelectApi | null"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "isEmpty",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "当前整树是否为空；机器尚未建起时为 false。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentLoading",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "当前是否显示整树加载态；与作者传入的 loading 属性分开。",
+              "readonly": true
             },
             {
               "kind": "field",

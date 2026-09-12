@@ -42,13 +42,13 @@ granularity=second 让秒段显出来并参与值，空段按上下键从该段�
 
 <XhDemo src="time-field/04-state" />
 
-### 形态
+### 变体
 
 variant 只改分段框的底色与描边用法，分段结构与键盘行为都不变
 
 <XhDemo src="time-field/05-variant" />
 
-### 语气
+### 颜色
 
 tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，只看语气这一轴
 

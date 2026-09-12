@@ -30,7 +30,7 @@ checked 传 "indeterminate" 表示部分选中，它不是第三个稳定态：�
 
 <XhDemo src="checkbox/02-indeterminate" />
 
-### 语气
+### 颜色
 
 tone 决定选中态的底与描边用哪族颜色，所以这里都置为选中
 

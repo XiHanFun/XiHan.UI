@@ -13,9 +13,12 @@ export function connectButtonGroup<T extends PropTypes>(
 ): ButtonGroupApi<T> {
   const orientation = props.orientation ?? 'horizontal'
   const disabled = !!props.disabled
+  const separators = props.separators ?? true
 
   return {
+    orientation,
     disabled,
+    separators,
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -27,15 +30,6 @@ export function connectButtonGroup<T extends PropTypes>(
       'data-size': props.size,
       'data-disabled': dataAttr(disabled),
       'data-full-width': dataAttr(!!props.fullWidth),
-    }),
-
-    // 段间的装饰线：不是按钮，读屏不念。
-    // 画的是这条线自己的朝向（横排里是竖线），与 root 的 data-orientation 相反
-    getSeparatorProps: () => normalize.element({
-      ...parts.separator.attrs,
-      'aria-hidden': true,
-      'data-orientation': orientation === 'horizontal' ? 'vertical' : 'horizontal',
-      'data-disabled': dataAttr(disabled),
     }),
   }
 }

@@ -1,4 +1,4 @@
-import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
+import type { ActionVariant, Direction, Size, Tone } from '@xihan-ui/core'
 import type {
   FloatButtonApi,
   FloatButtonExpandTrigger,
@@ -26,6 +26,7 @@ export const XhFloatButtonRoot = defineComponent({
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     disabled: Boolean,
+    dir: { type: String as PropType<Direction> },
     placement: { type: String as PropType<FloatButtonPlacement> },
     offset: { type: Number },
     shape: { type: String as PropType<FloatButtonShape> },

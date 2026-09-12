@@ -54,7 +54,7 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 
 <XhDemo src="collapsible/06-transition" />
 
-### 语气
+### 颜色
 
 tone 落在触发按钮的展开态上，六种语气各展开一份做对照
 

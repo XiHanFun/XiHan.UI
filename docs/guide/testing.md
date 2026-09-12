@@ -168,7 +168,7 @@ pnpm visual:performance --record
 
 ## 结构门禁
 
-`pnpm gate` 跑 111 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
+`pnpm gate` 跑 112 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
 
 | 门禁 | 拦什么 |
 | --- | --- |
@@ -197,7 +197,7 @@ pnpm visual:performance --record
 | `check-public-surface` | 公开面基线里有而当前没有的名字——被删了或改名了 |
 | `check-visual-performance-budget` | 固定设备、默认/reduce 场景、真实浏览器入口与既有 JS/CSS 体积真源任一脱节 |
 
-另有分层依赖检查与九项单独的门禁：
+另有分层依赖检查与十项单独的门禁：
 
 ```bash
 pnpm boundaries   # 分层依赖 + 禁循环 + styles 不依赖 JS + 库包不引第三方

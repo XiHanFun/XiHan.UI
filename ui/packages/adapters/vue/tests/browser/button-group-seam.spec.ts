@@ -4,7 +4,7 @@ import type { App, VNode } from 'vue'
 import { cdp, userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h } from 'vue'
-import { XhButton, XhButtonGroup, XhButtonGroupSeparator } from '../../src'
+import { XhButton, XhButtonGroup } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -109,15 +109,13 @@ describe('按钮组轮廓', () => {
   it('胶囊端点与半高分隔线保持连续轮廓', () => {
     mount(() => h(XhButtonGroup, { variant: 'solid' }, () => [
       h(XhButton, null, () => '日'),
-      h(XhButtonGroupSeparator),
       h(XhButton, null, () => '周'),
-      h(XhButtonGroupSeparator),
       h(XhButton, null, () => '月'),
     ]))
 
     const root = host!.querySelector<HTMLElement>(`[data-scope='button-group'][data-part='root']`)!
     const [first, middle, last] = buttons()
-    const separators = [...root.querySelectorAll<HTMLElement>(`[data-part='separator']`)]
+    const separators = [...root.querySelectorAll<HTMLElement>(`[data-xh-button-group-separator]`)]
     const rootHeight = root.getBoundingClientRect().height
 
     expect(Number.parseFloat(getComputedStyle(first!).borderStartStartRadius)).toBeGreaterThanOrEqual(rootHeight / 2)
@@ -132,10 +130,25 @@ describe('按钮组轮廓', () => {
       expect(style.marginInlineEnd).toBe('0px')
     }
   })
+
+  it('outline 由根绘制连续外框，段内只保留半高分隔线', () => {
+    mount(() => h(XhButtonGroup, { variant: 'outline' }, () => [
+      h(XhButton, null, () => '一'),
+      h(XhButton, null, () => '二'),
+      h(XhButton, null, () => '三'),
+    ]))
+
+    const root = host!.querySelector<HTMLElement>(`[data-scope='button-group'][data-part='root']`)!
+    const outline = getComputedStyle(root, '::after')
+    expect(outline.borderTopWidth).toBe('1px')
+    expect(outline.borderTopColor).not.toBe('rgba(0, 0, 0, 0)')
+    for (const button of buttons())
+      expect(getComputedStyle(button).borderTopColor).toBe('rgba(0, 0, 0, 0)')
+  })
 })
 
 describe('按钮组混合形态边界', () => {
-  it('outline 只给未声明形态的直接段画边，各显式形态保留自己的边', () => {
+  it('outline 外框归组根，显式形态仍保留自己的边界', () => {
     mount(() => h(XhButtonGroup, { variant: 'outline' }, () => [
       h(XhButton, null, () => '继承组'),
       h(XhButton, { variant: 'solid' }, () => '实心'),
@@ -144,7 +157,7 @@ describe('按钮组混合形态边界', () => {
     ]))
     const [inherited, solid, subtle, ghost] = buttons().map(button => getComputedStyle(button).borderTopColor)
 
-    expect(inherited).not.toBe('rgba(0, 0, 0, 0)')
+    expect(inherited).toBe('rgba(0, 0, 0, 0)')
     expect(solid).toBe('rgba(0, 0, 0, 0)')
     expect(subtle).not.toBe(inherited)
     expect(subtle).not.toBe('rgba(0, 0, 0, 0)')
@@ -163,7 +176,7 @@ describe('按钮组混合形态边界', () => {
     const inherited = getComputedStyle(inheritedButton!).borderTopColor
     const solid = getComputedStyle(solidButton!).borderTopColor
 
-    expect(inherited).not.toBe('rgba(0, 0, 0, 0)')
+    expect(inherited).toBe('rgba(0, 0, 0, 0)')
     expect(solid).toBe('rgba(0, 0, 0, 0)')
     await press(inheritedButton!)
     expect(inheritedButton!.matches(':active')).toBe(true)

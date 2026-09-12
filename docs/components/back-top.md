@@ -42,7 +42,7 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 
 <XhDemo src="back-top/04-tone-size" />
 
-### 形态
+### 变体
 
 variant 换按钮的底色、描边与前景怎么用；这里把露面门槛设成 0，不滚也看得见
 

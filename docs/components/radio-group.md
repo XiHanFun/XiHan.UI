@@ -42,7 +42,7 @@ orientation 只影响排版与 aria-orientation，方向键四个方向照样都
 
 <XhDemo src="radio-group/04-disabled" />
 
-### 语气
+### 颜色
 
 tone 决定选中圆点用哪族颜色，六种语气各一组
 

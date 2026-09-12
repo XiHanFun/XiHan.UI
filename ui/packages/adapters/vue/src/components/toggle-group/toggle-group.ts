@@ -2,12 +2,51 @@ import type { ActionVariant, Direction, Orientation, Size, Tone } from '@xihan-u
 import type { ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupValue } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { Comment, defineComponent, Fragment, h, onBeforeUnmount, ref, Text, watch } from 'vue'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideToggleGroup, useToggleGroupContext } from './context'
 import { useToggleGroup } from './use-toggle-group'
 
 type ToggleGroupProps = ToggleGroupSchema['props']
+
+function flattenChildren(children: readonly VNode[]): VNode[] {
+  const result: VNode[] = []
+  for (const child of children) {
+    if (child.type === Comment || child.type === Text)
+      continue
+    if (child.type === Fragment && Array.isArray(child.children)) {
+      result.push(...flattenChildren(child.children.filter(value => typeof value === 'object') as VNode[]))
+      continue
+    }
+    result.push(child)
+  }
+  return result
+}
+
+function renderChildren(children: readonly VNode[], props: {
+  disabled: boolean
+  orientation: Orientation
+  separators: boolean
+}): VNode[] {
+  const result: VNode[] = []
+  let itemCount = 0
+  for (const child of flattenChildren(children)) {
+    if (child.type === XhToggleGroupItem) {
+      if (props.separators && itemCount > 0) {
+        result.push(h('span', {
+          'key': `separator-${itemCount}`,
+          'aria-hidden': true,
+          'data-xh-toggle-group-separator': '',
+          'data-orientation': props.orientation === 'horizontal' ? 'vertical' : 'horizontal',
+          'data-disabled': props.disabled ? '' : undefined,
+        }))
+      }
+      itemCount += 1
+    }
+    result.push(child)
+  }
+  return result
+}
 
 export const XhToggleGroupRoot = defineComponent({
   name: 'XhToggleGroupRoot',
@@ -23,6 +62,7 @@ export const XhToggleGroupRoot = defineComponent({
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
     fullWidth: { type: Boolean, default: undefined },
+    separators: { type: Boolean, default: undefined },
     name: { type: String },
     orientation: { type: String as PropType<Orientation> },
     dir: { type: String as PropType<Direction> },
@@ -41,15 +81,18 @@ export const XhToggleGroupRoot = defineComponent({
     }
     const ctx = useToggleGroup(useFormControlProps(props) as ToggleGroupProps, notify)
     provideToggleGroup(ctx)
-    return () => h(
-      'div',
-      ctx.api.value.getRootProps() as Record<string, unknown>,
-      slots.default
+    return () => {
+      const children = slots.default
         ? slots.default()
         : props.collection
           ? renderDefaultTree(ctx.api.value.collection, slots.item)
-          : [],
-    )
+          : []
+      return h(
+        'div',
+        ctx.api.value.getRootProps() as Record<string, unknown>,
+        renderChildren(children, ctx.api.value),
+      )
+    }
   },
 })
 
@@ -87,15 +130,6 @@ export const XhToggleGroupItem = defineComponent({
       { ...ctx.api.value.getItemProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>, ref: itemEl },
       slots.default?.(),
     )
-  },
-})
-
-/** 段与段之间的装饰线；纯视觉，方向键与读屏都跳过它。 */
-export const XhToggleGroupSeparator = defineComponent({
-  name: 'XhToggleGroupSeparator',
-  setup() {
-    const ctx = useToggleGroupContext()
-    return () => h('span', ctx.api.value.getSeparatorProps() as Record<string, unknown>)
   },
 })
 

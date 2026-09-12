@@ -9,8 +9,8 @@ export default function Demo(): ReactNode {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
       {sizes.map(s => (
-        <XhButtonGroup key={s} size={s} variant="outline">
-          {views.map(v => <XhButton key={v}>{v}</XhButton>)}
+        <XhButtonGroup key={s} size={s}>
+          {views.map(view => <XhButton key={view}>{view}</XhButton>)}
         </XhButtonGroup>
       ))}
     </div>

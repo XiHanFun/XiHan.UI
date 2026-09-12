@@ -1,7 +1,7 @@
 import type { ActionVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupValue } from '@xihan-ui/headless'
-import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { useEffect, useRef } from 'react'
+import type { ComponentPropsWithRef, ReactElement, ReactNode } from 'react'
+import { Children, Fragment, isValidElement, useEffect, useRef } from 'react'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -23,6 +23,7 @@ export interface XhToggleGroupRootProps extends Omit<ComponentPropsWithRef<'div'
   tone?: Tone
   size?: Size
   fullWidth?: boolean
+  separators?: boolean
   name?: string
   orientation?: Orientation
   dir?: Direction
@@ -46,6 +47,7 @@ export function XhToggleGroupRoot({
   tone,
   size,
   fullWidth,
+  separators,
   name,
   orientation,
   dir,
@@ -67,6 +69,7 @@ export function XhToggleGroupRoot({
     tone,
     size,
     fullWidth,
+    separators,
     name,
     orientation,
     dir,
@@ -81,9 +84,7 @@ export function XhToggleGroupRoot({
   // 装成原生监听器，到达路径才与另外两家一致。onFocusOut 归到的 onBlur 本就是冒泡的 focusout，不动它
   const bind = useNativeEvents(api.getRootProps() as Record<string, unknown>, ['onFocus'])
 
-  const body = children ?? (collection
-    ? <DefaultTree collection={api.collection} renderItem={renderItem} />
-    : null)
+  const body = children ?? (collection ? renderDefaultTree(api.collection, renderItem) : null)
 
   return (
     <ToggleGroupProvider value={ctx}>
@@ -95,7 +96,7 @@ export function XhToggleGroupRoot({
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
-        {body}
+        {renderChildren(body, api)}
       </div>
     </ToggleGroupProvider>
   )
@@ -149,13 +150,6 @@ export function XhToggleGroupItem({ value, disabled, children, ...rest }: XhTogg
   )
 }
 
-export interface XhToggleGroupSeparatorProps extends ComponentPropsWithRef<'span'> {}
-/** 段与段之间的装饰线；纯视觉，方向键与读屏都跳过它。 */
-export function XhToggleGroupSeparator({ children, ...rest }: XhToggleGroupSeparatorProps): ReactNode {
-  const ctx = useToggleGroupContext()
-  return <span {...mergeReactProps(ctx.api.getSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
-}
-
 export interface XhToggleGroupHiddenInputProps extends ComponentPropsWithRef<'input'> {}
 /** 表单出口：整组只有一份，给了 name 才参与提交。 */
 export function XhToggleGroupHiddenInput({ ...rest }: XhToggleGroupHiddenInputProps): ReactNode {
@@ -168,17 +162,52 @@ export function XhToggleGroupHiddenInput({ ...rest }: XhToggleGroupHiddenInputPr
  * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
  * 条目底下没有文本部件，文字直接落在条目里。
  */
-function DefaultTree(props: {
-  collection: readonly ToggleGroupNodeMeta[]
-  renderItem?: (node: ToggleGroupNodeMeta) => ReactNode
-}): ReactNode {
-  return (
-    <>
-      {props.collection.map(node => (
-        <XhToggleGroupItem key={node.value} value={node.value}>
-          {props.renderItem?.(node) ?? node.label}
-        </XhToggleGroupItem>
-      ))}
-    </>
-  )
+function renderDefaultTree(
+  collection: readonly ToggleGroupNodeMeta[],
+  renderItem?: (node: ToggleGroupNodeMeta) => ReactNode,
+): ReactNode[] {
+  return collection.map(node => (
+    <XhToggleGroupItem key={node.value} value={node.value}>
+      {renderItem?.(node) ?? node.label}
+    </XhToggleGroupItem>
+  ))
+}
+
+function flattenChildren(children: ReactNode): ReactNode[] {
+  const result: ReactNode[] = []
+  for (const child of Children.toArray(children)) {
+    if (isValidElement(child) && child.type === Fragment) {
+      flattenChildren((child as ReactElement<{ children?: ReactNode }>).props.children).forEach(value => result.push(value))
+      continue
+    }
+    result.push(child)
+  }
+  return result
+}
+
+function renderChildren(children: ReactNode, api: {
+  disabled: boolean
+  orientation: Orientation
+  separators: boolean
+}): ReactNode[] {
+  const result: ReactNode[] = []
+  let itemCount = 0
+  for (const child of flattenChildren(children)) {
+    if (isValidElement(child) && child.type === XhToggleGroupItem) {
+      if (api.separators && itemCount > 0) {
+        result.push(
+          <span
+            key={`separator-${itemCount}`}
+            aria-hidden="true"
+            data-xh-toggle-group-separator=""
+            data-orientation={api.orientation === 'horizontal' ? 'vertical' : 'horizontal'}
+            data-disabled={api.disabled ? '' : undefined}
+          />,
+        )
+      }
+      itemCount += 1
+    }
+    result.push(child)
+  }
+  return result
 }

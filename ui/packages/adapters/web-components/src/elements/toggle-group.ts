@@ -31,10 +31,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} multiple - 允许多项同时选中，默认关闭
  * @attr {boolean} disabled - 整组禁用
  * @attr {boolean} disallow-empty - 不许把值点空（最后一个选中项摘不掉）
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定段的底色与描边怎么用
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体，决定段的底色与描边怎么用
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} full-width - 撑满行宽，每段等分剩余空间
+ * @attr {boolean} separators - 是否自动在相邻条目之间生成分隔线，默认 true
  * @attr {string} name - 表单字段名；给了它隐藏输入才带 name 并参与提交
  * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 horizontal；方向键四个恒响应，与它无关
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
@@ -43,7 +44,6 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires value-change - 选中值变化；detail 为 `{ value: string | string[] | null }`（形态跟着 multiple 走）
  * @csspart root - role=radiogroup / group 的容器（承载键盘收口与 Tab 兜底位）
  * @csspart item - 开关按钮，须是原生 `<button>` 并自带 value 属性标识身份
- * @csspart separator - 段间的装饰线，可选；读屏不念
  * @csspart hidden-input - 表单出口，可选；须是原生 `<input>`
  */
 export class XhToggleGroupElement extends XhElement {
@@ -65,6 +65,7 @@ export class XhToggleGroupElement extends XhElement {
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     fullWidth: { converter: BOOLEAN_CONVERTER, attribute: 'full-width' },
+    separators: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     orientation: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
@@ -83,6 +84,7 @@ export class XhToggleGroupElement extends XhElement {
   declare tone?: Tone
   declare size?: Size
   declare fullWidth?: boolean
+  declare separators?: boolean
   declare name?: string
   declare orientation?: Orientation
   declare direction?: Direction
@@ -127,6 +129,7 @@ export class XhToggleGroupElement extends XhElement {
       tone: this.tone,
       size: this.size,
       fullWidth: this.fullWidth,
+      separators: this.separators,
       name: this.name,
       orientation: this.orientation,
       dir: this.direction,
@@ -196,9 +199,12 @@ export class XhToggleGroupElement extends XhElement {
     for (const el of this.getParts('item'))
       this.spreader.spread(el, api.getItemProps(this.itemProps(el)) as Record<string, unknown>)
 
-    // 分隔线与表单出口都是可选角色节点，作者写了才接
-    for (const el of this.getParts('separator'))
-      this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
+    const separators = root ? this.syncAutomaticSeparators(root, api.separators) : []
+    for (const separator of separators) {
+      separator.setAttribute('aria-hidden', 'true')
+      separator.setAttribute('data-orientation', api.orientation === 'horizontal' ? 'vertical' : 'horizontal')
+      separator.toggleAttribute('data-disabled', api.disabled)
+    }
 
     const hiddenInput = this.getPart('hidden-input')
     if (hiddenInput)
@@ -206,5 +212,31 @@ export class XhToggleGroupElement extends XhElement {
 
     // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
     this.wasGroupDisabled = this.disabledState()
+  }
+
+  /** 默认补齐相邻条目间的分隔线，隐藏输入不参与。 */
+  private syncAutomaticSeparators(root: HTMLElement, enabled: boolean): HTMLElement[] {
+    const children = [...root.children] as HTMLElement[]
+    const generated = children.filter(child => child.hasAttribute('data-xh-toggle-group-separator'))
+    if (!enabled) {
+      for (const separator of generated)
+        separator.remove()
+      return []
+    }
+
+    const items = children.filter(child => child.matches(`[data-scope='toggle-group'][data-part='item']`))
+    const current = generated.length === Math.max(0, items.length - 1)
+      && items.slice(1).every((item, index) => item.previousElementSibling === generated[index])
+    if (current)
+      return generated
+
+    for (const separator of generated)
+      separator.remove()
+    for (const item of items.slice(1)) {
+      const separator = root.ownerDocument.createElement('span')
+      separator.setAttribute('data-xh-toggle-group-separator', '')
+      item.before(separator)
+    }
+    return [...root.querySelectorAll<HTMLElement>(':scope > [data-xh-toggle-group-separator]')]
   }
 }

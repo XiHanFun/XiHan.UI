@@ -42,13 +42,13 @@ disabled 连明暗一起停掉，read-only 只锁值、明暗照切，invalid �
 
 <XhDemo src="password-input/04-states" />
 
-### 形态
+### 变体
 
 variant 决定底与描边怎么画：描边、淡色填底、无框；密码框没有实心档
 
 <XhDemo src="password-input/05-variant" />
 
-### 语气
+### 颜色
 
 tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，语气的底色差别不必聚焦就看得见
 

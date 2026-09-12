@@ -4,17 +4,9 @@
       "found": "静态算 2.89:1，本侧量到 5.09:1（light · 无语气）",
       "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"
     },
-    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='ghost'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
-      "found": "静态算 2.89:1，本侧（归到 toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='subtle'] [data-part='item'][data-scope='toggle-group'][data-state='on']）量到 3.14:1（light · neutral）",
-      "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"
-    },
-    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='outline'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
-      "found": "静态算 2.89:1，本侧（归到 toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='subtle'] [data-part='item'][data-scope='toggle-group'][data-state='on']）量到 3.14:1（light · neutral）",
-      "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"
-    },
-    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='subtle'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
-      "found": "静态算 2.89:1，本侧量到 3.14:1（light · neutral）",
-      "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"
+    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='solid']:is(\n    :not([data-tone]),\n    [data-tone='brand']\n  ) [data-part='item'][data-scope='toggle-group'][data-state='on']": {
+      "found": "本侧挂不出 toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='solid']:is(\n    :not([data-tone]),\n    [data-tone='brand']\n  ) [data-part='item'][data-scope='toggle-group'][data-state='on']",
+      "why": "静态规则用 :is() 合并缺省颜色与 brand 分支，浏览器组合生成器不展开这一复合条件；等价的无颜色 solid 组合已由浏览器实测并进入实心面登记。"
     }
   },
   "browser": {
@@ -22,9 +14,9 @@
       "found": "静态没算出这一档，本侧量到 2.98:1（light · 无语气）",
       "why": "热力图颜色由主题、调色板与运行时等级共同决定，静态门禁不能展开最终内联值；浏览器仍直接量最终面与公共焦点环。"
     },
-    "toggle-group [data-disabled][data-part='item'][data-scope='toggle-group'][data-state='on']": {
-      "found": "静态算到覆盖它的档 toggle-group [data-part='item'][data-scope='toggle-group'][data-state='on']（1:1），本侧量到 1.92:1（light · neutral）",
-      "why": "禁用且按下那一档的面是 color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted))，私有槽掺在函数实参里，静态只解整条 var() 链、不进函数实参，这块面登在它的 opaque 分区；覆盖它的那几档算的是没禁用的底"
+    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='solid'] [data-disabled][data-part='item'][data-scope='toggle-group'][data-state='on']": {
+      "found": "静态算到覆盖它的档 toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='solid'] [data-part='item'][data-scope='toggle-group'][data-state='on']（1:1），本侧量到 2.34:1（light · 无语气）",
+      "why": "禁用且选中底色由 color-mix() 混合选中底与 muted；静态门禁不展开函数参数里的私有槽，归到未禁用底，浏览器侧按最终级联实测禁用面。"
     }
   },
   "unfocusable": {}

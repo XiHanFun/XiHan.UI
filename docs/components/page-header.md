@@ -48,7 +48,7 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 
 <XhDemo src="page-header/05-bordered-footer" />
 
-### 形态
+### 变体
 
 不写 variant 即不画面（与写 plain 一个样）；surface 加底色、圆角与左右内衬，raised 再加一层抬起投影，bordered 在这两档改画整圈描边
 
