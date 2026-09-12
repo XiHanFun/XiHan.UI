@@ -1,3 +1,4 @@
+import type { Service } from '@xihan-ui/core'
 import type {
   FormApi,
   FormColumnCount,
@@ -7,8 +8,8 @@ import type {
   FormErrorPatch,
   FormErrorsChangeDetails,
   FormFieldSpan,
-  FormPath,
   FormInvalidDetails,
+  FormPath,
   FormSchema,
   FormSubmitDetails,
   FormValidateOn,
@@ -26,6 +27,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
 // Lit 自带的 Boolean 转换器判的是 v !== null，写 disabled="false" 反而成了真
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+// 仅限本适配器复合控件的私有服务槽；不用导出函数，避免误变成自定义元素公开 API。
+const FORM_SERVICE = Symbol.for('xh.form.service')
 
 /**
  * 列数写整数就是各档同一个列数（`columns="2"`），写 JSON 对象就是逐档的列数
@@ -191,7 +194,13 @@ export class XhFormElement extends XhElement {
     () => this.machineProps(),
     // 落焦与"哪个字段排在前面"都要现查这棵子树，机器因此得拿到那个 <form>。
     // getter 而不是当下的节点：角色节点是作者渲染的，随时可能换一批
-    { onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')) },
+    {
+      onBuilt: (svc) => {
+        const host = this as unknown as { [FORM_SERVICE]?: Service<FormSchema> }
+        host[FORM_SERVICE] = svc
+        svc.refs.set('getRootEl', () => this.getPart('root'))
+      },
+    },
   )
 
   private machineProps(): Partial<FormSchema['props']> {

@@ -1,8 +1,9 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { FieldArrayApi, FieldArrayItem, FieldArrayItemProps, FieldArraySchema } from './field-array.types'
 import { contains, dataAttr } from '@xihan-ui/core'
+import { formArrayItemPath } from '../form'
 import { fieldArrayAnatomy, fieldArrayTriggerId } from './field-array.anatomy'
-import { atRowMax, atRowMin, rowBound } from './field-array.machine'
+import { atRowMax, atRowMin, fieldArrayValue, rowBound } from './field-array.machine'
 
 const parts = fieldArrayAnatomy.build()
 
@@ -17,11 +18,12 @@ export function connectFieldArray<T extends PropTypes>(
 ): FieldArrayApi<T> {
   const { context, prop, scope, send } = service
 
-  const value = context.get('value')
+  const value = fieldArrayValue(service)
   const keys = context.get('keys')
   const count = value.length
-  const disabled = !!prop('disabled')
-  const readOnly = !!prop('readOnly')
+  const form = service.refs.get('form')
+  const disabled = !!prop('disabled') || !!form?.prop('disabled')
+  const readOnly = !!prop('readOnly') || !!form?.prop('readOnly')
   const invalid = !!prop('invalid')
   const name = prop('name')
   const movable = !!prop('movable')
@@ -63,8 +65,8 @@ export function connectFieldArray<T extends PropTypes>(
     index,
     key: keys[index] ?? fallbackKey(index),
     value: row,
-    // 行里的控件靠它参与提交：整份数组一个名字，逐行加下标
-    name: name === undefined ? undefined : `${name}[${index}]`,
+    // 行里的控件靠它参与提交：显式数组路径保留每一段的类型，绝不拼 `name[index]` 字符串。
+    name: name === undefined ? undefined : formArrayItemPath(name, index),
     first: index === 0,
     last: index + 1 === count,
     canRemove: canRemove(index),

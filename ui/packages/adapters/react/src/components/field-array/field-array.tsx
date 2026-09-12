@@ -1,10 +1,11 @@
-import type { FieldArrayApi, FieldArraySchema, FieldArrayTranslations } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArraySchema, FieldArrayTranslations, FormPath } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
+import { useOptionalFormContext } from '../form/context'
 import { FieldArrayItemProvider, FieldArrayProvider, useFieldArrayContext, useFieldArrayItemContext } from './context'
 import { useFieldArray } from './use-field-array'
 
@@ -39,7 +40,7 @@ export interface XhFieldArrayRootProps extends Omit<ComponentPropsWithRef<'div'>
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
-  name?: string
+  name?: FormPath
   translations?: Partial<FieldArrayTranslations>
   onValueChange?: FieldArrayProps['onValueChange']
   children?: SlotChildren<FieldArrayRootSlotProps>
@@ -61,6 +62,7 @@ export function XhFieldArrayRoot({
   children,
   ...rest
 }: XhFieldArrayRootProps): ReactNode {
+  const form = useOptionalFormContext()
   const ctx = useFieldArray(withXhConfig('field-array', {
     value,
     defaultValue,
@@ -74,7 +76,7 @@ export function XhFieldArrayRoot({
     name,
     translations,
     onValueChange,
-  }) as FieldArrayProps)
+  }) as FieldArrayProps, form?.service)
   const api = ctx.api
 
   return (

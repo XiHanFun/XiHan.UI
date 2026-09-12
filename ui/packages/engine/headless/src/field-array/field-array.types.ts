@@ -1,4 +1,5 @@
-import type { MachineSchema, PropTypes } from '@xihan-ui/core'
+import type { MachineSchema, PropTypes, Service } from '@xihan-ui/core'
+import type { FormPath, FormSchema } from '../form'
 
 export interface FieldArrayValueChangeDetails {
   /** 变化后的整份数据数组，顺序即界面上从上到下的顺序。 */
@@ -30,8 +31,8 @@ export interface FieldArrayItem {
   key: string
   /** 这一行的数据，原样取自 value[index]。 */
   value: unknown
-  /** 这一行控件该用的表单字段名 `名字[下标]`；没给 name 时是 undefined。 */
-  name: string | undefined
+  /** 这一行控件该用的显式 FormPath；没给 name 时是 undefined。 */
+  name: FormPath | undefined
   first: boolean
   last: boolean
   canRemove: boolean
@@ -75,10 +76,10 @@ export interface FieldArraySchema extends MachineSchema {
     /** 校验失败标注：落到根与每一行上。 */
     invalid?: boolean
     /**
-     * 整份数组的表单字段名。给了之后每一行经 `item.name` 拿到 `名字[下标]`，
-     * 作者把它写到行里自己的控件上，整份数组才提交得出去。
+     * 整份数组的表单字段名。嵌套在 Form 中时会自动接入其值、规则、错误与校验真源；
+     * 每一行经 `item.name` 拿到显式数组 FormPath，绝不拼接字符串下标。
      */
-    name?: string
+    name?: FormPath
     translations?: Partial<FieldArrayTranslations>
     onValueChange?: (details: FieldArrayValueChangeDetails) => void
   }
@@ -98,6 +99,8 @@ export interface FieldArraySchema extends MachineSchema {
     keySeq: number
     /** 已经算好、还等着 value 落地的号。 */
     pending: FieldArrayPendingKeys | null
+    /** 最近祖先 Form 的服务，仅由三端适配器接线，不是公开 prop。 */
+    form: Service<FormSchema> | null
   }
   state: 'idle'
   event:

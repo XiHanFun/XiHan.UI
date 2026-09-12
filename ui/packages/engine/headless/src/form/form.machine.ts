@@ -1,12 +1,12 @@
 import type { Params } from '@xihan-ui/core'
 import type { FormErrors } from './form.errors'
-import type { FormPath } from './form.path'
-import type { FormSchema, FormValidateOn, FormValidationErrorDetails, FormValues } from './form.types'
+import type { FormArrayMutation, FormPath } from './form.path'
+import type { FormRules, FormSchema, FormValidateOn, FormValidationErrorDetails, FormValidationTask, FormValues } from './form.types'
 import { focusFirst, focusSafely, getTabbables, queryItems, setup } from '@xihan-ui/core'
 import { formFieldGroupQuery, formFieldName } from './form.anatomy'
 import { firstFormErrorName, formErrorNames, mergeFormErrors, normalizeFormErrors, sameFormErrors } from './form.errors'
+import { cloneFormPathRecord, formPathEntries, formPathKey, getFormPathValue, rebaseFormArrayPath, rebaseFormPathRecord, sameFormPathRecords, setFormPathValue } from './form.path'
 import { runFormRules } from './form.rules'
-import { cloneFormPathRecord, formPathKey, getFormPathValue, sameFormPathRecords, setFormPathValue } from './form.path'
 
 const { createMachine, guards } = setup<FormSchema>()
 const { not } = guards
@@ -32,6 +32,65 @@ export function sameFormValues(a: FormValues, b: FormValues | undefined): boolea
   if (!b)
     return false
   return sameFormPathRecords(a, b)
+}
+
+/**
+ * 规则的来源仍是 prop；一旦 FieldArray 变更行号，副本才接管路径迁移。
+ * 外部替换 rules 后立即丢掉旧副本，新的 prop 重新成为真源。
+ */
+function currentFormRules(params: Params<FormSchema>): FormRules | undefined {
+  const source = params.prop('rules')
+  if (params.refs.get('rulesSource') !== source) {
+    params.refs.set('rulesSource', source)
+    params.refs.set('rules', source)
+  }
+  return params.refs.get('rules')
+}
+
+/** 用同一条数组路径变换迁移所有仍在进行的校验任务。 */
+function rebaseValidation(
+  params: Params<FormSchema>,
+  name: FormPath,
+  mutation: FormArrayMutation,
+  value: unknown[],
+): void {
+  const running = params.refs.get('validation')
+  const next = new Map<string | null, FormValidationTask>()
+  for (const task of running.values()) {
+    const field = task.field == null ? null : rebaseFormArrayPath(task.field, name, mutation)
+    // 被删整行的字段任务已经不再有语义；后到结果不能写回。
+    if (field === null && task.field !== null)
+      continue
+    task.field = field
+    task.key = field == null ? null : formPathKey(field)
+    task.values = setFormPathValue(rebaseFormPathRecord(task.values, name, mutation), name, value)
+    next.set(task.key, task)
+  }
+  running.clear()
+  for (const [key, task] of next)
+    running.set(key, task)
+  syncValidating(params)
+}
+
+/** 已验证错误的来源标记也必须跟着行号走，不能只迁移可见文案。 */
+function rebaseValidatedErrors(
+  params: Params<FormSchema>,
+  errors: FormErrors,
+  name: FormPath,
+  mutation: FormArrayMutation,
+): void {
+  const before = params.refs.get('validatedErrors')
+  if (before.size === 0)
+    return
+  const next = new Set<string>()
+  for (const [path] of formPathEntries(errors)) {
+    if (!before.has(formPathKey(path)))
+      continue
+    const mapped = rebaseFormArrayPath(path, name, mutation)
+    if (mapped !== null)
+      next.add(formPathKey(mapped))
+  }
+  params.refs.set('validatedErrors', next)
 }
 
 /**
@@ -79,23 +138,29 @@ function discardValidation({ context, refs }: Params<FormSchema>): void {
 }
 
 /** 同字段只保留最新任务；任务持有值快照，删除后即使 Promise 完成也不能写回。 */
-function beginValidation(params: Params<FormSchema>, values: FormValues, field: FormPath | null): { pending: () => void, complete: () => boolean } {
+function beginValidation(params: Params<FormSchema>, values: FormValues, field: FormPath | null): { task: FormValidationTask, pending: () => void, complete: () => boolean } {
   const running = params.refs.get('validation')
-  const task = { values: cloneFormPathRecord(values), pending: false }
-  running.set(field == null ? null : formPathKey(field), task)
+  const task: FormValidationTask = {
+    field: Array.isArray(field) ? [...field] : field,
+    key: field == null ? null : formPathKey(field),
+    values: cloneFormPathRecord(values),
+    pending: false,
+  }
+  running.set(task.key, task)
   params.context.set('validationError', null)
   syncValidating(params)
   return {
+    task,
     pending: (): void => {
-      if (running.get(field == null ? null : formPathKey(field)) !== task)
+      if (running.get(task.key) !== task)
         return
       task.pending = true
       syncValidating(params)
     },
     complete: (): boolean => {
-      if (running.get(field == null ? null : formPathKey(field)) !== task)
+      if (running.get(task.key) !== task)
         return false
-      running.delete(field == null ? null : formPathKey(field))
+      running.delete(task.key)
       syncValidating(params)
       return sameFormValues(task.values, params.context.get('values'))
     },
@@ -108,14 +173,15 @@ function executeValidation(
   values: FormValues,
   field: FormPath | null,
   validate: () => FormErrors | Promise<FormErrors>,
-  apply: (errors: FormErrors) => void,
+  apply: (errors: FormErrors, field: FormPath | null) => void,
 ): void {
-  const task = beginValidation(params, values, field)
+  const validation = beginValidation(params, values, field)
+  const { task } = validation
   const fail = (cause: unknown): void => {
-    if (!task.complete())
+    if (!validation.complete())
       return
     discardValidation(params)
-    const details: FormValidationErrorDetails = { cause, values: cloneFormPathRecord(values), field: Array.isArray(field) ? [...field] : field }
+    const details: FormValidationErrorDetails = { cause, values: cloneFormPathRecord(task.values), field: Array.isArray(task.field) ? [...task.field] : task.field }
     params.context.set('validationError', details)
     params.prop('onValidationError')?.(details)
   }
@@ -128,11 +194,11 @@ function executeValidation(
     return
   }
   const settle = (errors: FormErrors): void => {
-    if (task.complete())
-      apply(errors)
+    if (validation.complete())
+      apply(errors, task.field)
   }
   if (outcome instanceof Promise) {
-    task.pending()
+    validation.pending()
     void outcome.then(settle, fail)
   }
   else {
@@ -143,20 +209,23 @@ function executeValidation(
 /** 跑一次校验（可能读取整表），但只把当前字段写回错误表。 */
 function validateOneField(params: Params<FormSchema>, values: FormValues, name: FormPath): void {
   const validate = params.prop('validate')
-  const rules = params.prop('rules')
+  const rules = currentFormRules(params)
   const rule = getFormPathValue(rules, name)
   if (!validate && !rule)
     return
-  const settle = (all: FormErrors): void => {
+  const settle = (all: FormErrors, field: FormPath | null): void => {
+    if (field == null)
+      return
     // 这一条的来源改记成「校验算出来的」：接下来再编辑这个字段不该把它抹掉
     const validated = params.refs.get('validatedErrors')
-    const key = formPathKey(name)
+    const key = formPathKey(field)
+    // 校验已在变更前的字段上启动；结果仍从原键取，再落到任务迁移后的当前键。
     const error = getFormPathValue(all, name)
     if (error)
       validated.add(key)
     else
       validated.delete(key)
-    params.context.set('errors', mergeFormErrors(params.context.get('errors'), setFormPathValue({}, name, error)))
+    params.context.set('errors', mergeFormErrors(params.context.get('errors'), setFormPathValue({}, field, error)))
   }
   executeValidation(
     params,
@@ -176,11 +245,13 @@ function validateOneField(params: Params<FormSchema>, values: FormValues, name: 
 // 状态只编码"上一次提交有没有被拦下"，它不受控、也没有对应的 prop。
 export const formMachine = createMachine({
   name: 'form',
-  refs: () => ({
+  refs: ({ prop }) => ({
     getRootEl: () => null,
     validation: new Map(),
     // 空表起步：作者预置的 defaultErrors 不是校验算出来的，编辑那个字段就该让它走
     validatedErrors: new Set<string>(),
+    rules: prop('rules'),
+    rulesSource: prop('rules'),
   }),
   context: ({ prop, cell }) => ({
     values: cell<FormValues>(() => ({
@@ -204,12 +275,18 @@ export const formMachine = createMachine({
   exit: ['discardValidation'],
   watch: ({ track, prop, context, action }) => {
     track([context.dep('values'), () => prop('values')], () => action(['discardStaleValidation']))
+    track([() => prop('rules')], () => action(['syncRules']))
   },
   on: {
     'FIELD.SET': [
       // 禁用/只读整条吃掉，连 onValuesChange 都不发：受控宿主收到意图会照写，等于绕过禁用
       { guard: not('isEditable') },
       { actions: ['setFieldValue', 'clearExternalFieldError', 'validateChangedField'] },
+    ],
+    'FIELD.ARRAY.MUTATE': [
+      // FieldArray 自己的 disabled/readOnly 已拦一层；这里再守住整个 Form 的禁用与只读。
+      { guard: not('isEditable') },
+      { actions: ['mutateFieldArray'] },
     ],
     'FIELD.BLUR': [
       { guard: not('isEnabled') },
@@ -264,6 +341,9 @@ export const formMachine = createMachine({
     },
     actions: {
       discardValidation,
+      syncRules: (params) => {
+        void currentFormRules(params)
+      },
       discardStaleValidation: (params) => {
         const running = params.refs.get('validation')
         const values = params.context.get('values')
@@ -275,6 +355,34 @@ export const formMachine = createMachine({
         if (error && !sameFormValues(error.values, values))
           params.context.set('validationError', null)
         syncValidating(params)
+      },
+      mutateFieldArray: (params) => {
+        const e = params.event.current()
+        if (e.type !== 'FIELD.ARRAY.MUTATE')
+          return
+        const { context, refs } = params
+        const beforeValues = context.get('values')
+        const beforeErrors = context.get('errors')
+        const nextValues = setFormPathValue(rebaseFormPathRecord(beforeValues, e.name, e.mutation), e.name, e.value)
+        const nextErrors = rebaseFormPathRecord(beforeErrors, e.name, e.mutation)
+
+        // 规则不是可变 prop：迁移自己的副本，下一次业务替换 rules 才切回新的来源。
+        const rules = currentFormRules(params)
+        if (rules)
+          refs.set('rules', rebaseFormPathRecord(rules, e.name, e.mutation))
+
+        rebaseValidatedErrors(params, beforeErrors, e.name, e.mutation)
+        rebaseValidation(params, e.name, e.mutation, e.value)
+
+        const previousError = context.get('validationError')
+        if (previousError) {
+          const field = previousError.field == null ? null : rebaseFormArrayPath(previousError.field, e.name, e.mutation)
+          context.set('validationError', field === null && previousError.field !== null
+            ? null
+            : { ...previousError, field, values: setFormPathValue(rebaseFormPathRecord(previousError.values, e.name, e.mutation), e.name, e.value) })
+        }
+        context.set('values', nextValues)
+        context.set('errors', nextErrors)
       },
       setFieldValue: (params) => {
         const { context, event } = params
@@ -329,7 +437,7 @@ export const formMachine = createMachine({
         const { prop, context, refs, send } = params
         const values = context.get('values')
         const validate = prop('validate')
-        const rules = prop('rules')
+        const rules = currentFormRules(params)
         discardValidation(params)
         // computed=true 是真跑过一轮：整表被替换掉，这张表整个记成校验算出来的，
         // 库外写进来的那几条随旧表一起作废。什么都没跑的那一路照旧不动来源登记。

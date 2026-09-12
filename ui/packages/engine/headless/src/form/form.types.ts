@@ -1,6 +1,6 @@
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 import type { FormErrorPatch, FormErrors } from './form.errors'
-import type { FormPath, FormPathRecord } from './form.path'
+import type { FormArrayMutation, FormPath, FormPathRecord } from './form.path'
 
 /**
  * 字段路径 → 值。字符串字段仍是对象上的单键；数组路径住在不可枚举路径索引，
@@ -124,6 +124,17 @@ export interface FormValidationErrorDetails {
   field: FormPath | null
 }
 
+/** 一项仍有资格写回的校验任务。数组换序时它与字段和值快照一起迁移。 */
+export interface FormValidationTask {
+  /** 当前字段身份；整表校验为 null。 */
+  field: FormPath | null
+  /** 当前字段身份的稳定键，作为 validation Map 的键。 */
+  key: string | null
+  /** 与任务同行的值快照。 */
+  values: FormValues
+  pending: boolean
+}
+
 /**
  * 字段容器自报家门：名字由作者声明，connect 据此产出 id、data-name 与失焦上报。
  * connect 不得反查 DOM：Vue 侧在 render 期求值（本帧 DOM 还不存在）、WC 侧在 updated 后求值，
@@ -152,7 +163,7 @@ export interface FormRefs {
   /** 表单根节点（那个 `<form>`）：字段容器的现查范围与落焦的起点。 */
   getRootEl: () => HTMLElement | null
   /** 当前有效的校验任务；null 表示整表提交，字符串表示字段。替换或删除即撤销写回资格。 */
-  validation: Map<string | null, { values: FormValues, pending: boolean }>
+  validation: Map<string | null, FormValidationTask>
   /**
    * 当下这张错误表里，哪几条是本库自己校验算出来的。
    *
@@ -160,6 +171,9 @@ export interface FormRefs {
    * 服务端返回后经 setFieldError 写进来的那些），字段一被编辑就清掉它。
    */
   validatedErrors: Set<string>
+  /** 当前规则的可迁移副本；props 仍是下一次外部更新的来源。 */
+  rules: FormRules | undefined
+  rulesSource: FormRules | undefined
 }
 
 export interface FormSchema extends MachineSchema {
@@ -241,6 +255,8 @@ export interface FormSchema extends MachineSchema {
     | { type: 'VALIDATION.FAIL', errors: FormErrors, values: FormValues }
     /** 写一个字段的值（api.setFieldValue）。change 模式下顺带校验这一个字段。 */
     | { type: 'FIELD.SET', name: FormPath, value: unknown }
+    /** FieldArray 的结构变更。表单一次迁移所有跟随行号的状态。 */
+    | { type: 'FIELD.ARRAY.MUTATE', name: FormPath, value: unknown[], mutation: FormArrayMutation }
     /** 焦点离开某个字段容器。blur 模式下据此校验这一个字段。 */
     | { type: 'FIELD.BLUR', name: FormPath }
     /** 写一个字段的错误（api.setFieldError）；空文案即清掉这一条。 */
@@ -253,6 +269,7 @@ export interface FormSchema extends MachineSchema {
   guard: 'isEnabled' | 'isEditable' | 'isValidationSnapshotCurrent'
   action:
     | 'setFieldValue'
+    | 'mutateFieldArray'
     | 'clearExternalFieldError'
     | 'validateChangedField'
     | 'validateBlurredField'
@@ -266,6 +283,7 @@ export interface FormSchema extends MachineSchema {
     | 'resetForm'
     | 'discardValidation'
     | 'discardStaleValidation'
+    | 'syncRules'
   effect: never
 }
 
