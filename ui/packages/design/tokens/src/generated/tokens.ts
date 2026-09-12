@@ -357,7 +357,7 @@ export const tokens = {
   "--xh-border-control-focus": "var(--xh-ring-focus)",
   "--xh-border-invalid": "var(--xh-color-danger-600)",
   "--xh-border-at-limit": "var(--xh-color-warning-600)",
-  "--xh-ring-focus": "var(--xh-color-brand-500)",
+  "--xh-ring-focus": "var(--xh-color-brand-600)",
   "--xh-ring-invalid": "var(--xh-color-danger-500)",
   "--xh-gradient-brand-from": "var(--xh-color-brand-500)",
   "--xh-gradient-brand-to": "var(--xh-color-brand-700)",

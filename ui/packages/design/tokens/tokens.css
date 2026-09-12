@@ -437,7 +437,7 @@
     --xh-fg-scrollbar-thumb-hover: var(--xh-color-neutral-500);
     --xh-fg-scrollbar-thumb-active: var(--xh-color-neutral-600);
     --xh-border-control-focus: var(--xh-ring-focus);
-    --xh-ring-focus: var(--xh-color-brand-500);
+    --xh-ring-focus: var(--xh-color-brand-600);
     --xh-ring-invalid: var(--xh-color-danger-500);
     --xh-gradient-brand-from: var(--xh-color-brand-500);
     --xh-gradient-brand-to: var(--xh-color-brand-700);

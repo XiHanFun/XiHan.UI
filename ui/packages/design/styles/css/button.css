@@ -24,9 +24,12 @@
     --xh-action-border-rest: transparent;
     --xh-action-highlight-rest: transparent;
     --xh-action-highlight-pressed: transparent;
-    --xh-action-shadow-rest: var(--xh-button-shadow, none);
-    --xh-action-shadow-hover: var(--xh-button-shadow-hover, none);
-    --xh-action-shadow-pressed: none;
+    --xh-_button-shadow-rest: var(--xh-button-shadow, none);
+    --xh-_button-shadow-hover: var(--xh-button-shadow-hover, none);
+    --xh-_button-shadow-pressed: none;
+    --xh-action-shadow-rest: var(--xh-_button-shadow-rest);
+    --xh-action-shadow-hover: var(--xh-_button-shadow-hover);
+    --xh-action-shadow-pressed: var(--xh-_button-shadow-pressed);
     --xh-action-radius: var(--xh-button-radius, var(--xh-_button-radius));
     --xh-action-visual-size: var(--xh-button-h, var(--xh-_button-group-h, var(--xh-_action-profile-visual-size)));
     --xh-action-padding-inline: var(--xh-button-px, var(--xh-_button-group-px, var(--xh-_action-profile-padding-inline)));
@@ -47,9 +50,9 @@
     --xh-action-border-rest: transparent;
     --xh-action-highlight-rest: transparent;
     --xh-action-highlight-pressed: var(--xh-_highlight-tone);
-    --xh-action-shadow-rest: var(--xh-_highlight-tone), var(--xh-material-soft-shadow);
-    --xh-action-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-_highlight-tone), var(--xh-elevation-raised));
-    --xh-action-shadow-pressed: var(--xh-_highlight-tone);
+    --xh-_button-shadow-rest: var(--xh-_highlight-tone), var(--xh-material-soft-shadow);
+    --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-_highlight-tone), var(--xh-elevation-raised));
+    --xh-_button-shadow-pressed: var(--xh-_highlight-tone);
   }
 
   [data-scope='button'][data-part='root'][data-variant='subtle'] {
@@ -84,36 +87,27 @@
 
   /* 默认按钮与 solid 都是品牌主动作，焦点、禁用和载入不能退回灰色家族缺省面。
      ButtonGroup 的 solid 段从容器继承同名公开槽，仍由一份规则得到相同状态。 */
-  [data-scope='button'][data-part='root']:is(
-    :not([data-variant]):not([data-scope='button-group'] *),
-    [data-variant='solid'],
-    [data-scope='button-group'][data-part='root'][data-variant='solid'] [data-scope='button'][data-part='root']:not([data-variant])
-  ) {
+  [data-scope='button'][data-part='root']:not([data-variant]):not([data-scope='button-group'] *),
+  [data-scope='button'][data-part='root'][data-variant='solid'],
+  [data-scope='button-group'][data-part='root'][data-variant='solid']
+    [data-scope='button'][data-part='root']:not([data-variant]) {
     --xh-_button-primary-bg: var(--xh-button-bg, var(--xh-_tone, var(--xh-bg-brand)));
     --xh-_button-primary-fg: var(--xh-button-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-  }
-
-  [data-scope='button'][data-part='root']:is(
-    :not([data-variant]):not([data-scope='button-group'] *),
-    [data-variant='solid'],
-    [data-scope='button-group'][data-part='root'][data-variant='solid'] [data-scope='button'][data-part='root']:not([data-variant])
-  ):focus-visible,
-  [data-scope='button'][data-part='root']:is(
-    :not([data-variant]):not([data-scope='button-group'] *),
-    [data-variant='solid'],
-    [data-scope='button-group'][data-part='root'][data-variant='solid'] [data-scope='button'][data-part='root']:not([data-variant])
-  )[data-disabled],
-  [data-scope='button'][data-part='root']:is(
-    :not([data-variant]):not([data-scope='button-group'] *),
-    [data-variant='solid'],
-    [data-scope='button-group'][data-part='root'][data-variant='solid'] [data-scope='button'][data-part='root']:not([data-variant])
-  )[data-loading][aria-disabled='true'] {
-    --xh-_action-current-highlight: transparent;
-
-    border-color: transparent;
-    background-color: var(--xh-_button-primary-bg);
-    color: var(--xh-_button-primary-fg);
-    box-shadow: none;
+    --xh-action-bg-focus-visible: var(--xh-_button-primary-bg);
+    --xh-action-bg-disabled: var(--xh-_button-primary-bg);
+    --xh-action-bg-loading: var(--xh-_button-primary-bg);
+    --xh-action-fg-focus-visible: var(--xh-_button-primary-fg);
+    --xh-action-fg-disabled: var(--xh-_button-primary-fg);
+    --xh-action-fg-loading: var(--xh-_button-primary-fg);
+    --xh-action-border-focus-visible: transparent;
+    --xh-action-border-disabled: transparent;
+    --xh-action-border-loading: transparent;
+    --xh-action-highlight-focus-visible: transparent;
+    --xh-action-highlight-disabled: transparent;
+    --xh-action-highlight-loading: transparent;
+    --xh-action-shadow-focus-visible: none;
+    --xh-action-shadow-disabled: none;
+    --xh-action-shadow-loading: none;
   }
 
   /* ButtonGroup 只向段灌公开颜色槽；段仍从同一份家族状态读取。 */

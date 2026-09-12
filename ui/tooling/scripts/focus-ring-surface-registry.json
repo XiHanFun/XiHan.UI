@@ -17,14 +17,20 @@
   },
   "opaque": {
     "back-top [trigger] var(--xh-material-glass-bg)": "缺省触发器是随页面背景透入的 M3 玻璃，静态工具不能按单一实体面判环；键盘聚焦时皮肤将它切到 material-glass-focus-surface，浏览器回归量该实体面与公共焦点环。",
+    "back-top [trigger] var(--xh-material-glass-focus-surface)": "M3 focus-surface 在浅深主题都收敛到不透明 bg.surface；默认公共环继续由浏览器对比回归验证。",
     "cascader [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "color-picker [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "combobox [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "context-menu [content] var(--xh-material-frosted-bg)": "M2 背景依赖背后内容。tabindex 不为0时已登记关环；空菜单自身以tabindex=0接收键盘焦点时，focus-visible实际铺material-frosted-focus-surface实体底，浏览器浅深主题回归保证边界可见。",
+    "context-menu [content] var(--xh-material-frosted-focus-surface)": "只有 tabindex=0 的空菜单接收此焦点面；M2 focus-surface 收敛到不透明 bg.surface，浏览器回归验证公共环。",
     "date-picker [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
+    "dialog [close-trigger] var(--xh-material-elevated-focus-surface)": "关闭钮聚焦时立即铺 M4 不透明 focus-surface，公共环不再与半透明内容面比较；浏览器回归验证浅深主题。",
     "dialog [content] linear-gradient(\n        to bottom,\n        var(--xh-dialog-highlight, var(--xh-material-elevated-highlight)) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      linear-gradient(\n        to bottom,\n        var(--xh-dialog-content-lens-bg, var(--xh-dialog-header-bg, var(--xh-material-glass-bg))),\n        var(\n          --xh-dialog-bg,\n          var(--xh-material-elevated-bg)\n        ) var(--xh-dialog-content-lens-depth, var(--xh-dialog-header-lens-depth, calc(var(--xh-dialog-py, var(--xh-surface-py-md)) + var(--xh-control-h-md))))\n      )": "M4 内容面由透明顶光与 M3 lens 到高遮蔽正文的渐变叠合，静态工具无法按单一实体色求环对比；content 已在同表 ringless 登记为焦点陷阱的 tabindex=-1 兜底，真实交互控件各自铺实体焦点面并由浏览器回归覆盖。",
     "float-button [trigger] var(--xh-material-glass-bg)": "缺省触发器是随页面背景透入的 M3 玻璃，静态工具不能按单一实体面判环；键盘聚焦时皮肤将它切到 material-glass-focus-surface，浏览器回归量该实体面与公共焦点环。",
+    "float-button [trigger] var(--xh-material-glass-focus-surface)": "M3 focus-surface 在键盘聚焦时提供不透明隔离底，公共环由浏览器浅深主题回归验证。",
+    "floating-panel [close-trigger] var(--xh-material-glass-focus-surface)": "关闭钮聚焦时铺不透明 M3 focus-surface，避免公共环与玻璃后的未知内容直接比较。",
     "floating-panel [content] linear-gradient(\n        to bottom,\n        var(--xh-material-glass-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-floating-panel-bg, var(--xh-material-glass-bg))": "M3 面板由透明 tint 与顶边高光叠合，静态工具无法以单一实体色判环；content 已在同表 ringless 登记为键盘事件收口，真实可交互的标题栏按钮聚焦时各自铺 material-glass-focus-surface 实体底。",
+    "floating-panel [window-state-trigger] var(--xh-material-glass-focus-surface)": "窗口状态钮聚焦时铺不透明 M3 focus-surface；选中实心档另由 currentColor 环规则保证。",
     "heatmap [cell] color-mix(in oklab, var(--xh-_heatmap-ink) var(--xh-_heatmap-level), var(--xh-_heatmap-empty))": "档位是连着的百分比、由连接层内联写进 style，皮肤里恒是 0%，静态解不出格子的实际颜色；满档那一格的面就是 --xh-_heatmap-ink（缺省即 --xh-bg-brand），环压上去大概率不到 3:1，要浏览器态判据接",
     "hover-card [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-hover-card-bg, var(--xh-material-frosted-bg))": "M2 预览面含透明底与顶光，content 的程序化聚焦已明确关环；预览默认没有内建交互控件，作者若组合控件，其实体焦点面由各自皮肤提供。",
     "image-viewer [close-trigger] color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent)": "面是半透明的，压在使用者的图片上，静态算不出对比度",
@@ -33,8 +39,11 @@
     "mention [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "menu [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "menubar [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
+    "popconfirm [cancel-trigger] var(--xh-material-soft-focus-surface)": "取消钮聚焦时切到不透明 M1 focus-surface 并立即停掉底色渐变，公共环由浏览器回归验证。",
     "popconfirm [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-popconfirm-bg, var(--xh-material-frosted-bg))": "M2 确认面有透明底与顶光，content 自身关环；确认钮和取消钮聚焦时各自使用实际不透明背景，焦点环不依赖背后采样颜色。",
+    "popover [close-trigger] var(--xh-material-frosted-focus-surface)": "关闭钮聚焦时切到不透明 M2 focus-surface，公共环不与模糊背景直接比较。",
     "popover [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-popover-bg, var(--xh-material-frosted-bg))": "M2 内容面含半透明 tint 与装饰顶光，最终底色随页面背景变化；content 自身的程序化焦点环已关闭，内建关闭钮聚焦时实际铺不透明 focus-surface，任意作者控件由各自皮肤保证焦点面。",
+    "prompt-input [input] var(--xh-material-glass-focus-surface)": "输入段自身明确关闭 outline，焦点环画在 root；该不透明底只负责文字与自动填充的可读性。",
     "time-picker [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "toggle-group [item] color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted))": "禁用且按下那一档，色由私有槽掺进 color-mix 里，本脚本只解整条 var() 链、不进函数实参；失效控件本就在 SC 1.4.11 的豁免里",
     "tree-select [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。"
@@ -126,7 +135,6 @@
     "slider [range]": "滑杆的已选区间，焦点落在拇指上",
     "slider [track]": "滑杆的轨道，焦点落在拇指上",
     "tags-input [root]": "这块面是反白的标签本体，画在条目里 tag 的 root 上（选择器主体戴 tag 的 scope，本脚本按皮肤文件记成 tags-input 的 root）：标签本体不接焦点，键盘走到它身上由 data-highlighted 反白，焦点仍在输入框；里面的删除钮另有自己的环",
-    "toolbar [separator]": "工具条分隔线，不接焦点",
     "tour [progress-dot]": "步骤指示点，纯展示不接焦点"
   },
   "solid": {
@@ -144,39 +152,25 @@
       "ratio": 1,
       "ring": "poured"
     },
-    "button [data-part='root'][data-scope='button-group'][data-variant='solid'] [data-part='root'][data-scope='button']": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "button [data-part='root'][data-scope='button'][data-variant='solid']": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
     "calendar [data-part='cell-trigger'][data-scope='calendar'][data-selected]": {
       "parts": [
         "cell-trigger"
       ],
-      "ratio": 1.36,
+      "ratio": 1,
       "ring": "poured"
     },
     "carousel [data-current][data-part='indicator'][data-scope='carousel']": {
       "parts": [
         "indicator"
       ],
-      "ratio": 1.36,
+      "ratio": 1,
       "ring": "poured"
     },
     "carousel [data-part='indicator'][data-scope='carousel']": {
       "parts": [
         "indicator"
       ],
-      "ratio": 1.16,
+      "ratio": 1.57,
       "ring": "poured"
     },
     "checkbox [data-part='root'][data-scope='checkbox'][data-state='checked']": {
@@ -204,7 +198,7 @@
       "parts": [
         "eye-dropper-trigger"
       ],
-      "ratio": 2.52,
+      "ratio": 2.89,
       "ring": "poured"
     },
     "date-field [data-part='root'][data-scope='date-field'] [data-focus][data-part='segment'][data-scope='date-field']": {
@@ -232,7 +226,7 @@
       "parts": [
         "trigger"
       ],
-      "ratio": 2.52,
+      "ratio": 2.89,
       "ring": "poured"
     },
     "download-trigger [data-part='root'][data-scope='download-trigger'][data-variant='solid']": {
@@ -246,7 +240,7 @@
       "parts": [
         "trigger"
       ],
-      "ratio": 2.52,
+      "ratio": 2.89,
       "ring": "poured"
     },
     "editable [data-part='submit-trigger'][data-scope='editable']": {
@@ -267,21 +261,21 @@
       "parts": [
         "window-state-trigger"
       ],
-      "ratio": 2.52,
+      "ratio": 2.89,
       "ring": "poured"
     },
     "form [data-part='submit-trigger'][data-scope='form']": {
       "parts": [
         "submit-trigger"
       ],
-      "ratio": 1.36,
+      "ratio": 1,
       "ring": "poured"
     },
     "image-cropper [data-part='crop-handle'][data-resizing][data-scope='image-cropper']": {
       "parts": [
         "crop-handle"
       ],
-      "ratio": 1.36,
+      "ratio": 1,
       "ring": "poured"
     },
     "pagination [data-part=:is(positioner,root)][data-scope='pagination'] [data-current][data-part='item'][data-scope='pagination']": {
@@ -316,28 +310,28 @@
       "parts": [
         "handle"
       ],
-      "ratio": 1.36,
+      "ratio": 1,
       "ring": "poured"
     },
     "scrollbar [data-dragging][data-part='thumb'][data-scope='scrollbar']": {
       "parts": [
         "thumb"
       ],
-      "ratio": 1.82,
+      "ratio": 1.54,
       "ring": "poured"
     },
     "scrollbar [data-part='thumb'][data-scope='scrollbar']": {
       "parts": [
         "thumb"
       ],
-      "ratio": 1.44,
+      "ratio": 1.75,
       "ring": "poured"
     },
     "slider [data-invalid][data-part='thumb'][data-scope='slider']": {
       "parts": [
         "thumb"
       ],
-      "ratio": 1.29,
+      "ratio": 1.05,
       "ring": "poured"
     },
     "slider [data-part='thumb'][data-scope='slider']": {
@@ -351,21 +345,14 @@
       "parts": [
         "resize-trigger"
       ],
-      "ratio": 1.36,
-      "ring": "poured"
-    },
-    "splitter [data-part='resize-trigger'][data-scope='splitter']": {
-      "parts": [
-        "resize-trigger"
-      ],
-      "ratio": 2.97,
+      "ratio": 1,
       "ring": "poured"
     },
     "switch [data-part='root'][data-scope='switch']": {
       "parts": [
         "root"
       ],
-      "ratio": 2.52,
+      "ratio": 2.89,
       "ring": "poured"
     },
     "switch [data-part='root'][data-scope='switch'][data-state='checked']": {
@@ -379,21 +366,21 @@
       "parts": [
         "column-visibility-trigger"
       ],
-      "ratio": 1.36,
+      "ratio": 1,
       "ring": "poured"
     },
     "table [data-part='row'][data-scope='table'][data-selected]": {
       "parts": [
         "row"
       ],
-      "ratio": 2.52,
+      "ratio": 2.89,
       "ring": "poured"
     },
     "table [data-part='select-all-trigger'][data-scope='table'][data-state=:is(checked,indeterminate)]": {
       "parts": [
         "select-all-trigger"
       ],
-      "ratio": 1.36,
+      "ratio": 1,
       "ring": "poured"
     },
     "tag [data-part='root'][data-scope='tag'][data-tone][data-variant='solid']": {
@@ -407,7 +394,7 @@
       "parts": [
         "root"
       ],
-      "ratio": 1.36,
+      "ratio": 1,
       "ring": "poured"
     },
     "time-field [data-part='root'][data-scope='time-field'] [data-focus][data-part='segment'][data-scope='time-field']:not([data-disabled])": {
@@ -442,21 +429,21 @@
       "parts": [
         "root"
       ],
-      "ratio": 2.52,
+      "ratio": 2.89,
       "ring": "poured"
     },
     "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='ghost']": {
       "parts": [
         "root"
       ],
-      "ratio": 2.31,
+      "ratio": 2.89,
       "ring": "poured"
     },
     "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='outline']": {
       "parts": [
         "root"
       ],
-      "ratio": 2.31,
+      "ratio": 2.89,
       "ring": "poured"
     },
     "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='solid']": {
@@ -470,7 +457,7 @@
       "parts": [
         "root"
       ],
-      "ratio": 2.31,
+      "ratio": 2.89,
       "ring": "poured"
     },
     "toggle-group [data-part='root'][data-scope='toggle-group'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
@@ -484,28 +471,28 @@
       "parts": [
         "item"
       ],
-      "ratio": 2.31,
+      "ratio": 2.89,
       "ring": "poured"
     },
     "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='outline'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
       "parts": [
         "item"
       ],
-      "ratio": 2.31,
+      "ratio": 2.89,
       "ring": "poured"
     },
     "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='subtle'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
       "parts": [
         "item"
       ],
-      "ratio": 2.31,
+      "ratio": 2.89,
       "ring": "poured"
     },
     "tour [data-part='next-trigger'][data-scope='tour']": {
       "parts": [
         "next-trigger"
       ],
-      "ratio": 1.36,
+      "ratio": 1,
       "ring": "poured"
     }
   }
