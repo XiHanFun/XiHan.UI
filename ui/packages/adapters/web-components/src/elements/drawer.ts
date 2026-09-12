@@ -1,7 +1,7 @@
-import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, PortalLease, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type { DrawerOpenChangeDetails, DrawerSchema } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createCounterIdGenerator, createPortalLease, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectDrawer, drawerAnatomy, drawerMachine, drawerMeta } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { wcNormalize } from '../dom/normalize'
@@ -80,11 +80,13 @@ export class XhDrawerElement extends XhElement {
   declare translations?: DrawerSchema['props']['translations']
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly drawerScope = createScope(null, this.idGen)
+  // 运行时环境必须始终取宿主当前所属 Document：iframe 创建或 adopt 之后不能继续用构造时的全局 realm。
+  private readonly drawerScope = createScope(() => this, this.idGen)
   private config: RuntimeConfig | null = null
   private contentNode: HTMLElement | null = null
   private exit: OverlayExit | null = null
   private backdropNode: HTMLElement | null = null
+  private portal: PortalLease | null = null
 
   private readonly notify = (details: DrawerOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
@@ -136,6 +138,44 @@ export class XhDrawerElement extends XhElement {
       onExitComplete: () => this.requestUpdate(),
     })
     return this.exit
+  }
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal?.roots ?? []
+  }
+
+  /**
+   * 只有非 contained 的视口模态层领取租约。backdrop 与 positioner 同迁，既脱离作者祖先的
+   * transform/contain/overflow，又在退场完成后按各自占位准确归位。
+   */
+  private mountViewportPortal(backdrop: HTMLElement, positioner: HTMLElement): void {
+    if (this.portal?.roots[0] === backdrop && this.portal.roots[1] === positioner && this.portal.source === this)
+      return
+    this.restoreViewportPortal()
+    this.ensureConfig()
+    const target = this.config!.portalContainer()
+    if (!target)
+      throw new Error('[xh] Drawer 视口模态浮层需要显式可用的 Portal 容器')
+    this.portal = createPortalLease({
+      source: this,
+      target,
+      roots: [backdrop, positioner],
+    })
+    this.requestUpdate()
+  }
+
+  private restoreViewportPortal(): void {
+    const portal = this.portal
+    if (!portal)
+      return
+    this.portal = null
+    try {
+      portal.release()
+    }
+    finally {
+      if (this.isConnected)
+        this.requestUpdate()
+    }
   }
 
   // 只交注册函数，层的入栈出栈由机器的 trackOverlay 效应跟着展开态做。
@@ -194,8 +234,15 @@ export class XhDrawerElement extends XhElement {
     exit.update(open)
     const visible = exit.visible
 
-    // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖
     const positioner = this.getPart('positioner')
+    // 局部抽屉以作者容器为坐标系；非模态继续原位且遮罩维持隐藏。
+    // 缺一个根时不做半搬运，仍让既有 Light-DOM 结构正常工作。
+    if (modal && !this.contained && (open || visible) && this.backdropNode && positioner)
+      this.mountViewportPortal(this.backdropNode, positioner)
+    else
+      this.restoreViewportPortal()
+
+    // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖
     if (positioner)
       this.setPartHidden(positioner, !visible)
     if (this.backdropNode)
@@ -210,6 +257,7 @@ export class XhDrawerElement extends XhElement {
     // 只在机器已经收起时才强收——元素被移动（remove 后立刻 append）时展开态不该被打断
     this.exit?.dispose()
     this.exit = null
+    this.restoreViewportPortal()
     if (this.ctrl.service.state.get() !== 'open')
       this.setPartHidden(this.contentNode, true)
     this.config = null // 重连时 ensureConfig 重建
