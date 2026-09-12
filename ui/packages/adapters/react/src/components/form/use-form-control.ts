@@ -12,21 +12,22 @@ export function useFormControlProps<T extends FormControlState>(props: T): T {
   const handle = useOptionalFormField()
   const field = useOptionalFieldContext()
 
-  const inherited: FormControlState | undefined = field
+  const fieldState: FormControlState | undefined = field
     ? {
         disabled: field.api.disabled,
         readOnly: field.api.readOnly,
         required: field.api.required,
         invalid: field.api.invalid,
       }
-    : form && handle
-      ? {
-          disabled: form.api.disabled,
-          readOnly: form.api.readOnly,
-          required: form.api.isFieldRequired(handle.name),
-          invalid: form.api.isFieldInvalid(handle.name),
-        }
-      : undefined
+    : undefined
+  const formState: FormControlState | undefined = form && handle
+    ? {
+        disabled: form.api.disabled,
+        readOnly: form.api.readOnly,
+        required: form.api.isFieldRequired(handle.name),
+        invalid: form.api.isFieldInvalid(handle.name),
+      }
+    : undefined
 
-  return { ...props, ...resolveFormControlState(props, inherited) }
+  return { ...props, ...resolveFormControlState(props, fieldState, formState) }
 }

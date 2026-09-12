@@ -21,4 +21,17 @@ describe('表单控件状态继承', () => {
       invalid: false,
     })
   })
+
+  it('字段层逐轴优先于表单层，未声明的轴继续回落到表单层', () => {
+    expect(resolveFormControlState(
+      { required: false },
+      { disabled: false, invalid: true },
+      { disabled: true, readOnly: true, required: true, invalid: false },
+    )).toEqual({
+      disabled: false,
+      readOnly: true,
+      required: false,
+      invalid: true,
+    })
+  })
 })

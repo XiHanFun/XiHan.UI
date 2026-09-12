@@ -5,6 +5,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, useId } from 'vue'
 import { slotPaints } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { useCheckbox } from './use-checkbox'
 
 type CheckboxProps = CheckboxSchema['props']
@@ -15,10 +16,10 @@ export const XhCheckbox = defineComponent({
     // 三态：true / false / 'indeterminate'。半选只能由外部给，点击不会切进去
     checked: { type: [Boolean, String] as PropType<CheckboxCheckedState>, default: undefined },
     defaultChecked: { type: [Boolean, String] as PropType<CheckboxCheckedState>, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
-    required: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
     /** 表单字段名；给了 hidden-input 才带 name 并参与提交 */
     name: { type: String, default: undefined },
     value: { type: String, default: undefined },
@@ -41,7 +42,7 @@ export const XhCheckbox = defineComponent({
       emit('checked-change', details)
       emit('update:checked', details.checked)
     }
-    const { api } = useCheckbox(props as CheckboxProps, notify)
+    const { api } = useCheckbox(useFormControlProps(props) as CheckboxProps, notify)
     // 字段的说明与校验状态要落在焦点所在的那颗按钮上：给了文字时封装根是外面那个 <label>，
     // XhFieldControl 把整份接线合在它身上，而读屏只念焦点所在节点的描述
     const fieldWiring = useFieldStateWiring()
@@ -55,10 +56,10 @@ export const XhCheckbox = defineComponent({
       const text = slots.default?.()
       const labelled = slotPaints(text)
       const box = h('button', fieldLabel.value({
+        ...fieldWiring.value,
         ...api.value.getRootProps() as Record<string, unknown>,
         // 有文字时名字改由它承担；没文字时不写，作者写在组件上的 aria-label 照旧生效
         ...(labelled ? { 'aria-labelledby': textId } : null),
-        ...fieldWiring.value,
       }), [
         h('span', api.value.getIndicatorProps() as Record<string, unknown>, slots.indicator?.()),
         props.name === undefined ? null : h('input', api.value.getHiddenInputProps() as Record<string, unknown>),

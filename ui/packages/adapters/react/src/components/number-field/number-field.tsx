@@ -6,6 +6,7 @@ import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { NumberFieldProvider, useNumberFieldContext } from './context'
 import { useNumberField } from './use-number-field'
 
@@ -68,7 +69,7 @@ export function XhNumberFieldRoot({
   children,
   ...rest
 }: XhNumberFieldRootProps): ReactNode {
-  const ctx = useNumberField({
+  const ctx = useNumberField(useFormControlProps({
     value,
     defaultValue,
     min,
@@ -88,7 +89,7 @@ export function XhNumberFieldRoot({
     parse,
     format,
     onValueChange,
-  } as NumberFieldProps)
+  } as NumberFieldProps))
   const api = ctx.api
   return (
     <NumberFieldProvider value={ctx}>
@@ -168,8 +169,8 @@ export function XhNumberFieldInput({ ...rest }: XhNumberFieldInputProps): ReactN
     <input
       {...mergeReactProps(
         fieldLabel({
-          ...ctx.api.getInputProps() as Record<string, unknown>,
           ...fieldWiring,
+          ...ctx.api.getInputProps() as Record<string, unknown>,
         }),
         rest as Record<string, unknown>,
       )}

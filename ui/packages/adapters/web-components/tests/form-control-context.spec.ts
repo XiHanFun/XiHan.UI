@@ -19,6 +19,47 @@ function textField(markup = ''): string {
     </xh-text-field>`
 }
 
+type AtomicControl = 'checkbox' | 'switch' | 'radio-group' | 'number-field'
+
+const ATOMIC_CONTROLS: AtomicControl[] = ['checkbox', 'switch', 'radio-group', 'number-field']
+
+function atomicControl(kind: AtomicControl, markup = ''): string {
+  if (kind === 'checkbox') {
+    return `<xh-checkbox ${markup}><button data-xh-part="root"><span data-xh-part="indicator"></span></button></xh-checkbox>`
+  }
+  if (kind === 'switch') {
+    return `<xh-switch ${markup}><button data-xh-part="root"><span data-xh-part="thumb"></span></button></xh-switch>`
+  }
+  if (kind === 'radio-group') {
+    return `<xh-radio-group ${markup}><div data-xh-part="root">
+      <div data-xh-part="item" value="a"><input data-xh-part="hidden-input"><span data-xh-part="indicator"></span><span data-xh-part="item-text">甲</span></div>
+    </div></xh-radio-group>`
+  }
+  return `<xh-number-field ${markup}><div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div></xh-number-field>`
+}
+
+async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabled: boolean): Promise<void> {
+  if (kind === 'number-field') {
+    const input = form.querySelector('xh-number-field input') as HTMLInputElement
+    await vi.waitFor(() => expect(input.disabled).toBe(enabled))
+    expect(input.readOnly).toBe(enabled)
+    expect(input.required).toBe(enabled)
+    expect(input.getAttribute('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  let root: HTMLElement | null = null
+  await vi.waitFor(() => {
+    root = form.querySelector<HTMLElement>(kind === 'radio-group' ? '[role="radiogroup"]' : `button[role="${kind}"]`)
+    expect(root?.getAttribute('aria-readonly')).toBe(String(enabled))
+  })
+  const disabled = kind === 'radio-group'
+    ? form.querySelector('[role="radio"]')?.getAttribute('aria-disabled') === 'true'
+    : (root! as HTMLButtonElement).disabled
+  expect(disabled).toBe(enabled)
+  expect(root!.getAttribute('aria-invalid')).toBe(String(enabled))
+  expect(root!.getAttribute('aria-required')).toBe(String(enabled))
+}
+
 function formMarkup(content: string): string {
   return `<form data-xh-part="root"><div data-xh-part="field-group" name="email">${content}</div></form>`
 }
@@ -94,5 +135,23 @@ describe('form control context 接线', () => {
     expect(input.required).toBe(false)
     expect(input.getAttribute('aria-readonly')).toBe('false')
     expect(input.getAttribute('aria-required')).toBe('false')
+  })
+
+  it.each(ATOMIC_CONTROLS)('%s 直接继承 Form 的四条状态轴', async (kind) => {
+    await expectAtomicState(makeForm(atomicControl(kind)), kind, true)
+  })
+
+  it.each(ATOMIC_CONTROLS)('%s 以最近 Field 的显式 false 顶掉 Form', async (kind) => {
+    const field = `<xh-field disabled="false" read-only="false" required="false" invalid="false">
+      <div data-xh-part="root"><div data-xh-part="control">${atomicControl(kind)}</div></div>
+    </xh-field>`
+    await expectAtomicState(makeForm(field), kind, false)
+  })
+
+  it.each(ATOMIC_CONTROLS)('%s 以实例显式 false 顶掉 Field 与 Form', async (kind) => {
+    const field = `<xh-field disabled read-only required invalid>
+      <div data-xh-part="root"><div data-xh-part="control">${atomicControl(kind, 'disabled="false" read-only="false" required="false" invalid="false"')}</div></div>
+    </xh-field>`
+    await expectAtomicState(makeForm(field), kind, false)
   })
 })

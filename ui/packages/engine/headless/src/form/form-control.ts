@@ -20,19 +20,20 @@ export interface ResolvedFormControlState {
 }
 
 /**
- * Form/Field 状态的唯一优先级规则：实例值 > 最近的继承值 > 内建 false。
+ * Form/Field 状态的唯一优先级规则：实例值 > Field > Form > 内建 false。
  *
  * 这条是无头层的纯计算；Vue/React 的 Context 与 Web Components 的 DOM 发现
  * 只负责把最近状态接到这里，不能各自再复制一套 `??` 规则。
  */
 export function resolveFormControlState(
   instance: FormControlState,
-  inherited: FormControlState | undefined,
+  field: FormControlState | undefined,
+  form?: FormControlState,
 ): ResolvedFormControlState {
   return {
-    disabled: instance.disabled ?? inherited?.disabled ?? false,
-    readOnly: instance.readOnly ?? inherited?.readOnly ?? false,
-    required: instance.required ?? inherited?.required ?? false,
-    invalid: instance.invalid ?? inherited?.invalid ?? false,
+    disabled: instance.disabled ?? field?.disabled ?? form?.disabled ?? false,
+    readOnly: instance.readOnly ?? field?.readOnly ?? form?.readOnly ?? false,
+    required: instance.required ?? field?.required ?? form?.required ?? false,
+    invalid: instance.invalid ?? field?.invalid ?? form?.invalid ?? false,
   }
 }
