@@ -107,11 +107,11 @@
   },
   "coarseTargets": {
     "alert:close-trigger": {
-      "px": 28,
+      "px": 32,
       "why": "提示条右上角的叉，手指直接落上去"
     },
     "back-top:trigger": {
-      "px": 32,
+      "px": 36,
       "why": "浮在页面角上的回顶钮，手指直接落上去"
     },
     "button:root": {
@@ -124,11 +124,11 @@
       "pending": "圆点直径 8px、点间距 4px，外扩到 44 要每侧 18px，相邻两点的命中区会大幅叠上；块轴单扩到 44 只会得到 8×44 的一条竖带，行内那一边仍是 8px"
     },
     "carousel:next-trigger": {
-      "px": 32,
+      "px": 36,
       "why": "走马灯的翻页钮，手指直接落上去"
     },
     "carousel:prev-trigger": {
-      "px": 32,
+      "px": 36,
       "why": "走马灯的翻页钮，手指直接落上去"
     },
     "checkbox:root": {
@@ -136,19 +136,19 @@
       "why": "勾选框本体，手指直接落上去"
     },
     "clipboard:copy-trigger": {
-      "px": 32,
+      "px": 36,
       "why": "复制钮，手指直接落上去"
     },
     "dialog:close-trigger": {
-      "px": 28,
+      "px": 32,
       "why": "对话框右上角的叉，手指直接落上去"
     },
     "download-trigger:root": {
-      "px": 28,
+      "px": 32,
       "why": "下载钮本体，手指直接落上去；28px 是 sm 档，md 与 lg 档更高"
     },
     "drawer:close-trigger": {
-      "px": 28,
+      "px": 32,
       "why": "抽屉右上角的叉，手指直接落上去"
     },
     "float-button:trigger": {
@@ -156,7 +156,7 @@
       "why": "浮在页面角上的动作钮，手指直接落上去"
     },
     "notification:item-close-trigger": {
-      "px": 28,
+      "px": 32,
       "why": "通知卡片右上角的叉，手指直接落上去"
     },
     "number-field:decrement-trigger": {
@@ -168,23 +168,23 @@
       "why": "数字输入的增量按钮，手指直接落上去"
     },
     "pagination:item": {
-      "px": 32,
+      "px": 36,
       "why": "页码格，手指直接落上去"
     },
     "pagination:next-trigger": {
-      "px": 32,
+      "px": 36,
       "why": "翻页钮，手指直接落上去"
     },
     "pagination:prev-trigger": {
-      "px": 32,
+      "px": 36,
       "why": "翻页钮，手指直接落上去"
     },
     "popover:close-trigger": {
-      "px": 28,
+      "px": 32,
       "why": "浮层右上角的叉，手指直接落上去"
     },
     "segmented:item": {
-      "px": 32,
+      "px": 36,
       "why": "分段控件的每一段，手指直接落上去"
     },
     "switch:root": {
@@ -192,11 +192,11 @@
       "why": "开关本体，手指直接落上去"
     },
     "tabs:trigger": {
-      "px": 32,
+      "px": 36,
       "why": "页签，手指直接落上去"
     },
     "timer:control": {
-      "px": 32,
+      "px": 36,
       "why": "计时器的起停钮，手指直接落上去"
     },
     "toast:close-trigger": {
@@ -204,15 +204,15 @@
       "why": "轻提示行尾的叉，手指直接落上去"
     },
     "toggle-group:item": {
-      "px": 32,
+      "px": 36,
       "why": "切换组的每一格，手指直接落上去"
     },
     "toggle:root": {
-      "px": 28,
+      "px": 24,
       "why": "切换钮本体，手指直接落上去"
     },
     "tour:close-trigger": {
-      "px": 28,
+      "px": 32,
       "why": "漫游卡片右上角的叉，手指直接落上去"
     }
   }

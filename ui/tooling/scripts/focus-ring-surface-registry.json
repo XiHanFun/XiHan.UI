@@ -425,41 +425,6 @@
       "ratio": 1,
       "ring": "off"
     },
-    "toggle [data-part='root'][data-scope='toggle'][data-state='on']": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 2.89,
-      "ring": "poured"
-    },
-    "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='ghost']": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 2.89,
-      "ring": "poured"
-    },
-    "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='outline']": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 2.89,
-      "ring": "poured"
-    },
-    "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='solid']": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='subtle']": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 2.89,
-      "ring": "poured"
-    },
     "toggle-group [data-part='root'][data-scope='toggle-group'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
       "parts": [
         "item"

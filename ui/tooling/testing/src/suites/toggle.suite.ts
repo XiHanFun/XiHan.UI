@@ -30,6 +30,23 @@ export const toggleSuite: ConformanceSuite = {
             'aria-pressed': 'false',
             'data-state': 'off',
             'data-disabled': null,
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
+          },
+        },
+      },
+    },
+    {
+      name: '图标与尺寸映射到动作控件视觉角色',
+      spec: { adr: 'action-control-family' },
+      props: { iconOnly: true, size: 'lg' },
+      initial: {
+        parts: {
+          root: {
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-size': 'lg',
           },
         },
       },

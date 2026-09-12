@@ -1,6 +1,6 @@
 # Toggle <Badge type="info" text="切换按钮" />
 
-一颗有记忆的按钮：按下去留在按下态，再按一下弹回来。状态由 `aria-pressed` 表达。
+在按下和未按下状态之间切换的按钮。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/toggle" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-按下态由 pressed 表达，非受控时组件自己维护
+切换按钮状态
 
 <XhDemo src="toggle/01-basic" />
 
@@ -26,85 +26,70 @@
 
 ### 禁用
 
-disabled 同时挡住指针与键盘，按下态保持原样
+保留禁用前的状态
 
 <XhDemo src="toggle/02-disabled" />
 
-### 排成一组
-
-多个独立的 toggle 各管各的按下态；要互斥或单一 Tab 位请改用切换按钮组
-
-<XhDemo src="toggle/03-group" />
-
 ### 形态
 
-variant 决定颜色怎么用，未按下与已按下两档一起看才完整
+设置切换按钮外观
 
 <XhDemo src="toggle/04-variant" />
 
 ### 语气
 
-tone 决定用哪族颜色，与 variant 正交；这里固定 solid 形态并置于按下态，语气差别最明显
+设置按下状态的颜色
 
 <XhDemo src="toggle/05-tone" />
 
 ### 尺寸
 
-size 只改高度、内边距与字号，不写就是缺省档
+提供三种尺寸
 
 <XhDemo src="toggle/06-size" />
 
 ### 图标
 
-按钮内容随便写，图标与文字之间的空隙由 --xh-toggle-gap 给；只放图标时按钮没有可见文字，名字得由 aria-label 补上
+支持图标标签和仅图标按钮
 
 <XhDemo src="toggle/07-icon" />
 
-### 变化回调
+### 受控状态
 
-pressed-change 每次带着 details 报一次按下意图；不做受控绑定时它就是拿到新值的唯一出口
+由外部状态控制按下值
 
 <XhDemo src="toggle/08-events" />
-
-### 请求在途
-
-受控的 pressed 不写回就不会动，在途期间来的意图直接丢掉；忙碌反馈由 aria-busy 与一枚转圈补在按钮上
-
-<XhDemo src="toggle/09-pending" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 开关一项立即生效的格式或视图（加粗、显示网格、静音）。
-- 状态属于工具而不属于表单：它不参与表单提交。
+- 切换立即生效的格式、视图或工具状态。
+- 操作需要保留当前状态时。
 
 ### 何时不用
 
-- 表示一项设置的开与关、且要随表单提交：用[开关](./switch)或[复选框](./checkbox)。
-- 几个选项互斥：用[切换按钮组](./toggle-group)——多个独立的切换按钮各管各的按下态，凑不出互斥。
-- 按下去只发生一次动作、不留状态：那是[按钮](./button)。
+- 需要提交表单值时，使用[开关](./switch)或[复选框](./checkbox)。
+- 需要互斥选择时，使用[切换按钮组](./toggle-group)。
+- 只执行一次操作时，使用[按钮](./button)。
 
 ### 特性
 
-- 形态 · 语气 · 尺寸三轴与按钮同源。
-- 受控时宿主不写回 `pressed` 值就不动，在途期间来的意图直接丢掉。
-- `disabled` 同时挡住指针与键盘，按下态保持原样。
-
-### 组合
-
-- 排成一条工具条：外面套[工具栏](./toolbar)拿到方向键导航。
-- 只放图标时配[文字提示](./tooltip)。
+- 使用 `aria-pressed` 表达当前状态。
+- 支持受控和非受控状态。
+- 支持形态、语气、尺寸、仅图标和全宽外观。
+- 禁用后保留当前按下状态。
 
 ### 最佳实践
 
-- 只放图标时给 `aria-label`，名字不能靠图形猜。
-- 按下与未按下的差别要能在灰度下看出来，别只靠颜色。
+- 标签应说明切换后影响的功能。
+- 仅图标按钮必须提供 `aria-label`。
+- 按下状态不能只依赖颜色区分。
 
 ### 反模式
 
-- 用它表达"当前在哪个标签页"：那是[标签页](./tabs)的事。
-- 请求在途时让按钮先翻状态再回滚：受控绑定不写回，用户看到的就是稳定的。
+- 不要用切换按钮表示当前标签页。
+- 不要将切换按钮作为表单开关使用。
 
 ## API 参考
 
@@ -203,6 +188,10 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 | `root` | `data-state` | 'on' \| 'off' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
+| `root` | `data-xh-action-control` | '' |
+| `root` | `data-xh-action-display` | 'always' |
+| `root` | `data-xh-action-profile` | 'icon' \| 'text' |
+| `root` | `data-xh-action-size` | props.size |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -211,30 +200,29 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-toggle-bg` | `root` | `background` | `default` | `transparent` | toggle 的 root 部件 background 覆盖槽。 |
-| `--xh-toggle-bg-hover` | `root` | `background` | `hover` | `--xh-bg-subtle-hover` | toggle 的 root 部件 background 覆盖槽。 |
-| `--xh-toggle-bg-on` | `root` | `background` | `hover`<br>`state=on` | `--xh-bg-subtle-active` | toggle 的 root 部件 background 覆盖槽。 |
-| `--xh-toggle-fg` | `root` | `color` | `default` | `--xh-fg-default` | toggle 的 root 部件 color 覆盖槽。 |
-| `--xh-toggle-fg-on` | `root` | `color` | `state=on` | `--xh-fg-default` | toggle 的 root 部件 color 覆盖槽。 |
-| `--xh-toggle-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-font-lg`<br>`--xh-control-font-sm`<br>`--xh-text-label-size` | toggle 的 root 部件 font-size 覆盖槽。 |
+| `--xh-toggle-bg` | `root` | `background-color` | `default`<br>`disabled`<br>`focus-visible` | `--xh-bg-subtle` | toggle 的 root 部件 background-color 覆盖槽。 |
+| `--xh-toggle-bg-active` | `root` | `background-color` | `active`<br>`disabled`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle-active` | toggle 的 root 部件 background-color 覆盖槽。 |
+| `--xh-toggle-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle-hover` | toggle 的 root 部件 background-color 覆盖槽。 |
+| `--xh-toggle-bg-on` | `root` | `background-color` | `disabled`<br>`focus-visible`<br>`state=on` | `--xh-_tone-subtle` | toggle 的 root 部件 background-color 覆盖槽。 |
+| `--xh-toggle-bg-on-active` | `root` | `background-color` | `active`<br>`disabled`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=on` | `--xh-_tone-subtle-active` | toggle 的 root 部件 background-color 覆盖槽。 |
+| `--xh-toggle-bg-on-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=on` | `--xh-_tone-subtle-hover` | toggle 的 root 部件 background-color 覆盖槽。 |
+| `--xh-toggle-border` | `root` | `border`<br>`border-color` | `active`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `transparent` | toggle 的 root 部件 border、border-color 覆盖槽。 |
+| `--xh-toggle-border-on` | `root` | `border`<br>`border-color` | `active`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=on` | `transparent` | toggle 的 root 部件 border、border-color 覆盖槽。 |
+| `--xh-toggle-fg` | `root` | `color` | `active`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | toggle 的 root 部件 color 覆盖槽。 |
+| `--xh-toggle-fg-on` | `root` | `color` | `active`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=on` | `--xh-_tone-fg` | toggle 的 root 部件 color 覆盖槽。 |
+| `--xh-toggle-font-size` | `root` | `font-size` | `default` | `--xh-_action-profile-font-size` | toggle 的 root 部件 font-size 覆盖槽。 |
 | `--xh-toggle-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | toggle 的 root 部件 font-weight 覆盖槽。 |
-| `--xh-toggle-gap` | `root` | `gap` | `default` | `--xh-control-gap-md` | toggle 的 root 部件 gap 覆盖槽。 |
-| `--xh-toggle-h` | `root` | `block-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | toggle 的 root 部件 block-size 覆盖槽。 |
-| `--xh-toggle-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | toggle 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-toggle-px` | `root` | `padding-inline` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-px-lg`<br>`--xh-control-px-md`<br>`--xh-control-px-sm` | toggle 的 root 部件 padding-inline 覆盖槽。 |
-| `--xh-toggle-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | toggle 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-toggle-shadow` | `root` | `box-shadow` | `disabled`<br>`not([data-disabled])`<br>`state=on`<br>`variant=solid` | `--xh-_toggle-highlight` | toggle 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-toggle-gap` | `root` | `gap` | `default` | `--xh-_action-profile-gap` | toggle 的 root 部件 gap 覆盖槽。 |
+| `--xh-toggle-h` | `root` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | toggle 的 root 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-toggle-icon-size` | `*`<br>`root` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-_action-profile-glyph-size` | toggle 的 *、root 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
+| `--xh-toggle-px` | `root` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | toggle 的 root 部件 padding-inline 覆盖槽。 |
+| `--xh-toggle-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | toggle 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-toggle-shadow` | `root` | `box-shadow` | `active`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=on` | `none` | toggle 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
-
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-### 响应式
-
-皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
 ### RTL
 

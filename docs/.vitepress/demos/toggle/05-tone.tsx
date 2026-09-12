@@ -1,4 +1,4 @@
-// 语气 | tone 决定用哪族颜色，与 variant 正交；这里固定 solid 形态并置于按下态，语气差别最明显
+// 语气 | 设置按下状态的颜色
 import type { ReactNode } from "react";
 import { XhToggle } from "@xihan-ui/react";
 

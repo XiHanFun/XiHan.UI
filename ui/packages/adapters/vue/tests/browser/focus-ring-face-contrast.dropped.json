@@ -617,7 +617,6 @@
   "[data-scope=\"toggle-group\"][data-part=\"item\"]:not([data-disabled]):hover": "写法挂不出来：:hover",
   "[data-scope=\"toggle-group\"][data-part=\"separator\"]": "部件不接焦点：toggle-group/separator",
   "[data-scope=\"toggle-group\"][data-part=\"separator\"][data-disabled]": "部件不接焦点：toggle-group/separator",
-  "[data-scope=\"toggle\"][data-part=\"root\"]:hover": "写法挂不出来：:hover",
   "[data-scope=\"tool-call\"][data-part=\"indicator\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"tool-call\"][data-part=\"root\"]": "部件不接焦点：tool-call/root",
   "[data-scope=\"tool-call\"][data-part=\"root\"][data-variant=\"ghost\"]": "部件不接焦点：tool-call/root",
