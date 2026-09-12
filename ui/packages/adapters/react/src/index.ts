@@ -2544,7 +2544,7 @@ export { XhWatermarkContent, XhWatermarkRoot } from './components/watermark/wate
 export type { XhWatermarkContentProps, XhWatermarkRootProps } from './components/watermark/watermark'
 // @xihan-ui/react —— React 适配器。
 export { mergeXhConfig, useXhConfig, withXhConfig, XhConfigProvider } from './config/config'
-export type { XhConfig, XhConfigProviderProps, XhTranslationOverrides } from './config/config'
+export type { XhConfig, XhConfigProviderProps, XhTranslationOverrides, XhVisualEnvironmentConfig } from './config/config'
 export { carriesOwnAnatomy, mergeIntoChild, renderAsChild } from './runtime/as-child'
 export type { AsChildProps } from './runtime/as-child'
 export { createReactRuntime } from './runtime/create-react-runtime'

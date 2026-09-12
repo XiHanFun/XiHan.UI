@@ -57,11 +57,14 @@ pnpm add @xihan-ui/vue @xihan-ui/tokens @xihan-ui/styles
 All three adapters share the same tokens and skins — import them once at the entry point:
 
 ```ts
-import { createThemeController } from '@xihan-ui/tokens/runtime'
+import { createVisualEnvironmentController } from '@xihan-ui/tokens/runtime'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-createThemeController({ storageKey: 'app-theme' })
+createVisualEnvironmentController({
+  root: document.documentElement,
+  initial: { mode: 'system', motion: 'system', transparency: 'system' },
+})
 ```
 
 Vue:

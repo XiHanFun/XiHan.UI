@@ -5,17 +5,26 @@
 // 这里给两条出口：setXhConfig 管整页，<xh-config> 管一棵子树，语义与 Vue 适配器的
 // provideXhConfig 对齐（那边是组件树，这边是 DOM 树）。
 import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
+import type {
+  VisualEnvironmentController,
+  VisualEnvironmentControllerOptions,
+} from '@xihan-ui/tokens/runtime'
 import { mergeXhConfig as mergeBase, withXhConfigBase } from '@xihan-ui/headless'
-import { setMotionOverride } from '@xihan-ui/motion'
+import { createVisualEnvironmentController } from '@xihan-ui/tokens/runtime'
 
 export type { XhTranslationOverrides }
 
-/** Web Components 的应用/子树配置；Portal 容器以 property-only 解析器表达。 */
+type BindVisualRoot<T> = T extends unknown ? Omit<T, 'parent' | 'root'> & { root: Element } : never
+export type XhVisualEnvironmentConfig = BindVisualRoot<VisualEnvironmentControllerOptions>
+
+/** Web Components 的应用/子树配置；Portal 容器与视觉环境以 property-only 值表达。 */
 export interface XhConfig extends XhConfigBase {
   portalContainer?: () => Element | null
+  visualEnvironment?: XhVisualEnvironmentConfig
 }
 
 let current: XhConfig = {}
+let currentVisualEnvironment: VisualEnvironmentController | undefined
 const listeners = new Set<() => void>()
 
 /** 配置变了就叫一遍：全局那份改了、任一 <xh-config> 改了或进出文档，都走这里。 */
@@ -24,16 +33,13 @@ export function notifyXhConfigChange(): void {
 }
 
 /** 覆写全局配置。整份替换，不做深合并——想改一处就把整份拿去改。 */
-export function setXhConfig(next: XhConfig): void {
-  current = next
-  applyMotionOverride(next)
+export function setXhConfig(config: XhConfig): void {
+  currentVisualEnvironment?.dispose()
+  currentVisualEnvironment = config.visualEnvironment
+    ? createVisualEnvironmentController(config.visualEnvironment)
+    : undefined
+  current = config
   notifyXhConfigChange()
-}
-
-/** 配置里写了 motion 才调 setMotionOverride；缺席不碰——别的地方设的 override 不在这里清。 */
-export function applyMotionOverride(config: XhConfig): void {
-  if (config.motion !== undefined)
-    setMotionOverride(config.motion)
 }
 
 export function getXhConfig(): Readonly<XhConfig> {
@@ -59,6 +65,7 @@ export function mergeXhConfig(base: XhConfig | undefined, over: XhConfig | undef
 /** `<xh-config>` 认领这个接口，配置解析沿 DOM 祖先链找它，不必反向依赖元素类。 */
 export interface XhConfigScope extends Element {
   readonly xhConfig: XhConfig
+  readonly visualEnvironmentController?: VisualEnvironmentController
 }
 
 function isConfigScope(node: Element): node is XhConfigScope {

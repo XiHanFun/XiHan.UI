@@ -85,7 +85,8 @@
     "@xihan-ui/headless": "workspace:^",
     "@xihan-ui/motion": "workspace:^",
     "@xihan-ui/pointer": "workspace:^",
-    "@xihan-ui/position": "workspace:^"
+    "@xihan-ui/position": "workspace:^",
+    "@xihan-ui/tokens": "workspace:^"
   },
   "devDependencies": {
     "@vitest/browser": "catalog:",
@@ -97,7 +98,6 @@
     "@xihan-ui/sound": "workspace:*",
     "@xihan-ui/styles": "workspace:*",
     "@xihan-ui/testing": "workspace:*",
-    "@xihan-ui/tokens": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
     "jsdom": "catalog:",
     "playwright": "catalog:",

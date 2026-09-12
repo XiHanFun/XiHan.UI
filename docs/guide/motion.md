@@ -100,14 +100,27 @@ const off = onMotionPreferenceChange(preference => console.log(preference));
 
 这是仓内唯一的探测通道：`@xihan-ui/core` 的 `RuntimeConfig.reducedMotion`（退场租约、贴底滚动）与平滑滚动、`headless` 的数字动画、反馈服务的加载弧线与 `backgrounds` 的画面都经 `resolveMotionPreference` 读，应用级 override 一处设、处处生效。门禁 `check-reduced-motion-channel` 守着：除 motion 包自身外，源码里不许再出现 `matchMedia('(prefers-reduced-motion')`。
 
-### 减弱动效的两步
+### 七轴控制器统一入口
 
-JS 与 CSS 是两条线，应用要减弱动效得各走一步：
+应用根只设置一次视觉环境，解析后的 motion 会同时投影到 DOM，并经显式 sink 驱动 JS 动画、Presence 与平滑滚动：
 
-1. **JS 侧**：在全局配置里写 `motion: 'reduce'`（Vue `provideXhConfig({ motion: 'reduce' })`，WC `setXhConfig({ motion: 'reduce' })` 或 `<xh-config motion="reduce">`），适配器收到就调 `setMotionOverride`；不经配置直接调 `setMotionOverride('reduce')` 也一样。配置里没写这个字段就不碰 override。
-2. **CSS 侧**：把 `data-motion="reduce"` 打到容器上。`tokens.css` 在 `@media (prefers-reduced-motion: reduce)` 之外还生成一份 `:where([data-motion='reduce'])` 块，重映射同一批 `--xh-motion-*` 语义令牌（时长 1ms、位移 0、缩放 1）。打在 `<html>` 上即全局，打在某个容器上即局部。
+```ts
+import { setMotionOverride } from "@xihan-ui/motion";
+import {
+  createMotionOverrideSink,
+  createVisualEnvironmentController,
+} from "@xihan-ui/tokens/runtime";
 
-配置不绑 DOM 节点，所以第二步由作者自己打；系统开了 prefers-reduced-motion 时两条线都自动降级，不必做任何事。
+const visual = createVisualEnvironmentController({
+  root: document.documentElement,
+  motionSink: createMotionOverrideSink(setMotionOverride),
+  initial: { motion: "system" },
+});
+
+visual.setPreference({ motion: "reduce" });
+```
+
+`motionSink` 只允许绑定 `documentElement` 根作用域。局部 VisualEnvironment 仍会写 `data-motion="reduce"`，让该子树的 CSS 令牌降级；它不会改全局 JS override，也不会影响兄弟树。需要直接控制全局 JS 且不使用视觉环境时，仍可显式调用 `setMotionOverride`。
 
 ## 播一段
 

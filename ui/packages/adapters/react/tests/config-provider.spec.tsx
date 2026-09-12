@@ -6,6 +6,7 @@
 // withXhConfig 拿 Proxy 接管 translations / locale / size 三个键，而 useMachine 那一处会
 // 展开 props（{ ...props }）——展开只带走自有键，作者没写的那几个于是原地蒸发，
 // 组件回落到内建英文。这一档没有任何门禁看得见：check-config-wiring 只核「有没有调 withXhConfig」。
+import { getMotionOverride, setMotionOverride } from '@xihan-ui/motion'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -21,8 +22,10 @@ beforeEach(() => {
 afterEach(() => {
   act(() => root?.unmount())
   host?.remove()
+  document.body.innerHTML = ''
   host = null
   root = null
+  setMotionOverride(null)
 })
 
 function mount(node: React.ReactNode): void {
@@ -75,5 +78,37 @@ describe('全局配置到达机器', () => {
       </XhConfigProvider>,
     )
     expect(document.querySelector('[data-scope="select"][data-part="root"]')?.getAttribute('data-size')).toBe('lg')
+  })
+})
+
+describe('xhConfigProvider · visualEnvironment', () => {
+  it('七轴绑定投影到显式 root，局部 motion 不污染全局 override', () => {
+    const scope = document.createElement('section')
+    document.body.append(scope)
+    setMotionOverride('no-preference')
+    mount(
+      <XhConfigProvider
+        config={{
+          visualEnvironment: {
+            root: scope,
+            initial: {
+              mode: 'dark',
+              density: 'compact',
+              dir: 'rtl',
+              contrast: 'more',
+              motion: 'reduce',
+              transparency: 'reduce',
+            },
+          },
+        }}
+      >
+        <span>内容</span>
+      </XhConfigProvider>,
+    )
+    expect(scope.getAttribute('data-theme')).toBe('dark')
+    expect(scope.getAttribute('data-density')).toBe('compact')
+    expect(scope.getAttribute('data-motion')).toBe('reduce')
+    expect(scope.getAttribute('data-transparency')).toBe('reduce')
+    expect(getMotionOverride()).toBe('no-preference')
   })
 })

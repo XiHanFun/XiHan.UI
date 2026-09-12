@@ -1,24 +1,24 @@
-import type { EnvSignals } from './env'
 import type { ThemePreference, ThemeState } from './types'
-import { applyThemeAttrs } from './apply'
-import { createEnvSignals, SSR_ENV } from './env'
-import { resolveTheme } from './resolve'
+import type {
+  VisualEnvironmentController,
+  VisualEnvironmentStorageError,
+} from './visual-controller'
+import { pickThemeState } from './resolve'
+import { createVisualEnvironmentController } from './visual-controller'
 
 type Cleanup = () => void
 
-function isSSR(): boolean {
-  return typeof document === 'undefined' || typeof window === 'undefined'
-}
-
-export interface ThemeControllerOptions {
-  /** 应用属性的根元素，默认 document.documentElement。 */
+interface ThemeControllerBaseOptions {
   root?: Element
-  /** 持久化偏好的 storage 键；不传则不持久化。 */
-  storageKey?: string
-  /** 初始偏好。 */
   initial?: ThemePreference
+  parent?: ThemeController
   win?: Window
 }
+
+export type ThemeControllerOptions = ThemeControllerBaseOptions & (
+  | { storageKey?: undefined, onStorageError?: undefined }
+  | { storageKey: string, onStorageError: (detail: VisualEnvironmentStorageError) => void }
+)
 
 export interface ThemeController {
   getState: () => ThemeState
@@ -28,78 +28,56 @@ export interface ThemeController {
   dispose: () => void
 }
 
-function readStored(win: Window | undefined, key: string | undefined): ThemePreference {
-  if (!key || !win)
-    return {}
-  try {
-    const raw = win.localStorage.getItem(key)
-    return raw ? (JSON.parse(raw) as ThemePreference) : {}
-  }
-  catch {
-    return {}
-  }
-}
+const visualByTheme = new WeakMap<ThemeController, VisualEnvironmentController>()
 
-function writeStored(win: Window | undefined, key: string | undefined, pref: ThemePreference): void {
-  if (!key || !win)
-    return
-  try {
-    win.localStorage.setItem(key, JSON.stringify(pref))
-  }
-  catch {
-    // 隐私模式 / 配额满：忽略
-  }
-}
-
+/** 旧五轴 API 是 VisualEnvironmentController 的明确视图，不持有独立状态或解析器。 */
 export function createThemeController(opts: ThemeControllerOptions = {}): ThemeController {
-  const ssr = isSSR()
-  const win = ssr ? undefined : (opts.win ?? window)
-  const root = opts.root ?? (ssr ? undefined : document.documentElement)
-  const env: EnvSignals = win ? createEnvSignals(win) : SSR_ENV
-
-  let preference: ThemePreference = { ...readStored(win, opts.storageKey), ...opts.initial }
-  let state = resolveTheme(preference, env)
-  const subs = new Set<(s: ThemeState) => void>()
-
-  function commit(): void {
-    if (root)
-      applyThemeAttrs(root, state)
-    for (const fn of [...subs]) fn(state)
+  const parent = opts.parent ? visualByTheme.get(opts.parent) : undefined
+  if (opts.parent && !parent)
+    throw new TypeError('parent 必须由 createThemeController 创建')
+  const visualOptions = {
+    root: opts.root,
+    initial: opts.initial,
+    parent,
+    win: opts.win,
   }
-
-  function recompute(): void {
-    const next = resolveTheme(preference, env)
-    // 五维全等则不触发
-    if (
-      next.mode === state.mode && next.brand === state.brand
-      && next.density === state.density && next.dir === state.dir && next.contrast === state.contrast
-    ) {
-      return
-    }
-    state = next
-    commit()
-  }
-
-  if (root)
-    applyThemeAttrs(root, state)
-
-  const unsub = env.subscribe(recompute)
-
-  return {
-    getState: () => state,
-    getPreference: () => preference,
-    setPreference(patch) {
-      preference = { ...preference, ...patch }
-      writeStored(win, opts.storageKey, preference)
-      recompute()
+  const visual = opts.storageKey
+    ? createVisualEnvironmentController({
+        ...visualOptions,
+        storageKey: opts.storageKey,
+        onStorageError: opts.onStorageError!,
+      })
+    : createVisualEnvironmentController(visualOptions)
+  const controller: ThemeController = {
+    getState: () => pickThemeState(visual.getState()),
+    getPreference: () => {
+      const preference = visual.getPreference()
+      return {
+        mode: preference.mode,
+        brand: preference.brand,
+        density: preference.density,
+        dir: preference.dir,
+        contrast: preference.contrast,
+      }
     },
+    setPreference: patch => visual.setPreference(patch),
     subscribe(fn) {
-      subs.add(fn)
-      return () => void subs.delete(fn)
+      let previous = pickThemeState(visual.getState())
+      return visual.subscribe((nextVisual) => {
+        const next = pickThemeState(nextVisual)
+        if (
+          next.mode === previous.mode && next.brand === previous.brand
+          && next.density === previous.density && next.dir === previous.dir
+          && next.contrast === previous.contrast
+        ) {
+          return
+        }
+        previous = next
+        fn(next)
+      })
     },
-    dispose() {
-      unsub()
-      subs.clear()
-    },
+    dispose: () => visual.dispose(),
   }
+  visualByTheme.set(controller, visual)
+  return controller
 }

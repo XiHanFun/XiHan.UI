@@ -1,36 +1,54 @@
-import type { ColorMode, Contrast } from './types'
+import type { ColorMode, Contrast, Transparency, VisualMotion } from './types'
 
-// 系统媒体查询信号：prefers-color-scheme 与 prefers-contrast。
+/** 平台真实提供 media feature 的四个视觉轴。 */
 export interface EnvSignals {
   systemMode: () => ColorMode
   systemContrast: () => Contrast
+  systemMotion: () => VisualMotion
+  systemTransparency: () => Transparency
   subscribe: (fn: () => void) => () => void
 }
 
-// 默认窗口走 globalThis.window 而不是裸 window：默认参数在 hasMM 守卫之前求值，
-// 无 window 的宿主里裸 window 会抛 ReferenceError 而不是回落到无媒体查询那一支。
+type MediaQueryListLike = Pick<MediaQueryList, 'matches' | 'addEventListener' | 'removeEventListener'>
+
+const QUERIES = {
+  mode: '(prefers-color-scheme: dark)',
+  contrast: '(prefers-contrast: more)',
+  motion: '(prefers-reduced-motion: reduce)',
+  transparency: '(prefers-reduced-transparency: reduce)',
+} as const
+
+/** 每个系统轴只在这一处建立并订阅媒体查询。 */
 export function createEnvSignals(win: Window | undefined = globalThis.window): EnvSignals {
-  const hasMM = typeof win?.matchMedia === 'function'
-  const dark = hasMM ? win.matchMedia('(prefers-color-scheme: dark)') : null
-  const more = hasMM ? win.matchMedia('(prefers-contrast: more)') : null
+  const query = (value: string): MediaQueryListLike | null =>
+    typeof win?.matchMedia === 'function' ? win.matchMedia(value) : null
+  const dark = query(QUERIES.mode)
+  const more = query(QUERIES.contrast)
+  const reducedMotion = query(QUERIES.motion)
+  const reducedTransparency = query(QUERIES.transparency)
+  const signals = [dark, more, reducedMotion, reducedTransparency]
 
   return {
     systemMode: () => (dark?.matches ? 'dark' : 'light'),
-    systemContrast: () => (more?.matches ? 'more' : 'base'),
+    systemContrast: () => (more?.matches ? 'more' : 'default'),
+    systemMotion: () => (reducedMotion?.matches ? 'reduce' : 'default'),
+    systemTransparency: () => (reducedTransparency?.matches ? 'reduce' : 'default'),
     subscribe(fn) {
-      dark?.addEventListener('change', fn)
-      more?.addEventListener('change', fn)
+      for (const signal of signals)
+        signal?.addEventListener('change', fn)
       return () => {
-        dark?.removeEventListener('change', fn)
-        more?.removeEventListener('change', fn)
+        for (const signal of signals)
+          signal?.removeEventListener('change', fn)
       }
     },
   }
 }
 
-/** SSR 回退：无媒体查询，一律浅色/基线对比度。 */
+/** SSR 回退：没有平台信号时使用七轴基线，不伪造系统能力。 */
 export const SSR_ENV: EnvSignals = {
   systemMode: () => 'light',
-  systemContrast: () => 'base',
+  systemContrast: () => 'default',
+  systemMotion: () => 'default',
+  systemTransparency: () => 'default',
   subscribe: () => () => {},
 }

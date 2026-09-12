@@ -134,27 +134,29 @@ defineXhElements();
 
 ## 加上主题
 
-三种用法共用同一套主题运行时。它把五个属性写到根元素上，皮肤按属性选择器命中：
+三种用法共用同一套七轴视觉环境运行时，皮肤与 Portal 都消费同一组已解析属性：
 
 ```ts
-import { createThemeController } from "@xihan-ui/tokens/runtime";
+import { createVisualEnvironmentController } from "@xihan-ui/tokens/runtime";
 
-const theme = createThemeController({
-  storageKey: "app-theme", // 传了才持久化
-  initial: { mode: "system", density: "comfortable" },
+const visual = createVisualEnvironmentController({
+  root: document.documentElement,
+  storageKey: "app-visual-environment",
+  onStorageError: detail => console.error("视觉偏好持久化失败", detail),
+  initial: { mode: "system", density: "comfortable", motion: "system", transparency: "system" },
 });
 
 // 切到深色
-theme.setPreference({ mode: "dark" });
+visual.setPreference({ mode: "dark" });
 
 // 跟随系统
-theme.setPreference({ mode: "system" });
+visual.setPreference({ mode: "system" });
 
 // 订阅已定型的状态
-theme.subscribe(state => console.log(state.mode, state.density, state.dir));
+visual.subscribe(state => console.log(state.mode, state.density, state.motion, state.transparency));
 ```
 
-五个维度分别是色彩模式、品牌、密度、对比度、书写方向，详见[设计令牌与主题](./guide/theme)。
+七个维度分别是色彩模式、品牌、密度、书写方向、对比度、动效与透明材质，详见[设计令牌与主题](./guide/theme)。
 
 ## 接下来读什么
 

@@ -22,6 +22,26 @@ import { defineXhBackground } from "@xihan-ui/web-components/backgrounds";
 defineXhBackground();
 ```
 
+## 配置与视觉环境
+
+`<xh-config>` 本身就是 Light DOM 局部 scope，七轴一次声明后会投影为 Core Portal 能桥接的标准属性：
+
+```html
+<xh-config
+  mode="dark"
+  brand="acme"
+  density="compact"
+  direction="rtl"
+  contrast="more"
+  motion="reduce"
+  transparency="reduce"
+>
+  <my-workspace></my-workspace>
+</xh-config>
+```
+
+局部 `motion` 只降低该子树的 CSS 动效，不会隐式调用全局 `setMotionOverride`。应用根需要同时驱动 JS 动画时，用 `setXhConfig({ visualEnvironment: { root, initial, motionSink } })` 显式绑定；详见[设计令牌与主题](../guide/theme)。
+
 ## 结构由你写
 
 ```html

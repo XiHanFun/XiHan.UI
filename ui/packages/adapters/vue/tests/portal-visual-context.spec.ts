@@ -4,6 +4,7 @@ import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
 import {
+  provideXhConfig,
   XhButton,
   XhButtonGroup,
   XhDialogContent,
@@ -24,10 +25,13 @@ import { XhPortal } from '../src/runtime/portal'
 let app: App | null = null
 let host: HTMLElement | null = null
 
-async function mount(render: () => VNode | VNode[]): Promise<void> {
+async function mount(render: () => VNode | VNode[], parent: HTMLElement = document.body, setup?: () => void): Promise<void> {
   host = document.createElement('div')
-  document.body.append(host)
-  app = createApp({ setup: () => render })
+  parent.append(host)
+  app = createApp({ setup: () => {
+    setup?.()
+    return render
+  } })
   app.mount(host)
   await nextTick()
   await nextTick()
@@ -57,6 +61,7 @@ function popover(testId: string): VNode {
 afterEach(() => {
   app?.unmount()
   host?.remove()
+  document.body.innerHTML = ''
   document.getElementById('xh-portal-root')?.remove()
   document.querySelectorAll('[data-testid="portal-target"]').forEach(node => node.remove())
   app = null
@@ -64,17 +69,26 @@ afterEach(() => {
 })
 
 describe('vue Portal 的局部视觉环境', () => {
-  it('真实 Popover 逐项继承来源七轴与自定义属性', async () => {
-    await mount(() => h('section', {
-      'data-theme': 'dark',
-      'data-brand': 'acme',
-      'data-density': 'compact',
-      'data-contrast': 'more',
-      'data-motion': 'reduce',
-      'data-transparency': 'reduce',
-      'dir': 'rtl',
-      'style': '--business-color: rebeccapurple',
-    }, [popover('first')]))
+  it('provideXhConfig 的单一七轴设置经来源 scope 桥接到实例壳', async () => {
+    const scope = document.createElement('section')
+    scope.style.setProperty('--business-color', 'rebeccapurple')
+    document.body.append(scope)
+    await mount(
+      () => popover('first'),
+      scope,
+      () => provideXhConfig({ visualEnvironment: {
+        root: scope,
+        initial: {
+          mode: 'dark',
+          brand: 'acme' as never,
+          density: 'compact',
+          contrast: 'more',
+          motion: 'reduce',
+          transparency: 'reduce',
+          dir: 'rtl',
+        },
+      } }),
+    )
 
     const shell = shellOf('first')
     expect(shell.getAttribute('data-theme')).toBe('dark')
