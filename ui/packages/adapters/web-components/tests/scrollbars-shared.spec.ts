@@ -11,7 +11,10 @@ import { defineXhElements } from '../src/define'
 
 defineXhElements()
 
-interface Updatable extends HTMLElement { updateComplete: Promise<unknown> }
+interface Updatable extends HTMLElement {
+  updateComplete: Promise<unknown>
+  portalContainer?: () => Element | null
+}
 
 beforeEach(() => {
   document.body.innerHTML = ''
@@ -66,6 +69,7 @@ function mount(markup = MARKUP): Updatable {
   const el = document.createElement('xh-combobox') as Updatable
   el.innerHTML = markup
   el.setAttribute('default-open', '')
+  el.portalContainer = () => el
   document.body.appendChild(el)
   return el
 }
@@ -132,19 +136,22 @@ describe('条子挂在作者写的壳上', () => {
     expect(content.getAttribute('data-state')).toBe('open')
   })
 
-  it('作者换掉壳，整套跟过去', async () => {
+  it('浮层内容更新时条子留在原壳', async () => {
     const el = mount()
     await settle(el)
-    const before = positioner(el)
+    const shell = positioner(el)
+    const root = roots(el)[0]!
 
-    const next = document.createElement('div')
-    next.setAttribute('data-xh-part', 'positioner')
-    next.innerHTML = LIST
-    before.replaceWith(next)
+    const item = document.createElement('div')
+    item.setAttribute('data-xh-part', 'item')
+    item.setAttribute('value', 'orange')
+    item.textContent = '橙子'
+    el.querySelector('[data-xh-part="content"]')!.append(item)
     await settle(el)
 
     expect(roots(el)).toHaveLength(1)
-    expect(roots(el)[0]!.parentElement).toBe(next)
+    expect(roots(el)[0]).toBe(root)
+    expect(root.parentElement).toBe(shell)
   })
 })
 

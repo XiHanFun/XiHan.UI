@@ -1,4 +1,4 @@
-// 横竖两条 | 同一个容器挂两条，gutter 让各自在末端让出交叉口，XhScrollbarCorner 把那一格补上
+// 双轴滚动 | 同时显示横向和纵向滚动条
 import type { ReactNode } from "react";
 import { XhScrollbarCorner, XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from "@xihan-ui/react";
 import { useRef } from "react";
@@ -38,7 +38,6 @@ export default function Demo(): ReactNode {
         ))}
       </div>
 
-      {/* 交叉口补丁写在其中一条里即可，跟着这一条显隐 */}
       <XhScrollbarRoot scrollable={() => box.current} type="auto" gutter>
         <XhScrollbarTrack>
           <XhScrollbarThumb />

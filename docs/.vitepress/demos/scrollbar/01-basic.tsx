@@ -1,30 +1,28 @@
-// 挂在自己的滚动容器上 | 滚动容器归你，滚动条只要拿到它；把节点交给 scrollable 即可
+// 基础用法 | 为滚动容器添加滚动条
 import type { ReactNode } from "react";
 import { XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from "@xihan-ui/react";
 import { useRef } from "react";
 
-const lines = Array.from({ length: 40 }, (_, i) => `第 ${i + 1} 行内容`);
+const items = ["项目概览", "组件规范", "设计令牌", "无障碍", "交互状态", "主题配置", "发布记录", "迁移指南"];
 
-// 藏掉原生滚动条的外观，滚动能力一点不动
 const boxStyle = {
-  blockSize: "160px",
+  blockSize: "144px",
   overflow: "auto",
   scrollbarWidth: "none",
-  border: "1px solid var(--xh-border-default)",
   borderRadius: "var(--xh-shape-surface)",
-  padding: "8px",
+  background: "var(--xh-bg-subtle)",
+  padding: "12px",
 } as const;
 
 export default function Demo(): ReactNode {
   const box = useRef<HTMLDivElement>(null);
 
   return (
-    // 定位上下文归容器：滚动条是绝对定位的，贴的是最近那个定位祖先
     <div style={{ position: "relative", inlineSize: "240px" }}>
       <div ref={box} style={boxStyle}>
-        {lines.map(line => (
-          <div key={line} style={{ paddingBlock: "2px" }}>
-            {line}
+        {items.map(item => (
+          <div key={item} style={{ paddingBlock: "6px" }}>
+            {item}
           </div>
         ))}
       </div>
