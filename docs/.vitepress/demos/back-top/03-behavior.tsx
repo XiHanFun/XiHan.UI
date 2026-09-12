@@ -1,56 +1,42 @@
-// 滚动方式 | behavior=auto 一步跳回顶部，smooth 平滑滚过去
+// 滚动方式 | 平滑返回或立即返回
 import type { CSSProperties, ReactNode } from "react";
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/react";
-import { useState } from "react";
+import { useRef } from "react";
 
-const boxStyle: CSSProperties = {
+const sections = ["概览", "配置", "接口", "发布"];
+const panelStyle: CSSProperties = {
   blockSize: "200px",
   overflow: "auto",
-  padding: "12px",
-  border: "1px solid var(--xh-border-default)",
-  borderRadius: "8px",
+  paddingInline: "14px",
+  borderRadius: "var(--xh-shape-surface)",
+  background: "var(--xh-bg-subtle)",
 };
-
 const rootStyle = {
   "position": "absolute",
-  "--xh-back-top-inset-block": "12px",
-  "--xh-back-top-inset-inline": "12px",
+  "--xh-back-top-inset-block": "10px",
+  "--xh-back-top-inset-inline": "10px",
 } as CSSProperties;
 
 export default function Demo(): ReactNode {
-  const [smoothEl, setSmoothEl] = useState<HTMLElement | null>(null);
-  const [autoEl, setAutoEl] = useState<HTMLElement | null>(null);
+  const smoothEl = useRef<HTMLDivElement>(null);
+  const autoEl = useRef<HTMLDivElement>(null);
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", inlineSize: "100%" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", inlineSize: "min(640px, 100%)" }}>
       <div style={{ position: "relative" }}>
-        <div ref={setSmoothEl} style={boxStyle}>
-          {Array.from({ length: 16 }, (_, i) => i + 1).map(i => (
-            <p key={i} style={{ margin: "0 0 12px" }}>{`smooth · 第 ${i} 段`}</p>
-          ))}
+        <div ref={smoothEl} style={panelStyle}>
+          {sections.map(section => <p key={section} style={{ minBlockSize: "64px" }}>{`平滑 · ${section}`}</p>)}
         </div>
-        <XhBackTopRoot
-          target={smoothEl}
-          behavior="smooth"
-          size="sm"
-          style={rootStyle}
-        >
+        <XhBackTopRoot target={() => smoothEl.current} behavior="smooth" visibilityHeight={40} size="sm" style={rootStyle}>
           <XhBackTopTrigger />
         </XhBackTopRoot>
       </div>
 
       <div style={{ position: "relative" }}>
-        <div ref={setAutoEl} style={boxStyle}>
-          {Array.from({ length: 16 }, (_, i) => i + 1).map(i => (
-            <p key={i} style={{ margin: "0 0 12px" }}>{`auto · 第 ${i} 段`}</p>
-          ))}
+        <div ref={autoEl} style={panelStyle}>
+          {sections.map(section => <p key={section} style={{ minBlockSize: "64px" }}>{`立即 · ${section}`}</p>)}
         </div>
-        <XhBackTopRoot
-          target={autoEl}
-          behavior="auto"
-          size="sm"
-          style={rootStyle}
-        >
+        <XhBackTopRoot target={() => autoEl.current} behavior="auto" visibilityHeight={40} size="sm" style={rootStyle}>
           <XhBackTopTrigger />
         </XhBackTopRoot>
       </div>

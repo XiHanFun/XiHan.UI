@@ -1,28 +1,27 @@
-<!-- 基础用法 | 滚过 200px 按钮才露面，点它滚回顶部 -->
-<!-- 定位壳缺省钉在视口一角；这里把它改成钉在面板内，示例才不必占用整页 -->
-<div style="position: relative; inline-size: 100%">
+<!-- 基础用法 | 滚动后显示回到顶部按钮 -->
+<div style="position: relative; inline-size: min(560px, 100%)">
   <div
     id="back-top-basic-scroll"
     style="
       block-size: 240px;
       overflow: auto;
-      padding: 12px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      padding-inline: 16px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
     "
-  ></div>
+  >
+    <section style="min-block-size: 104px; padding-block: 16px"><strong>概览</strong><p style="color: var(--xh-fg-muted)">概览相关内容</p></section>
+    <section style="min-block-size: 104px; padding-block: 16px"><strong>安装</strong><p style="color: var(--xh-fg-muted)">安装相关内容</p></section>
+    <section style="min-block-size: 104px; padding-block: 16px"><strong>主题</strong><p style="color: var(--xh-fg-muted)">主题相关内容</p></section>
+    <section style="min-block-size: 104px; padding-block: 16px"><strong>发布</strong><p style="color: var(--xh-fg-muted)">发布相关内容</p></section>
+  </div>
 
-  <template id="back-top-basic-tpl">
-    <xh-back-top>
+  <template id="back-top-basic-template">
+    <xh-back-top visibility-height="120">
       <div
         data-xh-part="root"
-        style="
-          position: absolute;
-          --xh-back-top-inset-block: 12px;
-          --xh-back-top-inset-inline: 12px;
-        "
+        style="position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px"
       >
-        <!-- 按钮不写内容，皮肤画兜底的箭头字形 -->
         <button data-xh-part="trigger"></button>
       </div>
     </xh-back-top>
@@ -30,18 +29,8 @@
 </div>
 
 <script type="module">
-  const box = document.getElementById("back-top-basic-scroll");
-  // 撑出可滚动的高度
-  for (let i = 1; i <= 20; i++) {
-    const line = document.createElement("p");
-    line.style.margin = "0 0 12px";
-    line.textContent = `第 ${i} 段内容，往下滚。`;
-    box.append(line);
-  }
-
-  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
-  const template = document.getElementById("back-top-basic-tpl");
+  const template = document.getElementById("back-top-basic-template");
   const backTop = template.content.firstElementChild;
-  backTop.target = box;
+  backTop.target = document.getElementById("back-top-basic-scroll");
   template.replaceWith(backTop);
 </script>

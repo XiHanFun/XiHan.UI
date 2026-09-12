@@ -1,48 +1,28 @@
-<!-- 形态 | variant 换按钮的底色、描边与前景怎么用；这里把露面门槛设成 0，不滚也看得见 -->
+<!-- 变体 | 选择与所在表面匹配的样式 -->
 <script setup lang="ts">
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";
-import { ref } from "vue";
 
-const solidEl = ref<HTMLElement | null>(null);
-const outlineEl = ref<HTMLElement | null>(null);
-const ghostEl = ref<HTMLElement | null>(null);
-
-const boxStyle = {
-  blockSize: "160px",
-  overflow: "auto",
-  padding: "12px",
-  border: "1px solid var(--xh-border-default)",
-  borderRadius: "8px",
-};
-const rootStyle
-  = "position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px";
+const variants = [
+  { label: "默认", value: undefined },
+  { label: "实心", value: "solid" },
+  { label: "线框", value: "outline" },
+  { label: "幽灵", value: "ghost" },
+] as const;
 </script>
 
 <template>
-  <div style="display: flex; flex-wrap: wrap; gap: 16px">
-    <div style="position: relative; inline-size: 200px">
-      <div ref="solidEl" :style="boxStyle">
-        <p v-for="i in 12" :key="i" style="margin: 0 0 12px">实心 {{ i }}</p>
-      </div>
-      <XhBackTopRoot :target="solidEl" variant="solid" :visibility-height="0" :style="rootStyle">
-        <XhBackTopTrigger />
-      </XhBackTopRoot>
-    </div>
-
-    <div style="position: relative; inline-size: 200px">
-      <div ref="outlineEl" :style="boxStyle">
-        <p v-for="i in 12" :key="i" style="margin: 0 0 12px">描边 {{ i }}</p>
-      </div>
-      <XhBackTopRoot :target="outlineEl" variant="outline" :visibility-height="0" :style="rootStyle">
-        <XhBackTopTrigger />
-      </XhBackTopRoot>
-    </div>
-
-    <div style="position: relative; inline-size: 200px">
-      <div ref="ghostEl" :style="boxStyle">
-        <p v-for="i in 12" :key="i" style="margin: 0 0 12px">幽灵 {{ i }}</p>
-      </div>
-      <XhBackTopRoot :target="ghostEl" variant="ghost" :visibility-height="0" :style="rootStyle">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); gap: 12px; inline-size: min(640px, 100%)">
+    <div
+      v-for="item in variants"
+      :key="item.label"
+      style="position: relative; block-size: 120px; padding: 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
+    >
+      <span style="color: var(--xh-fg-muted)">{{ item.label }}</span>
+      <XhBackTopRoot
+        :variant="item.value"
+        :visibility-height="0"
+        style="position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px"
+      >
         <XhBackTopTrigger />
       </XhBackTopRoot>
     </div>

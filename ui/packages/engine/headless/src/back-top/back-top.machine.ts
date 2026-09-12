@@ -82,20 +82,23 @@ export const backTopMachine = createMachine({
         let tracker: ScrollTrackerHandle | undefined
 
         flush(() => {
-          if (disposed)
-            return
-          const resolve = (): void => {
-            if (disposed || !tracker)
+          // React 的祖先 ref 在子组件 layout effect 之后才附着；延到提交后的微任务再解析。
+          scope.getWin().queueMicrotask(() => {
+            if (disposed)
               return
-            const height = resolveBackTopVisibilityHeight(prop('visibilityHeight'))
-            send({ type: 'SCROLL.RESOLVE', visible: tracker.metrics().top >= height })
-          }
-          tracker = createScrollTracker({
-            scope,
-            container: () => refs.get('getTargetEl')(),
-            onChange: resolve,
+            const resolve = (): void => {
+              if (disposed || !tracker)
+                return
+              const height = resolveBackTopVisibilityHeight(prop('visibilityHeight'))
+              send({ type: 'SCROLL.RESOLVE', visible: tracker.metrics().top >= height })
+            }
+            tracker = createScrollTracker({
+              scope,
+              container: () => refs.get('getTargetEl')(),
+              onChange: resolve,
+            })
+            resolve()
           })
-          resolve()
         })
 
         return () => {
