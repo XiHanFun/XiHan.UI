@@ -97,7 +97,7 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 - 形态 · 语气 · 尺寸三轴正交，任意组合都成立。
 - 载入态用 `aria-disabled` 加事件拦截表达，按钮仍能聚焦，读屏也仍念得到名字。
 - `prefix` / `suffix` 两个图元部件自带 `aria-hidden`，读屏念到的只有 `label`。
-- 默认与 `subtle` 使用实体 M1 柔和面；`solid` 是高遮蔽语气面，不使用磨砂或背景模糊。
+- 默认是品牌实心胶囊按钮，与 HeroUI 的主动作保持同一视觉层级；`subtle` 使用实体 M1 柔和面，二者都不使用磨砂或背景模糊。
 - 根节点把普通文字动作 / icon-only 两种稳定视觉角色投影到 `data-xh-action-*`；尺寸数值、状态反馈与粗指针命中区由 Action Control Family Recipe 统一解析，适配器不计算 CSS。
 - 皮肤认的是 `data-scope` 与 `data-part`，不是标签名。
 
@@ -199,10 +199,10 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-button-bg` | `root` | `background-color` | `default` | `--xh-bg-subtle` | button 的 root 部件 background-color 覆盖槽。 |
-| `--xh-button-bg-active` | `root` | `background-color` | `active`<br>`disabled`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle-active` | button 的 root 部件 background-color 覆盖槽。 |
-| `--xh-button-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle-hover` | button 的 root 部件 background-color 覆盖槽。 |
-| `--xh-button-fg` | `root` | `color` | `default` | `--xh-fg-default` | button 的 root 部件 color 覆盖槽。 |
+| `--xh-button-bg` | `root` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`is(:not([data-variant])`<br>`loading`<br>`not([data-scope='button-group'] *)`<br>`not([data-variant])`<br>`variant`<br>`variant=solid` | `--xh-_tone`<br>`--xh-bg-brand` | button 的 root 部件 background-color 覆盖槽。 |
+| `--xh-button-bg-active` | `root` | `background-color` | `active`<br>`disabled`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-brand-active` | button 的 root 部件 background-color 覆盖槽。 |
+| `--xh-button-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-brand-hover` | button 的 root 部件 background-color 覆盖槽。 |
+| `--xh-button-fg` | `root` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`is(:not([data-variant])`<br>`loading`<br>`not([data-scope='button-group'] *)`<br>`not([data-variant])`<br>`variant`<br>`variant=solid` | `--xh-_tone-on`<br>`--xh-fg-on-brand` | button 的 root 部件 color 覆盖槽。 |
 | `--xh-button-font-size` | `root` | `font-size` | `default` | `--xh-_button-group-font-size` | button 的 root 部件 font-size 覆盖槽。 |
 | `--xh-button-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | button 的 root 部件 font-weight 覆盖槽。 |
 | `--xh-button-gap` | `root` | `gap` | `default` | `--xh-_button-group-gap` | button 的 root 部件 gap 覆盖槽。 |
@@ -210,8 +210,8 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | `--xh-button-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | button 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-button-px` | `root` | `padding-inline` | `default` | `--xh-_button-group-px` | button 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-button-radius` | `root` | `border-radius` | `default` | `--xh-_button-radius` | button 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-button-shadow` | `root` | `box-shadow` | `default` | `--xh-material-soft-shadow` | button 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-button-shadow-hover` | `root` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-elevation-raised` | button 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-button-shadow` | `root` | `box-shadow` | `default` | `none` | button 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-button-shadow-hover` | `root` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `none` | button 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-button-spin-duration` | `indicator`<br>`root` | `animation` | `loading` | `--xh-spin-duration` | button 的 indicator、root 部件 animation 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
@@ -234,7 +234,7 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 ## 最佳实践
 
 - 只放图标时必须给 `aria-label`——按钮此时没有任何可见文字，名字只能由它来给。
-- 一个视图里 `solid` + `brand` 只留一个，主动作唯一才排得出主次。
+- 一个视图里默认按钮或 `solid` + `brand` 只留一个，主动作唯一才排得出主次。
 - 载入指示器需要作者提供真实图形，皮肤不会猜测并补画。要保持宽度，就让 `indicator` 常驻；皮肤在非载入态用 `visibility` 隐藏它，只在 `loading` 时显示并旋转。
 - 不要在 `loading` 时条件插入或移除 label、prefix、suffix；按钮保留原内容与完整表面，只停掉交互。
 
