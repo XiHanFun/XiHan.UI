@@ -1,8 +1,9 @@
+import type { Plugin } from "vite";
 import type { DefaultTheme, HeadConfig } from "vitepress";
 import { createRequire } from "node:module";
 import { defineConfig } from "vitepress";
 // @ts-expect-error 纯 JS 生成器，没有类型声明
-import { writeLlmsAssets } from "./gen-llms.mjs";
+import { renderPageMarkdown, writeLlmsAssets } from "./gen-llms.mjs";
 
 const require = createRequire(import.meta.url);
 
@@ -34,6 +35,33 @@ const transitiveXihanPackages = [
 const localXihanOptimizeExclusions = [
   ...new Set([...linkedXihanPackages, ...transitiveXihanPackages]),
 ].sort();
+
+function devMarkdownPlugin(): Plugin {
+  return {
+    name: "xihan-doc-page-markdown",
+    configureServer(server) {
+      server.middlewares.use(async (request, response, next) => {
+        const pathname = new URL(request.url ?? "/", "http://localhost").pathname;
+        const prefix = "/__markdown/";
+        if (!pathname.startsWith(prefix)) {
+          next();
+          return;
+        }
+
+        const markdown = await renderPageMarkdown(decodeURIComponent(pathname.slice(prefix.length)));
+        if (markdown === null) {
+          response.statusCode = 404;
+          response.end("Not Found");
+          return;
+        }
+
+        response.statusCode = 200;
+        response.setHeader("Content-Type", "text/markdown; charset=utf-8");
+        response.end(markdown);
+      });
+    },
+  };
+}
 
 // 渲染页面阶段组件抛的异常被 Vue 接住后只打进 console.error，构建仍退出 0：
 // 出错的示例在静态页里整块缺失，而流水线什么都看不见。这里把这一路的异常收下来，
@@ -335,6 +363,7 @@ export default defineConfig({
     await writeLlmsAssets(siteConfig.outDir);
   },
   vite: {
+    plugins: [devMarkdownPlugin()],
     // 组件库是 link: 进来的，Vite 的依赖预打包缓存只认 package.json 与锁文件，
     // 改了库的源码它不会失效——本地构建会拿着旧产物继续渲染而且什么都不说。
     // 排除掉，示例渲染的永远是当前代码；传递依赖也要列全，漏一个它就带着旧代码进缓存

@@ -56,8 +56,8 @@ onBeforeUnmount(() => observer?.disconnect());
 <style>
 .xh-component-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 20px 16px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px 18px;
   margin: 20px 0 44px;
 }
 
@@ -69,7 +69,7 @@ onBeforeUnmount(() => observer?.disconnect());
   position: relative;
   display: grid;
   place-items: center;
-  height: 156px;
+  height: 190px;
   border: 1px solid color-mix(in oklab, var(--vp-c-divider) 78%, transparent);
   border-radius: 14px;
   overflow: hidden;
@@ -82,11 +82,11 @@ onBeforeUnmount(() => observer?.disconnect());
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: 125%;
-  max-height: 180px;
+  width: 116%;
+  max-height: 210px;
   padding: 12px;
   overflow: hidden;
-  transform: scale(0.72);
+  transform: scale(0.86);
   transform-origin: center;
 }
 
@@ -132,7 +132,7 @@ onBeforeUnmount(() => observer?.disconnect());
   }
 
   .xh-component-card__preview {
-    height: 128px;
+    height: 148px;
   }
 }
 </style>
