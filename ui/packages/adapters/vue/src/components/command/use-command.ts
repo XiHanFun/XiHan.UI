@@ -84,15 +84,25 @@ export function useCommand(
     // data-state 提交到 DOM 之后再驱动 presence，让退场探测读到正确的 animationName
     watch(() => service.state.get() === 'open', open => presence.update(open), { flush: 'post' })
 
-    // content 就位后把它的 CSS 退场动画接到 presence 退出租约，无动画时关闭即卸载
-    let detachExit: (() => void) | undefined
-    watch(contentRef, (el) => {
-      detachExit?.()
-      detachExit = el ? attachCssExit(el, presence) : undefined
-    }, { flush: 'post' })
+    // content 与 modal backdrop 的有限退场共同决定资源归还；动态切 modal 时精确撤旧接新。
+    const exits = new Map<HTMLElement, () => void>()
+    watch([contentRef, backdropRef], (nodes) => {
+      const next = new Set(nodes.filter((node): node is HTMLElement => node !== null))
+      for (const node of next) {
+        if (!exits.has(node))
+          exits.set(node, attachCssExit(node, presence))
+      }
+      for (const [node, detach] of exits) {
+        if (!next.has(node)) {
+          exits.delete(node)
+          detach()
+        }
+      }
+    }, { flush: 'post', immediate: true })
 
     onBeforeUnmount(() => {
-      detachExit?.()
+      for (const detach of exits.values()) detach()
+      exits.clear()
       presence.dispose()
     })
   }

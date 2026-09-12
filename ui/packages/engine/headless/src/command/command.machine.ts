@@ -1,7 +1,7 @@
 import type { CommandNodeMeta, CommandSchema } from './command.types'
 import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
-import { createModalLayerResources, setupLayerTransaction } from '../shared/overlay-shell'
+import { createModalLayerResources, setupLayerTransaction, trackPresenceResources } from '../shared/overlay-shell'
 import { flattenCommandGroups, navigateCommandResults, resolveCommandGroups } from './command.filter'
 import { hiddenCommandValues } from './command.visibility'
 
@@ -49,6 +49,8 @@ export const commandMachine = createMachine({
     getInputEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // Layer、消解、焦点与模态资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
+  effects: ['trackOverlay'],
   watch: ({ track, prop, context, action }) => {
     // 受控时用户事件只发意图；宿主写回 open 后由这条 watch 派发 CONTROLLED.* 回写状态
     track([() => prop('open')], () => action(['syncOpen']))
@@ -85,8 +87,8 @@ export const commandMachine = createMachine({
       // 每次开都从空检索串起步，锚点落在首条上
       entry: ['resetInputValue', 'highlightFirst'],
       exit: ['clearHighlightedValue'],
-      // 进入 open：按固定顺序装配 dismiss → focus → scroll，最后推迟一帧挂背景失活
-      effects: ['trackOverlay', 'trackItemVisibility'],
+      // 条目可见性只服务逻辑展开；行为与模态资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackItemVisibility'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
@@ -236,73 +238,94 @@ export const commandMachine = createMachine({
         }
         return dispose
       },
-      trackOverlay: ({ refs, prop, scope, send, flush }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
-        // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
-        if (!config || !registerLayer)
-          return undefined
+      trackOverlay: ({ refs, prop, scope, send, flush, state, track }) => {
+        let reactivateFocus: (() => void) | null = null
+        return trackPresenceResources({
+          presence: () => refs.get('presence'),
+          open: () => state.get() === 'open',
+          track,
+          acquire: () => {
+            const config = refs.get('config')
+            const registerLayer = refs.get('registerLayer')
+            // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
+            if (!config || !registerLayer)
+              return undefined
 
-        return setupLayerTransaction(registerLayer, (layer, defer, run) => {
-          const getContentEl = refs.get('getContentEl')
+            return setupLayerTransaction(registerLayer, (layer, defer, run) => {
+              const getContentEl = refs.get('getContentEl')
 
-          const dismiss = createDismissLayer({
-            config,
-            layer,
-            // 两个开关都现读 prop，展开中途改也立刻生效
-            onEscapeKeyDown: (e) => {
-              if (!(prop('closeOnEscape') ?? true))
-                e.preventDefault()
-            },
-            onInteractOutside: (e) => {
-              if (!(prop('closeOnInteractOutside') ?? prop('modal') ?? true))
-                e.preventDefault()
-            },
-            onDismiss: reason =>
-              send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
-          })
-          defer(() => dismiss.dispose())
+              const dismiss = createDismissLayer({
+                config,
+                layer,
+                // 退场期只占原栈位屏蔽下层，不再重复发关闭；两个公开开关仍可动态更新。
+                onEscapeKeyDown: (e) => {
+                  if (state.get() !== 'open' || !(prop('closeOnEscape') ?? true))
+                    e.preventDefault()
+                },
+                onInteractOutside: (e) => {
+                  if (state.get() !== 'open' || !(prop('closeOnInteractOutside') ?? prop('modal') ?? true))
+                    e.preventDefault()
+                },
+                onDismiss: (reason) => {
+                  if (state.get() === 'open')
+                    send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' })
+                },
+              })
+              defer(() => dismiss.dispose())
 
-          // 焦点域无条件建，modal 只决定陷不陷焦点；放进 if (modal) 会让非模态
-          // 既不初始聚焦也不归还焦点，restoreFocus 失效
-          const focus = createFocusScope({
-            config,
-            layer,
-            container: getContentEl,
-            trapped: () => prop('modal') ?? true,
-            loop: () => prop('modal') ?? true,
-            // 开场焦点落在检索框上：面板一露面就能直接打字
-            initialFocus: () => refs.get('getInputEl')(),
-            restoreFocus: () => prop('restoreFocus') ?? true,
-            // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-            // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上。
-            // 按 connect 给 trigger 落的 id 现取，全局快捷键唤起的用法没有 trigger，归还照旧走快照
-            restoreTarget: () => scope.getById<HTMLElement>(scope.partId('command', 'trigger')),
-          })
-          defer(() => focus.dispose())
+              // 焦点域无条件建，modal 只决定陷不陷焦点；逻辑关闭后内容立即 inert，焦点约束同步停用。
+              const focus = createFocusScope({
+                config,
+                layer,
+                container: getContentEl,
+                trapped: () => state.get() === 'open' && (prop('modal') ?? true),
+                loop: () => state.get() === 'open' && (prop('modal') ?? true),
+                // 开场焦点落在检索框上：面板一露面就能直接打字
+                initialFocus: () => refs.get('getInputEl')(),
+                restoreFocus: () => prop('restoreFocus') ?? true,
+                // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+                // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上。
+                // 按 connect 给 trigger 落的 id 现取，全局快捷键唤起的用法没有 trigger，归还照旧走快照
+                restoreTarget: () => scope.getById<HTMLElement>(scope.partId('command', 'trigger')),
+              })
+              reactivateFocus = focus.reactivate
+              defer(() => {
+                reactivateFocus = null
+                focus.dispose()
+              })
 
-          const modalResources = createModalLayerResources({
-            config,
-            layer,
-            enabled: () => prop('modal') ?? true,
-            // 栈中位于本层之上的层一并算作目标：内层浮层搬到落点之后也是它的
-            // 直接子元素，不排除会被本层的 MutationObserver 打上 inert
-            targets: () => [
-              getContentEl(),
-              ...config.layerRegistry.elementsAbove(layer),
-            ].filter(Boolean) as Element[],
-            flush,
-            run,
-          })
-          defer(modalResources.dispose)
-          const syncModalResources = (): void => modalResources.sync()
-          refs.set('syncModalResources', syncModalResources)
-          defer(() => {
-            if (refs.get('syncModalResources') === syncModalResources)
-              refs.set('syncModalResources', null)
-          })
-          syncModalResources()
-        }, { registry: config.layerRegistry, flush })
+              // 模态滚动锁与背景失活保持到 Presence 退出完成；modal 动态关闭仍立即释放。
+              const modalResources = createModalLayerResources({
+                config,
+                layer,
+                enabled: () => prop('modal') ?? true,
+                // 栈中位于本层之上的层一并算作目标：内层浮层搬到落点之后也是它的
+                // 直接子元素，不排除会被本层的 MutationObserver 打上 inert
+                targets: () => [
+                  getContentEl(),
+                  ...config.layerRegistry.elementsAbove(layer),
+                ].filter(Boolean) as Element[],
+                flush,
+                run,
+              })
+              defer(modalResources.dispose)
+              const syncModalResources = (): void => modalResources.sync()
+              refs.set('syncModalResources', syncModalResources)
+              defer(() => {
+                if (refs.get('syncModalResources') === syncModalResources)
+                  refs.set('syncModalResources', null)
+              })
+              syncModalResources()
+            }, { registry: config.layerRegistry, flush })
+          },
+          onReopen: () => {
+            const activate = reactivateFocus
+            flush(() => scope.getWin().requestAnimationFrame(() => {
+              if (state.get() === 'open' && reactivateFocus === activate)
+                activate?.()
+            }))
+          },
+        })
       },
     },
   },

@@ -44,6 +44,7 @@ export function useCommand(props: CommandSchema['props']): CommandContext {
     isOpen: () => serviceRef.current?.state.get() === 'open',
     layer,
     node: () => contentRef.current,
+    additionalExitNodes: () => [backdropRef.current],
     surfaces: () => [backdropRef.current].filter(Boolean) as Element[],
     refs: (service) => {
       service.refs.set('getContentEl', (() => contentRef.current) as never)
