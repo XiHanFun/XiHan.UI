@@ -63,38 +63,27 @@ const availableIds = computed(
 
 // 当前框架这份示例的源码，加载完才有值
 const raw = ref("");
-const sourceRevision = ref(0);
 
 if (import.meta.hot) {
-  const refreshSource = () => {
-    sourceRevision.value += 1;
+  const reloadWhenDemoChanges = (payload: { updates: { acceptedPath: string; path: string }[] }) => {
+    const demoPath = `/demos/${props.src}`;
+    if (payload.updates.some(update =>
+      update.path.includes(demoPath) || update.acceptedPath.includes(demoPath))) {
+      window.location.reload();
+    }
   };
-  import.meta.hot.on("vite:beforeUpdate", refreshSource);
-  onScopeDispose(() => import.meta.hot?.off("vite:beforeUpdate", refreshSource));
-}
-
-async function loadSource(
-  framework: { id: string; ext: string },
-  revision: number,
-): Promise<string> {
-  if (import.meta.env.DEV) {
-    const base = import.meta.env.BASE_URL.replace(/\/$/, "");
-    const url = `${base}/.vitepress/demos/${props.src}${framework.ext}`;
-    const module = await import(/* @vite-ignore */ `${url}?raw&revision=${revision}`);
-    return module.default as string;
-  }
-
-  const load = sourcesByFramework[framework.id]?.[sourceKey(framework)];
-  return load ? await load() : "";
+  import.meta.hot.on("vite:beforeUpdate", reloadWhenDemoChanges);
+  onScopeDispose(() => import.meta.hot?.off("vite:beforeUpdate", reloadWhenDemoChanges));
 }
 
 watchEffect(async () => {
-  const requestedRevision = sourceRevision.value;
   const framework = demoFrameworks.find(item => item.id === demoFramework.value);
+  const load = framework && sourcesByFramework[framework.id]?.[sourceKey(framework)];
   const requested = demoFramework.value;
-  const text = framework ? await loadSource(framework, requestedRevision) : "";
+  raw.value = "";
+  const text = load ? await load() : "";
   // 加载期间可能已经切走，晚到的结果不许覆盖当前框架的
-  if (demoFramework.value === requested && sourceRevision.value === requestedRevision)
+  if (demoFramework.value === requested)
     raw.value = text;
 });
 
