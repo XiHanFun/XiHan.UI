@@ -45143,19 +45143,20 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "disabled",
+        "error",
         "highlighted",
-        "is(:hover, [data-highlighted], :focus-visible)",
-        "not([data-disabled])"
+        "hover",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "select 的 item 部件 background 覆盖槽。"
+      "description": "select 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-select-item-bg-pressed",
@@ -45188,7 +45189,11 @@
       ],
       "state": [
         "default",
-        "state=checked"
+        "error",
+        "highlighted",
+        "hover",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])"
       ],
       "defaultToken": [
         "--xh-material-frosted-fg"
@@ -45206,7 +45211,9 @@
         "color"
       ],
       "state": [
-        "state=checked"
+        "default",
+        "highlighted",
+        "is(:focus-visible, [data-highlighted])"
       ],
       "defaultToken": [
         "--xh-select-item-fg"
@@ -45242,7 +45249,9 @@
         "font-weight"
       ],
       "state": [
-        "state=checked"
+        "default",
+        "highlighted",
+        "is(:focus-visible, [data-highlighted])"
       ],
       "defaultToken": [
         "--xh-font-weight-regular"
@@ -45257,34 +45266,39 @@
         "item"
       ],
       "property": [
-        "gap"
+        "margin-inline-end",
+        "margin-inline-start"
       ],
       "state": [
-        "default"
+        "xh-collection-slot=indicator",
+        "xh-collection-slot=prefix",
+        "xh-collection-slot=shortcut",
+        "xh-collection-slot=suffix"
       ],
       "defaultToken": [
         "--xh-_select-gap"
       ],
       "visibility": "public",
-      "description": "select 的 item 部件 gap 覆盖槽。"
+      "description": "select 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-select-item-indicator-fg",
       "component": "select",
       "part": [
-        "item-indicator"
+        "item"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "default"
+        "state=checked",
+        "xh-collection-slot=indicator"
       ],
       "defaultToken": [
         "--xh-_select-accent"
       ],
       "visibility": "public",
-      "description": "select 的 item-indicator 部件 color 覆盖槽。"
+      "description": "select 的 item 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-select-item-indicator-size",

@@ -28,6 +28,8 @@
 - 选项按作者给出的 DOM 顺序排布；正式 `item-text` 弹性占据剩余宽度并负责长文省略，
   `item-indicator` 固定在逻辑末端。单选、多选统一由对号表示选中，正文保持正常颜色和字重；
   悬停与键盘高亮使用中性底，键盘焦点另有独立焦点环。选中本身不铺品牌底。
+- `item` 由 Headless 投影 Collection Item 的角色、尺寸、selected/checked/disabled 事实；`item-text`
+  与 `item-indicator` 投影固定内容列。三端适配器只展开这些属性，不各自判断视觉状态。
 - 相邻分组之间自动画材质分隔线，分组标题、空态、加载态与 footer 使用浮层的次要前景节奏。
 
 ## 示例
@@ -386,6 +388,10 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `list` | `data-state` | 'open' \| 'closed' |
 | `footer` | `data-state` | 'open' \| 'closed' |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-xh-collection-item` | '' |
+| `item` | `data-xh-collection-size` | props.size |
+| `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-indicator` | `data-xh-collection-slot` | 'indicator' |
 | `empty` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-state` | 'open' \| 'closed' |
 | `overflow-tag` | `data-count` | String(overflowCount) |
@@ -453,14 +459,14 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `--xh-select-group-spacing` | `group` | `padding-block-start` | `default` | `--xh-space-1_5` | select 的 group 部件 padding-block-start 覆盖槽。 |
 | `--xh-select-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | select 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-select-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | select 的 indicator 部件 color 覆盖槽。 |
-| `--xh-select-item-bg-hover` | `item` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted], :focus-visible)`<br>`not([data-disabled])` | `--xh-bg-subtle` | select 的 item 部件 background 覆盖槽。 |
+| `--xh-select-item-bg-hover` | `item` | `background-color` | `error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])` | `--xh-bg-subtle` | select 的 item 部件 background-color 覆盖槽。 |
 | `--xh-select-item-bg-pressed` | `item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | select 的 item 部件 background 覆盖槽。 |
-| `--xh-select-item-fg` | `item` | `color` | `default`<br>`state=checked` | `--xh-material-frosted-fg` | select 的 item 部件 color 覆盖槽。 |
-| `--xh-select-item-fg-selected` | `item` | `color` | `state=checked` | `--xh-select-item-fg` | select 的 item 部件 color 覆盖槽。 |
+| `--xh-select-item-fg` | `item` | `color` | `default`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])` | `--xh-material-frosted-fg` | select 的 item 部件 color 覆盖槽。 |
+| `--xh-select-item-fg-selected` | `item` | `color` | `default`<br>`highlighted`<br>`is(:focus-visible, [data-highlighted])` | `--xh-select-item-fg` | select 的 item 部件 color 覆盖槽。 |
 | `--xh-select-item-font-size` | `item` | `font-size` | `default` | `--xh-_select-font-size` | select 的 item 部件 font-size 覆盖槽。 |
-| `--xh-select-item-font-weight-selected` | `item` | `font-weight` | `state=checked` | `--xh-font-weight-regular` | select 的 item 部件 font-weight 覆盖槽。 |
-| `--xh-select-item-gap` | `item` | `gap` | `default` | `--xh-_select-gap` | select 的 item 部件 gap 覆盖槽。 |
-| `--xh-select-item-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_select-accent` | select 的 item-indicator 部件 color 覆盖槽。 |
+| `--xh-select-item-font-weight-selected` | `item` | `font-weight` | `default`<br>`highlighted`<br>`is(:focus-visible, [data-highlighted])` | `--xh-font-weight-regular` | select 的 item 部件 font-weight 覆盖槽。 |
+| `--xh-select-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_select-gap` | select 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-select-item-indicator-fg` | `item` | `color` | `state=checked`<br>`xh-collection-slot=indicator` | `--xh-_select-accent` | select 的 item 部件 color 覆盖槽。 |
 | `--xh-select-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | select 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-select-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | select 的 item 部件 line-height 覆盖槽。 |
 | `--xh-select-item-px` | `item` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 item 部件 padding-inline 覆盖槽。 |

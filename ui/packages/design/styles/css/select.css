@@ -1,3 +1,6 @@
+/* Select 条目与按需皮肤都从同一份 Collection Item Recipe 取得布局、状态和列节奏。 */
+@import '../family/collection-item.css';
+
 @layer xihan.motion {
   /* 菜单族共用同一份短位移动作；本皮肤自带定义，单独引入 select.css 时也不会丢动画。 */
   @keyframes xh-overlay-slide-in {
@@ -601,37 +604,33 @@
   }
 
   [data-scope='select'][data-part='item'] {
-    display: flex;
-    align-items: center;
-    gap: var(--xh-select-item-gap, var(--xh-_select-gap));
-    padding-block: var(--xh-select-item-py, var(--xh-_select-item-py));
-    padding-inline: var(--xh-select-item-px, var(--xh-_select-item-px));
-    border-radius: var(--xh-select-item-radius, var(--xh-shape-control));
-    color: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
-    font-size: var(--xh-select-item-font-size, var(--xh-_select-font-size));
+    /* 公开 Select 槽只映射到家族合同；网格、尺寸与状态选择器不在组件皮肤复制。 */
+    --xh-collection-block-padding: var(--xh-select-item-py, var(--xh-_select-item-py));
+    --xh-collection-inline-padding: var(--xh-select-item-px, var(--xh-_select-item-px));
+    --xh-collection-gap: var(--xh-select-item-gap, var(--xh-_select-gap));
+    --xh-collection-font-size: var(--xh-select-item-font-size, var(--xh-_select-font-size));
+    --xh-collection-radius: var(--xh-select-item-radius, var(--xh-shape-control));
+    --xh-collection-fg-rest: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-hover: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-keyboard-highlight: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-selected: var(--xh-select-item-fg-selected, var(--xh-select-item-fg, var(--xh-material-frosted-fg)));
+    --xh-collection-fg-selected-highlight: var(--xh-select-item-fg-selected, var(--xh-select-item-fg, var(--xh-material-frosted-fg)));
+    --xh-collection-font-weight-selected: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected-highlight: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-collection-bg-hover: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-keyboard-highlight: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-selected-highlight: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-indicator-fg-rest: var(--xh-select-item-indicator-fg, var(--xh-_select-accent));
+    --xh-collection-indicator-fg-checked: var(--xh-select-item-indicator-fg, var(--xh-_select-accent));
+
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
     line-height: var(--xh-select-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
-    cursor: pointer;
     user-select: none;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-  }
-
-  /* 悬停与键盘锚点共用中性灰轻档：条目本身承载焦点，不另画描边 */
-  [data-scope='select'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted], :focus-visible) {
-    background: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
   }
 
   [data-scope='select'][data-part='item']:not([data-disabled]):active {
     background: var(--xh-select-item-bg-pressed, var(--xh-bg-subtle-active));
-  }
-
-  /* 选中统一由末端对号表达；不铺选中底、不增重，悬停与键盘焦点继续独立铺中性底。 */
-  [data-scope='select'][data-part='item'][data-state='checked'] {
-    color: var(--xh-select-item-fg-selected, var(--xh-select-item-fg, var(--xh-material-frosted-fg)));
-    font-weight: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
   }
 
   [data-scope='select'][data-part='item']:focus:not(:focus-visible) {
@@ -643,14 +642,7 @@
     transition-property: color;
   }
 
-  /* 禁用走 aria-disabled 而非原生 disabled，条目仍可聚焦，样式由 data-disabled 表达 */
-  [data-scope='select'][data-part='item'][data-disabled] {
-    color: var(--xh-fg-disabled);
-    cursor: not-allowed;
-  }
-
   [data-scope='select'][data-part='item-text'] {
-    flex: 1 1 auto;
     /* 弹性子项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
     min-inline-size: 0;
     overflow: hidden;
@@ -661,14 +653,10 @@
   /* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动 */
   [data-scope='select'][data-part='item-indicator'] {
     display: inline-flex;
-    flex: none;
     align-items: center;
     justify-content: center;
-    margin-inline-start: auto;
     inline-size: var(--xh-select-item-indicator-size, var(--xh-control-indicator-size));
     block-size: var(--xh-select-item-indicator-size, var(--xh-control-indicator-size));
-    color: var(--xh-select-item-indicator-fg, var(--xh-_select-accent));
-    visibility: hidden;
   }
 
   /* 同上：没写内容就由皮肤画勾 */
@@ -681,14 +669,6 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-  }
-
-  [data-scope='select'][data-part='item-indicator'][data-state='checked'] {
-    visibility: visible;
-  }
-
-  [data-scope='select'][data-part='item-indicator'][data-disabled] {
-    color: var(--xh-fg-disabled);
   }
 
   /* 表单影子：视觉隐藏但留在布局与表单里，原生校验提示需要一个可定位的框 */

@@ -16,7 +16,7 @@ const FAMILY_STYLES_DIR = join(UI_ROOT, 'packages/design/styles/family')
 const HEADLESS_DIR = join(UI_ROOT, 'packages/engine/headless/src')
 
 const PRIVATE_PREFIX = '--xh-_'
-const FAMILY_BRIDGE_PREFIXES = ['--xh-action-', '--xh-field-']
+const FAMILY_BRIDGE_PREFIXES = ['--xh-action-', '--xh-collection-', '--xh-field-']
 const isFamilyBridge = name => FAMILY_BRIDGE_PREFIXES.some(prefix => name.startsWith(prefix))
 const TOKEN_VERSION = 1
 
@@ -199,7 +199,7 @@ function statesOf(selector, atRules) {
     const declaration = content.slice('data-'.length)
     const equal = declaration.indexOf('=')
     const attribute = (equal === -1 ? declaration : declaration.slice(0, equal)).replace(/[~|^$*]\s*$/, '').trim()
-    if (attribute === 'scope' || attribute === 'part' || attribute === 'xh-action-control')
+    if (attribute === 'scope' || attribute === 'part' || attribute === 'xh-action-control' || attribute === 'xh-collection-item')
       continue
     if (equal === -1) {
       states.push(attribute)

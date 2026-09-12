@@ -441,6 +441,9 @@ export function connectSelect<T extends PropTypes>(
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
       ...itemStateAttrs(item),
+      // Collection Item 家族只读取稳定角色与状态事实；三端适配器原样 spread，不复制视觉判定。
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': prop('size') ?? 'md',
       // 导航、检索与选中都以此为条目身份
       [ITEM_VALUE_ATTR]: item.value,
       'role': 'option',
@@ -490,10 +493,12 @@ export function connectSelect<T extends PropTypes>(
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'text',
     }),
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'indicator',
       'aria-hidden': true,
     }),
     // 表单出口：选中值靠这份原生 select 提交并被 required 校验看见，对键盘与读屏不存在。

@@ -308,6 +308,8 @@ export const selectSuite: ConformanceSuite = {
           // 收起态没有锚点：条目连同 content 一起 hidden
           'item': [
             {
+              'data-xh-collection-item': '',
+              'data-xh-collection-size': 'md',
               'role': 'option',
               'aria-selected': 'false',
               'aria-disabled': 'false',
@@ -322,10 +324,15 @@ export const selectSuite: ConformanceSuite = {
             { 'aria-selected': 'false', 'data-value': 'banana', 'tabindex': '-1' },
             { 'aria-selected': 'false', 'data-value': 'cherry', 'tabindex': '-1' },
           ],
+          'item-text': [
+            { 'data-xh-collection-slot': 'text' },
+            { 'data-xh-collection-slot': 'text' },
+            { 'data-xh-collection-slot': 'text' },
+          ],
           'item-indicator': [
-            { 'aria-hidden': 'true', 'data-state': 'unchecked' },
-            { 'aria-hidden': 'true', 'data-state': 'unchecked' },
-            { 'aria-hidden': 'true', 'data-state': 'unchecked' },
+            { 'aria-hidden': 'true', 'data-state': 'unchecked', 'data-xh-collection-slot': 'indicator' },
+            { 'aria-hidden': 'true', 'data-state': 'unchecked', 'data-xh-collection-slot': 'indicator' },
+            { 'aria-hidden': 'true', 'data-state': 'unchecked', 'data-xh-collection-slot': 'indicator' },
           ],
         },
         activeElement: null,
@@ -482,7 +489,12 @@ export const selectSuite: ConformanceSuite = {
           expect: {
             activeElement: { part: 'item[2]', exact: true },
             parts: {
-              'item[1]': { 'aria-disabled': 'true', 'disabled': null, 'data-disabled': '', 'tabindex': '-1' },
+              'item[1]': {
+                'aria-disabled': 'true',
+                'disabled': null,
+                'data-disabled': '',
+                'tabindex': '-1',
+              },
               'item[2]': { 'tabindex': '0', 'data-highlighted': '' },
             },
             // 移高亮不改选中值，一个事件也不发

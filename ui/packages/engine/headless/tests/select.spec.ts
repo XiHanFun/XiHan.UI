@@ -629,6 +629,26 @@ describe('selectSelect 显示文本与表单出口', () => {
     expect(h.item('banana').getAttribute('data-state')).toBe('unchecked')
   })
 
+  it('条目把 Collection Item 角色、尺寸与选择事实投影给三端', () => {
+    const h = mount({ defaultValue: 'apple', size: 'lg' }, { disabledItems: ['banana'] })
+    expect(h.item('apple').dataset).toMatchObject({
+      xhCollectionItem: '',
+      xhCollectionSize: 'lg',
+    })
+    expect(h.item('banana').dataset).toMatchObject({
+      xhCollectionItem: '',
+      xhCollectionSize: 'lg',
+      disabled: '',
+    })
+    expect(h.item('apple').getAttribute('data-state')).toBe('checked')
+    expect(h.item('apple').getAttribute('aria-selected')).toBe('true')
+    expect(h.item('cherry').getAttribute('aria-selected')).toBe('false')
+    const text = h.item('apple').querySelector('[data-part="item-text"]')
+    const indicator = h.item('apple').querySelector('[data-part="item-indicator"]')
+    expect(text?.getAttribute('data-xh-collection-slot')).toBe('text')
+    expect(indicator?.getAttribute('data-xh-collection-slot')).toBe('indicator')
+  })
+
   it('影子 select 靠 option.selected 表达选中，required 判得出「没选」', () => {
     const empty = mount({ name: 'fruit', required: true })
     expect(submitted(empty.hiddenSelect)).toEqual([])
