@@ -23020,7 +23020,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-layer-sticky"
+        "--xh-_layer"
       ],
       "visibility": "public",
       "description": "float-button 的 root 部件 z-index 覆盖槽。"

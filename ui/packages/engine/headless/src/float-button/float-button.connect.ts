@@ -1,6 +1,5 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { CollapsibleSchema } from '../collapsible'
-import type { FloatButtonApi, FloatButtonAppearance, FloatButtonPlacement, FloatButtonShape } from './float-button.types'
+import type { FloatButtonApi, FloatButtonAppearance, FloatButtonPlacement, FloatButtonSchema, FloatButtonShape } from './float-button.types'
 import { dataAttr } from '@xihan-ui/core'
 import { floatButtonAnatomy } from './float-button.anatomy'
 
@@ -23,11 +22,10 @@ export function resolveFloatButtonOffset(offset: number | undefined): number {
 }
 
 /**
- * 悬浮按钮跑 collapsible 机器：一颗触发器管着一组内容的开合，受控回写与通知全在那里。
- * 落位、外形与展开方式不入机器——它们不改开合，只决定接哪几个监听、往根上写哪几个 data-*。
+ * 开合与逻辑层资源由 FloatButton 专用机器持有；connect 只投影 DOM 属性与局部指针意图。
  */
 export function connectFloatButton<T extends PropTypes>(
-  service: Service<CollapsibleSchema>,
+  service: Service<FloatButtonSchema>,
   props: FloatButtonAppearance,
   normalize: NormalizeProps<T>,
 ): FloatButtonApi<T> {
@@ -40,11 +38,11 @@ export function connectFloatButton<T extends PropTypes>(
   const placement = props.placement ?? FLOAT_BUTTON_DEFAULT_PLACEMENT
   const shape = props.shape ?? FLOAT_BUTTON_DEFAULT_SHAPE
   const offset = resolveFloatButtonOffset(props.offset)
-  const hover = props.expandTrigger === 'hover'
+  const hover = prop('expandTrigger') === 'hover'
 
   const setOpen = (next: boolean): void => {
     if (next !== open)
-      send({ type: next ? 'OPEN' : 'CLOSE' })
+      send(next ? { type: 'OPEN' } : { type: 'CLOSE', src: 'programmatic' })
   }
 
   return {
@@ -63,11 +61,6 @@ export function connectFloatButton<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       // 贴边距离写成内联自定义属性：贴的是哪两条边由皮肤按 data-placement 决定，这里只给数
       'style': `--xh-_float-button-offset: ${offset}px`,
-      // 展开着按 Escape 收起来。悬停展开时指针一走就收，键盘上就只剩这一条路
-      'onKeydown': (event: KeyboardEvent) => {
-        if (event.key === 'Escape' && open)
-          send({ type: 'CLOSE' })
-      },
       // 悬停展开：进出整个壳才算数，不是只进出触发器——指针得能走到展开的那一组上去
       ...(hover
         ? {
@@ -75,7 +68,7 @@ export function connectFloatButton<T extends PropTypes>(
               if (!disabled)
                 send({ type: 'OPEN' })
             },
-            onPointerLeave: () => send({ type: 'CLOSE' }),
+            onPointerLeave: () => send({ type: 'CLOSE', src: 'hover' }),
           }
         : {}),
     }),

@@ -15,8 +15,8 @@ export const floatButtonKeyboard: KeyboardTable = {
     {
       id: 'float-button.kbd.escape',
       keys: ['Escape'],
-      when: 'open，焦点在整组之内',
-      does: '收起 list；悬停展开时指针一走就收，键盘上就只剩这一条路',
+      when: 'open，无论焦点是否仍在整组内',
+      does: '只收起当前 LayerRegistry 的栈顶层；更晚打开的 Drawer / Popover 先处理自己的 Escape',
     },
     {
       id: 'float-button.kbd.tab',

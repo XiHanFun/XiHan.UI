@@ -73,7 +73,7 @@ export function XhFloatButtonRoot({
   )
   return (
     <FloatButtonProvider value={ctx}>
-      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref }, { ref: ctx.rootRef })}>
         {renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })}
       </div>
     </FloatButtonProvider>

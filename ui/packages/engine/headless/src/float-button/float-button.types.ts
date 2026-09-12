@@ -1,5 +1,5 @@
-import type { ActionVariant, PropTypes, Size, Tone } from '@xihan-ui/core'
-import type { CollapsibleOpenChangeDetails, CollapsibleSchema } from '../collapsible'
+import type { ActionVariant, Cleanup, Direction, Layer, MachineSchema, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { CollapsibleOpenChangeDetails } from '../collapsible'
 
 /**
  * 钉在视口哪一角。
@@ -19,11 +19,14 @@ export interface FloatButtonTranslations {
   trigger: string
 }
 
-/**
- * 开合那半与 collapsible 同款——悬浮按钮跑的就是 collapsible 机器。
- * 剔掉两项：size（这里的尺寸只有一档，由皮肤定）与 onOpenChange（并进 Notifiers 一起给）。
- */
-export type FloatButtonDisclosureProps = Omit<CollapsibleSchema['props'], 'size' | 'onOpenChange'>
+/** 开合状态；视觉轴不进入机器。 */
+export interface FloatButtonDisclosureProps {
+  open?: boolean
+  defaultOpen?: boolean
+  disabled?: boolean
+  /** 文字方向，只作用于排版；作者没给就不写。 */
+  dir?: Direction
+}
 
 /** 对外的回调。 */
 export interface FloatButtonNotifiers {
@@ -51,6 +54,39 @@ export interface FloatButtonAppearance {
 }
 
 export type FloatButtonProps = FloatButtonDisclosureProps & FloatButtonNotifiers & FloatButtonAppearance
+
+/** 适配器只桥接所属 Document 的运行时、逻辑层登记与根节点。 */
+export interface FloatButtonRefs {
+  config: RuntimeConfig | null
+  registerLayer: ((input: Omit<Layer, 'id'>) => { layer: Layer, dispose: Cleanup }) | null
+  getRootEl: () => HTMLElement | null
+}
+
+/** FloatButton 专用状态机：开合、禁用和消解层资源都由 Headless 持有。 */
+export interface FloatButtonSchema extends MachineSchema {
+  props: FloatButtonDisclosureProps & FloatButtonNotifiers & Pick<FloatButtonAppearance, 'expandTrigger'>
+  context: Record<string, never>
+  computed: Record<string, never>
+  refs: FloatButtonRefs
+  state: 'open' | 'closed'
+  event:
+    | { type: 'OPEN' }
+    | { type: 'CLOSE', src?: 'hover' | 'esc' | 'interact-outside' | 'programmatic' }
+    | { type: 'TOGGLE' }
+    | { type: 'DISABLE' }
+    | { type: 'CONTROLLED.OPEN' }
+    | { type: 'CONTROLLED.CLOSE' }
+  tag: never
+  guard:
+    | 'isDisabled'
+    | 'isOpenControlled'
+  action:
+    | 'invokeOnOpen'
+    | 'invokeOnClose'
+    | 'syncOpen'
+    | 'syncDisabled'
+  effect: 'trackLayer'
+}
 
 export interface FloatButtonApi<T extends PropTypes = PropTypes> {
   /** 展开的那一组此刻露不露面。 */

@@ -45,7 +45,8 @@
     --xh-_float-button-shadow: var(--xh-material-glass-shadow);
 
     position: fixed;
-    z-index: var(--xh-float-button-layer, var(--xh-layer-sticky));
+    /* 展开时消费 LayerRegistry 的实时层序；收起后没有逻辑层，仍回到普通 sticky 槽。 */
+    z-index: var(--xh-float-button-layer, var(--xh-_layer, var(--xh-layer-sticky)));
     display: flex;
     /* 摞的方向由落位定，下面四条各自覆盖；这里给的是没写落位时的落点 */
     flex-direction: column;
