@@ -1,21 +1,28 @@
-// 基础用法 | 二维排布容器：cols 定分几列，gap 走间距档位，每一格按文档序依次落格
+// 基础用法 | 创建等宽列
 import type { CSSProperties, ReactNode } from "react";
 import { XhGridItem, XhGridRoot } from "@xihan-ui/react";
 
 const cellStyle: CSSProperties = {
-  padding: "12px",
-  borderRadius: "var(--xh-radius-md)",
+  minInlineSize: 0,
+  padding: "16px",
+  borderRadius: "var(--xh-shape-surface)",
   background: "var(--xh-bg-subtle)",
-  color: "var(--xh-fg-default)",
 };
 
-const cells = ["甲", "乙", "丙", "丁", "戊", "己"];
+const metrics = [
+  { label: "活跃用户", value: "12,860" },
+  { label: "转化率", value: "8.4%" },
+  { label: "订单", value: "1,294" },
+];
 
 export default function Demo(): ReactNode {
   return (
-    <XhGridRoot cols={3} gap="md">
-      {cells.map(c => (
-        <XhGridItem key={c} style={cellStyle}>{c}</XhGridItem>
+    <XhGridRoot cols={3} gap="md" style={{ inlineSize: "min(600px, 100%)" }}>
+      {metrics.map(metric => (
+        <XhGridItem key={metric.label} style={cellStyle}>
+          <div style={{ color: "var(--xh-fg-muted)", fontSize: "13px" }}>{metric.label}</div>
+          <strong style={{ display: "block", marginBlockStart: "8px", fontSize: "24px" }}>{metric.value}</strong>
+        </XhGridItem>
       ))}
     </XhGridRoot>
   );
