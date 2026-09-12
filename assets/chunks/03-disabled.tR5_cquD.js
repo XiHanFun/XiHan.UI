@@ -1,0 +1,1 @@
+import{gN as t}from"./theme.Bj50Izvy.js";import{d as a,o as s,c as o,a as r,E as n,k as d}from"./framework.m090XgxO.js";const l={style:{display:"flex","align-items":"center",gap:"8px"}},_=a({__name:"03-disabled",setup(p){return(i,e)=>(s(),o("p",l,[e[0]||(e[0]=r(" 当前不能按 ",-1)),n(d(t),{value:"Delete",disabled:""})]))}});export{_ as default};

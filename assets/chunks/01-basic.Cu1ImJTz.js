@@ -1,1 +1,0 @@
-import{eQ as e}from"./theme.CzGOHWR9.js";import{d as a,o,b as r,k as n}from"./framework.m090XgxO.js";const m=a({__name:"01-basic",setup(s){return(t,c)=>(o(),r(n(e),{label:"加载中"}))}});export{m as default};

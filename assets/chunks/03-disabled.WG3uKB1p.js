@@ -1,0 +1,1 @@
+import{bR as e}from"./theme.Bj50Izvy.js";import{d as o,o as a,b as r,k as s}from"./framework.m090XgxO.js";const _=o({__name:"03-disabled",setup(t){return(n,d)=>(a(),r(s(e),{keys:["Mod","S"],disabled:""}))}});export{_ as default};

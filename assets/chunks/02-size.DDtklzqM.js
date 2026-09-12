@@ -1,1 +1,0 @@
-import{gN as e}from"./theme.CzGOHWR9.js";import{d as t,o,c as n,E as s,k as a}from"./framework.m090XgxO.js";const r={style:{display:"flex","align-items":"center",gap:"12px"}},_=t({__name:"02-size",setup(i){return(c,l)=>(o(),n("div",r,[s(a(e),{value:"S",size:"sm"}),s(a(e),{value:"S",size:"md"}),s(a(e),{value:"S",size:"lg"})]))}});export{_ as default};

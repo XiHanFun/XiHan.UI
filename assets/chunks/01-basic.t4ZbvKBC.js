@@ -1,0 +1,1 @@
+import{i5 as e}from"./theme.Bj50Izvy.js";import{d as t,o as a,c as n,E as o,k as r,F as s}from"./framework.m090XgxO.js";const _=t({__name:"01-basic",setup(m){return(c,i)=>(a(),n(s,null,[o(r(e),{from:0,to:1024,size:"sm"}),o(r(e),{from:0,to:12480,size:"md"}),o(r(e),{from:0,to:98600,size:"lg",tone:"brand"})],64))}});export{_ as default};

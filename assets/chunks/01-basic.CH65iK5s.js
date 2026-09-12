@@ -1,0 +1,1 @@
+import{m as e}from"./theme.Bj50Izvy.js";import{d as a,o,b as r,w as s,a as n,k as m}from"./framework.m090XgxO.js";const c=a({__name:"01-basic",setup(p){return(u,t)=>(o(),r(m(e),null,{default:s(()=>[...t[0]||(t[0]=[n("按钮",-1)])]),_:1}))}});export{c as default};
