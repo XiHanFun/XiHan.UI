@@ -16,6 +16,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { PortalLeaseController } from '../runtime/portal-lease-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -113,13 +114,28 @@ export class XhTourElement extends XhElement {
   declare translations?: Partial<TourTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly tourScope = createScope(null, this.idGen)
+  private readonly tourScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   private contentNode: HTMLElement | null = null
   private backdropNode: HTMLElement | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，气泡的退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = new PortalLeaseController({
+    name: 'Tour',
+    config: () => this.config,
+    source: () => this.getPart('root'),
+    roots: () => {
+      const roots = [
+        this.getPart('backdrop'),
+        this.getPart('spotlight'),
+        this.getPart('positioner') ?? this.getPart('content'),
+      ]
+      return roots.filter((root): root is HTMLElement => !!root)
+    },
+    onChange: () => this.requestUpdate(),
+  })
+
   /** 哪些文本节点归元素填：作者自己写了内容的一概不碰。 */
   private readonly ownsText = new WeakMap<HTMLElement, boolean>()
 
@@ -166,6 +182,10 @@ export class XhTourElement extends XhElement {
     if (this.config)
       return
     this.config = createRuntimeConfig({ scope: this.tourScope, idGenerator: this.idGen })
+  }
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
   }
 
   /** 退场闸门建一次，并在机器挂载前把同一份 Presence 交给 Headless。 */
@@ -333,9 +353,11 @@ export class XhTourElement extends XhElement {
       el.toggleAttribute('hidden', hidden)
       this.setPartHidden(el, hidden)
     }
+    this.portal.sync(visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     super.disconnectedCallback()
     // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
