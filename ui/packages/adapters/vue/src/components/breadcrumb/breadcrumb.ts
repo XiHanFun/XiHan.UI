@@ -114,7 +114,7 @@ function renderItems(
   const out: VNode[] = []
   items.forEach((item, index) => {
     if (index > 0)
-      out.push(h(XhBreadcrumbSeparator, { key: `sep-${index}` }, () => separatorSlot?.() ?? '/'))
+      out.push(h(XhBreadcrumbSeparator, { key: `sep-${index}` }, () => separatorSlot?.()))
     if (item.type === 'ellipsis') {
       out.push(h(XhBreadcrumbEllipsis, { key: 'ellipsis' }, () => ellipsisSlot?.(item.nodes) ?? '…'))
       return

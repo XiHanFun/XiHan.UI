@@ -1,45 +1,25 @@
-// 尺寸 | size 换整条路径的字号与各层之间的间距，不传 size 即默认档
+// 尺寸 | 适配不同的信息密度
 import type { ReactNode } from "react";
-import {
-  XhBreadcrumbItem,
-  XhBreadcrumbLink,
-  XhBreadcrumbList,
-  XhBreadcrumbRoot,
-  XhBreadcrumbSeparator,
-} from "@xihan-ui/react";
+import { XhBreadcrumbRoot } from "@xihan-ui/react";
 
-// 中间一档不写 size，用 undefined 表达
+const items = [
+  { value: "home", label: "首页", href: "#/" },
+  { value: "components", label: "组件", href: "#/components" },
+  { value: "breadcrumb", label: "面包屑", current: true },
+];
 const sizes = [
-  { size: "sm", label: "小" },
-  { size: undefined, label: "默认" },
-  { size: "lg", label: "大" },
+  { label: "小", value: "sm" },
+  { label: "中", value: undefined },
+  { label: "大", value: "lg" },
 ] as const;
 
 export default function Demo(): ReactNode {
   return (
-    <div style={{ inlineSize: "100%", display: "grid", gap: "16px" }}>
-      {sizes.map(s => (
-        <div key={s.label} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span style={{ inlineSize: "40px", flex: "none", fontSize: "12px" }}>
-            {s.label}
-          </span>
-          <XhBreadcrumbRoot size={s.size}>
-            <XhBreadcrumbList>
-              <XhBreadcrumbItem>
-                <XhBreadcrumbLink href="#/">首页</XhBreadcrumbLink>
-              </XhBreadcrumbItem>
-              <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
-              <XhBreadcrumbItem>
-                <XhBreadcrumbLink href="#/components">组件</XhBreadcrumbLink>
-              </XhBreadcrumbItem>
-              <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
-              <XhBreadcrumbItem>
-                <XhBreadcrumbLink href="#/components/breadcrumb" current>
-                  面包屑
-                </XhBreadcrumbLink>
-              </XhBreadcrumbItem>
-            </XhBreadcrumbList>
-          </XhBreadcrumbRoot>
+    <div style={{ display: "grid", gap: "16px", inlineSize: "min(560px, 100%)" }}>
+      {sizes.map(({ label, value }) => (
+        <div key={label} style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <span style={{ inlineSize: "24px", color: "var(--xh-fg-muted)" }}>{label}</span>
+          <XhBreadcrumbRoot collection={items} size={value} />
         </div>
       ))}
     </div>

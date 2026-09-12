@@ -14,7 +14,7 @@ export interface XhBreadcrumbRootProps extends Omit<ComponentPropsWithRef<'nav'>
   translations?: Partial<BreadcrumbTranslations>
   tone?: Tone
   size?: Size
-  /** 分隔符的内容；不给就是一个斜杠。 */
+  /** 分隔符的内容；不给时由皮肤绘制默认箭头。 */
   renderSeparator?: () => ReactNode
   /** 省略位的内容，拿得到被折起的那几层；不给就是一个省略号。 */
   renderEllipsis?: (nodes: readonly BreadcrumbNodeMeta[]) => ReactNode
@@ -108,7 +108,7 @@ function DefaultTree(props: {
   const out: ReactNode[] = []
   props.items.forEach((item, index) => {
     if (index > 0)
-      out.push(<XhBreadcrumbSeparator key={`sep-${index}`}>{props.renderSeparator?.() ?? '/'}</XhBreadcrumbSeparator>)
+      out.push(<XhBreadcrumbSeparator key={`sep-${index}`}>{props.renderSeparator?.()}</XhBreadcrumbSeparator>)
     if (item.type === 'ellipsis') {
       out.push(<XhBreadcrumbEllipsis key="ellipsis">{props.renderEllipsis?.(item.nodes) ?? '…'}</XhBreadcrumbEllipsis>)
       return

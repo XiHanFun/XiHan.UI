@@ -1,32 +1,16 @@
-<!-- 读屏文案 | root 是 nav 地标，translations.root 换掉它的 aria-label，同页有多个地标时靠它区分 -->
+<!-- 自定义分隔符 | 替换层级之间的视觉标记 -->
 <script setup lang="ts">
-import {
-  XhBreadcrumbItem,
-  XhBreadcrumbLink,
-  XhBreadcrumbList,
-  XhBreadcrumbRoot,
-  XhBreadcrumbSeparator,
-} from "@xihan-ui/vue";
+import { XhBreadcrumbRoot } from "@xihan-ui/vue";
 
-const translations = { root: "文章位置" };
+const items = [
+  { value: "workspace", label: "工作台", href: "#/workspace" },
+  { value: "projects", label: "项目", href: "#/workspace/projects" },
+  { value: "xihan-ui", label: "XiHan.UI", current: true },
+];
 </script>
 
 <template>
-  <XhBreadcrumbRoot :translations="translations">
-    <XhBreadcrumbList>
-      <XhBreadcrumbItem>
-        <XhBreadcrumbLink href="#/blog">博客</XhBreadcrumbLink>
-      </XhBreadcrumbItem>
-      <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
-      <XhBreadcrumbItem>
-        <XhBreadcrumbLink href="#/blog/2026">2026</XhBreadcrumbLink>
-      </XhBreadcrumbItem>
-      <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
-      <XhBreadcrumbItem>
-        <XhBreadcrumbLink href="#/blog/2026/design-system" current>
-          设计系统运行时
-        </XhBreadcrumbLink>
-      </XhBreadcrumbItem>
-    </XhBreadcrumbList>
+  <XhBreadcrumbRoot :collection="items">
+    <template #separator>•</template>
   </XhBreadcrumbRoot>
 </template>
