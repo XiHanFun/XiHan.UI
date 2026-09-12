@@ -995,7 +995,7 @@ function renderComponent(entry, category) {
       push(a11y, '')
   }
 
-  const componentTokenDocs = renderComponentTokenDocs(es.componentTokens)
+  const componentTokenDocs = renderComponentTokenDocs(es.componentTokens, { headingLevel: 3 })
   const sm = scriptedMotion(id)
   const hasStyleReference = Boolean(
     sk
@@ -1034,7 +1034,7 @@ function renderComponent(entry, category) {
 
   // 可覆盖令牌的名字、部件、属性、状态与缺省来源全部来自 CSS 生成 manifest。
   if (componentTokenDocs)
-    push(...componentTokenDocs.replace(/^## CSS 变量$/m, '### CSS 变量').split('\n'), '')
+    push(...componentTokenDocs.split('\n'), '')
 
   // 动效：分三种情形——皮肤里真在动、动效在皮肤之外由脚本驱动、本组件不动。
   // renderless 且没有脚本动效的 family 不伪造“本组件皮肤”小节。
