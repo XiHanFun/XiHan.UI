@@ -105,7 +105,12 @@ export function usePagination(props: PaginationSchema['props']): PaginationConte
   const api = connectPagination({ root: service, pageSizeSelect }, reactNormalize)
 
   // 退场闸门：收起从跟着展开态走，改成跟着 presence 走
-  const visible = useOverlayExit({ config, isOpen: () => api.openEllipsis != null, contentRef })
+  const visible = useOverlayExit({
+    config,
+    isOpen: () => api.openEllipsis != null,
+    contentRef,
+    onPresence: presence => service.refs.set('presence', presence),
+  })
   const pageSizeVisible = useOverlayExit({
     config,
     isOpen: () => api.pageSizeSelect.open,

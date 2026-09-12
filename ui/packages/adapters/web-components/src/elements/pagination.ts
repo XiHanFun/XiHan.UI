@@ -169,6 +169,17 @@ export class XhPaginationElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.paginationScope, idGenerator: this.idGen })
   }
 
+  /** 在机器挂载前建立 Presence，让省略位行为资源与真实退场共享租约。 */
+  private ensureExit(open: boolean): OverlayExit {
+    this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open,
+      onExitComplete: () => this.requestUpdate(),
+    })
+    return this.exit
+  }
+
   /** 此刻摊开的是哪个省略位的节点——它是定位锚点。 */
   private openEllipsisEl(side: PaginationEllipsisSide | null): HTMLElement | null {
     if (!side)
@@ -223,6 +234,7 @@ export class XhPaginationElement extends XhElement {
     this.ensureConfig()
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.ensureExit(svc.state.matches('visible')).presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.openEllipsisEl(svc.context.get('openEllipsis')))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -381,15 +393,10 @@ export class XhPaginationElement extends XhElement {
     // 会盖过 UA 的 [hidden]{display:none}；换别家样式同理，只有内联 style 压得住。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const content = this.getPart('content')
-    this.ensureConfig()
-    this.exit ??= createOverlayExit({
-      config: this.config!,
-      open: api.openEllipsis != null,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    this.exit.track(content)
-    this.exit.update(api.openEllipsis != null)
-    this.setPartHidden(content, !this.exit.visible)
+    const exit = this.ensureExit(api.openEllipsis != null)
+    exit.track(content)
+    exit.update(api.openEllipsis != null)
+    this.setPartHidden(content, !exit.visible)
 
     this.bars.wire()
   }

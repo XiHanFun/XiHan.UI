@@ -247,6 +247,9 @@ export function connectPagination<T extends PropTypes>(
       'data-state': stateAttr,
       'data-placement': placement,
       'data-size': prop('size'),
+      // 视觉节点由 Presence 延留；逻辑关闭后立即退出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       'hidden': !open || undefined,
       // 指针落到面板上即撤销收起等待，斜着划过去不会半路关掉
       'onPointerenter': () => send({ type: 'ELLIPSIS.ENTER' }),

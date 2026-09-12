@@ -371,6 +371,9 @@ export function connectSideNav<T extends PropTypes>(
         // 锚点被滚出可视区时引擎置 hidden，样式据此收起浮层。
         // 这条与皮肤的 [data-hidden] 规则是一对：少了它，锚点滚出视区后面板会继续悬在原坐标
         'data-hidden': dataAttr(placed?.hidden),
+        // Presence 延留定位层；逻辑关闭后立即退出交互与可访问树。
+        'inert': !open || undefined,
+        'aria-hidden': !open || undefined,
         'hidden': !open || undefined,
         // 收起后坐标留到这一枝下一次展开才作废：退场动画在原位播
         'style': placed
@@ -396,6 +399,8 @@ export function connectSideNav<T extends PropTypes>(
           'id': contentId(v),
           'data-popout': '',
           'data-state': open ? 'open' : 'closed',
+          'inert': !open || undefined,
+          'aria-hidden': !open || undefined,
           // 面板自己也收起：定位层已经整层让位，这条是给「只查面板」的作者与读屏留的同一个事实
           'hidden': !open || undefined,
         })
