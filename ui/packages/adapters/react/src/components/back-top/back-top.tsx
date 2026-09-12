@@ -2,7 +2,6 @@ import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { BackTopApi, BackTopBehavior, BackTopSchema, BackTopTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { useCallback, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
@@ -21,8 +20,8 @@ export interface XhBackTopRootProps extends Omit<ComponentPropsWithRef<'div'>, '
   variant?: ActionVariant
   tone?: Tone
   size?: Size
-  /** 滚动容器，缺省即整页滚动；经 refs 交给观察器。 */
-  target?: HTMLElement | null
+  /** 滚动容器取值器，缺省即整页滚动；挂载效应执行时求值。 */
+  target?: () => HTMLElement | null
   onVisibilityChange?: BackTopProps['onVisibilityChange']
   children?: SlotChildren<BackTopRootSlotProps>
 }
@@ -40,10 +39,6 @@ export function XhBackTopRoot({
   children,
   ...rest
 }: XhBackTopRootProps): ReactNode {
-  // 取值器每帧换、接线只建一次：现读这一帧的 target，别让它成为重建的理由
-  const latest = useRef(target)
-  latest.current = target
-  const getTargetEl = useCallback(() => latest.current ?? null, [])
   const ctx = useBackTop(withXhConfig('back-top', {
     visibilityHeight,
     behavior,
@@ -52,7 +47,7 @@ export function XhBackTopRoot({
     tone,
     size,
     onVisibilityChange,
-  }) as BackTopProps, getTargetEl)
+  }) as BackTopProps, target)
   return (
     <BackTopProvider value={ctx}>
       <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>

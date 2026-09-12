@@ -1,29 +1,33 @@
-<!-- 基础用法 | 滚过 200px 按钮才露面，点它滚回顶部 -->
+<!-- 基础用法 | 滚动后显示回到顶部按钮 -->
 <script setup lang="ts">
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";
 import { ref } from "vue";
 
+const sections = ["概览", "安装", "主题", "发布"];
 const scrollEl = ref<HTMLElement | null>(null);
 </script>
 
 <template>
-  <!-- 定位壳缺省钉在视口一角；这里把它改成钉在面板内，示例才不必占用整页 -->
-  <div style="position: relative; inline-size: 100%">
+  <div style="position: relative; inline-size: min(560px, 100%)">
     <div
       ref="scrollEl"
       style="
         block-size: 240px;
         overflow: auto;
-        padding: 12px;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 8px;
+        padding-inline: 16px;
+        border-radius: var(--xh-shape-surface);
+        background: var(--xh-bg-subtle);
       "
     >
-      <p v-for="i in 20" :key="i" style="margin: 0 0 12px">第 {{ i }} 段内容，往下滚。</p>
+      <section v-for="section in sections" :key="section" style="min-block-size: 104px; padding-block: 16px">
+        <strong>{{ section }}</strong>
+        <p style="color: var(--xh-fg-muted)">{{ section }}相关内容</p>
+      </section>
     </div>
 
     <XhBackTopRoot
       :target="scrollEl"
+      :visibility-height="120"
       style="position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px"
     >
       <XhBackTopTrigger />

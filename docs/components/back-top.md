@@ -1,6 +1,6 @@
 # BackTop 回到顶部
 
-滚过一段距离后露面的按钮，点它滚回顶部。
+滚动超过指定距离后显示返回入口。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/back-top" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-滚过 200px 按钮才露面，点它滚回顶部
+滚动后显示回到顶部按钮
 
 <XhDemo src="back-top/01-basic" />
 
@@ -24,27 +24,21 @@
 
 ## 示例
 
-### 露面阈值
+### 显示阈值
 
-visibility-height 决定滚过多少像素按钮才出现
+提前显示回到顶部按钮
 
 <XhDemo src="back-top/02-visibility-height" />
 
 ### 滚动方式
 
-behavior=auto 一步跳回顶部，smooth 平滑滚过去
+平滑返回或立即返回
 
 <XhDemo src="back-top/03-behavior" />
 
-### 语气与尺寸
-
-tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读屏念出的名字
-
-<XhDemo src="back-top/04-tone-size" />
-
 ### 变体
 
-variant 换按钮的底色、描边与前景怎么用；这里把露面门槛设成 0，不滚也看得见
+选择与所在表面匹配的样式
 
 <XhDemo src="back-top/05-variant" />
 
@@ -52,34 +46,32 @@ variant 换按钮的底色、描边与前景怎么用；这里把露面门槛设
 
 ### 何时使用
 
-- 页面很长且没有别的快速返回方式。
+- 用于长页面或独立滚动区域。
 
 ### 何时不用
 
-- 页面本来就不长：滚过 200px 就出现的按钮只会挡内容。
-- 需要的是一组动作而不只是回顶：用[浮动按钮](./float-button)。
+- 短页面不需要返回入口。
+- 多个悬浮操作使用[浮动按钮](./float-button)。
 
 ### 特性
 
-- `visibilityHeight` 决定滚过多少像素才露面。
-- `behavior` 决定一步跳回还是平滑滚过去。
-- `translations` 换掉读屏念出的名字。
-- 缺省触发器与浮动按钮同属 M3 通透玻璃：背景、边缘、高光、柔影和磨砂来自 `material.glass`；显式 `variant` 仍按各自语义表面绘制。
-- 键盘聚焦时触发器改用配方的实体 focus surface，让公共焦点环不依赖背后页面颜色；高对比、减少透明和强制色沿同一令牌通道降级。
+- `visibilityHeight` 设置显示阈值。
+- `behavior` 支持平滑或立即返回。
+- 默认使用悬浮玻璃表面，也可通过 `variant` 调整外观。
+- 减少动效、减少透明度与强制色模式会自动降级。
 
 ### 组合
 
-- 与[滚动区域](./scroll-area)配合时把滚动容器指给它，别让它盯着窗口。
+- 指定 `target` 后监听并滚动该容器；未指定时作用于页面。
 
 ### 最佳实践
 
-- 位置要躲开固定工具条与移动端手势区。
-- 平滑滚动对晕动敏感的用户不友好，系统开了减弱动效时应退回一步跳回。
+- 避开固定工具条和移动端手势区。
+- 保持默认的按需显示，不要在页面顶部常驻。
 
 ### 反模式
 
-- 恒显：没滚动时它没有意义，只是一块遮挡。
-- 在短页面上加它。
+- 不要在短页面或已有返回入口的位置重复使用。
 
 ## API 参考
 

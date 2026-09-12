@@ -1,32 +1,28 @@
-<!-- 滚动方式 | behavior=auto 一步跳回顶部，smooth 平滑滚过去 -->
+<!-- 滚动方式 | 平滑返回或立即返回 -->
 <script setup lang="ts">
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";
 import { ref } from "vue";
 
+const sections = ["概览", "配置", "接口", "发布"];
 const smoothEl = ref<HTMLElement | null>(null);
 const autoEl = ref<HTMLElement | null>(null);
 </script>
 
 <template>
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; inline-size: 100%">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; inline-size: min(640px, 100%)">
     <div style="position: relative">
       <div
         ref="smoothEl"
-        style="
-          block-size: 200px;
-          overflow: auto;
-          padding: 12px;
-          border: 1px solid var(--xh-border-default);
-          border-radius: 8px;
-        "
+        style="block-size: 200px; overflow: auto; padding-inline: 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
       >
-        <p v-for="i in 16" :key="i" style="margin: 0 0 12px">smooth · 第 {{ i }} 段</p>
+        <p v-for="section in sections" :key="section" style="min-block-size: 64px">平滑 · {{ section }}</p>
       </div>
       <XhBackTopRoot
         :target="smoothEl"
         behavior="smooth"
+        :visibility-height="40"
         size="sm"
-        style="position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px"
+        style="position: absolute; --xh-back-top-inset-block: 10px; --xh-back-top-inset-inline: 10px"
       >
         <XhBackTopTrigger />
       </XhBackTopRoot>
@@ -35,21 +31,16 @@ const autoEl = ref<HTMLElement | null>(null);
     <div style="position: relative">
       <div
         ref="autoEl"
-        style="
-          block-size: 200px;
-          overflow: auto;
-          padding: 12px;
-          border: 1px solid var(--xh-border-default);
-          border-radius: 8px;
-        "
+        style="block-size: 200px; overflow: auto; padding-inline: 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
       >
-        <p v-for="i in 16" :key="i" style="margin: 0 0 12px">auto · 第 {{ i }} 段</p>
+        <p v-for="section in sections" :key="section" style="min-block-size: 64px">立即 · {{ section }}</p>
       </div>
       <XhBackTopRoot
         :target="autoEl"
         behavior="auto"
+        :visibility-height="40"
         size="sm"
-        style="position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px"
+        style="position: absolute; --xh-back-top-inset-block: 10px; --xh-back-top-inset-inline: 10px"
       >
         <XhBackTopTrigger />
       </XhBackTopRoot>
