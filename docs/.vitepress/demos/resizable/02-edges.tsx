@@ -1,10 +1,9 @@
-// 只开放部分边 | edges 决定哪几条边可调；没开放的边不显示把手
+// 全部边缘 | 从任意边缘或角点调整尺寸
 import type { ReactNode } from "react";
 import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/react";
 import { useState } from "react";
 
-// 只往右下角撑大——文档流里最常见的形态，不需要定位上下文也完全正确
-const EDGES = ["e", "s", "se"] as const;
+const EDGES = ["n", "ne", "e", "se", "s", "sw", "w", "nw"] as const;
 
 export default function Demo(): ReactNode {
   const [dimensions, setDimensions] = useState({ width: 240, height: 120 });
@@ -17,12 +16,12 @@ export default function Demo(): ReactNode {
       minWidth={120}
       minHeight={80}
       style={{
-        border: "1px solid var(--xh-border-default)",
         borderRadius: "var(--xh-shape-surface)",
-        padding: "12px",
+        background: "var(--xh-bg-subtle)",
+        padding: "16px",
       }}
     >
-      <span>只有右、下、右下三个把手</span>
+      <span>从任意边缘调整</span>
       {EDGES.map(edge => (
         <XhResizableHandle key={edge} edge={edge} />
       ))}

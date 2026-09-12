@@ -1,4 +1,4 @@
-// 约束 | 上下限夹住范围，aspectRatio 锁宽高比，step 吸附到整数倍
+// 约束 | 设置宽高比和步进
 import type { ReactNode } from "react";
 import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/react";
 import { useState } from "react";
@@ -12,7 +12,7 @@ export default function Demo(): ReactNode {
   return (
     <div style={{ display: "grid", gap: "24px" }}>
       <div>
-        <p style={{ marginBottom: "8px" }}>锁 16:9——推一条边，另一轴跟着算</p>
+        <p style={{ marginBottom: "8px" }}>16:9 宽高比</p>
         <XhResizableRoot
           dimensions={ratio}
           onDimensionsChange={details => setRatio(details.dimensions)}
@@ -20,9 +20,9 @@ export default function Demo(): ReactNode {
           edges={[...EDGES]}
           minWidth={160}
           style={{
-            border: "1px solid var(--xh-border-default)",
             borderRadius: "var(--xh-shape-surface)",
-            padding: "12px",
+            background: "var(--xh-bg-subtle)",
+            padding: "16px",
           }}
         >
           <span>{`${Math.round(ratio.width)} × ${Math.round(ratio.height)}`}</span>
@@ -33,7 +33,7 @@ export default function Demo(): ReactNode {
       </div>
 
       <div>
-        <p style={{ marginBottom: "8px" }}>吸附到 40 的整数倍</p>
+        <p style={{ marginBottom: "8px" }}>40px 步进</p>
         <XhResizableRoot
           dimensions={snapped}
           onDimensionsChange={details => setSnapped(details.dimensions)}
@@ -42,9 +42,9 @@ export default function Demo(): ReactNode {
           minWidth={120}
           minHeight={80}
           style={{
-            border: "1px solid var(--xh-border-default)",
             borderRadius: "var(--xh-shape-surface)",
-            padding: "12px",
+            background: "var(--xh-bg-subtle)",
+            padding: "16px",
           }}
         >
           <span>{`${snapped.width} × ${snapped.height}`}</span>
