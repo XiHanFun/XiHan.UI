@@ -1,33 +1,33 @@
-<!-- 基础用法 | 在触发区上右键（触摸端长按），菜单钉在按下去的那一点上 -->
+<!-- 基础用法 | 在目标区域右键打开命令菜单 -->
 <script setup lang="ts">
 import { XhContextMenuRoot } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const commands = [
-  { value: "copy", label: "复制" },
-  { value: "paste", label: "粘贴", disabled: true },
+  { value: "open", label: "打开" },
   { value: "rename", label: "重命名" },
-  { value: "delete", label: "删除", separatorBefore: true },
+  { value: "duplicate", label: "创建副本" },
+  { value: "delete", label: "移到回收站", separatorBefore: true },
 ];
-
-const picked = ref("");
-
-function onSelect(details: { value: string }): void {
-  picked.value = details.value;
-}
 </script>
 
 <template>
-  <div style="inline-size: 100%; display: grid; gap: 12px">
-    <XhContextMenuRoot :collection="commands" @select="onSelect">
-      <!-- 触发区的尺寸与排布归作者，皮肤只管它的交互观感 -->
-      <template #trigger>
-        <span style="display: grid; place-items: center; min-block-size: 120px">
-          在这块区域上右键
-        </span>
-      </template>
-    </XhContextMenuRoot>
-
-    <span>最近选中：{{ picked || "（无）" }}</span>
-  </div>
+  <XhContextMenuRoot :collection="commands">
+    <template #trigger>
+      <span
+        style="
+          display: grid;
+          place-items: center;
+          gap: 6px;
+          inline-size: min(480px, 100%);
+          min-block-size: 160px;
+          border-radius: var(--xh-shape-surface);
+          background: var(--xh-bg-subtle);
+          cursor: context-menu;
+        "
+      >
+        <strong>设计规范.pdf</strong>
+        <span style="color: var(--xh-fg-muted)">右键打开菜单</span>
+      </span>
+    </template>
+  </XhContextMenuRoot>
 </template>
