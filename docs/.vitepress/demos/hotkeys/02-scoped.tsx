@@ -1,33 +1,19 @@
-// 限定范围 | target 显式返回真实容器，只在这一层接组合
+// 局部范围 | 仅在指定区域内响应
 import type { ReactNode } from "react";
-import { XhHotkeys, XhKbdGroup } from "@xihan-ui/react";
+import { XhHotkeys } from "@xihan-ui/react";
 import { useRef, useState } from "react";
 
 export default function Demo(): ReactNode {
-  const [hits, setHits] = useState(0);
+  const [count, setCount] = useState(0);
   const scope = useRef<HTMLDivElement>(null);
-
   return (
     <div
       ref={scope}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "8px",
-        padding: "12px",
-        border: "1px solid currentColor",
-        borderRadius: "8px",
-      }}
+      tabIndex={0}
+      style={{ padding: "12px 16px", borderRadius: "var(--xh-shape-control)", background: "var(--xh-bg-subtle)" }}
     >
-      {/* 监听装在这一层容器上：焦点在框外时按同一组合不会触发 */}
-      <input placeholder="在这里按 Mod+Enter" />
-      <XhKbdGroup keys={["Mod", "Enter"]} />
-      <XhHotkeys
-        keys={["Mod", "Enter"]}
-        target={() => scope.current}
-        onHotKey={() => setHits(previous => previous + 1)}
-      />
-      <span>{`框内已触发 ${hits} 次`}</span>
+      {`聚焦后按 Mod + Enter · ${count ? `已触发 ${count} 次` : "等待输入"}`}
+      <XhHotkeys keys={["Mod", "Enter"]} target={() => scope.current} onHotKey={() => setCount(value => value + 1)} />
     </div>
   );
 }

@@ -1,29 +1,19 @@
-// 开关监听 | enabled 只控制行为，KbdGroup 的 disabled 由业务显式同步
+// 启用状态 | 动态启用或暂停监听
 import type { ReactNode } from "react";
-import { XhHotkeys, XhKbdGroup } from "@xihan-ui/react";
+import { XhHotkeys } from "@xihan-ui/react";
 import { useState } from "react";
 
 export default function Demo(): ReactNode {
   const [enabled, setEnabled] = useState(true);
-  const [hits, setHits] = useState(0);
-
+  const [count, setCount] = useState(0);
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-      <label style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-        <input
-          type="checkbox"
-          checked={enabled}
-          onChange={event => setEnabled(event.target.checked)}
-        />
-        监听生效
+    <>
+      <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <input type="checkbox" checked={enabled} onChange={event => setEnabled(event.target.checked)} />
+        启用 Mod + B
       </label>
-      <XhKbdGroup keys={["Mod", "B"]} disabled={!enabled} />
-      <XhHotkeys
-        keys={["Mod", "B"]}
-        enabled={enabled}
-        onHotKey={() => setHits(previous => previous + 1)}
-      />
-      <span>{`已触发 ${hits} 次`}</span>
-    </div>
+      <XhHotkeys keys={["Mod", "B"]} enabled={enabled} onHotKey={() => setCount(value => value + 1)} />
+      <output>{count ? `已触发 ${count} 次` : "等待输入"}</output>
+    </>
   );
 }
