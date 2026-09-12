@@ -67,6 +67,12 @@
     border-color: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
   }
 
+  /* 低强调变体用于已有表面：保留实体边界与三态填充，只移除控制盒海拔。 */
+  [data-scope='checkbox'][data-part='root'][data-variant='secondary'] {
+    --xh-_checkbox-shadow-rest: none;
+    --xh-_checkbox-shadow-hover: none;
+  }
+
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
      那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
   [data-scope='checkbox'][data-part='root']:is([data-state='checked'], [data-state='indeterminate']):focus-visible {

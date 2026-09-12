@@ -1,15 +1,11 @@
-<!-- 语气 | tone 决定选中态的底与描边用哪族颜色，所以这里都置为选中 -->
+<!-- 变体 | 根据所在表面选择强调层级 -->
 <script setup lang="ts">
 import { XhCheckbox } from "@xihan-ui/vue";
-
-const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap">
-    <span v-for="t in tones" :key="t" style="display: inline-flex; align-items: center; gap: 6px">
-      <XhCheckbox :tone="t" default-checked />
-      <span>{{ t }}</span>
-    </span>
+  <div style="display: grid; gap: 12px">
+    <XhCheckbox default-checked>主要复选框</XhCheckbox>
+    <XhCheckbox variant="secondary" default-checked>次级复选框</XhCheckbox>
   </div>
 </template>

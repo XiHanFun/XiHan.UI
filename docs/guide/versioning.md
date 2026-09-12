@@ -121,7 +121,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 218 个不同的 `data-*` 属性名、949 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 218 个不同的 `data-*` 属性名、950 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -133,7 +133,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-**样式钩子**——自带皮肤自己就消费了 163 个属性名 / 721 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤照着抄的就是这一组：
+**样式钩子**——自带皮肤自己就消费了 163 个属性名 / 722 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤照着抄的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -212,7 +212,7 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 131（`defineXhElements()` 注册 130 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1232 条声明 / 373 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| observed attribute | 1233 条声明 / 373 个不同名字 | **受约束**（具体元素上的具体属性名） |
 | attribute 名词汇表本身 | 373 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
 | `CustomEvent` 名 | 90 个名字 / 188 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（173 处中 171 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，免得被祖先 `<form>` 当成自己的提交 |
@@ -411,11 +411,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 ### 已经焊死的
 
 **六种介质的「改名 = major」现在有门禁兜着。** `pnpm gate:surface` 跑的 `check-public-surface`
-拿一份入库的基线（`ui/tooling/public-surface.json`，14158 个名字）比对当前状态：
+拿一份入库的基线（`ui/tooling/public-surface.json`，14160 个名字）比对当前状态：
 **基线里有而当前没有，就是删了或改名了，构建失败**。新增一律放行，因为那是 minor。
 
-覆盖：包名与 182 条子入口、7433 个导出名、128 个 `data-scope` 与 943 条部件配对、
-128 个组件的 1586 个 prop 名、220 种 `data-*`、33 个 `data-state` 取值、414 个令牌、
+覆盖：包名与 182 条子入口、7434 个导出名、128 个 `data-scope` 与 943 条部件配对、
+128 个组件的 1587 个 prop 名、220 种 `data-*`、33 个 `data-state` 取值、414 个令牌、
 5 个 `@layer` 名、3562 个组件覆盖槽、130 个自定义元素及其 attribute 与事件。
 
 prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测 `transfer` 的 `items` 改

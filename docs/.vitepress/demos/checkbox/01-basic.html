@@ -1,18 +1,10 @@
-<!-- 基础用法 | 不传 checked 即为非受控 -->
-<xh-checkbox>
-  <button data-xh-part="root">
-    <span data-xh-part="indicator"></span>
-  </button>
-</xh-checkbox>
-
-<xh-checkbox default-checked>
-  <button data-xh-part="root">
-    <span data-xh-part="indicator"></span>
-  </button>
-</xh-checkbox>
-
-<xh-checkbox disabled>
-  <button data-xh-part="root">
-    <span data-xh-part="indicator"></span>
-  </button>
+<!-- 基础用法 | 标记一个独立选项 -->
+<xh-checkbox name="updates" default-checked>
+  <label data-xh-part="label">
+    <button data-xh-part="root">
+      <span data-xh-part="indicator"></span>
+      <input data-xh-part="hidden-input" />
+    </button>
+    <span data-xh-part="text">接收产品更新</span>
+  </label>
 </xh-checkbox>

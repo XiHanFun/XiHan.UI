@@ -1,4 +1,4 @@
-<!-- 三态 | checked 传 "indeterminate" 表示部分选中，它不是第三个稳定态：点一下就落到 true -->
+<!-- 不确定状态 | 表示部分选中 -->
 <script setup lang="ts">
 import { XhCheckbox } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -7,6 +7,5 @@ const checked = ref<boolean | "indeterminate">("indeterminate");
 </script>
 
 <template>
-  <XhCheckbox v-model:checked="checked" />
-  <span>当前：{{ checked }}</span>
+  <XhCheckbox v-model:checked="checked">选择全部</XhCheckbox>
 </template>

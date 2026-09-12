@@ -1,5 +1,5 @@
 import type { Size, Tone } from '@xihan-ui/core'
-import type { CheckboxCheckedState, CheckboxSchema } from '@xihan-ui/headless'
+import type { CheckboxCheckedState, CheckboxSchema, CheckboxVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import { useId, useRef } from 'react'
 import { useFormReset } from '../../runtime/attach-form-reset'
@@ -26,6 +26,7 @@ export interface XhCheckboxProps extends ButtonProps {
   name?: string
   value?: string
   tone?: Tone
+  variant?: CheckboxVariant
   size?: Size
   onCheckedChange?: CheckboxProps['onCheckedChange']
   /** 方框里的图形；不写由皮肤画勾。 */
@@ -44,6 +45,7 @@ export function XhCheckbox({
   name,
   value,
   tone,
+  variant,
   size,
   onCheckedChange,
   indicator,
@@ -60,6 +62,7 @@ export function XhCheckbox({
     name,
     value,
     tone,
+    variant,
     size,
     onCheckedChange,
   } as CheckboxProps))
