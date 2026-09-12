@@ -24,12 +24,17 @@ export function isTreeSelectLazyBranch(node: TreeSelectNode): boolean {
   return node.hasChildren === true && node.children === undefined
 }
 
-export function findTreeSelectNode(nodes: readonly TreeSelectNode[], value: string): TreeSelectNode | null {
+export function findTreeSelectNode(
+  nodes: readonly TreeSelectNode[],
+  value: string,
+  loadedChildren: Readonly<Record<string, TreeSelectNode[]>> = {},
+): TreeSelectNode | null {
   for (const node of nodes) {
     if (node.value === value)
       return node
-    if (node.children) {
-      const found = findTreeSelectNode(node.children, value)
+    const children = node.children ?? loadedChildren[node.value]
+    if (children) {
+      const found = findTreeSelectNode(children, value, loadedChildren)
       if (found)
         return found
     }
@@ -66,22 +71,23 @@ function setBranchLoad(
   context.set('branchLoads', { ...context.get('branchLoads'), [value]: snapshot })
 }
 
-function clearBranchLoad(context: TreeSelectActionParams['context'], value: string): void {
-  const current = context.get('branchLoads')
-  if (!(value in current))
-    return
-  const { [value]: _, ...rest } = current
-  context.set('branchLoads', rest)
-}
-
 function beginBranchLoad(params: TreeSelectActionParams, value: string, force: boolean): void {
-  const { context, prop, refs } = params
+  const { context, prop, refs, scope } = params
   const loadChildren = prop('loadChildren')
-  const node = findTreeSelectNode(prop('collection') ?? [], value)
-  if (!loadChildren || !node || !isTreeSelectLazyBranch(node))
+  const node = findTreeSelectNode(prop('collection') ?? [], value, context.get('loadedChildren'))
+  if (!node || !isTreeSelectLazyBranch(node))
     return
   if (value in context.get('loadedChildren'))
     return
+  if (!force && context.get('branchLoads')[value]?.status === 'error')
+    return
+  if (!loadChildren) {
+    const error = new Error(`TreeSelect lazy branch "${value}" requires loadChildren`)
+    refs.get('branchLoadOwners').set(value, node)
+    setBranchLoad(context, value, { status: 'error', error })
+    prop('onBranchLoadError')?.({ value, node, error })
+    return
+  }
 
   const controllers = refs.get('branchLoadControllers')
   const previous = controllers.get(value)
@@ -90,15 +96,18 @@ function beginBranchLoad(params: TreeSelectActionParams, value: string, force: b
   previous?.controller.abort()
 
   const token = ++refs.get('branchLoadSequence').n
-  const controller = new AbortController()
-  controllers.set(value, { controller, token })
+  const controller = new (scope.getWin().AbortController)()
+  controllers.set(value, { controller, token, node })
+  refs.get('branchLoadOwners').set(value, node)
   setBranchLoad(context, value, { status: 'loading' })
+  prop('onBranchLoadStart')?.({ value, node, reason: force ? 'retry' : 'expand' })
 
   const current = (): boolean => {
     const entry = controllers.get(value)
     return entry?.controller === controller
       && entry.token === token
-      && isTreeSelectLazyBranch(findTreeSelectNode(prop('collection') ?? [], value) ?? ({ value } as TreeSelectNode))
+      && findTreeSelectNode(prop('collection') ?? [], value, context.get('loadedChildren')) === node
+      && isTreeSelectLazyBranch(node)
   }
 
   Promise.resolve()
@@ -106,26 +115,49 @@ function beginBranchLoad(params: TreeSelectActionParams, value: string, force: b
     .then((children) => {
       if (!current() || controller.signal.aborted)
         return
+      const resolved = children ? [...children] : []
       controllers.delete(value)
-      context.set('loadedChildren', { ...context.get('loadedChildren'), [value]: children ? [...children] : [] })
-      clearBranchLoad(context, value)
-    })
-    .catch((error: unknown) => {
+      context.set('loadedChildren', { ...context.get('loadedChildren'), [value]: resolved })
+      setBranchLoad(context, value, { status: 'loaded', empty: resolved.length === 0 })
+      prop('onBranchLoad')?.({ value, node, children: resolved })
+    }, (error: unknown) => {
       if (!current() || controller.signal.aborted)
         return
       controllers.delete(value)
       setBranchLoad(context, value, { status: 'error', error })
+      prop('onBranchLoadError')?.({ value, node, error })
     })
 }
 
-function lazyBranchValues(nodes: readonly TreeSelectNode[], values = new Set<string>()): Set<string> {
+function lazyBranches(
+  nodes: readonly TreeSelectNode[],
+  loadedChildren: Readonly<Record<string, TreeSelectNode[]>>,
+  values = new Map<string, TreeSelectNode>(),
+): Map<string, TreeSelectNode> {
   for (const node of nodes) {
     if (isTreeSelectLazyBranch(node))
-      values.add(node.value)
-    if (node.children)
-      lazyBranchValues(node.children, values)
+      values.set(node.value, node)
+    const children = node.children ?? loadedChildren[node.value]
+    if (children)
+      lazyBranches(children, loadedChildren, values)
   }
   return values
+}
+
+function cancelBranchLoad(params: TreeSelectActionParams, value: string): void {
+  const entry = params.refs.get('branchLoadControllers').get(value)
+  if (!entry)
+    return
+  entry.controller.abort()
+  params.refs.get('branchLoadControllers').delete(value)
+  setBranchLoad(params.context, value, { status: 'idle' })
+}
+
+function cancelBranchLoads(params: TreeSelectActionParams, except: ReadonlySet<string> = new Set()): void {
+  for (const value of [...params.refs.get('branchLoadControllers').keys()]) {
+    if (!except.has(value))
+      cancelBranchLoad(params, value)
+  }
 }
 
 /**
@@ -186,6 +218,7 @@ export const treeSelectMachine = createMachine({
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
     branchLoads: cell(() => ({ defaultValue: {} })),
     loadedChildren: cell(() => ({ defaultValue: {} })),
+    renderedNodeCount: cell<number>(() => ({ defaultValue: 0 })),
   }),
   refs: () => ({
     config: null,
@@ -198,6 +231,7 @@ export const treeSelectMachine = createMachine({
     typeahead: createTypeahead(),
     branchLoadControllers: new Map(),
     branchLoadSequence: { n: 0 },
+    branchLoadOwners: new Map(),
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   // 开合受控时用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.* 无条件回写；
@@ -209,7 +243,7 @@ export const treeSelectMachine = createMachine({
     // 受控 expandedValue、初始 defaultExpandedValue 与 API 改写共用这一个入口。
     track([context.dep('expandedValue')], () => action(['loadExpandedBranches']))
   },
-  // 分支请求常驻；Layer、消解与焦点资源同样常驻跟踪开合，关闭后由 Presence 延迟释放。
+  // 请求控制器随服务存活，但浮层或分支收起会主动中止；Layer、消解与焦点资源延迟到 Presence 完成。
   effects: ['trackBranchLoads', 'trackLayer'],
   // 这几件事与开合无关，两个状态里都得认；展开态另行声明的 NODE.SELECT 会盖过这里那一条。
   on: {
@@ -221,6 +255,9 @@ export const treeSelectMachine = createMachine({
     'BRANCH.COLLAPSE': { actions: ['collapseBranch'] },
     'BRANCH.TOGGLE': { actions: ['loadExpandedBranch', 'toggleBranch'] },
     'BRANCH.RETRY': { actions: ['retryBranch'] },
+    'NODE.MOUNT': { actions: ['syncRenderedNodes'] },
+    'NODE.UNMOUNT': { actions: ['syncRenderedNodes'] },
+    'NODES.SYNC': { actions: ['syncRenderedNodes'] },
     'NODE.FOCUS': { actions: ['setFocusedValue'] },
     'NODE.SELECT': { actions: ['selectNode'] },
   },
@@ -231,13 +268,13 @@ export const treeSelectMachine = createMachine({
         // 落点意图与焦点归还先记进 context：受控那一拍走 CONTROLLED.OPEN，读不到原按键事件。
         'OPEN': [
           { guard: 'isOpenControlled', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
-          { target: 'open', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
+          { target: 'open', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen', 'resumeBranchLoads'] },
         ],
         'TOGGLE': [
           { guard: 'isOpenControlled', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
-          { target: 'open', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
+          { target: 'open', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen', 'resumeBranchLoads'] },
         ],
-        'CONTROLLED.OPEN': { target: 'open' },
+        'CONTROLLED.OPEN': { target: 'open', actions: ['resumeBranchLoads'] },
       },
     },
     open: {
@@ -250,21 +287,21 @@ export const treeSelectMachine = createMachine({
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
-          { target: 'closed', actions: ['setReturnFocus', 'invokeOnClose'] },
+          { target: 'closed', actions: ['cancelBranchLoads', 'setReturnFocus', 'invokeOnClose'] },
         ],
         'TOGGLE': [
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
-          { target: 'closed', actions: ['setReturnFocus', 'invokeOnClose'] },
+          { target: 'closed', actions: ['cancelBranchLoads', 'setReturnFocus', 'invokeOnClose'] },
         ],
         // 多选选完接着挑，浮层不收起、焦点留在树里；单选选完即收起，走与 CLOSE 相同的收口
         'NODE.SELECT': [
           { guard: 'isMultiple', actions: ['selectNode'] },
           { guard: 'isOpenControlled', actions: ['selectNode', 'setReturnFocus', 'invokeOnClose'] },
-          { target: 'closed', actions: ['selectNode', 'setReturnFocus', 'invokeOnClose'] },
+          { target: 'closed', actions: ['selectNode', 'cancelBranchLoads', 'setReturnFocus', 'invokeOnClose'] },
         ],
         // 持有焦点的节点被移出 DOM，锚点悬空，就地重挑一个，否则没有节点认领 tabindex=0
         'NODE.LOST': { actions: ['setInitialFocusedValue'] },
-        'CONTROLLED.CLOSE': { target: 'closed' },
+        'CONTROLLED.CLOSE': { target: 'closed', actions: ['cancelBranchLoads'] },
       },
     },
   },
@@ -278,25 +315,48 @@ export const treeSelectMachine = createMachine({
 
       syncBranchLoads: (params) => {
         const { context, prop, refs } = params
-        const live = lazyBranchValues(prop('collection') ?? [])
+        const source = prop('collection') ?? []
+        const owners = refs.get('branchLoadOwners')
+        const currentChildren = context.get('loadedChildren')
+        const initialLive = lazyBranches(source, currentChildren)
+        const children = Object.fromEntries(
+          Object.entries(currentChildren).filter(([value]) => initialLive.get(value) === owners.get(value)),
+        )
+        const live = lazyBranches(source, children)
         const controllers = refs.get('branchLoadControllers')
         for (const [value, entry] of [...controllers]) {
-          if (!live.has(value)) {
+          if (live.get(value) !== entry.node) {
             entry.controller.abort()
             controllers.delete(value)
           }
         }
-        const prune = <T>(record: Record<string, T>): Record<string, T> => Object.fromEntries(
-          Object.entries(record).filter(([value]) => live.has(value)),
-        )
-        const loads = prune(context.get('branchLoads'))
-        const children = prune(context.get('loadedChildren'))
+        const keep = (value: string): boolean => live.get(value) === owners.get(value)
+        const loads = Object.fromEntries(Object.entries(context.get('branchLoads')).filter(([value]) => keep(value)))
         if (Object.keys(loads).length !== Object.keys(context.get('branchLoads')).length)
           context.set('branchLoads', loads)
-        if (Object.keys(children).length !== Object.keys(context.get('loadedChildren')).length)
+        if (Object.keys(children).length !== Object.keys(currentChildren).length)
           context.set('loadedChildren', children)
-        for (const value of context.get('expandedValue'))
-          beginBranchLoad(params, value, false)
+        for (const [value] of [...owners]) {
+          if (!keep(value))
+            owners.delete(value)
+        }
+        if (params.state.get() === 'open') {
+          for (const value of context.get('expandedValue'))
+            beginBranchLoad(params, value, false)
+        }
+      },
+
+      syncRenderedNodes: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'NODES.SYNC') {
+          if (context.get('renderedNodeCount') !== e.values.length)
+            context.set('renderedNodeCount', e.values.length)
+          return
+        }
+        if (e.type !== 'NODE.MOUNT' && e.type !== 'NODE.UNMOUNT')
+          return
+        const current = context.get('renderedNodeCount')
+        context.set('renderedNodeCount', e.type === 'NODE.MOUNT' ? current + 1 : Math.max(0, current - 1))
       },
 
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
@@ -435,8 +495,21 @@ export const treeSelectMachine = createMachine({
       },
 
       loadExpandedBranches: (params) => {
-        for (const value of params.context.get('expandedValue'))
+        if (params.state.get() !== 'open')
+          return
+        const expanded = new Set(params.context.get('expandedValue'))
+        cancelBranchLoads(params, expanded)
+        for (const value of expanded)
           beginBranchLoad(params, value, false)
+      },
+
+      resumeBranchLoads: (params) => {
+        params.flush(() => params.scope.getWin().queueMicrotask(() => {
+          if (params.state.get() !== 'open')
+            return
+          for (const value of params.context.get('expandedValue'))
+            beginBranchLoad(params, value, false)
+        }))
       },
 
       expandBranch: ({ context, event }) => {
@@ -449,30 +522,46 @@ export const treeSelectMachine = createMachine({
         context.set('expandedValue', [...current, e.value])
       },
 
-      collapseBranch: ({ context, event }) => {
-        const e = event.current()
+      collapseBranch: (params) => {
+        const { context } = params
+        const e = params.event.current()
         if (e.type !== 'BRANCH.COLLAPSE')
           return
+        cancelBranchLoad(params, e.value)
         context.set('expandedValue', context.get('expandedValue').filter(v => v !== e.value))
       },
 
-      toggleBranch: ({ context, event }) => {
-        const e = event.current()
+      toggleBranch: (params) => {
+        const { context } = params
+        const e = params.event.current()
         if (e.type !== 'BRANCH.TOGGLE')
           return
         const current = context.get('expandedValue')
+        if (current.includes(e.value))
+          cancelBranchLoad(params, e.value)
         context.set(
           'expandedValue',
           current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value],
         )
       },
+
+      cancelBranchLoads,
+
     },
     effects: {
-      // 组件卸载时中止所有请求；回调仍可能异步排队，但 token/controller 判据会拒绝它们。
-      trackBranchLoads: ({ refs }) => () => {
-        for (const { controller } of refs.get('branchLoadControllers').values())
-          controller.abort()
-        refs.get('branchLoadControllers').clear()
+      // 组件卸载时中止所有请求；分支/浮层收起由动作同步取消。
+      trackBranchLoads: (params) => {
+        params.flush(() => params.scope.getWin().queueMicrotask(() => {
+          if (params.state.get() !== 'open')
+            return
+          for (const value of params.context.get('expandedValue'))
+            beginBranchLoad(params, value, false)
+        }))
+        return () => {
+          for (const { controller } of params.refs.get('branchLoadControllers').values())
+            controller.abort()
+          params.refs.get('branchLoadControllers').clear()
+        }
       },
 
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读

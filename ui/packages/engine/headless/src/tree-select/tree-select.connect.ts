@@ -1,6 +1,6 @@
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TreeNodeMeta, TreeVisibleNode } from '../tree'
-import type { TreeSelectApi, TreeSelectBranchLoadSnapshot, TreeSelectSchema } from './tree-select.types'
+import type { TreeSelectApi, TreeSelectBranchLoadSnapshot, TreeSelectSchema, TreeSelectTranslations } from './tree-select.types'
 import { cascadeState, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/core'
 import { overlayPositioned } from '../shared/overlay'
 import { flattenTree, indexTree } from '../tree'
@@ -57,8 +57,19 @@ export function connectTreeSelect<T extends PropTypes>(
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
   const loading = !!prop('loading')
-  // 集合交给库时相位由库判；节点手写时库数不出有几条
+  // collection 与手写部件的节点事实来源不同，但空态判据只在这里汇合。
   const counted = prop('collection') != null
+  const renderedNodeCount = context.get('renderedNodeCount')
+  const empty = (counted ? collection.length : renderedNodeCount) === 0
+  const translations: TreeSelectTranslations = {
+    tree: prop('translations')?.tree ?? 'Tree options',
+    clearTrigger: prop('translations')?.clearTrigger ?? 'Clear',
+    empty: prop('translations')?.empty ?? 'No data',
+    loading: prop('translations')?.loading ?? 'Loading',
+    branchError: prop('translations')?.branchError ?? 'Could not load children',
+    retry: prop('translations')?.retry ?? 'Retry',
+    branchEmpty: prop('translations')?.branchEmpty ?? 'No children',
+  }
   // 只读与禁用都改不了选中值，禁用还额外禁止展开浮层
   const interactive = !disabled && !readOnly
   // 缺省不成环（与列表类组件相反）：树有层级，上键停在首行、下键停在末行才不丢上下文
@@ -87,10 +98,14 @@ export function connectTreeSelect<T extends PropTypes>(
   const isIndeterminate = (v: string): boolean => cascaded?.indeterminate.has(v) ?? false
   const isExpanded = (v: string): boolean => expandedValue.includes(v)
   const branchLoadState = (v: string): TreeSelectBranchLoadSnapshot | null => {
-    const node = findTreeSelectNode(sourceCollection, v)
+    const node = findTreeSelectNode(sourceCollection, v, context.get('loadedChildren'))
     if (!node || !isTreeSelectLazyBranch(node))
       return null
     return context.get('branchLoads')[v] ?? { status: 'idle' as const }
+  }
+  const branchLoadedEmpty = (v: string): boolean => {
+    const snapshot = branchLoadState(v)
+    return snapshot?.status === 'loaded' && snapshot.empty
   }
   // 控件级禁用向下传导，节点也可在 collection 里单独禁用
   const isDisabled = (v: string): boolean => disabled || !!metaOf(v)?.disabled
@@ -137,6 +152,8 @@ export function connectTreeSelect<T extends PropTypes>(
     'data-state': isExpanded(v) ? 'open' : 'closed',
     'data-loading': dataAttr(branchLoadState(v)?.status === 'loading'),
     'data-error': dataAttr(branchLoadState(v)?.status === 'error'),
+    'data-empty': dataAttr(branchLoadedEmpty(v)),
+    'data-load-state': branchLoadState(v)?.status,
   })
 
   /** 从节点内的元素向上找最近的 branch 容器。 */
@@ -177,7 +194,13 @@ export function connectTreeSelect<T extends PropTypes>(
 
   /** 确认键与点行的落点：只改选中值，展开态另由左右方向键与 branch-trigger 处理。 */
   const activate = (row: TreeVisibleNode): void => {
-    if (!interactive || row.disabled)
+    if (disabled || row.disabled)
+      return
+    if (row.branch && branchLoadState(row.value)?.status === 'error') {
+      send({ type: 'BRANCH.RETRY', value: row.value })
+      return
+    }
+    if (readOnly)
       return
     send({ type: 'NODE.SELECT', value: row.value })
   }
@@ -191,6 +214,9 @@ export function connectTreeSelect<T extends PropTypes>(
     valueText,
     displayText,
     focusedValue,
+    empty,
+    loading,
+    translations,
     multiple,
     disabled,
     readOnly,
@@ -316,7 +342,7 @@ export function connectTreeSelect<T extends PropTypes>(
       'type': 'button',
       // 整个控件只占一个 Tab 位（trigger），此按钮不入 Tab 序列；读屏按虚拟光标仍找得到它
       'tabindex': -1,
-      'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
+      'aria-label': translations.clearTrigger,
       // 没值就整个收起，不是禁用：清空钮与下拉钮并排时，一个灰着一个亮着，
       // 用户分不清哪个能点。有值才出现，出现即可用
       'hidden': !canClear || undefined,
@@ -488,7 +514,7 @@ export function connectTreeSelect<T extends PropTypes>(
       // 作者没渲染 label / value-text 时两段都是悬空 IDREF，按 accname 规则整条落空，
       // 名字退回下面那个可写的兜底
       'aria-labelledby': `${ids.label} ${ids['value-text']}`,
-      'aria-label': prop('translations')?.tree ?? 'Tree options',
+      'aria-label': translations.tree,
       // 复选与否显式输出
       'aria-multiselectable': multiple ? 'true' : 'false',
       'aria-disabled': disabled ? 'true' : 'false',
@@ -498,21 +524,24 @@ export function connectTreeSelect<T extends PropTypes>(
       'tabindex': open && focusedValue == null ? 0 : -1,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+      'data-empty': dataAttr(empty && !loading),
     }),
 
     // 空态占位：放在 content 里、tree 的兄弟（role=tree 只许拥有 treeitem 与 group）。
-    // 给了 collection 才由连接层判定露不露面；节点手写时库数不出有几条，那一档不写 hidden，归作者自己收放
+    // collection 与手写节点都用上方统一空态；取数在途时让位。
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
+      'role': 'status',
       'data-state': stateAttr,
-      'hidden': counted ? (loading || collection.length > 0) || undefined : loading || undefined,
+      'hidden': loading || !empty || undefined,
     }),
 
     // 在途占位：与空态占位同一个位置、同一套收放判据，只是条件相反
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
+      'role': 'status',
       'data-state': stateAttr,
-      'hidden': counted ? (!loading || collection.length > 0) || undefined : !loading || undefined,
+      'hidden': !loading || !empty || undefined,
     }),
 
     // 浮层底部的操作区：作者往里放「全部展开」「清空」这类按钮。
@@ -610,6 +639,46 @@ export function connectTreeSelect<T extends PropTypes>(
       ...branchState(node.value),
       // 子层是 treeitem 的下一级分组
       role: 'group',
+    }),
+
+    getBranchLoadingProps: node => normalize.element({
+      ...parts['branch-loading'].attrs,
+      ...branchState(node.value),
+      role: 'status',
+      hidden: (!isExpanded(node.value) || branchLoadState(node.value)?.status !== 'loading') || undefined,
+    }),
+
+    getBranchErrorProps: node => normalize.element({
+      ...parts['branch-error'].attrs,
+      ...branchState(node.value),
+      role: 'alert',
+      hidden: (!isExpanded(node.value) || branchLoadState(node.value)?.status !== 'error') || undefined,
+    }),
+
+    getBranchRetryTriggerProps: node => normalize.button({
+      ...parts['branch-retry-trigger'].attrs,
+      ...branchState(node.value),
+      'type': 'button',
+      'tabindex': -1,
+      'aria-label': translations.retry,
+      'disabled': disabled || undefined,
+      'hidden': (!isExpanded(node.value) || branchLoadState(node.value)?.status !== 'error') || undefined,
+      'onPointerDown': (event: PointerEvent) => {
+        if (event.button === 0)
+          event.preventDefault()
+      },
+      'onClick': (event: MouseEvent) => {
+        event.stopPropagation()
+        if (!disabled)
+          send({ type: 'BRANCH.RETRY', value: node.value })
+      },
+    }),
+
+    getBranchEmptyProps: node => normalize.element({
+      ...parts['branch-empty'].attrs,
+      ...branchState(node.value),
+      role: 'status',
+      hidden: (!isExpanded(node.value) || !branchLoadedEmpty(node.value)) || undefined,
     }),
 
     // 表单出口：选中值随表单提交，对键盘与读屏不存在

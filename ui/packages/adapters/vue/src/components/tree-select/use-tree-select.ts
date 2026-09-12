@@ -26,7 +26,7 @@ export interface TreeSelectContext {
 
 export function useTreeSelect(
   props: TreeSelectSchema['props'],
-  handlers: Pick<TreeSelectSchema['props'], 'onValueChange' | 'onExpandedValueChange' | 'onOpenChange'> = {},
+  handlers: Pick<TreeSelectSchema['props'], 'onValueChange' | 'onExpandedValueChange' | 'onOpenChange' | 'onBranchLoadStart' | 'onBranchLoad' | 'onBranchLoadError'> = {},
 ): TreeSelectContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
@@ -35,7 +35,7 @@ export function useTreeSelect(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // 三个回调由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
+  // 对外回调由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(treeSelectMachine, () => ({ ...props, ...handlers }), scope)
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
