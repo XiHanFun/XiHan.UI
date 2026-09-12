@@ -39,7 +39,7 @@ function buildNode(doc: Document, node: IconNode): SVGElement {
  * @attr {string} label - 可及名字；非空白时输出 role=img + aria-label，否则输出 aria-hidden=true
  * @attr {'text'|'sm'|'md'|'lg'|'xl'|'2xl'|'3xl'|'4xl'} size - 直径档位，缺省 md；text 跟着相邻文字的字号走
  * @attr {'light'|'regular'|'bold'} weight - 描边粗细档位，缺省 regular
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'90'|'180'|'270'} rotate - 旋转档位，不转就不写
  * @attr {'horizontal'|'vertical'|'both'} flip - 翻转轴，不翻就不写
  * @csspart root - 根 `<svg>`，承载 viewBox/data-icon/命名属性/data-size/data-weight/data-tone/data-rotate/data-flip

@@ -1,6 +1,6 @@
 # Icon 图标
 
-画一枚矢量图元，并把"它是装饰还是信息"这件事说清楚。
+用于显示矢量图标。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/icon" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-传的是图标记录本身而不是名字：名字要运行期查表，查表就得把整张表静态引进来，摇树全废
+显示一个图标
 
 <XhDemo src="icon/01-basic" />
 
@@ -26,37 +26,31 @@
 
 ### 尺寸与描边
 
-size 八档改直径（text 跟着相邻文字的字号走）、weight 三档改 stroke-width；缺省档 md 不落 data-* 属性，皮肤的基础规则就是缺省档
+设置图标大小和描边粗细
 
 <XhDemo src="icon/02-size-weight" />
 
-### 可及名字
+### 可访问名称
 
-命名只有两态：给了非空白 label 就是 role="img" + aria-label，没给就是 aria-hidden="true" 的装饰件
+为独立图标提供名称
 
 <XhDemo src="icon/03-label" />
 
-### 自定义图元
+### 自定义图形
 
-默认插槽给出内容时改由插槽填充根 svg，元素不再生成 glyph 空壳；坐标系此时由自己写的 viewBox 定
+直接提供 SVG 图形
 
 <XhDemo src="icon/04-custom-glyph" />
 
 ### 颜色
 
-图标没有底色，语气只落在前景上，取普通背景上表达该语气的那档文字色
+使用语义颜色
 
 <XhDemo src="icon/05-tone" />
 
-### 前景分级
-
-图标没有底色，前景是一个组件令牌；跟正文取同一族文字色，图标就跟着排出主次
-
-<XhDemo src="icon/06-depth" />
-
 ### 旋转与翻转
 
-rotate 只收 90 / 180 / 270 三档，flip 沿横轴或纵轴取反；两者是独立属性，同写即叠加
+改变图标方向
 
 <XhDemo src="icon/07-rotate-flip" />
 
@@ -64,35 +58,35 @@ rotate 只收 90 / 180 / 270 三档，flip 沿横轴或纵轴取反；两者是�
 
 ### 何时使用
 
-- 给动作、状态或条目配一枚图形标记。
-- 图形本身就是唯一的信息载体（比如只有图标的按钮里那枚图元）——这时给 `label`。
+- 为操作、状态或条目提供图形标识。
+- 作为独立信息使用时提供可访问名称。
 
 ### 何时不用
 
-- 需要一个带底色的圆形底座：用[图标块](./icon-wrapper)。
-- 图形是照片或插画：用[图片](./image)。
+- 需要带背景的图标时，使用[图标块](./icon-wrapper)。
+- 照片或插画使用[图片](./image)。
 
 ### 特性
 
-- 传的是图标记录本身而不是名字：按名字查表就得把整张表静态引进来，摇树全废。
-- 命名只有两态：给了非空白 `label` 就是 `role="img"` 加 `aria-label`；没给就是 `aria-hidden="true"` 的装饰件。没有第三种。
-- `size` 八档改直径（`text` 跟着相邻文字的字号走，其余七档是固定直径）、`weight` 三档改描边粗细；缺省档 `md` 不落 `data-*`，皮肤的基础规则就是缺省档。
-- `rotate` 只收 90 / 180 / 270 三档，`flip` 沿横轴或纵轴取反；两者同写时叠加，都是静态几何，不带过渡。
-- 图标没有底色，语气只落在前景上。
+- 直接接收可摇树优化的图标记录。
+- `label` 区分信息图标与装饰图标。
+- 支持八档尺寸和三档描边粗细。
+- 支持旋转与水平、垂直翻转。
+- 颜色只作用于图标前景。
 
 ### 组合
 
-- 放进[按钮](./button)的 `prefix` / `suffix`，或[图标块](./icon-wrapper)的底座里。
+- 放入[按钮](./button)或[图标块](./icon-wrapper)。
 
 ### 最佳实践
 
-- 旁边已经有文字说明同一件事时，别给 `label`——重复的名字会被读屏念两遍。
-- 同一屏里的图标保持同一档 `weight`，粗细混用比尺寸混用更显乱。
+- 图标旁已有同义文字时保持装饰状态。
+- 同一操作区域使用一致的描边粗细。
 
 ### 反模式
 
-- 给装饰性图标写 `label`，或给唯一承载语义的图标漏写 `label`：两者都会让读屏用户听到错的东西。
-- 用图标单独表达状态而不配文字或提示：图形的含义没有共识。
+- 不要为装饰图标重复提供名称。
+- 不要只用图标表达不明确的状态。
 
 ## API 参考
 
@@ -115,7 +109,7 @@ rotate 只收 90 / 180 / 270 三档，flip 沿横轴或纵轴取反；两者是�
 | `label` | `string` |  | 可及名字。 给了非空白文本 = 这个图标是页面上唯一说出这件事的东西，输出 role="img" + aria-label； 缺席或全空白 = 装饰，输出 aria-hidden="true"。没有第三种形态。 |
 | `rotate` | `IconRotate \| string` |  | 旋转档位：90 / 180 / 270，不转就不写。 收字符串是因为 WC 那侧的档位来自 DOM 属性；不是这三档的值一律不写出。 |
 | `size` | `IconSize` |  | 直径档位，缺省 md；缺省档不输出 data-size。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `weight` | `IconWeight` |  | 描边粗细档位，缺省 regular；缺省档不输出 data-weight。 |
 
 ### connect API
