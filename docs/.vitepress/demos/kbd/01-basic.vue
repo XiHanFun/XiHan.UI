@@ -1,10 +1,8 @@
-<!-- 基础用法 | 单枚原生 kbd，只显示键名，不注册快捷键 -->
+<!-- 基础用法 | 显示单个键名 -->
 <script setup lang="ts">
 import { XhKbd } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <p style="display: flex; align-items: center; gap: 8px">
-    按 <XhKbd value="Escape" /> 关闭当前面板
-  </p>
+  <XhKbd value="Escape" />
 </template>

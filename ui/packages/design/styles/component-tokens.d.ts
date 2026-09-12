@@ -1512,6 +1512,7 @@ export type ComponentTokenName =
   | '--xh-kbd-group-key-shadow-pressed'
   | '--xh-kbd-group-separator-fg'
   | '--xh-kbd-group-separator-fg-disabled'
+  | '--xh-kbd-h'
   | '--xh-kbd-min-w'
   | '--xh-kbd-px'
   | '--xh-kbd-py'

@@ -20,7 +20,7 @@ Headless 统一完成平台格式化、连接符、修饰键身份与整组可�
 SSR 不读取 ambient document，卸载仍精确解绑监听。
 
 删除 `@xihan-ui/styles/hotkeys.css` 与全部 `--xh-hotkeys-*` 槽，新增 `kbd.css` / `kbd-group.css`。
-键帽使用 M1 实体小表面、等宽字、1px edge、顶部高光与 contact shadow；只有显式 `pressed`
+键帽使用 20 / 24 / 28px 三档中性实体面、等宽字与内嵌底缘压感；只有显式 `pressed`
 事实或真实可交互 owner 的 `:active` 才轻压。禁用、compact、RTL、forced-colors 与 200% 缩放
 均由新 family 独立承担。
 

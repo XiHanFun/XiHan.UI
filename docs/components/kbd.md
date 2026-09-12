@@ -1,6 +1,6 @@
 # Kbd <Badge type="info" text="键帽" />
 
-显示一枚语义键帽，不注册任何键盘监听。`Mod` 会按平台写成 Mac 的 ⌘ 或其他平台的 Ctrl；要显示完整组合用[键帽组](./kbd-group)，要注册动作另用[快捷键](./hotkeys)。
+显示一个键名，不注册键盘监听。`Mod` 在 Mac 上显示为 ⌘，其他平台显示为 Ctrl。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/kbd" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-单枚原生 kbd，只显示键名，不注册快捷键
+显示单个键名
 
 <XhDemo src="kbd/01-basic" />
 
@@ -26,19 +26,19 @@
 
 ### 尺寸
 
-三档同时调整键帽字号与行内留白
+小、中、大三档
 
 <XhDemo src="kbd/02-size" />
 
 ### 禁用
 
-只表达对应动作不可用，不会降低整段文字的不透明度
+表示对应动作不可用
 
 <XhDemo src="kbd/03-disabled" />
 
-### 真实按下
+### 按下
 
-键帽只在可交互 owner 真正 active 时轻压
+展示动作激活时的键帽状态
 
 <XhDemo src="kbd/04-pressed" />
 
@@ -46,36 +46,36 @@
 
 ### 何时使用
 
-- 在说明文字里表示一枚键。
-- 需要单独控制一枚键帽的尺寸、禁用或真实按下反馈。
+- 表示单个键。
+- 展示按下或禁用状态。
 
 ### 何时不用
 
-- 显示完整快捷键组合：用[键帽组](./kbd-group)，让读屏只念一次整组。
-- 注册快捷键动作：用[快捷键](./hotkeys)，不要给纯展示节点安装全局监听。
-- 显示代码或命令文本：用[代码视图](./code-view)。
+- 快捷键组合使用[键帽组](./kbd-group)。
+- 快捷键监听使用[快捷键](./hotkeys)。
+- 代码和命令使用[代码视图](./code-view)。
 
 ### 特性
 
-- 使用原生 `kbd` 语义，平台格式化唯一事实源在 Headless。
-- `pressed` 只投影作者已知的真实激活事实；组件不会自己监听键盘，也不会默认制造按下态。
-- M1 实体小表面使用 1px 边、顶部高光和底部 contact shadow；按下时轻压并撤掉海拔。
-- compact 密度、三尺寸、RTL、forced-colors 和 200% 缩放均保持键名清楚。
+- 渲染原生 `kbd` 元素。
+- 平台键名由 Headless 统一格式化。
+- `pressed` 只表示外部传入的按下状态。
+- 提供三档尺寸和 compact 密度。
 
 ### 组合
 
-- 与按钮、菜单条目或说明文字并排。
-- 多枚键必须使用 KbdGroup，不要手写多个 `kbd` 再让读屏逐枚重复。
+- 可放在按钮、菜单项和说明文字中。
+- 多个键使用 KbdGroup。
 
 ### 最佳实践
 
-- 跨平台快捷键写 `Mod`，不要把 Ctrl 或 Meta 写死。
-- 只有动作真实触发期间才设置 `pressed`。
+- 跨平台快捷键使用 `Mod`。
+- 仅在动作激活时设置 `pressed`。
 
 ### 反模式
 
-- 用键帽替代实际按钮或菜单项。
-- 给纯展示 Kbd 安装键盘监听。
+- 不要用 Kbd 代替按钮或菜单项。
+- 不要在 Kbd 上注册快捷键。
 
 ## API 参考
 
@@ -126,8 +126,8 @@
 | --- | --- | --- |
 | `root` | `aria-label` | props.translations?.keyName?.(segment.key) |
 
-- 符号键帽通过 `aria-label` 使用可读键名；例如 ⌘ 念作 Command。
-- 单枚键帽可独立进入无障碍树；在 KbdGroup 内由组级名称统一朗读，子键帽会被隐藏。
+- 符号键通过 `aria-label` 提供可读名称。
+- 在 KbdGroup 内由整组统一朗读。
 
 ## 样式参考
 
@@ -156,21 +156,22 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-kbd-bg` | `root` | `background` | `default` | `--xh-material-soft-bg` | kbd 的 root 部件 background 覆盖槽。 |
+| `--xh-kbd-bg` | `root` | `background-color` | `default` | `--xh-bg-subtle` | kbd 的 root 部件 background-color 覆盖槽。 |
 | `--xh-kbd-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-muted` | kbd 的 root 部件 background 覆盖槽。 |
-| `--xh-kbd-border` | `root` | `border` | `default` | `--xh-material-soft-border` | kbd 的 root 部件 border 覆盖槽。 |
+| `--xh-kbd-border` | `root` | `border` | `default` | `--xh-border-default` | kbd 的 root 部件 border 覆盖槽。 |
 | `--xh-kbd-fg` | `root` | `color` | `default` | `--xh-fg-default` | kbd 的 root 部件 color 覆盖槽。 |
-| `--xh-kbd-fg-disabled` | `root` | `color` | `disabled` | `--xh-fg-subtle` | kbd 的 root 部件 color 覆盖槽。 |
+| `--xh-kbd-fg-disabled` | `root` | `color` | `disabled` | `--xh-fg-disabled` | kbd 的 root 部件 color 覆盖槽。 |
 | `--xh-kbd-fg-modifier` | `root` | `color` | `modifier` | `--xh-fg-muted` | kbd 的 root 部件 color 覆盖槽。 |
 | `--xh-kbd-font` | `root` | `font-family` | `default` | `--xh-font-family-mono` | kbd 的 root 部件 font-family 覆盖槽。 |
 | `--xh-kbd-font-size` | `root` | `font-size` | `default` | `--xh-_kbd-font-size` | kbd 的 root 部件 font-size 覆盖槽。 |
 | `--xh-kbd-font-weight` | `root` | `font-weight` | `default` | `--xh-font-weight-medium` | kbd 的 root 部件 font-weight 覆盖槽。 |
-| `--xh-kbd-min-w` | `root` | `min-inline-size` | `default` | `--xh-control-indicator-size` | kbd 的 root 部件 min-inline-size 覆盖槽。 |
+| `--xh-kbd-h` | `root` | `block-size` | `default` | `--xh-_kbd-h` | kbd 的 root 部件 block-size 覆盖槽。 |
+| `--xh-kbd-min-w` | `root` | `min-inline-size` | `default` | `--xh-_kbd-h` | kbd 的 root 部件 min-inline-size 覆盖槽。 |
 | `--xh-kbd-px` | `root` | `padding-inline` | `default` | `--xh-_kbd-px` | kbd 的 root 部件 padding-inline 覆盖槽。 |
-| `--xh-kbd-py` | `root` | `padding-block` | `default` | `--xh-space-0_5` | kbd 的 root 部件 padding-block 覆盖槽。 |
-| `--xh-kbd-radius` | `root` | `border-radius` | `default` | `--xh-shape-inset` | kbd 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-kbd-shadow` | `root` | `box-shadow` | `default` | `--xh-stroke-thin` | kbd 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-kbd-shadow-pressed` | `root` | `box-shadow` | `active`<br>`disabled`<br>`is(button, a[href], [role='button'], [role='menuitem'], [role='option'])`<br>`not([data-disabled])`<br>`not([disabled], [aria-disabled='true'])`<br>`pressed` | `--xh-stroke-thin` | kbd 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-kbd-py` | `root` | `padding-block` | `default` | `--xh-space-0` | kbd 的 root 部件 padding-block 覆盖槽。 |
+| `--xh-kbd-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | kbd 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-kbd-shadow` | `root` | `box-shadow` | `default` | `--xh-_kbd-shadow-rest` | kbd 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-kbd-shadow-pressed` | `root` | `box-shadow` | `active`<br>`disabled`<br>`is(button, a[href], [role='button'], [role='menuitem'], [role='option'])`<br>`not([data-disabled])`<br>`not([disabled], [aria-disabled='true'])`<br>`pressed` | `--xh-_kbd-shadow-pressed` | kbd 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

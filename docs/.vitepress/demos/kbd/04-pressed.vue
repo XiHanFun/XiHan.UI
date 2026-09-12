@@ -1,10 +1,8 @@
-<!-- 真实按下 | 键帽只在可交互 owner 真正 active 时轻压 -->
+<!-- 按下 | 展示动作激活时的键帽状态 -->
 <script setup lang="ts">
 import { XhKbd } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <button type="button" style="display: inline-flex; align-items: center; gap: 8px">
-    按住我 <XhKbd value="Enter" />
-  </button>
+  <XhKbd value="Enter" pressed />
 </template>
