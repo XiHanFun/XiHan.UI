@@ -1,4 +1,4 @@
-<!-- 尺寸 | 三档同时调整键帽字号与行内留白 -->
+<!-- 尺寸 | 小、中、大三档 -->
 <script setup lang="ts">
 import { XhKbd } from "@xihan-ui/vue";
 </script>

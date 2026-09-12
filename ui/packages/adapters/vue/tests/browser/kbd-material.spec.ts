@@ -27,7 +27,7 @@ afterEach(async () => {
   delete document.documentElement.dataset.density
 })
 
-describe('kbd / KbdGroup M1 实体键帽', () => {
+describe('kbd / KbdGroup 实体键帽', () => {
   it('使用原生 kbd，组合在 RTL 文本里仍保持物理键位顺序且整组只命名一次', () => {
     const root = mount(() => h('div', { dir: 'rtl' }, [
       h(XhKbdGroup, { keys: ['Mod', 'S'], platform: 'other' }),
@@ -59,7 +59,7 @@ describe('kbd / KbdGroup M1 实体键帽', () => {
     expect(getComputedStyle(group).whiteSpace).toBe('nowrap')
   })
 
-  it('只有显式 pressed 才撤掉 contact shadow 并轻压', () => {
+  it('只有显式 pressed 才减弱底缘压感并轻压', () => {
     const root = mount(() => h('div', null, [
       h(XhKbd, { 'value': 'S', 'data-test-rest': '' }),
       h(XhKbd, { 'value': 'S', 'pressed': true, 'data-test-pressed': '' }),

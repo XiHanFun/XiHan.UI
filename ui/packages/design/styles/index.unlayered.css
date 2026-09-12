@@ -4365,25 +4365,25 @@
   --xh-kbd-skin: 1;
 }
 
-/* 单枚 M1 实体键帽：薄 edge、顶部高光与贴住承载面的 contact shadow。 */
+/* 单枚键帽保留轻微压感，不使用浮层海拔。 */
 [data-scope='kbd'][data-part='root'] {
+  --xh-_kbd-h: var(--xh-space-6);
   --xh-_kbd-font-size: var(--xh-control-caption-md);
-  --xh-_kbd-px: var(--xh-space-1);
+  --xh-_kbd-px: var(--xh-space-2);
+  --xh-_kbd-shadow-rest: inset 0 calc(-1 * var(--xh-stroke-thick)) 0 var(--xh-border-strong);
+  --xh-_kbd-shadow-pressed: inset 0 calc(-1 * var(--xh-stroke-thin)) 0 var(--xh-border-strong);
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-inline-size: var(--xh-kbd-min-w, var(--xh-control-indicator-size));
-  padding-block: var(--xh-kbd-py, var(--xh-space-0_5));
+  block-size: var(--xh-kbd-h, var(--xh-_kbd-h));
+  min-inline-size: var(--xh-kbd-min-w, var(--xh-_kbd-h));
+  padding-block: var(--xh-kbd-py, var(--xh-space-0));
   padding-inline: var(--xh-kbd-px, var(--xh-_kbd-px));
-  border: var(--xh-stroke-thin) solid var(--xh-kbd-border, var(--xh-material-soft-border));
-  border-radius: var(--xh-kbd-radius, var(--xh-shape-inset));
-  background: var(--xh-kbd-bg, var(--xh-material-soft-bg));
-  box-shadow: var(
-    --xh-kbd-shadow,
-    inset 0 var(--xh-stroke-thin) 0 var(--xh-material-soft-highlight),
-    0 var(--xh-space-0_5) 0 var(--xh-border-control)
-  );
+  border: var(--xh-stroke-thin) solid var(--xh-kbd-border, var(--xh-border-default));
+  border-radius: var(--xh-kbd-radius, var(--xh-shape-control));
+  background-color: var(--xh-kbd-bg, var(--xh-bg-subtle));
+  box-shadow: var(--xh-kbd-shadow, var(--xh-_kbd-shadow-rest));
   color: var(--xh-kbd-fg, var(--xh-fg-default));
   font-family: var(--xh-kbd-font, var(--xh-font-family-mono));
   font-size: var(--xh-kbd-font-size, var(--xh-_kbd-font-size));
@@ -4396,7 +4396,7 @@
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    translate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    translate var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
 }
 
 [data-scope='kbd'][data-part='root'][data-modifier] {
@@ -4406,30 +4406,39 @@
 [data-scope='kbd'][data-part='root'][data-disabled] {
   background: var(--xh-kbd-bg-disabled, var(--xh-bg-muted));
   box-shadow: none;
-  color: var(--xh-kbd-fg-disabled, var(--xh-fg-subtle));
+  color: var(--xh-kbd-fg-disabled, var(--xh-fg-disabled));
 }
 
 /* pressed 只能来自显式事实，或来自真实可交互 owner 的原生 :active。 */
 [data-scope='kbd'][data-part='root'][data-pressed]:not([data-disabled]),
 :is(button, a[href], [role='button'], [role='menuitem'], [role='option']):not([disabled], [aria-disabled='true']):active
   [data-scope='kbd'][data-part='root']:not([data-disabled]) {
-  box-shadow: var(--xh-kbd-shadow-pressed, inset 0 var(--xh-stroke-thin) 0 var(--xh-material-soft-highlight));
+  box-shadow: var(--xh-kbd-shadow-pressed, var(--xh-_kbd-shadow-pressed));
   translate: 0 var(--xh-stroke-thin);
 }
 
 [data-scope='kbd'][data-part='root'][data-size='sm'] {
+  --xh-_kbd-h: var(--xh-space-5);
   --xh-_kbd-font-size: var(--xh-control-caption-sm);
-  --xh-_kbd-px: var(--xh-space-0_5);
-}
-
-[data-scope='kbd'][data-part='root'][data-size='lg'] {
-  --xh-_kbd-font-size: var(--xh-control-caption-lg);
   --xh-_kbd-px: var(--xh-space-1_5);
 }
 
+[data-scope='kbd'][data-part='root'][data-size='md'] {
+  --xh-_kbd-h: var(--xh-space-6);
+  --xh-_kbd-font-size: var(--xh-control-caption-md);
+  --xh-_kbd-px: var(--xh-space-2);
+}
+
+[data-scope='kbd'][data-part='root'][data-size='lg'] {
+  --xh-_kbd-h: var(--xh-space-7);
+  --xh-_kbd-font-size: var(--xh-control-caption-lg);
+  --xh-_kbd-px: var(--xh-space-2_5);
+}
+
 :where([data-density='compact']) [data-scope='kbd'][data-part='root']:not([data-size]) {
-  --xh-_kbd-font-size: var(--xh-control-caption-sm);
-  --xh-_kbd-px: var(--xh-space-0_5);
+  --xh-kbd-h: var(--xh-space-5);
+  --xh-kbd-font-size: var(--xh-control-caption-sm);
+  --xh-kbd-px: var(--xh-space-1_5);
 }
 
 [data-scope='kbd'][data-part='root'][hidden] {

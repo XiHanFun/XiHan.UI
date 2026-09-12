@@ -27836,16 +27836,16 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-material-soft-bg"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "kbd 的 root 部件 background 覆盖槽。"
+      "description": "kbd 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-kbd-bg-disabled",
@@ -27878,7 +27878,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-soft-border"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 border 覆盖槽。"
@@ -27914,7 +27914,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-disabled"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 color 覆盖槽。"
@@ -27992,6 +27992,24 @@
       "description": "kbd 的 root 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-kbd-h",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_kbd-h"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-kbd-min-w",
       "component": "kbd",
       "part": [
@@ -28004,7 +28022,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-indicator-size"
+        "--xh-_kbd-h"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 min-inline-size 覆盖槽。"
@@ -28040,7 +28058,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-0_5"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 padding-block 覆盖槽。"
@@ -28058,7 +28076,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 border-radius 覆盖槽。"
@@ -28076,7 +28094,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-stroke-thin"
+        "--xh-_kbd-shadow-rest"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 box-shadow 覆盖槽。"
@@ -28099,7 +28117,7 @@
         "pressed"
       ],
       "defaultToken": [
-        "--xh-stroke-thin"
+        "--xh-_kbd-shadow-pressed"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 box-shadow 覆盖槽。"
