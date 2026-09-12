@@ -4,7 +4,7 @@ import { defineXhElements } from '../../src/define'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-type Scope = 'select' | 'cascader' | 'combobox' | 'tree-select'
+type Scope = 'select' | 'cascader' | 'combobox' | 'tree-select' | 'date-picker' | 'time-picker' | 'mention' | 'color-picker'
 
 interface OverlayElement extends HTMLElement {
   open?: boolean
@@ -32,6 +32,29 @@ function markup(scope: Scope): string {
       <div data-xh-part="positioner"><div data-xh-part="content"></div></div><i data-after></i>
     </xh-combobox>`
   }
+  if (scope === 'date-picker') {
+    return `<xh-date-picker open>
+      <div data-xh-part="control"></div><i data-before></i>
+      <div data-xh-part="positioner"><div data-xh-part="content"><div data-xh-part="calendar"></div></div></div><i data-after></i>
+    </xh-date-picker>`
+  }
+  if (scope === 'time-picker') {
+    return `<xh-time-picker open default-value="09:30">
+      <div data-xh-part="root"><div data-xh-part="control"><span data-xh-part="segment" segment="hour"></span><button data-xh-part="trigger"></button></div><i data-before></i>
+      <div data-xh-part="positioner"><div data-xh-part="content"></div></div><i data-after></i></div>
+    </xh-time-picker>`
+  }
+  if (scope === 'mention') {
+    return `<xh-mention><div data-xh-part="root"><input data-xh-part="input"><i data-before></i>
+      <div data-xh-part="positioner"><div data-xh-part="content"></div></div><i data-after></i>
+    </div></xh-mention>`
+  }
+  if (scope === 'color-picker') {
+    return `<xh-color-picker open>
+      <button data-xh-part="trigger"></button><i data-before></i>
+      <div data-xh-part="positioner"><div data-xh-part="content"><div data-xh-part="saturation-area"><span data-xh-part="area-thumb"></span></div></div></div><i data-after></i>
+    </xh-color-picker>`
+  }
   return `<xh-tree-select open>
     <button data-xh-part="trigger">节点</button><i data-before></i>
     <div data-xh-part="positioner"><div data-xh-part="content"><div data-xh-part="tree"></div></div></div><i data-after></i>
@@ -41,10 +64,25 @@ function markup(scope: Scope): string {
 async function settle(doc: Document = document): Promise<void> {
   for (let round = 0; round < 4; round++) {
     await Promise.resolve()
-    for (const element of doc.querySelectorAll<OverlayElement>('xh-select, xh-cascader, xh-combobox, xh-tree-select'))
+    for (const element of doc.querySelectorAll<OverlayElement>('xh-select, xh-cascader, xh-combobox, xh-tree-select, xh-date-picker, xh-time-picker, xh-mention, xh-color-picker'))
       await element.updateComplete
   }
   await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+}
+
+function openMention(element: OverlayElement): void {
+  const input = element.querySelector<HTMLInputElement>('[data-xh-part="input"]')!
+  input.value = '@a'
+  input.setSelectionRange(2, 2)
+  input.dispatchEvent(new Event('input', { bubbles: true }))
+}
+
+function close(scope: Scope, element: OverlayElement): void {
+  if (scope !== 'mention') {
+    element.open = false
+    return
+  }
+  document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
 }
 
 function finiteAnimations(node: HTMLElement): Animation[] {
@@ -59,7 +97,7 @@ afterEach(() => {
   setDiagnosticsLevel('warn')
 })
 
-describe.each(['select', 'cascader', 'combobox', 'tree-select'] as const)('wc %s 锚定 Portal', (scope) => {
+describe.each(['select', 'cascader', 'combobox', 'tree-select', 'date-picker', 'time-picker', 'mention', 'color-picker'] as const)('wc %s 锚定 Portal', (scope) => {
   it('positioner 脱离裁剪祖先，退场完成前保持租约，随后精确归位', async () => {
     const style = document.createElement('style')
     style.dataset.testAnchoredPortal = ''
@@ -86,6 +124,10 @@ describe.each(['select', 'cascader', 'combobox', 'tree-select'] as const)('wc %s
     const originalNext = positioner.nextSibling
 
     await settle()
+    if (scope === 'mention') {
+      openMention(element)
+      await settle()
+    }
     const shell = positioner.parentElement!
     expect(shell.dataset.xhPortalShell).toBe('')
     expect(shell.parentElement?.id).toBe('xh-portal-root')
@@ -96,7 +138,7 @@ describe.each(['select', 'cascader', 'combobox', 'tree-select'] as const)('wc %s
     expect(shell.style.getPropertyValue('--test-portal-accent')).toBe('rgb(1, 2, 3)')
     expect(content.getAttribute('data-scope')).toBe(scope)
 
-    element.open = false
+    close(scope, element)
     await settle()
     expect(positioner.parentElement).toBe(shell)
     const animations = finiteAnimations(content)
