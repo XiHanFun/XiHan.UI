@@ -1,0 +1,74 @@
+{
+  "$description": "REQ-039 视觉性能预算的唯一真源。record 模式先输出真实 Chromium 基线；limits 只根据该报告制定，不保存伪造采样值。包体积继续引用既有棘轮，不复制或提高阈值。",
+  "schemaVersion": 1,
+  "profile": {
+    "name": "chromium-linux-2cpu",
+    "playwrightImage": "mcr.microsoft.com/playwright:v1.62.0-noble",
+    "browser": "chromium",
+    "viewport": {
+      "width": 800,
+      "height": 520
+    },
+    "deviceScaleFactor": 1,
+    "containerCpuCores": 2,
+    "containerMemory": "2g",
+    "cpuThrottlingRate": 4,
+    "warmupFrames": 30,
+    "sampleFrames": 120,
+    "trialsPerMode": 3,
+    "retentionCycles": 10
+  },
+  "scene": {
+    "adapter": "vue",
+    "fixture": "visual-baseline Dialog variant=blur",
+    "theme": "dark",
+    "density": "comfortable",
+    "modes": [
+      "default",
+      "reduce"
+    ],
+    "workload": "每帧移动 Dialog 后方的固定渐变背景，交替采样默认透明与 data-transparency=reduce"
+  },
+  "memory": {
+    "standardMeasurement": "not-gated",
+    "reason": "浏览器尚无稳定的标准轨页面内存 API；measureUserAgentSpecificMemory 仍是 WICG 草案且要求跨源隔离，本测试页不伪造该条件。",
+    "proxy": "在强制 GC 前后用 Chromium CDP Memory.getDOMCounters 比较 10 次挂载/卸载后的 documents、nodes 与 jsEventListeners 留存差值。"
+  },
+  "packageSizeBudgetSources": [
+    {
+      "path": ".size-limit.json",
+      "command": "pnpm size"
+    },
+    {
+      "path": ".size-limit.css.json",
+      "command": "node tooling/scripts/check-skin-size.mjs"
+    }
+  ],
+  "limits": {
+    "modes": {
+      "default": {
+        "frameIntervalP95Ms": 20,
+        "frameIntervalMaxMs": 50,
+        "longTaskCountMax": 0,
+        "longTaskTotalMsMax": 0,
+        "backdropBlurElementsMin": 2,
+        "backdropBlurAreaPxMin": 416001,
+        "backdropBlurAreaPxMax": 520000
+      },
+      "reduce": {
+        "frameIntervalP95Ms": 20,
+        "frameIntervalMaxMs": 50,
+        "longTaskCountMax": 0,
+        "longTaskTotalMsMax": 0,
+        "backdropBlurElementsMin": 0,
+        "backdropBlurAreaPxMin": 0,
+        "backdropBlurAreaPxMax": 0
+      }
+    },
+    "retention": {
+      "documentsDeltaMax": 0,
+      "nodesDeltaMax": 0,
+      "jsEventListenersDeltaMax": 0
+    }
+  }
+}

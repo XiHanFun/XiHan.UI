@@ -16,6 +16,7 @@ import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
 import { ADAPTERS } from './lib/adapters.mjs'
+import performanceBudget from './visual-performance-budget.json' with { type: 'json' }
 
 /**
  * 这个运行器只跑 Vue 适配器里的截图用例，React 与 Web Components 不在其列。
@@ -32,6 +33,7 @@ const IMAGE = 'mcr.microsoft.com/playwright:v1.62.0-noble'
 // 卷里同时放 pnpm store、corepack 缓存与容器自己的工作副本，重复运行不重装依赖。
 const VOLUME = 'xihan-ui-visual-baseline'
 const DEFAULT_SPEC = 'tests/browser/visual-baseline.spec.ts'
+const DEFAULT_PERFORMANCE_SPEC = 'tests/browser/visual-performance.spec.ts'
 
 const uiRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const vuePkg = join(uiRoot, ADAPTERS.vue.root)
@@ -48,6 +50,8 @@ if (argv.includes('--help') || argv.includes('-h')) {
   pnpm visual:baseline --update   生成 / 更新基线并写回库里
   pnpm visual:baseline --all      跑全部浏览器态用例，不只截图那一份
   pnpm visual:baseline --spec <相对 packages/adapters/vue 的路径>
+  pnpm visual:performance         在固定容器配额里校验 REQ-039 性能预算
+  pnpm visual:performance --record 只采样并输出报告，不判预算
 
 默认只跑 ${DEFAULT_SPEC}。
 校验失败时差异图落在 packages/adapters/vue/.vitest-attachments 下。
@@ -57,12 +61,22 @@ if (argv.includes('--help') || argv.includes('-h')) {
 
 const update = argv.includes('--update')
 const all = argv.includes('--all')
+const performanceMode = argv.includes('--performance')
+const record = argv.includes('--record')
 const specIndex = argv.indexOf('--spec')
 if (specIndex !== -1 && argv[specIndex + 1] == null) {
   console.error('[visual-baseline] ✗ --spec 后面要跟一个相对 packages/adapters/vue 的路径')
   process.exit(1)
 }
-const spec = all ? '' : specIndex !== -1 ? argv[specIndex + 1] : DEFAULT_SPEC
+if (performanceMode && (update || all || specIndex !== -1)) {
+  console.error('[visual-performance] ✗ 性能预算不接受 --update、--all 或 --spec')
+  process.exit(1)
+}
+if (!performanceMode && record) {
+  console.error('[visual-baseline] ✗ --record 只属于 pnpm visual:performance')
+  process.exit(1)
+}
+const spec = performanceMode ? DEFAULT_PERFORMANCE_SPEC : all ? '' : specIndex !== -1 ? argv[specIndex + 1] : DEFAULT_SPEC
 
 // Docker Desktop 认得盘符加正斜杠的写法；反斜杠会被 docker 的参数解析当成转义。
 const mountPath = path => path.replaceAll('\\', '/')
@@ -95,13 +109,23 @@ const args = [
   '--init',
   // 无头 Chromium 的共享内存默认 64MB 不够，画面一大就整页崩
   '--shm-size=1g',
+]
+
+if (performanceMode) {
+  args.push(
+    `--cpus=${performanceBudget.profile.containerCpuCores}`,
+    `--memory=${performanceBudget.profile.containerMemory}`,
+  )
+}
+
+args.push(
   '-v',
   `${mountPath(uiRoot)}:/host:ro`,
   '-v',
   `${VOLUME}:/cache`,
   '-v',
   `${mountPath(attachDir)}:/diff`,
-]
+)
 
 // 基线目录只在更新模式挂进去：校验模式下容器根本写不到库里的基线，
 // 「跑一次校验把基线洗了」这条路从挂载上就堵死。
@@ -109,7 +133,16 @@ if (update) {
   args.push('-v', `${mountPath(shotsDir)}:/out`)
 }
 
-args.push('-e', `XH_UPDATE=${update ? '1' : '0'}`, '-e', `XH_SPEC=${spec}`)
+args.push(
+  '-e',
+  `XH_UPDATE=${update ? '1' : '0'}`,
+  '-e',
+  `XH_SPEC=${spec}`,
+  '-e',
+  `XH_MODE=${performanceMode ? 'performance' : 'baseline'}`,
+  '-e',
+  `XH_RECORD=${record ? '1' : '0'}`,
+)
 
 // 校验模式对齐 CI：vitest 在 CI 下把 updateSnapshot 收成 none，缺基线时不再顺手补一张，
 // 而是直接判失败。没有这一条，「基线忘了提交」在本机是绿的、到 CI 才红。
@@ -124,9 +157,18 @@ if (process.getuid && process.getgid) {
 
 args.push(IMAGE, 'bash', '/host/tooling/scripts/visual-baseline.container.sh')
 
-console.log(`[visual-baseline] ${update ? '更新基线' : '校验基线'}：${spec || '全部浏览器态用例'}`)
-console.log(`[visual-baseline] 镜像 ${IMAGE}，缓存卷 ${VOLUME}`)
-console.log(`[visual-baseline] 适用面：${SCOPE}`)
+if (performanceMode) {
+  console.log(`[visual-performance] ${record ? '记录基线' : '校验预算'}：${spec}`)
+  console.log(
+    `[visual-performance] 镜像 ${IMAGE}，${performanceBudget.profile.containerCpuCores} CPU / `
+    + `${performanceBudget.profile.containerMemory}，缓存卷 ${VOLUME}`,
+  )
+}
+else {
+  console.log(`[visual-baseline] ${update ? '更新基线' : '校验基线'}：${spec || '全部浏览器态用例'}`)
+  console.log(`[visual-baseline] 镜像 ${IMAGE}，缓存卷 ${VOLUME}`)
+  console.log(`[visual-baseline] 适用面：${SCOPE}`)
+}
 
 const run = spawnSync('docker', args, {
   stdio: 'inherit',
@@ -145,7 +187,10 @@ if (run.status !== 0) {
 }
 
 console.log('')
-if (update) {
+if (performanceMode) {
+  console.log('[visual-performance] ✓ 真实采样报告已写入 packages/adapters/vue/.vitest-attachments/visual-performance.json')
+}
+else if (update) {
   console.log('[visual-baseline] ✓ 基线已写回 packages/adapters/vue/tests/browser/__screenshots__')
   console.log('  基线的改动是无声的：git diff 只显示二进制文件变了，看不出变成了什么样。')
   console.log('  提交前逐张打开看过，并在 PR 里说明每张为什么该变。')

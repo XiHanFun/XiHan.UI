@@ -1,14 +1,13 @@
 import { playwright } from '@vitest/browser-playwright'
 import { defineConfig } from 'vitest/config'
 
-// 浏览器态：真实 Chromium，跑 jsdom 里演不出来的那部分（无障碍、布局、可见性、真实焦点）。
-// 与 vitest.config 缺省的 jsdom 单测互不覆盖，各跑各的目录。
+// REQ-039 的性能预算独立于日常 browser 全量：它只在固定资源的 Linux 容器中运行。
 export default defineConfig({
   test: {
-    name: 'vue-browser',
-    include: ['tests/browser/**/*.spec.ts'],
-    exclude: ['tests/browser/visual-performance.spec.ts'],
+    name: 'vue-visual-performance',
+    include: ['tests/browser/visual-performance.spec.ts'],
     setupFiles: ['./tests/browser/setup.ts'],
+    testTimeout: 120_000,
     browser: {
       enabled: true,
       provider: playwright(),
