@@ -17,7 +17,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { heatmapMatrixKey } from '@xihan-ui/headless'
+import { heatmapMatrixKey, normalizeHeatmapNumber, normalizeHeatmapString } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import {
@@ -164,10 +164,10 @@ export const XhHeatmapRow = defineComponent({
     const row = computed<HeatmapRowProps>(() => {
       const variant = ctx.api.value.variant
       if (variant === 'matrix')
-        return { row: stringOf(props.value) }
+        return { row: normalizeHeatmapString(props.value) }
       if (variant === 'month')
-        return { month: props.month ?? blockMonth?.value, week: numberOf(props.value) }
-      return { weekDay: numberOf(props.value) }
+        return { month: props.month ?? blockMonth?.value, week: normalizeHeatmapNumber(props.value) }
+      return { weekDay: normalizeHeatmapNumber(props.value) }
     })
     provideHeatmapRow(computed(() => row.value.row))
     return () => h('div', ctx.api.value.getRowProps(row.value) as Record<string, unknown>, slots.default?.())
@@ -182,7 +182,7 @@ export const XhHeatmapWeekDay = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useHeatmapContext()
-    const weekDay = computed(() => numberOf(props.value))
+    const weekDay = computed(() => normalizeHeatmapNumber(props.value))
     return () => h('span', ctx.api.value.getWeekDayProps({ weekDay: weekDay.value }) as Record<string, unknown>, slots.default?.())
   },
 })
@@ -365,19 +365,4 @@ function renderMatrixTree(grid: HeatmapMatrixGrid, cellSlot?: (node: HeatmapCell
     }),
   ]))
   return [h(XhHeatmapGrid, null, () => [header, ...rows])]
-}
-
-/** 作者写的数字身份，兼收字符串；没写即 undefined。 */
-function numberOf(value: number | string | undefined): number | undefined {
-  if (value == null || value === '')
-    return undefined
-  const parsed = Number(value)
-  return Number.isFinite(parsed) ? parsed : undefined
-}
-
-/** 作者写的串身份；没写即 undefined。 */
-function stringOf(value: number | string | undefined): string | undefined {
-  if (value == null || value === '')
-    return undefined
-  return String(value)
 }
