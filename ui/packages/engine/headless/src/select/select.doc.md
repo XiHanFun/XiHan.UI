@@ -28,6 +28,8 @@
 - 选项按作者给出的 DOM 顺序排布；正式 `item-text` 弹性占据剩余宽度并负责长文省略，
   `item-indicator` 固定在逻辑末端。单选、多选统一由对号表示选中，正文保持正常颜色和字重；
   悬停与键盘高亮使用中性底，键盘焦点另有独立焦点环。选中本身不铺品牌底。
+- `item` 由 Headless 投影 Collection Item 的角色、尺寸、selected/checked/disabled 事实；`item-text`
+  与 `item-indicator` 投影固定内容列。三端适配器只展开这些属性，不各自判断视觉状态。
 - 相邻分组之间自动画材质分隔线，分组标题、空态、加载态与 footer 使用浮层的次要前景节奏。
 
 ## 组合

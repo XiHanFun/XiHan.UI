@@ -1,0 +1,157 @@
+{
+  "$description": "Collection Item 家族配方：尺寸节奏、内容列与状态矩阵只有这一份生成真源；组件只投影角色与事实。",
+  "version": 1,
+  "sizes": ["sm", "md", "lg"],
+  "columns": ["prefix", "text", "description", "shortcut", "suffix", "indicator"],
+  "states": ["rest", "hover", "keyboard-highlight", "selected", "selected+highlight", "open-path", "checked", "disabled", "loading", "error"],
+  "sizeValues": {
+    "sm": {
+      "blockPadding": "var(--xh-list-option-py-sm)",
+      "inlinePadding": "var(--xh-control-px-sm)",
+      "gap": "var(--xh-control-gap-sm)",
+      "fontSize": "var(--xh-control-font-sm)",
+      "glyphSize": "var(--xh-glyph-size-sm)"
+    },
+    "md": {
+      "blockPadding": "var(--xh-list-option-py-md)",
+      "inlinePadding": "var(--xh-control-px-md)",
+      "gap": "var(--xh-control-gap-md)",
+      "fontSize": "var(--xh-control-font-md)",
+      "glyphSize": "var(--xh-glyph-size-md)"
+    },
+    "lg": {
+      "blockPadding": "var(--xh-list-option-py-lg)",
+      "inlinePadding": "var(--xh-control-px-lg)",
+      "gap": "var(--xh-control-gap-lg)",
+      "fontSize": "var(--xh-control-font-lg)",
+      "glyphSize": "var(--xh-glyph-size-lg)"
+    }
+  },
+  "stateValues": {
+    "rest": {
+      "backgroundColor": "transparent",
+      "color": "var(--xh-material-frosted-fg)",
+      "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+      "indicatorColor": "var(--xh-fg-brand)",
+      "outlineColor": "transparent",
+      "fontWeight": "var(--xh-font-weight-regular)",
+      "cursor": "pointer",
+      "opacity": "1"
+    },
+    "hover": {
+      "backgroundColor": "var(--xh-bg-subtle)",
+      "color": "var(--xh-material-frosted-fg)",
+      "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+      "indicatorColor": "var(--xh-fg-brand)",
+      "outlineColor": "transparent",
+      "fontWeight": "var(--xh-font-weight-regular)",
+      "cursor": "pointer",
+      "opacity": "1"
+    },
+    "keyboard-highlight": {
+      "backgroundColor": "var(--xh-bg-subtle)",
+      "color": "var(--xh-material-frosted-fg)",
+      "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+      "indicatorColor": "var(--xh-fg-brand)",
+      "outlineColor": "var(--xh-ring-focus)",
+      "fontWeight": "var(--xh-font-weight-regular)",
+      "cursor": "pointer",
+      "opacity": "1"
+    },
+    "selected": {
+      "backgroundColor": "transparent",
+      "color": "var(--xh-material-frosted-fg)",
+      "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+      "indicatorColor": "var(--xh-fg-brand)",
+      "outlineColor": "transparent",
+      "fontWeight": "var(--xh-font-weight-regular)",
+      "cursor": "pointer",
+      "opacity": "1"
+    },
+    "selected+highlight": {
+      "backgroundColor": "var(--xh-bg-subtle)",
+      "color": "var(--xh-material-frosted-fg)",
+      "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+      "indicatorColor": "var(--xh-fg-brand)",
+      "outlineColor": "var(--xh-ring-focus)",
+      "fontWeight": "var(--xh-font-weight-regular)",
+      "cursor": "pointer",
+      "opacity": "1"
+    },
+    "open-path": {
+      "backgroundColor": "color-mix(in oklab, var(--xh-fg-brand) 10%, transparent)",
+      "color": "var(--xh-material-frosted-fg)",
+      "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+      "indicatorColor": "var(--xh-fg-brand)",
+      "outlineColor": "transparent",
+      "fontWeight": "var(--xh-font-weight-regular)",
+      "cursor": "pointer",
+      "opacity": "1"
+    },
+    "checked": {
+      "backgroundColor": "transparent",
+      "color": "var(--xh-material-frosted-fg)",
+      "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+      "indicatorColor": "var(--xh-fg-brand)",
+      "outlineColor": "transparent",
+      "fontWeight": "var(--xh-font-weight-regular)",
+      "cursor": "pointer",
+      "opacity": "1"
+    },
+    "disabled": {
+      "backgroundColor": "transparent",
+      "color": "var(--xh-fg-disabled)",
+      "descriptionColor": "var(--xh-fg-disabled)",
+      "indicatorColor": "var(--xh-fg-disabled)",
+      "outlineColor": "transparent",
+      "fontWeight": "var(--xh-font-weight-regular)",
+      "cursor": "not-allowed",
+      "opacity": "1"
+    },
+    "loading": {
+      "backgroundColor": "transparent",
+      "color": "var(--xh-material-frosted-fg)",
+      "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+      "indicatorColor": "var(--xh-fg-brand)",
+      "outlineColor": "transparent",
+      "fontWeight": "var(--xh-font-weight-regular)",
+      "cursor": "progress",
+      "opacity": "1"
+    },
+    "error": {
+      "backgroundColor": "color-mix(in oklab, var(--xh-fg-danger) 10%, transparent)",
+      "color": "var(--xh-fg-danger)",
+      "descriptionColor": "var(--xh-fg-danger)",
+      "indicatorColor": "var(--xh-fg-danger)",
+      "outlineColor": "var(--xh-fg-danger)",
+      "fontWeight": "var(--xh-font-weight-regular)",
+      "cursor": "pointer",
+      "opacity": "1"
+    }
+  },
+  "separator": {
+    "blockMargin": "var(--xh-space-1)",
+    "inlineMargin": "var(--xh-control-px-md)",
+    "color": "var(--xh-material-frosted-separator)"
+  },
+  "motion": {
+    "duration": "var(--xh-motion-duration-micro)",
+    "easing": "var(--xh-motion-ease-enter)"
+  },
+  "direction": {
+    "axis": "logical",
+    "flow": "row"
+  },
+  "forcedColors": {
+    "rest": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "transparent" },
+    "hover": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent" },
+    "keyboard-highlight": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight" },
+    "selected": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "transparent" },
+    "selected+highlight": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight" },
+    "open-path": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight" },
+    "checked": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "transparent" },
+    "disabled": { "backgroundColor": "Canvas", "color": "GrayText", "outlineColor": "transparent" },
+    "loading": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight" },
+    "error": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight" }
+  }
+}

@@ -22,6 +22,13 @@ import '@xihan-ui/styles/button.css'
 `@xihan-ui/styles/field-chrome.css`，并由 Headless 投影 `data-xh-field-chrome/input/affix/layout/size`
 角色。家族配方不读取组件名、标签名或未命名空间的业务属性。
 
+`select.css` 已传递引入 Collection Item；自定义集合可单独引入
+`@xihan-ui/styles/collection-item.css`，并用 `data-xh-collection-item/size/slot` 投影稳定角色；
+选择、禁用与加载直接读取 `aria-selected/aria-disabled/aria-busy`，路径、高亮与对号继续使用状态词汇表里的
+`data-in-path/data-highlighted/data-state`。
+Menu、Mention、Command 等导航候选在各自迁移前不会被
+机械标成持久选择；Select 的 `selected` 与 `checked` 分别表达选值事实和末端对号。
+
 ## 装
 
 ```bash
