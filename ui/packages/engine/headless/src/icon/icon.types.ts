@@ -31,7 +31,7 @@ export interface IconProps {
   size?: IconSize
   /** 描边粗细档位，缺省 regular；缺省档不输出 data-weight。 */
   weight?: IconWeight
-  /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 */
+  /** 颜色：brand / neutral / success / warning / danger / info。 */
   tone?: Tone
   /**
    * 旋转档位：90 / 180 / 270，不转就不写。
