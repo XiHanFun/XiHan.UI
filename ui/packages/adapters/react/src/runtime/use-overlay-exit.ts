@@ -25,6 +25,8 @@ export interface OverlayExitOptions {
   isOpen: () => boolean
   /** content 节点，退场动画从它身上探测。 */
   contentRef: RefObject<HTMLElement | null>
+  /** Presence 建立后交给需要共用退出生命周期的 Headless 机器；卸载时回传 null。 */
+  onPresence?: (presence: PresenceHandle | null) => void
 }
 
 /**
@@ -54,9 +56,12 @@ export function useOverlayExit(options: OverlayExitOptions): boolean {
       return
     const presence = createPresence({ config, open: latest.current.isOpen(), onRenderedChange: setVisible })
     presenceRef.current = presence
+    const onPresence = latest.current.onPresence
+    onPresence?.(presence)
     setVisible(presence.rendered)
     return () => {
       presence.dispose()
+      onPresence?.(null)
       if (presenceRef.current === presence)
         presenceRef.current = null
       if (observedPresence.current === presence) {

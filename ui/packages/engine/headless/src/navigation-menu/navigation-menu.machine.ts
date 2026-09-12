@@ -1,4 +1,4 @@
-import type { Transition } from '@xihan-ui/core'
+import type { Cleanup, Transition } from '@xihan-ui/core'
 import type { NavigationMenuIndicatorRect, NavigationMenuSchema } from './navigation-menu.types'
 import { contains, createDismissLayer, focusItem, itemValue, queryItems, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { setupLayerTransaction } from '../shared/overlay-shell'
@@ -52,12 +52,18 @@ export const navigationMenuMachine = createMachine({
     autoValue: cell<string | null>(() => ({ defaultValue: null })),
     // 量测结果只服务指示条的内联样式
     indicator: cell<NavigationMenuIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameRect })),
+    // 逻辑关闭后，最后一个面板完成视觉退场之前仍须保留 viewport 与行为资源
+    exitPending: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     getListEl: () => null,
     config: null,
     registerLayer: null,
     layerDispose: null,
+    presences: new Map(),
+    detachedValues: new Set(),
+    layerValue: null,
+    exitDispose: null,
   }),
   initialState: () => 'idle',
   // 挂载即量一次，让指示条首帧就在位；初始就展开着的那一项同时入栈
@@ -73,6 +79,7 @@ export const navigationMenuMachine = createMachine({
   // 程序化改写在三个状态里都认，并收掉计时器
   on: {
     'VALUE.SET': { target: 'idle', actions: ['setValue', 'clearPendingValue'] },
+    'PRESENCE.SET': { actions: ['setPresence', 'syncLayer'] },
   },
   states: {
     idle: {
@@ -153,16 +160,88 @@ export const navigationMenuMachine = createMachine({
       clearPendingValue: ({ context }) => context.set('pendingValue', null),
 
       /**
+       * 每个面板独立登记 Presence。注销必须与当前句柄身份一致，防止旧组件的迟到 cleanup
+       * 误删同 value 的新句柄；若卸载的是正在退场的面板，则不再等待视觉回调，立即释放。
+       */
+      setPresence: ({ refs, context, event, action }) => {
+        const e = event.current()
+        if (e.type !== 'PRESENCE.SET')
+          return
+        const presences = refs.get('presences')
+        const current = presences.get(e.value)
+        if (e.connected) {
+          presences.set(e.value, e.presence)
+          refs.get('detachedValues').delete(e.value)
+          if (current !== e.presence
+            && context.get('exitPending')
+            && refs.get('layerValue') === e.value) {
+            const exitDispose = refs.get('exitDispose')
+            refs.set('exitDispose', null)
+            exitDispose?.()
+          }
+          return
+        }
+        if (current !== e.presence)
+          return
+        presences.delete(e.value)
+        refs.get('detachedValues').add(e.value)
+        if (refs.get('layerValue') === e.value)
+          action(['dropLayer'])
+      },
+
+      /**
        * 层的进出栈跟着展开项走：有面板展开就入栈，都收起就出栈。
        * 常驻栈会占死栈顶、堵掉下层浮层的 Escape，所以只在展开期间在场。
        */
       syncLayer: ({ refs, context, scope, send, action, flush }) => {
-        const open = (context.get('value') ?? null) != null
+        const value = context.get('value') ?? null
+        const open = value != null
         const live = refs.get('layerDispose') != null
-        if (open === live)
-          return
-        if (!open) {
-          action(['dropLayer'])
+        if (open) {
+          // 重开或切项先废弃旧退场订阅，沿用原 Layer；旧 Presence 租约由适配器取消。
+          const exitDispose = refs.get('exitDispose')
+          if (exitDispose) {
+            refs.set('exitDispose', null)
+            exitDispose()
+          }
+          context.set('exitPending', false)
+          // 首帧尚未登记 Presence 时维持既有入层行为；只有适配器明确报告卸载才不保留空 Layer。
+          if (refs.get('detachedValues').has(value)) {
+            if (live || refs.get('layerValue') != null)
+              action(['dropLayer'])
+            return
+          }
+          refs.set('layerValue', value)
+          if (live)
+            return
+        }
+        else {
+          const layerValue = refs.get('layerValue')
+          if (layerValue == null) {
+            context.set('exitPending', false)
+            if (live)
+              action(['dropLayer'])
+            return
+          }
+          if (refs.get('exitDispose'))
+            return
+          const presence = refs.get('presences').get(layerValue)
+          // 没有视觉闸门（SSR/纯逻辑宿主）或视觉早已卸载时，保留原来的同步释放。
+          if (!presence || !presence.rendered) {
+            action(['dropLayer'])
+            return
+          }
+          context.set('exitPending', true)
+          let exitDispose: Cleanup | null = null
+          const finish = (): void => {
+            if (refs.get('exitDispose') !== exitDispose)
+              return
+            refs.set('exitDispose', null)
+            if ((context.get('value') ?? null) == null && refs.get('layerValue') === layerValue)
+              action(['dropLayer'])
+          }
+          exitDispose = presence.onExitComplete(finish)
+          refs.set('exitDispose', exitDispose)
           return
         }
         const config = refs.get('config')
@@ -197,7 +276,12 @@ export const navigationMenuMachine = createMachine({
         }, { registry: config.layerRegistry, flush })
         refs.set('layerDispose', cleanup)
       },
-      dropLayer: ({ refs }) => {
+      dropLayer: ({ refs, context }) => {
+        const exitDispose = refs.get('exitDispose')
+        refs.set('exitDispose', null)
+        exitDispose?.()
+        refs.set('layerValue', null)
+        context.set('exitPending', false)
         const cleanup = refs.get('layerDispose')
         refs.set('layerDispose', null)
         cleanup?.()

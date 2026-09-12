@@ -1,9 +1,9 @@
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTranslations } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { createRuntimeConfig } from '@xihan-ui/core'
-import { defineComponent, h, ref } from 'vue'
+import { defineComponent, h, nextTick, onMounted, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { slotPaints } from '../../runtime/slot-content'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
@@ -122,10 +122,31 @@ export const XhNavigationMenuContent = defineComponent({
     // 一个面板一份退场闸门：它们各开各的、动画各跑各的，一份管不过来。
     // 开合判据直接取 connect 这一帧的产出，不另起一套——两边各判一次迟早会说岔
     const contentRef = ref<HTMLElement | null>(null)
+    let presence: PresenceHandle | null = null
     const visible = useOverlayExit({
-      config: typeof document === 'undefined' ? null : createRuntimeConfig(),
-      isOpen: () => (ctx.api.value.getContentProps({ value: props.value }) as Record<string, unknown>).hidden !== true,
+      config: ctx.config,
+      isOpen: () => ctx.api.value.isOpen(props.value),
       contentRef,
+      onPresence: (next) => {
+        const previous = presence
+        presence = next
+        if (ctx.service.getStatus() !== 'Started')
+          return
+        if (next) {
+          ctx.service.send({ type: 'PRESENCE.SET', value: props.value, presence: next, connected: true })
+        }
+        else if (previous) {
+          ctx.service.send({ type: 'PRESENCE.SET', value: props.value, presence: previous, connected: false })
+        }
+      },
+    })
+    // setup 期 Presence 早于根机器的 onMounted；挂载后补报一次，确保首帧句柄已入 Headless 表。
+    onMounted(() => {
+      // 子组件 mounted 早于父级根机器启动，再让出一次提交队列才可安全送事件。
+      void nextTick(() => {
+        if (presence && ctx.service.getStatus() === 'Started')
+          ctx.service.send({ type: 'PRESENCE.SET', value: props.value, presence, connected: true })
+      })
     })
     return () => h(
       'div',

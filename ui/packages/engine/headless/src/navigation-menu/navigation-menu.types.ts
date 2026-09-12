@@ -1,4 +1,5 @@
 import type { Cleanup, Direction, Layer, MachineSchema, Orientation, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 /** 读屏用的文案，默认英文。 */
 export interface NavigationMenuTranslations {
@@ -72,6 +73,14 @@ export interface NavigationMenuRefs {
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
   /** 在场的层的撤销句柄，由 syncLayer 自行记账；没有层时为 null。 */
   layerDispose: Cleanup | null
+  /** 每个面板各自的视觉 presence；按 value 精确配对，切项时不串用退场信号。 */
+  presences: Map<string, PresenceHandle>
+  /** 已明确卸载的面板；区别于适配器首帧尚未来得及登记 Presence。 */
+  detachedValues: Set<string>
+  /** 当前行为层归属的面板；逻辑关闭后保留到该面板真实退场完成。 */
+  layerValue: string | null
+  /** 正在等待的退出完成订阅；重开或停机时先撤销，避免旧退出误拆新会话。 */
+  exitDispose: Cleanup | null
 }
 
 export interface NavigationMenuSchema extends MachineSchema {
@@ -113,6 +122,8 @@ export interface NavigationMenuSchema extends MachineSchema {
     autoValue: string | null
     /** 指示条的量测结果；都收起或量不到时为 null。 */
     indicator: NavigationMenuIndicatorRect | null
+    /** 逻辑已经关闭，但最后一个面板仍在视觉退场。 */
+    exitPending: boolean
   }
   computed: Record<string, never>
   refs: NavigationMenuRefs
@@ -134,6 +145,8 @@ export interface NavigationMenuSchema extends MachineSchema {
     | { type: 'DISMISS' }
     /** 程序化改写。 */
     | { type: 'VALUE.SET', value: string | null }
+    /** 适配器按面板 value 注册或精确注销其视觉 Presence。 */
+    | { type: 'PRESENCE.SET', value: string, presence: PresenceHandle, connected: boolean }
     // 定时器到点，名称与对应的 delay prop 同名
     | { type: 'after.delayDuration' }
     | { type: 'after.skipDelayDuration' }
@@ -147,6 +160,7 @@ export interface NavigationMenuSchema extends MachineSchema {
     | 'clearPendingValue'
     | 'clearAutoValue'
     | 'measureIndicator'
+    | 'setPresence'
     | 'syncLayer'
     | 'dropLayer'
   effect: 'waitForOpenDelay' | 'waitForSkipDelay' | 'trackResize'
