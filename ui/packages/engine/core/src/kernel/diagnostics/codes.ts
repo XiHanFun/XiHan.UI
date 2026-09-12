@@ -1,10 +1,13 @@
 // 诊断码。订阅方按码分流，文案可改，码不可改。
 
+/** 通用告警码单项入口；窄消费者无需为它保留整张码表。 */
+export const DIAGNOSTIC_WARN = 'core.warn'
+
 export const DIAGNOSTIC_CODES = {
   /** 断言不成立。 */
   invariant: 'core.invariant',
   /** 条件告警。 */
-  warn: 'core.warn',
+  warn: DIAGNOSTIC_WARN,
   /** dispose 的层不是栈顶。 */
   layerDisposeNotTop: 'core.layer.dispose-not-top',
   /** 机器抛出 MachineError。 */

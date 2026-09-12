@@ -1,6 +1,6 @@
 // 主题定义帮助器：恒等函数只做类型收窄，外加几条把常用包络写短的工厂。
 
-import type { EnvelopePoint, SoundSpec, SoundTheme } from '../types'
+import type { EnvelopePoint, OscillatorLayer, SoundSpec, SoundTheme } from '../types'
 
 export function defineSoundTheme<T extends SoundTheme>(theme: T): T {
   return theme
@@ -30,4 +30,24 @@ export function glide(from: number, to: number, duration: number): EnvelopePoint
     { time: 0, value: from },
     { time: duration, value: to, curve: 'exp' },
   ]
+}
+
+/** 常见的定频敲击声部；只压缩主题声明，不改变公开 SoundSpec 形态。 */
+export function strikeTone(
+  wave: OscillatorLayer['wave'],
+  frequency: number,
+  peak: number,
+  attack: number,
+  decay: number,
+  delay?: number,
+): OscillatorLayer {
+  const layer: OscillatorLayer = {
+    kind: 'oscillator',
+    wave,
+    frequency: flat(frequency),
+    gain: strike(peak, attack, decay),
+  }
+  if (delay !== undefined)
+    layer.delay = delay
+  return layer
 }

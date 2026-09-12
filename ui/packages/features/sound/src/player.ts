@@ -5,7 +5,7 @@
 import type { SoundContext } from './engine/context'
 import type { Voice } from './engine/voice'
 import type { PlayOptions, SoundPlayer, SoundPlayerOptions, SoundSpec, SoundTheme } from './types'
-import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
+import { DIAGNOSTIC_WARN, reportDiagnostic } from '@xihan-ui/core'
 import { createSoundContext, isAudioSupported } from './engine/context'
 import { playSpec } from './engine/voice'
 import { clampSpec } from './spec'
@@ -71,7 +71,7 @@ export function createSoundPlayer(options: SoundPlayerOptions = {}): SoundPlayer
       const found = theme[input]
       if (!found) {
         reportDiagnostic({
-          code: DIAGNOSTIC_CODES.warn,
+          code: DIAGNOSTIC_WARN,
           level: 'warn',
           message: `[sound] 主题里没有「${input}」这个声音`,
         })

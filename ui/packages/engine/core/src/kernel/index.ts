@@ -34,7 +34,7 @@ export {
   setDiagnosticsLevel,
 } from './diagnostics/channel'
 export type { DiagnosticCode } from './diagnostics/codes'
-export { DIAGNOSTIC_CODES } from './diagnostics/codes'
+export { DIAGNOSTIC_CODES, DIAGNOSTIC_WARN } from './diagnostics/codes'
 // (与 ./skin-check 同理,见 .size-limit.json 里 core 与 vue 各入口的棘轮)
 export type {
   DiagnosticHandler,

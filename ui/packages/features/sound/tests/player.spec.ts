@@ -5,7 +5,7 @@
  */
 
 import type { DiagnosticRecord } from '@xihan-ui/core'
-import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
+import { DIAGNOSTIC_CODES, onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createSoundPlayer } from '../src/player'
 import { FakeGain, installFakeAudio } from './fake-audio'
@@ -76,6 +76,7 @@ describe('createSoundPlayer', () => {
     const player = createSoundPlayer()
     player.play('nope')
     expect(records).toHaveLength(1)
+    expect(records[0]!.code).toBe(DIAGNOSTIC_CODES.warn)
     expect(records[0]!.message).toContain('nope')
     expect(fake.instances).toHaveLength(0)
   })
