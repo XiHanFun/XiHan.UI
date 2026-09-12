@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { mount } from '@vue/test-utils'
+import { formPathKey } from '@xihan-ui/headless'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
 import {
@@ -10,7 +11,6 @@ import {
   XhTextFieldInput,
   XhTextFieldRoot,
 } from '../src'
-import { formPathKey } from '@xihan-ui/headless'
 
 afterEach(() => {
   document.body.innerHTML = ''
@@ -31,7 +31,7 @@ function mountTextField(props: Record<string, boolean> = {}, wrapped = false) {
 }
 
 describe('form control context 接线', () => {
-  it('FieldGroup 用 name 接收数组路径，并把它稳定写成路径身份', () => {
+  it('fieldGroup 用 name 接收数组路径，并把它稳定写成路径身份', () => {
     const path = ['users', 0, 'email'] as const
     const view = mount(defineComponent({
       setup: () => () => h(XhFormRoot, null, () => h(XhFormFieldGroup, { name: path })),

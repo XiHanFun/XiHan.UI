@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { FieldArraySchema } from '../src/field-array'
-import type { FormSchema } from '../src/form'
+import type { FormRule, FormSchema } from '../src/form'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -293,12 +293,12 @@ describe('接入 FormPath：行号变更只在 Headless 真源迁移', () => {
     const users = ['users'] as const
     const email = ['users', 0, 'email'] as const
     const form = makeFormService({
-      defaultValues: createFormPathRecord([
+      defaultValues: createFormPathRecord<unknown>([
         [users, [{ id: 'a' }]],
         [email, 'a@example.com'],
         ['users[0].email', '字符串字段'],
       ]),
-      rules: createFormPathRecord([[email, { required: true }]]),
+      rules: createFormPathRecord<FormRule>([[email, { required: true }]]),
     })
     const rows = makeService({ name: users, createItem: () => ({ id: 'b' }) })
     rows.refs.set('form', form)
@@ -318,14 +318,14 @@ describe('接入 FormPath：行号变更只在 Headless 真源迁移', () => {
     const removedEmail = ['users', 1, 'email'] as const
     const lastEmail = ['users', 2, 'email'] as const
     const form = makeFormService({
-      defaultValues: createFormPathRecord([
+      defaultValues: createFormPathRecord<unknown>([
         [users, [{ id: 'a' }, { id: 'b' }, { id: 'c' }]],
         [firstEmail, 'a@example.com'],
         [removedEmail, 'b@example.com'],
         [lastEmail, 'c@example.com'],
         ['users[1].email', '字符串字段不参与数组迁移'],
       ]),
-      rules: createFormPathRecord([
+      rules: createFormPathRecord<FormRule>([
         [firstEmail, { required: true }],
         [removedEmail, { required: true }],
         [lastEmail, { required: true }],
@@ -361,14 +361,14 @@ describe('接入 FormPath：行号变更只在 Headless 真源迁移', () => {
     const moved = ['users', 0, 'email'] as const
     let resolveValidator: ((message: string | undefined) => void) | undefined
     const form = makeFormService({
-      defaultValues: createFormPathRecord([
+      defaultValues: createFormPathRecord<unknown>([
         [users, [{ id: 'a' }, { id: 'b' }, { id: 'c' }]],
         [['users', 0, 'email'], 'a@example.com'],
         [['users', 1, 'email'], 'b@example.com'],
         [original, 'c@example.com'],
       ]),
       validateOn: 'change',
-      rules: createFormPathRecord([[
+      rules: createFormPathRecord<FormRule>([[
         original,
         { required: true, validator: () => new Promise<string | undefined>((resolve) => { resolveValidator = resolve }) },
       ]]),

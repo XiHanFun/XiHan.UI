@@ -46,8 +46,13 @@ describe('树选择分支与叶子的统一选择反馈', () => {
         host.dir = dir
         document.body.append(host)
         app = createApp({ render: () => h(XhTreeSelectRoot, {
-          collection, multiple, cascade: multiple, dir, open: true,
-          defaultValue: ['one'], defaultExpandedValue: ['group'],
+          collection,
+          multiple,
+          cascade: multiple,
+          dir,
+          open: true,
+          defaultValue: ['one'],
+          defaultExpandedValue: ['group'],
         }) })
         app.mount(host)
         await nextTick()

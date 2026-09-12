@@ -10,8 +10,8 @@ import {
   firstFormErrorName,
   focusFormField,
   formFieldOrder,
-  formPathKey,
   formMachine,
+  formPathKey,
   mergeFormErrors,
   normalizeFormErrors,
   sameFormErrors,
@@ -559,7 +559,12 @@ describe('connectForm 结构与标注', () => {
     const path = ['users', 0, 'email'] as const
     const values = createFormPathRecord([[path, 'seed']])
     let settle: ((errors: FormErrorPatch) => void) | undefined
-    const s = makeService({ defaultValues: values, validate: () => new Promise<FormErrorPatch>((resolve) => { settle = resolve }) })
+    const s = makeService({
+      defaultValues: values,
+      validate: () => new Promise<FormErrorPatch>((resolve) => {
+        settle = resolve
+      }),
+    })
     s.api().submit()
     settle?.({})
     await microtask()

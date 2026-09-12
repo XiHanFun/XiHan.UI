@@ -26,7 +26,7 @@ describe('fieldArray 接入 FormPath', () => {
     document.body.append(host)
     const app = createApp({
       setup: () => () => h(XhFormRoot, {
-        defaultValues: createFormPathRecord([
+        defaultValues: createFormPathRecord<unknown>([
           [users, [{ id: 'a' }, { id: 'b' }]],
           [['users', 0, 'email'], 'a@example.com'],
           [middleEmail, 'b@example.com'],

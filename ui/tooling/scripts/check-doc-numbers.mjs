@@ -354,13 +354,13 @@ const truth = {
     },
   },
   表单字段组件数: {
-    how: '<name>.types.ts 的 props 里带 name?: string 的组件数',
+    how: '<name>.types.ts 的 props 里带 name?: 的组件数',
     async value() {
       const names = await once('anatomy', () => componentDirs('anatomy.ts'))
       let n = 0
       for (const name of names) {
         const src = await readFile(join(HEADLESS, name, `${name}.types.ts`), 'utf8').catch(() => '')
-        if (/^\s{4}name\?: string/m.test(src))
+        if (/^\s{4}name\?:/m.test(src))
           n++
       }
       return n

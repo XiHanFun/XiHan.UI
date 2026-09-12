@@ -18,7 +18,7 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-describe('Portal 视觉环境桥', () => {
+describe('portal 视觉环境桥', () => {
   it('真实 Chromium 将透明度轴与来源自定义属性投影到独占壳', async () => {
     const host = document.createElement('div')
     document.body.append(host)

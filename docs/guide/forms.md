@@ -126,4 +126,4 @@ segmented、select、signature-pad、slider、switch、tags-input、text-field�
 time-picker、toggle-group、transfer、tree-select。
 
 新加的表单组件忘了接重置会被门禁拦下：判据的分母是从源码里扫出来的（`types` 的 props 里有
-`name?: string` 即表单字段），不是手写名单。
+`name?:` 即表单字段，字段名既可以是标量字符串也可以是 `FormPath`），不是手写名单。

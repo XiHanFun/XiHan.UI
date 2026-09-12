@@ -13,7 +13,7 @@ let host: HTMLElement | null = null
 let keyboardModality = false
 
 function trigger(): HTMLButtonElement {
-  const element = document.querySelector<HTMLButtonElement>("[data-scope='float-button'][data-part='trigger']")
+  const element = document.querySelector<HTMLButtonElement>('[data-scope=\'float-button\'][data-part=\'trigger\']')
   if (!element)
     throw new Error('找不到 float-button/trigger')
   return element
@@ -97,7 +97,7 @@ describe('float-button 的 M3 通透玻璃皮肤', () => {
 
     const element = trigger()
     const style = getComputedStyle(element)
-    expect(element.closest("[data-part='root']")!.hasAttribute('data-variant')).toBe(false)
+    expect(element.closest('[data-part=\'root\']')!.hasAttribute('data-variant')).toBe(false)
     expect(style.backgroundColor).toBe(resolve(element, 'background-color', 'var(--xh-material-glass-bg)'))
     expect(style.borderTopColor).toBe(resolve(element, 'border-top-color', 'var(--xh-material-glass-border)'))
     expect(style.color).toBe(resolve(element, 'color', 'var(--xh-material-glass-fg)'))

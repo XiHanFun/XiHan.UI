@@ -1,6 +1,7 @@
 import type { Layer, Service } from '@xihan-ui/core'
 import type { TourApi, TourSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
+import type { OverlayWiring } from '../../runtime/use-overlay'
 import { connectTour, tourMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { useRef } from 'react'
@@ -8,7 +9,6 @@ import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
-import type { OverlayWiring } from '../../runtime/use-overlay'
 
 export interface TourContext extends OverlayWiring {
   service: Service<TourSchema>
