@@ -1,7 +1,7 @@
 import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
-import type { TagGroupApi, TagGroupItemDeleteDetails, TagGroupItemProps, TagGroupNode, TagGroupSchema, TagGroupSelectionMode, TagGroupTranslations, TagGroupValueChangeDetails, TagVariant } from '@xihan-ui/headless'
+import type { FormControlState, TagGroupApi, TagGroupItemDeleteDetails, TagGroupItemProps, TagGroupNode, TagGroupSchema, TagGroupSelectionMode, TagGroupTranslations, TagGroupValueChangeDetails, TagVariant } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTagGroup, tagAnatomy, tagGroupAnatomy, tagGroupMachine, tagGroupMeta } from '@xihan-ui/headless'
+import { connectTagGroup, resolveFormControlState, tagAnatomy, tagGroupAnatomy, tagGroupMachine, tagGroupMeta } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -75,8 +75,8 @@ export class XhTagGroupElement extends XhElement {
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
     deletable: { type: Boolean },
-    disabled: { type: Boolean },
-    readOnly: { type: Boolean, attribute: 'read-only' },
+    disabled: { converter: BOOLEAN_CONVERTER },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     orientation: { converter: STRING_CONVERTER },
@@ -107,6 +107,20 @@ export class XhTagGroupElement extends XhElement {
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
   /** 上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。 */
   private wasGroupDisabled = false
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field/Form 只交状态；TagGroup 仅消费公开的禁用、只读两轴。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
+  private controlState(): FormControlState {
+    return resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+    }, this.inheritedControl)
+  }
 
   private readonly notify = (details: TagGroupValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -121,6 +135,7 @@ export class XhTagGroupElement extends XhElement {
   private readonly ctrl = new MachineController<TagGroupSchema>(this, tagGroupMachine, () => this.machineProps())
 
   private machineProps(): Partial<TagGroupSchema['props']> {
+    const control = this.controlState()
     return {
       collection: this.collection,
       translations: this.translations,
@@ -128,8 +143,8 @@ export class XhTagGroupElement extends XhElement {
       defaultValue: this.defaultValue,
       selectionMode: this.selectionMode,
       deletable: this.deletable ?? false,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
       loop: this.loop,
       dir: this.direction,
       orientation: this.orientation,
@@ -181,7 +196,7 @@ export class XhTagGroupElement extends XhElement {
     // 「作者没写」表达不出 undefined，数据里的禁用就永远轮不到生效。
     if (this.collection)
       return { value, disabled: this.declaredItemDisabled(el), deletable }
-    const groupDisabled = !!this.disabled
+    const groupDisabled = this.controlState().disabled
     // 只有「本帧与上一帧都没整组禁用」时，节点上的 aria-disabled 才等于作者声明：
     // 整组禁用那几帧 connect 把每个条目都写成了 true，解禁当帧 DOM 上还留着这些写回值，
     // 此刻现读会把机器自己的产物误当声明、条目再也解不开。
@@ -284,6 +299,6 @@ export class XhTagGroupElement extends XhElement {
     }
 
     // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
-    this.wasGroupDisabled = !!this.disabled
+    this.wasGroupDisabled = !!this.controlState().disabled
   }
 }

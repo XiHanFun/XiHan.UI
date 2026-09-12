@@ -1,7 +1,7 @@
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { ListboxItemProps, ListboxNode, ListboxSchema, ListboxSelectionMode, ListboxValueChangeDetails } from '@xihan-ui/headless'
+import type { FormControlState, ListboxItemProps, ListboxNode, ListboxSchema, ListboxSelectionMode, ListboxValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectListbox, listboxAnatomy, listboxMachine, listboxMeta } from '@xihan-ui/headless'
+import { connectListbox, listboxAnatomy, listboxMachine, listboxMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -69,7 +69,7 @@ export class XhListboxElement extends XhElement {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
@@ -101,6 +101,21 @@ export class XhListboxElement extends XhElement {
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
   /** 上一帧是否整列禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。 */
   private wasListDisabled = false
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field/Form 只交状态；Listbox 仅消费公开的禁用、只读、错误三轴。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
+  private controlState(): FormControlState {
+    return resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
+  }
 
   private readonly notify = (details: ListboxValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -111,14 +126,15 @@ export class XhListboxElement extends XhElement {
   private readonly ctrl = new MachineController<ListboxSchema>(this, listboxMachine, () => this.machineProps())
 
   private machineProps(): Partial<ListboxSchema['props']> {
+    const control = this.controlState()
     return {
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
       selectionMode: this.selectionMode,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly,
-      invalid: this.invalid,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       loading: this.loading,
       tone: this.tone,
       size: this.size,
@@ -158,7 +174,7 @@ export class XhListboxElement extends XhElement {
     // 「作者没写」表达不出 undefined，数据里的禁用就永远轮不到生效。
     if (this.collection)
       return { value, disabled: this.declaredItemDisabled(el) }
-    const listDisabled = !!this.disabled
+    const listDisabled = this.controlState().disabled
     // 只有「本帧与上一帧都没整列禁用」时，节点上的 aria-disabled 才等于作者声明：
     // 整列禁用那几帧 connect 把每个条目都写成了 true，解禁当帧 DOM 上还留着这些写回值，
     // 此刻现读会把机器自己的产物误当声明、条目再也解不开。
@@ -217,6 +233,6 @@ export class XhListboxElement extends XhElement {
     }
 
     // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
-    this.wasListDisabled = !!this.disabled
+    this.wasListDisabled = !!this.controlState().disabled
   }
 }

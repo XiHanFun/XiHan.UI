@@ -30,6 +30,7 @@ import {
   XhFormFieldGroup,
   XhFormRoot,
   XhImageCropperRoot,
+  XhListboxRoot,
   XhMentionInput,
   XhMentionRoot,
   XhNumberFieldInput,
@@ -52,6 +53,7 @@ import {
   XhSliderThumb,
   XhSliderTrack,
   XhSwitch,
+  XhTagGroupRoot,
   XhTagsInputInput,
   XhTagsInputRoot,
   XhTextFieldInput,
@@ -74,9 +76,9 @@ import {
 } from '../src'
 
 type ControlState = Partial<Record<'disabled' | 'readOnly' | 'required' | 'invalid', boolean>>
-type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider' | 'Select' | 'Cascader' | 'Combobox' | 'TreeSelect' | 'DatePicker' | 'TimePicker' | 'ColorPicker' | 'Mention' | 'Rating' | 'Segmented' | 'ToggleGroup' | 'Transfer' | 'FieldArray' | 'FileUpload' | 'ImageCropper' | 'SignaturePad'
+type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider' | 'Select' | 'Cascader' | 'Combobox' | 'TreeSelect' | 'DatePicker' | 'TimePicker' | 'ColorPicker' | 'Mention' | 'Rating' | 'Segmented' | 'ToggleGroup' | 'Transfer' | 'FieldArray' | 'FileUpload' | 'ImageCropper' | 'SignaturePad' | 'Listbox' | 'TagGroup'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider', 'Select', 'Cascader', 'Combobox', 'TreeSelect', 'DatePicker', 'TimePicker', 'ColorPicker', 'Mention', 'Rating', 'Segmented', 'ToggleGroup', 'Transfer', 'FieldArray', 'FileUpload', 'ImageCropper', 'SignaturePad']
+const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider', 'Select', 'Cascader', 'Combobox', 'TreeSelect', 'DatePicker', 'TimePicker', 'ColorPicker', 'Mention', 'Rating', 'Segmented', 'ToggleGroup', 'Transfer', 'FieldArray', 'FileUpload', 'ImageCropper', 'SignaturePad', 'Listbox', 'TagGroup']
 
 function nonRequiredState(props: ControlState) {
   return { disabled: props.disabled, readOnly: props.readOnly, invalid: props.invalid }
@@ -176,6 +178,10 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
     return <XhImageCropperRoot {...disabledReadOnlyState(props)} />
   if (kind === 'SignaturePad')
     return <XhSignaturePadRoot {...props}><XhSignaturePadHiddenInput /></XhSignaturePadRoot>
+  if (kind === 'Listbox')
+    return <XhListboxRoot {...nonRequiredState(props)} collection={[{ value: 'a', label: '甲' }]} />
+  if (kind === 'TagGroup')
+    return <XhTagGroupRoot {...disabledReadOnlyState(props)} collection={[{ value: 'a', label: '甲' }]} />
   return (
     <XhSliderRoot {...nonRequiredState(props)} defaultValue={[50]}>
       <XhSliderControl>
@@ -198,6 +204,15 @@ function renderAtomicControl(kind: AtomicControl, instance: ControlState = {}, f
 }
 
 function expectAtomicState(container: HTMLElement, kind: AtomicControl, enabled: boolean): void {
+  if (kind === 'Listbox' || kind === 'TagGroup') {
+    const scope = kind === 'Listbox' ? 'listbox' : 'tag-group'
+    const root = container.querySelector<HTMLElement>(`[data-scope="${scope}"][data-part="root"]`)!
+    expect(root.hasAttribute('data-disabled')).toBe(enabled)
+    expect(root.hasAttribute('data-readonly')).toBe(enabled)
+    if (kind === 'Listbox')
+      expect(root.hasAttribute('data-invalid')).toBe(enabled)
+    return
+  }
   if (kind === 'FieldArray') {
     const root = container.querySelector<HTMLElement>('[data-scope="field-array"][data-part="root"]')!
     expect(root.hasAttribute('data-disabled')).toBe(enabled)
