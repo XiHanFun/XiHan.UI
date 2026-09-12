@@ -1,14 +1,15 @@
-import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
+import type { ActionVariant, IdGenerator, Layer, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
   CollapsibleOpenChangeDetails,
-  CollapsibleSchema,
   FloatButtonAppearance,
   FloatButtonExpandTrigger,
   FloatButtonPlacement,
+  FloatButtonSchema,
   FloatButtonShape,
   FloatButtonTranslations,
 } from '@xihan-ui/headless'
-import { collapsibleMachine, connectFloatButton, floatButtonAnatomy, floatButtonMeta } from '@xihan-ui/headless'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { connectFloatButton, floatButtonAnatomy, floatButtonMachine, floatButtonMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -22,8 +23,8 @@ const TRISTATE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? 
 /**
  * `<xh-float-button>` —— 悬浮按钮行为宿主：一颗钉在视口一角的触发器，展开一组动作。
  *
- * 开合跑的是 collapsible 机器——一颗触发器管着一组内容的开合，正是那台机器的活儿；
- * 落位、外形与展开方式不入机器，只决定接哪几个监听、往根上写哪几个 data-*。
+ * 专用机器持有开合、层外交互、Escape 仲裁与逻辑层生命周期；元素只桥接所属
+ * Document 的 RuntimeConfig、LayerRegistry 登记与 root 节点。
  *
  * 作者须把 trigger 写成 `<button>`：激活与 Tab 停靠由平台提供，元素不接管这两件。
  * 收起时 list 带 hidden，里面的按钮一并退出 Tab 序列与无障碍树。
@@ -77,23 +78,47 @@ export class XhFloatButtonElement extends XhElement {
   declare size?: Size
   declare translations?: Partial<FloatButtonTranslations>
 
+  private readonly idGen: IdGenerator = createCounterIdGenerator()
+  private readonly floatButtonScope = createScope(() => this, this.idGen)
+  private config: RuntimeConfig | null = null
+
   private readonly notify = (details: CollapsibleOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly ctrl = new MachineController<CollapsibleSchema>(
+  private readonly ctrl = new MachineController<FloatButtonSchema>(
     this,
-    collapsibleMachine,
+    floatButtonMachine,
     () => this.machineProps(),
+    { scope: this.floatButtonScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
-  private machineProps(): Partial<CollapsibleSchema['props']> {
+  private machineProps(): Partial<FloatButtonSchema['props']> {
     return {
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       disabled: this.disabled ?? false,
+      expandTrigger: this.expandTrigger,
       onOpenChange: this.notify,
     }
+  }
+
+  private ensureConfig(): void {
+    this.config ??= createRuntimeConfig({ scope: this.floatButtonScope, idGenerator: this.idGen })
+  }
+
+  private readonly registerLayer = (
+    layer: Omit<Layer, 'id'>,
+  ): ReturnType<RuntimeConfig['layerRegistry']['register']> => {
+    this.ensureConfig()
+    return this.config!.layerRegistry.register(layer)
+  }
+
+  private injectRefs(svc: Service<FloatButtonSchema>): void {
+    this.ensureConfig()
+    svc.refs.set('config', this.config)
+    svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('getRootEl', () => this.getPart('root'))
   }
 
   private appearance(): FloatButtonAppearance {
@@ -129,5 +154,11 @@ export class XhFloatButtonElement extends XhElement {
       // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来
       this.setPartHidden(list, props.hidden === true)
     }
+  }
+
+  override disconnectedCallback(): void {
+    // super 先停机并逆序释放 Headless 持有的消解层与 LayerRegistry 登记。
+    super.disconnectedCallback()
+    this.config = null
   }
 }
