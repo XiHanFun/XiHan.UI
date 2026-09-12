@@ -8,6 +8,7 @@ import type {
   FileUploadValidationResult,
 } from './file-upload.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
+import { sameArray } from '../shared/array'
 import { fileUploadHiddenInputId } from './file-upload.anatomy'
 
 const { createMachine } = setup<FileUploadSchema>()
@@ -140,7 +141,7 @@ export function formatFileSize(bytes: number): string {
  * 并把没变的列表判成变了导致 onFilesChange 重复发。元素本身按引用比。
  */
 export function sameFiles(a: readonly File[], b: readonly File[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((file, i) => file === b[i])
+  return sameArray(a, b)
 }
 
 /**
@@ -173,7 +174,7 @@ type UploadActionParams = Parameters<ActionFn<FileUploadSchema>>[0]
 
 /** 远程附件列表按元素比，语义同 sameFiles。 */
 export function sameRemoteFiles(a: readonly FileUploadRemoteFile[], b: readonly FileUploadRemoteFile[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((file, i) => file === b[i])
+  return sameArray(a, b)
 }
 
 /** 取（或发）文件的内部 id：文件对象是身份，同一个 File 恒拿同一个 id。 */

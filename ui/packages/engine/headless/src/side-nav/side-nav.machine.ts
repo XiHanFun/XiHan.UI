@@ -1,21 +1,12 @@
 import type { Cleanup, Layer, PositionResult } from '@xihan-ui/core'
 import type { SideNavNode, SideNavSchema } from './side-nav.types'
 import { focusItem, navigateItems, setup, trackHoverIntent } from '@xihan-ui/core'
+import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { OVERLAY_OFFSET } from '../shared/overlay'
 import { trackOverlayLayer } from '../shared/overlay-shell'
 import { indexTree } from '../tree'
 
 const { createMachine } = setup<SideNavSchema>()
-
-/** 去重且保序：展开集合是一个集合，重复元素没有意义。 */
-function unique(values: readonly string[]): string[] {
-  return [...new Set(values)]
-}
-
-/** 数组按元素比：受控时 cell 每次读都产出新数组，默认的 Object.is 恒不相等。 */
-function sameValues(a: string[], b: string[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((v, i) => v === b[i])
-}
 
 /**
  * 手风琴收口：展开某枝时收起同层其余分支，不同层与它的祖先不动。

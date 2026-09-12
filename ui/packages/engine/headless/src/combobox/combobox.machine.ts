@@ -1,6 +1,7 @@
 import type { PositionResult } from '@xihan-ui/core'
 import type { ComboboxFocusIntent, ComboboxSchema } from './combobox.types'
 import { isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
@@ -10,24 +11,9 @@ const { createMachine } = setup<ComboboxSchema>()
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const COMBOBOX_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
-/** 裸串是单选的简写，内部一律按数组处理；undefined 要原样透传，cell 靠它区分受控与否。 */
-function toValues(input: string | string[] | undefined): string[] | undefined {
-  if (input === undefined)
-    return undefined
-  return typeof input === 'string' ? [input] : [...input]
-}
-
 /** 选中集合的不变量：单选恒为长度 ≤ 1，多选去重。公开 API 与退格删末项都经这里收口。 */
 function normalizeSelection(next: readonly string[], multiple: boolean): string[] {
   return multiple ? [...new Set(next)] : next.slice(0, 1)
-}
-
-/**
- * 数组按元素比。受控时 cell 每次读都把 prop 归一成新数组，引用比恒不相等，
- * 会导致版本号空转与 onValueChange 重复发。
- */
-function sameValues(a: string[], b: string[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
 
 // 选中值与输入串走 cell 原生受控（给定 prop 即受控），不需要影子事件；

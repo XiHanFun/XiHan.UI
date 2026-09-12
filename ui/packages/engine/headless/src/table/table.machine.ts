@@ -11,6 +11,7 @@ import type {
 } from './table.types'
 import { applySelection, setup } from '@xihan-ui/core'
 import { clampSize, createPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
+import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { dragAnnouncement, hitAlong, hitAlongNested, insertionIndex } from '../shared/drag'
 import { snapshotDrift } from '../shared/drag-drift'
 import { orderColumnIds, resolveTableColumns } from './table.columns'
@@ -31,11 +32,6 @@ export function tableSelectionMode(mode: TableSelectionMode | undefined): TableS
   return mode ?? 'none'
 }
 
-/** 去重且保序：展开集合是一个集合，重复元素没有意义。 */
-function unique(values: readonly string[]): string[] {
-  return [...new Set(values)]
-}
-
 /**
  * 选中集合的不变量：单选恒为长度 ≤ 1，复选去重。
  * 单选下的裸 'all' 自相矛盾（一次只中一行），落成空集合。
@@ -45,11 +41,6 @@ function normalizeSelection(next: TableSelection, mode: TableSelectionMode): Tab
     return mode === 'single' ? [] : 'all'
   const uniq = unique(next)
   return mode === 'single' ? uniq.slice(0, 1) : uniq
-}
-
-/** 数组按元素比：受控时 cell 每次读都产出新数组，默认的 Object.is 恒不相等。 */
-function sameValues(a: string[], b: string[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
 
 /** 选中集合多一个裸 'all' 形态：它与「恰好列全了同一批 id」不是一回事，不能互判相等。 */

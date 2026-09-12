@@ -1,6 +1,7 @@
 import type { PositionResult } from '@xihan-ui/core'
 import type { SelectFocusIntent, SelectSchema } from './select.types'
 import { createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -14,15 +15,6 @@ export const SELECT_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 /** 未指定 maxTagCount 时多选标签最多摆几枚，其余折进 +N 那一枚。 */
 export const SELECT_DEFAULT_MAX_TAG_COUNT = 3
 
-// 对外允许裸串与 null 两种单选简写，内部一律按数组处理；undefined 要原样透传给 cell 判非受控
-function toValues(input: string | string[] | null | undefined): string[] | undefined {
-  if (input === undefined)
-    return undefined
-  if (input === null)
-    return []
-  return typeof input === 'string' ? [input] : [...input]
-}
-
 /** 选中集合的不变量：单选恒为长度 ≤ 1，多选去重。公开 API 与受控入参都经这里收口。 */
 function normalizeSelection(next: readonly string[], multiple: boolean): string[] {
   return multiple ? [...new Set(next)] : next.slice(0, 1)
@@ -31,11 +23,6 @@ function normalizeSelection(next: readonly string[], multiple: boolean): string[
 // 受控缺席时原样透传 undefined，cell 据此判非受控
 function normalizeInput(next: string[] | undefined, multiple: boolean): string[] | undefined {
   return next === undefined ? undefined : normalizeSelection(next, multiple)
-}
-
-// cell 默认按引用比，数组每帧新建会次次判变；按元素比才认得出「值没动」
-function sameValues(a: string[], b: string[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
 
 export const selectMachine = createMachine({

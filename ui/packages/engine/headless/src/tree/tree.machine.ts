@@ -2,6 +2,7 @@ import type { DragAnnounceKind, DropTarget } from '../shared/drag'
 import type { TreeMove, TreeNode, TreeNodeMeta, TreeSchema, TreeVisibleNode } from './tree.types'
 import { applySelection, cascadeToggle, collapseChecked, createTypeahead, setup } from '@xihan-ui/core'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
+import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { dragAnnouncement, hitAlongNested } from '../shared/drag'
 import { snapshotDrift } from '../shared/drag-drift'
 import { isTreeDropAllowed, treeMoveOf } from './tree.drag'
@@ -80,19 +81,9 @@ export function indexTree(collection: readonly TreeNode[]): Map<string, TreeNode
   return out
 }
 
-/** 去重且保序：展开集合是一个集合，重复元素没有意义。 */
-function unique(values: readonly string[]): string[] {
-  return [...new Set(values)]
-}
-
 /** 选中集合的不变量：单选恒为长度 ≤ 1，复选去重。公开 API 与内部写入都经这里收口。 */
 function normalizeSelection(next: readonly string[], multiple: boolean): string[] {
   return multiple ? unique(next) : next.slice(0, 1)
-}
-
-/** 数组按元素比：受控时 cell 每次读都产出新数组，默认的 Object.is 恒不相等。 */
-function sameValues(a: string[], b: string[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
 
 // 展开集合与选中集合都住在 context 的 cell 里，受控/非受控在 cell 收口，

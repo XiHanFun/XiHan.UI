@@ -1,6 +1,7 @@
 import type { ContextFacade, Params, PropFn } from '@xihan-ui/core'
 import type { TransferSchema, TransferSide } from './transfer.types'
 import { applySelection, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import {
   transferCheckedValues,
   transferIsCheckable,
@@ -46,16 +47,6 @@ function operableOn(params: SetParams, side: TransferSide): string[] {
     prop('filter'),
   )
   return transferOperableValues(visible)
-}
-
-/** 去重且保序：两个集合都是集合，重复元素没有意义。 */
-function unique(values: readonly string[]): string[] {
-  return [...new Set(values)]
-}
-
-/** 数组按元素比：受控时 cell 每次读都产出新数组，默认的 Object.is 恒不相等。 */
-function sameValues(a: string[], b: string[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
 
 /** 整个控件禁用时用户改不动任何东西；程序化入口（VALUE.SET / SELECTION.SET）不受此限。 */

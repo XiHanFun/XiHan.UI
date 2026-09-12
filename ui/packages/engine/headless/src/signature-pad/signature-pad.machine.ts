@@ -1,6 +1,7 @@
 import type { SignaturePadDrawingOptions, SignaturePadPointerPoint, SignaturePadSchema, SignaturePadStroke, SignaturePadSurface } from './signature-pad.types'
 import { setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
+import { sameArray } from '../shared/array'
 import { lastStrokePath, pointDistance, SIGNATURE_PAD_MIN_DISTANCE, signaturePadSvg, simulatedPressure, strokesToPaths } from './signature-pad.geometry'
 
 const { createMachine } = setup<SignaturePadSchema>()
@@ -24,7 +25,7 @@ export function sameSignatureStrokes(
   a: readonly SignaturePadStroke[],
   b: readonly SignaturePadStroke[] | undefined,
 ): boolean {
-  return b != null && a.length === b.length && a.every((stroke, i) => stroke === b[i])
+  return sameArray(a, b)
 }
 
 /** 设备报的压感；报不出（0 或缺席）时取中档，否则鼠标画出来的笔迹会细成一条缝。 */

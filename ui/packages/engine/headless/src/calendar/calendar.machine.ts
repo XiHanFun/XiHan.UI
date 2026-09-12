@@ -3,6 +3,7 @@ import type { CalendarView } from './calendar.grid'
 import type { CalendarSchema, CalendarSelectionMode } from './calendar.types'
 import { getLocalTimeZone, startOfMonth, today } from '@internationalized/date'
 import { focusItem, itemValue, queryItems, setup } from '@xihan-ui/core'
+import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { calendarCellTriggerQuery } from './calendar.anatomy'
 import {
   calendarPageMonths,
@@ -53,13 +54,6 @@ function alignVisibleStart(
     context.set('visibleStart', cell.subtract({ months: span }).toString())
 }
 
-/** 裸串是单选的简写，内部一律按数组处理；undefined 要原样透传，cell 靠它区分受控与否。 */
-function toValues(input: string | string[] | undefined): string[] | undefined {
-  if (input === undefined)
-    return undefined
-  return typeof input === 'string' ? [input] : [...input]
-}
-
 /** ISO 日期串按字典序比就是按时间比（YYYY-MM-DD 定长补零）。 */
 function compareIso(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0
@@ -71,11 +65,6 @@ function normalizeSelection(next: readonly string[], mode: CalendarSelectionMode
     return next.slice(0, 1)
   const unique = [...new Set(next)].sort(compareIso)
   return mode === 'range' ? unique.slice(0, 2) : unique
-}
-
-/** 数组按元素比：受控时每次读都把 prop 归一成新数组，默认的 Object.is 会判成每次都变。 */
-function sameValues(a: string[], b: string[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
 
 // 选中值与聚焦日住在 context 的 cell 里（prop 给定即受控），不编码进 FSM 状态，

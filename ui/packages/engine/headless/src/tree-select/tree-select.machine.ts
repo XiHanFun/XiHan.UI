@@ -2,6 +2,7 @@ import type { ActionFn, PositionResult } from '@xihan-ui/core'
 import type { TreeVisibleNode } from '../tree'
 import type { TreeSelectBranchLoadSnapshot, TreeSelectFocusIntent, TreeSelectNode, TreeSelectSchema } from './tree-select.types'
 import { cascadeToggle, collapseChecked, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { sameArray as sameValues, toArray as toValues, uniqueArray as unique } from '../shared/array'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -13,26 +14,9 @@ const { createMachine } = setup<TreeSelectSchema>()
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const TREE_SELECT_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
-/** 裸串是单选的简写，内部一律按数组处理；undefined 要原样透传，cell 靠它区分受控与否。 */
-function toValues(input: string | string[] | undefined): string[] | undefined {
-  if (input === undefined)
-    return undefined
-  return typeof input === 'string' ? [input] : [...input]
-}
-
 /** 选中集合的不变量：单选恒为长度 ≤ 1，多选去重。公开 API 与内部写入都经这里收口。 */
 function normalizeSelection(next: readonly string[], multiple: boolean): string[] {
   return multiple ? [...new Set(next)] : next.slice(0, 1)
-}
-
-/** 去重且保序：展开集合是一个集合，重复元素没有意义。 */
-function unique(values: readonly string[]): string[] {
-  return [...new Set(values)]
-}
-
-/** 数组按元素比：受控时 cell 每次读都产出新数组，默认的 Object.is 恒不相等。 */
-function sameValues(a: string[], b: string[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
 
 /** 节点是懒分支的唯一判据：明确有孩子但孩子尚未在 collection 里。 */
