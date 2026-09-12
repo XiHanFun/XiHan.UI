@@ -115,6 +115,14 @@ function contentOf(value: string): HTMLElement {
   return content
 }
 
+async function finishExit(value: string): Promise<void> {
+  for (const animation of contentOf(value).getAnimations()) {
+    if (Number.isFinite(animation.effect?.getComputedTiming().endTime))
+      animation.finish()
+  }
+  await settle()
+}
+
 function rootIsOpen(family: Family): boolean {
   if (family === 'context-menu') {
     const content = document.querySelector<HTMLElement>(
@@ -223,12 +231,14 @@ describe.each<Family>(['context-menu', 'menubar'])('%s 三级 Portal hover 树',
     expect(inner.getAttribute('aria-expanded')).toBe('false')
     expect(outer.getAttribute('aria-expanded')).toBe('true')
     expect(rootIsOpen(family)).toBe(true)
+    await finishExit('share-wecom')
 
     item('menu', 'share-email').focus()
     await userEvent.keyboard('{Escape}')
     await settle()
     expect(outer.getAttribute('aria-expanded')).toBe('false')
     expect(rootIsOpen(family)).toBe(true)
+    await finishExit('share-email')
 
     outer.focus()
     await userEvent.keyboard('{Escape}')

@@ -1,7 +1,9 @@
 // @vitest-environment jsdom
 import type { Anchor, PositionEnginePort, PositionOptions, PositionRect, Service } from '@xihan-ui/core'
+import type { ExitLease } from '@xihan-ui/core/presence'
 import type { MenubarApi, MenubarSchema, MenubarSelectDetails, MenubarValueChangeDetails } from '../src/menubar'
 import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
@@ -1043,6 +1045,59 @@ describe('menubar 定位', () => {
     expect(c.state()).toBe('open')
     expect(c.value()).toBe('file')
     expect(c.engine.calls).toHaveLength(0)
+  })
+})
+
+describe('menubar 真实退场 owner', () => {
+  it('换张后只等待当前菜单 Presence；退场中重开复用共享 Layer', () => {
+    const c = mount({ defaultValue: 'file' }, { layers: true })
+    const config = c.service.refs.get('config')!
+    const filePresence = createPresence({ config, open: true, onRenderedChange: () => {} })
+    const editPresence = createPresence({ config, open: false, onRenderedChange: () => {} })
+    c.service.send({ type: 'PRESENCE.SET', value: 'file', presence: filePresence, connected: true })
+    c.service.send({ type: 'PRESENCE.SET', value: 'edit', presence: editPresence, connected: true })
+    const original = config.layerRegistry.list()[0]
+    expect(original).toBeDefined()
+
+    let fileLease: ExitLease | null = null
+    const stopFile = filePresence.onBeforeExit(() => {
+      fileLease = filePresence.claimExit('menubar file exit')
+    })
+    const editLeases: ExitLease[] = []
+    const stopEdit = editPresence.onBeforeExit(() => {
+      editLeases.push(editPresence.claimExit(`menubar edit exit ${editLeases.length + 1}`))
+    })
+
+    c.api().setValue('edit')
+    filePresence.update(false)
+    editPresence.update(true)
+    expect(fileLease).not.toBeNull()
+    expect(config.layerRegistry.list()).toEqual([original])
+
+    c.api().setValue(null)
+    const closing = c.api().getContentProps({ value: 'edit' }) as Record<string, unknown>
+    expect(closing.inert).toBe(true)
+    expect(closing['aria-hidden']).toBe(true)
+    editPresence.update(false)
+    expect(editLeases).toHaveLength(1)
+    expect(config.layerRegistry.list()).toEqual([original])
+
+    c.api().setValue('edit')
+    expect(editLeases[0]!.settled).toBe(true)
+    expect(config.layerRegistry.list()).toEqual([original])
+    c.api().setValue(null)
+    editPresence.update(false)
+    expect(editLeases).toHaveLength(2)
+
+    fileLease!.done()
+    expect(config.layerRegistry.list()).toEqual([original])
+    editLeases[1]!.done()
+    expect(config.layerRegistry.list()).toHaveLength(0)
+
+    stopFile()
+    stopEdit()
+    filePresence.dispose()
+    editPresence.dispose()
   })
 })
 

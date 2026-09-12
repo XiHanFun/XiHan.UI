@@ -1,4 +1,5 @@
 import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { MenuApi, MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema, MenubarTranslations, MenuSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
@@ -210,12 +211,34 @@ export function XhMenubarContent({ value, children, ...rest }: XhMenubarContentP
   const menu = useMemo<MenubarContentProps>(() => ({ value: own }), [own])
   const setEl = useMenubarPart(ctx.registerContent, own)
   const contentRef = useRef<HTMLElement | null>(null)
+  const presenceRef = useRef<PresenceHandle | null>(null)
+  const presenceValueRef = useRef<string | null>(null)
+  const sendPresence = (event: MenubarSchema['event']): void => {
+    const deliver = (): void => {
+      if (ctx.service.getStatus() === 'Started')
+        ctx.service.send(event)
+    }
+    if (ctx.service.getStatus() === 'Started')
+      deliver()
+    else
+      queueMicrotask(deliver)
+  }
   // 一个菜单一份退场闸门：它们各开各的、动画各跑各的，一份管不过来。
   // 开合判据直接取 connect 这一帧的产出，不另起一套——两边各判一次迟早会说岔
   const visible = useOverlayExit({
     config: ctx.config,
     isOpen: () => (ctx.api.getContentProps(menu) as Record<string, unknown>).hidden !== true,
     contentRef,
+    onPresence: (next) => {
+      const previous = presenceRef.current
+      const previousValue = presenceValueRef.current
+      presenceRef.current = next
+      presenceValueRef.current = next ? own : null
+      if (next)
+        sendPresence({ type: 'PRESENCE.SET', value: own, presence: next, connected: true })
+      else if (previous && previousValue != null)
+        sendPresence({ type: 'PRESENCE.SET', value: previousValue, presence: previous, connected: false })
+    },
   })
   return (
     <div

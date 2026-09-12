@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
 import type { Anchor, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
+import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
 import type { MenuApi, MenuSchema } from '../src/menu'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { connectMenu, menuMachine } from '../src/menu'
@@ -52,6 +54,8 @@ function spread(el: HTMLElement, props: Record<string, unknown>): void {
 
 interface Harness {
   api: () => MenuApi
+  config: RuntimeConfig
+  presence: PresenceHandle | null
   service: ReturnType<typeof createService<MenuSchema>>
   send: (event: MenuSchema['event']) => void
   trigger: HTMLButtonElement
@@ -70,6 +74,8 @@ interface MountOptions {
   position?: PositionEnginePort
   /** 本层被移出层栈时调一次，用来记拆除顺序。 */
   onLayerDispose?: () => void
+  /** 注入真实 Presence，验证行为资源延迟到视觉退场完成后释放。 */
+  withPresence?: boolean
 }
 
 const runtimes: VanillaRuntime[] = []
@@ -102,7 +108,11 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   const service = createService(menuMachine, { props: () => props, runtime, scope })
 
   const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+  const presence = options.withPresence
+    ? createPresence({ config, open: (initial.open ?? initial.defaultOpen) ?? false, onRenderedChange: () => {} })
+    : null
   service.refs.set('config', config)
+  service.refs.set('presence', presence)
   service.refs.set('registerLayer', () => {
     const handle = config.layerRegistry.register({
       kind: 'popover',
@@ -140,6 +150,8 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
 
   return {
     api: () => connectMenu(service, normalizeProps),
+    config,
+    presence,
     service,
     send: event => service.send(event),
     trigger,
@@ -345,6 +357,37 @@ describe('menu 浮层定位', () => {
     await tick()
     expect(h.state()).toBe('open')
     expect(h.position()).toBeNull()
+  })
+})
+
+describe('menu 真实退场资源', () => {
+  it('根或子菜单实例各自等待自己的 Presence；重开复用原 Layer', () => {
+    const h = mount({ defaultOpen: true, submenu: true }, { withPresence: true })
+    const presence = h.presence!
+    const original = h.config.layerRegistry.list()[0]
+    expect(original).toBeDefined()
+    const leases: ExitLease[] = []
+    const stopExit = presence.onBeforeExit(() => {
+      leases.push(presence.claimExit(`menu exit ${leases.length + 1}`))
+    })
+
+    h.api().setOpen(false)
+    const closing = h.api().getContentProps() as Dict
+    expect(closing.inert).toBe(true)
+    expect(closing['aria-hidden']).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+    presence.update(false)
+    h.api().setOpen(true)
+    expect(leases[0]!.settled).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+
+    h.api().setOpen(false)
+    presence.update(false)
+    leases[1]!.done()
+    expect(h.config.layerRegistry.list()).toHaveLength(0)
+
+    stopExit()
+    presence.dispose()
   })
 })
 

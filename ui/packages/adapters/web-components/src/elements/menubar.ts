@@ -65,7 +65,7 @@ function authorDisabled(el: HTMLElement): boolean {
  */
 export class XhMenubarElement extends XhElement {
   /** 逐个 content 一份退场闸门：一个菜单一份，它们各开各的。 */
-  private readonly exits = new Map<HTMLElement, OverlayExit>()
+  private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit }>()
 
   static override partContract = { anatomy: menubarAnatomy, meta: menubarMeta }
 
@@ -312,24 +312,44 @@ export class XhMenubarElement extends XhElement {
       this.spreader.spread(el, api.getPositionerProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
 
     // 菜单常挂，按本帧产出的 hidden 用内联 display 收起
-    for (const el of this.getParts('content')) {
-      const props = api.getContentProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>
+    const contents = this.getParts('content')
+    const liveContents = new Set(contents)
+    for (const el of contents) {
+      const value = el.getAttribute('value') ?? ''
+      const props = api.getContentProps({ value }) as Record<string, unknown>
       this.spreader.spread(el, props)
       // 退场动画播完之前先别收。一个菜单一份闸门：它们各开各的、动画各跑各的，
       // 一份闸门管不过来。必须排在 spread 之后——data-state 得先落进 DOM，探测器才读得到
       const open = props.hidden !== true
-      let gate = this.exits.get(el)
-      if (!gate) {
-        gate = createOverlayExit({
+      let entry = this.exits.get(el)
+      if (entry && entry.value !== value) {
+        this.ctrl.service.send({ type: 'PRESENCE.SET', value: entry.value, presence: entry.gate.presence, connected: false })
+        entry.gate.dispose()
+        this.exits.delete(el)
+        entry = undefined
+      }
+      if (!entry) {
+        const gate = createOverlayExit({
           config: this.config!,
           open,
           onExitComplete: () => this.requestUpdate(),
         })
-        this.exits.set(el, gate)
+        entry = { value, gate }
+        this.exits.set(el, entry)
+        this.ctrl.service.send({ type: 'PRESENCE.SET', value, presence: gate.presence, connected: true })
       }
+      const { gate } = entry
       gate.track(el)
       gate.update(open)
       this.setPartHidden(el, !gate.visible)
+    }
+    // 作者运行期移除 content 时精确注销；若它正是退场 owner，Headless 会立即释放行为资源。
+    for (const [el, entry] of this.exits) {
+      if (liveContents.has(el))
+        continue
+      this.ctrl.service.send({ type: 'PRESENCE.SET', value: entry.value, presence: entry.gate.presence, connected: false })
+      entry.gate.dispose()
+      this.exits.delete(el)
     }
 
     for (const el of this.getParts('group')) {
@@ -372,8 +392,8 @@ export class XhMenubarElement extends XhElement {
     setMenuSubmenuOwner(this, null)
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起
-    for (const [el, gate] of this.exits) {
-      gate.dispose()
+    for (const [el, entry] of this.exits) {
+      entry.gate.dispose()
       this.setPartHidden(el, true)
     }
     this.exits.clear()

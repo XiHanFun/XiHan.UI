@@ -360,6 +360,9 @@ export function connectMenubar<T extends PropTypes>(
         'tabindex': isOpen && focusedItem == null ? 0 : -1,
         'data-state': stateAttr(isOpen),
         'data-placement': isOpen ? placement : undefined,
+        // 交接或 Presence 退场保留视觉节点时，非活动菜单立即撤出交互与可访问树。
+        'inert': !isOpen || undefined,
+        'aria-hidden': !isOpen || undefined,
         // 收起时留在 DOM 只隐藏；交接中的那张先不藏，等新菜单落位同帧换掉
         'hidden': (!isOpen && !holding) || undefined,
         'onKeyDown': (event: KeyboardEvent) => {

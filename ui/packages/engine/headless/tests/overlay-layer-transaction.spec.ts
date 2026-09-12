@@ -3,9 +3,61 @@
 import type { RuntimeConfig } from '@xihan-ui/core'
 import { createCounterIdGenerator, createLayerRegistry, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { describe, expect, it, vi } from 'vitest'
-import { createModalLayerResources, setupLayerTransaction, trackOverlayLayer } from '../src/shared/overlay-shell'
+import { createModalLayerResources, setupLayerTransaction, trackOverlayLayer, trackPresenceResources } from '../src/shared/overlay-shell'
 
 describe('浮层资源初始化事务', () => {
+  it('父机先停时等待子 Layer 退栈，再按严格 LIFO 清理', async () => {
+    const config = createRuntimeConfig()
+    const parentNode = document.createElement('div')
+    const childNode = document.createElement('div')
+    document.body.append(parentNode, childNode)
+    const order: string[] = []
+
+    const mount = (name: string, node: HTMLElement): (() => void) => {
+      let behaviorLayer: ReturnType<RuntimeConfig['layerRegistry']['register']>['layer'] | null = null
+      return trackPresenceResources({
+        presence: null,
+        open: () => true,
+        track: () => {},
+        acquire: () => trackOverlayLayer({
+          config,
+          registerLayer: () => {
+            const registration = config.layerRegistry.register({
+              kind: 'popover',
+              node: () => node,
+              branches: () => [],
+              isModal: () => false,
+              surfaces: () => [],
+            })
+            return {
+              layer: registration.layer,
+              dispose: () => {
+                order.push(name)
+                registration.dispose()
+              },
+            }
+          },
+          onDismiss: () => {},
+          onLayer: layer => behaviorLayer = layer,
+        }),
+        canRelease: () => behaviorLayer == null || config.layerRegistry.top() === behaviorLayer,
+        onReleaseReady: retry => config.layerRegistry.subscribe(() => queueMicrotask(retry)),
+      })
+    }
+
+    const stopParent = mount('parent', parentNode)
+    const stopChild = mount('child', childNode)
+    expect(config.layerRegistry.list()).toHaveLength(2)
+
+    stopParent()
+    expect(config.layerRegistry.list()).toHaveLength(2)
+    expect(order).toEqual([])
+    stopChild()
+    await Promise.resolve()
+    expect(config.layerRegistry.list()).toHaveLength(0)
+    expect(order).toEqual(['child', 'parent'])
+  })
+
   it('展开生命周期内切换模态策略时同步取得和释放锁页与背景失活', () => {
     const outside = document.createElement('button')
     const content = document.createElement('div')

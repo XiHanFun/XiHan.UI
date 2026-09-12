@@ -1,4 +1,5 @@
 import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -193,10 +194,32 @@ export const XhMenubarContent = defineComponent({
     // 一个菜单一份退场闸门：它们各开各的、动画各跑各的，一份管不过来。
     // 开合判据直接取 connect 这一帧的产出，不另起一套——两边各判一次迟早会说岔
     const contentRef = ref<HTMLElement | null>(null)
+    let presence: PresenceHandle | null = null
+    let presenceValue: string | null = null
+    const sendPresence = (event: MenubarSchema['event']): void => {
+      const deliver = (): void => {
+        if (ctx.service.getStatus() === 'Started')
+          ctx.service.send(event)
+      }
+      if (ctx.service.getStatus() === 'Started')
+        deliver()
+      else
+        queueMicrotask(deliver)
+    }
     const visible = useOverlayExit({
       config: typeof document === 'undefined' ? null : createRuntimeConfig(),
       isOpen: () => (ctx.api.value.getContentProps(menu.value) as Record<string, unknown>).hidden !== true,
       contentRef,
+      onPresence: (next) => {
+        const previous = presence
+        const previousValue = presenceValue
+        presence = next
+        presenceValue = next ? menu.value.value : null
+        if (next)
+          sendPresence({ type: 'PRESENCE.SET', value: presenceValue!, presence: next, connected: true })
+        else if (previous && previousValue != null)
+          sendPresence({ type: 'PRESENCE.SET', value: previousValue, presence: previous, connected: false })
+      },
     })
     return () => h('div', {
       ...ctx.api.value.getContentProps(menu.value) as Record<string, unknown>,
