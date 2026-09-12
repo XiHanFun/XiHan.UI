@@ -6,6 +6,10 @@ body {
   letter-spacing: -0.006em;
 }
 
+.VPNavBar .container.container {
+  max-width: none;
+}
+
 .VPSidebar {
   border-inline-end: 1px solid color-mix(in oklab, var(--vp-c-divider) 70%, transparent);
   background: var(--vp-c-bg);
@@ -254,6 +258,20 @@ body {
   }
 
   .VPLocalNav.has-sidebar.has-sidebar {
+    padding-left: var(--vp-sidebar-width);
+  }
+
+  .VPNavBar.has-sidebar .title.title {
+    width: var(--vp-sidebar-width);
+    padding-left: 24px;
+  }
+
+  .VPNavBar.has-sidebar .content.content {
+    padding-right: 24px;
+    padding-left: var(--vp-sidebar-width);
+  }
+
+  .VPNavBar.has-sidebar .divider.divider {
     padding-left: var(--vp-sidebar-width);
   }
 
