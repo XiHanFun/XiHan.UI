@@ -19,6 +19,13 @@ function trigger(): HTMLButtonElement {
   return element
 }
 
+function action(): HTMLButtonElement {
+  const element = document.querySelector<HTMLButtonElement>('[data-scope=\'float-button\'][data-part=\'list\'] > button')
+  if (!element)
+    throw new Error('找不到 float-button 原生动作项')
+  return element
+}
+
 async function settle(): Promise<void> {
   await nextTick()
   await new Promise(resolve => requestAnimationFrame(resolve))
@@ -104,6 +111,30 @@ describe('float-button 的 M3 通透玻璃皮肤', () => {
     expect(style.boxShadow).toBe(resolve(element, 'box-shadow', 'var(--xh-material-glass-shadow)'))
     expect(style.backdropFilter).toBe(resolve(element, 'backdrop-filter', 'var(--xh-material-glass-backdrop)'))
     expect(style.backgroundImage).toBe(resolve(element, 'background-image', 'linear-gradient(to bottom, var(--xh-material-glass-highlight) 0 var(--xh-stroke-thin), transparent var(--xh-stroke-thin))'))
+  })
+
+  it.each(THEMES)('%s：原生动作项与触发器共享玻璃面、尺寸和键盘焦点', async (theme) => {
+    document.documentElement.dataset.theme = theme
+    await mount()
+    await userEvent.click(trigger())
+    await finishMotion()
+    await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
+    await finishMotion()
+
+    const item = action()
+    const itemStyle = getComputedStyle(item)
+    const triggerStyle = getComputedStyle(trigger())
+    expect(item.getBoundingClientRect().width).toBeCloseTo(trigger().getBoundingClientRect().width, 4)
+    expect(item.getBoundingClientRect().height).toBeCloseTo(trigger().getBoundingClientRect().height, 4)
+    expect(itemStyle.backgroundColor).toBe(triggerStyle.backgroundColor)
+    expect(itemStyle.borderTopColor).toBe(triggerStyle.borderTopColor)
+    expect(itemStyle.borderRadius).toBe(triggerStyle.borderRadius)
+    expect(itemStyle.boxShadow).toBe(triggerStyle.boxShadow)
+    expect(itemStyle.backdropFilter).toBe(triggerStyle.backdropFilter)
+
+    await focus(item)
+    expect(item.matches(':focus-visible')).toBe(true)
+    expect(getComputedStyle(item).outlineStyle).toBe('solid')
   })
 
   it.each(THEMES)('%s：键盘焦点铺配方的实体焦点面，公共焦点环不改几何', async (theme) => {

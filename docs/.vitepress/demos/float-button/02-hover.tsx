@@ -1,16 +1,15 @@
-// 基础用法 | 展开一组悬浮操作
+// 悬停展开 | 指针进入时展开，键盘与触控仍可点击
 import type { ReactNode } from "react";
-import { MessageCircleIcon, SettingsIcon, ShareIcon } from "@xihan-ui/icons";
+import { MessageCircleIcon, ShareIcon } from "@xihan-ui/icons";
 import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger, XhIcon } from "@xihan-ui/react";
 
 export default function Demo(): ReactNode {
   return (
-    <XhFloatButtonRoot style={{ position: "static" }} defaultOpen>
+    <XhFloatButtonRoot style={{ position: "static" }} expandTrigger="hover">
       <XhFloatButtonTrigger />
       <XhFloatButtonList>
         <button type="button" aria-label="消息"><XhIcon icon={MessageCircleIcon} /></button>
         <button type="button" aria-label="分享"><XhIcon icon={ShareIcon} /></button>
-        <button type="button" aria-label="设置"><XhIcon icon={SettingsIcon} /></button>
       </XhFloatButtonList>
     </XhFloatButtonRoot>
   );

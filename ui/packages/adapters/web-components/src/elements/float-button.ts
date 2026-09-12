@@ -40,8 +40,8 @@ const TRISTATE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? 
  * @attr {number} offset - 距那两条边的距离（px），默认 24
  * @attr {'circle'|'square'} shape - 触发器外形，默认 circle
  * @attr {'hover'|'click'} expand-trigger - 展开方式，默认 click
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定底色、描边与前景怎么用
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸，缺省与 lg 同档
  * @fires open-change - 展开状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 定位壳，承载 data-state / data-placement / data-shape / data-disabled
