@@ -145,8 +145,14 @@ export class XhHoverCardElement extends XhElement {
   // 每次(重)建机器后都要重注：refs 属于机器实例，重连时的新机器不会继承旧的。
   private injectRefs(svc: Service<HoverCardSchema>): void {
     this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: (this.open ?? this.defaultOpen) ?? false,
+      onExitComplete: () => this.requestUpdate(),
+    })
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.exit.presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))

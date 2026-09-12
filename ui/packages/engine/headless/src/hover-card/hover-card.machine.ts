@@ -1,8 +1,8 @@
 import type { PositionResult, Transition } from '@xihan-ui/core'
 import type { HoverCardSchema } from './hover-card.types'
-import { createDismissLayer, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
-import { setupLayerTransaction } from '../shared/overlay-shell'
+import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */
 export const HOVER_CARD_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
@@ -60,6 +60,7 @@ export const hoverCardMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     position: null,
     getAnchorEl: () => null,
     getFloatingEl: () => null,
@@ -68,6 +69,8 @@ export const hoverCardMachine = createMachine({
     getDescriptionEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'visible' : 'closed'),
+  // Layer 与消解资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
+  effects: ['trackLayer'],
   watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
   states: {
     closed: {
@@ -99,10 +102,10 @@ export const hoverCardMachine = createMachine({
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
     },
-    // 复合态：两个子态下浮层都可见，定位与消解层挂在这一层。
+    // 复合态：两个子态下浮层都可见；定位挂在这一层，行为资源由顶层 effect 持有。
     visible: {
       initial: 'open',
-      effects: ['trackPosition', 'trackLayer'],
+      effects: ['trackPosition'],
       on: {
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
@@ -204,25 +207,22 @@ export const hoverCardMachine = createMachine({
           stop?.()
         }
       },
-      /** 浮层可见期间把层压入消解栈，不建焦点域、不锁滚动。 */
-      trackLayer: ({ refs, send, flush }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
-        if (!config || !registerLayer)
-          return undefined
-
-        return setupLayerTransaction(registerLayer, (layer, defer) => {
-          const dismiss = createDismissLayer({
-            config,
-            layer,
-            onDismiss: reason => send({
-              type: 'CLOSE',
-              src: reason === 'escape-key' ? 'esc' : 'interact-outside',
-            }),
-          })
-          defer(() => dismiss.dispose())
-        }, { registry: config.layerRegistry, flush })
-      },
+      /** Layer 与 DismissableLayer 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。 */
+      trackLayer: ({ refs, send, flush, state, track }) => trackPresenceResources({
+        presence: () => refs.get('presence'),
+        open: () => state.matches('visible'),
+        track,
+        acquire: () => trackOverlayLayer({
+          config: refs.get('config'),
+          registerLayer: refs.get('registerLayer'),
+          flush,
+          active: () => state.matches('visible'),
+          onDismiss: reason => send({
+            type: 'CLOSE',
+            src: reason === 'escape-key' ? 'esc' : 'interact-outside',
+          }),
+        }),
+      }),
     },
   },
 })

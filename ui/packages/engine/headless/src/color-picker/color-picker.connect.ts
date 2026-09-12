@@ -301,6 +301,9 @@ export function connectColorPicker<T extends PropTypes>(
       // tabindex 写 -1 不能省：焦点域在无可聚焦子控件时会退回聚焦容器本身
       'tabindex': -1,
       'data-placement': placement,
+      // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
     }),

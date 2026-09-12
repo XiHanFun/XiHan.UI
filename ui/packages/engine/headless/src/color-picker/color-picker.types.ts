@@ -1,4 +1,5 @@
 import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { SliderSchema } from '../slider'
 import type {
   ColorPickerAnchor,
@@ -47,6 +48,8 @@ export interface ColorPickerRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 视觉退场与行为资源共享的 Presence；缺省时关闭立即释放。 */
+  presence: PresenceHandle | null
   /** 浮层定位引擎；缺省即不产出位置结果。 */
   position: PositionEnginePort | null
   /** 定位锚点，取 trigger。 */

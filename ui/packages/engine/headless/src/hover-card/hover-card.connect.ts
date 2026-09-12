@@ -135,6 +135,9 @@ export function connectHoverCard<T extends PropTypes>(
       'data-placement': placement,
       // 尺寸轴落在 content 上而非 root：root 是可选部件，面板几何也长在 content 上
       'data-size': prop('size'),
+      // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       'hidden': !open || undefined,
       // 指针移入卡片即撤销收起等待
       'onPointerenter': () => send({ type: 'POINTER.ENTER' }),
