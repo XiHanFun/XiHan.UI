@@ -1,8 +1,8 @@
-// 线性模式 | linear 下还没走到的步一律禁用，只能回头看走过的；它只拦界面上的乱跳，逐步前进照常
+// 线性模式 | 只能返回已完成的步骤
 import type { ReactNode } from "react";
 import {
-  XhButton,
   XhStepsContent,
+  XhStepsDescription,
   XhStepsIndicator,
   XhStepsItem,
   XhStepsList,
@@ -12,38 +12,34 @@ import {
   XhStepsTrigger,
 } from "@xihan-ui/react";
 
-const steps = ["实名认证", "绑定银行卡", "签署协议"];
+const steps = [
+  { title: "实名认证", description: "身份信息已验证" },
+  { title: "绑定银行卡", description: "填写本人银行卡" },
+  { title: "签署协议", description: "完成后解锁" },
+];
 
 export default function Demo(): ReactNode {
   return (
-    <XhStepsRoot count={steps.length} linear style={{ inlineSize: "100%" }}>
-      {({ value, complete, goToPrevStep, goToNextStep }) => (
+    <XhStepsRoot count={steps.length} defaultValue={1} linear>
+      {({ value }) => (
         <>
           <XhStepsList>
-            {steps.map((s, i) => (
-              <XhStepsItem key={s} value={i}>
+            {steps.map((step, i) => (
+              <XhStepsItem key={step.title} value={i}>
                 <XhStepsTrigger>
                   <XhStepsIndicator>{value > i ? "" : i + 1}</XhStepsIndicator>
-                  <XhStepsTitle>{s}</XhStepsTitle>
+                  <XhStepsTitle>{step.title}</XhStepsTitle>
+                  <XhStepsDescription>{step.description}</XhStepsDescription>
                 </XhStepsTrigger>
                 <XhStepsSeparator />
               </XhStepsItem>
             ))}
           </XhStepsList>
 
-          <XhStepsContent value={0}>面板 1：上传证件照。</XhStepsContent>
-          <XhStepsContent value={1}>面板 2：填写卡号。</XhStepsContent>
-          <XhStepsContent value={2}>面板 3：勾选并签署。</XhStepsContent>
-          <XhStepsContent value={steps.length}>全部完成。</XhStepsContent>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <XhButton variant="outline" disabled={value === 0} onClick={() => goToPrevStep()}>
-              上一步
-            </XhButton>
-            <XhButton variant="solid" disabled={complete} onClick={() => goToNextStep()}>
-              下一步
-            </XhButton>
-          </div>
+          <XhStepsContent value={0}>核对身份信息。</XhStepsContent>
+          <XhStepsContent value={1}>填写本人银行卡。</XhStepsContent>
+          <XhStepsContent value={2}>阅读并签署服务协议。</XhStepsContent>
+          <XhStepsContent value={steps.length}>认证已完成。</XhStepsContent>
         </>
       )}
     </XhStepsRoot>
