@@ -3042,13 +3042,16 @@
               "name": "--xh-button-group-separator-color-disabled"
             },
             {
-              "name": "--xh-button-group-separator-gap"
+              "name": "--xh-button-group-separator-opacity"
             },
             {
-              "name": "--xh-button-group-separator-inset"
+              "name": "--xh-button-group-separator-opacity-disabled"
             },
             {
               "name": "--xh-button-group-separator-radius"
+            },
+            {
+              "name": "--xh-button-group-separator-size"
             },
             {
               "name": "--xh-button-group-separator-thickness"

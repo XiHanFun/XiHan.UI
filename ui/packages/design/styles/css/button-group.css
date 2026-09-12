@@ -62,22 +62,29 @@
      朝向是这条线自己的（横排里是竖线），与 root 的排布相反 */
   [data-scope='button-group'][data-part='separator'] {
     flex: none;
-    align-self: stretch;
+    align-self: center;
     border-radius: var(--xh-button-group-separator-radius, var(--xh-shape-pill));
-    background: var(--xh-button-group-separator-color, var(--xh-border-default));
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    background: var(--xh-button-group-separator-color, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+    opacity: var(--xh-button-group-separator-opacity, 0.24);
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='button-group'][data-part='separator'][data-orientation='vertical'] {
     inline-size: var(--xh-button-group-separator-thickness, var(--xh-stroke-thin));
-    margin-block: var(--xh-button-group-separator-inset, var(--xh-space-1));
-    margin-inline: var(--xh-button-group-separator-gap, var(--xh-space-1));
+    block-size: var(
+      --xh-button-group-separator-size,
+      calc(var(--xh-_button-group-h, var(--xh-control-h-md)) / 2)
+    );
   }
 
   [data-scope='button-group'][data-part='separator'][data-orientation='horizontal'] {
     block-size: var(--xh-button-group-separator-thickness, var(--xh-stroke-thin));
-    margin-block: var(--xh-button-group-separator-gap, var(--xh-space-1));
-    margin-inline: var(--xh-button-group-separator-inset, var(--xh-space-1));
+    inline-size: var(
+      --xh-button-group-separator-size,
+      calc(var(--xh-_button-group-h, var(--xh-control-h-md)) / 2)
+    );
   }
 
   /* 整组禁用：段真正的禁用由适配器落到每一段的原生 disabled 上，
@@ -90,6 +97,7 @@
      与两侧那几段自己的禁用过渡同拍 */
   [data-scope='button-group'][data-part='separator'][data-disabled] {
     background: var(--xh-button-group-separator-color-disabled, var(--xh-border-subtle));
+    opacity: var(--xh-button-group-separator-opacity-disabled, 0.36);
   }
 
   @media (forced-colors: active) {
@@ -133,6 +141,8 @@
     --xh-button-bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
     --xh-button-bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
     --xh-button-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+    --xh-button-group-separator-color: var(--xh-_tone-on, var(--xh-fg-on-brand));
+    --xh-button-group-separator-opacity: 0.24;
     /* 实心面顶边的内高光，沿继承流给组里每一段；段自己写了形态时按钮那边会覆盖掉它 */
     --xh-_button-group-highlight: var(--xh-_highlight-tone);
   }
@@ -142,6 +152,8 @@
     --xh-button-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
     --xh-button-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
     --xh-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-button-group-separator-color: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-button-group-separator-opacity: 0.16;
   }
 
   [data-scope='button-group'][data-part='root'][data-variant='outline'],
@@ -150,6 +162,16 @@
     --xh-button-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-button-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
     --xh-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='button-group'][data-part='root'][data-variant='outline'] {
+    --xh-button-group-separator-color: var(--xh-_tone-border-control, var(--xh-border-control));
+    --xh-button-group-separator-opacity: 1;
+  }
+
+  [data-scope='button-group'][data-part='root'][data-variant='ghost'] {
+    --xh-button-group-separator-color: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-button-group-separator-opacity: 0.16;
   }
 
   /* 未声明形态的段由组画 outline 描边；显式 solid/subtle/ghost 仍按自己的边界来。
@@ -202,25 +224,25 @@
      只认直接子节点：段之间插了别的节点时宁可退化成直角，也不要圆错位置 */
   [data-scope='button-group'][data-part='root'][data-orientation='horizontal'] > *:first-child,
   [data-scope='button-group'][data-part='root'][data-orientation='horizontal'] > *:first-child [data-scope='button'][data-part='root'] {
-    border-start-start-radius: var(--xh-button-group-radius, var(--xh-shape-control));
-    border-end-start-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+    border-start-start-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
+    border-end-start-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
   }
 
   [data-scope='button-group'][data-part='root'][data-orientation='horizontal'] > *:last-child,
   [data-scope='button-group'][data-part='root'][data-orientation='horizontal'] > *:last-child [data-scope='button'][data-part='root'] {
-    border-start-end-radius: var(--xh-button-group-radius, var(--xh-shape-control));
-    border-end-end-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+    border-start-end-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
+    border-end-end-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
   }
 
   [data-scope='button-group'][data-part='root'][data-orientation='vertical'] > *:first-child,
   [data-scope='button-group'][data-part='root'][data-orientation='vertical'] > *:first-child [data-scope='button'][data-part='root'] {
-    border-start-start-radius: var(--xh-button-group-radius, var(--xh-shape-control));
-    border-start-end-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+    border-start-start-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
+    border-start-end-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
   }
 
   [data-scope='button-group'][data-part='root'][data-orientation='vertical'] > *:last-child,
   [data-scope='button-group'][data-part='root'][data-orientation='vertical'] > *:last-child [data-scope='button'][data-part='root'] {
-    border-end-start-radius: var(--xh-button-group-radius, var(--xh-shape-control));
-    border-end-end-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+    border-end-start-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
+    border-end-end-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
   }
 }

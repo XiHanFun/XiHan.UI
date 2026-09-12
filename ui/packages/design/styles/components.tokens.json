@@ -3674,7 +3674,7 @@
         "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-pill"
       ],
       "visibility": "public",
       "description": "button-group 的 root 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
@@ -3692,7 +3692,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-_tone-on"
       ],
       "visibility": "public",
       "description": "button-group 的 separator 部件 background 覆盖槽。"
@@ -3716,44 +3716,40 @@
       "description": "button-group 的 separator 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-button-group-separator-gap",
+      "name": "--xh-button-group-separator-opacity",
       "component": "button-group",
       "part": [
         "separator"
       ],
       "property": [
-        "margin-block",
-        "margin-inline"
+        "opacity"
       ],
       "state": [
-        "orientation=horizontal",
-        "orientation=vertical"
+        "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "0.24"
       ],
       "visibility": "public",
-      "description": "button-group 的 separator 部件 margin-block、margin-inline 覆盖槽。"
+      "description": "button-group 的 separator 部件 opacity 覆盖槽。"
     },
     {
-      "name": "--xh-button-group-separator-inset",
+      "name": "--xh-button-group-separator-opacity-disabled",
       "component": "button-group",
       "part": [
         "separator"
       ],
       "property": [
-        "margin-block",
-        "margin-inline"
+        "opacity"
       ],
       "state": [
-        "orientation=horizontal",
-        "orientation=vertical"
+        "disabled"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "0.36"
       ],
       "visibility": "public",
-      "description": "button-group 的 separator 部件 margin-block、margin-inline 覆盖槽。"
+      "description": "button-group 的 separator 部件 opacity 覆盖槽。"
     },
     {
       "name": "--xh-button-group-separator-radius",
@@ -3772,6 +3768,26 @@
       ],
       "visibility": "public",
       "description": "button-group 的 separator 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-button-group-separator-size",
+      "component": "button-group",
+      "part": [
+        "separator"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "orientation=horizontal",
+        "orientation=vertical"
+      ],
+      "defaultToken": [
+        "--xh-_button-group-h"
+      ],
+      "visibility": "public",
+      "description": "button-group 的 separator 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-button-group-separator-thickness",

@@ -1,6 +1,6 @@
 # ButtonGroup <Badge type="info" text="按钮组" />
 
-把一组语义相关的按钮连成一条：相邻两段共用一条边，圆角只留在两端，视觉上是一个控件。
+将一组相关操作组合为连续的按钮控件。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/button-group" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-一组相关按钮连成一条：相邻两段共用一条边，圆角只留在两端
+组合相关操作
 
 <XhDemo src="button-group/01-basic" />
 
@@ -24,21 +24,21 @@
 
 ## 示例
 
-### 排布
+### 方向
 
-横排在左右两端留圆角，竖排改在上下两端；合边跟着换轴
+水平或垂直排列
 
 <XhDemo src="button-group/02-orientation" />
 
 ### 尺寸
 
-高度、内边距与字号在组上写一次，沿自定义属性流给组内每一段
+设置整组尺寸
 
 <XhDemo src="button-group/03-size" />
 
 ### 形态与语气
 
-形态决定颜色怎么用、语气决定用哪族颜色，两者都写在组上，段自己不重复标注
+设置整组外观
 
 <XhDemo src="button-group/04-variant-tone" />
 
@@ -46,38 +46,38 @@
 
 ### 何时使用
 
-- 几个动作属于同一件事，且并列关系明确（保存 / 另存为 / 导出）。
-- 想让整组按钮的档位、形态与语气写一次就够。
+- 并列展示作用相近的操作。
+- 统一一组按钮的尺寸、形态和语气。
 
 ### 何时不用
 
-- 组内各段是互斥选项、要选中其中一个：那是[切换按钮组](./toggle-group)——它有选中语义与方向键导航，按钮组两样都没有。
-- 各按钮之间没有语义关联：单独摆开，用间距区分，别硬连成一条。
+- 需要表达单选或多选状态时，使用[切换按钮组](./toggle-group)。
+- 操作之间没有直接关系时，分别放置按钮并保留间距。
 
 ### 特性
 
-- `root` 是唯一必需部件；需要把一排动作分成小段时，可在按钮之间放可选的装饰性 `separator`。
-  组内按钮仍是作者自己的动作，不是 ButtonGroup 的角色节点。
-- 尺寸、形态、语气写在容器上，沿自定义属性流给组内每一段。
-- 横排在左右两端留圆角，竖排改在上下两端；合边跟着换轴。
-- 段没有声明形态时继承组的形态；显式写在某一段上的 `solid` / `subtle` / `outline` / `ghost`
-  只管该段，组不会用自己的 outline 描边盖过去。组内按压保留换底反馈，但不缩放段盒，以免共边裂开。
+- 支持水平和垂直排列。
+- 自动合并相邻边界，只保留首尾圆角。
+- 支持统一设置尺寸、形态、语气、禁用状态和宽度。
+- 可使用 `separator` 在相邻操作之间显示分隔线。
+- 按下按钮时不缩放，避免组内边界断开。
 
 ### 组合
 
-- 组内放[按钮](./button)；最后一段放一个带菜单的按钮即得"主动作 + 更多"的分裂按钮。
+- 在组内直接放置[按钮](./button)。
+- 将菜单触发器放在末尾，可组成分裂按钮。
 
 ### 最佳实践
 
-- 一组以三到五段为宜，再多就该收进[菜单](./menu)。
-- 窄容器里放不下整条时，显式给 `orientation="vertical"` 让它竖排。它不会自己折行：一条焊死的按钮条折了行，两端的圆角就切在行末与行首。
-- 尺寸档位只写在组上，避免各段高度与内距错位。某一段确需强调时可单独声明形态；不要把同一份
-  形态和语气在组与每段重复一遍。
+- 每组只放置同一任务下的操作。
+- 操作较多时，保留常用项，其余收纳到菜单中。
+- 窄容器中使用垂直方向，不要让按钮组换行。
+- 尺寸和形态优先设置在按钮组上。
 
 ### 反模式
 
-- 用按钮组表达选中态：它不出 `aria-pressed`，读屏用户听不出哪一段是当前项。
-- 组内混进不可点的说明文字，破坏"每一段都是动作"的预期。
+- 不要用按钮组表示已选中项。
+- 不要在按钮之间插入说明文字。
 
 ## API 参考
 
@@ -158,18 +158,19 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-button-group-radius` | `root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`last-child`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-shape-control` | button-group 的 root 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
-| `--xh-button-group-separator-color` | `separator` | `background` | `default` | `--xh-border-default` | button-group 的 separator 部件 background 覆盖槽。 |
+| `--xh-button-group-radius` | `root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`last-child`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-shape-pill` | button-group 的 root 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-button-group-separator-color` | `separator` | `background` | `default` | `--xh-_tone-on` | button-group 的 separator 部件 background 覆盖槽。 |
 | `--xh-button-group-separator-color-disabled` | `separator` | `background` | `disabled` | `--xh-border-subtle` | button-group 的 separator 部件 background 覆盖槽。 |
-| `--xh-button-group-separator-gap` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | button-group 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
-| `--xh-button-group-separator-inset` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | button-group 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-button-group-separator-opacity` | `separator` | `opacity` | `default` | `0.24` | button-group 的 separator 部件 opacity 覆盖槽。 |
+| `--xh-button-group-separator-opacity-disabled` | `separator` | `opacity` | `disabled` | `0.36` | button-group 的 separator 部件 opacity 覆盖槽。 |
 | `--xh-button-group-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | button-group 的 separator 部件 border-radius 覆盖槽。 |
+| `--xh-button-group-separator-size` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-_button-group-h` | button-group 的 separator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-button-group-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | button-group 的 separator 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

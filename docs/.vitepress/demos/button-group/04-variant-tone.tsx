@@ -1,4 +1,4 @@
-// 形态与语气 | 形态决定颜色怎么用、语气决定用哪族颜色，两者都写在组上，段自己不重复标注
+// 形态与语气 | 设置整组外观
 import type { ReactNode } from "react";
 import { XhButton, XhButtonGroup } from "@xihan-ui/react";
 
@@ -14,7 +14,6 @@ export default function Demo(): ReactNode {
         </XhButtonGroup>
       ))}
 
-      {/* 换一族颜色只改语气，形态那条规则一个字不动 */}
       <XhButtonGroup variant="solid" tone="danger">
         {views.map(label => <XhButton key={label}>{label}</XhButton>)}
       </XhButtonGroup>

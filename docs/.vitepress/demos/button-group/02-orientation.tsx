@@ -1,4 +1,4 @@
-// 排布 | 横排在左右两端留圆角，竖排改在上下两端；合边跟着换轴
+// 方向 | 水平或垂直排列
 import type { ReactNode } from "react";
 import { XhButton, XhButtonGroup } from "@xihan-ui/react";
 
