@@ -1,4 +1,4 @@
-<!-- 二级子菜单 | XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份（父层方向键照常走、右方向键进子层），子层内用 XhMenu 系部件，任意层级选中都发根的 select 并整链关闭 -->
+<!-- 子菜单 | 将相关命令收进下一层 -->
 <script setup lang="ts">
 import {
   XhContextMenuContent,
@@ -13,38 +13,32 @@ import {
   XhMenuItem,
   XhMenuPositioner,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const picked = ref("（还没选）");
 </script>
 
 <template>
-  <XhContextMenuRoot @select="({ value }) => (picked = value)">
-    <XhContextMenuTrigger>
-      <div
-        style="display: grid; place-items: center; block-size: 120px; border: 1px dashed var(--xh-border-strong); border-radius: 8px"
-      >
-        在这里点右键
-      </div>
+  <XhContextMenuRoot>
+    <XhContextMenuTrigger
+      style="display: grid; place-items: center; inline-size: min(480px, 100%); min-block-size: 144px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); cursor: context-menu"
+    >
+      右键管理项目
     </XhContextMenuTrigger>
     <XhContextMenuPositioner>
       <XhContextMenuContent>
-        <XhContextMenuItem value="copy">复制</XhContextMenuItem>
+        <XhContextMenuItem value="open">打开</XhContextMenuItem>
         <XhContextMenuItem value="rename">重命名</XhContextMenuItem>
         <XhContextMenuSeparator />
         <XhContextMenuSub value="share">
-          <XhContextMenuSubTrigger>发送到…</XhContextMenuSubTrigger>
+          <XhContextMenuSubTrigger>发送到</XhContextMenuSubTrigger>
           <XhMenuPositioner>
             <XhMenuContent>
-              <XhMenuItem value="share-email">邮件</XhMenuItem>
-              <XhMenuItem value="share-sms">短信</XhMenuItem>
+              <XhMenuItem value="email">邮件</XhMenuItem>
+              <XhMenuItem value="message">消息</XhMenuItem>
             </XhMenuContent>
           </XhMenuPositioner>
         </XhContextMenuSub>
         <XhContextMenuSeparator />
-        <XhContextMenuItem value="delete">删除</XhContextMenuItem>
+        <XhContextMenuItem value="delete">移到回收站</XhContextMenuItem>
       </XhContextMenuContent>
     </XhContextMenuPositioner>
   </XhContextMenuRoot>
-  <p>选中：{{ picked }}</p>
 </template>
