@@ -16,6 +16,12 @@
 
 <XhDemo src="time-field/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="time-field"`：**`root`** · `label` · **`control`** · `segment-group` · **`segment`** · `clear-trigger` · `hidden-input`
+
 ## 示例
 
 ### 12 小时制
@@ -85,7 +91,22 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 - `min` / `max` 越界时只标注不改写。
 - 框内自带清空钮（`clear-trigger`）：有值才显形，点完焦点回到第一段。
 
-## 产物
+### 组合
+
+- 外面套[表单字段](./field)；与[日期输入](./date-field)并排组成日期时间。
+
+### 最佳实践
+
+- 明确时区归属：组件处理的是墙上时间，时区换算是宿主的事。
+- 12 小时制下上下午段位不能省，否则用户输入的时间有二义。
+
+### 反模式
+
+- 用文本输入收时间再解析。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -95,13 +116,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | 状态机 | `timeFieldMachine` |
 | 皮肤 | `@xihan-ui/styles/time-field.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="time-field"`：**`root`** · `label` · **`control`** · `segment-group` · **`segment`** · `clear-trigger` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -124,25 +139,25 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `translations` | `Partial<TimeFieldTranslations>` |  | 段位读屏名的覆盖；不给就用内置英文语义名。 |
 | `onValueChange` | `(details: TimeFieldValueChangeDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TimeFieldValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhTimeFieldRoot` | `default` | `TimeFieldRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
@@ -150,9 +165,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 **判据**：`canEdit`
 
-## connect API
+### connect API
 
-`useTimeField` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -178,7 +193,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `getClearTriggerProps` | `() => T['button']` | 清空按钮：有值才显形，不占 Tab 位，点完焦点回到第一段。 |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton/#keyboardinteraction)
 
@@ -194,9 +211,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `Backspace` / `Delete` | focus in a segment, not disabled/readOnly | 清掉本段；小时被清时上下午段仍保留原来的上午/下午 |
 | `a` / `p` | focus in 上下午段, 12 小时制, not disabled/readOnly | a 取上午、p 取下午（不区分大小写） |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -216,13 +233,15 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `segment` | `role` | 'spinbutton' |
 | `clear-trigger` | `aria-label` | props.translations.clearTrigger |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/time-field.css` 按部件选择：`[data-scope="time-field"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/time-field.css` 使用 `[data-scope="time-field"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -249,7 +268,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `segment` | `data-readonly` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -294,25 +313,12 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `--xh-time-field-segment-radius` | `segment` | `border-radius` | `default` | `--xh-shape-inset` | time-field 的 segment 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 外面套[表单字段](./field)；与[日期输入](./date-field)并排组成日期时间。
-
-## 最佳实践
-
-- 明确时区归属：组件处理的是墙上时间，时区换算是宿主的事。
-- 12 小时制下上下午段位不能省，否则用户输入的时间有二义。
-
-## 反模式
-
-- 用文本输入收时间再解析。

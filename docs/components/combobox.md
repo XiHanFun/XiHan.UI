@@ -16,6 +16,12 @@
 
 <XhDemo src="combobox/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="combobox"`：`root` · `label` · **`control`** · **`input`** · `trigger` · `clear-trigger` · `positioner` · **`content`** · `item` · `item-text` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `hidden-input`
+
 ## 示例
 
 ### 多选
@@ -128,7 +134,25 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 - 候选浮层统一使用 M2 磨砂表面、细顶光和边界阴影，输入框保持原有实体表面；空态和在途文字共用材质前景，不新增第二层背景或滤镜。
 - 进退场按实际落位方向淡入淡出并短距离移动，不缩放列表和文字；嵌套层独立决定方向。局部主题随 Portal 传递，增强对比度和减少透明度由材质令牌切为实体表面，减弱动效归零位移。
 
-## 产物
+### 组合
+
+- 外面套[表单字段](./field)。
+
+### 最佳实践
+
+- 异步候选要有在途与空态两种反馈，用户才知道是在找还是没有。
+- 允许自由文本时仍要提供空态说明，并明确提示 Enter 会使用当前文字；空态不会伪造成一个可选项。
+- 高亮匹配片段用[文本高亮](./highlight)，让用户看清为什么这条被选出来。
+- 无头用法需要按 `api.value` 遍历，为每个值调用 `api.getHiddenInputProps({ value })` 并渲染原生 input；旧的无参调用与 CSV 提交合同已删除。Vue/React 的 `HiddenInput` 部件自动铺开，Web Components 仍只需声明一个原生 `input[data-xh-part="hidden-input"]`，额外字段由宿主管理。
+
+### 反模式
+
+- 允许自由文本却不告诉用户——他以为自己选中了一条，其实提交了一段文字。
+- 输入一个字符就发一次请求。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -138,13 +162,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | 状态机 | `comboboxMachine` |
 | 皮肤 | `@xihan-ui/styles/combobox.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="combobox"`：`root` · `label` · **`control`** · **`input`** · `trigger` · `clear-trigger` · `positioner` · **`content`** · `item` · `item-text` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -178,9 +196,9 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `onInputValueChange` | `(details: ComboboxInputValueChangeDetails) => void` |  | 输入串变化回调：调用方据此重新过滤候选。 |
 | `onOpenChange` | `(details: ComboboxOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -188,9 +206,9 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `input-value-change` | `ComboboxInputValueChangeDetails` | 输入串变化；detail 为 `{ inputValue: string }`，作者据此过滤候选 |
 | `open-change` | `ComboboxOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -199,9 +217,9 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `XhComboboxRoot` | `empty` | — |  |
 | `XhComboboxRoot` | `item` | `ComboboxNodeMeta` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -214,7 +232,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `empty` | 'open' \| 'closed' |
 | `loading` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -222,9 +240,9 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 
 **判据**：`isOpenControlled` · `isMultiple` · `hasHighlight`
 
-## connect API
+### connect API
 
-`useCombobox` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -262,7 +280,9 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 与 content 是兄弟，同样不进 role=listbox。 |
 | `getHiddenInputProps` | `(props: { value: string }) => T['input']` | 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/#keyboardinteraction)
 
@@ -283,9 +303,9 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `Backspace` | multiple, 输入串为空且已有选中 | 删掉最后一个已选项 |
 | `可打印字符` | focus in input | 改写输入串并展开列表；过滤由调用方按 onInputValueChange 自己做 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -314,13 +334,15 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `empty` | `role` | 'status' |
 | `loading` | `role` | 'status' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/combobox.css` 按部件选择：`[data-scope="combobox"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/combobox.css` 使用 `[data-scope="combobox"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -357,7 +379,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `loading` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -441,7 +463,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `--xh-combobox-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | combobox 的 input 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -449,22 +471,6 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 外面套[表单字段](./field)。
-
-## 最佳实践
-
-- 异步候选要有在途与空态两种反馈，用户才知道是在找还是没有。
-- 允许自由文本时仍要提供空态说明，并明确提示 Enter 会使用当前文字；空态不会伪造成一个可选项。
-- 高亮匹配片段用[文本高亮](./highlight)，让用户看清为什么这条被选出来。
-- 无头用法需要按 `api.value` 遍历，为每个值调用 `api.getHiddenInputProps({ value })` 并渲染原生 input；旧的无参调用与 CSV 提交合同已删除。Vue/React 的 `HiddenInput` 部件自动铺开，Web Components 仍只需声明一个原生 `input[data-xh-part="hidden-input"]`，额外字段由宿主管理。
-
-## 反模式
-
-- 允许自由文本却不告诉用户——他以为自己选中了一条，其实提交了一段文字。
-- 输入一个字符就发一次请求。

@@ -16,6 +16,12 @@
 
 <XhDemo src="infinite-scroll/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="infinite-scroll"`：**`root`** · **`sentinel`** · `load-more-trigger`
+
 ## 示例
 
 ### 提前量
@@ -60,7 +66,28 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 - 取完之后关掉即可，不会再触发。
 - `load-more-trigger` 是同一条通路的另一个入口：一颗真按钮，取数中与关掉两段自动停用。
 
-## 产物
+### 组合
+
+- 与[列表](./list)、[骨架屏](./skeleton)配合。
+- 与[虚拟滚动](./virtualizer)合成一条边滚边取的长列表：`target` 指向虚拟滚动的视口，哨兵摆在内容层之后；示例在虚拟滚动那一页。
+
+### 最佳实践
+
+- 明确的结束提示："没有更多了"比无声停止好。
+- 加载失败要能重试，别静默停在那里。
+- 摆一颗 `load-more-trigger`：读屏在虚拟光标模式下不产生滚动事件，只靠哨兵那条路取不到第二页。
+- 按钮的文案写在按钮里，组件不代填名字——读屏念的与眼睛看的才是同一句。
+
+### 反模式
+
+- 页面底部有重要内容（页脚、版权、联系方式）却用无限滚动。
+- 不给结束提示，用户一直往下滚。
+- 与[虚拟滚动](./virtualizer)合用时把哨兵摆进条目之间：窗口外的条目不渲染，哨兵也就永远进不了可视区。
+- 与[虚拟滚动](./virtualizer)合用时不给 `target`：提前量按整页可视区算，而真正在滚的是虚拟滚动的视口那一层。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -70,13 +97,7 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/infinite-scroll.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="infinite-scroll"`：**`root`** · **`sentinel`** · `load-more-trigger`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -85,33 +106,33 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 | `loading` | `boolean` |  | 正在取数：其间不观察、不重复触发。取完由宿主写回 false。 |
 | `onLoad` | `() => void` |  | 该取下一页了。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `load` | `` | 该取下一页了 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhInfiniteScrollRoot` | `default` | `InfiniteScrollRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **事件**：`SENTINEL.ENTER` · `LOAD` · `MODE.SYNC`
 
 **判据**：`isPaused` · `isLoading`
 
-## connect API
+### connect API
 
-`useInfiniteScroll` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -122,28 +143,32 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 | `getSentinelProps` | `() => T['element']` |  |
 | `getLoadMoreTriggerProps` | `() => T['button']` | 取下一页的按钮。文案由作者写在按钮里，组件不代填。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-busy` | 'true' \| undefined |
 | `sentinel` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/infinite-scroll.css` 按部件选择：`[data-scope="infinite-scroll"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/infinite-scroll.css` 使用 `[data-scope="infinite-scroll"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -153,7 +178,7 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 | `load-more-trigger` | `data-loading` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -173,31 +198,12 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 | `--xh-infinite-scroll-sentinel-size` | `sentinel` | `block-size` | `default` | `--xh-stroke-thin` | infinite-scroll 的 sentinel 部件 block-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[列表](./list)、[骨架屏](./skeleton)配合。
-- 与[虚拟滚动](./virtualizer)合成一条边滚边取的长列表：`target` 指向虚拟滚动的视口，哨兵摆在内容层之后；示例在虚拟滚动那一页。
-
-## 最佳实践
-
-- 明确的结束提示："没有更多了"比无声停止好。
-- 加载失败要能重试，别静默停在那里。
-- 摆一颗 `load-more-trigger`：读屏在虚拟光标模式下不产生滚动事件，只靠哨兵那条路取不到第二页。
-- 按钮的文案写在按钮里，组件不代填名字——读屏念的与眼睛看的才是同一句。
-
-## 反模式
-
-- 页面底部有重要内容（页脚、版权、联系方式）却用无限滚动。
-- 不给结束提示，用户一直往下滚。
-- 与[虚拟滚动](./virtualizer)合用时把哨兵摆进条目之间：窗口外的条目不渲染，哨兵也就永远进不了可视区。
-- 与[虚拟滚动](./virtualizer)合用时不给 `target`：提前量按整页可视区算，而真正在滚的是虚拟滚动的视口那一层。

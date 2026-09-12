@@ -16,6 +16,12 @@
 
 <XhDemo src="floating-panel/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="floating-panel"`：`root` · `trigger` · **`positioner`** · **`content`** · `header` · `title` · `drag-trigger` · `resize-trigger` · `window-state-trigger` · `close-trigger` · `body`
+
 ## 示例
 
 ### 三种形态
@@ -73,7 +79,30 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 - `minSize` / `maxSize` 在每一处入口都生效——拖、推、`setDimensions` 走的是同一个夹取函数。
 - 内建默认矩形挂载时按视口夹一次：先收尺寸再推落点，窄屏上面板与右侧那几个改尺把手不会落在屏外。写了 `defaultPosition` / `defaultDimensions` 就照写的来。
 
-## 产物
+### 组合
+
+- 标题栏里放[按钮组](./button-group)承载三个形态按钮与关闭按钮。
+- 正文放[滚动区域](./scroll-area)：面板被改小后正文自己滚，而不是把面板撑破。
+
+### 最佳实践
+
+- 位置与尺寸值得存下来：拖动途中回调每帧都发，落存储前先节流。
+- 面板被搬到视口外之后，**再点触发按钮不会把它挪回来**——重新展开只是在同一个坐标上再展开一次。真正能收回来的只有两条：焦点落在拖拽把手上按 Enter / Space（送回初始落点），或者受控接管 `position`、在打开时写回一个视口内的坐标。产品线要"永远拖不出屏幕"就得走后一条。
+- 面板关闭或被搬走后，焦点会掉回 `<body>`：本组件不接管焦点归还，作者应在关闭后把焦点送回触发按钮。
+- 同屏挂多块面板时给它们不同的初始落点，否则会叠成一摞、只有最上面那块点得到。
+- 位置不做视口夹取：组件一次也不量视口，`onPositionChange` 里发出来的坐标就是指针算出来的原值。
+- 面板的落位是视口坐标（`position: fixed` + `left` / `top`）。Vue 侧定位层会被搬到统一的浮层落点，祖先怎么写都不影响；**Web Components 侧搬不动**（角色节点作者写在哪就在哪），把 `<xh-floating-panel>` 放进带 `transform` / `filter` / `backdrop-filter` / `contain: paint` 的容器里，那个祖先会抢走包含块，面板会落到错误的位置——展开时元素会投一条 `overlay.stacking-trap` 诊断。
+- Web Components 侧"能不能搬"这个开关的属性名是 `panel-draggable` 而不是 `draggable`：`draggable` 是 HTML 全局属性，占用它会把宿主元素变成原生拖放源，`dragstart` 一起浏览器就派 `pointercancel`，指针拖动当场中止。property 名同样是 `panelDraggable`；Vue 侧不受影响，仍是 `draggable`。
+
+### 反模式
+
+- 拿它当对话框用来确认删除：非模态面板允许用户绕开，重要的确认必须挡住去路。
+- 一屏挂五六块浮动面板：它们互相遮挡，用户先要整理桌面才能干活。
+- 把面板做成不可关闭也不可收拢：浮层挡住的正是用户要看的内容。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -83,13 +112,7 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | 状态机 | `floatingPanelMachine` |
 | 皮肤 | `@xihan-ui/styles/floating-panel.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="floating-panel"`：`root` · `trigger` · **`positioner`** · **`content`** · `header` · `title` · `drag-trigger` · `resize-trigger` · `window-state-trigger` · `close-trigger` · `body`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -112,9 +135,9 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `onDimensionsChange` | `(details: FloatingPanelDimensionsChangeDetails) => void` |  | 尺寸变化意图回调；改尺过程中会连续发很多次。 |
 | `onWindowStateChange` | `(details: FloatingPanelWindowStateChangeDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -123,17 +146,17 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `dimensions-change` | `FloatingPanelDimensionsChangeDetails` | 尺寸变化（改尺途中会连发）；detail 为 `{ dimensions: { width, height } }` |
 | `window-state-change` | `FloatingPanelWindowStateChangeDetails` | 形态变化；detail 为 `{ windowState: 'default' \| 'minimized' \| 'maximized' }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhFloatingPanelRoot` | `default` | `FloatingPanelRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -141,7 +164,7 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `positioner` | 'open' \| 'closed' |
 | `window-state-trigger` | 'on' \| 'off' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`closed` · `open` · `open.dragging` · `open.idle` · `open.resizing`
 
@@ -149,9 +172,9 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 
 **判据**：`canDrag` · `canInteract` · `canResize` · `isOpenControlled`
 
-## connect API
+### connect API
 
-`useFloatingPanel` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -180,7 +203,9 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `getCloseTriggerProps` | `() => T['button']` |  |
 | `getBodyProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/#keyboardinteraction)
 
@@ -193,9 +218,9 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `ArrowUp` / `ArrowDown` / `ArrowLeft` / `ArrowRight` | focus on resize-trigger, 未禁用、resizable 开启且是常规形态 | 把这个把手守的那条边往该方向推 10px；推不动的那根轴上不拦键（上下把手放行左右键） |
 | `Shift+ArrowUp` / `Shift+ArrowDown` / `Shift+ArrowLeft` / `Shift+ArrowRight` | focus on resize-trigger, 未禁用、resizable 开启且是常规形态 | 同上，一下推 50px |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -229,15 +254,17 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 - 把手在推不动时用 `aria-disabled` 而不是原生 `disabled`：后者会把它逐出 Tab 序列，键盘用户连"这里能搬"都读不到。改尺把手同理恒带 `tabindex="0"`。
 - 收拢时正文带上 `hidden`，其中的可聚焦元素一并退出 Tab 序列——只压高度的话读屏与 Tab 照样进得去。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/floating-panel.css` 按部件选择：`[data-scope="floating-panel"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/floating-panel.css` 使用 `[data-scope="floating-panel"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -258,7 +285,7 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `body` | `data-window-state` | context.get('windowState') |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -300,7 +327,7 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `--xh-floating-panel-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | floating-panel 的 trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -308,31 +335,10 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
 - 面板的坐标、八个把手的方位、方向键推动的方向**都是屏幕方位，不随 `dir` 翻转**。`w` 把手在 RTL 下仍长在物理左侧，按右方向键面板仍往屏幕右边走——指针位移本来就是屏幕坐标，跟着 `dir` 翻会让手上的方向与面板的动向对不上。
 - 因此皮肤里改尺把手那一段刻意写物理的 `inset` / `width` / `height`，连接层写的也是 `left` / `top`。**不要**把它们改成 `inset-inline-*`：把手会跑到对面，手往右拖却从左边收。
 - 面板内的正文照常跟随文档方向：标题栏的排布、正文的书写方向都由外面的 `dir` 决定，本组件一个字都不管。
-
-## 组合
-
-- 标题栏里放[按钮组](./button-group)承载三个形态按钮与关闭按钮。
-- 正文放[滚动区域](./scroll-area)：面板被改小后正文自己滚，而不是把面板撑破。
-
-## 最佳实践
-
-- 位置与尺寸值得存下来：拖动途中回调每帧都发，落存储前先节流。
-- 面板被搬到视口外之后，**再点触发按钮不会把它挪回来**——重新展开只是在同一个坐标上再展开一次。真正能收回来的只有两条：焦点落在拖拽把手上按 Enter / Space（送回初始落点），或者受控接管 `position`、在打开时写回一个视口内的坐标。产品线要"永远拖不出屏幕"就得走后一条。
-- 面板关闭或被搬走后，焦点会掉回 `<body>`：本组件不接管焦点归还，作者应在关闭后把焦点送回触发按钮。
-- 同屏挂多块面板时给它们不同的初始落点，否则会叠成一摞、只有最上面那块点得到。
-- 位置不做视口夹取：组件一次也不量视口，`onPositionChange` 里发出来的坐标就是指针算出来的原值。
-- 面板的落位是视口坐标（`position: fixed` + `left` / `top`）。Vue 侧定位层会被搬到统一的浮层落点，祖先怎么写都不影响；**Web Components 侧搬不动**（角色节点作者写在哪就在哪），把 `<xh-floating-panel>` 放进带 `transform` / `filter` / `backdrop-filter` / `contain: paint` 的容器里，那个祖先会抢走包含块，面板会落到错误的位置——展开时元素会投一条 `overlay.stacking-trap` 诊断。
-- Web Components 侧"能不能搬"这个开关的属性名是 `panel-draggable` 而不是 `draggable`：`draggable` 是 HTML 全局属性，占用它会把宿主元素变成原生拖放源，`dragstart` 一起浏览器就派 `pointercancel`，指针拖动当场中止。property 名同样是 `panelDraggable`；Vue 侧不受影响，仍是 `draggable`。
-
-## 反模式
-
-- 拿它当对话框用来确认删除：非模态面板允许用户绕开，重要的确认必须挡住去路。
-- 一屏挂五六块浮动面板：它们互相遮挡，用户先要整理桌面才能干活。
-- 把面板做成不可关闭也不可收拢：浮层挡住的正是用户要看的内容。

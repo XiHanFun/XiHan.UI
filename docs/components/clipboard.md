@@ -16,6 +16,12 @@
 
 <XhDemo src="clipboard/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="clipboard"`：**`root`** · `label` · `control` · `input` · **`copy-trigger`** · `indicator` · `status`
+
 ## 示例
 
 ### 只要一颗按钮
@@ -54,7 +60,24 @@
 - 必备部件只有 `root` 与 `trigger`：文本已经在页面上时，展示框与标题都可以省掉。
 - `timeout` 决定成功指示保持多久，非正数即不自动回落。
 
-## 产物
+### 组合
+
+- 与[代码视图](./code-view)搭配：代码视图负责显示，剪贴板负责带走。
+- 成功提示也可以改用[轻提示](./toast)，此时把 `indicator` 省掉。
+
+### 最佳实践
+
+- 复制失败要留可见的兜底路径——展示框就是那条路径，别为了好看把它藏掉。
+- 触发器上的文字随状态换（复制 / 已复制），别只换图标颜色。
+
+### 反模式
+
+- 假定复制一定成功：非安全上下文、权限被拒、浏览器策略都会让它失败。
+- 用它复制用户看不见的内容：用户无法核对自己带走了什么。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -64,13 +87,7 @@
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/clipboard.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="clipboard"`：**`root`** · `label` · `control` · `input` · **`copy-trigger`** · `indicator` · `status`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -84,26 +101,26 @@
 | `onStatusChange` | `(details: ClipboardStatusChangeDetails) => void` |  | 状态每次落位时通知一次；挂载那一刻的 idle 是初始态，不通知。 |
 | `onCopyError` | `(details: ClipboardCopyErrorDetails) => void` |  | 写入失败时通知；此时状态已经回到 idle。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `status-change` | `ClipboardStatusChangeDetails` | 状态变化；detail 为 `{ status: 'copying' \| 'copied' \| 'idle' }` |
 | `copy-error` | `ClipboardCopyErrorDetails` | 写入失败；detail 为 `{ error, value }`，此刻状态已经回到 idle |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhClipboardRoot` | `default` | `ClipboardRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -115,15 +132,15 @@
 | `indicator` | state.get() |
 | `status` | state.get() |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **事件**：`COPY.TRIGGER` · `COPY.SUCCESS` · `COPY.ERROR` · `after.timeout`
 
 **判据**：`isDisabled`
 
-## connect API
+### connect API
 
-`useClipboard` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -141,15 +158,17 @@
 | `getIndicatorProps` | `(props: ClipboardIndicatorProps) => T['element']` |  |
 | `getStatusProps` | `() => T['element']` | 复制成功的播报区，视觉隐藏；不给内容时念 announcement。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -159,13 +178,15 @@
 | `status` | `aria-live` | 'polite' |
 | `status` | `role` | 'status' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/clipboard.css` 按部件选择：`[data-scope="clipboard"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/clipboard.css` 使用 `[data-scope="clipboard"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -186,7 +207,7 @@
 | `status` | `data-state` | state.get() |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -228,31 +249,16 @@
 | `--xh-clipboard-loading-duration` | `copy-trigger` | `animation` | `state=copying` | `--xh-spin-duration` | clipboard 的 copy-trigger 部件 animation 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-clipboard-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[代码视图](./code-view)搭配：代码视图负责显示，剪贴板负责带走。
-- 成功提示也可以改用[轻提示](./toast)，此时把 `indicator` 省掉。
-
-## 最佳实践
-
-- 复制失败要留可见的兜底路径——展示框就是那条路径，别为了好看把它藏掉。
-- 触发器上的文字随状态换（复制 / 已复制），别只换图标颜色。
-
-## 反模式
-
-- 假定复制一定成功：非安全上下文、权限被拒、浏览器策略都会让它失败。
-- 用它复制用户看不见的内容：用户无法核对自己带走了什么。

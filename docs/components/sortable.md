@@ -16,6 +16,12 @@ ids 是顺序的唯一真源，sort 事件回传的 ids 已经重排好，可直
 
 <XhDemo src="sortable/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="sortable"`：**`root`** · **`item`** · `item-drag-trigger` · `drop-indicator` · `live-region`
+
 ## 示例
 
 ### 横排与网格
@@ -58,7 +64,14 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 - `orientation` 三档：竖排、横排，以及换行网格用的 `both`——网格按最近中心判落点。
 - 写一个 `drop-indicator` 节点（排在末项之后），拖动中会在松手后条目要插进去的那条缝上画一条线；落点回到起点时它自动收起。
 
-## 产物
+### 组合
+
+- 每项里放一个拖拽手柄：只有手柄能拖，条目其余部分照常可点。
+- 与[表格](./table)的列设置配合，做成可拖的列顺序面板。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -68,13 +81,7 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | 状态机 | `sortableMachine` |
 | 皮肤 | `@xihan-ui/styles/sortable.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="sortable"`：**`root`** · **`item`** · `item-drag-trigger` · `drop-indicator` · `live-region`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -89,9 +96,9 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | `onDragStart` | `(details: SortableDragStartDetails) => void` |  |  |
 | `onDragEnd` | `(details: SortableDragEndDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -99,9 +106,9 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | `drag-start` | `SortableDragStartDetails` | 拾起；detail 为 `{ id, from, mode }` |
 | `drag-end` | `SortableDragEndDetails` | 收尾（含取消）；detail 为 `{ id, from, to, mode, canceled }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -109,9 +116,9 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | `XhSortableItemDragTrigger` | `default` | — |  |
 | `XhSortableRoot` | `default` | `SortableRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `pending` · `dragging`
 
@@ -119,9 +126,9 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 
 **判据**：`canSort` · `passedActivation`
 
-## connect API
+### connect API
 
-`useSortable` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -137,7 +144,9 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | `getDropIndicatorProps` | `() => T['element']` | 落点线：拖动中且落点与起点不同一位时才在场，位置由内联样式给出。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/)
 
@@ -149,9 +158,9 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | `Space` / `Enter` | 键盘拖动中 | 放下，按当前位置提交顺序并播报落点 |
 | `Escape` | 键盘拖动中 | 取消，顺序回到拾起前，播报已取消与原位置 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -171,13 +180,15 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 - 拖动过程的每一步都写进视觉隐藏的 `role=status` 区域，读屏能听到「移到第几位，共几项」。
 - 拖动中的 Tab 会被拦下：焦点一旦移走，这一场就没有出口了。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/sortable.css` 按部件选择：`[data-scope="sortable"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/sortable.css` 使用 `[data-scope="sortable"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -192,7 +203,7 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | `drop-indicator` | `data-orientation` | props.orientation |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -214,17 +225,12 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | `--xh-sortable-item-shadow-dragging` | `item` | `box-shadow` | `dragging` | `--xh-elevation-raised` | sortable 的 item 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `box-shadow` · `opacity` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 每项里放一个拖拽手柄：只有手柄能拖，条目其余部分照常可点。
-- 与[表格](./table)的列设置配合，做成可拖的列顺序面板。

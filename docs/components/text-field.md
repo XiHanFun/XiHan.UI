@@ -16,6 +16,12 @@ root 持有状态，label 与 control 里的 input 各自向它取属性；不�
 
 <XhDemo src="text-field/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="text-field"`：**`root`** · `label` · `control` · `prefix` · **`input`** · `suffix` · `clear-trigger` · `count`
+
 ## 示例
 
 ### 受控
@@ -148,7 +154,23 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
   Field 或 Form 继承；实例显式写 `false` 仍以实例为准。Field 的标签、说明和错误描述链保持挂到 input。
 - 输入组、限制可输入字符由作者组合，组件不预设。
 
-## 产物
+### 组合
+
+- 外面套[表单字段](./field)拿标签与错误文本；与[按钮](./button)拼成输入组。
+
+### 最佳实践
+
+- `type` 要写对：移动端的软键盘按它切换，写错会让用户多按很多次。
+- 密码框的明暗切换按钮要有可及名字，并在切换后更新它。
+
+### 反模式
+
+- 用它收集固定格式的分段值（日期、验证码）：用[日期输入](./date-field)、[分格输入](./pin-input)。
+- 输入时就报格式错误。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -158,13 +180,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | 状态机 | `textFieldMachine` |
 | 皮肤 | `@xihan-ui/styles/text-field.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="text-field"`：**`root`** · `label` · `control` · `prefix` · **`input`** · `suffix` · `clear-trigger` · `count`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -187,26 +203,26 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | `translations` | `Partial<TextFieldTranslations>` |  | 读屏文案；缺省英文。 |
 | `onValueChange` | `(details: TextFieldValueChangeDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TextFieldValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhTextFieldCount` | `default` | `TextFieldCountSlotProps` |  |
 | `XhTextFieldRoot` | `default` | `TextFieldRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
@@ -214,9 +230,9 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 
 **判据**：`canEdit` · `canClear`
 
-## connect API
+### connect API
 
-`useTextField` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -243,7 +259,9 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getCountProps` | `() => T['element']` | 字数部件：承载 count / maxLength 两个数字，没开 showCount 时带 hidden 收起。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://html.spec.whatwg.org/multipage/input.html#text-(type=text)-state-and-search-state-(type=search))
 
@@ -251,9 +269,9 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | --- | --- | --- |
 | `Escape` | focus in input, clearable 且值非空, not disabled/readOnly | 清空值；三个条件缺一即不接管该键，交回给外层与浏览器 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -266,13 +284,15 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | `clear-trigger` | `aria-label` | label.clearTrigger |
 | `count` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/text-field.css` 按部件选择：`[data-scope="text-field"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/text-field.css` 使用 `[data-scope="text-field"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -313,7 +333,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | `count` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -365,24 +385,10 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | `--xh-text-field-textarea-py` | `input` | `padding-block` | `xh-field-input`<br>`xh-field-layout=textarea` | `--xh-space-2` | text-field 的 input 部件 padding-block 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 外面套[表单字段](./field)拿标签与错误文本；与[按钮](./button)拼成输入组。
-
-## 最佳实践
-
-- `type` 要写对：移动端的软键盘按它切换，写错会让用户多按很多次。
-- 密码框的明暗切换按钮要有可及名字，并在切换后更新它。
-
-## 反模式
-
-- 用它收集固定格式的分段值（日期、验证码）：用[日期输入](./date-field)、[分格输入](./pin-input)。
-- 输入时就报格式错误。

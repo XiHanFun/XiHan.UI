@@ -16,6 +16,12 @@
 
 <XhDemo src="scrollbar/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="scrollbar"`：**`root`** · **`track`** · **`thumb`** · `corner`
+
 ## 示例
 
 ### 横向 + 键盘可达
@@ -57,7 +63,25 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 - `focusable` 打开后滑块进 Tab 序并报 `role="scrollbar"`，方向键与翻页键可用。
 - 触屏（粗指针）上默认交给原生滚动，`forceVisible` 打开才画。
 
-## 产物
+### 组合
+
+- [滚动区域](./scroll-area)就是视口加两条本组件的组装：它的轨道、滑块与交叉口戴的正是本组件的 scope。
+- [表格](./table)放进滚动区即可滚；[虚拟滚动](./virtualizer)与[日志](./log)的视口给个 id，用 `controls` 挂上即可。
+- 两条轴各摆一个，都打开 `gutter` 让出交叉口，`corner` 写在其中一条里补上那一格。
+
+### 最佳实践
+
+- 藏原生滚动条只藏外观（`scrollbar-width: none`），别动滚动能力——键盘与滚轮仍要走原生通路。
+- 触摸设备保留原生滚动，别给 `hover` 档：手指没有"悬停"。
+
+### 反模式
+
+- 给每条滚动条都开 `focusable`：长页面上会平白多出十几个 Tab 停靠点。
+- 用它替代滚轮拦截：这个组件不接管滚轮，嵌套滚动的冲突要在布局上解决。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -67,13 +91,7 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 | 状态机 | `scrollbarMachine` |
 | 皮肤 | `@xihan-ui/styles/scrollbar.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="scrollbar"`：**`root`** · **`track`** · **`thumb`** · `corner`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -95,9 +113,9 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 | `onDragStart` | `(details: ScrollbarScrollDetails) => void` |  | 按住滑块。 |
 | `onDragEnd` | `(details: ScrollbarScrollDetails) => void` |  | 松开滑块。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -107,24 +125,24 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 | `drag-start` | `` | 按住滑块；detail 同上 |
 | `drag-end` | `` | 松开滑块；detail 同上 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhScrollbarRoot` | `default` | `ScrollbarRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'visible' \| 'hidden' |
 | `corner` | 'visible' \| 'hidden' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`hidden` · `visible` · `hiding` · `dragging`
 
@@ -132,9 +150,9 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 
 **判据**：`showsOnHover` · `showsOnScroll` · `staysVisible` · `canInteract`
 
-## connect API
+### connect API
 
-`useScrollbar` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -158,7 +176,9 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 | `getThumbProps` | `() => T['element']` |  |
 | `getCornerProps` | `() => T['element']` | 交叉口补丁，写在其中一条的 root 里；跟着这一条的显隐走。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/WCAG21/Techniques/general/G202)
 
@@ -172,9 +192,9 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 | `End` | focus in thumb, focusable | 滚到终点 |
 | `Tab` / `Shift+Tab` | focusable | 滑块是一个 Tab 停靠点；不开 focusable 时整条退出 Tab 序，也对读屏隐藏 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -188,13 +208,15 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 | `thumb` | `aria-valuenow` | Math.round(metrics.scroll) \| undefined |
 | `thumb` | `role` | 'scrollbar' \| undefined |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/scrollbar.css` 按部件选择：`[data-scope="scrollbar"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/scrollbar.css` 使用 `[data-scope="scrollbar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -217,7 +239,7 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 | `corner` | `data-state` | 'visible' \| 'hidden' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -232,28 +254,12 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 | `--xh-scrollbar-track-bg` | `corner`<br>`track` | `background` | `default` | `--xh-bg-scrollbar-track` | scrollbar 的 corner、track 部件 background 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- [滚动区域](./scroll-area)就是视口加两条本组件的组装：它的轨道、滑块与交叉口戴的正是本组件的 scope。
-- [表格](./table)放进滚动区即可滚；[虚拟滚动](./virtualizer)与[日志](./log)的视口给个 id，用 `controls` 挂上即可。
-- 两条轴各摆一个，都打开 `gutter` 让出交叉口，`corner` 写在其中一条里补上那一格。
-
-## 最佳实践
-
-- 藏原生滚动条只藏外观（`scrollbar-width: none`），别动滚动能力——键盘与滚轮仍要走原生通路。
-- 触摸设备保留原生滚动，别给 `hover` 档：手指没有"悬停"。
-
-## 反模式
-
-- 给每条滚动条都开 `focusable`：长页面上会平白多出十几个 Tab 停靠点。
-- 用它替代滚轮拦截：这个组件不接管滚轮，嵌套滚动的冲突要在布局上解决。

@@ -16,6 +16,12 @@
 
 <XhDemo src="gradient-text/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="gradient-text"`：**`root`**
+
 ## 示例
 
 ### 两端颜色
@@ -61,7 +67,23 @@ tone 决定两端取哪族颜色；写了 from / to 就由它们说了算，tone
 - `tone` 换成六族语气之一，两端自动取该族的主色与压深一档；写了 `from` / `to` 就以它们为准。
 - 高对比、强制色和打印环境自动退回当前实体前景；选中与复制仍使用原始文本，不生成替代内容。
 
-## 产物
+### 组合
+
+- 嵌在[排印](./typography)的标题里只强调其中几个字。
+
+### 最佳实践
+
+- 两端颜色的明度要接近，否则一句话里会有一半读不清。
+- 同一页面只用一处，用多了就不再是重音。
+
+### 反模式
+
+- 拿它做正文或长段落。
+- 两端取对比度极低的相近色：渐变看不出来，只剩渲染成本。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -70,13 +92,7 @@ tone 决定两端取哪族颜色；写了 from / to 就由它们说了算，tone
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/gradient-text.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="gradient-text"`：**`root`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -85,27 +101,31 @@ tone 决定两端取哪族颜色；写了 from / to 就由它们说了算，tone
 | `to` | `string` |  | 终点颜色，写成 CSS 变量交给皮肤；不给则用品牌色族。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，两端取该族颜色；写了 from / to 即让位。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/gradient-text.css` 按部件选择：`[data-scope="gradient-text"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/gradient-text.css` 使用 `[data-scope="gradient-text"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -113,7 +133,7 @@ tone 决定两端取哪族颜色；写了 from / to 就由它们说了算，tone
 | `root` | `data-tone` | props.tone |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -123,20 +143,6 @@ tone 决定两端取哪族颜色；写了 from / to 就由它们说了算，tone
 | `--xh-gradient-text-to` | `root` | `background-image` | `default` | `--xh-_gradient-text-to` | gradient-text 的 root 部件 background-image 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
-
-## 组合
-
-- 嵌在[排印](./typography)的标题里只强调其中几个字。
-
-## 最佳实践
-
-- 两端颜色的明度要接近，否则一句话里会有一半读不清。
-- 同一页面只用一处，用多了就不再是重音。
-
-## 反模式
-
-- 拿它做正文或长段落。
-- 两端取对比度极低的相近色：渐变看不出来，只剩渲染成本。

@@ -16,6 +16,12 @@
 
 <XhDemo src="question-flow/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="question-flow"`：**`root`** · `viewport` · **`track`** · **`question`** · `prompt` · `group` · `item` · `item-indicator` · `item-text` · `note` · `footer` · `prev-trigger` · `counter` · `next-trigger` · `skip-trigger` · **`submit-trigger`** · `result` · `live-region`
+
 ## 示例
 
 ### 自由文本与跳过
@@ -67,7 +73,31 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 - 跳过是明路：`allowSkip` 关掉时整颗跳过键收起，而不是留一颗按不动的按钮。
   末题上跳过即交卷——否则最后一题没有出口，人会被困在那里。
 
-## 产物
+### 组合
+
+- 步进计数器想做成里程表那样逐位滚动：把 `counter` 当容器，
+  数字交给[数值动画](./number-animation)，判定权仍在本组件手里。
+- 问卷收上来之后要接着执行危险动作：把[审批](./approval)排在它后面，两件事分开——
+  问卷收的是「怎么做」，闸门收的是「做不做」。
+- 装进[对话框](./dialog)时把 `initialFocus` 指到当前题的第一个选项上，
+  打开即可直接用方向键作答。
+
+### 最佳实践
+
+- 题目控制在三到五道：这是「动手前问一句」，不是问卷调查。
+- 单选题的选项写成互斥的完整答案，别让人靠自由文本补充关键信息。
+- 提交之后卡片不会自己消失：**宿主要在 `onSubmit` 里决定接下来做什么**，
+  想让它留在原地就渲 `result` 那一格。
+
+### 反模式
+
+- 用它承载不可逆的动作确认：问卷没有「拒绝」这条路，跳过与不答都会让流程继续往下走。
+- 把 `counter` 的文字当播报：那一格对读屏隐藏，改它不会让任何人听见。
+- 关掉自动前进的同时把继续键也藏了：那样单选题就再没有出口。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -77,13 +107,7 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/question-flow.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="question-flow"`：**`root`** · `viewport` · **`track`** · **`question`** · `prompt` · `group` · `item` · `item-indicator` · `item-text` · `note` · `footer` · `prev-trigger` · `counter` · `next-trigger` · `skip-trigger` · **`submit-trigger`** · `result` · `live-region`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -110,9 +134,9 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | `onSkip` | `(details: QuestionFlowSkipDetails) => void` |  |  |
 | `onSubmit` | `(details: QuestionFlowSubmitDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -122,18 +146,18 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | `skip` | `QuestionFlowSkipDetails` | 跳过一题；detail 为 `{ index, questionId }` |
 | `submit` | `QuestionFlowSubmitDetails` | 交卷；detail 为 `{ answers, notes }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhQuestionFlowItem` | `default` | `QuestionFlowOptionSlotProps` |  |
 | `XhQuestionFlowRoot` | `default` | `QuestionFlowRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -143,15 +167,15 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | `item-text` | 'checked' \| 'unchecked' |
 | `result` | state.get() |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **事件**：`OPTION.TOGGLE` · `NOTE.SET` · `GOTO` · `NEXT` · `PREV` · `SKIP` · `SUBMIT` · `VIEWPORT.MEASURE` · `after.autoAdvance` · `CONTROLLED.ANSWERING` · `CONTROLLED.SUBMITTED`
 
 **判据**：`isStatusControlled` · `canToggle` · `canSkip` · `isFirstQuestion` · `isLastQuestion`
 
-## connect API
+### connect API
 
-`useQuestionFlow` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -199,7 +223,9 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | `getResultProps` | `() => T['element']` |  |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/radio/#keyboardinteraction)
 
@@ -212,9 +238,9 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | `Space` | 焦点在当前题的选项上 | 切换该项。单选点已选中的那一项不取消 |
 | `Enter` | 焦点在当前题的选项或自由文本上，且这一题答得能往下走 | 前进一题；已经在末题就交卷 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -250,13 +276,15 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
   占位文字另走 `translations.notePlaceholder`。
 - 备注框与选项组都挡输入法组合态：组合期间的 Enter 是在确认候选词，不前进。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/question-flow.css` 按部件选择：`[data-scope="question-flow"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/question-flow.css` 使用 `[data-scope="question-flow"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -277,7 +305,7 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | `result` | `data-state` | state.get() |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -362,34 +390,12 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | `--xh-question-flow-viewport-h` | `viewport` | `block-size` | `default` | `--xh-_question-flow-viewport-h` | question-flow 的 viewport 部件 block-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-question-flow-in` · `xh-question-flow-result-in` · `xh-rise-in` 随皮肤自带，不引用别处文件里的名字；`background` · `block-size` · `border-color` · `box-shadow` · `color` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 步进计数器想做成里程表那样逐位滚动：把 `counter` 当容器，
-  数字交给[数值动画](./number-animation)，判定权仍在本组件手里。
-- 问卷收上来之后要接着执行危险动作：把[审批](./approval)排在它后面，两件事分开——
-  问卷收的是「怎么做」，闸门收的是「做不做」。
-- 装进[对话框](./dialog)时把 `initialFocus` 指到当前题的第一个选项上，
-  打开即可直接用方向键作答。
-
-## 最佳实践
-
-- 题目控制在三到五道：这是「动手前问一句」，不是问卷调查。
-- 单选题的选项写成互斥的完整答案，别让人靠自由文本补充关键信息。
-- 提交之后卡片不会自己消失：**宿主要在 `onSubmit` 里决定接下来做什么**，
-  想让它留在原地就渲 `result` 那一格。
-
-## 反模式
-
-- 用它承载不可逆的动作确认：问卷没有「拒绝」这条路，跳过与不答都会让流程继续往下走。
-- 把 `counter` 的文字当播报：那一格对读屏隐藏，改它不会让任何人听见。
-- 关掉自动前进的同时把继续键也藏了：那样单选题就再没有出口。

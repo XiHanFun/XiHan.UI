@@ -17,6 +17,12 @@
 
 <XhDemo src="badge/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="badge"`：**`root`** · `indicator`
+
 ## 示例
 
 ### 圆点与落点
@@ -62,7 +68,26 @@ tone 决定用哪族颜色——角标现实里主要是未读红点与在线/�
 - `dot` 收成一个圆点：只表示「有」，不表示「有几个」。
 - `label` 给读屏一整句：光念「3」听不出是什么的 3。
 
-## 产物
+### 组合
+
+- 挂在[头像](./avatar)、[按钮](./button)、[标签页](./tabs)的标签上做角标：
+  被标记的那个东西直接写进默认插槽，定位与偏移由组件自己承担，不必外层再套定位上下文。
+
+### 最佳实践
+
+- 角标要给 `label`：读屏念到孤零零一个数字，用户不知道那是未读数还是别的。
+- 状态别只用颜色区分：红绿色觉障碍的用户看不出差别，文字必须说清楚。
+- 计数会变的地方交给 `count` 算，别自己拼「99+」——上限口径散在各处迟早不一致。
+
+### 反模式
+
+- 拿徽标当分类标签用：它不可交互、摘不掉，用户点了没反应。
+- 一屏里到处都是高饱和度的徽标：全都在喊，等于都没喊。
+- 用徽标承载长句子。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -71,13 +96,7 @@ tone 决定用哪族颜色——角标现实里主要是未读红点与在线/�
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/badge.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="badge"`：**`root`** · `indicator`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -90,18 +109,18 @@ tone 决定用哪族颜色——角标现实里主要是未读红点与在线/�
 | `size` | `Size` |  | 尺寸：sm / md / lg。换的是圆点直径、两位数时的最小宽度与字号。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 角标现实里主要用 danger（未读小红点）与 success / neutral（在线 / 离线点）。 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhBadge` | `default` | — |  |
 | `XhBadgeIndicator` | `default` | `{ text: string }` |  |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -110,28 +129,32 @@ tone 决定用哪族颜色——角标现实里主要是未读红点与在线/�
 | `getRootProps` | `() => T['element']` | 锚点：被标记的那个东西（按钮、头像、标签页）放进它里面。 |
 | `getIndicatorProps` | `() => T['element']` | 角标本身，绝对定位在 root 的某个角上。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `indicator` | `aria-label` | props.label |
 | `indicator` | `role` | 'status' \| undefined |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/badge.css` 按部件选择：`[data-scope="badge"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/badge.css` 使用 `[data-scope="badge"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -142,7 +165,7 @@ tone 决定用哪族颜色——角标现实里主要是未读红点与在线/�
 | `indicator` | `data-tone` | props.tone |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -160,27 +183,10 @@ tone 决定用哪族颜色——角标现实里主要是未读红点与在线/�
 | `--xh-badge-shadow` | `indicator` | `box-shadow` | `default` | `--xh-_badge-highlight` | badge 的 indicator 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 挂在[头像](./avatar)、[按钮](./button)、[标签页](./tabs)的标签上做角标：
-  被标记的那个东西直接写进默认插槽，定位与偏移由组件自己承担，不必外层再套定位上下文。
-
-## 最佳实践
-
-- 角标要给 `label`：读屏念到孤零零一个数字，用户不知道那是未读数还是别的。
-- 状态别只用颜色区分：红绿色觉障碍的用户看不出差别，文字必须说清楚。
-- 计数会变的地方交给 `count` 算，别自己拼「99+」——上限口径散在各处迟早不一致。
-
-## 反模式
-
-- 拿徽标当分类标签用：它不可交互、摘不掉，用户点了没反应。
-- 一屏里到处都是高饱和度的徽标：全都在喊，等于都没喊。
-- 用徽标承载长句子。

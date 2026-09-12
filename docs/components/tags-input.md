@@ -16,6 +16,12 @@
 
 <XhDemo src="tags-input/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="tags-input"`：**`root`** · `label` · **`control`** · **`input`** · `item` · `item-input` · `clear-trigger` · `count` · `hidden-input`
+
 ## 示例
 
 ### 上限与粘贴拆分
@@ -106,7 +112,23 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 - `showCount` 显出计数部件，数字取 `count` 与 `max`，顶到上限与越界各换一档颜色。
 - `required` 经 `aria-required` 上报必填。
 
-## 产物
+### 组合
+
+- 外面套[表单字段](./field)；候选词一键添加时旁边摆一排[按钮](./button)。
+
+### 最佳实践
+
+- 入库前统一改写（去空白、转小写），否则同一个词会出现好几份。
+- 说明用什么键成词，否则用户会一直打空格。
+
+### 反模式
+
+- 不去重：同一个标签能加很多次。
+- 标签不能删。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -116,13 +138,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | 状态机 | `tagsInputMachine` |
 | 皮肤 | `@xihan-ui/styles/tags-input.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="tags-input"`：**`root`** · `label` · **`control`** · **`input`** · `item` · `item-input` · `clear-trigger` · `count` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -150,27 +166,27 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `onValueChange` | `(details: TagsInputValueChangeDetails) => void` |  |  |
 | `onInputValueChange` | `(details: TagsInputInputValueChangeDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TagsInputValueChangeDetails` | 标签集合变化；detail 为 `{ value: string[] }` |
 | `input-value-change` | `TagsInputInputValueChangeDetails` | 输入文本变化；detail 为 `{ inputValue: string }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhTagsInputCount` | `default` | `TagsInputCountSlotProps` |  |
 | `XhTagsInputRoot` | `default` | `TagsInputRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `navigating` · `editing`
 
@@ -178,9 +194,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 **判据**：`canEdit` · `canEditTag` · `canDeleteWithPrev` · `hasHighlightTarget`
 
-## connect API
+### connect API
 
-`useTagsInput` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -219,7 +235,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `getCountProps` | `() => T['element']` | 计数部件：承载 count / max 两个数字，没开 showCount 时带 hidden 收起。 |
 | `getHiddenInputProps` | `() => T['input']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/)
 
@@ -239,9 +257,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `Enter` | focus in item-input（就地编辑中） | 提交改写；改成空白等于删掉这个标签，改成另一个已有标签则并成一个。焦点交回输入框 |
 | `Escape` | focus in item-input（就地编辑中） | 撤销这次改写，标签保持原样，焦点交回输入框 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -255,13 +273,15 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `clear-trigger` | `aria-label` | label.clearTrigger |
 | `count` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/tags-input.css` 按部件选择：`[data-scope="tags-input"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/tags-input.css` 使用 `[data-scope="tags-input"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -277,7 +297,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `count` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -336,26 +356,12 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `--xh-tags-input-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | tags-input 的 input 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 外面套[表单字段](./field)；候选词一键添加时旁边摆一排[按钮](./button)。
-
-## 最佳实践
-
-- 入库前统一改写（去空白、转小写），否则同一个词会出现好几份。
-- 说明用什么键成词，否则用户会一直打空格。
-
-## 反模式
-
-- 不去重：同一个标签能加很多次。
-- 标签不能删。

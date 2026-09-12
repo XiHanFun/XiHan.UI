@@ -16,6 +16,12 @@
 
 <XhDemo src="button/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="button"`：**`root`** · `label` · `indicator` · `prefix` · `suffix`
+
 ## 示例
 
 ### 变体
@@ -101,7 +107,28 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 - 根节点把普通文字动作 / icon-only 两种稳定视觉角色投影到 `data-xh-action-*`；尺寸数值、状态反馈与粗指针命中区由 Action Control Family Recipe 统一解析，适配器不计算 CSS。
 - 皮肤认的是 `data-scope` 与 `data-part`，不是标签名。
 
-## 产物
+### 组合
+
+- 连排成一条：外面套[按钮组](./button-group)，档位与形态写在容器上，组内每一段自己不重复标注。
+- 图元用 [图标](./icon)，放进 `prefix` 或 `suffix`。
+- 需要二次确认的危险动作：外面套[弹出确认](./popconfirm)。
+
+### 最佳实践
+
+- 只放图标时必须给 `aria-label`——按钮此时没有任何可见文字，名字只能由它来给。
+- 一个视图里默认按钮或 `solid` + `brand` 只留一个，主动作唯一才排得出主次。
+- 载入指示器需要作者提供真实图形，皮肤不会猜测并补画。要保持宽度，就让 `indicator` 常驻；皮肤在非载入态用 `visibility` 隐藏它，只在 `loading` 时显示并旋转。
+- 不要在 `loading` 时条件插入或移除 label、prefix、suffix；按钮保留原内容与完整表面，只停掉交互。
+
+### 反模式
+
+- 用 `disabled` 表达"正在提交"：原生禁用会丢掉焦点、读屏也不再播报，用户不知道发生了什么。用 `loading`。
+- 把导航写成按钮加 `onClick` 跳转，见上。
+- 在按钮里再放一个可聚焦元素：一次点击落在哪个目标上不可预期。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -110,13 +137,7 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/button.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="button"`：**`root`** · `label` · `indicator` · `prefix` · `suffix`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -133,9 +154,9 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | `type` | `'button' \| 'submit' \| 'reset'` |  |  |
 | `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -147,7 +168,9 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | `getPrefixProps` | `() => T['element']` |  |
 | `getSuffixProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction)
 
@@ -155,9 +178,9 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | --- | --- | --- |
 | `Enter` / `Space` | focus in root, interactive | 激活按钮（原生行为） |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -167,15 +190,17 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | `prefix` | `aria-hidden` | 'true' |
 | `suffix` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/button.css` 按部件选择：`[data-scope="button"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/button.css` 使用 `[data-scope="button"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -193,7 +218,7 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | `root` | `data-xh-action-size` | props.size |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -215,31 +240,12 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | `--xh-button-spin-duration` | `indicator`<br>`root` | `animation` | `loading` | `--xh-spin-duration` | button 的 indicator、root 部件 animation 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-spin` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 连排成一条：外面套[按钮组](./button-group)，档位与形态写在容器上，组内每一段自己不重复标注。
-- 图元用 [图标](./icon)，放进 `prefix` 或 `suffix`。
-- 需要二次确认的危险动作：外面套[弹出确认](./popconfirm)。
-
-## 最佳实践
-
-- 只放图标时必须给 `aria-label`——按钮此时没有任何可见文字，名字只能由它来给。
-- 一个视图里默认按钮或 `solid` + `brand` 只留一个，主动作唯一才排得出主次。
-- 载入指示器需要作者提供真实图形，皮肤不会猜测并补画。要保持宽度，就让 `indicator` 常驻；皮肤在非载入态用 `visibility` 隐藏它，只在 `loading` 时显示并旋转。
-- 不要在 `loading` 时条件插入或移除 label、prefix、suffix；按钮保留原内容与完整表面，只停掉交互。
-
-## 反模式
-
-- 用 `disabled` 表达"正在提交"：原生禁用会丢掉焦点、读屏也不再播报，用户不知道发生了什么。用 `loading`。
-- 把导航写成按钮加 `onClick` 跳转，见上。
-- 在按钮里再放一个可聚焦元素：一次点击落在哪个目标上不可预期。

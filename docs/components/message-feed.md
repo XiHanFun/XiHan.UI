@@ -16,6 +16,12 @@
 
 <XhDemo src="message-feed/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="message-feed"`：**`root`** · **`viewport`** · **`list`** · `item` · `item-label` · `scroll-to-end-trigger` · `live-region`
+
 ## 示例
 
 ### 粘底跟随与播报
@@ -80,7 +86,35 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 - 新长出来的消息与冒出来的「回到底部」各带一段淡入位移；减弱动效档由令牌层压平，不必另行关闭。
 - 「回到底部」留空时皮肤画一枚向下的字形，往按钮里塞节点即换成自己的图形。
 
-## 产物
+### 组合
+
+- 正文用[流式正文](./markdown-stream)，代码用[代码视图](./code-view)。
+- 每条消息的动作条用[工具条](./toolbar)，复制那一格用[剪贴板](./clipboard)。
+- 加载更早的消息用[无限滚动](./infinite-scroll)，**必须把消息流的滚动容器交给它**，
+  否则它的提前量只对窗口视口生效。
+- 空会话用[空状态](./empty-state)，并显式把它的 `live` 设成 `off`：
+  它默认会成为活区，放在消息流里会与播报区抢播报。
+- 要左右分侧或气泡：条目上带 `data-role`（`user` / `assistant` / `system`），
+  在自己的样式表里按它写 `align-self`、底色、内衬与最大行宽即可，组件不预设这层外观。
+- 还在流式写入的条目带 `data-streaming`，这是留给使用者的钩子：正文走[流式正文](./markdown-stream)时
+  那枚光标就是「还在写」的标记；正文不经它渲染时，可按这个属性自己加一个非遮蔽式的标记，
+  例如前导色条或一格标签态。
+
+### 最佳实践
+
+- 条目必须是内容层的**直接子节点**：向上插入历史消息时的滚动补偿只在直接子节点里挑锚点，
+  套一层壳或用 `display: contents` 都会让补偿静默失效。
+- 一轮流结束时把整段最终文本写进播报区，别每来一个 token 写一次。
+
+### 反模式
+
+- 给每条消息各写一个 `tabindex="0"`：两百条消息就是两百个 Tab 停靠位。
+- 在消息流里再套一层滚动容器：粘底句柄认的是本组件的视口，套一层它就不动了。
+- 按 `data-streaming` 把整条消息压暗或虚化：一轮流可能持续数分钟，被盖住的正是读者正在逐字读的内容。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -90,13 +124,7 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 | 状态机 | `messageFeedMachine` |
 | 皮肤 | `@xihan-ui/styles/message-feed.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="message-feed"`：**`root`** · **`viewport`** · **`list`** · `item` · `item-label` · `scroll-to-end-trigger` · `live-region`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -109,41 +137,41 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 | `onStickChange` | `(details: MessageFeedStickChangeDetails) => void` |  |  |
 | `onItemFocus` | `(details: MessageFeedItemFocusDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `stick-change` | `MessageFeedStickChangeDetails` | 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
 | `item-focus` | `MessageFeedItemFocusDetails` | 锚点变化；detail 为 `{ id: string \| null }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhMessageFeedRoot` | `default` | `MessageFeedRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `root` | props.status |
 | `scroll-to-end-trigger` | 'hidden' \| 'visible' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
 **事件**：`STICK.CHANGE` · `SCROLL_TO_BOTTOM` · `ITEM.FOCUS` · `FEED.BLUR`
 
-## connect API
+### connect API
 
-`useMessageFeed` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -163,7 +191,9 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 | `getScrollToEndTriggerProps` | `() => T['button']` |  |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/feed/)
 
@@ -177,9 +207,9 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 | `ArrowUp` / `ArrowDown` / `Home` / `End` | 焦点落在某条消息上 | 组件不接管，浏览器滚动最近的可滚动祖先 |
 | `Enter` / `Space` | 焦点在回到底部按钮上 | 滚回底部并恢复粘附（原生按钮激活） |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -201,13 +231,15 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 - 播报走独立的原子区：一份会话只该有一个活区，每条消息各开一个会互相打断。
 - 消息流本身不发 `aria-busy`：它会压住同一棵子树内播报区的播报。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/message-feed.css` 按部件选择：`[data-scope="message-feed"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/message-feed.css` 使用 `[data-scope="message-feed"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -218,7 +250,7 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 | `scroll-to-end-trigger` | `data-state` | 'hidden' \| 'visible' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -241,38 +273,12 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 | `--xh-message-feed-scroll-to-end-trigger-size` | `scroll-to-end-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-sm` | message-feed 的 scroll-to-end-trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-message-feed-button-in` · `xh-message-feed-item-in` 随皮肤自带，不引用别处文件里的名字；`background` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 正文用[流式正文](./markdown-stream)，代码用[代码视图](./code-view)。
-- 每条消息的动作条用[工具条](./toolbar)，复制那一格用[剪贴板](./clipboard)。
-- 加载更早的消息用[无限滚动](./infinite-scroll)，**必须把消息流的滚动容器交给它**，
-  否则它的提前量只对窗口视口生效。
-- 空会话用[空状态](./empty-state)，并显式把它的 `live` 设成 `off`：
-  它默认会成为活区，放在消息流里会与播报区抢播报。
-- 要左右分侧或气泡：条目上带 `data-role`（`user` / `assistant` / `system`），
-  在自己的样式表里按它写 `align-self`、底色、内衬与最大行宽即可，组件不预设这层外观。
-- 还在流式写入的条目带 `data-streaming`，这是留给使用者的钩子：正文走[流式正文](./markdown-stream)时
-  那枚光标就是「还在写」的标记；正文不经它渲染时，可按这个属性自己加一个非遮蔽式的标记，
-  例如前导色条或一格标签态。
-
-## 最佳实践
-
-- 条目必须是内容层的**直接子节点**：向上插入历史消息时的滚动补偿只在直接子节点里挑锚点，
-  套一层壳或用 `display: contents` 都会让补偿静默失效。
-- 一轮流结束时把整段最终文本写进播报区，别每来一个 token 写一次。
-
-## 反模式
-
-- 给每条消息各写一个 `tabindex="0"`：两百条消息就是两百个 Tab 停靠位。
-- 在消息流里再套一层滚动容器：粘底句柄认的是本组件的视口，套一层它就不动了。
-- 按 `data-streaming` 把整条消息压暗或虚化：一轮流可能持续数分钟，被盖住的正是读者正在逐字读的内容。

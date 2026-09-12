@@ -16,6 +16,12 @@
 
 <XhDemo src="page-header/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="page-header"`：**`root`** · `breadcrumb` · `back-trigger` · `media` · `title` · `description` · `extra` · `footer`
+
 ## 示例
 
 ### 返回位
@@ -72,7 +78,23 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 - `extra` 贴在整行的末尾；面包屑整行排在标题之上，头像 / 图标排在返回位与标题之间。
 - 形态分三档：不写即不画面（贴在页面底色上），`surface` 加底色与圆角，`raised` 再加一层抬起投影；后两档的 `bordered` 改画整圈描边。
 
-## 产物
+### 组合
+
+- 面包屑位里放[面包屑](./breadcrumb)，头像位里放[头像](./avatar)，`extra` 里放[按钮组](./button-group)，`footer` 里放[描述列表](./descriptions)或一组[统计数值](./statistic)。
+
+### 最佳实践
+
+- 标题写具体对象的名字，不写页面类型。
+- `extra` 里的主操作只留一个，其余收进[菜单](./menu)。
+
+### 反模式
+
+- 返回位直接调 `history.back()`：用户从外链进来时会退出站点。给它一个确定的上级地址。
+- 页头里塞进整块表单。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -81,13 +103,7 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/page-header.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="page-header"`：**`root`** · `breadcrumb` · `back-trigger` · `media` · `title` · `description` · `extra` · `footer`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -95,9 +111,9 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定标题字号与整块的上下留白。 |
 | `variant` | `PageHeaderVariant` |  | 形态：plain / surface / raised。不写即不画面，与写 plain 同一个样子。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -110,19 +126,23 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 | `getExtraProps` | `() => T['element']` |  |
 | `getFooterProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/page-header.css` 按部件选择：`[data-scope="page-header"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/page-header.css` 使用 `[data-scope="page-header"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -131,7 +151,7 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 | `root` | `data-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -158,24 +178,10 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 | `--xh-page-header-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | page-header 的 title 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 面包屑位里放[面包屑](./breadcrumb)，头像位里放[头像](./avatar)，`extra` 里放[按钮组](./button-group)，`footer` 里放[描述列表](./descriptions)或一组[统计数值](./statistic)。
-
-## 最佳实践
-
-- 标题写具体对象的名字，不写页面类型。
-- `extra` 里的主操作只留一个，其余收进[菜单](./menu)。
-
-## 反模式
-
-- 返回位直接调 `history.back()`：用户从外链进来时会退出站点。给它一个确定的上级地址。
-- 页头里塞进整块表单。

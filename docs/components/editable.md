@@ -16,6 +16,12 @@
 
 <XhDemo src="editable/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="editable"`：**`root`** · `label` · `control` · **`preview`** · **`input`** · `edit-trigger` · `submit-trigger` · `cancel-trigger`
+
 ## 示例
 
 ### 提交方式
@@ -74,7 +80,23 @@ variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮�
 - `autoResize` 让输入框跟着内容长。
 - 形态 · 语气 · 尺寸三轴与[文本输入](./text-field)同源：形态只改编辑态那个框的底与描边，语气落在聚焦描边与提交钮上。
 
-## 产物
+### 组合
+
+- 放进[表格](./table)的单元格；与[表单](./form)配合做整表进出编辑态。
+
+### 最佳实践
+
+- 展示态要有可编辑的暗示（悬停时的底色或一枚铅笔），否则没人知道能点。
+- Escape 一定要能取消，且还原成原值。
+
+### 反模式
+
+- 失焦即提交却没有撤销：用户点到别处就把改动落库了。
+- 展示态和编辑态的行高不一样，进出编辑时整行跳动。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -84,13 +106,7 @@ variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮�
 | 状态机 | `editableMachine` |
 | 皮肤 | `@xihan-ui/styles/editable.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="editable"`：**`root`** · `label` · `control` · **`preview`** · **`input`** · `edit-trigger` · `submit-trigger` · `cancel-trigger`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -116,9 +132,9 @@ variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮�
 | `onValueRevert` | `(details: EditableValueRevertDetails) => void` |  | 撤销那一刻发（Escape、取消按钮、不算提交的离场）。 |
 | `onEditChange` | `(details: EditableEditChangeDetails) => void` |  | 编辑态变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -127,17 +143,17 @@ variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮�
 | `value-revert` | `EditableValueRevertDetails` | 撤销；detail 为 `{ value: string, discardedValue: string }` |
 | `edit-change` | `EditableEditChangeDetails` | 编辑态变化；detail 为 `{ edit: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhEditableRoot` | `default` | `EditableRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -150,7 +166,7 @@ variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮�
 | `submit-trigger` | 'edit' \| 'preview' |
 | `cancel-trigger` | 'edit' \| 'preview' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`preview` · `edit`
 
@@ -158,9 +174,9 @@ variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮�
 
 **判据**：`isEditControlled` · `canEdit` · `submitsOnLeave`
 
-## connect API
+### connect API
 
-`useEditable` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -186,7 +202,9 @@ variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮�
 | `getCancelTriggerProps` | `() => T['button']` |  |
 | `getControlProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://html.spec.whatwg.org/multipage/input.html#text-(type=text)-state-and-search-state-(type=search))
 
@@ -196,9 +214,9 @@ variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮�
 | `Escape` | focus in input | 撤销回上一次提交的值并回到预览态 |
 | `Tab` / `Shift+Tab` | focus in input | 按 submitMode 收尾（blur/both 提交，enter/none 撤销）；不拦默认行为，焦点照常移出 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -209,13 +227,15 @@ variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮�
 | `input` | `aria-labelledby` | `label` 部件的 id |
 | `edit-trigger` | `aria-controls` | `input` 部件的 id |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/editable.css` 按部件选择：`[data-scope="editable"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/editable.css` 使用 `[data-scope="editable"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -250,7 +270,7 @@ variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮�
 | `cancel-trigger` | `data-state` | 'edit' \| 'preview' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -309,26 +329,12 @@ variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮�
 | `--xh-editable-trigger-radius` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `border-radius` | `default` | `--xh-shape-control` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 放进[表格](./table)的单元格；与[表单](./form)配合做整表进出编辑态。
-
-## 最佳实践
-
-- 展示态要有可编辑的暗示（悬停时的底色或一枚铅笔），否则没人知道能点。
-- Escape 一定要能取消，且还原成原值。
-
-## 反模式
-
-- 失焦即提交却没有撤销：用户点到别处就把改动落库了。
-- 展示态和编辑态的行高不一样，进出编辑时整行跳动。

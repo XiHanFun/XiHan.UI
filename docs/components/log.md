@@ -16,6 +16,12 @@ root / viewport / content / line 四层；一行写什么由作者定，组件�
 
 <XhDemo src="log/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="log"`：**`root`** · **`viewport`** · **`content`** · `line` · `scroll-to-end-trigger` · `live-region`
+
 ## 示例
 
 ### 按行数定高
@@ -78,7 +84,25 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
   往按钮里塞节点即换成自己的图形。
 - 视口自身可聚焦，整块日志占一个 Tab 停靠位，方向键与翻页键交给浏览器滚动。
 
-## 产物
+### 组合
+
+- 行内可以用[文本高亮](./highlight)标出关键词。
+- 给视口一个 id，把[滚动条](./scrollbar)的 `controls` 指过去，条子与视口平级摆在 `root` 里：它浮在内容之上，不占宽度。没挂自绘滚动条时视口自己留一条空道，原生滚动条出现与消失不会推动文字。
+
+### 最佳实践
+
+- 用户往上翻时不要强行拉回底部，那是最恼人的行为之一。
+- 行数很大时截断或虚拟化，别把十万行全挂上去。
+
+### 反模式
+
+- 每来一行就整块重渲。
+- 不给复制或下载全部日志的入口。
+- 把每一行都写进播报区：读屏会被逐行打断，什么也听不清。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -88,13 +112,7 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 | 状态机 | `logMachine` |
 | 皮肤 | `@xihan-ui/styles/log.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="log"`：**`root`** · **`viewport`** · **`content`** · `line` · `scroll-to-end-trigger` · `live-region`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -105,39 +123,39 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 | `size` | `Size` |  | 尺寸：sm / md / lg。改的是行文字号与内衬，行高不随档变。 |
 | `translations` | `Partial<LogTranslations>` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `stick-change` | `LogStickChangeDetails` | 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhLogRoot` | `default` | `LogRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `scroll-to-end-trigger` | 'visible' \| 'hidden' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
 **事件**：`STICK.CHANGE` · `SCROLL_TO_BOTTOM`
 
-## connect API
+### connect API
 
-`useLog` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -154,7 +172,9 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 | `getScrollToEndTriggerProps` | `() => T['button']` |  |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/practices/structural-roles/)
 
@@ -163,9 +183,9 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 | `Tab` | 焦点进入日志区 | 日志区自身可聚焦，方向键/PageUp/PageDown/Home/End 交给浏览器滚动，组件不接管 |
 | `Space` / `Enter` | 焦点在"回到底部"按钮上 | 滚回底部并重新粘附 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -184,13 +204,15 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
   与错误条数。别把每一行原样写进去，那就等于把关掉的逐行播报又打开了一遍。
 - 成批取行期间视口报 `aria-busy`；播报区是视口的兄弟节点，不受它压制。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/log.css` 按部件选择：`[data-scope="log"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/log.css` 使用 `[data-scope="log"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -202,7 +224,7 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 | `scroll-to-end-trigger` | `data-state` | 'visible' \| 'hidden' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -233,28 +255,12 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 | `--xh-log-tab-size` | `line` | `tab-size` | `default` | `4` | log 的 line 部件 tab-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-log-button-in` 随皮肤自带，不引用别处文件里的名字；`background` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 行内可以用[文本高亮](./highlight)标出关键词。
-- 给视口一个 id，把[滚动条](./scrollbar)的 `controls` 指过去，条子与视口平级摆在 `root` 里：它浮在内容之上，不占宽度。没挂自绘滚动条时视口自己留一条空道，原生滚动条出现与消失不会推动文字。
-
-## 最佳实践
-
-- 用户往上翻时不要强行拉回底部，那是最恼人的行为之一。
-- 行数很大时截断或虚拟化，别把十万行全挂上去。
-
-## 反模式
-
-- 每来一行就整块重渲。
-- 不给复制或下载全部日志的入口。
-- 把每一行都写进播报区：读屏会被逐行打断，什么也听不清。

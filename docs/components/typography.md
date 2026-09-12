@@ -16,6 +16,12 @@ root 管段间距与最大行宽，标题与段落各自拿字号、字重、行
 
 <XhDemo src="typography/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="typography"`：**`root`** · `heading` · `paragraph` · `text` · `link` · `prose`
+
 ## 示例
 
 ### 标题档位
@@ -69,7 +75,23 @@ prose 收外来的整段 HTML：节点由内容自己带，样式按标签给
 - `prose` 收外来的整段 HTML：节点由内容自己带，标题、段落、列表、代码块、引用、表格按标签上样式。
 - `align` 与 `weight` 落在 `root` 上，整块正文一起换；`weight` 也能只写在一段行内文字上。
 
-## 产物
+### 组合
+
+- 与[文本高亮](./highlight)配合做检索命中标记；与[代码视图](./code-view)配合放整段代码。
+
+### 最佳实践
+
+- 最大行宽交给 `root`，别让正文横贯整个宽屏——一行超过约四十个汉字就很难回到下一行的行首。
+- 标题层级按文档结构选标签，视觉大小用 `level` 单独调，两件事分开。
+
+### 反模式
+
+- 为了字大就用 `<h1>`：读屏用户按标题跳转时会撞见错的结构。
+- 在正文块里塞交互控件却不留间距，点击目标会挤在一起。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -78,13 +100,7 @@ prose 收外来的整段 HTML：节点由内容自己带，样式按标签给
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/typography.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="typography"`：**`root`** · `heading` · `paragraph` · `text` · `link` · `prose`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -92,9 +108,9 @@ prose 收外来的整段 HTML：节点由内容自己带，样式按标签给
 | `size` | `Size` |  | 尺寸：sm / md / lg，整块正文的字号与段间距跟着换档。 |
 | `weight` | `TypographyWeight` |  | 字重：regular / medium / semibold / bold，整块正文跟着换。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -105,19 +121,23 @@ prose 收外来的整段 HTML：节点由内容自己带，样式按标签给
 | `getLinkProps` | `() => T['element']` |  |
 | `getProseProps` | `() => T['element']` | 富文本容器：外来的 HTML（Markdown 渲染结果）铺进来，样式按标签给。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/typography.css` 按部件选择：`[data-scope="typography"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/typography.css` 使用 `[data-scope="typography"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -130,7 +150,7 @@ prose 收外来的整段 HTML：节点由内容自己带，样式按标签给
 | `text` | `data-weight` | text.weight |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -192,30 +212,16 @@ prose 收外来的整段 HTML：节点由内容自己带，样式按标签给
 | `--xh-typography-text-font-weight` | `text` | `font-weight` | `variant=strong` | `--xh-font-weight-semibold` | typography 的 text 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`hover: hover`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[文本高亮](./highlight)配合做检索命中标记；与[代码视图](./code-view)配合放整段代码。
-
-## 最佳实践
-
-- 最大行宽交给 `root`，别让正文横贯整个宽屏——一行超过约四十个汉字就很难回到下一行的行首。
-- 标题层级按文档结构选标签，视觉大小用 `level` 单独调，两件事分开。
-
-## 反模式
-
-- 为了字大就用 `<h1>`：读屏用户按标题跳转时会撞见错的结构。
-- 在正文块里塞交互控件却不留间距，点击目标会挤在一起。

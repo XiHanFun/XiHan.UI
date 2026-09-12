@@ -16,6 +16,12 @@ root 持有状态，control 是那个视觉盒；不传 value 与 visible 即为
 
 <XhDemo src="password-input/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="password-input"`：**`root`** · `label` · `control` · **`input`** · **`visibility-trigger`** · `caps-lock-indicator` · `strength-meter`
+
 ## 示例
 
 ### 受控
@@ -84,7 +90,34 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 - 一体式 `control` 保持实体 Field Chrome；显隐动作与输入/状态区之间有半高语义分隔，三尺寸和 compact 密度使用同一比例。
 - 自动填充按当前形态、只读或禁用状态重画实体底与文字，不让浏览器注入的颜色把框切成异色段。
 
-## 产物
+### 组合
+
+- 外面套[表单字段](./field)拿标签、说明与错误文本。
+- 切换钮里放[图标](./icon)，随明暗换一只眼睛。钮上带 `data-state`（`visible` / `hidden`），作者用自己的 CSS 按它切两枚图标即可；也可以从 root 的默认插槽拿 `visible`（Vue）或听 `visibility-change`（Web Components）自己换。皮肤不替作者切图标——库里不知道那两枚图标长什么样。
+
+### 最佳实践
+
+- 自己写角色节点时（Web Components 用法），三个角色必须用对标签：标题是原生 `<label>`、输入框是原生 `<input>`、切换钮是原生 `<button>`。标题的 `for` 恒写向输入框的 id，写成 `<span>` 就点不动；切换钮写成 `<div>` 就没有 Enter / Space 激活——两种都不报错，只是静默失效。
+- 大写锁定提示这个节点也得由作者写出来（元素不生成结构），写成空壳即可，文字由组件填。Vue 侧这些由组件代劳，作者不会写错。
+- 明文只在用户主动切开时出现，别默认 `defaultVisible`：屏幕背后有别人。
+- 切换钮别在切开后消失或换位置：它承着焦点，一动键盘用户就丢了位置。
+- `readOnly` 只禁止改值，不禁止显隐：用户仍可聚焦、复制和核对已有密码；`disabled` 才同时禁用输入与显隐动作。
+- 大写锁定提示只提示，不拦提交：它是键盘的物理状态，用户可能就是要打大写。
+- 注册表单把 `autoComplete` 写成 `new-password`，否则密码管理器会把旧密码填进来。
+
+### 当前边界
+
+- anatomy 尚无正式的 prefix/suffix 部件；`control` 中的作者节点目前只按统一 gap 排布，不承诺前后缀语义或专门状态。需要时应以独立三端部件提交，不能用 CSS 猜任意子节点职责。
+- `control` 在 meta 中仍是可选部件，但共享 Field Chrome、组合焦点环与本次动作分隔都以它为边界；无 `control` 的结构只是独立输入框和按钮。是否把它提升为必需部件属于后续公共结构合同变更。
+
+### 反模式
+
+- 用它收「请再输一次」的确认格却不给自己的标签：读屏念出来的两格一模一样。
+- 把明暗态存进接口或本地存储：下一次打开页面时密码是明着的。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -94,13 +127,7 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | 状态机 | `passwordInputMachine` |
 | 皮肤 | `@xihan-ui/styles/password-input.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="password-input"`：**`root`** · `label` · `control` · **`input`** · **`visibility-trigger`** · `caps-lock-indicator` · `strength-meter`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -123,33 +150,33 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | `onValueChange` | `(details: PasswordInputValueChangeDetails) => void` |  |  |
 | `onVisibilityChange` | `(details: PasswordInputVisibilityChangeDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `PasswordInputValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
 | `visibility-change` | `PasswordInputVisibilityChangeDetails` | 明暗变化；detail 为 `{ visible: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhPasswordInputRoot` | `default` | `PasswordInputRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `visibility-trigger` | 'visible' \| 'hidden' |
 | `caps-lock-indicator` | 'visible' \| 'hidden' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
@@ -157,9 +184,9 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 
 **判据**：`canEdit` · `canToggleVisibility`
 
-## connect API
+### connect API
 
-`usePasswordInput` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -184,7 +211,9 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | `getCapsLockIndicatorProps` | `() => T['element']` |  |
 | `getStrengthMeterProps` | `() => T['element']` | 强度条：档位落在 data-level 与 aria-valuenow 上；没给 strength 时带 hidden 收起。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction)
 
@@ -193,9 +222,9 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | `Enter` / `Space` | focus on visibility-trigger, 控件未禁用 | 切换明暗；切换钮是原生 button，这两个键由平台翻成 click。焦点留在按钮上，框里的光标与选中范围原样放回 |
 | `CapsLock` | focus in input | 每次按键都重读一次大写锁定状态：开着就亮起提示，焦点离开输入框即熄灭 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -220,15 +249,17 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 - 焦点晚于提示出现的用户，靠输入框的 `aria-describedby` 也听得到同一句。
 - 输入框恒带 `spellcheck="false"` / `autocapitalize="off"` / `autocorrect="off"`：切成明文那一刻它就是普通文本框，拼写检查会把框里的内容发去远端服务，移动端还会给首字母自动大写并按词典纠错。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/password-input.css` 按部件选择：`[data-scope="password-input"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/password-input.css` 使用 `[data-scope="password-input"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -252,7 +283,7 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | `strength-meter` | `data-level` | undefined \| String(strength) |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -315,37 +346,12 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | `--xh-password-input-visibility-trigger-separator-h` | `control`<br>`input`<br>`visibility-trigger` | `block-size`<br>`inset-block-start` | `has(~ [data-scope='password-input'][data-part='input'])` | `--xh-_password-input-divider-h` | password-input 的 control、input、visibility-trigger 部件 block-size、inset-block-start 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 外面套[表单字段](./field)拿标签、说明与错误文本。
-- 切换钮里放[图标](./icon)，随明暗换一只眼睛。钮上带 `data-state`（`visible` / `hidden`），作者用自己的 CSS 按它切两枚图标即可；也可以从 root 的默认插槽拿 `visible`（Vue）或听 `visibility-change`（Web Components）自己换。皮肤不替作者切图标——库里不知道那两枚图标长什么样。
-
-## 最佳实践
-
-- 自己写角色节点时（Web Components 用法），三个角色必须用对标签：标题是原生 `<label>`、输入框是原生 `<input>`、切换钮是原生 `<button>`。标题的 `for` 恒写向输入框的 id，写成 `<span>` 就点不动；切换钮写成 `<div>` 就没有 Enter / Space 激活——两种都不报错，只是静默失效。
-- 大写锁定提示这个节点也得由作者写出来（元素不生成结构），写成空壳即可，文字由组件填。Vue 侧这些由组件代劳，作者不会写错。
-- 明文只在用户主动切开时出现，别默认 `defaultVisible`：屏幕背后有别人。
-- 切换钮别在切开后消失或换位置：它承着焦点，一动键盘用户就丢了位置。
-- `readOnly` 只禁止改值，不禁止显隐：用户仍可聚焦、复制和核对已有密码；`disabled` 才同时禁用输入与显隐动作。
-- 大写锁定提示只提示，不拦提交：它是键盘的物理状态，用户可能就是要打大写。
-- 注册表单把 `autoComplete` 写成 `new-password`，否则密码管理器会把旧密码填进来。
-
-### 当前边界
-
-- anatomy 尚无正式的 prefix/suffix 部件；`control` 中的作者节点目前只按统一 gap 排布，不承诺前后缀语义或专门状态。需要时应以独立三端部件提交，不能用 CSS 猜任意子节点职责。
-- `control` 在 meta 中仍是可选部件，但共享 Field Chrome、组合焦点环与本次动作分隔都以它为边界；无 `control` 的结构只是独立输入框和按钮。是否把它提升为必需部件属于后续公共结构合同变更。
-
-## 反模式
-
-- 用它收「请再输一次」的确认格却不给自己的标签：读屏念出来的两格一模一样。
-- 把明暗态存进接口或本地存储：下一次打开页面时密码是明着的。

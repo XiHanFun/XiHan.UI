@@ -16,6 +16,12 @@
 
 <XhDemo src="toggle/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="toggle"`：**`root`**
+
 ## 示例
 
 ### 禁用
@@ -85,7 +91,24 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 - 受控时宿主不写回 `pressed` 值就不动，在途期间来的意图直接丢掉。
 - `disabled` 同时挡住指针与键盘，按下态保持原样。
 
-## 产物
+### 组合
+
+- 排成一条工具条：外面套[工具栏](./toolbar)拿到方向键导航。
+- 只放图标时配[文字提示](./tooltip)。
+
+### 最佳实践
+
+- 只放图标时给 `aria-label`，名字不能靠图形猜。
+- 按下与未按下的差别要能在灰度下看出来，别只靠颜色。
+
+### 反模式
+
+- 用它表达"当前在哪个标签页"：那是[标签页](./tabs)的事。
+- 请求在途时让按钮先翻状态再回滚：受控绑定不写回，用户看到的就是稳定的。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -95,13 +118,7 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 | 状态机 | `toggleMachine` |
 | 皮肤 | `@xihan-ui/styles/toggle.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="toggle"`：**`root`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -115,23 +132,23 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 | `fullWidth` | `boolean` |  | 撑满行宽：工具条里一列开关常用。 |
 | `onPressedChange` | `(details: TogglePressedChangeDetails) => void` |  | pressed 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `pressed-change` | `TogglePressedChangeDetails` | pressed 状态变化；detail 为 `{ pressed: boolean }` |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'on' \| 'off' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`off` · `on`
 
@@ -139,9 +156,9 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 
 **判据**：`isPressedControlled`
 
-## connect API
+### connect API
 
-`useToggle` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -149,7 +166,9 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 | `setPressed` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction)
 
@@ -157,21 +176,23 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 | --- | --- | --- |
 | `Space` / `Enter` | focus in root, not disabled | 切换 pressed 状态 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-pressed` | 'true' \| 'false' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/toggle.css` 按部件选择：`[data-scope="toggle"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/toggle.css` 使用 `[data-scope="toggle"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -184,7 +205,7 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 | `root` | `data-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -205,31 +226,16 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 | `--xh-toggle-shadow` | `root` | `box-shadow` | `disabled`<br>`not([data-disabled])`<br>`state=on`<br>`variant=solid` | `--xh-_toggle-highlight` | toggle 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 排成一条工具条：外面套[工具栏](./toolbar)拿到方向键导航。
-- 只放图标时配[文字提示](./tooltip)。
-
-## 最佳实践
-
-- 只放图标时给 `aria-label`，名字不能靠图形猜。
-- 按下与未按下的差别要能在灰度下看出来，别只靠颜色。
-
-## 反模式
-
-- 用它表达"当前在哪个标签页"：那是[标签页](./tabs)的事。
-- 请求在途时让按钮先翻状态再回滚：受控绑定不写回，用户看到的就是稳定的。

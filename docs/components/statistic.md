@@ -16,6 +16,12 @@
 
 <XhDemo src="statistic/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="statistic"`：**`root`** · `label` · `value` · `prefix` · `suffix` · `trend`
+
 ## 示例
 
 ### 前后缀
@@ -65,7 +71,23 @@ trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正�
 - 数字用等宽字形，位数变化时不会左右晃。
 - `trend` 给出涨跌方向，箭头由皮肤画；它与 `tone` 正交——跌也可以是好事。
 
-## 产物
+### 组合
+
+- 值位放[数值动画](./number-animation)；整块放进[卡片](./card)；一排指标用[栅格](./grid)。
+
+### 最佳实践
+
+- 单位写进后缀而不是揉进数字里，数字才对得齐。
+- 给出对比基准（同比、环比），单独一个数字读者判断不了好坏。
+
+### 反模式
+
+- 一屏里十几个同等大小的指标：没有重点。
+- 用它显示精确到分的金额却不给货币符号。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -74,13 +96,7 @@ trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正�
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/statistic.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="statistic"`：**`root`** · `label` · `value` · `prefix` · `suffix` · `trend`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -88,9 +104,9 @@ trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正�
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，只落成 root 的 data-tone。 |
 | `trend` | `StatisticTrend` |  | 涨跌：up / down / flat，落成 trend 部件的 data-direction，皮肤据它出兜底箭头。 与 tone 正交，方向与颜色互不联动——跌也可以是好事（差错率、退货率）。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -102,19 +118,23 @@ trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正�
 | `getSuffixProps` | `() => T['element']` |  |
 | `getTrendProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/statistic.css` 按部件选择：`[data-scope="statistic"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/statistic.css` 使用 `[data-scope="statistic"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -123,7 +143,7 @@ trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正�
 | `trend` | `data-direction` | props.trend |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -144,24 +164,10 @@ trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正�
 | `--xh-statistic-value-font-size` | `value` | `font-size` | `default` | `--xh-_statistic-value-size` | statistic 的 value 部件 font-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 值位放[数值动画](./number-animation)；整块放进[卡片](./card)；一排指标用[栅格](./grid)。
-
-## 最佳实践
-
-- 单位写进后缀而不是揉进数字里，数字才对得齐。
-- 给出对比基准（同比、环比），单独一个数字读者判断不了好坏。
-
-## 反模式
-
-- 一屏里十几个同等大小的指标：没有重点。
-- 用它显示精确到分的金额却不给货币符号。

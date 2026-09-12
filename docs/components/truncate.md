@@ -16,6 +16,12 @@
 
 <XhDemo src="truncate/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="truncate"`：**`root`**
+
 ## 示例
 
 ### 行数
@@ -55,7 +61,23 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 - `expandable` 让整块文字变成一颗按钮，Enter / Space 也按得动。
 - `tooltip` 在真被裁掉时把整段文字交给平台的原生提示。
 
-## 产物
+### 组合
+
+- 外面套[文字提示](./tooltip)，按溢出回调开关，可以拿到与站点一致的提示样式。
+
+### 最佳实践
+
+- 只在裁掉时才给提示：没裁还弹提示是纯噪音。
+- 展开态要能收回去，否则布局在一次点击后再也回不来。
+
+### 反模式
+
+- 用固定字符数截断字符串代替本组件：等宽假设在中英混排与不同字体下都不成立。
+- 裁掉之后不提供任何看到全文的途径。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -65,13 +87,7 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 | 状态机 | `truncateMachine` |
 | 皮肤 | `@xihan-ui/styles/truncate.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="truncate"`：**`root`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -83,32 +99,32 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 | `onOpenChange` | `(details: TruncateOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 | `onOverflowChange` | `(details: TruncateOverflowChangeDetails) => void` |  | 量出来的溢出结论翻面时回调。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `TruncateOpenChangeDetails` | 展开状态变化；detail 为 `{ open: boolean }` |
 | `overflow-change` | `TruncateOverflowChangeDetails` | 溢出结论翻面；detail 为 `{ overflowing: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhTruncate` | `default` | `TruncateSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`closed` · `open`
 
@@ -116,9 +132,9 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 
 **判据**：`isOpenControlled`
 
-## connect API
+### connect API
 
-`useTruncate` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -128,7 +144,9 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 | `measure` | `() => void` | 手动重量一次：字体到位、外层换了布局这类观察器看不见的变化，由作者补一枪。 |
 | `getRootProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/button/)
 
@@ -137,22 +155,24 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 | `Enter` / `Space` | expandable，焦点在 root 上 | 铺开全文 / 收回夹住的那一版；Space 拦掉翻页的默认动作 |
 | `Tab` / `Shift+Tab` | expandable | 停到这块文字上；不可展开时它不带 tabindex，不在 Tab 序列里 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-expanded` | 'true' \| 'false' |
 | `root` | `role` | 'button' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/truncate.css` 按部件选择：`[data-scope="truncate"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/truncate.css` 使用 `[data-scope="truncate"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -163,7 +183,7 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 | `root` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -172,22 +192,8 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 | `--xh-truncate-lines` | `root` | `-webkit-line-clamp` | `multiline` | `--xh-_truncate-lines` | truncate 的 root 部件 -webkit-line-clamp 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-## 组合
-
-- 外面套[文字提示](./tooltip)，按溢出回调开关，可以拿到与站点一致的提示样式。
-
-## 最佳实践
-
-- 只在裁掉时才给提示：没裁还弹提示是纯噪音。
-- 展开态要能收回去，否则布局在一次点击后再也回不来。
-
-## 反模式
-
-- 用固定字符数截断字符串代替本组件：等宽假设在中英混排与不同字体下都不成立。
-- 裁掉之后不提供任何看到全文的途径。

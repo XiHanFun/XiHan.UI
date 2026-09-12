@@ -16,6 +16,12 @@
 
 <XhDemo src="side-nav/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="side-nav"`：**`root`** · **`list`** · **`item`** · `group` · `group-label` · `branch` · `branch-trigger` · `branch-text` · `branch-indicator` · `positioner` · `branch-content` · **`link`** · `link-text`
+
 ## 示例
 
 ### 手风琴与折叠
@@ -56,7 +62,23 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 - 折叠成图标栏时内嵌展开整体收起、文字由皮肤藏掉；顶层分支换装浮层弹出，悬停 / 点按 / 右方向键在旁侧弹出子级面板，面板内选中即落值收起。
 - 方向键上下走行、左右管层级。
 
-## 产物
+### 组合
+
+- 放进[布局](./layout)的 `sider`，折叠开关接布局的折叠态。
+
+### 最佳实践
+
+- 层级压到两级，第三级开始用户就记不住路径了。
+- 折叠态一定要留 `collapsedPopout`，否则图标栏进不去子级。
+
+### 反模式
+
+- 把每个叶子都做成分支（点开只有一项）。
+- 折叠时把整棵树卸载：展开状态与滚动位置全丢。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -66,13 +88,7 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 | 状态机 | `sideNavMachine` |
 | 皮肤 | `@xihan-ui/styles/side-nav.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="side-nav"`：**`root`** · **`list`** · **`item`** · `group` · `group-label` · `branch` · `branch-trigger` · `branch-text` · `branch-indicator` · `positioner` · `branch-content` · **`link`** · `link-text`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -93,26 +109,26 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 | `onValueChange` | `(details: SideNavValueChangeDetails) => void` |  | 选中意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onExpandedValueChange` | `(details: SideNavExpandedValueChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `SideNavValueChangeDetails` | 选中变化；detail 为 `{ value: string \| null }` |
 | `expanded-value-change` | `SideNavExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhSideNavRoot` | `default` | `SideNavRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -122,7 +138,7 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 | `branch-content` | 'open' \| 'closed' |
 | `popout-positioner` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `popout`
 
@@ -130,9 +146,9 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 
 **判据**：`canChange` · `canPopout`
 
-## connect API
+### connect API
 
-`useSideNav` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -166,7 +182,9 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 | `getLinkProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getLinkTextProps` | `() => T['element']` | 链接文字的载体：折叠时由皮肤整个藏掉。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation/)
 
@@ -183,9 +201,9 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 | `ArrowRight` / `Enter` / `Space` | focus in 折叠态顶层分支行 | 弹出子级面板并落焦第一行（RTL 与 ArrowLeft 对调） |
 | `ArrowLeft` / `Escape` | focus in 弹出面板 | 收回面板，焦点还给触发按钮（RTL 与 ArrowRight 对调；Escape 归消解层） |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -205,13 +223,15 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 - 行文字必须写进 `branch-text` / `link-text`。折叠成图标栏时这段文字被裁到看不见但仍参与播报，它就是按钮与链接在图标栏里唯一的可及名；行里只放图标不写文字，折叠后读屏报不出这一项是什么。
 - 行里的图标是装饰，写 `aria-hidden="true"`，别让它挤进可及名。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/side-nav.css` 按部件选择：`[data-scope="side-nav"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/side-nav.css` 使用 `[data-scope="side-nav"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -244,7 +264,7 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 | `popout-positioner` | `data-tone` | props.tone |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -279,7 +299,7 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 | `--xh-side-nav-w` | `root` | `inline-size` | `default` | `240px` | side-nav 的 root 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -287,20 +307,6 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 放进[布局](./layout)的 `sider`，折叠开关接布局的折叠态。
-
-## 最佳实践
-
-- 层级压到两级，第三级开始用户就记不住路径了。
-- 折叠态一定要留 `collapsedPopout`，否则图标栏进不去子级。
-
-## 反模式
-
-- 把每个叶子都做成分支（点开只有一项）。
-- 折叠时把整棵树卸载：展开状态与滚动位置全丢。

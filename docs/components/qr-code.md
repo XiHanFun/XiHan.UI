@@ -16,6 +16,12 @@
 
 <XhDemo src="qr-code/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="qr-code"`：**`root`** · `logo`
+
 ## 示例
 
 ### 纠错级别
@@ -78,7 +84,24 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 - `margin` 是静区，`pixelSize` 是边长。
 - 中心可以放 logo，配色可换。
 
-## 产物
+### 组合
+
+- 外面套[卡片](./card)；旁边配[剪贴板](./clipboard)给出文本形式的同一内容。
+
+### 最佳实践
+
+- 放 logo 就把纠错级别提到 Q 或 H，否则遮住的模块补不回来。
+- 静区不能省，贴边的二维码扫不出来。
+- 旁边同时给出文本或链接：不是所有人都能扫。
+
+### 反模式
+
+- 深色主题下直接反色：读码器默认深码点浅底，反色的码很多设备扫不出来。
+- 二维码印得太小。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -87,13 +110,7 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/qr-code.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="qr-code"`：**`root`** · `logo`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -106,17 +123,17 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 | `pixelSize` | `number` |  | 像素边长，缺省 160；写成根上的内联宽高。 |
 | `value` | `string` |  | 要编码的内容，按 UTF-8 取字节走字节模式；空串不画码。 |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'empty' |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -135,15 +152,17 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 | `getRootProps` | `() => T['element']` |  |
 | `getLogoProps` | `() => T['element']` | 铺到 logo 部件上的落位；没留位时宽高都是 0，那块连同里面的图形一起不渲染。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -151,13 +170,15 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 | `root` | `aria-label` | undefined \| props.label |
 | `root` | `role` | undefined \| 'img' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/qr-code.css` 按部件选择：`[data-scope="qr-code"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/qr-code.css` 使用 `[data-scope="qr-code"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -168,7 +189,7 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 | `root` | `data-version` | undefined \| String(version) |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -182,23 +203,8 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 | `--xh-qr-code-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | qr-code 的 root 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-## 组合
-
-- 外面套[卡片](./card)；旁边配[剪贴板](./clipboard)给出文本形式的同一内容。
-
-## 最佳实践
-
-- 放 logo 就把纠错级别提到 Q 或 H，否则遮住的模块补不回来。
-- 静区不能省，贴边的二维码扫不出来。
-- 旁边同时给出文本或链接：不是所有人都能扫。
-
-## 反模式
-
-- 深色主题下直接反色：读码器默认深码点浅底，反色的码很多设备扫不出来。
-- 二维码印得太小。

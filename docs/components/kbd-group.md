@@ -16,6 +16,12 @@
 
 <XhDemo src="kbd-group/01-platform" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="kbd-group"`：**`root`** · `key` · `separator`
+
 ## 示例
 
 ### 尺寸
@@ -55,7 +61,24 @@ size 换的是字号与键帽的内边距，三档与其余控件同源
 - 组合保持为不可拆分的行内单元，多个组合可以在外层自然换行。
 - M1 实体键帽使用等宽字、1px edge、顶部高光和底部 contact shadow。
 
-## 产物
+### 组合
+
+- 放在 Menu/ContextMenu/Command 条目末端时用 `margin-inline-start: auto` 对齐。
+- 与 Hotkeys 使用同一份 `keys`，由业务显式组合展示和行为。
+
+### 最佳实践
+
+- 一律写 `Mod` 作为跨平台主修饰键。
+- 只有对应动作不可用时才设置 `disabled`，不要从行为组件暗中推导视觉状态。
+
+### 反模式
+
+- 用 Hotkeys 组件代替 KbdGroup 只为了显示。
+- 手写 `Ctrl+S` 文本，导致 Mac 显示与真实组合不一致。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -64,13 +87,7 @@ size 换的是字号与键帽的内边距，三档与其余控件同源
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/kbd-group.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="kbd-group"`：**`root`** · `key` · `separator`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -81,9 +98,9 @@ size 换的是字号与键帽的内边距，三档与其余控件同源
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<KbdGroupTranslations>` |  | 读屏文案覆盖。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -95,15 +112,17 @@ size 换的是字号与键帽的内边距，三档与其余控件同源
 | `getKeyProps` | `(props: KbdGroupKeyProps) => T['element']` |  |
 | `getSeparatorProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -115,15 +134,17 @@ size 换的是字号与键帽的内边距，三档与其余控件同源
 - root 以一个组级 `aria-label` 朗读完整组合，视觉键帽和连接符全部 `aria-hidden`，不会重复念。
 - `keys` 必填且不能为空；无效组合直接报错，不产生无名称图像。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/kbd-group.css` 按部件选择：`[data-scope="kbd-group"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/kbd-group.css` 使用 `[data-scope="kbd-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -134,7 +155,7 @@ size 换的是字号与键帽的内边距，三档与其余控件同源
 | `key` | `data-modifier` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -161,29 +182,14 @@ size 换的是字号与键帽的内边距，三档与其余控件同源
 | `--xh-kbd-group-separator-fg-disabled` | `root`<br>`separator` | `color` | `disabled` | `--xh-fg-subtle` | kbd-group 的 root、separator 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background-color` · `border-color` · `box-shadow` · `color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
 键位顺序保持物理键盘的 LTR 顺序，并用 unicode bidi 隔离，不受周围文本方向重排。
-
-## 组合
-
-- 放在 Menu/ContextMenu/Command 条目末端时用 `margin-inline-start: auto` 对齐。
-- 与 Hotkeys 使用同一份 `keys`，由业务显式组合展示和行为。
-
-## 最佳实践
-
-- 一律写 `Mod` 作为跨平台主修饰键。
-- 只有对应动作不可用时才设置 `disabled`，不要从行为组件暗中推导视觉状态。
-
-## 反模式
-
-- 用 Hotkeys 组件代替 KbdGroup 只为了显示。
-- 手写 `Ctrl+S` 文本，导致 Mac 显示与真实组合不一致。

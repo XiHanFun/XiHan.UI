@@ -16,6 +16,12 @@
 
 <XhDemo src="virtualizer/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="virtualizer"`：**`root`** · **`viewport`** · **`content`** · `item`
+
 ## 示例
 
 ### 动态高度
@@ -66,7 +72,25 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 - `overscan` 决定窗口外多渲几个，滚动时不露白。
 - 可以滚到指定条目。
 
-## 产物
+### 组合
+
+- 与[列表](./list)、[表格](./table)、[选择器](./select)的长选项列表、[穿梭框](./transfer)配合。
+- 与[无限滚动](./infinite-scroll)合成一条边滚边取的长列表：哨兵摆在内容层之后，取数目标指向视口那一层。
+
+### 最佳实践
+
+- 条目高度差异大时用动态高度模式，别用估值硬撑。
+- 提供"滚到某条"的入口，否则用户永远找不回刚才看的位置。
+
+### 反模式
+
+- 在虚拟列表里放高度会突变的内容（图片没预留宽高比），滚动时位置乱跳。
+- 依赖 Ctrl + F 查找。
+- 把[无限滚动](./infinite-scroll)的哨兵摆进条目之间：窗口外的条目不渲染，哨兵跟着一起不渲染，第二页永远取不到。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -76,13 +100,7 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 | 状态机 | `virtualizerMachine` |
 | 皮肤 | `@xihan-ui/styles/virtualizer.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="virtualizer"`：**`root`** · **`viewport`** · **`content`** · `item`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -98,33 +116,33 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 | `paddingEnd` | `number` |  |  |
 | `lanes` | `number` |  | 多列网格的列数，默认 1（单列）。条目按下标轮流落到各道上。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `change` | `VirtualizerChangeDetails` | 该渲什么变了；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhVirtualizerRoot` | `default` | `VirtualizerRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `scrolling`
 
 **事件**：`SCROLL.START` · `SCROLL.END` · `MEASURE`
 
-## connect API
+### connect API
 
-`useVirtualizer` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -143,19 +161,23 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 | `getContentProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: VirtualizerItemProps) => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/WCAG21/Techniques/general/G202)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/virtualizer.css` 按部件选择：`[data-scope="virtualizer"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/virtualizer.css` 使用 `[data-scope="virtualizer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -167,26 +189,10 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 | `item` | `data-lane` | item.lane \| undefined |
 | `item` | `data-orientation` | 'horizontal' \| 'vertical' |
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[列表](./list)、[表格](./table)、[选择器](./select)的长选项列表、[穿梭框](./transfer)配合。
-- 与[无限滚动](./infinite-scroll)合成一条边滚边取的长列表：哨兵摆在内容层之后，取数目标指向视口那一层。
-
-## 最佳实践
-
-- 条目高度差异大时用动态高度模式，别用估值硬撑。
-- 提供"滚到某条"的入口，否则用户永远找不回刚才看的位置。
-
-## 反模式
-
-- 在虚拟列表里放高度会突变的内容（图片没预留宽高比），滚动时位置乱跳。
-- 依赖 Ctrl + F 查找。
-- 把[无限滚动](./infinite-scroll)的哨兵摆进条目之间：窗口外的条目不渲染，哨兵跟着一起不渲染，第二页永远取不到。

@@ -838,14 +838,27 @@ function renderComponent(entry, category) {
 
   // 与 HeroUI 一样，首个示例就是 Usage：读者进入页面后先看到可运行结果，再看其余变体。
   if (ex.length) {
-    const [usage, ...examples] = ex
+    const [usage] = ex
     push('## 用法', '')
     if (usage.description)
       push(usage.description, '')
     push(`<XhDemo src="${usage.src}" />`, '')
+  }
 
-    if (examples.length)
-      push('## 示例', '')
+  // HeroUI 式组件结构：紧跟用法入口，先让读者看清可组合部件，再进入变体示例。
+  if (rt.parts.length) {
+    push('## 组件结构', '')
+    push('加粗的是必需部件。', '')
+    push(
+      `${code(`data-scope="${id}"`)}：${
+        rt.parts.map(x => (required.has(x) ? `**${code(x)}**` : code(x))).join(' · ')}`,
+      '',
+    )
+  }
+
+  const examples = ex.slice(1)
+  if (examples.length) {
+    push('## 示例', '')
     for (const demo of examples) {
       push(`### ${demo.title}`, '')
       if (demo.description)
@@ -854,7 +867,7 @@ function renderComponent(entry, category) {
     }
   }
 
-  const guidance = ['何时使用', '何时不用', '特性']
+  const guidance = ['何时使用', '何时不用', '特性', '组合', '最佳实践', '反模式']
     .map(title => [title, authored(title)])
     .filter(([, text]) => text)
   if (guidance.length) {
@@ -863,8 +876,10 @@ function renderComponent(entry, category) {
       push(`### ${title}`, '', text, '')
   }
 
+  push('## API 参考', '')
+
   // 产物
-  push('## 产物', '')
+  push('### 产物', '')
   push('| 层 | 值 |', '| --- | --- |')
   if (ad.tag)
     push(`| 自定义元素 | ${code(`<${ad.tag}>`)} |`)
@@ -877,23 +892,9 @@ function renderComponent(entry, category) {
     push(`| 皮肤 | ${code(ad.skin)} |`)
   push('')
 
-  // renderless family 没有视觉解剖，不能伪造 data-scope 或空 part 表。
-  if (rt.parts.length) {
-    push('## 解剖', '')
-    push(
-      `部件名即 ${code('data-part')} 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 ${code('wc.missing-part')}）。`,
-      '',
-    )
-    push(
-      `${code(`data-scope="${id}"`)}：${
-        rt.parts.map(x => (required.has(x) ? `**${code(x)}**` : code(x))).join(' · ')}`,
-      '',
-    )
-  }
-
   // Props
   if (tm.props.length) {
-    push('## Props', '')
+    push('### Props', '')
     push('| 属性 | 类型 | 必填 | 说明 |', '| --- | --- | --- | --- |')
     for (const x of tm.props)
       push(`| ${cell(x.name)} | ${cell(x.type)} | ${x.optional ? '' : '是'} | ${esc(x.doc)} |`)
@@ -902,9 +903,9 @@ function renderComponent(entry, category) {
 
   // 事件：使用者真正要监听的那一组，与下面「状态」里的内部事件名不是一回事
   if (es.events.length) {
-    push('## 事件', '')
+    push('### 事件', '')
     push(
-      `自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 ${code('detail')} 上。可双向绑定的值另有 ${code('update:xxx')}，见 Props。`,
+      `自定义元素将载荷放在 ${code('detail')}；Vue 使用同名 emit。`,
       '',
     )
     push('| 事件 | 载荷 | 说明 |', '| --- | --- | --- |')
@@ -918,9 +919,9 @@ function renderComponent(entry, category) {
     comp => (slotsByComponent.get(comp) ?? []).map(x => ({ comp, ...x })),
   )
   if (slotRows.length) {
-    push('## 插槽', '')
+    push('### 插槽', '')
     push(
-      '作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。',
+      '仅列出带载荷的插槽。',
       '',
     )
     push('| Vue 组件 | 插槽 | 载荷 | 说明 |', '| --- | --- | --- | --- |')
@@ -932,16 +933,16 @@ function renderComponent(entry, category) {
   // 状态：对外能看见的是数据属性，内部转移是状态机
   const stateAttrs = at.data.filter(a => a.attr === 'data-state')
   if (tm.states || tm.events || stateAttrs.length) {
-    push('## 状态', '')
+    push('### 状态', '')
     if (stateAttrs.length) {
-      push(`对外可见的状态落在 ${code('data-state')} 上，写样式与断言都读它：`, '')
+      push(`公开状态写入 ${code('data-state')}。`, '')
       push('| 部件 | 取值 |', '| --- | --- |')
       for (const a of stateAttrs)
         push(`| ${cell(a.part)} | ${esc(a.value)} |`)
       push('')
     }
     if (tm.states || tm.events) {
-      push('状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。', '')
+      push('以下名称仅用于内部状态机。', '')
       if (tm.states)
         push(`**状态**：${tm.states.map(code).join(' · ')}`, '')
       if (tm.events)
@@ -953,9 +954,9 @@ function renderComponent(entry, category) {
 
   // connect API
   if (tm.api.length) {
-    push('## connect API', '')
+    push('### connect API', '')
     push(
-      `${code(ad.composable ?? 'connect')} 产出的对象。${code('getXxxProps()')} 铺到对应部件的宿主元素上，其余是可读状态与操作入口。`,
+      `${code('getXxxProps()')} 返回对应部件的宿主属性。`,
       '',
     )
     push('| 成员 | 类型 | 说明 |', '| --- | --- | --- |')
@@ -964,8 +965,10 @@ function renderComponent(entry, category) {
     push('')
   }
 
+  push('## 无障碍', '')
+
   // 键盘
-  push('## 键盘', '')
+  push('### 键盘', '')
   push(`规格出处：[W3C APG](${rt.keyboard.source})`, '')
   if (rt.keyboard.rows.length) {
     push('| 按键 | 生效条件 | 行为 |', '| --- | --- | --- |')
@@ -980,9 +983,9 @@ function renderComponent(entry, category) {
   // 无障碍：ARIA 由 connect 铺，作者不必手写；屏幕阅读器的实际念法另行补充
   const a11y = authored('无障碍')
   if (at.aria.length || a11y) {
-    push('## 无障碍', '')
     if (at.aria.length) {
-      push(`下面这些由 ${code('connect')} 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。`, '')
+      push('### ARIA', '')
+      push(`以下属性由 ${code('connect')} 生成。`, '')
       push('| 部件 | 属性 | 值 |', '| --- | --- | --- |')
       for (const a of at.aria)
         push(`| ${cell(a.part)} | ${cell(a.attr)} | ${esc(a.value)} |`)
@@ -992,13 +995,27 @@ function renderComponent(entry, category) {
       push(a11y, '')
   }
 
+  const componentTokenDocs = renderComponentTokenDocs(es.componentTokens)
+  const sm = scriptedMotion(id)
+  const hasStyleReference = Boolean(
+    sk
+    || at.data.length
+    || componentTokenDocs
+    || authored('响应式')
+    || authored('RTL')
+    || sm.drivers.length
+    || sm.presence
+    || sm.prefers,
+  )
+  if (hasStyleReference)
+    push('## 样式参考', '')
+
   // 样式：皮肤怎么挂、怎么覆盖
   if (sk && ad.skin) {
-    push('## 样式', '')
+    push('### 皮肤', '')
     push(
-      `默认皮肤 ${code(ad.skin)} 按部件选择：${code(`[data-scope="${id}"][data-part="${rt.parts[0]}"]`)}。`
-      + `它落在 ${sk.layers.map(code).join(' 与 ')} 层；业务样式不写进 ${code('@layer')} 即高于全部库层，`
-      + `要按层压过来就写进 ${code('xihan.overrides')}。`,
+      `${code(ad.skin)} 使用 ${code(`[data-scope="${id}"][data-part="${rt.parts[0]}"]`)} 部件选择器，`
+      + `位于 ${sk.layers.map(code).join(' 与 ')} 层。覆盖样式使用 ${code('xihan.overrides')}。`,
       '',
     )
     if (sk.forcedColors)
@@ -1007,8 +1024,8 @@ function renderComponent(entry, category) {
 
   // 数据属性：皮肤与断言的选择面
   if (at.data.length) {
-    push('## 数据属性', '')
-    push(`由 ${code('connect')} 产出并铺到部件上，皮肤与测试都据此选择；${code('data-disabled')} 这类无值属性在条件不成立时整个不出现。`, '')
+    push('### 数据属性', '')
+    push(`由 ${code('connect')} 生成；条件不成立时不输出无值属性。`, '')
     push('| 部件 | 属性 | 值 |', '| --- | --- | --- |')
     for (const a of at.data)
       push(`| ${cell(a.part)} | ${cell(a.attr)} | ${esc(a.value)} |`)
@@ -1016,13 +1033,11 @@ function renderComponent(entry, category) {
   }
 
   // 可覆盖令牌的名字、部件、属性、状态与缺省来源全部来自 CSS 生成 manifest。
-  const componentTokenDocs = renderComponentTokenDocs(es.componentTokens)
   if (componentTokenDocs)
-    push(...componentTokenDocs.split('\n'), '')
+    push(...componentTokenDocs.replace(/^## CSS 变量$/m, '### CSS 变量').split('\n'), '')
 
   // 动效：分三种情形——皮肤里真在动、动效在皮肤之外由脚本驱动、本组件不动。
   // renderless 且没有脚本动效的 family 不伪造“本组件皮肤”小节。
-  const sm = scriptedMotion(id)
   const inSkin = []
   if (sk?.keyframes.length)
     inSkin.push(`关键帧 ${sk.keyframes.map(code).join(' · ')} 随皮肤自带，不引用别处文件里的名字`)
@@ -1039,7 +1054,7 @@ function renderComponent(entry, category) {
     outsideSkin.push('内核读系统的减弱动效偏好，据此决定要不要动')
 
   if (sk || outsideSkin.length) {
-    push('## 动效', '')
+    push('### 动效', '')
     if (inSkin.length) {
       push(`${inSkin.join('；')}。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。`, '')
       if (outsideSkin.length)
@@ -1068,7 +1083,7 @@ function renderComponent(entry, category) {
   // 响应式：只有视口断点与容器查询算这一节；输入能力单独说，渲染模式不进来
   const responsive = authored('响应式')
   if (sk?.viewportQueries.length || sk?.inputQueries.length || responsive) {
-    push('## 响应式', '')
+    push('### 响应式', '')
     if (sk?.viewportQueries.length)
       push(`皮肤按视口分档：${sk.viewportQueries.map(code).join(' · ')}。`, '')
     if (sk?.inputQueries.length) {
@@ -1085,7 +1100,7 @@ function renderComponent(entry, category) {
   // RTL
   const rtl = authored('RTL')
   if ((sk && (sk.logical || sk.dirRules)) || rtl) {
-    push('## RTL', '')
+    push('### RTL', '')
     const bits = []
     if (sk?.logical)
       bits.push(`皮肤用逻辑属性排布（${code('inline-start')} 一族），${code('dir="rtl"')} 下自动镜像`)
@@ -1095,12 +1110,6 @@ function renderComponent(entry, category) {
       push(`${bits.join('；')}。`, '')
     if (rtl)
       push(rtl, '')
-  }
-
-  for (const title of ['组合', '最佳实践', '反模式']) {
-    const text = authored(title)
-    if (text)
-      push(`## ${title}`, '', text, '')
   }
 
   return L.join('\n')
@@ -1116,8 +1125,8 @@ function renderIndex() {
     '',
   )
   L.push(
-    '本册每个组件一页，页内小节固定：概述 · 源码入口 · 用法 · 示例 · 设计指引 · 产物 · 解剖 · Props · 事件 · 插槽 · 状态 · connect API · 键盘 · 无障碍 · 样式 · 数据属性 · CSS 变量 · 动效 · 响应式 · RTL · 组合 · 最佳实践 · 反模式。'
-    + '其中契约类的小节由组件源码、连接层与皮肤直接生成，不会与代码对不上；讲取舍的几节与组件源码同放，见各组件目录下的 doc.md。'
+    '每页统一为：用法 · 组件结构 · 示例 · 设计指引 · API 参考 · 无障碍 · 样式参考。'
+    + 'API、ARIA、数据属性与 CSS 变量从源码生成；适用场景和设计约束与组件源码同放。'
     + '某一节没有内容时整节不出现，不留空标题。',
     '',
   )

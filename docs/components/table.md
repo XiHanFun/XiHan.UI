@@ -16,6 +16,12 @@ columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一�
 
 <XhDemo src="table/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `toolbar` · `column-list` · `column-visibility-trigger` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `column-resize-trigger` · `column-drag-trigger` · `row-drag-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading` · `load-more-trigger` · `live-region`
+
 ## 示例
 
 ### 排序
@@ -177,7 +183,23 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 - 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐三样接出来：设置区照 `columnSettings` 渲，藏起来的列也在其中。两块都摆在 `root` 之外——`root` 是 grid 系角色，子节点只能是行与行组。
 - 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页的按钮点了做什么归作者，取数在途时自动停用。
 
-## 产物
+### 组合
+
+- 单元格里放[就地编辑](./editable)、[徽标](./badge)、[头像](./avatar)；下面接[分页](./pagination)；空态用[空状态](./empty-state)。
+
+### 最佳实践
+
+- 列宽尽量固定，别让内容长度决定列宽——翻页时整张表会重排。
+- 批量选择要显示已选条数，并在跨页时说明选中范围。
+
+### 反模式
+
+- 列多到必须横滚却不吸附首列：滚过去就不知道哪一行是哪一行。
+- 用表格做页面布局。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -187,13 +209,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | 状态机 | `tableMachine` |
 | 皮肤 | `@xihan-ui/styles/table.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `toolbar` · `column-list` · `column-visibility-trigger` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `column-resize-trigger` · `column-drag-trigger` · `row-drag-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading` · `load-more-trigger` · `live-region`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -230,9 +246,9 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `onSelectionChange` | `(details: TableSelectionChangeDetails) => void` |  |  |
 | `onExpandedValueChange` | `(details: TableExpandedValueChangeDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -242,18 +258,18 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `expanded-value-change` | `TableExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 | `row-move` | `TableRowMoveDetails` | 行换了位置；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插），ids 是重排好的整份行序 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhTableRoot` | `default` | `TableRootSlotProps` |  |
 | `XhTableRoot` | `toolbar` | `TableToolbarSlotProps` | 工具条槽：搜索、筛选、密度与列设置这些对整张表下手的控件写在这儿。 它渲成 root 的兄弟排在表前——root 是 grid 系角色，子节点只能是 row 与 rowgroup。 |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -261,15 +277,15 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `select-all-trigger` | tableSelectionState(selection, selectableIds) |
 | `expanded-row` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `resizing` · `columnDragging` · `rowDragging`
 
 **事件**：`SORT.SET` · `SORT.TOGGLE` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_DRAG.START` · `COLUMN_DRAG.MOVE` · `COLUMN_DRAG.END` · `COLUMN_DRAG.CANCEL` · `COLUMN.MOVE_BY` · `ROW_DRAG.START` · `ROW_DRAG.MOVE` · `ROW_DRAG.END` · `ROW_DRAG.CANCEL` · `ROW.MOVE_BY` · `ROW.REORDER_BLOCKED` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW.FOCUS` · `TABLE.BLUR`
 
-## connect API
+### connect API
 
-`useTable` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -337,7 +353,9 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `getLoadMoreTriggerProps` | `() => T['element']` | 取下一页的入口：还有没有下一页、点了做什么都归作者， 连接层只保证取数在途那一段点不动。 |
 | `getLiveRegionProps` | `() => T['element']` | 拖动过程的读屏播报区。视觉隐藏，文本从 `announcement` 取。 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/grid/#keyboardinteraction)
 
@@ -362,9 +380,9 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `Alt+ArrowUp` / `Alt+ArrowDown` | focus in table body，rowReorderable 且行拖拽没有被阻断的原因 | 把焦点行往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已在首行 / 末行就不动，也不回绕；焦点锚点跟着搬走的那一行，连按几下能一路挪到位。裸方向键仍是导航、Space 仍是选中、左右键仍是展开收起 |
 | `Alt+ArrowLeft` / `Alt+ArrowRight` | focus in table body，rows 里有行声明了 parentId，rowReorderable 且行拖拽没有被阻断的原因 | 把焦点行改一层缩进：往里是认上一个兄弟当爹，往外是变成父行的下一个兄弟；按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻，rtl 下两键对调，语义恒是「往里 / 往外」；没有上一个兄弟就缩不进去、已在根层就退不出来，两种情形都不动。rows 里一行都不带 parentId 时这两个键不归表格管，放行给页面 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -432,13 +450,15 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `header-row` | `role` | 'row' |
 | `footer-row` | `role` | 'row' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/table.css` 按部件选择：`[data-scope="table"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/table.css` 使用 `[data-scope="table"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -482,7 +502,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `footer-row` | `data-section` | 'footer' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -573,26 +593,12 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `--xh-table-trigger-size` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-table-loading-pulse` 随皮肤自带，不引用别处文件里的名字；`background-color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 单元格里放[就地编辑](./editable)、[徽标](./badge)、[头像](./avatar)；下面接[分页](./pagination)；空态用[空状态](./empty-state)。
-
-## 最佳实践
-
-- 列宽尽量固定，别让内容长度决定列宽——翻页时整张表会重排。
-- 批量选择要显示已选条数，并在跨页时说明选中范围。
-
-## 反模式
-
-- 列多到必须横滚却不吸附首列：滚过去就不知道哪一行是哪一行。
-- 用表格做页面布局。

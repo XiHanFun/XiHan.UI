@@ -16,6 +16,12 @@
 
 <XhDemo src="radio-group/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="radio-group"`：`root` · `label` · **`item`** · `item-text` · `indicator` · `hidden-input`
+
 ## 示例
 
 ### 受控
@@ -73,7 +79,23 @@ size 改条目间距与字号，不写即缺省中档
 - `collection` 可数据驱动，也可以逐项写。
 - 与[复选框](./checkbox)的不对称是有意的：一个复选框自己就成立（勾选同意条款），一个单选钮自己不成立，所以复选框另有独立组件、单选钮没有。
 
-## 产物
+### 组合
+
+- 外面套[表单字段](./field)；每项下面的补充说明放进选项内容里。
+
+### 最佳实践
+
+- 给出默认选中项，除非"未选"本身有意义。
+- 选项文字写完整，别靠共同前缀省略。
+
+### 反模式
+
+- 单选组只有一个选项：用户选不了别的，等于什么都没问。
+- 选项能被取消选中：单选组一旦选中就不该回到空值，需要空值就加一项"不指定"。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -83,13 +105,7 @@ size 改条目间距与字号，不写即缺省中档
 | 状态机 | `radioGroupMachine` |
 | 皮肤 | `@xihan-ui/styles/radio-group.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="radio-group"`：`root` · `label` · **`item`** · `item-text` · `indicator` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -107,25 +123,25 @@ size 改条目间距与字号，不写即缺省中档
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: RadioGroupValueChangeDetails) => void` |  | value 变化回调。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `RadioGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| null }` |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
 **事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET`
 
-## connect API
+### connect API
 
-`useRadioGroup` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -140,7 +156,9 @@ size 改条目间距与字号，不写即缺省中档
 | `getIndicatorProps` | `(props: RadioGroupItemProps) => T['element']` |  |
 | `getHiddenInputProps` | `(props: RadioGroupItemProps) => T['input']` | 条目对应的隐藏原生 radio 输入，用于表单提交。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/radio/#keyboardinteraction)
 
@@ -151,9 +169,9 @@ size 改条目间距与字号，不写即缺省中档
 | `ArrowUp` / `ArrowLeft` | focus in group, group not disabled | 焦点移到上一个可停留条目并选中，首项回绕到末项；dir=rtl 时改由 ArrowRight 承担 |
 | `Space` | focus on item, item not disabled | 选中当前条目 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -169,13 +187,15 @@ size 改条目间距与字号，不写即缺省中档
 | `indicator` | `aria-hidden` | 'true' |
 | `hidden-input` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/radio-group.css` 按部件选择：`[data-scope="radio-group"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/radio-group.css` 使用 `[data-scope="radio-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -188,7 +208,7 @@ size 改条目间距与字号，不写即缺省中档
 | `root` | `data-tone` | props.tone |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -212,22 +232,8 @@ size 改条目间距与字号，不写即缺省中档
 | `--xh-radio-group-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | radio-group 的 label 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-## 组合
-
-- 外面套[表单字段](./field)；每项下面的补充说明放进选项内容里。
-
-## 最佳实践
-
-- 给出默认选中项，除非"未选"本身有意义。
-- 选项文字写完整，别靠共同前缀省略。
-
-## 反模式
-
-- 单选组只有一个选项：用户选不了别的，等于什么都没问。
-- 选项能被取消选中：单选组一旦选中就不该回到空值，需要空值就加一项"不指定"。

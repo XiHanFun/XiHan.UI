@@ -16,6 +16,12 @@ href 归作者写，末级只多一个 current：它拿到 aria-current="page"�
 
 <XhDemo src="breadcrumb/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="breadcrumb"`：**`root`** · **`list`** · **`item`** · **`link`** · `link-icon` · `separator` · `ellipsis`
+
 ## 示例
 
 ### 折叠中间层级
@@ -66,7 +72,23 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 - 中间层级可以折叠成省略号；省略号与分隔符都对读屏隐藏，念出来仍是完整的列表项数。
 - `root` 是 `nav` 地标，`translations.root` 换掉它的 `aria-label`。
 
-## 产物
+### 组合
+
+- 放进[页头](./page-header)；某一层要换去处时把整套[菜单](./menu)放进那一项里。
+
+### 最佳实践
+
+- 末级写当前页标题，别写"详情"这种没有信息的词。
+- 同页有多个 `nav` 地标时给面包屑单独的 `aria-label`。
+
+### 反模式
+
+- 拿面包屑记录浏览历史：它表达的是层级位置，不是来路。
+- 末级也做成链接指向自己。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -76,13 +98,7 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/breadcrumb.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="breadcrumb"`：**`root`** · **`list`** · **`item`** · **`link`** · `link-icon` · `separator` · `ellipsis`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -93,9 +109,9 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `translations` | `Partial<BreadcrumbTranslations>` |  |  |
 
-## connect API
+### connect API
 
-`useBreadcrumb` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -109,7 +125,9 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getEllipsisProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/)
 
@@ -118,9 +136,9 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 | `Enter` | focus in link, 非当前页 | 跟随链接（原生 &lt;a href&gt; 的激活行为，面包屑自己不监听按键） |
 | `Tab` / `Shift+Tab` | focus in root | 逐条走过可点的链接；面包屑不做 roving tabindex，当前页那条带 tabindex=-1 自动脱序 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -131,13 +149,15 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 | `separator` | `aria-hidden` | 'true' |
 | `ellipsis` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/breadcrumb.css` 按部件选择：`[data-scope="breadcrumb"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/breadcrumb.css` 使用 `[data-scope="breadcrumb"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -146,7 +166,7 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 | `link` | `data-current` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -171,26 +191,12 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 | `--xh-breadcrumb-separator-size` | `separator` | `inline-size` | `default` | `--xh-glyph-size-text` | breadcrumb 的 separator 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 放进[页头](./page-header)；某一层要换去处时把整套[菜单](./menu)放进那一项里。
-
-## 最佳实践
-
-- 末级写当前页标题，别写"详情"这种没有信息的词。
-- 同页有多个 `nav` 地标时给面包屑单独的 `aria-label`。
-
-## 反模式
-
-- 拿面包屑记录浏览历史：它表达的是层级位置，不是来路。
-- 末级也做成链接指向自己。

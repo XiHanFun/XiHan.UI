@@ -16,6 +16,12 @@
 
 <XhDemo src="signature-pad/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="signature-pad"`：**`root`** · `label` · **`control`** · `guide` · **`path`** · `clear-trigger` · `status` · `hidden-input`
+
 ## 示例
 
 ### 标题、基准线与清空
@@ -70,7 +76,46 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 - 笔迹变了就发 `draw`，签名定稿就发 `draw-end`——抬笔、点清空、表单重置这三条路径都发。照 `draw-end` 缓存待提交的 SVG 不会拿到过期的那一版。
 - 手划出画布甚至划出窗口都跟手，抬手即收笔；落笔那根指针被捕获，手掌与第二根手指的移动不会被续进这一笔。
 
-## 产物
+### 组合
+
+- 与[字段](./field)搭配：标题、说明与错误提示交给字段，签名板只管画布。
+- 放进[表单](./form)里，`name` 一给就跟着提交与重置走。
+- 与[对话框](./dialog)搭配做"签名确认"：确认按钮的可用状态读 `empty`。
+
+### 节点形状是硬约束
+
+画布这一族部件必须落在特定标签上，写错了不会报错，只是一笔都画不出来：
+
+- `control` 必须是 `<svg>`；
+- `guide` 必须是 `control` 里面的 `<line>`；
+- `path` 必须是 `control` 里面的 `<path>`；
+- `clear-trigger` 必须是原生 `<button>`，`hidden-input` 必须是原生 `<input>`。
+
+`viewBox` 由组件自己写，作者不要在 `control` 上再写一个。
+
+### 两个适配器的分工
+
+- **Vue**：`XhSignaturePadRoot` 的默认插槽给出 `empty` / `paths` / `drawing` / `statusText` 与 `toSvg()` / `clear()`；也可以用 `useSignaturePad()` 自己拿。`XhSignaturePadGuide` 与 `XhSignaturePadPath` 必须写在 `XhSignaturePadControl` 里面——SVG 命名空间由那棵子树带下去，挪出去就成了 HTML 元素，画不出东西。
+- **Web Components**：结构由作者自己写（Light DOM，不投影插槽）。`<xh-signature-pad>` 上有 `clear()`、`toSvg()` 与只读的 `empty`；提交前取签名用 `toSvg()`，不必去缓存上一次 `draw-end`。
+- 两边的 `status` 部件里都不必自己写字：节点为空时由适配器填内建文案；写了字就以作者写的为准。
+
+### 最佳实践
+
+- 给清空按钮留一句可见文字或稳定的图标语义，别只靠一个叉。
+- **清空之后要把焦点安顿好**：按钮被禁用或被收起时焦点会掉回 `<body>`，键盘用户每清一次就丢一次位置。要么让按钮始终可按（本组件的默认做法），要么清空后显式把焦点交给下一个落点。
+- 提交前用 `empty` 拦一道：空签名与"签了但很潦草"是两回事，前者应该在客户端就挡住。
+- 要缓存待提交的 SVG 就照 `draw-end` 缓存：清空与表单重置同样会发它，缓存不会停在旧的那一版。不要去嗅探清空按钮的点击。
+- 存的是 SVG 文本，不是位图。要生成位图请在服务端渲染，别在前端截屏。
+
+### 反模式
+
+- 把画布做成小小一条：手写需要面积，太窄的画布只会逼人写出自己都认不出的字。
+- 让签名成为唯一的确认方式，却不给替代路径——这是可达性问题，不是体验问题。
+- 拿签名图当身份凭证。它证明的是"有人在这块画布上划过"，不是"谁划的"。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -80,13 +125,7 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 | 状态机 | `signaturePadMachine` |
 | 皮肤 | `@xihan-ui/styles/signature-pad.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="signature-pad"`：**`root`** · `label` · **`control`** · `guide` · **`path`** · `clear-trigger` · `status` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -100,26 +139,26 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 | `onDraw` | `(details: SignaturePadDrawDetails) => void` |  | 每收进一个点通知一次，清空与表单重置时也通知一次（路径为空）。 |
 | `onDrawEnd` | `(details: SignaturePadDrawEndDetails) => void` |  | 签名定稿时通知一次并带上可直接提交的 SVG：抬笔、清空、表单重置这三条路径都发。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `draw` | `SignaturePadDrawDetails` | 笔迹变了就通知一次（含清空与表单重置）；detail 为 `{ paths: string[], path: string }` |
 | `draw-end` | `SignaturePadDrawEndDetails` | 签名定稿时通知一次（抬笔、清空、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接落库 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhSignaturePadRoot` | `default` | `SignaturePadRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`drawing` · `idle`
 
@@ -127,9 +166,9 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 
 **判据**：`canDraw`
 
-## connect API
+### connect API
 
-`useSignaturePad` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -150,7 +189,9 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 | `getStatusProps` | `() => T['element']` | 状态出口：一块 role=status 的活区域，签上与清空都会播报一次。 |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份视觉隐藏的原生输入，随表单提交当前签名。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction)
 
@@ -158,9 +199,9 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 | --- | --- | --- |
 | `Enter` / `Space` | focus on clear-trigger, 未禁用且非只读 | 清空整块画布；按钮是原生 button，这两个键由平台翻成 click |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -182,13 +223,15 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 - 基准线是纯画面，带 `aria-hidden`，读屏不会念它。没有 `translations.guide` 这条文案：给一条装饰线起名字只会让读屏多念一句没有信息量的话。
 - 清空按钮是原生 `<button>`，Enter / Space 由平台激活；按钮里只放图标时读屏念的是 `translations.clearTrigger`。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/signature-pad.css` 按部件选择：`[data-scope="signature-pad"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/signature-pad.css` 使用 `[data-scope="signature-pad"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -211,7 +254,7 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 | `hidden-input` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -245,58 +288,21 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 | `--xh-signature-pad-status-font-size` | `status` | `font-size` | `default` | `--xh-text-label-size` | signature-pad 的 status 部件 font-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 - 画布宽度铺满外层容器，高度由宽高比（`--xh-signature-pad-aspect-ratio`，默认 5 / 2）决定，窄屏上自动变矮。
 - 签到一半转屏、拖动面板改宽度，已有笔迹按 `viewBox` 整体缩放，接着写下去的新笔与它落在同一套坐标里。
 - 触摸设备上画布关掉了浏览器的滚动与缩放手势，否则手指一划页面就滚走了。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
 - 画布与基准线不分左右：笔迹按落笔坐标记录，方向由写的人决定。
 - 标题与清空按钮的排布跟着文档方向走，皮肤全用逻辑属性。
-
-## 组合
-
-- 与[字段](./field)搭配：标题、说明与错误提示交给字段，签名板只管画布。
-- 放进[表单](./form)里，`name` 一给就跟着提交与重置走。
-- 与[对话框](./dialog)搭配做"签名确认"：确认按钮的可用状态读 `empty`。
-
-### 节点形状是硬约束
-
-画布这一族部件必须落在特定标签上，写错了不会报错，只是一笔都画不出来：
-
-- `control` 必须是 `<svg>`；
-- `guide` 必须是 `control` 里面的 `<line>`；
-- `path` 必须是 `control` 里面的 `<path>`；
-- `clear-trigger` 必须是原生 `<button>`，`hidden-input` 必须是原生 `<input>`。
-
-`viewBox` 由组件自己写，作者不要在 `control` 上再写一个。
-
-### 两个适配器的分工
-
-- **Vue**：`XhSignaturePadRoot` 的默认插槽给出 `empty` / `paths` / `drawing` / `statusText` 与 `toSvg()` / `clear()`；也可以用 `useSignaturePad()` 自己拿。`XhSignaturePadGuide` 与 `XhSignaturePadPath` 必须写在 `XhSignaturePadControl` 里面——SVG 命名空间由那棵子树带下去，挪出去就成了 HTML 元素，画不出东西。
-- **Web Components**：结构由作者自己写（Light DOM，不投影插槽）。`<xh-signature-pad>` 上有 `clear()`、`toSvg()` 与只读的 `empty`；提交前取签名用 `toSvg()`，不必去缓存上一次 `draw-end`。
-- 两边的 `status` 部件里都不必自己写字：节点为空时由适配器填内建文案；写了字就以作者写的为准。
-
-## 最佳实践
-
-- 给清空按钮留一句可见文字或稳定的图标语义，别只靠一个叉。
-- **清空之后要把焦点安顿好**：按钮被禁用或被收起时焦点会掉回 `<body>`，键盘用户每清一次就丢一次位置。要么让按钮始终可按（本组件的默认做法），要么清空后显式把焦点交给下一个落点。
-- 提交前用 `empty` 拦一道：空签名与"签了但很潦草"是两回事，前者应该在客户端就挡住。
-- 要缓存待提交的 SVG 就照 `draw-end` 缓存：清空与表单重置同样会发它，缓存不会停在旧的那一版。不要去嗅探清空按钮的点击。
-- 存的是 SVG 文本，不是位图。要生成位图请在服务端渲染，别在前端截屏。
-
-## 反模式
-
-- 把画布做成小小一条：手写需要面积，太窄的画布只会逼人写出自己都认不出的字。
-- 让签名成为唯一的确认方式，却不给替代路径——这是可达性问题，不是体验问题。
-- 拿签名图当身份凭证。它证明的是"有人在这块画布上划过"，不是"谁划的"。

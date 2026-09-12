@@ -16,6 +16,12 @@
 
 <XhDemo src="navigation-menu/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="navigation-menu"`：**`root`** · **`list`** · **`item`** · `trigger` · `trigger-indicator` · `content` · **`link`** · `indicator` · `viewport`
+
 ## 示例
 
 ### 受控
@@ -90,7 +96,23 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 - 没有下级的去处不必套面板：那一项直接铺成一条 `link`，它不进方向键那一组，按 Tab 一样到得了。
 - 面板整批塞进 `viewport` 后落位归外壳管：几个入口的面板落在同一处，宽窄不同也不再各贴各的入口。
 
-## 产物
+### 组合
+
+- 与[布局](./layout)的头部配合；窄屏时整体换成[抽屉](./drawer)里的[侧栏导航](./side-nav)。
+
+### 最佳实践
+
+- 面板里的链接分组并加组标题，一整块无结构的链接墙没人看得下去。
+- 延时保留默认值：调到 0 会让导航在指针路过时不停闪。
+
+### 反模式
+
+- 面板里混进需要提交的表单或命令按钮。
+- 悬停即刻展开且没有静默窗口：指针横穿时面板一路弹出。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -100,13 +122,7 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | 状态机 | `navigationMenuMachine` |
 | 皮肤 | `@xihan-ui/styles/navigation-menu.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="navigation-menu"`：**`root`** · **`list`** · **`item`** · `trigger` · `trigger-indicator` · `content` · **`link`** · `indicator` · `viewport`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -124,17 +140,17 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: NavigationMenuValueChangeDetails) => void` |  | value 变化回调。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `NavigationMenuValueChangeDetails` | 展开项变化；detail 为 `{ value: string \| null }` |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -145,7 +161,7 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | `indicator` | 'open' \| 'closed' |
 | `viewport` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `opening` · `skipping`
 
@@ -153,9 +169,9 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 
 **判据**：`hasValue` · `isCurrent` · `shouldKeepOpen`
 
-## connect API
+### connect API
 
-`useNavigationMenu` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -174,7 +190,9 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation/)
 
@@ -188,9 +206,9 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | `Escape` | open | 收起面板并把焦点归还对应 trigger；静默窗口内这一次归还不会把面板重新弹出来 |
 | `Tab` / `Shift+Tab` | open, focus in trigger | 走进展开的面板：面板就在 trigger 之后，收起的面板带 hidden 因而被整个跳过 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -206,13 +224,15 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | `indicator` | `aria-hidden` | 'true' |
 | `viewport` | `aria-hidden` | !open \|\| undefined |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/navigation-menu.css` 按部件选择：`[data-scope="navigation-menu"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/navigation-menu.css` 使用 `[data-scope="navigation-menu"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -237,7 +257,7 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | `viewport` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -278,7 +298,7 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | `--xh-navigation-menu-viewport-p` | `viewport` | `padding` | `default` | `--xh-space-2` | navigation-menu 的 viewport 部件 padding 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `block-size` · `inline-size` · `inset-block-start` · `inset-inline-start` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -286,20 +306,6 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[布局](./layout)的头部配合；窄屏时整体换成[抽屉](./drawer)里的[侧栏导航](./side-nav)。
-
-## 最佳实践
-
-- 面板里的链接分组并加组标题，一整块无结构的链接墙没人看得下去。
-- 延时保留默认值：调到 0 会让导航在指针路过时不停闪。
-
-## 反模式
-
-- 面板里混进需要提交的表单或命令按钮。
-- 悬停即刻展开且没有静默窗口：指针横穿时面板一路弹出。

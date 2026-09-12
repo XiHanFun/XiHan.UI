@@ -16,6 +16,12 @@ default-value 指定初始选中项，禁用的标签方向键会跳过；面板
 
 <XhDemo src="tabs/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="tabs"`：`root` · **`list`** · **`trigger`** · `indicator` · `separator` · **`content`** · `tab-drag-trigger` · `live-region`
+
 ## 示例
 
 ### 受控
@@ -117,7 +123,23 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 - `root` 按书写顺序渲染子节点：把面板写在标签栏前面，标签栏就落到内容之后。
 - `reorderable` 打开后标签可以拖着换位，键盘走 Alt + 主轴方向键。**只给 `collection` 时代铺的那套标记里没有播报区与拖动把手**：要读屏播报与触屏拖动，得写默认插槽并自己渲 `live-region` 与 `tab-drag-trigger`。
 
-## 产物
+### 组合
+
+- 与[卡片](./card)配合；标签多到一行放不下时把标签栏装进自建的横滚容器。
+
+### 最佳实践
+
+- 标签数控制在七个以内，超过就该换成[侧栏导航](./side-nav)。
+- 把当前标签写进地址，刷新后才回得到原处。
+
+### 反模式
+
+- 标签页里再套标签页：用户分不清哪一层在切。
+- 面板高度随内容剧烈变化，切换时整页跳动。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -127,13 +149,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | 状态机 | `tabsMachine` |
 | 皮肤 | `@xihan-ui/styles/tabs.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="tabs"`：`root` · **`list`** · **`trigger`** · `indicator` · `separator` · **`content`** · `tab-drag-trigger` · `live-region`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -154,9 +170,9 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `translations` | `Partial<TabsTranslations>` |  |  |
 | `onValueChange` | `(details: TabsValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -164,16 +180,16 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `tab-move` | `TabsMoveDetails` | 标签换了位；detail 为 `{ value, from, to, values }`，values 是重排好的整份标签序 |
 | `tab-close` | `TabsCloseDetails` | 标签被关闭；detail 为 `{ value, values }`，values 是关掉这一条之后余下的标签序 |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `trigger` | 'active' \| 'inactive' |
 | `content` | 'active' \| 'inactive' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
@@ -181,9 +197,9 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 
 **判据**：`isAutomatic`
 
-## connect API
+### connect API
 
-`useTabs` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -202,7 +218,9 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `getTabDragTriggerProps` | `(props: TabsTriggerProps) => T['element']` | 标签拖动把手。触屏那一路唯一的入口，不占 Tab 位。 常挂即可：reorderable 关着或这个标签禁用时它自报 data-disabled、也不再让出滚动， 渲了不会错。按拖不拖得动来决定渲不渲，会让 DOM 结构随状态变。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/#keyboardinteraction)
 
@@ -216,9 +234,9 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `Tab` / `Shift+Tab` | focus in list | 整组只有锚点 trigger 留在 Tab 序列内，一次 Tab 进出；无锚点时由 list 兜底，焦点进来后转投锚点 trigger（即选中项），锚点缺席或被禁用才落首个可停留项 |
 | `Alt+ArrowLeft` / `Alt+ArrowRight` / `Alt+ArrowUp` / `Alt+ArrowDown` | focus in list, reorderable 开着, 按键与 orientation 同轴 | 把焦点标签在标签带里往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻、rtl 下左右两键对调，竖排的上下两键不对调；已是首位 / 末位就不动，也不回绕；标签序不进库，只报一次重排好的新顺序。裸方向键仍是导航、Enter/Space 仍是确认 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -237,15 +255,17 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `live-region` | `aria-live` | 'polite' |
 | `live-region` | `role` | 'status' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/tabs.css` 按部件选择：`[data-scope="tabs"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/tabs.css` 使用 `[data-scope="tabs"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -267,7 +287,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `tab-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -315,30 +335,16 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `--xh-tabs-trigger-shadow-active` | `trigger` | `box-shadow` | `state=active` | `--xh-_tabs-trigger-shadow-active` | tabs 的 trigger 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `block-size` · `box-shadow` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[卡片](./card)配合；标签多到一行放不下时把标签栏装进自建的横滚容器。
-
-## 最佳实践
-
-- 标签数控制在七个以内，超过就该换成[侧栏导航](./side-nav)。
-- 把当前标签写进地址，刷新后才回得到原处。
-
-## 反模式
-
-- 标签页里再套标签页：用户分不清哪一层在切。
-- 面板高度随内容剧烈变化，切换时整页跳动。

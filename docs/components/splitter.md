@@ -16,6 +16,12 @@ panels 数组的长度决定面板块数，每条分隔条调的是它前面那�
 
 <XhDemo src="splitter/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="splitter"`：**`root`** · **`panel`** · **`resize-trigger`**
+
 ## 示例
 
 ### 受控
@@ -69,7 +75,23 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 - 拖到一半按 Escape 放弃这一场：布局退回按下那一刻，`onSizesChangeEnd` 不发。
 - `translations` 给整组面板与各条分隔条起名，读屏念到的就不再是一串无名的盒子。
 
-## 产物
+### 组合
+
+- 面板里放[滚动区域](./scroll-area)，让每一片各自滚动。
+
+### 最佳实践
+
+- 给每块面板设最小尺寸，否则能被拖到完全看不见、也拖不回来。
+- 存布局用 `onSizesChangeEnd`：拖动途中的每一帧都写存储会把主线程拖垮。
+
+### 反模式
+
+- 拿它做固定比例的两栏布局：多出来的拖动能力只会让用户误操作。
+- 分隔条做得只有一两个像素宽：指针命中率极低。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -79,13 +101,7 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 | 状态机 | `splitterMachine` |
 | 皮肤 | `@xihan-ui/styles/splitter.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="splitter"`：**`root`** · **`panel`** · **`resize-trigger`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -101,26 +117,26 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 | `onSizesChange` | `(details: SplitterSizesChangeDetails) => void` |  | 每次尺寸变化都发；拖动过程中会连续发很多次。 |
 | `onSizesChangeEnd` | `(details: SplitterSizesChangeEndDetails) => void` |  | 只在一次操作结束时发一次，适合拿来存布局。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `sizes-change` | `SplitterSizesChangeDetails` | 布局变化（拖动途中会连发）；detail 为 `{ sizes: number[] }` |
 | `sizes-change-end` | `SplitterSizesChangeEndDetails` | 一次拖拽收尾发一次；detail 为 `{ sizes: number[], index: number }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhSplitterRoot` | `default` | `SplitterRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `dragging`
 
@@ -128,9 +144,9 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 
 **判据**：`canResize`
 
-## connect API
+### connect API
 
-`useSplitter` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -147,7 +163,9 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 | `getPanelProps` | `(index: number) => T['element']` |  |
 | `getResizeTriggerProps` | `(index: number) => T['element']` | 第 index 条分隔条坐在第 index 与第 index+1 块面板之间，调整的是前一块。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/#keyboardinteraction)
 
@@ -162,9 +180,9 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 | `Escape` | 拖动中 | 放弃这一场拖拽，布局退回按下那一刻；收尾回调不发 |
 | `Enter` | focus in resize-trigger 且它调整的面板 collapsible，not disabled | 折叠 / 展开该面板；展开回到折叠前的尺寸。面板不可折叠时不接这个键 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -179,15 +197,17 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 | `resize-trigger` | `aria-valuenow` | String(panel.size) |
 | `resize-trigger` | `role` | 'separator' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/splitter.css` 按部件选择：`[data-scope="splitter"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/splitter.css` 使用 `[data-scope="splitter"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -197,7 +217,7 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 | `resize-trigger` | `data-index` | String(boundary) |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -212,22 +232,8 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 | `--xh-splitter-trigger-thickness` | `resize-trigger` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | splitter 的 resize-trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-## 组合
-
-- 面板里放[滚动区域](./scroll-area)，让每一片各自滚动。
-
-## 最佳实践
-
-- 给每块面板设最小尺寸，否则能被拖到完全看不见、也拖不回来。
-- 存布局用 `onSizesChangeEnd`：拖动途中的每一帧都写存储会把主线程拖垮。
-
-## 反模式
-
-- 拿它做固定比例的两栏布局：多出来的拖动能力只会让用户误操作。
-- 分隔条做得只有一两个像素宽：指针命中率极低。

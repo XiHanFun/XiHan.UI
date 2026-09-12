@@ -16,6 +16,12 @@
 
 <XhDemo src="button-group/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="button-group"`：**`root`** · `separator`
+
 ## 示例
 
 ### 排布
@@ -57,7 +63,25 @@
 - 段没有声明形态时继承组的形态；显式写在某一段上的 `solid` / `subtle` / `outline` / `ghost`
   只管该段，组不会用自己的 outline 描边盖过去。组内按压保留换底反馈，但不缩放段盒，以免共边裂开。
 
-## 产物
+### 组合
+
+- 组内放[按钮](./button)；最后一段放一个带菜单的按钮即得"主动作 + 更多"的分裂按钮。
+
+### 最佳实践
+
+- 一组以三到五段为宜，再多就该收进[菜单](./menu)。
+- 窄容器里放不下整条时，显式给 `orientation="vertical"` 让它竖排。它不会自己折行：一条焊死的按钮条折了行，两端的圆角就切在行末与行首。
+- 尺寸档位只写在组上，避免各段高度与内距错位。某一段确需强调时可单独声明形态；不要把同一份
+  形态和语气在组与每段重复一遍。
+
+### 反模式
+
+- 用按钮组表达选中态：它不出 `aria-pressed`，读屏用户听不出哪一段是当前项。
+- 组内混进不可点的说明文字，破坏"每一段都是动作"的预期。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -66,13 +90,7 @@
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/button-group.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="button-group"`：**`root`** · `separator`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -83,9 +101,9 @@
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，落到根上沿继承流给组内每一段。 |
 | `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，落到根上供皮肤写进组内按钮的颜色槽位。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -93,30 +111,34 @@
 | `getRootProps` | `() => T['element']` |  |
 | `getSeparatorProps` | `() => T['element']` | 段与段之间的装饰线，纯视觉、读屏不念。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `role` | 'group' |
 | `separator` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/button-group.css` 按部件选择：`[data-scope="button-group"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/button-group.css` 使用 `[data-scope="button-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -130,7 +152,7 @@
 | `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -145,28 +167,12 @@
 | `--xh-button-group-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | button-group 的 separator 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 组内放[按钮](./button)；最后一段放一个带菜单的按钮即得"主动作 + 更多"的分裂按钮。
-
-## 最佳实践
-
-- 一组以三到五段为宜，再多就该收进[菜单](./menu)。
-- 窄容器里放不下整条时，显式给 `orientation="vertical"` 让它竖排。它不会自己折行：一条焊死的按钮条折了行，两端的圆角就切在行末与行首。
-- 尺寸档位只写在组上，避免各段高度与内距错位。某一段确需强调时可单独声明形态；不要把同一份
-  形态和语气在组与每段重复一遍。
-
-## 反模式
-
-- 用按钮组表达选中态：它不出 `aria-pressed`，读屏用户听不出哪一段是当前项。
-- 组内混进不可点的说明文字，破坏"每一段都是动作"的预期。

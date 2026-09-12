@@ -16,6 +16,12 @@
 
 <XhDemo src="grid/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="grid"`：**`root`** · `item`
+
 ## 示例
 
 ### 列数
@@ -82,7 +88,23 @@ cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列
 - DOM 上只出得来皮肤有规则接的取值：`data-cols` 恒在 1 至 12 之间，`data-span` 与 `data-offset`
   要么落在范围内、要么不出现。
 
-## 产物
+### 组合
+
+- 表单里与[表单字段](./field)配合：字段占格，跨整行的字段写 `span`。
+
+### 最佳实践
+
+- 断点对象自窄到宽写，别只写 `lg`——比它窄的档会退回默认的一列。
+- 需要多于 12 列的结构就拆成两块，别把列数往大了写——超过 12 的值按一列排。
+
+### 反模式
+
+- 用栅格做整页骨架：那是[布局](./layout)的事。
+- 给格子写固定像素宽度，等宽约束当场失效。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -91,13 +113,7 @@ cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/grid.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="grid"`：**`root`** · `item`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -110,28 +126,32 @@ cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列
 | `rowGap` | `GridGap` |  | 只改行间距，档位同 gap；不写则跟着 gap 走。 |
 | `rows` | `GridRowCount` |  | 行数：1 至 12 的整数，不写则行数由内容自己撑出来；范围外的值也按不写算。 写了就把这几行排成显式轨道，超出的项落进隐式行。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(props?: GridItemProps) => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/grid.css` 按部件选择：`[data-scope="grid"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/grid.css` 使用 `[data-scope="grid"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -159,7 +179,7 @@ cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列
 | `item` | `data-span-xl` | span.xl |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -172,24 +192,10 @@ cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列
 | `--xh-grid-rows` | `root` | `grid-template-rows` | `rows` | `--xh-_grid-rows` | grid 的 root 部件 grid-template-rows 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
-## 响应式
+### 响应式
 
 皮肤按视口分档：`min-width: 1024px` · `min-width: 1280px` · `min-width: 640px` · `min-width: 768px`。
-
-## 组合
-
-- 表单里与[表单字段](./field)配合：字段占格，跨整行的字段写 `span`。
-
-## 最佳实践
-
-- 断点对象自窄到宽写，别只写 `lg`——比它窄的档会退回默认的一列。
-- 需要多于 12 列的结构就拆成两块，别把列数往大了写——超过 12 的值按一列排。
-
-## 反模式
-
-- 用栅格做整页骨架：那是[布局](./layout)的事。
-- 给格子写固定像素宽度，等宽约束当场失效。

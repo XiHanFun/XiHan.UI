@@ -16,6 +16,12 @@
 
 <XhDemo src="menu/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="menu"`：**`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `separator` · `group` · `group-label` · `arrow`
+
 ## 示例
 
 ### 受控
@@ -101,7 +107,29 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 - 浮层使用 M2 磨砂表面；展开项使用中性灰反馈，不加左侧条、不使用默认品牌蓝底，也不改变字重。
 - 图标、正文和快捷键等作者节点按一行排列；长正文用 `item-text` 截断，`item-description` 才另起一行，子菜单箭头位于行尾。
 
-## 产物
+### 组合
+
+- 触发器用[按钮](./button)；与[按钮组](./button-group)组合成分裂按钮；与[面包屑](./breadcrumb)组合做层级切换。
+
+### 最佳实践
+
+- 破坏性命令与其余条目之间隔一道[分隔线](./separator)，并放在最后。
+- 悬停触发只在指针环境有意义，触摸与键盘恒靠点击那条路径。
+- 快捷键提示用[键帽组](./kbd-group)并设置 `margin-inline-start: auto` 推到行尾，不必手写平台文本或补造占位节点。
+
+### 当前边界
+
+- 当前尚无正式 checkbox item、radio group/item 与单条 danger tone，选择能力需要行为及可访问语义一起交付，不能只画一个勾来代替。
+- KbdGroup 属于作者内容，只负责展示，不会自动注册键盘动作；正式 shortcut/trailing 部件仍待独立实现。
+
+### 反模式
+
+- 用菜单做单选：读屏用户听到的是"菜单项"，不是"选项"，选完也不知道当前值是什么。
+- 条目文字写成一句话：菜单项应是动宾短语。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -111,13 +139,7 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | 状态机 | `menuMachine` |
 | 皮肤 | `@xihan-ui/styles/menu.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="menu"`：**`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `separator` · `group` · `group-label` · `arrow`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -140,18 +162,18 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `onOpenChange` | `(details: MenuOpenChangeDetails) => void` |  | open 变化回调。 |
 | `onSelect` | `(details: MenuSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `MenuOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `select` | `MenuSelectDetails` | 条目被选中（菜单随之关闭）；detail 为 `{ value: string }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -160,9 +182,9 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `XhMenuRoot` | `item` | `MenuNodeMeta` |  |
 | `XhMenuSub` | `default` | `MenuSubSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -171,7 +193,7 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `content` | 'open' \| 'closed' |
 | `submenu-trigger` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -179,9 +201,9 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 
 **判据**：`isOpenControlled`
 
-## connect API
+### connect API
 
-`useMenu` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -203,7 +225,9 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `getGroupLabelProps` | `(props: MenuGroupProps) => T['element']` |  |
 | `getArrowProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/#keyboardinteraction)
 
@@ -219,9 +243,9 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `Escape` | open | 关闭菜单并把焦点归还 trigger |
 | `Tab` / `Shift+Tab` | open | 关闭菜单，焦点不归还 trigger，按 Tab 序列自然离开 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -246,15 +270,17 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `submenu-trigger` | `aria-haspopup` | 'menu' |
 | `submenu-trigger` | `role` | 'menuitem' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/menu.css` 按部件选择：`[data-scope="menu"][data-part="trigger"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/menu.css` 使用 `[data-scope="menu"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -275,7 +301,7 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `submenu-trigger` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -325,7 +351,7 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `--xh-menu-trigger-bg-active` | `trigger` | `background` | `disabled`<br>`not([data-disabled])`<br>`state=open` | `--xh-_menu-active-bg` | menu 的 trigger 部件 background 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -333,26 +359,6 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 触发器用[按钮](./button)；与[按钮组](./button-group)组合成分裂按钮；与[面包屑](./breadcrumb)组合做层级切换。
-
-## 最佳实践
-
-- 破坏性命令与其余条目之间隔一道[分隔线](./separator)，并放在最后。
-- 悬停触发只在指针环境有意义，触摸与键盘恒靠点击那条路径。
-- 快捷键提示用[键帽组](./kbd-group)并设置 `margin-inline-start: auto` 推到行尾，不必手写平台文本或补造占位节点。
-
-### 当前边界
-
-- 当前尚无正式 checkbox item、radio group/item 与单条 danger tone，选择能力需要行为及可访问语义一起交付，不能只画一个勾来代替。
-- KbdGroup 属于作者内容，只负责展示，不会自动注册键盘动作；正式 shortcut/trailing 部件仍待独立实现。
-
-## 反模式
-
-- 用菜单做单选：读屏用户听到的是"菜单项"，不是"选项"，选完也不知道当前值是什么。
-- 条目文字写成一句话：菜单项应是动宾短语。

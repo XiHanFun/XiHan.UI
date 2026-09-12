@@ -16,6 +16,12 @@
 
 <XhDemo src="switch/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="switch"`：**`root`** · `thumb` · `hidden-input` · `label` · `text`
+
 ## 示例
 
 ### 受控
@@ -101,7 +107,31 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 - 键盘聚焦环在明暗主题和开关两态都与轨道达到 3:1；RTL 会反转滑块行程，三尺寸与密度轴保持同一比例。
 - 减弱动效会取消按压拉伸并让 loading 圆环停转，以静止点线继续表达在途。
 
-## 产物
+### 组合
+
+- 与[表单字段](./field)配合；成排时放进[列表](./list)。
+
+### 最佳实践
+
+- 标签写这项设置本身（"邮件通知"），不写动作（"开启邮件通知"）——开关的状态已经说明了开还是关。
+- 异步提交时用 `loading` 并保持受控，别先翻再回滚。
+- 自定义轨道与滑块颜色时同时验证未选中边界、选中底和聚焦环；只换一支底色可能让暗色主题失去边界。
+
+### 当前边界
+
+- `label` 目前只直接拿到 disabled 状态，loading / readonly 光标需由皮肤读取内部 root；后续应由连接层把两轴
+  同步到 label，去掉关系选择器并让所有硬底线浏览器得到同一反馈。
+- React / Vue 的紧凑 `XhSwitch` 把默认插槽固定为轨道外标签，没有暴露轨道内容或 thumb 插槽；只有 Web Components
+  的 Light DOM 能给 thumb 写作者内容。若要三端支持开关内文案或自定义标记，应以独立部件 API 一起补齐。
+
+### 反模式
+
+- 开关翻过去还要按"保存"：那说明它应该是复选框。
+- 用开关表达两个并列选项（列表 / 网格）。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -111,13 +141,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | 状态机 | `switchMachine` |
 | 皮肤 | `@xihan-ui/styles/switch.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="switch"`：**`root`** · `thumb` · `hidden-input` · `label` · `text`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -134,17 +158,17 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定轨道与滑块的几何档位。 |
 | `onCheckedChange` | `(details: SwitchCheckedChangeDetails) => void` |  | checked 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `checked-change` | `SwitchCheckedChangeDetails` | checked 状态变化；detail 为 `{ checked: boolean }` |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -153,7 +177,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | `label` | 'checked' \| 'unchecked' |
 | `text` | 'checked' \| 'unchecked' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`off` · `on`
 
@@ -161,9 +185,9 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 **判据**：`isCheckedControlled` · `defaultsToChecked`
 
-## connect API
+### connect API
 
-`useSwitch` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -176,7 +200,9 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | `getLabelProps` | `() => T['label']` | 包住轨道与文字的 &lt;label&gt;：点文字即切换，轨道的可及名从文字来。只在带文字时渲染。 |
 | `getTextProps` | `() => T['element']` | 轨道旁的文字。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/switch/#keyboardinteraction)
 
@@ -184,9 +210,9 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | --- | --- | --- |
 | `Space` / `Enter` | focus in root, not disabled | 切换 checked 状态 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -197,15 +223,17 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | `root` | `aria-required` | 'true' \| 'false' |
 | `root` | `role` | 'switch' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/switch.css` 按部件选择：`[data-scope="switch"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/switch.css` 使用 `[data-scope="switch"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -227,7 +255,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | `text` | `data-state` | 'checked' \| 'unchecked' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -263,38 +291,16 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | `--xh-switch-thumb-shadow-readonly` | `root`<br>`thumb` | `box-shadow` | `readonly` | `none` | switch 的 root、thumb 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-switch-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `box-shadow` · `inline-size` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 与[表单字段](./field)配合；成排时放进[列表](./list)。
-
-## 最佳实践
-
-- 标签写这项设置本身（"邮件通知"），不写动作（"开启邮件通知"）——开关的状态已经说明了开还是关。
-- 异步提交时用 `loading` 并保持受控，别先翻再回滚。
-- 自定义轨道与滑块颜色时同时验证未选中边界、选中底和聚焦环；只换一支底色可能让暗色主题失去边界。
-
-### 当前边界
-
-- `label` 目前只直接拿到 disabled 状态，loading / readonly 光标需由皮肤读取内部 root；后续应由连接层把两轴
-  同步到 label，去掉关系选择器并让所有硬底线浏览器得到同一反馈。
-- React / Vue 的紧凑 `XhSwitch` 把默认插槽固定为轨道外标签，没有暴露轨道内容或 thumb 插槽；只有 Web Components
-  的 Light DOM 能给 thumb 写作者内容。若要三端支持开关内文案或自定义标记，应以独立部件 API 一起补齐。
-
-## 反模式
-
-- 开关翻过去还要按"保存"：那说明它应该是复选框。
-- 用开关表达两个并列选项（列表 / 网格）。

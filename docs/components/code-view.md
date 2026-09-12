@@ -16,6 +16,12 @@
 
 <XhDemo src="code-view/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="code-view"`：**`root`** · `header` · `filename` · `lang-label` · **`pre`** · **`code`** · `line` · `line-number` · `line-content` · `token` · `fold-trigger`
+
 ## 示例
 
 ### 行号与高亮行
@@ -86,7 +92,30 @@ size 换字号、行高与内边距三档，行号槽与折叠钮跟着一起走
 - 行号由皮肤用 `attr()` 画出来，因此**复制代码不会带上行号**，读屏也不会逐行念数字。
 - `clamped` 是纯受控的：折叠态通常由外部「全部展开 / 全部折叠」统一持有，内建一份只会跟它打架。
 
-## 产物
+### 组合
+
+- 与[剪贴板](./clipboard)配合提供复制；要非受控的折叠就套[折叠面板](./collapsible)。
+  把剪贴板三件放进 `header`，再用 `--xh-clipboard-copy-trigger-border: transparent`、
+  `--xh-clipboard-copy-trigger-bg: transparent`、`--xh-clipboard-copy-trigger-h: var(--xh-control-h-sm)`
+  三个槽把按钮压成头部里的安静形态。
+- 内建词法只分注释、字符串、数字、关键字、标点五档。要区分函数名、类型名、属性名这类精度，
+  就自己实现 `highlighter` 端口（同步纯函数，接 Shiki 之类）传进来，皮肤按记号种类上色的那套照旧生效。
+- 放进 AI 回复正文时由[流式正文](./markdown-stream)把代码块交过来。
+
+### 最佳实践
+
+- 标出语言：读者与着色器都需要它。
+- 高亮行用来点出「看这里」，不要一次点亮半屏。
+- 折叠阈值取十几行：再少读者每次都要展开，再多就失去了折叠的意义。
+
+### 反模式
+
+- 把代码放进普通段落里：空白与换行会被折叠掉。
+- 用行号当锚点做跳转：它是画上去的，DOM 里选不中。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -96,13 +125,7 @@ size 换字号、行高与内边距三档，行号槽与折叠钮跟着一起走
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/code-view.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="code-view"`：**`root`** · `header` · `filename` · `lang-label` · **`pre`** · **`code`** · `line` · `line-number` · `line-content` · `token` · `fold-trigger`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -123,34 +146,34 @@ size 换字号、行高与内边距三档，行号槽与折叠钮跟着一起走
 | `translations` | `Partial<CodeViewTranslations>` |  |  |
 | `wrap` | `boolean` |  | 长行自动换行，默认关（长行横向滚动）。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `clamp-toggle` | `CustomEvent` | 折叠态翻面的意图；detail 为 `{ clamped: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhCodeViewCode` | `line` | `CodeViewLineSlotProps` |  |
 | `XhCodeViewRoot` | `default` | `CodeViewRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `fold-trigger` | 'closed' \| 'open' |
 
-## connect API
+### connect API
 
-`useCodeView` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -174,7 +197,9 @@ size 换字号、行高与内边距三档，行号槽与折叠钮跟着一起走
 | `getTokenProps` | `(token: CodeToken) => T['element']` |  |
 | `getFoldTriggerProps` | `() => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/WCAG21/Techniques/general/G202)
 
@@ -183,9 +208,9 @@ size 换字号、行高与内边距三档，行号槽与折叠钮跟着一起走
 | `Tab` | 代码块在 Tab 序列中 | &lt;pre&gt; 自身可聚焦，随后方向键的横向滚动交给浏览器，组件不接管 |
 | `Enter` / `Space` | 焦点在折叠按钮上 | 翻面折叠态并发出意图；组件只接 click，按键走原生 button 的默认行为 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -200,13 +225,15 @@ size 换字号、行高与内边距三档，行号槽与折叠钮跟着一起走
 - 折叠按钮带 `aria-expanded` 与 `aria-controls`，指向 `pre`。
 - 语言角标与行号槽都对读屏隐藏，它们是装饰不是内容。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/code-view.css` 按部件选择：`[data-scope="code-view"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/code-view.css` 使用 `[data-scope="code-view"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -225,7 +252,7 @@ size 换字号、行高与内边距三档，行号槽与折叠钮跟着一起走
 | `fold-trigger` | `data-state` | 'closed' \| 'open' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -269,33 +296,12 @@ size 换字号、行高与内边距三档，行号槽与折叠钮跟着一起走
 | `--xh-code-view-string-fg` | `token` | `color` | `kind=string` | `--xh-syntax-string` | code-view 的 token 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[剪贴板](./clipboard)配合提供复制；要非受控的折叠就套[折叠面板](./collapsible)。
-  把剪贴板三件放进 `header`，再用 `--xh-clipboard-copy-trigger-border: transparent`、
-  `--xh-clipboard-copy-trigger-bg: transparent`、`--xh-clipboard-copy-trigger-h: var(--xh-control-h-sm)`
-  三个槽把按钮压成头部里的安静形态。
-- 内建词法只分注释、字符串、数字、关键字、标点五档。要区分函数名、类型名、属性名这类精度，
-  就自己实现 `highlighter` 端口（同步纯函数，接 Shiki 之类）传进来，皮肤按记号种类上色的那套照旧生效。
-- 放进 AI 回复正文时由[流式正文](./markdown-stream)把代码块交过来。
-
-## 最佳实践
-
-- 标出语言：读者与着色器都需要它。
-- 高亮行用来点出「看这里」，不要一次点亮半屏。
-- 折叠阈值取十几行：再少读者每次都要展开，再多就失去了折叠的意义。
-
-## 反模式
-
-- 把代码放进普通段落里：空白与换行会被折叠掉。
-- 用行号当锚点做跳转：它是画上去的，DOM 里选不中。

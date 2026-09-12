@@ -16,6 +16,12 @@
 
 <XhDemo src="listbox/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="listbox"`：`root` · `label` · **`content`** · `item` · `item-text` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `load-more-trigger`
+
 ## 示例
 
 ### 多选
@@ -87,7 +93,29 @@ tone 决定选中条目的勾选标记用哪族颜色，未选中的条目不受
 - `collection` 为空时，列表本体隐藏并退出 Tab 序列；不保留空描边。条目手写时，空白文本、只有标题的空组、带 `hidden` 的条目和分组都不算可见候选；禁用条目仍属于有效内容。
 - `load-more-trigger` 是取下一页的入口：还有没有下一页、点了做什么都归作者，连接层只保证在途与整列禁用两档点不动。
 
-## 产物
+### 组合
+
+- 作为[穿梭框](./transfer)的内层；长列表配[虚拟滚动](./virtualizer)。
+- **弹出式选择**：把本组件装进[浮层](./popover)——触发器显示当前选中项，落值时自己收起浮层，浮层底部还能放操作按钮。不参与表单、也不带输入框的那种就地切换（排序方式、显示密度）走这一种写法，不必另找组件；要随表单提交才用[选择器](./select)。这是本库「浮层壳 + 条目层」的官方组合写法：浮层只管开合与定位，条目、键盘导航、连打检索与选中语义全在本组件里，换一个浮层壳（[菜单](./menu)、[气泡卡片](./popover)）写法不变。示例见本页「弹出式选择」与[选择器](./select)页的同一例。
+
+### 最佳实践
+
+- 单选、多选与 Select 使用同一视觉规则：对号表示选中，中性底表示悬停或键盘高亮，正文不变色、不加粗。
+- 自定义条目应显式组合 `item-indicator`；该部件固定在逻辑末端，未选中时保留空间，避免选择时文字移动。
+- 空态和加载文案由作者通过 `Empty` / `Loading` 部件提供，放在 `root` 中作为 `content` 的兄弟。默认按 `collection` 渲染时没有额外状态文案，不会自动制造提示、假选项或空白状态块；需要提示时使用现有复合部件。
+- 给了 `collection` 时用同一份数据表达当前候选，空态与首次加载自动互斥；手写条目时由作者控制状态部件的 `hidden`。条目过滤使用 `hidden` 或移除节点，隐藏分组不参与方向键、连打、区间选择和全选；任意样式类的可见性由作者自行管理。
+
+- 多选时给出"已选 N 项"的回显，否则滚动后用户不知道选了多少。
+- 定高，别让列表把页面撑到需要整页滚动。
+
+### 反模式
+
+- 用它承载命令：列表框的条目是选项不是动作。
+- 选项超过几百条却不虚拟化。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -97,13 +125,7 @@ tone 决定选中条目的勾选标记用哪族颜色，未选中的条目不受
 | 状态机 | `listboxMachine` |
 | 皮肤 | `@xihan-ui/styles/listbox.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="listbox"`：`root` · `label` · **`content`** · `item` · `item-text` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `load-more-trigger`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -123,17 +145,17 @@ tone 决定选中条目的勾选标记用哪族颜色，未选中的条目不受
 | `typeahead` | `boolean` |  | 连打检索，默认开。 |
 | `onValueChange` | `(details: ListboxValueChangeDetails) => void` |  | value 变化意图回调。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `ListboxValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -141,17 +163,17 @@ tone 决定选中条目的勾选标记用哪族颜色，未选中的条目不受
 | `XhListboxRoot` | `label` | — |  |
 | `XhListboxRoot` | `item` | `ListboxNodeMeta` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
 **事件**：`VALUE.SET` · `VALUE.CLEAR` · `ITEM.SELECT` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `FOCUS.CLEAR` · `LIST.BLUR`
 
-## connect API
+### connect API
 
-`useListbox` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -179,7 +201,9 @@ tone 决定选中条目的勾选标记用哪族颜色，未选中的条目不受
 | `getItemTextProps` | `(props: ListboxItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: ListboxItemProps) => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/#keyboardinteraction)
 
@@ -196,9 +220,9 @@ tone 决定选中条目的勾选标记用哪族颜色，未选中的条目不受
 | `Ctrl+A` / `Cmd+A` | focus in listbox, 可多选 | 选中全部可选条目；已经全选则把它们一并取消（禁用但已选中的不动） |
 | `单个可打印字符` | focus in listbox, typeahead 未关 | 连打检索把焦点移到首字母匹配的条目，不改选中值 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -217,13 +241,15 @@ tone 决定选中条目的勾选标记用哪族颜色，未选中的条目不受
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
 | `group` | `role` | 'group' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/listbox.css` 按部件选择：`[data-scope="listbox"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/listbox.css` 使用 `[data-scope="listbox"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -247,7 +273,7 @@ tone 决定选中条目的勾选标记用哪族颜色，未选中的条目不受
 | `load-more-trigger` | `data-loading` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -303,32 +329,12 @@ tone 决定选中条目的勾选标记用哪族颜色，未选中的条目不受
 | `--xh-listbox-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | listbox 的 loading 部件 padding-block 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `background-color` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 作为[穿梭框](./transfer)的内层；长列表配[虚拟滚动](./virtualizer)。
-- **弹出式选择**：把本组件装进[浮层](./popover)——触发器显示当前选中项，落值时自己收起浮层，浮层底部还能放操作按钮。不参与表单、也不带输入框的那种就地切换（排序方式、显示密度）走这一种写法，不必另找组件；要随表单提交才用[选择器](./select)。这是本库「浮层壳 + 条目层」的官方组合写法：浮层只管开合与定位，条目、键盘导航、连打检索与选中语义全在本组件里，换一个浮层壳（[菜单](./menu)、[气泡卡片](./popover)）写法不变。示例见本页「弹出式选择」与[选择器](./select)页的同一例。
-
-## 最佳实践
-
-- 单选、多选与 Select 使用同一视觉规则：对号表示选中，中性底表示悬停或键盘高亮，正文不变色、不加粗。
-- 自定义条目应显式组合 `item-indicator`；该部件固定在逻辑末端，未选中时保留空间，避免选择时文字移动。
-- 空态和加载文案由作者通过 `Empty` / `Loading` 部件提供，放在 `root` 中作为 `content` 的兄弟。默认按 `collection` 渲染时没有额外状态文案，不会自动制造提示、假选项或空白状态块；需要提示时使用现有复合部件。
-- 给了 `collection` 时用同一份数据表达当前候选，空态与首次加载自动互斥；手写条目时由作者控制状态部件的 `hidden`。条目过滤使用 `hidden` 或移除节点，隐藏分组不参与方向键、连打、区间选择和全选；任意样式类的可见性由作者自行管理。
-
-- 多选时给出"已选 N 项"的回显，否则滚动后用户不知道选了多少。
-- 定高，别让列表把页面撑到需要整页滚动。
-
-## 反模式
-
-- 用它承载命令：列表框的条目是选项不是动作。
-- 选项超过几百条却不虚拟化。

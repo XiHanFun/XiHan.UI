@@ -16,6 +16,12 @@
 
 <XhDemo src="file-upload/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="file-upload"`：`root` · `label` · `dropzone` · `trigger` · **`hidden-input`** · `list` · `item` · `item-name` · `item-size-text` · `item-preview` · `item-progress` · `item-delete-trigger` · `clear-trigger`
+
 ## 示例
 
 ### 限制与拒收
@@ -96,7 +102,23 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 - `remoteFiles` 用来回显服务器上已有的附件，与本次新选的并列在同一个列表里。
 - 上传生命周期（完成、失败）各有回调；宿主还可以插入自定的准入判断。
 
-## 产物
+### 组合
+
+- 外面套[表单字段](./field)；缩略图墙用[图片](./image)与[图片预览](./image-viewer)。
+
+### 最佳实践
+
+- 在界面上写清楚允许的类型与大小上限，别等用户选完才拒。
+- 拒收要说明是哪个文件、为什么。
+
+### 反模式
+
+- 只拦前端不拦后端。
+- 上传中不给进度也不能取消。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -106,13 +128,7 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | 状态机 | `fileUploadMachine` |
 | 皮肤 | `@xihan-ui/styles/file-upload.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="file-upload"`：`root` · `label` · `dropzone` · `trigger` · **`hidden-input`** · `list` · `item` · `item-name` · `item-size-text` · `item-preview` · `item-progress` · `item-delete-trigger` · `clear-trigger`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -140,9 +156,9 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `onUploadComplete` | `(details: FileUploadCompleteDetails) => void` |  | 单个文件传完（upload 的 Promise 兑现）。 |
 | `onUploadError` | `(details: FileUploadErrorDetails) => void` |  | 单个文件传败（upload 的 Promise 拒绝）；中止不算失败不发。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -153,24 +169,24 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `file-accept` | `FileUploadFileAcceptDetails` | 本次收下了哪些；detail 为 `{ files: File[] }` |
 | `file-reject` | `FileUploadFileRejectDetails` | 本次拒了哪些、各自为什么；detail 为 `{ files: { file, reasons }[] }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhFileUploadRoot` | `default` | `FileUploadRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `item` | uploadOf(file)?.status |
 | `item-progress` | uploadOf(file)?.status |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `dragging`
 
@@ -178,9 +194,9 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 
 **判据**：`canChange` · `canDrop`
 
-## connect API
+### connect API
 
-`useFileUpload` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -214,7 +230,9 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `getItemDeleteTriggerProps` | `(props: FileUploadItemProps) => T['button']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction)
 
@@ -226,9 +244,9 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `Enter` / `Space` | focus on item-delete-trigger | 把这一条从列表里删掉（原生 button 的默认激活） |
 | `Enter` / `Space` | focus on clear-trigger | 清空整份列表（原生 button 的默认激活）；列表为空时按钮照常在位、可聚焦，激活是空操作 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -243,13 +261,15 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `item-delete-trigger` | `aria-label` | label.deleteItem(file) |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/file-upload.css` 按部件选择：`[data-scope="file-upload"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/file-upload.css` 使用 `[data-scope="file-upload"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -281,7 +301,7 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `clear-trigger` | `data-empty` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -363,26 +383,12 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `--xh-file-upload-trigger-shadow-hover` | `trigger` | `box-shadow` | `hover`<br>`not(:disabled)` | `--xh-elevation-raised` | file-upload 的 trigger 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `background-color` · `border-color` · `box-shadow` · `inline-size` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 外面套[表单字段](./field)；缩略图墙用[图片](./image)与[图片预览](./image-viewer)。
-
-## 最佳实践
-
-- 在界面上写清楚允许的类型与大小上限，别等用户选完才拒。
-- 拒收要说明是哪个文件、为什么。
-
-## 反模式
-
-- 只拦前端不拦后端。
-- 上传中不给进度也不能取消。

@@ -16,6 +16,12 @@ root 要有确定高度，视口才量得出溢出；滚动走的是浏览器原
 
 <XhDemo src="scroll-area/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="scroll-area"`：**`root`** · **`viewport`** · **`content`** · `scrollbar`
+
 ## 示例
 
 ### 显隐时机
@@ -73,7 +79,24 @@ variant="fade" 让还滚得动的那一侧把内容淡出，滚到头即收；�
   要自己画「还能往下滚」的提示可以直接接这几个属性。
 - `dir` 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。
 
-## 产物
+### 组合
+
+- 放进[分栏](./splitter)的面板、[对话框](./dialog)的内容区、[菜单](./menu)的长条目列表。
+- 把[表格](./table)放进视口：表格不再自己定高与滚，吸顶表头与吸附列钉在视口上，两条滚动条照常工作。
+
+### 最佳实践
+
+- 触屏（粗指针）上默认交给原生滚动、不画自绘滚动条；`forceVisible` 打开才画，那时别用 `hover`：那里没有悬停。
+- 内容可滚时给出可见提示（渐隐边缘或恒显滚动条），否则用户不知道下面还有东西。
+
+### 反模式
+
+- 把 `root` 的高度留给内容撑：量不出溢出，滚动条永远不出现。
+- 用它包住整页，再在里面嵌套多层滚动区域：滚轮落在哪一层不可预期。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -83,13 +106,7 @@ variant="fade" 让还滚得动的那一侧把内容淡出，滚到头即收；�
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/scroll-area.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="scroll-area"`：**`root`** · **`viewport`** · **`content`** · `scrollbar`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -101,26 +118,26 @@ variant="fade" 让还滚得动的那一侧把内容淡出，滚到头即收；�
 | `type` | `ScrollbarType` |  | 滚动条露面的时机，默认 scroll-hover。 |
 | `variant` | `ScrollAreaVariant` |  | 形态：plain / fade，默认 plain。 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhScrollAreaRoot` | `default` | `ScrollAreaRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `scrollbar` | 'visible' \| 'hidden' |
 | `corner` | 'visible' \| 'hidden' |
 
-## connect API
+### connect API
 
-`useScrollArea` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -138,7 +155,9 @@ variant="fade" 让还滚得动的那一侧把内容淡出，滚到头即收；�
 | `getThumbProps` | `(props: ScrollAreaScrollbarProps) => T['element']` |  |
 | `getCornerProps` | `() => T['element']` | 交叉口补丁，写在竖条的挂载点里；只有两条都在场时才显形。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/WCAG21/Techniques/general/G202)
 
@@ -150,21 +169,23 @@ variant="fade" 让还滚得动的那一侧把内容淡出，滚到头即收；�
 | `Home` / `End` | focus in viewport | 滚到内容两端；组件不监听、不拦截 |
 | `Space` / `Shift+Space` | focus in viewport | 整屏翻页；组件不监听、不拦截 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `scrollbar` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/scroll-area.css` 按部件选择：`[data-scope="scroll-area"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/scroll-area.css` 使用 `[data-scope="scroll-area"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -195,7 +216,7 @@ variant="fade" 让还滚得动的那一侧把内容淡出，滚到头即收；�
 | `corner` | `data-state` | 'visible' \| 'hidden' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -204,27 +225,12 @@ variant="fade" 让还滚得动的那一侧把内容淡出，滚到头即收；�
 | `--xh-scroll-area-fade-size` | `viewport` | `-webkit-mask-image`<br>`mask-image` | `at-max-horizontal`<br>`at-max-vertical`<br>`at-min-horizontal`<br>`at-min-vertical`<br>`not([data-at-max-horizontal])`<br>`not([data-at-max-vertical])`<br>`not([data-at-min-horizontal])`<br>`not([data-at-min-vertical])`<br>`size=lg`<br>`size=sm`<br>`variant=fade` | `--xh-space-4`<br>`--xh-space-6`<br>`--xh-space-8` | scroll-area 的 viewport 部件 -webkit-mask-image、mask-image 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 放进[分栏](./splitter)的面板、[对话框](./dialog)的内容区、[菜单](./menu)的长条目列表。
-- 把[表格](./table)放进视口：表格不再自己定高与滚，吸顶表头与吸附列钉在视口上，两条滚动条照常工作。
-
-## 最佳实践
-
-- 触屏（粗指针）上默认交给原生滚动、不画自绘滚动条；`forceVisible` 打开才画，那时别用 `hover`：那里没有悬停。
-- 内容可滚时给出可见提示（渐隐边缘或恒显滚动条），否则用户不知道下面还有东西。
-
-## 反模式
-
-- 把 `root` 的高度留给内容撑：量不出溢出，滚动条永远不出现。
-- 用它包住整页，再在里面嵌套多层滚动区域：滚轮落在哪一层不可预期。

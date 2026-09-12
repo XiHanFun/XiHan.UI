@@ -16,6 +16,12 @@
 
 <XhDemo src="kbd/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="kbd"`：**`root`**
+
 ## 示例
 
 ### 尺寸
@@ -56,7 +62,24 @@
 - M1 实体小表面使用 1px 边、顶部高光和底部 contact shadow；按下时轻压并撤掉海拔。
 - compact 密度、三尺寸、RTL、forced-colors 和 200% 缩放均保持键名清楚。
 
-## 产物
+### 组合
+
+- 与按钮、菜单条目或说明文字并排。
+- 多枚键必须使用 KbdGroup，不要手写多个 `kbd` 再让读屏逐枚重复。
+
+### 最佳实践
+
+- 跨平台快捷键写 `Mod`，不要把 Ctrl 或 Meta 写死。
+- 只有动作真实触发期间才设置 `pressed`。
+
+### 反模式
+
+- 用键帽替代实际按钮或菜单项。
+- 给纯展示 Kbd 安装键盘监听。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -65,13 +88,7 @@
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/kbd.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="kbd"`：**`root`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -82,9 +99,9 @@
 | `translations` | `Partial<KbdTranslations>` |  | 读屏键名覆盖。 |
 | `value` | `string` | 是 | 一枚键的声明，例如 Mod、Shift、Esc 或 S。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -93,15 +110,17 @@
 | `platform` | `HotkeysResolvedPlatform` | 实际采用的平台写法。 |
 | `getRootProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-kbd-element)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -110,15 +129,17 @@
 - 符号键帽通过 `aria-label` 使用可读键名；例如 ⌘ 念作 Command。
 - 单枚键帽可独立进入无障碍树；在 KbdGroup 内由组级名称统一朗读，子键帽会被隐藏。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/kbd.css` 按部件选择：`[data-scope="kbd"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/kbd.css` 使用 `[data-scope="kbd"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -129,7 +150,7 @@
 | `root` | `data-size` | props.size |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -152,27 +173,12 @@
 | `--xh-kbd-shadow-pressed` | `root` | `box-shadow` | `active`<br>`disabled`<br>`is(button, a[href], [role='button'], [role='menuitem'], [role='option'])`<br>`not([data-disabled])`<br>`not([disabled], [aria-disabled='true'])`<br>`pressed` | `--xh-stroke-thin` | kbd 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background-color` · `border-color` · `box-shadow` · `color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与按钮、菜单条目或说明文字并排。
-- 多枚键必须使用 KbdGroup，不要手写多个 `kbd` 再让读屏逐枚重复。
-
-## 最佳实践
-
-- 跨平台快捷键写 `Mod`，不要把 Ctrl 或 Meta 写死。
-- 只有动作真实触发期间才设置 `pressed`。
-
-## 反模式
-
-- 用键帽替代实际按钮或菜单项。
-- 给纯展示 Kbd 安装键盘监听。

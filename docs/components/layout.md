@@ -16,6 +16,12 @@
 
 <XhDemo src="layout/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="layout"`：**`root`** · `header` · `sider-backdrop` · `sider` · `content` · `footer` · `sider-trigger`
+
 ## 示例
 
 ### 折叠侧栏
@@ -80,7 +86,23 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 - 展开与折叠各一档宽度，两档都接受任意 CSS 长度。
 - `headerFixed` 与 `siderFixed` 各自独立；两个一起用时侧栏自动让开头的高度。
 
-## 产物
+### 组合
+
+- `sider` 里放[侧栏导航](./side-nav)，`header` 里放[菜单栏](./menubar)或[工具栏](./toolbar)，`content` 里放[页头](./page-header)。
+
+### 最佳实践
+
+- 内容区自己定高、内部滚动，别让整页滚动——吸顶的头与侧栏才立得住。
+- 折叠态的宽度要放得下图标加内边距，否则图标会被裁。
+
+### 反模式
+
+- 折叠时把侧栏整个卸载再挂回来：展开的分支、滚动位置、焦点全部重置。
+- 头和侧栏都不吸附却给它们设了 `position: fixed`：占位没了，内容会被盖住。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -90,13 +112,7 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 | 状态机 | `layoutMachine` |
 | 皮肤 | `@xihan-ui/styles/layout.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="layout"`：**`root`** · `header` · `sider-backdrop` · `sider` · `content` · `footer` · `sider-trigger`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -113,18 +129,18 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 | `onSiderCollapsedChange` | `(details: LayoutSiderCollapsedChangeDetails) => void` |  | 折叠态变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 | `onSiderBreakpoint` | `(details: LayoutSiderBreakpointDetails) => void` |  | 断点跨过去时发一次，挂载或更换档位时也发一次当前值。 窄屏要把侧栏换成抽屉的，接这条：组件自己只换宽度。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `sider-collapsed-change` | `LayoutSiderCollapsedChangeDetails` | 折叠态变化；detail 为 `{ collapsed: boolean }` |
 | `sider-breakpoint` | `LayoutSiderBreakpointDetails` | 断点跨过去时发，挂载时也发一次当前值；detail 为 `{ matched: boolean }` |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`expanded` · `collapsed`
 
@@ -132,9 +148,9 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 
 **判据**：`isSiderCollapsedControlled`
 
-## connect API
+### connect API
 
-`useLayout` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -149,7 +165,9 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 | `getFooterProps` | `() => T['element']` |  |
 | `getSiderTriggerProps` | `() => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/#keyboardinteraction)
 
@@ -158,9 +176,9 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 | `Space` / `Enter` | focus in sider-trigger | 折叠/展开 sider |
 | `Escape` | sider 按覆盖档盖在内容之上 | 收起 sider |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -168,13 +186,15 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 | `sider-trigger` | `aria-controls` | `sider` 部件的 id |
 | `sider-trigger` | `aria-expanded` | 'false' \| 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/layout.css` 按部件选择：`[data-scope="layout"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/layout.css` 使用 `[data-scope="layout"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -194,7 +214,7 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 | `sider-trigger` | `data-collapsed` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -229,13 +249,13 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 | `--xh-layout-sider-w` | `root`<br>`sider` | `inline-size` | `@media (min-width: 1024px)`<br>`@media (min-width: 1280px)`<br>`@media (min-width: 640px)`<br>`@media (min-width: 768px)`<br>`default`<br>`presentation=sheet`<br>`sider-breakpoint=lg`<br>`sider-breakpoint=md`<br>`sider-breakpoint=sm`<br>`sider-breakpoint=xl` | `15rem` | layout 的 root、sider 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `inline-size` · `opacity` · `scale` · `translate` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤按视口分档：`min-width: 1024px` · `min-width: 1280px` · `min-width: 640px` · `min-width: 768px`。
 
@@ -263,20 +283,6 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 - 遮罩渲染在侧栏之前：两层同一个层号，谁盖谁由文档序决定。
 - 覆盖档下侧栏贴死视口，内衬与安全区取大的一头，所以 `--xh-layout-sider-padding` 在这一档要写单值（`max()` 收不了简写的多值）。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- `sider` 里放[侧栏导航](./side-nav)，`header` 里放[菜单栏](./menubar)或[工具栏](./toolbar)，`content` 里放[页头](./page-header)。
-
-## 最佳实践
-
-- 内容区自己定高、内部滚动，别让整页滚动——吸顶的头与侧栏才立得住。
-- 折叠态的宽度要放得下图标加内边距，否则图标会被裁。
-
-## 反模式
-
-- 折叠时把侧栏整个卸载再挂回来：展开的分支、滚动位置、焦点全部重置。
-- 头和侧栏都不吸附却给它们设了 `position: fixed`：占位没了，内容会被盖住。

@@ -16,6 +16,12 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 
 <XhDemo src="tour/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="tour"`：**`root`** · `backdrop` · `spotlight` · `positioner` · **`content`** · `title` · `description` · `progress-text` · `progress-indicator` · `progress-dot` · `prev-trigger` · `next-trigger` · `skip-trigger` · `close-trigger` · `arrow`
+
 ## 示例
 
 ### 居中步
@@ -54,7 +60,24 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 - 可以有居中的无目标步（开场与结束）。
 - 步序与展开都可受控，另有完成与跳过两个回调。
 
-## 产物
+### 组合
+
+- 与[对话框](./dialog)配合做开场；结束后引导用户去[空状态](./empty-state)那一页或具体功能。
+
+### 最佳实践
+
+- 步数压到三到五步，多了没人走完。
+- 跳过入口从第一步就要有，且要显眼。
+- 只讲一次，记住用户已经看过。
+
+### 反模式
+
+- 强制走完不许跳过。
+- 引导目标在当前视口里不存在（还没渲染出来），聚光灯挖了个空。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -64,13 +87,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | 状态机 | `tourMachine` |
 | 皮肤 | `@xihan-ui/styles/tour.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="tour"`：**`root`** · `backdrop` · `spotlight` · `positioner` · **`content`** · `title` · `description` · `progress-text` · `progress-indicator` · `progress-dot` · `prev-trigger` · `next-trigger` · `skip-trigger` · `close-trigger` · `arrow`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -93,9 +110,9 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `onComplete` | `(details: TourCompleteDetails) => void` |  | 末步再按"下一步"：先发它，再按 onOpenChange 关闭。 |
 | `onSkip` | `(details: TourSkipDetails) => void` |  | 用户主动放弃（skip-trigger 或 Escape）：先发它，再按 onOpenChange 关闭。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -104,17 +121,17 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `complete` | `TourCompleteDetails` | 末步再按下一步；detail 为 `{ step: number }` |
 | `skip` | `TourSkipDetails` | 用户放弃（跳过按钮或 Escape）；detail 为 `{ step: number }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhTourRoot` | `default` | `TourRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -127,7 +144,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `next-trigger` | 'open' \| 'closed' |
 | `skip-trigger` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -135,9 +152,9 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 
 **判据**：`isOpenControlled` · `isLastStep` · `isLastStepOpenControlled`
 
-## connect API
+### connect API
 
-`useTour` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -171,7 +188,9 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `getCloseTriggerProps` | `() => T['button']` |  |
 | `getArrowProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/#keyboardinteraction)
 
@@ -182,9 +201,9 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `ArrowUp` / `ArrowDown` / `ArrowLeft` / `ArrowRight` | open | 一概不接管：既不换步也不阻止默认行为，留给页面滚动与读屏浏览 |
 | `Tab` / `Shift+Tab` | open | 焦点陷在 content 内循环，跑出去会被拉回来 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -201,15 +220,17 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `close-trigger` | `aria-label` | translations?.close |
 | `arrow` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/tour.css` 按部件选择：`[data-scope="tour"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/tour.css` 使用 `[data-scope="tour"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -238,7 +259,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -288,7 +309,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `--xh-tour-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-heading-3-weight` | tour 的 title 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；`background` · `background-color` · `block-size` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -296,25 +317,10 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[对话框](./dialog)配合做开场；结束后引导用户去[空状态](./empty-state)那一页或具体功能。
-
-## 最佳实践
-
-- 步数压到三到五步，多了没人走完。
-- 跳过入口从第一步就要有，且要显眼。
-- 只讲一次，记住用户已经看过。
-
-## 反模式
-
-- 强制走完不许跳过。
-- 引导目标在当前视口里不存在（还没渲染出来），聚光灯挖了个空。

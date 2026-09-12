@@ -16,6 +16,12 @@
 
 <XhDemo src="resizable/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="resizable"`：**`root`** · `handle`
+
 ## 示例
 
 ### 只开放部分边
@@ -61,7 +67,13 @@ edges 决定哪几条边可调；没开放的边不显示把手
   因此对边钉得住。把 root 改成 `static` 会让这两个方向只变尺寸不移位，看起来像是「拖左边、
   右边在长」；只用东 / 南 / 东南三向时没有这个前提。
 
-## 产物
+### 组合
+
+- 里面放[滚动区域](./scroll-area)，内容超出时自己滚。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -71,13 +83,7 @@ edges 决定哪几条边可调；没开放的边不显示把手
 | 状态机 | `resizableMachine` |
 | 皮肤 | `@xihan-ui/styles/resizable.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="resizable"`：**`root`** · `handle`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -98,27 +104,27 @@ edges 决定哪几条边可调；没开放的边不显示把手
 | `onDimensionsChange` | `(details: ResizableDimensionsChangeDetails) => void` |  | 尺寸变化意图。拖动途中连着发。 |
 | `onDimensionsChangeEnd` | `(details: ResizableDimensionsChangeEndDetails) => void` |  | 一次调整收尾发一次。存尺寸用它，别用 onDimensionsChange。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `dimensions-change` | `ResizableDimensionsChangeDetails` | 尺寸变化（拖动途中会连发）；detail 为 `{ dimensions }` |
 | `dimensions-change-end` | `ResizableDimensionsChangeEndDetails` | 一次调整收尾发一次；detail 为 `{ dimensions, edge }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhResizableHandle` | `default` | — |  |
 | `XhResizableRoot` | `default` | `ResizableRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `resizing`
 
@@ -126,9 +132,9 @@ edges 决定哪几条边可调；没开放的边不显示把手
 
 **判据**：`canResize`
 
-## connect API
+### connect API
 
-`useResizable` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -142,7 +148,9 @@ edges 决定哪几条边可调；没开放的边不显示把手
 | `getRootProps` | `() => T['element']` |  |
 | `getHandleProps` | `(props: { edge: ResizeEdge }) => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/#keyboardinteraction)
 
@@ -155,9 +163,9 @@ edges 决定哪几条边可调；没开放的边不显示把手
 | `End` | focus in handle, not disabled | 推到最大尺寸；没给上限时不动 |
 | `Escape` | 调整中 | 放弃这一次调整，尺寸与位移退回按下那一刻；收尾回调不发 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -169,15 +177,17 @@ edges 决定哪几条边可调；没开放的边不显示把手
 | `handle` | `aria-valuenow` | Math.round(edge === 'n' \|\| edge === 's' ? dimensions.… |
 | `handle` | `role` | 'separator' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/resizable.css` 按部件选择：`[data-scope="resizable"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/resizable.css` 使用 `[data-scope="resizable"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -189,7 +199,7 @@ edges 决定哪几条边可调；没开放的边不显示把手
 | `handle` | `data-resizing` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -199,20 +209,16 @@ edges 决定哪几条边可调；没开放的边不显示把手
 | `--xh-resizable-grip` | `handle` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-block-end`<br>`inset-block-start`<br>`inset-inline`<br>`inset-inline-end`<br>`inset-inline-start` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w` | `--xh-space-2` | resizable 的 handle 部件 block-size、inline-size、inset-block、inset-block-end、inset-block-start、inset-inline、inset-inline-end、inset-inline-start 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
 `edge` 说的是**逻辑方向**：`e` 是行尾侧，从右往左排版时它落在屏幕左边。机器把逻辑边翻成
 物理边再算几何——翻的是边不是位移的正负，只翻位移会算对宽度却动错那一头。键盘那侧因此
 不看文字方向：方向键按的恒是屏幕方向，与拖动完全同义。
-
-## 组合
-
-- 里面放[滚动区域](./scroll-area)，内容超出时自己滚。

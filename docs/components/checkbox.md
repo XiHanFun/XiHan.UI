@@ -16,6 +16,12 @@
 
 <XhDemo src="checkbox/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="checkbox"`：**`root`** · `indicator` · `hidden-input` · `label` · `text`
+
 ## 示例
 
 ### 三态
@@ -87,7 +93,29 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 - 明暗、增强对比和 forced-colors 都保留未选中边界、三态字形与键盘焦点；forced-colors 下 disabled
   交给系统 `GrayText`，不再叠加半透明。
 
-## 产物
+### 组合
+
+- 外面套[表单字段](./field)；成组时用[复选框组](./checkbox-group)；在[表格](./table)里做行选择。
+
+### 最佳实践
+
+- 标签点得动——把文字放进 `label` 部件，别只让方框可点。
+- 半选只用来表达"下级部分选中"，不要拿它当第三种业务状态。
+- 自定义选中底时要同时验证勾形与底、控制盒与页面、聚焦环与控制盒三组对比，六种 tone 都不能只靠色相区分。
+
+### 当前边界
+
+- Checkbox 当前没有 `loading` 状态、`aria-busy` 或在途 indicator 合同。异步提交需要由业务保留受控值并在旁边
+  显式呈现进度；后续若增加 loading，必须连同是否允许取消、错误暴露和三端事件一起设计，不能只补一枚 spinner。
+
+### 反模式
+
+- 用单个复选框表达二选一（是 / 否）：用[单选组](./radio-group)，两个选项都要能被读出来。
+- 勾上就立刻发请求却不给反馈。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -97,13 +125,7 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 | 状态机 | `checkboxMachine` |
 | 皮肤 | `@xihan-ui/styles/checkbox.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="checkbox"`：**`root`** · `indicator` · `hidden-input` · `label` · `text`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -119,26 +141,26 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定方框边长与勾的字号档位。 |
 | `onCheckedChange` | `(details: CheckboxCheckedChangeDetails) => void` |  | checked 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `checked-change` | `CheckboxCheckedChangeDetails` | checked 状态变化；detail 为 `{ checked: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhCheckbox` | `default` | — | 方框旁的文字；不写就只有一个方框。 |
 | `XhCheckbox` | `indicator` | — | 方框里的图形；不写由皮肤画勾。 |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -147,7 +169,7 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 | `label` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `text` | 'indeterminate' \| 'checked' \| 'unchecked' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`off` · `on` · `indeterminate`
 
@@ -155,9 +177,9 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 
 **判据**：`isCheckedControlled` · `defaultsToChecked` · `defaultsToIndeterminate`
 
-## connect API
+### connect API
 
-`useCheckbox` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -169,7 +191,9 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 | `getLabelProps` | `() => T['label']` | 包住方框与文字的 &lt;label&gt;：点文字即切换，方框的可及名从文字来。只在带文字时渲染。 |
 | `getTextProps` | `() => T['element']` | 方框旁的文字。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/#keyboardinteraction)
 
@@ -177,9 +201,9 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 | --- | --- | --- |
 | `Space` / `Enter` | focus in root, not disabled | 切换 checked 状态 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -190,15 +214,17 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 | `root` | `role` | 'checkbox' |
 | `indicator` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/checkbox.css` 按部件选择：`[data-scope="checkbox"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/checkbox.css` 使用 `[data-scope="checkbox"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -220,7 +246,7 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 | `text` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -250,32 +276,12 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 | `--xh-checkbox-shadow-readonly` | `root` | `box-shadow` | `disabled`<br>`not([data-disabled])`<br>`readonly` | `none` | checkbox 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background-color` · `border-color` · `box-shadow` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
-
-## 组合
-
-- 外面套[表单字段](./field)；成组时用[复选框组](./checkbox-group)；在[表格](./table)里做行选择。
-
-## 最佳实践
-
-- 标签点得动——把文字放进 `label` 部件，别只让方框可点。
-- 半选只用来表达"下级部分选中"，不要拿它当第三种业务状态。
-- 自定义选中底时要同时验证勾形与底、控制盒与页面、聚焦环与控制盒三组对比，六种 tone 都不能只靠色相区分。
-
-### 当前边界
-
-- Checkbox 当前没有 `loading` 状态、`aria-busy` 或在途 indicator 合同。异步提交需要由业务保留受控值并在旁边
-  显式呈现进度；后续若增加 loading，必须连同是否允许取消、错误暴露和三端事件一起设计，不能只补一枚 spinner。
-
-## 反模式
-
-- 用单个复选框表达二选一（是 / 否）：用[单选组](./radio-group)，两个选项都要能被读出来。
-- 勾上就立刻发请求却不给反馈。
