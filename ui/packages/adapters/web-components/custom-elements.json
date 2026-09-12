@@ -22339,6 +22339,15 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "type": {
+                "text": "PortalLease | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
               "name": "counterOwned",
               "type": {
                 "text": "boolean | null"
@@ -22396,6 +22405,51 @@
                 }
               },
               "description": "退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。"
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "mountViewportPortal",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "backdrop",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "positioner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "ImageViewer 始终是视口模态层：backdrop 与 positioner 作为一枚 Core 租约一同搬迁，\n并在退出动画结束、作者换根或宿主断开时按 placeholder 恢复。"
+            },
+            {
+              "kind": "method",
+              "name": "restoreViewportPortal",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             },
             {
               "kind": "field",
@@ -39078,6 +39132,25 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "ensureExit",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "OverlayExit"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "open",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "description": "在机器挂载前建立 Presence，确保 default-open 的行为资源与视觉退场共享同一租约。"
             },
             {
               "kind": "field",
