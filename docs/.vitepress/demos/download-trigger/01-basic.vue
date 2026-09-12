@@ -1,12 +1,13 @@
-<!-- 基础用法 | 内容已经在手里就直接给字符串，点一下即交给浏览器；文件名连同扩展名都由 file-name 说了算 -->
+<!-- 基础用法 | 下载文本文件 -->
 <script setup lang="ts">
-import { XhDownloadTrigger } from "@xihan-ui/vue";
+import { DownloadIcon } from "@xihan-ui/icons";
+import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
 
-const notes = "曦寒 UI 导出示例：这一行会被写进 notes.txt";
+const content = "XiHan.UI";
 </script>
 
 <template>
-  <XhDownloadTrigger :data="notes" file-name="notes.txt">
-    导出文本
+  <XhDownloadTrigger :data="content" file-name="xihan-ui.txt">
+    <XhIcon :icon="DownloadIcon" /> 下载文件
   </XhDownloadTrigger>
 </template>

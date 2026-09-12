@@ -1,8 +1,22 @@
+@import '../family/action-control.css';
+
 @layer xihan.motion {
   /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
   @keyframes xh-download-trigger-rotate {
     to {
       rotate: 360deg;
+    }
+  }
+
+  @keyframes xh-download-trigger-loading-reveal {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes xh-download-trigger-content-hide {
+    to {
+      color: transparent;
     }
   }
 }
@@ -21,12 +35,13 @@
   [data-scope='download-trigger'][data-part='root'] {
     /* 形态的落点：没写 data-variant 时这六支保持缺省档的取值，规则读的是
        「使用者令牌 → 这六支 → 语义令牌」三级，使用者令牌永远排在形态之前 */
-    --xh-_download-trigger-bg: var(--xh-bg-canvas);
+    --xh-_download-trigger-bg: var(--xh-bg-subtle);
     --xh-_download-trigger-bg-hover: var(--xh-bg-subtle-hover);
     --xh-_download-trigger-bg-active: var(--xh-bg-subtle-active);
     --xh-_download-trigger-fg: var(--xh-fg-default);
-    --xh-_download-trigger-border: var(--xh-border-control);
-    --xh-_download-trigger-border-hover: var(--xh-border-control-hover);
+    --xh-_download-trigger-border: transparent;
+    --xh-_download-trigger-border-hover: transparent;
+    --xh-_download-trigger-shadow-hover: none;
 
     /* 作者塞进来的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-download-trigger-icon-size, var(--xh-glyph-size-md));
@@ -40,12 +55,12 @@
     padding-inline: var(--xh-download-trigger-px, var(--xh-control-px-md));
     padding-block: 0;
     border: var(--xh-stroke-thin) solid var(--xh-download-trigger-border, var(--xh-_download-trigger-border));
-    border-radius: var(--xh-download-trigger-radius, var(--xh-shape-control));
+    border-radius: var(--xh-download-trigger-radius, var(--xh-shape-pill));
     background: var(--xh-download-trigger-bg, var(--xh-_download-trigger-bg));
     color: var(--xh-download-trigger-fg, var(--xh-_download-trigger-fg));
     /* 表单控件不继承页面字体，只给字号会让按钮用 UA 默认字族 */
     font-family: inherit;
-    font-size: var(--xh-download-trigger-font-size, var(--xh-text-label-size));
+    font-size: var(--xh-download-trigger-font-size, var(--xh-control-font-md));
     font-weight: var(--xh-download-trigger-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
@@ -70,14 +85,14 @@
   }
 
   /* 换底、换描边之外再抬起一档：这是一块实心的可点面，指针停上去它从页面里浮出来 */
-  [data-scope='download-trigger'][data-part='root']:hover {
+  [data-scope='download-trigger'][data-part='root']:not([data-loading]):hover {
     border-color: var(--xh-download-trigger-border-hover, var(--xh-_download-trigger-border-hover));
     background: var(--xh-download-trigger-bg-hover, var(--xh-_download-trigger-bg-hover));
-    box-shadow: var(--xh-download-trigger-shadow-hover, var(--xh-elevation-raised));
+    box-shadow: var(--xh-download-trigger-shadow-hover, var(--xh-_download-trigger-shadow-hover));
   }
 
   /* 换底之外再压一档：取数在途前的那一下按压给出回执 */
-  [data-scope='download-trigger'][data-part='root']:active {
+  [data-scope='download-trigger'][data-part='root']:not([data-loading]):active {
     background: var(--xh-download-trigger-bg-active, var(--xh-_download-trigger-bg-active));
     scale: var(--xh-motion-scale-press);
   }
@@ -92,6 +107,7 @@
     --xh-_download-trigger-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
     --xh-_download-trigger-border: transparent;
     --xh-_download-trigger-border-hover: transparent;
+    --xh-_download-trigger-shadow-hover: var(--xh-elevation-raised);
   }
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
@@ -149,7 +165,7 @@
   /* 没写内容就由皮肤画兜底字形；作者往按钮里塞了文字或自己的图形，这几条即不命中。
      字形另起一颗 ::after：::before 是转圈那枚圆环的方框，mask 会把描边裁成字形轮廓、圆环就此消失。
      取数在途那一档不画字形，那一格让给圆环 */
-  [data-scope='download-trigger'][data-part='root']:empty:not([data-state='preparing'])::after {
+  [data-scope='download-trigger'][data-part='root']:empty:not([aria-busy='true'])::after {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -160,37 +176,52 @@
     mask: var(--xh-glyph-mark-download) center / contain no-repeat;
   }
 
-  /* 取数在途：指针换成 progress，同时在按钮里转一枚圆环。
-     只靠指针形状的话触屏上是零反馈——手指按下去到文件出来之间屏上什么都不变，
-     用户只会接着点。圆环是行内的一个 flex 项，按钮的起始边不动，只往后长一截 */
-  [data-scope='download-trigger'][data-part='root'][data-state='preparing'] {
+  /* 快速取数不显示瞬时圆环；超过一个 micro 周期后才在原位换成加载状态。 */
+  [data-scope='download-trigger'][data-part='root'][data-state='preparing'][aria-busy='true'] {
     cursor: progress;
+    animation: xh-download-trigger-content-hide var(--xh-motion-duration-micro) var(--xh-motion-ease-enter)
+      var(--xh-motion-duration-micro) forwards;
   }
 
-  [data-scope='download-trigger'][data-part='root'][data-state='preparing']::before {
+  [data-scope='download-trigger'][data-part='root'][aria-busy='true']::before {
     content: '';
-    flex: none;
+    position: absolute;
+    inset: 0;
     inline-size: 1em;
     block-size: 1em;
+    margin: auto;
     border: var(--xh-stroke-thin) solid transparent;
-    border-block-start-color: currentColor;
+    border-block-start-color: var(--xh-download-trigger-loading-fg, var(--xh-_download-trigger-fg));
     border-radius: var(--xh-shape-pill);
-    animation: xh-download-trigger-rotate var(--xh-download-trigger-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+    opacity: 0;
+    animation:
+      xh-download-trigger-rotate var(--xh-download-trigger-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite,
+      xh-download-trigger-loading-reveal var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
   }
 
-  /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
-     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
-    [data-scope='download-trigger'][data-part='root'][data-state='preparing']::before {
+    [data-scope='download-trigger'][data-part='root'][aria-busy='true'] {
+      color: transparent;
+      animation: none;
+    }
+
+    [data-scope='download-trigger'][data-part='root'][aria-busy='true']::before {
       border-style: dotted;
-      border-color: currentColor;
+      border-color: var(--xh-download-trigger-loading-fg, var(--xh-_download-trigger-fg));
+      opacity: 1;
       animation: none;
     }
   }
 
-  :where([data-motion='reduce']) [data-scope='download-trigger'][data-part='root'][data-state='preparing']::before {
+  :where([data-motion='reduce']) [data-scope='download-trigger'][data-part='root'][aria-busy='true'] {
+    color: transparent;
+    animation: none;
+  }
+
+  :where([data-motion='reduce']) [data-scope='download-trigger'][data-part='root'][aria-busy='true']::before {
     border-style: dotted;
-    border-color: currentColor;
+    border-color: var(--xh-download-trigger-loading-fg, var(--xh-_download-trigger-fg));
+    opacity: 1;
     animation: none;
   }
 
@@ -220,8 +251,8 @@
       position: relative;
     }
 
-    [data-scope='download-trigger'][data-part='root']:not([data-state='preparing'])::before,
-    [data-scope='download-trigger'][data-part='root'][data-state='preparing']::after {
+    [data-scope='download-trigger'][data-part='root']:not([aria-busy='true'])::before,
+    [data-scope='download-trigger'][data-part='root'][aria-busy='true']::after {
       content: '';
       position: absolute;
       inset-block: -8px;

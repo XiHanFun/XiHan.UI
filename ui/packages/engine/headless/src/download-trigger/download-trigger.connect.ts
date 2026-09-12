@@ -33,6 +33,7 @@ export function connectDownloadTrigger<T extends PropTypes>(
       // 单体原生控件用原生 disabled：它本就不该被聚焦，也不该派 click
       'disabled': disabled || undefined,
       // 取数在途时按钮仍可聚焦、仍留在原位，只把"正在忙"如实报给读屏
+      'aria-disabled': preparing ? 'true' : undefined,
       'aria-busy': preparing ? 'true' : undefined,
       // 按钮里只放一个图标时没有可见文字，可及名字只能由这里给。
       // 不给缺省值：按钮里多半写着「导出 CSV」这类可见文字，凭空盖一个名字上去
@@ -43,6 +44,11 @@ export function connectDownloadTrigger<T extends PropTypes>(
       'data-size': prop('size'),
       'data-state': status,
       'data-disabled': dataAttr(disabled),
+      'data-loading': dataAttr(preparing),
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'onClick': () => {
         if (!disabled)
           send({ type: 'DOWNLOAD.TRIGGER' })

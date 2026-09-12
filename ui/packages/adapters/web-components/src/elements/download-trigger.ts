@@ -23,8 +23,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} file-name - 写出的文件名；缺省或空串退回内建名 download
  * @attr {string} mime-type - 内容类型；给了它就以它为准，连 Blob 自带的类型也照它重包
  * @attr {boolean} disabled - 禁用，按钮不可聚焦也点不动
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定颜色怎么用
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires download-complete - 数据已交给浏览器；detail 为 `{ fileName }`
  * @fires download-error - 取数失败或造不出下载；detail 为 `{ error, fileName }`，此刻状态已经回到 idle

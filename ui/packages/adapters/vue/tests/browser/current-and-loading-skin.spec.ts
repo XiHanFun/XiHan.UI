@@ -146,21 +146,27 @@ describe('「当前项」的三家槽名收成同一副构词', () => {
 // —— 在途：触屏上没有指针，光换 cursor 等于零反馈 ——
 
 describe('取数与写入在途的转圈', () => {
-  it('下载钮取数在途：指针之外另有一枚转起来的圆环', async () => {
+  it('下载钮取数在途：延迟显示圆环且外框不位移', async () => {
     // 永不落定的取数函数把状态钉在 preparing 上
     await mount(() => h(XhDownloadTrigger, { data: () => new Promise<string>(() => {}) }, () => '导出'))
     const root = part('download-trigger', 'root')
+    const width = root.getBoundingClientRect().width
+    const foreground = styleOf(root, 'color')
     expect(beforeOf(root, 'animation-name')).toBe('none')
 
     await userEvent.click(root)
     await nextTick()
     expect(root.getAttribute('data-state')).toBe('preparing')
     expect(styleOf(root, 'cursor')).toBe('progress')
-    expect(beforeOf(root, 'animation-name')).toBe('xh-download-trigger-rotate')
-    expect(beforeOf(root, 'animation-iteration-count')).toBe('infinite')
-    // 圆环真占了一格盒子，不是零尺寸的空规则
+    expect(root.getBoundingClientRect().width).toBeCloseTo(width, 4)
+    expect(beforeOf(root, 'animation-name')).toContain('xh-download-trigger-rotate')
+    expect(beforeOf(root, 'animation-name')).toContain('xh-download-trigger-loading-reveal')
+    expect(beforeOf(root, 'opacity')).toBe('0')
     expect(Number.parseFloat(beforeOf(root, 'width'))).toBeGreaterThan(0)
-    expect(beforeOf(root, 'border-top-color')).toBe(styleOf(root, 'color'))
+    expect(beforeOf(root, 'border-top-color')).toBe(foreground)
+    await new Promise<void>(resolve => setTimeout(resolve, 300))
+    expect(Number.parseFloat(beforeOf(root, 'opacity'))).toBeGreaterThan(0.9)
+    expect(root.getBoundingClientRect().width).toBeCloseTo(width, 4)
   })
 
   it('下载钮的转圈时长认使用者槽', async () => {
@@ -169,7 +175,7 @@ describe('取数与写入在途的转圈', () => {
     const root = part('download-trigger', 'root')
     await userEvent.click(root)
     await nextTick()
-    expect(beforeOf(root, 'animation-duration')).toBe('3s')
+    expect(beforeOf(root, 'animation-duration').split(',')[0]!.trim()).toBe('3s')
   })
 
   it('复制钮写入在途：圆环延迟出现，不闪动快速写入', async () => {
@@ -178,6 +184,7 @@ describe('取数与写入在途的转圈', () => {
     ]))
     const trigger = part('clipboard', 'copy-trigger')
     // 写剪贴板要真实权限，headless 下拿不到；这一档皮肤本来就只认属性，直接把状态摆上去
+    part('clipboard', 'root').setAttribute('data-state', 'copying')
     trigger.setAttribute('data-state', 'copying')
     trigger.setAttribute('aria-busy', 'true')
     expect(styleOf(trigger, 'cursor')).toBe('progress')

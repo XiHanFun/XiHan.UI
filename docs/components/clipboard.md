@@ -178,6 +178,7 @@
 | --- | --- | --- |
 | `input` | `aria-labelledby` | `label` 部件的 id |
 | `copy-trigger` | `aria-busy` | 'true' \| undefined |
+| `copy-trigger` | `aria-disabled` | 'true' \| undefined |
 | `copy-trigger` | `aria-label` | translations?.copy |
 | `indicator` | `aria-hidden` | indicator.copied !== copied \|\| undefined |
 | `status` | `aria-atomic` | 'true' |
@@ -207,7 +208,12 @@
 | `input` | `data-state` | 'idle' \| 'copying' \| 'copied' |
 | `copy-trigger` | `data-copied` | ''（条件成立时才出现） |
 | `copy-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `copy-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `copy-trigger` | `data-state` | 'idle' \| 'copying' \| 'copied' |
+| `copy-trigger` | `data-xh-action-control` | '' |
+| `copy-trigger` | `data-xh-action-display` | 'always' |
+| `copy-trigger` | `data-xh-action-profile` | 'text' |
+| `copy-trigger` | `data-xh-action-size` | props.size |
 | `indicator` | `data-copied` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'idle' \| 'copying' \| 'copied' |
 | `status` | `data-state` | 'idle' \| 'copying' \| 'copied' |
@@ -221,22 +227,24 @@
 | --- | --- | --- | --- | --- | --- |
 | `--xh-clipboard-control-active-layer` | `control`<br>`copy-trigger`<br>`input` | `z-index` | `focus-visible`<br>`hover` | `1` | clipboard 的 control、copy-trigger、input 部件 z-index 覆盖槽。 |
 | `--xh-clipboard-control-gap` | `control` | `gap` | `default` | `0` | clipboard 的 control 部件 gap 覆盖槽。 |
+| `--xh-clipboard-copy-trigger-attached-radius` | `control`<br>`copy-trigger` | `border-end-end-radius`<br>`border-start-end-radius` | `not(:first-child)` | `--xh-clipboard-input-radius` | clipboard 的 control、copy-trigger 部件 border-end-end-radius、border-start-end-radius 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-bg` | `copy-trigger` | `background` | `default` | `--xh-_clipboard-copy-trigger-bg` | clipboard 的 copy-trigger 部件 background 覆盖槽。 |
-| `--xh-clipboard-copy-trigger-bg-active` | `copy-trigger` | `background` | `active` | `--xh-_clipboard-copy-trigger-bg-active` | clipboard 的 copy-trigger 部件 background 覆盖槽。 |
+| `--xh-clipboard-copy-trigger-bg-active` | `copy-trigger` | `background` | `active`<br>`loading`<br>`not([data-loading])` | `--xh-_clipboard-copy-trigger-bg-active` | clipboard 的 copy-trigger 部件 background 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-bg-disabled` | `copy-trigger` | `background` | `disabled` | `--xh-bg-muted` | clipboard 的 copy-trigger 部件 background 覆盖槽。 |
-| `--xh-clipboard-copy-trigger-bg-hover` | `copy-trigger` | `background` | `hover` | `--xh-_clipboard-copy-trigger-bg-hover` | clipboard 的 copy-trigger 部件 background 覆盖槽。 |
+| `--xh-clipboard-copy-trigger-bg-hover` | `copy-trigger` | `background` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_clipboard-copy-trigger-bg-hover` | clipboard 的 copy-trigger 部件 background 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-border` | `copy-trigger` | `border` | `default` | `--xh-_clipboard-copy-trigger-border` | clipboard 的 copy-trigger 部件 border 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-border-copied` | `copy-trigger` | `border-color` | `copied` | `--xh-fg-success` | clipboard 的 copy-trigger 部件 border-color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-border-disabled` | `copy-trigger` | `border-color` | `disabled` | `--xh-border-control` | clipboard 的 copy-trigger 部件 border-color 覆盖槽。 |
-| `--xh-clipboard-copy-trigger-border-hover` | `copy-trigger` | `border-color` | `hover` | `--xh-_clipboard-copy-trigger-border-hover` | clipboard 的 copy-trigger 部件 border-color 覆盖槽。 |
+| `--xh-clipboard-copy-trigger-border-hover` | `copy-trigger` | `border-color` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_clipboard-copy-trigger-border-hover` | clipboard 的 copy-trigger 部件 border-color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-fg` | `copy-trigger`<br>`root` | `--xh-_ring-color`<br>`color` | `copied`<br>`default`<br>`focus-visible`<br>`variant=solid` | `--xh-_clipboard-copy-trigger-fg` | clipboard 的 copy-trigger、root 部件 --xh-_ring-color、color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-fg-copied` | `copy-trigger` | `color` | `copied` | `--xh-fg-success` | clipboard 的 copy-trigger 部件 color 覆盖槽。 |
-| `--xh-clipboard-copy-trigger-font-size` | `copy-trigger` | `font-size` | `default` | `--xh-text-body-size` | clipboard 的 copy-trigger 部件 font-size 覆盖槽。 |
+| `--xh-clipboard-copy-trigger-font-size` | `copy-trigger` | `font-size` | `default` | `--xh-_clipboard-font-size` | clipboard 的 copy-trigger 部件 font-size 覆盖槽。 |
+| `--xh-clipboard-copy-trigger-font-weight` | `copy-trigger` | `font-weight` | `default` | `--xh-text-label-weight` | clipboard 的 copy-trigger 部件 font-weight 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-gap` | `copy-trigger`<br>`indicator` | `gap` | `default` | `--xh-control-gap-sm` | clipboard 的 copy-trigger、indicator 部件 gap 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-h` | `copy-trigger` | `block-size` | `default` | `--xh-_clipboard-h` | clipboard 的 copy-trigger 部件 block-size 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-px` | `copy-trigger` | `padding-inline` | `default` | `--xh-_clipboard-px` | clipboard 的 copy-trigger 部件 padding-inline 覆盖槽。 |
-| `--xh-clipboard-copy-trigger-radius` | `copy-trigger` | `border-radius` | `default` | `--xh-shape-control` | clipboard 的 copy-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-clipboard-copy-trigger-shadow-hover` | `copy-trigger` | `box-shadow` | `hover` | `--xh-_clipboard-copy-trigger-shadow-hover` | clipboard 的 copy-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-clipboard-copy-trigger-radius` | `copy-trigger` | `border-radius` | `default` | `--xh-shape-pill` | clipboard 的 copy-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-clipboard-copy-trigger-shadow-hover` | `copy-trigger` | `box-shadow` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_clipboard-copy-trigger-shadow-hover` | clipboard 的 copy-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-clipboard-gap` | `root` | `gap` | `default` | `--xh-space-1` | clipboard 的 root 部件 gap 覆盖槽。 |
 | `--xh-clipboard-indicator-fg-copied` | `indicator` | `color` | `copied` | `--xh-fg-success` | clipboard 的 indicator 部件 color 覆盖槽。 |
 | `--xh-clipboard-indicator-gap` | `indicator` | `gap` | `default` | `--xh-clipboard-copy-trigger-gap` | clipboard 的 indicator 部件 gap 覆盖槽。 |
@@ -250,7 +258,7 @@
 | `--xh-clipboard-input-h` | `input` | `block-size` | `default` | `--xh-_clipboard-h` | clipboard 的 input 部件 block-size 覆盖槽。 |
 | `--xh-clipboard-input-min-w` | `input` | `inline-size` | `default` | `--xh-control-min-w` | clipboard 的 input 部件 inline-size 覆盖槽。 |
 | `--xh-clipboard-input-px` | `input` | `padding-inline` | `default` | `--xh-_clipboard-px` | clipboard 的 input 部件 padding-inline 覆盖槽。 |
-| `--xh-clipboard-input-radius` | `input` | `border-radius` | `default` | `--xh-shape-control` | clipboard 的 input 部件 border-radius 覆盖槽。 |
+| `--xh-clipboard-input-radius` | `control`<br>`copy-trigger`<br>`input` | `border-end-end-radius`<br>`border-radius`<br>`border-start-end-radius` | `default`<br>`not(:first-child)` | `--xh-shape-control` | clipboard 的 control、copy-trigger、input 部件 border-end-end-radius、border-radius、border-start-end-radius 覆盖槽。 |
 | `--xh-clipboard-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | clipboard 的 label 部件 color 覆盖槽。 |
 | `--xh-clipboard-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | clipboard 的 label 部件 font-size 覆盖槽。 |
 | `--xh-clipboard-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | clipboard 的 label 部件 font-weight 覆盖槽。 |

@@ -321,8 +321,13 @@ describe('connectDownloadTrigger 属性表', () => {
     expect(props['data-scope']).toBe('download-trigger')
     expect(props['data-part']).toBe('root')
     expect(props['aria-busy']).toBeUndefined()
+    expect(props['aria-disabled']).toBeUndefined()
     expect(props['data-state']).toBe('idle')
     expect(props['data-disabled']).toBeUndefined()
+    expect(props['data-loading']).toBeUndefined()
+    expect(props['data-xh-action-control']).toBe('')
+    expect(props['data-xh-action-profile']).toBe('text')
+    expect(props['data-xh-action-size']).toBe('md')
     expect(props.disabled).toBeUndefined()
   })
 
@@ -341,6 +346,8 @@ describe('connectDownloadTrigger 属性表', () => {
     const props = trigger.api().getRootProps() as Dict
     expect(props['data-state']).toBe('preparing')
     expect(props['aria-busy']).toBe('true')
+    expect(props['aria-disabled']).toBe('true')
+    expect(props['data-loading']).toBe('')
     expect(props.disabled).toBeUndefined()
   })
 

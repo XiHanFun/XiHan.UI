@@ -8061,6 +8061,26 @@
       "description": "clipboard 的 control 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-clipboard-copy-trigger-attached-radius",
+      "component": "clipboard",
+      "part": [
+        "control",
+        "copy-trigger"
+      ],
+      "property": [
+        "border-end-end-radius",
+        "border-start-end-radius"
+      ],
+      "state": [
+        "not(:first-child)"
+      ],
+      "defaultToken": [
+        "--xh-clipboard-input-radius"
+      ],
+      "visibility": "public",
+      "description": "clipboard 的 control、copy-trigger 部件 border-end-end-radius、border-start-end-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-clipboard-copy-trigger-bg",
       "component": "clipboard",
       "part": [
@@ -8088,7 +8108,9 @@
         "background"
       ],
       "state": [
-        "active"
+        "active",
+        "loading",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-_clipboard-copy-trigger-bg-active"
@@ -8124,7 +8146,9 @@
         "background"
       ],
       "state": [
-        "hover"
+        "hover",
+        "loading",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-_clipboard-copy-trigger-bg-hover"
@@ -8196,7 +8220,9 @@
         "border-color"
       ],
       "state": [
-        "hover"
+        "hover",
+        "loading",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-_clipboard-copy-trigger-border-hover"
@@ -8258,10 +8284,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-_clipboard-font-size"
       ],
       "visibility": "public",
       "description": "clipboard 的 copy-trigger 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-clipboard-copy-trigger-font-weight",
+      "component": "clipboard",
+      "part": [
+        "copy-trigger"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "clipboard 的 copy-trigger 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-copy-trigger-gap",
@@ -8331,7 +8375,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-pill"
       ],
       "visibility": "public",
       "description": "clipboard 的 copy-trigger 部件 border-radius 覆盖槽。"
@@ -8346,7 +8390,9 @@
         "box-shadow"
       ],
       "state": [
-        "hover"
+        "hover",
+        "loading",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-_clipboard-copy-trigger-shadow-hover"
@@ -8594,19 +8640,24 @@
       "name": "--xh-clipboard-input-radius",
       "component": "clipboard",
       "part": [
+        "control",
+        "copy-trigger",
         "input"
       ],
       "property": [
-        "border-radius"
+        "border-end-end-radius",
+        "border-radius",
+        "border-start-end-radius"
       ],
       "state": [
-        "default"
+        "default",
+        "not(:first-child)"
       ],
       "defaultToken": [
         "--xh-shape-control"
       ],
       "visibility": "public",
-      "description": "clipboard 的 input 部件 border-radius 覆盖槽。"
+      "description": "clipboard 的 control、copy-trigger、input 部件 border-end-end-radius、border-radius、border-start-end-radius 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-label-fg",
@@ -18000,7 +18051,9 @@
         "background"
       ],
       "state": [
-        "active"
+        "active",
+        "loading",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-_download-trigger-bg-active"
@@ -18036,7 +18089,9 @@
         "background"
       ],
       "state": [
-        "hover"
+        "hover",
+        "loading",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-_download-trigger-bg-hover"
@@ -18090,7 +18145,9 @@
         "border-color"
       ],
       "state": [
-        "hover"
+        "hover",
+        "loading",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-_download-trigger-border-hover"
@@ -18132,8 +18189,8 @@
       ],
       "defaultToken": [
         "--xh-control-font-lg",
-        "--xh-control-font-sm",
-        "--xh-text-label-size"
+        "--xh-control-font-md",
+        "--xh-control-font-sm"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 font-size 覆盖槽。"
@@ -18232,13 +18289,35 @@
         "animation"
       ],
       "state": [
-        "state=preparing"
+        "default"
       ],
       "defaultToken": [
         "--xh-spin-duration"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 animation 覆盖槽。"
+    },
+    {
+      "name": "--xh-download-trigger-loading-fg",
+      "component": "download-trigger",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border-block-start-color",
+        "border-color"
+      ],
+      "state": [
+        "@media (prefers-reduced-motion: reduce)",
+        "default",
+        "motion=reduce",
+        "where([data-motion='reduce'])"
+      ],
+      "defaultToken": [
+        "--xh-_download-trigger-fg"
+      ],
+      "visibility": "public",
+      "description": "download-trigger 的 root 部件 border-block-start-color、border-color 覆盖槽。"
     },
     {
       "name": "--xh-download-trigger-px",
@@ -18275,7 +18354,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-pill"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 border-radius 覆盖槽。"
@@ -18290,10 +18369,12 @@
         "box-shadow"
       ],
       "state": [
-        "hover"
+        "hover",
+        "loading",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "--xh-_download-trigger-shadow-hover"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 box-shadow 覆盖槽。"
@@ -25950,8 +26031,8 @@
         "indeterminate",
         "mode=send",
         "mode=stop",
+        "not([aria-busy='true'])",
         "not([data-selected])",
-        "not([data-state='preparing'])",
         "selected",
         "size=2xl",
         "size=3xl",
@@ -25969,7 +26050,6 @@
         "state=error",
         "state=indeterminate",
         "state=paused",
-        "state=preparing",
         "state=running",
         "state=visible"
       ],

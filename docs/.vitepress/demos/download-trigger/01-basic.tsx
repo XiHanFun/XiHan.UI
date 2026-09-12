@@ -1,13 +1,16 @@
-// 基础用法 | 内容已经在手里就直接给字符串，点一下即交给浏览器；文件名连同扩展名都由 file-name 说了算
+// 基础用法 | 下载文本文件
 import type { ReactNode } from "react";
-import { XhDownloadTrigger } from "@xihan-ui/react";
+import { DownloadIcon } from "@xihan-ui/icons";
+import { XhDownloadTrigger, XhIcon } from "@xihan-ui/react";
 
-const notes = "曦寒 UI 导出示例：这一行会被写进 notes.txt";
+const content = "XiHan.UI";
 
 export default function Demo(): ReactNode {
   return (
-    <XhDownloadTrigger data={notes} fileName="notes.txt">
-      导出文本
+    <XhDownloadTrigger data={content} fileName="xihan-ui.txt">
+      <XhIcon icon={DownloadIcon} />
+      {" "}
+      下载文件
     </XhDownloadTrigger>
   );
 }
