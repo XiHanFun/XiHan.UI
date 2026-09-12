@@ -1,4 +1,4 @@
-// 边缘渐隐 | variant="fade" 让还滚得动的那一侧把内容淡出，滚到头即收；带宽跟着 size 走
+// 边缘渐隐 | 提示还有更多内容
 import type { ReactNode } from "react";
 import {
   XhScrollAreaContent,
@@ -9,19 +9,19 @@ import {
   XhScrollAreaViewport,
 } from "@xihan-ui/react";
 
-const rows = Array.from({ length: 18 }, (_, i) => `第 ${i + 1} 行内容`);
+const rows = ["概览", "组件", "指南", "示例", "设计令牌", "无障碍", "主题", "动效", "国际化", "发布记录", "迁移指南", "常见问题"];
 
 export default function Demo(): ReactNode {
   return (
     <XhScrollAreaRoot
       variant="fade"
       size="lg"
-      style={{ blockSize: "180px", inlineSize: "100%", maxInlineSize: "320px" }}
+      style={{ blockSize: "180px", inlineSize: "min(320px, 100%)", borderRadius: "var(--xh-shape-surface)", background: "var(--xh-bg-subtle)" }}
     >
       <XhScrollAreaViewport>
-        <XhScrollAreaContent style={{ padding: "8px 12px" }}>
+        <XhScrollAreaContent style={{ padding: "12px 16px" }}>
           {rows.map(row => (
-            <p key={row} style={{ margin: 0, lineHeight: "28px" }}>
+            <p key={row} style={{ margin: 0, lineHeight: "30px" }}>
               {row}
             </p>
           ))}

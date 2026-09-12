@@ -1,4 +1,4 @@
-<!-- 基础用法 | root 要有确定高度，视口才量得出溢出；滚动走的是浏览器原生通路，组件只画滚动条 -->
+<!-- 基础用法 | 创建纵向滚动区域 -->
 <script setup lang="ts">
 import {
   XhScrollAreaContent,
@@ -9,16 +9,14 @@ import {
   XhScrollAreaViewport,
 } from "@xihan-ui/vue";
 
-const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行内容`);
+const items = ["项目概览", "组件规范", "设计令牌", "无障碍", "交互状态", "主题配置", "构建流程", "发布记录", "迁移指南", "常见问题"];
 </script>
 
 <template>
-  <XhScrollAreaRoot style="block-size: 180px; inline-size: 100%; max-inline-size: 420px">
+  <XhScrollAreaRoot type="always" style="block-size: 180px; inline-size: min(360px, 100%); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
     <XhScrollAreaViewport>
-      <XhScrollAreaContent style="padding: 8px 12px">
-        <p v-for="line in lines" :key="line" style="margin: 0; line-height: 24px">
-          {{ line }}
-        </p>
+      <XhScrollAreaContent style="padding: 12px 16px">
+        <div v-for="item in items" :key="item" style="padding-block: 7px">{{ item }}</div>
       </XhScrollAreaContent>
     </XhScrollAreaViewport>
     <XhScrollAreaScrollbar orientation="vertical">

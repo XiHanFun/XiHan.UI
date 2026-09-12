@@ -1,4 +1,4 @@
-<!-- 只管一条轴 | orientation 关掉的那条轴滚动条恒不显形，视口那一向也不再滚，不留滚不回来的暗格 -->
+<!-- 横向滚动 | 只启用横向滚动 -->
 <script setup lang="ts">
 import {
   XhScrollAreaContent,
@@ -9,14 +9,14 @@ import {
   XhScrollAreaViewport,
 } from "@xihan-ui/vue";
 
-const cards = Array.from({ length: 12 }, (_, i) => `卡片 ${i + 1}`);
+const cards = ["概览", "分析", "报告", "成员", "设置", "发布"];
 </script>
 
 <template>
   <XhScrollAreaRoot
     orientation="horizontal"
     type="always"
-    style="block-size: 110px; inline-size: 100%; max-inline-size: 420px"
+    style="block-size: 110px; inline-size: min(420px, 100%); border-radius: var(--xh-shape-surface)"
   >
     <XhScrollAreaViewport>
       <XhScrollAreaContent style="display: flex; gap: 10px; padding: 10px 12px">
@@ -29,8 +29,8 @@ const cards = Array.from({ length: 12 }, (_, i) => `卡片 ${i + 1}`);
             place-items: center;
             inline-size: 96px;
             block-size: 64px;
-            border: 1px solid var(--xh-border-subtle);
-            border-radius: 8px;
+            border-radius: var(--xh-shape-surface);
+            background: var(--xh-bg-subtle);
           "
         >
           {{ card }}

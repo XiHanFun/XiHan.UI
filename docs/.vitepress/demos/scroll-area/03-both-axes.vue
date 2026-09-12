@@ -1,4 +1,4 @@
-<!-- 双轴与拐角 | 两条轴各写一条滚动条，corner 补上右下角那块空白；内容要比视口宽，横轴才量得出溢出 -->
+<!-- 双轴滚动 | 同时显示横向和纵向滚动条 -->
 <script setup lang="ts">
 import {
   XhScrollAreaContent,
@@ -10,23 +10,20 @@ import {
   XhScrollAreaViewport,
 } from "@xihan-ui/vue";
 
-const rows = Array.from(
-  { length: 16 },
-  (_, i) => `第 ${i + 1} 行 —— 这一行故意写得很长，长到横向也需要滚动才看得完整句话`,
-);
+const rows = Array.from({ length: 10 }, (_, index) => `ORD-${String(index + 1).padStart(4, "0")} · 华东区域 · 企业版年度订阅 · 已完成`);
 </script>
 
 <template>
   <XhScrollAreaRoot
     type="always"
-    style="block-size: 160px; inline-size: 100%; max-inline-size: 420px"
+    style="block-size: 160px; inline-size: min(420px, 100%); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
   >
     <XhScrollAreaViewport>
-      <XhScrollAreaContent style="padding: 8px 12px">
+      <XhScrollAreaContent style="padding: 12px 16px">
         <p
           v-for="row in rows"
           :key="row"
-          style="margin: 0; line-height: 24px; white-space: nowrap"
+          style="margin: 0; line-height: 28px; white-space: nowrap"
         >
           {{ row }}
         </p>
