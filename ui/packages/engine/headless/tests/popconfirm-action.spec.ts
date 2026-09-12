@@ -289,4 +289,10 @@ describe('popconfirm 非模态语义', () => {
     const content = makeHarness().api().getContentProps() as Record<string, unknown>
     expect(content.role).toBe('dialog')
   })
+
+  it('逻辑关闭当拍让退场 content 退出交互树与可访问树', () => {
+    const content = makeHarness(undefined, { defaultOpen: false }).api().getContentProps() as Record<string, unknown>
+    expect(content.inert).toBe(true)
+    expect(content['aria-hidden']).toBe(true)
+  })
 })
