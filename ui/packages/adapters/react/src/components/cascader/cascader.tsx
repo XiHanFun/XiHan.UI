@@ -18,6 +18,7 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   CascaderContentProvider,
   CascaderGroupProvider,
@@ -124,7 +125,7 @@ export function XhCascaderRoot({
   children,
   ...rest
 }: XhCascaderRootProps): ReactNode {
-  const ctx = useCascader(withXhConfig('cascader', {
+  const ctx = useCascader(withXhConfig('cascader', useFormControlProps({
     collection,
     value,
     defaultValue,
@@ -154,7 +155,7 @@ export function XhCascaderRoot({
     dir,
     onValueChange,
     onOpenChange,
-  }) as CascaderProps)
+  })) as CascaderProps)
   const api = ctx.api
   return (
     <CascaderProvider value={ctx}>
@@ -211,7 +212,7 @@ export function XhCascaderTrigger({ children, ...rest }: XhCascaderTriggerProps)
   return (
     <button
       {...mergeReactProps(
-        fieldLabel({ ...ctx.api.getTriggerProps() as Record<string, unknown>, ...fieldWiring }),
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
         rest as Record<string, unknown>,
         { ref: (el: HTMLButtonElement | null) => { ctx.triggerRef.current = el } },
       )}

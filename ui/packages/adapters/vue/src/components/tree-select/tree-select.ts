@@ -8,6 +8,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideTreeSelect, provideTreeSelectNode, useTreeSelectContext, useTreeSelectNodeContext } from './context'
 import { useTreeSelect } from './use-tree-select'
 
@@ -76,9 +77,9 @@ export const XhTreeSelectRoot = defineComponent({
     multiple: Boolean,
     cascade: Boolean,
     checkedStrategy: { type: String as PropType<TreeSelectProps['checkedStrategy']>, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     loading: Boolean,
     variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
@@ -118,7 +119,7 @@ export const XhTreeSelectRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useTreeSelect(withXhConfig('tree-select', props) as TreeSelectProps, {
+    const ctx = useTreeSelect(withXhConfig('tree-select', useFormControlProps(props)) as TreeSelectProps, {
       onValueChange: notifyValue,
       onExpandedValueChange: notifyExpanded,
       onOpenChange: notifyOpen,
@@ -181,9 +182,9 @@ export const XhTreeSelectTrigger = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     const ctx = useTreeSelectContext()
     return () => h('button', fieldLabel.value({
+      ...fieldWiring.value,
       ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
-      ...fieldWiring.value,
     }), slots.default?.())
   },
 })

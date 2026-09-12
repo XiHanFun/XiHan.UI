@@ -2,8 +2,14 @@ import { render } from '@testing-library/react'
 import { formPathKey } from '@xihan-ui/headless'
 import { describe, expect, it } from 'vitest'
 import {
+  XhCascaderControl,
+  XhCascaderRoot,
+  XhCascaderTrigger,
   XhCheckbox,
   XhCheckboxGroupRoot,
+  XhComboboxControl,
+  XhComboboxInput,
+  XhComboboxRoot,
   XhDateFieldRoot,
   XhDateFieldSegment,
   XhEditableInput,
@@ -19,6 +25,8 @@ import {
   XhPinInputInput,
   XhPinInputRoot,
   XhRadioGroupRoot,
+  XhSelectRoot,
+  XhSelectTrigger,
   XhSliderControl,
   XhSliderRoot,
   XhSliderThumb,
@@ -30,12 +38,15 @@ import {
   XhTextFieldRoot,
   XhTimeFieldRoot,
   XhTimeFieldSegment,
+  XhTreeSelectControl,
+  XhTreeSelectRoot,
+  XhTreeSelectTrigger,
 } from '../src'
 
 type ControlState = Partial<Record<'disabled' | 'readOnly' | 'required' | 'invalid', boolean>>
-type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider'
+type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider' | 'Select' | 'Cascader' | 'Combobox' | 'TreeSelect'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider']
+const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider', 'Select', 'Cascader', 'Combobox', 'TreeSelect']
 
 function nonRequiredState(props: ControlState) {
   return { disabled: props.disabled, readOnly: props.readOnly, invalid: props.invalid }
@@ -64,6 +75,14 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
     return <XhTagsInputRoot {...props}><XhTagsInputInput /></XhTagsInputRoot>
   if (kind === 'CheckboxGroup')
     return <XhCheckboxGroupRoot {...nonRequiredState(props)} collection={[{ value: 'a', label: '甲' }]} />
+  if (kind === 'Select')
+    return <XhSelectRoot {...props}><XhSelectTrigger>选择</XhSelectTrigger></XhSelectRoot>
+  if (kind === 'Cascader')
+    return <XhCascaderRoot {...nonRequiredState(props)} collection={[]}><XhCascaderControl><XhCascaderTrigger>选择</XhCascaderTrigger></XhCascaderControl></XhCascaderRoot>
+  if (kind === 'Combobox')
+    return <XhComboboxRoot {...nonRequiredState(props)} collection={[]}><XhComboboxControl><XhComboboxInput /></XhComboboxControl></XhComboboxRoot>
+  if (kind === 'TreeSelect')
+    return <XhTreeSelectRoot {...nonRequiredState(props)} collection={[]}><XhTreeSelectControl><XhTreeSelectTrigger>选择</XhTreeSelectTrigger></XhTreeSelectControl></XhTreeSelectRoot>
   return (
     <XhSliderRoot {...nonRequiredState(props)} defaultValue={[50]}>
       <XhSliderControl>
@@ -86,6 +105,23 @@ function renderAtomicControl(kind: AtomicControl, instance: ControlState = {}, f
 }
 
 function expectAtomicState(container: HTMLElement, kind: AtomicControl, enabled: boolean): void {
+  if (kind === 'Combobox') {
+    const input = container.querySelector<HTMLInputElement>('[data-scope="combobox"][data-part="input"]')!
+    expect(input.disabled).toBe(enabled)
+    expect(input.readOnly).toBe(enabled)
+    expect(input.getAttribute('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'Select' || kind === 'Cascader' || kind === 'TreeSelect') {
+    const scope = kind === 'TreeSelect' ? 'tree-select' : kind.toLowerCase()
+    const trigger = container.querySelector<HTMLButtonElement>(`[data-scope="${scope}"][data-part="trigger"]`)!
+    expect(trigger.disabled).toBe(enabled)
+    expect(trigger.getAttribute('aria-readonly')).toBe(String(enabled))
+    expect(trigger.getAttribute('aria-invalid')).toBe(String(enabled))
+    if (kind === 'Select')
+      expect(container.querySelector<HTMLSelectElement>('select[data-part="hidden-select"]')?.required).toBe(enabled)
+    return
+  }
   if (kind === 'NumberField' || kind === 'PasswordInput' || kind === 'PinInput' || kind === 'Editable' || kind === 'TagsInput') {
     const input = container.querySelector('input')!
     expect(input.disabled).toBe(enabled)

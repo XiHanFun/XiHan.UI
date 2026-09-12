@@ -19,9 +19,9 @@ function textField(markup = ''): string {
     </xh-text-field>`
 }
 
-type AtomicControl = 'checkbox' | 'switch' | 'radio-group' | 'number-field' | 'password-input' | 'pin-input' | 'date-field' | 'time-field' | 'editable' | 'tags-input' | 'checkbox-group' | 'slider'
+type AtomicControl = 'checkbox' | 'switch' | 'radio-group' | 'number-field' | 'password-input' | 'pin-input' | 'date-field' | 'time-field' | 'editable' | 'tags-input' | 'checkbox-group' | 'slider' | 'select' | 'cascader' | 'combobox' | 'tree-select'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['checkbox', 'switch', 'radio-group', 'number-field', 'password-input', 'pin-input', 'date-field', 'time-field', 'editable', 'tags-input', 'checkbox-group', 'slider']
+const ATOMIC_CONTROLS: AtomicControl[] = ['checkbox', 'switch', 'radio-group', 'number-field', 'password-input', 'pin-input', 'date-field', 'time-field', 'editable', 'tags-input', 'checkbox-group', 'slider', 'select', 'cascader', 'combobox', 'tree-select']
 
 function atomicControl(kind: AtomicControl, markup = ''): string {
   if (kind === 'checkbox') {
@@ -45,7 +45,16 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
     return `<xh-date-field ${markup} segments="year"><div data-xh-part="root"><div data-xh-part="segment" segment="year"></div></div></xh-date-field>`
   if (kind === 'time-field')
     return `<xh-time-field ${markup} granularity="hour"><div data-xh-part="root"><span data-xh-part="segment" segment="hour"></span></div></xh-time-field>`
+  if (kind === 'select') {
+    return `<xh-select ${markup}><div data-xh-part="root"><button data-xh-part="trigger">选择</button><select data-xh-part="hidden-select"></select></div></xh-select>`
+  }
   const nonRequiredMarkup = markup.replace(/\brequired(?:="false")?/g, '')
+  if (kind === 'cascader')
+    return `<xh-cascader ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger">选择</button></div></div></xh-cascader>`
+  if (kind === 'combobox')
+    return `<xh-combobox ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div></xh-combobox>`
+  if (kind === 'tree-select')
+    return `<xh-tree-select ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger">选择</button></div></div></xh-tree-select>`
   if (kind === 'editable')
     return `<xh-editable ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><span data-xh-part="preview"></span><input data-xh-part="input"></div></div></xh-editable>`
   if (kind === 'tags-input')
@@ -59,6 +68,22 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
 }
 
 async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabled: boolean): Promise<void> {
+  if (kind === 'combobox') {
+    const input = form.querySelector('xh-combobox input') as HTMLInputElement
+    await vi.waitFor(() => expect(input.disabled).toBe(enabled))
+    expect(input.readOnly).toBe(enabled)
+    expect(input.getAttribute('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'select' || kind === 'cascader' || kind === 'tree-select') {
+    const trigger = form.querySelector(`xh-${kind} button[data-xh-part="trigger"]`) as HTMLButtonElement
+    await vi.waitFor(() => expect(trigger.disabled).toBe(enabled))
+    expect(trigger.getAttribute('aria-readonly')).toBe(String(enabled))
+    expect(trigger.getAttribute('aria-invalid')).toBe(String(enabled))
+    if (kind === 'select')
+      expect((form.querySelector('xh-select select') as HTMLSelectElement).required).toBe(enabled)
+    return
+  }
   if (kind === 'number-field' || kind === 'password-input' || kind === 'pin-input' || kind === 'editable' || kind === 'tags-input') {
     const input = form.querySelector(`xh-${kind} input`) as HTMLInputElement
     await vi.waitFor(() => expect(input.disabled).toBe(enabled))

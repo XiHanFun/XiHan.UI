@@ -7,10 +7,11 @@ import type {
   CascaderSchema,
   CascaderValue,
   CascaderValueChangeDetails,
+  FormControlState,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { cascaderAnatomy, cascaderMachine, cascaderMeta, connectCascader } from '@xihan-ui/headless'
+import { cascaderAnatomy, cascaderMachine, cascaderMeta, connectCascader, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
@@ -114,7 +115,7 @@ export class XhCascaderElement extends XhElement {
     searchable: { type: Boolean },
     cascade: { type: Boolean },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
@@ -206,7 +207,19 @@ export class XhCascaderElement extends XhElement {
     props: () => ({ dir: this.direction }),
   })
 
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
   private machineProps(): Partial<CascaderSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       collection: this.collection,
       value: this.value,
@@ -221,9 +234,9 @@ export class XhCascaderElement extends XhElement {
       searchable: this.searchable ?? false,
       cascade: this.cascade,
       checkedStrategy: this.checkedStrategy,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       loading: this.loading ?? false,
       variant: this.variant,
       tone: this.tone,

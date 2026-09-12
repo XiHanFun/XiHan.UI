@@ -10,6 +10,7 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   ComboboxGroupProvider,
   ComboboxItemProvider,
@@ -111,7 +112,7 @@ export function XhComboboxRoot({
   children,
   ...rest
 }: XhComboboxRootProps): ReactNode {
-  const ctx = useCombobox(withXhConfig('combobox', {
+  const ctx = useCombobox(withXhConfig('combobox', useFormControlProps({
     collection,
     value,
     defaultValue,
@@ -142,7 +143,7 @@ export function XhComboboxRoot({
     onValueChange,
     onInputValueChange,
     onOpenChange,
-  }) as ComboboxProps)
+  })) as ComboboxProps)
   const api = ctx.api
 
   // 首帧结算一次候选条数供空态节点判断，之后的增删由候选自己上报
@@ -229,7 +230,7 @@ export function XhComboboxInput({ as = 'input', ...rest }: XhComboboxInputProps)
   // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
   const fieldLabel = useFieldLabelWiring()
   const props = mergeReactProps(
-    fieldLabel({ ...ctx.api.getInputProps({ as }) as Record<string, unknown>, ...fieldWiring }),
+    fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps({ as }) as Record<string, unknown> }),
     rest as Record<string, unknown>,
     { ref: (el: ComboboxInputEl | null) => { ctx.inputRef.current = el } },
   )

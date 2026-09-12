@@ -11,6 +11,7 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { TreeSelectNodeProvider, TreeSelectProvider, useTreeSelectContext, useTreeSelectNodeContext } from './context'
 import { useTreeSelect } from './use-tree-select'
 
@@ -138,7 +139,7 @@ export function XhTreeSelectRoot({
   children,
   ...rest
 }: XhTreeSelectRootProps): ReactNode {
-  const ctx = useTreeSelect(withXhConfig('tree-select', {
+  const ctx = useTreeSelect(withXhConfig('tree-select', useFormControlProps({
     collection,
     loadChildren,
     clearable,
@@ -169,7 +170,7 @@ export function XhTreeSelectRoot({
     onValueChange,
     onExpandedValueChange,
     onOpenChange,
-  }) as TreeSelectProps)
+  })) as TreeSelectProps)
   const api = ctx.api
 
   const body = children != null
@@ -236,7 +237,7 @@ export function XhTreeSelectTrigger({ children, ...rest }: XhTreeSelectTriggerPr
   return (
     <button
       {...mergeReactProps(
-        fieldLabel({ ...ctx.api.getTriggerProps() as Record<string, unknown>, ...fieldWiring }),
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
         rest as Record<string, unknown>,
         { ref: (el: HTMLButtonElement | null) => { ctx.triggerRef.current = el } },
       )}
