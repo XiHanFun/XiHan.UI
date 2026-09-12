@@ -7,6 +7,7 @@ import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
+import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -71,11 +72,18 @@ export class XhPopconfirmElement extends XhElement {
   declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly popconfirmScope = createScope(null, this.idGen)
+  private readonly popconfirmScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = new AnchoredPortalController({
+    name: 'Popconfirm',
+    config: () => this.config,
+    source: () => this.getPart('trigger'),
+    root: () => this.getPart('positioner'),
+    onChange: () => this.requestUpdate(),
+  })
 
   private readonly notify = (details: PopoverOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
@@ -148,6 +156,10 @@ export class XhPopconfirmElement extends XhElement {
     if (this.config)
       return
     this.config = createRuntimeConfig({ scope: this.popconfirmScope, idGenerator: this.idGen })
+  }
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
   }
 
   /** 机器挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。 */
@@ -233,9 +245,11 @@ export class XhPopconfirmElement extends XhElement {
     exit.track(content)
     exit.update(api.open)
     this.setPartHidden(content, !exit.visible)
+    this.portal.sync(exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     super.disconnectedCallback()
     // 断开即结束这次可交互会话；业务 Promise 不取消，旧服务的事务票据会让其迟到结果失效。
     this.pendingState = false
