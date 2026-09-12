@@ -71,7 +71,7 @@
 
 - 使用 `aria-pressed` 表达当前状态。
 - 支持受控和非受控状态。
-- 支持形态、语气、尺寸、仅图标和全宽外观。
+- 支持变体、颜色、尺寸、仅图标和全宽外观。
 - 禁用后保留当前按下状态。
 
 ### 最佳实践
@@ -104,8 +104,8 @@
 | `pressed` | `boolean` |  |  |
 | `defaultPressed` | `boolean` |  |  |
 | `disabled` | `boolean` |  |  |
-| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg |
 | `iconOnly` | `boolean` |  | 只有图标：左右内距清零、宽高相等。宽度跟着当前尺寸档的高度走， 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行给可及名。 |
 | `fullWidth` | `boolean` |  | 撑满行宽：工具条里一列开关常用。 |
