@@ -137,7 +137,12 @@ function createDatePickerContext(
 
   const api = computed(() => connectDatePicker(services, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
-  const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+  const visible = useOverlayExit({
+    config,
+    isOpen: () => api.value.open,
+    contentRef,
+    onPresence: presence => root.refs.set('presence', presence),
+  })
   // 显式配置只选择同一 Document 内的落点，不能反过来决定 Scope，也不能跨 realm 搬运。
   const portalTarget = computed<string | Element>(() => {
     const runtime = config.value
