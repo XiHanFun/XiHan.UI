@@ -2,34 +2,13 @@ import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { PopoverSchema } from '../popover'
 import type { PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmIntents } from './popconfirm.types'
 import { dataAttr } from '@xihan-ui/core'
-import { OVERLAY_PLACEMENT_ANCHORED, overlayPositioned } from '../shared/overlay'
+import { OVERLAY_PLACEMENT_ANCHORED, overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { popconfirmAnatomy } from './popconfirm.anatomy'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */
 export const POPCONFIRM_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
 
 const parts = popconfirmAnatomy.build()
-
-// 落定那一侧的可用宽度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零宽，
-// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档静态值
-const AVAILABLE_W_FLOOR = 96
-
-// 块轴同理：贴边时引擎回报 0，写进 min() 会把面板压成零高
-const AVAILABLE_H_FLOOR = 96
-
-/** 引擎回报的可用尺寸转成 CSS 长度；低于下限当作没算出来，空串撤掉声明。 */
-function availablePx(available: number | undefined, floor: number): string {
-  return available != null && available >= floor ? `${available}px` : ''
-}
-
-function availableSpaceVars(
-  placed: { availableWidth?: number, availableHeight?: number } | null | undefined,
-): Record<string, string> {
-  return {
-    '--xh-_popconfirm-available-w': availablePx(placed?.availableWidth, AVAILABLE_W_FLOOR),
-    '--xh-_popconfirm-available-h': availablePx(placed?.availableHeight, AVAILABLE_H_FLOOR),
-  }
-}
 
 type ConfirmPhase = 'idle' | 'invoking' | 'pending' | 'settling'
 
@@ -328,10 +307,8 @@ export function connectPopconfirm<T extends PropTypes>(
       // 落位才露：皮肤基线把定位层藏着，带这个才显示。展开那几帧坐标还没算出来时就是藏的
       'data-positioned': dataAttr(overlayPositioned(position)),
       'style': {
-        position: 'fixed',
-        left: `${position?.x ?? 0}px`,
-        top: `${position?.y ?? 0}px`,
-        ...availableSpaceVars(position),
+        ...overlayFixedStyle(position),
+        ...overlayAvailableSpaceVars('popconfirm', position),
       },
     }),
     getContentProps: () => normalize.element({
@@ -374,10 +351,7 @@ export function connectPopconfirm<T extends PropTypes>(
       'data-placement': placement,
       // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。
       // 两根轴每帧都写，翻面后另一根不会留着上一帧的值；空串即撤掉声明，皮肤退回居中
-      'style': {
-        '--xh-_popconfirm-arrow-x': arrowAt?.x != null ? `${arrowAt.x}px` : '',
-        '--xh-_popconfirm-arrow-y': arrowAt?.y != null ? `${arrowAt.y}px` : '',
-      },
+      'style': overlayArrowVars('popconfirm', arrowAt),
     }),
   }
 }

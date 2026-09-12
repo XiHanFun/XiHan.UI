@@ -20,7 +20,7 @@ import {
   segmentMaxDigits,
 } from '../date-field'
 import { sameArray as sameDates } from '../shared/array'
-import { overlayPositioned } from '../shared/overlay'
+import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { timePickerColumns } from '../time-picker'
 import { datePickerAnatomy } from './date-picker.anatomy'
 import { DATE_PICKER_DEFAULT_PLACEMENT } from './date-picker.machine'
@@ -47,27 +47,6 @@ function resolveTranslations(input: Partial<DatePickerTranslations> | undefined)
     hour: input?.hour ?? 'hour',
     minute: input?.minute ?? 'minute',
     second: input?.second ?? 'second',
-  }
-}
-
-// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
-// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
-const AVAILABLE_H_FLOOR = 96
-
-// 行内轴同理：贴边时引擎回报 0，写进 min() 会把面板压成零宽
-const AVAILABLE_W_FLOOR = 96
-
-/** 引擎回报的可用尺寸转成 CSS 长度；低于下限当作没算出来，空串撤掉声明。 */
-function availablePx(available: number | undefined, floor: number): string {
-  return available != null && available >= floor ? `${available}px` : ''
-}
-
-function availableSpaceVars(
-  placed: { availableWidth?: number, availableHeight?: number } | null | undefined,
-): Record<string, string> {
-  return {
-    '--xh-_date-picker-available-w': availablePx(placed?.availableWidth, AVAILABLE_W_FLOOR),
-    '--xh-_date-picker-available-h': availablePx(placed?.availableHeight, AVAILABLE_H_FLOOR),
   }
 }
 
@@ -508,10 +487,8 @@ export function connectDatePicker<T extends PropTypes>(
       // 落位才露：皮肤基线把定位层藏着，带这个才显示。展开那几帧坐标还没算出来时就是藏的
       'data-positioned': dataAttr(overlayPositioned(position)),
       'style': {
-        position: 'fixed',
-        left: `${position?.x ?? 0}px`,
-        top: `${position?.y ?? 0}px`,
-        ...availableSpaceVars(position),
+        ...overlayFixedStyle(position),
+        ...overlayAvailableSpaceVars('date-picker', position),
       },
     }),
 

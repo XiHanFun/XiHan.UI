@@ -1,7 +1,7 @@
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { CascaderApi, CascaderNodeMeta, CascaderSchema, CascaderSearchResult, CascaderTranslations } from './cascader.types'
 import { cascadeState, dataAttr, focusItem, isComposingEvent, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/core'
-import { overlayPositioned } from '../shared/overlay'
+import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { cascaderAnatomy } from './cascader.anatomy'
 import {
   cascaderBuildColumns,
@@ -22,20 +22,6 @@ import {
 import { assertCascaderPath, encodeCascaderPath } from './cascader.value'
 
 const parts = cascaderAnatomy.build()
-
-// 落定那一侧的可用宽度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零宽，
-// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档静态值
-const AVAILABLE_W_FLOOR = 96
-
-function availableSpaceVars(
-  placed: { availableWidth?: number } | null | undefined,
-): Record<string, string> {
-  const available = placed?.availableWidth
-  return {
-    '--xh-_cascader-available-w':
-      available != null && available >= AVAILABLE_W_FLOOR ? `${available}px` : '',
-  }
-}
 
 export function connectCascader<T extends PropTypes>(
   service: Service<CascaderSchema>,
@@ -410,10 +396,8 @@ export function connectCascader<T extends PropTypes>(
       // 落位才露：皮肤基线把定位层藏着，带这个才显示。展开那几帧坐标还没算出来时就是藏的
       'data-positioned': dataAttr(overlayPositioned(position)),
       'style': {
-        position: 'fixed',
-        left: `${position?.x ?? 0}px`,
-        top: `${position?.y ?? 0}px`,
-        ...availableSpaceVars(position),
+        ...overlayFixedStyle(position),
+        ...overlayAvailableSpaceVars('cascader', position, null),
       },
     }),
 

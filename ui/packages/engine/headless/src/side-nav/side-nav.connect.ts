@@ -1,7 +1,7 @@
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { SideNavApi, SideNavNode, SideNavSchema } from './side-nav.types'
 import { dataAttr, focusItem, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
-import { overlayPositioned } from '../shared/overlay'
+import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { flattenTree, indexTree } from '../tree'
 import { sideNavAnatomy, sideNavLinkQuery, sideNavTriggerQuery } from './side-nav.anatomy'
 
@@ -9,27 +9,6 @@ const parts = sideNavAnatomy.build()
 
 // 悬停弹出的延时句柄：整页同时只有一个指针，单句柄即可
 let popoutHoverTimer: ReturnType<typeof setTimeout> | undefined
-
-// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
-// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
-const AVAILABLE_H_FLOOR = 96
-
-// 行内轴同理：贴边时引擎回报 0，写进 min() 会把面板压成零宽
-const AVAILABLE_W_FLOOR = 96
-
-/** 引擎回报的可用尺寸转成 CSS 长度；低于下限当作没算出来，空串撤掉声明。 */
-function availablePx(available: number | undefined, floor: number): string {
-  return available != null && available >= floor ? `${available}px` : ''
-}
-
-function availableSpaceVars(
-  placed: { availableWidth?: number, availableHeight?: number } | null | undefined,
-): Record<string, string> {
-  return {
-    '--xh-_side-nav-available-w': availablePx(placed?.availableWidth, AVAILABLE_W_FLOOR),
-    '--xh-_side-nav-available-h': availablePx(placed?.availableHeight, AVAILABLE_H_FLOOR),
-  }
-}
 
 export function connectSideNav<T extends PropTypes>(
   service: Service<SideNavSchema>,
@@ -378,10 +357,8 @@ export function connectSideNav<T extends PropTypes>(
         // 收起后坐标留到这一枝下一次展开才作废：退场动画在原位播
         'style': placed
           ? {
-              position: 'fixed',
-              left: `${placed.x ?? 0}px`,
-              top: `${placed.y ?? 0}px`,
-              ...availableSpaceVars(placed),
+              ...overlayFixedStyle(placed),
+              ...overlayAvailableSpaceVars('side-nav', placed),
             }
           // 逐属性清而非摘掉整个 style：折叠开关来回切换时不残留 fixed 坐标，
           // 作者写的其他内联样式不受波及

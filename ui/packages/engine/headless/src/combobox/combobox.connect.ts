@@ -1,7 +1,7 @@
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ComboboxApi, ComboboxInputEl, ComboboxInputProps, ComboboxItemProps, ComboboxNodeMeta, ComboboxSchema } from './combobox.types'
 import { contains, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
-import { overlayPositioned } from '../shared/overlay'
+import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { comboboxAnatomy, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 import { COMBOBOX_DEFAULT_PLACEMENT } from './combobox.machine'
 
@@ -20,35 +20,6 @@ const pointerHot = new WeakSet<Element>()
  */
 function isMultilineHost(input: ComboboxInputProps): boolean {
   return (input.as ?? 'input') === 'textarea'
-}
-
-// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
-// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
-const AVAILABLE_H_FLOOR = 96
-
-// 行内轴同理：贴边时引擎回报 0，写进 min() 会把面板压成零宽
-const AVAILABLE_W_FLOOR = 96
-
-/** 引擎回报的可用尺寸转成 CSS 长度；低于下限当作没算出来，空串撤掉声明。 */
-function availablePx(available: number | undefined, floor: number): string {
-  return available != null && available >= floor ? `${available}px` : ''
-}
-
-function availableSpaceVars(
-  placed: { availableWidth?: number, availableHeight?: number } | null | undefined,
-): Record<string, string> {
-  return {
-    '--xh-_combobox-available-w': availablePx(placed?.availableWidth, AVAILABLE_W_FLOOR),
-    '--xh-_combobox-available-h': availablePx(placed?.availableHeight, AVAILABLE_H_FLOOR),
-  }
-}
-
-// 锚点实测宽度。content 拿它做最小宽的下界，浮层因此不窄于输入框；
-// 引擎没算出来时空串撤掉声明，退回皮肤 positioner 上那档 0
-function anchorWidthVar(width: number | undefined): Record<string, string> {
-  return {
-    '--xh-_combobox-anchor-w': width != null ? `${width}px` : '',
-  }
 }
 
 export function connectCombobox<T extends PropTypes>(
@@ -398,13 +369,11 @@ export function connectCombobox<T extends PropTypes>(
       // 落位才露：皮肤基线把定位层藏着，带这个才显示。展开那几帧坐标还没算出来时就是藏的
       'data-positioned': dataAttr(overlayPositioned(position)),
       'style': {
-        position: 'fixed',
-        left: `${position?.x ?? 0}px`,
-        top: `${position?.y ?? 0}px`,
+        ...overlayFixedStyle(position),
         // content 继承这个高度上限，超出的条目在浮层内部滚
-        ...availableSpaceVars(position),
+        ...overlayAvailableSpaceVars('combobox', position),
         // content 继承这个宽度下界，浮层至少与输入框同宽
-        ...anchorWidthVar(position?.anchorWidth),
+        ...overlayAnchorWidthVar('combobox', position?.anchorWidth),
       },
     }),
 

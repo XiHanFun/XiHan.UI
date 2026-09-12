@@ -3,32 +3,12 @@ import type { SelectApi } from '../select'
 import type { PaginationApi, PaginationServices } from './pagination.types'
 import { dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectSelect } from '../select'
-import { OVERLAY_PLACEMENT_LIST, overlayPositioned } from '../shared/overlay'
+import { OVERLAY_PLACEMENT_LIST, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { paginationAnatomy } from './pagination.anatomy'
 import { PAGINATION_PAGE_SIZE_OPTIONS, PAGINATION_SIBLING_COUNT, paginationLabels } from './pagination.machine'
 import { buildPageItems, buildPageSequence, clampPage, normalizeCount, normalizePageSize, pageRangeOf, pageSizeOptionsOf, totalPagesOf } from './pagination.range'
 
 const parts = paginationAnatomy.build()
-
-/** 低于这个高度不写：面板挤成一条缝还不如让它溢出去，作者至少看得见。 */
-const AVAILABLE_H_FLOOR = 80
-
-// 行内轴同理：贴边时引擎回报 0，写进 min() 会把面板压成零宽
-const AVAILABLE_W_FLOOR = 96
-
-/** 引擎回报的可用尺寸转成 CSS 长度；低于下限当作没算出来，空串撤掉声明。 */
-function availablePx(available: number | undefined, floor: number): string {
-  return available != null && available >= floor ? `${available}px` : ''
-}
-
-function availableSpaceVars(
-  placed: { availableWidth?: number, availableHeight?: number } | null | undefined,
-): Record<string, string> {
-  return {
-    '--xh-_pagination-available-w': availablePx(placed?.availableWidth, AVAILABLE_W_FLOOR),
-    '--xh-_pagination-available-h': availablePx(placed?.availableHeight, AVAILABLE_H_FLOOR),
-  }
-}
 
 export function connectPagination<T extends PropTypes>(
   services: PaginationServices,
@@ -230,10 +210,8 @@ export function connectPagination<T extends PropTypes>(
       // 落位才露：皮肤基线把定位层藏着，带这个才显示
       'data-positioned': dataAttr(overlayPositioned(position)),
       'style': {
-        position: 'fixed',
-        left: `${position?.x ?? 0}px`,
-        top: `${position?.y ?? 0}px`,
-        ...availableSpaceVars(position),
+        ...overlayFixedStyle(position),
+        ...overlayAvailableSpaceVars('pagination', position, 80),
       },
     }),
 
