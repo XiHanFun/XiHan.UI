@@ -37,6 +37,11 @@ export function connectButton<T extends PropTypes>(
       // 在途要报 busy：aria-disabled 说的是「现在按不动」，aria-busy 说的是「这块还在更新」，
       // 两件事都成立。同族的 switch / popconfirm / table 都发这一条
       'aria-busy': loading ? 'true' : undefined,
+      // Family Recipe 只需要稳定的视觉角色事实；具体尺寸与状态值全部由样式层配方决定。
+      'data-xh-action-control': '',
+      'data-xh-action-profile': props.iconOnly ? 'icon' : 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': props.size ?? 'md',
       'data-variant': props.variant,
       'data-tone': props.tone,
       'data-size': props.size,

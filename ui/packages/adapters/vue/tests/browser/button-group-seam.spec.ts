@@ -126,8 +126,8 @@ describe('按钮组混合形态边界', () => {
     host = document.createElement('div')
     host.innerHTML = `
       <div data-scope="button-group" data-part="root" data-orientation="horizontal" data-variant="outline">
-        <xh-button><button data-scope="button" data-part="root">继承组</button></xh-button>
-        <xh-button><button data-scope="button" data-part="root" data-variant="solid">实心</button></xh-button>
+        <xh-button><button data-scope="button" data-part="root" data-xh-action-control data-xh-action-profile="text" data-xh-action-size="md" data-xh-action-display="always">继承组</button></xh-button>
+        <xh-button><button data-scope="button" data-part="root" data-xh-action-control data-xh-action-profile="text" data-xh-action-size="md" data-xh-action-display="always" data-variant="solid">实心</button></xh-button>
       </div>`
     document.body.append(host)
     const [inheritedButton, solidButton] = buttons()

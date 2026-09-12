@@ -29,6 +29,7 @@ import { join } from 'node:path'
 
 const SKINS = 'packages/design/styles/css'
 const HEADLESS = 'packages/engine/headless/src'
+const ACTION_RECIPE = 'packages/design/styles/family/action-control.css'
 
 /**
  * 该有按压反馈的控件，连同它的部件名（一个组件可以登记多个部件）。
@@ -194,6 +195,7 @@ const NO_PRESS = {
 }
 
 const problems = []
+const actionRecipe = await readFile(ACTION_RECIPE, 'utf8').catch(() => '')
 
 for (const [name, parts] of Object.entries(PRESSABLE)) {
   let css
@@ -206,12 +208,24 @@ for (const [name, parts] of Object.entries(PRESSABLE)) {
   }
   for (const part of parts) {
     if (typeof part === 'string')
-      checkPart(name, part, css)
+      checkPart(name, part, css, await isActionControlPart(name, part) ? actionRecipe : '')
     else if (part.feedback === 'surface')
       checkSurfacePart(name, part.part, css)
     else
       checkHeldPart(name, part.part, part.attr, css)
   }
+}
+
+/** Headless getter 明确投影 data-xh-action-control 时，按压反馈可以由 Family Recipe 提供。 */
+async function isActionControlPart(name, part) {
+  const source = await readFile(`${HEADLESS}/${name}/${name}.connect.ts`, 'utf8').catch(() => '')
+  const getter = `get${part.split('-').map(value => value[0].toUpperCase() + value.slice(1)).join('')}Props`
+  const start = source.search(new RegExp(`${getter}\\s*[:=]`))
+  if (start < 0)
+    return false
+  const next = source.slice(start + getter.length).search(/\bget[A-Z][A-Za-z0-9]*Props\s*[:=]/)
+  const body = source.slice(start, next < 0 ? source.length : start + getter.length + next)
+  return body.includes('\'data-xh-action-control\':')
 }
 
 for (const key of Object.keys(NO_PRESS)) {
@@ -312,10 +326,10 @@ function partSelector(part) {
     : `\\[data-scope='${part.slice(0, slash)}'\\]\\[data-part='${part.slice(slash + 1)}'\\]`
 }
 
-function checkPart(name, part, css) {
+function checkPart(name, part, css, familyCss = '') {
   // :active 规则要落在该部件上，且缩放量走令牌
   const active = new RegExp(`${partSelector(part)}[^{]*:active(?::not\\([^)]*\\))?\\s*\\{([^}]*)\\}`)
-  const match = css.match(active)
+  const match = css.match(active) ?? familyCss.match(/\[data-xh-action-control\][^{]*:active\s*\{([^}]*)\}/)
   if (!match) {
     problems.push(`${name} 的 ${part} 没有 :active 规则——按下去到松手之间没有任何变化`)
     return
@@ -327,7 +341,7 @@ function checkPart(name, part, css) {
     )
   }
   // 缩放要能过渡，否则是硬切
-  if (!/transition:[^;]*\bscale\b/.test(css)) {
+  if (!/transition:[^;]*\bscale\b/.test(css) && !/transition:[^;]*\bscale\b/.test(familyCss)) {
     problems.push(`${name} 的 ${part} 没把 scale 写进 transition——按下与松手都是硬切`)
   }
 }

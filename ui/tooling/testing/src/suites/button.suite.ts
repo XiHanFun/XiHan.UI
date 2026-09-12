@@ -33,6 +33,10 @@ export const buttonSuite: ConformanceSuite = {
             'aria-disabled': null,
             'data-disabled': null,
             'data-loading': null,
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
           },
         },
       },
@@ -43,6 +47,20 @@ export const buttonSuite: ConformanceSuite = {
       props: { variant: 'solid', size: 'sm', type: 'submit' },
       initial: {
         parts: { root: { 'type': 'submit', 'data-variant': 'solid', 'data-size': 'sm' } },
+      },
+    },
+    {
+      name: 'iconOnly：Action Control profile 由 Headless 统一投影',
+      spec: { apg: APG },
+      props: { 'iconOnly': true, 'size': 'lg', 'aria-label': '关闭' },
+      initial: {
+        parts: {
+          root: {
+            'data-icon-only': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-size': 'lg',
+          },
+        },
       },
     },
     {

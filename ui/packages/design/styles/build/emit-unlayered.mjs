@@ -34,6 +34,7 @@ const head = [
 ]
 
 const out = [...head]
+const inlined = new Set()
 
 for (const line of source.split('\n')) {
   const imported = line.match(/^\s*@import\s+['"]([^'"]+)['"];/)
@@ -51,13 +52,40 @@ for (const line of source.split('\n')) {
     continue
   }
   const file = path.join(pkgRoot, spec)
-  const css = fs.readFileSync(file, 'utf8')
   out.push('', `/* ${path.posix.join('styles', path.basename(file))} */`)
-  out.push(unwrapLayerBlocks(css).trim())
+  out.push(unwrapLayerBlocks(expandRelativeImports(file, [])).trim())
 }
 
 fs.writeFileSync(outFile, `${out.join('\n').replace(/\n{3,}/g, '\n\n').trim()}\n`)
 console.log(`已生成 ${path.relative(pkgRoot, outFile)}`)
+
+/**
+ * 独立组件皮肤可以先 @import Family Recipe；无层入口内联时必须递归展开，
+ * 否则嵌套 @import 会落到普通规则之后而成为无效声明。每个物理文件只展开一次，
+ * 后续多个组件迁入同一家族时也不会把共享配方复制进 full bundle。
+ */
+function expandRelativeImports(file, stack) {
+  const resolved = path.resolve(file)
+  if (stack.includes(resolved))
+    throw new Error(`样式 @import 成环：${[...stack, resolved].map(value => path.relative(pkgRoot, value)).join(' -> ')}`)
+  if (inlined.has(resolved))
+    return ''
+  inlined.add(resolved)
+
+  const source = fs.readFileSync(resolved, 'utf8')
+  const lines = []
+  for (const line of source.split('\n')) {
+    const imported = line.match(/^\s*@import\s+['"]([^'"]+)['"];/)
+    if (!imported || !imported[1].startsWith('.')) {
+      lines.push(line)
+      continue
+    }
+    const child = path.resolve(path.dirname(resolved), imported[1])
+    lines.push('', `/* ${path.relative(pkgRoot, child).replaceAll('\\', '/')} */`)
+    lines.push(expandRelativeImports(child, [...stack, resolved]))
+  }
+  return lines.join('\n')
+}
 
 /** 逐个拆掉 `@layer <名字> { ... }` 外壳，保留块内内容；`@layer a, b;` 声明语句丢弃 */
 function unwrapLayerBlocks(css) {

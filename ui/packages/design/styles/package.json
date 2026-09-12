@@ -33,6 +33,7 @@
       "types": "./component-tokens.d.ts",
       "import": "./component-tokens.js"
     },
+    "./action-control.css": "./family/action-control.css",
     "./components.tokens.json": "./components.tokens.json",
     "./accordion.css": "./css/accordion.css",
     "./affix.css": "./css/affix.css",
@@ -180,6 +181,7 @@
     "component-tokens.js",
     "components.tokens.json",
     "css",
+    "family",
     "index.css",
     "index.unlayered.css"
   ],
@@ -191,8 +193,8 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "gen": "node build/emit-component-tokens.mjs && node build/emit-unlayered.mjs",
-    "build": "node build/emit-component-tokens.mjs && node build/emit-unlayered.mjs"
+    "gen": "node build/action-control-recipe.mjs && node build/emit-component-tokens.mjs && node build/emit-unlayered.mjs",
+    "build": "node build/action-control-recipe.mjs && node build/emit-component-tokens.mjs && node build/emit-unlayered.mjs"
   },
   "dependencies": {
     "@xihan-ui/tokens": "workspace:^"

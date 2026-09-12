@@ -5,14 +5,16 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-const STYLES = 'packages/design/styles/css'
+const STYLE_DIRS = ['packages/design/styles/css', 'packages/design/styles/family']
 const RUNTIME_PRIVATE_SLOTS = new Map([
   ['--xh-_layer', 'packages/engine/core/src/kernel/structure/layer-registry.ts'],
 ])
 
-const files = (await readdir(STYLES)).filter(f => f.endsWith('.css'))
+const files = (await Promise.all(STYLE_DIRS.map(async dir =>
+  (await readdir(dir).catch(() => [])).filter(file => file.endsWith('.css')).map(file => ({ dir, file })),
+))).flat()
 if (files.length === 0) {
-  console.error(`[check-private-slots] ✗ ${STYLES} 下一份皮肤都没有，路径变了`)
+  console.error(`[check-private-slots] ✗ ${STYLE_DIRS.join(' / ')} 下一份皮肤都没有，路径变了`)
   process.exit(1)
 }
 
@@ -20,16 +22,17 @@ if (files.length === 0) {
 const declared = new Map()
 const used = new Map()
 
-for (const file of files) {
-  const text = await readFile(join(STYLES, file), 'utf8')
+for (const { dir, file } of files) {
+  const text = await readFile(join(dir, file), 'utf8')
+  const label = `${dir.split('/').at(-1)}/${file}`
   text.split('\n').forEach((line, i) => {
     for (const m of line.matchAll(/(--xh-_[\w-]+)\s*:/g)) {
       if (!declared.has(m[1]))
-        declared.set(m[1], `${file}:${i + 1}`)
+        declared.set(m[1], `${label}:${i + 1}`)
     }
     for (const m of line.matchAll(/var\(\s*(--xh-_[\w-]+)/g)) {
       if (!used.has(m[1]))
-        used.set(m[1], `${file}:${i + 1}`)
+        used.set(m[1], `${label}:${i + 1}`)
     }
   })
 }
