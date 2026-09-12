@@ -4,7 +4,7 @@ import { XhCardBody, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle } 
 
 export default function Demo(): ReactNode {
   return (
-    <XhCardRoot variant="outline" style={{ maxInlineSize: "360px" }}>
+    <XhCardRoot style={{ maxInlineSize: "360px" }}>
       <XhCardHeader>
         <XhCardTitle>本月账单</XhCardTitle>
         <XhCardDescription>账期 7 月 1 日至 7 月 31 日</XhCardDescription>

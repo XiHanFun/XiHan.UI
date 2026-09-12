@@ -4131,6 +4131,18 @@
               "name": "--xh-card-bg"
             },
             {
+              "name": "--xh-card-bg-hover"
+            },
+            {
+              "name": "--xh-card-body-font-size"
+            },
+            {
+              "name": "--xh-card-body-line-height"
+            },
+            {
+              "name": "--xh-card-body-pb"
+            },
+            {
               "name": "--xh-card-body-pt"
             },
             {

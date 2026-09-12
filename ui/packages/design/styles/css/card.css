@@ -5,54 +5,57 @@
   }
 
   [data-scope='card'][data-part='root'] {
+    position: relative;
     display: flex;
     flex-direction: column;
+    min-inline-size: 0;
     /* 封面要被圆角裁住，所以根自己收边 */
     overflow: hidden;
-    border: var(--xh-stroke-thin) solid var(--xh-material-soft-border);
+    border: var(--xh-stroke-thin) solid var(--xh-card-border, transparent);
     border-radius: var(--xh-card-radius, var(--xh-shape-surface));
-    /* 一像素顶光与实体底分层画：打印/高对比只需把 highlight 归零，不会留下无效 shadow 列表。 */
-    background:
-      linear-gradient(
-        to bottom,
-        var(--xh-material-soft-highlight) 0 var(--xh-stroke-thin),
-        transparent var(--xh-stroke-thin)
-      ),
-      var(--xh-card-bg, var(--xh-material-soft-bg));
-    color: var(--xh-card-fg, var(--xh-material-soft-fg));
-    box-shadow: var(--xh-card-shadow, var(--xh-material-soft-shadow));
-    /* 各段的内边距由根上这一个槽位统一给，换档只改这里 */
+    background-color: var(--xh-card-bg, var(--xh-bg-surface));
+    color: var(--xh-card-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-card-shadow, var(--xh-elevation-raised));
+    font-size: var(--xh-card-body-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-card-body-line-height, var(--xh-text-body-leading));
+    /* 各段的内边距与相邻间距都由根统一给，换档只改这里。 */
     --xh-_card-pad: var(--xh-space-4);
+    --xh-_card-section-gap: var(--xh-space-3);
   }
 
   /* —— 形态 —— */
   [data-scope='card'][data-part='root'][data-variant='outline'] {
     border-color: var(--xh-card-border, var(--xh-border-default));
+    box-shadow: var(--xh-card-shadow, none);
   }
 
   [data-scope='card'][data-part='root'][data-variant='subtle'] {
-    border-color: transparent;
+    border-color: var(--xh-card-border, transparent);
     background: var(--xh-card-bg, var(--xh-bg-subtle));
-    box-shadow: none;
+    box-shadow: var(--xh-card-shadow, none);
   }
 
   [data-scope='card'][data-part='root'][data-variant='elevated'] {
-    box-shadow: var(--xh-card-shadow, var(--xh-elevation-raised));
+    border-color: var(--xh-card-border, transparent);
+    background: var(--xh-card-bg, var(--xh-bg-surface-raised));
+    box-shadow: var(--xh-card-shadow, var(--xh-elevation-lifted));
   }
 
   [data-scope='card'][data-part='root'][data-variant='ghost'] {
-    border-color: transparent;
+    border-color: var(--xh-card-border, transparent);
     background: transparent;
-    box-shadow: none;
+    box-shadow: var(--xh-card-shadow, none);
   }
 
   /* —— 尺寸 —— */
   [data-scope='card'][data-part='root'][data-size='sm'] {
     --xh-_card-pad: var(--xh-space-3);
+    --xh-_card-section-gap: var(--xh-space-2);
   }
 
   [data-scope='card'][data-part='root'][data-size='lg'] {
     --xh-_card-pad: var(--xh-space-6);
+    --xh-_card-section-gap: var(--xh-space-4);
   }
 
   /* 悬停抬起：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态。
@@ -60,13 +63,36 @@
      指针停上去就再也看不出变化——两档的缺省本就取不同的深浅。 */
   @media (hover: hover) {
     [data-scope='card'][data-part='root'][data-hoverable]:hover {
-      border-color: var(--xh-card-border-hover, var(--xh-border-strong));
+      border-color: var(--xh-card-border-hover, var(--xh-border-default));
+      background-color: var(--xh-card-bg-hover, var(--xh-bg-surface));
       box-shadow: var(--xh-card-shadow-hover, var(--xh-elevation-lifted));
+    }
+
+    [data-scope='card'][data-part='root'][data-variant='outline'][data-hoverable]:hover {
+      border-color: var(--xh-card-border-hover, var(--xh-border-strong));
+    }
+
+    [data-scope='card'][data-part='root'][data-variant='subtle'][data-hoverable]:hover {
+      border-color: var(--xh-card-border-hover, transparent);
+      background-color: var(--xh-card-bg-hover, var(--xh-bg-subtle-hover));
+      box-shadow: var(--xh-card-shadow-hover, none);
+    }
+
+    [data-scope='card'][data-part='root'][data-variant='elevated'][data-hoverable]:hover {
+      background-color: var(--xh-card-bg-hover, var(--xh-bg-surface-raised));
+      box-shadow: var(--xh-card-shadow-hover, var(--xh-elevation-lifted));
+    }
+
+    [data-scope='card'][data-part='root'][data-variant='ghost'][data-hoverable]:hover {
+      border-color: var(--xh-card-border-hover, transparent);
+      background-color: var(--xh-card-bg-hover, var(--xh-bg-subtle));
+      box-shadow: var(--xh-card-shadow-hover, none);
     }
   }
 
   [data-scope='card'][data-part='root'][data-hoverable] {
     transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -83,14 +109,17 @@
     flex-direction: column;
     gap: var(--xh-card-header-gap, var(--xh-space-1));
     padding: var(--xh-_card-pad);
-    /* 头下面若还有别的段，间距由那一段自己的内边距接上，这里不重复留白 */
-    padding-block-end: var(--xh-card-header-pb, var(--xh-space-2));
+  }
+
+  /* 相邻内容段之间只留一份 8 / 12 / 16px 的间距；单独出现的部件仍保留完整内边距。 */
+  [data-scope='card'][data-part='header']:not(:last-child) {
+    padding-block-end: var(--xh-card-header-pb, var(--xh-space-0));
   }
 
   [data-scope='card'][data-part='title'] {
     font-size: var(--xh-card-title-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-font-weight-medium);
-    line-height: var(--xh-leading-tight);
+    line-height: var(--xh-leading-normal);
   }
 
   [data-scope='card'][data-part='root'][data-size='lg'] [data-scope='card'][data-part='title'] {
@@ -105,12 +134,16 @@
 
   [data-scope='card'][data-part='body'] {
     flex: 1 1 auto;
+    min-inline-size: 0;
     padding: var(--xh-_card-pad);
   }
 
-  /* 头与身相邻时，头已经收窄了下边距，身不必再从顶上留一份 */
   [data-scope='card'][data-part='header'] + [data-scope='card'][data-part='body'] {
-    padding-block-start: var(--xh-card-body-pt, var(--xh-space-2));
+    padding-block-start: var(--xh-card-body-pt, var(--xh-_card-section-gap));
+  }
+
+  [data-scope='card'][data-part='body']:not(:last-child) {
+    padding-block-end: var(--xh-card-body-pb, var(--xh-space-0));
   }
 
   [data-scope='card'][data-part='footer'] {
@@ -118,25 +151,38 @@
     align-items: center;
     gap: var(--xh-card-footer-gap, var(--xh-space-2));
     padding: var(--xh-_card-pad);
-    padding-block-start: var(--xh-card-footer-pt, var(--xh-space-2));
+  }
+
+  [data-scope='card'][data-part='header'] + [data-scope='card'][data-part='footer'],
+  [data-scope='card'][data-part='body'] + [data-scope='card'][data-part='footer'] {
+    padding-block-start: var(--xh-card-footer-pt, var(--xh-_card-section-gap));
   }
 
   /* —— 分段 —— */
   /* 分隔线画在下一段的上边，段与段之间才只有一条 */
   [data-scope='card'][data-part='root'][data-split] [data-scope='card'][data-part='body'],
   [data-scope='card'][data-part='root'][data-split] [data-scope='card'][data-part='footer'] {
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-card-divider, var(--xh-material-soft-separator));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-card-divider, var(--xh-border-subtle));
     padding-block-start: var(--xh-_card-pad);
-  }
-
-  @media (forced-colors: active) {
-    [data-scope='card'][data-part='root'] {
-      background-image: none;
-    }
   }
 
   [data-scope='card'][data-part='root'][data-split] [data-scope='card'][data-part='header'] {
     padding-block-end: var(--xh-_card-pad);
+  }
+
+  [data-scope='card'][data-part='root'][data-split] [data-scope='card'][data-part='body'] {
+    padding-block-end: var(--xh-_card-pad);
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='card'][data-part='root']:not([data-variant='ghost']) {
+      border-color: CanvasText;
+      box-shadow: none;
+    }
+
+    [data-scope='card'][data-part='root'][data-hoverable]:hover {
+      border-color: Highlight;
+    }
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。

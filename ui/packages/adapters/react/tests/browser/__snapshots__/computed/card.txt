@@ -1,9 +1,9 @@
 # card
 
 [body]
-padding-top: 8px
+padding-top: 12px
 padding-right: 16px
-padding-bottom: 16px
+padding-bottom: 0px
 padding-left: 16px
 row-gap: normal
 column-gap: normal
@@ -20,8 +20,8 @@ border-right-color: oklch(0.145 0.005 258)
 border-bottom-color: oklch(0.145 0.005 258)
 border-left-color: oklch(0.145 0.005 258)
 min-height: auto
-font-size: 16px
-line-height: normal
+font-size: 14px
+line-height: 21px
 font-weight: 400
 color: oklch(0.145 0.005 258)
 background-color: rgba(0, 0, 0, 0)
@@ -71,7 +71,7 @@ outline-offset: 0px
 outline-color: oklch(0.439 0.006 258)
 
 [footer]
-padding-top: 8px
+padding-top: 12px
 padding-right: 16px
 padding-bottom: 16px
 padding-left: 16px
@@ -90,8 +90,8 @@ border-right-color: oklch(0.145 0.005 258)
 border-bottom-color: oklch(0.145 0.005 258)
 border-left-color: oklch(0.145 0.005 258)
 min-height: auto
-font-size: 16px
-line-height: normal
+font-size: 14px
+line-height: 21px
 font-weight: 400
 color: oklch(0.145 0.005 258)
 background-color: rgba(0, 0, 0, 0)
@@ -108,7 +108,7 @@ outline-color: oklch(0.145 0.005 258)
 [header]
 padding-top: 16px
 padding-right: 16px
-padding-bottom: 8px
+padding-bottom: 0px
 padding-left: 16px
 row-gap: 4px
 column-gap: 4px
@@ -125,8 +125,8 @@ border-right-color: oklch(0.145 0.005 258)
 border-bottom-color: oklch(0.145 0.005 258)
 border-left-color: oklch(0.145 0.005 258)
 min-height: auto
-font-size: 16px
-line-height: normal
+font-size: 14px
+line-height: 21px
 font-weight: 400
 color: oklch(0.145 0.005 258)
 background-color: rgba(0, 0, 0, 0)
@@ -160,8 +160,8 @@ border-right-color: oklch(0.145 0.005 258)
 border-bottom-color: oklch(0.145 0.005 258)
 border-left-color: oklch(0.145 0.005 258)
 min-height: auto
-font-size: 16px
-line-height: normal
+font-size: 14px
+line-height: 21px
 font-weight: 400
 color: oklch(0.145 0.005 258)
 background-color: rgba(0, 0, 0, 0)
@@ -182,24 +182,24 @@ padding-bottom: 0px
 padding-left: 0px
 row-gap: normal
 column-gap: normal
-border-top-left-radius: 8px
-border-top-right-radius: 8px
-border-bottom-right-radius: 8px
-border-bottom-left-radius: 8px
+border-top-left-radius: 12px
+border-top-right-radius: 12px
+border-bottom-right-radius: 12px
+border-bottom-left-radius: 12px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
 border-left-width: 1px
-border-top-color: oklch(0.967 0.001 258)
-border-right-color: oklch(0.967 0.001 258)
-border-bottom-color: oklch(0.967 0.001 258)
-border-left-color: oklch(0.967 0.001 258)
+border-top-color: rgba(0, 0, 0, 0)
+border-right-color: rgba(0, 0, 0, 0)
+border-bottom-color: rgba(0, 0, 0, 0)
+border-left-color: rgba(0, 0, 0, 0)
 min-height: 0px
-font-size: 16px
-line-height: normal
+font-size: 14px
+line-height: 21px
 font-weight: 400
 color: oklch(0.145 0.005 258)
-background-color: oklch(0.995 0.001 258)
+background-color: oklch(1 0 0)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
@@ -231,7 +231,7 @@ border-bottom-color: oklch(0.145 0.005 258)
 border-left-color: oklch(0.145 0.005 258)
 min-height: auto
 font-size: 14px
-line-height: 17.5px
+line-height: 21px
 font-weight: 500
 color: oklch(0.145 0.005 258)
 background-color: rgba(0, 0, 0, 0)
