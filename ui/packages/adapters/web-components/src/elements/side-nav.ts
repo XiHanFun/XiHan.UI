@@ -7,6 +7,7 @@ import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
+import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -98,11 +99,11 @@ export class XhSideNavElement extends XhElement {
   }
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly navScope = createScope(null, this.idGen)
+  private readonly navScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 每个弹出面板的定位层一份退场闸门：退场动画播完才真收。 */
-  private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit }>()
+  private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit, portal: AnchoredPortalController }>()
 
   private readonly ctrl = new MachineController<SideNavSchema>(
     this,
@@ -136,6 +137,10 @@ export class XhSideNavElement extends XhElement {
     if (this.config)
       return
     this.config = createRuntimeConfig({ scope: this.navScope, idGenerator: this.idGen })
+  }
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return [...this.exits.values()].flatMap(entry => entry.portal.roots)
   }
 
   /** 当前弹出分支名下的角色节点：按归属分支的 value 现查。 */
@@ -178,8 +183,9 @@ export class XhSideNavElement extends XhElement {
     this.ctrl.service.send({ type: 'PRESENCE.SET', value, presence, connected })
   }
 
-  private releaseExit(el: HTMLElement, entry: { value: string, gate: OverlayExit }): void {
+  private releaseExit(el: HTMLElement, entry: { value: string, gate: OverlayExit, portal: AnchoredPortalController }): void {
     this.setPresence(entry.value, entry.gate.presence, false)
+    entry.portal.dispose()
     entry.gate.dispose()
     this.setPartHidden(el, true)
     this.exits.delete(el)
@@ -194,6 +200,12 @@ export class XhSideNavElement extends XhElement {
   }
 
   private nodeOf(el: HTMLElement, selector: string): SideNavNodeProps {
+    const positioner = el.matches('[data-xh-part="positioner"]')
+      ? el
+      : el.closest<HTMLElement>('[data-xh-part="positioner"]')
+    const portaled = positioner ? this.exits.get(positioner) : undefined
+    if (portaled)
+      return { value: portaled.value }
     const owner = el.closest<HTMLElement>(selector)
     const source = owner && owner !== this && this.contains(owner) ? owner : el
     return { value: source.getAttribute('value') ?? '' }
@@ -203,6 +215,7 @@ export class XhSideNavElement extends XhElement {
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起
     for (const [el, entry] of this.exits) {
+      entry.portal.dispose()
       entry.gate.dispose()
       this.setPartHidden(el, true)
     }
@@ -255,7 +268,14 @@ export class XhSideNavElement extends XhElement {
           open,
           onExitComplete: () => this.requestUpdate(),
         })
-        entry = { value, gate }
+        const portal = new AnchoredPortalController({
+          name: `SideNav popout ${value}`,
+          config: () => this.config,
+          source: () => this.findPopoutPart(this.exits.get(el)?.value ?? value, 'branch-trigger'),
+          root: () => el,
+          onChange: () => this.requestUpdate(),
+        })
+        entry = { value, gate, portal }
         this.exits.set(el, entry)
         this.setPresence(value, gate.presence, true)
       }
@@ -277,6 +297,7 @@ export class XhSideNavElement extends XhElement {
       entry.gate.update(open)
       el.toggleAttribute('hidden', !entry.gate.visible)
       this.setPartHidden(el, !entry.gate.visible)
+      entry.portal.sync(entry.gate.visible)
       popoutVisible.set(el, entry.gate.visible)
     }
     putAll('link', '[data-xh-part="link"]', node => api.getLinkProps(node))

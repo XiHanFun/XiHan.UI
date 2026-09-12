@@ -7,6 +7,7 @@ import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
+import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
@@ -119,11 +120,19 @@ export class XhPaginationElement extends XhElement {
   declare closeDelay?: number
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly paginationScope = createScope(null, this.idGen)
+  private readonly paginationScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着展开态走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private ellipsisPortalSource: HTMLElement | null = null
+  private readonly ellipsisPortal = new AnchoredPortalController({
+    name: 'Pagination ellipsis',
+    config: () => this.config,
+    source: () => this.ellipsisPortalSource,
+    root: () => this.getPart('positioner') ?? this.getPart('content'),
+    onChange: () => this.requestUpdate(),
+  })
 
   private readonly notify = (details: PaginationPageChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('page-change', { detail: details, bubbles: true, composed: true }))
@@ -156,6 +165,13 @@ export class XhPaginationElement extends XhElement {
   private pageSizeMount: HTMLElement | null = null
   /** 下拉浮层的退场闸门，与省略位那层各走各的。 */
   private pageSizeExit: OverlayExit | null = null
+  private readonly pageSizePortal = new AnchoredPortalController({
+    name: 'Pagination page size',
+    config: () => this.config,
+    source: () => this.pageSizeNodes?.control ?? null,
+    root: () => this.pageSizeNodes?.positioner ?? null,
+    onChange: () => this.requestUpdate(),
+  })
 
   /** 折叠页码列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
   private readonly bars = new ScrollbarsController(this, {
@@ -178,6 +194,20 @@ export class XhPaginationElement extends XhElement {
       onExitComplete: () => this.requestUpdate(),
     })
     return this.exit
+  }
+
+  private ensurePageSizeExit(open: boolean): OverlayExit {
+    this.ensureConfig()
+    this.pageSizeExit ??= createOverlayExit({
+      config: this.config!,
+      open,
+      onExitComplete: () => this.requestUpdate(),
+    })
+    return this.pageSizeExit
+  }
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return [...this.ellipsisPortal.roots, ...this.pageSizePortal.roots]
   }
 
   /** 此刻摊开的是哪个省略位的节点——它是定位锚点。 */
@@ -222,6 +252,7 @@ export class XhPaginationElement extends XhElement {
     this.ensureConfig()
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerPageSizeLayer)
+    svc.refs.set('presence', this.ensurePageSizeExit(svc.state.get() === 'open').presence)
     svc.refs.set('position', createPositionEngine())
     svc.refs.set('getAnchorEl', () => this.pageSizeNodes?.trigger ?? null)
     svc.refs.set('getFloatingEl', () => this.pageSizeNodes?.positioner ?? null)
@@ -393,12 +424,16 @@ export class XhPaginationElement extends XhElement {
     // 会盖过 UA 的 [hidden]{display:none}；换别家样式同理，只有内联 style 压得住。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const content = this.getPart('content')
+    const anchor = this.openEllipsisEl(api.openEllipsis)
+    if (anchor)
+      this.ellipsisPortalSource = anchor
     const exit = this.ensureExit(api.openEllipsis != null)
     exit.track(content)
     exit.update(api.openEllipsis != null)
     this.setPartHidden(content, !exit.visible)
 
     this.bars.wire()
+    this.ellipsisPortal.sync(exit.visible)
   }
 
   /**
@@ -449,6 +484,7 @@ export class XhPaginationElement extends XhElement {
     const nodes = this.pageSizeNodes
     if (!nodes)
       return
+    this.pageSizePortal.dispose()
     for (const node of [nodes.root, nodes.control, nodes.trigger, nodes.valueText, nodes.indicator, nodes.positioner, nodes.content, nodes.list])
       this.spreader.release(node)
     for (const entry of nodes.items.values()) {
@@ -506,19 +542,18 @@ export class XhPaginationElement extends XhElement {
 
     // 与省略位那层同一套：收起押后到退场播完，皮肤给 content 设了 display，只有内联 style 压得住
     this.ensureConfig()
-    this.pageSizeExit ??= createOverlayExit({
-      config: this.config!,
-      open: select.open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    this.pageSizeExit.track(nodes.content)
-    this.pageSizeExit.update(select.open)
+    const exit = this.ensurePageSizeExit(select.open)
+    exit.track(nodes.content)
+    exit.update(select.open)
     // 直接写而不走 setPartHidden：那条路是为作者写的角色节点留的，要护住作者自己的内联
     // display；这颗是元素建的，没有作者的那一份，也没有「标签已在、类未到」那段升级前空窗
-    nodes.content.style.display = this.pageSizeExit.visible ? '' : 'none'
+    nodes.content.style.display = exit.visible ? '' : 'none'
+    this.pageSizePortal.sync(exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.ellipsisPortal.dispose()
+    this.pageSizePortal.dispose()
     super.disconnectedCallback()
     this.pageSizeExit?.dispose()
     this.pageSizeExit = null
