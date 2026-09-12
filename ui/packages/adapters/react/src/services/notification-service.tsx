@@ -12,7 +12,7 @@ import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
 import type { XhConfigSource } from './service-config'
 import { ensurePortalRoot } from '@xihan-ui/core'
-import { createFeedbackServiceController } from '@xihan-ui/headless'
+import { createFeedbackServiceController, resolveFeedbackServiceTitle } from '@xihan-ui/headless'
 import { Fragment, useSyncExternalStore } from 'react'
 import {
   XhNotificationItem,
@@ -82,13 +82,6 @@ export interface NotificationService {
   dispose: () => void
 }
 
-/** 合并过的在标题后追加计数，没并过就是原话。 */
-function cardTitle(item: ResolvedNotification): string | undefined {
-  if (item.count <= 1 || item.title == null)
-    return item.title
-  return `${item.title} ×${item.count}`
-}
-
 function DefaultCard(props: {
   item: ResolvedNotification
   translations: Partial<NotificationTranslations> | undefined
@@ -100,7 +93,7 @@ function DefaultCard(props: {
   return (
     <XhNotificationItem
       id={item.id}
-      title={cardTitle(item)}
+      title={resolveFeedbackServiceTitle(item)}
       description={item.description}
       type={item.type}
       duration={item.duration}

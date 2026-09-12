@@ -3,11 +3,11 @@
 // 避开多层模态叠加。onOk 返回 Promise 时确认钮自动进入 pending 并拦住关闭，
 // 失败保持打开以便重试或取消。
 import type { Tone } from '@xihan-ui/core'
-import type { DialogServiceControllerSpec, DialogServiceControllerState } from '@xihan-ui/headless'
+import type { DialogServiceBadge, DialogServiceControllerSpec, DialogServiceControllerState } from '@xihan-ui/headless'
 import type { App, MaybeRefOrGetter, VNodeChild } from 'vue'
 import type { XhConfig } from '../config/config'
 import { ensurePortalRoot } from '@xihan-ui/core'
-import { createDialogServiceController } from '@xihan-ui/headless'
+import { createDialogServiceController, dialogServiceBadgeTone } from '@xihan-ui/headless'
 import { createApp, defineComponent, h, reactive, shallowRef, toRaw, toValue } from 'vue'
 import { XhButton, XhButtonIndicator, XhButtonLabel } from '../components/button'
 import { XhDialogBody, XhDialogContent, XhDialogDescription, XhDialogFooter, XhDialogHeader, XhDialogIndicator, XhDialogRoot, XhDialogTitle } from '../components/dialog/dialog'
@@ -34,7 +34,7 @@ export interface ConfirmOptions {
   /** 确认钮语气，默认 brand；危险操作传 danger。 */
   tone?: Tone
   /** 标题旁的类型徽记。不给则不出徽记。 */
-  badge?: 'info' | 'success' | 'warning' | 'error'
+  badge?: DialogServiceBadge
   okText?: MaybeRefOrGetter<string>
   cancelText?: MaybeRefOrGetter<string>
   /** false 阻止关闭；抛错或 Promise 拒绝进入 actionError，保持打开。 */
@@ -100,7 +100,7 @@ interface Spec extends DialogServiceControllerSpec {
   cancelText: MaybeRefOrGetter<string>
   showCancel: boolean
   /** 标题旁的类型徽记（预设档用），confirm 不带。 */
-  badge?: 'info' | 'success' | 'warning' | 'error'
+  badge?: DialogServiceBadge
   /** 返回 false 阻止本次确认；异常由独立错误状态报告。 */
   onOk?: () => unknown
   onActionError?: (error: DialogActionError) => void | Promise<void>
@@ -168,7 +168,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
         }, () => spec
           ? h(XhDialogContent, null, () => [
               h(XhDialogHeader, null, () => [
-                spec.badge ? h(XhDialogIndicator, { 'data-tone': toneOfBadge(spec.badge) }) : null,
+                spec.badge ? h(XhDialogIndicator, { 'data-tone': dialogServiceBadgeTone(spec.badge) }) : null,
                 h(XhDialogTitle, () => spec.title),
               ]),
               h(XhDialogBody, null, () => [
@@ -194,10 +194,6 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     },
   })
 
-  function toneOfBadge(badge: NonNullable<Spec['badge']>): Tone {
-    return badge === 'error' ? 'danger' : badge
-  }
-
   const app: App = createApp(Host)
   let mounted = false
   function failHost(cause: unknown): void {
@@ -214,7 +210,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     }
   }
 
-  const alert = (badge: NonNullable<Spec['badge']>, tone: Tone) => async (opts: AlertOptions): Promise<void> => {
+  const alert = (badge: DialogServiceBadge, tone: Tone) => async (opts: AlertOptions): Promise<void> => {
     await controller.request({
       title: opts.title,
       content: opts.content,

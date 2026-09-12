@@ -1,5 +1,6 @@
 import type { Tone } from '@xihan-ui/core'
 import type {
+  DialogServiceBadge,
   LoadingBarTranslations,
   NotificationDedupe,
   NotificationOptions,
@@ -139,7 +140,7 @@ export interface ConfirmOptions {
   /** 确认钮语气，默认 brand；危险操作传 danger。 */
   tone?: Tone
   /** 标题旁的类型徽记。不给则不出徽记。 */
-  badge?: 'info' | 'success' | 'warning' | 'error'
+  badge?: DialogServiceBadge
   okText?: string
   cancelText?: string
   /** false 阻止关闭；抛错或 Promise 拒绝进入 actionError，保持打开。 */

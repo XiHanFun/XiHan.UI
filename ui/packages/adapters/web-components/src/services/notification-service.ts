@@ -13,16 +13,9 @@ import type {
   NotificationService,
   NotificationServiceOptions,
 } from './types'
-import { createFeedbackServiceController, NOTIFICATION_PLACEMENT, NOTIFICATION_PLACEMENTS } from '@xihan-ui/headless'
+import { createFeedbackServiceController, NOTIFICATION_PLACEMENT, NOTIFICATION_PLACEMENTS, resolveFeedbackServiceTitle } from '@xihan-ui/headless'
 import { createServiceHolder, partNode, reportServiceFailure } from './host'
 import { defineFeedbackElements } from './register'
-
-/** 合并过的在标题后追加计数，没并过就是原话。 */
-function cardTitle(item: ResolvedNotification): string | undefined {
-  if (item.count <= 1 || item.title == null)
-    return item.title
-  return `${item.title} ×${item.count}`
-}
 
 export function createNotificationService(options: NotificationServiceOptions = {}): NotificationService {
   if (typeof document === 'undefined')
@@ -122,7 +115,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
       action.textContent = item.actionLabel ?? ''
 
     node.itemId = item.id
-    node.titleText = cardTitle(item)
+    node.titleText = resolveFeedbackServiceTitle(item)
     node.description = item.description
     node.type = item.type
     node.duration = item.duration

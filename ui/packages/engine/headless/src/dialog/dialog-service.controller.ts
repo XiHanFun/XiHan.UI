@@ -1,3 +1,13 @@
+import type { Tone } from '@xihan-ui/core'
+
+/** 命令式告知框标题旁的语义徽记。 */
+export type DialogServiceBadge = 'info' | 'success' | 'warning' | 'error'
+
+/** 徽记的 error 语义在视觉语气轴上统一命名为 danger。 */
+export function dialogServiceBadgeTone(badge: DialogServiceBadge): Tone {
+  return badge === 'error' ? 'danger' : badge
+}
+
 /** 命令式对话框动作异常；保留原始原因，展示文案由适配器决定。 */
 export interface DialogServiceActionError {
   cause: unknown

@@ -1,6 +1,7 @@
 import type { FeedbackServiceQueue } from '../src/notification'
 import { describe, expect, it, vi } from 'vitest'
-import { createFeedbackServiceController } from '../src/notification'
+import { createFeedbackServiceController, resolveFeedbackServiceTitle } from '../src/notification'
+import { resolveToastServiceItem } from '../src/toast'
 
 interface RecordOptions {
   id?: string
@@ -29,6 +30,32 @@ function makeQueue() {
 }
 
 describe('feedback service controller', () => {
+  it('toast 与 notification 共用合并计数标题投影', () => {
+    expect(resolveFeedbackServiceTitle({ title: '同步完成' })).toBe('同步完成')
+    expect(resolveFeedbackServiceTitle({ title: '同步完成', count: 1 })).toBe('同步完成')
+    expect(resolveFeedbackServiceTitle({ title: '同步完成', count: 3 })).toBe('同步完成 ×3')
+    expect(resolveFeedbackServiceTitle({ count: 3 })).toBeUndefined()
+  })
+
+  it('toast 服务默认项只由 Headless 决定标题、语气、时长与关闭出口', () => {
+    expect(resolveToastServiceItem(
+      { id: 'a', title: '处理中', count: 2, actionLabel: '撤销' },
+      { duration: 3000, removeDelay: 180, pauseOnPageIdle: false },
+    )).toEqual({
+      id: 'a',
+      title: '处理中 ×2',
+      type: 'info',
+      duration: 3000,
+      removeDelay: 180,
+      closable: false,
+      pauseOnPageIdle: false,
+      actionLabel: '撤销',
+    })
+    expect(resolveToastServiceItem({ id: 'loading', type: 'loading' }).closable).toBe(true)
+    expect(resolveToastServiceItem({ id: 'fixed', duration: 0 }).closable).toBe(true)
+    expect(resolveToastServiceItem({ id: 'forced', type: 'loading', closable: false }).closable).toBe(false)
+  })
+
   it('复用注入的 notification 队列端口完成 create/update/dismiss/dismissAll', () => {
     const { queue, records } = makeQueue()
     const controller = createFeedbackServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })

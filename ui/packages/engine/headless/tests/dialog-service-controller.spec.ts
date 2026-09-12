@@ -1,6 +1,6 @@
 import type { DialogServiceControllerSpec, DialogServiceRequest } from '../src/dialog'
 import { describe, expect, it } from 'vitest'
-import { createDialogServiceController } from '../src/dialog'
+import { createDialogServiceController, dialogServiceBadgeTone } from '../src/dialog'
 
 interface Spec extends DialogServiceControllerSpec {
   title: string
@@ -17,6 +17,13 @@ function deferred<T = void>(): { promise: Promise<T>, resolve: (value: T) => voi
 }
 
 describe('dialog service controller', () => {
+  it('三端告知框徽记共用同一语气映射', () => {
+    expect(dialogServiceBadgeTone('info')).toBe('info')
+    expect(dialogServiceBadgeTone('success')).toBe('success')
+    expect(dialogServiceBadgeTone('warning')).toBe('warning')
+    expect(dialogServiceBadgeTone('error')).toBe('danger')
+  })
+
   it('请求严格排队，Promise 先结算，显式完成长退场后才推进', async () => {
     const controller = createDialogServiceController<Spec>()
     const first = controller.request({ title: '第一问' })

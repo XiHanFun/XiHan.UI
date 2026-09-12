@@ -10,6 +10,7 @@ import type {
   ToastOptions,
   ToastPlacement,
   ToastRecord,
+  ToastServiceDefaults,
   ToastTranslations,
   ToastType,
 } from '@xihan-ui/headless'
@@ -22,7 +23,7 @@ import {
   createFeedbackServiceController,
   NOTIFICATION_MAX,
   notificationMachine,
-  TOAST_DURATION,
+  resolveToastServiceItem,
   TOAST_GAP,
   TOAST_PLACEMENT,
   toastAnatomy,
@@ -38,17 +39,10 @@ import { createServiceConfig } from './service-config'
 
 const parts = toastAnatomy.build()
 
-/** 单条没写时的兜底：服务档一次定好，逐条渲染时补进去。 */
-interface ToastDefaults {
-  duration?: number
-  removeDelay?: number
-  pauseOnPageIdle?: boolean
-}
-
 /** 文案可以给常量，也可以给取值函数——摞里的条子会跨过一次切语言。 */
 export type ToastTranslationsSource = Partial<ToastTranslations> | (() => Partial<ToastTranslations>)
 
-export interface ToastServiceOptions extends ToastDefaults {
+export interface ToastServiceOptions extends ToastServiceDefaults {
   /** 那一摞落在哪儿，默认 'top'：视线正好在刚才操作的地方上方。 */
   placement?: ToastPlacement
   /** 最多同时留几条，默认 5；超出先挤低优先级的，同级里挤最旧的。 */
@@ -110,50 +104,27 @@ export interface ToastService {
   dispose: () => void
 }
 
-/**
- * 这一条会不会自己走掉。loading 一直挂着，duration <= 0 与非有限值也是。
- * 走不掉的必须留个出口，否则界面上一个可点、可聚焦的节点都没有。
- */
-function selfDismissing(toast: ToastRecord, defaults: ToastDefaults): boolean {
-  if (toast.type === 'loading')
-    return false
-  const duration = toast.duration ?? defaults.duration ?? TOAST_DURATION
-  return Number.isFinite(duration) && duration > 0
-}
-
-/** 合并过的在标题后追加计数，没并过就是原话。 */
-function toastTitle(toast: ToastRecord): string | undefined {
-  const count = toast.count ?? 1
-  if (count <= 1 || toast.title == null)
-    return toast.title
-  return `${toast.title} ×${count}`
-}
-
 function DefaultToast(props: {
   toast: ToastRecord
-  defaults: ToastDefaults
+  defaults: ToastServiceDefaults
   translations: Partial<ToastTranslations> | undefined
   paused: boolean
   onUnmounted: (id: string) => void
   onAction: (id: string) => void
 }): ReactNode {
   const { toast, defaults } = props
-  // 到点自己走的默认不出叉，多一颗叉就多一个「要不要点」的判断；
-  // 走不掉的反过来默认给叉。两者都能用 closable 显式改口
-  const closable = toast.closable ?? !selfDismissing(toast, defaults)
-  // 语气跟着 connect 的缺省走（type 缺席即 info）。字形不在这儿渲染：
+  const item = resolveToastServiceItem(toast, defaults)
+  // 字形不在这儿渲染：
   // 它由皮肤按 root 上的 data-severity 画，声明式用法与 Web Components 那侧才拿得到同一枚
-  const type = toast.type ?? 'info'
   return (
     <XhToastRoot
-      id={toast.id}
-      title={toastTitle(toast)}
-      type={type}
-      // 单条 > 服务档 > 机器内建默认
-      duration={toast.duration ?? defaults.duration}
-      removeDelay={toast.removeDelay ?? defaults.removeDelay}
-      closable={closable}
-      pauseOnPageIdle={defaults.pauseOnPageIdle}
+      id={item.id}
+      title={item.title}
+      type={item.type}
+      duration={item.duration}
+      removeDelay={item.removeDelay}
+      closable={item.closable}
+      pauseOnPageIdle={item.pauseOnPageIdle}
       paused={props.paused}
       translations={props.translations}
       onStatusChange={({ id, status }: { id: string, status: string }) => {
@@ -164,8 +135,8 @@ function DefaultToast(props: {
     >
       {/* 节点平铺，不再套一层行容器：横排是皮肤的事，模板套一层只会与它打架 */}
       <XhToastTitle />
-      {toast.actionLabel ? <XhToastActionTrigger>{toast.actionLabel}</XhToastActionTrigger> : null}
-      {closable ? <XhToastCloseTrigger /> : null}
+      {item.actionLabel ? <XhToastActionTrigger>{item.actionLabel}</XhToastActionTrigger> : null}
+      {item.closable ? <XhToastCloseTrigger /> : null}
     </XhToastRoot>
   )
 }
