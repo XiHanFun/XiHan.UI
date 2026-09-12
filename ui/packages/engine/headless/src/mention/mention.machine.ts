@@ -2,7 +2,7 @@ import type { PositionResult } from '@xihan-ui/core'
 import type { MentionSchema, MentionTrigger } from './mention.types'
 import { itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
-import { trackOverlayLayer, trackOverlayPosition } from '../shared/overlay-shell'
+import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { mentionItemQuery } from './mention.anatomy'
 import { findMentionTrigger, insertMention, normalizeMentionPrefixes } from './mention.trigger'
 
@@ -62,6 +62,7 @@ export const mentionMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     position: null,
     getFloatingEl: () => null,
     getContentEl: () => null,
@@ -69,6 +70,8 @@ export const mentionMachine = createMachine({
   }),
   // 挂载时光标在哪还不知道，一律从收起态起步
   initialState: () => 'closed',
+  // Layer 与消解资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
+  effects: ['trackLayer'],
   on: {
     // 表单重置从任何状态都要认。不设禁用/只读守卫：原生表单的重置算法不看这两个标志
     'FORM.RESET': { actions: ['resetToDefault'] },
@@ -88,8 +91,8 @@ export const mentionMachine = createMachine({
       // 先结算候选条数，再把高亮落到首条：提及浮层恒有高亮，回车才有确定的落点
       entry: ['syncItems', 'highlightFirst'],
       exit: ['clearHighlightedValue'],
-      // 定位 → 消解。焦点全程留在输入框，因此不挂焦点域
-      effects: ['trackPosition', 'trackLayer'],
+      // 定位只服务逻辑展开；Layer 与消解资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackPosition'],
       on: {
         'CLOSE': { target: 'closed', actions: ['invokeOnClose'] },
         'ESCAPE': { target: 'closed', actions: ['dismissHere', 'invokeOnClose'] },
@@ -275,24 +278,30 @@ export const mentionMachine = createMachine({
         onResult: result => context.set('position', result),
       }),
 
-      // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape。
-      // 焦点全程留在输入框，因此不给焦点域
-      trackLayer: ({ refs, send, flush }) => trackOverlayLayer({
-        config: refs.get('config'),
-        registerLayer: refs.get('registerLayer'),
-        flush,
-        onDismiss: (reason) => {
-          // Escape 要记下这一处，与点外面收起不是一回事
-          if (reason === 'escape-key') {
-            send({ type: 'ESCAPE' })
-            return
-          }
-          // 焦点跑到层外与输入框自己的 blur 是同一件事，只认后者，
-          // 两处都收口时 onOpenChange 会为同一次离场发两遍
-          if (reason === 'focus-outside')
-            return
-          send({ type: 'CLOSE' })
-        },
+      // Layer 与 DismissableLayer 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
+      // 焦点全程留在输入框，因此不给焦点域。
+      trackLayer: ({ refs, send, flush, state, track }) => trackPresenceResources({
+        presence: () => refs.get('presence'),
+        open: () => state.get() === 'open',
+        track,
+        acquire: () => trackOverlayLayer({
+          config: refs.get('config'),
+          registerLayer: refs.get('registerLayer'),
+          flush,
+          active: () => state.get() === 'open',
+          onDismiss: (reason) => {
+            // Escape 要记下这一处，与点外面收起不是一回事
+            if (reason === 'escape-key') {
+              send({ type: 'ESCAPE' })
+              return
+            }
+            // 焦点跑到层外与输入框自己的 blur 是同一件事，只认后者，
+            // 两处都收口时 onOpenChange 会为同一次离场发两遍
+            if (reason === 'focus-outside')
+              return
+            send({ type: 'CLOSE' })
+          },
+        }),
       }),
     },
   },

@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
 import type { Anchor, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
+import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
 import type { DatePickerApi, DatePickerSchema, DatePickerServices, DatePickerTimeUnit } from '../src/date-picker'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { calendarMachine } from '../src/calendar'
@@ -70,10 +72,14 @@ interface MountOptions {
   position?: PositionEnginePort
   /** 本层被移出层栈时调一次，用来记拆除顺序。 */
   onLayerDispose?: () => void
+  /** 注入真实 Presence，验证行为资源延迟到视觉退场完成后释放。 */
+  withPresence?: boolean
 }
 
 interface Harness {
   api: () => DatePickerApi
+  config: RuntimeConfig
+  presence: PresenceHandle | null
   root: HTMLElement
   label: HTMLElement
   control: HTMLElement
@@ -204,7 +210,11 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   }
 
   const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+  const presence = options.withPresence
+    ? createPresence({ config, open: (initial.open ?? initial.defaultOpen) ?? false, onRenderedChange: () => {} })
+    : null
   rootService.refs.set('config', config)
+  rootService.refs.set('presence', presence)
   rootService.refs.set('registerLayer', () => {
     const handle = config.layerRegistry.register({
       kind: 'popover',
@@ -337,6 +347,8 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
 
   return {
     api: () => connectDatePicker(services, normalizeProps),
+    config,
+    presence,
     root,
     label,
     control,
@@ -1536,6 +1548,40 @@ describe('浮层定位', () => {
     await tick()
     expect(h.state()).toBe('open')
     expect(h.position()).toBeNull()
+  })
+})
+
+describe('datePicker 真实退场资源', () => {
+  it('逻辑关闭立即失活，Layer 与焦点域等 Presence 完成才释放；中途重开复用原登记', () => {
+    const h = mount({ defaultOpen: true }, { withPresence: true })
+    const presence = h.presence!
+    const original = h.config.layerRegistry.list()[0]
+    expect(original).toBeDefined()
+
+    const leases: ExitLease[] = []
+    const stopExit = presence.onBeforeExit(() => {
+      leases.push(presence.claimExit(`date-picker exit ${leases.length + 1}`))
+    })
+    h.api().setOpen(false)
+    const closing = h.api().getContentProps() as Record<string, unknown>
+    expect(closing.inert).toBe(true)
+    expect(closing['aria-hidden']).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+    presence.update(false)
+    expect(leases).toHaveLength(1)
+
+    h.api().setOpen(true)
+    expect(leases[0]!.settled).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+
+    h.api().setOpen(false)
+    presence.update(false)
+    expect(leases).toHaveLength(2)
+    leases[1]!.done()
+    expect(h.config.layerRegistry.list()).toHaveLength(0)
+
+    stopExit()
+    presence.dispose()
   })
 })
 

@@ -4,7 +4,7 @@ import type { TreeSelectBranchLoadSnapshot, TreeSelectFocusIntent, TreeSelectNod
 import { cascadeToggle, collapseChecked, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
-import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition } from '../shared/overlay-shell'
+import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { flattenTree } from '../tree'
 import { treeSelectAnatomy, treeSelectBranchQuery, treeSelectItemQuery } from './tree-select.anatomy'
 
@@ -206,6 +206,7 @@ export const treeSelectMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     position: null,
     getAnchorEl: () => null,
     getFloatingEl: () => null,
@@ -224,7 +225,8 @@ export const treeSelectMachine = createMachine({
     // 受控 expandedValue、初始 defaultExpandedValue 与 API 改写共用这一个入口。
     track([context.dep('expandedValue')], () => action(['loadExpandedBranches']))
   },
-  effects: ['trackBranchLoads'],
+  // 分支请求常驻；Layer、消解与焦点资源同样常驻跟踪开合，关闭后由 Presence 延迟释放。
+  effects: ['trackBranchLoads', 'trackLayer'],
   // 这几件事与开合无关，两个状态里都得认；展开态另行声明的 NODE.SELECT 会盖过这里那一条。
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
@@ -259,8 +261,8 @@ export const treeSelectMachine = createMachine({
       entry: ['setInitialFocusedValue'],
       // 收起就丢缓冲，否则下次展开首字母会拼进上一轮查询串
       exit: ['clearFocusedValue', 'clearTypeahead'],
-      // 进入 open：定位 → 消解 → 焦点。退出 open 时按同序清理，焦点归还发生在消解层撤销之后。
-      effects: ['trackPosition', 'trackLayer'],
+      // 定位只服务逻辑展开；Layer、消解与焦点资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackPosition'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
@@ -512,41 +514,57 @@ export const treeSelectMachine = createMachine({
         onResult: result => context.set('position', result),
       }),
 
-      // 层与消解层、焦点域绑在同一个效应里，三者生命周期必须一致；
-      // 层只在展开期间入栈，常驻会占死栈顶把下面各层的 Escape 堵死。
-      trackLayer: ({ refs, context, send, flush }) => trackOverlayLayer({
-        // 无 DOM 环境：状态机照常转移，不挂副作用
-        config: refs.get('config'),
-        registerLayer: refs.get('registerLayer'),
-        flush,
-        onDismiss: overlayCloseOnDismiss(send),
-        focusScope: {
-          // 每次读最新 ref，容器晚一拍就位也能命中
-          container: () => refs.get('getContentEl')(),
-          // 显式指定落焦点为锚点节点：Tab 序列探测会过滤掉写成 <a> 的节点。
-          // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试。
-          // 无锚点（指针打开且无选中值）时落到 tree 部件自己身上，它此刻正认领着 Tab 位。
-          // 不能留给焦点域的 Tab 序列探测：那条路按文档序取 content 的全部可 tab 后代，
-          // 作者放在树前面的搜索框会把焦点抢走，而键盘处理器挂在树上，方向键就此失灵
-          initialFocus: () => {
-            const content = refs.get('getContentEl')()
-            if (!content)
-              return null
-            const anchor = context.get('focusedValue')
-            if (anchor != null)
-              return findTreeSelectNodeEl(content, anchor)
-            // 本轮该有锚点却还没挑出来（节点身份标记晚一拍写上）：返回 null 让焦点域重试，
-            // 别滑到容器上定死——落焦一旦成功就不再重试
-            if (!(context.get('focusIntent') === 'selected' && context.get('value').length === 0))
-              return null
-            return content.querySelector<HTMLElement>(treeSelectAnatomy.build().tree.selector)
+      // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
+      trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
+        let reactivateFocus: (() => void) | null = null
+        return trackPresenceResources({
+          presence: () => refs.get('presence'),
+          open: () => state.get() === 'open',
+          track,
+          acquire: () => trackOverlayLayer({
+            // 无 DOM 环境：状态机照常转移，不挂副作用
+            config: refs.get('config'),
+            registerLayer: refs.get('registerLayer'),
+            flush,
+            active: () => state.get() === 'open',
+            onDismiss: overlayCloseOnDismiss(send),
+            focusScope: {
+              // 每次读最新 ref，容器晚一拍就位也能命中
+              container: () => refs.get('getContentEl')(),
+              // 显式指定落焦点为锚点节点：Tab 序列探测会过滤掉写成 <a> 的节点。
+              // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试。
+              // 无锚点（指针打开且无选中值）时落到 tree 部件自己身上，它此刻正认领着 Tab 位。
+              // 不能留给焦点域的 Tab 序列探测：那条路按文档序取 content 的全部可 tab 后代，
+              // 作者放在树前面的搜索框会把焦点抢走，而键盘处理器挂在树上，方向键就此失灵
+              initialFocus: () => {
+                const content = refs.get('getContentEl')()
+                if (!content)
+                  return null
+                const anchor = context.get('focusedValue')
+                if (anchor != null)
+                  return findTreeSelectNodeEl(content, anchor)
+                // 本轮该有锚点却还没挑出来（节点身份标记晚一拍写上）：返回 null 让焦点域重试，
+                // 别滑到容器上定死——落焦一旦成功就不再重试
+                if (!(context.get('focusIntent') === 'selected' && context.get('value').length === 0))
+                  return null
+                return content.querySelector<HTMLElement>(treeSelectAnatomy.build().tree.selector)
+              },
+              restoreFocus: () => context.get('returnFocus'),
+              // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+              // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
+              restoreTarget: () => refs.get('getAnchorEl')(),
+              onReactivate: reactivate => reactivateFocus = reactivate,
+            },
+          }),
+          onReopen: () => {
+            const activate = reactivateFocus
+            flush(() => scope.getWin().requestAnimationFrame(() => {
+              if (state.get() === 'open' && reactivateFocus === activate)
+                activate?.()
+            }))
           },
-          restoreFocus: () => context.get('returnFocus'),
-          // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
-          restoreTarget: () => refs.get('getAnchorEl')(),
-        },
-      }),
+        })
+      },
     },
   },
 })

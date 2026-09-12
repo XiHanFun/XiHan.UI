@@ -531,6 +531,9 @@ export function connectDatePicker<T extends PropTypes>(
       'tabindex': -1,
       'data-state': stateAttr,
       'data-placement': placement,
+      // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
     }),

@@ -76,12 +76,16 @@ export function trackOverlayPosition(o: OverlayPositionOptions): Cleanup | undef
   }
 }
 
-/** 焦点域里各家不同的那几项；其余（不陷焦点、不回绕、容器每次现取）由外壳定死。 */
+/** 焦点域里各家不同的那几项；容器每次现取，其他策略缺省为非陷阱、不回绕。 */
 export interface OverlayFocusScopeSpec {
   /** 焦点域容器，每次求值现取，容器晚一拍就位也能命中。 */
   container: () => HTMLElement | null
   /** 展开时焦点落在哪；返回 null 则焦点域自行重试到 DOM 就位。 */
   initialFocus?: () => HTMLElement | null
+  /** 是否把焦点约束在域内，缺省 false。 */
+  trapped?: () => boolean
+  /** Tab 走到边界是否回绕，缺省 false。 */
+  loop?: boolean
   /** 拆除时是否归还焦点，缺省归还。 */
   restoreFocus?: () => boolean
   /** 归还焦点的落点，缺省回落到建域前的焦点持有者。 */
@@ -294,7 +298,7 @@ export function setupLayerTransaction(
 /** Presence 与行为资源共享生命周期时的输入。 */
 export interface PresenceResourceOptions {
   /** 视觉 Presence；缺省（SSR/纯逻辑宿主）时逻辑关闭立即释放。 */
-  presence: PresenceHandle | null
+  presence: PresenceHandle | null | (() => PresenceHandle | null)
   /** 当前逻辑展开态，也是机器 tracker 的依赖。 */
   open: Dep
   /** 注册机器 tracker。 */
@@ -316,6 +320,8 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
   let disposed = false
   let release: Cleanup | undefined
   let lastOpen = false
+  let presence: PresenceHandle | null = null
+  let offExit: Cleanup | undefined
 
   const finish = (): void => {
     if (disposed || o.open() || !release)
@@ -324,21 +330,30 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
     release = undefined
     cleanup()
   }
-  const offExit = o.presence?.onExitComplete(finish)
+  const syncPresence = (): PresenceHandle | null => {
+    const next = typeof o.presence === 'function' ? o.presence() : o.presence
+    if (next === presence)
+      return presence
+    offExit?.()
+    presence = next
+    offExit = presence?.onExitComplete(finish)
+    return presence
+  }
   const sync = (): void => {
     if (disposed)
       return
     const open = Boolean(o.open())
+    const currentPresence = syncPresence()
     const reopening = open && !lastOpen && release !== undefined
     lastOpen = open
     if (open) {
-      o.presence?.update(true)
+      currentPresence?.update(true)
       release ??= o.acquire()
       if (reopening)
         o.onReopen?.()
       return
     }
-    if (!o.presence || !o.presence.rendered)
+    if (!currentPresence || !currentPresence.rendered)
       finish()
   }
 
@@ -402,9 +417,8 @@ export function trackOverlayLayer(o: OverlayLayerOptions): Cleanup | undefined {
         config,
         layer,
         container: spec.container,
-        // 列表族不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
-        trapped: () => false,
-        loop: false,
+        trapped: spec.trapped ?? (() => false),
+        loop: spec.loop ?? false,
         initialFocus: spec.initialFocus,
         restoreFocus: spec.restoreFocus,
         restoreTarget: spec.restoreTarget,
