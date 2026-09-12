@@ -1,33 +1,15 @@
-<!-- 侧栏位置 | sider-placement 决定侧栏挂在行首还是行尾，分隔线也跟着换到挨内容的那一边 -->
+<!-- 侧栏位置 | 将侧栏放在行首或行尾 -->
 <script setup lang="ts">
-import {
-  XhLayoutContent,
-  XhLayoutHeader,
-  XhLayoutRoot,
-  XhLayoutSider,
-} from "@xihan-ui/vue";
+import { XhLayoutContent, XhLayoutHeader, XhLayoutRoot, XhLayoutSider } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <div style="display: grid; gap: 16px">
-    <XhLayoutRoot
-      sider-placement="start"
-      bordered
-      style="block-size: 160px; border-radius: 8px; overflow: hidden"
-    >
-      <XhLayoutHeader>侧栏在行首</XhLayoutHeader>
-      <XhLayoutSider>导航</XhLayoutSider>
-      <XhLayoutContent>正文</XhLayoutContent>
+  <div style="display: grid; gap: 16px; inline-size: min(560px, 100%)">
+    <XhLayoutRoot bordered style="block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden">
+      <XhLayoutHeader>行首侧栏</XhLayoutHeader><XhLayoutSider>导航</XhLayoutSider><XhLayoutContent>正文</XhLayoutContent>
     </XhLayoutRoot>
-
-    <XhLayoutRoot
-      sider-placement="end"
-      bordered
-      style="block-size: 160px; border-radius: 8px; overflow: hidden"
-    >
-      <XhLayoutHeader>侧栏在行尾</XhLayoutHeader>
-      <XhLayoutSider>属性面板</XhLayoutSider>
-      <XhLayoutContent>正文</XhLayoutContent>
+    <XhLayoutRoot sider-placement="end" bordered style="block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden">
+      <XhLayoutHeader>行尾侧栏</XhLayoutHeader><XhLayoutSider>属性</XhLayoutSider><XhLayoutContent>正文</XhLayoutContent>
     </XhLayoutRoot>
   </div>
 </template>

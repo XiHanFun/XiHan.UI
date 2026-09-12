@@ -1,24 +1,18 @@
-<!-- 基础用法 | 头与脚各横贯一行，侧栏与内容并排占中间那一行；少写一段就少一行或少一列 -->
+<!-- 基础用法 | 构建应用页面骨架 -->
 <script setup lang="ts">
-import {
-  XhLayoutContent,
-  XhLayoutFooter,
-  XhLayoutHeader,
-  XhLayoutRoot,
-  XhLayoutSider,
-} from "@xihan-ui/vue";
+import { XhLayoutContent, XhLayoutFooter, XhLayoutHeader, XhLayoutRoot, XhLayoutSider } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhLayoutRoot
-    bordered
-    style="block-size: 280px; border-radius: 8px; overflow: hidden"
-  >
-    <XhLayoutHeader>控制台</XhLayoutHeader>
-    <XhLayoutSider>导航</XhLayoutSider>
+  <XhLayoutRoot bordered sider-breakpoint="sm" style="inline-size: min(720px, 100%); block-size: 280px; border-radius: var(--xh-shape-surface); overflow: hidden">
+    <XhLayoutHeader><strong>XiHan Admin</strong></XhLayoutHeader>
+    <XhLayoutSider>
+      <div style="display: grid; gap: 12px"><span>概览</span><span>用户</span><span>设置</span></div>
+    </XhLayoutSider>
     <XhLayoutContent>
-      正文区。四段都可缺省，只摆头和内容也是一副合法的骨架。
+      <strong>欢迎回来</strong>
+      <p style="color: var(--xh-fg-muted)">这里是今日的项目概览。</p>
     </XhLayoutContent>
-    <XhLayoutFooter>版本 1.0.0</XhLayoutFooter>
+    <XhLayoutFooter>© 2026 XiHan.UI</XhLayoutFooter>
   </XhLayoutRoot>
 </template>
