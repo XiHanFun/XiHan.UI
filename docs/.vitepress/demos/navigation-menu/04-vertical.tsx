@@ -1,4 +1,4 @@
-// 竖排 | orientation="vertical" 把入口排成一列、面板改从侧边长出来，方向键随之改收上下键
+// 竖向排列 | 在侧栏旁展开子级导航
 import type { ReactNode } from "react";
 import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/react";
 
@@ -22,7 +22,7 @@ const panels: Record<string, Array<{ href: string; label: string }>> = {
 
 export default function Demo(): ReactNode {
   return (
-    <div style={{ inlineSize: "100%", paddingBlockEnd: "40px" }}>
+    <div style={{ inlineSize: "min(480px, 100%)", paddingBlockEnd: "40px" }}>
       <XhNavigationMenuRoot
         collection={entries}
         orientation="vertical"

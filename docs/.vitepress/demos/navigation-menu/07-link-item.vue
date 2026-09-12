@@ -1,11 +1,10 @@
-<!-- 直达入口 | 没有下级的去处不必套面板：那一项直接铺成一条 link，它不进方向键那一组（那一组只认 trigger），按 Tab 一样到得了 -->
+<!-- 直达链接 | 混合下拉入口与普通链接 -->
 <script setup lang="ts">
 import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/vue";
 
 const entries = [
   { value: "products", label: "产品" },
   { value: "docs", label: "文档" },
-  // 直达入口：给了 href 就没有 trigger 也没有面板，点了就跳走
   { value: "changelog", label: "更新日志", href: "#/changelog" },
 ];
 
@@ -22,7 +21,7 @@ const panels: Record<string, Array<{ href: string; label: string }>> = {
 </script>
 
 <template>
-  <div style="inline-size: 100%; padding-block-end: 150px">
+  <div style="inline-size: min(640px, 100%); padding-block-end: 150px">
     <XhNavigationMenuRoot :collection="entries">
       <template #panel="node">
         <XhNavigationMenuLink
