@@ -1,4 +1,4 @@
-<!-- 竖排 | orientation="vertical" 把步骤列与面板并排摆，方向键随之改收上下键 -->
+<!-- 垂直布局 | 展示纵向流程与步骤内容 -->
 <script setup lang="ts">
 import {
   XhStepsContent,
@@ -21,15 +21,15 @@ const steps = [
 
 <template>
   <XhStepsRoot
+    v-slot="{ value }"
     :count="steps.length"
     :default-value="1"
     orientation="vertical"
-    style="inline-size: 100%"
   >
     <XhStepsList>
       <XhStepsItem v-for="(s, i) in steps" :key="s.title" :value="i">
         <XhStepsTrigger>
-          <XhStepsIndicator>{{ i + 1 }}</XhStepsIndicator>
+          <XhStepsIndicator>{{ value > i ? "" : i + 1 }}</XhStepsIndicator>
           <XhStepsTitle>{{ s.title }}</XhStepsTitle>
           <XhStepsDescription>{{ s.description }}</XhStepsDescription>
         </XhStepsTrigger>
@@ -37,9 +37,9 @@ const steps = [
       </XhStepsItem>
     </XhStepsList>
 
-    <XhStepsContent :value="0">面板 1：打包日志。</XhStepsContent>
-    <XhStepsContent :value="1">面板 2：测试报告。</XhStepsContent>
-    <XhStepsContent :value="2">面板 3：发布记录。</XhStepsContent>
-    <XhStepsContent :value="steps.length">流水线跑完了。</XhStepsContent>
+    <XhStepsContent :value="0">查看构建产物。</XhStepsContent>
+    <XhStepsContent :value="1">检查测试报告。</XhStepsContent>
+    <XhStepsContent :value="2">确认发布记录。</XhStepsContent>
+    <XhStepsContent :value="steps.length">流水线已完成。</XhStepsContent>
   </XhStepsRoot>
 </template>
