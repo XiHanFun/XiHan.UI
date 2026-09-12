@@ -197,8 +197,11 @@ export function XhSideNavBranchIndicator({ children, ...rest }: XhSideNavBranchI
   )
 }
 
-export interface XhSideNavBranchContentProps extends ComponentPropsWithRef<'ul'> {}
-export function XhSideNavBranchContent({ children, ...rest }: XhSideNavBranchContentProps): ReactNode {
+export interface XhSideNavBranchContentProps extends ComponentPropsWithRef<'ul'> {
+  /** 本分支弹层的 Portal 容器；优先于应用级配置。 */
+  container?: () => Element | null
+}
+export function XhSideNavBranchContent({ children, container, ...rest }: XhSideNavBranchContentProps): ReactNode {
   const ctx = useSideNavContext()
   const node = useSideNavNodeContext()
   const value = node.value
@@ -242,7 +245,7 @@ export function XhSideNavBranchContent({ children, ...rest }: XhSideNavBranchCon
   // 收起跟着退场闸门走：定位层与面板的 hidden 都押后到退场动画播完
   const hidden = !visible || undefined
   return (
-    <XhPortal container={ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer}>
       <div {...ctx.api.getPopoutPositionerProps({ value }) as Record<string, unknown>} hidden={hidden}>
         <ul
           {...mergeReactProps(

@@ -30,6 +30,8 @@ export type TourRootSlotProps = Pick<
 >
 
 export interface XhTourRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+  /** 本实例三张 Tour 浮层的 Portal 容器；优先于应用级配置。 */
+  container?: () => Element | null
   steps?: TourStep[]
   value?: number
   defaultValue?: number
@@ -53,6 +55,7 @@ export interface XhTourRootProps extends Omit<ComponentPropsWithRef<'div'>, 'chi
 }
 
 export function XhTourRoot({
+  container,
   steps,
   value,
   defaultValue,
@@ -93,7 +96,7 @@ export function XhTourRoot({
     onValueChange,
     onComplete,
     onSkip,
-  }) as TourProps)
+  }) as TourProps, container)
   const api = ctx.api
   // 经 children 载荷交出状态与走步、放弃等命令，供浮层外的按钮使用
   return (
