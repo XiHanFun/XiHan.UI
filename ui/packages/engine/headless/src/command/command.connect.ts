@@ -155,6 +155,9 @@ export function connectCommand<T extends PropTypes>(
       'data-state': stateAttr,
       // 尺寸轴落在 content 上：解剖里没有 root，positioner 非必需，且 content 会被 portal 走
       'data-size': prop('size'),
+      // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 收起态自带 hidden：positioner 非必需部件，最小结构下没有别的节点兜底
       'hidden': !open || undefined,
     }),

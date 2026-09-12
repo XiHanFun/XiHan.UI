@@ -15,6 +15,7 @@ export interface CommandRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 视觉退场与全部模态行为资源共享的 Presence；缺省时关闭立即释放。 */
   presence: PresenceHandle | null
   /** 展开期间 modal 改值时同步焦点约束、滚动锁与背景失活。 */
   syncModalResources: (() => void) | null

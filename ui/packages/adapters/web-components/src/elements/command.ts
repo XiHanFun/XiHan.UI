@@ -267,9 +267,14 @@ export class XhCommandElement extends XhElement {
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<CommandSchema>): void {
     this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: (this.open ?? this.defaultOpen) ?? false,
+      onExitComplete: () => this.requestUpdate(),
+    })
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', null)
+    svc.refs.set('presence', this.exit.presence)
     svc.refs.set('getContentEl', () => this.getPart('content'))
     svc.refs.set('getListEl', () => this.getPart('list'))
     svc.refs.set('getInputEl', () => this.getPart('input') as HTMLInputElement | null)
@@ -352,7 +357,7 @@ export class XhCommandElement extends XhElement {
       open: api.open,
       onExitComplete: () => this.requestUpdate(),
     })
-    this.exit.track(this.getPart('content'))
+    this.exit.track(this.getPart('content'), this.getPart('backdrop'))
     this.exit.update(api.open)
     const visible = this.exit.visible
     const modal = this.modal ?? true
