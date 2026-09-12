@@ -50,7 +50,7 @@ catalog:
   oxlint: ^1.75.0
   dependency-cruiser: ^18.1.0
   # —— 测试 ——
-  vitest: ^4.1.10
+  vitest: ^4.1.11
   '@vitest/coverage-v8': ^4.1.10
   jsdom: ^27.0.0
   # —— 真实浏览器测试：无障碍与视觉时序断言只在 Chromium 里跑，jsdom 不参与 ——
