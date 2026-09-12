@@ -15,13 +15,13 @@ import { overlayPositioned } from '../shared/overlay'
 import { connectSlider } from '../slider'
 import { colorPickerAnatomy } from './color-picker.anatomy'
 import {
-  colorPickerApplyInput,
   colorPickerChannelRange,
   colorPickerChannelValue,
   colorPickerCss,
   colorPickerHsvaToRgba,
   colorPickerHueCss,
   colorPickerInputText,
+  colorPickerResolveFormat,
   colorPickerResolveHsva,
   colorPickerSameColor,
   colorPickerToRgba,
@@ -117,8 +117,9 @@ export function connectColorPicker<T extends PropTypes>(
   const draft = context.get('draft')
   const dragTarget = context.get('dragTarget')
   const eyeDropperSupported = context.get('eyeDropperSupported')
+  const errors = context.get('errors')
 
-  const format = prop('format') ?? 'hex'
+  const format = colorPickerResolveFormat(prop('format') as string | undefined) ?? 'hex'
   const alpha = prop('alpha') ?? false
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
@@ -170,9 +171,9 @@ export function connectColorPicker<T extends PropTypes>(
   const inputText = (channel: ColorPickerInputChannel): string =>
     draft?.channel === channel ? draft.text : colorPickerInputText(hsva, channel, alpha)
 
-  /** 草稿收不下来时给输入框打上 aria-invalid。 */
+  /** 输入错误由机器持有；commit 后仍保留，直到修正或显式取消。 */
   const inputInvalid = (channel: ColorPickerInputChannel): boolean =>
-    draft?.channel === channel && colorPickerApplyInput(hsva, channel, draft.text, alpha) == null
+    errors.input?.channel === channel
 
   /**
    * 按下之后把焦点转投到对应的拇指上。
@@ -206,6 +207,7 @@ export function connectColorPicker<T extends PropTypes>(
     dragging,
     picking,
     eyeDropperSupported,
+    errors,
     swatches,
     isSwatchSelected: swatch => colorPickerSameColor(swatch, value),
     channelState,
@@ -214,7 +216,8 @@ export function connectColorPicker<T extends PropTypes>(
       if (next !== open)
         send({ type: next ? 'OPEN' : 'CLOSE' })
     },
-    setValue: next => send({ type: 'VALUE.SET', value: next }),
+    setValue: next => send({ type: 'VALUE.SET', value: next, source: 'api' }),
+    clearError: () => send({ type: 'ERROR.CLEAR' }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -530,7 +533,7 @@ export function connectColorPicker<T extends PropTypes>(
         'style': { background: colorPickerCss(colorPickerToRgba(swatch)) },
         'onClick': () => {
           if (interactive)
-            send({ type: 'VALUE.SET', value: swatch })
+            send({ type: 'VALUE.SET', value: swatch, source: 'swatch' })
         },
       })
     },

@@ -2,7 +2,7 @@ import type { Params, Scope, Service } from '@xihan-ui/core'
 import type { SliderSchema } from '../slider'
 import type { ColorPickerChannel, ColorPickerHsva } from './color-picker.color'
 import type { ColorPickerPoint } from './color-picker.geometry'
-import type { ColorPickerDragTarget, ColorPickerSchema } from './color-picker.types'
+import type { ColorPickerDragTarget, ColorPickerErrorDetails, ColorPickerErrors, ColorPickerSchema } from './color-picker.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
@@ -14,6 +14,7 @@ import {
   colorPickerChannelValue,
   colorPickerHsvaToRgba,
   colorPickerParse,
+  colorPickerResolveFormat,
   colorPickerResolveHsva,
   colorPickerRgbaToHsva,
   colorPickerToString,
@@ -66,6 +67,69 @@ export function colorPickerOpenEyeDropper(scope: Scope, signal?: AbortSignal): P
 
 type MachineParams = Params<ColorPickerSchema>
 
+type ColorPickerErrorSlot = keyof ColorPickerErrors
+
+function emptyErrors(): ColorPickerErrors {
+  return { format: null, input: null, parse: null, eyeDropper: null }
+}
+
+function sameError(a: ColorPickerErrorDetails | null, b: ColorPickerErrorDetails): boolean {
+  if (!a || a.type !== b.type)
+    return false
+  if (a.type === 'format' && b.type === 'format')
+    return a.format === b.format
+  if (a.type === 'input' && b.type === 'input')
+    return a.channel === b.channel && a.value === b.value
+  if (a.type === 'parse' && b.type === 'parse')
+    return a.source === b.source && a.value === b.value
+  return a.type === 'eye-dropper' && b.type === 'eye-dropper' && Object.is(a.cause, b.cause)
+}
+
+function setError(params: MachineParams, slot: ColorPickerErrorSlot, error: ColorPickerErrorDetails): void {
+  const current = params.context.get('errors')
+  if (sameError(current[slot], error))
+    return
+  params.context.set('errors', { ...current, [slot]: error })
+  params.prop('onColorError')?.(error)
+}
+
+function clearError(params: MachineParams, slot: ColorPickerErrorSlot): void {
+  const current = params.context.get('errors')
+  if (current[slot] === null)
+    return
+  params.context.set('errors', { ...current, [slot]: null })
+}
+
+function clearAllErrors(params: MachineParams): void {
+  const current = params.context.get('errors')
+  if (Object.values(current).some(Boolean))
+    params.context.set('errors', emptyErrors())
+}
+
+function syncValueError(params: MachineParams): void {
+  params.context.set('draft', null)
+  clearError(params, 'input')
+  const value = params.context.get('value')
+  if (colorPickerParse(value)) {
+    clearError(params, 'parse')
+    return
+  }
+  setError(params, 'parse', { type: 'parse', source: 'external', value })
+}
+
+function syncFormatError(params: MachineParams): void {
+  const format = params.prop('format') as string | undefined
+  if (colorPickerResolveFormat(format)) {
+    clearError(params, 'format')
+    return
+  }
+  setError(params, 'format', { type: 'format', format: String(format) })
+}
+
+function isEyeDropperCancel(error: unknown): boolean {
+  return typeof error === 'object' && error !== null && (error as { name?: unknown }).name === 'AbortError'
+}
+
 /** 当前工作色：值串加上锚。灰度处的色相由锚保住，详见 colorPickerResolveHsva。 */
 function currentHsva(params: MachineParams): ColorPickerHsva {
   return colorPickerResolveHsva(params.context.get('value'), params.context.get('anchor'))
@@ -78,18 +142,29 @@ function currentHsva(params: MachineParams): ColorPickerHsva {
  */
 function applyHsva(params: MachineParams, next: ColorPickerHsva): void {
   const { context, prop } = params
+  const format = colorPickerResolveFormat(prop('format') as string | undefined)
+  if (!format) {
+    syncFormatError(params)
+    return
+  }
   const alpha = prop('alpha') ?? false
   const hsva: ColorPickerHsva = alpha ? next : { ...next, a: 1 }
-  const value = colorPickerToString(colorPickerHsvaToRgba(hsva), prop('format') ?? 'hex', alpha)
+  const value = colorPickerToString(colorPickerHsvaToRgba(hsva), format, alpha)
+  context.set('draft', null)
+  clearError(params, 'format')
+  clearError(params, 'input')
+  clearError(params, 'parse')
   context.set('anchor', { value, hsva })
   context.set('value', value)
 }
 
-/** 把一个外来的串收成工作色；解析不出就原地不动。 */
-function applyValueString(params: MachineParams, raw: string): void {
+/** 把一个外来的串收成工作色；解析不出时保留原值并显式报告来源。 */
+function applyValueString(params: MachineParams, raw: string, source: 'external' | 'api' | 'swatch' | 'eye-dropper'): void {
   const rgba = colorPickerParse(raw)
-  if (!rgba)
+  if (!rgba) {
+    setError(params, 'parse', { type: 'parse', source, value: raw })
     return
+  }
   applyHsva(params, colorPickerRgbaToHsva(rgba, currentHsva(params).h))
 }
 
@@ -158,6 +233,7 @@ export const colorPickerMachine = createMachine({
     draft: cell<ColorPickerSchema['context']['draft']>(() => ({ defaultValue: null })),
     dragTarget: cell<ColorPickerDragTarget | null>(() => ({ defaultValue: null })),
     eyeDropperSupported: cell<boolean>(() => ({ defaultValue: false })),
+    errors: cell<ColorPickerErrors>(() => ({ defaultValue: emptyErrors() })),
   }),
   refs: () => ({
     config: null,
@@ -173,9 +249,13 @@ export const colorPickerMachine = createMachine({
   // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
   effects: ['trackLayer'],
   // 挂载即问一次环境有没有屏幕取色，按钮从首帧起就要正确禁用
-  entry: ['syncEyeDropperSupport'],
+  entry: ['syncValueError', 'syncFormatError', 'syncEyeDropperSupport'],
   // 开合受控时用户事件只发意图、不自改状态；宿主写回 open 后由这里派发影子事件无条件回写
-  watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
+  watch: ({ track, prop, action }) => {
+    track([() => prop('open')], () => action(['syncOpen']))
+    track([() => prop('value')], () => action(['syncValueError']))
+    track([() => prop('format')], () => action(['syncFormatError']))
+  },
   // 改值与开合无关，收起态下 api.setValue 同样要认
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
@@ -189,6 +269,7 @@ export const colorPickerMachine = createMachine({
     // 打字不设守卫：草稿是纯显示状态，落值那一步在 setDraft / commitDraft 内另有守卫
     'INPUT.CHANGE': { actions: ['setDraft'] },
     'INPUT.COMMIT': { actions: ['commitDraft'] },
+    'ERROR.CLEAR': { actions: ['clearErrors'] },
   },
   states: {
     closed: {
@@ -227,7 +308,7 @@ export const colorPickerMachine = createMachine({
           on: {
             // 按下即跳，随后的拖动由 trackPointer 接手
             'DRAG.START': { guard: 'canInteract', target: 'open.dragging', actions: ['startDrag'] },
-            'EYE_DROPPER.OPEN': { guard: 'canPick', target: 'open.picking' },
+            'EYE_DROPPER.OPEN': { guard: 'canPick', target: 'open.picking', actions: ['clearEyeDropperError'] },
           },
         },
         dragging: {
@@ -241,8 +322,8 @@ export const colorPickerMachine = createMachine({
           effects: ['runEyeDropper'],
           on: {
             'EYE_DROPPER.RESULT': { target: 'open.idle', actions: ['setValueFromEyeDropper'] },
-            // 放弃取色与接口报错走同一条
             'EYE_DROPPER.CANCEL': { target: 'open.idle' },
+            'EYE_DROPPER.ERROR': { target: 'open.idle', actions: ['setEyeDropperError'] },
           },
         },
       },
@@ -261,6 +342,9 @@ export const colorPickerMachine = createMachine({
           params.context.reset('anchor')
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
         params.context.reset('draft')
+        clearAllErrors(params)
+        syncValueError(params)
+        syncFormatError(params)
       },
 
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
@@ -274,6 +358,9 @@ export const colorPickerMachine = createMachine({
         send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
 
+      syncValueError,
+      syncFormatError,
+
       syncEyeDropperSupport: ({ scope, context }) => {
         context.set('eyeDropperSupported', colorPickerHasEyeDropper(scope))
       },
@@ -281,7 +368,7 @@ export const colorPickerMachine = createMachine({
       setValue: (params) => {
         const e = params.event.current()
         if (e.type === 'VALUE.SET')
-          applyValueString(params, e.value)
+          applyValueString(params, e.value, e.source ?? 'api')
       },
 
       setArea: (params) => {
@@ -341,25 +428,34 @@ export const colorPickerMachine = createMachine({
         if (!params.guard('canInteract'))
           return
         const next = colorPickerApplyInput(currentHsva(params), e.channel, e.value, params.prop('alpha') ?? false)
-        if (next)
-          applyHsva(params, next)
+        if (!next) {
+          setError(params, 'input', { type: 'input', channel: e.channel, value: e.value })
+          return
+        }
+        clearError(params, 'input')
+        applyHsva(params, next)
       },
 
-      /** 收下（回车或失焦）：收得了就落值，收不了就丢掉草稿复原成规范文本。 */
+      /** 收下（回车或失焦）：收得了就落值，收不了保留草稿与错误供作者修正。 */
       commitDraft: (params) => {
         const e = params.event.current()
         if (e.type !== 'INPUT.COMMIT')
           return
         const draft = params.context.get('draft')
-        params.context.set('draft', null)
         if (!draft || draft.channel !== e.channel || !params.guard('canInteract'))
           return
         const next = colorPickerApplyInput(currentHsva(params), e.channel, draft.text, params.prop('alpha') ?? false)
-        if (next)
-          applyHsva(params, next)
+        if (!next) {
+          setError(params, 'input', { type: 'input', channel: draft.channel, value: draft.text })
+          return
+        }
+        applyHsva(params, next)
       },
 
-      clearDraft: ({ context }) => context.set('draft', null),
+      clearDraft: (params) => {
+        params.context.set('draft', null)
+        clearError(params, 'input')
+      },
 
       startDrag: (params) => {
         const e = params.event.current()
@@ -382,7 +478,24 @@ export const colorPickerMachine = createMachine({
       setValueFromEyeDropper: (params) => {
         const e = params.event.current()
         if (e.type === 'EYE_DROPPER.RESULT')
-          applyValueString(params, e.value)
+          applyValueString(params, e.value, 'eye-dropper')
+      },
+
+      setEyeDropperError: (params) => {
+        const e = params.event.current()
+        if (e.type === 'EYE_DROPPER.ERROR')
+          setError(params, 'eyeDropper', { type: 'eye-dropper', cause: e.cause })
+      },
+
+      clearEyeDropperError: (params) => {
+        clearError(params, 'eyeDropper')
+        const parseError = params.context.get('errors').parse
+        if (parseError?.source === 'eye-dropper')
+          clearError(params, 'parse')
+      },
+      clearErrors: (params) => {
+        params.context.set('draft', null)
+        clearAllErrors(params)
       },
     },
     effects: {
@@ -489,9 +602,9 @@ export const colorPickerMachine = createMachine({
             if (!disposed)
               send({ type: 'EYE_DROPPER.RESULT', value })
           },
-          () => {
+          (error) => {
             if (!disposed)
-              send({ type: 'EYE_DROPPER.CANCEL' })
+              send(isEyeDropperCancel(error) ? { type: 'EYE_DROPPER.CANCEL' } : { type: 'EYE_DROPPER.ERROR', cause: error })
           },
         )
 

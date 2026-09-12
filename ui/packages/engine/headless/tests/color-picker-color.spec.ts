@@ -12,6 +12,7 @@ import {
   colorPickerHueCss,
   colorPickerInputText,
   colorPickerParse,
+  colorPickerResolveFormat,
   colorPickerResolveHsva,
   colorPickerRgbaToHex,
   colorPickerRgbaToHsla,
@@ -146,9 +147,20 @@ describe('colorPickerParse', () => {
     expect(colorPickerParse('transparent')).toBeNull()
   })
 
-  it('越界分量夹回区间', () => {
-    expect(colorPickerParse('rgb(300, -20, 246)')).toEqual({ r: 255, g: 0, b: 246, a: 1 })
-    expect(colorPickerParse('rgba(59, 130, 246, 5)')).toEqual(BLUE)
+  it('越界分量、透明度或多余参数一律拒绝，不静默裁切', () => {
+    expect(colorPickerParse('rgb(300, -20, 246)')).toBeNull()
+    expect(colorPickerParse('rgba(59, 130, 246, 5)')).toBeNull()
+    expect(colorPickerParse('hsl(217, 101%, 60%)')).toBeNull()
+    expect(colorPickerParse('hsla(217, 91%, -1%, 0.5)')).toBeNull()
+    expect(colorPickerParse('rgb(59, 130, 246, 1, 0)')).toBeNull()
+  })
+})
+
+describe('colorPickerResolveFormat', () => {
+  it('缺省是 hex，未知格式显式返回 null', () => {
+    expect(colorPickerResolveFormat(undefined)).toBe('hex')
+    expect(colorPickerResolveFormat('rgba')).toBe('rgba')
+    expect(colorPickerResolveFormat('oklch')).toBeNull()
   })
 })
 
@@ -291,9 +303,10 @@ describe('colorPickerApplyInput', () => {
     expect(colorPickerApplyInput(hsva, 'hex', '#ff000000', false)!.a).toBe(0.5)
   })
 
-  it('rgb 分量按 0-255 收，越界夹回', () => {
+  it('rgb 分量按 0-255 收，越界显式拒绝', () => {
     expect(colorPickerHsvaToRgba(colorPickerApplyInput(hsva, 'r', '200', true)!).r).toBe(200)
-    expect(colorPickerHsvaToRgba(colorPickerApplyInput(hsva, 'r', '999', true)!).r).toBe(255)
+    expect(colorPickerApplyInput(hsva, 'r', '999', true)).toBeNull()
+    expect(colorPickerApplyInput(hsva, 'g', '-1', true)).toBeNull()
   })
 
   it('把分量改到与另两个相等（变灰）时色相不塌成红', () => {
@@ -303,6 +316,8 @@ describe('colorPickerApplyInput', () => {
 
   it('透明度框按百分数收', () => {
     expect(colorPickerApplyInput(hsva, 'a', '80', true)!.a).toBeCloseTo(0.8, 5)
+    expect(colorPickerApplyInput(hsva, 'a', '-1', true)).toBeNull()
+    expect(colorPickerApplyInput(hsva, 'a', '101', true)).toBeNull()
   })
 
   it('打到一半、空串、非法字符一律 null（草稿留给调用方处置）', () => {

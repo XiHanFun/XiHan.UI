@@ -1,6 +1,8 @@
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type {
   ColorPickerChannel,
+  ColorPickerErrorDetails,
+  ColorPickerErrors,
   ColorPickerFormat,
   ColorPickerOpenChangeDetails,
   ColorPickerSchema,
@@ -65,6 +67,7 @@ const STRING_LIST_CONVERTER = {
  * @attr {string} name - 表单字段名；给了 hidden-input 才带 name 并参与提交
  * @fires value-change - 颜色变化；detail 为 `{ value: string }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires color-error - 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly）
  * @csspart label - 组标题（触发器 aria-labelledby 的目标之一）
  * @csspart control - 触发按钮的收纳容器：描边、底色与聚焦环都落在这一层
@@ -149,6 +152,10 @@ export class XhColorPickerElement extends XhPortalHostElement {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
   }
 
+  private readonly notifyColorError = (details: ColorPickerErrorDetails): void => {
+    this.dispatchEvent(new CustomEvent('color-error', { detail: details, bubbles: true, composed: true }))
+  }
+
   private readonly ctrl = new MachineController<ColorPickerSchema>(
     this,
     colorPickerMachine,
@@ -213,6 +220,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
       translations: this.translations,
       onValueChange: this.notifyValue,
       onOpenChange: this.notifyOpen,
+      onColorError: this.notifyColorError,
     }
   }
 
@@ -287,6 +295,16 @@ export class XhColorPickerElement extends XhPortalHostElement {
    */
   setValue(next: string): void {
     this.api()?.setValue(next)
+  }
+
+  /** 格式、输入、颜色解析与屏幕取色四路错误；机器未建立时均为空。 */
+  get errors(): ColorPickerErrors {
+    return this.api()?.errors ?? { format: null, input: null, parse: null, eyeDropper: null }
+  }
+
+  /** 清掉四路显式错误；屏幕取色重试也会自动先清它自己那一路。 */
+  clearError(): void {
+    this.api()?.clearError()
   }
 
   /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（读到的会是自己写的字）。 */

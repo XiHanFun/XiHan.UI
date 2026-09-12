@@ -4,6 +4,15 @@ import { clamp } from '../shared/number'
 
 export type ColorPickerFormat = 'hex' | 'rgba' | 'hsla'
 
+const COLOR_PICKER_FORMATS: readonly ColorPickerFormat[] = ['hex', 'rgba', 'hsla']
+
+/** 未指定格式时取 hex；运行期写入未知格式时返回 null，不静默伪装成 hex。 */
+export function colorPickerResolveFormat(format: string | undefined): ColorPickerFormat | null {
+  if (format === undefined)
+    return 'hex'
+  return COLOR_PICKER_FORMATS.find(candidate => candidate === format) ?? null
+}
+
 /** 两条通道滑杆各自调的是哪一路。 */
 export type ColorPickerChannel = 'hue' | 'alpha'
 
@@ -271,17 +280,17 @@ export function colorPickerParse(input: string): ColorPickerRgba | null {
 
   const kind = matched[1]!
   const args = splitArgs(matched[2]!)
-  if (args.length < 3)
+  if (args.length !== 3 && args.length !== 4)
     return null
   // 第四个参数（alpha）可以省；`50%` 与 `0.5` 是同一个意思
   const alpha = args.length > 3 ? functionArg(args[3]!, 0.01) : 1
-  if (!Number.isFinite(alpha))
+  if (!Number.isFinite(alpha) || alpha < 0 || alpha > 1)
     return null
 
   if (kind.startsWith('rgb')) {
     // r/g/b 写成百分比时以 255 为满值
     const nums = [args[0]!, args[1]!, args[2]!].map(token => functionArg(token, 2.55))
-    if (nums.some(n => !Number.isFinite(n)))
+    if (nums.some(n => !Number.isFinite(n) || n < 0 || n > 255))
       return null
     return colorPickerNormalizeRgba({ r: nums[0]!, g: nums[1]!, b: nums[2]!, a: alpha })
   }
@@ -289,7 +298,7 @@ export function colorPickerParse(input: string): ColorPickerRgba | null {
   const h = functionArg(args[0]!, 1)
   const s = functionArg(args[1]!, 1)
   const l = functionArg(args[2]!, 1)
-  if (![h, s, l].every(Number.isFinite))
+  if (![h, s, l].every(Number.isFinite) || s < 0 || s > 100 || l < 0 || l > 100)
     return null
   return colorPickerHslaToRgba({ h, s, l, a: alpha })
 }
@@ -414,8 +423,13 @@ export function colorPickerApplyInput(
   const n = Number(raw)
   if (!Number.isFinite(n))
     return null
-  if (channel === 'a')
+  if (channel === 'a') {
+    if (n < 0 || n > 100)
+      return null
     return colorPickerWithChannel(hsva, 'alpha', n)
+  }
+  if (n < 0 || n > 255)
+    return null
 
   const rgba = colorPickerHsvaToRgba(hsva)
   // 色相经 hint 带过去，调成灰时色相会塌成 0

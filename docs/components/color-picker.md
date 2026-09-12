@@ -16,6 +16,10 @@
 - `format` 决定值串写法；面板里也可以让用户自己切换写法。
 - `alpha` 打开透明度通道。
 - 支持屏幕取色（依赖平台能力）与数值输入。
+- 文本输入严格校验范围：不完整、非法或越界内容保留在输入框，并通过 `errors.input` / `onColorError` 明确报告；不会悄悄复原或夹回合法区间。
+- 运行期未知 `format`、整体颜色解析失败与屏幕取色异常分别保存在 `errors.format`、`errors.parse`、`errors.eyeDropper`。`clearError()` 可显式清理；再次屏幕取色会先清掉上一轮取色相关诊断。
+- 用户取消屏幕取色（`AbortError`）不是失败；接口抛错或拒绝才走 `eye-dropper` 错误。已经关闭或被下一轮替代的旧取色结果不会回写新值。
+- 预设色板当前项由 `isSwatchSelected`、`aria-pressed` 与 `data-state=checked` 持久标识，不依赖悬停反馈。
 - 输入框与通道输入保持实体表面，弹层使用 M2 磨砂背景、细顶光与统一边界阴影；顶光不覆盖取色区域，也不拦截鼠标。
 - 色域、色相轨道和预设色板保留原色，磨砂只作用于浮层背后的内容，不通过整层透明度淡化静止状态下的颜色。
 - 浮层按实际落位方向淡入并短距离移动，不缩放取色区域；收起时完整播放退场，再由适配器隐藏。
@@ -120,6 +124,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `translations` | `Partial<ColorPickerTranslations>` |  |  |
 | `onValueChange` | `(details: ColorPickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onOpenChange` | `(details: ColorPickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
+| `onColorError` | `(details: ColorPickerErrorDetails) => void` |  | 格式、文本、颜色解析或屏幕取色失败；与 value/open 事件独立。 |
 
 ## 事件
 
@@ -129,6 +134,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | --- | --- | --- |
 | `value-change` | `ColorPickerValueChangeDetails` | 颜色变化；detail 为 `{ value: string }` |
 | `open-change` | `ColorPickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `color-error` | `ColorPickerErrorDetails` | 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象 |
 
 ## 插槽
 
@@ -152,7 +158,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 
 **状态**：`closed` · `open` · `open.idle` · `open.dragging` · `open.picking`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `AREA.SET` · `AREA.STEP` · `AREA.TO_EDGE` · `CHANNEL.SET` · `CHANNEL.STEP` · `CHANNEL.TO_EDGE` · `INPUT.CHANGE` · `INPUT.COMMIT` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `EYE_DROPPER.OPEN` · `EYE_DROPPER.RESULT` · `EYE_DROPPER.CANCEL` · `FORM.RESET`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `AREA.SET` · `AREA.STEP` · `AREA.TO_EDGE` · `CHANNEL.SET` · `CHANNEL.STEP` · `CHANNEL.TO_EDGE` · `INPUT.CHANGE` · `INPUT.COMMIT` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `EYE_DROPPER.OPEN` · `EYE_DROPPER.RESULT` · `EYE_DROPPER.CANCEL` · `EYE_DROPPER.ERROR` · `ERROR.CLEAR` · `FORM.RESET`
 
 **判据**：`isOpenControlled` · `canInteract` · `canPick`
 
@@ -173,12 +179,14 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `dragging` | `boolean` | 指针正拖着某一处。 |
 | `picking` | `boolean` | 屏幕取色正在进行。 |
 | `eyeDropperSupported` | `boolean` |  |
+| `errors` | `ColorPickerErrors` | 格式、文本、颜色解析与屏幕取色四路互不覆盖的错误。 |
 | `swatches` | `string[]` | 预设色板（原样透传 swatches prop，缺省是空数组）。 |
 | `isSwatchSelected` | `(value: string) => boolean` |  |
 | `channelState` | `(channel: ColorPickerChannel) => ColorPickerChannelState` |  |
 | `inputText` | `(channel: ColorPickerInputChannel) => string` | 某个数值框此刻该显示的字（有草稿显示草稿，否则显示规范文本）。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string) => void` |  |
+| `clearError` | `() => void` | 清掉四路显式错误；屏幕取色重试也会先清它自己那一路。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
@@ -392,6 +400,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 
 - 提供预设色板：绝大多数用户不需要在色域里精挑。
 - 回显时同时给色块和色值串，色块用来看、值串用来复制。
+- 监听 `onColorError` 给错误配可见说明；错误对象是诊断出口，不会自动替你渲染提示。
 
 ## 反模式
 
