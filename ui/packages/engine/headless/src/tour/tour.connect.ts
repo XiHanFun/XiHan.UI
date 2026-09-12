@@ -27,6 +27,7 @@ export function connectTour<T extends PropTypes>(
   const currentStep = currentTourStep(steps, value)
   const firstStep = value <= 0
   const lastStep = isTourLastStep(value, count)
+  const showBackdrop = prop('showBackdrop') ?? true
   // 锚定与否只看这一步自己的声明，不看量出来的框：量是推迟到宿主提交之后的
   const anchored = !!currentStep?.target
 
@@ -81,7 +82,8 @@ export function connectTour<T extends PropTypes>(
       ...parts.backdrop.attrs,
       'aria-hidden': true,
       'data-state': stateAttr,
-      'hidden': !open || !(prop('showBackdrop') ?? true) || undefined,
+      'data-position': anchored ? 'anchored' : 'center',
+      'hidden': !open || !showBackdrop || undefined,
     }),
 
     /**
@@ -92,6 +94,7 @@ export function connectTour<T extends PropTypes>(
       ...parts.spotlight.attrs,
       'aria-hidden': true,
       'data-state': stateAttr,
+      'data-dimmed': dataAttr(showBackdrop),
       // 收起态与居中步都不画；判据用作者声明的 target 而不是量到的框，与量测时机无关
       'hidden': !open || !anchored || undefined,
       'style': {

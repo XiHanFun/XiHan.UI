@@ -1,5 +1,5 @@
-// 按步定制正文 | 标题与说明之外，正文按当前步的 id 换成自己的一块内容；showBackdrop 关掉那层压暗，引导与页面一起看
-import type { CSSProperties, ReactNode } from "react";
+// 无遮罩 | 保留页面环境并突出目标
+import type { ReactNode } from "react";
 import {
   XhButton,
   XhTourArrow,
@@ -11,61 +11,28 @@ import {
   XhTourPrevTrigger,
   XhTourProgressText,
   XhTourRoot,
-  XhTourSkipTrigger,
   XhTourSpotlight,
   XhTourTitle,
 } from "@xihan-ui/react";
 
 const steps = [
-  {
-    id: "search",
-    target: "#tour-per-step-search",
-    title: "全站搜索",
-    description: "按名称或编号找记录。",
-  },
-  {
-    id: "filter",
-    target: "#tour-per-step-filter",
-    title: "筛选",
-    description: "条件会记在本地，下次进来还在。",
-  },
-  {
-    id: "export",
-    target: "#tour-per-step-export",
-    title: "导出",
-    description: "导出当前筛选后的全部数据。",
-  },
+  { id: "search", target: "#tour-clear-search", title: "搜索", description: "输入关键词查找记录。" },
+  { id: "filter", target: "#tour-clear-filter", title: "筛选", description: "按状态收窄结果。" },
 ];
-
-// 各步自己的那块正文：键就是 steps 里的 id
-const tips: Record<string, string[]> = {
-  search: ["支持拼音首字母", "编号可以只输后六位"],
-  filter: ["状态与时间区间可以叠加", "清空条件用一次「重置」"],
-  export: ["走后台队列，导完站内信通知", "单次上限十万行"],
-};
 
 const translations = {
   close: "关闭",
   progress: (step: number, count: number) => `第 ${step} 步，共 ${count} 步`,
 };
 
-const panel: CSSProperties = {
-  padding: "8px 14px",
-  border: "1px solid var(--vp-c-divider)",
-  borderRadius: "8px",
-};
-
 export default function Demo(): ReactNode {
   return (
     <XhTourRoot steps={steps} showBackdrop={false} translations={translations}>
-      {({ setOpen, lastStep, currentStep }) => (
+      {({ setOpen, lastStep }) => (
         <>
-          <div style={{ display: "grid", gap: "16px", justifyItems: "start" }}>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
-              <div id="tour-per-step-search" style={panel}>搜索</div>
-              <div id="tour-per-step-filter" style={panel}>筛选</div>
-              <div id="tour-per-step-export" style={panel}>导出</div>
-            </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+            <XhButton id="tour-clear-search" variant="outline">搜索</XhButton>
+            <XhButton id="tour-clear-filter" variant="outline">筛选</XhButton>
             <XhButton variant="solid" onClick={() => setOpen(true)}>开始引导</XhButton>
           </div>
 
@@ -74,21 +41,10 @@ export default function Demo(): ReactNode {
             <XhTourContent>
               <XhTourTitle />
               <XhTourDescription />
-              {/* 按当前步换的那一块：标题与说明照旧由组件按 steps 填 */}
-              {currentStep
-                ? (
-                    <ul style={{ margin: 0, paddingInlineStart: "18px" }}>
-                      {(tips[currentStep.id] ?? []).map(tip => (
-                        <li key={tip}>{tip}</li>
-                      ))}
-                    </ul>
-                  )
-                : null}
               <XhTourProgressText />
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <XhTourPrevTrigger>上一步</XhTourPrevTrigger>
                 <XhTourNextTrigger>{lastStep ? "完成" : "下一步"}</XhTourNextTrigger>
-                <XhTourSkipTrigger>跳过</XhTourSkipTrigger>
               </div>
               <XhTourCloseTrigger />
               <XhTourArrow />

@@ -1,4 +1,4 @@
-// 遮罩让位只能在真实浏览器里验：判据是计算后的背景色，jsdom 既不跑级联也不解析 :has()。
+// 遮罩让位只能在真实浏览器里验：判据是计算后的背景色与 Spotlight 阴影槽。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
@@ -28,7 +28,7 @@ afterEach(() => {
 })
 
 /** 挂一份两步引导：首步锚定页面上的真实元素，末步不锚定。返回控制步序的 ref。 */
-function mountTour(): { step: { value: number } } {
+function mountTour(showBackdrop = true): { step: { value: number } } {
   const step = ref(0)
   host = document.createElement('div')
   host.innerHTML = '<button id="tour-backdrop-target">目标</button>'
@@ -36,6 +36,7 @@ function mountTour(): { step: { value: number } } {
   app = createApp({
     setup: () => () => h(XhTourRoot, {
       'open': true,
+      'showBackdrop': showBackdrop,
       'value': step.value,
       'steps': [
         { id: 'a', target: '#tour-backdrop-target', title: '锚定步' },
@@ -84,5 +85,15 @@ describe('tour 遮罩让位', () => {
 
     expect(part('spotlight').hasAttribute('hidden'), '居中步不画高亮框').toBe(true)
     expect(getComputedStyle(part('backdrop')).backgroundColor).not.toBe(TRANSPARENT)
+  })
+
+  it('showBackdrop=false：保留高亮环，但不再用阴影压暗页面', async () => {
+    mountTour(false)
+    await settle()
+
+    const spotlight = part('spotlight')
+    expect(spotlight.hasAttribute('hidden')).toBe(false)
+    expect(spotlight.hasAttribute('data-dimmed')).toBe(false)
+    expect(getComputedStyle(spotlight).getPropertyValue('--xh-_tour-spotlight-shroud').trim()).toBe('transparent')
   })
 })

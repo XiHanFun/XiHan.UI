@@ -145,6 +145,7 @@
     "data-current": "导航族的当前项（锚点、面包屑、导航菜单、侧栏链接、轮播指示点、页码）。配对 aria-current。",
     "data-dashed": "separator 画成虚线，实线段与空白段交替铺。",
     "data-deletable": "tag-group 的这枚标签摘得掉：摘除钮露面，Delete / Backspace 认它。",
+    "data-dimmed": "tour 的 Spotlight 正在用全屏阴影压暗目标以外的页面。",
     "data-disabled": "禁用：不可交互，也不参与提交。配对 aria-disabled。",
     "data-dot": "badge 收成一个不带文字的圆点。",
     "data-closable": "这一项可以关掉：tabs 的页签在焦点上按 Delete / Backspace 即发关闭意图。",

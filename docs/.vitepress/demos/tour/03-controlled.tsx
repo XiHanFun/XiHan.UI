@@ -1,5 +1,5 @@
-// 受控 | 传了 open 与 value 就由宿主说了算：内部不再自改，只发意图，浮层里的按钮与外面的进度读的是同一份状态
-import type { CSSProperties, ReactNode } from "react";
+// 定位 | 为每一步选择合适的浮层方向
+import type { ReactNode } from "react";
 import {
   XhButton,
   XhTourArrow,
@@ -10,96 +10,52 @@ import {
   XhTourNextTrigger,
   XhTourPositioner,
   XhTourPrevTrigger,
+  XhTourProgressText,
   XhTourRoot,
   XhTourSpotlight,
   XhTourTitle,
 } from "@xihan-ui/react";
-import { useState } from "react";
 
 const steps = [
-  {
-    id: "list",
-    target: "#tour-controlled-list",
-    title: "列表",
-    description: "记录都在这里。",
-  },
-  {
-    id: "detail",
-    target: "#tour-controlled-detail",
-    title: "详情",
-    description: "选中一条后在这块看明细。",
-  },
-  {
-    id: "actions",
-    target: "#tour-controlled-actions",
-    title: "操作",
-    description: "批量动作收在这一栏。",
-  },
+  { id: "left", target: "#tour-placement-left", title: "左侧入口", description: "浮层显示在目标下方。", placement: "bottom-start" as const },
+  { id: "center", target: "#tour-placement-center", title: "中间入口", description: "浮层显示在目标上方。", placement: "top" as const },
+  { id: "right", target: "#tour-placement-right", title: "右侧入口", description: "浮层显示在目标左侧。", placement: "left" as const },
 ];
 
-const panel: CSSProperties = {
-  padding: "8px 14px",
-  border: "1px solid var(--vp-c-divider)",
-  borderRadius: "8px",
+const translations = {
+  close: "关闭",
+  progress: (step: number, count: number) => `第 ${step} 步，共 ${count} 步`,
 };
 
 export default function Demo(): ReactNode {
-  const [open, setOpen] = useState(false);
-  const [step, setStep] = useState(0);
-  const [log, setLog] = useState("（未开始）");
-
-  function start(from: number): void {
-    setStep(from);
-    setOpen(true);
-  }
-
-  function onComplete(details: { step: number }): void {
-    setLog(`走完了第 ${details.step + 1} 步`);
-  }
-
-  function onSkip(details: { step: number }): void {
-    setLog(`在第 ${details.step + 1} 步放弃`);
-  }
-
   return (
-    <XhTourRoot
-      open={open}
-      onOpenChange={details => setOpen(details.open)}
-      value={step}
-      onValueChange={details => setStep(details.value)}
-      steps={steps}
-      onComplete={onComplete}
-      onSkip={onSkip}
-    >
-      <div style={{ display: "grid", gap: "16px", justifyItems: "start" }}>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
-          <div id="tour-controlled-list" style={panel}>列表</div>
-          <div id="tour-controlled-detail" style={panel}>详情</div>
-          <div id="tour-controlled-actions" style={panel}>操作</div>
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px" }}>
-          <XhButton variant="solid" onClick={() => start(0)}>从头开始</XhButton>
-          <XhButton variant="outline" onClick={() => start(2)}>直接跳到第 3 步</XhButton>
-          <span style={{ fontSize: "13px", opacity: 0.75 }}>
-            {`open=${open} · value=${step} · ${log}`}
-          </span>
-        </div>
-      </div>
-
-      <XhTourBackdrop />
-      <XhTourSpotlight />
-      <XhTourPositioner>
-        <XhTourContent>
-          <XhTourTitle />
-          <XhTourDescription />
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <XhTourPrevTrigger>上一步</XhTourPrevTrigger>
-            <XhTourNextTrigger>下一步</XhTourNextTrigger>
+    <XhTourRoot steps={steps} translations={translations}>
+      {({ setOpen, lastStep }) => (
+        <>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+            <XhButton id="tour-placement-left" variant="outline">左侧</XhButton>
+            <XhButton id="tour-placement-center" variant="outline">中间</XhButton>
+            <XhButton id="tour-placement-right" variant="outline">右侧</XhButton>
+            <XhButton variant="solid" onClick={() => setOpen(true)}>查看定位</XhButton>
           </div>
-          <XhTourCloseTrigger />
-          <XhTourArrow />
-        </XhTourContent>
-      </XhTourPositioner>
+
+          <XhTourBackdrop />
+          <XhTourSpotlight />
+          <XhTourPositioner>
+            <XhTourContent>
+              <XhTourTitle />
+              <XhTourDescription />
+              <XhTourProgressText />
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <XhTourPrevTrigger>上一步</XhTourPrevTrigger>
+                <XhTourNextTrigger>{lastStep ? "完成" : "下一步"}</XhTourNextTrigger>
+              </div>
+              <XhTourCloseTrigger />
+              <XhTourArrow />
+            </XhTourContent>
+          </XhTourPositioner>
+        </>
+      )}
     </XhTourRoot>
   );
 }

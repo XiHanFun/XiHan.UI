@@ -1,19 +1,11 @@
-<!-- 居中步 | 不写 target 的那一步不锚定任何元素：浮层居中、不画高亮框、也不出箭头，适合当开场白与收尾 -->
+<!-- 居中步骤 | 用于引导的开场与结束 -->
 <xh-tour id="tour-centered" spotlight-padding="12">
   <div data-xh-part="root">
-    <div style="display: grid; gap: 16px; justify-items: start">
-      <div
-        id="tour-centered-inbox"
-        style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
-      >
-        收件箱
-      </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <xh-button variant="outline"><button id="tour-centered-inbox" data-xh-part="root">收件箱</button></xh-button>
       <xh-button variant="solid">
         <button data-xh-part="root" id="tour-centered-start">开始引导</button>
       </xh-button>
-      <span id="tour-centered-current" style="font-size: 13px; opacity: 0.75">
-        当前步：welcome
-      </span>
     </div>
 
     <div data-xh-part="backdrop"></div>
@@ -38,7 +30,6 @@
 <script type="module">
   const tour = document.getElementById("tour-centered");
 
-  // 头尾两步没有 target，浮层落在屏幕正中
   tour.steps = [
     {
       id: "welcome",
@@ -62,7 +53,6 @@
     progress: (step, count) => `第 ${step} 步，共 ${count} 步`,
   };
 
-  // 开合由宿主保管：按钮打开，组件要关时写回
   document.getElementById("tour-centered-start").addEventListener("click", () => {
     tour.open = true;
   });
@@ -70,11 +60,8 @@
     tour.open = event.detail.open;
   });
 
-  // 外面这行文字跟着步序走
-  const current = document.getElementById("tour-centered-current");
   const next = document.getElementById("tour-centered-next");
   tour.addEventListener("value-change", (event) => {
-    current.textContent = `当前步：${tour.steps[event.detail.value].id}`;
     next.textContent =
       event.detail.value === tour.steps.length - 1 ? "完成" : "下一步";
   });

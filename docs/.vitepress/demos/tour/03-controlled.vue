@@ -1,4 +1,4 @@
-<!-- 受控 | 传了 open 与 value 就由宿主说了算：内部不再自改，只发意图，浮层里的按钮与外面的进度读的是同一份状态 -->
+<!-- 定位 | 为每一步选择合适的浮层方向 -->
 <script setup lang="ts">
 import {
   XhButton,
@@ -10,75 +10,31 @@ import {
   XhTourNextTrigger,
   XhTourPositioner,
   XhTourPrevTrigger,
+  XhTourProgressText,
   XhTourRoot,
   XhTourSpotlight,
   XhTourTitle,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const steps = [
-  {
-    id: "list",
-    target: "#tour-controlled-list",
-    title: "列表",
-    description: "记录都在这里。",
-  },
-  {
-    id: "detail",
-    target: "#tour-controlled-detail",
-    title: "详情",
-    description: "选中一条后在这块看明细。",
-  },
-  {
-    id: "actions",
-    target: "#tour-controlled-actions",
-    title: "操作",
-    description: "批量动作收在这一栏。",
-  },
+  { id: "left", target: "#tour-placement-left", title: "左侧入口", description: "浮层显示在目标下方。", placement: "bottom-start" as const },
+  { id: "center", target: "#tour-placement-center", title: "中间入口", description: "浮层显示在目标上方。", placement: "top" as const },
+  { id: "right", target: "#tour-placement-right", title: "右侧入口", description: "浮层显示在目标左侧。", placement: "left" as const },
 ];
 
-const open = ref(false);
-const step = ref(0);
-const log = ref("（未开始）");
-
-const panel
-  = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px";
-
-function start(from: number): void {
-  step.value = from;
-  open.value = true;
-}
-
-function onComplete(details: { step: number }): void {
-  log.value = `走完了第 ${details.step + 1} 步`;
-}
-
-function onSkip(details: { step: number }): void {
-  log.value = `在第 ${details.step + 1} 步放弃`;
-}
+const translations = {
+  close: "关闭",
+  progress: (step: number, count: number) => `第 ${step} 步，共 ${count} 步`,
+};
 </script>
 
 <template>
-  <XhTourRoot
-    v-model:open="open"
-    v-model:value="step"
-    :steps="steps"
-    @complete="onComplete"
-    @skip="onSkip"
-  >
-    <div style="display: grid; gap: 16px; justify-items: start">
-      <div style="display: flex; flex-wrap: wrap; gap: 12px">
-        <div id="tour-controlled-list" :style="panel">列表</div>
-        <div id="tour-controlled-detail" :style="panel">详情</div>
-        <div id="tour-controlled-actions" :style="panel">操作</div>
-      </div>
-      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
-        <XhButton variant="solid" @click="start(0)">从头开始</XhButton>
-        <XhButton variant="outline" @click="start(2)">直接跳到第 3 步</XhButton>
-        <span style="font-size: 13px; opacity: 0.75">
-          open={{ open }} · value={{ step }} · {{ log }}
-        </span>
-      </div>
+  <XhTourRoot v-slot="{ setOpen, lastStep }" :steps="steps" :translations="translations">
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <XhButton id="tour-placement-left" variant="outline">左侧</XhButton>
+      <XhButton id="tour-placement-center" variant="outline">中间</XhButton>
+      <XhButton id="tour-placement-right" variant="outline">右侧</XhButton>
+      <XhButton variant="solid" @click="setOpen(true)">查看定位</XhButton>
     </div>
 
     <XhTourBackdrop />
@@ -87,9 +43,10 @@ function onSkip(details: { step: number }): void {
       <XhTourContent>
         <XhTourTitle />
         <XhTourDescription />
+        <XhTourProgressText />
         <div style="display: flex; align-items: center; gap: 8px">
           <XhTourPrevTrigger>上一步</XhTourPrevTrigger>
-          <XhTourNextTrigger>下一步</XhTourNextTrigger>
+          <XhTourNextTrigger>{{ lastStep ? "完成" : "下一步" }}</XhTourNextTrigger>
         </div>
         <XhTourCloseTrigger />
         <XhTourArrow />
