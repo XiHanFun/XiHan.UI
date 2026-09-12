@@ -4,7 +4,7 @@ import type { App, VNode } from 'vue'
 import { cdp, userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h } from 'vue'
-import { XhButton, XhButtonGroup } from '../../src'
+import { XhButton, XhButtonGroup, XhButtonGroupSeparator } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -102,6 +102,33 @@ describe('按钮组共边按压', () => {
     await press(standalone)
     expect(standalone.matches(':active')).toBe(true)
     expect(getComputedStyle(standalone).scale).not.toBe('none')
+  })
+})
+
+describe('按钮组轮廓', () => {
+  it('胶囊端点与半高分隔线保持连续轮廓', () => {
+    mount(() => h(XhButtonGroup, { variant: 'solid' }, () => [
+      h(XhButton, null, () => '日'),
+      h(XhButtonGroupSeparator),
+      h(XhButton, null, () => '周'),
+      h(XhButtonGroupSeparator),
+      h(XhButton, null, () => '月'),
+    ]))
+
+    const root = host!.querySelector<HTMLElement>(`[data-scope='button-group'][data-part='root']`)!
+    const [first, middle, last] = buttons()
+    const separators = [...root.querySelectorAll<HTMLElement>(`[data-part='separator']`)]
+    const rootHeight = root.getBoundingClientRect().height
+
+    expect(Number.parseFloat(getComputedStyle(first!).borderStartStartRadius)).toBeGreaterThanOrEqual(rootHeight / 2)
+    expect(getComputedStyle(middle!).borderRadius).toBe('0px')
+    expect(Number.parseFloat(getComputedStyle(last!).borderEndEndRadius)).toBeGreaterThanOrEqual(rootHeight / 2)
+    for (const separator of separators) {
+      const style = getComputedStyle(separator)
+      expect(separator.getBoundingClientRect().height).toBeCloseTo(rootHeight / 2, 1)
+      expect(style.marginInlineStart).toBe('0px')
+      expect(style.marginInlineEnd).toBe('0px')
+    }
   })
 })
 

@@ -1,4 +1,4 @@
-<!-- 尺寸 | 高度、内边距与字号在组上写一次，沿自定义属性流给组内每一段 -->
+<!-- 尺寸 | 设置整组尺寸 -->
 <script setup lang="ts">
 import { XhButton, XhButtonGroup } from "@xihan-ui/vue";
 

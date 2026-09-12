@@ -1,13 +1,15 @@
-<!-- 基础用法 | 一组相关按钮连成一条：相邻两段共用一条边，圆角只留在两端 -->
+<!-- 基础用法 | 组合相关操作 -->
 <script setup lang="ts">
-import { XhButton, XhButtonGroup } from "@xihan-ui/vue";
+import { XhButton, XhButtonGroup, XhButtonGroupSeparator } from "@xihan-ui/vue";
 
 const views = ["日", "周", "月"];
 </script>
 
 <template>
-  <!-- 段就是组的直接子节点；形态写在组上，组内每段都取得到 -->
-  <XhButtonGroup variant="outline">
-    <XhButton v-for="v in views" :key="v">{{ v }}</XhButton>
+  <XhButtonGroup variant="solid">
+    <template v-for="(view, index) in views" :key="view">
+      <XhButtonGroupSeparator v-if="index > 0" />
+      <XhButton>{{ view }}</XhButton>
+    </template>
   </XhButtonGroup>
 </template>
