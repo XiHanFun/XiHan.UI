@@ -3,6 +3,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { attachMaterialRecipes, emitMaterialRecipes } from './material-recipes.mjs'
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 const TOKENS_DIR = join(ROOT, 'tokens')
@@ -12,8 +13,9 @@ const ICON_SVG_DIR = join(ROOT, '..', 'icons', 'src', 'svg')
 /** 库层序声明，与 packages/design/styles/css/layers.css 逐字一致，由 check-layer-order 门禁盯住。 */
 const LAYER_ORDER = '@layer xihan.reset, xihan.tokens, xihan.motion, xihan.components, xihan.overrides;'
 
-async function load(name) {
-  return JSON.parse(await readFile(join(TOKENS_DIR, name), 'utf8'))
+async function load(name, material) {
+  const document = JSON.parse(await readFile(join(TOKENS_DIR, name), 'utf8'))
+  return material ? attachMaterialRecipes(document, material, name) : document
 }
 
 // 把 DTCG 组树展开成 [{ name: '--xh-a-b-c', value, type }]
@@ -85,26 +87,27 @@ async function declarations(entries, indent = '    ') {
 }
 
 async function main() {
+  const materials = await emitMaterialRecipes()
   const primitive = flatten(await load('primitive.json'))
-  const base = flatten(await load('semantic.base.json'))
+  const base = flatten(await load('semantic.base.json', materials.fragments['semantic.base.json']))
   const compact = flatten(await load('semantic.compact.json'))
-  const light = flatten(await load('semantic.light.json'))
-  const dark = flatten(await load('semantic.dark.json'))
-  const lightMore = flatten(await load('semantic.light.more.json'))
-  const darkMore = flatten(await load('semantic.dark.more.json'))
-  const transparencyReduce = flatten(await load('semantic.transparency.reduce.json'))
-  const forcedColors = flatten(await load('semantic.forced-colors.json'))
+  const lightAll = flatten(await load('semantic.light.json', materials.fragments['semantic.light.json']))
+  const darkAll = flatten(await load('semantic.dark.json', materials.fragments['semantic.dark.json']))
+  const lightMore = flatten(await load('semantic.light.more.json', materials.fragments['semantic.light.more.json']))
+  const darkMore = flatten(await load('semantic.dark.more.json', materials.fragments['semantic.dark.more.json']))
+  const transparencyReduce = flatten(await load('semantic.transparency.reduce.json', materials.fragments['semantic.transparency.reduce.json']))
+  const forcedColors = flatten(await load('semantic.forced-colors.json', materials.fragments['semantic.forced-colors.json']))
   const reduce = flatten(await load('semantic.reduce.json'))
-  const print = flatten(await load('semantic.print.json'))
+  const print = flatten(await load('semantic.print.json', materials.fragments['semantic.print.json']))
 
-  for (const e of [...primitive, ...base, ...compact, ...light, ...dark, ...lightMore, ...darkMore, ...transparencyReduce, ...forcedColors, ...reduce, ...print])
+  for (const e of [...primitive, ...base, ...compact, ...lightAll, ...darkAll, ...lightMore, ...darkMore, ...transparencyReduce, ...forcedColors, ...reduce, ...print])
     declared.add(e.name)
 
   // 两条轴可以落在不同祖先上。主题保存自己的候选值，对比度标记独立继承，
   // 每个轴边界重新选择公开值；不依赖只能命中同一节点的复合属性选择器。
-  const normals = [new Map([...primitive, ...base, ...light].map(e => [e.name, e])), new Map([...primitive, ...base, ...light, ...dark].map(e => [e.name, e]))]
   const mores = [new Map(lightMore.map(e => [e.name, e])), new Map([...lightMore, ...darkMore].map(e => [e.name, e]))]
   const contrasted = [...new Set([...lightMore, ...darkMore].map(e => e.name))].sort()
+  const normals = [new Map([...primitive, ...base, ...lightAll].map(e => [e.name, e])), new Map([...primitive, ...base, ...lightAll, ...darkAll].map(e => [e.name, e]))]
   const routes = new Map()
   const palettes = [[], []]
   for (const name of contrasted) {
@@ -124,8 +127,23 @@ async function main() {
         choices.push(`var(${slot})`)
       }
     }
-    routes.set(name, `var(--xh-_contrast-use-default, ${choices[0]}) var(--xh-_contrast-use-more, ${choices[1]})`)
+    if (choices[0] !== choices[1])
+      routes.set(name, `var(--xh-_contrast-use-default, ${choices[0]}) var(--xh-_contrast-use-more, ${choices[1]})`)
   }
+  const darkByName = new Map(darkAll.map(entry => [entry.name, entry]))
+  // Recipe 真源里跨主题完全相同、且不参与 contrast 路由的材质通道只写一次。
+  // 值仍保留 var() 引用，在最终消费作用域解析，所以嵌套 theme 不会冻结为根主题。
+  const sharedMaterial = lightAll.filter((entry) => {
+    const darkEntry = darkByName.get(entry.name)
+    return entry.name.startsWith('--xh-material-')
+      && !routes.has(entry.name)
+      && darkEntry?.type === entry.type
+      && darkEntry.value === entry.value
+  })
+  const sharedMaterialNames = new Set(sharedMaterial.map(entry => entry.name))
+  const semanticBase = [...base, ...sharedMaterial]
+  const light = lightAll.filter(entry => !sharedMaterialNames.has(entry.name))
+  const dark = darkAll.filter(entry => !sharedMaterialNames.has(entry.name))
   const selection = [...routes].map(([name, value]) => `    ${name}: ${value};`).join('\n')
   async function themed(entries, index) {
     return `${await declarations(entries.filter(entry => !routes.has(entry.name)))}\n${palettes[index].join('\n')}\n${selection}`
@@ -145,7 +163,7 @@ ${await declarations(primitive)}
 
   /* 非模式语义（密度等轴的基线合并写法） */
   :where(:root), :where([data-density='comfortable']) {
-${await declarations(base)}
+${await declarations(semanticBase)}
   }
 
   /* density 轴 · compact 档：只覆盖收紧的盒尺寸。排在基线合并块之后，
@@ -154,14 +172,8 @@ ${await declarations(base)}
 ${await declarations(compact)}
   }
 
-  /* mode 轴 · 浅色基线块 */
-  :where(:root) {
-    color-scheme: light;
-${await themed(light, 0)}
-  }
-
-  /* mode 轴 · 浅色显式取值块 */
-  :where([data-theme='light']) {
+  /* mode 轴 · 浅色基线与显式取值完全同源；合并选择器避免把整套候选重复输出两次。 */
+  :where(:root), :where([data-theme='light']) {
     color-scheme: light;
 ${await themed(light, 0)}
   }
@@ -233,7 +245,7 @@ ${await declarations(print, '      ')}
 
   // —— tokens.json / generated.ts（默认=浅色，含 primitive + base + light）——
   const flatMap = {}
-  for (const e of [...primitive, ...base, ...light]) flatMap[e.name] = await resolve(e.value, e.type)
+  for (const e of [...primitive, ...base, ...lightAll]) flatMap[e.name] = await resolve(e.value, e.type)
 
   const generatedTs = `/* eslint-disable */
 // AUTO-GENERATED by build/emit-tokens.mjs — do not edit.
@@ -247,7 +259,7 @@ export type TokenName = keyof typeof tokens
   await mkdir(join(ROOT, 'src', 'generated'), { recursive: true })
   await writeFile(join(ROOT, 'src', 'generated', 'tokens.ts'), generatedTs)
 
-  console.log(`[emit-tokens] primitive ${primitive.length} · base ${base.length} · compact ${compact.length} · light ${light.length} · dark ${dark.length} · transparency ${transparencyReduce.length} · forced-colors ${forcedColors.length} · reduce ${reduce.length} · print ${print.length} → tokens.css / tokens.json / src/generated/tokens.ts`)
+  console.log(`[emit-tokens] material recipes ${materials.recipes} × ${materials.targets} modes · shared ${sharedMaterial.length} · primitive ${primitive.length} · base ${base.length} · compact ${compact.length} · light ${light.length} · dark ${dark.length} · transparency ${transparencyReduce.length} · forced-colors ${forcedColors.length} · reduce ${reduce.length} · print ${print.length} → tokens.css / tokens.json / src/generated/tokens.ts`)
 }
 
 main()

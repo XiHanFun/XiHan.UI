@@ -1,0 +1,346 @@
+{
+  "$description": "M0-M4 材质配方的单一生成真源。这里保存 tint、透明度、背景光学、边缘、高光与分层阴影；semantic.*.json 的 material 子树由构建生成。order 只保持既有生成物的序列化顺序，不表达材质等级。",
+  "order": [
+    "elevated",
+    "glass",
+    "solid",
+    "soft",
+    "frosted"
+  ],
+  "profiles": {
+    "solid": {
+      "id": "M0",
+      "description": "M0 实体内容面：不采样背后内容，不依赖装饰高光或投影表达边界。",
+      "light": {
+        "tint": "{bg.surface}",
+        "alpha": "{alpha.opaque}",
+        "backdrop": {
+          "blur": "{blur.none}",
+          "saturation": "100%",
+          "contrast": "100%"
+        },
+        "edge": "{border.default}",
+        "highlight": "oklch(0 0 0 / 0)",
+        "shadows": {
+          "contact": "none",
+          "ambient": "none",
+          "sheet": "none"
+        },
+        "separator": "{border.subtle}",
+        "foreground": "{fg.default}",
+        "mutedForeground": "{fg.muted}",
+        "focusSurface": "{bg.surface}"
+      },
+      "dark": {
+        "tint": "{bg.surface}",
+        "alpha": "{alpha.opaque}",
+        "backdrop": {
+          "blur": "{blur.none}",
+          "saturation": "100%",
+          "contrast": "100%"
+        },
+        "edge": "{border.default}",
+        "highlight": "oklch(0 0 0 / 0)",
+        "shadows": {
+          "contact": "none",
+          "ambient": "none",
+          "sheet": "none"
+        },
+        "separator": "{border.subtle}",
+        "foreground": "{fg.default}",
+        "mutedForeground": "{fg.muted}",
+        "focusSurface": "{bg.surface}"
+      }
+    },
+    "soft": {
+      "id": "M1",
+      "description": "M1 柔和实体面：用细微明度、顶边高光和两段弱投影分层，不使用 backdrop blur。",
+      "light": {
+        "tint": "oklch(0.995 0.001 258)",
+        "alpha": "{alpha.opaque}",
+        "backdrop": {
+          "blur": "{blur.none}",
+          "saturation": "100%",
+          "contrast": "100%"
+        },
+        "edge": "{border.subtle}",
+        "highlight": "oklch(1 0 0 / 0.72)",
+        "shadows": {
+          "contact": "0 1px 1px -0.5px oklch(0.145 0.005 258 / 0.04)",
+          "ambient": "0 4px 10px -6px oklch(0.145 0.005 258 / 0.05)",
+          "sheet": "none"
+        },
+        "separator": "{border.subtle}",
+        "foreground": "{fg.default}",
+        "mutedForeground": "{fg.muted}",
+        "focusSurface": "{material.soft.bg}"
+      },
+      "dark": {
+        "tint": "oklch(0.22 0.006 258)",
+        "alpha": "{alpha.opaque}",
+        "backdrop": {
+          "blur": "{blur.none}",
+          "saturation": "100%",
+          "contrast": "100%"
+        },
+        "edge": "{border.subtle}",
+        "highlight": "oklch(1 0 0 / 0.07)",
+        "shadows": {
+          "contact": "0 1px 1px -0.5px oklch(0 0 0 / 0.28)",
+          "ambient": "0 4px 10px -6px oklch(0 0 0 / 0.24)",
+          "sheet": "none"
+        },
+        "separator": "{border.subtle}",
+        "foreground": "{fg.default}",
+        "mutedForeground": "{fg.muted}",
+        "focusSurface": "{material.soft.bg}"
+      }
+    },
+    "frosted": {
+      "id": "M2",
+      "description": "M2 磨砂面：用于导航与锚定浮层，正文和焦点隔离面保持实体。",
+      "light": {
+        "tint": "oklch(0.99 0.003 258)",
+        "alpha": "{alpha.high}",
+        "backdrop": {
+          "blur": "{blur.md}",
+          "saturation": "108%",
+          "contrast": "100%"
+        },
+        "edge": "oklch(0.145 0.005 258 / 0.14)",
+        "highlight": "oklch(1 0 0 / 0.52)",
+        "shadows": {
+          "contact": "0 2px 4px -2px oklch(0.145 0.005 258 / 0.1)",
+          "ambient": "0 12px 28px -12px oklch(0.145 0.005 258 / 0.16)",
+          "sheet": "none"
+        },
+        "separator": "oklch(0.145 0.005 258 / 0.12)",
+        "foreground": "{fg.default}",
+        "mutedForeground": "{fg.muted}",
+        "focusSurface": "{bg.surface}",
+        "compact": {
+          "alpha": "{alpha.ultra-high}",
+          "backdrop": {
+            "blur": "{blur.sm}",
+            "saturation": "104%",
+            "contrast": "100%"
+          },
+          "shadows": {
+            "contact": "0 1px 2px -1px oklch(0.145 0.005 258 / 0.08)",
+            "ambient": "0 6px 16px -8px oklch(0.145 0.005 258 / 0.12)",
+            "sheet": "none"
+          }
+        }
+      },
+      "dark": {
+        "tint": "oklch(0.19 0.008 258)",
+        "alpha": "{alpha.high}",
+        "backdrop": {
+          "blur": "{blur.md}",
+          "saturation": "108%",
+          "contrast": "100%"
+        },
+        "edge": "oklch(1 0 0 / 0.16)",
+        "highlight": "oklch(1 0 0 / 0.14)",
+        "shadows": {
+          "contact": "0 2px 4px -2px oklch(0 0 0 / 0.42)",
+          "ambient": "0 12px 28px -12px oklch(0 0 0 / 0.52)",
+          "sheet": "none"
+        },
+        "separator": "oklch(1 0 0 / 0.12)",
+        "foreground": "{fg.default}",
+        "mutedForeground": "{fg.muted}",
+        "focusSurface": "{bg.surface}",
+        "compact": {
+          "alpha": "{alpha.ultra-high}",
+          "backdrop": {
+            "blur": "{blur.sm}",
+            "saturation": "104%",
+            "contrast": "100%"
+          },
+          "shadows": {
+            "contact": "0 1px 2px -1px oklch(0 0 0 / 0.38)",
+            "ambient": "0 6px 16px -8px oklch(0 0 0 / 0.46)",
+            "sheet": "none"
+          }
+        }
+      }
+    },
+    "glass": {
+      "id": "M3",
+      "description": "M3 浮动玻璃：用于浮动创作表面，固定光学采样并保持正文不透明。",
+      "light": {
+        "tint": "oklch(0.99 0.003 258)",
+        "alpha": "{alpha.medium}",
+        "backdrop": {
+          "blur": "{blur.lg}",
+          "saturation": "112%",
+          "contrast": "100%"
+        },
+        "edge": "oklch(0.145 0.005 258 / 0.24)",
+        "highlight": "oklch(1 0 0 / 0.3)",
+        "shadows": {
+          "contact": "0 3px 6px -3px oklch(0.145 0.005 258 / 0.12)",
+          "ambient": "0 16px 40px -14px oklch(0.145 0.005 258 / 0.18)",
+          "sheet": "none"
+        },
+        "separator": "oklch(0.145 0.005 258 / 0.18)",
+        "foreground": "{fg.default}",
+        "mutedForeground": "{color.neutral.700}",
+        "focusSurface": "{bg.surface}"
+      },
+      "dark": {
+        "tint": "oklch(0.19 0.008 258)",
+        "alpha": "{alpha.medium}",
+        "backdrop": {
+          "blur": "{blur.lg}",
+          "saturation": "112%",
+          "contrast": "100%"
+        },
+        "edge": "oklch(1 0 0 / 0.24)",
+        "highlight": "oklch(1 0 0 / 0.22)",
+        "shadows": {
+          "contact": "0 3px 6px -3px oklch(0 0 0 / 0.46)",
+          "ambient": "0 16px 40px -14px oklch(0 0 0 / 0.56)",
+          "sheet": "none"
+        },
+        "separator": "oklch(1 0 0 / 0.18)",
+        "foreground": "{fg.default}",
+        "mutedForeground": "{color.neutral.300}",
+        "focusSurface": "{bg.surface}"
+      }
+    },
+    "elevated": {
+      "id": "M4",
+      "description": "M4 高层玻璃：高遮蔽模态正文保护区与三段高层投影，只允许最外层壳采样背景。",
+      "light": {
+        "tint": "oklch(0.99 0.003 258)",
+        "alpha": "{alpha.ultra-high}",
+        "backdrop": {
+          "blur": "{blur.xl}",
+          "saturation": "108%",
+          "contrast": "100%"
+        },
+        "edge": "oklch(0.145 0.005 258 / 0.28)",
+        "highlight": "oklch(1 0 0 / 0.32)",
+        "shadows": {
+          "contact": "0 2px 4px -2px oklch(0.145 0.005 258 / 0.12)",
+          "ambient": "0 12px 28px -12px oklch(0.145 0.005 258 / 0.16)",
+          "sheet": "0 32px 64px -20px oklch(0.145 0.005 258 / 0.18)"
+        },
+        "separator": "oklch(0.145 0.005 258 / 0.2)",
+        "foreground": "{fg.default}",
+        "mutedForeground": "{color.neutral.700}",
+        "focusSurface": "{bg.surface}"
+      },
+      "dark": {
+        "tint": "oklch(0.19 0.008 258)",
+        "alpha": "0.92",
+        "backdrop": {
+          "blur": "{blur.xl}",
+          "saturation": "108%",
+          "contrast": "100%"
+        },
+        "edge": "oklch(1 0 0 / 0.28)",
+        "highlight": "oklch(1 0 0 / 0.32)",
+        "shadows": {
+          "contact": "0 2px 4px -2px oklch(0 0 0 / 0.5)",
+          "ambient": "0 12px 28px -12px oklch(0 0 0 / 0.55)",
+          "sheet": "0 32px 64px -20px oklch(0 0 0 / 0.6)"
+        },
+        "separator": "oklch(1 0 0 / 0.2)",
+        "foreground": "{fg.default}",
+        "mutedForeground": "{color.neutral.300}",
+        "focusSurface": "{bg.surface}"
+      }
+    }
+  },
+  "auxiliary": {
+    "contrast-more": {
+      "solid": {},
+      "soft": {
+        "edge": "{border.subtle}",
+        "highlight": "oklch(0 0 0 / 0)",
+        "separator": "{border.subtle}"
+      },
+      "frosted": {
+        "background": "{bg.surface}",
+        "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" },
+        "edge": "{border.subtle}",
+        "highlight": "oklch(0 0 0 / 0)",
+        "separator": "{border.subtle}",
+        "focusSurface": "{bg.surface}",
+        "compact": {
+          "alpha": "{alpha.opaque}",
+          "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" },
+          "shadows": { "contact": "none", "ambient": "none", "sheet": "none" }
+        }
+      },
+      "glass": {
+        "background": "{bg.surface}",
+        "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" },
+        "edge": "{border.subtle}",
+        "highlight": "oklch(0 0 0 / 0)",
+        "shadows": { "contact": "none", "ambient": "none", "sheet": "none" },
+        "separator": "{border.subtle}",
+        "mutedForeground": "{fg.muted}"
+      },
+      "elevated": {
+        "background": "{bg.surface}",
+        "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" },
+        "edge": "{border.subtle}",
+        "highlight": "oklch(0 0 0 / 0)",
+        "shadows": { "contact": "none", "ambient": "none", "sheet": "none" },
+        "separator": "{border.subtle}",
+        "mutedForeground": "{fg.muted}"
+      }
+    },
+    "transparency-reduce": {
+      "solid": {},
+      "soft": {},
+      "frosted": {
+        "background": "{bg.surface}",
+        "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" },
+        "edge": "{border.default}",
+        "highlight": "oklch(0 0 0 / 0)",
+        "separator": "{border.subtle}",
+        "focusSurface": "{bg.surface}",
+        "compact": {
+          "alpha": "{alpha.opaque}",
+          "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" }
+        }
+      },
+      "glass": {
+        "background": "{bg.surface}",
+        "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" },
+        "edge": "{border.subtle}",
+        "highlight": "oklch(0 0 0 / 0)",
+        "separator": "{border.subtle}",
+        "mutedForeground": "{fg.muted}"
+      },
+      "elevated": {
+        "background": "{bg.surface}",
+        "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" },
+        "edge": "{border.default}",
+        "highlight": "oklch(0 0 0 / 0)",
+        "separator": "{border.subtle}",
+        "mutedForeground": "{fg.muted}",
+        "focusSurface": "{bg.surface}"
+      }
+    },
+    "forced-colors": {
+      "solid": { "background": "Canvas", "edge": "CanvasText", "highlight": "transparent", "shadows": { "contact": "none", "ambient": "none", "sheet": "none" }, "separator": "CanvasText", "foreground": "CanvasText", "mutedForeground": "CanvasText", "focusSurface": "Canvas" },
+      "soft": { "background": "Canvas", "edge": "CanvasText", "highlight": "transparent", "shadows": { "contact": "none", "ambient": "none", "sheet": "none" }, "separator": "CanvasText", "foreground": "CanvasText", "mutedForeground": "CanvasText", "focusSurface": "Canvas" },
+      "frosted": { "background": "Canvas", "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" }, "edge": "CanvasText", "highlight": "Canvas", "shadows": { "contact": "none", "ambient": "none", "sheet": "none" }, "separator": "CanvasText", "foreground": "CanvasText", "mutedForeground": "CanvasText", "focusSurface": "Canvas", "compact": { "alpha": "{alpha.opaque}", "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" }, "shadows": { "contact": "none", "ambient": "none", "sheet": "none" } } },
+      "glass": { "background": "Canvas", "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" }, "edge": "CanvasText", "highlight": "transparent", "shadows": { "contact": "none", "ambient": "none", "sheet": "none" }, "separator": "CanvasText", "foreground": "CanvasText", "mutedForeground": "CanvasText", "focusSurface": "Canvas" },
+      "elevated": { "background": "Canvas", "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" }, "edge": "CanvasText", "highlight": "transparent", "shadows": { "contact": "none", "ambient": "none", "sheet": "none" }, "separator": "CanvasText", "foreground": "CanvasText", "mutedForeground": "CanvasText", "focusSurface": "Canvas" }
+    },
+    "print": {
+      "solid": {},
+      "soft": { "highlight": "oklch(0 0 0 / 0)", "shadows": { "contact": "none", "ambient": "none", "sheet": "none" } },
+      "frosted": { "background": "{bg.surface}", "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" }, "edge": "{border.default}", "highlight": "oklch(0 0 0 / 0)", "shadows": { "contact": "none", "ambient": "none", "sheet": "none" }, "separator": "{border.subtle}", "compact": { "alpha": "{alpha.opaque}", "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" }, "shadows": { "contact": "none", "ambient": "none", "sheet": "none" } } },
+      "glass": { "background": "{bg.surface}", "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" }, "edge": "{border.subtle}", "highlight": "oklch(0 0 0 / 0)", "shadows": { "contact": "none", "ambient": "none", "sheet": "none" }, "separator": "{border.subtle}" },
+      "elevated": { "background": "{bg.surface}", "backdrop": { "blur": "{blur.none}", "saturation": "100%", "contrast": "100%" }, "edge": "{border.default}", "highlight": "oklch(0 0 0 / 0)", "shadows": { "contact": "none", "ambient": "none", "sheet": "none" }, "separator": "{border.subtle}" }
+    }
+  }
+}

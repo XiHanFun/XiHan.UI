@@ -398,7 +398,7 @@ describe('快照的前提', () => {
     // 两块由同一份 semantic.light.json 发出、本该逐条相同，这条断言盯的就是它们分叉——
     // 分叉之后没标主题的页面会取到一套没人算过的值，而快照全绿。
     const semantic = blocks.filter(b => b.decls.some(d => SEMANTIC_NAMES.includes(d.name)))
-    const fallback = semantic.filter(b => b.matchers.every(m => Object.keys(m).length === 0)).at(-1)
+    const fallback = semantic.filter(b => b.matchers.some(m => Object.keys(m).length === 0)).at(-1)
     const light = semantic.find(b => b.matchers.some(m => m.theme === 'light'))
 
     expect(fallback, '没找到无条件命中的语义取值块').toBeDefined()
