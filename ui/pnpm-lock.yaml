@@ -191,9 +191,6 @@ importers:
       '@xihan-ui/position':
         specifier: workspace:^
         version: link:../../engine/position
-      '@xihan-ui/tokens':
-        specifier: workspace:^
-        version: link:../../design/tokens
     devDependencies:
       '@testing-library/react':
         specifier: 'catalog:'
@@ -228,6 +225,9 @@ importers:
       '@xihan-ui/testing':
         specifier: workspace:*
         version: link:../../../tooling/testing
+      '@xihan-ui/tokens':
+        specifier: workspace:*
+        version: link:../../design/tokens
       '@xihan-ui/tsconfig':
         specifier: workspace:*
         version: link:../../../tooling/tsconfig
@@ -261,9 +261,6 @@ importers:
       '@xihan-ui/position':
         specifier: workspace:^
         version: link:../../engine/position
-      '@xihan-ui/tokens':
-        specifier: workspace:^
-        version: link:../../design/tokens
     devDependencies:
       '@vitest/browser':
         specifier: 'catalog:'
@@ -292,6 +289,9 @@ importers:
       '@xihan-ui/testing':
         specifier: workspace:*
         version: link:../../../tooling/testing
+      '@xihan-ui/tokens':
+        specifier: workspace:*
+        version: link:../../design/tokens
       '@xihan-ui/tsconfig':
         specifier: workspace:*
         version: link:../../../tooling/tsconfig
@@ -325,9 +325,6 @@ importers:
       '@xihan-ui/position':
         specifier: workspace:^
         version: link:../../engine/position
-      '@xihan-ui/tokens':
-        specifier: workspace:^
-        version: link:../../design/tokens
     devDependencies:
       '@custom-elements-manifest/analyzer':
         specifier: 'catalog:'
@@ -356,6 +353,9 @@ importers:
       '@xihan-ui/testing':
         specifier: workspace:*
         version: link:../../../tooling/testing
+      '@xihan-ui/tokens':
+        specifier: workspace:*
+        version: link:../../design/tokens
       '@xihan-ui/tsconfig':
         specifier: workspace:*
         version: link:../../../tooling/tsconfig
@@ -388,6 +388,10 @@ importers:
         version: link:../tokens
 
   packages/design/tokens:
+    dependencies:
+      '@xihan-ui/core':
+        specifier: workspace:^
+        version: link:../../engine/core
     devDependencies:
       '@xihan-ui/build':
         specifier: workspace:*

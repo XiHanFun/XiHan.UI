@@ -8,9 +8,9 @@ import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
 import type {
   VisualEnvironmentController,
   VisualEnvironmentControllerOptions,
-} from '@xihan-ui/tokens/runtime'
+} from '@xihan-ui/core/visual-environment'
 import { mergeXhConfig as mergeBase, withXhConfigBase } from '@xihan-ui/headless'
-import { createVisualEnvironmentController } from '@xihan-ui/tokens/runtime'
+import { createVisualEnvironmentController } from '@xihan-ui/core/visual-environment'
 
 export type { XhTranslationOverrides }
 

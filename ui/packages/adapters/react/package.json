@@ -86,8 +86,7 @@
     "@xihan-ui/headless": "workspace:^",
     "@xihan-ui/motion": "workspace:^",
     "@xihan-ui/pointer": "workspace:^",
-    "@xihan-ui/position": "workspace:^",
-    "@xihan-ui/tokens": "workspace:^"
+    "@xihan-ui/position": "workspace:^"
   },
   "devDependencies": {
     "@testing-library/react": "catalog:",
@@ -101,6 +100,7 @@
     "@xihan-ui/sound": "workspace:*",
     "@xihan-ui/styles": "workspace:*",
     "@xihan-ui/testing": "workspace:*",
+    "@xihan-ui/tokens": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
     "jsdom": "catalog:",
     "react": "catalog:",

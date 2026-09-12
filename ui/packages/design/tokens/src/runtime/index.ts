@@ -4,7 +4,7 @@ export {
   toThemeAttrs,
   toVisualEnvironmentAttrs,
   VISUAL_ENVIRONMENT_ATTRIBUTES,
-} from './apply'
+} from '@xihan-ui/core/visual-environment'
 export type { BrandScale, BrandStep, RegisterBrandOptions } from './brand'
 export { brandScaleCss, deriveBrandScale, registerBrand } from './brand'
 export type { Oklch, PickColorOptions } from './color'
@@ -32,10 +32,10 @@ export {
 } from './color'
 export type { ThemeController, ThemeControllerOptions } from './controller'
 export { createThemeController } from './controller'
-// @xihan-ui/tokens/runtime —— 主题运行时。
-export type { EnvSignals } from './env'
-export { createEnvSignals, SSR_ENV } from './env'
-export { pickThemeState, resolveTheme, resolveVisualEnvironment } from './resolve'
+// @xihan-ui/tokens/runtime —— 兼容的主题运行时入口；实现由 Core 持有。
+export type { EnvSignals } from '@xihan-ui/core/visual-environment'
+export { createEnvSignals, SSR_ENV } from '@xihan-ui/core/visual-environment'
+export { pickThemeState, resolveTheme, resolveVisualEnvironment } from '@xihan-ui/core/visual-environment'
 export type {
   BrandId,
   ColorMode,
@@ -50,13 +50,13 @@ export type {
   VisualEnvironmentPreference,
   VisualEnvironmentState,
   VisualMotion,
-} from './types'
-export { BASELINE_THEME, BASELINE_VISUAL_ENVIRONMENT, brandId } from './types'
+} from '@xihan-ui/core/visual-environment'
+export { BASELINE_THEME, BASELINE_VISUAL_ENVIRONMENT, brandId } from '@xihan-ui/core/visual-environment'
 export type {
   MotionOverrideSetter,
   VisualEnvironmentController,
   VisualEnvironmentControllerOptions,
   VisualEnvironmentStorageError,
   VisualMotionSink,
-} from './visual-controller'
-export { createMotionOverrideSink, createVisualEnvironmentController } from './visual-controller'
+} from '@xihan-ui/core/visual-environment'
+export { createMotionOverrideSink, createVisualEnvironmentController } from '@xihan-ui/core/visual-environment'
