@@ -1,5 +1,5 @@
 import type { GridColumnCount, GridItemProps, GridProps } from '@xihan-ui/headless'
-import { connectGrid, gridAnatomy, gridMeta } from '@xihan-ui/headless'
+import { connectGrid, gridAnatomy, gridMeta, normalizeGridCount, normalizeGridTier } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -14,21 +14,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * 缺的那几档会安静地退回一列，而作者看不出是哪里写坏了。
  */
 const COLS_CONVERTER = {
-  fromAttribute: (v: string | null) => {
-    if (v === null)
-      return undefined
-    if (!v.trimStart().startsWith('{'))
-      return Number(v) as GridColumnCount
-    try {
-      const parsed: unknown = JSON.parse(v)
-      return parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)
-        ? (parsed as ColsByBreakpoint)
-        : undefined
-    }
-    catch {
-      return undefined
-    }
-  },
+  fromAttribute: (v: string | null) => normalizeGridTier(v) as GridColumnCount | ColsByBreakpoint | undefined,
 }
 
 /**
@@ -37,22 +23,7 @@ const COLS_CONVERTER = {
  * 解析不出对象、或不是数字时同样当没写，取值范围由 connect 判。
  */
 function authorTier(el: HTMLElement, name: string): number | Record<string, number> | undefined {
-  const raw = el.getAttribute(name)
-  if (raw == null || raw.trim() === '')
-    return undefined
-  if (raw.trimStart().startsWith('{')) {
-    try {
-      const parsed: unknown = JSON.parse(raw)
-      return parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)
-        ? (parsed as Record<string, number>)
-        : undefined
-    }
-    catch {
-      return undefined
-    }
-  }
-  const n = Number(raw)
-  return Number.isFinite(n) ? n : undefined
+  return normalizeGridTier(el.getAttribute(name)) as number | Record<string, number> | undefined
 }
 
 /**
@@ -86,7 +57,7 @@ export class XhGridElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开
   static override properties = {
     cols: { converter: COLS_CONVERTER },
-    rows: { converter: { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) } },
+    rows: { converter: { fromAttribute: normalizeGridCount } },
     minColWidth: { converter: STRING_CONVERTER, attribute: 'min-col-width' },
     gap: { converter: STRING_CONVERTER },
     rowGap: { converter: STRING_CONVERTER, attribute: 'row-gap' },
