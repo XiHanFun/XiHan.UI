@@ -16,6 +16,7 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useFormControlProps } from '../form/use-form-control'
 import { ColorPickerChannelProvider, ColorPickerProvider, useColorPickerChannelContext, useColorPickerContext } from './context'
 import { useColorPicker } from './use-color-picker'
 
@@ -82,7 +83,7 @@ export function XhColorPickerRoot({
   children,
   ...rest
 }: XhColorPickerRootProps): ReactNode {
-  const ctx = useColorPicker(withXhConfig('color-picker', {
+  const ctx = useColorPicker(withXhConfig('color-picker', useFormControlProps({
     value,
     defaultValue,
     format,
@@ -100,7 +101,7 @@ export function XhColorPickerRoot({
     translations,
     onValueChange,
     onOpenChange,
-  }) as ColorPickerProps)
+  })) as ColorPickerProps)
   const api = ctx.api
 
   return (

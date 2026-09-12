@@ -7,11 +7,12 @@ import type {
   ColorPickerServices,
   ColorPickerTranslations,
   ColorPickerValueChangeDetails,
+  FormControlState,
   SliderSchema,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { colorPickerAnatomy, colorPickerChannelSliderProps, colorPickerMachine, colorPickerMeta, colorPickerToChannel, colorPickerToInputChannel, connectColorPicker, sliderMachine } from '@xihan-ui/headless'
+import { colorPickerAnatomy, colorPickerChannelSliderProps, colorPickerMachine, colorPickerMeta, colorPickerToChannel, colorPickerToInputChannel, connectColorPicker, resolveFormControlState, sliderMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -172,15 +173,26 @@ export class XhColorPickerElement extends XhElement {
     scrollable: () => this.getPart('content'),
   })
 
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
   private machineProps(): Partial<ColorPickerSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
       format: this.format,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
       alpha: this.alpha ?? false,
       swatches: this.swatches,
       name: this.name,

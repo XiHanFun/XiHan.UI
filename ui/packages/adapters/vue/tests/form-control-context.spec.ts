@@ -9,17 +9,28 @@ import {
   XhCascaderTrigger,
   XhCheckbox,
   XhCheckboxGroupRoot,
+  XhColorPickerControl,
+  XhColorPickerRoot,
+  XhColorPickerTrigger,
   XhComboboxControl,
   XhComboboxInput,
   XhComboboxRoot,
   XhDateFieldRoot,
   XhDateFieldSegment,
+  XhDatePickerControl,
+  XhDatePickerHiddenInput,
+  XhDatePickerRoot,
+  XhDatePickerSegment,
+  XhDatePickerSegmentGroup,
+  XhDatePickerTrigger,
   XhEditableInput,
   XhEditableRoot,
   XhFieldControl,
   XhFieldRoot,
   XhFormFieldGroup,
   XhFormRoot,
+  XhMentionInput,
+  XhMentionRoot,
   XhNumberFieldInput,
   XhNumberFieldRoot,
   XhPasswordInputInput,
@@ -40,15 +51,21 @@ import {
   XhTextFieldRoot,
   XhTimeFieldRoot,
   XhTimeFieldSegment,
+  XhTimePickerControl,
+  XhTimePickerHiddenInput,
+  XhTimePickerRoot,
+  XhTimePickerSegment,
+  XhTimePickerSegmentGroup,
+  XhTimePickerTrigger,
   XhTreeSelectControl,
   XhTreeSelectRoot,
   XhTreeSelectTrigger,
 } from '../src'
 
 type ControlState = Partial<Record<'disabled' | 'readOnly' | 'required' | 'invalid', boolean>>
-type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider' | 'Select' | 'Cascader' | 'Combobox' | 'TreeSelect'
+type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider' | 'Select' | 'Cascader' | 'Combobox' | 'TreeSelect' | 'DatePicker' | 'TimePicker' | 'ColorPicker' | 'Mention'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider', 'Select', 'Cascader', 'Combobox', 'TreeSelect']
+const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider', 'Select', 'Cascader', 'Combobox', 'TreeSelect', 'DatePicker', 'TimePicker', 'ColorPicker', 'Mention']
 
 function nonRequiredState(props: ControlState) {
   return { disabled: props.disabled, readOnly: props.readOnly, invalid: props.invalid }
@@ -85,6 +102,14 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
     return h(XhComboboxRoot, { ...nonRequiredState(props), collection: [] }, () => h(XhComboboxControl, null, () => h(XhComboboxInput)))
   if (kind === 'TreeSelect')
     return h(XhTreeSelectRoot, { ...nonRequiredState(props), collection: [] }, () => h(XhTreeSelectControl, null, () => h(XhTreeSelectTrigger, null, () => '选择')))
+  if (kind === 'DatePicker')
+    return h(XhDatePickerRoot, { ...props, segments: ['year'] }, () => [h(XhDatePickerControl, null, () => [h(XhDatePickerSegmentGroup, null, () => h(XhDatePickerSegment, { segment: 'year' })), h(XhDatePickerTrigger, null, () => '选择')]), h(XhDatePickerHiddenInput)])
+  if (kind === 'TimePicker')
+    return h(XhTimePickerRoot, { ...props, granularity: 'hour' }, () => [h(XhTimePickerControl, null, () => [h(XhTimePickerSegmentGroup, null, () => h(XhTimePickerSegment, { segment: 'hour' })), h(XhTimePickerTrigger, null, () => '选择')]), h(XhTimePickerHiddenInput)])
+  if (kind === 'ColorPicker')
+    return h(XhColorPickerRoot, { disabled: props.disabled, readOnly: props.readOnly }, () => h(XhColorPickerControl, null, () => h(XhColorPickerTrigger, null, () => '选择')))
+  if (kind === 'Mention')
+    return h(XhMentionRoot, nonRequiredState(props), () => h(XhMentionInput))
   return h(XhSliderRoot, { ...nonRequiredState(props), defaultValue: [50] }, () => h(XhSliderControl, null, () => [h(XhSliderTrack), h(XhSliderThumb, { index: 0 })]))
 }
 
@@ -103,11 +128,27 @@ function mountAtomicControl(kind: AtomicControl, instance: ControlState = {}, fi
 }
 
 function expectAtomicState(wrapper: ReturnType<typeof mount>, kind: AtomicControl, enabled: boolean): void {
-  if (kind === 'Combobox') {
-    const input = wrapper.find('[data-scope="combobox"][data-part="input"]')
+  if (kind === 'Combobox' || kind === 'Mention') {
+    const scope = kind.toLowerCase()
+    const input = wrapper.find(`[data-scope="${scope}"][data-part="input"]`)
     expect(input.attributes('disabled') !== undefined).toBe(enabled)
     expect(input.attributes('readonly') !== undefined).toBe(enabled)
     expect(input.attributes('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'DatePicker' || kind === 'TimePicker' || kind === 'ColorPicker') {
+    const scope = kind.replace('Picker', '-picker').toLowerCase()
+    const trigger = wrapper.find(`[data-scope="${scope}"][data-part="trigger"]`)
+    expect(trigger.attributes('disabled') !== undefined).toBe(enabled)
+    if (kind === 'ColorPicker') {
+      expect(wrapper.find('[data-scope="color-picker"][data-part="root"]').attributes('data-readonly') !== undefined).toBe(enabled)
+    }
+    else {
+      const segment = wrapper.find('[role="spinbutton"]')
+      expect(segment.attributes('aria-readonly')).toBe(String(enabled))
+      expect(segment.attributes('aria-invalid')).toBe(String(enabled))
+      expect(segment.attributes('aria-required')).toBe(String(enabled))
+    }
     return
   }
   if (kind === 'Select' || kind === 'Cascader' || kind === 'TreeSelect') {

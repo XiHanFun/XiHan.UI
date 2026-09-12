@@ -23,6 +23,7 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   DatePickerCellProvider,
   DatePickerPanelProvider,
@@ -191,7 +192,7 @@ export function XhDatePickerRoot({
   children,
   ...rest
 }: XhDatePickerRootProps): ReactNode {
-  const ctx = useDatePicker(withXhConfig('date-picker', {
+  const ctx = useDatePicker(withXhConfig('date-picker', useFormControlProps({
     value,
     defaultValue,
     open,
@@ -230,7 +231,7 @@ export function XhDatePickerRoot({
     onOpenChange,
     onFocusedValueChange,
     onActiveViewChange,
-  }) as DatePickerProps)
+  })) as DatePickerProps)
   const api = ctx.api
   return (
     <DatePickerProvider value={ctx}>
@@ -357,7 +358,7 @@ export function XhDatePickerTrigger({ children, ...rest }: XhDatePickerTriggerPr
   return (
     <button
       {...mergeReactProps(
-        fieldLabel({ ...ctx.api.getTriggerProps() as Record<string, unknown>, ...fieldWiring }),
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
         rest as Record<string, unknown>,
       )}
     >

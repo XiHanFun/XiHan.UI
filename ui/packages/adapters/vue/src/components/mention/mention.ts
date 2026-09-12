@@ -7,6 +7,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideMention, provideMentionItem, useMentionContext, useMentionItemContext } from './context'
 import { useMention } from './use-mention'
 
@@ -32,11 +33,11 @@ export const XhMentionRoot = defineComponent({
     collection: { type: Array as PropType<MentionNode[]>, default: undefined },
     value: { type: String, default: undefined },
     defaultValue: { type: String, default: undefined },
-    disabled: Boolean,
+    disabled: { type: Boolean, default: undefined },
     loading: Boolean,
     name: { type: String, default: undefined },
-    readOnly: Boolean,
-    invalid: Boolean,
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     placeholder: { type: String, default: undefined },
     loop: { type: Boolean, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },
@@ -72,7 +73,7 @@ export const XhMentionRoot = defineComponent({
     const notifySelect: MentionProps['onSelect'] = details => emit('select', details)
     const notifyOpen: MentionProps['onOpenChange'] = details => emit('open-change', details)
 
-    const ctx = useMention(withXhConfig('mention', props) as MentionProps, {
+    const ctx = useMention(withXhConfig('mention', useFormControlProps(props)) as MentionProps, {
       onValueChange: notifyValue,
       onQueryChange: notifyQuery,
       onSelect: notifySelect,
@@ -123,9 +124,9 @@ export const XhMentionInput = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     const ctx = useMentionContext()
     return () => h('input', fieldLabel.value({
+      ...fieldWiring.value,
       ...ctx.api.value.getInputProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.inputRef.value = el as MentionInputEl },
-      ...fieldWiring.value,
     }))
   },
 })

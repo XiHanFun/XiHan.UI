@@ -17,6 +17,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotPaints } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   provideTimePicker,
   provideTimePickerColumn,
@@ -68,12 +69,12 @@ export const XhTimePickerRoot = defineComponent({
     step: { type: Number, default: undefined },
     /** 快捷选项；给了就在浮层里多出一列，时刻要在自己的 computed 里算好再传。 */
     presets: { type: Array as PropType<TimePickerPreset[]>, default: undefined },
-    disabled: Boolean,
+    disabled: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<TimePickerProps['translations']>, default: undefined },
     isTimeUnavailable: { type: Function as PropType<(value: string, unit: TimePickerColumnUnit) => boolean>, default: undefined },
-    readOnly: Boolean,
-    invalid: Boolean,
-    required: Boolean,
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
     name: { type: String, default: undefined },
     variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
@@ -102,7 +103,7 @@ export const XhTimePickerRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useTimePicker(withXhConfig('time-picker', props) as TimePickerProps, {
+    const ctx = useTimePicker(withXhConfig('time-picker', useFormControlProps(props)) as TimePickerProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
     })
@@ -177,10 +178,10 @@ export const XhTimePickerTrigger = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     const ctx = useTimePickerContext()
     return () => h('button', fieldLabel.value({
+      ...fieldWiring.value,
       ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
       // 归还焦点要落到它身上：锚点取的是整个输入行，那一层不可聚焦
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
-      ...fieldWiring.value,
     }), slots.default?.())
   },
 })
