@@ -105,7 +105,7 @@
 | [时间输入](./time-field) | `time-field` | 7 | 9 | 9 |
 | [时间选择器](./time-picker) | `time-picker` | 14 | 24 | 11 |
 | [穿梭框](./transfer) | `transfer` | 19 | 11 | 10 |
-| [树选择](./tree-select) | `tree-select` | 23 | 16 | 13 |
+| [树选择](./tree-select) | `tree-select` | 27 | 17 | 13 |
 
 ## 数据展示
 
