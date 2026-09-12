@@ -7,6 +7,9 @@ hero:
   name: 曦寒视图组件
   text: 框架无关的跨端组件库
   tagline: 快速、轻量、高效、用心的框架无关 Headless UI 组件库。
+  image:
+    src: /images/logo.png
+    alt: 曦寒视图组件
   actions:
     - theme: brand
       text: 快速上手
