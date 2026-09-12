@@ -13307,6 +13307,15 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "type": {
+                "text": "PortalLease | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -13356,6 +13365,51 @@
                 }
               ],
               "description": "退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。"
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "mountViewportPortal",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "backdrop",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "positioner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "视口模态层的 backdrop 与 positioner 一起租到当前 Document 的 Portal 根。两根共用一枚租约，\n关闭完成、转为非模态、作者换根或宿主断开时，Core 用各自 placeholder 精确归还作者位置。"
+            },
+            {
+              "kind": "method",
+              "name": "restoreViewportPortal",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             },
             {
               "kind": "field",
@@ -14544,6 +14598,15 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "type": {
+                "text": "PortalLease | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -14593,6 +14656,51 @@
                 }
               ],
               "description": "退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。"
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "mountViewportPortal",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "backdrop",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "positioner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "只有非 contained 的视口模态层领取租约。backdrop 与 positioner 同迁，既脱离作者祖先的\ntransform/contain/overflow，又在退场完成后按各自占位准确归位。"
+            },
+            {
+              "kind": "method",
+              "name": "restoreViewportPortal",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             },
             {
               "kind": "field",
@@ -15870,7 +15978,7 @@
               "name": "name",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "FormPath | undefined"
               },
               "attribute": "name"
             },
@@ -16000,9 +16108,9 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "FormPath | undefined"
               },
-              "description": "整份数组的表单字段名；每一行经 item.name 拿到 名字[下标]",
+              "description": "整份数组的表单字段名；嵌套 Form 时自动使用同一条 FormPath 真源",
               "name": "name",
               "fieldName": "name"
             }
@@ -18730,7 +18838,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<FormSchema>( this, formMachine, () => this.machineProps(), // 落焦与\"哪个字段排在前面\"都要现查这棵子树，机器因此得拿到那个 <form>。 // getter 而不是当下的节点：角色节点是作者渲染的，随时可能换一批 { onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')) }, )"
+              "default": "new MachineController<FormSchema>( this, formMachine, () => this.machineProps(), // 落焦与\"哪个字段排在前面\"都要现查这棵子树，机器因此得拿到那个 <form>。 // getter 而不是当下的节点：角色节点是作者渲染的，随时可能换一批 { onBuilt: (svc) => { const host = this as unknown as { [FORM_SERVICE]?: Service<FormSchema> } host[FORM_SERVICE] = svc svc.refs.set('getRootEl', () => this.getPart('root')) }, }, )"
             },
             {
               "kind": "method",
