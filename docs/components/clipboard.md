@@ -70,7 +70,8 @@
 
 - 保留可见文本，让用户可以核对并手动复制。
 - 复制按钮使用明确的可访问名称。
-- 成功反馈应短暂且不改变控件尺寸。
+- 默认使用中性工具面；只有复制是页面主操作时才使用 `solid`。
+- 成功反馈只替换图标与文字，不改变控件尺寸或轮廓。
 
 ### 反模式
 
@@ -233,8 +234,7 @@
 | `--xh-clipboard-copy-trigger-bg-disabled` | `copy-trigger` | `background` | `disabled` | `--xh-bg-muted` | clipboard 的 copy-trigger 部件 background 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-bg-hover` | `copy-trigger` | `background` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_clipboard-copy-trigger-bg-hover` | clipboard 的 copy-trigger 部件 background 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-border` | `copy-trigger` | `border` | `default` | `--xh-_clipboard-copy-trigger-border` | clipboard 的 copy-trigger 部件 border 覆盖槽。 |
-| `--xh-clipboard-copy-trigger-border-copied` | `copy-trigger` | `border-color` | `copied` | `--xh-fg-success` | clipboard 的 copy-trigger 部件 border-color 覆盖槽。 |
-| `--xh-clipboard-copy-trigger-border-disabled` | `copy-trigger` | `border-color` | `disabled` | `--xh-border-control` | clipboard 的 copy-trigger 部件 border-color 覆盖槽。 |
+| `--xh-clipboard-copy-trigger-border-disabled` | `copy-trigger` | `border-color` | `disabled` | `--xh-_clipboard-copy-trigger-border` | clipboard 的 copy-trigger 部件 border-color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-border-hover` | `copy-trigger` | `border-color` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_clipboard-copy-trigger-border-hover` | clipboard 的 copy-trigger 部件 border-color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-fg` | `copy-trigger`<br>`root` | `--xh-_ring-color`<br>`color` | `copied`<br>`default`<br>`focus-visible`<br>`variant=solid` | `--xh-_clipboard-copy-trigger-fg` | clipboard 的 copy-trigger、root 部件 --xh-_ring-color、color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-fg-copied` | `copy-trigger` | `color` | `copied` | `--xh-fg-success` | clipboard 的 copy-trigger 部件 color 覆盖槽。 |
@@ -267,7 +267,7 @@
 
 ### 动效
 
-关键帧 `xh-clipboard-loading-hide` · `xh-clipboard-loading-reveal` · `xh-clipboard-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-clipboard-loading-hide` · `xh-clipboard-loading-reveal` · `xh-clipboard-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

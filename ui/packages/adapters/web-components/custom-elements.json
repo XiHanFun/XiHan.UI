@@ -7009,9 +7009,6 @@
               "name": "--xh-clipboard-copy-trigger-border"
             },
             {
-              "name": "--xh-clipboard-copy-trigger-border-copied"
-            },
-            {
               "name": "--xh-clipboard-copy-trigger-border-disabled"
             },
             {

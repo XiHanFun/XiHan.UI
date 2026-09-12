@@ -8175,24 +8175,6 @@
       "description": "clipboard 的 copy-trigger 部件 border 覆盖槽。"
     },
     {
-      "name": "--xh-clipboard-copy-trigger-border-copied",
-      "component": "clipboard",
-      "part": [
-        "copy-trigger"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "copied"
-      ],
-      "defaultToken": [
-        "--xh-fg-success"
-      ],
-      "visibility": "public",
-      "description": "clipboard 的 copy-trigger 部件 border-color 覆盖槽。"
-    },
-    {
       "name": "--xh-clipboard-copy-trigger-border-disabled",
       "component": "clipboard",
       "part": [
@@ -8205,7 +8187,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-_clipboard-copy-trigger-border"
       ],
       "visibility": "public",
       "description": "clipboard 的 copy-trigger 部件 border-color 覆盖槽。"
@@ -18130,7 +18112,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-_download-trigger-border"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 border-color 覆盖槽。"

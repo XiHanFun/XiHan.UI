@@ -34,8 +34,8 @@
     --xh-_clipboard-copy-trigger-bg-hover: var(--xh-bg-subtle-hover);
     --xh-_clipboard-copy-trigger-bg-active: var(--xh-bg-subtle-active);
     --xh-_clipboard-copy-trigger-fg: var(--xh-fg-default);
-    --xh-_clipboard-copy-trigger-border: var(--xh-border-control);
-    --xh-_clipboard-copy-trigger-border-hover: var(--xh-border-control-hover);
+    --xh-_clipboard-copy-trigger-border: transparent;
+    --xh-_clipboard-copy-trigger-border-hover: transparent;
     --xh-_clipboard-copy-trigger-shadow-hover: none;
 
     /* 输入框与按钮同取一档高度，换尺寸只改这一个私有槽 */
@@ -197,6 +197,8 @@
   }
 
   [data-scope='clipboard'][data-part='copy-trigger'] {
+    --xh-action-scale-pressed: none;
+
     display: inline-grid;
     position: relative;
     flex: none;
@@ -223,8 +225,15 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 独立复制动作是无描边的工具面；接在只读输入框后面时补回外轮廓。 */
+  [data-scope='clipboard'][data-part='root']:not([data-variant])
+    [data-scope='clipboard'][data-part='control']
+    > [data-scope='clipboard'][data-part='copy-trigger']:not(:first-child) {
+    --xh-_clipboard-copy-trigger-border: var(--xh-border-control);
+    --xh-_clipboard-copy-trigger-border-hover: var(--xh-border-control-hover);
   }
 
   [data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='copy-trigger']:not(:first-child) {
@@ -261,15 +270,9 @@
     box-shadow: var(--xh-clipboard-copy-trigger-shadow-hover, var(--xh-_clipboard-copy-trigger-shadow-hover));
   }
 
-  /* 换底之外再压一档：复制钮按下时缩放 */
+  /* 工具触发器按下只加深表面，不缩放；异步状态接管时不会发生骤然回弹。 */
   [data-scope='clipboard'][data-part='copy-trigger']:not([data-loading]):active {
     background: var(--xh-clipboard-copy-trigger-bg-active, var(--xh-_clipboard-copy-trigger-bg-active));
-    scale: var(--xh-motion-scale-press);
-  }
-
-  /* 连续控件内按下只换底色，不缩开输入框与按钮之间的接缝。 */
-  [data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='copy-trigger']:active {
-    scale: none;
   }
 
   /* 快速写入不显示瞬时圆环；超过一个 micro 周期后才平滑换成加载状态。 */
@@ -317,9 +320,8 @@
     animation: none;
   }
 
-  /* 复制成功那一段换成成功色，撑住"这次真的写进去了"这句话 */
+  /* 复制成功只换前景与内容，轮廓和尺寸保持稳定。 */
   [data-scope='clipboard'][data-part='copy-trigger'][data-copied] {
-    border-color: var(--xh-clipboard-copy-trigger-border-copied, var(--xh-fg-success));
     color: var(--xh-clipboard-copy-trigger-fg-copied, var(--xh-fg-success));
   }
 
@@ -338,7 +340,9 @@
       --xh-clipboard-indicator-gap,
       var(--xh-clipboard-copy-trigger-gap, var(--xh-control-gap-sm))
     );
+    opacity: 0;
     visibility: hidden;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 作者仍可用原生 hidden 收起整个指示器。 */
@@ -348,6 +352,7 @@
 
   [data-scope='clipboard'][data-part='indicator']:not([data-copied]),
   [data-scope='clipboard'][data-part='root'][data-state='copied'] [data-scope='clipboard'][data-part='indicator'][data-copied] {
+    opacity: 1;
     visibility: visible;
   }
 
@@ -370,7 +375,7 @@
    * 这条排在悬停与按下之后，特异度相同、后写的赢。
    */
   [data-scope='clipboard'][data-part='copy-trigger']:disabled {
-    border-color: var(--xh-clipboard-copy-trigger-border-disabled, var(--xh-border-control));
+    border-color: var(--xh-clipboard-copy-trigger-border-disabled, var(--xh-_clipboard-copy-trigger-border));
     background: var(--xh-clipboard-copy-trigger-bg-disabled, var(--xh-bg-muted));
     color: var(--xh-fg-disabled);
     /* 置灰的按钮仍然会命中 :hover，抬起那一档要在这里收掉 */
