@@ -1,44 +1,22 @@
-# 选择器 <Badge type="info" text="select" />
+# Select <Badge type="info" text="选择器" />
 
 从一份已知清单里选一个或多个值，选项收在浮层里。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/select" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/select.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/select" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/select" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/select.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 选项五个以上、且都能列举出来。
-- 需要多选并把选中项显示成标签。
-
-## 何时不用
-
-- 选项二到五个且都值得同时可见：用[单选组](./radio-group)。
-- 用户需要输入自由文本或搜索候选：用[组合框](./combobox)。
-- 选项是层级的：用[级联选择](./cascader)或[树选择](./tree-select)。
-- 值不随表单提交、只是就地切一个视图参数：把[列表框](./listbox)装进[浮层](./popover)，那一套组合更轻，也不占 `name`。
-
-## 特性
-
-- `hidden-select` 承担表单参与。
-- 多选可以把选中项显示成标签行：最多摆 `maxTagCount` 枚（缺省 3），其余合成一枚 +N，触发器始终是一行。每枚标签都是库里的 tag；摆在触发器外时可以配删除钮，那颗钮就是 tag 的 `close-trigger`。
-- 浮层里可以有分组、底部操作区与滚动加载。
-- 三种非条目相位各有部件：空（`empty`）与在途（`loading`）。`loading` 为真时列表报 `aria-busy`，在途占位顶上来、空态让位。
-- 大量选项时列表可以只渲可视区。
-- 触发盒保持实体 Field Chrome，选项浮层使用 M2 磨砂表面；面板落位后按实际 placement 从锚点一侧
-  淡入短移，退出沿原方向收回，不缩放整张列表。
-- 逻辑关闭时列表立即 `inert` 并退出可访问树；Layer、DismissableLayer 与焦点域会保留到
-  content 的全部有限退场动画完成。退场中重开复用原 Layer 并重新激活焦点域，卸载立即释放。
-- 选项按作者给出的 DOM 顺序排布；正式 `item-text` 弹性占据剩余宽度并负责长文省略，
-  `item-indicator` 固定在逻辑末端。单选、多选统一由对号表示选中，正文保持正常颜色和字重；
-  悬停与键盘高亮使用中性底，键盘焦点另有独立焦点环。选中本身不铺品牌底。
-- `item` 由 Headless 投影 Collection Item 的角色、尺寸、selected/checked/disabled 事实；`item-text`
-  与 `item-indicator` 投影固定内容列。三端适配器只展开这些属性，不各自判断视觉状态。
-- 相邻分组之间自动画材质分隔线，分组标题、空态、加载态与 footer 使用浮层的次要前景节奏。
-
-## 示例
-
-### 基础用法
+## 用法
 
 选中值恒是数组，条目按 value 标识身份；禁用的条目方向键会跳过
 
 <XhDemo src="select/01-basic" />
+
+## 示例
 
 ### 多选
 
@@ -153,6 +131,38 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 值不进表单、只是就地切一个视图参数时用这一套：popover 管开合与定位，listbox 管条目与键盘，没有 hidden-select，也不占 name
 
 <XhDemo src="select/20-listbox-popover" />
+
+## 设计指引
+
+### 何时使用
+
+- 选项五个以上、且都能列举出来。
+- 需要多选并把选中项显示成标签。
+
+### 何时不用
+
+- 选项二到五个且都值得同时可见：用[单选组](./radio-group)。
+- 用户需要输入自由文本或搜索候选：用[组合框](./combobox)。
+- 选项是层级的：用[级联选择](./cascader)或[树选择](./tree-select)。
+- 值不随表单提交、只是就地切一个视图参数：把[列表框](./listbox)装进[浮层](./popover)，那一套组合更轻，也不占 `name`。
+
+### 特性
+
+- `hidden-select` 承担表单参与。
+- 多选可以把选中项显示成标签行：最多摆 `maxTagCount` 枚（缺省 3），其余合成一枚 +N，触发器始终是一行。每枚标签都是库里的 tag；摆在触发器外时可以配删除钮，那颗钮就是 tag 的 `close-trigger`。
+- 浮层里可以有分组、底部操作区与滚动加载。
+- 三种非条目相位各有部件：空（`empty`）与在途（`loading`）。`loading` 为真时列表报 `aria-busy`，在途占位顶上来、空态让位。
+- 大量选项时列表可以只渲可视区。
+- 触发盒保持实体 Field Chrome，选项浮层使用 M2 磨砂表面；面板落位后按实际 placement 从锚点一侧
+  淡入短移，退出沿原方向收回，不缩放整张列表。
+- 逻辑关闭时列表立即 `inert` 并退出可访问树；Layer、DismissableLayer 与焦点域会保留到
+  content 的全部有限退场动画完成。退场中重开复用原 Layer 并重新激活焦点域，卸载立即释放。
+- 选项按作者给出的 DOM 顺序排布；正式 `item-text` 弹性占据剩余宽度并负责长文省略，
+  `item-indicator` 固定在逻辑末端。单选、多选统一由对号表示选中，正文保持正常颜色和字重；
+  悬停与键盘高亮使用中性底，键盘焦点另有独立焦点环。选中本身不铺品牌底。
+- `item` 由 Headless 投影 Collection Item 的角色、尺寸、selected/checked/disabled 事实；`item-text`
+  与 `item-indicator` 投影固定内容列。三端适配器只展开这些属性，不各自判断视觉状态。
+- 相邻分组之间自动画材质分隔线，分组标题、空态、加载态与 footer 使用浮层的次要前景节奏。
 
 ## 产物
 

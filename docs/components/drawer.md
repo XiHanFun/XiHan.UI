@@ -1,32 +1,22 @@
-# 抽屉 <Badge type="info" text="drawer" />
+# Drawer <Badge type="info" text="抽屉" />
 
 从屏幕某一边滑出的面板。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/drawer" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/drawer.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/drawer" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/drawer" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/drawer.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 内容比对话框长（一整张表单、一份详情），但仍属于当前上下文。
-- 窄屏上的导航或筛选面板。
-
-## 何时不用
-
-- 只是确认一件事：用[对话框](./dialog)或[弹出确认](./popconfirm)。
-- 内容需要与页面主体对照着看：并排展开，别遮住。
-
-## 特性
-
-- `side` 决定从哪一边出来；`contained` 让它只占据某个容器而不是整个视口。
-- `modal=false` 时不渲染遮罩，定位层也不截获页面指针；页面可以与抽屉并行交互。展开期间切换 `modal`，滚动锁、背景失活与焦点陷阱会同步切换。
-- 可以拖边缘改厚度。
-- 关闭时内容立即失活并退出可访问树；面板与遮罩全部完成退场后释放模态资源并发出 `onExitComplete` / `exit-complete`。退场中重开不会被旧完成关闭，卸载立即清理。
-- 关闭前可以拦截（有未保存改动时先问一句）。
-
-## 示例
-
-### 基础用法
+## 用法
 
 不传 open 即为非受控；Escape 关闭、Tab 在面板里循环，展开期间页面滚不动
 
 <XhDemo src="drawer/01-basic" />
+
+## 示例
 
 ### 贴边方向
 
@@ -69,6 +59,26 @@ header / body / footer 把面板切成三段：头与尾定在原处，只有正
 把抽屉收进某块区域：遮罩与定位层从 fixed 换成 absolute，只罩住那块区域而不是盖满整屏
 
 <XhDemo src="drawer/08-contained" />
+
+## 设计指引
+
+### 何时使用
+
+- 内容比对话框长（一整张表单、一份详情），但仍属于当前上下文。
+- 窄屏上的导航或筛选面板。
+
+### 何时不用
+
+- 只是确认一件事：用[对话框](./dialog)或[弹出确认](./popconfirm)。
+- 内容需要与页面主体对照着看：并排展开，别遮住。
+
+### 特性
+
+- `side` 决定从哪一边出来；`contained` 让它只占据某个容器而不是整个视口。
+- `modal=false` 时不渲染遮罩，定位层也不截获页面指针；页面可以与抽屉并行交互。展开期间切换 `modal`，滚动锁、背景失活与焦点陷阱会同步切换。
+- 可以拖边缘改厚度。
+- 关闭时内容立即失活并退出可访问树；面板与遮罩全部完成退场后释放模态资源并发出 `onExitComplete` / `exit-complete`。退场中重开不会被旧完成关闭，卸载立即清理。
+- 关闭前可以拦截（有未保存改动时先问一句）。
 
 ## 产物
 

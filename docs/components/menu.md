@@ -1,35 +1,22 @@
-# 菜单 <Badge type="info" text="menu" />
+# Menu <Badge type="info" text="菜单" />
 
 由一个触发器弹出的一列命令。选中一条即执行并收起。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/menu" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/menu.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/menu" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/menu" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/menu.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 一组动作放不下、或不值得全部摆在界面上（更多操作、账户菜单）。
-- 需要二级子菜单的命令树。
-
-## 何时不用
-
-- 要选一个值并保留选中态：那是[选择器](./select)——菜单的条目是命令，选完就关，不留选中。
-- 只有一两个动作：直接摆[按钮](./button)。
-- 是站点的主导航：用[导航菜单](./navigation-menu)，它的条目是链接。
-
-## 特性
-
-- 悬停触发有安全三角：指针斜穿赶往浮层不会误收；Portal 化的多级子菜单由 headless 逻辑树维护真实父子关系，在末级移动不会启动祖先关闭，叶项选择按叶到根收起并只由根上报一次。
-- 条目以 `value` 标识身份，禁用项方向键跳过也选不中。
-- `content` 里可以直接放任意节点；不是 `item` 就不进方向键行程，也选不中。
-- 子菜单触发条目双重身份：父层方向键照常走、右方向键进子层、子层左方向键退回。
-- 条目可按 `group` 分组，组标题写在 `group-label` 上，两者以 `aria-labelledby` 相认；分组不改变方向键行程。
-- 浮层使用 M2 磨砂表面；展开项使用中性灰反馈，不加左侧条、不使用默认品牌蓝底，也不改变字重。
-- 图标、正文和快捷键等作者节点按一行排列；长正文用 `item-text` 截断，`item-description` 才另起一行，子菜单箭头位于行尾。
-
-## 示例
-
-### 基础用法
+## 用法
 
 条目以 value 标识身份，禁用项方向键跳过也选不中；删除前面隔着一道分隔线
 
 <XhDemo src="menu/01-basic" />
+
+## 示例
 
 ### 受控
 
@@ -90,6 +77,29 @@ open-on-hover 一个 prop：进触发器延时展开，离开后指针经安全�
 XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照常走、右方向键进子层、子层左方向键退回），悬停经安全三角斜穿不误收，任意层级选中都发根的 select 并整链关闭
 
 <XhDemo src="menu/10-submenu" />
+
+## 设计指引
+
+### 何时使用
+
+- 一组动作放不下、或不值得全部摆在界面上（更多操作、账户菜单）。
+- 需要二级子菜单的命令树。
+
+### 何时不用
+
+- 要选一个值并保留选中态：那是[选择器](./select)——菜单的条目是命令，选完就关，不留选中。
+- 只有一两个动作：直接摆[按钮](./button)。
+- 是站点的主导航：用[导航菜单](./navigation-menu)，它的条目是链接。
+
+### 特性
+
+- 悬停触发有安全三角：指针斜穿赶往浮层不会误收；Portal 化的多级子菜单由 headless 逻辑树维护真实父子关系，在末级移动不会启动祖先关闭，叶项选择按叶到根收起并只由根上报一次。
+- 条目以 `value` 标识身份，禁用项方向键跳过也选不中。
+- `content` 里可以直接放任意节点；不是 `item` 就不进方向键行程，也选不中。
+- 子菜单触发条目双重身份：父层方向键照常走、右方向键进子层、子层左方向键退回。
+- 条目可按 `group` 分组，组标题写在 `group-label` 上，两者以 `aria-labelledby` 相认；分组不改变方向键行程。
+- 浮层使用 M2 磨砂表面；展开项使用中性灰反馈，不加左侧条、不使用默认品牌蓝底，也不改变字重。
+- 图标、正文和快捷键等作者节点按一行排列；长正文用 `item-text` 截断，`item-description` 才另起一行，子菜单箭头位于行尾。
 
 ## 产物
 

@@ -1,33 +1,22 @@
-# 分栏 <Badge type="info" text="splitter" />
+# Splitter <Badge type="info" text="分栏" />
 
 把一块区域拆成几片可拖动的面板，边界由用户自己分配。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/splitter" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/splitter.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/splitter" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/splitter" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/splitter.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 代码编辑器、文件管理器、带预览的编辑界面这类"两边都重要、比例因人而异"的布局。
-- 用户调好的比例需要记下来：`onSizesChangeEnd` 就是为此留的。
-
-## 何时不用
-
-- 比例是固定的：用[栅格](./grid)或[弹性布局](./flex)。
-- 侧栏只有展开与折叠两态：用[布局](./layout)的折叠侧栏。
-
-## 特性
-
-- `panels` 数组的长度决定面板块数，每条分隔条调的是它前面那一块。
-- 两个回调分工明确：`onSizesChange` 拖动途中连着发，`onSizesChangeEnd` 松手才发一次，存布局用后者。
-- 方向键按 `step` 推、Shift 加方向键按 `largeStep` 推；`collapsible` 的面板在分隔条上按 Enter 折叠。
-- 面板里再放一套分栏即可拆出第二根轴，里外两层各管各的尺寸。
-- 拖到一半按 Escape 放弃这一场：布局退回按下那一刻，`onSizesChangeEnd` 不发。
-- `translations` 给整组面板与各条分隔条起名，读屏念到的就不再是一串无名的盒子。
-
-## 示例
-
-### 基础用法
+## 用法
 
 panels 数组的长度决定面板块数，每条分隔条调的是它前面那一块
 
 <XhDemo src="splitter/01-basic" />
+
+## 示例
 
 ### 受控
 
@@ -58,6 +47,27 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 分隔条内可以再摆一个把手，粗细由 --xh-splitter-trigger-thickness 让出位置
 
 <XhDemo src="splitter/06-trigger-content" />
+
+## 设计指引
+
+### 何时使用
+
+- 代码编辑器、文件管理器、带预览的编辑界面这类"两边都重要、比例因人而异"的布局。
+- 用户调好的比例需要记下来：`onSizesChangeEnd` 就是为此留的。
+
+### 何时不用
+
+- 比例是固定的：用[栅格](./grid)或[弹性布局](./flex)。
+- 侧栏只有展开与折叠两态：用[布局](./layout)的折叠侧栏。
+
+### 特性
+
+- `panels` 数组的长度决定面板块数，每条分隔条调的是它前面那一块。
+- 两个回调分工明确：`onSizesChange` 拖动途中连着发，`onSizesChangeEnd` 松手才发一次，存布局用后者。
+- 方向键按 `step` 推、Shift 加方向键按 `largeStep` 推；`collapsible` 的面板在分隔条上按 Enter 折叠。
+- 面板里再放一套分栏即可拆出第二根轴，里外两层各管各的尺寸。
+- 拖到一半按 Escape 放弃这一场：布局退回按下那一刻，`onSizesChangeEnd` 不发。
+- `translations` 给整组面板与各条分隔条起名，读屏念到的就不再是一串无名的盒子。
 
 ## 产物
 

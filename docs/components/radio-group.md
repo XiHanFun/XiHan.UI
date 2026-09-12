@@ -1,31 +1,22 @@
-# 单选组 <Badge type="info" text="radio-group" />
+# RadioGroup <Badge type="info" text="单选组" />
 
 一组互斥选项共一个值，所有选项同时可见。单个单选钮是这里的 `item` 部件，不另立组件——它脱离组既没有互斥对象，也无法取消选中。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/radio-group" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/radio-group.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/radio-group" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/radio-group" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/radio-group.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 二到五个互斥选项，且各选项的文字值得同时摊开让用户比较。
-
-## 何时不用
-
-- 选项超过五六个：用[选择器](./select)。
-- 选项是并列的视图切换：用[切换按钮组](./toggle-group)或[标签页](./tabs)。
-- 可以多选：用[复选框组](./checkbox-group)。
-
-## 特性
-
-- 整组只占一个 Tab 位，组内靠方向键走——这是原生单选组的行为。
-- `hidden-input` 承担表单参与。
-- `collection` 可数据驱动，也可以逐项写。
-- 与[复选框](./checkbox)的不对称是有意的：一个复选框自己就成立（勾选同意条款），一个单选钮自己不成立，所以复选框另有独立组件、单选钮没有。
-
-## 示例
-
-### 基础用法
+## 用法
 
 组内只有一个 Tab 停靠点，进组后四个方向键都能切换
 
 <XhDemo src="radio-group/01-basic" />
+
+## 示例
 
 ### 受控
 
@@ -62,6 +53,25 @@ size 改条目间距与字号，不写即缺省中档
 自家字段叫什么由数据定，映射成条目的值、文本与禁用即可
 
 <XhDemo src="radio-group/07-options" />
+
+## 设计指引
+
+### 何时使用
+
+- 二到五个互斥选项，且各选项的文字值得同时摊开让用户比较。
+
+### 何时不用
+
+- 选项超过五六个：用[选择器](./select)。
+- 选项是并列的视图切换：用[切换按钮组](./toggle-group)或[标签页](./tabs)。
+- 可以多选：用[复选框组](./checkbox-group)。
+
+### 特性
+
+- 整组只占一个 Tab 位，组内靠方向键走——这是原生单选组的行为。
+- `hidden-input` 承担表单参与。
+- `collection` 可数据驱动，也可以逐项写。
+- 与[复选框](./checkbox)的不对称是有意的：一个复选框自己就成立（勾选同意条款），一个单选钮自己不成立，所以复选框另有独立组件、单选钮没有。
 
 ## 产物
 

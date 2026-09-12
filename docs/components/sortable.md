@@ -1,34 +1,22 @@
-# 排序 <Badge type="info" text="sortable" />
+# Sortable <Badge type="info" text="排序" />
 
 让用户拖着重排一列条目，键盘也能完成同一件事。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/sortable" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/sortable.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/sortable" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/sortable" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/sortable.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 顺序本身是数据的一部分：表格列的先后、标签页的排列、收藏项的次序。
-- 顺序要存回后端：`sort` 事件直接给出重排好的 `ids`，接上就能提交。
-
-## 何时不用
-
-- 顺序由数据决定而不由人决定：那是排序规则，不是拖拽。
-- 要把条目拖到**另一个**容器里：本组件只管单个列表内部的重排。
-
-## 特性
-
-- `ids` 是顺序的唯一真源，`sort` 事件回传的 `ids` 已经重排好，可以直接写回。
-- 拖动过程走乐观投影：其余条目实时让位，松手即定，不是拖完才跳一下。
-- 键盘路径默认开着且关不掉：空格拾起、方向键挪、空格放下、Esc 取消，全程有读屏播报。
-- 按下之后要走够 `activationDistance`（默认 5px）才算拖动，因此条目本身仍然可以点击。
-- 拖到容器边缘会自动滚动，视口外的落点够得着。
-- `orientation` 三档：竖排、横排，以及换行网格用的 `both`——网格按最近中心判落点。
-- 写一个 `drop-indicator` 节点（排在末项之后），拖动中会在松手后条目要插进去的那条缝上画一条线；落点回到起点时它自动收起。
-
-## 示例
-
-### 基础用法
+## 用法
 
 ids 是顺序的唯一真源，sort 事件回传的 ids 已经重排好，可直接写回
 
 <XhDemo src="sortable/01-basic" />
+
+## 示例
 
 ### 横排与网格
 
@@ -47,6 +35,28 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 手柄退出 Tab 序列，按下也不进拖动
 
 <XhDemo src="sortable/04-disabled" />
+
+## 设计指引
+
+### 何时使用
+
+- 顺序本身是数据的一部分：表格列的先后、标签页的排列、收藏项的次序。
+- 顺序要存回后端：`sort` 事件直接给出重排好的 `ids`，接上就能提交。
+
+### 何时不用
+
+- 顺序由数据决定而不由人决定：那是排序规则，不是拖拽。
+- 要把条目拖到**另一个**容器里：本组件只管单个列表内部的重排。
+
+### 特性
+
+- `ids` 是顺序的唯一真源，`sort` 事件回传的 `ids` 已经重排好，可以直接写回。
+- 拖动过程走乐观投影：其余条目实时让位，松手即定，不是拖完才跳一下。
+- 键盘路径默认开着且关不掉：空格拾起、方向键挪、空格放下、Esc 取消，全程有读屏播报。
+- 按下之后要走够 `activationDistance`（默认 5px）才算拖动，因此条目本身仍然可以点击。
+- 拖到容器边缘会自动滚动，视口外的落点够得着。
+- `orientation` 三档：竖排、横排，以及换行网格用的 `both`——网格按最近中心判落点。
+- 写一个 `drop-indicator` 节点（排在末项之后），拖动中会在松手后条目要插进去的那条缝上画一条线；落点回到起点时它自动收起。
 
 ## 产物
 

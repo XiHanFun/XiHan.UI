@@ -1,32 +1,22 @@
-# 侧栏导航 <Badge type="info" text="side-nav" />
+# SideNav <Badge type="info" text="侧栏导航" />
 
 后台侧边那棵导航树：分支可展开，选中落在叶子上并一路点亮祖先枝。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/side-nav" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/side-nav.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/side-nav" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/side-nav" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/side-nav.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 管理后台、控制台的主导航，层级两到三层。
-- 侧栏需要折叠成图标栏，且折叠后仍要能进到子级。
-
-## 何时不用
-
-- 导航只有一层：用一列链接就够。
-- 是内容树而不是导航树（文件、组织架构）：用[树](./tree)。
-- 顶部横向导航：用[导航菜单](./navigation-menu)。
-
-## 特性
-
-- `collection` 是层级与文本的唯一事实源。
-- `accordion` 让同层只开一枝；不开即可多开。
-- 折叠成图标栏时内嵌展开整体收起、文字由皮肤藏掉；顶层分支换装浮层弹出，悬停 / 点按 / 右方向键在旁侧弹出子级面板，面板内选中即落值收起。
-- 方向键上下走行、左右管层级。
-
-## 示例
-
-### 基础用法
+## 用法
 
 管理后台侧栏：分支内嵌展开（可多开）、选中落在叶子上并一路点亮祖先枝，方向键上下走行、左右管层级
 
 <XhDemo src="side-nav/01-basic" />
+
+## 示例
 
 ### 手风琴与折叠
 
@@ -45,6 +35,26 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 展开集合交给宿主：一次全展开或全收起，也能按当前路由把该开的那一枝开上；collection 里标了 disabled 的入口方向键跳过，点它也不落值
 
 <XhDemo src="side-nav/04-controlled-expand" />
+
+## 设计指引
+
+### 何时使用
+
+- 管理后台、控制台的主导航，层级两到三层。
+- 侧栏需要折叠成图标栏，且折叠后仍要能进到子级。
+
+### 何时不用
+
+- 导航只有一层：用一列链接就够。
+- 是内容树而不是导航树（文件、组织架构）：用[树](./tree)。
+- 顶部横向导航：用[导航菜单](./navigation-menu)。
+
+### 特性
+
+- `collection` 是层级与文本的唯一事实源。
+- `accordion` 让同层只开一枝；不开即可多开。
+- 折叠成图标栏时内嵌展开整体收起、文字由皮肤藏掉；顶层分支换装浮层弹出，悬停 / 点按 / 右方向键在旁侧弹出子级面板，面板内选中即落值收起。
+- 方向键上下走行、左右管层级。
 
 ## 产物
 

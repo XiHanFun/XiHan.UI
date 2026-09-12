@@ -1,34 +1,22 @@
-# 分格输入 <Badge type="info" text="pin-input" />
+# PinInput <Badge type="info" text="分格输入" />
 
 把一串短码拆成几个格子，一格一个字符。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/pin-input" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/pin-input.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/pin-input" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/pin-input" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/pin-input.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 一次性验证码、支付密码、邀请码这类定长的短串。
-
-## 何时不用
-
-- 长度不固定或较长：用[文本输入](./text-field)。
-- 输入的是密码：用 `type="password"` 的文本输入，密码管理器认得它。
-
-## 特性
-
-- `otp` 一开就接上平台的验证码自动填充。
-- 按顺序录入：焦点落在第一个空格上，还轮不到的格子既点不进、也不是 Tab 停靠点；
-  往回改已填的格子照走，填满之后哪一格都能改。`readOnly` 与 `disabled` 不设这道限。
-- 粘贴一整串会按格拆开填进去。
-- `mask` 遮蔽字符、`type` 与 `pattern` 限制可输入字符类别。
-- `onValueComplete` 在填满那一刻发一次，用来自动提交。
-- `group` 与 `separator` 把格子分段排（123-456），下标仍按文档序算。
-- `readOnly` 让格子只能看与复制，`required` 给每格补上原生必填。
-
-## 示例
-
-### 基础用法
+## 用法
 
 每格都是原生输入框，敲一个字符自动跳下一格；粘贴整串会从落点那一格起按格铺开
 
 <XhDemo src="pin-input/01-basic" />
+
+## 示例
 
 ### 一次性验证码
 
@@ -89,6 +77,28 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 的准入表
 
 <XhDemo src="pin-input/11-pattern" />
+
+## 设计指引
+
+### 何时使用
+
+- 一次性验证码、支付密码、邀请码这类定长的短串。
+
+### 何时不用
+
+- 长度不固定或较长：用[文本输入](./text-field)。
+- 输入的是密码：用 `type="password"` 的文本输入，密码管理器认得它。
+
+### 特性
+
+- `otp` 一开就接上平台的验证码自动填充。
+- 按顺序录入：焦点落在第一个空格上，还轮不到的格子既点不进、也不是 Tab 停靠点；
+  往回改已填的格子照走，填满之后哪一格都能改。`readOnly` 与 `disabled` 不设这道限。
+- 粘贴一整串会按格拆开填进去。
+- `mask` 遮蔽字符、`type` 与 `pattern` 限制可输入字符类别。
+- `onValueComplete` 在填满那一刻发一次，用来自动提交。
+- `group` 与 `separator` 把格子分段排（123-456），下标仍按文档序算。
+- `readOnly` 让格子只能看与复制，`required` 给每格补上原生必填。
 
 ## 产物
 

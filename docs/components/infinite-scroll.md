@@ -1,30 +1,22 @@
-# 无限滚动 <Badge type="info" text="infinite-scroll" />
+# InfiniteScroll <Badge type="info" text="无限滚动" />
 
 取下一页的通用触发器，滚动只是默认的触发方式。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/infinite-scroll" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/infinite-scroll.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/infinite-scroll" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/infinite-scroll" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/infinite-scroll.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 时间流、消息列表这类用户只关心"再来一些"的内容。
-
-## 何时不用
-
-- 用户需要跳到确定位置或分享某一页：用[分页](./pagination)。
-- 页面有页脚需要够得着：无限滚动会让页脚永远追不上。
-
-## 特性
-
-- `distance` 是提前量：距底部还有这么远就触发，用户感觉不到等待。
-- `loading` 与 `disabled` 由组件交给宿主，加载提示与结束语都由宿主自己摆。
-- 取完之后关掉即可，不会再触发。
-- `load-more-trigger` 是同一条通路的另一个入口：一颗真按钮，取数中与关掉两段自动停用。
-
-## 示例
-
-### 基础用法
+## 用法
 
 哨兵滚进可视区就派 load，取完把 loading 写回 false
 
 <XhDemo src="infinite-scroll/01-basic" />
+
+## 示例
 
 ### 提前量
 
@@ -49,6 +41,24 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 与哨兵同一条通路：读屏在虚拟光标模式下不产生滚动事件，这颗按钮是它的键盘等价入口
 
 <XhDemo src="infinite-scroll/05-load-more" />
+
+## 设计指引
+
+### 何时使用
+
+- 时间流、消息列表这类用户只关心"再来一些"的内容。
+
+### 何时不用
+
+- 用户需要跳到确定位置或分享某一页：用[分页](./pagination)。
+- 页面有页脚需要够得着：无限滚动会让页脚永远追不上。
+
+### 特性
+
+- `distance` 是提前量：距底部还有这么远就触发，用户感觉不到等待。
+- `loading` 与 `disabled` 由组件交给宿主，加载提示与结束语都由宿主自己摆。
+- 取完之后关掉即可，不会再触发。
+- `load-more-trigger` 是同一条通路的另一个入口：一颗真按钮，取数中与关掉两段自动停用。
 
 ## 产物
 

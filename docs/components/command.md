@@ -1,40 +1,22 @@
-# 命令面板 <Badge type="info" text="command" />
+# Command <Badge type="info" text="命令面板" />
 
 一块盖在页面上的检索面板：打字筛出命令，方向键选，回车执行。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/command" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/command.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/command" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/command" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/command.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 功能散在很多层菜单里，用户知道要做什么却找不到入口。
-- 需要一条跨页面的统一入口：搜页面、搜设置、搜数据、跑动作，都从这里进。
-- 熟手要靠键盘一路走完：唤起、打字、回车，全程不碰鼠标。
-
-## 何时不用
-
-- 只是从一份清单里选一个值填进表单：用[组合框](./combobox)或[选择器](./select)。
-- 只是右键菜单或按钮菜单：用[上下文菜单](./context-menu)或[菜单](./menu)。
-- 面板里要放表单、要分步骤：那是[对话框](./dialog)。
-
-## 特性
-
-- 内置过滤：清单交进来，按检索串逐词筛、按 `group` 归组，空组自动丢掉。`keywords` 让一条命令同时认英文名、拼音与旧称。
-- 过滤可以关掉（`filter` 置否），改由调用方自己筛——远端检索走这一档。
-- 面板默认是模态浮层：陷焦点、锁滚动、背景失活，Escape 与点击遮罩收起，收起后焦点还给触发按钮。`modal=false` 时不渲染遮罩、不拦页面指针，也不启用这些模态约束；展开期间切换会立即同步。
-- 焦点全程在检索框，锚点经 `aria-activedescendant` 报给读屏；活动候选同步 `aria-selected=true`，其余候选显式为 `false`，打字后锚点自动钉回首条。
-- 这里的 `aria-selected` 遵循 [WAI-ARIA 组合框规范](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)中“选中随焦点移动”的模式，只描述当前活动建议；命令执行后不会留下持久选中状态，视觉也不画对号或选中底。
-- 两种非条目相位各有部件：空（`empty`）与在途（`loading`）。取数期间在途占位顶上来，空态让位，两者不同屏。
-- 零可见命令时列表不保留额外空白行；搜索输入和作者提供的状态、底栏仍然在场。
-  没有提供 Empty / Loading 文案时，不显示纯空白占位，也不自动捏造提示文字。
-- `collection` 与过滤结果保持数据语义；已挂载节点上的 `hidden` 会排除对应条目或分组的交互与 ARIA 高亮。
-  未挂载、虚拟候选不按隐藏推断；展开期间替换列表节点后，可见性观察会切换到新节点。
-- `closeOnSelect` 决定选中后收不收；连着执行多条命令时关掉它。
-
-## 示例
-
-### 基础用法
+## 用法
 
 交一份命令清单，过滤、归组与空态都由组件包办
 
 <XhDemo src="command/01-basic" />
+
+## 示例
 
 ### 快捷键唤起 + 手写部件
 
@@ -53,6 +35,34 @@ variant 只落在 backdrop 那一层：opaque 压一层底、blur 糊掉背后�
 filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛选归服务端；取数期间 loading 让在途占位顶上来、列表压暗一档，空态让位
 
 <XhDemo src="command/04-async" />
+
+## 设计指引
+
+### 何时使用
+
+- 功能散在很多层菜单里，用户知道要做什么却找不到入口。
+- 需要一条跨页面的统一入口：搜页面、搜设置、搜数据、跑动作，都从这里进。
+- 熟手要靠键盘一路走完：唤起、打字、回车，全程不碰鼠标。
+
+### 何时不用
+
+- 只是从一份清单里选一个值填进表单：用[组合框](./combobox)或[选择器](./select)。
+- 只是右键菜单或按钮菜单：用[上下文菜单](./context-menu)或[菜单](./menu)。
+- 面板里要放表单、要分步骤：那是[对话框](./dialog)。
+
+### 特性
+
+- 内置过滤：清单交进来，按检索串逐词筛、按 `group` 归组，空组自动丢掉。`keywords` 让一条命令同时认英文名、拼音与旧称。
+- 过滤可以关掉（`filter` 置否），改由调用方自己筛——远端检索走这一档。
+- 面板默认是模态浮层：陷焦点、锁滚动、背景失活，Escape 与点击遮罩收起，收起后焦点还给触发按钮。`modal=false` 时不渲染遮罩、不拦页面指针，也不启用这些模态约束；展开期间切换会立即同步。
+- 焦点全程在检索框，锚点经 `aria-activedescendant` 报给读屏；活动候选同步 `aria-selected=true`，其余候选显式为 `false`，打字后锚点自动钉回首条。
+- 这里的 `aria-selected` 遵循 [WAI-ARIA 组合框规范](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)中“选中随焦点移动”的模式，只描述当前活动建议；命令执行后不会留下持久选中状态，视觉也不画对号或选中底。
+- 两种非条目相位各有部件：空（`empty`）与在途（`loading`）。取数期间在途占位顶上来，空态让位，两者不同屏。
+- 零可见命令时列表不保留额外空白行；搜索输入和作者提供的状态、底栏仍然在场。
+  没有提供 Empty / Loading 文案时，不显示纯空白占位，也不自动捏造提示文字。
+- `collection` 与过滤结果保持数据语义；已挂载节点上的 `hidden` 会排除对应条目或分组的交互与 ARIA 高亮。
+  未挂载、虚拟候选不按隐藏推断；展开期间替换列表节点后，可见性观察会切换到新节点。
+- `closeOnSelect` 决定选中后收不收；连着执行多条命令时关掉它。
 
 ## 产物
 

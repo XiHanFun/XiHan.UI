@@ -1,33 +1,22 @@
-# 切换按钮组 <Badge type="info" text="toggle-group" />
+# ToggleGroup <Badge type="info" text="切换按钮组" />
 
 一排连在一起的切换按钮，整组共一个值：单选时是分段控件，多选时是一排可同时按下的工具钮。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/toggle-group" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/toggle-group.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/toggle-group" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/toggle-group" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/toggle-group.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 在少数几个互斥项之间切换视图（日 / 周 / 月，列表 / 网格）。
-- 一排可同时开关的格式工具（加粗 / 斜体 / 下划线），此时开 `multiple`。
-
-## 何时不用
-
-- 选项超过五六个，或需要搜索：用[选择器](./select)。
-- 选项要随表单提交并需要 label 关联：用[单选组](./radio-group)。
-- 各段是动作不是选项：用[按钮组](./button-group)。
-
-## 特性
-
-- `multiple` 换的是整套 ARIA：单选时 `root` 是 `radiogroup`、条目是 `radio`；多选时 `root` 退回 `group`、条目退回按钮加 `aria-pressed`，值也从字符串变成数组。
-- roving tabindex：整组只占一个 Tab 位，进组后四个方向键都能走，与视觉排布无关。
-- `disallowEmpty` 决定能不能点成空值。
-- 条目一律 `aria-disabled` 而非原生 `disabled`：点不动但焦点落得上去，仍能当方向键的起点。
-- 给了 `collection` 就由它做显示文本与禁用的事实源，条目部件只需报 `value`。
-
-## 示例
-
-### 基础用法
+## 用法
 
 单选分段控件：root 是 radiogroup、条目是 radio；整组只占一个 Tab 位，进组后四个方向键都能走
 
 <XhDemo src="toggle-group/01-basic" />
+
+## 示例
 
 ### 受控与不可清空
 
@@ -70,6 +59,27 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 三轴打在 root 上沿继承流下发给每一段，条目自己不写任何一档
 
 <XhDemo src="toggle-group/08-variant-tone-size" />
+
+## 设计指引
+
+### 何时使用
+
+- 在少数几个互斥项之间切换视图（日 / 周 / 月，列表 / 网格）。
+- 一排可同时开关的格式工具（加粗 / 斜体 / 下划线），此时开 `multiple`。
+
+### 何时不用
+
+- 选项超过五六个，或需要搜索：用[选择器](./select)。
+- 选项要随表单提交并需要 label 关联：用[单选组](./radio-group)。
+- 各段是动作不是选项：用[按钮组](./button-group)。
+
+### 特性
+
+- `multiple` 换的是整套 ARIA：单选时 `root` 是 `radiogroup`、条目是 `radio`；多选时 `root` 退回 `group`、条目退回按钮加 `aria-pressed`，值也从字符串变成数组。
+- roving tabindex：整组只占一个 Tab 位，进组后四个方向键都能走，与视觉排布无关。
+- `disallowEmpty` 决定能不能点成空值。
+- 条目一律 `aria-disabled` 而非原生 `disabled`：点不动但焦点落得上去，仍能当方向键的起点。
+- 给了 `collection` 就由它做显示文本与禁用的事实源，条目部件只需报 `value`。
 
 ## 产物
 

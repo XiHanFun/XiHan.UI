@@ -1,34 +1,22 @@
-# 分段控制器 <Badge type="info" text="segmented" />
+# Segmented <Badge type="info" text="分段控制器" />
 
 一排连在一起的互斥选项，选中的那一段底下有一块会滑动的指示器。它是单选组，参与表单提交。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/segmented" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/segmented.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/segmented" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/segmented" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/segmented.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 二到五个平级选项之间切换：视图模式（列表 / 网格）、时间粒度（日 / 周 / 月）、排序方式。
-- 选项少、名字短，且值得一直摊开给用户看——分段控件的价值就在于不用点开就知道有哪几个。
-- 需要随表单一起提交这个选择。
-
-## 何时不用
-
-- 选项超过六个，或选项文字长短悬殊：改用[单选组](./radio-group)竖排，或[选择器](./select)收进浮层。
-- 需要多选，或表达的是按钮的按下态而不是一个字段值：用[切换按钮组](./toggle-group)——它没有 `name`、不参与表单，也没有滑动指示器。
-- 切换的是同一块区域的几屏内容：那是[标签页](./tabs)，它管的是面板的显隐，不是一个值。
-
-## 特性
-
-- 集合入口：给 `collection` 就只交数据，条目文本与禁用都以数据为准；要改结构再写部件。
-- 受控与非受控两态齐全：`value` 给了即受控，只发 `onValueChange` 不自改。
-- 参与表单：给 `name` 后隐藏输入才带上它；宿主表单点重置，选中值回落到 `defaultValue`。隐藏输入只在「只交 `collection`、由组件铺开结构」时自动铺；自己写默认插槽排版的话，得记得放一个隐藏输入部件，否则给了 `name` 也没有任何东西参与提交。
-- 指示器位置由组件量出来，横排竖排、ltr 与 rtl 都是同一条规则。
-- 语气 · 尺寸两轴与其余组件同源；`block` 让整组撑满行宽、各段等分。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一排互斥选项：root 是 radiogroup、每段是 radio；整组只占一个 Tab 位，进组后四个方向键都能走
 
 <XhDemo src="segmented/01-basic" />
+
+## 示例
 
 ### 受控
 
@@ -71,6 +59,28 @@ size 换的是段的高度、内边距与字号，指示器跟着量出来的段
 给了 name 才带上隐藏输入参与提交；宿主表单点重置，选中值回落到 default-value
 
 <XhDemo src="segmented/08-form" />
+
+## 设计指引
+
+### 何时使用
+
+- 二到五个平级选项之间切换：视图模式（列表 / 网格）、时间粒度（日 / 周 / 月）、排序方式。
+- 选项少、名字短，且值得一直摊开给用户看——分段控件的价值就在于不用点开就知道有哪几个。
+- 需要随表单一起提交这个选择。
+
+### 何时不用
+
+- 选项超过六个，或选项文字长短悬殊：改用[单选组](./radio-group)竖排，或[选择器](./select)收进浮层。
+- 需要多选，或表达的是按钮的按下态而不是一个字段值：用[切换按钮组](./toggle-group)——它没有 `name`、不参与表单，也没有滑动指示器。
+- 切换的是同一块区域的几屏内容：那是[标签页](./tabs)，它管的是面板的显隐，不是一个值。
+
+### 特性
+
+- 集合入口：给 `collection` 就只交数据，条目文本与禁用都以数据为准；要改结构再写部件。
+- 受控与非受控两态齐全：`value` 给了即受控，只发 `onValueChange` 不自改。
+- 参与表单：给 `name` 后隐藏输入才带上它；宿主表单点重置，选中值回落到 `defaultValue`。隐藏输入只在「只交 `collection`、由组件铺开结构」时自动铺；自己写默认插槽排版的话，得记得放一个隐藏输入部件，否则给了 `name` 也没有任何东西参与提交。
+- 指示器位置由组件量出来，横排竖排、ltr 与 rtl 都是同一条规则。
+- 语气 · 尺寸两轴与其余组件同源；`block` 让整组撑满行宽、各段等分。
 
 ## 产物
 

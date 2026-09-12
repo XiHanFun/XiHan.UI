@@ -1,44 +1,22 @@
-# 组合框 <Badge type="info" text="combobox" />
+# Combobox <Badge type="info" text="组合框" />
 
 能打字过滤的选择器：输入框加候选浮层，可以只从候选里选，也可以允许自由文本。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/combobox" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/combobox.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/combobox" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/combobox" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/combobox.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 选项多到需要检索（城市、用户、商品）。
-- 候选来自远端，随输入变化。
-- 允许用户输入清单之外的值（`allowCustomValue`）。
-
-## 何时不用
-
-- 选项固定且不多：用[选择器](./select)。
-- 只是在正文里插入引用：用[提及](./mention)。
-- 输入的是标签集合：用[标签输入](./tags-input)。
-
-## 特性
-
-- `inputBehavior` 决定输入时是否自动高亮或自动补全首项。
-- 多选、分组、异步候选、选中后清空输入都是内置行为。
-- `openOnClick` 决定点击输入框是否直接展开候选。
-- 清空钮有值才出现，出现即顶替展开钮那一格，盒的宽度不随有没有值跳动；展开的入口始终是输入框（打字、方向键、`openOnClick`）。
-- 输入宿主可以换成多行。
-- 原生表单按每个选中值生成一个同名隐藏字段；`['a,b', 'c']` 用 `FormData.getAll(name)` 读取为两个原值，不使用逗号拼接。零选中没有提交项，禁用不提交，只读仍提交。
-- 声明 `HiddenInput` 部件才参与原生表单。`form` 可指定外部表单 ID，提交与重置使用同一所有者；显式 ID 不存在时不回退祖先表单。非受控 reset 恢复 `defaultValue`，受控值由业务响应重置请求。
-- 三种非条目相位各有部件：空（`empty`）与在途（`loading`）。取数期间在途占位顶上来，空态让位，两者不同屏。
-- `content` 始终是候选与状态共用的唯一浮层表面；`empty`/`loading` 保持为 `role=listbox` 外的同级 `role=status`，只在零候选时把状态文字覆盖到该表面，不再各画一张卡。已有候选进入 loading 时列表原样保留，只由 `aria-busy` 报后台刷新，不产生不可见却仍能提交的活动项。
-- 自动结构没有收到 `empty` 文案时不绘制无文字的空面；需要展开后解释空结果时必须显式提供文案，不由组件猜一条通用提示。
-- 单选、多选统一由候选末端的对号表示选中；正文保持正常颜色和字重，选中本身不铺品牌底。
-- 指针与键盘导航通过同一 `data-highlighted` 中性底表达，输入框继续持有焦点；选中与高亮叠加时，对号和中性底同时保留。
-- 候选内容按作者给出的 DOM 顺序排布；正式 `item-text` 占据剩余宽度并负责长文省略，`item-indicator` 固定在逻辑末端。
-- 候选浮层统一使用 M2 磨砂表面、细顶光和边界阴影，输入框保持原有实体表面；空态和在途文字共用材质前景，不新增第二层背景或滤镜。
-- 进退场按实际落位方向淡入淡出并短距离移动，不缩放列表和文字；嵌套层独立决定方向。局部主题随 Portal 传递，增强对比度和减少透明度由材质令牌切为实体表面，减弱动效归零位移。
-
-## 示例
-
-### 基础用法
+## 用法
 
 过滤由宿主自己算：组件把输入串交出来，此刻显示哪几条候选由调用方定
 
 <XhDemo src="combobox/01-basic" />
+
+## 示例
 
 ### 多选
 
@@ -117,6 +95,38 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 输入部件写成 textarea 即多行宿主；此时不写 role 与 aria-expanded，textarea 保留它自带的 textbox 角色
 
 <XhDemo src="combobox/14-textarea-host" />
+
+## 设计指引
+
+### 何时使用
+
+- 选项多到需要检索（城市、用户、商品）。
+- 候选来自远端，随输入变化。
+- 允许用户输入清单之外的值（`allowCustomValue`）。
+
+### 何时不用
+
+- 选项固定且不多：用[选择器](./select)。
+- 只是在正文里插入引用：用[提及](./mention)。
+- 输入的是标签集合：用[标签输入](./tags-input)。
+
+### 特性
+
+- `inputBehavior` 决定输入时是否自动高亮或自动补全首项。
+- 多选、分组、异步候选、选中后清空输入都是内置行为。
+- `openOnClick` 决定点击输入框是否直接展开候选。
+- 清空钮有值才出现，出现即顶替展开钮那一格，盒的宽度不随有没有值跳动；展开的入口始终是输入框（打字、方向键、`openOnClick`）。
+- 输入宿主可以换成多行。
+- 原生表单按每个选中值生成一个同名隐藏字段；`['a,b', 'c']` 用 `FormData.getAll(name)` 读取为两个原值，不使用逗号拼接。零选中没有提交项，禁用不提交，只读仍提交。
+- 声明 `HiddenInput` 部件才参与原生表单。`form` 可指定外部表单 ID，提交与重置使用同一所有者；显式 ID 不存在时不回退祖先表单。非受控 reset 恢复 `defaultValue`，受控值由业务响应重置请求。
+- 三种非条目相位各有部件：空（`empty`）与在途（`loading`）。取数期间在途占位顶上来，空态让位，两者不同屏。
+- `content` 始终是候选与状态共用的唯一浮层表面；`empty`/`loading` 保持为 `role=listbox` 外的同级 `role=status`，只在零候选时把状态文字覆盖到该表面，不再各画一张卡。已有候选进入 loading 时列表原样保留，只由 `aria-busy` 报后台刷新，不产生不可见却仍能提交的活动项。
+- 自动结构没有收到 `empty` 文案时不绘制无文字的空面；需要展开后解释空结果时必须显式提供文案，不由组件猜一条通用提示。
+- 单选、多选统一由候选末端的对号表示选中；正文保持正常颜色和字重，选中本身不铺品牌底。
+- 指针与键盘导航通过同一 `data-highlighted` 中性底表达，输入框继续持有焦点；选中与高亮叠加时，对号和中性底同时保留。
+- 候选内容按作者给出的 DOM 顺序排布；正式 `item-text` 占据剩余宽度并负责长文省略，`item-indicator` 固定在逻辑末端。
+- 候选浮层统一使用 M2 磨砂表面、细顶光和边界阴影，输入框保持原有实体表面；空态和在途文字共用材质前景，不新增第二层背景或滤镜。
+- 进退场按实际落位方向淡入淡出并短距离移动，不缩放列表和文字；嵌套层独立决定方向。局部主题随 Portal 传递，增强对比度和减少透明度由材质令牌切为实体表面，减弱动效归零位移。
 
 ## 产物
 

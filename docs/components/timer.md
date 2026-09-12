@@ -1,37 +1,22 @@
-# 计时器 <Badge type="info" text="timer" />
+# Timer <Badge type="info" text="计时器" />
 
 一段可正可倒的计时：能起、能停、能接着走、能归零。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/timer" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/timer.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/timer" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/timer" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/timer.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 秒表、答题计时、专注计时这类需要用户自己控制起停的场景。
-- 会议或直播的已进行时长。
-- 需要倒着走、并且要在中途暂停的限时任务。
-- 验证码重发倒计时、限时活动、会话即将过期提醒这类只倒数、不需要按钮的场景：走受控通道，只给一个剩余时长。
-
-## 何时不用
-
-- 展示的是一个时刻而不是一段时长：用[时间戳](./timestamp)。
-- 表达任务完成到哪一步：用[进度条](./progress)。
-
-## 特性
-
-- 正着走还是倒着走由 `countdown` 决定，起点 `startMs` 与终点 `targetMs` 两个方向共用。
-- `start` / `pause` / `resume` / `reset` 四个动作齐全，`control` 部件把它们收成一个按钮，按当前状态自动换语义。
-- 时间只从单调时钟的两个时刻相减而来，一拍都不累加，所以停停走走也不会越走越偏。
-- `interval` 只决定数字多久跳一次；到点由另一个精确落在终点上的定时器判定，终点不落在整拍上也不会走过头。
-- 每一段数字是一个 `item` 部件，`unit` 说明它是天、时、分、秒还是毫秒，排版完全交给作者。
-- **受控通道**：给了 `value`（剩余毫秒）或 `active` 即进受控分支——`value` 就是起点、方向锁成倒着走、终点锁成 0，改写它即从新值重新计时；`active` 翻假停在当前值、翻真接着走。受控时起停按钮不再改状态（根上落 `data-controlled`），状态归这两个 prop。
-- `format` 把当前值铺成一串字（`api.text`），`precision` 决定取到哪一位：`0` 到秒、`3` 到毫秒，缺省 `3` 即不量化。
-- `live` 决定时间区的读屏播报档位，缺省 `off`。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一个自己往上走的秒表：不写内容时组件铺开时、分、秒三段，auto-start 让它挂载即开跑
 
 <XhDemo src="timer/01-basic" />
+
+## 示例
 
 ### 倒着走
 
@@ -68,6 +53,31 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 给了 value 与 active 就走受控分支：value 改写即重新计时，active 翻假停在当前剩余量、翻真接着走
 
 <XhDemo src="timer/07-controlled" />
+
+## 设计指引
+
+### 何时使用
+
+- 秒表、答题计时、专注计时这类需要用户自己控制起停的场景。
+- 会议或直播的已进行时长。
+- 需要倒着走、并且要在中途暂停的限时任务。
+- 验证码重发倒计时、限时活动、会话即将过期提醒这类只倒数、不需要按钮的场景：走受控通道，只给一个剩余时长。
+
+### 何时不用
+
+- 展示的是一个时刻而不是一段时长：用[时间戳](./timestamp)。
+- 表达任务完成到哪一步：用[进度条](./progress)。
+
+### 特性
+
+- 正着走还是倒着走由 `countdown` 决定，起点 `startMs` 与终点 `targetMs` 两个方向共用。
+- `start` / `pause` / `resume` / `reset` 四个动作齐全，`control` 部件把它们收成一个按钮，按当前状态自动换语义。
+- 时间只从单调时钟的两个时刻相减而来，一拍都不累加，所以停停走走也不会越走越偏。
+- `interval` 只决定数字多久跳一次；到点由另一个精确落在终点上的定时器判定，终点不落在整拍上也不会走过头。
+- 每一段数字是一个 `item` 部件，`unit` 说明它是天、时、分、秒还是毫秒，排版完全交给作者。
+- **受控通道**：给了 `value`（剩余毫秒）或 `active` 即进受控分支——`value` 就是起点、方向锁成倒着走、终点锁成 0，改写它即从新值重新计时；`active` 翻假停在当前值、翻真接着走。受控时起停按钮不再改状态（根上落 `data-controlled`），状态归这两个 prop。
+- `format` 把当前值铺成一串字（`api.text`），`precision` 决定取到哪一位：`0` 到秒、`3` 到毫秒，缺省 `3` 即不量化。
+- `live` 决定时间区的读屏播报档位，缺省 `off`。
 
 ## 产物
 

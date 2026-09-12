@@ -1,41 +1,22 @@
-# 数字输入 <Badge type="info" text="number-field" />
+# NumberField <Badge type="info" text="数字输入" />
 
 带加减与区间约束的数值输入。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/number-field" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/number-field.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/number-field" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/number-field" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/number-field.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 数量、价格、百分比这类需要精确到某一位的数值。
-- 需要步进（键盘上下键、加减钮）。
-
-## 何时不用
-
-- 用户更关心相对位置而非精确值：用[滑块](./slider)。
-- 值实际是编号或电话（不参与运算）：用[文本输入](./text-field)，数字输入的千分位与步进会碍事。
-
-## 特性
-
-- `step` 与 `largeStep` 分别对应方向键和 PageUp / PageDown。
-- 长按加减钮连续步进，首跳延时与间隔都可调。
-- `parse` / `format` 一对，用来接固定小数位、千分位、货币符号或自定义换算。
-- 越界的值在失焦规范化时被夹回区间。
-- `prefix` / `suffix` 在框内摆货币符、单位或图标，两段对读屏隐藏。
-- `control` 是输入、前后缀与两颗动作共用的唯一 Field Chrome；内嵌动作保持透明，只用短分隔线、
-  悬停底与按压缩放报告边界和操作状态，不增加侧条或品牌色展开底。
-- comfortable 下 `sm` / `md` / `lg` 控件高为 28 / 32 / 40px，动作盒为 24 / 24 / 32px；compact
-  下分别为 24 / 28 / 36px 与 20 / 20 / 28px。数字使用等宽字形，前缀、数值和后缀共用中线。
-- 粗指针环境会把真实加减按钮与控件高度扩到 comfortable 48px、compact 44px；命中区由 flex
-  子项本身承担，不用伪元素伸进输入区，两颗按钮及输入区互不重叠。
-- Tab 只停在 `spinbutton` 输入框，聚焦环由整个 `control` 统一绘制；加减钮退出 Tab 序列，但仍可由
-  指针和公开 API 操作。到达 `min` / `max` 时只禁用对应方向，`disabled` / `readOnly` 才同时锁住两侧。
-- 分隔线长度为控件高度的一半，颜色默认取 M1 柔和分隔色；位置使用逻辑属性，RTL 下自动换边。
-
-## 示例
-
-### 基础用法
+## 用法
 
 加减按钮与输入框共用一份状态；值是原始输入串，不传 value 即为非受控
 
 <XhDemo src="number-field/01-basic" />
+
+## 示例
 
 ### 区间与步长
 
@@ -114,6 +95,35 @@ invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样
 parse 把显示串读成数、format 把数写回显示串；两个方向必须互逆，否则按一下加号值就会漂
 
 <XhDemo src="number-field/14-parse-format" />
+
+## 设计指引
+
+### 何时使用
+
+- 数量、价格、百分比这类需要精确到某一位的数值。
+- 需要步进（键盘上下键、加减钮）。
+
+### 何时不用
+
+- 用户更关心相对位置而非精确值：用[滑块](./slider)。
+- 值实际是编号或电话（不参与运算）：用[文本输入](./text-field)，数字输入的千分位与步进会碍事。
+
+### 特性
+
+- `step` 与 `largeStep` 分别对应方向键和 PageUp / PageDown。
+- 长按加减钮连续步进，首跳延时与间隔都可调。
+- `parse` / `format` 一对，用来接固定小数位、千分位、货币符号或自定义换算。
+- 越界的值在失焦规范化时被夹回区间。
+- `prefix` / `suffix` 在框内摆货币符、单位或图标，两段对读屏隐藏。
+- `control` 是输入、前后缀与两颗动作共用的唯一 Field Chrome；内嵌动作保持透明，只用短分隔线、
+  悬停底与按压缩放报告边界和操作状态，不增加侧条或品牌色展开底。
+- comfortable 下 `sm` / `md` / `lg` 控件高为 28 / 32 / 40px，动作盒为 24 / 24 / 32px；compact
+  下分别为 24 / 28 / 36px 与 20 / 20 / 28px。数字使用等宽字形，前缀、数值和后缀共用中线。
+- 粗指针环境会把真实加减按钮与控件高度扩到 comfortable 48px、compact 44px；命中区由 flex
+  子项本身承担，不用伪元素伸进输入区，两颗按钮及输入区互不重叠。
+- Tab 只停在 `spinbutton` 输入框，聚焦环由整个 `control` 统一绘制；加减钮退出 Tab 序列，但仍可由
+  指针和公开 API 操作。到达 `min` / `max` 时只禁用对应方向，`disabled` / `readOnly` 才同时锁住两侧。
+- 分隔线长度为控件高度的一半，颜色默认取 M1 柔和分隔色；位置使用逻辑属性，RTL 下自动换边。
 
 ## 产物
 

@@ -1,33 +1,22 @@
-# 排印 <Badge type="info" text="typography" />
+# Typography <Badge type="info" text="排印" />
 
 一块正文的排版容器：管住段间距与最大行宽，标题、段落与行内文字各自拿自己的字号、字重与行高。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/typography" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/typography.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/typography" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/typography" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/typography.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 渲染一段较长的正文：文章、说明、条款、AI 回复。
-- 需要标题层级与段落节奏一致，而不想逐处写字号。
-
-## 何时不用
-
-- 只是一行标签或一句提示：直接写文本，别套整套排版。
-- 要把长文本裁成几行：用[文本截断](./truncate)。
-- 要渲染 Markdown：用 `@xihan-ui/markdown`，它产出的节点套一层 `prose` 部件即得排版。
-
-## 特性
-
-- `root` 管段间距与最大行宽；`level` 只换标题字号档位，用哪个标签由作者定。
-- 行内文字三种形态：`muted` 弱化、`strong` 加重、`code` 等宽；与语气、字重是三条轴，可以一起写。
-- `link` 是一个独立部件，链接样式不必另写。
-- `prose` 收外来的整段 HTML：节点由内容自己带，标题、段落、列表、代码块、引用、表格按标签上样式。
-- `align` 与 `weight` 落在 `root` 上，整块正文一起换；`weight` 也能只写在一段行内文字上。
-
-## 示例
-
-### 基础用法
+## 用法
 
 root 管段间距与最大行宽，标题与段落各自拿字号、字重、行高
 
 <XhDemo src="typography/01-basic" />
+
+## 示例
 
 ### 标题档位
 
@@ -58,6 +47,27 @@ size 换的是整块正文的字号与段间距，不传 size 即默认档
 prose 收外来的整段 HTML：节点由内容自己带，样式按标签给
 
 <XhDemo src="typography/06-prose" />
+
+## 设计指引
+
+### 何时使用
+
+- 渲染一段较长的正文：文章、说明、条款、AI 回复。
+- 需要标题层级与段落节奏一致，而不想逐处写字号。
+
+### 何时不用
+
+- 只是一行标签或一句提示：直接写文本，别套整套排版。
+- 要把长文本裁成几行：用[文本截断](./truncate)。
+- 要渲染 Markdown：用 `@xihan-ui/markdown`，它产出的节点套一层 `prose` 部件即得排版。
+
+### 特性
+
+- `root` 管段间距与最大行宽；`level` 只换标题字号档位，用哪个标签由作者定。
+- 行内文字三种形态：`muted` 弱化、`strong` 加重、`code` 等宽；与语气、字重是三条轴，可以一起写。
+- `link` 是一个独立部件，链接样式不必另写。
+- `prose` 收外来的整段 HTML：节点由内容自己带，标题、段落、列表、代码块、引用、表格按标签上样式。
+- `align` 与 `weight` 落在 `root` 上，整块正文一起换；`weight` 也能只写在一段行内文字上。
 
 ## 产物
 

@@ -1,32 +1,22 @@
-# 图标 <Badge type="info" text="icon" />
+# Icon <Badge type="info" text="图标" />
 
 画一枚矢量图元，并把"它是装饰还是信息"这件事说清楚。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/icon" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/icon.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/icon" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/icon" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/icon.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 给动作、状态或条目配一枚图形标记。
-- 图形本身就是唯一的信息载体（比如只有图标的按钮里那枚图元）——这时给 `label`。
-
-## 何时不用
-
-- 需要一个带底色的圆形底座：用[图标块](./icon-wrapper)。
-- 图形是照片或插画：用[图片](./image)。
-
-## 特性
-
-- 传的是图标记录本身而不是名字：按名字查表就得把整张表静态引进来，摇树全废。
-- 命名只有两态：给了非空白 `label` 就是 `role="img"` 加 `aria-label`；没给就是 `aria-hidden="true"` 的装饰件。没有第三种。
-- `size` 八档改直径（`text` 跟着相邻文字的字号走，其余七档是固定直径）、`weight` 三档改描边粗细；缺省档 `md` 不落 `data-*`，皮肤的基础规则就是缺省档。
-- `rotate` 只收 90 / 180 / 270 三档，`flip` 沿横轴或纵轴取反；两者同写时叠加，都是静态几何，不带过渡。
-- 图标没有底色，语气只落在前景上。
-
-## 示例
-
-### 基础用法
+## 用法
 
 传的是图标记录本身而不是名字：名字要运行期查表，查表就得把整张表静态引进来，摇树全废
 
 <XhDemo src="icon/01-basic" />
+
+## 示例
 
 ### 尺寸与描边
 
@@ -63,6 +53,26 @@ size 八档改直径（text 跟着相邻文字的字号走）、weight 三档改
 rotate 只收 90 / 180 / 270 三档，flip 沿横轴或纵轴取反；两者是独立属性，同写即叠加
 
 <XhDemo src="icon/07-rotate-flip" />
+
+## 设计指引
+
+### 何时使用
+
+- 给动作、状态或条目配一枚图形标记。
+- 图形本身就是唯一的信息载体（比如只有图标的按钮里那枚图元）——这时给 `label`。
+
+### 何时不用
+
+- 需要一个带底色的圆形底座：用[图标块](./icon-wrapper)。
+- 图形是照片或插画：用[图片](./image)。
+
+### 特性
+
+- 传的是图标记录本身而不是名字：按名字查表就得把整张表静态引进来，摇树全废。
+- 命名只有两态：给了非空白 `label` 就是 `role="img"` 加 `aria-label`；没给就是 `aria-hidden="true"` 的装饰件。没有第三种。
+- `size` 八档改直径（`text` 跟着相邻文字的字号走，其余七档是固定直径）、`weight` 三档改描边粗细；缺省档 `md` 不落 `data-*`，皮肤的基础规则就是缺省档。
+- `rotate` 只收 90 / 180 / 270 三档，`flip` 沿横轴或纵轴取反；两者同写时叠加，都是静态几何，不带过渡。
+- 图标没有底色，语气只落在前景上。
 
 ## 产物
 

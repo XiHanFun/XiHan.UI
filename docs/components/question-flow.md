@@ -1,43 +1,22 @@
-# 澄清问卷 <Badge type="info" text="question-flow" />
+# QuestionFlow <Badge type="info" text="澄清问卷" />
 
 动手之前先问几句：一次一题，人逐题作答，答完一起提交。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/question-flow" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/question-flow.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/question-flow" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/question-flow" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/question-flow.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 需求还差几处没说清，把含糊的地方拆成几道选择题问回去。
-- 一次要问的不止一件事，而每件都只要一两秒就能答完。
-
-## 何时不用
-
-- 只问一件事：那是一个[单选组](./radio-group)或[复选框组](./checkbox-group)，不必套一层问卷。
-- 要人批准一次危险动作：那是闸门，用[审批](./approval)——它的出口只有批准与拒绝两条，
-  没有「跳过」，也没有「答完再说」。
-- 要收一份长表单：字段之间有校验与联动，用[表单](./form)。
-
-## 特性
-
-- **一次只暴露一题**：非当前题对读屏 `aria-hidden`、对键盘 `inert`，里面的可聚焦物另发 `tabindex="-1"`。
-  它们仍留在轨道上，只是走不到——这样卡片高度才有得可量，来回翻页也不必重建 DOM。
-- **高度与位移是量出来的，不是猜的**：机器在活 DOM 上量当前题的盒，把结果写进 context，
-  连接层只把它格式化成两个私有槽（视口高度与轨道位移）。连接层是渲染期纯函数，
-  不查 DOM、不起定时器、不读时钟。
-- **单选自动前进，多选等人点继续**：选中一项后隔一小段自动翻到下一题；连着改主意时，
-  每改一次都从整段延时重新计。**自动前进只走下一题**——末题上它停住，不替人按发送。
-- **一颗按钮两个身份**：不是末题时是「继续」，末题时是「发送」。它原位换 `data-mode` 与可访问名，
-  正在按它的人不会按空。
-- **自由文本与选项同等算数**：写了一句「都不是，我想要……」就算答过了这一题，继续键随之亮起。
-- 进度只播报一次：`counter` 那格 `aria-hidden`，逐题跳动的数字不进活区；
-  换题与交卷由 `announcement` 念一句。
-- 跳过是明路：`allowSkip` 关掉时整颗跳过键收起，而不是留一颗按不动的按钮。
-  末题上跳过即交卷——否则最后一题没有出口，人会被困在那里。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一次一题：单选选中后自动翻到下一题，多选等人点继续，末题上那颗按钮变成发送
 
 <XhDemo src="question-flow/01-basic" />
+
+## 示例
 
 ### 自由文本与跳过
 
@@ -56,6 +35,37 @@
 size 换问句、选项行与页脚按钮的几何档，三档共用同一份问题
 
 <XhDemo src="question-flow/04-size" />
+
+## 设计指引
+
+### 何时使用
+
+- 需求还差几处没说清，把含糊的地方拆成几道选择题问回去。
+- 一次要问的不止一件事，而每件都只要一两秒就能答完。
+
+### 何时不用
+
+- 只问一件事：那是一个[单选组](./radio-group)或[复选框组](./checkbox-group)，不必套一层问卷。
+- 要人批准一次危险动作：那是闸门，用[审批](./approval)——它的出口只有批准与拒绝两条，
+  没有「跳过」，也没有「答完再说」。
+- 要收一份长表单：字段之间有校验与联动，用[表单](./form)。
+
+### 特性
+
+- **一次只暴露一题**：非当前题对读屏 `aria-hidden`、对键盘 `inert`，里面的可聚焦物另发 `tabindex="-1"`。
+  它们仍留在轨道上，只是走不到——这样卡片高度才有得可量，来回翻页也不必重建 DOM。
+- **高度与位移是量出来的，不是猜的**：机器在活 DOM 上量当前题的盒，把结果写进 context，
+  连接层只把它格式化成两个私有槽（视口高度与轨道位移）。连接层是渲染期纯函数，
+  不查 DOM、不起定时器、不读时钟。
+- **单选自动前进，多选等人点继续**：选中一项后隔一小段自动翻到下一题；连着改主意时，
+  每改一次都从整段延时重新计。**自动前进只走下一题**——末题上它停住，不替人按发送。
+- **一颗按钮两个身份**：不是末题时是「继续」，末题时是「发送」。它原位换 `data-mode` 与可访问名，
+  正在按它的人不会按空。
+- **自由文本与选项同等算数**：写了一句「都不是，我想要……」就算答过了这一题，继续键随之亮起。
+- 进度只播报一次：`counter` 那格 `aria-hidden`，逐题跳动的数字不进活区；
+  换题与交卷由 `announcement` 念一句。
+- 跳过是明路：`allowSkip` 关掉时整颗跳过键收起，而不是留一颗按不动的按钮。
+  末题上跳过即交卷——否则最后一题没有出口，人会被困在那里。
 
 ## 产物
 

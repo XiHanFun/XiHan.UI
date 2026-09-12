@@ -1,29 +1,22 @@
-# 统计数值 <Badge type="info" text="statistic" />
+# Statistic <Badge type="info" text="统计数值" />
 
 一个带标签的关键数字，可以配前后缀。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/statistic" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/statistic.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/statistic" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/statistic" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/statistic.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 仪表盘、概览页上的核心指标。
-
-## 何时不用
-
-- 多个指标需要按维度对照：用[表格](./table)。
-- 表达的是完成比例：用[进度条](./progress)。
-
-## 特性
-
-- 标签、值、前缀、后缀各占一段。
-- 数字用等宽字形，位数变化时不会左右晃。
-- `trend` 给出涨跌方向，箭头由皮肤画；它与 `tone` 正交——跌也可以是好事。
-
-## 示例
-
-### 基础用法
+## 用法
 
 标签在上、数值在下；数值由你自己格式化好再塞进来，组件不做千分位也不做换算
 
 <XhDemo src="statistic/01-basic" />
+
+## 示例
 
 ### 前后缀
 
@@ -54,6 +47,23 @@ tone 决定数值与前后缀用哪族颜色，标签始终保持弱前景
 trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正交——跌也可以是好事
 
 <XhDemo src="statistic/06-trend" />
+
+## 设计指引
+
+### 何时使用
+
+- 仪表盘、概览页上的核心指标。
+
+### 何时不用
+
+- 多个指标需要按维度对照：用[表格](./table)。
+- 表达的是完成比例：用[进度条](./progress)。
+
+### 特性
+
+- 标签、值、前缀、后缀各占一段。
+- 数字用等宽字形，位数变化时不会左右晃。
+- `trend` 给出涨跌方向，箭头由皮肤画；它与 `tone` 正交——跌也可以是好事。
 
 ## 产物
 

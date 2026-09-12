@@ -1,33 +1,22 @@
-# 滚动条 <Badge type="info" text="scrollbar" />
+# Scrollbar <Badge type="info" text="滚动条" />
 
 自绘的滚动条，挂在**任意一个**滚动容器上：表格的滚动盒、虚拟滚动的视口、随手一个 `overflow: auto` 的 div 都行。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/scrollbar" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/scrollbar.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/scrollbar" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/scrollbar" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/scrollbar.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 原生滚动条在各平台长得不一样，而设计稿要求一致。
-- 滚动容器不归组件管（表格、虚拟列表、你自己的布局），但滚动条要跟库里其余部分一个样。
-
-## 何时不用
-
-- 容器与滚动条一起要：用[滚动区域](./scroll-area)，它把视口、内容与两条滚动条打包好了。
-- 只是想让原生滚动条细一点：`scrollbar-width: thin` 就够，不必换掉整套交互。
-
-## 特性
-
-- 挂在作者给的滚动容器上，与它是不是本组件的后代无关；挂上后容器带 `data-xh-scrollbar`，原生滚动条的外观自动藏起来。
-- 五种露面时机（`scroll-hover` / `auto` / `always` / `scroll` / `hover`），带收起延时；露出与收起都淡变。
-- 缺省档 `scroll-hover` 浮在内容之上，滚动时与指针进来时露出，两样都停下后收起，全程不占布局宽度（横条不占高度）。
-- 拖滑块、点轨道跳转、RTL 双向换算、滑块像素下限都在库里。
-- `focusable` 打开后滑块进 Tab 序并报 `role="scrollbar"`，方向键与翻页键可用。
-- 触屏（粗指针）上默认交给原生滚动，`forceVisible` 打开才画。
-
-## 示例
-
-### 挂在自己的滚动容器上
+## 用法
 
 滚动容器归你，滚动条只要拿到它；把节点交给 scrollable 即可
 
 <XhDemo src="scrollbar/01-basic" />
+
+## 示例
 
 ### 横向 + 键盘可达
 
@@ -46,6 +35,27 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 缺省的 scroll-hover 滚动或指针进来都露、auto 溢出就露、always 恒露、scroll 只认滚动、hover 只认指针；收起都是淡出
 
 <XhDemo src="scrollbar/04-types" />
+
+## 设计指引
+
+### 何时使用
+
+- 原生滚动条在各平台长得不一样，而设计稿要求一致。
+- 滚动容器不归组件管（表格、虚拟列表、你自己的布局），但滚动条要跟库里其余部分一个样。
+
+### 何时不用
+
+- 容器与滚动条一起要：用[滚动区域](./scroll-area)，它把视口、内容与两条滚动条打包好了。
+- 只是想让原生滚动条细一点：`scrollbar-width: thin` 就够，不必换掉整套交互。
+
+### 特性
+
+- 挂在作者给的滚动容器上，与它是不是本组件的后代无关；挂上后容器带 `data-xh-scrollbar`，原生滚动条的外观自动藏起来。
+- 五种露面时机（`scroll-hover` / `auto` / `always` / `scroll` / `hover`），带收起延时；露出与收起都淡变。
+- 缺省档 `scroll-hover` 浮在内容之上，滚动时与指针进来时露出，两样都停下后收起，全程不占布局宽度（横条不占高度）。
+- 拖滑块、点轨道跳转、RTL 双向换算、滑块像素下限都在库里。
+- `focusable` 打开后滑块进 Tab 序并报 `role="scrollbar"`，方向键与翻页键可用。
+- 触屏（粗指针）上默认交给原生滚动，`forceVisible` 打开才画。
 
 ## 产物
 

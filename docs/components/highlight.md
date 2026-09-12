@@ -1,30 +1,22 @@
-# 文本高亮 <Badge type="info" text="highlight" />
+# Highlight <Badge type="info" text="文本高亮" />
 
 把一段文本里命中关键词的片段标出来。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/highlight" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/highlight.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/highlight" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/highlight" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/highlight.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 搜索结果、候选列表里标出为什么这一条被选出来。
-
-## 何时不用
-
-- 需要富文本或代码着色：用[代码视图](./code-view)。
-- 想强调一段固定的话：直接写[排印](./typography)的 `strong`。
-
-## 特性
-
-- `text` 收单个词或一组词。
-- `caseSensitive` 决定是否区分大小写。
-- 命中片段落在 `mark` 部件上，样式归皮肤。
-- `tone` 换命中片段用哪族颜色，落在 `root` 上——一段里有好几个命中，语气是整段的属性。
-
-## 示例
-
-### 基础用法
+## 用法
 
 命中关键词的片段渲染成 `&lt;mark>`，其余是纯文本；整段文本原样拼得回来
 
 <XhDemo src="highlight/01-basic" />
+
+## 示例
 
 ### 一组关键词
 
@@ -49,6 +41,24 @@
 tone 决定命中片段用哪族颜色，没命中的文本不受影响
 
 <XhDemo src="highlight/05-tone" />
+
+## 设计指引
+
+### 何时使用
+
+- 搜索结果、候选列表里标出为什么这一条被选出来。
+
+### 何时不用
+
+- 需要富文本或代码着色：用[代码视图](./code-view)。
+- 想强调一段固定的话：直接写[排印](./typography)的 `strong`。
+
+### 特性
+
+- `text` 收单个词或一组词。
+- `caseSensitive` 决定是否区分大小写。
+- 命中片段落在 `mark` 部件上，样式归皮肤。
+- `tone` 换命中片段用哪族颜色，落在 `root` 上——一段里有好几个命中，语气是整段的属性。
 
 ## 产物
 

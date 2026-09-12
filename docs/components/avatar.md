@@ -1,30 +1,22 @@
-# 头像 <Badge type="info" text="avatar" />
+# Avatar <Badge type="info" text="头像" />
 
 一个人或一个组织的圆形标识：优先显示图片，取不到就回退到文字或图标。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/avatar" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/avatar.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/avatar" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/avatar" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/avatar.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 列表、评论、成员选择里标识身份。
-
-## 何时不用
-
-- 标识的是一个功能或分类：用[图标块](./icon-wrapper)。
-- 就是一张图：用[图片](./image)。
-
-## 特性
-
-- 加载状态会回调；失败时自动落到 `fallback`。
-- 直径与配色都是组件令牌，可以逐实例覆盖。
-- `tone` 换淡底与回退字的配色族；没写它时用中性缺省。
-- 状态点与角标由作者挂在外面，组件不预设。
-
-## 示例
-
-### 基础用法
+## 用法
 
 图片加载失败或未提供时落到 fallback
 
 <XhDemo src="avatar/01-basic" />
+
+## 示例
 
 ### 加载失败回退
 
@@ -85,6 +77,24 @@ status-change 在状态落位时通知，过渡态 idle 不通知；没给地址
 tone 换淡底与回退字的配色族；不写 tone 就是中性缺省，直径与字号都不受影响
 
 <XhDemo src="avatar/11-tone" />
+
+## 设计指引
+
+### 何时使用
+
+- 列表、评论、成员选择里标识身份。
+
+### 何时不用
+
+- 标识的是一个功能或分类：用[图标块](./icon-wrapper)。
+- 就是一张图：用[图片](./image)。
+
+### 特性
+
+- 加载状态会回调；失败时自动落到 `fallback`。
+- 直径与配色都是组件令牌，可以逐实例覆盖。
+- `tone` 换淡底与回退字的配色族；没写它时用中性缺省。
+- 状态点与角标由作者挂在外面，组件不预设。
 
 ## 产物
 

@@ -1,34 +1,22 @@
-# 气泡卡片 <Badge type="info" text="popover" />
+# Popover <Badge type="info" text="气泡卡片" />
 
 由点击触发、贴着触发器的一小块浮层，里面可以放任意内容与交互。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/popover" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/popover.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/popover" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/popover" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/popover.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 补充信息或一小组操作，不值得为它开对话框。
-- 内容里有可聚焦元素（按钮、输入框）——这是它与[文字提示](./tooltip)的分界线。
-
-## 何时不用
-
-- 只是一句纯文字说明：用[文字提示](./tooltip)。
-- 悬停即出、不需要点击：用[悬浮卡片](./hover-card)。
-- 内容是一列命令：用[菜单](./menu)。
-
-## 特性
-
-- `placement` 只是首选位，空间不够时定位引擎自动翻面。
-- `modal` 可选：需要锁住下层时打开；展开期间可动态切换，模态档会锁住页面滚动并让背景失活。
-- 可以与触发器同宽，也可以落在指针位置。
-- `end` 这类对齐是逻辑方向，跟着书写方向走，不是左右。
-
-默认内容面使用 M2 磨砂配方，背景模糊只发生在浮层本体，箭头复用底色和边界，不重复模糊。正文保持不透明。关闭按钮键盘聚焦时立即铺实体隔离底，确保内收焦点环有稳定对比。系统减少透明度、高对比与强制颜色时，原位置切换为实体表面，打印时收起交互浮层。
-
-## 示例
-
-### 基础用法
+## 用法
 
 点击展开，Escape 或点外部关闭；positioner 负责摆位，content 才是浮层本体
 
 <XhDemo src="popover/01-basic" />
+
+## 示例
 
 ### 朝向与间距
 
@@ -89,6 +77,28 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 触发器缩成一个像素、按点击坐标固定摆放，浮层就钉在刚点到的那一点上；再点一下换个落点
 
 <XhDemo src="popover/10-point-anchor" />
+
+## 设计指引
+
+### 何时使用
+
+- 补充信息或一小组操作，不值得为它开对话框。
+- 内容里有可聚焦元素（按钮、输入框）——这是它与[文字提示](./tooltip)的分界线。
+
+### 何时不用
+
+- 只是一句纯文字说明：用[文字提示](./tooltip)。
+- 悬停即出、不需要点击：用[悬浮卡片](./hover-card)。
+- 内容是一列命令：用[菜单](./menu)。
+
+### 特性
+
+- `placement` 只是首选位，空间不够时定位引擎自动翻面。
+- `modal` 可选：需要锁住下层时打开；展开期间可动态切换，模态档会锁住页面滚动并让背景失活。
+- 可以与触发器同宽，也可以落在指针位置。
+- `end` 这类对齐是逻辑方向，跟着书写方向走，不是左右。
+
+默认内容面使用 M2 磨砂配方，背景模糊只发生在浮层本体，箭头复用底色和边界，不重复模糊。正文保持不透明。关闭按钮键盘聚焦时立即铺实体隔离底，确保内收焦点环有稳定对比。系统减少透明度、高对比与强制颜色时，原位置切换为实体表面，打印时收起交互浮层。
 
 ## 产物
 

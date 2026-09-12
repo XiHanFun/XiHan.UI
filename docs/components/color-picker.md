@@ -1,37 +1,22 @@
-# 颜色选择器 <Badge type="info" text="color-picker" />
+# ColorPicker <Badge type="info" text="颜色选择器" />
 
 选一个颜色：色域面板加通道滑块，另有预设色板与屏幕取色。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/color-picker" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/color-picker.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/color-picker" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/color-picker" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/color-picker.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 用户要自由指定颜色（主题定制、标注、画布）。
-
-## 何时不用
-
-- 可选颜色是固定的几种：用[单选组](./radio-group)配色块，或[选择器](./select)。
-
-## 特性
-
-- 必备部件是 `root` · `content` · `saturation-area` · `area-thumb`，缺一个组件就不工作。
-- `format` 决定值串写法；面板里也可以让用户自己切换写法。
-- `alpha` 打开透明度通道。
-- 支持屏幕取色（依赖平台能力）与数值输入。
-- 文本输入严格校验范围：不完整、非法或越界内容保留在输入框，并通过 `errors.input` / `onColorError` 明确报告；不会悄悄复原或夹回合法区间。
-- 运行期未知 `format`、整体颜色解析失败与屏幕取色异常分别保存在 `errors.format`、`errors.parse`、`errors.eyeDropper`。`clearError()` 可显式清理；再次屏幕取色会先清掉上一轮取色相关诊断。
-- 用户取消屏幕取色（`AbortError`）不是失败；接口抛错或拒绝才走 `eye-dropper` 错误。已经关闭或被下一轮替代的旧取色结果不会回写新值。
-- 预设色板当前项由 `isSwatchSelected`、`aria-pressed` 与 `data-state=checked` 持久标识，不依赖悬停反馈。
-- 输入框与通道输入保持实体表面，弹层使用 M2 磨砂背景、细顶光与统一边界阴影；顶光不覆盖取色区域，也不拦截鼠标。
-- 色域、色相轨道和预设色板保留原色，磨砂只作用于浮层背后的内容，不通过整层透明度淡化静止状态下的颜色。
-- 浮层按实际落位方向淡入并短距离移动，不缩放取色区域；收起时完整播放退场，再由适配器隐藏。
-- 局部明暗主题随 Portal 传递。增强对比度和减少透明度沿用材质令牌切为实体表面；减弱动效缩短进出场并归零位移。
-
-## 示例
-
-### 基础用法
+## 用法
 
 必备部件是 trigger / content / saturation-area / area-thumb，缺一个组件就不工作
 
 <XhDemo src="color-picker/01-basic" />
+
+## 示例
 
 ### 受控
 
@@ -86,6 +71,31 @@ format 只决定对外的序列化，工作色始终是同一套；三种写法�
 format 只管对外的序列化：换过之后把当前值原样写回一次，值串就改按新写法产出，工作色一点不动
 
 <XhDemo src="color-picker/10-format-switch" />
+
+## 设计指引
+
+### 何时使用
+
+- 用户要自由指定颜色（主题定制、标注、画布）。
+
+### 何时不用
+
+- 可选颜色是固定的几种：用[单选组](./radio-group)配色块，或[选择器](./select)。
+
+### 特性
+
+- 必备部件是 `root` · `content` · `saturation-area` · `area-thumb`，缺一个组件就不工作。
+- `format` 决定值串写法；面板里也可以让用户自己切换写法。
+- `alpha` 打开透明度通道。
+- 支持屏幕取色（依赖平台能力）与数值输入。
+- 文本输入严格校验范围：不完整、非法或越界内容保留在输入框，并通过 `errors.input` / `onColorError` 明确报告；不会悄悄复原或夹回合法区间。
+- 运行期未知 `format`、整体颜色解析失败与屏幕取色异常分别保存在 `errors.format`、`errors.parse`、`errors.eyeDropper`。`clearError()` 可显式清理；再次屏幕取色会先清掉上一轮取色相关诊断。
+- 用户取消屏幕取色（`AbortError`）不是失败；接口抛错或拒绝才走 `eye-dropper` 错误。已经关闭或被下一轮替代的旧取色结果不会回写新值。
+- 预设色板当前项由 `isSwatchSelected`、`aria-pressed` 与 `data-state=checked` 持久标识，不依赖悬停反馈。
+- 输入框与通道输入保持实体表面，弹层使用 M2 磨砂背景、细顶光与统一边界阴影；顶光不覆盖取色区域，也不拦截鼠标。
+- 色域、色相轨道和预设色板保留原色，磨砂只作用于浮层背后的内容，不通过整层透明度淡化静止状态下的颜色。
+- 浮层按实际落位方向淡入并短距离移动，不缩放取色区域；收起时完整播放退场，再由适配器隐藏。
+- 局部明暗主题随 Portal 传递。增强对比度和减少透明度沿用材质令牌切为实体表面；减弱动效缩短进出场并归零位移。
 
 ## 产物
 

@@ -1,35 +1,22 @@
-# 浮动按钮 <Badge type="info" text="float-button" />
+# FloatButton <Badge type="info" text="浮动按钮" />
 
 钉在视口某一角的动作入口：平时是一枚触发器，展开后长出一列动作。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/float-button" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/float-button.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/float-button" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/float-button" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/float-button.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 页面主动作在长内容里滚没了，但要求随时可达（新建、回到编辑、联系客服）。
-- 移动端或窄视口，工具栏没有位置再挂按钮。
-
-## 何时不用
-
-- 动作与当前滚动位置有关：那是[回到顶部](./back-top)。
-- 一屏里已经有固定工具栏：直接放进[工具栏](./toolbar)，别再叠一层浮层。
-- 动作超过五六个：收进[菜单](./menu)或抽屉，一列悬浮按钮遮内容。
-
-## 特性
-
-- 四个角可钉，`start` / `end` 跟着书写方向走，那一组恒往页面中间长。
-- `hover` 与 `click` 两种展开方式，点击那条恒在——触摸与键盘只有它。
-- click 展开后，层外按下或全局 Escape 会收起；多个浮层并存时只由同一 Document 的逻辑栈顶响应，后开的 Drawer / Popover 先退场。Toast 属于反馈通道，不登记为可消解父层。
-- hover 模式保留整个根节点的指针进出路径；指针离开与层外消解同时到达时只发一次关闭意图。
-- 收起时组内按钮退出 Tab 序列，不会盲聚焦到看不见的东西上。
-- 缺省触发器是 M3 通透玻璃：背景、边缘、高光、柔影和磨砂来自同一份 `material.glass` 配方；显式 `variant` 仍按各自语义表面绘制。
-- 键盘聚焦时触发器改用配方的实体 focus surface，让公共焦点环不依赖背后页面颜色；高对比、减少透明和强制色沿同一令牌通道降级。
-
-## 示例
-
-### 基础用法
+## 用法
 
 点触发器展开一组动作，再点一下收起；收起时那组按钮退出 Tab 序列
 
 <XhDemo src="float-button/01-basic" />
+
+## 示例
 
 ### 四角
 
@@ -54,6 +41,29 @@ shape 换圆角档，offset 决定距那两条边多远；translations 换掉读
 variant 换触发器的用色方式，size 换直径；缺省档与 lg 同高，悬浮钮起步就比行内按钮大一号
 
 <XhDemo src="float-button/05-variant-size" />
+
+## 设计指引
+
+### 何时使用
+
+- 页面主动作在长内容里滚没了，但要求随时可达（新建、回到编辑、联系客服）。
+- 移动端或窄视口，工具栏没有位置再挂按钮。
+
+### 何时不用
+
+- 动作与当前滚动位置有关：那是[回到顶部](./back-top)。
+- 一屏里已经有固定工具栏：直接放进[工具栏](./toolbar)，别再叠一层浮层。
+- 动作超过五六个：收进[菜单](./menu)或抽屉，一列悬浮按钮遮内容。
+
+### 特性
+
+- 四个角可钉，`start` / `end` 跟着书写方向走，那一组恒往页面中间长。
+- `hover` 与 `click` 两种展开方式，点击那条恒在——触摸与键盘只有它。
+- click 展开后，层外按下或全局 Escape 会收起；多个浮层并存时只由同一 Document 的逻辑栈顶响应，后开的 Drawer / Popover 先退场。Toast 属于反馈通道，不登记为可消解父层。
+- hover 模式保留整个根节点的指针进出路径；指针离开与层外消解同时到达时只发一次关闭意图。
+- 收起时组内按钮退出 Tab 序列，不会盲聚焦到看不见的东西上。
+- 缺省触发器是 M3 通透玻璃：背景、边缘、高光、柔影和磨砂来自同一份 `material.glass` 配方；显式 `variant` 仍按各自语义表面绘制。
+- 键盘聚焦时触发器改用配方的实体 focus surface，让公共焦点环不依赖背后页面颜色；高对比、减少透明和强制色沿同一令牌通道降级。
 
 ## 产物
 

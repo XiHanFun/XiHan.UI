@@ -1,36 +1,21 @@
-# 快捷键 <Badge type="info" text="hotkeys" />
+# Hotkeys <Badge type="info" text="快捷键" />
 
 注册并匹配一组键盘组合，不渲染任何 DOM。可见键帽由[键帽](./kbd)与[键帽组](./kbd-group)负责，展示不会隐式安装全局监听。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/hotkeys" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/hotkeys" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/hotkeys" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/hotkeys.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 给已有按钮、菜单项或命令增加键盘通路。
-- 在组件生命周期内注册一条全局或明确局部范围的组合。
-
-## 何时不用
-
-- 只展示组合：用[键帽组](./kbd-group)。
-- 只展示一枚键：用[键帽](./kbd)。
-- 处理菜单、工具条等 APG 组件自身的方向键导航：使用对应组件内建行为。
-
-## 特性
-
-- `XhHotkeys` / `<xh-hotkeys>` 与 `useHotkeys` 都只安装监听，不输出键帽或展示容器。
-- `keys` 必填、非空且必须恰好包含一枚主键；无效声明直接报错，不注册永远无法命中的死监听。
-- `Mod` 在 Mac 上匹配 Meta，其余平台匹配 Control；平台自动侦测只在适配器挂载后发生。
-- 修饰键逐个全等比对：注册 Ctrl+S 时，Ctrl+Shift+S 不会误命中。
-- 命中后默认阻止浏览器默认动作，`preventDefault` 可显式关闭。
-- 没有 Ctrl / Meta / Alt 的组合在输入框、文本域、下拉或可编辑区内让给输入。
-- 输入法组合期间不响应。
-- `target` 缺省为所属 Document；局部监听必须传返回真实 EventTarget 的 resolver，不猜组件父节点。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一组组合的键帽：Mod 在 Mac 上出 ⌘、其余平台出 Ctrl，平台由组件自己测出来
 
 <XhDemo src="hotkeys/01-basic" />
+
+## 示例
 
 ### 限定范围
 
@@ -49,6 +34,30 @@ enabled 只控制行为，KbdGroup 的 disabled 由业务显式同步
 useHotkeys 只安装监听，展示是 Kbd/KbdGroup 的独立职责
 
 <XhDemo src="hotkeys/04-register-only" />
+
+## 设计指引
+
+### 何时使用
+
+- 给已有按钮、菜单项或命令增加键盘通路。
+- 在组件生命周期内注册一条全局或明确局部范围的组合。
+
+### 何时不用
+
+- 只展示组合：用[键帽组](./kbd-group)。
+- 只展示一枚键：用[键帽](./kbd)。
+- 处理菜单、工具条等 APG 组件自身的方向键导航：使用对应组件内建行为。
+
+### 特性
+
+- `XhHotkeys` / `<xh-hotkeys>` 与 `useHotkeys` 都只安装监听，不输出键帽或展示容器。
+- `keys` 必填、非空且必须恰好包含一枚主键；无效声明直接报错，不注册永远无法命中的死监听。
+- `Mod` 在 Mac 上匹配 Meta，其余平台匹配 Control；平台自动侦测只在适配器挂载后发生。
+- 修饰键逐个全等比对：注册 Ctrl+S 时，Ctrl+Shift+S 不会误命中。
+- 命中后默认阻止浏览器默认动作，`preventDefault` 可显式关闭。
+- 没有 Ctrl / Meta / Alt 的组合在输入框、文本域、下拉或可编辑区内让给输入。
+- 输入法组合期间不响应。
+- `target` 缺省为所属 Document；局部监听必须传返回真实 EventTarget 的 resolver，不猜组件父节点。
 
 ## 产物
 

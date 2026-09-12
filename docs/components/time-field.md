@@ -1,31 +1,22 @@
-# 时间输入 <Badge type="info" text="time-field" />
+# TimeField <Badge type="info" text="时间输入" />
 
 分段的时间输入框：时、分、秒各占一段，方向键加减。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/time-field" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/time-field.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/time-field" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/time-field" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/time-field.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 用户知道确切时间，打字比翻列表快。
-- 需要 12 小时制并带上下午段位。
-
-## 何时不用
-
-- 需要从固定的整点或半点里挑：用[时间选择器](./time-picker)。
-- 需要日期：用[日期输入](./date-field)。
-
-## 特性
-
-- `hourCycle` 切 12 / 24 小时制，12 小时制时自动多一个上下午段位。
-- `granularity` 决定精确到分还是到秒。
-- `min` / `max` 越界时只标注不改写。
-- 框内自带清空钮（`clear-trigger`）：有值才显形，点完焦点回到第一段。
-
-## 示例
-
-### 基础用法
+## 用法
 
 默认 24 小时制，上下键在段区间里回绕，缺一段整份值就退回空串
 
 <XhDemo src="time-field/01-basic" />
+
+## 示例
 
 ### 12 小时制
 
@@ -74,6 +65,25 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 值交给宿主持有，写回来的时间被吸附到清单里的一格，上下键与数字键因此都落在清单上
 
 <XhDemo src="time-field/09-whitelist" />
+
+## 设计指引
+
+### 何时使用
+
+- 用户知道确切时间，打字比翻列表快。
+- 需要 12 小时制并带上下午段位。
+
+### 何时不用
+
+- 需要从固定的整点或半点里挑：用[时间选择器](./time-picker)。
+- 需要日期：用[日期输入](./date-field)。
+
+### 特性
+
+- `hourCycle` 切 12 / 24 小时制，12 小时制时自动多一个上下午段位。
+- `granularity` 决定精确到分还是到秒。
+- `min` / `max` 越界时只标注不改写。
+- 框内自带清空钮（`clear-trigger`）：有值才显形，点完焦点回到第一段。
 
 ## 产物
 

@@ -1,32 +1,22 @@
-# 轻提示 <Badge type="info" text="toast" />
+# Toast <Badge type="info" text="轻提示" />
 
 一条会自己消失的短反馈：一枚状态字形加一句话，横排一行、贴着文字收缩。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/toast" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/toast.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/toast" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/toast" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/toast.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 一次操作的结果："已保存"、"已复制"、"发送失败"。
-- 反馈重要但不需要打断用户。
-
-## 何时不用
-
-- 用户必须知道并处理：用[警告提示](./alert)让它常驻，或用[对话框](./dialog)阻断。
-- 内容较长、分标题与正文两层，或不是用户点出来的：用[通知](./notification)。
-
-## 特性
-
-- `duration` 决定停留时长，指针悬停或页面失焦时计时暂停。
-- 可以带一个操作按钮（撤销、查看详情）。
-- `type` 决定语气：淡底、描边与状态字形一起换族，正文留中性。
-- 组件档 `closable` 缺省为真，叉写不写由作者定；全局服务的默认模板反过来——
-  到点自己走的不出叉，走不掉的（`loading`、`duration` 给 0）才出。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一条一句话：title 部件留空时由属性上的文案填入；duration 给 0 即不自动消失
 
 <XhDemo src="toast/01-basic" />
+
+## 示例
 
 ### 语气
 
@@ -57,6 +47,26 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 轻提示没有容器组件，那一摞由 createToastService 渲染；模块作用域随处可调（请求拦截器、store）
 
 <XhDemo src="toast/06-service" />
+
+## 设计指引
+
+### 何时使用
+
+- 一次操作的结果："已保存"、"已复制"、"发送失败"。
+- 反馈重要但不需要打断用户。
+
+### 何时不用
+
+- 用户必须知道并处理：用[警告提示](./alert)让它常驻，或用[对话框](./dialog)阻断。
+- 内容较长、分标题与正文两层，或不是用户点出来的：用[通知](./notification)。
+
+### 特性
+
+- `duration` 决定停留时长，指针悬停或页面失焦时计时暂停。
+- 可以带一个操作按钮（撤销、查看详情）。
+- `type` 决定语气：淡底、描边与状态字形一起换族，正文留中性。
+- 组件档 `closable` 缺省为真，叉写不写由作者定；全局服务的默认模板反过来——
+  到点自己走的不出叉，走不掉的（`loading`、`duration` 给 0）才出。
 
 ## 产物
 

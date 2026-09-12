@@ -1,32 +1,22 @@
-# 键帽 <Badge type="info" text="kbd" />
+# Kbd <Badge type="info" text="键帽" />
 
 显示一枚语义键帽，不注册任何键盘监听。`Mod` 会按平台写成 Mac 的 ⌘ 或其他平台的 Ctrl；要显示完整组合用[键帽组](./kbd-group)，要注册动作另用[快捷键](./hotkeys)。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/kbd" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/kbd.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/kbd" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/kbd" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/kbd.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 在说明文字里表示一枚键。
-- 需要单独控制一枚键帽的尺寸、禁用或真实按下反馈。
-
-## 何时不用
-
-- 显示完整快捷键组合：用[键帽组](./kbd-group)，让读屏只念一次整组。
-- 注册快捷键动作：用[快捷键](./hotkeys)，不要给纯展示节点安装全局监听。
-- 显示代码或命令文本：用[代码视图](./code-view)。
-
-## 特性
-
-- 使用原生 `kbd` 语义，平台格式化唯一事实源在 Headless。
-- `pressed` 只投影作者已知的真实激活事实；组件不会自己监听键盘，也不会默认制造按下态。
-- M1 实体小表面使用 1px 边、顶部高光和底部 contact shadow；按下时轻压并撤掉海拔。
-- compact 密度、三尺寸、RTL、forced-colors 和 200% 缩放均保持键名清楚。
-
-## 示例
-
-### 基础用法
+## 用法
 
 单枚原生 kbd，只显示键名，不注册快捷键
 
 <XhDemo src="kbd/01-basic" />
+
+## 示例
 
 ### 尺寸
 
@@ -45,6 +35,26 @@
 键帽只在可交互 owner 真正 active 时轻压
 
 <XhDemo src="kbd/04-pressed" />
+
+## 设计指引
+
+### 何时使用
+
+- 在说明文字里表示一枚键。
+- 需要单独控制一枚键帽的尺寸、禁用或真实按下反馈。
+
+### 何时不用
+
+- 显示完整快捷键组合：用[键帽组](./kbd-group)，让读屏只念一次整组。
+- 注册快捷键动作：用[快捷键](./hotkeys)，不要给纯展示节点安装全局监听。
+- 显示代码或命令文本：用[代码视图](./code-view)。
+
+### 特性
+
+- 使用原生 `kbd` 语义，平台格式化唯一事实源在 Headless。
+- `pressed` 只投影作者已知的真实激活事实；组件不会自己监听键盘，也不会默认制造按下态。
+- M1 实体小表面使用 1px 边、顶部高光和底部 contact shadow；按下时轻压并撤掉海拔。
+- compact 密度、三尺寸、RTL、forced-colors 和 200% 缩放均保持键名清楚。
 
 ## 产物
 

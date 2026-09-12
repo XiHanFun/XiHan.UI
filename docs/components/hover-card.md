@@ -1,33 +1,22 @@
-# 悬浮卡片 <Badge type="info" text="hover-card" />
+# HoverCard <Badge type="info" text="悬浮卡片" />
 
 指针停留一会儿才出现的信息卡：预览一个对象，不打断当前动作。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/hover-card" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/hover-card.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/hover-card" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/hover-card" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/hover-card.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 链接或头像的预览：用户资料、文档摘要、商品简介。
-- 信息属于"顺便看看"，不需要专门去点。
-
-## 何时不用
-
-- 内容需要交互（按钮、表单）：用[气泡卡片](./popover)。
-- 只是一句文字：用[文字提示](./tooltip)。
-- 触摸端是主要场景。
-
-## 特性
-
-- `openDelay` 与 `closeDelay` 一对：进入要停留、离开有宽限，指针斜穿去卡片上不会误收。
-- 可受控。
-- 内容与 Popover 共用 M2 磨砂：单层背景模糊、柔和顶光和浮层阴影，正文保持不透明。
-  箭头只复用底色与边界，不叠加模糊；减少透明、高对比与强制颜色偏好由材质令牌统一响应。
-  `--xh-hover-card-backdrop` 可覆盖模糊配方；打印时整块预览收起。
-
-## 示例
-
-### 基础用法
+## 用法
 
 与 Tooltip 的分界在于卡片本体可交互：指针停在卡片上不收起，里面的链接与按钮都点得到
 
 <XhDemo src="hover-card/01-basic" />
+
+## 示例
 
 ### 延时
 
@@ -58,6 +47,27 @@ placement 是请求值，空间不够时定位引擎会自动翻面；offset 调
 disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样进不了展开等待
 
 <XhDemo src="hover-card/06-disabled" />
+
+## 设计指引
+
+### 何时使用
+
+- 链接或头像的预览：用户资料、文档摘要、商品简介。
+- 信息属于"顺便看看"，不需要专门去点。
+
+### 何时不用
+
+- 内容需要交互（按钮、表单）：用[气泡卡片](./popover)。
+- 只是一句文字：用[文字提示](./tooltip)。
+- 触摸端是主要场景。
+
+### 特性
+
+- `openDelay` 与 `closeDelay` 一对：进入要停留、离开有宽限，指针斜穿去卡片上不会误收。
+- 可受控。
+- 内容与 Popover 共用 M2 磨砂：单层背景模糊、柔和顶光和浮层阴影，正文保持不透明。
+  箭头只复用底色与边界，不叠加模糊；减少透明、高对比与强制颜色偏好由材质令牌统一响应。
+  `--xh-hover-card-backdrop` 可覆盖模糊配方；打印时整块预览收起。
 
 ## 产物
 

@@ -1,35 +1,22 @@
-# 开关 <Badge type="info" text="switch" />
+# Switch <Badge type="info" text="开关" />
 
 一项设置的开与关，翻过去立即生效。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/switch" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/switch.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/switch" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/switch" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/switch.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 设置页里立即生效的开关（通知、深色模式、自动保存）。
-
-## 何时不用
-
-- 值要随表单一起提交：用[复选框](./checkbox)，它是表单控件的原生语义。
-- 是工具栏上的格式按钮：用[切换按钮](./toggle)。
-
-## 特性
-
-- `loading` 表达在途并锁住用户再次切换：按钮保持可聚焦，以 `aria-busy` 和滑块内指示器报告状态；
-  受控宿主仍可写回 `checked` 完成事务，失败时保持原值。它不会把 loading 假装成 disabled。
-- `readOnly` 与 `disabled` 分开：只读仍可聚焦。
-- 轨道保持实体表单控件：未选中用中性底和明确内边界，选中用实心语气色，只读选中回到中性底；
-  不使用 backdrop 或透明玻璃。
-- 滑块使用 M1 实体底、细边、顶光和接触影；指针悬停轻抬，按住时沿行进方向拉长并在释放时回圆。
-  loading、只读与禁用不产生可操作的悬停/按压假反馈。
-- 键盘聚焦环在明暗主题和开关两态都与轨道达到 3:1；RTL 会反转滑块行程，三尺寸与密度轴保持同一比例。
-- 减弱动效会取消按压拉伸并让 loading 圆环停转，以静止点线继续表达在途。
-
-## 示例
-
-### 基础用法
+## 用法
 
 不传 checked 即为非受控，开关自己维护状态
 
 <XhDemo src="switch/01-basic" />
+
+## 示例
 
 ### 受控
 
@@ -90,6 +77,29 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 给了 name 才生出表单影子：开着才提交，值缺省是 on，与原生复选框一致
 
 <XhDemo src="switch/11-form" />
+
+## 设计指引
+
+### 何时使用
+
+- 设置页里立即生效的开关（通知、深色模式、自动保存）。
+
+### 何时不用
+
+- 值要随表单一起提交：用[复选框](./checkbox)，它是表单控件的原生语义。
+- 是工具栏上的格式按钮：用[切换按钮](./toggle)。
+
+### 特性
+
+- `loading` 表达在途并锁住用户再次切换：按钮保持可聚焦，以 `aria-busy` 和滑块内指示器报告状态；
+  受控宿主仍可写回 `checked` 完成事务，失败时保持原值。它不会把 loading 假装成 disabled。
+- `readOnly` 与 `disabled` 分开：只读仍可聚焦。
+- 轨道保持实体表单控件：未选中用中性底和明确内边界，选中用实心语气色，只读选中回到中性底；
+  不使用 backdrop 或透明玻璃。
+- 滑块使用 M1 实体底、细边、顶光和接触影；指针悬停轻抬，按住时沿行进方向拉长并在释放时回圆。
+  loading、只读与禁用不产生可操作的悬停/按压假反馈。
+- 键盘聚焦环在明暗主题和开关两态都与轨道达到 3:1；RTL 会反转滑块行程，三尺寸与密度轴保持同一比例。
+- 减弱动效会取消按压拉伸并让 loading 圆环停转，以静止点线继续表达在途。
 
 ## 产物
 

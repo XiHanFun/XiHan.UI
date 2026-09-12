@@ -1,4 +1,4 @@
-# 空状态 <Badge type="info" text="empty-state" />
+# EmptyState <Badge type="info" text="空状态" />
 
 没有数据时那一块：说清楚为什么空，以及可以做什么。
 
@@ -6,29 +6,21 @@
 这类结果页也用本组件铺。`status` 只落成 root 的 `data-status`，皮肤据它给图标区上语气色，
 不改任何语义、不带插画资产。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/empty-state" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/empty-state.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/empty-state" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/empty-state" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/empty-state.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 列表、表格、搜索结果为空。
-- 首次使用、还没有任何数据。
-
-## 何时不用
-
-- 数据在加载中：用[骨架屏](./skeleton)或[加载指示器](./spinner)。
-- 只是一次轻量操作的反馈：用[轻提示](./toast)。
-
-## 特性
-
-- 图标、标题、描述、操作四段都可选。
-- `live` 决定这块内容出现时读屏怎么播报——搜索结果变空时这一条很重要。
-- `status` 决定图标区并进哪一族语气色：三个状态码各并进最接近的一族，另有成功、警示、出错、提示四档。
-
-## 示例
-
-### 基础用法
+## 用法
 
 图标、标题、说明、操作四个槽都可选，只有 root 是必须的
 
 <XhDemo src="empty-state/01-basic" />
+
+## 示例
 
 ### 尺寸
 
@@ -59,6 +51,24 @@ size 只换留白与字号，语义一点不动；不传即 md
 status 只落成 data-status，皮肤据它给图标区上语气色；画什么图标仍由作者塞
 
 <XhDemo src="empty-state/06-status" />
+
+## 设计指引
+
+### 何时使用
+
+- 列表、表格、搜索结果为空。
+- 首次使用、还没有任何数据。
+
+### 何时不用
+
+- 数据在加载中：用[骨架屏](./skeleton)或[加载指示器](./spinner)。
+- 只是一次轻量操作的反馈：用[轻提示](./toast)。
+
+### 特性
+
+- 图标、标题、描述、操作四段都可选。
+- `live` 决定这块内容出现时读屏怎么播报——搜索结果变空时这一条很重要。
+- `status` 决定图标区并进哪一族语气色：三个状态码各并进最接近的一族，另有成功、警示、出错、提示四档。
 
 ## 产物
 

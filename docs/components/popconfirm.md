@@ -1,40 +1,22 @@
-# 弹出确认 <Badge type="info" text="popconfirm" />
+# Popconfirm <Badge type="info" text="弹出确认" />
 
 贴着触发器的一句确认：比对话框轻，但仍拦住一次误操作。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/popconfirm" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/popconfirm.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/popconfirm" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/popconfirm" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/popconfirm.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 影响有限、可撤销的删除或清空，且触发器就在近处。
-
-## 何时不用
-
-- 后果严重不可逆：用[对话框](./dialog)，并让用户读到完整说明。
-- 操作可以撤销：干脆直接做，配一条带"撤销"的[轻提示](./toast)——那比事前确认体验好。
-
-## 特性
-
-- 确认按钮支持同步返回和任意 thenable：调用业务前即占用事务，兑现后收起；同步抛错、
-  `then` 读取失败或拒绝都会保持打开，并通过 `actionError` 与 `confirm-error` 原样暴露 `cause`。
-- pending 期间重复确认、触发器切换、`setOpen(false)`、Escape 与层外交互都不会关闭。
-  取消仍可立即终止组件的等待并收起；它不会假装取消业务 Promise，迟到的兑现或拒绝会按事务票据丢弃。
-- 受控宿主把 `open` 写成 `false` 属于事实状态，会终止当前确认事务；此后重新写成 `true` 是新会话，
-  旧 thenable 的结算不会关闭它或写入错误。
-- 浮层是非模态 `dialog`：不陷焦点、不锁滚动、不隐藏页面其它内容。
-- 位置、尺寸、语气三轴。
-- 内容与箭头使用和 Popover 同源的 M2 磨砂表面：边界、顶光、背景模糊与投影保持连续；
-  强制颜色模式会撤掉装饰顶光，由系统色接管边界。
-- 标题、说明与末行操作按固定节奏排布，长文案可在可用宽度内断行。确认是实心主操作，
-  取消是 soft 次操作；两颗按钮都有接触高光、按压回执、明确的不透明聚焦底与粗指针命中区。
-- pending 时在确认文案之前显示 spinner，并以 `aria-busy` / `aria-disabled` 报告状态；挂起时按钮不再响应 hover / active 换面，
-  减弱动效下以静止点线圆环表达在途。
-
-## 示例
-
-### 基础用法
+## 用法
 
 点触发器就地问一句，确认与取消都收起浮层；展开时焦点先落在取消上
 
 <XhDemo src="popconfirm/01-basic" />
+
+## 示例
 
 ### 放置位
 
@@ -59,6 +41,34 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 确认回调返回 Promise 即挂起确认门：浮层等兑现才收起、确认按钮转圈且再点无效，落空（reject）留在原地；不必再手动受控拦收起
 
 <XhDemo src="popconfirm/05-async-confirm" />
+
+## 设计指引
+
+### 何时使用
+
+- 影响有限、可撤销的删除或清空，且触发器就在近处。
+
+### 何时不用
+
+- 后果严重不可逆：用[对话框](./dialog)，并让用户读到完整说明。
+- 操作可以撤销：干脆直接做，配一条带"撤销"的[轻提示](./toast)——那比事前确认体验好。
+
+### 特性
+
+- 确认按钮支持同步返回和任意 thenable：调用业务前即占用事务，兑现后收起；同步抛错、
+  `then` 读取失败或拒绝都会保持打开，并通过 `actionError` 与 `confirm-error` 原样暴露 `cause`。
+- pending 期间重复确认、触发器切换、`setOpen(false)`、Escape 与层外交互都不会关闭。
+  取消仍可立即终止组件的等待并收起；它不会假装取消业务 Promise，迟到的兑现或拒绝会按事务票据丢弃。
+- 受控宿主把 `open` 写成 `false` 属于事实状态，会终止当前确认事务；此后重新写成 `true` 是新会话，
+  旧 thenable 的结算不会关闭它或写入错误。
+- 浮层是非模态 `dialog`：不陷焦点、不锁滚动、不隐藏页面其它内容。
+- 位置、尺寸、语气三轴。
+- 内容与箭头使用和 Popover 同源的 M2 磨砂表面：边界、顶光、背景模糊与投影保持连续；
+  强制颜色模式会撤掉装饰顶光，由系统色接管边界。
+- 标题、说明与末行操作按固定节奏排布，长文案可在可用宽度内断行。确认是实心主操作，
+  取消是 soft 次操作；两颗按钮都有接触高光、按压回执、明确的不透明聚焦底与粗指针命中区。
+- pending 时在确认文案之前显示 spinner，并以 `aria-busy` / `aria-disabled` 报告状态；挂起时按钮不再响应 hover / active 换面，
+  减弱动效下以静止点线圆环表达在途。
 
 ## 产物
 

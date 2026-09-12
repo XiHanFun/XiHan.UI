@@ -1,33 +1,22 @@
-# 文字提示 <Badge type="info" text="tooltip" />
+# Tooltip <Badge type="info" text="文字提示" />
 
 悬停或聚焦时出现的一句纯文字说明。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tooltip" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/tooltip.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/tooltip" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/tooltip" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/tooltip.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 补充说明一个图标按钮是什么、一个截断的文字全文是什么。
-- 内容是纯文字，且没有任何可交互元素。
-
-## 何时不用
-
-- 内容里有按钮或链接：用[气泡卡片](./popover)——提示是够不着的。
-- 信息重要到不能错过：写在界面上，别藏进悬停。
-- 触摸设备是主要场景：那里没有悬停。
-
-## 特性
-
-- `openDelay` / `closeDelay` 防止指针路过时一路闪。
-- 聚焦也能触发，键盘用户拿得到。
-- 语气与尺寸两轴。
-- 默认保持反白的小型 M2 表面，与承载操作的 Popover 分开；六种语气都使用高遮蔽 tint 与不透明文字，箭头和气泡同色同边。
-- 进退场只做侧向短移与透明度，120ms 内完成，不缩放文字和箭头。
-
-## 示例
-
-### 基础用法
+## 用法
 
 悬停或聚焦触发器即出；指针停在提示上也不收起
 
 <XhDemo src="tooltip/01-basic" />
+
+## 示例
 
 ### 朝向
 
@@ -70,6 +59,27 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 提示到了宽度上限就换行，不会拉成一条横线；上限是 content 上的 --xh-tooltip-max-w 槽位
 
 <XhDemo src="tooltip/08-long-text" />
+
+## 设计指引
+
+### 何时使用
+
+- 补充说明一个图标按钮是什么、一个截断的文字全文是什么。
+- 内容是纯文字，且没有任何可交互元素。
+
+### 何时不用
+
+- 内容里有按钮或链接：用[气泡卡片](./popover)——提示是够不着的。
+- 信息重要到不能错过：写在界面上，别藏进悬停。
+- 触摸设备是主要场景：那里没有悬停。
+
+### 特性
+
+- `openDelay` / `closeDelay` 防止指针路过时一路闪。
+- 聚焦也能触发，键盘用户拿得到。
+- 语气与尺寸两轴。
+- 默认保持反白的小型 M2 表面，与承载操作的 Popover 分开；六种语气都使用高遮蔽 tint 与不透明文字，箭头和气泡同色同边。
+- 进退场只做侧向短移与透明度，120ms 内完成，不缩放文字和箭头。
 
 ## 产物
 

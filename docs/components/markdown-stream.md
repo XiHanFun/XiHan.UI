@@ -1,37 +1,22 @@
-# 流式正文 <Badge type="info" text="markdown-stream" />
+# MarkdownStream <Badge type="info" text="流式正文" />
 
 把已经渲好的 Markdown 块列表投影成带稳定 key 的正文结构，按块的种类分流。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/markdown-stream" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/markdown-stream.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/markdown-stream" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/markdown-stream" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/markdown-stream.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 展示 AI 回复的正文，且正文是边生成边显示的。
-- 正文里混着代码块与公式，需要各自交给专门的组件渲染。
-
-## 何时不用
-
-- 正文是一次性拿到的静态文档：直接渲染就好，不必经过流式内核。
-- 只是一段纯文本：用[排印](./typography)。
-
-## 特性
-
-- **组件不解析 Markdown，也不持有渲染器。** 块列表由宿主调 `@xihan-ui/markdown` 的
-  `createStreamRenderer().render(全文)` 得到后传进来；渲染器是有状态的，谁持有谁负责。
-- 块的 `key` 是稳定的：生长中的那一块 key 恒定，定型的块 key 不再变化。
-  框架据此复用同一份 DOM 只改文本，用户每收到一个字都被重建节点的话，选区与滚动位置全丢。
-- **`html` 只对 markdown 块有效。** 代码块拿 `source` 交给[代码视图](./code-view)，
-  公式块拿 `source` 交给宿主自选的公式引擎；不接管的降级结果是把原文当正文显示。
-- 流式光标是皮肤的 `::after`，不做成组件。它画在带 `data-caret` 的那一格上：
-  正文在长的时候是生长的那一块，一块都还没来的时候是外壳，所以请求刚发出去、
-  一个字都没到的那一段，页面上也有东西。`caret` 设成 `false` 时两处都不发这个属性。
-- 光标在等第一个字的时候闪，出字之后停在实心：正文自己在动，再闪一下只是噪声。
-
-## 示例
-
-### 基础用法
+## 用法
 
 块列表由宿主用流式渲染器得到，组件只按 key 铺开、按种类分流
 
 <XhDemo src="markdown-stream/01-basic" />
+
+## 示例
 
 ### 流式增长
 
@@ -56,6 +41,31 @@ markdown 块铺 html，代码块拿 source 交出去——照 html 渲会让同�
 size 换正文字号与块间距，三档共用同一份块列表
 
 <XhDemo src="markdown-stream/05-size" />
+
+## 设计指引
+
+### 何时使用
+
+- 展示 AI 回复的正文，且正文是边生成边显示的。
+- 正文里混着代码块与公式，需要各自交给专门的组件渲染。
+
+### 何时不用
+
+- 正文是一次性拿到的静态文档：直接渲染就好，不必经过流式内核。
+- 只是一段纯文本：用[排印](./typography)。
+
+### 特性
+
+- **组件不解析 Markdown，也不持有渲染器。** 块列表由宿主调 `@xihan-ui/markdown` 的
+  `createStreamRenderer().render(全文)` 得到后传进来；渲染器是有状态的，谁持有谁负责。
+- 块的 `key` 是稳定的：生长中的那一块 key 恒定，定型的块 key 不再变化。
+  框架据此复用同一份 DOM 只改文本，用户每收到一个字都被重建节点的话，选区与滚动位置全丢。
+- **`html` 只对 markdown 块有效。** 代码块拿 `source` 交给[代码视图](./code-view)，
+  公式块拿 `source` 交给宿主自选的公式引擎；不接管的降级结果是把原文当正文显示。
+- 流式光标是皮肤的 `::after`，不做成组件。它画在带 `data-caret` 的那一格上：
+  正文在长的时候是生长的那一块，一块都还没来的时候是外壳，所以请求刚发出去、
+  一个字都没到的那一段，页面上也有东西。`caret` 设成 `false` 时两处都不发这个属性。
+- 光标在等第一个字的时候闪，出字之后停在实心：正文自己在动，再闪一下只是噪声。
 
 ## 产物
 

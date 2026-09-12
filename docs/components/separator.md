@@ -1,36 +1,22 @@
-# 分隔线 <Badge type="info" text="separator" />
+# Separator <Badge type="info" text="分隔线" />
 
 在两组内容之间画一条线，并说清楚这条线是语义分隔还是纯装饰。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/separator" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/separator.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/separator" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/separator" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/separator.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 菜单、列表、工具栏里切开两组不同性质的条目。
-- 一行里放两条线、中间留出分节标题。
-
-## 何时不用
-
-- 只是想拉开距离：用间距，别用线。线是"这两边不是一回事"的声明。
-- 每一项之间都要线：那通常说明列表本身该换成分组结构。
-
-## 特性
-
-- `decorative` 开启后用 `role="none"` + `aria-hidden="true"` 把整段（包括可见分节文字）退出无障碍树，
-  同时不出 `aria-orientation`；只是排版用的线应该这么写。带业务含义的分节文字不要开 decorative。
-- 给了 `content` 就自动排成「线 · 文字 · 线」三段：间距、字号与线长都走令牌，不必在外层手搓。
-- `align` 把分节文字挪到靠左或靠右，那一侧的线收成一小截。
-- `variant` 三档只换线的深浅：默认线使用会随浅深色、对比度与透明度策略变化的材质分隔色，
-  subtle 使用实体低对比线，strong 使用高对比边界。
-- `dashed` 画虚线，横竖两个朝向各自成立；段长走 `--xh-separator-dash-length` / `-dash-gap`。
-- 线是拿背景画出来的：颜色槽位收的是背景值，粗细是另一个槽位；圆润端点避免细线在玻璃表面显得生硬。
-- 竖向分隔线需要父容器有确定高度。
-
-## 示例
-
-### 方向
+## 用法
 
 竖向分隔线需要父容器有确定高度
 
 <XhDemo src="separator/01-basic" />
+
+## 示例
 
 ### 纯装饰
 
@@ -49,6 +35,30 @@ decorative 开启后读屏跳过它；只是排版用的横线应该这么写
 variant 三档换深浅，dashed 画虚线（横竖各自成立），粗细与颜色仍是两个槽位
 
 <XhDemo src="separator/04-line-style" />
+
+## 设计指引
+
+### 何时使用
+
+- 菜单、列表、工具栏里切开两组不同性质的条目。
+- 一行里放两条线、中间留出分节标题。
+
+### 何时不用
+
+- 只是想拉开距离：用间距，别用线。线是"这两边不是一回事"的声明。
+- 每一项之间都要线：那通常说明列表本身该换成分组结构。
+
+### 特性
+
+- `decorative` 开启后用 `role="none"` + `aria-hidden="true"` 把整段（包括可见分节文字）退出无障碍树，
+  同时不出 `aria-orientation`；只是排版用的线应该这么写。带业务含义的分节文字不要开 decorative。
+- 给了 `content` 就自动排成「线 · 文字 · 线」三段：间距、字号与线长都走令牌，不必在外层手搓。
+- `align` 把分节文字挪到靠左或靠右，那一侧的线收成一小截。
+- `variant` 三档只换线的深浅：默认线使用会随浅深色、对比度与透明度策略变化的材质分隔色，
+  subtle 使用实体低对比线，strong 使用高对比边界。
+- `dashed` 画虚线，横竖两个朝向各自成立；段长走 `--xh-separator-dash-length` / `-dash-gap`。
+- 线是拿背景画出来的：颜色槽位收的是背景值，粗细是另一个槽位；圆润端点避免细线在玻璃表面显得生硬。
+- 竖向分隔线需要父容器有确定高度。
 
 ## 产物
 
