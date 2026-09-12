@@ -43,6 +43,7 @@ afterEach(async () => {
   host?.remove()
   host = null
   delete document.documentElement.dataset.density
+  delete document.documentElement.dataset.theme
   await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
 })
 
@@ -142,5 +143,24 @@ describe('action Control 状态与命中区', () => {
     host!.append(business)
     expect(getComputedStyle(business).display).not.toBe('inline-flex')
     expect(getComputedStyle(business).backgroundImage).toBe('none')
+  })
+
+  it('深色主题的品牌实心按钮保持深品牌面与浅色文字', () => {
+    document.documentElement.dataset.theme = 'dark'
+    mount(() => h('div', null, [
+      h(XhButton, { variant: 'solid' }, () => '主要'),
+      h(XhButtonGroup, { variant: 'solid' }, () => [
+        h(XhButton, null, () => '照片'),
+        h(XhButton, null, () => '视频'),
+      ]),
+    ]))
+
+    const [standalone, grouped] = [...host!.querySelectorAll<HTMLButtonElement>('[data-xh-action-control]')]
+    const tokens = getComputedStyle(document.documentElement)
+    for (const button of [standalone, grouped]) {
+      const style = getComputedStyle(button!)
+      expect(style.backgroundColor).toBe(tokens.getPropertyValue('--xh-color-brand-600').trim())
+      expect(style.color).toBe(tokens.getPropertyValue('--xh-color-neutral-0').trim())
+    }
   })
 })
