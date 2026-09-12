@@ -1,31 +1,32 @@
-// 贴下边 | 给了 offset-bottom 就改贴可视区的下边，判定线也换到下边
+// 底部固定 | 将操作栏固定在底部
 import type { ReactNode } from "react";
 import { XhAffixContent, XhAffixRoot } from "@xihan-ui/react";
-import { useState } from "react";
+import { useRef } from "react";
 
 export default function Demo(): ReactNode {
-  const [scrollEl, setScrollEl] = useState<HTMLElement | null>(null);
+  const scrollEl = useRef<HTMLDivElement>(null);
 
   return (
     <div
-      ref={setScrollEl}
+      ref={scrollEl}
       style={{
         blockSize: "240px",
+        inlineSize: "min(420px, 100%)",
         overflow: "auto",
         padding: "12px",
-        border: "1px solid var(--xh-border-default)",
-        borderRadius: "8px",
+        borderRadius: "var(--xh-shape-surface)",
+        background: "var(--xh-bg-subtle)",
       }}
     >
-      <p style={{ blockSize: "80px" }}>这块工具条在滚到它之前就贴在容器底边，滚过去之后回到常规流。</p>
+      <div style={{ blockSize: "80px" }}>订单列表</div>
 
-      <XhAffixRoot target={scrollEl} offsetBottom={12}>
+      <XhAffixRoot target={() => scrollEl.current} offsetBottom={12}>
         <XhAffixContent
           style={{
             display: "flex",
             gap: "8px",
             padding: "8px 12px",
-            borderRadius: "6px",
+            borderRadius: "var(--xh-shape-control)",
             background: "var(--xh-bg-surface-raised)",
             boxShadow: "var(--xh-elevation-floating)",
           }}
@@ -35,7 +36,7 @@ export default function Demo(): ReactNode {
         </XhAffixContent>
       </XhAffixRoot>
 
-      <p style={{ blockSize: "600px" }}>下面是很长的列表内容。</p>
+      <div style={{ blockSize: "600px" }} />
     </div>
   );
 }

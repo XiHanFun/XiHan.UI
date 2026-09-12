@@ -1,24 +1,24 @@
-// 让出吸顶栏 | offset-top 把判定线往下挪，钉住后也在同一位置留出这段高度
+// 顶部偏移 | 避让固定页头
 import type { ReactNode } from "react";
 import { XhAffixContent, XhAffixRoot } from "@xihan-ui/react";
-import { useState } from "react";
+import { useRef } from "react";
 
 export default function Demo(): ReactNode {
-  const [scrollEl, setScrollEl] = useState<HTMLElement | null>(null);
+  const scrollEl = useRef<HTMLDivElement>(null);
 
   return (
     <div
-      ref={setScrollEl}
+      ref={scrollEl}
       style={{
         position: "relative",
         blockSize: "240px",
+        inlineSize: "min(420px, 100%)",
         overflow: "auto",
         padding: "12px",
-        border: "1px solid var(--xh-border-default)",
-        borderRadius: "8px",
+        borderRadius: "var(--xh-shape-surface)",
+        background: "var(--xh-bg-subtle)",
       }}
     >
-      {/* 容器自带一条 40px 的吸顶栏，钉住的内容要躲开它 */}
       <div
         style={{
           position: "sticky",
@@ -34,22 +34,22 @@ export default function Demo(): ReactNode {
         吸顶栏
       </div>
 
-      <p style={{ blockSize: "120px" }}>往下滚。</p>
+      <div style={{ blockSize: "120px" }} />
 
-      <XhAffixRoot target={scrollEl} offsetTop={40}>
+      <XhAffixRoot target={() => scrollEl.current} offsetTop={40}>
         <XhAffixContent
           style={{
             padding: "8px 12px",
-            borderRadius: "6px",
-            background: "var(--xh-bg-brand)",
-            color: "var(--xh-fg-on-brand)",
+            borderRadius: "var(--xh-shape-control)",
+            background: "var(--xh-bg-brand-subtle)",
+            color: "var(--xh-fg-brand)",
           }}
         >
-          钉在吸顶栏下方 40px 处
+          二级工具栏
         </XhAffixContent>
       </XhAffixRoot>
 
-      <p style={{ blockSize: "600px" }}>后面还有很长的内容。</p>
+      <div style={{ blockSize: "600px" }} />
     </div>
   );
 }

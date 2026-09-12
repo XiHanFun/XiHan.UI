@@ -1,4 +1,4 @@
-<!-- 让出吸顶栏 | offset-top 把判定线往下挪，钉住后也在同一位置留出这段高度 -->
+<!-- 顶部偏移 | 避让固定页头 -->
 <script setup lang="ts">
 import { XhAffixContent, XhAffixRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -12,13 +12,13 @@ const scrollEl = ref<HTMLElement | null>(null);
     style="
       position: relative;
       block-size: 240px;
+      inline-size: min(420px, 100%);
       overflow: auto;
       padding: 12px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
     "
   >
-    <!-- 容器自带一条 40px 的吸顶栏，钉住的内容要躲开它 -->
     <div
       style="
         position: sticky;
@@ -34,21 +34,21 @@ const scrollEl = ref<HTMLElement | null>(null);
       吸顶栏
     </div>
 
-    <p style="block-size: 120px">往下滚。</p>
+    <div style="block-size: 120px" />
 
     <XhAffixRoot :target="scrollEl" :offset-top="40">
       <XhAffixContent
         style="
           padding: 8px 12px;
-          border-radius: 6px;
-          background: var(--xh-bg-brand);
-          color: var(--xh-fg-on-brand);
+          border-radius: var(--xh-shape-control);
+          background: var(--xh-bg-brand-subtle);
+          color: var(--xh-fg-brand);
         "
       >
-        钉在吸顶栏下方 40px 处
+        二级工具栏
       </XhAffixContent>
     </XhAffixRoot>
 
-    <p style="block-size: 600px">后面还有很长的内容。</p>
+    <div style="block-size: 600px" />
   </div>
 </template>

@@ -1,4 +1,4 @@
-<!-- 基础用法 | 滚过判定线就把内容钉在滚动容器可视区的上边；占位盒留在原位，页面不跳 -->
+<!-- 基础用法 | 滚动后固定工具栏 -->
 <script setup lang="ts">
 import { XhAffixContent, XhAffixRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -11,28 +11,28 @@ const scrollEl = ref<HTMLElement | null>(null);
     ref="scrollEl"
     style="
       block-size: 240px;
+      inline-size: min(420px, 100%);
       overflow: auto;
       padding: 12px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
     "
   >
-    <p style="block-size: 120px">往下滚，下面那条会钉在容器顶边。</p>
+    <div style="block-size: 120px; padding: 8px">项目概览</div>
 
-    <!-- target 指向真正在滚的那层；不给就按整页滚动算 -->
     <XhAffixRoot :target="scrollEl">
       <XhAffixContent
         style="
           padding: 8px 12px;
-          border-radius: 6px;
-          background: var(--xh-bg-brand);
-          color: var(--xh-fg-on-brand);
+          border-radius: var(--xh-shape-control);
+          background: var(--xh-bg-brand-subtle);
+          color: var(--xh-fg-brand);
         "
       >
-        我会钉在顶边
+        筛选与操作
       </XhAffixContent>
     </XhAffixRoot>
 
-    <p style="block-size: 600px">后面还有很长的内容，一直滚到底再滚回去。</p>
+    <div style="block-size: 600px; padding: 12px">项目动态<br><br>最近访问<br><br>团队成员</div>
   </div>
 </template>
