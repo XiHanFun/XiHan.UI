@@ -1,12 +1,18 @@
-<!-- 语气 | tone 决定两端取哪族颜色；写了 from / to 就由它们说了算，tone 让位 -->
+<!-- 颜色 | 使用预设语义颜色 -->
 <script setup lang="ts">
 import { XhGradientText } from "@xihan-ui/vue";
 
-const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
+const tones = [
+  { label: "品牌", value: "brand" },
+  { label: "成功", value: "success" },
+  { label: "警告", value: "warning" },
+  { label: "危险", value: "danger" },
+  { label: "信息", value: "info" },
+] as const;
 </script>
 
 <template>
-  <p v-for="tone in tones" :key="tone" style="margin: 0 0 8px; font-size: 28px; font-weight: 700">
-    <XhGradientText :tone="tone">曦寒前端组件库 · {{ tone }}</XhGradientText>
-  </p>
+  <div style="display: flex; flex-wrap: wrap; gap: 20px; font-size: 24px; font-weight: 700">
+    <XhGradientText v-for="tone in tones" :key="tone.value" :tone="tone.value">{{ tone.label }}</XhGradientText>
+  </div>
 </template>

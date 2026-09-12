@@ -20106,7 +20106,7 @@
               "type": {
                 "text": "Tone | undefined"
               },
-              "description": "语气，两端取该族颜色；写了 from / to 即让位",
+              "description": "颜色；显式 from / to 优先",
               "name": "tone",
               "fieldName": "tone"
             }

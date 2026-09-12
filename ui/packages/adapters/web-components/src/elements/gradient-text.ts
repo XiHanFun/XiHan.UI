@@ -19,7 +19,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {string} from - 起点颜色，写成 root 上的 --xh-gradient-text-from
  * @attr {string} to - 终点颜色，写成 root 上的 --xh-gradient-text-to
  * @attr {'to-right'|'to-left'|'to-bottom'|'to-top'|'to-bottom-right'|'to-bottom-left'|'to-top-right'|'to-top-left'} direction - 渐变走向档位，缺省 to-right
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，两端取该族颜色；写了 from / to 即让位
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色；显式 from / to 优先
  * @csspart root - 被上色的文字容器，承载 data-direction、data-tone 与两端颜色变量
  */
 export class XhGradientTextElement extends XhElement {

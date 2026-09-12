@@ -1,17 +1,20 @@
-// 语气 | tone 决定两端取哪族颜色；写了 from / to 就由它们说了算，tone 让位
+// 颜色 | 使用预设语义颜色
+import type { Tone } from "@xihan-ui/core";
 import type { ReactNode } from "react";
 import { XhGradientText } from "@xihan-ui/react";
 
-const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
+const tones: { label: string; value: Tone }[] = [
+  { label: "品牌", value: "brand" },
+  { label: "成功", value: "success" },
+  { label: "警告", value: "warning" },
+  { label: "危险", value: "danger" },
+  { label: "信息", value: "info" },
+];
 
 export default function Demo(): ReactNode {
   return (
-    <>
-      {tones.map(tone => (
-        <p key={tone} style={{ margin: "0 0 8px", fontSize: "28px", fontWeight: 700 }}>
-          <XhGradientText tone={tone}>{`曦寒前端组件库 · ${tone}`}</XhGradientText>
-        </p>
-      ))}
-    </>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", fontSize: "24px", fontWeight: 700 }}>
+      {tones.map(tone => <XhGradientText key={tone.value} tone={tone.value}>{tone.label}</XhGradientText>)}
+    </div>
   );
 }
