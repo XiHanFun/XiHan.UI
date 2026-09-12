@@ -159,14 +159,18 @@ export const affixMachine = createMachine({
         }
 
         flush(() => {
-          if (disposed)
-            return
-          tracker = createScrollTracker({
-            scope,
-            container: () => refs.get('getTargetEl')(),
-            onChange: resolve,
+          // React 的祖先 ref 要到整棵提交完成才就绪；延到微任务再解析 target，
+          // 避免子组件的 layout effect 抢在祖先 ref 之前把监听器错误绑到 window。
+          scope.getWin().queueMicrotask(() => {
+            if (disposed)
+              return
+            tracker = createScrollTracker({
+              scope,
+              container: () => refs.get('getTargetEl')(),
+              onChange: resolve,
+            })
+            resolve()
           })
-          resolve()
         })
 
         return () => {

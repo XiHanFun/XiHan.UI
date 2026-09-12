@@ -1,7 +1,6 @@
 import type { AffixApi, AffixSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { useCallback, useRef } from 'react'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
 import { AffixProvider, useAffixContext } from './context'
@@ -15,8 +14,8 @@ export interface AffixRootSlotProps extends Pick<AffixApi, 'affixed'> {}
 export interface XhAffixRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   offsetTop?: number
   offsetBottom?: number
-  /** 滚动容器，缺省即整页滚动；经 refs 交给观察器。 */
-  target?: HTMLElement | null
+  /** 滚动容器取值器，缺省即整页滚动；挂载效应执行时求值。 */
+  target?: () => HTMLElement | null
   onAffixChange?: AffixProps['onAffixChange']
   children?: SlotChildren<AffixRootSlotProps>
 }
@@ -30,11 +29,7 @@ export function XhAffixRoot({
   children,
   ...rest
 }: XhAffixRootProps): ReactNode {
-  // 取值器每帧换、接线只建一次：现读这一帧的 target，别让它成为重建的理由
-  const latest = useRef(target)
-  latest.current = target
-  const getTargetEl = useCallback(() => latest.current ?? null, [])
-  const ctx = useAffix({ offsetTop, offsetBottom, onAffixChange } as AffixProps, getTargetEl)
+  const ctx = useAffix({ offsetTop, offsetBottom, onAffixChange } as AffixProps, target)
   return (
     <AffixProvider value={ctx}>
       <div
