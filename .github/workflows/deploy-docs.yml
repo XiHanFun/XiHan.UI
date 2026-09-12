@@ -63,6 +63,11 @@ jobs:
       - name: 构建文档
         run: pnpm run build
 
+      # 产物包含供 Agent 直读的原始 Markdown，其中的 Vue/JSX 双花括号不是 Liquid 模板。
+      # 缺少该标记时 GitHub Pages 会再次交给 Jekyll 解析，合法示例会导致部署失败。
+      - name: 验证 GitHub Pages 静态托管标记
+        run: test -f .vitepress/dist/.nojekyll
+
       - name: 部署文档
         uses: JamesIves/github-pages-deploy-action@v4
         with:
