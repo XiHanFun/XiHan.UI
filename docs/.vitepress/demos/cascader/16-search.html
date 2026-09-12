@@ -1,4 +1,4 @@
-<!-- 搜索 | searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表替换列视图；上下键走候选、Enter 选中、Escape 先清词再收浮层。无匹配（试试输入「苏州」）时空态占位露面，文案经 translations 覆盖 -->
+<!-- 搜索 | 按完整路径筛选选项 -->
 <xh-cascader id="cascader-search" searchable placeholder="试试输入「西湖」或「苏州」">
   <div data-xh-part="root">
     <span data-xh-part="label">收货地区</span>
@@ -82,7 +82,6 @@
     </div>
   </div>
 </xh-cascader>
-<p>当前路径：<span id="cascader-search-value">（未选）</span></p>
 
 <script type="module">
   const cascader = document.getElementById("cascader-search");
@@ -125,9 +124,4 @@
   // 读屏与空态占位的文案是对象，只走属性
   cascader.translations = { noMatch: "未找到匹配的地区" };
 
-  const readout = document.getElementById("cascader-search-value");
-  cascader.addEventListener("value-change", (event) => {
-    const path = event.detail.value[0];
-    readout.textContent = path ? path.join(" / ") : "（未选）";
-  });
 </script>

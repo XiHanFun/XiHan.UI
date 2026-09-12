@@ -1,4 +1,4 @@
-<!-- 基础用法 | collection 是层级、显示文本与禁用的唯一事实源；levels 按深度摊开，每层一个 column -->
+<!-- 基础用法 | 按层级选择完整地区路径 -->
 <script setup lang="ts">
 import {
   XhCascaderColumn,
@@ -14,7 +14,6 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const regions = [
   {
@@ -51,12 +50,10 @@ const regions = [
     ],
   },
 ];
-
-const area = ref<string[][]>([]);
 </script>
 
 <template>
-  <XhCascaderRoot v-slot="{ levels }" v-model:value="area" :collection="regions" placeholder="请选择地区">
+  <XhCascaderRoot v-slot="{ levels }" :collection="regions" placeholder="请选择地区">
     <XhCascaderLabel>收货地区</XhCascaderLabel>
     <XhCascaderControl>
       <XhCascaderTrigger>
@@ -75,5 +72,4 @@ const area = ref<string[][]>([]);
       </XhCascaderContent>
     </XhCascaderPositioner>
   </XhCascaderRoot>
-  <p>当前路径：{{ area.length ? area[0].join(" / ") : "（未选）" }}</p>
 </template>

@@ -1,4 +1,4 @@
-<!-- 基础用法 | collection 是层级、显示文本与禁用的唯一事实源；levels 按深度摊开，每层一个 column -->
+<!-- 基础用法 | 按层级选择完整地区路径 -->
 <xh-cascader id="cascader-basic" placeholder="请选择地区">
   <div data-xh-part="root">
     <span data-xh-part="label">收货地区</span>
@@ -60,10 +60,8 @@
     </div>
   </div>
 </xh-cascader>
-<p>当前路径：<span id="cascader-basic-value">（未选）</span></p>
 
 <script type="module">
-  // 树数据是数组，只走属性；标记里的列与条目照它的层级摆
   const cascader = document.getElementById("cascader-basic");
   cascader.collection = [
     {
@@ -101,9 +99,4 @@
     },
   ];
 
-  const readout = document.getElementById("cascader-basic-value");
-  cascader.addEventListener("value-change", (event) => {
-    const path = event.detail.value[0];
-    readout.textContent = path ? path.join(" / ") : "（未选）";
-  });
 </script>

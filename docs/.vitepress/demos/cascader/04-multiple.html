@@ -1,4 +1,4 @@
-<!-- 多选 | 选中的是一组路径，落值后浮层不收起、焦点留在列里接着挑；再点一次即取消 -->
+<!-- 多选 | 选择多个分类路径 -->
 <xh-cascader id="cascader-multiple" multiple placeholder="可以多挑几条">
   <div data-xh-part="root">
     <span data-xh-part="label">采购清单</span>
@@ -43,7 +43,6 @@
     </div>
   </div>
 </xh-cascader>
-<p id="cascader-multiple-value">已选 1 条：fruit/apple</p>
 
 <script type="module">
   const cascader = document.getElementById("cascader-multiple");
@@ -66,13 +65,9 @@
     },
   ];
 
-  // 选中路径集合是数组，只走属性；给了它即受控，宿主写回才算数
   cascader.value = [["fruit", "apple"]];
 
-  const readout = document.getElementById("cascader-multiple-value");
   cascader.addEventListener("value-change", (event) => {
     cascader.value = event.detail.value;
-    const text = event.detail.value.map((path) => path.join("/")).join("、");
-    readout.textContent = `已选 ${event.detail.value.length} 条：${text || "（无）"}`;
   });
 </script>

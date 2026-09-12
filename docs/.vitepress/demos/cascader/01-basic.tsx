@@ -1,4 +1,4 @@
-// 基础用法 | collection 是层级、显示文本与禁用的唯一事实源；levels 按深度摊开，每层一个 column
+// 基础用法 | 按层级选择完整地区路径
 import type { ReactNode } from "react";
 import {
   XhCascaderColumn,
@@ -14,7 +14,6 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/react";
-import { useState } from "react";
 
 const regions = [
   {
@@ -53,43 +52,33 @@ const regions = [
 ];
 
 export default function Demo(): ReactNode {
-  const [area, setArea] = useState<string[][]>([]);
-
   return (
-    <>
-      <XhCascaderRoot
-        value={area}
-        onValueChange={details => setArea(details.value)}
-        collection={regions}
-        placeholder="请选择地区"
-      >
-        {({ levels }) => (
-          <>
-            <XhCascaderLabel>收货地区</XhCascaderLabel>
-            <XhCascaderControl>
-              <XhCascaderTrigger>
-                <XhCascaderValueText />
-                <XhCascaderIndicator />
-              </XhCascaderTrigger>
-            </XhCascaderControl>
-            <XhCascaderPositioner>
-              <XhCascaderContent>
-                {levels.map(lv => (
-                  <XhCascaderColumn key={lv.level} level={lv.level}>
-                    {lv.items.map(node => (
-                      <XhCascaderItem key={node.value} value={node.value}>
-                        <XhCascaderItemText>{node.label}</XhCascaderItemText>
-                        <XhCascaderItemIndicator />
-                      </XhCascaderItem>
-                    ))}
-                  </XhCascaderColumn>
-                ))}
-              </XhCascaderContent>
-            </XhCascaderPositioner>
-          </>
-        )}
-      </XhCascaderRoot>
-      <p>{`当前路径：${area[0]?.join(" / ") ?? "（未选）"}`}</p>
-    </>
+    <XhCascaderRoot collection={regions} placeholder="请选择地区">
+      {({ levels }) => (
+        <>
+          <XhCascaderLabel>收货地区</XhCascaderLabel>
+          <XhCascaderControl>
+            <XhCascaderTrigger>
+              <XhCascaderValueText />
+              <XhCascaderIndicator />
+            </XhCascaderTrigger>
+          </XhCascaderControl>
+          <XhCascaderPositioner>
+            <XhCascaderContent>
+              {levels.map(lv => (
+                <XhCascaderColumn key={lv.level} level={lv.level}>
+                  {lv.items.map(node => (
+                    <XhCascaderItem key={node.value} value={node.value}>
+                      <XhCascaderItemText>{node.label}</XhCascaderItemText>
+                      <XhCascaderItemIndicator />
+                    </XhCascaderItem>
+                  ))}
+                </XhCascaderColumn>
+              ))}
+            </XhCascaderContent>
+          </XhCascaderPositioner>
+        </>
+      )}
+    </XhCascaderRoot>
   );
 }
