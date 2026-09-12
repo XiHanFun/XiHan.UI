@@ -15,7 +15,7 @@ export interface GradientTextProps {
   to?: string
   /** 渐变走向档位，缺省 to-right。 */
   direction?: GradientTextDirection
-  /** 语气：brand / neutral / success / warning / danger / info，两端取该族颜色；写了 from / to 即让位。 */
+  /** 颜色：brand / neutral / success / warning / danger / info；显式 from / to 优先。 */
   tone?: Tone
 }
 

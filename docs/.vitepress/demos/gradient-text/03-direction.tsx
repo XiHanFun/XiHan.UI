@@ -1,25 +1,22 @@
-// 走向 | direction 收的是档位，四条边加四个角共八档，逐档对应 CSS 渐变的 to 边或角写法；不收任意角度
+// 方向 | 设置渐变方向
+import type { GradientTextDirection } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import { XhGradientText } from "@xihan-ui/react";
 
-const directions = [
-  "to-right",
-  "to-left",
-  "to-bottom",
-  "to-top",
-  "to-bottom-right",
-  "to-bottom-left",
-  "to-top-right",
-  "to-top-left",
-] as const;
+const directions: { label: string; value: GradientTextDirection }[] = [
+  { label: "向右", value: "to-right" },
+  { label: "向下", value: "to-bottom" },
+  { label: "右下", value: "to-bottom-right" },
+  { label: "右上", value: "to-top-right" },
+];
 
 export default function Demo(): ReactNode {
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", fontSize: "24px", fontWeight: 700 }}>
-      {directions.map(d => (
-        <span key={d}>
-          <XhGradientText direction={d} from="#ff5500" to="#0055ff">{d}</XhGradientText>
-        </span>
+      {directions.map(direction => (
+        <XhGradientText key={direction.value} direction={direction.value} from="#f97316" to="#2563eb">
+          {direction.label}
+        </XhGradientText>
       ))}
     </div>
   );

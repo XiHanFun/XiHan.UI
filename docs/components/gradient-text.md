@@ -1,6 +1,6 @@
 # GradientText 渐变文字
 
-把渐变裁进字形里：颜色只出现在笔画上，不铺成一块底色。
+用于为短文本添加渐变色强调。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/gradient-text" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-渐变裁进字形里；不给颜色就用品牌色族，走向缺省从左到右
+使用默认品牌渐变
 
 <XhDemo src="gradient-text/01-basic" />
 
@@ -24,27 +24,27 @@
 
 ## 示例
 
-### 两端颜色
+### 自定义颜色
 
-from 与 to 收颜色值，落成根上的 CSS 变量；写令牌或写具体色值都行
+设置渐变两端颜色
 
 <XhDemo src="gradient-text/02-colors" />
 
-### 走向
+### 方向
 
-direction 收的是档位，四条边加四个角共八档，逐档对应 CSS 渐变的 to 边或角写法；不收任意角度
+设置渐变方向
 
 <XhDemo src="gradient-text/03-direction" />
 
-### 只渐变一段
+### 行内强调
 
-组件是行内的，可以只包住整句话里的几个字，字号字重由外面的文字决定
+只为关键词添加渐变
 
 <XhDemo src="gradient-text/04-partial" />
 
 ### 颜色
 
-tone 决定两端取哪族颜色；写了 from / to 就由它们说了算，tone 让位
+使用预设语义颜色
 
 <XhDemo src="gradient-text/05-tone" />
 
@@ -52,34 +52,35 @@ tone 决定两端取哪族颜色；写了 from / to 就由它们说了算，tone
 
 ### 何时使用
 
-- 标题、品牌字样、营销页里需要一处视觉重音的短句。
+- 标题、品牌名称或营销短句。
+- 需要突出显示的关键词。
 
 ### 何时不用
 
-- 正文、表单标签、任何需要长时间阅读的文字：渐变会让对比度沿着文字变化，读起来更费力。
-- 需要底色而不是字色：那是普通容器的背景。
+- 正文、表单标签和长篇内容。
+- 对比度要求严格的关键信息。
 
 ### 特性
 
-- 组件是行内的，可以只包住整句话里的几个字，字号字重由外面的文字决定。
-- `from` / `to` 收颜色值并落成根上的 CSS 变量，写令牌或写具体色值都行；不给就用品牌色族。
-- `direction` 收的是档位——四条边加四个角共八档，不收任意角度。
-- `tone` 换成六族语气之一，两端自动取该族的主色与压深一档；写了 `from` / `to` 就以它们为准。
-- 高对比、强制色和打印环境自动退回当前实体前景；选中与复制仍使用原始文本，不生成替代内容。
+- 继承外部字号与字重，可用于行内文本。
+- `from` 与 `to` 设置渐变两端颜色。
+- `direction` 提供八个方向。
+- `tone` 使用预设颜色；显式颜色优先。
+- 高对比、强制色和打印环境自动使用实体前景色。
 
 ### 组合
 
-- 嵌在[排印](./typography)的标题里只强调其中几个字。
+- 嵌入[排印](./typography)标题中强调关键词。
 
 ### 最佳实践
 
-- 两端颜色的明度要接近，否则一句话里会有一半读不清。
-- 同一页面只用一处，用多了就不再是重音。
+- 使用明度接近的两端颜色。
+- 每个视图只保留少量渐变强调。
 
 ### 反模式
 
-- 拿它做正文或长段落。
-- 两端取对比度极低的相近色：渐变看不出来，只剩渲染成本。
+- 不要用于正文或长段落。
+- 不要使用几乎无法区分的两端颜色。
 
 ## API 参考
 
@@ -99,7 +100,7 @@ tone 决定两端取哪族颜色；写了 from / to 就由它们说了算，tone
 | `direction` | `GradientTextDirection` |  | 渐变走向档位，缺省 to-right。 |
 | `from` | `string` |  | 起点颜色，写成 CSS 变量交给皮肤；不给则用品牌色族。 |
 | `to` | `string` |  | 终点颜色，写成 CSS 变量交给皮肤；不给则用品牌色族。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，两端取该族颜色；写了 from / to 即让位。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info；显式 from / to 优先。 |
 
 ### connect API
 

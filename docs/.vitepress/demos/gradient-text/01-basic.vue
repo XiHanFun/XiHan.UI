@@ -1,4 +1,4 @@
-<!-- 基础用法 | 渐变裁进字形里；不给颜色就用品牌色族，走向缺省从左到右 -->
+<!-- 基础用法 | 使用默认品牌渐变 -->
 <script setup lang="ts">
 import { XhGradientText } from "@xihan-ui/vue";
 </script>

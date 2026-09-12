@@ -1,25 +1,6 @@
-<!-- 两端颜色 | from 与 to 收颜色值，落成根上的 CSS 变量；写令牌或写具体色值都行 -->
-<div
-  style="display: flex; flex-direction: column; gap: 12px; font-size: 28px; font-weight: 700"
->
-  <p>
-    <xh-gradient-text from="#ff5500" to="#ff0088">
-      <span data-xh-part="root">从 #ff5500 渐到 #ff0088</span>
-    </xh-gradient-text>
-  </p>
-  <p>
-    <xh-gradient-text from="#00b8d9" to="#6554c0">
-      <span data-xh-part="root">从 #00b8d9 渐到 #6554c0</span>
-    </xh-gradient-text>
-  </p>
-  <p>
-    <xh-gradient-text
-      from="var(--xh-color-success-500)"
-      to="var(--xh-color-info-600)"
-    >
-      <span data-xh-part="root">
-        从 var(--xh-color-success-500) 渐到 var(--xh-color-info-600)
-      </span>
-    </xh-gradient-text>
-  </p>
+<!-- 自定义颜色 | 设置渐变两端颜色 -->
+<div style="display: flex; flex-direction: column; gap: 12px; font-size: 28px; font-weight: 700">
+  <xh-gradient-text from="#f97316" to="#ec4899"><span data-xh-part="root">日落橙</span></xh-gradient-text>
+  <xh-gradient-text from="#8b5cf6" to="#06b6d4"><span data-xh-part="root">极光紫</span></xh-gradient-text>
+  <xh-gradient-text from="#0ea5e9" to="#2563eb"><span data-xh-part="root">海洋蓝</span></xh-gradient-text>
 </div>
