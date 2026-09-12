@@ -1,86 +1,17 @@
-<!-- 分组与标记位 | 组标题与组内条目用 role="group" 加 aria-labelledby 对上；中间包一层不影响方向键行程，条目里标记位与文字各占一段 -->
+<!-- 分组 | 使用标题与分隔线组织命令 -->
 <script setup lang="ts">
-import { CheckIcon } from "@xihan-ui/icons";
-import {
-  XhIcon,
-  XhMenuContent,
-  XhMenuGroup,
-  XhMenuGroupLabel,
-  XhMenuItem,
-  XhMenuPositioner,
-  XhMenuRoot,
-  XhMenuSeparator,
-  XhMenuTrigger,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
+import { XhButton, XhMenuRoot } from "@xihan-ui/vue";
 
-const groups = [
-  {
-    value: "density",
-    label: "行高",
-    items: [
-      { value: "compact", label: "紧凑" },
-      { value: "comfortable", label: "宽松" },
-    ],
-  },
-  {
-    value: "panel",
-    label: "面板",
-    items: [
-      { value: "sidebar", label: "侧栏" },
-      { value: "inspector", label: "属性面板" },
-    ],
-  },
+const actions = [
+  { value: "compact", label: "紧凑", group: "density", groupLabel: "行高" },
+  { value: "comfortable", label: "宽松", indicator: "✓", group: "density" },
+  { value: "sidebar", label: "侧栏", indicator: "✓", group: "panels", groupLabel: "面板", separatorBefore: true },
+  { value: "inspector", label: "属性面板", group: "panels" },
 ];
-
-const density = ref("comfortable");
-const panels = ref<string[]>(["sidebar"]);
-
-function checked(group: string, value: string): boolean {
-  return group === "density" ? density.value === value : panels.value.includes(value);
-}
-
-function onSelect(details: { value: string }): void {
-  if (details.value === "compact" || details.value === "comfortable") {
-    density.value = details.value;
-    return;
-  }
-  panels.value = panels.value.includes(details.value)
-    ? panels.value.filter(v => v !== details.value)
-    : [...panels.value, details.value];
-}
-
-// 标记位恒占一格，勾不勾都不推动后面的文字
-const markStyle = {
-  flex: "none",
-  inlineSize: "14px",
-};
 </script>
 
 <template>
-  <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-    <XhMenuRoot @select="onSelect">
-      <XhMenuTrigger>视图</XhMenuTrigger>
-      <XhMenuPositioner>
-        <XhMenuContent>
-          <template v-for="(g, index) in groups" :key="g.value">
-            <XhMenuSeparator v-if="index > 0" />
-            <XhMenuGroup :value="g.value">
-              <XhMenuGroupLabel>{{ g.label }}</XhMenuGroupLabel>
-              <XhMenuItem v-for="item in g.items" :key="item.value" :value="item.value">
-                <span :style="markStyle"><XhIcon v-if="checked(g.value, item.value)" :icon="CheckIcon" /></span>
-                <span>{{ item.label }}</span>
-              </XhMenuItem>
-            </XhMenuGroup>
-          </template>
-        </XhMenuContent>
-      </XhMenuPositioner>
-    </XhMenuRoot>
-
-    <span>
-      行高：{{ density === "compact" ? "紧凑" : "宽松" }}；面板：{{
-        panels.length ? `${panels.length} 个` : "都收起了"
-      }}
-    </span>
-  </div>
+  <XhMenuRoot :collection="actions" trigger-as-child>
+    <template #trigger><XhButton variant="subtle">视图</XhButton></template>
+  </XhMenuRoot>
 </template>
