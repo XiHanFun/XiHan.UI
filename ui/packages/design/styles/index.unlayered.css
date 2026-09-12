@@ -558,7 +558,7 @@
   align-self: center;
   z-index: 1;
   border-radius: var(--xh-button-group-separator-radius, var(--xh-shape-pill));
-  background: var(--xh-button-group-separator-color, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+  background: var(--xh-button-group-separator-color, var(--xh-fg-default));
   opacity: var(--xh-button-group-separator-opacity, var(--xh-control-separator-opacity));
   pointer-events: none;
   transition:

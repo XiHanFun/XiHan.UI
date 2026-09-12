@@ -10,12 +10,12 @@ import { slotPaints } from '../../runtime/slot-content'
 
 /**
  * 把一个图元节点建成元素，递归到底。
- * 标签与属性名逐字透传（连字符与大小写都保留），命名空间由 React 从父 svg 往下带。
+ * 标签大小写原样保留；SVG 呈现属性先转成 React 属性名，落到 DOM 后仍是标准连字符写法。
  */
 function renderNode(node: IconNode, key: number): ReactElement {
   return createElement(
     node.tag,
-    { ...node.attrs, key },
+    { ...reactNormalize.element((node.attrs ?? {}) as Record<string, unknown>), key },
     node.children?.map((child, index) => renderNode(child, index)),
   )
 }

@@ -832,7 +832,7 @@ function renderComponent(entry, category) {
   const authored = title => doc?.sections[title]
 
   const status = entry.status === 'new'
-    ? ' <Badge type="tip" text="新增" />'
+    ? ' <Badge type="tip" text="new" />'
     : entry.status === 'updated'
       ? ' <Badge type="warning" text="更新" />'
       : ''

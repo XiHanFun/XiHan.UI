@@ -33,6 +33,9 @@ export interface XhButtonProps extends Omit<ComponentPropsWithRef<'button'>, 'ty
   shape?: ButtonProps['shape']
   /** 渲染成哪个标签，默认 button；写成 a 时作者自行给 href。 */
   as?: ButtonProps['as']
+  href?: ComponentPropsWithRef<'a'>['href']
+  target?: ComponentPropsWithRef<'a'>['target']
+  rel?: ComponentPropsWithRef<'a'>['rel']
 }
 
 export function XhButton({
@@ -74,7 +77,7 @@ export function XhButton({
   // 那是 DOM 语义：React 的合成事件既没有这个方法，两个处理器也早被合成一条链，拦不住。
   // 装成原生监听器之后，事件在节点上就被截住、根本到不了 React 委派的那一层
   const bind = useNativeEvents(api.getRootProps() as Record<string, unknown>)
-  const Tag = as as 'button'
+  const Tag = as as 'button' | 'a'
   return (
     <ButtonCtx value={api}>
       <Tag {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>

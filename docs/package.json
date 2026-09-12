@@ -43,10 +43,14 @@
     "@xihan-ui/styles": "link:../ui/packages/design/styles",
     "@xihan-ui/vue": "link:../ui/packages/adapters/vue",
     "@xihan-ui/web-components": "link:../ui/packages/adapters/web-components",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
     "vitepress": "^1.6.4",
     "vue": "^3.5.39"
   },
   "devDependencies": {
+    "@types/react": "19.2.0",
+    "@types/react-dom": "19.2.0",
     "@xihan-ui/eslint-config": "link:../ui/tooling/eslint-config",
     "eslint": "10.7.0"
   }

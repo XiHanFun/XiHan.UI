@@ -18,6 +18,20 @@ const ATTR_ALIAS: Record<string, string> = {
   'novalidate': 'noValidate', // 1
   'autocorrect': 'autoCorrect', // 1
   'shape-rendering': 'shapeRendering', // 1
+  'fill-opacity': 'fillOpacity',
+  'fill-rule': 'fillRule',
+  'clip-rule': 'clipRule',
+  'stroke-width': 'strokeWidth',
+  'stroke-linecap': 'strokeLinecap',
+  'stroke-linejoin': 'strokeLinejoin',
+  'stroke-miterlimit': 'strokeMiterlimit',
+  'stroke-dasharray': 'strokeDasharray',
+  'stroke-dashoffset': 'strokeDashoffset',
+  'stroke-opacity': 'strokeOpacity',
+  'vector-effect': 'vectorEffect',
+  'clip-path': 'clipPath',
+  'stop-color': 'stopColor',
+  'stop-opacity': 'stopOpacity',
 }
 
 // React 合成事件名，按全小写形式索引。headless 里同一个事件有两种写法并存

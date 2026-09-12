@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { Component } from "vue";
+import type { ComponentType } from "react";
+import type { Root as ReactRoot } from "react-dom/client";
 import { XhCodeViewCode, XhCodeViewPre, XhCodeViewRoot } from "@xihan-ui/vue";
 import { useData } from "vitepress";
 import {
@@ -27,6 +29,7 @@ const props = defineProps<{
 // 预览与源码取自同一个文件，两者不可能对不上。
 // 不用 eager：示例有一千多份，全量打进主题块的话每页都要下载整套
 const vueModules = import.meta.glob<{ default: Component }>("../demos/**/*.vue");
+const reactModules = import.meta.glob<{ default: ComponentType }>("../demos/**/*.tsx");
 const vueSources = import.meta.glob<string>("../demos/**/*.vue", {
   query: "?raw",
   import: "default",
@@ -123,6 +126,39 @@ const notApplicable = computed(() =>
 );
 
 const wcHost = ref<HTMLElement | null>(null);
+const reactHost = ref<HTMLElement | null>(null);
+let reactRoot: ReactRoot | undefined;
+let reactRequest = 0;
+
+function unmountReact() {
+  reactRequest += 1;
+  reactRoot?.unmount();
+  reactRoot = undefined;
+}
+
+watchPostEffect(() => {
+  const host = reactHost.value;
+  if (demoFramework.value !== "react" || !host) {
+    unmountReact();
+    return;
+  }
+  const load = reactModules[`../demos/${props.src}.tsx`];
+  if (!load)
+    return;
+  const request = ++reactRequest;
+  reactRoot?.unmount();
+  reactRoot = undefined;
+  void Promise.all([import("react"), import("react-dom/client"), load()]).then(
+    ([React, ReactDOM, module]) => {
+      if (request !== reactRequest || reactHost.value !== host)
+        return;
+      reactRoot = ReactDOM.createRoot(host);
+      reactRoot.render(React.createElement(module.default));
+    },
+  );
+});
+
+onScopeDispose(unmountReact);
 
 // 自定义元素全站注册一次，且只在浏览器里注册
 let defined: Promise<void> | undefined;
@@ -187,7 +223,16 @@ async function copy() {
       v-bind="stageBindings"
     >
       <component :is="vueDemo" v-if="vueDemo" />
-      <div v-else-if="!missing" ref="wcHost" class="xh-demo__wc" />
+      <div
+        v-else-if="demoFramework === 'react' && !missing"
+        ref="reactHost"
+        class="xh-demo__runtime"
+      />
+      <div
+        v-else-if="demoFramework === 'web-components' && !missing"
+        ref="wcHost"
+        class="xh-demo__runtime"
+      />
       <div v-else class="xh-demo__missing">
         <p v-if="notApplicable">{{ activeName }} 版不适用：{{ notApplicable }}</p>
         <p v-else>这个示例还没有 {{ activeName }} 版：{{ src }}</p>
@@ -262,7 +307,7 @@ async function copy() {
   color: var(--xh-fg-default);
 }
 /* 自定义元素的示例整体挂在这一层，摆位与 Vue 那份一致 */
-.xh-demo__wc {
+.xh-demo__runtime {
   display: flex;
   flex-wrap: wrap;
   align-items: center;

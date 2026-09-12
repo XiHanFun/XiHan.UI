@@ -6,7 +6,7 @@
 import type { IconRecord } from '@xihan-ui/core'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { XhIcon } from '../src'
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
@@ -96,5 +96,16 @@ describe('xhIcon 嵌套建树', () => {
       expect(el.namespaceURI).toBe(SVG_NS)
     const dataKeys = all.flatMap(el => el.getAttributeNames()).filter(n => n.startsWith('data-'))
     expect(dataKeys).toEqual([])
+  })
+
+  it('SVG 连字符属性先转成 React 属性名，不产生无效 DOM 属性警告', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      await mountIcon()
+      expect(error).not.toHaveBeenCalled()
+    }
+    finally {
+      error.mockRestore()
+    }
   })
 })

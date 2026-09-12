@@ -1,4 +1,4 @@
-# Kbd 键帽
+# Kbd 键帽 <Badge type="tip" text="new" />
 
 显示一个键名，不注册键盘监听。`Mod` 在 Mac 上显示为 ⌘，其他平台显示为 Ctrl。
 

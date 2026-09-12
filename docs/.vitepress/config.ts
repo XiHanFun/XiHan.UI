@@ -1,11 +1,13 @@
 import type { Plugin } from "vite";
 import type { DefaultTheme, HeadConfig } from "vitepress";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitepress";
 // @ts-expect-error 纯 JS 生成器，没有类型声明
 import { renderPageMarkdown, writeLlmsAssets } from "./gen-llms.mjs";
 
 const require = createRequire(import.meta.url);
+const repositoryRoot = fileURLToPath(new URL("../..", import.meta.url));
 
 interface DocsPackageManifest {
   dependencies?: Record<string, string>;
@@ -90,7 +92,7 @@ const componentManifest: {
   categories: {
     id: string;
     label: string;
-    components: { id: string; name: string }[];
+    components: { id: string; name: string; status?: "new" | "updated" }[];
   }[];
 } = require("../../ui/scripts/component-docs.manifest.json");
 
@@ -237,7 +239,7 @@ const componentsSidebar: DefaultTheme.SidebarItem[] = [
     collapsed: false,
     items: category.components.map(component => ({
       // 英文名与代码导出一致，中文名作次级识别；两者同排，保持 HeroUI 中文站的扫描方式。
-      text: `${enName(component.id)} <span class="xh-sidebar-cn">${component.name}</span>`,
+      text: `${enName(component.id)} <span class="xh-sidebar-cn">${component.name}</span>${component.status === "new" ? ' <span class="xh-sidebar-status">new</span>' : ""}`,
       link: `/components/${component.id}`,
     })),
   })),
@@ -364,12 +366,21 @@ export default defineConfig({
   },
   vite: {
     plugins: [devMarkdownPlugin()],
+    esbuild: {
+      jsx: "automatic",
+      jsxImportSource: "react",
+    },
     // 组件库是 link: 进来的，Vite 的依赖预打包缓存只认 package.json 与锁文件，
     // 改了库的源码它不会失效——本地构建会拿着旧产物继续渲染而且什么都不说。
     // 排除掉，示例渲染的永远是当前代码；传递依赖也要列全，漏一个它就带着旧代码进缓存
     optimizeDeps: {
       // Vite 对包名做前缀匹配：排除 @xihan-ui/react 会连同 react/sound 等公开子路径一起排除。
       exclude: localXihanOptimizeExclusions,
+    },
+    server: {
+      fs: {
+        allow: [repositoryRoot],
+      },
     },
   },
   themeConfig: {

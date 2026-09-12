@@ -1,6 +1,6 @@
 # Button 按钮
 
-触发一次动作的最小控件：按下去就发生一件事。它不承载值，也不表达持续的开关态。
+用于触发即时操作。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/button" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-按钮文字直接写在内容里
+触发一次操作
 
 <XhDemo src="button/01-basic" />
 
@@ -26,99 +26,95 @@
 
 ### 变体
 
-variant 只改皮肤的几个颜色槽位，行为完全一致
+设置按钮外观
 
 <XhDemo src="button/02-variant" />
 
 ### 尺寸
 
-不传 size 即默认档
+小、中、大三档
 
 <XhDemo src="button/03-size" />
 
-### 禁用与载入
+### 图标
 
-loading 会挡住点击，并给 indicator 部件挂上旋转动画
+在文字前后放置图标
 
-<XhDemo src="button/04-state" />
+<XhDemo src="button/04-with-icons" />
 
-### 颜色
+### 仅图标
 
-tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气都成立
+紧凑的图标操作
 
-<XhDemo src="button/05-tone" />
+<XhDemo src="button/05-icon-only" />
 
-### 图标与文字
+### 加载
 
-图元放进 prefix 或 suffix 部件，文字放进 label；两个图元部件自带 aria-hidden，读屏念到的只有 label
+保留按钮标签并阻止重复操作
 
-<XhDemo src="button/06-icon" />
+<XhDemo src="button/06-loading" />
 
-### 点击事件
+### 异步操作
 
-处理器照常挂在组件上；载入态与禁用态的点击在根上就被拦下，作者挂的处理器也收不到
+点击后显示加载状态
 
-<XhDemo src="button/07-click" />
+<XhDemo src="button/07-loading-triggered" />
 
-### 形状与图标按钮
+### 全宽
 
-圆角是一个组件令牌；只放一枚图元时把左右内边距收成 0、宽度取控件档位，名字这时只能由 aria-label 给
+占满容器宽度
 
-<XhDemo src="button/08-shape" />
+<XhDemo src="button/08-full-width" />
 
-### 自定义配色
+### 禁用
 
-不写 variant 时底色与文字色取自组件令牌，逐个实例覆盖就能用上语气表以外的颜色
+暂时不可执行的操作
 
-<XhDemo src="button/09-custom-color" />
+<XhDemo src="button/09-disabled" />
 
-### 渲染成链接
+### 链接
 
-皮肤认的是 data-scope 与 data-part 这组契约，不是标签名：把契约铺到链接元素上就得到导航型按钮，跳转仍由浏览器原生完成
+保留原生导航能力
 
-<XhDemo src="button/11-as-link" />
+<XhDemo src="button/10-as-link" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 提交表单、执行一次命令、打开浮层。
-- 一屏里有多个动作、需要把主次排出来：形态（variant）与语气（tone）是两条正交的轴，四种形态 × 六种语气都成立。
-- 只放一枚图元的紧凑动作，用 `iconOnly` 收成正方形。
+- 提交表单或执行命令。
+- 打开菜单、对话框等浮层。
+- 需要明确主次关系的一组操作。
 
 ### 何时不用
 
-- 跳到另一个地址：那是链接。浏览器的中键新开、右键菜单与预读只对 `<a>` 生效，写成按钮加跳转全都拿不到。要的是链接外观加按钮质感时，把 `data-scope` / `data-part` 这组契约铺到 `<a>` 上，皮肤照样认。
-- 开关一个持续状态：用[切换按钮](./toggle)，它有 `aria-pressed`。
-- 在几个互斥项里选一个：用[切换按钮组](./toggle-group)或[单选组](./radio-group)。
+- 导航到其他地址时，将按钮渲染为链接。
+- 表达持续的开关状态时，使用[切换按钮](./toggle)。
+- 在多个选项中选择时，使用[切换按钮组](./toggle-group)或[单选组](./radio-group)。
 
 ### 特性
 
-- 形态 · 语气 · 尺寸三轴正交，任意组合都成立。
-- 载入态用 `aria-disabled` 加事件拦截表达，按钮仍能聚焦，读屏也仍念得到名字。
-- `prefix` / `suffix` 两个图元部件自带 `aria-hidden`，读屏念到的只有 `label`。
-- 默认是品牌实心胶囊按钮，与 HeroUI 的主动作保持同一视觉层级；`subtle` 使用实体 M1 柔和面，二者都不使用磨砂或背景模糊。
-- 根节点把普通文字动作 / icon-only 两种稳定视觉角色投影到 `data-xh-action-*`；尺寸数值、状态反馈与粗指针命中区由 Action Control Family Recipe 统一解析，适配器不计算 CSS。
-- 皮肤认的是 `data-scope` 与 `data-part`，不是标签名。
+- 支持四种变体、六种颜色和三种尺寸。
+- 支持文字、图标、图标加文字与全宽按钮。
+- `loading` 保留焦点并阻止重复操作。
+- `as="a"` 保留原生链接能力。
 
 ### 组合
 
-- 连排成一条：外面套[按钮组](./button-group)，档位与形态写在容器上，组内每一段自己不重复标注。
-- 图元用 [图标](./icon)，放进 `prefix` 或 `suffix`。
-- 需要二次确认的危险动作：外面套[弹出确认](./popconfirm)。
+- 使用 `prefix` 与 `suffix` 放置图标。
+- 使用 `indicator` 提供加载图形。
+- 使用[按钮组](./button-group)组合相关操作。
 
 ### 最佳实践
 
-- 只放图标时必须给 `aria-label`——按钮此时没有任何可见文字，名字只能由它来给。
-- 一个视图里默认按钮或 `solid` + `brand` 只留一个，主动作唯一才排得出主次。
-- 载入指示器需要作者提供真实图形，皮肤不会猜测并补画。要保持宽度，就让 `indicator` 常驻；皮肤在非载入态用 `visibility` 隐藏它，只在 `loading` 时显示并旋转。
-- 不要在 `loading` 时条件插入或移除 label、prefix、suffix；按钮保留原内容与完整表面，只停掉交互。
+- 每个视图只保留一个主要操作。
+- 图标按钮必须提供 `aria-label`。
+- 加载时保留原有标签，避免按钮宽度变化。
 
 ### 反模式
 
-- 用 `disabled` 表达"正在提交"：原生禁用会丢掉焦点、读屏也不再播报，用户不知道发生了什么。用 `loading`。
-- 把导航写成按钮加 `onClick` 跳转，见上。
-- 在按钮里再放一个可聚焦元素：一次点击落在哪个目标上不可预期。
+- 不要使用按钮模拟普通链接。
+- 不要在按钮中嵌套可聚焦元素。
 
 ## API 参考
 
@@ -144,9 +140,9 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | `loading` | `boolean` |  | 加载态：用 aria-disabled + 拦截事件表达，保留焦点。 |
 | `shape` | `ButtonShape` |  | 圆角档：rounded 是常规控件圆角，pill 是胶囊，square 是直角。 缺省即跟着 --xh-shape-control 走，与不写这一项时逐值相同。 |
 | `size` | `Size` |  |  |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `type` | `'button' \| 'submit' \| 'reset'` |  |  |
-| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
 
 ### connect API
 
