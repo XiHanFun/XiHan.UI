@@ -60,12 +60,15 @@ describe('剪贴板视觉', () => {
     expect(triggerStyle.backgroundColor).toBe(inputStyle.backgroundColor)
 
     const width = trigger.getBoundingClientRect().width
+    const border = triggerStyle.borderRightColor
     const root = host!.querySelector<HTMLElement>(`[data-scope='clipboard'][data-part='root']`)!
     const indicators = [...trigger.querySelectorAll<HTMLElement>(`[data-part='indicator']`)]
     expect(getComputedStyle(indicators[0]!).visibility).toBe('visible')
     expect(getComputedStyle(indicators[1]!).visibility).toBe('hidden')
     root.setAttribute('data-state', 'copied')
+    trigger.setAttribute('data-copied', '')
     expect(trigger.getBoundingClientRect().width).toBeCloseTo(width, 4)
+    expect(getComputedStyle(trigger).borderRightColor).toBe(border)
     expect(getComputedStyle(indicators[0]!).visibility).toBe('hidden')
     expect(getComputedStyle(indicators[1]!).visibility).toBe('visible')
 
@@ -79,5 +82,6 @@ describe('剪贴板视觉', () => {
     const style = getComputedStyle(trigger)
     expect(Number.parseFloat(style.borderStartStartRadius)).toBeGreaterThan(0)
     expect(Number.parseFloat(style.borderStartEndRadius)).toBeGreaterThan(0)
+    expect(style.borderRightColor).toBe('rgba(0, 0, 0, 0)')
   })
 })

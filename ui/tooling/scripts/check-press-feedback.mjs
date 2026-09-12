@@ -40,13 +40,13 @@ const PRESSABLE = {
   'menu': [{ part: 'item', feedback: 'surface' }],
   // 按钮形的控件本体：整颗就是点击目标
   'button': ['root'],
-  'download-trigger': ['root'],
+  'download-trigger': [{ part: 'root', feedback: 'surface' }],
   'toggle': ['root'],
   'toggle-group': [{ part: 'item', feedback: 'surface' }],
   'segmented': ['item'],
   'back-top': ['trigger'],
   'float-button': ['trigger'],
-  'clipboard': ['copy-trigger'],
+  'clipboard': [{ part: 'copy-trigger', feedback: 'surface' }],
   'infinite-scroll': ['load-more-trigger'],
   // 集合件尾部的「取下一页」：一颗铺满一行的按钮，整条就是点击目标
   'listbox': ['load-more-trigger'],

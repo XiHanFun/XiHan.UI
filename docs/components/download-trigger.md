@@ -72,7 +72,7 @@
 - 接受字符串、Blob 与异步数据函数。
 - `preparing` 期间保留焦点并阻止重复触发。
 - 通过完成与失败事件返回本次文件名和错误。
-- 默认使用 Button 家族的中性工具样式。
+- 默认使用 Button 家族的中性工具样式，按下时只改变表面，不缩放。
 
 ### 组合
 
@@ -82,6 +82,7 @@
 ### 最佳实践
 
 - 文件名应包含正确扩展名。
+- 保留下载图标与可见文字；只有下载是页面主操作时才使用 `solid`。
 - 大文件优先使用服务端下载地址。
 - 失败事件应连接可见反馈。
 
@@ -222,7 +223,7 @@
 | `--xh-download-trigger-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-muted` | download-trigger 的 root 部件 background 覆盖槽。 |
 | `--xh-download-trigger-bg-hover` | `root` | `background` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_download-trigger-bg-hover` | download-trigger 的 root 部件 background 覆盖槽。 |
 | `--xh-download-trigger-border` | `root` | `border` | `default` | `--xh-_download-trigger-border` | download-trigger 的 root 部件 border 覆盖槽。 |
-| `--xh-download-trigger-border-disabled` | `root` | `border-color` | `disabled` | `--xh-border-control` | download-trigger 的 root 部件 border-color 覆盖槽。 |
+| `--xh-download-trigger-border-disabled` | `root` | `border-color` | `disabled` | `--xh-_download-trigger-border` | download-trigger 的 root 部件 border-color 覆盖槽。 |
 | `--xh-download-trigger-border-hover` | `root` | `border-color` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_download-trigger-border-hover` | download-trigger 的 root 部件 border-color 覆盖槽。 |
 | `--xh-download-trigger-fg` | `root` | `color` | `default` | `--xh-_download-trigger-fg` | download-trigger 的 root 部件 color 覆盖槽。 |
 | `--xh-download-trigger-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-font-lg`<br>`--xh-control-font-md`<br>`--xh-control-font-sm` | download-trigger 的 root 部件 font-size 覆盖槽。 |
@@ -239,7 +240,7 @@
 
 ### 动效
 
-关键帧 `xh-download-trigger-content-hide` · `xh-download-trigger-loading-reveal` · `xh-download-trigger-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-download-trigger-content-hide` · `xh-download-trigger-loading-reveal` · `xh-download-trigger-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

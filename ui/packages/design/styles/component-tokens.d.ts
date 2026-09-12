@@ -433,7 +433,6 @@ export type ComponentTokenName =
   | '--xh-clipboard-copy-trigger-bg-disabled'
   | '--xh-clipboard-copy-trigger-bg-hover'
   | '--xh-clipboard-copy-trigger-border'
-  | '--xh-clipboard-copy-trigger-border-copied'
   | '--xh-clipboard-copy-trigger-border-disabled'
   | '--xh-clipboard-copy-trigger-border-hover'
   | '--xh-clipboard-copy-trigger-fg'
