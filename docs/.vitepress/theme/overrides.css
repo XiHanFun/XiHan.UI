@@ -37,7 +37,7 @@ body {
 }
 
 .VPSidebarItem.level-1.is-active > .item {
-  background: var(--vp-c-bg-elv);
+  background: var(--xh-bg-brand-subtle);
   box-shadow: var(--xh-doc-shadow-control);
 }
 
@@ -59,8 +59,9 @@ body {
   opacity: 0.66;
 }
 
-.VPSidebarItem.level-1.is-active > .item .text {
-  color: var(--vp-c-text-1);
+.VPSidebarItem.level-1.is-active > .item.item .link.link,
+.VPSidebarItem.level-1.is-active > .item.item .text.text {
+  color: var(--xh-fg-brand-strong);
   font-weight: 500;
 }
 

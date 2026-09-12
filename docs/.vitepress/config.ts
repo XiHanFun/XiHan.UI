@@ -244,9 +244,12 @@ const nav: DefaultTheme.NavItem[] = [
     text: `v${version}`,
     items: [
       {
+        text: "版本",
+        items: [{ text: "更新日志", link: "/changelog" }],
+      },
+      {
         text: "项目",
         items: [
-          { text: "更新日志", link: "/changelog" },
           { text: "适配器", link: "/adapters/vue" },
           { text: "服务与运行时", link: "/runtime/" },
         ],

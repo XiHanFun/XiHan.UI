@@ -4,10 +4,12 @@ import {
   XhScrollbarThumb,
   XhScrollbarTrack,
 } from "@xihan-ui/vue";
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { useData } from "vitepress";
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 const page = ref<HTMLElement | null>(null);
 const sidebar = ref<HTMLElement | null>(null);
+const { page: currentPage } = useData();
 
 function forwardPageScroll(): void {
   page.value?.dispatchEvent(new Event("scroll"));
@@ -18,6 +20,15 @@ onMounted(() => {
   sidebar.value = document.querySelector<HTMLElement>(".VPSidebar");
   window.addEventListener("scroll", forwardPageScroll, { passive: true });
 });
+
+watch(
+  () => currentPage.value.relativePath,
+  async () => {
+    await nextTick();
+    sidebar.value = document.querySelector<HTMLElement>(".VPSidebar");
+  },
+  { flush: "post" },
+);
 
 onBeforeUnmount(() => {
   window.removeEventListener("scroll", forwardPageScroll);
