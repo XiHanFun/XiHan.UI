@@ -2644,6 +2644,55 @@
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
 }
 
+/* 原生按钮直接作为动作项时，沿用触发器的视觉面；XhButton 保留自己的皮肤。 */
+[data-scope='float-button'][data-part='list'] > button:not([data-scope]) {
+  padding: 0;
+  border: var(--xh-stroke-thin) solid var(--xh-float-button-border, var(--xh-_float-button-border));
+  background-color: var(--xh-float-button-bg, var(--xh-_float-button-bg));
+  color: var(--xh-float-button-fg, var(--xh-_float-button-fg));
+  box-shadow: var(--xh-float-button-shadow, var(--xh-_float-button-shadow));
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+}
+
+[data-scope='float-button'][data-part='root']:not([data-variant])
+  [data-scope='float-button'][data-part='list']
+  > button:not([data-scope]) {
+  background-image: linear-gradient(
+    to bottom,
+    var(--xh-material-glass-highlight) 0 var(--xh-stroke-thin),
+    transparent var(--xh-stroke-thin)
+  );
+  -webkit-backdrop-filter: var(--xh-material-glass-backdrop);
+  backdrop-filter: var(--xh-material-glass-backdrop);
+}
+
+[data-scope='float-button'][data-part='list'] > button:not([data-scope]):focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+@media (hover: hover) {
+  [data-scope='float-button'][data-part='list'] > button:not([data-scope]):not(:disabled):hover {
+    border-color: var(--xh-float-button-border-hover, var(--xh-_float-button-border-hover));
+    background-color: var(--xh-float-button-bg-hover, var(--xh-_float-button-bg-hover));
+  }
+}
+
+[data-scope='float-button'][data-part='list'] > button:not([data-scope]):not(:disabled):active {
+  background-color: var(--xh-float-button-bg-active, var(--xh-_float-button-bg-active));
+  scale: var(--xh-motion-scale-press);
+}
+
+[data-scope='float-button'][data-part='list'] > button:not([data-scope]):disabled {
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
 /* 交错的间隔：第二条起逐级往后推，第六条起统一钉在第五级，
    动作再多也不会拖出一条越来越慢的尾巴 */
 [data-scope='float-button'][data-part='list'] > *:nth-child(2) {

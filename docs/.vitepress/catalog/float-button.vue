@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { XhFloatButtonRoot, XhFloatButtonTrigger } from "@xihan-ui/vue";
+import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xihan-ui/vue";
 </script>
 
 <template>
   <XhFloatButtonRoot style="position: static">
     <XhFloatButtonTrigger />
+    <XhFloatButtonList />
   </XhFloatButtonRoot>
 </template>

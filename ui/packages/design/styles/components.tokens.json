@@ -23126,24 +23126,27 @@
       "name": "--xh-float-button-bg",
       "component": "float-button",
       "part": [
+        "list",
         "trigger"
       ],
       "property": [
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-scope])"
       ],
       "defaultToken": [
         "--xh-_float-button-bg"
       ],
       "visibility": "public",
-      "description": "float-button 的 trigger 部件 background-color 覆盖槽。"
+      "description": "float-button 的 list、trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-float-button-bg-active",
       "component": "float-button",
       "part": [
+        "list",
         "trigger"
       ],
       "property": [
@@ -23152,18 +23155,21 @@
       "state": [
         "active",
         "disabled",
-        "not([data-disabled])"
+        "not(:disabled)",
+        "not([data-disabled])",
+        "not([data-scope])"
       ],
       "defaultToken": [
         "--xh-_float-button-bg-active"
       ],
       "visibility": "public",
-      "description": "float-button 的 trigger 部件 background-color 覆盖槽。"
+      "description": "float-button 的 list、trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-float-button-bg-hover",
       "component": "float-button",
       "part": [
+        "list",
         "trigger"
       ],
       "property": [
@@ -23173,36 +23179,41 @@
         "@media (hover: hover)",
         "disabled",
         "hover",
-        "not([data-disabled])"
+        "not(:disabled)",
+        "not([data-disabled])",
+        "not([data-scope])"
       ],
       "defaultToken": [
         "--xh-_float-button-bg-hover"
       ],
       "visibility": "public",
-      "description": "float-button 的 trigger 部件 background-color 覆盖槽。"
+      "description": "float-button 的 list、trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-float-button-border",
       "component": "float-button",
       "part": [
+        "list",
         "trigger"
       ],
       "property": [
         "border"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-scope])"
       ],
       "defaultToken": [
         "--xh-_float-button-border"
       ],
       "visibility": "public",
-      "description": "float-button 的 trigger 部件 border 覆盖槽。"
+      "description": "float-button 的 list、trigger 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-float-button-border-hover",
       "component": "float-button",
       "part": [
+        "list",
         "trigger"
       ],
       "property": [
@@ -23212,18 +23223,21 @@
         "@media (hover: hover)",
         "disabled",
         "hover",
-        "not([data-disabled])"
+        "not(:disabled)",
+        "not([data-disabled])",
+        "not([data-scope])"
       ],
       "defaultToken": [
         "--xh-_float-button-border-hover"
       ],
       "visibility": "public",
-      "description": "float-button 的 trigger 部件 border-color 覆盖槽。"
+      "description": "float-button 的 list、trigger 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-float-button-fg",
       "component": "float-button",
       "part": [
+        "list",
         "root",
         "trigger"
       ],
@@ -23235,13 +23249,14 @@
         "default",
         "disabled",
         "focus-visible",
+        "not([data-scope])",
         "variant=solid"
       ],
       "defaultToken": [
         "--xh-_float-button-fg"
       ],
       "visibility": "public",
-      "description": "float-button 的 root、trigger 部件 --xh-_ring-color、color 覆盖槽。"
+      "description": "float-button 的 list、root、trigger 部件 --xh-_ring-color、color 覆盖槽。"
     },
     {
       "name": "--xh-float-button-gap",
@@ -23324,19 +23339,21 @@
       "name": "--xh-float-button-shadow",
       "component": "float-button",
       "part": [
+        "list",
         "trigger"
       ],
       "property": [
         "box-shadow"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-scope])"
       ],
       "defaultToken": [
         "--xh-_float-button-shadow"
       ],
       "visibility": "public",
-      "description": "float-button 的 trigger 部件 box-shadow 覆盖槽。"
+      "description": "float-button 的 list、trigger 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-float-button-size",

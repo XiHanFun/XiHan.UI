@@ -18690,7 +18690,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "形态，决定底色、描边与前景怎么用",
+              "description": "变体",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -18698,7 +18698,7 @@
               "type": {
                 "text": "Tone | undefined"
               },
-              "description": "语气",
+              "description": "颜色",
               "name": "tone",
               "fieldName": "tone"
             },

@@ -1,6 +1,6 @@
 # FloatButton 浮动按钮
 
-钉在视口某一角的动作入口：平时是一枚触发器，展开后长出一列动作。
+用于在视口边缘提供持续可见的操作入口。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/float-button" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-点触发器展开一组动作，再点一下收起；收起时那组按钮退出 Tab 序列
+展开一组悬浮操作
 
 <XhDemo src="float-button/01-basic" />
 
@@ -24,66 +24,67 @@
 
 ## 示例
 
-### 四角
+### 悬停展开
 
-placement 决定钉在哪一角，start / end 跟着书写方向走；那一组恒往页面中间长
+指针进入时展开，键盘与触控仍可点击
 
-<XhDemo src="float-button/02-placement" />
+<XhDemo src="float-button/02-hover" />
 
-### 展开方式
+### 变体
 
-hover 指针进出整个壳就开合，click 点触发器；点这条恒在，触摸与键盘都靠它
+设置浮动按钮的表面
 
-<XhDemo src="float-button/03-expand-trigger" />
+<XhDemo src="float-button/03-variant" />
 
-### 外形与贴边
+### 尺寸
 
-shape 换圆角档，offset 决定距那两条边多远；translations 换掉读屏念出的名字
+使用小、中、大三档尺寸
 
-<XhDemo src="float-button/04-shape-offset" />
+<XhDemo src="float-button/04-size" />
 
-### 形态与尺寸
+### 外形
 
-variant 换触发器的用色方式，size 换直径；缺省档与 lg 同高，悬浮钮起步就比行内按钮大一号
+使用圆形或方形触发器
 
-<XhDemo src="float-button/05-variant-size" />
+<XhDemo src="float-button/05-shape" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 页面主动作在长内容里滚没了，但要求随时可达（新建、回到编辑、联系客服）。
-- 移动端或窄视口，工具栏没有位置再挂按钮。
+- 长页面中的常用主操作。
+- 移动端或窄屏中的紧凑操作组。
 
 ### 何时不用
 
-- 动作与当前滚动位置有关：那是[回到顶部](./back-top)。
-- 一屏里已经有固定工具栏：直接放进[工具栏](./toolbar)，别再叠一层浮层。
-- 动作超过五六个：收进[菜单](./menu)或抽屉，一列悬浮按钮遮内容。
+- 返回页面顶部时，使用[回到顶部](./back-top)。
+- 页面已有固定[工具栏](./toolbar)时。
+- 操作数量较多时，使用[菜单](./menu)或抽屉。
 
 ### 特性
 
-- 四个角可钉，`start` / `end` 跟着书写方向走，那一组恒往页面中间长。
-- `hover` 与 `click` 两种展开方式，点击那条恒在——触摸与键盘只有它。
-- click 展开后，层外按下或全局 Escape 会收起；多个浮层并存时只由同一 Document 的逻辑栈顶响应，后开的 Drawer / Popover 先退场。Toast 属于反馈通道，不登记为可消解父层。
-- hover 模式保留整个根节点的指针进出路径；指针离开与层外消解同时到达时只发一次关闭意图。
-- 收起时组内按钮退出 Tab 序列，不会盲聚焦到看不见的东西上。
-- 缺省触发器是 M3 通透玻璃：背景、边缘、高光、柔影和磨砂来自同一份 `material.glass` 配方；显式 `variant` 仍按各自语义表面绘制。
-- 键盘聚焦时触发器改用配方的实体 focus surface，让公共焦点环不依赖背后页面颜色；高对比、减少透明和强制色沿同一令牌通道降级。
+- 支持四个视口角与安全区偏移。
+- 支持点击或悬停展开；键盘与触控始终使用点击。
+- Escape、层外点击和再次触发均可收起。
+- 收起后动作项退出 Tab 序列。
+- 默认使用通透玻璃表面，显式变体使用对应语义表面。
+- 原生按钮动作项自动继承触发器的尺寸与外观。
 
 ### 组合
 
-- 组内放[按钮](./button)或[图标块](./icon-wrapper)；每一项配[文字提示](./tooltip)说明它是什么。
+- 动作项可使用原生按钮或[按钮](./button)。
+- 纯图标动作可配合[文字提示](./tooltip)。
 
 ### 最佳实践
 
-- 每一项都给可及名字：悬浮按钮通常只有图标。
-- `offset` 要躲开移动端的安全区与系统手势条。
+- 为每个图标按钮提供可访问名称。
+- 将操作数量控制在 2 至 5 个。
+- 使用 `offset` 避开系统手势区。
 
 ### 反模式
 
-- 用它承载破坏性动作（删除、清空）：贴边的大按钮最容易误触。
-- 展开后盖住页面主内容或另一个固定条。
+- 不要承载高风险的破坏性操作。
+- 不要遮挡主要内容或固定导航。
 
 ## API 参考
 
@@ -111,9 +112,9 @@ variant 换触发器的用色方式，size 换直径；缺省档与 lg 同高，
 | `placement` | `FloatButtonPlacement` |  | 钉在哪一角，默认 bottom-end。 |
 | `shape` | `FloatButtonShape` |  | 触发器外形，默认 circle。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，缺省与 lg 同档——悬浮钮要够得着，起步就比行内按钮大一号。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `translations` | `Partial<FloatButtonTranslations>` |  |  |
-| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定底色、描边与前景怎么用。 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
 
 ### 事件
 
@@ -217,23 +218,23 @@ variant 换触发器的用色方式，size 换直径；缺省档与 lg 同高，
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-float-button-bg` | `trigger` | `background-color` | `default` | `--xh-_float-button-bg` | float-button 的 trigger 部件 background-color 覆盖槽。 |
-| `--xh-float-button-bg-active` | `trigger` | `background-color` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-_float-button-bg-active` | float-button 的 trigger 部件 background-color 覆盖槽。 |
-| `--xh-float-button-bg-hover` | `trigger` | `background-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-_float-button-bg-hover` | float-button 的 trigger 部件 background-color 覆盖槽。 |
-| `--xh-float-button-border` | `trigger` | `border` | `default` | `--xh-_float-button-border` | float-button 的 trigger 部件 border 覆盖槽。 |
-| `--xh-float-button-border-hover` | `trigger` | `border-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-_float-button-border-hover` | float-button 的 trigger 部件 border-color 覆盖槽。 |
-| `--xh-float-button-fg` | `root`<br>`trigger` | `--xh-_ring-color`<br>`color` | `default`<br>`disabled`<br>`focus-visible`<br>`variant=solid` | `--xh-_float-button-fg` | float-button 的 root、trigger 部件 --xh-_ring-color、color 覆盖槽。 |
+| `--xh-float-button-bg` | `list`<br>`trigger` | `background-color` | `default`<br>`not([data-scope])` | `--xh-_float-button-bg` | float-button 的 list、trigger 部件 background-color 覆盖槽。 |
+| `--xh-float-button-bg-active` | `list`<br>`trigger` | `background-color` | `active`<br>`disabled`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-scope])` | `--xh-_float-button-bg-active` | float-button 的 list、trigger 部件 background-color 覆盖槽。 |
+| `--xh-float-button-bg-hover` | `list`<br>`trigger` | `background-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-scope])` | `--xh-_float-button-bg-hover` | float-button 的 list、trigger 部件 background-color 覆盖槽。 |
+| `--xh-float-button-border` | `list`<br>`trigger` | `border` | `default`<br>`not([data-scope])` | `--xh-_float-button-border` | float-button 的 list、trigger 部件 border 覆盖槽。 |
+| `--xh-float-button-border-hover` | `list`<br>`trigger` | `border-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-scope])` | `--xh-_float-button-border-hover` | float-button 的 list、trigger 部件 border-color 覆盖槽。 |
+| `--xh-float-button-fg` | `list`<br>`root`<br>`trigger` | `--xh-_ring-color`<br>`color` | `default`<br>`disabled`<br>`focus-visible`<br>`not([data-scope])`<br>`variant=solid` | `--xh-_float-button-fg` | float-button 的 list、root、trigger 部件 --xh-_ring-color、color 覆盖槽。 |
 | `--xh-float-button-gap` | `list`<br>`root` | `gap` | `default` | `--xh-space-2` | float-button 的 list、root 部件 gap 覆盖槽。 |
 | `--xh-float-button-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | float-button 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-float-button-layer` | `root` | `z-index` | `default` | `--xh-_layer` | float-button 的 root 部件 z-index 覆盖槽。 |
 | `--xh-float-button-radius` | `list`<br>`root`<br>`trigger` | `border-radius` | `default`<br>`shape=square` | `--xh-shape-control`<br>`--xh-shape-pill` | float-button 的 list、root、trigger 部件 border-radius 覆盖槽。 |
-| `--xh-float-button-shadow` | `trigger` | `box-shadow` | `default` | `--xh-_float-button-shadow` | float-button 的 trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-float-button-shadow` | `list`<br>`trigger` | `box-shadow` | `default`<br>`not([data-scope])` | `--xh-_float-button-shadow` | float-button 的 list、trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-float-button-size` | `list`<br>`trigger` | `block-size`<br>`inline-size` | `default` | `--xh-_float-button-size` | float-button 的 list、trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-pop-in` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-pop-in` 随皮肤自带，不引用别处文件里的名字；`background` · `background-color` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
