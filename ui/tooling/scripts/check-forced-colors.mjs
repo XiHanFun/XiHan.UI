@@ -98,10 +98,10 @@ function blockEnd(css, open) {
   return css.length
 }
 
-/** 一份 CSS 里所有 `@media (forced-colors: active)` 块的正文拼起来。 */
+/** 一份 CSS 里所有包含 `(forced-colors: active)` 分支的 @media 块正文拼起来。 */
 function forcedBody(css) {
   let out = ''
-  const re = /@media\s*\(\s*forced-colors\s*:\s*active\s*\)\s*\{/g
+  const re = /@media\b[^{}]*\(\s*forced-colors\s*:\s*active\s*\)[^{}]*\{/g
   for (let m = re.exec(css); m !== null; m = re.exec(css)) {
     const open = m.index + m[0].length - 1
     out += `${css.slice(open + 1, blockEnd(css, open))}\n`
@@ -113,7 +113,7 @@ function forcedBody(css) {
 function withoutForced(css) {
   let out = css
   for (;;) {
-    const at = out.search(/@media\s*\(\s*forced-colors\s*:\s*active\s*\)\s*\{/)
+    const at = out.search(/@media\b[^{}]*\(\s*forced-colors\s*:\s*active\s*\)[^{}]*\{/)
     if (at === -1)
       return out
     const open = out.indexOf('{', at)
