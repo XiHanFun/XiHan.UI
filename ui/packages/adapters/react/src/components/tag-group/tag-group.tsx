@@ -8,6 +8,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import { TagGroupItemProvider, TagGroupProvider, useTagGroupContext, useTagGroupItemContext } from './context'
 import { useTagGroup } from './use-tag-group'
 
@@ -74,7 +75,7 @@ export function XhTagGroupRoot({
   children,
   ...rest
 }: XhTagGroupRootProps): ReactNode {
-  const ctx = useTagGroup(withXhConfig('tag-group', {
+  const ctx = useTagGroup(withXhConfig('tag-group', useFormControlProps({
     collection,
     value,
     defaultValue,
@@ -92,7 +93,7 @@ export function XhTagGroupRoot({
     translations,
     onValueChange,
     onItemDelete,
-  }) as TagGroupProps)
+  })) as TagGroupProps)
   const api = ctx.api
 
   const body = children != null

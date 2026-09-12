@@ -3,6 +3,7 @@ import type { ListboxApi, ListboxGroupProps, ListboxItemProps, ListboxNode, List
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   provideListbox,
   provideListboxItem,
@@ -31,9 +32,9 @@ export const XhListboxRoot = defineComponent({
     value: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     selectionMode: { type: String as PropType<ListboxSelectionMode>, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     loading: Boolean,
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
@@ -57,7 +58,7 @@ export const XhListboxRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useListbox(props as ListboxProps, notify)
+    const ctx = useListbox(useFormControlProps(props) as ListboxProps, notify)
     provideListbox(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [
       ...(slots.default

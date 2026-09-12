@@ -4,6 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideTagGroup, provideTagGroupItem, useTagGroupContext, useTagGroupItemContext } from './context'
 import { useTagGroup } from './use-tag-group'
 
@@ -26,8 +27,8 @@ export const XhTagGroupRoot = defineComponent({
     defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     selectionMode: { type: String as PropType<TagGroupSelectionMode>, default: undefined },
     deletable: Boolean,
-    disabled: Boolean,
-    readOnly: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
@@ -57,7 +58,7 @@ export const XhTagGroupRoot = defineComponent({
     const notifyDelete: TagGroupProps['onItemDelete'] = (details) => {
       emit('item-delete', details)
     }
-    const ctx = useTagGroup(withXhConfig('tag-group', props) as TagGroupProps, notify, notifyDelete)
+    const ctx = useTagGroup(withXhConfig('tag-group', useFormControlProps(props)) as TagGroupProps, notify, notifyDelete)
     provideTagGroup(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [
       ...(slots.default

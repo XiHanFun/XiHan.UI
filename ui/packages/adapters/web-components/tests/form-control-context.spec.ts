@@ -19,9 +19,9 @@ function textField(markup = ''): string {
     </xh-text-field>`
 }
 
-type AtomicControl = 'checkbox' | 'switch' | 'radio-group' | 'number-field' | 'password-input' | 'pin-input' | 'date-field' | 'time-field' | 'editable' | 'tags-input' | 'checkbox-group' | 'slider' | 'select' | 'cascader' | 'combobox' | 'tree-select' | 'date-picker' | 'time-picker' | 'color-picker' | 'mention' | 'rating' | 'segmented' | 'toggle-group' | 'transfer' | 'field-array' | 'file-upload' | 'image-cropper' | 'signature-pad'
+type AtomicControl = 'checkbox' | 'switch' | 'radio-group' | 'number-field' | 'password-input' | 'pin-input' | 'date-field' | 'time-field' | 'editable' | 'tags-input' | 'checkbox-group' | 'slider' | 'select' | 'cascader' | 'combobox' | 'tree-select' | 'date-picker' | 'time-picker' | 'color-picker' | 'mention' | 'rating' | 'segmented' | 'toggle-group' | 'transfer' | 'field-array' | 'file-upload' | 'image-cropper' | 'signature-pad' | 'listbox' | 'tag-group'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['checkbox', 'switch', 'radio-group', 'number-field', 'password-input', 'pin-input', 'date-field', 'time-field', 'editable', 'tags-input', 'checkbox-group', 'slider', 'select', 'cascader', 'combobox', 'tree-select', 'date-picker', 'time-picker', 'color-picker', 'mention', 'rating', 'segmented', 'toggle-group', 'transfer', 'field-array', 'file-upload', 'image-cropper', 'signature-pad']
+const ATOMIC_CONTROLS: AtomicControl[] = ['checkbox', 'switch', 'radio-group', 'number-field', 'password-input', 'pin-input', 'date-field', 'time-field', 'editable', 'tags-input', 'checkbox-group', 'slider', 'select', 'cascader', 'combobox', 'tree-select', 'date-picker', 'time-picker', 'color-picker', 'mention', 'rating', 'segmented', 'toggle-group', 'transfer', 'field-array', 'file-upload', 'image-cropper', 'signature-pad', 'listbox', 'tag-group']
 
 function atomicControl(kind: AtomicControl, markup = ''): string {
   if (kind === 'checkbox') {
@@ -49,6 +49,12 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
     return `<xh-select ${markup}><div data-xh-part="root"><button data-xh-part="trigger">选择</button><select data-xh-part="hidden-select"></select></div></xh-select>`
   }
   const nonRequiredMarkup = markup.replace(/\brequired(?:="false")?/g, '')
+  if (kind === 'listbox')
+    return `<xh-listbox ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="content"><div data-xh-part="item" value="a"><span data-xh-part="item-text">甲</span></div></div></div></xh-listbox>`
+  if (kind === 'tag-group') {
+    const tagGroupMarkup = markup.replace(/\b(?:required|invalid)(?:="false")?/g, '')
+    return `<xh-tag-group ${tagGroupMarkup}><div data-xh-part="root"><div data-xh-part="list"><span data-xh-part="item" value="a"><span data-xh-part="cell"><span data-xh-part="item-text">甲</span></span></span></div></div></xh-tag-group>`
+  }
   if (kind === 'cascader')
     return `<xh-cascader ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger">选择</button></div></div></xh-cascader>`
   if (kind === 'combobox')
@@ -102,6 +108,17 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
 }
 
 async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabled: boolean): Promise<void> {
+  if (kind === 'listbox' || kind === 'tag-group') {
+    let root: HTMLElement | null = null
+    await vi.waitFor(() => {
+      root = form.querySelector<HTMLElement>(`xh-${kind} [data-scope="${kind}"][data-part="root"]`)
+      expect(root?.hasAttribute('data-disabled')).toBe(enabled)
+    })
+    expect(root!.hasAttribute('data-readonly')).toBe(enabled)
+    if (kind === 'listbox')
+      expect(root!.hasAttribute('data-invalid')).toBe(enabled)
+    return
+  }
   if (kind === 'field-array') {
     let root: HTMLElement | null = null
     await vi.waitFor(() => {

@@ -7,6 +7,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   ListboxGroupProvider,
   ListboxItemProvider,
@@ -73,7 +74,7 @@ export function XhListboxRoot({
   renderItem,
   ...rest
 }: XhListboxRootProps): ReactNode {
-  const ctx = useListbox({
+  const ctx = useListbox(useFormControlProps({
     collection,
     value,
     defaultValue,
@@ -89,7 +90,7 @@ export function XhListboxRoot({
     dir,
     orientation,
     onValueChange,
-  } as ListboxProps)
+  }) as ListboxProps)
   const api = ctx.api
 
   const body = children != null
