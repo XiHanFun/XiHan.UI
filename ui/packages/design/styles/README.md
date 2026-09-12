@@ -16,6 +16,8 @@ import '@xihan-ui/styles/tone.css'
 import '@xihan-ui/styles/button.css'
 ```
 
+`button.css` 已传递引入 Action Control Family Recipe；需要给自定义解剖接入同一视觉合同时，也可单独引入 `@xihan-ui/styles/action-control.css`，并使用文档化的 `data-xh-action-*` 角色属性。
+
 ## 装
 
 ```bash

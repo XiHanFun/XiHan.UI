@@ -9,6 +9,7 @@
 // 顺带把「按需产物的顺序只能由 index.css 过滤得来」这条钉在这里：同层内等特异性的规则靠源序
 // 定胜负，另起一套排序（例如按目录读取序）会让按需与全量渲染分叉，而且分叉看不出来。
 import { readdir, readFile } from 'node:fs/promises'
+import { emitActionControlRecipe } from '../../packages/design/styles/build/action-control-recipe.mjs'
 
 const PKG = 'packages/design/styles'
 
@@ -25,6 +26,13 @@ const exported = Object.values(manifest.exports)
   .map(target => target.slice('./css/'.length))
 
 const errors = []
+
+try {
+  await emitActionControlRecipe({ check: true })
+}
+catch (error) {
+  errors.push(error instanceof Error ? error.message : String(error))
+}
 
 for (const file of files) {
   if (!imported.includes(file))

@@ -20,6 +20,7 @@
 - 载入态用 `aria-disabled` 加事件拦截表达，按钮仍能聚焦，读屏也仍念得到名字。
 - `prefix` / `suffix` 两个图元部件自带 `aria-hidden`，读屏念到的只有 `label`。
 - 默认与 `subtle` 使用实体 M1 柔和面；`solid` 是高遮蔽语气面，不使用磨砂或背景模糊。
+- 根节点把普通文字动作 / icon-only 两种稳定视觉角色投影到 `data-xh-action-*`；尺寸数值、状态反馈与粗指针命中区由 Action Control Family Recipe 统一解析，适配器不计算 CSS。
 - 皮肤认的是 `data-scope` 与 `data-part`，不是标签名。
 
 ## 组合

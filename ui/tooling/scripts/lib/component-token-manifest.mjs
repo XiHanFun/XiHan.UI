@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'node:fs/promises'
+import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -12,8 +12,11 @@ export const COMPONENT_TOKEN_DOCS_END = '<!-- xh-component-tokens:end -->'
 const COMPONENT_DOCS_MANIFEST_PATH = join(UI_ROOT, 'scripts/component-docs.manifest.json')
 const DESIGN_TOKENS_PATH = join(UI_ROOT, 'packages/design/tokens/tokens.json')
 const STYLES_DIR = join(UI_ROOT, 'packages/design/styles/css')
+const FAMILY_STYLES_DIR = join(UI_ROOT, 'packages/design/styles/family')
+const HEADLESS_DIR = join(UI_ROOT, 'packages/engine/headless/src')
 
 const PRIVATE_PREFIX = '--xh-_'
+const FAMILY_BRIDGE_PREFIX = '--xh-action-'
 const TOKEN_VERSION = 1
 
 const compareText = (a, b) => (a < b ? -1 : a > b ? 1 : 0)
@@ -195,7 +198,7 @@ function statesOf(selector, atRules) {
     const declaration = content.slice('data-'.length)
     const equal = declaration.indexOf('=')
     const attribute = (equal === -1 ? declaration : declaration.slice(0, equal)).replace(/[~|^$*]\s*$/, '').trim()
-    if (attribute === 'scope' || attribute === 'part')
+    if (attribute === 'scope' || attribute === 'part' || attribute === 'xh-action-control')
       continue
     if (equal === -1) {
       states.push(attribute)
@@ -264,7 +267,8 @@ function mergeFacet(inherited, current, neutral) {
 function projectedUsages(declaration, consumers, inheritedParts = [], inheritedStates = [], trail = new Set()) {
   const parts = mergeFacet(inheritedParts, partsOf(declaration.selector), '*')
   const states = mergeFacet(inheritedStates, statesOf(declaration.selector, declaration.atRules), 'default')
-  if (!declaration.property.startsWith(PRIVATE_PREFIX) || trail.has(declaration))
+  const bridge = declaration.property.startsWith(PRIVATE_PREFIX) || declaration.property.startsWith(FAMILY_BRIDGE_PREFIX)
+  if (!bridge || trail.has(declaration))
     return [{ parts, property: declaration.property, states }]
   const next = consumers.get(declaration.property) ?? []
   if (!next.length)
@@ -280,9 +284,27 @@ export async function buildComponentTokenManifest(options = {}) {
     .sort((a, b) => b.length - a.length || compareText(a, b))
   const designTokens = new Set(Object.keys(JSON.parse(await readFile(options.designTokensPath ?? DESIGN_TOKENS_PATH, 'utf8'))))
   const stylesDir = options.stylesDir ?? STYLES_DIR
+  const familyStylesDir = options.familyStylesDir ?? FAMILY_STYLES_DIR
   const records = new Map()
   const noFallback = []
   const errors = []
+
+  /* Family Recipe 的状态与布局只生成一次；组件文件里的公开槽通过私有合同投影到这里的最终属性。 */
+  const familyDeclarations = []
+  const familyFiles = await readdir(familyStylesDir).catch(() => [])
+  for (const file of familyFiles.filter(name => name.endsWith('.css')).sort()) {
+    const source = stripComments(await readFile(join(familyStylesDir, file), 'utf8'))
+    walkCss(source, 0, source.length, [], declaration => familyDeclarations.push({
+      ...declaration,
+      calls: varCalls(declaration.value),
+    }))
+  }
+
+  async function actionProfiles(component) {
+    const source = await readFile(join(HEADLESS_DIR, component, `${component}.connect.ts`), 'utf8').catch(() => '')
+    const expression = /['"]data-xh-action-profile['"]\s*:\s*([^,\n]+)/.exec(source)?.[1] ?? ''
+    return new Set([...expression.matchAll(/['"]([a-z-]+)['"]/g)].map(match => match[1]))
+  }
 
   for (const sourceComponent of componentIds.slice().sort(compareText)) {
     const file = join(stylesDir, `${sourceComponent}.css`)
@@ -299,10 +321,15 @@ export async function buildComponentTokenManifest(options = {}) {
       ...declaration,
       calls: varCalls(declaration.value),
     }))
+    const supportedActionProfiles = await actionProfiles(sourceComponent)
+    const applicableFamilyDeclarations = familyDeclarations.filter((declaration) => {
+      const profiles = [...declaration.selector.matchAll(/data-xh-action-profile=['"]([a-z-]+)['"]/g)].map(match => match[1])
+      return profiles.length === 0 || profiles.some(profile => supportedActionProfiles.has(profile))
+    })
     const consumers = new Map()
-    for (const declaration of declarations) {
+    for (const declaration of [...declarations, ...applicableFamilyDeclarations]) {
       for (const call of declaration.calls) {
-        if (!call.name.startsWith(PRIVATE_PREFIX))
+        if (!call.name.startsWith(PRIVATE_PREFIX) && !call.name.startsWith(FAMILY_BRIDGE_PREFIX))
           continue
         const list = consumers.get(call.name) ?? []
         if (!list.includes(declaration))

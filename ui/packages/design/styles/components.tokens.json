@@ -3462,14 +3462,10 @@
         "font-size"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-_button-group-font-size",
-        "--xh-control-font-lg",
-        "--xh-control-font-sm"
+        "--xh-_button-group-font-size"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 font-size 覆盖槽。"
@@ -3517,20 +3513,18 @@
         "root"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "inline-size"
       ],
       "state": [
         "default",
-        "size=lg",
-        "size=sm"
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-_button-group-h",
-        "--xh-control-h-lg",
-        "--xh-control-h-sm"
+        "--xh-_button-group-h"
       ],
       "visibility": "public",
-      "description": "button 的 root 部件 block-size 覆盖槽。"
+      "description": "button 的 root 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-button-icon-size",
@@ -3542,14 +3536,10 @@
         "--xh-icon-size"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-lg",
-        "--xh-glyph-size-md",
-        "--xh-glyph-size-sm"
+        "--xh-_action-profile-glyph-size"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 --xh-icon-size 覆盖槽。"
@@ -3564,14 +3554,10 @@
         "padding-inline"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-_button-group-px",
-        "--xh-control-px-lg",
-        "--xh-control-px-sm"
+        "--xh-_button-group-px"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 padding-inline 覆盖槽。"
@@ -3607,7 +3593,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_button-shadow-rest"
+        "--xh-material-soft-shadow"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 box-shadow 覆盖槽。"
@@ -3629,7 +3615,7 @@
         "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-_button-shadow-hover"
+        "--xh-elevation-raised"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 box-shadow 覆盖槽。"

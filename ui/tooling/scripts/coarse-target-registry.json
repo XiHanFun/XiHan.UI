@@ -115,8 +115,8 @@
       "why": "浮在页面角上的回顶钮，手指直接落上去"
     },
     "button:root": {
-      "px": 28,
-      "why": "按钮本体，手指直接落上去；28px 是 sm 档，md 与 lg 档更高"
+      "px": 24,
+      "why": "按钮本体，手指直接落上去；24px 是 Action Control 的 xs 视觉地板，Button 公开 sm/md/lg 更高"
     },
     "carousel:indicator": {
       "px": 8,

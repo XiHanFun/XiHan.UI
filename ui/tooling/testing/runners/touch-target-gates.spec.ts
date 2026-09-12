@@ -37,6 +37,7 @@ export function connectDemo(normalize, parts) {
   return {
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
+      'data-xh-action-control': '',
     }),
   }
 }
@@ -90,6 +91,35 @@ describe('触摸目标门禁', () => {
 
     expect(height.status, String(height.stderr)).toBe(0)
     expect(coarse.status, String(coarse.stderr)).toBe(0)
+  })
+
+  it('允许 text Action Control 只扩块轴，避免相邻文字按钮的行内命中区重叠', () => {
+    const root = createFixture(baseTriggerCss(`
+@media (pointer: coarse) {
+  [data-xh-action-control][data-xh-action-profile='text']::after {
+    min-block-size: 44px;
+  }
+}
+`))
+
+    const result = run(COARSE_TARGET_GATE, root)
+
+    expect(result.status, String(result.stderr)).toBe(0)
+  })
+
+  it('非 text Action Control 只扩块轴仍然失败', () => {
+    const root = createFixture(baseTriggerCss(`
+@media (pointer: coarse) {
+  [data-xh-action-control][data-xh-action-profile='icon']::after {
+    min-block-size: 44px;
+  }
+}
+`))
+
+    const result = run(COARSE_TARGET_GATE, root)
+
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain('粗指针下命中区 24px')
   })
 
   it('拒绝任一轴小于 44px 的真实触摸盒', () => {
