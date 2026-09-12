@@ -216,11 +216,56 @@ header / body / footer 把面板切成三段：头与尾定在原处，只有正
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-drawer-backdrop-bg` · `--xh-drawer-backdrop-blur` · `--xh-drawer-backdrop-layer` · `--xh-drawer-bg` · `--xh-drawer-close-bg-active` · `--xh-drawer-close-bg-hover` · `--xh-drawer-close-fg` · `--xh-drawer-close-fg-hover` · `--xh-drawer-close-radius` · `--xh-drawer-close-size` · `--xh-drawer-description-fg` · `--xh-drawer-description-font-size` · `--xh-drawer-fg` · `--xh-drawer-footer-gap` · `--xh-drawer-footer-pt` · `--xh-drawer-gap` · `--xh-drawer-header-gap` · `--xh-drawer-header-pb` · `--xh-drawer-icon-size` · `--xh-drawer-layer` · `--xh-drawer-px` · `--xh-drawer-py` · `--xh-drawer-radius` · `--xh-drawer-shadow` · `--xh-drawer-size` · `--xh-drawer-title-fg` · `--xh-drawer-title-font-size` · `--xh-drawer-title-font-weight` · `--xh-drawer-trigger-bg` · `--xh-drawer-trigger-bg-active` · `--xh-drawer-trigger-bg-hover` · `--xh-drawer-trigger-bg-open` · `--xh-drawer-trigger-border` · `--xh-drawer-trigger-border-hover` · `--xh-drawer-trigger-border-open` · `--xh-drawer-trigger-fg` · `--xh-drawer-trigger-font-size` · `--xh-drawer-trigger-font-weight` · `--xh-drawer-trigger-gap` · `--xh-drawer-trigger-h` · `--xh-drawer-trigger-px` · `--xh-drawer-trigger-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-drawer-backdrop-bg` | `backdrop` | `background` | `default` | `--xh-bg-overlay` | drawer 的 backdrop 部件 background 覆盖槽。 |
+| `--xh-drawer-backdrop-blur` | `backdrop` | `backdrop-filter` | `variant=blur` | `--xh-overlay-backdrop-blur` | drawer 的 backdrop 部件 backdrop-filter 覆盖槽。 |
+| `--xh-drawer-backdrop-layer` | `backdrop` | `z-index` | `default` | `--xh-_layer` | drawer 的 backdrop 部件 z-index 覆盖槽。 |
+| `--xh-drawer-bg` | `content` | `background` | `default` | `--xh-bg-surface` | drawer 的 content 部件 background 覆盖槽。 |
+| `--xh-drawer-close-bg-active` | `close-trigger` | `background` | `active` | `--xh-bg-subtle-active` | drawer 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-drawer-close-bg-hover` | `close-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | drawer 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-drawer-close-fg` | `close-trigger` | `color` | `default` | `--xh-fg-muted` | drawer 的 close-trigger 部件 color 覆盖槽。 |
+| `--xh-drawer-close-fg-hover` | `close-trigger` | `color` | `hover` | `--xh-fg-default` | drawer 的 close-trigger 部件 color 覆盖槽。 |
+| `--xh-drawer-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | drawer 的 close-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-drawer-close-size` | `close-trigger`<br>`content`<br>`title` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default`<br>`has([data-scope='drawer'][data-part='close-trigger'])` | `--xh-control-h-sm` | drawer 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
+| `--xh-drawer-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | drawer 的 description 部件 color 覆盖槽。 |
+| `--xh-drawer-description-font-size` | `description` | `font-size` | `default` | `--xh-text-body-size` | drawer 的 description 部件 font-size 覆盖槽。 |
+| `--xh-drawer-fg` | `content` | `color` | `default` | `--xh-fg-default` | drawer 的 content 部件 color 覆盖槽。 |
+| `--xh-drawer-footer-gap` | `footer` | `gap` | `default` | `--xh-control-gap-md` | drawer 的 footer 部件 gap 覆盖槽。 |
+| `--xh-drawer-footer-pt` | `footer` | `padding-block-start` | `default` | `--xh-space-2` | drawer 的 footer 部件 padding-block-start 覆盖槽。 |
+| `--xh-drawer-gap` | `content` | `gap` | `default` | `--xh-stack-gap-md` | drawer 的 content 部件 gap 覆盖槽。 |
+| `--xh-drawer-header-gap` | `header` | `gap` | `default` | `--xh-stack-gap-sm` | drawer 的 header 部件 gap 覆盖槽。 |
+| `--xh-drawer-header-pb` | `header` | `padding-block-end` | `default` | `--xh-space-2` | drawer 的 header 部件 padding-block-end 覆盖槽。 |
+| `--xh-drawer-icon-size` | `content`<br>`root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | drawer 的 content、root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-drawer-layer` | `content`<br>`positioner` | `z-index` | `default` | `--xh-_layer` | drawer 的 content、positioner 部件 z-index 覆盖槽。 |
+| `--xh-drawer-px` | `content` | `padding-inline` | `contained`<br>`default` | `--xh-surface-px-md` | drawer 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-drawer-py` | `content` | `padding-block-end`<br>`padding-block-start` | `contained`<br>`default` | `--xh-surface-py-md` | drawer 的 content 部件 padding-block-end、padding-block-start 覆盖槽。 |
+| `--xh-drawer-radius` | `content` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `side=bottom`<br>`side=left`<br>`side=right`<br>`side=top` | `--xh-shape-surface` | drawer 的 content 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-drawer-shadow` | `content` | `box-shadow` | `default` | `--xh-elevation-sheet` | drawer 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-drawer-size` | `content` | `block-size`<br>`inline-size` | `side=bottom`<br>`side=left`<br>`side=right`<br>`side=top` | `--xh-_drawer-size` | drawer 的 content 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-drawer-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | drawer 的 title 部件 color 覆盖槽。 |
+| `--xh-drawer-title-font-size` | `title` | `font-size` | `default` | `--xh-text-heading-3-size` | drawer 的 title 部件 font-size 覆盖槽。 |
+| `--xh-drawer-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-heading-3-weight` | drawer 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-drawer-trigger-bg` | `trigger` | `background` | `default` | `--xh-bg-canvas` | drawer 的 trigger 部件 background 覆盖槽。 |
+| `--xh-drawer-trigger-bg-active` | `trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | drawer 的 trigger 部件 background 覆盖槽。 |
+| `--xh-drawer-trigger-bg-hover` | `trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | drawer 的 trigger 部件 background 覆盖槽。 |
+| `--xh-drawer-trigger-bg-open` | `trigger` | `background` | `state=open` | `--xh-bg-subtle-active` | drawer 的 trigger 部件 background 覆盖槽。 |
+| `--xh-drawer-trigger-border` | `trigger` | `border` | `default` | `--xh-border-control` | drawer 的 trigger 部件 border 覆盖槽。 |
+| `--xh-drawer-trigger-border-hover` | `trigger` | `border-color` | `hover`<br>`not(:disabled)` | `--xh-border-control-hover` | drawer 的 trigger 部件 border-color 覆盖槽。 |
+| `--xh-drawer-trigger-border-open` | `trigger` | `border-color` | `state=open` | `--xh-border-control-hover` | drawer 的 trigger 部件 border-color 覆盖槽。 |
+| `--xh-drawer-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | drawer 的 trigger 部件 color 覆盖槽。 |
+| `--xh-drawer-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-text-label-size` | drawer 的 trigger 部件 font-size 覆盖槽。 |
+| `--xh-drawer-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | drawer 的 trigger 部件 font-weight 覆盖槽。 |
+| `--xh-drawer-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-md` | drawer 的 trigger 部件 gap 覆盖槽。 |
+| `--xh-drawer-trigger-h` | `trigger` | `block-size` | `default` | `--xh-control-h-md` | drawer 的 trigger 部件 block-size 覆盖槽。 |
+| `--xh-drawer-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-control-px-md` | drawer 的 trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-drawer-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | drawer 的 trigger 部件 border-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

@@ -157,11 +157,20 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 | `root` | `data-state` | 'empty' |
 | `root` | `data-version` | undefined \| String(version) |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-qr-code-bg` · `--xh-qr-code-eye-fg` · `--xh-qr-code-fg` · `--xh-qr-code-placeholder-bg` · `--xh-qr-code-placeholder-border` · `--xh-qr-code-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-qr-code-bg` | `root` | `background`<br>`fill` | `default`<br>`xh-geom=logo-clear` | `--xh-color-neutral-0` | qr-code 的 root 部件 background、fill 覆盖槽。 |
+| `--xh-qr-code-eye-fg` | `root` | `fill` | `xh-geom=eyes` | `currentColor` | qr-code 的 root 部件 fill 覆盖槽。 |
+| `--xh-qr-code-fg` | `root` | `color` | `default` | `--xh-color-neutral-950` | qr-code 的 root 部件 color 覆盖槽。 |
+| `--xh-qr-code-placeholder-bg` | `root` | `background` | `state=empty`<br>`state=error` | `--xh-bg-subtle` | qr-code 的 root 部件 background 覆盖槽。 |
+| `--xh-qr-code-placeholder-border` | `root` | `box-shadow` | `state=empty`<br>`state=error` | `--xh-border-default` | qr-code 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-qr-code-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | qr-code 的 root 部件 border-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

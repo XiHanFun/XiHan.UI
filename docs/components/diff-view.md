@@ -229,11 +229,51 @@ size 换字号、行高与行号槽的宽度，三档并列对照
 | `gap` | `data-value` | hunkIndex:0 |
 | `gap-trigger` | `data-value` | hunkIndex:0 |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-diff-view-added-bg` · `--xh-diff-view-added-fg` · `--xh-diff-view-bg` · `--xh-diff-view-border` · `--xh-diff-view-change-bar` · `--xh-diff-view-comment-fg` · `--xh-diff-view-empty-bg` · `--xh-diff-view-empty-fg` · `--xh-diff-view-font` · `--xh-diff-view-font-size` · `--xh-diff-view-gap-bg` · `--xh-diff-view-gap-bg-hover` · `--xh-diff-view-gap-fg` · `--xh-diff-view-gutter` · `--xh-diff-view-header-fg` · `--xh-diff-view-header-font-size` · `--xh-diff-view-header-gap` · `--xh-diff-view-icon-size` · `--xh-diff-view-inline-change-radius` · `--xh-diff-view-keyword-fg` · `--xh-diff-view-keyword-weight` · `--xh-diff-view-line-height` · `--xh-diff-view-max-h` · `--xh-diff-view-number-fg` · `--xh-diff-view-number-token-fg` · `--xh-diff-view-punctuation-fg` · `--xh-diff-view-px` · `--xh-diff-view-py` · `--xh-diff-view-radius` · `--xh-diff-view-removed-bg` · `--xh-diff-view-removed-fg` · `--xh-diff-view-shadow` · `--xh-diff-view-string-fg` · `--xh-diff-view-truncation-bg` · `--xh-diff-view-truncation-border` · `--xh-diff-view-truncation-fg` · `--xh-diff-view-truncation-gap`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-diff-view-added-bg` | `row` | `background` | `change=added` | `--xh-diff-added-bg` | diff-view 的 row 部件 background 覆盖槽。 |
+| `--xh-diff-view-added-fg` | `inline-change`<br>`line-content`<br>`line-number`<br>`row`<br>`summary` | `background`<br>`box-shadow`<br>`color` | `change=added` | `--xh-diff-added-fg` | diff-view 的 inline-change、line-content、line-number、row、summary 部件 background、box-shadow、color 覆盖槽。 |
+| `--xh-diff-view-bg` | `root` | `background` | `default` | `--xh-bg-surface` | diff-view 的 root 部件 background 覆盖槽。 |
+| `--xh-diff-view-border` | `header`<br>`line-number`<br>`root` | `border`<br>`border-block-end`<br>`border-inline-end`<br>`border-inline-start` | `@media (min-width: 1024px)`<br>`default`<br>`side=new`<br>`view=split` | `--xh-border-subtle` | diff-view 的 header、line-number、root 部件 border、border-block-end、border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-diff-view-change-bar` | `row` | `background`<br>`box-shadow` | `change=added`<br>`change=removed` | `--xh-stroke-thick` | diff-view 的 row 部件 background、box-shadow 覆盖槽。 |
+| `--xh-diff-view-comment-fg` | `token` | `color` | `kind=comment` | `--xh-fg-muted` | diff-view 的 token 部件 color 覆盖槽。 |
+| `--xh-diff-view-empty-bg` | `line-content` | `background` | `empty` | `--xh-bg-subtle` | diff-view 的 line-content 部件 background 覆盖槽。 |
+| `--xh-diff-view-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | diff-view 的 empty 部件 color 覆盖槽。 |
+| `--xh-diff-view-font` | `body`<br>`header` | `font-family` | `default` | `--xh-font-family-mono` | diff-view 的 body、header 部件 font-family 覆盖槽。 |
+| `--xh-diff-view-font-size` | `body` | `font-size` | `default` | `--xh-_diff-view-font-size` | diff-view 的 body 部件 font-size 覆盖槽。 |
+| `--xh-diff-view-gap-bg` | `gap` | `background` | `default` | `--xh-bg-subtle` | diff-view 的 gap 部件 background 覆盖槽。 |
+| `--xh-diff-view-gap-bg-hover` | `gap-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | diff-view 的 gap-trigger 部件 background 覆盖槽。 |
+| `--xh-diff-view-gap-fg` | `gap-trigger` | `color` | `default` | `--xh-fg-muted` | diff-view 的 gap-trigger 部件 color 覆盖槽。 |
+| `--xh-diff-view-gutter` | `line-number` | `inline-size` | `default` | `4ch` | diff-view 的 line-number 部件 inline-size 覆盖槽。 |
+| `--xh-diff-view-header-fg` | `header` | `color` | `default` | `--xh-fg-muted` | diff-view 的 header 部件 color 覆盖槽。 |
+| `--xh-diff-view-header-font-size` | `empty`<br>`header`<br>`truncation` | `font-size` | `default` | `--xh-text-secondary-size` | diff-view 的 empty、header、truncation 部件 font-size 覆盖槽。 |
+| `--xh-diff-view-header-gap` | `header` | `gap` | `default` | `--xh-space-2` | diff-view 的 header 部件 gap 覆盖槽。 |
+| `--xh-diff-view-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | diff-view 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-diff-view-inline-change-radius` | `inline-change` | `border-radius` | `change` | `--xh-shape-inset` | diff-view 的 inline-change 部件 border-radius 覆盖槽。 |
+| `--xh-diff-view-keyword-fg` | `token` | `color` | `kind=keyword` | `--xh-syntax-keyword` | diff-view 的 token 部件 color 覆盖槽。 |
+| `--xh-diff-view-keyword-weight` | `token` | `font-weight` | `kind=keyword` | `--xh-font-weight-semibold` | diff-view 的 token 部件 font-weight 覆盖槽。 |
+| `--xh-diff-view-line-height` | `body`<br>`gap`<br>`row` | `line-height`<br>`min-block-size` | `default` | `--xh-text-code-leading` | diff-view 的 body、gap、row 部件 line-height、min-block-size 覆盖槽。 |
+| `--xh-diff-view-max-h` | `viewport` | `max-block-size` | `default` | `--xh-viewport-max-h` | diff-view 的 viewport 部件 max-block-size 覆盖槽。 |
+| `--xh-diff-view-number-fg` | `line-number` | `color` | `default` | `--xh-fg-subtle` | diff-view 的 line-number 部件 color 覆盖槽。 |
+| `--xh-diff-view-number-token-fg` | `token` | `color` | `kind=number` | `--xh-syntax-number` | diff-view 的 token 部件 color 覆盖槽。 |
+| `--xh-diff-view-punctuation-fg` | `token` | `color` | `kind=punctuation` | `--xh-fg-subtle` | diff-view 的 token 部件 color 覆盖槽。 |
+| `--xh-diff-view-px` | `empty`<br>`gap-trigger`<br>`header`<br>`line-content`<br>`line-number`<br>`truncation` | `padding-inline`<br>`padding-inline-end` | `default` | `--xh-_diff-view-px` | diff-view 的 empty、gap-trigger、header、line-content、line-number、truncation 部件 padding-inline、padding-inline-end 覆盖槽。 |
+| `--xh-diff-view-py` | `empty`<br>`header`<br>`truncation` | `padding-block` | `default` | `--xh-_diff-view-py` | diff-view 的 empty、header、truncation 部件 padding-block 覆盖槽。 |
+| `--xh-diff-view-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | diff-view 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-diff-view-removed-bg` | `row` | `background` | `change=removed` | `--xh-diff-removed-bg` | diff-view 的 row 部件 background 覆盖槽。 |
+| `--xh-diff-view-removed-fg` | `inline-change`<br>`line-content`<br>`line-number`<br>`row`<br>`summary` | `background`<br>`color` | `change=removed` | `--xh-diff-removed-fg` | diff-view 的 inline-change、line-content、line-number、row、summary 部件 background、color 覆盖槽。 |
+| `--xh-diff-view-shadow` | `root` | `box-shadow` | `default` | `--xh-elevation-raised` | diff-view 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-diff-view-string-fg` | `token` | `color` | `kind=string` | `--xh-syntax-string` | diff-view 的 token 部件 color 覆盖槽。 |
+| `--xh-diff-view-truncation-bg` | `truncation` | `background` | `default` | `--xh-fg-warning` | diff-view 的 truncation 部件 background 覆盖槽。 |
+| `--xh-diff-view-truncation-border` | `truncation` | `border-block-start` | `default` | `--xh-border-subtle` | diff-view 的 truncation 部件 border-block-start 覆盖槽。 |
+| `--xh-diff-view-truncation-fg` | `truncation` | `color` | `default` | `--xh-fg-warning` | diff-view 的 truncation 部件 color 覆盖槽。 |
+| `--xh-diff-view-truncation-gap` | `truncation` | `gap` | `default` | `--xh-space-2` | diff-view 的 truncation 部件 gap 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

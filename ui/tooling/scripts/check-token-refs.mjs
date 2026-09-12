@@ -4,17 +4,19 @@
 // 而 CSS 不会告诉任何人。toggle 的按下态就这么静默失效了很久。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { readComponentTokenManifest } from './lib/component-token-manifest.mjs'
 
 const STYLES_DIR = 'packages/design/styles/css'
 const TOKENS_CSS = 'packages/design/tokens/tokens.css'
 
-/** 组件私有槽：由皮肤自己声明或留给使用者覆盖，不在令牌产物里。 */
-function isComponentSlot(name, declaredInStyles) {
-  return name.startsWith('--xh-_') || declaredInStyles.has(name)
+/** 组件私有槽、manifest 公开覆盖槽或声明型计算输出都不属于全局设计令牌。 */
+function isComponentSlot(name, publicSlots, declaredInStyles) {
+  return name.startsWith('--xh-_') || publicSlots.has(name) || declaredInStyles.has(name)
 }
 
 const tokensCss = await readFile(TOKENS_CSS, 'utf8')
 const declared = new Set([...tokensCss.matchAll(/^\s*(--xh-[a-z0-9_-]+)\s*:/gm)].map(m => m[1]))
+const publicSlots = new Set((await readComponentTokenManifest()).tokens.map(token => token.name))
 
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css'))
 const sources = new Map()
@@ -64,10 +66,7 @@ for (const [file, src] of sources) {
     }
     for (const m of line.matchAll(/var\(\s*(--xh-[a-z0-9_-]+)/g)) {
       const name = m[1]
-      if (declared.has(name) || isComponentSlot(name, declaredInStyles))
-        continue
-      // 组件级覆盖点的形状是 --xh-<组件名>-*，由使用者声明，缺省走兜底
-      if (new RegExp(`^--xh-${file.replace(/\.css$/, '')}-`).test(name))
+      if (declared.has(name) || isComponentSlot(name, publicSlots, declaredInStyles))
         continue
       orphans.push(`${file}:${i + 1}  ${name}`)
     }

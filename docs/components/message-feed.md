@@ -207,11 +207,29 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 | `item` | `data-streaming` | ''（条件成立时才出现） |
 | `scroll-to-end-trigger` | `data-state` | 'hidden' \| 'visible' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-message-feed-gap` · `--xh-message-feed-icon-size` · `--xh-message-feed-item-gap` · `--xh-message-feed-item-radius` · `--xh-message-feed-label-fg` · `--xh-message-feed-label-font-size` · `--xh-message-feed-p` · `--xh-message-feed-scroll-to-end-trigger-bg` · `--xh-message-feed-scroll-to-end-trigger-bg-hover` · `--xh-message-feed-scroll-to-end-trigger-border` · `--xh-message-feed-scroll-to-end-trigger-fg` · `--xh-message-feed-scroll-to-end-trigger-inset` · `--xh-message-feed-scroll-to-end-trigger-radius` · `--xh-message-feed-scroll-to-end-trigger-shadow` · `--xh-message-feed-scroll-to-end-trigger-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-message-feed-gap` | `list` | `gap` | `default` | `--xh-_message-feed-gap` | message-feed 的 list 部件 gap 覆盖槽。 |
+| `--xh-message-feed-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | message-feed 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-message-feed-item-gap` | `item` | `gap` | `default` | `--xh-space-1` | message-feed 的 item 部件 gap 覆盖槽。 |
+| `--xh-message-feed-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | message-feed 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-message-feed-label-fg` | `item-label` | `color` | `default` | `--xh-fg-muted` | message-feed 的 item-label 部件 color 覆盖槽。 |
+| `--xh-message-feed-label-font-size` | `item-label` | `font-size` | `default` | `--xh-text-caption-size` | message-feed 的 item-label 部件 font-size 覆盖槽。 |
+| `--xh-message-feed-p` | `list` | `padding` | `default` | `--xh-_message-feed-p` | message-feed 的 list 部件 padding 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `background` | `default` | `--xh-bg-surface-raised` | message-feed 的 scroll-to-end-trigger 部件 background 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-bg-hover` | `scroll-to-end-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | message-feed 的 scroll-to-end-trigger 部件 background 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-border` | `scroll-to-end-trigger` | `border` | `default` | `--xh-border-default` | message-feed 的 scroll-to-end-trigger 部件 border 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-fg` | `scroll-to-end-trigger` | `color` | `default` | `--xh-fg-default` | message-feed 的 scroll-to-end-trigger 部件 color 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-inset` | `scroll-to-end-trigger` | `inset-block-end`<br>`inset-inline-end` | `default` | `--xh-space-4` | message-feed 的 scroll-to-end-trigger 部件 inset-block-end、inset-inline-end 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-radius` | `scroll-to-end-trigger` | `border-radius` | `default` | `--xh-shape-pill` | message-feed 的 scroll-to-end-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-shadow` | `scroll-to-end-trigger` | `box-shadow` | `default` | `--xh-elevation-raised` | message-feed 的 scroll-to-end-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-size` | `scroll-to-end-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-sm` | message-feed 的 scroll-to-end-trigger 部件 block-size、inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

@@ -12,6 +12,7 @@ import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import ts from 'typescript'
 import { ADAPTERS, reactCovered, reactProgress } from './lib/adapters.mjs'
+import { readComponentTokenManifest } from './lib/component-token-manifest.mjs'
 
 const PACKAGES = 'packages'
 const HEADLESS = 'packages/engine/headless/src'
@@ -228,7 +229,7 @@ for (const entry of await readdir(HEADLESS, { withFileTypes: true })) {
 // ── 五、CSS：令牌名、@layer 名、组件覆盖槽 ──
 const tokens = sorted(new Set(Object.keys(JSON.parse(await readFile(TOKENS, 'utf8')))))
 const layers = new Set()
-const slots = new Set()
+const slots = new Set((await readComponentTokenManifest()).tokens.map(token => token.name))
 const stateValues = new Set()
 const keyframes = new Set()
 for (const file of await readdir(SKINS)) {
@@ -239,10 +240,6 @@ for (const file of await readdir(SKINS)) {
     for (const name of m[1].split(',').map(s => s.trim()).filter(Boolean))
       layers.add(name)
   }
-  // 使用者可覆盖的槽：var(--xh-<组件>-…, 兜底) 里第一个参数。
-  // 私有槽 --xh-_xxx 自动被排除——名字里的 `_` 不在 [a-z0-9-] 里，匹配到那一位就断了。
-  for (const m of css.matchAll(/var\((--xh-[a-z0-9-]+),/g))
-    slots.add(m[1])
   for (const m of css.matchAll(/\[data-state=['"]([a-z0-9-]+)['"]\]/g))
     stateValues.add(m[1])
   // 关键帧名字是受支持的覆盖点（规范 §8.7 约束 3），改名与删名同样是破坏性变更。

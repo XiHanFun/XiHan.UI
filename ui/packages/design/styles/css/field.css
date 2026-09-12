@@ -14,7 +14,7 @@
      整表据此对齐；描述与错误文案跟着控件走第二列 */
   [data-scope='form'][data-part='root'][data-layout='horizontal'] [data-scope='field'][data-part='root'] {
     display: grid;
-    grid-template-columns: var(--xh-form-label-w) minmax(0, 1fr);
+    grid-template-columns: var(--xh-form-label-w, 30%) minmax(0, 1fr);
     column-gap: var(--xh-field-label-gap, var(--xh-space-3));
     align-items: start;
   }

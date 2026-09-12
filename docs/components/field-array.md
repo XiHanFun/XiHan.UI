@@ -186,11 +186,43 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | `add-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-field-array-action-gap` · `--xh-field-array-add-bg` · `--xh-field-array-add-bg-active` · `--xh-field-array-add-bg-hover` · `--xh-field-array-add-border` · `--xh-field-array-add-border-disabled` · `--xh-field-array-add-border-hover` · `--xh-field-array-add-fg` · `--xh-field-array-add-font-size` · `--xh-field-array-add-height` · `--xh-field-array-add-px` · `--xh-field-array-add-radius` · `--xh-field-array-content-gap` · `--xh-field-array-gap` · `--xh-field-array-icon-size` · `--xh-field-array-item-delete-fg-hover` · `--xh-field-array-item-gap` · `--xh-field-array-item-label-fg` · `--xh-field-array-item-label-font-size` · `--xh-field-array-item-padding` · `--xh-field-array-item-radius` · `--xh-field-array-trigger-bg` · `--xh-field-array-trigger-bg-active` · `--xh-field-array-trigger-bg-hover` · `--xh-field-array-trigger-fg` · `--xh-field-array-trigger-fg-hover` · `--xh-field-array-trigger-font-size` · `--xh-field-array-trigger-radius` · `--xh-field-array-trigger-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-field-array-action-gap` | `add-trigger`<br>`item-action` | `gap` | `default` | `--xh-space-1` | field-array 的 add-trigger、item-action 部件 gap 覆盖槽。 |
+| `--xh-field-array-add-bg` | `add-trigger` | `background` | `default` | `transparent` | field-array 的 add-trigger 部件 background 覆盖槽。 |
+| `--xh-field-array-add-bg-active` | `add-trigger` | `background` | `active`<br>`not([aria-disabled='true'])` | `--xh-bg-subtle-active` | field-array 的 add-trigger 部件 background 覆盖槽。 |
+| `--xh-field-array-add-bg-hover` | `add-trigger` | `background` | `hover`<br>`not([aria-disabled='true'])` | `--xh-bg-subtle-hover` | field-array 的 add-trigger 部件 background 覆盖槽。 |
+| `--xh-field-array-add-border` | `add-trigger` | `border` | `default` | `--xh-border-control` | field-array 的 add-trigger 部件 border 覆盖槽。 |
+| `--xh-field-array-add-border-disabled` | `add-trigger` | `border-color` | `default` | `--xh-border-subtle` | field-array 的 add-trigger 部件 border-color 覆盖槽。 |
+| `--xh-field-array-add-border-hover` | `add-trigger` | `border-color` | `hover`<br>`not([aria-disabled='true'])` | `--xh-border-control-hover` | field-array 的 add-trigger 部件 border-color 覆盖槽。 |
+| `--xh-field-array-add-fg` | `add-trigger` | `color` | `default` | `--xh-fg-brand` | field-array 的 add-trigger 部件 color 覆盖槽。 |
+| `--xh-field-array-add-font-size` | `add-trigger` | `font-size` | `default` | `--xh-text-label-size` | field-array 的 add-trigger 部件 font-size 覆盖槽。 |
+| `--xh-field-array-add-height` | `add-trigger` | `block-size` | `default` | `--xh-control-h-md` | field-array 的 add-trigger 部件 block-size 覆盖槽。 |
+| `--xh-field-array-add-px` | `add-trigger` | `padding-inline` | `default` | `--xh-control-px-md` | field-array 的 add-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-field-array-add-radius` | `add-trigger` | `border-radius` | `default` | `--xh-shape-control` | field-array 的 add-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-field-array-content-gap` | `item-content` | `gap` | `default` | `--xh-space-2` | field-array 的 item-content 部件 gap 覆盖槽。 |
+| `--xh-field-array-gap` | `root` | `gap` | `default` | `--xh-space-2` | field-array 的 root 部件 gap 覆盖槽。 |
+| `--xh-field-array-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | field-array 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-field-array-item-delete-fg-hover` | `item-delete-trigger` | `color` | `hover`<br>`not([aria-disabled='true'])` | `--xh-fg-danger-hover` | field-array 的 item-delete-trigger 部件 color 覆盖槽。 |
+| `--xh-field-array-item-gap` | `item` | `gap` | `default` | `--xh-space-2` | field-array 的 item 部件 gap 覆盖槽。 |
+| `--xh-field-array-item-label-fg` | `item-label` | `color` | `default` | `--xh-fg-muted` | field-array 的 item-label 部件 color 覆盖槽。 |
+| `--xh-field-array-item-label-font-size` | `item-label` | `font-size` | `default` | `--xh-text-secondary-size` | field-array 的 item-label 部件 font-size 覆盖槽。 |
+| `--xh-field-array-item-padding` | `item` | `padding` | `default` | `--xh-space-0` | field-array 的 item 部件 padding 覆盖槽。 |
+| `--xh-field-array-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | field-array 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-field-array-trigger-bg` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background` | `default` | `transparent` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background 覆盖槽。 |
+| `--xh-field-array-trigger-bg-active` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background` | `active`<br>`not([aria-disabled='true'])` | `--xh-bg-subtle-active` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background 覆盖槽。 |
+| `--xh-field-array-trigger-bg-hover` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background` | `hover`<br>`not([aria-disabled='true'])` | `--xh-bg-subtle-hover` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background 覆盖槽。 |
+| `--xh-field-array-trigger-fg` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `color` | `default` | `--xh-fg-muted` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 color 覆盖槽。 |
+| `--xh-field-array-trigger-fg-hover` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `color` | `hover`<br>`not([aria-disabled='true'])` | `--xh-fg-default` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 color 覆盖槽。 |
+| `--xh-field-array-trigger-font-size` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 font-size 覆盖槽。 |
+| `--xh-field-array-trigger-radius` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `border-radius` | `default` | `--xh-shape-control` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-field-array-trigger-size` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 block-size、inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

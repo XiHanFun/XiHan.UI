@@ -170,11 +170,21 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 | `range` | `data-state` | state.get() |
 | `peg` | `data-state` | state.get() |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-loading-bar-fade` · `--xh-loading-bar-layer` · `--xh-loading-bar-peg-fg` · `--xh-loading-bar-peg-w` · `--xh-loading-bar-range` · `--xh-loading-bar-speed` · `--xh-loading-bar-track`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-loading-bar-fade` | `root` | `transition` | `default` | `--xh-motion-duration-exit` | loading-bar 的 root 部件 transition 覆盖槽。 |
+| `--xh-loading-bar-layer` | `root` | `z-index` | `default` | `--xh-layer-sticky` | loading-bar 的 root 部件 z-index 覆盖槽。 |
+| `--xh-loading-bar-peg-fg` | `peg` | `background` | `default` | `--xh-loading-bar-range` | loading-bar 的 peg 部件 background 覆盖槽。 |
+| `--xh-loading-bar-peg-w` | `peg` | `inline-size` | `default` | `--xh-space-8` | loading-bar 的 peg 部件 inline-size 覆盖槽。 |
+| `--xh-loading-bar-range` | `peg`<br>`range` | `background` | `default` | `--xh-_tone-soft` | loading-bar 的 peg、range 部件 background 覆盖槽。 |
+| `--xh-loading-bar-speed` | `range` | `transition` | `default` | `--xh-motion-duration-enter` | loading-bar 的 range 部件 transition 覆盖槽。 |
+| `--xh-loading-bar-track` | `track` | `background` | `default` | `transparent` | loading-bar 的 track 部件 background 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

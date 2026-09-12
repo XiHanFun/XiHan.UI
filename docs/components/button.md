@@ -177,11 +177,28 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-button-bg` · `--xh-button-bg-active` · `--xh-button-bg-hover` · `--xh-button-fg` · `--xh-button-font-size` · `--xh-button-font-weight` · `--xh-button-gap` · `--xh-button-h` · `--xh-button-icon-size` · `--xh-button-px` · `--xh-button-radius` · `--xh-button-shadow` · `--xh-button-shadow-hover` · `--xh-button-spin-duration`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-button-bg` | `root` | `background-color` | `default` | `--xh-bg-subtle` | button 的 root 部件 background-color 覆盖槽。 |
+| `--xh-button-bg-active` | `root` | `background-color` | `active`<br>`disabled`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle-active` | button 的 root 部件 background-color 覆盖槽。 |
+| `--xh-button-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle-hover` | button 的 root 部件 background-color 覆盖槽。 |
+| `--xh-button-fg` | `root` | `color` | `default` | `--xh-fg-default` | button 的 root 部件 color 覆盖槽。 |
+| `--xh-button-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-_button-group-font-size`<br>`--xh-control-font-lg`<br>`--xh-control-font-sm` | button 的 root 部件 font-size 覆盖槽。 |
+| `--xh-button-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | button 的 root 部件 font-weight 覆盖槽。 |
+| `--xh-button-gap` | `root` | `gap` | `default` | `--xh-_button-group-gap` | button 的 root 部件 gap 覆盖槽。 |
+| `--xh-button-h` | `root` | `block-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-_button-group-h`<br>`--xh-control-h-lg`<br>`--xh-control-h-sm` | button 的 root 部件 block-size 覆盖槽。 |
+| `--xh-button-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | button 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-button-px` | `root` | `padding-inline` | `default`<br>`size=lg`<br>`size=sm` | `--xh-_button-group-px`<br>`--xh-control-px-lg`<br>`--xh-control-px-sm` | button 的 root 部件 padding-inline 覆盖槽。 |
+| `--xh-button-radius` | `root` | `border-radius` | `default` | `--xh-_button-radius` | button 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-button-shadow` | `root` | `box-shadow` | `default` | `--xh-_button-shadow-rest` | button 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-button-shadow-hover` | `root` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_button-shadow-hover` | button 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-button-spin-duration` | `indicator`<br>`root` | `animation` | `loading` | `--xh-spin-duration` | button 的 indicator、root 部件 animation 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

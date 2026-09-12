@@ -16,6 +16,11 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import ts from 'typescript'
+import {
+  COMPONENT_TOKEN_MANIFEST_PATH,
+  componentTokensByComponent,
+  renderComponentTokenDocs,
+} from '../tooling/scripts/lib/component-token-manifest.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const uiRoot = path.resolve(here, '..')
@@ -82,8 +87,7 @@ const vueExports = new Set([
 const wcDefine = fs.readFileSync(path.join(uiRoot, 'packages/adapters/web-components/src/define.ts'), 'utf8')
 const wcTags = new Set([...wcDefine.matchAll(/['"`](xh-[a-z0-9-]+)['"`]/g)].map(m => m[1]))
 
-// 自定义元素清单：公开事件与可覆盖令牌都已由 cem 采集，按标签名取用即可，
-// 不必在这里再解析一遍源码。
+// 自定义元素清单只提供公开事件；组件覆盖槽由 CSS 生成 manifest 单独提供。
 const cem = JSON.parse(
   fs.readFileSync(path.join(uiRoot, 'packages/adapters/web-components/custom-elements.json'), 'utf8'),
 )
@@ -95,12 +99,16 @@ for (const mod of cem.modules ?? []) {
   }
 }
 
-/** 公开事件与组件级令牌。没有自定义元素的组件（纯 Vue 产物）两样都空。 */
+const componentTokenEntries = componentTokensByComponent(
+  JSON.parse(fs.readFileSync(COMPONENT_TOKEN_MANIFEST_PATH, 'utf8')),
+)
+
+/** 公开事件来自 CEM；组件级令牌来自 CSS 生成 manifest。 */
 function elementSurface(id) {
   const decl = cemByTag.get(`xh-${id}`)
   return {
     events: decl?.events ?? [],
-    cssProps: (decl?.cssProperties ?? []).map(p => p.name).sort(),
+    componentTokens: componentTokenEntries.get(id) ?? [],
   }
 }
 
@@ -955,15 +963,10 @@ function renderComponent(entry, category) {
     push('')
   }
 
-  // 可覆盖的令牌：改这一个组件的外观从这里下手，不必去翻皮肤源码
-  if (es.cssProps.length) {
-    push('## CSS 变量', '')
-    push(
-      '本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。',
-      '',
-    )
-    push(es.cssProps.map(code).join(' · '), '')
-  }
+  // 可覆盖令牌的名字、部件、属性、状态与缺省来源全部来自 CSS 生成 manifest。
+  const componentTokenDocs = renderComponentTokenDocs(es.componentTokens)
+  if (componentTokenDocs)
+    push(...componentTokenDocs.split('\n'), '')
 
   // 动效：分三种情形——皮肤里真在动、动效在皮肤之外由脚本驱动、本组件不动。
   // 「皮肤里真在动」只认剥掉减弱动效与高对比两类块之后仍成立的声明：那两处写的是关掉

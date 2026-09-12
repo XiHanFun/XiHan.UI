@@ -29,6 +29,11 @@
   ],
   "exports": {
     ".": "./index.css",
+    "./component-tokens": {
+      "types": "./component-tokens.d.ts",
+      "import": "./component-tokens.js"
+    },
+    "./components.tokens.json": "./components.tokens.json",
     "./accordion.css": "./css/accordion.css",
     "./affix.css": "./css/affix.css",
     "./alert.css": "./css/alert.css",
@@ -171,6 +176,9 @@
   },
   "files": [
     "CHANGELOG.md",
+    "component-tokens.d.ts",
+    "component-tokens.js",
+    "components.tokens.json",
     "css",
     "index.css",
     "index.unlayered.css"
@@ -183,8 +191,8 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "gen": "node build/emit-unlayered.mjs",
-    "build": "node build/emit-unlayered.mjs"
+    "gen": "node build/emit-component-tokens.mjs && node build/emit-unlayered.mjs",
+    "build": "node build/emit-component-tokens.mjs && node build/emit-unlayered.mjs"
   },
   "dependencies": {
     "@xihan-ui/tokens": "workspace:^"

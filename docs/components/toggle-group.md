@@ -198,11 +198,43 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `separator` | `data-disabled` | ''（条件成立时才出现） |
 | `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-toggle-group-item-bg` · `--xh-toggle-group-item-bg-active` · `--xh-toggle-group-item-bg-disabled` · `--xh-toggle-group-item-bg-hover` · `--xh-toggle-group-item-bg-on` · `--xh-toggle-group-item-bg-on-active` · `--xh-toggle-group-item-bg-on-hover` · `--xh-toggle-group-item-border` · `--xh-toggle-group-item-border-disabled` · `--xh-toggle-group-item-border-on` · `--xh-toggle-group-item-border-on-disabled` · `--xh-toggle-group-item-fg` · `--xh-toggle-group-item-fg-disabled` · `--xh-toggle-group-item-fg-on` · `--xh-toggle-group-item-fg-on-disabled` · `--xh-toggle-group-item-font-size` · `--xh-toggle-group-item-font-weight` · `--xh-toggle-group-item-gap` · `--xh-toggle-group-item-h` · `--xh-toggle-group-item-px` · `--xh-toggle-group-item-radius` · `--xh-toggle-group-item-shadow` · `--xh-toggle-group-separator-color` · `--xh-toggle-group-separator-color-disabled` · `--xh-toggle-group-separator-gap` · `--xh-toggle-group-separator-inset` · `--xh-toggle-group-separator-radius` · `--xh-toggle-group-separator-thickness`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-toggle-group-item-bg` | `item` | `background` | `default` | `--xh-_toggle-group-item-bg` | toggle-group 的 item 部件 background 覆盖槽。 |
+| `--xh-toggle-group-item-bg-active` | `item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-_toggle-group-item-bg-active` | toggle-group 的 item 部件 background 覆盖槽。 |
+| `--xh-toggle-group-item-bg-disabled` | `item` | `background` | `disabled` | `--xh-bg-muted` | toggle-group 的 item 部件 background 覆盖槽。 |
+| `--xh-toggle-group-item-bg-hover` | `item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-_toggle-group-item-bg-hover` | toggle-group 的 item 部件 background 覆盖槽。 |
+| `--xh-toggle-group-item-bg-on` | `item` | `background` | `state=on` | `--xh-_toggle-group-item-bg-on` | toggle-group 的 item 部件 background 覆盖槽。 |
+| `--xh-toggle-group-item-bg-on-active` | `item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])`<br>`state=on` | `--xh-_toggle-group-item-bg-on-active` | toggle-group 的 item 部件 background 覆盖槽。 |
+| `--xh-toggle-group-item-bg-on-disabled` | `item` | `background` | `disabled`<br>`state=on` | `--xh-_toggle-group-item-bg-on` | toggle-group 的 item 部件 background 覆盖槽。 |
+| `--xh-toggle-group-item-bg-on-hover` | `item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`state=on` | `--xh-_toggle-group-item-bg-on-hover` | toggle-group 的 item 部件 background 覆盖槽。 |
+| `--xh-toggle-group-item-border` | `item` | `border` | `default` | `--xh-_toggle-group-item-border` | toggle-group 的 item 部件 border 覆盖槽。 |
+| `--xh-toggle-group-item-border-disabled` | `item` | `border` | `disabled` | `--xh-border-subtle` | toggle-group 的 item 部件 border 覆盖槽。 |
+| `--xh-toggle-group-item-border-on` | `item` | `border` | `state=on` | `--xh-_toggle-group-item-border-on` | toggle-group 的 item 部件 border 覆盖槽。 |
+| `--xh-toggle-group-item-border-on-disabled` | `item` | `border` | `disabled`<br>`state=on` | `--xh-_toggle-group-item-border-on` | toggle-group 的 item 部件 border 覆盖槽。 |
+| `--xh-toggle-group-item-fg` | `item` | `color` | `default` | `--xh-_toggle-group-item-fg` | toggle-group 的 item 部件 color 覆盖槽。 |
+| `--xh-toggle-group-item-fg-disabled` | `item` | `color` | `disabled` | `--xh-fg-disabled` | toggle-group 的 item 部件 color 覆盖槽。 |
+| `--xh-toggle-group-item-fg-on` | `item` | `color` | `state=on` | `--xh-_toggle-group-item-fg-on` | toggle-group 的 item 部件 color 覆盖槽。 |
+| `--xh-toggle-group-item-fg-on-disabled` | `item` | `color` | `disabled`<br>`state=on` | `--xh-_toggle-group-item-fg-on` | toggle-group 的 item 部件 color 覆盖槽。 |
+| `--xh-toggle-group-item-font-size` | `item` | `font-size` | `default` | `--xh-_toggle-group-font-size` | toggle-group 的 item 部件 font-size 覆盖槽。 |
+| `--xh-toggle-group-item-font-weight` | `item` | `font-weight` | `default` | `--xh-text-label-weight` | toggle-group 的 item 部件 font-weight 覆盖槽。 |
+| `--xh-toggle-group-item-gap` | `item` | `gap` | `default` | `--xh-_toggle-group-gap` | toggle-group 的 item 部件 gap 覆盖槽。 |
+| `--xh-toggle-group-item-h` | `item` | `block-size` | `default` | `--xh-_toggle-group-h` | toggle-group 的 item 部件 block-size 覆盖槽。 |
+| `--xh-toggle-group-item-px` | `item` | `padding-inline` | `default` | `--xh-_toggle-group-px` | toggle-group 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-toggle-group-item-radius` | `item`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`first-of-type`<br>`last-child`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-shape-control` | toggle-group 的 item、root 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-toggle-group-item-shadow` | `item` | `box-shadow` | `state=on` | `--xh-_toggle-group-highlight` | toggle-group 的 item 部件 box-shadow 覆盖槽。 |
+| `--xh-toggle-group-separator-color` | `separator` | `background` | `default` | `--xh-border-default` | toggle-group 的 separator 部件 background 覆盖槽。 |
+| `--xh-toggle-group-separator-color-disabled` | `separator` | `background` | `disabled` | `--xh-border-subtle` | toggle-group 的 separator 部件 background 覆盖槽。 |
+| `--xh-toggle-group-separator-gap` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | toggle-group 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-toggle-group-separator-inset` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | toggle-group 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-toggle-group-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | toggle-group 的 separator 部件 border-radius 覆盖槽。 |
+| `--xh-toggle-group-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | toggle-group 的 separator 部件 block-size、inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

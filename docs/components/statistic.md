@@ -112,11 +112,27 @@ trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正�
 | `root` | `data-tone` | props.tone |
 | `trend` | `data-direction` | props.trend |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-statistic-affix-fg` · `--xh-statistic-affix-font-size` · `--xh-statistic-fg` · `--xh-statistic-gap` · `--xh-statistic-label-fg` · `--xh-statistic-label-font-size` · `--xh-statistic-row-gap` · `--xh-statistic-trend-fg` · `--xh-statistic-trend-font-size` · `--xh-statistic-trend-gap` · `--xh-statistic-trend-offset` · `--xh-statistic-value-fg` · `--xh-statistic-value-font-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-statistic-affix-fg` | `prefix`<br>`suffix` | `color` | `default` | `--xh-_tone-fg` | statistic 的 prefix、suffix 部件 color 覆盖槽。 |
+| `--xh-statistic-affix-font-size` | `prefix`<br>`suffix` | `font-size` | `default` | `--xh-_statistic-affix-size` | statistic 的 prefix、suffix 部件 font-size 覆盖槽。 |
+| `--xh-statistic-fg` | `root` | `color` | `default` | `--xh-fg-default` | statistic 的 root 部件 color 覆盖槽。 |
+| `--xh-statistic-gap` | `root` | `column-gap` | `default` | `--xh-space-0` | statistic 的 root 部件 column-gap 覆盖槽。 |
+| `--xh-statistic-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | statistic 的 label 部件 color 覆盖槽。 |
+| `--xh-statistic-label-font-size` | `label` | `font-size` | `default` | `--xh-_statistic-label-size` | statistic 的 label 部件 font-size 覆盖槽。 |
+| `--xh-statistic-row-gap` | `root` | `row-gap` | `default` | `--xh-_statistic-row-gap` | statistic 的 root 部件 row-gap 覆盖槽。 |
+| `--xh-statistic-trend-fg` | `trend` | `color` | `default` | `--xh-_tone-fg` | statistic 的 trend 部件 color 覆盖槽。 |
+| `--xh-statistic-trend-font-size` | `trend` | `font-size` | `default` | `--xh-_statistic-affix-size` | statistic 的 trend 部件 font-size 覆盖槽。 |
+| `--xh-statistic-trend-gap` | `trend` | `gap` | `default` | `--xh-space-0_5` | statistic 的 trend 部件 gap 覆盖槽。 |
+| `--xh-statistic-trend-offset` | `trend` | `margin-inline-start` | `default` | `--xh-space-2` | statistic 的 trend 部件 margin-inline-start 覆盖槽。 |
+| `--xh-statistic-value-fg` | `value` | `color` | `default` | `--xh-_tone-fg` | statistic 的 value 部件 color 覆盖槽。 |
+| `--xh-statistic-value-font-size` | `value` | `font-size` | `default` | `--xh-_statistic-value-size` | statistic 的 value 部件 font-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

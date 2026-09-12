@@ -236,36 +236,27 @@
     --xh-_code-view-font-size: var(--xh-control-font-lg);
   }
 
-  /* 语法配色：注释与标点复用既有语义色，三种真需要色相的走 --xh-syntax-* 语法令牌（随主题明暗切换）。 */
-  [data-scope='code-view'][data-part='root'] {
-    --xh-code-view-comment-fg: var(--xh-fg-muted);
-    --xh-code-view-punctuation-fg: var(--xh-fg-subtle);
-    --xh-code-view-string-fg: var(--xh-syntax-string);
-    --xh-code-view-number-token-fg: var(--xh-syntax-number);
-    --xh-code-view-keyword-fg: var(--xh-syntax-keyword);
-  }
-
   /* 记号本身不带任何布局，只上色：它是行内片段，多一点盒模型都会破坏对齐 */
   [data-scope='code-view'][data-part='token'][data-kind='comment'] {
-    color: var(--xh-code-view-comment-fg);
+    color: var(--xh-code-view-comment-fg, var(--xh-fg-muted));
     font-style: italic;
   }
 
   [data-scope='code-view'][data-part='token'][data-kind='string'] {
-    color: var(--xh-code-view-string-fg);
+    color: var(--xh-code-view-string-fg, var(--xh-syntax-string));
   }
 
   [data-scope='code-view'][data-part='token'][data-kind='number'] {
-    color: var(--xh-code-view-number-token-fg);
+    color: var(--xh-code-view-number-token-fg, var(--xh-syntax-number));
   }
 
   [data-scope='code-view'][data-part='token'][data-kind='keyword'] {
-    color: var(--xh-code-view-keyword-fg);
+    color: var(--xh-code-view-keyword-fg, var(--xh-syntax-keyword));
     font-weight: var(--xh-code-view-keyword-weight, var(--xh-font-weight-semibold));
   }
 
   [data-scope='code-view'][data-part='token'][data-kind='punctuation'] {
-    color: var(--xh-code-view-punctuation-fg);
+    color: var(--xh-code-view-punctuation-fg, var(--xh-fg-subtle));
   }
 
   /*

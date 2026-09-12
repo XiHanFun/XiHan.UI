@@ -247,11 +247,48 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `window-state-trigger` | `data-target-window-state` | item.windowState |
 | `body` | `data-window-state` | context.get('windowState') |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-floating-panel-action-bg-active` · `--xh-floating-panel-action-bg-hover` · `--xh-floating-panel-action-fg` · `--xh-floating-panel-action-fg-active` · `--xh-floating-panel-action-fg-hover` · `--xh-floating-panel-action-radius` · `--xh-floating-panel-action-size` · `--xh-floating-panel-bg` · `--xh-floating-panel-body-px` · `--xh-floating-panel-body-py` · `--xh-floating-panel-border` · `--xh-floating-panel-close-radius` · `--xh-floating-panel-close-size` · `--xh-floating-panel-corner-size` · `--xh-floating-panel-fg` · `--xh-floating-panel-handle-size` · `--xh-floating-panel-header-bg` · `--xh-floating-panel-header-border` · `--xh-floating-panel-header-gap` · `--xh-floating-panel-header-px` · `--xh-floating-panel-header-py` · `--xh-floating-panel-icon-size` · `--xh-floating-panel-layer` · `--xh-floating-panel-radius` · `--xh-floating-panel-shadow` · `--xh-floating-panel-title-fg` · `--xh-floating-panel-title-font-size` · `--xh-floating-panel-title-font-weight` · `--xh-floating-panel-trigger-bg` · `--xh-floating-panel-trigger-border` · `--xh-floating-panel-trigger-fg` · `--xh-floating-panel-trigger-h` · `--xh-floating-panel-trigger-px` · `--xh-floating-panel-trigger-radius`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-floating-panel-action-bg-active` | `close-trigger`<br>`window-state-trigger` | `background` | `active`<br>`state=on` | `--xh-bg-subtle-active` | floating-panel 的 close-trigger、window-state-trigger 部件 background 覆盖槽。 |
+| `--xh-floating-panel-action-bg-hover` | `close-trigger`<br>`window-state-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | floating-panel 的 close-trigger、window-state-trigger 部件 background 覆盖槽。 |
+| `--xh-floating-panel-action-fg` | `close-trigger`<br>`window-state-trigger` | `color` | `default` | `--xh-material-glass-fg-muted` | floating-panel 的 close-trigger、window-state-trigger 部件 color 覆盖槽。 |
+| `--xh-floating-panel-action-fg-active` | `window-state-trigger` | `color` | `state=on` | `--xh-fg-default` | floating-panel 的 window-state-trigger 部件 color 覆盖槽。 |
+| `--xh-floating-panel-action-fg-hover` | `close-trigger`<br>`window-state-trigger` | `color` | `hover` | `--xh-fg-default` | floating-panel 的 close-trigger、window-state-trigger 部件 color 覆盖槽。 |
+| `--xh-floating-panel-action-radius` | `window-state-trigger` | `border-radius` | `default` | `--xh-shape-control` | floating-panel 的 window-state-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-floating-panel-action-size` | `window-state-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-sm` | floating-panel 的 window-state-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-floating-panel-bg` | `content` | `background` | `default` | `--xh-material-glass-bg` | floating-panel 的 content 部件 background 覆盖槽。 |
+| `--xh-floating-panel-body-px` | `body` | `padding-inline` | `default` | `--xh-surface-px-sm` | floating-panel 的 body 部件 padding-inline 覆盖槽。 |
+| `--xh-floating-panel-body-py` | `body` | `padding-block` | `default` | `--xh-surface-py-sm` | floating-panel 的 body 部件 padding-block 覆盖槽。 |
+| `--xh-floating-panel-border` | `content` | `border` | `default` | `--xh-material-glass-border` | floating-panel 的 content 部件 border 覆盖槽。 |
+| `--xh-floating-panel-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | floating-panel 的 close-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-floating-panel-close-size` | `close-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-sm` | floating-panel 的 close-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-floating-panel-corner-size` | `positioner`<br>`resize-trigger` | `height`<br>`width` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw` | `--xh-space-4` | floating-panel 的 positioner、resize-trigger 部件 height、width 覆盖槽。 |
+| `--xh-floating-panel-fg` | `content` | `color` | `default` | `--xh-material-glass-fg` | floating-panel 的 content 部件 color 覆盖槽。 |
+| `--xh-floating-panel-handle-size` | `positioner`<br>`resize-trigger` | `height`<br>`width` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w` | `--xh-space-2` | floating-panel 的 positioner、resize-trigger 部件 height、width 覆盖槽。 |
+| `--xh-floating-panel-header-bg` | `header` | `background` | `default` | `--xh-material-glass-bg` | floating-panel 的 header 部件 background 覆盖槽。 |
+| `--xh-floating-panel-header-border` | `header` | `border-block-end` | `default` | `--xh-material-glass-separator` | floating-panel 的 header 部件 border-block-end 覆盖槽。 |
+| `--xh-floating-panel-header-gap` | `header` | `gap` | `default` | `--xh-control-gap-sm` | floating-panel 的 header 部件 gap 覆盖槽。 |
+| `--xh-floating-panel-header-px` | `header` | `padding-inline` | `default` | `--xh-space-3` | floating-panel 的 header 部件 padding-inline 覆盖槽。 |
+| `--xh-floating-panel-header-py` | `header` | `padding-block` | `default` | `--xh-space-2` | floating-panel 的 header 部件 padding-block 覆盖槽。 |
+| `--xh-floating-panel-icon-size` | `content`<br>`root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | floating-panel 的 content、root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-floating-panel-layer` | `positioner` | `z-index` | `default` | `--xh-layer-drawer` | floating-panel 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-floating-panel-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | floating-panel 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-floating-panel-shadow` | `content` | `box-shadow` | `default` | `--xh-material-glass-shadow` | floating-panel 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-floating-panel-title-fg` | `title` | `color` | `default` | `--xh-material-glass-fg` | floating-panel 的 title 部件 color 覆盖槽。 |
+| `--xh-floating-panel-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | floating-panel 的 title 部件 font-size 覆盖槽。 |
+| `--xh-floating-panel-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-label-weight` | floating-panel 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-floating-panel-trigger-bg` | `trigger` | `background` | `default` | `--xh-bg-surface` | floating-panel 的 trigger 部件 background 覆盖槽。 |
+| `--xh-floating-panel-trigger-border` | `trigger` | `border` | `default` | `--xh-border-control` | floating-panel 的 trigger 部件 border 覆盖槽。 |
+| `--xh-floating-panel-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | floating-panel 的 trigger 部件 color 覆盖槽。 |
+| `--xh-floating-panel-trigger-h` | `trigger` | `block-size` | `default` | `--xh-control-h-md` | floating-panel 的 trigger 部件 block-size 覆盖槽。 |
+| `--xh-floating-panel-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-control-px-md` | floating-panel 的 trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-floating-panel-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | floating-panel 的 trigger 部件 border-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
