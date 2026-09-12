@@ -1,7 +1,7 @@
 import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
-import type { SegmentedItemProps, SegmentedNode, SegmentedSchema, SegmentedValueChangeDetails } from '@xihan-ui/headless'
+import type { FormControlState, ResolvedFormControlState, SegmentedItemProps, SegmentedNode, SegmentedSchema, SegmentedValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectSegmented, segmentedAnatomy, segmentedMachine, segmentedMeta } from '@xihan-ui/headless'
+import { connectSegmented, resolveFormControlState, segmentedAnatomy, segmentedMachine, segmentedMeta } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -102,16 +102,34 @@ export class XhSegmentedElement extends XhElement {
     { onBuilt: svc => this.injectRefs(svc) },
   )
 
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
+  private controlState(): ResolvedFormControlState {
+    return resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+      required: this.required,
+    }, this.inheritedControl)
+  }
+
   private machineProps(): Partial<SegmentedSchema['props']> {
+    const control = this.controlState()
     return {
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect
-      disabled: this.disabled,
-      readOnly: this.readOnly,
-      invalid: this.invalid,
-      required: this.required,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
+      required: control.required,
       name: this.name,
       orientation: this.orientation,
       dir: this.direction,
@@ -162,7 +180,7 @@ export class XhSegmentedElement extends XhElement {
       return { value, disabled: own }
     }
     // 只有本帧与上一帧都没整组禁用时，节点上的 aria-disabled 才等于作者声明
-    if (!this.disabled && !this.wasGroupDisabled) {
+    if (!this.controlState().disabled && !this.wasGroupDisabled) {
       const own = isItemDisabled(el)
       this.declaredDisabled.set(el, own)
       return { value, disabled: own }
@@ -206,6 +224,6 @@ export class XhSegmentedElement extends XhElement {
     }
 
     // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
-    this.wasGroupDisabled = !!this.disabled
+    this.wasGroupDisabled = this.controlState().disabled
   }
 }

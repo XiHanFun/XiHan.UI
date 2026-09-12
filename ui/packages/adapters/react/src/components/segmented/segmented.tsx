@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
+import { useFormControlProps } from '../form/use-form-control'
 import { SegmentedItemProvider, SegmentedProvider, useSegmentedContext, useSegmentedItemContext } from './context'
 import { useSegmented } from './use-segmented'
 
@@ -56,7 +57,7 @@ export function XhSegmentedRoot({
   children,
   ...rest
 }: XhSegmentedRootProps): ReactNode {
-  const ctx = useSegmented({
+  const ctx = useSegmented(useFormControlProps({
     collection,
     value,
     defaultValue,
@@ -72,7 +73,7 @@ export function XhSegmentedRoot({
     tone,
     size,
     onValueChange,
-  } as SegmentedProps)
+  } as SegmentedProps))
   const api = ctx.api
 
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件

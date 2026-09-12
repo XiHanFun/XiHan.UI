@@ -36,6 +36,10 @@ import {
   XhPinInputInput,
   XhPinInputRoot,
   XhRadioGroupRoot,
+  XhRatingControl,
+  XhRatingItem,
+  XhRatingRoot,
+  XhSegmentedRoot,
   XhSelectRoot,
   XhSelectTrigger,
   XhSliderControl,
@@ -55,18 +59,30 @@ import {
   XhTimePickerSegment,
   XhTimePickerSegmentGroup,
   XhTimePickerTrigger,
+  XhToggleGroupRoot,
+  XhTransferList,
+  XhTransferRoot,
+  XhTransferSourcePanel,
   XhTreeSelectControl,
   XhTreeSelectRoot,
   XhTreeSelectTrigger,
 } from '../src'
 
 type ControlState = Partial<Record<'disabled' | 'readOnly' | 'required' | 'invalid', boolean>>
-type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider' | 'Select' | 'Cascader' | 'Combobox' | 'TreeSelect' | 'DatePicker' | 'TimePicker' | 'ColorPicker' | 'Mention'
+type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider' | 'Select' | 'Cascader' | 'Combobox' | 'TreeSelect' | 'DatePicker' | 'TimePicker' | 'ColorPicker' | 'Mention' | 'Rating' | 'Segmented' | 'ToggleGroup' | 'Transfer'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider', 'Select', 'Cascader', 'Combobox', 'TreeSelect', 'DatePicker', 'TimePicker', 'ColorPicker', 'Mention']
+const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider', 'Select', 'Cascader', 'Combobox', 'TreeSelect', 'DatePicker', 'TimePicker', 'ColorPicker', 'Mention', 'Rating', 'Segmented', 'ToggleGroup', 'Transfer']
 
 function nonRequiredState(props: ControlState) {
   return { disabled: props.disabled, readOnly: props.readOnly, invalid: props.invalid }
+}
+
+function ratingState(props: ControlState) {
+  return { disabled: props.disabled, readOnly: props.readOnly, required: props.required }
+}
+
+function disabledState(props: ControlState) {
+  return { disabled: props.disabled }
 }
 
 function atomicControl(kind: AtomicControl, props: ControlState) {
@@ -126,6 +142,19 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
     return <XhColorPickerRoot disabled={props.disabled} readOnly={props.readOnly}><XhColorPickerControl><XhColorPickerTrigger>选择</XhColorPickerTrigger></XhColorPickerControl></XhColorPickerRoot>
   if (kind === 'Mention')
     return <XhMentionRoot {...nonRequiredState(props)}><XhMentionInput /></XhMentionRoot>
+  if (kind === 'Rating')
+    return <XhRatingRoot {...ratingState(props)} count={1}><XhRatingControl><XhRatingItem value={1} /></XhRatingControl></XhRatingRoot>
+  if (kind === 'Segmented')
+    return <XhSegmentedRoot {...props} collection={[{ value: 'a', label: '甲' }]} />
+  if (kind === 'ToggleGroup')
+    return <XhToggleGroupRoot {...disabledState(props)} collection={[{ value: 'a', label: '甲' }]} />
+  if (kind === 'Transfer') {
+    return (
+      <XhTransferRoot {...nonRequiredState(props)} collection={[]}>
+        <XhTransferSourcePanel><XhTransferList /></XhTransferSourcePanel>
+      </XhTransferRoot>
+    )
+  }
   return (
     <XhSliderRoot {...nonRequiredState(props)} defaultValue={[50]}>
       <XhSliderControl>
@@ -148,6 +177,35 @@ function renderAtomicControl(kind: AtomicControl, instance: ControlState = {}, f
 }
 
 function expectAtomicState(container: HTMLElement, kind: AtomicControl, enabled: boolean): void {
+  if (kind === 'Rating') {
+    const control = container.querySelector<HTMLElement>('[data-scope="rating"][data-part="control"]')!
+    expect(control.getAttribute('aria-disabled')).toBe(String(enabled))
+    expect(control.getAttribute('aria-readonly')).toBe(String(enabled))
+    expect(control.getAttribute('aria-required')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'Segmented') {
+    const root = container.querySelector<HTMLElement>('[data-scope="segmented"][data-part="root"]')!
+    const item = container.querySelector<HTMLElement>('[data-scope="segmented"][data-part="item"]')!
+    expect(item.getAttribute('aria-disabled')).toBe(String(enabled))
+    expect(root.getAttribute('aria-readonly')).toBe(String(enabled))
+    expect(root.getAttribute('aria-invalid')).toBe(String(enabled))
+    expect(root.getAttribute('aria-required')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'ToggleGroup') {
+    const item = container.querySelector<HTMLElement>('[data-scope="toggle-group"][data-part="item"]')!
+    expect(item.getAttribute('aria-disabled')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'Transfer') {
+    const root = container.querySelector<HTMLElement>('[data-scope="transfer"][data-part="root"]')!
+    const list = container.querySelector<HTMLElement>('[data-scope="transfer"][data-part="list"]')!
+    expect(root.hasAttribute('data-disabled')).toBe(enabled)
+    expect(list.getAttribute('aria-readonly')).toBe(String(enabled))
+    expect(list.getAttribute('aria-invalid')).toBe(String(enabled))
+    return
+  }
   if (kind === 'Combobox' || kind === 'Mention') {
     const scope = kind.toLowerCase()
     const input = container.querySelector<HTMLInputElement>(`[data-scope="${scope}"][data-part="input"]`)!

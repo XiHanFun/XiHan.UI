@@ -1,5 +1,6 @@
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type {
+  FormControlState,
   TransferFilter,
   TransferItem,
   TransferSchema,
@@ -9,7 +10,7 @@ import type {
   TransferValueChangeDetails,
 } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTransfer, transferAnatomy, transferFocusKey, transferMachine, transferMeta } from '@xihan-ui/headless'
+import { connectTransfer, resolveFormControlState, transferAnatomy, transferFocusKey, transferMachine, transferMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -103,7 +104,7 @@ export class XhTransferElement extends XhElement {
     defaultSelection: { attribute: false },
     filter: { attribute: false },
     searchable: { type: Boolean },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
@@ -158,8 +159,20 @@ export class XhTransferElement extends XhElement {
   // transfer 机器无副作用、无 refs（两侧集合全部从 collection + value + 搜索串推导），
   // 不需要 config / 定位引擎，故 controller 只带 props。
   private readonly ctrl = new MachineController<TransferSchema>(this, transferMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；Transfer 仅消费公开的禁用、只读、无效三轴。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<TransferSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       collection: this.collection,
       value: this.value,
@@ -170,9 +183,9 @@ export class XhTransferElement extends XhElement {
       defaultSelection: this.defaultSelection,
       filter: this.filter,
       searchable: this.searchable ?? false,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly,
-      invalid: this.invalid,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       loading: this.loading,
       tone: this.tone,
       size: this.size,

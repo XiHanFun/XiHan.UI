@@ -1,7 +1,7 @@
 import type { Direction, Size, Tone } from '@xihan-ui/core'
-import type { RatingHoverChangeDetails, RatingItemProps, RatingSchema, RatingTranslations, RatingValueChangeDetails } from '@xihan-ui/headless'
+import type { FormControlState, RatingHoverChangeDetails, RatingItemProps, RatingSchema, RatingTranslations, RatingValueChangeDetails } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectRating, ratingAnatomy, ratingMachine, ratingMeta } from '@xihan-ui/headless'
+import { connectRating, ratingAnatomy, ratingMachine, ratingMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -90,17 +90,29 @@ export class XhRatingElement extends XhElement {
   }
 
   private readonly ctrl = new MachineController<RatingSchema>(this, ratingMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；Rating 仅消费公开的禁用、只读、必填三轴。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<RatingSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      required: this.required,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
       count: this.count,
       allowHalf: this.allowHalf ?? false,
       allowClear: this.allowClear,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      required: this.required ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      required: control.required,
       name: this.name,
       dir: this.direction,
       tone: this.tone,

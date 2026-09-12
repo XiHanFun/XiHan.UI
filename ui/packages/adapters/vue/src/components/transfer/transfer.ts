@@ -13,6 +13,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   provideTransfer,
   provideTransferGroup,
@@ -69,9 +70,9 @@ export const XhTransferRoot = defineComponent({
     defaultSelection: { type: Array as PropType<string[]>, default: undefined },
     searchable: Boolean,
     filter: { type: Function as PropType<TransferFilter>, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     loading: Boolean,
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
@@ -99,7 +100,7 @@ export const XhTransferRoot = defineComponent({
       emit('selection-change', details)
       emit('update:selection', details.value)
     }
-    const ctx = useTransfer(withXhConfig('transfer', props) as TransferProps, {
+    const ctx = useTransfer(withXhConfig('transfer', useFormControlProps(props)) as TransferProps, {
       onValueChange: notifyValue,
       onSelectionChange: notifySelection,
     })

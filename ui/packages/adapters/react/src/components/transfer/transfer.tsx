@@ -14,6 +14,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   TransferGroupProvider,
   TransferItemProvider,
@@ -104,7 +105,7 @@ export function XhTransferRoot({
   children,
   ...rest
 }: XhTransferRootProps): ReactNode {
-  const ctx = useTransfer(withXhConfig('transfer', {
+  const ctx = useTransfer(withXhConfig('transfer', useFormControlProps({
     collection,
     value,
     defaultValue,
@@ -126,7 +127,7 @@ export function XhTransferRoot({
     translations,
     onValueChange,
     onSelectionChange,
-  }) as TransferProps)
+  })) as TransferProps)
   const api = ctx.api
   return (
     <TransferProvider value={ctx}>
