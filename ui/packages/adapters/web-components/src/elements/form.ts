@@ -17,12 +17,12 @@ import type {
   FormValues,
   FormValuesChangeDetails,
 } from '@xihan-ui/headless'
-import type { FormControlHost } from './form-control-host'
+import type { FormControlHost } from '../runtime/form-control-host'
 import { connectForm, formAnatomy, formMachine, formMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { FORM_CONTROL_HOST_SELECTOR } from '../runtime/form-control-host'
 import { MachineController } from '../runtime/machine-controller'
-import { FORM_CONTROL_HOST_SELECTOR } from './form-control-host'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
