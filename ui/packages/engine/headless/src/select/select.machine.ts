@@ -1,9 +1,9 @@
 import type { PositionResult } from '@xihan-ui/core'
 import type { SelectFocusIntent, SelectSchema } from './select.types'
-import { createDismissLayer, createFocusScope, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
-import { setupLayerTransaction, trackOverlayPosition } from '../shared/overlay-shell'
+import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { selectItemQuery, selectItemText } from './select.anatomy'
 
 const { createMachine } = setup<SelectSchema>()
@@ -319,118 +319,55 @@ export const selectMachine = createMachine({
       }),
       // Layer、DismissableLayer、FocusScope 与视觉 Presence 共享同一租约：逻辑关闭后内容
       // 已 inert，但资源仍留在顶层，直到真实 CSS 退场结束才逆序释放。
-      trackLayer: ({ refs, context, send, flush, state, track }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
-        if (!config || !registerLayer)
-          return undefined
-
-        let reactivateFocus: (() => void) | undefined
-        const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer) => {
-          const dismiss = createDismissLayer({
-            config,
-            layer,
-            // 退场帧仍占栈顶以屏蔽下层，但不再接受第二次关闭意图。
-            onEscapeKeyDown: (event) => {
-              if (state.get() !== 'open')
-                event.preventDefault()
+      trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
+        let reactivateFocus: (() => void) | null = null
+        return trackPresenceResources({
+          presence: refs.get('presence'),
+          open: () => state.get() === 'open',
+          track,
+          acquire: () => trackOverlayLayer({
+            config: refs.get('config'),
+            registerLayer: refs.get('registerLayer'),
+            flush,
+            active: () => state.get() === 'open',
+            onDismiss: overlayCloseOnDismiss(send),
+            focusScope: {
+              // 每次读最新 ref，容器晚一拍就位也能命中
+              container: () => refs.get('getContentEl')(),
+              // 列表族不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
+              trapped: () => false,
+              loop: false,
+              // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测会过滤掉写成 <a> 的条目，
+              // 也会把焦点送给作者放进浮层的输入框。
+              initialFocus: () => {
+                const content = refs.get('getContentEl')()
+                if (!content)
+                  return null
+                const anchor = context.get('highlightedValue')
+                if (anchor != null)
+                  return queryItems(content, selectItemQuery).find(el => itemValue(el) === anchor) ?? null
+                // 本轮该有锚点却还没挑出来（条目身份标记晚一拍写上）：返回 null 让焦点域重试，
+                // 别滑到容器上定死——落焦一旦成功就不再重试
+                if (!(context.get('focusIntent') === 'selected' && context.get('value').length === 0))
+                  return null
+                // 确实不该有锚点（指针打开且无选中值）：焦点歇在列表容器上，它此刻正认领着 Tab 位
+                return content
+              },
+              restoreFocus: () => context.get('returnFocus'),
+              // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+              // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
+              restoreTarget: () => refs.get('getAnchorEl')(),
+              onReactivate: reactivate => reactivateFocus = reactivate,
             },
-            onInteractOutside: (event) => {
-              if (state.get() !== 'open')
-                event.preventDefault()
-            },
-            onDismiss: reason => send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
-          })
-          defer(() => dismiss.dispose())
-
-          const focus = createFocusScope({
-            config,
-            layer,
-            // 每次读最新 ref，容器晚一拍就位也能命中
-            container: () => refs.get('getContentEl')(),
-            // 列表族不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
-            trapped: () => false,
-            loop: false,
-            // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测会过滤掉写成 <a> 的条目，
-            // 也会把焦点送给作者放进浮层的输入框。
-            initialFocus: () => {
-              const content = refs.get('getContentEl')()
-              if (!content)
-                return null
-              const anchor = context.get('highlightedValue')
-              if (anchor != null)
-                return queryItems(content, selectItemQuery).find(el => itemValue(el) === anchor) ?? null
-              // 本轮该有锚点却还没挑出来（条目身份标记晚一拍写上）：返回 null 让焦点域重试，
-              // 别滑到容器上定死——落焦一旦成功就不再重试
-              if (!(context.get('focusIntent') === 'selected' && context.get('value').length === 0))
-                return null
-              // 确实不该有锚点（指针打开且无选中值）：焦点歇在列表容器上，它此刻正认领着 Tab 位
-              return content
-            },
-            restoreFocus: () => context.get('returnFocus'),
-            // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-            // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
-            restoreTarget: () => refs.get('getAnchorEl')(),
-          })
-          reactivateFocus = focus.reactivate
-          defer(() => {
-            if (reactivateFocus === focus.reactivate)
-              reactivateFocus = undefined
-            focus.dispose()
-          })
-        }, { registry: config.layerRegistry, flush })
-
-        const presence = refs.get('presence')
-        let disposed = false
-        let release: (() => void) | undefined
-        let lastOpen = false
-
-        const finish = (): void => {
-          if (disposed || state.get() === 'open' || !release)
-            return
-          const cleanup = release
-          release = undefined
-          cleanup()
-        }
-        const offExit = presence?.onExitComplete(finish)
-        const sync = (): void => {
-          if (disposed)
-            return
-          const open = state.get() === 'open'
-          const reopening = open && !lastOpen && release !== undefined
-          lastOpen = open
-          if (open) {
-            presence?.update(true)
-            release ??= acquire()
-            if (reopening) {
-              const activate = reactivateFocus
-              flush(() => config.scope.getWin().requestAnimationFrame(() => {
-                if (!disposed && state.get() === 'open' && release && reactivateFocus === activate)
-                  activate?.()
-              }))
-            }
-          }
-          else if (!presence || !presence.rendered) {
-            finish()
-          }
-        }
-        try {
-          track([() => state.get()], sync)
-          sync()
-        }
-        catch (error) {
-          disposed = true
-          offExit?.()
-          release?.()
-          throw error
-        }
-        return () => {
-          disposed = true
-          offExit?.()
-          const cleanup = release
-          release = undefined
-          cleanup?.()
-        }
+          }),
+          onReopen: () => {
+            const activate = reactivateFocus
+            flush(() => scope.getWin().requestAnimationFrame(() => {
+              if (state.get() === 'open' && reactivateFocus === activate)
+                activate?.()
+            }))
+          },
+        })
       },
     },
   },
