@@ -423,12 +423,15 @@ function markdownCodeList(values) {
   return values.map(value => `\`${String(value).replace(/\|/g, '\\|')}\``).join('<br>')
 }
 
-export function renderComponentTokenDocs(tokens) {
+export function renderComponentTokenDocs(tokens, options = {}) {
   if (!tokens.length)
     return ''
+  const headingLevel = options.headingLevel ?? 2
+  if (!Number.isInteger(headingLevel) || headingLevel < 1 || headingLevel > 6)
+    throw new TypeError(`CSS 变量标题层级必须是 1–6，收到 ${headingLevel}`)
   const lines = [
     COMPONENT_TOKEN_DOCS_START,
-    '## CSS 变量',
+    `${'#'.repeat(headingLevel)} CSS 变量`,
     '',
     '本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。',
     '',

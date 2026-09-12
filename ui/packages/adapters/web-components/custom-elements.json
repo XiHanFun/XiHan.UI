@@ -10688,7 +10688,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-config>` —— 配置作用域。包住一棵子树，里面的元素解析 locale / size / translations\n时先看最近的这一层，再往外层与全局那份回落。\n\n它不渲染任何东西、不接线任何角色节点：作者写的子节点原样留在 Light DOM 里，\n这个元素只是 DOM 树上的一个记号。皮肤里没有它的规则，布局上它是 display: contents。\n\n与 Vue 适配器的 `provideXhConfig` 是同一件事的两种写法：那边沿组件树找，这边沿 DOM 祖先链找。\n逐键合并，本层只覆盖自己写了的那几项——只想改文案的子树不会把外层的 locale 一并抹掉。\n\n`translations`、`scrollRoot` 与 `portalContainer` 是对象或函数，只能走 property；`locale` / `size` / `motion` 属性与 property 都行。\n`motion` 写了就调 setMotionOverride（应用级、不分子树）；CSS 侧的 data-motion 钩子由作者自己打。",
+          "description": "`<xh-config>` —— 配置作用域。包住一棵子树，里面的元素解析 locale / size / translations\n时先看最近的这一层，再往外层与全局那份回落。\n\n它不渲染任何东西、不接线任何角色节点：作者写的子节点原样留在 Light DOM 里，\n这个元素只是 DOM 树上的一个记号。皮肤里没有它的规则，布局上它是 display: contents。\n\n与 Vue 适配器的 `provideXhConfig` 是同一件事的两种写法：那边沿组件树找，这边沿 DOM 祖先链找。\n逐键合并，本层只覆盖自己写了的那几项——只想改文案的子树不会把外层的 locale 一并抹掉。\n\n`translations`、`scrollRoot` 与 `portalContainer` 是对象或函数，只能走 property；七个视觉轴均可走属性或 property。\n七轴只投影到当前元素；局部 motion 不会改全局 JS override。",
           "name": "XhConfigElement",
           "members": [
             {
@@ -10711,12 +10711,66 @@
             },
             {
               "kind": "field",
+              "name": "mode",
+              "privacy": "public",
+              "type": {
+                "text": "ColorMode | 'system' | undefined"
+              },
+              "attribute": "mode"
+            },
+            {
+              "kind": "field",
+              "name": "brand",
+              "privacy": "public",
+              "type": {
+                "text": "BrandId | undefined"
+              },
+              "attribute": "brand"
+            },
+            {
+              "kind": "field",
+              "name": "density",
+              "privacy": "public",
+              "type": {
+                "text": "Density | undefined"
+              },
+              "attribute": "density"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "direction"
+            },
+            {
+              "kind": "field",
+              "name": "contrast",
+              "privacy": "public",
+              "type": {
+                "text": "Contrast | 'system' | undefined"
+              },
+              "attribute": "contrast"
+            },
+            {
+              "kind": "field",
               "name": "motion",
               "privacy": "public",
               "type": {
-                "text": "MotionPreference | undefined"
+                "text": "VisualMotion | 'system' | undefined"
               },
               "attribute": "motion"
+            },
+            {
+              "kind": "field",
+              "name": "transparency",
+              "privacy": "public",
+              "type": {
+                "text": "Transparency | 'system' | undefined"
+              },
+              "attribute": "transparency"
             },
             {
               "kind": "field",
@@ -10747,12 +10801,48 @@
             },
             {
               "kind": "field",
+              "name": "_visualEnvironmentController",
+              "type": {
+                "text": "VisualEnvironmentController | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "visualEnvironmentController",
+              "type": {
+                "text": "VisualEnvironmentController | undefined"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "xhConfig",
               "type": {
                 "text": "XhConfig"
               },
               "description": "本层声明的那几项；解析器沿祖先链读它，缺席的键交给外层。",
               "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "visualPreference",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "VisualEnvironmentPreference"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "parentVisualEnvironment",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "VisualEnvironmentController | undefined"
+                }
+              }
             }
           ],
           "attributes": [
@@ -10774,11 +10864,59 @@
             },
             {
               "type": {
-                "text": "MotionPreference | undefined"
+                "text": "ColorMode | 'system' | undefined"
               },
-              "description": "应用级动效偏好，写了就覆盖系统的 prefers-reduced-motion",
+              "description": "色彩模式",
+              "name": "mode",
+              "fieldName": "mode"
+            },
+            {
+              "type": {
+                "text": "BrandId | undefined"
+              },
+              "description": "品牌标识",
+              "name": "brand",
+              "fieldName": "brand"
+            },
+            {
+              "type": {
+                "text": "Density | undefined"
+              },
+              "description": "视觉密度",
+              "name": "density",
+              "fieldName": "density"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向；控制器会把解析结果投影到标准 dir 属性",
+              "name": "direction",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "Contrast | 'system' | undefined"
+              },
+              "description": "对比度偏好",
+              "name": "contrast",
+              "fieldName": "contrast"
+            },
+            {
+              "type": {
+                "text": "VisualMotion | 'system' | undefined"
+              },
+              "description": "动效偏好；只作用当前 DOM scope",
               "name": "motion",
               "fieldName": "motion"
+            },
+            {
+              "type": {
+                "text": "Transparency | 'system' | undefined"
+              },
+              "description": "透明材质偏好",
+              "name": "transparency",
+              "fieldName": "transparency"
             }
           ],
           "superclass": {
@@ -18145,7 +18283,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-float-button>` —— 悬浮按钮行为宿主：一颗钉在视口一角的触发器，展开一组动作。\n\n开合跑的是 collapsible 机器——一颗触发器管着一组内容的开合，正是那台机器的活儿；\n落位、外形与展开方式不入机器，只决定接哪几个监听、往根上写哪几个 data-*。\n\n作者须把 trigger 写成 `<button>`：激活与 Tab 停靠由平台提供，元素不接管这两件。\n收起时 list 带 hidden，里面的按钮一并退出 Tab 序列与无障碍树。\n贴边距离写在 root 的内联 style 里（自定义属性只有这一条路能同时落到两个适配器上），\n于是 root 的内联 style 归本元素管，作者自己的内联样式写在外层元素上。",
+          "description": "`<xh-float-button>` —— 悬浮按钮行为宿主：一颗钉在视口一角的触发器，展开一组动作。\n\n专用机器持有开合、层外交互、Escape 仲裁与逻辑层生命周期；元素只桥接所属\nDocument 的 RuntimeConfig、LayerRegistry 登记与 root 节点。\n\n作者须把 trigger 写成 `<button>`：激活与 Tab 停靠由平台提供，元素不接管这两件。\n收起时 list 带 hidden，里面的按钮一并退出 Tab 序列与无障碍树。\n贴边距离写在 root 的内联 style 里（自定义属性只有这一条路能同时落到两个适配器上），\n于是 root 的内联 style 归本元素管，作者自己的内联样式写在外层元素上。",
           "name": "XhFloatButtonElement",
           "cssParts": [
             {
@@ -18271,6 +18409,30 @@
             },
             {
               "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "floatButtonScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -18280,7 +18442,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<CollapsibleSchema>( this, collapsibleMachine, () => this.machineProps(), )"
+              "default": "new MachineController<FloatButtonSchema>( this, floatButtonMachine, () => this.machineProps(), { scope: this.floatButtonScope, onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
               "kind": "method",
@@ -18288,9 +18450,43 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "Partial<CollapsibleSchema['props']>"
+                  "text": "Partial<FloatButtonSchema['props']>"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<FloatButtonSchema>"
+                  }
+                }
+              ]
             },
             {
               "kind": "method",
@@ -20747,38 +20943,15 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-hotkeys>` —— Light-DOM 行为宿主：作者写一个空的行内容器当 root，\n元素把 keys 翻成当前平台的写法铺成一排键帽，并在 document 或父节点上接住这组组合。\n\n键帽与连接符出多少枚由 keys 与平台决定，作者写不出来，故 root 的内容整份由本元素接管，\n写在里面的东西会被替换掉。\n\n`Mod` 在 Mac 上是 ⌘、其余平台是 Ctrl，同一份 keys 两边都对。平台缺省测出来的那个，\n显式写 `platform` 即以它为准。\n\n命中后默认拦下浏览器的默认动作；组合里除 Shift 外没有别的修饰键时，\n落在输入框、文本域、可编辑区里的按键一律让给输入。",
+          "description": "`<xh-hotkeys>` —— 纯行为快捷键注册器，不生成键帽、不接管子节点，也没有视觉 part。\n\n可见快捷键提示使用 `<xh-kbd-group>`；局部监听通过 target property 传入显式 resolver，\n不再从展示节点猜测 parent。",
           "name": "XhHotkeysElement",
-          "cssParts": [
-            {
-              "description": "键帽的容器（承载 role=img 与整组组合的名字）",
-              "name": "root"
-            },
-            {
-              "description": "一枚键帽，由元素铺进 root",
-              "name": "key"
-            },
-            {
-              "description": "两枚键帽之间的连接符，由元素铺进 root；Mac 的写法里收起",
-              "name": "separator"
-            }
-          ],
           "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: hotkeysAnatomy, meta: hotkeysMeta }"
-            },
             {
               "kind": "field",
               "name": "keys",
               "privacy": "public",
               "type": {
-                "text": "string[] | undefined"
+                "text": "string[]"
               },
               "attribute": "keys"
             },
@@ -20797,8 +20970,7 @@
               "privacy": "public",
               "type": {
                 "text": "HotkeysTarget | undefined"
-              },
-              "attribute": "target"
+              }
             },
             {
               "kind": "field",
@@ -20820,30 +20992,12 @@
             },
             {
               "kind": "field",
-              "name": "size",
-              "privacy": "public",
-              "type": {
-                "text": "Size | undefined"
-              },
-              "attribute": "size"
-            },
-            {
-              "kind": "field",
-              "name": "translations",
-              "privacy": "public",
-              "type": {
-                "text": "Partial<HotkeysTranslations> | undefined"
-              }
-            },
-            {
-              "kind": "field",
               "name": "#detected",
               "privacy": "private",
               "type": {
                 "text": "HotkeysPlatform"
               },
-              "default": "'auto'",
-              "description": "接进文档后测出来的平台；测出来之前是 auto，connect 按非 Mac 出。"
+              "default": "'auto'"
             },
             {
               "kind": "field",
@@ -20852,8 +21006,7 @@
               "type": {
                 "text": "EventTarget | null"
               },
-              "default": "null",
-              "description": "当前挂着监听的节点。"
+              "default": "null"
             },
             {
               "kind": "field",
@@ -20883,25 +21036,7 @@
                 "type": {
                   "text": "void"
                 }
-              },
-              "parameters": [
-                {
-                  "name": "target",
-                  "type": {
-                    "text": "HotkeysTarget"
-                  }
-                }
-              ],
-              "description": "监听装在文档或父节点上；节点没换就不重挂。"
-            },
-            {
-              "kind": "field",
-              "name": "#painted",
-              "privacy": "private",
-              "type": {
-                "text": "{ host: Element, key: string } | undefined"
-              },
-              "description": "上一次往哪个 root 铺过哪一排键帽。"
+              }
             },
             {
               "kind": "method",
@@ -20912,31 +21047,6 @@
                   "text": "void"
                 }
               }
-            },
-            {
-              "kind": "method",
-              "name": "#paint",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "root",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                },
-                {
-                  "name": "api",
-                  "type": {
-                    "text": "HotkeysApi"
-                  }
-                }
-              ],
-              "description": "把键帽与连接符铺进 root。\n这一排没变就不重铺——每帧重建节点会把用户正在拖的选区弄没。"
             }
           ],
           "events": [
@@ -20951,9 +21061,9 @@
           "attributes": [
             {
               "type": {
-                "text": "string[] | undefined"
+                "text": "string[]"
               },
-              "description": "组合里的各枚键，逗号分隔，如 `Mod,S`；逗号本身这枚主键写不进属性，那种组合走 property 传数组",
+              "description": "组合里的各枚键，逗号分隔；逗号本身作为主键时改用 property 传数组",
               "name": "keys",
               "fieldName": "keys"
             },
@@ -20961,23 +21071,15 @@
               "type": {
                 "text": "HotkeysPlatform | undefined"
               },
-              "description": "按哪个平台的写法显示与解析，缺省测出来的那个",
+              "description": "匹配所用平台，缺省挂载后实测",
               "name": "platform",
               "fieldName": "platform"
             },
             {
               "type": {
-                "text": "HotkeysTarget | undefined"
-              },
-              "description": "监听装在哪儿，缺省 document",
-              "name": "target",
-              "fieldName": "target"
-            },
-            {
-              "type": {
                 "text": "boolean | undefined"
               },
-              "description": "命中后拦下浏览器的默认动作，默认开启",
+              "description": "命中后是否阻止默认动作，默认开启",
               "name": "prevent-default",
               "fieldName": "preventDefault"
             },
@@ -20988,14 +21090,6 @@
               "description": "监听是否生效，默认开启",
               "name": "enabled",
               "fieldName": "enabled"
-            },
-            {
-              "type": {
-                "text": "Size | undefined"
-              },
-              "description": "尺寸",
-              "name": "size",
-              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -21003,57 +21097,7 @@
             "module": "/src/element-base"
           },
           "tagName": "xh-hotkeys",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-hotkeys-fg"
-            },
-            {
-              "name": "--xh-hotkeys-font-size"
-            },
-            {
-              "name": "--xh-hotkeys-gap"
-            },
-            {
-              "name": "--xh-hotkeys-key-bg"
-            },
-            {
-              "name": "--xh-hotkeys-key-bg-disabled"
-            },
-            {
-              "name": "--xh-hotkeys-key-border"
-            },
-            {
-              "name": "--xh-hotkeys-key-fg"
-            },
-            {
-              "name": "--xh-hotkeys-key-fg-modifier"
-            },
-            {
-              "name": "--xh-hotkeys-key-font"
-            },
-            {
-              "name": "--xh-hotkeys-key-font-weight"
-            },
-            {
-              "name": "--xh-hotkeys-key-min-w"
-            },
-            {
-              "name": "--xh-hotkeys-key-px"
-            },
-            {
-              "name": "--xh-hotkeys-key-py"
-            },
-            {
-              "name": "--xh-hotkeys-key-radius"
-            },
-            {
-              "name": "--xh-hotkeys-key-shadow"
-            },
-            {
-              "name": "--xh-hotkeys-separator-fg"
-            }
-          ]
+          "customElement": true
         }
       ],
       "exports": [
@@ -24271,6 +24315,474 @@
           "declaration": {
             "name": "XhJsonViewerElement",
             "module": "src/elements/json-viewer.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/kbd-group.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-kbd-group>` —— 数据驱动的纯展示组合。root 承担唯一 aria-label，子键帽与连接符只作视觉。",
+          "name": "XhKbdGroupElement",
+          "cssParts": [
+            {
+              "description": "整组容器，承载唯一可读名称",
+              "name": "root"
+            },
+            {
+              "description": "元素按 keys 生成的一枚原生 kbd",
+              "name": "key"
+            },
+            {
+              "description": "非 Mac 平台两枚键之间的加号",
+              "name": "separator"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: kbdGroupAnatomy, meta: kbdGroupMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "keys",
+              "privacy": "public",
+              "type": {
+                "text": "string[]"
+              },
+              "attribute": "keys"
+            },
+            {
+              "kind": "field",
+              "name": "platform",
+              "privacy": "public",
+              "type": {
+                "text": "HotkeysPlatform | undefined"
+              },
+              "attribute": "platform"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "pressed",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "pressed"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<KbdGroupTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#detected",
+              "privacy": "private",
+              "type": {
+                "text": "HotkeysPlatform"
+              },
+              "default": "'auto'"
+            },
+            {
+              "kind": "field",
+              "name": "#painted",
+              "privacy": "private",
+              "type": {
+                "text": "{ host: Element, key: string } | undefined"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paint",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "KbdGroupApi"
+                  }
+                }
+              ]
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string[]"
+              },
+              "description": "组合里的各枚键，逗号分隔；逗号本身作为主键时改用 property 传数组",
+              "name": "keys",
+              "fieldName": "keys"
+            },
+            {
+              "type": {
+                "text": "HotkeysPlatform | undefined"
+              },
+              "description": "平台写法，缺省挂载后实测",
+              "name": "platform",
+              "fieldName": "platform"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "作者确认动作真实激活时的轻压事实",
+              "name": "pressed",
+              "fieldName": "pressed"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "所提示动作是否不可用",
+              "name": "disabled",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-kbd-group",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-kbd-group-fg"
+            },
+            {
+              "name": "--xh-kbd-group-font-size"
+            },
+            {
+              "name": "--xh-kbd-group-gap"
+            },
+            {
+              "name": "--xh-kbd-group-key-bg"
+            },
+            {
+              "name": "--xh-kbd-group-key-bg-disabled"
+            },
+            {
+              "name": "--xh-kbd-group-key-border"
+            },
+            {
+              "name": "--xh-kbd-group-key-fg"
+            },
+            {
+              "name": "--xh-kbd-group-key-fg-disabled"
+            },
+            {
+              "name": "--xh-kbd-group-key-fg-modifier"
+            },
+            {
+              "name": "--xh-kbd-group-key-font"
+            },
+            {
+              "name": "--xh-kbd-group-key-font-weight"
+            },
+            {
+              "name": "--xh-kbd-group-key-h"
+            },
+            {
+              "name": "--xh-kbd-group-key-min-w"
+            },
+            {
+              "name": "--xh-kbd-group-key-px"
+            },
+            {
+              "name": "--xh-kbd-group-key-py"
+            },
+            {
+              "name": "--xh-kbd-group-key-radius"
+            },
+            {
+              "name": "--xh-kbd-group-key-shadow"
+            },
+            {
+              "name": "--xh-kbd-group-key-shadow-pressed"
+            },
+            {
+              "name": "--xh-kbd-group-separator-fg"
+            },
+            {
+              "name": "--xh-kbd-group-separator-fg-disabled"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhKbdGroupElement",
+          "declaration": {
+            "name": "XhKbdGroupElement",
+            "module": "src/elements/kbd-group.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/kbd.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-kbd>` —— 单枚纯展示键帽。root 应使用原生 `<kbd>`，元素按 value 写入可见文本与可读名称。",
+          "name": "XhKbdElement",
+          "cssParts": [
+            {
+              "description": "原生 kbd 键帽",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: kbdAnatomy, meta: kbdMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "platform",
+              "privacy": "public",
+              "type": {
+                "text": "HotkeysPlatform | undefined"
+              },
+              "attribute": "platform"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "pressed",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "pressed"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<KbdTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#detected",
+              "privacy": "private",
+              "type": {
+                "text": "HotkeysPlatform"
+              },
+              "default": "'auto'"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "一枚键的声明，例如 Mod、Shift、Esc 或 S",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "HotkeysPlatform | undefined"
+              },
+              "description": "平台写法，缺省挂载后实测",
+              "name": "platform",
+              "fieldName": "platform"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "作者确认动作真实激活时的轻压事实",
+              "name": "pressed",
+              "fieldName": "pressed"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "所提示动作是否不可用",
+              "name": "disabled",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-kbd",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-kbd-bg"
+            },
+            {
+              "name": "--xh-kbd-bg-disabled"
+            },
+            {
+              "name": "--xh-kbd-border"
+            },
+            {
+              "name": "--xh-kbd-fg"
+            },
+            {
+              "name": "--xh-kbd-fg-disabled"
+            },
+            {
+              "name": "--xh-kbd-fg-modifier"
+            },
+            {
+              "name": "--xh-kbd-font"
+            },
+            {
+              "name": "--xh-kbd-font-size"
+            },
+            {
+              "name": "--xh-kbd-font-weight"
+            },
+            {
+              "name": "--xh-kbd-h"
+            },
+            {
+              "name": "--xh-kbd-min-w"
+            },
+            {
+              "name": "--xh-kbd-px"
+            },
+            {
+              "name": "--xh-kbd-py"
+            },
+            {
+              "name": "--xh-kbd-radius"
+            },
+            {
+              "name": "--xh-kbd-shadow"
+            },
+            {
+              "name": "--xh-kbd-shadow-pressed"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhKbdElement",
+          "declaration": {
+            "name": "XhKbdElement",
+            "module": "src/elements/kbd.ts"
           }
         }
       ]
@@ -54845,7 +55357,23 @@
               "name": "branch-content"
             },
             {
-              "description": "空态占位，须放在 content 里当 tree 的兄弟；给了 collection 时由元素按条数收放，节点手写时归作者",
+              "description": "懒分支在途状态；标记缺席时由元素补齐",
+              "name": "branch-loading"
+            },
+            {
+              "description": "懒分支错误状态；标记缺席时由元素补齐",
+              "name": "branch-error"
+            },
+            {
+              "description": "懒分支失败后的重试按钮；标记缺席时由元素补齐",
+              "name": "branch-retry-trigger"
+            },
+            {
+              "description": "懒分支成功返回空数组的状态；标记缺席时由元素补齐",
+              "name": "branch-empty"
+            },
+            {
+              "description": "整树空态；标记缺席时由元素补齐，collection 与手写节点均自动判定",
               "name": "empty"
             },
             {
@@ -55169,6 +55697,29 @@
             },
             {
               "kind": "field",
+              "name": "ownsFeedbackText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()"
+            },
+            {
+              "kind": "field",
+              "name": "generatedFeedback",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakSet<HTMLElement>()"
+            },
+            {
+              "kind": "field",
+              "name": "renderedNodeCount",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "-1"
+            },
+            {
+              "kind": "field",
               "name": "hiddenInputs",
               "privacy": "private",
               "readonly": true
@@ -55188,6 +55739,24 @@
             {
               "kind": "field",
               "name": "notifyOpen",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyBranchLoadStart",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyBranchLoad",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyBranchLoadError",
               "privacy": "private",
               "readonly": true
             },
@@ -55230,6 +55799,42 @@
                   }
                 }
               ]
+            },
+            {
+              "kind": "method",
+              "name": "branchLoadState",
+              "return": {
+                "type": {
+                  "text": "TreeSelectBranchLoadSnapshot | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "读取一个懒分支的 Headless 异步相位；非懒分支返回 null。"
+            },
+            {
+              "kind": "method",
+              "name": "retryBranch",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "显式重试失败分支；实际请求身份与竞态仍由 Headless 管理。"
             },
             {
               "kind": "method",
@@ -55356,6 +55961,59 @@
             },
             {
               "kind": "method",
+              "name": "fillFeedbackText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "ensureFeedback",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "parent",
+                  "type": {
+                    "text": "HTMLElement | null"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "tag",
+                  "default": "'div'"
+                }
+              ],
+              "description": "作者部件优先；缺席时在指定容器末尾补一个默认反馈节点。"
+            },
+            {
+              "kind": "method",
               "name": "wire",
               "privacy": "protected",
               "return": {
@@ -55385,6 +56043,27 @@
               "name": "open-change",
               "type": {
                 "text": "TreeSelectOpenChangeDetails"
+              }
+            },
+            {
+              "description": "分支请求开始；detail 为 `{ value, node, reason }`",
+              "name": "branch-load-start",
+              "type": {
+                "text": "TreeSelectBranchLoadStartDetails"
+              }
+            },
+            {
+              "description": "分支请求成功；detail 为 `{ value, node, children }`",
+              "name": "branch-load",
+              "type": {
+                "text": "TreeSelectBranchLoadDetails"
+              }
+            },
+            {
+              "description": "分支请求失败；detail 为 `{ value, node, error }`",
+              "name": "branch-load-error",
+              "type": {
+                "text": "TreeSelectBranchLoadErrorDetails"
               }
             }
           ],

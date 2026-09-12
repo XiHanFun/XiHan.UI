@@ -200,6 +200,9 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `value-change` | `TreeSelectValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
 | `expanded-value-change` | `TreeSelectExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 | `open-change` | `TreeSelectOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `branch-load-start` | `TreeSelectBranchLoadStartDetails` | 分支请求开始；detail 为 `{ value, node, reason }` |
+| `branch-load` | `TreeSelectBranchLoadDetails` | 分支请求成功；detail 为 `{ value, node, children }` |
+| `branch-load-error` | `TreeSelectBranchLoadErrorDetails` | 分支请求失败；detail 为 `{ value, node, error }` |
 
 ### 插槽
 

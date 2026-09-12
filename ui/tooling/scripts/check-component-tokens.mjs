@@ -64,7 +64,7 @@ for (const component of components) {
     problems.push(`组件文档缺失：${docsPath}`)
     continue
   }
-  const expectedBlock = renderComponentTokenDocs(expectedByComponent.get(component) ?? [])
+  const expectedBlock = renderComponentTokenDocs(expectedByComponent.get(component) ?? [], { headingLevel: 3 })
   const start = docs.indexOf(COMPONENT_TOKEN_DOCS_START)
   const end = docs.indexOf(COMPONENT_TOKEN_DOCS_END)
   if (!expectedBlock) {
