@@ -1,28 +1,26 @@
-<!-- 基础用法 | 等宽不等高的项按最短列优先落进三列，底边尽量齐平 -->
+<!-- 基础用法 | 按最短列排列卡片 -->
 <script setup lang="ts">
 import { XhMasonry } from "@xihan-ui/vue";
 
-const cardStyle
-  = "padding: 12px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
-
 const cards = [
-  { label: "甲", height: 90 },
-  { label: "乙", height: 140 },
-  { label: "丙", height: 60 },
-  { label: "丁", height: 110 },
-  { label: "戊", height: 70 },
-  { label: "己", height: 150 },
+  { title: "快速上手", description: "几分钟完成安装并渲染第一个组件。" },
+  { title: "无头内核", description: "行为、状态和无障碍逻辑独立于视图层，可在多个框架中复用。" },
+  { title: "设计令牌", description: "统一颜色、间距和动效。" },
+  { title: "多端适配", description: "同时支持 Vue、React 和 Web Components。" },
+  { title: "无障碍", description: "内置键盘导航与语义属性。" },
+  { title: "主题系统", description: "支持浅色、深色、高对比度和自定义品牌主题。" },
 ];
 </script>
 
 <template>
-  <XhMasonry :columns="3" gap="md">
-    <div
-      v-for="c in cards"
-      :key="c.label"
-      :style="`${cardStyle}; block-size: ${c.height}px`"
+  <XhMasonry :columns="3" gap="md" style="inline-size: min(680px, 100%)">
+    <article
+      v-for="card in cards"
+      :key="card.title"
+      style="padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
     >
-      {{ c.label }}
-    </div>
+      <strong>{{ card.title }}</strong>
+      <p style="margin-block-end: 0; color: var(--xh-fg-muted)">{{ card.description }}</p>
+    </article>
   </XhMasonry>
 </template>

@@ -1,30 +1,18 @@
-<!-- 逐档列数 | 列数写成断点对象，按容器自身的宽度换档：窄栏一列，宽到 md 两列，宽到 lg 四列 -->
+<!-- 响应式列 | 根据容器宽度调整列数 -->
 <script setup lang="ts">
 import { XhMasonry } from "@xihan-ui/vue";
 
-const cardStyle
-  = "padding: 12px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
-
-const cards = [
-  { label: "甲", height: 80 },
-  { label: "乙", height: 130 },
-  { label: "丙", height: 60 },
-  { label: "丁", height: 100 },
-  { label: "戊", height: 90 },
-  { label: "己", height: 120 },
-  { label: "庚", height: 70 },
-  { label: "辛", height: 110 },
-];
+const items = ["概览", "组件", "主题", "发布"];
 </script>
 
 <template>
-  <XhMasonry :columns="{ base: 1, md: 2, lg: 4 }" gap="md">
+  <XhMasonry :columns="{ base: 1, sm: 2, md: 3 }" gap="sm" style="inline-size: min(720px, 100%)">
     <div
-      v-for="c in cards"
-      :key="c.label"
-      :style="`${cardStyle}; block-size: ${c.height}px`"
+      v-for="(item, index) in items"
+      :key="item"
+      :style="`padding: ${16 + index * 6}px 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)`"
     >
-      {{ c.label }}
+      {{ item }}
     </div>
   </XhMasonry>
 </template>
