@@ -1,15 +1,22 @@
-<!-- 基础用法 | 二维排布容器：cols 定分几列，gap 走间距档位，每一格按文档序依次落格 -->
+<!-- 基础用法 | 创建等宽列 -->
 <script setup lang="ts">
 import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
 
 const cellStyle
-  = "padding: 12px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
+  = "min-inline-size: 0; padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)";
 
-const cells = ["甲", "乙", "丙", "丁", "戊", "己"];
+const metrics = [
+  { label: "活跃用户", value: "12,860" },
+  { label: "转化率", value: "8.4%" },
+  { label: "订单", value: "1,294" },
+];
 </script>
 
 <template>
-  <XhGridRoot :cols="3" gap="md">
-    <XhGridItem v-for="c in cells" :key="c" :style="cellStyle">{{ c }}</XhGridItem>
+  <XhGridRoot :cols="3" gap="md" style="inline-size: min(600px, 100%)">
+    <XhGridItem v-for="metric in metrics" :key="metric.label" :style="cellStyle">
+      <div style="color: var(--xh-fg-muted); font-size: 13px">{{ metric.label }}</div>
+      <strong style="display: block; margin-block-start: 8px; font-size: 24px">{{ metric.value }}</strong>
+    </XhGridItem>
   </XhGridRoot>
 </template>
