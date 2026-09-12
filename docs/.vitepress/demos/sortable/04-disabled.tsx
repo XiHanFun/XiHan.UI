@@ -1,19 +1,20 @@
-// 禁用 | 手柄退出 Tab 序列，按下也不进拖动
+// 禁用项目 | 固定单个项目的位置
 import type { ReactNode } from "react";
-import { XhSortableItem, XhSortableItemDragTrigger, XhSortableRoot } from "@xihan-ui/react";
+import { XhSortableItem, XhSortableItemDragTrigger, XhSortableLiveRegion, XhSortableRoot } from "@xihan-ui/react";
 import { useState } from "react";
 
 export default function Demo(): ReactNode {
-  const [ids, setIds] = useState(["锁定一", "锁定二", "锁定三"]);
+  const [ids, setIds] = useState(["固定项", "设计", "实现", "发布"]);
 
   return (
-    <XhSortableRoot ids={ids} onSort={details => setIds(details.ids)} disabled>
+    <XhSortableRoot ids={ids} onSort={({ ids: next }) => setIds(next)} style={{ inlineSize: "min(360px, 100%)" }}>
       {ids.map(id => (
-        <XhSortableItem key={id} itemId={id} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 12px", border: "1px solid var(--xh-border-default)" }}>
-          <XhSortableItemDragTrigger itemId={id} />
+        <XhSortableItem key={id} itemId={id} disabled={id === "固定项"} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 12px", borderRadius: "var(--xh-shape-surface)", background: "var(--xh-bg-subtle)" }}>
+          <XhSortableItemDragTrigger itemId={id} disabled={id === "固定项"} />
           <span>{id}</span>
         </XhSortableItem>
       ))}
+      <XhSortableLiveRegion />
     </XhSortableRoot>
   );
 }
