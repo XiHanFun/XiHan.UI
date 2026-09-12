@@ -3,7 +3,7 @@ import type { MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarItemPro
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { MenubarPartRegistry } from './use-menubar'
-import { createRuntimeConfig } from '@xihan-ui/core'
+import { createRuntimeConfig, groupAdjacentRuns } from '@xihan-ui/core'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
@@ -341,19 +341,6 @@ function renderDefaultTree(
   ]
 }
 
-/** 相邻同 group 的条目并成一段，没写 group 的各自成段。 */
-function groupRuns(collection: readonly MenubarNodeMeta[]): MenubarNodeMeta[][] {
-  const runs: MenubarNodeMeta[][] = []
-  for (const meta of collection) {
-    const last = runs.at(-1)
-    if (last && meta.group != null && last[0]!.group === meta.group)
-      last.push(meta)
-    else
-      runs.push([meta])
-  }
-  return runs
-}
-
 /** 单个条目：文字在上，副文本在下，没给副文本就不铺那个部件。 */
 function renderNode(
   meta: MenubarNodeMeta,
@@ -370,7 +357,7 @@ function renderNodes(
   collection: readonly MenubarNodeMeta[],
   itemSlot?: (node: MenubarNodeMeta) => VNode[],
 ): VNode[] {
-  return groupRuns(collection).flatMap((run, runIndex) => {
+  return groupAdjacentRuns(collection, node => node.group).flatMap((run, runIndex) => {
     const head = run[0]!
     // 首条上的标记不产出分隔线：菜单开头不留一道空隔
     const lead = runIndex > 0 && head.separatorBefore

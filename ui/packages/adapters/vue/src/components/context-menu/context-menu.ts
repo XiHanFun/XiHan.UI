@@ -2,7 +2,7 @@ import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type { ContextMenuApi, ContextMenuGroupProps, ContextMenuItemProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuSchema, MenuApi } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { mergeProps } from '@xihan-ui/core'
+import { groupAdjacentRuns, mergeProps } from '@xihan-ui/core'
 import { computed, defineComponent, h, mergeProps as mergeVueProps, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
@@ -333,8 +333,6 @@ export const XhContextMenuArrow = defineComponent({
 })
 
 /** 一段连续的同组条目；不分组的条目各自单独成段。 */
-type NodeRun = [ContextMenuNodeMeta, ...ContextMenuNodeMeta[]]
-
 /**
  * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
  * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
@@ -353,25 +351,12 @@ function renderDefaultTree(
   ]
 }
 
-/** 相邻同 group 的条目并成一段，没写 group 的各自成段。 */
-function groupRuns(collection: readonly ContextMenuNodeMeta[]): NodeRun[] {
-  const runs: NodeRun[] = []
-  for (const meta of collection) {
-    const last = runs.at(-1)
-    if (last && meta.group != null && last[0].group === meta.group)
-      last.push(meta)
-    else
-      runs.push([meta])
-  }
-  return runs
-}
-
 /** content 的内容：分组段铺成 group，段首的分隔线落在 group 外面。 */
 function renderNodes(
   collection: readonly ContextMenuNodeMeta[],
   itemSlot?: (node: ContextMenuNodeMeta) => VNode[],
 ): VNode[] {
-  return groupRuns(collection).flatMap((run, runIndex) => {
+  return groupAdjacentRuns(collection, node => node.group).flatMap((run, runIndex) => {
     const head = run[0]
     // 首条上的标记不产出分隔线：菜单开头不留一道空隔
     const lead = runIndex > 0 && head.separatorBefore

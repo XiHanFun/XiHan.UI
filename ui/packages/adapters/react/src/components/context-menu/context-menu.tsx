@@ -12,7 +12,7 @@ import type {
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { mergeProps } from '@xihan-ui/core'
+import { groupAdjacentRuns, mergeProps } from '@xihan-ui/core'
 import { Fragment, useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
@@ -384,22 +384,6 @@ export function XhContextMenuSubTrigger({ children, ...rest }: XhContextMenuSubT
   )
 }
 
-/** 一段连续的同组条目；不分组的条目各自单独成段。 */
-type NodeRun = [ContextMenuNodeMeta, ...ContextMenuNodeMeta[]]
-
-/** 相邻同 group 的条目并成一段，没写 group 的各自成段。 */
-function groupRuns(collection: readonly ContextMenuNodeMeta[]): NodeRun[] {
-  const runs: NodeRun[] = []
-  for (const meta of collection) {
-    const last = runs.at(-1)
-    if (last && meta.group != null && last[0].group === meta.group)
-      last.push(meta)
-    else
-      runs.push([meta])
-  }
-  return runs
-}
-
 /** 单个条目：标记位排在文字前面，没给标记位就不铺那个部件。 */
 function renderItemNode(
   meta: ContextMenuNodeMeta,
@@ -419,7 +403,7 @@ function renderNodes(
   collection: readonly ContextMenuNodeMeta[],
   renderItem?: (node: ContextMenuNodeMeta) => ReactNode,
 ): ReactNode[] {
-  return groupRuns(collection).map((run, runIndex) => {
+  return groupAdjacentRuns(collection, node => node.group).map((run, runIndex) => {
     const head = run[0]
     // 首条上的标记不产出分隔线：菜单开头不留一道空隔
     const lead = runIndex > 0 && head.separatorBefore ? <XhContextMenuSeparator /> : null
