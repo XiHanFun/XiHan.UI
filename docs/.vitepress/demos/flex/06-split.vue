@@ -1,9 +1,8 @@
-<!-- 分隔符 | 每两个子项之间放一份分隔符：Vue 交给 split 插槽自动铺，WC 由作者逐个写在 root 里 -->
+<!-- 分隔符 | 在相邻内容之间添加分隔符 -->
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
 const linkStyle = "color: var(--xh-fg-brand); cursor: pointer";
-// 分隔符部件自带 aria-hidden，这里只画那条线；display: block 让它吃得住尺寸
 const ruleStyle
   = "display: block; inline-size: 1px; block-size: 1em; background: var(--xh-border-default)";
 

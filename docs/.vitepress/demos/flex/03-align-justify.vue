@@ -1,37 +1,18 @@
-<!-- 对齐与分布 | justify 管主轴怎么分，align 管交叉轴怎么对；两条轴互不相干 -->
+<!-- 对齐与分布 | 对齐内容并分配剩余空间 -->
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
-
-const trackStyle
-  = "border: 1px solid var(--xh-border-default); border-radius: var(--xh-radius-md); padding: 8px; block-size: 72px";
-const boxStyle
-  = "padding: 8px 14px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
-const tallBoxStyle = `${boxStyle}; padding-block: 20px`;
-const labelStyle = "font-size: 13px; color: var(--xh-fg-muted)";
-
-const justifies = ["start", "center", "end", "between"] as const;
-const aligns = ["start", "center", "end", "stretch"] as const;
 </script>
 
 <template>
-  <XhFlex orientation="vertical" gap="lg">
-    <XhFlex v-for="j in justifies" :key="j" orientation="vertical" gap="xs">
-      <span :style="labelStyle">justify = {{ j }}</span>
-      <!-- 轨道给了固定高度，主轴上才有多余空间可分 -->
-      <XhFlex :justify="j" gap="sm" align="center" :style="trackStyle">
-        <span :style="boxStyle">甲</span>
-        <span :style="boxStyle">乙</span>
-        <span :style="boxStyle">丙</span>
-      </XhFlex>
+  <XhFlex
+    align="center"
+    justify="between"
+    style="inline-size: min(360px, 100%); padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
+  >
+    <XhFlex align="center" gap="sm">
+      <span style="display: grid; inline-size: 36px; block-size: 36px; place-items: center; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand)">周</span>
+      <XhFlex orientation="vertical" gap="xs"><strong>周宁</strong><small style="color: var(--xh-fg-muted)">在线</small></XhFlex>
     </XhFlex>
-
-    <XhFlex v-for="a in aligns" :key="a" orientation="vertical" gap="xs">
-      <span :style="labelStyle">align = {{ a }}</span>
-      <XhFlex :align="a" gap="sm" :style="trackStyle">
-        <span :style="boxStyle">甲</span>
-        <span :style="tallBoxStyle">乙（更高）</span>
-        <span :style="boxStyle">丙</span>
-      </XhFlex>
-    </XhFlex>
+    <span style="color: var(--xh-fg-brand)">项目负责人</span>
   </XhFlex>
 </template>
