@@ -26,6 +26,7 @@ const OVERLAY_PARTS = new Set(['backdrop', 'content', 'positioner', 'viewport'])
 /** 把「标识符 → 它取自哪个部件」的绑定形态列全，setPartHidden 的实参靠这张表还原成部件名。 */
 const BINDINGS = [
   /(?:const|let)\s+(\w+)\s*=\s*this\.getParts?\('([\w-]+)'\)/g,
+  /(?:const|let)\s+(\w+)\s*=\s*\w+\.querySelector(?:<[^>]+>)?\('\[data-xh-part=["']([\w-]+)["']\]'\)/g,
   /for\s*\(\s*const\s+(\w+)\s+of\s+this\.getParts\('([\w-]+)'\)/g,
   /for\s*\(\s*const\s+(\w+)\s+of\s+this\.partsIn\([^,]+,\s*'([\w-]+)'\)/g,
 ]

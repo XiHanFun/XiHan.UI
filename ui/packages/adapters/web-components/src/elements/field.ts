@@ -1,11 +1,11 @@
 import type { Scope } from '@xihan-ui/core'
 import type { FieldProps, FormControlState } from '@xihan-ui/headless'
-import type { FormControlHost } from './form-control-host'
+import type { FormControlHost } from '../runtime/form-control-host'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectField, fieldAnatomy, fieldMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-import { FORM_CONTROL_HOST_SELECTOR } from './form-control-host'
+import { FORM_CONTROL_HOST_SELECTOR } from '../runtime/form-control-host'
 
 // 属性缺席翻成 undefined，控件 id 的缺省由 connect 派生。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
