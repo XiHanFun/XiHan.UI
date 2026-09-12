@@ -2,7 +2,7 @@ import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/co
 import type { TimeSegmentType } from '../time-field'
 import type { TimePickerApi, TimePickerColumnUnit, TimePickerPresetState, TimePickerSchema } from './time-picker.types'
 import { dataAttr, focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
-import { overlayPositioned } from '../shared/overlay'
+import { overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import {
   appendSegmentDigit,
   dayPeriodLabel,
@@ -541,11 +541,7 @@ export function connectTimePicker<T extends PropTypes>(
       'data-hidden': dataAttr(position?.hidden),
       // 落位才露：皮肤基线把定位层藏着，带这个才显示。展开那几帧坐标还没算出来时就是藏的
       'data-positioned': dataAttr(overlayPositioned(position)),
-      'style': {
-        position: 'fixed',
-        left: `${position?.x ?? 0}px`,
-        top: `${position?.y ?? 0}px`,
-      },
+      'style': overlayFixedStyle(position),
     }),
 
     // 键盘全在 content 上收口，选项只管声明自己。

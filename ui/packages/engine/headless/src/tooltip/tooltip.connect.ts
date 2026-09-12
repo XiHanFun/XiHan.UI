@@ -1,7 +1,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TooltipApi, TooltipSchema } from './tooltip.types'
 import { dataAttr } from '@xihan-ui/core'
-import { overlayPositioned } from '../shared/overlay'
+import { overlayArrowVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { tooltipAnatomy } from './tooltip.anatomy'
 import { TOOLTIP_DEFAULT_PLACEMENT } from './tooltip.machine'
 
@@ -67,9 +67,7 @@ export function connectTooltip<T extends PropTypes>(
       'data-positioned': dataAttr(overlayPositioned(position)),
       'data-state': stateAttr,
       'style': {
-        position: 'fixed',
-        left: `${position?.x ?? 0}px`,
-        top: `${position?.y ?? 0}px`,
+        ...overlayFixedStyle(position),
         // 皮肤给 SSR 首帧兜了一条 inset-inline-start，RTL 下它落在 right 上；
         // 行内把 right 让开，行内轴才只由 left 一侧约束，浮层不会被拉宽
         right: 'auto',
@@ -99,10 +97,7 @@ export function connectTooltip<T extends PropTypes>(
       'data-placement': placement,
       // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。
       // 两根轴每帧都写，翻面后另一根不会留着上一帧的值；空串即撤掉声明，皮肤退回居中
-      'style': {
-        '--xh-_tooltip-arrow-x': arrowAt?.x != null ? `${arrowAt.x}px` : '',
-        '--xh-_tooltip-arrow-y': arrowAt?.y != null ? `${arrowAt.y}px` : '',
-      },
+      'style': overlayArrowVars('tooltip', arrowAt),
     }),
   }
 }

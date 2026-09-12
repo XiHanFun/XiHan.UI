@@ -13,7 +13,7 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/core'
-import { overlayPositioned } from '../shared/overlay'
+import { overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import {
   menubarAnatomy,
   menubarItemQuery,
@@ -23,27 +23,6 @@ import {
 import { MENUBAR_DEFAULT_PLACEMENT } from './menubar.machine'
 
 const parts = menubarAnatomy.build()
-
-// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
-// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
-const AVAILABLE_H_FLOOR = 96
-
-// 行内轴同理：贴边时引擎回报 0，写进 min() 会把面板压成零宽
-const AVAILABLE_W_FLOOR = 96
-
-/** 引擎回报的可用尺寸转成 CSS 长度；低于下限当作没算出来，空串撤掉声明。 */
-function availablePx(available: number | undefined, floor: number): string {
-  return available != null && available >= floor ? `${available}px` : ''
-}
-
-function availableSpaceVars(
-  placed: { availableWidth?: number, availableHeight?: number } | null | undefined,
-): Record<string, string> {
-  return {
-    '--xh-_menubar-available-w': availablePx(placed?.availableWidth, AVAILABLE_W_FLOOR),
-    '--xh-_menubar-available-h': availablePx(placed?.availableHeight, AVAILABLE_H_FLOOR),
-  }
-}
 
 export function connectMenubar<T extends PropTypes>(
   service: Service<MenubarSchema>,
@@ -333,11 +312,9 @@ export function connectMenubar<T extends PropTypes>(
         // 落位才露：按本菜单名下那份判。收起中的留着账，退场可见；展开前清过账，先藏
         'data-positioned': dataAttr(overlayPositioned(placed)),
         'style': {
-          position: 'fixed',
-          left: `${placed?.x ?? 0}px`,
-          top: `${placed?.y ?? 0}px`,
+          ...overlayFixedStyle(placed),
           // content 继承这个高度上限，超出的条目在菜单内部滚
-          ...availableSpaceVars(isOpen ? placed : undefined),
+          ...overlayAvailableSpaceVars('menubar', isOpen ? placed : undefined),
         },
       })
     },
@@ -470,10 +447,7 @@ export function connectMenubar<T extends PropTypes>(
         'data-placement': placement,
         // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。
         // 两根轴每帧都写，翻面后另一根不会留着上一帧的值；空串即撤掉声明，皮肤退回居中
-        'style': {
-          '--xh-_menubar-arrow-x': arrowAt?.x != null ? `${arrowAt.x}px` : '',
-          '--xh-_menubar-arrow-y': arrowAt?.y != null ? `${arrowAt.y}px` : '',
-        },
+        'style': overlayArrowVars('menubar', arrowAt),
       })
     },
   }
