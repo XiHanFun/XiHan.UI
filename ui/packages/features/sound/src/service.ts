@@ -127,6 +127,17 @@ function call<Method extends ServiceMethod>(
   return Reflect.apply(method, service, args) as ReturnType<Method>
 }
 
+function soundMethod<Service extends object, Key extends keyof Service>(
+  controller: { play: (key: Key) => void },
+  service: Service,
+  key: Key,
+): Service[Key] {
+  return ((...args: never[]) => {
+    controller.play(key)
+    return Reflect.apply(service[key] as ServiceMethod, service, args)
+  }) as Service[Key]
+}
+
 /**
  * 给结构化 Toast 服务加声音，保留服务自身类型与返回值。
  * create 缺省按 info；update 只在显式改 type 时发声；loading 映射为静音。
@@ -153,26 +164,11 @@ export function withToastSoundService<Service extends ToastSoundServicePort>(
         controller.play(input.type)
       return call(service, service.update, args)
     },
-    info: (...args: Parameters<Service['info']>) => {
-      controller.play('info')
-      return call(service, service.info, args)
-    },
-    success: (...args: Parameters<Service['success']>) => {
-      controller.play('success')
-      return call(service, service.success, args)
-    },
-    warning: (...args: Parameters<Service['warning']>) => {
-      controller.play('warning')
-      return call(service, service.warning, args)
-    },
-    error: (...args: Parameters<Service['error']>) => {
-      controller.play('error')
-      return call(service, service.error, args)
-    },
-    loading: (...args: Parameters<Service['loading']>) => {
-      controller.play('loading')
-      return call(service, service.loading, args)
-    },
+    info: soundMethod(controller, service, 'info'),
+    success: soundMethod(controller, service, 'success'),
+    warning: soundMethod(controller, service, 'warning'),
+    error: soundMethod(controller, service, 'error'),
+    loading: soundMethod(controller, service, 'loading'),
     dispose: () => {
       controller.dispose()
       service.dispose()
@@ -190,21 +186,13 @@ export function withDialogSoundService<Service extends DialogSoundServicePort>(
     defaults: DIALOG_SOUND_DEFAULTS,
   })
 
-  const invoke = <Key extends Exclude<keyof DialogSoundServicePort, 'dispose'>>(
-    key: Key,
-    args: Parameters<Service[Key]>,
-  ): ReturnType<Service[Key]> => {
-    controller.play(key)
-    return call(service, service[key], args)
-  }
-
   return {
     ...service,
-    confirm: (...args: Parameters<Service['confirm']>) => invoke('confirm', args),
-    info: (...args: Parameters<Service['info']>) => invoke('info', args),
-    success: (...args: Parameters<Service['success']>) => invoke('success', args),
-    warning: (...args: Parameters<Service['warning']>) => invoke('warning', args),
-    error: (...args: Parameters<Service['error']>) => invoke('error', args),
+    confirm: soundMethod(controller, service, 'confirm'),
+    info: soundMethod(controller, service, 'info'),
+    success: soundMethod(controller, service, 'success'),
+    warning: soundMethod(controller, service, 'warning'),
+    error: soundMethod(controller, service, 'error'),
     dispose: () => {
       controller.dispose()
       service.dispose()

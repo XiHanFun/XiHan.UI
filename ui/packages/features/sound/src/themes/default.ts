@@ -1,7 +1,7 @@
 // 默认主题：清亮乐音系。音符取自 C 大调——成功与完成是琶音上行，
 // 错误是低音区下行，交互声是高频短敲；反馈类带少量混响撑出空间感。
 
-import { defineSoundTheme, flat, glide, strike } from './define'
+import { defineSoundTheme, flat, glide, strike, strikeTone } from './define'
 
 export const defaultSoundTheme = defineSoundTheme({
   'click': {
@@ -51,9 +51,9 @@ export const defaultSoundTheme = defineSoundTheme({
   },
   'success': {
     layers: [
-      { kind: 'oscillator', wave: 'sine', frequency: flat(523.25), gain: strike(0.28, 0.008, 0.22) },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(659.25), gain: strike(0.3, 0.008, 0.26), delay: 0.09 },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(783.99), gain: strike(0.32, 0.008, 0.34), delay: 0.18 },
+      strikeTone('sine', 523.25, 0.28, 0.008, 0.22),
+      strikeTone('sine', 659.25, 0.3, 0.008, 0.26, 0.09),
+      strikeTone('sine', 783.99, 0.32, 0.008, 0.34, 0.18),
     ],
     space: 0.15,
   },
@@ -66,23 +66,23 @@ export const defaultSoundTheme = defineSoundTheme({
   },
   'warning': {
     layers: [
-      { kind: 'oscillator', wave: 'triangle', frequency: flat(880), gain: strike(0.28, 0.005, 0.1) },
-      { kind: 'oscillator', wave: 'triangle', frequency: flat(880), gain: strike(0.28, 0.005, 0.16), delay: 0.14 },
+      strikeTone('triangle', 880, 0.28, 0.005, 0.1),
+      strikeTone('triangle', 880, 0.28, 0.005, 0.16, 0.14),
     ],
     space: 0.08,
   },
   'info': {
     layers: [
-      { kind: 'oscillator', wave: 'sine', frequency: flat(1046.5), gain: strike(0.26, 0.01, 0.3) },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(1318.51), gain: strike(0.1, 0.01, 0.25) },
+      strikeTone('sine', 1046.5, 0.26, 0.01, 0.3),
+      strikeTone('sine', 1318.51, 0.1, 0.01, 0.25),
     ],
     space: 0.18,
   },
   'notification': {
     layers: [
-      { kind: 'oscillator', wave: 'sine', frequency: flat(783.99), gain: strike(0.3, 0.01, 0.28) },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(659.25), gain: strike(0.28, 0.01, 0.4), delay: 0.15 },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(1567.98), gain: strike(0.07, 0.01, 0.2) },
+      strikeTone('sine', 783.99, 0.3, 0.01, 0.28),
+      strikeTone('sine', 659.25, 0.28, 0.01, 0.4, 0.15),
+      strikeTone('sine', 1567.98, 0.07, 0.01, 0.2),
     ],
     space: 0.25,
   },
@@ -106,10 +106,10 @@ export const defaultSoundTheme = defineSoundTheme({
   },
   'complete': {
     layers: [
-      { kind: 'oscillator', wave: 'sine', frequency: flat(523.25), gain: strike(0.26, 0.008, 0.2) },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(659.25), gain: strike(0.28, 0.008, 0.22), delay: 0.09 },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(783.99), gain: strike(0.28, 0.008, 0.26), delay: 0.18 },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(1046.5), gain: strike(0.3, 0.008, 0.5), delay: 0.27 },
+      strikeTone('sine', 523.25, 0.26, 0.008, 0.2),
+      strikeTone('sine', 659.25, 0.28, 0.008, 0.22, 0.09),
+      strikeTone('sine', 783.99, 0.28, 0.008, 0.26, 0.18),
+      strikeTone('sine', 1046.5, 0.3, 0.008, 0.5, 0.27),
     ],
     space: 0.2,
   },
