@@ -15,10 +15,9 @@ import { cascaderAnatomy, cascaderMachine, cascaderMeta, connectCascader, resolv
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
-import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定；Lit 自带转换器会把缺席落成 null/false，表达不了"未指定"。
@@ -97,7 +96,10 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart item-indicator - 条目选中标记（aria-hidden）
  * @csspart footer - 浮层底部的操作区，写在 content 里与列并列，横跨全部列；不进任何一列的拥有关系，方向键也走不到
  */
-export class XhCascaderElement extends XhElement {
+export class XhCascaderElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: cascaderAnatomy, meta: cascaderMeta }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
@@ -168,7 +170,7 @@ export class XhCascaderElement extends XhElement {
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
-  private readonly portal = new AnchoredPortalController({
+  private readonly portal = this.createAnchoredPortalController({
     name: 'Cascader',
     config: () => this.config,
     source: () => this.getPart('trigger'),

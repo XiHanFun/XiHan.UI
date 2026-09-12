@@ -6,6 +6,8 @@ export interface PortalLeaseControllerOptions {
   name: string
   /** 当前宿主所属 Document 的 RuntimeConfig。 */
   config: () => RuntimeConfig | null
+  /** 实例或 xh-config 声明的 Portal 容器解析器；缺席时才回落 RuntimeConfig。 */
+  portalContainer?: () => (() => Element | null) | undefined
   /** Portal 视觉环境的逻辑来源。 */
   source: () => Element | null
   /** 同一租约原子搬迁的根。 */
@@ -40,10 +42,7 @@ export class PortalLeaseController {
       return
     }
 
-    const config = this.options.config()
-    const target = config?.portalContainer()
-    if (!target)
-      throw new Error(`[xh] ${this.options.name} 浮层需要显式可用的 Portal 容器`)
+    const target = this.resolveTarget()
 
     if (
       this.lease?.source === source
@@ -71,5 +70,23 @@ export class PortalLeaseController {
     this.lease = null
     lease.release()
     return true
+  }
+
+  private resolveTarget(): Element {
+    const resolver = this.options.portalContainer?.() ?? this.options.config()?.portalContainer
+    let target: Element | null | undefined
+    try {
+      target = resolver?.()
+    }
+    catch (error) {
+      if (this.release())
+        this.options.onChange()
+      throw error
+    }
+    if (target)
+      return target
+    if (this.release())
+      this.options.onChange()
+    throw new Error(`[xh] ${this.options.name} 的 portalContainer 必须返回已连接的同 Document Element`)
   }
 }

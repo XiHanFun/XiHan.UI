@@ -4664,6 +4664,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -4965,6 +4973,12 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "ownsValueText",
               "privacy": "private",
               "readonly": true,
@@ -5023,6 +5037,31 @@
               "description": "列区的自绘条：与 content 同级挂在已经 fixed 的 positioner 上。\n只摆横的——列多到放不下时整体横向滚动，纵向溢出归每一列自己；\n横条的正负按排版方向算，而组件不读计算样式，把作者写的那份显式交过去。"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ]
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -5039,6 +5078,16 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
                 }
               }
             },
@@ -5440,8 +5489,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-cascader",
           "customElement": true,
@@ -5923,6 +5972,42 @@
               "default": "new MachineController<CheckboxGroupSchema>(this, checkboxGroupMachine, () => this.machineProps())"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；本组件仅消费公开的三条轴。"
+            },
+            {
+              "kind": "method",
+              "name": "controlState",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ResolvedFormControlState"
+                }
+              }
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -6352,6 +6437,32 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<CheckboxSchema>(this, checkboxMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
             },
             {
               "kind": "method",
@@ -7082,6 +7193,7 @@
             {
               "kind": "field",
               "name": "highlighter",
+              "privacy": "public",
               "type": {
                 "text": "HighlighterPort | null | undefined"
               },
@@ -7110,6 +7222,24 @@
                 "text": "string | undefined"
               },
               "description": "上一次铺进 code 部件的那份逐行结构，用来判断要不要重铺。"
+            },
+            {
+              "kind": "field",
+              "name": "#releaseHighlighter",
+              "privacy": "private",
+              "type": {
+                "text": "() => void | undefined"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "resolvedHighlighter",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HighlighterPort | undefined"
+                }
+              }
             },
             {
               "kind": "method",
@@ -7765,6 +7895,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -7951,6 +8089,12 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -8002,6 +8146,31 @@
               "description": "面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ]
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -8018,6 +8187,16 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
                 }
               }
             },
@@ -8291,8 +8470,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-color-picker",
           "customElement": true,
@@ -8607,6 +8786,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -8891,6 +9078,12 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -8936,6 +9129,31 @@
               "readonly": true
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ]
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -8952,6 +9170,16 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
                 }
               }
             },
@@ -9250,8 +9478,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-combobox",
           "customElement": true,
@@ -9563,6 +9791,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -9783,6 +10019,12 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
@@ -9949,6 +10191,16 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
                 }
               }
             },
@@ -10201,8 +10453,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-command",
           "customElement": true,
@@ -10392,7 +10644,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-config>` —— 配置作用域。包住一棵子树，里面的元素解析 locale / size / translations\n时先看最近的这一层，再往外层与全局那份回落。\n\n它不渲染任何东西、不接线任何角色节点：作者写的子节点原样留在 Light DOM 里，\n这个元素只是 DOM 树上的一个记号。皮肤里没有它的规则，布局上它是 display: contents。\n\n与 Vue 适配器的 `provideXhConfig` 是同一件事的两种写法：那边沿组件树找，这边沿 DOM 祖先链找。\n逐键合并，本层只覆盖自己写了的那几项——只想改文案的子树不会把外层的 locale 一并抹掉。\n\n`translations` 与 `scrollRoot` 是对象与函数，只能走 property；`locale` / `size` / `motion` 属性与 property 都行。\n`motion` 写了就调 setMotionOverride（应用级、不分子树）；CSS 侧的 data-motion 钩子由作者自己打。",
+          "description": "`<xh-config>` —— 配置作用域。包住一棵子树，里面的元素解析 locale / size / translations\n时先看最近的这一层，再往外层与全局那份回落。\n\n它不渲染任何东西、不接线任何角色节点：作者写的子节点原样留在 Light DOM 里，\n这个元素只是 DOM 树上的一个记号。皮肤里没有它的规则，布局上它是 display: contents。\n\n与 Vue 适配器的 `provideXhConfig` 是同一件事的两种写法：那边沿组件树找，这边沿 DOM 祖先链找。\n逐键合并，本层只覆盖自己写了的那几项——只想改文案的子树不会把外层的 locale 一并抹掉。\n\n`translations`、`scrollRoot` 与 `portalContainer` 是对象或函数，只能走 property；`locale` / `size` / `motion` 属性与 property 都行。\n`motion` 写了就调 setMotionOverride（应用级、不分子树）；CSS 侧的 data-motion 钩子由作者自己打。",
           "name": "XhConfigElement",
           "members": [
             {
@@ -10439,6 +10691,15 @@
                 "text": "() => HTMLElement | null"
               },
               "description": "真正在滚的那个元素，交给滚动锁（函数只走 property）"
+            },
+            {
+              "kind": "field",
+              "name": "portalContainer",
+              "privacy": "public",
+              "type": {
+                "text": "() => Element | null"
+              },
+              "description": "子树内物理 Portal 的默认目标（函数只走 property）"
             },
             {
               "kind": "field",
@@ -10554,6 +10815,14 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
             {
               "kind": "field",
               "name": "partContract",
@@ -10739,6 +11008,12 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "notifyOpen",
               "privacy": "private",
               "readonly": true
@@ -10824,6 +11099,16 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
                 }
               }
             },
@@ -11004,8 +11289,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-context-menu",
           "customElement": true,
@@ -11370,6 +11655,32 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<DateFieldSchema>(this, dateFieldMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
             },
             {
               "kind": "method",
@@ -11801,6 +12112,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -12156,6 +12475,12 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -12225,6 +12550,31 @@
               }
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ]
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -12241,6 +12591,16 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
                 }
               }
             },
@@ -12684,8 +13044,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-date-picker",
           "customElement": true,
@@ -13166,6 +13526,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -13308,11 +13676,8 @@
             {
               "kind": "field",
               "name": "portal",
-              "type": {
-                "text": "PortalLease | null"
-              },
               "privacy": "private",
-              "default": "null"
+              "readonly": true
             },
             {
               "kind": "field",
@@ -13373,41 +13738,6 @@
               "return": {
                 "type": {
                   "text": "readonly HTMLElement[]"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "mountViewportPortal",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "backdrop",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                },
-                {
-                  "name": "positioner",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                }
-              ],
-              "description": "视口模态层的 backdrop 与 positioner 一起租到当前 Document 的 Portal 根。两根共用一枚租约，\n关闭完成、转为非模态、作者换根或宿主断开时，Core 用各自 placeholder 精确归还作者位置。"
-            },
-            {
-              "kind": "method",
-              "name": "restoreViewportPortal",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
                 }
               }
             },
@@ -13536,8 +13866,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-dialog",
           "customElement": true,
@@ -14440,6 +14770,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -14599,11 +14937,8 @@
             {
               "kind": "field",
               "name": "portal",
-              "type": {
-                "text": "PortalLease | null"
-              },
               "privacy": "private",
-              "default": "null"
+              "readonly": true
             },
             {
               "kind": "field",
@@ -14664,41 +14999,6 @@
               "return": {
                 "type": {
                   "text": "readonly HTMLElement[]"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "mountViewportPortal",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "backdrop",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                },
-                {
-                  "name": "positioner",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                }
-              ],
-              "description": "只有非 contained 的视口模态层领取租约。backdrop 与 positioner 同迁，既脱离作者祖先的\ntransform/contain/overflow，又在退场完成后按各自占位准确归位。"
-            },
-            {
-              "kind": "method",
-              "name": "restoreViewportPortal",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
                 }
               }
             },
@@ -14843,8 +15143,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-drawer",
           "customElement": true,
@@ -15232,6 +15532,32 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<EditableSchema>( this, editableMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；本组件仅消费公开的三条轴。"
             },
             {
               "kind": "method",
@@ -16002,6 +16328,32 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<FieldArraySchema>(this, fieldArrayMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；FieldArray 仅消费公开的禁用、只读、无效三轴。"
             },
             {
               "kind": "method",
@@ -16964,6 +17316,32 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<FileUploadSchema>( this, fileUploadMachine, () => this.machineProps(), { scope: this.uploadScope }, )"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；FileUpload 仅消费公开的禁用、无效两轴。"
             },
             {
               "kind": "method",
@@ -20680,6 +21058,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -20813,6 +21199,12 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -20849,6 +21241,16 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
                 }
               }
             },
@@ -20971,8 +21373,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-hover-card",
           "customElement": true,
@@ -21751,6 +22153,32 @@
               "default": "new MachineController<ImageCropperSchema>( this, imageCropperMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；ImageCropper 仅消费公开的禁用、只读两轴。"
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -22153,6 +22581,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -22340,11 +22776,8 @@
             {
               "kind": "field",
               "name": "portal",
-              "type": {
-                "text": "PortalLease | null"
-              },
               "privacy": "private",
-              "default": "null"
+              "readonly": true
             },
             {
               "kind": "field",
@@ -22413,41 +22846,6 @@
               "return": {
                 "type": {
                   "text": "readonly HTMLElement[]"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "mountViewportPortal",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "backdrop",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                },
-                {
-                  "name": "positioner",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                }
-              ],
-              "description": "ImageViewer 始终是视口模态层：backdrop 与 positioner 作为一枚 Core 租约一同搬迁，\n并在退出动画结束、作者换根或宿主断开时按 placeholder 恢复。"
-            },
-            {
-              "kind": "method",
-              "name": "restoreViewportPortal",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
                 }
               }
             },
@@ -22601,8 +22999,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-image-viewer",
           "customElement": true,
@@ -24682,6 +25080,42 @@
             },
             {
               "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field/Form 只交状态；Listbox 仅消费公开的禁用、只读、错误三轴。"
+            },
+            {
+              "kind": "method",
+              "name": "controlState",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "FormControlState"
+                }
+              }
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -26321,6 +26755,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -26533,6 +26975,12 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -26578,6 +27026,31 @@
               "description": "作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ]
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -26594,6 +27067,16 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
                 }
               }
             },
@@ -26817,8 +27300,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-mention",
           "customElement": true,
@@ -27056,6 +27539,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -27275,15 +27766,6 @@
             },
             {
               "kind": "field",
-              "name": "portal",
-              "type": {
-                "text": "PortalLease | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "menuTree",
               "privacy": "private",
               "readonly": true
@@ -27297,6 +27779,12 @@
               "privacy": "private",
               "readonly": true,
               "default": "{ tree: this.menuTree, registerSubmenu: child => this.registerSubmenu(child), }"
+            },
+            {
+              "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
             },
             {
               "kind": "field",
@@ -27429,40 +27917,6 @@
               "return": {
                 "type": {
                   "text": "readonly HTMLElement[]"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "mountPositionerPortal",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "positioner",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                },
-                {
-                  "name": "source",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "restorePositionerPortal",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
                 }
               }
             },
@@ -27672,8 +28126,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-menu",
           "customElement": true,
@@ -27879,10 +28333,18 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "exits",
               "privacy": "private",
               "readonly": true,
-              "default": "new Map<HTMLElement, OverlayExit>()",
+              "default": "new Map<HTMLElement, { value: string, gate: OverlayExit, portal: AnchoredPortalController }>()",
               "description": "逐个 content 一份退场闸门：一个菜单一份，它们各开各的。"
             },
             {
@@ -28195,6 +28657,34 @@
               }
             },
             {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "createPortal",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "AnchoredPortalController"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
               "kind": "field",
               "name": "registerLayer",
               "privacy": "private",
@@ -28379,8 +28869,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-menubar",
           "customElement": true,
@@ -28957,7 +29447,7 @@
               "name": "exits",
               "privacy": "private",
               "readonly": true,
-              "default": "new Map<HTMLElement, OverlayExit>()",
+              "default": "new Map<HTMLElement, { value: string, gate: OverlayExit }>()",
               "description": "逐个 content 一份退场闸门：一个菜单一份，它们各开各的。"
             },
             {
@@ -29153,6 +29643,79 @@
                   "name": "svc",
                   "type": {
                     "text": "Service<NavigationMenuSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setPresence",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "presence",
+                  "type": {
+                    "text": "OverlayExit['presence']"
+                  }
+                },
+                {
+                  "name": "connected",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "description": "Presence 的身份与生命周期由 Headless 记账；WC 只报告真实 content 的接入与离场。"
+            },
+            {
+              "kind": "method",
+              "name": "releaseExit",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "entry",
+                  "type": {
+                    "text": "{ value: string, gate: OverlayExit }"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
                   }
                 }
               ]
@@ -30680,6 +31243,32 @@
               "default": "new MachineController<NumberFieldSchema>(this, numberFieldMachine, () => this.machineProps())"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -31270,6 +31859,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -31456,6 +32053,21 @@
             },
             {
               "kind": "field",
+              "name": "ellipsisPortalSource",
+              "type": {
+                "text": "HTMLElement | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "ellipsisPortal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -31512,6 +32124,12 @@
             },
             {
               "kind": "field",
+              "name": "pageSizePortal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "bars",
               "privacy": "private",
               "readonly": true,
@@ -31525,6 +32143,53 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureExit",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "OverlayExit"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "open",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "description": "在机器挂载前建立 Presence，让省略位行为资源与真实退场共享租约。"
+            },
+            {
+              "kind": "method",
+              "name": "ensurePageSizeExit",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "OverlayExit"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "open",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
                 }
               }
             },
@@ -31905,8 +32570,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-pagination",
           "customElement": true,
@@ -32239,6 +32904,32 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<PasswordInputSchema>(this, passwordInputMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
             },
             {
               "kind": "method",
@@ -32810,6 +33501,32 @@
               "default": "new MachineController<PinInputSchema>(this, pinInputMachine, () => this.machineProps())"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -33135,6 +33852,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -33250,6 +33975,12 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -33336,6 +34067,35 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureExit",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "OverlayExit"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "open",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "description": "机器挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。"
             },
             {
               "kind": "field",
@@ -33455,8 +34215,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-popconfirm",
           "customElement": true,
@@ -33598,6 +34358,14 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
             {
               "kind": "field",
               "name": "partContract",
@@ -33742,6 +34510,12 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -33778,6 +34552,16 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
                 }
               }
             },
@@ -33919,8 +34703,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-popover",
           "customElement": true,
@@ -35892,6 +36676,42 @@
               "default": "new MachineController<RadioGroupSchema>(this, radioGroupMachine, () => this.machineProps())"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
+            },
+            {
+              "kind": "method",
+              "name": "controlState",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ResolvedFormControlState"
+                }
+              }
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -36350,6 +37170,32 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<RatingSchema>(this, ratingMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；Rating 仅消费公开的禁用、只读、必填三轴。"
             },
             {
               "kind": "method",
@@ -38400,6 +39246,42 @@
               "default": "new MachineController<SegmentedSchema>( this, segmentedMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
+            },
+            {
+              "kind": "method",
+              "name": "controlState",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ResolvedFormControlState"
+                }
+              }
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -38816,6 +39698,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -39065,6 +39955,12 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "ownsText",
               "privacy": "private",
               "readonly": true,
@@ -39114,6 +40010,31 @@
               "description": "作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ]
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -39130,6 +40051,16 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
                 }
               }
             },
@@ -39517,8 +40448,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-select",
           "customElement": true,
@@ -40029,6 +40960,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -40209,7 +41148,7 @@
               "name": "exits",
               "privacy": "private",
               "readonly": true,
-              "default": "new Map<HTMLElement, OverlayExit>()",
+              "default": "new Map<HTMLElement, { value: string, gate: OverlayExit, portal: AnchoredPortalController }>()",
               "description": "每个弹出面板的定位层一份退场闸门：退场动画播完才真收。"
             },
             {
@@ -40241,6 +41180,16 @@
             },
             {
               "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "findPopoutPart",
               "privacy": "private",
               "return": {
@@ -40250,9 +41199,9 @@
               },
               "parameters": [
                 {
-                  "name": "svc",
+                  "name": "value",
                   "type": {
-                    "text": "Service<SideNavSchema>"
+                    "text": "string"
                   }
                 },
                 {
@@ -40284,6 +41233,79 @@
                   "name": "svc",
                   "type": {
                     "text": "Service<SideNavSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setPresence",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "presence",
+                  "type": {
+                    "text": "OverlayExit['presence']"
+                  }
+                },
+                {
+                  "name": "connected",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "description": "WC 只报告真实面板 Presence 的接入与离场，资源会话由 Headless 按 value 记账。"
+            },
+            {
+              "kind": "method",
+              "name": "releaseExit",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "entry",
+                  "type": {
+                    "text": "{ value: string, gate: OverlayExit, portal: AnchoredPortalController }"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
                   }
                 }
               ]
@@ -40422,8 +41444,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-side-nav",
           "customElement": true,
@@ -40654,6 +41676,32 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<SignaturePadSchema>( this, signaturePadMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；SignaturePad 消费公开的四条轴。"
             },
             {
               "kind": "method",
@@ -41330,6 +42378,32 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<SliderSchema>( this, sliderMachine, () => this.machineProps(), { scope: this.sliderScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；本组件仅消费公开的三条轴。"
             },
             {
               "kind": "method",
@@ -43372,6 +44446,32 @@
               "default": "new MachineController<SwitchSchema>(this, switchMachine, () => this.machineProps())"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -45298,6 +46398,42 @@
             },
             {
               "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field/Form 只交状态；TagGroup 仅消费公开的禁用、只读两轴。"
+            },
+            {
+              "kind": "method",
+              "name": "controlState",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "FormControlState"
+                }
+              }
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -46289,6 +47425,32 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<TagsInputSchema>(this, tagsInputMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
             },
             {
               "kind": "method",
@@ -47597,6 +48759,32 @@
               "default": "new MachineController<TimeFieldSchema>(this, timeFieldMachine, () => this.machineProps())"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -47990,6 +49178,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -48256,6 +49452,12 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -48274,6 +49476,31 @@
               "default": "new MachineController<TimePickerSchema>( this, timePickerMachine, () => this.machineProps(), { scope: this.pickerScope, onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ]
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -48290,6 +49517,16 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
                 }
               }
             },
@@ -48557,8 +49794,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-time-picker",
           "customElement": true,
@@ -50265,6 +51502,42 @@
               "default": "new MachineController<ToggleGroupSchema>(this, toggleGroupMachine, () => this.machineProps())"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；ToggleGroup 仅消费公开的禁用轴。"
+            },
+            {
+              "kind": "method",
+              "name": "disabledState",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -51610,6 +52883,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -51728,6 +53009,21 @@
             },
             {
               "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "tooltipScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "config",
               "type": {
                 "text": "RuntimeConfig | null"
@@ -51735,6 +53031,12 @@
               "privacy": "private",
               "default": "null",
               "description": "消解层与退场闸门共用一份环境包。"
+            },
+            {
+              "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
             },
             {
               "kind": "field",
@@ -51747,7 +53049,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<TooltipSchema>( this, tooltipMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+              "default": "new MachineController<TooltipSchema>( this, tooltipMachine, () => this.machineProps(), { scope: this.tooltipScope, onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
               "kind": "method",
@@ -51766,6 +53068,16 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
                 }
               }
             },
@@ -51896,8 +53208,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-tooltip",
           "customElement": true,
@@ -52029,6 +53341,14 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
             {
               "kind": "field",
               "name": "partContract",
@@ -52227,6 +53547,12 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "ownsText",
               "privacy": "private",
               "readonly": true,
@@ -52287,6 +53613,16 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
                 }
               }
             },
@@ -52518,8 +53854,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-tour",
           "customElement": true,
@@ -52952,6 +54288,32 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<TransferSchema>(this, transferMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；Transfer 仅消费公开的禁用、只读、无效三轴。"
             },
             {
               "kind": "method",
@@ -53497,6 +54859,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -53780,6 +55150,12 @@
             },
             {
               "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "ownsValueText",
               "privacy": "private",
               "readonly": true,
@@ -53826,6 +55202,31 @@
               "description": "树的自绘条：与 content 同级挂在已经 fixed 的 positioner 上。\n两条轴都摆——深层节点靠缩进往行末推，横向溢出与纵向一样是常态；\n横条的正负按排版方向算，而组件不读计算样式，把作者写的那份显式交过去。"
             },
             {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ]
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -53842,6 +55243,16 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
                 }
               }
             },
@@ -54143,8 +55554,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-tree-select",
           "customElement": true,

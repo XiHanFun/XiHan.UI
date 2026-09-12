@@ -13,10 +13,9 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { connectTour, tourAnatomy, tourMachine, tourMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
-import { PortalLeaseController } from '../runtime/portal-lease-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -72,7 +71,10 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart close-trigger - 关闭（只关，不算放弃）
  * @csspart arrow - 指向目标的箭头（aria-hidden；居中步带 hidden）
  */
-export class XhTourElement extends XhElement {
+export class XhTourElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: tourAnatomy, meta: tourMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -121,7 +123,7 @@ export class XhTourElement extends XhElement {
   private backdropNode: HTMLElement | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，气泡的退场动画播完才真收。 */
   private exit: OverlayExit | null = null
-  private readonly portal = new PortalLeaseController({
+  private readonly portal = this.createPortalLeaseController({
     name: 'Tour',
     config: () => this.config,
     source: () => this.getPart('root'),

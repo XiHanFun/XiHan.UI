@@ -5,10 +5,9 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { connectDrawer, drawerAnatomy, drawerMachine, drawerMeta } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
-import { PortalLeaseController } from '../runtime/portal-lease-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
@@ -48,7 +47,10 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart footer - 面板尾：动作按钮所在的那一段，不跟着正文滚
  * @csspart close-trigger - 关闭按钮
  */
-export class XhDrawerElement extends XhElement {
+export class XhDrawerElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: drawerAnatomy, meta: drawerMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -87,7 +89,7 @@ export class XhDrawerElement extends XhElement {
   private contentNode: HTMLElement | null = null
   private exit: OverlayExit | null = null
   private backdropNode: HTMLElement | null = null
-  private readonly portal = new PortalLeaseController({
+  private readonly portal = this.createPortalLeaseController({
     name: 'Drawer 视口模态',
     config: () => this.config,
     source: () => this,

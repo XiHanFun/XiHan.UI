@@ -5,10 +5,9 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { connectTooltip, tooltipAnatomy, tooltipMachine, tooltipMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
-import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 字符串属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在机器。
 // Lit 默认转换器会在属性被移除时把值落成 null，那样就再也表达不了"没写过"。
@@ -46,7 +45,10 @@ const NUMBER_CONVERTER = {
  * @csspart content - role=tooltip 的提示内容（收起时 hidden）
  * @csspart arrow - 指向锚点的箭头，装饰性
  */
-export class XhTooltipElement extends XhElement {
+export class XhTooltipElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: tooltipAnatomy, meta: tooltipMeta }
 
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
@@ -85,7 +87,7 @@ export class XhTooltipElement extends XhElement {
 
   /** 消解层与退场闸门共用一份环境包。 */
   private config: RuntimeConfig | null = null
-  private readonly portal = new AnchoredPortalController({
+  private readonly portal = this.createAnchoredPortalController({
     name: 'Tooltip',
     config: () => this.config,
     source: () => this.getPart('trigger'),

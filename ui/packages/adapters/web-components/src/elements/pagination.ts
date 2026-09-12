@@ -5,10 +5,9 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { connectPagination, paginationAnatomy, paginationMachine, paginationMeta, paginationPageSizeSelectProps, selectMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
-import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 数值属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在 connect。
@@ -78,7 +77,10 @@ interface PageSizeNodes {
  * @csspart ellipsis-trigger - 折进去那几页的入口，须自带 side 属性（start / end）；承载 data-side 与 aria-expanded
  * @csspart page-size-select - 每页条数控制器的挂载点，写一个空 `<div>` 即可；里头那套下拉的角色节点由元素自己建
  */
-export class XhPaginationElement extends XhElement {
+export class XhPaginationElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: paginationAnatomy, meta: paginationMeta }
 
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
@@ -126,7 +128,7 @@ export class XhPaginationElement extends XhElement {
   /** 退场闸门：收起从跟着展开态走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
   private ellipsisPortalSource: HTMLElement | null = null
-  private readonly ellipsisPortal = new AnchoredPortalController({
+  private readonly ellipsisPortal = this.createAnchoredPortalController({
     name: 'Pagination ellipsis',
     config: () => this.config,
     source: () => this.ellipsisPortalSource,
@@ -165,7 +167,7 @@ export class XhPaginationElement extends XhElement {
   private pageSizeMount: HTMLElement | null = null
   /** 下拉浮层的退场闸门，与省略位那层各走各的。 */
   private pageSizeExit: OverlayExit | null = null
-  private readonly pageSizePortal = new AnchoredPortalController({
+  private readonly pageSizePortal = this.createAnchoredPortalController({
     name: 'Pagination page size',
     config: () => this.config,
     source: () => this.pageSizeNodes?.control ?? null,

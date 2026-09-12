@@ -16,10 +16,9 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { connectTimePicker, resolveFormControlState, timePickerAnatomy, timePickerMachine, timePickerMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
-import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -101,7 +100,10 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @csspart item - role=option 的一格，须自带 value 属性（两位补零的显示串；上下午列写 '00' / '01'）
  * @csspart hidden-input - type=hidden 的表单出口，值是完整 ISO 串
  */
-export class XhTimePickerElement extends XhElement {
+export class XhTimePickerElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: timePickerAnatomy, meta: timePickerMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -166,7 +168,7 @@ export class XhTimePickerElement extends XhElement {
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
-  private readonly portal = new AnchoredPortalController({
+  private readonly portal = this.createAnchoredPortalController({
     name: 'TimePicker',
     config: () => this.config,
     source: () => this.getPart('control'),

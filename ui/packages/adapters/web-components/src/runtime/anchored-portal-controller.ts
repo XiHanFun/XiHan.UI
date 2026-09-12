@@ -6,6 +6,8 @@ export interface AnchoredPortalControllerOptions {
   name: string
   /** 当前宿主所属 Document 的 RuntimeConfig。 */
   config: () => RuntimeConfig | null
+  /** 实例或 xh-config 声明的 Portal 容器解析器；缺席时才回落 RuntimeConfig。 */
+  portalContainer?: () => (() => Element | null) | undefined
   /** 视觉环境来源，通常是 trigger；组合输入使用 control。 */
   source: () => Element | null
   /** 被物理搬迁的 positioner 根。 */
