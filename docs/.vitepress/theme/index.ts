@@ -18,6 +18,11 @@ export default {
     // 框架切换器排在站点标题之后，全站一份、所有示例跟着它走
     return h(Theme.Layout, null, {
       "nav-bar-content-before": () => h(XhFrameworkSwitch),
+      "sidebar-nav-before": () => h(
+        "div",
+        { class: "xh-framework-mobile" },
+        h(XhFrameworkSwitch),
+      ),
       // 每页正文上方一条取 Markdown 的直链，指向构建期落在同路径的 .md
       "doc-before": () => h(XhPageMarkdown),
       "layout-bottom": () => h(XhDocsScrollbars),
