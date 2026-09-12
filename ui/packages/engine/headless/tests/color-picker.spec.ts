@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
 
 import type { ReactiveRuntime, Service } from '@xihan-ui/core'
+import type { ExitLease } from '@xihan-ui/core/presence'
 import type { ColorPickerChannel, ColorPickerSchema, ColorPickerServices } from '../src/color-picker'
 import type { SliderSchema } from '../src/slider'
-import { createService, normalizeProps } from '@xihan-ui/core'
+import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { colorPickerChannelSliderProps, colorPickerMachine, colorPickerParse, connectColorPicker } from '../src/color-picker'
@@ -43,6 +45,36 @@ function makeService(props: Props = {}): Service<ColorPickerSchema> {
 
 function api(service: Service<ColorPickerSchema>) {
   return connectColorPicker(servicesOf(service), normalizeProps)
+}
+
+/** 真实退场资源用的最小 DOM 与行为层接线。 */
+function makePresenceService() {
+  const runtime = createVanillaRuntime()
+  const service = attachSliders(createService(colorPickerMachine, { props: () => ({}), runtime }), runtime)
+  const root = document.createElement('div')
+  const trigger = document.createElement('button')
+  const positioner = document.createElement('div')
+  const content = document.createElement('div')
+  content.appendChild(document.createElement('button'))
+  positioner.appendChild(content)
+  root.append(trigger, positioner)
+  document.body.appendChild(root)
+  const config = createRuntimeConfig()
+  const presence = createPresence({ config, open: false, onRenderedChange: () => {} })
+  service.refs.set('config', config)
+  service.refs.set('presence', presence)
+  service.refs.set('registerLayer', () => config.layerRegistry.register({
+    kind: 'popover',
+    node: () => content,
+    branches: () => [trigger],
+    isModal: () => false,
+    surfaces: () => [],
+  }))
+  service.refs.set('getAnchorEl', () => trigger)
+  service.refs.set('getFloatingEl', () => positioner)
+  service.refs.set('getContentEl', () => content)
+  runtime.start()
+  return { config, content, presence, root, runtime, service }
 }
 
 /**
@@ -166,6 +198,41 @@ function releasePointer(): void {
 afterEach(() => {
   document.body.innerHTML = ''
   Reflect.deleteProperty(window, 'EyeDropper')
+})
+
+describe('colorPicker 真实退场资源', () => {
+  it('逻辑关闭立即失活，行为资源等 Presence 完成才释放；中途重开复用原 Layer', () => {
+    const h = makePresenceService()
+    const leases: ExitLease[] = []
+    const stopExit = h.presence.onBeforeExit(() => {
+      leases.push(h.presence.claimExit(`color-picker exit ${leases.length + 1}`))
+    })
+
+    api(h.service).setOpen(true)
+    const original = h.config.layerRegistry.list()[0]
+    expect(original).toBeDefined()
+    api(h.service).setOpen(false)
+    const closing = api(h.service).getContentProps() as Dict
+    expect(closing.inert).toBe(true)
+    expect(closing['aria-hidden']).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+    h.presence.update(false)
+    expect(leases).toHaveLength(1)
+
+    api(h.service).setOpen(true)
+    expect(leases[0]!.settled).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+
+    api(h.service).setOpen(false)
+    h.presence.update(false)
+    leases[1]!.done()
+    expect(h.config.layerRegistry.list()).toHaveLength(0)
+
+    stopExit()
+    h.presence.dispose()
+    h.runtime.stop()
+    h.root.remove()
+  })
 })
 
 describe('colorPickerMachine 值', () => {

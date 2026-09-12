@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
+import type { ExitLease } from '@xihan-ui/core/presence'
 import type { HoverCardOpenChangeDetails, HoverCardSchema } from '../src/hover-card'
 import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
@@ -133,6 +135,44 @@ function press(el: HTMLElement, key: string): void {
 
 beforeEach(() => {
   vi.useFakeTimers()
+})
+
+describe('hoverCard 真实退场资源', () => {
+  it('逻辑关闭立即失活，行为资源等 Presence 完成才释放；中途重开复用原 Layer', () => {
+    const c = makeCard()
+    wireLayer(c)
+    const config = c.service.refs.get('config')!
+    const presence = createPresence({ config, open: false, onRenderedChange: () => {} })
+    c.service.refs.set('presence', presence)
+    const leases: ExitLease[] = []
+    const stopExit = presence.onBeforeExit(() => {
+      leases.push(presence.claimExit(`hover-card exit ${leases.length + 1}`))
+    })
+
+    c.api().setOpen(true)
+    const original = config.layerRegistry.list()[0]
+    expect(original).toBeDefined()
+    c.api().setOpen(false)
+    const closing = c.api().getContentProps() as Record<string, unknown>
+    expect(closing.inert).toBe(true)
+    expect(closing['aria-hidden']).toBe(true)
+    expect(config.layerRegistry.list()).toEqual([original])
+    presence.update(false)
+    expect(leases).toHaveLength(1)
+
+    c.api().setOpen(true)
+    expect(leases[0]!.settled).toBe(true)
+    expect(config.layerRegistry.list()).toEqual([original])
+
+    c.api().setOpen(false)
+    presence.update(false)
+    leases[1]!.done()
+    expect(config.layerRegistry.list()).toHaveLength(0)
+
+    stopExit()
+    presence.dispose()
+    c.stop()
+  })
 })
 
 afterEach(() => {

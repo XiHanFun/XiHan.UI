@@ -3,10 +3,10 @@ import type { SliderSchema } from '../slider'
 import type { ColorPickerChannel, ColorPickerHsva } from './color-picker.color'
 import type { ColorPickerPoint } from './color-picker.geometry'
 import type { ColorPickerDragTarget, ColorPickerSchema } from './color-picker.types'
-import { createDismissLayer, createFocusScope, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
-import { setupLayerTransaction } from '../shared/overlay-shell'
+import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 import {
   COLOR_PICKER_FALLBACK,
   colorPickerApplyInput,
@@ -162,6 +162,7 @@ export const colorPickerMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     position: null,
     getAnchorEl: () => null,
     getFloatingEl: () => null,
@@ -169,6 +170,8 @@ export const colorPickerMachine = createMachine({
     getAreaEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
+  effects: ['trackLayer'],
   // 挂载即问一次环境有没有屏幕取色，按钮从首帧起就要正确禁用
   entry: ['syncEyeDropperSupport'],
   // 开合受控时用户事件只发意图、不自改状态；宿主写回 open 后由这里派发影子事件无条件回写
@@ -204,8 +207,8 @@ export const colorPickerMachine = createMachine({
     },
     open: {
       initial: 'idle',
-      // 进入 open：定位 → 消解 + 焦点。退出时逆序拆
-      effects: ['trackPosition', 'trackLayer'],
+      // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackPosition'],
       // 收起时丢掉没收下的草稿，再展开时输入框显示当前颜色
       exit: ['clearDraft'],
       on: {
@@ -427,36 +430,37 @@ export const colorPickerMachine = createMachine({
         }
       },
 
-      // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape
-      trackLayer: ({ refs, send, flush }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
-        // 无 DOM 环境不挂副作用，状态机照常转移
-        if (!config || !registerLayer)
-          return undefined
-
-        return setupLayerTransaction(registerLayer, (layer, defer) => {
-          const dismiss = createDismissLayer({
-            config,
-            layer,
+      // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
+      trackLayer: ({ refs, send, flush, scope, state, track }) => {
+        let reactivateFocus: (() => void) | null = null
+        return trackPresenceResources({
+          presence: () => refs.get('presence'),
+          open: () => state.matches('open'),
+          track,
+          acquire: () => trackOverlayLayer({
+            // 无 DOM 环境不挂副作用，状态机照常转移
+            config: refs.get('config'),
+            registerLayer: refs.get('registerLayer'),
+            flush,
+            active: () => state.matches('open'),
             onDismiss: () => send({ type: 'CLOSE' }),
-          })
-          defer(() => dismiss.dispose())
-
-          // 展开即把焦点送进浮层；非模态，Tab 走得出去后由消解层判定是否收起
-          const focus = createFocusScope({
-            config,
-            layer,
-            container: () => refs.get('getContentEl')(),
-            trapped: () => false,
-            loop: false,
-            restoreFocus: () => true,
-            // 归还落点显式给触发器：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-            // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
-            restoreTarget: () => refs.get('getAnchorEl')(),
-          })
-          defer(() => focus.dispose())
-        }, { registry: config.layerRegistry, flush })
+            focusScope: {
+              // 展开即把焦点送进浮层；非模态，Tab 走得出去后由消解层判定是否收起
+              container: () => refs.get('getContentEl')(),
+              restoreFocus: () => true,
+              // 归还落点显式给触发器：Safari 指针激活时也不退回 body。
+              restoreTarget: () => refs.get('getAnchorEl')(),
+              onReactivate: reactivate => reactivateFocus = reactivate,
+            },
+          }),
+          onReopen: () => {
+            const activate = reactivateFocus
+            flush(() => scope.getWin().requestAnimationFrame(() => {
+              if (state.matches('open') && reactivateFocus === activate)
+                activate?.()
+            }))
+          },
+        })
       },
 
       // 跟手交给指针会话：监听挂在文档上，挂在取色区上指针一离开就断，系统收走指针也会收尾
