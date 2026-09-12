@@ -1,4 +1,4 @@
-<!-- 行内文字 | variant 换形态：muted 弱化、strong 加重、code 等宽 -->
+<!-- 文本变体 | 设置正文、辅助、强调、代码和链接样式 -->
 <script setup lang="ts">
 import {
   XhTypographyLink,
@@ -10,13 +10,10 @@ import {
 
 <template>
   <XhTypographyRoot>
-    <XhTypographyParagraph>
-      不写 variant 就是一段普通正文，<XhTypographyText variant="muted">这一段弱化</XhTypographyText>，
-      <XhTypographyText variant="strong">这一段加重</XhTypographyText>，
-      档位写在 <XhTypographyText as="code" variant="code">data-level</XhTypographyText> 上。
-    </XhTypographyParagraph>
-    <XhTypographyParagraph>
-      链接自带下划线，<XhTypographyLink href="#">不只靠颜色区分</XhTypographyLink>。
-    </XhTypographyParagraph>
+    <XhTypographyParagraph>默认正文</XhTypographyParagraph>
+    <XhTypographyParagraph><XhTypographyText variant="muted">辅助信息</XhTypographyText></XhTypographyParagraph>
+    <XhTypographyParagraph><XhTypographyText variant="strong">重要内容</XhTypographyText></XhTypographyParagraph>
+    <XhTypographyParagraph><XhTypographyText as="code" variant="code">pnpm add @xihan-ui/vue</XhTypographyText></XhTypographyParagraph>
+    <XhTypographyParagraph><XhTypographyLink href="#">查看文档</XhTypographyLink></XhTypographyParagraph>
   </XhTypographyRoot>
 </template>
