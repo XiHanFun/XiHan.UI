@@ -28,12 +28,6 @@ import {
   XhFloatingPanelTitle,
   XhImageViewerContent,
   XhImageViewerRoot,
-  XhTourBackdrop,
-  XhTourContent,
-  XhTourPositioner,
-  XhTourRoot,
-  XhTourSpotlight,
-  XhTourTitle,
   XhPopoverContent,
   XhPopoverPositioner,
   XhPopoverRoot,
@@ -51,6 +45,12 @@ import {
   XhToolCallContent,
   XhToolCallRoot,
   XhToolCallTrigger,
+  XhTourBackdrop,
+  XhTourContent,
+  XhTourPositioner,
+  XhTourRoot,
+  XhTourSpotlight,
+  XhTourTitle,
 } from '../../src'
 // 皮肤要一起加载：这里查的就是皮肤给出的 animationName 与 display
 import '@xihan-ui/tokens/tokens.css'
@@ -611,6 +611,25 @@ describe('select 退场', () => {
     await settle()
 
     expect(closing.style.display, '动画结束后应当由宿主写内联 display:none').toBe('none')
+  })
+
+  it('内容全部有限退场完成前保留 Layer，逻辑关闭立即退出交互树', async () => {
+    installLongExit('select')
+    const setOpen = await mount(tree)
+    await setOpen(false)
+    await new Promise(resolve => requestAnimationFrame(resolve))
+
+    const content = part('select', 'content')
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    const animations = finiteAnimations(content)
+    expect(animations).toHaveLength(2)
+    animations[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    animations[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
   })
 })
 

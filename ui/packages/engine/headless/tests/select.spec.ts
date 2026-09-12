@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
 import type { Anchor, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
+import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
 import type { SelectApi, SelectSchema } from '../src/select'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { connectSelect, selectMachine } from '../src/select'
@@ -51,6 +53,8 @@ function spread(el: HTMLElement, props: Record<string, unknown>): void {
 
 interface Harness {
   api: () => SelectApi
+  config: RuntimeConfig
+  presence: PresenceHandle | null
   root: HTMLElement
   form: HTMLFormElement | null
   positioner: HTMLElement
@@ -83,6 +87,8 @@ interface MountOptions {
   position?: PositionEnginePort
   /** 本层被移出层栈时调一次，用来记拆除顺序。 */
   onLayerDispose?: () => void
+  /** 用真实 Presence 驱动行为资源的退出租约。 */
+  withPresence?: boolean
 }
 
 const runtimes: VanillaRuntime[] = []
@@ -147,6 +153,9 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   })
 
   const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+  const presence = options.withPresence
+    ? createPresence({ config, open: (initial.open ?? initial.defaultOpen) ?? false, onRenderedChange: () => {} })
+    : null
   service.refs.set('config', config)
   service.refs.set('registerLayer', () => {
     const handle = config.layerRegistry.register({
@@ -164,6 +173,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
       },
     }
   })
+  service.refs.set('presence', presence)
   if (options.position)
     service.refs.set('position', options.position)
   service.refs.set('getAnchorEl', () => trigger)
@@ -210,6 +220,8 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
 
   return {
     api: () => connectSelect(service, normalizeProps),
+    config,
+    presence,
     root,
     form,
     positioner,
@@ -269,6 +281,44 @@ function submitted(el: HTMLSelectElement): string[] {
 afterEach(() => {
   for (const runtime of runtimes.splice(0)) runtime.stop()
   document.body.innerHTML = ''
+})
+
+describe('select 真实退场资源', () => {
+  it('逻辑关闭立即撤出交互树，Layer、DismissableLayer 与 FocusScope 等到 Presence 完成才释放', () => {
+    const h = mount({ defaultOpen: true }, { withPresence: true })
+    const presence = h.presence!
+    expect(h.config.layerRegistry.list()).toHaveLength(1)
+
+    let firstExit: ExitLease | undefined
+    const stopFirstExit = presence.onBeforeExit(() => {
+      firstExit = presence.claimExit('select test exit')
+    })
+    h.send({ type: 'CLOSE' })
+    expect(h.state()).toBe('closed')
+    expect(h.content.getAttribute('inert')).toBe('true')
+    expect(h.content.getAttribute('aria-hidden')).toBe('true')
+    expect(h.config.layerRegistry.list()).toHaveLength(1)
+
+    presence.update(false)
+    expect(firstExit?.settled).toBe(false)
+    expect(h.config.layerRegistry.list()).toHaveLength(1)
+
+    // 退场中重开沿用同一层登记，并结清旧视觉租约。
+    h.send({ type: 'OPEN' })
+    expect(firstExit?.settled).toBe(true)
+    expect(h.config.layerRegistry.list()).toHaveLength(1)
+    stopFirstExit()
+
+    let finalExit: ExitLease | undefined
+    const stopFinalExit = presence.onBeforeExit(() => {
+      finalExit = presence.claimExit('select final exit')
+    })
+    h.send({ type: 'CLOSE' })
+    presence.update(false)
+    finalExit?.done()
+    expect(h.config.layerRegistry.list()).toHaveLength(0)
+    stopFinalExit()
+  })
 })
 
 describe('selectMachine 值的形状与不变量', () => {
