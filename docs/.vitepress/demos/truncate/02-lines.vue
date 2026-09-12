@@ -1,23 +1,12 @@
-<!-- 行数 | lines 为 1 走单行省略，大于 1 按行数裁，末行收省略号 -->
+<!-- 多行截断 | 限制文本显示两行 -->
 <script setup lang="ts">
 import { XhTruncate } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const lines = ref(2);
-const text
-  = "这条商品说明写得很长：材质为 100% 长绒棉，机洗需用中性洗涤剂，不可漂白，"
-    + "低温熨烫，深浅色分开洗涤，首次下水建议单独清洗以免染色。";
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px; inline-size: 100%; max-inline-size: 420px">
-    <label style="display: flex; align-items: center; gap: 8px">
-      夹几行
-      <input v-model.number="lines" type="range" min="1" max="5" step="1">
-      {{ lines }}
-    </label>
-
-    <!-- 换行数就是换了一把尺，组件会自己重量一次，不必手动触发 -->
-    <XhTruncate :lines="lines">{{ text }}</XhTruncate>
+  <div style="inline-size: 360px; max-inline-size: 100%">
+    <XhTruncate :lines="2">
+      组件状态与无障碍逻辑由无头内核统一管理，Vue、React 与 Web Components 适配器共享同一份行为定义。
+    </XhTruncate>
   </div>
 </template>
