@@ -147,10 +147,9 @@ function stateValue(source, state, field) {
 
 function stateDeclarations(source, state, focus = false) {
   const value = source.states[state]
-  const fields = state === 'rest'
-    ? STATE_FIELDS
-    : STATE_FIELDS.filter(field => value[field] !== source.states.rest[field])
-  const lines = fields.map((field) => {
+  // 默认值相同不代表状态槽可以省略：组件可能只覆盖 hover/focus/loading 某一档。
+  // 每个状态都完整发出桥接声明，保证 recipe JSON 中登记的状态槽全部真实可消费。
+  const lines = STATE_FIELDS.map((field) => {
     const property = field === 'highlight' ? '--xh-_action-current-highlight' : CSS_PROPERTY[field]
     return `    ${property}: ${stateValue(source, state, field)};`
   })
