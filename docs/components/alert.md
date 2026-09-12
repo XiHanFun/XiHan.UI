@@ -1,4 +1,4 @@
-# Alert <Badge type="info" text="警告提示" />
+# Alert 警告提示
 
 页面里常驻的一条提示：说明一件与当前上下文有关的事。
 

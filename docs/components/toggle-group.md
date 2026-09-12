@@ -1,4 +1,4 @@
-# ToggleGroup <Badge type="info" text="切换按钮组" />
+# ToggleGroup 切换按钮组
 
 一排连在一起的切换按钮，整组共一个值：单选时是分段控件，多选时是一排可同时按下的工具钮。
 

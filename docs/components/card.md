@@ -1,4 +1,4 @@
-# Card <Badge type="info" text="卡片" />
+# Card 卡片
 
 一块有边界的内容容器：封面、标题、正文与页脚各占一段。
 

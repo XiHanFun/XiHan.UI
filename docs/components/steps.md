@@ -1,4 +1,4 @@
-# Steps <Badge type="info" text="步骤条" />
+# Steps 步骤条
 
 把一件事拆成有先后的几步，并标出走到哪一步了。
 

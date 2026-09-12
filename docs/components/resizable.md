@@ -1,4 +1,4 @@
-# Resizable <Badge type="info" text="可调容器" />
+# Resizable 可调容器
 
 一块能拖着改尺寸的区域，八条边都能推，键盘也能推。
 

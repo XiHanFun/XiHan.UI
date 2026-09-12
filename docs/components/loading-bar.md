@@ -1,4 +1,4 @@
-# LoadingBar <Badge type="info" text="加载条" />
+# LoadingBar 加载条
 
 页面顶部那条细进度线：表示"正在去往别处"或"正在取数据"。
 

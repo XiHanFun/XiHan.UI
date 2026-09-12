@@ -1,4 +1,4 @@
-# Tour <Badge type="info" text="引导" />
+# Tour 引导
 
 一串聚光灯步骤，逐个指向界面上的元素并解释它。
 

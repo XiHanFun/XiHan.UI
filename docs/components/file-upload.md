@@ -1,4 +1,4 @@
-# FileUpload <Badge type="info" text="文件上传" />
+# FileUpload 文件上传
 
 选择文件、拖放文件，并把已选与已传的文件列出来。
 

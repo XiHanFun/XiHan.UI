@@ -1,4 +1,4 @@
-# ContextMenu <Badge type="info" text="右键菜单" />
+# ContextMenu 右键菜单
 
 在触发区上右键（触摸端长按）弹出的命令菜单，钉在按下去的那一点上。
 

@@ -1,4 +1,4 @@
-# CheckboxGroup <Badge type="info" text="复选框组" />
+# CheckboxGroup 复选框组
 
 一组多选项共一个值数组，附带全选与半选。
 

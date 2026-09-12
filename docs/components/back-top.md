@@ -1,4 +1,4 @@
-# BackTop <Badge type="info" text="回到顶部" />
+# BackTop 回到顶部
 
 滚过一段距离后露面的按钮，点它滚回顶部。
 

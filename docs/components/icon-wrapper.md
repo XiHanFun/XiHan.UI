@@ -1,4 +1,4 @@
-# IconWrapper <Badge type="info" text="图标块" />
+# IconWrapper 图标块
 
 给图元配一个定直径的底座：圆形或圆角方形，图元恒在正中。
 

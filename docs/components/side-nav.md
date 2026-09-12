@@ -1,4 +1,4 @@
-# SideNav <Badge type="info" text="侧栏导航" />
+# SideNav 侧栏导航
 
 后台侧边那棵导航树：分支可展开，选中落在叶子上并一路点亮祖先枝。
 

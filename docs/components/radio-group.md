@@ -1,4 +1,4 @@
-# RadioGroup <Badge type="info" text="单选组" />
+# RadioGroup 单选组
 
 一组互斥选项共一个值，所有选项同时可见。单个单选钮是这里的 `item` 部件，不另立组件——它脱离组既没有互斥对象，也无法取消选中。
 

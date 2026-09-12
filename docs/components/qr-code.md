@@ -1,4 +1,4 @@
-# QrCode <Badge type="info" text="二维码" />
+# QrCode 二维码
 
 把一段文本画成二维码。
 

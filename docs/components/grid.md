@@ -1,4 +1,4 @@
-# Grid <Badge type="info" text="栅格" />
+# Grid 栅格
 
 二维排布容器：`cols` 定分几列，每一格按文档序依次落格。
 

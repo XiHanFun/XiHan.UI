@@ -1,4 +1,4 @@
-# Editable <Badge type="info" text="就地编辑" />
+# Editable 就地编辑
 
 一段文本平时是只读的展示，点一下就地变成输入框。
 

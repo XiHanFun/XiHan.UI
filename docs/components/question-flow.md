@@ -1,4 +1,4 @@
-# QuestionFlow <Badge type="info" text="澄清问卷" />
+# QuestionFlow 澄清问卷
 
 动手之前先问几句：一次一题，人逐题作答，答完一起提交。
 

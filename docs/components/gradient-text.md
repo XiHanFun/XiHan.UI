@@ -1,4 +1,4 @@
-# GradientText <Badge type="info" text="渐变文字" />
+# GradientText 渐变文字
 
 把渐变裁进字形里：颜色只出现在笔画上，不铺成一块底色。
 

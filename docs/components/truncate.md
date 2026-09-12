@@ -1,4 +1,4 @@
-# Truncate <Badge type="info" text="文本截断" />
+# Truncate 文本截断
 
 放不下的文本收成省略号，并把"到底有没有被裁掉"如实报出来。
 

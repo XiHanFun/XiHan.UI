@@ -1,4 +1,4 @@
-# Table <Badge type="info" text="表格" />
+# Table 表格
 
 多行同构记录按列排开，支持排序、选择、展开与吸顶。
 

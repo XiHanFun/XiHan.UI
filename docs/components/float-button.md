@@ -1,4 +1,4 @@
-# FloatButton <Badge type="info" text="浮动按钮" />
+# FloatButton 浮动按钮
 
 钉在视口某一角的动作入口：平时是一枚触发器，展开后长出一列动作。
 

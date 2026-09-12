@@ -1,4 +1,4 @@
-# Tabs <Badge type="info" text="标签页" />
+# Tabs 标签页
 
 在同一块区域里切换几组并列的内容，同时只显示一组。
 

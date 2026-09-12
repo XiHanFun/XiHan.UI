@@ -1,4 +1,4 @@
-# PageHeader <Badge type="info" text="页头" />
+# PageHeader 页头
 
 一页内容的抬头：面包屑、返回位、头像位、标题、副标题、行尾操作与页脚各占一段。
 

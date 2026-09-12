@@ -1,4 +1,4 @@
-# Carousel <Badge type="info" text="走马灯" />
+# Carousel 走马灯
 
 在同一块区域里轮播若干张内容，一次显示一屏。
 

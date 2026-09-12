@@ -1,4 +1,4 @@
-# KbdGroup <Badge type="info" text="键帽组" />
+# KbdGroup 键帽组
 
 显示一组快捷键，不注册键盘监听。键名和连接符按平台格式化。
 

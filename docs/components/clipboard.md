@@ -1,4 +1,4 @@
-# Clipboard <Badge type="info" text="剪贴板" />
+# Clipboard 剪贴板
 
 把一段文本交给系统剪贴板，并把这次写入的结果如实报出来。
 

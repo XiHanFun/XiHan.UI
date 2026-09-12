@@ -1,4 +1,4 @@
-# Progress <Badge type="info" text="进度条" />
+# Progress 进度条
 
 表示一件事完成了多少。线形、环形与仪表盘三种画法。
 

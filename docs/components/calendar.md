@@ -1,4 +1,4 @@
-# Calendar <Badge type="info" text="日历" />
+# Calendar 日历
 
 一整月（或周 / 月 / 季 / 年）的网格，格子里可以放内容。
 

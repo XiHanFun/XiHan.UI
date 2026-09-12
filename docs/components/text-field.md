@@ -1,4 +1,4 @@
-# TextField <Badge type="info" text="文本输入" />
+# TextField 文本输入
 
 单行或多行的自由文本输入。
 

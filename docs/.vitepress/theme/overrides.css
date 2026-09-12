@@ -106,6 +106,10 @@ body {
   letter-spacing: -0.025em;
 }
 
+.vp-doc h2 .header-anchor {
+  top: 0;
+}
+
 .vp-doc h3 {
   margin-top: 34px;
   font-size: 18px;

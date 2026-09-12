@@ -1,4 +1,4 @@
-# Toolbar <Badge type="info" text="工具栏" />
+# Toolbar 工具栏
 
 把一排控件收成一组：整条在 Tab 序列里只占一个位子，条内改用方向键走。
 

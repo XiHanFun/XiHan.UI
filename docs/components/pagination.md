@@ -1,4 +1,4 @@
-# Pagination <Badge type="info" text="分页" />
+# Pagination 分页
 
 把一份很长的结果切成一页一页，并给出当前位置与去处。
 

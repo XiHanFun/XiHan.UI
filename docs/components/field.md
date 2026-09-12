@@ -1,4 +1,4 @@
-# Field <Badge type="info" text="表单字段" />
+# Field 表单字段
 
 把标签、控件、说明与错误文本绑成一组，并把 `id` 与 ARIA 关联接好。
 

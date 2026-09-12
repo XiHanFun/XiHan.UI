@@ -1,4 +1,4 @@
-# Checkbox <Badge type="info" text="复选框" />
+# Checkbox 复选框
 
 一个可以选中、不选中、也可以处于半选的独立开关。
 

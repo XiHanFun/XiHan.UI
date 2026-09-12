@@ -1,4 +1,4 @@
-# ButtonGroup <Badge type="info" text="按钮组" />
+# ButtonGroup 按钮组
 
 将一组相关操作组合为连续的按钮控件。
 

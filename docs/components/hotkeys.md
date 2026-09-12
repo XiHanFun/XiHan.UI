@@ -1,4 +1,4 @@
-# Hotkeys <Badge type="info" text="快捷键" />
+# Hotkeys 快捷键
 
 注册并匹配一组键盘组合，不渲染任何 DOM。可见键帽由[键帽](./kbd)与[键帽组](./kbd-group)负责，展示不会隐式安装全局监听。
 

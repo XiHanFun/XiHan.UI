@@ -1,4 +1,4 @@
-# MarkdownStream <Badge type="info" text="流式正文" />
+# MarkdownStream 流式正文
 
 把已经渲好的 Markdown 块列表投影成带稳定 key 的正文结构，按块的种类分流。
 
