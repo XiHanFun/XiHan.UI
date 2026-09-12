@@ -28,4 +28,8 @@ export const FORM_CONTROL_HOST_SELECTOR = [
   'xh-tags-input',
   'xh-checkbox-group',
   'xh-slider',
+  'xh-rating',
+  'xh-segmented',
+  'xh-toggle-group',
+  'xh-transfer',
 ].join(', ')

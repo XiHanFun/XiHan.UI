@@ -3,6 +3,7 @@ import type { ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGro
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideToggleGroup, useToggleGroupContext } from './context'
 import { useToggleGroup } from './use-toggle-group'
 
@@ -38,7 +39,7 @@ export const XhToggleGroupRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useToggleGroup(props as ToggleGroupProps, notify)
+    const ctx = useToggleGroup(useFormControlProps(props) as ToggleGroupProps, notify)
     provideToggleGroup(ctx)
     return () => h(
       'div',

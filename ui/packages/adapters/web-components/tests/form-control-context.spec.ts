@@ -19,9 +19,9 @@ function textField(markup = ''): string {
     </xh-text-field>`
 }
 
-type AtomicControl = 'checkbox' | 'switch' | 'radio-group' | 'number-field' | 'password-input' | 'pin-input' | 'date-field' | 'time-field' | 'editable' | 'tags-input' | 'checkbox-group' | 'slider' | 'select' | 'cascader' | 'combobox' | 'tree-select' | 'date-picker' | 'time-picker' | 'color-picker' | 'mention'
+type AtomicControl = 'checkbox' | 'switch' | 'radio-group' | 'number-field' | 'password-input' | 'pin-input' | 'date-field' | 'time-field' | 'editable' | 'tags-input' | 'checkbox-group' | 'slider' | 'select' | 'cascader' | 'combobox' | 'tree-select' | 'date-picker' | 'time-picker' | 'color-picker' | 'mention' | 'rating' | 'segmented' | 'toggle-group' | 'transfer'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['checkbox', 'switch', 'radio-group', 'number-field', 'password-input', 'pin-input', 'date-field', 'time-field', 'editable', 'tags-input', 'checkbox-group', 'slider', 'select', 'cascader', 'combobox', 'tree-select', 'date-picker', 'time-picker', 'color-picker', 'mention']
+const ATOMIC_CONTROLS: AtomicControl[] = ['checkbox', 'switch', 'radio-group', 'number-field', 'password-input', 'pin-input', 'date-field', 'time-field', 'editable', 'tags-input', 'checkbox-group', 'slider', 'select', 'cascader', 'combobox', 'tree-select', 'date-picker', 'time-picker', 'color-picker', 'mention', 'rating', 'segmented', 'toggle-group', 'transfer']
 
 function atomicControl(kind: AtomicControl, markup = ''): string {
   if (kind === 'checkbox') {
@@ -63,6 +63,20 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
     return `<xh-color-picker ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger">选择</button></div><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div></xh-color-picker>`
   if (kind === 'mention')
     return `<xh-mention ${nonRequiredMarkup}><div data-xh-part="root"><input data-xh-part="input"><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div></xh-mention>`
+  if (kind === 'rating') {
+    const ratingMarkup = markup.replace(/\binvalid(?:="false")?/g, '')
+    return `<xh-rating ${ratingMarkup} count="1"><div data-xh-part="root"><div data-xh-part="control"><span data-xh-part="item" value="1"></span></div></div></xh-rating>`
+  }
+  if (kind === 'segmented') {
+    return `<xh-segmented ${markup}><div data-xh-part="root"><button data-xh-part="item" value="a"><span data-xh-part="item-text">甲</span></button></div></xh-segmented>`
+  }
+  if (kind === 'toggle-group') {
+    const disabledMarkup = markup.replace(/\b(?:read-only|required|invalid)(?:="false")?/g, '')
+    return `<xh-toggle-group ${disabledMarkup}><div data-xh-part="root"><button data-xh-part="item" value="a">甲</button></div></xh-toggle-group>`
+  }
+  if (kind === 'transfer') {
+    return `<xh-transfer ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="source-panel"><div data-xh-part="list"></div></div></div></xh-transfer>`
+  }
   if (kind === 'editable')
     return `<xh-editable ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><span data-xh-part="preview"></span><input data-xh-part="input"></div></div></xh-editable>`
   if (kind === 'tags-input')
@@ -76,6 +90,47 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
 }
 
 async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabled: boolean): Promise<void> {
+  if (kind === 'rating') {
+    let control: HTMLElement | null = null
+    await vi.waitFor(() => {
+      control = form.querySelector<HTMLElement>('xh-rating [data-scope="rating"][data-part="control"]')
+      expect(control?.getAttribute('aria-disabled')).toBe(String(enabled))
+    })
+    expect(control!.getAttribute('aria-readonly')).toBe(String(enabled))
+    expect(control!.getAttribute('aria-required')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'segmented') {
+    let root: HTMLElement | null = null
+    await vi.waitFor(() => {
+      root = form.querySelector<HTMLElement>('xh-segmented [data-scope="segmented"][data-part="root"]')
+      expect(root?.getAttribute('aria-readonly')).toBe(String(enabled))
+    })
+    const item = form.querySelector<HTMLElement>('xh-segmented [data-scope="segmented"][data-part="item"]')!
+    expect(item.getAttribute('aria-disabled')).toBe(String(enabled))
+    expect(root!.getAttribute('aria-invalid')).toBe(String(enabled))
+    expect(root!.getAttribute('aria-required')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'toggle-group') {
+    await vi.waitFor(() => {
+      const item = form.querySelector<HTMLElement>('xh-toggle-group [data-scope="toggle-group"][data-part="item"]')
+      expect(item?.getAttribute('aria-disabled')).toBe(String(enabled))
+    })
+    return
+  }
+  if (kind === 'transfer') {
+    let root: HTMLElement | null = null
+    let list: HTMLElement | null = null
+    await vi.waitFor(() => {
+      root = form.querySelector<HTMLElement>('xh-transfer [data-scope="transfer"][data-part="root"]')
+      list = form.querySelector<HTMLElement>('xh-transfer [data-scope="transfer"][data-part="list"]')
+      expect(root?.hasAttribute('data-disabled')).toBe(enabled)
+      expect(list?.getAttribute('aria-readonly')).toBe(String(enabled))
+    })
+    expect(list!.getAttribute('aria-invalid')).toBe(String(enabled))
+    return
+  }
   if (kind === 'combobox' || kind === 'mention') {
     const input = form.querySelector(`xh-${kind} input`) as HTMLInputElement
     await vi.waitFor(() => expect(input.disabled).toBe(enabled))

@@ -4,6 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideRating, useRatingContext } from './context'
 import { useRating } from './use-rating'
 
@@ -34,9 +35,9 @@ export const XhRatingRoot = defineComponent({
     count: { type: Number, default: undefined },
     allowHalf: Boolean,
     allowClear: { type: Boolean, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    required: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
     name: { type: String, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
@@ -60,7 +61,7 @@ export const XhRatingRoot = defineComponent({
     const onHoverChange: RatingProps['onHoverChange'] = (details) => {
       emit('hover-change', details)
     }
-    const ctx = useRating(withXhConfig('rating', props) as RatingProps, { onValueChange, onHoverChange })
+    const ctx = useRating(withXhConfig('rating', useFormControlProps(props)) as RatingProps, { onValueChange, onHoverChange })
     provideRating(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

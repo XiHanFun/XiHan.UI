@@ -9,6 +9,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import { RatingProvider, useRatingContext } from './context'
 import { useRating } from './use-rating'
 
@@ -81,7 +82,7 @@ export function XhRatingRoot({
   children,
   ...rest
 }: XhRatingRootProps): ReactNode {
-  const ctx = useRating(withXhConfig('rating', {
+  const ctx = useRating(withXhConfig('rating', useFormControlProps({
     value,
     defaultValue,
     count,
@@ -97,7 +98,7 @@ export function XhRatingRoot({
     translations,
     onValueChange,
     onHoverChange,
-  }) as RatingProps)
+  })) as RatingProps)
   const api = ctx.api
 
   // 值攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置什么都不会发生。
