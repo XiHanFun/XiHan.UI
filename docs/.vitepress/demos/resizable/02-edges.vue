@@ -1,11 +1,10 @@
-<!-- 只开放部分边 | edges 决定哪几条边可调；没开放的边不显示把手 -->
+<!-- 全部边缘 | 从任意边缘或角点调整尺寸 -->
 <script setup lang="ts">
 import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const dimensions = ref({ width: 240, height: 120 });
-// 只往右下角撑大——文档流里最常见的形态，不需要定位上下文也完全正确
-const EDGES = ["e", "s", "se"] as const;
+const EDGES = ["n", "ne", "e", "se", "s", "sw", "w", "nw"] as const;
 </script>
 
 <template>
@@ -14,9 +13,9 @@ const EDGES = ["e", "s", "se"] as const;
     :edges="[...EDGES]"
     :min-width="120"
     :min-height="80"
-    style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
+    style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px"
   >
-    <span>只有右、下、右下三个把手</span>
+    <span>从任意边缘调整</span>
     <XhResizableHandle v-for="edge in EDGES" :key="edge" :edge="edge" />
   </XhResizableRoot>
 </template>

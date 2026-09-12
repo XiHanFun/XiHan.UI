@@ -1,13 +1,10 @@
-<!-- 只开放部分边 | edges 决定哪几条边可调；没开放的边不显示把手 -->
-<!-- 只往右下角撑大——文档流里最常见的形态，不需要定位上下文也完全正确 -->
-<xh-resizable default-dimensions="240x120" edges="e,s,se" min-width="120" min-height="80">
-  <div
-    data-xh-part="root"
-    style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
-  >
-    <span>只有右、下、右下三个把手</span>
-    <span data-xh-part="handle" edge="e"></span>
-    <span data-xh-part="handle" edge="s"></span>
-    <span data-xh-part="handle" edge="se"></span>
+<!-- 全部边缘 | 从任意边缘或角点调整尺寸 -->
+<xh-resizable default-dimensions="240x120" min-width="120" min-height="80">
+  <div data-xh-part="root" style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px">
+    <span>从任意边缘调整</span>
+    <span data-xh-part="handle" edge="n"></span><span data-xh-part="handle" edge="ne"></span>
+    <span data-xh-part="handle" edge="e"></span><span data-xh-part="handle" edge="se"></span>
+    <span data-xh-part="handle" edge="s"></span><span data-xh-part="handle" edge="sw"></span>
+    <span data-xh-part="handle" edge="w"></span><span data-xh-part="handle" edge="nw"></span>
   </div>
 </xh-resizable>
