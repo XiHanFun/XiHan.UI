@@ -11,16 +11,18 @@ let round = 0
  * 按「装没装 @xihan-ui/code-highlight」重新取一份元素类，挂一块已闭合的 TypeScript 代码。
  * 作者写的角色节点只铺到 code 那一层，逐行结构由元素接管。
  */
-async function render(installed: boolean): Promise<Updatable> {
+async function render(installed: boolean, highlighter?: null): Promise<Updatable & { requested: ReturnType<typeof vi.fn> }> {
+  const requested = vi.fn()
   // 两条路都显式登记：只在一边登记，另一边会捡到上一条用例留下的那份
   vi.doMock('@xihan-ui/code-highlight', () => {
+    requested()
     if (!installed)
       throw new Error('Cannot find package \'@xihan-ui/code-highlight\'')
     return vi.importActual('@xihan-ui/code-highlight')
   })
   vi.resetModules()
   // 先把包捂热：真去磁盘取一趟要跨好几个 tick，元素那边的 import 就只剩一个微任务
-  if (installed)
+  if (installed && highlighter !== null)
     await import('@xihan-ui/code-highlight')
   const { XhCodeViewElement } = await import('../src/elements/code-view')
 
@@ -33,11 +35,13 @@ async function render(installed: boolean): Promise<Updatable> {
   document.body.appendChild(host)
 
   const el = host.firstElementChild as Updatable
+  if (highlighter === null)
+    Object.assign(el, { highlighter: null })
   await el.updateComplete
   // 着色实现是异步到达的，等它落位再重渲一轮
   await new Promise(resolve => setTimeout(resolve, 0))
   await el.updateComplete
-  return el
+  return Object.assign(el, { requested })
 }
 
 /**
@@ -60,5 +64,11 @@ describe('可选的着色实现', () => {
     // 记号拼回去与原文逐字相等，一个空格都不许丢
     expect(tokens.map(token => token.textContent).join('')).toBe('const a = 1')
     expect(tokens[0]!.getAttribute('data-kind')).toBe('keyword')
+  }, RELOAD_TIMEOUT)
+
+  it('显式 null 保持纯文本且不请求默认可选模块', async () => {
+    const el = await render(true, null)
+    expect(el.requested).not.toHaveBeenCalled()
+    expect(el.querySelectorAll('[data-part="token"]')).toHaveLength(0)
   }, RELOAD_TIMEOUT)
 })

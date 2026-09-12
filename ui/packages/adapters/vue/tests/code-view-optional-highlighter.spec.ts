@@ -5,18 +5,20 @@ import { describe, expect, it, vi } from 'vitest'
 import { h } from 'vue'
 
 /** 按「装没装 @xihan-ui/code-highlight」重新取一份组件模块。 */
-async function loadCodeView(installed: boolean) {
+async function loadCodeView(installed: boolean, warm = installed) {
+  const requested = vi.fn()
   // 两条路都显式登记：只在一边登记，另一边会捡到上一条用例留下的那份
   vi.doMock('@xihan-ui/code-highlight', () => {
+    requested()
     if (!installed)
       throw new Error('Cannot find package \'@xihan-ui/code-highlight\'')
     return vi.importActual('@xihan-ui/code-highlight')
   })
   vi.resetModules()
   // 先把包捂热：真去磁盘取一趟要跨好几个 tick，组件那边的 import 就只剩一个微任务
-  if (installed)
+  if (warm)
     await import('@xihan-ui/code-highlight')
-  return import('../src/components/code-view/code-view')
+  return { ...await import('../src/components/code-view/code-view'), requested }
 }
 
 /** 挂一块已闭合的 TypeScript 代码，铺到记号那一层。 */
@@ -52,5 +54,16 @@ describe('可选的着色实现', () => {
     // 记号拼回去与原文逐字相等，一个空格都不许丢
     expect(tokens.map(token => token.element.textContent).join('')).toBe('const a = 1')
     expect(tokens[0]!.attributes('data-kind')).toBe('keyword')
+  }, RELOAD_TIMEOUT)
+
+  it('显式 null 保持纯文本且不请求默认可选模块', async () => {
+    const { XhCodeViewRoot, XhCodeViewPre, XhCodeViewCode, requested } = await loadCodeView(true, false)
+    const wrapper = mount(XhCodeViewRoot, {
+      props: { code: 'const a = 1', lang: 'ts', complete: true, highlighter: null },
+      slots: { default: () => h(XhCodeViewPre, null, () => h(XhCodeViewCode)) },
+    })
+    await flushPromises()
+    expect(requested).not.toHaveBeenCalled()
+    expect(wrapper.findAll('[data-part="token"]')).toHaveLength(0)
   }, RELOAD_TIMEOUT)
 })

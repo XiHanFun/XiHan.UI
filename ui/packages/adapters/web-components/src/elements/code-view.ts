@@ -1,30 +1,11 @@
 import type { HighlighterPort, IdGenerator } from '@xihan-ui/core'
 import type { CodeViewApi, CodeViewClampToggleDetails, CodeViewProps, CodeViewTranslations } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { codeViewAnatomy, codeViewMeta, connectCodeView } from '@xihan-ui/headless'
+import { codeViewAnatomy, codeViewMeta, connectCodeView, createCodeViewHighlighterResource } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
-/**
- * 默认着色实现全元素共用一份：它无状态，没必要每块代码建一个。
- *
- * `@xihan-ui/code-highlight` 是可选 peer：装了它，模块到达后这里落成它的实现，
- * 在场的代码视图重渲一次并着色；没装则一直是 null，代码按纯文本渲染。
- */
-let defaultHighlighter: HighlighterPort | null = null
-
-/** 模块只载一次。 */
-let pending: Promise<void> | null = null
-
-/** 首次用到时才去载默认着色实现；载不到就保持 null。 */
-function requestDefaultHighlighter(): Promise<void> {
-  pending ??= import('@xihan-ui/code-highlight')
-    .then((module) => {
-      defaultHighlighter = module.createHighlighter()
-    })
-    .catch(() => {})
-  return pending
-}
+const defaultHighlighter = createCodeViewHighlighterResource(() => import('@xihan-ui/code-highlight'))
 
 // 属性缺席翻成 undefined，缺省值由 connect 给出
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -85,6 +66,7 @@ export class XhCodeViewElement extends XhElement {
     highlightWhileStreaming: { converter: BOOLEAN_CONVERTER, attribute: 'highlight-while-streaming' },
     size: { converter: STRING_CONVERTER },
     // 对象值走不了 HTML 属性，只作为 property 暴露
+    highlighter: { attribute: false },
     translations: { attribute: false },
   }
 
@@ -104,21 +86,33 @@ export class XhCodeViewElement extends XhElement {
   declare translations?: Partial<CodeViewTranslations>
 
   /** 换一个着色实现（典型是接 Shiki）；置 null 关掉着色。只走 property，属性表达不了对象。 */
-  highlighter?: HighlighterPort | null
+  declare highlighter?: HighlighterPort | null
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly codeViewScope = createScope(null, this.idGen)
 
   /** 上一次铺进 code 部件的那份逐行结构，用来判断要不要重铺。 */
   #painted?: string
+  #releaseHighlighter?: () => void
 
   override connectedCallback(): void {
     super.connectedCallback()
-    // 着色实现是异步到达的，到了再重渲一次；没装那个包就一直是纯文本
-    void requestDefaultHighlighter().then(() => {
-      if (defaultHighlighter !== null)
-        this.requestUpdate()
-    })
+    this.#releaseHighlighter = defaultHighlighter.subscribe(() => this.requestUpdate())
+  }
+
+  override disconnectedCallback(): void {
+    this.#releaseHighlighter?.()
+    this.#releaseHighlighter = undefined
+    super.disconnectedCallback()
+  }
+
+  private resolvedHighlighter(): HighlighterPort | undefined {
+    if (this.highlighter === null)
+      return undefined
+    if (this.highlighter !== undefined)
+      return this.highlighter
+    defaultHighlighter.request()
+    return defaultHighlighter.read() ?? undefined
   }
 
   private viewProps(): CodeViewProps {
@@ -135,7 +129,7 @@ export class XhCodeViewElement extends XhElement {
       highlightLines: this.highlightLines,
       clamp: this.clamp,
       clamped: this.clamped,
-      highlighter: this.highlighter === null ? undefined : this.highlighter ?? defaultHighlighter ?? undefined,
+      highlighter: this.resolvedHighlighter(),
       highlightWhileStreaming: this.highlightWhileStreaming,
       size: this.size,
       translations: this.translations,
