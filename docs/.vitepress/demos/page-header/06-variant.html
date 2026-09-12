@@ -1,24 +1,23 @@
-<!-- 形态 | 不写 variant 即不画面（与写 plain 一个样）；surface 加底色、圆角与左右内衬，raised 再加一层抬起投影，bordered 在这两档改画整圈描边 -->
-<div style="display: flex; flex-direction: column; gap: 12px">
-  <!-- 第一档不写 variant -->
+<!-- 变体 | 适配页面、表面与抬升区域 -->
+<div style="display: grid; gap: 12px; inline-size: min(720px, 100%)">
   <xh-page-header bordered>
     <div data-xh-part="root">
-      <div data-xh-part="title">不画面</div>
-      <div data-xh-part="description">页头贴在什么底上，由这一轴决定</div>
+      <div data-xh-part="title">纯净</div>
+      <div data-xh-part="description">融入页面背景</div>
     </div>
   </xh-page-header>
 
   <xh-page-header variant="surface" bordered>
     <div data-xh-part="root">
-      <div data-xh-part="title">有面</div>
-      <div data-xh-part="description">页头贴在什么底上，由这一轴决定</div>
+      <div data-xh-part="title">表面</div>
+      <div data-xh-part="description">使用独立内容面</div>
     </div>
   </xh-page-header>
 
   <xh-page-header variant="raised" bordered>
     <div data-xh-part="root">
-      <div data-xh-part="title">抬起</div>
-      <div data-xh-part="description">页头贴在什么底上，由这一轴决定</div>
+      <div data-xh-part="title">抬升</div>
+      <div data-xh-part="description">突出当前页面</div>
     </div>
   </xh-page-header>
 </div>

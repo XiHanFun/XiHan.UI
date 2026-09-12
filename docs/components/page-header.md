@@ -1,6 +1,6 @@
 # PageHeader 页头
 
-一页内容的抬头：面包屑、返回位、头像位、标题、副标题、行尾操作与页脚各占一段。
+统一呈现页面标题、说明、导航和主要操作。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/page-header" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-除了 root，返回位、副标题、操作、页脚都可选；只写用得上的那几段
+显示标题、说明与页面操作
 
 <XhDemo src="page-header/01-basic" />
 
@@ -24,39 +24,21 @@
 
 ## 示例
 
-### 返回位
+### 页脚
 
-返回位就是作者自己的按钮：组件只给身份与位置，type、可及名字与点击行为自己写
-
-<XhDemo src="page-header/02-back" />
-
-### 行尾操作
-
-extra 贴在整行的末尾，里面放什么按钮由作者决定
-
-<XhDemo src="page-header/03-extra" />
-
-### 尺寸
-
-size 换的是标题字号与整块的上下留白，不写 size 即默认档
-
-<XhDemo src="page-header/04-size" />
-
-### 分隔线与页脚
-
-bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
+在标题下方显示页面摘要
 
 <XhDemo src="page-header/05-bordered-footer" />
 
 ### 变体
 
-不写 variant 即不画面（与写 plain 一个样）；surface 加底色、圆角与左右内衬，raised 再加一层抬起投影，bordered 在这两档改画整圈描边
+适配页面、表面与抬升区域
 
 <XhDemo src="page-header/06-variant" />
 
-### 面包屑与头像位
+### 导航与媒体
 
-面包屑整行排在标题之上（写在标记最前面），头像/图标排在返回位与标题之间；两块都可缺省
+补充页面路径和对象标识
 
 <XhDemo src="page-header/07-breadcrumb-media" />
 
@@ -64,33 +46,33 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 
 ### 何时使用
 
-- 详情页、编辑页需要一个统一的抬头，带返回与本页主操作。
+- 详情页、编辑页或对象页面需要稳定的标题区域。
 
 ### 何时不用
 
-- 页面就是一张表或一块卡片，标题写在卡片里更近：用[卡片](./card)。
-- 需要的是站点级的头（logo、全局搜索、账户）：那属于[布局](./layout)的 `header`。
+- 卡片标题应放在卡片内部。
+- Logo、全局搜索和账户入口属于站点级布局。
 
 ### 特性
 
-- 除了 `root`，返回位、副标题、操作、页脚都可选，只写用得上的那几段。
-- 返回位就是作者自己的按钮：组件只给身份与位置，类型、可及名字与点击行为自己写。
-- `extra` 贴在整行的末尾；面包屑整行排在标题之上，头像 / 图标排在返回位与标题之间。
-- 形态分三档：不写即不画面（贴在页面底色上），`surface` 加底色与圆角，`raised` 再加一层抬起投影；后两档的 `bordered` 改画整圈描边。
+- 标题与说明上下排列，操作区位于末侧。
+- 面包屑、返回位、媒体位、操作区和页脚均可省略。
+- `surface` 提供独立内容面，`raised` 增加抬升层级。
+- `bordered` 为纯净页头增加底部分隔，为有面页头增加完整边界。
 
 ### 组合
 
-- 面包屑位里放[面包屑](./breadcrumb)，头像位里放[头像](./avatar)，`extra` 里放[按钮组](./button-group)，`footer` 里放[描述列表](./descriptions)或一组[统计数值](./statistic)。
+- 使用 `breadcrumb`、`media`、`extra` 和 `footer` 组织补充内容。
 
 ### 最佳实践
 
-- 标题写具体对象的名字，不写页面类型。
-- `extra` 里的主操作只留一个，其余收进[菜单](./menu)。
+- 标题使用具体对象名称，说明文字保持简短。
+- 操作区只保留一个主要操作。
 
 ### 反模式
 
-- 返回位直接调 `history.back()`：用户从外链进来时会退出站点。给它一个确定的上级地址。
-- 页头里塞进整块表单。
+- 返回入口应指向明确的上级页面。
+- 不要在页头中放置完整表单。
 
 ## API 参考
 
@@ -161,7 +143,7 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 | `--xh-page-header-border` | `root` | `border`<br>`border-block-end` | `bordered`<br>`is([data-variant='surface'], [data-variant='raised'])`<br>`variant=raised`<br>`variant=surface` | `--xh-border-subtle` | page-header 的 root 部件 border、border-block-end 覆盖槽。 |
 | `--xh-page-header-breadcrumb-fg` | `breadcrumb` | `color` | `default` | `--xh-fg-muted` | page-header 的 breadcrumb 部件 color 覆盖槽。 |
 | `--xh-page-header-breadcrumb-font-size` | `breadcrumb` | `font-size` | `default` | `--xh-text-secondary-size` | page-header 的 breadcrumb 部件 font-size 覆盖槽。 |
-| `--xh-page-header-column-gap` | `root` | `column-gap` | `default` | `--xh-space-3` | page-header 的 root 部件 column-gap 覆盖槽。 |
+| `--xh-page-header-column-gap` | `back-trigger`<br>`extra`<br>`media` | `margin-inline-end`<br>`margin-inline-start` | `default` | `--xh-space-3` | page-header 的 back-trigger、extra、media 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-page-header-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | page-header 的 description 部件 color 覆盖槽。 |
 | `--xh-page-header-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | page-header 的 description 部件 font-size 覆盖槽。 |
 | `--xh-page-header-extra-gap` | `extra` | `gap` | `default` | `--xh-space-2` | page-header 的 extra 部件 gap 覆盖槽。 |
@@ -181,6 +163,10 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 ### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
+### 响应式
+
+皮肤按视口分档：`max-width: 640px`。
 
 ### RTL
 

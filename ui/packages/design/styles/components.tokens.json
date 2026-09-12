@@ -36867,10 +36867,13 @@
       "name": "--xh-page-header-column-gap",
       "component": "page-header",
       "part": [
-        "root"
+        "back-trigger",
+        "extra",
+        "media"
       ],
       "property": [
-        "column-gap"
+        "margin-inline-end",
+        "margin-inline-start"
       ],
       "state": [
         "default"
@@ -36879,7 +36882,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "page-header 的 root 部件 column-gap 覆盖槽。"
+      "description": "page-header 的 back-trigger、extra、media 部件 margin-inline-end、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-page-header-description-fg",
