@@ -1,4 +1,4 @@
-<!-- 竖排 | orientation="vertical" 把入口排成一列、面板改从侧边长出来，方向键随之改收上下键 -->
+<!-- 竖向排列 | 在侧栏旁展开子级导航 -->
 <script setup lang="ts">
 import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/vue";
 
@@ -22,7 +22,7 @@ const panels: Record<string, Array<{ href: string; label: string }>> = {
 </script>
 
 <template>
-  <div style="inline-size: 100%; padding-block-end: 40px">
+  <div style="inline-size: min(480px, 100%); padding-block-end: 40px">
     <XhNavigationMenuRoot
       :collection="entries"
       orientation="vertical"

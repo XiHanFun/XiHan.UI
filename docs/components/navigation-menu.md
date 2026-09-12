@@ -1,6 +1,6 @@
 # NavigationMenu 导航菜单
 
-站点的主导航：一排入口，展开后是一整块去处面板，面板里是链接不是命令。
+用于站点顶部的多级导航菜单。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/navigation-menu" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-面板落在同一个 li 里、紧跟 trigger 之后，展开时按 Tab 就走得进去，里面的条目是链接不是命令，点了就跳走
+从顶部入口展开站点导航
 
 <XhDemo src="navigation-menu/01-basic" />
 
@@ -24,91 +24,55 @@
 
 ## 示例
 
-### 受控
+### 竖向排列
 
-传了 value 就由宿主说了算，null 表示都收起
-
-<XhDemo src="navigation-menu/02-controlled" />
-
-### 展开延时
-
-delay-duration 是悬停多久才展开，防的是指针横穿导航时一路闪出面板；skip-delay-duration 是收起后的静默窗口，窗口内再碰任意入口直接展开
-
-<XhDemo src="navigation-menu/03-delay" />
-
-### 竖排
-
-orientation="vertical" 把入口排成一列、面板改从侧边长出来，方向键随之改收上下键
+在侧栏旁展开子级导航
 
 <XhDemo src="navigation-menu/04-vertical" />
 
-### 颜色
+### 直达链接
 
-tone 换的是入口的高亮底与指示条、当前链接的文字色，静止态一样：悬停到入口上、或用方向键把焦点移过去才显现
-
-<XhDemo src="navigation-menu/05-tone" />
-
-### 尺寸
-
-size 一档换掉入口的高度、内边距与字号，写在 root 上、面板里的链接一并跟着变
-
-<XhDemo src="navigation-menu/06-size" />
-
-### 直达入口
-
-没有下级的去处不必套面板：那一项直接铺成一条 link，它不进方向键那一组（那一组只认 trigger），按 Tab 一样到得了
+混合下拉入口与普通链接
 
 <XhDemo src="navigation-menu/07-link-item" />
 
-### 共享面板外壳
+### 共享面板
 
-面板整批塞进 viewport 后落位归外壳管：几个入口的面板落在同一处，宽窄不同也不再各贴各的入口
+在固定位置切换不同导航内容
 
 <XhDemo src="navigation-menu/08-viewport" />
-
-### 默认展开项
-
-defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针移开、Escape 或点回入口都收得起来
-
-<XhDemo src="navigation-menu/09-default-open" />
-
-### 收窄成一列图标
-
-竖排时面板本就从入口侧边长出来；收窄只是把文字从入口里撤掉、把它挪进面板，指针停上去才露出来
-
-<XhDemo src="navigation-menu/10-collapsed" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 门户、营销站、文档站的顶部导航，每个板块下还有若干去处。
+- 门户、营销站或文档站具有多组导航链接。
 
 ### 何时不用
 
-- 条目是命令（执行一次动作）：用[菜单](./menu)。
-- 后台的层级导航：用[侧栏导航](./side-nav)。
+- 操作命令使用[菜单](./menu)。
+- 后台层级导航使用[侧栏导航](./side-nav)。
 
 ### 特性
 
-- 面板落在同一个 `li` 里、紧跟入口之后，展开时按 Tab 就走得进去。
-- `delayDuration` 防的是指针横穿导航时一路闪出面板；`skipDelayDuration` 是收起后的静默窗口，窗口内再碰任意入口直接展开。
-- 没有下级的去处不必套面板：那一项直接铺成一条 `link`，它不进方向键那一组，按 Tab 一样到得了。
-- 面板整批塞进 `viewport` 后落位归外壳管：几个入口的面板落在同一处，宽窄不同也不再各贴各的入口。
+- 支持横向和竖向排列、延迟展开与键盘导航。
+- 没有子级的入口可直接渲染为链接。
+- `viewport` 可让所有面板在同一位置切换。
+- 当前链接使用 `aria-current="page"`。
 
 ### 组合
 
-- 与[布局](./layout)的头部配合；窄屏时整体换成[抽屉](./drawer)里的[侧栏导航](./side-nav)。
+- 窄屏时切换为抽屉或侧栏导航，不压缩顶部入口。
 
 ### 最佳实践
 
-- 面板里的链接分组并加组标题，一整块无结构的链接墙没人看得下去。
-- 延时保留默认值：调到 0 会让导航在指针路过时不停闪。
+- 使用短标题和简洁说明组织链接。
+- 保留默认展开延时，避免指针经过时连续闪动。
 
 ### 反模式
 
-- 面板里混进需要提交的表单或命令按钮。
-- 悬停即刻展开且没有静默窗口：指针横穿时面板一路弹出。
+- 不要在导航面板中放置表单或一次性命令。
+- 不要在窄屏中强行保留完整横向导航。
 
 ## API 参考
 

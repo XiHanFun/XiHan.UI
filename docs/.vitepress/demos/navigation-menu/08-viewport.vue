@@ -1,4 +1,4 @@
-<!-- 共享面板外壳 | 面板整批塞进 viewport 后落位归外壳管：几个入口的面板落在同一处，宽窄不同也不再各贴各的入口 -->
+<!-- 共享面板 | 在固定位置切换不同导航内容 -->
 <script setup lang="ts">
 import {
   XhNavigationMenuContent,
@@ -37,7 +37,7 @@ const groups = [
 </script>
 
 <template>
-  <div style="inline-size: 100%; padding-block-end: 180px">
+  <div style="inline-size: min(640px, 100%); padding-block-end: 180px">
     <XhNavigationMenuRoot>
       <XhNavigationMenuList>
         <XhNavigationMenuItem v-for="g in groups" :key="g.value">
@@ -47,8 +47,6 @@ const groups = [
         </XhNavigationMenuItem>
       </XhNavigationMenuList>
 
-      <!-- 外壳放在 root 内、list 之后；里面装哪一份面板由各自的 value 决定。
-           面板不再住在各自那一项里，按 Tab 走进面板要先走完全部入口 -->
       <XhNavigationMenuViewport>
         <XhNavigationMenuContent
           v-for="g in groups"
