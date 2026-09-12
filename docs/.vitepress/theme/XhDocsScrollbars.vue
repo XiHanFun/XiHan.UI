@@ -17,7 +17,7 @@ onMounted(() => {
 
 <template>
   <div v-if="page" class="xh-doc-scrollbar xh-doc-scrollbar--page">
-    <XhScrollbarRoot :scrollable="page" orientation="vertical" type="always" size="sm">
+    <XhScrollbarRoot :scrollable="page" orientation="vertical" type="scroll" size="sm">
       <XhScrollbarTrack>
         <XhScrollbarThumb />
       </XhScrollbarTrack>
@@ -25,7 +25,7 @@ onMounted(() => {
   </div>
 
   <div v-if="sidebar" class="xh-doc-scrollbar xh-doc-scrollbar--sidebar">
-    <XhScrollbarRoot :scrollable="sidebar" orientation="vertical" type="always" size="sm">
+    <XhScrollbarRoot :scrollable="sidebar" orientation="vertical" type="hover" size="sm">
       <XhScrollbarTrack>
         <XhScrollbarThumb />
       </XhScrollbarTrack>
@@ -52,21 +52,7 @@ onMounted(() => {
 }
 
 .xh-doc-scrollbar--sidebar {
-  left: calc(
-    max(0px, (100vw - var(--vp-layout-max-width)) / 2)
-    + var(--vp-sidebar-width)
-    - var(--xh-scrollbar-thickness-sm)
-  );
-}
-
-.xh-doc-scrollbar > [data-scope='scrollbar'][data-part='root'] {
-  opacity: 0;
-  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-}
-
-.xh-doc-scrollbar:hover > [data-scope='scrollbar'][data-part='root'],
-.xh-doc-scrollbar > [data-scope='scrollbar'][data-part='root']:has([data-dragging]) {
-  opacity: 1;
+  left: calc(var(--vp-sidebar-width) - var(--xh-scrollbar-thickness-sm));
 }
 
 @media (max-width: 959px), (pointer: coarse) {
