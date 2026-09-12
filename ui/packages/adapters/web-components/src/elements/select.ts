@@ -8,6 +8,7 @@ import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
+import { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -139,11 +140,18 @@ export class XhSelectElement extends XhElement {
   declare maxTagCount?: number
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly selectScope = createScope(null, this.idGen)
+  private readonly selectScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = new AnchoredPortalController({
+    name: 'Select',
+    config: () => this.config,
+    source: () => this.getPart('trigger'),
+    root: () => this.getPart('positioner'),
+    onChange: () => this.requestUpdate(),
+  })
 
   /** value-text / overflow-tag 的文字是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
   private readonly ownsText = new WeakMap<HTMLElement, boolean>()
@@ -215,6 +223,10 @@ export class XhSelectElement extends XhElement {
     if (this.config)
       return
     this.config = createRuntimeConfig({ scope: this.selectScope, idGenerator: this.idGen })
+  }
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
   }
 
   /** 在机器挂载前建立 Presence，确保 default-open 的行为资源与视觉退场共享同一租约。 */
@@ -455,9 +467,11 @@ export class XhSelectElement extends XhElement {
     exit.track(content)
     exit.update(api.open)
     this.setPartHidden(content, !exit.visible)
+    this.portal.sync(exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()
