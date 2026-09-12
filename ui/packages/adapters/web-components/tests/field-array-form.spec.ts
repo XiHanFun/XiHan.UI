@@ -22,7 +22,7 @@ describe('fieldArray 接入 FormPath', () => {
     const form = document.createElement('xh-form') as XhFormElement
     const array = document.createElement('xh-field-array') as XhFieldArrayElement
     const onValuesChange = vi.fn()
-    form.defaultValues = createFormPathRecord([
+    form.defaultValues = createFormPathRecord<unknown>([
       [users, [{ id: 'a' }, { id: 'b' }]],
       [['users', 0, 'email'], 'a@example.com'],
       [middleEmail, 'b@example.com'],

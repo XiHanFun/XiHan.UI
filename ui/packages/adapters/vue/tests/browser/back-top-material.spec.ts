@@ -16,14 +16,14 @@ let scrollCalls: ScrollToOptions[] = []
 let keyboardModality = false
 
 function root(): HTMLElement {
-  const element = document.querySelector<HTMLElement>("[data-scope='back-top'][data-part='root']")
+  const element = document.querySelector<HTMLElement>('[data-scope=\'back-top\'][data-part=\'root\']')
   if (!element)
     throw new Error('找不到 back-top/root')
   return element
 }
 
 function trigger(): HTMLButtonElement {
-  const element = document.querySelector<HTMLButtonElement>("[data-scope='back-top'][data-part='trigger']")
+  const element = document.querySelector<HTMLButtonElement>('[data-scope=\'back-top\'][data-part=\'trigger\']')
   if (!element)
     throw new Error('找不到 back-top/trigger')
   return element
@@ -53,7 +53,7 @@ async function mount(): Promise<void> {
   Object.defineProperty(scroller, 'scrollTop', {
     configurable: true,
     get: () => scrollTop,
-    set: value => { scrollTop = Number(value) },
+    set: (value) => { scrollTop = Number(value) },
   })
   scroller.scrollTo = (options) => {
     if (typeof options === 'object')

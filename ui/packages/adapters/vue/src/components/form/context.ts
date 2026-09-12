@@ -1,6 +1,6 @@
+import type { FormPath } from '@xihan-ui/headless'
 import type { InjectionKey } from 'vue'
 import type { FormContext } from './use-form'
-import type { FormPath } from '@xihan-ui/headless'
 import { inject, provide } from 'vue'
 
 const KEY: InjectionKey<FormContext> = Symbol.for('xh-form')

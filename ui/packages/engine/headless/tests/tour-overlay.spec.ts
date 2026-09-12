@@ -84,7 +84,7 @@ function pressEscape(element: HTMLElement): void {
   element.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
 }
 
-describe('Tour 与 Presence 共用退出生命周期', () => {
+describe('tour 与 Presence 共用退出生命周期', () => {
   it('逻辑关闭立即失活内容，Layer、消解与焦点域留到退出租约完成', async () => {
     const h = makeHarness()
     await open(h)

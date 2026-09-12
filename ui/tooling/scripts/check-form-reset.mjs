@@ -108,8 +108,8 @@ for (const name of dirs) {
   if (declared)
     declaresReset.push(name)
 
-  // props 段里出现 name?: string 即视为表单字段
-  const isField = /^\s{4}name\?: string/m.test(types)
+  // props 段里出现 name?: 即视为表单字段；字段名可以是标量 string，也可以是 FormPath。
+  const isField = /^\s{4}name\?:/m.test(types)
   if (!isField)
     continue
   fields.push(name)

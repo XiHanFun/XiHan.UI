@@ -27,7 +27,7 @@ describe('fieldArray 接入 FormPath', () => {
 
     act(() => root!.render(
       <XhFormRoot
-        defaultValues={createFormPathRecord([
+        defaultValues={createFormPathRecord<unknown>([
           [users, [{ id: 'a' }, { id: 'b' }]],
           [['users', 0, 'email'], 'a@example.com'],
           [middleEmail, 'b@example.com'],

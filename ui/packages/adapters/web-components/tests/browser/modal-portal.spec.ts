@@ -64,15 +64,15 @@ function disableExitAnimation(scope: OverlayScope): void {
   document.head.append(style)
 }
 
+beforeEach(() => {
+  // 此处故意把浮层放进陷阱祖先来验物理脱离；不让旧的 Light-DOM 诊断淹没此回归输出。
+  setDiagnosticsLevel('silent')
+})
+
 afterEach(() => {
   document.body.innerHTML = ''
   document.head.querySelectorAll('style[data-test-modal-portal-exit]').forEach(style => style.remove())
   setDiagnosticsLevel('warn')
-})
-
-beforeEach(() => {
-  // 此处故意把浮层放进陷阱祖先来验物理脱离；不让旧的 Light-DOM 诊断淹没此回归输出。
-  setDiagnosticsLevel('silent')
 })
 
 describe.each(['dialog', 'drawer'] as const)('wc %s 视口模态 Portal', (scope) => {
