@@ -26,6 +26,8 @@ const cssDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   '../../packages/design/styles/css',
 )
+const fieldFamilyPath = path.resolve(cssDir, '../family/field-chrome.css')
+const headlessDir = path.resolve(cssDir, '../../../engine/headless/src')
 
 /** 通道 ①：`::placeholder` 伪元素，组件 → 承载占位串的部件。 */
 const PSEUDO = {
@@ -131,6 +133,39 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
         problems.push(`${file} ${scope} 的 ${chLabel} 占位前景默认取 var(${m[2]})，两条通道必须同取 var(${DEFAULT_FG})——不同默认值会让下拉框与输入框的同一句占位文字深浅不一`)
     }
   }
+}
+
+/* 迁入 Field Chrome 的组件不再复制 ::placeholder。门禁同时验证三段链：
+   Headless 投影输入角色、组件公开槽映到家族桥、家族唯一规则落到语义前景。 */
+const fieldFamily = fs.readFileSync(fieldFamilyPath, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
+const familyPlaceholder = [...fieldFamily.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(([, selector]) =>
+  selector.trim() === '[data-xh-field-input]::placeholder')
+const familyPlaceholderColor = familyPlaceholder ? decl(familyPlaceholder[2], 'color') : null
+for (const [scope, part] of Object.entries(PSEUDO)) {
+  const key = `pseudo:${scope}`
+  if (base.has(key))
+    continue
+  const componentCss = fs.readFileSync(path.join(cssDir, `${scope}.css`), 'utf8')
+  if (!/@import\s+['"]\.\.\/family\/field-chrome\.css['"]/.test(componentCss))
+    continue
+  const connectPath = path.join(headlessDir, scope, `${scope}.connect.ts`)
+  const connect = fs.readFileSync(connectPath, 'utf8')
+  if (!/['"]data-xh-field-input['"]\s*:/.test(connect)) {
+    problems.push(`${scope}.connect.ts 没有投影 data-xh-field-input，Field Chrome 的占位规则落不到 [${part}]`)
+    continue
+  }
+  if (familyPlaceholderColor !== `var(--xh-field-placeholder-fg, var(${DEFAULT_FG}))`) {
+    problems.push(`family/field-chrome.css 的 ::placeholder 应写 var(--xh-field-placeholder-fg, var(${DEFAULT_FG}))`)
+    continue
+  }
+  const bridge = new RegExp(
+    `--xh-field-placeholder-fg\\s*:\\s*var\\(\\s*--xh-${scope}-placeholder-fg\\s*,\\s*var\\(\\s*${DEFAULT_FG}\\s*\\)\\s*\\)`,
+  )
+  if (!bridge.test(componentCss)) {
+    problems.push(`${scope}.css 没把 --xh-${scope}-placeholder-fg 映到 --xh-field-placeholder-fg`)
+    continue
+  }
+  base.set(key, { file: `${scope}.css → family/field-chrome.css`, part })
 }
 
 for (const [registry, channel, chLabel] of [[PSEUDO, 'pseudo', '::placeholder'], [ATTR, 'attr', '[data-placeholder]']]) {

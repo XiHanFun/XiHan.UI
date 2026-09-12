@@ -9,12 +9,21 @@
     /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
     --xh-_date-picker-available-h: 100vh;
+    /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，内容层据此夹住行内轴；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+    --xh-_date-picker-available-w: 100vw;
+
+    /* 每个浮层独立声明方向，避免继承祖先浮层的进场位移。 */
+    --xh-_overlay-enter-up: 0;
+    --xh-_overlay-enter-down: 0;
+    --xh-_overlay-enter-left: 0;
+    --xh-_overlay-enter-right: 0;
 
     /* 面板的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊出一条竖灰带 */
     --xh-scrollbar-track-bg: transparent;
 
     position: fixed;
-    z-index: var(--xh-date-picker-layer, var(--xh-layer-popover));
+    z-index: var(--xh-date-picker-layer, var(--xh-_layer, var(--xh-layer-popover)));
     /* 空壳不吃指针，交互只发生在 content 里 */
     pointer-events: none;
   }
@@ -24,26 +33,20 @@
     visibility: hidden;
   }
 
-  /* 缩放原点与进场位移按落定的那一侧给：面板从贴着锚点的那条边涨开、沿主轴退让一小段。
-     两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
-     origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+  /* 短位移按实际落位的物理方向给，不随书写方向翻转。 */
   [data-scope='date-picker'][data-part='positioner'][data-placement^='top'] {
-    --xh-_overlay-origin-y: 100%;
     --xh-_overlay-enter-down: 1;
   }
 
   [data-scope='date-picker'][data-part='positioner'][data-placement^='bottom'] {
-    --xh-_overlay-origin-y: 0;
     --xh-_overlay-enter-up: 1;
   }
 
   [data-scope='date-picker'][data-part='positioner'][data-placement^='left'] {
-    --xh-_overlay-origin-x: 100%;
     --xh-_overlay-enter-right: 1;
   }
 
   [data-scope='date-picker'][data-part='positioner'][data-placement^='right'] {
-    --xh-_overlay-origin-x: 0;
     --xh-_overlay-enter-left: 1;
   }
 
@@ -66,17 +69,16 @@
     /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
     --xh-_date-picker-control-shadow: var(--xh-elevation-raised);
 
-    /* 聚焦环、时间列选中与确认按钮随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，
+    /* 聚焦环、选中对号与确认按钮随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，
        退回原来的焦点色与品牌色 */
     --xh-_date-picker-ring: var(--xh-ring-focus);
     --xh-_date-picker-accent: var(--xh-_tone, var(--xh-bg-brand));
     --xh-_date-picker-accent-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
     --xh-_date-picker-accent-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
     --xh-_date-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
-    --xh-_date-picker-accent-subtle: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-    /* 淡底上的字与实心底上的字是两档：--xh-_tone-fg 是语气层为淡底配的那一档，
-       没写 data-tone 时退到 fg-brand-strong——fg-brand（600）压在 brand-100 上只有 4.21 */
-    --xh-_date-picker-accent-subtle-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+    /* 对号画在普通面上，取语气前景角色，不能拿确认按钮的实心背景色充当前景。 */
+    --xh-_date-picker-check-fg: var(--xh-_tone, var(--xh-fg-brand));
+    --xh-_date-picker-time-item-check-size: var(--xh-glyph-size-sm);
     /* 确认按钮是面板里唯一的实心块，顶边画一条极浅的内高光把它衬出厚度 */
     --xh-_date-picker-confirm-highlight: inset 0 var(--xh-stroke-thin) 0 0
       color-mix(in oklab, var(--xh-_date-picker-accent-fg) 14%, transparent);
@@ -90,6 +92,10 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-date-picker-gap, var(--xh-space-1));
+
+    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+    min-inline-size: min(var(--xh-date-picker-control-min-w, var(--xh-control-min-w)), 100%);
+    max-inline-size: 100%;
   }
 
   /* —— 尺寸 —— */
@@ -110,6 +116,13 @@
     --xh-_date-picker-gap: var(--xh-control-gap-lg);
     --xh-_date-picker-font-size: var(--xh-control-font-lg);
     --xh-_date-picker-label-font-size: var(--xh-control-font-lg);
+  }
+
+  /* 375px 复合面板要同时容下日历与时/分两列；手机档用正式小指示符，平板起恢复16px。 */
+  @media (width < 768px) {
+    [data-scope='date-picker']:is([data-part='root'], [data-part='positioner']) {
+      --xh-_date-picker-time-item-check-size: var(--xh-control-indicator-sm);
+    }
   }
 
   /* —— 形态 —— */
@@ -167,7 +180,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--xh-date-picker-control-gap, var(--xh-_date-picker-gap));
-    min-inline-size: var(--xh-date-picker-control-min-w, var(--xh-control-min-w));
+    min-inline-size: min(var(--xh-date-picker-control-min-w, var(--xh-control-min-w)), 100%);
     block-size: var(--xh-date-picker-control-h, var(--xh-_date-picker-control-h));
     padding-inline: var(--xh-date-picker-control-px, var(--xh-_date-picker-control-px));
     padding-block: 0;
@@ -295,6 +308,12 @@
     color: var(--xh-date-picker-action-fg-hover, var(--xh-fg-default));
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='date-picker'][data-part='trigger'][data-state='open']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   /* 清空按钮不占 Tab 位（tabindex=-1），这条是给程序化聚焦兜底：落焦时得看得见。
      展开钮是常规 Tab 停靠点，它落焦时环由盒的 :focus-within 画，这里不再套一圈 */
   [data-scope='date-picker'][data-part='clear-trigger']:focus-visible {
@@ -308,21 +327,39 @@
   }
 
   [data-scope='date-picker'][data-part='content'] {
+    position: relative;
     display: block;
+    /* 行内轴只有落位后的可用宽度这一个上限：不夹住，浮层就会被定位层的包含块压窄，
+       网格轨道跟着缩到比日期钮还窄，相邻两颗日期钮互相盖住 */
+    max-inline-size: var(--xh-_date-picker-available-w);
     padding-block: var(--xh-date-picker-content-py, var(--xh-space-3));
     padding-inline: var(--xh-date-picker-content-px, var(--xh-space-3));
-    border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-date-picker-content-radius, var(--xh-shape-surface));
-    background: var(--xh-date-picker-content-bg, var(--xh-bg-surface));
-    color: var(--xh-date-picker-content-fg, var(--xh-fg-default));
+    background: var(--xh-date-picker-content-bg, var(--xh-material-frosted-bg));
+    color: var(--xh-date-picker-content-fg, var(--xh-material-frosted-fg));
     /* 日历是定高结构：六行日期加表头本来就有固定高度，上限走页内滚动面那一档；
        可用高度是定位引擎算出的视口余量，视口真放不下时再收一截 */
     max-block-size: min(var(--xh-date-picker-max-h, var(--xh-viewport-h-lg)), var(--xh-_date-picker-available-h));
-    overflow-y: auto;
-    /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
-    transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
-    box-shadow: var(--xh-date-picker-content-shadow, var(--xh-elevation-floating));
+    /* 两轴都滚：块轴放不下时面板内自己竖滚，行内轴放不下时面板内自己横滚，
+       日历那几块保持各自的天然宽度，不被压 */
+    overflow: auto;
+    box-shadow: var(--xh-date-picker-content-shadow, var(--xh-material-frosted-shadow));
+    -webkit-backdrop-filter: var(--xh-date-picker-content-backdrop, var(--xh-material-frosted-backdrop));
+    backdrop-filter: var(--xh-date-picker-content-backdrop, var(--xh-material-frosted-backdrop));
     pointer-events: auto;
+  }
+
+  /* 顶光由唯一浮层表面绘制，不占日历空间，也不拦截操作。 */
+  [data-scope='date-picker'][data-part='content']::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: var(--xh-stroke-thin);
+    border-radius: inherit;
+    background: var(--xh-date-picker-content-highlight, var(--xh-material-frosted-highlight));
+    pointer-events: none;
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -339,14 +376,14 @@
 
   [data-scope='date-picker'][data-part='content'][data-state='open'] {
     /* 只在展开态挂着：随状态属性一起消失，不长期占着合成层 */
-    will-change: opacity, scale, translate;
-    animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    will-change: opacity, translate;
+    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
      免得动画结束到真收起之间闪一下原样 */
   [data-scope='date-picker'][data-part='content'][data-state='closed'] {
-    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 内嵌日历的挂载点同时充当日历的根节点：日历那份样式的 root 规则落在
@@ -356,33 +393,74 @@
      showTime 那套结构里 content 直属子节点是作者自己的包裹块与确认行,
      无条件横排会把它们并到日历旁边去。
      不加 :not([hidden])：content 收起态带 hidden 但仍在播退场动画，
-     排除掉会让它在那几帧退回 block、两张日历竖着堆一下 */
+     排除掉会让它在那几帧退回 block、两张日历竖着堆一下。
+     并排放不下就折行，第二张月历落到第一张下面：视口窄与面板被夹窄都命中这一条 */
   [data-scope='date-picker'][data-part='content']:has(> [data-part='calendar'] + [data-part='calendar']) {
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-start;
   }
 
   /* 快捷选项列摆在日历的行内起始一侧，同样只在它真在场时才横过来。
-     与上一条同理：不加 :not([hidden])，退场那几帧塌回 block 会让两块竖着堆一下 */
+     与上一条同理：不加 :not([hidden])，退场那几帧塌回 block 会让两块竖着堆一下。
+     一并折行：选项条在手机档占满一行，日历落到它下面 */
   [data-scope='date-picker'][data-part='content']:has(> [data-part='preset-group']) {
     display: flex;
+    flex-wrap: wrap;
     align-items: stretch;
   }
 
-  /* 第二个起的面板画一道左分隔线：两张网格挨着排时要有条界，
-     否则 8 月末与 9 月初那两列看着像同一张表 */
-  [data-scope='date-picker'][data-part='calendar'] + [data-scope='date-picker'][data-part='calendar'] {
-    padding-inline-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-panel-divider, var(--xh-border-subtle));
+  /* showTime 的时间列与日历同处一条可折行的行内流：放得下就并排贴在日历旁边，
+     放不下时整组时间列折到日历下面，几列彼此仍横着排。
+     不写这一条时 content 是 block，时列与分列会各占满一行竖着摞成一长条 */
+  [data-scope='date-picker'][data-part='content']:has(> [data-part='time-column']) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
   }
 
-  /* 快捷选项列与它旁边那张日历之间留出同样的空当，两道分隔线左右对称 */
+  /* 确认按钮沉到所在那一行的底边：它是整块面板的出口，不跟日历顶边对齐 */
+  [data-scope='date-picker'][data-part='content']:has(> [data-part='time-column']) > [data-part='confirm-trigger'] {
+    align-self: flex-end;
+  }
+
+  /* 第二个起的面板画一道分隔线：两张网格挨着排时要有条界，
+     否则 8 月末与 9 月初那两列看着像同一张表。
+     手机档两张月历折行堆叠，线画在块起始边 */
+  [data-scope='date-picker'][data-part='calendar'] + [data-scope='date-picker'][data-part='calendar'] {
+    padding-block-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-date-picker-panel-divider, var(--xh-material-frosted-separator));
+  }
+
+  /* 平板起两张月历并排放得下，线改画在行内起始边 */
+  @media (min-width: 768px) {
+    [data-scope='date-picker'][data-part='calendar'] + [data-scope='date-picker'][data-part='calendar'] {
+      padding-block-start: 0;
+      padding-inline-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
+      border-block-start: none;
+      border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-panel-divider, var(--xh-material-frosted-separator));
+    }
+  }
+
+  /* 快捷选项与它旁边那张日历之间留出同样的空当。
+     手机档选项条在上、日历在下，空当留在块轴 */
   [data-scope='date-picker'][data-part='preset-group'] + [data-scope='date-picker'][data-part='calendar'] {
-    padding-inline-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
+    padding-block-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
+  }
+
+  /* 平板起选项列回到日历一侧，空当跟着回到行内轴，两道分隔线左右对称 */
+  @media (min-width: 768px) {
+    [data-scope='date-picker'][data-part='preset-group'] + [data-scope='date-picker'][data-part='calendar'] {
+      padding-block-start: 0;
+      padding-inline-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
+    }
   }
 
   [data-scope='date-picker'][data-part='calendar'] {
     display: flex;
+    /* 面板被夹窄时不跟着缩：日期钮的宽度是定死的，网格轨道再窄下去就会与右邻的钮叠在一起。
+       撑出去的那截交给面板自己横滚 */
+    min-inline-size: max-content;
     flex-direction: column;
     gap: var(--xh-date-picker-calendar-gap, var(--xh-space-3));
     /* 数字等宽：1 与 7 的字形宽度在比例字体里并不相同，不定住会让整张网格随月份抖动 */
@@ -393,19 +471,33 @@
     display: none;
   }
 
-  /* —— 快捷选项：一列按钮式条目，贴在日历的行内起始一侧 —— */
+  /* —— 快捷选项：一条按钮式条目 —— */
+  /* 手机档：整条压在面板顶部占满一行，条目横着排，放不下就这一条自己横滚 */
   [data-scope='date-picker'][data-part='preset-group'] {
     display: flex;
-    flex: none;
-    /* 这一列的高度由并排的日历给：不写就按内容收，右侧那道分隔线只画到最后一条选项 */
+    /* 独占面板的一整行，后面的日历折到它下面 */
+    flex: 0 0 100%;
+    /* 这一条的另一轴由并排的那块给：不写就按内容收，分隔线只画到最后一条选项 */
     align-self: stretch;
-    flex-direction: column;
+    flex-direction: row;
     gap: var(--xh-date-picker-preset-group-gap, var(--xh-list-option-gap));
-    /* 选项多起来时这一列自己滚，不把整张面板撑高 */
+    /* 选项多起来时这一条自己滚，不把整张面板撑大 */
     max-block-size: var(--xh-date-picker-preset-group-h, var(--xh-viewport-h-lg));
     padding: var(--xh-date-picker-preset-group-padding, var(--xh-space-1));
-    overflow-y: auto;
-    border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-border-subtle));
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-material-frosted-separator));
+  }
+
+  /* 平板起：换成贴在日历行内起始一侧的竖列，滚动轴与分隔线一起转过来 */
+  @media (min-width: 768px) {
+    [data-scope='date-picker'][data-part='preset-group'] {
+      flex: none;
+      flex-direction: column;
+      overflow: auto;
+      border-block-end: none;
+      border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-material-frosted-separator));
+    }
   }
 
   [data-scope='date-picker'][data-part='preset-group'][hidden] {
@@ -413,34 +505,69 @@
   }
 
   [data-scope='date-picker'][data-part='preset'] {
+    /* 横着排那一档不许被压扁：条目文本本来就不折行 */
+    position: relative;
+    flex: none;
     padding-block: var(--xh-date-picker-preset-py, var(--xh-space-1));
     padding-inline: var(--xh-date-picker-preset-px, var(--xh-space-3));
+    /* 对号的末端轨始终留着，切换选中时文字与整列宽度都不移动。 */
+    padding-inline-end: calc(
+      var(--xh-date-picker-preset-px, var(--xh-space-3)) +
+        var(--xh-date-picker-preset-check-size, var(--xh-glyph-size-sm)) +
+        var(--xh-space-1)
+    );
     border-radius: var(--xh-date-picker-preset-radius, var(--xh-shape-control));
     font-size: var(--xh-text-secondary-size);
     line-height: var(--xh-leading-normal);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 悬停与键盘锚点共用中性轻档，命中那一条才走品牌淡底——两档靠色相分家；禁用的不响应悬停 */
-  [data-scope='date-picker'][data-part='preset']:hover:not([data-disabled]) {
+  /* 悬停与键盘焦点共用中性底；持久选中只由末端对号表达。 */
+  [data-scope='date-picker'][data-part='preset']:not([data-disabled]):is(:hover, :focus-visible) {
     background: var(--xh-date-picker-preset-bg-hover, var(--xh-bg-subtle));
   }
 
-  [data-scope='date-picker'][data-part='preset']:focus-visible,
-  [data-scope='date-picker'][data-part='preset-group']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
+  [data-scope='date-picker'][data-part='preset']:focus-visible {
+    transition-property: color;
   }
 
   [data-scope='date-picker'][data-part='preset'][data-state='checked'] {
-    background: var(--xh-date-picker-preset-bg-selected, var(--xh-_date-picker-accent-subtle));
-    color: var(--xh-date-picker-preset-fg-selected, var(--xh-_date-picker-accent-subtle-fg));
-    font-weight: var(--xh-font-weight-medium);
+    color: var(--xh-date-picker-preset-fg-selected, inherit);
+    font-weight: var(--xh-font-weight-regular);
+  }
+
+  [data-scope='date-picker'][data-part='preset']::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: var(--xh-date-picker-preset-px, var(--xh-space-3));
+    inline-size: var(--xh-date-picker-preset-check-size, var(--xh-glyph-size-sm));
+    block-size: var(--xh-date-picker-preset-check-size, var(--xh-glyph-size-sm));
+    translate: 0 -50%;
+    background-color: var(--xh-date-picker-preset-check-fg, var(--xh-_date-picker-check-fg));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  }
+
+  [data-scope='date-picker'][data-part='preset'][data-state='checked']::after {
+    opacity: 1;
   }
 
   [data-scope='date-picker'][data-part='preset'][data-disabled] {
     color: var(--xh-date-picker-preset-fg-disabled, var(--xh-fg-disabled));
+    cursor: not-allowed;
+  }
+
+  [data-scope='date-picker'][data-part='preset'][data-disabled]::after {
+    background-color: var(--xh-date-picker-preset-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* —— showTime：时间列贴在日历右侧、逐列滚动，确认按钮收口 ——
@@ -453,7 +580,7 @@
     block-size: var(--xh-date-picker-time-column-h, var(--xh-viewport-h-sm));
     padding: var(--xh-date-picker-time-column-padding, var(--xh-space-1));
     overflow-y: auto;
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-border-subtle));
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-material-frosted-separator));
   }
 
   [data-scope='date-picker'][data-part='time-column'][hidden] {
@@ -461,30 +588,75 @@
   }
 
   [data-scope='date-picker'][data-part='time-item'] {
+    --xh-_date-picker-time-item-rail: max(
+      var(--xh-date-picker-time-item-px, var(--xh-space-3)),
+      calc(var(--xh-date-picker-time-item-check-size, var(--xh-_date-picker-time-item-check-size)) + var(--xh-space-1))
+    );
+
+    position: relative;
     padding-block: var(--xh-date-picker-time-item-py, var(--xh-space-1));
-    padding-inline: var(--xh-date-picker-time-item-px, var(--xh-space-3));
+    /* 左右两轨等宽：末端放对号，起始端留同宽空轨，数字仍在整行数学中心。 */
+    padding-inline: var(--xh-_date-picker-time-item-rail);
     border-radius: var(--xh-date-picker-time-item-radius, var(--xh-shape-control));
     font-size: var(--xh-text-secondary-size);
     line-height: var(--xh-leading-normal);
+    font-variant-numeric: tabular-nums;
     text-align: center;
     cursor: pointer;
     user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='date-picker'][data-part='time-item']:hover {
+  [data-scope='date-picker'][data-part='time-column']:not([aria-disabled='true']) [data-part='time-item']:is(
+      :hover,
+      :focus-visible
+    ) {
     background: var(--xh-date-picker-time-item-bg-hover, var(--xh-bg-subtle));
   }
 
-  /* 键盘走到哪一格要看得见：这几列靠方向键逐格走，没有这一条就等于闭着眼挑 */
-  [data-scope='date-picker'][data-part='time-item']:focus-visible,
-  [data-scope='date-picker'][data-part='time-column']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
+  [data-scope='date-picker'][data-part='time-item']:focus-visible {
+    transition-property: color;
   }
 
   [data-scope='date-picker'][data-part='time-item'][data-state='checked'] {
-    background: var(--xh-date-picker-time-item-bg-selected, var(--xh-_date-picker-accent-subtle));
-    color: var(--xh-date-picker-time-item-fg-selected, var(--xh-_date-picker-accent-subtle-fg));
-    font-weight: var(--xh-font-weight-medium);
+    color: var(--xh-date-picker-time-item-fg-selected, inherit);
+    font-weight: var(--xh-font-weight-regular);
+  }
+
+  [data-scope='date-picker'][data-part='time-item']::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    /* 标记占轨道末端，内缘与正文之间恒留一档间隙；与 padding 读同一个 rail，避免重叠。 */
+    inset-inline-end: calc(
+      var(--xh-_date-picker-time-item-rail) -
+        var(--xh-date-picker-time-item-check-size, var(--xh-_date-picker-time-item-check-size)) -
+        var(--xh-space-1)
+    );
+    inline-size: var(--xh-date-picker-time-item-check-size, var(--xh-_date-picker-time-item-check-size));
+    block-size: var(--xh-date-picker-time-item-check-size, var(--xh-_date-picker-time-item-check-size));
+    translate: 0 -50%;
+    background-color: var(--xh-date-picker-time-item-check-fg, var(--xh-_date-picker-check-fg));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  }
+
+  [data-scope='date-picker'][data-part='time-item'][data-state='checked']::after {
+    opacity: 1;
+  }
+
+  [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item'] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item']::after {
+    background-color: var(--xh-fg-disabled);
   }
 
   /* 槽名统一按部件取 --xh-date-picker-confirm-trigger-* */
@@ -516,8 +688,10 @@
     scale: var(--xh-motion-scale-press);
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
   [data-scope='date-picker'][data-part='confirm-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
+    outline: var(--xh-ring-width) solid currentColor;
     outline-offset: var(--xh-ring-offset);
   }
 
@@ -547,14 +721,32 @@
     -webkit-mask: var(--xh-glyph-mark-calendar) center / contain no-repeat;
     mask: var(--xh-glyph-mark-calendar) center / contain no-repeat;
   }
+
+  @media (forced-colors: active) {
+    /* 系统接管底色后仍保住末端对号；禁用标记改用系统失效色。 */
+    [data-scope='date-picker'][data-part='preset']::after,
+    [data-scope='date-picker'][data-part='time-item']::after {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+    }
+
+    [data-scope='date-picker'][data-part='preset'][data-disabled]::after,
+    [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item']::after {
+      background-color: GrayText;
+    }
+
+    [data-scope='date-picker'][data-part='preset'][data-disabled],
+    [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item'] {
+      color: GrayText;
+    }
+  }
 }
 
 @layer xihan.motion {
-  /* 进场从锚点那一侧冒出来：位移的两个分量由 placement 写进私有槽，没写就退回原地缩放 */
-  @keyframes xh-overlay-pop-in {
+  /* 与选择器共用短位移动作；独立引入本皮肤时也提供完整关键帧。 */
+  @keyframes xh-overlay-slide-in {
     from {
       opacity: 0;
-      scale: var(--xh-motion-scale-enter);
       translate:
         calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
         calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
@@ -562,20 +754,21 @@
 
     to {
       opacity: 1;
-      scale: 1;
       translate: 0 0;
     }
   }
 
-  @keyframes xh-pop-out {
+  @keyframes xh-overlay-slide-out {
     from {
       opacity: 1;
-      scale: 1;
+      translate: 0 0;
     }
 
     to {
       opacity: 0;
-      scale: var(--xh-motion-scale-exit);
+      translate:
+        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
     }
   }
 

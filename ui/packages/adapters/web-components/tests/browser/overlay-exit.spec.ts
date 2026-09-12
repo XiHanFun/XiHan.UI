@@ -2,6 +2,7 @@
 // getComputedStyle（animationName 恒为空串），退场探测那条路在 jsdom 里天然走不到。
 //
 // Light DOM 下节点归作者，收起靠内联 display——所以这里查的是「退场期间 display 没被写死」。
+import { getLayerRegistry } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../../src/define'
 // 皮肤要一起加载：这里查的就是皮肤给出的 animationName
@@ -59,6 +60,249 @@ const DIALOG = `
     </div>
   </xh-dialog>
 `
+
+describe.each(['dialog', 'drawer'] as const)('wc %s 的行为资源退出合同', (scope) => {
+  function installLongExit(): void {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes test-exit-fade { from { opacity: 1 } to { opacity: 0 } }
+      @keyframes test-exit-move { from { translate: 0 0 } to { translate: 0 8px } }
+      @keyframes test-exit-shine { from { outline-color: transparent } to { outline-color: transparent } }
+      [data-scope='${scope}'][data-part='content'][data-state='closed'] {
+        animation: test-exit-fade 60s linear forwards, test-exit-move 60s linear forwards, test-exit-shine 60s linear infinite;
+      }
+      [data-scope='${scope}'][data-part='backdrop'][data-state='closed'] { animation: test-exit-fade 60s linear forwards }
+    `
+    document.body.append(style)
+  }
+  function finite(node: HTMLElement): Animation[] {
+    return node.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
+  }
+  function fixture(): HTMLElement {
+    return mount(`<xh-${scope} open><div${scope === 'drawer' ? ' data-xh-part="root"' : ''}>
+      <button data-xh-part="trigger">打开</button><div data-xh-part="backdrop"></div>
+      <div data-xh-part="positioner"><div data-xh-part="content"><h2 data-xh-part="title">标题</h2><button>内部</button></div></div>
+    </div></xh-${scope}>`)
+  }
+
+  it('内容全部有限动画和遮罩完成前保留失活与滚动约束', async () => {
+    installLongExit()
+    const outside = document.createElement('button')
+    document.body.append(outside)
+    const element = fixture()
+    const completed: number[] = []
+    element.addEventListener('exit-complete', () => completed.push(getLayerRegistry(document).list().length))
+    await settle()
+    element.setAttribute('open', 'false')
+    await settle()
+    const content = part(scope, 'content')!
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    const action = content.querySelector('button')!
+    action.focus()
+    expect(document.activeElement).not.toBe(action)
+    expect(outside.inert).toBe(true)
+    expect(document.body.style.overflow).toBe('hidden')
+    const animations = finite(content)
+    expect(animations).toHaveLength(2)
+    animations[0]!.finish()
+    await settle()
+    expect(completed).toEqual([])
+    animations[1]!.finish()
+    await settle()
+    expect(completed).toEqual([])
+    for (const animation of finite(part(scope, 'backdrop')!)) animation.finish()
+    await settle()
+    expect(completed).toEqual([0])
+    expect(outside.inert).toBe(false)
+    expect(content.style.display).toBe('none')
+  })
+
+  it('重开废弃旧完成，卸载立即撤销模态资源', async () => {
+    installLongExit()
+    const element = fixture()
+    const completed: number[] = []
+    element.addEventListener('exit-complete', () => completed.push(getLayerRegistry(document).list().length))
+    await settle()
+    element.setAttribute('open', 'false')
+    await settle()
+    const old = finite(part(scope, 'content')!)
+    element.setAttribute('open', 'true')
+    await settle()
+    for (const animation of old) animation.cancel()
+    await settle()
+    expect(part(scope, 'content')!.inert).toBe(false)
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    expect(completed).toEqual([])
+    element.setAttribute('open', 'false')
+    await settle()
+    element.remove()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+    expect(completed).toEqual([])
+  })
+})
+
+describe('wc select 行为资源退出', () => {
+  it('真实 content 退场完成前保留 Layer，逻辑关闭立即退出交互树', async () => {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes test-select-exit { from { opacity: 1 } to { opacity: 0 } }
+      @keyframes test-select-move { from { translate: 0 0 } to { translate: 0 8px } }
+      [data-scope='select'][data-part='content'][data-state='closed'] {
+        animation: test-select-exit 60s linear forwards, test-select-move 60s linear forwards;
+      }
+    `
+    document.body.append(style)
+    const element = mount(`
+      <xh-select open>
+        <div data-xh-part="root">
+          <button data-xh-part="trigger">选择</button>
+          <div data-xh-part="positioner"><div data-xh-part="content">
+            <div data-xh-part="list"><div data-xh-part="item" value="a"><span data-xh-part="item-text">甲</span></div></div>
+          </div></div>
+        </div>
+      </xh-select>`)
+    await settle()
+
+    element.setAttribute('open', 'false')
+    await settle()
+    const content = part('select', 'content')!
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    const animations = content.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
+    expect(animations).toHaveLength(2)
+    animations[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    animations[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+  })
+})
+
+const IMAGE_VIEWER = `
+  <xh-image-viewer open>
+    <button data-xh-part="trigger">开</button>
+    <div data-xh-part="backdrop"></div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content"><img data-xh-part="image"><button>内部</button></div>
+    </div>
+  </xh-image-viewer>
+`
+
+describe('wc image-viewer 的行为资源退出合同', () => {
+  it('内容和遮罩均完成退出租约前保留模态资源', async () => {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes test-image-viewer-exit { from { opacity: 1 } to { opacity: 0 } }
+      @keyframes test-image-viewer-move { from { translate: 0 0 } to { translate: 0 8px } }
+      [data-scope='image-viewer'][data-part='content'][data-state='closed'] {
+        animation: test-image-viewer-exit 60s linear forwards, test-image-viewer-move 60s linear forwards;
+      }
+      [data-scope='image-viewer'][data-part='backdrop'][data-state='closed'] {
+        animation: test-image-viewer-exit 60s linear forwards;
+      }
+    `
+    document.body.append(style)
+    const outside = document.createElement('button')
+    document.body.append(outside)
+    const element = mount(IMAGE_VIEWER)
+    await settle()
+
+    element.setAttribute('open', 'false')
+    await settle()
+    const content = part('image-viewer', 'content')!
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    expect(outside.inert).toBe(true)
+    expect(document.body.style.overflow).toBe('hidden')
+
+    const finite = content.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
+    expect(finite).toHaveLength(2)
+    finite[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    finite[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    for (const animation of part('image-viewer', 'backdrop')!.getAnimations()) animation.finish()
+    await settle()
+
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+    expect(outside.inert).toBe(false)
+    expect(content.style.display).toBe('none')
+  })
+})
+
+describe('wc tour 的退出资源', () => {
+  it('气泡、遮罩与聚光灯全部完成前保留 Layer，但不接入 Tour 没有的背景资源', async () => {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes test-tour-exit { from { opacity: 1 } to { opacity: 0 } }
+      @keyframes test-tour-move { from { translate: 0 0 } to { translate: 0 8px } }
+      [data-scope='tour'][data-part='content'][data-state='closed'] {
+        animation: test-tour-exit 60s linear forwards, test-tour-move 60s linear forwards;
+      }
+      [data-scope='tour'][data-part='backdrop'][data-state='closed'],
+      [data-scope='tour'][data-part='spotlight'][data-state='closed'] {
+        animation: test-tour-exit 60s linear forwards;
+      }
+    `
+    document.body.append(style)
+    const target = document.createElement('button')
+    target.id = 'tour-exit-target'
+    document.body.append(target)
+    const element = mount(`
+      <xh-tour open>
+        <div data-xh-part="root"></div>
+        <div data-xh-part="backdrop"></div>
+        <div data-xh-part="spotlight"></div>
+        <div data-xh-part="positioner"><div data-xh-part="content"><h2 data-xh-part="title">第一步</h2></div></div>
+      </xh-tour>
+    `)
+    const tour = element as HTMLElement & { steps: Array<{ id: string, target: string, title: string }> }
+    tour.steps = [
+      { id: 'one', target: '#tour-exit-target', title: '第一步' },
+    ]
+    await settle()
+    expect(part('tour', 'content')!.style.display).not.toBe('none')
+    expect(part('tour', 'spotlight')!.hasAttribute('hidden')).toBe(false)
+
+    element.setAttribute('open', 'false')
+    await settle()
+    const content = part('tour', 'content')!
+    const backdrop = part('tour', 'backdrop')!
+    const spotlight = part('tour', 'spotlight')!
+    expect(content.getAttribute('data-state')).toBe('closed')
+    expect(getComputedStyle(content).animationName).toContain('test-tour-exit')
+    expect(getComputedStyle(content).display).not.toBe('none')
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    expect(target.inert).toBe(false)
+    expect(document.body.style.overflow).not.toBe('hidden')
+
+    const finite = (node: HTMLElement): Animation[] => node.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
+    const contentAnimations = finite(content)
+    expect(contentAnimations).toHaveLength(2)
+    contentAnimations[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    contentAnimations[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    for (const animation of finite(backdrop)) animation.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    for (const animation of finite(spotlight)) animation.finish()
+    await settle()
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    await settle()
+
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+    expect(content.style.display).toBe('none')
+  })
+})
 
 describe('wc dialog 退场', () => {
   it('收起后 content 不立刻被写成 display:none，而是在播退场动画', async () => {
@@ -212,7 +456,7 @@ describe('wc tooltip 退场', () => {
     await settle()
 
     expect(content.style.display, '退场动画播完之前不能写 display:none').not.toBe('none')
-    expect(getComputedStyle(content).animationName).toBe('xh-pop-out')
+    expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-out')
 
     expect(await animationEnd(content), '退场动画应当真的结束一次').toBe(true)
     await settle()

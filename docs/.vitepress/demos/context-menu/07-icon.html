@@ -12,15 +12,15 @@
               <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
             </xh-icon>
             <span data-xh-part="item-text">剪切</span>
-            <!-- item-text 会撑满剩余宽度，快捷键提示自然被顶到条目末端 -->
-            <span style="color: var(--xh-fg-muted)">Ctrl+X</span>
+            <!-- item-text 会撑满剩余宽度，KbdGroup 自然落在条目末端 -->
+            <xh-kbd-group keys="Mod,X" size="sm"><span data-xh-part="root"></span></xh-kbd-group>
           </div>
           <div data-xh-part="item" value="paste" aria-disabled="true">
             <xh-icon size="sm" data-glyph="paste">
               <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
             </xh-icon>
             <span data-xh-part="item-text">粘贴</span>
-            <span style="color: var(--xh-fg-muted)">Ctrl+V</span>
+            <xh-kbd-group keys="Mod,V" size="sm" disabled><span data-xh-part="root"></span></xh-kbd-group>
           </div>
           <div data-xh-part="separator"></div>
           <div data-xh-part="item" value="delete">
@@ -28,7 +28,7 @@
               <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
             </xh-icon>
             <span data-xh-part="item-text">删除</span>
-            <span style="color: var(--xh-fg-muted)">Del</span>
+            <xh-kbd-group keys="Delete" size="sm"><span data-xh-part="root"></span></xh-kbd-group>
           </div>
         </div>
       </div>

@@ -1,34 +1,17 @@
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { TagApi } from '../tag'
 import type { SelectApi, SelectItemProps, SelectNodeMeta, SelectSchema } from './select.types'
 import { contains, dataAttr, focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
-import { overlayPositioned } from '../shared/overlay'
+import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
+import { connectStaticTag, tagVariantForControl } from '../tag'
 import { selectAnatomy, selectItemQuery, selectItemText } from './select.anatomy'
-import { SELECT_DEFAULT_PLACEMENT } from './select.machine'
+import { SELECT_DEFAULT_MAX_TAG_COUNT, SELECT_DEFAULT_PLACEMENT } from './select.machine'
 
 const parts = selectAnatomy.build()
 
 // 指针亲手点亮过的条目：pointerleave 只收自己点的漆，键盘建立的高亮被指针路过不受影响
 const pointerHot = new WeakSet<Element>()
-
-// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
-// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
-const AVAILABLE_H_FLOOR = 96
-
-function availableHeightVar(available: number | undefined): Record<string, string> {
-  return {
-    '--xh-_select-available-h':
-      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
-  }
-}
-
-// 锚点实测宽度。content 拿它做最小宽的下界，浮层因此不窄于触发器；
-// 引擎没算出来时空串撤掉声明，退回皮肤 positioner 上那档 0
-function anchorWidthVar(width: number | undefined): Record<string, string> {
-  return {
-    '--xh-_select-anchor-w': width != null ? `${width}px` : '',
-  }
-}
 
 export function connectSelect<T extends PropTypes>(
   service: Service<SelectSchema>,
@@ -67,19 +50,48 @@ export function connectSelect<T extends PropTypes>(
   const placeholder = prop('placeholder') ?? null
   // 多选把各项文本连起来显示；分隔符固定，作者要别的排版就自己渲染 valueText
   const displayText = valueText.length > 0 ? valueText.join(', ') : placeholder ?? ''
-  // 标签形态：与 value/valueText 同序，maxTagCount 只截可见的、余数进 overflowCount
+  // 标签形态：与 value/valueText 同序，maxTagCount 只截可见的、余数进 overflowCount 并合成 overflow-tag 那一枚
   const allTags = value.map((v, i) => ({ value: v, label: valueText[i] ?? v }))
-  const maxTagCount = prop('maxTagCount')
-  const tags = maxTagCount === undefined ? allTags : allTags.slice(0, Math.max(0, maxTagCount))
+  const maxTagCount = prop('maxTagCount') ?? SELECT_DEFAULT_MAX_TAG_COUNT
+  const tags = allTags.slice(0, Math.max(0, maxTagCount))
   const overflowCount = allTags.length - tags.length
+  const overflowText = overflowCount > 0
+    ? (prop('translations')?.overflowTag ?? ((count: number) => `+${count}`))(overflowCount)
+    : ''
   const tagLabel = (v: string): string => allTags.find(tag => tag.value === v)?.label ?? v
   // roving tabindex 与方向键起点共用这一个锚点；收起时为 null（条目此刻不可达）
   const highlighted = context.get('highlightedValue') ?? null
   const disabled = !!prop('disabled')
+  const deleteItemLabel = prop('translations')?.deleteItem ?? ((label: string) => `Delete ${label}`)
+  const readOnly = !!prop('readOnly')
+  const tagAxes = { variant: tagVariantForControl(prop('variant')), tone: prop('tone'), size: prop('size'), disabled, readOnly }
+  // 标签与 +N 套的是库里的 tag：语气、尺寸、禁用与只读从本控件传下去，形态按控件的面派。
+  // 显隐受控在这里——标签在不在只看选中值在不在，不建机器。
+  // 值标签一枚一份，关闭钮即删除钮：受控 open 下按它只发 onOpenChange，摘值从这里回到机器；
+  // 摆在触发器里时不渲那颗钮（按钮不能套按钮），root 的产出不看 closable
+  const hostedTag = (v: string): TagApi<T> => connectStaticTag(
+    {
+      ...tagAxes,
+      closable: true,
+      open: true,
+      translations: { close: deleteItemLabel(tagLabel(v)) },
+      onOpenChange: ({ open }) => {
+        if (!open)
+          send({ type: 'VALUE.SET', value: value.filter(x => x !== v) })
+      },
+    },
+    { get: () => true, set: () => {} },
+    normalize,
+  )
+  // +N 那一枚不可关闭：没有折起的标签时就是收起态，hidden 由 tag 给
+  const overflowTag = connectStaticTag(
+    { ...tagAxes, closable: false, open: overflowCount > 0 },
+    { get: () => overflowCount > 0, set: () => {} },
+    normalize,
+  )
   const loading = !!prop('loading')
   // 集合交给库时相位由库判；条目手写时库数不出有几条
   const counted = prop('collection') != null
-  const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
   // 只读与禁用都改不了选中值，区别在于禁用连浮层都展不开
   const interactive = !disabled && !readOnly
@@ -148,6 +160,7 @@ export function connectSelect<T extends PropTypes>(
     canClear,
     tags,
     overflowCount,
+    overflowText,
     highlightedValue: highlighted,
     setOpen: (next) => {
       if (next !== open)
@@ -258,21 +271,27 @@ export function connectSelect<T extends PropTypes>(
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
     }),
-    getTagProps: ({ value: v }) => normalize.element({
-      ...parts.tag.attrs,
+    // 标签行：无选中时整个收起，皮肤据此让 value-text 回来显示占位文字
+    getTagListProps: () => normalize.element({
+      ...parts['tag-list'].attrs,
+      'hidden': value.length === 0 || undefined,
+      'data-disabled': dataAttr(disabled),
+    }),
+    // 标签本体就是 tag 的 root（data-scope="tag"），只多一个 data-value 记它代表哪个选中值
+    getTagProps: ({ value: v }) => ({
+      ...hostedTag(v).getRootProps() as Record<string, unknown>,
       'data-value': v,
-      'data-disabled': dataAttr(disabled),
-    }),
-    getItemDeleteTriggerProps: ({ value: v }) => normalize.button({
-      ...parts['item-delete-trigger'].attrs,
-      'type': 'button',
-      'aria-label': (prop('translations')?.deleteItem ?? ((label: string) => `Delete ${label}`))(tagLabel(v)),
-      'data-disabled': dataAttr(disabled),
-      'onClick': () => {
-        if (interactive)
-          send({ type: 'VALUE.SET', value: value.filter(x => x !== v) })
-      },
-    }),
+    }) as T['element'],
+    // 折起来的那些合成一枚：也是 tag 的 root，data-count 记折了几枚；没有折起的就整个收起，不留空位
+    getOverflowTagProps: () => ({
+      ...overflowTag.getRootProps() as Record<string, unknown>,
+      'data-count': String(overflowCount),
+    }) as T['element'],
+    // 两种标签的文字都落在 tag 的 label 上，截断规则挂在那一层
+    getTagLabelProps: () => overflowTag.getLabelProps(),
+    // 删除钮就是所在标签那份 tag 的 close-trigger：可及名、禁用与点按都由 tag 给，
+    // 只读时点按送到机器的 VALUE.SET 被 isReadOnly 守卫挡下
+    getItemDeleteTriggerProps: ({ value: v }) => hostedTag(v).getCloseTriggerProps(),
     // 清空按钮是 trigger 的兄弟节点（按钮不能套按钮），点按只清值不碰开合
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
@@ -314,13 +333,11 @@ export function connectSelect<T extends PropTypes>(
       // 落位才露：皮肤基线把定位层藏着，带这个才显示。展开那几帧坐标还没算出来时就是藏的
       'data-positioned': dataAttr(overlayPositioned(position)),
       'style': {
-        position: 'fixed',
-        left: `${position?.x ?? 0}px`,
-        top: `${position?.y ?? 0}px`,
+        ...overlayFixedStyle(position),
         // content 继承这个高度上限，超出的条目在浮层内部滚
-        ...availableHeightVar(position?.availableHeight),
+        ...overlayAvailableSpaceVars('select', position),
         // content 继承这个宽度下界，浮层至少与触发器同宽
-        ...anchorWidthVar(position?.anchorWidth),
+        ...overlayAnchorWidthVar('select', position?.anchorWidth),
       },
     }),
     // 浮层的外壳：描边、底色、阴影画在它身上，键盘也在它上面收口（条目只管声明自己）。
@@ -330,6 +347,9 @@ export function connectSelect<T extends PropTypes>(
       ...parts.content.attrs,
       'data-state': stateAttr,
       'data-placement': placement,
+      // Presence 会把视觉节点留到动画结束；逻辑关闭后立即退出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
       'onKeydown': (event: KeyboardEvent) => {
@@ -421,6 +441,9 @@ export function connectSelect<T extends PropTypes>(
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
       ...itemStateAttrs(item),
+      // Collection Item 家族只读取稳定角色与状态事实；三端适配器原样 spread，不复制视觉判定。
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': prop('size') ?? 'md',
       // 导航、检索与选中都以此为条目身份
       [ITEM_VALUE_ATTR]: item.value,
       'role': 'option',
@@ -470,10 +493,12 @@ export function connectSelect<T extends PropTypes>(
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'text',
     }),
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'indicator',
       'aria-hidden': true,
     }),
     // 表单出口：选中值靠这份原生 select 提交并被 required 校验看见，对键盘与读屏不存在。

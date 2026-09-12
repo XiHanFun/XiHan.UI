@@ -11,9 +11,16 @@ export interface DialogRefs {
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
   presence: PresenceHandle | null
+  /** 展开期间 modal 改值时同步滚动锁与背景失活。 */
+  syncModalResources: (() => void) | null
   getContentEl: () => HTMLElement | null
   getTriggerEl: () => HTMLElement | null
   branches: () => Element[]
+  /**
+   * connect 给部件落 id 时用的组件名。归还焦点时按这个名字现取 trigger，
+   * 抽屉跑的是同一台机器、部件名却是 drawer，由它的 refs 初值改写成自己的。
+   */
+  partScope: string
 }
 
 export interface DialogOpenChangeDetails {
@@ -43,6 +50,8 @@ export interface DialogSchema extends MachineSchema {
     translations?: Partial<DialogTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: DialogOpenChangeDetails) => void
+    /** 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 */
+    onExitComplete?: () => void
   }
   context: Record<string, never>
   computed: Record<string, never>
@@ -57,7 +66,7 @@ export interface DialogSchema extends MachineSchema {
     | { type: 'CONTROLLED.CLOSE' }
   tag: never
   guard: 'isOpenControlled'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'syncModalResources'
   effect: 'trackOverlay'
 }
 

@@ -5,9 +5,9 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { connectImageViewer, imageViewerAnatomy, imageViewerCounterText, imageViewerMachine, imageViewerMeta } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
@@ -53,7 +53,10 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart counter - 「第 n / 共 m」计数（元素代填）
  * @csspart close-trigger - 关闭
  */
-export class XhImageViewerElement extends XhElement {
+export class XhImageViewerElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: imageViewerAnatomy, meta: imageViewerMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -93,11 +96,23 @@ export class XhImageViewerElement extends XhElement {
   declare translations?: Partial<ImageViewerTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly viewerScope = createScope(null, this.idGen)
+  // 运行时环境必须始终取宿主当前所属 Document：iframe 创建或 adopt 之后不能继续用构造时的全局 realm。
+  private readonly viewerScope = createScope(() => this, this.idGen)
   private config: RuntimeConfig | null = null
   private contentNode: HTMLElement | null = null
   private exit: OverlayExit | null = null
   private backdropNode: HTMLElement | null = null
+  private readonly portal = this.createPortalLeaseController({
+    name: 'ImageViewer 视口模态',
+    config: () => this.config,
+    source: () => this,
+    roots: () => {
+      const positioner = this.getPart('positioner')
+      return this.backdropNode && positioner ? [this.backdropNode, positioner] : []
+    },
+    onChange: () => this.requestUpdate(),
+  })
+
   /** counter 的文本归属：首帧为空才代填，作者写过内容就不碰。 */
   private counterOwned: boolean | null = null
 
@@ -159,6 +174,10 @@ export class XhImageViewerElement extends XhElement {
     return this.exit
   }
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
+  }
+
   // 只交注册函数，层的入栈出栈由机器的 trackOverlay 效应跟着展开态做。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
@@ -167,7 +186,6 @@ export class XhImageViewerElement extends XhElement {
       node: () => this.contentNode,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [this.backdropNode].filter(Boolean) as Element[],
     })
   }
@@ -177,6 +195,7 @@ export class XhImageViewerElement extends XhElement {
     this.ensureConfig()
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.ensureExit().presence)
     svc.refs.set('getContentEl', () => this.contentNode)
   }
 
@@ -227,12 +246,15 @@ export class XhImageViewerElement extends XhElement {
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const exit = this.ensureExit()
-    exit.track(this.contentNode)
+    exit.track(this.contentNode, this.backdropNode)
     exit.update(open)
     const visible = exit.visible
 
-    // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖
     const positioner = this.getPart('positioner')
+    // 逻辑关闭后仍由退出租约持有双根，直到内容和遮罩均完成实际退场。
+    this.portal.sync(open || visible)
+
+    // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖
     if (positioner)
       this.setPartHidden(positioner, !visible)
     if (this.backdropNode)
@@ -246,6 +268,7 @@ export class XhImageViewerElement extends XhElement {
     // 只在机器已经收起时才强收——元素被移动（remove 后立刻 append）时展开态不该被打断
     this.exit?.dispose()
     this.exit = null
+    this.portal.dispose()
     if (this.ctrl.service.state.get() !== 'open')
       this.setPartHidden(this.contentNode, true)
     this.config = null // 重连时 ensureConfig 重建

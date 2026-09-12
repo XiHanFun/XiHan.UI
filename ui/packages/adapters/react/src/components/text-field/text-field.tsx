@@ -3,11 +3,13 @@ import type { TextFieldApi, TextFieldInputHost, TextFieldSchema, TextFieldType }
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { autoSizeTextarea } from '@xihan-ui/headless'
-import { useEffect, useRef } from 'react'
+import { useCallback, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
+import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { TextFieldProvider, useTextFieldContext } from './context'
 import { useTextField } from './use-text-field'
 
@@ -22,7 +24,7 @@ export type TextFieldRootSlotProps = Pick<
 /** 字数部件函数式 children 的载荷：当前字数、上限与顶到上限的标志。 */
 export type TextFieldCountSlotProps = Pick<TextFieldApi, 'count' | 'maxLength' | 'atLimit'>
 
-export interface XhTextFieldRootProps {
+export interface XhTextFieldRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   value?: string
   defaultValue?: string
   type?: TextFieldType
@@ -45,14 +47,57 @@ export interface XhTextFieldRootProps {
   children?: SlotChildren<TextFieldRootSlotProps>
 }
 
-export function XhTextFieldRoot({ children, ...props }: XhTextFieldRootProps): ReactNode {
-  const ctx = useTextField(withXhConfig('text-field', props) as TextFieldProps)
+export function XhTextFieldRoot({
+  value,
+  defaultValue,
+  type,
+  placeholder,
+  disabled,
+  readOnly,
+  required,
+  invalid,
+  name,
+  maxLength,
+  clearable,
+  showCount,
+  autoSize,
+  variant,
+  tone,
+  size,
+  translations,
+  onValueChange,
+  children,
+  ...rest
+}: XhTextFieldRootProps): ReactNode {
+  const ctx = useTextField(withXhConfig('text-field', useFormControlProps({
+    value,
+    defaultValue,
+    type,
+    placeholder,
+    disabled,
+    readOnly,
+    required,
+    invalid,
+    name,
+    maxLength,
+    clearable,
+    showCount,
+    autoSize,
+    variant,
+    tone,
+    size,
+    translations,
+    onValueChange,
+  })) as TextFieldProps)
   const api = ctx.api
   return (
     <TextFieldProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {renderSlot(children, {
           value: api.value,
@@ -104,25 +149,40 @@ export function XhTextFieldInput({ as = 'input', ...rest }: XhTextFieldInputProp
   const fieldLabel = useFieldLabelWiring()
   const ctx = useTextFieldContext()
   const el = useRef<HTMLTextAreaElement | null>(null)
-
-  // 程序化写值（setValue / 表单重置 / 受控回写）不触发 input 事件，量高在渲染后补一次
   const value = ctx.api.value
   const autoSize = ctx.api.autoSize
-  useEffect(() => {
-    if (as === 'textarea' && el.current)
+  const autoSizeRef = useRef(autoSize)
+  autoSizeRef.current = autoSize
+  const setInputRef = useCallback((node: HTMLElement | null): (() => void) | undefined => {
+    const next = as === 'textarea' ? node as HTMLTextAreaElement | null : null
+    if (el.current && el.current !== next)
+      autoSizeTextarea(el.current, false)
+    el.current = next
+    if (!next)
+      return undefined
+    autoSizeTextarea(next, autoSizeRef.current)
+    return () => {
+      if (el.current !== next)
+        return
+      autoSizeTextarea(next, false)
+      el.current = null
+    }
+  }, [as])
+
+  // 程序化写值（setValue / 表单重置 / 受控回写）不触发 input 事件，量高在渲染后补一次
+  useIsomorphicLayoutEffect(() => {
+    if (el.current)
       autoSizeTextarea(el.current, autoSize)
   }, [as, value, autoSize])
 
   const props = mergeReactProps(
     fieldLabel({
-      ...ctx.api.getInputProps({ as }) as Record<string, unknown>,
       ...fieldWiring,
+      ...ctx.api.getInputProps({ as }) as Record<string, unknown>,
     }),
     rest as Record<string, unknown>,
     {
-      ref: (node: HTMLElement | null) => {
-        el.current = as === 'textarea' ? node as HTMLTextAreaElement : null
-      },
+      ref: setInputRef,
     },
   )
 

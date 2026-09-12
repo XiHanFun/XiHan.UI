@@ -1,6 +1,7 @@
 import type { NavIntent, StepOptions } from '@xihan-ui/core'
 import type { CascaderColumn, CascaderLevel, CascaderNode, CascaderNodeMeta } from './cascader.types'
 import { stepIndex } from '@xihan-ui/core'
+import { sameArray } from '../shared/array'
 
 // 级联的纯算法层：不碰 DOM、不认识状态机（connect 在 render 期求值，此时 DOM 尚不存在）。
 
@@ -148,7 +149,7 @@ export function cascaderSamePath(
 ): boolean {
   if (a == null || b == null)
     return a == null && b == null
-  return a.length === b.length && a.every((v, i) => v === b[i])
+  return sameArray(a, b)
 }
 
 /** 路径的比较键。用 JSON 编码而非拼分隔符，分隔符可能出现在 value 里导致撞键。 */

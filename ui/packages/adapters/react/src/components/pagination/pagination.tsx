@@ -2,6 +2,7 @@ import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type { PaginationApi, PaginationEllipsisSide, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { useCallback, useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -34,7 +35,10 @@ export type PaginationRootSlotProps = Pick<
   | 'slice'
 >
 
-export interface XhPaginationRootProps {
+/** 根上自有的那些取值；dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'nav'>, 'children' | 'dir'>
+
+export interface XhPaginationRootProps extends RootElementProps {
   /** 总条数。 */
   count?: number
   pageSize?: number
@@ -58,12 +62,61 @@ export interface XhPaginationRootProps {
 }
 
 /** 根节点渲染为 nav 地标。 */
-export function XhPaginationRoot({ children, ...props }: XhPaginationRootProps): ReactNode {
-  const ctx = usePagination(withXhConfig('pagination', props) as PaginationProps)
+export function XhPaginationRoot({
+  count,
+  pageSize,
+  defaultPageSize,
+  pageSizeOptions,
+  page,
+  defaultPage,
+  siblingCount,
+  dir,
+  translations,
+  placement,
+  offset,
+  openDelay,
+  closeDelay,
+  tone,
+  size,
+  onPageChange,
+  onPageSizeChange,
+  children,
+  ...rest
+}: XhPaginationRootProps): ReactNode {
+  const machineProps = {
+    count,
+    pageSize,
+    defaultPageSize,
+    pageSizeOptions,
+    page,
+    defaultPage,
+    siblingCount,
+    dir,
+    translations,
+    placement,
+    offset,
+    openDelay,
+    closeDelay,
+    tone,
+    size,
+    onPageChange,
+    onPageSizeChange,
+  }
+  const ctx = usePagination(withXhConfig('pagination', machineProps) as PaginationProps)
   const api = ctx.api
+  // 稳定回调避免 Portal 为祖先 source 补一次提交时把已附着的根 ref 先清空再重挂。
+  const setRootRef = useCallback((el: HTMLElement | null) => {
+    ctx.rootRef.current = el
+  }, [ctx.rootRef])
   return (
     <PaginationProvider value={ctx}>
-      <nav {...api.getRootProps() as Record<string, unknown>}>
+      <nav
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: setRootRef },
+        )}
+      >
         {renderSlot(children, {
           page: api.page,
           pageSize: api.pageSize,
@@ -183,26 +236,83 @@ export function XhPaginationJumper({ ...rest }: XhPaginationJumperProps): ReactN
   return <input {...mergeReactProps(ctx.api.getJumperProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
 }
 
-/** 每页条数控制器的载荷：可选档位与它们的显示文字。 */
-export interface PaginationPageSizeSelectSlotProps {
-  options: number[]
-  label: (size: number) => string
+/**
+ * 一档条位。单拎成组件是因为条目的聚焦上报与指针离开都不冒泡，
+ * React 的同名合成事件挂在根容器上收不到，得逐条改装成原生监听器。
+ */
+function PageSizeOption({ value, label }: { value: string, label: string }): ReactNode {
+  const select = usePaginationContext().api.pageSizeSelect
+  const item = useMemo(() => ({ value }), [value])
+  const bind = useNativeEvents(
+    select.getItemProps(item) as Record<string, unknown>,
+    ['onFocus', 'onPointerLeave'],
+  )
+  return (
+    <div {...mergeReactProps(bind.attrs, { ref: bind.ref })}>
+      <span {...select.getItemTextProps(item) as Record<string, unknown>}>{label}</span>
+      <span {...select.getItemIndicatorProps(item) as Record<string, unknown>} />
+    </div>
+  )
 }
 
-export interface XhPaginationPageSizeSelectProps extends Omit<ComponentPropsWithRef<'select'>, 'children'> {
-  children?: SlotChildren<PaginationPageSizeSelectSlotProps>
+export interface XhPaginationPageSizeSelectProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  container?: () => Element | null
 }
-export function XhPaginationPageSizeSelect({ children, ...rest }: XhPaginationPageSizeSelectProps): ReactNode {
+/**
+ * 每页条数控制器：装的是库里的 select，不再是原生下拉。
+ *
+ * 组合发生在这一层——连接层把整份 select 的 api 摆在 api.pageSizeSelect 上，
+ * 这里照它铺角色节点（DOM 上带 data-scope="select"，吃的是 select 那份皮肤）。
+ * 档位与档位文字都由连接层从 pageSizeOptions 与 translations.pageSizeOption 算好。
+ */
+export function XhPaginationPageSizeSelect({ container, ...rest }: XhPaginationPageSizeSelectProps): ReactNode {
   const ctx = usePaginationContext()
   const api = ctx.api
-  // 档位由作者渲染成 option：原生 select 的子节点不是角色节点，用不着再立一个部件
-  const body = children == null
-    ? api.pageSizeOptions.map(size => <option key={size} value={String(size)}>{String(size)}</option>)
-    : renderSlot(children, { options: api.pageSizeOptions, label: (size: number) => String(size) })
+  const select = api.pageSizeSelect
   return (
-    <select {...mergeReactProps(api.getPageSizeSelectProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {body}
-    </select>
+    <>
+      <div {...mergeReactProps(api.getPageSizeSelectProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+        <div {...select.getRootProps() as Record<string, unknown>}>
+          <div {...select.getControlProps() as Record<string, unknown>}>
+            <button
+              {...mergeReactProps(
+                select.getTriggerProps() as Record<string, unknown>,
+                { ref: (el: HTMLButtonElement | null) => { ctx.pageSizeTriggerRef.current = el } },
+              )}
+            >
+              <span {...select.getValueTextProps() as Record<string, unknown>}>{select.displayText}</span>
+              <span {...select.getIndicatorProps() as Record<string, unknown>} />
+            </button>
+          </div>
+        </div>
+      </div>
+      <XhPortal container={container ?? ctx.portalContainer} source={ctx.pageSizeTriggerRef}>
+        <div
+          {...mergeReactProps(
+            select.getPositionerProps() as Record<string, unknown>,
+            { ref: (el: HTMLDivElement | null) => { ctx.pageSizePositionerRef.current = el } },
+          )}
+        >
+          <div
+            {...mergeReactProps(
+              select.getContentProps() as Record<string, unknown>,
+              {
+                // 收起跟着退场闸门走，与省略位那层同一套写法
+                style: ctx.pageSizeVisible ? undefined : { display: 'none' },
+                ref: (el: HTMLDivElement | null) => { ctx.pageSizeContentRef.current = el },
+              },
+            )}
+          >
+            <div {...select.getListProps() as Record<string, unknown>}>
+              {select.collection.map(option => (
+                <PageSizeOption key={option.value} value={option.value} label={option.label} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </XhPortal>
+    </>
   )
 }
 
@@ -216,7 +326,7 @@ export function XhPaginationPositioner({ children, container, ...rest }: XhPagin
   // 折叠页码列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current })
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.rootRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

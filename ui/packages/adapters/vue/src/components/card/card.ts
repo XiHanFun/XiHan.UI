@@ -9,10 +9,10 @@ import { provideCard, useCardContext } from './context'
 
 export const XhCardRoot = defineComponent({
   name: 'XhCardRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    variant: { type: String as PropType<CardVariant>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    variant: { type: String as PropType<CardVariant> },
+    size: { type: String as PropType<Size> },
     hoverable: Boolean,
     split: Boolean,
   },

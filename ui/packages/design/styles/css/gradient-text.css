@@ -1,4 +1,14 @@
 @layer xihan.components {
+  /* 轴边界只路由简单前景值，渐变本身仍在组件根用本地 direction/from/to 计算。
+     这样内层 default/more 能双向重置，也不会把未解析的组件变量冻结在祖先上。 */
+  :where(:root, [data-contrast='default']) {
+    --xh-_gradient-text-fg: transparent;
+  }
+
+  :where([data-contrast='more']) {
+    --xh-_gradient-text-fg: var(--xh-fg-default);
+  }
+
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='gradient-text'] {
     --xh-gradient-text-skin: 1;
@@ -21,16 +31,12 @@
     );
     -webkit-background-clip: text;
     background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
+    color: var(--xh-_gradient-text-fg);
+    -webkit-text-fill-color: currentColor;
   }
 
   /* —— 走向 —— */
   /* 逐档换算成 CSS 的 to <边或角>，四条边加四个角 */
-  [data-scope='gradient-text'][data-part='root'][data-direction='to-right'] {
-    --xh-_gradient-text-dir: to right;
-  }
-
   [data-scope='gradient-text'][data-part='root'][data-direction='to-left'] {
     --xh-_gradient-text-dir: to left;
   }
@@ -67,8 +73,8 @@
     --xh-_gradient-text-to: var(--xh-_tone-active);
   }
 
-  /* 强制色模式下系统会禁掉背景图，留着透明前景整段字就彻底看不见了，这里把填充色还回去 */
-  @media (forced-colors: active) {
+  /* 无 JS 时的系统高对比、强制色与打印统一退回单色；显式局部轴由上面的最近作用域标记负责。 */
+  @media (prefers-contrast: more), (forced-colors: active), print {
     [data-scope='gradient-text'][data-part='root'] {
       background-image: none;
       color: inherit;

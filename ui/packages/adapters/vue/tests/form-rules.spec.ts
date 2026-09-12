@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 // 声明式校验规则：required/min/max/pattern/type 首败即停、文案走 rule.message → validateMessages 模板 → 内置模板；
 // validator 与 validate 都可异步（validating 置真、批次号防竞态），change 模式逐字段跑规则。
+import type { FormValidationErrorDetails } from '@xihan-ui/headless'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import { XhFormFieldGroup, XhFormRoot, XhFormSubmitTrigger } from '../src'
@@ -23,6 +24,7 @@ afterEach(() => {
 interface SlotApi {
   errors: Record<string, string>
   validating: boolean
+  validationError: FormValidationErrorDetails | null
   setFieldValue: (name: string, value: unknown) => void
   submit: () => void
 }
@@ -32,21 +34,23 @@ interface Mounted {
   submit: () => Promise<void>
   onSubmit: ReturnType<typeof vi.fn>
   onInvalid: ReturnType<typeof vi.fn>
+  onValidationError: ReturnType<typeof vi.fn>
 }
 
 function mountForm(props: Record<string, unknown>): Mounted {
   const onSubmit = vi.fn()
   const onInvalid = vi.fn()
+  const onValidationError = vi.fn()
   let latest: SlotApi | undefined
   const host = document.createElement('div')
   document.body.appendChild(host)
   const app = createApp({
     setup: () => () =>
-      h(XhFormRoot, { ...props, onSubmit, onInvalid }, {
+      h(XhFormRoot, { ...props, onSubmit, onInvalid, onValidationError }, {
         default: (slot: SlotApi) => {
           latest = slot
           return [
-            h(XhFormFieldGroup, { value: 'user' }, () => []),
+            h(XhFormFieldGroup, { name: 'user' }, () => []),
             h(XhFormSubmitTrigger, () => '提交'),
           ]
         },
@@ -65,10 +69,29 @@ function mountForm(props: Record<string, unknown>): Mounted {
     },
     onSubmit,
     onInvalid,
+    onValidationError,
   }
 }
 
 describe('form 声明式规则', () => {
+  it('异常事件与插槽状态保持原始原因，显式重试成功后清除', async () => {
+    const cause = new Error('校验服务失败')
+    const validate = vi.fn().mockRejectedValueOnce(cause).mockResolvedValue({})
+    const m = mountForm({ defaultValues: { user: '甲' }, validate })
+    await tick()
+    await m.submit()
+    expect(m.onValidationError).toHaveBeenCalledWith({ cause, values: { user: '甲' }, field: null })
+    expect(m.api().validationError?.cause).toBe(cause)
+    expect(m.api().validating).toBe(false)
+    expect(m.api().errors).toEqual({})
+    expect(m.onInvalid).not.toHaveBeenCalled()
+    expect(m.onSubmit).not.toHaveBeenCalled()
+
+    await m.submit()
+    expect(m.api().validationError).toBeNull()
+    expect(m.onSubmit).toHaveBeenCalledTimes(1)
+  })
+
   it('required：空值拦下提交，文案走内置模板', async () => {
     const m = mountForm({ rules: { user: { required: true } } })
     await tick()

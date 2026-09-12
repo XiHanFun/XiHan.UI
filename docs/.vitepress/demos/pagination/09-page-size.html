@@ -1,4 +1,4 @@
-<!-- 每页条数 | 控制器由库自带：档位从 page-size-options 来，换档时页码跟着换算，改档前第一条仍留在页内 -->
+<!-- 每页条数 | 控制器就是库里的下拉：档位从 page-size-options 来、档位文字取 translations.pageSizeOption，换档时页码跟着换算，改档前第一条仍留在页内 -->
 <xh-pagination
   id="pagination-page-size"
   count="196"
@@ -7,20 +7,16 @@
   style="inline-size: 100%"
 >
   <nav data-xh-part="root">
-    <!-- 控制器是原生 select，档位写成 option，长相归作者 -->
-    <select data-xh-part="page-size-select">
-      <option value="10">10 条 / 页</option>
-      <option value="20">20 条 / 页</option>
-      <option value="50">50 条 / 页</option>
-    </select>
+    <!-- 挂载点写一个空 div 就够：里头那套下拉的角色节点由元素自己建 -->
+    <div data-xh-part="page-size-select"></div>
 
     <button data-xh-part="prev-trigger"></button>
     <button data-xh-part="item" value="1">1</button>
-    <button data-xh-part="ellipsis-trigger" side="start">…</button>
+    <button data-xh-part="ellipsis-trigger" side="start"></button>
     <button data-xh-part="item" value="7">7</button>
     <button data-xh-part="item" value="8">8</button>
     <button data-xh-part="item" value="9">9</button>
-    <button data-xh-part="ellipsis-trigger" side="end">…</button>
+    <button data-xh-part="ellipsis-trigger" side="end"></button>
     <button data-xh-part="item" value="20">20</button>
     <button data-xh-part="next-trigger"></button>
     <span id="pagination-page-size-readout" style="flex-basis: 100%">
@@ -35,8 +31,9 @@
   const next = root.querySelector('[data-xh-part="next-trigger"]');
   const readout = document.getElementById("pagination-page-size-readout");
 
-  // 档位表只做取值来源，不决定长相
+  // 档位表只做取值来源，每一档的文字归文案桶
   host.pageSizeOptions = [10, 20, 50];
+  host.translations = { pageSizeOption: (size) => `${size} 条 / 页` };
 
   // 换档之后总页数与页码都变了，两样都从元素上重读；
   // 条目区间也是它给的，末页不满时右端已经收成实际条数
@@ -50,7 +47,6 @@
       if (item.type === "ellipsis") {
         el.dataset.xhPart = "ellipsis-trigger";
         el.setAttribute("side", item.side);
-        el.textContent = "…";
       } else {
         el.dataset.xhPart = "item";
         el.setAttribute("value", String(item.value));

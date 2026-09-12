@@ -29,7 +29,7 @@ function touchesParts(record: MutationRecord): boolean {
  * 角色节点上属于作者的"声明"（与机器写上去的"状态"分属两侧），改了就等于换了一个条目，必须重新接线。
  * 只盯这几个而不是所有属性：wire() 每帧都往角色节点写 aria- 与 data-，全量观察等于自己触发自己。
  */
-const AUTHORED_ATTRS = ['value', 'disabled', 'aria-disabled'] as const
+const AUTHORED_ATTRS = ['value', 'name', 'data-path', 'disabled', 'aria-disabled'] as const
 
 function rewritesDeclaration(record: MutationRecord): boolean {
   if (record.type !== 'attributes' || !record.attributeName)
@@ -61,6 +61,14 @@ export abstract class XhElement extends XhReactiveElement {
     return this.partMap.get(name) ?? []
   }
 
+  /**
+   * 仍归本实例所有、但为逃离祖先层叠上下文而搬到 Portal 的角色根。
+   * 缺省没有；返回的根必须与宿主属于同一 Document。
+   */
+  protected externalPartRoots(): readonly HTMLElement[] {
+    return []
+  }
+
   /** 接管前记下角色节点上作者写的内联 display。 */
   private readonly authorDisplay = new WeakMap<HTMLElement, string>()
 
@@ -78,7 +86,13 @@ export abstract class XhElement extends XhReactiveElement {
   }
 
   protected refreshParts(): void {
-    const next = discoverParts(this as unknown as HTMLElement)
+    const externalRoots = this.externalPartRoots()
+    const ownerDocument = this.ownerDocument
+    for (const root of externalRoots) {
+      if (root.ownerDocument !== ownerDocument)
+        throw new Error('[xh] Web Component 的 Portal 角色根必须与宿主属于同一 Document')
+    }
+    const next = discoverParts(this as unknown as HTMLElement, externalRoots)
     const live = new Set<HTMLElement>()
     for (const els of next.values()) {
       for (const el of els) live.add(el)
@@ -97,6 +111,7 @@ export abstract class XhElement extends XhReactiveElement {
     // 会同时挂上两台机器的处理器（一次点击驱动两台）；单纯被移除的节点也仍能派事件、改本组状态
     for (const el of gone) this.spreader.release(el)
     this.partMap = next
+    this.syncPartObservers()
   }
 
   /**
@@ -202,16 +217,38 @@ export abstract class XhElement extends XhReactiveElement {
       if (hit)
         this.requestUpdate()
     })
-    this.partObserver.observe(this, {
+    this.syncPartObservers()
+  }
+
+  private syncPartObservers(): void {
+    const observer = this.partObserver
+    if (!observer)
+      return
+    observer.disconnect()
+    const observe = (root: Node): void => observer.observe(root, {
       childList: true,
       subtree: true,
       attributes: true,
       attributeFilter: [...AUTHORED_ATTRS],
     })
+    observe(this)
+    for (const root of this.externalPartRoots())
+      observe(root)
   }
 
   /** 目标是否归本宿主管：嵌套 xh-* 子树归内层元素自己管，外层不替它重跑 wire（discoverParts 本来也跳过它们）。 */
   private ownsSubtree(target: Node): boolean {
+    for (const root of this.externalPartRoots()) {
+      if (target !== root && !root.contains(target))
+        continue
+      for (let node: Node | null = target; node; node = node.parentNode) {
+        if (node === root)
+          return true
+        const tag = (node as Element).tagName
+        if (typeof tag === 'string' && tag.toLowerCase().startsWith('xh-'))
+          break
+      }
+    }
     for (let node: Node | null = target; node; node = node.parentNode) {
       if (node === this)
         return true

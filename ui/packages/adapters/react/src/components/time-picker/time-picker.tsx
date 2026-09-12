@@ -18,6 +18,7 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { TimePickerColumnProvider, TimePickerProvider, useTimePickerColumnContext, useTimePickerContext } from './context'
 import { useTimePicker } from './use-time-picker'
 
@@ -50,7 +51,7 @@ export interface TimePickerPresetsSlotProps {
   presets: readonly TimePickerPresetState[]
 }
 
-export interface XhTimePickerRootProps {
+export interface XhTimePickerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   value?: string
   defaultValue?: string
   open?: boolean
@@ -82,14 +83,73 @@ export interface XhTimePickerRootProps {
   children?: SlotChildren<TimePickerRootSlotProps>
 }
 
-export function XhTimePickerRoot({ children, ...props }: XhTimePickerRootProps): ReactNode {
-  const ctx = useTimePicker(withXhConfig('time-picker', props) as TimePickerProps)
+export function XhTimePickerRoot({
+  value,
+  defaultValue,
+  open,
+  defaultOpen,
+  min,
+  max,
+  locale,
+  hourCycle,
+  granularity,
+  step,
+  presets,
+  disabled,
+  translations,
+  isTimeUnavailable,
+  readOnly,
+  invalid,
+  required,
+  name,
+  variant,
+  tone,
+  size,
+  placement,
+  offset,
+  dir,
+  onValueChange,
+  onOpenChange,
+  children,
+  ...rest
+}: XhTimePickerRootProps): ReactNode {
+  const ctx = useTimePicker(withXhConfig('time-picker', useFormControlProps({
+    value,
+    defaultValue,
+    open,
+    defaultOpen,
+    min,
+    max,
+    locale,
+    hourCycle,
+    granularity,
+    step,
+    presets,
+    disabled,
+    translations,
+    isTimeUnavailable,
+    readOnly,
+    invalid,
+    required,
+    name,
+    variant,
+    tone,
+    size,
+    placement,
+    offset,
+    dir,
+    onValueChange,
+    onOpenChange,
+  })) as TimePickerProps)
   const api = ctx.api
   return (
     <TimePickerProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {children == null
           ? null
@@ -168,7 +228,7 @@ export function XhTimePickerTrigger({ children, ...rest }: XhTimePickerTriggerPr
   return (
     <button
       {...mergeReactProps(
-        fieldLabel({ ...ctx.api.getTriggerProps() as Record<string, unknown>, ...fieldWiring }),
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
         rest as Record<string, unknown>,
         // 归还焦点要落到它身上：锚点取的是整个输入行，那一层不可聚焦
         { ref: (el: HTMLButtonElement | null) => { ctx.triggerRef.current = el } },
@@ -193,7 +253,7 @@ export interface XhTimePickerPositionerProps extends ComponentPropsWithRef<'div'
 export function XhTimePickerPositioner({ children, container, ...rest }: XhTimePickerPositionerProps): ReactNode {
   const ctx = useTimePickerContext()
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.controlRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

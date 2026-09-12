@@ -5,6 +5,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { providePasswordInput, usePasswordInputContext } from './context'
 import { usePasswordInput } from './use-password-input'
 
@@ -19,23 +20,23 @@ export type PasswordInputRootSlotProps = Pick<
 export const XhPasswordInputRoot = defineComponent({
   name: 'XhPasswordInputRoot',
   props: {
-    // default: undefined 表示非受控
-    value: { type: String, default: undefined },
-    defaultValue: { type: String, default: undefined },
+    // 缺席值 undefined 表示非受控
+    value: { type: String },
+    defaultValue: { type: String },
     visible: { type: Boolean, default: undefined },
     defaultVisible: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
-    name: { type: String, default: undefined },
-    placeholder: { type: String, default: undefined },
-    autoComplete: { type: String, default: undefined },
-    strength: { type: Number, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<PasswordInputTranslations>>, default: undefined },
+    name: { type: String },
+    placeholder: { type: String },
+    autoComplete: { type: String },
+    strength: { type: Number },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<PasswordInputTranslations>> },
   },
   // value-change 携带 { value }，update:value 携带裸串；明暗走 visibility-change 一路
   emits: {
@@ -57,7 +58,7 @@ export const XhPasswordInputRoot = defineComponent({
       emit('update:visible', details.visible)
     }
     const ctx = usePasswordInput(
-      withXhConfig('password-input', props) as PasswordInputProps,
+      withXhConfig('password-input', useFormControlProps(props)) as PasswordInputProps,
       { onValueChange, onVisibilityChange },
     )
     providePasswordInput(ctx)
@@ -101,7 +102,7 @@ export const XhPasswordInputInput = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     const ctx = usePasswordInputContext()
     // 原生 <input>：光标、选区与撤销都归浏览器，label 的 for 也指着它
-    return () => h('input', fieldLabel.value({ ...ctx.api.value.getInputProps() as Record<string, unknown>, ...fieldWiring.value }))
+    return () => h('input', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getInputProps() as Record<string, unknown> }))
   },
 })
 

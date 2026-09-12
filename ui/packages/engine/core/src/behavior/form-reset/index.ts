@@ -1,9 +1,11 @@
 import type { Disposable } from '../../kernel'
-import { isDocument, isShadowRoot } from '../../kernel'
+import { isDocument, isElement, isHTMLElement, isShadowRoot } from '../../kernel'
 
 export interface FormResetBridgeOptions {
   /** 组件在文档里的锚点，每次用时现取：重渲会换掉它。 */
   readonly getNode: () => Node | null | undefined
+  /** 显式 form 属性；缺省沿祖先查找，给定但不存在时不关联任何表单。 */
+  readonly getFormId?: () => string | undefined
   /** 所属表单被重置、且重置的默认行为没被拦下时回调。 */
   readonly onReset: () => void
 }
@@ -13,7 +15,7 @@ const INERT: Disposable = { disposed: true, dispose: () => {} }
 function elementOf(node: Node | null | undefined): Element | null {
   if (!node)
     return null
-  return node.nodeType === 1 ? (node as Element) : node.parentElement
+  return isElement(node) ? node : node.parentElement
 }
 
 /**
@@ -32,11 +34,14 @@ export function createFormResetBridge(options: FormResetBridgeOptions): Disposab
 
   const handler = (event: Event): void => {
     const form = event.target
-    if (!(form instanceof HTMLFormElement))
+    if (!isHTMLElement(form) || form.localName !== 'form')
       return
-    // 比对 closest 的结果而不是 form.contains：appendChild 造得出嵌套表单，
-    // 外层重置不该误伤内层表单里的组件
-    if (elementOf(options.getNode())?.closest('form') !== form)
+    const node = elementOf(options.getNode())
+    const formId = options.getFormId?.()
+    // 显式归属优先；空 ID、失效 ID 不回退祖先。按 root 查找，与原生 form 属性同域。
+    // 缺省仍比对 closest 而不是 contains，外层重置不误伤嵌套表单里的组件。
+    const owner = formId === undefined ? node?.closest('form') : target.getElementById(formId)
+    if (!isHTMLElement(owner) || owner.localName !== 'form' || owner !== form)
       return
     // 同步读：会拦重置的那一方挂在 form 元素自己身上（目标期），必定早于这里的冒泡期监听。
     // 拦下的重置里作者自己的原生控件也没还原，组件单方面还原会拼出半份默认值

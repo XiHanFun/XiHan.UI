@@ -26,11 +26,6 @@
     display: none;
   }
 
-  /* 标签左置：标签列宽的缺省档在这儿，labelWidth 会以行内样式盖过它 */
-  [data-scope='form'][data-part='root'][data-layout='horizontal'] {
-    --xh-form-label-w: 30%;
-  }
-
   /* 横排一行流：字段并肩排，放不下自动折行 */
   [data-scope='form'][data-part='root'][data-layout='inline'] {
     flex-flow: row wrap;
@@ -335,6 +330,12 @@
     background: var(--xh-form-submit-bg, var(--xh-bg-brand));
     color: var(--xh-form-submit-fg, var(--xh-fg-on-brand));
     box-shadow: var(--xh-form-submit-shadow, var(--xh-_form-submit-highlight));
+  }
+
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='form'][data-part='submit-trigger']:not(:disabled):focus-visible {
+    --xh-_ring-color: currentColor;
   }
 
   [data-scope='form'][data-part='submit-trigger']:hover:not(:disabled) {

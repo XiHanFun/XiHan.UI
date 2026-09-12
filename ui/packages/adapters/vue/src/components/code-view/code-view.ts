@@ -2,33 +2,13 @@ import type { HighlighterPort, Size } from '@xihan-ui/core'
 import type { CodeLine, CodeViewApi, CodeViewProps, CodeViewTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { createCodeViewHighlighterResource } from '@xihan-ui/headless'
 import { defineComponent, h, onBeforeUnmount, onMounted, shallowRef } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideCodeView, useCodeViewContext } from './context'
 import { useCodeView } from './use-code-view'
 
-/**
- * 默认着色实现全组件共用一份：它无状态，没必要每块代码建一个。
- *
- * `@xihan-ui/code-highlight` 是可选 peer：装了它，模块到达后这个 ref 落成它的实现，
- * 在场的代码视图重渲一次并着色；没装则一直是 null，代码按纯文本渲染。
- */
-const defaultHighlighter = shallowRef<HighlighterPort | null>(null)
-
-/** 模块只载一次。 */
-let requested = false
-
-/** 首次用到时才去载默认着色实现；载不到就保持 null。 */
-function requestDefaultHighlighter(): void {
-  if (requested)
-    return
-  requested = true
-  void import('@xihan-ui/code-highlight')
-    .then((module) => {
-      defaultHighlighter.value = module.createHighlighter()
-    })
-    .catch(() => {})
-}
+const defaultHighlighter = createCodeViewHighlighterResource(() => import('@xihan-ui/code-highlight'))
 
 /** 默认插槽的载荷：语言、行数与折叠状态，以及翻面折叠的句柄。 */
 export type CodeViewRootSlotProps = Pick<CodeViewApi, 'lang' | 'lineCount' | 'lines' | 'foldable' | 'clamped' | 'setClamped'>
@@ -44,25 +24,25 @@ export interface CodeViewLineSlotProps {
 
 export const XhCodeViewRoot = defineComponent({
   name: 'XhCodeViewRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     code: { type: String, default: '' },
-    lang: { type: String, default: undefined },
-    filename: { type: String, default: undefined },
+    lang: { type: String },
+    filename: { type: String },
     // 三态，undefined 与 false 同样不落 data-complete
     complete: { type: Boolean, default: undefined },
     wrap: Boolean,
     lineNumbers: Boolean,
-    startLine: { type: Number, default: undefined },
-    highlightLines: { type: [String, Array] as PropType<string | readonly number[]>, default: undefined },
-    clamp: { type: Number, default: undefined },
+    startLine: { type: Number },
+    highlightLines: { type: [String, Array] as PropType<string | readonly number[]> },
+    clamp: { type: Number },
     // 纯受控：没有 defaultClamped，要非受控就套 collapsible
     clamped: { type: Boolean, default: undefined },
     /** 换一个着色实现（典型是接 Shiki）；显式给 null 则关掉着色。 */
-    highlighter: { type: Object as PropType<HighlighterPort | null>, default: undefined },
+    highlighter: { type: Object as PropType<HighlighterPort | null> },
     highlightWhileStreaming: { type: Boolean, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<CodeViewTranslations>>, default: undefined },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<CodeViewTranslations>> },
   },
   emits: {
     'clamp-toggle': (_details: PayloadOf<CodeViewProps, 'onClampToggle'>) => true,
@@ -73,7 +53,9 @@ export const XhCodeViewRoot = defineComponent({
   }>,
   setup(props, { slots, emit }) {
     const configured = withXhConfig('code-view', props)
-    requestDefaultHighlighter()
+    const highlighterRevision = shallowRef(0)
+    const unsubscribe = defaultHighlighter.subscribe(() => highlighterRevision.value++)
+    onBeforeUnmount(unsubscribe)
     // getter 透传保住响应性：props 变了带动 connect 重算
     const forward: CodeViewProps = {
       get code() {
@@ -107,7 +89,13 @@ export const XhCodeViewRoot = defineComponent({
         return props.clamped
       },
       get highlighter() {
-        return props.highlighter === null ? undefined : props.highlighter ?? defaultHighlighter.value ?? undefined
+        if (props.highlighter === null)
+          return undefined
+        if (props.highlighter !== undefined)
+          return props.highlighter
+        void highlighterRevision.value
+        defaultHighlighter.request()
+        return defaultHighlighter.read() ?? undefined
       },
       get highlightWhileStreaming() {
         return props.highlightWhileStreaming
@@ -148,7 +136,7 @@ export const XhCodeViewFilename = defineComponent({
   name: 'XhCodeViewFilename',
   props: {
     /** 不给就取 XhCodeViewRoot 上的 filename。 */
-    filename: { type: String, default: undefined },
+    filename: { type: String },
   },
   setup(props, { slots }) {
     const ctx = useCodeViewContext()

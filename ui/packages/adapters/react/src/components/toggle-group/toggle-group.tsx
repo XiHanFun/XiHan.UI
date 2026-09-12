@@ -5,12 +5,13 @@ import { useEffect, useRef } from 'react'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
+import { useFormControlProps } from '../form/use-form-control'
 import { ToggleGroupProvider, useToggleGroupContext } from './context'
 import { useToggleGroup } from './use-toggle-group'
 
 type ToggleGroupProps = ToggleGroupSchema['props']
 
-export interface XhToggleGroupRootProps {
+export interface XhToggleGroupRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
   collection?: ToggleGroupNode[]
   value?: ToggleGroupValue
   defaultValue?: ToggleGroupValue
@@ -34,8 +35,45 @@ export interface XhToggleGroupRootProps {
   children?: ReactNode
 }
 
-export function XhToggleGroupRoot({ children, renderItem, ...props }: XhToggleGroupRootProps): ReactNode {
-  const ctx = useToggleGroup(props as ToggleGroupProps)
+export function XhToggleGroupRoot({
+  collection,
+  value,
+  defaultValue,
+  multiple,
+  disabled,
+  disallowEmpty,
+  variant,
+  tone,
+  size,
+  fullWidth,
+  name,
+  orientation,
+  dir,
+  loop,
+  rovingFocus,
+  onValueChange,
+  renderItem,
+  children,
+  ...rest
+}: XhToggleGroupRootProps): ReactNode {
+  const ctx = useToggleGroup(useFormControlProps({
+    collection,
+    value,
+    defaultValue,
+    multiple,
+    disabled,
+    disallowEmpty,
+    variant,
+    tone,
+    size,
+    fullWidth,
+    name,
+    orientation,
+    dir,
+    loop,
+    rovingFocus,
+    onValueChange,
+  } as ToggleGroupProps))
   const api = ctx.api
 
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
@@ -43,7 +81,7 @@ export function XhToggleGroupRoot({ children, renderItem, ...props }: XhToggleGr
   // 装成原生监听器，到达路径才与另外两家一致。onFocusOut 归到的 onBlur 本就是冒泡的 focusout，不动它
   const bind = useNativeEvents(api.getRootProps() as Record<string, unknown>, ['onFocus'])
 
-  const body = children ?? (props.collection
+  const body = children ?? (collection
     ? <DefaultTree collection={api.collection} renderItem={renderItem} />
     : null)
 
@@ -52,6 +90,7 @@ export function XhToggleGroupRoot({ children, renderItem, ...props }: XhToggleGr
       <div
         {...mergeReactProps(
           bind.attrs,
+          rest as Record<string, unknown>,
           { ref: bind.ref },
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}

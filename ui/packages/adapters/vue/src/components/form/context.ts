@@ -1,3 +1,4 @@
+import type { FormPath } from '@xihan-ui/headless'
 import type { InjectionKey } from 'vue'
 import type { FormContext } from './use-form'
 import { inject, provide } from 'vue'
@@ -22,7 +23,7 @@ export function useOptionalFormContext(): FormContext | null {
 
 /** 字段容器把字段名交给后代：Field 据此从表单上下文自取校验态。 */
 export interface FormFieldHandle {
-  name: () => string
+  name: () => FormPath
 }
 
 const FIELD_KEY: InjectionKey<FormFieldHandle> = Symbol.for('xh-form-field')

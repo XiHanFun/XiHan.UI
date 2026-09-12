@@ -1,7 +1,8 @@
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { Fragment, useRef } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -12,7 +13,10 @@ import { useNavigationMenu } from './use-navigation-menu'
 
 type NavigationMenuProps = NavigationMenuSchema['props']
 
-export interface XhNavigationMenuRootProps {
+/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'nav'>, 'children' | 'defaultValue' | 'dir'>
+
+export interface XhNavigationMenuRootProps extends RootElementProps {
   collection?: NavigationMenuNode[]
   value?: string | null
   defaultValue?: string | null
@@ -32,8 +36,40 @@ export interface XhNavigationMenuRootProps {
 }
 
 /** 根节点渲染为 nav，收起的三条出口（指针离开、焦点离场、Escape）在这一层处理。 */
-export function XhNavigationMenuRoot({ children, renderPanel, ...props }: XhNavigationMenuRootProps): ReactNode {
-  const ctx = useNavigationMenu(withXhConfig('navigation-menu', props) as NavigationMenuProps)
+export function XhNavigationMenuRoot({
+  collection,
+  value,
+  defaultValue,
+  orientation,
+  delayDuration,
+  skipDelayDuration,
+  dir,
+  loop,
+  disabled,
+  translations,
+  tone,
+  size,
+  onValueChange,
+  children,
+  renderPanel,
+  ...rest
+}: XhNavigationMenuRootProps): ReactNode {
+  const machineProps = {
+    collection,
+    value,
+    defaultValue,
+    orientation,
+    delayDuration,
+    skipDelayDuration,
+    dir,
+    loop,
+    disabled,
+    translations,
+    tone,
+    size,
+    onValueChange,
+  }
+  const ctx = useNavigationMenu(withXhConfig('navigation-menu', machineProps) as NavigationMenuProps)
   // 根上的指针离开不冒泡，改装成原生监听器；onFocusout 归到的 onBlur 本就是冒泡的 focusout，不动它
   const bind = useNativeEvents(
     ctx.api.getRootProps() as Record<string, unknown>,
@@ -43,12 +79,13 @@ export function XhNavigationMenuRoot({ children, renderPanel, ...props }: XhNavi
   // 给了 collection 就按数据铺开整套结构
   const body = slotPaints(children)
     ? children
-    : (props.collection ? <DefaultTree collection={ctx.api.collection} renderPanel={renderPanel} /> : null)
+    : (collection ? <DefaultTree collection={ctx.api.collection} renderPanel={renderPanel} /> : null)
   return (
     <NavigationMenuProvider value={ctx}>
       <nav
         {...mergeReactProps(
           bind.attrs,
+          rest as Record<string, unknown>,
           { ref: bind.ref },
           { ref: (el: HTMLElement | null) => { ctx.rootRef.current = el } },
         )}
@@ -133,11 +170,35 @@ export function XhNavigationMenuContent({ value, children, ...rest }: XhNavigati
   // 一个面板一份退场闸门：它们各开各的、动画各跑各的，一份管不过来。
   // 开合判据直接取 connect 这一帧的产出，不另起一套——两边各判一次迟早会说岔
   const contentRef = useRef<HTMLElement | null>(null)
+  const presenceRef = useRef<PresenceHandle | null>(null)
   const visible = useOverlayExit({
     config: ctx.config,
-    isOpen: () => (ctx.api.getContentProps({ value }) as Record<string, unknown>).hidden !== true,
+    isOpen: () => ctx.api.isOpen(value),
     contentRef,
+    onPresence: (next) => {
+      const previous = presenceRef.current
+      presenceRef.current = next
+      if (ctx.service.getStatus() !== 'Started')
+        return
+      if (next) {
+        ctx.service.send({ type: 'PRESENCE.SET', value, presence: next, connected: true })
+      }
+      else if (previous) {
+        ctx.service.send({ type: 'PRESENCE.SET', value, presence: previous, connected: false })
+      }
+    },
   })
+  // 子级 layout effect 可能早于根机器启动；被动阶段补报一次，确保首帧 Presence 已入 Headless 表。
+  useEffect(() => {
+    const presence = presenceRef.current
+    if (!presence || ctx.service.getStatus() !== 'Started')
+      return
+    ctx.service.send({ type: 'PRESENCE.SET', value, presence, connected: true })
+    return () => {
+      if (ctx.service.getStatus() === 'Started')
+        ctx.service.send({ type: 'PRESENCE.SET', value, presence, connected: false })
+    }
+  }, [ctx.service, value])
   return (
     <div
       {...mergeReactProps(

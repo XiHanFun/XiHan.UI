@@ -7,6 +7,7 @@ import { readdir, readFile, stat } from 'node:fs/promises'
 
 const SRC = 'packages/engine/headless/src'
 const MAP = `${SRC}/config/translations.ts`
+const DOCS_MANIFEST = 'scripts/component-docs.manifest.json'
 
 const pascal = kebab => kebab.split('-').map(part => part[0].toUpperCase() + part.slice(1)).join('')
 
@@ -28,12 +29,20 @@ for (const name of entries) {
 comps.sort()
 
 const map = await readFile(MAP, 'utf8')
+const componentDocs = JSON.parse(await readFile(DOCS_MANIFEST, 'utf8'))
+const renderless = new Set(componentDocs.categories
+  .flatMap(category => category.components)
+  .filter(component => component.renderless)
+  .map(component => component.id))
 // 键 → 它指向的文案类型名：指错类型（date-field 指成 date-picker 的）编译照样过，只有这里能抓
 const listed = new Map([...map.matchAll(/^\s*'([\w-]+)'\?: Partial<(\w+)>/gm)].map(hit => [hit[1], hit[2]]))
 
 const errors = []
 
 for (const comp of comps) {
+  // renderless behavior 没有可读 UI 文案，强塞空 Translations 只会留下无效公开面。
+  if (renderless.has(comp))
+    continue
   const name = `${pascal(comp)}Translations`
   const types = await readFile(`${SRC}/${comp}/${comp}.types.ts`, 'utf8')
   if (!new RegExp(`\\b(?:interface|type) ${name}\\b`).test(types))
@@ -58,4 +67,4 @@ if (errors.length > 0) {
   process.exit(1)
 }
 
-console.log(`[check-translations-slots] 通过：${comps.length} 个组件都留了文案位、也都挂进了覆盖表`)
+console.log(`[check-translations-slots] 通过：${comps.length - renderless.size} 个有视觉/文案面的组件都留了文案位、也都挂进了覆盖表（renderless ${renderless.size} 个不伪造空槽）`)

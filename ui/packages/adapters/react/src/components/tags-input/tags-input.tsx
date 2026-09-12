@@ -9,6 +9,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { TagsInputItemProvider, TagsInputProvider, useTagsInputContext, useTagsInputItemContext } from './context'
 import { useTagsInput } from './use-tags-input'
 
@@ -42,7 +43,7 @@ export type TagsInputRootSlotProps = Pick<
   | 'edit'
 >
 
-export interface XhTagsInputRootProps {
+export interface XhTagsInputRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   value?: string[]
   defaultValue?: string[]
   inputValue?: string
@@ -71,14 +72,67 @@ export interface XhTagsInputRootProps {
   children?: SlotChildren<TagsInputRootSlotProps>
 }
 
-export function XhTagsInputRoot({ children, ...props }: XhTagsInputRootProps): ReactNode {
-  const ctx = useTagsInput(withXhConfig('tags-input', props) as TagsInputProps)
+export function XhTagsInputRoot({
+  value,
+  defaultValue,
+  inputValue,
+  defaultInputValue,
+  max,
+  allowOverflow,
+  disabled,
+  readOnly,
+  required,
+  invalid,
+  showCount,
+  name,
+  placeholder,
+  delimiter,
+  addOnPaste,
+  editable,
+  blurBehavior,
+  variant,
+  tone,
+  size,
+  translations,
+  onValueChange,
+  onInputValueChange,
+  children,
+  ...rest
+}: XhTagsInputRootProps): ReactNode {
+  const ctx = useTagsInput(withXhConfig('tags-input', useFormControlProps({
+    value,
+    defaultValue,
+    inputValue,
+    defaultInputValue,
+    max,
+    allowOverflow,
+    disabled,
+    readOnly,
+    required,
+    invalid,
+    showCount,
+    name,
+    placeholder,
+    delimiter,
+    addOnPaste,
+    editable,
+    blurBehavior,
+    variant,
+    tone,
+    size,
+    translations,
+    onValueChange,
+    onInputValueChange,
+  })) as TagsInputProps)
   const api = ctx.api
   return (
     <TagsInputProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {renderSlot(children, {
           value: api.value,
@@ -137,7 +191,7 @@ export function XhTagsInputInput({ ...rest }: XhTagsInputInputProps): ReactNode 
   return (
     <input
       {...mergeReactProps(
-        fieldLabel({ ...ctx.api.getInputProps() as Record<string, unknown>, ...fieldWiring }),
+        fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps() as Record<string, unknown> }),
         rest as Record<string, unknown>,
       )}
     />
@@ -192,6 +246,7 @@ export function XhTagsInputItem({ value, children, ...rest }: XhTagsInputItemPro
 }
 
 export interface XhTagsInputItemPreviewProps extends ComponentPropsWithRef<'span'> {}
+/** 标签的预览：渲的是库里 tag 的 root（data-scope="tag"），就地编辑时由 tag 收起。 */
 export function XhTagsInputItemPreview({ children, ...rest }: XhTagsInputItemPreviewProps): ReactNode {
   const ctx = useTagsInputContext()
   const item = useTagsInputItemContext()
@@ -203,6 +258,7 @@ export function XhTagsInputItemPreview({ children, ...rest }: XhTagsInputItemPre
 }
 
 export interface XhTagsInputItemTextProps extends ComponentPropsWithRef<'span'> {}
+/** 标签文字：渲的是 tag 的 label，截断落在这一层。 */
 export function XhTagsInputItemText({ children, ...rest }: XhTagsInputItemTextProps): ReactNode {
   const ctx = useTagsInputContext()
   const item = useTagsInputItemContext()
@@ -214,6 +270,7 @@ export function XhTagsInputItemText({ children, ...rest }: XhTagsInputItemTextPr
 }
 
 export interface XhTagsInputItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 删除钮：渲的是所在标签那份 tag 的 close-trigger，不占 Tab 位；禁用与只读时留位、原生 disabled。 */
 export function XhTagsInputItemDeleteTrigger({ children, ...rest }: XhTagsInputItemDeleteTriggerProps): ReactNode {
   const ctx = useTagsInputContext()
   const item = useTagsInputItemContext()

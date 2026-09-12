@@ -2,9 +2,11 @@ import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type { PopoverApi, PopoverSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, mergeProps, Teleport } from 'vue'
+import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
+import { mergePartProps } from '../../runtime/merge-props'
+import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { providePopover, usePopoverContext } from './context'
 import { usePopover } from './use-popover'
@@ -19,15 +21,15 @@ export const XhPopoverRoot = defineComponent({
   props: {
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
     modal: { type: Boolean, default: false },
     closeOnEscape: { type: Boolean, default: true },
     closeOnInteractOutside: { type: Boolean, default: true },
-    translations: { type: Object as PropType<PopoverProps['translations']>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    translations: { type: Object as PropType<PopoverProps['translations']> },
+    size: { type: String as PropType<Size> },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: {
@@ -50,39 +52,45 @@ export const XhPopoverRoot = defineComponent({
 
 export const XhPopoverTrigger = defineComponent({
   name: 'XhPopoverTrigger',
+  // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
+  inheritAttrs: false,
   props: {
     /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const ctx = usePopoverContext()
     return () => {
-      const attrs = {
+      const part = mergePartProps({
         ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
         ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
-      }
+      }, attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
-        const merged = mergeIntoChild(children, attrs, 'popover')
+        const merged = mergeIntoChild(children, part, 'popover')
         if (merged)
           return merged
       }
-      return h('button', attrs, children)
+      return h('button', part, children)
     }
   },
 })
 
 export const XhPopoverPositioner = defineComponent({
   name: 'XhPopoverPositioner',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = usePopoverContext()
     // 面板内容的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
     const bars = useScrollbars({ scrollable: () => ctx.contentRef.value })
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },

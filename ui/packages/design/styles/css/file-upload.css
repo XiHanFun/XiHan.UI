@@ -147,8 +147,12 @@
     white-space: nowrap;
   }
 
+  /* 文件条数由用户一次选进来多少给，行数没有尽头：
+     列表到这个高度就不再长，剩下的行在列表内滚出来，投放区与触发钮不会被推出视野 */
   [data-scope='file-upload'][data-part='list'] {
     display: flex;
+    max-block-size: var(--xh-file-upload-list-max-h, var(--xh-viewport-h-md));
+    overflow-y: auto;
     flex-direction: column;
     gap: var(--xh-file-upload-item-gap, var(--xh-space-2));
   }
@@ -163,6 +167,9 @@
     --xh-_file-upload-progress: 0;
 
     display: flex;
+    /* 一行排不下就换行：文件名有自己的下限，挤到那个下限之后由后面的部件另起一行，
+       而不是把文件名继续压到零宽 */
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--xh-file-upload-item-inner-gap, var(--xh-control-gap-md));
     padding-block: var(--xh-file-upload-item-py, var(--xh-space-2));
@@ -274,11 +281,12 @@
     object-fit: cover;
   }
 
-  /* 文件名占满中间那段并用省略号收口：不写 min-inline-size 的话，
-     flex 项的最小尺寸是内容宽度，长文件名会把整行顶宽而不是被截断 */
+  /* 文件名占满中间那段并用省略号收口。
+     下限是这一行的换行点：名字缩到这个宽度还不够，后面的部件就被推去下一行；
+     再用 100% 收一次口——容器比这个下限还窄时，名字只占满容器，不把整行顶宽 */
   [data-scope='file-upload'][data-part='item-name'] {
     flex: 1;
-    min-inline-size: 0;
+    min-inline-size: min(var(--xh-file-upload-item-name-min-w, var(--xh-control-min-w)), 100%);
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

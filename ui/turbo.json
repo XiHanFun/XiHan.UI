@@ -9,7 +9,7 @@
     },
     "typecheck": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**", "tests/**", "*.vue", "tsconfig*.json"],
+      "inputs": ["src/**", "tests/**", "spec/**", "runners/**", "*.vue", "tsconfig*.json", "package.json"],
       "outputs": []
     },
     "test": {
@@ -25,8 +25,16 @@
       "outputs": ["coverage/**"]
     },
     "@xihan-ui/styles#build": {
-      "inputs": ["index.css", "css/**", "build/**", "package.json"],
-      "outputs": []
+      "inputs": [
+        "index.css",
+        "css/**",
+        "build/**",
+        "package.json",
+        "$TURBO_ROOT$/scripts/component-docs.manifest.json",
+        "$TURBO_ROOT$/tooling/scripts/lib/component-token-manifest.mjs",
+        "$TURBO_ROOT$/packages/design/tokens/tokens.json"
+      ],
+      "outputs": ["component-tokens.d.ts", "component-tokens.js", "components.tokens.json", "index.unlayered.css"]
     },
     "@xihan-ui/tokens#test": {
       "dependsOn": ["^build"],

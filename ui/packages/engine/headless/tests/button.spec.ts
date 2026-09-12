@@ -13,8 +13,19 @@ describe('connectButton', () => {
     expect(root['data-scope']).toBe('button')
     expect(root['data-part']).toBe('root')
     expect(root.type).toBe('submit')
+    expect(root['data-xh-action-control']).toBe('')
+    expect(root['data-xh-action-profile']).toBe('text')
+    expect(root['data-xh-action-display']).toBe('always')
+    expect(root['data-xh-action-size']).toBe('md')
     expect(root['data-variant']).toBe('solid')
     expect(root['data-size']).toBe('md')
+  })
+
+  it('只投影 Action Control 的稳定 profile 与 size，不计算 CSS 数值', () => {
+    const icon = connectButton({ iconOnly: true, size: 'lg', ariaLabel: '关闭' }, normalizeProps).getRootProps() as Record<string, unknown>
+    expect(icon['data-xh-action-profile']).toBe('icon')
+    expect(icon['data-xh-action-size']).toBe('lg')
+    expect(Object.keys(icon).includes('style')).toBe(false)
   })
 
   it('disabled 用原生 disabled（不加 aria-disabled）', () => {

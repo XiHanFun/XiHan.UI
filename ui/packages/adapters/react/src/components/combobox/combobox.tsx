@@ -10,6 +10,7 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   ComboboxGroupProvider,
   ComboboxItemProvider,
@@ -28,7 +29,10 @@ export type ComboboxRootSlotProps = Pick<
   'open' | 'value' | 'inputValue' | 'highlightedValue' | 'empty' | 'isSelected' | 'setOpen' | 'setValue' | 'setInputValue' | 'clear'
 >
 
-export interface XhComboboxRootProps {
+/** 根上自有的那些取值；dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'>
+
+export interface XhComboboxRootProps extends RootElementProps {
   collection?: ComboboxNode[]
   /** 标题文字。给了它就不必再写 label 部件。 */
   label?: ReactNode
@@ -42,6 +46,8 @@ export interface XhComboboxRootProps {
   defaultOpen?: boolean
   /** 表单字段名；给了 hidden-input 才带 name 并参与提交。 */
   name?: string
+  /** 显式关联的原生表单 ID。 */
+  form?: string
   multiple?: boolean
   disabled?: boolean
   readOnly?: boolean
@@ -69,8 +75,75 @@ export interface XhComboboxRootProps {
   children?: SlotChildren<ComboboxRootSlotProps>
 }
 
-export function XhComboboxRoot({ children, label, empty, renderItem, ...props }: XhComboboxRootProps): ReactNode {
-  const ctx = useCombobox(withXhConfig('combobox', props) as ComboboxProps)
+export function XhComboboxRoot({
+  collection,
+  label,
+  empty,
+  value,
+  defaultValue,
+  inputValue,
+  defaultInputValue,
+  open,
+  defaultOpen,
+  name,
+  form,
+  multiple,
+  disabled,
+  readOnly,
+  invalid,
+  loading,
+  loop,
+  placeholder,
+  clearable,
+  translations,
+  allowCustomValue,
+  openOnClick,
+  inputBehavior,
+  placement,
+  offset,
+  dir,
+  variant,
+  tone,
+  size,
+  onValueChange,
+  onInputValueChange,
+  onOpenChange,
+  renderItem,
+  children,
+  ...rest
+}: XhComboboxRootProps): ReactNode {
+  const ctx = useCombobox(withXhConfig('combobox', useFormControlProps({
+    collection,
+    value,
+    defaultValue,
+    inputValue,
+    defaultInputValue,
+    open,
+    defaultOpen,
+    name,
+    form,
+    multiple,
+    disabled,
+    readOnly,
+    invalid,
+    loading,
+    loop,
+    placeholder,
+    clearable,
+    translations,
+    allowCustomValue,
+    openOnClick,
+    inputBehavior,
+    placement,
+    offset,
+    dir,
+    variant,
+    tone,
+    size,
+    onValueChange,
+    onInputValueChange,
+    onOpenChange,
+  })) as ComboboxProps)
   const api = ctx.api
 
   // 首帧结算一次候选条数供空态节点判断，之后的增删由候选自己上报
@@ -90,13 +163,13 @@ export function XhComboboxRoot({ children, label, empty, renderItem, ...props }:
         setInputValue: api.setInputValue,
         clear: api.clear,
       })
-    : props.collection
+    : collection
       ? (
           <DefaultTree
             collection={api.collection}
             label={label}
             empty={empty}
-            clearable={props.clearable}
+            clearable={clearable}
             renderItem={renderItem}
           />
         )
@@ -105,8 +178,11 @@ export function XhComboboxRoot({ children, label, empty, renderItem, ...props }:
   return (
     <ComboboxProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {body}
       </div>
@@ -154,7 +230,7 @@ export function XhComboboxInput({ as = 'input', ...rest }: XhComboboxInputProps)
   // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
   const fieldLabel = useFieldLabelWiring()
   const props = mergeReactProps(
-    fieldLabel({ ...ctx.api.getInputProps({ as }) as Record<string, unknown>, ...fieldWiring }),
+    fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps({ as }) as Record<string, unknown> }),
     rest as Record<string, unknown>,
     { ref: (el: ComboboxInputEl | null) => { ctx.inputRef.current = el } },
   )
@@ -187,7 +263,7 @@ export function XhComboboxPositioner({ children, container, ...rest }: XhCombobo
   // 候选列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current })
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.controlRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,
@@ -289,17 +365,18 @@ export interface XhComboboxHiddenInputProps extends Omit<ComponentPropsWithRef<'
 /** 表单出口，不写这个部件即不参与表单提交。 */
 export function XhComboboxHiddenInput({ ...rest }: XhComboboxHiddenInputProps): ReactNode {
   const ctx = useComboboxContext()
-  return (
+  return ctx.api.value.map(value => (
     <input
+      key={value}
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps() as Record<string, unknown>,
+        ctx.api.getHiddenInputProps({ value }) as Record<string, unknown>,
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；节点是 hidden，这个出口不会被调用
         { onChange: noop },
         rest as Record<string, unknown>,
       )}
     />
-  )
+  ))
 }
 
 export interface XhComboboxEmptyProps extends ComponentPropsWithRef<'div'> {}

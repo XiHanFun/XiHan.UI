@@ -1,4 +1,5 @@
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 /**
  * 展开那一刻高亮落在哪里：
@@ -34,6 +35,8 @@ export interface ComboboxRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 视觉退场与行为资源共享的 Presence；缺省时关闭立即释放。 */
+  presence: PresenceHandle | null
   /** 浮层定位引擎；缺省即不产出位置结果。 */
   position: PositionEnginePort | null
   /** 定位锚点，取整个输入行（control），浮层因此与输入框等宽对齐。 */
@@ -116,8 +119,10 @@ export interface ComboboxSchema extends MachineSchema {
     open?: boolean
     defaultOpen?: boolean
     /** 多选：选中是集合，选中后列表不收起、输入串清空以便接着筛。 */
-    /** 表单字段名；给了 hidden-input 才带 name 并参与提交。多选按逗号拼成一串。 */
+    /** 表单字段名；hidden-input 按选中值逐个生成同名字段，不使用分隔符编码。 */
     name?: string
+    /** 原生表单 ID；显式关联外部表单，提交与 reset 使用同一所有者。 */
+    form?: string
     multiple?: boolean
     /** 整个控件禁用：输入框与两个按钮都用原生 disabled。 */
     disabled?: boolean
@@ -275,8 +280,8 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
    * 与 content 是兄弟，同样不进 role=listbox。
    */
   getLoadingProps: () => T['element']
-  /** 表单影子：选中值随表单提交。给了 name 才带 name，不给就不参与提交。 */
-  getHiddenInputProps: () => T['input']
+  /** 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。 */
+  getHiddenInputProps: (props: { value: string }) => T['input']
 }
 
 /** 读屏用的文案。 */

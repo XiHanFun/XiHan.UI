@@ -4,7 +4,7 @@ import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { renderAsChild } from '../../runtime/as-child'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
@@ -49,11 +49,13 @@ export function XhTooltipTrigger({ children, asChild, ...rest }: XhTooltipTrigge
   const ctx = useTooltipContext()
   // 指针进出、按下与聚焦装成原生监听器：这几个事件不冒泡，委派在根容器上的合成事件收不到
   const bind = useNativeEvents(ctx.api.getTriggerProps() as Record<string, unknown>)
-  const props = mergeReactProps(
-    bind.attrs,
+  const props = mergePartProps(
+    mergeReactProps(
+      bind.attrs,
+      { ref: bind.ref },
+      { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
+    ),
     rest as Record<string, unknown>,
-    { ref: bind.ref },
-    { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
   )
   return renderAsChild(asChild, children, props, 'tooltip', (p, kids) => <button {...p}>{kids}</button>)
 }
@@ -66,7 +68,7 @@ export interface XhTooltipPositionerProps extends ComponentPropsWithRef<'div'> {
 export function XhTooltipPositioner({ children, container, ...rest }: XhTooltipPositionerProps): ReactNode {
   const ctx = useTooltipContext()
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

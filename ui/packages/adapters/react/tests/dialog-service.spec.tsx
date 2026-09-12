@@ -39,21 +39,19 @@ describe('确认框服务', () => {
   })
 
   it('点确认 resolve true，点取消 resolve false', async () => {
-    vi.useFakeTimers()
     service = createDialogService()
     const first = service.confirm({ title: '一' })
     await settle()
     await act(async () => buttons()[1]!.click())
     expect(await first).toBe(true)
 
-    // 上一个的退场窗口没走完，下一个不会挂上来
-    const second = service.confirm({ title: '二' })
-    await settle()
-    expect(buttons()).toHaveLength(0)
+    // 无动画时真实退出在当前提交内完成，不平白等待固定窗口
+    let second!: Promise<boolean>
     await act(async () => {
-      vi.advanceTimersByTime(300)
+      second = service!.confirm({ title: '二' })
     })
     await settle()
+    expect(title()).toBe('二')
     await act(async () => buttons()[0]!.click())
     expect(await second).toBe(false)
   })
@@ -80,7 +78,6 @@ describe('确认框服务', () => {
   })
 
   it('同一时刻只挂一个，后来的排队', async () => {
-    vi.useFakeTimers()
     service = createDialogService()
     const first = service.confirm({ title: '一' })
     void service.confirm({ title: '二' })
@@ -90,10 +87,7 @@ describe('确认框服务', () => {
 
     await act(async () => buttons()[1]!.click())
     expect(await first).toBe(true)
-    // 退场窗口走完才轮到下一个
-    await act(async () => {
-      vi.advanceTimersByTime(300)
-    })
+    // 无动画时由本次 exit-complete 立即轮到下一项
     await settle()
     expect(title()).toBe('二')
   })

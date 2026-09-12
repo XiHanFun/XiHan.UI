@@ -1,4 +1,4 @@
-<!-- 异步加载子节点 | 展开某个分支才去要它的子节点：先摆一行禁用占位，数据回来就地换掉，显示文本随之取到新 label -->
+<!-- 首次全量加载与空集合 | 第一次展开才取整棵树；正式 Loading/Empty 与候选树互斥，状态文字不进入选值或键盘导航，底部按钮可重放有数据与零集合响应 -->
 <script setup lang="ts">
 import {
   XhTreeSelectBranch,
@@ -8,64 +8,80 @@ import {
   XhTreeSelectBranchTrigger,
   XhTreeSelectContent,
   XhTreeSelectControl,
+  XhTreeSelectEmpty,
+  XhTreeSelectFooter,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
   XhTreeSelectItemText,
   XhTreeSelectLabel,
+  XhTreeSelectLoading,
   XhTreeSelectPositioner,
   XhTreeSelectRoot,
   XhTreeSelectTree,
   XhTreeSelectTrigger,
   XhTreeSelectValueText,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
+import { onBeforeUnmount, ref } from "vue";
 
 interface Node {
   value: string;
   label: string;
-  disabled?: boolean;
   children?: Node[];
 }
 
-// 占位行也是一个真节点：它得在 collection 里，方向键才走得到它
-function pending(owner: string): Node[] {
-  return [{ value: `${owner}-pending`, label: "加载中…", disabled: true }];
-}
+const CITY_TREE: Node[] = [
+  {
+    value: "east",
+    label: "华东",
+    children: [
+      { value: "east-shanghai", label: "上海" },
+      { value: "east-hangzhou", label: "杭州" },
+      { value: "east-nanjing", label: "南京" },
+    ],
+  },
+  {
+    value: "north",
+    label: "华北",
+    children: [
+      { value: "north-beijing", label: "北京" },
+      { value: "north-tianjin", label: "天津" },
+    ],
+  },
+];
 
-const collection = ref<Node[]>([
-  { value: "east", label: "华东", children: pending("east") },
-  { value: "north", label: "华北", children: pending("north") },
-]);
-
-const cities: Record<string, string[]> = {
-  east: ["上海", "杭州", "南京"],
-  north: ["北京", "天津"],
-};
-
+const collection = ref<Node[]>([]);
 const expanded = ref<string[]>([]);
 const picked = ref<string[]>([]);
-const loaded = new Set<string>();
+const loading = ref(false);
+let requested = false;
+let timer: number | undefined;
 
-function fetchChildren(value: string): void {
-  if (loaded.has(value))
-    return;
-  loaded.add(value);
-  window.setTimeout(() => {
-    const branch = collection.value.find(node => node.value === value);
-    if (!branch)
-      return;
-    branch.children = cities[value].map((name, index) => ({
-      value: `${value}-${index}`,
-      label: name,
-    }));
+function load(mode: "cities" | "empty"): void {
+  if (timer !== undefined)
+    window.clearTimeout(timer);
+  loading.value = true;
+  collection.value = [];
+  expanded.value = [];
+  picked.value = [];
+  timer = window.setTimeout(() => {
+    timer = undefined;
+    collection.value = mode === "cities" ? CITY_TREE : [];
+    loading.value = false;
   }, 800);
 }
 
-function onExpandedValueChange(details: { value: string[] }): void {
-  expanded.value = details.value;
-  for (const value of details.value) fetchChildren(value);
+function onOpenChange(details: { open: boolean }): void {
+  if (!details.open || requested)
+    return;
+  requested = true;
+  load("cities");
 }
+
+onBeforeUnmount(() => {
+  if (timer !== undefined)
+    window.clearTimeout(timer);
+});
 </script>
 
 <template>
@@ -73,9 +89,11 @@ function onExpandedValueChange(details: { value: string[] }): void {
     v-model:value="picked"
     :collection="collection"
     :expanded-value="expanded"
+    :loading="loading"
     placeholder="选一个城市"
     style="max-inline-size: 320px"
-    @expanded-value-change="onExpandedValueChange"
+    @expanded-value-change="expanded = $event.value"
+    @open-change="onOpenChange"
   >
     <XhTreeSelectLabel>投放城市</XhTreeSelectLabel>
     <XhTreeSelectControl>
@@ -95,10 +113,11 @@ function onExpandedValueChange(details: { value: string[] }): void {
             <XhTreeSelectBranchControl>
               <XhTreeSelectBranchTrigger />
               <XhTreeSelectBranchText>{{ region.label }}</XhTreeSelectBranchText>
+              <XhTreeSelectItemIndicator />
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem
-                v-for="city in region.children"
+                v-for="city in region.children ?? []"
                 :key="city.value"
                 :value="city.value"
               >
@@ -108,6 +127,12 @@ function onExpandedValueChange(details: { value: string[] }): void {
             </XhTreeSelectBranchContent>
           </XhTreeSelectBranch>
         </XhTreeSelectTree>
+        <XhTreeSelectLoading>正在加载城市…</XhTreeSelectLoading>
+        <XhTreeSelectEmpty>暂无可选城市</XhTreeSelectEmpty>
+        <XhTreeSelectFooter>
+          <button type="button" :disabled="loading" @click="load('cities')">加载城市</button>
+          <button type="button" :disabled="loading" @click="load('empty')">加载空集合</button>
+        </XhTreeSelectFooter>
       </XhTreeSelectContent>
     </XhTreeSelectPositioner>
   </XhTreeSelectRoot>

@@ -4,19 +4,22 @@
 // 只有这一个渲染成裸元素。每份组件皮肤在 [data-scope='X'] 上落了一个 --xh-X-skin 标记，
 // 取不到就说明那份 CSS 不在场。
 import type { Cleanup } from '../types'
+import { isDocument, isElement } from '../guards'
+import { createPerDocumentRegistry } from '../structure/per-document-registry'
 import { reportDiagnostic } from './channel'
 import { DIAGNOSTIC_CODES } from './codes'
 
 /** 每个 scope 只探一次：探测要读计算样式，逐实例探会变成真实的强制样式重算。 */
-const probed = new Set<string>()
+const probedByDocument = createPerDocumentRegistry<Set<string>>(() => new Set<string>())
 
-function probe(element: Element): void {
+function probe(element: Element, win: Window): void {
   const scope = element.getAttribute('data-scope')
+  const probed = probedByDocument.get(element.ownerDocument)
   if (scope === null || probed.has(scope))
     return
-  probed.add(scope)
 
-  const marker = getComputedStyle(element).getPropertyValue(`--xh-${scope}-skin`).trim()
+  const marker = win.getComputedStyle(element).getPropertyValue(`--xh-${scope}-skin`).trim()
+  probed.add(scope)
   if (marker !== '')
     return
 
@@ -36,31 +39,30 @@ export interface SkinCheckOptions {
 /**
  * 启动皮肤在场探测，返回停止函数。只该在开发模式下调用。
  *
- * 先扫一遍已有节点，再用 MutationObserver 接住后续进来的；没有 MutationObserver 的环境只扫这一遍。
+ * 先扫一遍已有节点，再用所属 Window 的 MutationObserver 接住后续进来的。
  */
 export function startSkinCheck(options: SkinCheckOptions = {}): Cleanup {
-  if (typeof document === 'undefined')
+  if (!options.root && typeof document === 'undefined')
     return () => undefined
 
   const root = options.root ?? document
-  for (const element of root.querySelectorAll('[data-scope]')) probe(element)
-
-  // 构造器从被观测节点自己的文档取：跨 iframe 时全局的那个来自另一个 window，
-  // 拿它去观测别的文档里的节点，回调一次都不会来。
-  // root 可能就是 Document（它自己的 ownerDocument 是 null），所以两种都认
-  const doc = root.nodeType === 9 ? (root as unknown as Document) : root.ownerDocument
+  const doc = isDocument(root) ? root : root.ownerDocument
   const view = doc?.defaultView
+  if (!view)
+    throw new Error('[xh] startSkinCheck 的 root 必须属于带活动 Window 的 Document')
   if (typeof view?.MutationObserver !== 'function')
-    return () => undefined
+    throw new Error('[xh] startSkinCheck 需要 root 所属 Window 提供 MutationObserver')
+
+  for (const element of root.querySelectorAll('[data-scope]')) probe(element, view)
 
   const observer = new view.MutationObserver((records) => {
     for (const record of records) {
       for (const node of record.addedNodes) {
-        if (!(node instanceof Element))
+        if (!isElement(node))
           continue
         if (node.hasAttribute('data-scope'))
-          probe(node)
-        for (const nested of node.querySelectorAll('[data-scope]')) probe(nested)
+          probe(node, view)
+        for (const nested of node.querySelectorAll('[data-scope]')) probe(nested, view)
       }
     }
   })

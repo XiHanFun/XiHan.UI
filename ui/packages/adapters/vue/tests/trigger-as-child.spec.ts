@@ -1,11 +1,11 @@
-import { onDiagnostic, resetDiagnostics } from '@xihan-ui/core'
+import { resetDiagnostics } from '@xihan-ui/core'
 // @vitest-environment jsdom
 // 触发器的 asChild：借用作者的节点当触发器，不再自己渲染 <button> 包裹。
 // 元素子节点整套属性都拿；组件子节点保留自己的解剖标记只拿接线属性；
-// 子节点数不对退回默认渲染并报诊断；定位锚点拿到的是真实元素。
+// 子节点数不对明确抛错；定位锚点拿到的是真实元素。
 // 两个触发器叠在同一颗按钮上（气泡 + 浮层）也是一种合法用法，靠属性直通把两套接线合上去。
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createApp, defineComponent, h, nextTick } from 'vue'
+import { Comment, createApp, defineComponent, Fragment, h, nextTick, Text } from 'vue'
 import {
   XhButton,
   XhDialogContent,
@@ -25,6 +25,8 @@ import {
   XhTooltipRoot,
   XhTooltipTrigger,
 } from '../src'
+import { mergeIntoChild } from '../src/runtime/as-child'
+import { mergePartProps } from '../src/runtime/merge-props'
 
 async function tick(): Promise<void> {
   await nextTick()
@@ -152,19 +154,172 @@ describe('触发器 asChild', () => {
     expect(document.querySelector('[data-scope="popover"][data-part="content"]')).not.toBeNull()
   })
 
-  it('子节点不是恰好一个：报诊断并退回默认的 button 渲染', async () => {
+  // 同名处理器串起来依次跑，作者的排在部件的前面。三条路都是同一个先后：
+  // 不开 asChild 写在部件上、开 asChild 写在子节点上、开 asChild 写在部件上。
+  // 先后一旦跟着写法反转，作者在一种写法里拦得住的事在另一种写法里拦不住，而两边看着是同一个 prop。
+  it('不开 asChild、作者写在部件上：作者先跑、部件后跑', async () => {
     const seen: string[] = []
-    const off = onDiagnostic(record => seen.push(`${record.scope}:${record.message}`))
-    cleanup.push(off)
+    mount(() => h(XhDialogRoot, { onOpenChange: () => seen.push('部件') }, () => [
+      h(XhDialogTrigger, { onClick: () => seen.push('作者') }, () => '打开'),
+      h(XhDialogContent, () => '内容'),
+    ]))
+    await tick()
 
+    el('[data-scope="dialog"][data-part="trigger"]').click()
+    await tick()
+    expect(seen).toEqual(['作者', '部件'])
+  })
+
+  it('开 asChild、作者写在子节点上：作者先跑、部件后跑', async () => {
+    const seen: string[] = []
+    mount(() => h(XhDialogRoot, { onOpenChange: () => seen.push('部件') }, () => [
+      h(XhDialogTrigger, { asChild: true }, () => h('button', { onClick: () => seen.push('作者') }, '打开')),
+      h(XhDialogContent, () => '内容'),
+    ]))
+    await tick()
+
+    el('[data-scope="dialog"][data-part="trigger"]').click()
+    await tick()
+    expect(seen).toEqual(['作者', '部件'])
+  })
+
+  it('开 asChild、作者写在部件上：先后与另外两条路相同', async () => {
+    const seen: string[] = []
+    mount(() => h(XhDialogRoot, { onOpenChange: () => seen.push('部件') }, () => [
+      h(XhDialogTrigger, { asChild: true, onClick: () => seen.push('作者') }, () => h('button', null, '打开')),
+      h(XhDialogContent, () => '内容'),
+    ]))
+    await tick()
+
+    el('[data-scope="dialog"][data-part="trigger"]').click()
+    await tick()
+    expect(seen).toEqual(['作者', '部件'])
+  })
+
+  it('作者写在部件上的普通值仍然盖过部件的，class 两边都留', async () => {
     mount(() => h(XhDialogRoot, null, () => [
-      h(XhDialogTrigger, { asChild: true }, () => [h('span', 'a'), h('span', 'b')]),
+      h(XhDialogTrigger, { 'class': 'mine', 'type': 'submit', 'aria-label': '我的名字' }, () => '打开'),
       h(XhDialogContent, () => '内容'),
     ]))
     await tick()
 
     const trigger = el('[data-scope="dialog"][data-part="trigger"]')
-    expect(trigger.tagName).toBe('BUTTON')
-    expect(seen.some(m => m.startsWith('dialog:') && m.includes('asChild'))).toBe(true)
+    expect(trigger.getAttribute('type')).toBe('submit')
+    expect(trigger.getAttribute('aria-label')).toBe('我的名字')
+    expect(trigger.classList.contains('mine')).toBe(true)
+    // 部件的接线属性没被顺手丢掉
+    expect(trigger.getAttribute('aria-haspopup')).toBe('dialog')
+  })
+
+  it('子节点不是恰好一个时抛错，合法 Fragment 仍可组合', () => {
+    for (const children of [undefined, [], [h('span', 'a'), h('span', 'b')]])
+      expect(() => mergeIntoChild(children, {}, 'dialog')).toThrow(/dialog asChild 需要恰好一个可挂载子节点/)
+    expect(mergeIntoChild([h(Fragment, [h('button', '唯一节点')])], {}, 'dialog').type).toBe('button')
+  })
+
+  it.each(['可见文本', '0', '42'])('拒绝与唯一元素并列的文本节点：%s', (text) => {
+    expect(() => mergeIntoChild([h(Text, text), h('button')], {}, 'dialog')).toThrow(/不能包含非空文本/)
+    expect(() => mergeIntoChild([h(Fragment, [h(Text, text), h('button')])], {}, 'dialog')).toThrow(/不能包含非空文本/)
+  })
+
+  it.each(['可见文本', 0, 42])('拒绝 Fragment 内未经归一化的可见内容：%s', (text) => {
+    expect(() => mergeIntoChild([h(Fragment, [text, h('button')])], {}, 'dialog')).toThrow(/不能包含非空文本/)
+  })
+
+  it('空白、注释与条件占位不影响唯一组合宿主', () => {
+    const child = mergeIntoChild([h(Fragment, [
+      h(Text, ' \n\t'),
+      h(Comment, '条件占位'),
+      ' ',
+      false,
+      true,
+      null,
+      undefined,
+      h('button'),
+    ])], {}, 'dialog')
+    expect(child.type).toBe('button')
+  })
+
+  it.each(['默认部件', '组合部件', '组合子节点'] as const)('%s 的作者取消点击后不打开对话框', async (location) => {
+    const seen: string[] = []
+    const cancel = (event: MouseEvent) => {
+      seen.push('作者')
+      event.preventDefault()
+    }
+    mount(() => h(XhDialogRoot, { onOpenChange: () => seen.push('部件') }, () => [
+      h(XhDialogTrigger, {
+        asChild: location !== '默认部件',
+        onClick: location === '组合子节点' ? undefined : cancel,
+      }, () => location === '默认部件'
+        ? '打开'
+        : h('button', {
+            type: 'button',
+            onClick: location === '组合子节点' ? cancel : undefined,
+          }, '打开')),
+    ]))
+    await tick()
+    el('[data-scope="dialog"][data-part="trigger"]').click()
+    await tick()
+    expect(seen).toEqual(['作者'])
+    expect(el('[data-scope="dialog"][data-part="trigger"]').getAttribute('aria-expanded')).toBe('false')
+  })
+
+  it('组合子节点取消键盘事件后保留其余作者处理器，跳过部件动作', async () => {
+    const seen: string[] = []
+    mount(() => mergeIntoChild([h('button', {
+      onKeydown: [
+        (event: KeyboardEvent) => {
+          seen.push('取消')
+          event.preventDefault()
+        },
+        () => seen.push('作者记录'),
+      ],
+    }, '操作')], { onKeydown: () => seen.push('部件') }, 'dialog'))
+    await tick()
+    el('button').dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+    expect(seen).toEqual(['取消', '作者记录'])
+  })
+
+  it('作者 stopImmediatePropagation 仍阻止后续同节点处理器', async () => {
+    const seen: string[] = []
+    mount(() => h('button', mergePartProps({ onClick: () => seen.push('部件') }, {
+      onClick: [
+        (event: MouseEvent) => {
+          seen.push('作者')
+          event.stopImmediatePropagation()
+        },
+        () => seen.push('作者后续'),
+      ],
+    }), '操作'))
+    await tick()
+    el('button').click()
+    expect(seen).toEqual(['作者'])
+  })
+
+  it('普通多参数回调仍将全部参数交给作者和部件', () => {
+    const author = vi.fn()
+    const internal = vi.fn()
+    const detail = { source: '作者' }
+    const merged = mergePartProps({ onValueChange: internal }, { onValueChange: author })
+    for (const handler of merged.onValueChange as Array<(...args: unknown[]) => void>)
+      handler('新值', detail)
+    expect(author).toHaveBeenCalledWith('新值', detail)
+    expect(internal).toHaveBeenCalledWith('新值', detail)
+  })
+
+  it('部件处理器数组仍遵循 Vue 的 stopImmediatePropagation', async () => {
+    const seen: string[] = []
+    mount(() => h('button', mergePartProps({
+      onClick: [
+        (event: MouseEvent) => {
+          seen.push('部件')
+          event.stopImmediatePropagation()
+        },
+        () => seen.push('部件后续'),
+      ],
+    }, { onClick: () => seen.push('作者') }), '操作'))
+    await tick()
+    el('button').click()
+    expect(seen).toEqual(['作者', '部件'])
   })
 })

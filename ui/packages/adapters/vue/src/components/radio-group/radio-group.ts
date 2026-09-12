@@ -3,6 +3,7 @@ import type { RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGrou
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideRadioGroup, provideRadioGroupItem, useRadioGroupContext, useRadioGroupItemContext } from './context'
 import { useRadioGroup } from './use-radio-group'
 
@@ -11,20 +12,20 @@ type RadioGroupProps = RadioGroupSchema['props']
 export const XhRadioGroupRoot = defineComponent({
   name: 'XhRadioGroupRoot',
   props: {
-    collection: { type: Array as PropType<RadioGroupNode[]>, default: undefined },
+    collection: { type: Array as PropType<RadioGroupNode[]> },
     /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
-    label: { type: String, default: undefined },
-    value: { type: String as PropType<string | null>, default: undefined },
-    defaultValue: { type: String as PropType<string | null>, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
-    required: Boolean,
-    orientation: { type: String as PropType<Orientation>, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    name: { type: String, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    label: { type: String },
+    value: { type: String as PropType<string | null> },
+    defaultValue: { type: String as PropType<string | null> },
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
+    orientation: { type: String as PropType<Orientation> },
+    dir: { type: String as PropType<Direction> },
+    name: { type: String },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // value-change 携带 { value }，update:value 携带裸值
   emits: {
@@ -36,7 +37,7 @@ export const XhRadioGroupRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useRadioGroup(props as RadioGroupProps, notify)
+    const ctx = useRadioGroup(useFormControlProps(props) as RadioGroupProps, notify)
     provideRadioGroup(ctx)
     return () => h(
       'div',

@@ -5,9 +5,9 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { connectDialog, dialogAnatomy, dialogMachine, dialogMeta } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
@@ -29,6 +29,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'sm'|'md'|'lg'} size - 尺寸：只换 content 的最大宽度，落在 content 上
  * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只换 backdrop 的底色与模糊
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires exit-complete - 退出完成且本层资源已释放
  * @csspart trigger - 触发按钮
  * @csspart backdrop - 遮罩层
  * @csspart positioner - 浮层定位容器
@@ -41,7 +42,10 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart footer - 面板尾：动作按钮所在的那一段，不跟着正文滚
  * @csspart close-trigger - 关闭按钮
  */
-export class XhDialogElement extends XhElement {
+export class XhDialogElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: dialogAnatomy, meta: dialogMeta }
 
   // role 不声明为响应式属性，复用 HTMLElement 原生反射，在 machineProps 里经 getAttribute 读取。
@@ -70,11 +74,22 @@ export class XhDialogElement extends XhElement {
   declare translations?: DialogSchema['props']['translations']
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly dialogScope = createScope(null, this.idGen)
+  // 运行时环境必须始终取宿主当前所属 Document：iframe 创建或 adopt 之后不能继续用构造时的全局 realm。
+  private readonly dialogScope = createScope(() => this, this.idGen)
   private config: RuntimeConfig | null = null
   private contentNode: HTMLElement | null = null
   private exit: OverlayExit | null = null
   private backdropNode: HTMLElement | null = null
+  private readonly portal = this.createPortalLeaseController({
+    name: 'Dialog 视口模态',
+    config: () => this.config,
+    source: () => this,
+    roots: () => {
+      const positioner = this.getPart('positioner')
+      return this.backdropNode && positioner ? [this.backdropNode, positioner] : []
+    },
+    onChange: () => this.requestUpdate(),
+  })
 
   private readonly notify = (details: DialogOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
@@ -100,6 +115,7 @@ export class XhDialogElement extends XhElement {
       variant: this.variant,
       translations: this.translations,
       onOpenChange: this.notify,
+      onExitComplete: () => this.dispatchEvent(new CustomEvent('exit-complete', { bubbles: true, composed: true })),
     }
   }
 
@@ -115,14 +131,18 @@ export class XhDialogElement extends XhElement {
   }
 
   /** 退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。 */
-  private ensureExit(): OverlayExit {
+  private ensureExit(open: boolean): OverlayExit {
     this.ensureConfig()
     this.exit ??= createOverlayExit({
       config: this.config!,
-      open: this.ctrl.service.state.get() === 'open',
+      open,
       onExitComplete: () => this.requestUpdate(),
     })
     return this.exit
+  }
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
   }
 
   // 只交注册函数，层的入栈出栈由机器的 trackOverlay 效应跟着展开态做。
@@ -133,7 +153,6 @@ export class XhDialogElement extends XhElement {
       node: () => this.contentNode,
       branches: () => [],
       isModal: () => this.machineProps().modal ?? true,
-      setModal: () => {},
       surfaces: () => [this.backdropNode].filter(Boolean) as Element[],
     })
   }
@@ -143,7 +162,7 @@ export class XhDialogElement extends XhElement {
     this.ensureConfig()
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', null)
+    svc.refs.set('presence', this.ensureExit(svc.state.get() === 'open').presence)
     svc.refs.set('getContentEl', () => this.contentNode)
     svc.refs.set('getTriggerEl', () => this.getPart('trigger'))
     svc.refs.set('branches', () => [])
@@ -176,17 +195,21 @@ export class XhDialogElement extends XhElement {
 
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
-    const exit = this.ensureExit()
-    exit.track(this.contentNode)
+    const exit = this.ensureExit(open)
+    const modal = this.machineProps().modal ?? true
+    exit.track(this.contentNode, modal ? this.backdropNode : null)
     exit.update(open)
     const visible = exit.visible
 
-    // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖
     const positioner = this.getPart('positioner')
+    // 非模态不领取视口租约；缺一个根时共享控制器保持既有 Light-DOM 结构。
+    this.portal.sync(modal && (open || visible))
+
+    // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖
     if (positioner)
       this.setPartHidden(positioner, !visible)
     if (this.backdropNode)
-      this.setPartHidden(this.backdropNode, !visible)
+      this.setPartHidden(this.backdropNode, !visible || !modal)
     // positioner 不是必需部件，content 自己也要收起
     this.setPartHidden(this.contentNode, !visible)
   }
@@ -197,6 +220,7 @@ export class XhDialogElement extends XhElement {
     // 只在机器已经收起时才强收——元素被移动（remove 后立刻 append）时展开态不该被打断
     this.exit?.dispose()
     this.exit = null
+    this.portal.dispose()
     if (this.ctrl.service.state.get() !== 'open')
       this.setPartHidden(this.contentNode, true)
     this.config = null // 重连时 ensureConfig 重建

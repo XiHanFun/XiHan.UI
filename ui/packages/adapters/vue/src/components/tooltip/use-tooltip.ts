@@ -54,7 +54,6 @@ export function useTooltip(
       // trigger 记为本层分支，点它算层内交互
       branches: () => [triggerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
 
@@ -73,6 +72,7 @@ export function useTooltip(
     config,
     isOpen: () => api.value.open,
     contentRef,
+    onPresence: presence => service.refs.set('presence', presence),
   })
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')

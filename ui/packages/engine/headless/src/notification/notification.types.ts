@@ -36,7 +36,7 @@ export interface NotificationRecord {
   actionLabel?: string
   /** 挤条时先挤低的。不给则按语气派生：error=2 / warning=1 / 其余=0。 */
   priority?: number
-  /** 按内容合并后的条数，>1 时由宿主在标题后追加计数。 */
+  /** 按内容合并后的条数，>1 时由 Headless 服务投影在标题后追加计数。 */
   count?: number
 }
 
@@ -50,7 +50,7 @@ export type NotificationDedupe = 'id' | 'content'
 /** create 的入参：id 可省，省了就现生成一个并由 create 返回。 */
 export type NotificationOptions = Omit<NotificationRecord, 'id'> & { id?: string }
 
-/** 补齐 notification 默认值后的条目：直接摊给 toast 部件即可，不必再兜一遍缺省。 */
+/** 补齐 notification 默认值后的条目；命令式服务标题仍统一经过合并计数投影。 */
 export interface ResolvedNotification extends NotificationRecord {
   placement: NotificationPlacement
   type: NotificationType
@@ -85,7 +85,7 @@ export interface NotificationSchema extends MachineSchema {
     defaultItems?: NotificationRecord[]
     /** 默认落位，默认 bottom-end。 */
     placement?: NotificationPlacement
-    /** 每个位置最多同时留几条，超出先挤低优先级、同级里挤最旧的。不给即不限。 */
+    /** 每个位置最多同时留几条，超出先挤低优先级、同级里挤最旧的。默认 5；给 Infinity 即不限。 */
     max?: number
     /** 重复怎么算，默认 'id'。 */
     dedupe?: NotificationDedupe

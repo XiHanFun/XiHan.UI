@@ -29,6 +29,14 @@
   ],
   "exports": {
     ".": "./index.css",
+    "./component-tokens": {
+      "types": "./component-tokens.d.ts",
+      "import": "./component-tokens.js"
+    },
+    "./action-control.css": "./family/action-control.css",
+    "./collection-item.css": "./family/collection-item.css",
+    "./field-chrome.css": "./family/field-chrome.css",
+    "./components.tokens.json": "./components.tokens.json",
     "./accordion.css": "./css/accordion.css",
     "./affix.css": "./css/affix.css",
     "./alert.css": "./css/alert.css",
@@ -78,10 +86,11 @@
     "./grid.css": "./css/grid.css",
     "./heatmap.css": "./css/heatmap.css",
     "./highlight.css": "./css/highlight.css",
-    "./hotkeys.css": "./css/hotkeys.css",
     "./hover-card.css": "./css/hover-card.css",
     "./icon-wrapper.css": "./css/icon-wrapper.css",
     "./icon.css": "./css/icon.css",
+    "./kbd.css": "./css/kbd.css",
+    "./kbd-group.css": "./css/kbd-group.css",
     "./image-cropper.css": "./css/image-cropper.css",
     "./image-viewer.css": "./css/image-viewer.css",
     "./image.css": "./css/image.css",
@@ -171,7 +180,11 @@
   },
   "files": [
     "CHANGELOG.md",
+    "component-tokens.d.ts",
+    "component-tokens.js",
+    "components.tokens.json",
     "css",
+    "family",
     "index.css",
     "index.unlayered.css"
   ],
@@ -183,8 +196,8 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "gen": "node build/emit-unlayered.mjs",
-    "build": "node build/emit-unlayered.mjs"
+    "gen": "node build/action-control-recipe.mjs && node build/field-chrome-recipe.mjs && node build/collection-item-recipe.mjs && node build/emit-component-tokens.mjs && node build/emit-unlayered.mjs",
+    "build": "node build/action-control-recipe.mjs && node build/field-chrome-recipe.mjs && node build/collection-item-recipe.mjs && node build/emit-component-tokens.mjs && node build/emit-unlayered.mjs"
   },
   "dependencies": {
     "@xihan-ui/tokens": "workspace:^"

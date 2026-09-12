@@ -1,7 +1,8 @@
 import type { PositionResult } from '@xihan-ui/core'
 import type { MentionSchema, MentionTrigger } from './mention.types'
-import { createDismissLayer, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
+import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { mentionItemQuery } from './mention.anatomy'
 import { findMentionTrigger, insertMention, normalizeMentionPrefixes } from './mention.trigger'
 
@@ -19,9 +20,14 @@ function sameTrigger(a: MentionTrigger | null, b: MentionTrigger | null | undefi
   return a.index === b.index && a.prefix === b.prefix && a.query === b.query
 }
 
+/** 只认当前可见候选；hidden 项不进入计数、导航或 aria-activedescendant。 */
+function visibleItems(content: HTMLElement): HTMLElement[] {
+  return queryItems(content, mentionItemQuery).filter(item => !item.hidden)
+}
+
 /** 取容器里首个可停留的候选值。 */
 function firstItemValue(content: HTMLElement): string | null {
-  return itemValue(navigateItems(queryItems(content, mentionItemQuery), null, 'first'))
+  return itemValue(navigateItems(visibleItems(content), null, 'first'))
 }
 
 /**
@@ -56,6 +62,7 @@ export const mentionMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     position: null,
     getFloatingEl: () => null,
     getContentEl: () => null,
@@ -63,6 +70,8 @@ export const mentionMachine = createMachine({
   }),
   // 挂载时光标在哪还不知道，一律从收起态起步
   initialState: () => 'closed',
+  // Layer 与消解资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
+  effects: ['trackLayer'],
   on: {
     // 表单重置从任何状态都要认。不设禁用/只读守卫：原生表单的重置算法不看这两个标志
     'FORM.RESET': { actions: ['resetToDefault'] },
@@ -82,8 +91,8 @@ export const mentionMachine = createMachine({
       // 先结算候选条数，再把高亮落到首条：提及浮层恒有高亮，回车才有确定的落点
       entry: ['syncItems', 'highlightFirst'],
       exit: ['clearHighlightedValue'],
-      // 定位 → 消解。焦点全程留在输入框，因此不挂焦点域
-      effects: ['trackPosition', 'trackLayer'],
+      // 定位只服务逻辑展开；Layer 与消解资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackPosition'],
       on: {
         'CLOSE': { target: 'closed', actions: ['invokeOnClose'] },
         'ESCAPE': { target: 'closed', actions: ['dismissHere', 'invokeOnClose'] },
@@ -157,7 +166,7 @@ export const mentionMachine = createMachine({
           const content = refs.get('getContentEl')()
           if (!content)
             return
-          const items = queryItems(content, mentionItemQuery)
+          const items = visibleItems(content)
           context.set('itemCount', items.length)
           const highlighted = context.get('highlightedValue')
           // 高亮被筛掉就改停到首条，不留一个指向不存在 id 的 aria-activedescendant
@@ -171,7 +180,7 @@ export const mentionMachine = createMachine({
         const content = refs.get('getContentEl')()
         if (!content)
           return
-        const items = queryItems(content, mentionItemQuery)
+        const items = visibleItems(content)
         context.set('itemCount', items.length)
         const highlighted = context.get('highlightedValue')
         if (highlighted != null && !items.some(el => itemValue(el) === highlighted))
@@ -246,60 +255,40 @@ export const mentionMachine = createMachine({
     },
     effects: {
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
-      trackPosition: ({ refs, prop, context, flush }) => {
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
+        // 无引擎时不定位，其余照常
+        engine: refs.get('position'),
+        flush,
         // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
         // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
-        context.set('position', null)
-        const engine = refs.get('position')
-        if (!engine)
-          return undefined
+        clear: () => context.set('position', null),
+        // 定位锚点就是输入框本体
+        getAnchor: () => refs.get('getInputEl')(),
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? MENTION_DEFAULT_PLACEMENT,
+          offset: prop('offset') ?? OVERLAY_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+          dir: prop('dir'),
+          // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+          size: true,
+        }),
+        onResult: result => context.set('position', result),
+      }),
 
-        let stop: (() => void) | undefined
-        let disposed = false
-
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden，此时量出的浮层尺寸为 0
-        flush(() => {
-          if (disposed)
-            return
-          const anchor = refs.get('getInputEl')()
-          const floating = refs.get('getFloatingEl')()
-          if (!anchor || !floating)
-            return
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? MENTION_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? OVERLAY_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-              dir: prop('dir'),
-              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
-              size: true,
-            },
-            result => context.set('position', result),
-          )
-        })
-
-        return () => {
-          disposed = true
-          stop?.()
-        }
-      },
-
-      // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape
-      trackLayer: ({ refs, send }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
-        if (!config || !registerLayer)
-          return undefined
-
-        const { layer, dispose: disposeLayer } = registerLayer()
-
-        const dismiss = createDismissLayer({
-          config,
-          layer,
+      // Layer 与 DismissableLayer 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
+      // 焦点全程留在输入框，因此不给焦点域。
+      trackLayer: ({ refs, send, flush, state, track }) => trackPresenceResources({
+        presence: () => refs.get('presence'),
+        open: () => state.get() === 'open',
+        track,
+        acquire: () => trackOverlayLayer({
+          config: refs.get('config'),
+          registerLayer: refs.get('registerLayer'),
+          flush,
+          active: () => state.get() === 'open',
           onDismiss: (reason) => {
             // Escape 要记下这一处，与点外面收起不是一回事
             if (reason === 'escape-key') {
@@ -312,13 +301,8 @@ export const mentionMachine = createMachine({
               return
             send({ type: 'CLOSE' })
           },
-        })
-
-        return () => {
-          dismiss.dispose()
-          disposeLayer()
-        }
-      },
+        }),
+      }),
     },
   },
 })

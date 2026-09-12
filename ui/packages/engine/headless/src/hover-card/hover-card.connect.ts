@@ -1,22 +1,11 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { HoverCardApi, HoverCardSchema } from './hover-card.types'
 import { contains, dataAttr } from '@xihan-ui/core'
-import { overlayPositioned } from '../shared/overlay'
+import { overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { hoverCardAnatomy } from './hover-card.anatomy'
 import { HOVER_CARD_DEFAULT_PLACEMENT } from './hover-card.machine'
 
 const parts = hoverCardAnatomy.build()
-
-// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
-// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
-const AVAILABLE_H_FLOOR = 96
-
-function availableHeightVar(available: number | undefined): Record<string, string> {
-  return {
-    '--xh-_hover-card-available-h':
-      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
-  }
-}
 
 export function connectHoverCard<T extends PropTypes>(
   service: Service<HoverCardSchema>,
@@ -104,10 +93,8 @@ export function connectHoverCard<T extends PropTypes>(
       // 落位才露：皮肤基线把定位层藏着，带这个才显示。展开那几帧坐标还没算出来时就是藏的
       'data-positioned': dataAttr(overlayPositioned(position)),
       'style': {
-        position: 'fixed',
-        left: `${position?.x ?? 0}px`,
-        top: `${position?.y ?? 0}px`,
-        ...availableHeightVar(position?.availableHeight),
+        ...overlayFixedStyle(position),
+        ...overlayAvailableSpaceVars('hover-card', position),
       },
     }),
 
@@ -125,6 +112,9 @@ export function connectHoverCard<T extends PropTypes>(
       'data-placement': placement,
       // 尺寸轴落在 content 上而非 root：root 是可选部件，面板几何也长在 content 上
       'data-size': prop('size'),
+      // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       'hidden': !open || undefined,
       // 指针移入卡片即撤销收起等待
       'onPointerenter': () => send({ type: 'POINTER.ENTER' }),
@@ -144,10 +134,7 @@ export function connectHoverCard<T extends PropTypes>(
       'data-placement': placement,
       // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。
       // 两根轴每帧都写，翻面后另一根不会留着上一帧的值；空串即撤掉声明，皮肤退回居中
-      'style': {
-        '--xh-_hover-card-arrow-x': arrowAt?.x != null ? `${arrowAt.x}px` : '',
-        '--xh-_hover-card-arrow-y': arrowAt?.y != null ? `${arrowAt.y}px` : '',
-      },
+      'style': overlayArrowVars('hover-card', arrowAt),
     }),
   }
 }

@@ -5,7 +5,6 @@
  */
 
 import type { HotkeysProps, HotkeysTriggerDetails } from '../src/hotkeys/index'
-import { normalizeProps } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   connectHotkeys,
@@ -20,11 +19,9 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-function api(props: HotkeysProps = {}) {
-  return connectHotkeys(props, normalizeProps)
+function api(props: HotkeysProps) {
+  return connectHotkeys(props)
 }
-
-const rootProps = (props: HotkeysProps = {}) => api(props).getRootProps() as Record<string, unknown>
 
 /** 造一次按键。target 不传即落在 body 上，那不是打字的地方。 */
 function press(key: string, init: KeyboardEventInit = {}, target: EventTarget = document.body): KeyboardEvent {
@@ -134,62 +131,32 @@ describe('isTypingTarget 打字落点', () => {
   })
 })
 
-describe('connectHotkeys 属性产出', () => {
-  it('整块当一张图对外，名字由 aria-label 给：读屏念不出 ⌘ ⇧ 这类符号', () => {
-    expect(rootProps({ keys: ['Mod', 'S'], platform: 'mac' })).toMatchObject({
-      'role': 'img',
-      'aria-label': 'Command + S',
-      'data-platform': 'mac',
-      'data-scope': 'hotkeys',
-      'data-part': 'root',
-    })
+describe('connectHotkeys 行为投影', () => {
+  it('只暴露监听事实，不再产生任何键帽或 DOM getter', () => {
+    const current = api({ keys: ['Mod', 'S'], platform: 'mac', enabled: false })
+    expect(current.platform).toBe('mac')
+    expect(current.enabled).toBe(false)
+    expect(current.target).toBe('document')
+    expect(Object.keys(current).sort()).toEqual(['enabled', 'handleKeyDown', 'matches', 'platform', 'resolveTarget', 'target'])
   })
 
-  it('一枚键都翻不出来时不出 role：没有名字的图读屏只念得出「图像」', () => {
-    const empty = rootProps()
-    expect(empty.role).toBeUndefined()
-    expect(empty['aria-label']).toBeUndefined()
-    expect(empty['data-part']).toBe('root')
-    expect(rootProps({ keys: [''] }).role).toBeUndefined()
+  it('局部 target 保留作者的显式 resolver，不猜组件父节点', () => {
+    const node = document.createElement('section')
+    const target = () => node
+    expect(api({ keys: ['S'], target }).target).toBe(target)
+    expect(api({ keys: ['S'], target }).resolveTarget(document)).toBe(node)
   })
 
-  it('两条文案各管一段：逐枚键的读法与整句的拼法都能换掉', () => {
-    expect(rootProps({
-      keys: ['Mod', 'S'],
-      platform: 'other',
-      translations: {
-        keyName: key => (key === 'Control' ? '控制' : key),
-        hotkey: names => names.join('加'),
-      },
-    })).toMatchObject({ 'aria-label': '控制加S' })
+  it('空组合与不可命中的多主键组合直接报错，不注册静默死监听', () => {
+    expect(() => connectHotkeys({ keys: [] })).toThrow(/非空/)
+    expect(() => connectHotkeys({ keys: ['Mod', 'A', 'S'] })).toThrow(/只能包含一枚主键/)
   })
 
-  it('尺寸原样透传，没写就不输出；缺省档由皮肤承担', () => {
-    expect(rootProps({ keys: ['S'], size: 'lg' })['data-size']).toBe('lg')
-    expect(rootProps({ keys: ['S'] })['data-size']).toBeUndefined()
-  })
-
-  it('监听关掉才写 data-disabled，开着时不留空属性', () => {
-    expect(rootProps({ keys: ['S'], enabled: false })['data-disabled']).toBe('')
-    expect(rootProps({ keys: ['S'] })['data-disabled']).toBeUndefined()
-  })
-
-  it('键帽只标修饰键与否，身份按作者写的那个词认领', () => {
-    const current = api({ keys: ['Mod', 'S'], platform: 'mac' })
-    expect(current.getKeyProps({ value: 'Mod' })).toMatchObject({ 'data-part': 'key', 'data-modifier': '' })
-    expect((current.getKeyProps({ value: 'S' }) as Record<string, unknown>)['data-modifier']).toBeUndefined()
-    expect(current.segmentOf('S')?.label).toBe('S')
-    expect(current.segmentOf('不存在')).toBeNull()
-  })
-
-  it('mac 的写法里键帽连排：连接符是空串且那一格收起', () => {
-    const mac = api({ keys: ['Mod', 'S'], platform: 'mac' })
-    expect(mac.separator).toBe('')
-    expect(mac.getSeparatorProps()).toMatchObject({ hidden: true })
-
-    const other = api({ keys: ['Mod', 'S'], platform: 'other' })
-    expect(other.separator).toBe('+')
-    expect((other.getSeparatorProps() as Record<string, unknown>).hidden).toBeUndefined()
+  it('target 声明和 resolver 返回值都严格校验', () => {
+    expect(() => connectHotkeys({ keys: ['S'], target: 'parent' as never })).toThrow(/target/)
+    const current = connectHotkeys({ keys: ['S'], target: () => ({}) as EventTarget })
+    expect(() => current.resolveTarget(document)).toThrow(/EventTarget/)
+    expect(connectHotkeys({ keys: ['S'], target: () => null }).resolveTarget(document)).toBeNull()
   })
 })
 

@@ -1,26 +1,31 @@
 @layer xihan.motion {
   /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
      动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-  @keyframes xh-pop-in {
+  @keyframes xh-overlay-slide-in {
     from {
       opacity: 0;
-      scale: var(--xh-motion-scale-enter);
+      translate:
+        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
     }
 
     to {
       opacity: 1;
-      scale: 1;
+      translate: 0 0;
     }
   }
-  @keyframes xh-pop-out {
+
+  @keyframes xh-overlay-slide-out {
     from {
       opacity: 1;
-      scale: 1;
+      translate: 0 0;
     }
 
     to {
       opacity: 0;
-      scale: var(--xh-motion-scale-exit);
+      translate:
+        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
     }
   }
 }
@@ -36,12 +41,20 @@
     /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，content 继承它限高；
        引擎没算（尚未落位 / 无引擎）时不额外限高 */
     --xh-_menu-available-h: 100vh;
+    /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+    --xh-_menu-available-w: 100vw;
+    /* Web Components 的子菜单仍在父层 DOM 内，先清零以截断父 positioner 的方向继承。 */
+    --xh-_overlay-enter-up: 0;
+    --xh-_overlay-enter-down: 0;
+    --xh-_overlay-enter-left: 0;
+    --xh-_overlay-enter-right: 0;
 
     /* 条目列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在菜单右缘糊一条竖灰带 */
     --xh-scrollbar-track-bg: transparent;
 
     position: fixed;
-    z-index: var(--xh-menu-layer, var(--xh-layer-popover));
+    z-index: var(--xh-menu-layer, var(--xh-_layer, var(--xh-layer-popover)));
     /* 空壳不吃指针，交互只发生在 content 上 */
     pointer-events: none;
   }
@@ -49,6 +62,23 @@
   /* 锚点被滚出可视区：整个浮层随之收起 */
   [data-scope='menu'][data-part='positioner'][data-hidden] {
     visibility: hidden;
+  }
+
+  /* 菜单从锚点一侧短移入；物理 placement 与定位引擎同一套，不随书写方向翻。 */
+  [data-scope='menu'][data-part='positioner'][data-placement^='top'] {
+    --xh-_overlay-enter-down: 1;
+  }
+
+  [data-scope='menu'][data-part='positioner'][data-placement^='bottom'] {
+    --xh-_overlay-enter-up: 1;
+  }
+
+  [data-scope='menu'][data-part='positioner'][data-placement^='left'] {
+    --xh-_overlay-enter-right: 1;
+  }
+
+  [data-scope='menu'][data-part='positioner'][data-placement^='right'] {
+    --xh-_overlay-enter-left: 1;
   }
 
   /* 触发器的长相归作者，皮肤只表达展开态。私有槽声明在它自己身上：
@@ -75,28 +105,40 @@
     --xh-_menu-item-gap: var(--xh-control-gap-md);
     --xh-_menu-font-size: var(--xh-control-font-md);
 
-    /* 打开子菜单的触发条目走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
-       悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话打开路径就认不出来了 */
-    --xh-_menu-item-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--xh-menu-content-gap, var(--xh-list-option-gap));
     min-inline-size: var(--xh-menu-min-w, var(--xh-overlay-menu-min-w));
-    max-inline-size: var(--xh-menu-max-w, var(--xh-overlay-max-w));
+    /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+    max-inline-size: min(var(--xh-menu-max-w, var(--xh-overlay-max-w)), var(--xh-_menu-available-w));
     /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
        列表族的 16rem 对命令菜单偏矮，这里另给一档 */
     max-block-size: min(var(--xh-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menu-available-h));
     padding-block: var(--xh-menu-content-py, var(--xh-surface-pad-xs));
     padding-inline: var(--xh-menu-content-px, var(--xh-surface-pad-xs));
-    border: var(--xh-stroke-thin) solid var(--xh-menu-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-menu-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-menu-content-radius, var(--xh-shape-surface));
-    background: var(--xh-menu-content-bg, var(--xh-bg-surface));
-    color: var(--xh-menu-content-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-menu-content-shadow, var(--xh-elevation-floating));
+    background: var(--xh-menu-content-bg, var(--xh-material-frosted-bg));
+    color: var(--xh-menu-content-fg, var(--xh-material-frosted-fg));
+    box-shadow: var(--xh-menu-content-shadow, var(--xh-material-frosted-shadow));
+    -webkit-backdrop-filter: var(--xh-menu-backdrop, var(--xh-material-frosted-backdrop));
+    backdrop-filter: var(--xh-menu-backdrop, var(--xh-material-frosted-backdrop));
     /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
     overflow-y: auto;
     pointer-events: auto;
+  }
+
+  /* 顶光是独立装饰层，不替换真实边框；高对比/强制色归零后四边轮廓仍完整。 */
+  [data-scope='menu'][data-part='content']::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: var(--xh-stroke-thin);
+    border-radius: inherit;
+    background: var(--xh-menu-highlight, var(--xh-material-frosted-highlight));
+    pointer-events: none;
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -112,14 +154,15 @@
 
   /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='menu'][data-part='content'][data-state='open'] {
-    will-change: opacity, scale;
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    will-change: opacity, translate;
+    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
      免得动画结束到真收起之间闪一下原样 */
   [data-scope='menu'][data-part='content'][data-state='closed'] {
-    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    will-change: opacity, translate;
+    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* —— 尺寸 —— */
@@ -146,7 +189,7 @@
     padding-block: var(--xh-menu-item-py, var(--xh-_menu-item-py));
     padding-inline: var(--xh-menu-item-px, var(--xh-_menu-item-px));
     border-radius: var(--xh-menu-item-radius, var(--xh-shape-control));
-    color: var(--xh-menu-item-fg, var(--xh-fg-default));
+    color: var(--xh-menu-item-fg, var(--xh-material-frosted-fg));
     font-size: var(--xh-menu-item-font-size, var(--xh-_menu-font-size));
     line-height: var(--xh-menu-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
@@ -162,16 +205,14 @@
     background: var(--xh-menu-item-bg-hover, var(--xh-bg-subtle));
   }
 
-  /* 打开子菜单的触发条目是展开路径，走品牌淡底加粗强档。
-     必须排在轻档之后：悬停或焦点回到它身上时同特指度靠书写顺序压过轻档 */
-  [data-scope='menu'][data-part='item']:not([data-disabled])[data-state='open'] {
-    background: var(--xh-menu-item-bg-active, var(--xh-_menu-item-active-bg));
-    font-weight: var(--xh-menu-item-active-font-weight, var(--xh-font-weight-semibold));
+  [data-scope='menu'][data-part='item']:not([data-disabled]):active {
+    background: var(--xh-menu-item-bg-pressed, var(--xh-bg-subtle-active));
   }
 
-  /* 键盘落焦的条目画内收环；指针触发的聚焦不画 */
-  [data-scope='menu'][data-part='item']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
+  /* 展开项使用中性底色，不加侧条，也不改变字重。
+     必须排在轻档之后：悬停或焦点回到它身上时同特指度靠书写顺序压过轻档 */
+  [data-scope='menu'][data-part='item']:not([data-disabled])[data-state='open'] {
+    background: var(--xh-menu-item-bg-active, var(--xh-bg-subtle));
   }
 
   [data-scope='menu'][data-part='item']:focus:not(:focus-visible) {
@@ -180,11 +221,13 @@
 
   [data-scope='menu'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
+    cursor: not-allowed;
   }
 
   /* 条目里的文字载体：占满剩余宽度，长文本自己收省略号 */
   [data-scope='menu'][data-part='item-text'] {
     flex: 1;
+    min-inline-size: 0;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -201,6 +244,7 @@
     align-items: center;
     justify-content: center;
     inline-size: var(--xh-menu-item-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-menu-item-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-menu-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)));
   }
 
@@ -215,7 +259,9 @@
   /* 副文本另起一行：整行占满，把条目的一行内容折成两行 */
   [data-scope='menu'][data-part='item-description'] {
     flex: 1 0 100%;
-    color: var(--xh-menu-item-description-fg, var(--xh-fg-muted));
+    order: 2;
+    min-inline-size: 0;
+    color: var(--xh-menu-item-description-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-menu-item-description-font-size, var(--xh-text-caption-size));
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -230,20 +276,21 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 带副文本的条目改成两行排布：主文字与标记位在上一行，副文本占满下一行 */
-  [data-scope='menu'][data-part='item']:has([data-scope='menu'][data-part='item-description']) {
+  /* 作者的图标、正文和快捷键按一行排布；只有说明部件另起一行。 */
+  [data-scope='menu'][data-part='item']:has(> [data-scope='menu'][data-part='item-description']) {
     flex-wrap: wrap;
   }
 
   /* 带子菜单的条目行尾画右向小箭头：不点开也看得出还有下一级。
-     位置靠 margin 顶到行尾，图形取兜底字形令牌 */
+     箭头与作者内容同排，用自动外距推到行尾。 */
   [data-scope='menu'][data-part='item'][aria-haspopup='menu']::after {
     content: '';
     flex: none;
+    order: 1;
     margin-inline-start: auto;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    background-color: currentColor;
+    background-color: var(--xh-menu-submenu-indicator-fg, var(--xh-material-frosted-fg-muted));
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
     mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
   }
@@ -270,7 +317,7 @@
     display: block;
     padding-block: var(--xh-menu-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-menu-group-label-px, var(--xh-_menu-item-px));
-    color: var(--xh-menu-group-label-fg, var(--xh-fg-subtle));
+    color: var(--xh-menu-group-label-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-menu-group-label-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-menu-group-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
@@ -284,7 +331,8 @@
   [data-scope='menu'][data-part='separator'] {
     block-size: var(--xh-menu-separator-thickness, var(--xh-stroke-thin));
     margin-block: var(--xh-menu-separator-my, var(--xh-space-0_5));
-    background: var(--xh-menu-separator-color, var(--xh-border-default));
+    border-radius: var(--xh-menu-separator-radius, var(--xh-shape-pill));
+    background: var(--xh-menu-separator-color, var(--xh-material-frosted-separator));
   }
 
   /* 箭头的底色与描边色，几何在 overlay-arrow.css。
@@ -296,8 +344,8 @@
     --xh-_overlay-arrow-x: var(--xh-_menu-arrow-x);
     --xh-_overlay-arrow-y: var(--xh-_menu-arrow-y);
 
-    background: var(--xh-menu-content-bg, var(--xh-bg-surface));
-    border: var(--xh-stroke-thin) solid var(--xh-menu-border, var(--xh-border-default));
+    background: var(--xh-menu-content-bg, var(--xh-material-frosted-bg));
+    border: var(--xh-stroke-thin) solid var(--xh-menu-border, var(--xh-material-frosted-border));
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。

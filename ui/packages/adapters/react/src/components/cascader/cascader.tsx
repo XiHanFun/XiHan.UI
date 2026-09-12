@@ -9,7 +9,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -18,10 +18,13 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import {
+  CascaderContentProvider,
   CascaderGroupProvider,
   CascaderItemProvider,
   CascaderProvider,
+  useCascaderContentContext,
   useCascaderContext,
   useCascaderGroupContext,
   useCascaderItemContext,
@@ -53,10 +56,15 @@ export type CascaderRootSlotProps = Pick<
   | 'clear'
 >
 
-export interface XhCascaderRootProps {
+/** 根上自有的那些取值；dir 与 defaultValue 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
+
+export interface XhCascaderRootProps extends RootElementProps {
   collection?: CascaderNode[]
   value?: CascaderValue
   defaultValue?: CascaderValue
+  name?: string
+  form?: string
   open?: boolean
   defaultOpen?: boolean
   expandTrigger?: CascaderExpandTrigger
@@ -84,12 +92,74 @@ export interface XhCascaderRootProps {
   children?: SlotChildren<CascaderRootSlotProps>
 }
 
-export function XhCascaderRoot({ children, ...props }: XhCascaderRootProps): ReactNode {
-  const ctx = useCascader(withXhConfig('cascader', props) as CascaderProps)
+export function XhCascaderRoot({
+  collection,
+  value,
+  defaultValue,
+  name,
+  form,
+  open,
+  defaultOpen,
+  expandTrigger,
+  changeOnSelect,
+  multiple,
+  searchable,
+  cascade,
+  checkedStrategy,
+  disabled,
+  readOnly,
+  invalid,
+  loading,
+  translations,
+  variant,
+  tone,
+  size,
+  placeholder,
+  separator,
+  placement,
+  offset,
+  loop,
+  dir,
+  onValueChange,
+  onOpenChange,
+  children,
+  ...rest
+}: XhCascaderRootProps): ReactNode {
+  const ctx = useCascader(withXhConfig('cascader', useFormControlProps({
+    collection,
+    value,
+    defaultValue,
+    name,
+    form,
+    open,
+    defaultOpen,
+    expandTrigger,
+    changeOnSelect,
+    multiple,
+    searchable,
+    cascade,
+    checkedStrategy,
+    disabled,
+    readOnly,
+    invalid,
+    loading,
+    translations,
+    variant,
+    tone,
+    size,
+    placeholder,
+    separator,
+    placement,
+    offset,
+    loop,
+    dir,
+    onValueChange,
+    onOpenChange,
+  })) as CascaderProps)
   const api = ctx.api
   return (
     <CascaderProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>, { ref: ctx.rootRef })}>
         {renderSlot(children, {
           open: api.open,
           // levels 每层一列、层内节点各一条目，供作者渲染；columns 只读当前展开的列
@@ -111,6 +181,7 @@ export function XhCascaderRoot({ children, ...props }: XhCascaderRootProps): Rea
           select: api.select,
           clear: api.clear,
         })}
+        {api.value.map(path => <input key={JSON.stringify(path)} {...api.getHiddenInputProps({ path }) as Record<string, unknown>} />)}
       </div>
     </CascaderProvider>
   )
@@ -141,7 +212,7 @@ export function XhCascaderTrigger({ children, ...rest }: XhCascaderTriggerProps)
   return (
     <button
       {...mergeReactProps(
-        fieldLabel({ ...ctx.api.getTriggerProps() as Record<string, unknown>, ...fieldWiring }),
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
         rest as Record<string, unknown>,
         { ref: (el: HTMLButtonElement | null) => { ctx.triggerRef.current = el } },
       )}
@@ -190,7 +261,7 @@ export function XhCascaderPositioner({ children, container, ...rest }: XhCascade
     props: () => ({ dir: (ctx.api.getPositionerProps() as { dir?: Direction }).dir }),
   })
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,
@@ -209,37 +280,80 @@ export interface XhCascaderContentProps extends ComponentPropsWithRef<'div'> {
   /** 空态占位的内容；不给就按视图取「无匹配」或「无数据」。 */
   empty?: ReactNode
 }
-/** 收起时只隐藏不卸载；跨列的键盘导航也在这一层处理。 */
-export function XhCascaderContent({ children, empty, ...rest }: XhCascaderContentProps): ReactNode {
+
+/** 放在作者 children 之后渲染；作者 Loading 即使隔着业务组件，也已用同一 Content 令牌登记。 */
+function CascaderAutoLoading(): ReactNode {
   const ctx = useCascaderContext()
-  const api = ctx.api
+  const content = useCascaderContentContext()
+  if (content.authoredLoadingCount > 0 || content.renderRegistration.authoredLoading)
+    return null
   return (
-    <div
-      {...mergeReactProps(
-        api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
-        {
-          // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
-          // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
-          style: ctx.rendered ? undefined : { display: 'none' },
-          ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el },
-        },
-      )}
-    >
-      {children}
-      {/* 空态占位常挂在列后，露不露面归连接层 */}
-      <div {...api.getEmptyProps() as Record<string, unknown>}>
-        {empty ?? (api.searching ? api.translations.noMatch : api.translations.empty)}
-      </div>
+    <div {...ctx.api.getLoadingProps() as Record<string, unknown>} data-xh-cascader-auto-loading="">
+      {ctx.api.translations.loading}
     </div>
   )
 }
 
+/** 收起时只隐藏不卸载；跨列的键盘导航也在这一层处理。 */
+export function XhCascaderContent({ children, empty, ...rest }: XhCascaderContentProps): ReactNode {
+  const ctx = useCascaderContext()
+  const api = ctx.api
+  const [authoredLoadingCount, setAuthoredLoadingCount] = useState(0)
+  const registerLoading = useCallback(() => {
+    let active = true
+    setAuthoredLoadingCount(count => count + 1)
+    return () => {
+      if (!active)
+        return
+      active = false
+      setAuthoredLoadingCount(count => count - 1)
+    }
+  }, [])
+  // 每轮各用自己的对象；并发或被中断的树只改自己，不能污染另一轮的判断。
+  const renderRegistration = { authoredLoading: false }
+  const contentContext = {
+    renderRegistration,
+    authoredLoadingCount,
+    registerLoading,
+  }
+  return (
+    <CascaderContentProvider value={contentContext}>
+      <div
+        {...mergeReactProps(
+          api.getContentProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          {
+            // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
+            // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
+            style: ctx.rendered ? undefined : { display: 'none' },
+            ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el },
+          },
+        )}
+      >
+        {children}
+        {/* 空态占位常挂在列后，露不露面归连接层 */}
+        <div {...api.getEmptyProps() as Record<string, unknown>}>
+          {empty ?? (api.searching ? api.translations.noMatch : api.translations.empty)}
+        </div>
+        <CascaderAutoLoading />
+      </div>
+    </CascaderContentProvider>
+  )
+}
+
 export interface XhCascaderLoadingProps extends ComponentPropsWithRef<'div'> {}
-/** 在途占位：与空态占位同一个位置，取数期间顶上来；文案归作者。 */
+/** 在途占位：当前视图无候选时顶上来；无 children 则读取 Cascader translations.loading。 */
 export function XhCascaderLoading({ children, ...rest }: XhCascaderLoadingProps): ReactNode {
   const ctx = useCascaderContext()
-  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  const content = useCascaderContentContext()
+  // render 阶段登记让服务端直出和客户端首帧都能在末尾自动节点渲染前识别作者部件。
+  content.renderRegistration.authoredLoading = true
+  useIsomorphicLayoutEffect(() => content.registerLoading(), [content.registerLoading])
+  return (
+    <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children ?? ctx.api.translations.loading}
+    </div>
+  )
 }
 
 export interface XhCascaderInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue'> {}

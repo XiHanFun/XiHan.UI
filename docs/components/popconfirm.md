@@ -13,8 +13,20 @@
 
 ## 特性
 
-- 确认按钮支持异步：在途期间进 pending 并拦住关闭，失败保持打开。
+- 确认按钮支持同步返回和任意 thenable：调用业务前即占用事务，兑现后收起；同步抛错、
+  `then` 读取失败或拒绝都会保持打开，并通过 `actionError` 与 `confirm-error` 原样暴露 `cause`。
+- pending 期间重复确认、触发器切换、`setOpen(false)`、Escape 与层外交互都不会关闭。
+  取消仍可立即终止组件的等待并收起；它不会假装取消业务 Promise，迟到的兑现或拒绝会按事务票据丢弃。
+- 受控宿主把 `open` 写成 `false` 属于事实状态，会终止当前确认事务；此后重新写成 `true` 是新会话，
+  旧 thenable 的结算不会关闭它或写入错误。
+- 浮层是非模态 `dialog`：不陷焦点、不锁滚动、不隐藏页面其它内容。
 - 位置、尺寸、语气三轴。
+- 内容与箭头使用和 Popover 同源的 M2 磨砂表面：边界、顶光、背景模糊与投影保持连续；
+  强制颜色模式会撤掉装饰顶光，由系统色接管边界。
+- 标题、说明与末行操作按固定节奏排布，长文案可在可用宽度内断行。确认是实心主操作，
+  取消是 soft 次操作；两颗按钮都有接触高光、按压回执、明确的不透明聚焦底与粗指针命中区。
+- pending 时在确认文案之前显示 spinner，并以 `aria-busy` / `aria-disabled` 报告状态；挂起时按钮不再响应 hover / active 换面，
+  减弱动效下以静止点线圆环表达在途。
 
 ## 示例
 
@@ -74,7 +86,8 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
 | `onCancel` | `() => void` |  | 点了取消按钮，随后浮层收起；挂起中的确认结果随之作废。Escape 与层外交互只发 onOpenChange，不发这条。 |
-| `onConfirm` | `() => void \| Promise<unknown>` |  | 点了确认按钮。返回 Promise 即挂起确认门：浮层等它兑现才收起、 确认按钮转圈且再点无效，落空（reject）则留在原地不收。同步返回照旧立即收起。 |
+| `onConfirm` | `() => void \| PromiseLike<unknown>` |  | 点了确认按钮。返回 thenable 即挂起确认门：浮层等它兑现才收起、 确认按钮转圈且再点无效，拒绝则留在原地并报告确认错误。同步返回照旧立即收起。 |
+| `onConfirmError` | `(details: PopconfirmConfirmErrorDetails) => void` |  | 确认回调同步抛出或 thenable 拒绝；details.cause 是未经包装的原始原因。 |
 | `onOpenChange` | `(details: PopoverOpenChangeDetails) => void` |  | open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `open` | `boolean` |  |  |
 | `placement` | `Placement` |  |  |
@@ -87,7 +100,8 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `PopoverOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
-| `confirm` | `` | 点了确认按钮；随后浮层收起。异步门走 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () =&gt; Promise` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，落空留在原地），confirm 事件照发只作通知 |
+| `confirm` | `` | 点了确认按钮；随后浮层收起。异步门走 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () =&gt; thenable` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知 |
+| `confirm-error` | `PopconfirmConfirmErrorDetails` | 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因 |
 | `cancel` | `` | 点了取消按钮；随后浮层收起 |
 
 ## 插槽
@@ -117,6 +131,7 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | --- | --- | --- |
 | `open` | `boolean` |  |
 | `pending` | `boolean` | 异步确认进行中：确认按钮转圈、再点无效。 |
+| `actionError` | `PopconfirmConfirmErrorDetails \| null` | 最近一次有效确认动作的错误；新确认或取消时清空。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `confirm` | `() => void` | 发确认意图并请求收起；异步确认挂起期间再调无效。 |
 | `cancel` | `() => void` | 发取消意图并请求收起。 |
@@ -132,14 +147,14 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 
 ## 键盘
 
-规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/#keyboardinteraction)
+规格出处：[W3C APG](https://www.w3.org/TR/wai-aria-1.2/#dialog)
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | focus in trigger | 切换开合，展开时把焦点移入 content |
-| `Enter` / `Space` | focus in confirm-trigger | 发确认意图并收起浮层 |
-| `Enter` / `Space` | focus in cancel-trigger | 发取消意图并收起浮层 |
-| `Escape` | open | 收起浮层并把焦点还给 trigger；不发确认也不发取消 |
+| `Enter` / `Space` | focus in confirm-trigger | 发确认意图；同步成功或 thenable 兑现后收起 |
+| `Enter` / `Space` | focus in cancel-trigger | 终止组件等待，发取消意图并收起浮层 |
+| `Escape` | open and not pending | 收起浮层并把焦点还给 trigger；不发确认也不发取消 |
 
 ## 无障碍
 
@@ -151,14 +166,18 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-labelledby` | `title` 部件的 id |
-| `content` | `role` | 'alertdialog' |
+| `content` | `role` | 'dialog' |
 | `confirm-trigger` | `aria-busy` | 'true' \| undefined |
+| `confirm-trigger` | `aria-disabled` | 'true' \| undefined |
 | `arrow` | `aria-hidden` | 'true' |
 
 ## 样式
 
 默认皮肤 `@xihan-ui/styles/popconfirm.css` 按部件选择：`[data-scope="popconfirm"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ## 数据属性
 
@@ -178,19 +197,54 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | `confirm-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-popconfirm-action-px` · `--xh-popconfirm-action-radius` · `--xh-popconfirm-arrow-size` · `--xh-popconfirm-bg` · `--xh-popconfirm-border` · `--xh-popconfirm-cancel-bg` · `--xh-popconfirm-cancel-fg` · `--xh-popconfirm-confirm-bg` · `--xh-popconfirm-confirm-fg` · `--xh-popconfirm-confirm-shadow` · `--xh-popconfirm-description-fg` · `--xh-popconfirm-fg` · `--xh-popconfirm-gap` · `--xh-popconfirm-layer` · `--xh-popconfirm-loading-duration` · `--xh-popconfirm-max-w` · `--xh-popconfirm-px` · `--xh-popconfirm-py` · `--xh-popconfirm-radius` · `--xh-popconfirm-shadow` · `--xh-popconfirm-title-fg` · `--xh-popconfirm-title-font-size` · `--xh-popconfirm-title-font-weight`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-popconfirm-action-px` | `cancel-trigger`<br>`confirm-trigger` | `padding-inline` | `default` | `--xh-control-px-sm` | popconfirm 的 cancel-trigger、confirm-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-popconfirm-action-radius` | `cancel-trigger`<br>`confirm-trigger` | `border-radius` | `default` | `--xh-shape-control` | popconfirm 的 cancel-trigger、confirm-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-popconfirm-action-shadow` | `cancel-trigger`<br>`confirm-trigger` | `box-shadow` | `default`<br>`hover`<br>`loading`<br>`not([data-loading])` | `--xh-_popconfirm-confirm-highlight`<br>`--xh-material-soft-shadow` | popconfirm 的 cancel-trigger、confirm-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-popconfirm-arrow-size` | `arrow` | `--xh-_overlay-arrow-size` | `default` | `--xh-overlay-arrow-size` | popconfirm 的 arrow 部件 --xh-_overlay-arrow-size 覆盖槽。 |
+| `--xh-popconfirm-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | popconfirm 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-popconfirm-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-material-frosted-bg` | popconfirm 的 arrow、content 部件 background 覆盖槽。 |
+| `--xh-popconfirm-border` | `arrow`<br>`content` | `border` | `default` | `--xh-material-frosted-border` | popconfirm 的 arrow、content 部件 border 覆盖槽。 |
+| `--xh-popconfirm-cancel-bg` | `cancel-trigger` | `background-color` | `default` | `--xh-material-soft-bg` | popconfirm 的 cancel-trigger 部件 background-color 覆盖槽。 |
+| `--xh-popconfirm-cancel-bg-focus` | `cancel-trigger` | `background-color` | `focus-visible` | `--xh-material-soft-focus-surface` | popconfirm 的 cancel-trigger 部件 background-color 覆盖槽。 |
+| `--xh-popconfirm-cancel-fg` | `cancel-trigger` | `color` | `default` | `--xh-material-soft-fg` | popconfirm 的 cancel-trigger 部件 color 覆盖槽。 |
+| `--xh-popconfirm-cancel-fg-focus` | `cancel-trigger` | `color` | `focus-visible` | `--xh-material-soft-fg` | popconfirm 的 cancel-trigger 部件 color 覆盖槽。 |
+| `--xh-popconfirm-confirm-bg` | `confirm-trigger` | `background-color` | `default`<br>`focus-visible` | `--xh-_tone` | popconfirm 的 confirm-trigger 部件 background-color 覆盖槽。 |
+| `--xh-popconfirm-confirm-fg` | `confirm-trigger` | `color` | `default` | `--xh-_tone-on` | popconfirm 的 confirm-trigger 部件 color 覆盖槽。 |
+| `--xh-popconfirm-confirm-shadow` | `cancel-trigger`<br>`confirm-trigger` | `box-shadow` | `default`<br>`hover`<br>`loading`<br>`not([data-loading])` | `--xh-popconfirm-action-shadow` | popconfirm 的 cancel-trigger、confirm-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-popconfirm-description-fg` | `description` | `color` | `default` | `--xh-material-frosted-fg-muted` | popconfirm 的 description 部件 color 覆盖槽。 |
+| `--xh-popconfirm-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | popconfirm 的 content 部件 color 覆盖槽。 |
+| `--xh-popconfirm-gap` | `content` | `gap` | `default` | `--xh-space-2` | popconfirm 的 content 部件 gap 覆盖槽。 |
+| `--xh-popconfirm-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | popconfirm 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-popconfirm-loading-duration` | `confirm-trigger` | `animation` | `loading` | `--xh-spin-duration` | popconfirm 的 confirm-trigger 部件 animation 覆盖槽。 |
+| `--xh-popconfirm-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | popconfirm 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-popconfirm-max-w` | `content` | `max-inline-size` | `default` | `--xh-_popconfirm-max-w` | popconfirm 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-popconfirm-px` | `content` | `padding-inline` | `default` | `--xh-_popconfirm-pad` | popconfirm 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-popconfirm-py` | `content` | `padding-block` | `default` | `--xh-_popconfirm-pad` | popconfirm 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-popconfirm-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | popconfirm 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-popconfirm-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | popconfirm 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-popconfirm-title-fg` | `title` | `color` | `default` | `--xh-material-frosted-fg` | popconfirm 的 title 部件 color 覆盖槽。 |
+| `--xh-popconfirm-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | popconfirm 的 title 部件 font-size 覆盖槽。 |
+| `--xh-popconfirm-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | popconfirm 的 title 部件 font-weight 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
-关键帧 `xh-overlay-pop-in` · `xh-pop-out` · `xh-popconfirm-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-pop-in` · `xh-pop-out` · `xh-popconfirm-rotate` 随皮肤自带，不引用别处文件里的名字；`background-color` · `border-color` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+## 响应式
+
+皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ## RTL
 

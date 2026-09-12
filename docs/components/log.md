@@ -191,11 +191,37 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 | `line` | `data-level` | line?.level |
 | `scroll-to-end-trigger` | `data-state` | 'visible' \| 'hidden' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-log-bg` · `--xh-log-border` · `--xh-log-content-px` · `--xh-log-fg` · `--xh-log-font` · `--xh-log-font-size` · `--xh-log-icon-size` · `--xh-log-level-debug-fg` · `--xh-log-level-error-fg` · `--xh-log-level-info-fg` · `--xh-log-level-warn-fg` · `--xh-log-line-height` · `--xh-log-radius` · `--xh-log-rows` · `--xh-log-scroll-to-end-trigger-bg` · `--xh-log-scroll-to-end-trigger-bg-hover` · `--xh-log-scroll-to-end-trigger-border` · `--xh-log-scroll-to-end-trigger-fg` · `--xh-log-scroll-to-end-trigger-inset` · `--xh-log-scroll-to-end-trigger-radius` · `--xh-log-scroll-to-end-trigger-shadow` · `--xh-log-scroll-to-end-trigger-size` · `--xh-log-tab-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-log-bg` | `root` | `background` | `default` | `--xh-bg-subtle` | log 的 root 部件 background 覆盖槽。 |
+| `--xh-log-border` | `root` | `border` | `default` | `--xh-border-default` | log 的 root 部件 border 覆盖槽。 |
+| `--xh-log-content-px` | `content` | `padding-inline` | `default` | `--xh-_log-content-px` | log 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-log-fg` | `root` | `color` | `default` | `--xh-fg-default` | log 的 root 部件 color 覆盖槽。 |
+| `--xh-log-font` | `content` | `font-family` | `default` | `--xh-font-family-mono` | log 的 content 部件 font-family 覆盖槽。 |
+| `--xh-log-font-size` | `content` | `font-size` | `default` | `--xh-_log-font-size` | log 的 content 部件 font-size 覆盖槽。 |
+| `--xh-log-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | log 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-log-level-debug-fg` | `line` | `color` | `level=debug` | `--xh-fg-subtle` | log 的 line 部件 color 覆盖槽。 |
+| `--xh-log-level-error-fg` | `line` | `color` | `level=error` | `--xh-fg-danger` | log 的 line 部件 color 覆盖槽。 |
+| `--xh-log-level-info-fg` | `line` | `color` | `level=info` | `--xh-fg-default` | log 的 line 部件 color 覆盖槽。 |
+| `--xh-log-level-warn-fg` | `line` | `color` | `level=warn` | `--xh-fg-warning` | log 的 line 部件 color 覆盖槽。 |
+| `--xh-log-line-height` | `line`<br>`root`<br>`viewport` | `block-size`<br>`line-height` | `default` | `1.25rem` | log 的 line、root、viewport 部件 block-size、line-height 覆盖槽。 |
+| `--xh-log-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | log 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-log-rows` | `viewport` | `block-size` | `default` | `16` | log 的 viewport 部件 block-size 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `background` | `default` | `--xh-bg-surface-raised` | log 的 scroll-to-end-trigger 部件 background 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-bg-hover` | `scroll-to-end-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | log 的 scroll-to-end-trigger 部件 background 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-border` | `scroll-to-end-trigger` | `border` | `default` | `--xh-border-default` | log 的 scroll-to-end-trigger 部件 border 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-fg` | `scroll-to-end-trigger` | `color` | `default` | `--xh-fg-default` | log 的 scroll-to-end-trigger 部件 color 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-inset` | `scroll-to-end-trigger` | `inset-block-end`<br>`inset-inline-end` | `default` | `--xh-space-3` | log 的 scroll-to-end-trigger 部件 inset-block-end、inset-inline-end 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-radius` | `scroll-to-end-trigger` | `border-radius` | `default` | `--xh-shape-pill` | log 的 scroll-to-end-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-shadow` | `scroll-to-end-trigger` | `box-shadow` | `default` | `--xh-elevation-raised` | log 的 scroll-to-end-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-size` | `scroll-to-end-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-sm` | log 的 scroll-to-end-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-log-tab-size` | `line` | `tab-size` | `default` | `4` | log 的 line 部件 tab-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

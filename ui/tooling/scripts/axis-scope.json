@@ -135,7 +135,10 @@
   "highlight": [
     "tone"
   ],
-  "hotkeys": [
+  "kbd": [
+    "size"
+  ],
+  "kbd-group": [
     "size"
   ],
   "hover-card": [
@@ -304,9 +307,7 @@
     "size"
   ],
   "tag-group": [
-    "variant",
-    "tone",
-    "size"
+    "variant"
   ],
   "tags-input": [
     "variant",

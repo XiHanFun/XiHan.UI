@@ -7,12 +7,69 @@ const VALUES = ['apple', 'banana', 'cherry'] as const
 
 const VALUE_TEXT = '[data-scope="select"][data-part="value-text"]'
 const HIDDEN_SELECT = '[data-scope="select"][data-part="hidden-select"]'
+/** 触发器里的标签与触发器外的标签都是 tag 的 root；+N 那一枚另带 data-count。 */
+const TAG_ROOT = '[data-scope="select"][data-part="root"] [data-scope="tag"][data-part="root"]'
+const OVERFLOW_TAG = `${TAG_ROOT}[data-count]`
+const SELECT_TAG = `${TAG_ROOT}:not([data-count])`
+/** 标签里的删除钮：就是 tag 的 close-trigger，戴 tag 的 scope。 */
+const DELETE_TRIGGER = '[data-scope="select"][data-part="root"] [data-scope="tag"][data-part="close-trigger"]'
 
 /** 显示文字不进归一化快照（快照只采属性），只能直接读 DOM。 */
-function assertValueText(doc: Document, expected: string): void {
-  const actual = doc.querySelector<HTMLElement>(VALUE_TEXT)?.textContent?.trim() ?? null
+function assertPartText(doc: Document, selector: string, part: string, expected: string): void {
+  const actual = doc.querySelector<HTMLElement>(selector)?.textContent?.trim() ?? null
   if (actual !== expected)
-    throw new Error(`value-text 文本不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+    throw new Error(`${part} 文本不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+}
+
+function assertValueText(doc: Document, expected: string): void {
+  assertPartText(doc, VALUE_TEXT, 'value-text', expected)
+}
+
+/** +N 那一枚的文字：三侧都由库填（Vue / React 的默认内容、WC 的元素代填）。 */
+function assertOverflowText(doc: Document, expected: string): void {
+  assertPartText(doc, OVERFLOW_TAG, 'overflow-tag', expected)
+}
+
+/**
+ * 标签戴的是 tag 的 scope，快照只采本组件 scope 的部件，采不到它们，只能直接读 DOM。
+ * 逐枚比对属性：期望里写 null 的属性必须缺席。
+ */
+function assertTagAttrs(doc: Document, selector: string, label: string, expected: readonly Record<string, string | null>[]): void {
+  const els = [...doc.querySelectorAll<HTMLElement>(selector)]
+  if (els.length !== expected.length)
+    throw new Error(`${label} 个数不符：期望 ${expected.length}，实际 ${els.length}`)
+  els.forEach((el, i) => {
+    for (const [name, want] of Object.entries(expected[i]!)) {
+      const got = el.getAttribute(name)
+      if (got !== want)
+        throw new Error(`${label}[${i}] 的 ${name} 不符：期望 ${JSON.stringify(want)}，实际 ${JSON.stringify(got)}`)
+    }
+  })
+}
+
+/** 触发器里两枚 + 触发器外一枚，文档序。 */
+function assertTags(doc: Document, expected: readonly Record<string, string | null>[]): void {
+  assertTagAttrs(doc, SELECT_TAG, 'tag', expected)
+}
+
+function assertOverflowTag(doc: Document, expected: Record<string, string | null>): void {
+  assertTagAttrs(doc, OVERFLOW_TAG, 'overflow-tag', [expected])
+}
+
+/** 删除钮只有触发器外那一枚：触发器里的标签不渲它（按钮不能套按钮）。 */
+function assertDeleteTrigger(doc: Document, expected: Record<string, string | null>): void {
+  assertTagAttrs(doc, DELETE_TRIGGER, 'item-delete-trigger', [{ type: 'button', ...expected }])
+  if (doc.querySelector('[data-scope="select"][data-part="trigger"] [data-scope="tag"][data-part="close-trigger"]'))
+    throw new Error('触发器里的标签不该有 tag 的关闭钮')
+}
+
+/** 删除钮戴 tag 的 scope，声明式 click 步找不到它，照 click 步的动作直接点。 */
+function clickDeleteTrigger(doc: Document): void {
+  const el = doc.querySelector<HTMLElement>(DELETE_TRIGGER)
+  if (!el)
+    throw new Error('找不到删除钮')
+  el.focus?.()
+  el.click()
 }
 
 /**
@@ -117,6 +174,46 @@ function withClearTrigger(base: FixtureNode): FixtureNode {
   return { ...base, children }
 }
 
+/**
+ * 标签形态：触发器里的标签行（tag-list）收着两枚标签与 +N 那一枚（overflow-tag），
+ * 触发器外再摆一枚带删除钮的。标签由作者按 api.tags 渲染，fixture 是静态的，这里直接写死两枚。
+ * tag / overflow-tag / item-delete-trigger 是作者侧的写法名，渲出来是 tag 的 root 与 close-trigger（data-scope="tag"），不进本组件的解剖。
+ */
+function withTags(base: FixtureNode): FixtureNode {
+  const tag = (value: string, text: string, deletable = false): FixtureNode => ({
+    part: 'tag',
+    attrs: { value },
+    children: deletable
+      ? [{ tag: 'span', text }, { part: 'item-delete-trigger', tag: 'button' }]
+      : [{ tag: 'span', text }],
+  })
+  // 触发器外那枚放在 control 之后、positioner 之前：positioner 得是根的末子
+  const children = (base.children ?? []).flatMap((node): FixtureNode[] =>
+    node.part === 'control'
+      ? [
+          {
+            ...node,
+            children: (node.children ?? []).map(child =>
+              child.part === 'trigger'
+                ? {
+                    ...child,
+                    // 标签行排在 value-text 与 indicator 之间：三者是触发器里并排的一行
+                    children: (child.children ?? []).flatMap((grandchild): FixtureNode[] =>
+                      grandchild.part === 'value-text'
+                        ? [grandchild, { part: 'tag-list', children: [tag(VALUES[0], 'Apple'), tag(VALUES[1], 'Banana'), { part: 'overflow-tag' }] }]
+                        : [grandchild],
+                    ),
+                  }
+                : child,
+            ),
+          },
+          tag(VALUES[0], 'Apple', true),
+        ]
+      : [node],
+  )
+  return { ...base, children }
+}
+
 // content 始终在 DOM，展开态靠 hidden 属性显隐，不卸载作者节点。
 // 隐藏 select 由根部件自行装配，不作为 fixture 节点；采集器仍会抓到它。
 // 位置由引擎异步回填，快照不采集 style，因此这里只断言 data-placement 这类语义属性。
@@ -211,6 +308,8 @@ export const selectSuite: ConformanceSuite = {
           // 收起态没有锚点：条目连同 content 一起 hidden
           'item': [
             {
+              'data-xh-collection-item': '',
+              'data-xh-collection-size': 'md',
               'role': 'option',
               'aria-selected': 'false',
               'aria-disabled': 'false',
@@ -225,10 +324,15 @@ export const selectSuite: ConformanceSuite = {
             { 'aria-selected': 'false', 'data-value': 'banana', 'tabindex': '-1' },
             { 'aria-selected': 'false', 'data-value': 'cherry', 'tabindex': '-1' },
           ],
+          'item-text': [
+            { 'data-xh-collection-slot': 'text' },
+            { 'data-xh-collection-slot': 'text' },
+            { 'data-xh-collection-slot': 'text' },
+          ],
           'item-indicator': [
-            { 'aria-hidden': 'true', 'data-state': 'unchecked' },
-            { 'aria-hidden': 'true', 'data-state': 'unchecked' },
-            { 'aria-hidden': 'true', 'data-state': 'unchecked' },
+            { 'aria-hidden': 'true', 'data-state': 'unchecked', 'data-xh-collection-slot': 'indicator' },
+            { 'aria-hidden': 'true', 'data-state': 'unchecked', 'data-xh-collection-slot': 'indicator' },
+            { 'aria-hidden': 'true', 'data-state': 'unchecked', 'data-xh-collection-slot': 'indicator' },
           ],
         },
         activeElement: null,
@@ -385,7 +489,12 @@ export const selectSuite: ConformanceSuite = {
           expect: {
             activeElement: { part: 'item[2]', exact: true },
             parts: {
-              'item[1]': { 'aria-disabled': 'true', 'disabled': null, 'data-disabled': '', 'tabindex': '-1' },
+              'item[1]': {
+                'aria-disabled': 'true',
+                'disabled': null,
+                'data-disabled': '',
+                'tabindex': '-1',
+              },
               'item[2]': { 'tabindex': '0', 'data-highlighted': '' },
             },
             // 移高亮不改选中值，一个事件也不发
@@ -1080,6 +1189,243 @@ export const selectSuite: ConformanceSuite = {
             activeElement: 'trigger',
             parts: { 'trigger': { 'aria-expanded': 'false', 'data-placeholder': '' }, 'item[1]': { 'aria-selected': 'false' } },
             events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '标签：每枚都是 tag 的 root 并带 data-value；删除钮是 tag 的 close-trigger，可及名走 translations.deleteItem，点按摘掉那个值',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { multiple: true, defaultValue: ['apple', 'banana'], name: 'fruit', translations: { deleteItem: (label: string) => `移除${label}` } },
+      initial: {
+        counts: { 'tag-list': 1 },
+        parts: {
+          // 有选中：标签行露面
+          'tag-list': { 'hidden': null, 'data-disabled': null },
+          // 名字仍从 value-text 取：标签行只是视觉，读屏念到的是完整的选中项文本
+          'trigger': { 'aria-labelledby': '@part(label) @part(value-text)' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '标签与删除钮戴 tag 的 scope、+N 的文字不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            // 三枚标签都是 tag 的 root，展示态；两枚都摆得下，+N 那一枚收起
+            assertTags(doc, [
+              { 'data-value': 'apple', 'data-state': 'open', 'hidden': null, 'data-disabled': null },
+              { 'data-value': 'banana', 'data-state': 'open', 'hidden': null, 'data-disabled': null },
+              { 'data-value': 'apple', 'data-state': 'open', 'hidden': null, 'data-disabled': null },
+            ])
+            assertOverflowTag(doc, { 'hidden': '', 'data-state': 'closed', 'data-count': '0', 'data-disabled': null })
+            // 触发器外那枚的删除钮：留在原地、可按；本组件不再有自己的删除钮部件
+            assertDeleteTrigger(doc, { 'aria-label': '移除Apple', 'hidden': null, 'disabled': null, 'data-disabled': null })
+            if (doc.querySelector('[data-scope="select"][data-part="item-delete-trigger"]'))
+              throw new Error('删除钮不该再戴 select 的 scope')
+            assertOverflowText(doc, '')
+            assertValueText(doc, 'Apple, Banana')
+          },
+        },
+        {
+          kind: 'raw',
+          why: '删除钮戴 tag 的 scope，声明式 click 步找不到它',
+          run: ({ doc }) => clickDeleteTrigger(doc),
+          expect: {
+            parts: { 'item[0]': { 'aria-selected': 'false' }, 'item[1]': { 'aria-selected': 'true' }, 'tag-list': { hidden: null } },
+            events: [{ type: 'value-change', detail: { value: ['banana'] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '标签：不给 maxTagCount 时最多摆 3 枚，第 4 个起折进 +N；overflow-tag 去掉 hidden、带 data-count 并显示 +1',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      // 第 4 个值没有对应条目：显示文本退回值本身，折叠只看个数
+      props: { multiple: true, defaultValue: ['apple', 'banana', 'cherry', 'durian'], name: 'fruit' },
+      initial: {
+        parts: { 'tag-list': { hidden: null } },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '+N 戴 tag 的 scope、文字不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertOverflowTag(doc, { 'hidden': null, 'data-state': 'open', 'data-count': '1' })
+            assertOverflowText(doc, '+1')
+          },
+        },
+      ],
+    },
+    {
+      name: '标签：maxTagCount 给 1 时折起其余；文字走 translations.overflowTag；受控写回后个数跟着变',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { multiple: true, value: ['apple', 'banana', 'cherry'], maxTagCount: 1, name: 'fruit', translations: { overflowTag: (count: number) => `还有 ${count} 项` } },
+      steps: [
+        {
+          kind: 'raw',
+          why: '+N 戴 tag 的 scope、文字不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertOverflowTag(doc, { 'hidden': null, 'data-count': '2' })
+            assertOverflowText(doc, '还有 2 项')
+          },
+        },
+        {
+          kind: 'setProps',
+          props: { value: ['apple'] },
+          expect: { parts: { 'tag-list': { hidden: null } } },
+        },
+        {
+          kind: 'raw',
+          why: '+N 戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => assertOverflowTag(doc, { 'hidden': '', 'data-count': '0' }),
+        },
+        {
+          kind: 'setProps',
+          props: { value: [] },
+          expect: { parts: { 'tag-list': { hidden: '' } } },
+        },
+        {
+          kind: 'raw',
+          why: '+N 戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => assertOverflowTag(doc, { 'hidden': '', 'data-count': '0' }),
+        },
+      ],
+    },
+    {
+      name: '标签：无选中时标签行 hidden，点条目选中后露面',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { multiple: true, name: 'fruit', placeholder: '请选择' },
+      initial: {
+        parts: { 'tag-list': { hidden: '' } },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '+N 戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => assertOverflowTag(doc, { hidden: '' }),
+        },
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'click',
+          part: 'item[2]',
+          expect: {
+            parts: { 'tag-list': { hidden: null }, 'item[2]': { 'aria-selected': 'true' } },
+            events: [{ type: 'value-change', detail: { value: ['cherry'] } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '+N 戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => assertOverflowTag(doc, { hidden: '' }),
+        },
+      ],
+    },
+    {
+      name: '标签：禁用时标签行、每枚标签与 +N 都标 data-disabled，删除钮留位、原生 disabled，点删除钮不动',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { multiple: true, defaultValue: ['apple', 'banana'], disabled: true, name: 'fruit' },
+      initial: {
+        parts: {
+          'tag-list': { 'data-disabled': '' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '标签与删除钮戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertTags(doc, [{ 'data-disabled': '' }, { 'data-disabled': '' }, { 'data-disabled': '' }])
+            assertOverflowTag(doc, { 'data-disabled': '' })
+            assertDeleteTrigger(doc, { 'hidden': null, 'disabled': '', 'data-disabled': '' })
+          },
+        },
+        {
+          kind: 'raw',
+          why: '删除钮戴 tag 的 scope，声明式 click 步找不到它',
+          run: ({ doc }) => clickDeleteTrigger(doc),
+          expect: { parts: { 'item[0]': { 'aria-selected': 'true' } }, events: [] },
+        },
+      ],
+    },
+    {
+      name: '标签：只读时标签不置灰，删除钮留位、原生 disabled，点它不动值、不发事件',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { multiple: true, defaultValue: ['apple', 'banana'], readOnly: true, name: 'fruit' },
+      steps: [
+        {
+          kind: 'raw',
+          why: '标签与删除钮戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertTags(doc, [{ 'data-disabled': null }, { 'data-disabled': null }, { 'data-disabled': null }])
+            assertDeleteTrigger(doc, { 'hidden': null, 'disabled': '', 'data-disabled': '' })
+            clickDeleteTrigger(doc)
+          },
+          expect: { parts: { 'item[0]': { 'aria-selected': 'true' }, 'item[1]': { 'aria-selected': 'true' } }, events: [] },
+        },
+      ],
+    },
+    {
+      name: '标签：tone / size 由 select 传到每枚标签与 +N 上；形态按控件的面派——subtle 控件里是描边标签，其余（含缺省）是淡底标签',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { multiple: true, defaultValue: ['apple', 'banana', 'cherry', 'durian'], name: 'fruit', variant: 'subtle', tone: 'success', size: 'sm' },
+      steps: [
+        {
+          kind: 'raw',
+          why: '标签戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => {
+            const axes = { 'data-variant': 'outline', 'data-tone': 'success', 'data-size': 'sm' }
+            assertTags(doc, [axes, axes, axes])
+            assertOverflowTag(doc, { ...axes, 'data-count': '1' })
+          },
+        },
+        {
+          kind: 'setProps',
+          props: { variant: 'ghost', tone: 'danger', size: 'lg' },
+        },
+        {
+          kind: 'raw',
+          why: '标签戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => {
+            const axes = { 'data-variant': 'subtle', 'data-tone': 'danger', 'data-size': 'lg' }
+            assertTags(doc, [axes, axes, axes])
+            assertOverflowTag(doc, axes)
+          },
+        },
+      ],
+    },
+    {
+      name: '标签：控件缺省即 outline，不写 variant 与写 outline 的标签一样是淡底档；tone / size 不写就不带',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { multiple: true, defaultValue: ['apple', 'banana', 'cherry', 'durian'], name: 'fruit' },
+      steps: [
+        {
+          kind: 'raw',
+          why: '标签戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => {
+            const axes = { 'data-variant': 'subtle', 'data-tone': null, 'data-size': null }
+            assertTags(doc, [axes, axes, axes])
+            assertOverflowTag(doc, { ...axes, 'data-count': '1' })
+          },
+        },
+        {
+          kind: 'setProps',
+          props: { variant: 'outline' },
+        },
+        {
+          kind: 'raw',
+          why: '标签戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => {
+            const axes = { 'data-variant': 'subtle', 'data-tone': null, 'data-size': null }
+            assertTags(doc, [axes, axes, axes])
+            assertOverflowTag(doc, axes)
           },
         },
       ],

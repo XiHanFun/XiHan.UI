@@ -30,7 +30,7 @@
 - 月份名落在「这个月头一天所在的那一列」上：一列跨两个月时整列归后一个月。1 号极少正好是周首日，按「列里头一天所在的月」分段会让十二个月份名里有九个整体晚一列，读者顺着「2 月」往下看反而错过月初那几天。第 0 列是唯一的例外，它按区间首日所在的月归——起点落在月末（`2024-01-29` 起的近 365 天就是）时那一列只露出上个月末尾几天，跟着末一天走会让头一个月一个名字都不出。代价是这种区间里第二个月的名字排在第 1 列，比它 1 号所在的第 0 列晚一列。
 - 一整年放不下一屏时网格自己横着滚，行首那一列星期名钉在起始缘不跟着走（矩阵形态的行名同理）。钉住的那一列自带 `--xh-bg-surface` 的底色，整块摆在别的底色上（卡片、分区）时要改写 `--xh-heatmap-bg`，否则那一列会是一块补丁。 月历形态例外：月块是换行排开的，宽度永远不超过容器，那一档不当滚动容器，也就没有钉住的那一列。
 - 三张网格的推导都是纯函数（`buildHeatmapGrid` / `buildHeatmapMonthGrid` / `buildHeatmapMatrixGrid`），可以脱离组件单独调用来预生成数据。
-- 格距四周一样宽：数据行的高度钉死成格子的边长，不由行首那一列星期名的字撑开。三档尺寸的横向与纵向格距都是「聚焦环偏移 + 环宽」那一个值（缺省 4px），格子 sm 8px / md 10px / lg 12px。
+- 格距四周一样宽：数据行的高度钉死成格子的边长，不由行首那一列星期名的字撑开。三档尺寸的横向与纵向格距是同一个值（缺省 4px），格子 sm 8px / md 10px / lg 12px。
 - 行首那一列星期名隔行画：只留第 0/2/4/6 行之外的那三行——周首日是星期一时是「二 / 四 / 六」，是星期日时是「一 / 三 / 五」。一行只有 10px 高而字是 12px，七个挨着写会上下叠在一起；隔一行之后每个留下来的字有两行的高度可用。三档尺寸一视同仁，不随档位变。要七行全画就把 `--xh-heatmap-week-day-skip` 改成一个看得见的颜色，比如 `var(--xh-heatmap-label-fg, var(--xh-fg-subtle))`（此时 `sm` 档会挨得很紧）。跳过的是字不是盒子：那几行只是字不上色，节点、文字、盒子与底色都还在——钉住那一列的实色底不能缺四行，缺了格子就从行首透出来，那四行也会不再参与命中测试，鼠标划过行首弹出的是看不见那一格的详情条。
 - 色阶对照条两端各写一个词（缺省 `Less` `More`），一排色块自己说不出哪头是多。文案走 `translations.legendLow` / `legendHigh`，部件是 `legend-label`（`value` 写 `low` 或 `high`）；Vue 侧不写默认插槽时两端自动铺出来，WC 侧从元素的 `legendText` 属性取这两个字。
 - 配色有两条路，缺省是品牌色。一条是 `tone` 语气轴（brand / neutral / success / warning / danger / info），与其余组件共用；另一条是 `palette` 色板轴（green / blue / orange / purple / red / gray），直接按颜色点名。色板只定色阶满档那一端的实心底，0 档的空格底与中间各档的兑法一概不动，也不参与语气层的悬停 / 淡底 / 前景派生——它是装饰性的一条轴，不是第四条语义轴。两个都写时听色板的：色板指名了一个具体颜色，语气只是推得出一个颜色。
@@ -317,11 +317,46 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `legend-label` | `data-bound` | label.bound |
 | `legend-item` | `data-level` | String(item.level) |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-heatmap-bg` · `--xh-heatmap-block-gap` · `--xh-heatmap-block-inner-gap` · `--xh-heatmap-cell-border` · `--xh-heatmap-cell-radius` · `--xh-heatmap-cell-size` · `--xh-heatmap-column-w` · `--xh-heatmap-empty` · `--xh-heatmap-fg` · `--xh-heatmap-font-size` · `--xh-heatmap-gap` · `--xh-heatmap-grid-gap` · `--xh-heatmap-gutter` · `--xh-heatmap-ink` · `--xh-heatmap-label-fg` · `--xh-heatmap-legend-gap` · `--xh-heatmap-py` · `--xh-heatmap-row-gap` · `--xh-heatmap-row-h` · `--xh-heatmap-sticky-layer` · `--xh-heatmap-title-fg` · `--xh-heatmap-tooltip-bg` · `--xh-heatmap-tooltip-fg` · `--xh-heatmap-tooltip-font-size` · `--xh-heatmap-tooltip-layer` · `--xh-heatmap-tooltip-max-w` · `--xh-heatmap-tooltip-px` · `--xh-heatmap-tooltip-py` · `--xh-heatmap-tooltip-radius` · `--xh-heatmap-tooltip-shadow` · `--xh-heatmap-week-day-skip`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-heatmap-bg` | `root`<br>`row-label`<br>`week-day` | `background` | `default` | `--xh-bg-surface` | heatmap 的 root、row-label、week-day 部件 background 覆盖槽。 |
+| `--xh-heatmap-block-gap` | `grid`<br>`root` | `gap` | `variant=month` | `--xh-_heatmap-gutter` | heatmap 的 grid、root 部件 gap 覆盖槽。 |
+| `--xh-heatmap-block-inner-gap` | `month-block` | `gap` | `default` | `--xh-_heatmap-gap` | heatmap 的 month-block 部件 gap 覆盖槽。 |
+| `--xh-heatmap-cell-bg` | `cell`<br>`legend-item` | `background` | `default` | `--xh-_heatmap-ink` | heatmap 的 cell、legend-item 部件 background 覆盖槽。 |
+| `--xh-heatmap-cell-border` | `cell`<br>`legend-item` | `box-shadow` | `default` | `--xh-border-default` | heatmap 的 cell、legend-item 部件 box-shadow 覆盖槽。 |
+| `--xh-heatmap-cell-radius` | `cell`<br>`legend-item` | `border-radius` | `default` | `--xh-shape-inset` | heatmap 的 cell、legend-item 部件 border-radius 覆盖槽。 |
+| `--xh-heatmap-cell-size` | `cell`<br>`legend-item`<br>`month-label`<br>`root`<br>`row`<br>`week-day` | `block-size`<br>`border`<br>`inline-size`<br>`margin-inline-start` | `@media print`<br>`default`<br>`first-child`<br>`level=1`<br>`level=2`<br>`level=3`<br>`size=lg`<br>`size=sm`<br>`variant=month`<br>`week`<br>`week-day` | `--xh-space-2`<br>`--xh-space-2_5`<br>`--xh-space-3` | heatmap 的 cell、legend-item、month-label、root、row、week-day 部件 block-size、border、inline-size、margin-inline-start 覆盖槽。 |
+| `--xh-heatmap-column-w` | `cell`<br>`column-label`<br>`root` | `inline-size` | `default`<br>`variant=matrix` | `--xh-_heatmap-row-h` | heatmap 的 cell、column-label、root 部件 inline-size 覆盖槽。 |
+| `--xh-heatmap-empty` | `cell`<br>`legend-item`<br>`root` | `background` | `default` | `--xh-bg-subtle` | heatmap 的 cell、legend-item、root 部件 background 覆盖槽。 |
+| `--xh-heatmap-fg` | `root` | `color` | `default` | `--xh-fg-muted` | heatmap 的 root 部件 color 覆盖槽。 |
+| `--xh-heatmap-font-size` | `root` | `font-size` | `default` | `--xh-_heatmap-font-size` | heatmap 的 root 部件 font-size 覆盖槽。 |
+| `--xh-heatmap-gap` | `root` | `gap` | `default` | `--xh-space-2` | heatmap 的 root 部件 gap 覆盖槽。 |
+| `--xh-heatmap-grid-gap` | `grid` | `gap` | `default` | `--xh-_heatmap-gap` | heatmap 的 grid 部件 gap 覆盖槽。 |
+| `--xh-heatmap-gutter` | `grid`<br>`root`<br>`row-label`<br>`week-day` | `gap`<br>`inline-size`<br>`scroll-padding-inline-start` | `default`<br>`size=sm`<br>`variant=month` | `--xh-space-6`<br>`--xh-space-8` | heatmap 的 grid、root、row-label、week-day 部件 gap、inline-size、scroll-padding-inline-start 覆盖槽。 |
+| `--xh-heatmap-ink` | `cell`<br>`legend-item`<br>`root` | `background` | `default`<br>`is([data-theme='dark'] *, [data-theme='dark'])`<br>`palette=blue`<br>`palette=gray`<br>`palette=green`<br>`palette=orange`<br>`palette=purple`<br>`palette=red`<br>`theme=dark`<br>`tone` | `--xh-_tone`<br>`--xh-bg-brand`<br>`--xh-color-danger-600`<br>`--xh-color-info-600`<br>`--xh-color-neutral-450`<br>`--xh-color-neutral-600`<br>`--xh-color-purple-600`<br>`--xh-color-success-600`<br>`--xh-color-warning-600` | heatmap 的 cell、legend-item、root 部件 background 覆盖槽。 |
+| `--xh-heatmap-label-fg` | `column-label`<br>`legend`<br>`month-label`<br>`root`<br>`row-label`<br>`week-day` | `color` | `default`<br>`variant=month`<br>`week-day=0`<br>`week-day=2`<br>`week-day=4`<br>`week-day=6` | `--xh-fg-subtle` | heatmap 的 column-label、legend、month-label、root、row-label、week-day 部件 color 覆盖槽。 |
+| `--xh-heatmap-legend-gap` | `legend` | `gap` | `default` | `--xh-_heatmap-gap` | heatmap 的 legend 部件 gap 覆盖槽。 |
+| `--xh-heatmap-py` | `root` | `padding-block` | `default` | `--xh-_heatmap-gap` | heatmap 的 root 部件 padding-block 覆盖槽。 |
+| `--xh-heatmap-row-gap` | `row` | `gap` | `default` | `--xh-_heatmap-gap` | heatmap 的 row 部件 gap 覆盖槽。 |
+| `--xh-heatmap-row-h` | `cell`<br>`column-label`<br>`root` | `block-size`<br>`inline-size` | `default`<br>`size=lg`<br>`size=sm`<br>`variant=matrix` | `--xh-space-4`<br>`--xh-space-5`<br>`--xh-space-6` | heatmap 的 cell、column-label、root 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-heatmap-sticky-layer` | `row-label`<br>`week-day` | `z-index` | `default` | `1` | heatmap 的 row-label、week-day 部件 z-index 覆盖槽。 |
+| `--xh-heatmap-title-fg` | `month-label`<br>`root` | `color` | `variant=month` | `--xh-fg-default` | heatmap 的 month-label、root 部件 color 覆盖槽。 |
+| `--xh-heatmap-tooltip-bg` | `tooltip` | `background` | `default` | `--xh-fg-default` | heatmap 的 tooltip 部件 background 覆盖槽。 |
+| `--xh-heatmap-tooltip-fg` | `tooltip` | `color` | `default` | `--xh-bg-surface` | heatmap 的 tooltip 部件 color 覆盖槽。 |
+| `--xh-heatmap-tooltip-font-size` | `tooltip` | `font-size` | `default` | `--xh-text-caption-size` | heatmap 的 tooltip 部件 font-size 覆盖槽。 |
+| `--xh-heatmap-tooltip-layer` | `tooltip` | `z-index` | `default` | `2` | heatmap 的 tooltip 部件 z-index 覆盖槽。 |
+| `--xh-heatmap-tooltip-max-w` | `tooltip` | `max-inline-size` | `default` | `--xh-overlay-max-w` | heatmap 的 tooltip 部件 max-inline-size 覆盖槽。 |
+| `--xh-heatmap-tooltip-px` | `tooltip` | `padding-inline` | `default` | `--xh-space-2` | heatmap 的 tooltip 部件 padding-inline 覆盖槽。 |
+| `--xh-heatmap-tooltip-py` | `tooltip` | `padding-block` | `default` | `--xh-space-1` | heatmap 的 tooltip 部件 padding-block 覆盖槽。 |
+| `--xh-heatmap-tooltip-radius` | `tooltip` | `border-radius` | `default` | `--xh-shape-control` | heatmap 的 tooltip 部件 border-radius 覆盖槽。 |
+| `--xh-heatmap-tooltip-shadow` | `tooltip` | `box-shadow` | `default` | `--xh-elevation-floating` | heatmap 的 tooltip 部件 box-shadow 覆盖槽。 |
+| `--xh-heatmap-week-day-skip` | `root`<br>`week-day` | `color` | `week-day=0`<br>`week-day=2`<br>`week-day=4`<br>`week-day=6` | `transparent` | heatmap 的 root、week-day 部件 color 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

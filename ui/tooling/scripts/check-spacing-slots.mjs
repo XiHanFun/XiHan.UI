@@ -47,6 +47,8 @@ const CROSS_PART = {
   'cascader.column': ['search-list', 'empty'],
   // 搜索候选与列内条目排的是同一套行度量，空态文字与条目同一档字号
   'cascader.item': ['search-item', 'empty'],
+  // 搜索候选由组件自动生成，没有独立 indicator 节点；末端伪元素与列项对号必须共用尺寸和颜色
+  'cascader.item-indicator': ['search-item'],
   // 勾选框画在全选格上，checkbox-group 没有单独的 indicator 节点承载它
   'checkbox-group.indicator': ['select-all-trigger'],
   // --xh-code-view-line-height 是整块代码的行距，line 只是它头一个词，与行部件无关
@@ -63,8 +65,9 @@ const CROSS_PART = {
   'diff-view.empty': ['line-content'],
   // 图例里那几个方块就是格子本身的缩略，形状与底色同源才对得上图上的深浅
   'heatmap.cell': ['legend-item'],
-  // 每页条数下拉、信息区与跳页框都与页码钮并排在同一行，盒型取同一族才平齐
-  'pagination.item': ['page-size-select', 'summary', 'jumper'],
+  // 信息区与跳页框都与页码钮并排在同一行，盒型取同一族才平齐。
+  // 每页条数那个下拉不在其列：它装的是库里的 select，盒型归 select 那份皮肤
+  'pagination.item': ['summary', 'jumper'],
   // 星星之间的间距由装它们的那一行排
   'rating.item': ['control'],
   // 文件条目之间的间距由装它们的那一列排
@@ -88,8 +91,8 @@ const CROSS_PART = {
   // 工具名用等宽字族，摘要行里跟着它排；耗时与错误行与状态标签同一档字号
   'tool-call.label': ['summary'],
   'tool-call.status': ['duration', 'error'],
-  // 叶子行没摆指示符时由行盒自己补出首格，补的宽度就是那格本该有的部件的宽度
-  'tree-select.item-indicator': ['item'],
+  // 叶子为同级分支的展开箭头保留首格；对号独立位于末端，箭头尺寸覆盖后缩进也需同值。
+  'tree-select.branch-indicator': ['item'],
 }
 
 /** 注释挖空但保留换行。 */

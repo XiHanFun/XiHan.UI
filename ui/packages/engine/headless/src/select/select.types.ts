@@ -1,4 +1,5 @@
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 /**
  * 展开那一刻高亮落在哪里：
@@ -14,6 +15,8 @@ export interface SelectRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 视觉退场与行为资源共享的 Presence；缺省时关闭立即释放。 */
+  presence: PresenceHandle | null
   /** 浮层定位引擎；缺省即不产出位置结果。 */
   position: PositionEnginePort | null
   /** 定位锚点，通常是 trigger。 */
@@ -53,8 +56,10 @@ export interface SelectNode {
 export interface SelectTranslations {
   /** 清空按钮的可及名。 */
   clearTrigger: string
-  /** 标签删除按钮的可及名，接收标签文本。 */
+  /** 标签删除按钮的可及名，接收标签文本；经 tag 的 translations.close 落到那颗钮上。 */
   deleteItem: (label: string) => string
+  /** 被折起的标签那一枚（overflow-tag）显示的文字，接收折起的个数；默认 +N。 */
+  overflowTag: (count: number) => string
   /** 列表框容器的兜底名字，作者两个名字部件（label / value-text）都没渲染时才出面。 */
   content: string
 }
@@ -121,7 +126,7 @@ export interface SelectSchema extends MachineSchema {
     loading?: boolean
     /** 读屏用的文案，默认英文。 */
     translations?: Partial<SelectTranslations>
-    /** 多选标签最多摆几个，其余折进 overflowCount；缺省全摆。 */
+    /** 多选标签最多摆几枚，其余折进 overflowCount、合成 +N 那一枚；缺省 3（SELECT_DEFAULT_MAX_TAG_COUNT）。 */
     maxTagCount?: number
     /** 原生表单校验：无选中值时提交被拦下。 */
     required?: boolean
@@ -221,8 +226,10 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   canClear: boolean
   /** 可见标签（受 maxTagCount 截断），与 value/valueText 同序。 */
   tags: SelectTagMeta[]
-  /** 被 maxTagCount 折起来的标签数；作者据此渲染 +N。 */
+  /** 被 maxTagCount 折起来的标签数。 */
   overflowCount: number
+  /** +N 那一枚显示的文字（translations.overflowTag 算出）；没有折起的标签时为空串。 */
+  overflowText: string
   /** 高亮锚点；收起时为 null。 */
   highlightedValue: string | null
   setOpen: (next: boolean) => void
@@ -240,9 +247,15 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   getIndicatorProps: () => T['element']
   /** 清空按钮：不占 Tab 位；清不了时整个藏掉；点按清空全部选中、不展开浮层，焦点送回 trigger。 */
   getClearTriggerProps: () => T['button']
-  /** 标签：一个选中值一枚；放触发器里就是纯展示，放外面配 item-delete-trigger 可删。 */
+  /** 标签行：收着可见标签与 +N 那一枚，放在触发器里；无选中时整个 hidden。 */
+  getTagListProps: () => T['element']
+  /** 标签：一个选中值一枚，就是库里 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下去，形态按控件的面派（outline / ghost / 缺省摆淡底标签，subtle 摆描边标签），另带 data-value 记它代表哪个值。放触发器里就是纯展示（不渲关闭钮），放外面配删除钮可删。 */
   getTagProps: (props: SelectTagProps) => T['element']
-  /** 标签删除按钮：点按摘掉所在标签的选中值；须放在 tag 部件里。 */
+  /** 标签文字所在的块（tag 的 label）：截断落在这一层；标签与 +N 共用。 */
+  getTagLabelProps: () => T['element']
+  /** 被折起的标签合成的那一枚：同样是 tag 的 root，显示 overflowText、带 data-count；没有折起的标签时 hidden。 */
+  getOverflowTagProps: () => T['element']
+  /** 标签删除按钮：就是所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名走 translations.deleteItem，禁用时留位、原生 disabled；点按摘掉所在标签的选中值；须放在标签里。 */
   getItemDeleteTriggerProps: (props: SelectTagProps) => T['button']
   getPositionerProps: () => T['element']
   /** 浮层外壳：描边、底色、阴影与键盘收口都在它身上。 */

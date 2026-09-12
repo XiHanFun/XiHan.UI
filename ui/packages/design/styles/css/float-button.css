@@ -34,17 +34,19 @@
     --xh-_float-button-size: var(--xh-control-h-lg);
     --xh-_float-button-radius: var(--xh-float-button-radius, var(--xh-shape-pill));
 
-    /* 形态的落点：没写 data-variant 时这六支保持缺省档的取值，触发器读的是
-       「使用者令牌 → 这六支 → 语义令牌」三级，使用者令牌永远排在形态之前 */
-    --xh-_float-button-bg: var(--xh-bg-surface-raised);
+    /* 缺省面是 M3 通透玻璃：背景、边缘、顶光、投影与磨砂全部从同一份配方取，
+       高对比、减少透明度、打印和强制色便能一起降级。显式 variant 只覆写必要的动作色。 */
+    --xh-_float-button-bg: var(--xh-material-glass-bg);
     --xh-_float-button-bg-hover: var(--xh-bg-subtle-hover);
     --xh-_float-button-bg-active: var(--xh-bg-subtle-active);
-    --xh-_float-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
-    --xh-_float-button-border: var(--xh-border-control);
-    --xh-_float-button-border-hover: var(--xh-border-control-hover);
+    --xh-_float-button-fg: var(--xh-material-glass-fg);
+    --xh-_float-button-border: var(--xh-material-glass-border);
+    --xh-_float-button-border-hover: var(--xh-material-glass-border);
+    --xh-_float-button-shadow: var(--xh-material-glass-shadow);
 
     position: fixed;
-    z-index: var(--xh-float-button-layer, var(--xh-layer-sticky));
+    /* 展开时消费 LayerRegistry 的实时层序；收起后没有逻辑层，仍回到普通 sticky 槽。 */
+    z-index: var(--xh-float-button-layer, var(--xh-_layer, var(--xh-layer-sticky)));
     display: flex;
     /* 摞的方向由落位定，下面四条各自覆盖；这里给的是没写落位时的落点 */
     flex-direction: column;
@@ -108,6 +110,20 @@
     --xh-_float-button-border-hover: transparent;
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     形态写在壳上、面画在触发器上，所以这条是后代选择器，环落在拿焦点的那颗钮上 */
+  [data-scope='float-button'][data-part='root'][data-variant='solid']
+    [data-scope='float-button'][data-part='trigger']:not([data-disabled]):focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
+  /* 置灰只换字色、面仍是实心语气底：环取面配对的那支前景色，不取被换掉的置灰色 */
+  [data-scope='float-button'][data-part='root'][data-variant='solid']
+    [data-scope='float-button'][data-part='trigger'][data-disabled]:focus-visible {
+    --xh-_ring-color: var(--xh-float-button-fg, var(--xh-_float-button-fg));
+  }
+
   [data-scope='float-button'][data-part='root'][data-variant='subtle'] {
     --xh-_float-button-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_float-button-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
@@ -131,6 +147,18 @@
     --xh-_float-button-border-hover: transparent;
   }
 
+  /* 缺省档留住 M3 顶光；实心、淡色、描边和透空形态各有自身表面，不能把玻璃高光误铺上去。 */
+  [data-scope='float-button'][data-part='root']:not([data-variant])
+    [data-scope='float-button'][data-part='trigger'] {
+    background-image: linear-gradient(
+      to bottom,
+      var(--xh-material-glass-highlight) 0 var(--xh-stroke-thin),
+      transparent var(--xh-stroke-thin)
+    );
+    -webkit-backdrop-filter: var(--xh-material-glass-backdrop);
+    backdrop-filter: var(--xh-material-glass-backdrop);
+  }
+
   /* —— 触发器 —— */
   /* 里面通常只放一个图标，宽高同取一档尺寸 */
   [data-scope='float-button'][data-part='trigger'] {
@@ -144,10 +172,10 @@
     border: var(--xh-stroke-thin) solid var(--xh-float-button-border, var(--xh-_float-button-border));
     border-radius: var(--xh-_float-button-radius);
     /* 使用者令牌排在形态之前：写了覆盖钩子就以它为准，没写才按 data-variant 那一档取值 */
-    background: var(--xh-float-button-bg, var(--xh-_float-button-bg));
+    background-color: var(--xh-float-button-bg, var(--xh-_float-button-bg));
     color: var(--xh-float-button-fg, var(--xh-_float-button-fg));
-    /* 浮在内容之上，靠投影与页面拉开层次 */
-    box-shadow: var(--xh-float-button-shadow, var(--xh-elevation-sheet));
+    /* 缺省走 M3 柔和浮影；使用者已有的 shadow 槽仍排在配方前面。 */
+    box-shadow: var(--xh-float-button-shadow, var(--xh-_float-button-shadow));
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -159,14 +187,21 @@
   @media (hover: hover) {
     [data-scope='float-button'][data-part='trigger']:not([data-disabled]):hover {
       border-color: var(--xh-float-button-border-hover, var(--xh-_float-button-border-hover));
-      background: var(--xh-float-button-bg-hover, var(--xh-_float-button-bg-hover));
+      background-color: var(--xh-float-button-bg-hover, var(--xh-_float-button-bg-hover));
     }
   }
 
   /* 换底之外再压一档：钮浮在内容之上，缩放不牵动页面排版 */
   [data-scope='float-button'][data-part='trigger']:not([data-disabled]):active {
-    background: var(--xh-float-button-bg-active, var(--xh-_float-button-bg-active));
+    background-color: var(--xh-float-button-bg-active, var(--xh-_float-button-bg-active));
     scale: var(--xh-motion-scale-press);
+  }
+
+  /* 透明面上的内收环没有稳定的底可量对比：键盘聚焦时铺 M3 配方提供的实体 focus surface。
+     这个面与公共焦点环已有足够对比，继续吃库环；不改盒模型，也不影响鼠标或触摸激活。 */
+  [data-scope='float-button'][data-part='root']:not([data-variant])
+    [data-scope='float-button'][data-part='trigger']:focus-visible {
+    background-color: var(--xh-material-glass-focus-surface);
   }
 
   /* 禁用只换颜色，不叠不透明度：两者同时用只会互相抵消，把字压到读不出来 */

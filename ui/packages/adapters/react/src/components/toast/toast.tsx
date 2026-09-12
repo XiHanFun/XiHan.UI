@@ -16,7 +16,7 @@ export type ToastRootSlotProps = Pick<
   'id' | 'status' | 'type' | 'paused' | 'remaining' | 'dismiss' | 'pause' | 'resume'
 >
 
-export interface XhToastRootProps {
+export interface XhToastRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 队列身份，不是 DOM id；不给则回落到实例的 scope id。 */
   id?: string
   title?: string
@@ -33,8 +33,34 @@ export interface XhToastRootProps {
   children?: SlotChildren<ToastRootSlotProps>
 }
 
-export function XhToastRoot({ children, ...props }: XhToastRootProps): ReactNode {
-  const ctx = useToast(withXhConfig('toast', props) as ToastProps)
+export function XhToastRoot({
+  id,
+  title,
+  type,
+  duration,
+  removeDelay,
+  closable,
+  pauseOnPageIdle,
+  paused,
+  translations,
+  onStatusChange,
+  onAction,
+  children,
+  ...rest
+}: XhToastRootProps): ReactNode {
+  const ctx = useToast(withXhConfig('toast', {
+    id,
+    title,
+    type,
+    duration,
+    removeDelay,
+    closable,
+    pauseOnPageIdle,
+    paused,
+    translations,
+    onStatusChange,
+    onAction,
+  }) as ToastProps)
   const api = ctx.api
   // 指针进出改装成原生监听器：pointerenter / pointerleave 不冒泡，委派在根容器上的合成事件收不到。
   // 焦点那两路留给合成事件：连接层派的是 focusin / focusout，React 的 onFocus / onBlur 挂的正是它们，
@@ -42,7 +68,7 @@ export function XhToastRoot({ children, ...props }: XhToastRootProps): ReactNode
   const bind = useNativeEvents(api.getRootProps() as Record<string, unknown>, ['onPointerEnter', 'onPointerLeave'])
   return (
     <ToastProvider value={ctx}>
-      <div {...mergeReactProps(bind.attrs, { ref: bind.ref })}>
+      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
         {renderSlot(children, {
           id: api.id,
           status: api.status,

@@ -1,11 +1,8 @@
 @layer xihan.motion {
-  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-  /* 进场从锚点那一侧冒出来：位移的两个分量由 placement 写进私有槽，没写就退回原地缩放 */
-  @keyframes xh-overlay-pop-in {
+  /* 短位移关键帧随皮肤自带，单独引入也能完成进退场。 */
+  @keyframes xh-overlay-slide-in {
     from {
       opacity: 0;
-      scale: var(--xh-motion-scale-enter);
       translate:
         calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
         calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
@@ -13,19 +10,20 @@
 
     to {
       opacity: 1;
-      scale: 1;
       translate: 0 0;
     }
   }
-  @keyframes xh-pop-out {
+  @keyframes xh-overlay-slide-out {
     from {
       opacity: 1;
-      scale: 1;
+      translate: 0 0;
     }
 
     to {
       opacity: 0;
-      scale: var(--xh-motion-scale-exit);
+      translate:
+        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
     }
   }
 }
@@ -41,12 +39,22 @@
     /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
        引擎没算（尚未落位 / 无引擎）时不额外限高 */
     --xh-_mention-available-h: 100vh;
+    /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+    --xh-_mention-available-w: 100vw;
+    /* 本层先清空祖先方向，再使用实际落位方向。 */
+    --xh-_overlay-enter-up: 0;
+    --xh-_overlay-enter-down: 0;
+    --xh-_overlay-enter-left: 0;
+    --xh-_overlay-enter-right: 0;
 
     /* 候选列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在列表右缘糊一条竖灰带 */
     --xh-scrollbar-track-bg: transparent;
 
     position: fixed;
-    z-index: var(--xh-mention-layer, var(--xh-layer-popover));
+    /* listbox 与同级状态文字占同一个格；content 始终是唯一拥有材质的表面。 */
+    display: grid;
+    z-index: var(--xh-mention-layer, var(--xh-_layer, var(--xh-layer-popover)));
     /* 空壳不吃指针，交互只发生在 content 上 */
     pointer-events: none;
   }
@@ -56,37 +64,34 @@
     visibility: hidden;
   }
 
-  /* 缩放原点与进场位移按落定的那一侧给：列表从贴着输入框的那条边涨开、沿主轴退让一小段。
-     两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
-     origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+  [data-scope='mention'][data-part='positioner'][hidden] {
+    display: none;
+  }
+
+  /* 进退场按实际落位的物理方向移动，不随书写方向翻转。 */
   [data-scope='mention'][data-part='positioner'][data-placement^='top'] {
-    --xh-_overlay-origin-y: 100%;
     --xh-_overlay-enter-down: 1;
   }
 
   [data-scope='mention'][data-part='positioner'][data-placement^='bottom'] {
-    --xh-_overlay-origin-y: 0;
     --xh-_overlay-enter-up: 1;
   }
 
   [data-scope='mention'][data-part='positioner'][data-placement^='left'] {
-    --xh-_overlay-origin-x: 100%;
     --xh-_overlay-enter-right: 1;
   }
 
   [data-scope='mention'][data-part='positioner'][data-placement^='right'] {
-    --xh-_overlay-origin-x: 0;
     --xh-_overlay-enter-left: 1;
   }
 
   /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
   [data-scope='mention']:is([data-part='root'], [data-part='positioner']) {
-    /* 尺寸档只换这五个私有槽，输入框与候选都从这两处继承它们，换档不必给每个部件各写一条选择器 */
+    /* 尺寸档只换这六个私有槽，输入框与候选都从这两处继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_mention-h: var(--xh-control-h-md);
     --xh-_mention-px: var(--xh-control-px-md);
     --xh-_mention-item-py: var(--xh-list-option-py-md);
     --xh-_mention-item-px: var(--xh-control-px-md);
-    --xh-_mention-py: var(--xh-field-py);
     --xh-_mention-gap: var(--xh-control-gap-md);
     --xh-_mention-font-size: var(--xh-control-font-md);
 
@@ -107,6 +112,10 @@
 
   [data-scope='mention'][data-part='root'] {
     display: block;
+
+    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+    min-inline-size: min(var(--xh-mention-input-min-w, var(--xh-control-min-w)), 100%);
+    max-inline-size: 100%;
   }
 
   /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -139,7 +148,6 @@
     --xh-_mention-px: var(--xh-control-px-sm);
     --xh-_mention-item-py: var(--xh-list-option-py-sm);
     --xh-_mention-item-px: var(--xh-control-px-sm);
-    --xh-_mention-py: var(--xh-space-1);
     --xh-_mention-gap: var(--xh-control-gap-sm);
     --xh-_mention-font-size: var(--xh-control-font-sm);
   }
@@ -149,7 +157,6 @@
     --xh-_mention-px: var(--xh-control-px-lg);
     --xh-_mention-item-py: var(--xh-list-option-py-lg);
     --xh-_mention-item-px: var(--xh-control-px-lg);
-    --xh-_mention-py: var(--xh-space-3);
     --xh-_mention-gap: var(--xh-control-gap-lg);
     --xh-_mention-font-size: var(--xh-control-font-lg);
   }
@@ -181,14 +188,14 @@
   }
 
   /* 框与聚焦环都长在输入框自己身上：这里没有把输入框和别的控件裹成一体的输入行，
-     整个组件在视觉上就是这一个可打字的方框 */
+     整个组件在视觉上就是这一个可打字的方框。
+     定高到控件档、纵向内距归零，与并排的其他单行控件等高 */
   [data-scope='mention'][data-part='input'] {
     display: block;
     inline-size: 100%;
-    min-inline-size: var(--xh-mention-input-min-w, var(--xh-control-min-w));
-    /* 缺省宿主是 textarea：高度按行数撑，控件档只兜住底线 */
-    min-block-size: var(--xh-mention-input-h, var(--xh-_mention-h));
-    padding-block: var(--xh-mention-input-py, var(--xh-_mention-py));
+    min-inline-size: min(var(--xh-mention-input-min-w, var(--xh-control-min-w)), 100%);
+    block-size: var(--xh-mention-input-h, var(--xh-_mention-h));
+    padding-block: 0;
     padding-inline: var(--xh-mention-input-px, var(--xh-_mention-px));
     border: var(--xh-stroke-thin) solid var(--xh-mention-input-border, var(--xh-_mention-input-border));
     border-radius: var(--xh-mention-input-radius, var(--xh-shape-control));
@@ -199,18 +206,9 @@
     font-family: inherit;
     font-size: var(--xh-mention-input-font-size, var(--xh-_mention-font-size));
     line-height: var(--xh-leading-normal);
-    /* 多行宿主只许纵向拉伸：横向拉宽会把浮层与输入框的对齐拽歪 */
-    resize: vertical;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-  }
-
-  /* 单行宿主定高到控件档，纵向内距归零，与并排的其他控件等高。
-     单行与多行在 DOM 上只差一个标签名，没有别的标记可选，所以按标签名分支 */
-  input[data-scope='mention'][data-part='input'] {
-    block-size: var(--xh-mention-input-h, var(--xh-_mention-h));
-    padding-block: 0;
   }
 
   [data-scope='mention'][data-part='input'][hidden] {
@@ -249,8 +247,6 @@
   [data-scope='mention'][data-part='input']:disabled {
     background: var(--xh-mention-input-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
-    /* 禁用时连拉伸把手也一并收走，免得留一个拖得动却改不了内容的角 */
-    resize: none;
   }
 
   /* 自动填充：引擎给填过的框强加一套系统色（多数是黄底黑字），盖得过 background 与 color，
@@ -275,23 +271,40 @@
   }
 
   [data-scope='mention'][data-part='content'] {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--xh-mention-content-gap, var(--xh-list-option-gap));
-    min-inline-size: var(--xh-mention-content-min-w, var(--xh-overlay-min-w));
-    max-inline-size: var(--xh-mention-content-max-w, var(--xh-overlay-max-w));
+    grid-area: 1 / 1;
+    min-inline-size: min(var(--xh-mention-content-min-w, var(--xh-overlay-min-w)), var(--xh-_mention-available-w));
+    /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+    max-inline-size: min(var(--xh-mention-content-max-w, var(--xh-overlay-max-w)), var(--xh-_mention-available-w));
+    /* 状态文字先隐藏时仍保留完整退场面，不塌回一条空边。 */
+    min-block-size: var(--xh-mention-content-min-h, var(--xh-_mention-h));
     max-block-size: min(var(--xh-mention-content-max-h, var(--xh-overlay-max-h)), var(--xh-_mention-available-h));
     padding-block: var(--xh-mention-content-py, var(--xh-space-1));
     padding-inline: var(--xh-mention-content-px, var(--xh-space-1));
-    border: var(--xh-stroke-thin) solid var(--xh-mention-content-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-mention-content-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-mention-content-radius, var(--xh-shape-surface));
-    background: var(--xh-mention-content-bg, var(--xh-bg-surface));
-    color: var(--xh-mention-content-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-mention-content-shadow, var(--xh-elevation-floating));
+    background: var(--xh-mention-content-bg, var(--xh-material-frosted-bg));
+    color: var(--xh-mention-content-fg, var(--xh-material-frosted-fg));
+    box-shadow: var(--xh-mention-content-shadow, var(--xh-material-frosted-shadow));
+    -webkit-backdrop-filter: var(--xh-mention-content-backdrop, var(--xh-material-frosted-backdrop));
+    backdrop-filter: var(--xh-mention-content-backdrop, var(--xh-material-frosted-backdrop));
     overflow-y: auto;
     pointer-events: auto;
-    /* 进退场的缩放锚在贴着输入框的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
-    transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
+  }
+
+  /* 光效仅属于唯一外壳，不拦截候选或同级状态文字。 */
+  [data-scope='mention'][data-part='content']::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: var(--xh-stroke-thin);
+    border-radius: inherit;
+    background: var(--xh-mention-content-highlight, var(--xh-material-frosted-highlight));
+    pointer-events: none;
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -300,12 +313,6 @@
      真正的收起由宿主在退场结束后落成内联 display:none（Vue 那边直接不渲染）。
      其余声明了 display 的角色节点仍补 [hidden]，那几处没有退场动画。 */
 
-  /* 宿主把候选全筛没了：浮层还开着，但这一副框壳没有内容可框，整个让位。
-     组件不替宿主判空——「没有匹配项」要不要说话、说什么，是宿主的事 */
-  [data-scope='mention'][data-part='content']:empty {
-    display: none;
-  }
-
   /* 列表从不承载焦点（焦点恒在输入框，高亮走 aria-activedescendant），
      可滚动容器在某些浏览器里会被自动塞进 Tab 序列，落焦时不画环 */
   [data-scope='mention'][data-part='content']:focus-visible {
@@ -313,15 +320,15 @@
   }
 
   [data-scope='mention'][data-part='content'][data-state='open'] {
-    animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
     /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, scale, translate;
+    will-change: opacity, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
      免得动画结束到真收起之间闪一下原样 */
   [data-scope='mention'][data-part='content'][data-state='closed'] {
-    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='mention'][data-part='item'] {
@@ -331,7 +338,7 @@
     padding-block: var(--xh-mention-item-py, var(--xh-_mention-item-py));
     padding-inline: var(--xh-mention-item-px, var(--xh-_mention-item-px));
     border-radius: var(--xh-mention-item-radius, var(--xh-shape-control));
-    color: var(--xh-mention-item-fg, var(--xh-fg-default));
+    color: var(--xh-mention-item-fg, var(--xh-material-frosted-fg));
     font-size: var(--xh-mention-item-font-size, var(--xh-_mention-font-size));
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
     line-height: var(--xh-mention-item-leading, var(--xh-leading-normal));
@@ -351,9 +358,6 @@
      两套底色各画各的会出现"鼠标停在 A 上、回车却插进了 B" */
   [data-scope='mention'][data-part='item'][data-highlighted]:not([data-disabled]) {
     background: var(--xh-mention-item-bg-hover, var(--xh-bg-subtle));
-    /* 焦点恒在输入框，高亮条目自带内收环；列表是滚动容器，环画在外沿会被裁掉 */
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
@@ -387,16 +391,17 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 空态与候选面板同形：它是 content 的兄弟节点，两者只会有一个显出来 */
+  /* 空态保持为 listbox 的同级 role=status，只把文字叠到 content 的唯一表面。 */
   [data-scope='mention'][data-part='empty'] {
-    display: block;
+    /* 同级定位保证状态文字绘制在磨砂 content 上方，不需要额外层号。 */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-area: 1 / 1;
     padding-block: var(--xh-mention-empty-py, var(--xh-space-3));
     padding-inline: var(--xh-mention-empty-px, var(--xh-_mention-item-px));
-    border: var(--xh-stroke-thin) solid var(--xh-mention-empty-border, var(--xh-border-default));
-    border-radius: var(--xh-mention-empty-radius, var(--xh-shape-surface));
-    background: var(--xh-mention-empty-bg, var(--xh-bg-surface));
-    box-shadow: var(--xh-mention-empty-shadow, var(--xh-elevation-floating));
-    color: var(--xh-mention-empty-fg, var(--xh-fg-subtle));
+    color: var(--xh-mention-empty-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-mention-empty-font-size, var(--xh-_mention-font-size));
     line-height: var(--xh-leading-none);
     text-align: center;
@@ -406,16 +411,16 @@
     display: none;
   }
 
-  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
+  /* 在途占位与空态同格、两者不同屏；它同样不重复绘制表面。 */
   [data-scope='mention'][data-part='loading'] {
-    display: block;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-area: 1 / 1;
     padding-block: var(--xh-mention-loading-py, var(--xh-space-3));
     padding-inline: var(--xh-mention-loading-px, var(--xh-_mention-item-px));
-    border: var(--xh-stroke-thin) solid var(--xh-mention-loading-border, var(--xh-border-default));
-    border-radius: var(--xh-mention-loading-radius, var(--xh-shape-surface));
-    background: var(--xh-mention-loading-bg, var(--xh-bg-surface));
-    box-shadow: var(--xh-mention-loading-shadow, var(--xh-elevation-floating));
-    color: var(--xh-mention-loading-fg, var(--xh-fg-subtle));
+    color: var(--xh-mention-loading-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-mention-loading-font-size, var(--xh-_mention-font-size));
     line-height: var(--xh-leading-none);
     text-align: center;
@@ -423,6 +428,22 @@
 
   [data-scope='mention'][data-part='loading'][hidden] {
     display: none;
+  }
+
+  [data-scope='mention'][data-part='empty']:empty,
+  [data-scope='mention'][data-part='loading']:empty {
+    display: none;
+  }
+
+  /* 手写结构可以把全部候选留在 DOM 里只加 hidden；没有可见 item 也没有状态文案时，
+     打开的空 listbox 不画无意义框。closed 不命中，content 仍能完成 Presence 退场。 */
+  [data-scope='mention'][data-part='positioner']:not(:has(
+    > [data-scope='mention'][data-part='empty']:not([hidden]):not(:empty),
+    > [data-scope='mention'][data-part='loading']:not([hidden]):not(:empty)
+  )) > [data-scope='mention'][data-part='content'][data-state='open']:not(:has(
+    > [data-scope='mention'][data-part='item']:not([hidden])
+  )) {
+    visibility: hidden;
   }
 
   @media print {

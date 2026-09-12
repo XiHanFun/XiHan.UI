@@ -2,7 +2,7 @@ import type { Fixture } from '@xihan-ui/testing'
 import type { SsrHarness } from '@xihan-ui/testing/ssr'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { renderFixtureNode, resolveRoot } from './fixture-element'
+import { renderFixtureChildren, resolveRoot } from './fixture-element'
 
 /**
  * React 的服务端直出宿主。
@@ -16,7 +16,7 @@ export function createReactSsrHarness(): SsrHarness {
       return renderToStaticMarkup(createElement(
         Root,
         { ...fixture.tree.attrs, ...fixture.props },
-        fixture.tree.children?.map((c, i) => renderFixtureNode(c, fixture.component, i)),
+        renderFixtureChildren(fixture.tree.children, fixture.component),
       ))
     },
   }

@@ -1,4 +1,4 @@
-import type { FormApi, FormColumns, FormErrorPatch, FormFieldSpan, FormSchema, FormValidateOn, FormValues } from '@xihan-ui/headless'
+import type { FormApi, FormColumns, FormErrorPatch, FormFieldSpan, FormPath, FormSchema, FormValidateOn, FormValues } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
@@ -16,6 +16,7 @@ export type FormRootSlotProps = Pick<
   | 'invalid'
   | 'submitFailed'
   | 'validating'
+  | 'validationError'
   | 'getFieldId'
   | 'getFieldError'
   | 'setFieldValue'
@@ -27,7 +28,7 @@ export type FormRootSlotProps = Pick<
 
 /** 字段容器默认插槽的载荷：这一个字段的名字、值、错误与控件 id，以及写值的命令。 */
 export interface FormFieldGroupSlotProps {
-  name: string
+  name: FormPath
   value: unknown
   error: string | undefined
   invalid: boolean
@@ -40,27 +41,27 @@ export type FormErrorSummarySlotProps = Pick<FormApi, 'errors' | 'errorNames' | 
 
 /** 错误摘要单条默认插槽的载荷：这一条指向的字段名与它的错误文案。 */
 export interface FormErrorSummaryItemSlotProps {
-  name: string
+  name: FormPath
   error: string | undefined
 }
 
 export const XhFormRoot = defineComponent({
   name: 'XhFormRoot',
-  // 缺省值由 connect 与机器给出，这里一律 default: undefined
+  // 缺省值由 connect 与机器给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    values: { type: Object as PropType<FormValues>, default: undefined },
-    defaultValues: { type: Object as PropType<FormValues>, default: undefined },
-    errors: { type: Object as PropType<FormErrorPatch>, default: undefined },
-    defaultErrors: { type: Object as PropType<FormErrorPatch>, default: undefined },
-    validate: { type: Function as PropType<FormProps['validate']>, default: undefined },
-    rules: { type: Object as PropType<FormProps['rules']>, default: undefined },
-    validateMessages: { type: Object as PropType<FormProps['validateMessages']>, default: undefined },
-    validateOn: { type: String as PropType<FormValidateOn>, default: undefined },
-    layout: { type: String as PropType<FormProps['layout']>, default: undefined },
+    values: { type: Object as PropType<FormValues> },
+    defaultValues: { type: Object as PropType<FormValues> },
+    errors: { type: Object as PropType<FormErrorPatch> },
+    defaultErrors: { type: Object as PropType<FormErrorPatch> },
+    validate: { type: Function as PropType<FormProps['validate']> },
+    rules: { type: Object as PropType<FormProps['rules']> },
+    validateMessages: { type: Object as PropType<FormProps['validateMessages']> },
+    validateOn: { type: String as PropType<FormValidateOn> },
+    layout: { type: String as PropType<FormProps['layout']> },
     /** grid 排布下分几列：整数即各档同一个列数，断点对象 `{ base, sm, md, lg, xl }` 则逐档取值。 */
-    columns: { type: [Number, Object] as PropType<FormColumns>, default: undefined },
-    labelWidth: { type: [Number, String], default: undefined },
-    labelAlign: { type: String as PropType<FormProps['labelAlign']>, default: undefined },
+    columns: { type: [Number, Object] as PropType<FormColumns> },
+    labelWidth: { type: [Number, String] },
+    labelAlign: { type: String as PropType<FormProps['labelAlign']> },
     disabled: Boolean,
     readOnly: Boolean,
   },
@@ -70,6 +71,7 @@ export const XhFormRoot = defineComponent({
     'errors-change': (_details: PayloadOf<FormProps, 'onErrorsChange'>) => true,
     'submit': (_details: PayloadOf<FormProps, 'onSubmit'>) => true,
     'invalid': (_details: PayloadOf<FormProps, 'onInvalid'>) => true,
+    'validation-error': (_details: PayloadOf<FormProps, 'onValidationError'>) => true,
     'update:values': (_values: PayloadOf<FormProps, 'onValuesChange'>['values']) => true,
     'update:errors': (_errors: PayloadOf<FormProps, 'onErrorsChange'>['errors']) => true,
   },
@@ -88,6 +90,7 @@ export const XhFormRoot = defineComponent({
       },
       onSubmit: details => emit('submit', details),
       onInvalid: details => emit('invalid', details),
+      onValidationError: details => emit('validation-error', details),
     })
     provideForm(ctx)
 
@@ -102,6 +105,7 @@ export const XhFormRoot = defineComponent({
       invalid: ctx.api.value.invalid,
       submitFailed: ctx.api.value.submitFailed,
       validating: ctx.api.value.validating,
+      validationError: ctx.api.value.validationError,
       getFieldId: ctx.api.value.getFieldId,
       getFieldError: ctx.api.value.getFieldError,
       setFieldValue: ctx.setFieldValue,
@@ -116,10 +120,10 @@ export const XhFormRoot = defineComponent({
 export const XhFormFieldGroup = defineComponent({
   name: 'XhFormFieldGroup',
   props: {
-    /** 字段名，与 values / errors 表里的键一致。 */
-    value: { type: String, required: true },
+    /** 字段路径；字符串含点仍是单键，数组才表示层级。 */
+    name: { type: [String, Array] as PropType<FormPath>, required: true },
     /** grid 排布下这一格占多宽：1 至 4 跨这么多列，'full' 占满整行；不写占一列。 */
-    span: { type: [Number, String] as PropType<FormFieldSpan>, default: undefined },
+    span: { type: [Number, String] as PropType<FormFieldSpan> },
   },
   slots: Object as SlotsType<{
     default?: (props: FormFieldGroupSlotProps) => VNode[]
@@ -127,18 +131,18 @@ export const XhFormFieldGroup = defineComponent({
   setup(props, { slots }) {
     const ctx = useFormContext()
     // 后代 Field 据此从表单上下文自取校验态，省掉逐字段搬运
-    provideFormField({ name: () => props.value })
+    provideFormField({ name: () => props.name })
     // 作用域插槽暴露本字段的值、错误与写入方法
     return () => h(
       'div',
-      ctx.api.value.getFieldGroupProps({ name: props.value, span: props.span }) as Record<string, unknown>,
+      ctx.api.value.getFieldGroupProps({ name: props.name, span: props.span }) as Record<string, unknown>,
       slots.default?.({
-        name: props.value,
-        value: ctx.api.value.getFieldValue(props.value),
-        error: ctx.api.value.getFieldError(props.value),
-        invalid: ctx.api.value.isFieldInvalid(props.value),
-        controlId: ctx.api.value.getFieldId(props.value),
-        setValue: (next: unknown) => ctx.setFieldValue(props.value, next),
+        name: props.name,
+        value: ctx.api.value.getFieldValue(props.name),
+        error: ctx.api.value.getFieldError(props.name),
+        invalid: ctx.api.value.isFieldInvalid(props.name),
+        controlId: ctx.api.value.getFieldId(props.name),
+        setValue: (next: unknown) => ctx.setFieldValue(props.name, next),
       }),
     )
   },
@@ -162,8 +166,8 @@ export const XhFormErrorSummary = defineComponent({
 export const XhFormErrorSummaryItem = defineComponent({
   name: 'XhFormErrorSummaryItem',
   props: {
-    /** 这一条指向哪个字段。 */
-    value: { type: String, required: true },
+    /** 这一条指向哪个字段路径。 */
+    name: { type: [String, Array] as PropType<FormPath>, required: true },
   },
   slots: Object as SlotsType<{
     default?: (props: FormErrorSummaryItemSlotProps) => VNode[]
@@ -173,8 +177,8 @@ export const XhFormErrorSummaryItem = defineComponent({
     // 渲染为原生 a，href 指向字段容器的 id
     return () => h(
       'a',
-      ctx.api.value.getErrorSummaryItemProps({ name: props.value }) as Record<string, unknown>,
-      slots.default?.({ name: props.value, error: ctx.api.value.getFieldError(props.value) }),
+      ctx.api.value.getErrorSummaryItemProps({ name: props.name }) as Record<string, unknown>,
+      slots.default?.({ name: props.name, error: ctx.api.value.getFieldError(props.name) }),
     )
   },
 })

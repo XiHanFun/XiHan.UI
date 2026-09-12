@@ -27,6 +27,7 @@ export const XhTagRoot = defineComponent({
     // 三态：不传即由 connect 决定缺省，传 false 才真的关掉
     closable: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
     open: { type: Boolean, default: undefined },
     defaultOpen: { type: Boolean, default: undefined },
     translations: Object as PropType<Partial<TagTranslations>>,

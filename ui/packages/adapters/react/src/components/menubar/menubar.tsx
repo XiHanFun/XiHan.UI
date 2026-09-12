@@ -1,30 +1,28 @@
 import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { MenuApi, MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema, MenubarTranslations, MenuSchema } from '@xihan-ui/headless'
-import type { ComponentPropsWithRef, ReactNode } from 'react'
+import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
-import type { MenubarChain } from './context'
 import type { MenubarPartRegistry } from './use-menubar'
-import { mergeProps } from '@xihan-ui/core'
+import { groupAdjacentRuns, mergeProps } from '@xihan-ui/core'
 import { Fragment, useCallback, useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
-import { MenuChainProvider, MenuProvider, useMenuContext } from '../menu/context'
-import { useMenu } from '../menu/use-menu'
+import { MenuProvider, useMenuContext } from '../menu/context'
+import { useMenuWithParent } from '../menu/use-menu'
 import {
-  MenubarChainProvider,
   MenubarGroupProvider,
   MenubarItemProvider,
   MenubarMenuProvider,
   MenubarProvider,
   MenubarSubProvider,
-  useMenubarChain,
   useMenubarContext,
   useMenubarGroupContext,
   useMenubarItemContext,
@@ -49,7 +47,10 @@ function useMenubarPart(register: MenubarPartRegistry, value: string): (el: HTML
 /** 函数式 children 的载荷：当前展开的那一项、有没有菜单展开着，与切换展开项的命令。 */
 export type MenubarRootSlotProps = Pick<MenubarApi, 'value' | 'open' | 'setValue'>
 
-export interface XhMenubarRootProps {
+/** 根上自有的那些取值；defaultValue、dir 与 onSelect 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir' | 'onSelect'>
+
+export interface XhMenubarRootProps extends RootElementProps {
   /** 菜单栏数据；给了它就不必逐条摆部件。 */
   collection?: MenubarNode[]
   value?: string | null
@@ -72,44 +73,67 @@ export interface XhMenubarRootProps {
 }
 
 /** role=menubar 根节点：trigger 的 roving tabindex 作用域，各菜单浮层也挂在其内。 */
-export function XhMenubarRoot({ children, renderItem, ...props }: XhMenubarRootProps): ReactNode {
-  const ctx = useMenubar(withXhConfig('menubar', props) as MenubarProps)
+export function XhMenubarRoot({
+  collection,
+  value,
+  defaultValue,
+  orientation,
+  loop,
+  dir,
+  disabled,
+  typeahead,
+  placement,
+  offset,
+  tone,
+  size,
+  translations,
+  onValueChange,
+  onSelect,
+  children,
+  renderItem,
+  ...rest
+}: XhMenubarRootProps): ReactNode {
+  const machineProps = {
+    collection,
+    value,
+    defaultValue,
+    orientation,
+    loop,
+    dir,
+    disabled,
+    typeahead,
+    placement,
+    offset,
+    tone,
+    size,
+    translations,
+    onValueChange,
+    onSelect,
+  }
+  const ctx = useMenubar(withXhConfig('menubar', machineProps) as MenubarProps)
   // 菜单栏根上的 onFocus 是 DOM 的 focus（不冒泡，只在根自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，trigger 得焦也会把它叫起来——装成原生监听器，到达路径才与另外两家一致。
   // onFocusOut 归到的 onBlur 本就是冒泡的 focusout，不动它
   const bind = useNativeEvents(ctx.api.getRootProps() as Record<string, unknown>, ['onFocus'])
 
-  // 子菜单任意层级的选中都汇到这里：先发根的 select，再关掉整条菜单栏。
-  // 关根用 setValue(null) —— 菜单栏是「当前展开哪一项」的模型，没有 setOpen。
-  // 取值器每帧换、链只建一次：拿 ref 转一道，别让它成为重建的理由
-  const latest = useRef({ onSelect: props.onSelect, api: ctx.api })
-  latest.current = { onSelect: props.onSelect, api: ctx.api }
-  const chain = useMemo<MenubarChain>(() => ({
-    notifySelect: (details) => {
-      latest.current.onSelect?.(details)
-      latest.current.api.setValue(null)
-    },
-  }), [])
-
   const body = children != null
     ? renderSlot(children, { value: ctx.api.value, open: ctx.api.open, setValue: ctx.api.setValue })
-    : props.collection
+    : collection
       ? <DefaultTree collection={ctx.api.collection} renderItem={renderItem} />
       : null
 
   return (
     <MenubarProvider value={ctx}>
-      <MenubarChainProvider value={chain}>
-        <div
-          {...mergeReactProps(
-            bind.attrs,
-            { ref: bind.ref },
-            { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
-          )}
-        >
-          {body}
-        </div>
-      </MenubarChainProvider>
+      <div
+        {...mergeReactProps(
+          bind.attrs,
+          rest as Record<string, unknown>,
+          { ref: bind.ref },
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
+      >
+        {body}
+      </div>
     </MenubarProvider>
   )
 }
@@ -130,11 +154,13 @@ export function XhMenubarTrigger({ value, disabled, asChild, children, ...rest }
     ctx.api.getTriggerProps({ value, disabled }) as Record<string, unknown>,
     ['onFocus', 'onPointerEnter'],
   )
-  const props = mergeReactProps(
-    bind.attrs,
+  const props = mergePartProps(
+    mergeReactProps(
+      bind.attrs,
+      { ref: bind.ref },
+      { ref: setEl },
+    ),
     rest as Record<string, unknown>,
-    { ref: bind.ref },
-    { ref: setEl },
   )
   return renderAsChild(asChild, children, props, 'menubar', (p, kids) => <button {...p}>{kids}</button>)
 }
@@ -149,9 +175,15 @@ export function XhMenubarPositioner({ value, container, children, ...rest }: XhM
   const ctx = useMenubarContext()
   const menu = useMemo<MenubarContentProps>(() => ({ value }), [value])
   const setEl = useMenubarPart(ctx.registerPositioner, value)
+  const getTrigger = ctx.getTrigger
+  const source = useMemo<RefObject<HTMLElement | null>>(() => ({
+    get current() {
+      return getTrigger(value)
+    },
+  }), [getTrigger, value])
   return (
     <MenubarMenuProvider value={menu}>
-      <XhPortal container={container ?? ctx.portalContainer}>
+      <XhPortal container={container ?? ctx.portalContainer} source={source}>
         <div
           {...mergeReactProps(
             ctx.api.getPositionerProps(menu) as Record<string, unknown>,
@@ -179,12 +211,34 @@ export function XhMenubarContent({ value, children, ...rest }: XhMenubarContentP
   const menu = useMemo<MenubarContentProps>(() => ({ value: own }), [own])
   const setEl = useMenubarPart(ctx.registerContent, own)
   const contentRef = useRef<HTMLElement | null>(null)
+  const presenceRef = useRef<PresenceHandle | null>(null)
+  const presenceValueRef = useRef<string | null>(null)
+  const sendPresence = (event: MenubarSchema['event']): void => {
+    const deliver = (): void => {
+      if (ctx.service.getStatus() === 'Started')
+        ctx.service.send(event)
+    }
+    if (ctx.service.getStatus() === 'Started')
+      deliver()
+    else
+      queueMicrotask(deliver)
+  }
   // 一个菜单一份退场闸门：它们各开各的、动画各跑各的，一份管不过来。
   // 开合判据直接取 connect 这一帧的产出，不另起一套——两边各判一次迟早会说岔
   const visible = useOverlayExit({
     config: ctx.config,
     isOpen: () => (ctx.api.getContentProps(menu) as Record<string, unknown>).hidden !== true,
     contentRef,
+    onPresence: (next) => {
+      const previous = presenceRef.current
+      const previousValue = presenceValueRef.current
+      presenceRef.current = next
+      presenceValueRef.current = next ? own : null
+      if (next)
+        sendPresence({ type: 'PRESENCE.SET', value: own, presence: next, connected: true })
+      else if (previous && previousValue != null)
+        sendPresence({ type: 'PRESENCE.SET', value: previousValue, presence: previous, connected: false })
+    },
   })
   return (
     <div
@@ -350,28 +404,18 @@ export function XhMenubarSub({ value, disabled, children, ...props }: XhMenubarS
   const owner = useMenubarMenuContext()
   if (!owner)
     throw new Error('XhMenubarSub 要放在 XhMenubarPositioner 里')
-  const chain = useMenubarChain()
   const ownerValue = owner.value
-  // 菜单栏的选中要带菜单身份，子层只知道条目值，在这里补上
-  const notifySelect = useCallback(
-    (details: { value: string }) => chain.notifySelect({ menu: ownerValue, value: details.value }),
-    [chain, ownerValue],
-  )
   // 子层跑的是一台子菜单模式的 menu 机器：菜单栏那台是单机器单锚点，装不下第二层
-  const sub = useMenu({
+  const sub = useMenuWithParent({
     ...props,
     disabled,
     submenu: true,
     dir: props.dir ?? parent.service.prop('dir'),
     tone: props.tone ?? parent.service.prop('tone'),
     size: props.size ?? parent.service.prop('size'),
-    onSelect: notifySelect,
-  } as MenuProps)
+  } as MenuProps, parent.tree)
 
   const handle = useMemo(() => ({ parent, value, disabled }), [parent, value, disabled])
-  // 子层里还能再嵌一层 XhMenuSub：那一层要往上找选中汇总的链
-  const menuChain = useMemo(() => ({ notifySelect }), [notifySelect])
-
   // 所属那张菜单收起时本层跟着收，层层传导
   const ownerOpen = parent.api.isOpen(ownerValue)
   const setOpenRef = useRef(sub.api.setOpen)
@@ -383,11 +427,9 @@ export function XhMenubarSub({ value, disabled, children, ...props }: XhMenubarS
 
   return (
     <MenuProvider value={sub}>
-      <MenuChainProvider value={menuChain}>
-        <MenubarSubProvider value={handle}>
-          {renderSlot(children, { open: sub.api.open, setOpen: sub.api.setOpen })}
-        </MenubarSubProvider>
-      </MenuChainProvider>
+      <MenubarSubProvider value={handle}>
+        {renderSlot(children, { open: sub.api.open, setOpen: sub.api.setOpen })}
+      </MenubarSubProvider>
     </MenuProvider>
   )
 }
@@ -422,19 +464,6 @@ export function XhMenubarSubTrigger({ children, ...rest }: XhMenubarSubTriggerPr
   )
 }
 
-/** 相邻同 group 的条目并成一段，没写 group 的各自成段。 */
-function groupRuns(collection: readonly MenubarNodeMeta[]): MenubarNodeMeta[][] {
-  const runs: MenubarNodeMeta[][] = []
-  for (const meta of collection) {
-    const last = runs.at(-1)
-    if (last && meta.group != null && last[0]!.group === meta.group)
-      last.push(meta)
-    else
-      runs.push([meta])
-  }
-  return runs
-}
-
 /** 单个条目：文字在上，副文本在下，没给副文本就不铺那个部件。 */
 function renderNode(meta: MenubarNodeMeta, renderItem?: (node: MenubarNodeMeta) => ReactNode): ReactNode {
   return (
@@ -447,7 +476,7 @@ function renderNode(meta: MenubarNodeMeta, renderItem?: (node: MenubarNodeMeta) 
 
 /** content 的内容：分组段铺成 group，段首的分隔线落在 group 外面。 */
 function renderNodes(collection: readonly MenubarNodeMeta[], renderItem?: (node: MenubarNodeMeta) => ReactNode): ReactNode {
-  return groupRuns(collection).map((run, runIndex) => {
+  return groupAdjacentRuns(collection, node => node.group).map((run, runIndex) => {
     const head = run[0]!
     // 首条上的标记不产出分隔线：菜单开头不留一道空隔
     const lead = runIndex > 0 && head.separatorBefore ? <XhMenubarSeparator /> : null

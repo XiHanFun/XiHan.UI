@@ -25,13 +25,23 @@ export function resolvePart(component: string, part: string): Component {
   return comp
 }
 
+/** 节点声明了只在某些适配器下渲、名单里又没有 vue 时，本侧当它没写。 */
+function rendersHere(node: FixtureNode): boolean {
+  return node.only == null || node.only.includes('vue')
+}
+
+/** 一组子节点 → VNode 列表，本侧不渲的先剔掉；没有子节点给 undefined。 */
+export function renderFixtureChildren(nodes: readonly FixtureNode[] | undefined, component: string): VNode[] | undefined {
+  return nodes?.filter(rendersHere).map(c => renderFixtureNode(c, component))
+}
+
 // FixtureNode → VNode。part 节点解析成对应组件，纯结构节点直接建元素；组件数增加时零改动。
 export function renderFixtureNode(node: FixtureNode, component: string): VNode {
   if (node.part) {
-    const kids = node.children?.map(c => renderFixtureNode(c, component))
+    const kids = renderFixtureChildren(node.children, component)
     const slot = kids ? () => kids : node.text != null ? () => node.text : undefined
     return h(resolvePart(component, node.part), { ...node.attrs }, slot ? { default: slot } : undefined)
   }
-  const kids = node.children?.map(c => renderFixtureNode(c, component))
+  const kids = renderFixtureChildren(node.children, component)
   return h(node.tag ?? 'div', { ...node.attrs }, kids ?? node.text)
 }

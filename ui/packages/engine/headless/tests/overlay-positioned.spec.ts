@@ -9,7 +9,13 @@ import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
 import { connectMenu, menuMachine } from '../src/menu'
-import { overlayPositioned } from '../src/shared/overlay'
+import {
+  overlayAnchorWidthVar,
+  overlayArrowVars,
+  overlayAvailableSpaceVars,
+  overlayFixedStyle,
+  overlayPositioned,
+} from '../src/shared/overlay'
 
 describe('落位判据', () => {
   it('还没有结果时不算落位——展开那几帧就是这个状态', () => {
@@ -30,6 +36,38 @@ describe('落位判据', () => {
 
   it('判据与展开态无关：收起中的面板留着坐标，退场才看得见', () => {
     expect(overlayPositioned({ x: 10, y: 20 })).toBe(true)
+  })
+})
+
+describe('浮层动态样式真源', () => {
+  it('固定定位坐标逐轴回落且保留 0px', () => {
+    expect(overlayFixedStyle({ x: 0 }, { x: 8, y: 12 })).toEqual({
+      position: 'fixed',
+      left: '0px',
+      top: '12px',
+    })
+  })
+
+  it('可用尺寸保留族名、下限与空串撤销语义', () => {
+    expect(overlayAvailableSpaceVars('menu', { availableWidth: 95, availableHeight: 96 })).toEqual({
+      '--xh-_menu-available-w': '',
+      '--xh-_menu-available-h': '96px',
+    })
+    expect(overlayAvailableSpaceVars('pagination', { availableWidth: 96, availableHeight: 80 }, 80)).toEqual({
+      '--xh-_pagination-available-w': '96px',
+      '--xh-_pagination-available-h': '80px',
+    })
+    expect(overlayAvailableSpaceVars('cascader', { availableWidth: 120, availableHeight: 120 }, null)).toEqual({
+      '--xh-_cascader-available-w': '120px',
+    })
+  })
+
+  it('锚宽与箭头两轴未结算时写空串', () => {
+    expect(overlayAnchorWidthVar('select', undefined)).toEqual({ '--xh-_select-anchor-w': '' })
+    expect(overlayArrowVars('popover', { x: 4 })).toEqual({
+      '--xh-_popover-arrow-x': '4px',
+      '--xh-_popover-arrow-y': '',
+    })
   })
 })
 

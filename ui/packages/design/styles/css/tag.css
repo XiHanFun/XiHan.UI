@@ -9,11 +9,12 @@
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-tag-icon-size, var(--xh-glyph-size-text));
 
-    /* 尺寸档只换这四个私有槽，下面的声明从它们取值 */
+    /* 尺寸档只换这五个私有槽，下面的声明从它们取值；行框是标签里那一行的高，取指示符档 */
     --xh-_tag-gap: var(--xh-space-1);
     --xh-_tag-px: var(--xh-space-2);
-    --xh-_tag-py: var(--xh-space-0_5);
-    --xh-_tag-font-size: var(--xh-text-caption-size);
+    --xh-_tag-py: var(--xh-space-1);
+    --xh-_tag-font-size: var(--xh-text-secondary-size);
+    --xh-_tag-line-h: var(--xh-control-indicator-md);
 
     display: inline-flex;
     align-items: center;
@@ -22,13 +23,16 @@
     gap: var(--xh-tag-gap, var(--xh-_tag-gap));
     padding-inline: var(--xh-tag-px, var(--xh-_tag-px));
     padding-block: var(--xh-tag-py, var(--xh-_tag-py));
-    border: var(--xh-stroke-thin) solid transparent;
+    border: var(--xh-stroke-thin) solid var(--xh-tag-border, var(--xh-material-soft-border));
     border-radius: var(--xh-tag-radius, var(--xh-shape-control));
-    background: var(--xh-tag-bg, var(--xh-bg-subtle));
-    color: var(--xh-tag-fg, var(--xh-fg-default));
+    background: var(--xh-tag-bg, var(--xh-material-soft-bg));
+    box-shadow: var(--xh-tag-shadow, var(--xh-material-soft-shadow));
+    color: var(--xh-tag-fg, var(--xh-material-soft-fg));
     font-size: var(--xh-tag-font-size, var(--xh-_tag-font-size));
     font-weight: var(--xh-tag-font-weight, var(--xh-font-weight-medium));
-    line-height: var(--xh-leading-none);
+    /* 行框不低于关闭钮，有没有关闭钮同档标签一样高；
+       作者把字调得比这一格还大时行框跟着字走，label 的截断不会剪掉字的上下沿 */
+    line-height: max(calc(var(--xh-leading-none) * 1em), var(--xh-_tag-line-h));
     /* 随文排时与正文基线对齐 */
     vertical-align: middle;
   }
@@ -51,8 +55,9 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    position: relative;
     flex: none;
-    /* 命中区取标签内移除钮的指示符尺寸，不随标签档位缩小 */
+    /* 命中区：作者槽 → 不分档的指示符，三档同一个数，与库里其它标签内的移除钮同一把尺；行框比它高的档里钮居中 */
     block-size: var(--xh-tag-close-size, var(--xh-control-indicator-size));
     inline-size: var(--xh-tag-close-size, var(--xh-control-indicator-size));
     /* 命中区比字形大一圈，往内收一格才不会在标签右缘留出一块空白 */
@@ -69,6 +74,15 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  }
+
+  /* 视觉盒保持 16px，透明命中层扩到随文动作的 24px，不把整枚标签撑高。 */
+  [data-scope='tag'][data-part='close-trigger']::after {
+    position: absolute;
+    inset: calc(
+      (var(--xh-control-action-size) - var(--xh-tag-close-size, var(--xh-control-indicator-size))) / -2
+    );
+    content: '';
   }
 
   /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半 */
@@ -90,11 +104,6 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 环往内收：命中区贴着标签内缘，往外画会被相邻标签压住 */
-  [data-scope='tag'][data-part='close-trigger']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   /* —— 形态 —— */
   /* 形态只决定颜色怎么用。每个形态拆成两条：先是没写语气时的基线配色，
      再是写了语气时的覆盖。语气槽会沿继承流下来，覆盖那条必须带 [data-tone] 限定，
@@ -111,6 +120,20 @@
     box-shadow: var(--xh-tag-shadow, var(--xh-_tag-highlight));
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     置灰那档的底已换成静默色、字换成置灰色，不在其列：环退回默认那一支 */
+  [data-scope='tag'][data-part='root'][data-variant='solid']:not([data-disabled]):focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
+  /* 关闭钮自己的面是透空的，环压着的是标签那块实心底；它的字色就是那块底上的前景色，
+     环跟着取过来 */
+  [data-scope='tag'][data-part='root'][data-variant='solid']:not([data-disabled])
+    [data-scope='tag'][data-part='close-trigger']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   [data-scope='tag'][data-part='root'][data-variant='solid'][data-tone] {
     --xh-_tag-highlight: var(--xh-_highlight-tone);
 
@@ -119,9 +142,9 @@
   }
 
   [data-scope='tag'][data-part='root'][data-variant='subtle'] {
-    border-color: transparent;
-    background: var(--xh-tag-bg, var(--xh-bg-subtle));
-    color: var(--xh-tag-fg, var(--xh-fg-default));
+    border-color: var(--xh-tag-border, var(--xh-material-soft-border));
+    background: var(--xh-tag-bg, var(--xh-material-soft-bg));
+    color: var(--xh-tag-fg, var(--xh-material-soft-fg));
   }
 
   [data-scope='tag'][data-part='root'][data-variant='subtle'][data-tone] {
@@ -132,6 +155,7 @@
   [data-scope='tag'][data-part='root'][data-variant='outline'] {
     border-color: var(--xh-tag-border, var(--xh-border-default));
     background: transparent;
+    box-shadow: none;
     color: var(--xh-tag-fg, var(--xh-fg-default));
   }
 
@@ -142,19 +166,32 @@
     color: var(--xh-tag-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
   }
 
+  [data-scope='tag'][data-part='root'][data-variant='ghost'] {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    color: var(--xh-tag-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='tag'][data-part='root'][data-variant='ghost'][data-tone] {
+    color: var(--xh-tag-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
+  }
+
   /* —— 尺寸 —— */
-  /* 标签是随文排的标记，不占控件行高，档位走间距与字号而不是 control-h */
+  /* 标签是随文排的标记，不占控件行高，档位走间距、字号与行框而不是 control-h */
   [data-scope='tag'][data-part='root'][data-size='sm'] {
     --xh-_tag-gap: var(--xh-space-0_5);
     --xh-_tag-px: var(--xh-space-1_5);
-    --xh-_tag-py: var(--xh-space-0);
+    --xh-_tag-py: var(--xh-space-0_5);
+    --xh-_tag-font-size: var(--xh-text-caption-size);
   }
 
+  /* 行框上到指示符的大档，竖向内衬沿用中档；关闭钮不换档 */
   [data-scope='tag'][data-part='root'][data-size='lg'] {
     --xh-_tag-gap: var(--xh-space-1_5);
     --xh-_tag-px: var(--xh-space-3);
-    --xh-_tag-py: var(--xh-space-1);
-    --xh-_tag-font-size: var(--xh-text-secondary-size);
+    --xh-_tag-font-size: var(--xh-text-body-size);
+    --xh-_tag-line-h: var(--xh-control-indicator-lg);
   }
 
   /* —— 禁用 —— */

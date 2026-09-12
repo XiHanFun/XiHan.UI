@@ -1,7 +1,12 @@
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
-  TreeNode,
+  FormControlState,
+  TreeSelectBranchLoadDetails,
+  TreeSelectBranchLoadErrorDetails,
+  TreeSelectBranchLoadSnapshot,
+  TreeSelectBranchLoadStartDetails,
   TreeSelectExpandedValueChangeDetails,
+  TreeSelectNode,
   TreeSelectNodeProps,
   TreeSelectOpenChangeDetails,
   TreeSelectSchema,
@@ -9,12 +14,14 @@ import type {
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTreeSelect, treeSelectAnatomy, treeSelectMachine, treeSelectMeta } from '@xihan-ui/headless'
+import { connectTreeSelect, resolveFormControlState, treeSelectAnatomy, treeSelectMachine, treeSelectMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
+import { PART_ATTR } from '../dom/parts'
+import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定；Lit 自带转换器把缺席落成 null/false，
@@ -64,10 +71,14 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {boolean} loop - 上下键走到首尾回绕，默认关；写 loop="true" 打开
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
- * @attr {string} name - 表单字段名；给了 hidden-input 才参与提交（多选按逗号拼成一串）
+ * @attr {string} name - 表单字段名；每个选中值提交为一个同名字段
+ * @attr {string} form - 显式关联的原生表单 ID，提交与 reset 使用同一所有者
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires branch-load-start - 分支请求开始；detail 为 `{ value, node, reason }`
+ * @fires branch-load - 分支请求成功；detail 为 `{ value, node, children }`
+ * @fires branch-load-error - 分支请求失败；detail 为 `{ value, node, error }`
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）
  * @csspart label - 标题（aria-labelledby 目标）
  * @csspart control - 触发按钮与清空按钮的收纳容器：描边、底色与聚焦环都落在这一层
@@ -80,19 +91,26 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @csspart tree - role=tree 容器，没有锚点时的 Tab 兜底位与落焦点
  * @csspart item - role=treeitem 叶子，须自带 value 属性标识身份
  * @csspart item-text - 叶子文本
- * @csspart item-indicator - 叶子选中标记（aria-hidden）
+ * @csspart item-indicator - 叶子与分支共用的选中或半选标记（aria-hidden）
  * @csspart branch - role=treeitem 分支，须自带 value 属性；它裹着自己的 branch-content
  * @csspart branch-control - 分支可点行（点它只改选中值，展开归箭头与左右方向键）
  * @csspart branch-trigger - 展开箭头（aria-hidden 且不占 Tab 位，只切换展开态）
  * @csspart branch-indicator - 展开方向指示符（aria-hidden）
  * @csspart branch-text - 分支文本
  * @csspart branch-content - role=group 子层容器，收起时隐藏
- * @csspart empty - 空态占位，须放在 content 里当 tree 的兄弟；给了 collection 时由元素按条数收放，节点手写时归作者
+ * @csspart branch-loading - 懒分支在途状态；标记缺席时由元素补齐
+ * @csspart branch-error - 懒分支错误状态；标记缺席时由元素补齐
+ * @csspart branch-retry-trigger - 懒分支失败后的重试按钮；标记缺席时由元素补齐
+ * @csspart branch-empty - 懒分支成功返回空数组的状态；标记缺席时由元素补齐
+ * @csspart empty - 整树空态；标记缺席时由元素补齐，collection 与手写节点均自动判定
  * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
  * @csspart footer - 浮层底部的操作区，写在 content 里、tree 的兄弟；不进树的拥有关系，方向键与连打检索也走不到
  * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
  */
-export class XhTreeSelectElement extends XhElement {
+export class XhTreeSelectElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: treeSelectAnatomy, meta: treeSelectMeta }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
@@ -108,10 +126,11 @@ export class XhTreeSelectElement extends XhElement {
     multiple: { type: Boolean },
     cascade: { type: Boolean },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
+    loadChildren: { attribute: false },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -122,9 +141,12 @@ export class XhTreeSelectElement extends XhElement {
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     name: { converter: STRING_CONVERTER },
+    form: { converter: STRING_CONVERTER },
   }
 
-  declare collection?: TreeNode[]
+  declare collection?: TreeSelectNode[]
+  /** 懒分支的取数函数；只能作为 property 设置。 */
+  declare loadChildren?: TreeSelectSchema['props']['loadChildren']
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare expandedValue?: string[]
@@ -149,16 +171,29 @@ export class XhTreeSelectElement extends XhElement {
   declare loop?: boolean
   declare direction?: Direction
   declare name?: string
+  declare form?: string
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly treeSelectScope = createScope(null, this.idGen)
+  private readonly treeSelectScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = this.createAnchoredPortalController({
+    name: 'TreeSelect',
+    config: () => this.config,
+    source: () => this.getPart('trigger'),
+    root: () => this.getPart('positioner'),
+    onChange: () => this.requestUpdate(),
+  })
 
   /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
   private readonly ownsValueText = new WeakMap<HTMLElement, boolean>()
+  private readonly ownsFeedbackText = new WeakMap<HTMLElement, boolean>()
+  private readonly generatedFeedback = new WeakSet<HTMLElement>()
+  private renderedNodeCount = -1
+
+  private readonly hiddenInputs = createRepeatedHiddenInputs(this.spreader)
 
   private readonly notifyValue = (details: TreeSelectValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -170,6 +205,18 @@ export class XhTreeSelectElement extends XhElement {
 
   private readonly notifyOpen = (details: TreeSelectOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyBranchLoadStart = (details: TreeSelectBranchLoadStartDetails): void => {
+    this.dispatchEvent(new CustomEvent('branch-load-start', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyBranchLoad = (details: TreeSelectBranchLoadDetails): void => {
+    this.dispatchEvent(new CustomEvent('branch-load', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyBranchLoadError = (details: TreeSelectBranchLoadErrorDetails): void => {
+    this.dispatchEvent(new CustomEvent('branch-load-error', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<TreeSelectSchema>(
@@ -191,9 +238,32 @@ export class XhTreeSelectElement extends XhElement {
     props: () => ({ dir: this.direction }),
   })
 
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
+  /** 读取一个懒分支的 Headless 异步相位；非懒分支返回 null。 */
+  branchLoadState(value: string): TreeSelectBranchLoadSnapshot | null {
+    return connectTreeSelect(this.ctrl.service, wcNormalize).branchLoadState(value)
+  }
+
+  /** 显式重试失败分支；实际请求身份与竞态仍由 Headless 管理。 */
+  retryBranch(value: string): void {
+    connectTreeSelect(this.ctrl.service, wcNormalize).retryBranch(value)
+  }
+
   private machineProps(): Partial<TreeSelectSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       collection: this.collection,
+      loadChildren: this.loadChildren,
       value: this.value,
       defaultValue: this.defaultValue,
       expandedValue: this.expandedValue,
@@ -204,9 +274,9 @@ export class XhTreeSelectElement extends XhElement {
       multiple: this.multiple ?? false,
       cascade: this.cascade,
       checkedStrategy: this.checkedStrategy,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       loading: this.loading ?? false,
       variant: this.variant,
       tone: this.tone,
@@ -218,9 +288,13 @@ export class XhTreeSelectElement extends XhElement {
       loop: this.loop,
       dir: this.direction,
       name: this.name,
+      form: this.form,
       onValueChange: this.notifyValue,
       onExpandedValueChange: this.notifyExpanded,
       onOpenChange: this.notifyOpen,
+      onBranchLoadStart: this.notifyBranchLoadStart,
+      onBranchLoad: this.notifyBranchLoad,
+      onBranchLoadError: this.notifyBranchLoadError,
     }
   }
 
@@ -228,6 +302,10 @@ export class XhTreeSelectElement extends XhElement {
     if (this.config)
       return
     this.config = createRuntimeConfig({ scope: this.treeSelectScope, idGenerator: this.idGen })
+  }
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
   }
 
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
@@ -240,7 +318,6 @@ export class XhTreeSelectElement extends XhElement {
       // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
       branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 浮层不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })
@@ -249,8 +326,14 @@ export class XhTreeSelectElement extends XhElement {
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<TreeSelectSchema>): void {
     this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: (this.open ?? this.defaultOpen) ?? false,
+      onExitComplete: () => this.requestUpdate(),
+    })
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.exit.presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -268,6 +351,7 @@ export class XhTreeSelectElement extends XhElement {
    * 判据是「焦点已不在浮层内」且离场的正是持有锚点的那个节点。
    */
   protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
+    this.hiddenInputs.release(nodes)
     const { context, getStatus, scope, send } = this.ctrl.service
     // 机器已停机则跳过
     if (getStatus() !== 'Started')
@@ -291,7 +375,7 @@ export class XhTreeSelectElement extends XhElement {
    */
   private nodeOf(el: HTMLElement, selector: string): TreeSelectNodeProps {
     const owner = el.closest<HTMLElement>(selector)
-    const source = owner && owner !== this && this.contains(owner) ? owner : el
+    const source = owner && owner !== this ? owner : el
     return { value: source.getAttribute('value') ?? '' }
   }
 
@@ -307,7 +391,48 @@ export class XhTreeSelectElement extends XhElement {
     el.textContent = text
   }
 
+  private fillFeedbackText(el: HTMLElement, text: string): void {
+    let owned = this.ownsFeedbackText.get(el)
+    if (owned === undefined) {
+      owned = (el.textContent ?? '').trim() === ''
+      this.ownsFeedbackText.set(el, owned)
+    }
+    if (owned && el.textContent !== text)
+      el.textContent = text
+  }
+
+  /** 作者部件优先；缺席时在指定容器末尾补一个默认反馈节点。 */
+  private ensureFeedback(parent: HTMLElement | null, name: string, tag = 'div'): HTMLElement | null {
+    if (!parent)
+      return null
+    const candidates = [...parent.querySelectorAll<HTMLElement>(`[${PART_ATTR}="${name}"]`)]
+      .filter(el => !name.startsWith('branch-') || el.closest(BRANCH_SELECTOR) === parent)
+    const authored = candidates.find(el => !this.generatedFeedback.has(el))
+    if (authored) {
+      for (const generated of candidates) {
+        if (this.generatedFeedback.has(generated))
+          generated.remove()
+      }
+      return authored
+    }
+    if (candidates[0])
+      return candidates[0]
+    const el = this.ownerDocument.createElement(tag)
+    el.setAttribute(PART_ATTR, name)
+    this.generatedFeedback.add(el)
+    parent.append(el)
+    return el
+  }
+
   protected wire(): void {
+    const nodes = [...this.getParts('branch'), ...this.getParts('item')]
+    if (nodes.length !== this.renderedNodeCount) {
+      this.renderedNodeCount = nodes.length
+      this.ctrl.service.send({
+        type: 'NODES.SYNC',
+        values: nodes.map(el => this.nodeOf(el, `${BRANCH_SELECTOR}, ${ITEM_SELECTOR}`).value),
+      })
+    }
     const api = connectTreeSelect(this.ctrl.service, wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
@@ -326,10 +451,19 @@ export class XhTreeSelectElement extends XhElement {
     put('content', api.getContentProps() as Record<string, unknown>)
     put('tree', api.getTreeProps() as Record<string, unknown>)
     put('footer', api.getFooterProps() as Record<string, unknown>)
-    put('empty', api.getEmptyProps() as Record<string, unknown>)
-    put('loading', api.getLoadingProps() as Record<string, unknown>)
+    const empty = this.ensureFeedback(this.getPart('content'), 'empty')
+    if (empty) {
+      this.spreader.spread(empty, api.getEmptyProps() as Record<string, unknown>)
+      this.fillFeedbackText(empty, api.translations.empty)
+    }
+    const loading = this.ensureFeedback(this.getPart('content'), 'loading')
+    if (loading) {
+      this.spreader.spread(loading, api.getLoadingProps() as Record<string, unknown>)
+      this.fillFeedbackText(loading, api.translations.loading)
+    }
     // 表单出口可缺省
-    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+    this.hiddenInputs.sync(this.getPart('hidden-input'), api.value.map(value =>
+      api.getHiddenInputProps({ value }) as Record<string, unknown>))
 
     // 属性先落，再填显示文字
     const valueText = this.getPart('value-text')
@@ -346,13 +480,31 @@ export class XhTreeSelectElement extends XhElement {
     }
     putAll('item', ITEM_SELECTOR, node => api.getItemProps(node))
     putAll('item-text', ITEM_SELECTOR, node => api.getItemTextProps(node))
-    putAll('item-indicator', ITEM_SELECTOR, node => api.getItemIndicatorProps(node))
+    putAll('item-indicator', `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`, node => api.getItemIndicatorProps(node))
     putAll('branch', BRANCH_SELECTOR, node => api.getBranchProps(node))
     putAll('branch-control', BRANCH_SELECTOR, node => api.getBranchControlProps(node))
     putAll('branch-trigger', BRANCH_SELECTOR, node => api.getBranchTriggerProps(node))
     putAll('branch-indicator', BRANCH_SELECTOR, node => api.getBranchIndicatorProps(node))
     putAll('branch-text', BRANCH_SELECTOR, node => api.getBranchTextProps(node))
     putAll('branch-content', BRANCH_SELECTOR, node => api.getBranchContentProps(node))
+    for (const branch of this.getParts('branch')) {
+      const node = this.nodeOf(branch, BRANCH_SELECTOR)
+      if (api.branchLoadState(node.value) == null)
+        continue
+      const feedback = [
+        ['branch-loading', 'div', api.getBranchLoadingProps(node), api.translations.loading],
+        ['branch-error', 'div', api.getBranchErrorProps(node), api.translations.branchError],
+        ['branch-retry-trigger', 'button', api.getBranchRetryTriggerProps(node), api.translations.retry],
+        ['branch-empty', 'div', api.getBranchEmptyProps(node), api.translations.branchEmpty],
+      ] as const
+      for (const [name, tag, props, text] of feedback) {
+        const el = this.ensureFeedback(branch, name, tag)
+        if (!el)
+          continue
+        this.spreader.spread(el, props as Record<string, unknown>)
+        this.fillFeedbackText(el, text)
+      }
+    }
 
     // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
@@ -370,9 +522,11 @@ export class XhTreeSelectElement extends XhElement {
       this.setPartHidden(el, !api.isExpanded(this.nodeOf(el, BRANCH_SELECTOR).value))
 
     this.bars.wire()
+    this.portal.sync(this.exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()
@@ -381,5 +535,6 @@ export class XhTreeSelectElement extends XhElement {
       this.setPartHidden(this.getPart('content'), true)
     // 层随机器停机一并撤掉，此处不再管
     this.config = null // 重连时 ensureConfig 重建
+    this.renderedNodeCount = -1
   }
 }

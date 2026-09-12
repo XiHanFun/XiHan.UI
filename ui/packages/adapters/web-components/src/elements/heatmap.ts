@@ -14,7 +14,7 @@ import type {
   HeatmapVariant,
 } from '@xihan-ui/headless'
 import { DATA_PART, DATA_SCOPE } from '@xihan-ui/core'
-import { buildHeatmapGrid, connectHeatmap, HEATMAP_LEGEND_TEXT, heatmapAnatomy, heatmapMachine, heatmapMeta } from '@xihan-ui/headless'
+import { buildHeatmapGrid, connectHeatmap, HEATMAP_LEGEND_TEXT, heatmapAnatomy, heatmapMachine, heatmapMeta, normalizeHeatmapNumber, normalizeHeatmapString } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -26,25 +26,10 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 数字属性：属性缺席或空串即 undefined，交回 connect 定缺省。
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
-/** 角色节点上作者写的 value，解不出数字即当没写。 */
-function numberOf(el: HTMLElement): number | undefined {
-  const raw = el.getAttribute('value')
-  if (raw == null || raw === '')
-    return undefined
-  const parsed = Number(raw)
-  return Number.isFinite(parsed) ? parsed : undefined
-}
-
-/** 角色节点上作者写的 value，空串即当没写。 */
-function stringOf(el: HTMLElement): string | undefined {
-  const raw = el.getAttribute('value')
-  return raw == null || raw === '' ? undefined : raw
-}
-
 /** 往上找最近的某个角色节点，取它写着的 value：块把月份传给行，行把行身份传给格子。 */
 function ancestorValue(el: HTMLElement, part: string): string | undefined {
   const host = el.parentElement?.closest<HTMLElement>(`[${DATA_SCOPE}="heatmap"][${DATA_PART}="${part}"]`)
-  return host == null ? undefined : stringOf(host)
+  return normalizeHeatmapString(host?.getAttribute('value'))
 }
 
 /**
@@ -192,10 +177,10 @@ export class XhHeatmapElement extends XhElement {
   /** 作者写在行上的身份，按形态翻成连接层认得的那一组坐标。 */
   private rowProps(el: HTMLElement, variant: HeatmapVariant): HeatmapRowProps {
     if (variant === 'matrix')
-      return { row: stringOf(el) }
+      return { row: normalizeHeatmapString(el.getAttribute('value')) }
     if (variant === 'month')
-      return { month: ancestorValue(el, 'month-block'), week: numberOf(el) }
-    return { weekDay: numberOf(el) }
+      return { month: ancestorValue(el, 'month-block'), week: normalizeHeatmapNumber(el.getAttribute('value')) }
+    return { weekDay: normalizeHeatmapNumber(el.getAttribute('value')) }
   }
 
   protected wire(): void {
@@ -219,13 +204,13 @@ export class XhHeatmapElement extends XhElement {
       this.spreader.spread(el, api.getRowProps(this.rowProps(el, variant)) as Record<string, unknown>)
 
     for (const el of this.getParts('week-day'))
-      this.spreader.spread(el, api.getWeekDayProps({ weekDay: numberOf(el) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getWeekDayProps({ weekDay: normalizeHeatmapNumber(el.getAttribute('value')) }) as Record<string, unknown>)
 
     for (const el of this.getParts('month-label'))
       this.spreader.spread(el, api.getMonthLabelProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
 
     for (const el of this.getParts('row-label'))
-      this.spreader.spread(el, api.getRowLabelProps({ value: stringOf(el) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getRowLabelProps({ value: normalizeHeatmapString(el.getAttribute('value')) }) as Record<string, unknown>)
 
     for (const el of this.getParts('column-label'))
       this.spreader.spread(el, api.getColumnLabelProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
@@ -242,9 +227,9 @@ export class XhHeatmapElement extends XhElement {
 
     // 两端那两个字：value 写 low 或 high，不写即当起点那一端
     for (const el of this.getParts('legend-label'))
-      this.spreader.spread(el, api.getLegendLabelProps({ bound: stringOf(el) === 'high' ? 'high' : 'low' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getLegendLabelProps({ bound: normalizeHeatmapString(el.getAttribute('value')) === 'high' ? 'high' : 'low' }) as Record<string, unknown>)
 
     for (const el of this.getParts('legend-item'))
-      this.spreader.spread(el, api.getLegendItemProps({ level: numberOf(el) ?? 0 }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getLegendItemProps({ level: normalizeHeatmapNumber(el.getAttribute('value')) ?? 0 }) as Record<string, unknown>)
   }
 }

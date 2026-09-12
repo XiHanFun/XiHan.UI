@@ -3,9 +3,11 @@ import type { CalendarSchema, CalendarSelectionMode, CalendarView } from '../cal
 import type { DateFieldSchema, DateGranularity, DateSegmentSet } from '../date-field'
 import type { DatePickerSchema, DatePickerValueSource } from './date-picker.types'
 import { getLocalTimeZone, today } from '@internationalized/date'
-import { createDismissLayer, createFocusScope, itemValue, resetDeclaredValue, resolveLocale, setup } from '@xihan-ui/core'
+import { itemValue, resetDeclaredValue, resolveLocale, setup } from '@xihan-ui/core'
 import { calendarAnatomy, calendarPeriodStart, calendarWeekRange, parseCalendarDate } from '../calendar'
+import { toArray as toValues } from '../shared/array'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
+import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { datePickerDatePart, datePickerJoinDateTime, datePickerTimePart } from './date-picker.time'
 
 const { createMachine, guards } = setup<DatePickerSchema>()
@@ -38,13 +40,6 @@ export function datePickerSegmentSet(
 
 /** 日期格子的 CSS 选择器，取自日历解剖。 */
 const CELL_TRIGGER_SELECTOR = calendarAnatomy.build()['cell-trigger'].selector
-
-/** 裸串归一为单元素数组；undefined 必须原样透传，受控与否靠它区分。 */
-function toValues(input: string | string[] | undefined): string[] | undefined {
-  if (input === undefined)
-    return undefined
-  return typeof input === 'string' ? [input] : [...input]
-}
 
 /** 按字典序比较 ISO 日期串（YYYY-MM-DD 定长补零，字典序即时间序）。 */
 function compareIso(a: string, b: string): number {
@@ -322,12 +317,15 @@ export const datePickerMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     position: null,
     getAnchorEl: () => null,
     getFloatingEl: () => null,
     getContentEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
+  effects: ['trackLayer'],
   // 开合受控（给定 open prop）时用户事件只发意图、不自改状态；宿主写回 open 后由 watch
   // 派发 CONTROLLED.* 回写状态
   watch: ({ track, prop, action }) => {
@@ -359,8 +357,8 @@ export const datePickerMachine = createMachine({
     open: {
       // 焦点域靠这个值去活 DOM 里找落点格子；钻到哪一层也一并拨回作者要的那一档
       entry: ['focusSelectedDay', 'resetActiveView'],
-      // 进入顺序：定位 → 消解 + 焦点；退出时逆序拆，焦点归还发生在消解层撤销之后
-      effects: ['trackPosition', 'trackLayer'],
+      // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackPosition'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
@@ -495,98 +493,70 @@ export const datePickerMachine = createMachine({
     },
     effects: {
       // 引擎订阅的返回值即 cleanup；位置结果写进 context 供 connect 读
-      trackPosition: ({ refs, prop, context, flush }) => {
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
+        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
+        engine: refs.get('position'),
+        flush,
         // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
         // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
-        context.set('position', null)
-        const engine = refs.get('position')
-        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
-        if (!engine)
-          return undefined
+        clear: () => context.set('position', null),
+        getAnchor: () => refs.get('getAnchorEl')(),
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? DATE_PICKER_DEFAULT_PLACEMENT,
+          offset: prop('offset') ?? OVERLAY_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+          dir: prop('dir'),
+          // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+          size: true,
+        }),
+        onResult: result => context.set('position', result),
+      }),
 
-        let stop: (() => void) | undefined
-        let disposed = false
-
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden（高度为 0），
-        // 此时算出的坐标会少掉浮层自身尺寸
-        flush(() => {
-          if (disposed)
-            return
-          const anchor = refs.get('getAnchorEl')()
-          const floating = refs.get('getFloatingEl')()
-          if (!anchor || !floating)
-            return
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? DATE_PICKER_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? OVERLAY_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-              dir: prop('dir'),
-              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
-              size: true,
+      // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
+      trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
+        let reactivateFocus: (() => void) | null = null
+        return trackPresenceResources({
+          presence: () => refs.get('presence'),
+          open: () => state.get() === 'open',
+          track,
+          acquire: () => trackOverlayLayer({
+            // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
+            config: refs.get('config'),
+            registerLayer: refs.get('registerLayer'),
+            flush,
+            active: () => state.get() === 'open',
+            onDismiss: overlayCloseOnDismiss(send),
+            focusScope: {
+              // 每次读最新 ref，容器晚一拍就位也能命中
+              container: () => refs.get('getContentEl')(),
+              // 落点显式指定为聚焦日那一格，交给 Tab 序列探测会停在第一个可聚焦元素。
+              // 每次求值都现查：content 仍带 hidden 的那一帧返回 null，焦点域会重试到 DOM 就位
+              initialFocus: () => {
+                // 点输入行展开:焦点本来就在某个段位上,把它原样交回去——焦点域一拿到非空落点
+                // 就认账,于是既不搬走焦点,也不会退回去聚焦浮层里的头一个可聚焦元素
+                if (!context.get('moveFocusIn')) {
+                  const anchor = refs.get('getAnchorEl')()
+                  const active = refs.get('config')?.scope.getActiveElement()
+                  if (anchor && active instanceof HTMLElement && anchor.contains(active))
+                    return active
+                }
+                return findDatePickerCellEl(refs.get('getContentEl')(), context.get('focusedValue'))
+              },
+              restoreFocus: () => context.get('returnFocus'),
+              onReactivate: reactivate => reactivateFocus = reactivate,
             },
-            result => context.set('position', result),
-          )
-        })
-
-        return () => {
-          disposed = true
-          stop?.()
-        }
-      },
-
-      // 层的入栈出栈与消解层、焦点域同生命周期，绑在同一个效应里。
-      // 层只能在展开期间入栈：消解层只让栈顶响应 Escape，常驻栈里会堵死其下各层的 Escape。
-      trackLayer: ({ refs, context, send }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
-        // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
-        if (!config || !registerLayer)
-          return undefined
-
-        const { layer, dispose: disposeLayer } = registerLayer()
-
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: reason =>
-            send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
-        })
-
-        const focus = createFocusScope({
-          config,
-          layer,
-          // 每次读最新 ref，容器晚一拍就位也能命中
-          container: () => refs.get('getContentEl')(),
-          // 日历不陷焦点也不回绕：Tab 能走出去，走出去由消解层判定是否关闭
-          trapped: () => false,
-          loop: false,
-          // 落点显式指定为聚焦日那一格，交给 Tab 序列探测会停在第一个可聚焦元素。
-          // 每次求值都现查：content 仍带 hidden 的那一帧返回 null，焦点域会重试到 DOM 就位
-          initialFocus: () => {
-            // 点输入行展开:焦点本来就在某个段位上,把它原样交回去——焦点域一拿到非空落点
-            // 就认账,于是既不搬走焦点,也不会退回去聚焦浮层里的头一个可聚焦元素
-            if (!context.get('moveFocusIn')) {
-              const anchor = refs.get('getAnchorEl')()
-              const active = config.scope.getActiveElement()
-              if (anchor && active instanceof HTMLElement && anchor.contains(active))
-                return active
-            }
-            return findDatePickerCellEl(refs.get('getContentEl')(), context.get('focusedValue'))
+          }),
+          onReopen: () => {
+            const activate = reactivateFocus
+            flush(() => scope.getWin().requestAnimationFrame(() => {
+              if (state.get() === 'open' && reactivateFocus === activate)
+                activate?.()
+            }))
           },
-          restoreFocus: () => context.get('returnFocus'),
         })
-
-        // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈
-        return () => {
-          focus.dispose()
-          dismiss.dispose()
-          disposeLayer()
-        }
       },
     },
   },

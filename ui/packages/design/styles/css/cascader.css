@@ -6,11 +6,20 @@
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='cascader'][data-part='positioner'] {
+    /* 落定那一侧的可用宽度，由定位引擎经内联自定义属性写进来，列区据此夹住行内轴；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+    --xh-_cascader-available-w: 100vw;
+    /* 当前浮层只接受自己的落位方向，不叠加祖先的位移。 */
+    --xh-_overlay-enter-up: 0;
+    --xh-_overlay-enter-down: 0;
+    --xh-_overlay-enter-left: 0;
+    --xh-_overlay-enter-right: 0;
+
     /* 列区的自绘条浮在内容之上：轨道不上底色，实色轨道会在列区下缘糊出一条灰带 */
     --xh-scrollbar-track-bg: transparent;
 
     position: fixed;
-    z-index: var(--xh-cascader-layer, var(--xh-layer-popover));
+    z-index: var(--xh-cascader-layer, var(--xh-_layer, var(--xh-layer-popover)));
     /* 空壳不吃指针，交互只发生在 content 里 */
     pointer-events: none;
   }
@@ -20,26 +29,20 @@
     visibility: hidden;
   }
 
-  /* 缩放原点与进场位移按落定的那一侧给：列区从贴着盒的那条边涨开、沿主轴退让一小段。
-     两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
-     origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+  /* 位移遵循实际落位的物理方向，不随书写方向翻转。 */
   [data-scope='cascader'][data-part='positioner'][data-placement^='top'] {
-    --xh-_overlay-origin-y: 100%;
     --xh-_overlay-enter-down: 1;
   }
 
   [data-scope='cascader'][data-part='positioner'][data-placement^='bottom'] {
-    --xh-_overlay-origin-y: 0;
     --xh-_overlay-enter-up: 1;
   }
 
   [data-scope='cascader'][data-part='positioner'][data-placement^='left'] {
-    --xh-_overlay-origin-x: 100%;
     --xh-_overlay-enter-right: 1;
   }
 
   [data-scope='cascader'][data-part='positioner'][data-placement^='right'] {
-    --xh-_overlay-origin-x: 0;
     --xh-_overlay-enter-left: 1;
   }
 
@@ -70,12 +73,6 @@
     /* 强调色随语气走，只落在勾选标记上；没写 data-tone 时退回品牌色 */
     --xh-_cascader-accent: var(--xh-_tone, var(--xh-fg-brand));
 
-    /* 选中条目的文字色随语气走，没写 data-tone 时退回品牌强调色 */
-    --xh-_cascader-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
-
-    /* 展开路径的底色：随语气走淡底，没写 data-tone 时退回品牌淡底 */
-    --xh-_cascader-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-
     /* 聚焦环恒用固定环色；校验失败时换成告警环色 */
     --xh-_cascader-ring: var(--xh-ring-focus);
   }
@@ -85,6 +82,10 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-cascader-gap, var(--xh-space-1));
+
+    /* 父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+    min-inline-size: min(var(--xh-cascader-control-min-w, var(--xh-control-min-w)), 100%);
+    max-inline-size: 100%;
   }
 
   /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，作者手动收起时要自己还回去 */
@@ -161,7 +162,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--xh-cascader-control-gap, var(--xh-_cascader-gap));
-    min-inline-size: var(--xh-cascader-control-min-w, var(--xh-control-min-w));
+    min-inline-size: min(var(--xh-cascader-control-min-w, var(--xh-control-min-w)), 100%);
     block-size: var(--xh-cascader-control-h, var(--xh-_cascader-h));
     padding-inline: var(--xh-cascader-control-px, var(--xh-_cascader-px));
     border: var(--xh-stroke-thin) solid var(--xh-cascader-control-border, var(--xh-_cascader-border));
@@ -338,20 +339,35 @@
   /* 级联的骨架就在这一条上：列沿书写方向并排，一层一列。
      横向随列数增减，因此不设固定宽度，只给每列自己的宽度 */
   [data-scope='cascader'][data-part='content'] {
+    position: relative;
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    max-inline-size: var(--xh-cascader-content-max-w, var(--xh-overlay-max-w-xl));
-    border: var(--xh-stroke-thin) solid var(--xh-cascader-content-border, var(--xh-border-default));
+    /* 静态档与落位后的可用宽度取小：列多起来时外框自己就宽过了可用区，
+       盒内不产生溢出，下面那条 overflow-x 便一直没事可做，最右那一列落在屏外点不到 */
+    max-inline-size: min(var(--xh-cascader-content-max-w, var(--xh-overlay-max-w-xl)), var(--xh-_cascader-available-w));
+    border: var(--xh-stroke-thin) solid var(--xh-cascader-content-border, var(--xh-material-frosted-border));
     border-radius: var(--xh-cascader-content-radius, var(--xh-shape-surface));
-    background: var(--xh-cascader-content-bg, var(--xh-bg-surface));
-    color: var(--xh-cascader-content-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-cascader-content-shadow, var(--xh-elevation-floating));
+    background: var(--xh-cascader-content-bg, var(--xh-material-frosted-bg));
+    color: var(--xh-cascader-content-fg, var(--xh-material-frosted-fg));
+    box-shadow: var(--xh-cascader-content-shadow, var(--xh-material-frosted-shadow));
+    -webkit-backdrop-filter: var(--xh-cascader-content-backdrop, var(--xh-material-frosted-backdrop));
+    backdrop-filter: var(--xh-cascader-content-backdrop, var(--xh-material-frosted-backdrop));
     /* 列多到放不下时整体横向滚动；纵向溢出归每一列自己 */
     overflow-x: auto;
     pointer-events: auto;
-    /* 进退场的缩放锚在贴着盒的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
-    transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
+  }
+
+  /* 唯一外壳的内侧顶光；列和状态部件不另画材质面。 */
+  [data-scope='cascader'][data-part='content']::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: var(--xh-stroke-thin);
+    border-radius: inherit;
+    background: var(--xh-cascader-content-highlight, var(--xh-material-frosted-highlight));
+    pointer-events: none;
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -366,15 +382,15 @@
   }
 
   [data-scope='cascader'][data-part='content'][data-state='open'] {
-    animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
     /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
-    will-change: opacity, scale, translate;
+    will-change: opacity, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
      免得动画结束到真收起之间闪一下原样 */
   [data-scope='cascader'][data-part='content'][data-state='closed'] {
-    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 一列：宽度由内容撑出、设下限防塌，高度定死——切换展开路径时浮层不上下跳动，
@@ -400,13 +416,7 @@
   /* 分隔线画在列的起始缘，且第一列不画：这样列数增减时线永远只出现在列与列之间。
      用逻辑属性，rtl 下自动跑到另一侧 */
   [data-scope='cascader'][data-part='column'] + [data-scope='cascader'][data-part='column'] {
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-cascader-column-divider, var(--xh-border-subtle));
-  }
-
-  /* 焦点落在根列上只有一种情形：指针打开、无选中值、还没有任何条目当锚点。
-     那一刻它认领着 Tab 位，环画在列内沿；有锚点时环长在条目上，列不再画 */
-  [data-scope='cascader'][data-part='column'][tabindex='0']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-cascader-column-divider, var(--xh-material-frosted-separator));
   }
 
   [data-scope='cascader'][data-part='column']:not([tabindex='0']):focus-visible {
@@ -435,7 +445,7 @@
     display: block;
     padding-block: var(--xh-cascader-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-cascader-group-label-px, var(--xh-_cascader-row-px));
-    color: var(--xh-cascader-group-label-fg, var(--xh-fg-subtle));
+    color: var(--xh-cascader-group-label-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-cascader-group-label-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-cascader-group-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
@@ -458,7 +468,7 @@
     padding-block: var(--xh-cascader-item-py, var(--xh-_cascader-row-py));
     padding-inline: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
     border-radius: var(--xh-cascader-item-radius, var(--xh-shape-control));
-    color: var(--xh-cascader-item-fg, var(--xh-fg-default));
+    color: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
     font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
     line-height: var(--xh-cascader-item-leading, var(--xh-leading-normal));
@@ -476,10 +486,10 @@
     display: none;
   }
 
-  /* 一列开幕：条目自上而下逐条冒出来。列从 hidden 转回来、或换了展开路径把另一批条目放出来时，
+  /* 一列开幕：条目自上而下逐条淡入。列从 hidden 转回来、或换了展开路径把另一批条目放出来时，
      这段动画重新起跑。backwards 让每条在自己那份延迟里保持起始帧 */
   [data-scope='cascader'][data-part='column'] [data-part='item'] {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) backwards;
   }
 
   /* 交错的间隔：第二条起逐级往后推，第六条起统一钉在第五级，条目再多也不会拖出一条越来越慢的尾巴。
@@ -504,35 +514,33 @@
     animation-delay: calc(5 * var(--xh-motion-stagger-step));
   }
 
-  /* 底色分两档、靠色相分家：悬停与键盘锚点是中性灰轻档，展开路径是品牌淡底加粗。
-     hover 恒中性灰、不接语气槽——两档同色相的话路径就认不出来了。
-     悬停展开把路径挪走后留在原地的锚点降回轻档，每列至多一条路径高亮 */
-  [data-scope='cascader'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+  /* 列项与搜索结果共用一档中性反馈；选中由对号承担，不借背景或文字强调。 */
+  [data-scope='cascader'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted], :focus-visible) {
     background: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
   }
 
-  /* 必须排在轻档之后：锚点走到路径上时同特指度靠书写顺序压过轻档 */
-  [data-scope='cascader'][data-part='item']:not([data-disabled])[data-in-path] {
-    background: var(--xh-cascader-item-bg-active, var(--xh-_cascader-active-bg));
-    font-weight: var(--xh-cascader-item-active-font-weight, var(--xh-font-weight-semibold));
-  }
-
-  /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色强档归展开路径、轻档归悬停，
-     三者因此能同时看见 */
-  [data-scope='cascader']:is([data-part='item'], [data-part='search-item'])[data-state='checked'] {
-    color: var(--xh-cascader-item-fg-selected, var(--xh-_cascader-selected-fg));
-    font-weight: var(--xh-cascader-item-selected-font-weight, var(--xh-font-weight-medium));
-  }
-
-  /* 环往内收：行是撑满列宽的，环画在外沿会被裁掉 */
+  /* 键盘焦点的实体中性底要当帧落下，避免背景过渡期间焦点位置发虚。 */
   [data-scope='cascader'][data-part='item']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
+    transition-property: color;
+  }
+
+  /* 展开路径只保留同一中性底与正常字重，不叠品牌底，也不把路径误读成已选择。 */
+  [data-scope='cascader'][data-part='item']:not([data-disabled])[data-in-path] {
+    background: var(--xh-cascader-item-bg-active, var(--xh-bg-subtle));
+    font-weight: var(--xh-cascader-item-active-font-weight, var(--xh-font-weight-regular));
+  }
+
+  /* 单选、多选与搜索结果都由末端对号表示选中；正文保留常态颜色与字重。 */
+  [data-scope='cascader'][data-part='item'][data-state='checked'] {
+    color: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
+    font-weight: var(--xh-cascader-item-selected-font-weight, var(--xh-font-weight-regular));
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
      所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
   [data-scope='cascader'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
+    cursor: not-allowed;
   }
 
   /* 分支条目行尾画右向小箭头：不点开也看得出还有下一级。位置由 item-text 的 flex:1 顶到行尾。
@@ -549,7 +557,12 @@
   }
 
   [data-scope='cascader'][data-part='item'][data-branch][data-disabled]::after {
-    border-color: var(--xh-fg-disabled);
+    background-color: var(--xh-fg-disabled);
+  }
+
+  [data-scope='cascader'][data-part='item'][data-branch]:dir(rtl)::after {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-left);
+    mask-image: var(--xh-glyph-mark-chevron-left);
   }
 
   [data-scope='cascader'][data-part='item-text'] {
@@ -566,7 +579,9 @@
     flex: none;
     align-items: center;
     justify-content: center;
+    margin-inline-start: auto;
     inline-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-cascader-item-indicator-fg, var(--xh-_cascader-accent));
     visibility: hidden;
   }
@@ -623,7 +638,7 @@
     padding-block: var(--xh-cascader-input-py, var(--xh-space-2));
     padding-inline: var(--xh-cascader-input-px, var(--xh-control-px-md));
     border: none;
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-search-divider, var(--xh-border-subtle));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-search-divider, var(--xh-material-frosted-separator));
     border-start-start-radius: inherit;
     border-start-end-radius: inherit;
     background: none;
@@ -631,10 +646,6 @@
     font-family: inherit;
     font-size: var(--xh-cascader-input-font-size, var(--xh-_cascader-font-size));
     line-height: var(--xh-leading-normal);
-  }
-
-  [data-scope='cascader'][data-part='input']:focus-visible {
-    outline: none;
   }
 
   [data-scope='cascader'][data-part='input'][hidden] {
@@ -684,32 +695,78 @@
 
   /* 候选与列内条目同一套行度量，虚拟高亮与悬停同用轻档 */
   [data-scope='cascader'][data-part='search-item'] {
+    position: relative;
     padding-block: var(--xh-cascader-item-py, var(--xh-_cascader-row-py));
     padding-inline: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
+    /* 搜索结果没有独立 indicator 部件，末端为同一枚皮肤对号预留固定轨。 */
+    padding-inline-end: calc(
+      var(--xh-cascader-item-px, var(--xh-_cascader-row-px)) +
+        var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size)) +
+        var(--xh-cascader-item-gap, var(--xh-_cascader-gap))
+    );
     overflow: hidden;
     border-radius: var(--xh-cascader-item-radius, var(--xh-shape-control));
-    color: var(--xh-cascader-item-fg, var(--xh-fg-default));
+    color: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
     font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
     line-height: var(--xh-cascader-item-leading, var(--xh-leading-normal));
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='cascader'][data-part='search-item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+  [data-scope='cascader'][data-part='search-item']:not([data-disabled]):is(
+      :hover,
+      [data-highlighted],
+      :focus-visible
+    ) {
     background: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
   }
 
-  /* 焦点恒在输入框，环只跟虚拟高亮走，悬停不画；往内收，行是撑满列宽的，环画在外沿会被裁掉 */
-  [data-scope='cascader'][data-part='search-item']:not([data-disabled])[data-highlighted] {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+  [data-scope='cascader'][data-part='search-item']:focus-visible {
+    transition-property: color;
+  }
+
+  [data-scope='cascader'][data-part='search-item'][data-state='checked'] {
+    color: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
+    font-weight: var(--xh-cascader-item-selected-font-weight, var(--xh-font-weight-regular));
   }
 
   [data-scope='cascader'][data-part='search-item'][data-disabled] {
     color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 自动生成的搜索结果复用 item-indicator 的尺寸、颜色和对号字形，不新增第二套作者槽。 */
+  [data-scope='cascader'][data-part='search-item']::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
+    inline-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
+    translate: 0 -50%;
+    background-color: var(--xh-cascader-item-indicator-fg, var(--xh-_cascader-accent));
+    visibility: hidden;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  }
+
+  [data-scope='cascader'][data-part='search-item'][data-state='checked']::after {
+    visibility: visible;
+  }
+
+  [data-scope='cascader'][data-part='search-item'][data-state='indeterminate']::after {
+    visibility: visible;
+    -webkit-mask-image: var(--xh-glyph-mark-minus);
+    mask-image: var(--xh-glyph-mark-minus);
+  }
+
+  [data-scope='cascader'][data-part='search-item'][data-disabled]::after {
+    background-color: var(--xh-fg-disabled);
   }
 
   [data-scope='cascader'][data-part='search-item'][hidden] {
@@ -730,7 +787,7 @@
     min-inline-size: var(--xh-cascader-column-min-w, 7rem);
     min-block-size: var(--xh-cascader-empty-min-h, 5rem);
     padding: var(--xh-cascader-empty-p, var(--xh-space-3));
-    color: var(--xh-cascader-empty-fg, var(--xh-fg-subtle));
+    color: var(--xh-cascader-empty-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
   }
 
@@ -747,7 +804,7 @@
     min-inline-size: var(--xh-cascader-loading-min-w, var(--xh-cascader-column-min-w, 7rem));
     min-block-size: var(--xh-cascader-loading-min-h, 5rem);
     padding: var(--xh-cascader-loading-p, var(--xh-space-3));
-    color: var(--xh-cascader-loading-fg, var(--xh-fg-subtle));
+    color: var(--xh-cascader-loading-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-cascader-loading-font-size, var(--xh-_cascader-font-size));
   }
 
@@ -791,17 +848,29 @@
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
     mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   }
+
+  @media (forced-colors: active) {
+    /* 蒙版底色会被系统改成 Canvas 而消失；明确用系统前景保住箭头、对号与半选横线。 */
+    [data-scope='cascader'][data-part='item'][data-branch]::after,
+    [data-scope='cascader'][data-part='item-indicator']:empty::before,
+    [data-scope='cascader'][data-part='search-item']::after {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+    }
+
+    [data-scope='cascader'][data-part='item'][data-branch][data-disabled]::after,
+    [data-scope='cascader'][data-part='item-indicator'][data-disabled]:empty::before,
+    [data-scope='cascader'][data-part='search-item'][data-disabled]::after {
+      background-color: GrayText;
+    }
+  }
 }
 
 @layer xihan.motion {
-  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-  /* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
-     四个都没写就退回原地缩放 */
-  @keyframes xh-overlay-pop-in {
+  /* 关键帧随皮肤自带，独立引入时仍有完整的短位移动效。 */
+  @keyframes xh-overlay-slide-in {
     from {
       opacity: 0;
-      scale: var(--xh-motion-scale-enter);
       translate:
         calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
         calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
@@ -809,33 +878,32 @@
 
     to {
       opacity: 1;
-      scale: 1;
       translate: 0 0;
     }
   }
 
-  /* 列里的条目原地涨开，不带方向位移：浮层壳已经沿主轴挪过一段，条目再挪一次就是两段位移 */
-  @keyframes xh-pop-in {
+  /* 浮层已经移动，列项只淡入，不再对文字叠加缩放。 */
+  @keyframes xh-fade-in {
     from {
       opacity: 0;
-      scale: var(--xh-motion-scale-enter);
     }
 
     to {
       opacity: 1;
-      scale: 1;
     }
   }
 
-  @keyframes xh-pop-out {
+  @keyframes xh-overlay-slide-out {
     from {
       opacity: 1;
-      scale: 1;
+      translate: 0 0;
     }
 
     to {
       opacity: 0;
-      scale: var(--xh-motion-scale-exit);
+      translate:
+        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
     }
   }
 

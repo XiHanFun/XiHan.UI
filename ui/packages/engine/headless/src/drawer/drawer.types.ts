@@ -1,5 +1,5 @@
-import type { Cleanup, Layer, MachineSchema, OverlayBackdropVariant, OverlayCloseReason, PropTypes, RuntimeConfig, Size } from '@xihan-ui/core'
-import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { OverlayBackdropVariant, OverlayCloseReason, PropTypes, Size } from '@xihan-ui/core'
+import type { DialogRefs, DialogSchema } from '../dialog'
 
 /** 抽屉贴住的那条视口边，也是滑入方向的来源。 */
 export type DrawerSide = 'top' | 'right' | 'bottom' | 'left'
@@ -8,16 +8,8 @@ export interface DrawerTranslations {
   close: string
 }
 
-// 适配器在挂载前填入 DOM 环境与元素 getter；纯逻辑测试下保持缺省（副作用不挂）。
-export interface DrawerRefs {
-  config: RuntimeConfig | null
-  /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
-  registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
-  presence: PresenceHandle | null
-  getContentEl: () => HTMLElement | null
-  getTriggerEl: () => HTMLElement | null
-  branches: () => Element[]
-}
+/** 抽屉跑对话框那台机器，DOM 环境与元素 getter 这一组就是它的。 */
+export type DrawerRefs = DialogRefs
 
 export interface DrawerOpenChangeDetails {
   open: boolean
@@ -28,10 +20,18 @@ export interface DrawerOpenChangeDetails {
   reason?: OverlayCloseReason
 }
 
-export interface DrawerSchema extends MachineSchema {
+/**
+ * 抽屉的 schema：除 props 外整份取自对话框——状态、事件、守卫、动作、效应与 refs 都是它的。
+ * props 这一层自己写：多出 side 与 contained，文案与开合回调换成抽屉自己的形状。
+ */
+export interface DrawerSchema extends Omit<DialogSchema, 'props'> {
   props: {
     open?: boolean
     defaultOpen?: boolean
+    /**
+     * 是否启用模态约束，默认 true。false 时不提供遮罩，页面其余部分保持可交互；
+     * 展开期间可以切换，滚动锁、背景失活与焦点陷阱会同步更新。
+     */
     modal?: boolean
     /**
      * 浮层挂在某个局部容器里而不是视口：遮罩与定位层从 fixed 换成 absolute，
@@ -54,22 +54,9 @@ export interface DrawerSchema extends MachineSchema {
     translations?: Partial<DrawerTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: DrawerOpenChangeDetails) => void
+    /** 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 */
+    onExitComplete?: () => void
   }
-  context: Record<string, never>
-  computed: Record<string, never>
-  refs: DrawerRefs
-  state: 'open' | 'closed'
-  event:
-    | { type: 'OPEN' }
-    | { type: 'TOGGLE' }
-    | { type: 'CLOSE', src?: 'esc' | 'close-trigger' | 'interact-outside' }
-    // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
-    | { type: 'CONTROLLED.OPEN' }
-    | { type: 'CONTROLLED.CLOSE' }
-  tag: never
-  guard: 'isOpenControlled'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen'
-  effect: 'trackOverlay'
 }
 
 export interface DrawerApi<T extends PropTypes = PropTypes> {

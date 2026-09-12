@@ -19,9 +19,25 @@ import {
 } from "@xihan-ui/vue";
 ```
 
-只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 915 个导出组件按组件分组列在[组件参考](../components/)里。
+只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 918 个导出组件按组件分组列在[组件参考](../components/)里。
 
 没有插件，不需要 `app.use()`。按名字 import 即可，`sideEffects: false` 让打包器摇掉没用到的部分。
+
+## 配置与视觉环境
+
+`provideXhConfig` 接收响应式配置。七轴视觉环境必须显式给出对应 DOM 根；嵌套 provide 自动接父控制器，局部 motion 不改全局 JS override：
+
+```ts
+provideXhConfig({
+  locale: "zh-CN",
+  visualEnvironment: {
+    root: workspaceElement,
+    initial: { mode: "dark", density: "compact", motion: "reduce" },
+  },
+});
+```
+
+物理 Portal 会由 Core 从该根桥接已解析七轴到实例壳，Vue 适配器不复制视觉状态。
 
 ## 事件与 v-model
 
@@ -52,6 +68,12 @@ emits: {
 ```
 
 具体的绑定名按组件而定：开关是 `v-model:checked`，浮层是 `v-model:open`，输入框是 `v-model:value`。
+
+## asChild 与事件取消
+
+支持 `asChild` 的部件可以把行为接到作者提供的单个子节点上。Fragment 会展开后检查，仅忽略空白、注释和条件占位；零个或多个可挂载子节点、元素旁并列的非空文本或数字都会明确报错，不会生成默认按钮或丢弃可见内容。需要默认按钮时移除 `asChild`，组合多个内容时提供一个实际宿主节点。
+
+作者写在部件或子节点上的事件处理器先执行；调用 `preventDefault()` 后，部件内部动作不再执行。作者的处理器数组仍按原顺序运行，`stopImmediatePropagation()` 仍可停止同节点后续处理器。普通回调保留全部参数，ref 的登记和清理不受事件取消影响。
 
 ## 受控与非受控
 
@@ -156,6 +178,12 @@ const { api } = useAccordion(
 | `onMount` / `onCleanup` | `onMounted` / `onBeforeUnmount`（不在组件内则立即执行 / 忽略） |
 
 `useMachine(machine, props, scope)` 把它包起来。props 传的是 getter 而不是对象，每次展开成新对象让机器的身份缓存失效——这样在模板里原地改某个 prop 也收得到。
+
+## 行为原语
+
+`@xihan-ui/vue/behavior` 单独提供滚动锁、悬停意图、滚动观察、贴底和连敲检索的 Vue 包装。`useHoverIntent` 到 mounted 后才读取模板 ref，并持续观察 trigger 与三个计时参数；trigger 暂时为 `null` 时释放旧绑定，节点重新出现后再建立。content getter 与回调现读当前响应式选项，不会因浮层内容挂载或普通闭包换代重启安全三角。选项对象本身也可传 ref 或 getter；显式类型使用该子入口的 `UseHoverIntentOptions`。
+
+`useScrollLock` 在组件 mounted 后才读取模板 ref，并以 post watcher 跟随 active；释放时先清本地句柄，清理抛错后再次激活仍可建立。active 为真期间不因配置对象更新重锁，关闭再开启才读取新配置。
 
 ## 背景层
 

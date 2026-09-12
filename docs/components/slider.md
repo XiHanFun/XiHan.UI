@@ -234,11 +234,49 @@ value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出�
 | `tick-label` | `data-passed` | ''（条件成立时才出现） |
 | `hidden-input` | `data-index` | String(thumb.index) |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-slider-gap` · `--xh-slider-label-fg` · `--xh-slider-label-font-size` · `--xh-slider-label-font-weight` · `--xh-slider-range-bg` · `--xh-slider-range-bg-invalid` · `--xh-slider-range-radius` · `--xh-slider-thumb-bg` · `--xh-slider-thumb-bg-invalid` · `--xh-slider-thumb-border` · `--xh-slider-thumb-radius` · `--xh-slider-thumb-scale-dragging` · `--xh-slider-thumb-shadow` · `--xh-slider-thumb-shadow-dragging` · `--xh-slider-thumb-size` · `--xh-slider-tick-bg` · `--xh-slider-tick-bg-active` · `--xh-slider-tick-label-fg` · `--xh-slider-tick-label-fg-active` · `--xh-slider-tick-label-font-size` · `--xh-slider-tick-label-gap` · `--xh-slider-tick-radius` · `--xh-slider-tick-size` · `--xh-slider-track-bg` · `--xh-slider-track-radius` · `--xh-slider-track-thickness` · `--xh-slider-value-text-bg` · `--xh-slider-value-text-fg` · `--xh-slider-value-text-font-size` · `--xh-slider-value-text-offset` · `--xh-slider-value-text-px` · `--xh-slider-value-text-py` · `--xh-slider-value-text-radius` · `--xh-slider-vertical-length`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-slider-control-gutter` | `control`<br>`root`<br>`tick-label` | `margin-inline` | `has([data-part='tick-label'])`<br>`orientation=horizontal` | `--xh-space-6` | slider 的 control、root、tick-label 部件 margin-inline 覆盖槽。 |
+| `--xh-slider-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | slider 的 root 部件 gap 覆盖槽。 |
+| `--xh-slider-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | slider 的 label 部件 color 覆盖槽。 |
+| `--xh-slider-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | slider 的 label 部件 font-size 覆盖槽。 |
+| `--xh-slider-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | slider 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-slider-range-bg` | `range` | `background` | `default` | `--xh-_tone` | slider 的 range 部件 background 覆盖槽。 |
+| `--xh-slider-range-bg-invalid` | `range` | `background` | `invalid` | `--xh-border-invalid` | slider 的 range 部件 background 覆盖槽。 |
+| `--xh-slider-range-radius` | `range` | `border-radius` | `default` | `--xh-shape-pill` | slider 的 range 部件 border-radius 覆盖槽。 |
+| `--xh-slider-thumb-bg` | `thumb` | `background` | `default` | `--xh-_tone` | slider 的 thumb 部件 background 覆盖槽。 |
+| `--xh-slider-thumb-bg-invalid` | `thumb` | `background` | `invalid` | `--xh-border-invalid` | slider 的 thumb 部件 background 覆盖槽。 |
+| `--xh-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-bg-surface` | slider 的 thumb 部件 border 覆盖槽。 |
+| `--xh-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-pill` | slider 的 thumb 部件 border-radius 覆盖槽。 |
+| `--xh-slider-thumb-scale-dragging` | `thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | slider 的 thumb 部件 scale 覆盖槽。 |
+| `--xh-slider-thumb-shadow` | `thumb` | `box-shadow` | `default` | `--xh-elevation-raised` | slider 的 thumb 部件 box-shadow 覆盖槽。 |
+| `--xh-slider-thumb-shadow-dragging` | `thumb` | `box-shadow` | `dragging` | `--xh-elevation-lifted` | slider 的 thumb 部件 box-shadow 覆盖槽。 |
+| `--xh-slider-thumb-size` | `control`<br>`root`<br>`thumb` | `block-size`<br>`inline-size`<br>`margin-block-end`<br>`margin-block-start`<br>`margin-inline-start` | `default`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`size=lg`<br>`size=sm` | `--xh-space-3`<br>`--xh-space-6`<br>`--xh-track-thumb-size` | slider 的 control、root、thumb 部件 block-size、inline-size、margin-block-end、margin-block-start、margin-inline-start 覆盖槽。 |
+| `--xh-slider-tick-bg` | `tick` | `background` | `default` | `--xh-border-strong` | slider 的 tick 部件 background 覆盖槽。 |
+| `--xh-slider-tick-bg-active` | `tick` | `background` | `passed` | `--xh-_tone` | slider 的 tick 部件 background 覆盖槽。 |
+| `--xh-slider-tick-label-fg` | `tick-label` | `color` | `default` | `--xh-fg-subtle` | slider 的 tick-label 部件 color 覆盖槽。 |
+| `--xh-slider-tick-label-fg-active` | `tick-label` | `color` | `passed` | `--xh-fg-default` | slider 的 tick-label 部件 color 覆盖槽。 |
+| `--xh-slider-tick-label-font-size` | `tick-label` | `font-size` | `default` | `--xh-text-caption-size` | slider 的 tick-label 部件 font-size 覆盖槽。 |
+| `--xh-slider-tick-label-gap` | `root`<br>`tick-label` | `margin-block-start`<br>`margin-inline-start` | `default`<br>`orientation=vertical` | `--xh-space-1` | slider 的 root、tick-label 部件 margin-block-start、margin-inline-start 覆盖槽。 |
+| `--xh-slider-tick-radius` | `tick` | `border-radius` | `default` | `--xh-shape-pill` | slider 的 tick 部件 border-radius 覆盖槽。 |
+| `--xh-slider-tick-size` | `tick` | `block-size`<br>`inline-size` | `default` | `--xh-space-1` | slider 的 tick 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-slider-track-bg` | `track` | `background` | `default` | `--xh-bg-subtle-active` | slider 的 track 部件 background 覆盖槽。 |
+| `--xh-slider-track-radius` | `track` | `border-radius` | `default` | `--xh-shape-pill` | slider 的 track 部件 border-radius 覆盖槽。 |
+| `--xh-slider-track-thickness` | `root`<br>`track` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical`<br>`size=lg`<br>`size=sm` | `--xh-space-1`<br>`--xh-space-2`<br>`--xh-track-thickness` | slider 的 root、track 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-slider-value-text-bg` | `value-text` | `background` | `default` | `--xh-_tone` | slider 的 value-text 部件 background 覆盖槽。 |
+| `--xh-slider-value-text-fg` | `value-text` | `color` | `default` | `--xh-_tone-on` | slider 的 value-text 部件 color 覆盖槽。 |
+| `--xh-slider-value-text-font-size` | `value-text` | `font-size` | `default` | `--xh-text-caption-size` | slider 的 value-text 部件 font-size 覆盖槽。 |
+| `--xh-slider-value-text-offset` | `value-text` | `margin-block-end`<br>`margin-inline` | `default`<br>`orientation=vertical` | `--xh-space-2` | slider 的 value-text 部件 margin-block-end、margin-inline 覆盖槽。 |
+| `--xh-slider-value-text-px` | `value-text` | `padding-inline` | `default` | `--xh-space-2` | slider 的 value-text 部件 padding-inline 覆盖槽。 |
+| `--xh-slider-value-text-py` | `value-text` | `padding-block` | `default` | `--xh-space-0_5` | slider 的 value-text 部件 padding-block 覆盖槽。 |
+| `--xh-slider-value-text-radius` | `value-text` | `border-radius` | `default` | `--xh-shape-control` | slider 的 value-text 部件 border-radius 覆盖槽。 |
+| `--xh-slider-vertical-length` | `control` | `block-size` | `orientation=vertical` | `10rem` | slider 的 control 部件 block-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

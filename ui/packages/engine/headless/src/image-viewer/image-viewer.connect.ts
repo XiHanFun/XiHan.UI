@@ -123,6 +123,9 @@ export function connectImageViewer<T extends PropTypes>(
       'aria-modal': 'true',
       // 当前图的 alt 就是最贴切的名字，没有再退到通用文案
       'aria-label': currentItem?.alt ?? label.content,
+      // 逻辑关闭先让内容退出交互与可访问树；Presence 仅负责延后视觉树和模态资源的释放。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       'data-state': stateAttr,
       'hidden': !open || undefined,
       'tabindex': -1,
@@ -214,9 +217,15 @@ export function connectImageViewer<T extends PropTypes>(
       },
     }),
 
+    // 不给 role=toolbar：那个角色承诺的是整条只占一个 Tab 位、条内靠方向键走。
+    // 这条带走不了那套——左右方向键与 Home/End 在这台上是翻页，条内走位一接管，
+    // 看片的主交互就从条里每颗钮上消失了。装什么进来也归作者，条里多一颗自带
+    // Tab 位的钮，「只占一位」当场不成立。
+    // 报 group：一组有名字的控件，名字无条件发，否则读屏念到的只是散落的钮。
+    // 真要那套走位就往里放一个 Toolbar，与 table 的控件带同一条路子
     getToolbarProps: () => normalize.element({
       ...parts.toolbar.attrs,
-      'role': 'toolbar',
+      'role': 'group',
       'aria-label': label.toolbar,
       'data-state': stateAttr,
     }),

@@ -60,7 +60,7 @@ function useNodeFocusReport(
   }, [service, el])
 }
 
-export interface XhTreeRootProps {
+export interface XhTreeRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   collection?: TreeNode[]
   /** 外框形态：surface 带描边与底色（缺省），plain 只留行。 */
   variant?: TreeVariant
@@ -91,12 +91,60 @@ export interface XhTreeRootProps {
   children?: SlotChildren<TreeRootSlotProps>
 }
 
-export function XhTreeRoot({ children, ...props }: XhTreeRootProps): ReactNode {
-  const ctx = useTree(withXhConfig('tree', props) as TreeProps)
+export function XhTreeRoot({
+  collection,
+  variant,
+  expandedValue,
+  defaultExpandedValue,
+  selection,
+  defaultSelection,
+  multiple,
+  leafOrientation,
+  cascade,
+  checkedStrategy,
+  expandOnClick,
+  disabled,
+  loading,
+  loop,
+  typeahead,
+  dir,
+  nodeDraggable,
+  allowDrop,
+  translations,
+  onExpandedValueChange,
+  onSelectionChange,
+  onNodeMove,
+  children,
+  ...rest
+}: XhTreeRootProps): ReactNode {
+  const ctx = useTree(withXhConfig('tree', {
+    collection,
+    variant,
+    expandedValue,
+    defaultExpandedValue,
+    selection,
+    defaultSelection,
+    multiple,
+    leafOrientation,
+    cascade,
+    checkedStrategy,
+    expandOnClick,
+    disabled,
+    loading,
+    loop,
+    typeahead,
+    dir,
+    nodeDraggable,
+    allowDrop,
+    translations,
+    onExpandedValueChange,
+    onSelectionChange,
+    onNodeMove,
+  }) as TreeProps)
   const api = ctx.api
   return (
     <TreeProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           visibleNodes: api.visibleNodes,
           expandedValue: api.expandedValue,

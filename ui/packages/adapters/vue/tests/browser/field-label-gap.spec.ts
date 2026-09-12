@@ -69,7 +69,7 @@ function inForm(layout: FormLayout): unknown {
   return h(
     XhFormRoot,
     { layout, labelWidth: 96 },
-    () => h(XhFormFieldGroup, { value: 'username' }, () => field()),
+    () => h(XhFormFieldGroup, { name: 'username' }, () => field()),
   )
 }
 

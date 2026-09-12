@@ -1,51 +1,54 @@
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type { SelectApi, SelectGroupProps, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
-import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { XhPortal } from '../../runtime/portal'
+import { slotIsPlainText } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideSelect, provideSelectGroup, provideSelectItem, provideSelectTag, useSelectContext, useSelectGroupContext, useSelectItemContext, useSelectTagContext } from './context'
 import { useSelect } from './use-select'
 
 type SelectProps = SelectSchema['props']
 
-/** 默认插槽的载荷：展开态、选中集合与显示文字、可见标签与被折起的个数，以及改展开、改值、清空、摘值四个动作。 */
+/** 默认插槽的载荷：展开态、选中集合与显示文字、可见标签与被折起的个数及其文字，以及改展开、改值、清空、摘值四个动作。 */
 export type SelectRootSlotProps = Pick<
   SelectApi,
-  'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
+  'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'overflowText' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
 >
 
-export const XhSelectRoot = defineComponent({
+export const XhSelectRoot = /* @__PURE__ */ defineComponent({
   name: 'XhSelectRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<SelectNode[]>, default: undefined },
+    collection: { type: Array as PropType<SelectNode[]> },
     /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
-    label: { type: String, default: undefined },
-    value: { type: [String, Array] as PropType<string | string[] | null>, default: undefined },
-    defaultValue: { type: [String, Array] as PropType<string | string[] | null>, default: undefined },
+    label: { type: String },
+    value: { type: [String, Array] as PropType<string | string[] | null> },
+    defaultValue: { type: [String, Array] as PropType<string | string[] | null> },
     multiple: Boolean,
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    disabled: Boolean,
+    disabled: { type: Boolean, default: undefined },
     /** 只读：浮层照常展开与浏览，但选中值改不动、也清不掉。 */
     readOnly: { type: Boolean, default: undefined },
     /** 自动渲染树里是否带清空按钮；手写部件不看它，写了节点即可清。 */
     clearable: Boolean,
     invalid: { type: Boolean, default: undefined },
     loading: { type: Boolean, default: undefined },
-    required: Boolean,
-    name: { type: String, default: undefined },
-    translations: { type: Object as PropType<SelectProps['translations']>, default: undefined },
-    maxTagCount: { type: Number, default: undefined },
-    placeholder: { type: String, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    required: { type: Boolean, default: undefined },
+    name: { type: String },
+    translations: { type: Object as PropType<SelectProps['translations']> },
+    maxTagCount: { type: Number },
+    placeholder: { type: String },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // *-change 携带 details 对象，update:* 携带裸值。
   // 校验函数恒真，只声明载荷类型：'update:value' 是 string[]，单选也是长度 1 的数组而非裸串。
@@ -69,7 +72,7 @@ export const XhSelectRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useSelect(withXhConfig('select', props) as SelectProps, notifyValue, notifyOpen)
+    const ctx = useSelect(withXhConfig('select', useFormControlProps(props)) as SelectProps, notifyValue, notifyOpen)
     provideSelect(ctx)
 
     // 表单影子由根部件装配：空串选项打底，每个选中值一个 selected 选项，供 required 判定。
@@ -91,6 +94,7 @@ export const XhSelectRoot = defineComponent({
           displayText: ctx.api.value.displayText,
           tags: ctx.api.value.tags,
           overflowCount: ctx.api.value.overflowCount,
+          overflowText: ctx.api.value.overflowText,
           setOpen: ctx.api.value.setOpen,
           setValue: ctx.api.value.setValue,
           clear: ctx.api.value.clear,
@@ -108,7 +112,7 @@ export const XhSelectRoot = defineComponent({
   },
 })
 
-export const XhSelectLabel = defineComponent({
+export const XhSelectLabel = /* @__PURE__ */ defineComponent({
   name: 'XhSelectLabel',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -116,7 +120,7 @@ export const XhSelectLabel = defineComponent({
   },
 })
 
-export const XhSelectControl = defineComponent({
+export const XhSelectControl = /* @__PURE__ */ defineComponent({
   name: 'XhSelectControl',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -125,7 +129,7 @@ export const XhSelectControl = defineComponent({
   },
 })
 
-export const XhSelectTrigger = defineComponent({
+export const XhSelectTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhSelectTrigger',
   setup(_, { slots }) {
     // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
@@ -134,14 +138,14 @@ export const XhSelectTrigger = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     const ctx = useSelectContext()
     return () => h('button', fieldLabel.value({
+      ...fieldWiring.value,
       ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
-      ...fieldWiring.value,
     }), slots.default?.())
   },
 })
 
-export const XhSelectValueText = defineComponent({
+export const XhSelectValueText = /* @__PURE__ */ defineComponent({
   name: 'XhSelectValueText',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -154,7 +158,7 @@ export const XhSelectValueText = defineComponent({
   },
 })
 
-export const XhSelectIndicator = defineComponent({
+export const XhSelectIndicator = /* @__PURE__ */ defineComponent({
   name: 'XhSelectIndicator',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -162,7 +166,7 @@ export const XhSelectIndicator = defineComponent({
   },
 })
 
-export const XhSelectClearTrigger = defineComponent({
+export const XhSelectClearTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhSelectClearTrigger',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -171,7 +175,37 @@ export const XhSelectClearTrigger = defineComponent({
   },
 })
 
-export const XhSelectTag = defineComponent({
+export const XhSelectTagList = /* @__PURE__ */ defineComponent({
+  name: 'XhSelectTagList',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    // 标签行：可见标签与 +N 那一枚在里面并排；无选中时连接层给 hidden，value-text 回来显示占位文字
+    return () => h('span', ctx.api.value.getTagListProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
+export const XhSelectTagLabel = /* @__PURE__ */ defineComponent({
+  name: 'XhSelectTagLabel',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    return () => h('span', ctx.api.value.getTagLabelProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/**
+ * 标签内容：只有文字时替它包一层 label——截断规则挂在 label 上，直接摊在 root 上的文字过长会把
+ * 删除钮挤出去；作者自己写了节点就原样放行。与 XhTagRoot 同一条规矩。
+ * 库自己填的文字（+N，没有折起时是空串）恒包 label，三家适配器渲出同一棵树。
+ */
+function tagChildren(content: VNode[] | string | undefined): VNode[] | string | undefined {
+  if (typeof content === 'string')
+    return [h(XhSelectTagLabel, null, () => content)]
+  return slotIsPlainText(content) ? [h(XhSelectTagLabel, null, () => content)] : content
+}
+
+/** 一个选中值一枚，就是库里 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从 select 传下去，形态按控件的面派；触发器里纯展示，触发器外配 XhSelectItemDeleteTrigger 可删。 */
+export const XhSelectTag = /* @__PURE__ */ defineComponent({
   name: 'XhSelectTag',
   props: {
     /** 它代表哪个选中值。 */
@@ -180,11 +214,26 @@ export const XhSelectTag = defineComponent({
   setup(props, { slots }) {
     const ctx = useSelectContext()
     provideSelectTag({ value: () => props.value })
-    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, slots.default?.())
+    // 标签随文排在触发器那一行里，根用 span
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, tagChildren(slots.default?.()))
   },
 })
 
-export const XhSelectItemDeleteTrigger = defineComponent({
+/** 折起的标签合成的那一枚：同样是 tag 的 root；有插槽用插槽，否则显示 +N。没有折起的标签时连接层给 hidden。 */
+export const XhSelectOverflowTag = /* @__PURE__ */ defineComponent({
+  name: 'XhSelectOverflowTag',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    return () => h(
+      'span',
+      ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
+      tagChildren(slots.default?.() ?? ctx.api.value.overflowText),
+    )
+  },
+})
+
+/** 标签里的删除钮：就是所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名走 translations.deleteItem；点按摘掉所在标签的选中值。 */
+export const XhSelectItemDeleteTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhSelectItemDeleteTrigger',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -193,14 +242,18 @@ export const XhSelectItemDeleteTrigger = defineComponent({
   },
 })
 
-export const XhSelectPositioner = defineComponent({
+export const XhSelectPositioner = /* @__PURE__ */ defineComponent({
   name: 'XhSelectPositioner',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useSelectContext()
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
@@ -209,7 +262,7 @@ export const XhSelectPositioner = defineComponent({
   },
 })
 
-export const XhSelectContent = defineComponent({
+export const XhSelectContent = /* @__PURE__ */ defineComponent({
   name: 'XhSelectContent',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -223,7 +276,7 @@ export const XhSelectContent = defineComponent({
   },
 })
 
-export const XhSelectList = defineComponent({
+export const XhSelectList = /* @__PURE__ */ defineComponent({
   name: 'XhSelectList',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -232,7 +285,7 @@ export const XhSelectList = defineComponent({
   },
 })
 
-export const XhSelectFooter = defineComponent({
+export const XhSelectFooter = /* @__PURE__ */ defineComponent({
   name: 'XhSelectFooter',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -242,7 +295,7 @@ export const XhSelectFooter = defineComponent({
   },
 })
 
-export const XhSelectEmpty = defineComponent({
+export const XhSelectEmpty = /* @__PURE__ */ defineComponent({
   name: 'XhSelectEmpty',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -252,7 +305,7 @@ export const XhSelectEmpty = defineComponent({
   },
 })
 
-export const XhSelectLoading = defineComponent({
+export const XhSelectLoading = /* @__PURE__ */ defineComponent({
   name: 'XhSelectLoading',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -261,7 +314,7 @@ export const XhSelectLoading = defineComponent({
   },
 })
 
-export const XhSelectGroup = defineComponent({
+export const XhSelectGroup = /* @__PURE__ */ defineComponent({
   name: 'XhSelectGroup',
   props: {
     value: { type: String, required: true },
@@ -275,7 +328,7 @@ export const XhSelectGroup = defineComponent({
   },
 })
 
-export const XhSelectGroupLabel = defineComponent({
+export const XhSelectGroupLabel = /* @__PURE__ */ defineComponent({
   name: 'XhSelectGroupLabel',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -284,7 +337,7 @@ export const XhSelectGroupLabel = defineComponent({
   },
 })
 
-export const XhSelectItem = defineComponent({
+export const XhSelectItem = /* @__PURE__ */ defineComponent({
   name: 'XhSelectItem',
   props: {
     value: { type: String, required: true },
@@ -322,7 +375,7 @@ export const XhSelectItem = defineComponent({
   },
 })
 
-export const XhSelectItemText = defineComponent({
+export const XhSelectItemText = /* @__PURE__ */ defineComponent({
   name: 'XhSelectItemText',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -331,7 +384,7 @@ export const XhSelectItemText = defineComponent({
   },
 })
 
-export const XhSelectItemIndicator = defineComponent({
+export const XhSelectItemIndicator = /* @__PURE__ */ defineComponent({
   name: 'XhSelectItemIndicator',
   setup(_, { slots }) {
     const ctx = useSelectContext()

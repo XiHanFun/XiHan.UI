@@ -46,16 +46,16 @@ function onSubmit() {
     <!-- 摘要条目按路径名指过去，点一下焦点落进对应的字段容器 -->
     <XhFormErrorSummary v-slot="{ errorCount }">
       <span>共 {{ errorCount }} 处需要修改</span>
-      <XhFormErrorSummaryItem v-slot="{ error }" value="user.name">姓名：{{ error }}</XhFormErrorSummaryItem>
-      <XhFormErrorSummaryItem v-slot="{ error }" value="user.email">邮箱：{{ error }}</XhFormErrorSummaryItem>
+      <XhFormErrorSummaryItem v-slot="{ error }" name="user.name">姓名：{{ error }}</XhFormErrorSummaryItem>
+      <XhFormErrorSummaryItem v-slot="{ error }" name="user.email">邮箱：{{ error }}</XhFormErrorSummaryItem>
       <template v-for="(row, index) in model.hobbies" :key="index">
-        <XhFormErrorSummaryItem v-slot="{ error }" :value="hobbyName(index)">
+        <XhFormErrorSummaryItem v-slot="{ error }" :name="hobbyName(index)">
           爱好 {{ index + 1 }}：{{ error }}
         </XhFormErrorSummaryItem>
       </template>
     </XhFormErrorSummary>
 
-    <XhFormFieldGroup v-slot="{ error, invalid }" value="user.name">
+    <XhFormFieldGroup v-slot="{ error, invalid }" name="user.name">
       <XhFieldRoot :invalid="invalid" required>
         <XhFieldLabel>姓名</XhFieldLabel>
         <XhFieldControl>
@@ -66,7 +66,7 @@ function onSubmit() {
       </XhFieldRoot>
     </XhFormFieldGroup>
 
-    <XhFormFieldGroup v-slot="{ error, invalid }" value="user.email">
+    <XhFormFieldGroup v-slot="{ error, invalid }" name="user.email">
       <XhFieldRoot :invalid="invalid" required>
         <XhFieldLabel>邮箱</XhFieldLabel>
         <XhFieldControl>
@@ -77,7 +77,7 @@ function onSubmit() {
     </XhFormFieldGroup>
 
     <template v-for="(row, index) in model.hobbies" :key="index">
-      <XhFormFieldGroup v-slot="{ error, invalid }" :value="hobbyName(index)">
+      <XhFormFieldGroup v-slot="{ error, invalid }" :name="hobbyName(index)">
         <XhFieldRoot :invalid="invalid" required>
           <XhFieldLabel>爱好 {{ index + 1 }}</XhFieldLabel>
           <XhFieldControl>

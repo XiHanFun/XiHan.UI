@@ -1,9 +1,11 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { FormPath } from './form.path'
 import type { FormApi, FormColumns, FormColumnsByBreakpoint, FormFieldSpan, FormSchema } from './form.types'
 import { contains, dataAttr } from '@xihan-ui/core'
 import { FORM_FIELD_NAME_ATTR, formAnatomy, formFieldId } from './form.anatomy'
 import { formErrorNames } from './form.errors'
 import { formValidateOn } from './form.machine'
+import { formPathKey, getFormPathValue } from './form.path'
 import { hasRequiredRule } from './form.rules'
 
 const parts = formAnatomy.build()
@@ -67,7 +69,7 @@ export function connectForm<T extends PropTypes>(
   // 错误全改完就撤下摘要，此时状态仍停在失败态（下一次提交成功才回 idle）
   const summaryVisible = submitFailed && invalid
 
-  const fieldError = (name: string): string | undefined => errors[name]
+  const fieldError = (name: FormPath): string | undefined => getFormPathValue(errors, name)
 
   return {
     values,
@@ -77,15 +79,16 @@ export function connectForm<T extends PropTypes>(
     invalid,
     submitFailed,
     validating: context.get('validating'),
+    validationError: context.get('validationError'),
     disabled,
     readOnly,
     validateOn,
     layout: prop('layout') ?? 'vertical',
     getFieldId: name => formFieldId(scope, name),
-    getFieldValue: name => values[name],
+    getFieldValue: name => getFormPathValue(values, name),
     getFieldError: fieldError,
     isFieldInvalid: name => fieldError(name) !== undefined,
-    isFieldRequired: name => hasRequiredRule(prop('rules')?.[name]),
+    isFieldRequired: name => hasRequiredRule(getFormPathValue(service.refs.get('rules'), name)),
     setFieldValue: (name, value) => send({ type: 'FIELD.SET', name, value }),
     setFieldError: (name, message) => send({ type: 'ERROR.SET', name, message }),
     clearErrors: () => send({ type: 'ERRORS.CLEAR' }),
@@ -136,7 +139,7 @@ export function connectForm<T extends PropTypes>(
       ...parts['field-group'].attrs,
       // 摘要链接与落焦反查都按这个 id 找容器
       'id': formFieldId(scope, field.name),
-      [FORM_FIELD_NAME_ATTR]: field.name,
+      [FORM_FIELD_NAME_ATTR]: formPathKey(field.name),
       // 容器里的控件全禁用时，焦点至少落得到这块区域上
       'tabindex': -1,
       // 网格排布下这一格占多宽，其余排布下皮肤不接这个属性
@@ -175,7 +178,7 @@ export function connectForm<T extends PropTypes>(
       ...parts['error-summary-item'].attrs,
       // 指向字段容器的片段标识。写成真链接而非按钮，读屏才会把它归进链接列表
       'href': `#${formFieldId(scope, item.name)}`,
-      [FORM_FIELD_NAME_ATTR]: item.name,
+      [FORM_FIELD_NAME_ATTR]: formPathKey(item.name),
       'data-invalid': dataAttr(fieldError(item.name) !== undefined),
       // 作者一次把所有字段的条目都写上，这里按当下的错误表决定谁露面
       'hidden': fieldError(item.name) === undefined || undefined,

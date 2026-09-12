@@ -1,6 +1,11 @@
 import type { KnownViolations } from './run'
 
-/** axe 存量违规登记表，两个适配器共用；修好一条即从表里删一条，否则判登记过期。 */
+/**
+ * axe 存量违规登记表，两个适配器共用；修好一条即从表里删一条，否则判登记过期。
+ *
+ * 这张表是「明暗两遍都要命中」的那一档：扫描按 data-theme 跑两遍，某一遍不再命中就判过期，
+ * 只在一个主题下成立的登记要挪进各适配器基线的 knownByTheme。
+ */
 export const knownA11yViolations: KnownViolations = {
   // 禁用标签的文字用 --xh-fg-disabled 落在 --xh-bg-muted 上，实测 2.36:1（浅色）/ 1.94:1（深色）。
   // 这不是 tag 自己的取值：整个禁用族都是这一档——toggle-group 条目、download-trigger、
@@ -21,7 +26,9 @@ export const knownA11yViolations: KnownViolations = {
   // translations.input，为的是钉住这条契约，于是扫出来的就是一个没有名字的 textarea。
   // 真实用法里由作者命名：给 translations.input，或自己写 <label for> / aria-label。
   'prompt-input': { label: '输入框的可访问名归作者，组件不无条件发 aria-label；夹具刻意不给文案以钉住这条契约' },
-  'tag': { 'color-contrast': '禁用标签的文字是全库统一的 fg-disabled/bg-muted 一档（2.36:1），按 1.4.3 失效控件豁免；tag 的 root 没有 axe 认得的禁用语义，所以只有它被扫出来' },
+  'tag': { 'color-contrast': '禁用标签的文字是全库统一的 fg-disabled/bg-muted 一档（浅色 2.36:1、深色 1.93:1），按 1.4.3 失效控件豁免；tag 的 root 没有 axe 认得的禁用语义，所以只有它被扫出来' },
+  // select 摆在触发器外的那枚可删标签与 tag 同一档：触发器里的那些在原生 disabled 的按钮内，axe 跳过；外面这枚是个没有角色的 span
+  'select': { 'color-contrast': '禁用时触发器外那枚标签的文字同 tag：fg-disabled 落在 bg-subtle 上（浅色 2.35:1、深色 1.93:1），按 1.4.3 失效控件豁免；它不在原生 disabled 的按钮里，axe 看得见' },
 }
 
 /** 全组件通用登记，整轮至少命中一次即可。 */

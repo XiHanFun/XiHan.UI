@@ -9,6 +9,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideImageCropper, useImageCropperContext } from './context'
 import { useImageCropper } from './use-image-cropper'
 
@@ -23,32 +24,31 @@ export type ImageCropperRootSlotProps = Pick<
 
 export const XhImageCropperRoot = defineComponent({
   name: 'XhImageCropperRoot',
-  // 全部 default: undefined，缺省值由 connect 与机器决定
+  // 缺省值由 connect 与机器决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    src: { type: String, default: undefined },
-    alt: { type: String, default: undefined },
-    aspectRatio: { type: Number as PropType<number | null>, default: undefined },
-    value: { type: Object as PropType<ImageCropperRect>, default: undefined },
-    defaultValue: { type: Object as PropType<ImageCropperRect>, default: undefined },
-    minWidth: { type: Number, default: undefined },
-    minHeight: { type: Number, default: undefined },
-    zoom: { type: Number, default: undefined },
-    defaultZoom: { type: Number, default: undefined },
-    minZoom: { type: Number, default: undefined },
-    maxZoom: { type: Number, default: undefined },
-    zoomStep: { type: Number, default: undefined },
-    rotation: { type: Number, default: undefined },
-    defaultRotation: { type: Number, default: undefined },
-    minRotation: { type: Number, default: undefined },
-    maxRotation: { type: Number, default: undefined },
-    rotationStep: { type: Number, default: undefined },
-    shape: { type: String as PropType<ImageCropperShape>, default: undefined },
+    src: { type: String },
+    alt: { type: String },
+    aspectRatio: { type: Number as PropType<number | null> },
+    value: { type: Object as PropType<ImageCropperRect> },
+    defaultValue: { type: Object as PropType<ImageCropperRect> },
+    minWidth: { type: Number },
+    minHeight: { type: Number },
+    zoom: { type: Number },
+    defaultZoom: { type: Number },
+    minZoom: { type: Number },
+    maxZoom: { type: Number },
+    zoomStep: { type: Number },
+    rotation: { type: Number },
+    defaultRotation: { type: Number },
+    minRotation: { type: Number },
+    maxRotation: { type: Number },
+    rotationStep: { type: Number },
+    shape: { type: String as PropType<ImageCropperShape> },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
-    name: { type: String, default: undefined },
+    name: { type: String },
     translations: {
       type: Object as PropType<ImageCropperProps['translations']>,
-      default: undefined,
     },
   },
   // value-change 携带 { value }，update:value 携带裸矩形；
@@ -82,7 +82,7 @@ export const XhImageCropperRoot = defineComponent({
       emit('update:rotation', details.rotation)
     }
     const ctx = useImageCropper(
-      withXhConfig('image-cropper', props) as ImageCropperProps,
+      withXhConfig('image-cropper', useFormControlProps(props)) as ImageCropperProps,
       { onValueChange, onValueChangeEnd, onZoomChange, onRotationChange },
     )
     provideImageCropper(ctx)

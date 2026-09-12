@@ -1,25 +1,14 @@
 import type { TagGroupSchema, TagGroupSelectionMode } from './tag-group.types'
 import { createTypeahead, setup } from '@xihan-ui/core'
+import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 
 const { createMachine } = setup<TagGroupSchema>()
-
-/** 裸串归一为单元素数组；undefined 原样透传。 */
-function toValues(input: string | string[] | undefined): string[] | undefined {
-  if (input === undefined)
-    return undefined
-  return typeof input === 'string' ? [input] : [...input]
-}
 
 /** 选中集合归一：不选中模式清空，单选截到长度 ≤ 1，复选去重。 */
 export function normalizeTagSelection(next: readonly string[], mode: TagGroupSelectionMode): string[] {
   if (mode === 'none')
     return []
   return mode === 'single' ? next.slice(0, 1) : [...new Set(next)]
-}
-
-/** 数组按元素逐项比较：受控时 cell 每次读都把 prop 归一成新数组，引用比会误判成变更。 */
-function sameValues(a: string[], b: string[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
 
 // 选中集合存放在 context cell，受控/非受控由 cell 收口；机器只有 idle 一个状态。

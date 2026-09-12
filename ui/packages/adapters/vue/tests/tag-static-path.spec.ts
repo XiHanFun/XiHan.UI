@@ -174,4 +174,34 @@ describe('标签的快路（不可关闭）', () => {
     expect(root().getAttribute('data-state')).toBe('closed')
     expect(onOpenChange).toHaveBeenCalledWith({ open: false })
   })
+
+  it('快路上的只读：关闭钮露面但禁用，标签不置灰，直接派 click 也不收', async () => {
+    const closable = ref(false)
+    const onOpenChange = vi.fn()
+    const host = document.createElement('div')
+    document.body.append(host)
+    app = createApp({
+      setup: () => () =>
+        h(XhTagRoot, { closable: closable.value, readOnly: true, onOpenChange }, () => [
+          h(XhTagLabel, () => '标签'),
+          h(XhTagCloseTrigger),
+        ]),
+    })
+    app.mount(host)
+    await tick()
+
+    closable.value = true
+    await tick()
+    const close = document.querySelector<HTMLButtonElement>('[data-scope="tag"][data-part="close-trigger"]')!
+    expect(close.hasAttribute('hidden')).toBe(false)
+    expect(close.disabled).toBe(true)
+    expect(close.hasAttribute('data-disabled')).toBe(true)
+    expect(root().hasAttribute('data-disabled')).toBe(false)
+
+    // 禁用控件上 el.click() 被激活行为短路，直接派发才验得到连接层的守卫
+    close.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+    await tick()
+    expect(root().getAttribute('data-state')).toBe('open')
+    expect(onOpenChange).not.toHaveBeenCalled()
+  })
 })

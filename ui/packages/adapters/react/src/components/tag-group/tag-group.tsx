@@ -8,6 +8,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import { TagGroupItemProvider, TagGroupProvider, useTagGroupContext, useTagGroupItemContext } from './context'
 import { useTagGroup } from './use-tag-group'
 
@@ -19,7 +20,10 @@ export type TagGroupRootSlotProps = Pick<
   'value' | 'selectionMode' | 'focusedValue' | 'isSelected' | 'setValue' | 'select' | 'toggle' | 'deleteItem'
 >
 
-export interface XhTagGroupRootProps {
+/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
+
+export interface XhTagGroupRootProps extends RootElementProps {
   collection?: TagGroupNode[]
   /** 标题内容。给了它就不必再写 label 部件。 */
   label?: ReactNode
@@ -48,8 +52,48 @@ export interface XhTagGroupRootProps {
 }
 
 /** 一排可选、可摘的标签。回传值恒为数组，单选时长度 ≤ 1。 */
-export function XhTagGroupRoot({ children, label, renderItem, ...props }: XhTagGroupRootProps): ReactNode {
-  const ctx = useTagGroup(withXhConfig('tag-group', props) as TagGroupProps)
+export function XhTagGroupRoot({
+  collection,
+  label,
+  value,
+  defaultValue,
+  selectionMode,
+  deletable,
+  disabled,
+  readOnly,
+  loop,
+  dir,
+  orientation,
+  typeahead,
+  variant,
+  tone,
+  size,
+  translations,
+  onValueChange,
+  onItemDelete,
+  renderItem,
+  children,
+  ...rest
+}: XhTagGroupRootProps): ReactNode {
+  const ctx = useTagGroup(withXhConfig('tag-group', useFormControlProps({
+    collection,
+    value,
+    defaultValue,
+    selectionMode,
+    deletable,
+    disabled,
+    readOnly,
+    loop,
+    dir,
+    orientation,
+    typeahead,
+    variant,
+    tone,
+    size,
+    translations,
+    onValueChange,
+    onItemDelete,
+  })) as TagGroupProps)
   const api = ctx.api
 
   const body = children != null
@@ -63,13 +107,13 @@ export function XhTagGroupRoot({ children, label, renderItem, ...props }: XhTagG
         toggle: api.toggle,
         deleteItem: api.deleteItem,
       })
-    : props.collection
+    : collection
       ? <DefaultTree collection={api.collection} label={label} renderItem={renderItem} />
       : null
 
   return (
     <TagGroupProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>{body}</div>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
     </TagGroupProvider>
   )
 }
@@ -105,7 +149,7 @@ export interface XhTagGroupItemProps extends Omit<ComponentPropsWithRef<'span'>,
   deletable?: boolean
 }
 
-/** 一枚标签。用 span 才能随文排，选中与摘除的键盘路径都在 list 上。 */
+/** 一枚标签：渲出来是 tag 的 root（data-scope="tag"），组把行角色、Tab 停靠点、选中与锚点叠在它上面。用 span 才能随文排，选中与摘除的键盘路径都在 list 上。 */
 export function XhTagGroupItem({ value, disabled, deletable, children, ...rest }: XhTagGroupItemProps): ReactNode {
   const ctx = useTagGroupContext()
   const item = useMemo(() => ({ value, disabled, deletable }), [value, disabled, deletable])
@@ -162,6 +206,8 @@ export function XhTagGroupCell({ children, ...rest }: XhTagGroupCellProps): Reac
 }
 
 export interface XhTagGroupItemTextProps extends ComponentPropsWithRef<'span'> {}
+
+/** 标签文字：渲出来是 tag 的 label。 */
 export function XhTagGroupItemText({ children, ...rest }: XhTagGroupItemTextProps): ReactNode {
   const ctx = useTagGroupContext()
   const { item } = useTagGroupItemContext()
@@ -170,7 +216,7 @@ export function XhTagGroupItemText({ children, ...rest }: XhTagGroupItemTextProp
 
 export interface XhTagGroupItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
 
-/** 摘除钮：整组没开放摘除时收起，不留一个按不动的叉。 */
+/** 摘除钮：渲出来是所在标签那份 tag 的 close-trigger，不占 Tab 位；整组没开放摘除时收起，不留一个按不动的叉。 */
 export function XhTagGroupItemDeleteTrigger({ children, ...rest }: XhTagGroupItemDeleteTriggerProps): ReactNode {
   const ctx = useTagGroupContext()
   const { item } = useTagGroupItemContext()

@@ -108,27 +108,27 @@ export type TableToolbarSlotProps = Pick<
   | 'loading'
 >
 
-export const XhTableRoot = defineComponent({
+export const XhTableRoot = /* @__PURE__ */ defineComponent({
   name: 'XhTableRoot',
-  // 有机器侧兜底的 prop 一律 default: undefined，缺省值由 connect 与机器决定
+  // 有机器侧兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined，缺省值由 connect 与机器决定
   props: {
-    columns: { type: Array as PropType<TableColumnDef[]>, default: undefined },
-    rows: { type: Array as PropType<TableRowDef[]>, default: undefined },
-    sort: { type: Array as PropType<TableSortDescriptor[]>, default: undefined },
-    defaultSort: { type: Array as PropType<TableSortDescriptor[]>, default: undefined },
-    selection: { type: [Array, String] as PropType<TableSelection>, default: undefined },
-    defaultSelection: { type: [Array, String] as PropType<TableSelection>, default: undefined },
-    selectionMode: { type: String as PropType<TableSelectionMode>, default: undefined },
+    columns: { type: Array as PropType<TableColumnDef[]> },
+    rows: { type: Array as PropType<TableRowDef[]> },
+    sort: { type: Array as PropType<TableSortDescriptor[]> },
+    defaultSort: { type: Array as PropType<TableSortDescriptor[]> },
+    selection: { type: [Array, String] as PropType<TableSelection> },
+    defaultSelection: { type: [Array, String] as PropType<TableSelection> },
+    selectionMode: { type: String as PropType<TableSelectionMode> },
     /** 要哪几列前缀列（序号 / 多选 / 展开），按给定顺序插在最前面并占住列号。 */
-    prefixColumns: { type: Array as PropType<TableColumnKind[]>, default: undefined },
+    prefixColumns: { type: Array as PropType<TableColumnKind[]> },
     /** 当前页码与每页条数：只用来算序号，不参与切片。 */
     /** 列偏好：给定即受控。持久化归使用者，库只负责把它算进生效列。 */
-    columnPreference: { type: Object as PropType<TableColumnPreference>, default: undefined },
-    defaultColumnPreference: { type: Object as PropType<TableColumnPreference>, default: undefined },
-    page: { type: Number, default: undefined },
-    pageSize: { type: Number, default: undefined },
-    expandedValue: { type: Array as PropType<string[]>, default: undefined },
-    defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
+    columnPreference: { type: Object as PropType<TableColumnPreference> },
+    defaultColumnPreference: { type: Object as PropType<TableColumnPreference> },
+    page: { type: Number },
+    pageSize: { type: Number },
+    expandedValue: { type: Array as PropType<string[]> },
+    defaultExpandedValue: { type: Array as PropType<string[]> },
     loading: Boolean,
     empty: { type: Boolean, default: undefined },
     stickyHeader: Boolean,
@@ -139,11 +139,11 @@ export const XhTableRoot = defineComponent({
     /** 行可以拖着换位。整行都是拖动源，不另出把手。 */
     rowReorderable: Boolean,
     /** 这一次搬家许不许。收到的是折算好的落点（搬到哪个父下面的第几位）。不给即都许。 */
-    allowRowDrop: { type: Function as PropType<TableProps['allowRowDrop']>, default: undefined },
+    allowRowDrop: { type: Function as PropType<TableProps['allowRowDrop']> },
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<TableProps['translations']>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<TableProps['translations']> },
   },
   // *-change 携带 { value }，update:* 携带裸值以支持 v-model
   emits: {
@@ -254,7 +254,7 @@ export const XhTableRoot = defineComponent({
  * 写在 XhTableRoot 的 toolbar 插槽里——它渲成 root 的兄弟，不进 role=grid 的子节点。
  * 不带 role：要方向键 roving 就往里放一个 XhToolbarRoot。
  */
-export const XhTableToolbar = defineComponent({
+export const XhTableToolbar = /* @__PURE__ */ defineComponent({
   name: 'XhTableToolbar',
   setup(_, { slots }) {
     const ctx = useTableContext()
@@ -263,7 +263,7 @@ export const XhTableToolbar = defineComponent({
 })
 
 /** 列设置区：一列一行，渲什么照 root 插槽载荷里的 columnSettings 走。 */
-export const XhTableColumnList = defineComponent({
+export const XhTableColumnList = /* @__PURE__ */ defineComponent({
   name: 'XhTableColumnList',
   setup(_, { slots }) {
     const ctx = useTableContext()
@@ -275,11 +275,11 @@ export const XhTableColumnList = defineComponent({
  * 一列的显隐把手（复选形态，勾着＝这一列显示着）。
  * 列身份优先取自己的 value；不给就跟着所在的列标题走（表头里的那一路）。
  */
-export const XhTableColumnVisibilityTrigger = defineComponent({
+export const XhTableColumnVisibilityTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhTableColumnVisibilityTrigger',
   props: {
     /** 列 id。写在列设置区里必给；写在列标题里可省，跟着那一列走。 */
-    value: { type: String, default: undefined },
+    value: { type: String },
   },
   setup(props, { slots }) {
     const ctx = useTableContext()
@@ -295,7 +295,7 @@ export const XhTableColumnVisibilityTrigger = defineComponent({
   },
 })
 
-export const XhTableCaption = defineComponent({
+export const XhTableCaption = /* @__PURE__ */ defineComponent({
   name: 'XhTableCaption',
   setup(_, { slots }) {
     const ctx = useTableContext()
@@ -303,7 +303,7 @@ export const XhTableCaption = defineComponent({
   },
 })
 
-export const XhTableHeader = defineComponent({
+export const XhTableHeader = /* @__PURE__ */ defineComponent({
   name: 'XhTableHeader',
   setup(_, { slots }) {
     const ctx = useTableContext()
@@ -312,7 +312,7 @@ export const XhTableHeader = defineComponent({
   },
 })
 
-export const XhTableBody = defineComponent({
+export const XhTableBody = /* @__PURE__ */ defineComponent({
   name: 'XhTableBody',
   setup(_, { slots }) {
     const ctx = useTableContext()
@@ -322,7 +322,7 @@ export const XhTableBody = defineComponent({
   },
 })
 
-export const XhTableFooter = defineComponent({
+export const XhTableFooter = /* @__PURE__ */ defineComponent({
   name: 'XhTableFooter',
   setup(_, { slots }) {
     const ctx = useTableContext()
@@ -331,11 +331,11 @@ export const XhTableFooter = defineComponent({
   },
 })
 
-export const XhTableRow = defineComponent({
+export const XhTableRow = /* @__PURE__ */ defineComponent({
   name: 'XhTableRow',
   props: {
     /** 行 id：数据行必给，表头行与脚注行省略。 */
-    value: { type: String, default: undefined },
+    value: { type: String },
   },
   setup(props, { slots }) {
     const ctx = useTableContext()
@@ -362,7 +362,7 @@ export const XhTableRow = defineComponent({
   },
 })
 
-export const XhTableColumnHeader = defineComponent({
+export const XhTableColumnHeader = /* @__PURE__ */ defineComponent({
   name: 'XhTableColumnHeader',
   props: {
     value: { type: String, required: true },
@@ -379,13 +379,13 @@ export const XhTableColumnHeader = defineComponent({
   },
 })
 
-export const XhTableCell = defineComponent({
+export const XhTableCell = /* @__PURE__ */ defineComponent({
   name: 'XhTableCell',
   props: {
     /** 列 id。 */
     value: { type: String, required: true },
     /** 跨列数，从 value 那一列往后算。 */
-    colspan: { type: [String, Number] as PropType<string | number>, default: undefined },
+    colspan: { type: [String, Number] as PropType<string | number> },
   },
   setup(props, { slots }) {
     const ctx = useTableContext()
@@ -403,7 +403,7 @@ export const XhTableCell = defineComponent({
   },
 })
 
-export const XhTableSelectAllTrigger = defineComponent({
+export const XhTableSelectAllTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhTableSelectAllTrigger',
   setup(_, { slots }) {
     const ctx = useTableContext()
@@ -415,7 +415,7 @@ export const XhTableSelectAllTrigger = defineComponent({
   },
 })
 
-export const XhTableRowSelectTrigger = defineComponent({
+export const XhTableRowSelectTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhTableRowSelectTrigger',
   setup(_, { slots }) {
     const ctx = useTableContext()
@@ -428,7 +428,7 @@ export const XhTableRowSelectTrigger = defineComponent({
   },
 })
 
-export const XhTableSortTrigger = defineComponent({
+export const XhTableSortTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhTableSortTrigger',
   setup(_, { slots }) {
     const ctx = useTableContext()
@@ -442,7 +442,7 @@ export const XhTableSortTrigger = defineComponent({
 })
 
 /** 列宽把手。放在表头格里，只有 resizable 的列渲它。 */
-export const XhTableColumnResizeTrigger = defineComponent({
+export const XhTableColumnResizeTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhTableColumnResizeTrigger',
   setup(_, { slots }) {
     const ctx = useTableContext()
@@ -456,7 +456,7 @@ export const XhTableColumnResizeTrigger = defineComponent({
 })
 
 /** 列拖拽把手。放在表头格里，只有可拖的列渲它。 */
-export const XhTableColumnDragTrigger = defineComponent({
+export const XhTableColumnDragTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhTableColumnDragTrigger',
   setup(_, { slots }) {
     const ctx = useTableContext()
@@ -475,7 +475,7 @@ export const XhTableColumnDragTrigger = defineComponent({
  * 树形表下另有 Alt + 左右键改缩进层级。
  * 整行起手那一路照旧可用，把手是叠加的第二个入口。
  */
-export const XhTableRowDragTrigger = defineComponent({
+export const XhTableRowDragTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhTableRowDragTrigger',
   setup(_, { slots }) {
     const ctx = useTableContext()
@@ -488,7 +488,7 @@ export const XhTableRowDragTrigger = defineComponent({
   },
 })
 
-export const XhTableExpandTrigger = defineComponent({
+export const XhTableExpandTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhTableExpandTrigger',
   setup(_, { slots }) {
     const ctx = useTableContext()
@@ -501,7 +501,7 @@ export const XhTableExpandTrigger = defineComponent({
   },
 })
 
-export const XhTableExpandedRow = defineComponent({
+export const XhTableExpandedRow = /* @__PURE__ */ defineComponent({
   name: 'XhTableExpandedRow',
   props: {
     /** 所属数据行的 id。 */
@@ -519,7 +519,7 @@ export const XhTableExpandedRow = defineComponent({
   },
 })
 
-export const XhTableEmpty = defineComponent({
+export const XhTableEmpty = /* @__PURE__ */ defineComponent({
   name: 'XhTableEmpty',
   setup(_, { slots }) {
     const ctx = useTableContext()
@@ -527,7 +527,7 @@ export const XhTableEmpty = defineComponent({
   },
 })
 
-export const XhTableLoading = defineComponent({
+export const XhTableLoading = /* @__PURE__ */ defineComponent({
   name: 'XhTableLoading',
   setup(_, { slots }) {
     const ctx = useTableContext()
@@ -535,7 +535,7 @@ export const XhTableLoading = defineComponent({
   },
 })
 
-export const XhTableLoadMoreTrigger = defineComponent({
+export const XhTableLoadMoreTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhTableLoadMoreTrigger',
   setup(_, { slots }) {
     const ctx = useTableContext()

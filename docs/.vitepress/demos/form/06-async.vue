@@ -42,7 +42,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     style="inline-size: 320px"
     @submit="onSubmit"
   >
-    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="username">
+    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="username">
       <XhFieldRoot :invalid="invalid" required>
         <XhFieldLabel>用户名</XhFieldLabel>
         <XhFieldControl>

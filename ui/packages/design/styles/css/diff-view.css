@@ -4,12 +4,7 @@
     --xh-diff-view-skin: 1;
   }
 
-  /* 新增与删除的颜色是逐行状态不是组件语气，走各自的语义令牌、不接语气轴 */
   [data-scope='diff-view'][data-part='root'] {
-    --xh-diff-view-added-bg: var(--xh-diff-added-bg);
-    --xh-diff-view-added-fg: var(--xh-diff-added-fg);
-    --xh-diff-view-removed-bg: var(--xh-diff-removed-bg);
-    --xh-diff-view-removed-fg: var(--xh-diff-removed-fg);
     /* 作者塞进部件里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-text));
 
@@ -60,22 +55,17 @@
   }
 
   [data-scope='diff-view'][data-part='summary'][data-change='added'] {
-    color: var(--xh-diff-view-added-fg);
+    color: var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
   }
 
   [data-scope='diff-view'][data-part='summary'][data-change='removed'] {
-    color: var(--xh-diff-view-removed-fg);
+    color: var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg));
   }
 
   /* 唯一的 Tab 停靠点；两轴都可能溢出 */
   [data-scope='diff-view'][data-part='viewport'] {
     overflow: auto;
     max-block-size: var(--xh-diff-view-max-h, var(--xh-viewport-max-h));
-  }
-
-  /* 焦点环偏移取负画在内侧，避免被 root 的 overflow: hidden 裁掉 */
-  [data-scope='diff-view'][data-part='viewport']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='diff-view'][data-part='body'] {
@@ -104,8 +94,8 @@
 
   /* 变更类型不只靠颜色：新增行画一条实心色条 */
   [data-scope='diff-view'][data-part='row'][data-change='added'] {
-    background: var(--xh-diff-view-added-bg);
-    box-shadow: inset var(--xh-diff-view-change-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-diff-view-added-fg);
+    background: var(--xh-diff-view-added-bg, var(--xh-diff-added-bg));
+    box-shadow: inset var(--xh-diff-view-change-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
   }
 
   /* 删除行的色条改画斜纹：与新增行的实心条在灰度与高对比度下也分得开。
@@ -114,13 +104,13 @@
     background:
       repeating-linear-gradient(
           45deg,
-          var(--xh-diff-view-removed-fg) 0,
-          var(--xh-diff-view-removed-fg) 1.5px,
+          var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg)) 0,
+          var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg)) 1.5px,
           transparent 1.5px,
           transparent 3px
         )
         left / var(--xh-diff-view-change-bar, var(--xh-stroke-thick)) 100% no-repeat,
-      var(--xh-diff-view-removed-bg);
+      var(--xh-diff-view-removed-bg, var(--xh-diff-removed-bg));
   }
 
   /* 点开折叠格才露出来的那几行播一次入场；收起是硬切，不占一段退场窗口 */
@@ -151,16 +141,19 @@
 
   /* 行号跟着行的变更类型走：一眼扫下来数字本身就分出了增删 */
   [data-scope='diff-view'][data-part='line-number'][data-change='added'] {
-    color: var(--xh-diff-view-added-fg);
+    color: var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
   }
 
   [data-scope='diff-view'][data-part='line-number'][data-change='removed'] {
-    color: var(--xh-diff-view-removed-fg);
+    color: var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg));
   }
 
-  /* 并排视图两列之间的接缝：新侧的行号槽再补一条左边线 */
-  [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='line-number'][data-side='new'] {
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
+  /* 窄档的并排视图：一行的两侧改成上下两段，旧行在上、新行在下。
+     行由横排 flex 换成两列栅格——行号一列、正文一列，一行里的四个格按 DOM 次序
+     自然落成两行，正文列因此只按单侧的最长行撑宽，不再是两侧之和 */
+  [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='row']:not([hidden]) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
   }
 
   /* white-space: pre 保留缩进；每一侧各占一半宽 */
@@ -177,11 +170,11 @@
   }
 
   [data-scope='diff-view'][data-part='line-content'][data-change='added'] {
-    color: var(--xh-diff-view-added-fg);
+    color: var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
   }
 
   [data-scope='diff-view'][data-part='line-content'][data-change='removed'] {
-    color: var(--xh-diff-view-removed-fg);
+    color: var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg));
   }
 
   /* 并排视图里空的那一侧只有底色，没有内容 */
@@ -225,42 +218,33 @@
   }
 
   [data-scope='diff-view'][data-part='inline-change'][data-change='added'] {
-    background: color-mix(in oklab, var(--xh-diff-view-added-fg) 18%, transparent);
+    background: color-mix(in oklab, var(--xh-diff-view-added-fg, var(--xh-diff-added-fg)) 18%, transparent);
   }
 
   [data-scope='diff-view'][data-part='inline-change'][data-change='removed'] {
-    background: color-mix(in oklab, var(--xh-diff-view-removed-fg) 18%, transparent);
-  }
-
-  /* 记号只上色，不带任何盒模型：多一点都会破坏对齐 */
-  [data-scope='diff-view'][data-part='root'] {
-    --xh-diff-view-comment-fg: var(--xh-fg-muted);
-    --xh-diff-view-punctuation-fg: var(--xh-fg-subtle);
-    --xh-diff-view-string-fg: var(--xh-syntax-string);
-    --xh-diff-view-number-token-fg: var(--xh-syntax-number);
-    --xh-diff-view-keyword-fg: var(--xh-syntax-keyword);
+    background: color-mix(in oklab, var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg)) 18%, transparent);
   }
 
   [data-scope='diff-view'][data-part='token'][data-kind='comment'] {
-    color: var(--xh-diff-view-comment-fg);
+    color: var(--xh-diff-view-comment-fg, var(--xh-fg-muted));
     font-style: italic;
   }
 
   [data-scope='diff-view'][data-part='token'][data-kind='string'] {
-    color: var(--xh-diff-view-string-fg);
+    color: var(--xh-diff-view-string-fg, var(--xh-syntax-string));
   }
 
   [data-scope='diff-view'][data-part='token'][data-kind='number'] {
-    color: var(--xh-diff-view-number-token-fg);
+    color: var(--xh-diff-view-number-token-fg, var(--xh-syntax-number));
   }
 
   [data-scope='diff-view'][data-part='token'][data-kind='keyword'] {
-    color: var(--xh-diff-view-keyword-fg);
+    color: var(--xh-diff-view-keyword-fg, var(--xh-syntax-keyword));
     font-weight: var(--xh-diff-view-keyword-weight, var(--xh-font-weight-semibold));
   }
 
   [data-scope='diff-view'][data-part='token'][data-kind='punctuation'] {
-    color: var(--xh-diff-view-punctuation-fg);
+    color: var(--xh-diff-view-punctuation-fg, var(--xh-fg-subtle));
   }
 
   /* 折起来的那一行：整行都是展开按钮 */
@@ -302,10 +286,6 @@
 
   [data-scope='diff-view'][data-part='gap-trigger']:active {
     scale: var(--xh-motion-scale-press);
-  }
-
-  [data-scope='diff-view'][data-part='gap-trigger']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='diff-view'][data-part='empty'] {
@@ -372,6 +352,19 @@
     --xh-_diff-view-font-size: var(--xh-control-font-lg);
     --xh-_diff-view-px: var(--xh-space-4);
     --xh-_diff-view-py: var(--xh-space-3);
+  }
+
+  /* 宽档：视口放得下两列，并排视图回到一行两侧 */
+  @media (min-width: 1024px) {
+    [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='row']:not([hidden]) {
+      display: flex;
+    }
+
+    /* 两列之间的接缝：新侧的行号槽再补一条左边线。只在并排时是接缝，
+       堆叠时它落在段首，成了一条与任何东西都不相接的竖线 */
+    [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='line-number'][data-side='new'] {
+      border-inline-start: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
+    }
   }
 
   /*

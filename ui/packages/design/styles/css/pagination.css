@@ -170,6 +170,12 @@
     box-shadow: var(--xh-pagination-item-shadow, var(--xh-_pagination-highlight));
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='pagination'][data-part='item'][data-current]:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   [data-scope='pagination'][data-part='item'][data-current]:hover {
     border-color: var(--xh-pagination-item-border-selected-hover, var(--xh-_pagination-selected-bg-hover));
     background: var(--xh-pagination-item-bg-selected-hover, var(--xh-_pagination-selected-bg-hover));
@@ -187,39 +193,16 @@
   [data-scope='pagination'][data-part='ellipsis-trigger'] {
     color: var(--xh-pagination-ellipsis-trigger-fg, var(--xh-fg-subtle));
   }
-  /* 每页条数控制器：原生 select，抹掉系统外观后与页码格子共用同一副骨架。
-     箭头用背景图而非伪元素——原生 select 不生成 ::before */
+  /* 每页条数控制器的挂载点：里头装的是库里的 select，控件本身的描边、底色、聚焦环与
+     浮层都归 select 那份皮肤，这一格只把它摆进分页行 */
   [data-scope='pagination'][data-part='page-size-select'] {
+    display: inline-flex;
     flex: none;
-    block-size: var(--xh-pagination-item-h, var(--xh-_pagination-item-size));
-    padding-inline: var(--xh-pagination-item-px, var(--xh-_pagination-item-px));
-    /* 右侧让开箭头 */
-    padding-inline-end: calc(
-      var(--xh-pagination-item-px, var(--xh-_pagination-item-px)) +
-        var(--xh-icon-size, var(--xh-glyph-size-text)) + var(--xh-space-1)
-    );
-    border: var(--xh-stroke-thin) solid var(--xh-pagination-page-size-border, var(--xh-border-default));
-    border-radius: var(--xh-pagination-item-radius, var(--xh-shape-control));
-    background: var(--xh-pagination-page-size-bg, var(--xh-bg-surface));
-    color: var(--xh-pagination-item-fg, var(--xh-fg-default));
-    font-size: var(--xh-pagination-font-size, var(--xh-_pagination-font-size));
-    line-height: var(--xh-leading-none);
-    appearance: none;
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    align-items: center;
   }
 
-  /* 描边与填充一起换：只加深一圈描边的话，指针停在控件正中时那点变化落在视野外围，
-     旁边那排页码格子换的是整块底色，两者的回执强度对不上 */
-  [data-scope='pagination'][data-part='page-size-select']:hover:not(:disabled) {
-    border-color: var(--xh-pagination-page-size-border-hover, var(--xh-border-strong));
-    background: var(--xh-pagination-page-size-bg-hover, var(--xh-bg-subtle-hover));
-  }
-
-  [data-scope='pagination'][data-part='page-size-select']:disabled {
-    color: var(--xh-fg-disabled);
+  [data-scope='pagination'][data-part='page-size-select'][hidden] {
+    display: none;
   }
 
   /* 信息区：一段次要文字，与页码格子同一条基线 */
@@ -275,12 +258,15 @@
     /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，面板继承它限高；
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
     --xh-_pagination-available-h: 100vh;
+    /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+    --xh-_pagination-available-w: 100vw;
 
     /* 页码面板的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊一条竖灰带 */
     --xh-scrollbar-track-bg: transparent;
 
     position: fixed;
-    z-index: var(--xh-pagination-layer, var(--xh-layer-popover));
+    z-index: var(--xh-pagination-layer, var(--xh-_layer, var(--xh-layer-popover)));
     /* 空壳不吃指针：省略位与面板之间那段间隙要能点得穿 */
     pointer-events: none;
   }
@@ -296,7 +282,8 @@
     flex-flow: row wrap;
     gap: var(--xh-pagination-gap, var(--xh-space-1));
     /* 页码不可预知有多少：不限高就整块伸出视口且滚不到 */
-    max-inline-size: var(--xh-pagination-content-max-w, var(--xh-overlay-max-w));
+    /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+    max-inline-size: min(var(--xh-pagination-content-max-w, var(--xh-overlay-max-w)), var(--xh-_pagination-available-w));
     max-block-size: min(
       var(--xh-pagination-content-max-h, var(--xh-overlay-max-h)),
       var(--xh-_pagination-available-h)
@@ -348,6 +335,18 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
     mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  }
+
+  /* 省略位不写内容时画三点：折进去那几页的入口，空着就是一格看不出能点的空白 */
+  [data-scope='pagination'][data-part='ellipsis-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-ellipsis) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-ellipsis) center / contain no-repeat;
   }
 
   /* rtl 下页序从右往左走，箭头跟着指向行进方向 */

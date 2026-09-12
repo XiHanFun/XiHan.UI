@@ -2,9 +2,28 @@
  * 聚焦环的公共层：全库共用一份。
  *
  * 解剖给每个部件打上 data-scope 与 data-part，键盘焦点落在哪个部件上，环就由这里画：
- * 粗细取 --xh-ring-width，颜色取 --xh-ring-focus，偏移取 --xh-_ring-offset（默认 --xh-ring-offset）。
+ * 粗细取 --xh-ring-width，颜色取 --xh-_ring-color（默认 --xh-ring-focus），
+ * 偏移取 --xh-ring-offset——这个令牌是负的一个环宽，环的外沿与元素边框外沿重合，
+ * 元素聚焦前后占的地方一样大。全库只有这一种偏移，要另画的组件把整条环重写。
  *
- * 往内收的档由组件给 --xh-_ring-offset 赋值，赋值写在自己的 :focus-visible 规则里。
+ * 环往内收之后，内侧紧挨着的是环压着的那块面。面是实心的那几档，环色与面同族、贴上去就
+ * 看不出来；那几档在各自皮肤的 :focus-visible 规则里把 --xh-_ring-color 灌成 currentColor，
+ * 环随之取这块面配对的前景色——那一支色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+ * 取的是「面配对的前景色」，不是语气色：环仍然不随 data-tone 走，没有实心面的那些档
+ * 一律是 --xh-ring-focus 这一支。
+ *
+ * 灌 currentColor 的档要同时成立三件事：
+ *   一、面画在谁身上——画在祖先上（标签里那颗透空的关闭钮坐在标签那块实心底上）时
+ *       规则写成后代选择器，槽仍然灌在拿焦点的那个节点上；
+ *   二、部件得有 color——圆点、滑块这类没有字的部件先补一支与面配对的墨色，
+ *       不补则 currentColor 取到继承下来的正文色或原生控件的 UA 前景色；
+ *       只有一档要换的（开关选中的轨道）把那支色直接写进槽，不绕 currentColor；
+ *   三、面被换走的档要退出——失效档把面换成置灰底、前景换成置灰色或透明，
+ *       中性轻档把实心底换成灰底，currentColor 在这些档上会把环跟着糊掉甚至整条画成透明。
+ *       靠收窄选择器退回本份的默认值，或把槽显式写回 var(--xh-ring-focus)。
+ *
+ * 槽在这里只留一个默认值，名单不收在本份里——谁的面是实心的由那份皮肤自己知道，
+ * 也只有引了那份皮肤的人该为它付字节。
  * :focus-visible 只匹配拿着焦点的那一个节点，祖先不匹配，所以这个槽不会被后代读到。
  *
  * 选择器停在两个属性加一个伪类（0,3,0）：与组件皮肤里
@@ -12,17 +31,11 @@
  * 要另画的组件照写即可压过；同时压过 forced-colors.css 里 (0,2,0) 的状态环，
  * 高对比档里键盘焦点仍然压在选中、展开这类状态之上。
  *
- * 排在全部组件皮肤之前：组件不必为了改一个偏移把整条环重写一遍。
+ * 排在全部组件皮肤之前：组件不必为了换个环色把整条环重写一遍。
  */
 @layer xihan.components {
-  :root {
-    /* 往内收的那一档：环画在元素内沿，宽度就是环自己的宽度。
-       要内收的组件把它灌进 --xh-_ring-offset。 */
-    --xh-_ring-inset: calc(-1 * var(--xh-ring-width));
-  }
-
   [data-scope][data-part]:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-_ring-offset, var(--xh-ring-offset));
+    outline: var(--xh-ring-width) solid var(--xh-_ring-color, var(--xh-ring-focus));
+    outline-offset: var(--xh-ring-offset);
   }
 }

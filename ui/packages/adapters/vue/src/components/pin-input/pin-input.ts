@@ -4,6 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFormControlProps } from '../form/use-form-control'
 import { providePinInput, usePinInputContext } from './context'
 import { usePinInput } from './use-pin-input'
 
@@ -18,26 +19,26 @@ export type PinInputRootSlotProps = Pick<
 export const XhPinInputRoot = defineComponent({
   name: 'XhPinInputRoot',
   props: {
-    // default: undefined 表示非受控
-    value: { type: Array as PropType<string[]>, default: undefined },
-    defaultValue: { type: Array as PropType<string[]>, default: undefined },
-    // 缺省值由 connect 给出，这里一律 default: undefined
-    length: { type: Number, default: undefined },
-    type: { type: String as PropType<PinInputType>, default: undefined },
-    pattern: { type: String, default: undefined },
+    // 缺席值 undefined 表示非受控
+    value: { type: Array as PropType<string[]> },
+    defaultValue: { type: Array as PropType<string[]> },
+    // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
+    length: { type: Number },
+    type: { type: String as PropType<PinInputType> },
+    pattern: { type: String },
     mask: Boolean,
     otp: Boolean,
-    placeholder: { type: String, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    required: Boolean,
-    invalid: Boolean,
+    placeholder: { type: String },
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     blurOnComplete: Boolean,
-    name: { type: String, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<PinInputTranslations>>, default: undefined },
+    name: { type: String },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<PinInputTranslations>> },
   },
   // value-change 携带 { value, valueAsString }，update:value 携带裸数组
   emits: {
@@ -54,7 +55,7 @@ export const XhPinInputRoot = defineComponent({
       emit('update:value', details.value)
     }
     const onValueComplete: PinInputProps['onValueComplete'] = details => emit('value-complete', details)
-    const ctx = usePinInput(withXhConfig('pin-input', props) as PinInputProps, { onValueChange, onValueComplete })
+    const ctx = usePinInput(withXhConfig('pin-input', useFormControlProps(props)) as PinInputProps, { onValueChange, onValueComplete })
     providePinInput(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

@@ -27,6 +27,7 @@ import { fileURLToPath } from 'node:url'
 const uiRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const HEADLESS_SRC = join(uiRoot, 'packages/engine/headless/src')
 const STYLES_DIR = join(uiRoot, 'packages/design/styles/css')
+const FAMILY_STYLES_DIR = join(uiRoot, 'packages/design/styles/family')
 
 /** connect 里发射的 data-* 键，取单引号写法（本仓一律如此）。 */
 const RE_DATA_KEY = /'(data-[\w-]+)'\s*:/g
@@ -76,6 +77,8 @@ const HOOK_ATTRS = {
  * 键写成「组件:属性」，值写清承载它的是哪一条。
  */
 const HOOKS = {
+  'pagination:data-placement': '省略页码弹层暴露定位引擎实际落点，供自定义皮肤读取；标准皮肤没有箭头，坐标由 positioner 内联值承载',
+  'side-nav:data-placement': '侧栏弹出分支暴露定位引擎实际落点，供自定义皮肤读取；标准皮肤没有箭头，坐标由 positioner 内联值承载',
   // 显隐一律由 hidden 承载：收起时留着节点只加 hidden，data-state 是同一件事的同名镜像
   'alert:data-state': '开合的显隐由 root 上的 hidden 承载',
   'avatar:data-state': '图与兜底各自的显隐由自己的 hidden 承载',
@@ -108,6 +111,7 @@ const HOOKS = {
   'transfer:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
   'tree:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
   'tree-select:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
+  'tree-select:data-error': '懒分支失败不预设错误文案或重试按钮；这一位留给作者结构接线，默认皮肤不伪造局部错误面',
   // 只读：观感落在真正的输入件身上
   'field:data-readonly': '只读的观感落在各输入件自己身上（text-field.css:155 那一类），这一层只往下传状态',
   'field-array:data-readonly': '行数改不动的观感落在三个把手的 aria-disabled 上，行里控件的只读由作者自己置，这一层只往下传状态',
@@ -145,6 +149,8 @@ const HOOKS = {
   'scroll-area:data-reveal-mode': '露面策略是入参；露不露由 data-state=visible|hidden 表出',
   'scrollbar:data-reveal-mode': '露面策略是入参；露不露由 data-state=visible|hidden 表出',
   'table:data-sortable': '这一列排不排得了序。排序钮不排序时置 hidden，箭头由 data-sort 画',
+  'tag-group:data-deletable': '这一枚摘不摘得掉：摘除钮收不收由它自己的 hidden 承载，键盘 Delete / Backspace 路读这一位定夺',
+  'tags-input:data-editing': '正在就地编辑：预览（tag 的 root）与编辑框的切换由两边各自的 hidden 承载',
   'tags-input:data-overflowing': '越过上限时 data-at-max 同时为真（前者是 count > max，后者是 count >= max），观感由 control 上的 at-max 描边一并承载，两者不另分档',
   'timer:data-action': '控制钮这一按是开始还是暂停，换的是文案不是外观',
   'tool-call:data-settled': '跑完没跑完看的是状态文字与用时那两格；跑砸了另有 data-errored 换描边色',
@@ -153,7 +159,6 @@ const HOOKS = {
   'timestamp:data-format': '按日期、时间还是两者一起渲染，换的是文本不是外观',
   'tour:data-last': '走到末步。末步换的是按钮文案不是外观',
   'transfer:data-one-way': '单向还是双向。少一组钮由 hidden 承载',
-  'tree-select:data-indeterminate': '解剖里没有勾选框部件，三态没有可画的地方；选中与否由 data-selected 表出',
 }
 
 /** 去掉注释，注释里的选择器不算数。 */
@@ -295,6 +300,28 @@ for (const file of (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).s
           scopedConsume.set(scope, new Set())
         for (const attr of attrs)
           scopedConsume.get(scope).add(attr)
+      }
+    }
+  }
+}
+
+/* Family Recipe 选择器按 data-xh-* 角色跨组件生效。只把规则归给确实投影了该组角色的组件；
+   若把其中的 data-loading 当成全局消费，会错误宣称所有组件的 loading 都有视觉。 */
+for (const file of (await readdir(FAMILY_STYLES_DIR).catch(() => [])).filter(f => f.endsWith('.css')).sort()) {
+  const css = stripForcedColors(stripComments(await readFile(join(FAMILY_STYLES_DIR, file), 'utf8')))
+  for (const list of selectorLists(css)) {
+    for (const selector of splitTop(list, ',')) {
+      const attrs = [...selector.matchAll(RE_ATTR_IN_SELECTOR)].map(match => match[1]).filter(attr => attr !== 'data-scope')
+      const roles = attrs.filter(attr => attr.startsWith('data-xh-'))
+      if (roles.length === 0)
+        continue
+      for (const [component, componentAttrs] of emitted) {
+        if (!roles.every(role => componentAttrs.has(role)))
+          continue
+        if (!scopedConsume.has(component))
+          scopedConsume.set(component, new Set())
+        for (const attr of attrs)
+          scopedConsume.get(component).add(attr)
       }
     }
   }

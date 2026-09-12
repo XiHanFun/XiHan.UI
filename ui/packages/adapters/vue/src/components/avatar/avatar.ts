@@ -12,10 +12,10 @@ export const XhAvatarRoot = defineComponent({
   name: 'XhAvatarRoot',
   props: {
     // 缺席即无来源，落回退态
-    src: { type: String, default: undefined },
-    alt: { type: String, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
+    src: { type: String },
+    alt: { type: String },
+    size: { type: String as PropType<Size> },
+    tone: { type: String as PropType<Tone> },
   },
   // status-change 携带 { status }
   emits: {

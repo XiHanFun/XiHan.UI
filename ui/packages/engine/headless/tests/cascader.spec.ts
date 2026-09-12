@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
-import type { RuntimeConfig } from '@xihan-ui/core'
+import type { Anchor, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
+import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
 import type { CascaderApi, CascaderNode, CascaderSchema } from '../src/cascader'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
@@ -257,10 +259,19 @@ interface ItemEls {
 
 interface Harness {
   api: () => CascaderApi
+  config: RuntimeConfig
+  presence: PresenceHandle | null
   trigger: HTMLButtonElement
   valueText: HTMLElement
   clear: HTMLButtonElement
   content: HTMLElement
+  positioner: HTMLElement
+  /** 引擎回报并写进 context 的位置结果。 */
+  position: () => PositionResult | null
+  /** 换掉锚点 / 浮层 ref，用来验它们缺席时不挂订阅。 */
+  setRef: (key: 'getAnchorEl' | 'getFloatingEl', value: () => HTMLElement | null) => void
+  /** 搜索词，Escape 的两拍按它分岔。 */
+  inputValue: () => string
   column: (level: number) => HTMLElement
   item: (value: string) => ItemEls
   /** 摘掉一个条目（模拟调用方换数据）。 */
@@ -284,9 +295,18 @@ interface Harness {
   tabStops: () => string[]
 }
 
+interface Options {
+  /** 定位引擎；不给即缺省，机器照常转移但不产出位置结果。 */
+  position?: PositionEnginePort
+  /** 本层被移出层栈时调一次，用来记拆除顺序。 */
+  onLayerDispose?: () => void
+  /** 注入真实 Presence，验证行为资源延迟到视觉退场完成后释放。 */
+  withPresence?: boolean
+}
+
 const runtimes: VanillaRuntime[] = []
 
-function mount(initial: Partial<Props> = {}): Harness {
+function mount(initial: Partial<Props> = {}, options: Options = {}): Harness {
   const doc = document
   const runtime = createVanillaRuntime()
   runtimes.push(runtime)
@@ -337,16 +357,30 @@ function mount(initial: Partial<Props> = {}): Harness {
   const service = createService(cascaderMachine, { props: () => props.get(), runtime, scope })
 
   const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+  const presence = options.withPresence
+    ? createPresence({ config, open: (initial.open ?? initial.defaultOpen) ?? false, onRenderedChange: () => {} })
+    : null
   service.refs.set('config', config)
-  service.refs.set('registerLayer', () => config.layerRegistry.register({
-    kind: 'popover',
-    node: () => content,
-    // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换
-    branches: () => [trigger],
-    isModal: () => false,
-    setModal: () => {},
-    surfaces: () => [],
-  }))
+  service.refs.set('presence', presence)
+  service.refs.set('registerLayer', () => {
+    const handle = config.layerRegistry.register({
+      kind: 'popover',
+      node: () => content,
+      // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换
+      branches: () => [trigger],
+      isModal: () => false,
+      surfaces: () => [],
+    })
+    return {
+      layer: handle.layer,
+      dispose: () => {
+        handle.dispose()
+        options.onLayerDispose?.()
+      },
+    }
+  })
+  if (options.position)
+    service.refs.set('position', options.position)
   service.refs.set('getAnchorEl', () => trigger)
   service.refs.set('getFloatingEl', () => positioner)
   service.refs.set('getContentEl', () => content)
@@ -379,10 +413,16 @@ function mount(initial: Partial<Props> = {}): Harness {
 
   return {
     api: () => connectCascader(service, normalizeProps),
+    config,
+    presence,
     trigger: trigger as HTMLButtonElement,
     valueText,
     clear: clear as HTMLButtonElement,
     content,
+    positioner,
+    position: () => service.context.get('position'),
+    setRef: (key, value) => service.refs.set(key, value),
+    inputValue: () => service.context.get('inputValue'),
     column: level => columns[level]!,
     item: value => items.get(value)!,
     removeItem: (value) => {
@@ -1055,6 +1095,7 @@ describe('roving tabindex 与 ARIA 骨架', () => {
 
 describe('空态占位', () => {
   const emptyProps = (h: Harness): Record<string, unknown> => h.api().getEmptyProps() as Record<string, unknown>
+  const loadingProps = (h: Harness): Record<string, unknown> => h.api().getLoadingProps() as Record<string, unknown>
 
   it('collection 为空：content 标 data-empty，占位露面', () => {
     const h = mount({ collection: [], defaultOpen: true })
@@ -1066,6 +1107,21 @@ describe('空态占位', () => {
     const h = mount({ defaultOpen: true })
     expect(h.content.hasAttribute('data-empty')).toBe(false)
     expect(emptyProps(h).hidden).toBe(true)
+  })
+
+  it('首次取数且当前视图无候选：Loading 出面、Empty 让位，两者都是独立状态区', () => {
+    const h = mount({ collection: [], defaultOpen: true, loading: true })
+    expect(h.content.getAttribute('aria-busy')).toBe('true')
+    expect(emptyProps(h)).toMatchObject({ role: 'status', hidden: true })
+    expect(loadingProps(h)).toMatchObject({ role: 'status', hidden: undefined })
+  })
+
+  it('已有候选或祖先列时加载只报 aria-busy，不用状态块盖掉可操作内容', () => {
+    const h = mount({ defaultOpen: true, loading: true })
+    expect(h.content.getAttribute('aria-busy')).toBe('true')
+    expect(loadingProps(h).hidden).toBe(true)
+    expect(h.column(0).hasAttribute('hidden')).toBe(false)
+    expect(h.item('zhejiang').item.hasAttribute('hidden')).toBe(false)
   })
 
   it('搜索视图看候选：无匹配时露面且候选列表标 data-empty，有匹配即收起', () => {
@@ -1080,9 +1136,365 @@ describe('空态占位', () => {
 
   it('文案默认英文，translations 逐键覆盖', () => {
     const h = mount()
-    expect(h.api().translations).toEqual({ empty: 'No data', noMatch: 'No matches', column: 'Options', searchList: 'Search results', clearTrigger: 'Clear' })
-    h.setProps({ translations: { empty: '暂无数据', clearTrigger: '清空' } })
-    expect(h.api().translations).toEqual({ empty: '暂无数据', noMatch: 'No matches', column: 'Options', searchList: 'Search results', clearTrigger: '清空' })
+    expect(h.api().translations).toEqual({ empty: 'No data', noMatch: 'No matches', loading: 'Loading', column: 'Options', searchInput: 'Search', searchList: 'Search results', clearTrigger: 'Clear' })
+    h.setProps({ translations: { empty: '暂无数据', loading: '正在加载', clearTrigger: '清空' } })
+    expect(h.api().translations).toEqual({ empty: '暂无数据', noMatch: 'No matches', loading: '正在加载', column: 'Options', searchInput: 'Search', searchList: 'Search results', clearTrigger: '清空' })
     expect(h.clear.getAttribute('aria-label')).toBe('清空')
+  })
+})
+
+describe('搜索候选与列项共用选择状态', () => {
+  const searchProps = (h: Harness, path: string[]): Record<string, unknown> =>
+    h.api().getSearchItemProps({ path }) as Record<string, unknown>
+
+  it.each([
+    { strategy: 'all', expected: ['zhejiang/hangzhou', 'zhejiang/hangzhou/xihu', 'zhejiang/hangzhou/yuhang'] },
+    { strategy: 'parent', expected: ['zhejiang/hangzhou'] },
+    { strategy: 'child', expected: ['zhejiang/hangzhou/xihu', 'zhejiang/hangzhou/yuhang'] },
+  ] as const)('$strategy 收敛值仍让分支与叶候选显示 checked', ({ strategy, expected }) => {
+    const h = mount({
+      multiple: true,
+      cascade: true,
+      checkedStrategy: strategy,
+      changeOnSelect: true,
+      searchable: true,
+      defaultOpen: true,
+    })
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'zhejiang' })
+    click(h.item('hangzhou').item)
+    expect(h.value().map(path => path.join('/'))).toEqual(expected)
+
+    h.send({ type: 'INPUT.CHANGE', value: 'Hangzhou' })
+    for (const path of [
+      ['zhejiang', 'hangzhou'],
+      ['zhejiang', 'hangzhou', 'xihu'],
+      ['zhejiang', 'hangzhou', 'yuhang'],
+    ]) {
+      const props = searchProps(h, path)
+      expect(props['data-state']).toBe('checked')
+      expect(props['aria-selected']).toBe('true')
+      expect(props['aria-checked']).toBe('true')
+    }
+  })
+
+  it('部分级联同时让列项与可搜索分支报告 indeterminate / mixed', () => {
+    const h = mount({
+      multiple: true,
+      cascade: true,
+      checkedStrategy: 'child',
+      changeOnSelect: true,
+      searchable: true,
+      defaultOpen: true,
+      defaultValue: [['zhejiang', 'hangzhou', 'xihu']],
+    })
+    h.send({ type: 'INPUT.CHANGE', value: 'Zhejiang' })
+
+    expect(h.item('zhejiang').item.getAttribute('data-state')).toBe('indeterminate')
+    const props = searchProps(h, ['zhejiang'])
+    expect(props['data-state']).toBe('indeterminate')
+    expect(props['aria-selected']).toBe('false')
+    expect(props['aria-checked']).toBe('mixed')
+  })
+
+  it('节点禁用与整控件禁用都传给搜索候选，整控件禁用时不保留虚假高亮', () => {
+    const nodeDisabled = mount({ searchable: true, defaultOpen: true })
+    nodeDisabled.send({ type: 'INPUT.CHANGE', value: 'Wenzhou' })
+    const nodeProps = searchProps(nodeDisabled, ['zhejiang', 'wenzhou'])
+    expect(nodeProps['aria-disabled']).toBe('true')
+    expect(nodeProps['data-disabled']).toBe('')
+
+    nodeDisabled.setProps({ disabled: true })
+    nodeDisabled.send({ type: 'INPUT.CHANGE', value: 'Xihu' })
+    const props = searchProps(nodeDisabled, ['zhejiang', 'hangzhou', 'xihu'])
+    expect(nodeDisabled.api().searchHighlightIndex).toBe(-1)
+    expect(props['aria-disabled']).toBe('true')
+    expect(props['data-disabled']).toBe('')
+    expect(props['data-highlighted']).toBeUndefined()
+  })
+})
+
+/** 记账用的假定位引擎：每次 attach 的入参原样收下，撤订阅也记一笔。 */
+function fakeEngine(): {
+  port: PositionEnginePort
+  calls: { anchor: Anchor, floating: HTMLElement, options: PositionOptions, emit: (r: PositionResult) => void }[]
+  stops: () => number
+} {
+  const calls: { anchor: Anchor, floating: HTMLElement, options: PositionOptions, emit: (r: PositionResult) => void }[] = []
+  let stops = 0
+  return {
+    calls,
+    stops: () => stops,
+    port: {
+      attach: (anchor, floating, options, onResult) => {
+        calls.push({ anchor, floating, options, emit: onResult })
+        return () => {
+          stops += 1
+        }
+      },
+    },
+  }
+}
+
+/** flush 在 vanilla 运行时是一枚微任务；消解层的交互再等一枚微任务武装。 */
+function tick(): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, 0))
+}
+
+/** 等 n 帧：焦点域的落焦重试与归还都排在 rAF 上。 */
+async function frames(n = 5): Promise<void> {
+  for (let i = 0; i < n; i++)
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+}
+
+function pointerDown(el: HTMLElement): void {
+  el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true }))
+}
+
+const RESULT: PositionResult = { x: 12, y: 34, placement: 'bottom-start', hidden: false }
+
+describe('cascader 浮层定位', () => {
+  it('等 DOM 落定才挂：进入展开态那一刻还没碰引擎，一拍之后才把锚点与浮层交进去', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.send({ type: 'OPEN' })
+    expect(engine.calls).toHaveLength(0)
+    await tick()
+    expect(engine.calls).toHaveLength(1)
+    expect(engine.calls[0]!.anchor).toBe(h.trigger)
+    expect(engine.calls[0]!.floating).toBe(h.positioner)
+  })
+
+  it('交给引擎的参数：缺省 bottom-start 与 8px，坐标系走视口，要可用空间，不要箭头', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.send({ type: 'OPEN' })
+    await tick()
+    const options = engine.calls[0]!.options
+    expect(options.placement).toBe('bottom-start')
+    expect(options.offset).toBe(8)
+    expect(options.strategy).toBe('fixed')
+    expect(options.size).toBe(true)
+    expect(options.dir).toBeUndefined()
+    expect(options.arrow).toBeUndefined()
+  })
+
+  it('placement / offset / dir 由 props 覆盖', async () => {
+    const engine = fakeEngine()
+    const h = mount({ placement: 'top-end', offset: 2, dir: 'rtl' }, { position: engine.port })
+    h.send({ type: 'OPEN' })
+    await tick()
+    const options = engine.calls[0]!.options
+    expect(options.placement).toBe('top-end')
+    expect(options.offset).toBe(2)
+    expect(options.dir).toBe('rtl')
+  })
+
+  it('引擎回报的结果写进 context，连接层据此认落位', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.send({ type: 'OPEN' })
+    await tick()
+    expect((h.api().getPositionerProps() as Record<string, unknown>)['data-positioned']).toBeUndefined()
+    engine.calls[0]!.emit(RESULT)
+    expect(h.position()).toEqual(RESULT)
+    expect((h.api().getPositionerProps() as Record<string, unknown>)['data-positioned']).toBe('')
+  })
+
+  it('重新展开先把上一轮坐标清掉：再次落位之前不算已定位', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.send({ type: 'OPEN' })
+    await tick()
+    engine.calls[0]!.emit(RESULT)
+    h.send({ type: 'CLOSE' })
+    // 收起中坐标还留着，退场要用
+    expect(h.position()).toEqual(RESULT)
+    h.send({ type: 'OPEN' })
+    expect(h.position()).toBeNull()
+  })
+
+  it('收起即撤订阅', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.send({ type: 'OPEN' })
+    await tick()
+    expect(engine.stops()).toBe(0)
+    h.send({ type: 'CLOSE' })
+    expect(engine.stops()).toBe(1)
+  })
+
+  it('展开当拍又收起：那一拍到来时不再挂订阅', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.send({ type: 'OPEN' })
+    h.send({ type: 'CLOSE' })
+    await tick()
+    expect(engine.calls).toHaveLength(0)
+  })
+
+  it('锚点或浮层缺席就不挂', async () => {
+    const engine = fakeEngine()
+    const noAnchor = mount({}, { position: engine.port })
+    noAnchor.setRef('getAnchorEl', () => null)
+    noAnchor.send({ type: 'OPEN' })
+    await tick()
+    expect(engine.calls).toHaveLength(0)
+
+    const noFloating = mount({}, { position: engine.port })
+    noFloating.setRef('getFloatingEl', () => null)
+    noFloating.send({ type: 'OPEN' })
+    await tick()
+    expect(engine.calls).toHaveLength(0)
+  })
+
+  it('没有引擎照常转移，只是没有位置结果', async () => {
+    const h = mount()
+    h.send({ type: 'OPEN' })
+    await tick()
+    expect(h.state()).toBe('open')
+    expect(h.position()).toBeNull()
+  })
+})
+
+describe('cascader 真实退场资源', () => {
+  it('逻辑关闭立即失活，Layer 与焦点域等 Presence 完成才释放；中途重开复用原登记', () => {
+    const h = mount({ defaultOpen: true }, { withPresence: true })
+    const presence = h.presence!
+    const original = h.config.layerRegistry.list()[0]
+    expect(original).toBeDefined()
+
+    const leases: ExitLease[] = []
+    const stopExit = presence.onBeforeExit(() => {
+      leases.push(presence.claimExit(`cascader exit ${leases.length + 1}`))
+    })
+    h.send({ type: 'CLOSE' })
+    const closing = h.api().getContentProps() as Record<string, unknown>
+    expect(closing.inert).toBe(true)
+    expect(closing['aria-hidden']).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+    presence.update(false)
+    expect(leases).toHaveLength(1)
+
+    h.send({ type: 'OPEN' })
+    expect(leases[0]!.settled).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+
+    h.send({ type: 'CLOSE' })
+    presence.update(false)
+    expect(leases).toHaveLength(2)
+    leases[1]!.done()
+    expect(h.config.layerRegistry.list()).toHaveLength(0)
+
+    stopExit()
+    presence.dispose()
+  })
+})
+
+describe('cascader 浮层的层与消解', () => {
+  it('escape 收起并把关闭原因报成 esc', async () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange })
+    h.send({ type: 'OPEN' })
+    await tick()
+    press(document.body, 'Escape')
+    expect(h.state()).toBe('closed')
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'esc' })
+  })
+
+  it('escape 分两拍：搜索词还在就先清词回列视图，词已空才收浮层', async () => {
+    const h = mount({ searchable: true })
+    h.send({ type: 'OPEN' })
+    await tick()
+    h.send({ type: 'INPUT.CHANGE', value: 'Xihu' })
+    press(document.body, 'Escape')
+    expect(h.state()).toBe('open')
+    expect(h.inputValue()).toBe('')
+    press(document.body, 'Escape')
+    expect(h.state()).toBe('closed')
+  })
+
+  it('层外按下指针收起并把关闭原因报成 interact-outside', async () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange })
+    h.send({ type: 'OPEN' })
+    await tick()
+    pointerDown(document.body)
+    expect(h.state()).toBe('closed')
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'interact-outside' })
+  })
+
+  it('收起之后这一层不再吃 Escape', async () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange })
+    h.send({ type: 'OPEN' })
+    await tick()
+    h.send({ type: 'CLOSE' })
+    onOpenChange.mockClear()
+    press(document.body, 'Escape')
+    expect(onOpenChange).not.toHaveBeenCalled()
+  })
+
+  it('逆序拆：先撤焦点域与消解层的订阅，最后才把层移出栈', async () => {
+    const order: string[] = []
+    const h = mount({}, { onLayerDispose: () => order.push('layer') })
+    h.send({ type: 'OPEN' })
+    await tick()
+    const remove = document.removeEventListener.bind(document)
+    const spy = vi.spyOn(document, 'removeEventListener').mockImplementation(((type: string, listener: EventListener, opts?: boolean | EventListenerOptions) => {
+      // focusout 只有焦点域摘、pointerdown 只有消解层摘，拿它们当各自的拆除标记
+      if (type === 'focusout')
+        order.push('focus-scope')
+      if (type === 'pointerdown')
+        order.push('dismiss')
+      remove(type, listener, opts)
+    }) as typeof document.removeEventListener)
+    h.send({ type: 'CLOSE' })
+    spy.mockRestore()
+    expect(order).toEqual(['focus-scope', 'dismiss', 'layer'])
+  })
+})
+
+describe('cascader 展开时的焦点', () => {
+  it('有焦点锚点时焦点落在那个条目上，多列时落在锚点所在的那一列里', async () => {
+    const h = mount({ defaultValue: ['zhejiang', 'hangzhou', 'xihu'] })
+    h.send({ type: 'OPEN' })
+    await frames()
+    expect(h.focusedPath()).toEqual(['zhejiang', 'hangzhou', 'xihu'])
+    expect(document.activeElement).toBe(h.item('xihu').item)
+  })
+
+  it('指针打开且无选中值：不落锚点，焦点歇在认领着 Tab 位的根列上', async () => {
+    const h = mount()
+    h.send({ type: 'OPEN' })
+    await frames()
+    expect(h.focusedPath()).toBeNull()
+    expect(h.column(0).getAttribute('tabindex')).toBe('0')
+    expect(document.activeElement).toBe(h.column(0))
+  })
+
+  it('关掉之后焦点归还 trigger——展开之前焦点在 body 上也一样', async () => {
+    const h = mount({ defaultValue: ['macau'] })
+    expect(document.activeElement).toBe(document.body)
+    h.send({ type: 'OPEN' })
+    await frames()
+    h.send({ type: 'CLOSE' })
+    await frames()
+    expect(document.activeElement).toBe(h.trigger)
+  })
+
+  it('tab 与层外交互关掉的那两路都把焦点让出去，不往回抢', async () => {
+    const byTab = mount({ defaultValue: ['macau'] })
+    byTab.send({ type: 'OPEN' })
+    await frames()
+    byTab.send({ type: 'CLOSE', src: 'tab' })
+    await frames()
+    expect(document.activeElement).not.toBe(byTab.trigger)
+
+    const byOutside = mount({ defaultValue: ['macau'] })
+    byOutside.send({ type: 'OPEN' })
+    await frames()
+    byOutside.send({ type: 'CLOSE', src: 'interact-outside' })
+    await frames()
+    expect(document.activeElement).not.toBe(byOutside.trigger)
   })
 })

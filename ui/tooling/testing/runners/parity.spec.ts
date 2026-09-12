@@ -49,6 +49,8 @@ import {
   infiniteScrollSuite,
   inputGroupSuite,
   jsonViewerSuite,
+  kbdGroupSuite,
+  kbdSuite,
   layoutSuite,
   listSuite,
   loadingBarSuite,
@@ -107,10 +109,12 @@ import {
 } from '../src'
 
 beforeEach(() => {
+  document.documentElement.style.setProperty('--xh-breakpoint-md', '768px')
   vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
 })
 
 afterEach(() => {
+  document.documentElement.style.removeProperty('--xh-breakpoint-md')
   document.body.innerHTML = ''
   vi.unstubAllGlobals()
 })
@@ -216,6 +220,8 @@ const SUITES: readonly ConformanceSuite[] = [
   timerSuite,
   heatmapSuite,
   downloadTriggerSuite,
+  kbdSuite,
+  kbdGroupSuite,
   hotkeysSuite,
   imageCropperSuite,
   signaturePadSuite,

@@ -2,18 +2,19 @@
 
 XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式只服务于一件事：**让「组件的行为」独立于「渲染它的框架」存在**。
 
-## 一个组件的四份产物
+## 一个组件的五份产物
 
-以对话框为例，`dialog` 这个组件在仓库里落成四处：
+以对话框为例，`dialog` 这个组件在仓库里落成五处：
 
 | 产物 | 位置 | 内容 |
 | --- | --- | --- |
 | 无头内核 | `packages/engine/headless/src/dialog/` | 解剖、状态机、键盘规格表、`connect` |
 | Vue 组件 | `packages/adapters/vue/src/components/dialog/` | `XhDialogRoot` 等一组 `defineComponent` |
+| React 组件 | `packages/adapters/react/src/components/dialog/` | `XhDialogRoot` 等函数组件与 hooks |
 | 自定义元素 | `packages/adapters/web-components/src/elements/dialog.ts` | `<xh-dialog>`，Light-DOM 行为宿主 |
 | 皮肤 | `packages/design/styles/css/dialog.css` | 纯 CSS，按 `data-*` 选中 |
 
-四份里只有第一份包含逻辑。后三份分别回答「怎么把属性挂到 Vue 的 vnode 上」「怎么把属性挂到作者手写的 DOM 上」「这些属性长什么样」。
+组件行为由无头内核定义；三个适配器分别将属性与事件接到 Vue、React 和作者的 DOM，皮肤决定这些状态的外观。
 
 ## 分层与依赖矩阵
 
@@ -36,6 +37,7 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式只服务于一
 | 3 | `styles` | —（纯 CSS，不得依赖任何 JS 包） |
 | 3 | `backgrounds` | `core` `motion` |
 | 4 | `vue` | `core` `headless` `position` `code-highlight` `tokens` `backgrounds` `sound` `motion` `pointer` |
+| 4 | `react` | `core` `headless` `position` `code-highlight` `tokens` `backgrounds` `sound` `motion` `pointer` |
 | 4 | `web-components` | `core` `headless` `position` `code-highlight` `tokens` `backgrounds` `motion` `pointer` |
 
 除分层外还有三条硬规则，同样由门禁执行：
@@ -52,7 +54,7 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式只服务于一
 用户点击
    │
    ▼
-适配器把 DOM 事件交给 connect 产出的 onClick        （vue / web-components）
+适配器把 DOM 事件交给 connect 产出的 onClick        （vue / react / web-components）
    │
    ▼
 service.send({ type: 'TRIGGER.CLICK' })            （core）
@@ -70,7 +72,7 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 皮肤按 [data-state='open'] 命中新规则，动画播放      （styles）
 ```
 
-关键在于中间那三步与框架无关。Vue 适配器和 Web Components 适配器各自只负责最外两步。
+关键在于中间那三步与框架无关。Vue、React 与 Web Components 适配器各自负责最外两步。
 
 ## 包一览
 
@@ -89,8 +91,9 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 
 | 包 | 职责 |
 | --- | --- |
-| `@xihan-ui/headless` | 126 个组件的解剖 + 状态机 + `connect`，无样式、无框架 |
+| `@xihan-ui/headless` | 128 个组件的解剖 + 状态机 + `connect`，无样式、无框架 |
 | `@xihan-ui/vue` | Vue 3 适配器 |
+| `@xihan-ui/react` | React 19 适配器 |
 | `@xihan-ui/web-components` | Web Components 适配器，自研响应式基类 |
 
 **表现**
@@ -120,7 +123,7 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 XiHan.UI/
 ├── ui/                      # 组件库工作区（pnpm workspace）
 │   ├── packages/            # 对外发布的库包，按角色分四组
-│   │   ├── adapters/        # vue · web-components——你选一个
+│   │   ├── adapters/        # vue · react · web-components——按宿主选择
 │   │   ├── design/          # tokens · styles · icons——外观
 │   │   ├── features/        # markdown · chat-stream · backgrounds · sound · animations · code-highlight——按需自选
 │   │   └── engine/          # core · motion · pointer · position · headless
@@ -133,7 +136,7 @@ XiHan.UI/
 └── docs/                    # 文档站（VitePress），按 link: 指回上面的库包
 ```
 
-文档站每个组件页的示例渲染的是真实组件，且 Vue 与自定义元素两套写法并排，是对照两套适配器行为的主要手段；示例源文件在 `docs/.vitepress/demos/<组件>/` 下。
+文档站提供 Vue、React 与自定义元素的真实组件示例；示例源文件在 `docs/.vitepress/demos/<组件>/` 下。各框架覆盖由 `check-demo-frameworks` 核对，不适用项和缺席项分别登记。
 
 ## 技术选型
 

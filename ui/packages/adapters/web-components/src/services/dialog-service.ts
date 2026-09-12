@@ -3,17 +3,17 @@
 // 避开多层模态叠加。onOk 返回 Promise 时确认钮自动进入 pending 并拦住关闭，
 // 失败保持打开以便重试或取消。
 import type { Tone } from '@xihan-ui/core'
+import type { DialogServiceBadge, DialogServiceControllerSpec, DialogServiceRequest } from '@xihan-ui/headless'
 import type { XhButtonElement } from '../elements/button'
 import type { XhDialogElement } from '../elements/dialog'
-import type { AlertOptions, ConfirmOptions, DialogBody, DialogService, DialogServiceOptions } from './types'
+import type { AlertOptions, ConfirmOptions, DialogActionError, DialogBody, DialogService, DialogServiceOptions } from './types'
+import { ensurePortalRoot } from '@xihan-ui/core'
+import { createDialogServiceController, dialogServiceBadgeTone } from '@xihan-ui/headless'
 import { spinArc } from './glyph'
-import { createServiceHolder, partNode, reportServiceFailure } from './host'
+import { partNode } from './host'
 import { defineFeedbackElements } from './register'
 
-/** 关到再开之间留出退场窗口，动效走完再放下一个。 */
-const EXIT_WINDOW_MS = 250
-
-interface Spec {
+interface Spec extends DialogServiceControllerSpec {
   title: string
   content?: DialogBody
   tone: Tone
@@ -21,24 +21,32 @@ interface Spec {
   cancelText: string
   showCancel: boolean
   /** 标题旁的类型徽记（预设档用），confirm 不带。 */
-  badge?: 'info' | 'success' | 'warning' | 'error'
+  badge?: DialogServiceBadge
   onOk?: () => unknown
-  resolve: (ok: boolean) => void
-  settled: boolean
-}
-
-function toneOfBadge(badge: NonNullable<Spec['badge']>): Tone {
-  return badge === 'error' ? 'danger' : badge
+  onActionError?: (error: DialogActionError) => void | Promise<void>
 }
 
 export function createDialogService(options: DialogServiceOptions = {}): DialogService {
   if (typeof document === 'undefined')
     throw new Error('createDialogService 需要 document；SSR 里请等到客户端再创建')
 
-  defineFeedbackElements()
-
   const defaults = { okText: options.okText ?? 'OK', cancelText: options.cancelText ?? 'Cancel' }
-  const { holder, release } = createServiceHolder(options.target)
+  const holder = options.target ?? document.createElement('div')
+  const release = (): void => {
+    if (!options.target)
+      holder.remove()
+  }
+  let hostFailure: { cause: unknown } | null = null
+  try {
+    defineFeedbackElements()
+    if (!options.target)
+      ensurePortalRoot(document).appendChild(holder)
+    if (holder.nodeType !== 1 || holder.ownerDocument !== document || !holder.isConnected)
+      throw new Error('DialogService target 必须是当前文档中已连接的元素')
+  }
+  catch (cause) {
+    hostFailure = { cause }
+  }
 
   const dialog = document.createElement('xh-dialog') as XhDialogElement
   // 告知类弹窗一律 alertdialog：点外面不关，得明确按一下才算读过
@@ -54,6 +62,10 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   const title = partNode('div', 'title')
   const body = partNode('div', 'body')
   const description = partNode('div', 'description')
+  const errorMessage = document.createElement('p')
+  errorMessage.setAttribute('role', 'alert')
+  errorMessage.style.color = 'var(--xh-fg-danger)'
+  errorMessage.hidden = true
   const footer = partNode('div', 'footer')
   const cancel = document.createElement('xh-button') as XhButtonElement
   const cancelRoot = partNode('button', 'root')
@@ -64,7 +76,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   const okLabel = partNode('span', 'label')
 
   header.append(indicator, title)
-  body.append(description)
+  body.append(description, errorMessage)
   cancelRoot.append(cancelLabel)
   cancel.append(cancelRoot)
   cancel.variant = 'ghost'
@@ -76,29 +88,26 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   positioner.append(content)
   dialog.append(backdrop, positioner)
 
-  const queue: Spec[] = []
-  let current: Spec | null = null
-  let busy = false
-  let disposed = false
-  let mounted = true
-  let advanceTimer: ReturnType<typeof setTimeout> | null = null
+  const controller = createDialogServiceController<Spec>({ onStateChange: () => paint() })
 
-  try {
-    holder.appendChild(dialog)
+  if (!hostFailure) {
+    try {
+      holder.appendChild(dialog)
+    }
+    catch (cause) {
+      hostFailure = { cause }
+      release()
+    }
   }
-  catch (error) {
-    mounted = reportServiceFailure('dialog', error)
-    release()
-  }
-
-  function paint(): void {
-    const spec = current
+  function paintContent(): void {
+    const serviceState = controller.state
+    const spec = serviceState.current?.spec
     if (!spec)
       return
     title.textContent = spec.title
     indicator.hidden = spec.badge == null
     if (spec.badge)
-      indicator.setAttribute('data-tone', toneOfBadge(spec.badge))
+      indicator.setAttribute('data-tone', dialogServiceBadgeTone(spec.badge))
     else
       indicator.removeAttribute('data-tone')
     // 串走 description 部件（读屏的 aria-describedby 接在它上面），
@@ -111,113 +120,70 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
       description.textContent = spec.content ?? ''
     }
     cancel.hidden = !spec.showCancel
-    cancel.disabled = busy
+    cancel.disabled = serviceState.busy
     cancelLabel.textContent = spec.cancelText
     ok.tone = spec.tone
-    ok.loading = busy
-    okIndicator.replaceChildren(...(busy ? [spinArc()] : []))
-    okLabel.textContent = busy ? `${spec.okText}…` : spec.okText
+    ok.loading = serviceState.busy
+    okIndicator.replaceChildren(...(serviceState.busy ? [spinArc()] : []))
+    okLabel.textContent = serviceState.busy ? `${spec.okText}…` : spec.okText
+    errorMessage.hidden = serviceState.actionError === null
+    errorMessage.textContent = serviceState.actionError ? options.actionErrorText ?? 'Action failed. Please try again.' : ''
     // 忙的时候 Esc 也拦住：正在提交的那一下不该被一个按键撤销
-    dialog.closeOnEscape = !busy
+    dialog.closeOnEscape = !serviceState.busy
   }
 
-  function next(): void {
-    if (disposed || current || queue.length === 0)
+  function failHost(cause: unknown): void {
+    controller.fail(cause)
+  }
+
+  let exitRequest: DialogServiceRequest<Spec> | null = null
+  let exitListener: (() => void) | null = null
+  function syncExitListener(): void {
+    const request = controller.state.exiting
+    if (request === exitRequest)
       return
-    current = queue.shift()!
-    busy = false
-    paint()
-    dialog.open = true
+    if (exitListener)
+      dialog.removeEventListener('exit-complete', exitListener)
+    exitRequest = request
+    exitListener = request ? () => void controller.finishExit(request) : null
+    if (exitListener)
+      dialog.addEventListener('exit-complete', exitListener, { once: true })
   }
 
-  function settle(okPressed: boolean): void {
-    const spec = current
-    if (!spec || spec.settled)
-      return
-    spec.settled = true
-    spec.resolve(okPressed)
+  function paint(): void {
+    try {
+      paintContent()
+      syncExitListener()
+      dialog.open = controller.state.open
+    }
+    catch (cause) {
+      failHost(cause)
+    }
   }
-
-  /** 退场窗口走完再清当前项、放下一个；程序化关闭与元素侧关闭都汇到这里，只挂一只表。 */
-  function scheduleAdvance(): void {
-    if (advanceTimer)
-      return
-    advanceTimer = setTimeout(() => {
-      advanceTimer = null
-      current = null
-      busy = false
-      next()
-    }, EXIT_WINDOW_MS)
-  }
-
-  function close(okPressed: boolean): void {
-    settle(okPressed)
-    dialog.open = false
-    scheduleAdvance()
-  }
+  if (hostFailure)
+    controller.fail(hostFailure.cause)
 
   // 元素侧的关闭（Esc 等）从这里回来：未定的一律按取消结
   const onOpenChange = (event: Event): void => {
     const detail = (event as CustomEvent<{ open: boolean }>).detail
     if (detail?.open)
       return
-    settle(false)
-    dialog.open = false
-    scheduleAdvance()
+    controller.close(false)
   }
   dialog.addEventListener('open-change', onOpenChange)
 
   const onCancel = (): void => {
-    if (!busy)
-      close(false)
+    if (!controller.state.busy)
+      controller.close(false)
   }
   const onOk = (): void => {
-    void confirmCurrent()
+    void controller.confirmCurrent()
   }
   cancelRoot.addEventListener('click', onCancel)
   okRoot.addEventListener('click', onOk)
 
-  async function confirmCurrent(): Promise<void> {
-    const spec = current
-    if (!spec || busy)
-      return
-    if (spec.onOk) {
-      busy = true
-      paint()
-      try {
-        // 返回 false 表示不放行，对话框保持打开
-        const verdict = await spec.onOk()
-        if (verdict === false) {
-          busy = false
-          paint()
-          return
-        }
-      }
-      catch (error) {
-        busy = false
-        paint()
-        console.error('[xh] confirm onOk 失败，对话框保持打开', error)
-        return
-      }
-      busy = false
-      paint()
-    }
-    close(true)
-  }
-
-  function request(spec: Omit<Spec, 'resolve' | 'settled'>): Promise<boolean> {
-    if (disposed)
-      return Promise.reject(new Error('dialog 服务已卸载'))
-    if (!mounted)
-      return Promise.resolve(false)
-    return new Promise<boolean>((resolve) => {
-      queue.push({ ...spec, resolve, settled: false })
-      next()
-    })
-  }
-
-  const alert = (badge: NonNullable<Spec['badge']>, tone: Tone) => async (opts: AlertOptions): Promise<void> => {
-    await request({
+  const alert = (badge: DialogServiceBadge, tone: Tone) => async (opts: AlertOptions): Promise<void> => {
+    await controller.request({
       title: opts.title,
       content: opts.content,
       tone,
@@ -226,11 +192,13 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
       showCancel: false,
       badge,
       onOk: opts.onOk,
+      onActionError: opts.onActionError,
     })
   }
 
   return {
-    confirm: (opts: ConfirmOptions) => request({
+    get actionError() { return controller.state.actionError },
+    confirm: (opts: ConfirmOptions) => controller.request({
       title: opts.title,
       content: opts.content,
       tone: opts.tone ?? 'brand',
@@ -239,21 +207,17 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
       showCancel: true,
       badge: opts.badge,
       onOk: opts.onOk,
+      onActionError: opts.onActionError,
     }),
     info: alert('info', 'info'),
     success: alert('success', 'success'),
     warning: alert('warning', 'warning'),
     error: alert('error', 'danger'),
     dispose: () => {
-      disposed = true
-      if (advanceTimer) {
-        clearTimeout(advanceTimer)
-        advanceTimer = null
-      }
-      settle(false)
-      for (const spec of queue.splice(0))
-        spec.resolve(false)
+      controller.dispose()
       dialog.removeEventListener('open-change', onOpenChange)
+      if (exitListener)
+        dialog.removeEventListener('exit-complete', exitListener)
       cancelRoot.removeEventListener('click', onCancel)
       okRoot.removeEventListener('click', onOk)
       dialog.remove()

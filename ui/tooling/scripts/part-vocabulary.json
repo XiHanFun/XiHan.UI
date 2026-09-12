@@ -486,6 +486,7 @@
       "calendar"
     ],
     "hidden-input": [
+      "cascader",
       "checkbox",
       "checkbox-group",
       "color-picker",
@@ -504,6 +505,7 @@
       "time-field",
       "time-picker",
       "toggle-group",
+      "transfer",
       "tree-select"
     ],
     "hidden-select": [
@@ -604,7 +606,6 @@
       "skeleton",
       "sortable",
       "steps",
-      "tag-group",
       "tags-input",
       "time-picker",
       "timeline",
@@ -636,10 +637,7 @@
     ],
     "item-delete-trigger": [
       "field-array",
-      "file-upload",
-      "select",
-      "tag-group",
-      "tags-input"
+      "file-upload"
     ],
     "item-description": [
       "context-menu",
@@ -682,8 +680,7 @@
       "file-upload"
     ],
     "item-preview": [
-      "file-upload",
-      "tags-input"
+      "file-upload"
     ],
     "item-progress": [
       "file-upload",
@@ -710,8 +707,6 @@
       "radio-group",
       "segmented",
       "select",
-      "tag-group",
-      "tags-input",
       "transfer",
       "tree",
       "tree-select"
@@ -727,7 +722,7 @@
       "pagination"
     ],
     "key": [
-      "hotkeys"
+      "kbd-group"
     ],
     "label": [
       "button",
@@ -1067,10 +1062,11 @@
       "grid",
       "heatmap",
       "highlight",
-      "hotkeys",
       "hover-card",
       "icon",
       "icon-wrapper",
+      "kbd",
+      "kbd-group",
       "image",
       "image-cropper",
       "infinite-scroll",
@@ -1209,7 +1205,7 @@
       "breadcrumb",
       "button-group",
       "context-menu",
-      "hotkeys",
+      "kbd-group",
       "menu",
       "menubar",
       "pin-input",
@@ -1281,7 +1277,7 @@
     "tab-drag-trigger": [
       "tabs"
     ],
-    "tag": [
+    "tag-list": [
       "select"
     ],
     "target-panel": [
@@ -1561,7 +1557,6 @@
     "suffix": true,
     "summary": true,
     "swatch": true,
-    "tag": true,
     "text": true,
     "thumb": true,
     "tick": true,

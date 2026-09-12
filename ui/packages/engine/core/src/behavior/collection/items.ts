@@ -1,3 +1,4 @@
+import type { FocusableElement } from '../../kernel'
 import type { NavIntent, StepOptions } from './navigate'
 import { DATA_PART, DATA_SCOPE } from '../../kernel'
 import { focusSafely } from '../focus-scope/tabbable'
@@ -14,6 +15,12 @@ export interface ItemQuery {
 
 /** 条目身份属性，导航与选中都以它为准。 */
 export const ITEM_VALUE_ATTR = 'data-value'
+
+/** 作者声明的部件下标：可解析为有限数即采用，否则回退到首项。 */
+export function normalizeItemIndex(raw: number | string | null | undefined, fallback = 0): number {
+  const value = Number(raw)
+  return Number.isFinite(value) ? value : fallback
+}
 
 function selector(q: ItemQuery): string {
   return `[${DATA_SCOPE}="${q.scope}"][${DATA_PART}="${q.part}"]`
@@ -106,7 +113,7 @@ export function navigateItems(
 }
 
 /** 聚焦条目并滚入可视区。 */
-export function focusItem(el: HTMLElement | null): void {
+export function focusItem(el: FocusableElement | null): void {
   if (!el)
     return
   focusSafely(el)

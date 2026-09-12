@@ -9,7 +9,10 @@ import { useAccordion } from './use-accordion'
 
 type AccordionProps = AccordionSchema['props']
 
-export interface XhAccordionRootProps {
+/** 根上自有的那些取值；dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'dir'>
+
+export interface XhAccordionRootProps extends RootElementProps {
   collection?: AccordionNode[]
   value?: string[]
   defaultValue?: string[]
@@ -29,14 +32,47 @@ export interface XhAccordionRootProps {
   children?: ReactNode
 }
 
-export function XhAccordionRoot({ children, renderContent, ...props }: XhAccordionRootProps): ReactNode {
-  const ctx = useAccordion(props as AccordionProps)
-  const body = children ?? (props.collection
+export function XhAccordionRoot({
+  collection,
+  value,
+  defaultValue,
+  multiple,
+  collapsible,
+  loop,
+  disabled,
+  variant,
+  orientation,
+  dir,
+  tone,
+  size,
+  onValueChange,
+  renderContent,
+  children,
+  ...rest
+}: XhAccordionRootProps): ReactNode {
+  const ctx = useAccordion({
+    collection,
+    value,
+    defaultValue,
+    multiple,
+    collapsible,
+    loop,
+    disabled,
+    variant,
+    orientation,
+    dir,
+    tone,
+    size,
+    onValueChange,
+  } as AccordionProps)
+  const body = children ?? (collection
     ? <DefaultTree collection={ctx.api.collection} renderContent={renderContent} />
     : null)
   return (
     <AccordionProvider value={ctx}>
-      <div {...ctx.api.getRootProps() as Record<string, unknown>}>{body}</div>
+      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+        {body}
+      </div>
     </AccordionProvider>
   )
 }

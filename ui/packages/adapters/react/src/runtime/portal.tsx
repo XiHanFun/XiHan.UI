@@ -1,7 +1,10 @@
 import type { ReactNode } from 'react'
-import { useEffect, useState } from 'react'
+import { createPortalVisualBridge } from '@xihan-ui/core'
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useXhConfig } from '../config/config'
+
+const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
 /** 浮层挂到哪个容器；返回 null 即挂 body。 */
 export type PortalContainer = (() => Element | null) | undefined
@@ -33,6 +36,8 @@ export function usePortalTarget(container: PortalContainer, deferUntilMounted = 
 
 export interface XhPortalProps {
   container?: PortalContainer
+  /** 已有的逻辑来源节点；给了就不生成来源标记。祖先 ref 会等当前提交附着完成后再建桥。 */
+  source?: { readonly current: Element | null }
   /**
    * 首帧就地渲染、等挂载后的效应再搬，用来与服务端标记对齐。缺省为假。
    * 开了这一档，内容会被拆建一次，机器放进去的焦点会丢。
@@ -47,9 +52,67 @@ export interface XhPortalProps {
  * 服务端一律就地渲染：react-dom/server 根本不支持 createPortal，而首屏即展开的浮层
  * 必须直出展开态——正文既要能被索引也要能被读屏念到，渲成空占位等于把这一屏丢了。
  */
-export function XhPortal({ container, deferUntilMounted, children }: XhPortalProps): ReactNode {
+export function XhPortal({ container, source, deferUntilMounted, children }: XhPortalProps): ReactNode {
   const target = usePortalTarget(container, deferUntilMounted)
-  if (!target)
-    return children
-  return createPortal(children, target)
+  return <PortalWithVisualBridge target={target} source={source}>{children}</PortalWithVisualBridge>
+}
+
+function PortalWithVisualBridge({ target, source, children }: {
+  target: Element | null
+  source?: { readonly current: Element | null }
+  children?: ReactNode
+}): ReactNode {
+  const sourceRef = useRef<HTMLTemplateElement | null>(null)
+  const shellRef = useRef<HTMLDivElement | null>(null)
+  // 祖先 host ref 在子组件的首轮 layout effect 之后才附着。显式 source 只让这一轮提交完成一次；
+  // 下一次同步提交仍为空就按真实缺失报错，不改用 marker/body，也不带着未桥接的壳继续。
+  const [sourceCommitProbe, setSourceCommitProbe] = useState(0)
+  const bridgeRef = useRef<{
+    source: Element
+    shell: HTMLElement
+    dispose: () => void
+  } | null>(null)
+
+  useIsomorphicLayoutEffect(() => {
+    const sourceNode = target ? (source?.current ?? sourceRef.current) : null
+    const shell = shellRef.current
+    if (target && !shell)
+      throw new Error('[xh] Portal 视觉环境的来源标记或实例壳未挂载')
+    if (target && !sourceNode) {
+      if (source && sourceCommitProbe === 0) {
+        setSourceCommitProbe(1)
+        return
+      }
+      throw new Error('[xh] Portal 视觉环境的来源标记或实例壳未挂载')
+    }
+    if (sourceCommitProbe !== 0)
+      setSourceCommitProbe(0)
+    const current = bridgeRef.current
+    if (sourceNode && shell && current?.source === sourceNode && current.shell === shell)
+      return
+    current?.dispose()
+    bridgeRef.current = null
+    if (!sourceNode || !shell)
+      return
+    const bridge = createPortalVisualBridge({ source: sourceNode, shell })
+    bridgeRef.current = { source: sourceNode, shell, dispose: bridge.dispose }
+  })
+
+  useEffect(() => () => {
+    bridgeRef.current?.dispose()
+    bridgeRef.current = null
+  }, [])
+
+  const shell = (
+    <div ref={shellRef} data-xh-portal-shell="" style={{ display: 'contents' }}>
+      {children}
+    </div>
+  )
+
+  return (
+    <Fragment>
+      {source ? null : <template ref={sourceRef} data-xh-portal-source="" />}
+      {target ? createPortal(shell, target) : shell}
+    </Fragment>
+  )
 }

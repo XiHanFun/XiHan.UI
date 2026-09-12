@@ -1,10 +1,10 @@
-import type { FieldProps } from '@xihan-ui/headless'
-import type { ComponentPropsWithRef, ReactElement, ReactNode } from 'react'
+import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { Children, cloneElement, isValidElement } from 'react'
+import { mergeIntoChild } from '../../runtime/as-child'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
 import { useOptionalFormContext, useOptionalFormField } from '../form/context'
+import { useFormControlProps } from '../form/use-form-control'
 import { FieldProvider, useFieldContext } from './context'
 import { useField } from './use-field'
 
@@ -16,11 +16,6 @@ export function wiringOnly(controlProps: Record<string, unknown>): Record<string
       rest[key] = value
   }
   return rest
-}
-
-/** 子节点已带角色标记：组件节点的根由它自己渲染，元素节点看有没有写 data-scope。 */
-function carriesOwnAnatomy(node: ReactElement<Record<string, unknown>>): boolean {
-  return typeof node.type !== 'string' || node.props['data-scope'] != null
 }
 
 export interface XhFieldRootProps extends ComponentPropsWithRef<'div'> {
@@ -42,17 +37,7 @@ export function XhFieldRoot({
   children,
   ...rest
 }: XhFieldRootProps): ReactNode {
-  const form = useOptionalFormContext()
-  const handle = useOptionalFormField()
-  const bound = form && handle ? { api: form.api, name: handle.name } : null
-  const merged: FieldProps = {
-    invalid: invalid ?? (bound ? bound.api.isFieldInvalid(bound.name) : undefined),
-    required: required ?? (bound ? bound.api.isFieldRequired(bound.name) : undefined),
-    disabled: disabled ?? (bound ? bound.api.disabled : undefined),
-    readOnly: readOnly ?? (bound ? bound.api.readOnly : undefined),
-    controlId,
-  }
-  const ctx = useField(merged)
+  const ctx = useField(useFormControlProps({ invalid, required, disabled, readOnly, controlId }))
   return (
     <FieldProvider value={ctx}>
       <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
@@ -93,14 +78,10 @@ export function XhFieldControl({ asChild = true, children }: XhFieldControlProps
   const controlProps = ctx.api.getControlProps() as Record<string, unknown>
   // control props 经函数式 children 交给作者，控件节点由作者渲染
   const rendered = renderSlot(children, controlProps)
-  const nodes = Children.toArray(rendered).filter(node => isValidElement(node))
-  // 关了 asChild、或不止一个节点：都视为作者已用载荷自行接线
-  if (!asChild || nodes.length !== 1)
+  // 手工接线必须显式关闭 asChild，不能根据无效结构猜测作者意图。
+  if (!asChild)
     return rendered
-  const node = nodes[0] as ReactElement<Record<string, unknown>>
-  // 单个节点合并属性；它自带角色标记时不覆盖，只落接线属性
-  const merged = carriesOwnAnatomy(node) ? wiringOnly(controlProps) : controlProps
-  return cloneElement(node, mergeReactProps(node.props, merged))
+  return mergeIntoChild(rendered, controlProps, 'field/control')
 }
 
 export interface XhFieldDescriptionProps extends ComponentPropsWithRef<'p'> {}

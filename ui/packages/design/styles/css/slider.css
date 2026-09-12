@@ -49,6 +49,14 @@
     cursor: pointer;
   }
 
+  /* 刻度文案以刻度为圆心横向摊开，首末两档各有一半落在轨道之外，页面因此恒多出半个文案的宽度。
+     排了刻度文案的横轨两侧各让出一段，那半个文案落进让出来的这一段里。
+     让在控件上而不是根上：轨道、刻度、拇指的坐标都以控件为基准，一起让开才不会彼此错位。 */
+  [data-scope='slider'][data-part='root']:has([data-part='tick-label'])
+    [data-part='control'][data-orientation='horizontal'] {
+    margin-inline: var(--xh-slider-control-gutter, var(--xh-space-6));
+  }
+
   [data-scope='slider'][data-part='control'][data-orientation='vertical'] {
     flex-direction: column;
     justify-content: center;
@@ -120,11 +128,20 @@
     border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-bg-surface));
     border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-pill));
     background: var(--xh-slider-thumb-bg, var(--xh-_tone, var(--xh-bg-brand)));
+    /* 圆点上没有字，这一支是给环用的：环灌 currentColor 时取到的是与这块底配对的前景色，
+       不写就取到从页面继承下来的正文色 */
+    color: var(--xh-_tone-on, var(--xh-fg-on-brand));
     box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-raised));
     cursor: grab;
     transition:
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='slider'][data-part='thumb']:focus-visible {
+    --xh-_ring-color: currentColor;
   }
 
   /* 内联样式把 inset-inline-start 定在值所在的比例上，那是拇指的**起始边**不是圆心；

@@ -1,5 +1,5 @@
 import type { CascaderGroupProps, CascaderItemProps } from '@xihan-ui/headless'
-import type { ComputedRef, InjectionKey } from 'vue'
+import type { ComputedRef, InjectionKey, Ref } from 'vue'
 import type { CascaderContext } from './use-cascader'
 import { inject, provide } from 'vue'
 
@@ -13,9 +13,16 @@ export interface CascaderGroupContext {
   group: ComputedRef<CascaderGroupProps>
 }
 
+/** Content 局部登记：隔着 Fragment、普通元素或业务组件包装，Loading 仍归最近的 Content 所有。 */
+export interface CascaderContentContext {
+  authoredLoadingCount: Ref<number>
+  registerLoading: () => () => void
+}
+
 const KEY: InjectionKey<CascaderContext> = Symbol.for('xh-cascader')
 const ITEM_KEY: InjectionKey<CascaderItemContext> = Symbol.for('xh-cascader-item')
 const GROUP_KEY: InjectionKey<CascaderGroupContext> = Symbol.for('xh-cascader-group')
+const CONTENT_KEY: InjectionKey<CascaderContentContext> = Symbol.for('xh-cascader-content')
 
 export function provideCascader(ctx: CascaderContext): void {
   provide(KEY, ctx)
@@ -25,6 +32,17 @@ export function useCascaderContext(): CascaderContext {
   const ctx = inject(KEY, null)
   if (!ctx)
     throw new Error('[xh] Cascader 部件必须用在 XhCascaderRoot 内')
+  return ctx
+}
+
+export function provideCascaderContent(ctx: CascaderContentContext): void {
+  provide(CONTENT_KEY, ctx)
+}
+
+export function useCascaderContentContext(): CascaderContentContext {
+  const ctx = inject(CONTENT_KEY, null)
+  if (!ctx)
+    throw new Error('[xh] Cascader Loading 必须用在 XhCascaderContent 内')
   return ctx
 }
 

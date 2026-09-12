@@ -59,7 +59,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       v-for="f in fields"
       :key="f.name"
       v-slot="{ value, setValue }"
-      :value="f.name"
+      :name="f.name"
     >
       <!-- Field 不接任何校验 props：invalid、必填星号与错误文案全部从表单上下文自取 -->
       <XhFieldRoot>

@@ -1,25 +1,27 @@
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { SliderApi } from '../slider'
 import type { ColorPickerChannel, ColorPickerInputChannel } from './color-picker.color'
 import type {
   ColorPickerApi,
   ColorPickerChannelProps,
   ColorPickerChannelState,
   ColorPickerInputProps,
-  ColorPickerSchema,
+  ColorPickerServices,
   ColorPickerSwatchItemProps,
   ColorPickerTranslations,
 } from './color-picker.types'
-import { dataAttr, isComposingEvent, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { overlayPositioned } from '../shared/overlay'
+import { dataAttr, isComposingEvent, ITEM_VALUE_ATTR, normalizeProps } from '@xihan-ui/core'
+import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { connectSlider } from '../slider'
 import { colorPickerAnatomy } from './color-picker.anatomy'
 import {
-  colorPickerApplyInput,
   colorPickerChannelRange,
   colorPickerChannelValue,
   colorPickerCss,
   colorPickerHsvaToRgba,
   colorPickerHueCss,
   colorPickerInputText,
+  colorPickerResolveFormat,
   colorPickerResolveHsva,
   colorPickerSameColor,
   colorPickerToRgba,
@@ -54,27 +56,39 @@ function resolveTranslations(input: Partial<ColorPickerTranslations> | undefined
   }
 }
 
-// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
-// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
-const AVAILABLE_H_FLOOR = 96
+type Dict = Record<string, unknown>
 
-function availableHeightVar(available: number | undefined): Record<string, string> {
-  return {
-    '--xh-_color-picker-available-h':
-      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
-  }
+/** 方向键在通道上的语义方向；左右两键在 RTL 下对调，上下恒是"朝 max 走"。 */
+const CHANNEL_ARROW: Record<string, (flip: boolean) => 1 | -1> = {
+  ArrowUp: () => 1,
+  ArrowDown: () => -1,
+  ArrowRight: flip => (flip ? -1 : 1),
+  ArrowLeft: flip => (flip ? 1 : -1),
 }
 
 export function connectColorPicker<T extends PropTypes>(
-  service: Service<ColorPickerSchema>,
+  services: ColorPickerServices,
   normalize: NormalizeProps<T>,
 ): ColorPickerApi<T> {
-  const { state, prop, send, context, scope } = service
+  const { state, prop, send, context, scope } = services.root
 
   // 展开态是复合状态，state.get() 拿到的是叶子路径（open.idle 之类），一律用 matches 判
   const open = state.matches('open')
-  const dragging = state.matches('open.dragging')
+  // 取色器自己只管二维取色区那一处拖动，通道滑杆的拖动住在各自那台滑杆里
+  const areaDragging = state.matches('open.dragging')
   const picking = state.matches('open.picking')
+
+  /**
+   * 两条通道各自那台滑杆。
+   *
+   * 用恒等归一化连一次拿到原始属性字典：传调用方的归一化器会把 onKeyDown 之类
+   * 改成各框架的事件键名，再覆盖就成了两个键、两个处理器。
+   */
+  const channelSliders: Record<ColorPickerChannel, SliderApi> = {
+    hue: connectSlider(services.hueSlider, normalizeProps),
+    alpha: connectSlider(services.alphaSlider, normalizeProps),
+  }
+  const dragging = areaDragging || channelSliders.hue.dragging || channelSliders.alpha.dragging
 
   const ids = scope.ids('color-picker', 'label', 'trigger', 'content', 'value-text')
 
@@ -82,8 +96,9 @@ export function connectColorPicker<T extends PropTypes>(
   const draft = context.get('draft')
   const dragTarget = context.get('dragTarget')
   const eyeDropperSupported = context.get('eyeDropperSupported')
+  const errors = context.get('errors')
 
-  const format = prop('format') ?? 'hex'
+  const format = colorPickerResolveFormat(prop('format') as string | undefined) ?? 'hex'
   const alpha = prop('alpha') ?? false
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
@@ -135,9 +150,9 @@ export function connectColorPicker<T extends PropTypes>(
   const inputText = (channel: ColorPickerInputChannel): string =>
     draft?.channel === channel ? draft.text : colorPickerInputText(hsva, channel, alpha)
 
-  /** 草稿收不下来时给输入框打上 aria-invalid。 */
+  /** 输入错误由机器持有；commit 后仍保留，直到修正或显式取消。 */
   const inputInvalid = (channel: ColorPickerInputChannel): boolean =>
-    draft?.channel === channel && colorPickerApplyInput(hsva, channel, draft.text, alpha) == null
+    errors.input?.channel === channel
 
   /**
    * 按下之后把焦点转投到对应的拇指上。
@@ -171,6 +186,7 @@ export function connectColorPicker<T extends PropTypes>(
     dragging,
     picking,
     eyeDropperSupported,
+    errors,
     swatches,
     isSwatchSelected: swatch => colorPickerSameColor(swatch, value),
     channelState,
@@ -179,7 +195,8 @@ export function connectColorPicker<T extends PropTypes>(
       if (next !== open)
         send({ type: next ? 'OPEN' : 'CLOSE' })
     },
-    setValue: next => send({ type: 'VALUE.SET', value: next }),
+    setValue: next => send({ type: 'VALUE.SET', value: next, source: 'api' }),
+    clearError: () => send({ type: 'ERROR.CLEAR' }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -248,10 +265,8 @@ export function connectColorPicker<T extends PropTypes>(
       // 落位才露：皮肤基线把定位层藏着，带这个才显示。展开那几帧坐标还没算出来时就是藏的
       'data-positioned': dataAttr(overlayPositioned(position)),
       'style': {
-        position: 'fixed',
-        left: `${position?.x ?? 0}px`,
-        top: `${position?.y ?? 0}px`,
-        ...availableHeightVar(position?.availableHeight),
+        ...overlayFixedStyle(position),
+        ...overlayAvailableSpaceVars('color-picker', position),
       },
     }),
 
@@ -266,6 +281,9 @@ export function connectColorPicker<T extends PropTypes>(
       // tabindex 写 -1 不能省：焦点域在无可聚焦子控件时会退回聚焦容器本身
       'tabindex': -1,
       'data-placement': placement,
+      // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
     }),
@@ -273,7 +291,7 @@ export function connectColorPicker<T extends PropTypes>(
     getSaturationAreaProps: () => normalize.element({
       ...parts['saturation-area'].attrs,
       ...stateAttrs(),
-      'data-dragging': dataAttr(dragging && dragTarget === 'area'),
+      'data-dragging': dataAttr(areaDragging && dragTarget === 'area'),
       // 底色是当前色相的纯色，两层渐变（饱和度、明度）由皮肤盖在上面
       'style': { backgroundColor: colorPickerHueCss(hsva.h), touchAction: 'none' },
       // 按下即跳，随后的拖动由机器的 trackPointer 接手；挂在区域而不是拇指上
@@ -301,7 +319,7 @@ export function connectColorPicker<T extends PropTypes>(
       // div 上原生 disabled 不生效，禁用须显式写 aria-disabled 并抽掉 Tab 位；readOnly 不抽
       'aria-disabled': disabled ? 'true' : 'false',
       'tabindex': disabled ? undefined : 0,
-      'data-dragging': dataAttr(dragging && dragTarget === 'area'),
+      'data-dragging': dataAttr(areaDragging && dragTarget === 'area'),
       // 横轴是饱和度，纵轴是明度（向下变暗，取补数）
       'style': {
         insetInlineStart: colorPickerPercent(hsva.s / 100),
@@ -326,23 +344,28 @@ export function connectColorPicker<T extends PropTypes>(
       },
     }),
 
-    getChannelSliderProps: ({ channel }: ColorPickerChannelProps) => normalize.element({
-      ...parts['channel-slider'].attrs,
-      ...stateAttrs(),
-      'data-channel': channel,
-      'data-disabled': dataAttr(channelInert(channel)),
-      'data-dragging': dataAttr(dragging && dragTarget === channel),
-      // 不关掉默认手势，指针会被 pointercancel 收走
-      'style': { touchAction: 'none' },
-      // 按下挂在整条滑杆而不是轨道上，拇指常常浮出轨道
-      'onPointerDown': (event: PointerEvent) => {
-        if (!channelEditable(channel) || event.button !== 0)
-          return
-        event.preventDefault()
-        send({ type: 'DRAG.START', target: channel, point: { clientX: event.clientX, clientY: event.clientY } })
-        focusThumb(event.currentTarget as HTMLElement, parts['channel-slider-thumb'].selector)
-      },
-    }),
+    // 按下挂在整条滑杆而不是轨道上（拇指常常浮出轨道），这一层就是内嵌滑杆的 control：
+    // 按下即跳与随后的跟手都由那台滑杆接手，轨道矩形从它自己的 getTrackEl 现量
+    getChannelSliderProps: ({ channel }: ColorPickerChannelProps) => {
+      const controlDown = (channelSliders[channel].getControlProps() as Dict).onPointerDown as
+        ((event: PointerEvent) => void) | undefined
+      return normalize.element({
+        ...parts['channel-slider'].attrs,
+        ...stateAttrs(),
+        'data-channel': channel,
+        'data-disabled': dataAttr(channelInert(channel)),
+        'data-dragging': dataAttr(channelSliders[channel].dragging),
+        // 不关掉默认手势，指针会被 pointercancel 收走
+        'style': { touchAction: 'none' },
+        'onPointerDown': (event: PointerEvent) => {
+          if (!channelEditable(channel) || event.button !== 0)
+            return
+          controlDown?.(event)
+          // 焦点转投由这里补：滑杆按自己那份解剖找拇指，而这里的拇指挂着取色器的部件名
+          focusThumb(event.currentTarget as HTMLElement, parts['channel-slider-thumb'].selector)
+        },
+      })
+    },
 
     getChannelSliderTrackProps: ({ channel }: ColorPickerChannelProps) => normalize.element({
       ...parts['channel-slider-track'].attrs,
@@ -358,9 +381,18 @@ export function connectColorPicker<T extends PropTypes>(
       },
     }),
 
+    /**
+     * 键盘与聚焦记账取内嵌滑杆的产出：方向键 / PageUp / PageDown / Home / End、
+     * 大步进与 RTL 掉头都在它那一份处理器里。
+     *
+     * 读屏那几条仍在本组件明写：它们是取色器自己对外的契约，
+     * 而且部件名、名字与带单位的播报文本三样滑杆都给不出。取的数与滑杆算的是同一个。
+     */
     getChannelSliderThumbProps: ({ channel }: ColorPickerChannelProps) => {
       const info = channelState(channel)
       const inert = channelInert(channel)
+      const sliderThumb = channelSliders[channel].getThumbProps(0) as Dict
+      const sliderKeyDown = sliderThumb.onKeyDown as ((event: KeyboardEvent) => void) | undefined
       return normalize.element({
         ...parts['channel-slider-thumb'].attrs,
         ...stateAttrs(),
@@ -370,6 +402,7 @@ export function connectColorPicker<T extends PropTypes>(
         'aria-valuenow': String(info.value),
         // 单位必须补上，光念数字分不清角度与百分数
         'aria-valuetext': label.channelValueText(channel, info.value),
+        // 通道滑杆没有可见标题，名字只能直给
         'aria-label': label.channel(channel),
         'aria-orientation': 'horizontal',
         'aria-disabled': inert ? 'true' : 'false',
@@ -377,22 +410,22 @@ export function connectColorPicker<T extends PropTypes>(
         'tabindex': inert ? undefined : 0,
         'data-channel': channel,
         'data-disabled': dataAttr(inert),
-        'data-dragging': dataAttr(dragging && dragTarget === channel),
+        'data-dragging': dataAttr(channelSliders[channel].dragging),
+        // 位置按未取整的工作色算，比滑杆按整格算的那一份更贴当前颜色
         'style': { insetInlineStart: colorPickerPercent(info.percent) },
+        // 滑杆聚焦时记下手在哪个滑块上；一条通道只有一个滑块，转发过来是为了两边状态不脱钩
+        'onFocus': sliderThumb.onFocus,
         'onKeyDown': (event: KeyboardEvent) => {
           if (!channelEditable(channel))
             return
-          const large = event.shiftKey
-          const step = (direction: 1 | -1): void => send({ type: 'CHANNEL.STEP', channel, direction, large })
-          runKey(event, {
-            ArrowRight: () => step(flipHorizontal ? -1 : 1),
-            ArrowLeft: () => step(flipHorizontal ? 1 : -1),
-            // 上下两键恒是"屏幕向上朝 max"，与 dir 无关
-            ArrowUp: () => step(1),
-            ArrowDown: () => step(-1),
-            Home: () => send({ type: 'CHANNEL.TO_EDGE', channel, edge: 'min' }),
-            End: () => send({ type: 'CHANNEL.TO_EDGE', channel, edge: 'max' }),
-          })
+          // Shift + 方向键是取色器自己的大步进，滑杆只把大步进给了 PageUp / PageDown
+          const arrow = event.shiftKey ? CHANNEL_ARROW[event.key] : undefined
+          if (arrow && !event.ctrlKey && !event.metaKey && !event.altKey) {
+            event.preventDefault()
+            send({ type: 'CHANNEL.STEP', channel, direction: arrow(flipHorizontal), large: true })
+            return
+          }
+          sliderKeyDown?.(event)
         },
       })
     },
@@ -477,7 +510,7 @@ export function connectColorPicker<T extends PropTypes>(
         'style': { background: colorPickerCss(colorPickerToRgba(swatch)) },
         'onClick': () => {
           if (interactive)
-            send({ type: 'VALUE.SET', value: swatch })
+            send({ type: 'VALUE.SET', value: swatch, source: 'swatch' })
         },
       })
     },

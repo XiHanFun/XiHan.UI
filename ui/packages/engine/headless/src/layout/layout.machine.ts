@@ -1,5 +1,6 @@
 import type { LayoutBreakpoint, LayoutSchema, LayoutSiderPresentation } from './layout.types'
-import { getLayerRegistry, setup } from '@xihan-ui/core'
+import { createEscapeFallback, setup } from '@xihan-ui/core'
+import { trackSiderBreakpoint } from './layout.breakpoint'
 
 const { createMachine } = setup<LayoutSchema>()
 
@@ -22,6 +23,9 @@ export const layoutMachine = createMachine({
   name: 'layout',
   context: ({ cell }) => ({
     siderNarrow: cell<boolean>(() => ({ defaultValue: false })),
+  }),
+  refs: () => ({
+    config: null,
   }),
   initialState: ({ prop }) => ((prop('siderCollapsed') ?? prop('defaultSiderCollapsed')) ? 'collapsed' : 'expanded'),
   watch: ({ track, prop, action }) => track([() => prop('siderCollapsed')], () => action(['syncSiderCollapsed'])),
@@ -74,62 +78,28 @@ export const layoutMachine = createMachine({
       },
     },
     effects: {
+      trackSiderBreakpoint,
       /**
-       * 跟住 siderBreakpoint 那一档的媒体查询，跨过去发一次、挂载时也发一次当前值。
-       * 档位的像素宽度取自断点令牌，JS 里不另抄一份；令牌样式表没引入时这条不跑。
-       * 档位在挂载时读一次。
+       * 覆盖档的 Escape 后备出口。Hub 在 capture 阶段先让 Layer 消费本次按键，
+       * 只有这条 lane 当时为空且票据一直有效，才在 bubble 阶段收起最近展开的侧栏。
        */
-      trackSiderBreakpoint: ({ prop, context, send, scope }) => {
-        const tier = prop('siderBreakpoint')
-        if (!tier)
-          return undefined
-        const win = scope.getWin()
-        if (typeof win.matchMedia !== 'function')
-          return undefined
-        const width = scope.getComputedStyle(scope.getDoc().documentElement)
-          .getPropertyValue(`--xh-breakpoint-${tier}`)
-          .trim()
-        if (!width)
-          return undefined
-        const query = win.matchMedia(`(min-width: ${width})`)
-        const notify = (): void => {
-          const matched = query.matches
-          context.set('siderNarrow', !matched)
-          prop('onSiderBreakpoint')?.({ matched })
-          // 覆盖档跨档时跟着开合：进覆盖档先收起，免得一挂上来就盖住内容；回占位档还原成展开。
-          // 走的是 siderCollapsed 那条通道，受控宿主照常收到回调、由它说了算
-          if (prop('siderPresentation') === 'sheet')
-            send(matched ? { type: 'SIDER.EXPAND' } : { type: 'SIDER.COLLAPSE' })
-        }
-        notify()
-        query.addEventListener('change', notify)
-        return () => query.removeEventListener('change', notify)
-      },
-      /**
-       * 覆盖档的 Escape：盖在内容之上的那一层按 Escape 收起。
-       * 两道闸门：侧栏得真按覆盖档摆着（占位档下它是骨架的一列，Escape 与它无关），
-       * 且此刻没有浮层在层栈上——对话框、下拉这些叠在骨架之上，Escape 先归它们，
-       * 一次按键不该既关掉浮层又把侧栏一起收走。
-       */
-      dismissSiderSheet: ({ prop, context, send, scope }) => {
+      dismissSiderSheet: ({ prop, context, send, scope, refs }) => {
+        const config = refs.get('config')
+        if (!config)
+          throw new Error('[xh] Layout 覆盖式侧栏缺少 RuntimeConfig')
         const doc = scope.getDoc()
-        const registry = getLayerRegistry(doc)
-        const onKeydown = (event: KeyboardEvent): void => {
-          if (event.key !== 'Escape' || event.defaultPrevented)
-            return
-          if (registry.top())
-            return
-          const presentation = resolveSiderPresentation(
+        if (config.scope.getDoc() !== doc || config.layerRegistry.ownerDocument !== doc)
+          throw new Error('[xh] Layout 的 RuntimeConfig、LayerRegistry 与机器 Scope 必须属于同一 Document')
+        const fallback = createEscapeFallback({
+          config,
+          isEnabled: () => resolveSiderPresentation(
             prop('siderPresentation'),
             prop('siderBreakpoint'),
             context.get('siderNarrow'),
-          )
-          if (presentation !== 'sheet')
-            return
-          send({ type: 'SIDER.COLLAPSE' })
-        }
-        doc.addEventListener('keydown', onKeydown)
-        return () => doc.removeEventListener('keydown', onKeydown)
+          ) === 'sheet',
+          onEscape: () => send({ type: 'SIDER.COLLAPSE' }),
+        })
+        return fallback.dispose
       },
     },
   },

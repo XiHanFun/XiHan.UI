@@ -13,9 +13,9 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { connectTour, tourAnatomy, tourMachine, tourMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -71,7 +71,10 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart close-trigger - 关闭（只关，不算放弃）
  * @csspart arrow - 指向目标的箭头（aria-hidden；居中步带 hidden）
  */
-export class XhTourElement extends XhElement {
+export class XhTourElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: tourAnatomy, meta: tourMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -113,13 +116,28 @@ export class XhTourElement extends XhElement {
   declare translations?: Partial<TourTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly tourScope = createScope(null, this.idGen)
+  private readonly tourScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   private contentNode: HTMLElement | null = null
   private backdropNode: HTMLElement | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，气泡的退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = this.createPortalLeaseController({
+    name: 'Tour',
+    config: () => this.config,
+    source: () => this.getPart('root'),
+    roots: () => {
+      const roots = [
+        this.getPart('backdrop'),
+        this.getPart('spotlight'),
+        this.getPart('positioner') ?? this.getPart('content'),
+      ]
+      return roots.filter((root): root is HTMLElement => !!root)
+    },
+    onChange: () => this.requestUpdate(),
+  })
+
   /** 哪些文本节点归元素填：作者自己写了内容的一概不碰。 */
   private readonly ownsText = new WeakMap<HTMLElement, boolean>()
 
@@ -168,7 +186,22 @@ export class XhTourElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.tourScope, idGenerator: this.idGen })
   }
 
-  // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
+  }
+
+  /** 退场闸门建一次，并在机器挂载前把同一份 Presence 交给 Headless。 */
+  private ensureExit(): OverlayExit {
+    this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: this.ctrl.service.state.get() === 'open',
+      onExitComplete: () => this.requestUpdate(),
+    })
+    return this.exit
+  }
+
+  // 只交注册函数、不在连接期注册：层的入栈出栈由机器的 trackOverlay 效应与 Presence 共同负责。
   // 连接期就注册会让层常驻栈里占着栈顶，把同页其它层的 Escape 堵死。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
@@ -177,7 +210,6 @@ export class XhTourElement extends XhElement {
       node: () => this.contentNode,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       // 遮罩是"点它就该关本层"的表面；关不关仍由 closeOnInteractOutside 说了算（缺省不关）
       surfaces: () => [this.backdropNode].filter(Boolean) as Element[],
     })
@@ -188,6 +220,7 @@ export class XhTourElement extends XhElement {
     this.ensureConfig()
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.ensureExit().presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
@@ -280,15 +313,33 @@ export class XhTourElement extends XhElement {
     // 收起跟着退场闸门走：presence 读 content 的 animationName 决定要不要多留一会儿，
     // 遮罩、高亮框与定位层与气泡一起收——定位层先 display:none 的话里面的退场一帧都播不出来。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
-    this.ensureConfig()
-    this.exit ??= createOverlayExit({
-      config: this.config!,
-      open: api.open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    this.exit.track(this.contentNode)
-    this.exit.update(api.open)
-    const visible = this.exit.visible
+    const exit = this.ensureExit()
+    const positioner = this.getPart('positioner')
+    const spotlight = this.getPart('spotlight')
+    // 本轮逻辑已收起、但上一帧 Presence 仍在时，connect 会先给这些节点落 hidden。
+    // 先撤掉它再让 Presence 采样，UA 的 [hidden] 才不会把真实退场动画压成 display:none。
+    // positioner 是 content 的祖先，也必须一并留住；showBackdrop / anchored 为假时不把本来就不存在的表面拉出来。
+    if (exit.visible) {
+      if (positioner) {
+        positioner.toggleAttribute('hidden', false)
+        this.setPartHidden(positioner, false)
+      }
+      if (this.contentNode) {
+        this.contentNode.toggleAttribute('hidden', false)
+        this.setPartHidden(this.contentNode, false)
+      }
+      if (this.backdropNode && (this.showBackdrop ?? true)) {
+        this.backdropNode.toggleAttribute('hidden', false)
+        this.setPartHidden(this.backdropNode, false)
+      }
+      if (spotlight && api.anchored) {
+        spotlight.toggleAttribute('hidden', false)
+        this.setPartHidden(spotlight, false)
+      }
+    }
+    exit.track(this.contentNode, this.backdropNode, spotlight)
+    exit.update(api.open)
+    const visible = exit.visible
     const hiddenOf: Record<string, boolean> = {
       backdrop: !visible || !(this.showBackdrop ?? true),
       spotlight: !visible || !api.anchored,
@@ -304,9 +355,11 @@ export class XhTourElement extends XhElement {
       el.toggleAttribute('hidden', hidden)
       this.setPartHidden(el, hidden)
     }
+    this.portal.sync(visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     super.disconnectedCallback()
     // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上

@@ -1,9 +1,10 @@
 <!-- 快捷键唤起 + 手写部件 | Mod+K 打开，命中的字由文本高亮标出来，行尾挂各命令自己的快捷键 -->
 <!-- 唤起的入口：监听装在整篇文档上，面板收着也按得出来 -->
 <div style="display: flex; align-items: center; gap: 8px">
-  <xh-hotkeys id="command-hotkey-trigger" keys="Mod,K">
+  <xh-kbd-group keys="Mod,K">
     <span data-xh-part="root"></span>
-  </xh-hotkeys>
+  </xh-kbd-group>
+  <xh-hotkeys id="command-hotkey-trigger" keys="Mod,K"></xh-hotkeys>
   <span>按一下唤起命令面板</span>
 </div>
 
@@ -19,17 +20,17 @@
             <span data-xh-part="item-text">
               <xh-highlight text="新建文档"><span data-xh-part="root"></span></xh-highlight>
             </span>
-            <xh-hotkeys keys="Mod,N" enabled="false" size="sm">
+            <xh-kbd-group keys="Mod,N" size="sm">
               <span data-xh-part="root"></span>
-            </xh-hotkeys>
+            </xh-kbd-group>
           </div>
           <div data-xh-part="item" value="save">
             <span data-xh-part="item-text">
               <xh-highlight text="保存"><span data-xh-part="root"></span></xh-highlight>
             </span>
-            <xh-hotkeys keys="Mod,S" enabled="false" size="sm">
+            <xh-kbd-group keys="Mod,S" size="sm">
               <span data-xh-part="root"></span>
-            </xh-hotkeys>
+            </xh-kbd-group>
           </div>
           <div data-xh-part="item" value="search">
             <span data-xh-part="item-text">

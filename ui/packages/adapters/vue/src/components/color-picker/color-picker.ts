@@ -10,9 +10,11 @@ import type {
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { colorPickerToChannel, colorPickerToInputChannel } from '@xihan-ui/headless'
-import { computed, defineComponent, h, mergeProps, onUnmounted, Teleport } from 'vue'
+import { computed, defineComponent, h, mergeProps, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   provideColorPicker,
   provideColorPickerChannel,
@@ -26,33 +28,34 @@ type ColorPickerProps = ColorPickerSchema['props']
 /** 默认插槽的载荷：展开态、当前颜色的各式表示、预设色板、屏幕取色状态，以及改展开与改值两个动作。 */
 export type ColorPickerRootSlotProps = Pick<
   ColorPickerApi,
-  'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'picking' | 'eyeDropperSupported' | 'setOpen' | 'setValue'
+  'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'picking' | 'eyeDropperSupported' | 'errors' | 'setOpen' | 'setValue' | 'clearError'
 >
 
 export const XhColorPickerRoot = defineComponent({
   name: 'XhColorPickerRoot',
-  // 缺省值由 connect 与机器给出，这里一律 default: undefined
+  // 缺省值由 connect 与机器给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    value: { type: String, default: undefined },
-    defaultValue: { type: String, default: undefined },
-    format: { type: String as PropType<ColorPickerFormat>, default: undefined },
+    value: { type: String },
+    defaultValue: { type: String },
+    format: { type: String as PropType<ColorPickerFormat> },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    disabled: Boolean,
-    readOnly: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
     alpha: Boolean,
-    swatches: { type: Array as PropType<string[]>, default: undefined },
-    name: { type: String, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
-    translations: { type: Object as PropType<Partial<ColorPickerTranslations>>, default: undefined },
+    swatches: { type: Array as PropType<string[]> },
+    name: { type: String },
+    size: { type: String as PropType<Size> },
+    dir: { type: String as PropType<Direction> },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
+    translations: { type: Object as PropType<Partial<ColorPickerTranslations>> },
   },
   // *-change 携带 details 对象，update:* 携带裸值
   emits: {
     'value-change': (_details: PayloadOf<ColorPickerProps, 'onValueChange'>) => true,
     'open-change': (_details: PayloadOf<ColorPickerProps, 'onOpenChange'>) => true,
+    'color-error': (_details: PayloadOf<ColorPickerProps, 'onColorError'>) => true,
     'update:value': (_value: PayloadOf<ColorPickerProps, 'onValueChange'>['value']) => true,
     'update:open': (_open: PayloadOf<ColorPickerProps, 'onOpenChange'>['open']) => true,
   },
@@ -68,9 +71,11 @@ export const XhColorPickerRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useColorPicker(withXhConfig('color-picker', props) as ColorPickerProps, {
+    const notifyColorError: ColorPickerProps['onColorError'] = details => emit('color-error', details)
+    const ctx = useColorPicker(withXhConfig('color-picker', useFormControlProps(props)) as ColorPickerProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
+      onColorError: notifyColorError,
     })
     provideColorPicker(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
@@ -81,8 +86,10 @@ export const XhColorPickerRoot = defineComponent({
       swatches: ctx.api.value.swatches,
       picking: ctx.api.value.picking,
       eyeDropperSupported: ctx.api.value.eyeDropperSupported,
+      errors: ctx.api.value.errors,
       setOpen: ctx.api.value.setOpen,
       setValue: ctx.api.value.setValue,
+      clearError: ctx.api.value.clearError,
     }))
   },
 })
@@ -139,14 +146,18 @@ export const XhColorPickerSwatch = defineComponent({
 
 export const XhColorPickerPositioner = defineComponent({
   name: 'XhColorPickerPositioner',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useColorPickerContext()
     // 面板的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
     const bars = useScrollbars({ scrollable: () => ctx.contentRef.value })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
@@ -193,7 +204,7 @@ export const XhColorPickerChannelSlider = defineComponent({
   name: 'XhColorPickerChannelSlider',
   props: {
     /** 这条滑杆调的是哪一路，缺省或不识别时按色相处理。 */
-    channel: { type: String as PropType<ColorPickerChannel>, default: undefined },
+    channel: { type: String as PropType<ColorPickerChannel> },
   },
   setup(props, { slots }) {
     const ctx = useColorPickerContext()
@@ -238,7 +249,7 @@ export const XhColorPickerChannelInput = defineComponent({
   name: 'XhColorPickerChannelInput',
   props: {
     /** 这个框编辑的是哪一路：hex 是整串，r/g/b 是分量，a 是透明度百分数；缺省或不识别时按 hex 处理。 */
-    channel: { type: String as PropType<ColorPickerInputChannel>, default: undefined },
+    channel: { type: String as PropType<ColorPickerInputChannel> },
   },
   setup(props) {
     const ctx = useColorPickerContext()

@@ -9,10 +9,7 @@
     "toggle-group:hidden-input": "原生 input 被压成 1px 藏在组里承接表单提交，指针落在可见的段上，不落在它身上"
   },
   "inlineMark": {
-    "select:item-delete-trigger": "回显区里每枚标签自带的移除钮，随文排在标签文字旁，尺寸随指示符档不随控件行高",
-    "tag-group:item-delete-trigger": "一排标签里每枚自带的移除钮，随文排在标签文字旁，尺寸随指示符档不随控件行高",
-    "tag:close-trigger": "标签是随文排的标记，那颗叉排在标签文字旁，尺寸随指示符档不随控件行高",
-    "tags-input:item-delete-trigger": "输入框里每枚标签自带的移除钮，随文排在标签文字旁，尺寸随指示符档不随控件行高"
+    "tag:close-trigger": "标签是随文排的标记，那颗叉排在标签文字旁，尺寸随指示符档不随控件行高"
   },
   "backlog": {
     "carousel:indicator": {
@@ -118,8 +115,8 @@
       "why": "浮在页面角上的回顶钮，手指直接落上去"
     },
     "button:root": {
-      "px": 28,
-      "why": "按钮本体，手指直接落上去；28px 是 sm 档，md 与 lg 档更高"
+      "px": 24,
+      "why": "按钮本体，手指直接落上去；24px 是 Action Control 的 xs 视觉地板，Button 公开 sm/md/lg 更高"
     },
     "carousel:indicator": {
       "px": 8,
@@ -161,6 +158,14 @@
     "notification:item-close-trigger": {
       "px": 28,
       "why": "通知卡片右上角的叉，手指直接落上去"
+    },
+    "number-field:decrement-trigger": {
+      "px": 24,
+      "why": "数字输入的减量按钮，手指直接落上去"
+    },
+    "number-field:increment-trigger": {
+      "px": 24,
+      "why": "数字输入的增量按钮，手指直接落上去"
     },
     "pagination:item": {
       "px": 32,

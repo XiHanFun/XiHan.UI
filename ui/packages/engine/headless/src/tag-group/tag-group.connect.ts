@@ -1,7 +1,9 @@
 import type { NavIntent, NormalizeProps, PropTypes, SelectionOrder, Service } from '@xihan-ui/core'
+import type { TagApi } from '../tag'
 import type { TagGroupApi, TagGroupItemProps, TagGroupNodeMeta, TagGroupSchema } from './tag-group.types'
-import { contains, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems, toggleSelectAll } from '@xihan-ui/core'
-import { tagGroupAnatomy, tagGroupItemQuery, tagGroupItemText } from './tag-group.anatomy'
+import { contains, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, mergeProps, navigateItems, navIntentFromKey, toggleSelectAll } from '@xihan-ui/core'
+import { connectStaticTag } from '../tag'
+import { tagGroupAnatomy, tagGroupItems, tagGroupItemText } from './tag-group.anatomy'
 
 const parts = tagGroupAnatomy.build()
 
@@ -53,18 +55,15 @@ export function connectTagGroup<T extends PropTypes>(
     item.deletable ?? metaOf.get(item.value)?.deletable ?? groupDeletable
   const canDelete = (item: TagGroupItemProps): boolean => editable && isDeletable(item) && !isDisabled(item)
 
-  // item / cell / item-text / item-delete-trigger 共用同一份状态标记
+  // 标签本体与格子共用同一份状态标记；选中是布尔位，data-state 留给 tag 的 open 族
   const stateAttrs = (item: TagGroupItemProps): Record<string, string | undefined> => ({
-    'data-state': isSelected(item.value) ? 'checked' : 'unchecked',
+    'data-selected': dataAttr(isSelected(item.value)),
     'data-disabled': dataAttr(isDisabled(item)),
     'data-highlighted': dataAttr(focusedValue === item.value),
   })
 
   /** 按文档序现读条目集合；仅在事件回调中调用。 */
-  const items = (list: HTMLElement): HTMLElement[] => queryItems(list, tagGroupItemQuery)
-
-  /** 事件目标所在的标签列表容器。 */
-  const listOf = (el: HTMLElement): HTMLElement | null => el.closest<HTMLElement>(parts.list.selector)
+  const items = (list: HTMLElement): HTMLElement[] => tagGroupItems(list)
 
   const focusValue = (el: HTMLElement | null): string | null => {
     const next = itemValue(el)
@@ -123,12 +122,10 @@ export function connectTagGroup<T extends PropTypes>(
    * 容器会重新认领 Tab 停靠点。
    *
    * 只在焦点确实落在这一枚里时才搬：鼠标点摘除钮时焦点压根没进来，搬走它等于把用户
-   * 从别处拽过来。
+   * 从别处拽过来。列表按 id 取——键盘与摘除钮两条路都到这里，不必各自带着出发点。
    */
-  const requestDelete = (origin: HTMLElement, item: TagGroupItemProps): void => {
-    if (!canDelete(item))
-      return
-    const list = listOf(origin)
+  const requestDelete = (item: TagGroupItemProps): void => {
+    const list = scope.getById(ids.list)
     if (!list)
       return
     const all = items(list)
@@ -143,6 +140,29 @@ export function connectTagGroup<T extends PropTypes>(
     }
     send({ type: 'ITEM.DELETE', value: item.value })
   }
+
+  // 一枚标签套的是库里的 tag：三轴与只读从整组传下去，禁用与可摘逐枚定。
+  // 显隐受控在这里——标签在不在由宿主的数据决定，不建机器。
+  // 关闭钮即摘除钮：受控 open 下按它只发 onOpenChange，摘除从这里回到机器；
+  // 禁用与只读都由 tag 挡在钮上，这里不再守一次
+  const hostedTag = (item: TagGroupItemProps): TagApi<T> => connectStaticTag(
+    {
+      variant: prop('variant'),
+      tone: prop('tone'),
+      size: prop('size'),
+      readOnly,
+      disabled: isDisabled(item),
+      closable: isDeletable(item),
+      open: true,
+      translations: { close: label.deleteItem(metaOf.get(item.value)?.label ?? item.value) },
+      onOpenChange: ({ open }) => {
+        if (!open)
+          requestDelete(item)
+      },
+    },
+    { get: () => true, set: () => {} },
+    normalize,
+  )
 
   return {
     value,
@@ -230,7 +250,7 @@ export function connectTagGroup<T extends PropTypes>(
           if (!canDelete(item))
             return
           event.preventDefault()
-          requestDelete(el, item)
+          requestDelete(item)
           return
         }
         if (key === 'Enter') {
@@ -276,35 +296,34 @@ export function connectTagGroup<T extends PropTypes>(
       },
     }),
 
-    getItemProps: item => normalize.element({
-      ...parts.item.attrs,
-      ...stateAttrs(item),
-      // 导航、检索、选中与摘除的条目身份
-      [ITEM_VALUE_ATTR]: item.value,
-      'role': 'row',
-      // 不参与选中时干脆不出这个属性：一排纯标记标签报「未选中」是句假话
-      'aria-selected': selectable ? (isSelected(item.value) ? 'true' : 'false') : undefined,
-      // 用 aria-disabled 而非原生 disabled，禁用条目仍可聚焦、仍是导航起点
-      'aria-disabled': isDisabled(item) ? 'true' : 'false',
-      // roving tabindex：整组只有锚点条目留在 Tab 序列内
-      'tabindex': anchor === item.value ? 0 : -1,
-      // 三轴落在标签自己身上：一枚标签就是一个 tag，语气槽也从这里往下继承。
-      // 缺省档由皮肤承担，这里不补默认值
-      'data-variant': prop('variant'),
-      'data-tone': prop('tone'),
-      'data-size': prop('size'),
-      'data-selectable': dataAttr(selectable),
-      'data-deletable': dataAttr(isDeletable(item)),
-      'onClick': () => {
-        if (!selectable || !editable || isDisabled(item))
-          return
-        send(multiselectable
-          ? { type: 'ITEM.TOGGLE', value: item.value }
-          : { type: 'ITEM.SELECT', value: item.value })
-      },
-      // 禁用条目被聚焦也记锚点，作为方向键起点
-      'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
-    }),
+    // 标签本体就是 tag 的 root（data-scope="tag"）：三轴与置灰由 tag 给，
+    // 集合里的那些事——行角色、身份、roving tabindex、选中与锚点——叠在它上面
+    getItemProps: item => mergeProps<T['element']>(
+      hostedTag(item).getRootProps(),
+      normalize.element({
+        ...stateAttrs(item),
+        // 导航、检索、选中与摘除的条目身份
+        [ITEM_VALUE_ATTR]: item.value,
+        'role': 'row',
+        // 不参与选中时干脆不出这个属性：一排纯标记标签报「未选中」是句假话
+        'aria-selected': selectable ? (isSelected(item.value) ? 'true' : 'false') : undefined,
+        // 用 aria-disabled 而非原生 disabled，禁用条目仍可聚焦、仍是导航起点
+        'aria-disabled': isDisabled(item) ? 'true' : 'false',
+        // roving tabindex：整组只有锚点条目留在 Tab 序列内
+        'tabindex': anchor === item.value ? 0 : -1,
+        'data-selectable': dataAttr(selectable),
+        'data-deletable': dataAttr(isDeletable(item)),
+        'onClick': () => {
+          if (!selectable || !editable || isDisabled(item))
+            return
+          send(multiselectable
+            ? { type: 'ITEM.TOGGLE', value: item.value }
+            : { type: 'ITEM.SELECT', value: item.value })
+        },
+        // 禁用条目被聚焦也记锚点，作为方向键起点
+        'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
+      }),
+    ),
 
     // 标签里那一格：摘除钮可聚焦，只有落在 gridcell 下面才是合法嵌套
     getCellProps: item => normalize.element({
@@ -313,38 +332,28 @@ export function connectTagGroup<T extends PropTypes>(
       role: 'gridcell',
     }),
 
-    getItemTextProps: item => normalize.element({
-      ...parts['item-text'].attrs,
-      ...stateAttrs(item),
-    }),
+    // 标签文字落在 tag 的 label 上，截断规则挂在那一层
+    getItemTextProps: item => hostedTag(item).getLabelProps(),
 
-    getItemDeleteTriggerProps: item => normalize.button({
-      ...parts['item-delete-trigger'].attrs,
-      // 这颗钮的置灰档跟着「摘不摘得动」走，而不是跟着标签本身的禁用：
-      // 只读的整组里标签照常可选，那颗叉却按不动
-      'data-state': isSelected(item.value) ? 'checked' : 'unchecked',
-      'data-disabled': dataAttr(!canDelete(item)),
-      'type': 'button',
-      // 钮里通常只有一个叉，不给名字读屏念不出摘的是哪一枚
-      'aria-label': label.deleteItem(metaOf.get(item.value)?.label ?? item.value),
-      // 不占 Tab 位：一排十枚标签，逐枚摘除钮各占一个停靠点时 Tab 就没法用了；
-      // 键盘那一路走方向键选中标签再按 Delete / Backspace
-      'tabindex': -1,
-      // 单体按钮用原生 disabled：摘不掉的时候不该能被激活
-      'disabled': !canDelete(item) || undefined,
-      // 整组不开放摘除时连按钮一起收起，不留一个按不动的叉
-      'hidden': !isDeletable(item) || undefined,
-      'onPointerDown': (event: PointerEvent) => {
-        // 只认主键，右键留给上下文菜单
-        if (event.button !== 0)
-          return
-        // 焦点不因点这颗叉而改变：焦点在组外就留在组外，在某一枚标签上就留在那一枚上，
-        // 摘完之后的去处由 requestDelete 按当下的焦点位置决定
-        event.preventDefault()
-      },
-      'onClick': (event: MouseEvent) => {
-        requestDelete(event.currentTarget as HTMLElement, item)
-      },
-    }),
+    // 摘除钮就是所在标签那份 tag 的 close-trigger：可及名、禁用、收起与点按都由 tag 给。
+    // 不占 Tab 位：一排十枚标签，逐枚摘除钮各占一个停靠点时 Tab 就没法用了；
+    // 键盘那一路走方向键选中标签再按 Delete / Backspace。
+    // click 先截断冒泡，再执行 tag 的删除逻辑：否则同一次点击会继续撞上 item 的选择处理器。
+    getItemDeleteTriggerProps: item => mergeProps<T['button']>(
+      normalize.button({
+        onClick: (event: MouseEvent) => event.stopPropagation(),
+      }),
+      hostedTag(item).getCloseTriggerProps(),
+      normalize.button({
+        tabindex: -1,
+        onPointerDown: (event: PointerEvent) => {
+          // 只认主键，右键留给上下文菜单。
+          // 焦点不因点这颗叉而改变：焦点在组外就留在组外，在某一枚标签上就留在那一枚上，
+          // 摘完之后的去处由 requestDelete 按当下的焦点位置决定
+          if (event.button === 0)
+            event.preventDefault()
+        },
+      }),
+    ),
   }
 }

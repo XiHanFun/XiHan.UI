@@ -7,16 +7,17 @@ import type {
   CascaderSchema,
   CascaderValue,
   CascaderValueChangeDetails,
+  FormControlState,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { cascaderAnatomy, cascaderMachine, cascaderMeta, connectCascader } from '@xihan-ui/headless'
+import { cascaderAnatomy, cascaderMachine, cascaderMeta, connectCascader, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定；Lit 自带转换器会把缺席落成 null/false，表达不了"未指定"。
@@ -47,6 +48,8 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * `el.value = ['zhejiang','hangzhou']`）。
  *
  * @customElement xh-cascader
+ * @attr {string} name - 原生字段名，每条选中路径作为 JSON 字符串数组独立提交
+ * @attr {string} form - 关联的原生表单 ID，指定后覆盖祖先归属
  * @attr {boolean} open - 受控开合；缺省该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {'click'|'hover'} expand-trigger - 子列由点还是悬停展开，默认 click
@@ -58,7 +61,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {boolean} disabled - 整个控件禁用：trigger 用原生 disabled，浮层展不开
  * @attr {boolean} read-only - 只读：浮层照常展开、列照常浏览，但选中值改不动、也清不掉
  * @attr {boolean} invalid - 校验失败标注
- * @attr {boolean} loading - 候选还在取：浮层报 aria-busy，在途占位顶上来、空态占位让位
+ * @attr {boolean} loading - 候选还在取：浮层报 aria-busy；当前视图无候选时在途占位顶上来
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -71,6 +74,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @fires value-change - 选中路径集合变化；detail 为 `{ value: string[][] }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）
+ * @csspart hidden-input - 宿主自动生成的逐路径原生表单出口，无需作者手写
  * @csspart label - 标题（aria-labelledby 目标）
  * @csspart control - 触发按钮与清空按钮的收纳容器：描边、底色与聚焦环都落在这一层
  * @csspart trigger - role=combobox 的触发按钮，同时是定位锚点，须是原生 button
@@ -82,7 +86,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart input - 搜索框（content 顶部）；没开 searchable 时带 hidden。上下键走候选、Enter 选中、Escape 先清词
  * @csspart search-list - 候选列表容器；不在搜索视图时带 hidden，无候选时带 data-empty
  * @csspart search-item - 一条候选，须用 value 属性写整条路径的 JSON 数组串（如 value='["a","b"]'）；词换了不匹配的带 hidden
- * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来；文案归作者
+ * @csspart loading - 在途占位，与空态占位同一个位置；标记里没写就由元素补一个并填 translations.loading，作者写了则归作者
  * @csspart empty - 空态占位：搜索无候选或 collection 为空时露面，其余时候带 hidden。标记里没写就由元素在 content 末尾补一个并填缺省文案；写了就用作者那份，文案也归作者
  * @csspart column - role=listbox 的一列，须自带 level 属性标识它是第几列；砍掉时带 hidden
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份；条目挂在它里面
@@ -92,7 +96,10 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart item-indicator - 条目选中标记（aria-hidden）
  * @csspart footer - 浮层底部的操作区，写在 content 里与列并列，横跨全部列；不进任何一列的拥有关系，方向键也走不到
  */
-export class XhCascaderElement extends XhElement {
+export class XhCascaderElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: cascaderAnatomy, meta: cascaderMeta }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
@@ -101,6 +108,8 @@ export class XhCascaderElement extends XhElement {
     collection: { attribute: false },
     value: { attribute: false },
     defaultValue: { attribute: false },
+    name: { converter: STRING_CONVERTER },
+    form: { converter: STRING_CONVERTER },
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     expandTrigger: { converter: STRING_CONVERTER, attribute: 'expand-trigger' },
@@ -109,7 +118,7 @@ export class XhCascaderElement extends XhElement {
     searchable: { type: Boolean },
     cascade: { type: Boolean },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
@@ -128,6 +137,8 @@ export class XhCascaderElement extends XhElement {
   declare collection?: CascaderNode[]
   declare value?: CascaderValue
   declare defaultValue?: CascaderValue
+  declare name?: string
+  declare form?: string
   declare open?: boolean
   declare defaultOpen?: boolean
   declare expandTrigger?: CascaderExpandTrigger
@@ -151,18 +162,33 @@ export class XhCascaderElement extends XhElement {
   declare direction?: Direction
   declare translations?: CascaderSchema['props']['translations']
 
+  private readonly formInputs: HTMLInputElement[] = []
+
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly cascaderScope = createScope(null, this.idGen)
+  private readonly cascaderScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = this.createAnchoredPortalController({
+    name: 'Cascader',
+    config: () => this.config,
+    source: () => this.getPart('trigger'),
+    root: () => this.getPart('positioner'),
+    onChange: () => this.requestUpdate(),
+  })
 
   /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
   private readonly ownsValueText = new WeakMap<HTMLElement, boolean>()
 
   /** 空态占位的文案是否归元素填，判定同 ownsValueText。 */
   private readonly ownsEmptyText = new WeakMap<HTMLElement, boolean>()
+
+  /** 在途占位的文案是否归元素填，判定同 ownsValueText。 */
+  private readonly ownsLoadingText = new WeakMap<HTMLElement, boolean>()
+
+  /** 元素自己补出的 Loading；作者运行期加入正式部件时用它精确撤掉自动节点。 */
+  private readonly generatedLoading = new WeakSet<HTMLElement>()
 
   private readonly notifyValue = (details: CascaderValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -191,11 +217,25 @@ export class XhCascaderElement extends XhElement {
     props: () => ({ dir: this.direction }),
   })
 
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
   private machineProps(): Partial<CascaderSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
+      name: this.name,
+      form: this.form,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       expandTrigger: this.expandTrigger,
@@ -204,9 +244,9 @@ export class XhCascaderElement extends XhElement {
       searchable: this.searchable ?? false,
       cascade: this.cascade,
       checkedStrategy: this.checkedStrategy,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       loading: this.loading ?? false,
       variant: this.variant,
       tone: this.tone,
@@ -229,6 +269,10 @@ export class XhCascaderElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.cascaderScope, idGenerator: this.idGen })
   }
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
+  }
+
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
@@ -239,7 +283,6 @@ export class XhCascaderElement extends XhElement {
       // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
       branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 浮层不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })
@@ -248,8 +291,14 @@ export class XhCascaderElement extends XhElement {
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<CascaderSchema>): void {
     this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: (this.open ?? this.defaultOpen) ?? false,
+      onExitComplete: () => this.requestUpdate(),
+    })
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.exit.presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -296,7 +345,7 @@ export class XhCascaderElement extends XhElement {
    */
   private itemOf(el: HTMLElement): CascaderItemProps {
     const owner = el.closest<HTMLElement>(ITEM_SELECTOR)
-    const source = owner && owner !== this && this.contains(owner) ? owner : el
+    const source = owner && owner !== this ? owner : el
     return { value: source.getAttribute('value') ?? '' }
   }
 
@@ -341,8 +390,49 @@ export class XhCascaderElement extends XhElement {
     return el
   }
 
+  /**
+   * 取在途占位；作者没写就补一枚。作者运行期加入自己的 Loading 时移除自动节点，
+   * 始终只保留一枚状态部件，不靠文案内容猜所有权。
+   */
+  private ensureLoading(): HTMLElement | null {
+    const loadings = this.getParts('loading')
+    const authored = loadings.find(el => !this.generatedLoading.has(el))
+    if (authored) {
+      for (const generated of loadings) {
+        if (this.generatedLoading.has(generated))
+          generated.remove()
+      }
+      return authored
+    }
+    if (loadings[0])
+      return loadings[0]
+    const content = this.getPart('content')
+    if (!content)
+      return null
+    const el = this.ownerDocument.createElement('div')
+    el.setAttribute(PART_ATTR, 'loading')
+    el.setAttribute('data-xh-cascader-auto-loading', '')
+    this.generatedLoading.add(el)
+    content.append(el)
+    return el
+  }
+
   protected wire(): void {
     const api = connectCascader(this.ctrl.service, wcNormalize)
+
+    // 每条完整路径一个原生字段，空集合没有空字段；自动节点不进入作者部件发现。
+    while (this.formInputs.length > api.value.length) {
+      const input = this.formInputs.pop()!
+      this.spreader.release(input)
+      input.remove()
+    }
+    for (let index = 0; index < api.value.length; index++) {
+      const input = this.formInputs[index] ?? this.ownerDocument.createElement('input')
+      this.formInputs[index] = input
+      this.spreader.spread(input, api.getHiddenInputProps({ path: api.value[index]! }) as Record<string, unknown>)
+      if (input.parentElement !== this)
+        this.append(input)
+    }
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)
@@ -361,13 +451,19 @@ export class XhCascaderElement extends XhElement {
     put('input', api.getInputProps() as Record<string, unknown>)
     put('search-list', api.getSearchListProps() as Record<string, unknown>)
     put('footer', api.getFooterProps() as Record<string, unknown>)
-    put('loading', api.getLoadingProps() as Record<string, unknown>)
 
     // 空态占位标记里没写就补一个：露不露面归连接层，文案按当前视图取无匹配或无数据
     const empty = this.ensureEmpty()
     if (empty) {
       this.spreader.spread(empty, api.getEmptyProps() as Record<string, unknown>)
       this.fillOwnedText(this.ownsEmptyText, empty, api.searching ? api.translations.noMatch : api.translations.empty)
+    }
+
+    // Content 与 Vue / React 一样完整装配两种状态；作者写了 Loading 时只接线并保留作者文案。
+    const loading = this.ensureLoading()
+    if (loading) {
+      this.spreader.spread(loading, api.getLoadingProps() as Record<string, unknown>)
+      this.fillOwnedText(this.ownsLoadingText, loading, api.translations.loading)
     }
 
     // 候选是多实例 part：身份用 value 属性自报整条路径（JSON 数组串，与 cascaderPathKey 同构）
@@ -432,9 +528,16 @@ export class XhCascaderElement extends XhElement {
       this.setPartHidden(el, !api.isVisible(this.itemOf(el).value))
 
     this.bars.wire()
+    this.portal.sync(this.exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
+    for (const input of this.formInputs) {
+      this.spreader.release(input)
+      input.remove()
+    }
+    this.formInputs.length = 0
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()

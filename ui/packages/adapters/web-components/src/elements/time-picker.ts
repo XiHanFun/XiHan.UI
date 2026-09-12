@@ -1,5 +1,6 @@
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
+  FormControlState,
   TimeGranularity,
   TimeHourCycle,
   TimePickerColumn,
@@ -12,12 +13,12 @@ import type {
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectTimePicker, timePickerAnatomy, timePickerMachine, timePickerMeta } from '@xihan-ui/headless'
+import { connectTimePicker, resolveFormControlState, timePickerAnatomy, timePickerMachine, timePickerMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -99,7 +100,10 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @csspart item - role=option 的一格，须自带 value 属性（两位补零的显示串；上下午列写 '00' / '01'）
  * @csspart hidden-input - type=hidden 的表单出口，值是完整 ISO 串
  */
-export class XhTimePickerElement extends XhElement {
+export class XhTimePickerElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: timePickerAnatomy, meta: timePickerMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -159,11 +163,18 @@ export class XhTimePickerElement extends XhElement {
   declare direction?: Direction
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly pickerScope = createScope(null, this.idGen)
+  private readonly pickerScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = this.createAnchoredPortalController({
+    name: 'TimePicker',
+    config: () => this.config,
+    source: () => this.getPart('control'),
+    root: () => this.getPart('positioner'),
+    onChange: () => this.requestUpdate(),
+  })
 
   private readonly notifyValue = (details: TimePickerValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -180,7 +191,20 @@ export class XhTimePickerElement extends XhElement {
     { scope: this.pickerScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
   private machineProps(): Partial<TimePickerSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+      required: this.required,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
@@ -193,12 +217,12 @@ export class XhTimePickerElement extends XhElement {
       granularity: this.granularity,
       step: this.step,
       presets: this.presets,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       translations: this.translations,
       isTimeUnavailable: this.isTimeUnavailable,
-      required: this.required ?? false,
+      required: control.required,
       name: this.name,
       variant: this.variant,
       tone: this.tone,
@@ -217,6 +241,10 @@ export class XhTimePickerElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.pickerScope, idGenerator: this.idGen })
   }
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
+  }
+
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
@@ -226,7 +254,6 @@ export class XhTimePickerElement extends XhElement {
       // 整个输入行记为本层分支：点触发器算层内交互，开合交给它自己切换。
       branches: () => [this.getPart('control')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 浮层不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })
@@ -235,8 +262,14 @@ export class XhTimePickerElement extends XhElement {
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<TimePickerSchema>): void {
     this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: (this.open ?? this.defaultOpen) ?? false,
+      onExitComplete: () => this.requestUpdate(),
+    })
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.exit.presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('control'))
     svc.refs.set('getTriggerEl', () => this.getPart('trigger'))
@@ -331,9 +364,11 @@ export class XhTimePickerElement extends XhElement {
     this.exit.track(this.getPart('content'))
     this.exit.update(api.open)
     this.setPartHidden(this.getPart('content'), !this.exit.visible)
+    this.portal.sync(this.exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()

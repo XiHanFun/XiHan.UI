@@ -1,5 +1,5 @@
 import type { Service } from '@xihan-ui/core'
-import type { FieldArrayApi, FieldArraySchema } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArraySchema, FormSchema } from '@xihan-ui/headless'
 import type { ComputedRef } from 'vue'
 import { createScope } from '@xihan-ui/core'
 import { connectFieldArray, fieldArrayMachine } from '@xihan-ui/headless'
@@ -16,11 +16,13 @@ export interface FieldArrayContext {
 export function useFieldArray(
   props: FieldArraySchema['props'],
   handlers: Pick<FieldArraySchema['props'], 'onValueChange'> = {},
+  form?: Service<FormSchema> | null,
 ): FieldArrayContext {
   // scope id 走 Vue 的 useId，保证同页多实例的 IDREF 不相撞
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const service = useMachine(fieldArrayMachine, () => ({ ...props, ...handlers }), scope)
+  service.refs.set('form', form ?? null)
   const api = computed(() => connectFieldArray(service, vueNormalize))
   return { api, service }
 }

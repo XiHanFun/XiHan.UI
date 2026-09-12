@@ -1,6 +1,6 @@
 import type { Dict } from '@xihan-ui/core'
 import type { Ref } from 'react'
-import { mergeProps } from '@xihan-ui/core'
+import { isEventHandlerKey, mergeProps } from '@xihan-ui/core'
 
 /** React 19 的 ref 是普通 prop，同名合并时两边都要收到节点。 */
 type AnyRef = Ref<unknown> | undefined
@@ -38,5 +38,32 @@ export function mergeReactProps<T extends Dict>(...sources: (Partial<T> | undefi
   const refs = sources.map(s => (s as Dict | undefined)?.ref as AnyRef).filter(Boolean)
   if (refs.length > 1)
     merged.ref = refs.reduce((a, b) => composeRefs(a, b))
+  return merged as T
+}
+
+/**
+ * 把部件接线与作者写在部件上的 props 合成一份。
+ *
+ * 同名事件处理器作者的排在前面先跑、部件的后跑，作者因此能在部件动作之前拦下事件；
+ * className、style 与其余普通值的取舍与直接展开 `{...rest}` 时一致，作者的说了算。
+ */
+export function mergePartProps<T extends Dict>(part: Partial<T>, author: Partial<T>): T {
+  const merged = mergeReactProps<T>(part, author) as Dict
+  for (const key of Object.keys(merged)) {
+    if (!isEventHandlerKey(key))
+      continue
+    const theirs = (author as Dict | undefined)?.[key]
+    const ours = (part as Dict | undefined)?.[key]
+    if (typeof theirs === 'function' && typeof ours === 'function') {
+      const a = theirs as (...args: unknown[]) => void
+      const b = ours as (...args: unknown[]) => void
+      merged[key] = (...args: unknown[]) => {
+        a(...args)
+        if ((args[0] as { defaultPrevented?: boolean } | null | undefined)?.defaultPrevented)
+          return
+        b(...args)
+      }
+    }
+  }
   return merged as T
 }

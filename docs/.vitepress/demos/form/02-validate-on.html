@@ -2,7 +2,7 @@
 <!-- 失焦时校验这一个字段：填的过程中不打断 -->
 <xh-form id="form-validate-blur" validate-on="blur">
   <form data-xh-part="root" style="inline-size: 240px">
-    <div data-xh-part="field-group" value="port">
+    <div data-xh-part="field-group" name="port">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">端口（失焦校验）</label>
@@ -18,7 +18,7 @@
 <!-- 改一个字就校验一次：错误随输入实时消长 -->
 <xh-form id="form-validate-change" validate-on="change">
   <form data-xh-part="root" style="inline-size: 240px">
-    <div data-xh-part="field-group" value="port">
+    <div data-xh-part="field-group" name="port">
       <xh-field>
         <div data-xh-part="root">
           <label data-xh-part="label">端口（改动即校验）</label>

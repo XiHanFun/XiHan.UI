@@ -22,7 +22,6 @@ function layer(): Omit<Layer, 'id' | 'node' | 'surfaces'> {
     kind: 'modal',
     branches: () => [],
     isModal: () => true,
-    setModal: () => {},
   }
 }
 
@@ -46,6 +45,8 @@ export function useImageViewer(props: ImageViewerSchema['props']): ImageViewerCo
     node: () => contentRef.current,
     // 遮罩登记为可点关闭的表面，是否真关由 closeOnInteractOutside 决定
     surfaces: () => [backdropRef.current].filter(Boolean) as Element[],
+    // 内容和遮罩各自有退场动画；两张退出租约均完成前不能释放模态资源。
+    additionalExitNodes: () => [backdropRef.current],
     refs: (service) => {
       service.refs.set('getContentEl', (() => contentRef.current) as never)
     },

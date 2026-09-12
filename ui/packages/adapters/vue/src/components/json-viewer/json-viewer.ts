@@ -2,25 +2,13 @@ import type { Direction, Size } from '@xihan-ui/core'
 import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerVariant, JsonViewerView } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { groupJsonViewerNodesByParent } from '@xihan-ui/headless'
 import { defineComponent, h, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useJsonViewer } from './use-json-viewer'
 
 type JsonViewerProps = JsonViewerSchema['props']
-
-/** 可见行按父路径分组，铺 DOM 时逐层取用。 */
-function groupByParent(nodes: readonly JsonViewerNode[]): Map<string | null, JsonViewerNode[]> {
-  const out = new Map<string | null, JsonViewerNode[]>()
-  for (const node of nodes) {
-    const list = out.get(node.parent)
-    if (list)
-      list.push(node)
-    else
-      out.set(node.parent, [node])
-  }
-  return out
-}
 
 function renderRows(
   api: JsonViewerApi,
@@ -72,23 +60,23 @@ function renderRow(
 
 export const XhJsonViewerRoot = defineComponent({
   name: 'XhJsonViewerRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     // 任意形状都收，类型检查交给使用方
     value: { type: null as unknown as PropType<unknown>, default: undefined as unknown },
-    view: { type: String as PropType<JsonViewerView>, default: undefined },
+    view: { type: String as PropType<JsonViewerView> },
     /** 外框形态：surface 带描边与底色（缺省），plain 只留内容。 */
-    variant: { type: String as PropType<JsonViewerVariant>, default: undefined },
-    expandedValue: { type: Array as PropType<string[]>, default: undefined },
-    defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
-    defaultExpandedDepth: { type: Number, default: undefined },
-    maxStringLength: { type: Number, default: undefined },
-    maxItems: { type: Number, default: undefined },
+    variant: { type: String as PropType<JsonViewerVariant> },
+    expandedValue: { type: Array as PropType<string[]> },
+    defaultExpandedValue: { type: Array as PropType<string[]> },
+    defaultExpandedDepth: { type: Number },
+    maxStringLength: { type: Number },
+    maxItems: { type: Number },
     sortKeys: { type: Boolean, default: undefined },
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<JsonViewerTranslations>>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<JsonViewerTranslations>> },
   },
   // 空态那一格的内容：不写即铺 translations 里的兜底文案
   slots: Object as SlotsType<{
@@ -140,7 +128,7 @@ export const XhJsonViewerRoot = defineComponent({
         ])
       }
 
-      const children = groupByParent(api.visibleNodes)
+      const children = groupJsonViewerNodesByParent(api.visibleNodes)
       return h('div', api.getRootProps() as Record<string, unknown>, [
         h('div', { ...api.getTreeProps() as Record<string, unknown>, ref: keepLayer }, renderRows(api, children, null)),
         renderEmpty(api),

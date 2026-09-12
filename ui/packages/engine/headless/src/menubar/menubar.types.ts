@@ -1,4 +1,5 @@
 import type { Cleanup, Direction, Layer, MachineSchema, Orientation, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 /** 展开菜单时的落焦端：'first'/'last' 从集合两端进，'none' 焦点留在 trigger 上。 */
 export type MenubarFocusIntent = 'first' | 'last' | 'none'
@@ -8,6 +9,12 @@ export interface MenubarRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄，只在有菜单展开期间调用。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 每张菜单各自的视觉 Presence，按 content value 精确配对。 */
+  presences: Map<string, PresenceHandle>
+  /** 已明确卸载的菜单；区别于首帧尚未登记 Presence。 */
+  detachedValues: Set<string>
+  /** 当前行为层归属的菜单；最终关闭后保留到该菜单退出完成。 */
+  layerValue: string | null
   /** 浮层定位引擎；缺省即不产出位置结果。 */
   position: PositionEnginePort | null
   /** 当前展开项的 trigger，定位锚点。 */
@@ -169,6 +176,8 @@ export interface MenubarSchema extends MachineSchema {
     autoValue: string | null
     /** 收起时是否把焦点归还 trigger；Tab 与层外交互时为 false。 */
     returnFocus: boolean
+    /** Presence 注册表变更版本，驱动行为资源控制器重新读取当前 owner。 */
+    presenceVersion: number
   }
   computed: Record<string, never>
   refs: MenubarRefs
@@ -189,6 +198,8 @@ export interface MenubarSchema extends MachineSchema {
     | { type: 'MENUBAR.BLUR' }
     /** 程序化改写展开项。 */
     | { type: 'VALUE.SET', value: string | null }
+    /** 适配器按菜单 value 注册或精确注销其视觉 Presence。 */
+    | { type: 'PRESENCE.SET', value: string, presence: PresenceHandle, connected: boolean }
     | { type: 'ITEM.FOCUS', value: string }
     /** 持有焦点的条目离开了 DOM：浏览器此时不派 focusout，机器读不到，由适配器如实上报。 */
     | { type: 'ITEM.LOST' }
@@ -200,6 +211,8 @@ export interface MenubarSchema extends MachineSchema {
   guard: 'hasValue' | 'isCurrent' | 'shouldAbsorbToggle' | 'shouldSwitch'
   action:
     | 'syncOpenState'
+    | 'syncLayerOwner'
+    | 'setPresence'
     | 'openFromEvent'
     | 'toggleFromEvent'
     | 'switchValue'

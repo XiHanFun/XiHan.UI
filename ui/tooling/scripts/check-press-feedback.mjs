@@ -14,24 +14,29 @@
 // 全集是扫出来的，不是登出来的：皮肤里带 cursor:pointer 的部件就是「可点部件」，
 // 两张表加起来必须盖住它们，漏一个就判红。反过来不成立——已登记的部件不要求自己那条
 // 规则里写 cursor:pointer，共享规则里继承来的也算数。
+// 可点的是选择器末尾那个复合体（主体）；主体戴着别的组件的 scope 时，说明这份皮肤把可点加在了
+// 内嵌的别家部件上（tag-group 给 tag 的 root），键写成「宿主:scope/部件」，登记时照抄。
 //
-// 两种形态：
+// 三种形态：
 // ① 即时按压（多数）：反馈落在 :active 上，缩放量走令牌。
 // ② 长按等待（登记成 { part, attr }）：要按满一段时间才生效的操作，反馈由连接层打的
 //    状态属性驱动。这一支不能靠 :active——手指按住不动时 :active 会被滚动接管等原因
 //    提前撤掉，而等待期恰恰是最需要回执的那几百毫秒；也不比缩放，因为这类触发区往往是
 //    作者的整块内容，缩放它会把作者自己的排版一起抖起来。改比底色。
+// ③ 列表行的即时换面：显式登记 feedback: 'surface'，只检查本部件的换底与过渡，禁止改变按压几何。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const SKINS = 'packages/design/styles/css'
 const HEADLESS = 'packages/engine/headless/src'
+const ACTION_RECIPE = 'packages/design/styles/family/action-control.css'
 
 /**
  * 该有按压反馈的控件，连同它的部件名（一个组件可以登记多个部件）。
- * 字符串条目按形态①查；`{ part, attr }` 条目按形态②查。
+ * 字符串按形态①查，`{ part, attr }` 按②查，`{ part, feedback: 'surface' }` 按③查。
  */
 const PRESSABLE = {
+  'menu': [{ part: 'item', feedback: 'surface' }],
   // 按钮形的控件本体：整颗就是点击目标
   'button': ['root'],
   'download-trigger': ['root'],
@@ -44,8 +49,8 @@ const PRESSABLE = {
   'infinite-scroll': ['load-more-trigger'],
   // 集合件尾部的「取下一页」：一颗铺满一行的按钮，整条就是点击目标
   'listbox': ['load-more-trigger'],
-  // 一枚标签就是一颗紧凑的芯片，整枚就是点击目标
-  'tag-group': ['item', 'item-delete-trigger'],
+  // 组里的一枚标签就是 tag 的 root，整枚就是点击目标；摘除钮是 tag 的 close-trigger，按压归 tag.css
+  'tag-group': ['tag/root'],
   // 清空 / 关闭 / 移除按钮四类（契约见 check-clear-trigger）
   'cascader': ['clear-trigger'],
   'tree-select': ['clear-trigger'],
@@ -54,8 +59,9 @@ const PRESSABLE = {
   'date-picker': ['clear-trigger', 'trigger', 'confirm-trigger'],
   'time-picker': ['clear-trigger', 'trigger'],
   'text-field': ['clear-trigger'],
-  'tags-input': ['clear-trigger', 'item-delete-trigger'],
-  'select': ['clear-trigger', 'item-delete-trigger'],
+  // 标签里的删除钮是 tag 的 close-trigger，按压归 tag.css
+  'tags-input': ['clear-trigger'],
+  'select': ['clear-trigger', { part: 'item', feedback: 'surface' }],
   'date-field': ['clear-trigger'],
   'time-field': ['clear-trigger'],
   'file-upload': ['clear-trigger', 'item-delete-trigger', 'trigger'],
@@ -110,7 +116,7 @@ const PRESSABLE = {
   // 展开与导航的触发钮
   'accordion': ['trigger'],
   'collapsible': ['trigger'],
-  'menubar': ['trigger'],
+  'menubar': ['trigger', { part: 'item', feedback: 'surface' }],
   'navigation-menu': ['trigger'],
   'tabs': ['trigger'],
   // 表格里的勾选与展开把手，以及表尾那颗「取下一页」
@@ -129,7 +135,7 @@ const PRESSABLE = {
   'reasoning': ['trigger'],
   'tool-call': ['trigger'],
   // 触屏上代替右键的长按：等待期的回执落在 data-pressing 上
-  'context-menu': [{ part: 'trigger', attr: 'data-pressing' }],
+  'context-menu': [{ part: 'trigger', attr: 'data-pressing' }, { part: 'item', feedback: 'surface' }],
 }
 
 /**
@@ -139,11 +145,7 @@ const PRESSABLE = {
  */
 const NO_PRESS = {
   // 列表族条目：一行文字，按下的回执走高亮档（悬停中性灰、展开路径品牌淡底）
-  'menu:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'menubar:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'context-menu:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'listbox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'select:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'combobox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'command:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'cascader:item': '列表行的按下回执走高亮档，缩放会抖动整列',
@@ -187,13 +189,13 @@ const NO_PRESS = {
   'color-picker:channel-slider': '拖拽轨道，按下的回执由拇指的拖拽放大给出；缩放整条轨道会让渐变与拇指位置一起错开',
   // 大块区域：缩放会把里面的排版一起抖起来
   'image-viewer:trigger': '触发区是作者自己的一块内容（多为缩略图），皮肤对它零外观规则；缩放它会把作者的排版一起抖起来',
-  'image-viewer:toolbar': '工具条本身是容器，cursor:pointer 落在它里面的按钮上（那几颗已登记有按压反馈），缩放整条会把所有按钮一起抖起来',
   'file-upload:dropzone': '大块投放区，按下回执由拖入态的描边与底色给出；缩放整块会把里面的说明文字一起抖起来',
   'truncate:root': '触发区就是被裁的那整段文本，缩放它会把整段排版一起抖起来',
   'table:sort-trigger': '排序把手 flex:1 撑满整块列标题，缩放会把表头文字连同列宽基线一起抖起来；按下回执落在排序指示字形与列标题底色上',
 }
 
 const problems = []
+const actionRecipe = await readFile(ACTION_RECIPE, 'utf8').catch(() => '')
 
 for (const [name, parts] of Object.entries(PRESSABLE)) {
   let css
@@ -206,10 +208,24 @@ for (const [name, parts] of Object.entries(PRESSABLE)) {
   }
   for (const part of parts) {
     if (typeof part === 'string')
-      checkPart(name, part, css)
+      checkPart(name, part, css, await isActionControlPart(name, part) ? actionRecipe : '')
+    else if (part.feedback === 'surface')
+      checkSurfacePart(name, part.part, css)
     else
       checkHeldPart(name, part.part, part.attr, css)
   }
+}
+
+/** Headless getter 明确投影 data-xh-action-control 时，按压反馈可以由 Family Recipe 提供。 */
+async function isActionControlPart(name, part) {
+  const source = await readFile(`${HEADLESS}/${name}/${name}.connect.ts`, 'utf8').catch(() => '')
+  const getter = `get${part.split('-').map(value => value[0].toUpperCase() + value.slice(1)).join('')}Props`
+  const start = source.search(new RegExp(`${getter}\\s*[:=]`))
+  if (start < 0)
+    return false
+  const next = source.slice(start + getter.length).search(/\bget[A-Z][A-Za-z0-9]*Props\s*[:=]/)
+  const body = source.slice(start, next < 0 ? source.length : start + getter.length + next)
+  return body.includes('\'data-xh-action-control\':')
 }
 
 for (const key of Object.keys(NO_PRESS)) {
@@ -262,10 +278,15 @@ async function collectClickableParts() {
     for (const rule of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
       if (!/cursor:\s*pointer/.test(rule[2]))
         continue
-      // 选择器可能是逗号分组，一条规则里列的部件全收
-      const parts = new Set([...rule[1].matchAll(/\[data-part='([a-z0-9-]+)'\]/g)].map(m => m[1]))
-      for (const part of parts) {
-        const key = `${name}:${part}`
+      // 选择器可能是逗号分组，每条分支只收主体那个复合体
+      for (const branch of rule[1].split(',')) {
+        const compounds = splitCompounds(branch.trim().replace(/\s+/g, ' '))
+        const subject = compounds[compounds.length - 1] ?? ''
+        const part = /\[data-part='([a-z0-9-]+)'\]/.exec(subject)?.[1]
+        if (!part)
+          continue
+        const scope = /\[data-scope='([a-z0-9-]+)'\]/.exec(subject)?.[1] ?? name
+        const key = scope === name ? `${name}:${part}` : `${name}:${scope}/${part}`
         if (!found.has(key))
           found.set(key, css.slice(0, rule.index).split('\n').length)
       }
@@ -274,10 +295,41 @@ async function collectClickableParts() {
   return [...found].sort(([a], [b]) => a.localeCompare(b))
 }
 
-function checkPart(name, part, css) {
+/** 括号与方括号之外的空格与组合符才分隔复合体。 */
+function splitCompounds(branch) {
+  const out = []
+  let depth = 0
+  let current = ''
+  for (const ch of branch) {
+    if (ch === '[' || ch === '(')
+      depth++
+    else if (ch === ']' || ch === ')')
+      depth--
+    if (depth === 0 && (ch === ' ' || ch === '>' || ch === '+' || ch === '~')) {
+      if (current)
+        out.push(current)
+      current = ''
+      continue
+    }
+    current += ch
+  }
+  if (current)
+    out.push(current)
+  return out
+}
+
+/** 登记名里的部件：本组件的写部件名，别家的写 scope/部件，选择器按后者要带上那个 scope。 */
+function partSelector(part) {
+  const slash = part.indexOf('/')
+  return slash < 0
+    ? `\\[data-part='${part}'\\]`
+    : `\\[data-scope='${part.slice(0, slash)}'\\]\\[data-part='${part.slice(slash + 1)}'\\]`
+}
+
+function checkPart(name, part, css, familyCss = '') {
   // :active 规则要落在该部件上，且缩放量走令牌
-  const active = new RegExp(`\\[data-part='${part}'\\][^{]*:active(?::not\\([^)]*\\))?\\s*\\{([^}]*)\\}`)
-  const match = css.match(active)
+  const active = new RegExp(`${partSelector(part)}[^{]*:active(?::not\\([^)]*\\))?\\s*\\{([^}]*)\\}`)
+  const match = css.match(active) ?? familyCss.match(/\[data-xh-action-control\][^{]*:active\s*\{([^}]*)\}/)
   if (!match) {
     problems.push(`${name} 的 ${part} 没有 :active 规则——按下去到松手之间没有任何变化`)
     return
@@ -289,9 +341,23 @@ function checkPart(name, part, css) {
     )
   }
   // 缩放要能过渡，否则是硬切
-  if (!/transition:[^;]*\bscale\b/.test(css)) {
+  if (!/transition:[^;]*\bscale\b/.test(css) && !/transition:[^;]*\bscale\b/.test(familyCss)) {
     problems.push(`${name} 的 ${part} 没把 scale 写进 transition——按下与松手都是硬切`)
   }
+}
+
+/** 列表行用换面表达按下，几何保持不变；只有显式登记的部件走这条合同。 */
+function checkSurfacePart(name, part, css) {
+  const active = new RegExp(`${partSelector(part)}[^{]*:active(?::not\\([^)]*\\))?\\s*\\{([^}]*)\\}`)
+  const match = css.match(active)
+  const surface = match?.[1].match(/(?:^|;)\s*background(?:-color)?\s*:\s*([^;]+)/)
+  if (!surface || /^(?:none|transparent)$/.test(surface[1].trim()))
+    problems.push(`${name} 的 ${part} 没有明确的 :active 换面`)
+  if (match && /(?:^|;)\s*(?:scale|translate|transform)\s*:/.test(match[1]))
+    problems.push(`${name} 的 ${part} 登记为换面反馈，却在按下时改变几何`)
+  const rules = [...css.matchAll(new RegExp(`${partSelector(part)}[^{]*\\{([^}]*)\\}`, 'g'))]
+  if (!rules.some(rule => /transition:[^;]*\bbackground(?:-color)?\b/.test(rule[1])))
+    problems.push(`${name} 的 ${part} 没把换面写进本部件的 transition`)
 }
 
 /** 形态②：反馈规则挂在状态属性上，且换的是底色。 */
@@ -322,10 +388,11 @@ if (problems.length) {
 }
 
 const pressable = Object.values(PRESSABLE).flat()
-const held = pressable.filter(part => typeof part !== 'string').length
+const held = pressable.filter(part => typeof part !== 'string' && 'attr' in part).length
+const surfaces = pressable.filter(part => typeof part !== 'string' && part.feedback === 'surface').length
 console.log(
   `[check-press-feedback] 通过：皮肤里 ${clickable.length} 个可点部件全部定性过`
   + `（登记 ${registered.size} 个）——${pressable.length} 个按下去有回应`
-  + `（其中长按等待 ${held} 个比底色，其余比缩放且缩放量都走令牌）`
+  + `（长按等待 ${held} 个比底色，即时换面 ${surfaces} 个保持几何，其余缩放走令牌）`
   + `，${Object.keys(NO_PRESS).length} 个判定为不给按压反馈`,
 )

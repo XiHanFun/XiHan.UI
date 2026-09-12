@@ -1,8 +1,8 @@
 import type { ControlVariant, Direction, Placement, Service, Size, Tone } from '@xihan-ui/core'
-import type { TreeNode, TreeSelectApi, TreeSelectSchema } from '@xihan-ui/headless'
+import type { TreeSelectApi, TreeSelectNode, TreeSelectSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -11,7 +11,8 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
-import { TreeSelectNodeProvider, TreeSelectProvider, useTreeSelectContext, useTreeSelectNodeContext } from './context'
+import { useFormControlProps } from '../form/use-form-control'
+import { TreeSelectContentProvider, TreeSelectNodeProvider, TreeSelectProvider, useTreeSelectContentContext, useTreeSelectContext, useTreeSelectNodeContext } from './context'
 import { useTreeSelect } from './use-tree-select'
 
 type TreeSelectProps = TreeSelectSchema['props']
@@ -24,16 +25,20 @@ export type TreeSelectRootSlotProps = Pick<
   | 'expandedValue'
   | 'visibleNodes'
   | 'focusedValue'
+  | 'empty'
+  | 'loading'
   | 'displayText'
   | 'canClear'
   | 'isSelected'
   | 'isIndeterminate'
   | 'isExpanded'
+  | 'branchLoadState'
   | 'setOpen'
   | 'setValue'
   | 'setExpandedValue'
   | 'expand'
   | 'collapse'
+  | 'retryBranch'
   | 'select'
   | 'clear'
 >
@@ -63,10 +68,20 @@ function useNodeFocusReport(
     if (el.current && service.scope.getActiveElement() === el.current)
       service.send({ type: 'NODE.LOST' })
   }, [service, el])
+
+  useIsomorphicLayoutEffect(() => {
+    if (service.getStatus() === 'Started')
+      service.send({ type: 'NODE.MOUNT', value })
+    return () => {
+      if (service.getStatus() === 'Started')
+        service.send({ type: 'NODE.UNMOUNT', value })
+    }
+  }, [service, value])
 }
 
-export interface XhTreeSelectRootProps {
-  collection?: TreeNode[]
+export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+  collection?: TreeSelectNode[]
+  loadChildren?: TreeSelectProps['loadChildren']
   /** 标题文字。给了它就不必再写 label 部件。 */
   label?: ReactNode
   /** 自动渲染树里是否带清空按钮；手写部件不看它，写了节点即可清。 */
@@ -94,14 +109,90 @@ export interface XhTreeSelectRootProps {
   loop?: boolean
   dir?: Direction
   name?: string
+  /** 显式关联的原生表单 ID。 */
+  form?: string
   onValueChange?: TreeSelectProps['onValueChange']
   onExpandedValueChange?: TreeSelectProps['onExpandedValueChange']
   onOpenChange?: TreeSelectProps['onOpenChange']
+  onBranchLoadStart?: TreeSelectProps['onBranchLoadStart']
+  onBranchLoad?: TreeSelectProps['onBranchLoad']
+  onBranchLoadError?: TreeSelectProps['onBranchLoadError']
   children?: SlotChildren<TreeSelectRootSlotProps>
 }
 
-export function XhTreeSelectRoot({ children, label, ...props }: XhTreeSelectRootProps): ReactNode {
-  const ctx = useTreeSelect(withXhConfig('tree-select', props) as TreeSelectProps)
+export function XhTreeSelectRoot({
+  collection,
+  loadChildren,
+  label,
+  clearable,
+  value,
+  defaultValue,
+  expandedValue,
+  defaultExpandedValue,
+  open,
+  defaultOpen,
+  multiple,
+  cascade,
+  checkedStrategy,
+  disabled,
+  readOnly,
+  invalid,
+  loading,
+  variant,
+  tone,
+  size,
+  placeholder,
+  translations,
+  placement,
+  offset,
+  loop,
+  dir,
+  name,
+  form,
+  onValueChange,
+  onExpandedValueChange,
+  onOpenChange,
+  onBranchLoadStart,
+  onBranchLoad,
+  onBranchLoadError,
+  children,
+  ...rest
+}: XhTreeSelectRootProps): ReactNode {
+  const ctx = useTreeSelect(withXhConfig('tree-select', useFormControlProps({
+    collection,
+    loadChildren,
+    clearable,
+    value,
+    defaultValue,
+    expandedValue,
+    defaultExpandedValue,
+    open,
+    defaultOpen,
+    multiple,
+    cascade,
+    checkedStrategy,
+    disabled,
+    readOnly,
+    invalid,
+    loading,
+    variant,
+    tone,
+    size,
+    placeholder,
+    translations,
+    placement,
+    offset,
+    loop,
+    dir,
+    name,
+    form,
+    onValueChange,
+    onExpandedValueChange,
+    onOpenChange,
+    onBranchLoadStart,
+    onBranchLoad,
+    onBranchLoadError,
+  })) as TreeSelectProps)
   const api = ctx.api
 
   const body = children != null
@@ -111,28 +202,35 @@ export function XhTreeSelectRoot({ children, label, ...props }: XhTreeSelectRoot
         expandedValue: api.expandedValue,
         visibleNodes: api.visibleNodes,
         focusedValue: api.focusedValue,
+        empty: api.empty,
+        loading: api.loading,
         displayText: api.displayText,
         canClear: api.canClear,
         isSelected: api.isSelected,
         isIndeterminate: api.isIndeterminate,
         isExpanded: api.isExpanded,
+        branchLoadState: api.branchLoadState,
         setOpen: api.setOpen,
         setValue: api.setValue,
         setExpandedValue: api.setExpandedValue,
         expand: api.expand,
         collapse: api.collapse,
+        retryBranch: api.retryBranch,
         select: api.select,
         clear: api.clear,
       })
-    : props.collection
-      ? <DefaultTree collection={api.collection} label={label} clearable={props.clearable} />
+    : collection
+      ? <DefaultTree collection={api.collection} label={label} clearable={clearable} />
       : null
 
   return (
     <TreeSelectProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {body}
       </div>
@@ -140,7 +238,7 @@ export function XhTreeSelectRoot({ children, label, ...props }: XhTreeSelectRoot
   )
 }
 
-XhTreeSelectRoot.xhEvents = ['value-change', 'expanded-value-change', 'open-change'] as const
+XhTreeSelectRoot.xhEvents = ['value-change', 'expanded-value-change', 'open-change', 'branch-load-start', 'branch-load', 'branch-load-error'] as const
 
 export interface XhTreeSelectLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeSelectLabel({ children, ...rest }: XhTreeSelectLabelProps): ReactNode {
@@ -165,7 +263,7 @@ export function XhTreeSelectTrigger({ children, ...rest }: XhTreeSelectTriggerPr
   return (
     <button
       {...mergeReactProps(
-        fieldLabel({ ...ctx.api.getTriggerProps() as Record<string, unknown>, ...fieldWiring }),
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
         rest as Record<string, unknown>,
         { ref: (el: HTMLButtonElement | null) => { ctx.triggerRef.current = el } },
       )}
@@ -214,7 +312,7 @@ export function XhTreeSelectPositioner({ children, container, ...rest }: XhTreeS
     props: () => ({ dir: (ctx.api.getPositionerProps() as { dir?: Direction }).dir }),
   })
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,
@@ -230,24 +328,64 @@ export function XhTreeSelectPositioner({ children, container, ...rest }: XhTreeS
 }
 
 export interface XhTreeSelectContentProps extends ComponentPropsWithRef<'div'> {}
+
+function TreeSelectAutoEmpty({ content }: { content: ReturnType<typeof useTreeSelectContentContext> }): ReactNode {
+  const ctx = useTreeSelectContext()
+  if (content.renderRegistration.authoredEmpty || content.authoredEmptyCount > 0)
+    return null
+  return <div {...ctx.api.getEmptyProps() as Record<string, unknown>} data-xh-tree-select-auto-empty="">{ctx.api.translations.empty}</div>
+}
+
+function TreeSelectAutoLoading({ content }: { content: ReturnType<typeof useTreeSelectContentContext> }): ReactNode {
+  const ctx = useTreeSelectContext()
+  if (content.renderRegistration.authoredLoading || content.authoredLoadingCount > 0)
+    return null
+  return <div {...ctx.api.getLoadingProps() as Record<string, unknown>} data-xh-tree-select-auto-loading="">{ctx.api.translations.loading}</div>
+}
+
 /** 收起时只隐藏不卸载。 */
 export function XhTreeSelectContent({ children, ...rest }: XhTreeSelectContentProps): ReactNode {
   const ctx = useTreeSelectContext()
+  const [authoredEmptyCount, setAuthoredEmptyCount] = useState(0)
+  const [authoredLoadingCount, setAuthoredLoadingCount] = useState(0)
+  const register = useCallback((setCount: (update: (count: number) => number) => void) => {
+    let active = true
+    setCount(count => count + 1)
+    return () => {
+      if (!active)
+        return
+      active = false
+      setCount(count => count - 1)
+    }
+  }, [])
+  const registerEmpty = useCallback(() => register(setAuthoredEmptyCount), [register])
+  const registerLoading = useCallback(() => register(setAuthoredLoadingCount), [register])
+  const content = {
+    renderRegistration: { authoredEmpty: false, authoredLoading: false },
+    authoredEmptyCount,
+    authoredLoadingCount,
+    registerEmpty,
+    registerLoading,
+  }
   return (
-    <div
-      {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
-        {
-          // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
-          // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
-          style: ctx.rendered ? undefined : { display: 'none' },
-          ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el },
-        },
-      )}
-    >
-      {children}
-    </div>
+    <TreeSelectContentProvider value={content}>
+      <div
+        {...mergeReactProps(
+          ctx.api.getContentProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          {
+            // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
+            // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
+            style: ctx.rendered ? undefined : { display: 'none' },
+            ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el },
+          },
+        )}
+      >
+        {children}
+        <TreeSelectAutoEmpty content={content} />
+        <TreeSelectAutoLoading content={content} />
+      </div>
+    </TreeSelectContentProvider>
   )
 }
 
@@ -319,6 +457,7 @@ export function XhTreeSelectBranch({ value, children, ...rest }: XhTreeSelectBra
         )}
       >
         {children}
+        <TreeSelectBranchFeedback />
       </div>
     </TreeSelectNodeProvider>
   )
@@ -360,18 +499,67 @@ export function XhTreeSelectBranchContent({ children, ...rest }: XhTreeSelectBra
   return <div {...mergeReactProps(ctx.api.getBranchContentProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
 }
 
+export interface XhTreeSelectBranchLoadingProps extends ComponentPropsWithRef<'div'> {}
+export function XhTreeSelectBranchLoading({ children, ...rest }: XhTreeSelectBranchLoadingProps): ReactNode {
+  const ctx = useTreeSelectContext()
+  const node = useTreeSelectNodeContext()
+  return <div {...mergeReactProps(ctx.api.getBranchLoadingProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.loading}</div>
+}
+
+export interface XhTreeSelectBranchErrorProps extends ComponentPropsWithRef<'div'> {}
+export function XhTreeSelectBranchError({ children, ...rest }: XhTreeSelectBranchErrorProps): ReactNode {
+  const ctx = useTreeSelectContext()
+  const node = useTreeSelectNodeContext()
+  return <div {...mergeReactProps(ctx.api.getBranchErrorProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.branchError}</div>
+}
+
+export interface XhTreeSelectBranchRetryTriggerProps extends ComponentPropsWithRef<'button'> {}
+export function XhTreeSelectBranchRetryTrigger({ children, ...rest }: XhTreeSelectBranchRetryTriggerProps): ReactNode {
+  const ctx = useTreeSelectContext()
+  const node = useTreeSelectNodeContext()
+  return <button {...mergeReactProps(ctx.api.getBranchRetryTriggerProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.retry}</button>
+}
+
+export interface XhTreeSelectBranchEmptyProps extends ComponentPropsWithRef<'div'> {}
+export function XhTreeSelectBranchEmpty({ children, ...rest }: XhTreeSelectBranchEmptyProps): ReactNode {
+  const ctx = useTreeSelectContext()
+  const node = useTreeSelectNodeContext()
+  return <div {...mergeReactProps(ctx.api.getBranchEmptyProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.branchEmpty}</div>
+}
+
+function TreeSelectBranchFeedback(): ReactNode {
+  const ctx = useTreeSelectContext()
+  const node = useTreeSelectNodeContext()
+  if (ctx.api.branchLoadState(node.value) == null)
+    return null
+  return (
+    <>
+      <XhTreeSelectBranchLoading />
+      <XhTreeSelectBranchError />
+      <XhTreeSelectBranchRetryTrigger />
+      <XhTreeSelectBranchEmpty />
+    </>
+  )
+}
+
 export interface XhTreeSelectEmptyProps extends ComponentPropsWithRef<'div'> {}
 /** 空态占位：写在 content 里、tree 的兄弟，不进 role=tree 的拥有关系。 */
 export function XhTreeSelectEmpty({ children, ...rest }: XhTreeSelectEmptyProps): ReactNode {
   const ctx = useTreeSelectContext()
-  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  const content = useTreeSelectContentContext()
+  content.renderRegistration.authoredEmpty = true
+  useIsomorphicLayoutEffect(() => content.registerEmpty(), [content.registerEmpty])
+  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.empty}</div>
 }
 
 export interface XhTreeSelectLoadingProps extends ComponentPropsWithRef<'div'> {}
 /** 在途占位：与空态占位同一个位置，取数期间顶上来。 */
 export function XhTreeSelectLoading({ children, ...rest }: XhTreeSelectLoadingProps): ReactNode {
   const ctx = useTreeSelectContext()
-  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  const content = useTreeSelectContentContext()
+  content.renderRegistration.authoredLoading = true
+  useIsomorphicLayoutEffect(() => content.registerLoading(), [content.registerLoading])
+  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.loading}</div>
 }
 
 export interface XhTreeSelectFooterProps extends ComponentPropsWithRef<'div'> {}
@@ -385,31 +573,33 @@ export interface XhTreeSelectHiddenInputProps extends Omit<ComponentPropsWithRef
 /** 表单出口，不写这个部件即不参与表单提交。 */
 export function XhTreeSelectHiddenInput({ ...rest }: XhTreeSelectHiddenInputProps): ReactNode {
   const ctx = useTreeSelectContext()
-  return (
+  return ctx.api.value.map(value => (
     <input
+      key={value}
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps() as Record<string, unknown>,
+        ctx.api.getHiddenInputProps({ value }) as Record<string, unknown>,
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；节点是 hidden，这个出口不会被调用
         { onChange: noop },
         rest as Record<string, unknown>,
       )}
     />
-  )
+  ))
 }
 
 function noop(): void {}
 
 /** 按 collection 递归铺节点：带 children 的落成 branch，其余落成 item。 */
-function renderNodes(nodes: readonly TreeNode[]): ReactNode[] {
-  return nodes.map(node => node.children
+function renderNodes(nodes: readonly TreeSelectNode[]): ReactNode[] {
+  return nodes.map(node => (node.children || node.hasChildren)
     ? (
         <XhTreeSelectBranch key={node.value} value={node.value}>
           <XhTreeSelectBranchControl>
             <XhTreeSelectBranchTrigger />
             <XhTreeSelectBranchText>{node.label ?? node.value}</XhTreeSelectBranchText>
+            <XhTreeSelectItemIndicator />
           </XhTreeSelectBranchControl>
-          <XhTreeSelectBranchContent>{renderNodes(node.children)}</XhTreeSelectBranchContent>
+          <XhTreeSelectBranchContent>{renderNodes(node.children ?? [])}</XhTreeSelectBranchContent>
         </XhTreeSelectBranch>
       )
     : (
@@ -425,7 +615,7 @@ function renderNodes(nodes: readonly TreeNode[]): ReactNode[] {
  * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
  */
 function DefaultTree(props: {
-  collection: readonly TreeNode[]
+  collection: readonly TreeSelectNode[]
   label?: ReactNode
   clearable?: boolean
 }): ReactNode {

@@ -7,6 +7,7 @@ const APG_COMBOBOX = 'https://www.w3.org/WAI/ARIA/apg/patterns/combobox/'
 const APG_TREE = 'https://www.w3.org/WAI/ARIA/apg/patterns/treeview/'
 
 const SCOPE = '[data-scope="tree-select"]'
+const BRANCH_LOAD_ERROR = new Error('offline')
 
 /**
  * 树数据：层级元信息、显示文本与节点禁用的事实源。
@@ -144,10 +145,10 @@ function assertValueText(doc: Document, expected: string): void {
 }
 
 /** 一起读表单出口的 name 与 value：name 反射成属性，value 只落 DOM property。 */
-function assertHiddenInput(doc: Document, name: string, value: string): void {
-  const el = doc.querySelector<HTMLInputElement>(`${SCOPE}[data-part="hidden-input"]`)
-  const actual = el ? ([el.name, el.value] as const) : null
-  const expected = [name, value] as const
+function assertHiddenInput(doc: Document, name: string, values: readonly string[]): void {
+  const inputs = [...doc.querySelectorAll<HTMLInputElement>(`${SCOPE}[data-part="hidden-input"]`)]
+  const actual = inputs.filter(el => !el.disabled).map(el => [el.name, el.value])
+  const expected = values.map(value => [name, value])
   if (JSON.stringify(actual) !== JSON.stringify(expected))
     throw new Error(`表单出口的 name/value 不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
 }
@@ -188,7 +189,6 @@ export const treeSelectSuite: ConformanceSuite = {
           'value-text',
           'indicator',
           'clear-trigger',
-          'hidden-input',
           'positioner',
           'content',
           'tree',
@@ -222,6 +222,8 @@ export const treeSelectSuite: ConformanceSuite = {
           'item[3]',
           'item-indicator[3]',
           'item-text[3]',
+          'empty',
+          'loading',
         ],
         counts: {
           'root': 1,
@@ -234,7 +236,7 @@ export const treeSelectSuite: ConformanceSuite = {
           'positioner': 1,
           'content': 1,
           'tree': 1,
-          'hidden-input': 1,
+          'hidden-input': 0,
           'branch': 3,
           'branch-control': 3,
           'branch-trigger': 3,
@@ -244,6 +246,8 @@ export const treeSelectSuite: ConformanceSuite = {
           'item': 4,
           'item-text': 4,
           'item-indicator': 4,
+          'empty': 1,
+          'loading': 1,
         },
         parts: {
           'root': {
@@ -364,8 +368,6 @@ export const treeSelectSuite: ConformanceSuite = {
           'item[2]': { 'aria-disabled': 'true', 'data-disabled': '', 'data-value': 'readme', 'disabled': null },
           'item[3]': { 'aria-level': '1', 'aria-posinset': '3', 'aria-setsize': '3', 'data-value': 'license' },
           'item-indicator[0]': { 'aria-hidden': 'true', 'data-selected': null },
-          // 表单出口对键盘与读屏都不存在
-          'hidden-input': { type: 'hidden', name: 'dir', disabled: null },
         },
         activeElement: null,
       },
@@ -376,7 +378,131 @@ export const treeSelectSuite: ConformanceSuite = {
           why: '显示文字与表单值都不进属性快照，只能直接读 DOM',
           run: ({ doc }) => {
             assertValueText(doc, '请选择')
-            assertHiddenInput(doc, 'dir', '')
+            assertHiddenInput(doc, 'dir', [])
+          },
+        },
+      ],
+    },
+    {
+      name: 'collection 真实空树自动露出 empty；外部 loading 与它不同屏',
+      spec: { apg: APG_TREE },
+      props: { collection: [], defaultOpen: true },
+      initial: {
+        parts: {
+          tree: { 'data-empty': '' },
+          empty: { role: 'status', hidden: null },
+          loading: { role: 'status', hidden: '' },
+        },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { loading: true },
+          expect: {
+            parts: {
+              tree: { 'data-empty': null, 'aria-busy': 'true' },
+              empty: { hidden: '' },
+              loading: { hidden: null },
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: '懒分支在途：默认结构公开 loading，开始事件带分支与原因',
+      spec: { apg: APG_TREE },
+      props: {
+        collection: [{ value: 'docs', label: 'Docs', hasChildren: true }],
+        defaultOpen: true,
+        loadChildren: () => new Promise(() => {}),
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'branch-trigger[2]',
+          expect: {
+            parts: {
+              'branch[2]': { 'aria-busy': 'true', 'data-loading': '', 'data-load-state': 'loading' },
+              'branch-loading': { role: 'status', hidden: null },
+              'branch-error': { hidden: '' },
+              'branch-retry-trigger': { hidden: '' },
+              'branch-empty': { hidden: '' },
+            },
+            events: [{
+              type: 'branch-load-start',
+              detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, reason: 'expand' },
+            }, { type: 'expanded-value-change', detail: { value: ['docs'] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '懒分支失败与重试：error/retry 结构和事件不降级成空态',
+      spec: { apg: APG_TREE },
+      covers: ['tree-select.kbd.retry'],
+      props: {
+        collection: [{ value: 'docs', label: 'Docs', hasChildren: true }],
+        defaultOpen: true,
+        loadChildren: () => Promise.reject(BRANCH_LOAD_ERROR),
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'branch-trigger[2]',
+          expect: {
+            parts: {
+              'branch[2]': { 'data-error': '', 'data-load-state': 'error', 'data-empty': null },
+              'branch-loading': { hidden: '' },
+              'branch-error': { role: 'alert', hidden: null },
+              'branch-retry-trigger': { 'type': 'button', 'aria-label': 'Retry', 'hidden': null },
+              'branch-empty': { hidden: '' },
+            },
+            events: [
+              { type: 'branch-load-start', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, reason: 'expand' } },
+              { type: 'expanded-value-change', detail: { value: ['docs'] } },
+              { type: 'branch-load-error', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, error: BRANCH_LOAD_ERROR } },
+            ],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Enter',
+          expect: {
+            parts: { 'branch[2]': { 'data-error': '', 'data-load-state': 'error' } },
+            events: [
+              { type: 'branch-load-start', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, reason: 'retry' } },
+              { type: 'branch-load-error', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, error: BRANCH_LOAD_ERROR } },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      name: '懒分支成功空结果：loaded empty 独立于失败和整树空态',
+      spec: { apg: APG_TREE },
+      props: {
+        collection: [{ value: 'docs', label: 'Docs', hasChildren: true }],
+        defaultOpen: true,
+        loadChildren: async () => [],
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'branch-trigger[2]',
+          expect: {
+            parts: {
+              'tree': { 'data-empty': null },
+              'branch[2]': { 'data-empty': '', 'data-error': null, 'data-load-state': 'loaded' },
+              'branch-loading': { hidden: '' },
+              'branch-error': { hidden: '' },
+              'branch-retry-trigger': { hidden: '' },
+              'branch-empty': { role: 'status', hidden: null },
+            },
+            events: [
+              { type: 'branch-load-start', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, reason: 'expand' } },
+              { type: 'expanded-value-change', detail: { value: ['docs'] } },
+              { type: 'branch-load', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, children: [] } },
+            ],
           },
         },
       ],
@@ -662,7 +788,7 @@ export const treeSelectSuite: ConformanceSuite = {
           why: '显示文字与表单值都不进属性快照，只能直接读 DOM',
           run: ({ doc }) => {
             assertValueText(doc, 'Index')
-            assertHiddenInput(doc, 'dir', 'index')
+            assertHiddenInput(doc, 'dir', ['index'])
           },
         },
         {
@@ -1077,7 +1203,7 @@ export const treeSelectSuite: ConformanceSuite = {
           why: '显示文字与表单值都不进属性快照，只能直接读 DOM',
           run: ({ doc }) => {
             assertValueText(doc, '请选择')
-            assertHiddenInput(doc, 'dir', '')
+            assertHiddenInput(doc, 'dir', [])
           },
         },
       ],
@@ -1112,7 +1238,7 @@ export const treeSelectSuite: ConformanceSuite = {
         {
           kind: 'raw',
           why: '表单值不进属性快照，只能直接读 DOM',
-          run: ({ doc }) => assertHiddenInput(doc, 'dir', ''),
+          run: ({ doc }) => assertHiddenInput(doc, 'dir', []),
         },
         // 没值了再按不吞键、不发事件
         { kind: 'key', key: 'Delete', expect: { parts: { item: itemsSelected() }, events: [] } },
@@ -1214,7 +1340,7 @@ export const treeSelectSuite: ConformanceSuite = {
           why: '显示文字与表单值都不进属性快照，只能直接读 DOM',
           run: ({ doc }) => {
             assertValueText(doc, 'License')
-            assertHiddenInput(doc, 'dir', 'license')
+            assertHiddenInput(doc, 'dir', ['license'])
           },
         },
       ],

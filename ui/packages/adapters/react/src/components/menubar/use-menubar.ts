@@ -1,8 +1,8 @@
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { MenubarApi, MenubarSchema } from '@xihan-ui/headless'
+import type { MenubarApi, MenubarSchema, MenuTreeNode } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import { createRuntimeConfig } from '@xihan-ui/core'
-import { connectMenubar, menubarMachine } from '@xihan-ui/headless'
+import { connectMenubar, createMenuTreeNode, menubarMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { useCallback, useMemo, useRef } from 'react'
 import { useXhConfig } from '../../config/config'
@@ -17,9 +17,13 @@ export interface MenubarContext {
   service: Service<MenubarSchema>
   api: MenubarApi
   rootRef: RefObject<HTMLElement | null>
+  /** 对应菜单的真实触发器；Portal 在提交期读取这只逻辑锚点。 */
+  getTrigger: (value: string) => HTMLElement | null
   registerTrigger: MenubarPartRegistry
   registerPositioner: MenubarPartRegistry
   registerContent: MenubarPartRegistry
+  /** 子菜单经 Portal 分离后的逻辑父节点。 */
+  tree: MenuTreeNode
   /** 运行时配置；服务端没有 DOM 时为 null。每张菜单的退场闸门从它拿 reduce 档。 */
   config: RuntimeConfig | null
   /** 浮层搬到哪儿：全局配置 > 运行时配置 > body。 */
@@ -31,6 +35,9 @@ export function useMenubar(props: MenubarSchema['props']): MenubarContext {
   const scope = useReactScope()
   const xhConfig = useXhConfig()
   const rootRef = useRef<HTMLElement | null>(null)
+  const serviceRef = useRef<Service<MenubarSchema> | null>(null)
+  const latestProps = useRef(props)
+  latestProps.current = props
 
   // 普通 Map 而非状态，这三份表只在事件与效应里被机器读
   const registry = useMemo(() => {
@@ -59,6 +66,21 @@ export function useMenubar(props: MenubarSchema['props']): MenubarContext {
     [scope, idGenerator],
   )
 
+  const tree = useMemo(() => createMenuTreeNode({
+    getPositioner: () => {
+      const value = serviceRef.current?.context.get('value') ?? null
+      return value == null ? null : registry.positioners.get(value) ?? null
+    },
+    isOpen: () => serviceRef.current?.state.get() === 'open',
+    close: () => serviceRef.current?.send({ type: 'CLOSE' }),
+    isRoot: () => true,
+    onRootSelect: (details) => {
+      const menu = serviceRef.current?.context.get('value') ?? null
+      if (menu != null)
+        latestProps.current.onSelect?.({ menu, value: details.value })
+    },
+  }), [registry])
+
   // 机器的挂载效应会立刻读 refs，交在 onCreate 里才赶得上
   const onCreate = useCallback((service: Service<MenubarSchema>) => {
     const current = (table: Map<string, HTMLElement>) => (): HTMLElement | null => {
@@ -78,7 +100,6 @@ export function useMenubar(props: MenubarSchema['props']): MenubarContext {
       // 整条菜单栏记为本层分支，点 trigger 与掠过换菜单都算层内交互
       branches: () => [rootRef.current].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 菜单不带遮罩，没有可点关闭的表面
       surfaces: () => [],
     })
@@ -89,6 +110,7 @@ export function useMenubar(props: MenubarSchema['props']): MenubarContext {
   }, [config, registry])
 
   const service = useMachine(menubarMachine, () => props, { scope, onCreate })
+  serviceRef.current = service
 
   const portalContainer = useCallback(
     () => xhConfig.portalContainer?.() ?? config?.portalContainer() ?? null,
@@ -99,9 +121,11 @@ export function useMenubar(props: MenubarSchema['props']): MenubarContext {
     service,
     api: connectMenubar(service, reactNormalize),
     rootRef,
+    getTrigger: value => registry.triggers.get(value) ?? null,
     registerTrigger: registry.registerTrigger,
     registerPositioner: registry.registerPositioner,
     registerContent: registry.registerContent,
+    tree,
     config,
     portalContainer,
   }

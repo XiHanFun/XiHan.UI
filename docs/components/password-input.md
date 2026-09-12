@@ -21,6 +21,8 @@
 - `autoComplete` 缺省 `current-password`，注册表单要显式改成 `new-password`。
 - `strength` 给 0–4 五档就显出强度条；打分算法归调用方，组件只把档位画出来。
 - 形态 · 语气 · 尺寸三轴与[文本输入](./text-field)同源，并排放不会差一档。
+- 一体式 `control` 保持实体 Field Chrome；显隐动作与输入/状态区之间有半高语义分隔，三尺寸和 compact 密度使用同一比例。
+- 自动填充按当前形态、只读或禁用状态重画实体底与文字，不让浏览器注入的颜色把框切成异色段。
 
 ## 示例
 
@@ -212,6 +214,8 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 
 默认皮肤 `@xihan-ui/styles/password-input.css` 按部件选择：`[data-scope="password-input"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ## 数据属性
 
 由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
@@ -237,15 +241,73 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | `strength-meter` | `data-disabled` | ''（条件成立时才出现） |
 | `strength-meter` | `data-level` | undefined \| String(strength) |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-password-input-caps-lock-fg` · `--xh-password-input-caps-lock-font-size` · `--xh-password-input-caps-lock-gap` · `--xh-password-input-caps-lock-px` · `--xh-password-input-control-bg` · `--xh-password-input-control-bg-disabled` · `--xh-password-input-control-bg-hover` · `--xh-password-input-control-bg-readonly` · `--xh-password-input-control-border` · `--xh-password-input-control-border-focus` · `--xh-password-input-control-border-hover` · `--xh-password-input-control-border-invalid` · `--xh-password-input-control-gap` · `--xh-password-input-control-h` · `--xh-password-input-control-min-w` · `--xh-password-input-control-px` · `--xh-password-input-control-radius` · `--xh-password-input-control-shadow` · `--xh-password-input-gap` · `--xh-password-input-icon-size` · `--xh-password-input-input-autofill-bg` · `--xh-password-input-input-autofill-fg` · `--xh-password-input-input-bg` · `--xh-password-input-input-bg-disabled` · `--xh-password-input-input-bg-hover` · `--xh-password-input-input-bg-readonly` · `--xh-password-input-input-border` · `--xh-password-input-input-border-focus` · `--xh-password-input-input-border-hover` · `--xh-password-input-input-border-invalid` · `--xh-password-input-input-fg` · `--xh-password-input-input-font-size` · `--xh-password-input-input-h` · `--xh-password-input-input-min-w` · `--xh-password-input-input-px` · `--xh-password-input-input-radius` · `--xh-password-input-input-shadow` · `--xh-password-input-label-fg` · `--xh-password-input-label-fg-disabled` · `--xh-password-input-label-font-size` · `--xh-password-input-label-font-weight` · `--xh-password-input-placeholder-fg` · `--xh-password-input-strength-fg` · `--xh-password-input-strength-radius` · `--xh-password-input-strength-thickness` · `--xh-password-input-strength-track` · `--xh-password-input-trigger-bg` · `--xh-password-input-trigger-bg-active` · `--xh-password-input-trigger-bg-hover` · `--xh-password-input-trigger-fg` · `--xh-password-input-trigger-fg-hover` · `--xh-password-input-trigger-font-size` · `--xh-password-input-trigger-radius` · `--xh-password-input-trigger-size`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-password-input-caps-lock-fg` | `caps-lock-indicator` | `color` | `default` | `--xh-fg-muted` | password-input 的 caps-lock-indicator 部件 color 覆盖槽。 |
+| `--xh-password-input-caps-lock-fg-disabled` | `caps-lock-indicator`<br>`control` | `color` | `disabled` | `--xh-fg-disabled` | password-input 的 caps-lock-indicator、control 部件 color 覆盖槽。 |
+| `--xh-password-input-caps-lock-font-size` | `caps-lock-indicator` | `font-size` | `default` | `--xh-_password-input-caps-lock-font-size` | password-input 的 caps-lock-indicator 部件 font-size 覆盖槽。 |
+| `--xh-password-input-control-bg` | `control` | `background` | `default` | `--xh-_password-input-bg` | password-input 的 control 部件 background 覆盖槽。 |
+| `--xh-password-input-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | password-input 的 control 部件 background 覆盖槽。 |
+| `--xh-password-input-control-bg-hover` | `control` | `background` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid])`<br>`readonly` | `--xh-_password-input-bg-hover` | password-input 的 control 部件 background 覆盖槽。 |
+| `--xh-password-input-control-bg-readonly` | `control` | `background` | `readonly` | `--xh-bg-subtle` | password-input 的 control 部件 background 覆盖槽。 |
+| `--xh-password-input-control-border` | `control` | `border` | `default` | `--xh-_password-input-border` | password-input 的 control 部件 border 覆盖槽。 |
+| `--xh-password-input-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])` | `--xh-_password-input-border-focus` | password-input 的 control 部件 border-color 覆盖槽。 |
+| `--xh-password-input-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid])`<br>`readonly` | `--xh-_password-input-border-hover` | password-input 的 control 部件 border-color 覆盖槽。 |
+| `--xh-password-input-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | password-input 的 control 部件 border-color 覆盖槽。 |
+| `--xh-password-input-control-gap` | `control`<br>`input`<br>`visibility-trigger` | `gap`<br>`inset-inline-end`<br>`inset-inline-start` | `default`<br>`has(~ [data-scope='password-input'][data-part='input'])` | `--xh-_password-input-gap` | password-input 的 control、input、visibility-trigger 部件 gap、inset-inline-end、inset-inline-start 覆盖槽。 |
+| `--xh-password-input-control-h` | `control` | `block-size` | `default` | `--xh-_password-input-h` | password-input 的 control 部件 block-size 覆盖槽。 |
+| `--xh-password-input-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | password-input 的 control、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-password-input-control-px` | `control` | `padding-inline` | `default` | `--xh-_password-input-px` | password-input 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-password-input-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | password-input 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-password-input-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_password-input-shadow` | password-input 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-password-input-gap` | `root` | `gap` | `default` | `--xh-space-1` | password-input 的 root 部件 gap 覆盖槽。 |
+| `--xh-password-input-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | password-input 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-password-input-input-autofill-bg` | `control`<br>`input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-_password-input-autofill-bg` | password-input 的 control、input 部件 box-shadow 覆盖槽。 |
+| `--xh-password-input-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-_password-input-autofill-fg` | password-input 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
+| `--xh-password-input-input-bg` | `input` | `background` | `default` | `--xh-_password-input-bg` | password-input 的 input 部件 background 覆盖槽。 |
+| `--xh-password-input-input-bg-disabled` | `input` | `background` | `disabled` | `--xh-bg-subtle` | password-input 的 input 部件 background 覆盖槽。 |
+| `--xh-password-input-input-bg-hover` | `input` | `background` | `hover`<br>`invalid`<br>`not(:disabled, [readonly], [data-invalid])` | `--xh-_password-input-bg-hover` | password-input 的 input 部件 background 覆盖槽。 |
+| `--xh-password-input-input-bg-readonly` | `input` | `background` | `default` | `--xh-bg-subtle` | password-input 的 input 部件 background 覆盖槽。 |
+| `--xh-password-input-input-border` | `input` | `border` | `default` | `--xh-_password-input-border` | password-input 的 input 部件 border 覆盖槽。 |
+| `--xh-password-input-input-border-focus` | `input` | `border-color` | `focus-visible` | `--xh-_password-input-border-focus` | password-input 的 input 部件 border-color 覆盖槽。 |
+| `--xh-password-input-input-border-hover` | `input` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, [readonly], [data-invalid])` | `--xh-_password-input-border-hover` | password-input 的 input 部件 border-color 覆盖槽。 |
+| `--xh-password-input-input-border-invalid` | `input` | `border-color` | `invalid` | `--xh-border-invalid` | password-input 的 input 部件 border-color 覆盖槽。 |
+| `--xh-password-input-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | password-input 的 input 部件 color 覆盖槽。 |
+| `--xh-password-input-input-font-size` | `input` | `font-size` | `default` | `--xh-_password-input-font-size` | password-input 的 input 部件 font-size 覆盖槽。 |
+| `--xh-password-input-input-h` | `input` | `block-size` | `default` | `--xh-_password-input-h` | password-input 的 input 部件 block-size 覆盖槽。 |
+| `--xh-password-input-input-min-w` | `input` | `min-inline-size` | `default` | `--xh-control-min-w` | password-input 的 input 部件 min-inline-size 覆盖槽。 |
+| `--xh-password-input-input-px` | `input` | `padding-inline` | `default` | `--xh-_password-input-px` | password-input 的 input 部件 padding-inline 覆盖槽。 |
+| `--xh-password-input-input-radius` | `input` | `border-radius` | `default` | `--xh-shape-control` | password-input 的 input 部件 border-radius 覆盖槽。 |
+| `--xh-password-input-input-shadow` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`default` | `--xh-_password-input-shadow` | password-input 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-password-input-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | password-input 的 label 部件 color 覆盖槽。 |
+| `--xh-password-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | password-input 的 label 部件 color 覆盖槽。 |
+| `--xh-password-input-label-font-size` | `label` | `font-size` | `default` | `--xh-_password-input-label-font-size` | password-input 的 label 部件 font-size 覆盖槽。 |
+| `--xh-password-input-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | password-input 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-password-input-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | password-input 的 input 部件 color 覆盖槽。 |
+| `--xh-password-input-strength-fg` | `strength-meter` | `background` | `empty` | `--xh-_password-input-strength-fg` | password-input 的 strength-meter 部件 background 覆盖槽。 |
+| `--xh-password-input-strength-radius` | `strength-meter` | `border-radius` | `default` | `--xh-shape-pill` | password-input 的 strength-meter 部件 border-radius 覆盖槽。 |
+| `--xh-password-input-strength-thickness` | `strength-meter` | `block-size` | `default` | `--xh-track-thickness` | password-input 的 strength-meter 部件 block-size 覆盖槽。 |
+| `--xh-password-input-strength-track` | `strength-meter` | `background` | `default` | `--xh-bg-subtle-active` | password-input 的 strength-meter 部件 background 覆盖槽。 |
+| `--xh-password-input-trigger-bg` | `visibility-trigger` | `background` | `default`<br>`disabled` | `transparent` | password-input 的 visibility-trigger 部件 background 覆盖槽。 |
+| `--xh-password-input-trigger-bg-active` | `visibility-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | password-input 的 visibility-trigger 部件 background 覆盖槽。 |
+| `--xh-password-input-trigger-bg-hover` | `visibility-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | password-input 的 visibility-trigger 部件 background 覆盖槽。 |
+| `--xh-password-input-trigger-fg` | `visibility-trigger` | `color` | `default` | `--xh-fg-muted` | password-input 的 visibility-trigger 部件 color 覆盖槽。 |
+| `--xh-password-input-trigger-fg-hover` | `visibility-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | password-input 的 visibility-trigger 部件 color 覆盖槽。 |
+| `--xh-password-input-trigger-font-size` | `visibility-trigger` | `font-size` | `default` | `--xh-_password-input-trigger-font-size` | password-input 的 visibility-trigger 部件 font-size 覆盖槽。 |
+| `--xh-password-input-trigger-radius` | `visibility-trigger` | `border-radius` | `default` | `--xh-shape-control` | password-input 的 visibility-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-password-input-trigger-size` | `visibility-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | password-input 的 visibility-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-password-input-visibility-trigger-separator-color` | `control`<br>`input`<br>`visibility-trigger` | `border-inline-start` | `has(~ [data-scope='password-input'][data-part='input'])` | `--xh-border-subtle` | password-input 的 control、input、visibility-trigger 部件 border-inline-start 覆盖槽。 |
+| `--xh-password-input-visibility-trigger-separator-h` | `control`<br>`input`<br>`visibility-trigger` | `block-size`<br>`inset-block-start` | `has(~ [data-scope='password-input'][data-part='input'])` | `--xh-_password-input-divider-h` | password-input 的 control、input、visibility-trigger 部件 block-size、inset-block-start 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
-`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -264,8 +326,14 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 - 大写锁定提示这个节点也得由作者写出来（元素不生成结构），写成空壳即可，文字由组件填。Vue 侧这些由组件代劳，作者不会写错。
 - 明文只在用户主动切开时出现，别默认 `defaultVisible`：屏幕背后有别人。
 - 切换钮别在切开后消失或换位置：它承着焦点，一动键盘用户就丢了位置。
+- `readOnly` 只禁止改值，不禁止显隐：用户仍可聚焦、复制和核对已有密码；`disabled` 才同时禁用输入与显隐动作。
 - 大写锁定提示只提示，不拦提交：它是键盘的物理状态，用户可能就是要打大写。
 - 注册表单把 `autoComplete` 写成 `new-password`，否则密码管理器会把旧密码填进来。
+
+### 当前边界
+
+- anatomy 尚无正式的 prefix/suffix 部件；`control` 中的作者节点目前只按统一 gap 排布，不承诺前后缀语义或专门状态。需要时应以独立三端部件提交，不能用 CSS 猜任意子节点职责。
+- `control` 在 meta 中仍是可选部件，但共享 Field Chrome、组合焦点环与本次动作分隔都以它为边界；无 `control` 的结构只是独立输入框和按钮。是否把它提升为必需部件属于后续公共结构合同变更。
 
 ## 反模式
 

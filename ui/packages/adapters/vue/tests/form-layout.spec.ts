@@ -101,7 +101,7 @@ describe('form 网格里的跨列', () => {
       setup: () => () => h(
         XhFormRoot,
         { layout: 'grid', columns: 2 },
-        () => [h(XhFormFieldGroup, { value: 'name', span }, () => [])],
+        () => [h(XhFormFieldGroup, { name: 'name', span }, () => [])],
       ),
     })
     app.mount(host)

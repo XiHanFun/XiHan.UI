@@ -9,14 +9,14 @@ import { useBreadcrumb } from './use-breadcrumb'
 /** 根节点渲染为 nav 地标 */
 export const XhBreadcrumbRoot = defineComponent({
   name: 'XhBreadcrumbRoot',
-  // 缺省值由 connect 给出，这里一律 default: undefined
+  // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<readonly BreadcrumbNode[]>, default: undefined },
-    maxItems: { type: Number, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    translations: { type: Object as PropType<Partial<BreadcrumbTranslations>>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    collection: { type: Array as PropType<readonly BreadcrumbNode[]> },
+    maxItems: { type: Number },
+    dir: { type: String as PropType<Direction> },
+    translations: { type: Object as PropType<Partial<BreadcrumbTranslations>> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   setup(props, { slots }) {
     const ctx = useBreadcrumb(withXhConfig('breadcrumb', props) as BreadcrumbProps)

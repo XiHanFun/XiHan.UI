@@ -82,10 +82,15 @@ describe('trackHoverIntent', () => {
   let closeIntent: ReturnType<typeof vi.fn<() => void>>
   let dispose: (() => void) | null = null
 
-  function mount(opts: { openDelay?: number, closeDelay?: number } = {}): void {
+  function mount(opts: {
+    openDelay?: number
+    closeDelay?: number
+    getHoverBranches?: () => readonly HTMLElement[]
+  } = {}): void {
     dispose = trackHoverIntent({
-      getTriggerEl: () => trigger,
+      trigger,
       getContentEl: () => content,
+      getHoverBranches: opts.getHoverBranches,
       openDelay: opts.openDelay ?? 100,
       closeDelay: opts.closeDelay ?? 300,
       onOpenIntent: openIntent,
@@ -191,6 +196,37 @@ describe('trackHoverIntent', () => {
     expect(closeIntent).toHaveBeenCalledTimes(1)
   })
 
+  it('portal 后代分支与主内容构成同一悬停树，跨入、内部移动和返回都不关闭', () => {
+    content = mountContent({ x: 0, y: 0, width: 80, height: 80 })
+    const branch = mountContent({ x: 100, y: 0, width: 80, height: 80 })
+    mount({ getHoverBranches: () => [branch] })
+
+    pointer('pointerleave', content, 80, 40, branch)
+    pointer('pointerenter', branch, 100, 40, content)
+    pointer('pointermove', branch, 140, 40)
+    vi.advanceTimersByTime(1000)
+    expect(closeIntent).not.toHaveBeenCalled()
+
+    pointer('pointerleave', branch, 100, 40, content)
+    pointer('pointerenter', content, 80, 40, branch)
+    vi.advanceTimersByTime(1000)
+    expect(closeIntent).not.toHaveBeenCalled()
+  })
+
+  it('主内容到 Portal 后代的间隙使用安全多边形，到达分支后撤销关闭', () => {
+    content = mountContent({ x: 0, y: 0, width: 80, height: 80 })
+    const branch = mountContent({ x: 100, y: 0, width: 80, height: 80 })
+    mount({ getHoverBranches: () => [branch] })
+
+    pointer('pointerleave', content, 80, 40)
+    pointer('pointermove', document, 90, 40)
+    vi.advanceTimersByTime(299)
+    expect(closeIntent).not.toHaveBeenCalled()
+    pointer('pointerenter', branch, 100, 40)
+    vi.advanceTimersByTime(1000)
+    expect(closeIntent).not.toHaveBeenCalled()
+  })
+
   it('拆除后一切静默', () => {
     mount()
     pointer('pointerenter', trigger)
@@ -198,5 +234,521 @@ describe('trackHoverIntent', () => {
     dispose = null
     vi.advanceTimersByTime(1000)
     expect(openIntent).not.toHaveBeenCalled()
+  })
+})
+
+describe('trackHoverIntent 所属 realm 与资源生命周期', () => {
+  function foreignElements(): {
+    frame: HTMLIFrameElement
+    doc: Document
+    win: Window & typeof globalThis
+    trigger: HTMLElement
+    content: HTMLElement
+  } {
+    const frame = document.createElement('iframe')
+    document.body.appendChild(frame)
+    const doc = frame.contentDocument!
+    const win = frame.contentWindow! as Window & typeof globalThis
+    const trigger = doc.createElement('button')
+    const content = doc.createElement('div')
+    doc.body.append(trigger, content)
+    return { frame, doc, win, trigger, content }
+  }
+
+  function pointerIn(
+    win: Window & typeof globalThis,
+    type: string,
+    target: EventTarget,
+    x = 0,
+    y = 0,
+    relatedTarget: EventTarget | null = null,
+  ): void {
+    const event = new win.Event(type, { bubbles: true }) as PointerEvent
+    Object.defineProperties(event, {
+      clientX: { value: x },
+      clientY: { value: y },
+      relatedTarget: { value: relatedTarget },
+    })
+    target.dispatchEvent(event)
+  }
+
+  function bridgeTimers(win: Window & typeof globalThis): {
+    set: ReturnType<typeof vi.spyOn>
+    clear: ReturnType<typeof vi.spyOn>
+  } {
+    const schedule = window.setTimeout.bind(window)
+    const cancel = window.clearTimeout.bind(window)
+    const set = vi.spyOn(win, 'setTimeout').mockImplementation((handler, timeout, ...args) =>
+      schedule(handler, timeout, ...args))
+    const clear = vi.spyOn(win, 'clearTimeout').mockImplementation(handle => cancel(handle))
+    return { set, clear }
+  }
+
+  function track(options: {
+    trigger: HTMLElement
+    getContentEl: () => HTMLElement | null
+    openDelay?: number
+    closeDelay?: number
+    buffer?: number
+    onOpenIntent: () => void
+    onCloseIntent: () => void
+  }): () => void {
+    return trackHoverIntent(options)
+  }
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
+    vi.useRealTimers()
+    document.body.innerHTML = ''
+  })
+
+  it('iframe 的直接互转与计时器都使用所属 Window', () => {
+    const { win, trigger, content } = foreignElements()
+    const timers = bridgeTimers(win)
+    const open = vi.fn()
+    const close = vi.fn()
+    const stop = track({
+      trigger,
+      getContentEl: () => content,
+      openDelay: 100,
+      closeDelay: 300,
+      onOpenIntent: open,
+      onCloseIntent: close,
+    })
+
+    pointerIn(win, 'pointerenter', trigger)
+    expect(timers.set).toHaveBeenCalledTimes(1)
+    vi.advanceTimersByTime(100)
+    expect(open).toHaveBeenCalledTimes(1)
+
+    pointerIn(win, 'pointerleave', trigger, 0, 0, content)
+    vi.advanceTimersByTime(300)
+    expect(close).not.toHaveBeenCalled()
+    pointerIn(win, 'pointerleave', content, 0, 0, trigger)
+    vi.advanceTimersByTime(300)
+    expect(close).not.toHaveBeenCalled()
+    pointerIn(win, 'pointerleave', trigger)
+    pointerIn(win, 'pointerenter', content)
+    expect(timers.clear).toHaveBeenCalled()
+    stop()
+  })
+
+  it('安全三角只监听触发器所属 Document', () => {
+    const { doc, win, trigger, content } = foreignElements()
+    bridgeTimers(win)
+    content.getBoundingClientRect = () => ({
+      x: 100,
+      y: 20,
+      width: 80,
+      height: 60,
+      top: 20,
+      left: 100,
+      right: 180,
+      bottom: 80,
+      toJSON: () => ({}),
+    }) as DOMRect
+    const close = vi.fn()
+    const stop = track({
+      trigger,
+      getContentEl: () => content,
+      closeDelay: 300,
+      onOpenIntent: () => {},
+      onCloseIntent: close,
+    })
+
+    pointerIn(win, 'pointerleave', trigger, 0, 50)
+    pointerIn(win, 'pointermove', doc, 40, 200)
+    expect(close).toHaveBeenCalledTimes(1)
+    stop()
+  })
+
+  it('顶层 DOM globals 缺失时显式外部节点仍可直接互转', () => {
+    const { win, trigger, content } = foreignElements()
+    bridgeTimers(win)
+    let runtimeError: unknown = null
+    const onError = (event: ErrorEvent): void => {
+      runtimeError = event.error
+      event.preventDefault()
+    }
+    win.addEventListener('error', onError)
+    vi.stubGlobal('document', undefined)
+    vi.stubGlobal('window', undefined)
+    vi.stubGlobal('Node', undefined)
+    vi.stubGlobal('Element', undefined)
+    vi.stubGlobal('HTMLElement', undefined)
+    const close = vi.fn()
+    const stop = track({
+      trigger,
+      getContentEl: () => content,
+      closeDelay: 300,
+      onOpenIntent: () => {},
+      onCloseIntent: close,
+    })
+
+    pointerIn(win, 'pointerleave', trigger, 0, 0, content)
+    vi.advanceTimersByTime(300)
+    expect(runtimeError).toBeNull()
+    expect(close).not.toHaveBeenCalled()
+    stop()
+    win.removeEventListener('error', onError)
+  })
+
+  it('content 换代后旧节点事件完全静默', () => {
+    const trigger = document.createElement('button')
+    const first = document.createElement('div')
+    const second = document.createElement('div')
+    document.body.append(trigger, first, second)
+    let content: HTMLElement | null = first
+    const close = vi.fn()
+    const stop = track({
+      trigger,
+      getContentEl: () => content,
+      closeDelay: 300,
+      onOpenIntent: () => {},
+      onCloseIntent: close,
+    })
+    pointerIn(window, 'pointerenter', trigger)
+    content = second
+    pointerIn(window, 'pointerenter', trigger)
+
+    pointerIn(window, 'pointerleave', first)
+    vi.advanceTimersByTime(300)
+    expect(close).not.toHaveBeenCalled()
+    pointerIn(window, 'pointerleave', second)
+    vi.advanceTimersByTime(300)
+    expect(close).toHaveBeenCalledTimes(1)
+    stop()
+  })
+
+  it('重复建立安全三角不会遗留旧的 Document 监听', () => {
+    const trigger = document.createElement('button')
+    const content = document.createElement('div')
+    document.body.append(trigger, content)
+    const add = vi.spyOn(document, 'addEventListener')
+    const remove = vi.spyOn(document, 'removeEventListener')
+    const stop = track({
+      trigger,
+      getContentEl: () => content,
+      onOpenIntent: () => {},
+      onCloseIntent: () => {},
+    })
+
+    pointerIn(window, 'pointerleave', trigger)
+    pointerIn(window, 'pointerleave', trigger)
+    expect(remove.mock.calls.filter(([type]) => type === 'pointermove')).toHaveLength(1)
+    stop()
+    const added = add.mock.calls.filter(([type]) => type === 'pointermove').length
+    const removed = remove.mock.calls.filter(([type]) => type === 'pointermove').length
+    expect(added).toBe(2)
+    expect(removed).toBe(added)
+  })
+
+  it('跨 Document content 与非法数值在创建阶段明确失败且不挂监听', () => {
+    const trigger = document.createElement('button')
+    document.body.appendChild(trigger)
+    const { content } = foreignElements()
+    const add = vi.spyOn(trigger, 'addEventListener')
+    expect(() => track({
+      trigger,
+      getContentEl: () => content,
+      onOpenIntent: () => {},
+      onCloseIntent: () => {},
+    })).toThrow(/content.*同一 Document/)
+    expect(add).not.toHaveBeenCalled()
+
+    expect(() => track({
+      trigger,
+      getContentEl: () => null,
+      getHoverBranches: () => [content],
+      onOpenIntent: () => {},
+      onCloseIntent: () => {},
+    } as never)).toThrow(/hover branch.*同一 Document/)
+    expect(add).not.toHaveBeenCalled()
+
+    expect(() => track({
+      trigger,
+      getContentEl: () => null,
+      getHoverBranches: () => null,
+      onOpenIntent: () => {},
+      onCloseIntent: () => {},
+    } as never)).toThrow(/getHoverBranches.*只读数组/)
+    expect(add).not.toHaveBeenCalled()
+
+    expect(() => track({
+      trigger,
+      getContentEl: () => null,
+      openDelay: Number.NaN,
+      onOpenIntent: () => {},
+      onCloseIntent: () => {},
+    })).toThrow(/openDelay.*非负有限数/)
+    expect(add).not.toHaveBeenCalled()
+  })
+
+  it('缺失、非 HTMLElement 与离线 Document trigger 均明确失败', () => {
+    const base = {
+      getContentEl: () => null,
+      onOpenIntent: () => {},
+      onCloseIntent: () => {},
+    }
+    expect(() => trackHoverIntent({ ...base, trigger: null as never })).toThrow(/trigger.*原生 HTMLElement/)
+    expect(() => trackHoverIntent({ ...base, trigger: document.createElementNS('http://www.w3.org/2000/svg', 'svg') as never })).toThrow(/trigger.*原生 HTMLElement/)
+
+    const offline = document.implementation.createHTMLDocument('offline')
+    const trigger = offline.createElement('button')
+    offline.body.appendChild(trigger)
+    expect(() => trackHoverIntent({ ...base, trigger })).toThrow(/没有活动 Window/)
+  })
+
+  it.each([
+    ['openDelay', Number.NaN],
+    ['closeDelay', Number.POSITIVE_INFINITY],
+    ['buffer', -1],
+  ] as const)('%s 拒绝非有限或负数', (name, value) => {
+    const trigger = document.createElement('button')
+    document.body.appendChild(trigger)
+    expect(() => trackHoverIntent({
+      trigger,
+      getContentEl: () => null,
+      [name]: value,
+      onOpenIntent: () => {},
+      onCloseIntent: () => {},
+    })).toThrow(new RegExp(`${name}.*非负有限数`))
+  })
+
+  it('从其他 Window adopt 后的 content 按当前 Document 生效', () => {
+    const trigger = document.createElement('button')
+    document.body.appendChild(trigger)
+    const { frame, content: source } = foreignElements()
+    const content = document.adoptNode(source)
+    document.body.appendChild(content)
+    const close = vi.fn()
+    const stop = track({
+      trigger,
+      getContentEl: () => content,
+      closeDelay: 300,
+      onOpenIntent: () => {},
+      onCloseIntent: close,
+    })
+
+    pointerIn(window, 'pointerleave', trigger, 0, 0, content)
+    vi.advanceTimersByTime(300)
+    expect(close).not.toHaveBeenCalled()
+    stop()
+    frame.remove()
+  })
+
+  it('初始 content 立即具备监听且重复 dispose 不重复拆除', () => {
+    const trigger = document.createElement('button')
+    const content = document.createElement('div')
+    document.body.append(trigger, content)
+    const close = vi.fn()
+    const removeTrigger = vi.spyOn(trigger, 'removeEventListener')
+    const removeContent = vi.spyOn(content, 'removeEventListener')
+    const stop = track({
+      trigger,
+      getContentEl: () => content,
+      closeDelay: 300,
+      onOpenIntent: () => {},
+      onCloseIntent: close,
+    })
+
+    pointerIn(window, 'pointerleave', content)
+    vi.advanceTimersByTime(300)
+    expect(close).toHaveBeenCalledTimes(1)
+    stop()
+    stop()
+    expect(removeTrigger.mock.calls.filter(([type]) => type.startsWith('pointer'))).toHaveLength(2)
+    expect(removeContent.mock.calls.filter(([type]) => type.startsWith('pointer'))).toHaveLength(2)
+  })
+
+  it('travel 期间 content 换代会按原离开点重算安全三角', () => {
+    const trigger = document.createElement('button')
+    const right = document.createElement('div')
+    const left = document.createElement('div')
+    right.getBoundingClientRect = () => ({
+      x: 100,
+      y: 20,
+      width: 80,
+      height: 60,
+      top: 20,
+      left: 100,
+      right: 180,
+      bottom: 80,
+      toJSON: () => ({}),
+    }) as DOMRect
+    left.getBoundingClientRect = () => ({
+      x: -180,
+      y: 20,
+      width: 80,
+      height: 60,
+      top: 20,
+      left: -180,
+      right: -100,
+      bottom: 80,
+      toJSON: () => ({}),
+    }) as DOMRect
+    document.body.append(trigger, right, left)
+    let content = right
+    const close = vi.fn()
+    const stop = track({
+      trigger,
+      getContentEl: () => content,
+      closeDelay: 300,
+      onOpenIntent: () => {},
+      onCloseIntent: close,
+    })
+
+    pointerIn(window, 'pointerleave', trigger, 0, 50)
+    content = left
+    pointerIn(window, 'pointermove', document, -40, 50)
+    expect(close).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(299)
+    expect(close).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(1)
+    expect(close).toHaveBeenCalledTimes(1)
+    stop()
+  })
+
+  it('travel 期间 content 暂时离场后仍能跟随重新出现的新节点', () => {
+    const trigger = document.createElement('button')
+    const right = document.createElement('div')
+    const left = document.createElement('div')
+    right.getBoundingClientRect = () => ({
+      x: 100,
+      y: 20,
+      width: 80,
+      height: 60,
+      top: 20,
+      left: 100,
+      right: 180,
+      bottom: 80,
+      toJSON: () => ({}),
+    }) as DOMRect
+    left.getBoundingClientRect = () => ({
+      x: -180,
+      y: 20,
+      width: 80,
+      height: 60,
+      top: 20,
+      left: -180,
+      right: -100,
+      bottom: 80,
+      toJSON: () => ({}),
+    }) as DOMRect
+    document.body.append(trigger, right, left)
+    let content: HTMLElement | null = right
+    const close = vi.fn()
+    const stop = track({
+      trigger,
+      getContentEl: () => content,
+      closeDelay: 300,
+      onOpenIntent: () => {},
+      onCloseIntent: close,
+    })
+
+    pointerIn(window, 'pointerleave', trigger, 0, 50)
+    content = null
+    pointerIn(window, 'pointermove', document, 20, 50)
+    content = left
+    pointerIn(window, 'pointermove', document, -40, 50)
+    vi.advanceTimersByTime(299)
+    expect(close).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(1)
+    expect(close).toHaveBeenCalledTimes(1)
+    stop()
+  })
+
+  it('content getter 重入 dispose 后不会重新绑定或安排计时器', () => {
+    const trigger = document.createElement('button')
+    const first = document.createElement('div')
+    const second = document.createElement('div')
+    document.body.append(trigger, first, second)
+    let content = first
+    let disposeDuringRead = false
+    let stop = (): void => {}
+    const open = vi.fn()
+    const addSecond = vi.spyOn(second, 'addEventListener')
+    stop = track({
+      trigger,
+      getContentEl: () => {
+        if (disposeDuringRead)
+          stop()
+        return content
+      },
+      openDelay: 100,
+      onOpenIntent: open,
+      onCloseIntent: () => {},
+    })
+
+    content = second
+    disposeDuringRead = true
+    pointerIn(window, 'pointerenter', trigger)
+    vi.advanceTimersByTime(100)
+    expect(addSecond).not.toHaveBeenCalled()
+    expect(open).not.toHaveBeenCalled()
+    stop()
+  })
+
+  it('计时器编号为零时仍会被清理', () => {
+    const trigger = document.createElement('button')
+    document.body.appendChild(trigger)
+    const clear = vi.spyOn(window, 'clearTimeout')
+    vi.spyOn(window, 'setTimeout').mockReturnValue(0)
+    const stop = track({
+      trigger,
+      getContentEl: () => null,
+      onOpenIntent: () => {},
+      onCloseIntent: () => {},
+    })
+
+    pointerIn(window, 'pointerenter', trigger)
+    pointerIn(window, 'pointerenter', trigger)
+    expect(clear).toHaveBeenCalledWith(0)
+    stop()
+  })
+
+  it('trigger 在计时期间被 adopt 时拒绝旧 realm 回调', () => {
+    const trigger = document.createElement('button')
+    document.body.appendChild(trigger)
+    const frame = document.createElement('iframe')
+    document.body.appendChild(frame)
+    const open = vi.fn()
+    const stop = track({
+      trigger,
+      getContentEl: () => null,
+      openDelay: 100,
+      onOpenIntent: open,
+      onCloseIntent: () => {},
+    })
+    pointerIn(window, 'pointerenter', trigger)
+    frame.contentDocument!.adoptNode(trigger)
+
+    expect(() => vi.advanceTimersByTime(100)).toThrow(/更换所属 Document/)
+    expect(open).not.toHaveBeenCalled()
+    stop()
+    frame.remove()
+  })
+
+  it('trigger 监听初始化失败时撤销已经绑定的 content', () => {
+    const trigger = document.createElement('button')
+    const content = document.createElement('div')
+    document.body.append(trigger, content)
+    const removeContent = vi.spyOn(content, 'removeEventListener')
+    vi.spyOn(trigger, 'addEventListener').mockImplementationOnce(() => {
+      throw new Error('trigger listener failed')
+    })
+
+    expect(() => track({
+      trigger,
+      getContentEl: () => content,
+      onOpenIntent: () => {},
+      onCloseIntent: () => {},
+    })).toThrow('trigger listener failed')
+    expect(removeContent.mock.calls.filter(([type]) => type.startsWith('pointer'))).toHaveLength(2)
   })
 })

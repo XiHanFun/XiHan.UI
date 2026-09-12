@@ -5,7 +5,6 @@ import type {
   CalendarView,
   DateFieldSegmentState,
   DatePickerApi,
-  DatePickerFieldApi,
   DatePickerPreset,
   DatePickerPresetState,
   DatePickerSchema,
@@ -15,6 +14,7 @@ import type {
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import type { DatePickerGroupIndex } from './context'
+import { datePickerFieldAt, resolveDatePickerFieldIndex, resolveDatePickerPanelIndex } from '@xihan-ui/headless'
 import { useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -23,6 +23,7 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   DatePickerCellProvider,
   DatePickerPanelProvider,
@@ -45,15 +46,7 @@ function noop(): void {}
  */
 function usePanelIndex(index: number | string | undefined): number {
   const panel = useDatePickerPanelContext()
-  if (index === undefined || index === '')
-    return panel
-  const n = Math.trunc(Number(index))
-  return Number.isFinite(n) && n >= 0 ? n : panel
-}
-
-/** 按组号取那一组分段输入；非区间模式下终点那组缺席。 */
-function fieldOf(api: DatePickerApi, index: DatePickerGroupIndex): DatePickerFieldApi | null {
-  return index === 1 ? api.fieldEnd : api.field
+  return resolveDatePickerPanelIndex(index, panel)
 }
 
 /** 函数式 children 的载荷：选择器的开合与选中值、内嵌日历的展示数据、两组段位，以及改写值的句柄。 */
@@ -95,7 +88,7 @@ export interface DatePickerPresetsSlotProps {
   presets: readonly DatePickerPresetState[]
 }
 
-export interface XhDatePickerRootProps {
+export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'> {
   value?: string | string[]
   defaultValue?: string | string[]
   open?: boolean
@@ -149,14 +142,97 @@ export interface XhDatePickerRootProps {
 }
 
 /** 网格与段位由作者照 children 载荷里的 weeks / segments 自行渲染。 */
-export function XhDatePickerRoot({ children, ...props }: XhDatePickerRootProps): ReactNode {
-  const ctx = useDatePicker(withXhConfig('date-picker', props) as DatePickerProps)
+export function XhDatePickerRoot({
+  value,
+  defaultValue,
+  open,
+  defaultOpen,
+  min,
+  max,
+  locale,
+  timeZone,
+  selectionMode,
+  view,
+  activeView,
+  segments,
+  weekSelection,
+  visibleCount,
+  fixedWeeks,
+  defaultFocusedValue,
+  presets,
+  isDateUnavailable,
+  disabled,
+  readOnly,
+  invalid,
+  required,
+  name,
+  endName,
+  translations,
+  variant,
+  tone,
+  size,
+  placement,
+  offset,
+  dir,
+  closeOnSelect,
+  showTime,
+  timeGranularity,
+  onValueChange,
+  onOpenChange,
+  onFocusedValueChange,
+  onActiveViewChange,
+  children,
+  ...rest
+}: XhDatePickerRootProps): ReactNode {
+  const ctx = useDatePicker(withXhConfig('date-picker', useFormControlProps({
+    value,
+    defaultValue,
+    open,
+    defaultOpen,
+    min,
+    max,
+    locale,
+    timeZone,
+    selectionMode,
+    view,
+    activeView,
+    segments,
+    weekSelection,
+    visibleCount,
+    fixedWeeks,
+    defaultFocusedValue,
+    presets,
+    isDateUnavailable,
+    disabled,
+    readOnly,
+    invalid,
+    required,
+    name,
+    endName,
+    translations,
+    variant,
+    tone,
+    size,
+    placement,
+    offset,
+    dir,
+    closeOnSelect,
+    showTime,
+    timeGranularity,
+    onValueChange,
+    onOpenChange,
+    onFocusedValueChange,
+    onActiveViewChange,
+  })) as DatePickerProps)
   const api = ctx.api
   return (
     <DatePickerProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {children == null
           ? null
@@ -217,7 +293,7 @@ export interface XhDatePickerSegmentGroupProps extends ComponentPropsWithRef<'di
 /** role=group 的分段容器，也是换段时的查询边界。 */
 export function XhDatePickerSegmentGroup({ index = 0, children, ...rest }: XhDatePickerSegmentGroupProps): ReactNode {
   const ctx = useDatePickerContext()
-  const group: DatePickerGroupIndex = Number(index) === 1 ? 1 : 0
+  const group: DatePickerGroupIndex = resolveDatePickerFieldIndex(index)
   return (
     // 组内的段位与隐藏输入据此认领起止
     <DatePickerSegmentGroupProvider value={group}>
@@ -239,7 +315,7 @@ export interface XhDatePickerSegmentProps extends Omit<ComponentPropsWithRef<'di
 export function XhDatePickerSegment({ index, segment, children, ...rest }: XhDatePickerSegmentProps): ReactNode {
   const ctx = useDatePickerContext()
   const group = useDatePickerSegmentGroupContext()
-  const field = fieldOf(ctx.api, group)
+  const field = datePickerFieldAt(ctx.api, group)
   // 落点由连接层算：按下标还是按段名是同一条路，适配器这边不重写一份
   const declared = segment != null ? { segment } : { index: Math.trunc(Number(index)) }
   const state = field?.segmentOf(declared)
@@ -274,7 +350,7 @@ export function XhDatePickerTrigger({ children, ...rest }: XhDatePickerTriggerPr
   return (
     <button
       {...mergeReactProps(
-        fieldLabel({ ...ctx.api.getTriggerProps() as Record<string, unknown>, ...fieldWiring }),
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
         rest as Record<string, unknown>,
       )}
     >
@@ -293,7 +369,7 @@ export function XhDatePickerPositioner({ children, container, ...rest }: XhDateP
   // 浮层面板的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current })
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.controlRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,
@@ -604,8 +680,8 @@ export interface XhDatePickerHiddenInputProps extends Omit<ComponentPropsWithRef
 export function XhDatePickerHiddenInput({ index, ...rest }: XhDatePickerHiddenInputProps): ReactNode {
   const ctx = useDatePickerContext()
   const group = useDatePickerSegmentGroupContext()
-  const at: DatePickerGroupIndex = index === undefined ? group : (Number(index) === 1 ? 1 : 0)
-  const field = fieldOf(ctx.api, at)
+  const at: DatePickerGroupIndex = index === undefined ? group : resolveDatePickerFieldIndex(index)
+  const field = datePickerFieldAt(ctx.api, at)
   // 非区间模式下终点那份没有可提交的值，不渲染
   if (!field)
     return null

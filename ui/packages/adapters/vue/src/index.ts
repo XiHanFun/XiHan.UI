@@ -235,8 +235,8 @@ export {
 export type { CommandRootSlotProps } from './components/command/command'
 export { useCommand } from './components/command/use-command'
 export type { CommandContext } from './components/command/use-command'
-export { provideContextMenuChain, provideContextMenuSub, useContextMenuChain, useContextMenuSubContext } from './components/context-menu/context'
-export type { ContextMenuChain, ContextMenuSubHandle } from './components/context-menu/context'
+export { provideContextMenuSub, useContextMenuSubContext } from './components/context-menu/context'
+export type { ContextMenuSubHandle } from './components/context-menu/context'
 export {
   XhContextMenuArrow,
   XhContextMenuContent,
@@ -494,6 +494,8 @@ export { XhInputGroupItem, XhInputGroupRoot } from './components/input-group/inp
 export { XhJsonViewerRoot } from './components/json-viewer/json-viewer'
 export { useJsonViewer } from './components/json-viewer/use-json-viewer'
 export type { JsonViewerContext } from './components/json-viewer/use-json-viewer'
+export { XhKbdGroup } from './components/kbd-group/kbd-group'
+export { XhKbd } from './components/kbd/kbd'
 export { provideLayout, useLayoutContext } from './components/layout/context'
 export { XhLayoutContent, XhLayoutFooter, XhLayoutHeader, XhLayoutRoot, XhLayoutSider, XhLayoutSiderBackdrop, XhLayoutSiderTrigger } from './components/layout/layout'
 export { useLayout } from './components/layout/use-layout'
@@ -553,8 +555,8 @@ export { XhMentionContent, XhMentionEmpty, XhMentionInput, XhMentionItem, XhMent
 export type { MentionRootSlotProps } from './components/mention/mention'
 export { useMention } from './components/mention/use-mention'
 export type { MentionContext } from './components/mention/use-mention'
-export { provideMenu, provideMenuChain, provideMenuGroup, provideMenuSub, useMenuChain, useMenuContext, useMenuGroupContext, useMenuSubContext } from './components/menu/context'
-export type { MenuChain, MenuGroupContext, MenuSubHandle } from './components/menu/context'
+export { provideMenu, provideMenuGroup, provideMenuSub, useMenuContext, useMenuGroupContext, useMenuSubContext } from './components/menu/context'
+export type { MenuGroupContext, MenuSubHandle } from './components/menu/context'
 export {
   XhMenuArrow,
   XhMenuContent,
@@ -574,8 +576,8 @@ export {
 export type { MenuRootSlotProps, MenuSubSlotProps } from './components/menu/menu'
 export { useMenu } from './components/menu/use-menu'
 export type { MenuContext } from './components/menu/use-menu'
-export { provideMenubarChain, provideMenubarSub, useMenubarChain, useMenubarSubContext } from './components/menubar/context'
-export type { MenubarChain, MenubarSubHandle } from './components/menubar/context'
+export { provideMenubarSub, useMenubarSubContext } from './components/menubar/context'
+export type { MenubarSubHandle } from './components/menubar/context'
 export {
   XhMenubarArrow,
   XhMenubarContent,
@@ -798,9 +800,12 @@ export {
   XhSelectLabel,
   XhSelectList,
   XhSelectLoading,
+  XhSelectOverflowTag,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTag,
+  XhSelectTagLabel,
+  XhSelectTagList,
   XhSelectTrigger,
   XhSelectValueText,
 } from './components/select/select'
@@ -1100,7 +1105,11 @@ export {
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
   XhTreeSelectBranchControl,
+  XhTreeSelectBranchEmpty,
+  XhTreeSelectBranchError,
   XhTreeSelectBranchIndicator,
+  XhTreeSelectBranchLoading,
+  XhTreeSelectBranchRetryTrigger,
   XhTreeSelectBranchText,
   XhTreeSelectBranchTrigger,
   XhTreeSelectClearTrigger,
@@ -1167,14 +1176,14 @@ export { provideWatermark, useWatermarkContext } from './components/watermark/co
 export type { WatermarkContext } from './components/watermark/context'
 export { XhWatermarkContent, XhWatermarkRoot } from './components/watermark/watermark'
 export { mergeXhConfig, provideXhConfig, useXhConfig, withXhConfig } from './config/config'
-export type { XhConfig, XhTranslationOverrides } from './config/config'
+export type { XhConfig, XhTranslationOverrides, XhVisualEnvironmentConfig } from './config/config'
 export { createVueRuntime } from './runtime/create-vue-runtime'
 export { vueNormalize } from './runtime/normalize-props'
 export type { PayloadOf } from './runtime/payload'
 export { useMachine } from './runtime/use-machine'
 export { createVueIdGenerator } from './runtime/vue-id'
 export { createDialogService } from './services/dialog-service'
-export type { AlertOptions, ConfirmOptions, DialogBody, DialogService, DialogServiceOptions, PromptOptions } from './services/dialog-service'
+export type { AlertOptions, ConfirmOptions, DialogActionError, DialogBody, DialogService, DialogServiceOptions, PromptOptions } from './services/dialog-service'
 export { createLoadingBarService } from './services/loading-bar-service'
 export type { LoadingBarService, LoadingBarServiceOptions } from './services/loading-bar-service'
 export { createNotificationService } from './services/notification-service'

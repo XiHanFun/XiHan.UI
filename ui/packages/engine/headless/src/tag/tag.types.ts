@@ -1,7 +1,7 @@
 import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 形态。取值与 tag.css 的选择器一一对应。 */
-export type TagVariant = 'outline' | 'solid' | 'subtle'
+export type TagVariant = 'ghost' | 'outline' | 'solid' | 'subtle'
 
 export interface TagOpenChangeDetails {
   open: boolean
@@ -18,7 +18,7 @@ export interface TagTranslations {
 
 export interface TagSchema extends MachineSchema {
   props: {
-    /** 形态：solid / subtle / outline，决定颜色怎么用。 */
+    /** 形态：solid / subtle / outline / ghost，决定颜色怎么用。 */
     variant?: TagVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
     tone?: Tone
@@ -28,6 +28,8 @@ export interface TagSchema extends MachineSchema {
     closable?: boolean
     /** 标签禁用：关闭钮不可用，点击不改显隐。 */
     disabled?: boolean
+    /** 只读：关闭钮留在原地但按不动，标签本身不置灰。 */
+    readOnly?: boolean
     /** 受控显隐；缺省该 prop 即非受控。 */
     open?: boolean
     /** 非受控初始显隐，默认显示。 */

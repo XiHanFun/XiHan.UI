@@ -1,0 +1,69 @@
+{
+  "$description": "Action Control 家族配方：四种视觉 profile 共用一套状态、显示策略与输入能力规则。组件只投影稳定角色，不自行复制交互皮肤。",
+  "version": 1,
+  "order": ["text", "icon", "field-inset", "floating"],
+  "sizes": ["xs", "sm", "md", "lg"],
+  "displays": ["always", "has-value", "hover-focus"],
+  "profiles": {
+    "text": {
+      "description": "普通文字动作；标签决定行内宽度，视觉尺寸决定块轴高度。",
+      "layout": { "square": false, "radius": "var(--xh-shape-control)" },
+      "sizes": {
+        "xs": { "visualSize": "24px", "paddingInline": "var(--xh-space-1)", "gap": "var(--xh-space-1)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "sm": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "var(--xh-control-px-sm)", "gap": "var(--xh-control-gap-sm)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "md": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "var(--xh-control-px-md)", "gap": "var(--xh-control-gap-md)", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
+        "lg": { "visualSize": "var(--xh-control-h-lg)", "paddingInline": "var(--xh-control-px-lg)", "gap": "var(--xh-control-gap-lg)", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" }
+      }
+    },
+    "icon": {
+      "description": "icon-only 与 close 动作；视觉盒为正方形，作者内容完整替换图形。",
+      "layout": { "square": true, "radius": "var(--xh-shape-control)" },
+      "sizes": {
+        "xs": { "visualSize": "24px", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "sm": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "md": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
+        "lg": { "visualSize": "var(--xh-control-h-lg)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" }
+      }
+    },
+    "field-inset": {
+      "description": "字段内部的 clear、reveal、increment/decrement；视觉盒紧凑，粗指针命中区不缩。",
+      "layout": { "square": true, "radius": "var(--xh-shape-inset)" },
+      "sizes": {
+        "xs": { "visualSize": "24px", "paddingInline": "0", "gap": "0", "glyphSize": "12px", "fontSize": "var(--xh-control-caption-sm)" },
+        "sm": { "visualSize": "24px", "paddingInline": "0", "gap": "0", "glyphSize": "14px", "fontSize": "var(--xh-control-caption-sm)" },
+        "md": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-caption-md)" },
+        "lg": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-caption-lg)" }
+      }
+    },
+    "floating": {
+      "description": "浮在页面或媒体上的独立动作；视觉盒与图形光学档均大于内嵌控制。",
+      "layout": { "square": true, "radius": "var(--xh-shape-pill)" },
+      "sizes": {
+        "xs": { "visualSize": "var(--xh-control-box-sm)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "sm": { "visualSize": "var(--xh-control-box-md)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
+        "md": { "visualSize": "var(--xh-control-box-lg)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" },
+        "lg": { "visualSize": "calc(var(--xh-control-box-lg) + var(--xh-space-2))", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-xl)", "fontSize": "var(--xh-control-font-lg)" }
+      }
+    }
+  },
+  "states": {
+    "rest": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-default)", "borderColor": "var(--xh-material-soft-border)", "highlight": "var(--xh-material-soft-highlight)", "shadow": "var(--xh-material-soft-shadow)", "opacity": "1", "cursor": "pointer", "scale": "none" },
+    "hover": { "backgroundColor": "var(--xh-bg-subtle-hover)", "color": "var(--xh-fg-default)", "borderColor": "var(--xh-material-soft-border)", "highlight": "var(--xh-material-soft-highlight)", "shadow": "var(--xh-elevation-raised)", "opacity": "1", "cursor": "pointer", "scale": "none" },
+    "pressed": { "backgroundColor": "var(--xh-bg-subtle-active)", "color": "var(--xh-fg-default)", "borderColor": "var(--xh-material-soft-border)", "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "var(--xh-motion-scale-press)" },
+    "focus-visible": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-default)", "borderColor": "var(--xh-material-soft-border)", "highlight": "var(--xh-material-soft-highlight)", "shadow": "var(--xh-material-soft-shadow)", "opacity": "1", "cursor": "pointer", "scale": "none", "ringColor": "var(--xh-ring-focus)" },
+    "disabled": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-default)", "borderColor": "var(--xh-material-soft-border)", "highlight": "transparent", "shadow": "none", "opacity": "var(--xh-state-disabled-opacity)", "cursor": "not-allowed", "scale": "none" },
+    "loading": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-default)", "borderColor": "var(--xh-material-soft-border)", "highlight": "var(--xh-material-soft-highlight)", "shadow": "var(--xh-material-soft-shadow)", "opacity": "1", "cursor": "progress", "scale": "none" }
+  },
+  "coarsePointer": { "minimumTarget": "44px" },
+  "motion": { "duration": "var(--xh-motion-duration-micro)", "easing": "var(--xh-motion-ease-enter)", "pressEasing": "var(--xh-motion-ease-enter-strong)" },
+  "compact": { "strategy": "semantic-token-remap", "tokens": ["--xh-control-h-sm", "--xh-control-h-md", "--xh-control-h-lg", "--xh-control-box-sm", "--xh-control-box-md", "--xh-control-box-lg", "--xh-control-px-sm", "--xh-control-px-md", "--xh-control-px-lg", "--xh-control-gap-md", "--xh-control-gap-lg"] },
+  "direction": { "axis": "logical", "flow": "row" },
+  "forcedColors": {
+    "rest": { "backgroundColor": "ButtonFace", "color": "ButtonText", "borderColor": "ButtonText", "outlineColor": "Highlight" },
+    "hover": { "backgroundColor": "Highlight", "color": "HighlightText", "borderColor": "Highlight", "outlineColor": "Highlight" },
+    "pressed": { "backgroundColor": "Highlight", "color": "HighlightText", "borderColor": "Highlight", "outlineColor": "Highlight" },
+    "focus-visible": { "backgroundColor": "ButtonFace", "color": "ButtonText", "borderColor": "ButtonText", "outlineColor": "Highlight" },
+    "disabled": { "backgroundColor": "ButtonFace", "color": "GrayText", "borderColor": "GrayText", "outlineColor": "GrayText" },
+    "loading": { "backgroundColor": "ButtonFace", "color": "ButtonText", "borderColor": "ButtonText", "outlineColor": "Highlight" }
+  }
+}

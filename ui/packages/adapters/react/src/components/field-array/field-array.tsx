@@ -1,10 +1,12 @@
-import type { FieldArrayApi, FieldArraySchema, FieldArrayTranslations } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArraySchema, FieldArrayTranslations, FormPath } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
+import { useOptionalFormContext } from '../form/context'
+import { useFormControlProps } from '../form/use-form-control'
 import { FieldArrayItemProvider, FieldArrayProvider, useFieldArrayContext, useFieldArrayItemContext } from './context'
 import { useFieldArray } from './use-field-array'
 
@@ -28,7 +30,7 @@ export type FieldArrayRootSlotProps = Pick<
   | 'moveDown'
 >
 
-export interface XhFieldArrayRootProps {
+export interface XhFieldArrayRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
   value?: unknown[]
   defaultValue?: unknown[]
   min?: number
@@ -39,21 +41,53 @@ export interface XhFieldArrayRootProps {
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
-  name?: string
+  name?: FormPath
   translations?: Partial<FieldArrayTranslations>
   onValueChange?: FieldArrayProps['onValueChange']
   children?: SlotChildren<FieldArrayRootSlotProps>
 }
 
-export function XhFieldArrayRoot({ children, ...props }: XhFieldArrayRootProps): ReactNode {
-  const ctx = useFieldArray(withXhConfig('field-array', props) as FieldArrayProps)
+export function XhFieldArrayRoot({
+  value,
+  defaultValue,
+  min,
+  max,
+  createItem,
+  movable,
+  disabled,
+  readOnly,
+  invalid,
+  name,
+  translations,
+  onValueChange,
+  children,
+  ...rest
+}: XhFieldArrayRootProps): ReactNode {
+  const form = useOptionalFormContext()
+  const ctx = useFieldArray(withXhConfig('field-array', useFormControlProps({
+    value,
+    defaultValue,
+    min,
+    max,
+    createItem,
+    movable,
+    disabled,
+    readOnly,
+    invalid,
+    name,
+    translations,
+    onValueChange,
+  })) as FieldArrayProps, form?.service)
   const api = ctx.api
 
   return (
     <FieldArrayProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {/* items 里每一项都带 key，作者铺行时直接用 row.key */}
         {renderSlot(children, {

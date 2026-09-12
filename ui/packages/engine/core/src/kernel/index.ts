@@ -34,7 +34,7 @@ export {
   setDiagnosticsLevel,
 } from './diagnostics/channel'
 export type { DiagnosticCode } from './diagnostics/codes'
-export { DIAGNOSTIC_CODES } from './diagnostics/codes'
+export { DIAGNOSTIC_CODES, DIAGNOSTIC_WARN } from './diagnostics/codes'
 // (与 ./skin-check 同理,见 .size-limit.json 里 core 与 vue 各入口的棘轮)
 export type {
   DiagnosticHandler,
@@ -63,15 +63,19 @@ export { createRuntimeConfig } from './runtime-config'
 export type { Scope } from './scope'
 export { createScope, getActiveElementDeep } from './scope'
 // 结构：层栈
-export type { Layer, LayerKind, LayerRegistry } from './structure/layer-registry'
-export { createLayerRegistry, getLayerRegistry } from './structure/layer-registry'
+export type { Layer, LayerKind, LayerRegistry, LayerVisual, LayerVisualBindingOptions } from './structure/layer-registry'
+export { bindLayerVisual, createLayerRegistry, getLayerRegistry, LAYER_VISUAL_PROPERTY } from './structure/layer-registry'
 
 export type { PerDocumentRegistry } from './structure/per-document-registry'
 export { createPerDocumentRegistry } from './structure/per-document-registry'
 // 结构：portal 落点
+export type { PortalLease, PortalLeaseOptions } from './structure/portal-lease'
+export { createPortalLease } from './structure/portal-lease'
 export { ensurePortalRoot } from './structure/portal-root'
+export type { PortalVisualBridge, PortalVisualBridgeOptions } from './structure/portal-visual-bridge'
+export { createPortalVisualBridge } from './structure/portal-visual-bridge'
 // 类型与生命周期
-export type { ActionVariant, Cleanup, ControlVariant, Dict, Direction, Disposable, MaybeBooleanish, Orientation, OverlayBackdropVariant, OverlayCloseReason, Size, Tone } from './types'
+export type { ActionVariant, Cleanup, ControlVariant, Dict, Direction, Disposable, FocusableElement, MaybeBooleanish, Orientation, OverlayBackdropVariant, OverlayCloseReason, Size, Tone } from './types'
 export { toCleanup } from './types'
 
 // 端口类型

@@ -14,11 +14,12 @@ import type {
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled } from '@xihan-ui/core'
 import { commandAnatomy, commandMachine, commandMeta, connectCommand } from '@xihan-ui/headless'
+import { resolveXhConfig } from '../config'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -69,7 +70,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
  * @csspart footer - 面板底部提示条，作者放什么由作者定
  */
-export class XhCommandElement extends XhElement {
+export class XhCommandElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: commandAnatomy, meta: commandMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -122,10 +126,23 @@ export class XhCommandElement extends XhElement {
   declare variant?: OverlayBackdropVariant
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly commandScope = createScope(null, this.idGen)
+  private readonly commandScope = createScope(() => this, this.idGen)
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = this.createPortalLeaseController({
+    name: 'Command 视口',
+    config: () => this.config,
+    source: () => this,
+    roots: () => {
+      const positioner = this.getPart('positioner')
+      const content = this.getPart('content')
+      const surface = positioner ?? content
+      const backdrop = (this.modal ?? true) ? this.getPart('backdrop') : null
+      return [backdrop, surface].filter((node): node is HTMLElement => node != null)
+    },
+    onChange: () => this.requestUpdate(),
+  })
 
   /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
@@ -240,8 +257,19 @@ export class XhCommandElement extends XhElement {
   private ensureConfig(): void {
     if (this.config)
       return
-    // scrollRoot 交给运行期配置自行探测；面板锁的是页面主滚动层
-    this.config = createRuntimeConfig({ scope: this.commandScope, idGenerator: this.idGen })
+    // scrollRoot 每次现读：全局配置、最近的 <xh-config> 与元素搬家都按打开当刻解析
+    this.config = createRuntimeConfig({
+      scope: this.commandScope,
+      idGenerator: this.idGen,
+      scrollRoot: () => {
+        const scrollRoot = resolveXhConfig(this).scrollRoot
+        return scrollRoot === undefined ? null : scrollRoot()
+      },
+    })
+  }
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
   }
 
   // 只交注册函数，层的入栈出栈由机器的 trackOverlay 效应跟着展开态做。
@@ -252,7 +280,6 @@ export class XhCommandElement extends XhElement {
       node: () => this.getPart('content'),
       branches: () => [],
       isModal: () => this.modal ?? true,
-      setModal: () => {},
       surfaces: () => [this.getPart('backdrop')].filter(Boolean) as Element[],
     })
   }
@@ -260,9 +287,14 @@ export class XhCommandElement extends XhElement {
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<CommandSchema>): void {
     this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: (this.open ?? this.defaultOpen) ?? false,
+      onExitComplete: () => this.requestUpdate(),
+    })
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', null)
+    svc.refs.set('presence', this.exit.presence)
     svc.refs.set('getContentEl', () => this.getPart('content'))
     svc.refs.set('getListEl', () => this.getPart('list'))
     svc.refs.set('getInputEl', () => this.getPart('input') as HTMLInputElement | null)
@@ -281,7 +313,25 @@ export class XhCommandElement extends XhElement {
     return this.getParts(name).filter(el => owner.contains(el))
   }
 
+  private visibilityList: HTMLElement | null = null
+
+  protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
+    if (!this.visibilityList || !nodes.includes(this.visibilityList))
+      return
+    this.visibilityList = null
+    if (this.ctrl.service.getStatus() === 'Started') {
+      this.ctrl.service.refs.set('getListEl', () => null)
+      this.ctrl.service.refs.get('syncListVisibility')?.()
+    }
+  }
+
   protected wire(): void {
+    const list = this.getPart('list')
+    if (list !== this.visibilityList) {
+      this.visibilityList = list
+      this.ctrl.service.refs.set('getListEl', () => list)
+      this.ctrl.service.refs.get('syncListVisibility')?.()
+    }
     const api = connectCommand(this.ctrl.service, wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
@@ -327,18 +377,21 @@ export class XhCommandElement extends XhElement {
       open: api.open,
       onExitComplete: () => this.requestUpdate(),
     })
-    this.exit.track(this.getPart('content'))
+    this.exit.track(this.getPart('content'), this.getPart('backdrop'))
     this.exit.update(api.open)
     const visible = this.exit.visible
+    const modal = this.modal ?? true
+    this.portal.sync(visible)
 
     // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖
-    this.setPartHidden(this.getPart('backdrop'), !visible)
+    this.setPartHidden(this.getPart('backdrop'), !visible || !modal)
     this.setPartHidden(this.getPart('positioner'), !visible)
     // positioner 不是必需部件，content 自己也要收起
     this.setPartHidden(this.getPart('content'), !visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并把子树收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上。
     // 只在机器已经收起时才强收——元素被移动（remove 后立刻 append）时展开态不该被打断

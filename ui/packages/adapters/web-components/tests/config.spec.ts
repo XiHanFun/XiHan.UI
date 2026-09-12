@@ -25,22 +25,31 @@ afterEach(() => {
 })
 
 describe('motion', () => {
-  it('setXhConfig 写了 motion 就设应用级 override', () => {
-    setXhConfig({ motion: 'reduce' })
-    expect(getMotionOverride()).toBe('reduce')
+  it('setXhConfig 只通过显式根绑定七轴，不隐式改全局 motion', () => {
+    const scope = document.createElement('section')
+    setMotionOverride('no-preference')
+    setXhConfig({ visualEnvironment: { root: scope, initial: { mode: 'dark', motion: 'reduce' } } })
+    expect(scope.getAttribute('data-theme')).toBe('dark')
+    expect(scope.getAttribute('data-motion')).toBe('reduce')
+    expect(getMotionOverride()).toBe('no-preference')
   })
 
-  it('setXhConfig 没写 motion 不碰别处设好的 override', () => {
-    setMotionOverride('reduce')
-    setXhConfig({ locale: 'en-US' })
-    expect(getMotionOverride()).toBe('reduce')
-  })
-
-  it('<xh-config motion> 属性与 property 都能设，改了跟着变', async () => {
-    const scope = await mount('<xh-config motion="reduce"></xh-config>') as Updatable & { motion?: string }
-    expect(getMotionOverride()).toBe('reduce')
-    scope.motion = 'no-preference'
+  it('<xh-config> 七轴落在自身 scope，运行期一次更新且不污染全局 motion', async () => {
+    setMotionOverride('no-preference')
+    const scope = await mount('<xh-config mode="dark" brand="acme" density="compact" direction="rtl" contrast="more" motion="reduce" transparency="reduce"></xh-config>') as Updatable & { mode?: string, motion?: string }
+    expect(scope.getAttribute('data-theme')).toBe('dark')
+    expect(scope.getAttribute('data-brand')).toBe('acme')
+    expect(scope.getAttribute('data-density')).toBe('compact')
+    expect(scope.getAttribute('dir')).toBe('rtl')
+    expect(scope.getAttribute('data-contrast')).toBe('more')
+    expect(scope.getAttribute('data-motion')).toBe('reduce')
+    expect(scope.getAttribute('data-transparency')).toBe('reduce')
+    expect(getMotionOverride()).toBe('no-preference')
+    scope.mode = 'light'
+    scope.motion = 'default'
     await scope.updateComplete
+    expect(scope.getAttribute('data-theme')).toBe('light')
+    expect(scope.getAttribute('data-motion')).toBe('default')
     expect(getMotionOverride()).toBe('no-preference')
   })
 })

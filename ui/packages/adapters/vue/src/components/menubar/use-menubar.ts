@@ -1,8 +1,8 @@
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { MenubarApi, MenubarSchema } from '@xihan-ui/headless'
+import type { MenubarApi, MenubarSchema, MenuTreeNode } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectMenubar, menubarMachine } from '@xihan-ui/headless'
+import { connectMenubar, createMenuTreeNode, menubarMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
@@ -20,6 +20,8 @@ export interface MenubarContext {
   registerTrigger: MenubarPartRegistry
   registerPositioner: MenubarPartRegistry
   registerContent: MenubarPartRegistry
+  /** 子菜单经 Portal 分离后的逻辑父节点。 */
+  tree: MenuTreeNode
   /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
 }
@@ -38,7 +40,22 @@ export function useMenubar(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(menubarMachine, () => ({ ...props, onValueChange, onSelect }), scope)
+  let service: Service<MenubarSchema> | null = null
+  const tree = createMenuTreeNode({
+    getPositioner: () => {
+      const value = service?.context.get('value') ?? null
+      return value == null ? null : positioners.get(value) ?? null
+    },
+    isOpen: () => service?.state.get() === 'open',
+    close: () => service?.send({ type: 'CLOSE' }),
+    isRoot: () => true,
+    onRootSelect: (details) => {
+      const menu = service?.context.get('value') ?? null
+      if (menu != null)
+        onSelect?.({ menu, value: details.value })
+    },
+  })
+  service = useMachine(menubarMachine, () => ({ ...props, onValueChange, onSelect }), scope)
 
   const put = (table: Map<string, HTMLElement>): MenubarPartRegistry => (value, el) => {
     if (el)
@@ -63,7 +80,6 @@ export function useMenubar(
       // 整条菜单栏记为本层分支，点 trigger 与掠过换菜单都算层内交互
       branches: () => [rootRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 菜单不带遮罩，没有可点关闭的表面
       surfaces: () => [],
     })
@@ -89,6 +105,7 @@ export function useMenubar(
     registerTrigger: put(triggers),
     registerPositioner: put(positioners),
     registerContent: put(contents),
+    tree,
     portalTarget,
   }
 }

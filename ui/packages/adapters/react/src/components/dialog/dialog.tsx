@@ -5,7 +5,7 @@ import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { DialogProvider, useDialogContext } from './context'
@@ -29,6 +29,7 @@ export interface XhDialogRootProps {
   variant?: OverlayBackdropVariant
   translations?: DialogProps['translations']
   onOpenChange?: DialogProps['onOpenChange']
+  onExitComplete?: DialogProps['onExitComplete']
   children?: SlotChildren<DialogRootSlotProps>
 }
 
@@ -41,13 +42,13 @@ export function XhDialogRoot({ children, ...props }: XhDialogRootProps): ReactNo
   )
 }
 
-XhDialogRoot.xhEvents = ['open-change'] as const
+XhDialogRoot.xhEvents = ['open-change', 'exit-complete'] as const
 
 export interface XhDialogTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 
 export function XhDialogTrigger({ children, asChild, ...rest }: XhDialogTriggerProps): ReactNode {
   const ctx = useDialogContext()
-  const props = mergeReactProps(
+  const props = mergePartProps(
     ctx.api.getTriggerProps() as Record<string, unknown>,
     rest as Record<string, unknown>,
   )
@@ -64,12 +65,13 @@ export function XhDialogContent({ children, container, ...rest }: XhDialogConten
   if (!ctx.rendered)
     return null
   const api = ctx.api
+  const backdrop = api.getBackdropProps() as Record<string, unknown>
   return (
     <XhPortal container={container ?? ctx.portalContainer}>
-      {api.open || ctx.rendered
+      {!backdrop.hidden
         ? (
             <div
-              {...api.getBackdropProps() as Record<string, unknown>}
+              {...backdrop}
               ref={(el: HTMLDivElement | null) => {
                 ctx.backdropRef.current = el
               }}
@@ -79,6 +81,7 @@ export function XhDialogContent({ children, container, ...rest }: XhDialogConten
       <div {...api.getPositionerProps() as Record<string, unknown>}>
         <div
           {...mergeReactProps(api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}
+          hidden={!ctx.rendered || undefined}
           ref={(el: HTMLDivElement | null) => {
             ctx.contentRef.current = el
           }}

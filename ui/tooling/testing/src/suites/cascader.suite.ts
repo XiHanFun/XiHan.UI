@@ -1,6 +1,6 @@
 import type { CascaderNode } from '@xihan-ui/headless'
 import type { AttrExpectation, ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
-import { cascaderAnatomy, cascaderKeyboard } from '@xihan-ui/headless'
+import { cascaderAnatomy, cascaderKeyboard, cascaderPathKey } from '@xihan-ui/headless'
 
 // 触发器照 combobox 规格，展开后的每一列照 listbox 规格（APG 没有级联模式）。
 const APG_COMBOBOX = 'https://www.w3.org/WAI/ARIA/apg/patterns/combobox/'
@@ -164,6 +164,152 @@ function assertValueText(doc: Document, expected: string): void {
   if (actual !== expected)
     throw new Error(`value-text 文本不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
 }
+
+// —— 检索档 ——
+
+/**
+ * 候选节点两侧不同源：WC 的候选由作者在标记里声明、常驻 DOM，词换了不匹配的带 hidden；
+ * Vue / React 的 search-list 只渲当下命中的那几条。同一帧里两侧的候选节点数因此对不上，
+ * 逐帧比对比不了打过字的检索档。
+ */
+const SEARCH_PARITY = 'WC 的候选常驻 DOM 靠 hidden 过滤，Vue / React 只渲当下命中的那几条，同一帧的候选节点数对不上'
+
+/** 一条 WC 侧手写的候选：整条路径的 JSON 串写在 value 上，显示文本是逐段连缀。 */
+function searchItem(path: readonly string[], text: string): FixtureNode {
+  return { part: 'search-item', attrs: { value: cascaderPathKey(path) }, text, only: ['wc'] }
+}
+
+/**
+ * 全部候选，与 cascaderSearchCandidates 摊出来的一致：每条叶子路径一条，按树序；
+ * taiwan 的 children 是空数组、算叶子；wenzhou 自身禁用、整条禁用。
+ * 只在 WC 侧渲：Vue / React 的 search-list 按当下命中自渲，不收作者写的候选。
+ */
+const SEARCH_ITEMS: readonly FixtureNode[] = [
+  searchItem(['zhejiang', 'hangzhou', 'xihu'], 'Zhejiang / Hangzhou / Xihu'),
+  searchItem(['zhejiang', 'hangzhou', 'yuhang'], 'Zhejiang / Hangzhou / Yuhang'),
+  searchItem(['zhejiang', 'ningbo', 'jiangbei'], 'Zhejiang / Ningbo / Jiangbei'),
+  searchItem(['zhejiang', 'wenzhou'], 'Zhejiang / Wenzhou'),
+  searchItem(['jiangsu', 'nanjing', 'xuanwu'], 'Jiangsu / Nanjing / Xuanwu'),
+  searchItem(['taiwan'], 'Taiwan'),
+  searchItem(['macau'], 'Macau'),
+]
+
+/** 检索档结构：检索框与候选列表插在列前面，候选列表里装 candidates 那些节点。 */
+function searchFixture(base: FixtureNode, candidates: readonly FixtureNode[] = SEARCH_ITEMS): FixtureNode {
+  return {
+    ...base,
+    children: base.children!.map((child) => {
+      if (child.part !== 'positioner')
+        return child
+      const content = child.children![0]!
+      return {
+        ...child,
+        children: [{
+          ...content,
+          children: [
+            { part: 'input', tag: 'input' },
+            { part: 'search-list', children: candidates },
+            ...content.children!,
+          ],
+        }],
+      }
+    }),
+  }
+}
+
+/** 在 content 末尾放一枚作者 Loading；用来证明自动装配会让位而不是生成第二枚。 */
+function authoredLoadingFixture(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: base.children!.map((child) => {
+      if (child.part !== 'positioner')
+        return child
+      const content = child.children![0]!
+      return {
+        ...child,
+        children: [{
+          ...content,
+          children: [
+            ...content.children!,
+            // 普通作者包装是合法内容；适配器必须按最近 Content 的所有权登记，不能只看直接子组件类型。
+            { tag: 'section', children: [{ part: 'loading', text: '作者正在读取地区' }] },
+          ],
+        }],
+      }
+    }),
+  }
+}
+
+/** 「浙江」那一支的四条命中候选，按 cascaderSearchCandidates 的树序；末条整条禁用。 */
+const XIHU = ['zhejiang', 'hangzhou', 'xihu']
+const YUHANG = ['zhejiang', 'hangzhou', 'yuhang']
+const JIANGBEI = ['zhejiang', 'ningbo', 'jiangbei']
+
+/** 改写检索词：type 步骤只派按键、改不动输入框的值，而检索的入口正是原生 input 事件。 */
+async function typeQuery(doc: Document, text: string, flush: () => Promise<void>): Promise<void> {
+  const input = doc.querySelector<HTMLInputElement>(`${SCOPE}[data-part="input"]`)
+  if (!input)
+    throw new Error('检索框不存在')
+  input.focus()
+  input.value = text
+  input.dispatchEvent(new Event('input', { bubbles: true }))
+  await flush()
+}
+
+/**
+ * 断言高亮落在哪条候选上（传 null 断言没有高亮）。
+ *
+ * 候选节点的下标两侧对不上（WC 的候选常驻、Vue / React 只渲命中的那几条），
+ * 快照里的 `@part(search-item[i])` 引用因此表达不了落点；
+ * 而 aria-activedescendant 的 id 末段是候选自己的身份（整条路径的 JSON 串），
+ * 由连接层同一份代码产出，两侧逐字相同——判据落在这一段上，
+ * 再要求这个 id 在文档里真能解到一条带高亮标记的候选。
+ */
+function expectHighlight(path: readonly string[] | null): StepWithExpect {
+  return {
+    kind: 'raw',
+    why: '候选节点的下标两侧对不上，快照的 @part 引用表达不了高亮落点；改判 aria-activedescendant 末段的候选身份，并要求它解得开',
+    run: ({ doc }) => {
+      const input = doc.querySelector(`${SCOPE}[data-part="input"]`)
+      if (!input)
+        throw new Error('检索框不存在')
+      const actual = input.getAttribute('aria-activedescendant')
+      const suffix = path ? `search-item-${cascaderPathKey(path)}` : null
+      const ok = suffix == null ? actual == null : !!actual && actual.endsWith(suffix)
+      if (!ok)
+        throw new Error(`高亮落点不符：期望 ${suffix ?? '（无高亮）'}，实际 ${actual ?? '（无高亮）'}`)
+      if (actual == null)
+        return
+      const target = doc.getElementById(actual)
+      if (!target || target.getAttribute('data-part') !== 'search-item')
+        throw new Error(`aria-activedescendant 指向 ${actual}，文档里没有这条候选`)
+      if (!target.hasAttribute('data-highlighted'))
+        throw new Error(`aria-activedescendant 指到的候选 ${actual} 没带 data-highlighted`)
+    },
+  }
+}
+
+/** 展开浮层并把焦点交给检索框。 */
+const OPEN_AND_FOCUS_INPUT: readonly StepWithExpect[] = [
+  { kind: 'click', part: 'trigger' },
+  { kind: 'settle', until: { activeElement: 'column[0]' } },
+  { kind: 'focus', part: 'input', expect: { activeElement: { part: 'input', exact: true } } },
+]
+
+/** 检索档共用的开场：展开、焦点进检索框、打进「zhejiang」这个词。 */
+const OPEN_AND_SEARCH_ZHEJIANG: readonly StepWithExpect[] = [
+  ...OPEN_AND_FOCUS_INPUT,
+  {
+    kind: 'raw',
+    why: 'type 步骤只派按键、改不动输入框的值，而检索的入口正是原生 input 事件',
+    run: ({ doc, flush }) => typeQuery(doc, 'zhejiang', flush),
+    expect: {
+      // 候选列表顶掉列视图，浮层与焦点都不动
+      parts: { 'content': { 'data-searching': '', 'hidden': null }, 'search-list': { 'hidden': null, 'data-empty': null } },
+      activeElement: { part: 'input', exact: true },
+    },
+  },
+]
 
 /** 断言整个控件在 Tab 序列里的停靠点数目。 */
 function expectTabStops(expected: number): StepWithExpect {
@@ -1148,6 +1294,294 @@ export const cascaderSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      name: '检索档：打字把列视图换成候选列表，高亮落到首个可选候选；ArrowDown 走下一条，Enter 落整条路径',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ searchable: true }),
+      fixture: searchFixture,
+      skipParity: SEARCH_PARITY,
+      covers: ['cascader.kbd.search.type', 'cascader.kbd.search.next', 'cascader.kbd.search.select'],
+      steps: [
+        ...OPEN_AND_SEARCH_ZHEJIANG,
+        expectHighlight(XIHU),
+        { kind: 'key', key: 'ArrowDown' },
+        // 焦点不动，走的是虚拟高亮
+        { ...expectHighlight(YUHANG), expect: { activeElement: { part: 'input', exact: true } } },
+        {
+          kind: 'key',
+          key: 'Enter',
+          expect: {
+            events: [
+              { type: 'value-change', detail: { value: [YUHANG] } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
+            ],
+          },
+        },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'content', name: 'hidden', value: '' } },
+          // 收起时检索词一并清掉，下次展开回到列视图
+          expect: { parts: { content: { 'hidden': '', 'data-searching': null }, item: itemsSelected('yuhang') } },
+        },
+        {
+          kind: 'settle',
+          until: { activeElement: 'trigger' },
+          expect: { activeElement: 'trigger' },
+        },
+      ],
+    },
+    {
+      name: '检索档：只读时候选选不动——检索照常，Enter 一个值都不落',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ searchable: true, readOnly: true }),
+      fixture: searchFixture,
+      skipParity: SEARCH_PARITY,
+      steps: [
+        ...OPEN_AND_SEARCH_ZHEJIANG,
+        expectHighlight(XIHU),
+        {
+          kind: 'key',
+          key: 'Enter',
+          // 只读改不了选中值，与列内条目同一条守卫；浮层也就不会因为「选完」而收起
+          expect: { events: [], parts: { content: { hidden: null }, item: itemsSelected() } },
+        },
+      ],
+    },
+    {
+      name: '检索档：上下键跳过整条禁用的候选，到尽头按 loop 回绕',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ searchable: true }),
+      fixture: searchFixture,
+      skipParity: SEARCH_PARITY,
+      covers: ['cascader.kbd.search.prev'],
+      steps: [
+        ...OPEN_AND_SEARCH_ZHEJIANG,
+        // 四条命中里末条（浙江 / 温州）整条禁用：走到第三条再往下就跳过它回绕到首条。
+        // 逐步派而不用 repeat：连接层每帧重算一次高亮，同一帧内连发的第二下读的还是上一帧的落点
+        { kind: 'key', key: 'ArrowDown' },
+        { kind: 'key', key: 'ArrowDown' },
+        expectHighlight(JIANGBEI),
+        { kind: 'key', key: 'ArrowDown' },
+        expectHighlight(XIHU),
+        // 往回绕同样跳过禁用那条，落在第三条上
+        { kind: 'key', key: 'ArrowUp' },
+        expectHighlight(JIANGBEI),
+        {
+          kind: 'key',
+          key: 'Enter',
+          expect: { events: [{ type: 'value-change', detail: { value: [JIANGBEI] } }, { type: 'open-change', detail: { open: false, reason: 'selection' } }] },
+        },
+      ],
+    },
+    {
+      name: '检索档：Home / End 跳到首末个可选候选，末条整条禁用时 End 停在它前一条',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ searchable: true }),
+      fixture: searchFixture,
+      skipParity: SEARCH_PARITY,
+      covers: ['cascader.kbd.search.first', 'cascader.kbd.search.last'],
+      steps: [
+        ...OPEN_AND_SEARCH_ZHEJIANG,
+        { kind: 'key', key: 'ArrowDown' },
+        expectHighlight(YUHANG),
+        { kind: 'key', key: 'End' },
+        expectHighlight(JIANGBEI),
+        { kind: 'key', key: 'Home' },
+        { ...expectHighlight(XIHU), expect: { activeElement: { part: 'input', exact: true } } },
+      ],
+    },
+    {
+      name: '检索档：命中的候选整条禁用时没有高亮，Enter 既不落值也不吞键',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ searchable: true }),
+      fixture: searchFixture,
+      skipParity: SEARCH_PARITY,
+      steps: [
+        ...OPEN_AND_FOCUS_INPUT,
+        {
+          kind: 'raw',
+          why: 'type 步骤只派按键、改不动输入框的值，而检索的入口正是原生 input 事件',
+          run: ({ doc, flush }) => typeQuery(doc, 'wenzhou', flush),
+          expect: { parts: { 'content': { 'data-searching': '' }, 'search-list': { 'data-empty': null } } },
+        },
+        // 唯一命中的那条整条禁用：高亮无处可落，读屏也就没有可指的候选
+        expectHighlight(null),
+        {
+          kind: 'key',
+          key: 'Enter',
+          expect: { events: [], parts: { content: { hidden: null }, item: itemsSelected() } },
+        },
+      ],
+    },
+    {
+      name: '检索档：Escape 先清检索词回列视图、浮层不收，词已空再按才收浮层',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ searchable: true }),
+      fixture: searchFixture,
+      skipParity: SEARCH_PARITY,
+      covers: ['cascader.kbd.search.clear'],
+      steps: [
+        ...OPEN_AND_SEARCH_ZHEJIANG,
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: {
+            // 列视图回来了，浮层还开着，焦点仍在检索框
+            activeElement: { part: 'input', exact: true },
+            parts: {
+              content: { 'data-searching': null, 'hidden': null },
+              column: columnsShown(1),
+              input: { 'aria-activedescendant': null },
+            },
+            events: [],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }] },
+        },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'content', name: 'hidden', value: '' } },
+          expect: { parts: { content: { hidden: '' }, trigger: { 'aria-expanded': 'false' } } },
+        },
+      ],
+    },
+    {
+      name: '检索档：检索词为空时上下键把焦点交给列——有锚点落回锚点，没有则按方向进列的头尾',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ searchable: true }),
+      // 全程不打字，用不着候选；不声明候选，两侧的候选节点数就对得上，这一条留在逐帧比对里
+      fixture: base => searchFixture(base, []),
+      covers: ['cascader.kbd.search.into-columns'],
+      steps: [
+        ...OPEN_AND_FOCUS_INPUT,
+        {
+          kind: 'key',
+          key: 'ArrowUp',
+          // 还没有锚点：ArrowUp 从当前列末端进
+          expect: {
+            activeElement: { part: 'item[3]', exact: true },
+            parts: { 'item[3]': { 'tabindex': '0', 'data-highlighted': '' }, 'column': columnsShown(1) },
+          },
+        },
+        { kind: 'focus', part: 'input', expect: { activeElement: { part: 'input', exact: true } } },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          // 锚点还在：落回它自己，不再往下走一步
+          expect: {
+            activeElement: { part: 'item[3]', exact: true },
+            parts: { 'item[3]': { 'data-highlighted': '' } },
+          },
+        },
+      ],
+    },
+    {
+      name: '检索档：左右键留给光标，组合期的按键一律不接，Tab 收起浮层',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ searchable: true }),
+      fixture: searchFixture,
+      skipParity: SEARCH_PARITY,
+      covers: ['cascader.kbd.search.caret', 'cascader.kbd.search.compose', 'cascader.kbd.search.tab'],
+      steps: [
+        ...OPEN_AND_SEARCH_ZHEJIANG,
+        // 进子列那一套只在焦点落在条目上时发生：高亮、焦点与列都不动
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          expect: { activeElement: { part: 'input', exact: true }, parts: { column: columnsShown(1) } },
+        },
+        expectHighlight(XIHU),
+        {
+          kind: 'key',
+          key: 'ArrowLeft',
+          expect: { activeElement: { part: 'input', exact: true }, parts: { column: columnsShown(1) } },
+        },
+        expectHighlight(XIHU),
+        // 组合期的上下键归输入法候选框，高亮不动
+        { kind: 'key', key: 'ArrowDown', composing: true },
+        expectHighlight(XIHU),
+        {
+          kind: 'key',
+          key: 'Enter',
+          composing: true,
+          expect: { events: [], parts: { content: { hidden: null }, item: itemsSelected() } },
+        },
+        {
+          kind: 'key',
+          key: 'Tab',
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'tab' } }] },
+        },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'content', name: 'hidden', value: '' } },
+          expect: { parts: { content: { hidden: '' }, trigger: { 'aria-expanded': 'false' } } },
+        },
+      ],
+    },
+    {
+      name: '首次加载：Content 自动装配唯一 Loading，Empty 让位并使用翻译文案',
+      spec: { adr: 'cascader-loading-surface' },
+      props: {
+        collection: [],
+        loading: true,
+        translations: { loading: '正在读取地区' },
+      },
+      expect: {
+        counts: { empty: 1, loading: 1 },
+        parts: {
+          content: { 'aria-busy': 'true', 'data-empty': '', 'hidden': null },
+          empty: { role: 'status', hidden: '' },
+          loading: { role: 'status', hidden: null },
+        },
+      },
+      // 与本套件的键盘用例一样从收起态进入，等焦点域完成挂载再比较稳定状态。
+      steps: [{ kind: 'click', part: 'trigger' }, { kind: 'settle', until: { activeElement: 'column[0]' } }, {
+        kind: 'raw',
+        why: '状态文案不进属性快照，直接读取唯一 Loading 的可见文本',
+        run: ({ doc }) => {
+          const loadings = doc.querySelectorAll<HTMLElement>(`${SCOPE}[data-part="loading"]`)
+          if (loadings.length !== 1 || loadings[0]!.textContent?.trim() !== '正在读取地区')
+            throw new Error(`首次加载应只有一枚翻译后的 Loading，实际 ${loadings.length} 枚`)
+        },
+      }],
+    },
+    {
+      name: '作者显式 Loading：自动装配让位，作者内容不被默认翻译覆盖',
+      spec: { adr: 'cascader-loading-surface' },
+      fixture: authoredLoadingFixture,
+      props: { collection: [], loading: true },
+      expect: {
+        counts: { empty: 1, loading: 1 },
+        parts: { loading: { role: 'status', hidden: null } },
+      },
+      steps: [{ kind: 'click', part: 'trigger' }, { kind: 'settle', until: { activeElement: 'column[0]' } }, {
+        kind: 'raw',
+        why: '作者内容不进属性快照，直接证明它没有被默认 Loading 替换或并排重复',
+        run: ({ doc }) => {
+          const loadings = doc.querySelectorAll<HTMLElement>(`${SCOPE}[data-part="loading"]`)
+          if (loadings.length !== 1 || loadings[0]!.textContent?.trim() !== '作者正在读取地区')
+            throw new Error(`作者 Loading 应原样保留且只有一枚，实际 ${loadings.length} 枚`)
+        },
+      }],
+    },
+    {
+      name: '后台刷新：已有候选与祖先列保持可用，Loading 状态块不额外占列',
+      spec: { adr: 'cascader-loading-surface' },
+      props: props({ loading: true }),
+      steps: [{ kind: 'click', part: 'trigger' }, { kind: 'settle', until: { activeElement: 'column[0]' } }],
+      expect: {
+        counts: { loading: 1 },
+        parts: {
+          'content': { 'aria-busy': 'true', 'data-empty': null, 'hidden': null },
+          'loading': { role: 'status', hidden: '' },
+          'column[0]': { hidden: null },
+          'item[0]': { hidden: null },
+        },
+      },
     },
   ],
 }

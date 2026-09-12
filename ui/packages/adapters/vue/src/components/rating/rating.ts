@@ -4,6 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideRating, useRatingContext } from './context'
 import { useRating } from './use-rating'
 
@@ -28,20 +29,20 @@ export type RatingItemSlotProps = RatingItemState
 export const XhRatingRoot = defineComponent({
   name: 'XhRatingRoot',
   props: {
-    // default: undefined 表示非受控
-    value: { type: Number, default: undefined },
-    defaultValue: { type: Number, default: undefined },
-    count: { type: Number, default: undefined },
+    // 缺席值 undefined 表示非受控
+    value: { type: Number },
+    defaultValue: { type: Number },
+    count: { type: Number },
     allowHalf: Boolean,
     allowClear: { type: Boolean, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    required: Boolean,
-    name: { type: String, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<RatingProps['translations']>, default: undefined },
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
+    name: { type: String },
+    dir: { type: String as PropType<Direction> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<RatingProps['translations']> },
   },
   // value-change 携带 { value }，update:value 携带裸值；hover-change 是预览通道
   emits: {
@@ -60,7 +61,7 @@ export const XhRatingRoot = defineComponent({
     const onHoverChange: RatingProps['onHoverChange'] = (details) => {
       emit('hover-change', details)
     }
-    const ctx = useRating(withXhConfig('rating', props) as RatingProps, { onValueChange, onHoverChange })
+    const ctx = useRating(withXhConfig('rating', useFormControlProps(props)) as RatingProps, { onValueChange, onHoverChange })
     provideRating(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

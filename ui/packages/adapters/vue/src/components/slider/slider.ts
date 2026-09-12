@@ -2,7 +2,9 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { SliderApi, SliderMark, SliderMarkMeta, SliderSchema, SliderValueTextDetails } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { normalizeItemIndex } from '@xihan-ui/core'
 import { computed, defineComponent, h } from 'vue'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideSlider, provideSliderThumb, useSliderContext, useSliderThumbContext } from './context'
 import { useSlider } from './use-slider'
 
@@ -22,27 +24,26 @@ export interface SliderTickGroupTickSlotProps {
 export const XhSliderRoot = defineComponent({
   name: 'XhSliderRoot',
   props: {
-    // 值恒是数组，单滑块即长度 1；default: undefined 表示非受控
-    value: { type: Array as PropType<number[]>, default: undefined },
-    defaultValue: { type: Array as PropType<number[]>, default: undefined },
-    min: { type: Number, default: undefined },
-    max: { type: Number, default: undefined },
-    step: { type: Number, default: undefined },
-    largeStep: { type: Number, default: undefined },
-    minStepsBetweenThumbs: { type: Number, default: undefined },
-    marks: { type: Array as PropType<SliderMark[]>, default: undefined },
+    // 值恒是数组，单滑块即长度 1；缺席值 undefined 表示非受控
+    value: { type: Array as PropType<number[]> },
+    defaultValue: { type: Array as PropType<number[]> },
+    min: { type: Number },
+    max: { type: Number },
+    step: { type: Number },
+    largeStep: { type: Number },
+    minStepsBetweenThumbs: { type: Number },
+    marks: { type: Array as PropType<SliderMark[]> },
     snapToMarks: { type: Boolean, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    name: { type: String, default: undefined },
+    orientation: { type: String as PropType<Orientation> },
+    dir: { type: String as PropType<Direction> },
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    name: { type: String },
     getValueText: {
       type: Function as PropType<(details: SliderValueTextDetails) => string>,
-      default: undefined,
     },
   },
   // value-change 携带 { value }，update:value 携带裸数组；value-change-end 只在操作收尾时发一次
@@ -62,7 +63,7 @@ export const XhSliderRoot = defineComponent({
     const notifyEnd: SliderProps['onValueChangeEnd'] = (details) => {
       emit('value-change-end', details)
     }
-    const ctx = useSlider(props as SliderProps, notify, notifyEnd)
+    const ctx = useSlider(useFormControlProps(props) as SliderProps, notify, notifyEnd)
     provideSlider(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,
@@ -138,10 +139,7 @@ export const XhSliderThumb = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useSliderContext()
-    const index = computed(() => {
-      const n = Number(props.index)
-      return Number.isFinite(n) ? n : 0
-    })
+    const index = computed(() => normalizeItemIndex(props.index))
     provideSliderThumb({ index })
     return () => h('div', ctx.api.value.getThumbProps(index.value) as Record<string, unknown>, slots.default?.())
   },

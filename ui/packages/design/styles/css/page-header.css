@@ -98,6 +98,10 @@
   [data-scope='page-header'][data-part='title'] {
     margin: 0;
     flex: none;
+    /* 标题不参与伸缩，长过整行时收到行宽为止，中间没有断点的长串在行尾断开，
+       不把整条页头撑出容器 */
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
     color: var(--xh-page-header-title-fg, var(--xh-fg-default));
     font-size: var(--xh-page-header-title-font-size, var(--xh-_page-header-title-size));
     font-weight: var(--xh-page-header-title-font-weight, var(--xh-font-weight-semibold));

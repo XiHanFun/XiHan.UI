@@ -44,6 +44,12 @@ export const colorPickerKeyboard: KeyboardTable = {
       does: '同上，但一步走 10',
     },
     {
+      id: 'color-picker.kbd.channel-page-step',
+      keys: ['PageUp', 'PageDown'],
+      when: 'focus in channel-slider-thumb, channel enabled',
+      does: '朝 max / min 各走 10，与 dir 无关',
+    },
+    {
       id: 'color-picker.kbd.channel-edge',
       keys: ['Home', 'End'],
       when: 'focus in channel-slider-thumb, channel enabled',
@@ -53,7 +59,7 @@ export const colorPickerKeyboard: KeyboardTable = {
       id: 'color-picker.kbd.input-commit',
       keys: ['Enter'],
       when: 'focus in channel-input',
-      does: '收下框里的字；收不了（打了一半）就复原成规范文本。一并拦住表单提交',
+      does: '收下框里的字；收不了就保留草稿并报告输入错误。一并拦住表单提交',
     },
     {
       id: 'color-picker.kbd.escape',

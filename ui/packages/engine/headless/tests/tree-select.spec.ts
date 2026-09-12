@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
-import type { RuntimeConfig } from '@xihan-ui/core'
+import type { Anchor, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
+import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
 import type { TreeNode } from '../src/tree'
 import type { TreeSelectApi, TreeSelectSchema } from '../src/tree-select'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { connectTreeSelect, treeSelectMachine } from '../src/tree-select'
@@ -95,8 +97,19 @@ interface ItemEls {
   indicator: HTMLElement
 }
 
+interface MountOptions {
+  /** 定位引擎；不给即缺省，机器照常转移但不产出位置结果。 */
+  position?: PositionEnginePort
+  /** 本层被移出层栈时调一次，用来记拆除顺序。 */
+  onLayerDispose?: () => void
+  /** 注入真实 Presence，验证行为资源延迟到视觉退场完成后释放。 */
+  withPresence?: boolean
+}
+
 interface Harness {
   api: () => TreeSelectApi
+  config: RuntimeConfig
+  presence: PresenceHandle | null
   root: HTMLElement
   trigger: HTMLButtonElement
   valueText: HTMLElement
@@ -121,11 +134,16 @@ interface Harness {
   expanded: () => string[]
   focused: () => string | null
   returnFocus: () => boolean
+  /** 被定位的浮层容器。 */
+  positioner: HTMLElement
+  position: () => PositionResult | null
+  /** 换掉锚点 / 浮层 ref，用来验它们缺席时不挂订阅。 */
+  setRef: (key: 'getAnchorEl' | 'getFloatingEl', value: () => HTMLElement | null) => void
 }
 
 const runtimes: VanillaRuntime[] = []
 
-function mount(initial: Partial<Props> = {}): Harness {
+function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harness {
   const doc = document
   const runtime = createVanillaRuntime()
   runtimes.push(runtime)
@@ -134,7 +152,7 @@ function mount(initial: Partial<Props> = {}): Harness {
   const props = runtime.signal<Partial<Props>>({ collection: COLLECTION, ...initial })
   // 作者标记镜像的是机器手上的那份 collection：两边不同源的话，
   // 摊平算出来的可见行在 DOM 里一个也找不到，用例会假绿
-  const collection = props.get().collection!
+  const collection = props.get().collection ?? []
 
   const idGen = createCounterIdGenerator()
   const scope = createScope(null, idGen)
@@ -203,16 +221,30 @@ function mount(initial: Partial<Props> = {}): Harness {
   const service = createService(treeSelectMachine, { props: () => props.get(), runtime, scope })
 
   const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+  const presence = options.withPresence
+    ? createPresence({ config, open: (initial.open ?? initial.defaultOpen) ?? false, onRenderedChange: () => {} })
+    : null
   service.refs.set('config', config)
-  service.refs.set('registerLayer', () => config.layerRegistry.register({
-    kind: 'popover',
-    node: () => content,
-    // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换
-    branches: () => [trigger],
-    isModal: () => false,
-    setModal: () => {},
-    surfaces: () => [],
-  }))
+  service.refs.set('presence', presence)
+  service.refs.set('registerLayer', () => {
+    const handle = config.layerRegistry.register({
+      kind: 'popover',
+      node: () => content,
+      // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换
+      branches: () => [trigger],
+      isModal: () => false,
+      surfaces: () => [],
+    })
+    return {
+      layer: handle.layer,
+      dispose: () => {
+        handle.dispose()
+        options.onLayerDispose?.()
+      },
+    }
+  })
+  if (options.position)
+    service.refs.set('position', options.position)
   service.refs.set('getAnchorEl', () => trigger)
   service.refs.set('getFloatingEl', () => positioner)
   service.refs.set('getContentEl', () => content)
@@ -229,7 +261,9 @@ function mount(initial: Partial<Props> = {}): Harness {
     spread(positioner, api.getPositionerProps() as Record<string, unknown>)
     spread(content, api.getContentProps() as Record<string, unknown>)
     spread(treeEl, api.getTreeProps() as Record<string, unknown>)
-    spread(hiddenInput, api.getHiddenInputProps() as Record<string, unknown>)
+    spread(hiddenInput, api.value.length
+      ? api.getHiddenInputProps({ value: api.value[0]! }) as Record<string, unknown>
+      : { type: 'hidden', name: undefined, disabled: true, value: '' })
     for (const [value, b] of branches) {
       const node = { value }
       spread(b.branch, api.getBranchProps(node) as Record<string, unknown>)
@@ -255,6 +289,8 @@ function mount(initial: Partial<Props> = {}): Harness {
 
   return {
     api: () => connectTreeSelect(service, normalizeProps),
+    config,
+    presence,
     root,
     trigger: trigger as HTMLButtonElement,
     valueText,
@@ -282,6 +318,9 @@ function mount(initial: Partial<Props> = {}): Harness {
     expanded: () => service.context.get('expandedValue'),
     focused: () => service.context.get('focusedValue'),
     returnFocus: () => service.context.get('returnFocus'),
+    positioner,
+    position: () => service.context.get('position'),
+    setRef: (key, value) => service.refs.set(key, value),
   }
 }
 
@@ -305,7 +344,7 @@ function focusedValue(): string | null {
   return document.activeElement?.getAttribute('data-value') ?? null
 }
 
-/** flush 在 vanilla 运行时是 queueMicrotask；消解层的监听器注册还要过一个 setTimeout。 */
+/** flush 在 vanilla 运行时是一枚微任务；消解层的交互再等一枚微任务武装。 */
 function tick(): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, 0))
 }
@@ -401,14 +440,19 @@ describe('选中值与显示文本', () => {
     expect(multi.value()).toEqual(['index', 'license'])
   })
 
-  it('表单出口：name 缺省即不参与提交，值按逗号拼成一串，整控件禁用则不提交', () => {
+  it('单值表单出口：name 缺省不参与提交，整控件禁用则不提交', () => {
     const h = mount({ multiple: true, defaultValue: ['index', 'license'] })
     expect(h.hiddenInput.getAttribute('type')).toBe('hidden')
     expect(h.hiddenInput.getAttribute('name')).toBeNull()
-    expect(h.hiddenInput.value).toBe('index,license')
+    expect(h.hiddenInput.value).toBe('index')
 
     h.setProps({ name: 'dir' })
     expect(h.hiddenInput.getAttribute('name')).toBe('dir')
+    expect(h.api().value.map(value => h.api().getHiddenInputProps({ value })))
+      .toEqual([
+        expect.objectContaining({ type: 'hidden', name: 'dir', value: 'index' }),
+        expect.objectContaining({ type: 'hidden', name: 'dir', value: 'license' }),
+      ])
     h.setProps({ disabled: true })
     expect(h.hiddenInput.hasAttribute('disabled')).toBe(true)
   })
@@ -788,7 +832,7 @@ describe('收起的出口', () => {
     h.trigger.focus()
     click(h.trigger)
     await settle()
-    // 消解层的监听器延后一拍注册（免得开自己的那次交互立刻把自己关掉）
+    // Hub 监听同步在场；本层参与者延后一拍武装（免得打开事件立刻把自己关掉）
     await tick()
 
     press(active(), 'Escape')
@@ -1064,5 +1108,466 @@ describe('aRIA 契约', () => {
     expect(h.clear.hasAttribute('aria-hidden')).toBe(false)
     expect(h.branch('src').trigger.getAttribute('tabindex')).toBe('-1')
     expect(h.branch('src').trigger.getAttribute('aria-hidden')).toBe('true')
+  })
+})
+
+function fakeEngine(): {
+  port: PositionEnginePort
+  calls: { anchor: Anchor, floating: HTMLElement, options: PositionOptions, emit: (r: PositionResult) => void }[]
+  stops: () => number
+} {
+  const calls: { anchor: Anchor, floating: HTMLElement, options: PositionOptions, emit: (r: PositionResult) => void }[] = []
+  let stops = 0
+  return {
+    calls,
+    stops: () => stops,
+    port: {
+      attach: (anchor, floating, options, onResult) => {
+        calls.push({ anchor, floating: floating as HTMLElement, options, emit: onResult })
+        return () => {
+          stops += 1
+        }
+      },
+    },
+  }
+}
+
+const POSITION_RESULT: PositionResult = { x: 12, y: 34, placement: 'bottom-start', hidden: false }
+
+describe('浮层定位', () => {
+  it('等 DOM 落定才挂：进入展开态那一刻还没碰引擎，一拍之后才把锚点与浮层交进去', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.api().setOpen(true)
+    expect(engine.calls).toHaveLength(0)
+    await tick()
+    expect(engine.calls).toHaveLength(1)
+    expect(engine.calls[0]!.anchor).toBe(h.trigger)
+    expect(engine.calls[0]!.floating).toBe(h.positioner)
+  })
+
+  it('交给引擎的参数：缺省 bottom-start 与 8px，坐标系走视口，要可用空间，不要箭头', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.api().setOpen(true)
+    await tick()
+    const options = engine.calls[0]!.options
+    expect(options.placement).toBe('bottom-start')
+    expect(options.offset).toBe(8)
+    expect(options.strategy).toBe('fixed')
+    expect(options.size).toBe(true)
+    expect(options.dir).toBeUndefined()
+    expect(options.arrow).toBeUndefined()
+  })
+
+  it('placement / offset / dir 由 props 覆盖', async () => {
+    const engine = fakeEngine()
+    const h = mount({ placement: 'top-end', offset: 2, dir: 'rtl' }, { position: engine.port })
+    h.api().setOpen(true)
+    await tick()
+    const options = engine.calls[0]!.options
+    expect(options.placement).toBe('top-end')
+    expect(options.offset).toBe(2)
+    expect(options.dir).toBe('rtl')
+  })
+
+  it('引擎回报的结果写进 context，连接层据此认落位', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.api().setOpen(true)
+    await tick()
+    expect((h.api().getPositionerProps() as Record<string, unknown>)['data-positioned']).toBeUndefined()
+    engine.calls[0]!.emit(POSITION_RESULT)
+    expect(h.position()).toEqual(POSITION_RESULT)
+    expect((h.api().getPositionerProps() as Record<string, unknown>)['data-positioned']).toBe('')
+  })
+
+  it('重新展开先把上一轮坐标清掉：再次落位之前不算已定位', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.api().setOpen(true)
+    await tick()
+    engine.calls[0]!.emit(POSITION_RESULT)
+    h.api().setOpen(false)
+    // 收起中坐标还留着，退场要用
+    expect(h.position()).toEqual(POSITION_RESULT)
+    h.api().setOpen(true)
+    expect(h.position()).toBeNull()
+  })
+
+  it('收起即撤订阅', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.api().setOpen(true)
+    await tick()
+    expect(engine.stops()).toBe(0)
+    h.api().setOpen(false)
+    expect(engine.stops()).toBe(1)
+  })
+
+  it('展开当拍又收起：那一拍到来时不再挂订阅', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.api().setOpen(true)
+    h.api().setOpen(false)
+    await tick()
+    expect(engine.calls).toHaveLength(0)
+  })
+
+  it('锚点或浮层缺席都不挂', async () => {
+    const engine = fakeEngine()
+    const noAnchor = mount({}, { position: engine.port })
+    noAnchor.setRef('getAnchorEl', () => null)
+    noAnchor.api().setOpen(true)
+    await tick()
+    expect(engine.calls).toHaveLength(0)
+
+    const noFloating = mount({}, { position: engine.port })
+    noFloating.setRef('getFloatingEl', () => null)
+    noFloating.api().setOpen(true)
+    await tick()
+    expect(engine.calls).toHaveLength(0)
+  })
+
+  it('没有引擎照常转移，坐标仍被显式置空', async () => {
+    const h = mount()
+    h.api().setOpen(true)
+    await tick()
+    expect(h.state()).toBe('open')
+    expect(h.position()).toBeNull()
+  })
+})
+
+describe('treeSelect 懒分支', () => {
+  it('首次展开在 headless 开请求，成功结果成为有效树而不是由适配器拼接', async () => {
+    const onBranchLoadStart = vi.fn()
+    const onBranchLoad = vi.fn()
+    const loadChildren = vi.fn(async () => [{ value: 'leaf', label: 'Leaf' }])
+    const h = mount({
+      collection: [{ value: 'root', label: 'Root', hasChildren: true }],
+      defaultOpen: true,
+      loadChildren,
+      onBranchLoadStart,
+      onBranchLoad,
+    })
+
+    h.api().expand('root')
+    expect(h.api().branchLoadState('root')).toEqual({ status: 'loading' })
+    expect((h.api().getBranchProps({ value: 'root' }) as Record<string, unknown>)['aria-busy']).toBe('true')
+    await tick()
+
+    expect(loadChildren).toHaveBeenCalledTimes(1)
+    expect(onBranchLoadStart).toHaveBeenCalledWith(expect.objectContaining({ value: 'root', reason: 'expand' }))
+    expect(onBranchLoad).toHaveBeenCalledWith(expect.objectContaining({ value: 'root', children: [{ value: 'leaf', label: 'Leaf' }] }))
+    expect(h.api().branchLoadState('root')).toEqual({ status: 'loaded', empty: false })
+    expect(h.api().collection).toEqual([{ value: 'root', label: 'Root', hasChildren: true, children: [{ value: 'leaf', label: 'Leaf' }] }])
+    expect(h.api().visibleNodes.map(node => node.value)).toEqual(['root', 'leaf'])
+  })
+
+  it('失败保留 cause；重试使旧请求中止，旧结果不能覆盖新一轮', async () => {
+    let rejectFirst: (error: unknown) => void = () => {}
+    let resolveSecond: (children: { value: string }[]) => void = () => {}
+    const loadChildren = vi.fn()
+      .mockImplementationOnce(({ signal }: { signal: AbortSignal }) => new Promise<never>((_, reject) => {
+        rejectFirst = reject
+        signal.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')))
+      }))
+      .mockImplementationOnce(() => new Promise<{ value: string }[]>((resolve) => { resolveSecond = resolve }))
+    const onBranchLoadError = vi.fn()
+    const h = mount({ collection: [{ value: 'root', hasChildren: true }], defaultOpen: true, loadChildren, onBranchLoadError })
+
+    h.api().expand('root')
+    await tick()
+    rejectFirst(new Error('offline'))
+    await tick()
+    expect(h.api().branchLoadState('root')?.status).toBe('error')
+    expect(onBranchLoadError).toHaveBeenCalledWith(expect.objectContaining({ value: 'root', error: expect.any(Error) }))
+
+    h.api().retryBranch('root')
+    await tick()
+    expect(loadChildren).toHaveBeenCalledTimes(2)
+    resolveSecond([{ value: 'fresh' }])
+    await tick()
+
+    expect(h.api().branchLoadState('root')).toEqual({ status: 'loaded', empty: false })
+    expect(h.api().collection[0]?.children?.map(node => node.value)).toEqual(['fresh'])
+  })
+
+  it('不理会中止的 loader 即使晚到，也不能用旧成功结果覆盖重试', async () => {
+    let resolveFirst: (children: { value: string }[]) => void = () => {}
+    let resolveSecond: (children: { value: string }[]) => void = () => {}
+    const loadChildren = vi.fn()
+      .mockImplementationOnce(() => new Promise<{ value: string }[]>((done) => { resolveFirst = done }))
+      .mockImplementationOnce(() => new Promise<{ value: string }[]>((done) => { resolveSecond = done }))
+    const h = mount({ collection: [{ value: 'root', hasChildren: true }], defaultOpen: true, loadChildren })
+
+    h.api().expand('root')
+    await tick()
+    h.api().retryBranch('root')
+    await tick()
+    resolveFirst([{ value: 'stale' }])
+    await tick()
+    expect(h.api().branchLoadState('root')).toEqual({ status: 'loading' })
+
+    resolveSecond([{ value: 'current' }])
+    await tick()
+    expect(h.api().collection[0]?.children?.map(node => node.value)).toEqual(['current'])
+  })
+
+  it('外部移除懒分支会中止请求，延迟兑现不写回已失效 collection', async () => {
+    let resolve: (children: { value: string }[]) => void = () => {}
+    let signal: AbortSignal | undefined
+    const h = mount({
+      collection: [{ value: 'root', hasChildren: true }],
+      defaultOpen: true,
+      loadChildren: ({ signal: next }) => {
+        signal = next
+        return new Promise<{ value: string }[]>((done) => {
+          resolve = done
+        })
+      },
+    })
+
+    h.api().expand('root')
+    await tick()
+    h.setProps({ collection: [] })
+    expect(signal?.aborted).toBe(true)
+    resolve([{ value: 'stale' }])
+    await tick()
+
+    expect(h.api().collection).toEqual([])
+    expect(h.api().branchLoadState('root')).toBeNull()
+  })
+
+  it('分支收起会中止在途请求，迟到结果无效；再次展开开启新请求', async () => {
+    const pending: Array<{ signal: AbortSignal, resolve: (children: { value: string }[]) => void }> = []
+    const loadChildren = vi.fn(({ signal }: { signal: AbortSignal }) => new Promise<{ value: string }[]>((resolve) => {
+      pending.push({ signal, resolve })
+    }))
+    const h = mount({ collection: [{ value: 'root', hasChildren: true }], defaultOpen: true, loadChildren })
+
+    h.api().expand('root')
+    await tick()
+    h.api().collapse('root')
+    expect(pending[0]!.signal.aborted).toBe(true)
+    expect(h.api().branchLoadState('root')).toEqual({ status: 'idle' })
+    pending[0]!.resolve([{ value: 'stale' }])
+    await tick()
+    expect(h.api().collection[0]?.children).toEqual([])
+
+    h.api().expand('root')
+    await tick()
+    expect(loadChildren).toHaveBeenCalledTimes(2)
+    pending[1]!.resolve([{ value: 'fresh' }])
+    await tick()
+    expect(h.api().collection[0]?.children?.map(node => node.value)).toEqual(['fresh'])
+  })
+
+  it('整浮层收起同样中止请求，重新展开后由展开集合恢复新一轮', async () => {
+    const pending: Array<{ signal: AbortSignal, resolve: (children: { value: string }[]) => void }> = []
+    const h = mount({
+      collection: [{ value: 'root', hasChildren: true }],
+      defaultOpen: true,
+      defaultExpandedValue: ['root'],
+      loadChildren: ({ signal }) => new Promise((resolve) => { pending.push({ signal, resolve }) }),
+    })
+    await tick()
+    h.api().setOpen(false)
+    expect(pending[0]!.signal.aborted).toBe(true)
+    pending[0]!.resolve([{ value: 'stale' }])
+    await tick()
+    expect(h.api().collection[0]?.children).toEqual([])
+
+    h.api().setOpen(true)
+    await tick()
+    expect(pending).toHaveLength(2)
+  })
+
+  it('同 value 节点对象换代会作废旧请求与旧结果', async () => {
+    let resolveOld: (children: { value: string }[]) => void = () => {}
+    const oldNode = { value: 'root', hasChildren: true }
+    const newNode = { value: 'root', hasChildren: true }
+    const loadChildren = vi.fn()
+      .mockImplementationOnce(({ signal }: { signal: AbortSignal }) => new Promise<{ value: string }[]>((resolve) => {
+        resolveOld = resolve
+        expect(signal.aborted).toBe(false)
+      }))
+      .mockImplementationOnce(() => Promise.resolve([{ value: 'fresh' }]))
+    const h = mount({ collection: [oldNode], defaultOpen: true, loadChildren })
+    h.api().expand('root')
+    await tick()
+    h.setProps({ collection: [newNode] })
+    resolveOld([{ value: 'stale' }])
+    await tick()
+    expect(loadChildren).toHaveBeenCalledTimes(2)
+    expect(h.api().collection[0]?.children?.map(node => node.value)).toEqual(['fresh'])
+  })
+
+  it('成功空数组是 loaded empty；失败与缺 loader 都保持独立错误结构', async () => {
+    const h = mount({
+      collection: [{ value: 'root', hasChildren: true }],
+      defaultOpen: true,
+      loadChildren: () => [],
+    })
+    h.api().expand('root')
+    await tick()
+    expect(h.api().branchLoadState('root')).toEqual({ status: 'loaded', empty: true })
+    expect((h.api().getBranchEmptyProps({ value: 'root' }) as Record<string, unknown>).hidden).toBeUndefined()
+    expect((h.api().getBranchErrorProps({ value: 'root' }) as Record<string, unknown>).hidden).toBe(true)
+
+    const onBranchLoadError = vi.fn()
+    const missing = mount({ collection: [{ value: 'missing', hasChildren: true }], defaultOpen: true, onBranchLoadError })
+    missing.api().expand('missing')
+    expect(missing.api().branchLoadState('missing')?.status).toBe('error')
+    expect((missing.api().getBranchRetryTriggerProps({ value: 'missing' }) as Record<string, unknown>).hidden).toBeUndefined()
+    expect(onBranchLoadError).toHaveBeenCalledWith(expect.objectContaining({ value: 'missing', error: expect.any(Error) }))
+  })
+
+  it('取回的子项仍可声明下一层懒分支，身份继续由 Headless 递归追踪', async () => {
+    const loadChildren = vi.fn(({ node }: { node: { value: string } }) => node.value === 'root'
+      ? [{ value: 'nested', hasChildren: true }]
+      : [{ value: 'leaf' }])
+    const h = mount({
+      collection: [{ value: 'root', hasChildren: true }],
+      defaultOpen: true,
+      loadChildren,
+    })
+    h.api().expand('root')
+    await tick()
+    h.api().expand('nested')
+    await tick()
+    expect(loadChildren).toHaveBeenCalledTimes(2)
+    expect(h.api().branchLoadState('nested')).toEqual({ status: 'loaded', empty: false })
+    expect(h.api().collection[0]?.children?.[0]?.children?.map(node => node.value)).toEqual(['leaf'])
+  })
+})
+
+describe('treeSelect 自动空态', () => {
+  it('collection 空树与外部 loading 不同屏', () => {
+    const empty = mount({ collection: [] })
+    expect(empty.api().empty).toBe(true)
+    expect((empty.api().getEmptyProps() as Record<string, unknown>).hidden).toBeUndefined()
+    expect((empty.api().getLoadingProps() as Record<string, unknown>).hidden).toBe(true)
+
+    const loading = mount({ collection: [], loading: true })
+    expect((loading.api().getEmptyProps() as Record<string, unknown>).hidden).toBe(true)
+    expect((loading.api().getLoadingProps() as Record<string, unknown>).hidden).toBeUndefined()
+  })
+
+  it('手写节点由三端上报挂载事实，增删后的空态只在 Headless 判', () => {
+    const h = mount({ collection: undefined })
+    expect(h.api().empty).toBe(true)
+    h.send({ type: 'NODE.MOUNT', value: 'manual' })
+    expect(h.api().empty).toBe(false)
+    h.send({ type: 'NODE.UNMOUNT', value: 'manual' })
+    expect(h.api().empty).toBe(true)
+    h.send({ type: 'NODES.SYNC', values: ['a', 'a', 'b'] })
+    expect(h.api().empty).toBe(false)
+    h.send({ type: 'NODES.SYNC', values: [] })
+    expect(h.api().empty).toBe(true)
+  })
+})
+
+describe('tree-select 真实退场资源', () => {
+  it('逻辑关闭立即失活，Layer 与焦点域等 Presence 完成才释放；中途重开复用原登记', async () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange }, { withPresence: true })
+    const presence = h.presence!
+    h.send({ type: 'OPEN', focus: 'selected' })
+    const original = h.config.layerRegistry.list()[0]
+    expect(original).toBeDefined()
+    await settle()
+    expect(document.activeElement).toBe(h.treeEl)
+
+    const leases: ExitLease[] = []
+    const stopExit = presence.onBeforeExit(() => {
+      leases.push(presence.claimExit(`tree-select exit ${leases.length + 1}`))
+    })
+    h.send({ type: 'CLOSE' })
+    const closing = h.api().getContentProps() as Record<string, unknown>
+    expect(closing.inert).toBe(true)
+    expect(closing['aria-hidden']).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+    presence.update(false)
+    expect(leases).toHaveLength(1)
+    onOpenChange.mockClear()
+    press(document.body, 'Escape')
+    expect(onOpenChange).not.toHaveBeenCalled()
+
+    h.send({ type: 'OPEN', focus: 'selected' })
+    expect(leases[0]!.settled).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+    await settle()
+    expect(document.activeElement).toBe(h.treeEl)
+
+    h.send({ type: 'CLOSE' })
+    presence.update(false)
+    expect(leases).toHaveLength(2)
+    leases[1]!.done()
+    expect(h.config.layerRegistry.list()).toHaveLength(0)
+
+    stopExit()
+    presence.dispose()
+  })
+})
+
+describe('浮层的层与消解', () => {
+  it('escape 收起且把关闭原因报成 esc', async () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange })
+    h.trigger.focus()
+    click(h.trigger)
+    await settle()
+    await tick()
+    press(active(), 'Escape')
+    expect(h.state()).toBe('closed')
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'esc' })
+  })
+
+  it('层外按下指针收起且把关闭原因报成 interact-outside', async () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange })
+    h.trigger.focus()
+    click(h.trigger)
+    await settle()
+    await tick()
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true }))
+    expect(h.state()).toBe('closed')
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'interact-outside' })
+    expect(h.returnFocus()).toBe(false)
+  })
+
+  it('收起之后这一层不再吃 Escape', async () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange })
+    h.trigger.focus()
+    click(h.trigger)
+    await settle()
+    await tick()
+    h.api().setOpen(false)
+    onOpenChange.mockClear()
+    press(document.body, 'Escape')
+    expect(onOpenChange).not.toHaveBeenCalled()
+  })
+
+  it('逆序拆：先撤焦点域与消解层的订阅，最后才把层移出栈', async () => {
+    const order: string[] = []
+    const h = mount({}, { onLayerDispose: () => order.push('layer') })
+    h.trigger.focus()
+    click(h.trigger)
+    await settle()
+    await tick()
+    const remove = document.removeEventListener.bind(document)
+    const spy = vi.spyOn(document, 'removeEventListener').mockImplementation(((type: string, listener: EventListener, opts?: boolean | EventListenerOptions) => {
+      // focusout 只有焦点域摘、pointerdown 只有消解层摘，拿它们当各自的拆除标记
+      if (type === 'focusout')
+        order.push('focus-scope')
+      if (type === 'pointerdown')
+        order.push('dismiss')
+      remove(type, listener, opts)
+    }) as typeof document.removeEventListener)
+    h.api().setOpen(false)
+    spy.mockRestore()
+    expect(order).toEqual(['focus-scope', 'dismiss', 'layer'])
   })
 })

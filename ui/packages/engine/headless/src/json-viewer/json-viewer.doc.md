@@ -17,6 +17,7 @@
 ## 特性
 
 - 行结构由 `value` 摊出来，作者不写任何行标记：Vue 与自定义元素两侧铺出同一棵 DOM，根容器里原有的内容由组件接管。
+- 自定义渲染器可调用 `groupJsonViewerNodesByParent(nodes)` 把可见行按父路径分组；返回值保留父路径首次出现顺序、组内输入顺序与节点身份。
 - 不给 `value` 就是空视图，一行也不摊；对象内部真有一个值为 `undefined` 的成员时，那一行照常摊出来。
 - 展开集合可受控（`expandedValue` / `defaultExpandedValue`），不受控时按 `defaultExpandedDepth` 现算：数据晚于组件挂载才到（自定义元素常是先升级、再由脚本写 `.value`）也照样算得上，第一次展开或收起之后就固定下来，不再跟着数据走。
 - `maxStringLength` 截长字符串，`maxItems` 折超长数组，`sortKeys` 让对象键按字典序排。

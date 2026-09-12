@@ -3,7 +3,7 @@ import type { Service } from '@xihan-ui/core'
 import type { TruncateApi, TruncateSchema } from '../src/truncate'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
 import { connectTruncate, isTruncateOverflowing, resolveTruncateLines, truncateMachine } from '../src/truncate'
 
@@ -70,6 +70,7 @@ interface Rig {
   api: () => TruncateApi
   rootProps: () => Dict
   setProps: (next: Props) => void
+  stop: () => void
   /** 改尺寸并逼观察器重量一次。 */
   resize: (box: Box) => void
 }
@@ -112,6 +113,7 @@ function makeRig(initial: Props = {}, box: Box = { sw: 400, cw: 100, sh: 100, ch
     api,
     rootProps: () => api().getRootProps() as Dict,
     setProps: next => props.set({ ...props.get(), ...next }),
+    stop: () => runtime.stop(),
     // 无布局环境没有 ResizeObserver，改完尺寸只能靠内容变动把量测拉起来
     resize: (next) => {
       stubBox(root, next)
@@ -164,6 +166,47 @@ describe('truncate 量测', () => {
     rig.setProps({ lines: 1 })
     await settle()
     expect(rig.api().overflowing).toBe(false)
+  })
+
+  it('字体加载完成后重量，并在卸载时清理所属 Document 监听', async () => {
+    let resolveReady: (() => void) | undefined
+    const ready = new Promise<void>((resolve) => {
+      resolveReady = resolve
+    })
+    const fonts = new EventTarget() as EventTarget & { ready: Promise<void> }
+    Object.defineProperty(fonts, 'ready', { value: ready })
+    const add = vi.spyOn(fonts, 'addEventListener')
+    const remove = vi.spyOn(fonts, 'removeEventListener')
+    const previous = Object.getOwnPropertyDescriptor(document, 'fonts')
+    Object.defineProperty(document, 'fonts', { configurable: true, value: fonts })
+    stops.push(() => {
+      if (previous)
+        Object.defineProperty(document, 'fonts', previous)
+      else
+        Reflect.deleteProperty(document, 'fonts')
+    })
+
+    const seen: boolean[] = []
+    const rig = makeRig({ onOverflowChange: d => seen.push(d.overflowing) })
+    await settle()
+    expect(rig.api().overflowing).toBe(true)
+    expect(add).toHaveBeenCalledWith('loadingdone', expect.any(Function))
+    expect(add).toHaveBeenCalledWith('loadingerror', expect.any(Function))
+
+    stubBox(rig.root, { sw: 100, cw: 100, sh: 100, ch: 100 })
+    resolveReady!()
+    await settle()
+    expect(rig.api().overflowing).toBe(false)
+
+    stubBox(rig.root, { sw: 400, cw: 100, sh: 100, ch: 100 })
+    fonts.dispatchEvent(new Event('loadingdone'))
+    await settle()
+    expect(rig.api().overflowing).toBe(true)
+    expect(seen).toEqual([true, false, true])
+
+    rig.stop()
+    expect(remove).toHaveBeenCalledWith('loadingdone', expect.any(Function))
+    expect(remove).toHaveBeenCalledWith('loadingerror', expect.any(Function))
   })
 })
 

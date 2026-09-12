@@ -1,5 +1,5 @@
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { PopconfirmApi, PopconfirmIntents, PopconfirmNotifiers, PopconfirmOverlayProps, PopoverSchema } from '@xihan-ui/headless'
+import type { PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmIntents, PopconfirmNotifiers, PopconfirmOverlayProps, PopoverSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectPopconfirm, popoverMachine } from '@xihan-ui/headless'
@@ -34,6 +34,9 @@ export function usePopconfirm(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
+  // ref 同步写入：thenable 被识别的同一拍里，机器就要开始拒绝 Escape 与层外交互关闭。
+  const pending = ref(false)
+  const actionError = ref<PopconfirmConfirmErrorDetails | null>(null)
 
   // 开合、定位、消解层与焦点域全交给 popover 机器；气泡确认只多出确认/取消两个意图，
   // 它们不改开合以外的状态，走 connect 不进机器。
@@ -43,8 +46,8 @@ export function usePopconfirm(
     defaultOpen: props.defaultOpen,
     placement: props.placement,
     offset: props.offset,
-    closeOnEscape: props.closeOnEscape,
-    closeOnInteractOutside: props.closeOnInteractOutside,
+    closeOnEscape: pending.value ? false : props.closeOnEscape,
+    closeOnInteractOutside: pending.value ? false : props.closeOnInteractOutside,
     size: props.size,
     onOpenChange: notify?.onOpenChange,
   }), scope)
@@ -62,7 +65,6 @@ export function usePopconfirm(
       // trigger 记为本层分支，点它算层内交互
       branches: () => [triggerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
 
@@ -75,12 +77,10 @@ export function usePopconfirm(
     service.refs.set('getContentEl', () => contentRef.value)
   }
 
-  // 异步确认的挂起布尔住在这儿，connect 只发变化意图
-  const pending = ref(false)
-
   // 每次点击现读 notify，宿主换回调也立刻生效；onConfirm 的返回值原样透传，异步门靠它
   const intents: PopconfirmIntents = {
     onConfirm: () => notify?.onConfirm?.(),
+    onConfirmError: details => notify?.onConfirmError?.(details),
     onCancel: () => { notify?.onCancel?.() },
     get pending() {
       return pending.value
@@ -88,11 +88,22 @@ export function usePopconfirm(
     onPendingChange: (next) => {
       pending.value = next
     },
+    get actionError() {
+      return actionError.value
+    },
+    onActionErrorChange: (next) => {
+      actionError.value = next
+    },
   }
 
   const api = computed(() => connectPopconfirm(service, intents, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
-  const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+  const visible = useOverlayExit({
+    config,
+    isOpen: () => api.value.open,
+    contentRef,
+    onPresence: presence => service.refs.set('presence', presence),
+  })
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 

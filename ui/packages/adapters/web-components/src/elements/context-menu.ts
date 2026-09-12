@@ -1,14 +1,16 @@
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { ContextMenuItemProps, ContextMenuNode, ContextMenuOpenChangeDetails, ContextMenuSchema, ContextMenuSelectDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
+import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectContextMenu, contextMenuAnatomy, contextMenuMachine, contextMenuMeta } from '@xihan-ui/headless'
+import { connectContextMenu, contextMenuAnatomy, contextMenuMachine, contextMenuMeta, createMenuTreeNode } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
+import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -54,7 +56,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
  * @csspart arrow - 指向锚点的箭头（aria-hidden，data-placement 随实际放置位翻转）
  */
-export class XhContextMenuElement extends XhElement {
+export class XhContextMenuElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: contextMenuAnatomy, meta: contextMenuMeta }
 
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
@@ -91,11 +96,38 @@ export class XhContextMenuElement extends XhElement {
   declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly menuScope = createScope(null, this.idGen)
+  private readonly menuScope = createScope(this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  /** 子菜单 trigger 的 WC 属性铺设桥；逻辑树由 headless 节点维护。 */
+  private readonly submenuBridges = new Map<HTMLElement, MenuSubmenuChild>()
+
+  private readonly menuTree = createMenuTreeNode({
+    getPositioner: () => this.getPart('positioner'),
+    isOpen: () => this.ctrl.service.state.get() === 'open',
+    close: () => this.ctrl.service.send({ type: 'CLOSE' }),
+    isRoot: () => true,
+    onRootSelect: details => this.notifySelect(details),
+  })
+
+  private readonly submenuOwner: MenuSubmenuOwner = {
+    tree: this.menuTree,
+    registerSubmenu: child => this.registerSubmenu(child),
+  }
+
+  private readonly portal = this.createAnchoredPortalController({
+    name: 'ContextMenu',
+    config: () => this.config,
+    source: () => this.getPart('trigger'),
+    root: () => this.getPart('positioner'),
+    onShellReady: (shell) => {
+      setMenuSubmenuOwner(shell, this.submenuOwner)
+      return () => setMenuSubmenuOwner(shell, null)
+    },
+    onChange: () => this.requestUpdate(),
+  })
 
   private readonly notifyOpen = (details: ContextMenuOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
@@ -103,6 +135,52 @@ export class XhContextMenuElement extends XhElement {
 
   private readonly notifySelect = (details: ContextMenuSelectDetails): void => {
     this.dispatchEvent(new CustomEvent('select', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private wireSubmenuChild(child: MenuSubmenuChild): void {
+    const api = connectContextMenu(this.ctrl.service, wcNormalize)
+    this.spreader.spread(child.trigger, api.getItemProps({
+      value: child.trigger.getAttribute('value') ?? '',
+      disabled: child.getDisabled(),
+    }) as Record<string, unknown>)
+  }
+
+  private registerSubmenu(child: MenuSubmenuChild): MenuSubmenuRegistration {
+    if (this.submenuBridges.has(child.trigger))
+      throw new Error('[xh] 同一 ContextMenu 的同一子菜单 trigger 只能登记一次')
+    const releaseTree = this.menuTree.registerChild(child.tree)
+    this.submenuBridges.set(child.trigger, child)
+    try {
+      this.wireSubmenuChild(child)
+    }
+    catch (error) {
+      this.submenuBridges.delete(child.trigger)
+      releaseTree()
+      throw error
+    }
+    this.requestUpdate()
+    let active = true
+    const assertCurrent = (): void => {
+      if (!active || this.submenuBridges.get(child.trigger) !== child)
+        throw new Error('[xh] ContextMenu 子菜单逻辑所有权已经释放')
+    }
+    return {
+      sync: () => {
+        assertCurrent()
+        this.wireSubmenuChild(child)
+      },
+      dispose: () => {
+        if (!active)
+          return
+        active = false
+        releaseTree()
+        if (this.submenuBridges.get(child.trigger) !== child)
+          return
+        this.submenuBridges.delete(child.trigger)
+        this.spreader.release(child.trigger)
+        this.requestUpdate()
+      },
+    }
   }
 
   private readonly ctrl = new MachineController<ContextMenuSchema>(
@@ -146,6 +224,10 @@ export class XhContextMenuElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.menuScope, idGenerator: this.idGen })
   }
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
+  }
+
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
   // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
@@ -158,7 +240,6 @@ export class XhContextMenuElement extends XhElement {
       // 浮层壳一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
       branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 右键菜单不带遮罩，没有"点它就该关本层"的表面
       surfaces: () => [],
     })
@@ -167,8 +248,14 @@ export class XhContextMenuElement extends XhElement {
   // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
   private injectRefs(svc: Service<ContextMenuSchema>): void {
     this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: (this.open ?? this.defaultOpen) ?? false,
+      onExitComplete: () => this.requestUpdate(),
+    })
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.exit.presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     // 触发区兼作两用：收起时焦点归还它，没有光标坐标时它的起始角就是锚点
@@ -183,6 +270,7 @@ export class XhContextMenuElement extends XhElement {
    * 定位是 flush 推迟的（那时 partMap 已就位），这里只为锚点补上时机。
    */
   override connectedCallback(): void {
+    setMenuSubmenuOwner(this, this.submenuOwner)
     this.refreshParts()
     super.connectedCallback()
   }
@@ -251,6 +339,8 @@ export class XhContextMenuElement extends XhElement {
       for (const description of this.partsIn(el, 'item-description'))
         this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
     }
+    for (const child of this.submenuBridges.values())
+      this.wireSubmenuChild(child)
 
     // 分隔线也是多实例 part，但不带身份、不入导航，属性对每个都一样
     for (const el of this.getParts('separator'))
@@ -274,9 +364,12 @@ export class XhContextMenuElement extends XhElement {
     this.setPartHidden(content, !this.exit.visible)
 
     this.bars.wire()
+    this.portal.sync(this.exit.visible)
   }
 
   override disconnectedCallback(): void {
+    setMenuSubmenuOwner(this, null)
+    this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()

@@ -50,7 +50,9 @@
      不套这一层时下面那几条照旧生效，两种写法都成立 */
   [data-scope='alert'][data-part='content'] {
     display: flex;
-    flex: 1 1 auto;
+    /* 伸缩基准取 0 而不是 auto：取 auto 时基准是这一列的 max-content——
+       一段长说明就能把基准撑到比整行还宽，root 那条换行随即把图标、文本列、叉拆成三行 */
+    flex: 1 1 0;
     flex-direction: column;
     gap: var(--xh-alert-content-gap, var(--xh-space-1));
     min-inline-size: 0;

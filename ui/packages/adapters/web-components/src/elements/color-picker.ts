@@ -1,20 +1,25 @@
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type {
   ColorPickerChannel,
+  ColorPickerErrorDetails,
+  ColorPickerErrors,
   ColorPickerFormat,
   ColorPickerOpenChangeDetails,
   ColorPickerSchema,
+  ColorPickerServices,
   ColorPickerTranslations,
   ColorPickerValueChangeDetails,
+  FormControlState,
+  SliderSchema,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { colorPickerAnatomy, colorPickerMachine, colorPickerMeta, colorPickerToChannel, colorPickerToInputChannel, connectColorPicker } from '@xihan-ui/headless'
+import { colorPickerAnatomy, colorPickerChannelSliderProps, colorPickerMachine, colorPickerMeta, colorPickerToChannel, colorPickerToInputChannel, connectColorPicker, resolveFormControlState, sliderMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -62,6 +67,7 @@ const STRING_LIST_CONVERTER = {
  * @attr {string} name - 表单字段名；给了 hidden-input 才带 name 并参与提交
  * @fires value-change - 颜色变化；detail 为 `{ value: string }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires color-error - 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly）
  * @csspart label - 组标题（触发器 aria-labelledby 的目标之一）
  * @csspart control - 触发按钮的收纳容器：描边、底色与聚焦环都落在这一层
@@ -81,7 +87,10 @@ const STRING_LIST_CONVERTER = {
  * @csspart swatch-item - 预设色板一格，须是原生 button 且自带 value 属性
  * @csspart hidden-input - type=hidden 的表单出口，值是当前颜色串；作者不写这个部件就不参与提交
  */
-export class XhColorPickerElement extends XhElement {
+export class XhColorPickerElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: colorPickerAnatomy, meta: colorPickerMeta }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
@@ -122,11 +131,18 @@ export class XhColorPickerElement extends XhElement {
   declare translations?: Partial<ColorPickerTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly pickerScope = createScope(null, this.idGen)
+  private readonly pickerScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = this.createAnchoredPortalController({
+    name: 'ColorPicker',
+    config: () => this.config,
+    source: () => this.getPart('trigger'),
+    root: () => this.getPart('positioner'),
+    onChange: () => this.requestUpdate(),
+  })
 
   private readonly notifyValue = (details: ColorPickerValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -136,6 +152,10 @@ export class XhColorPickerElement extends XhElement {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
   }
 
+  private readonly notifyColorError = (details: ColorPickerErrorDetails): void => {
+    this.dispatchEvent(new CustomEvent('color-error', { detail: details, bubbles: true, composed: true }))
+  }
+
   private readonly ctrl = new MachineController<ColorPickerSchema>(
     this,
     colorPickerMachine,
@@ -143,21 +163,53 @@ export class XhColorPickerElement extends XhElement {
     { scope: this.pickerScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  // 两条通道各自一台滑杆：区间与当下的值从取色器现读，推动经 CHANNEL.SET 送回去。
+  // 三台共用一份 scope，part id 里带组件名区分，不会撞
+  private readonly hueCtrl = new MachineController<SliderSchema>(
+    this,
+    sliderMachine,
+    () => colorPickerChannelSliderProps(this.ctrl.service, 'hue'),
+    { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.channelTrack('hue')) },
+  )
+
+  private readonly alphaCtrl = new MachineController<SliderSchema>(
+    this,
+    sliderMachine,
+    () => colorPickerChannelSliderProps(this.ctrl.service, 'alpha'),
+    { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.channelTrack('alpha')) },
+  )
+
+  /** 连接层要的整份服务表。 */
+  private services(): ColorPickerServices {
+    return { root: this.ctrl.service, hueSlider: this.hueCtrl.service, alphaSlider: this.alphaCtrl.service }
+  }
+
   /** 面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
   })
 
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
   private machineProps(): Partial<ColorPickerSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
       format: this.format,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
       alpha: this.alpha ?? false,
       swatches: this.swatches,
       name: this.name,
@@ -168,6 +220,7 @@ export class XhColorPickerElement extends XhElement {
       translations: this.translations,
       onValueChange: this.notifyValue,
       onOpenChange: this.notifyOpen,
+      onColorError: this.notifyColorError,
     }
   }
 
@@ -175,6 +228,10 @@ export class XhColorPickerElement extends XhElement {
     if (this.config)
       return
     this.config = createRuntimeConfig({ scope: this.pickerScope, idGenerator: this.idGen })
+  }
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
   }
 
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
@@ -187,7 +244,6 @@ export class XhColorPickerElement extends XhElement {
       // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
       branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 浮层不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })
@@ -205,14 +261,19 @@ export class XhColorPickerElement extends XhElement {
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入；节点一律懒读，建机器时 partMap 还空着。
   private injectRefs(svc: Service<ColorPickerSchema>): void {
     this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: (this.open ?? this.defaultOpen) ?? false,
+      onExitComplete: () => this.requestUpdate(),
+    })
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.exit.presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
     svc.refs.set('getAreaEl', () => this.getPart('saturation-area'))
-    svc.refs.set('getChannelTrackEl', channel => this.channelTrack(channel))
   }
 
   /** 提前发现一次角色节点，让 default-open 时机器在 hostConnected 里就取得到 content。 */
@@ -225,7 +286,7 @@ export class XhColorPickerElement extends XhElement {
    * 命令式入口共用的取法；机器要到进文档（hostConnected）才建，还没建时给 null，调用方退回空操作。
    */
   private api(): ReturnType<typeof connectColorPicker> | null {
-    return this.ctrl.service ? connectColorPicker(this.ctrl.service, wcNormalize) : null
+    return this.ctrl.service ? connectColorPicker(this.services(), wcNormalize) : null
   }
 
   /**
@@ -234,6 +295,16 @@ export class XhColorPickerElement extends XhElement {
    */
   setValue(next: string): void {
     this.api()?.setValue(next)
+  }
+
+  /** 格式、输入、颜色解析与屏幕取色四路错误；机器未建立时均为空。 */
+  get errors(): ColorPickerErrors {
+    return this.api()?.errors ?? { format: null, input: null, parse: null, eyeDropper: null }
+  }
+
+  /** 清掉四路显式错误；屏幕取色重试也会自动先清它自己那一路。 */
+  clearError(): void {
+    this.api()?.clearError()
   }
 
   /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（读到的会是自己写的字）。 */
@@ -256,7 +327,7 @@ export class XhColorPickerElement extends XhElement {
   }
 
   protected wire(): void {
-    const api = connectColorPicker(this.ctrl.service, wcNormalize)
+    const api = connectColorPicker(this.services(), wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)
@@ -306,7 +377,7 @@ export class XhColorPickerElement extends XhElement {
 
     // Light DOM 常驻，WC 自管可见性：作者层若给 content 声明了 display，
     // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。
-    // 本包的样式自带 [hidden]{display:none} 压得住，但宿主不能指望作者装了这份样式
+    // 可见性统一由 presence 驱动，不依赖作者是否引入默认皮肤。
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     this.ensureConfig()
@@ -320,9 +391,11 @@ export class XhColorPickerElement extends XhElement {
     this.setPartHidden(this.getPart('content'), !this.exit.visible)
 
     this.bars.wire()
+    this.portal.sync(this.exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()

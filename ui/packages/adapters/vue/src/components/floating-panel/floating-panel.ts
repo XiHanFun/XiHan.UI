@@ -8,8 +8,9 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, mergeProps, Teleport } from 'vue'
+import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { XhPortal } from '../../runtime/portal'
 import { provideFloatingPanel, useFloatingPanelContext } from './context'
 import { useFloatingPanel } from './use-floating-panel'
 
@@ -24,23 +25,23 @@ export type FloatingPanelRootSlotProps = Pick<
 
 export const XhFloatingPanelRoot = defineComponent({
   name: 'XhFloatingPanelRoot',
-  // 全部 default: undefined，缺省值由 connect 与机器决定
+  // 缺省值由 connect 与机器决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     open: { type: Boolean, default: undefined },
     defaultOpen: { type: Boolean, default: undefined },
-    position: { type: Object as PropType<FloatingPanelPosition>, default: undefined },
-    defaultPosition: { type: Object as PropType<FloatingPanelPosition>, default: undefined },
-    dimensions: { type: Object as PropType<FloatingPanelSize>, default: undefined },
-    defaultDimensions: { type: Object as PropType<FloatingPanelSize>, default: undefined },
-    minSize: { type: Object as PropType<FloatingPanelSize>, default: undefined },
-    maxSize: { type: Object as PropType<FloatingPanelSize>, default: undefined },
-    windowState: { type: String as PropType<FloatingPanelWindowState>, default: undefined },
-    defaultWindowState: { type: String as PropType<FloatingPanelWindowState>, default: undefined },
+    position: { type: Object as PropType<FloatingPanelPosition> },
+    defaultPosition: { type: Object as PropType<FloatingPanelPosition> },
+    dimensions: { type: Object as PropType<FloatingPanelSize> },
+    defaultDimensions: { type: Object as PropType<FloatingPanelSize> },
+    minSize: { type: Object as PropType<FloatingPanelSize> },
+    maxSize: { type: Object as PropType<FloatingPanelSize> },
+    windowState: { type: String as PropType<FloatingPanelWindowState> },
+    defaultWindowState: { type: String as PropType<FloatingPanelWindowState> },
     // 缺省为真的两个开关：写成裸 Boolean 会被 Vue 的布尔 casting 永久关死
     draggable: { type: Boolean, default: undefined },
     resizable: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<FloatingPanelProps['translations']>, default: undefined },
+    translations: { type: Object as PropType<FloatingPanelProps['translations']> },
   },
   // 语义事件收整个 details，update: 收裸值
   emits: {
@@ -104,12 +105,16 @@ export const XhFloatingPanelTrigger = defineComponent({
 
 export const XhFloatingPanelPositioner = defineComponent({
   name: 'XhFloatingPanelPositioner',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useFloatingPanelContext()
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
       h(
         'div',
         {

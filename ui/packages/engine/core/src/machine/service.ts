@@ -1,12 +1,15 @@
 import type {
+  ActionFn,
   ActionsOrFn,
   Bindable,
   ComputedFn,
   ContextFacade,
   Dep,
+  EffectFn,
   EffectsOrFn,
   EventObject,
   GuardExpr,
+  GuardFn,
   MachineConfig,
   MachineSchema,
   MachineStatus,
@@ -21,8 +24,9 @@ import type {
 } from './types'
 // 解释器：把 machine 定义与注入的响应式宿主组合成可运行的 service。
 // 事件走同步 FIFO 队列 + run-to-completion，转移走六阶段编排。
-import { callAll, createCounterIdGenerator, createScope, isDev } from '../kernel'
-import { MachineError, raiseMachineError, reportMachineCrash } from './errors'
+import { createCounterIdGenerator, createScope, isDev } from '../kernel'
+import { MachineError, raiseMachineError, reportMachineCrash, throwMachineError } from './errors'
+import { getOwnCallableImplementation } from './implementation'
 import {
   choose,
   findTransition,
@@ -32,13 +36,33 @@ import {
   resolveToLeaf,
 } from './transitions'
 
-const INIT_STATE = '__init__'
 const EVENT_LOOP_LIMIT = 1e4
+const NO_STOP_REASON = Symbol('no-stop-reason')
+const ROOT_EFFECT_PATH = Symbol('root-effect-path')
 
 interface Tracker {
   deps: Dep[]
   fn: () => void
   last: unknown[]
+}
+
+interface EffectDisposer {
+  dispose: () => unknown[]
+}
+
+type EffectPath = string | typeof ROOT_EFFECT_PATH
+
+type CollectedError
+  = | { found: false }
+    | { found: true, error: unknown }
+
+function describeThrown(error: unknown): string {
+  try {
+    return error instanceof Error ? error.message : String(error)
+  }
+  catch {
+    return '<无法格式化的异常>'
+  }
 }
 
 export function createService<T extends MachineSchema>(
@@ -117,11 +141,10 @@ export function createService<T extends MachineSchema>(
   function evalGuard(expr: GuardExpr<T>, event: T['event']): boolean {
     if (typeof expr === 'function')
       return expr(paramsFor(event))
-    const impl = machine.implementations?.guards?.[expr as Slice<T, 'guard'> & string]
-    if (!impl) {
+    const guards = machine.implementations?.guards
+    const impl = getOwnCallableImplementation(guards, expr) as GuardFn<T> | undefined
+    if (!impl)
       failClosed('MISSING_GUARD', expr)
-      return false
-    }
     return impl(paramsFor(event))
   }
   function guardOfTransition(t: Transition<T>, event: T['event']): boolean {
@@ -137,19 +160,30 @@ export function createService<T extends MachineSchema>(
   }
 
   function runActions(spec: ActionsOrFn<T> | undefined, event: T['event']): void {
-    for (const name of resolveList(spec, event)) {
-      const impl = machine.implementations?.actions?.[name as Slice<T, 'action'> & string]
-      if (!impl) {
+    const implementations = resolveList(spec, event).map((name) => {
+      const actions = machine.implementations?.actions
+      const impl = getOwnCallableImplementation(actions, name) as ActionFn<T> | undefined
+      if (!impl)
         failClosed('MISSING_ACTION', name)
-        continue
-      }
+      return impl
+    })
+    for (const impl of implementations)
       impl(paramsFor(event))
-    }
   }
 
-  function failClosed(code: 'MISSING_ACTION' | 'MISSING_GUARD' | 'MISSING_EFFECT', name: string): void {
-    raiseMachineError(code, `"${name}" is not registered in implementations`, machine.name)
-    inspect?.({ type: 'event', machineName: machine.name, state: currentState as T['state'], detail: `unhandled: ${name}` })
+  function failClosed(code: 'MISSING_ACTION' | 'MISSING_GUARD' | 'MISSING_EFFECT', name: string): never {
+    try {
+      throwMachineError(code, `"${name}" is not registered as an own callable implementation`, machine.name)
+    }
+    catch (error) {
+      try {
+        inspect?.({ type: 'event', machineName: machine.name, state: currentState as T['state'], detail: `unhandled: ${name}` })
+      }
+      catch {}
+      if (status === 'Started')
+        stopMissingImplementationFailure(error)
+      throw error
+    }
   }
 
   // —— Params 组装（event 门面按传入事件冻结）——
@@ -176,71 +210,173 @@ export function createService<T extends MachineSchema>(
   }
 
   // —— effect 表 ——
-  const effects = new Map<string, VoidFunction>()
-  function mountEffects(path: string, spec: EffectsOrFn<T> | undefined): void {
-    const cleanups: VoidFunction[] = []
-    for (const name of resolveList(spec, currentEvent)) {
-      const impl = machine.implementations?.effects?.[name as Slice<T, 'effect'> & string]
-      if (!impl) {
-        failClosed('MISSING_EFFECT', name)
-        continue
+  const effects = new Map<EffectPath, EffectDisposer>()
+
+  function drainEffectCleanups(cleanups: VoidFunction[]): unknown[] {
+    const errors: unknown[] = []
+    while (cleanups.length) {
+      try {
+        cleanups.pop()!()
       }
-      const cleanup = impl(paramsFor(currentEvent))
-      if (typeof cleanup === 'function')
-        cleanups.push(cleanup)
+      catch (error) {
+        errors.push(error)
+      }
     }
-    if (cleanups.length) {
-      const prev = effects.get(path)
-      effects.set(path, callAll(prev, ...cleanups) as VoidFunction)
-    }
+    return errors
   }
-  function teardownAllEffects(): void {
-    for (const cleanup of effects.values()) cleanup()
+
+  function collectedError(errors: unknown[], message: string): CollectedError {
+    if (errors.length === 1)
+      return { found: true, error: errors[0] }
+    if (errors.length > 1)
+      return { found: true, error: new AggregateError(errors, message, { cause: errors[0] }) }
+    return { found: false }
+  }
+
+  function throwCollectedErrors(errors: unknown[], message: string): void {
+    const result = collectedError(errors, message)
+    if (result.found)
+      throw result.error
+  }
+
+  function rollbackEffectBatch(cleanups: VoidFunction[], setupError: unknown): never {
+    const rollbackErrors = drainEffectCleanups(cleanups)
+    if (!rollbackErrors.length)
+      throw setupError
+    throw new AggregateError(
+      [setupError, ...rollbackErrors],
+      '[xh] 状态机 effect 初始化与回滚同时失败',
+      { cause: setupError },
+    )
+  }
+
+  function mountEffects(path: EffectPath, spec: EffectsOrFn<T> | undefined): boolean {
+    if (effects.has(path)) {
+      const pathLabel = path === ROOT_EFFECT_PATH ? '<machine-root>' : path
+      throw new MachineError(
+        'DUPLICATE_EFFECT_PATH',
+        `effect path "${pathLabel}" is already mounted`,
+        machine.name,
+      )
+    }
+    const cleanups: VoidFunction[] = []
+    const effect: EffectDisposer = {
+      dispose: () => drainEffectCleanups(cleanups),
+    }
+    effects.set(path, effect)
+
+    let names: string[] = []
+    try {
+      names = resolveList(spec, currentEvent)
+      const implementations = names.map((name) => {
+        const effectImplementations = machine.implementations?.effects
+        const impl = getOwnCallableImplementation(effectImplementations, name) as EffectFn<T> | undefined
+        if (!impl)
+          failClosed('MISSING_EFFECT', name)
+        return impl
+      })
+      for (const impl of implementations) {
+        if (status === 'Stopped' || effects.get(path) !== effect)
+          break
+        const cleanup = impl(paramsFor(currentEvent))
+        if (typeof cleanup === 'function')
+          cleanups.push(cleanup)
+      }
+    }
+    catch (setupError) {
+      if (effects.get(path) === effect)
+        effects.delete(path)
+      rollbackEffectBatch(cleanups, setupError)
+    }
+
+    if (status === 'Stopped' || effects.get(path) !== effect) {
+      if (effects.get(path) === effect)
+        effects.delete(path)
+      throwCollectedErrors(effect.dispose(), '[xh] 状态机 effect 挂载中断期间清理出现多个异常')
+      return false
+    }
+
+    if (!names.length && effects.get(path) === effect)
+      effects.delete(path)
+    return true
+  }
+
+  function disposeMountedEffect(path: string): void {
+    const effect = effects.get(path)
+    effects.delete(path)
+    if (effect)
+      throwCollectedErrors(effect.dispose(), '[xh] 状态机 effect 清理出现多个异常')
+  }
+
+  function teardownAllEffects(): unknown[] {
+    const mounted = [...effects.values()].reverse()
     effects.clear()
+    return mounted.flatMap(effect => effect.dispose())
   }
 
   // —— 六阶段编排 ——
-  function choreograph(from: string, to: string, t: Transition<T>): void {
-    const { exiting, entering } = getExitEnterStates(machine, from, to, t.reenter)
+  function choreograph(from: string | null, to: string, t: Transition<T>): void {
+    const initializing = from === null
+    const { exiting, entering } = initializing
+      ? { exiting: [], entering: getStateChain(machine, to) }
+      : getExitEnterStates(machine, from, to, t.reenter)
     try {
-      for (const item of exiting) {
-        const cleanup = effects.get(item.path)
-        if (cleanup)
-          cleanup()
-        effects.delete(item.path)
-      }
+      for (const item of exiting)
+        disposeMountedEffect(item.path)
       for (const item of exiting) runActions(item.node.exit, currentEvent)
       runActions(t.actions, currentEvent)
-      for (const item of entering) mountEffects(item.path, item.node.effects)
-      if (from === INIT_STATE) {
-        runActions(machine.entry, currentEvent)
-        mountEffects(INIT_STATE, machine.effects)
+      for (const item of entering) {
+        if (!mountEffects(item.path, item.node.effects))
+          return
       }
-      for (const item of entering) runActions(item.node.entry, currentEvent)
-      previousState = from === INIT_STATE ? undefined : (from as T['state'])
+      if (initializing) {
+        runActions(machine.entry, currentEvent)
+        if (status === 'Stopped' || !mountEffects(ROOT_EFFECT_PATH, machine.effects))
+          return
+      }
+      for (const item of entering) {
+        runActions(item.node.entry, currentEvent)
+        if (status === 'Stopped')
+          return
+      }
+      previousState = initializing ? undefined : (from as T['state'])
       currentState = to
       stateCell.set(to)
     }
     catch (err) {
-      stop(new MachineError('MACHINE_CRASHED', `choreograph ${from}→${to} threw: ${(err as Error).message}`, machine.name))
+      if (hasMissingImplementationFailure(err))
+        stopMissingImplementationFailure(err)
+      stop(new MachineError(
+        'MACHINE_CRASHED',
+        `choreograph ${initializing ? '<initial>' : from}→${to} threw: ${describeThrown(err)}`,
+        machine.name,
+        { cause: err },
+      ))
     }
   }
 
   // —— 转移解析 ——
   function transition(event: T['event']): void {
-    const from = currentState
-    const { transitions, source } = findTransition(machine, from, event.type)
-    const chosen = choose(transitions, t => guardOfTransition(t, event))
-    if (!chosen)
-      return
-    previousEvent = currentEvent
-    currentEvent = event
-    if (chosen.target === undefined && !chosen.reenter) {
-      runActions(chosen.actions, event)
-      return
+    try {
+      const from = currentState
+      const { transitions, source } = findTransition(machine, from, event.type)
+      const chosen = choose(transitions, t => guardOfTransition(t, event))
+      if (!chosen)
+        return
+      previousEvent = currentEvent
+      currentEvent = event
+      if (chosen.target === undefined && !chosen.reenter) {
+        runActions(chosen.actions, event)
+        return
+      }
+      const to = resolveStateValue(machine, chosen.target ?? from, source)
+      choreograph(from, to, chosen)
     }
-    const to = resolveStateValue(machine, chosen.target ?? from, source)
-    choreograph(from, to, chosen)
+    catch (error) {
+      if (hasMissingImplementationFailure(error))
+        stopMissingImplementationFailure(error)
+      throw error
+    }
   }
 
   // —— 事件队列 ——
@@ -288,25 +424,34 @@ export function createService<T extends MachineSchema>(
     runtime.track(deps, () => enqueueTracker(tracker))
   }
   function enqueueTracker(tracker: Tracker): void {
+    if (status === 'Stopped')
+      return
     pendingTrackers.add(tracker)
     // 挂载前不冲刷，累积到 onMount 的 resync + drain 里统一消费
     if (!draining && status === 'Started')
       drainTrackers()
   }
   function drainTrackers(): void {
-    if (!pendingTrackers.size)
-      return
-    const batch = [...pendingTrackers]
-    pendingTrackers.clear()
-    for (const tracker of batch) {
-      const next = tracker.deps.map(d => d())
-      const changed = next.some((v, i) => !Object.is(v, tracker.last[i]))
-      tracker.last = next
-      if (changed)
-        tracker.fn()
+    try {
+      if (!pendingTrackers.size)
+        return
+      const batch = [...pendingTrackers]
+      pendingTrackers.clear()
+      for (const tracker of batch) {
+        const next = tracker.deps.map(d => d())
+        const changed = next.some((v, i) => !Object.is(v, tracker.last[i]))
+        tracker.last = next
+        if (changed)
+          tracker.fn()
+      }
+      if (queue.length && !draining)
+        drain()
     }
-    if (queue.length && !draining)
-      drain()
+    catch (error) {
+      if (hasMissingImplementationFailure(error))
+        stopMissingImplementationFailure(error)
+      throw error
+    }
   }
   function resyncTrackers(): void {
     // 只标记待处理，不推进 last，由随后的 drainTrackers 检出变化并推进
@@ -327,28 +472,95 @@ export function createService<T extends MachineSchema>(
   })
 
   // —— 生命周期 ——
-  function stop(reason?: unknown): void {
+  function stop(reason: unknown | typeof NO_STOP_REASON = NO_STOP_REASON): void {
     if (status !== 'Started') {
       status = 'Stopped'
+      queue.length = 0
+      pendingTrackers.clear()
+      if (reason !== NO_STOP_REASON) {
+        reportMachineCrash(reason, machine.name)
+        throw reason
+      }
       return
     }
-    teardownAllEffects()
-    runActions(machine.exit, currentEvent)
     status = 'Stopped'
-    if (reason) {
-      reportMachineCrash(reason, machine.name)
-      if (isDev())
-        throw reason
+    queue.length = 0
+    pendingTrackers.clear()
+
+    const lifecycleErrors: unknown[] = []
+    try {
+      lifecycleErrors.push(...teardownAllEffects())
     }
+    catch (error) {
+      lifecycleErrors.push(error)
+    }
+    try {
+      runActions(machine.exit, currentEvent)
+    }
+    catch (error) {
+      lifecycleErrors.push(error)
+    }
+
+    if (reason !== NO_STOP_REASON) {
+      const crashResult = collectedError(
+        [reason, ...lifecycleErrors],
+        '[xh] 状态机崩溃与停止清理同时出现异常',
+      )
+      if (!crashResult.found)
+        return
+      reportMachineCrash(crashResult.error, machine.name)
+      if (lifecycleErrors.length || isDev() || hasMissingImplementationFailure(reason))
+        throw crashResult.error
+      return
+    }
+    const lifecycleResult = collectedError(lifecycleErrors, '[xh] 状态机停止清理出现多个异常')
+    if (lifecycleResult.found) {
+      reportMachineCrash(lifecycleResult.error, machine.name)
+      throw lifecycleResult.error
+    }
+  }
+
+  function stopMissingImplementationFailure(error: unknown): never {
+    if (status === 'Stopped')
+      throw error
+    stop(error)
+    throw error
   }
 
   runtime.onMount(() => {
     if (runtime.isServer)
       return
+    if (status === 'Started') {
+      const invariant = new MachineError(
+        'DUPLICATE_SERVICE_MOUNT',
+        'service mount hook was invoked more than once',
+        machine.name,
+      )
+      stop(new MachineError(
+        'MACHINE_CRASHED',
+        `mount threw: ${invariant.message}`,
+        machine.name,
+        { cause: invariant },
+      ))
+      return
+    }
+    if (status === 'Stopped')
+      return
+
     status = 'Started'
-    resyncTrackers()
-    choreograph(INIT_STATE, initialStateValue, {} as Transition<T>)
-    drainTrackers()
+    draining = true
+    try {
+      resyncTrackers()
+      choreograph(null, initialStateValue, {} as Transition<T>)
+      if (status === 'Started')
+        drainTrackers()
+    }
+    finally {
+      draining = false
+      stepGuard = 0
+    }
+    if (status === 'Started' && queue.length)
+      drain()
   })
   runtime.onCleanup(() => stop())
 
@@ -368,6 +580,23 @@ export function createService<T extends MachineSchema>(
     scope,
     send,
   }
+}
+
+function hasMissingImplementationFailure(error: unknown, seen = new Set<object>()): boolean {
+  if ((typeof error !== 'object' && typeof error !== 'function') || error === null || seen.has(error))
+    return false
+  seen.add(error)
+  if (error instanceof MachineError
+    && (error.code === 'MISSING_ACTION' || error.code === 'MISSING_GUARD' || error.code === 'MISSING_EFFECT')) {
+    return true
+  }
+  if (error instanceof AggregateError
+    && error.errors.some(item => hasMissingImplementationFailure(item, seen))) {
+    return true
+  }
+  if (error instanceof Error)
+    return hasMissingImplementationFailure(error.cause, seen)
+  return false
 }
 
 export type { EventObject }

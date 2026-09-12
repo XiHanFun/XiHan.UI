@@ -2,9 +2,11 @@ import type { OverlayBackdropVariant, Size } from '@xihan-ui/core'
 import type { DrawerApi, DrawerSchema, DrawerSide } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, mergeProps, Teleport } from 'vue'
+import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
+import { mergePartProps } from '../../runtime/merge-props'
+import { XhPortal } from '../../runtime/portal'
 import { provideDrawer, useDrawerContext } from './context'
 import { useDrawer } from './use-drawer'
 
@@ -16,17 +18,17 @@ export type DrawerRootSlotProps = Pick<DrawerApi, 'open' | 'side' | 'setOpen'>
 export const XhDrawerRoot = defineComponent({
   name: 'XhDrawerRoot',
   props: {
-    // 缺省值由 connect 给出，这里一律 default: undefined
+    // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     modal: { type: Boolean, default: undefined },
-    side: { type: String as PropType<DrawerSide>, default: undefined },
-    role: { type: String as PropType<'dialog' | 'alertdialog'>, default: undefined },
+    side: { type: String as PropType<DrawerSide> },
+    role: { type: String as PropType<'dialog' | 'alertdialog'> },
     closeOnEscape: { type: Boolean, default: undefined },
     closeOnInteractOutside: { type: Boolean, default: undefined },
     restoreFocus: { type: Boolean, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    variant: { type: String as PropType<OverlayBackdropVariant>, default: undefined },
+    size: { type: String as PropType<Size> },
+    variant: { type: String as PropType<OverlayBackdropVariant> },
     /**
      * 挂到哪个容器（CSS 选择器或元素）。给了它就是局部抽屉：
      * 浮层搬进那个容器，遮罩与定位层从 fixed 换成 absolute，只罩住它而不是盖满整屏。
@@ -34,18 +36,19 @@ export const XhDrawerRoot = defineComponent({
      * 那个容器要自己带 position（relative 之类），否则 absolute 会往上找到别的定位祖先。
      * 不给则问全局配置的 portalContainer，再没有才落 body。
      */
-    container: { type: [String, Object] as PropType<string | Element>, default: undefined },
+    container: { type: [String, Object] as PropType<string | Element> },
     /**
      * 只把画法改成局部（遮罩与定位层从 fixed 换成 absolute），不管搬到哪儿。
      * 给了 container 就默认为真，不必再写一遍；两个都不给即铺满视口。
      */
     contained: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<DrawerProps['translations']>, default: undefined },
+    translations: { type: Object as PropType<DrawerProps['translations']> },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: {
     'open-change': (_details: PayloadOf<DrawerProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<DrawerProps, 'onOpenChange'>['open']) => true,
+    'exit-complete': () => true,
   },
   slots: Object as SlotsType<{
     default?: (props: DrawerRootSlotProps) => VNode[]
@@ -57,7 +60,7 @@ export const XhDrawerRoot = defineComponent({
     }
     // 容器一处给定，两件事都从它派生：contained 交给机器（皮肤据此把遮罩与定位层
     // 从 fixed 换成 absolute），同一个值又是 Teleport 的落点，两边不会各说各话
-    const ctx = useDrawer(withXhConfig('drawer', props) as DrawerProps, notify, () => props.container)
+    const ctx = useDrawer(withXhConfig('drawer', props) as DrawerProps, notify, () => props.container, () => emit('exit-complete'))
     provideDrawer(ctx)
     // root 是真实节点，content 会被 portal 到 body，data-side 挂在这里供页面内的部分读取
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
@@ -70,22 +73,24 @@ export const XhDrawerRoot = defineComponent({
 
 export const XhDrawerTrigger = defineComponent({
   name: 'XhDrawerTrigger',
+  // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
+  inheritAttrs: false,
   props: {
     /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const ctx = useDrawerContext()
     return () => {
-      const attrs = ctx.api.value.getTriggerProps() as Record<string, unknown>
+      const part = mergePartProps(ctx.api.value.getTriggerProps() as Record<string, unknown>, attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
-        const merged = mergeIntoChild(children, attrs, 'drawer')
+        const merged = mergeIntoChild(children, part, 'drawer')
         if (merged)
           return merged
       }
-      return h('button', attrs, children)
+      return h('button', part, children)
     }
   },
 })
@@ -101,14 +106,18 @@ export const XhDrawerContent = defineComponent({
       if (!ctx.rendered.value)
         return null
       const api = ctx.api.value
-      return h(Teleport, { to: ctx.portalTarget.value }, [
-        h('div', {
-          ...api.getBackdropProps() as Record<string, unknown>,
-          ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
-        }),
+      const backdrop = api.getBackdropProps() as Record<string, unknown>
+      return h(XhPortal, { to: ctx.portalTarget.value }, () => [
+        !backdrop.hidden
+          ? h('div', {
+              ...backdrop,
+              ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
+            })
+          : null,
         h('div', api.getPositionerProps() as Record<string, unknown>, [
           h('div', {
             ...mergeProps(api.getContentProps() as Record<string, unknown>, attrs),
+            hidden: !ctx.rendered.value || undefined,
             ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
           }, slots.default?.()),
         ]),

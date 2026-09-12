@@ -113,14 +113,33 @@ export const floatButtonSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '展开着按 Escape 收起',
+      name: '展开后全局 Escape 收起，焦点无需留在根内',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['float-button.kbd.escape'],
       steps: [
         { kind: 'click', part: 'trigger' },
         {
-          kind: 'key',
+          kind: 'outside',
+          action: 'key',
           key: 'Escape',
+          expect: {
+            parts: {
+              trigger: { 'aria-expanded': 'false' },
+              list: { 'data-state': 'closed', 'hidden': '' },
+            },
+            events: [{ type: 'open-change', detail: { open: false } }],
+          },
+        },
+      ],
+    },
+    {
+      name: 'click 展开后层外 pointerdown 收起',
+      spec: { adr: 'dismissable-layer' },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'outside',
+          action: 'click',
           expect: {
             parts: {
               trigger: { 'aria-expanded': 'false' },
@@ -214,6 +233,40 @@ export const floatButtonSuite: ConformanceSuite = {
           },
           events: [],
         }),
+      ],
+    },
+    {
+      name: '受控展开后禁用只发一次关闭意图；父未写回前 DOM 仍由 open 控制',
+      spec: { adr: 'controlled-uncontrolled' },
+      props: { open: true },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { disabled: true },
+          expect: {
+            parts: {
+              trigger: { 'disabled': '', 'aria-expanded': 'true' },
+              list: { 'data-state': 'open', 'hidden': null },
+            },
+            events: [{ type: 'open-change', detail: { open: false } }],
+          },
+        },
+        {
+          kind: 'setProps',
+          props: { disabled: true },
+          expect: {
+            parts: { list: { 'data-state': 'open', 'hidden': null } },
+            events: [],
+          },
+        },
+        {
+          kind: 'setProps',
+          props: { open: false },
+          expect: {
+            parts: { list: { 'data-state': 'closed', 'hidden': '' } },
+            events: [],
+          },
+        },
       ],
     },
   ],

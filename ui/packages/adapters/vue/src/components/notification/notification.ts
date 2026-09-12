@@ -22,18 +22,18 @@ export interface NotificationRootSlotProps {
 
 export const XhNotificationRoot = defineComponent({
   name: 'XhNotificationRoot',
-  // 缺省值由 connect 决定，这里一律 default: undefined
+  // 缺省值由 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    items: { type: Array as PropType<NotificationRecord[]>, default: undefined },
-    defaultItems: { type: Array as PropType<NotificationRecord[]>, default: undefined },
-    placement: { type: String as PropType<NotificationPlacement>, default: undefined },
-    max: { type: Number, default: undefined },
-    dedupe: { type: String as PropType<NotificationDedupe>, default: undefined },
-    gap: { type: Number, default: undefined },
-    duration: { type: Number, default: undefined },
-    removeDelay: { type: Number, default: undefined },
+    items: { type: Array as PropType<NotificationRecord[]> },
+    defaultItems: { type: Array as PropType<NotificationRecord[]> },
+    placement: { type: String as PropType<NotificationPlacement> },
+    max: { type: Number },
+    dedupe: { type: String as PropType<NotificationDedupe> },
+    gap: { type: Number },
+    duration: { type: Number },
+    removeDelay: { type: Number },
     pauseOnPageIdle: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<Partial<NotificationTranslations>>, default: undefined },
+    translations: { type: Object as PropType<Partial<NotificationTranslations>> },
   },
   // items-change 携带 { items }，update:items 携带裸队列以支持 v-model:items
   emits: {
@@ -73,7 +73,7 @@ export const XhNotificationGroup = defineComponent({
   name: 'XhNotificationGroup',
   props: {
     // 不写就用 notification 的 placement；写了就只收这个位置上的条目
-    placement: { type: String as PropType<NotificationPlacement>, default: undefined },
+    placement: { type: String as PropType<NotificationPlacement> },
   },
   slots: Object as SlotsType<{
     default?: (props: NotificationGroupSlotProps) => VNode[]
@@ -99,19 +99,19 @@ export const XhNotificationGroup = defineComponent({
 /** 单条卡片。生命周期复用 toast 那台机器：会自己消失的卡片，这一行为与消息来源无关。 */
 export const XhNotificationItem = defineComponent({
   name: 'XhNotificationItem',
-  // 缺省值由 connect 决定，这里一律 default: undefined
+  // 缺省值由 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    id: { type: String, default: undefined },
-    title: { type: String, default: undefined },
-    description: { type: String, default: undefined },
-    type: { type: String as PropType<ToastType>, default: undefined },
-    duration: { type: Number, default: undefined },
-    removeDelay: { type: Number, default: undefined },
+    id: { type: String },
+    title: { type: String },
+    description: { type: String },
+    type: { type: String as PropType<ToastType> },
+    duration: { type: Number },
+    removeDelay: { type: Number },
     closable: { type: Boolean, default: undefined },
     pauseOnPageIdle: { type: Boolean, default: undefined },
     // 由宿主整摞一起按住计时；与指针、焦点那几路并存，最后一个松开才继续走
     paused: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<Partial<NotificationTranslations>>, default: undefined },
+    translations: { type: Object as PropType<Partial<NotificationTranslations>> },
   },
   emits: {
     'status-change': (_details: PayloadOf<ToastSchema['props'], 'onStatusChange'>) => true,

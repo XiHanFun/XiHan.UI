@@ -39,11 +39,11 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     <!-- 摘要只在提交失败后显形；条目一次全写上，谁露面由当下的错误表决定 -->
     <XhFormErrorSummary v-slot="{ errorCount }">
       <span>共 {{ errorCount }} 处需要修改</span>
-      <XhFormErrorSummaryItem v-slot="{ error }" value="email">{{ error }}</XhFormErrorSummaryItem>
-      <XhFormErrorSummaryItem v-slot="{ error }" value="nickname">{{ error }}</XhFormErrorSummaryItem>
+      <XhFormErrorSummaryItem v-slot="{ error }" name="email">{{ error }}</XhFormErrorSummaryItem>
+      <XhFormErrorSummaryItem v-slot="{ error }" name="nickname">{{ error }}</XhFormErrorSummaryItem>
     </XhFormErrorSummary>
 
-    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="email">
+    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="email">
       <XhFieldRoot :invalid="invalid" required>
         <XhFieldLabel>邮箱</XhFieldLabel>
         <XhFieldControl>
@@ -58,7 +58,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       </XhFieldRoot>
     </XhFormFieldGroup>
 
-    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="nickname">
+    <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="nickname">
       <XhFieldRoot :invalid="invalid" required>
         <XhFieldLabel>昵称</XhFieldLabel>
         <XhFieldControl>

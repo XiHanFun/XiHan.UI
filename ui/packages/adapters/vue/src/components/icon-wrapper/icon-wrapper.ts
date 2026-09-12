@@ -8,11 +8,11 @@ import { vueNormalize } from '../../runtime/normalize-props'
 
 export const XhIconWrapper = defineComponent({
   name: 'XhIconWrapper',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    variant: { type: String as PropType<ActionVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    variant: { type: String as PropType<ActionVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   setup(props, { slots }) {
     return () => h(

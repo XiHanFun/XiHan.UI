@@ -1,4 +1,4 @@
-// 四条轴笛卡尔积 16 格，每格一份「解析后的语义令牌最终取值」快照。
+// 五条轴笛卡尔积 32 格，每格一份「解析后的语义令牌最终取值」快照。
 // 这一层不渲染组件、不开浏览器，只把 tokens.css 的取值块按层叠顺序算一遍，秒级，可以每次改动都跑。
 //
 // 它守的是漂移。逐条断言只钉得住写下那天想到的那几支：改一支原语、动一个覆盖档、
@@ -6,7 +6,7 @@
 // 快照钉的是全部——任何一支在任何一格里的最终取值变了，都会 diff 出来。
 //
 // 取值块全是零特指度的 :where()，谁在后面谁赢，块序本身就是取值的一部分：
-// 深色 + 高对比那一格先被浅色高对比块覆盖一次，再被深色高对比块盖回来。
+// 主题候选与对比度选择标记独立继承，在轴边界共同决定公开值。
 // 所以这里不按「档」去合并 JSON 源，而是照 tokens.css 里的书写顺序逐块套用：
 // 合并顺序自己写一套的话，写错了会把错的取值固化进快照，之后再没人发现。
 import { createHash } from 'node:crypto'
@@ -27,6 +27,7 @@ const AXES = {
   density: ['comfortable', 'compact'],
   contrast: ['default', 'more'],
   motion: ['default', 'reduce'],
+  transparency: ['default', 'reduce'],
 } as const
 
 type Axis = keyof typeof AXES
@@ -34,7 +35,7 @@ type Combination = { [K in Axis]: typeof AXES[K][number] }
 
 /**
  * 属性选择器到轴的映射。tokens.css 里出现表外的 data-* 时直接抛：
- * 认不出的属性如果当成「不命中」放过去，那一档的取值就永远不进这 16 格，
+ * 认不出的属性如果当成「不命中」放过去，那一档的取值就永远不进这 32 格，
  * 快照会一直绿着，而它守的那份取值根本没人算过。
  */
 const ATTR_TO_AXIS: Record<string, Axis> = {
@@ -42,6 +43,7 @@ const ATTR_TO_AXIS: Record<string, Axis> = {
   'data-density': 'density',
   'data-contrast': 'contrast',
   'data-motion': 'motion',
+  'data-transparency': 'transparency',
 }
 
 function combinations(): Combination[] {
@@ -49,8 +51,10 @@ function combinations(): Combination[] {
   for (const theme of AXES.theme) {
     for (const density of AXES.density) {
       for (const contrast of AXES.contrast) {
-        for (const motion of AXES.motion)
-          out.push({ theme, density, contrast, motion })
+        for (const motion of AXES.motion) {
+          for (const transparency of AXES.transparency)
+            out.push({ theme, density, contrast, motion, transparency })
+        }
       }
     }
   }
@@ -58,11 +62,11 @@ function combinations(): Combination[] {
 }
 
 function idOf(c: Combination): string {
-  return `theme-${c.theme}_density-${c.density}_contrast-${c.contrast}_motion-${c.motion}`
+  return `theme-${c.theme}_density-${c.density}_contrast-${c.contrast}_motion-${c.motion}_transparency-${c.transparency}`
 }
 
 function titleOf(c: Combination): string {
-  return `theme=${c.theme} density=${c.density} contrast=${c.contrast} motion=${c.motion}`
+  return `theme=${c.theme} density=${c.density} contrast=${c.contrast} motion=${c.motion} transparency=${c.transparency}`
 }
 
 /* ---------- 解析 tokens.css ---------- */
@@ -100,8 +104,8 @@ interface Parsed { blocks: Block[], mediaConditions: string[] }
  * 逐行扫 tokens.css。产物的形状是固定的：一行一条声明，选择器与开花括号同行，
  * 注释独占整行，所以这里不引 CSS 解析器。
  *
- * @media 块整块跳过：减弱动效那一档在这 16 格里走的是 data-motion 钩子，
- * @media 那份与钩子块同源同值（由 reduce.spec 逐条对齐）。跳过的条件会被记下来判断是不是只有这一个。
+ * @media 块整块跳过：减弱动效和减少透明在矩阵中各走对应的 DOM 钩子，
+ * 媒体路径与钩子块同源同值。跳过的条件会被记下来判断是不是只有登记的辅助媒体。
  */
 function parse(source: string): Parsed {
   const blocks: Block[] = []
@@ -168,7 +172,7 @@ function parse(source: string): Parsed {
     }
 
     // 产物里一条声明就是「名: 值;」，只隔一个空格。排版变了这里会抛，不会静默漏掉一条
-    const decl = /^([\w-]+): (.+);$/.exec(line)
+    const decl = /^([\w-]+): (.*);$/.exec(line)
     if (!decl)
       throw new Error(`认不出的一行：${line}`)
     if (!current)
@@ -219,16 +223,51 @@ function cascade(combo: Combination): Resolved {
   return { raw, applied, colorScheme }
 }
 
-/** var(--xh-a) 逐层展开到字面值。环引用会把栈撑爆，所以自己带一份路径判环。 */
+/** 展开 CSS var()，包含嵌套候选、空白值及 initial 的保证无效值语义。 */
 function resolveValue(value: string, raw: Map<string, string>, seen: string[] = []): string {
-  return value.replace(/var\(\s*(--[\w-]+)\s*\)/g, (_, name: string) => {
+  let output = ''
+  let cursor = 0
+  while (cursor < value.length) {
+    const start = value.indexOf('var(', cursor)
+    if (start < 0) {
+      output += value.slice(cursor)
+      break
+    }
+    output += value.slice(cursor, start)
+    let depth = 1
+    let end = start + 4
+    let comma = -1
+    for (; end < value.length && depth > 0; end++) {
+      if (value[end] === '(')
+        depth++
+      else if (value[end] === ')')
+        depth--
+      else if (value[end] === ',' && depth === 1 && comma < 0)
+        comma = end
+    }
+    if (depth !== 0)
+      throw new Error(`未闭合的 var：${value}`)
+    const name = value.slice(start + 4, comma < 0 ? end - 1 : comma).trim()
     if (seen.includes(name))
       throw new Error(`令牌引用成环：${[...seen, name].join(' → ')}`)
     const next = raw.get(name)
-    if (next === undefined)
-      throw new Error(`引用了未声明的 ${name}`)
-    return resolveValue(next, raw, [...seen, name])
-  })
+    if (next === undefined || next === 'initial') {
+      if (comma < 0)
+        throw new Error(`引用了未声明或无效的 ${name}`)
+      output += resolveValue(value.slice(comma + 1, end - 1), raw, seen)
+    }
+    else {
+      output += resolveValue(next, raw, [...seen, name])
+    }
+    cursor = end
+  }
+  return output.trim()
+}
+
+/** DTCG 源值到生成器写进 CSS 的值：既支持整支引用，也支持字面值和内嵌引用。 */
+function toCssValue(value: string): string {
+  return value.replace(/\{([^}]+)\}/g, (_, path: string) =>
+    `var(--xh-${path.trim().replace(/\./g, '-')})`)
 }
 
 /* ---------- 语义层的名单 ---------- */
@@ -261,6 +300,8 @@ const SEMANTIC_SOURCES = [
   'semantic.light.more.json',
   'semantic.dark.json',
   'semantic.dark.more.json',
+  'semantic.transparency.reduce.json',
+  'semantic.forced-colors.json',
   'semantic.reduce.json',
   'semantic.print.json',
 ]
@@ -339,11 +380,16 @@ describe('快照的前提', () => {
     }
   })
 
-  it('被跳过的 @media 只有减弱动效与打印这两个', () => {
+  it('被跳过的 @media 都有独立源测试看守', () => {
     // 别的 @media 块会成为解析盲区：那一档的取值不进这 16 格，快照照样绿。
-    // 这两个各有一份逐条对齐的用例看着（reduce.spec / print.spec），
-    // 第三个冒出来时这里判红，逼着它要么进轴、要么也配一份自己的用例。
-    expect(mediaConditions).toEqual(['(prefers-reduced-motion: reduce)', 'print'])
+    // 四个分别由 material-frosted.spec / reduce.spec / print.spec 对账；
+    // 新条件冒出来时这里判红，逼着它要么进轴、要么也配一份自己的用例。
+    expect(mediaConditions).toEqual([
+      '(prefers-reduced-transparency: reduce)',
+      '(forced-colors: active)',
+      '(prefers-reduced-motion: reduce)',
+      'print',
+    ])
   })
 
   it('不带 data-theme 的默认档与浅色档逐条同名同值', () => {
@@ -352,7 +398,7 @@ describe('快照的前提', () => {
     // 两块由同一份 semantic.light.json 发出、本该逐条相同，这条断言盯的就是它们分叉——
     // 分叉之后没标主题的页面会取到一套没人算过的值，而快照全绿。
     const semantic = blocks.filter(b => b.decls.some(d => SEMANTIC_NAMES.includes(d.name)))
-    const fallback = semantic.filter(b => b.matchers.every(m => Object.keys(m).length === 0)).at(-1)
+    const fallback = semantic.filter(b => b.matchers.some(m => Object.keys(m).length === 0)).at(-1)
     const light = semantic.find(b => b.matchers.some(m => m.theme === 'light'))
 
     expect(fallback, '没找到无条件命中的语义取值块').toBeDefined()
@@ -365,26 +411,47 @@ describe('快照的前提', () => {
   })
 })
 
-// 深色 + 高对比是唯一被覆盖两次的一格：浅色高对比块无条件命中（它只写 [data-contrast='more']），
-// 深色高对比块排在它后面把边界一族盖回来。层叠顺序解析错了，这一格会静默取到浅色档的边界色，
-// 而 16 份快照仍然各不相同、看不出问题。
+// 深色 + 高对比必须选择深色候选，不能仅凭内层 contrast 属性取浅色高对比值。
+// 主题候选或选择标记解析错了，这一格会静默取到浅色档的边界色，
+// 而 32 份快照仍然各不相同、看不出问题。
 describe('深色 × 高对比取的是深色高对比档', () => {
   const darkMore = flatten(loadJson('semantic.dark.more.json'))
-  const cell = { density: 'comfortable', contrast: 'more', motion: 'default' } as const
+  const cell = { density: 'comfortable', contrast: 'more', motion: 'default', transparency: 'default' } as const
+  const sharedDecoration = new Map([
+    ['--xh-material-elevated-highlight', 'oklch(0 0 0 / 0)'],
+    ['--xh-material-elevated-backdrop', 'none'],
+    ['--xh-material-elevated-shadow', 'none'],
+    ['--xh-material-glass-highlight', 'oklch(0 0 0 / 0)'],
+    ['--xh-material-glass-backdrop', 'none'],
+    ['--xh-material-glass-shadow', 'none'],
+    ['--xh-material-soft-highlight', 'oklch(0 0 0 / 0)'],
+    ['--xh-material-frosted-highlight', 'oklch(0 0 0 / 0)'],
+    ['--xh-material-frosted-backdrop', 'none'],
+    ['--xh-material-frosted-compact-alpha', '1'],
+    ['--xh-material-frosted-compact-backdrop', 'none'],
+    ['--xh-material-frosted-compact-shadow', 'none'],
+  ])
 
-  it('这一格的边界取值与浅色高对比档逐条不同', () => {
+  it('非装饰令牌的最终取值与浅色档逐条不同，共同关闭的装饰高光单独对账', () => {
     const dark = cascade({ ...cell, theme: 'dark' })
     const light = cascade({ ...cell, theme: 'light' })
     expect(darkMore.length).toBeGreaterThan(0)
-    for (const t of darkMore)
-      expect(dark.raw.get(t.name), t.name).not.toBe(light.raw.get(t.name))
+    for (const t of darkMore) {
+      const darkValue = resolveValue(dark.raw.get(t.name)!, dark.raw)
+      const lightValue = resolveValue(light.raw.get(t.name)!, light.raw)
+      if (sharedDecoration.has(t.name)) {
+        expect(darkValue, t.name).toBe(sharedDecoration.get(t.name))
+        expect(lightValue, t.name).toBe(darkValue)
+      }
+      else {
+        expect(darkValue, t.name).not.toBe(lightValue)
+      }
+    }
   })
 
-  it('这一格的边界取值逐条对上 semantic.dark.more.json', () => {
+  it('这一格的最终取值逐条对上 semantic.dark.more.json 的字面值与引用', () => {
     const { raw } = cascade({ ...cell, theme: 'dark' })
-    for (const t of darkMore) {
-      const expected = `var(--xh-${t.value.slice(1, -1).replace(/\./g, '-')})`
-      expect(raw.get(t.name), t.name).toBe(expected)
-    }
+    for (const t of darkMore)
+      expect(resolveValue(raw.get(t.name)!, raw), t.name).toBe(resolveValue(toCssValue(t.value), raw))
   })
 })

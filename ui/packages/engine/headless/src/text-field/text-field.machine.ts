@@ -1,5 +1,6 @@
 import type { TextFieldSchema } from './text-field.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
+import { validateTextFieldAutoSize } from './text-field.autosize'
 
 const { createMachine } = setup<TextFieldSchema>()
 
@@ -25,6 +26,10 @@ export function isAtLimit(value: string, maxLength: number | undefined): boolean
 
 export const textFieldMachine = createMachine({
   name: 'text-field',
+  props: ({ props }) => ({
+    ...props,
+    autoSize: validateTextFieldAutoSize(props.autoSize),
+  }),
   context: ({ prop, cell }) => ({
     // 值住在 cell 里，受控/非受控在此收口，不需要 CONTROLLED.* 影子事件
     value: cell<string>(() => ({

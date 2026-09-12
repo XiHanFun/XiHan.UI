@@ -2,8 +2,9 @@ import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type { PaginationApi, PaginationEllipsisSide, PaginationPageSizeChangeDetails, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, mergeProps, Teleport } from 'vue'
+import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { providePagination, usePaginationContext } from './context'
 import { usePagination } from './use-pagination'
@@ -33,23 +34,23 @@ export type PaginationRootSlotProps = Pick<
 
 export const XhPaginationRoot = defineComponent({
   name: 'XhPaginationRoot',
-  // 缺省值由 connect 给出，这里一律 default: undefined
+  // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    count: { type: Number, default: undefined },
-    pageSize: { type: Number, default: undefined },
-    defaultPageSize: { type: Number, default: undefined },
-    pageSizeOptions: { type: Array as PropType<number[]>, default: undefined },
-    page: { type: Number, default: undefined },
-    defaultPage: { type: Number, default: undefined },
-    siblingCount: { type: Number, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    translations: { type: Object as PropType<Partial<PaginationTranslations>>, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
-    openDelay: { type: Number, default: undefined },
-    closeDelay: { type: Number, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    count: { type: Number },
+    pageSize: { type: Number },
+    defaultPageSize: { type: Number },
+    pageSizeOptions: { type: Array as PropType<number[]> },
+    page: { type: Number },
+    defaultPage: { type: Number },
+    siblingCount: { type: Number },
+    dir: { type: String as PropType<Direction> },
+    translations: { type: Object as PropType<Partial<PaginationTranslations>> },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
+    openDelay: { type: Number },
+    closeDelay: { type: Number },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // page-change 携带 { page, pageSize }，update:page 携带裸页码；
   // 换档同时改页码，两个 update 都发，v-model:page 与 v-model:page-size 才不会各说各话
@@ -185,39 +186,81 @@ export const XhPaginationJumper = defineComponent({
   },
 })
 
+/**
+ * 每页条数控制器：装的是库里的 select，不再是原生下拉。
+ *
+ * 组合发生在这一层——连接层把整份 select 的 api 摆在 api.pageSizeSelect 上，
+ * 这里照它铺角色节点（DOM 上带 data-scope="select"，吃的是 select 那份皮肤）。
+ * 档位与档位文字都由连接层从 pageSizeOptions 与 translations.pageSizeOption 算好。
+ */
 export const XhPaginationPageSizeSelect = defineComponent({
   name: 'XhPaginationPageSizeSelect',
-  slots: Object as SlotsType<{
-    default?: (props: { options: number[], label: (size: number) => string }) => VNode[]
-  }>,
-  setup(_, { slots }) {
+  props: {
+    /** 本实例的 PageSizeSelect Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
+  // 渲染出来是「挂载点 + 被搬走的浮层」两截，作者写的 class 与 style 得自己接住落到挂载点上
+  inheritAttrs: false,
+  setup(props, { attrs }) {
     const ctx = usePaginationContext()
-    // 档位由作者渲染成 option：原生 select 的子节点不是角色节点，用不着再立一个部件
-    return () => h(
-      'select',
-      ctx.api.value.getPageSizeSelectProps() as Record<string, unknown>,
-      slots.default
-        ? slots.default({
-            options: ctx.api.value.pageSizeOptions,
-            label: (size: number) => String(size),
-          })
-        : ctx.api.value.pageSizeOptions.map(size =>
-            h('option', { key: size, value: String(size) }, String(size)),
-          ),
-    )
+    return () => {
+      const api = ctx.api.value
+      const select = api.pageSizeSelect
+      return [
+        h('div', mergeProps(api.getPageSizeSelectProps() as Record<string, unknown>, attrs), [
+          h('div', select.getRootProps() as Record<string, unknown>, [
+            h('div', select.getControlProps() as Record<string, unknown>, [
+              h('button', {
+                ...select.getTriggerProps() as Record<string, unknown>,
+                ref: (el: unknown) => { ctx.pageSizeTriggerRef.value = el as HTMLElement },
+              }, [
+                h('span', select.getValueTextProps() as Record<string, unknown>, select.displayText),
+                h('span', select.getIndicatorProps() as Record<string, unknown>),
+              ]),
+            ]),
+          ]),
+        ]),
+        h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.pageSizeTriggerRef }, () => [
+          h('div', {
+            ...select.getPositionerProps() as Record<string, unknown>,
+            ref: (el: unknown) => { ctx.pageSizePositionerRef.value = el as HTMLElement },
+          }, [
+            h('div', {
+              ...select.getContentProps() as Record<string, unknown>,
+              // 收起跟着退场闸门走，与省略位那层同一套写法
+              style: ctx.pageSizeVisible.value ? undefined : { display: 'none' },
+              ref: (el: unknown) => { ctx.pageSizeContentRef.value = el as HTMLElement },
+            }, [
+              h('div', select.getListProps() as Record<string, unknown>, select.collection.map(option =>
+                h('div', {
+                  ...select.getItemProps({ value: option.value }) as Record<string, unknown>,
+                  key: option.value,
+                }, [
+                  h('span', select.getItemTextProps({ value: option.value }) as Record<string, unknown>, option.label),
+                  h('span', select.getItemIndicatorProps({ value: option.value }) as Record<string, unknown>),
+                ]))),
+            ]),
+          ]),
+        ]),
+      ]
+    }
   },
 })
 
 export const XhPaginationPositioner = defineComponent({
   name: 'XhPaginationPositioner',
+  props: {
+    /** 本实例的省略页 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = usePaginationContext()
     // 折叠页码列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
     const bars = useScrollbars({ scrollable: () => ctx.contentRef.value })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.ellipsisRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },

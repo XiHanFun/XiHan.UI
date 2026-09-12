@@ -130,9 +130,45 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 
 基线文件名带浏览器与平台后缀（`…-chromium-linux.png`），入库的只有 `linux` 这一套。带别的平台后缀的文件不该出现——字体守卫会在生成之前就把用例拦下——真见到了直接删，不要提交。
 
+## 视觉样板性能预算
+
+`pnpm visual:performance` 在像素基线同一 Playwright Linux 镜像里运行真实 Chromium，并把报告写到
+`ui/packages/adapters/vue/.vitest-attachments/visual-performance.json`。这条用例不另造展示页：它直接复用
+`visual-baseline.spec.ts` 的 Dialog `variant="blur"` 夹具与 800×520 视口，在对话框后方逐帧移动固定渐变背景，
+让 `backdrop-filter` 参与真实合成。默认透明与 `data-transparency="reduce"` 交替采样，避免先后顺序把机器热态只压到某一档。
+
+设备档固定为 `mcr.microsoft.com/playwright:v1.62.0-noble`、Chromium、800×520@1x、2 CPU、2 GiB，
+并通过 CDP 对渲染进程施加 4× CPU throttle。每档先预热 30 帧，再采 120 帧，重复三轮。预算真源是
+`tooling/scripts/visual-performance-budget.json`；容器镜像版本继续与 `pnpm-workspace.yaml` 的 Playwright catalog 对齐。
+
+报告与门禁包含：
+
+- `requestAnimationFrame` 相邻回调的 p50 / p95 / 最大间隔；每帧都会改变背景绘制位置，这个间隔包含该帧排队、样式、绘制与合成对下一帧的影响，不把纯 JS 计时冒充 GPU 时间；
+- W3C Long Tasks `PerformanceObserver` 给出的长任务数量、最大值与合计时长；
+- 每个可见且计算样式含 `blur(...)` 的 `backdrop-filter` 元素，在视口内裁切后的面积之和。重叠材质逐层计数，因为每一层都要独立取样；`reduce` 档必须严格为 0；
+- 10 次交替挂载/卸载后，强制 GC 前后的 CDP `Memory.getDOMCounters` 差值，作为 documents / DOM nodes / JS listeners 的资源留存代理。
+
+这里不输出伪内存数。浏览器目前没有稳定的标准轨页面内存 API；候选
+`measureUserAgentSpecificMemory()` 仍是 WICG 草案，而且要求跨源隔离。测试页不会为拿到一个数字而伪造隔离条件，
+报告会如实记录候选 API 与 `crossOriginIsolated` 状态，并用上述 DOM 资源留存代理守泄漏。长任务定义见
+[W3C Long Tasks](https://www.w3.org/TR/longtasks-1/)，内存候选 API 的标准状态见
+[WICG Measure Memory](https://wicg.github.io/performance-measure-memory/)。
+
+第一次建立或有意重定预算时，必须先运行：
+
+```bash
+pnpm visual:performance --record
+```
+
+`--record` 只写真实报告、不判断 `limits`。至少检查一份完整报告后，才按实测值与明确余量修改预算真源；常规
+`pnpm visual:performance` 会执行红线。CI 跑后者。像素基线仍由 `pnpm visual:baseline` 守护，这项不自动更新任何 PNG。
+
+包体积不在性能 JSON 里复制数字：JavaScript / 发布产物继续由 `.size-limit.json` 与 `pnpm size` 守护，逐皮肤 CSS
+继续由 `.size-limit.css.json` 与 `check-skin-size` 守护。性能预算门禁反查这两份真源；修改本项不得提高既有阈值。
+
 ## 结构门禁
 
-`pnpm gate` 跑 105 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
+`pnpm gate` 跑 111 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
 
 | 门禁 | 拦什么 |
 | --- | --- |
@@ -152,11 +188,14 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 | `check-autofill` | 渲染原生表单控件的输入框没写自动填充规则，或两个手段 / 两个引擎的选择器缺一 |
 | `check-part-wiring` | 解剖声明、`connect` 产出、适配器却不接线的部件 |
 | `check-dead-state-attr` | `connect` 发出的 `data-*` 在**本组件的作用域**里没有一条规则消费——别的组件有同名规则不算数，那条规则永远选不中它。信息钩子逐条登记，登记项过期同样判失败 |
+| `check-skin-parts` | 皮肤选择器里的 `[data-part]` 不在它所属 scope 的解剖里——部件退役后留下的规则永远选不中节点，`surface:update` 还会把它的覆盖槽收回公开面。scope 按选择器现算（逐分支、逐复合：写在 `[data-part]` 前后的 `[data-scope]` 都管这一节，没写的沿用左边最近那一节，`:is()` / `:where()` 里一致的 scope 带回外面，`:not()` / `:has()` 里各算各的），解剖外的名字逐条登记，登记项过期同样判失败；`data-scope` / `data-part` 的属性选择器读不出来的（转义、匹配符不是全等）同样判失败 |
 | `check-breakpoints` | 皮肤 `@media` 里的断点字面量不在令牌清单里（自定义属性在媒体条件里不生效，只能写字面量） |
 | `check-focus-ring` | 聚焦环的粗细、颜色、偏移写了字面量而不是令牌，主题与全局调整对它无效 |
+| `check-focus-ring-surface` | 可聚焦部件的面压着环不到 3:1（算出来的，不是看形态猜的），那一档却没把 `--xh-_ring-color` 灌成 `currentColor`——键盘焦点在那块面上等于没画。`currentColor` 罩到非实心档、`:focus-visible` 里关掉环（`outline: none` / `outline-width: 0`）却没登记环由谁画、画了实心面却不接焦点也没登记的部件，同样判红；聚焦规则把环色写成透明的直接判红，没有登记表 |
 | `check-exports` | 实现了却忘了从包级入口导出，包外拿不到它，而构建与类型检查照过 |
 | `check-package-roles` | 包所在的角色组与它 `package.json` 里的依赖声明对不上 |
 | `check-public-surface` | 公开面基线里有而当前没有的名字——被删了或改名了 |
+| `check-visual-performance-budget` | 固定设备、默认/reduce 场景、真实浏览器入口与既有 JS/CSS 体积真源任一脱节 |
 
 另有分层依赖检查与九项单独的门禁：
 
@@ -185,7 +224,7 @@ pnpm gate:llms    # 文档站的机读资产：页数、组件数、令牌数与
 pnpm size
 ```
 
-35 条产物各有上限（gzip 后），涨过线就红。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，要看具体数字请翻那一份，这里不抄。
+37 条产物各有上限（gzip 后），涨过线就红。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，要看具体数字请翻那一份，这里不抄。
 
 ## 相关
 

@@ -1,5 +1,6 @@
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type {
+  FormControlState,
   TransferFilter,
   TransferItem,
   TransferSchema,
@@ -9,7 +10,7 @@ import type {
   TransferValueChangeDetails,
 } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTransfer, transferAnatomy, transferFocusKey, transferMachine, transferMeta } from '@xihan-ui/headless'
+import { connectTransfer, resolveFormControlState, transferAnatomy, transferFocusKey, transferMachine, transferMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -53,6 +54,8 @@ function stripNativeDisabled(el: HTMLElement): void {
  * `el.collection = [...]`、`el.value = ['a']`。
  *
  * @customElement xh-transfer
+ * @attr {string} name - 原生表单字段名，目标侧每个值提交一个同名字段
+ * @attr {string} form - 原生表单 ID，显式指定时覆盖祖先表单归属
  * @attr {boolean} searchable - 每侧带一个搜索框；关掉时搜索框仍在 DOM 里但带 hidden
  * @attr {boolean} disabled - 整个控件禁用：条目转 aria-disabled，按钮与搜索框用原生 disabled
  * @attr {boolean} read-only - 只读：两侧照常浏览与搜索，但勾选改不动、也搬不动
@@ -66,6 +69,7 @@ function stripNativeDisabled(el: HTMLElement): void {
  * @fires value-change - 落在右侧的值变化；detail 为 `{ value: string[] }`
  * @fires selection-change - 勾选集合变化；detail 为 `{ value: string[] }`
  * @csspart root - 组件根容器（承载 data-disabled/data-one-way）
+ * @csspart hidden-input - 宿主自动装配的重复字段出口，无需作者手写
  * @csspart source-panel - 左侧面板容器，其内的角色节点一律归左侧
  * @csspart target-panel - 右侧面板容器，其内的角色节点一律归右侧
  * @csspart panel-header - 面板头部容器（标题、计数、全选格的落脚处）
@@ -94,11 +98,13 @@ export class XhTransferElement extends XhElement {
     collection: { attribute: false },
     value: { attribute: false },
     defaultValue: { attribute: false },
+    name: { converter: STRING_CONVERTER },
+    form: { converter: STRING_CONVERTER },
     selection: { attribute: false },
     defaultSelection: { attribute: false },
     filter: { attribute: false },
     searchable: { type: Boolean },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
@@ -114,6 +120,8 @@ export class XhTransferElement extends XhElement {
   declare collection?: TransferItem[]
   declare value?: string[]
   declare defaultValue?: string[]
+  declare name?: string
+  declare form?: string
   declare selection?: string[]
   declare defaultSelection?: string[]
   declare filter?: TransferFilter
@@ -129,6 +137,17 @@ export class XhTransferElement extends XhElement {
   declare direction?: Direction
   declare translations?: Partial<TransferTranslations>
 
+  private readonly formInputs: HTMLInputElement[] = []
+
+  override disconnectedCallback(): void {
+    for (const input of this.formInputs) {
+      this.spreader.release(input)
+      input.remove()
+    }
+    this.formInputs.length = 0
+    super.disconnectedCallback()
+  }
+
   private readonly notifyValue = (details: TransferValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -140,19 +159,33 @@ export class XhTransferElement extends XhElement {
   // transfer 机器无副作用、无 refs（两侧集合全部从 collection + value + 搜索串推导），
   // 不需要 config / 定位引擎，故 controller 只带 props。
   private readonly ctrl = new MachineController<TransferSchema>(this, transferMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；Transfer 仅消费公开的禁用、只读、无效三轴。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<TransferSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
+      name: this.name,
+      form: this.form,
       selection: this.selection,
       defaultSelection: this.defaultSelection,
       filter: this.filter,
       searchable: this.searchable ?? false,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly,
-      invalid: this.invalid,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       loading: this.loading,
       tone: this.tone,
       size: this.size,
@@ -204,6 +237,20 @@ export class XhTransferElement extends XhElement {
 
   protected wire(): void {
     const api = connectTransfer(this.ctrl.service, wcNormalize)
+
+    // 原生出口由宿主管理，零值不产生空字符串字段；不带 data-xh-part 以免重复接管。
+    while (this.formInputs.length > api.value.length) {
+      const input = this.formInputs.pop()!
+      this.spreader.release(input)
+      input.remove()
+    }
+    for (let index = 0; index < api.value.length; index++) {
+      const input = this.formInputs[index] ?? this.ownerDocument.createElement('input')
+      this.formInputs[index] = input
+      this.spreader.spread(input, api.getHiddenInputProps({ value: api.value[index]! }) as Record<string, unknown>)
+      if (input.parentElement !== this)
+        this.append(input)
+    }
 
     const put = (el: HTMLElement | null, props: Record<string, unknown>): void => {
       if (el)

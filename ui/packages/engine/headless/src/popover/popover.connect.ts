@@ -1,22 +1,11 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { PopoverApi, PopoverSchema } from './popover.types'
 import { dataAttr } from '@xihan-ui/core'
-import { overlayPositioned } from '../shared/overlay'
+import { overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { popoverAnatomy } from './popover.anatomy'
 import { POPOVER_DEFAULT_PLACEMENT } from './popover.machine'
 
 const parts = popoverAnatomy.build()
-
-// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
-// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
-const AVAILABLE_H_FLOOR = 96
-
-function availableHeightVar(available: number | undefined): Record<string, string> {
-  return {
-    '--xh-_popover-available-h':
-      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
-  }
-}
 
 export function connectPopover<T extends PropTypes>(
   service: Service<PopoverSchema>,
@@ -63,10 +52,8 @@ export function connectPopover<T extends PropTypes>(
       // 落位才露：皮肤基线把定位层藏着，带这个才显示。展开那几帧坐标还没算出来时就是藏的
       'data-positioned': dataAttr(overlayPositioned(position)),
       'style': {
-        position: 'fixed',
-        left: `${position?.x ?? 0}px`,
-        top: `${position?.y ?? 0}px`,
-        ...availableHeightVar(position?.availableHeight),
+        ...overlayFixedStyle(position),
+        ...overlayAvailableSpaceVars('popover', position),
       },
     }),
     getContentProps: () => normalize.element({
@@ -74,6 +61,9 @@ export function connectPopover<T extends PropTypes>(
       'id': ids.content,
       'role': 'dialog',
       'tabindex': -1,
+      // Presence 会把收起内容留到动画结束；这段期间必须先退出焦点树与交互树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       'aria-modal': modal ? 'true' : 'false',
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
@@ -98,10 +88,7 @@ export function connectPopover<T extends PropTypes>(
       'data-placement': placement,
       // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。
       // 两根轴每帧都写，翻面后另一根不会留着上一帧的值；空串即撤掉声明，皮肤退回居中
-      'style': {
-        '--xh-_popover-arrow-x': arrowAt?.x != null ? `${arrowAt.x}px` : '',
-        '--xh-_popover-arrow-y': arrowAt?.y != null ? `${arrowAt.y}px` : '',
-      },
+      'style': overlayArrowVars('popover', arrowAt),
     }),
   }
 }

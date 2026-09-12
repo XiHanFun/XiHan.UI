@@ -2,6 +2,7 @@ import type { PositionResult, PropFn, Scope } from '@xihan-ui/core'
 import type { TourSchema, TourSpotlightRect, TourStep } from './tour.types'
 import { canTakeFocus, createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
+import { setupLayerTransaction } from '../shared/overlay-shell'
 import { sameTourSpotlight, tourSpotlightBox } from './tour.spotlight'
 
 const { createMachine } = setup<TourSchema>()
@@ -79,12 +80,15 @@ export const tourMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     position: null,
     getFloatingEl: () => null,
     getContentEl: () => null,
     reanchor: null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // 逻辑收起之后，层、消解与焦点域必须等所有视觉退场租约结清才归还。
+  effects: ['trackOverlay'],
   watch: ({ track, prop, context, action }) => {
     // 受控时用户事件只发意图回调、不自改状态；宿主写回 open 后由这里派发 CONTROLLED.* 无条件回写
     track([() => prop('open')], () => action(['syncOpen']))
@@ -105,7 +109,7 @@ export const tourMachine = createMachine({
     },
     open: {
       // 进入 open：定位 → 高亮 → 消解与焦点。退出 open 时按同序清理。
-      effects: ['trackPosition', 'trackSpotlight', 'trackLayer'],
+      effects: ['trackPosition', 'trackSpotlight'],
       // 几何随展开态一起来一起走，留着上一轮坐标会让下次展开先按旧位置闪一帧
       exit: ['clearGeometry'],
       on: {
@@ -303,57 +307,120 @@ export const tourMachine = createMachine({
           win.removeEventListener('scroll', onScroll, { capture: true })
         }
       },
-      // 层与消解层、焦点域绑在同一个效应里，三者生命周期必须一致；
-      // 层只在展开期间入栈，常驻会占死栈顶把下面各层的 Escape 堵死。
-      trackLayer: ({ refs, prop, scope, send }) => {
+      // 层、消解层与焦点域共享 Presence 生命周期：逻辑关闭先让内容失活，
+      // 真正的视觉退场结束后才逆序归还。Tour 本身没有滚动锁或背景失活资源，不能在这里虚构它们。
+      trackOverlay: ({ refs, prop, scope, send, flush, state, track }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
         // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
         if (!config || !registerLayer)
           return undefined
 
-        const { layer, dispose: disposeLayer } = registerLayer()
-        const getContentEl = refs.get('getContentEl')
+        let reactivateFocus: (() => void) | undefined
+        const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer) => {
+          const getContentEl = refs.get('getContentEl')
+          const dismiss = createDismissLayer({
+            config,
+            layer,
+            // 退场帧仍持有 Layer，但不能再接受第二次关闭意图。
+            onEscapeKeyDown: (event) => {
+              if (state.get() !== 'open' || !(prop('closeOnEscape') ?? true))
+                event.preventDefault()
+            },
+            onInteractOutside: (event) => {
+              if (state.get() !== 'open' || !(prop('closeOnInteractOutside') ?? false))
+                event.preventDefault()
+            },
+            // 两个开关都现读 prop，引导中途改也立刻生效
+            onDismiss: (reason) => {
+              if (reason === 'escape-key') {
+                if (prop('closeOnEscape') ?? true)
+                  // Escape 走放弃这条路而不是单纯关闭，onSkip 要发出去
+                  send({ type: 'SKIP' })
+                return
+              }
+              // 指针落在层外、焦点跑到层外都归这一条；closeOnInteractOutside 缺省 false
+              if (prop('closeOnInteractOutside') ?? false)
+                send({ type: 'CLOSE', src: 'interact-outside' })
+            },
+          })
+          defer(() => dismiss.dispose())
 
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          // 两个开关都现读 prop，引导中途改也立刻生效
-          onDismiss: (reason) => {
-            if (reason === 'escape-key') {
-              if (prop('closeOnEscape') ?? true)
-                // Escape 走放弃这条路而不是单纯关闭，onSkip 要发出去
-                send({ type: 'SKIP' })
-              return
+          const focus = createFocusScope({
+            config,
+            layer,
+            // 每次读最新 ref，容器晚一拍就位也能命中
+            container: () => getContentEl(),
+            // 退场内容已经 inert，保留焦点域的归还资格但不再把焦点拉回去。
+            trapped: () => state.get() === 'open',
+            loop: true,
+            // 焦点落在 content 容器本身而不是第一个按钮：读屏念完整段文案，Enter/Space 归下一步管。
+            // 容器还没显形时回 null，回非空会被当成焦点已安排好
+            initialFocus: () => {
+              const el = getContentEl()
+              return canTakeFocus(el, scope) ? el : null
+            },
+            restoreFocus: () => true,
+          })
+          reactivateFocus = focus.reactivate
+          defer(() => {
+            if (reactivateFocus === focus.reactivate)
+              reactivateFocus = undefined
+            focus.dispose()
+          })
+        }, { registry: config.layerRegistry, flush })
+
+        const presence = refs.get('presence')
+        let disposed = false
+        let release: (() => void) | undefined
+        let lastOpen = false
+
+        const finish = (): void => {
+          if (disposed || state.get() === 'open' || !release)
+            return
+          const cleanup = release
+          release = undefined
+          cleanup()
+        }
+        const offExit = presence?.onExitComplete(finish)
+        const sync = (): void => {
+          if (disposed)
+            return
+          const open = state.get() === 'open'
+          const reopening = open && !lastOpen && release !== undefined
+          lastOpen = open
+          if (open) {
+            // 退场中重开沿用原 Layer；Presence 会结清旧视觉租约。
+            release ??= acquire()
+            presence?.update(true)
+            if (reopening) {
+              const activate = reactivateFocus
+              flush(() => scope.getWin().requestAnimationFrame(() => {
+                if (!disposed && state.get() === 'open' && release && reactivateFocus === activate)
+                  activate?.()
+              }))
             }
-            // 指针落在层外、焦点跑到层外都归这一条；closeOnInteractOutside 缺省 false
-            if (prop('closeOnInteractOutside') ?? false)
-              send({ type: 'CLOSE', src: 'interact-outside' })
-          },
-        })
-
-        const focus = createFocusScope({
-          config,
-          layer,
-          // 每次读最新 ref，容器晚一拍就位也能命中
-          container: () => getContentEl(),
-          // 与 aria-modal 一致，焦点陷在浮层里，否则 Tab 一下就到了遮罩背后的页面
-          trapped: () => true,
-          loop: true,
-          // 焦点落在 content 容器本身而不是第一个按钮：读屏念完整段文案，Enter/Space 归下一步管。
-          // 容器还没显形时回 null，回非空会被当成焦点已安排好
-          initialFocus: () => {
-            const el = getContentEl()
-            return canTakeFocus(el, scope) ? el : null
-          },
-          restoreFocus: () => true,
-        })
-
-        // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈
+          }
+          else if (!presence || !presence.rendered) {
+            finish()
+          }
+        }
+        try {
+          track([() => state.get()], sync)
+          sync()
+        }
+        catch (error) {
+          disposed = true
+          offExit?.()
+          release?.()
+          throw error
+        }
         return () => {
-          focus.dispose()
-          dismiss.dispose()
-          disposeLayer()
+          disposed = true
+          offExit?.()
+          const cleanup = release
+          release = undefined
+          cleanup?.()
         }
       },
     },

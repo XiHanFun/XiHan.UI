@@ -16,9 +16,11 @@
 ## 特性
 
 - `placement` 只是首选位，空间不够时定位引擎自动翻面。
-- `modal` 可选：需要锁住下层时打开。
+- `modal` 可选：需要锁住下层时打开；展开期间可动态切换，模态档会锁住页面滚动并让背景失活。
 - 可以与触发器同宽，也可以落在指针位置。
 - `end` 这类对齐是逻辑方向，跟着书写方向走，不是左右。
+
+默认内容面使用 M2 磨砂配方，背景模糊只发生在浮层本体，箭头复用底色和边界，不重复模糊。正文保持不透明。关闭按钮键盘聚焦时立即铺实体隔离底，确保内收焦点环有稳定对比。系统减少透明度、高对比与强制颜色时，原位置切换为实体表面，打印时收起交互浮层。
 
 ## 示例
 
@@ -191,6 +193,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-labelledby` | `title` 部件的 id |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | 'dialog' |
@@ -200,6 +203,8 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 ## 样式
 
 默认皮肤 `@xihan-ui/styles/popover.css` 按部件选择：`[data-scope="popover"][data-part="trigger"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ## 数据属性
 
@@ -217,11 +222,40 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | `content` | `data-state` | 'open' \| 'closed' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-popover-arrow-size` · `--xh-popover-bg` · `--xh-popover-border` · `--xh-popover-close-bg-active` · `--xh-popover-close-bg-hover` · `--xh-popover-close-fg` · `--xh-popover-close-fg-hover` · `--xh-popover-close-radius` · `--xh-popover-close-size` · `--xh-popover-description-fg` · `--xh-popover-fg` · `--xh-popover-gap` · `--xh-popover-icon-size` · `--xh-popover-layer` · `--xh-popover-max-h` · `--xh-popover-max-w` · `--xh-popover-px` · `--xh-popover-py` · `--xh-popover-radius` · `--xh-popover-shadow` · `--xh-popover-title-fg` · `--xh-popover-title-font-size` · `--xh-popover-title-font-weight`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-popover-arrow-size` | `arrow` | `--xh-_overlay-arrow-size` | `default` | `--xh-overlay-arrow-size` | popover 的 arrow 部件 --xh-_overlay-arrow-size 覆盖槽。 |
+| `--xh-popover-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | popover 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-popover-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-material-frosted-bg` | popover 的 arrow、content 部件 background 覆盖槽。 |
+| `--xh-popover-border` | `arrow`<br>`content` | `border` | `default` | `--xh-material-frosted-border` | popover 的 arrow、content 部件 border 覆盖槽。 |
+| `--xh-popover-close-bg-active` | `close-trigger` | `background` | `active` | `--xh-bg-subtle-active` | popover 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-popover-close-bg-focus` | `close-trigger` | `background` | `focus-visible` | `--xh-material-frosted-focus-surface` | popover 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-popover-close-bg-hover` | `close-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | popover 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-popover-close-fg` | `close-trigger` | `color` | `default` | `--xh-material-frosted-fg-muted` | popover 的 close-trigger 部件 color 覆盖槽。 |
+| `--xh-popover-close-fg-focus` | `close-trigger` | `color` | `focus-visible` | `--xh-material-frosted-fg` | popover 的 close-trigger 部件 color 覆盖槽。 |
+| `--xh-popover-close-fg-hover` | `close-trigger` | `color` | `hover` | `--xh-fg-default` | popover 的 close-trigger 部件 color 覆盖槽。 |
+| `--xh-popover-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | popover 的 close-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-popover-close-size` | `close-trigger`<br>`content`<br>`title` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default`<br>`has([data-scope='popover'][data-part='close-trigger'])` | `--xh-control-h-sm` | popover 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
+| `--xh-popover-description-fg` | `description` | `color` | `default` | `--xh-material-frosted-fg-muted` | popover 的 description 部件 color 覆盖槽。 |
+| `--xh-popover-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | popover 的 content 部件 color 覆盖槽。 |
+| `--xh-popover-gap` | `content` | `gap` | `default` | `--xh-space-2` | popover 的 content 部件 gap 覆盖槽。 |
+| `--xh-popover-icon-size` | `content` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | popover 的 content 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-popover-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | popover 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-popover-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | popover 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-popover-max-w` | `content` | `max-inline-size` | `default` | `--xh-_popover-max-w` | popover 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-popover-px` | `content` | `padding-inline` | `default` | `--xh-_popover-pad` | popover 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-popover-py` | `content` | `padding-block` | `default` | `--xh-_popover-pad` | popover 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-popover-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | popover 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-popover-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | popover 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-popover-title-fg` | `title` | `color` | `default` | `--xh-material-frosted-fg` | popover 的 title 部件 color 覆盖槽。 |
+| `--xh-popover-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | popover 的 title 部件 font-size 覆盖槽。 |
+| `--xh-popover-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | popover 的 title 部件 font-weight 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
@@ -246,6 +280,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 ## 最佳实践
 
 - 打开后焦点进浮层，Escape 关闭并归还焦点。
+- 模态浮层关闭时，滚动锁与背景失活会保留到真实退场动画结束；退场内容自身立即退出焦点与交互树。
 - 内容控制在一屏内，需要滚动就说明该换[抽屉](./drawer)了。
 
 ## 反模式

@@ -14,19 +14,19 @@ export type LoadingBarRootSlotProps = Pick<LoadingBarApi, 'phase' | 'value' | 'v
 
 export const XhLoadingBarRoot = defineComponent({
   name: 'XhLoadingBarRoot',
-  // 缺省值由机器与 connect 给出，这里一律 default: undefined
+  // 缺省值由机器与 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    value: { type: Number, default: undefined },
-    defaultValue: { type: Number, default: undefined },
+    value: { type: Number },
+    defaultValue: { type: Number },
     loading: { type: Boolean, default: undefined },
-    height: { type: [String, Number] as PropType<string | number>, default: undefined },
-    color: { type: String, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
+    height: { type: [String, Number] as PropType<string | number> },
+    color: { type: String },
+    tone: { type: String as PropType<Tone> },
     trickle: { type: Boolean, default: undefined },
-    trickleSpeed: { type: Number, default: undefined },
-    minimum: { type: Number, default: undefined },
-    fadeDuration: { type: Number, default: undefined },
-    translations: { type: Object as PropType<Partial<LoadingBarTranslations>>, default: undefined },
+    trickleSpeed: { type: Number },
+    minimum: { type: Number },
+    fadeDuration: { type: Number },
+    translations: { type: Object as PropType<Partial<LoadingBarTranslations>> },
   },
   // value-change 携带 { value }，update:value 携带裸数值
   emits: {

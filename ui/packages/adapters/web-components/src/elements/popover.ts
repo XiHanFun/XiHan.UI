@@ -5,9 +5,9 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { connectPopover, popoverAnatomy, popoverMachine, popoverMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -41,7 +41,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart close-trigger - 关闭按钮
  * @csspart arrow - 指向锚点的箭头（aria-hidden，data-placement 随实际放置位翻转）
  */
-export class XhPopoverElement extends XhElement {
+export class XhPopoverElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: popoverAnatomy, meta: popoverMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -74,11 +77,18 @@ export class XhPopoverElement extends XhElement {
   declare translations?: Partial<PopoverTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly popoverScope = createScope(null, this.idGen)
+  private readonly popoverScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = this.createAnchoredPortalController({
+    name: 'Popover',
+    config: () => this.config,
+    source: () => this.getPart('trigger'),
+    root: () => this.getPart('positioner'),
+    onChange: () => this.requestUpdate(),
+  })
 
   private readonly notify = (details: PopoverOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
@@ -119,6 +129,21 @@ export class XhPopoverElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.popoverScope, idGenerator: this.idGen })
   }
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
+  }
+
+  /** 机器挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。 */
+  private ensureExit(open: boolean): OverlayExit {
+    this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open,
+      onExitComplete: () => this.requestUpdate(),
+    })
+    return this.exit
+  }
+
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
   // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
@@ -130,8 +155,7 @@ export class XhPopoverElement extends XhElement {
       // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，浮层等于关不掉。
       // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉
       branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
-      isModal: () => this.modal ?? false,
-      setModal: () => {},
+      isModal: () => this.ctrl.service.prop('modal') ?? false,
       // 非模态浮层不自带遮罩，没有"点它就该关本层"的表面
       surfaces: () => [],
     })
@@ -142,6 +166,7 @@ export class XhPopoverElement extends XhElement {
     this.ensureConfig()
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.ensureExit(svc.state.get() === 'open').presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -187,20 +212,18 @@ export class XhPopoverElement extends XhElement {
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const content = this.getPart('content')
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
-      config: this.config!,
-      open: api.open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    this.exit.track(content)
-    this.exit.update(api.open)
+    const exit = this.ensureExit(api.open)
+    exit.track(content)
+    exit.update(api.open)
     if (content)
-      this.setPartHidden(content, !this.exit.visible)
+      this.setPartHidden(content, !exit.visible)
 
     this.bars.wire()
+    this.portal.sync(exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     super.disconnectedCallback()
     // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上

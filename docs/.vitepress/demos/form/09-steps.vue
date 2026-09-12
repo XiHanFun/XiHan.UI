@@ -77,7 +77,7 @@ function saveDraft(values: Record<string, unknown>) {
 
     <!-- 上一步的字段容器这会儿并没渲染，值仍留在值表里 -->
     <template v-for="field in current.fields" :key="field.name">
-      <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" :value="field.name">
+      <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" :name="field.name">
         <XhFieldRoot :invalid="invalid" required>
           <XhFieldLabel>{{ field.label }}</XhFieldLabel>
           <XhFieldControl>

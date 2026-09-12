@@ -19,7 +19,10 @@ export type LogRootSlotProps = Pick<
   | 'scrollToBottom'
 >
 
-export interface XhLogRootProps {
+/** 根上自有的那些取值。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children'>
+
+export interface XhLogRootProps extends RootElementProps {
   /** 视口按多少行定高；缺省时高度由皮肤给。 */
   rows?: number
   /** 行还在路上：日志区报 aria-busy，根落 data-loading。 */
@@ -31,12 +34,20 @@ export interface XhLogRootProps {
   children?: SlotChildren<LogRootSlotProps>
 }
 
-export function XhLogRoot({ children, onStickChange, ...props }: XhLogRootProps): ReactNode {
-  const ctx = useLog(withXhConfig('log', props) as LogProps, onStickChange)
+export function XhLogRoot({
+  rows,
+  loading,
+  size,
+  translations,
+  onStickChange,
+  children,
+  ...rest
+}: XhLogRootProps): ReactNode {
+  const ctx = useLog(withXhConfig('log', { rows, loading, size, translations }) as LogProps, onStickChange)
   const { api } = ctx
   return (
     <LogProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           rows: api.rows,
           loading: api.loading,

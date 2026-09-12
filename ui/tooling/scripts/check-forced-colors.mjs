@@ -65,7 +65,6 @@ const EXEMPT = {
   'splitter.css:data-dragging': '正在拖动分隔条时的临时反馈，指针正按在把手上',
   'table.css:data-resizing': '正在拖动列宽时的临时反馈，指针正按在列边上',
   'table.css:data-striped': '斑马纹是读长表的辅助，行与行的分界由行盒自己的排版给出',
-  'tags-input.css:data-editing': '原地改字时输入框有插入符与聚焦环，两条在这一档里都还在',
   'tool-call.css:data-state=awaiting-approval': '各档状态由状态区的文字写出来，底色只是重复一遍',
   'tool-call.css:data-state=output-available': '同上',
   'tool-call.css:data-state=output-error': '同上',
@@ -76,6 +75,8 @@ const EXEMPT = {
  * 承载信息的那几份（色相带、删除行的斜纹、半颗星、扫光裁进字形）各自带 forced-colors 块。
  */
 const DECORATIVE = {
+  'back-top.css': 'M3 顶光只表达玻璃厚度；触发器本身的系统背景、边框与公共焦点环仍保留操作边界',
+  'float-button.css': 'M3 顶光只用来表达玻璃厚度；触发器本身的系统背景、边框与焦点环仍保留操作边界',
   'image-cropper.css': '三分参考线是构图辅助，裁切框自己的描边与四角把手在这一档里都还在',
   'loading-bar.css': '进度段末端那道亮边是装饰，进度本身由 range 的底色与 root 上的 aria-valuenow 表出',
 }
@@ -97,10 +98,10 @@ function blockEnd(css, open) {
   return css.length
 }
 
-/** 一份 CSS 里所有 `@media (forced-colors: active)` 块的正文拼起来。 */
+/** 一份 CSS 里所有包含 `(forced-colors: active)` 分支的 @media 块正文拼起来。 */
 function forcedBody(css) {
   let out = ''
-  const re = /@media\s*\(\s*forced-colors\s*:\s*active\s*\)\s*\{/g
+  const re = /@media\b[^{}]*\(\s*forced-colors\s*:\s*active\s*\)[^{}]*\{/g
   for (let m = re.exec(css); m !== null; m = re.exec(css)) {
     const open = m.index + m[0].length - 1
     out += `${css.slice(open + 1, blockEnd(css, open))}\n`
@@ -112,7 +113,7 @@ function forcedBody(css) {
 function withoutForced(css) {
   let out = css
   for (;;) {
-    const at = out.search(/@media\s*\(\s*forced-colors\s*:\s*active\s*\)\s*\{/)
+    const at = out.search(/@media\b[^{}]*\(\s*forced-colors\s*:\s*active\s*\)[^{}]*\{/)
     if (at === -1)
       return out
     const open = out.indexOf('{', at)

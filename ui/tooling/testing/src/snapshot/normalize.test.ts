@@ -21,6 +21,15 @@ describe('normalizeAttrs', () => {
     expect('data-v-1a2b3c4d' in attrs).toBe(false)
   })
 
+  it('保留跨端 family recipe 语义，其他 data-xh 内部标记仍过滤', () => {
+    const e = el('<button data-xh-action-control="" data-xh-field-size="md" data-xh-collection-slot="text" data-xh-internal="x"></button>')
+    const attrs = normalizeAttrs(e, new Map())
+    expect(attrs['data-xh-action-control']).toBe('')
+    expect(attrs['data-xh-field-size']).toBe('md')
+    expect(attrs['data-xh-collection-slot']).toBe('text')
+    expect('data-xh-internal' in attrs).toBe(false)
+  })
+
   it('缺失的结构属性显式为 null', () => {
     const e = el('<button type="button"></button>')
     const attrs = normalizeAttrs(e, new Map())
@@ -45,5 +54,12 @@ describe('normalizeAttrs', () => {
     const buckets = new Map([['item', [i0, i1]], ['trigger', [trigger]]])
     const attrs = normalizeAttrs(trigger, buckets)
     expect(attrs['aria-activedescendant']).toBe('@part(item[1])')
+  })
+
+  it('表单路径的 name 声明介质归一，保留连接层输出的路径状态', () => {
+    const item = el('<a name="email" data-scope="form" data-part="error-summary-item" data-name="email"></a>')
+    const attrs = normalizeAttrs(item, new Map())
+    expect(attrs.name).toBeNull()
+    expect(attrs['data-name']).toBe('email')
   })
 })

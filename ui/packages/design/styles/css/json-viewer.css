@@ -17,13 +17,6 @@
     --xh-_json-viewer-font-size: var(--xh-control-caption-md);
     --xh-_json-viewer-row-py: var(--xh-space-0_5);
     --xh-_json-viewer-indent: var(--xh-space-4);
-    --xh-json-viewer-key-fg: var(--xh-fg-brand-strong);
-    --xh-json-viewer-punctuation-fg: var(--xh-fg-subtle);
-    --xh-json-viewer-null-fg: var(--xh-fg-subtle);
-    --xh-json-viewer-string-fg: var(--xh-syntax-string);
-    --xh-json-viewer-number-fg: var(--xh-syntax-number);
-    --xh-json-viewer-boolean-fg: var(--xh-syntax-keyword);
-
     /* 两档的自绘条浮在内容之上：轨道不上底色，实色轨道会沿容器边缘糊出一条灰带 */
     --xh-scrollbar-track-bg: transparent;
 
@@ -95,11 +88,6 @@
   [data-scope='json-viewer'][data-part='text'][hidden] {
     display: none;
   }
-
-  /* 这一档没有行可落焦，环画在整块上，往内收免得被容器裁掉 */
-  [data-scope='json-viewer'][data-part='text']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
   [data-scope='json-viewer'][data-part='tree'][hidden] {
     display: none;
   }
@@ -117,8 +105,7 @@
 
   [data-scope='json-viewer'][data-part='branch']:focus-visible > [data-scope='json-viewer'][data-part='branch-control'] {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    /* 往内收：行是撑满宽度的，环画在外沿会被容器裁掉 */
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 行：标量与分支共用同一套盒子，两种行在视觉上必须齐平 */
@@ -152,16 +139,11 @@
     user-select: none;
   }
 
-  /* 标量行自己就是 treeitem，环往内收：行是撑满宽度的，画在外沿会被容器裁掉 */
-  [data-scope='json-viewer'][data-part='item']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   /* 键名不参与压缩：它短且必须完整可读，被挤掉的应该是值 */
   [data-scope='json-viewer'][data-part='item-key'],
   [data-scope='json-viewer'][data-part='branch-text'] {
     flex: none;
-    color: var(--xh-json-viewer-key-fg);
+    color: var(--xh-json-viewer-key-fg, var(--xh-fg-brand-strong));
     font-weight: var(--xh-json-viewer-key-font-weight, var(--xh-font-weight-medium));
   }
 
@@ -169,7 +151,7 @@
   [data-scope='json-viewer'][data-part='item-key']::after,
   [data-scope='json-viewer'][data-part='branch-text']::after {
     content: ':';
-    color: var(--xh-json-viewer-punctuation-fg);
+    color: var(--xh-json-viewer-punctuation-fg, var(--xh-fg-subtle));
   }
 
   /* 弹性子项默认最小尺寸是内容尺寸，不归零则长字符串把行撑破、省略号轮不上 */
@@ -182,25 +164,25 @@
   }
 
   [data-scope='json-viewer'][data-part='item-value'][data-value-type='string'] {
-    color: var(--xh-json-viewer-string-fg);
+    color: var(--xh-json-viewer-string-fg, var(--xh-syntax-string));
   }
 
   [data-scope='json-viewer'][data-part='item-value'][data-value-type='number'] {
-    color: var(--xh-json-viewer-number-fg);
+    color: var(--xh-json-viewer-number-fg, var(--xh-syntax-number));
   }
 
   [data-scope='json-viewer'][data-part='item-value'][data-value-type='boolean'] {
-    color: var(--xh-json-viewer-boolean-fg);
+    color: var(--xh-json-viewer-boolean-fg, var(--xh-syntax-keyword));
   }
 
   [data-scope='json-viewer'][data-part='item-value'][data-value-type='null'] {
-    color: var(--xh-json-viewer-null-fg);
+    color: var(--xh-json-viewer-null-fg, var(--xh-fg-subtle));
   }
 
   /* 空对象与空数组只剩一对括号，跟标点同色 */
   [data-scope='json-viewer'][data-part='item-value'][data-value-type='array'],
   [data-scope='json-viewer'][data-part='item-value'][data-value-type='object'] {
-    color: var(--xh-json-viewer-punctuation-fg);
+    color: var(--xh-json-viewer-punctuation-fg, var(--xh-fg-subtle));
   }
 
   /* 循环引用与截断占位不是真数据，排在语气之外用弱化字重表达 */

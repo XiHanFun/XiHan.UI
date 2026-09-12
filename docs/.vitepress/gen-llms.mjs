@@ -289,7 +289,7 @@ export async function writeLlmsAssets(outDir) {
   ];
   const index = [
     assetHeader("曦寒视图组件", [
-      "> 框架无关的设计系统运行时：无头内核提供行为与无障碍，Vue 与 Web Components 两个适配器只负责把属性铺到宿主元素上，纯 CSS 皮肤认 `data-scope` / `data-part` 而不是类名。",
+      "> 框架无关的设计系统运行时：无头内核提供行为与无障碍，Vue、React 与 Web Components 三个适配器只负责把属性铺到宿主元素上，纯 CSS 皮肤认 `data-scope` / `data-part` 而不是类名。",
       "",
       "本文件由文档站构建期生成，内容与库同源。",
       "",

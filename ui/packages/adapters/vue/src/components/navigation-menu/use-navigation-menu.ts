@@ -15,6 +15,8 @@ export interface NavigationMenuContext {
   rootRef: Ref<HTMLElement | null>
   /** list 节点：trigger 集合的查询容器，同时是指示条量测的参照系。 */
   listRef: Ref<HTMLElement | null>
+  /** 与 Headless Layer 同 realm 的配置；子面板退场闸门复用它。 */
+  config: RuntimeConfig | null
 }
 
 export function useNavigationMenu(
@@ -31,18 +33,18 @@ export function useNavigationMenu(
   // 指示条的量测在机器的 action 里跑，参照系经 refs 交进去
   service.refs.set('getListEl', () => listRef.value)
 
+  let config: RuntimeConfig | null = null
   if (typeof document !== 'undefined') {
-    const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+    config = createRuntimeConfig({ scope, idGenerator: idGen })
 
     // 只提供注册函数，入栈出栈由机器的 syncLayer 按展开项驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
+    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       // 导航只参与 Escape 仲裁与栈顶判定：面板就在文档流里，不陷焦点、不锁滚动、没有遮罩
       kind: 'inline',
       // 整个 nav 都算层内：trigger 与面板都住在里面
       node: () => rootRef.value,
       branches: () => [],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
 
@@ -51,5 +53,5 @@ export function useNavigationMenu(
   }
 
   const api = computed(() => connectNavigationMenu(service, vueNormalize))
-  return { api, service, rootRef, listRef }
+  return { api, service, rootRef, listRef, config }
 }

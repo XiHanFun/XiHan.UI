@@ -3,6 +3,7 @@ import type { SegmentedItemProps, SegmentedNode, SegmentedNodeMeta, SegmentedSch
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideSegmented, provideSegmentedItem, useSegmentedContext, useSegmentedItemContext } from './context'
 import { useSegmented } from './use-segmented'
 
@@ -10,22 +11,22 @@ type SegmentedProps = SegmentedSchema['props']
 
 export const XhSegmentedRoot = defineComponent({
   name: 'XhSegmentedRoot',
-  // 全部 default: undefined，缺省值由机器与 connect 决定
+  // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<SegmentedNode[]>, default: undefined },
-    value: { type: String as PropType<string | null>, default: undefined },
-    defaultValue: { type: String as PropType<string | null>, default: undefined },
+    collection: { type: Array as PropType<SegmentedNode[]> },
+    value: { type: String as PropType<string | null> },
+    defaultValue: { type: String as PropType<string | null> },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
-    name: { type: String, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    name: { type: String },
+    orientation: { type: String as PropType<Orientation> },
+    dir: { type: String as PropType<Direction> },
     loop: { type: Boolean, default: undefined },
     block: { type: Boolean, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // value-change 携带 { value }，update:value 携带裸值
   emits: {
@@ -42,7 +43,7 @@ export const XhSegmentedRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useSegmented(props as SegmentedProps, notify)
+    const ctx = useSegmented(useFormControlProps(props) as SegmentedProps, notify)
     provideSegmented(ctx)
     // 写了默认插槽就整套结构自理：隐藏输入也要自己放一个 XhSegmentedHiddenInput，
     // 否则给了 name 也没有任何东西参与提交

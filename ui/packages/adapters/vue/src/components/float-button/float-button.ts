@@ -21,19 +21,19 @@ export type FloatButtonRootSlotProps = Pick<FloatButtonApi, 'open' | 'setOpen'>
 /** 根节点是定位壳：把整组钉在视口一角，悬停展开时进出它才算数。 */
 export const XhFloatButtonRoot = defineComponent({
   name: 'XhFloatButtonRoot',
-  // 缺省值由机器与 connect 决定，这里一律 default: undefined
+  // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     disabled: Boolean,
-    placement: { type: String as PropType<FloatButtonPlacement>, default: undefined },
-    offset: { type: Number, default: undefined },
-    shape: { type: String as PropType<FloatButtonShape>, default: undefined },
-    expandTrigger: { type: String as PropType<FloatButtonExpandTrigger>, default: undefined },
-    variant: { type: String as PropType<ActionVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<FloatButtonTranslations>>, default: undefined },
+    placement: { type: String as PropType<FloatButtonPlacement> },
+    offset: { type: Number },
+    shape: { type: String as PropType<FloatButtonShape> },
+    expandTrigger: { type: String as PropType<FloatButtonExpandTrigger> },
+    variant: { type: String as PropType<ActionVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<FloatButtonTranslations>> },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: {
@@ -52,7 +52,7 @@ export const XhFloatButtonRoot = defineComponent({
     }
     const ctx = useFloatButton(withXhConfig('float-button', props) as FloatButtonProps, notify)
     provideFloatButton(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: ctx.rootRef }, slots.default?.({
       open: ctx.api.value.open,
       setOpen: ctx.api.value.setOpen,
     }))

@@ -10,9 +10,14 @@ interface Updatable extends HTMLElement {
 }
 
 // 对外语义事件（跨适配器一致的 CustomEvent），无关组件忽略
-const PUBLIC_EVENTS = ['open-change', 'checked-change', 'clamp-toggle', 'column-preference-change', 'pressed-change', 'node-move', 'row-move', 'tab-move', 'value-change', 'select', 'sort', 'status-change', 'submit', 'stop', 'stick-change', 'download-complete', 'download-error', 'item-delete', 'item-focus', 'decision', 'granted-scopes-change', 'expanded-value-change', 'index-change', 'answers-change', 'notes-change']
+const PUBLIC_EVENTS = ['open-change', 'checked-change', 'clamp-toggle', 'color-error', 'branch-load-start', 'branch-load', 'branch-load-error', 'column-preference-change', 'pressed-change', 'node-move', 'row-move', 'tab-move', 'value-change', 'select', 'sort', 'status-change', 'submit', 'stop', 'stick-change', 'download-complete', 'download-error', 'item-delete', 'item-focus', 'decision', 'granted-scopes-change', 'expanded-value-change', 'index-change', 'answers-change', 'notes-change']
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
+
+/** 节点声明了只在某些适配器下渲、名单里又没有 wc 时，本侧当它没写。 */
+function rendersHere(node: FixtureNode): boolean {
+  return node.only == null || node.only.includes('wc')
+}
 
 // FixtureNode → Light-DOM 元素：part 节点打 data-xh-part，纯文本子节点建文本节点。
 // <svg> 连同它的子树建在 SVG 命名空间下：createElement('svg') 建出的是 XHTML 的 <svg>，
@@ -24,8 +29,9 @@ function renderNode(node: FixtureNode, doc: Document, ns?: string): HTMLElement 
   if (node.part)
     el.dataset.xhPart = node.part
   for (const [k, v] of Object.entries(node.attrs ?? {})) el.setAttribute(k, v)
-  if (node.children?.length) {
-    for (const c of node.children) {
+  const kids = node.children?.filter(rendersHere)
+  if (kids?.length) {
+    for (const c of kids) {
       if (c.text != null && c.tag == null && c.part == null && c.children == null)
         el.appendChild(doc.createTextNode(c.text))
       else

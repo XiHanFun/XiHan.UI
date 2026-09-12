@@ -3,6 +3,7 @@ import type { PopoverSchema } from './popover.types'
 import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
+import { createModalLayerResources, setupLayerTransaction } from '../shared/overlay-shell'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */
 export const POPOVER_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
@@ -20,6 +21,8 @@ export const popoverMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
+    syncModalResources: null,
     position: null,
     getAnchorEl: () => null,
     getFloatingEl: () => null,
@@ -27,9 +30,14 @@ export const popoverMachine = createMachine({
     getInitialFocusEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // 层、焦点域和模态资源由机器持有；逻辑关闭后继续保留到 Presence 完成真实退场。
+  effects: ['trackLayer'],
   // 受控（open prop 给定）时，用户事件只发意图回调、不自改状态；宿主写回 open 后
   // 由此 watch 追踪 open 变化，派发影子事件 CONTROLLED.* 无条件回写状态。
-  watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
+  watch: ({ track, prop, action }) => {
+    track([() => prop('open')], () => action(['syncOpen']))
+    track([() => prop('modal')], () => action(['syncModalResources']))
+  },
   states: {
     closed: {
       on: {
@@ -46,8 +54,8 @@ export const popoverMachine = createMachine({
       },
     },
     open: {
-      // 进入 open：定位 → 消解 → 焦点。退出 open 时按同序清理，焦点归还发生在消解层撤销之后。
-      effects: ['trackPosition', 'trackLayer'],
+      // 定位只服务于逻辑展开；行为层另由顶层效应保留到真实退场结束。
+      effects: ['trackPosition'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
@@ -85,6 +93,7 @@ export const popoverMachine = createMachine({
           return
         send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
+      syncModalResources: ({ refs }) => refs.get('syncModalResources')?.(),
     },
     effects: {
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读。
@@ -133,54 +142,135 @@ export const popoverMachine = createMachine({
           stop?.()
         }
       },
-      // 层与消解层、焦点域同生命周期；层只在展开期间入栈，常驻栈会占死栈顶、堵掉下层 Escape。
-      trackLayer: ({ refs, prop, send, context }) => {
+      // 层、消解层、焦点域与模态资源共用一轮生命周期；关闭后等 Presence 真退场再逆序释放。
+      trackLayer: ({ refs, prop, send, context, flush, state, track }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
         // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
         if (!config || !registerLayer)
           return undefined
 
-        const { layer, dispose: disposeLayer } = registerLayer()
+        let reactivateFocus: (() => void) | undefined
+        const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer, run) => {
+          const dismiss = createDismissLayer({
+            config,
+            layer,
+            // 退场期间层仍在栈里充当屏障，但不再重复发关闭意图。
+            onEscapeKeyDown: (event) => {
+              if (state.get() !== 'open' || !(prop('closeOnEscape') ?? true))
+                event.preventDefault()
+            },
+            onInteractOutside: (event) => {
+              if (state.get() !== 'open' || !(prop('closeOnInteractOutside') ?? true))
+                event.preventDefault()
+            },
+            onDismiss: reason => send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
+          })
+          defer(() => dismiss.dispose())
 
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          // 关不关在这里判定：两个开关都现读 prop，开合中途改也立刻生效
-          onDismiss: (reason) => {
-            const escape = reason === 'escape-key'
-            const allowed = escape
-              ? (prop('closeOnEscape') ?? true)
-              : (prop('closeOnInteractOutside') ?? true)
-            if (!allowed)
-              return
-            send({ type: 'CLOSE', src: escape ? 'esc' : 'interact-outside' })
-          },
-        })
+          const focus = createFocusScope({
+            config,
+            layer,
+            // 每次读最新 ref，容器晚一拍就位也能命中
+            container: () => refs.get('getContentEl')(),
+            // 非模态浮层不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
+            trapped: () => (prop('modal') ?? false) && state.get() === 'open',
+            loop: () => prop('modal') ?? false,
+            // 缺省返回 null，落点仍由焦点域的 Tab 序列探测决定；
+            // 浮层里排着集合的组合件填这一条把落点收口（见 getInitialFocusEl）。
+            // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
+            initialFocus: () => refs.get('getInitialFocusEl')(),
+            restoreFocus: () => context.get('returnFocus'),
+            // 归还落点显式给锚点：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+            // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
+            restoreTarget: () => refs.get('getAnchorEl')(),
+          })
+          reactivateFocus = focus.reactivate
+          defer(() => {
+            if (reactivateFocus === focus.reactivate)
+              reactivateFocus = undefined
+            focus.dispose()
+          })
 
-        const focus = createFocusScope({
-          config,
-          layer,
-          // 每次读最新 ref，容器晚一拍就位也能命中
-          container: () => refs.get('getContentEl')(),
-          // 非模态浮层不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
-          trapped: () => prop('modal') ?? false,
-          loop: prop('modal') ?? false,
-          // 缺省返回 null，落点仍由焦点域的 Tab 序列探测决定；
-          // 浮层里排着集合的组合件填这一条把落点收口（见 getInitialFocusEl）。
-          // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
-          initialFocus: () => refs.get('getInitialFocusEl')(),
-          restoreFocus: () => context.get('returnFocus'),
-          // 归还落点显式给锚点：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
-          restoreTarget: () => refs.get('getAnchorEl')(),
-        })
+          const getContentEl = refs.get('getContentEl')
+          const modalResources = createModalLayerResources({
+            config,
+            layer,
+            enabled: () => prop('modal') ?? false,
+            // 内嵌浮层通常 portal 到 body；栈中位于本层之上的节点必须与当前 content 一起保留。
+            targets: () => [
+              getContentEl(),
+              ...config.layerRegistry.elementsAbove(layer),
+            ].filter(Boolean) as Element[],
+            flush,
+            run,
+          })
+          defer(modalResources.dispose)
+          const syncModalResources = (): void => {
+            // 退场期间冻结关闭那一刻的模态策略；重开或展开中变更时再同步。
+            if (state.get() === 'open')
+              modalResources.sync()
+          }
+          refs.set('syncModalResources', syncModalResources)
+          defer(() => {
+            if (refs.get('syncModalResources') === syncModalResources)
+              refs.set('syncModalResources', null)
+          })
+          syncModalResources()
+        }, { registry: config.layerRegistry, flush })
 
-        // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈
+        const presence = refs.get('presence')
+        let disposed = false
+        let release: (() => void) | undefined
+        let lastOpen = false
+
+        const finish = (): void => {
+          if (disposed || state.get() === 'open' || !release)
+            return
+          const cleanup = release
+          release = undefined
+          cleanup()
+        }
+        const offExit = presence?.onExitComplete(finish)
+        const sync = (): void => {
+          if (disposed)
+            return
+          const open = state.get() === 'open'
+          const reopening = open && !lastOpen && release !== undefined
+          lastOpen = open
+          if (open) {
+            // 先废弃旧退出租约，退场中重开沿用同一层登记与模态资源。
+            presence?.update(true)
+            release ??= acquire()
+            refs.get('syncModalResources')?.()
+            if (reopening) {
+              const activate = reactivateFocus
+              flush(() => config.scope.getWin().requestAnimationFrame(() => {
+                if (!disposed && state.get() === 'open' && release && reactivateFocus === activate)
+                  activate?.()
+              }))
+            }
+          }
+          else if (!presence || !presence.rendered) {
+            finish()
+          }
+        }
+        try {
+          track([() => state.get()], sync)
+          sync()
+        }
+        catch (error) {
+          disposed = true
+          offExit?.()
+          release?.()
+          throw error
+        }
         return () => {
-          focus.dispose()
-          dismiss.dispose()
-          disposeLayer()
+          disposed = true
+          offExit?.()
+          const cleanup = release
+          release = undefined
+          cleanup?.()
         }
       },
     },

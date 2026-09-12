@@ -7,8 +7,6 @@ export { findMentionTrigger, insertMention, MENTION_DEFAULT_PREFIX, normalizeMen
 export type {
   MentionApi,
   MentionInputEl,
-  MentionInputHost,
-  MentionInputProps,
   MentionItemProps,
   MentionNode,
   MentionNodeMeta,

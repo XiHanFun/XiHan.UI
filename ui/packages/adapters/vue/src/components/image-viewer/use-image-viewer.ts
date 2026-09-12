@@ -52,7 +52,6 @@ export function useImageViewer(
       node: () => contentRef.value,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       surfaces: () => [backdropRef.value].filter(Boolean) as Element[],
     })
     const presence: PresenceHandle = createPresence({
@@ -66,21 +65,32 @@ export function useImageViewer(
 
     service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
+    service.refs.set('presence', presence)
     service.refs.set('getContentEl', () => contentRef.value)
 
     // data-state 提交到 DOM 之后再驱动 presence，让退场探测读到正确的 animationName
     watch(() => service.state.get() === 'open', open => presence.update(open), { flush: 'post' })
 
-    // content 就位后把它的 CSS 退场动画接到 presence 退出租约，无动画时关闭即卸载
-    let detachExit: (() => void) | undefined
-    watch(contentRef, (el) => {
-      detachExit?.()
-      detachExit = el ? attachCssExit(el, presence) : undefined
+    // 内容与遮罩各自的动画都要申领退出租约；任一未结束都不能提早释放模态资源。
+    const tracked = new Map<HTMLElement, Cleanup>()
+    watch([contentRef, backdropRef], (nodes) => {
+      const next = new Set(nodes.filter((node): node is HTMLElement => node !== null))
+      for (const node of next) {
+        if (!tracked.has(node))
+          tracked.set(node, attachCssExit(node, presence))
+      }
+      for (const [node, detach] of tracked) {
+        if (!next.has(node)) {
+          tracked.delete(node)
+          detach()
+        }
+      }
     }, { flush: 'post' })
 
     onBeforeUnmount(() => {
-      detachExit?.()
       presence.dispose()
+      for (const detach of tracked.values()) detach()
+      tracked.clear()
     })
   }
 

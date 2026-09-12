@@ -15,6 +15,9 @@ const HEIGHT_PROPS = new Set(['block-size', 'min-block-size', 'max-block-size'])
 /** 滚动面高度令牌：三档定高、页内滚动面上限、菜单族上限、列表族上限。 */
 const HEIGHT_TOKENS = /--xh-(?:viewport-h-(?:sm|md|lg)|viewport-max-h|overlay-menu-max-h|overlay-max-h)\b/
 
+/** 控件高度令牌：既是控件又在框内滚的部件，它的地板走这把尺。 */
+const CONTROL_FLOOR_TOKENS = /--xh-control-(?:h|box)-(?:sm|md|lg)\b/
+
 /** 不带尺寸的取值：把高度交给外层或视口，或者明说「不设下限 / 不设上限」。 */
 const PASS_THROUGH = /^(?:0|none|100%|auto|inherit|unset|revert|fit-content|max-content|min-content)$/
 
@@ -45,7 +48,9 @@ const EXEMPT = {
   'layout sider': '贴边侧栏的高度是视口减去顶栏偏移，跟着页面走',
   'log viewport': '日志窗高度是「显示几行」乘行高，行数由使用者给',
   'marquee root': '跑马灯的高度是内容轨道自己的高度',
+  'markdown-stream block': '滚的是行内方向（overflow-x）：块轴的高度就是这一段渲染结果自己的高度',
   'scroll-area viewport': '视口高度是容器高度减去滚动条厚度，容器多高就多高',
+  'tool-call content': '滚的是行内方向（overflow-x）：块轴由展开收起的行高动画给，收起时归零',
 }
 
 /** 去掉注释。 */
@@ -104,18 +109,28 @@ for (const file of files) {
   }
 
   /**
-   * 值本身或它的组件槽回退链上出现过滚动面令牌。
+   * 值本身或它的组件槽回退链上出现过 ruler 那把尺。
    * `min(那把尺, var(--xh-_<c>-available-h))` 这种写法算数：可用高度是定位引擎算出的视口余量，
    * 它只负责在屏幕装不下时再收一截，尺仍是 min() 里的另一半。
    */
-  const onScale = (value, depth = 0) => {
-    if (PASS_THROUGH.test(value) || HEIGHT_TOKENS.test(value))
+  const onRuler = (value, ruler, depth = 0) => {
+    if (PASS_THROUGH.test(value) || ruler.test(value))
       return true
     if (depth >= 4)
       return false
     const refs = [...value.matchAll(/var\(\s*(--[\w-]+)/g)]
-    return refs.some(ref => (slots.get(ref[1]) ?? []).some(declared => onScale(declared, depth + 1)))
+    return refs.some(ref => (slots.get(ref[1]) ?? []).some(declared => onRuler(declared, ruler, depth + 1)))
   }
+
+  const onScale = value => onRuler(value, HEIGHT_TOKENS)
+
+  /**
+   * 这条高度声明落在它该落的那把尺上。
+   * 上限与定高走滚动面这把尺；地板另算：又是控件又在框内滚的部件（标签输入的框、
+   * 多行输入的框），地板是「至少一行控件那么高」，走的是控件那把尺，由 check-control-height 管。
+   */
+  const accepts = (name, value) => onScale(value)
+    || (name === 'min-block-size' && onRuler(value, CONTROL_FLOOR_TOKENS))
 
   // 一、收面板：规则里滚起来的部件就是面板，各皮肤的部件名不止一套，按实际 overflow 收
   const panels = new Map()
@@ -124,6 +139,8 @@ for (const file of files) {
     if (!scrolls)
       continue
     for (const selector of rule.selectors) {
+      if (/::(?:before|after)\b/.test(selector))
+        continue
       const part = lastPart(selector)
       if (part == null)
         continue
@@ -135,6 +152,9 @@ for (const file of files) {
   // 二、面板上的高度声明：基础块与带状态的块都算，同一属性后写的覆盖先写的
   for (const rule of rules) {
     for (const selector of rule.selectors) {
+      // 顶边高光等伪元素有自己的发丝高度，不是宿主滚动面板的高度。
+      if (/::(?:before|after)\b/.test(selector))
+        continue
       const part = lastPart(selector)
       if (part == null || !panels.has(part))
         continue
@@ -148,20 +168,20 @@ for (const file of files) {
 
   for (const [part, panel] of panels) {
     const key = `${comp} ${part}`
-    panel.onScale = panel.heights.size > 0 && [...panel.heights.values()].every(h => onScale(h.value))
+    panel.onScale = panel.heights.size > 0 && [...panel.heights].every(([name, h]) => accepts(name, h.value))
     panelsBySkin.set(key, panel)
     if (key in EXEMPT) {
       usedExempt.add(key)
       continue
     }
 
-    // 三、高度取值只许落在滚动面令牌上
+    // 三、高度取值只许落在滚动面令牌上（地板另走控件那把尺）
     for (const [name, { value }] of panel.heights) {
-      if (onScale(value)) {
+      if (accepts(name, value)) {
         governed++
         continue
       }
-      report(comp, `${part} 的 ${name}: ${value} —— 没走 --xh-viewport-h-* / --xh-viewport-max-h / --xh-overlay-menu-max-h / --xh-overlay-max-h`)
+      report(comp, `${part} 的 ${name}: ${value} —— 没走 --xh-viewport-h-* / --xh-viewport-max-h / --xh-overlay-menu-max-h / --xh-overlay-max-h（地板可走 --xh-control-h-* / --xh-control-box-*）`)
     }
 
     // 四、面板必须写高度声明；不上这把尺的登在名单里

@@ -115,10 +115,30 @@
     ]
   },
   {
+    "name": "react/backgrounds",
+    "path": "packages/adapters/react/dist/backgrounds.js",
+    "gzip": true,
+    "limit": "18 kB",
+    "ignore": [
+      "react",
+      "react-dom"
+    ]
+  },
+  {
     "name": "react/behavior",
     "path": "packages/adapters/react/dist/behavior.js",
     "gzip": true,
     "limit": "3.8 kB",
+    "ignore": [
+      "react",
+      "react-dom"
+    ]
+  },
+  {
+    "name": "react/sound",
+    "path": "packages/adapters/react/dist/sound.js",
+    "gzip": true,
+    "limit": "5.9 kB",
     "ignore": [
       "react",
       "react-dom"

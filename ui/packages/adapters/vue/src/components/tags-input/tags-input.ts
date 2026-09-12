@@ -5,6 +5,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideTagsInput, provideTagsInputItem, useTagsInputContext, useTagsInputItemContext } from './context'
 import { useTagsInput } from './use-tags-input'
 
@@ -36,30 +37,30 @@ export type TagsInputRootSlotProps = Pick<
 
 export const XhTagsInputRoot = defineComponent({
   name: 'XhTagsInputRoot',
-  // 有 connect 与机器兜底的 prop 一律 default: undefined
+  // 有 connect 与机器兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    // default: undefined 表示非受控
-    value: { type: Array as PropType<string[]>, default: undefined },
-    defaultValue: { type: Array as PropType<string[]>, default: undefined },
-    inputValue: { type: String, default: undefined },
-    defaultInputValue: { type: String, default: undefined },
-    max: { type: Number, default: undefined },
+    // 缺席值 undefined 表示非受控
+    value: { type: Array as PropType<string[]> },
+    defaultValue: { type: Array as PropType<string[]> },
+    inputValue: { type: String },
+    defaultInputValue: { type: String },
+    max: { type: Number },
     allowOverflow: Boolean,
-    disabled: Boolean,
-    readOnly: Boolean,
-    required: Boolean,
-    invalid: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     showCount: Boolean,
-    name: { type: String, default: undefined },
-    placeholder: { type: String, default: undefined },
-    delimiter: { type: String, default: undefined },
+    name: { type: String },
+    placeholder: { type: String },
+    delimiter: { type: String },
     addOnPaste: Boolean,
     editable: Boolean,
-    blurBehavior: { type: String as PropType<TagsInputBlurBehavior | null>, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<TagsInputTranslations>>, default: undefined },
+    blurBehavior: { type: String as PropType<TagsInputBlurBehavior | null> },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<TagsInputTranslations>> },
   },
   // value-change 携带 { value }，update:value 携带裸数组；输入文本走 input-value-change 一路
   emits: {
@@ -80,7 +81,7 @@ export const XhTagsInputRoot = defineComponent({
       emit('input-value-change', details)
       emit('update:inputValue', details.inputValue)
     }
-    const ctx = useTagsInput(withXhConfig('tags-input', props) as TagsInputProps, { onValueChange, onInputValueChange })
+    const ctx = useTagsInput(withXhConfig('tags-input', useFormControlProps(props)) as TagsInputProps, { onValueChange, onInputValueChange })
     provideTagsInput(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,
@@ -128,7 +129,7 @@ export const XhTagsInputInput = defineComponent({
     // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
     const fieldLabel = useFieldLabelWiring()
     const ctx = useTagsInputContext()
-    return () => h('input', fieldLabel.value({ ...ctx.api.value.getInputProps() as Record<string, unknown>, ...fieldWiring.value }))
+    return () => h('input', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getInputProps() as Record<string, unknown> }))
   },
 })
 
@@ -166,6 +167,7 @@ export const XhTagsInputItem = defineComponent({
   },
 })
 
+/** 标签的预览：渲的是库里 tag 的 root（data-scope="tag"），就地编辑时由 tag 收起。 */
 export const XhTagsInputItemPreview = defineComponent({
   name: 'XhTagsInputItemPreview',
   setup(_, { slots }) {
@@ -175,6 +177,7 @@ export const XhTagsInputItemPreview = defineComponent({
   },
 })
 
+/** 标签文字：渲的是 tag 的 label，截断落在这一层。 */
 export const XhTagsInputItemText = defineComponent({
   name: 'XhTagsInputItemText',
   setup(_, { slots }) {
@@ -184,6 +187,7 @@ export const XhTagsInputItemText = defineComponent({
   },
 })
 
+/** 删除钮：渲的是所在标签那份 tag 的 close-trigger，不占 Tab 位；禁用与只读时留位、原生 disabled。 */
 export const XhTagsInputItemDeleteTrigger = defineComponent({
   name: 'XhTagsInputItemDeleteTrigger',
   setup(_, { slots }) {

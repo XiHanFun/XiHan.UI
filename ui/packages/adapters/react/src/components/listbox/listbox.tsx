@@ -7,6 +7,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   ListboxGroupProvider,
   ListboxItemProvider,
@@ -25,7 +26,10 @@ export type ListboxRootSlotProps = Pick<
   'value' | 'selectionMode' | 'focusedValue' | 'isSelected' | 'setValue' | 'select' | 'toggle'
 >
 
-export interface XhListboxRootProps {
+/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
+
+export interface XhListboxRootProps extends RootElementProps {
   collection?: ListboxNode[]
   /** 标题文字。给了它就不必再写 label 部件。 */
   label?: ReactNode
@@ -49,8 +53,44 @@ export interface XhListboxRootProps {
   children?: SlotChildren<ListboxRootSlotProps>
 }
 
-export function XhListboxRoot({ children, label, renderItem, ...props }: XhListboxRootProps): ReactNode {
-  const ctx = useListbox(props as ListboxProps)
+export function XhListboxRoot({
+  collection,
+  value,
+  defaultValue,
+  selectionMode,
+  disabled,
+  readOnly,
+  invalid,
+  loading,
+  tone,
+  size,
+  loop,
+  typeahead,
+  dir,
+  orientation,
+  onValueChange,
+  children,
+  label,
+  renderItem,
+  ...rest
+}: XhListboxRootProps): ReactNode {
+  const ctx = useListbox(useFormControlProps({
+    collection,
+    value,
+    defaultValue,
+    selectionMode,
+    disabled,
+    readOnly,
+    invalid,
+    loading,
+    tone,
+    size,
+    loop,
+    typeahead,
+    dir,
+    orientation,
+    onValueChange,
+  }) as ListboxProps)
   const api = ctx.api
 
   const body = children != null
@@ -63,13 +103,13 @@ export function XhListboxRoot({ children, label, renderItem, ...props }: XhListb
         select: api.select,
         toggle: api.toggle,
       })
-    : props.collection
+    : collection
       ? <DefaultTree collection={api.collection} label={label} renderItem={renderItem} />
       : null
 
   return (
     <ListboxProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>{body}</div>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
     </ListboxProvider>
   )
 }

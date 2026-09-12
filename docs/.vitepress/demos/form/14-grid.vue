@@ -36,7 +36,7 @@ const rules = {
       v-for="f in fields"
       :key="f.name"
       v-slot="{ value, setValue }"
-      :value="f.name"
+      :name="f.name"
       :span="f.span"
     >
       <XhFieldRoot>

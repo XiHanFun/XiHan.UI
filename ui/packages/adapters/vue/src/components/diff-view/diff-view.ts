@@ -2,6 +2,7 @@ import type { CodeToken, Size } from '@xihan-ui/core'
 import type { DiffChange, DiffModel, DiffSide, DiffViewApi, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { diffViewSides } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideDiffView, useDiffViewContext } from './context'
@@ -15,22 +16,17 @@ export type DiffViewRootSlotProps = Pick<
   'view' | 'rows' | 'expandedValue' | 'stats' | 'truncated' | 'truncatedLines' | 'isEmpty' | 'toggleGap' | 'setExpandedValue'
 >
 
-/** 单栏只有一列，恒为旧侧；并排两列都铺。 */
-function sidesOf(view: DiffViewMode): readonly DiffSide[] {
-  return view === 'split' ? ['old', 'new'] : ['old']
-}
-
 export const XhDiffViewRoot = defineComponent({
   name: 'XhDiffViewRoot',
   props: {
-    model: { type: Object as PropType<DiffModel>, default: undefined },
-    view: { type: String as PropType<DiffViewMode>, default: undefined },
-    contextLines: { type: Number, default: undefined },
-    expandedValue: { type: Array as PropType<readonly string[]>, default: undefined },
-    defaultExpandedValue: { type: Array as PropType<readonly string[]>, default: undefined },
+    model: { type: Object as PropType<DiffModel> },
+    view: { type: String as PropType<DiffViewMode> },
+    contextLines: { type: Number },
+    expandedValue: { type: Array as PropType<readonly string[]> },
+    defaultExpandedValue: { type: Array as PropType<readonly string[]> },
     wrap: { type: Boolean, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<DiffViewTranslations>>, default: undefined },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<DiffViewTranslations>> },
   },
   emits: {
     'expanded-value-change': (_details: PayloadOf<Props, 'onExpandedValueChange'>) => true,
@@ -110,7 +106,7 @@ export const XhDiffViewBody = defineComponent({
     // 行是模型算出来的派生结构，作者写不出 N 行，由组件铺
     return () => {
       const api = ctx.api.value
-      const sides = sidesOf(api.view)
+      const sides = diffViewSides(api.view)
       return h('div', api.getBodyProps() as Record<string, unknown>, [
         ...api.rows.map((row) => {
           if (row.kind === 'gap') {

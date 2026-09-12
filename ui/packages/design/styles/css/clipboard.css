@@ -31,6 +31,9 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-clipboard-gap, var(--xh-space-1));
+
+    /* 父容器给不出这么宽时整件跟着收，不越出父容器 */
+    max-inline-size: 100%;
   }
 
   /* —— 尺寸 —— */
@@ -55,6 +58,18 @@
     --xh-_clipboard-copy-trigger-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
     --xh-_clipboard-copy-trigger-border: transparent;
     --xh-_clipboard-copy-trigger-border-hover: transparent;
+  }
+
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     形态写在 root 上、拿焦点的是按钮，规则因此写成后代 */
+  [data-scope='clipboard'][data-part='root'][data-variant='solid'] [data-scope='clipboard'][data-part='copy-trigger']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
+  /* 复制成功那一段把字换成成功色，面仍是实心语气底；环取面配对的那支前景色 */
+  [data-scope='clipboard'][data-part='root'][data-variant='solid'] [data-scope='clipboard'][data-part='copy-trigger'][data-copied]:focus-visible {
+    --xh-_ring-color: var(--xh-clipboard-copy-trigger-fg, var(--xh-_clipboard-copy-trigger-fg));
   }
 
   [data-scope='clipboard'][data-part='root'][data-variant='subtle'] {
@@ -117,7 +132,9 @@
   }
 
   [data-scope='clipboard'][data-part='input'] {
-    min-inline-size: var(--xh-clipboard-input-min-w, var(--xh-control-min-w));
+    /* 宽度是偏好值不是地板：并排的复制钮占掉位置后，输入框还能继续被压缩 */
+    inline-size: var(--xh-clipboard-input-min-w, var(--xh-control-min-w));
+    min-inline-size: 0;
     block-size: var(--xh-clipboard-input-h, var(--xh-_clipboard-h));
     padding-inline: var(--xh-clipboard-input-px, var(--xh-_clipboard-px));
     padding-block: 0;

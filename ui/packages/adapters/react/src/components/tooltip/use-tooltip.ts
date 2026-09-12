@@ -37,7 +37,6 @@ export function useTooltip(props: TooltipSchema['props']): TooltipContext {
     // trigger 记为本层分支，点它算层内交互
     branches: () => [triggerRef.current].filter(Boolean) as Element[],
     isModal: () => false,
-    setModal: () => {},
   }), [])
 
   const overlay = useOverlay({

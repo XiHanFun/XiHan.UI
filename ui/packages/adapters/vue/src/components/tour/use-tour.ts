@@ -15,6 +15,7 @@ export interface TourContext {
   service: Service<TourSchema>
   api: ComputedRef<TourApi>
   backdropRef: Ref<HTMLElement | null>
+  spotlightRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
   /** 此刻该不该可见：收起那一帧押后到退场动画播完；遮罩、高亮框与定位层跟它一起收。 */
@@ -28,9 +29,11 @@ export interface TourContext {
 export function useTour(
   props: TourSchema['props'],
   notify: Pick<TourSchema['props'], 'onOpenChange' | 'onValueChange' | 'onComplete' | 'onSkip'> = {},
+  container?: () => Element | null | undefined,
 ): TourContext {
   const xhConfig = useXhConfig()
   const backdropRef = ref<HTMLElement | null>(null)
+  const spotlightRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
 
@@ -52,7 +55,6 @@ export function useTour(
       node: () => contentRef.value,
       branches: () => [],
       isModal: () => true,
-      setModal: () => {},
       // 遮罩登记为可点关闭的表面，是否真关由 closeOnInteractOutside 决定
       surfaces: () => [backdropRef.value].filter(Boolean) as Element[],
     })
@@ -66,11 +68,17 @@ export function useTour(
   }
 
   const api = computed(() => connectTour(service, vueNormalize))
-  const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+  const visible = useOverlayExit({
+    config,
+    isOpen: () => api.value.open,
+    contentRef,
+    additionalExitRefs: [backdropRef, spotlightRef],
+    onPresence: presence => service.refs.set('presence', presence),
+  })
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
-  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
+  const portalTarget = computed<string | Element>(() => container?.() ?? xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
   const showBackdrop = (): boolean => props.showBackdrop ?? true
 
-  return { service, api, backdropRef, positionerRef, contentRef, visible, showBackdrop, portalTarget }
+  return { service, api, backdropRef, spotlightRef, positionerRef, contentRef, visible, showBackdrop, portalTarget }
 }

@@ -5,8 +5,10 @@
 // 而尺一改，凑出来的那个不跟着走。来源对了档位也得对：md 档引了 lg 的数，一行里照样高出一截。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { declarations, stripComments } from './lib/css-declarations.mjs'
 
 const STYLES_DIR = 'packages/design/styles/css'
+const FAMILY_STYLES_DIR = 'packages/design/styles/family'
 
 /** 受管辖的部件：组件自己那层可交互控件，所有组件通用的部件名。 */
 const CONTROL_PARTS = new Set(['control', 'input', 'trigger', 'preview', 'segment'])
@@ -30,6 +32,10 @@ const TIER = /--xh-control-(?:h|box)-(sm|md|lg)\b/g
 
 /** 高度属性。多行控件走 min-block-size 同样算数。 */
 const HEIGHT_PROPS = new Set(['block-size', 'min-block-size', 'height', 'min-height'])
+
+/** 粗指针专属最小高度是触摸命中盒，不是组件的桌面尺寸档。 */
+const COARSE_MEDIA = /@media[^{]*[(\s]pointer\s*:\s*coarse/
+const COARSE_TOUCH_HEIGHT_PROPS = new Set(['min-block-size'])
 
 /** 把高度交给外层控件或内容决定的值，它们本身不带档位。 */
 const PASS_THROUGH = new Set(['100%', 'auto', 'inherit', 'unset', 'revert', 'fit-content', 'max-content', 'min-content'])
@@ -62,7 +68,7 @@ const consumed = new Set()
 
 for (const file of files) {
   const comp = file.replace(/\.css$/, '')
-  const src = (await readFile(join(STYLES_DIR, file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '')
+  const src = stripComments(await readFile(join(STYLES_DIR, file), 'utf8'))
   const bodyParts = CONTROL_BODY[comp] ?? []
   const isControlPart = part => CONTROL_PARTS.has(part) || bodyParts.includes(part)
 
@@ -118,28 +124,36 @@ for (const file of files) {
   // 一之二、档位要对得上：sm 块引 sm、lg 块引 lg，没有 data-size 的块里控件本体高度槽只许 md。
   // 只看本体高度槽（--xh-_<comp>-…-h / …-box-size）与受管部件上的高度声明；
   // 关闭钮、翻页钮这类固定小号的动作钮走的是别的槽名，不在此列
-  for (const rule of src.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    const selector = rule[1].replace(/\s+/g, ' ')
+  for (const decl of declarations(src)) {
+    const selector = (decl.selectors.at(-1) ?? '').replace(/\s+/g, ' ')
     const size = selector.match(/\[data-size='(sm|md|lg)'\]/)?.[1] ?? null
     const selectorParts = [...selector.matchAll(/\[data-part='([\w-]+)'\]/g)].map(m => m[1])
     const governedSelector = selectorParts.some(isControlPart)
-    for (const decl of rule[2].matchAll(/(?:^|;|\{)\s*(--xh-_[\w-]+|[a-z-]+)\s*:\s*([^;}]+)/g)) {
-      const name = decl[1]
-      const isBodySlot = name.startsWith('--xh-_') && /(?:-h|-box-size)$/.test(name)
-      const isHeightProp = HEIGHT_PROPS.has(name) && governedSelector
-      if (!isBodySlot && !isHeightProp)
+    const name = decl.prop
+    const isBodySlot = name.startsWith('--xh-_') && /(?:-h|-box-size)$/.test(name)
+    const isHeightProp = HEIGHT_PROPS.has(name) && governedSelector
+    if (!isBodySlot && !isHeightProp)
+      continue
+
+    // 真实触摸盒用 min-* 在 coarse 媒体里加地板，不改桌面 block-size，
+    // 所以它可跨到 box-lg；具体是否达到 44px 由 check-coarse-target 解析令牌值。
+    const isCoarseTouchMinimum
+      = isHeightProp
+        && COARSE_TOUCH_HEIGHT_PROPS.has(name)
+        && decl.selectors.some(part => COARSE_MEDIA.test(part))
+    if (isCoarseTouchMinimum)
+      continue
+
+    for (const tier of decl.value.matchAll(TIER)) {
+      const want = size ?? 'md'
+      if (tier[1] === want)
         continue
-      for (const tier of decl[2].matchAll(TIER)) {
-        const want = size ?? 'md'
-        if (tier[1] === want)
-          continue
-        const key = `${file} ${selectorParts.at(-1) ?? name}`
-        if (key in OFF_TIER) {
-          usedOffTier.add(key)
-          continue
-        }
-        problems.push(`${key}  ${name}: ${decl[2].trim()}  —— ${size ? `[data-size='${size}'] 块` : '缺省块'}里引了 ${tier[1]} 档，该是 ${want}`)
+      const key = `${file} ${selectorParts.at(-1) ?? name}`
+      if (key in OFF_TIER) {
+        usedOffTier.add(key)
+        continue
       }
+      problems.push(`${key}  ${name}: ${decl.value.trim()}  —— ${size ? `[data-size='${size}'] 块` : '缺省块'}里引了 ${tier[1]} 档，该是 ${want}`)
     }
   }
 
@@ -148,6 +162,22 @@ for (const file of files) {
     if (!HEIGHT_PROPS.has(decl[1]))
       continue
     for (const ref of decl[2].matchAll(/var\(\s*(--xh-[\w-]+)/g))
+      consumed.add(ref[1])
+  }
+}
+
+/* Family Recipe 的最终高度声明与组件桥接槽分居两份文件。把家族声明并进依赖图，
+   但不把它伪装成某个组件皮肤重复跑 anatomy 判据。 */
+for (const file of (await readdir(FAMILY_STYLES_DIR).catch(() => [])).filter(f => f.endsWith('.css'))) {
+  const src = stripComments(await readFile(join(FAMILY_STYLES_DIR, file), 'utf8'))
+  const slots = new Map()
+  for (const match of src.matchAll(/(--xh-[\w-]+)\s*:\s*([^;}]+)/g))
+    slots.set(match[1], [...(slots.get(match[1]) ?? []), match[2].trim()])
+  slotsByFile.set(`family/${file}`, slots)
+  for (const declaration of src.matchAll(/(?:^|;|\{)\s*([a-z-]+)\s*:\s*([^;}]+)/g)) {
+    if (!HEIGHT_PROPS.has(declaration[1]))
+      continue
+    for (const ref of declaration[2].matchAll(/var\(\s*(--xh-[\w-]+)/g))
       consumed.add(ref[1])
   }
 }

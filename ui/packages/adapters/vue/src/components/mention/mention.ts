@@ -1,11 +1,13 @@
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { MentionApi, MentionInputEl, MentionInputHost, MentionItemProps, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
+import type { MentionApi, MentionInputEl, MentionItemProps, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, Teleport, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideMention, provideMentionItem, useMentionContext, useMentionItemContext } from './context'
 import { useMention } from './use-mention'
 
@@ -25,27 +27,27 @@ export type MentionRootSlotProps = Pick<
 
 export const XhMentionRoot = defineComponent({
   name: 'XhMentionRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    triggerPrefix: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    collection: { type: Array as PropType<MentionNode[]>, default: undefined },
-    value: { type: String, default: undefined },
-    defaultValue: { type: String, default: undefined },
-    disabled: Boolean,
+    triggerPrefix: { type: [String, Array] as PropType<string | string[]> },
+    collection: { type: Array as PropType<MentionNode[]> },
+    value: { type: String },
+    defaultValue: { type: String },
+    disabled: { type: Boolean, default: undefined },
     loading: Boolean,
-    name: { type: String, default: undefined },
-    readOnly: Boolean,
-    invalid: Boolean,
-    placeholder: { type: String, default: undefined },
+    name: { type: String },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
+    placeholder: { type: String },
     loop: { type: Boolean, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
-    translations: { type: Object as PropType<MentionTranslations>, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    translations: { type: Object as PropType<MentionTranslations> },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // *-change 携带 details 对象，update:* 携带裸值
   emits: {
@@ -71,7 +73,7 @@ export const XhMentionRoot = defineComponent({
     const notifySelect: MentionProps['onSelect'] = details => emit('select', details)
     const notifyOpen: MentionProps['onOpenChange'] = details => emit('open-change', details)
 
-    const ctx = useMention(withXhConfig('mention', props) as MentionProps, {
+    const ctx = useMention(withXhConfig('mention', useFormControlProps(props)) as MentionProps, {
       onValueChange: notifyValue,
       onQueryChange: notifyQuery,
       onSelect: notifySelect,
@@ -112,39 +114,37 @@ export const XhMentionLabel = defineComponent({
   },
 })
 
+/** 单行输入框；正文写在它身上，候选浮层贴着它落位。 */
 export const XhMentionInput = defineComponent({
   name: 'XhMentionInput',
-  props: {
-    /**
-     * 输入框渲染成哪个标签，默认 textarea。
-     * 写 input 即单行宿主：connect 随之补上 type、role 与 aria-expanded。
-     */
-    as: { type: String as PropType<MentionInputHost>, default: 'textarea' },
-  },
-  setup(props) {
+  setup() {
     // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
     const fieldWiring = useFieldStateWiring()
     // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
     const fieldLabel = useFieldLabelWiring()
     const ctx = useMentionContext()
-    return () => h(props.as, fieldLabel.value({
-      ...ctx.api.value.getInputProps({ as: props.as }) as Record<string, unknown>,
-      ref: (el: unknown) => { ctx.inputRef.value = el as MentionInputEl },
+    return () => h('input', fieldLabel.value({
       ...fieldWiring.value,
+      ...ctx.api.value.getInputProps() as Record<string, unknown>,
+      ref: (el: unknown) => { ctx.inputRef.value = el as MentionInputEl },
     }))
   },
 })
 
 export const XhMentionPositioner = defineComponent({
   name: 'XhMentionPositioner',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useMentionContext()
     // 候选列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
     const bars = useScrollbars({ scrollable: () => ctx.contentRef.value })
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.inputRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },

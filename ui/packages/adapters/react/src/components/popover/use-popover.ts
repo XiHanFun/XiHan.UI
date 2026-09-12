@@ -28,6 +28,8 @@ export function usePopover(props: PopoverSchema['props']): PopoverContext {
   const positionerRef = useRef<HTMLElement | null>(null)
   const contentRef = useRef<HTMLElement | null>(null)
   const serviceRef = useRef<Service<PopoverSchema> | null>(null)
+  const modalRef = useRef(props.modal)
+  modalRef.current = props.modal
 
   const initialOpen = (props.open ?? props.defaultOpen) ?? false
 
@@ -36,9 +38,8 @@ export function usePopover(props: PopoverSchema['props']): PopoverContext {
     // trigger 记为本层分支，点它算层内交互；
     // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉
     branches: () => [triggerRef.current, positionerRef.current].filter(Boolean) as Element[],
-    isModal: () => props.modal ?? false,
-    setModal: () => {},
-  }), [props.modal])
+    isModal: () => modalRef.current ?? false,
+  }), [])
 
   const overlay = useOverlay({
     scope,

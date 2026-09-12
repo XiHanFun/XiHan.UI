@@ -2,7 +2,7 @@
 import type { TreeNode } from '@xihan-ui/headless'
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { defineComponent, h, nextTick } from 'vue'
+import { defineComponent, h, nextTick, ref } from 'vue'
 import {
   provideXhConfig,
   XhTreeSelectBranch,
@@ -13,11 +13,13 @@ import {
   XhTreeSelectClearTrigger,
   XhTreeSelectContent,
   XhTreeSelectControl,
+  XhTreeSelectEmpty,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
   XhTreeSelectItemText,
   XhTreeSelectLabel,
+  XhTreeSelectLoading,
   XhTreeSelectPositioner,
   XhTreeSelectRoot,
   XhTreeSelectTree,
@@ -66,7 +68,7 @@ function mountFromCollection(value: string[], portal: HTMLElement = newPortal(),
   }), { attachTo: document.body })
 }
 
-/** 手写全套部件，节点只报 value，文本与禁用交给 collection */
+/** 手写全套部件，节点只报 value；分支与叶子都包含正式 item-indicator，文本与禁用交给 collection。 */
 function mountFromParts(value: string[], portal: HTMLElement = newPortal(), clearable = false) {
   return mount(defineComponent({
     setup() {
@@ -88,6 +90,7 @@ function mountFromParts(value: string[], portal: HTMLElement = newPortal(), clea
               h(XhTreeSelectBranchControl, () => [
                 h(XhTreeSelectBranchTrigger),
                 h(XhTreeSelectBranchText, () => 'docs'),
+                h(XhTreeSelectItemIndicator),
               ]),
               h(XhTreeSelectBranchContent, () => [
                 h(XhTreeSelectItem, { value: 'guide' }, () => [
@@ -104,6 +107,7 @@ function mountFromParts(value: string[], portal: HTMLElement = newPortal(), clea
               h(XhTreeSelectBranchControl, () => [
                 h(XhTreeSelectBranchTrigger),
                 h(XhTreeSelectBranchText, () => 'empty'),
+                h(XhTreeSelectItemIndicator),
               ]),
               h(XhTreeSelectBranchContent, () => []),
             ]),
@@ -135,6 +139,84 @@ function partsOf(...roots: Element[]): (string | null)[] {
 }
 
 describe('tree-select 的 collection', () => {
+  it('hasChildren 懒分支仍铺成 branch；取回子项后由 headless 有效树驱动重渲', async () => {
+    const portal = newPortal()
+    let resolve: (nodes: { value: string, label: string }[]) => void = () => {}
+    const w = mount(defineComponent({
+      setup() {
+        provideXhConfig({ portalContainer: () => portal })
+        return () => h(XhTreeSelectRoot, {
+          collection: [{ value: 'remote', label: '远程目录', hasChildren: true }],
+          loadChildren: () => new Promise<{ value: string, label: string }[]>((done) => { resolve = done }),
+        })
+      },
+    }), { attachTo: document.body })
+
+    const branch = portal.querySelector<HTMLElement>('[data-part="branch"]')!
+    expect(branch).not.toBeNull()
+    portal.querySelector<HTMLElement>('[data-part="branch-trigger"]')!.click()
+    await nextTick()
+    expect(branch.getAttribute('aria-busy')).toBe('true')
+
+    resolve([{ value: 'fetched', label: '已取回' }])
+    await Promise.resolve()
+    await Promise.resolve()
+    await new Promise(resolve => setTimeout(resolve, 0))
+    await nextTick()
+    expect([...portal.querySelectorAll('[data-part="item-text"]')].map(el => el.textContent)).toEqual(['已取回'])
+    expect(branch.hasAttribute('data-loading')).toBe(false)
+    w.unmount()
+  })
+
+  it('collection 与手写节点共用 Headless 自动空态，节点增删即时同步', async () => {
+    const collection = mount(XhTreeSelectRoot, { props: { collection: [], defaultOpen: true }, attachTo: document.body })
+    const automatic = document.querySelector<HTMLElement>('[data-xh-tree-select-auto-empty]')!
+    expect(automatic.textContent).toBe('No data')
+    expect(automatic.hidden).toBe(false)
+    collection.unmount()
+
+    const shown = ref(false)
+    const manual = mount(defineComponent({
+      setup: () => () => h(XhTreeSelectRoot, { defaultOpen: true }, () => [
+        h(XhTreeSelectTrigger, () => '选择'),
+        h(XhTreeSelectPositioner, null, () => h(XhTreeSelectContent, null, () => h(
+          XhTreeSelectTree,
+          null,
+          () => shown.value ? [h(XhTreeSelectItem, { value: 'manual' }, () => '手写')] : [],
+        ))),
+      ]),
+    }), { attachTo: document.body })
+    await nextTick()
+    expect(document.querySelector<HTMLElement>('[data-xh-tree-select-auto-empty]')!.hidden).toBe(false)
+    shown.value = true
+    await nextTick()
+    await nextTick()
+    expect(document.querySelector<HTMLElement>('[data-xh-tree-select-auto-empty]')!.hidden).toBe(true)
+    shown.value = false
+    await nextTick()
+    await nextTick()
+    expect(document.querySelector<HTMLElement>('[data-xh-tree-select-auto-empty]')!.hidden).toBe(false)
+    manual.unmount()
+  })
+
+  it('作者 Empty/Loading 在子 setup 阶段登记，同次提交不出现重复 status', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h(XhTreeSelectRoot, { defaultOpen: true }, () => [
+        h(XhTreeSelectTrigger, () => '选择'),
+        h(XhTreeSelectPositioner, null, () => h(XhTreeSelectContent, null, () => [
+          h(XhTreeSelectTree),
+          h(XhTreeSelectEmpty, null, () => '作者空态'),
+          h(XhTreeSelectLoading, null, () => '作者加载'),
+        ])),
+      ]),
+    }), { attachTo: document.body })
+    expect(document.querySelectorAll('[data-part="empty"]')).toHaveLength(1)
+    expect(document.querySelectorAll('[data-part="loading"]')).toHaveLength(1)
+    expect(document.querySelector('[data-xh-tree-select-auto-empty]')).toBeNull()
+    expect(document.querySelector('[data-xh-tree-select-auto-loading]')).toBeNull()
+    w.unmount()
+  })
+
   it('不写插槽时按数据铺开整套部件，带 children 的落成 branch', () => {
     const portal = newPortal()
     const w = mountFromCollection([], portal)
@@ -151,6 +233,7 @@ describe('tree-select 的 collection', () => {
       'branch-control',
       'branch-trigger',
       'branch-text',
+      'item-indicator',
       'branch-content',
       'item',
       'item-indicator',
@@ -162,10 +245,13 @@ describe('tree-select 的 collection', () => {
       'branch-control',
       'branch-trigger',
       'branch-text',
+      'item-indicator',
       'branch-content',
       'item',
       'item-indicator',
       'item-text',
+      'empty',
+      'loading',
     ])
     w.unmount()
   })

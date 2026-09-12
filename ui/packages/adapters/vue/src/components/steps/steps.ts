@@ -17,21 +17,21 @@ export type StepsRootSlotProps = Pick<
 
 export const XhStepsRoot = defineComponent({
   name: 'XhStepsRoot',
-  // 全部 default: undefined，缺省值由 connect 决定
+  // 缺省值由 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    value: { type: Number, default: undefined },
-    defaultValue: { type: Number, default: undefined },
-    count: { type: Number, default: undefined },
-    collection: { type: Array as PropType<StepNode[]>, default: undefined },
-    statuses: { type: Object as PropType<Record<number, StepStatus>>, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
+    value: { type: Number },
+    defaultValue: { type: Number },
+    count: { type: Number },
+    collection: { type: Array as PropType<StepNode[]> },
+    statuses: { type: Object as PropType<Record<number, StepStatus>> },
+    orientation: { type: String as PropType<Orientation> },
     linear: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    translations: { type: Object as PropType<Partial<StepsTranslations>>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    translations: { type: Object as PropType<Partial<StepsTranslations>> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // value-change 携带 { value }，update:value 携带裸下标
   emits: {

@@ -1,0 +1,31 @@
+// 基础用法 | default-value 指定初始选中项，禁用的标签方向键会跳过；面板常挂，靠 hidden 显隐
+import type { ReactNode } from "react";
+import { XhTabsRoot } from "@xihan-ui/react";
+
+const tabs = [
+  { value: "overview", label: "概览" },
+  { value: "usage", label: "用法" },
+  // 禁用写在数据里，方向键会跳过它
+  { value: "api", label: "API（禁用）", disabled: true },
+];
+
+// 面板正文按条目取
+const panels: Record<string, string> = {
+  overview: "概览面板：默认 automatic，方向键移动焦点时顺带切换选中。",
+  usage: "用法面板：面板不做懒挂载，切走再切回来，里面的滚动位置与表单态都还在。",
+  api: "API 面板。",
+};
+
+export default function Demo(): ReactNode {
+  return (
+    // 根不收透传属性，撑满宽度写在外面这层上
+    <div style={{ inlineSize: "100%" }}>
+      <XhTabsRoot
+        collection={tabs}
+        defaultValue="overview"
+        // 面板内容归作者，走 renderPanel 渲染 prop
+        renderPanel={node => panels[node.value]}
+      />
+    </div>
+  );
+}

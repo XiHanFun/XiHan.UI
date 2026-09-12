@@ -18,9 +18,15 @@
 
 ## 特性
 
-- 形态 · 语气 · 尺寸三轴与其余组件同源。
-- `closable` 给出关闭钮，显隐可受控（`open` / `defaultOpen` / `open-change`）。
+- 形态 · 语气 · 尺寸三轴与其余组件同源。四种形态是 solid / subtle / outline / ghost：
+  缺省与 subtle 使用 M1 compact surface，solid 强调身份，outline 只留轮廓，ghost 完全融入父表面。
+  语气挂在显式形态之下；不写 `variant` 时保持中性 M1。尺寸档走间距、字号与行框，不占控件行高；
+  同档标签有没有关闭钮都一样高，缺省档放进缺省档控件的行高里不撑高。缺省档（26px）高过
+  14px 正文行（21px）：随文排、紧凑表格的状态列、下拉候选里的标签写 `size="sm"`（22px）。
+- `closable` 给出关闭钮，显隐可受控（`open` / `defaultOpen` / `open-change`）。叉保持 16px 视觉盒，
+  透明命中层扩到随文动作的 24px；不会为了命中面积撑高标签。
 - `disabled` 让标签留在原地但摘不掉，宽度不会因禁用而跳变。
+- `readOnly` 只锁关闭钮：钮留在原地但按不动，标签本身不置灰；宿主整体只读时逐枚传下来即可。
 - Vue 侧默认插槽里只有文字时自动包一层 `label`，截断规则直接生效。
 
 ## 示例
@@ -57,9 +63,15 @@ disabled 让标签留在原地却摘不掉：关闭钮仍占着位置，标签�
 
 ### 尺寸
 
-size 只改内边距、间距与字号，不写就是缺省档；关闭钮的命中区不跟着缩
+size 换内边距、间距、字号与行框，不写就是缺省档；同一档有没有关闭钮都一样高，关闭钮三档同一个尺寸
 
 <XhDemo src="tag/06-size" />
+
+### 只读
+
+readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰；与 disabled 的区别只在标签本体的颜色
+
+<XhDemo src="tag/07-read-only" />
 
 ## 产物
 
@@ -81,11 +93,12 @@ size 只改内边距、间距与字号，不写就是缺省档；关闭钮的命
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `TagVariant` |  | 形态：solid / subtle / outline，决定颜色怎么用。 |
+| `variant` | `TagVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `closable` | `boolean` |  | 是否给出关闭钮，默认 false。false 时该钮同时被禁用与收起。 |
 | `disabled` | `boolean` |  | 标签禁用：关闭钮不可用，点击不改显隐。 |
+| `readOnly` | `boolean` |  | 只读：关闭钮留在原地但按不动，标签本身不置灰。 |
 | `open` | `boolean` |  | 受控显隐；缺省该 prop 即非受控。 |
 | `defaultOpen` | `boolean` |  | 非受控初始显隐，默认显示。 |
 | `onOpenChange` | `(details: TagOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
@@ -135,7 +148,7 @@ size 只改内边距、间距与字号，不写就是缺省档；关闭钮的命
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `Enter` / `Space` | focus 在 close-trigger 上，且 closable 且未禁用 | 收起标签并通知 open=false；关闭钮是原生 button，这两个键由平台翻成 click |
+| `Enter` / `Space` | focus 在 close-trigger 上，且 closable 且未禁用、非只读 | 收起标签并通知 open=false；关闭钮是原生 button，这两个键由平台翻成 click |
 
 ## 无障碍
 
@@ -162,11 +175,32 @@ size 只改内边距、间距与字号，不写就是缺省档；关闭钮的命
 | `root` | `data-variant` | props.variant |
 | `close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-tag-bg` · `--xh-tag-bg-disabled` · `--xh-tag-border` · `--xh-tag-border-disabled` · `--xh-tag-close-bg-active` · `--xh-tag-close-bg-hover` · `--xh-tag-close-fg` · `--xh-tag-close-radius` · `--xh-tag-close-size` · `--xh-tag-fg` · `--xh-tag-font-size` · `--xh-tag-font-weight` · `--xh-tag-gap` · `--xh-tag-icon-size` · `--xh-tag-px` · `--xh-tag-py` · `--xh-tag-radius` · `--xh-tag-shadow`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-tag-bg` | `root` | `background` | `default`<br>`tone`<br>`variant=solid`<br>`variant=subtle` | `--xh-_tone`<br>`--xh-_tone-subtle`<br>`--xh-bg-brand`<br>`--xh-material-soft-bg` | tag 的 root 部件 background 覆盖槽。 |
+| `--xh-tag-bg-disabled` | `root` | `background` | `disabled`<br>`tone` | `--xh-bg-muted` | tag 的 root 部件 background 覆盖槽。 |
+| `--xh-tag-border` | `root` | `border`<br>`border-color` | `default`<br>`tone`<br>`variant=outline`<br>`variant=subtle` | `--xh-_tone-border-control`<br>`--xh-border-default`<br>`--xh-material-soft-border` | tag 的 root 部件 border、border-color 覆盖槽。 |
+| `--xh-tag-border-disabled` | `root` | `border-color` | `disabled`<br>`tone` | `--xh-border-subtle` | tag 的 root 部件 border-color 覆盖槽。 |
+| `--xh-tag-close-bg-active` | `close-trigger` | `background` | `active`<br>`not(:disabled)` | `color-mix(in oklab, currentColor 22%, transparent)` | tag 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-tag-close-bg-hover` | `close-trigger` | `background` | `hover`<br>`not(:disabled)` | `color-mix(in oklab, currentColor 14%, transparent)` | tag 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-tag-close-fg` | `close-trigger` | `color` | `default` | `currentColor` | tag 的 close-trigger 部件 color 覆盖槽。 |
+| `--xh-tag-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-inset` | tag 的 close-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-tag-close-size` | `close-trigger` | `block-size`<br>`inline-size`<br>`inset` | `default` | `--xh-control-indicator-size` | tag 的 close-trigger 部件 block-size、inline-size、inset 覆盖槽。 |
+| `--xh-tag-fg` | `root` | `color` | `default`<br>`tone`<br>`variant=ghost`<br>`variant=outline`<br>`variant=solid`<br>`variant=subtle` | `--xh-_tone-fg`<br>`--xh-_tone-on`<br>`--xh-fg-default`<br>`--xh-fg-on-brand`<br>`--xh-material-soft-fg` | tag 的 root 部件 color 覆盖槽。 |
+| `--xh-tag-font-size` | `root` | `font-size` | `default` | `--xh-_tag-font-size` | tag 的 root 部件 font-size 覆盖槽。 |
+| `--xh-tag-font-weight` | `root` | `font-weight` | `default` | `--xh-font-weight-medium` | tag 的 root 部件 font-weight 覆盖槽。 |
+| `--xh-tag-gap` | `root` | `gap` | `default` | `--xh-_tag-gap` | tag 的 root 部件 gap 覆盖槽。 |
+| `--xh-tag-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | tag 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-tag-px` | `root` | `padding-inline` | `default` | `--xh-_tag-px` | tag 的 root 部件 padding-inline 覆盖槽。 |
+| `--xh-tag-py` | `root` | `padding-block` | `default` | `--xh-_tag-py` | tag 的 root 部件 padding-block 覆盖槽。 |
+| `--xh-tag-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | tag 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-tag-shadow` | `root` | `box-shadow` | `default`<br>`variant=solid` | `--xh-_tag-highlight`<br>`--xh-material-soft-shadow` | tag 的 root 部件 box-shadow 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
@@ -186,7 +220,7 @@ size 只改内边距、间距与字号，不写就是缺省档；关闭钮的命
 
 ## 最佳实践
 
-- 关闭钮的可访问名要带上标签文字：默认只念 Remove，一屏十个标签听起来一模一样。逐实例传 `translations.close` 写成"移除 前端"。
+- 关闭钮的可访问名要带上标签文字：默认只念 Delete，一屏十个标签听起来一模一样。逐实例传 `translations.close` 写成"移除 前端"。
 - 摘掉一枚之后要把焦点交出去：标签是成排出现的，被摘的那一枚带着焦点一起消失，焦点会掉回页面开头，键盘与读屏用户每摘一次就丢一次位置。交给顶上来的那一枚的关闭钮，一枚不剩就交给列表容器或"还原"钮。组件不替宿主决定去留，这件事也就只能宿主自己接。
 - 摘掉一个标签之后要有回退路径，否则用户误点就再也加不回来。
 - 标签文字尽量短：它是身份标记，不是句子。

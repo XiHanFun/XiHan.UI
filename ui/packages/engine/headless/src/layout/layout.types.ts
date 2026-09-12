@@ -1,4 +1,4 @@
-import type { MachineSchema, PropTypes } from '@xihan-ui/core'
+import type { MachineSchema, PropTypes, RuntimeConfig } from '@xihan-ui/core'
 
 /** 侧栏挂在行首还是行尾。 */
 export type LayoutSiderPlacement = 'start' | 'end'
@@ -18,6 +18,12 @@ export interface LayoutSiderBreakpointDetails {
   matched: boolean
 }
 
+/** 适配器在机器挂载前注入的宿主运行时。 */
+export interface LayoutRefs {
+  /** Escape 层级判断所用的 Scope 与 LayerRegistry，二者必须属于机器 Scope 的同一 Document。 */
+  config: RuntimeConfig | null
+}
+
 export interface LayoutSchema extends MachineSchema {
   props: {
     /** 受控折叠态：给了值就由宿主说了算。 */
@@ -33,6 +39,7 @@ export interface LayoutSchema extends MachineSchema {
     /**
      * 侧栏的自适应断点：视口窄于这一档时侧栏按折叠宽显示。
      * 只换宽度不改折叠态——折叠态归 siderCollapsed 那条通道，两者互不干扰。
+     * 运行期换档会重绑媒体查询；需要所属 Window.matchMedia 与对应断点令牌。
      */
     siderBreakpoint?: LayoutBreakpoint
     /**
@@ -54,7 +61,7 @@ export interface LayoutSchema extends MachineSchema {
     /** 折叠态变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
     onSiderCollapsedChange?: (details: LayoutSiderCollapsedChangeDetails) => void
     /**
-     * 断点跨过去时发一次，挂载时也发一次当前值。
+     * 断点跨过去时发一次，挂载或更换档位时也发一次当前值。
      * 窄屏要把侧栏换成抽屉的，接这条：组件自己只换宽度。
      */
     onSiderBreakpoint?: (details: LayoutSiderBreakpointDetails) => void
@@ -64,7 +71,7 @@ export interface LayoutSchema extends MachineSchema {
     siderNarrow: boolean
   }
   computed: Record<string, never>
-  refs: Record<string, never>
+  refs: LayoutRefs
   state: 'expanded' | 'collapsed'
   event:
     | { type: 'SIDER.COLLAPSE' }

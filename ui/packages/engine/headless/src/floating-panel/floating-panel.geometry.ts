@@ -15,8 +15,11 @@ export const FLOATING_PANEL_MIN_SIZE: FloatingPanelSize = { width: 160, height: 
 /** 作者没给 defaultDimensions 时的初始尺寸。 */
 export const FLOATING_PANEL_DEFAULT_SIZE: FloatingPanelSize = { width: 360, height: 240 }
 
+/** 内建默认矩形与视口四边之间留的余量，也是默认落点离左上角的距离。 */
+const VIEWPORT_MARGIN = 24
+
 /** 作者没给 defaultPosition 时的初始落点：离视口左上角留一段，别贴死在角上。 */
-export const FLOATING_PANEL_DEFAULT_POSITION: FloatingPanelPosition = { x: 24, y: 24 }
+export const FLOATING_PANEL_DEFAULT_POSITION: FloatingPanelPosition = { x: VIEWPORT_MARGIN, y: VIEWPORT_MARGIN }
 
 /** 方向键每下走多少像素。 */
 export const FLOATING_PANEL_STEP = 10
@@ -30,6 +33,61 @@ export const FLOATING_PANEL_LARGE_STEP = 50
  */
 function finite(value: number): number {
   return Number.isFinite(value) ? value : 0
+}
+
+/** 视口的量度，由调用方从窗口取来；两条边都取不到时给 null。 */
+export interface FloatingPanelViewport {
+  width: number
+  height: number
+}
+
+/** 窗口的可视尺寸；量不出有效值时给 null，夹取整个跳过。 */
+export function floatingPanelViewportOf(
+  win: { innerWidth?: number, innerHeight?: number } | null | undefined,
+): FloatingPanelViewport | null {
+  const width = win?.innerWidth
+  const height = win?.innerHeight
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width! <= 0 || height! <= 0)
+    return null
+  return { width: width!, height: height! }
+}
+
+/**
+ * 从 scope 取视口；没有 DOM 的一侧给 null。
+ *
+ * scope.getWin() 在服务端会抛（它的 getRootNode 兜底到裸 document），而 context 与 connect
+ * 在直出时照样各跑一遍，所以取窗口这一步必须先问有没有 DOM。
+ */
+export function floatingPanelViewportFrom(
+  scope: { getWin: () => { innerWidth?: number, innerHeight?: number } },
+): FloatingPanelViewport | null {
+  if (typeof document === 'undefined')
+    return null
+  return floatingPanelViewportOf(scope.getWin())
+}
+
+/**
+ * 把一份矩形夹进视口：先按「四边各留一段余量」收尺寸，再把落点推回视口内。
+ *
+ * 尺寸不收到 FLOATING_PANEL_MIN_SIZE 以下——视口比下限还窄时落点归 0，
+ * 面板宁可溢出也不塌成一条谁也点不着的窄缝。视口给 null 即原样返回。
+ */
+export function fitFloatingPanelToViewport(
+  position: FloatingPanelPosition,
+  size: FloatingPanelSize,
+  viewport: FloatingPanelViewport | null | undefined,
+): { position: FloatingPanelPosition, size: FloatingPanelSize } {
+  if (!viewport)
+    return { position, size }
+  const width = Math.max(FLOATING_PANEL_MIN_SIZE.width, Math.min(size.width, viewport.width - VIEWPORT_MARGIN * 2))
+  const height = Math.max(FLOATING_PANEL_MIN_SIZE.height, Math.min(size.height, viewport.height - VIEWPORT_MARGIN * 2))
+  return {
+    position: {
+      x: Math.max(0, Math.min(finite(position.x), viewport.width - width - VIEWPORT_MARGIN)),
+      y: Math.max(0, Math.min(finite(position.y), viewport.height - height - VIEWPORT_MARGIN)),
+    },
+    size: { width, height },
+  }
 }
 
 export function sameFloatingPanelPosition(

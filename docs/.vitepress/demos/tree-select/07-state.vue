@@ -67,6 +67,7 @@ const states = [
               <XhTreeSelectBranchControl>
                 <XhTreeSelectBranchTrigger />
                 <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
+                <XhTreeSelectItemIndicator />
               </XhTreeSelectBranchControl>
               <XhTreeSelectBranchContent>
                 <XhTreeSelectItem value="guide">

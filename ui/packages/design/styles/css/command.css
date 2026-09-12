@@ -111,7 +111,7 @@
   [data-scope='command'][data-part='backdrop'] {
     position: fixed;
     inset: 0;
-    z-index: var(--xh-command-backdrop-layer, var(--xh-layer-modal));
+    z-index: var(--xh-command-backdrop-layer, var(--xh-_layer, var(--xh-layer-modal)));
     background: var(--xh-command-backdrop-bg, var(--xh-bg-overlay));
   }
 
@@ -140,10 +140,12 @@
   [data-scope='command'][data-part='positioner'] {
     position: fixed;
     inset: 0;
-    z-index: var(--xh-command-layer, var(--xh-layer-modal));
+    z-index: var(--xh-command-layer, var(--xh-_layer, var(--xh-layer-modal)));
     display: flex;
     align-items: flex-start;
     justify-content: center;
+    /* 全屏定位层只负责排版，不截获页面指针；模态拦截由 backdrop 承担。 */
+    pointer-events: none;
     padding-block-start: max(var(--xh-command-inset-block-start, var(--xh-space-8)), env(safe-area-inset-top));
     padding-block-end: max(var(--xh-command-positioner-pb, var(--xh-space-4)), env(safe-area-inset-bottom));
     padding-inline: max(
@@ -171,6 +173,8 @@
     box-shadow: var(--xh-command-shadow, var(--xh-elevation-sheet));
     /* 条目的高亮底色是方角，滚到两端时会探出面板的圆角 */
     overflow: hidden;
+    /* positioner 不吃指针，面板自身恢复交互。 */
+    pointer-events: auto;
     /* 进退场的缩放锚在面板顶缘：它是从上方落下来的 */
     transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 0);
   }
@@ -221,11 +225,6 @@
     color: var(--xh-command-placeholder-fg, var(--xh-fg-subtle));
   }
 
-  /* 环往内收：检索框是通栏的，环画在外沿会顺着面板的圆角探出去 */
-  [data-scope='command'][data-part='input']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
-  }
-
   /* 自动填充态：浏览器给填过的框强加一套系统色（多数引擎是黄底黑字），
      优先级高到 background / color 改不动，也不跟主题走。
      底用 box-shadow 的 inset 扩散铺满内容盒，字用 -webkit-text-fill-color 接回令牌。
@@ -253,6 +252,15 @@
     padding-block: var(--xh-command-list-py, var(--xh-space-2));
     padding-inline: var(--xh-command-list-px, var(--xh-space-2));
     overflow-y: auto;
+  }
+
+  /* 没有可见命令时不保留列表的上下内距；只排除列表内部 hidden 祖先，退场中的外壳不影响判断。 */
+  [data-scope='command'][data-part='list']:not(:has(
+    [data-scope='command'][data-part='item']:not([hidden]):not(
+      [data-scope='command'][data-part='list'] [hidden] *
+    )
+  )) {
+    display: none;
   }
 
   /* 列表从不承载焦点（焦点恒在检索框，锚点走 aria-activedescendant），
@@ -375,6 +383,12 @@
     font-size: var(--xh-command-loading-font-size, var(--xh-_command-font-size));
     line-height: var(--xh-leading-none);
     text-align: center;
+  }
+
+  /* 未提供状态内容时不渲染一块纯留白，提示文案仍由作者明确提供。 */
+  [data-scope='command'][data-part='empty']:empty,
+  [data-scope='command'][data-part='loading']:empty {
+    display: none;
   }
 
   /* 取数在途：列表压暗一档，与在途占位一起说明这块正在变 */

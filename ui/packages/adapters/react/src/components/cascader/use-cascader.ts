@@ -5,6 +5,7 @@ import type { OverlayWiring } from '../../runtime/use-overlay'
 import { cascaderMachine, connectCascader } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { useCallback, useRef } from 'react'
+import { useFormReset } from '../../runtime/attach-form-reset'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
@@ -14,6 +15,7 @@ export interface CascaderContext extends OverlayWiring {
   /** 机器实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<CascaderSchema>
   api: CascaderApi
+  rootRef: RefObject<HTMLDivElement | null>
   triggerRef: RefObject<HTMLElement | null>
   positionerRef: RefObject<HTMLElement | null>
   contentRef: RefObject<HTMLElement | null>
@@ -22,6 +24,7 @@ export interface CascaderContext extends OverlayWiring {
 export function useCascader(props: CascaderSchema['props']): CascaderContext {
   const idGenerator = useReactIdGenerator()
   const scope = useReactScope()
+  const rootRef = useRef<HTMLDivElement | null>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
   const positionerRef = useRef<HTMLElement | null>(null)
   const contentRef = useRef<HTMLElement | null>(null)
@@ -35,7 +38,6 @@ export function useCascader(props: CascaderSchema['props']): CascaderContext {
     // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
     branches: () => [triggerRef.current, positionerRef.current].filter(Boolean) as Element[],
     isModal: () => false,
-    setModal: () => {},
   }), [])
 
   const overlay = useOverlay({
@@ -59,11 +61,13 @@ export function useCascader(props: CascaderSchema['props']): CascaderContext {
     onCreate: overlay.onCreate as never,
   })
   serviceRef.current = service
+  useFormReset(service, rootRef)
 
   return {
     ...overlay,
     service,
     api: connectCascader(service, reactNormalize),
+    rootRef,
     triggerRef,
     positionerRef,
     contentRef,

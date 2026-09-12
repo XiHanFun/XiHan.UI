@@ -1,8 +1,9 @@
 import type { Direction, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { SideNavApi, SideNavNode, SideNavSchema, SideNavTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -33,7 +34,10 @@ export type SideNavRootSlotProps = Pick<
   | 'closePopout'
 >
 
-export interface XhSideNavRootProps {
+/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'nav'>, 'children' | 'defaultValue' | 'dir'>
+
+export interface XhSideNavRootProps extends RootElementProps {
   collection?: SideNavNode[]
   value?: string | null
   defaultValue?: string | null
@@ -53,13 +57,49 @@ export interface XhSideNavRootProps {
   children?: SlotChildren<SideNavRootSlotProps>
 }
 
-export function XhSideNavRoot({ children, ...props }: XhSideNavRootProps): ReactNode {
-  const ctx = useSideNav(withXhConfig('side-nav', props) as SideNavProps)
+export function XhSideNavRoot({
+  collection,
+  value,
+  defaultValue,
+  expandedValue,
+  defaultExpandedValue,
+  accordion,
+  collapsed,
+  collapsedPopout,
+  disabled,
+  loop,
+  dir,
+  tone,
+  size,
+  translations,
+  onValueChange,
+  onExpandedValueChange,
+  children,
+  ...rest
+}: XhSideNavRootProps): ReactNode {
+  const ctx = useSideNav(withXhConfig('side-nav', {
+    collection,
+    value,
+    defaultValue,
+    expandedValue,
+    defaultExpandedValue,
+    accordion,
+    collapsed,
+    collapsedPopout,
+    disabled,
+    loop,
+    dir,
+    tone,
+    size,
+    translations,
+    onValueChange,
+    onExpandedValueChange,
+  }) as SideNavProps)
   const api = ctx.api
   // 经 children 载荷交出状态与命令，供折叠开关这类外部控件使用
   return (
     <SideNavProvider value={ctx}>
-      <nav {...api.getRootProps() as Record<string, unknown>}>
+      <nav {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           value: api.value,
           expandedValue: api.expandedValue,
@@ -157,19 +197,43 @@ export function XhSideNavBranchIndicator({ children, ...rest }: XhSideNavBranchI
   )
 }
 
-export interface XhSideNavBranchContentProps extends ComponentPropsWithRef<'ul'> {}
-export function XhSideNavBranchContent({ children, ...rest }: XhSideNavBranchContentProps): ReactNode {
+export interface XhSideNavBranchContentProps extends ComponentPropsWithRef<'ul'> {
+  /** 本分支弹层的 Portal 容器；优先于应用级配置。 */
+  container?: () => Element | null
+}
+export function XhSideNavBranchContent({ children, container, ...rest }: XhSideNavBranchContentProps): ReactNode {
   const ctx = useSideNavContext()
   const node = useSideNavNodeContext()
   const value = node.value
   // 一个弹出面板一份退场闸门：退场动画挂在面板上，从它身上探测。
   // 开合判据直接取 connect 这一帧的产出，不另起一套
   const panelRef = useRef<HTMLElement | null>(null)
+  const presenceRef = useRef<PresenceHandle | null>(null)
   const visible = useOverlayExit({
     config: ctx.config,
     isOpen: () => (ctx.api.getPopoutPositionerProps({ value }) as Record<string, unknown>).hidden !== true,
     contentRef: panelRef,
+    onPresence: (next) => {
+      const previous = presenceRef.current
+      presenceRef.current = next
+      if (ctx.service.getStatus() !== 'Started')
+        return
+      if (next)
+        ctx.service.send({ type: 'PRESENCE.SET', value, presence: next, connected: true })
+      else if (previous)
+        ctx.service.send({ type: 'PRESENCE.SET', value, presence: previous, connected: false })
+    },
   })
+  useEffect(() => {
+    const presence = presenceRef.current
+    if (!presence || ctx.service.getStatus() !== 'Started')
+      return
+    ctx.service.send({ type: 'PRESENCE.SET', value, presence, connected: true })
+    return () => {
+      if (ctx.service.getStatus() === 'Started')
+        ctx.service.send({ type: 'PRESENCE.SET', value, presence, connected: false })
+    }
+  }, [ctx.service, value])
 
   const contentProps = ctx.api.getBranchContentProps({ value }) as Record<string, unknown>
   if (!ctx.api.isPopoutPanel(value)) {
@@ -181,7 +245,7 @@ export function XhSideNavBranchContent({ children, ...rest }: XhSideNavBranchCon
   // 收起跟着退场闸门走：定位层与面板的 hidden 都押后到退场动画播完
   const hidden = !visible || undefined
   return (
-    <XhPortal container={ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer}>
       <div {...ctx.api.getPopoutPositionerProps({ value }) as Record<string, unknown>} hidden={hidden}>
         <ul
           {...mergeReactProps(

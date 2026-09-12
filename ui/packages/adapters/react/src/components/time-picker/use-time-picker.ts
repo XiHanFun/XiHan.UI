@@ -40,7 +40,6 @@ export function useTimePicker(props: TimePickerSchema['props']): TimePickerConte
     // 整个输入行记为本层分支，点触发器算层内交互
     branches: () => [controlRef.current].filter(Boolean) as Element[],
     isModal: () => false,
-    setModal: () => {},
   }), [])
 
   const overlay = useOverlay({

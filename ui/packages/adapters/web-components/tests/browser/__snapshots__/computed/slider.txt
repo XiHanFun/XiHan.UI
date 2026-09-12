@@ -198,7 +198,7 @@ min-height: 0px
 font-size: 16px
 line-height: normal
 font-weight: 400
-color: rgb(0, 0, 0)
+color: oklch(1 0 0)
 background-color: oklch(0.546 0.216 258)
 transition-property: scale, box-shadow
 transition-duration: 0.12s, 0.12s
@@ -208,7 +208,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: rgb(0, 0, 0)
+outline-color: oklch(1 0 0)
 
 [track]
 padding-top: 0px

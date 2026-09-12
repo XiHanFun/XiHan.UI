@@ -15,11 +15,13 @@
 
 ## 特性
 
-- 悬停触发有安全三角：指针斜穿赶往浮层不会误收，走岔或停滞才收起；延时可调。
+- 悬停触发有安全三角：指针斜穿赶往浮层不会误收；Portal 化的多级子菜单由 headless 逻辑树维护真实父子关系，在末级移动不会启动祖先关闭，叶项选择按叶到根收起并只由根上报一次。
 - 条目以 `value` 标识身份，禁用项方向键跳过也选不中。
 - `content` 里可以直接放任意节点；不是 `item` 就不进方向键行程，也选不中。
 - 子菜单触发条目双重身份：父层方向键照常走、右方向键进子层、子层左方向键退回。
 - 条目可按 `group` 分组，组标题写在 `group-label` 上，两者以 `aria-labelledby` 相认；分组不改变方向键行程。
+- 浮层使用 M2 磨砂表面；展开项使用中性灰反馈，不加左侧条、不使用默认品牌蓝底，也不改变字重。
+- 图标、正文和快捷键等作者节点按一行排列；长正文用 `item-text` 截断，`item-description` 才另起一行，子菜单箭头位于行尾。
 
 ## 示例
 
@@ -43,7 +45,7 @@ placement 只是首选位，空间不够时定位引擎会自动翻面；arrow �
 
 ### 语气
 
-tone 决定条目高亮用哪族颜色；静止态看不出来，展开后悬停条目、或用方向键把焦点移上去才显现
+普通菜单行与展开项保持中性灰；tone 作用于触发器反馈和显式标记，不给展开项铺品牌色
 
 <XhDemo src="menu/04-tone" />
 
@@ -216,6 +218,7 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'menu' |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-label` | props.translations.content |
 | `content` | `aria-labelledby` | `trigger` 部件的 id \| undefined |
 | `content` | `role` | 'menu' |
@@ -261,15 +264,60 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `submenu-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `submenu-trigger` | `data-state` | 'open' \| 'closed' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-menu-arrow-size` · `--xh-menu-border` · `--xh-menu-content-bg` · `--xh-menu-content-fg` · `--xh-menu-content-gap` · `--xh-menu-content-px` · `--xh-menu-content-py` · `--xh-menu-content-radius` · `--xh-menu-content-shadow` · `--xh-menu-group-gap` · `--xh-menu-group-label-fg` · `--xh-menu-group-label-font-size` · `--xh-menu-group-label-font-weight` · `--xh-menu-group-label-px` · `--xh-menu-group-label-py` · `--xh-menu-icon-size` · `--xh-menu-item-active-font-weight` · `--xh-menu-item-bg-active` · `--xh-menu-item-bg-hover` · `--xh-menu-item-description-fg` · `--xh-menu-item-description-font-size` · `--xh-menu-item-fg` · `--xh-menu-item-font-size` · `--xh-menu-item-gap` · `--xh-menu-item-indicator-fg` · `--xh-menu-item-indicator-size` · `--xh-menu-item-leading` · `--xh-menu-item-px` · `--xh-menu-item-py` · `--xh-menu-item-radius` · `--xh-menu-layer` · `--xh-menu-max-h` · `--xh-menu-max-w` · `--xh-menu-min-w` · `--xh-menu-separator-color` · `--xh-menu-separator-my` · `--xh-menu-separator-thickness` · `--xh-menu-trigger-bg-active`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-menu-arrow-size` | `arrow` | `--xh-_overlay-arrow-size` | `default` | `--xh-overlay-arrow-size` | menu 的 arrow 部件 --xh-_overlay-arrow-size 覆盖槽。 |
+| `--xh-menu-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | menu 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-menu-border` | `arrow`<br>`content` | `border` | `default` | `--xh-material-frosted-border` | menu 的 arrow、content 部件 border 覆盖槽。 |
+| `--xh-menu-content-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-material-frosted-bg` | menu 的 arrow、content 部件 background 覆盖槽。 |
+| `--xh-menu-content-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | menu 的 content 部件 color 覆盖槽。 |
+| `--xh-menu-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | menu 的 content 部件 gap 覆盖槽。 |
+| `--xh-menu-content-px` | `content` | `padding-inline` | `default` | `--xh-surface-pad-xs` | menu 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-menu-content-py` | `content` | `padding-block` | `default` | `--xh-surface-pad-xs` | menu 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-menu-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | menu 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-menu-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | menu 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-menu-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | menu 的 group 部件 gap 覆盖槽。 |
+| `--xh-menu-group-label-fg` | `group-label` | `color` | `default` | `--xh-material-frosted-fg-muted` | menu 的 group-label 部件 color 覆盖槽。 |
+| `--xh-menu-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | menu 的 group-label 部件 font-size 覆盖槽。 |
+| `--xh-menu-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | menu 的 group-label 部件 font-weight 覆盖槽。 |
+| `--xh-menu-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_menu-item-px` | menu 的 group-label 部件 padding-inline 覆盖槽。 |
+| `--xh-menu-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | menu 的 group-label 部件 padding-block 覆盖槽。 |
+| `--xh-menu-highlight` | `content` | `background` | `default` | `--xh-material-frosted-highlight` | menu 的 content 部件 background 覆盖槽。 |
+| `--xh-menu-icon-size` | `content` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | menu 的 content 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-menu-item-bg-active` | `item` | `background` | `disabled`<br>`not([data-disabled])`<br>`state=open` | `--xh-bg-subtle` | menu 的 item 部件 background 覆盖槽。 |
+| `--xh-menu-item-bg-hover` | `item` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])` | `--xh-bg-subtle` | menu 的 item 部件 background 覆盖槽。 |
+| `--xh-menu-item-bg-pressed` | `item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | menu 的 item 部件 background 覆盖槽。 |
+| `--xh-menu-item-description-fg` | `item-description` | `color` | `default` | `--xh-material-frosted-fg-muted` | menu 的 item-description 部件 color 覆盖槽。 |
+| `--xh-menu-item-description-font-size` | `item-description` | `font-size` | `default` | `--xh-text-caption-size` | menu 的 item-description 部件 font-size 覆盖槽。 |
+| `--xh-menu-item-fg` | `item` | `color` | `default` | `--xh-material-frosted-fg` | menu 的 item 部件 color 覆盖槽。 |
+| `--xh-menu-item-font-size` | `item` | `font-size` | `default` | `--xh-_menu-font-size` | menu 的 item 部件 font-size 覆盖槽。 |
+| `--xh-menu-item-gap` | `item` | `gap` | `default` | `--xh-_menu-item-gap` | menu 的 item 部件 gap 覆盖槽。 |
+| `--xh-menu-item-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone` | menu 的 item-indicator 部件 color 覆盖槽。 |
+| `--xh-menu-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | menu 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-menu-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | menu 的 item 部件 line-height 覆盖槽。 |
+| `--xh-menu-item-px` | `item` | `padding-inline` | `default` | `--xh-_menu-item-px` | menu 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-menu-item-py` | `item` | `padding-block` | `default` | `--xh-_menu-item-py` | menu 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-menu-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | menu 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-menu-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | menu 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-menu-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | menu 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-menu-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | menu 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-menu-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-menu-min-w` | menu 的 content 部件 min-inline-size 覆盖槽。 |
+| `--xh-menu-separator-color` | `separator` | `background` | `default` | `--xh-material-frosted-separator` | menu 的 separator 部件 background 覆盖槽。 |
+| `--xh-menu-separator-my` | `separator` | `margin-block` | `default` | `--xh-space-0_5` | menu 的 separator 部件 margin-block 覆盖槽。 |
+| `--xh-menu-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | menu 的 separator 部件 border-radius 覆盖槽。 |
+| `--xh-menu-separator-thickness` | `separator` | `block-size` | `default` | `--xh-stroke-thin` | menu 的 separator 部件 block-size 覆盖槽。 |
+| `--xh-menu-submenu-indicator-fg` | `item` | `background-color` | `default` | `--xh-material-frosted-fg-muted` | menu 的 item 部件 background-color 覆盖槽。 |
+| `--xh-menu-trigger-bg-active` | `trigger` | `background` | `disabled`<br>`not([data-disabled])`<br>`state=open` | `--xh-_menu-active-bg` | menu 的 trigger 部件 background 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
-关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -287,6 +335,12 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 
 - 破坏性命令与其余条目之间隔一道[分隔线](./separator)，并放在最后。
 - 悬停触发只在指针环境有意义，触摸与键盘恒靠点击那条路径。
+- 快捷键提示用[键帽组](./kbd-group)并设置 `margin-inline-start: auto` 推到行尾，不必手写平台文本或补造占位节点。
+
+### 当前边界
+
+- 当前尚无正式 checkbox item、radio group/item 与单条 danger tone，选择能力需要行为及可访问语义一起交付，不能只画一个勾来代替。
+- KbdGroup 属于作者内容，只负责展示，不会自动注册键盘动作；正式 shortcut/trailing 部件仍待独立实现。
 
 ## 反模式
 

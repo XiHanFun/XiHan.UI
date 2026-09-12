@@ -3,6 +3,7 @@ import type { CommandApi, CommandGroupMeta, CommandItemProps, CommandNodeMeta, C
 import { contains, dataAttr, isComposingEvent, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/core'
 import { commandAnatomy, commandItemQuery, commandItemText } from './command.anatomy'
 import { flattenCommandGroups, navigateCommandResults, resolveCommandGroups } from './command.filter'
+import { hiddenCommandValues } from './command.visibility'
 
 const parts = commandAnatomy.build()
 
@@ -42,8 +43,10 @@ export function connectCommand<T extends PropTypes>(
 
   // 锚点所指的命令被筛掉时当场作废：留着会让 aria-activedescendant 指向一个不存在的 id
   const raw = context.get('highlightedValue')
-  const highlighted = raw != null && metaOf.has(raw) ? raw : null
-  const empty = open && hasCollection && results.length === 0
+  const hiddenValues = new Set(context.get('hiddenValues'))
+  const highlighted = raw != null && metaOf.has(raw) && !hiddenValues.has(raw) ? raw : null
+  // 没有结果或所有结果都明确隐藏时显示作者空态；未挂载候选不在隐藏镜像中。
+  const empty = open && hasCollection && results.every(item => hiddenValues.has(item.value))
 
   /** 这条命令此刻在不在结果里。收起而不是不渲染：两个适配器因此产出同一棵 DOM。 */
   const itemHidden = (value: string): boolean => hasCollection && !metaOf.has(value)
@@ -68,9 +71,13 @@ export function connectCommand<T extends PropTypes>(
     el?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })
   }
 
-  /** 方向键落点：在结果里挑，禁用的跳过；走数据不查 DOM，首帧即准。 */
+  /** collection 保留未挂载候选；事件发生时仅排除已有 DOM 明确隐藏的条目。 */
+  const renderedHidden = (): Set<string> => hiddenCommandValues(refs.get('getListEl')())
+
+  /** 方向键仍按数据顺序选取，跳过禁用与作者明确隐藏的候选。 */
   const highlightBy = (intent: NavIntent): void => {
-    const next = navigateCommandResults(results, highlighted, intent, loop)
+    const hidden = renderedHidden()
+    const next = navigateCommandResults(results.filter(item => !hidden.has(item.value)), highlighted, intent, loop)
     if (!next)
       return
     send({ type: 'ITEM.HIGHLIGHT', value: next.value })
@@ -80,7 +87,7 @@ export function connectCommand<T extends PropTypes>(
   /** 确认键：认锚点所在的那条命令，禁用的不认。 */
   const commitHighlighted = (): void => {
     const meta = highlighted == null ? undefined : metaOf.get(highlighted)
-    if (!meta || meta.disabled)
+    if (!meta || meta.disabled || renderedHidden().has(meta.value))
       return
     send({ type: 'ITEM.SELECT', value: meta.value, label: meta.label })
   }
@@ -100,7 +107,7 @@ export function connectCommand<T extends PropTypes>(
     setInputValue: next => send({ type: 'INPUT.SET', value: next }),
     select: (value) => {
       const meta = metaOf.get(value)
-      if (meta?.disabled)
+      if (meta?.disabled || renderedHidden().has(value))
         return
       send({ type: 'ITEM.SELECT', value, label: meta?.label ?? value })
     },
@@ -121,6 +128,8 @@ export function connectCommand<T extends PropTypes>(
       'data-state': stateAttr,
       // 形态轴落在 backdrop 上：三档换的都是这一层自己的底色与模糊
       'data-variant': prop('variant'),
+      // 非模态不激活遮罩；Vue/React 据此不创建节点，WC 隐藏作者节点。
+      'hidden': !modal || undefined,
     }),
 
     getPositionerProps: () => normalize.element({
@@ -146,6 +155,9 @@ export function connectCommand<T extends PropTypes>(
       'data-state': stateAttr,
       // 尺寸轴落在 content 上：解剖里没有 root，positioner 非必需，且 content 会被 portal 走
       'data-size': prop('size'),
+      // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 收起态自带 hidden：positioner 非必需部件，最小结构下没有别的节点兜底
       'hidden': !open || undefined,
     }),
@@ -243,20 +255,21 @@ export function connectCommand<T extends PropTypes>(
       // aria-activedescendant 要指得到它，所以每条命令都得有个稳定 id
       'id': itemId(item.value),
       'role': 'option',
-      // 命令面板里没有「选中状态」这条线，选完即执行；显式写 false 而非省略
-      'aria-selected': 'false',
+      // 命令没有持久选值；这里是 APG combobox 的 selection-follows-focus：
+      // aria-activedescendant 指到哪一条，哪一条就向读屏报 selected，其余显式为 false。
+      'aria-selected': highlighted === item.value ? 'true' : 'false',
       // 集合条目一律 aria-disabled，原生 disabled 不派发 click，点击就走不到守卫里
       'aria-disabled': itemDisabled(item) ? 'true' : 'false',
       // 不给 tabindex：焦点恒在检索框
       'hidden': itemHidden(item.value) || undefined,
       'onClick': (event: MouseEvent) => {
-        if (itemDisabled(item))
+        if (itemDisabled(item) || renderedHidden().has(item.value))
           return
         send({ type: 'ITEM.SELECT', value: item.value, label: commandItemText(event.currentTarget as HTMLElement) })
       },
       // 指针划过即挪锚点：不同步的话，鼠标停在 A 上、回车却执行了键盘锚点所在的 B
       'onPointerMove': (event: PointerEvent) => {
-        if (!itemDisabled(item) && highlighted !== item.value) {
+        if (!itemDisabled(item) && !renderedHidden().has(item.value) && highlighted !== item.value) {
           pointerHot.add(event.currentTarget as Element)
           send({ type: 'ITEM.HIGHLIGHT', value: item.value })
         }

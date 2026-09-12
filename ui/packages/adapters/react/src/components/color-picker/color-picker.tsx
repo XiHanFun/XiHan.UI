@@ -12,9 +12,11 @@ import type { SlotChildren } from '../../runtime/slot-content'
 import { colorPickerToChannel, colorPickerToInputChannel } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
+import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useFormControlProps } from '../form/use-form-control'
 import { ColorPickerChannelProvider, ColorPickerProvider, useColorPickerChannelContext, useColorPickerContext } from './context'
 import { useColorPicker } from './use-color-picker'
 
@@ -25,7 +27,7 @@ function noop(): void {}
 /** 函数式 children 的载荷：展开态、当前颜色的各式表示、预设色板、屏幕取色状态，以及改展开与改值两个动作。 */
 export type ColorPickerRootSlotProps = Pick<
   ColorPickerApi,
-  'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'picking' | 'eyeDropperSupported' | 'setOpen' | 'setValue'
+  'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'picking' | 'eyeDropperSupported' | 'errors' | 'setOpen' | 'setValue' | 'clearError'
 >
 
 /** 根上自有的那些取值；dir 与原生的同名属性含义不同，由这里接管。 */
@@ -57,6 +59,7 @@ export interface XhColorPickerRootProps extends RootElementProps {
   translations?: Partial<ColorPickerTranslations>
   onValueChange?: ColorPickerProps['onValueChange']
   onOpenChange?: ColorPickerProps['onOpenChange']
+  onColorError?: ColorPickerProps['onColorError']
   children?: SlotChildren<ColorPickerRootSlotProps>
 }
 
@@ -78,10 +81,11 @@ export function XhColorPickerRoot({
   translations,
   onValueChange,
   onOpenChange,
+  onColorError,
   children,
   ...rest
 }: XhColorPickerRootProps): ReactNode {
-  const ctx = useColorPicker(withXhConfig('color-picker', {
+  const ctx = useColorPicker(withXhConfig('color-picker', useFormControlProps({
     value,
     defaultValue,
     format,
@@ -99,7 +103,8 @@ export function XhColorPickerRoot({
     translations,
     onValueChange,
     onOpenChange,
-  }) as ColorPickerProps)
+    onColorError,
+  })) as ColorPickerProps)
   const api = ctx.api
 
   return (
@@ -119,15 +124,17 @@ export function XhColorPickerRoot({
           swatches: api.swatches,
           picking: api.picking,
           eyeDropperSupported: api.eyeDropperSupported,
+          errors: api.errors,
           setOpen: api.setOpen,
           setValue: api.setValue,
+          clearError: api.clearError,
         })}
       </div>
     </ColorPickerProvider>
   )
 }
 
-XhColorPickerRoot.xhEvents = ['value-change', 'open-change'] as const
+XhColorPickerRoot.xhEvents = ['value-change', 'open-change', 'color-error'] as const
 
 export interface XhColorPickerLabelProps extends ComponentPropsWithRef<'label'> {}
 
@@ -204,7 +211,7 @@ export function XhColorPickerPositioner({ children, container, ...rest }: XhColo
   // 面板的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current })
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,
@@ -317,13 +324,14 @@ export interface XhColorPickerChannelSliderThumbProps extends ComponentPropsWith
 export function XhColorPickerChannelSliderThumb({ children, ...rest }: XhColorPickerChannelSliderThumbProps): ReactNode {
   const ctx = useColorPickerContext()
   const channel = useColorPickerChannelContext()
+  // 拇指上的 onFocus 来自内嵌滑杆，是不冒泡的 DOM focus，React 的同名合成事件挂的是冒泡的 focusin：
+  // 后代得焦会被算成拇指自己得焦。装成原生监听器，到达路径才与另外两家一致
+  const bind = useNativeEvents(
+    ctx.api.getChannelSliderThumbProps({ channel }) as Record<string, unknown>,
+    ['onFocus'],
+  )
   return (
-    <div
-      {...mergeReactProps(
-        ctx.api.getChannelSliderThumbProps({ channel }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
-      )}
-    >
+    <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest as Record<string, unknown>)}>
       {children}
     </div>
   )

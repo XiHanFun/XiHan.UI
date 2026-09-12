@@ -1,0 +1,112 @@
+// 选中与展开双受控 | 两份集合都由宿主持有：组件只发事件，宿主写回它才动，回显的就是写回的那两份
+import type { ReactNode } from "react";
+import {
+  XhTreeSelectBranch,
+  XhTreeSelectBranchContent,
+  XhTreeSelectBranchControl,
+  XhTreeSelectBranchText,
+  XhTreeSelectBranchTrigger,
+  XhTreeSelectClearTrigger,
+  XhTreeSelectContent,
+  XhTreeSelectControl,
+  XhTreeSelectIndicator,
+  XhTreeSelectItem,
+  XhTreeSelectItemIndicator,
+  XhTreeSelectItemText,
+  XhTreeSelectLabel,
+  XhTreeSelectPositioner,
+  XhTreeSelectRoot,
+  XhTreeSelectTree,
+  XhTreeSelectTrigger,
+  XhTreeSelectValueText,
+} from "@xihan-ui/react";
+import { useState } from "react";
+
+// draft.md 是禁用叶子：方向键与连打检索跳过它，确认键也不认它
+const files = [
+  {
+    value: "docs",
+    label: "docs",
+    children: [
+      { value: "guide", label: "guide.md" },
+      { value: "draft", label: "draft.md（禁用）", disabled: true },
+      {
+        value: "i18n",
+        label: "i18n",
+        children: [
+          { value: "zh", label: "zh-CN.md" },
+          { value: "en", label: "en-US.md" },
+        ],
+      },
+    ],
+  },
+];
+
+export default function Demo(): ReactNode {
+  const [value, setValue] = useState<string[]>(["guide"]);
+  const [expanded, setExpanded] = useState<string[]>(["docs"]);
+
+  return (
+    <>
+      <XhTreeSelectRoot
+        value={value}
+        onValueChange={details => setValue(details.value)}
+        expandedValue={expanded}
+        onExpandedValueChange={details => setExpanded(details.value)}
+        collection={files}
+        placeholder="选一个文件"
+        style={{ maxInlineSize: "320px" }}
+      >
+        <XhTreeSelectLabel>文档</XhTreeSelectLabel>
+        <XhTreeSelectControl>
+          <XhTreeSelectTrigger>
+            <XhTreeSelectValueText />
+            <XhTreeSelectIndicator />
+          </XhTreeSelectTrigger>
+          <XhTreeSelectClearTrigger />
+        </XhTreeSelectControl>
+        <XhTreeSelectPositioner>
+          <XhTreeSelectContent>
+            <XhTreeSelectTree>
+              <XhTreeSelectBranch value="docs">
+                <XhTreeSelectBranchControl>
+                  <XhTreeSelectBranchTrigger />
+                  <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
+                  <XhTreeSelectItemIndicator />
+                </XhTreeSelectBranchControl>
+                <XhTreeSelectBranchContent>
+                  <XhTreeSelectItem value="guide">
+                    <XhTreeSelectItemIndicator />
+                    <XhTreeSelectItemText>guide.md</XhTreeSelectItemText>
+                  </XhTreeSelectItem>
+                  <XhTreeSelectItem value="draft">
+                    <XhTreeSelectItemIndicator />
+                    <XhTreeSelectItemText>draft.md（禁用）</XhTreeSelectItemText>
+                  </XhTreeSelectItem>
+                  <XhTreeSelectBranch value="i18n">
+                    <XhTreeSelectBranchControl>
+                      <XhTreeSelectBranchTrigger />
+                      <XhTreeSelectBranchText>i18n</XhTreeSelectBranchText>
+                      <XhTreeSelectItemIndicator />
+                    </XhTreeSelectBranchControl>
+                    <XhTreeSelectBranchContent>
+                      <XhTreeSelectItem value="zh">
+                        <XhTreeSelectItemIndicator />
+                        <XhTreeSelectItemText>zh-CN.md</XhTreeSelectItemText>
+                      </XhTreeSelectItem>
+                      <XhTreeSelectItem value="en">
+                        <XhTreeSelectItemIndicator />
+                        <XhTreeSelectItemText>en-US.md</XhTreeSelectItemText>
+                      </XhTreeSelectItem>
+                    </XhTreeSelectBranchContent>
+                  </XhTreeSelectBranch>
+                </XhTreeSelectBranchContent>
+              </XhTreeSelectBranch>
+            </XhTreeSelectTree>
+          </XhTreeSelectContent>
+        </XhTreeSelectPositioner>
+      </XhTreeSelectRoot>
+      <p>{`已选：${value.join("、") || "（无）"} · 展开：${expanded.join("、") || "（无）"}`}</p>
+    </>
+  );
+}

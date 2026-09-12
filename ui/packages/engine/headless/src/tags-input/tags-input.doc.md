@@ -15,6 +15,7 @@
 ## 特性
 
 - `delimiter` 与 `addOnPaste` 一起处理粘贴拆分。
+- 每枚标签都是库里的 tag：预览、文字与删除钮就是它的 root、label 与 close-trigger，语气与尺寸随控件，形态按控件的面派。
 - `editable` 让已有标签双击就地改。
 - `max` 与 `allowOverflow` 一对：超出上限是拒收还是标红。
 - 标签的值可以是对象，不必是字符串。

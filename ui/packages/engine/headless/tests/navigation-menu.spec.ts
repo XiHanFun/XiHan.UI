@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
+import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { NavigationMenuSchema, NavigationMenuValueChangeDetails } from '../src/navigation-menu'
-import { createService, normalizeProps } from '@xihan-ui/core'
+import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
@@ -136,6 +138,39 @@ function makeMenu(initial: Props = {}, disabled?: string) {
       runtime.stop()
       root.remove()
       outside.remove()
+    },
+  }
+}
+
+/** 只装配行为层与 Presence 接线，供真实退场资源测试复用。 */
+function makeLayerMenu() {
+  const runtime = createVanillaRuntime()
+  const props = runtime.signal<Props>({})
+  const service = createService(navigationMenuMachine, { props: () => props.get(), runtime })
+  const config = createRuntimeConfig()
+  const list = document.createElement('ul')
+  document.body.appendChild(list)
+  service.refs.set('getListEl', () => list)
+  service.refs.set('config', config)
+  service.refs.set('registerLayer', () => config.layerRegistry.register({
+    kind: 'inline',
+    node: () => list,
+    branches: () => [],
+    isModal: () => false,
+    surfaces: () => [],
+  }))
+  runtime.start()
+  return {
+    api: () => connectNavigationMenu(service, normalizeProps),
+    config,
+    connectPresence: (value: string, presence: PresenceHandle) =>
+      service.send({ type: 'PRESENCE.SET', value, presence, connected: true }),
+    disconnectPresence: (value: string, presence: PresenceHandle) =>
+      service.send({ type: 'PRESENCE.SET', value, presence, connected: false }),
+    exitPending: () => service.context.get('exitPending') ?? false,
+    stop: () => {
+      runtime.stop()
+      list.remove()
     },
   }
 }
@@ -332,6 +367,194 @@ describe('navigationMenu 收起', () => {
     c.links[0]!.dispatchEvent(event)
     expect(c.value()).toBeNull()
     expect(event.defaultPrevented).toBe(false)
+  })
+
+  it('层 cleanup 抛错后仍能在下次展开时重新登记', () => {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({})
+    const service = createService(navigationMenuMachine, { props: () => props.get(), runtime })
+    const config = createRuntimeConfig()
+    const list = document.createElement('ul')
+    document.body.appendChild(list)
+    let registrations = 0
+    let failNextCleanup = true
+
+    service.refs.set('getListEl', () => list)
+    service.refs.set('config', config)
+    service.refs.set('registerLayer', () => {
+      registrations += 1
+      const registration = config.layerRegistry.register({
+        kind: 'popover',
+        node: () => list,
+        branches: () => [],
+        isModal: () => false,
+        surfaces: () => [],
+      })
+      return {
+        layer: registration.layer,
+        dispose: () => {
+          registration.dispose()
+          if (failNextCleanup) {
+            failNextCleanup = false
+            throw new Error('layer cleanup failed')
+          }
+        },
+      }
+    })
+    runtime.start()
+    const presence = createPresence({ config, open: false, onRenderedChange: () => {} })
+    service.send({ type: 'PRESENCE.SET', value: 'products', presence, connected: true })
+    const api = () => connectNavigationMenu(service, normalizeProps)
+
+    api().setValue('products')
+    expect(registrations).toBe(1)
+    expect(() => api().setValue(null)).toThrow('layer cleanup failed')
+    expect(service.refs.get('layerDispose')).toBeNull()
+
+    api().setValue('products')
+    expect(registrations).toBe(2)
+
+    runtime.stop()
+    presence.dispose()
+    list.remove()
+  })
+
+  it('从 A 切到 B 后只等待 B 的 Presence；关闭时 viewport 保留但立即退出交互树', () => {
+    const h = makeLayerMenu()
+    const presenceA = createPresence({ config: h.config, open: false, onRenderedChange: () => {} })
+    const presenceB = createPresence({ config: h.config, open: false, onRenderedChange: () => {} })
+    h.connectPresence('products', presenceA)
+    h.connectPresence('docs', presenceB)
+
+    h.api().setValue('products')
+    presenceA.update(true)
+    const original = h.config.layerRegistry.list()[0]
+    expect(original).toBeDefined()
+
+    let leaseA: ExitLease | null = null
+    const offExitA = presenceA.onBeforeExit(() => {
+      leaseA = presenceA.claimExit('navigation-menu A animation')
+    })
+    h.api().setValue('docs')
+    presenceA.update(false)
+    presenceB.update(true)
+    expect(leaseA).not.toBeNull()
+    expect(h.config.layerRegistry.list()).toEqual([original])
+
+    let leaseB: ExitLease | null = null
+    const offExitB = presenceB.onBeforeExit(() => {
+      leaseB = presenceB.claimExit('navigation-menu B animation')
+    })
+    h.api().setValue(null)
+    expect(h.exitPending()).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+
+    const closingContent = h.api().getContentProps({ value: 'docs' }) as Record<string, unknown>
+    expect(closingContent.hidden).toBe(true)
+    expect(closingContent.inert).toBe(true)
+    expect(closingContent['aria-hidden']).toBe(true)
+    const closingViewport = h.api().getViewportProps() as Record<string, unknown>
+    expect(closingViewport.hidden).toBeUndefined()
+    expect(closingViewport.inert).toBe(true)
+    expect(closingViewport['aria-hidden']).toBe(true)
+
+    presenceB.update(false)
+    expect(leaseB).not.toBeNull()
+    leaseA!.done()
+    expect(h.config.layerRegistry.list()).toEqual([original])
+    expect(h.exitPending()).toBe(true)
+
+    leaseB!.done()
+    expect(h.config.layerRegistry.list()).toHaveLength(0)
+    expect(h.exitPending()).toBe(false)
+    expect((h.api().getViewportProps() as Record<string, unknown>).hidden).toBe(true)
+
+    offExitA()
+    offExitB()
+    presenceA.dispose()
+    presenceB.dispose()
+    h.stop()
+  })
+
+  it('退场中重开沿用原 Layer，并撤销旧退出等待', () => {
+    const h = makeLayerMenu()
+    const presence = createPresence({ config: h.config, open: false, onRenderedChange: () => {} })
+    h.connectPresence('products', presence)
+    h.api().setValue('products')
+    presence.update(true)
+    const original = h.config.layerRegistry.list()[0]
+
+    let lease: ExitLease | null = null
+    const offBeforeExit = presence.onBeforeExit(() => {
+      lease = presence.claimExit('navigation-menu animation')
+    })
+    h.api().setValue(null)
+    presence.update(false)
+    expect(h.exitPending()).toBe(true)
+
+    h.api().setValue('products')
+    presence.update(true)
+    expect(lease!.settled).toBe(true)
+    expect(h.exitPending()).toBe(false)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+
+    offBeforeExit()
+    presence.dispose()
+    h.stop()
+  })
+
+  it('首帧尚未登记 Presence 仍入层；明确卸载后不重建，重新连接后恢复', () => {
+    const h = makeLayerMenu()
+    h.api().setValue('products')
+    expect(h.config.layerRegistry.list()).toHaveLength(1)
+
+    const presence = createPresence({ config: h.config, open: true, onRenderedChange: () => {} })
+    h.connectPresence('products', presence)
+    expect(h.config.layerRegistry.list()).toHaveLength(1)
+
+    h.disconnectPresence('products', presence)
+    expect(h.config.layerRegistry.list()).toHaveLength(0)
+    expect(h.exitPending()).toBe(false)
+
+    h.connectPresence('products', presence)
+    expect(h.config.layerRegistry.list()).toHaveLength(1)
+
+    presence.dispose()
+    h.stop()
+  })
+
+  it('旧句柄迟到注销不删新句柄；精确卸载 closing content 立即释放资源', () => {
+    const h = makeLayerMenu()
+    const stale = createPresence({ config: h.config, open: false, onRenderedChange: () => {} })
+    const current = createPresence({ config: h.config, open: false, onRenderedChange: () => {} })
+    h.connectPresence('products', stale)
+    h.connectPresence('products', current)
+    h.disconnectPresence('products', stale)
+
+    h.api().setValue('products')
+    current.update(true)
+    const original = h.config.layerRegistry.list()[0]
+    let lease: ExitLease | null = null
+    const offBeforeExit = current.onBeforeExit(() => {
+      lease = current.claimExit('navigation-menu replacement animation')
+    })
+    h.api().setValue(null)
+    current.update(false)
+    expect(lease).not.toBeNull()
+    expect(h.exitPending()).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+
+    h.disconnectPresence('products', stale)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+    h.disconnectPresence('products', current)
+    expect(h.config.layerRegistry.list()).toHaveLength(0)
+    expect(h.exitPending()).toBe(false)
+
+    offBeforeExit()
+    lease!.cancel()
+    stale.dispose()
+    current.dispose()
+    h.stop()
   })
 })
 

@@ -10,7 +10,7 @@ export const paginationAnatomy = createAnatomy('pagination', [
   'next-trigger',
   'item',
   'ellipsis-trigger',
-  // 每页条数控制器：一个原生 select，档位从 pageSizeOptions 来
+  // 每页条数控制器的挂载点：里头装的是库里的 select，档位从 pageSizeOptions 来
   'page-size-select',
   // 摊开省略号的那一层。同时只开一个省略位，一份定位层就够
   'positioner',

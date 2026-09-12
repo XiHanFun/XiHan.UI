@@ -20,8 +20,11 @@
     flex-direction: column;
   }
 
+  /* 横排一行摆不下时条目落到下一行。不换行的话它们只会被压窄，
+     文字逐字折行、每个条目变成一根竖条 */
   [data-scope='radio-group'][data-part='root'][data-orientation='horizontal'] {
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
   }
 

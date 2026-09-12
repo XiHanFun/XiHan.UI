@@ -1,4 +1,5 @@
 import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 /**
  * 展开时焦点落在集合的哪一端：ArrowUp 那类反向入口从末尾进，键盘入口从首个可用条目进。
@@ -18,6 +19,8 @@ export interface ContextMenuRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 视觉退场与行为资源共享的 Presence；缺省时关闭立即释放。 */
+  presence: PresenceHandle | null
   /** 浮层定位引擎；缺省即不产出位置结果。 */
   position: PositionEnginePort | null
   /** 被定位的浮层容器，通常是 positioner。锚点是光标坐标，不是元素，故没有 getAnchorEl。 */

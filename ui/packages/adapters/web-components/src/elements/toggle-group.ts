@@ -1,7 +1,7 @@
 import type { ActionVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { ToggleGroupItemProps, ToggleGroupNode, ToggleGroupSchema, ToggleGroupValueChangeDetails } from '@xihan-ui/headless'
+import type { FormControlState, ToggleGroupItemProps, ToggleGroupNode, ToggleGroupSchema, ToggleGroupValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectToggleGroup, toggleGroupAnatomy, toggleGroupMachine, toggleGroupMeta } from '@xihan-ui/headless'
+import { connectToggleGroup, resolveFormControlState, toggleGroupAnatomy, toggleGroupMachine, toggleGroupMeta } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -101,6 +101,17 @@ export class XhToggleGroupElement extends XhElement {
 
   // toggle-group 机器无副作用：不需要 config/layer/refs，controller 只带 props。
   private readonly ctrl = new MachineController<ToggleGroupSchema>(this, toggleGroupMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；ToggleGroup 仅消费公开的禁用轴。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
+  private disabledState(): boolean {
+    return resolveFormControlState({ disabled: this.disabled }, this.inheritedControl).disabled
+  }
 
   private machineProps(): Partial<ToggleGroupSchema['props']> {
     return {
@@ -110,7 +121,7 @@ export class XhToggleGroupElement extends XhElement {
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect
       // （multiple / disabled / disallowEmpty 默认关，loop / rovingFocus 默认开）
       multiple: this.multiple,
-      disabled: this.disabled,
+      disabled: this.disabledState(),
       disallowEmpty: this.disallowEmpty,
       variant: this.variant,
       tone: this.tone,
@@ -163,7 +174,7 @@ export class XhToggleGroupElement extends XhElement {
       this.declaredDisabled.set(el, own)
       return { value, disabled: own }
     }
-    if (!this.disabled && !this.wasGroupDisabled) {
+    if (!this.disabledState() && !this.wasGroupDisabled) {
       const own = isItemDisabled(el)
       this.declaredDisabled.set(el, own)
       return { value, disabled: own }
@@ -194,6 +205,6 @@ export class XhToggleGroupElement extends XhElement {
       this.spreader.spread(hiddenInput, api.getHiddenInputProps() as Record<string, unknown>)
 
     // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
-    this.wasGroupDisabled = !!this.disabled
+    this.wasGroupDisabled = this.disabledState()
   }
 }

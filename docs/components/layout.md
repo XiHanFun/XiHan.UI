@@ -95,13 +95,13 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 | `siderWidth` | `string` |  | 展开时侧栏的宽度，任意 CSS 长度；不写则用皮肤里的档位。 |
 | `siderCollapsedWidth` | `string` |  | 折叠时侧栏的宽度，任意 CSS 长度；不写则用皮肤里的档位。 |
 | `siderPlacement` | `LayoutSiderPlacement` |  | 侧栏挂在行首还是行尾，缺省 start。 |
-| `siderBreakpoint` | `LayoutBreakpoint` |  | 侧栏的自适应断点：视口窄于这一档时侧栏按折叠宽显示。 只换宽度不改折叠态——折叠态归 siderCollapsed 那条通道，两者互不干扰。 |
+| `siderBreakpoint` | `LayoutBreakpoint` |  | 侧栏的自适应断点：视口窄于这一档时侧栏按折叠宽显示。 只换宽度不改折叠态——折叠态归 siderCollapsed 那条通道，两者互不干扰。 运行期换档会重绑媒体查询；需要所属 Window.matchMedia 与对应断点令牌。 |
 | `siderPresentation` | `LayoutSiderPresentation` |  | 侧栏呈现形态，缺省 inline（在骨架里占一列）。 sheet 是覆盖档：侧栏移出画外，展开时盖在内容之上并铺一层遮罩，内容因此占满整宽。 同时写了 siderBreakpoint 时它只在未达那一档时成立——宽屏照旧占一列，窄屏才覆盖， 且跨档时侧栏跟着开合（进覆盖档收起、回占位档展开），走的是 siderCollapsed 那条通道。 覆盖档不锁焦点、不把背后的内容标成惰性：它是骨架里的一段，不是模态浮层。 |
 | `headerFixed` | `boolean` |  | 头吸顶：滚动时头钉在滚动容器的上沿。只落标记，钉住的实现归皮肤。 |
 | `siderFixed` | `boolean` |  | 侧栏吸附：滚动时侧栏钉在滚动容器的上沿，头也吸顶时让开头那一条。只落标记，钉住的实现归皮肤。 |
 | `bordered` | `boolean` |  | 在头、侧栏、脚与内容之间画分隔线。 |
 | `onSiderCollapsedChange` | `(details: LayoutSiderCollapsedChangeDetails) => void` |  | 折叠态变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
-| `onSiderBreakpoint` | `(details: LayoutSiderBreakpointDetails) => void` |  | 断点跨过去时发一次，挂载时也发一次当前值。 窄屏要把侧栏换成抽屉的，接这条：组件自己只换宽度。 |
+| `onSiderBreakpoint` | `(details: LayoutSiderBreakpointDetails) => void` |  | 断点跨过去时发一次，挂载或更换档位时也发一次当前值。 窄屏要把侧栏换成抽屉的，接这条：组件自己只换宽度。 |
 
 ## 事件
 
@@ -183,11 +183,41 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 | `sider` | `data-presentation` | resolveSiderPresentation( prop('siderPresentation'), … |
 | `sider-trigger` | `data-collapsed` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-layout-bg` · `--xh-layout-border` · `--xh-layout-content-padding` · `--xh-layout-fg` · `--xh-layout-footer-bg` · `--xh-layout-footer-padding` · `--xh-layout-header-bg` · `--xh-layout-header-gap` · `--xh-layout-header-h` · `--xh-layout-header-layer` · `--xh-layout-header-px` · `--xh-layout-scrollport-h` · `--xh-layout-sider-backdrop-bg` · `--xh-layout-sider-backdrop-layer` · `--xh-layout-sider-bg` · `--xh-layout-sider-collapsed-w` · `--xh-layout-sider-layer` · `--xh-layout-sider-padding` · `--xh-layout-sider-shadow` · `--xh-layout-sider-trigger-bg` · `--xh-layout-sider-trigger-bg-active` · `--xh-layout-sider-trigger-bg-hover` · `--xh-layout-sider-trigger-fg` · `--xh-layout-sider-trigger-gap` · `--xh-layout-sider-trigger-px` · `--xh-layout-sider-trigger-radius` · `--xh-layout-sider-w`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-layout-bg` | `root` | `background` | `default` | `--xh-bg-page` | layout 的 root 部件 background 覆盖槽。 |
+| `--xh-layout-border` | `footer`<br>`header`<br>`root`<br>`sider` | `border-block-end`<br>`border-block-start`<br>`border-inline-end`<br>`border-inline-start` | `bordered`<br>`placement=end`<br>`placement=start` | `--xh-border-default` | layout 的 footer、header、root、sider 部件 border-block-end、border-block-start、border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-layout-content-padding` | `content` | `padding` | `default` | `--xh-space-4` | layout 的 content 部件 padding 覆盖槽。 |
+| `--xh-layout-fg` | `root` | `color` | `default` | `--xh-fg-default` | layout 的 root 部件 color 覆盖槽。 |
+| `--xh-layout-footer-bg` | `footer` | `background` | `default` | `--xh-bg-surface` | layout 的 footer 部件 background 覆盖槽。 |
+| `--xh-layout-footer-padding` | `footer` | `padding` | `default` | `--xh-space-3` | layout 的 footer 部件 padding 覆盖槽。 |
+| `--xh-layout-header-bg` | `header` | `background` | `default` | `--xh-bg-surface` | layout 的 header 部件 background 覆盖槽。 |
+| `--xh-layout-header-gap` | `header` | `gap` | `default` | `--xh-space-3` | layout 的 header 部件 gap 覆盖槽。 |
+| `--xh-layout-header-h` | `header`<br>`root`<br>`sider` | `block-size`<br>`grid-template-rows`<br>`inset-block-start`<br>`max-block-size` | `default`<br>`fixed`<br>`header-fixed`<br>`sider-fixed` | `3.5rem` | layout 的 header、root、sider 部件 block-size、grid-template-rows、inset-block-start、max-block-size 覆盖槽。 |
+| `--xh-layout-header-layer` | `header` | `z-index` | `fixed` | `--xh-layer-sticky` | layout 的 header 部件 z-index 覆盖槽。 |
+| `--xh-layout-header-px` | `header` | `padding-inline` | `default` | `--xh-space-4` | layout 的 header 部件 padding-inline 覆盖槽。 |
+| `--xh-layout-scrollport-h` | `sider` | `max-block-size` | `fixed`<br>`presentation=sheet` | `100dvh`<br>`100vh` | layout 的 sider 部件 max-block-size 覆盖槽。 |
+| `--xh-layout-sider-backdrop-bg` | `sider-backdrop` | `background` | `default` | `--xh-bg-overlay` | layout 的 sider-backdrop 部件 background 覆盖槽。 |
+| `--xh-layout-sider-backdrop-layer` | `sider-backdrop` | `z-index` | `default` | `--xh-layer-drawer` | layout 的 sider-backdrop 部件 z-index 覆盖槽。 |
+| `--xh-layout-sider-bg` | `sider` | `background` | `default` | `--xh-bg-subtle` | layout 的 sider 部件 background 覆盖槽。 |
+| `--xh-layout-sider-collapsed-w` | `root`<br>`sider` | `inline-size` | `collapsed`<br>`sider-breakpoint` | `4rem` | layout 的 root、sider 部件 inline-size 覆盖槽。 |
+| `--xh-layout-sider-layer` | `sider` | `z-index` | `presentation=sheet` | `--xh-layer-drawer` | layout 的 sider 部件 z-index 覆盖槽。 |
+| `--xh-layout-sider-padding` | `sider` | `padding`<br>`padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default`<br>`presentation=sheet` | `--xh-space-3` | layout 的 sider 部件 padding、padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
+| `--xh-layout-sider-shadow` | `sider` | `box-shadow` | `presentation=sheet` | `--xh-elevation-sheet` | layout 的 sider 部件 box-shadow 覆盖槽。 |
+| `--xh-layout-sider-trigger-bg` | `sider-trigger` | `background` | `default` | `transparent` | layout 的 sider-trigger 部件 background 覆盖槽。 |
+| `--xh-layout-sider-trigger-bg-active` | `sider-trigger` | `background` | `active` | `--xh-bg-subtle-active` | layout 的 sider-trigger 部件 background 覆盖槽。 |
+| `--xh-layout-sider-trigger-bg-hover` | `sider-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | layout 的 sider-trigger 部件 background 覆盖槽。 |
+| `--xh-layout-sider-trigger-fg` | `sider-trigger` | `color` | `default` | `--xh-fg-default` | layout 的 sider-trigger 部件 color 覆盖槽。 |
+| `--xh-layout-sider-trigger-gap` | `sider-trigger` | `gap` | `default` | `--xh-control-gap-sm` | layout 的 sider-trigger 部件 gap 覆盖槽。 |
+| `--xh-layout-sider-trigger-px` | `sider-trigger` | `padding-inline` | `default` | `--xh-control-px-sm` | layout 的 sider-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-layout-sider-trigger-radius` | `sider-trigger` | `border-radius` | `default` | `--xh-shape-control` | layout 的 sider-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-layout-sider-w` | `root`<br>`sider` | `inline-size` | `@media (min-width: 1024px)`<br>`@media (min-width: 1280px)`<br>`@media (min-width: 640px)`<br>`@media (min-width: 768px)`<br>`default`<br>`presentation=sheet`<br>`sider-breakpoint=lg`<br>`sider-breakpoint=md`<br>`sider-breakpoint=sm`<br>`sider-breakpoint=xl` | `15rem` | layout 的 root、sider 部件 inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
@@ -202,10 +232,23 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 - `siderBreakpoint` 给一档（`sm` / `md` / `lg` / `xl`），视口窄于这一档时侧栏按折叠宽显示。
   它只换宽度、不改折叠态：折叠态归 `siderCollapsed` 那条通道，两者互不干扰。
 - 断点跨过去时发 `onSiderBreakpoint`，挂载时也发一次当前值。要在窄屏改换别的排布，接这个回调。
+- 运行期修改 `siderBreakpoint` 会立即切换媒体查询、报告新档位当前值；移除该属性会解除观察并清除窄屏标记，保留当前折叠态。
+  `siderPresentation` 切到 `sheet` 时立即应用当前断点，受控折叠态仍由宿主写回。
+  断点令牌在属性更新和媒体查询事件时重新读取，单独修改 CSSOM 不会主动触发重绑。
+  已指定断点却缺少令牌或所属 Window 的 `matchMedia` 会明确报错；同步失败会解除监听，不再沿用旧档位，需以有效属性更新重新建立。
 - `siderPresentation="sheet"` 是覆盖档：侧栏移出画外，展开时盖在内容之上并铺一层遮罩，内容占满整宽。
   与 `siderBreakpoint` 配着写就是「宽屏占一列、窄屏覆盖」——跨档时侧栏跟着开合，
   进覆盖档收起、回占位档展开，走的仍是 `siderCollapsed` 那条通道。
 - 覆盖档下点遮罩或按 Escape 收起侧栏，`sider-trigger` 照旧是把它唤出来的那个控件。
+- 覆盖侧栏通过共享 Document Hub 的空栈 fallback 接收 Escape，并读取当前组件的
+  `RuntimeConfig.layerRegistry`。capture 时只要该栈存在对话框、菜单等 Layer，本键就归上层消费；
+  即使 Layer 同步退栈，仍要到下一次 Escape 才收侧栏。自定义 LayerRegistry 与同一 Document
+  的默认注册表互不干扰。
+- 同一 LayerRegistry 下同时展开多个覆盖侧栏时，每次 Escape 只收最近展开的一个；受控侧栏未写回
+  折叠态时持续占住这个位置。占位档与当前断点解析为 inline 的侧栏会被动态跳过。
+- 直接使用 headless 机器时，要在 mount 前把与机器 Scope 属于同一 Document 的 `RuntimeConfig`
+  写进 `LayoutRefs.config`；缺失或跨 Document 混接都会明确失败。Vue、React 与 Web Components
+  适配器已经完成这段接线。
 - 覆盖档不锁焦点、不把背后的内容标成惰性：它是骨架里的一段，不是模态浮层。要模态用[抽屉](./drawer)。
 - 遮罩渲染在侧栏之前：两层同一个层号，谁盖谁由文档序决定。
 - 覆盖档下侧栏贴死视口，内衬与安全区取大的一头，所以 `--xh-layout-sider-padding` 在这一档要写单值（`max()` 收不了简写的多值）。

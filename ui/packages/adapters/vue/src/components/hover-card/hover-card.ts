@@ -2,8 +2,10 @@ import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type { HoverCardApi, HoverCardSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, mergeProps, Teleport } from 'vue'
+import { defineComponent, h, mergeProps } from 'vue'
 import { mergeIntoChild } from '../../runtime/as-child'
+import { mergePartProps } from '../../runtime/merge-props'
+import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { provideHoverCard, useHoverCardContext } from './context'
 import { useHoverCard } from './use-hover-card'
@@ -15,17 +17,17 @@ export type HoverCardRootSlotProps = Pick<HoverCardApi, 'open' | 'setOpen'>
 
 export const XhHoverCardRoot = defineComponent({
   name: 'XhHoverCardRoot',
-  // 缺省值由机器与 connect 给出，这里一律 default: undefined
+  // 缺省值由机器与 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
-    openDelay: { type: Number, default: undefined },
-    closeDelay: { type: Number, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
+    openDelay: { type: Number },
+    closeDelay: { type: Number },
+    dir: { type: String as PropType<Direction> },
     disabled: Boolean,
-    size: { type: String as PropType<Size>, default: undefined },
+    size: { type: String as PropType<Size> },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: {
@@ -51,39 +53,45 @@ export const XhHoverCardRoot = defineComponent({
 
 export const XhHoverCardTrigger = defineComponent({
   name: 'XhHoverCardTrigger',
+  // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
+  inheritAttrs: false,
   props: {
     /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const ctx = useHoverCardContext()
     return () => {
-      const attrs = {
+      const part = mergePartProps({
         ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
         ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
-      }
+      }, attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
-        const merged = mergeIntoChild(children, attrs, 'hover-card')
+        const merged = mergeIntoChild(children, part, 'hover-card')
         if (merged)
           return merged
       }
-      return h('button', attrs, children)
+      return h('button', part, children)
     }
   },
 })
 
 export const XhHoverCardPositioner = defineComponent({
   name: 'XhHoverCardPositioner',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useHoverCardContext()
     // 卡片内容的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
     const bars = useScrollbars({ scrollable: () => ctx.contentRef.value })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },

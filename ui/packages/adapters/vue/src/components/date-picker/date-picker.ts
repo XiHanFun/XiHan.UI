@@ -6,7 +6,6 @@ import type {
   CalendarView,
   DateFieldSegmentState,
   DatePickerApi,
-  DatePickerFieldApi,
   DatePickerPreset,
   DatePickerPresetState,
   DatePickerSchema,
@@ -15,11 +14,14 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, mergeProps, Teleport } from 'vue'
+import { datePickerFieldAt, resolveDatePickerFieldIndex, resolveDatePickerPanelIndex } from '@xihan-ui/headless'
+import { computed, defineComponent, h, mergeProps, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { XhPortal } from '../../runtime/portal'
 import { slotPaints } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   provideDatePicker,
   provideDatePickerCell,
@@ -30,7 +32,7 @@ import {
   useDatePickerPanelContext,
   useDatePickerSegmentGroupContext,
 } from './context'
-import { useDatePicker } from './use-date-picker'
+import { useDatePickerWithRoot } from './use-date-picker'
 
 type DatePickerProps = DatePickerSchema['props']
 
@@ -40,17 +42,7 @@ type DatePickerProps = DatePickerSchema['props']
  */
 function usePanelIndex(props: { index?: number | string }): ComputedRef<number> {
   const panel = useDatePickerPanelContext()
-  return computed(() => {
-    if (props.index === undefined || props.index === '')
-      return panel.index.value
-    const n = Math.trunc(Number(props.index))
-    return Number.isFinite(n) && n >= 0 ? n : panel.index.value
-  })
-}
-
-/** 按组号取那一组分段输入；非区间模式下终点那组缺席。 */
-function fieldOf(api: DatePickerApi, index: 0 | 1): DatePickerFieldApi | null {
-  return index === 1 ? api.fieldEnd : api.field
+  return computed(() => resolveDatePickerPanelIndex(props.index, panel.index.value))
 }
 
 /** 默认插槽的载荷：选择器的开合与选中值、内嵌日历的展示数据、两组段位，以及改写值的句柄。 */
@@ -94,53 +86,53 @@ export interface DatePickerPresetsSlotProps {
 
 export const XhDatePickerRoot = defineComponent({
   name: 'XhDatePickerRoot',
-  // 有 connect / machine 兜底的 prop 一律 default: undefined
+  // 有 connect / machine 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    value: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
+    value: { type: [String, Array] as PropType<string | string[]> },
+    defaultValue: { type: [String, Array] as PropType<string | string[]> },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    min: { type: String, default: undefined },
-    max: { type: String, default: undefined },
-    locale: { type: String, default: undefined },
-    timeZone: { type: String, default: undefined },
-    selectionMode: { type: String as PropType<CalendarSelectionMode>, default: undefined },
+    min: { type: String },
+    max: { type: String },
+    locale: { type: String },
+    timeZone: { type: String },
+    selectionMode: { type: String as PropType<CalendarSelectionMode> },
     /** 挑的粒度：天（默认）/ 月 / 季度 / 年。输入行铺哪几段也跟着它走。 */
-    view: { type: String as PropType<CalendarView>, default: undefined },
+    view: { type: String as PropType<CalendarView> },
     /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 view。 */
-    activeView: { type: String as PropType<CalendarView>, default: undefined },
+    activeView: { type: String as PropType<CalendarView> },
     /** 输入行铺哪几段；不给就按 view 推。 */
-    segments: { type: Array as PropType<DateSegmentSet>, default: undefined },
+    segments: { type: Array as PropType<DateSegmentSet> },
     /** 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 */
     weekSelection: { type: Boolean, default: undefined },
     /** 并排展示几页；缺省单选 1，区间按两端定：同一页放得下就 1，跨页才 2。 */
-    visibleCount: { type: Number, default: undefined },
+    visibleCount: { type: Number },
     /** 日历恒渲染六行，默认开。关掉后翻页时浮层高度会跟着月份变。 */
     fixedWeeks: { type: Boolean, default: undefined },
     /** 初始聚焦日，同时决定展开时先落在哪一页；不给就退回首个选中值，再退回今天。 */
-    defaultFocusedValue: { type: String, default: undefined },
+    defaultFocusedValue: { type: String },
     /** 快捷选项；给了就在浮层里多出一列，日子要在自己的 computed 里算好再传。 */
-    presets: { type: Array as PropType<DatePickerPreset[]>, default: undefined },
-    isDateUnavailable: { type: Function as PropType<(value: string) => boolean>, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
-    required: Boolean,
-    name: { type: String, default: undefined },
+    presets: { type: Array as PropType<DatePickerPreset[]> },
+    isDateUnavailable: { type: Function as PropType<(value: string) => boolean> },
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
+    name: { type: String },
     // 区间终点那份隐藏输入的表单名；不给即终点不参与提交
-    endName: { type: String, default: undefined },
+    endName: { type: String },
     // 区间模式下两组段位各自的读屏名字
-    translations: { type: Object as PropType<DatePickerProps['translations']>, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    translations: { type: Object as PropType<DatePickerProps['translations']> },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
     closeOnSelect: { type: Boolean, default: undefined },
     showTime: { type: Boolean, default: undefined },
-    timeGranularity: { type: String as PropType<DatePickerSchema['props']['timeGranularity']>, default: undefined },
+    timeGranularity: { type: String as PropType<DatePickerSchema['props']['timeGranularity']> },
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
   emits: {
@@ -156,6 +148,7 @@ export const XhDatePickerRoot = defineComponent({
     default?: (props: DatePickerRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
+    const rootRef = ref<HTMLElement | null>(null)
     const notifyValue: DatePickerProps['onValueChange'] = (details) => {
       emit('value-change', details)
       emit('update:value', details.value)
@@ -170,15 +163,15 @@ export const XhDatePickerRoot = defineComponent({
       emit('active-view-change', details)
       emit('update:activeView', details.activeView)
     }
-    const ctx = useDatePicker(withXhConfig('date-picker', props) as DatePickerProps, {
+    const ctx = useDatePickerWithRoot(withXhConfig('date-picker', useFormControlProps(props)) as DatePickerProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
       onFocusedValueChange: notifyFocus,
       onActiveViewChange: notifyActiveView,
-    })
+    }, rootRef)
     provideDatePicker(ctx)
     // 网格与段位由作者照插槽里的 weeks / segments 自行渲染
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: rootRef }, slots.default?.({
       open: ctx.api.value.open,
       value: ctx.api.value.value,
       valueAsString: ctx.api.value.valueAsString,
@@ -229,7 +222,7 @@ export const XhDatePickerSegmentGroup = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useDatePickerContext()
-    const index = computed<0 | 1>(() => (Number(props.index) === 1 ? 1 : 0))
+    const index = computed<0 | 1>(() => resolveDatePickerFieldIndex(props.index))
     // 组内的段位与隐藏输入据此认领起止
     provideDatePickerSegmentGroup({ index })
     // role=group 的分段容器，也是换段时的查询边界
@@ -245,9 +238,9 @@ export const XhDatePickerSegment = defineComponent({
   name: 'XhDatePickerSegment',
   props: {
     // 段位下标，兼收字符串以支持模板里写 index="0"
-    index: { type: [Number, String] as PropType<number | string>, default: undefined },
+    index: { type: [Number, String] as PropType<number | string> },
     /** 按段名声明这一格。段集里没有这一块时它收起；与 index 二选一，两个都写按段名算。 */
-    segment: { type: String as PropType<DateSegmentType>, default: undefined },
+    segment: { type: String as PropType<DateSegmentType> },
   },
   slots: Object as SlotsType<{
     default?: (props: DatePickerSegmentSlotProps) => VNode[]
@@ -256,7 +249,7 @@ export const XhDatePickerSegment = defineComponent({
     const ctx = useDatePickerContext()
     const group = useDatePickerSegmentGroupContext()
     return () => {
-      const field = fieldOf(ctx.api.value, group.index.value)
+      const field = datePickerFieldAt(ctx.api.value, group.index.value)
       // 非区间模式下写在终点组里的段位无处落脚，不渲染
       if (!field)
         return null
@@ -291,25 +284,37 @@ export const XhDatePickerTrigger = defineComponent({
     // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
     const fieldLabel = useFieldLabelWiring()
     const ctx = useDatePickerContext()
-    return () => h('button', fieldLabel.value({ ...ctx.api.value.getTriggerProps() as Record<string, unknown>, ...fieldWiring.value }), slots.default?.())
+    return () => h('button', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getTriggerProps() as Record<string, unknown> }), slots.default?.())
   },
 })
 
 export const XhDatePickerPositioner = defineComponent({
   name: 'XhDatePickerPositioner',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useDatePickerContext()
     // 浮层面板的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
-    const bars = useScrollbars({ scrollable: () => ctx.contentRef.value })
+    const bars = useScrollbars({ scrollable: () => ctx.contentRef.value, scope: ctx.services.root.scope })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
-      h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
-        ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
-      }, [...(slots.default?.() ?? []), ...bars.render()]),
-    ])
+    return () => {
+      const target = props.container ?? ctx.portalTarget.value
+      return h(XhPortal, {
+        to: target,
+        source: ctx.controlRef,
+        // SSR 与客户端首帧都还没有真实 root：保持同一原地结构，绑定 Scope 后再搬运。
+        disabled: props.container == null && typeof target === 'string',
+      }, () => [
+        h('div', {
+          ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+          ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
+        }, [...(slots.default?.() ?? []), ...bars.render()]),
+      ])
+    }
   },
 })
 
@@ -466,7 +471,7 @@ export const XhDatePickerHeading = defineComponent({
   name: 'XhDatePickerHeading',
   props: {
     /** 属于第几个面板；不写就跟着所在的日历走。 */
-    index: { type: [Number, String], default: undefined },
+    index: { type: [Number, String] },
   },
   setup(props, { slots }) {
     const ctx = useDatePickerContext()
@@ -484,7 +489,7 @@ export const XhDatePickerHeadingYearTrigger = defineComponent({
   name: 'XhDatePickerHeadingYearTrigger',
   props: {
     /** 属于第几个面板；不写就跟着所在的日历走。 */
-    index: { type: [Number, String], default: undefined },
+    index: { type: [Number, String] },
   },
   setup(props, { slots }) {
     const ctx = useDatePickerContext()
@@ -502,7 +507,7 @@ export const XhDatePickerHeadingMonthTrigger = defineComponent({
   name: 'XhDatePickerHeadingMonthTrigger',
   props: {
     /** 属于第几个面板；不写就跟着所在的日历走。 */
-    index: { type: [Number, String], default: undefined },
+    index: { type: [Number, String] },
   },
   setup(props, { slots }) {
     const ctx = useDatePickerContext()
@@ -519,7 +524,7 @@ export const XhDatePickerGrid = defineComponent({
   name: 'XhDatePickerGrid',
   props: {
     /** 属于第几个面板；不写就跟着所在的日历走。 */
-    index: { type: [Number, String], default: undefined },
+    index: { type: [Number, String] },
   },
   setup(props, { slots }) {
     const ctx = useDatePickerContext()
@@ -604,7 +609,7 @@ export const XhDatePickerCell = defineComponent({
      * 属于第几个面板；不写就跟着所在的日历走。同一天会同时出现在两个面板里
      * （8 月末那几天也铺在 9 月的首行），「是不是本月」只有连着面板一起看才判得出来。
      */
-    index: { type: [Number, String], default: undefined },
+    index: { type: [Number, String] },
   },
   setup(props, { slots }) {
     const ctx = useDatePickerContext()
@@ -633,14 +638,14 @@ export const XhDatePickerHiddenInput = defineComponent({
   name: 'XhDatePickerHiddenInput',
   props: {
     // 写在分段容器外面时用它指明属于哪一端；写在容器里面不必给，跟着容器走
-    index: { type: [Number, String] as PropType<number | string>, default: undefined },
+    index: { type: [Number, String] as PropType<number | string> },
   },
   setup(props) {
     const ctx = useDatePickerContext()
     const group = useDatePickerSegmentGroupContext()
     return () => {
-      const index = props.index === undefined ? group.index.value : (Number(props.index) === 1 ? 1 : 0)
-      const field = fieldOf(ctx.api.value, index)
+      const index = props.index === undefined ? group.index.value : resolveDatePickerFieldIndex(props.index)
+      const field = datePickerFieldAt(ctx.api.value, index)
       // 非区间模式下终点那份没有可提交的值，不渲染
       if (!field)
         return null

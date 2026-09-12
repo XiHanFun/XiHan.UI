@@ -14,9 +14,9 @@ export const XhImageRoot = defineComponent({
   name: 'XhImageRoot',
   props: {
     // 缺席即无来源，落回退态
-    src: { type: String, default: undefined },
-    alt: { type: String, default: undefined },
-    fallbackDelay: { type: Number, default: undefined },
+    src: { type: String },
+    alt: { type: String },
+    fallbackDelay: { type: Number },
   },
   // status-change 携带 { status }
   emits: {

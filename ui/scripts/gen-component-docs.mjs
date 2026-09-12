@@ -16,6 +16,11 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import ts from 'typescript'
+import {
+  COMPONENT_TOKEN_MANIFEST_PATH,
+  componentTokensByComponent,
+  renderComponentTokenDocs,
+} from '../tooling/scripts/lib/component-token-manifest.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const uiRoot = path.resolve(here, '..')
@@ -82,8 +87,7 @@ const vueExports = new Set([
 const wcDefine = fs.readFileSync(path.join(uiRoot, 'packages/adapters/web-components/src/define.ts'), 'utf8')
 const wcTags = new Set([...wcDefine.matchAll(/['"`](xh-[a-z0-9-]+)['"`]/g)].map(m => m[1]))
 
-// 自定义元素清单：公开事件与可覆盖令牌都已由 cem 采集，按标签名取用即可，
-// 不必在这里再解析一遍源码。
+// 自定义元素清单只提供公开事件；组件覆盖槽由 CSS 生成 manifest 单独提供。
 const cem = JSON.parse(
   fs.readFileSync(path.join(uiRoot, 'packages/adapters/web-components/custom-elements.json'), 'utf8'),
 )
@@ -95,12 +99,16 @@ for (const mod of cem.modules ?? []) {
   }
 }
 
-/** 公开事件与组件级令牌。没有自定义元素的组件（纯 Vue 产物）两样都空。 */
+const componentTokenEntries = componentTokensByComponent(
+  JSON.parse(fs.readFileSync(COMPONENT_TOKEN_MANIFEST_PATH, 'utf8')),
+)
+
+/** 公开事件来自 CEM；组件级令牌来自 CSS 生成 manifest。 */
 function elementSurface(id) {
   const decl = cemByTag.get(`xh-${id}`)
   return {
     events: decl?.events ?? [],
-    cssProps: (decl?.cssProperties ?? []).map(p => p.name).sort(),
+    componentTokens: componentTokenEntries.get(id) ?? [],
   }
 }
 
@@ -356,7 +364,7 @@ function skinTraits(id) {
     transitions: transitions.length > 0,
     transitionProps: transitionProps(transitions),
     // 视口断点与容器查询是响应式；输入能力与渲染模式各自是另一回事，不混进那一节
-    viewportQueries: queries.filter(q => /(?:min|max)-(?:width|height|inline-size|block-size)/.test(q)),
+    viewportQueries: queries.filter(q => /\b(?:(?:min|max)-)?(?:width|height|inline-size|block-size)\s*[:<>=]|[<>=]\s*(?:width|height|inline-size|block-size)\b/.test(q)),
     inputQueries: queries.filter(q => /(?:any-)?(?:pointer|hover)\s*:/.test(q)),
     forcedColors: queries.some(q => q.includes('forced-colors')),
     reduceMotion: css.includes('prefers-reduced-motion'),
@@ -652,6 +660,25 @@ function typeMeta(id) {
           if (key === 'guard')
             result.guards = unionMembers(member.type, sf)
         }
+
+        // 除 props 外整份继承别人的 schema（drawer 跑 dialog 那台机器），状态、事件与判据
+        // 声明在父那边，从这份声明的成员里读不到，经类型检查器把继承来的成员解析出来
+        if (!result.states || !result.events || !result.guards) {
+          for (const sym of checker.getPropertiesOfType(checker.getTypeAtLocation(node))) {
+            if (sym.name !== 'state' && sym.name !== 'event' && sym.name !== 'guard')
+              continue
+            const decl = sym.declarations?.[0]
+            if (!decl || !ts.isPropertySignature(decl) || !decl.type)
+              continue
+            const members = unionMembers(decl.type, decl.getSourceFile())
+            if (sym.name === 'state')
+              result.states ??= members
+            if (sym.name === 'event')
+              result.events ??= members
+            if (sym.name === 'guard')
+              result.guards ??= members
+          }
+        }
       }
 
       // 视图 props 单独写成一个 XxxProps：没有机器的组件全部 props 都在这儿，
@@ -800,17 +827,19 @@ function renderComponent(entry, category) {
     push(`| 皮肤 | ${code(ad.skin)} |`)
   push('')
 
-  // 解剖
-  push('## 解剖', '')
-  push(
-    `部件名即 ${code('data-part')} 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 ${code('wc.missing-part')}）。`,
-    '',
-  )
-  push(
-    `${code(`data-scope="${id}"`)}：${
-      rt.parts.map(x => (required.has(x) ? `**${code(x)}**` : code(x))).join(' · ')}`,
-    '',
-  )
+  // renderless family 没有视觉解剖，不能伪造 data-scope 或空 part 表。
+  if (rt.parts.length) {
+    push('## 解剖', '')
+    push(
+      `部件名即 ${code('data-part')} 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 ${code('wc.missing-part')}）。`,
+      '',
+    )
+    push(
+      `${code(`data-scope="${id}"`)}：${
+        rt.parts.map(x => (required.has(x) ? `**${code(x)}**` : code(x))).join(' · ')}`,
+      '',
+    )
+  }
 
   // Props
   if (tm.props.length) {
@@ -936,19 +965,13 @@ function renderComponent(entry, category) {
     push('')
   }
 
-  // 可覆盖的令牌：改这一个组件的外观从这里下手，不必去翻皮肤源码
-  if (es.cssProps.length) {
-    push('## CSS 变量', '')
-    push(
-      '本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。',
-      '',
-    )
-    push(es.cssProps.map(code).join(' · '), '')
-  }
+  // 可覆盖令牌的名字、部件、属性、状态与缺省来源全部来自 CSS 生成 manifest。
+  const componentTokenDocs = renderComponentTokenDocs(es.componentTokens)
+  if (componentTokenDocs)
+    push(...componentTokenDocs.split('\n'), '')
 
   // 动效：分三种情形——皮肤里真在动、动效在皮肤之外由脚本驱动、本组件不动。
-  // 「皮肤里真在动」只认剥掉减弱动效与高对比两类块之后仍成立的声明：那两处写的是关掉
-  push('## 动效', '')
+  // renderless 且没有脚本动效的 family 不伪造“本组件皮肤”小节。
   const sm = scriptedMotion(id)
   const inSkin = []
   if (sk?.keyframes.length)
@@ -965,28 +988,31 @@ function renderComponent(entry, category) {
   if (sm.prefers)
     outsideSkin.push('内核读系统的减弱动效偏好，据此决定要不要动')
 
-  if (inSkin.length) {
-    push(`${inSkin.join('；')}。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。`, '')
-    if (outsideSkin.length)
-      push(`皮肤之外还有一段：${outsideSkin.join('；')}。`, '')
-  }
-  else if (outsideSkin.length) {
-    push(
-      `皮肤里没有过渡也没有关键帧，本组件的动效不在皮肤里：${outsideSkin.join('；')}。`
-      + '时长与缓动仍读[动效令牌](../guide/motion)。',
-      '',
-    )
-  }
-  else {
-    push('本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。', '')
-  }
-  if (inSkin.length || outsideSkin.length) {
-    push(
-      sk?.reduceMotion
-        ? `${code('prefers-reduced-motion: reduce')} 下本组件另有降级规则。`
-        : '系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。',
-      '',
-    )
+  if (sk || outsideSkin.length) {
+    push('## 动效', '')
+    if (inSkin.length) {
+      push(`${inSkin.join('；')}。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。`, '')
+      if (outsideSkin.length)
+        push(`皮肤之外还有一段：${outsideSkin.join('；')}。`, '')
+    }
+    else if (outsideSkin.length) {
+      push(
+        `皮肤里没有过渡也没有关键帧，本组件的动效不在皮肤里：${outsideSkin.join('；')}。`
+        + '时长与缓动仍读[动效令牌](../guide/motion)。',
+        '',
+      )
+    }
+    else {
+      push('本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。', '')
+    }
+    if (inSkin.length || outsideSkin.length) {
+      push(
+        sk?.reduceMotion
+          ? `${code('prefers-reduced-motion: reduce')} 下本组件另有降级规则。`
+          : '系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。',
+        '',
+      )
+    }
   }
 
   // 响应式：只有视口断点与容器查询算这一节；输入能力单独说，渲染模式不进来
@@ -1032,10 +1058,11 @@ function renderComponent(entry, category) {
 
 function renderIndex() {
   const total = manifest.categories.reduce((a, c) => a + c.components.length, 0)
+  const renderless = manifest.categories.flatMap(c => c.components).filter(c => c.renderless).length
   const L = []
   L.push('# 组件总览', '')
   L.push(
-    `${total} 个组件，每个都同时提供**无头内核**（\`@xihan-ui/headless\`）、**Vue 组件**（\`@xihan-ui/vue\`）、**自定义元素**（\`@xihan-ui/web-components\`）与**默认皮肤**（\`@xihan-ui/styles\`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。`,
+    `${total} 个组件都提供**无头内核**（\`@xihan-ui/headless\`）、**Vue 组件**（\`@xihan-ui/vue\`）与**自定义元素**（\`@xihan-ui/web-components\`）；其中 ${total - renderless} 个视觉组件另有**默认皮肤**（\`@xihan-ui/styles\`），${renderless} 个 renderless 行为组件不伪造视觉层。内核是唯一的行为定义，适配器不重新实现逻辑。`,
     '',
   )
   L.push(

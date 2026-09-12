@@ -3,13 +3,16 @@ import type { CollapsibleSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import { renderAsChild } from '../../runtime/as-child'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { CollapsibleProvider, useCollapsibleContext } from './context'
 import { useCollapsible } from './use-collapsible'
 
 type CollapsibleProps = CollapsibleSchema['props']
 
-export interface XhCollapsibleRootProps {
+/** 根上自有的那些取值；dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'dir'>
+
+export interface XhCollapsibleRootProps extends RootElementProps {
   open?: boolean
   defaultOpen?: boolean
   disabled?: boolean
@@ -20,11 +23,23 @@ export interface XhCollapsibleRootProps {
   children?: ReactNode
 }
 
-export function XhCollapsibleRoot({ children, ...props }: XhCollapsibleRootProps): ReactNode {
-  const ctx = useCollapsible(props as CollapsibleProps)
+export function XhCollapsibleRoot({
+  open,
+  defaultOpen,
+  disabled,
+  tone,
+  size,
+  dir,
+  onOpenChange,
+  children,
+  ...rest
+}: XhCollapsibleRootProps): ReactNode {
+  const ctx = useCollapsible({ open, defaultOpen, disabled, tone, size, dir, onOpenChange } as CollapsibleProps)
   return (
     <CollapsibleProvider value={ctx}>
-      <div {...ctx.api.getRootProps() as Record<string, unknown>}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+        {children}
+      </div>
     </CollapsibleProvider>
   )
 }
@@ -41,7 +56,7 @@ export function XhCollapsibleHeader({ children, ...rest }: XhCollapsibleHeaderPr
 export interface XhCollapsibleTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 export function XhCollapsibleTrigger({ children, asChild, ...rest }: XhCollapsibleTriggerProps): ReactNode {
   const ctx = useCollapsibleContext()
-  const props = mergeReactProps(
+  const props = mergePartProps(
     ctx.api.getTriggerProps() as Record<string, unknown>,
     rest as Record<string, unknown>,
   )

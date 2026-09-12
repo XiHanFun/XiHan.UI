@@ -1,7 +1,9 @@
 import type { PositionResult } from '@xihan-ui/core'
 import type { ComboboxFocusIntent, ComboboxSchema } from './combobox.types'
-import { createDismissLayer, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
+import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 
 const { createMachine } = setup<ComboboxSchema>()
@@ -9,24 +11,9 @@ const { createMachine } = setup<ComboboxSchema>()
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const COMBOBOX_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
-/** 裸串是单选的简写，内部一律按数组处理；undefined 要原样透传，cell 靠它区分受控与否。 */
-function toValues(input: string | string[] | undefined): string[] | undefined {
-  if (input === undefined)
-    return undefined
-  return typeof input === 'string' ? [input] : [...input]
-}
-
 /** 选中集合的不变量：单选恒为长度 ≤ 1，多选去重。公开 API 与退格删末项都经这里收口。 */
 function normalizeSelection(next: readonly string[], multiple: boolean): string[] {
   return multiple ? [...new Set(next)] : next.slice(0, 1)
-}
-
-/**
- * 数组按元素比。受控时 cell 每次读都把 prop 归一成新数组，引用比恒不相等，
- * 会导致版本号空转与 onValueChange 重复发。
- */
-function sameValues(a: string[], b: string[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
 
 // 选中值与输入串走 cell 原生受控（给定 prop 即受控），不需要影子事件；
@@ -57,6 +44,7 @@ export const comboboxMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     position: null,
     getAnchorEl: () => null,
     getFloatingEl: () => null,
@@ -64,6 +52,8 @@ export const comboboxMachine = createMachine({
     getInputEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // Layer 与消解资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
+  effects: ['trackLayer'],
   // 挂载即按选中值结算一次显示文本，并据此把输入框填成选中项的文字
   entry: ['syncValueText', 'prefillInputValue'],
   watch: ({ track, prop, context, action }) => {
@@ -106,8 +96,8 @@ export const comboboxMachine = createMachine({
       // 先结算候选条数（空态节点据此显形），再按落点意图挑高亮
       entry: ['syncItems', 'setInitialHighlightedValue'],
       exit: ['clearHighlightedValue'],
-      // 进入 open：定位 → 消解。退出时逆序拆。焦点全程留在输入框，因此不挂焦点域
-      effects: ['trackPosition', 'trackLayer'],
+      // 定位只服务逻辑展开；Layer 与消解资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackPosition'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
@@ -411,62 +401,40 @@ export const comboboxMachine = createMachine({
     },
     effects: {
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
-      trackPosition: ({ refs, prop, context, flush }) => {
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
+        // 无引擎时不定位，其余照常
+        engine: refs.get('position'),
+        flush,
         // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
         // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
-        context.set('position', null)
-        const engine = refs.get('position')
-        // 无引擎时不定位，其余照常
-        if (!engine)
-          return undefined
+        clear: () => context.set('position', null),
+        getAnchor: () => refs.get('getAnchorEl')(),
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? COMBOBOX_DEFAULT_PLACEMENT,
+          offset: prop('offset') ?? OVERLAY_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+          dir: prop('dir'),
+          // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+          size: true,
+        }),
+        onResult: result => context.set('position', result),
+      }),
 
-        let stop: (() => void) | undefined
-        let disposed = false
-
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden，此时量出的浮层尺寸为 0
-        flush(() => {
-          if (disposed)
-            return
-          const anchor = refs.get('getAnchorEl')()
-          const floating = refs.get('getFloatingEl')()
-          if (!anchor || !floating)
-            return
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? COMBOBOX_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? OVERLAY_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-              dir: prop('dir'),
-              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
-              size: true,
-            },
-            result => context.set('position', result),
-          )
-        })
-
-        return () => {
-          disposed = true
-          stop?.()
-        }
-      },
-
-      // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape
-      trackLayer: ({ refs, send }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
-        // 无 DOM 环境不挂副作用，状态机照常转移
-        if (!config || !registerLayer)
-          return undefined
-
-        const { layer, dispose: disposeLayer } = registerLayer()
-
-        const dismiss = createDismissLayer({
-          config,
-          layer,
+      // Layer 与 DismissableLayer 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
+      // 列表不接管焦点，因此不给焦点域；焦点离开整个组件由输入框的 blur 上报（INPUT.BLUR）。
+      trackLayer: ({ refs, send, flush, state, track }) => trackPresenceResources({
+        presence: refs.get('presence'),
+        open: () => state.get() === 'open',
+        track,
+        acquire: () => trackOverlayLayer({
+          // 无 DOM 环境不挂副作用，状态机照常转移
+          config: refs.get('config'),
+          registerLayer: refs.get('registerLayer'),
+          flush,
+          active: () => state.get() === 'open',
           onDismiss: (reason) => {
             // Escape 走两拍（先清高亮再收起），所以不复用 CLOSE
             if (reason === 'escape-key') {
@@ -479,14 +447,8 @@ export const comboboxMachine = createMachine({
               return
             send({ type: 'CLOSE' })
           },
-        })
-
-        // 列表不接管焦点，因此没有焦点域可挂；焦点离开整个组件由输入框的 blur 上报（INPUT.BLUR）
-        return () => {
-          dismiss.dispose()
-          disposeLayer()
-        }
-      },
+        }),
+      }),
     },
   },
 })

@@ -1,4 +1,6 @@
-import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/core'
+import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { SliderSchema } from '../slider'
 import type {
   ColorPickerAnchor,
   ColorPickerChannel,
@@ -9,8 +11,11 @@ import type {
 } from './color-picker.color'
 import type { ColorPickerPoint } from './color-picker.geometry'
 
-/** 正被指针拖着的是哪一处。 */
-export type ColorPickerDragTarget = 'area' | ColorPickerChannel
+/**
+ * 正被指针拖着的是哪一处。
+ * 只有二维取色区归取色器自己管；两条通道滑杆的拖动住在各自那台内嵌滑杆里。
+ */
+export type ColorPickerDragTarget = 'area'
 
 /** 某个输入框里那串还没收下的字。同一时刻只会有一个框在编辑（就是聚焦的那个）。 */
 export interface ColorPickerDraft {
@@ -43,6 +48,8 @@ export interface ColorPickerRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 视觉退场与行为资源共享的 Presence；缺省时关闭立即释放。 */
+  presence: PresenceHandle | null
   /** 浮层定位引擎；缺省即不产出位置结果。 */
   position: PositionEnginePort | null
   /** 定位锚点，取 trigger。 */
@@ -53,8 +60,20 @@ export interface ColorPickerRefs {
   getContentEl: () => HTMLElement | null
   /** 二维取色区本体：坐标换算以它的矩形为准，矩形在事件那一刻才量。 */
   getAreaEl: () => HTMLElement | null
-  /** 某条通道的轨道本体，同样只在事件那一刻量。 */
-  getChannelTrackEl: (channel: ColorPickerChannel) => HTMLElement | null
+}
+
+/**
+ * 取色器跑起来要的几台机器：自己一台，两条通道滑杆各一台。
+ *
+ * 两条滑杆的区间、步长与当下的值都受控于取色器，推动经 CHANNEL.SET 送回来；
+ * 轨道矩形由适配器接到各自那台滑杆的 getTrackEl 上。
+ */
+export interface ColorPickerServices {
+  root: Service<ColorPickerSchema>
+  /** 色相那条，区间 0-360。 */
+  hueSlider: Service<SliderSchema>
+  /** 透明度那条，区间 0-100；alpha 关掉时整条禁用。 */
+  alphaSlider: Service<SliderSchema>
 }
 
 export interface ColorPickerValueChangeDetails {
@@ -64,6 +83,42 @@ export interface ColorPickerValueChangeDetails {
 
 export interface ColorPickerOpenChangeDetails {
   open: boolean
+}
+
+export interface ColorPickerFormatErrorDetails {
+  type: 'format'
+  format: string
+}
+
+export interface ColorPickerInputErrorDetails {
+  type: 'input'
+  channel: ColorPickerInputChannel
+  value: string
+}
+
+export interface ColorPickerParseErrorDetails {
+  type: 'parse'
+  source: 'external' | 'api' | 'swatch' | 'eye-dropper'
+  value: string
+}
+
+export interface ColorPickerEyeDropperErrorDetails {
+  type: 'eye-dropper'
+  cause: unknown
+}
+
+export type ColorPickerErrorDetails
+  = | ColorPickerFormatErrorDetails
+    | ColorPickerInputErrorDetails
+    | ColorPickerParseErrorDetails
+    | ColorPickerEyeDropperErrorDetails
+
+/** 四路错误相互独立；修正一路不会擦掉另外一路的诊断。 */
+export interface ColorPickerErrors {
+  format: ColorPickerFormatErrorDetails | null
+  input: ColorPickerInputErrorDetails | null
+  parse: ColorPickerParseErrorDetails | null
+  eyeDropper: ColorPickerEyeDropperErrorDetails | null
 }
 
 /** 通道滑杆三件套自报的身份：作者在部件上声明，connect 据此产出属性。 */
@@ -112,6 +167,8 @@ export interface ColorPickerSchema extends MachineSchema {
     onValueChange?: (details: ColorPickerValueChangeDetails) => void
     /** open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
     onOpenChange?: (details: ColorPickerOpenChangeDetails) => void
+    /** 格式、文本、颜色解析或屏幕取色失败；与 value/open 事件独立。 */
+    onColorError?: (details: ColorPickerErrorDetails) => void
   }
   context: {
     /** 值串。受控（value 给定）时 cell 直读 prop。 */
@@ -126,6 +183,8 @@ export interface ColorPickerSchema extends MachineSchema {
     dragTarget: ColorPickerDragTarget | null
     /** 宿主环境有没有 EyeDropper；取色按钮据此禁用。 */
     eyeDropperSupported: boolean
+    /** 格式、文本、颜色解析与屏幕取色四路错误。 */
+    errors: ColorPickerErrors
   }
   computed: Record<string, never>
   refs: ColorPickerRefs
@@ -137,8 +196,8 @@ export interface ColorPickerSchema extends MachineSchema {
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
-    /** 整体改写颜色（预设色板、屏幕取色、外部 setValue 都走它）；解析不出的串原地不动。 */
-    | { type: 'VALUE.SET', value: string }
+    /** 整体改写颜色（预设色板、屏幕取色、外部 setValue 都走它）；解析失败时原值不动并报告来源。 */
+    | { type: 'VALUE.SET', value: string, source?: 'api' | 'swatch' }
     /** 取色区按比例落点（0-1），由拖动路径发出。 */
     | { type: 'AREA.SET', x: number, y: number }
     /** 取色区上按方向键走一格。 */
@@ -150,7 +209,7 @@ export interface ColorPickerSchema extends MachineSchema {
     | { type: 'CHANNEL.TO_EDGE', channel: ColorPickerChannel, edge: 'min' | 'max' }
     /** 用户在数值框里打字：留下草稿，能收就顺手收下。 */
     | { type: 'INPUT.CHANGE', channel: ColorPickerInputChannel, value: string }
-    /** 收下数值框（回车或失焦）：收得了就落值，收不了就复原成规范文本。 */
+    /** 收下数值框（回车或失焦）：收得了就落值，收不了保留草稿与错误。 */
     | { type: 'INPUT.COMMIT', channel: ColorPickerInputChannel }
     | { type: 'DRAG.START', target: ColorPickerDragTarget, point: ColorPickerPoint }
     | { type: 'DRAG.MOVE', point: ColorPickerPoint }
@@ -158,8 +217,10 @@ export interface ColorPickerSchema extends MachineSchema {
     /** 唤起屏幕取色。 */
     | { type: 'EYE_DROPPER.OPEN' }
     | { type: 'EYE_DROPPER.RESULT', value: string }
-    /** 用户按 Esc 放弃取色、或接口报错。 */
+    /** 用户按 Esc 放弃取色。 */
     | { type: 'EYE_DROPPER.CANCEL' }
+    | { type: 'EYE_DROPPER.ERROR', cause: unknown }
+    | { type: 'ERROR.CLEAR' }
     | { type: 'FORM.RESET' }
   tag: never
   guard: 'isOpenControlled' | 'canInteract' | 'canPick'
@@ -167,6 +228,8 @@ export interface ColorPickerSchema extends MachineSchema {
     | 'invokeOnOpen'
     | 'invokeOnClose'
     | 'syncOpen'
+    | 'syncValueError'
+    | 'syncFormatError'
     | 'syncEyeDropperSupport'
     | 'setValue'
     | 'setArea'
@@ -182,6 +245,9 @@ export interface ColorPickerSchema extends MachineSchema {
     | 'dragMove'
     | 'endDrag'
     | 'setValueFromEyeDropper'
+    | 'setEyeDropperError'
+    | 'clearEyeDropperError'
+    | 'clearErrors'
     | 'resetToDefault'
   effect: 'trackPosition' | 'trackLayer' | 'trackPointer' | 'runEyeDropper'
 }
@@ -212,6 +278,8 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   /** 屏幕取色正在进行。 */
   picking: boolean
   eyeDropperSupported: boolean
+  /** 格式、文本、颜色解析与屏幕取色四路互不覆盖的错误。 */
+  errors: ColorPickerErrors
   /** 预设色板（原样透传 swatches prop，缺省是空数组）。 */
   swatches: string[]
   isSwatchSelected: (value: string) => boolean
@@ -220,6 +288,8 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   inputText: (channel: ColorPickerInputChannel) => string
   setOpen: (next: boolean) => void
   setValue: (next: string) => void
+  /** 清掉四路显式错误；屏幕取色重试也会先清它自己那一路。 */
+  clearError: () => void
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
   getControlProps: () => T['element']

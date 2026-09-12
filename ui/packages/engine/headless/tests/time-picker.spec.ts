@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
 import type { RuntimeConfig } from '@xihan-ui/core'
+import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
 import type { TimeSegmentType } from '../src/time-field'
 import type { TimePickerApi, TimePickerColumnUnit, TimePickerSchema } from '../src/time-picker'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
@@ -67,6 +69,8 @@ function spread(el: HTMLElement, props: Record<string, unknown>): void {
 
 interface Harness {
   api: () => TimePickerApi
+  config: RuntimeConfig
+  presence: PresenceHandle | null
   root: HTMLElement
   label: HTMLElement
   control: HTMLElement
@@ -84,6 +88,11 @@ interface Harness {
   destroy: () => void
 }
 
+interface MountOptions {
+  /** 注入真实 Presence，验证行为资源延迟到视觉退场完成后释放。 */
+  withPresence?: boolean
+}
+
 const runtimes: VanillaRuntime[] = []
 
 /**
@@ -91,7 +100,7 @@ const runtimes: VanillaRuntime[] = []
  * min/max 是运行期才收窄的，作者若跟着重渲，被裁掉的格子就再也验不到 aria-disabled 了。
  * 真实作者会照 api.columns 渲染，那是这份网格的子集。
  */
-function mount(initial: Partial<Props> = {}): Harness {
+function mount(initial: Partial<Props> = {}, mountOptions: MountOptions = {}): Harness {
   const doc = document
   const runtime = createVanillaRuntime()
   runtimes.push(runtime)
@@ -144,14 +153,17 @@ function mount(initial: Partial<Props> = {}): Harness {
   const service = createService(timePickerMachine, { props: () => props.get(), runtime, scope })
 
   const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+  const presence = mountOptions.withPresence
+    ? createPresence({ config, open: (initial.open ?? initial.defaultOpen) ?? false, onRenderedChange: () => {} })
+    : null
   service.refs.set('config', config)
+  service.refs.set('presence', presence)
   service.refs.set('registerLayer', () => config.layerRegistry.register({
     kind: 'popover',
     node: () => content,
     // 输入行记为本层分支：点触发器算层内交互，开合交给它自己切换
     branches: () => [control],
     isModal: () => false,
-    setModal: () => {},
     surfaces: () => [],
   }))
   service.refs.set('getAnchorEl', () => control)
@@ -192,6 +204,8 @@ function mount(initial: Partial<Props> = {}): Harness {
 
   return {
     api,
+    config,
+    presence,
     root,
     label,
     control,
@@ -548,7 +562,7 @@ describe('开合', () => {
     const h = open({ defaultValue: '09:30' })
     h.trigger.click()
     expect(h.state()).toBe('open')
-    // 消解层的监听是延后注册的（免得打开自己的那次交互立刻把自己关掉），得让出一拍
+    // Document Hub 同步挂监听，本层参与者延后一枚微任务武装（免得打开事件立刻关掉自己），得让出一拍
     await new Promise(resolve => setTimeout(resolve, 0))
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
     expect(h.state()).toBe('closed')
@@ -927,6 +941,40 @@ describe('禁用 / 只读 / 越界 / 清空', () => {
     expect(h.control.getAttribute('aria-invalid')).toBe('false')
     expect(h.segment('hour').getAttribute('aria-required')).toBe('true')
     expect(h.segment('hour').getAttribute('aria-readonly')).toBe('true')
+  })
+})
+
+describe('timePicker 真实退场资源', () => {
+  it('逻辑关闭立即失活，Layer 与焦点域等 Presence 完成才释放；中途重开复用原登记', () => {
+    const h = mount({ defaultOpen: true }, { withPresence: true })
+    const presence = h.presence!
+    const original = h.config.layerRegistry.list()[0]
+    expect(original).toBeDefined()
+
+    const leases: ExitLease[] = []
+    const stopExit = presence.onBeforeExit(() => {
+      leases.push(presence.claimExit(`time-picker exit ${leases.length + 1}`))
+    })
+    h.api().setOpen(false)
+    const closing = h.api().getContentProps() as Record<string, unknown>
+    expect(closing.inert).toBe(true)
+    expect(closing['aria-hidden']).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+    presence.update(false)
+    expect(leases).toHaveLength(1)
+
+    h.api().setOpen(true)
+    expect(leases[0]!.settled).toBe(true)
+    expect(h.config.layerRegistry.list()).toEqual([original])
+
+    h.api().setOpen(false)
+    presence.update(false)
+    expect(leases).toHaveLength(2)
+    leases[1]!.done()
+    expect(h.config.layerRegistry.list()).toHaveLength(0)
+
+    stopExit()
+    presence.dispose()
   })
 })
 

@@ -55,6 +55,8 @@ export function connectDrawer<T extends PropTypes>(
       'data-contained': dataAttr(contained),
       // 形态轴落在 backdrop 上：三档换的都是这一层自己的底色与模糊
       'data-variant': prop('variant'),
+      // 非模态不激活遮罩；Vue/React 据此不创建节点，WC 隐藏作者节点。
+      'hidden': !modal || undefined,
     }),
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
@@ -68,6 +70,8 @@ export function connectDrawer<T extends PropTypes>(
       'id': ids.content,
       'role': role,
       'tabindex': -1,
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 非模态时显式写 "false"，不能省略：读屏对"未声明"与"声明为非模态"处理不同
       'aria-modal': modal ? 'true' : 'false',
       'aria-labelledby': ids.title,

@@ -29,5 +29,5 @@
 *.ttf binary
 *.otf binary
 
-# 锁文件不参与 diff 展示，冲突一律重装解决
-pnpm-lock.yaml -diff linguist-generated=true
+# 锁文件按文本展示依赖差异；生成文件标记只折叠展示，不隐藏 diff。
+pnpm-lock.yaml diff linguist-generated=true

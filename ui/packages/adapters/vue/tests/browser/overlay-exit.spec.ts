@@ -1,6 +1,7 @@
 // 退场动画只能在真实浏览器里验：jsdom 不把样式表里的 animation 简写算进
 // getComputedStyle（animationName 恒为空串），退场探测那条路在 jsdom 里天然走不到。
 import type { App, Ref } from 'vue'
+import { getLayerRegistry } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
 import {
@@ -17,6 +18,19 @@ import {
   XhFloatingPanelTitle,
   XhImageViewerContent,
   XhImageViewerRoot,
+  XhSelectContent,
+  XhSelectItem,
+  XhSelectItemText,
+  XhSelectList,
+  XhSelectPositioner,
+  XhSelectRoot,
+  XhSelectTrigger,
+  XhTourBackdrop,
+  XhTourContent,
+  XhTourPositioner,
+  XhTourRoot,
+  XhTourSpotlight,
+  XhTourTitle,
 } from '../../src'
 // 皮肤要一起加载：这里查的就是皮肤给出的 animationName 与 display
 import '@xihan-ui/tokens/tokens.css'
@@ -64,6 +78,10 @@ function animationEnd(el: HTMLElement, timeout = 2000): Promise<boolean> {
       resolve(true)
     }, { once: true })
   })
+}
+
+function finiteAnimations(node: HTMLElement): Animation[] {
+  return node.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
 }
 
 describe('dialog 退场', () => {
@@ -133,9 +151,48 @@ describe('dialog 退场', () => {
   })
 })
 
+describe('select 行为资源退出', () => {
+  it('真实 content 退场完成前保留 Layer，逻辑关闭立即退出交互树', async () => {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes test-select-exit { from { opacity: 1 } to { opacity: 0 } }
+      @keyframes test-select-move { from { translate: 0 0 } to { translate: 0 8px } }
+      [data-scope='select'][data-part='content'][data-state='closed'] {
+        animation: test-select-exit 60s linear forwards, test-select-move 60s linear forwards;
+      }
+    `
+    document.body.append(style)
+    const open = mount(value => h(XhSelectRoot, { open: value }, {
+      default: () => [
+        h(XhSelectTrigger, null, () => '选择'),
+        h(XhSelectPositioner, null, () => [
+          h(XhSelectContent, null, () => [
+            h(XhSelectList, null, () => [h(XhSelectItem, { value: 'a' }, () => h(XhSelectItemText, () => '甲'))]),
+          ]),
+        ]),
+      ],
+    }))
+    await settle()
+
+    open.value = false
+    await settle()
+    const content = part('select', 'content')!
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    const animations = finiteAnimations(content)
+    expect(animations).toHaveLength(2)
+    animations[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    animations[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+  })
+})
+
 describe('image-viewer 退场', () => {
   it('收起后 content 留在 DOM 里并在播淡出', async () => {
-    const open = mount(value => h(XhImageViewerRoot, { open: value, items: [{ src: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=' }] }, {
+    const open = mount(value => h(XhImageViewerRoot, { open: value, collection: [{ src: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=' }] }, {
       default: () => h(XhImageViewerContent),
     }))
     await settle()
@@ -150,6 +207,117 @@ describe('image-viewer 退场', () => {
     expect(closing, '退场动画播完之前 content 不能被卸载').not.toBeNull()
     expect(getComputedStyle(closing!).display, 'content 收起态不能是 display:none').not.toBe('none')
     expect(getComputedStyle(closing!).animationName).toBe('xh-fade-out')
+  })
+
+  it('内容与遮罩均完成退出前保留模态资源，完成后才发 exit-complete', async () => {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes test-image-viewer-exit { from { opacity: 1 } to { opacity: 0 } }
+      @keyframes test-image-viewer-move { from { translate: 0 0 } to { translate: 0 8px } }
+      [data-scope='image-viewer'][data-part='content'][data-state='closed'] {
+        animation: test-image-viewer-exit 60s linear forwards, test-image-viewer-move 60s linear forwards;
+      }
+      [data-scope='image-viewer'][data-part='backdrop'][data-state='closed'] {
+        animation: test-image-viewer-exit 60s linear forwards;
+      }
+    `
+    document.body.append(style)
+    const outside = document.createElement('button')
+    document.body.append(outside)
+    const open = mount(value => h(XhImageViewerRoot, {
+      open: value,
+      collection: [{ src: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=' }],
+    }, {
+      default: () => h(XhImageViewerContent, null, { default: () => h('button', '内部') }),
+    }))
+    await settle()
+
+    open.value = false
+    await settle()
+    const content = part('image-viewer', 'content')!
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    expect(outside.inert).toBe(true)
+    expect(document.body.style.overflow).toBe('hidden')
+
+    const finite = content.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
+    expect(finite).toHaveLength(2)
+    finite[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    finite[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    for (const animation of part('image-viewer', 'backdrop')!.getAnimations()) animation.finish()
+    await settle()
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    await settle()
+
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+    expect(outside.inert).toBe(false)
+    expect(part('image-viewer', 'content')).toBeNull()
+  })
+})
+
+describe('tour 退出资源', () => {
+  it('气泡、遮罩与聚光灯全部完成前保留 Layer，但不接入 Tour 没有的背景资源', async () => {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes test-tour-exit { from { opacity: 1 } to { opacity: 0 } }
+      @keyframes test-tour-move { from { translate: 0 0 } to { translate: 0 8px } }
+      [data-scope='tour'][data-part='content'][data-state='closed'] {
+        animation: test-tour-exit 60s linear forwards, test-tour-move 60s linear forwards;
+      }
+      [data-scope='tour'][data-part='backdrop'][data-state='closed'],
+      [data-scope='tour'][data-part='spotlight'][data-state='closed'] {
+        animation: test-tour-exit 60s linear forwards;
+      }
+    `
+    document.body.append(style)
+    const target = document.createElement('button')
+    target.id = 'tour-exit-target'
+    document.body.append(target)
+    const open = mount(value => h(XhTourRoot, {
+      open: value,
+      steps: [{ id: 'one', target: '#tour-exit-target', title: '第一步' }],
+    }, {
+      default: () => [
+        h(XhTourBackdrop),
+        h(XhTourSpotlight),
+        h(XhTourPositioner, null, () => [h(XhTourContent, null, () => [h(XhTourTitle)])]),
+      ],
+    }))
+    await settle()
+
+    open.value = false
+    await settle()
+    const content = part('tour', 'content')!
+    const backdrop = part('tour', 'backdrop')!
+    const spotlight = part('tour', 'spotlight')!
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    expect(target.inert).toBe(false)
+    expect(document.body.style.overflow).not.toBe('hidden')
+
+    const finite = (node: HTMLElement): Animation[] => node.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
+    const contentAnimations = finite(content)
+    expect(contentAnimations).toHaveLength(2)
+    contentAnimations[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    contentAnimations[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    for (const animation of finite(backdrop)) animation.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    for (const animation of finite(spotlight)) animation.finish()
+    await settle()
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    await settle()
+
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+    expect(content.style.display).toBe('none')
   })
 })
 

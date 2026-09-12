@@ -5,8 +5,10 @@ import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   connectPinInput,
+  firstEmptyPinIndex,
   isPinComplete,
   padPinValue,
+  pinFocusTarget,
   pinInputMachine,
   pinLength,
   samePinValue,
@@ -189,6 +191,45 @@ describe('pin-input 纯函数', () => {
     expect(pinLength(4.7)).toBe(4)
   })
 
+  it('firstEmptyPinIndex 报第一个空格，填满了报 -1', () => {
+    expect(firstEmptyPinIndex(['', '', ''])).toBe(0)
+    expect(firstEmptyPinIndex(['1', '', ''])).toBe(1)
+    // 中间被清空：报的是那个洞，不是末尾
+    expect(firstEmptyPinIndex(['1', '', '3'])).toBe(1)
+    expect(firstEmptyPinIndex(['1', '2', '3'])).toBe(-1)
+  })
+
+  it('pinFocusTarget 不许越过第一个空格，填满后原样放行', () => {
+    // 一格都没填：点哪儿都落在首格
+    expect(pinFocusTarget(['', '', ''], 2)).toBe(0)
+    // 已填两格：第三格是待填的那一格，点它就落它
+    expect(pinFocusTarget(['1', '2', '', ''], 2)).toBe(2)
+    // 再往后就越界了，退回第一个空格
+    expect(pinFocusTarget(['1', '2', '', ''], 3)).toBe(2)
+    // 往回改上一格不受限
+    expect(pinFocusTarget(['1', '2', '', ''], 0)).toBe(0)
+    // 填满之后哪一格都能落
+    expect(pinFocusTarget(['1', '2', '3'], 2)).toBe(2)
+    expect(pinFocusTarget(['1', '2', '3'], 0)).toBe(0)
+  })
+
+  it('pinFocusTarget 把出界的下标夹回格子范围', () => {
+    expect(pinFocusTarget(['1', '2', '3'], 9)).toBe(2)
+    expect(pinFocusTarget(['1', '2', '3'], -4)).toBe(0)
+    expect(pinFocusTarget(['1', '2', '3'], Number.NaN)).toBe(0)
+    expect(pinFocusTarget([], 3)).toBe(0)
+  })
+
+  it('pinFocusTarget 的结果再裁一次仍是它自己：按裁定搬焦点不会来回弹', () => {
+    const cases: string[][] = [['', '', ''], ['1', '', ''], ['1', '2', ''], ['1', '2', '3'], ['1', '', '3']]
+    for (const value of cases) {
+      for (let i = -2; i < value.length + 2; i++) {
+        const once = pinFocusTarget(value, i)
+        expect(pinFocusTarget(value, once)).toBe(once)
+      }
+    }
+  })
+
   it('isPinComplete / samePinValue', () => {
     expect(isPinComplete(['1', '2'])).toBe(true)
     expect(isPinComplete(['1', ''])).toBe(false)
@@ -260,6 +301,48 @@ describe('pinInputMachine', () => {
     s.send({ type: 'VALUE.FILL', index: 1, value: '2' })
     expect(padPinValue(s.context.get('value'), 2)).toEqual(['1', ''])
     expect(onValueChange).toHaveBeenCalledWith({ value: ['1', '2'], valueAsString: '12' })
+  })
+
+  it('iNPUT.FOCUS 记的是裁定后的落点：越不过第一个空格', () => {
+    const s = service({ length: 4 })
+    // 一格没填，点第三格也只落到首格
+    s.send({ type: 'INPUT.FOCUS', index: 2 })
+    expect(s.context.get('focusedIndex')).toBe(0)
+    s.send({ type: 'VALUE.FILL', index: 0, value: '1' })
+    // 首格填上了，第二格成了待填的那一格
+    s.send({ type: 'INPUT.FOCUS', index: 3 })
+    expect(s.context.get('focusedIndex')).toBe(1)
+    // 往回改上一格不受限
+    s.send({ type: 'INPUT.FOCUS', index: 0 })
+    expect(s.context.get('focusedIndex')).toBe(0)
+  })
+
+  it('填满之后 INPUT.FOCUS 落在点的那一格，改哪一位都行', () => {
+    const s = service({ length: 3, defaultValue: ['1', '2', '3'] })
+    s.send({ type: 'INPUT.FOCUS', index: 2 })
+    expect(s.context.get('focusedIndex')).toBe(2)
+    s.send({ type: 'INPUT.FOCUS', index: 0 })
+    expect(s.context.get('focusedIndex')).toBe(0)
+  })
+
+  it('中间那格被清空后，第一个空格就是它：焦点不再往后走', () => {
+    const s = service({ length: 3, defaultValue: ['1', '2', '3'] })
+    s.send({ type: 'VALUE.CLEAR_AT', index: 1 })
+    // 停在被清掉的那一格上，接着填就是它
+    s.send({ type: 'INPUT.FOCUS', index: 1 })
+    expect(s.context.get('focusedIndex')).toBe(1)
+    // 末格还有字，但轮不到它
+    s.send({ type: 'INPUT.FOCUS', index: 2 })
+    expect(s.context.get('focusedIndex')).toBe(1)
+  })
+
+  it('只读与禁用不按顺序录入：点哪一格就记哪一格', () => {
+    const readOnly = service({ length: 4, value: ['1', '', '3', ''], readOnly: true })
+    readOnly.send({ type: 'INPUT.FOCUS', index: 2 })
+    expect(readOnly.context.get('focusedIndex')).toBe(2)
+    const disabled = service({ length: 4, value: ['1', '', '3', ''], disabled: true })
+    disabled.send({ type: 'INPUT.FOCUS', index: 3 })
+    expect(disabled.context.get('focusedIndex')).toBe(3)
   })
 
   it('vALUE.SET 整份替换并按 type 过滤，VALUE.CLEAR 清空', () => {
@@ -341,7 +424,8 @@ describe('connectPinInput 属性输出', () => {
   })
 
   it('data-focus 跟着焦点走，焦点离开整组即撤掉', () => {
-    const m = open({ length: 2 })
+    // 填满之后哪一格都能落焦，这里只验标记跟着焦点走；没填满时的落点另有判据
+    const m = open({ length: 2, defaultValue: ['1', '2'] })
     m.boxes[1]!.focus()
     expect(m.boxes[1]!.getAttribute('data-focus')).toBe('')
     expect(m.boxes[0]!.getAttribute('data-focus')).toBeNull()
@@ -424,9 +508,10 @@ describe('connectPinInput 输入行为', () => {
   })
 
   it('一次塞进多个字符要拆开分发，而不是塞进一格', () => {
-    const m = open({ length: 4 })
+    // 首格先填上，第二格才落得了焦；顺序录入下"前面空着还能站到后面"本就走不到
+    const m = open({ length: 4, defaultValue: ['1', '', '', ''] })
     typeInto(m.boxes[1]!, '234')
-    expect(boxValues(m)).toEqual(['', '2', '3', '4'])
+    expect(boxValues(m)).toEqual(['1', '2', '3', '4'])
     expect(m.boxes[1]!.value).toBe('2')
     expect(focusedIndex(m)).toBe(3)
   })
@@ -458,9 +543,10 @@ describe('connectPinInput 输入行为', () => {
 
 describe('connectPinInput 粘贴', () => {
   it('从当前格起按格铺开，超长截断', () => {
-    const m = open({ length: 4 })
+    // 落点是第二格：首格已填，顺序录入允许站在这里
+    const m = open({ length: 4, defaultValue: ['1', '', '', ''] })
     paste(m.boxes[1]!, '2345')
-    expect(boxValues(m)).toEqual(['', '2', '3', '4'])
+    expect(boxValues(m)).toEqual(['1', '2', '3', '4'])
     expect(focusedIndex(m)).toBe(3)
   })
 
@@ -585,6 +671,125 @@ describe('connectPinInput 键盘', () => {
     m.boxes[1]!.dispatchEvent(event)
     expect(event.defaultPrevented).toBe(false)
     expect(focusedIndex(m)).toBe(1)
+  })
+})
+
+describe('connectPinInput 按顺序录入', () => {
+  it('点还轮不到的格子：焦点落到第一个空格上', () => {
+    const m = open({ length: 4 })
+    m.boxes[2]!.focus()
+    expect(focusedIndex(m)).toBe(0)
+    expect(m.api().focusedIndex).toBe(0)
+    expect(m.boxes[0]!.getAttribute('data-focus')).toBe('')
+    expect(m.boxes[2]!.getAttribute('data-focus')).toBeNull()
+  })
+
+  it('已填几格就能站到待填的那一格，再往后仍被拨回来', () => {
+    const m = open({ length: 4, defaultValue: ['1', '2', '', ''] })
+    m.boxes[2]!.focus()
+    expect(focusedIndex(m)).toBe(2)
+    m.boxes[3]!.focus()
+    expect(focusedIndex(m)).toBe(2)
+    // 往回改上一格照走
+    m.boxes[0]!.focus()
+    expect(focusedIndex(m)).toBe(0)
+  })
+
+  it('填满之后点任意一格都落在那一格', () => {
+    const m = open({ length: 4, defaultValue: ['1', '2', '3', '4'] })
+    m.boxes[3]!.focus()
+    expect(focusedIndex(m)).toBe(3)
+    m.boxes[1]!.focus()
+    expect(focusedIndex(m)).toBe(1)
+  })
+
+  it('焦点被拨走时只搬一次，不来回弹', () => {
+    const m = open({ length: 4 })
+    const moves: number[] = []
+    m.boxes.forEach((box, i) => box.addEventListener('focus', () => moves.push(i)))
+    m.boxes[3]!.focus()
+    // 一共两发：落在第四格那一发，与被拨到首格那一发，此外不再有
+    // （两发的先后不作数：连接层的处理器先于用例挂上，首格那一发嵌在第四格那一发里面）
+    expect(moves).toHaveLength(2)
+    expect(new Set(moves)).toEqual(new Set([0, 3]))
+    expect(focusedIndex(m)).toBe(0)
+  })
+
+  it('还轮不到的格子退出 Tab 序列，键盘走得出这一组', () => {
+    const m = open({ length: 4, defaultValue: ['1', '', '', ''] })
+    // 首格已填、第二格待填，两格都还留在 Tab 序列里
+    expect(m.boxes.map(b => b.getAttribute('tabindex'))).toEqual([null, null, '-1', '-1'])
+    typeInto(m.boxes[1]!, '2')
+    expect(m.boxes.map(b => b.getAttribute('tabindex'))).toEqual([null, null, null, '-1'])
+  })
+
+  it('填满后每一格都回到 Tab 序列里', () => {
+    const m = open({ length: 3, defaultValue: ['1', '2', '3'] })
+    expect(m.boxes.map(b => b.getAttribute('tabindex'))).toEqual([null, null, null])
+  })
+
+  it('只读不设限：点哪一格就落哪一格，也不摘 Tab 停靠点', () => {
+    const m = open({ length: 4, value: ['1', '', '3', ''], readOnly: true })
+    m.boxes[2]!.focus()
+    expect(focusedIndex(m)).toBe(2)
+    expect(m.boxes.map(b => b.getAttribute('tabindex'))).toEqual([null, null, null, null])
+  })
+
+  it('右键越不过第一个空格，左键在已填区间里照走', () => {
+    const m = open({ length: 4, defaultValue: ['1', '2', '', ''] })
+    m.boxes[2]!.focus()
+    pressKey(m.boxes[2]!, 'ArrowRight')
+    expect(focusedIndex(m)).toBe(2)
+    pressKey(m.boxes[2]!, 'ArrowLeft')
+    expect(focusedIndex(m)).toBe(1)
+    pressKey(m.boxes[1]!, 'ArrowLeft')
+    expect(focusedIndex(m)).toBe(0)
+    pressKey(m.boxes[0]!, 'ArrowRight')
+    expect(focusedIndex(m)).toBe(1)
+  })
+
+  it('end 停在第一个空格上，Home 照旧回首格', () => {
+    const m = open({ length: 4, defaultValue: ['1', '2', '', ''] })
+    m.boxes[0]!.focus()
+    pressKey(m.boxes[0]!, 'End')
+    expect(focusedIndex(m)).toBe(2)
+    pressKey(m.boxes[2]!, 'Home')
+    expect(focusedIndex(m)).toBe(0)
+  })
+
+  it('delete 清掉中间那格后焦点留在原地，右键也不再越过它', () => {
+    const m = open({ length: 4, defaultValue: ['1', '2', '3', '4'] })
+    m.boxes[1]!.focus()
+    pressKey(m.boxes[1]!, 'Delete')
+    expect(boxValues(m)).toEqual(['1', '', '3', '4'])
+    expect(focusedIndex(m)).toBe(1)
+    pressKey(m.boxes[1]!, 'ArrowRight')
+    expect(focusedIndex(m)).toBe(1)
+    // 补上这一格，后面的格子就重新轮得到
+    typeInto(m.boxes[1]!, '9')
+    expect(boxValues(m)).toEqual(['1', '9', '3', '4'])
+    expect(focusedIndex(m)).toBe(2)
+  })
+
+  it('退格清掉本格后焦点不动，接着退格才回上一格', () => {
+    const m = open({ length: 4, defaultValue: ['1', '2', '3', ''] })
+    m.boxes[2]!.focus()
+    pressKey(m.boxes[2]!, 'Backspace')
+    expect(boxValues(m)).toEqual(['1', '2', '', ''])
+    expect(focusedIndex(m)).toBe(2)
+    pressKey(m.boxes[2]!, 'Backspace')
+    expect(boxValues(m)).toEqual(['1', '', '', ''])
+    expect(focusedIndex(m)).toBe(1)
+  })
+
+  it('粘贴仍从落点那一格起铺开，只是落点越不过第一个空格', () => {
+    const m = open({ length: 4, defaultValue: ['1', '', '', ''] })
+    // 作者想从第三格起粘：焦点先被拨到第二格，铺开也就从那里起
+    m.boxes[2]!.focus()
+    expect(focusedIndex(m)).toBe(1)
+    paste(m.boxes[focusedIndex(m)]!, '23')
+    expect(boxValues(m)).toEqual(['1', '2', '3', ''])
+    expect(focusedIndex(m)).toBe(3)
   })
 })
 

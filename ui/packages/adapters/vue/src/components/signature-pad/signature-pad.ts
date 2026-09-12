@@ -3,6 +3,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideSignaturePad, useSignaturePadContext } from './context'
 import { useSignaturePad } from './use-signature-pad'
 
@@ -16,15 +17,15 @@ export type SignaturePadRootSlotProps = Pick<
 
 export const XhSignaturePadRoot = defineComponent({
   name: 'XhSignaturePadRoot',
-  // 全部 default: undefined，缺省值由 connect 决定
+  // 缺省值由 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
-    name: { type: String, default: undefined },
-    drawing: { type: Object as PropType<SignaturePadDrawingOptions>, default: undefined },
-    translations: { type: Object as PropType<Partial<SignaturePadTranslations>>, default: undefined },
+    name: { type: String },
+    drawing: { type: Object as PropType<SignaturePadDrawingOptions> },
+    translations: { type: Object as PropType<Partial<SignaturePadTranslations>> },
   },
   // 两条都是只读通知，签名写不回来，因此没有 v-model
   emits: {
@@ -37,7 +38,7 @@ export const XhSignaturePadRoot = defineComponent({
   setup(props, { slots, emit }) {
     const onDraw: SignaturePadProps['onDraw'] = details => emit('draw', details)
     const onDrawEnd: SignaturePadProps['onDrawEnd'] = details => emit('draw-end', details)
-    const ctx = useSignaturePad(withXhConfig('signature-pad', props) as SignaturePadProps, { onDraw, onDrawEnd })
+    const ctx = useSignaturePad(withXhConfig('signature-pad', useFormControlProps(props)) as SignaturePadProps, { onDraw, onDrawEnd })
     provideSignaturePad(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       paths: ctx.api.value.paths,

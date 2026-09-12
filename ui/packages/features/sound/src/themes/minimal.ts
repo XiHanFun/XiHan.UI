@@ -1,7 +1,7 @@
 // 极简主题：短促、干净、无混响。单层衰减都在 0.15 秒内，整段不超过 0.3 秒。
 // 适合信息密度高、提示频繁的界面——声音只标记事件发生，不渲染情绪。
 
-import { defineSoundTheme, flat, glide, strike } from './define'
+import { defineSoundTheme, flat, glide, strike, strikeTone } from './define'
 
 export const minimalSoundTheme = defineSoundTheme({
   'click': {
@@ -16,12 +16,12 @@ export const minimalSoundTheme = defineSoundTheme({
   },
   'toggle-on': {
     layers: [
-      { kind: 'oscillator', wave: 'sine', frequency: flat(880), gain: strike(0.22, 0.002, 0.05) },
+      strikeTone('sine', 880, 0.22, 0.002, 0.05),
     ],
   },
   'toggle-off': {
     layers: [
-      { kind: 'oscillator', wave: 'sine', frequency: flat(659.25), gain: strike(0.2, 0.002, 0.05) },
+      strikeTone('sine', 659.25, 0.2, 0.002, 0.05),
     ],
   },
   'open': {
@@ -36,8 +36,8 @@ export const minimalSoundTheme = defineSoundTheme({
   },
   'success': {
     layers: [
-      { kind: 'oscillator', wave: 'sine', frequency: flat(880), gain: strike(0.22, 0.003, 0.08) },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(1174.66), gain: strike(0.22, 0.003, 0.1), delay: 0.07 },
+      strikeTone('sine', 880, 0.22, 0.003, 0.08),
+      strikeTone('sine', 1174.66, 0.22, 0.003, 0.1, 0.07),
     ],
   },
   'error': {
@@ -48,19 +48,19 @@ export const minimalSoundTheme = defineSoundTheme({
   },
   'warning': {
     layers: [
-      { kind: 'oscillator', wave: 'triangle', frequency: flat(987.77), gain: strike(0.2, 0.003, 0.06) },
-      { kind: 'oscillator', wave: 'triangle', frequency: flat(987.77), gain: strike(0.2, 0.003, 0.08), delay: 0.11 },
+      strikeTone('triangle', 987.77, 0.2, 0.003, 0.06),
+      strikeTone('triangle', 987.77, 0.2, 0.003, 0.08, 0.11),
     ],
   },
   'info': {
     layers: [
-      { kind: 'oscillator', wave: 'sine', frequency: flat(1046.5), gain: strike(0.18, 0.003, 0.09) },
+      strikeTone('sine', 1046.5, 0.18, 0.003, 0.09),
     ],
   },
   'notification': {
     layers: [
-      { kind: 'oscillator', wave: 'sine', frequency: flat(880), gain: strike(0.2, 0.003, 0.08) },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(1046.5), gain: strike(0.18, 0.003, 0.1), delay: 0.09 },
+      strikeTone('sine', 880, 0.2, 0.003, 0.08),
+      strikeTone('sine', 1046.5, 0.18, 0.003, 0.1, 0.09),
     ],
   },
   'send': {
@@ -75,9 +75,9 @@ export const minimalSoundTheme = defineSoundTheme({
   },
   'complete': {
     layers: [
-      { kind: 'oscillator', wave: 'sine', frequency: flat(659.25), gain: strike(0.2, 0.003, 0.08) },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(880), gain: strike(0.2, 0.003, 0.08), delay: 0.08 },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(1046.5), gain: strike(0.2, 0.003, 0.12), delay: 0.16 },
+      strikeTone('sine', 659.25, 0.2, 0.003, 0.08),
+      strikeTone('sine', 880, 0.2, 0.003, 0.08, 0.08),
+      strikeTone('sine', 1046.5, 0.2, 0.003, 0.12, 0.16),
     ],
   },
 })

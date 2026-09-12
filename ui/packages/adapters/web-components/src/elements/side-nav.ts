@@ -1,13 +1,14 @@
 import type { Cleanup, IdGenerator, Layer, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { SideNavExpandedValueChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
+import type { AnchoredPortalController } from '../runtime/anchored-portal-controller'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectSideNav, sideNavAnatomy, sideNavMachine, sideNavMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -51,7 +52,10 @@ const GROUP_SELECTOR = '[data-xh-part="group"]'
  * @csspart link - 去处链接，须自带 value 属性；选中输出 aria-current="page" 与 data-current
  * @csspart link-text - 链接文字载体，折叠成图标栏时裁到看不见但仍参与播报，是链接在图标栏里的可及名
  */
-export class XhSideNavElement extends XhElement {
+export class XhSideNavElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: sideNavAnatomy, meta: sideNavMeta }
 
   // dir 只占属性名、字段改叫 direction：同名声明会盖掉 HTMLElement 原生反射。
@@ -98,11 +102,11 @@ export class XhSideNavElement extends XhElement {
   }
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly navScope = createScope(null, this.idGen)
+  private readonly navScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 每个弹出面板的定位层一份退场闸门：退场动画播完才真收。 */
-  private readonly exits = new Map<HTMLElement, OverlayExit>()
+  private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit, portal: AnchoredPortalController }>()
 
   private readonly ctrl = new MachineController<SideNavSchema>(
     this,
@@ -138,29 +142,28 @@ export class XhSideNavElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.navScope, idGenerator: this.idGen })
   }
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return [...this.exits.values()].flatMap(entry => entry.portal.roots)
+  }
+
   /** 当前弹出分支名下的角色节点：按归属分支的 value 现查。 */
-  private findPopoutPart(svc: Service<SideNavSchema>, name: string): HTMLElement | null {
-    const v = svc.context.get('popoutValue')
-    if (v == null)
-      return null
+  private findPopoutPart(value: string, name: string): HTMLElement | null {
     for (const el of this.getParts(name)) {
-      if (this.nodeOf(el, BRANCH_SELECTOR).value === v)
+      if (this.nodeOf(el, BRANCH_SELECTOR).value === value)
         return el
     }
     return null
   }
 
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着弹出态走（机器的 trackPopoutLayer 效应负责）
-  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
+  private readonly registerLayer = (value: string): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
-    const svc = this.ctrl.service
     return this.config!.layerRegistry.register({
       kind: 'popover',
-      node: () => this.findPopoutPart(svc, 'branch-content'),
+      node: () => this.findPopoutPart(value, 'branch-content'),
       // 触发按钮记为本层分支，点它算层内交互
-      branches: () => [this.findPopoutPart(svc, 'branch-trigger')].filter(Boolean) as Element[],
+      branches: () => [this.findPopoutPart(value, 'branch-trigger')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
   }
@@ -171,12 +174,41 @@ export class XhSideNavElement extends XhElement {
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
     svc.refs.set('position', this.positionEngine)
-    svc.refs.set('getPopoutAnchorEl', () => this.findPopoutPart(svc, 'branch-trigger'))
-    svc.refs.set('getPopoutContentEl', () => this.findPopoutPart(svc, 'branch-content'))
-    svc.refs.set('getPopoutPositionerEl', () => this.findPopoutPart(svc, 'positioner'))
+    svc.refs.set('getPopoutAnchorEl', value => this.findPopoutPart(value, 'branch-trigger'))
+    svc.refs.set('getPopoutContentEl', value => this.findPopoutPart(value, 'branch-content'))
+    svc.refs.set('getPopoutPositionerEl', value => this.findPopoutPart(value, 'positioner'))
+  }
+
+  /** WC 只报告真实面板 Presence 的接入与离场，资源会话由 Headless 按 value 记账。 */
+  private setPresence(value: string, presence: OverlayExit['presence'], connected: boolean): void {
+    if (this.ctrl.service.getStatus() !== 'Started')
+      return
+    this.ctrl.service.send({ type: 'PRESENCE.SET', value, presence, connected })
+  }
+
+  private releaseExit(el: HTMLElement, entry: { value: string, gate: OverlayExit, portal: AnchoredPortalController }): void {
+    this.setPresence(entry.value, entry.gate.presence, false)
+    entry.portal.dispose()
+    entry.gate.dispose()
+    this.setPartHidden(el, true)
+    this.exits.delete(el)
+  }
+
+  protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
+    for (const el of nodes) {
+      const entry = this.exits.get(el)
+      if (entry)
+        this.releaseExit(el, entry)
+    }
   }
 
   private nodeOf(el: HTMLElement, selector: string): SideNavNodeProps {
+    const positioner = el.matches('[data-xh-part="positioner"]')
+      ? el
+      : el.closest<HTMLElement>('[data-xh-part="positioner"]')
+    const portaled = positioner ? this.exits.get(positioner) : undefined
+    if (portaled)
+      return { value: portaled.value }
     const owner = el.closest<HTMLElement>(selector)
     const source = owner && owner !== this && this.contains(owner) ? owner : el
     return { value: source.getAttribute('value') ?? '' }
@@ -185,8 +217,9 @@ export class XhSideNavElement extends XhElement {
   override disconnectedCallback(): void {
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起
-    for (const [el, gate] of this.exits) {
-      gate.dispose()
+    for (const [el, entry] of this.exits) {
+      entry.portal.dispose()
+      entry.gate.dispose()
       this.setPartHidden(el, true)
     }
     this.exits.clear()
@@ -226,24 +259,49 @@ export class XhSideNavElement extends XhElement {
     // 一个定位层一份闸门。必须排在两处 spread 之后——data-state 得先落进 DOM，探测器才读得到
     const popoutVisible = new Map<HTMLElement, boolean>()
     for (const el of this.getParts('positioner')) {
-      const props = api.getPopoutPositionerProps(this.nodeOf(el, BRANCH_SELECTOR)) as Record<string, unknown>
+      const value = this.nodeOf(el, BRANCH_SELECTOR).value
+      const props = api.getPopoutPositionerProps({ value }) as Record<string, unknown>
       this.spreader.spread(el, props)
       const open = props.hidden !== true
-      let gate = this.exits.get(el)
-      if (!gate) {
+      let entry = this.exits.get(el)
+      if (!entry) {
         this.ensureConfig()
-        gate = createOverlayExit({
+        const gate = createOverlayExit({
           config: this.config!,
           open,
           onExitComplete: () => this.requestUpdate(),
         })
-        this.exits.set(el, gate)
+        const portal = this.createAnchoredPortalController({
+          name: `SideNav popout ${value}`,
+          config: () => this.config,
+          source: () => this.findPopoutPart(this.exits.get(el)?.value ?? value, 'branch-trigger'),
+          root: () => el,
+          onChange: () => this.requestUpdate(),
+        })
+        entry = { value, gate, portal }
+        this.exits.set(el, entry)
+        this.setPresence(value, gate.presence, true)
       }
-      gate.track(el.querySelector<HTMLElement>('[data-xh-part="branch-content"]'))
-      gate.update(open)
-      el.toggleAttribute('hidden', !gate.visible)
-      this.setPartHidden(el, !gate.visible)
-      popoutVisible.set(el, gate.visible)
+      else if (entry.value !== value) {
+        this.setPresence(entry.value, entry.gate.presence, false)
+        entry.value = value
+        this.setPresence(value, entry.gate.presence, true)
+      }
+      const panel = el.querySelector<HTMLElement>('[data-xh-part="branch-content"]')
+      // spread 已按逻辑态给定位层与面板写上 hidden；Presence 必须在真实盒子仍存在时采样退出动画。
+      // 当前仍可见的关闭帧先撤掉 hidden/display，再驱动 update(false)。
+      if (open || entry.gate.visible) {
+        el.removeAttribute('hidden')
+        this.setPartHidden(el, false)
+        panel?.removeAttribute('hidden')
+        this.setPartHidden(panel, false)
+      }
+      entry.gate.track(panel)
+      entry.gate.update(open)
+      el.toggleAttribute('hidden', !entry.gate.visible)
+      this.setPartHidden(el, !entry.gate.visible)
+      entry.portal.sync(entry.gate.visible)
+      popoutVisible.set(el, entry.gate.visible)
     }
     putAll('link', '[data-xh-part="link"]', node => api.getLinkProps(node))
 

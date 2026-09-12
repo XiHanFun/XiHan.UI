@@ -9,6 +9,7 @@ import type {
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   provideCheckboxGroup,
   provideCheckboxGroupItem,
@@ -28,20 +29,20 @@ export type CheckboxGroupRootSlotProps = Pick<
 export const XhCheckboxGroupRoot = defineComponent({
   name: 'XhCheckboxGroupRoot',
   props: {
-    collection: { type: Array as PropType<CheckboxGroupNode[]>, default: undefined },
+    collection: { type: Array as PropType<CheckboxGroupNode[]> },
     /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
-    label: { type: String, default: undefined },
-    // default: undefined 表示非受控
-    value: { type: Array as PropType<string[]>, default: undefined },
-    defaultValue: { type: Array as PropType<string[]>, default: undefined },
-    itemValues: { type: Array as PropType<string[]>, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
-    name: { type: String, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    label: { type: String },
+    // 缺席值 undefined 表示非受控
+    value: { type: Array as PropType<string[]> },
+    defaultValue: { type: Array as PropType<string[]> },
+    itemValues: { type: Array as PropType<string[]> },
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
+    name: { type: String },
+    orientation: { type: String as PropType<Orientation> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // value-change 携带 { value }，update:value 携带裸数组
   emits: {
@@ -58,7 +59,7 @@ export const XhCheckboxGroupRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useCheckboxGroup(props as CheckboxGroupProps, notify)
+    const ctx = useCheckboxGroup(useFormControlProps(props) as CheckboxGroupProps, notify)
     provideCheckboxGroup(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default
       ? slots.default({

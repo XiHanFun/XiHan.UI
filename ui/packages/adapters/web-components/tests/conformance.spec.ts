@@ -9,8 +9,15 @@ import {
 } from '@xihan-ui/core'
 import { runConformance } from '@xihan-ui/testing'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { installLayoutViewport } from '../../../../tooling/testing/src/fixtures/layout-viewport'
 import { createWcHarness } from './harness'
 import { wcSuites } from './suites'
+
+let restoreLayoutViewport: (() => void) | undefined
+beforeEach(({ task }) => {
+  if (task.suite?.name.startsWith('conformance: layout '))
+    restoreLayoutViewport = installLayoutViewport(document)
+})
 
 let diagnostics: DiagnosticRecord[] = []
 
@@ -20,6 +27,11 @@ beforeEach(() => {
   setDiagnosticsLevel('warn')
   diagnostics = []
   onDiagnostic(record => void diagnostics.push(record))
+})
+
+afterEach(() => {
+  restoreLayoutViewport?.()
+  restoreLayoutViewport = undefined
 })
 
 afterEach(() => {

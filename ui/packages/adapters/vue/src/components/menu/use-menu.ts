@@ -1,10 +1,10 @@
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { MenuApi, MenuSchema } from '@xihan-ui/headless'
+import type { MenuApi, MenuSchema, MenuTreeNode } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectMenu, menuMachine } from '@xihan-ui/headless'
+import { connectMenu, createMenuTreeNode, menuMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
@@ -17,16 +17,19 @@ export interface MenuContext {
   triggerRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
+  /** Portal 之外的逻辑父子、悬停区域与选择收链由 headless 节点统一维护。 */
+  tree: MenuTreeNode
   /** 此刻该不该渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
   /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
 }
 
-export function useMenu(
+function useMenuImpl(
   props: MenuSchema['props'],
   onOpenChange?: MenuSchema['props']['onOpenChange'],
   onSelect?: MenuSchema['props']['onSelect'],
+  treeParent?: MenuTreeNode,
 ): MenuContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
@@ -35,7 +38,21 @@ export function useMenu(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(menuMachine, () => ({ ...props, onOpenChange, onSelect }), scope)
+  let service: Service<MenuSchema> | null = null
+  const tree = createMenuTreeNode({
+    getPositioner: () => positionerRef.value,
+    isOpen: () => service?.state.get() === 'open',
+    close: () => service?.send({ type: 'CLOSE' }),
+    isRoot: () => !(service?.prop('submenu') ?? props.submenu),
+    onRootSelect: details => onSelect?.(details),
+  })
+  service = useMachine(menuMachine, () => ({
+    ...props,
+    onOpenChange,
+    onSelect: treeParent ? tree.select : onSelect,
+  }), scope)
+  const releaseParent = treeParent?.registerChild(tree)
+  onBeforeUnmount(() => releaseParent?.())
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
   let config: RuntimeConfig | null = null
@@ -51,7 +68,6 @@ export function useMenu(
       // 浮层壳一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
       branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
 
@@ -62,13 +78,37 @@ export function useMenu(
     service.refs.set('getAnchorEl', () => triggerRef.value)
     service.refs.set('getFloatingEl', () => positionerRef.value)
     service.refs.set('getContentEl', () => contentRef.value)
+    service.refs.set('getHoverBranches', tree.getHoverBranches)
   }
 
   const api = computed(() => connectMenu(service, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
-  const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+  const visible = useOverlayExit({
+    config,
+    isOpen: () => api.value.open,
+    contentRef,
+    onPresence: presence => service.refs.set('presence', presence),
+  })
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget }
+  return { visible, service, api, triggerRef, positionerRef, contentRef, tree, portalTarget }
+}
+
+/** 公开 composable：建立一棵独立菜单树。 */
+export function useMenu(
+  props: MenuSchema['props'],
+  onOpenChange?: MenuSchema['props']['onOpenChange'],
+  onSelect?: MenuSchema['props']['onSelect'],
+): MenuContext {
+  return useMenuImpl(props, onOpenChange, onSelect)
+}
+
+/** 组合部件内部入口：把子菜单连接到 headless 逻辑树。 */
+export function useMenuWithParent(
+  props: MenuSchema['props'],
+  onOpenChange: MenuSchema['props']['onOpenChange'] | undefined,
+  treeParent: MenuTreeNode,
+): MenuContext {
+  return useMenuImpl(props, onOpenChange, undefined, treeParent)
 }

@@ -2,10 +2,12 @@ import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui
 import type { ComboboxApi, ComboboxGroupProps, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, Teleport, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   provideCombobox,
   provideComboboxItem,
@@ -26,41 +28,42 @@ export type ComboboxRootSlotProps = Pick<
 
 export const XhComboboxRoot = defineComponent({
   name: 'XhComboboxRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<ComboboxNode[]>, default: undefined },
+    collection: { type: Array as PropType<ComboboxNode[]> },
     /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
-    label: { type: String, default: undefined },
+    label: { type: String },
     /** 无匹配时的提示语。给了它就不必再写 empty 部件；要放别的内容改用 empty 插槽。 */
-    empty: { type: String, default: undefined },
-    value: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    inputValue: { type: String, default: undefined },
-    defaultInputValue: { type: String, default: undefined },
+    empty: { type: String },
+    value: { type: [String, Array] as PropType<string | string[]> },
+    defaultValue: { type: [String, Array] as PropType<string | string[]> },
+    inputValue: { type: String },
+    defaultInputValue: { type: String },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     /** 表单字段名；给了 hidden-input 才带 name 并参与提交 */
-    name: { type: String, default: undefined },
+    name: { type: String },
+    form: { type: String },
     multiple: Boolean,
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     loading: Boolean,
     loop: { type: Boolean, default: undefined },
-    placeholder: { type: String, default: undefined },
+    placeholder: { type: String },
     /** 自动铺开时是否渲染清空钮；手写部件模式不看它，写了节点即可清 */
     clearable: Boolean,
-    translations: { type: Object as PropType<ComboboxProps['translations']>, default: undefined },
+    translations: { type: Object as PropType<ComboboxProps['translations']> },
     allowCustomValue: Boolean,
     openOnClick: Boolean,
-    inputBehavior: { type: String as PropType<ComboboxInputBehavior>, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    inputBehavior: { type: String as PropType<ComboboxInputBehavior> },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // *-change 携带 details 对象，update:* 携带裸值
   emits: {
@@ -90,7 +93,7 @@ export const XhComboboxRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useCombobox(withXhConfig('combobox', props) as ComboboxProps, {
+    const ctx = useCombobox(withXhConfig('combobox', useFormControlProps(props)) as ComboboxProps, {
       onValueChange: notifyValue,
       onInputValueChange: notifyInputValue,
       onOpenChange: notifyOpen,
@@ -166,9 +169,9 @@ export const XhComboboxInput = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     const ctx = useComboboxContext()
     return () => h(props.as, fieldLabel.value({
+      ...fieldWiring.value,
       ...ctx.api.value.getInputProps({ as: props.as }) as Record<string, unknown>,
       ref: (el: unknown) => { ctx.inputRef.value = el as ComboboxInputEl },
-      ...fieldWiring.value,
     }))
   },
 })
@@ -191,14 +194,18 @@ export const XhComboboxClearTrigger = defineComponent({
 
 export const XhComboboxPositioner = defineComponent({
   name: 'XhComboboxPositioner',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useComboboxContext()
     // 候选列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
     const bars = useScrollbars({ scrollable: () => ctx.contentRef.value })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.controlRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
@@ -283,10 +290,15 @@ export const XhComboboxItemIndicator = defineComponent({
 
 export const XhComboboxHiddenInput = defineComponent({
   name: 'XhComboboxHiddenInput',
-  setup() {
+  inheritAttrs: false,
+  setup(_, { attrs }) {
     const ctx = useComboboxContext()
     // 表单出口，不写这个部件即不参与表单提交
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => ctx.api.value.value.map(value => h('input', {
+      ...ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown>,
+      ...attrs,
+      key: value,
+    }))
   },
 })
 

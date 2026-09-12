@@ -24,6 +24,8 @@ export function useDrawer(
   const scope = useReactScope()
   const contentRef = useRef<HTMLElement | null>(null)
   const backdropRef = useRef<HTMLElement | null>(null)
+  const modalRef = useRef(props.modal)
+  modalRef.current = props.modal
 
   // 机器还没建出来，首帧的展开态先按 props 算：与 initialState 同一条判定
   const initialOpen = (props.open ?? props.defaultOpen) ?? false
@@ -33,9 +35,8 @@ export function useDrawer(
   const layer = useCallback((): Omit<Layer, 'id' | 'node' | 'surfaces'> => ({
     kind: 'modal',
     branches: () => [],
-    isModal: () => props.modal ?? true,
-    setModal: () => {},
-  }), [props.modal])
+    isModal: () => modalRef.current ?? true,
+  }), [])
 
   const overlay = useOverlay({
     scope,
@@ -45,6 +46,7 @@ export function useDrawer(
     layer,
     node: () => contentRef.current,
     surfaces: () => [backdropRef.current].filter(Boolean) as Element[],
+    additionalExitNodes: () => [backdropRef.current],
     container,
     refs: (service) => {
       service.refs.set('getContentEl', (() => contentRef.current) as never)

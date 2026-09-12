@@ -5,12 +5,16 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
+import { useFormControlProps } from '../form/use-form-control'
 import { SegmentedItemProvider, SegmentedProvider, useSegmentedContext, useSegmentedItemContext } from './context'
 import { useSegmented } from './use-segmented'
 
 type SegmentedProps = SegmentedSchema['props']
 
-export interface XhSegmentedRootProps {
+/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
+
+export interface XhSegmentedRootProps extends RootElementProps {
   collection?: SegmentedNode[]
   value?: string | null
   defaultValue?: string | null
@@ -33,8 +37,43 @@ export interface XhSegmentedRootProps {
   children?: ReactNode
 }
 
-export function XhSegmentedRoot({ children, renderItem, ...props }: XhSegmentedRootProps): ReactNode {
-  const ctx = useSegmented(props as SegmentedProps)
+export function XhSegmentedRoot({
+  collection,
+  value,
+  defaultValue,
+  disabled,
+  readOnly,
+  invalid,
+  required,
+  name,
+  orientation,
+  dir,
+  loop,
+  block,
+  tone,
+  size,
+  onValueChange,
+  renderItem,
+  children,
+  ...rest
+}: XhSegmentedRootProps): ReactNode {
+  const ctx = useSegmented(useFormControlProps({
+    collection,
+    value,
+    defaultValue,
+    disabled,
+    readOnly,
+    invalid,
+    required,
+    name,
+    orientation,
+    dir,
+    loop,
+    block,
+    tone,
+    size,
+    onValueChange,
+  } as SegmentedProps))
   const api = ctx.api
 
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
@@ -44,7 +83,7 @@ export function XhSegmentedRoot({ children, renderItem, ...props }: XhSegmentedR
 
   // 写了 children 就整套结构自理：隐藏输入也要自己放一个 XhSegmentedHiddenInput，
   // 否则给了 name 也没有任何东西参与提交
-  const body = children ?? (props.collection
+  const body = children ?? (collection
     ? <DefaultTree collection={api.collection} renderItem={renderItem} />
     : null)
 
@@ -53,6 +92,7 @@ export function XhSegmentedRoot({ children, renderItem, ...props }: XhSegmentedR
       <div
         {...mergeReactProps(
           bind.attrs,
+          rest as Record<string, unknown>,
           { ref: bind.ref },
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}

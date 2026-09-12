@@ -2,9 +2,11 @@ import type { OverlayBackdropVariant, Size } from '@xihan-ui/core'
 import type { DialogApi, DialogSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, mergeProps, Teleport } from 'vue'
+import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
+import { mergePartProps } from '../../runtime/merge-props'
+import { XhPortal } from '../../runtime/portal'
 import { provideDialog, useDialogContext } from './context'
 import { useDialog } from './use-dialog'
 
@@ -13,7 +15,7 @@ type DialogProps = DialogSchema['props']
 /** 默认插槽的载荷：展开态与改展开的动作。 */
 export type DialogRootSlotProps = Pick<DialogApi, 'open' | 'setOpen'>
 
-export const XhDialogRoot = defineComponent({
+export const XhDialogRoot = /* @__PURE__ */ defineComponent({
   name: 'XhDialogRoot',
   props: {
     open: { type: Boolean, default: undefined },
@@ -23,15 +25,16 @@ export const XhDialogRoot = defineComponent({
     closeOnEscape: { type: Boolean, default: true },
     closeOnInteractOutside: { type: Boolean, default: undefined },
     restoreFocus: { type: Boolean, default: true },
-    initialFocus: { type: String, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    variant: { type: String as PropType<OverlayBackdropVariant>, default: undefined },
-    translations: { type: Object as PropType<DialogProps['translations']>, default: undefined },
+    initialFocus: { type: String },
+    size: { type: String as PropType<Size> },
+    variant: { type: String as PropType<OverlayBackdropVariant> },
+    translations: { type: Object as PropType<DialogProps['translations']> },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: {
     'open-change': (_details: PayloadOf<DialogProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<DialogProps, 'onOpenChange'>['open']) => true,
+    'exit-complete': () => true,
   },
   slots: Object as SlotsType<{
     default?: (props: DialogRootSlotProps) => VNode[]
@@ -41,54 +44,62 @@ export const XhDialogRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useDialog(withXhConfig('dialog', props) as DialogProps, notify)
+    const ctx = useDialog(withXhConfig('dialog', props) as DialogProps, notify, () => emit('exit-complete'))
     provideDialog(ctx)
     return () => slots.default?.({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
   },
 })
 
-export const XhDialogTrigger = defineComponent({
+export const XhDialogTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhDialogTrigger',
+  // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
+  inheritAttrs: false,
   props: {
     /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const ctx = useDialogContext()
     return () => {
-      const attrs = ctx.api.value.getTriggerProps() as Record<string, unknown>
+      const part = mergePartProps(ctx.api.value.getTriggerProps() as Record<string, unknown>, attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
-        const merged = mergeIntoChild(children, attrs, 'dialog')
+        const merged = mergeIntoChild(children, part, 'dialog')
         if (merged)
           return merged
       }
-      return h('button', attrs, children)
+      return h('button', part, children)
     }
   },
 })
 
-export const XhDialogContent = defineComponent({
+export const XhDialogContent = /* @__PURE__ */ defineComponent({
   name: 'XhDialogContent',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 content 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useDialogContext()
     return () => {
       if (!ctx.rendered.value)
         return null
       const api = ctx.api.value
-      return h(Teleport, { to: ctx.portalTarget.value }, [
-        api.open || ctx.rendered.value
+      const backdrop = api.getBackdropProps() as Record<string, unknown>
+      return h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
+        !backdrop.hidden
           ? h('div', {
-              ...api.getBackdropProps() as Record<string, unknown>,
+              ...backdrop,
               ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
             })
           : null,
         h('div', api.getPositionerProps() as Record<string, unknown>, [
           h('div', {
             ...mergeProps(api.getContentProps() as Record<string, unknown>, attrs),
+            hidden: !ctx.rendered.value || undefined,
             ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
           }, slots.default?.()),
         ]),
@@ -97,7 +108,7 @@ export const XhDialogContent = defineComponent({
   },
 })
 
-export const XhDialogHeader = defineComponent({
+export const XhDialogHeader = /* @__PURE__ */ defineComponent({
   name: 'XhDialogHeader',
   setup(_, { slots }) {
     const ctx = useDialogContext()
@@ -106,7 +117,7 @@ export const XhDialogHeader = defineComponent({
 })
 
 /** 语气徽记：不给内容就由皮肤按节点上的 data-tone 画兜底字形，塞了节点即整枚换掉。 */
-export const XhDialogIndicator = defineComponent({
+export const XhDialogIndicator = /* @__PURE__ */ defineComponent({
   name: 'XhDialogIndicator',
   setup(_, { slots }) {
     const ctx = useDialogContext()
@@ -114,7 +125,7 @@ export const XhDialogIndicator = defineComponent({
   },
 })
 
-export const XhDialogTitle = defineComponent({
+export const XhDialogTitle = /* @__PURE__ */ defineComponent({
   name: 'XhDialogTitle',
   setup(_, { slots }) {
     const ctx = useDialogContext()
@@ -122,7 +133,7 @@ export const XhDialogTitle = defineComponent({
   },
 })
 
-export const XhDialogDescription = defineComponent({
+export const XhDialogDescription = /* @__PURE__ */ defineComponent({
   name: 'XhDialogDescription',
   setup(_, { slots }) {
     const ctx = useDialogContext()
@@ -130,7 +141,7 @@ export const XhDialogDescription = defineComponent({
   },
 })
 
-export const XhDialogBody = defineComponent({
+export const XhDialogBody = /* @__PURE__ */ defineComponent({
   name: 'XhDialogBody',
   setup(_, { slots }) {
     const ctx = useDialogContext()
@@ -138,7 +149,7 @@ export const XhDialogBody = defineComponent({
   },
 })
 
-export const XhDialogFooter = defineComponent({
+export const XhDialogFooter = /* @__PURE__ */ defineComponent({
   name: 'XhDialogFooter',
   setup(_, { slots }) {
     const ctx = useDialogContext()
@@ -146,7 +157,7 @@ export const XhDialogFooter = defineComponent({
   },
 })
 
-export const XhDialogCloseTrigger = defineComponent({
+export const XhDialogCloseTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhDialogCloseTrigger',
   setup(_, { slots }) {
     const ctx = useDialogContext()

@@ -6,7 +6,7 @@ import type { DrawerOpenChangeDetails, DrawerSchema, DrawerSide } from '../src/d
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
-import { connectDrawer, drawerMachine } from '../src/drawer'
+import { connectDrawer, drawerAnatomy, drawerMachine } from '../src/drawer'
 
 function makeService(props: DrawerSchema['props'] = {}): Service<DrawerSchema> {
   const runtime = createVanillaRuntime()
@@ -140,6 +140,123 @@ describe('connectDrawer 属性输出', () => {
       .getCloseTriggerProps() as Record<string, unknown>
     expect(close['aria-label']).toBe('关闭')
   })
+
+  it('没给 translations 时 close-trigger 的 aria-label 是 Close', () => {
+    const close = connectDrawer(makeService(), normalizeProps)
+      .getCloseTriggerProps() as Record<string, unknown>
+    expect(close['aria-label']).toBe('Close')
+  })
+
+  it('十一个部件各带 data-scope="drawer" 与自己的 data-part', () => {
+    const api = connectDrawer(makeService({ defaultOpen: true }), normalizeProps)
+    const emitted: Array<[string, Record<string, unknown>]> = [
+      ['root', api.getRootProps() as Record<string, unknown>],
+      ['trigger', api.getTriggerProps() as Record<string, unknown>],
+      ['backdrop', api.getBackdropProps() as Record<string, unknown>],
+      ['positioner', api.getPositionerProps() as Record<string, unknown>],
+      ['content', api.getContentProps() as Record<string, unknown>],
+      ['header', api.getHeaderProps() as Record<string, unknown>],
+      ['title', api.getTitleProps() as Record<string, unknown>],
+      ['description', api.getDescriptionProps() as Record<string, unknown>],
+      ['body', api.getBodyProps() as Record<string, unknown>],
+      ['footer', api.getFooterProps() as Record<string, unknown>],
+      ['close-trigger', api.getCloseTriggerProps() as Record<string, unknown>],
+    ]
+    expect(emitted.map(([part]) => part)).toEqual([...drawerAnatomy.parts])
+    for (const [part, props] of emitted) {
+      expect(props['data-scope']).toBe('drawer')
+      expect(props['data-part']).toBe(part)
+    }
+  })
+
+  it('size 同时落在 root 与 content 上，遮罩与定位层不带', () => {
+    const api = connectDrawer(makeService({ size: 'lg', defaultOpen: true }), normalizeProps)
+    expect(attrs(api, 'root')['data-size']).toBe('lg')
+    expect(attrs(api, 'content')['data-size']).toBe('lg')
+    expect((api.getBackdropProps() as Record<string, unknown>)['data-size']).toBeUndefined()
+    expect((api.getPositionerProps() as Record<string, unknown>)['data-size']).toBeUndefined()
+  })
+
+  it('variant 只落在 backdrop 上：换的是那一层自己的底色与模糊', () => {
+    const api = connectDrawer(makeService({ variant: 'blur', defaultOpen: true }), normalizeProps)
+    expect((api.getBackdropProps() as Record<string, unknown>)['data-variant']).toBe('blur')
+    expect(attrs(api, 'root')['data-variant']).toBeUndefined()
+    expect(attrs(api, 'content')['data-variant']).toBeUndefined()
+    expect((api.getPositionerProps() as Record<string, unknown>)['data-variant']).toBeUndefined()
+  })
+
+  it('contained 四处一起报：root 也在内', () => {
+    const on = connectDrawer(makeService({ contained: true, defaultOpen: true }), normalizeProps)
+    expect(attrs(on, 'root')['data-contained']).toBe('')
+    expect((on.getBackdropProps() as Record<string, unknown>)['data-contained']).toBe('')
+    expect((on.getPositionerProps() as Record<string, unknown>)['data-contained']).toBe('')
+    expect(attrs(on, 'content')['data-contained']).toBe('')
+
+    const off = connectDrawer(makeService({ defaultOpen: true }), normalizeProps)
+    expect(attrs(off, 'root')['data-contained']).toBeUndefined()
+    expect(attrs(off, 'content')['data-contained']).toBeUndefined()
+  })
+
+  it('positioner 恒已落位：贴边由皮肤的 inset 排，没有「还没量完」的窗口', () => {
+    const closed = connectDrawer(makeService(), normalizeProps).getPositionerProps() as Record<string, unknown>
+    expect(closed['data-positioned']).toBe('')
+    expect(closed['data-state']).toBe('closed')
+
+    const open = connectDrawer(makeService({ defaultOpen: true }), normalizeProps).getPositionerProps() as Record<string, unknown>
+    expect(open['data-positioned']).toBe('')
+    expect(open['data-state']).toBe('open')
+  })
+
+  it('backdrop 跟着开合走 data-state', () => {
+    const s = makeService()
+    expect((connectDrawer(s, normalizeProps).getBackdropProps() as Record<string, unknown>)['data-state']).toBe('closed')
+    s.send({ type: 'OPEN' })
+    expect((connectDrawer(s, normalizeProps).getBackdropProps() as Record<string, unknown>)['data-state']).toBe('open')
+  })
+
+  it('非模态 backdrop 带 hidden，模态 backdrop 保持可用', () => {
+    const plain = connectDrawer(makeService({ modal: false, defaultOpen: true }), normalizeProps)
+      .getBackdropProps() as Record<string, unknown>
+    expect(plain.hidden).toBe(true)
+
+    const modal = connectDrawer(makeService({ modal: true, defaultOpen: true }), normalizeProps)
+      .getBackdropProps() as Record<string, unknown>
+    expect(modal.hidden).toBeUndefined()
+  })
+})
+
+describe('drawer 关闭来路落进 onOpenChange 的 reason', () => {
+  function makeWithChanges(): { service: Service<DrawerSchema>, changes: DrawerOpenChangeDetails[] } {
+    const changes: DrawerOpenChangeDetails[] = []
+    const runtime = createVanillaRuntime()
+    const service = createService(drawerMachine, {
+      props: () => ({ defaultOpen: true, onOpenChange: (d: DrawerOpenChangeDetails) => changes.push(d) }),
+      runtime,
+    })
+    runtime.start()
+    return { service, changes }
+  }
+
+  it('点 close-trigger 报 close-trigger', () => {
+    const { service, changes } = makeWithChanges()
+    const close = connectDrawer(service, normalizeProps).getCloseTriggerProps() as { onClick: () => void }
+    close.onClick()
+    expect(service.state.get()).toBe('closed')
+    expect(changes).toEqual([{ open: false, reason: 'close-trigger' }])
+  })
+
+  it('setOpen(false) 是代码调的，报 programmatic', () => {
+    const { service, changes } = makeWithChanges()
+    connectDrawer(service, normalizeProps).setOpen(false)
+    expect(changes).toEqual([{ open: false, reason: 'programmatic' }])
+  })
+
+  it('点 trigger 收起算用户操作，报 close-trigger', () => {
+    const { service, changes } = makeWithChanges()
+    const trigger = connectDrawer(service, normalizeProps).getTriggerProps() as { onClick: () => void }
+    trigger.onClick()
+    expect(changes).toEqual([{ open: false, reason: 'close-trigger' }])
+  })
 })
 
 // —— 展开期的副作用：焦点域、背景失活、层栈 ——
@@ -189,7 +306,6 @@ function makeDomHarness(props: DrawerSchema['props'] = {}): DomHarness {
     node: () => (committed ? content : null),
     branches: () => [],
     isModal: () => props.modal ?? true,
-    setModal: () => {},
     surfaces: () => [],
   }))
   service.refs.set('presence', null)
@@ -295,6 +411,38 @@ describe('drawerMachine 展开期副作用', () => {
     expect(document.activeElement).toBe(h.content)
     h.stop()
   })
+
+  it('模态展开期锁住滚动，关上即解锁', () => {
+    const h = makeDomHarness({ modal: true })
+    expect(document.body.style.overflow).toBe('')
+    h.service.send({ type: 'OPEN' })
+    expect(document.body.style.overflow).toBe('hidden')
+    h.service.send({ type: 'CLOSE' })
+    expect(document.body.style.overflow).toBe('')
+    h.stop()
+  })
+
+  it('非模态不锁滚动', () => {
+    const h = makeDomHarness({ modal: false })
+    h.service.send({ type: 'OPEN' })
+    expect(document.body.style.overflow).toBe('')
+    h.stop()
+  })
+
+  it('restoreFocus 为 false 时关闭不归还焦点', async () => {
+    const h = makeDomHarness({ restoreFocus: false })
+    h.trigger.focus()
+    h.service.send({ type: 'OPEN' })
+    h.commit()
+    await frame()
+    expect(document.activeElement).toBe(h.inner)
+
+    h.service.send({ type: 'CLOSE' })
+    await frame()
+    // 焦点留在原处，不被拽回 trigger
+    expect(document.activeElement).not.toBe(h.trigger)
+    h.stop()
+  })
 })
 
 // —— 展开期的两个消解开关：Escape 与层外交互 ——
@@ -337,7 +485,6 @@ function makeDismissHarness(initial: DrawerSchema['props'] = {}): DismissHarness
     node: () => content,
     branches: () => [],
     isModal: () => props.modal ?? true,
-    setModal: () => {},
     surfaces: () => [backdrop],
   }))
   service.refs.set('getContentEl', () => content)
@@ -358,7 +505,7 @@ function makeDismissHarness(initial: DrawerSchema['props'] = {}): DismissHarness
   return harness
 }
 
-/** 展开并等到消解层的监听器注册上（它延后一拍，避开打开自己的那次交互）。 */
+/** 展开并等到消解参与者武装；Hub 监听同步在场，参与资格延后一拍以避开打开事件。 */
 async function openDismiss(h: DismissHarness): Promise<void> {
   h.service.send({ type: 'OPEN' })
   await new Promise(resolve => setTimeout(resolve, 0))

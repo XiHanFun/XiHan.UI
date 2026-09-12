@@ -1,22 +1,23 @@
 ---
 name: xihan-ui
-description: 用 XiHan.UI（曦寒视图组件）写界面时加载：框架无关的设计系统运行时，无头内核 + Vue 与 Web Components 两个适配器 + 纯 CSS 皮肤。涵盖三视觉轴、部件契约、设计令牌、三级覆盖通道与两个适配器的写法差异。触发词：XiHan.UI、曦寒视图组件、@xihan-ui、XhButton、xh-button、data-xh-part、--xh-。
+description: 用 XiHan.UI（曦寒视图组件）写界面时加载：框架无关的设计系统运行时，无头内核 + Vue、React 与 Web Components 三个适配器 + 纯 CSS 皮肤。涵盖三视觉轴、部件契约、设计令牌、三级覆盖通道与三个适配器的写法差异。触发词：XiHan.UI、曦寒视图组件、@xihan-ui、XhButton、xh-button、data-xh-part、--xh-。
 ---
 
 # XiHan.UI
 
 ## 先读这一段
 
-**这不是 React 组件库，也不是 Tailwind 那类原子类库。** 一个组件在这套库里由四份产物组成，同源：
+XiHan.UI 通过 Vue、React 与 Web Components 三个适配器提供同源组件。一个组件包含五份产物：
 
 | 产物 | 包 | 你写什么 |
 | --- | --- | --- |
 | 无头内核 | `@xihan-ui/headless` | 行为、状态机、无障碍。不产 DOM |
 | Vue 适配器 | `@xihan-ui/vue` | `<XhButton>`、复合件逐个部件写出来 |
+| React 适配器 | `@xihan-ui/react` | React 19 函数组件；部件同名，带载荷插槽使用函数式 children |
 | 自定义元素 | `@xihan-ui/web-components` | `<xh-button>`，内部结构由你手写，用 `data-xh-part` 声明角色 |
 | 默认皮肤 | `@xihan-ui/styles` | 纯 CSS，认 `data-scope` + `data-part`，**不认类名** |
 
-写代码前先跑 `scripts/list-components.mjs` 确认组件存在，再跑 `scripts/get-component-docs.mjs <标识>` 拿这个组件的部件名、Props、事件、状态与两个适配器的示例。**不要凭印象猜 API**——部件名与 Props 是逐组件生成的，猜错在编译期不报错，只是那个部件永远没有样式。
+写代码前先跑 `scripts/list-components.mjs` 确认组件存在，再跑 `scripts/get-component-docs.mjs <标识>` 拿这个组件的部件名、Props、事件、状态与三端示例。**不要凭印象猜 API**——按目标适配器的公开类型核对导入、事件和插槽载荷；编译通过也不能替代运行时部件验证。
 
 ## 判废表
 
@@ -29,7 +30,7 @@ description: 用 XiHan.UI（曦寒视图组件）写界面时加载：框架无�
 | `transition: 0.2s ease` | `--xh-motion-duration-*` / `--xh-motion-ease-*` | 裸时长绕开减弱动效通道，用户关了动效它照跑 |
 | 设 `--xh-_tone`、`--xh-_highlight-*` 这类带下划线的槽 | 设同名的公开槽 | `--xh-_*` 是库内私有槽，随时会改 |
 | 自造 `.xh-` 开头的类名或 `xh-` 开头的自定义元素 | 用你自己的前缀 | `xh-` 是这个库的命名空间 |
-| 在 `<xh-*>` 元素内部用 `data-part` 声明部件 | `data-xh-part` | 见下面「两个适配器」：两者不是一个属性，元素只认后者 |
+| 在 `<xh-*>` 元素内部用 `data-part` 声明部件 | `data-xh-part` | 见下面「三个适配器」：两者不是一个属性，元素只认后者 |
 
 ### 这几条不是禁令，别当禁令用
 
@@ -64,24 +65,45 @@ description: 用 XiHan.UI（曦寒视图组件）写界面时加载：框架无�
 
 某个组件有哪些覆盖槽，看它参考页的「CSS 变量」一节，或直接读皮肤源码：`scripts/get-skin.mjs <标识>`。
 
-## 两个适配器
+## 三个适配器
 
 **Vue**：复合件把每个部件写成一个组件，别想着只写外壳。
 
 ```vue
 <script setup lang="ts">
-import { XhDialogContent, XhDialogRoot, XhDialogTrigger } from '@xihan-ui/vue'
+import { XhDialogCloseTrigger, XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@xihan-ui/vue'
 </script>
 
 <template>
   <XhDialogRoot>
     <XhDialogTrigger>打开</XhDialogTrigger>
-    <XhDialogContent>正文</XhDialogContent>
+    <XhDialogContent>
+      <XhDialogTitle>确认操作</XhDialogTitle>
+      <XhDialogCloseTrigger>关闭</XhDialogCloseTrigger>
+    </XhDialogContent>
   </XhDialogRoot>
 </template>
 ```
 
-**自定义元素**：结构由你手写，每个节点上用 `data-xh-part` 声明它是哪个部件。
+**React**：导入 `@xihan-ui/react` 的同名部件；普通 JSX children 表达内容，函数式 children 接收组件公开的插槽载荷。受控变更使用明细回调，例如 `onOpenChange={({ open }) => setOpen(open)}`，不使用 Vue 的 `v-model`。
+
+```tsx
+import { XhDialogCloseTrigger, XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@xihan-ui/react'
+
+export function Example() {
+  return (
+    <XhDialogRoot>
+      <XhDialogTrigger>打开对话框</XhDialogTrigger>
+      <XhDialogContent>
+        <XhDialogTitle>确认操作</XhDialogTitle>
+        <XhDialogCloseTrigger>关闭</XhDialogCloseTrigger>
+      </XhDialogContent>
+    </XhDialogRoot>
+  )
+}
+```
+
+**自定义元素**：作者节点用 `data-xh-part` 声明部件；某些内部部件由宿主自动装配，范围以该组件文档为准。
 
 ```html
 <script type="module">
@@ -94,7 +116,10 @@ import { XhDialogContent, XhDialogRoot, XhDialogTrigger } from '@xihan-ui/vue'
   <button data-xh-part="trigger">打开</button>
   <div data-xh-part="backdrop"></div>
   <div data-xh-part="positioner">
-    <div data-xh-part="content">正文</div>
+    <div data-xh-part="content">
+      <h2 data-xh-part="title">确认操作</h2>
+      <button data-xh-part="close-trigger">关闭</button>
+    </div>
   </div>
 </xh-dialog>
 ```
@@ -120,6 +145,6 @@ node scripts/get-skin.mjs button               # 默认皮肤源码（只读本�
 
 - `https://ui.docs.xihanfun.com/llms.txt` —— 全站索引
 - `https://ui.docs.xihanfun.com/llms-components.txt` —— 全部组件参考页
-- `https://ui.docs.xihanfun.com/llms-guide.txt` —— 核心概念、两个适配器、运行时
+- `https://ui.docs.xihanfun.com/llms-guide.txt` —— 核心概念、三个适配器、运行时
 - `https://ui.docs.xihanfun.com/llms-tokens.txt` —— 令牌全表
 - 任意一页把地址后缀成 `.md` 就是这一页的 Markdown，例如 `https://ui.docs.xihanfun.com/components/button.md`

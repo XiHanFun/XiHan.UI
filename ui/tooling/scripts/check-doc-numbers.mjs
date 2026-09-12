@@ -354,13 +354,13 @@ const truth = {
     },
   },
   表单字段组件数: {
-    how: '<name>.types.ts 的 props 里带 name?: string 的组件数',
+    how: '<name>.types.ts 的 props 里带 name?: 的组件数',
     async value() {
       const names = await once('anatomy', () => componentDirs('anatomy.ts'))
       let n = 0
       for (const name of names) {
         const src = await readFile(join(HEADLESS, name, `${name}.types.ts`), 'utf8').catch(() => '')
-        if (/^\s{4}name\?: string/m.test(src))
+        if (/^\s{4}name\?:/m.test(src))
           n++
       }
       return n
@@ -442,10 +442,10 @@ const truth = {
     },
   },
   轻提示同屏上限: {
-    how: 'vue 的 toast-service.ts 里私有队列的 max 缺省值',
+    how: 'headless 的 notification.machine.ts 里 NOTIFICATION_MAX 的值（轻提示服务的 max 缺省读它）',
     async value() {
-      const src = await read('packages/adapters/vue/src/services/toast-service.ts')
-      return Number(src.match(/\bmax = (\d+)/)[1])
+      const src = await read('packages/engine/headless/src/notification/notification.machine.ts')
+      return Number(src.match(/\bNOTIFICATION_MAX = (\d+)/)[1])
     },
   },
   自定义元素数加一: {

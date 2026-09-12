@@ -17,7 +17,10 @@
 - `movable` 给出上移下移。
 - `createItem` 决定新增一行时的初值。
 - 一行里可以放多个字段。
-- `name` 给整份数组一个字段名，每行经 `item.name` 拿到 `名字[下标]` 写到自己的控件上。
+- `name` 是 `FormPath`。嵌套在 Form 里时自动读取该路径的数组值，每行经 `item.name`
+  拿到显式数组路径；点号与方括号从不被猜成层级。
+- 在 Form 内新增、删除、换序会一并迁移该数组子字段的 values、rules、errors、异步
+  validation 与已验证错误标记；字符串字段绝不参与数组下标迁移。
 - `readOnly` 让行数改不动，`invalid` 把校验状态传到每一行。
 - `item-label` 承载行前的行号或名目。
 

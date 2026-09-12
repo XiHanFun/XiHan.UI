@@ -7,6 +7,7 @@ import type {
   JsonViewerWalkOptions,
 } from './json-viewer.types'
 import { setup } from '@xihan-ui/core'
+import { uniqueArray as unique } from '../shared/array'
 
 const { createMachine } = setup<JsonViewerSchema>()
 
@@ -265,11 +266,6 @@ function samePaths(a: string[] | null, b: string[] | null | undefined): boolean 
   if (a == null || b == null)
     return a === b
   return a.length === b.length && a.every((v, i) => v === b[i])
-}
-
-/** 去重且保序：展开集合是一个集合，重复元素没有意义。 */
-function unique(values: readonly string[]): string[] {
-  return [...new Set(values)]
 }
 
 // 展开集合住在 context 的 cell 里，受控/非受控在 cell 收口，不需要影子事件与受控守卫。

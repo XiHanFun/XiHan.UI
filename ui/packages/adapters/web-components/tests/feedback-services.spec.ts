@@ -73,6 +73,17 @@ describe('createToastService', () => {
     toast.dispose()
   })
 
+  it('不写 max 缺省留 5 条：连发 20 条只剩最新的五条', async () => {
+    const toast = createToastService()
+    for (let i = 1; i <= 20; i++)
+      toast.info(`第 ${i} 条`, { duration: 0 })
+    await tick()
+    const titles = [...document.querySelectorAll('[data-scope="toast"][data-part="title"]')].map(el => el.textContent)
+    expect(titles).toEqual(['第 16 条', '第 17 条', '第 18 条', '第 19 条', '第 20 条'])
+    expect(document.querySelector('[data-scope="toast"][data-part="group"]')?.getAttribute('data-count')).toBe('5')
+    toast.dispose()
+  })
+
   it('到点自己走的不出叉，走不掉的反过来出叉', async () => {
     const toast = createToastService()
     toast.success('已保存')
@@ -181,7 +192,7 @@ describe('createDialogService', () => {
     expect(document.body.textContent).toContain('第一问')
     expect(document.body.textContent).not.toContain('第二问')
     buttonWith('OK').click()
-    await wait(350)
+    await tick()
     expect(document.body.textContent).toContain('第二问')
     buttonWith('Cancel').click()
     await tick()

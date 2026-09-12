@@ -9,7 +9,7 @@ import {
   setDiagnosticsDedupe,
   setDiagnosticsLevel,
 } from '../src/kernel/diagnostics/channel'
-import { DIAGNOSTIC_CODES } from '../src/kernel/diagnostics/codes'
+import { DIAGNOSTIC_CODES, DIAGNOSTIC_WARN } from '../src/kernel/diagnostics/codes'
 import { invariant, warn } from '../src/kernel/utils/invariant'
 
 function collect(): DiagnosticRecord[] {
@@ -25,6 +25,10 @@ beforeEach(() => {
 })
 
 describe('诊断通道', () => {
+  it('通用告警单项入口与总码表同源', () => {
+    expect(DIAGNOSTIC_WARN).toBe(DIAGNOSTIC_CODES.warn)
+  })
+
   it('投递的记录原样送到订阅者', () => {
     const seen = collect()
     reportDiagnostic({ code: 'x.y', level: 'warn', message: 'm', scope: 'dialog', part: 'content' })

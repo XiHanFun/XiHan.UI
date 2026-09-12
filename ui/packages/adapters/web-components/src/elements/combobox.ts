@@ -9,16 +9,18 @@ import type {
   ComboboxOpenChangeDetails,
   ComboboxSchema,
   ComboboxValueChangeDetails,
+  FormControlState,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled } from '@xihan-ui/core'
-import { comboboxAnatomy, comboboxMachine, comboboxMeta, connectCombobox } from '@xihan-ui/headless'
+import { comboboxAnatomy, comboboxMachine, comboboxMeta, connectCombobox, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
+import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -76,12 +78,16 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item-indicator - 候选选中标记（aria-hidden）
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
- * @attr {string} name - 表单字段名；给了 hidden-input 才参与提交（多选按逗号拼成一串）
+ * @attr {string} name - 表单字段名；每个选中值提交为一个同名字段
+ * @attr {string} form - 显式关联的原生表单 ID，提交与 reset 使用同一所有者
  * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
  * @csspart empty - 无匹配项提示；须放在 positioner 里当 content 的兄弟（列表内只允许 option 与 group）
  * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
  */
-export class XhComboboxElement extends XhElement {
+export class XhComboboxElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: comboboxAnatomy, meta: comboboxMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -91,6 +97,7 @@ export class XhComboboxElement extends XhElement {
     // 文案对象只走 property
     translations: { attribute: false },
     name: { converter: STRING_CONVERTER },
+    form: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     inputValue: { converter: STRING_CONVERTER, attribute: 'input-value' },
@@ -98,7 +105,7 @@ export class XhComboboxElement extends XhElement {
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     multiple: { type: Boolean },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
@@ -132,6 +139,7 @@ export class XhComboboxElement extends XhElement {
   declare loading?: boolean
   declare loop?: boolean
   declare name?: string
+  declare form?: string
   declare placeholder?: string
   declare allowCustomValue?: boolean
   declare openOnClick?: boolean
@@ -144,11 +152,18 @@ export class XhComboboxElement extends XhElement {
   declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly comboboxScope = createScope(null, this.idGen)
+  private readonly comboboxScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = this.createAnchoredPortalController({
+    name: 'Combobox',
+    config: () => this.config,
+    source: () => this.getPart('control'),
+    root: () => this.getPart('positioner'),
+    onChange: () => this.requestUpdate(),
+  })
 
   private readonly notifyValue = (details: ComboboxValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -177,8 +192,20 @@ export class XhComboboxElement extends XhElement {
 
   /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
+  private readonly hiddenInputs = createRepeatedHiddenInputs(this.spreader)
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<ComboboxSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       collection: this.collection,
       translations: this.translations,
@@ -189,12 +216,13 @@ export class XhComboboxElement extends XhElement {
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       multiple: this.multiple ?? false,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       loading: this.loading ?? false,
       loop: this.loop,
       name: this.name,
+      form: this.form,
       placeholder: this.placeholder,
       allowCustomValue: this.allowCustomValue ?? false,
       openOnClick: this.openOnClick ?? false,
@@ -217,6 +245,10 @@ export class XhComboboxElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.comboboxScope, idGenerator: this.idGen })
   }
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
+  }
+
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
@@ -227,7 +259,6 @@ export class XhComboboxElement extends XhElement {
       // 浮层壳一并记上：候选列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
       branches: () => [this.getPart('control'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 列表不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })
@@ -236,8 +267,14 @@ export class XhComboboxElement extends XhElement {
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<ComboboxSchema>): void {
     this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: (this.open ?? this.defaultOpen) ?? false,
+      onExitComplete: () => this.requestUpdate(),
+    })
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.exit.presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('control'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -257,6 +294,10 @@ export class XhComboboxElement extends XhElement {
   // 取 owner 子树内指定名字的角色节点。
   private partsIn(owner: HTMLElement, name: string): HTMLElement[] {
     return this.getParts(name).filter(el => owner.contains(el))
+  }
+
+  protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
+    this.hiddenInputs.release(nodes)
   }
 
   protected wire(): void {
@@ -280,7 +321,8 @@ export class XhComboboxElement extends XhElement {
     put('content', api.getContentProps() as Record<string, unknown>)
     put('empty', api.getEmptyProps() as Record<string, unknown>)
     put('loading', api.getLoadingProps() as Record<string, unknown>)
-    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+    this.hiddenInputs.sync(this.getPart('hidden-input'), api.value.map(value =>
+      api.getHiddenInputProps({ value }) as Record<string, unknown>))
 
     for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }
@@ -323,9 +365,11 @@ export class XhComboboxElement extends XhElement {
       this.ctrl.service.send({ type: 'ITEMS.SYNC' })
 
     this.bars.wire()
+    this.portal.sync(this.exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()

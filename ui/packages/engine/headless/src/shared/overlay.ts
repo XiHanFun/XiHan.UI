@@ -29,6 +29,66 @@ export interface OverlayPlacementLike {
   hidden?: boolean
 }
 
+export interface OverlayAvailableSpaceLike {
+  availableWidth?: number
+  availableHeight?: number
+}
+
+function pixel(value: number | undefined): string {
+  return value != null ? `${value}px` : ''
+}
+
+/** 固定定位层的三项行内样式；坐标未结算时沿用既有 0px 占位。 */
+export function overlayFixedStyle(
+  position: OverlayPlacementLike | null | undefined,
+  fallback?: OverlayPlacementLike | null,
+): Record<string, string> {
+  return {
+    position: 'fixed',
+    left: pixel(position?.x ?? fallback?.x ?? 0),
+    top: pixel(position?.y ?? fallback?.y ?? 0),
+  }
+}
+
+/**
+ * 定位引擎的可用尺寸投影到族私有 CSS 变量。低于下限时写空串撤销声明，
+ * 避免贴边的 0 把面板压扁；绝大多数族使用 96px，特殊族显式传自己的块轴下限。
+ */
+export function overlayAvailableSpaceVars(
+  scope: string,
+  available: OverlayAvailableSpaceLike | null | undefined,
+  heightFloor: number | null = 96,
+): Record<string, string> {
+  const prefix = `--xh-_${scope}-available-`
+  const out: Record<string, string> = {
+    [`${prefix}w`]: available?.availableWidth != null && available.availableWidth >= 96
+      ? pixel(available.availableWidth)
+      : '',
+  }
+  if (heightFloor != null) {
+    out[`${prefix}h`] = available?.availableHeight != null && available.availableHeight >= heightFloor
+      ? pixel(available.availableHeight)
+      : ''
+  }
+  return out
+}
+
+/** 锚点实测宽度；未结算时写空串撤销族私有声明。 */
+export function overlayAnchorWidthVar(scope: string, width: number | undefined): Record<string, string> {
+  return { [`--xh-_${scope}-anchor-w`]: pixel(width) }
+}
+
+/** 箭头交叉轴落点；两轴始终同时写，翻面后不会残留上一帧。 */
+export function overlayArrowVars(
+  scope: string,
+  arrow: OverlayPlacementLike | null | undefined,
+): Record<string, string> {
+  return {
+    [`--xh-_${scope}-arrow-x`]: pixel(arrow?.x),
+    [`--xh-_${scope}-arrow-y`]: pixel(arrow?.y),
+  }
+}
+
 /**
  * 浮层此刻是否已经落位——这是它能不能被看见的唯一判据。
  *

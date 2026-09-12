@@ -5,7 +5,7 @@ import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
@@ -48,10 +48,12 @@ export interface XhPopoverTriggerProps extends ComponentPropsWithRef<'button'>, 
 
 export function XhPopoverTrigger({ children, asChild, ...rest }: XhPopoverTriggerProps): ReactNode {
   const ctx = usePopoverContext()
-  const props = mergeReactProps(
-    ctx.api.getTriggerProps() as Record<string, unknown>,
+  const props = mergePartProps(
+    mergeReactProps(
+      ctx.api.getTriggerProps() as Record<string, unknown>,
+      { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
+    ),
     rest as Record<string, unknown>,
-    { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
   )
   return renderAsChild(asChild, children, props, 'popover', (p, kids) => <button {...p}>{kids}</button>)
 }
@@ -66,7 +68,7 @@ export function XhPopoverPositioner({ children, container, ...rest }: XhPopoverP
   // 面板内容的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current })
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

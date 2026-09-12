@@ -71,7 +71,7 @@
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
-    "test": "vitest run"
+    "test": "vitest run && node tests/production/run-machine-implementation-contract.mjs"
   },
   "dependencies": {
     "@xihan-ui/motion": "workspace:^"

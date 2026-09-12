@@ -191,6 +191,15 @@ export function connectTransfer<T extends PropTypes>(
     toggleAll: side => send({ type: 'SIDE.TOGGLE_ALL', side }),
     move: to => send({ type: 'ITEMS.MOVE', to }),
 
+    getHiddenInputProps: input => normalize.input({
+      ...parts['hidden-input'].attrs,
+      type: 'hidden',
+      name: prop('name'),
+      form: prop('form'),
+      disabled: disabled || undefined,
+      value: input.value,
+    }),
+
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       // 两个视觉轴打在根上，两侧面板与条目从这里继承私有槽，子部件不重复标注

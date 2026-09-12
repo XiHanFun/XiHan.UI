@@ -1,8 +1,8 @@
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { ContextMenuApi, ContextMenuSchema } from '@xihan-ui/headless'
+import type { ContextMenuApi, ContextMenuSchema, MenuTreeNode } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectContextMenu, contextMenuMachine } from '@xihan-ui/headless'
+import { connectContextMenu, contextMenuMachine, createMenuTreeNode } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
@@ -17,6 +17,8 @@ export interface ContextMenuContext {
   triggerRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
+  /** 子菜单经 Portal 分离后的逻辑父节点。 */
+  tree: MenuTreeNode
   /** 此刻该不该渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
   /** 浮层搬到哪儿：全局配置的 portalContainer > body。 */
@@ -35,7 +37,15 @@ export function useContextMenu(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(contextMenuMachine, () => ({ ...props, onOpenChange, onSelect }), scope)
+  let service: Service<ContextMenuSchema> | null = null
+  const tree = createMenuTreeNode({
+    getPositioner: () => positionerRef.value,
+    isOpen: () => service?.state.get() === 'open',
+    close: () => service?.send({ type: 'CLOSE' }),
+    isRoot: () => true,
+    onRootSelect: details => onSelect?.(details),
+  })
+  service = useMachine(contextMenuMachine, () => ({ ...props, onOpenChange, onSelect }), scope)
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
   let config: RuntimeConfig | null = null
@@ -51,7 +61,6 @@ export function useContextMenu(
       // 浮层壳一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
       branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
 
@@ -67,9 +76,14 @@ export function useContextMenu(
 
   const api = computed(() => connectContextMenu(service, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
-  const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+  const visible = useOverlayExit({
+    config,
+    isOpen: () => api.value.open,
+    contentRef,
+    onPresence: presence => service.refs.set('presence', presence),
+  })
   // 先问全局配置的落点，没有才落 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget }
+  return { visible, service, api, triggerRef, positionerRef, contentRef, tree, portalTarget }
 }

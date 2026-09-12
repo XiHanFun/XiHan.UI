@@ -1,7 +1,7 @@
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { MentionApi, MentionInputEl, MentionInputProps, MentionItemProps, MentionNodeMeta, MentionSchema } from './mention.types'
+import type { MentionApi, MentionInputEl, MentionItemProps, MentionNodeMeta, MentionSchema } from './mention.types'
 import { contains, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
-import { overlayPositioned } from '../shared/overlay'
+import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { mentionAnatomy, mentionItemQuery, mentionItemText } from './mention.anatomy'
 import { MENTION_DEFAULT_PLACEMENT } from './mention.machine'
 
@@ -10,32 +10,9 @@ const parts = mentionAnatomy.build()
 /** 只有这些键单纯挪光标；正文与它们无关，重算触发才有意义。 */
 const CARET_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown'])
 
-/**
- * 输入宿主是不是多行。
- *
- * textarea 的允许角色只有它自带的 textbox，写 role="combobox" 是文档一致性违规；
- * 而 aria-expanded 不在 textbox 的支持属性里。所以多行宿主上 type / role / aria-expanded
- * 三条一并缺席，「有候选浮层」改由 aria-haspopup、aria-controls、aria-autocomplete
- * 与 aria-activedescendant 表达——这四条 textbox 都支持。
- */
-function isMultilineHost(input: MentionInputProps): boolean {
-  return (input.as ?? 'textarea') === 'textarea'
-}
-
 /** 取光标位置；拿不到就当在末尾。 */
 function caretOf(el: MentionInputEl): number {
   return el.selectionStart ?? el.value.length
-}
-
-// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
-// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
-const AVAILABLE_H_FLOOR = 96
-
-function availableHeightVar(available: number | undefined): Record<string, string> {
-  return {
-    '--xh-_mention-available-h':
-      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
-  }
 }
 
 export function connectMention<T extends PropTypes>(
@@ -50,6 +27,7 @@ export function connectMention<T extends PropTypes>(
   const trigger = context.get('trigger')
   // 高亮不承载焦点，只经 aria-activedescendant 上报；收起时为 null
   const highlighted = context.get('highlightedValue') ?? null
+  const itemCount = context.get('itemCount')
   const disabled = !!prop('disabled')
   const loading = !!prop('loading')
   const readOnly = !!prop('readOnly')
@@ -70,8 +48,8 @@ export function connectMention<T extends PropTypes>(
     disabled: !!node.disabled,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
-  // 没给 collection 时条目是作者自己铺的，组件无从判空
-  const empty = nodes !== undefined && collection.length === 0
+  // itemCount 尚未结算时不抢跑空态；结算后按真实可见 DOM 判断，手写 hidden 项也不会冒充候选。
+  const empty = open && itemCount === 0
 
   const isHighlighted = (v: string): boolean => highlighted === v
 
@@ -91,7 +69,8 @@ export function connectMention<T extends PropTypes>(
    * 候选集合只在事件那一刻读，顺序即文档序。
    * 渲染期不得调用：那里 Vue 读到上一帧、WC 读到本帧。
    */
-  const items = (): HTMLElement[] => queryItems(refs.get('getContentEl')(), mentionItemQuery)
+  const items = (): HTMLElement[] =>
+    queryItems(refs.get('getContentEl')(), mentionItemQuery).filter(item => !item.hidden)
 
   /** 移高亮。焦点不动，但列表要跟着滚，否则长列表里高亮会跑出可视区。 */
   const highlightBy = (intent: NavIntent): void => {
@@ -159,7 +138,7 @@ export function connectMention<T extends PropTypes>(
      * 输出一条空的 aria-label / placeholder 会把作者写在 input 部件上的那份抹掉——
      * WC 侧的属性铺设按「值为 undefined 即删属性」办事。
      */
-    getInputProps: (input = {}) => normalize.textarea({
+    getInputProps: () => normalize.input({
       ...parts.input.attrs,
       'id': ids.input,
       'name': prop('name'),
@@ -167,10 +146,8 @@ export function connectMention<T extends PropTypes>(
       // 两条同时写时 aria-labelledby 优先，会把作者那句盖掉
       ...(inputLabel === undefined ? { 'aria-labelledby': ids.label } : { 'aria-label': inputLabel }),
       ...(placeholder === undefined ? {} : { placeholder }),
-      // textarea 没有 type 属性
-      'type': isMultilineHost(input) ? undefined : 'text',
-      // 多行宿主保留它自带的 textbox 角色，不改成 combobox
-      'role': isMultilineHost(input) ? undefined : 'combobox',
+      'type': 'text',
+      'role': 'combobox',
       // 关掉浏览器自带的历史补全，它会盖在候选列表上
       'autocomplete': 'off',
       'value': value,
@@ -179,8 +156,7 @@ export function connectMention<T extends PropTypes>(
       // 显式 true/false：省略是没说，显式 false 是明确说了不是
       'aria-invalid': invalid ? 'true' : 'false',
       'aria-haspopup': 'listbox',
-      // aria-expanded 不在 textbox 的支持属性里，多行宿主上整条缺席
-      'aria-expanded': isMultilineHost(input) ? undefined : (open ? 'true' : 'false'),
+      'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
       'aria-autocomplete': 'list',
       // 收起态没有高亮可指，属性整个缺席（aria-activedescendant 没有"假值"写法）
@@ -237,11 +213,11 @@ export function connectMention<T extends PropTypes>(
         }
         if (key === 'Enter') {
           if (commitHighlighted()) {
-            // 提交了候选就吞掉这次回车，正文里不留换行
+            // 提交了候选就吞掉这次回车，它不再往下走到表单
             event.preventDefault()
             return
           }
-          // 没有可提交的候选：回车照常换行，只把浮层收起来
+          // 没有可提交的候选：不拦按键，只把浮层收起来；这一发照常留给表单做隐式提交
           send({ type: 'CLOSE' })
           return
         }
@@ -254,7 +230,7 @@ export function connectMention<T extends PropTypes>(
           // 不拦：焦点要按 Tab 序列自然离开，浮层让开即可
           send({ type: 'CLOSE' })
         }
-        // Home / End 一概不拦：多行正文里它们是跳行首行尾，抢走就没法打字了。
+        // Home / End 一概不拦：正文里它们是把光标跳到首尾，抢走就没法打字了。
         // 光标随之挪动，keyup 会把新位置报回来，触发跟着重算
       },
     }),
@@ -277,11 +253,9 @@ export function connectMention<T extends PropTypes>(
       // 落位才露：皮肤基线把定位层藏着，带这个才显示。展开那几帧坐标还没算出来时就是藏的
       'data-positioned': dataAttr(overlayPositioned(position)),
       'style': {
-        position: 'fixed',
-        left: `${position?.x ?? 0}px`,
-        top: `${position?.y ?? 0}px`,
+        ...overlayFixedStyle(position),
         // content 继承这个高度上限，超出的条目在浮层内部滚
-        ...availableHeightVar(position?.availableHeight),
+        ...overlayAvailableSpaceVars('mention', position),
       },
     }),
 
@@ -297,6 +271,9 @@ export function connectMention<T extends PropTypes>(
       'tabindex': -1,
       'data-state': stateAttr,
       'data-placement': placement,
+      // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
       'onPointerDown': (event: PointerEvent) => {
@@ -321,7 +298,8 @@ export function connectMention<T extends PropTypes>(
       ...parts.loading.attrs,
       'role': 'status',
       'data-state': stateAttr,
-      'hidden': !(open && loading) || undefined,
+      // 已有可见候选时列表原样留着，只由 aria-busy 报刷新；零候选才显示状态文字。
+      'hidden': !(open && loading && itemCount === 0) || undefined,
     }),
 
     getItemProps: item => normalize.element({
@@ -338,13 +316,14 @@ export function connectMention<T extends PropTypes>(
       'aria-disabled': itemDisabled(item) ? 'true' : 'false',
       // 不给 tabindex：焦点恒在输入框
       'onClick': (event: MouseEvent) => {
-        if (disabled || itemDisabled(item))
+        const el = event.currentTarget as HTMLElement
+        if (disabled || itemDisabled(item) || el.hidden)
           return
-        send({ type: 'ITEM.SELECT', value: item.value, label: mentionItemText(event.currentTarget as HTMLElement) })
+        send({ type: 'ITEM.SELECT', value: item.value, label: mentionItemText(el) })
       },
       // 指针划过即高亮：不同步的话，鼠标停在 A 上、回车却插进了键盘高亮的 B
-      'onPointerMove': () => {
-        if (!disabled && !itemDisabled(item) && highlighted !== item.value)
+      'onPointerMove': (event: PointerEvent) => {
+        if (!(event.currentTarget as HTMLElement).hidden && !disabled && !itemDisabled(item) && highlighted !== item.value)
           send({ type: 'ITEM.HIGHLIGHT', value: item.value })
       },
     }),

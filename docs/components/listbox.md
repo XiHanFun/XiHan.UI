@@ -18,6 +18,7 @@
 - `typeahead` 连打检索。
 - 定高滚动与三种非条目相位都有对应部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。
 - `loading` 为真时列表报 `aria-busy`，在途占位顶上来、空态占位让位；给了 `collection` 时两者的收放归连接层。
+- `collection` 为空时，列表本体隐藏并退出 Tab 序列；不保留空描边。条目手写时，空白文本、只有标题的空组、带 `hidden` 的条目和分组都不算可见候选；禁用条目仍属于有效内容。
 - `load-more-trigger` 是取下一页的入口：还有没有下一页、点了做什么都归作者，连接层只保证在途与整列禁用两档点不动。
 
 ## 示例
@@ -90,7 +91,7 @@ tone 决定选中条目的勾选标记用哪族颜色，未选中的条目不受
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="listbox"`：`root` · `label` · **`content`** · **`item`** · `item-text` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `load-more-trigger`
+`data-scope="listbox"`：`root` · `label` · **`content`** · `item` · `item-text` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `load-more-trigger`
 
 ## Props
 
@@ -235,11 +236,62 @@ tone 决定选中条目的勾选标记用哪族颜色，未选中的条目不受
 | `load-more-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-loading` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-listbox-content-bg` · `--xh-listbox-content-border` · `--xh-listbox-content-border-invalid` · `--xh-listbox-content-fg` · `--xh-listbox-content-gap` · `--xh-listbox-content-max-h` · `--xh-listbox-content-px` · `--xh-listbox-content-py` · `--xh-listbox-content-radius` · `--xh-listbox-empty-fg` · `--xh-listbox-empty-font-size` · `--xh-listbox-empty-px` · `--xh-listbox-empty-py` · `--xh-listbox-gap` · `--xh-listbox-group-gap` · `--xh-listbox-group-label-fg` · `--xh-listbox-group-label-font-size` · `--xh-listbox-group-label-font-weight` · `--xh-listbox-group-label-px` · `--xh-listbox-group-label-py` · `--xh-listbox-group-spacing` · `--xh-listbox-icon-size` · `--xh-listbox-item-bg-hover` · `--xh-listbox-item-fg` · `--xh-listbox-item-fg-selected` · `--xh-listbox-item-font-size` · `--xh-listbox-item-font-weight-selected` · `--xh-listbox-item-gap` · `--xh-listbox-item-indicator-fg` · `--xh-listbox-item-indicator-size` · `--xh-listbox-item-leading` · `--xh-listbox-item-px` · `--xh-listbox-item-py` · `--xh-listbox-item-radius` · `--xh-listbox-label-fg` · `--xh-listbox-label-font-size` · `--xh-listbox-label-font-weight` · `--xh-listbox-load-more-trigger-bg-hover` · `--xh-listbox-load-more-trigger-fg` · `--xh-listbox-load-more-trigger-font-size` · `--xh-listbox-load-more-trigger-gap` · `--xh-listbox-load-more-trigger-px` · `--xh-listbox-load-more-trigger-py` · `--xh-listbox-load-more-trigger-radius` · `--xh-listbox-loading-fg` · `--xh-listbox-loading-font-size` · `--xh-listbox-loading-px` · `--xh-listbox-loading-py`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-listbox-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` | listbox 的 content 部件 background 覆盖槽。 |
+| `--xh-listbox-content-border` | `content` | `border` | `default` | `--xh-border-default` | listbox 的 content 部件 border 覆盖槽。 |
+| `--xh-listbox-content-border-invalid` | `content` | `border-color` | `invalid` | `--xh-border-invalid` | listbox 的 content 部件 border-color 覆盖槽。 |
+| `--xh-listbox-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | listbox 的 content 部件 color 覆盖槽。 |
+| `--xh-listbox-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | listbox 的 content 部件 gap 覆盖槽。 |
+| `--xh-listbox-content-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-md` | listbox 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-listbox-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | listbox 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-listbox-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | listbox 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-listbox-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | listbox 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-listbox-empty-fg` | `empty` | `color` | `default` | `--xh-fg-subtle` | listbox 的 empty 部件 color 覆盖槽。 |
+| `--xh-listbox-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_listbox-font-size` | listbox 的 empty 部件 font-size 覆盖槽。 |
+| `--xh-listbox-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 empty 部件 padding-inline 覆盖槽。 |
+| `--xh-listbox-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | listbox 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-listbox-gap` | `root` | `gap` | `default` | `--xh-space-2` | listbox 的 root 部件 gap 覆盖槽。 |
+| `--xh-listbox-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | listbox 的 group 部件 gap 覆盖槽。 |
+| `--xh-listbox-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-subtle` | listbox 的 group-label 部件 color 覆盖槽。 |
+| `--xh-listbox-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | listbox 的 group-label 部件 font-size 覆盖槽。 |
+| `--xh-listbox-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | listbox 的 group-label 部件 font-weight 覆盖槽。 |
+| `--xh-listbox-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 group-label 部件 padding-inline 覆盖槽。 |
+| `--xh-listbox-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | listbox 的 group-label 部件 padding-block 覆盖槽。 |
+| `--xh-listbox-group-spacing` | `content`<br>`group`<br>`item` | `margin-block-start` | `has([data-scope='listbox'][data-part='item']:not([hidden])`<br>`not([data-scope='listbox'][data-part='content'] [hidden] *)` | `--xh-space-1_5` | listbox 的 content、group、item 部件 margin-block-start 覆盖槽。 |
+| `--xh-listbox-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | listbox 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-listbox-item-bg-hover` | `item` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted], :focus-visible)`<br>`not([data-disabled])` | `--xh-bg-subtle` | listbox 的 item 部件 background 覆盖槽。 |
+| `--xh-listbox-item-fg` | `item` | `color` | `default`<br>`state=checked` | `--xh-fg-default` | listbox 的 item 部件 color 覆盖槽。 |
+| `--xh-listbox-item-fg-selected` | `item` | `color` | `state=checked` | `--xh-listbox-item-fg` | listbox 的 item 部件 color 覆盖槽。 |
+| `--xh-listbox-item-font-size` | `item` | `font-size` | `default` | `--xh-_listbox-font-size` | listbox 的 item 部件 font-size 覆盖槽。 |
+| `--xh-listbox-item-font-weight-selected` | `item` | `font-weight` | `state=checked` | `--xh-font-weight-regular` | listbox 的 item 部件 font-weight 覆盖槽。 |
+| `--xh-listbox-item-gap` | `item` | `gap` | `default` | `--xh-_listbox-gap` | listbox 的 item 部件 gap 覆盖槽。 |
+| `--xh-listbox-item-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_listbox-accent` | listbox 的 item-indicator 部件 color 覆盖槽。 |
+| `--xh-listbox-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | listbox 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-listbox-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | listbox 的 item 部件 line-height 覆盖槽。 |
+| `--xh-listbox-item-px` | `item` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-listbox-item-py` | `item` | `padding-block` | `default` | `--xh-_listbox-item-py` | listbox 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-listbox-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | listbox 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-listbox-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | listbox 的 label 部件 color 覆盖槽。 |
+| `--xh-listbox-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | listbox 的 label 部件 font-size 覆盖槽。 |
+| `--xh-listbox-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | listbox 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-listbox-load-more-trigger-bg-hover` | `load-more-trigger` | `background-color` | `hover` | `--xh-bg-subtle` | listbox 的 load-more-trigger 部件 background-color 覆盖槽。 |
+| `--xh-listbox-load-more-trigger-fg` | `load-more-trigger` | `color` | `default` | `--xh-_tone-fg` | listbox 的 load-more-trigger 部件 color 覆盖槽。 |
+| `--xh-listbox-load-more-trigger-font-size` | `load-more-trigger` | `font-size` | `default` | `--xh-_listbox-font-size` | listbox 的 load-more-trigger 部件 font-size 覆盖槽。 |
+| `--xh-listbox-load-more-trigger-gap` | `load-more-trigger` | `gap` | `default` | `--xh-_listbox-gap` | listbox 的 load-more-trigger 部件 gap 覆盖槽。 |
+| `--xh-listbox-load-more-trigger-px` | `load-more-trigger` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 load-more-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-listbox-load-more-trigger-py` | `load-more-trigger` | `padding-block` | `default` | `--xh-_listbox-item-py` | listbox 的 load-more-trigger 部件 padding-block 覆盖槽。 |
+| `--xh-listbox-load-more-trigger-radius` | `load-more-trigger` | `border-radius` | `default` | `--xh-shape-control` | listbox 的 load-more-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-listbox-loading-fg` | `loading` | `color` | `default` | `--xh-fg-subtle` | listbox 的 loading 部件 color 覆盖槽。 |
+| `--xh-listbox-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_listbox-font-size` | listbox 的 loading 部件 font-size 覆盖槽。 |
+| `--xh-listbox-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 loading 部件 padding-inline 覆盖槽。 |
+| `--xh-listbox-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | listbox 的 loading 部件 padding-block 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
@@ -257,6 +309,11 @@ tone 决定选中条目的勾选标记用哪族颜色，未选中的条目不受
 - **弹出式选择**：把本组件装进[浮层](./popover)——触发器显示当前选中项，落值时自己收起浮层，浮层底部还能放操作按钮。不参与表单、也不带输入框的那种就地切换（排序方式、显示密度）走这一种写法，不必另找组件；要随表单提交才用[选择器](./select)。这是本库「浮层壳 + 条目层」的官方组合写法：浮层只管开合与定位，条目、键盘导航、连打检索与选中语义全在本组件里，换一个浮层壳（[菜单](./menu)、[气泡卡片](./popover)）写法不变。示例见本页「弹出式选择」与[选择器](./select)页的同一例。
 
 ## 最佳实践
+
+- 单选、多选与 Select 使用同一视觉规则：对号表示选中，中性底表示悬停或键盘高亮，正文不变色、不加粗。
+- 自定义条目应显式组合 `item-indicator`；该部件固定在逻辑末端，未选中时保留空间，避免选择时文字移动。
+- 空态和加载文案由作者通过 `Empty` / `Loading` 部件提供，放在 `root` 中作为 `content` 的兄弟。默认按 `collection` 渲染时没有额外状态文案，不会自动制造提示、假选项或空白状态块；需要提示时使用现有复合部件。
+- 给了 `collection` 时用同一份数据表达当前候选，空态与首次加载自动互斥；手写条目时由作者控制状态部件的 `hidden`。条目过滤使用 `hidden` 或移除节点，隐藏分组不参与方向键、连打、区间选择和全选；任意样式类的可见性由作者自行管理。
 
 - 多选时给出"已选 N 项"的回显，否则滚动后用户不知道选了多少。
 - 定高，别让列表把页面撑到需要整页滚动。

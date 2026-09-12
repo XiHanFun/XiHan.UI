@@ -48,7 +48,7 @@ const rules = {
         v-for="f in fields"
         :key="f.name"
         v-slot="{ value, setValue }"
-        :value="f.name"
+        :name="f.name"
       >
         <XhFieldRoot>
           <XhFieldLabel>{{ f.label }}</XhFieldLabel>

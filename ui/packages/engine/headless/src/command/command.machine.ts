@@ -1,7 +1,9 @@
 import type { CommandNodeMeta, CommandSchema } from './command.types'
-import { acquireScrollLock, createDismissLayer, createFocusScope, hideOutside, setup } from '@xihan-ui/core'
+import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
+import { createModalLayerResources, setupLayerTransaction, trackPresenceResources } from '../shared/overlay-shell'
 import { flattenCommandGroups, navigateCommandResults, resolveCommandGroups } from './command.filter'
+import { hiddenCommandValues } from './command.visibility'
 
 const { createMachine } = setup<CommandSchema>()
 
@@ -33,19 +35,27 @@ export const commandMachine = createMachine({
     })),
     // 锚点只服务 aria-activedescendant 与确认键的落点，焦点全程留在检索框
     highlightedValue: cell<string | null>(() => ({ defaultValue: null })),
+    // 与 collection 独立：仅镜像已挂载条目的显式 hidden，不以“找不到 DOM”推断隐藏。
+    hiddenValues: cell<string[]>(() => ({ defaultValue: [] })),
   }),
   refs: () => ({
     config: null,
     registerLayer: null,
     presence: null,
+    syncModalResources: null,
     getContentEl: () => null,
     getListEl: () => null,
+    syncListVisibility: null,
     getInputEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // Layer、消解、焦点与模态资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
+  effects: ['trackOverlay'],
   watch: ({ track, prop, context, action }) => {
     // 受控时用户事件只发意图；宿主写回 open 后由这条 watch 派发 CONTROLLED.* 回写状态
     track([() => prop('open')], () => action(['syncOpen']))
+    // 模态策略是展开生命周期内可变的；核心机器统一切换行为资源。
+    track([() => prop('modal')], () => action(['syncModalResources']))
     // 检索串一变结果就换了一批，锚点跟着钉回首条。
     // 挂在 watch 上而不是转移上：受控检索串要等宿主写回才真的变，那一拍才是结果换掉的时刻
     track([context.dep('inputValue')], () => action(['highlightFirst']))
@@ -53,6 +63,7 @@ export const commandMachine = createMachine({
     // 指不着了才补挑一次。不无条件重挑——宿主在模板里就地造数组时这条 watch 每帧都跳，
     // 无条件重挑会把方向键刚挪过去的锚点一次次拽回首条
     track([() => prop('collection')], () => action(['highlightIfDangling']))
+    track([context.dep('hiddenValues')], () => action(['highlightVisibleIfDangling']))
   },
   on: {
     'INPUT.SET': { actions: ['setInputValue'] },
@@ -76,8 +87,8 @@ export const commandMachine = createMachine({
       // 每次开都从空检索串起步，锚点落在首条上
       entry: ['resetInputValue', 'highlightFirst'],
       exit: ['clearHighlightedValue'],
-      // 进入 open：按固定顺序装配 dismiss → focus → scroll，最后推迟一帧挂背景失活
-      effects: ['trackOverlay'],
+      // 条目可见性只服务逻辑展开；行为与模态资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackItemVisibility'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
@@ -154,97 +165,167 @@ export const commandMachine = createMachine({
         context.set('highlightedValue', navigateCommandResults(results, null, 'first', true)?.value ?? null)
       },
 
+      // 在 DOM 提交后按新的 hidden 镜像重核；不能拿上一帧 hidden 阻止检索结果重新出现。
+      highlightVisibleIfDangling: ({ context, prop, state }) => {
+        if (state.get() !== 'open')
+          return
+        const hidden = new Set(context.get('hiddenValues'))
+        const results = commandResults(prop, context.get('inputValue')).filter(item => !hidden.has(item.value))
+        const current = context.get('highlightedValue')
+        if (current != null && results.some(item => item.value === current && !item.disabled))
+          return
+        context.set('highlightedValue', navigateCommandResults(results, null, 'first', true)?.value ?? null)
+      },
+
       /** 选中通知；条目自报禁用的在连接层就被挡下，走不到这里。 */
       invokeOnSelect: ({ prop, event }) => {
         const e = event.current()
         if (e.type === 'ITEM.SELECT')
           prop('onSelect')?.({ value: e.value, label: e.label })
       },
+      syncModalResources: ({ refs }) => refs.get('syncModalResources')?.(),
     },
     effects: {
-      trackOverlay: ({ refs, prop, scope, send, flush }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
-        // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
-        if (!config || !registerLayer)
-          return undefined
-
-        // 层只在展开期间入栈：只有栈顶响应 Escape，常驻的层会堵死其下各层
-        const { layer, dispose: disposeLayer } = registerLayer()
-
-        // 开场快照：滚动锁与背景失活装配一次就定了，事后补不回来
-        const modal = prop('modal') ?? true
-        const getContentEl = refs.get('getContentEl')
-        const disposers: Array<() => void> = []
-
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          // 两个开关都现读 prop，展开中途改也立刻生效
-          onEscapeKeyDown: (e) => {
-            if (!(prop('closeOnEscape') ?? true))
-              e.preventDefault()
-          },
-          onInteractOutside: (e) => {
-            if (!(prop('closeOnInteractOutside') ?? prop('modal') ?? true))
-              e.preventDefault()
-          },
-          onDismiss: reason =>
-            send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
-        })
-        disposers.push(() => dismiss.dispose())
-
-        // 焦点域无条件建，modal 只决定陷不陷焦点；放进 if (modal) 会让非模态
-        // 既不初始聚焦也不归还焦点，restoreFocus 失效
-        const focus = createFocusScope({
-          config,
-          layer,
-          container: getContentEl,
-          trapped: () => modal,
-          loop: modal,
-          // 开场焦点落在检索框上：面板一露面就能直接打字
-          initialFocus: () => refs.get('getInputEl')(),
-          restoreFocus: () => prop('restoreFocus') ?? true,
-          // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上。
-          // 按 connect 给 trigger 落的 id 现取，全局快捷键唤起的用法没有 trigger，归还照旧走快照
-          restoreTarget: () => scope.getById<HTMLElement>(scope.partId('command', 'trigger')),
-        })
-        disposers.push(() => focus.dispose())
-
-        if (modal) {
-          const lock = acquireScrollLock({ config })
-          disposers.push(() => lock.dispose())
-
-          // 栈中位于本层之上的层一并算作目标：内层浮层搬到落点之后也是它的
-          // 直接子元素，不排除会被本层的 MutationObserver 打上 inert
-          const getTargets = (): Element[] => [
-            getContentEl(),
-            ...config.layerRegistry.elementsAbove(layer),
-          ].filter(Boolean) as Element[]
-
-          // 背景失活推迟到宿主提交那一帧之后：进入 open 时 content 尚未渲染，
-          // 此刻 targets 为空会导致背景永不 inert
-          let hidden: (() => void) | undefined
-          let alive = true
-          flush(() => {
-            if (!alive)
-              return
-            if (getTargets().length)
-              hidden = hideOutside(getTargets, config.scope)
-          })
-          // flush 回调可能在效应拆除之后才跑，用存活标志挡住
-          disposers.push(() => {
-            alive = false
-            hidden?.()
-          })
+      trackItemVisibility: ({ refs, context, flush }) => {
+        let alive = true
+        let observer: MutationObserver | undefined
+        let observedList: HTMLElement | null = null
+        const sync = (): void => {
+          if (!alive)
+            return
+          const next = [...hiddenCommandValues(observedList)].sort()
+          const previous = context.get('hiddenValues')
+          if (next.length !== previous.length || next.some((value, index) => value !== previous[index]))
+            context.set('hiddenValues', next)
         }
-
-        // 逆序拆：先撤依赖层的订阅，最后才把层本身移出栈
-        return () => {
-          for (let i = disposers.length - 1; i >= 0; i--) disposers[i]!()
-          disposeLayer()
+        const rebind = (): void => {
+          if (!alive)
+            return
+          const list = refs.get('getListEl')()
+          if (list === observedList) {
+            if (!list)
+              sync()
+            return
+          }
+          observer?.disconnect()
+          observer = undefined
+          observedList = list
+          // 纯逻辑运行不要求挂载 DOM；已有列表必须使用它所属的 Window。
+          if (!list) {
+            sync()
+            return
+          }
+          const win = list.ownerDocument.defaultView
+          if (!win)
+            throw new Error('[xh] Command 列表缺少所属 Window')
+          observer = new win.MutationObserver(sync)
+          observer.observe(list, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden', 'data-scope', 'data-part', 'data-value'] })
+          sync()
         }
+        const dispose = (): void => {
+          alive = false
+          observer?.disconnect()
+          if (refs.get('syncListVisibility') === rebind)
+            refs.set('syncListVisibility', null)
+        }
+        refs.set('syncListVisibility', rebind)
+        try {
+          flush(rebind)
+        }
+        catch (error) {
+          dispose()
+          throw error
+        }
+        return dispose
+      },
+      trackOverlay: ({ refs, prop, scope, send, flush, state, track }) => {
+        let reactivateFocus: (() => void) | null = null
+        return trackPresenceResources({
+          presence: () => refs.get('presence'),
+          open: () => state.get() === 'open',
+          track,
+          acquire: () => {
+            const config = refs.get('config')
+            const registerLayer = refs.get('registerLayer')
+            // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
+            if (!config || !registerLayer)
+              return undefined
+
+            return setupLayerTransaction(registerLayer, (layer, defer, run) => {
+              const getContentEl = refs.get('getContentEl')
+
+              const dismiss = createDismissLayer({
+                config,
+                layer,
+                // 退场期只占原栈位屏蔽下层，不再重复发关闭；两个公开开关仍可动态更新。
+                onEscapeKeyDown: (e) => {
+                  if (state.get() !== 'open' || !(prop('closeOnEscape') ?? true))
+                    e.preventDefault()
+                },
+                onInteractOutside: (e) => {
+                  if (state.get() !== 'open' || !(prop('closeOnInteractOutside') ?? prop('modal') ?? true))
+                    e.preventDefault()
+                },
+                onDismiss: (reason) => {
+                  if (state.get() === 'open')
+                    send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' })
+                },
+              })
+              defer(() => dismiss.dispose())
+
+              // 焦点域无条件建，modal 只决定陷不陷焦点；逻辑关闭后内容立即 inert，焦点约束同步停用。
+              const focus = createFocusScope({
+                config,
+                layer,
+                container: getContentEl,
+                trapped: () => state.get() === 'open' && (prop('modal') ?? true),
+                loop: () => state.get() === 'open' && (prop('modal') ?? true),
+                // 开场焦点落在检索框上：面板一露面就能直接打字
+                initialFocus: () => refs.get('getInputEl')(),
+                restoreFocus: () => prop('restoreFocus') ?? true,
+                // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+                // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上。
+                // 按 connect 给 trigger 落的 id 现取，全局快捷键唤起的用法没有 trigger，归还照旧走快照
+                restoreTarget: () => scope.getById<HTMLElement>(scope.partId('command', 'trigger')),
+              })
+              reactivateFocus = focus.reactivate
+              defer(() => {
+                reactivateFocus = null
+                focus.dispose()
+              })
+
+              // 模态滚动锁与背景失活保持到 Presence 退出完成；modal 动态关闭仍立即释放。
+              const modalResources = createModalLayerResources({
+                config,
+                layer,
+                enabled: () => prop('modal') ?? true,
+                // 栈中位于本层之上的层一并算作目标：内层浮层搬到落点之后也是它的
+                // 直接子元素，不排除会被本层的 MutationObserver 打上 inert
+                targets: () => [
+                  getContentEl(),
+                  ...config.layerRegistry.elementsAbove(layer),
+                ].filter(Boolean) as Element[],
+                flush,
+                run,
+              })
+              defer(modalResources.dispose)
+              const syncModalResources = (): void => modalResources.sync()
+              refs.set('syncModalResources', syncModalResources)
+              defer(() => {
+                if (refs.get('syncModalResources') === syncModalResources)
+                  refs.set('syncModalResources', null)
+              })
+              syncModalResources()
+            }, { registry: config.layerRegistry, flush })
+          },
+          onReopen: () => {
+            const activate = reactivateFocus
+            flush(() => scope.getWin().requestAnimationFrame(() => {
+              if (state.get() === 'open' && reactivateFocus === activate)
+                activate?.()
+            }))
+          },
+        })
       },
     },
   },

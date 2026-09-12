@@ -1,4 +1,5 @@
 import type { CascadeStrategy, Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 /**
  * 树数据，层级、显示文本与条目禁用的唯一事实源。
@@ -90,8 +91,12 @@ export interface CascaderTranslations {
   empty: string
   /** 搜索无匹配（候选为空）时的占位文案。 */
   noMatch: string
+  /** 首次取数且当前视图没有候选时的在途文案。 */
+  loading: string
   /** 没有父条目可指的列（根列与收起的那几列）的兜底名字，两个名字部件都没渲染时才出面。 */
   column: string
+  /** 检索框的可及名字：字段标签名的是整个控件，浮层里这个框要自己一句。 */
+  searchInput: string
   /** 搜索结果列表的可及名字：它没有可指的标题部件，只能自带一句。 */
   searchList: string
   /** 清空按钮的可及名字。 */
@@ -103,6 +108,8 @@ export interface CascaderRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 视觉退场与行为资源共享的 Presence；缺省时关闭立即释放。 */
+  presence: PresenceHandle | null
   /** 浮层定位引擎；缺省即不产出位置结果。 */
   position: PositionEnginePort | null
   /** 定位锚点，取 trigger；清空按钮按完也把焦点还给它。 */
@@ -152,6 +159,10 @@ export interface CascaderSchema extends MachineSchema {
      */
     value?: CascaderValue
     defaultValue?: CascaderValue
+    /** 原生字段名，每条选中路径提交一项 JSON 字符串数组。 */
+    name?: string
+    /** 关联的原生表单 ID；指定后覆盖祖先表单归属。 */
+    form?: string
     /** 展开态。给定即受控：内部不再自改，只发 onOpenChange。 */
     open?: boolean
     defaultOpen?: boolean
@@ -176,7 +187,7 @@ export interface CascaderSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 */
     invalid?: boolean
-    /** 候选还在取：浮层报 aria-busy，在途占位顶上来、空态占位让位。 */
+    /** 候选还在取：浮层报 aria-busy；当前视图无候选时在途占位顶上来。 */
     loading?: boolean
     /** 空态占位的文案覆盖，默认英文。 */
     translations?: Partial<CascaderTranslations>
@@ -227,6 +238,7 @@ export interface CascaderSchema extends MachineSchema {
   refs: CascaderRefs
   state: 'open' | 'closed'
   event:
+    | { type: 'FORM.RESET' }
     | { type: 'OPEN', focus?: CascaderFocusIntent }
     | { type: 'TOGGLE', focus?: CascaderFocusIntent }
     | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' }
@@ -258,6 +270,7 @@ export interface CascaderSchema extends MachineSchema {
   tag: never
   guard: 'isOpenControlled' | 'isMultiple' | 'staysOpenOnSelect'
   action:
+    | 'resetToDefault'
     | 'invokeOnOpen'
     | 'invokeOnClose'
     | 'syncOpen'
@@ -317,7 +330,7 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   inputValue: string
   /** 过滤后的候选：整条路径连缀匹配，带 pathKey 与禁用标记。 */
   searchResults: readonly CascaderSearchResult[]
-  /** 候选里的虚拟高亮下标（已夹进候选长度）；没有候选为 -1。 */
+  /** 候选里的虚拟高亮下标，恒落在一条可选候选上；没有候选或整批禁用为 -1。 */
   searchHighlightIndex: number
   /** 空态占位的文案：实例覆盖并入默认后的完整一份。 */
   translations: CascaderTranslations
@@ -329,6 +342,8 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   select: (path: string[]) => void
   clear: () => void
   getRootProps: () => T['element']
+  /** 每条路径独立编码，适配器按 value 渲染重复同名字段。 */
+  getHiddenInputProps: (props: { path: readonly string[] }) => T['input']
   getLabelProps: () => T['element']
   getControlProps: () => T['element']
   getTriggerProps: () => T['button']
@@ -346,8 +361,8 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   /** 空态占位：当前视图没有条目（搜索无候选，或根列没有条目）时露面，其余时候带 hidden。 */
   getEmptyProps: () => T['element']
   /**
-   * 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。
-   * 文案归作者，连接层只管收放。
+   * 在途占位：当前视图无候选且正在取数时顶上来；已有候选或祖先列时只保留 aria-busy。
+   * 适配器自动提供缺省部件，作者显式写部件即可替换它。
    */
   getLoadingProps: () => T['element']
   /** 浮层底部的操作区：放在 content 里、与列并列，不入任何一列的拥有关系，方向键也走不到。 */

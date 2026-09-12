@@ -1,3 +1,4 @@
+import type { FormPath } from '@xihan-ui/headless'
 import type { FormContext } from './use-form'
 import { createContext, useContext } from 'react'
 
@@ -19,7 +20,7 @@ export function useOptionalFormContext(): FormContext | undefined {
 
 /** 字段容器把字段名交给后代：Field 据此从表单上下文自取校验态。 */
 export interface FormFieldHandle {
-  name: string
+  name: FormPath
 }
 
 const FieldCtx = createContext<FormFieldHandle | undefined>(undefined)

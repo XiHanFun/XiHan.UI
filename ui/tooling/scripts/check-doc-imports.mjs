@@ -16,7 +16,7 @@ const uiRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const repoRoot = join(uiRoot, '..')
 
 const IMPORT = /import\s+(?:type\s+)?\{([^}]*)\}\s*from\s*['"](@xihan-ui\/[a-z0-9-]+)(?:\/[a-z0-9-.]+)?['"]/g
-const EXT = /\.(?:md|vue|html|ts|js|mjs)$/
+const EXT = /\.(?:md|vue|html|tsx?|js|mjs)$/
 /** 不扫的目录：依赖、产物，以及文档站构建时的中间目录。 */
 const SKIP = /[\\/](?:node_modules|dist|\.git|\.turbo|\.vitepress[\\/](?:cache|\.temp))$/
 

@@ -10,11 +10,13 @@
 // ③ 浮层角落关闭钮：--xh-<c>-close-size → --xh-control-h-sm，--xh-<c>-close-radius → --xh-shape-control；
 //    字形颜色也得留使用者槽——常态一个、悬停换色的再一个，写死语义令牌等于这颗叉的颜色改不动。
 // ④ 标签内移除钮：尺寸基准 --xh-control-indicator-size，圆角 --xh-shape-inset；行级删除钮同 ①的尺寸基准。
+//    库里只有 tag 画这颗钮：select / tags-input / tag-group 里的标签就是 tag，删除钮是它的 close-trigger。
 // 四类都要有 :active 按压反馈（走 --xh-motion-scale-press）与 [hidden]{display:none}。
 import { readFile } from 'node:fs/promises'
 
 const SKINS = 'packages/design/styles/css'
 const HEADLESS = 'packages/engine/headless/src'
+const ACTION_FAMILY = 'packages/design/styles/family/action-control.css'
 
 /** ① 内嵌清空钮：组件 → 点完焦点该回到的部件（只用于提示文案，判据看 connect 里有没有 focus 调用）。 */
 const EMBEDDED = ['cascader', 'tree-select', 'combobox', 'date-picker', 'time-picker', 'text-field', 'tags-input', 'select', 'date-field', 'time-field']
@@ -34,7 +36,7 @@ const CLOSE_PART = { notification: 'item-close-trigger' }
  */
 const CLOSE_FG_EXCEPTION = { 'image-viewer': '看图时整块 chrome 盖住页面，叉的颜色随那层继承（color: inherit），自己不定前景' }
 /** ④ 标签内移除钮（组件 → 部件）与行级删除钮。 */
-const CHIP_REMOVE = { 'tag': 'close-trigger', 'tags-input': 'item-delete-trigger', 'select': 'item-delete-trigger' }
+const CHIP_REMOVE = { tag: 'close-trigger' }
 const ROW_DELETE = { 'file-upload': 'item-delete-trigger', 'field-array': 'item-delete-trigger' }
 
 const problems = []
@@ -150,21 +152,43 @@ function checkCloseForeground(c, part, css) {
 // ① 内嵌清空钮
 for (const c of EMBEDDED) {
   const css = await skin(c)
+  const src = await connect(c)
+  const g = src ? getter(src, 'getClearTriggerProps') : null
   if (css) {
-    await checkButtonSkin(c, 'clear-trigger', {
-      sizeSlot: `--xh-${c}-action-size`,
-      sizeToken: '--xh-control-action-size',
-      radiusSlot: `--xh-${c}-action-radius`,
-      radiusToken: '--xh-shape-control',
-    })(css)
-    if (!has(rulesOf(css, c, 'clear-trigger'), t => /:empty::before/.test(t)) || !/--xh-glyph-mark-close/.test(css))
+    const sharedAction = /@import\s+['"]\.\.\/family\/action-control\.css['"]/.test(css)
+      && /['"]data-xh-action-profile['"]\s*:\s*['"]field-inset['"]/.test(g ?? '')
+    const rules = rulesOf(css, c, 'clear-trigger')
+    if (sharedAction) {
+      const family = await readFile(ACTION_FAMILY, 'utf8')
+      const sizeRe = new RegExp(`--xh-action-visual-size:\\s*var\\(--xh-${esc(c)}-action-size,\\s*var\\(--xh-_action-profile-visual-size\\)\\)`)
+      if (!has(rules, (t, b) => t.trim() === '' && sizeRe.test(b)))
+        problems.push(`${c}.css [clear-trigger] 没把 --xh-${c}-action-size 映到 field-inset 视觉盒`)
+      const radiusRe = new RegExp(`--xh-action-radius:\\s*var\\(--xh-${esc(c)}-action-radius,\\s*var\\(--xh-shape-inset\\)\\)`)
+      if (!has(rules, (t, b) => t.trim() === '' && radiusRe.test(b)))
+        problems.push(`${c}.css [clear-trigger] 没把 --xh-${c}-action-radius 映到 field-inset 圆角`)
+      if (!has(rules, (t, b) => t.trim().startsWith('[hidden]') && /display:\s*none/.test(b)))
+        problems.push(`${c}.css [clear-trigger] 缺 [hidden] { display: none }`)
+      if (!/\[data-xh-action-control\]:not\(\[data-disabled\]\):not\(\[data-loading\]\):active[\s\S]*--xh-motion-scale-press/.test(family))
+        problems.push('family/action-control.css 缺 field-inset 共用的 :active 按压反馈')
+      if (!/transition:[\s\S]{0,400}\bscale\b/.test(family))
+        problems.push('family/action-control.css 的共用 transition 没有 scale')
+      if (!/['"]data-xh-action-display['"]\s*:\s*['"]has-value['"]/.test(g ?? '') || !/['"]data-xh-action-has-value['"]\s*:/.test(g ?? ''))
+        problems.push(`${c}.connect.ts 的 field-inset clear 没投影 has-value 显示策略`)
+    }
+    else {
+      await checkButtonSkin(c, 'clear-trigger', {
+        sizeSlot: `--xh-${c}-action-size`,
+        sizeToken: '--xh-control-action-size',
+        radiusSlot: `--xh-${c}-action-radius`,
+        radiusToken: '--xh-shape-control',
+      })(css)
+    }
+    if (!has(rules, t => /:empty::before/.test(t)) || !/--xh-glyph-mark-close/.test(css))
       problems.push(`${c}.css [clear-trigger] 缺 :empty::before 兜底字形（--xh-glyph-mark-close）`)
     if (/:hover[^{]*\{[^}]*opacity/.test(css) && /\[data-part='clear-trigger'\]/.test(css) && /:has\(/.test(css))
       problems.push(`${c}.css 清空钮还在靠 :hover 显形 / :has() 让位——互斥走 data-clearable`)
   }
-  const src = await connect(c)
   if (src) {
-    const g = getter(src, 'getClearTriggerProps')
     if (!g) {
       problems.push(`${c}.connect.ts 没有 getClearTriggerProps`)
       continue

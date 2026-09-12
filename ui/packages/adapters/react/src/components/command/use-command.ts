@@ -26,16 +26,16 @@ export function useCommand(props: CommandSchema['props']): CommandContext {
   const listRef = useRef<HTMLElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const serviceRef = useRef<Service<CommandSchema> | null>(null)
+  const modalRef = useRef(props.modal)
+  modalRef.current = props.modal
 
   const initialOpen = (props.open ?? props.defaultOpen) ?? false
-  const modal = props.modal
 
   const layer = useCallback((): Omit<Layer, 'id' | 'node' | 'surfaces'> => ({
     kind: 'modal',
     branches: () => [],
-    isModal: () => modal ?? true,
-    setModal: () => {},
-  }), [modal])
+    isModal: () => modalRef.current ?? true,
+  }), [])
 
   const overlay = useOverlay({
     scope,
@@ -44,6 +44,7 @@ export function useCommand(props: CommandSchema['props']): CommandContext {
     isOpen: () => serviceRef.current?.state.get() === 'open',
     layer,
     node: () => contentRef.current,
+    additionalExitNodes: () => [backdropRef.current],
     surfaces: () => [backdropRef.current].filter(Boolean) as Element[],
     refs: (service) => {
       service.refs.set('getContentEl', (() => contentRef.current) as never)

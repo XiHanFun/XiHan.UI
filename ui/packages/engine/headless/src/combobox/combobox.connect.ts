@@ -1,7 +1,7 @@
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ComboboxApi, ComboboxInputEl, ComboboxInputProps, ComboboxItemProps, ComboboxNodeMeta, ComboboxSchema } from './combobox.types'
 import { contains, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
-import { overlayPositioned } from '../shared/overlay'
+import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { comboboxAnatomy, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 import { COMBOBOX_DEFAULT_PLACEMENT } from './combobox.machine'
 
@@ -20,25 +20,6 @@ const pointerHot = new WeakSet<Element>()
  */
 function isMultilineHost(input: ComboboxInputProps): boolean {
   return (input.as ?? 'input') === 'textarea'
-}
-
-// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
-// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
-const AVAILABLE_H_FLOOR = 96
-
-function availableHeightVar(available: number | undefined): Record<string, string> {
-  return {
-    '--xh-_combobox-available-h':
-      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
-  }
-}
-
-// 锚点实测宽度。content 拿它做最小宽的下界，浮层因此不窄于输入框；
-// 引擎没算出来时空串撤掉声明，退回皮肤 positioner 上那档 0
-function anchorWidthVar(width: number | undefined): Record<string, string> {
-  return {
-    '--xh-_combobox-anchor-w': width != null ? `${width}px` : '',
-  }
 }
 
 export function connectCombobox<T extends PropTypes>(
@@ -388,13 +369,11 @@ export function connectCombobox<T extends PropTypes>(
       // 落位才露：皮肤基线把定位层藏着，带这个才显示。展开那几帧坐标还没算出来时就是藏的
       'data-positioned': dataAttr(overlayPositioned(position)),
       'style': {
-        position: 'fixed',
-        left: `${position?.x ?? 0}px`,
-        top: `${position?.y ?? 0}px`,
+        ...overlayFixedStyle(position),
         // content 继承这个高度上限，超出的条目在浮层内部滚
-        ...availableHeightVar(position?.availableHeight),
+        ...overlayAvailableSpaceVars('combobox', position),
         // content 继承这个宽度下界，浮层至少与输入框同宽
-        ...anchorWidthVar(position?.anchorWidth),
+        ...overlayAnchorWidthVar('combobox', position?.anchorWidth),
       },
     }),
 
@@ -411,6 +390,9 @@ export function connectCombobox<T extends PropTypes>(
       'tabindex': -1,
       'data-state': stateAttr,
       'data-placement': placement,
+      // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
       'onPointerDown': (event: PointerEvent) => {
@@ -499,17 +481,20 @@ export function connectCombobox<T extends PropTypes>(
       ...parts.loading.attrs,
       'role': 'status',
       'data-state': stateAttr,
-      'hidden': !(open && loading) || undefined,
+      // 已有候选时列表原样留着，只由 aria-busy 报后台刷新；零候选才用状态文字占据表面。
+      // itemCount 尚未结算时不抢跑，避免首帧把真实候选盖住。
+      'hidden': !(open && loading && itemCount === 0) || undefined,
     }),
 
-    getHiddenInputProps: () => normalize.input({
+    getHiddenInputProps: input => normalize.input({
       // type 先于 value 写入：改 type 会重置输入的值
       type: 'hidden',
       ...parts['hidden-input'].attrs,
       // name 缺省即不产出该属性，此时不参与提交
       name: prop('name'),
-      // 多选按逗号拼成一串，与 tree-select 同法
-      value: value.join(','),
+      form: prop('form'),
+      // 每个选中值对应一个同名原生控件，值内的逗号保持原样。
+      value: input.value,
       // 单体控件用原生 disabled，禁用时不提交值
       disabled: disabled || undefined,
     }),

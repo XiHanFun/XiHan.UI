@@ -25,6 +25,7 @@ export function useDrawer(
   props: DrawerSchema['props'],
   onOpenChange?: DrawerSchema['props']['onOpenChange'],
   container?: () => string | Element | null | undefined,
+  onExitComplete?: DrawerSchema['props']['onExitComplete'],
 ): DrawerContext {
   // 应用级默认挂载点：core 的 RuntimeConfig 一直留着这个字段，这里把它真正接上
   const xhConfig = useXhConfig()
@@ -38,7 +39,7 @@ export function useDrawer(
   const service = useMachine(
     drawerMachine,
     // 显式写了 contained 以它为准；没写则「给了容器即局部」
-    () => ({ ...props, contained: props.contained ?? container?.() != null, onOpenChange }),
+    () => ({ ...props, contained: props.contained ?? container?.() != null, onOpenChange, onExitComplete }),
     scope,
   )
 
@@ -61,7 +62,6 @@ export function useDrawer(
       node: () => contentRef.value,
       branches: () => [],
       isModal: () => props.modal ?? true,
-      setModal: () => {},
       surfaces: () => [backdropRef.value].filter(Boolean) as Element[],
     })
     const presence: PresenceHandle = createPresence({
@@ -84,15 +84,25 @@ export function useDrawer(
     watch(() => service.state.get() === 'open', open => presence.update(open), { flush: 'post' })
 
     // content 就位后把它的 CSS 退场动画接到 presence 退出租约，无动画时关闭即卸载
-    let detachExit: (() => void) | undefined
-    watch(contentRef, (el) => {
-      detachExit?.()
-      detachExit = el ? attachCssExit(el, presence) : undefined
+    const tracked = new Map<HTMLElement, Cleanup>()
+    watch([contentRef, backdropRef], (nodes) => {
+      const next = new Set(nodes.filter((node): node is HTMLElement => node !== null))
+      for (const node of next) {
+        if (!tracked.has(node))
+          tracked.set(node, attachCssExit(node, presence))
+      }
+      for (const [node, detach] of tracked) {
+        if (!next.has(node)) {
+          tracked.delete(node)
+          detach()
+        }
+      }
     }, { flush: 'post' })
 
     onBeforeUnmount(() => {
-      detachExit?.()
       presence.dispose()
+      for (const detach of tracked.values()) detach()
+      tracked.clear()
     })
   }
 

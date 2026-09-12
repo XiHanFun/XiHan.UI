@@ -220,9 +220,12 @@
     /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，面板继承它限高；
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
     --xh-_side-nav-available-h: 100vh;
+    /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
+    --xh-_side-nav-available-w: 100vw;
 
     position: fixed;
-    z-index: var(--xh-side-nav-popout-layer, var(--xh-layer-popover));
+    z-index: var(--xh-side-nav-popout-layer, var(--xh-_layer, var(--xh-layer-popover)));
     pointer-events: auto;
   }
 
@@ -235,7 +238,8 @@
      面板自己不吃子层缩进（padding 整圈盖掉），面板内的嵌套子层照常缩进 */
   [data-scope='side-nav'][data-part='branch-content'][data-popout] {
     min-inline-size: var(--xh-side-nav-popout-min-w, var(--xh-overlay-menu-min-w));
-    max-inline-size: var(--xh-side-nav-popout-max-w, var(--xh-overlay-max-w));
+    /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
+    max-inline-size: min(var(--xh-side-nav-popout-max-w, var(--xh-overlay-max-w)), var(--xh-_side-nav-available-w));
     padding: var(--xh-side-nav-popout-p, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-side-nav-popout-border, var(--xh-border-default));
     border-radius: var(--xh-side-nav-popout-radius, var(--xh-shape-surface));

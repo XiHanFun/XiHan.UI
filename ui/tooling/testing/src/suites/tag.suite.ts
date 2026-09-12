@@ -58,6 +58,17 @@ export const tagSuite: ConformanceSuite = {
       },
     },
     {
+      name: 'ghost：第四种公开形态逐字落到 root，关闭钮仍保持原生按钮合同',
+      spec: { adr: 'tag-four-variants' },
+      props: { variant: 'ghost', closable: true },
+      initial: {
+        parts: {
+          'root': { 'data-variant': 'ghost' },
+          'close-trigger': { type: 'button', disabled: null, hidden: null },
+        },
+      },
+    },
+    {
       name: 'closable：关闭钮解禁并露面，root 不受影响',
       spec: { apg: APG },
       props: { closable: true },
@@ -130,6 +141,21 @@ export const tagSuite: ConformanceSuite = {
           parts: {
             'root': { 'data-disabled': '', 'data-state': 'open', 'hidden': null },
             // 只是禁用而非不可关闭：叉仍占着位置，标签宽度不跳变
+            'close-trigger': { 'disabled': '', 'data-disabled': '', 'hidden': null },
+          },
+          events: [],
+        }),
+      ],
+    },
+    {
+      name: 'readOnly：关闭钮留在原位但禁用，root 不打 data-disabled，直接派 click 也不收标签',
+      spec: { apg: APG },
+      props: { closable: true, readOnly: true },
+      steps: [
+        dispatchClickOnDisabled('tag', 'close-trigger', {
+          parts: {
+            // 只读只锁那颗叉，标签本身不置灰
+            'root': { 'data-disabled': null, 'data-state': 'open', 'hidden': null },
             'close-trigger': { 'disabled': '', 'data-disabled': '', 'hidden': null },
           },
           events: [],

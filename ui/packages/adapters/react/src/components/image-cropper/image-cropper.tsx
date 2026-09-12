@@ -10,6 +10,7 @@ import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import { ImageCropperProvider, useImageCropperContext } from './context'
 import { useImageCropper } from './use-image-cropper'
 
@@ -24,7 +25,7 @@ export type ImageCropperRootSlotProps = Pick<
   | 'getCropRect' | 'setValue' | 'setZoom' | 'setRotation'
 >
 
-export interface XhImageCropperRootProps {
+export interface XhImageCropperRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
   src?: string
   alt?: string
   aspectRatio?: number | null
@@ -56,14 +57,73 @@ export interface XhImageCropperRootProps {
   children?: SlotChildren<ImageCropperRootSlotProps>
 }
 
-export function XhImageCropperRoot({ children, ...props }: XhImageCropperRootProps): ReactNode {
-  const ctx = useImageCropper(withXhConfig('image-cropper', props) as ImageCropperProps)
+export function XhImageCropperRoot({
+  src,
+  alt,
+  aspectRatio,
+  value,
+  defaultValue,
+  minWidth,
+  minHeight,
+  zoom,
+  defaultZoom,
+  minZoom,
+  maxZoom,
+  zoomStep,
+  rotation,
+  defaultRotation,
+  minRotation,
+  maxRotation,
+  rotationStep,
+  shape,
+  disabled,
+  readOnly,
+  name,
+  translations,
+  onValueChange,
+  onValueChangeEnd,
+  onZoomChange,
+  onRotationChange,
+  children,
+  ...rest
+}: XhImageCropperRootProps): ReactNode {
+  const ctx = useImageCropper(withXhConfig('image-cropper', useFormControlProps({
+    src,
+    alt,
+    aspectRatio,
+    value,
+    defaultValue,
+    minWidth,
+    minHeight,
+    zoom,
+    defaultZoom,
+    minZoom,
+    maxZoom,
+    zoomStep,
+    rotation,
+    defaultRotation,
+    minRotation,
+    maxRotation,
+    rotationStep,
+    shape,
+    disabled,
+    readOnly,
+    name,
+    translations,
+    onValueChange,
+    onValueChangeEnd,
+    onZoomChange,
+    onRotationChange,
+  })) as ImageCropperProps)
   const api = ctx.api
   return (
     <ImageCropperProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {renderSlot(children, {
           value: api.value,

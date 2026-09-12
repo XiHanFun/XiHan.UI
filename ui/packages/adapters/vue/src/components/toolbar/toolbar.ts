@@ -12,14 +12,14 @@ export type ToolbarRootSlotProps = Pick<ToolbarApi, 'focusedValue' | 'orientatio
 
 export const XhToolbarRoot = defineComponent({
   name: 'XhToolbarRoot',
-  // 全部 default: undefined，缺省值由 connect 决定
+  // 缺省值由 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    orientation: { type: String as PropType<Orientation>, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    orientation: { type: String as PropType<Orientation> },
+    dir: { type: String as PropType<Direction> },
     loop: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
-    variant: { type: String as PropType<ToolbarVariant>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    variant: { type: String as PropType<ToolbarVariant> },
+    size: { type: String as PropType<Size> },
   },
   slots: Object as SlotsType<{
     default?: (props: ToolbarRootSlotProps) => VNode[]

@@ -15,9 +15,12 @@
 ## 特性
 
 - 标签的 `for`、说明与错误文本的 `aria-describedby`、无效态的 `aria-invalid` 全部自动接上，作者不写 `id`。
-- `disabled` / `readOnly` / `invalid` / `required` 沿字段流给里面的控件。
+- `disabled` / `readOnly` / `invalid` / `required` 沿字段流给里面的控件。控件实例没写才继承；
+  显式 `false` 顶掉最近的 Field/Form 状态。TextField 收到后会把行为与 ARIA 写到真正的 input，
+  不只停在包装根。
 - 有错误文本时说明文字不会被顶掉，两者可以同时在。
 - 默认把接线属性合到控件槽里唯一的子节点上，这条只适用于「子节点的根就是可聚焦控件」。控件藏在薄封装里时关掉 asChild，由封装内部自取——标签的 for 只对可标注元素生效，指到封装的根上会静默失效。
+- `FieldControl` 的默认 `asChild` 必须提供唯一可挂载子节点，允许包在 Fragment 中；零节点、多个节点或并列非空文本明确报错，不再静默丢失标签和 ARIA 接线。需要手工组织多个节点时显式设置 `asChild=false`，并通过插槽载荷或 `useFieldControl` 绑定真控件。
 
 ## 组合
 

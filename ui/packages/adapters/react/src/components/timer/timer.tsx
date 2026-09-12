@@ -21,7 +21,7 @@ export type TimerRootSlotProps = Pick<
 /** 没写 children 时铺开的那几段：时、分、秒。要天或毫秒就自己写部件。 */
 const DEFAULT_UNITS: readonly TimerUnit[] = ['hours', 'minutes', 'seconds']
 
-export interface XhTimerRootProps {
+export interface XhTimerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 起始值毫秒，缺省 0。 */
   startMs?: number
   /** 终点值毫秒。倒计时缺省 0；正计时不给它就一直走下去。 */
@@ -51,8 +51,40 @@ export interface XhTimerRootProps {
   children?: SlotChildren<TimerRootSlotProps>
 }
 
-export function XhTimerRoot({ children, ...props }: XhTimerRootProps): ReactNode {
-  const ctx = useTimer(withXhConfig('timer', props) as TimerProps)
+export function XhTimerRoot({
+  startMs,
+  targetMs,
+  countdown,
+  value,
+  active,
+  autoStart,
+  interval,
+  format,
+  precision,
+  live,
+  size,
+  translations,
+  onTick,
+  onComplete,
+  children,
+  ...rest
+}: XhTimerRootProps): ReactNode {
+  const ctx = useTimer(withXhConfig('timer', {
+    startMs,
+    targetMs,
+    countdown,
+    value,
+    active,
+    autoStart,
+    interval,
+    format,
+    precision,
+    live,
+    size,
+    translations,
+    onTick,
+    onComplete,
+  }) as TimerProps)
   const { api } = ctx
   const content = renderSlot(children, {
     phase: api.phase,
@@ -75,7 +107,7 @@ export function XhTimerRoot({ children, ...props }: XhTimerRootProps): ReactNode
   })
   return (
     <TimerProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {/* children 为空（含条件渲染落空）时退回组件自己铺的时分秒 */}
         {slotPaints(content) ? content : <DefaultTree />}
       </div>

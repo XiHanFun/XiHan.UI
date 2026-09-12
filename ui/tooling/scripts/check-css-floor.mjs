@@ -14,7 +14,8 @@
 //   白名单      → field-sizing 的退化路径是 textarea 的 rows 属性(HTML 侧),CSS 里没有可机械
 //                 验证的兜底,按文件白名单放行,新用法必须来这条名单面前说清退化路径
 //
-// .browserslistrc 只作记录,不参与判定:判定依据是拒绝名单与兜底检查,两者都以文档化的
+// .browserslistrc 参与判定:拒绝名单每条记着它要求的引擎版本,三家都写全且都不高于地板时
+// 这条就该删——门禁当场判红,不必靠人记得回来看。判定依据仍是拒绝名单与兜底检查,两者都以文档化的
 // 硬底线为基准,改名单时必须同步改 versioning.md 的支持面表格。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -23,21 +24,45 @@ const STYLES = 'packages/design/styles/css'
 const BROWSERSLIST = '.browserslistrc'
 
 // —— 拒绝名单:出现即抬底线,无一例外 ——
+// since 记的是各引擎最早完整支持的版本。三家都写全、且都不高于 .browserslistrc 的地板时,
+// 这条登记就过期了——地板已经把它包含进来,再拦着就是拦一个本来就能用的特性。
+// 只写了一部分引擎的按「判不出」处理,条目照旧生效:宁可多拦,不可放行一个真会抬底线的。
 const REJECT = [
-  { name: '@container 容器查询', re: /@container\b/, reason: 'size 查询把底线从 2023-03 抬到 2023-09' },
-  { name: '@scope 作用域规则', re: /@scope\b/, reason: 'Chrome 118 起,高于底线' },
-  { name: '@starting-style 起始样式', re: /@starting-style\b/, reason: 'Firefox 129 / Safari 17.5 起,高于底线' },
+  { name: '@scope 作用域规则', re: /@scope\b/, since: { chrome: 118 }, reason: 'Chrome 118 起,高于底线' },
+  { name: '@starting-style 起始样式', re: /@starting-style\b/, since: { firefox: 129, safari: 17.5 }, reason: 'Firefox 129 / Safari 17.5 起,高于底线' },
   { name: 'view-transition 视图过渡', re: /view-transition|::view-transition/, reason: 'Firefox / Safari 晚于底线' },
-  { name: 'animation-timeline 滚动驱动动画', re: /animation-timeline|scroll-timeline|timeline-scope/, reason: 'Chrome 115 起,高于底线' },
-  { name: 'interpolate-size 插值尺寸', re: /interpolate-size\b/, reason: 'Chrome 129 起,高于底线' },
-  { name: 'text-box-trim 行盒裁剪', re: /text-box-(?:trim|edge)/, reason: 'Chrome 133 起,高于底线' },
-  { name: 'CSS 嵌套选择器', re: /^[^\S\n]*&[^=]|^[^\S\n]*:is\(&|^[^\S\n]*:not\(&/m, reason: 'Chrome 120 / Firefox 117 起,高于底线' },
+  { name: 'animation-timeline 滚动驱动动画', re: /animation-timeline|scroll-timeline|timeline-scope/, since: { chrome: 115 }, reason: 'Chrome 115 起,高于底线' },
+  { name: 'interpolate-size 插值尺寸', re: /interpolate-size\b/, since: { chrome: 129 }, reason: 'Chrome 129 起,高于底线' },
+  { name: 'text-box-trim 行盒裁剪', re: /text-box-(?:trim|edge)/, since: { chrome: 133 }, reason: 'Chrome 133 起,高于底线' },
+  { name: 'CSS 嵌套选择器', re: /^[^\S\n]*&[^=]|^[^\S\n]*:is\(&|^[^\S\n]*:not\(&/m, since: { chrome: 120, firefox: 117 }, reason: 'Chrome 120 / Firefox 117 起,高于底线' },
 ]
+
+/** .browserslistrc 里 `引擎 >= 版本` 的地板,取不到的引擎不进表。 */
+function floorOf(text) {
+  const out = {}
+  for (const hit of text.matchAll(/^\s*([a-z_]+)\s*>=\s*([\d.]+)\s*$/gm))
+    out[hit[1]] = Number(hit[2])
+  return out
+}
+
+/**
+ * 这条登记是不是已经被地板包含了。
+ * 三家都写全、且每一家的要求都不高于地板,才算过期——少写一家就判不出,照旧生效。
+ */
+function coveredByFloor(item, floor) {
+  const engines = ['chrome', 'firefox', 'safari']
+  if (!item.since || engines.some(e => item.since[e] === undefined || floor[e] === undefined))
+    return false
+  return engines.every(e => item.since[e] <= floor[e])
+}
 
 // —— 级联兜底:允许使用,但同一规则块内同一属性必须先有旧写法 ——
 const CASCADE = [
   { name: 'light-dark()', marker: /light-dark\(/, fallbackOf: value => !value.includes('light-dark('), hint: '同一属性先写一条普通颜色声明,再写 light-dark() 那条' },
   { name: '动态视口单位 svh/lvh/dvh', marker: /(?:^|[^a-z-])(?:svh|lvh|dvh)\b/, fallbackOf: value => /(?:^|[^a-z-])vh\b/.test(value), hint: '同一属性先写 vh 声明,再写动态视口单位那条' },
+  // 行盒单位:一行字的高度。晚于地板的具体版本没查证到,所以不进拒绝名单——它有兜底可写:
+  // 同一行的高度等于「字号 × 行距」,两者都是本库的令牌,算出来的数与 1lh 一致。
+  { name: '行盒单位 lh/rlh', marker: /(?:^|[^\w-])[\d.]+r?lh\b/, fallbackOf: value => !/(?:^|[^\w-])[\d.]+r?lh\b/.test(value), hint: '同一属性先写一条按令牌算的「字号 × 行距」声明,再写 lh 那条' },
 ]
 
 // —— 受 @supports 守卫的增强:每一处都必须落在测同一个特性的 @supports 块里 ——
@@ -103,7 +128,7 @@ function ruleBlocks(css) {
 
 /** 块内声明行:缩进 + 属性名 + 冒号 + 值。属性名覆盖 --xh-* 与普通属性;空白只吃水平空白。 */
 function declarationsOf(block) {
-  return [...block.matchAll(/^[^\S\n]*((--[\w-]+|[a-z-]+))[^\S\n]*:([^\n]*)$/gm)]
+  return [...block.matchAll(/^[^\S\n]*(--[\w-]+|[a-z-]+)[^\S\n]*:([^\n]*)$/gm)]
     .map(m => ({ name: m[1], value: m[2].trim(), line: m[0].trim() }))
 }
 
@@ -111,16 +136,33 @@ const errors = []
 /** 真的用来放行过的皮肤。 */
 const usedAllowlist = new Set()
 
-// .browserslistrc 必须存在:它是地板的书面记录,拒绝名单与之对照
+// .browserslistrc 必须存在:它是地板的书面记录,拒绝名单逐条与之对账
+let floorText = ''
 try {
-  const floor = await readFile(BROWSERSLIST, 'utf8')
-  if (!floor.trim()) {
+  floorText = await readFile(BROWSERSLIST, 'utf8')
+  if (!floorText.trim()) {
     console.error(`[check-css-floor] ✗ ${BROWSERSLIST} 是空的,硬底线没有记录`)
     process.exit(1)
   }
 }
 catch {
   console.error(`[check-css-floor] ✗ 缺少 ${BROWSERSLIST},硬底线没有书面记录,拒绝名单失去对照`)
+  process.exit(1)
+}
+
+// 地板抬上去之后,被它包含进来的登记必须删掉:再拦着就是拦一个本来就能用的特性
+const floor = floorOf(floorText)
+if (Object.keys(floor).length === 0) {
+  console.error(`[check-css-floor] ✗ ${BROWSERSLIST} 里读不出「引擎 >= 版本」,拒绝名单没法与它对账`)
+  process.exit(1)
+}
+const stale = REJECT.filter(item => coveredByFloor(item, floor))
+if (stale.length > 0) {
+  console.error(`[check-css-floor] ✗ 拒绝名单有 ${stale.length} 条已经被地板包含:`)
+  for (const item of stale) {
+    const need = ['chrome', 'firefox', 'safari'].map(e => `${e} ${item.since[e]}`).join(' / ')
+    console.error(`  ${item.name} 要求 ${need},都不高于地板——把这条从 REJECT 里删掉`)
+  }
   process.exit(1)
 }
 

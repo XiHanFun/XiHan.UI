@@ -1,13 +1,16 @@
 import type { Cleanup, Direction, IdGenerator, Layer, Orientation, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { MenubarItemProps, MenubarNode, MenubarSchema, MenubarSelectDetails, MenubarTranslations, MenubarValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
+import type { AnchoredPortalController } from '../runtime/anchored-portal-controller'
+import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectMenubar, menubarAnatomy, menubarMachine, menubarMeta } from '@xihan-ui/headless'
+import { connectMenubar, createMenuTreeNode, menubarAnatomy, menubarMachine, menubarMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -61,11 +64,12 @@ function authorDisabled(el: HTMLElement): boolean {
  * @csspart group-label - 分组标题，靠 id 被同组 group 的 aria-labelledby 指着
  * @csspart arrow - 指向锚点的箭头（aria-hidden），须写在同一张菜单的 positioner 里
  */
-export class XhMenubarElement extends XhElement {
+export class XhMenubarElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   /** 逐个 content 一份退场闸门：一个菜单一份，它们各开各的。 */
-  private readonly exits = new Map<HTMLElement, OverlayExit>()
-  /** 闸门只用到 reducedMotion，本元素别处不需要 config，建一份共用即可。 */
-  private exitConfig: ReturnType<typeof createRuntimeConfig> | null = null
+  private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit, portal: AnchoredPortalController }>()
 
   static override partContract = { anatomy: menubarAnatomy, meta: menubarMeta }
 
@@ -105,9 +109,28 @@ export class XhMenubarElement extends XhElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // trigger 与 content 按 value 逐对互指的 id 由 scope 派生
-  private readonly barScope = createScope(null, this.idGen)
+  private readonly barScope = createScope(this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
+  /** 子菜单 trigger 的 WC 属性铺设桥；逻辑树由 headless 节点维护。 */
+  private readonly submenuBridges = new Map<HTMLElement, MenuSubmenuChild>()
+
+  private readonly menuTree = createMenuTreeNode({
+    getPositioner: () => this.partFor('positioner', this.openValue()),
+    isOpen: () => this.ctrl.service.state.get() === 'open',
+    close: () => this.ctrl.service.send({ type: 'CLOSE' }),
+    isRoot: () => true,
+    onRootSelect: (details) => {
+      const menu = this.openValue()
+      if (menu != null)
+        this.notifySelect({ menu, value: details.value })
+    },
+  })
+
+  private readonly submenuOwner: MenuSubmenuOwner = {
+    tree: this.menuTree,
+    registerSubmenu: child => this.registerSubmenu(child),
+  }
 
   private readonly notifyValue = (details: MenubarValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -115,6 +138,62 @@ export class XhMenubarElement extends XhElement {
 
   private readonly notifySelect = (details: MenubarSelectDetails): void => {
     this.dispatchEvent(new CustomEvent('select', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private wireSubmenuChild(child: MenuSubmenuChild): void {
+    const api = connectMenubar(this.ctrl.service, wcNormalize)
+    this.spreader.spread(child.trigger, api.getItemProps({
+      value: child.trigger.getAttribute('value') ?? '',
+      disabled: child.getDisabled(),
+    }) as Record<string, unknown>)
+  }
+
+  private submenuOwnerValue(trigger: HTMLElement): string {
+    const content = trigger.closest<HTMLElement>('[data-xh-part="content"][value]')
+    const value = content?.getAttribute('value')
+    if (!value)
+      throw new Error('[xh] Menubar 子菜单 trigger 必须位于带 value 的所属 content 内')
+    return value
+  }
+
+  private registerSubmenu(child: MenuSubmenuChild): MenuSubmenuRegistration {
+    if (this.submenuBridges.has(child.trigger))
+      throw new Error('[xh] 同一 Menubar 的同一子菜单 trigger 只能登记一次')
+    // 创建期即验证所属菜单身份，不把结构错误拖到第一次选择。
+    this.submenuOwnerValue(child.trigger)
+    const releaseTree = this.menuTree.registerChild(child.tree)
+    this.submenuBridges.set(child.trigger, child)
+    try {
+      this.wireSubmenuChild(child)
+    }
+    catch (error) {
+      this.submenuBridges.delete(child.trigger)
+      releaseTree()
+      throw error
+    }
+    this.requestUpdate()
+    let active = true
+    const assertCurrent = (): void => {
+      if (!active || this.submenuBridges.get(child.trigger) !== child)
+        throw new Error('[xh] Menubar 子菜单逻辑所有权已经释放')
+    }
+    return {
+      sync: () => {
+        assertCurrent()
+        this.wireSubmenuChild(child)
+      },
+      dispose: () => {
+        if (!active)
+          return
+        active = false
+        releaseTree()
+        if (this.submenuBridges.get(child.trigger) !== child)
+          return
+        this.submenuBridges.delete(child.trigger)
+        this.spreader.release(child.trigger)
+        this.requestUpdate()
+      },
+    }
   }
 
   private readonly ctrl = new MachineController<MenubarSchema>(
@@ -162,6 +241,24 @@ export class XhMenubarElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.barScope, idGenerator: this.idGen })
   }
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return [...this.exits.values()].flatMap(entry => entry.portal.roots)
+  }
+
+  private createPortal(value: string): AnchoredPortalController {
+    return this.createAnchoredPortalController({
+      name: `Menubar ${value}`,
+      config: () => this.config,
+      source: () => this.partFor('trigger', value),
+      root: () => this.partFor('positioner', value),
+      onShellReady: (shell) => {
+        setMenuSubmenuOwner(shell, this.submenuOwner)
+        return () => setMenuSubmenuOwner(shell, null)
+      },
+      onChange: () => this.requestUpdate(),
+    })
+  }
+
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
@@ -172,7 +269,6 @@ export class XhMenubarElement extends XhElement {
       // 开合归菜单栏自己切换。
       branches: () => [this.getPart('root')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 菜单不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })
@@ -192,6 +288,7 @@ export class XhMenubarElement extends XhElement {
 
   /** 提前发现一次角色节点：default-value 时机器在 hostConnected 当场要去 content 里挑焦点锚点。 */
   override connectedCallback(): void {
+    setMenuSubmenuOwner(this, this.submenuOwner)
     this.refreshParts()
     super.connectedCallback()
   }
@@ -237,24 +334,47 @@ export class XhMenubarElement extends XhElement {
       this.spreader.spread(el, api.getPositionerProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
 
     // 菜单常挂，按本帧产出的 hidden 用内联 display 收起
-    for (const el of this.getParts('content')) {
-      const props = api.getContentProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>
+    const contents = this.getParts('content')
+    const liveContents = new Set(contents)
+    for (const el of contents) {
+      const value = el.getAttribute('value') ?? ''
+      const props = api.getContentProps({ value }) as Record<string, unknown>
       this.spreader.spread(el, props)
       // 退场动画播完之前先别收。一个菜单一份闸门：它们各开各的、动画各跑各的，
       // 一份闸门管不过来。必须排在 spread 之后——data-state 得先落进 DOM，探测器才读得到
       const open = props.hidden !== true
-      let gate = this.exits.get(el)
-      if (!gate) {
-        gate = createOverlayExit({
-          config: this.exitConfig ??= createRuntimeConfig(),
+      let entry = this.exits.get(el)
+      if (entry && entry.value !== value) {
+        this.ctrl.service.send({ type: 'PRESENCE.SET', value: entry.value, presence: entry.gate.presence, connected: false })
+        entry.gate.dispose()
+        entry.portal.dispose()
+        this.exits.delete(el)
+        entry = undefined
+      }
+      if (!entry) {
+        const gate = createOverlayExit({
+          config: this.config!,
           open,
           onExitComplete: () => this.requestUpdate(),
         })
-        this.exits.set(el, gate)
+        entry = { value, gate, portal: this.createPortal(value) }
+        this.exits.set(el, entry)
+        this.ctrl.service.send({ type: 'PRESENCE.SET', value, presence: gate.presence, connected: true })
       }
+      const { gate } = entry
       gate.track(el)
       gate.update(open)
       this.setPartHidden(el, !gate.visible)
+      entry.portal.sync(gate.visible)
+    }
+    // 作者运行期移除 content 时精确注销；若它正是退场 owner，Headless 会立即释放行为资源。
+    for (const [el, entry] of this.exits) {
+      if (liveContents.has(el))
+        continue
+      this.ctrl.service.send({ type: 'PRESENCE.SET', value: entry.value, presence: entry.gate.presence, connected: false })
+      entry.gate.dispose()
+      entry.portal.dispose()
+      this.exits.delete(el)
     }
 
     for (const el of this.getParts('group')) {
@@ -278,6 +398,8 @@ export class XhMenubarElement extends XhElement {
       for (const description of this.partsIn(el, 'item-description'))
         this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
     }
+    for (const child of this.submenuBridges.values())
+      this.wireSubmenuChild(child)
 
     // 箭头跟着它所在那张菜单的 positioner 走，身份取 positioner 自报的 value
     for (const el of this.getParts('positioner')) {
@@ -292,10 +414,12 @@ export class XhMenubarElement extends XhElement {
   }
 
   override disconnectedCallback(): void {
+    setMenuSubmenuOwner(this, null)
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起
-    for (const [el, gate] of this.exits) {
-      gate.dispose()
+    for (const [el, entry] of this.exits) {
+      entry.gate.dispose()
+      entry.portal.dispose()
       this.setPartHidden(el, true)
     }
     this.exits.clear()

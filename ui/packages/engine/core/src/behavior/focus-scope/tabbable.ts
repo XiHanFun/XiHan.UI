@@ -1,3 +1,8 @@
+import type { FocusableElement } from '../../kernel/types'
+import { isDocument, isHTMLElement, isShadowRoot } from '../../kernel/guards'
+
+const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
+
 const FOCUSABLE = [
   'a[href]',
   'button:not([disabled])',
@@ -10,11 +15,11 @@ const FOCUSABLE = [
   'video[controls]',
 ].join(',')
 
-function isVisible(el: HTMLElement): boolean {
+function isVisible(el: FocusableElement): boolean {
   const win = el.ownerDocument.defaultView
-  let node: HTMLElement | null = el
+  let node: Element | null = el
   while (node) {
-    if (node.hidden)
+    if (isHTMLElement(node) && node.hidden)
       return false
     const style = win?.getComputedStyle(node)
     if (style && (style.display === 'none' || style.visibility === 'hidden' || style.visibility === 'collapse'))
@@ -25,34 +30,47 @@ function isVisible(el: HTMLElement): boolean {
 }
 
 /** 容器内按 DOM 顺序排列的可 tab 元素。 */
-export function getTabbables(container: HTMLElement): HTMLElement[] {
-  const els = Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE))
+export function getTabbables(container: Element): FocusableElement[] {
+  const els = Array.from(container.querySelectorAll<FocusableElement>(FOCUSABLE))
   return els.filter(el => el.tabIndex >= 0 && isVisible(el))
 }
 
 /** 过滤掉 <a> 元素。 */
-export function removeLinks(els: HTMLElement[]): HTMLElement[] {
-  return els.filter(el => el.tagName !== 'A')
+export function removeLinks<T extends FocusableElement>(els: T[]): T[] {
+  return els.filter(el => el.localName !== 'a')
 }
 
 export interface FocusOptions {
   select?: boolean
 }
 
+function activeElementInRoot(el: FocusableElement): Element | null {
+  const root = el.getRootNode()
+  return isDocument(root) || isShadowRoot(root)
+    ? root.activeElement
+    : el.ownerDocument.activeElement
+}
+
+function isSelectableTextControl(el: FocusableElement): el is HTMLInputElement | HTMLTextAreaElement {
+  return isHTMLElement(el)
+    && el.namespaceURI === HTML_NAMESPACE
+    && (el.localName === 'input' || el.localName === 'textarea')
+}
+
 /** 安全聚焦：不滚动；对输入类可选中文本。已聚焦则跳过。 */
-export function focusSafely(el: HTMLElement | null | undefined, opts: FocusOptions = {}): void {
-  if (!el || el === el.ownerDocument.activeElement)
+export function focusSafely(el: FocusableElement | null | undefined, opts: FocusOptions = {}): void {
+  if (!el || el === activeElementInRoot(el))
     return
   el.focus({ preventScroll: true })
-  if (opts.select && (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement))
+  if (opts.select && isSelectableTextControl(el))
     el.select()
 }
 
 /** 依次尝试聚焦，成功（变成 activeElement）即返回 true。 */
-export function focusFirst(els: HTMLElement[], opts: FocusOptions = {}): boolean {
+export function focusFirst(els: FocusableElement[], opts: FocusOptions = {}): boolean {
   for (const el of els) {
     focusSafely(el, opts)
-    if (el.ownerDocument.activeElement === el)
+    if (activeElementInRoot(el) === el)
       return true
   }
   return false

@@ -1,6 +1,7 @@
 import type { Params } from '@xihan-ui/core'
 import type { TagsInputSchema } from './tags-input.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
+import { sameArray } from '../shared/array'
 import { tagsInputEditInputId } from './tags-input.anatomy'
 
 const { createMachine } = setup<TagsInputSchema>()
@@ -31,7 +32,7 @@ export function splitTags(raw: string, delimiter: string): string[] {
 
 /** 逐项比对：数组每次都是新引用，不比内容的话值没变也会通知一遍。 */
 export function sameTags(a: readonly string[], b: readonly string[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((tag, i) => tag === b[i])
+  return sameArray(a, b)
 }
 
 /** max 是否给了个能用的上限。负数与非有限值按"没给"处理。 */

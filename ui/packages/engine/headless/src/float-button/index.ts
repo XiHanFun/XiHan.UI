@@ -7,6 +7,7 @@ export {
   resolveFloatButtonOffset,
 } from './float-button.connect'
 export { floatButtonKeyboard } from './float-button.keyboard'
+export { floatButtonMachine } from './float-button.machine'
 export { floatButtonMeta } from './float-button.meta'
 export type {
   FloatButtonApi,
@@ -16,6 +17,8 @@ export type {
   FloatButtonNotifiers,
   FloatButtonPlacement,
   FloatButtonProps,
+  FloatButtonRefs,
+  FloatButtonSchema,
   FloatButtonShape,
   FloatButtonTranslations,
 } from './float-button.types'

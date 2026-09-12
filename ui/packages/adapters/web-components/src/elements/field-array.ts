@@ -1,8 +1,13 @@
-import type { FieldArrayItemProps, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails } from '@xihan-ui/headless'
-import { connectFieldArray, fieldArrayAnatomy, fieldArrayMachine, fieldArrayMeta } from '@xihan-ui/headless'
+import type { Service } from '@xihan-ui/core'
+import type { FieldArrayItemProps, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails, FormControlState, FormPath, FormSchema } from '@xihan-ui/headless'
+import { connectFieldArray, fieldArrayAnatomy, fieldArrayMachine, fieldArrayMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
+
+// 与 form.ts 共享的私有适配器槽；不把内部服务暴露成自定义元素 API。
+const FORM_SERVICE = Symbol.for('xh.form.service')
+type FormHost = HTMLElement & { [FORM_SERVICE]?: Service<FormSchema> }
 
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
@@ -37,7 +42,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} disabled - 禁用：新增、删除、换序三路都按不动
  * @attr {boolean} read-only - 只读：行数改不动，行里的控件由作者自己置只读
  * @attr {boolean} invalid - 校验失败标注；落到根与每一行上
- * @attr {string} name - 整份数组的表单字段名；每一行经 item.name 拿到 名字[下标]
+ * @attr {string} name - 整份数组的表单字段名；嵌套 Form 时自动使用同一条 FormPath 真源
  * @fires value-change - 数据数组变化；detail 为 `{ value: unknown[] }`
  * @csspart root - 整份列表的容器，承载 data-disabled / data-empty / data-at-min / data-at-max / data-movable
  * @csspart item - 一行一个，可自带 index 属性声明下标，缺省按文档序
@@ -77,7 +82,7 @@ export class XhFieldArrayElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
-  declare name?: string
+  declare name?: FormPath
   declare translations?: Partial<FieldArrayTranslations>
 
   private readonly notifyValue = (details: FieldArrayValueChangeDetails): void => {
@@ -87,8 +92,20 @@ export class XhFieldArrayElement extends XhElement {
   // 机器只有一个还焦点的收尾动作（自己经 scope 取节点），不需要 config/layer/定位引擎，
   // 故 controller 只带 props。
   private readonly ctrl = new MachineController<FieldArraySchema>(this, fieldArrayMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；FieldArray 仅消费公开的禁用、只读、无效三轴。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<FieldArraySchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
@@ -96,9 +113,9 @@ export class XhFieldArrayElement extends XhElement {
       max: this.max,
       createItem: this.createItem,
       movable: this.movable ?? false,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       name: this.name,
       translations: this.translations,
       onValueChange: this.notifyValue,
@@ -111,6 +128,8 @@ export class XhFieldArrayElement extends XhElement {
   }
 
   protected wire(): void {
+    const form = this.closest('xh-form') as FormHost | null
+    this.ctrl.service.refs.set('form', form?.[FORM_SERVICE] ?? null)
     const api = connectFieldArray(this.ctrl.service, wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {

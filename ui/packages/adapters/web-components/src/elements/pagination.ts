@@ -1,13 +1,13 @@
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { PaginationApi, PaginationEllipsisSide, PaginationEntryRange, PaginationPage, PaginationPageChangeDetails, PaginationPageItem, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
+import type { PaginationApi, PaginationEllipsisSide, PaginationEntryRange, PaginationPage, PaginationPageChangeDetails, PaginationPageItem, PaginationSchema, PaginationTranslations, SelectApi, SelectSchema } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectPagination, paginationAnatomy, paginationMachine, paginationMeta } from '@xihan-ui/headless'
+import { connectPagination, paginationAnatomy, paginationMachine, paginationMeta, paginationPageSizeSelectProps, selectMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 数值属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在 connect。
@@ -19,6 +19,20 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 function itemPage(el: HTMLElement): number {
   const raw = el.getAttribute('value')
   return raw == null || raw === '' ? Number.NaN : Number(raw)
+}
+
+/** 内嵌下拉那套节点。作者只写 page-size-select 那一格，里头这些由元素自己建。 */
+interface PageSizeNodes {
+  root: HTMLElement
+  control: HTMLElement
+  trigger: HTMLElement
+  valueText: HTMLElement
+  indicator: HTMLElement
+  positioner: HTMLElement
+  content: HTMLElement
+  list: HTMLElement
+  /** 档位节点，按档位值索引：档位表变了只补差额，不整套重建。 */
+  items: Map<string, { item: HTMLElement, text: HTMLElement, indicator: HTMLElement }>
 }
 
 /**
@@ -61,8 +75,12 @@ function itemPage(el: HTMLElement): number {
  * @csspart next-trigger - 下一页；末页时转原生 disabled
  * @csspart item - 页码按钮，须自带 value 属性；当前页带 aria-current="page" 与 data-current
  * @csspart ellipsis-trigger - 折进去那几页的入口，须自带 side 属性（start / end）；承载 data-side 与 aria-expanded
+ * @csspart page-size-select - 每页条数控制器的挂载点，写一个空 `<div>` 即可；里头那套下拉的角色节点由元素自己建
  */
-export class XhPaginationElement extends XhElement {
+export class XhPaginationElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: paginationAnatomy, meta: paginationMeta }
 
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
@@ -104,11 +122,19 @@ export class XhPaginationElement extends XhElement {
   declare closeDelay?: number
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly paginationScope = createScope(null, this.idGen)
+  private readonly paginationScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着展开态走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private ellipsisPortalSource: HTMLElement | null = null
+  private readonly ellipsisPortal = this.createAnchoredPortalController({
+    name: 'Pagination ellipsis',
+    config: () => this.config,
+    source: () => this.ellipsisPortalSource,
+    root: () => this.getPart('positioner') ?? this.getPart('content'),
+    onChange: () => this.requestUpdate(),
+  })
 
   private readonly notify = (details: PaginationPageChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('page-change', { detail: details, bubbles: true, composed: true }))
@@ -125,6 +151,30 @@ export class XhPaginationElement extends XhElement {
     { scope: this.paginationScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  /**
+   * 每页条数那个下拉：用的是库里的 select，不再是原生下拉。
+   * props 从翻页机现读，故必须排在 ctrl 之后建。
+   */
+  private readonly pageSizeCtrl = new MachineController<SelectSchema>(
+    this,
+    selectMachine,
+    () => paginationPageSizeSelectProps(this.ctrl.service as Service<PaginationSchema>),
+    { scope: this.paginationScope, onBuilt: svc => this.injectPageSizeRefs(svc) },
+  )
+
+  /** 下拉那套节点；作者写的挂载点换了就整套重建。 */
+  private pageSizeNodes: PageSizeNodes | null = null
+  private pageSizeMount: HTMLElement | null = null
+  /** 下拉浮层的退场闸门，与省略位那层各走各的。 */
+  private pageSizeExit: OverlayExit | null = null
+  private readonly pageSizePortal = this.createAnchoredPortalController({
+    name: 'Pagination page size',
+    config: () => this.config,
+    source: () => this.pageSizeNodes?.control ?? null,
+    root: () => this.pageSizeNodes?.positioner ?? null,
+    onChange: () => this.requestUpdate(),
+  })
+
   /** 折叠页码列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('positioner'),
@@ -135,6 +185,31 @@ export class XhPaginationElement extends XhElement {
     if (this.config)
       return
     this.config = createRuntimeConfig({ scope: this.paginationScope, idGenerator: this.idGen })
+  }
+
+  /** 在机器挂载前建立 Presence，让省略位行为资源与真实退场共享租约。 */
+  private ensureExit(open: boolean): OverlayExit {
+    this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open,
+      onExitComplete: () => this.requestUpdate(),
+    })
+    return this.exit
+  }
+
+  private ensurePageSizeExit(open: boolean): OverlayExit {
+    this.ensureConfig()
+    this.pageSizeExit ??= createOverlayExit({
+      config: this.config!,
+      open,
+      onExitComplete: () => this.requestUpdate(),
+    })
+    return this.pageSizeExit
+  }
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return [...this.ellipsisPortal.roots, ...this.pageSizePortal.roots]
   }
 
   /** 此刻摊开的是哪个省略位的节点——它是定位锚点。 */
@@ -159,9 +234,31 @@ export class XhPaginationElement extends XhElement {
       // 浮层壳一并记上：页码列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
       branches: () => [...this.getParts('ellipsis-trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
+  }
+
+  // 下拉自己一层：触发器记为本层分支，点它算层内交互
+  private readonly registerPageSizeLayer = (): { layer: Layer, dispose: Cleanup } => {
+    this.ensureConfig()
+    return this.config!.layerRegistry.register({
+      kind: 'popover',
+      node: () => this.pageSizeNodes?.content ?? null,
+      branches: () => [this.pageSizeNodes?.trigger].filter(Boolean) as Element[],
+      isModal: () => false,
+      surfaces: () => [],
+    })
+  }
+
+  private injectPageSizeRefs(svc: Service<SelectSchema>): void {
+    this.ensureConfig()
+    svc.refs.set('config', this.config)
+    svc.refs.set('registerLayer', this.registerPageSizeLayer)
+    svc.refs.set('presence', this.ensurePageSizeExit(svc.state.get() === 'open').presence)
+    svc.refs.set('position', createPositionEngine())
+    svc.refs.set('getAnchorEl', () => this.pageSizeNodes?.trigger ?? null)
+    svc.refs.set('getFloatingEl', () => this.pageSizeNodes?.positioner ?? null)
+    svc.refs.set('getContentEl', () => this.pageSizeNodes?.content ?? null)
   }
 
   // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
@@ -170,6 +267,7 @@ export class XhPaginationElement extends XhElement {
     this.ensureConfig()
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.ensureExit(svc.state.matches('visible')).presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.openEllipsisEl(svc.context.get('openEllipsis')))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -190,8 +288,9 @@ export class XhPaginationElement extends XhElement {
    * 而这些都是公开面，作者拿到元素随时可能读、可能调——还没进文档时如实给空，不抛错。
    */
   private api(): PaginationApi | null {
-    const service = this.ctrl.service as Service<PaginationSchema> | undefined
-    return service ? connectPagination(service, wcNormalize) : null
+    const root = this.ctrl.service as Service<PaginationSchema> | undefined
+    const pageSizeSelect = this.pageSizeCtrl.service as Service<SelectSchema> | undefined
+    return root && pageSizeSelect ? connectPagination({ root, pageSizeSelect }, wcNormalize) : null
   }
 
   /**
@@ -285,7 +384,10 @@ export class XhPaginationElement extends XhElement {
   }
 
   protected wire(): void {
-    const api = connectPagination(this.ctrl.service, wcNormalize)
+    const api = connectPagination(
+      { root: this.ctrl.service, pageSizeSelect: this.pageSizeCtrl.service as Service<SelectSchema> },
+      wcNormalize,
+    )
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)
@@ -316,6 +418,7 @@ export class XhPaginationElement extends XhElement {
 
     // positioner 的 style 是坐标对象，spreader 会逐条写成内联样式
     put('page-size-select', api.getPageSizeSelectProps() as Record<string, unknown>)
+    this.wirePageSizeSelect(api.pageSizeSelect)
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
 
@@ -323,21 +426,140 @@ export class XhPaginationElement extends XhElement {
     // 会盖过 UA 的 [hidden]{display:none}；换别家样式同理，只有内联 style 压得住。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const content = this.getPart('content')
-    this.ensureConfig()
-    this.exit ??= createOverlayExit({
-      config: this.config!,
-      open: api.openEllipsis != null,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    this.exit.track(content)
-    this.exit.update(api.openEllipsis != null)
-    this.setPartHidden(content, !this.exit.visible)
+    const anchor = this.openEllipsisEl(api.openEllipsis)
+    if (anchor)
+      this.ellipsisPortalSource = anchor
+    const exit = this.ensureExit(api.openEllipsis != null)
+    exit.track(content)
+    exit.update(api.openEllipsis != null)
+    this.setPartHidden(content, !exit.visible)
 
     this.bars.wire()
+    this.ellipsisPortal.sync(exit.visible)
+  }
+
+  /**
+   * 内嵌下拉的角色节点由元素自己建：作者只写 page-size-select 那一格挂载点。
+   *
+   * 建出来的节点一律不打 data-xh-part——打了会被 discoverParts 收进 partMap，
+   * 而它们归 select 的 scope 管，本就不在分页的解剖里。
+   */
+  private ensurePageSizeNodes(): PageSizeNodes | null {
+    const mount = this.getPart('page-size-select')
+    if (!mount)
+      return null
+    if (this.pageSizeMount === mount && this.pageSizeNodes)
+      return this.pageSizeNodes
+
+    if (this.pageSizeNodes)
+      this.releasePageSizeNodes()
+
+    const doc = this.ownerDocument
+    const el = (tag: string): HTMLElement => doc.createElement(tag)
+    const nodes: PageSizeNodes = {
+      root: el('div'),
+      control: el('div'),
+      trigger: el('button'),
+      valueText: el('span'),
+      indicator: el('span'),
+      positioner: el('div'),
+      content: el('div'),
+      list: el('div'),
+      items: new Map(),
+    }
+    nodes.trigger.append(nodes.valueText, nodes.indicator)
+    nodes.control.append(nodes.trigger)
+    nodes.root.append(nodes.control)
+    nodes.content.append(nodes.list)
+    nodes.positioner.append(nodes.content)
+    // 浮层留在挂载点里：它是 fixed，坐标由引擎给，摆在哪一层都不影响落位
+    mount.append(nodes.root, nodes.positioner)
+
+    this.pageSizeNodes = nodes
+    this.pageSizeMount = mount
+    // 本轮接线已经走过一半，新节点这一轮打不上：再催一轮
+    this.requestUpdate()
+    return nodes
+  }
+
+  private releasePageSizeNodes(): void {
+    const nodes = this.pageSizeNodes
+    if (!nodes)
+      return
+    this.pageSizePortal.dispose()
+    for (const node of [nodes.root, nodes.control, nodes.trigger, nodes.valueText, nodes.indicator, nodes.positioner, nodes.content, nodes.list])
+      this.spreader.release(node)
+    for (const entry of nodes.items.values()) {
+      this.spreader.release(entry.item)
+      this.spreader.release(entry.text)
+      this.spreader.release(entry.indicator)
+    }
+    nodes.root.remove()
+    nodes.positioner.remove()
+    this.pageSizeNodes = null
+    this.pageSizeMount = null
+  }
+
+  /** 把内嵌下拉那份 api 打到自建的节点上；档位表变了只补差额。 */
+  private wirePageSizeSelect(select: SelectApi): void {
+    const nodes = this.ensurePageSizeNodes()
+    if (!nodes)
+      return
+
+    this.spreader.spread(nodes.root, select.getRootProps() as Record<string, unknown>)
+    this.spreader.spread(nodes.control, select.getControlProps() as Record<string, unknown>)
+    this.spreader.spread(nodes.trigger, select.getTriggerProps() as Record<string, unknown>)
+    this.spreader.spread(nodes.valueText, select.getValueTextProps() as Record<string, unknown>)
+    nodes.valueText.textContent = select.displayText
+    this.spreader.spread(nodes.indicator, select.getIndicatorProps() as Record<string, unknown>)
+    this.spreader.spread(nodes.positioner, select.getPositionerProps() as Record<string, unknown>)
+    this.spreader.spread(nodes.content, select.getContentProps() as Record<string, unknown>)
+    this.spreader.spread(nodes.list, select.getListProps() as Record<string, unknown>)
+
+    const alive = new Set<string>()
+    for (const option of select.collection) {
+      alive.add(option.value)
+      let entry = nodes.items.get(option.value)
+      if (!entry) {
+        const doc = this.ownerDocument
+        entry = { item: doc.createElement('div'), text: doc.createElement('span'), indicator: doc.createElement('span') }
+        entry.item.append(entry.text, entry.indicator)
+        nodes.list.append(entry.item)
+        nodes.items.set(option.value, entry)
+      }
+      this.spreader.spread(entry.item, select.getItemProps({ value: option.value }) as Record<string, unknown>)
+      this.spreader.spread(entry.text, select.getItemTextProps({ value: option.value }) as Record<string, unknown>)
+      entry.text.textContent = option.label
+      this.spreader.spread(entry.indicator, select.getItemIndicatorProps({ value: option.value }) as Record<string, unknown>)
+    }
+    for (const [value, entry] of nodes.items) {
+      if (alive.has(value))
+        continue
+      this.spreader.release(entry.item)
+      this.spreader.release(entry.text)
+      this.spreader.release(entry.indicator)
+      entry.item.remove()
+      nodes.items.delete(value)
+    }
+
+    // 与省略位那层同一套：收起押后到退场播完，皮肤给 content 设了 display，只有内联 style 压得住
+    this.ensureConfig()
+    const exit = this.ensurePageSizeExit(select.open)
+    exit.track(nodes.content)
+    exit.update(select.open)
+    // 直接写而不走 setPartHidden：那条路是为作者写的角色节点留的，要护住作者自己的内联
+    // display；这颗是元素建的，没有作者的那一份，也没有「标签已在、类未到」那段升级前空窗
+    nodes.content.style.display = exit.visible ? '' : 'none'
+    this.pageSizePortal.sync(exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.ellipsisPortal.dispose()
+    this.pageSizePortal.dispose()
     super.disconnectedCallback()
+    this.pageSizeExit?.dispose()
+    this.pageSizeExit = null
+    this.releasePageSizeNodes()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()
     this.exit = null

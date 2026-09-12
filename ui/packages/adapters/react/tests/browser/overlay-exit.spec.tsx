@@ -5,12 +5,14 @@
 // use-overlay，折叠族（tool-call / reasoning）走 use-overlay-exit，两条闸门各有各的接线。
 import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
-import { act } from 'react'
+import { getLayerRegistry } from '@xihan-ui/core'
+import { act, StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   XhDatePickerCalendar,
   XhDatePickerContent,
+  XhDatePickerControl,
   XhDatePickerPositioner,
   XhDatePickerRoot,
   XhDialogCloseTrigger,
@@ -43,10 +45,116 @@ import {
   XhToolCallContent,
   XhToolCallRoot,
   XhToolCallTrigger,
+  XhTourBackdrop,
+  XhTourContent,
+  XhTourPositioner,
+  XhTourRoot,
+  XhTourSpotlight,
+  XhTourTitle,
 } from '../../src'
 // 皮肤要一起加载：这里查的就是皮肤给出的 animationName 与 display
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
+
+let root: Root | null = null
+let host: HTMLElement | null = null
+
+function installLongExit(scope: string): void {
+  const style = document.createElement('style')
+  style.textContent = `
+    @keyframes test-exit-fade { from { opacity: 1 } to { opacity: 0 } }
+    @keyframes test-exit-move { from { translate: 0 0 } to { translate: 0 8px } }
+    @keyframes test-exit-shine { from { outline-color: transparent } to { outline-color: transparent } }
+    [data-scope='${scope}'][data-part='content'][data-state='closed'] {
+      animation: test-exit-fade 60s linear forwards, test-exit-move 60s linear forwards, test-exit-shine 60s linear infinite;
+    }
+    [data-scope='${scope}'][data-part='backdrop'][data-state='closed'] { animation: test-exit-fade 60s linear forwards }
+  `
+  document.body.append(style)
+}
+
+function finiteAnimations(node: HTMLElement): Animation[] {
+  return node.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
+}
+
+describe.each(['dialog', 'drawer'] as const)('%s 的行为资源退出合同', (scope) => {
+  it('等完内容全部有限动画和遮罩，退出期间内容与背景保持失活', async () => {
+    installLongExit(scope)
+    const outside = document.createElement('button')
+    document.body.append(outside)
+    const completed: number[] = []
+    const onExitComplete = () => completed.push(getLayerRegistry(document).list().length)
+    const setOpen = await mount(open => scope === 'dialog'
+      ? (
+          <XhDialogRoot open={open} onExitComplete={onExitComplete}>
+            <XhDialogContent>
+              <XhDialogTitle>标题</XhDialogTitle>
+              <button type="button">内部</button>
+            </XhDialogContent>
+          </XhDialogRoot>
+        )
+      : (
+          <XhDrawerRoot open={open} onExitComplete={onExitComplete}>
+            <XhDrawerContent>
+              <XhDrawerTitle>标题</XhDrawerTitle>
+              <button type="button">内部</button>
+            </XhDrawerContent>
+          </XhDrawerRoot>
+        ))
+    await setOpen(false)
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const content = part(scope, 'content')
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    const action = content.querySelector('button')!
+    // 先释放进入时已有的焦点，再验证失活节点不能重新取得焦点。
+    action.blur()
+    action.focus()
+    expect(document.activeElement).not.toBe(action)
+    expect(outside.inert).toBe(true)
+    expect(document.body.style.overflow).toBe('hidden')
+    const animations = finiteAnimations(content)
+    expect(animations).toHaveLength(2)
+    animations[0]!.finish()
+    await settle()
+    expect(completed).toEqual([])
+    animations[1]!.finish()
+    await settle()
+    expect(completed).toEqual([])
+    for (const animation of finiteAnimations(part(scope, 'backdrop'))) animation.finish()
+    await settle()
+    expect(completed).toEqual([0])
+    expect(outside.inert).toBe(false)
+    expect(query(scope, 'content')).toBeNull()
+  })
+
+  it('strictMode 重开撤销旧退出，卸载立即释放且不误发完成', async () => {
+    installLongExit(scope)
+    const completed: number[] = []
+    const onExitComplete = () => completed.push(getLayerRegistry(document).list().length)
+    const setOpen = await mount(open => (
+      <StrictMode>
+        {scope === 'dialog'
+          ? <XhDialogRoot open={open} onExitComplete={onExitComplete}><XhDialogContent><XhDialogTitle>标题</XhDialogTitle></XhDialogContent></XhDialogRoot>
+          : <XhDrawerRoot open={open} onExitComplete={onExitComplete}><XhDrawerContent><XhDrawerTitle>标题</XhDrawerTitle></XhDrawerContent></XhDrawerRoot>}
+      </StrictMode>
+    ))
+    await setOpen(false)
+    const old = finiteAnimations(part(scope, 'content'))
+    await setOpen(true)
+    for (const animation of old) animation.cancel()
+    await settle()
+    expect(part(scope, 'content').inert).toBe(false)
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    expect(completed).toEqual([])
+    await setOpen(false)
+    await inAct(() => root!.unmount())
+    root = null
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+    expect(completed).toEqual([])
+  })
+})
 
 const globals = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }
 
@@ -61,9 +169,6 @@ async function inAct(fn: () => void | Promise<void>): Promise<void> {
     globals.IS_REACT_ACT_ENVIRONMENT = previous
   }
 }
-
-let root: Root | null = null
-let host: HTMLElement | null = null
 
 afterEach(async () => {
   if (root) {
@@ -329,6 +434,100 @@ describe('image-viewer 退场', () => {
 
     expect(query('image-viewer', 'content'), '动画结束后应当卸载').toBeNull()
   })
+
+  it('内容和遮罩的全部退出租约完成前保留模态资源，完成后才通知', async () => {
+    installLongExit('image-viewer')
+    const outside = document.createElement('button')
+    document.body.append(outside)
+    const setOpen = await mount(open => (
+      <XhImageViewerRoot
+        open={open}
+        collection={[{ src: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=' }]}
+      >
+        <XhImageViewerContent><button type="button">内部</button></XhImageViewerContent>
+      </XhImageViewerRoot>
+    ))
+
+    await setOpen(false)
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const content = part('image-viewer', 'content')
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    expect(outside.inert).toBe(true)
+    expect(document.body.style.overflow).toBe('hidden')
+
+    const contentAnimations = finiteAnimations(content)
+    expect(contentAnimations).toHaveLength(2)
+    contentAnimations[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    contentAnimations[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    for (const animation of finiteAnimations(part('image-viewer', 'backdrop'))) animation.finish()
+    await settle()
+
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+    expect(outside.inert).toBe(false)
+    expect(query('image-viewer', 'content')).toBeNull()
+  })
+})
+
+describe('tour 退出资源', () => {
+  it('气泡、遮罩与聚光灯全部完成前保留 Layer，但不接入 Tour 没有的背景资源', async () => {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes test-tour-exit { from { opacity: 1 } to { opacity: 0 } }
+      @keyframes test-tour-move { from { translate: 0 0 } to { translate: 0 8px } }
+      [data-scope='tour'][data-part='content'][data-state='closed'] {
+        animation: test-tour-exit 60s linear forwards, test-tour-move 60s linear forwards;
+      }
+      [data-scope='tour'][data-part='backdrop'][data-state='closed'],
+      [data-scope='tour'][data-part='spotlight'][data-state='closed'] {
+        animation: test-tour-exit 60s linear forwards;
+      }
+    `
+    document.body.append(style)
+    const target = document.createElement('button')
+    target.id = 'tour-exit-target'
+    document.body.append(target)
+    const setOpen = await mount(open => (
+      <XhTourRoot open={open} steps={[{ id: 'one', target: '#tour-exit-target', title: '第一步' }]}>
+        <XhTourBackdrop />
+        <XhTourSpotlight />
+        <XhTourPositioner><XhTourContent><XhTourTitle /></XhTourContent></XhTourPositioner>
+      </XhTourRoot>
+    ))
+
+    await setOpen(false)
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const content = part('tour', 'content')
+    const backdrop = part('tour', 'backdrop')
+    const spotlight = part('tour', 'spotlight')
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    expect(target.inert).toBe(false)
+    expect(document.body.style.overflow).not.toBe('hidden')
+
+    const contentAnimations = finiteAnimations(content)
+    expect(contentAnimations).toHaveLength(2)
+    contentAnimations[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    contentAnimations[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    for (const animation of finiteAnimations(backdrop)) animation.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    for (const animation of finiteAnimations(spotlight)) animation.finish()
+    await settle()
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    await settle()
+
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+    expect(content.style.display).toBe('none')
+  })
 })
 
 describe('popover 退场', () => {
@@ -400,7 +599,7 @@ describe('select 退场', () => {
 
     const closing = part('select', 'content')
     expect(getComputedStyle(closing).display, 'content 收起态不能是 display:none').not.toBe('none')
-    expectPlaying(closing, 'xh-pop-out')
+    expectPlaying(closing, 'xh-overlay-slide-out')
   })
 
   it('动画结束后才落成内联收起', async () => {
@@ -413,12 +612,32 @@ describe('select 退场', () => {
 
     expect(closing.style.display, '动画结束后应当由宿主写内联 display:none').toBe('none')
   })
+
+  it('内容全部有限退场完成前保留 Layer，逻辑关闭立即退出交互树', async () => {
+    installLongExit('select')
+    const setOpen = await mount(tree)
+    await setOpen(false)
+    await new Promise(resolve => requestAnimationFrame(resolve))
+
+    const content = part('select', 'content')
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    const animations = finiteAnimations(content)
+    expect(animations).toHaveLength(2)
+    animations[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    animations[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+  })
 })
 
 describe('date-picker 退场', () => {
   /** 两张日历并排的面板：content 靠 :has 认出第二张才横排。 */
   const tree = (open: boolean): ReactNode => (
     <XhDatePickerRoot open={open}>
+      <XhDatePickerControl />
       <XhDatePickerPositioner>
         <XhDatePickerContent>
           <XhDatePickerCalendar index={0} />
@@ -439,7 +658,7 @@ describe('date-picker 退场', () => {
 
     const closing = part('date-picker', 'content')
     expect(getComputedStyle(closing).display, '退场帧若退回 block，两张日历会竖着堆起来闪一下').toBe('flex')
-    expectPlaying(closing, 'xh-pop-out')
+    expectPlaying(closing, 'xh-overlay-slide-out')
   })
 
   it('动画结束后才落成内联收起', async () => {
@@ -516,6 +735,19 @@ describe('tool-call 收起', () => {
       <XhToolCallContent>正文</XhToolCallContent>
     </XhToolCallRoot>
   )
+
+  it('严格模式重建后仍能结清退出租约，再次展开和关闭也正常', async () => {
+    const setOpen = await mount(open => <StrictMode>{tree(open)}</StrictMode>)
+    for (let round = 0; round < 2; round++) {
+      await setOpen(false)
+      const content = part('tool-call', 'content')
+      for (const animation of content.getAnimations()) animation.finish()
+      await settle()
+      expect(content.style.display).toBe('none')
+      await setOpen(true)
+      expect(content.style.display).not.toBe('none')
+    }
+  })
 
   it('收起后 content 仍在布局里，并且真的在播收拢动画', async () => {
     const setOpen = await mount(tree)

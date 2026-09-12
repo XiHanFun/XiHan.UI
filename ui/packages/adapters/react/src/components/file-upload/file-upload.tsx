@@ -5,8 +5,9 @@ import type { SlotChildren } from '../../runtime/slot-content'
 import { useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import { FileUploadItemProvider, FileUploadProvider, useFileUploadContext, useFileUploadItemContext } from './context'
 import { useFileUpload } from './use-file-upload'
 
@@ -94,7 +95,7 @@ export function XhFileUploadRoot({
   children,
   ...rest
 }: XhFileUploadRootProps): ReactNode {
-  const ctx = useFileUpload(withXhConfig('file-upload', {
+  const ctx = useFileUpload(withXhConfig('file-upload', useFormControlProps({
     files,
     defaultFiles,
     remoteFiles,
@@ -118,7 +119,7 @@ export function XhFileUploadRoot({
     onRemoteFilesChange,
     onUploadComplete,
     onUploadError,
-  }) as FileUploadProps)
+  })) as FileUploadProps)
   const api = ctx.api
 
   return (
@@ -188,7 +189,7 @@ export interface XhFileUploadTriggerProps extends ComponentPropsWithRef<'button'
 
 export function XhFileUploadTrigger({ children, asChild, ...rest }: XhFileUploadTriggerProps): ReactNode {
   const ctx = useFileUploadContext()
-  const props = mergeReactProps(
+  const props = mergePartProps(
     ctx.api.getTriggerProps() as Record<string, unknown>,
     rest as Record<string, unknown>,
   )

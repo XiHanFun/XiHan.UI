@@ -21,7 +21,10 @@ export interface CodeViewLineSlotProps {
   number: number
 }
 
-export interface XhCodeViewRootProps {
+/** 根上自有的那些取值；lang 是围栏语言标注、不是原生的文档语言，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'lang'>
+
+export interface XhCodeViewRootProps extends RootElementProps {
   code?: string
   /** 围栏语言标注，空白一律落 plaintext。 */
   lang?: string
@@ -53,9 +56,42 @@ export interface XhCodeViewRootProps {
   children?: SlotChildren<CodeViewRootSlotProps>
 }
 
-export function XhCodeViewRoot({ children, highlighter, ...props }: XhCodeViewRootProps): ReactNode {
-  const configured = withXhConfig('code-view', props) as XhCodeViewRootProps
-  const fallback = useDefaultHighlighter()
+export function XhCodeViewRoot({
+  code,
+  lang,
+  filename,
+  complete,
+  wrap,
+  lineNumbers,
+  startLine,
+  highlightLines,
+  clamp,
+  clamped,
+  highlighter,
+  highlightWhileStreaming,
+  size,
+  translations,
+  onClampToggle,
+  children,
+  ...rest
+}: XhCodeViewRootProps): ReactNode {
+  const configured = withXhConfig('code-view', {
+    code,
+    lang,
+    filename,
+    complete,
+    wrap,
+    lineNumbers,
+    startLine,
+    highlightLines,
+    clamp,
+    clamped,
+    highlightWhileStreaming,
+    size,
+    translations,
+    onClampToggle,
+  })
+  const fallback = useDefaultHighlighter(highlighter === undefined)
   const ctx = useCodeView({
     ...configured,
     code: configured.code ?? '',
@@ -64,7 +100,7 @@ export function XhCodeViewRoot({ children, highlighter, ...props }: XhCodeViewRo
   const { api } = ctx
   return (
     <CodeViewProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           lang: api.lang,
           lineCount: api.lineCount,

@@ -25,10 +25,23 @@
 - `siderBreakpoint` 给一档（`sm` / `md` / `lg` / `xl`），视口窄于这一档时侧栏按折叠宽显示。
   它只换宽度、不改折叠态：折叠态归 `siderCollapsed` 那条通道，两者互不干扰。
 - 断点跨过去时发 `onSiderBreakpoint`，挂载时也发一次当前值。要在窄屏改换别的排布，接这个回调。
+- 运行期修改 `siderBreakpoint` 会立即切换媒体查询、报告新档位当前值；移除该属性会解除观察并清除窄屏标记，保留当前折叠态。
+  `siderPresentation` 切到 `sheet` 时立即应用当前断点，受控折叠态仍由宿主写回。
+  断点令牌在属性更新和媒体查询事件时重新读取，单独修改 CSSOM 不会主动触发重绑。
+  已指定断点却缺少令牌或所属 Window 的 `matchMedia` 会明确报错；同步失败会解除监听，不再沿用旧档位，需以有效属性更新重新建立。
 - `siderPresentation="sheet"` 是覆盖档：侧栏移出画外，展开时盖在内容之上并铺一层遮罩，内容占满整宽。
   与 `siderBreakpoint` 配着写就是「宽屏占一列、窄屏覆盖」——跨档时侧栏跟着开合，
   进覆盖档收起、回占位档展开，走的仍是 `siderCollapsed` 那条通道。
 - 覆盖档下点遮罩或按 Escape 收起侧栏，`sider-trigger` 照旧是把它唤出来的那个控件。
+- 覆盖侧栏通过共享 Document Hub 的空栈 fallback 接收 Escape，并读取当前组件的
+  `RuntimeConfig.layerRegistry`。capture 时只要该栈存在对话框、菜单等 Layer，本键就归上层消费；
+  即使 Layer 同步退栈，仍要到下一次 Escape 才收侧栏。自定义 LayerRegistry 与同一 Document
+  的默认注册表互不干扰。
+- 同一 LayerRegistry 下同时展开多个覆盖侧栏时，每次 Escape 只收最近展开的一个；受控侧栏未写回
+  折叠态时持续占住这个位置。占位档与当前断点解析为 inline 的侧栏会被动态跳过。
+- 直接使用 headless 机器时，要在 mount 前把与机器 Scope 属于同一 Document 的 `RuntimeConfig`
+  写进 `LayoutRefs.config`；缺失或跨 Document 混接都会明确失败。Vue、React 与 Web Components
+  适配器已经完成这段接线。
 - 覆盖档不锁焦点、不把背后的内容标成惰性：它是骨架里的一段，不是模态浮层。要模态用[抽屉](./drawer)。
 - 遮罩渲染在侧栏之前：两层同一个层号，谁盖谁由文档序决定。
 - 覆盖档下侧栏贴死视口，内衬与安全区取大的一头，所以 `--xh-layout-sider-padding` 在这一档要写单值（`max()` 收不了简写的多值）。

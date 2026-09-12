@@ -21,8 +21,11 @@ const HEADLESS = 'packages/engine/headless/src'
 
 /** 机器里交出归还落点的写法。 */
 const WIRED = /\brestoreTarget\s*:/
-/** 建焦点域的调用。 */
-const FOCUS_SCOPE = /\bcreateFocusScope\s*\(/
+/** 建焦点域：自己调，或者把焦点域那一份交给共享的浮层外壳。 */
+const FOCUS_SCOPE = /\bcreateFocusScope\s*\(|\bfocusScope\s*:/
+
+/** src 下不是组件的目录，不参与这道门禁。 */
+const NOT_COMPONENTS = new Set(['shared'])
 
 /**
  * 不交显式落点的组件，逐个写明凭什么。
@@ -31,9 +34,9 @@ const FOCUS_SCOPE = /\bcreateFocusScope\s*\(/
  */
 const EXEMPT = {
   'popconfirm': '自己没有机器，浮层跑的是 popover 那台，焦点域与归还都在那一层建',
+  'drawer': '机器整份取自 dialog，焦点域与归还都在那一层建；落点按 refs 的 partScope 取 drawer 自己的 trigger',
   'navigation-menu': '不建焦点域：面板里是链接不是菜单项，收起时由 focusItem 直接把焦点放回对应 trigger',
   'menubar': 'roving 锚点自己算，退出动作里手搬焦点（restoreTriggerFocus）',
-  'side-nav': '面板只在键盘展开时建焦点域，那种入口下创建前的持有者就是触发按钮；指针会话不建域，拆除时自己把焦点搬回锚点',
   'date-picker': '触发器是输入行，点它必然把焦点落到某一段上，创建前的快照就是它本身',
   'tour': '引导没有触发器，由宿主程序发起，除了创建前的持有者没有别的落点可交',
 }
@@ -143,6 +146,8 @@ let scoped = 0
 
 for (const entry of (await readdir(HEADLESS, { withFileTypes: true })).filter(d => d.isDirectory()).sort((a, b) => a.name < b.name ? -1 : 1)) {
   const name = entry.name
+  if (NOT_COMPONENTS.has(name))
+    continue
   const dir = join(HEADLESS, name)
   const keyboardFile = `${HEADLESS}/${name}/${name}.keyboard.ts`.split('\\').join('/')
 

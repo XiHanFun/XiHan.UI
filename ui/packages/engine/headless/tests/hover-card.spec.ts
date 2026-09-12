@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
+import type { ExitLease } from '@xihan-ui/core/presence'
 import type { HoverCardOpenChangeDetails, HoverCardSchema } from '../src/hover-card'
 import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
@@ -109,7 +111,6 @@ function wireLayer(card: ReturnType<typeof makeCard>): string[] {
       // trigger 记为本层分支：点它算层内交互
       branches: () => [card.trigger],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
     return {
@@ -134,6 +135,44 @@ function press(el: HTMLElement, key: string): void {
 
 beforeEach(() => {
   vi.useFakeTimers()
+})
+
+describe('hoverCard 真实退场资源', () => {
+  it('逻辑关闭立即失活，行为资源等 Presence 完成才释放；中途重开复用原 Layer', () => {
+    const c = makeCard()
+    wireLayer(c)
+    const config = c.service.refs.get('config')!
+    const presence = createPresence({ config, open: false, onRenderedChange: () => {} })
+    c.service.refs.set('presence', presence)
+    const leases: ExitLease[] = []
+    const stopExit = presence.onBeforeExit(() => {
+      leases.push(presence.claimExit(`hover-card exit ${leases.length + 1}`))
+    })
+
+    c.api().setOpen(true)
+    const original = config.layerRegistry.list()[0]
+    expect(original).toBeDefined()
+    c.api().setOpen(false)
+    const closing = c.api().getContentProps() as Record<string, unknown>
+    expect(closing.inert).toBe(true)
+    expect(closing['aria-hidden']).toBe(true)
+    expect(config.layerRegistry.list()).toEqual([original])
+    presence.update(false)
+    expect(leases).toHaveLength(1)
+
+    c.api().setOpen(true)
+    expect(leases[0]!.settled).toBe(true)
+    expect(config.layerRegistry.list()).toEqual([original])
+
+    c.api().setOpen(false)
+    presence.update(false)
+    leases[1]!.done()
+    expect(config.layerRegistry.list()).toHaveLength(0)
+
+    stopExit()
+    presence.dispose()
+    c.stop()
+  })
 })
 
 afterEach(() => {
@@ -355,7 +394,7 @@ describe('hoverCard 收起的其它出口', () => {
     vi.advanceTimersByTime(10)
     expect(c.state()).toBe('visible.open')
 
-    // 消解层的监听器是延后注册的（避开打开自己的那一次交互）
+    // Document Hub 同步挂监听，本层参与者延后一枚微任务武装（避开打开自己的那一次交互）
     await vi.advanceTimersByTimeAsync(1)
     // 焦点不在卡片里：keydown 落在文档上，trigger/content 的处理器一个也收不到
     expect(c.root.contains(document.activeElement)).toBe(false)

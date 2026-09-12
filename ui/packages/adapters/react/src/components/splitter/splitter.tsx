@@ -2,6 +2,7 @@ import type { Direction, Orientation } from '@xihan-ui/core'
 import type { SplitterApi, SplitterPanelProps, SplitterPanelState, SplitterSchema, SplitterTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { normalizeItemIndex } from '@xihan-ui/core'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -10,12 +11,6 @@ import { SplitterProvider, useSplitterContext } from './context'
 import { useSplitter } from './use-splitter'
 
 type SplitterProps = SplitterSchema['props']
-
-/** 把作者写的下标收成数字；不是数字就当第一个。 */
-function toIndex(raw: number | string): number {
-  const n = Number(raw)
-  return Number.isFinite(n) ? n : 0
-}
 
 /** 函数式 children 的载荷：各面板的百分比与逐块状态、拖拽态，以及整份赋值、单块调整、折叠展开的命令。 */
 export interface SplitterRootSlotProps {
@@ -119,7 +114,7 @@ export function XhSplitterPanel({ index = 0, children, ...rest }: XhSplitterPane
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getPanelProps(toIndex(index)) as Record<string, unknown>,
+        ctx.api.getPanelProps(normalizeItemIndex(index)) as Record<string, unknown>,
         rest as Record<string, unknown>,
       )}
     >
@@ -139,7 +134,7 @@ export function XhSplitterResizeTrigger({ index = 0, children, ...rest }: XhSpli
   // 后代得焦会被算成分隔条自己得焦，键盘操作的那一条于是认错人。装成原生监听器，
   // 到达路径才与另外两家一致
   const bind = useNativeEvents(
-    ctx.api.getResizeTriggerProps(toIndex(index)) as Record<string, unknown>,
+    ctx.api.getResizeTriggerProps(normalizeItemIndex(index)) as Record<string, unknown>,
     ['onFocus'],
   )
   return (

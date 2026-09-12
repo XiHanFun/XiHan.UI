@@ -1,14 +1,14 @@
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
+import type { FormControlState, SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectSelect, selectAnatomy, selectMachine, selectMeta } from '@xihan-ui/headless'
+import { connectSelect, resolveFormControlState, selectAnatomy, selectMachine, selectMeta, tagAnatomy } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -22,8 +22,13 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 锚点取 trigger、被定位的浮层取 positioner。
  * 条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。
  *
- * value-text 的显示文字与表单影子 hidden-select 的选项由元素代填，作者只需给出空节点；
- * value-text 里作者写了内容就归作者，元素不再改写。
+ * value-text 的显示文字、overflow-tag 的 +N 与表单影子 hidden-select 的选项由元素代填，作者只需给出空节点；
+ * value-text / overflow-tag 里作者写了内容就归作者，元素不再改写。
+ *
+ * tag 与 overflow-tag 两个角色节点接的是库里 tag 的 root（DOM 上带 data-scope="tag"，吃 tag 那份皮肤）：
+ * 语气、尺寸与禁用从本元素传下去，形态按控件的面派（outline / ghost / 缺省摆淡底标签，subtle 摆描边标签）。
+ * 节点里只有文字时元素替它包一层 tag 的 label（截断落在那一层），
+ * 作者自己写了子节点就原样放行。item-delete-trigger 接的是所在标签那份 tag 的 close-trigger。
  *
  * @customElement xh-select
  * @attr {string} value - 受控选中值；缺省该属性即非受控。多选集合请写 property，属性只递得进单值
@@ -34,7 +39,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} read-only - 只读：浮层照常展开、条目照常浏览，但选中值改不动、也清不掉
  * @attr {boolean} invalid - 校验错误态：trigger 标红并输出 aria-invalid
  * @attr {boolean} loading - 条目还在取：列表报 aria-busy，在途占位顶上来、空态占位让位
- * @attr {number} max-tag-count - 多选标签最多摆几个，其余折进 api 的 overflowCount；缺省全摆
+ * @attr {number} max-tag-count - 多选标签最多摆几个，其余折进 overflowCount 并合成 overflow-tag 那一枚；缺省 3
  * @attr {boolean} required - 原生表单校验：无选中值时提交被拦下；多选下的门槛是至少选中一项
  * @attr {string} name - 表单字段名；给定后表单影子才带 name 并参与提交
  * @attr {string} placeholder - 无选中时 value-text 显示的占位文字
@@ -55,8 +60,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart indicator - 展开指示符（aria-hidden，data-state 随开合）
  * @csspart control - 盒：触发器与清空按钮在里面并排，描边、底色、控件高度与聚焦环都长在它上面
  * @csspart clear-trigger - 清空按钮：盒里 trigger 的兄弟节点，不占 Tab 位；清不了（无值 / 禁用 / 只读）时带 hidden，点完焦点送回 trigger；可及名走 translations.clearTrigger
- * @csspart tag - 多选标签，须自带 value 属性标识选中值；放触发器里是纯展示，放外面配 item-delete-trigger 可删
- * @csspart item-delete-trigger - 标签删除按钮，须放在 tag 里；点按摘掉所在标签的选中值，可及名走 translations.deleteItem
+ * @csspart tag-list - 触发器里的标签行：可见标签与 overflow-tag 放在它里面；无选中时带 hidden，value-text 回来显示占位文字
+ * @csspart tag - 多选标签，须自带 value 属性标识选中值；接的是 tag 的 root（data-scope="tag"），语气、尺寸与禁用随本元素、形态按控件的面派；放触发器里是纯展示，放外面配 item-delete-trigger 可删
+ * @csspart item-delete-trigger - 标签删除按钮，须放在 tag 里；接的是所在标签那份 tag 的 close-trigger（data-scope="tag"），禁用时留位、原生 disabled；点按摘掉所在标签的选中值，可及名走 translations.deleteItem
+ * @csspart overflow-tag - 折起的标签合成的那一枚，同样接 tag 的 root，带 data-count：留空即由元素填入 +N（文字走 translations.overflowTag），作者写了内容则归作者；没有折起的标签时带 hidden
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - 浮层外壳（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart list - role=listbox 本体，条目放在它里面；滚动也在这一层
@@ -70,8 +77,16 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item-indicator - 条目选中标记（aria-hidden）
  * @csspart hidden-select - 表单影子，须是原生 select 空壳；选项由元素按当前值补齐（多选时开原生 multiple），省略该节点即不参与表单
  */
-export class XhSelectElement extends XhElement {
-  static override partContract = { anatomy: selectAnatomy, meta: selectMeta }
+export class XhSelectElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
+  // tag / overflow-tag 接的是 tag 的 root，item-delete-trigger 接的是 tag 的 close-trigger：三个作者名都归 tag 那套 scope 管，不在本元素的解剖里
+  static override partContract = {
+    anatomy: selectAnatomy,
+    meta: selectMeta,
+    delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }],
+  }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -82,11 +97,11 @@ export class XhSelectElement extends XhElement {
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
-    invalid: { type: Boolean },
+    invalid: { converter: BOOLEAN_CONVERTER },
     loading: { type: Boolean },
-    required: { type: Boolean },
+    required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
     placement: { converter: STRING_CONVERTER },
@@ -127,14 +142,23 @@ export class XhSelectElement extends XhElement {
   declare maxTagCount?: number
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly selectScope = createScope(null, this.idGen)
+  private readonly selectScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = this.createAnchoredPortalController({
+    name: 'Select',
+    config: () => this.config,
+    source: () => this.getPart('trigger'),
+    root: () => this.getPart('positioner'),
+    onChange: () => this.requestUpdate(),
+  })
 
-  /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
-  private readonly ownsValueText = new WeakMap<HTMLElement, boolean>()
+  /** value-text / overflow-tag 的文字是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
+  private readonly ownsText = new WeakMap<HTMLElement, boolean>()
+  /** 每枚标签里由元素补出来的那层 label。 */
+  private readonly tagLabels = new WeakMap<HTMLElement, HTMLElement>()
   /** 表单影子当前这批选项对应的值与文字，同一份不重建。 */
   private readonly hiddenOptionKey = new WeakMap<HTMLElement, string>()
 
@@ -155,19 +179,31 @@ export class XhSelectElement extends XhElement {
 
   /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<SelectSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+      required: this.required,
+    }, this.inheritedControl)
     return {
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue ?? null,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       loading: this.loading ?? false,
-      required: this.required ?? false,
+      required: control.required,
       name: this.name,
       placeholder: this.placeholder,
       placement: this.placement,
@@ -191,6 +227,21 @@ export class XhSelectElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.selectScope, idGenerator: this.idGen })
   }
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
+  }
+
+  /** 在机器挂载前建立 Presence，确保 default-open 的行为资源与视觉退场共享同一租约。 */
+  private ensureExit(open: boolean): OverlayExit {
+    this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open,
+      onExitComplete: () => this.requestUpdate(),
+    })
+    return this.exit
+  }
+
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
@@ -200,7 +251,6 @@ export class XhSelectElement extends XhElement {
       // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
       branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 列表不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })
@@ -211,6 +261,7 @@ export class XhSelectElement extends XhElement {
     this.ensureConfig()
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.ensureExit(svc.state.get() === 'open').presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -253,16 +304,33 @@ export class XhSelectElement extends XhElement {
     return this.getParts(name).filter(el => item.contains(el))
   }
 
-  /** 填入选中项显示文字；首次见到该节点时若已有内容则归作者，之后不再改写。 */
-  private fillValueText(el: HTMLElement, text: string): void {
-    let owned = this.ownsValueText.get(el)
+  /** 填入元素代管的文字（value-text 的显示文字、overflow-tag 的 +N）；首次见到该节点时若已有内容则归作者，之后不再改写。 */
+  private fillText(el: HTMLElement, text: string): void {
+    let owned = this.ownsText.get(el)
     if (owned === undefined) {
       owned = (el.textContent ?? '').trim() === ''
-      this.ownsValueText.set(el, owned)
+      this.ownsText.set(el, owned)
     }
     if (!owned || el.textContent === text)
       return
     el.textContent = text
+  }
+
+  /**
+   * 标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，
+   * 返回 null。补出来的那层不打 data-xh-part，不进角色节点表。
+   */
+  private ensureTagLabel(tag: HTMLElement): HTMLElement | null {
+    const existing = this.tagLabels.get(tag)
+    if (existing && existing.parentNode === tag)
+      return existing
+    if (tag.children.length > 0)
+      return null
+    const label = this.ownerDocument.createElement('span')
+    label.append(...Array.from(tag.childNodes))
+    tag.append(label)
+    this.tagLabels.set(tag, label)
+    return label
   }
 
   /**
@@ -299,9 +367,14 @@ export class XhSelectElement extends XhElement {
     return this.ctrl.service ? connectSelect(this.ctrl.service, wcNormalize).tags : []
   }
 
-  /** 被 max-tag-count 折起来的标签数，作者据它渲染 +N。机器尚未建起时为 0。 */
+  /** 被 max-tag-count 折起来的标签数；+N 那一枚由元素填进 overflow-tag，这里只供作者读。机器尚未建起时为 0。 */
   get overflowCount(): number {
     return this.ctrl.service ? connectSelect(this.ctrl.service, wcNormalize).overflowCount : 0
+  }
+
+  /** overflow-tag 显示的文字（translations.overflowTag 算出）；没有折起的标签、或机器尚未建起时为空串。 */
+  get overflowText(): string {
+    return this.ctrl.service ? connectSelect(this.ctrl.service, wcNormalize).overflowText : ''
   }
 
   protected wire(): void {
@@ -319,12 +392,29 @@ export class XhSelectElement extends XhElement {
     put('indicator', api.getIndicatorProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
 
-    // 标签是多实例 part：身份取自己（或所在 tag）的 value 属性
-    for (const el of this.getParts('tag'))
+    put('tag-list', api.getTagListProps() as Record<string, unknown>)
+    // 标签是多实例 part，接的是 tag 的 root：身份取自己（或所在 tag）的 value 属性；只有文字的补一层 label
+    const tagLabelProps = api.getTagLabelProps() as Record<string, unknown>
+    for (const el of this.getParts('tag')) {
       this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      const label = this.ensureTagLabel(el)
+      if (label)
+        this.spreader.spread(label, tagLabelProps)
+    }
+    // 删除钮是所在标签那份 tag 的 close-trigger：身份取所在 tag 的 value 属性
     for (const el of this.getParts('item-delete-trigger')) {
       const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
       this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
+    }
+    // +N 那一枚：属性先落，文字填进 label；作者写了子节点就归作者
+    const overflowTag = this.getPart('overflow-tag')
+    if (overflowTag) {
+      this.spreader.spread(overflowTag, api.getOverflowTagProps() as Record<string, unknown>)
+      const label = this.ensureTagLabel(overflowTag)
+      if (label) {
+        this.spreader.spread(label, tagLabelProps)
+        this.fillText(label, api.overflowText)
+      }
     }
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
@@ -346,7 +436,7 @@ export class XhSelectElement extends XhElement {
     const valueText = this.getPart('value-text')
     if (valueText) {
       this.spreader.spread(valueText, api.getValueTextProps() as Record<string, unknown>)
-      this.fillValueText(valueText, api.displayText)
+      this.fillText(valueText, api.displayText)
     }
 
     // 表单影子可缺省
@@ -373,21 +463,17 @@ export class XhSelectElement extends XhElement {
 
     // content 常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）
     const content = this.getPart('content')
-    if (content)
-      // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
-      // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
-      this.ensureConfig()
-    this.exit ??= createOverlayExit({
-      config: this.config!,
-      open: api.open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    this.exit.track(content)
-    this.exit.update(api.open)
-    this.setPartHidden(content, !this.exit.visible)
+    // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
+    // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
+    const exit = this.ensureExit(api.open)
+    exit.track(content)
+    exit.update(api.open)
+    this.setPartHidden(content, !exit.visible)
+    this.portal.sync(exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()

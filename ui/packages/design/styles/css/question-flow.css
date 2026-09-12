@@ -333,9 +333,12 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 页脚：左边步进，右边动作 */
+  /* 页脚：左边步进，右边动作。
+     两侧的钮都不收缩、文案也不折行，一行摆不下时整条页脚顶出卡片；
+     允许换行后摆不下的那一组落到下一行 */
   [data-scope='question-flow'][data-part='footer'] {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: var(--xh-question-flow-footer-gap, var(--xh-space-3));
@@ -448,6 +451,12 @@
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  }
+
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  [data-scope='question-flow'][data-part='submit-trigger']:focus-visible {
+    --xh-_ring-color: currentColor;
   }
 
   [data-scope='question-flow'][data-part='skip-trigger'][hidden],

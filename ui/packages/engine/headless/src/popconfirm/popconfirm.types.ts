@@ -7,15 +7,22 @@ import type { PopoverOpenChangeDetails, PopoverSchema } from '../popover'
  */
 export type PopconfirmOverlayProps = Omit<PopoverSchema['props'], 'modal' | 'translations' | 'onOpenChange'>
 
-/** 对外的三个回调。 */
+/** 确认动作失败；cause 保留回调同步抛出或 thenable 拒绝时的原值。 */
+export interface PopconfirmConfirmErrorDetails {
+  cause: unknown
+}
+
+/** 对外回调。 */
 export interface PopconfirmNotifiers {
   /** open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 */
   onOpenChange?: (details: PopoverOpenChangeDetails) => void
   /**
-   * 点了确认按钮。返回 Promise 即挂起确认门：浮层等它兑现才收起、
-   * 确认按钮转圈且再点无效，落空（reject）则留在原地不收。同步返回照旧立即收起。
+   * 点了确认按钮。返回 thenable 即挂起确认门：浮层等它兑现才收起、
+   * 确认按钮转圈且再点无效，拒绝则留在原地并报告确认错误。同步返回照旧立即收起。
    */
-  onConfirm?: () => void | Promise<unknown>
+  onConfirm?: () => void | PromiseLike<unknown>
+  /** 确认回调同步抛出或 thenable 拒绝；details.cause 是未经包装的原始原因。 */
+  onConfirmError?: (details: PopconfirmConfirmErrorDetails) => void
   /** 点了取消按钮，随后浮层收起；挂起中的确认结果随之作废。Escape 与层外交互只发 onOpenChange，不发这条。 */
   onCancel?: () => void
 }
@@ -27,8 +34,16 @@ export interface PopconfirmPendingChannel {
   onPendingChange?: (pending: boolean) => void
 }
 
+/** 确认错误由适配器持有；null 表示当前没有确认动作错误。 */
+export interface PopconfirmActionErrorChannel {
+  actionError?: PopconfirmConfirmErrorDetails | null
+  onActionErrorChange?: (error: PopconfirmConfirmErrorDetails | null) => void
+}
+
 /** connect 用得上的部分：确认与取消不改开合以外的状态，因此不入机器，由 connect 直接转交。 */
-export type PopconfirmIntents = Pick<PopconfirmNotifiers, 'onConfirm' | 'onCancel'> & PopconfirmPendingChannel
+export type PopconfirmIntents = Pick<PopconfirmNotifiers, 'onConfirm' | 'onConfirmError' | 'onCancel'>
+  & PopconfirmPendingChannel
+  & PopconfirmActionErrorChannel
 
 export type PopconfirmProps = PopconfirmOverlayProps & PopconfirmNotifiers
 
@@ -36,6 +51,8 @@ export interface PopconfirmApi<T extends PropTypes = PropTypes> {
   open: boolean
   /** 异步确认进行中：确认按钮转圈、再点无效。 */
   pending: boolean
+  /** 最近一次有效确认动作的错误；新确认或取消时清空。 */
+  actionError: PopconfirmConfirmErrorDetails | null
   setOpen: (next: boolean) => void
   /** 发确认意图并请求收起；异步确认挂起期间再调无效。 */
   confirm: () => void

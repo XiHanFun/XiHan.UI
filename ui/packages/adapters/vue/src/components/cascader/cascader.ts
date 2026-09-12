@@ -13,11 +13,13 @@ import type {
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { CascaderContext } from './use-cascader'
-import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
-import { provideCascader, provideCascaderGroup, provideCascaderItem, useCascaderContext, useCascaderGroupContext, useCascaderItemContext } from './context'
+import { useFormControlProps } from '../form/use-form-control'
+import { provideCascader, provideCascaderContent, provideCascaderGroup, provideCascaderItem, useCascaderContentContext, useCascaderContext, useCascaderGroupContext, useCascaderItemContext } from './context'
 import { useCascader } from './use-cascader'
 
 type CascaderProps = CascaderSchema['props']
@@ -77,33 +79,35 @@ export type CascaderRootSlotProps = Pick<
 
 export const XhCascaderRoot = defineComponent({
   name: 'XhCascaderRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<CascaderNode[]>, default: undefined },
-    value: { type: Array as PropType<CascaderValue>, default: undefined },
-    defaultValue: { type: Array as PropType<CascaderValue>, default: undefined },
+    collection: { type: Array as PropType<CascaderNode[]> },
+    value: { type: Array as PropType<CascaderValue> },
+    defaultValue: { type: Array as PropType<CascaderValue> },
+    name: { type: String },
+    form: { type: String },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    expandTrigger: { type: String as PropType<CascaderExpandTrigger>, default: undefined },
+    expandTrigger: { type: String as PropType<CascaderExpandTrigger> },
     changeOnSelect: Boolean,
     multiple: Boolean,
     searchable: { type: Boolean, default: undefined },
     cascade: Boolean,
-    checkedStrategy: { type: String as PropType<CascaderProps['checkedStrategy']>, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
+    checkedStrategy: { type: String as PropType<CascaderProps['checkedStrategy']> },
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     loading: Boolean,
-    translations: { type: Object as PropType<Partial<CascaderTranslations>>, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    placeholder: { type: String, default: undefined },
-    separator: { type: String, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    translations: { type: Object as PropType<Partial<CascaderTranslations>> },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    placeholder: { type: String },
+    separator: { type: String },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为路径数组，单选时长度 ≤ 1
   emits: {
@@ -124,13 +128,13 @@ export const XhCascaderRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useCascader(withXhConfig('cascader', props) as CascaderProps, {
+    const ctx = useCascader(withXhConfig('cascader', useFormControlProps(props)) as CascaderProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
     })
     provideCascader(ctx)
 
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [slots.default?.({
       open: ctx.api.value.open,
       // levels 每层一列、层内节点各一条目，供作者渲染；columns 只读当前展开的列
       levels: ctx.api.value.levels,
@@ -150,7 +154,10 @@ export const XhCascaderRoot = defineComponent({
       setActivePath: ctx.api.value.setActivePath,
       select: ctx.api.value.select,
       clear: ctx.api.value.clear,
-    }))
+    }), ...ctx.api.value.value.map(path => h('input', {
+      ...ctx.api.value.getHiddenInputProps({ path }) as Record<string, unknown>,
+      key: JSON.stringify(path),
+    }))])
   },
 })
 
@@ -180,9 +187,9 @@ export const XhCascaderTrigger = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     const ctx = useCascaderContext()
     return () => h('button', fieldLabel.value({
+      ...fieldWiring.value,
       ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
-      ...fieldWiring.value,
     }), slots.default?.())
   },
 })
@@ -218,9 +225,13 @@ export const XhCascaderClearTrigger = defineComponent({
 
 export const XhCascaderPositioner = defineComponent({
   name: 'XhCascaderPositioner',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useCascaderContext()
     // 列区的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner。
     // 只摆横的：列多到放不下时整体横向滚动，纵向溢出归每一列自己。
@@ -231,7 +242,7 @@ export const XhCascaderPositioner = defineComponent({
       props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir }),
     })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
@@ -240,13 +251,57 @@ export const XhCascaderPositioner = defineComponent({
   },
 })
 
+export const XhCascaderLoading = defineComponent({
+  name: 'XhCascaderLoading',
+  setup(_, { slots }) {
+    const ctx = useCascaderContext()
+    const content = useCascaderContentContext()
+    const unregister = content.registerLoading()
+    onBeforeUnmount(unregister)
+    // 在途占位：作者没写内容时使用 Cascader 自己的翻译合同。
+    return () => h(
+      'div',
+      ctx.api.value.getLoadingProps() as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.translations.loading,
+    )
+  },
+})
+
+/** 放在作者插槽之后挂载；隔着普通元素或业务组件的 Loading 已在 setup 阶段登记。 */
+const XhCascaderAutoLoading = defineComponent({
+  name: 'XhCascaderAutoLoading',
+  setup() {
+    const ctx = useCascaderContext()
+    const content = useCascaderContentContext()
+    return () => content.authoredLoadingCount.value > 0
+      ? null
+      : h('div', {
+          ...ctx.api.value.getLoadingProps() as Record<string, unknown>,
+          'data-xh-cascader-auto-loading': '',
+        }, ctx.api.value.translations.loading)
+  },
+})
+
 export const XhCascaderContent = defineComponent({
   name: 'XhCascaderContent',
   setup(_, { slots }) {
     const ctx = useCascaderContext()
+    const authoredLoadingCount = ref(0)
+    const registerLoading = (): (() => void) => {
+      authoredLoadingCount.value += 1
+      let active = true
+      return () => {
+        if (!active)
+          return
+        active = false
+        authoredLoadingCount.value -= 1
+      }
+    }
+    provideCascaderContent({ authoredLoadingCount, registerLoading })
     // 收起时只隐藏不卸载；跨列的键盘导航也在这一层处理
     return () => {
       const api = ctx.api.value
+      const children = slots.default?.() ?? []
       return h('div', {
         ...api.getContentProps() as Record<string, unknown>,
         // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
@@ -254,24 +309,16 @@ export const XhCascaderContent = defineComponent({
         style: ctx.visible.value ? undefined : { display: 'none' },
         ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
       }, [
-        slots.default?.(),
+        children,
         // 空态占位常挂在列后，露不露面归连接层；empty 插槽可换内容，缺省文案按视图取无匹配或无数据
         h(
           'div',
           api.getEmptyProps() as Record<string, unknown>,
           slots.empty ? slots.empty() : (api.searching ? api.translations.noMatch : api.translations.empty),
         ),
+        h(XhCascaderAutoLoading),
       ])
     }
-  },
-})
-
-export const XhCascaderLoading = defineComponent({
-  name: 'XhCascaderLoading',
-  setup(_, { slots }) {
-    const ctx = useCascaderContext()
-    // 在途占位：与空态占位同一个位置，取数期间顶上来；文案归作者
-    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

@@ -12,7 +12,10 @@ type InfiniteScrollProps = InfiniteScrollSchema['props']
 /** 函数式 children 的载荷：取数所处的阶段，以及正在取数与已关掉两个状态。 */
 export type InfiniteScrollRootSlotProps = Pick<InfiniteScrollApi, 'phase' | 'loading' | 'disabled'>
 
-export interface XhInfiniteScrollRootProps {
+/** 根上自有的那些取值；onLoad 在这里是「该取下一页了」，与原生的同名事件含义不同，由本组件接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'onLoad'>
+
+export interface XhInfiniteScrollRootProps extends RootElementProps {
   /** 提前量（px）：哨兵离可视区还有这么远就算进入，默认 0。 */
   distance?: number
   /** 关掉：不再观察，也不再触发。列表已经没有下一页时用它。 */
@@ -27,13 +30,21 @@ export interface XhInfiniteScrollRootProps {
 }
 
 /** 根节点是列表的外壳，状态挂在它身上；滚动本身走浏览器原生通路，组件不接管。 */
-export function XhInfiniteScrollRoot({ children, target, ...props }: XhInfiniteScrollRootProps): ReactNode {
+export function XhInfiniteScrollRoot({
+  distance,
+  disabled,
+  loading,
+  target,
+  onLoad,
+  children,
+  ...rest
+}: XhInfiniteScrollRootProps): ReactNode {
   const getTarget = useCallback(() => target ?? null, [target])
-  const ctx = useInfiniteScroll(props as InfiniteScrollProps, getTarget)
+  const ctx = useInfiniteScroll({ distance, disabled, loading, onLoad } as InfiniteScrollProps, getTarget)
   const api = ctx.api
   return (
     <InfiniteScrollProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, { phase: api.phase, loading: api.loading, disabled: api.disabled })}
       </div>
     </InfiniteScrollProvider>

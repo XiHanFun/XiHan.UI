@@ -9,7 +9,7 @@ export function connectNavigationMenu<T extends PropTypes>(
   service: Service<NavigationMenuSchema>,
   normalize: NormalizeProps<T>,
 ): NavigationMenuApi<T> {
-  const { context, prop, send, scope } = service
+  const { context, prop, refs, send, scope } = service
   // cell 初值可能是 undefined，这里归一成 null
   const value = context.get('value') ?? null
   const indicator = context.get('indicator')
@@ -18,6 +18,10 @@ export function connectNavigationMenu<T extends PropTypes>(
   const loop = prop('loop') ?? true
   const label = prop('translations')?.root ?? 'Main navigation'
   const open = value != null
+  const exitPending = context.get('exitPending') ?? false
+  // 受控 value 的新值先参与宿主渲染，机器 tracker 随后才会写 exitPending。
+  // 旧 Layer 尚在即是关闭提交的第一帧；先保住 viewport，动画探测才不会被祖先 display:none 截断。
+  const closingCommit = !open && refs.get('layerValue') != null && refs.get('layerDispose') != null
 
   // collection 推出的入口元信息：入口文本、禁用与直达去处都在这里定案，trigger 部件只报 value
   const collection: NavigationMenuNodeMeta[] = (prop('collection') ?? []).map(node => ({
@@ -158,7 +162,7 @@ export function connectNavigationMenu<T extends PropTypes>(
       'data-disabled': dataAttr(triggerDisabled(item)),
     }),
 
-    /** 面板常挂，靠 hidden 显隐。 */
+    /** 面板常挂；逻辑关闭立即交给 Presence 退场，并退出交互与可访问树。 */
     getContentProps: (item) => {
       const isOpen = item.value === value
       return normalize.element({
@@ -169,6 +173,8 @@ export function connectNavigationMenu<T extends PropTypes>(
         'aria-labelledby': triggerId(item.value),
         'data-state': stateAttr(isOpen),
         'data-orientation': orientation,
+        'inert': !isOpen || undefined,
+        'aria-hidden': !isOpen || undefined,
         'hidden': !isOpen || undefined,
       })
     },
@@ -198,12 +204,14 @@ export function connectNavigationMenu<T extends PropTypes>(
         : undefined,
     }),
 
-    // 可选的共享面板外壳，供样式层使用，不带 aria
+    // 可选的共享面板外壳：退场期间保留渲染，但逻辑关闭即撤出交互与可访问树
     getViewportProps: () => normalize.element({
       ...parts.viewport.attrs,
       'data-state': stateAttr(open),
       'data-orientation': orientation,
-      'hidden': !open || undefined,
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
+      'hidden': !(open || exitPending || closingCommit) || undefined,
     }),
   }
 }

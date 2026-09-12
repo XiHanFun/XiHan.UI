@@ -1,9 +1,11 @@
 import type { Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { SideNavApi, SideNavNode, SideNavSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, ref, Teleport } from 'vue'
+import { defineComponent, h, nextTick, onMounted, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { XhPortal } from '../../runtime/portal'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { provideSideNav, provideSideNavNode, useSideNavContext, useSideNavNodeContext } from './context'
 import { useSideNav } from './use-side-nav'
@@ -31,22 +33,22 @@ export type SideNavRootSlotProps = Pick<
 
 export const XhSideNavRoot = defineComponent({
   name: 'XhSideNavRoot',
-  // 缺省值由 connect 与机器给出，这里一律 default: undefined
+  // 缺省值由 connect 与机器给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<SideNavNode[]>, default: undefined },
-    value: { type: String as PropType<string | null>, default: undefined },
-    defaultValue: { type: String as PropType<string | null>, default: undefined },
-    expandedValue: { type: Array as PropType<string[]>, default: undefined },
-    defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
+    collection: { type: Array as PropType<SideNavNode[]> },
+    value: { type: String as PropType<string | null> },
+    defaultValue: { type: String as PropType<string | null> },
+    expandedValue: { type: Array as PropType<string[]> },
+    defaultExpandedValue: { type: Array as PropType<string[]> },
     accordion: Boolean,
     collapsed: { type: Boolean, default: undefined },
     collapsedPopout: { type: Boolean, default: undefined },
     disabled: Boolean,
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<SideNavProps['dir']>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<SideNavProps['translations']>, default: undefined },
+    dir: { type: String as PropType<SideNavProps['dir']> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<SideNavProps['translations']> },
   },
   // *-change 携带 details 对象，update:* 携带裸值，支持 v-model:value 与 v-model:expanded-value
   emits: {
@@ -170,16 +172,37 @@ export const XhSideNavBranchIndicator = defineComponent({
 
 export const XhSideNavBranchContent = defineComponent({
   name: 'XhSideNavBranchContent',
-  setup(_, { slots }) {
+  props: {
+    /** 本分支弹层的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
+  setup(props, { slots }) {
     const ctx = useSideNavContext()
     const node = useSideNavNodeContext()
     // 一个弹出面板一份退场闸门：退场动画挂在面板上，从它身上探测。
     // 开合判据直接取 connect 这一帧的产出，不另起一套
     const panelRef = ref<HTMLElement | null>(null)
+    let presence: PresenceHandle | null = null
     const visible = useOverlayExit({
       config: ctx.config,
       isOpen: () => (ctx.api.value.getPopoutPositionerProps({ value: node.value }) as Record<string, unknown>).hidden !== true,
       contentRef: panelRef,
+      onPresence: (next) => {
+        const previous = presence
+        presence = next
+        if (ctx.service.getStatus() !== 'Started')
+          return
+        if (next)
+          ctx.service.send({ type: 'PRESENCE.SET', value: node.value, presence: next, connected: true })
+        else if (previous)
+          ctx.service.send({ type: 'PRESENCE.SET', value: node.value, presence: previous, connected: false })
+      },
+    })
+    onMounted(() => {
+      void nextTick(() => {
+        if (presence && ctx.service.getStatus() === 'Started')
+          ctx.service.send({ type: 'PRESENCE.SET', value: node.value, presence, connected: true })
+      })
     })
     return () => {
       if (!ctx.api.value.isPopoutPanel(node.value)) {
@@ -194,7 +217,7 @@ export const XhSideNavBranchContent = defineComponent({
         hidden,
         ref: (el: unknown) => { panelRef.value = el as HTMLElement | null },
       }, slots.default?.())
-      return h(Teleport, { to: ctx.portalTarget.value }, [
+      return h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
         h('div', {
           ...ctx.api.value.getPopoutPositionerProps({ value: node.value }) as Record<string, unknown>,
           hidden,

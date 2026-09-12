@@ -1,4 +1,5 @@
 import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 export interface TooltipOpenChangeDetails {
   open: boolean
@@ -12,6 +13,8 @@ export interface TooltipRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄，只在浮层可见期间调用。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 视觉退场与行为资源共享的 Presence；缺省时关闭立即释放。 */
+  presence: PresenceHandle | null
   position: PositionEnginePort | null
   /** 锚点元素（trigger）。 */
   getAnchorEl: () => HTMLElement | null

@@ -1,7 +1,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TourApi, TourSchema } from './tour.types'
 import { dataAttr } from '@xihan-ui/core'
-import { overlayPositioned } from '../shared/overlay'
+import { overlayArrowVars, overlayAvailableSpaceVars, overlayPositioned } from '../shared/overlay'
 import { tourAnatomy } from './tour.anatomy'
 import { clampTourStep, currentTourStep, isTourLastStep, TOUR_DEFAULT_PLACEMENT, tourStepCount } from './tour.machine'
 
@@ -12,18 +12,6 @@ const parts = tourAnatomy.build()
  * 这里再走一遍等于一次按键推进两步。
  */
 const INTERACTIVE = 'button, a[href], input, select, textarea, [role="button"], [contenteditable="true"]'
-
-// 落定那一侧的可用高度。低于这个值气泡自身骨架（内缩、标题、按钮行）就放不下，
-// 当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh。
-// 比别的浮层高一截，因为气泡的固定部件比一张空面板多
-const AVAILABLE_H_FLOOR = 160
-
-function availableHeightVar(available: number | undefined): Record<string, string> {
-  return {
-    '--xh-_tour-available-h':
-      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
-  }
-}
 
 export function connectTour<T extends PropTypes>(
   service: Service<TourSchema>,
@@ -132,7 +120,7 @@ export function connectTour<T extends PropTypes>(
         left: anchored ? `${position?.x ?? 0}px` : '',
         top: anchored ? `${position?.y ?? 0}px` : '',
         // 居中步没有引擎结果，同样发空串把上一步的高度撤掉
-        ...availableHeightVar(anchored ? position?.availableHeight : undefined),
+        ...overlayAvailableSpaceVars('tour', anchored ? position : undefined, 160),
       },
     }),
 
@@ -148,6 +136,9 @@ export function connectTour<T extends PropTypes>(
       'data-state': stateAttr,
       'data-step': stepAttr,
       'data-placement': placement,
+      // 逻辑收起时先退出交互与可访问树；Presence 仅延后视觉节点与行为资源的释放。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
       'onKeydown': (event: KeyboardEvent) => {
@@ -239,10 +230,7 @@ export function connectTour<T extends PropTypes>(
       'hidden': !open || !anchored || undefined,
       // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。
       // 两根轴每帧都写，翻面后另一根不会留着上一帧的值；空串即撤掉声明，皮肤退回居中
-      'style': {
-        '--xh-_tour-arrow-x': arrowAt?.x != null ? `${arrowAt.x}px` : '',
-        '--xh-_tour-arrow-y': arrowAt?.y != null ? `${arrowAt.y}px` : '',
-      },
+      'style': overlayArrowVars('tour', arrowAt),
     }),
   }
 }

@@ -18,7 +18,7 @@ export interface PresenceHandle extends Disposable {
   /** 直接绑到 DOM 的 data-state 值。 */
   readonly state: 'open' | 'closed'
   /** 申领一张退出租约；只在 open === false 时有意义。 */
-  claimExit: (reason: string, timeoutMs?: number) => ExitLease
+  claimExit: (reason: string) => ExitLease
   /** 退场彻底完成（所有租约归还）时回调。 */
   onExitComplete: (fn: () => void) => Cleanup
   /** 退场开始前（同步）调用；动画探测器在此申领租约。 */
@@ -63,30 +63,24 @@ export function createPresence(o: PresenceOptions): PresenceHandle {
     }
   }
 
-  function claimExit(_reason: string, timeoutMs?: number): ExitLease {
+  function claimExit(_reason: string): ExitLease {
     if (config.reducedMotion())
       return SETTLED_LEASE
 
     transition('EXIT_CLAIMED')
     let settled = false
-    let timer: ReturnType<typeof setTimeout> | undefined
     const entry: LeaseEntry = {
       // event 存在则在最后一张租约归还时触发转移；缺省（打断）只归还不卸载
       settle(event) {
         if (settled)
           return
         settled = true
-        if (timer)
-          clearTimeout(timer)
         leases.delete(entry)
         if (event && leases.size === 0)
           transition(event)
       },
     }
     leases.add(entry)
-
-    if (timeoutMs != null && timeoutMs >= 0)
-      timer = setTimeout(() => entry.settle('ALL_LEASES_DONE'), timeoutMs)
 
     return {
       get settled() {

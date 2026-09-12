@@ -47,10 +47,17 @@ describe('connectDialog', () => {
   })
 
   it('alertdialog role + 非模态显式 aria-modal="false"', () => {
-    const content = connectDialog(makeService({ role: 'alertdialog', modal: false }), normalizeProps).getContentProps() as Record<string, unknown>
+    const api = connectDialog(makeService({ role: 'alertdialog', modal: false }), normalizeProps)
+    const content = api.getContentProps() as Record<string, unknown>
     expect(content.role).toBe('alertdialog')
     // 省略与显式 false 在读屏那里不是一回事：前者是"没说"，后者是"明确说了不是模态"
     expect(content['aria-modal']).toBe('false')
+    expect((api.getBackdropProps() as Record<string, unknown>).hidden).toBe(true)
+  })
+
+  it('默认模态不隐藏 backdrop', () => {
+    const backdrop = connectDialog(makeService(), normalizeProps).getBackdropProps() as Record<string, unknown>
+    expect(backdrop.hidden).toBeUndefined()
   })
 
   it('trigger 的 aria-haspopup / aria-expanded / aria-controls', () => {
@@ -111,7 +118,6 @@ function makeDismissHarness(initial: DialogSchema['props'] = {}): DismissHarness
     node: () => content,
     branches: () => [],
     isModal: () => props.modal ?? true,
-    setModal: () => {},
     surfaces: () => [backdrop],
   }))
   service.refs.set('getContentEl', () => content)
@@ -132,7 +138,7 @@ function makeDismissHarness(initial: DialogSchema['props'] = {}): DismissHarness
   return harness
 }
 
-/** 展开并等到消解层的监听器注册上（它延后一拍，避开打开自己的那次交互）。 */
+/** 展开并等到消解参与者武装；Hub 监听同步在场，参与资格延后一拍以避开打开事件。 */
 async function open(h: DismissHarness): Promise<void> {
   h.service.send({ type: 'OPEN' })
   await new Promise(resolve => setTimeout(resolve, 0))

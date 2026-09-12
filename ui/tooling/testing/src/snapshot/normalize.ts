@@ -15,15 +15,22 @@ const IDREF_ATTRS = new Set([
   'for',
 ])
 
-/** 适配器噪音与结构标记（含 WC 的 data-xh-*）：不进快照。 */
+/** 适配器噪音与内部结构标记：不进快照。 */
 const ADAPTER_NOISE = /^data-(?:v-[0-9a-f]{6,8}|server-rendered|defer-hydration|lit-|reactroot$|scope$|part$|xh-)/
+
+/** 三端共同消费的 family recipe 语义，不是适配器内部标记，必须参与跨端对拍。 */
+const PUBLIC_XH_FAMILY = /^data-xh-(?:action|field|collection)-/
+
+function isAdapterNoise(name: string): boolean {
+  return ADAPTER_NOISE.test(name) && !PUBLIC_XH_FAMILY.test(name)
+}
 
 function collectedNames(el: Element): string[] {
   const names = new Set<string>(BASE_ATTRS)
   for (const n of el.getAttributeNames()) {
     if (n === 'id' || n.startsWith('aria-'))
       names.add(n)
-    else if (n.startsWith('data-') && !ADAPTER_NOISE.test(n))
+    else if (n.startsWith('data-') && !isAdapterNoise(n))
       names.add(n)
   }
   return [...names].sort()
@@ -58,10 +65,20 @@ function normalizeValue(name: string, raw: string | null, buckets: Map<string, H
   return raw.split(/\s+/).filter(Boolean).map(id => resolveIdref(id, buckets)).join(' ')
 }
 
+function isFormPathDeclaration(el: HTMLElement, name: string): boolean {
+  return name === 'name'
+    && el.dataset.scope === 'form'
+    && (el.dataset.part === 'field-group' || el.dataset.part === 'error-summary-item')
+}
+
 /** 采集单个元素的归一化属性表（键已排序）。 */
 export function normalizeAttrs(el: HTMLElement, buckets: Map<string, HTMLElement[]>): Record<string, string | null> {
   const out: Record<string, string | null> = {}
-  for (const name of collectedNames(el))
-    out[name] = normalizeValue(name, el.getAttribute(name), buckets)
+  for (const name of collectedNames(el)) {
+    // WC 的 Light DOM 用原生 name 属性声明 FormPath，Vue/React 将同名 prop 消费掉、不落 DOM。
+    // 两侧最终状态都由 data-name / data-form-path 表达；声明介质不参与跨适配器快照。
+    const raw = isFormPathDeclaration(el, name) ? null : el.getAttribute(name)
+    out[name] = normalizeValue(name, raw, buckets)
+  }
   return out
 }

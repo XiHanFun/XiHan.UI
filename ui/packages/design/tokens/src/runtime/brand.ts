@@ -49,11 +49,13 @@ const ANCHOR_STEP: BrandStep = '600'
  * sRGB 色域，明度曲线原样保留。用基线 600 档当种子会得到与基线逐值一致的一套。
  */
 export function deriveBrandScale(seed: string): BrandScale {
-  const { c, h } = parseColorToOklch(seed)
+  const { c, h, a } = parseColorToOklch(seed)
+  if (a !== 1)
+    throw new Error('品牌种子色必须完全不透明')
   const k = c / BASE_C[ANCHOR_STEP]
   const out = {} as BrandScale
   for (const step of BRAND_STEPS) {
-    out[step] = formatOklch({ l: BASE_L[step], c: BASE_C[step] * k, h })
+    out[step] = formatOklch({ l: BASE_L[step], c: BASE_C[step] * k, h, a: 1 })
   }
   return out
 }

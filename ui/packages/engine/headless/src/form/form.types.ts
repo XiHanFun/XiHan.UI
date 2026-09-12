@@ -1,8 +1,12 @@
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 import type { FormErrorPatch, FormErrors } from './form.errors'
+import type { FormArrayMutation, FormPath, FormPathRecord } from './form.path'
 
-/** 字段名 → 值。表单不解读值的类型，只负责搬运与交给 validate。 */
-export type FormValues = Record<string, unknown>
+/**
+ * 字段路径 → 值。字符串字段仍是对象上的单键；数组路径住在不可枚举路径索引，
+ * 不会被 JavaScript 暗中转成逗号字符串。用 get/setFormPathValue 访问数组路径。
+ */
+export type FormValues = FormPathRecord<unknown>
 
 /** 内置类型检查档位。 */
 export type FormRuleType = 'string' | 'number' | 'integer' | 'email' | 'url' | 'array'
@@ -29,7 +33,7 @@ export interface FormRule {
 }
 
 /** 字段名 → 一条或一组规则。 */
-export type FormRules = Record<string, FormRule | FormRule[]>
+export type FormRules = FormPathRecord<FormRule | FormRule[]>
 
 /** 文案模板，{name}/{min}/{max} 现场代入；缺省用内置英文模板。 */
 export interface FormValidateMessages {
@@ -111,14 +115,34 @@ export interface FormInvalidDetails {
   values: FormValues
 }
 
+/** 校验器执行异常，和字段填写错误分开；原始 cause 不转换成默认文案。 */
+export interface FormValidationErrorDetails {
+  cause: unknown
+  /** 发生异常的值快照。 */
+  values: FormValues
+  /** null 表示整表提交校验；否则是触发校验的字段路径。 */
+  field: FormPath | null
+}
+
+/** 一项仍有资格写回的校验任务。数组换序时它与字段和值快照一起迁移。 */
+export interface FormValidationTask {
+  /** 当前字段身份；整表校验为 null。 */
+  field: FormPath | null
+  /** 当前字段身份的稳定键，作为 validation Map 的键。 */
+  key: string | null
+  /** 与任务同行的值快照。 */
+  values: FormValues
+  pending: boolean
+}
+
 /**
  * 字段容器自报家门：名字由作者声明，connect 据此产出 id、data-name 与失焦上报。
  * connect 不得反查 DOM：Vue 侧在 render 期求值（本帧 DOM 还不存在）、WC 侧在 updated 后求值，
  * 读 DOM 会让两个适配器的首帧快照分叉。
  */
 export interface FormFieldGroupProps {
-  /** 字段名，与 values / errors 表里的键一致。 */
-  name: string
+  /** 字段路径；字符串含点仍是单键，数组才表示嵌套层级。 */
+  name: FormPath
   /**
    * grid 排布下这个字段占多宽：1 至 4 是固定跨几列，'full' 占满整行；不写占一列。
    * 范围外的值按不写算。'full' 跟着当下的列数走，窄视口收成一列时它仍是一整行；
@@ -130,7 +154,7 @@ export interface FormFieldGroupProps {
 
 /** 错误摘要里的一条：指向哪个字段由作者声明。 */
 export interface FormErrorSummaryItemProps {
-  name: string
+  name: FormPath
 }
 
 // 适配器在挂载前填入根元素 getter；纯逻辑测试与 SSR 下保持缺省，
@@ -138,8 +162,8 @@ export interface FormErrorSummaryItemProps {
 export interface FormRefs {
   /** 表单根节点（那个 `<form>`）：字段容器的现查范围与落焦的起点。 */
   getRootEl: () => HTMLElement | null
-  /** 运行中的校验批次号，晚到的异步结果按它判弃；整表与逐字段各记各的。 */
-  validation: { seq: number, fieldSeq: Record<string, number> }
+  /** 当前有效的校验任务；null 表示整表提交，字符串表示字段。替换或删除即撤销写回资格。 */
+  validation: Map<string | null, FormValidationTask>
   /**
    * 当下这张错误表里，哪几条是本库自己校验算出来的。
    *
@@ -147,6 +171,9 @@ export interface FormRefs {
    * 服务端返回后经 setFieldError 写进来的那些），字段一被编辑就清掉它。
    */
   validatedErrors: Set<string>
+  /** 当前规则的可迁移副本；props 仍是下一次外部更新的来源。 */
+  rules: FormRules | undefined
+  rulesSource: FormRules | undefined
 }
 
 export interface FormSchema extends MachineSchema {
@@ -194,14 +221,18 @@ export interface FormSchema extends MachineSchema {
     onSubmit?: (details: FormSubmitDetails) => void
     /** 校验不通过时调，带上拦下来的整张错误表。 */
     onInvalid?: (details: FormInvalidDetails) => void
+    /** 校验器抛错或拒绝 Promise 时调用；不触发 onInvalid 或 onSubmit。 */
+    onValidationError?: (details: FormValidationErrorDetails) => void
   }
   context: {
     /** 当下的值表。受控（values 给定）时 cell 直读 prop。 */
     values: FormValues
     /** 当下的错误表，已清理（在表里 = 此刻有错）。受控（errors 给定）时 cell 直读 prop。 */
     errors: FormErrors
-    /** 异步校验进行中；全同步的校验不碰它。 */
+    /** 至少一项有效异步校验进行中；过期任务不再计入。 */
     validating: boolean
+    /** 最近一次有效校验的执行异常；新校验、变值或重置时清除。 */
+    validationError: FormValidationErrorDetails | null
   }
   computed: Record<string, never>
   refs: FormRefs
@@ -223,19 +254,22 @@ export interface FormSchema extends MachineSchema {
      */
     | { type: 'VALIDATION.FAIL', errors: FormErrors, values: FormValues }
     /** 写一个字段的值（api.setFieldValue）。change 模式下顺带校验这一个字段。 */
-    | { type: 'FIELD.SET', name: string, value: unknown }
+    | { type: 'FIELD.SET', name: FormPath, value: unknown }
+    /** FieldArray 的结构变更。表单一次迁移所有跟随行号的状态。 */
+    | { type: 'FIELD.ARRAY.MUTATE', name: FormPath, value: unknown[], mutation: FormArrayMutation }
     /** 焦点离开某个字段容器。blur 模式下据此校验这一个字段。 */
-    | { type: 'FIELD.BLUR', name: string }
+    | { type: 'FIELD.BLUR', name: FormPath }
     /** 写一个字段的错误（api.setFieldError）；空文案即清掉这一条。 */
-    | { type: 'ERROR.SET', name: string, message?: string }
+    | { type: 'ERROR.SET', name: FormPath, message?: string }
     /** 清空整张错误表。 */
     | { type: 'ERRORS.CLEAR' }
     /** 把焦点送进某个字段（错误摘要里的链接点了就发它）。 */
-    | { type: 'ERROR.FOCUS', name: string }
+    | { type: 'ERROR.FOCUS', name: FormPath }
   tag: never
-  guard: 'isEnabled' | 'isEditable'
+  guard: 'isEnabled' | 'isEditable' | 'isValidationSnapshotCurrent'
   action:
     | 'setFieldValue'
+    | 'mutateFieldArray'
     | 'clearExternalFieldError'
     | 'validateChangedField'
     | 'validateBlurredField'
@@ -247,6 +281,9 @@ export interface FormSchema extends MachineSchema {
     | 'setFieldError'
     | 'clearErrors'
     | 'resetForm'
+    | 'discardValidation'
+    | 'discardStaleValidation'
+    | 'syncRules'
   effect: never
 }
 
@@ -256,7 +293,7 @@ export interface FormApi<T extends PropTypes = PropTypes> {
   /** 当下的错误表（已清理）。 */
   errors: FormErrors
   /** 出错的字段名，插入顺序。 */
-  errorNames: string[]
+  errorNames: FormPath[]
   errorCount: number
   /** 错误表非空。与"提交失败过"无关，挂载时作者塞进来的错误也算。 */
   invalid: boolean
@@ -264,23 +301,25 @@ export interface FormApi<T extends PropTypes = PropTypes> {
   submitFailed: boolean
   /** 异步校验进行中（提交或逐字段都算）。 */
   validating: boolean
+  /** 校验服务异常；null 表示没有异常，字段错误仍从 errors 读取。 */
+  validationError: FormValidationErrorDetails | null
   disabled: boolean
   readOnly: boolean
   validateOn: FormValidateOn
   /** 当下的排布档。 */
   layout: FormLayout
   /** 字段容器的 DOM id；错误摘要的链接指向它。 */
-  getFieldId: (name: string) => string
-  getFieldValue: (name: string) => unknown
+  getFieldId: (name: FormPath) => string
+  getFieldValue: (name: FormPath) => unknown
   /** 该字段此刻的错误文案；没错时为 undefined。 */
-  getFieldError: (name: string) => string | undefined
-  isFieldInvalid: (name: string) => boolean
+  getFieldError: (name: FormPath) => string | undefined
+  isFieldInvalid: (name: FormPath) => boolean
   /** 该字段的规则里声明了 required：字段的必填标记从这里推。 */
-  isFieldRequired: (name: string) => boolean
+  isFieldRequired: (name: FormPath) => boolean
   /** 写一个字段的值；禁用或只读时不动。 */
-  setFieldValue: (name: string, value: unknown) => void
+  setFieldValue: (name: FormPath, value: unknown) => void
   /** 写一个字段的错误；不给文案（或给空串）即清掉这一条。 */
-  setFieldError: (name: string, message?: string) => void
+  setFieldError: (name: FormPath, message?: string) => void
   clearErrors: () => void
   /** 走完整的校验与提交流程，与用户按提交键同一条路。 */
   submit: () => void

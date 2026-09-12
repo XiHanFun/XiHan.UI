@@ -44,3 +44,53 @@ export function cascaderFilterCandidates(
     return [...candidates]
   return candidates.filter(candidate => candidate.labels.join('/').toLowerCase().includes(q))
 }
+
+/** 候选高亮的最小形状：这两个助手只看禁用与否。 */
+interface CascaderSearchSelectable {
+  disabled: boolean
+}
+
+/**
+ * 把存下来的高亮下标落到一条可选候选上：先夹进候选区间，
+ * 落在禁用候选上就往后顺延（绕回头部再找），整批都禁用给 -1。
+ */
+export function cascaderResolveSearchHighlight(
+  results: readonly CascaderSearchSelectable[],
+  stored: number,
+): number {
+  if (results.length === 0)
+    return -1
+  const start = Math.min(Math.max(stored, 0), results.length - 1)
+  for (let step = 0; step < results.length; step++) {
+    const at = (start + step) % results.length
+    if (!results[at]!.disabled)
+      return at
+  }
+  return -1
+}
+
+/**
+ * 候选列表里走一步：禁用候选跳过，越界时 loop 开就绕、关就停在原地（返回 -1）。
+ * from 传 -1 配 delta=1 即「从头找首个可选」，传 length 配 delta=-1 即「从尾找末个可选」。
+ */
+export function cascaderStepSearch(
+  results: readonly CascaderSearchSelectable[],
+  from: number,
+  delta: 1 | -1,
+  loop: boolean,
+): number {
+  const size = results.length
+  if (size === 0)
+    return -1
+  for (let step = 1; step <= size; step++) {
+    let at = from + delta * step
+    if (at < 0 || at >= size) {
+      if (!loop)
+        return -1
+      at = ((at % size) + size) % size
+    }
+    if (!results[at]!.disabled)
+      return at
+  }
+  return -1
+}

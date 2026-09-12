@@ -196,6 +196,7 @@
       "content": "from{opacity:0}to{opacity:1}",
       "definedIn": [
         "avatar.css",
+        "cascader.css",
         "command.css",
         "dialog.css",
         "drawer.css",
@@ -205,6 +206,7 @@
       ],
       "consumers": [
         "avatar",
+        "cascader",
         "command",
         "dialog",
         "drawer",
@@ -328,58 +330,96 @@
     "xh-overlay-pop-in": {
       "content": "from{opacity:0;scale:var(--xh-motion-scale-enter);translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;scale:1;translate:0 0}",
       "definedIn": [
-        "cascader.css",
-        "combobox.css",
         "command.css",
-        "date-picker.css",
         "hover-card.css",
-        "mention.css",
         "popconfirm.css",
         "popover.css",
         "select.css",
+        "tour.css"
+      ],
+      "consumers": [
+        "command",
+        "hover-card",
+        "popconfirm",
+        "popover",
+        "tour"
+      ]
+    },
+    "xh-overlay-slide-in": {
+      "content": "from{opacity:0;translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;translate:0 0}",
+      "definedIn": [
+        "cascader.css",
+        "color-picker.css",
+        "combobox.css",
+        "context-menu.css",
+        "date-picker.css",
+        "mention.css",
+        "menu.css",
+        "menubar.css",
+        "select.css",
         "time-picker.css",
         "tooltip.css",
-        "tour.css",
         "tree-select.css"
       ],
       "consumers": [
         "cascader",
+        "color-picker",
         "combobox",
-        "command",
+        "context-menu",
         "date-picker",
-        "hover-card",
         "mention",
-        "popconfirm",
-        "popover",
+        "menu",
+        "menubar",
         "select",
         "time-picker",
         "tooltip",
-        "tour",
+        "tree-select"
+      ]
+    },
+    "xh-overlay-slide-out": {
+      "content": "from{opacity:1;translate:0 0}to{opacity:0;translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}",
+      "definedIn": [
+        "cascader.css",
+        "color-picker.css",
+        "combobox.css",
+        "context-menu.css",
+        "date-picker.css",
+        "mention.css",
+        "menu.css",
+        "menubar.css",
+        "select.css",
+        "time-picker.css",
+        "tooltip.css",
+        "tree-select.css"
+      ],
+      "consumers": [
+        "cascader",
+        "color-picker",
+        "combobox",
+        "context-menu",
+        "date-picker",
+        "mention",
+        "menu",
+        "menubar",
+        "select",
+        "time-picker",
+        "tooltip",
         "tree-select"
       ]
     },
     "xh-pop-in": {
       "content": "from{opacity:0;scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
       "definedIn": [
-        "cascader.css",
-        "color-picker.css",
         "context-menu.css",
         "float-button.css",
         "floating-panel.css",
-        "menu.css",
-        "menubar.css",
         "navigation-menu.css",
         "pagination.css",
         "side-nav.css"
       ],
       "consumers": [
-        "cascader",
-        "color-picker",
-        "context-menu",
         "float-button",
         "floating-panel",
-        "menu",
-        "menubar",
         "navigation-menu",
         "pagination",
         "side-nav"
@@ -388,50 +428,28 @@
     "xh-pop-out": {
       "content": "from{opacity:1;scale:1}to{opacity:0;scale:var(--xh-motion-scale-exit)}",
       "definedIn": [
-        "cascader.css",
-        "color-picker.css",
-        "combobox.css",
         "command.css",
         "context-menu.css",
-        "date-picker.css",
         "floating-panel.css",
         "hover-card.css",
-        "mention.css",
-        "menu.css",
-        "menubar.css",
         "navigation-menu.css",
         "pagination.css",
         "popconfirm.css",
         "popover.css",
         "select.css",
         "side-nav.css",
-        "time-picker.css",
-        "tooltip.css",
-        "tour.css",
-        "tree-select.css"
+        "tour.css"
       ],
       "consumers": [
-        "cascader",
-        "color-picker",
-        "combobox",
         "command",
-        "context-menu",
-        "date-picker",
         "floating-panel",
         "hover-card",
-        "mention",
-        "menu",
-        "menubar",
         "navigation-menu",
         "pagination",
         "popconfirm",
         "popover",
-        "select",
         "side-nav",
-        "time-picker",
-        "tooltip",
-        "tour",
-        "tree-select"
+        "tour"
       ]
     },
     "xh-popconfirm-rotate": {

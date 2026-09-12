@@ -13,6 +13,8 @@ const sound = createSoundPlayer()
 sound.play('success')
 ```
 
+命令式反馈服务可通过 `withToastSoundService` / `withDialogSoundService` 装饰。两者只依赖最小结构化服务端口，不依赖 Headless 或任何框架；共享播放器槽与自定义宿主的解锁接线分别使用 `createSharedSoundPlayerController`、`createSoundServiceController`。
+
 ## 装
 
 ```bash

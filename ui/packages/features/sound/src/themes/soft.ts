@@ -1,7 +1,7 @@
 // 柔和主题：低音区正弦、慢起音、长衰减、厚混响。适合阅读器、
 // 冥想类或夜间界面——提示要被听见，但不许惊到人。
 
-import { defineSoundTheme, flat, glide, strike } from './define'
+import { defineSoundTheme, glide, strike, strikeTone } from './define'
 
 export const softSoundTheme = defineSoundTheme({
   'click': {
@@ -52,9 +52,9 @@ export const softSoundTheme = defineSoundTheme({
   },
   'success': {
     layers: [
-      { kind: 'oscillator', wave: 'sine', frequency: flat(261.63), gain: strike(0.22, 0.025, 0.4) },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(329.63), gain: strike(0.22, 0.025, 0.4), delay: 0.12 },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(392), gain: strike(0.24, 0.025, 0.45), delay: 0.24 },
+      strikeTone('sine', 261.63, 0.22, 0.025, 0.4),
+      strikeTone('sine', 329.63, 0.22, 0.025, 0.4, 0.12),
+      strikeTone('sine', 392, 0.24, 0.025, 0.45, 0.24),
     ],
     space: 0.35,
   },
@@ -62,29 +62,29 @@ export const softSoundTheme = defineSoundTheme({
     // 三角波而非正弦：低音区的纯正弦在笔记本与手机内置扬声器上几乎发不出声，
     // 三角波的谐波按 1/n² 衰减，够被听见又不失柔和
     layers: [
-      { kind: 'oscillator', wave: 'triangle', frequency: flat(196), gain: strike(0.28, 0.02, 0.25) },
-      { kind: 'oscillator', wave: 'triangle', frequency: flat(155.56), gain: strike(0.26, 0.02, 0.3), delay: 0.16 },
+      strikeTone('triangle', 196, 0.28, 0.02, 0.25),
+      strikeTone('triangle', 155.56, 0.26, 0.02, 0.3, 0.16),
     ],
     space: 0.2,
   },
   'warning': {
     layers: [
-      { kind: 'oscillator', wave: 'sine', frequency: flat(587.33), gain: strike(0.22, 0.03, 0.18) },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(587.33), gain: strike(0.22, 0.03, 0.22), delay: 0.2 },
+      strikeTone('sine', 587.33, 0.22, 0.03, 0.18),
+      strikeTone('sine', 587.33, 0.22, 0.03, 0.22, 0.2),
     ],
     space: 0.25,
   },
   'info': {
     layers: [
-      { kind: 'oscillator', wave: 'sine', frequency: flat(523.25), gain: strike(0.22, 0.03, 0.35) },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(659.25), gain: strike(0.1, 0.03, 0.3) },
+      strikeTone('sine', 523.25, 0.22, 0.03, 0.35),
+      strikeTone('sine', 659.25, 0.1, 0.03, 0.3),
     ],
     space: 0.35,
   },
   'notification': {
     layers: [
-      { kind: 'oscillator', wave: 'sine', frequency: flat(587.33), gain: strike(0.24, 0.03, 0.4) },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(493.88), gain: strike(0.24, 0.03, 0.45), delay: 0.18 },
+      strikeTone('sine', 587.33, 0.24, 0.03, 0.4),
+      strikeTone('sine', 493.88, 0.24, 0.03, 0.45, 0.18),
     ],
     space: 0.4,
   },
@@ -102,10 +102,10 @@ export const softSoundTheme = defineSoundTheme({
   },
   'complete': {
     layers: [
-      { kind: 'oscillator', wave: 'sine', frequency: flat(261.63), gain: strike(0.2, 0.025, 0.35) },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(329.63), gain: strike(0.2, 0.025, 0.35), delay: 0.12 },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(392), gain: strike(0.2, 0.025, 0.4), delay: 0.24 },
-      { kind: 'oscillator', wave: 'sine', frequency: flat(523.25), gain: strike(0.24, 0.025, 0.6), delay: 0.36 },
+      strikeTone('sine', 261.63, 0.2, 0.025, 0.35),
+      strikeTone('sine', 329.63, 0.2, 0.025, 0.35, 0.12),
+      strikeTone('sine', 392, 0.2, 0.025, 0.4, 0.24),
+      strikeTone('sine', 523.25, 0.24, 0.025, 0.6, 0.36),
     ],
     space: 0.4,
   },

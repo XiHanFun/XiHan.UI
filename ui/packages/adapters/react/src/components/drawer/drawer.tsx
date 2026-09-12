@@ -5,7 +5,7 @@ import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { DrawerProvider, useDrawerContext } from './context'
@@ -16,7 +16,7 @@ type DrawerProps = DrawerSchema['props']
 /** 函数式 children 的载荷：展开状态、已解析的滑出边，与开合命令。 */
 export interface DrawerRootSlotProps extends Pick<DrawerApi, 'open' | 'side' | 'setOpen'> {}
 
-export interface XhDrawerRootProps {
+export interface XhDrawerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   open?: boolean
   defaultOpen?: boolean
   modal?: boolean
@@ -40,29 +40,63 @@ export interface XhDrawerRootProps {
   contained?: boolean
   translations?: DrawerProps['translations']
   onOpenChange?: DrawerProps['onOpenChange']
+  onExitComplete?: DrawerProps['onExitComplete']
   children?: SlotChildren<DrawerRootSlotProps>
 }
 
-export function XhDrawerRoot({ children, container, ...props }: XhDrawerRootProps): ReactNode {
-  const ctx = useDrawer(withXhConfig('drawer', props) as DrawerProps, container)
+export function XhDrawerRoot({
+  open,
+  defaultOpen,
+  modal,
+  side,
+  role,
+  closeOnEscape,
+  closeOnInteractOutside,
+  restoreFocus,
+  size,
+  variant,
+  contained,
+  translations,
+  onOpenChange,
+  onExitComplete,
+  children,
+  container,
+  ...rest
+}: XhDrawerRootProps): ReactNode {
+  const ctx = useDrawer(withXhConfig('drawer', {
+    open,
+    defaultOpen,
+    modal,
+    side,
+    role,
+    closeOnEscape,
+    closeOnInteractOutside,
+    restoreFocus,
+    size,
+    variant,
+    contained,
+    translations,
+    onOpenChange,
+    onExitComplete,
+  }) as DrawerProps, container)
   const api = ctx.api
   // root 是真实节点，content 会被搬到浮层落点，data-side 挂在这里供页面内的部分读取
   return (
     <DrawerProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, { open: api.open, side: api.side, setOpen: api.setOpen })}
       </div>
     </DrawerProvider>
   )
 }
 
-XhDrawerRoot.xhEvents = ['open-change'] as const
+XhDrawerRoot.xhEvents = ['open-change', 'exit-complete'] as const
 
 export interface XhDrawerTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 
 export function XhDrawerTrigger({ children, asChild, ...rest }: XhDrawerTriggerProps): ReactNode {
   const ctx = useDrawerContext()
-  const props = mergeReactProps(
+  const props = mergePartProps(
     ctx.api.getTriggerProps() as Record<string, unknown>,
     rest as Record<string, unknown>,
   )
@@ -77,15 +111,21 @@ export function XhDrawerContent({ children, ...rest }: XhDrawerContentProps): Re
   if (!ctx.rendered)
     return null
   const api = ctx.api
+  const backdrop = api.getBackdropProps() as Record<string, unknown>
   return (
     <XhPortal container={ctx.portalContainer}>
-      <div
-        {...api.getBackdropProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.backdropRef.current = el }}
-      />
+      {!backdrop.hidden
+        ? (
+            <div
+              {...backdrop}
+              ref={(el: HTMLDivElement | null) => { ctx.backdropRef.current = el }}
+            />
+          )
+        : null}
       <div {...api.getPositionerProps() as Record<string, unknown>}>
         <div
           {...mergeReactProps(api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}
+          hidden={!ctx.rendered || undefined}
           ref={(el: HTMLDivElement | null) => { ctx.contentRef.current = el }}
         >
           {children}

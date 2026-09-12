@@ -6,6 +6,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import { DateFieldProvider, useDateFieldContext } from './context'
 import { useDateField } from './use-date-field'
 
@@ -34,7 +35,7 @@ export interface DateFieldSegmentSlotProps {
   segment: DateFieldSegmentState | undefined
 }
 
-export interface XhDateFieldRootProps {
+export interface XhDateFieldRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
   value?: string | null
   defaultValue?: string | null
   min?: string
@@ -58,14 +59,59 @@ export interface XhDateFieldRootProps {
   children?: SlotChildren<DateFieldRootSlotProps>
 }
 
-export function XhDateFieldRoot({ children, ...props }: XhDateFieldRootProps): ReactNode {
-  const ctx = useDateField(withXhConfig('date-field', props) as DateFieldProps)
+export function XhDateFieldRoot({
+  value,
+  defaultValue,
+  min,
+  max,
+  locale,
+  timeZone,
+  granularity,
+  segments,
+  disabled,
+  readOnly,
+  invalid,
+  required,
+  name,
+  placeholder,
+  translations,
+  variant,
+  tone,
+  size,
+  onValueChange,
+  children,
+  ...rest
+}: XhDateFieldRootProps): ReactNode {
+  const ctx = useDateField(withXhConfig('date-field', useFormControlProps({
+    value,
+    defaultValue,
+    min,
+    max,
+    locale,
+    timeZone,
+    granularity,
+    segments,
+    disabled,
+    readOnly,
+    invalid,
+    required,
+    name,
+    placeholder,
+    translations,
+    variant,
+    tone,
+    size,
+    onValueChange,
+  })) as DateFieldProps)
   const api = ctx.api
   return (
     <DateFieldProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {children == null
           ? null

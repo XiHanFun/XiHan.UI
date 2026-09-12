@@ -19,6 +19,8 @@ export type MachineErrorCode
     | 'EVENT_LOOP'
     | 'SEND_BEFORE_MOUNT'
     | 'MISSING_SCOPE_ID'
+    | 'DUPLICATE_SERVICE_MOUNT'
+    | 'DUPLICATE_EFFECT_PATH'
     | 'MACHINE_CRASHED'
     | 'MISSING_ACTION'
     | 'MISSING_GUARD'
@@ -29,26 +31,50 @@ export type MachineErrorCode
 export class MachineError extends Error {
   readonly code: MachineErrorCode
   readonly machineName?: string
-  constructor(code: MachineErrorCode, message: string, machineName?: string) {
-    super(`[xh:machine:${code}]${machineName ? ` (${machineName})` : ''} ${message}`)
+  constructor(code: MachineErrorCode, message: string, machineName?: string, options?: ErrorOptions) {
+    super(`[xh:machine:${code}]${machineName ? ` (${machineName})` : ''} ${message}`, options)
     this.name = 'MachineError'
     this.code = code
     this.machineName = machineName
   }
 }
 
-/** 投递进诊断通道，dev 下额外抛出；prod 下不抛，由订阅方决定怎么处置。 */
-export function raiseMachineError(code: MachineErrorCode, message: string, machineName?: string): void {
+function reportMachineError(
+  code: MachineErrorCode,
+  message: string,
+  machineName?: string,
+  includeReason = false,
+): MachineError {
   const error = new MachineError(code, message, machineName)
   reportDiagnostic({
     code: DIAGNOSTIC_CODES.machineError,
     level: 'error',
     message: error.message,
     scope: machineName,
-    detail: { machineCode: code },
+    detail: includeReason ? { machineCode: code, reason: error } : { machineCode: code },
   })
+  return error
+}
+
+/** 投递进诊断通道，dev 下额外抛出；prod 下不抛，由订阅方决定怎么处置。 */
+export function raiseMachineError(code: MachineErrorCode, message: string, machineName?: string): void {
+  const error = reportMachineError(code, message, machineName)
   if (isDev())
     throw error
+}
+
+/** 投递进诊断通道后始终抛出同一个错误，用于任何环境都不能继续的机器契约。 */
+export function throwMachineError(code: MachineErrorCode, message: string, machineName?: string): never {
+  throw reportMachineError(code, message, machineName, true)
+}
+
+function describeMachineFailure(reason: unknown): string {
+  try {
+    return reason instanceof Error ? reason.message : String(reason)
+  }
+  catch {
+    return '<无法格式化的异常>'
+  }
 }
 
 /** 上报机器在停机时携带的崩溃原因。 */
@@ -56,8 +82,11 @@ export function reportMachineCrash(reason: unknown, machineName?: string): void 
   reportDiagnostic({
     code: DIAGNOSTIC_CODES.machineError,
     level: 'error',
-    message: reason instanceof Error ? reason.message : String(reason),
+    message: describeMachineFailure(reason),
     scope: machineName,
-    detail: { machineCode: 'MACHINE_CRASHED' satisfies MachineErrorCode },
+    detail: {
+      machineCode: 'MACHINE_CRASHED' satisfies MachineErrorCode,
+      reason,
+    },
   })
 }

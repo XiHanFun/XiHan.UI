@@ -14,9 +14,12 @@
 
 ## 特性
 
-- 只有 `root` 一个部件：组内每一段是作者自己的按钮，不是本组件的角色节点。
+- `root` 是唯一必需部件；需要把一排动作分成小段时，可在按钮之间放可选的装饰性 `separator`。
+  组内按钮仍是作者自己的动作，不是 ButtonGroup 的角色节点。
 - 尺寸、形态、语气写在容器上，沿自定义属性流给组内每一段。
 - 横排在左右两端留圆角，竖排改在上下两端；合边跟着换轴。
+- 段没有声明形态时继承组的形态；显式写在某一段上的 `solid` / `subtle` / `outline` / `ghost`
+  只管该段，组不会用自己的 outline 描边盖过去。组内按压保留换底反馈，但不缩放段盒，以免共边裂开。
 
 ## 示例
 
@@ -116,11 +119,21 @@
 | `separator` | `data-disabled` | ''（条件成立时才出现） |
 | `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-button-group-radius` · `--xh-button-group-separator-color` · `--xh-button-group-separator-color-disabled` · `--xh-button-group-separator-gap` · `--xh-button-group-separator-inset` · `--xh-button-group-separator-radius` · `--xh-button-group-separator-thickness`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-button-group-radius` | `root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`last-child`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-shape-control` | button-group 的 root 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-button-group-separator-color` | `separator` | `background` | `default` | `--xh-border-default` | button-group 的 separator 部件 background 覆盖槽。 |
+| `--xh-button-group-separator-color-disabled` | `separator` | `background` | `disabled` | `--xh-border-subtle` | button-group 的 separator 部件 background 覆盖槽。 |
+| `--xh-button-group-separator-gap` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | button-group 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-button-group-separator-inset` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | button-group 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-button-group-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | button-group 的 separator 部件 border-radius 覆盖槽。 |
+| `--xh-button-group-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | button-group 的 separator 部件 block-size、inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
@@ -139,7 +152,9 @@
 ## 最佳实践
 
 - 一组以三到五段为宜，再多就该收进[菜单](./menu)。
-- 档位只写在组上，别再逐段重复——两处写法不一致时段与段会错位。
+- 窄容器里放不下整条时，显式给 `orientation="vertical"` 让它竖排。它不会自己折行：一条焊死的按钮条折了行，两端的圆角就切在行末与行首。
+- 尺寸档位只写在组上，避免各段高度与内距错位。某一段确需强调时可单独声明形态；不要把同一份
+  形态和语气在组与每段重复一遍。
 
 ## 反模式
 

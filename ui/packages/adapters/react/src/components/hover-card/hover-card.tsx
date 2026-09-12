@@ -4,7 +4,7 @@ import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { renderAsChild } from '../../runtime/as-child'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
@@ -17,7 +17,7 @@ type HoverCardProps = HoverCardSchema['props']
 /** 函数式 children 的载荷：卡片的展开态与开合命令。 */
 export interface HoverCardRootSlotProps extends Pick<HoverCardApi, 'open' | 'setOpen'> {}
 
-export interface XhHoverCardRootProps {
+export interface XhHoverCardRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'> {
   open?: boolean
   defaultOpen?: boolean
   placement?: Placement
@@ -35,11 +35,35 @@ export interface XhHoverCardRootProps {
   children?: SlotChildren<HoverCardRootSlotProps>
 }
 
-export function XhHoverCardRoot({ children, ...props }: XhHoverCardRootProps): ReactNode {
-  const ctx = useHoverCard(props as HoverCardProps)
+export function XhHoverCardRoot({
+  open,
+  defaultOpen,
+  placement,
+  offset,
+  openDelay,
+  closeDelay,
+  dir,
+  disabled,
+  size,
+  onOpenChange,
+  children,
+  ...rest
+}: XhHoverCardRootProps): ReactNode {
+  const ctx = useHoverCard({
+    open,
+    defaultOpen,
+    placement,
+    offset,
+    openDelay,
+    closeDelay,
+    dir,
+    disabled,
+    size,
+    onOpenChange,
+  } as HoverCardProps)
   return (
     <HoverCardProvider value={ctx}>
-      <div {...ctx.api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })}
       </div>
     </HoverCardProvider>
@@ -58,11 +82,13 @@ export function XhHoverCardTrigger({ children, asChild, ...rest }: XhHoverCardTr
     ctx.api.getTriggerProps() as Record<string, unknown>,
     ['onFocus', 'onPointerEnter', 'onPointerLeave'],
   )
-  const props = mergeReactProps(
-    bind.attrs,
+  const props = mergePartProps(
+    mergeReactProps(
+      bind.attrs,
+      { ref: bind.ref },
+      { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
+    ),
     rest as Record<string, unknown>,
-    { ref: bind.ref },
-    { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
   )
   return renderAsChild(asChild, children, props, 'hover-card', (p, kids) => <button {...p}>{kids}</button>)
 }
@@ -77,7 +103,7 @@ export function XhHoverCardPositioner({ children, container, ...rest }: XhHoverC
   // 卡片内容的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current })
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

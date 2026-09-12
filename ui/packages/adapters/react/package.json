@@ -30,9 +30,17 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./backgrounds": {
+      "types": "./dist/backgrounds.d.ts",
+      "import": "./dist/backgrounds.js"
+    },
     "./behavior": {
       "types": "./dist/behavior.d.ts",
       "import": "./dist/behavior.js"
+    },
+    "./sound": {
+      "types": "./dist/sound.d.ts",
+      "import": "./dist/sound.js"
     }
   },
   "main": "./dist/index.js",
@@ -56,12 +64,20 @@
     "test:browser": "vitest run --config vitest.browser.config.ts"
   },
   "peerDependencies": {
+    "@xihan-ui/backgrounds": "workspace:^",
     "@xihan-ui/code-highlight": "workspace:^",
+    "@xihan-ui/sound": "workspace:^",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "peerDependenciesMeta": {
+    "@xihan-ui/backgrounds": {
+      "optional": true
+    },
     "@xihan-ui/code-highlight": {
+      "optional": true
+    },
+    "@xihan-ui/sound": {
       "optional": true
     }
   },
@@ -70,7 +86,8 @@
     "@xihan-ui/headless": "workspace:^",
     "@xihan-ui/motion": "workspace:^",
     "@xihan-ui/pointer": "workspace:^",
-    "@xihan-ui/position": "workspace:^"
+    "@xihan-ui/position": "workspace:^",
+    "@xihan-ui/tokens": "workspace:^"
   },
   "devDependencies": {
     "@testing-library/react": "catalog:",
@@ -78,11 +95,12 @@
     "@types/react-dom": "catalog:",
     "@vitest/browser": "catalog:",
     "@vitest/browser-playwright": "catalog:",
+    "@xihan-ui/backgrounds": "workspace:*",
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/code-highlight": "workspace:*",
+    "@xihan-ui/sound": "workspace:*",
     "@xihan-ui/styles": "workspace:*",
     "@xihan-ui/testing": "workspace:*",
-    "@xihan-ui/tokens": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
     "jsdom": "catalog:",
     "react": "catalog:",

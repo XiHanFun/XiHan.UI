@@ -61,7 +61,6 @@ export function useHoverCard(
       branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
       // 悬停卡片非模态：不陷焦点、不锁滚动、无遮罩
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
 
@@ -80,7 +79,12 @@ export function useHoverCard(
 
   const api = computed(() => connectHoverCard(service, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
-  const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+  const visible = useOverlayExit({
+    config,
+    isOpen: () => api.value.open,
+    contentRef,
+    onPresence: presence => service.refs.set('presence', presence),
+  })
   // 先问全局配置的落点，没有才落 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 

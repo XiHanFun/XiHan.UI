@@ -18,19 +18,19 @@ export type PromptInputRootSlotProps = Pick<
 export const XhPromptInputRoot = defineComponent({
   name: 'XhPromptInputRoot',
   props: {
-    // default: undefined 表示非受控，落成空串会被当成受控的空值
-    value: { type: String, default: undefined },
-    defaultValue: { type: String, default: undefined },
+    // 缺席值 undefined 表示非受控，落成空串会被当成受控的空值
+    value: { type: String },
+    defaultValue: { type: String },
     disabled: Boolean,
     loading: Boolean,
-    submitKey: { type: String as PropType<PromptInputSubmitKey>, default: undefined },
+    submitKey: { type: String as PropType<PromptInputSubmitKey> },
     // 用 undefined 而非裸 Boolean，缺省值由机器与 connect 给出
     allowEmptySubmit: { type: Boolean, default: undefined },
     clearOnSubmit: { type: Boolean, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<PromptInputTranslations>>, default: undefined },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<PromptInputTranslations>> },
   },
   // value-change 与 submit 携带 { value }，update:value 携带裸串以支持 v-model:value，stop 无载荷
   emits: {

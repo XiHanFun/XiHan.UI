@@ -1,8 +1,9 @@
-import type { PositionResult, VirtualAnchor } from '@xihan-ui/core'
+import type { Layer, PositionResult, VirtualAnchor } from '@xihan-ui/core'
 import type { ContextMenuFocusIntent, ContextMenuPoint, ContextMenuSchema } from './context-menu.types'
-import { createDismissLayer, createFocusScope, createTypeahead, DIAGNOSTIC_CODES, itemValue, navigateItems, queryItems, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { createTypeahead, DIAGNOSTIC_CODES, itemValue, navigateItems, queryItems, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
+import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { contextMenuAnatomy, contextMenuItemQuery } from './context-menu.anatomy'
 
 const { createMachine } = setup<ContextMenuSchema>()
@@ -48,6 +49,7 @@ export const contextMenuMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     position: null,
     getFloatingEl: () => null,
     getTriggerEl: () => null,
@@ -56,6 +58,8 @@ export const contextMenuMachine = createMachine({
     reanchor: null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
+  effects: ['trackLayer'],
   watch: ({ track, prop, context, action }) => {
     // 受控（open 给定）时用户事件只发意图、不自改状态，由这条 track 派发 CONTROLLED.* 回写
     track([() => prop('open')], () => action(['syncOpen']))
@@ -104,8 +108,8 @@ export const contextMenuMachine = createMachine({
       // 锚点在进入展开态时就位（条目常挂，收起时只是 hidden）；锚点定了才有条目认领 tabindex=0
       entry: ['setInitialFocusedValue'],
       exit: ['clearFocusedValue', 'clearTypeahead'],
-      // 进入 open：定位 → 消解 → 焦点。退出 open 时按同序清理，焦点归还发生在消解层撤销之后。
-      effects: ['trackPosition', 'trackLayer'],
+      // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackPosition'],
       on: {
         // 已展开时在别处再右键：只挪锚点，不先关再开。
         // 定位由 watch 追着坐标重挂，层与焦点域全程不动
@@ -240,29 +244,16 @@ export const contextMenuMachine = createMachine({
           prop('longPressDelay') ?? CONTEXT_MENU_LONG_PRESS_DELAY,
         ),
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读。
-      trackPosition: ({ refs, prop, context, flush }) => {
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
+        // 无引擎时不定位，其余照常
+        engine: refs.get('position'),
+        flush,
         // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
         // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
-        context.set('position', null)
-        const engine = refs.get('position')
-        // 无引擎时不定位，其余照常
-        if (!engine)
-          return undefined
-
-        let stop: (() => void) | undefined
-        let queued = false
-        let disposed = false
-
-        const attach = (): void => {
-          queued = false
-          if (disposed)
-            return
-          // 换锚点先撤旧订阅：引擎的 autoUpdate 会一直跟着旧坐标算，留着就是两套位置轮流写
-          stop?.()
-          stop = undefined
-          const floating = refs.get('getFloatingEl')()
-          if (!floating)
-            return
+        clear: () => context.set('position', null),
+        // 坐标变了由 watch 调这个钩子重挂一轮，层与焦点域原地不动
+        onSchedule: schedule => refs.set('reanchor', schedule),
+        getAnchor: () => {
           // 受控 open、defaultOpen 直接进展开态、命令式 setOpen 未给坐标：三条路都没有光标坐标，
           // 锚点退回触发区的起始角
           const point = context.get('point') ?? triggerOrigin(refs.get('getTriggerEl')())
@@ -274,104 +265,77 @@ export const contextMenuMachine = createMachine({
               message: '菜单展开了却没有锚点：既没有光标坐标，也找不到 trigger 部件。'
                 + '右键或 openAt(x, y) 交坐标进来，或者渲染一个 trigger 让菜单锚在它上面',
             })
-            return
+            return null
           }
           // 虚拟锚点：菜单钉在这一点上，零尺寸矩形 + offset 0 即菜单角贴着它
           const anchor: VirtualAnchor = {
             getBoundingClientRect: () => ({ x: point.x, y: point.y, width: 0, height: 0 }),
           }
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? CONTEXT_MENU_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? CONTEXT_MENU_DEFAULT_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-              dir: prop('dir'),
-              // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
-              arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
-              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
-              size: true,
+          return anchor
+        },
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? CONTEXT_MENU_DEFAULT_PLACEMENT,
+          offset: prop('offset') ?? CONTEXT_MENU_DEFAULT_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+          dir: prop('dir'),
+          // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
+          arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
+          // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+          size: true,
+        }),
+        onResult: result => context.set('position', result),
+      }),
+      // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
+      trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
+        let reactivateFocus: (() => void) | null = null
+        let behaviorLayer: Layer | null = null
+        return trackPresenceResources({
+          presence: () => refs.get('presence'),
+          open: () => state.get() === 'open',
+          track,
+          acquire: () => trackOverlayLayer({
+            // 无 DOM 环境不挂副作用，状态机照常转移
+            config: refs.get('config'),
+            registerLayer: refs.get('registerLayer'),
+            flush,
+            active: () => state.get() === 'open',
+            onLayer: layer => behaviorLayer = layer,
+            onDismiss: overlayCloseOnDismiss(send),
+            focusScope: {
+              // 每次读最新 ref，容器晚一拍就位也能命中
+              container: () => refs.get('getContentEl')(),
+              // 显式指定落焦点，两种落点都不交给 Tab 序列探测。
+              initialFocus: () => {
+                const content = refs.get('getContentEl')()
+                if (!content)
+                  return null
+                const anchor = context.get('focusedValue')
+                if (anchor != null)
+                  return queryItems(content, contextMenuItemQuery).find(el => itemValue(el) === anchor) ?? null
+                // 本轮该有锚点却还没挑出来时让焦点域重试；指针打开则焦点歇在菜单容器。
+                return context.get('focusIntent') === 'none' ? content : null
+              },
+              restoreFocus: () => context.get('returnFocus'),
+              restoreTarget: () => refs.get('getTriggerEl')(),
+              onReactivate: reactivate => reactivateFocus = reactivate,
             },
-            result => context.set('position', result),
-          )
-        }
-
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden，此时量出的浮层尺寸为 0。
-        // 同一拍里的多次请求合并成一次
-        const schedule = (): void => {
-          if (queued || disposed)
-            return
-          queued = true
-          flush(attach)
-        }
-
-        refs.set('reanchor', schedule)
-        schedule()
-
-        return () => {
-          disposed = true
-          refs.set('reanchor', null)
-          stop?.()
-        }
-      },
-      // 层与消解层、焦点域绑在同一个效应里，三者生命周期必须一致。
-      // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape
-      trackLayer: ({ refs, context, send }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
-        // 无 DOM 环境不挂副作用，状态机照常转移
-        if (!config || !registerLayer)
-          return undefined
-
-        const { layer, dispose: disposeLayer } = registerLayer()
-
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: reason =>
-            send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
-        })
-
-        const focus = createFocusScope({
-          config,
-          layer,
-          // 每次读最新 ref，容器晚一拍就位也能命中
-          container: () => refs.get('getContentEl')(),
-          // 菜单不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
-          trapped: () => false,
-          loop: false,
-          // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测走 focusFirst(removeLinks(...))，
-          // 条目写成 <a> 会被整体过滤掉，且容器自身从来不是候选——只靠它焦点要等到最后一帧才落位。
-          // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
-          initialFocus: () => {
-            const content = refs.get('getContentEl')()
-            if (!content)
-              return null
-            const anchor = context.get('focusedValue')
-            if (anchor != null)
-              return queryItems(content, contextMenuItemQuery).find(el => itemValue(el) === anchor) ?? null
-            // 本轮该有锚点却还没挑出来（WC 侧条目身份标记要等首次 wire()）：返回 null 让焦点域重试，
-            // 别滑到容器上定死——落焦一旦成功就不再重试
-            if (context.get('focusIntent') !== 'none')
-              return null
-            // 确实不该有锚点（指针打开）：焦点歇在菜单容器上，它此刻正认领着 Tab 位
-            return content
+          }),
+          canRelease: () => {
+            const config = refs.get('config')
+            return behaviorLayer == null || config == null || config.layerRegistry.top() === behaviorLayer
           },
-          restoreFocus: () => context.get('returnFocus'),
-          // 归还落点显式给触发区：右键那一下浏览器未必把焦点放在它身上（各平台不一致），
-          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
-          restoreTarget: () => refs.get('getTriggerEl')(),
+          onReleaseReady: retry => refs.get('config')?.layerRegistry.subscribe(() => scope.getWin().queueMicrotask(retry)) ?? (() => {}),
+          onReopen: () => {
+            const activate = reactivateFocus
+            flush(() => scope.getWin().requestAnimationFrame(() => {
+              if (state.get() === 'open' && reactivateFocus === activate)
+                activate?.()
+            }))
+          },
         })
-
-        // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈
-        return () => {
-          focus.dispose()
-          dismiss.dispose()
-          disposeLayer()
-        }
       },
     },
   },

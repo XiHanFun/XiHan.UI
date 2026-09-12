@@ -2,6 +2,7 @@ import type { CodeToken, Size } from '@xihan-ui/core'
 import type { DiffChange, DiffModel, DiffSide, DiffViewApi, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { diffViewSides } from '@xihan-ui/headless'
 import { Fragment } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -16,11 +17,6 @@ export type DiffViewRootSlotProps = Pick<
   DiffViewApi,
   'view' | 'rows' | 'expandedValue' | 'stats' | 'truncated' | 'truncatedLines' | 'isEmpty' | 'toggleGap' | 'setExpandedValue'
 >
-
-/** 单栏只有一列，恒为旧侧；并排两列都铺。 */
-function sidesOf(view: DiffViewMode): readonly DiffSide[] {
-  return view === 'split' ? ['old', 'new'] : ['old']
-}
 
 /** 着色记号逐个铺成 span。 */
 function renderTokens(api: DiffViewApi, tokens: readonly CodeToken[]): ReactNode[] {
@@ -50,7 +46,7 @@ function renderCell(api: DiffViewApi, rowIndex: number, side: DiffSide): ReactNo
   return renderTokens(api, tokens)
 }
 
-export interface XhDiffViewRootProps {
+export interface XhDiffViewRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 差异模型，唯一入口。补丁与新旧两版文本都先归一到它。 */
   model?: DiffModel
   /** 单栏 unified 还是并排 split。 */
@@ -68,12 +64,34 @@ export interface XhDiffViewRootProps {
   children?: SlotChildren<DiffViewRootSlotProps>
 }
 
-export function XhDiffViewRoot({ children, ...props }: XhDiffViewRootProps): ReactNode {
-  const ctx = useDiffView(withXhConfig('diff-view', props) as Props)
+export function XhDiffViewRoot({
+  model,
+  view,
+  contextLines,
+  expandedValue,
+  defaultExpandedValue,
+  wrap,
+  size,
+  translations,
+  onExpandedValueChange,
+  children,
+  ...rest
+}: XhDiffViewRootProps): ReactNode {
+  const ctx = useDiffView(withXhConfig('diff-view', {
+    model,
+    view,
+    contextLines,
+    expandedValue,
+    defaultExpandedValue,
+    wrap,
+    size,
+    translations,
+    onExpandedValueChange,
+  }) as Props)
   const { api } = ctx
   return (
     <DiffViewProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           view: api.view,
           rows: api.rows,
@@ -135,7 +153,7 @@ export interface XhDiffViewBodyProps extends ComponentPropsWithRef<'div'> {}
 export function XhDiffViewBody({ children, ...rest }: XhDiffViewBodyProps): ReactNode {
   const ctx = useDiffViewContext()
   const { api } = ctx
-  const sides = sidesOf(api.view)
+  const sides = diffViewSides(api.view)
   return (
     <div {...mergeReactProps(api.getBodyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {api.rows.map((row) => {

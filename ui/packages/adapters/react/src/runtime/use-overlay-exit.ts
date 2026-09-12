@@ -1,7 +1,8 @@
 import type { RuntimeConfig } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { RefObject } from 'react'
 import { attachCssExit, createPresence } from '@xihan-ui/core/presence'
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 // 退场闸门：把「几时真的收起内容」从展开态挪到 presence 上。
 //
@@ -24,6 +25,8 @@ export interface OverlayExitOptions {
   isOpen: () => boolean
   /** content 节点，退场动画从它身上探测。 */
   contentRef: RefObject<HTMLElement | null>
+  /** Presence 建立后交给需要共用退出生命周期的 Headless 机器；卸载时回传 null。 */
+  onPresence?: (presence: PresenceHandle | null) => void
 }
 
 /**
@@ -41,31 +44,54 @@ export function useOverlayExit(options: OverlayExitOptions): boolean {
   const latest = useRef(options)
   latest.current = options
 
-  const presence = useMemo(
-    () => (config ? createPresence({ config, open: initialOpen, onRenderedChange: setVisible }) : null),
-    [config, initialOpen],
-  )
-
   // data-state 落到 DOM 之后再驱动进出场：早于提交驱动，退场探测读到的还是上一帧的
   // animationName，量不到这次的动画
   const detachExit = useRef<(() => void) | undefined>(undefined)
+  const observedNode = useRef<HTMLElement | null>(null)
+  const observedPresence = useRef<PresenceHandle | null>(null)
+  const presenceRef = useRef<PresenceHandle | null>(null)
+  // Presence 归提交生命周期所有；StrictMode 的清理与重建必须得到新的租约容器。
+  useIsomorphicLayoutEffect(() => {
+    if (!config)
+      return
+    const presence = createPresence({ config, open: latest.current.isOpen(), onRenderedChange: setVisible })
+    presenceRef.current = presence
+    const onPresence = latest.current.onPresence
+    onPresence?.(presence)
+    setVisible(presence.rendered)
+    return () => {
+      presence.dispose()
+      onPresence?.(null)
+      if (presenceRef.current === presence)
+        presenceRef.current = null
+      if (observedPresence.current === presence) {
+        detachExit.current?.()
+        detachExit.current = undefined
+        observedNode.current = null
+        observedPresence.current = null
+      }
+    }
+  }, [config])
+
   useIsomorphicLayoutEffect(() => {
     const open = latest.current.isOpen()
+    const presence = presenceRef.current
     if (!presence) {
       setVisible(open)
       return
     }
-    presence.update(open)
+    if (open)
+      presence.update(true)
     const node = latest.current.contentRef.current
-    detachExit.current?.()
-    detachExit.current = node ? attachCssExit(node, presence) : undefined
+    if (node !== observedNode.current || presence !== observedPresence.current) {
+      const detach = detachExit.current
+      detachExit.current = node ? attachCssExit(node, presence) : undefined
+      observedNode.current = node
+      observedPresence.current = presence
+      detach?.()
+    }
+    presence.update(open)
   })
-
-  useEffect(() => () => {
-    detachExit.current?.()
-    detachExit.current = undefined
-    presence?.dispose()
-  }, [presence])
 
   return visible
 }

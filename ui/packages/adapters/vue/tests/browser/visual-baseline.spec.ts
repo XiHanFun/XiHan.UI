@@ -18,11 +18,6 @@ import {
   XhButton,
   XhButtonLabel,
   XhButtonPrefix,
-  XhDialogContent,
-  XhDialogDescription,
-  XhDialogRoot,
-  XhDialogTitle,
-  XhDialogTrigger,
   XhDrawerContent,
   XhDrawerDescription,
   XhDrawerRoot,
@@ -46,6 +41,11 @@ import {
   XhToastRoot,
   XhToastTitle,
 } from '../../src'
+import {
+  VISUAL_BASELINE_FONT,
+  VISUAL_BASELINE_VIEWPORT,
+  visualBaselineDialogFixture,
+} from './visual-baseline.fixture'
 // 令牌与皮肤一起加载：画面就是它们两层算出来的
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -58,7 +58,7 @@ import '@xihan-ui/styles'
  * 不写死就等于把「今天这台机器装了什么字体」烘进 40 张位图。
  * 装法：容器与 CI 都要有 fonts-dejavu-core。
  */
-const BASELINE_FONT = 'DejaVu Sans'
+const BASELINE_FONT = VISUAL_BASELINE_FONT
 
 /**
  * 视口尺寸写死，画面尺寸才写死。
@@ -66,7 +66,7 @@ const BASELINE_FONT = 'DejaVu Sans'
  * 宽度要容得下贴右边的抽屉（20rem = 320px）与对话框，
  * 高度要让展开的下拉与菜单整块落在视口内、不触发翻边。
  */
-const VIEWPORT = { width: 800, height: 520 }
+const VIEWPORT = VISUAL_BASELINE_VIEWPORT
 
 /**
  * 整屏舞台的 id：它就是每张基线的取景框。
@@ -218,15 +218,7 @@ const FIXTURES: Record<string, () => VNode[]> = {
     ]),
   ],
 
-  'dialog': () => [
-    h(XhDialogRoot, { open: true, translations: { close: 'Close' } }, () => [
-      h(XhDialogTrigger, { asChild: true }, () => h(XhButton, null, () => 'Open dialog')),
-      h(XhDialogContent, null, () => [
-        h(XhDialogTitle, null, () => 'Confirm publish'),
-        h(XhDialogDescription, null, () => 'Once published this page is visible to everyone.'),
-      ]),
-    ]),
-  ],
+  'dialog': visualBaselineDialogFixture,
 
   'drawer': () => [
     h(XhDrawerRoot, { open: true, translations: { close: 'Close' } }, () => [

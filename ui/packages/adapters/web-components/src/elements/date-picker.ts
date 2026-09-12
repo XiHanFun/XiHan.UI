@@ -19,15 +19,16 @@ import type {
   DatePickerValueChangeDetails,
   DateSegmentSet,
   DateSegmentType,
+  FormControlState,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { calendarAnatomy, calendarMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldEndProps, datePickerFieldProps, datePickerMachine, datePickerMeta } from '@xihan-ui/headless'
+import { calendarAnatomy, calendarMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldAt, datePickerFieldEndProps, datePickerFieldProps, datePickerMachine, datePickerMeta, resolveDatePickerPanelIndex, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -63,10 +64,7 @@ function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentPro
 /** 取作者写在段位上的 index，缺席或写坏了退回组内文档序。 */
 function declaredIndex(el: HTMLElement, position: number): number {
   const raw = el.getAttribute('index')
-  if (raw == null || raw.trim() === '')
-    return position
-  const parsed = Number(raw)
-  return Number.isFinite(parsed) ? Math.trunc(parsed) : position
+  return resolveDatePickerPanelIndex(raw == null ? undefined : raw.trim(), position)
 }
 
 /**
@@ -158,7 +156,10 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart cell-trigger - 真正可点可聚焦的那一层，承载 aria-disabled 与 roving tabindex
  * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串；区间模式下起止各一份
  */
-export class XhDatePickerElement extends XhElement {
+export class XhDatePickerElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   // 分段输入与日历的 DOM 摊在本元素的 Light DOM 里由本元素接线，它们的角色节点归各自 scope 管
   static override partContract = {
     anatomy: datePickerAnatomy,
@@ -246,11 +247,18 @@ export class XhDatePickerElement extends XhElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // 四台机器共用一份 scope，part id 里带组件名故不相撞
-  private readonly pickerScope = createScope(null, this.idGen)
+  private readonly pickerScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = this.createAnchoredPortalController({
+    name: 'DatePicker',
+    config: () => this.config,
+    source: () => this.getPart('control'),
+    root: () => this.getPart('positioner'),
+    onChange: () => this.requestUpdate(),
+  })
 
   private readonly notifyValue = (details: DatePickerValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -321,7 +329,20 @@ export class XhDatePickerElement extends XhElement {
     }
   }
 
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
   private machineProps(): Partial<DatePickerSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+      required: this.required,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
@@ -341,10 +362,10 @@ export class XhDatePickerElement extends XhElement {
       fixedWeeks: this.fixedWeeks,
       defaultFocusedValue: this.defaultFocusedValue,
       isDateUnavailable: this.isDateUnavailable,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
-      required: this.required ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
+      required: control.required,
       name: this.name,
       endName: this.endName,
       translations: this.translations,
@@ -370,6 +391,10 @@ export class XhDatePickerElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.pickerScope, idGenerator: this.idGen })
   }
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
+  }
+
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
@@ -380,7 +405,6 @@ export class XhDatePickerElement extends XhElement {
       // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
       branches: () => [this.getPart('control'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 浮层不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })
@@ -389,8 +413,14 @@ export class XhDatePickerElement extends XhElement {
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<DatePickerSchema>): void {
     this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: (this.open ?? this.defaultOpen) ?? false,
+      onExitComplete: () => this.requestUpdate(),
+    })
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.exit.presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('control'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -527,7 +557,7 @@ export class XhDatePickerElement extends XhElement {
     const hiddenInputs = this.hiddenInputGroups(segmentGroups)
     for (const index of [0, 1] as const) {
       // 非区间模式没有终点那一组，作者多写的 segment-group、段位与隐藏输入一概不接线
-      const field = index === 0 ? api.field : api.fieldEnd
+      const field = datePickerFieldAt(api, index)
       if (!field)
         continue
       const segmentGroup = segmentGroups[index]
@@ -623,9 +653,11 @@ export class XhDatePickerElement extends XhElement {
     this.setPartHidden(this.getPart('content'), !this.exit.visible)
 
     this.bars.wire()
+    this.portal.sync(this.exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()

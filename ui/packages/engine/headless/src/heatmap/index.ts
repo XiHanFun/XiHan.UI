@@ -63,6 +63,7 @@ export type {
   HeatmapVariant,
   HeatmapWeekDayMeta,
 } from './heatmap.grid'
+export { normalizeHeatmapNumber, normalizeHeatmapString } from './heatmap.input'
 export { heatmapKeyboard } from './heatmap.keyboard'
 export { heatmapActiveCell, heatmapActiveSource, heatmapActiveTip, heatmapGridOptions, heatmapMachine } from './heatmap.machine'
 export type { HeatmapActiveContext, HeatmapActiveSource } from './heatmap.machine'

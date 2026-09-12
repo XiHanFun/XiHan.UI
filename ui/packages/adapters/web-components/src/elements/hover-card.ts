@@ -5,9 +5,9 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { connectHoverCard, hoverCardAnatomy, hoverCardMachine, hoverCardMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -52,7 +52,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart description - 说明（aria-describedby 目标）
  * @csspart arrow - 指向锚点的箭头（aria-hidden，data-placement 随实际放置位翻转）
  */
-export class XhHoverCardElement extends XhElement {
+export class XhHoverCardElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: hoverCardAnatomy, meta: hoverCardMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -81,11 +84,18 @@ export class XhHoverCardElement extends XhElement {
   declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly hoverCardScope = createScope(null, this.idGen)
+  private readonly hoverCardScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = this.createAnchoredPortalController({
+    name: 'HoverCard',
+    config: () => this.config,
+    source: () => this.getPart('trigger'),
+    root: () => this.getPart('positioner') ?? this.getPart('content'),
+    onChange: () => this.requestUpdate(),
+  })
 
   private readonly notify = (details: HoverCardOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
@@ -125,6 +135,10 @@ export class XhHoverCardElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.hoverCardScope, idGenerator: this.idGen })
   }
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
+  }
+
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着可见态走（机器的 trackLayer 效应负责）。
   // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
@@ -137,7 +151,6 @@ export class XhHoverCardElement extends XhElement {
       branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       // 悬停卡片从不模态：不陷焦点、不锁滚动、没有自带遮罩
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
   }
@@ -146,8 +159,14 @@ export class XhHoverCardElement extends XhElement {
   // 每次(重)建机器后都要重注：refs 属于机器实例，重连时的新机器不会继承旧的。
   private injectRefs(svc: Service<HoverCardSchema>): void {
     this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: (this.open ?? this.defaultOpen) ?? false,
+      onExitComplete: () => this.requestUpdate(),
+    })
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.exit.presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -202,9 +221,11 @@ export class XhHoverCardElement extends XhElement {
     this.setPartHidden(content, !this.exit.visible)
 
     this.bars.wire()
+    this.portal.sync(this.exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()

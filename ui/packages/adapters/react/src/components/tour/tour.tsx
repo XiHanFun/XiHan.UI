@@ -29,7 +29,9 @@ export type TourRootSlotProps = Pick<
   | 'remeasure'
 >
 
-export interface XhTourRootProps {
+export interface XhTourRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+  /** 本实例三张 Tour 浮层的 Portal 容器；优先于应用级配置。 */
+  container?: () => Element | null
   steps?: TourStep[]
   value?: number
   defaultValue?: number
@@ -52,13 +54,54 @@ export interface XhTourRootProps {
   children?: SlotChildren<TourRootSlotProps>
 }
 
-export function XhTourRoot({ children, ...props }: XhTourRootProps): ReactNode {
-  const ctx = useTour(withXhConfig('tour', props) as TourProps)
+export function XhTourRoot({
+  container,
+  steps,
+  value,
+  defaultValue,
+  open,
+  defaultOpen,
+  placement,
+  offset,
+  dir,
+  closeOnEscape,
+  closeOnInteractOutside,
+  showBackdrop,
+  spotlightPadding,
+  autoScroll,
+  translations,
+  onOpenChange,
+  onValueChange,
+  onComplete,
+  onSkip,
+  children,
+  ...rest
+}: XhTourRootProps): ReactNode {
+  const ctx = useTour(withXhConfig('tour', {
+    steps,
+    value,
+    defaultValue,
+    open,
+    defaultOpen,
+    placement,
+    offset,
+    dir,
+    closeOnEscape,
+    closeOnInteractOutside,
+    showBackdrop,
+    spotlightPadding,
+    autoScroll,
+    translations,
+    onOpenChange,
+    onValueChange,
+    onComplete,
+    onSkip,
+  }) as TourProps, container)
   const api = ctx.api
   // 经 children 载荷交出状态与走步、放弃等命令，供浮层外的按钮使用
   return (
     <TourProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderSlot(children, {
           open: api.open,
           value: api.value,
@@ -93,7 +136,7 @@ export function XhTourBackdrop({ children, ...rest }: XhTourBackdropProps): Reac
           rest as Record<string, unknown>,
           {
             // 收起跟着退场闸门走：遮罩的淡出与气泡的退场并行播
-            hidden: (!ctx.visible || !ctx.showBackdrop) || undefined,
+            hidden: (!ctx.rendered || !ctx.showBackdrop) || undefined,
             ref: (el: HTMLDivElement | null) => { ctx.backdropRef.current = el },
           },
         )}
@@ -115,7 +158,10 @@ export function XhTourSpotlight({ ...rest }: XhTourSpotlightProps): ReactNode {
           ctx.api.getSpotlightProps() as Record<string, unknown>,
           rest as Record<string, unknown>,
           // 收起跟着退场闸门走：高亮框的退场与气泡并行播；居中步照常不画
-          { hidden: (!ctx.visible || !ctx.api.anchored) || undefined },
+          {
+            hidden: (!ctx.rendered || !ctx.api.anchored) || undefined,
+            ref: (el: HTMLDivElement | null) => { ctx.spotlightRef.current = el },
+          },
         )}
       />
     </XhPortal>
@@ -134,7 +180,7 @@ export function XhTourPositioner({ children, ...rest }: XhTourPositionerProps): 
           rest as Record<string, unknown>,
           {
             // 定位层收起跟着退场闸门走：它先 display:none 的话，里面气泡的退场一帧都播不出来
-            hidden: !ctx.visible || undefined,
+            hidden: !ctx.rendered || undefined,
             ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el },
           },
         )}
@@ -156,7 +202,7 @@ export function XhTourContent({ children, ...rest }: XhTourContentProps): ReactN
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
-          style: ctx.visible ? undefined : { display: 'none' },
+          style: ctx.rendered ? undefined : { display: 'none' },
           ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el },
         },
       )}

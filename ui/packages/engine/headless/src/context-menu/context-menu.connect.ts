@@ -13,7 +13,7 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/core'
-import { overlayPositioned } from '../shared/overlay'
+import { overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { contextMenuAnatomy, contextMenuItemQuery, contextMenuItemText } from './context-menu.anatomy'
 import { CONTEXT_MENU_DEFAULT_PLACEMENT } from './context-menu.machine'
 
@@ -24,17 +24,6 @@ const pointerHot = new WeakSet<Element>()
 
 /** 右键那一下的 button 值；它不算「点到别处」。 */
 const SECONDARY_BUTTON = 2
-
-// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
-// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
-const AVAILABLE_H_FLOOR = 96
-
-function availableHeightVar(available: number | undefined): Record<string, string> {
-  return {
-    '--xh-_context-menu-available-h':
-      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
-  }
-}
 
 export function connectContextMenu<T extends PropTypes>(
   service: Service<ContextMenuSchema>,
@@ -213,12 +202,10 @@ export function connectContextMenu<T extends PropTypes>(
       // 落位才露：皮肤基线把定位层藏着，带这个才显示。展开那几帧坐标还没算出来时就是藏的
       'data-positioned': dataAttr(overlayPositioned(position)),
       'style': {
-        position: 'fixed',
         // 引擎结果没回来之前先用光标坐标顶着；无引擎时它就是最终落位
-        left: `${position?.x ?? point?.x ?? 0}px`,
-        top: `${position?.y ?? point?.y ?? 0}px`,
+        ...overlayFixedStyle(position, point),
         // content 继承这个高度上限，超出的条目在菜单内部滚
-        ...availableHeightVar(position?.availableHeight),
+        ...overlayAvailableSpaceVars('context-menu', position),
       },
     }),
 
@@ -235,6 +222,9 @@ export function connectContextMenu<T extends PropTypes>(
       'tabindex': open && anchor == null ? 0 : -1,
       'data-state': stateAttr,
       'data-placement': placement,
+      // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
       // content 自身拿到焦点＝没有活动条目：锚点清空，Tab 停靠点回容器兜底
@@ -355,10 +345,7 @@ export function connectContextMenu<T extends PropTypes>(
       'data-placement': placement,
       // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。
       // 两根轴每帧都写，翻面后另一根不会留着上一帧的值；空串即撤掉声明，皮肤退回居中
-      'style': {
-        '--xh-_context-menu-arrow-x': arrowAt?.x != null ? `${arrowAt.x}px` : '',
-        '--xh-_context-menu-arrow-y': arrowAt?.y != null ? `${arrowAt.y}px` : '',
-      },
+      'style': overlayArrowVars('context-menu', arrowAt),
     }),
   }
 }

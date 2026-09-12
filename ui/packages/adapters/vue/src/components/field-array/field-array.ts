@@ -1,8 +1,10 @@
-import type { FieldArrayApi, FieldArrayItemProps, FieldArraySchema, FieldArrayTranslations } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArrayItemProps, FieldArraySchema, FieldArrayTranslations, FormPath } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useOptionalFormContext } from '../form/context'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideFieldArray, provideFieldArrayItem, useFieldArrayContext, useFieldArrayItemContext } from './context'
 import { useFieldArray } from './use-field-array'
 
@@ -28,20 +30,20 @@ export type FieldArrayRootSlotProps = Pick<
 
 export const XhFieldArrayRoot = defineComponent({
   name: 'XhFieldArrayRoot',
-  // 有 connect 与机器兜底的 prop 一律 default: undefined
+  // 有 connect 与机器兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    // default: undefined 表示非受控
-    value: { type: Array as PropType<unknown[]>, default: undefined },
-    defaultValue: { type: Array as PropType<unknown[]>, default: undefined },
-    min: { type: Number, default: undefined },
-    max: { type: Number, default: undefined },
-    createItem: { type: Function as PropType<() => unknown>, default: undefined },
+    // 缺席值 undefined 表示非受控
+    value: { type: Array as PropType<unknown[]> },
+    defaultValue: { type: Array as PropType<unknown[]> },
+    min: { type: Number },
+    max: { type: Number },
+    createItem: { type: Function as PropType<() => unknown> },
     movable: Boolean,
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
-    name: { type: String, default: undefined },
-    translations: { type: Object as PropType<Partial<FieldArrayTranslations>>, default: undefined },
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
+    name: { type: [String, Array] as PropType<FormPath> },
+    translations: { type: Object as PropType<Partial<FieldArrayTranslations>> },
   },
   // value-change 携带 { value }，update:value 携带裸数组
   emits: {
@@ -52,11 +54,12 @@ export const XhFieldArrayRoot = defineComponent({
     default?: (props: FieldArrayRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
+    const form = useOptionalFormContext()
     const onValueChange: FieldArrayProps['onValueChange'] = (details) => {
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useFieldArray(withXhConfig('field-array', props) as FieldArrayProps, { onValueChange })
+    const ctx = useFieldArray(withXhConfig('field-array', useFormControlProps(props)) as FieldArrayProps, { onValueChange }, form?.service)
     provideFieldArray(ctx)
     // items 里每一项都带 key，作者铺行时直接 :key="row.key"
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({

@@ -28,6 +28,8 @@ const THEMES = ['light', 'dark']
 /**
  * 明知不达标且不改颜色的配对。键为 `${theme}/${tone}/${pair}`，值为理由。
  * 聚焦环不随语气走（warning 本体压白底只有 2.70）所以这里只查 --xh-ring-focus 一条，不查各族。
+ * 实心面上环改取那块面配对的前景色（focus.css），落回下面已经在查的「实心底 vs on 字」
+ * 那几对，不另立配对：那几对按 4.5 判，非文本对比要的 3:1 一并覆盖。
  */
 const KNOWN = new Map([])
 

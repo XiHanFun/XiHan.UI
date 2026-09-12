@@ -3,6 +3,7 @@ import type { EditableActivationMode, EditableApi, EditableSchema, EditableSubmi
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideEditable, useEditableContext } from './context'
 import { useEditable } from './use-editable'
 
@@ -16,25 +17,25 @@ export type EditableRootSlotProps = Pick<
 
 export const XhEditableRoot = defineComponent({
   name: 'XhEditableRoot',
-  // 缺省值由 connect 与机器给出，这里一律 default: undefined
+  // 缺省值由 connect 与机器给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    value: { type: String, default: undefined },
-    defaultValue: { type: String, default: undefined },
+    value: { type: String },
+    defaultValue: { type: String },
     edit: { type: Boolean, default: undefined },
     defaultEdit: Boolean,
-    placeholder: { type: String, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
-    maxLength: { type: Number, default: undefined },
-    name: { type: String, default: undefined },
-    submitMode: { type: String as PropType<EditableSubmitMode>, default: undefined },
-    activationMode: { type: String as PropType<EditableActivationMode>, default: undefined },
+    placeholder: { type: String },
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
+    maxLength: { type: Number },
+    name: { type: String },
+    submitMode: { type: String as PropType<EditableSubmitMode> },
+    activationMode: { type: String as PropType<EditableActivationMode> },
     selectOnFocus: { type: Boolean, default: undefined },
     autoResize: Boolean,
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // value-change / edit-change 携带 details，update:* 携带裸值；提交与撤销只有语义事件
   emits: {
@@ -49,7 +50,7 @@ export const XhEditableRoot = defineComponent({
     default?: (props: EditableRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    const ctx = useEditable(props as EditableProps, {
+    const ctx = useEditable(useFormControlProps(props) as EditableProps, {
       onValueChange: (details) => {
         emit('value-change', details)
         emit('update:value', details.value)

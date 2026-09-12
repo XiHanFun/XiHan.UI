@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
-import type { RuntimeConfig } from '@xihan-ui/core'
+import type { Anchor, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
+import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
 import type { MentionApi, MentionSchema } from '../src/mention'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { connectMention, mentionMachine } from '../src/mention'
@@ -63,9 +65,17 @@ function spread(el: HTMLElement, props: Record<string, unknown>): void {
 
 interface Harness {
   api: () => MentionApi
+  config: RuntimeConfig
+  presence: PresenceHandle | null
   root: HTMLElement
-  input: HTMLTextAreaElement
+  input: HTMLInputElement
   content: HTMLElement
+  positioner: HTMLElement
+  send: (event: MentionSchema['event']) => void
+  /** 引擎回报并写进 context 的位置结果。 */
+  position: () => PositionResult | null
+  /** 把锚点 / 浮层 ref 换成空的，用来验它们缺席时不挂订阅。 */
+  clearRef: (key: 'getInputEl' | 'getFloatingEl') => void
   item: (value: string) => HTMLElement
   /** 换一批候选：过滤是调用方的活儿，这里模拟它按查询串重渲列表。 */
   setItems: (values: readonly string[]) => void
@@ -79,6 +89,12 @@ interface Harness {
 interface Options {
   /** 收到 onQueryChange 就按前缀过滤候选——真实调用方的最小形态。 */
   filterOnQuery?: boolean
+  /** 定位引擎；不给即缺省，机器照常转移但不产出位置结果。 */
+  position?: PositionEnginePort
+  /** 本层被移出层栈时调一次，用来记拆除顺序。 */
+  onLayerDispose?: () => void
+  /** 注入真实 Presence，验证行为资源延迟到视觉退场完成后释放。 */
+  withPresence?: boolean
 }
 
 const runtimes: VanillaRuntime[] = []
@@ -93,7 +109,7 @@ function mount(initial: Partial<Props> = {}, options: Options = {}): Harness {
   const scope = createScope(null, idGen)
 
   const root = doc.createElement('div')
-  const input = doc.createElement('textarea')
+  const input = doc.createElement('input')
   const positioner = doc.createElement('div')
   const content = doc.createElement('div')
   positioner.append(content)
@@ -126,15 +142,29 @@ function mount(initial: Partial<Props> = {}, options: Options = {}): Harness {
   })
 
   const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+  const presence = options.withPresence
+    ? createPresence({ config, open: false, onRenderedChange: () => {} })
+    : null
   service.refs.set('config', config)
-  service.refs.set('registerLayer', () => config.layerRegistry.register({
-    kind: 'popover',
-    node: () => content,
-    branches: () => [input],
-    isModal: () => false,
-    setModal: () => {},
-    surfaces: () => [],
-  }))
+  service.refs.set('presence', presence)
+  service.refs.set('registerLayer', () => {
+    const handle = config.layerRegistry.register({
+      kind: 'popover',
+      node: () => content,
+      branches: () => [input],
+      isModal: () => false,
+      surfaces: () => [],
+    })
+    return {
+      layer: handle.layer,
+      dispose: () => {
+        handle.dispose()
+        options.onLayerDispose?.()
+      },
+    }
+  })
+  if (options.position)
+    service.refs.set('position', options.position)
   service.refs.set('getFloatingEl', () => positioner)
   service.refs.set('getContentEl', () => content)
   service.refs.set('getInputEl', () => input)
@@ -169,9 +199,20 @@ function mount(initial: Partial<Props> = {}, options: Options = {}): Harness {
 
   return {
     api: () => connectMention(service, normalizeProps),
+    config,
+    presence,
     root,
     input,
     content,
+    positioner,
+    send: event => service.send(event),
+    position: () => service.context.get('position'),
+    clearRef: (key) => {
+      if (key === 'getFloatingEl')
+        service.refs.set('getFloatingEl', () => null)
+      else
+        service.refs.set('getInputEl', () => null)
+    },
     item: v => itemEls.get(v)!,
     setItems,
     setProps: (next) => {
@@ -184,6 +225,45 @@ function mount(initial: Partial<Props> = {}, options: Options = {}): Harness {
     highlighted: () => service.context.get('highlightedValue'),
   }
 }
+
+describe('mention 真实退场资源', () => {
+  it('逻辑关闭立即失活，Layer 等 Presence 完成才释放；中途重开复用原登记', () => {
+    const onOpenChange = vi.fn()
+    const m = mount({ onOpenChange }, { withPresence: true })
+    const presence = m.presence!
+    m.send({ type: 'OPEN' })
+    const original = m.config.layerRegistry.list()[0]
+    expect(original).toBeDefined()
+
+    const leases: ExitLease[] = []
+    const stopExit = presence.onBeforeExit(() => {
+      leases.push(presence.claimExit(`mention exit ${leases.length + 1}`))
+    })
+    m.send({ type: 'CLOSE' })
+    const closing = m.api().getContentProps() as Record<string, unknown>
+    expect(closing.inert).toBe(true)
+    expect(closing['aria-hidden']).toBe(true)
+    expect(m.config.layerRegistry.list()).toEqual([original])
+    presence.update(false)
+    expect(leases).toHaveLength(1)
+    onOpenChange.mockClear()
+    press(document.body, 'Escape')
+    expect(onOpenChange).not.toHaveBeenCalled()
+
+    m.send({ type: 'OPEN' })
+    expect(leases[0]!.settled).toBe(true)
+    expect(m.config.layerRegistry.list()).toEqual([original])
+
+    m.send({ type: 'CLOSE' })
+    presence.update(false)
+    expect(leases).toHaveLength(2)
+    leases[1]!.done()
+    expect(m.config.layerRegistry.list()).toHaveLength(0)
+
+    stopExit()
+    presence.dispose()
+  })
+})
 
 /** 合成事件默认 cancelable=false，那样 preventDefault 是空操作、defaultPrevented 永远为假。 */
 function press(el: HTMLElement, key: string, init: KeyboardEventInit = {}): KeyboardEvent {
@@ -201,19 +281,19 @@ function click(el: HTMLElement): void {
 }
 
 /** 打字：把整段正文写进框里、把光标摆到指定位置，再派原生 input 事件。 */
-function type(input: HTMLTextAreaElement, text: string, caret = text.length): void {
+function type(input: HTMLInputElement, text: string, caret = text.length): void {
   input.value = text
   input.setSelectionRange(caret, caret)
   input.dispatchEvent(new Event('input', { bubbles: true }))
 }
 
 /** 只挪光标，不改正文。 */
-function moveCaret(input: HTMLTextAreaElement, caret: number): void {
+function moveCaret(input: HTMLInputElement, caret: number): void {
   input.setSelectionRange(caret, caret)
   release(input, 'ArrowLeft')
 }
 
-/** flush 在 vanilla 运行时是 queueMicrotask；消解层的监听器注册还要过一个 setTimeout。 */
+/** flush 在 vanilla 运行时是一枚微任务；消解层的交互再等一枚微任务武装。 */
 function tick(): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, 0))
 }
@@ -549,21 +629,22 @@ describe('公开 API 与无障碍属性', () => {
     expect(m.state()).toBe('closed')
   })
 
-  it('多行宿主不写 role 与 aria-expanded，组合框语义走 textbox 支持的那几条', () => {
+  it('输入框写足组合框那一套属性，彼此互指', () => {
     const m = mount()
-    expect(m.input.hasAttribute('role')).toBe(false)
-    expect(m.input.hasAttribute('aria-expanded')).toBe(false)
+    expect(m.input.getAttribute('role')).toBe('combobox')
+    expect(m.input.getAttribute('type')).toBe('text')
+    expect(m.input.getAttribute('aria-expanded')).toBe('false')
     expect(m.input.getAttribute('aria-haspopup')).toBe('listbox')
     expect(m.input.getAttribute('aria-autocomplete')).toBe('list')
     expect(m.input.getAttribute('aria-controls')).toBe(m.content.getAttribute('id'))
   })
 
-  it('单行宿主才补上 role=combobox 与 aria-expanded', () => {
+  it('展开时 aria-expanded 翻成 true', async () => {
     const m = mount()
-    const props = m.api().getInputProps({ as: 'input' }) as Record<string, unknown>
-    expect(props.role).toBe('combobox')
-    expect(props.type).toBe('text')
-    expect(props['aria-expanded']).toBe('false')
+    type(m.input, '@li')
+    await tick()
+    expect(m.state()).toBe('open')
+    expect(m.input.getAttribute('aria-expanded')).toBe('true')
   })
 
   it('浮层自带可及名字：role=listbox 必须有名字，而这里没有可指的标题部件', () => {
@@ -632,6 +713,38 @@ describe('公开 API 与无障碍属性', () => {
 })
 
 describe('异步候选', () => {
+  it('loading 只在零可见候选时显示；hidden 候选不留高亮或不可见回车目标', async () => {
+    const m = mount({ loading: true })
+    type(m.input, '@')
+    await tick()
+    const loadingProps = (): Record<string, unknown> => m.api().getLoadingProps() as Record<string, unknown>
+
+    expect(m.content.getAttribute('aria-busy')).toBe('true')
+    expect(loadingProps().hidden).toBe(true)
+    expect(m.highlighted()).toBe('lilei')
+
+    for (const value of ALL)
+      m.item(value).hidden = true
+    m.send({ type: 'ITEMS.SYNC' })
+    expect(m.api().empty).toBe(true)
+    expect(m.highlighted()).toBeNull()
+    expect(m.input.hasAttribute('aria-activedescendant')).toBe(false)
+    expect(loadingProps().hidden).toBeUndefined()
+
+    m.item('lilei').dispatchEvent(new MouseEvent('pointermove', { bubbles: true }))
+    click(m.item('lilei'))
+    expect(m.highlighted()).toBeNull()
+    expect(m.value()).toBe('@')
+    expect(m.state()).toBe('open')
+
+    press(m.input, 'ArrowDown')
+    expect(m.highlighted()).toBeNull()
+    const enter = press(m.input, 'Enter')
+    expect(enter.defaultPrevented).toBe(false)
+    expect(m.value()).toBe('@')
+    expect(m.state()).toBe('closed')
+  })
+
   it('查询串变了先交出去，候选晚一拍到也接得住', async () => {
     vi.useFakeTimers()
     try {
@@ -647,5 +760,224 @@ describe('异步候选', () => {
     finally {
       vi.useRealTimers()
     }
+  })
+})
+
+/** 记账用的假定位引擎：每次 attach 的入参原样收下，撤订阅也记一笔。 */
+function fakeEngine(): {
+  port: PositionEnginePort
+  calls: { anchor: Anchor, floating: HTMLElement, options: PositionOptions, emit: (r: PositionResult) => void }[]
+  stops: () => number
+} {
+  const calls: { anchor: Anchor, floating: HTMLElement, options: PositionOptions, emit: (r: PositionResult) => void }[] = []
+  let stops = 0
+  return {
+    calls,
+    stops: () => stops,
+    port: {
+      attach: (anchor, floating, options, onResult) => {
+        calls.push({ anchor, floating, options, emit: onResult })
+        return () => {
+          stops += 1
+        }
+      },
+    },
+  }
+}
+
+/** 等 n 帧：焦点域若真挂了，落焦重试排在 rAF 上。 */
+async function frames(n = 5): Promise<void> {
+  for (let i = 0; i < n; i++)
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+}
+
+function pointerDown(el: HTMLElement): void {
+  el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true }))
+}
+
+const RESULT: PositionResult = { x: 12, y: 34, placement: 'bottom-start', hidden: false }
+
+describe('mention 浮层定位', () => {
+  it('等 DOM 落定才挂：进入展开态那一刻还没碰引擎，一拍之后才把输入框与浮层交进去', async () => {
+    const engine = fakeEngine()
+    const m = mount({}, { position: engine.port })
+    m.send({ type: 'OPEN' })
+    expect(engine.calls).toHaveLength(0)
+    await tick()
+    expect(engine.calls).toHaveLength(1)
+    // 提及的定位锚点就是输入框本体
+    expect(engine.calls[0]!.anchor).toBe(m.input)
+    expect(engine.calls[0]!.floating).toBe(m.positioner)
+  })
+
+  it('交给引擎的参数：缺省 bottom-start 与 8px，坐标系走视口，要可用空间，不要箭头', async () => {
+    const engine = fakeEngine()
+    const m = mount({}, { position: engine.port })
+    m.send({ type: 'OPEN' })
+    await tick()
+    const options = engine.calls[0]!.options
+    expect(options.placement).toBe('bottom-start')
+    expect(options.offset).toBe(8)
+    expect(options.strategy).toBe('fixed')
+    expect(options.size).toBe(true)
+    expect(options.dir).toBeUndefined()
+    expect(options.arrow).toBeUndefined()
+  })
+
+  it('placement / offset / dir 由 props 覆盖', async () => {
+    const engine = fakeEngine()
+    const m = mount({ placement: 'top-end', offset: 2, dir: 'rtl' }, { position: engine.port })
+    m.send({ type: 'OPEN' })
+    await tick()
+    const options = engine.calls[0]!.options
+    expect(options.placement).toBe('top-end')
+    expect(options.offset).toBe(2)
+    expect(options.dir).toBe('rtl')
+  })
+
+  it('引擎回报的结果写进 context，连接层据此认落位', async () => {
+    const engine = fakeEngine()
+    const m = mount({}, { position: engine.port })
+    m.send({ type: 'OPEN' })
+    await tick()
+    expect((m.api().getPositionerProps() as Record<string, unknown>)['data-positioned']).toBeUndefined()
+    engine.calls[0]!.emit(RESULT)
+    expect(m.position()).toEqual(RESULT)
+    expect((m.api().getPositionerProps() as Record<string, unknown>)['data-positioned']).toBe('')
+  })
+
+  it('重新展开先把上一轮坐标清掉：再次落位之前不算已定位', async () => {
+    const engine = fakeEngine()
+    const m = mount({}, { position: engine.port })
+    m.send({ type: 'OPEN' })
+    await tick()
+    engine.calls[0]!.emit(RESULT)
+    m.send({ type: 'CLOSE' })
+    // 收起中坐标还留着，退场要用
+    expect(m.position()).toEqual(RESULT)
+    m.send({ type: 'OPEN' })
+    expect(m.position()).toBeNull()
+  })
+
+  it('收起即撤订阅', async () => {
+    const engine = fakeEngine()
+    const m = mount({}, { position: engine.port })
+    m.send({ type: 'OPEN' })
+    await tick()
+    expect(engine.stops()).toBe(0)
+    m.send({ type: 'CLOSE' })
+    expect(engine.stops()).toBe(1)
+  })
+
+  it('展开当拍又收起：那一拍到来时不再挂订阅', async () => {
+    const engine = fakeEngine()
+    const m = mount({}, { position: engine.port })
+    m.send({ type: 'OPEN' })
+    m.send({ type: 'CLOSE' })
+    await tick()
+    expect(engine.calls).toHaveLength(0)
+  })
+
+  it('输入框或浮层缺席就不挂', async () => {
+    const engine = fakeEngine()
+    const noAnchor = mount({}, { position: engine.port })
+    noAnchor.clearRef('getInputEl')
+    noAnchor.send({ type: 'OPEN' })
+    await tick()
+    expect(engine.calls).toHaveLength(0)
+
+    const noFloating = mount({}, { position: engine.port })
+    noFloating.clearRef('getFloatingEl')
+    noFloating.send({ type: 'OPEN' })
+    await tick()
+    expect(engine.calls).toHaveLength(0)
+  })
+
+  it('没有引擎照常转移，只是没有位置结果', async () => {
+    const m = mount()
+    m.send({ type: 'OPEN' })
+    await tick()
+    expect(m.state()).toBe('open')
+    expect(m.position()).toBeNull()
+  })
+})
+
+describe('mention 浮层的层与消解', () => {
+  it('escape 走消解层：收起并把这一处记下，光标不挪走就不再自动展开', async () => {
+    const onOpenChange = vi.fn()
+    const m = mount({ onOpenChange })
+    type(m.input, '@li')
+    await tick()
+    press(document.body, 'Escape')
+    expect(m.state()).toBe('closed')
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+    type(m.input, '@lil')
+    expect(m.state()).toBe('closed')
+  })
+
+  it('层外按下指针收起；与 escape 不是一回事——它不记触发点，同一处接着打字照常弹回来', async () => {
+    const onOpenChange = vi.fn()
+    const m = mount({ onOpenChange })
+    type(m.input, '@li')
+    await tick()
+    pointerDown(document.body)
+    expect(m.state()).toBe('closed')
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+    type(m.input, '@lil')
+    expect(m.state()).toBe('open')
+  })
+
+  it('焦点跑到层外不由消解层收口：那一路归输入框自己的 blur，两处都认会为同一次离场发两遍', async () => {
+    const onOpenChange = vi.fn()
+    const m = mount({ onOpenChange })
+    m.send({ type: 'OPEN' })
+    await tick()
+    onOpenChange.mockClear()
+    const outside = document.createElement('button')
+    document.body.appendChild(outside)
+    outside.focus()
+    expect(m.state()).toBe('open')
+    expect(onOpenChange).not.toHaveBeenCalled()
+  })
+
+  it('收起之后这一层不再吃 Escape', async () => {
+    const onOpenChange = vi.fn()
+    const m = mount({ onOpenChange })
+    m.send({ type: 'OPEN' })
+    await tick()
+    m.send({ type: 'CLOSE' })
+    onOpenChange.mockClear()
+    press(document.body, 'Escape')
+    expect(onOpenChange).not.toHaveBeenCalled()
+  })
+
+  it('不挂焦点域：展开不搬焦点，收起也不归还——焦点全程留在输入框', async () => {
+    const m = mount()
+    m.input.focus()
+    m.send({ type: 'OPEN' })
+    await frames()
+    expect(document.activeElement).toBe(m.input)
+    m.send({ type: 'CLOSE' })
+    await frames()
+    expect(document.activeElement).toBe(m.input)
+  })
+
+  it('逆序拆：先撤消解层的订阅，最后才把层移出栈', async () => {
+    const order: string[] = []
+    const m = mount({}, { onLayerDispose: () => order.push('layer') })
+    m.send({ type: 'OPEN' })
+    await tick()
+    const remove = document.removeEventListener.bind(document)
+    const spy = vi.spyOn(document, 'removeEventListener').mockImplementation(((type: string, listener: EventListener, opts?: boolean | EventListenerOptions) => {
+      // pointerdown 只有消解层摘；focusout 是焦点域的标记，这一族根本不该出现
+      if (type === 'pointerdown')
+        order.push('dismiss')
+      if (type === 'focusout')
+        order.push('focus-scope')
+      remove(type, listener, opts)
+    }) as typeof document.removeEventListener)
+    m.send({ type: 'CLOSE' })
+    spy.mockRestore()
+    expect(order).toEqual(['dismiss', 'layer'])
   })
 })

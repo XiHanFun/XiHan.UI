@@ -4,7 +4,7 @@
 
 <p><b>A fast, lightweight, efficient and thoughtfully built framework-agnostic component library</b></p>
 
-<p>A headless core with Vue 3 and Web Components adapters — composable, accessible and themeable UI infrastructure</p>
+<p>A headless core with Vue 3, React 19 and Web Components adapters — composable, accessible and themeable UI infrastructure</p>
 
 <p><b>English</b> | <a href="./README_cn.md">简体中文</a></p>
 
@@ -17,7 +17,7 @@
 <p>
   <img alt="Vue" src="https://img.shields.io/badge/Vue-3.5-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat-square&logo=typescript&logoColor=white" />
-  <img alt="Components" src="https://img.shields.io/badge/Components-126-1f6feb?style=flat-square" />
+  <img alt="Components" src="https://img.shields.io/badge/Components-128-1f6feb?style=flat-square" />
   <a href="https://www.npmjs.com/package/@xihan-ui/vue"><img alt="npm" src="https://img.shields.io/npm/v/@xihan-ui/vue?style=flat-square&logo=npm&logoColor=white" /></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/XiHanFun/XiHan.UI?style=flat-square&color=green" /></a>
 </p>
@@ -32,12 +32,12 @@
 
 ## Introduction
 
-XiHan.UI is built around a framework-agnostic headless core: a component's state, interaction and accessibility logic live in that core, and every framework only gets a thin adapter. The same `connect()` output runs one shared conformance suite on both the Vue and the Web Components side, advancing the case step by step and comparing normalized DOM, so "framework-agnostic" is a property under test rather than a slogan. XiHan.UI is the component layer of the XiHanFun open-source ecosystem, which spans foundation, components and applications.
+XiHan.UI is built around a framework-agnostic headless core: a component's state, interaction and accessibility logic live in that core, and every framework only gets a thin adapter. Vue, React and Web Components run the shared conformance suite against the same `connect()` output, advancing the case step by step and comparing normalized DOM. XiHan.UI is the component layer of the XiHanFun open-source ecosystem, which spans foundation, components and applications.
 
 ## Features
 
-- **Framework-agnostic** - state and accessibility live in the headless core; Vue and Web Components behave identically
-- **126 components** - covering general, layout, navigation, data entry, data display, feedback, overlay and AI chat — eight groups
+- **Framework-agnostic** - state and accessibility live in the headless core; Vue, React and Web Components share the same component contracts
+- **128 components** - covering general, layout, navigation, data entry, data display, feedback, overlay and AI chat — eight groups
 - **Almost dependency-free** - the only third-party runtime dependency is `@internationalized/date`; floating positioning, pointer sessions, code highlighting and streaming markdown are all first-party
 - **Build-time styling** - tokens are generated from DTCG sources into CSS variables and skins are layered with `@layer`; no CSS-in-JS at runtime
 - **Themeable** - color mode, brand, density, contrast and writing direction switch independently
@@ -54,14 +54,17 @@ pnpm add @xihan-ui/vue @xihan-ui/tokens @xihan-ui/styles
 
 ## Usage
 
-Both adapters share the same tokens and skins — import them once at the entry point:
+All three adapters share the same tokens and skins — import them once at the entry point:
 
 ```ts
-import { createThemeController } from '@xihan-ui/tokens/runtime'
+import { createVisualEnvironmentController } from '@xihan-ui/tokens/runtime'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-createThemeController({ storageKey: 'app-theme' })
+createVisualEnvironmentController({
+  root: document.documentElement,
+  initial: { mode: 'system', motion: 'system', transparency: 'system' },
+})
 ```
 
 Vue:
@@ -82,7 +85,29 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@
 </template>
 ```
 
-Web Components: the element renders no structure of its own. You write Light-DOM children carrying `data-xh-part`, and the element applies the `connect()` output to them.
+React 19:
+
+```bash
+pnpm add @xihan-ui/react @xihan-ui/tokens @xihan-ui/styles
+```
+
+```tsx
+import { XhDialogCloseTrigger, XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@xihan-ui/react'
+
+export function Example() {
+  return (
+    <XhDialogRoot>
+      <XhDialogTrigger>打开对话框</XhDialogTrigger>
+      <XhDialogContent>
+        <XhDialogTitle>确认操作</XhDialogTitle>
+        <XhDialogCloseTrigger>关闭</XhDialogCloseTrigger>
+      </XhDialogContent>
+    </XhDialogRoot>
+  )
+}
+```
+
+Web Components: write Light-DOM children carrying `data-xh-part`; the element applies the `connect()` output and adds the internal parts defined by each component's contract.
 
 ```ts
 import { defineXhElements } from '@xihan-ui/web-components/define'
@@ -115,7 +140,7 @@ The styling floor is Chrome 111, Firefox 113 and Safari 16.2 (the bar for `oklch
 
 The package catalog, directory layout and development commands live in [ui/README.md](./ui/README.md).
 
-To see the components running locally, first `cd ui && pnpm build`, then start the documentation site — every example on a component page uses the real component, with the Vue and Web Components spellings side by side:
+To see the components running locally, first `cd ui && pnpm build`, then start the documentation site, which includes Vue, React and Web Components examples using real components:
 
 ```bash
 cd docs
@@ -123,11 +148,11 @@ pnpm install
 pnpm dev
 ```
 
-Changes must pass the full CI gate, and CI runs the same commands you do locally: `pnpm lint`, `pnpm typecheck`, `pnpm boundaries`, `pnpm gate` (one command runs 105 structural checks), `pnpm test`, `pnpm build`, `pnpm size` and more.
+Changes must pass the full CI gate, and CI runs the same commands you do locally: `pnpm lint`, `pnpm typecheck`, `pnpm boundaries`, `pnpm gate` (one command runs 111 structural checks), `pnpm test`, `pnpm build`, `pnpm size` and more.
 
 ## Scope
 
-In the box: 126 components with their cores and both adapters, the default skins, design tokens and the theme runtime, the cross-adapter conformance suite, the accessibility sweep and floating-position contract in real Chromium, and the documentation site.
+In the box: 128 components with their cores and three adapters, 127 visual-component skins, design tokens and the theme runtime, the cross-adapter conformance suite, the accessibility sweep and floating-position contract in real Chromium, and the documentation site.
 
 Not in the box: bundled language packs (component copy ships English only; other languages need your own `translations`, though the global injection point is in place), the token browser, the AI family's MarkdownStream / Reasoning and ToolCall collapsing / tool approval, and enterprise business components.
 

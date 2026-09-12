@@ -16,8 +16,12 @@
     --xh-_segmented-indicator-bg: var(--xh-bg-surface);
     --xh-_segmented-fg-selected: var(--xh-fg-default);
 
+    /* 一行排不下就折行：每个选项都必须看得见、点得到，硬撑一行会把末尾几段顶出容器。
+       段各自带圆角，折行不会切角；不改成横向滚动是因为段离轨道内沿只有一格衬距，
+       轨道一旦成为滚动容器，段的焦点环（画在段外侧 2px 处）会被裁掉 */
     position: relative;
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: stretch;
     padding: var(--xh-segmented-track-padding, var(--xh-space-0_5));
     border: var(--xh-stroke-thin) solid var(--xh-segmented-border, var(--xh-border-subtle));
@@ -26,18 +30,27 @@
     font-size: var(--xh-segmented-font-size, var(--xh-_segmented-font-size));
   }
 
-  /* 横排时外盒整体就是一档控件高：段被 align-items: stretch 撑满轨道内侧，与同行控件齐平 */
+  /* 横排时外盒整体就是一档控件高：段被 align-items: stretch 撑满轨道内侧，与同行控件齐平。
+     写下限而非定值：排得下时两者逐值相同，排不下折了行才让轨道往下长 */
   [data-scope='segmented'][data-part='root'][data-orientation='horizontal'] {
     flex-direction: row;
-    block-size: var(--xh-segmented-h, var(--xh-_segmented-h));
+    min-block-size: var(--xh-segmented-h, var(--xh-_segmented-h));
   }
 
+  /* 段的高度交给轨道：一行时被 stretch 撑满轨道内侧。
+     下限按「一档控件高减掉轨道上下的衬距与描边」算，折了行每一行仍是这个高度，
+     不写的话多行会被 align-content 均分成一叠扁条 */
   [data-scope='segmented'][data-part='root'][data-orientation='horizontal'] [data-scope='segmented'][data-part='item'] {
     block-size: auto;
+    min-block-size: calc(
+      var(--xh-segmented-h, var(--xh-_segmented-h)) - 2 * var(--xh-segmented-track-padding, var(--xh-space-0_5)) - 2 *
+        var(--xh-stroke-thin)
+    );
   }
 
   [data-scope='segmented'][data-part='root'][data-orientation='vertical'] {
     flex-direction: column;
+    flex-wrap: nowrap;
   }
 
   /* 撑满行宽：各段等分剩余空间，长短不一的文字也排得齐 */
@@ -132,6 +145,14 @@
     color: var(--xh-segmented-item-fg-checked, var(--xh-_segmented-fg-selected));
   }
 
+  /* 指示器在场时选中段自己透空，环紧挨着的是压在它底下、与它同一块矩形的指示器实心底；
+     环色与那块底同族就看不出来，改取选中段自己的前景色——那一支本来就配着这块底定的。
+     指示器是可选部件，作者没渲染它时选中段直接坐在轨道底上，那一档的环仍取默认那一支 */
+  [data-scope='segmented'][data-part='root']:has([data-scope='segmented'][data-part='indicator']:not([hidden]))
+    [data-scope='segmented'][data-part='item'][data-state='checked']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
   /* 悬停只提亮未选中的那几段：选中段的底下压着指示器，再变色就成了两套强调。
      底色用中性的悬停档——它是「指哪一段」的轻反馈，不表达选中 */
   [data-scope='segmented'][data-part='item']:not([data-disabled]):not([data-state='checked']):hover {
@@ -161,11 +182,6 @@
      禁用由轨道底色、未选中段的文字色与光标表达，选中段保持可读 */
   [data-scope='segmented'][data-part='item'][data-disabled][data-state='checked'] {
     color: var(--xh-segmented-item-fg-checked-disabled, var(--xh-_segmented-fg-selected));
-  }
-
-  /* 焦点环往内收一格：段贴着轨道内缘，往外画会被 root 的描边切掉一半 */
-  [data-scope='segmented'][data-part='item']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='segmented'][data-part='item-text'] {

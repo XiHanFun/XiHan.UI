@@ -3,30 +3,27 @@ import type { MenuApi, MenuGroupProps, MenuItemProps, MenuNode, MenuNodeMeta, Me
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
-import type { MenuChain } from './context'
 import { mergeProps } from '@xihan-ui/core'
 import { Fragment, useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import {
-  MenuChainProvider,
   MenuGroupProvider,
   MenuItemProvider,
   MenuProvider,
   MenuSubProvider,
-  useMenuChain,
   useMenuContext,
   useMenuGroupContext,
   useMenuItemContext,
   useMenuSubContext,
 } from './context'
-import { useMenu } from './use-menu'
+import { useMenu, useMenuWithParent } from './use-menu'
 
 type MenuProps = MenuSchema['props']
 
@@ -71,28 +68,13 @@ export function XhMenuRoot({
 }: XhMenuRootProps): ReactNode {
   const ctx = useMenu(withXhConfig('menu', props) as MenuProps)
 
-  // 任意层级子菜单的选中都汇到根：先发根的 select 再关根，各级随父关闭级联收起。
-  // 取值器每帧换、链只建一次：拿 ref 转一道，别让它成为重建的理由
-  const latest = useRef({ onSelect: props.onSelect, api: ctx.api })
-  latest.current = { onSelect: props.onSelect, api: ctx.api }
-  const chain = useMemo<MenuChain>(() => ({
-    notifySelect: (details) => {
-      latest.current.onSelect?.(details)
-      latest.current.api.setOpen(false)
-    },
-  }), [])
-
   const body = children != null
     ? renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })
     : props.collection
       ? <DefaultTree collection={ctx.api.collection} trigger={trigger} triggerAsChild={triggerAsChild} renderItem={renderItem} />
       : null
 
-  return (
-    <MenuProvider value={ctx}>
-      <MenuChainProvider value={chain}>{body}</MenuChainProvider>
-    </MenuProvider>
-  )
+  return <MenuProvider value={ctx}>{body}</MenuProvider>
 }
 
 XhMenuRoot.xhEvents = ['open-change', 'select'] as const
@@ -100,10 +82,12 @@ XhMenuRoot.xhEvents = ['open-change', 'select'] as const
 export interface XhMenuTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 export function XhMenuTrigger({ children, asChild, ...rest }: XhMenuTriggerProps): ReactNode {
   const ctx = useMenuContext()
-  const props = mergeReactProps(
-    ctx.api.getTriggerProps() as Record<string, unknown>,
+  const props = mergePartProps(
+    mergeReactProps(
+      ctx.api.getTriggerProps() as Record<string, unknown>,
+      { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
+    ),
     rest as Record<string, unknown>,
-    { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
   )
   return renderAsChild(asChild, children, props, 'menu', (p, kids) => <button {...p}>{kids}</button>)
 }
@@ -118,7 +102,7 @@ export function XhMenuPositioner({ children, container, ...rest }: XhMenuPositio
   // 条目列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current })
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,
@@ -297,17 +281,14 @@ export interface XhMenuSubProps {
  */
 export function XhMenuSub({ value, disabled, children, ...props }: XhMenuSubProps): ReactNode {
   const parent = useMenuContext()
-  const chain = useMenuChain()
-  const ctx = useMenu({
+  const ctx = useMenuWithParent({
     ...props,
     disabled,
     submenu: true,
     dir: props.dir ?? parent.service.prop('dir'),
     tone: props.tone ?? parent.service.prop('tone'),
     size: props.size ?? parent.service.prop('size'),
-    // 子层的选中汇到根：根发 select 并关根，各级随父关闭级联收起
-    onSelect: details => chain.notifySelect(details),
-  } as MenuProps)
+  } as MenuProps, parent.tree)
 
   const handle = useMemo(() => ({ parent, value, disabled }), [parent, value, disabled])
 

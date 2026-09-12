@@ -1,9 +1,9 @@
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTranslations } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { createRuntimeConfig } from '@xihan-ui/core'
-import { defineComponent, h, ref } from 'vue'
+import { defineComponent, h, nextTick, onMounted, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { slotPaints } from '../../runtime/slot-content'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
@@ -15,20 +15,20 @@ type NavigationMenuProps = NavigationMenuSchema['props']
 /** 根节点渲染为 nav，收起的三条出口（指针离开、焦点离场、Escape）在这一层处理 */
 export const XhNavigationMenuRoot = defineComponent({
   name: 'XhNavigationMenuRoot',
-  // 全部 default: undefined，缺省值由机器与 connect 决定
+  // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<NavigationMenuNode[]>, default: undefined },
-    value: { type: String as PropType<string | null>, default: undefined },
-    defaultValue: { type: String as PropType<string | null>, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
-    delayDuration: { type: Number, default: undefined },
-    skipDelayDuration: { type: Number, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    collection: { type: Array as PropType<NavigationMenuNode[]> },
+    value: { type: String as PropType<string | null> },
+    defaultValue: { type: String as PropType<string | null> },
+    orientation: { type: String as PropType<Orientation> },
+    delayDuration: { type: Number },
+    skipDelayDuration: { type: Number },
+    dir: { type: String as PropType<Direction> },
     loop: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<Partial<NavigationMenuTranslations>>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    translations: { type: Object as PropType<Partial<NavigationMenuTranslations>> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // value-change 携带 { value }，update:value 携带裸值以支持 v-model:value
   emits: {
@@ -122,10 +122,31 @@ export const XhNavigationMenuContent = defineComponent({
     // 一个面板一份退场闸门：它们各开各的、动画各跑各的，一份管不过来。
     // 开合判据直接取 connect 这一帧的产出，不另起一套——两边各判一次迟早会说岔
     const contentRef = ref<HTMLElement | null>(null)
+    let presence: PresenceHandle | null = null
     const visible = useOverlayExit({
-      config: typeof document === 'undefined' ? null : createRuntimeConfig(),
-      isOpen: () => (ctx.api.value.getContentProps({ value: props.value }) as Record<string, unknown>).hidden !== true,
+      config: ctx.config,
+      isOpen: () => ctx.api.value.isOpen(props.value),
       contentRef,
+      onPresence: (next) => {
+        const previous = presence
+        presence = next
+        if (ctx.service.getStatus() !== 'Started')
+          return
+        if (next) {
+          ctx.service.send({ type: 'PRESENCE.SET', value: props.value, presence: next, connected: true })
+        }
+        else if (previous) {
+          ctx.service.send({ type: 'PRESENCE.SET', value: props.value, presence: previous, connected: false })
+        }
+      },
+    })
+    // setup 期 Presence 早于根机器的 onMounted；挂载后补报一次，确保首帧句柄已入 Headless 表。
+    onMounted(() => {
+      // 子组件 mounted 早于父级根机器启动，再让出一次提交队列才可安全送事件。
+      void nextTick(() => {
+        if (presence && ctx.service.getStatus() === 'Started')
+          ctx.service.send({ type: 'PRESENCE.SET', value: props.value, presence, connected: true })
+      })
     })
     return () => h(
       'div',

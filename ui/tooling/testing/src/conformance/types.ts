@@ -23,6 +23,11 @@ export interface FixtureNode {
   /** 作者写在节点上的属性：业务标记（data-testid）与标注（aria-label 之类）；不含 data-scope、data-part。 */
   readonly attrs?: Readonly<Record<string, string>>
   readonly children?: readonly FixtureNode[]
+  /**
+   * 只在这些适配器下渲进标记，其余适配器当它没写；省略 = 各侧都渲。
+   * 给「一侧由作者手写、另一侧由部件自渲」的节点用，同一份夹具因此能喂给每一侧。
+   */
+  readonly only?: readonly AdapterName[]
 }
 
 export interface Fixture {
@@ -152,6 +157,8 @@ export interface ConformanceSuite {
   readonly anatomy: Anatomy<string>
   /** 键盘表：覆盖率的分母。 */
   readonly keyboard: KeyboardTable
+  /** 严格必填 props 的最小有效声明，供 SSR/a11y/样式/标签默认夹具共用。 */
+  readonly defaultProps?: Readonly<Record<string, unknown>>
   /** 默认 fixture 结构树。 */
   readonly fixture: FixtureNode
   readonly cases: readonly ConformanceCase[]

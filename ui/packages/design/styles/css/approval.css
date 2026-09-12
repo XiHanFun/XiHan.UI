@@ -301,9 +301,12 @@
     color: var(--xh-approval-result-fg-denied, var(--xh-fg-danger));
   }
 
-  /* 动作行：两颗按钮靠右排，间距归库管 */
+  /* 动作行：两颗按钮靠右排，间距归库管。
+     一行排不下就折行：两颗钮的文案都不折行，靠右排的行溢出时是往行首那侧漫出去，
+     漫出去的那截既不产生横滚也回不来，折行是这一行唯一取得回来的形态。 */
   [data-scope='approval'][data-part='footer'] {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
     gap: var(--xh-approval-footer-gap, var(--xh-space-2));
@@ -349,6 +352,15 @@
     background: var(--xh-approval-approve-bg, var(--xh-_tone, var(--xh-bg-brand)));
     color: var(--xh-approval-approve-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
     box-shadow: var(--xh-approval-approve-shadow, var(--xh-_approval-approve-highlight));
+  }
+
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     两条分支对着还铺着实心底的那两档：按得动的常态，与判定在途那一档。
+     关闭档的底换成置灰底、字换成置灰色，环取过来就跟底一起糊了，那一档走公共层的环 */
+  [data-scope='approval'][data-part='approve-trigger']:not([aria-disabled='true']):focus-visible,
+  [data-scope='approval'][data-part='approve-trigger'][data-loading]:focus-visible {
+    --xh-_ring-color: currentColor;
   }
 
   /* 两道守卫缺一不可：判定在途走 aria-disabled（保住可聚焦），落定后才换成原生 disabled，

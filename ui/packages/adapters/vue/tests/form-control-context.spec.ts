@@ -1,0 +1,402 @@
+// @vitest-environment jsdom
+import { mount } from '@vue/test-utils'
+import { formPathKey } from '@xihan-ui/headless'
+import { afterEach, describe, expect, it } from 'vitest'
+import { defineComponent, h } from 'vue'
+import {
+  XhCascaderControl,
+  XhCascaderRoot,
+  XhCascaderTrigger,
+  XhCheckbox,
+  XhCheckboxGroupRoot,
+  XhColorPickerControl,
+  XhColorPickerRoot,
+  XhColorPickerTrigger,
+  XhComboboxControl,
+  XhComboboxInput,
+  XhComboboxRoot,
+  XhDateFieldRoot,
+  XhDateFieldSegment,
+  XhDatePickerControl,
+  XhDatePickerHiddenInput,
+  XhDatePickerRoot,
+  XhDatePickerSegment,
+  XhDatePickerSegmentGroup,
+  XhDatePickerTrigger,
+  XhEditableInput,
+  XhEditableRoot,
+  XhFieldArrayRoot,
+  XhFieldControl,
+  XhFieldRoot,
+  XhFileUploadRoot,
+  XhFormFieldGroup,
+  XhFormRoot,
+  XhImageCropperRoot,
+  XhListboxRoot,
+  XhMentionInput,
+  XhMentionRoot,
+  XhNumberFieldInput,
+  XhNumberFieldRoot,
+  XhPasswordInputInput,
+  XhPasswordInputRoot,
+  XhPinInputInput,
+  XhPinInputRoot,
+  XhRadioGroupRoot,
+  XhRatingControl,
+  XhRatingItem,
+  XhRatingRoot,
+  XhSegmentedRoot,
+  XhSelectRoot,
+  XhSelectTrigger,
+  XhSignaturePadHiddenInput,
+  XhSignaturePadRoot,
+  XhSliderControl,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+  XhSwitch,
+  XhTagGroupRoot,
+  XhTagsInputInput,
+  XhTagsInputRoot,
+  XhTextFieldInput,
+  XhTextFieldRoot,
+  XhTimeFieldRoot,
+  XhTimeFieldSegment,
+  XhTimePickerControl,
+  XhTimePickerHiddenInput,
+  XhTimePickerRoot,
+  XhTimePickerSegment,
+  XhTimePickerSegmentGroup,
+  XhTimePickerTrigger,
+  XhToggleGroupRoot,
+  XhTransferList,
+  XhTransferRoot,
+  XhTransferSourcePanel,
+  XhTreeSelectControl,
+  XhTreeSelectRoot,
+  XhTreeSelectTrigger,
+} from '../src'
+
+type ControlState = Partial<Record<'disabled' | 'readOnly' | 'required' | 'invalid', boolean>>
+type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider' | 'Select' | 'Cascader' | 'Combobox' | 'TreeSelect' | 'DatePicker' | 'TimePicker' | 'ColorPicker' | 'Mention' | 'Rating' | 'Segmented' | 'ToggleGroup' | 'Transfer' | 'FieldArray' | 'FileUpload' | 'ImageCropper' | 'SignaturePad' | 'Listbox' | 'TagGroup'
+
+const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider', 'Select', 'Cascader', 'Combobox', 'TreeSelect', 'DatePicker', 'TimePicker', 'ColorPicker', 'Mention', 'Rating', 'Segmented', 'ToggleGroup', 'Transfer', 'FieldArray', 'FileUpload', 'ImageCropper', 'SignaturePad', 'Listbox', 'TagGroup']
+
+function nonRequiredState(props: ControlState) {
+  return { disabled: props.disabled, readOnly: props.readOnly, invalid: props.invalid }
+}
+
+function ratingState(props: ControlState) {
+  return { disabled: props.disabled, readOnly: props.readOnly, required: props.required }
+}
+
+function disabledState(props: ControlState) {
+  return { disabled: props.disabled }
+}
+
+function disabledInvalidState(props: ControlState) {
+  return { disabled: props.disabled, invalid: props.invalid }
+}
+
+function disabledReadOnlyState(props: ControlState) {
+  return { disabled: props.disabled, readOnly: props.readOnly }
+}
+
+function atomicControl(kind: AtomicControl, props: ControlState) {
+  if (kind === 'Checkbox')
+    return h(XhCheckbox, props)
+  if (kind === 'Switch')
+    return h(XhSwitch, props)
+  if (kind === 'RadioGroup')
+    return h(XhRadioGroupRoot, { ...props, collection: [{ value: 'a', label: '甲' }] })
+  if (kind === 'NumberField')
+    return h(XhNumberFieldRoot, props, () => h(XhNumberFieldInput))
+  if (kind === 'PasswordInput')
+    return h(XhPasswordInputRoot, props, () => h(XhPasswordInputInput))
+  if (kind === 'PinInput')
+    return h(XhPinInputRoot, { ...props, length: 1 }, () => h(XhPinInputInput, { index: 0 }))
+  if (kind === 'DateField')
+    return h(XhDateFieldRoot, { ...props, segments: ['year'] }, () => h(XhDateFieldSegment, { segment: 'year' }))
+  if (kind === 'TimeField')
+    return h(XhTimeFieldRoot, { ...props, granularity: 'hour' }, () => h(XhTimeFieldSegment, { segment: 'hour' }))
+  if (kind === 'Editable')
+    return h(XhEditableRoot, nonRequiredState(props), () => h(XhEditableInput))
+  if (kind === 'TagsInput')
+    return h(XhTagsInputRoot, props, () => h(XhTagsInputInput))
+  if (kind === 'CheckboxGroup')
+    return h(XhCheckboxGroupRoot, { ...nonRequiredState(props), collection: [{ value: 'a', label: '甲' }] })
+  if (kind === 'Select')
+    return h(XhSelectRoot, props, () => h(XhSelectTrigger, null, () => '选择'))
+  if (kind === 'Cascader')
+    return h(XhCascaderRoot, { ...nonRequiredState(props), collection: [] }, () => h(XhCascaderControl, null, () => h(XhCascaderTrigger, null, () => '选择')))
+  if (kind === 'Combobox')
+    return h(XhComboboxRoot, { ...nonRequiredState(props), collection: [] }, () => h(XhComboboxControl, null, () => h(XhComboboxInput)))
+  if (kind === 'TreeSelect')
+    return h(XhTreeSelectRoot, { ...nonRequiredState(props), collection: [] }, () => h(XhTreeSelectControl, null, () => h(XhTreeSelectTrigger, null, () => '选择')))
+  if (kind === 'DatePicker')
+    return h(XhDatePickerRoot, { ...props, segments: ['year'] }, () => [h(XhDatePickerControl, null, () => [h(XhDatePickerSegmentGroup, null, () => h(XhDatePickerSegment, { segment: 'year' })), h(XhDatePickerTrigger, null, () => '选择')]), h(XhDatePickerHiddenInput)])
+  if (kind === 'TimePicker')
+    return h(XhTimePickerRoot, { ...props, granularity: 'hour' }, () => [h(XhTimePickerControl, null, () => [h(XhTimePickerSegmentGroup, null, () => h(XhTimePickerSegment, { segment: 'hour' })), h(XhTimePickerTrigger, null, () => '选择')]), h(XhTimePickerHiddenInput)])
+  if (kind === 'ColorPicker')
+    return h(XhColorPickerRoot, { disabled: props.disabled, readOnly: props.readOnly }, () => h(XhColorPickerControl, null, () => h(XhColorPickerTrigger, null, () => '选择')))
+  if (kind === 'Mention')
+    return h(XhMentionRoot, nonRequiredState(props), () => h(XhMentionInput))
+  if (kind === 'Rating')
+    return h(XhRatingRoot, { ...ratingState(props), count: 1 }, () => h(XhRatingControl, null, () => h(XhRatingItem, { value: 1 })))
+  if (kind === 'Segmented')
+    return h(XhSegmentedRoot, { ...props, collection: [{ value: 'a', label: '甲' }] })
+  if (kind === 'ToggleGroup')
+    return h(XhToggleGroupRoot, { ...disabledState(props), collection: [{ value: 'a', label: '甲' }] })
+  if (kind === 'Transfer')
+    return h(XhTransferRoot, { ...nonRequiredState(props), collection: [] }, () => h(XhTransferSourcePanel, null, () => h(XhTransferList)))
+  if (kind === 'FieldArray')
+    return h(XhFieldArrayRoot, nonRequiredState(props))
+  if (kind === 'FileUpload')
+    return h(XhFileUploadRoot, disabledInvalidState(props))
+  if (kind === 'ImageCropper')
+    return h(XhImageCropperRoot, disabledReadOnlyState(props))
+  if (kind === 'SignaturePad')
+    return h(XhSignaturePadRoot, props, () => h(XhSignaturePadHiddenInput))
+  if (kind === 'Listbox')
+    return h(XhListboxRoot, { ...nonRequiredState(props), collection: [{ value: 'a', label: '甲' }] })
+  if (kind === 'TagGroup')
+    return h(XhTagGroupRoot, { ...disabledReadOnlyState(props), collection: [{ value: 'a', label: '甲' }] })
+  return h(XhSliderRoot, { ...nonRequiredState(props), defaultValue: [50] }, () => h(XhSliderControl, null, () => [h(XhSliderTrack), h(XhSliderThumb, { index: 0 })]))
+}
+
+function mountAtomicControl(kind: AtomicControl, instance: ControlState = {}, field?: ControlState) {
+  return mount(defineComponent({
+    setup: () => () => h(XhFormRoot, {
+      disabled: true,
+      readOnly: true,
+      rules: { email: { required: true } },
+      errors: { email: '格式不对' },
+    }, () => h(XhFormFieldGroup, { name: 'email' }, () => {
+      const control = atomicControl(kind, instance)
+      return field ? h(XhFieldRoot, field, () => control) : control
+    })),
+  }), { attachTo: document.body })
+}
+
+function expectAtomicState(wrapper: ReturnType<typeof mount>, kind: AtomicControl, enabled: boolean): void {
+  if (kind === 'Listbox' || kind === 'TagGroup') {
+    const scope = kind === 'Listbox' ? 'listbox' : 'tag-group'
+    const root = wrapper.find(`[data-scope="${scope}"][data-part="root"]`)
+    expect(root.attributes('data-disabled') !== undefined).toBe(enabled)
+    expect(root.attributes('data-readonly') !== undefined).toBe(enabled)
+    if (kind === 'Listbox')
+      expect(root.attributes('data-invalid') !== undefined).toBe(enabled)
+    return
+  }
+  if (kind === 'FieldArray') {
+    const root = wrapper.find('[data-scope="field-array"][data-part="root"]')
+    expect(root.attributes('data-disabled') !== undefined).toBe(enabled)
+    expect(root.attributes('data-readonly') !== undefined).toBe(enabled)
+    expect(root.attributes('data-invalid') !== undefined).toBe(enabled)
+    return
+  }
+  if (kind === 'FileUpload') {
+    const root = wrapper.find('[data-scope="file-upload"][data-part="root"]')
+    expect(root.attributes('data-disabled') !== undefined).toBe(enabled)
+    expect(root.attributes('data-invalid') !== undefined).toBe(enabled)
+    return
+  }
+  if (kind === 'ImageCropper') {
+    const root = wrapper.find('[data-scope="image-cropper"][data-part="root"]')
+    expect(root.attributes('data-disabled') !== undefined).toBe(enabled)
+    expect(root.attributes('data-readonly') !== undefined).toBe(enabled)
+    return
+  }
+  if (kind === 'SignaturePad') {
+    const root = wrapper.find('[data-scope="signature-pad"][data-part="root"]')
+    expect(root.attributes('data-disabled') !== undefined).toBe(enabled)
+    expect(root.attributes('data-readonly') !== undefined).toBe(enabled)
+    expect(root.attributes('data-invalid') !== undefined).toBe(enabled)
+    expect(wrapper.find('input').attributes('required') !== undefined).toBe(enabled)
+    return
+  }
+  if (kind === 'Rating') {
+    const control = wrapper.find('[data-scope="rating"][data-part="control"]')
+    expect(control.attributes('aria-disabled')).toBe(String(enabled))
+    expect(control.attributes('aria-readonly')).toBe(String(enabled))
+    expect(control.attributes('aria-required')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'Segmented') {
+    const root = wrapper.find('[data-scope="segmented"][data-part="root"]')
+    const item = wrapper.find('[data-scope="segmented"][data-part="item"]')
+    expect(item.attributes('aria-disabled')).toBe(String(enabled))
+    expect(root.attributes('aria-readonly')).toBe(String(enabled))
+    expect(root.attributes('aria-invalid')).toBe(String(enabled))
+    expect(root.attributes('aria-required')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'ToggleGroup') {
+    const item = wrapper.find('[data-scope="toggle-group"][data-part="item"]')
+    expect(item.attributes('aria-disabled')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'Transfer') {
+    const root = wrapper.find('[data-scope="transfer"][data-part="root"]')
+    const list = wrapper.find('[data-scope="transfer"][data-part="list"]')
+    expect(root.attributes('data-disabled') !== undefined).toBe(enabled)
+    expect(list.attributes('aria-readonly')).toBe(String(enabled))
+    expect(list.attributes('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'Combobox' || kind === 'Mention') {
+    const scope = kind.toLowerCase()
+    const input = wrapper.find(`[data-scope="${scope}"][data-part="input"]`)
+    expect(input.attributes('disabled') !== undefined).toBe(enabled)
+    expect(input.attributes('readonly') !== undefined).toBe(enabled)
+    expect(input.attributes('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'DatePicker' || kind === 'TimePicker' || kind === 'ColorPicker') {
+    const scope = kind.replace('Picker', '-picker').toLowerCase()
+    const trigger = wrapper.find(`[data-scope="${scope}"][data-part="trigger"]`)
+    expect(trigger.attributes('disabled') !== undefined).toBe(enabled)
+    if (kind === 'ColorPicker') {
+      expect(wrapper.find('[data-scope="color-picker"][data-part="root"]').attributes('data-readonly') !== undefined).toBe(enabled)
+    }
+    else {
+      const segment = wrapper.find('[role="spinbutton"]')
+      expect(segment.attributes('aria-readonly')).toBe(String(enabled))
+      expect(segment.attributes('aria-invalid')).toBe(String(enabled))
+      expect(segment.attributes('aria-required')).toBe(String(enabled))
+    }
+    return
+  }
+  if (kind === 'Select' || kind === 'Cascader' || kind === 'TreeSelect') {
+    const scope = kind === 'TreeSelect' ? 'tree-select' : kind.toLowerCase()
+    const trigger = wrapper.find(`[data-scope="${scope}"][data-part="trigger"]`)
+    expect(trigger.attributes('disabled') !== undefined).toBe(enabled)
+    expect(trigger.attributes('aria-readonly')).toBe(String(enabled))
+    expect(trigger.attributes('aria-invalid')).toBe(String(enabled))
+    if (kind === 'Select')
+      expect(wrapper.find('select[data-part="hidden-select"]').attributes('required') !== undefined).toBe(enabled)
+    return
+  }
+  if (kind === 'NumberField' || kind === 'PasswordInput' || kind === 'PinInput' || kind === 'Editable' || kind === 'TagsInput') {
+    const input = wrapper.find('input')
+    expect(input.attributes('disabled') !== undefined).toBe(enabled)
+    expect(input.attributes('readonly') !== undefined).toBe(enabled)
+    if (kind === 'TagsInput')
+      expect(input.attributes('aria-required')).toBe(String(enabled))
+    else if (kind !== 'Editable')
+      expect(input.attributes('required') !== undefined).toBe(enabled)
+    expect(input.attributes('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'CheckboxGroup') {
+    const item = wrapper.find('[role="checkbox"]')
+    expect(item.attributes('aria-disabled')).toBe(String(enabled))
+    expect(item.attributes('aria-readonly')).toBe(String(enabled))
+    expect(item.attributes('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'Slider') {
+    const root = wrapper.find('[data-scope="slider"][data-part="root"]')
+    const thumb = wrapper.find('[role="slider"]')
+    expect(thumb.attributes('aria-disabled')).toBe(String(enabled))
+    expect(root.attributes('data-readonly') !== undefined).toBe(enabled)
+    expect(root.attributes('data-invalid') !== undefined).toBe(enabled)
+    return
+  }
+  if (kind === 'DateField' || kind === 'TimeField') {
+    const segment = wrapper.find('[role="spinbutton"]')
+    expect(segment.attributes('aria-disabled')).toBe(String(enabled))
+    expect(segment.attributes('aria-readonly')).toBe(String(enabled))
+    expect(segment.attributes('aria-required')).toBe(String(enabled))
+    expect(segment.attributes('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  const root = wrapper.find(kind === 'RadioGroup' ? '[role="radiogroup"]' : `button[role="${kind === 'Checkbox' ? 'checkbox' : 'switch'}"]`)
+  const disabled = kind === 'RadioGroup'
+    ? wrapper.find('[role="radio"]').attributes('aria-disabled') === 'true'
+    : root.attributes('disabled') !== undefined
+  expect(disabled).toBe(enabled)
+  expect(root.attributes('aria-readonly')).toBe(String(enabled))
+  expect(root.attributes('aria-invalid')).toBe(String(enabled))
+  expect(root.attributes('aria-required')).toBe(String(enabled))
+}
+
+afterEach(() => {
+  document.body.innerHTML = ''
+})
+
+function mountTextField(props: Record<string, boolean> = {}, wrapped = false) {
+  return mount(defineComponent({
+    setup: () => () => h(XhFormRoot, {
+      disabled: true,
+      readOnly: true,
+      rules: { email: { required: true } },
+      errors: { email: '格式不对' },
+    }, () => h(XhFormFieldGroup, { name: 'email' }, () => {
+      const text = h(XhTextFieldRoot, props, () => h(XhTextFieldInput))
+      return wrapped ? h(XhFieldRoot, null, () => h(XhFieldControl, null, () => text)) : text
+    })),
+  }), { attachTo: document.body })
+}
+
+describe('form control context 接线', () => {
+  it('fieldGroup 用 name 接收数组路径，并把它稳定写成路径身份', () => {
+    const path = ['users', 0, 'email'] as const
+    const view = mount(defineComponent({
+      setup: () => () => h(XhFormRoot, null, () => h(XhFormFieldGroup, { name: path })),
+    }))
+    expect(view.find('[data-part="field-group"]').attributes('data-form-path')).toBe(formPathKey(path))
+  })
+
+  it.each([
+    ['直接控件', false],
+    ['Field 包装控件', true],
+  ])('%s 继承 Form 的禁用、只读、必填与无效态', (_name, wrapped) => {
+    const wrapper = mountTextField({}, wrapped)
+    const input = wrapper.find('input')
+    expect(input.attributes('disabled')).toBeDefined()
+    expect(input.attributes('readonly')).toBeDefined()
+    expect(input.attributes('required')).toBeDefined()
+    expect(input.attributes('aria-invalid')).toBe('true')
+    expect(input.attributes('aria-readonly')).toBe('true')
+    expect(input.attributes('aria-required')).toBe('true')
+  })
+
+  it('text field 实例显式 false 顶掉最近 Field 的四条继承状态', () => {
+    const wrapper = mountTextField({ disabled: false, readOnly: false, required: false, invalid: false }, true)
+    const input = wrapper.find('input')
+    expect(input.attributes('disabled')).toBeUndefined()
+    expect(input.attributes('readonly')).toBeUndefined()
+    expect(input.attributes('required')).toBeUndefined()
+    expect(input.attributes('aria-invalid')).toBe('false')
+    expect(input.attributes('aria-readonly')).toBe('false')
+    expect(input.attributes('aria-required')).toBe('false')
+  })
+
+  it.each(ATOMIC_CONTROLS)('%s 直接继承 Form 的四条状态轴', (kind) => {
+    expectAtomicState(mountAtomicControl(kind), kind, true)
+  })
+
+  it.each(ATOMIC_CONTROLS)('%s 以最近 Field 的显式 false 顶掉 Form', (kind) => {
+    expectAtomicState(mountAtomicControl(kind, {}, {
+      disabled: false,
+      readOnly: false,
+      required: false,
+      invalid: false,
+    }), kind, false)
+  })
+
+  it.each(ATOMIC_CONTROLS)('%s 以实例显式 false 顶掉 Field 与 Form', (kind) => {
+    expectAtomicState(mountAtomicControl(kind, {
+      disabled: false,
+      readOnly: false,
+      required: false,
+      invalid: false,
+    }, {
+      disabled: true,
+      readOnly: true,
+      required: true,
+      invalid: true,
+    }), kind, false)
+  })
+})

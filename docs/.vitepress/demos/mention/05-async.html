@@ -1,9 +1,11 @@
-<!-- 异步候选 | 查询串每变一次就重新去远端查一遍，等结果的这段时间浮层里空着 -->
+<!-- 异步候选 | 查询串每变一次就重新去远端查一遍，加载、空结果和候选共用一张浮层表面 -->
 <xh-mention id="mention-async" placeholder="输入 @ 再打两个字试试">
   <div data-xh-part="root">
-    <textarea data-xh-part="input"></textarea>
+    <input data-xh-part="input" />
     <div data-xh-part="positioner">
       <div data-xh-part="content"></div>
+      <div data-xh-part="empty">没有匹配的人选</div>
+      <div data-xh-part="loading">查询中…</div>
     </div>
   </div>
 </xh-mention>
@@ -23,6 +25,8 @@
   let timer = 0;
 
   mention.translations = { input: "正文", content: "提及谁" };
+  mention.collection = [];
+  mention.loading = false;
 
   function itemNode(person) {
     const item = document.createElement("div");
@@ -37,6 +41,8 @@
 
   function show(options, loading) {
     content.replaceChildren(...options.map(itemNode));
+    mention.collection = options;
+    mention.loading = loading;
     status.textContent = loading ? "查询中…" : `候选 ${options.length} 条`;
   }
 

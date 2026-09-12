@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
-import type { RuntimeConfig } from '@xihan-ui/core'
+import type { Anchor, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
+import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
 import type { SelectApi, SelectSchema } from '../src/select'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { connectSelect, selectMachine } from '../src/select'
@@ -51,8 +53,15 @@ function spread(el: HTMLElement, props: Record<string, unknown>): void {
 
 interface Harness {
   api: () => SelectApi
+  config: RuntimeConfig
+  presence: PresenceHandle | null
   root: HTMLElement
   form: HTMLFormElement | null
+  positioner: HTMLElement
+  send: (event: SelectSchema['event']) => void
+  position: () => PositionResult | null
+  /** 换掉锚点 / 浮层 ref，用来验它们缺席时不挂订阅。 */
+  setRef: (key: 'getAnchorEl' | 'getFloatingEl', value: () => HTMLElement | null) => void
   trigger: HTMLButtonElement
   clear: HTMLButtonElement
   indicator: HTMLElement
@@ -74,6 +83,12 @@ interface MountOptions {
   disabledItems?: readonly string[]
   /** 把 root 包进一个 form，用于走原生提交出口。 */
   inForm?: boolean
+  /** 定位引擎；不给即缺省，机器照常转移但不产出位置结果。 */
+  position?: PositionEnginePort
+  /** 本层被移出层栈时调一次，用来记拆除顺序。 */
+  onLayerDispose?: () => void
+  /** 用真实 Presence 驱动行为资源的退出租约。 */
+  withPresence?: boolean
 }
 
 const runtimes: VanillaRuntime[] = []
@@ -138,15 +153,29 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   })
 
   const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+  const presence = options.withPresence
+    ? createPresence({ config, open: (initial.open ?? initial.defaultOpen) ?? false, onRenderedChange: () => {} })
+    : null
   service.refs.set('config', config)
-  service.refs.set('registerLayer', () => config.layerRegistry.register({
-    kind: 'popover',
-    node: () => content,
-    branches: () => [trigger],
-    isModal: () => false,
-    setModal: () => {},
-    surfaces: () => [],
-  }))
+  service.refs.set('registerLayer', () => {
+    const handle = config.layerRegistry.register({
+      kind: 'popover',
+      node: () => content,
+      branches: () => [trigger],
+      isModal: () => false,
+      surfaces: () => [],
+    })
+    return {
+      layer: handle.layer,
+      dispose: () => {
+        handle.dispose()
+        options.onLayerDispose?.()
+      },
+    }
+  })
+  service.refs.set('presence', presence)
+  if (options.position)
+    service.refs.set('position', options.position)
   service.refs.set('getAnchorEl', () => trigger)
   service.refs.set('getFloatingEl', () => positioner)
   service.refs.set('getContentEl', () => content)
@@ -191,8 +220,14 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
 
   return {
     api: () => connectSelect(service, normalizeProps),
+    config,
+    presence,
     root,
     form,
+    positioner,
+    send: event => service.send(event),
+    position: () => service.context.get('position'),
+    setRef: (key, value) => service.refs.set(key, value),
     trigger,
     clear,
     indicator,
@@ -213,7 +248,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   }
 }
 
-/** flush 在 vanilla 运行时是 queueMicrotask；消解层的监听器注册还要过一个 setTimeout。 */
+/** flush 在 vanilla 运行时是一枚微任务；消解层的交互再等一枚微任务武装。 */
 function tick(): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, 0))
 }
@@ -246,6 +281,44 @@ function submitted(el: HTMLSelectElement): string[] {
 afterEach(() => {
   for (const runtime of runtimes.splice(0)) runtime.stop()
   document.body.innerHTML = ''
+})
+
+describe('select 真实退场资源', () => {
+  it('逻辑关闭立即撤出交互树，Layer、DismissableLayer 与 FocusScope 等到 Presence 完成才释放', () => {
+    const h = mount({ defaultOpen: true }, { withPresence: true })
+    const presence = h.presence!
+    expect(h.config.layerRegistry.list()).toHaveLength(1)
+
+    let firstExit: ExitLease | undefined
+    const stopFirstExit = presence.onBeforeExit(() => {
+      firstExit = presence.claimExit('select test exit')
+    })
+    h.send({ type: 'CLOSE' })
+    expect(h.state()).toBe('closed')
+    expect(h.content.getAttribute('inert')).toBe('true')
+    expect(h.content.getAttribute('aria-hidden')).toBe('true')
+    expect(h.config.layerRegistry.list()).toHaveLength(1)
+
+    presence.update(false)
+    expect(firstExit?.settled).toBe(false)
+    expect(h.config.layerRegistry.list()).toHaveLength(1)
+
+    // 退场中重开沿用同一层登记，并结清旧视觉租约。
+    h.send({ type: 'OPEN' })
+    expect(firstExit?.settled).toBe(true)
+    expect(h.config.layerRegistry.list()).toHaveLength(1)
+    stopFirstExit()
+
+    let finalExit: ExitLease | undefined
+    const stopFinalExit = presence.onBeforeExit(() => {
+      finalExit = presence.claimExit('select final exit')
+    })
+    h.send({ type: 'CLOSE' })
+    presence.update(false)
+    finalExit?.done()
+    expect(h.config.layerRegistry.list()).toHaveLength(0)
+    stopFinalExit()
+  })
 })
 
 describe('selectMachine 值的形状与不变量', () => {
@@ -556,6 +629,26 @@ describe('selectSelect 显示文本与表单出口', () => {
     expect(h.item('banana').getAttribute('data-state')).toBe('unchecked')
   })
 
+  it('条目把 Collection Item 角色、尺寸与选择事实投影给三端', () => {
+    const h = mount({ defaultValue: 'apple', size: 'lg' }, { disabledItems: ['banana'] })
+    expect(h.item('apple').dataset).toMatchObject({
+      xhCollectionItem: '',
+      xhCollectionSize: 'lg',
+    })
+    expect(h.item('banana').dataset).toMatchObject({
+      xhCollectionItem: '',
+      xhCollectionSize: 'lg',
+      disabled: '',
+    })
+    expect(h.item('apple').getAttribute('data-state')).toBe('checked')
+    expect(h.item('apple').getAttribute('aria-selected')).toBe('true')
+    expect(h.item('cherry').getAttribute('aria-selected')).toBe('false')
+    const text = h.item('apple').querySelector('[data-part="item-text"]')
+    const indicator = h.item('apple').querySelector('[data-part="item-indicator"]')
+    expect(text?.getAttribute('data-xh-collection-slot')).toBe('text')
+    expect(indicator?.getAttribute('data-xh-collection-slot')).toBe('indicator')
+  })
+
   it('影子 select 靠 option.selected 表达选中，required 判得出「没选」', () => {
     const empty = mount({ name: 'fruit', required: true })
     expect(submitted(empty.hiddenSelect)).toEqual([])
@@ -763,5 +856,281 @@ describe('selectSelect 键盘清空', () => {
     h.setProps({ disabled: true })
     expect(press(h.trigger, 'Delete').defaultPrevented).toBe(false)
     expect(h.value()).toEqual(['apple'])
+  })
+})
+
+/** 记账用的假定位引擎：每次 attach 的入参原样收下，撤订阅也记一笔。 */
+function fakeEngine(): {
+  port: PositionEnginePort
+  calls: { anchor: Anchor, floating: HTMLElement, options: PositionOptions, emit: (r: PositionResult) => void }[]
+  stops: () => number
+} {
+  const calls: { anchor: Anchor, floating: HTMLElement, options: PositionOptions, emit: (r: PositionResult) => void }[] = []
+  let stops = 0
+  return {
+    calls,
+    stops: () => stops,
+    port: {
+      attach: (anchor, floating, options, onResult) => {
+        calls.push({ anchor, floating, options, emit: onResult })
+        return () => {
+          stops += 1
+        }
+      },
+    },
+  }
+}
+
+/** 等 n 帧：焦点域的落焦重试与归还都排在 rAF 上。 */
+async function frames(n = 5): Promise<void> {
+  for (let i = 0; i < n; i++)
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+}
+
+const RESULT: PositionResult = { x: 12, y: 34, placement: 'bottom-start', hidden: false }
+
+describe('selectSelect 浮层定位', () => {
+  it('等 DOM 落定才挂：进入展开态那一刻还没碰引擎，一拍之后才把锚点与浮层交进去', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.send({ type: 'OPEN' })
+    expect(engine.calls).toHaveLength(0)
+    await tick()
+    expect(engine.calls).toHaveLength(1)
+    expect(engine.calls[0]!.anchor).toBe(h.trigger)
+    expect(engine.calls[0]!.floating).toBe(h.positioner)
+  })
+
+  it('交给引擎的参数：缺省 bottom-start 与 8px，坐标系走视口，要可用空间，不要箭头', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.send({ type: 'OPEN' })
+    await tick()
+    const options = engine.calls[0]!.options
+    expect(options.placement).toBe('bottom-start')
+    expect(options.offset).toBe(8)
+    expect(options.strategy).toBe('fixed')
+    expect(options.size).toBe(true)
+    expect(options.dir).toBeUndefined()
+    expect(options.arrow).toBeUndefined()
+  })
+
+  it('placement / offset / dir 由 props 覆盖', async () => {
+    const engine = fakeEngine()
+    const h = mount({ placement: 'top-end', offset: 2, dir: 'rtl' }, { position: engine.port })
+    h.send({ type: 'OPEN' })
+    await tick()
+    const options = engine.calls[0]!.options
+    expect(options.placement).toBe('top-end')
+    expect(options.offset).toBe(2)
+    expect(options.dir).toBe('rtl')
+  })
+
+  it('引擎回报的结果写进 context，连接层据此认落位', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.send({ type: 'OPEN' })
+    await tick()
+    expect((h.api().getPositionerProps() as Record<string, unknown>)['data-positioned']).toBeUndefined()
+    engine.calls[0]!.emit(RESULT)
+    expect(h.position()).toEqual(RESULT)
+    expect((h.api().getPositionerProps() as Record<string, unknown>)['data-positioned']).toBe('')
+  })
+
+  it('重新展开先把上一轮坐标清掉：再次落位之前不算已定位', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.send({ type: 'OPEN' })
+    await tick()
+    engine.calls[0]!.emit(RESULT)
+    h.send({ type: 'CLOSE' })
+    // 收起中坐标还留着，退场要用
+    expect(h.position()).toEqual(RESULT)
+    h.send({ type: 'OPEN' })
+    expect(h.position()).toBeNull()
+  })
+
+  it('收起即撤订阅', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.send({ type: 'OPEN' })
+    await tick()
+    expect(engine.stops()).toBe(0)
+    h.send({ type: 'CLOSE' })
+    expect(engine.stops()).toBe(1)
+  })
+
+  it('展开当拍又收起：那一拍到来时不再挂订阅', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.send({ type: 'OPEN' })
+    h.send({ type: 'CLOSE' })
+    await tick()
+    expect(engine.calls).toHaveLength(0)
+  })
+
+  it('锚点或浮层缺席就不挂', async () => {
+    const engine = fakeEngine()
+    const noAnchor = mount({}, { position: engine.port })
+    noAnchor.setRef('getAnchorEl', () => null)
+    noAnchor.send({ type: 'OPEN' })
+    await tick()
+    expect(engine.calls).toHaveLength(0)
+
+    const noFloating = mount({}, { position: engine.port })
+    noFloating.setRef('getFloatingEl', () => null)
+    noFloating.send({ type: 'OPEN' })
+    await tick()
+    expect(engine.calls).toHaveLength(0)
+  })
+
+  it('没有引擎照常转移，只是没有位置结果', async () => {
+    const h = mount()
+    h.send({ type: 'OPEN' })
+    await tick()
+    expect(h.state()).toBe('open')
+    expect(h.position()).toBeNull()
+  })
+})
+
+describe('selectSelect 浮层的层与消解', () => {
+  it('escape 收起并把关闭原因报成 esc', async () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange })
+    h.send({ type: 'OPEN' })
+    await tick()
+    press(document.body, 'Escape')
+    expect(h.state()).toBe('closed')
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'esc' })
+  })
+
+  it('层外按下指针收起并把关闭原因报成 interact-outside', async () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange })
+    h.send({ type: 'OPEN' })
+    await tick()
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true }))
+    expect(h.state()).toBe('closed')
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'interact-outside' })
+  })
+
+  it('收起之后这一层不再吃 Escape', async () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange })
+    h.send({ type: 'OPEN' })
+    await tick()
+    h.send({ type: 'CLOSE' })
+    onOpenChange.mockClear()
+    press(document.body, 'Escape')
+    expect(onOpenChange).not.toHaveBeenCalled()
+  })
+
+  it('逆序拆：先撤焦点域与消解层的订阅，最后才把层移出栈', async () => {
+    const order: string[] = []
+    const h = mount({}, { onLayerDispose: () => order.push('layer') })
+    h.send({ type: 'OPEN' })
+    await tick()
+    const remove = document.removeEventListener.bind(document)
+    const spy = vi.spyOn(document, 'removeEventListener').mockImplementation(((type: string, listener: EventListener, opts?: boolean | EventListenerOptions) => {
+      // focusout 只有焦点域摘、pointerdown 只有消解层摘，拿它们当各自的拆除标记
+      if (type === 'focusout')
+        order.push('focus-scope')
+      if (type === 'pointerdown')
+        order.push('dismiss')
+      remove(type, listener, opts)
+    }) as typeof document.removeEventListener)
+    h.send({ type: 'CLOSE' })
+    spy.mockRestore()
+    expect(order).toEqual(['focus-scope', 'dismiss', 'layer'])
+  })
+})
+
+describe('selectSelect 展开时的焦点', () => {
+  it('有高亮锚点时焦点落在那个条目上', async () => {
+    const h = mount({ defaultValue: 'banana' })
+    h.send({ type: 'OPEN' })
+    await frames()
+    expect(h.highlighted()).toBe('banana')
+    expect(document.activeElement).toBe(h.item('banana'))
+  })
+
+  it('指针打开且无选中值：不落锚点，焦点歇在认领着 Tab 位的列表本体上', async () => {
+    const h = mount()
+    h.send({ type: 'OPEN' })
+    await frames()
+    // 没有条目认领 Tab 位，兜底的那一位在列表本体上
+    expect(ITEMS.map(i => h.item(i.value).getAttribute('tabindex'))).toEqual(['-1', '-1', '-1'])
+    expect(h.list.getAttribute('tabindex')).toBe('0')
+    expect(document.activeElement).toBe(h.list)
+  })
+
+  it('关掉之后焦点归还 trigger——展开之前焦点在 body 上也一样', async () => {
+    const h = mount({ defaultValue: 'banana' })
+    expect(document.activeElement).toBe(document.body)
+    h.send({ type: 'OPEN' })
+    await frames()
+    h.send({ type: 'CLOSE' })
+    await frames()
+    expect(document.activeElement).toBe(h.trigger)
+  })
+
+  it('tab 关掉的那一路把焦点让出去，不往回抢', async () => {
+    const h = mount({ defaultValue: 'banana' })
+    h.send({ type: 'OPEN' })
+    await frames()
+    h.send({ type: 'CLOSE', src: 'tab' })
+    await frames()
+    expect(document.activeElement).not.toBe(h.trigger)
+  })
+})
+
+describe('selectSelect 标签删除钮：就是 tag 的 close-trigger', () => {
+  /** 把删除钮的 props 摊到一颗真按钮上，与适配器渲出来的节点同形。 */
+  function deleteButton(h: Harness, value: string): HTMLButtonElement {
+    const el = document.createElement('button')
+    spread(el, h.api().getItemDeleteTriggerProps({ value }) as Record<string, unknown>)
+    h.root.appendChild(el)
+    return el
+  }
+
+  it('可及名走 translations.deleteItem，缺省 Delete + 标签文字；点按摘掉那个值并通知一次', async () => {
+    const onValueChange = vi.fn()
+    const h = mount({ multiple: true, defaultValue: ['apple', 'banana'], onValueChange })
+    await tick()
+    const props = h.api().getItemDeleteTriggerProps({ value: 'apple' })
+    expect([props['data-scope'], props['data-part'], props.type]).toEqual(['tag', 'close-trigger', 'button'])
+    // 标签本体也是同一份 tag 的 root：三轴与 data-value 齐全，触发器里不渲钮，root 不因带钮而变
+    const root = h.api().getTagProps({ value: 'apple' })
+    expect([root['data-scope'], root['data-part'], root['data-value'], root['data-variant'], root['data-state']]).toEqual(['tag', 'root', 'apple', 'subtle', 'open'])
+    const remove0 = deleteButton(h, 'apple')
+    expect(remove0.getAttribute('aria-label')).toBe('Delete Apple')
+    // 可摘：留在原地、可按
+    expect([remove0.hasAttribute('hidden'), remove0.hasAttribute('disabled'), remove0.hasAttribute('data-disabled')]).toEqual([false, false, false])
+    h.setProps({ translations: { deleteItem: label => `移除${label}` } })
+    const remove = deleteButton(h, 'apple')
+    expect(remove.getAttribute('aria-label')).toBe('移除Apple')
+    click(remove)
+    expect(h.value()).toEqual(['banana'])
+    expect(onValueChange.mock.calls).toEqual([[{ value: ['banana'] }]])
+  })
+
+  it('禁用：钮留在原地、原生 disabled 且标 data-disabled，标签本体置灰；点按不动值', () => {
+    const onValueChange = vi.fn()
+    const h = mount({ multiple: true, defaultValue: ['apple', 'banana'], disabled: true, onValueChange })
+    const remove = deleteButton(h, 'apple')
+    expect([remove.hasAttribute('hidden'), remove.hasAttribute('disabled'), remove.hasAttribute('data-disabled')]).toEqual([false, true, true])
+    expect(h.api().getTagProps({ value: 'apple' })['data-disabled']).toBe('')
+    click(remove)
+    expect(h.value()).toEqual(['apple', 'banana'])
+    expect(onValueChange).not.toHaveBeenCalled()
+  })
+
+  it('只读：点按送到机器的 VALUE.SET 被守卫挡下，不动值、不通知；标签本体不置灰', () => {
+    const onValueChange = vi.fn()
+    const h = mount({ multiple: true, defaultValue: ['apple', 'banana'], readOnly: true, onValueChange })
+    expect(h.api().getTagProps({ value: 'apple' })['data-disabled']).toBeUndefined()
+    click(deleteButton(h, 'apple'))
+    expect(h.value()).toEqual(['apple', 'banana'])
+    expect(onValueChange).not.toHaveBeenCalled()
   })
 })

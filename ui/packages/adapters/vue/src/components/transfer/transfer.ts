@@ -13,6 +13,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   provideTransfer,
   provideTransferGroup,
@@ -58,25 +59,27 @@ interface TransferPanelSlots {
 
 export const XhTransferRoot = defineComponent({
   name: 'XhTransferRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<TransferItem[]>, default: undefined },
-    value: { type: Array as PropType<string[]>, default: undefined },
-    defaultValue: { type: Array as PropType<string[]>, default: undefined },
-    selection: { type: Array as PropType<string[]>, default: undefined },
-    defaultSelection: { type: Array as PropType<string[]>, default: undefined },
+    collection: { type: Array as PropType<TransferItem[]> },
+    value: { type: Array as PropType<string[]> },
+    defaultValue: { type: Array as PropType<string[]> },
+    name: { type: String },
+    form: { type: String },
+    selection: { type: Array as PropType<string[]> },
+    defaultSelection: { type: Array as PropType<string[]> },
     searchable: Boolean,
-    filter: { type: Function as PropType<TransferFilter>, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
+    filter: { type: Function as PropType<TransferFilter> },
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     loading: Boolean,
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
     oneWay: Boolean,
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    translations: { type: Object as PropType<TransferProps['translations']>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    translations: { type: Object as PropType<TransferProps['translations']> },
   },
   // *-change 携带 details 对象，update:* 携带裸集合以支持 v-model
   emits: {
@@ -97,12 +100,12 @@ export const XhTransferRoot = defineComponent({
       emit('selection-change', details)
       emit('update:selection', details.value)
     }
-    const ctx = useTransfer(withXhConfig('transfer', props) as TransferProps, {
+    const ctx = useTransfer(withXhConfig('transfer', useFormControlProps(props)) as TransferProps, {
       onValueChange: notifyValue,
       onSelectionChange: notifySelection,
     })
     provideTransfer(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [slots.default?.({
       value: ctx.api.value.value,
       selection: ctx.api.value.selection,
       sourceItems: ctx.api.value.visibleItems('source'),
@@ -115,7 +118,10 @@ export const XhTransferRoot = defineComponent({
       toggle: ctx.api.value.toggle,
       toggleAll: ctx.api.value.toggleAll,
       move: ctx.api.value.move,
-    }))
+    }), ...ctx.api.value.value.map(value => h('input', {
+      ...ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown>,
+      key: value,
+    }))])
   },
 })
 

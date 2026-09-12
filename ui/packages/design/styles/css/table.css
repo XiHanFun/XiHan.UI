@@ -36,7 +36,11 @@
     display: flex;
     position: relative;
     flex-direction: column;
-    max-block-size: var(--xh-table-max-h, var(--xh-viewport-h-lg));
+    /* 高度上限再由视口收一次：定值比屏幕还高时表格自己滚不动，只能靠页面滚，
+       吸顶表头也就钉不住。视口取 dvb：移动端地址栏收放会改变可视高度，dvb 跟着变；
+       不认 dvb 的引擎由级联回落到前一条的 vh */
+    max-block-size: min(var(--xh-table-max-h, var(--xh-viewport-h-lg)), 100vh);
+    max-block-size: min(var(--xh-table-max-h, var(--xh-viewport-h-lg)), 100dvb);
     /* 外框由 [data-bordered] 画：那一位缺席就是不要外框，只留行间横线 */
     border: 0;
     background: var(--xh-table-bg, var(--xh-bg-surface));
@@ -212,13 +216,15 @@
     background: var(--xh-table-row-bg-selected, var(--xh-bg-subtle-active));
   }
 
-  [data-scope='table'][data-part='row'][data-disabled] {
-    color: var(--xh-fg-disabled);
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     禁用行的前景被换成灰档，不在这一条里，环走公共层的默认色 */
+  [data-scope='table'][data-part='row'][data-selected]:not([data-disabled]):focus-visible {
+    --xh-_ring-color: currentColor;
   }
 
-  /* 行才是 Tab 停靠点，环画在整行上；往内收：行是撑满宽度的，环画在外沿会被滚动容器裁掉 */
-  [data-scope='table'][data-part='row']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
+  [data-scope='table'][data-part='row'][data-disabled] {
+    color: var(--xh-fg-disabled);
   }
 
   /* 列宽由连接层写进内联 inline-size，因此 flex-basis 取 auto：
@@ -349,6 +355,20 @@
     background: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     禁用档的前景是透明的（勾要藏起来），不在这一条里，环走公共层的默认色 */
+  [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']):not([data-disabled]):focus-visible,
+  [data-scope='table'][data-part='column-visibility-trigger'][data-state='checked']:not([data-disabled]):focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
+  /* 半选档的前景是透明的（勾藏起来、横杠由伪元素画），currentColor 取到的是透明；
+     环直接取面配对的那支前景色 */
+  [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate']:not([data-disabled]):focus-visible {
+    --xh-_ring-color: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
+  }
+
   /* 未选中时勾不出现，但盒子还在：它是边框画出来的空框 */
   [data-scope='table'][data-part='select-all-trigger'][data-state='unchecked'],
   [data-scope='table'][data-part='column-visibility-trigger'][data-state='unchecked'],
@@ -379,13 +399,6 @@
     border-color: var(--xh-border-subtle);
     background: var(--xh-bg-muted);
     color: transparent;
-  }
-
-  /* 全选把手是表头里独立的 Tab 停靠点，环得画在它自己身上。
-     往内收，与行、排序把手同一口径：把手长在列头里，列头与根都收 overflow，
-     环画在外沿会被裁掉 */
-  [data-scope='table'][data-part='select-all-trigger']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 行选择把手不占 Tab 位（键盘那一路走 Space），只服务指针 */
@@ -763,10 +776,6 @@
 
   [data-scope='table'][data-part='sort-trigger'][data-disabled]::after {
     content: none;
-  }
-
-  [data-scope='table'][data-part='sort-trigger']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 详情行：靠 data-state 收起，不卸载作者节点。内容长在它的单元格里，行本身只画底色 */

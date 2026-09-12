@@ -331,6 +331,14 @@
     font-weight: var(--xh-font-weight-medium);
   }
 
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     排掉不可用的格子：那一档的底换成置灰底、字换成置灰色，环取过来就跟底一起糊了，
+     它仍要能聚焦（方向键的起点），环由公共层画 */
+  [data-scope='calendar'][data-part='cell-trigger'][data-selected]:not([data-disabled]):focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
 
   /* 不可用走 aria-disabled 而非原生 disabled：格子仍要可聚焦（它还得当方向键的起点），
      所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
@@ -350,11 +358,6 @@
   [data-scope='calendar'][data-part='grid'][data-readonly][data-view='day']
     [data-part='cell-trigger']:not([data-disabled]) {
     cursor: default;
-  }
-
-  /* 焦点环往内收一像素，免得被相邻格子的底色盖住 */
-  [data-scope='calendar'][data-part='cell-trigger']:focus-visible {
-    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

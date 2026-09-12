@@ -12,10 +12,12 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, mergeProps, Teleport } from 'vue'
+import { computed, defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { XhPortal } from '../../runtime/portal'
 import { slotPaints } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   provideTimePicker,
   provideTimePickerColumn,
@@ -53,34 +55,34 @@ export interface TimePickerPresetsSlotProps {
 
 export const XhTimePickerRoot = defineComponent({
   name: 'XhTimePickerRoot',
-  // 缺省值由 connect 给出，这里一律 default: undefined
+  // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    value: { type: String, default: undefined },
-    defaultValue: { type: String, default: undefined },
+    value: { type: String },
+    defaultValue: { type: String },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    min: { type: String, default: undefined },
-    max: { type: String, default: undefined },
-    locale: { type: String, default: undefined },
-    hourCycle: { type: Number as PropType<TimeHourCycle>, default: undefined },
-    granularity: { type: String as PropType<TimeGranularity>, default: undefined },
-    step: { type: Number, default: undefined },
+    min: { type: String },
+    max: { type: String },
+    locale: { type: String },
+    hourCycle: { type: Number as PropType<TimeHourCycle> },
+    granularity: { type: String as PropType<TimeGranularity> },
+    step: { type: Number },
     /** 快捷选项；给了就在浮层里多出一列，时刻要在自己的 computed 里算好再传。 */
-    presets: { type: Array as PropType<TimePickerPreset[]>, default: undefined },
-    disabled: Boolean,
-    translations: { type: Object as PropType<TimePickerProps['translations']>, default: undefined },
-    isTimeUnavailable: { type: Function as PropType<(value: string, unit: TimePickerColumnUnit) => boolean>, default: undefined },
-    readOnly: Boolean,
-    invalid: Boolean,
-    required: Boolean,
-    name: { type: String, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    presets: { type: Array as PropType<TimePickerPreset[]> },
+    disabled: { type: Boolean, default: undefined },
+    translations: { type: Object as PropType<TimePickerProps['translations']> },
+    isTimeUnavailable: { type: Function as PropType<(value: string, unit: TimePickerColumnUnit) => boolean> },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
+    name: { type: String },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
   },
   // *-change 携带 details 对象，update:* 携带裸值
   emits: {
@@ -101,7 +103,7 @@ export const XhTimePickerRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useTimePicker(withXhConfig('time-picker', props) as TimePickerProps, {
+    const ctx = useTimePicker(withXhConfig('time-picker', useFormControlProps(props)) as TimePickerProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
     })
@@ -176,10 +178,10 @@ export const XhTimePickerTrigger = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     const ctx = useTimePickerContext()
     return () => h('button', fieldLabel.value({
+      ...fieldWiring.value,
       ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
       // 归还焦点要落到它身上：锚点取的是整个输入行，那一层不可聚焦
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
-      ...fieldWiring.value,
     }), slots.default?.())
   },
 })
@@ -194,12 +196,16 @@ export const XhTimePickerClearTrigger = defineComponent({
 
 export const XhTimePickerPositioner = defineComponent({
   name: 'XhTimePickerPositioner',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useTimePickerContext()
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.controlRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },

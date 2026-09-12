@@ -90,7 +90,7 @@ async function* walk(dir) {
         continue
       yield* walk(full)
     }
-    else if (['.vue', '.md', '.html', '.ts', '.css'].includes(extname(entry.name))) {
+    else if (['.vue', '.md', '.html', '.ts', '.tsx', '.css'].includes(extname(entry.name))) {
       yield full
     }
   }

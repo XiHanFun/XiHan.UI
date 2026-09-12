@@ -4,6 +4,8 @@ import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
+import { mergePartProps } from '../../runtime/merge-props'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideFileUpload, provideFileUploadItem, useFileUploadContext, useFileUploadItemContext } from './context'
 import { useFileUpload } from './use-file-upload'
 
@@ -31,26 +33,26 @@ export type FileUploadRootSlotProps = Pick<
 
 export const XhFileUploadRoot = defineComponent({
   name: 'XhFileUploadRoot',
-  // 有 connect 与机器兜底的 prop 一律 default: undefined
+  // 有 connect 与机器兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    // default: undefined 表示非受控
-    files: { type: Array as PropType<File[]>, default: undefined },
-    defaultFiles: { type: Array as PropType<File[]>, default: undefined },
-    remoteFiles: { type: Array as PropType<FileUploadRemoteFile[]>, default: undefined },
-    defaultRemoteFiles: { type: Array as PropType<FileUploadRemoteFile[]>, default: undefined },
-    upload: { type: Function as PropType<FileUploadProps['upload']>, default: undefined },
+    // 缺席值 undefined 表示非受控
+    files: { type: Array as PropType<File[]> },
+    defaultFiles: { type: Array as PropType<File[]> },
+    remoteFiles: { type: Array as PropType<FileUploadRemoteFile[]> },
+    defaultRemoteFiles: { type: Array as PropType<FileUploadRemoteFile[]> },
+    upload: { type: Function as PropType<FileUploadProps['upload']> },
     autoUpload: { type: Boolean, default: undefined },
-    accept: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    maxFiles: { type: Number, default: undefined },
-    maxFileSize: { type: Number, default: undefined },
-    minFileSize: { type: Number, default: undefined },
-    disabled: Boolean,
-    invalid: Boolean,
-    name: { type: String, default: undefined },
+    accept: { type: [String, Array] as PropType<string | string[]> },
+    maxFiles: { type: Number },
+    maxFileSize: { type: Number },
+    minFileSize: { type: Number },
+    disabled: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
+    name: { type: String },
     allowDrop: { type: Boolean, default: undefined },
     directory: Boolean,
-    capture: { type: String as PropType<'user' | 'environment'>, default: undefined },
-    translations: { type: Object as PropType<Partial<FileUploadTranslations>>, default: undefined },
+    capture: { type: String as PropType<'user' | 'environment'> },
+    translations: { type: Object as PropType<Partial<FileUploadTranslations>> },
   },
   // files-change 携带 { files }，update:files 携带裸数组；file-accept / file-reject 逐个文件报告
   emits: {
@@ -79,7 +81,7 @@ export const XhFileUploadRoot = defineComponent({
     }
     const onUploadComplete: FileUploadProps['onUploadComplete'] = details => emit('upload-complete', details)
     const onUploadError: FileUploadProps['onUploadError'] = details => emit('upload-error', details)
-    const ctx = useFileUpload(withXhConfig('file-upload', props) as FileUploadProps, { onFilesChange, onFileAccept, onFileReject, onRemoteFilesChange, onUploadComplete, onUploadError })
+    const ctx = useFileUpload(withXhConfig('file-upload', useFormControlProps(props)) as FileUploadProps, { onFilesChange, onFileAccept, onFileReject, onRemoteFilesChange, onUploadComplete, onUploadError })
     provideFileUpload(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       acceptedFiles: ctx.api.value.acceptedFiles,
@@ -120,22 +122,24 @@ export const XhFileUploadDropzone = defineComponent({
 
 export const XhFileUploadTrigger = defineComponent({
   name: 'XhFileUploadTrigger',
+  // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
+  inheritAttrs: false,
   props: {
     /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const ctx = useFileUploadContext()
     return () => {
-      const attrs = ctx.api.value.getTriggerProps() as Record<string, unknown>
+      const part = mergePartProps(ctx.api.value.getTriggerProps() as Record<string, unknown>, attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
-        const merged = mergeIntoChild(children, attrs, 'file-upload')
+        const merged = mergeIntoChild(children, part, 'file-upload')
         if (merged)
           return merged
       }
-      return h('button', attrs, children)
+      return h('button', part, children)
     }
   },
 })
@@ -160,9 +164,9 @@ export const XhFileUploadItem = defineComponent({
   name: 'XhFileUploadItem',
   props: {
     /** 这一行显示哪个文件（本地或远程附件）。 */
-    file: { type: Object as PropType<FileUploadFile>, default: undefined },
+    file: { type: Object as PropType<FileUploadFile> },
     /** 改用下标从 allFiles（远程在前、本地在后）里取文件，兼收字符串以支持模板里写 index="0"。 */
-    index: { type: [Number, String] as PropType<number | string>, default: undefined },
+    index: { type: [Number, String] as PropType<number | string> },
   },
   setup(props, { slots }) {
     const ctx = useFileUploadContext()

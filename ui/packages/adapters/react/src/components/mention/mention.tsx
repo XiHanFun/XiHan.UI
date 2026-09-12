@@ -1,5 +1,5 @@
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { MentionApi, MentionInputEl, MentionInputHost, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
+import type { MentionApi, MentionInputEl, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo } from 'react'
@@ -9,6 +9,7 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { MentionItemProvider, MentionProvider, useMentionContext, useMentionItemContext } from './context'
 import { useMention } from './use-mention'
 
@@ -26,7 +27,10 @@ export type MentionRootSlotProps = Pick<
   | 'close'
 >
 
-export interface XhMentionRootProps {
+/** 根上自有的那些取值；defaultValue、dir 与 onSelect 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir' | 'onSelect'>
+
+export interface XhMentionRootProps extends RootElementProps {
   /** 开候选的前缀字符，缺省 '@'；给数组即多种前缀并存。 */
   triggerPrefix?: string | string[]
   collection?: MentionNode[]
@@ -59,8 +63,59 @@ export interface XhMentionRootProps {
   children?: SlotChildren<MentionRootSlotProps>
 }
 
-export function XhMentionRoot({ children, renderItem, empty, ...props }: XhMentionRootProps): ReactNode {
-  const ctx = useMention(withXhConfig('mention', props) as MentionProps)
+export function XhMentionRoot({
+  triggerPrefix,
+  collection,
+  value,
+  defaultValue,
+  disabled,
+  loading,
+  name,
+  readOnly,
+  invalid,
+  placeholder,
+  loop,
+  placement,
+  offset,
+  dir,
+  translations,
+  variant,
+  tone,
+  size,
+  onValueChange,
+  onQueryChange,
+  onSelect,
+  onOpenChange,
+  children,
+  renderItem,
+  empty,
+  ...rest
+}: XhMentionRootProps): ReactNode {
+  const machineProps = {
+    triggerPrefix,
+    collection,
+    value,
+    defaultValue,
+    disabled,
+    loading,
+    name,
+    readOnly,
+    invalid,
+    placeholder,
+    loop,
+    placement,
+    offset,
+    dir,
+    translations,
+    variant,
+    tone,
+    size,
+    onValueChange,
+    onQueryChange,
+    onSelect,
+    onOpenChange,
+  }
+  const ctx = useMention(withXhConfig('mention', useFormControlProps(machineProps)) as MentionProps)
   const api = ctx.api
 
   // 首帧结算一次候选条数，之后的增删由条目自己上报
@@ -77,15 +132,18 @@ export function XhMentionRoot({ children, renderItem, empty, ...props }: XhMenti
         setValue: api.setValue,
         close: api.close,
       })
-    : props.collection
+    : collection
       ? <DefaultTree collection={api.collection} empty={empty} renderItem={renderItem} />
       : null
 
   return (
     <MentionProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {body}
       </div>
@@ -102,28 +160,21 @@ export function XhMentionLabel({ children, ...rest }: XhMentionLabelProps): Reac
   return <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</label>
 }
 
-export interface XhMentionInputProps extends Omit<ComponentPropsWithRef<'textarea'>, 'value' | 'defaultValue'> {
-  /**
-   * 输入框渲染成哪个标签，默认 textarea。
-   * 写 input 即单行宿主：connect 随之补上 type、role 与 aria-expanded。
-   */
-  as?: MentionInputHost
-}
-export function XhMentionInput({ as = 'textarea', ...rest }: XhMentionInputProps): ReactNode {
+export interface XhMentionInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue'> {}
+/** 单行输入框；正文写在它身上，候选浮层贴着它落位。 */
+export function XhMentionInput({ ...rest }: XhMentionInputProps): ReactNode {
   const ctx = useMentionContext()
   // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
   const fieldWiring = useFieldStateWiring()
   // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
   const fieldLabel = useFieldLabelWiring()
   const props = mergeReactProps(
-    fieldLabel({ ...ctx.api.getInputProps({ as }) as Record<string, unknown>, ...fieldWiring }),
+    fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps() as Record<string, unknown> }),
     rest as Record<string, unknown>,
     { ref: (el: MentionInputEl | null) => { ctx.inputRef.current = el } },
   )
   // 自己渲染宿主节点，label 的 for 指向它
-  return as === 'input'
-    ? <input {...props as ComponentPropsWithRef<'input'>} />
-    : <textarea {...props as ComponentPropsWithRef<'textarea'>} />
+  return <input {...props as ComponentPropsWithRef<'input'>} />
 }
 
 export interface XhMentionPositionerProps extends ComponentPropsWithRef<'div'> {
@@ -136,7 +187,7 @@ export function XhMentionPositioner({ children, container, ...rest }: XhMentionP
   // 候选列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current })
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.inputRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

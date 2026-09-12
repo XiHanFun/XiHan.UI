@@ -1,0 +1,512 @@
+{
+  "backlog": {},
+  "declared": {
+    "image-viewer [data-part='close-trigger'][data-scope='image-viewer']": "面是半透明的（neutral-950 兑 transparent 55%），压在使用者的图片上，静态算不出对比度",
+    "image-viewer [data-part='next-trigger'][data-scope='image-viewer']": "面是半透明的（neutral-950 兑 transparent 55%），压在使用者的图片上，静态算不出对比度",
+    "image-viewer [data-part='prev-trigger'][data-scope='image-viewer']": "面是半透明的（neutral-950 兑 transparent 55%），压在使用者的图片上，静态算不出对比度",
+    "popconfirm [data-part='cancel-trigger'][data-scope='popconfirm']:is(:hover, :active)": "规则只罩 :is(:hover, :active) 两档：那两档的面 bg-subtle-hover 2.97、bg-subtle-active 2.52 在线下，本脚本不收 :hover / :active 的面；常态的淡底 3.40 过线，吃默认环",
+    "segmented [data-part='root'][data-scope='segmented']:has([data-scope='segmented'][data-part='indicator']:not([hidden])) [data-part='item'][data-scope='segmented'][data-state='checked']": "选中段自己的面是透空的，环内侧是压在它底下、与它同一块矩形的指示器实心底（写了 data-tone 时默认环压上去 1.08-2.89）；本脚本只看部件自己那条 background，看不见被压在下面的兄弟节点",
+    "table [data-part='select-all-trigger'][data-scope='table'][data-state='indeterminate']:not([data-disabled])": "半选档的前景是透明的（勾藏起来、横杠由伪元素画），currentColor 会取到透明，这一条改取面配对的前景色；面那条规则把 checked 与 indeterminate 写在同一个 :is() 里，本脚本记成一档 [data-state=:is(checked,indeterminate)]，只写 indeterminate 的这条罩不上它",
+    "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='root'][data-scope='tag'] [data-part='close-trigger'][data-scope='tag']": "叉（tag 的 close-trigger）自己的面是透空的，环内侧是整颗标签（tag 的 root）反白后的实心语气底（默认环压上去 1.00-2.89）；本脚本只看部件自己那条 background，透空的面透出祖先那一层算不出来",
+    "tag [data-part='root'][data-scope='tag'][data-variant='solid']:not([data-disabled]) [data-part='close-trigger'][data-scope='tag']": "关闭钮自己的面是透空的，环压着的是标签根那块实心语气底；本脚本按部件自己那条面规则算，看不到祖先铺的底",
+    "transfer [data-part='item-checkbox'][data-scope='transfer'][data-state='checked']": "连接层给这颗把手发 aria-hidden: true，焦点落不上去，这条 :focus-visible 规则画不出来",
+    "tree [data-indeterminate][data-part='branch-checkbox'][data-scope='tree']": "连接层给这颗把手发 aria-hidden: true 与 tabindex: -1，并在 pointerdown 里拦掉默认聚焦，焦点落不上去",
+    "tree [data-indeterminate][data-part='item-checkbox'][data-scope='tree']": "连接层给这颗把手发 aria-hidden: true 与 tabindex: -1，并在 pointerdown 里拦掉默认聚焦，焦点落不上去",
+    "tree [data-part='branch-checkbox'][data-scope='tree'][data-selected]": "连接层给这颗把手发 aria-hidden: true 与 tabindex: -1，并在 pointerdown 里拦掉默认聚焦，焦点落不上去",
+    "tree [data-part='item-checkbox'][data-scope='tree'][data-selected]": "连接层给这颗把手发 aria-hidden: true 与 tabindex: -1，并在 pointerdown 里拦掉默认聚焦，焦点落不上去"
+  },
+  "opaque": {
+    "back-top [trigger] var(--xh-material-glass-bg)": "缺省触发器是随页面背景透入的 M3 玻璃，静态工具不能按单一实体面判环；键盘聚焦时皮肤将它切到 material-glass-focus-surface，浏览器回归量该实体面与公共焦点环。",
+    "cascader [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
+    "color-picker [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
+    "combobox [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
+    "context-menu [content] var(--xh-material-frosted-bg)": "M2 背景依赖背后内容。tabindex 不为0时已登记关环；空菜单自身以tabindex=0接收键盘焦点时，focus-visible实际铺material-frosted-focus-surface实体底，浏览器浅深主题回归保证边界可见。",
+    "date-picker [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
+    "dialog [content] linear-gradient(\n        to bottom,\n        var(--xh-dialog-highlight, var(--xh-material-elevated-highlight)) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      linear-gradient(\n        to bottom,\n        var(--xh-dialog-content-lens-bg, var(--xh-dialog-header-bg, var(--xh-material-glass-bg))),\n        var(\n          --xh-dialog-bg,\n          var(--xh-material-elevated-bg)\n        ) var(--xh-dialog-content-lens-depth, var(--xh-dialog-header-lens-depth, calc(var(--xh-dialog-py, var(--xh-surface-py-md)) + var(--xh-control-h-md))))\n      )": "M4 内容面由透明顶光与 M3 lens 到高遮蔽正文的渐变叠合，静态工具无法按单一实体色求环对比；content 已在同表 ringless 登记为焦点陷阱的 tabindex=-1 兜底，真实交互控件各自铺实体焦点面并由浏览器回归覆盖。",
+    "float-button [trigger] var(--xh-material-glass-bg)": "缺省触发器是随页面背景透入的 M3 玻璃，静态工具不能按单一实体面判环；键盘聚焦时皮肤将它切到 material-glass-focus-surface，浏览器回归量该实体面与公共焦点环。",
+    "floating-panel [content] linear-gradient(\n        to bottom,\n        var(--xh-material-glass-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-floating-panel-bg, var(--xh-material-glass-bg))": "M3 面板由透明 tint 与顶边高光叠合，静态工具无法以单一实体色判环；content 已在同表 ringless 登记为键盘事件收口，真实可交互的标题栏按钮聚焦时各自铺 material-glass-focus-surface 实体底。",
+    "heatmap [cell] color-mix(in oklab, var(--xh-_heatmap-ink) var(--xh-_heatmap-level), var(--xh-_heatmap-empty))": "档位是连着的百分比、由连接层内联写进 style，皮肤里恒是 0%，静态解不出格子的实际颜色；满档那一格的面就是 --xh-_heatmap-ink（缺省即 --xh-bg-brand），环压上去大概率不到 3:1，要浏览器态判据接",
+    "hover-card [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-hover-card-bg, var(--xh-material-frosted-bg))": "M2 预览面含透明底与顶光，content 的程序化聚焦已明确关环；预览默认没有内建交互控件，作者若组合控件，其实体焦点面由各自皮肤提供。",
+    "image-viewer [close-trigger] color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent)": "面是半透明的，压在使用者的图片上，静态算不出对比度",
+    "image-viewer [next-trigger] color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent)": "面是半透明的，压在使用者的图片上，静态算不出对比度",
+    "image-viewer [prev-trigger] color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent)": "面是半透明的，压在使用者的图片上，静态算不出对比度",
+    "mention [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
+    "menu [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
+    "menubar [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
+    "popconfirm [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-popconfirm-bg, var(--xh-material-frosted-bg))": "M2 确认面有透明底与顶光，content 自身关环；确认钮和取消钮聚焦时各自使用实际不透明背景，焦点环不依赖背后采样颜色。",
+    "popover [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-popover-bg, var(--xh-material-frosted-bg))": "M2 内容面含半透明 tint 与装饰顶光，最终底色随页面背景变化；content 自身的程序化焦点环已关闭，内建关闭钮聚焦时实际铺不透明 focus-surface，任意作者控件由各自皮肤保证焦点面。",
+    "time-picker [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
+    "toggle-group [item] color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted))": "禁用且按下那一档，色由私有槽掺进 color-mix 里，本脚本只解整条 var() 链、不进函数实参；失效控件本就在 SC 1.4.11 的豁免里",
+    "tree-select [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。"
+  },
+  "ringless": {
+    "calendar [data-part='grid'][data-scope='calendar']": "网格自己不落焦，焦点永远在某一格上，环长在格上",
+    "carousel [data-part='indicator-group'][data-scope='carousel']": "不是可聚焦节点，落焦只会是浏览器兜底行为；指示点各自有环",
+    "carousel [data-part='list'][data-scope='carousel']": "不是可聚焦节点，落焦只会是浏览器兜底行为；两侧按钮与指示点各自有环",
+    "carousel [data-part='viewport'][data-scope='carousel']": "不是可聚焦节点，落焦只会是浏览器兜底行为；两侧按钮与指示点各自有环",
+    "cascader [data-part='column'][data-scope='cascader']:not([tabindex='0'])": "首列只在打开且还没有锚点条目时认领 Tab 位（那时 tabindex=0，吃 focus.css 的默认环）；tabindex=-1 时是程序化落焦的中转，高亮长在条目上",
+    "cascader [data-part='content'][data-scope='cascader']": "焦点域的兜底落点（tabindex=-1），高亮永远长在条目上",
+    "color-picker [data-part='content'][data-scope='color-picker']": "浮层只是容器，tabindex=-1 是焦点域的兜底落点，环长在里面的控件上",
+    "combobox [data-part='clear-trigger'][data-scope='combobox']": "按钮在盒里，环由 control 的 :focus-within 画在外框上",
+    "combobox [data-part='content'][data-scope='combobox']": "列表从不承载焦点（焦点恒在输入框，高亮走 aria-activedescendant）；可滚动容器被浏览器塞进 Tab 序列时不画环",
+    "combobox [data-part='input'][data-scope='combobox']": "环由 control 的 :focus-within 画在外框上",
+    "combobox [data-part='trigger'][data-scope='combobox']": "按钮在盒里，环由 control 的 :focus-within 画在外框上",
+    "command [data-part='content'][data-scope='command']": "面板只承接开场那一刻的程序化聚焦，随即转投检索框；环长在检索框与条目上",
+    "command [data-part='list'][data-scope='command']": "列表从不承载焦点（焦点恒在检索框，锚点走 aria-activedescendant）；可滚动容器被浏览器塞进 Tab 序列时不画环",
+    "context-menu [data-part='content'][data-scope='context-menu']:not([tabindex='0'])": "content 只在打开且还没有锚点条目时认领 Tab 位（那时 tabindex=0，吃 focus.css 的默认环）；tabindex=-1 时是程序化落焦的中转，高亮长在条目上",
+    "date-field [data-focus][data-part='segment'][data-scope='date-field']": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
+    "date-field [data-part='segment'][data-scope='date-field']": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
+    "date-picker [data-part='content'][data-scope='date-picker']": "浮层壳不承载焦点（焦点直接落到聚焦日那一格），tabindex=-1 只接程序化落焦",
+    "date-picker [data-part='segment-group'][data-scope='date-picker']": "容器不占 Tab 位也不承载焦点，环由 control 画",
+    "dialog [data-part='content'][data-scope='dialog']": "面板是焦点陷阱的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
+    "drawer [data-part='content'][data-scope='drawer']": "面板是焦点陷阱的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
+    "floating-panel [data-part='content'][data-scope='floating-panel']": "面板本体不接收焦点，只是键盘事件的收口点；环长在标题栏的按钮上",
+    "form [data-part='error-summary'][data-scope='form']": "摘要不承载焦点（焦点直接送去出错的字段），它只是一段播报",
+    "hover-card [data-part='content'][data-scope='hover-card']": "可编程聚焦的容器（tabindex=-1），环留给里面真正的可聚焦元素",
+    "json-viewer [data-part='branch'][data-scope='json-viewer']": "branch 是 treeitem，环画在它自己那一行上；整棵子树套一圈会把展开的层级全框进去",
+    "json-viewer [data-part='tree'][data-scope='json-viewer']": "焦点在树外时容器自己进 Tab 序列兜底，环永远长在行上",
+    "listbox [data-part='content'][data-scope='listbox']": "焦点在集合外时容器自己进 Tab 序列兜底，高亮永远长在条目上",
+    "mention [data-part='content'][data-scope='mention']": "列表从不承载焦点（焦点恒在输入框，高亮走 aria-activedescendant）；可滚动容器被浏览器塞进 Tab 序列时不画环",
+    "menu [data-part='content'][data-scope='menu']": "焦点域的兜底落点（tabindex=-1），高亮永远长在条目上",
+    "menubar [data-part='content'][data-scope='menubar']": "没有条目锚点时的 Tab 兜底落点，高亮永远长在条目上",
+    "menubar [data-part='root'][data-scope='menubar']": "roving tabindex 的兜底落点，焦点转投给 trigger 之后不再停留",
+    "number-field [data-part='control'][data-scope='number-field'] [data-part='decrement-trigger']": "焦点落到盒内按钮时 control 已经 :focus-within 起了环",
+    "number-field [data-part='control'][data-scope='number-field'] [data-part='increment-trigger']": "焦点落到盒内按钮时 control 已经 :focus-within 起了环",
+    "number-field [data-part='control'][data-scope='number-field'] [data-part='input']": "盒内 input 不自己画各态，环由 control 的 :focus-within 画在外框上",
+    "password-input [data-part='control'][data-scope='password-input'] [data-part='input']": "环由 control 的 :focus-within 画在外框上",
+    "popconfirm [data-part='content'][data-scope='popconfirm']": "浮层壳是焦点域的兜底落点（tabindex=-1），环长在确认与取消两颗按钮上",
+    "popover [data-part='content'][data-scope='popover']": "面板是焦点域的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
+    "prompt-input [data-part='input'][data-scope='prompt-input']": "环由 root 的 :focus-within 画在整个框上",
+    "rating [data-part='control'][data-scope='rating']": "焦点域的兜底落点：焦点从带外进来先落在它身上，随即转投给某颗星；高亮永远长在星星上",
+    "scroll-area [data-part='content'][data-scope='scroll-area']": "纯容器，不进 Tab 序列也不承载焦点；作者自己加了 tabindex 也该显形视口那圈环，不在这儿多画一圈",
+    "scroll-area [data-part='root'][data-scope='scroll-area']": "纯容器，不进 Tab 序列也不承载焦点；作者自己加了 tabindex 也该显形视口那圈环，不在这儿多画一圈",
+    "scroll-area [data-part='scrollbar'][data-scope='scroll-area']": "纯容器，不进 Tab 序列也不承载焦点；作者自己加了 tabindex 也该显形视口那圈环，不在这儿多画一圈",
+    "scrollbar [data-part='root'][data-scope='scrollbar']": "纯容器，不承载焦点；作者加了 tabindex 也不在这儿多画一圈，环长在滑块上",
+    "scrollbar [data-part='track'][data-scope='scrollbar']": "纯容器，不承载焦点；作者加了 tabindex 也不在这儿多画一圈，环长在滑块上",
+    "segmented [data-part='root'][data-scope='segmented']": "root 会短暂拿到 tabindex=0，onFocus 立刻把焦点转投给段，高亮长在条目上",
+    "select [data-part='list'][data-scope='select']:not([tabindex='0'])": "列表只在打开且还没有锚点条目时认领 Tab 位（那时 tabindex=0，吃 focus.css 的默认环）；tabindex=-1 时是程序化落焦的中转，高亮长在条目上",
+    "select [data-part='trigger'][data-scope='select']": "环画在盒（control 的 :focus-within）上，按钮自己不再画",
+    "splitter [data-part='panel'][data-scope='splitter']": "面板不占 Tab 位也不承载焦点（连接层没给 tabindex）；作者加了 tabindex 也不在这儿画环，环长在分隔条上",
+    "splitter [data-part='root'][data-scope='splitter']": "纯容器，焦点长在分隔条上",
+    "table [data-part='body'][data-scope='table']": "行级 roving 的兜底 Tab 位，环归行",
+    "table [data-part='expand-trigger'][data-scope='table']": "连接层给它 aria-hidden 与 tabindex=-1，只服务指针；键盘展开走行上的方向键",
+    "table [data-part='root'][data-scope='table']": "纯容器，高亮永远长在行上",
+    "table [data-part='row-select-trigger'][data-scope='table']": "把手不占 Tab 位（键盘那一路走 Space），只服务指针",
+    "tag-group [data-part='list'][data-scope='tag-group']": "焦点在集合外时容器自己进 Tab 序列兜底，高亮永远长在标签上",
+    "tags-input [data-part='input'][data-scope='tags-input']": "环由 control 统一画在外框上",
+    "text-field [data-part='input'][data-scope='text-field']": "环由 control 的 :focus-within 画在外框上",
+    "time-field [data-focus][data-part='segment'][data-scope='time-field']:not([data-disabled])": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
+    "time-field [data-part='segment'][data-scope='time-field']": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
+    "time-picker [data-focus][data-part='segment'][data-scope='time-picker']:not([data-disabled])": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
+    "time-picker [data-part='column'][data-scope='time-picker']:not([tabindex='0'])": "列只在还没有格当锚点时认领 Tab 位，那时 [tabindex='0']:focus-visible 另画一圈；有锚点时环长在格上",
+    "time-picker [data-part='content'][data-scope='time-picker']": "面板不承载焦点（焦点在某一列的某一格上）",
+    "time-picker [data-part='segment'][data-scope='time-picker']": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
+    "toggle-group [data-part='root'][data-scope='toggle-group']": "root 会短暂拿到 tabindex=0，onFocus 立刻把焦点转投给条目，高亮长在条目上",
+    "toolbar [data-part='root'][data-scope='toolbar']": "root 会短暂拿到 tabindex=0，onFocus 立刻把焦点转投给条目，高亮长在条目上",
+    "transfer [data-part='list'][data-scope='transfer']": "焦点在集合外时容器自己进 Tab 序列兜底，高亮永远长在条目上",
+    "tree [data-part='branch'][data-scope='tree']": "branch 是 treeitem，环画在它自己那一行上；整棵子树套一圈会把展开的层级全框进去",
+    "tree [data-part='tree'][data-scope='tree']": "焦点在树外时容器自己进 Tab 序列兜底，环永远长在行上",
+    "tree-select [data-part='branch'][data-scope='tree-select']": "branch 是 treeitem，环画在它自己那一行上；整棵子树套一圈会把展开的层级全框进去",
+    "tree-select [data-part='content'][data-scope='tree-select']": "焦点域的兜底落点（tabindex=-1），高亮永远长在行上",
+    "tree-select [data-part='tree'][data-scope='tree-select']:not([tabindex='0'])": "树只在打开且还没有锚点行时认领 Tab 位（那时 tabindex=0，吃 focus.css 的默认环）；tabindex=-1 时是程序化落焦的中转，环长在行上",
+    "virtualizer [data-part='content'][data-scope='virtualizer']": "纯容器，不进 Tab 序列也不承载焦点；作者自己加了 tabindex 也该显形视口那圈环，不在这儿多画一圈；条目内部的可聚焦内容有自己的环",
+    "virtualizer [data-part='item'][data-scope='virtualizer']": "纯容器，不进 Tab 序列也不承载焦点；作者自己加了 tabindex 也该显形视口那圈环，不在这儿多画一圈；条目内部的可聚焦内容有自己的环",
+    "virtualizer [data-part='root'][data-scope='virtualizer']": "纯容器，不进 Tab 序列也不承载焦点；作者自己加了 tabindex 也该显形视口那圈环，不在这儿多画一圈；条目内部的可聚焦内容有自己的环"
+  },
+  "unfocusable": {
+    "badge [indicator]": "角标是贴在别的东西上的标记，不接焦点",
+    "icon-wrapper [root]": "图标底座是装饰容器，不接焦点",
+    "loading-bar [range]": "顶部进度细带的已完成段，纯展示不接焦点",
+    "password-input [strength-meter]": "强度条的轨道，纯展示不接焦点",
+    "progress [range]": "进度条的已完成段，纯展示不接焦点",
+    "progress [track]": "进度条的轨道，纯展示不接焦点",
+    "qr-code [root]": "二维码的底色块，纯展示不接焦点",
+    "separator [line]": "分隔线，不接焦点",
+    "separator [root]": "分隔线，不接焦点",
+    "slider [range]": "滑杆的已选区间，焦点落在拇指上",
+    "slider [track]": "滑杆的轨道，焦点落在拇指上",
+    "tags-input [root]": "这块面是反白的标签本体，画在条目里 tag 的 root 上（选择器主体戴 tag 的 scope，本脚本按皮肤文件记成 tags-input 的 root）：标签本体不接焦点，键盘走到它身上由 data-highlighted 反白，焦点仍在输入框；里面的删除钮另有自己的环",
+    "toolbar [separator]": "工具条分隔线，不接焦点",
+    "tour [progress-dot]": "步骤指示点，纯展示不接焦点"
+  },
+  "solid": {
+    "approval [data-part='approve-trigger'][data-scope='approval']": {
+      "parts": [
+        "approve-trigger"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "back-top [data-part='root'][data-scope='back-top'][data-variant='solid'] [data-part='trigger'][data-scope='back-top']": {
+      "parts": [
+        "trigger"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "button [data-part='root'][data-scope='button-group'][data-variant='solid'] [data-part='root'][data-scope='button']": {
+      "parts": [
+        "root"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "button [data-part='root'][data-scope='button'][data-variant='solid']": {
+      "parts": [
+        "root"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "calendar [data-part='cell-trigger'][data-scope='calendar'][data-selected]": {
+      "parts": [
+        "cell-trigger"
+      ],
+      "ratio": 1.36,
+      "ring": "poured"
+    },
+    "carousel [data-current][data-part='indicator'][data-scope='carousel']": {
+      "parts": [
+        "indicator"
+      ],
+      "ratio": 1.36,
+      "ring": "poured"
+    },
+    "carousel [data-part='indicator'][data-scope='carousel']": {
+      "parts": [
+        "indicator"
+      ],
+      "ratio": 1.16,
+      "ring": "poured"
+    },
+    "checkbox [data-part='root'][data-scope='checkbox'][data-state='checked']": {
+      "parts": [
+        "root"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "checkbox [data-part='root'][data-scope='checkbox'][data-state='indeterminate']": {
+      "parts": [
+        "root"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "clipboard [data-part='root'][data-scope='clipboard'][data-variant='solid'] [data-part='copy-trigger'][data-scope='clipboard']": {
+      "parts": [
+        "copy-trigger"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "color-picker [data-part='eye-dropper-trigger'][data-scope='color-picker'][data-state='picking']": {
+      "parts": [
+        "eye-dropper-trigger"
+      ],
+      "ratio": 2.52,
+      "ring": "poured"
+    },
+    "date-field [data-part='root'][data-scope='date-field'] [data-focus][data-part='segment'][data-scope='date-field']": {
+      "parts": [
+        "segment"
+      ],
+      "ratio": 1,
+      "ring": "off"
+    },
+    "date-field [data-part='root'][data-scope='date-field'] [data-part='segment'][data-scope='date-field']": {
+      "parts": [
+        "segment"
+      ],
+      "ratio": 1,
+      "ring": "off"
+    },
+    "date-picker [data-part=:is(positioner,root)][data-scope='date-picker'] [data-part='confirm-trigger'][data-scope='date-picker']": {
+      "parts": [
+        "confirm-trigger"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "date-picker [data-part='trigger'][data-scope='date-picker'][data-state='open']": {
+      "parts": [
+        "trigger"
+      ],
+      "ratio": 2.52,
+      "ring": "poured"
+    },
+    "download-trigger [data-part='root'][data-scope='download-trigger'][data-variant='solid']": {
+      "parts": [
+        "root"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "drawer [data-part='trigger'][data-scope='drawer'][data-state='open']": {
+      "parts": [
+        "trigger"
+      ],
+      "ratio": 2.52,
+      "ring": "poured"
+    },
+    "editable [data-part='submit-trigger'][data-scope='editable']": {
+      "parts": [
+        "submit-trigger"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "float-button [data-part='root'][data-scope='float-button'][data-variant='solid'] [data-part='trigger'][data-scope='float-button']": {
+      "parts": [
+        "trigger"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "floating-panel [data-part='window-state-trigger'][data-scope='floating-panel'][data-state='on']": {
+      "parts": [
+        "window-state-trigger"
+      ],
+      "ratio": 2.52,
+      "ring": "poured"
+    },
+    "form [data-part='submit-trigger'][data-scope='form']": {
+      "parts": [
+        "submit-trigger"
+      ],
+      "ratio": 1.36,
+      "ring": "poured"
+    },
+    "image-cropper [data-part='crop-handle'][data-resizing][data-scope='image-cropper']": {
+      "parts": [
+        "crop-handle"
+      ],
+      "ratio": 1.36,
+      "ring": "poured"
+    },
+    "pagination [data-part=:is(positioner,root)][data-scope='pagination'] [data-current][data-part='item'][data-scope='pagination']": {
+      "parts": [
+        "item"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "popconfirm [data-part='confirm-trigger'][data-scope='popconfirm']": {
+      "parts": [
+        "confirm-trigger"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "prompt-input [data-part='submit-trigger'][data-scope='prompt-input']": {
+      "parts": [
+        "submit-trigger"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "question-flow [data-part='submit-trigger'][data-scope='question-flow']": {
+      "parts": [
+        "submit-trigger"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "resizable [data-part='handle'][data-resizing][data-scope='resizable']": {
+      "parts": [
+        "handle"
+      ],
+      "ratio": 1.36,
+      "ring": "poured"
+    },
+    "scrollbar [data-dragging][data-part='thumb'][data-scope='scrollbar']": {
+      "parts": [
+        "thumb"
+      ],
+      "ratio": 1.82,
+      "ring": "poured"
+    },
+    "scrollbar [data-part='thumb'][data-scope='scrollbar']": {
+      "parts": [
+        "thumb"
+      ],
+      "ratio": 1.44,
+      "ring": "poured"
+    },
+    "slider [data-invalid][data-part='thumb'][data-scope='slider']": {
+      "parts": [
+        "thumb"
+      ],
+      "ratio": 1.29,
+      "ring": "poured"
+    },
+    "slider [data-part='thumb'][data-scope='slider']": {
+      "parts": [
+        "thumb"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "splitter [data-dragging][data-part='resize-trigger'][data-scope='splitter']": {
+      "parts": [
+        "resize-trigger"
+      ],
+      "ratio": 1.36,
+      "ring": "poured"
+    },
+    "splitter [data-part='resize-trigger'][data-scope='splitter']": {
+      "parts": [
+        "resize-trigger"
+      ],
+      "ratio": 2.97,
+      "ring": "poured"
+    },
+    "switch [data-part='root'][data-scope='switch']": {
+      "parts": [
+        "root"
+      ],
+      "ratio": 2.52,
+      "ring": "poured"
+    },
+    "switch [data-part='root'][data-scope='switch'][data-state='checked']": {
+      "parts": [
+        "root"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "table [data-part='column-visibility-trigger'][data-scope='table'][data-state='checked']": {
+      "parts": [
+        "column-visibility-trigger"
+      ],
+      "ratio": 1.36,
+      "ring": "poured"
+    },
+    "table [data-part='row'][data-scope='table'][data-selected]": {
+      "parts": [
+        "row"
+      ],
+      "ratio": 2.52,
+      "ring": "poured"
+    },
+    "table [data-part='select-all-trigger'][data-scope='table'][data-state=:is(checked,indeterminate)]": {
+      "parts": [
+        "select-all-trigger"
+      ],
+      "ratio": 1.36,
+      "ring": "poured"
+    },
+    "tag [data-part='root'][data-scope='tag'][data-tone][data-variant='solid']": {
+      "parts": [
+        "root"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "tag [data-part='root'][data-scope='tag'][data-variant='solid']": {
+      "parts": [
+        "root"
+      ],
+      "ratio": 1.36,
+      "ring": "poured"
+    },
+    "time-field [data-part='root'][data-scope='time-field'] [data-focus][data-part='segment'][data-scope='time-field']:not([data-disabled])": {
+      "parts": [
+        "segment"
+      ],
+      "ratio": 1,
+      "ring": "off"
+    },
+    "time-field [data-part='root'][data-scope='time-field'] [data-part='segment'][data-scope='time-field']": {
+      "parts": [
+        "segment"
+      ],
+      "ratio": 1,
+      "ring": "off"
+    },
+    "time-picker [data-part=:is(positioner,root)][data-scope='time-picker'] [data-focus][data-part='segment'][data-scope='time-picker']:not([data-disabled])": {
+      "parts": [
+        "segment"
+      ],
+      "ratio": 1,
+      "ring": "off"
+    },
+    "time-picker [data-part=:is(positioner,root)][data-scope='time-picker'] [data-part='segment'][data-scope='time-picker']": {
+      "parts": [
+        "segment"
+      ],
+      "ratio": 1,
+      "ring": "off"
+    },
+    "toggle [data-part='root'][data-scope='toggle'][data-state='on']": {
+      "parts": [
+        "root"
+      ],
+      "ratio": 2.52,
+      "ring": "poured"
+    },
+    "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='ghost']": {
+      "parts": [
+        "root"
+      ],
+      "ratio": 2.31,
+      "ring": "poured"
+    },
+    "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='outline']": {
+      "parts": [
+        "root"
+      ],
+      "ratio": 2.31,
+      "ring": "poured"
+    },
+    "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='solid']": {
+      "parts": [
+        "root"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='subtle']": {
+      "parts": [
+        "root"
+      ],
+      "ratio": 2.31,
+      "ring": "poured"
+    },
+    "toggle-group [data-part='root'][data-scope='toggle-group'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
+      "parts": [
+        "item"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='ghost'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
+      "parts": [
+        "item"
+      ],
+      "ratio": 2.31,
+      "ring": "poured"
+    },
+    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='outline'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
+      "parts": [
+        "item"
+      ],
+      "ratio": 2.31,
+      "ring": "poured"
+    },
+    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='subtle'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
+      "parts": [
+        "item"
+      ],
+      "ratio": 2.31,
+      "ring": "poured"
+    },
+    "tour [data-part='next-trigger'][data-scope='tour']": {
+      "parts": [
+        "next-trigger"
+      ],
+      "ratio": 1.36,
+      "ring": "poured"
+    }
+  }
+}

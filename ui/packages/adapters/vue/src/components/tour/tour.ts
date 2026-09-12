@@ -2,8 +2,9 @@ import type { Direction, Placement } from '@xihan-ui/core'
 import type { TourApi, TourSchema, TourStep } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, mergeProps, Teleport } from 'vue'
+import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { XhPortal } from '../../runtime/portal'
 import { provideTour, useTourContext } from './context'
 import { useTour } from './use-tour'
 
@@ -31,21 +32,23 @@ export const XhTourRoot = defineComponent({
   name: 'XhTourRoot',
   // 全部 default: undefined —— 缺省值的唯一事实源在 machine 与 connect
   props: {
-    steps: { type: Array as PropType<TourStep[]>, default: undefined },
-    value: { type: Number, default: undefined },
-    defaultValue: { type: Number, default: undefined },
+    steps: { type: Array as PropType<TourStep[]> },
+    value: { type: Number },
+    defaultValue: { type: Number },
     open: { type: Boolean, default: undefined },
     defaultOpen: { type: Boolean, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
     closeOnEscape: { type: Boolean, default: undefined },
     closeOnInteractOutside: { type: Boolean, default: undefined },
     showBackdrop: { type: Boolean, default: undefined },
-    spotlightPadding: { type: Number, default: undefined },
+    spotlightPadding: { type: Number },
     autoScroll: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<TourProps['translations']>, default: undefined },
+    translations: { type: Object as PropType<TourProps['translations']> },
+    /** 本实例三张 Tour 浮层的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
   },
   // open-change / value-change 携带对象；update:* 携带裸值，支持 v-model:open 与 v-model:value
   emits: {
@@ -71,7 +74,7 @@ export const XhTourRoot = defineComponent({
       },
       onComplete: details => emit('complete', details),
       onSkip: details => emit('skip', details),
-    })
+    }, () => props.container)
     provideTour(ctx)
     // 经插槽暴露状态与走步、放弃等命令，供浮层外的按钮使用
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
@@ -99,7 +102,7 @@ export const XhTourBackdrop = defineComponent({
   setup(_, { slots, attrs }) {
     const ctx = useTourContext()
     // 与浮层同去一个落点：遮罩留在原地就会被面板甩下，两层不再叠在一起
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: ctx.portalTarget.value }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getBackdropProps() as Record<string, unknown>, attrs),
         // 收起跟着退场闸门走：遮罩的淡出与气泡的退场并行播
@@ -117,11 +120,12 @@ export const XhTourSpotlight = defineComponent({
   setup(_, { attrs }) {
     const ctx = useTourContext()
     // 高亮框与遮罩是同一层暗幕的两半，必须一起搬
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: ctx.portalTarget.value }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getSpotlightProps() as Record<string, unknown>, attrs),
         // 收起跟着退场闸门走：高亮框的退场与气泡并行播；居中步照常不画
         hidden: (!ctx.visible.value || !ctx.api.value.anchored) || undefined,
+        ref: (el: unknown) => { ctx.spotlightRef.value = el as HTMLElement },
       }),
     ])
   },
@@ -134,7 +138,7 @@ export const XhTourPositioner = defineComponent({
   setup(_, { slots, attrs }) {
     const ctx = useTourContext()
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: ctx.portalTarget.value }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         // 定位层收起跟着退场闸门走：它先 display:none 的话，里面气泡的退场一帧都播不出来

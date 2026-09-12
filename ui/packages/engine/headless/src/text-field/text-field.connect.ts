@@ -54,6 +54,8 @@ export function connectTextField<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // Action Control 的显示策略只读取命名空间宿主，不反查 text-field anatomy。
+      'data-xh-action-owner': '',
       // 三个视觉轴只落在 root，子部件从这里继承皮肤声明的私有槽
       'data-variant': prop('variant'),
       'data-tone': prop('tone'),
@@ -68,6 +70,8 @@ export function connectTextField<T extends PropTypes>(
     // 视觉盒：描边、底色与聚焦环画在这个节点上，输入框与清空按钮排在它里面
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
@@ -102,9 +106,12 @@ export function connectTextField<T extends PropTypes>(
       'aria-labelledby': ids.label,
       // 显式 true/false：省略是没说，显式 false 是明确说了不是
       'aria-invalid': invalid ? 'true' : 'false',
-      // 皮肤只认 data-*、不认标签名，多行宿主的排版靠这一条认出来
-      'data-multiline': dataAttr((input.as ?? 'input') === 'textarea'),
-      'data-auto-resize': dataAttr((input.as ?? 'input') === 'textarea' && !!autoSize),
+      'aria-readonly': readOnly ? 'true' : 'false',
+      'aria-required': prop('required') ? 'true' : 'false',
+      // Field Chrome 不读取 text-field anatomy；布局与原生输入角色由 Headless 明确投影。
+      'data-xh-field-input': '',
+      'data-xh-field-layout': (input.as ?? 'input') === 'textarea' ? 'textarea' : 'single-line',
+      'data-xh-field-auto-size': dataAttr((input.as ?? 'input') === 'textarea' && !!autoSize),
       'data-disabled': dataAttr(disabled),
       'data-invalid': dataAttr(invalid),
       'data-empty': dataAttr(empty),
@@ -133,18 +140,25 @@ export function connectTextField<T extends PropTypes>(
     // 装饰段：货币符、单位、图标。名字由 label 部件给，这两段一律不进名字链
     getPrefixProps: () => normalize.element({
       ...parts.prefix.attrs,
+      'data-xh-field-affix': 'prefix',
       'aria-hidden': true,
       'data-disabled': dataAttr(disabled),
     }),
 
     getSuffixProps: () => normalize.element({
       ...parts.suffix.attrs,
+      'data-xh-field-affix': 'suffix',
       'aria-hidden': true,
       'data-disabled': dataAttr(disabled),
     }),
 
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-display': 'has-value',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'data-xh-action-has-value': dataAttr(!empty),
       'type': 'button',
       // 不占 Tab 位（键盘用户走 Escape），但读屏按虚拟光标仍找得到它
       'tabindex': -1,

@@ -2,6 +2,7 @@ import type { Direction, Orientation } from '@xihan-ui/core'
 import type { SplitterApi, SplitterPanelProps, SplitterPanelState, SplitterSchema, SplitterTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { normalizeItemIndex } from '@xihan-ui/core'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideSplitter, useSplitterContext } from './context'
@@ -24,24 +25,19 @@ export interface SplitterRootSlotProps {
 /** 部件上的下标声明，兼收字符串以支持 DOM 属性写法。 */
 const INDEX_PROP = { index: { type: [Number, String] as PropType<number | string>, default: 0 } }
 
-function toIndex(raw: number | string): number {
-  const n = Number(raw)
-  return Number.isFinite(n) ? n : 0
-}
-
 export const XhSplitterRoot = defineComponent({
   name: 'XhSplitterRoot',
   props: {
-    // 布局恒是数组；default: undefined 表示非受控
-    sizes: { type: Array as PropType<number[]>, default: undefined },
-    defaultSizes: { type: Array as PropType<number[]>, default: undefined },
-    panels: { type: Array as PropType<SplitterPanelProps[]>, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    // 布局恒是数组；缺席值 undefined 表示非受控
+    sizes: { type: Array as PropType<number[]> },
+    defaultSizes: { type: Array as PropType<number[]> },
+    panels: { type: Array as PropType<SplitterPanelProps[]> },
+    orientation: { type: String as PropType<Orientation> },
+    dir: { type: String as PropType<Direction> },
     disabled: Boolean,
-    step: { type: Number, default: undefined },
-    largeStep: { type: Number, default: undefined },
-    translations: { type: Object as PropType<Partial<SplitterTranslations>>, default: undefined },
+    step: { type: Number },
+    largeStep: { type: Number },
+    translations: { type: Object as PropType<Partial<SplitterTranslations>> },
   },
   // sizes-change 携带 { sizes }，update:sizes 携带裸数组；sizes-change-end 只在操作收尾时发一次
   emits: {
@@ -87,7 +83,7 @@ export const XhSplitterPanel = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useSplitterContext()
-    const index = computed(() => toIndex(props.index))
+    const index = computed(() => normalizeItemIndex(props.index))
     return () => h('div', ctx.api.value.getPanelProps(index.value) as Record<string, unknown>, slots.default?.())
   },
 })
@@ -100,7 +96,7 @@ export const XhSplitterResizeTrigger = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useSplitterContext()
-    const index = computed(() => toIndex(props.index))
+    const index = computed(() => normalizeItemIndex(props.index))
     return () => h('div', ctx.api.value.getResizeTriggerProps(index.value) as Record<string, unknown>, slots.default?.())
   },
 })

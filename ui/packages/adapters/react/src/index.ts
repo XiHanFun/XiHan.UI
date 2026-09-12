@@ -464,13 +464,12 @@ export {
 export { useCommand } from './components/command/use-command'
 export type { CommandContext } from './components/command/use-command'
 export {
-  useContextMenuChain,
   useContextMenuContext,
   useContextMenuGroupContext,
   useContextMenuItemContext,
   useContextMenuSubContext,
 } from './components/context-menu/context'
-export type { ContextMenuChain, ContextMenuSubHandle } from './components/context-menu/context'
+export type { ContextMenuSubHandle } from './components/context-menu/context'
 export {
   XhContextMenuArrow,
   XhContextMenuContent,
@@ -1080,6 +1079,10 @@ export { XhJsonViewerRoot } from './components/json-viewer/json-viewer'
 export type { XhJsonViewerRootProps } from './components/json-viewer/json-viewer'
 export { useJsonViewer } from './components/json-viewer/use-json-viewer'
 export type { JsonViewerContext } from './components/json-viewer/use-json-viewer'
+export { XhKbdGroup } from './components/kbd-group/kbd-group'
+export type { XhKbdGroupProps } from './components/kbd-group/kbd-group'
+export { XhKbd } from './components/kbd/kbd'
+export type { XhKbdProps } from './components/kbd/kbd'
 export { useLayoutContext } from './components/layout/context'
 export {
   XhLayoutContent,
@@ -1226,13 +1229,12 @@ export type {
 export { useMention } from './components/mention/use-mention'
 export type { MentionContext } from './components/mention/use-mention'
 export {
-  useMenuChain,
   useMenuContext,
   useMenuGroupContext,
   useMenuItemContext,
   useMenuSubContext,
 } from './components/menu/context'
-export type { MenuChain, MenuSubHandle } from './components/menu/context'
+export type { MenuSubHandle } from './components/menu/context'
 export {
   XhMenuArrow,
   XhMenuContent,
@@ -1270,14 +1272,13 @@ export type {
 export { useMenu } from './components/menu/use-menu'
 export type { MenuContext } from './components/menu/use-menu'
 export {
-  useMenubarChain,
   useMenubarContext,
   useMenubarGroupContext,
   useMenubarItemContext,
   useMenubarMenuContext,
   useMenubarSubContext,
 } from './components/menubar/context'
-export type { MenubarChain, MenubarSubHandle } from './components/menubar/context'
+export type { MenubarSubHandle } from './components/menubar/context'
 export {
   XhMenubarArrow,
   XhMenubarContent,
@@ -1459,7 +1460,6 @@ export {
 } from './components/pagination/pagination'
 export type {
   PaginationContentSlotProps,
-  PaginationPageSizeSelectSlotProps,
   PaginationRootSlotProps,
   PaginationSummarySlotProps,
   XhPaginationContentProps,
@@ -1774,9 +1774,12 @@ export {
   XhSelectLabel,
   XhSelectList,
   XhSelectLoading,
+  XhSelectOverflowTag,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTag,
+  XhSelectTagLabel,
+  XhSelectTagList,
   XhSelectTrigger,
   XhSelectValueText,
 } from './components/select/select'
@@ -2433,7 +2436,11 @@ export {
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
   XhTreeSelectBranchControl,
+  XhTreeSelectBranchEmpty,
+  XhTreeSelectBranchError,
   XhTreeSelectBranchIndicator,
+  XhTreeSelectBranchLoading,
+  XhTreeSelectBranchRetryTrigger,
   XhTreeSelectBranchText,
   XhTreeSelectBranchTrigger,
   XhTreeSelectClearTrigger,
@@ -2545,7 +2552,7 @@ export { XhWatermarkContent, XhWatermarkRoot } from './components/watermark/wate
 export type { XhWatermarkContentProps, XhWatermarkRootProps } from './components/watermark/watermark'
 // @xihan-ui/react —— React 适配器。
 export { mergeXhConfig, useXhConfig, withXhConfig, XhConfigProvider } from './config/config'
-export type { XhConfig, XhConfigProviderProps, XhTranslationOverrides } from './config/config'
+export type { XhConfig, XhConfigProviderProps, XhTranslationOverrides, XhVisualEnvironmentConfig } from './config/config'
 export { carriesOwnAnatomy, mergeIntoChild, renderAsChild } from './runtime/as-child'
 export type { AsChildProps } from './runtime/as-child'
 export { createReactRuntime } from './runtime/create-react-runtime'
@@ -2561,6 +2568,7 @@ export { createDialogService } from './services/dialog-service'
 export type {
   AlertOptions,
   ConfirmOptions,
+  DialogActionError,
   DialogBody,
   DialogService,
   DialogServiceOptions,

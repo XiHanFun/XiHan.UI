@@ -8,8 +8,9 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
-import { renderSlot } from '../../runtime/slot-content'
+import { renderSlot, slotIsPlainText } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   SelectGroupProvider,
   SelectItemProvider,
@@ -24,13 +25,16 @@ import { useSelect } from './use-select'
 
 type SelectProps = SelectSchema['props']
 
-/** 函数式 children 的载荷：展开态、选中集合与显示文字、可见标签与被折起的个数，以及四个动作。 */
+/** 函数式 children 的载荷：展开态、选中集合与显示文字、可见标签与被折起的个数及其文字，以及四个动作。 */
 export type SelectRootSlotProps = Pick<
   SelectApi,
-  'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
+  'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'overflowText' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
 >
 
-export interface XhSelectRootProps {
+/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
+
+export interface XhSelectRootProps extends RootElementProps {
   collection?: SelectNode[]
   /** 标题文字。给了它就不必再写 label 部件。 */
   label?: ReactNode
@@ -65,8 +69,64 @@ export interface XhSelectRootProps {
   children?: SlotChildren<SelectRootSlotProps>
 }
 
-export function XhSelectRoot({ children, label, renderItem, ...props }: XhSelectRootProps): ReactNode {
-  const ctx = useSelect(withXhConfig('select', props) as SelectProps)
+export function XhSelectRoot({
+  collection,
+  label,
+  value,
+  defaultValue,
+  multiple,
+  open,
+  defaultOpen,
+  disabled,
+  readOnly,
+  clearable,
+  invalid,
+  loading,
+  required,
+  name,
+  translations,
+  maxTagCount,
+  placeholder,
+  placement,
+  offset,
+  loop,
+  dir,
+  variant,
+  tone,
+  size,
+  onValueChange,
+  onOpenChange,
+  renderItem,
+  children,
+  ...rest
+}: XhSelectRootProps): ReactNode {
+  const ctx = useSelect(withXhConfig('select', useFormControlProps({
+    collection,
+    value,
+    defaultValue,
+    multiple,
+    open,
+    defaultOpen,
+    disabled,
+    readOnly,
+    clearable,
+    invalid,
+    loading,
+    required,
+    name,
+    translations,
+    maxTagCount,
+    placeholder,
+    placement,
+    offset,
+    loop,
+    dir,
+    variant,
+    tone,
+    size,
+    onValueChange,
+    onOpenChange,
+  })) as SelectProps)
   const api = ctx.api
 
   // 表单影子由根部件装配：空串选项打底，每个选中值一个 selected 选项，供 required 判定。
@@ -87,20 +147,24 @@ export function XhSelectRoot({ children, label, renderItem, ...props }: XhSelect
         displayText: api.displayText,
         tags: api.tags,
         overflowCount: api.overflowCount,
+        overflowText: api.overflowText,
         setOpen: api.setOpen,
         setValue: api.setValue,
         clear: api.clear,
         deselect: api.deselect,
       })
-    : props.collection
-      ? <DefaultTree collection={api.collection} label={label} clearable={props.clearable} renderItem={renderItem} />
+    : collection
+      ? <DefaultTree collection={api.collection} label={label} clearable={clearable} renderItem={renderItem} />
       : null
 
   return (
     <SelectProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {hiddenSelect}
         {body}
@@ -134,7 +198,7 @@ export function XhSelectTrigger({ children, ...rest }: XhSelectTriggerProps): Re
   return (
     <button
       {...mergeReactProps(
-        fieldLabel({ ...ctx.api.getTriggerProps() as Record<string, unknown>, ...fieldWiring }),
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
         rest as Record<string, unknown>,
         { ref: (el: HTMLButtonElement | null) => { ctx.triggerRef.current = el } },
       )}
@@ -168,20 +232,56 @@ export function XhSelectClearTrigger({ children, ...rest }: XhSelectClearTrigger
   return <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
 }
 
+export interface XhSelectTagListProps extends ComponentPropsWithRef<'span'> {}
+/** 标签行：可见标签与 +N 那一枚在里面并排；无选中时连接层给 hidden，value-text 回来显示占位文字。 */
+export function XhSelectTagList({ children, ...rest }: XhSelectTagListProps): ReactNode {
+  const ctx = useSelectContext()
+  return <span {...mergeReactProps(ctx.api.getTagListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+export interface XhSelectTagLabelProps extends ComponentPropsWithRef<'span'> {}
+/** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
+export function XhSelectTagLabel({ children, ...rest }: XhSelectTagLabelProps): ReactNode {
+  const ctx = useSelectContext()
+  return <span {...mergeReactProps(ctx.api.getTagLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+/**
+ * 标签内容：只有文字时替它包一层 label——截断规则挂在 label 上，直接摊在 root 上的文字过长会把
+ * 删除钮挤出去；作者自己写了节点就原样放行。与 XhTagRoot 同一条规矩。
+ * 库自己填的文字（+N，没有折起时是空串）恒包 label，三家适配器渲出同一棵树。
+ */
+function tagChildren(children: ReactNode): ReactNode {
+  return typeof children === 'string' || slotIsPlainText(children) ? <XhSelectTagLabel>{children}</XhSelectTagLabel> : children
+}
+
 export interface XhSelectTagProps extends ComponentPropsWithRef<'span'> {
   /** 它代表哪个选中值。 */
   value: string
 }
+/** 一个选中值一枚，就是库里 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从 select 传下去，形态按控件的面派；触发器里纯展示，触发器外配 XhSelectItemDeleteTrigger 可删。 */
 export function XhSelectTag({ value, children, ...rest }: XhSelectTagProps): ReactNode {
   const ctx = useSelectContext()
   return (
     <SelectTagProvider value={value}>
-      <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+      <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{tagChildren(children)}</span>
     </SelectTagProvider>
   )
 }
 
+export interface XhSelectOverflowTagProps extends ComponentPropsWithRef<'span'> {}
+/** 折起的标签合成的那一枚：同样是 tag 的 root；有内容用内容，否则显示 +N。没有折起的标签时连接层给 hidden。 */
+export function XhSelectOverflowTag({ children, ...rest }: XhSelectOverflowTagProps): ReactNode {
+  const ctx = useSelectContext()
+  return (
+    <span {...mergeReactProps(ctx.api.getOverflowTagProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {tagChildren(children ?? ctx.api.overflowText)}
+    </span>
+  )
+}
+
 export interface XhSelectItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 标签里的删除钮：就是所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名走 translations.deleteItem；点按摘掉所在标签的选中值。 */
 export function XhSelectItemDeleteTrigger({ children, ...rest }: XhSelectItemDeleteTriggerProps): ReactNode {
   const ctx = useSelectContext()
   const value = useSelectTagContext()
@@ -196,7 +296,7 @@ export interface XhSelectPositionerProps extends ComponentPropsWithRef<'div'> {
 export function XhSelectPositioner({ children, container, ...rest }: XhSelectPositionerProps): ReactNode {
   const ctx = useSelectContext()
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

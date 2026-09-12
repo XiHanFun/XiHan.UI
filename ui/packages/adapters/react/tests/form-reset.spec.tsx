@@ -497,7 +497,7 @@ describe('集合浮层族的原生表单重置', () => {
     )
     expect(part('combobox', 'hidden-input').value).toBe('apple')
     clear('combobox')
-    expect(part('combobox', 'hidden-input').value).toBe('')
+    expect(new FormData(form).getAll('fruit')).toEqual([])
     act(() => form.reset())
     expect(part('combobox', 'hidden-input').value).toBe('apple')
   })
@@ -518,7 +518,7 @@ describe('集合浮层族的原生表单重置', () => {
     )
     expect(part('tree-select', 'hidden-input').value).toBe('src')
     clear('tree-select')
-    expect(part('tree-select', 'hidden-input').value).toBe('')
+    expect(new FormData(form).getAll('dir')).toEqual([])
     act(() => form.reset())
     expect(part('tree-select', 'hidden-input').value).toBe('src')
   })
@@ -531,7 +531,7 @@ describe('集合浮层族的原生表单重置', () => {
         collection={[{ value: 'lilei', label: 'Lilei' }]}
       />,
     )
-    const input = (): HTMLTextAreaElement => part('mention', 'input') as unknown as HTMLTextAreaElement
+    const input = (): HTMLInputElement => part('mention', 'input') as unknown as HTMLInputElement
     expect(input().value).toBe('@lilei 早')
     // 正文只落 DOM property，改它得直接写值再派原生 input 事件
     act(() => {

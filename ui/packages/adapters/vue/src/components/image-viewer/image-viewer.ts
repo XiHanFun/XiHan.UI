@@ -3,9 +3,11 @@ import type { imageViewerCounterText as counterTextFn, ImageViewerApi, ImageView
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { imageViewerCounterText } from '@xihan-ui/headless'
-import { defineComponent, h, mergeProps, Teleport } from 'vue'
+import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
+import { mergePartProps } from '../../runtime/merge-props'
+import { XhPortal } from '../../runtime/portal'
 import { provideImageViewer, useImageViewerContext } from './context'
 import { useImageViewer } from './use-image-viewer'
 
@@ -38,22 +40,22 @@ export type ImageViewerRootSlotProps = Pick<
 
 export const XhImageViewerRoot = defineComponent({
   name: 'XhImageViewerRoot',
-  // 缺省值由 connect 与机器给出，这里一律 default: undefined
+  // 缺省值由 connect 与机器给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<ImageViewerItem[]>, default: undefined },
+    collection: { type: Array as PropType<ImageViewerItem[]> },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    index: { type: Number, default: undefined },
-    defaultIndex: { type: Number, default: undefined },
+    index: { type: Number },
+    defaultIndex: { type: Number },
     loop: { type: Boolean, default: undefined },
-    zoomStep: { type: Number, default: undefined },
-    minScale: { type: Number, default: undefined },
-    maxScale: { type: Number, default: undefined },
+    zoomStep: { type: Number },
+    minScale: { type: Number },
+    maxScale: { type: Number },
     closeOnEscape: { type: Boolean, default: undefined },
     closeOnInteractOutside: { type: Boolean, default: undefined },
     restoreFocus: { type: Boolean, default: undefined },
-    variant: { type: String as PropType<OverlayBackdropVariant>, default: undefined },
-    translations: { type: Object as PropType<ImageViewerProps['translations']>, default: undefined },
+    variant: { type: String as PropType<OverlayBackdropVariant> },
+    translations: { type: Object as PropType<ImageViewerProps['translations']> },
   },
   // *-change 携带 details 对象，update:* 携带裸值，支持 v-model:open 与 v-model:index
   emits: {
@@ -105,37 +107,43 @@ export const XhImageViewerRoot = defineComponent({
 
 export const XhImageViewerTrigger = defineComponent({
   name: 'XhImageViewerTrigger',
+  // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
+  inheritAttrs: false,
   props: {
     /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const ctx = useImageViewerContext()
     return () => {
-      const attrs = ctx.api.value.getTriggerProps() as Record<string, unknown>
+      const part = mergePartProps(ctx.api.value.getTriggerProps() as Record<string, unknown>, attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
-        const merged = mergeIntoChild(children, attrs, 'image-viewer')
+        const merged = mergeIntoChild(children, part, 'image-viewer')
         if (merged)
           return merged
       }
-      return h('button', attrs, children)
+      return h('button', part, children)
     }
   },
 })
 
 export const XhImageViewerContent = defineComponent({
   name: 'XhImageViewerContent',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 content 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useImageViewerContext()
     return () => {
       if (!ctx.rendered.value)
         return null
       const api = ctx.api.value
-      return h(Teleport, { to: ctx.portalTarget.value }, [
+      return h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
         h('div', {
           ...api.getBackdropProps() as Record<string, unknown>,
           ref: (el: unknown) => {

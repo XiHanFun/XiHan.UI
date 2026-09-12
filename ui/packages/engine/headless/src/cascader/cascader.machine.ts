@@ -1,8 +1,9 @@
 import type { PositionResult } from '@xihan-ui/core'
 import type { CascaderFocusIntent, CascaderNodeMeta, CascaderSchema, CascaderValue } from './cascader.types'
-import { cascadeToggle, collapseChecked, createDismissLayer, createFocusScope, itemValue, queryItems, setup } from '@xihan-ui/core'
+import { cascadeToggle, collapseChecked, itemValue, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
+import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { cascaderAnatomy, cascaderItemQuery } from './cascader.anatomy'
 import {
   cascaderBuildColumns,
@@ -13,6 +14,7 @@ import {
   cascaderStepColumn,
   cascaderTruncatePath,
 } from './cascader.columns'
+import { assertCascaderPath } from './cascader.value'
 
 const { createMachine } = setup<CascaderSchema>()
 
@@ -29,15 +31,23 @@ export const CASCADER_DEFAULT_SEPARATOR = ' / '
 function toPaths(input: CascaderValue | undefined): string[][] | undefined {
   if (input === undefined)
     return undefined
+  if (!Array.isArray(input))
+    throw new TypeError('[xh] Cascader 值必须是字符串路径或路径数组')
   if (input.length === 0)
     return []
-  if (Array.isArray(input[0]))
-    return (input as readonly (readonly string[])[]).map(path => [...path])
-  return [[...(input as readonly string[])]]
+  const paths = Array.isArray(input[0]) ? input : [input]
+  return Array.from(paths, (path) => {
+    assertCascaderPath(path)
+    return [...path]
+  })
 }
 
 /** 归一选中集合：单选截到长度 ≤ 1，多选按路径内容去重。 */
 function normalizeSelection(next: readonly (readonly string[])[], multiple: boolean): string[][] {
+  if (!Array.isArray(next))
+    throw new TypeError('[xh] Cascader 选中集合必须是路径数组')
+  for (const path of next)
+    assertCascaderPath(path)
   if (!multiple)
     return next.slice(0, 1).map(path => [...path])
   const seen = new Set<string>()
@@ -97,18 +107,22 @@ export const cascaderMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     position: null,
     getAnchorEl: () => null,
     getFloatingEl: () => null,
     getContentEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
+  effects: ['trackLayer'],
   // 开合受控时用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.* 回写
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
   },
   // 与开合无关、两个状态都认的事件；展开态另行声明的 ITEM.SELECT 会盖过这里那一条
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { actions: ['clearValue'] },
     'PATH.SET': { actions: ['setActivePath'] },
@@ -136,8 +150,8 @@ export const cascaderMachine = createMachine({
       // 展开那一刻把列一路铺到选中路径上并挑好焦点锚点，全程纯计算
       entry: ['setInitialFocusedPath'],
       exit: ['clearFocusedPath', 'clearInput'],
-      // 定位 → 消解 → 焦点；退出时逆序清理
-      effects: ['trackPosition', 'trackLayer'],
+      // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackPosition'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
@@ -176,6 +190,8 @@ export const cascaderMachine = createMachine({
       },
     },
     actions: {
+      // 只还原表单值，保持当前浏览位置与实际 DOM 焦点，不擅自关闭受控浮层。
+      resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
 
@@ -313,8 +329,9 @@ export const cascaderMachine = createMachine({
 
       selectPath: ({ context, prop, event }) => {
         const e = event.current()
-        if (e.type !== 'ITEM.SELECT' || e.path.length === 0)
+        if (e.type !== 'ITEM.SELECT')
           return
+        assertCascaderPath(e.path)
         const meta = cascaderNodeAt(prop('collection') ?? [], e.path)
         // 分支只有在 changeOnSelect 或级联勾选打开时才落值；否则点分支纯粹是展开子列
         if (meta?.branch && !prop('changeOnSelect') && !(prop('multiple') && prop('cascade')))
@@ -354,111 +371,85 @@ export const cascaderMachine = createMachine({
     },
     effects: {
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
-      trackPosition: ({ refs, prop, context, flush }) => {
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
+        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
+        engine: refs.get('position'),
+        flush,
         // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
         // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
-        context.set('position', null)
-        const engine = refs.get('position')
-        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
-        if (!engine)
-          return undefined
+        clear: () => context.set('position', null),
+        getAnchor: () => refs.get('getAnchorEl')(),
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? CASCADER_DEFAULT_PLACEMENT,
+          offset: prop('offset') ?? OVERLAY_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+          dir: prop('dir'),
+          // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限宽
+          size: true,
+        }),
+        onResult: result => context.set('position', result),
+      }),
 
-        let stop: (() => void) | undefined
-        let disposed = false
-
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden（高度为 0），
-        // 此时算出的坐标会少掉浮层自身的尺寸——placement=top 会正好错位一个浮层高度
-        flush(() => {
-          if (disposed)
-            return
-          const anchor = refs.get('getAnchorEl')()
-          const floating = refs.get('getFloatingEl')()
-          if (!anchor || !floating)
-            return
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? CASCADER_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? OVERLAY_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-              dir: prop('dir'),
+      // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
+      trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
+        let reactivateFocus: (() => void) | null = null
+        return trackPresenceResources({
+          presence: refs.get('presence'),
+          open: () => state.get() === 'open',
+          track,
+          acquire: () => trackOverlayLayer({
+            // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
+            config: refs.get('config'),
+            registerLayer: refs.get('registerLayer'),
+            flush,
+            active: () => state.get() === 'open',
+            onDismiss: (reason) => {
+              // Escape 分两拍：搜索词还在就先清词回列视图，词已空才收浮层
+              if (reason === 'escape-key' && context.get('inputValue') !== '') {
+                send({ type: 'INPUT.CHANGE', value: '' })
+                return
+              }
+              send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' })
             },
-            result => context.set('position', result),
-          )
-        })
-
-        return () => {
-          disposed = true
-          stop?.()
-        }
-      },
-
-      // 层的入栈出栈与消解层、焦点域绑在同一个效应里：三者生命周期必须完全一致。
-      // 层只在展开期间入栈——消解层只让栈顶响应 Escape，若层在挂载期就注册、与开合无关地
-      // 常驻栈里，同页后挂载的那个会永久占着栈顶，把它下面每一层的 Escape 都堵死。
-      trackLayer: ({ refs, context, send }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
-        // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
-        if (!config || !registerLayer)
-          return undefined
-
-        const { layer, dispose: disposeLayer } = registerLayer()
-
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: (reason) => {
-            // Escape 分两拍：搜索词还在就先清词回列视图，词已空才收浮层
-            if (reason === 'escape-key' && context.get('inputValue') !== '') {
-              send({ type: 'INPUT.CHANGE', value: '' })
-              return
-            }
-            send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' })
+            focusScope: {
+              // 每次读最新 ref，容器晚一拍就位也能命中
+              container: () => refs.get('getContentEl')(),
+              // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测走的是
+              // focusFirst(removeLinks(...))，条目写成 <a> 时会被整体过滤掉，
+              // 且容器自身从来不是候选——只靠它焦点要等到最后一帧才落位。
+              // 这里每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
+              initialFocus: () => {
+                const content = refs.get('getContentEl')()
+                if (!content)
+                  return null
+                const path = context.get('focusedPath')
+                const anchor = path?.[path.length - 1] ?? null
+                if (anchor != null)
+                  return findCascaderItemEl(content, anchor)
+                // 本轮该有锚点却还没挑出来：返回 null 让焦点域重试，别滑到列上定死
+                if (!(context.get('focusIntent') === 'selected' && context.get('value').length === 0))
+                  return null
+                // 确实不该有锚点（指针打开且无选中值）：焦点落到根列，它是 role=listbox 且认领着 Tab 位
+                return content.querySelector<HTMLElement>(`${cascaderAnatomy.build().column.selector}[data-level='0']`)
+              },
+              restoreFocus: () => context.get('returnFocus'),
+              // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+              // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
+              restoreTarget: () => refs.get('getAnchorEl')(),
+              onReactivate: reactivate => reactivateFocus = reactivate,
+            },
+          }),
+          onReopen: () => {
+            const activate = reactivateFocus
+            flush(() => scope.getWin().requestAnimationFrame(() => {
+              if (state.get() === 'open' && reactivateFocus === activate)
+                activate?.()
+            }))
           },
         })
-
-        const focus = createFocusScope({
-          config,
-          layer,
-          // 每次读最新 ref，容器晚一拍就位也能命中
-          container: () => refs.get('getContentEl')(),
-          // 各列不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
-          trapped: () => false,
-          loop: false,
-          // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测走的是
-          // focusFirst(removeLinks(...))，条目写成 <a> 时会被整体过滤掉，
-          // 且容器自身从来不是候选——只靠它焦点要等到最后一帧才落位。
-          // 这里每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
-          initialFocus: () => {
-            const content = refs.get('getContentEl')()
-            if (!content)
-              return null
-            const path = context.get('focusedPath')
-            const anchor = path?.[path.length - 1] ?? null
-            if (anchor != null)
-              return findCascaderItemEl(content, anchor)
-            // 本轮该有锚点却还没挑出来：返回 null 让焦点域重试，别滑到列上定死
-            if (!(context.get('focusIntent') === 'selected' && context.get('value').length === 0))
-              return null
-            // 确实不该有锚点（指针打开且无选中值）：焦点落到根列，它是 role=listbox 且认领着 Tab 位
-            return content.querySelector<HTMLElement>(`${cascaderAnatomy.build().column.selector}[data-level='0']`)
-          },
-          restoreFocus: () => context.get('returnFocus'),
-          // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
-          restoreTarget: () => refs.get('getAnchorEl')(),
-        })
-
-        // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈
-        return () => {
-          focus.dispose()
-          dismiss.dispose()
-          disposeLayer()
-        }
       },
     },
   },

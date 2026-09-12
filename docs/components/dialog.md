@@ -15,11 +15,16 @@
 
 ## 特性
 
-- `modal` 决定是否锁住下层：非模态时下面照常可交互。
+- `modal` 决定是否锁住下层：非模态不创建遮罩，页面仍可点击、聚焦和滚动；展开期间切换会同步更新这些约束。
 - 焦点进入时落在 `initialFocus`，关闭后归还触发器。
 - `closeOnEscape` 与 `closeOnInteractOutside` 各自可关——填了一半的表单不该点一下外面就没了。
 - 内容区可以内部滚动，标题栏可以拖动挪窗口。
+- 关闭时内容立即失活并退出可访问树，内容与遮罩的有限退场动画全部完成后再释放模态资源，并发出 `onExitComplete` / `exit-complete`。重开撤销旧退出，卸载立即清理。
 - 另有命令式服务，业务代码一次调用即弹出。
+- 命令式服务与声明式组件共用 `Header / Body / Footer` 三段：标题和徽记在 Header，字符串、函数正文及取值表单在 Body，操作按钮在 Footer。长内容只滚动 Body，头尾保留在面板内。
+- 命令式服务的 `onOk` 返回 `false` 只阻止关闭；同步抛错或 Promise 拒绝会保持对话框打开，设置独立 `service.actionError` 并触发 `onActionError({ cause })`。`cause` 保留原始异常，不直接转成用户提示。
+- 失败提示通过服务的 `actionErrorText` 本地化：Vue 支持字符串/ref/getter，React 支持字符串/getter，Web Components 使用字符串，与各端按钮文案合同一致；提示位于 Body 的 `role=alert` 实时区。重试先清理旧异常，关闭或切换请求后旧 Promise 不再写回。
+- 服务宿主或函数正文渲染失败会拒绝所属请求，`onActionError` 通知自身失败也会拒绝所属请求；业务需要处理返回 Promise 的拒绝。显式 `target` 必须是当前文档中已经连接的元素，无法展示时不会解析为取消或永久等待。
 
 ## 示例
 
@@ -109,6 +114,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。落在 backdrop 上，只换那一层的底色与模糊。 |
 | `translations` | `Partial<DialogTranslations>` |  |  |
 | `onOpenChange` | `(details: DialogOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `onExitComplete` | `() => void` |  | 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 |
 
 ## 事件
 
@@ -116,6 +122,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
+| `exit-complete` | `CustomEvent` | 退出完成且本层资源已释放 |
 | `open-change` | `DialogOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ## 插槽
@@ -186,6 +193,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-labelledby` | `title` 部件的 id |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | props.role |
@@ -195,6 +203,8 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 ## 样式
 
 默认皮肤 `@xihan-ui/styles/dialog.css` 按部件选择：`[data-scope="dialog"][data-part="trigger"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ## 数据属性
 
@@ -210,11 +220,59 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-dialog-backdrop-bg` · `--xh-dialog-backdrop-blur` · `--xh-dialog-backdrop-layer` · `--xh-dialog-bg` · `--xh-dialog-close-bg-active` · `--xh-dialog-close-bg-hover` · `--xh-dialog-close-fg` · `--xh-dialog-close-fg-hover` · `--xh-dialog-close-radius` · `--xh-dialog-close-size` · `--xh-dialog-description-fg` · `--xh-dialog-description-font-size` · `--xh-dialog-fg` · `--xh-dialog-footer-gap` · `--xh-dialog-footer-pt` · `--xh-dialog-gap` · `--xh-dialog-header-gap` · `--xh-dialog-header-pb` · `--xh-dialog-icon-size` · `--xh-dialog-indicator-bg` · `--xh-dialog-indicator-fg` · `--xh-dialog-indicator-mark-size` · `--xh-dialog-indicator-radius` · `--xh-dialog-indicator-size` · `--xh-dialog-layer` · `--xh-dialog-max-w` · `--xh-dialog-positioner-padding` · `--xh-dialog-px` · `--xh-dialog-py` · `--xh-dialog-radius` · `--xh-dialog-shadow` · `--xh-dialog-title-fg` · `--xh-dialog-title-font-size` · `--xh-dialog-title-font-weight`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-dialog-backdrop-bg` | `backdrop` | `background` | `default` | `--xh-bg-overlay` | dialog 的 backdrop 部件 background 覆盖槽。 |
+| `--xh-dialog-backdrop-blur` | `backdrop` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `variant=blur` | `--xh-overlay-backdrop-blur` | dialog 的 backdrop 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-dialog-backdrop-filter` | `backdrop`<br>`content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default`<br>`variant=blur` | `--xh-dialog-backdrop-blur`<br>`--xh-material-elevated-backdrop` | dialog 的 backdrop、content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-dialog-backdrop-layer` | `backdrop` | `z-index` | `default` | `--xh-_layer` | dialog 的 backdrop 部件 z-index 覆盖槽。 |
+| `--xh-dialog-bg` | `content` | `background` | `@media (forced-colors: active)`<br>`default` | `--xh-material-elevated-bg` | dialog 的 content 部件 background 覆盖槽。 |
+| `--xh-dialog-border` | `content` | `border` | `default` | `--xh-material-elevated-border` | dialog 的 content 部件 border 覆盖槽。 |
+| `--xh-dialog-close-bg-active` | `close-trigger` | `background` | `active` | `--xh-bg-subtle-active` | dialog 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-dialog-close-bg-focus` | `close-trigger` | `background` | `focus-visible` | `--xh-material-elevated-focus-surface` | dialog 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-dialog-close-bg-hover` | `close-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | dialog 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-dialog-close-fg` | `close-trigger` | `color` | `default` | `--xh-fg-muted` | dialog 的 close-trigger 部件 color 覆盖槽。 |
+| `--xh-dialog-close-fg-focus` | `close-trigger` | `color` | `focus-visible` | `--xh-material-elevated-fg` | dialog 的 close-trigger 部件 color 覆盖槽。 |
+| `--xh-dialog-close-fg-hover` | `close-trigger` | `color` | `hover` | `--xh-fg-default` | dialog 的 close-trigger 部件 color 覆盖槽。 |
+| `--xh-dialog-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | dialog 的 close-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-dialog-close-size` | `close-trigger`<br>`content`<br>`title` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default`<br>`has([data-scope='dialog'][data-part='close-trigger'])` | `--xh-control-h-sm` | dialog 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
+| `--xh-dialog-content-backdrop-filter` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-dialog-backdrop-filter` | dialog 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-dialog-content-lens-bg` | `content` | `background` | `default` | `--xh-dialog-header-bg` | dialog 的 content 部件 background 覆盖槽。 |
+| `--xh-dialog-content-lens-depth` | `content` | `background` | `default` | `--xh-dialog-header-lens-depth` | dialog 的 content 部件 background 覆盖槽。 |
+| `--xh-dialog-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | dialog 的 description 部件 color 覆盖槽。 |
+| `--xh-dialog-description-font-size` | `description` | `font-size` | `default` | `--xh-text-body-size` | dialog 的 description 部件 font-size 覆盖槽。 |
+| `--xh-dialog-fg` | `content` | `color` | `default` | `--xh-material-elevated-fg` | dialog 的 content 部件 color 覆盖槽。 |
+| `--xh-dialog-footer-gap` | `footer` | `gap` | `default` | `--xh-control-gap-md` | dialog 的 footer 部件 gap 覆盖槽。 |
+| `--xh-dialog-footer-pt` | `footer` | `padding-block-start` | `default` | `--xh-space-2` | dialog 的 footer 部件 padding-block-start 覆盖槽。 |
+| `--xh-dialog-gap` | `content` | `gap` | `default` | `--xh-stack-gap-md` | dialog 的 content 部件 gap 覆盖槽。 |
+| `--xh-dialog-header-bg` | `content` | `background` | `default` | `--xh-material-glass-bg` | dialog 的 content 部件 background 覆盖槽。 |
+| `--xh-dialog-header-gap` | `header` | `gap` | `default` | `--xh-stack-gap-sm` | dialog 的 header 部件 gap 覆盖槽。 |
+| `--xh-dialog-header-lens-depth` | `content` | `background` | `default` | `--xh-dialog-py` | dialog 的 content 部件 background 覆盖槽。 |
+| `--xh-dialog-header-pb` | `header` | `padding-block-end` | `default` | `--xh-space-2` | dialog 的 header 部件 padding-block-end 覆盖槽。 |
+| `--xh-dialog-highlight` | `content` | `background` | `default` | `--xh-material-elevated-highlight` | dialog 的 content 部件 background 覆盖槽。 |
+| `--xh-dialog-icon-size` | `content` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | dialog 的 content 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-dialog-indicator-bg` | `indicator` | `background` | `default` | `--xh-_tone-subtle` | dialog 的 indicator 部件 background 覆盖槽。 |
+| `--xh-dialog-indicator-fg` | `indicator` | `color` | `default` | `--xh-_tone-fg` | dialog 的 indicator 部件 color 覆盖槽。 |
+| `--xh-dialog-indicator-mark-size` | `indicator` | `--xh-icon-size` | `default` | `--xh-dialog-indicator-size` | dialog 的 indicator 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-dialog-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | dialog 的 indicator 部件 border-radius 覆盖槽。 |
+| `--xh-dialog-indicator-size` | `indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | dialog 的 indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
+| `--xh-dialog-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | dialog 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-dialog-max-w` | `content` | `max-inline-size` | `default` | `--xh-_dialog-max-w` | dialog 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-dialog-positioner-padding` | `positioner` | `padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default` | `--xh-space-4` | dialog 的 positioner 部件 padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
+| `--xh-dialog-px` | `content` | `padding-inline` | `default` | `--xh-surface-px-md` | dialog 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-dialog-py` | `content` | `background`<br>`padding-block` | `default` | `--xh-surface-py-md` | dialog 的 content 部件 background、padding-block 覆盖槽。 |
+| `--xh-dialog-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | dialog 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-dialog-separator` | `body`<br>`content`<br>`footer`<br>`header` | `border-block-end`<br>`border-block-start` | `has([data-scope='dialog'][data-part='body'])`<br>`has([data-scope='dialog'][data-part='footer'])` | `--xh-material-elevated-separator` | dialog 的 body、content、footer、header 部件 border-block-end、border-block-start 覆盖槽。 |
+| `--xh-dialog-shadow` | `content` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | dialog 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-dialog-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | dialog 的 title 部件 color 覆盖槽。 |
+| `--xh-dialog-title-font-size` | `title` | `font-size` | `default` | `--xh-text-heading-3-size` | dialog 的 title 部件 font-size 覆盖槽。 |
+| `--xh-dialog-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-heading-3-weight` | dialog 的 title 部件 font-weight 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

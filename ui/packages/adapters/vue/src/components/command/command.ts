@@ -3,9 +3,11 @@ import type { CommandApi, CommandGroup, CommandGroupMeta, CommandGroupProps, Com
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { COMMAND_UNGROUPED, resolveCommandGroups } from '@xihan-ui/headless'
-import { computed, defineComponent, h, mergeProps, Teleport } from 'vue'
+import { computed, defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
+import { mergePartProps } from '../../runtime/merge-props'
+import { XhPortal } from '../../runtime/portal'
 import {
   provideCommand,
   provideCommandItem,
@@ -26,14 +28,14 @@ export type CommandRootSlotProps = Pick<
 
 export const XhCommandRoot = defineComponent({
   name: 'XhCommandRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<CommandNode[]>, default: undefined },
-    groups: { type: Array as PropType<CommandGroup[]>, default: undefined },
+    collection: { type: Array as PropType<CommandNode[]> },
+    groups: { type: Array as PropType<CommandGroup[]> },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    inputValue: { type: String, default: undefined },
-    defaultInputValue: { type: String, default: undefined },
+    inputValue: { type: String },
+    defaultInputValue: { type: String },
     /** 内置过滤，默认开；关掉即由调用方自己筛 */
     filter: { type: Boolean, default: undefined },
     caseSensitive: Boolean,
@@ -44,14 +46,14 @@ export const XhCommandRoot = defineComponent({
     restoreFocus: { type: Boolean, default: true },
     loop: { type: Boolean, default: undefined },
     loading: Boolean,
-    placeholder: { type: String, default: undefined },
+    placeholder: { type: String },
     /** 无匹配时的提示语。给了它就不必再写 empty 部件；要放别的内容改用 empty 插槽。 */
-    empty: { type: String, default: undefined },
+    empty: { type: String },
     /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    variant: { type: String as PropType<OverlayBackdropVariant>, default: undefined },
-    translations: { type: Object as PropType<CommandProps['translations']>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    size: { type: String as PropType<Size> },
+    variant: { type: String as PropType<OverlayBackdropVariant> },
+    translations: { type: Object as PropType<CommandProps['translations']> },
   },
   // *-change 携带 details 对象，update:* 携带裸值
   emits: {
@@ -124,42 +126,51 @@ export const XhCommandRoot = defineComponent({
 
 export const XhCommandTrigger = defineComponent({
   name: 'XhCommandTrigger',
+  // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
+  inheritAttrs: false,
   props: {
     /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const ctx = useCommandContext()
     return () => {
-      const attrs = ctx.api.value.getTriggerProps() as Record<string, unknown>
+      const part = mergePartProps(ctx.api.value.getTriggerProps() as Record<string, unknown>, attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
-        const merged = mergeIntoChild(children, attrs, 'command')
+        const merged = mergeIntoChild(children, part, 'command')
         if (merged)
           return merged
       }
-      return h('button', attrs, children)
+      return h('button', part, children)
     }
   },
 })
 
 export const XhCommandContent = defineComponent({
   name: 'XhCommandContent',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 content 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useCommandContext()
     return () => {
       if (!ctx.rendered.value)
         return null
       const api = ctx.api.value
+      const backdrop = api.getBackdropProps() as Record<string, unknown>
       // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-      return h(Teleport, { to: ctx.portalTarget.value }, [
-        h('div', {
-          ...api.getBackdropProps() as Record<string, unknown>,
-          ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
-        }),
+      return h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
+        !backdrop.hidden
+          ? h('div', {
+              ...backdrop,
+              ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
+            })
+          : null,
         h('div', api.getPositionerProps() as Record<string, unknown>, [
           h('div', {
             ...mergeProps(api.getContentProps() as Record<string, unknown>, attrs),

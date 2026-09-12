@@ -1,23 +1,24 @@
 import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { MenubarPartRegistry } from './use-menubar'
-import { createRuntimeConfig } from '@xihan-ui/core'
-import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
+import { createRuntimeConfig, groupAdjacentRuns } from '@xihan-ui/core'
+import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
+import { mergePartProps } from '../../runtime/merge-props'
+import { XhPortal } from '../../runtime/portal'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
-import { provideMenu, provideMenuChain, useMenuContext } from '../menu/context'
-import { useMenu } from '../menu/use-menu'
+import { provideMenu, useMenuContext } from '../menu/context'
+import { useMenuWithParent } from '../menu/use-menu'
 import {
   provideMenubar,
-  provideMenubarChain,
   provideMenubarGroup,
   provideMenubarItem,
   provideMenubarMenu,
   provideMenubarSub,
-  useMenubarChain,
   useMenubarContext,
   useMenubarGroupContext,
   useMenubarItemContext,
@@ -50,21 +51,21 @@ export type MenubarRootSlotProps = Pick<MenubarApi, 'value' | 'open' | 'setValue
 /** role=menubar 根节点：trigger 的 roving tabindex 作用域，各菜单浮层也挂在其内 */
 export const XhMenubarRoot = defineComponent({
   name: 'XhMenubarRoot',
-  // 全部 default: undefined，缺省值由机器与 connect 决定
+  // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<MenubarNode[]>, default: undefined },
-    value: { type: String as PropType<string | null>, default: undefined },
-    defaultValue: { type: String as PropType<string | null>, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
+    collection: { type: Array as PropType<MenubarNode[]> },
+    value: { type: String as PropType<string | null> },
+    defaultValue: { type: String as PropType<string | null> },
+    orientation: { type: String as PropType<Orientation> },
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
     disabled: { type: Boolean, default: undefined },
     typeahead: { type: Boolean, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<MenubarProps['translations']>, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<MenubarProps['translations']> },
   },
   // value-change 携带 { value }、select 携带 { menu, value }，update:value 携带裸值
   emits: {
@@ -84,14 +85,6 @@ export const XhMenubarRoot = defineComponent({
     const notifySelect: MenubarProps['onSelect'] = details => emit('select', details)
     const ctx = useMenubar(withXhConfig('menubar', props) as MenubarProps, notifyValue, notifySelect)
     provideMenubar(ctx)
-    // 子菜单任意层级的选中都汇到这里：先发根的 select，再关掉整条菜单栏。
-    // 关根用 setValue(null) —— 菜单栏是「当前展开哪一项」的模型，没有 setOpen
-    provideMenubarChain({
-      notifySelect: (details) => {
-        emit('select', details)
-        ctx.api.value.setValue(null)
-      },
-    })
     return () => h('div', {
       ...ctx.api.value.getRootProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
@@ -109,6 +102,8 @@ export const XhMenubarRoot = defineComponent({
 
 export const XhMenubarTrigger = defineComponent({
   name: 'XhMenubarTrigger',
+  // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
+  inheritAttrs: false,
   props: {
     value: { type: String, required: true },
     // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
@@ -116,7 +111,7 @@ export const XhMenubarTrigger = defineComponent({
     /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const ctx = useMenubarContext()
     // trigger 同时作为定位锚点与焦点归还目标
     const setEl = useMenubarPart(ctx.registerTrigger, () => props.value)
@@ -141,21 +136,21 @@ export const XhMenubarTrigger = defineComponent({
         service.send({ type: 'MENUBAR.BLUR' })
     })
     return () => {
-      const attrs = {
+      const part = mergePartProps({
         ...ctx.api.value.getTriggerProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>,
         ref: (el: unknown) => {
           triggerEl.value = el as HTMLElement | null
           setEl(el as HTMLElement | null)
         },
-      }
+      }, attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
-        const merged = mergeIntoChild(children, attrs, 'menubar')
+        const merged = mergeIntoChild(children, part, 'menubar')
         if (merged)
           return merged
       }
-      return h('button', attrs, children)
+      return h('button', part, children)
     }
   },
 })
@@ -164,6 +159,8 @@ export const XhMenubarPositioner = defineComponent({
   name: 'XhMenubarPositioner',
   props: {
     value: { type: String, required: true },
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
@@ -174,7 +171,7 @@ export const XhMenubarPositioner = defineComponent({
     provideMenubarMenu({ menu })
     const setEl = useMenubarPart(ctx.registerPositioner, () => props.value)
     // 每张菜单各搬各的定位层到 portal 落点，逃开祖先的层叠上下文
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.rootRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps(menu.value) as Record<string, unknown>, attrs),
         ref: (el: unknown) => setEl(el as HTMLElement | null),
@@ -187,7 +184,7 @@ export const XhMenubarContent = defineComponent({
   name: 'XhMenubarContent',
   props: {
     // 缺省时沿用外层 positioner 提供的身份，无 positioner 时必填
-    value: { type: String, default: undefined },
+    value: { type: String },
   },
   setup(props, { slots }) {
     const ctx = useMenubarContext()
@@ -199,10 +196,32 @@ export const XhMenubarContent = defineComponent({
     // 一个菜单一份退场闸门：它们各开各的、动画各跑各的，一份管不过来。
     // 开合判据直接取 connect 这一帧的产出，不另起一套——两边各判一次迟早会说岔
     const contentRef = ref<HTMLElement | null>(null)
+    let presence: PresenceHandle | null = null
+    let presenceValue: string | null = null
+    const sendPresence = (event: MenubarSchema['event']): void => {
+      const deliver = (): void => {
+        if (ctx.service.getStatus() === 'Started')
+          ctx.service.send(event)
+      }
+      if (ctx.service.getStatus() === 'Started')
+        deliver()
+      else
+        queueMicrotask(deliver)
+    }
     const visible = useOverlayExit({
       config: typeof document === 'undefined' ? null : createRuntimeConfig(),
       isOpen: () => (ctx.api.value.getContentProps(menu.value) as Record<string, unknown>).hidden !== true,
       contentRef,
+      onPresence: (next) => {
+        const previous = presence
+        const previousValue = presenceValue
+        presence = next
+        presenceValue = next ? menu.value.value : null
+        if (next)
+          sendPresence({ type: 'PRESENCE.SET', value: presenceValue!, presence: next, connected: true })
+        else if (previous && previousValue != null)
+          sendPresence({ type: 'PRESENCE.SET', value: previousValue, presence: previous, connected: false })
+      },
     })
     return () => h('div', {
       ...ctx.api.value.getContentProps(menu.value) as Record<string, unknown>,
@@ -347,19 +366,6 @@ function renderDefaultTree(
   ]
 }
 
-/** 相邻同 group 的条目并成一段，没写 group 的各自成段。 */
-function groupRuns(collection: readonly MenubarNodeMeta[]): MenubarNodeMeta[][] {
-  const runs: MenubarNodeMeta[][] = []
-  for (const meta of collection) {
-    const last = runs.at(-1)
-    if (last && meta.group != null && last[0]!.group === meta.group)
-      last.push(meta)
-    else
-      runs.push([meta])
-  }
-  return runs
-}
-
 /** 单个条目：文字在上，副文本在下，没给副文本就不铺那个部件。 */
 function renderNode(
   meta: MenubarNodeMeta,
@@ -376,7 +382,7 @@ function renderNodes(
   collection: readonly MenubarNodeMeta[],
   itemSlot?: (node: MenubarNodeMeta) => VNode[],
 ): VNode[] {
-  return groupRuns(collection).flatMap((run, runIndex) => {
+  return groupAdjacentRuns(collection, node => node.group).flatMap((run, runIndex) => {
     const head = run[0]!
     // 首条上的标记不产出分隔线：菜单开头不留一道空隔
     const lead = runIndex > 0 && head.separatorBefore
@@ -410,18 +416,18 @@ export const XhMenubarSub = defineComponent({
     /** 它在所属那张菜单里的条目身份。 */
     value: { type: String, required: true },
     disabled: { type: Boolean, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     loop: { type: Boolean, default: undefined },
     openOnHover: { type: Boolean, default: undefined },
-    hoverOpenDelay: { type: Number, default: undefined },
-    hoverCloseDelay: { type: Number, default: undefined },
+    hoverOpenDelay: { type: Number },
+    hoverCloseDelay: { type: Number },
     /** 文字方向；缺省继承父层。子层被搬到浮层落点，继承不到父层的方向。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
     /** 语气；缺省继承父层。子层是浮层落点下的同级节点，CSS 私有槽继承不到。 */
-    tone: { type: String as PropType<Tone>, default: undefined },
+    tone: { type: String as PropType<Tone> },
     /** 尺寸；缺省继承父层，理由同 tone。 */
-    size: { type: String as PropType<Size>, default: undefined },
+    size: { type: String as PropType<Size> },
   },
   slots: Object as SlotsType<{
     default?: (props: MenubarSubSlotProps) => VNode[]
@@ -431,9 +437,8 @@ export const XhMenubarSub = defineComponent({
     const owner = useMenubarMenuContext()
     if (!owner)
       throw new Error('[xh] MenubarSub 必须用在 XhMenubarPositioner 内')
-    const chain = useMenubarChain()
     // 子层跑的是一台子菜单模式的 menu 机器：菜单栏那台是单机器单锚点，装不下第二层
-    const sub = useMenu(
+    const sub = useMenuWithParent(
       {
         ...props,
         submenu: true,
@@ -442,15 +447,10 @@ export const XhMenubarSub = defineComponent({
         size: props.size ?? parent.service.prop('size'),
       },
       undefined,
-      // 菜单栏的选中要带菜单身份，子层只知道条目值，在这里补上
-      details => chain.notifySelect({ menu: owner.menu.value.value, value: details.value }),
+      parent.tree,
     )
     // 子树内的 XhMenu 系部件都归子机器
     provideMenu(sub)
-    // 子层里还能再嵌一层 XhMenuSub：那一层要往上找选中汇总的链
-    provideMenuChain({
-      notifySelect: details => chain.notifySelect({ menu: owner.menu.value.value, value: details.value }),
-    })
     provideMenubarSub({ parent, value: props.value, disabled: props.disabled })
     // 所属那张菜单收起时本层跟着收，层层传导
     watch(() => parent.api.value.isOpen(owner.menu.value.value), (open) => {

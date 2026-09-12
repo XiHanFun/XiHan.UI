@@ -19,15 +19,15 @@ type EyeShape = NonNullable<QrCodeProps['eyeShape']>
  */
 export const XhQrCode = defineComponent({
   name: 'XhQrCode',
-  // 缺省值由 connect 给出，这里一律 default: undefined
+  // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    value: { type: String, default: undefined },
-    level: { type: String as PropType<QrLevel>, default: undefined },
-    pixelSize: { type: Number, default: undefined },
-    margin: { type: Number, default: undefined },
-    label: { type: String, default: undefined },
-    moduleShape: { type: String as PropType<ModuleShape>, default: undefined },
-    eyeShape: { type: String as PropType<EyeShape>, default: undefined },
+    value: { type: String },
+    level: { type: String as PropType<QrLevel> },
+    pixelSize: { type: Number },
+    margin: { type: Number },
+    label: { type: String },
+    moduleShape: { type: String as PropType<ModuleShape> },
+    eyeShape: { type: String as PropType<EyeShape> },
   },
   setup(props, { slots }) {
     // 插槽里有没有东西是渲染期才知道的事实，进不了 computed 的依赖：先落到 ref 上，再让 api 依赖这个 ref。

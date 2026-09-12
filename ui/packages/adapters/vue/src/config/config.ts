@@ -2,12 +2,19 @@
 // 取值优先级：实例 props > 最近一层注入 > 外层注入 > 组件内建默认（英文）。
 // 注入是可选的——不 provide 时组件走原路，零开销。
 import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
+import type {
+  VisualEnvironmentController,
+  VisualEnvironmentControllerOptions,
+} from '@xihan-ui/tokens/runtime'
 import type { ComputedRef, InjectionKey, MaybeRefOrGetter } from 'vue'
 import { componentTranslations, mergeXhConfig as mergeBase, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
-import { setMotionOverride } from '@xihan-ui/motion'
-import { computed, inject, provide, toValue, watch } from 'vue'
+import { createVisualEnvironmentController } from '@xihan-ui/tokens/runtime'
+import { computed, inject, onScopeDispose, provide, shallowRef, toValue, watch } from 'vue'
 
 export type { XhTranslationOverrides }
+
+type BindVisualRoot<T> = T extends unknown ? Omit<T, 'parent' | 'root'> & { root: Element } : never
+export type XhVisualEnvironmentConfig = BindVisualRoot<VisualEnvironmentControllerOptions>
 
 export interface XhConfig extends XhConfigBase {
   /**
@@ -15,9 +22,12 @@ export interface XhConfig extends XhConfigBase {
    * 应用级默认，实例上写了容器的以实例为准。
    */
   portalContainer?: () => Element | null
+  /** 本次 provide 的七轴视觉环境；root 必须显式给出，不猜测组件 DOM。 */
+  visualEnvironment?: XhVisualEnvironmentConfig
 }
 
 const KEY: InjectionKey<MaybeRefOrGetter<XhConfig>> = Symbol.for('xh-config')
+const VISUAL_KEY: InjectionKey<ComputedRef<VisualEnvironmentController | undefined>> = Symbol.for('xh-visual-environment')
 
 /**
  * 本层与外层逐键合并。
@@ -35,28 +45,44 @@ export function mergeXhConfig(base: XhConfig | undefined, over: XhConfig): XhCon
  * 嵌套注入按键合并，不整份遮蔽：内层只写了 translations 时，外层的 locale 仍然生效。
  */
 export function provideXhConfig(config: MaybeRefOrGetter<XhConfig>): void {
-  applyMotionOverride(config)
   const parent = inject(KEY, undefined)
-  if (!parent) {
-    provide(KEY, config)
-    return
-  }
-  provide(KEY, () => mergeXhConfig(toValue(parent), toValue(config)))
-}
+  provide(KEY, parent ? () => mergeXhConfig(toValue(parent), toValue(config)) : config)
 
-/**
- * 这一层写了 motion 才调 setMotionOverride；缺席不碰——别的地方设的 override 不在这里清。
- * 配置是 ref/getter 时跟着它变。
- */
-function applyMotionOverride(config: MaybeRefOrGetter<XhConfig>): void {
-  watch(
-    () => toValue(config).motion,
-    (motion) => {
-      if (motion !== undefined)
-        setMotionOverride(motion)
+  const parentVisual = inject(VISUAL_KEY, undefined)
+  const localVisual = shallowRef<VisualEnvironmentController>()
+  const visual = computed(() => localVisual.value ?? parentVisual?.value)
+  provide(VISUAL_KEY, visual)
+  const stop = watch(
+    () => {
+      const binding = toValue(config).visualEnvironment
+      return [
+        binding?.root,
+        binding?.storageKey,
+        binding?.onStorageError,
+        binding?.motionSink,
+        binding?.initial?.mode,
+        binding?.initial?.brand,
+        binding?.initial?.density,
+        binding?.initial?.dir,
+        binding?.initial?.contrast,
+        binding?.initial?.motion,
+        binding?.initial?.transparency,
+        parentVisual?.value,
+      ] as const
+    },
+    ([_root, _storageKey, _onStorageError, _motionSink, _mode, _brand, _density, _dir, _contrast, _motion, _transparency, inherited]) => {
+      const binding = toValue(config).visualEnvironment
+      localVisual.value?.dispose()
+      localVisual.value = binding
+        ? createVisualEnvironmentController({ ...binding, parent: inherited })
+        : undefined
     },
     { immediate: true },
   )
+  onScopeDispose(() => {
+    stop()
+    localVisual.value?.dispose()
+  })
 }
 
 /** 读当前作用域的全局配置（已与外层合并）；没注入时得到空对象。 */

@@ -19,6 +19,7 @@
     --xh-_switch-track-h: var(--xh-switch-track-h-md);
     --xh-_switch-pad: var(--xh-space-0_5);
     --xh-_switch-thumb-size: calc(var(--xh-_switch-track-h) - var(--xh-_switch-pad) * 2);
+    --xh-_switch-thumb-press-stretch: var(--xh-switch-thumb-press-stretch, var(--xh-motion-distance-sm));
 
     /* 粗指针一档的命中区外扩量：轨道高加两条它正好是 44px。
        lg 档不另给一份——那一档的轨道本来就更高，同一个外扩量下命中区只多不少 */
@@ -26,6 +27,8 @@
 
     /* 选中态轨道色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
     --xh-_switch-accent: var(--xh-_tone, var(--xh-bg-brand));
+    /* 轨道边界以内描边表达，不吃掉滑块行程；checked / readonly / invalid 只换这一支色。 */
+    --xh-_switch-track-border: var(--xh-switch-border, var(--xh-border-control));
 
     position: relative;
     display: inline-flex;
@@ -36,21 +39,26 @@
     border: 0;
     border-radius: var(--xh-switch-radius, var(--xh-shape-pill));
     background: var(--xh-switch-bg, var(--xh-bg-subtle-active));
+    color: var(--xh-switch-fg, var(--xh-fg-default));
+    box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-_switch-track-border);
     cursor: pointer;
-    /* 投影一项走的是校验失败那圈内描边：它由 box-shadow 画出来，不接过渡就是一帧跳出来的 */
+    /* 轨道边界与校验失败都由内描边画，不接 box-shadow 过渡就会一帧跳色。 */
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
-  [data-scope='switch'][data-part='root'][data-state='checked'] {
-    background: var(--xh-switch-bg-checked, var(--xh-_switch-accent));
+  /* 内收环压在实体轨道上，直接取轨道的配对前景；只读 checked 已换中性底，退回默认品牌环。 */
+  [data-scope='switch'][data-part='root']:not([data-readonly][data-state='checked']):focus-visible {
+    --xh-_ring-color: currentColor;
   }
 
-  /* 校验失败：轨道描一圈警示色。轨道本身没有边框，这里补出来 */
-  [data-scope='switch'][data-part='root'][data-invalid] {
-    box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-switch-border-invalid, var(--xh-border-invalid));
+  [data-scope='switch'][data-part='root'][data-state='checked'] {
+    --xh-_switch-track-border: var(--xh-switch-border-checked, var(--xh-_switch-accent));
+
+    background: var(--xh-switch-bg-checked, var(--xh-_switch-accent));
+    color: var(--xh-switch-fg-checked, var(--xh-_tone-on, var(--xh-fg-on-brand)));
   }
 
   /* 只读：值仍要读得清、也仍会随表单提交，所以不压对比度、也不借禁用那档灰。
@@ -62,7 +70,25 @@
   }
 
   [data-scope='switch'][data-part='root'][data-readonly][data-state='checked'] {
+    --xh-_switch-track-border: var(--xh-switch-border-checked-readonly, var(--xh-border-control));
+
     background: var(--xh-switch-bg-checked-readonly, var(--xh-bg-muted));
+    color: var(--xh-switch-fg-checked-readonly, var(--xh-fg-default));
+  }
+
+  /* 高对比轴把中性状态的边界提到 strong；实心语气色 checked 仍由自己的色相边界表达。 */
+  :where([data-contrast='more']) [data-scope='switch'][data-part='root'][data-state='unchecked'] {
+    --xh-_switch-track-border: var(--xh-switch-border, var(--xh-border-strong));
+  }
+
+  :where([data-contrast='more'])
+    [data-scope='switch'][data-part='root'][data-readonly][data-state='checked'] {
+    --xh-_switch-track-border: var(--xh-switch-border-checked-readonly, var(--xh-border-strong));
+  }
+
+  /* 校验失败排在状态与对比轴之后：只把轨道内描边换成警示色，不改轨道几何。 */
+  [data-scope='switch'][data-part='root'][data-invalid] {
+    --xh-_switch-track-border: var(--xh-switch-border-invalid, var(--xh-border-invalid));
   }
 
   [data-scope='switch'][data-part='root'][data-readonly] [data-scope='switch'][data-part='thumb'] {
@@ -71,12 +97,13 @@
 
   /* 按下去要有回应：轨道整条轻微下压，松手即弹回。
      轨道宽高由私有槽定死，文字在外层 label 里，缩它不改布局。只读与禁用不压 */
-  [data-scope='switch'][data-part='root']:not([data-disabled]):not([data-readonly]):active {
+  [data-scope='switch'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-loading]):active {
     scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='switch'][data-part='root'][data-disabled] {
     opacity: var(--xh-state-disabled-opacity);
+    cursor: not-allowed;
   }
 
   /* —— 尺寸 —— */
@@ -106,14 +133,30 @@
   }
 
   [data-scope='switch'][data-part='thumb'] {
+    --xh-_switch-thumb-highlight: var(--xh-switch-thumb-highlight, var(--xh-material-soft-highlight));
+
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
     inline-size: var(--xh-_switch-thumb-size);
     block-size: var(--xh-_switch-thumb-size);
+    border: var(--xh-stroke-thin) solid var(--xh-switch-thumb-border, var(--xh-material-soft-border));
     border-radius: var(--xh-switch-thumb-radius, var(--xh-shape-pill));
-    background: var(--xh-switch-thumb, var(--xh-bg-canvas));
-    box-shadow: var(--xh-switch-thumb-shadow, var(--xh-elevation-raised));
-    /* 只读那一档滑块收掉浮起的投影，与轨道换底色同步淡出 */
+    background:
+      linear-gradient(
+        to bottom,
+        var(--xh-_switch-thumb-highlight) 0 var(--xh-stroke-thin),
+        transparent var(--xh-stroke-thin)
+      ),
+      var(--xh-switch-thumb, var(--xh-material-soft-bg));
+    color: var(--xh-switch-thumb-fg, var(--xh-material-soft-fg));
+    box-shadow: var(--xh-switch-thumb-shadow, var(--xh-material-soft-shadow));
+    line-height: 0;
+    /* 状态切换只动位移与表面，按压拉伸另走 inline-size；不使用 transition-all。 */
     transition:
       translate var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -121,14 +164,48 @@
     translate: var(--xh-_switch-thumb-size) 0;
   }
 
-  /* 提交中：指针摆「在途」、滑块里转圈；不是禁用，焦点与对比度都保持 */
-  [data-scope='switch'][data-part='root'][data-loading] {
-    cursor: progress;
+  /* flex 的 inline-start 会随 dir 翻转，物理 translate 也要反向，checked 才始终走到 inline-end。 */
+  [dir='rtl'] [data-scope='switch'][data-part='thumb'][data-state='checked'] {
+    translate: calc(-1 * var(--xh-_switch-thumb-size)) 0;
   }
 
-  [data-scope='switch'][data-part='thumb'][data-loading] {
-    display: grid;
-    place-items: center;
+  /* 指针设备悬停时只把滑块从接触影抬到 raised；轨道仍是实体表单控件，不增加 blur。 */
+  @media (hover: hover) {
+    [data-scope='switch'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-loading]):hover
+      [data-scope='switch'][data-part='thumb'] {
+      box-shadow: var(--xh-switch-thumb-shadow-hover, var(--xh-elevation-raised));
+    }
+  }
+
+  /* Naive 同类的橡皮带回执：按住时向行进方向拉长，已选中端同步回退同一段，外缘不越出轨道。 */
+  [data-scope='switch'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-loading]):active
+    [data-scope='switch'][data-part='thumb'] {
+    --xh-_switch-thumb-highlight: transparent;
+
+    inline-size: calc(var(--xh-_switch-thumb-size) + var(--xh-_switch-thumb-press-stretch));
+    box-shadow: var(--xh-switch-thumb-shadow-pressed, none);
+  }
+
+  [data-scope='switch'][data-part='root'][data-state='checked']:not([data-disabled]):not([data-readonly]):not([data-loading]):active
+    [data-scope='switch'][data-part='thumb'] {
+    translate: calc(var(--xh-_switch-thumb-size) - var(--xh-_switch-thumb-press-stretch)) 0;
+  }
+
+  [dir='rtl']
+    [data-scope='switch'][data-part='root'][data-state='checked']:not([data-disabled]):not([data-readonly]):not([data-loading]):active
+    [data-scope='switch'][data-part='thumb'] {
+    translate: calc(-1 * (var(--xh-_switch-thumb-size) - var(--xh-_switch-thumb-press-stretch))) 0;
+  }
+
+  [data-scope='switch'][data-part='root'][data-disabled] [data-scope='switch'][data-part='thumb'] {
+    --xh-_switch-thumb-highlight: transparent;
+
+    box-shadow: var(--xh-switch-thumb-shadow-disabled, none);
+  }
+
+  /* 提交中：指针摆「在途」、滑块里转圈；不是禁用，焦点与对比度都保持 */
+  [data-scope='switch'][data-part='root'][data-loading]:not([data-disabled]) {
+    cursor: progress;
   }
 
   [data-scope='switch'][data-part='thumb'][data-loading]::after {
@@ -136,7 +213,7 @@
     inline-size: 60%;
     block-size: 60%;
     border: var(--xh-stroke-thin) solid transparent;
-    border-block-start-color: var(--xh-switch-loading-fg, var(--xh-bg-brand));
+    border-block-start-color: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
     border-radius: var(--xh-shape-pill);
     animation: xh-switch-rotate var(--xh-switch-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
@@ -153,6 +230,20 @@
 
   [data-scope='switch'][data-part='label'][data-disabled] {
     color: var(--xh-switch-label-fg-disabled, var(--xh-fg-disabled));
+    cursor: not-allowed;
+  }
+
+  /* label 没有独立的 readonly/loading 状态属性，现读里面真实的轨道状态，不复制一套业务状态。 */
+  [data-scope='switch'][data-part='label']:has(
+    [data-scope='switch'][data-part='root'][data-readonly]:not([data-disabled])
+  ) {
+    cursor: default;
+  }
+
+  [data-scope='switch'][data-part='label']:has(
+    [data-scope='switch'][data-part='root'][data-loading]:not([data-disabled])
+  ) {
+    cursor: progress;
   }
 
   [data-scope='switch'][data-part='text'] {
@@ -163,16 +254,24 @@
   /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
      两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
+    [data-scope='switch'][data-part='root'] {
+      --xh-_switch-thumb-press-stretch: var(--xh-motion-distance-sm);
+    }
+
     [data-scope='switch'][data-part='thumb'][data-loading]::after {
       border-style: dotted;
-      border-color: var(--xh-switch-loading-fg, var(--xh-bg-brand));
+      border-color: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
       animation: none;
     }
   }
 
+  :where([data-motion='reduce']) [data-scope='switch'][data-part='root'] {
+    --xh-_switch-thumb-press-stretch: var(--xh-motion-distance-sm);
+  }
+
   :where([data-motion='reduce']) [data-scope='switch'][data-part='thumb'][data-loading]::after {
     border-style: dotted;
-    border-color: var(--xh-switch-loading-fg, var(--xh-bg-brand));
+    border-color: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
     animation: none;
   }
 
@@ -184,6 +283,35 @@
     display: none;
   }
 
+  @media (forced-colors: active) {
+    /* 系统会丢弃 box-shadow 与背景图：轨道改用内收 outline，滑块用真实边框保住两层几何。 */
+    [data-scope='switch'][data-part='root'] {
+      outline: var(--xh-stroke-thin) solid CanvasText;
+      outline-offset: calc(-1 * var(--xh-stroke-thin));
+    }
+
+    [data-scope='switch'][data-part='root'][data-disabled] {
+      outline-color: GrayText;
+    }
+
+    [data-scope='switch'][data-part='root'][data-readonly] {
+      outline-style: dashed;
+    }
+
+    [data-scope='switch'][data-part='root'][data-readonly]:focus-visible {
+      outline-width: var(--xh-ring-width);
+      outline-style: solid;
+      outline-color: Highlight;
+      outline-offset: var(--xh-ring-offset);
+    }
+
+    [data-scope='switch'][data-part='thumb'] {
+      border-color: CanvasText;
+      background-image: none;
+      box-shadow: none;
+    }
+  }
+
   @media print {
     /* 打印默认丢底色与投影：轨道与滑块都只有一块底，落到纸上整条开关消失，开与关无从读起。
        轨道补一圈实边把形状画出来，滑块补一圈实边把它停在哪一端画出来——
@@ -193,10 +321,13 @@
     [data-scope='switch'][data-part='root'] {
       outline: var(--xh-stroke-thin) solid currentColor;
       outline-offset: calc(-1 * var(--xh-stroke-thin));
+      box-shadow: none;
     }
 
     [data-scope='switch'][data-part='thumb'] {
       border: var(--xh-stroke-thin) solid currentColor;
+      background-image: none;
+      box-shadow: none;
     }
 
     /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
@@ -205,7 +336,7 @@
        并成一条之后这层配对关系在文本上就断了。 */
     [data-scope='switch'][data-part='thumb'][data-loading]::after {
       border-style: dotted;
-      border-color: var(--xh-switch-loading-fg, var(--xh-bg-brand));
+      border-color: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
       animation: none;
     }
   }

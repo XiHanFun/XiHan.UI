@@ -1,6 +1,7 @@
 import type { Direction, Size } from '@xihan-ui/core'
 import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerVariant, JsonViewerView } from '@xihan-ui/headless'
-import type { ReactNode } from 'react'
+import type { ComponentPropsWithRef, ReactNode } from 'react'
+import { groupJsonViewerNodesByParent } from '@xihan-ui/headless'
 import { useCallback, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -9,19 +10,6 @@ import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useJsonViewer } from './use-json-viewer'
 
 type JsonViewerProps = JsonViewerSchema['props']
-
-/** 可见行按父路径分组，铺 DOM 时逐层取用。 */
-function groupByParent(nodes: readonly JsonViewerNode[]): Map<string | null, JsonViewerNode[]> {
-  const out = new Map<string | null, JsonViewerNode[]>()
-  for (const node of nodes) {
-    const list = out.get(node.parent)
-    if (list)
-      list.push(node)
-    else
-      out.set(node.parent, [node])
-  }
-  return out
-}
 
 interface RowsProps {
   api: JsonViewerApi
@@ -87,7 +75,7 @@ function JsonViewerTree({ api, keepLayer }: { api: JsonViewerApi, keepLayer: (el
   // 挂的是冒泡的 focusin，行得焦也会把它叫起来，那一下会把焦点从行抢回锚点上。
   // 同一节点上的 onFocusOut 归到 React 的 onBlur，留在合成事件那一档不动
   const bind = useNativeEvents(api.getTreeProps() as Record<string, unknown>, ['onFocus'])
-  const groups = groupByParent(api.visibleNodes)
+  const groups = groupJsonViewerNodesByParent(api.visibleNodes)
   return (
     <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, { ref: keepLayer })}>
       <JsonRows api={api} groups={groups} parent={null} />
@@ -95,7 +83,10 @@ function JsonViewerTree({ api, keepLayer }: { api: JsonViewerApi, keepLayer: (el
   )
 }
 
-export interface XhJsonViewerRootProps {
+/** 根上自有的那些取值；行由组件按数据铺，不收 children，dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'>
+
+export interface XhJsonViewerRootProps extends RootElementProps {
   /** 要展示的值，任意形状。 */
   value?: unknown
   /** 展示形态：tree 摊成可折叠的行，text 直接出 JSON 原文。 */
@@ -118,8 +109,41 @@ export interface XhJsonViewerRootProps {
 }
 
 /** 行是按数据摊出来的，作者写不出也不必写：整棵树由组件自己铺。 */
-export function XhJsonViewerRoot({ empty, ...props }: XhJsonViewerRootProps): ReactNode {
-  const ctx = useJsonViewer(withXhConfig('json-viewer', props) as JsonViewerProps)
+export function XhJsonViewerRoot({
+  value,
+  view,
+  variant,
+  expandedValue,
+  defaultExpandedValue,
+  defaultExpandedDepth,
+  maxStringLength,
+  maxItems,
+  sortKeys,
+  loop,
+  dir,
+  size,
+  translations,
+  onExpandedValueChange,
+  empty,
+  ...rest
+}: XhJsonViewerRootProps): ReactNode {
+  const machineProps = {
+    value,
+    view,
+    variant,
+    expandedValue,
+    defaultExpandedValue,
+    defaultExpandedDepth,
+    maxStringLength,
+    maxItems,
+    sortKeys,
+    loop,
+    dir,
+    size,
+    translations,
+    onExpandedValueChange,
+  }
+  const ctx = useJsonViewer(withXhConfig('json-viewer', machineProps) as JsonViewerProps)
   const { api } = ctx
 
   // 此刻在场的那个滚动层：两档互斥，树档是 tree、原文档是 pre。
@@ -132,7 +156,6 @@ export function XhJsonViewerRoot({ empty, ...props }: XhJsonViewerRootProps): Re
 
   // 两档的自绘条：与滚动层同级、绝对定位不占布局，壳是这层根。
   // 两条轴都摆——深层缩进往行首方向推、长字符串往行尾伸
-  const dir = props.dir
   const bars = useScrollbars({
     scrollable: () => layerRef.current,
     axes: ['vertical', 'horizontal'],
@@ -145,7 +168,7 @@ export function XhJsonViewerRoot({ empty, ...props }: XhJsonViewerRootProps): Re
   )
 
   return (
-    <div {...api.getRootProps() as Record<string, unknown>}>
+    <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {/* 原文档不铺行：整块文本交给 pre，框选与复制才拿得到与后端一字不差的那份 */}
       {api.view === 'text'
         ? <pre {...api.getTextProps() as Record<string, unknown>} ref={keepLayer}>{api.text}</pre>

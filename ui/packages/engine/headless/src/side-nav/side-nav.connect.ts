@@ -1,7 +1,7 @@
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { SideNavApi, SideNavNode, SideNavSchema } from './side-nav.types'
 import { dataAttr, focusItem, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
-import { overlayPositioned } from '../shared/overlay'
+import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { flattenTree, indexTree } from '../tree'
 import { sideNavAnatomy, sideNavLinkQuery, sideNavTriggerQuery } from './side-nav.anatomy'
 
@@ -9,17 +9,6 @@ const parts = sideNavAnatomy.build()
 
 // 悬停弹出的延时句柄：整页同时只有一个指针，单句柄即可
 let popoutHoverTimer: ReturnType<typeof setTimeout> | undefined
-
-// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
-// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
-const AVAILABLE_H_FLOOR = 96
-
-function availableHeightVar(available: number | undefined): Record<string, string> {
-  return {
-    '--xh-_side-nav-available-h':
-      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
-  }
-}
 
 export function connectSideNav<T extends PropTypes>(
   service: Service<SideNavSchema>,
@@ -361,18 +350,19 @@ export function connectSideNav<T extends PropTypes>(
         // 锚点被滚出可视区时引擎置 hidden，样式据此收起浮层。
         // 这条与皮肤的 [data-hidden] 规则是一对：少了它，锚点滚出视区后面板会继续悬在原坐标
         'data-hidden': dataAttr(placed?.hidden),
+        // Presence 延留定位层；逻辑关闭后立即退出交互与可访问树。
+        'inert': !open || undefined,
+        'aria-hidden': !open || undefined,
         'hidden': !open || undefined,
         // 收起后坐标留到这一枝下一次展开才作废：退场动画在原位播
         'style': placed
           ? {
-              position: 'fixed',
-              left: `${placed.x ?? 0}px`,
-              top: `${placed.y ?? 0}px`,
-              ...availableHeightVar(placed.availableHeight),
+              ...overlayFixedStyle(placed),
+              ...overlayAvailableSpaceVars('side-nav', placed),
             }
           // 逐属性清而非摘掉整个 style：折叠开关来回切换时不残留 fixed 坐标，
           // 作者写的其他内联样式不受波及
-          : { 'position': '', 'left': '', 'top': '', '--xh-_side-nav-available-h': '' },
+          : { 'position': '', 'left': '', 'top': '', '--xh-_side-nav-available-w': '', '--xh-_side-nav-available-h': '' },
       })
     },
 
@@ -386,6 +376,8 @@ export function connectSideNav<T extends PropTypes>(
           'id': contentId(v),
           'data-popout': '',
           'data-state': open ? 'open' : 'closed',
+          'inert': !open || undefined,
+          'aria-hidden': !open || undefined,
           // 面板自己也收起：定位层已经整层让位，这条是给「只查面板」的作者与读屏留的同一个事实
           'hidden': !open || undefined,
         })

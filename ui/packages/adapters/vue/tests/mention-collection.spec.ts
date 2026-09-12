@@ -59,12 +59,12 @@ function skeleton(root: Element): string[] {
   })
 }
 
-function textarea(root: Element): HTMLTextAreaElement {
-  return root.querySelector('[data-part="input"]') as HTMLTextAreaElement
+function input(root: Element): HTMLInputElement {
+  return root.querySelector('[data-part="input"]') as HTMLInputElement
 }
 
 /** 打字：写值、摆光标、派原生 input 事件——组件的入口就是这三件。 */
-async function type(el: HTMLTextAreaElement, text: string, caret = text.length): Promise<void> {
+async function type(el: HTMLInputElement, text: string, caret = text.length): Promise<void> {
   el.focus()
   el.value = text
   el.setSelectionRange(caret, caret)
@@ -124,9 +124,9 @@ describe('mention 的 collection', () => {
     w.unmount()
   })
 
-  it('输入宿主默认是 textarea', () => {
+  it('输入宿主是单行 input', () => {
     const w = mountFromCollection()
-    expect(textarea(w.element).tagName).toBe('TEXTAREA')
+    expect(input(w.element).tagName).toBe('INPUT')
     w.unmount()
   })
 
@@ -138,7 +138,7 @@ describe('mention 的 collection', () => {
         onQueryChange: (d: { query: string | null }) => seen.push(d.query),
       }),
     }), { attachTo: document.body })
-    await type(textarea(w.element), '你好 @li')
+    await type(input(w.element), '你好 @li')
     expect(document.body.querySelector('[data-part="content"]')!.hasAttribute('hidden')).toBe(false)
     expect(seen.at(-1)).toBe('li')
     w.unmount()
@@ -146,7 +146,7 @@ describe('mention 的 collection', () => {
 
   it('回车把候选插到光标处：只换掉查询串，光标落在插入内容之后', async () => {
     const w = mountFromCollection()
-    const el = textarea(w.element)
+    const el = input(w.element)
     // 光标停在 li 之后、后面那段之前
     await type(el, '请 @li 看一下', 5)
     el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
@@ -160,7 +160,7 @@ describe('mention 的 collection', () => {
 
   it('点候选与回车走同一条路', async () => {
     const w = mountFromCollection()
-    const el = textarea(w.element)
+    const el = input(w.element)
     await type(el, '@')
     const items = [...document.body.querySelectorAll('[data-part="item"]')]
     items[1]!.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))

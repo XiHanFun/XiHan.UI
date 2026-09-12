@@ -1,8 +1,10 @@
 import type { PositionResult } from '@xihan-ui/core'
 import type { SelectFocusIntent, SelectSchema } from './select.types'
-import { createDismissLayer, createFocusScope, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
+import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { selectItemQuery, selectItemText } from './select.anatomy'
 
 const { createMachine } = setup<SelectSchema>()
@@ -10,14 +12,8 @@ const { createMachine } = setup<SelectSchema>()
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const SELECT_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
-// 对外允许裸串与 null 两种单选简写，内部一律按数组处理；undefined 要原样透传给 cell 判非受控
-function toValues(input: string | string[] | null | undefined): string[] | undefined {
-  if (input === undefined)
-    return undefined
-  if (input === null)
-    return []
-  return typeof input === 'string' ? [input] : [...input]
-}
+/** 未指定 maxTagCount 时多选标签最多摆几枚，其余折进 +N 那一枚。 */
+export const SELECT_DEFAULT_MAX_TAG_COUNT = 3
 
 /** 选中集合的不变量：单选恒为长度 ≤ 1，多选去重。公开 API 与受控入参都经这里收口。 */
 function normalizeSelection(next: readonly string[], multiple: boolean): string[] {
@@ -27,11 +23,6 @@ function normalizeSelection(next: readonly string[], multiple: boolean): string[
 // 受控缺席时原样透传 undefined，cell 据此判非受控
 function normalizeInput(next: string[] | undefined, multiple: boolean): string[] | undefined {
   return next === undefined ? undefined : normalizeSelection(next, multiple)
-}
-
-// cell 默认按引用比，数组每帧新建会次次判变；按元素比才认得出「值没动」
-function sameValues(a: string[], b: string[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
 
 export const selectMachine = createMachine({
@@ -56,6 +47,7 @@ export const selectMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     position: null,
     getAnchorEl: () => null,
     getFloatingEl: () => null,
@@ -66,6 +58,8 @@ export const selectMachine = createMachine({
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   // 挂载即结算一次显示文本：defaultValue / 受控初值都得在首帧就有文字可显示
   entry: ['syncValueText'],
+  // 行为资源由顶层 effect 持有：逻辑关闭后仍等 Presence 结清真实退场才归还。
+  effects: ['trackLayer'],
   // 开合受控时用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.* 无条件回写；值受控走 cell。
   // 值这一路的 watch 只兜宿主侧写入，内部选中当场已同步过文本。
   watch: ({ track, prop, context, action }) => {
@@ -106,8 +100,8 @@ export const selectMachine = createMachine({
       entry: ['setInitialHighlightedValue'],
       // 收起就丢缓冲，否则下次展开首字母会拼进上一轮查询串
       exit: ['clearHighlightedValue', 'clearTypeahead'],
-      // 进入 open：定位 → 消解 → 焦点。退出 open 时按同序清理，焦点归还发生在消解层撤销之后。
-      effects: ['trackPosition', 'trackLayer'],
+      // 定位只服务逻辑展开；Layer、消解与焦点资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackPosition'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
@@ -289,103 +283,78 @@ export const selectMachine = createMachine({
     },
     effects: {
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读。
-      trackPosition: ({ refs, prop, context, flush }) => {
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
+        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
+        engine: refs.get('position'),
+        flush,
         // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
         // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
-        context.set('position', null)
-        const engine = refs.get('position')
-        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
-        if (!engine)
-          return undefined
-
-        let stop: (() => void) | undefined
-        let disposed = false
-
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带 hidden、高度为 0，算出的坐标会错位
-        flush(() => {
-          if (disposed)
-            return
-          const anchor = refs.get('getAnchorEl')()
-          const floating = refs.get('getFloatingEl')()
-          if (!anchor || !floating)
-            return
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? SELECT_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? OVERLAY_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-              dir: prop('dir'),
-              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
-              size: true,
+        clear: () => context.set('position', null),
+        getAnchor: () => refs.get('getAnchorEl')(),
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? SELECT_DEFAULT_PLACEMENT,
+          offset: prop('offset') ?? OVERLAY_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+          dir: prop('dir'),
+          // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+          size: true,
+        }),
+        onResult: result => context.set('position', result),
+      }),
+      // Layer、DismissableLayer、FocusScope 与视觉 Presence 共享同一租约：逻辑关闭后内容
+      // 已 inert，但资源仍留在顶层，直到真实 CSS 退场结束才逆序释放。
+      trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
+        let reactivateFocus: (() => void) | null = null
+        return trackPresenceResources({
+          presence: refs.get('presence'),
+          open: () => state.get() === 'open',
+          track,
+          acquire: () => trackOverlayLayer({
+            config: refs.get('config'),
+            registerLayer: refs.get('registerLayer'),
+            flush,
+            active: () => state.get() === 'open',
+            onDismiss: overlayCloseOnDismiss(send),
+            focusScope: {
+              // 每次读最新 ref，容器晚一拍就位也能命中
+              container: () => refs.get('getContentEl')(),
+              // 列表族不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
+              trapped: () => false,
+              loop: false,
+              // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测会过滤掉写成 <a> 的条目，
+              // 也会把焦点送给作者放进浮层的输入框。
+              initialFocus: () => {
+                const content = refs.get('getContentEl')()
+                if (!content)
+                  return null
+                const anchor = context.get('highlightedValue')
+                if (anchor != null)
+                  return queryItems(content, selectItemQuery).find(el => itemValue(el) === anchor) ?? null
+                // 本轮该有锚点却还没挑出来（条目身份标记晚一拍写上）：返回 null 让焦点域重试，
+                // 别滑到容器上定死——落焦一旦成功就不再重试
+                if (!(context.get('focusIntent') === 'selected' && context.get('value').length === 0))
+                  return null
+                // 确实不该有锚点（指针打开且无选中值）：焦点歇在列表容器上，它此刻正认领着 Tab 位
+                return content
+              },
+              restoreFocus: () => context.get('returnFocus'),
+              // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+              // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
+              restoreTarget: () => refs.get('getAnchorEl')(),
+              onReactivate: reactivate => reactivateFocus = reactivate,
             },
-            result => context.set('position', result),
-          )
-        })
-
-        return () => {
-          disposed = true
-          stop?.()
-        }
-      },
-      // 层与消解层、焦点域绑在同一个效应里，三者生命周期必须一致；
-      // 层只在展开期间入栈，常驻会占死栈顶把下面各层的 Escape 堵死。
-      trackLayer: ({ refs, context, send }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
-        // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
-        if (!config || !registerLayer)
-          return undefined
-
-        const { layer, dispose: disposeLayer } = registerLayer()
-
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: reason =>
-            send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
-        })
-
-        const focus = createFocusScope({
-          config,
-          layer,
-          // 每次读最新 ref，容器晚一拍就位也能命中
-          container: () => refs.get('getContentEl')(),
-          // 列表不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
-          trapped: () => false,
-          loop: false,
-          // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测会过滤掉写成 <a> 的条目，
-          // 也会把焦点送给作者放进浮层的输入框。
-          // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试。
-          initialFocus: () => {
-            const content = refs.get('getContentEl')()
-            if (!content)
-              return null
-            const anchor = context.get('highlightedValue')
-            if (anchor != null)
-              return queryItems(content, selectItemQuery).find(el => itemValue(el) === anchor) ?? null
-            // 本轮该有锚点却还没挑出来（条目身份标记晚一拍写上）：返回 null 让焦点域重试，
-            // 别滑到容器上定死——落焦一旦成功就不再重试
-            if (!(context.get('focusIntent') === 'selected' && context.get('value').length === 0))
-              return null
-            // 确实不该有锚点（指针打开且无选中值）：焦点歇在列表容器上，它此刻正认领着 Tab 位
-            return content
+          }),
+          onReopen: () => {
+            const activate = reactivateFocus
+            flush(() => scope.getWin().requestAnimationFrame(() => {
+              if (state.get() === 'open' && reactivateFocus === activate)
+                activate?.()
+            }))
           },
-          restoreFocus: () => context.get('returnFocus'),
-          // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
-          restoreTarget: () => refs.get('getAnchorEl')(),
         })
-
-        // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈
-        return () => {
-          focus.dispose()
-          dismiss.dispose()
-          disposeLayer()
-        }
       },
     },
   },

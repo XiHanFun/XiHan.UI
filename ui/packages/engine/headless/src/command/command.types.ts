@@ -15,9 +15,14 @@ export interface CommandRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 视觉退场与全部模态行为资源共享的 Presence；缺省时关闭立即释放。 */
   presence: PresenceHandle | null
+  /** 展开期间 modal 改值时同步焦点约束、滚动锁与背景失活。 */
+  syncModalResources: (() => void) | null
   getContentEl: () => HTMLElement | null
   getListEl: () => HTMLElement | null
+  /** 私有接线：List 提交或释放后通知当前可见性效应重新绑定。 */
+  syncListVisibility: (() => void) | null
   getInputEl: () => HTMLInputElement | null
 }
 
@@ -126,6 +131,8 @@ export interface CommandSchema extends MachineSchema {
     inputValue: string
     /** 键盘锚点，不承载焦点，只经 aria-activedescendant 上报；收起时为 null。 */
     highlightedValue: string | null
+    /** 已挂载条目的显式 hidden 镜像；未挂载的虚拟候选不在其中。 */
+    hiddenValues: string[]
   }
   computed: Record<string, never>
   refs: CommandRefs
@@ -154,8 +161,10 @@ export interface CommandSchema extends MachineSchema {
     | 'clearHighlightedValue'
     | 'highlightFirst'
     | 'highlightIfDangling'
+    | 'highlightVisibleIfDangling'
     | 'invokeOnSelect'
-  effect: 'trackOverlay'
+    | 'syncModalResources'
+  effect: 'trackOverlay' | 'trackItemVisibility'
 }
 
 export interface CommandItemProps {

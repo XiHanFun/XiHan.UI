@@ -3,7 +3,7 @@ import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
-import { connectTag, tagMachine } from '../src/tag'
+import { connectStaticTag, connectTag, tagMachine, tagVariantForControl } from '../src/tag'
 
 type Props = TagSchema['props']
 
@@ -91,6 +91,8 @@ describe('connectTag 三轴', () => {
     expect(label['data-variant']).toBeUndefined()
     expect(label['data-tone']).toBeUndefined()
     expect(label['data-size']).toBeUndefined()
+
+    expect(makeTag({ variant: 'ghost' }).api().getRootProps()['data-variant']).toBe('ghost')
   })
 
   it('root 不带 role：标签是展示节点，交互只在关闭钮上', () => {
@@ -155,5 +157,77 @@ describe('connectTag 关闭钮', () => {
     expect(close['data-disabled']).toBeUndefined()
     expect(close.hidden).toBeUndefined()
     expect(t.api().getRootProps()['data-disabled']).toBeUndefined()
+  })
+})
+
+describe('connectTag 只读', () => {
+  it('readOnly 与 closable 同真：按钮留在原位但禁用，root 不打 data-disabled，点不动也不通知', () => {
+    const seen: TagOpenChangeDetails[] = []
+    const t = makeTag({ closable: true, readOnly: true, onOpenChange: d => seen.push(d) })
+    const close = t.api().getCloseTriggerProps()
+
+    // 只读只锁那颗叉：钮留在原位、宽度不跳变，标签本身不置灰
+    expect(close.hidden).toBeUndefined()
+    expect(close.disabled).toBe(true)
+    expect(close['data-disabled']).toBe('')
+    expect(t.api().getRootProps()['data-disabled']).toBeUndefined()
+    expect(t.api().disabled).toBe(false)
+
+    press(close)
+    expect(t.state()).toBe('open')
+    expect(seen).toEqual([])
+  })
+
+  it('readOnly 不改 closable：不给关闭钮时按钮照旧收起', () => {
+    const close = makeTag({ readOnly: true }).api().getCloseTriggerProps()
+    expect(close.hidden).toBe(true)
+    expect(close.disabled).toBe(true)
+  })
+
+  it('readOnly 撤掉后按钮当场解禁', () => {
+    const t = makeTag({ closable: true, readOnly: true })
+    expect(t.api().getCloseTriggerProps().disabled).toBe(true)
+
+    t.setProps({ readOnly: false })
+    expect(t.api().getCloseTriggerProps().disabled).toBeUndefined()
+    expect(t.api().getCloseTriggerProps()['data-disabled']).toBeUndefined()
+  })
+
+  it('快路同一条规矩：受控 open 下只读的关闭钮不发意图', () => {
+    const seen: TagOpenChangeDetails[] = []
+    const api = connectStaticTag(
+      { closable: true, readOnly: true, open: true, onOpenChange: d => seen.push(d) },
+      { get: () => true, set: () => {} },
+      normalizeProps,
+    )
+    const close = api.getCloseTriggerProps()
+    expect(close.disabled).toBe(true)
+    expect(close.hidden).toBeUndefined()
+    expect(api.getRootProps()['data-disabled']).toBeUndefined()
+
+    press(close)
+    expect(seen).toEqual([])
+  })
+
+  it('快路已关闭时再次触发 close 不重复发相同受控意图', () => {
+    const seen: TagOpenChangeDetails[] = []
+    const api = connectStaticTag(
+      { closable: true, open: false, onOpenChange: details => seen.push(details) },
+      { get: () => false, set: () => {} },
+      normalizeProps,
+    )
+
+    press(api.getCloseTriggerProps())
+
+    expect(seen).toEqual([])
+  })
+})
+
+describe('tagVariantForControl 控件面到标签形态', () => {
+  it('subtle 面上摆描边标签；outline / ghost / 缺省的面摆淡底标签', () => {
+    expect(tagVariantForControl('subtle')).toBe('outline')
+    expect(tagVariantForControl('outline')).toBe('subtle')
+    expect(tagVariantForControl('ghost')).toBe('subtle')
+    expect(tagVariantForControl(undefined)).toBe('subtle')
   })
 })

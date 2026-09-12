@@ -44,8 +44,27 @@ export interface ToastRecord {
   actionLabel?: string
   /** 挤条时先挤低的。不给则按语气派生：error=2 / warning=1 / 其余=0。 */
   priority?: number
-  /** 按内容合并后的条数，>1 时由宿主在标题后追加计数。 */
+  /** 按内容合并后的条数，>1 时由 Headless 服务投影在标题后追加计数。 */
   count?: number
+}
+
+/** 命令式 Toast 服务对单条记录补充的默认值。 */
+export interface ToastServiceDefaults {
+  duration?: number
+  removeDelay?: number
+  pauseOnPageIdle?: boolean
+}
+
+/** 三端默认模板共同消费的纯数据投影。 */
+export interface ResolvedToastServiceItem {
+  id: string
+  title?: string
+  type: ToastType
+  duration?: number
+  removeDelay?: number
+  closable: boolean
+  pauseOnPageIdle?: boolean
+  actionLabel?: string
 }
 
 /** create 的入参：id 可省，省了就现生成一个并由 create 返回。 */

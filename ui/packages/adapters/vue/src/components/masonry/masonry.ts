@@ -1,7 +1,6 @@
-import type { MasonryColumns, MasonryProps } from '@xihan-ui/headless'
+import type { MasonryColumns, MasonryMeasurement, MasonryProps } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
-import { queryItems } from '@xihan-ui/core'
-import { connectMasonry, distributeMasonry, masonryItemQuery, resolveMasonryColumns } from '@xihan-ui/headless'
+import { connectMasonry, distributeMasonry, measureMasonry, resolveMasonryColumns, sameMasonryHeights } from '@xihan-ui/headless'
 import { Comment, defineComponent, Fragment, h, onBeforeUnmount, onMounted, onUpdated, ref, Text } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 
@@ -54,21 +53,15 @@ function masonryItems(nodes: readonly VNode[]): VNode[] {
   return items
 }
 
-/** 两遍量到的高度是不是一样。逐位比而不是比引用：每次量都产出新数组，比引用等于每次都判变。 */
-function sameHeights(a: readonly number[], b: readonly number[]): boolean {
-  return a.length === b.length && a.every((value, index) => value === b[index])
-}
-
 export const XhMasonry = defineComponent({
   name: 'XhMasonry',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     // 列数由作者声明：兼收字符串以支持模板里写 columns="3"，收对象则是逐档的列数
     columns: {
       type: [Number, String, Object] as PropType<number | string | ColumnsByBreakpoint>,
-      default: undefined,
     },
-    gap: { type: String as PropType<MasonryProps['gap']>, default: undefined },
+    gap: { type: String as PropType<MasonryProps['gap']> },
     sequential: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
@@ -82,24 +75,20 @@ export const XhMasonry = defineComponent({
     /** 当前挂着观察器的节点，与新一轮比对后才决定要不要重挂。 */
     let observed: HTMLElement[] = []
 
+    /** Headless 只产出测量快照；是否写入 Vue ref 仍由适配器决定。 */
+    const publishMeasurement = (measurement: MasonryMeasurement): void => {
+      if (measurement.width !== width.value)
+        width.value = measurement.width
+      if (!sameMasonryHeights(measurement.heights, heights.value))
+        heights.value = [...measurement.heights]
+    }
+
     /** 量一遍容器宽度与每一项的高度。量到的与上一遍一样就不写，否则量一次重排一次没完。 */
     const measure = (): void => {
       const el = rootEl.value
       if (!el)
         return
-      const nextWidth = el.getBoundingClientRect().width
-      const items = queryItems(el, masonryItemQuery)
-      const nextHeights = Array.from<number>({ length: items.length }).fill(0)
-      for (const node of items) {
-        // 项的原序写在 data-index 上：重排后 DOM 序等于列序，按文档序记高度会对错号
-        const index = Number(node.dataset.index)
-        if (Number.isInteger(index) && index >= 0 && index < nextHeights.length)
-          nextHeights[index] = node.getBoundingClientRect().height
-      }
-      if (nextWidth !== width.value)
-        width.value = nextWidth
-      if (!sameHeights(nextHeights, heights.value))
-        heights.value = nextHeights
+      publishMeasurement(measureMasonry(el))
     }
 
     /** 项增删后把观察器挂到新的一批节点上，再量一遍。节点没变就不重挂：重挂会白白多跑一轮回调。 */
@@ -107,14 +96,15 @@ export const XhMasonry = defineComponent({
       const el = rootEl.value
       if (!el)
         return
-      const next = [el, ...queryItems(el, masonryItemQuery)]
+      const measurement = measureMasonry(el)
+      const next = [el, ...measurement.items]
       const changed = next.length !== observed.length || next.some((node, index) => node !== observed[index])
       if (observer && changed) {
         observer.disconnect()
         for (const node of next) observer.observe(node)
         observed = next
       }
-      measure()
+      publishMeasurement(measurement)
     }
 
     onMounted(() => {

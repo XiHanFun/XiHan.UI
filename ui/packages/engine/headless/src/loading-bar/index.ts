@@ -1,3 +1,5 @@
+export { createLoadingBarServiceController } from './loading-bar-service.controller'
+export type { LoadingBarServiceController, LoadingBarServiceControllerOptions, LoadingBarServiceControllerState } from './loading-bar-service.controller'
 export { loadingBarAnatomy } from './loading-bar.anatomy'
 export { connectLoadingBar } from './loading-bar.connect'
 export { loadingBarKeyboard } from './loading-bar.keyboard'

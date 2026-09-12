@@ -234,11 +234,27 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 | `zoom-slider` | `data-disabled` | ''（条件成立时才出现） |
 | `rotate-slider` | `data-disabled` | ''（条件成立时才出现） |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-image-cropper-bg` · `--xh-image-cropper-crop-border` · `--xh-image-cropper-grid-line` · `--xh-image-cropper-handle-bg` · `--xh-image-cropper-handle-bg-resizing` · `--xh-image-cropper-handle-border` · `--xh-image-cropper-handle-radius` · `--xh-image-cropper-handle-size` · `--xh-image-cropper-mask` · `--xh-image-cropper-slider-accent` · `--xh-image-cropper-slider-w` · `--xh-image-cropper-viewport-radius` · `--xh-image-cropper-w`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-image-cropper-bg` | `viewport` | `background` | `default` | `--xh-bg-muted` | image-cropper 的 viewport 部件 background 覆盖槽。 |
+| `--xh-image-cropper-crop-border` | `crop-area` | `border-color` | `default` | `--xh-bg-surface` | image-cropper 的 crop-area 部件 border-color 覆盖槽。 |
+| `--xh-image-cropper-grid-line` | `grid` | `background-image` | `default` | `--xh-border-subtle` | image-cropper 的 grid 部件 background-image 覆盖槽。 |
+| `--xh-image-cropper-handle-bg` | `crop-handle` | `background` | `default` | `--xh-bg-surface` | image-cropper 的 crop-handle 部件 background 覆盖槽。 |
+| `--xh-image-cropper-handle-bg-resizing` | `crop-handle` | `background` | `resizing` | `--xh-bg-brand` | image-cropper 的 crop-handle 部件 background 覆盖槽。 |
+| `--xh-image-cropper-handle-border` | `crop-handle` | `border-color` | `default` | `--xh-border-strong` | image-cropper 的 crop-handle 部件 border-color 覆盖槽。 |
+| `--xh-image-cropper-handle-radius` | `crop-handle` | `border-radius` | `default` | `--xh-shape-inset` | image-cropper 的 crop-handle 部件 border-radius 覆盖槽。 |
+| `--xh-image-cropper-handle-size` | `crop-handle`<br>`root` | `block-size`<br>`inline-size`<br>`inset` | `default` | `--xh-control-indicator-size` | image-cropper 的 crop-handle、root 部件 block-size、inline-size、inset 覆盖槽。 |
+| `--xh-image-cropper-mask` | `crop-area` | `box-shadow` | `default` | `--xh-bg-overlay` | image-cropper 的 crop-area 部件 box-shadow 覆盖槽。 |
+| `--xh-image-cropper-slider-accent` | `rotate-slider`<br>`zoom-slider` | `accent-color` | `default` | `--xh-bg-brand` | image-cropper 的 rotate-slider、zoom-slider 部件 accent-color 覆盖槽。 |
+| `--xh-image-cropper-slider-w` | `rotate-slider`<br>`zoom-slider` | `inline-size` | `default` | `100%` | image-cropper 的 rotate-slider、zoom-slider 部件 inline-size 覆盖槽。 |
+| `--xh-image-cropper-viewport-radius` | `viewport` | `border-radius` | `default` | `--xh-shape-surface` | image-cropper 的 viewport 部件 border-radius 覆盖槽。 |
+| `--xh-image-cropper-w` | `root` | `inline-size` | `default` | `100%` | image-cropper 的 root 部件 inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
@@ -247,6 +263,8 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
 - 裁切矩形描述的是图片像素，坐标恒是物理方向：`x` 永远从图片左边缘算起，方向键的左右也永远对应图片的左右。整页 `dir="rtl"` 时框不会翻到另一侧，组件因此不收 `dir`。
 - 皮肤里裁切框与把手的落点跟着写物理属性，与连接层算出来的那份坐标同一口径，不依赖祖先链上的文字方向。

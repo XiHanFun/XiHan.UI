@@ -34,7 +34,10 @@ export type CarouselRootSlotProps = Pick<
   | 'resume'
 >
 
-export interface XhCarouselRootProps {
+/** 根上自有的那些取值；dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'>
+
+export interface XhCarouselRootProps extends RootElementProps {
   page?: number
   defaultPage?: number
   slideCount?: number
@@ -53,8 +56,38 @@ export interface XhCarouselRootProps {
   children?: SlotChildren<CarouselRootSlotProps>
 }
 
-export function XhCarouselRoot({ children, ...props }: XhCarouselRootProps): ReactNode {
-  const ctx = useCarousel(withXhConfig('carousel', props) as CarouselProps)
+export function XhCarouselRoot({
+  page,
+  defaultPage,
+  slideCount,
+  slidesPerPage,
+  slidesPerMove,
+  orientation,
+  dir,
+  loop,
+  autoplay,
+  allowPointerDrag,
+  spacing,
+  translations,
+  onPageChange,
+  children,
+  ...rest
+}: XhCarouselRootProps): ReactNode {
+  const ctx = useCarousel(withXhConfig('carousel', {
+    page,
+    defaultPage,
+    slideCount,
+    slidesPerPage,
+    slidesPerMove,
+    orientation,
+    dir,
+    loop,
+    autoplay,
+    allowPointerDrag,
+    spacing,
+    translations,
+    onPageChange,
+  }) as CarouselProps)
   const api = ctx.api
   // 根上的 onPointerEnter / onPointerLeave 是 DOM 的 pointerenter / pointerleave（不冒泡）。
   // React 的同名合成事件是从 pointerover / pointerout 合出来的，指针在幻灯片之间划过也会重放一遍，
@@ -66,7 +99,7 @@ export function XhCarouselRoot({ children, ...props }: XhCarouselRootProps): Rea
   )
   return (
     <CarouselProvider value={ctx}>
-      <div {...mergeReactProps(bind.attrs, { ref: bind.ref })}>
+      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
         {renderSlot(children, {
           page: api.page,
           totalPages: api.totalPages,

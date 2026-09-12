@@ -17,7 +17,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { heatmapMatrixKey } from '@xihan-ui/headless'
+import { heatmapMatrixKey, normalizeHeatmapNumber, normalizeHeatmapString } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -62,22 +62,7 @@ export type HeatmapRootSlotProps = Pick<
  */
 export type HeatmapCellSlotProps = HeatmapCellMeta | HeatmapMatrixCellMeta
 
-/** 作者写的数字身份，兼收字符串；没写即 undefined。 */
-function numberOf(value: number | string | undefined): number | undefined {
-  if (value == null || value === '')
-    return undefined
-  const parsed = Number(value)
-  return Number.isFinite(parsed) ? parsed : undefined
-}
-
-/** 作者写的串身份；没写即 undefined。 */
-function stringOf(value: number | string | undefined): string | undefined {
-  if (value == null || value === '')
-    return undefined
-  return String(value)
-}
-
-export interface XhHeatmapRootProps {
+export interface XhHeatmapRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'> {
   /** 形态：calendar 一年一张、month 一个自然月一块、matrix 行列自定。 */
   variant?: HeatmapVariant
   value?: HeatmapValue[]
@@ -110,8 +95,48 @@ export interface XhHeatmapRootProps {
   children?: SlotChildren<HeatmapRootSlotProps>
 }
 
-export function XhHeatmapRoot({ children, renderCell, renderTooltip, ...props }: XhHeatmapRootProps): ReactNode {
-  const ctx = useHeatmap(withXhConfig('heatmap', props) as HeatmapProps)
+export function XhHeatmapRoot({
+  variant,
+  value,
+  rows,
+  columns,
+  startDate,
+  endDate,
+  levels,
+  thresholds,
+  firstDayOfWeek,
+  locale,
+  dir,
+  tone,
+  palette,
+  size,
+  translations,
+  onCellFocus,
+  onCellActive,
+  renderCell,
+  renderTooltip,
+  children,
+  ...rest
+}: XhHeatmapRootProps): ReactNode {
+  const ctx = useHeatmap(withXhConfig('heatmap', {
+    variant,
+    value,
+    rows,
+    columns,
+    startDate,
+    endDate,
+    levels,
+    thresholds,
+    firstDayOfWeek,
+    locale,
+    dir,
+    tone,
+    palette,
+    size,
+    translations,
+    onCellFocus,
+    onCellActive,
+  }) as HeatmapProps)
   const { api } = ctx
   const body = children === undefined
     ? <DefaultTree api={api} renderCell={renderCell} renderTooltip={renderTooltip} />
@@ -132,7 +157,7 @@ export function XhHeatmapRoot({ children, renderCell, renderTooltip, ...props }:
       })
   return (
     <HeatmapProvider value={ctx}>
-      <div {...api.getRootProps() as Record<string, unknown>}>{body}</div>
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
     </HeatmapProvider>
   )
 }
@@ -194,11 +219,11 @@ export function XhHeatmapRow({ value, month, children, ...rest }: XhHeatmapRowPr
   const { variant } = ctx.api
   let row: HeatmapRowProps
   if (variant === 'matrix')
-    row = { row: stringOf(value) }
+    row = { row: normalizeHeatmapString(value) }
   else if (variant === 'month')
-    row = { month: month ?? blockMonth, week: numberOf(value) }
+    row = { month: month ?? blockMonth, week: normalizeHeatmapNumber(value) }
   else
-    row = { weekDay: numberOf(value) }
+    row = { weekDay: normalizeHeatmapNumber(value) }
   return (
     <HeatmapRowProvider value={row.row}>
       <div
@@ -224,7 +249,7 @@ export function XhHeatmapWeekDay({ value, children, ...rest }: XhHeatmapWeekDayP
   return (
     <span
       {...mergeReactProps(
-        ctx.api.getWeekDayProps({ weekDay: numberOf(value) }) as Record<string, unknown>,
+        ctx.api.getWeekDayProps({ weekDay: normalizeHeatmapNumber(value) }) as Record<string, unknown>,
         rest as Record<string, unknown>,
       )}
     >

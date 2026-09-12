@@ -1,7 +1,7 @@
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
+  FormControlState,
   MentionInputEl,
-  MentionInputHost,
   MentionItemProps,
   MentionNode,
   MentionOpenChangeDetails,
@@ -13,13 +13,13 @@ import type {
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectMention, mentionAnatomy, mentionMachine, mentionMeta } from '@xihan-ui/headless'
+import { connectMention, mentionAnatomy, mentionMachine, mentionMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -37,10 +37,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 邮箱地址里的 @ 因此不会误触发；前缀到光标之间那段就是查询串。其二，选中候选不是替换整个值，
  * 而是把那段查询串换成候选文本、前后文一字不动，光标随后落在插入内容之后。
  *
- * input 部件写成 textarea（缺省）时保留它自带的 textbox 角色：ARIA in HTML 只允许 textarea
- * 取 textbox，而 aria-expanded 不在 textbox 的支持属性里，两者一并让位；
- * 「有候选浮层」改由 aria-haspopup、aria-controls、aria-autocomplete 与 aria-activedescendant 表达。
- * 写成 input 时才补上 role=combobox 与 aria-expanded。
+ * input 部件是单行 `<input>`，元素往上打 role=combobox 与 aria-expanded；
+ * 候选身份经 aria-controls、aria-autocomplete 与 aria-activedescendant 上报。
  *
  * 过滤不由本元素做：查询串变化时派发 query-change，作者据此增删 item 节点。
  *
@@ -67,7 +65,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires open-change - 浮层开合；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state/data-disabled 与三个视觉轴）
  * @csspart label - 标题；`for` 恒写向输入框，故须是原生 `<label>` 才点得动
- * @csspart input - 输入框，写 textarea（推荐）或 input；没给 translations.input 时名字取自 label 部件
+ * @csspart input - 单行输入框，须写成 `<input>`；没给 translations.input 时名字取自 label 部件
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - role=listbox 容器（消解层的根节点），收起时带 hidden
  * @csspart empty - 一条候选都没有时显出的空态；须与 content 同级（listbox 里只许放 option）
@@ -75,7 +73,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item - role=option 候选，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart item-text - 候选文本，也是插回正文的取字处
  */
-export class XhMentionElement extends XhElement {
+export class XhMentionElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: mentionAnatomy, meta: mentionMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -87,10 +88,10 @@ export class XhMentionElement extends XhElement {
     triggerPrefix: { converter: STRING_CONVERTER, attribute: 'trigger-prefix' },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     loading: { type: Boolean },
-    readOnly: { type: Boolean, attribute: 'read-only' },
-    invalid: { type: Boolean },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    invalid: { converter: BOOLEAN_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
     name: { converter: STRING_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
@@ -124,11 +125,18 @@ export class XhMentionElement extends XhElement {
   declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  private readonly mentionScope = createScope(null, this.idGen)
+  private readonly mentionScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  private readonly portal = this.createAnchoredPortalController({
+    name: 'Mention',
+    config: () => this.config,
+    source: () => this.getPart('input'),
+    root: () => this.getPart('positioner'),
+    onChange: () => this.requestUpdate(),
+  })
 
   private readonly notifyValue = (details: MentionValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -161,17 +169,28 @@ export class XhMentionElement extends XhElement {
 
   /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<MentionSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       triggerPrefix: this.triggerPrefix,
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
-      disabled: this.disabled ?? false,
+      disabled: control.disabled,
       loading: this.loading ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       placeholder: this.placeholder,
       name: this.name,
       loop: this.loop,
@@ -195,6 +214,10 @@ export class XhMentionElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.mentionScope, idGenerator: this.idGen })
   }
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.portal.roots
+  }
+
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
@@ -205,7 +228,6 @@ export class XhMentionElement extends XhElement {
       // 浮层壳一并记上：候选列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
       branches: () => [this.getPart('input'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 浮层不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })
@@ -214,8 +236,14 @@ export class XhMentionElement extends XhElement {
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<MentionSchema>): void {
     this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: false,
+      onExitComplete: () => this.requestUpdate(),
+    })
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.exit.presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
@@ -247,10 +275,8 @@ export class XhMentionElement extends XhElement {
     put('empty', api.getEmptyProps() as Record<string, unknown>)
     put('loading', api.getLoadingProps() as Record<string, unknown>)
 
-    // 宿主标签直接读作者写的标记：作者摆的是 textarea 还是 input，DOM 已经说明白了
     const inputEl = this.getPart('input') as MentionInputEl | null
-    const inputHost: MentionInputHost = inputEl?.tagName === 'INPUT' ? 'input' : 'textarea'
-    const inputProps = api.getInputProps({ as: inputHost }) as Record<string, unknown>
+    const inputProps = api.getInputProps() as Record<string, unknown>
     // 值一样就别重写：给 value 重新赋值会把光标弹到末尾，正文中间的提及就插不进去了
     if (inputEl && inputEl.value === inputProps.value)
       delete inputProps.value
@@ -290,9 +316,11 @@ export class XhMentionElement extends XhElement {
       this.ctrl.service.send({ type: 'ITEMS.SYNC' })
 
     this.bars.wire()
+    this.portal.sync(this.exit.visible)
   }
 
   override disconnectedCallback(): void {
+    this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()

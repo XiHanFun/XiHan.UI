@@ -15,7 +15,7 @@ type ToolbarProps = ToolbarSchema['props']
 /** 函数式 children 的载荷：焦点锚点、生效的主轴与整条工具条的禁用态。 */
 export type ToolbarRootSlotProps = Pick<ToolbarApi, 'focusedValue' | 'orientation' | 'disabled'>
 
-export interface XhToolbarRootProps {
+export interface XhToolbarRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   orientation?: Orientation
   dir?: Direction
   loop?: boolean
@@ -26,15 +26,24 @@ export interface XhToolbarRootProps {
 }
 
 // 无对外事件：条目的点击与切换由条目自行派发
-export function XhToolbarRoot({ children, ...props }: XhToolbarRootProps): ReactNode {
-  const ctx = useToolbar(props as ToolbarProps)
+export function XhToolbarRoot({
+  orientation,
+  dir,
+  loop,
+  disabled,
+  variant,
+  size,
+  children,
+  ...rest
+}: XhToolbarRootProps): ReactNode {
+  const ctx = useToolbar({ orientation, dir, loop, disabled, variant, size } as ToolbarProps)
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，条目得焦也会把它叫起来，那一下会把焦点从条目抢回锚点上——
   // 装成原生监听器，到达路径才与另外两家一致。onFocusOut 归到的 onBlur 本就是冒泡的 focusout，不动它
   const bind = useNativeEvents(ctx.api.getRootProps() as Record<string, unknown>, ['onFocus'])
   return (
     <ToolbarProvider value={ctx}>
-      <div {...mergeReactProps(bind.attrs, { ref: bind.ref })}>
+      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
         {renderSlot(children, {
           focusedValue: ctx.api.focusedValue,
           orientation: ctx.api.orientation,

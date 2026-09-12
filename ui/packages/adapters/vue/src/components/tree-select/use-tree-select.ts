@@ -26,7 +26,7 @@ export interface TreeSelectContext {
 
 export function useTreeSelect(
   props: TreeSelectSchema['props'],
-  handlers: Pick<TreeSelectSchema['props'], 'onValueChange' | 'onExpandedValueChange' | 'onOpenChange'> = {},
+  handlers: Pick<TreeSelectSchema['props'], 'onValueChange' | 'onExpandedValueChange' | 'onOpenChange' | 'onBranchLoadStart' | 'onBranchLoad' | 'onBranchLoadError'> = {},
 ): TreeSelectContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
@@ -35,7 +35,7 @@ export function useTreeSelect(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // 三个回调由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
+  // 对外回调由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(treeSelectMachine, () => ({ ...props, ...handlers }), scope)
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
@@ -52,7 +52,6 @@ export function useTreeSelect(
       // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
       branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
 
@@ -67,7 +66,12 @@ export function useTreeSelect(
 
   const api = computed(() => connectTreeSelect(service, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
-  const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+  const visible = useOverlayExit({
+    config,
+    isOpen: () => api.value.open,
+    contentRef,
+    onPresence: presence => service.refs.set('presence', presence),
+  })
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 

@@ -18,11 +18,12 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * （Enter/Space 的激活由平台负责），收起时用内联 style.display 隐藏 root。
  *
  * @customElement xh-tag
- * @attr {'solid'|'subtle'|'outline'} variant - 形态，决定颜色怎么用
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定颜色怎么用
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定用哪族颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} closable - 是否给出关闭钮，缺省为假；为假时该钮同时被禁用与收起
  * @attr {boolean} disabled - 标签禁用，关闭钮留在原地但按不动
+ * @attr {boolean} read-only - 只读，关闭钮留在原地但按不动，标签本身不置灰
  * @attr {boolean} open - 受控显隐；缺省该属性即非受控
  * @attr {boolean} default-open - 非受控初始显隐，缺省为显示
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
@@ -40,6 +41,7 @@ export class XhTagElement extends XhElement {
     size: { converter: STRING_CONVERTER },
     closable: { converter: BOOLEAN_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     // 文案是对象，只能走 property
@@ -51,6 +53,7 @@ export class XhTagElement extends XhElement {
   declare size?: Size
   declare closable?: boolean
   declare disabled?: boolean
+  declare readOnly?: boolean
   declare open?: boolean
   declare defaultOpen?: boolean
   declare translations?: TagSchema['props']['translations']
@@ -70,6 +73,7 @@ export class XhTagElement extends XhElement {
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect
       closable: this.closable,
       disabled: this.disabled,
+      readOnly: this.readOnly,
       open: this.open,
       defaultOpen: this.defaultOpen,
       translations: this.translations,

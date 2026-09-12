@@ -173,11 +173,27 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-toggle-bg` · `--xh-toggle-bg-hover` · `--xh-toggle-bg-on` · `--xh-toggle-fg` · `--xh-toggle-fg-on` · `--xh-toggle-font-size` · `--xh-toggle-font-weight` · `--xh-toggle-gap` · `--xh-toggle-h` · `--xh-toggle-icon-size` · `--xh-toggle-px` · `--xh-toggle-radius` · `--xh-toggle-shadow`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-toggle-bg` | `root` | `background` | `default` | `transparent` | toggle 的 root 部件 background 覆盖槽。 |
+| `--xh-toggle-bg-hover` | `root` | `background` | `hover` | `--xh-bg-subtle-hover` | toggle 的 root 部件 background 覆盖槽。 |
+| `--xh-toggle-bg-on` | `root` | `background` | `hover`<br>`state=on` | `--xh-bg-subtle-active` | toggle 的 root 部件 background 覆盖槽。 |
+| `--xh-toggle-fg` | `root` | `color` | `default` | `--xh-fg-default` | toggle 的 root 部件 color 覆盖槽。 |
+| `--xh-toggle-fg-on` | `root` | `color` | `state=on` | `--xh-fg-default` | toggle 的 root 部件 color 覆盖槽。 |
+| `--xh-toggle-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-font-lg`<br>`--xh-control-font-sm`<br>`--xh-text-label-size` | toggle 的 root 部件 font-size 覆盖槽。 |
+| `--xh-toggle-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | toggle 的 root 部件 font-weight 覆盖槽。 |
+| `--xh-toggle-gap` | `root` | `gap` | `default` | `--xh-control-gap-md` | toggle 的 root 部件 gap 覆盖槽。 |
+| `--xh-toggle-h` | `root` | `block-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | toggle 的 root 部件 block-size 覆盖槽。 |
+| `--xh-toggle-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | toggle 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-toggle-px` | `root` | `padding-inline` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-px-lg`<br>`--xh-control-px-md`<br>`--xh-control-px-sm` | toggle 的 root 部件 padding-inline 覆盖槽。 |
+| `--xh-toggle-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | toggle 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-toggle-shadow` | `root` | `box-shadow` | `disabled`<br>`not([data-disabled])`<br>`state=on`<br>`variant=solid` | `--xh-_toggle-highlight` | toggle 的 root 部件 box-shadow 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

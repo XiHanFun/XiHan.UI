@@ -16,6 +16,7 @@
 
 - **两个入口归一到同一个模型**：`computeTextDiff(before, after)` 拿两版全文算，
   `parseUnifiedPatch(patch)` 解析补丁；组件只认模型。
+- 自定义渲染器可调用 `diffViewSides(view)` 取得列序：单栏为旧侧，分栏按旧侧、新侧排列。
 - **着色在建模时一次算好**，不在连接层跑：`computeTextDiff` 手里有完整文本，
   整体切一次再按行取，跨行的块注释与多行字符串才不会着错色。
   `parseUnifiedPatch` 拿不到完整文件，因此**一律不填着色**——宁可不着色也不错着色。

@@ -5,6 +5,8 @@
 //
 // 只跑指定组件：置环境变量 XH_WC_DEMOS=select,dialog（由 tooling/scripts/check-wc-demos.mjs 传入）。
 import type { DiagnosticRecord } from '@xihan-ui/core'
+import type { PartContract } from '../../src/dom/part-contract'
+import type { XhElement } from '../../src/element-base'
 import {
   onDiagnostic,
   setDiagnosticsConsoleOutput,
@@ -14,6 +16,7 @@ import {
 import * as headless from '@xihan-ui/headless'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../../src/define'
+import { delegatedScopesOf } from '../../src/dom/part-contract'
 import { discoverParts } from '../../src/dom/parts'
 // 皮肤与令牌一起加载：示例在文档站里就是带皮肤跑的，缺皮肤会引出与示例本身无关的诊断
 import '@xihan-ui/tokens/tokens.css'
@@ -63,12 +66,38 @@ const demos: Demo[] = Object.entries(RAW)
   .sort((a, b) => a.id.localeCompare(b.id))
 
 // innerHTML 收下的 <script> 不会执行，逐个重建成新节点才跑得起来（与文档站同一做法）
-function reviveScripts(host: HTMLElement): void {
+async function reviveScripts(host: HTMLElement): Promise<void> {
   for (const stale of Array.from(host.querySelectorAll('script'))) {
     const script = document.createElement('script')
     for (const attr of Array.from(stale.attributes)) script.setAttribute(attr.name, attr.value)
     script.textContent = stale.textContent
-    stale.replaceWith(script)
+    if (script.type !== 'module')
+      throw new Error('示例脚本必须使用 type="module"')
+    // 此验证环境的内联模块没有可靠 load 通知；显式完成事件保证求值结束后才允许清场。
+    const completed = `xh-demo-module-${crypto.randomUUID()}`
+    if (!script.src)
+      script.textContent += `\n;document.dispatchEvent(new Event(${JSON.stringify(completed)}));`
+    await new Promise<void>((resolve, reject) => {
+      const listeners = new AbortController()
+      const ready = (): void => {
+        listeners.abort()
+        resolve()
+      }
+      const failed = (event: ErrorEvent): void => {
+        listeners.abort()
+        reject(event.error ?? new Error(event.message))
+      }
+      const options = { once: true, signal: listeners.signal }
+      document.addEventListener(completed, ready, options)
+      window.addEventListener('error', failed, options)
+      if (script.src)
+        script.addEventListener('load', ready, options)
+      script.addEventListener('error', () => {
+        listeners.abort()
+        reject(new Error(`示例模块加载失败：${script.src || '内联模块'}`))
+      }, options)
+      stale.replaceWith(script)
+    })
   }
 }
 
@@ -101,6 +130,17 @@ async function settle(host: HTMLElement): Promise<void> {
 function describeNode(el: Element): string {
   const part = el.getAttribute('data-xh-part')
   return `<${el.tagName.toLowerCase()}${part ? ` data-xh-part="${part}"` : ''}>`
+}
+
+/** 最近的 xh-* 宿主声明的契约；没有宿主或宿主没声明时为 null。 */
+function hostContractOf(el: Element): PartContract | null {
+  for (let host = el.parentElement; host; host = host.parentElement) {
+    const tag = host.tagName.toLowerCase()
+    if (!tag.startsWith('xh-'))
+      continue
+    return (customElements.get(tag) as typeof XhElement | undefined)?.partContract ?? null
+  }
+  return null
 }
 
 const consoleErrors: string[] = []
@@ -173,7 +213,7 @@ describe('自定义元素版示例', () => {
       stage = document.createElement('div')
       document.body.append(stage)
       stage.innerHTML = demo.html
-      reviveScripts(stage)
+      await reviveScripts(stage)
       await settle(stage)
 
       const hosts = Array.from(stage.querySelectorAll('*')).filter(el =>
@@ -206,16 +246,28 @@ describe('自定义元素版示例', () => {
         }
       }
 
-      // 判据二：作者写的每个角色节点都被发现并接线。包在 xh-* 子元素里的触发器、拼错的部件名都栽在这
+      // 判据二：作者写的每个角色节点都被发现并接线。包在 xh-* 子元素里的触发器、拼错的部件名都栽在这。
+      // 宿主以 delegates 委派出去的作者名归内嵌部件管：不论接出来的名字变没变，data-scope 都得是那个部件的；
+      // 委派表与运行期的契约校验取同一份
       for (const el of Array.from(stage.querySelectorAll('[data-xh-part]'))) {
         const authored = el.getAttribute('data-xh-part')!
         const wired = el.getAttribute('data-part')
-        if (wired === null)
+        const scope = el.getAttribute('data-scope')
+        const contract = hostContractOf(el)
+        const delegated = contract ? delegatedScopesOf(contract).get(authored) : undefined
+        if (wired === null) {
           problems.push(`${describeNode(el)} 没被接线：拿不到 data-part，检查部件名是否拼错、是否被包进了别的 xh-* 元素里`)
-        else if (wired !== authored)
-          problems.push(`${describeNode(el)} 接成了 data-part="${wired}"`)
-        else if (!el.hasAttribute('data-scope'))
+        }
+        else if (scope === null) {
           problems.push(`${describeNode(el)} 拿到了 data-part 却没有 data-scope`)
+        }
+        else if (delegated) {
+          if (!delegated.has(scope))
+            problems.push(`${describeNode(el)} 委派给了 ${[...delegated].join(' / ')}，接出来的 data-scope 却是 "${scope}"`)
+        }
+        else if (wired !== authored) {
+          problems.push(`${describeNode(el)} 接成了 data-part="${wired}"`)
+        }
       }
 
       // 判据四：控制台零 error，未捕获异常与 error 级诊断同论

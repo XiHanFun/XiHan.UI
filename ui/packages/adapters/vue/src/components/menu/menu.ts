@@ -3,37 +3,39 @@ import type { MenuApi, MenuGroupProps, MenuItemProps, MenuNode, MenuNodeMeta, Me
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { mergeProps } from '@xihan-ui/core'
-import { computed, defineComponent, h, mergeProps as mergeVueProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps as mergeVueProps, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
+import { mergePartProps } from '../../runtime/merge-props'
+import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
-import { provideMenu, provideMenuChain, provideMenuGroup, provideMenuItem, provideMenuSub, useMenuChain, useMenuContext, useMenuGroupContext, useMenuItemContext, useMenuSubContext } from './context'
-import { useMenu } from './use-menu'
+import { provideMenu, provideMenuGroup, provideMenuItem, provideMenuSub, useMenuContext, useMenuGroupContext, useMenuItemContext, useMenuSubContext } from './context'
+import { useMenu, useMenuWithParent } from './use-menu'
 
 type MenuProps = MenuSchema['props']
 
 /** 默认插槽的载荷：展开态与改展开的动作。 */
 export type MenuRootSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 
-export const XhMenuRoot = defineComponent({
+export const XhMenuRoot = /* @__PURE__ */ defineComponent({
   name: 'XhMenuRoot',
-  // 缺省值由 connect 给出，这里一律 default: undefined
+  // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<MenuNode[]>, default: undefined },
+    collection: { type: Array as PropType<MenuNode[]> },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
     typeahead: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<Partial<MenuTranslations>>, default: undefined },
+    translations: { type: Object as PropType<Partial<MenuTranslations>> },
     openOnHover: { type: Boolean, default: undefined },
-    hoverOpenDelay: { type: Number, default: undefined },
-    hoverCloseDelay: { type: Number, default: undefined },
+    hoverOpenDelay: { type: Number },
+    hoverCloseDelay: { type: Number },
     /**
      * 只交 collection 时，触发器插槽给的那个节点直接当触发器用，不再外包一颗 <button>。
      * 摆部件的写法有 XhMenuTrigger 自己的 asChild，这个 prop 是给代铺那条路的同一个能力。
@@ -59,13 +61,6 @@ export const XhMenuRoot = defineComponent({
     const notifySelect: MenuProps['onSelect'] = details => emit('select', details)
     const ctx = useMenu(withXhConfig('menu', props) as MenuProps, notifyOpen, notifySelect)
     provideMenu(ctx)
-    // 任意层级子菜单的选中都汇到根：先发根的 select 再关根，各级随父关闭级联收起
-    provideMenuChain({
-      notifySelect: (details) => {
-        emit('select', details)
-        ctx.api.value.setOpen(false)
-      },
-    })
     return () => (slots.default
       ? slots.default({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
       : props.collection
@@ -74,41 +69,47 @@ export const XhMenuRoot = defineComponent({
   },
 })
 
-export const XhMenuTrigger = defineComponent({
+export const XhMenuTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhMenuTrigger',
+  // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
+  inheritAttrs: false,
   props: {
     /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const ctx = useMenuContext()
     return () => {
-      const attrs = {
+      const part = mergePartProps({
         ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
         ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
-      }
+      }, attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
-        const merged = mergeIntoChild(children, attrs, 'menu')
+        const merged = mergeIntoChild(children, part, 'menu')
         if (merged)
           return merged
       }
-      return h('button', attrs, children)
+      return h('button', part, children)
     }
   },
 })
 
-export const XhMenuPositioner = defineComponent({
+export const XhMenuPositioner = /* @__PURE__ */ defineComponent({
   name: 'XhMenuPositioner',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useMenuContext()
     // 条目列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
     const bars = useScrollbars({ scrollable: () => ctx.contentRef.value })
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
-    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef }, () => [
       h('div', {
         ...mergeVueProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
@@ -117,7 +118,7 @@ export const XhMenuPositioner = defineComponent({
   },
 })
 
-export const XhMenuContent = defineComponent({
+export const XhMenuContent = /* @__PURE__ */ defineComponent({
   name: 'XhMenuContent',
   setup(_, { slots }) {
     const ctx = useMenuContext()
@@ -131,7 +132,7 @@ export const XhMenuContent = defineComponent({
   },
 })
 
-export const XhMenuItem = defineComponent({
+export const XhMenuItem = /* @__PURE__ */ defineComponent({
   name: 'XhMenuItem',
   props: {
     value: { type: String, required: true },
@@ -177,33 +178,32 @@ export type MenuSubSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
  * 子菜单：内部再跑一台 menu 机器（submenu 模式），触发条目由 XhMenuSubTrigger
  * 渲染成「父菜单条目 + 本子菜单触发器」的双重身份。本身不渲染节点。
  */
-export const XhMenuSub = defineComponent({
+export const XhMenuSub = /* @__PURE__ */ defineComponent({
   name: 'XhMenuSub',
   props: {
     /** 它在父菜单里的条目身份。 */
     value: { type: String, required: true },
     disabled: { type: Boolean, default: undefined },
-    collection: { type: Array as PropType<MenuNode[]>, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    collection: { type: Array as PropType<MenuNode[]> },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     loop: { type: Boolean, default: undefined },
     openOnHover: { type: Boolean, default: undefined },
-    hoverOpenDelay: { type: Number, default: undefined },
+    hoverOpenDelay: { type: Number },
     /** 文字方向；缺省继承父层。子层被搬到浮层落点，继承不到父层的方向。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
     /** 语气；缺省继承父层。子层是浮层落点下的同级节点，CSS 私有槽继承不到。 */
-    tone: { type: String as PropType<Tone>, default: undefined },
+    tone: { type: String as PropType<Tone> },
     /** 尺寸；缺省继承父层，理由同 tone。 */
-    size: { type: String as PropType<Size>, default: undefined },
-    hoverCloseDelay: { type: Number, default: undefined },
+    size: { type: String as PropType<Size> },
+    hoverCloseDelay: { type: Number },
   },
   slots: Object as SlotsType<{
     default?: (props: MenuSubSlotProps) => VNode[]
   }>,
   setup(props, { slots }) {
     const parent = useMenuContext()
-    const chain = useMenuChain()
-    const ctx = useMenu(
+    const ctx = useMenuWithParent(
       {
         ...props,
         submenu: true,
@@ -212,8 +212,7 @@ export const XhMenuSub = defineComponent({
         size: props.size ?? parent.service.prop('size'),
       } as MenuProps,
       undefined,
-      // 子层的选中汇到根：根发 select 并关根，各级随父关闭级联收起
-      details => chain.notifySelect(details),
+      parent.tree,
     )
     // 覆盖菜单上下文：本子树内的部件都归子机器
     provideMenu(ctx)
@@ -227,7 +226,7 @@ export const XhMenuSub = defineComponent({
   },
 })
 
-export const XhMenuSubTrigger = defineComponent({
+export const XhMenuSubTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhMenuSubTrigger',
   setup(_, { slots }) {
     const sub = useMenuSubContext()
@@ -246,7 +245,7 @@ export const XhMenuSubTrigger = defineComponent({
 })
 
 /** 条目里的文字载体：连打检索取它，图标与副文本的文字因此不进检索串 */
-export const XhMenuItemText = defineComponent({
+export const XhMenuItemText = /* @__PURE__ */ defineComponent({
   name: 'XhMenuItemText',
   setup(_, { slots }) {
     const ctx = useMenuContext()
@@ -256,7 +255,7 @@ export const XhMenuItemText = defineComponent({
 })
 
 /** 条目里的标记位（勾选、图标），纯装饰 */
-export const XhMenuItemIndicator = defineComponent({
+export const XhMenuItemIndicator = /* @__PURE__ */ defineComponent({
   name: 'XhMenuItemIndicator',
   setup(_, { slots }) {
     const ctx = useMenuContext()
@@ -266,7 +265,7 @@ export const XhMenuItemIndicator = defineComponent({
 })
 
 /** 条目里的副文本，排在文字下一行 */
-export const XhMenuItemDescription = defineComponent({
+export const XhMenuItemDescription = /* @__PURE__ */ defineComponent({
   name: 'XhMenuItemDescription',
   setup(_, { slots }) {
     const ctx = useMenuContext()
@@ -275,7 +274,7 @@ export const XhMenuItemDescription = defineComponent({
   },
 })
 
-export const XhMenuGroup = defineComponent({
+export const XhMenuGroup = /* @__PURE__ */ defineComponent({
   name: 'XhMenuGroup',
   props: {
     value: { type: String, required: true },
@@ -288,7 +287,7 @@ export const XhMenuGroup = defineComponent({
   },
 })
 
-export const XhMenuGroupLabel = defineComponent({
+export const XhMenuGroupLabel = /* @__PURE__ */ defineComponent({
   name: 'XhMenuGroupLabel',
   setup(_, { slots }) {
     const ctx = useMenuContext()
@@ -297,7 +296,7 @@ export const XhMenuGroupLabel = defineComponent({
   },
 })
 
-export const XhMenuSeparator = defineComponent({
+export const XhMenuSeparator = /* @__PURE__ */ defineComponent({
   name: 'XhMenuSeparator',
   setup() {
     const ctx = useMenuContext()
@@ -305,7 +304,7 @@ export const XhMenuSeparator = defineComponent({
   },
 })
 
-export const XhMenuArrow = defineComponent({
+export const XhMenuArrow = /* @__PURE__ */ defineComponent({
   name: 'XhMenuArrow',
   setup() {
     const ctx = useMenuContext()

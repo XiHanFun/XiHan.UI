@@ -74,7 +74,7 @@ function authorDisabled(el: HTMLElement): boolean {
  */
 export class XhNavigationMenuElement extends XhElement {
   /** 逐个 content 一份退场闸门：一个菜单一份，它们各开各的。 */
-  private readonly exits = new Map<HTMLElement, OverlayExit>()
+  private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit }>()
   /** 退场闸门与消解层共用一份环境包。 */
   private config: RuntimeConfig | null = null
 
@@ -163,7 +163,6 @@ export class XhNavigationMenuElement extends XhElement {
       node: () => this.getPart('root'),
       branches: () => [],
       isModal: () => false,
-      setModal: () => {},
       surfaces: () => [],
     })
   }
@@ -175,6 +174,33 @@ export class XhNavigationMenuElement extends XhElement {
     svc.refs.set('getListEl', () => this.getPart('list'))
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+  }
+
+  /** Presence 的身份与生命周期由 Headless 记账；WC 只报告真实 content 的接入与离场。 */
+  private setPresence(value: string, presence: OverlayExit['presence'], connected: boolean): void {
+    if (this.ctrl.service.getStatus() !== 'Started')
+      return
+    this.ctrl.service.send({
+      type: 'PRESENCE.SET',
+      value,
+      presence,
+      connected,
+    })
+  }
+
+  private releaseExit(el: HTMLElement, entry: { value: string, gate: OverlayExit }): void {
+    this.setPresence(entry.value, entry.gate.presence, false)
+    entry.gate.dispose()
+    this.setPartHidden(el, true)
+    this.exits.delete(el)
+  }
+
+  protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
+    for (const el of nodes) {
+      const entry = this.exits.get(el)
+      if (entry)
+        this.releaseExit(el, entry)
+    }
   }
 
   protected wire(): void {
@@ -214,24 +240,32 @@ export class XhNavigationMenuElement extends XhElement {
     // 那条声明会盖过 UA 的 [hidden]{display:none}，得用内联 style.display 压住。
     // 判据直接取 connect 这一帧的产出，不另起一套：两边各判一次迟早会说岔。
     for (const el of this.getParts('content')) {
-      const props = api.getContentProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>
+      const value = el.getAttribute('value') ?? ''
+      const props = api.getContentProps({ value }) as Record<string, unknown>
       this.spreader.spread(el, props)
       // 退场动画播完之前先别收。一个菜单一份闸门：它们各开各的、动画各跑各的，
       // 一份闸门管不过来。必须排在 spread 之后——data-state 得先落进 DOM，探测器才读得到
-      const open = props.hidden !== true
-      let gate = this.exits.get(el)
-      if (!gate) {
+      const open = api.isOpen(value)
+      let entry = this.exits.get(el)
+      if (!entry) {
         this.ensureConfig()
-        gate = createOverlayExit({
+        const gate = createOverlayExit({
           config: this.config!,
           open,
           onExitComplete: () => this.requestUpdate(),
         })
-        this.exits.set(el, gate)
+        entry = { value, gate }
+        this.exits.set(el, entry)
+        this.setPresence(value, gate.presence, true)
       }
-      gate.track(el)
-      gate.update(open)
-      this.setPartHidden(el, !gate.visible)
+      else if (entry.value !== value) {
+        this.setPresence(entry.value, entry.gate.presence, false)
+        entry.value = value
+        this.setPresence(value, entry.gate.presence, true)
+      }
+      entry.gate.track(el)
+      entry.gate.update(open)
+      this.setPartHidden(el, !entry.gate.visible)
     }
 
     for (const el of this.getParts('link'))
@@ -253,12 +287,9 @@ export class XhNavigationMenuElement extends XhElement {
   }
 
   override disconnectedCallback(): void {
-    super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起
-    for (const [el, gate] of this.exits) {
-      gate.dispose()
-      this.setPartHidden(el, true)
-    }
-    this.exits.clear()
+    for (const [el, entry] of this.exits)
+      this.releaseExit(el, entry)
+    super.disconnectedCallback()
   }
 }

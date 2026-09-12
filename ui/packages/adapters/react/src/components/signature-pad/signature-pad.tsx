@@ -4,6 +4,7 @@ import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import { SignaturePadProvider, useSignaturePadContext } from './context'
 import { useSignaturePad } from './use-signature-pad'
 
@@ -17,7 +18,7 @@ export type SignaturePadRootSlotProps = Pick<
   'paths' | 'empty' | 'drawing' | 'disabled' | 'readOnly' | 'statusText' | 'toSvg' | 'clear'
 >
 
-export interface XhSignaturePadRootProps {
+export interface XhSignaturePadRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   disabled?: boolean
   readOnly?: boolean
   required?: boolean
@@ -31,14 +32,39 @@ export interface XhSignaturePadRootProps {
   children?: SlotChildren<SignaturePadRootSlotProps>
 }
 
-export function XhSignaturePadRoot({ children, ...props }: XhSignaturePadRootProps): ReactNode {
-  const ctx = useSignaturePad(withXhConfig('signature-pad', props) as SignaturePadProps)
+export function XhSignaturePadRoot({
+  disabled,
+  readOnly,
+  required,
+  invalid,
+  name,
+  drawing,
+  translations,
+  onDraw,
+  onDrawEnd,
+  children,
+  ...rest
+}: XhSignaturePadRootProps): ReactNode {
+  const ctx = useSignaturePad(withXhConfig('signature-pad', useFormControlProps({
+    disabled,
+    readOnly,
+    required,
+    invalid,
+    name,
+    drawing,
+    translations,
+    onDraw,
+    onDrawEnd,
+  })) as SignaturePadProps)
   const api = ctx.api
   return (
     <SignaturePadProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {renderSlot(children, {
           paths: api.paths,

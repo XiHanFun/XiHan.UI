@@ -22,7 +22,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 <template>
   <!-- 整表禁用：两颗按钮自带原生 disabled，控件那一侧的 disabled 由自己落 -->
   <XhFormRoot disabled :default-values="{ token: 'xh-0f2a' }" style="inline-size: 260px;">
-    <XhFormFieldGroup v-slot="{ value, setValue }" value="token">
+    <XhFormFieldGroup v-slot="{ value, setValue }" name="token">
       <XhFieldRoot disabled>
         <XhFieldLabel>接入令牌</XhFieldLabel>
         <XhFieldControl>
@@ -49,7 +49,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     style="inline-size: 260px;"
     @submit="onSubmit"
   >
-    <XhFormFieldGroup v-slot="{ value, setValue }" value="token">
+    <XhFormFieldGroup v-slot="{ value, setValue }" name="token">
       <XhFieldRoot>
         <XhFieldLabel>接入令牌</XhFieldLabel>
         <XhFieldControl>

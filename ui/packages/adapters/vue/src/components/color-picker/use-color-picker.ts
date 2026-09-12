@@ -1,8 +1,8 @@
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { ColorPickerApi, ColorPickerChannel, ColorPickerSchema } from '@xihan-ui/headless'
+import type { ColorPickerApi, ColorPickerChannel, ColorPickerSchema, ColorPickerServices, SliderSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { colorPickerMachine, connectColorPicker } from '@xihan-ui/headless'
+import { colorPickerChannelSliderProps, colorPickerMachine, connectColorPicker, sliderMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
@@ -30,7 +30,7 @@ export interface ColorPickerContext {
 
 export function useColorPicker(
   props: ColorPickerSchema['props'],
-  handlers: Pick<ColorPickerSchema['props'], 'onValueChange' | 'onOpenChange'> = {},
+  handlers: Pick<ColorPickerSchema['props'], 'onValueChange' | 'onOpenChange' | 'onColorError'> = {},
 ): ColorPickerContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
@@ -43,6 +43,24 @@ export function useColorPicker(
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const service = useMachine(colorPickerMachine, () => ({ ...props, ...handlers }), scope)
+
+  // 两条通道各自一台滑杆：区间与当下的值从取色器现读，取色器须先建立；
+  // 三台共用一份 scope，part id 里带组件名区分，不会撞
+  const channelSlider = (channel: ColorPickerChannel): Service<SliderSchema> => {
+    const slider = useMachine<SliderSchema>(
+      sliderMachine,
+      () => colorPickerChannelSliderProps(service, channel),
+      scope,
+    )
+    // 传 getter 而非节点，轨道要到挂载后才有
+    slider.refs.set('getTrackEl', () => channelTracks[channel])
+    return slider
+  }
+  const services: ColorPickerServices = {
+    root: service,
+    hueSlider: channelSlider('hue'),
+    alphaSlider: channelSlider('alpha'),
+  }
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
   let config: RuntimeConfig | null = null
@@ -58,7 +76,6 @@ export function useColorPicker(
       // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
       branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      setModal: () => {},
       // 浮层不带遮罩，没有可点关闭的表面
       surfaces: () => [],
     })
@@ -72,12 +89,16 @@ export function useColorPicker(
     service.refs.set('getContentEl', () => contentRef.value)
     // 传 getter 而非节点，ref 在挂载后才有值
     service.refs.set('getAreaEl', () => areaRef.value)
-    service.refs.set('getChannelTrackEl', channel => channelTracks[channel])
   }
 
-  const api = computed(() => connectColorPicker(service, vueNormalize))
+  const api = computed(() => connectColorPicker(services, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
-  const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+  const visible = useOverlayExit({
+    config,
+    isOpen: () => api.value.open,
+    contentRef,
+    onPresence: presence => service.refs.set('presence', presence),
+  })
   // 先问全局配置的落点，没有才落 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 

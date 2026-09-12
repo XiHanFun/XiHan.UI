@@ -5,6 +5,7 @@ import type { SlotChildren } from '../../runtime/slot-content'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import { EditableProvider, useEditableContext } from './context'
 import { useEditable } from './use-editable'
 
@@ -16,7 +17,7 @@ export type EditableRootSlotProps = Pick<
   'value' | 'displayValue' | 'editing' | 'empty' | 'setValue' | 'edit' | 'submit' | 'cancel'
 >
 
-export interface XhEditableRootProps {
+export interface XhEditableRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
   value?: string
   defaultValue?: string
   /** 受控编辑态。 */
@@ -43,14 +44,63 @@ export interface XhEditableRootProps {
   children?: SlotChildren<EditableRootSlotProps>
 }
 
-export function XhEditableRoot({ children, ...props }: XhEditableRootProps): ReactNode {
-  const ctx = useEditable(props as EditableProps)
+export function XhEditableRoot({
+  value,
+  defaultValue,
+  edit,
+  defaultEdit,
+  placeholder,
+  disabled,
+  readOnly,
+  invalid,
+  maxLength,
+  name,
+  submitMode,
+  activationMode,
+  selectOnFocus,
+  autoResize,
+  variant,
+  tone,
+  size,
+  onValueChange,
+  onValueCommit,
+  onValueRevert,
+  onEditChange,
+  children,
+  ...rest
+}: XhEditableRootProps): ReactNode {
+  const ctx = useEditable(useFormControlProps({
+    value,
+    defaultValue,
+    edit,
+    defaultEdit,
+    placeholder,
+    disabled,
+    readOnly,
+    invalid,
+    maxLength,
+    name,
+    submitMode,
+    activationMode,
+    selectOnFocus,
+    autoResize,
+    variant,
+    tone,
+    size,
+    onValueChange,
+    onValueCommit,
+    onValueRevert,
+    onEditChange,
+  } as EditableProps))
   const api = ctx.api
   return (
     <EditableProvider value={ctx}>
       <div
-        {...api.getRootProps() as Record<string, unknown>}
-        ref={(el: HTMLDivElement | null) => { ctx.rootRef.current = el }}
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
       >
         {renderSlot(children, {
           value: api.value,

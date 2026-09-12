@@ -3,8 +3,10 @@ import { setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import {
   clampFloatingPanelSize,
+  fitFloatingPanelToViewport,
   FLOATING_PANEL_DEFAULT_POSITION,
   FLOATING_PANEL_DEFAULT_SIZE,
+  floatingPanelViewportFrom,
   moveFloatingPanel,
   resizeFloatingPanel,
   sameFloatingPanelPosition,
@@ -18,34 +20,44 @@ const { createMachine } = setup<FloatingPanelSchema>()
 // 展开态下再分闲置、指针搬动、指针改尺三段，后两段各挂一份跟手副作用。
 export const floatingPanelMachine = createMachine({
   name: 'floating-panel',
-  context: ({ prop, cell }) => ({
-    position: cell(() => ({
-      value: prop('position'),
-      defaultValue: prop('defaultPosition') ?? FLOATING_PANEL_DEFAULT_POSITION,
-      // 坐标每帧都是新对象，默认的 Object.is 会把"没动"也判成动了
-      isEqual: sameFloatingPanelPosition,
-      // 通知必须挂在 cell 上：受控时 set 不写内部值，只有这条回调能把用户意图送出去
-      onChange: position => prop('onPositionChange')?.({ position }),
-    })),
-    dimensions: cell(() => {
-      const min = prop('minSize')
-      const max = prop('maxSize')
-      const controlled = prop('dimensions')
-      return {
-        // 受控值也要过一遍上下限：作者写进来的尺寸同样不该小于 minSize。
-        // undefined 原样留着，那是"非受控"的唯一表达
-        value: controlled === undefined ? undefined : clampFloatingPanelSize(controlled, min, max),
-        defaultValue: clampFloatingPanelSize(prop('defaultDimensions') ?? FLOATING_PANEL_DEFAULT_SIZE, min, max),
-        isEqual: sameFloatingPanelSize,
-        onChange: dimensions => prop('onDimensionsChange')?.({ dimensions }),
-      }
-    }),
-    windowState: cell(() => ({
-      value: prop('windowState'),
-      defaultValue: prop('defaultWindowState') ?? 'default',
-      onChange: windowState => prop('onWindowStateChange')?.({ windowState }),
-    })),
-  }),
+  context: ({ prop, cell, scope }) => {
+    // 内建默认矩形按挂载时的视口夹一次：360×240 落在 (24,24) 时右缘恒 384，
+    // 窄屏上它连同右侧那几个改尺把手一起落在屏外。
+    // 作者写了 defaultPosition / defaultDimensions 就照写的来，那是明说的落位
+    const home = fitFloatingPanelToViewport(
+      FLOATING_PANEL_DEFAULT_POSITION,
+      FLOATING_PANEL_DEFAULT_SIZE,
+      floatingPanelViewportFrom(scope),
+    )
+    return {
+      position: cell(() => ({
+        value: prop('position'),
+        defaultValue: prop('defaultPosition') ?? home.position,
+        // 坐标每帧都是新对象，默认的 Object.is 会把"没动"也判成动了
+        isEqual: sameFloatingPanelPosition,
+        // 通知必须挂在 cell 上：受控时 set 不写内部值，只有这条回调能把用户意图送出去
+        onChange: position => prop('onPositionChange')?.({ position }),
+      })),
+      dimensions: cell(() => {
+        const min = prop('minSize')
+        const max = prop('maxSize')
+        const controlled = prop('dimensions')
+        return {
+          // 受控值也要过一遍上下限：作者写进来的尺寸同样不该小于 minSize。
+          // undefined 原样留着，那是"非受控"的唯一表达
+          value: controlled === undefined ? undefined : clampFloatingPanelSize(controlled, min, max),
+          defaultValue: clampFloatingPanelSize(prop('defaultDimensions') ?? home.size, min, max),
+          isEqual: sameFloatingPanelSize,
+          onChange: dimensions => prop('onDimensionsChange')?.({ dimensions }),
+        }
+      }),
+      windowState: cell(() => ({
+        value: prop('windowState'),
+        defaultValue: prop('defaultWindowState') ?? 'default',
+        onChange: windowState => prop('onWindowStateChange')?.({ windowState }),
+      })),
+    }
+  },
   refs: () => ({
     getContentEl: () => null,
     session: null,

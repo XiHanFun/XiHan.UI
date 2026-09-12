@@ -14,12 +14,14 @@
 
 ## 特性
 
-- `decorative` 开启后读屏跳过它（`role="none"`，不出 `aria-orientation`）；只是排版用的横线应该这么写。
+- `decorative` 开启后用 `role="none"` + `aria-hidden="true"` 把整段（包括可见分节文字）退出无障碍树，
+  同时不出 `aria-orientation`；只是排版用的线应该这么写。带业务含义的分节文字不要开 decorative。
 - 给了 `content` 就自动排成「线 · 文字 · 线」三段：间距、字号与线长都走令牌，不必在外层手搓。
 - `align` 把分节文字挪到靠左或靠右，那一侧的线收成一小截。
-- `variant` 三档只换线的深浅：默认线 / 弱线 / 强线。
+- `variant` 三档只换线的深浅：默认线使用会随浅深色、对比度与透明度策略变化的材质分隔色，
+  subtle 使用实体低对比线，strong 使用高对比边界。
 - `dashed` 画虚线，横竖两个朝向各自成立；段长走 `--xh-separator-dash-length` / `-dash-gap`。
-- 线是拿背景画出来的：颜色槽位收的是背景值，粗细是另一个槽位。
+- 线是拿背景画出来的：颜色槽位收的是背景值，粗细是另一个槽位；圆润端点避免细线在玻璃表面显得生硬。
 - 竖向分隔线需要父容器有确定高度。
 
 ## 示例
@@ -69,7 +71,7 @@ variant 三档换深浅，dashed 画虚线（横竖各自成立），粗细与�
 | --- | --- | --- | --- |
 | `align` | `SeparatorAlign` |  | 分节文字落在哪一侧，缺省居中；缺省档不输出 data-align。 |
 | `dashed` | `boolean` |  | 画成虚线；实线段与空白段的长度走 --xh-separator-dash-length / -dash-gap 两个槽。 |
-| `decorative` | `boolean` |  | 装饰性分隔：仅视觉分组，不进无障碍树（role=none，无 aria-orientation）。 |
+| `decorative` | `boolean` |  | 装饰性分隔：仅视觉分组，root 通过 role=none + aria-hidden 完整退出无障碍树。 |
 | `orientation` | `'horizontal' \| 'vertical'` |  |  |
 | `variant` | `SeparatorVariant` |  | 线怎么画，缺省 default；缺省档不输出 data-variant。 |
 
@@ -95,6 +97,7 @@ variant 三档换深浅，dashed 画虚线（横竖各自成立），粗细与�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `aria-hidden` | 'true' \| undefined |
 | `root` | `aria-orientation` | 'vertical' \| undefined |
 | `root` | `role` | 'none' \| 'separator' |
 | `line` | `role` | 'none' |
@@ -115,11 +118,23 @@ variant 三档换深浅，dashed 画虚线（横竖各自成立），粗细与�
 | `root` | `data-variant` | props.variant |
 | `line` | `data-orientation` | props.orientation |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-separator-align-length` · `--xh-separator-color` · `--xh-separator-content-fg` · `--xh-separator-content-font-size` · `--xh-separator-dash-gap` · `--xh-separator-dash-length` · `--xh-separator-gap` · `--xh-separator-thickness`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-separator-align-length` | `line`<br>`root` | `flex` | `align=end`<br>`align=start`<br>`first-child`<br>`last-child` | `--xh-space-6` | separator 的 line、root 部件 flex 覆盖槽。 |
+| `--xh-separator-color` | `line`<br>`root` | `background` | `dashed`<br>`default`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=strong`<br>`variant=subtle` | `--xh-border-strong`<br>`--xh-material-frosted-separator`<br>`--xh-material-soft-separator` | separator 的 line、root 部件 background 覆盖槽。 |
+| `--xh-separator-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` | separator 的 content 部件 color 覆盖槽。 |
+| `--xh-separator-content-font-size` | `content` | `font-size` | `default` | `--xh-text-secondary-size` | separator 的 content 部件 font-size 覆盖槽。 |
+| `--xh-separator-dash-gap` | `line`<br>`root` | `background` | `dashed`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1_5` | separator 的 line、root 部件 background 覆盖槽。 |
+| `--xh-separator-dash-length` | `line`<br>`root` | `background` | `dashed`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1_5` | separator 的 line、root 部件 background 覆盖槽。 |
+| `--xh-separator-gap` | `content`<br>`root` | `gap` | `has([data-part='content'])` | `--xh-space-3` | separator 的 content、root 部件 gap 覆盖槽。 |
+| `--xh-separator-radius` | `line`<br>`root` | `border-radius` | `default` | `--xh-shape-pill` | separator 的 line、root 部件 border-radius 覆盖槽。 |
+| `--xh-separator-thickness` | `line`<br>`root` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | separator 的 line、root 部件 block-size、inline-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 

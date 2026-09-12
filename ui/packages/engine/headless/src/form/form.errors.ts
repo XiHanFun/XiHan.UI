@@ -1,19 +1,17 @@
 // 错误表的纯运算，不碰 DOM、不看状态机。
 // 不变量：在表里 = 这个字段此刻有错。空串与 undefined 不是一条错误，而是"把这条清掉"。
 
-/** 字段名 → 错误文案。只装真正有错的字段。 */
-export type FormErrors = Record<string, string>
+import type { FormPath } from './form.path'
+import { deleteFormPathValue, formPathEntries, getFormPathValue, hasFormPathValue, setFormPathValue } from './form.path'
+
+/** 字段路径 → 错误文案。数组路径不落进普通对象键。 */
+export type FormErrors = import('./form.path').FormPathRecord<string>
 
 /**
  * 允许"清空"的错误表写法：校验函数的返回值与命令式的 setFieldError 都收这个形状，
  * 空串 / undefined / null 表示这条没有错误。
  */
-export type FormErrorPatch = Record<string, string | undefined | null>
-
-/** 自有属性判定。错误表是普通对象字面量，`'toString' in errors` 会被原型链骗过去。 */
-function has(table: object, key: string): boolean {
-  return Object.hasOwn(table, key)
-}
+export type FormErrorPatch = import('./form.path').FormPathRecord<string | undefined | null>
 
 function isMessage(value: unknown): value is string {
   return typeof value === 'string' && value !== ''
@@ -24,13 +22,12 @@ function isMessage(value: unknown): value is string {
  * 校验函数的返回值、受控的 errors、defaultErrors 三条入口都要过这一道。
  */
 export function normalizeFormErrors(raw: FormErrorPatch | undefined | null): FormErrors {
-  const out: FormErrors = {}
+  let out: FormErrors = {}
   if (!raw)
     return out
-  for (const key of Object.keys(raw)) {
-    const message = raw[key]
+  for (const [path, message] of formPathEntries(raw)) {
     if (isMessage(message))
-      out[key] = message
+      out = setFormPathValue(out, path, message)
   }
   return out
 }
@@ -43,18 +40,17 @@ export function normalizeFormErrors(raw: FormErrorPatch | undefined | null): For
  */
 export function mergeFormErrors(current: FormErrors, patch: FormErrorPatch): FormErrors {
   let changed = false
-  const out: FormErrors = { ...current }
-  for (const key of Object.keys(patch)) {
-    const message = patch[key]
+  let out: FormErrors = current
+  for (const [path, message] of formPathEntries(patch)) {
     if (isMessage(message)) {
-      if (out[key] !== message) {
-        out[key] = message
+      if (getFormPathValue(out, path) !== message) {
+        out = setFormPathValue(out, path, message)
         changed = true
       }
       continue
     }
-    if (has(out, key)) {
-      delete out[key]
+    if (hasFormPathValue(out, path)) {
+      out = deleteFormPathValue(out, path)
       changed = true
     }
   }
@@ -62,8 +58,8 @@ export function mergeFormErrors(current: FormErrors, patch: FormErrorPatch): For
 }
 
 /** 表里的字段名，保持插入顺序。 */
-export function formErrorNames(errors: FormErrors): string[] {
-  return Object.keys(errors)
+export function formErrorNames(errors: FormErrors): FormPath[] {
+  return formPathEntries(errors).map(([path]) => path)
 }
 
 /**
@@ -73,10 +69,11 @@ export function formErrorNames(errors: FormErrors): string[] {
 export function sameFormErrors(a: FormErrors, b: FormErrors | undefined): boolean {
   if (!b)
     return false
-  const keys = Object.keys(a)
-  if (keys.length !== Object.keys(b).length)
+  const aEntries = formPathEntries(a)
+  const bEntries = formPathEntries(b)
+  if (aEntries.length !== bEntries.length)
     return false
-  return keys.every(key => has(b, key) && a[key] === b[key])
+  return aEntries.every(([path, message]) => getFormPathValue(b, path) === message && hasFormPathValue(b, path))
 }
 
 /**
@@ -85,10 +82,10 @@ export function sameFormErrors(a: FormErrors, b: FormErrors | undefined): boolea
  * domOrder 里一个都没命中时退回键序的第一条——字段容器可能压根没渲染
  * （分步表单的下一步、条件字段），此时给不出文档序。
  */
-export function firstFormErrorName(domOrder: readonly string[], errors: FormErrors): string | null {
+export function firstFormErrorName(domOrder: readonly FormPath[], errors: FormErrors): FormPath | null {
   for (const name of domOrder) {
-    if (has(errors, name))
+    if (hasFormPathValue(errors, name))
       return name
   }
-  return Object.keys(errors)[0] ?? null
+  return formErrorNames(errors)[0] ?? null
 }

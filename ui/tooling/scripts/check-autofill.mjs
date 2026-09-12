@@ -25,6 +25,7 @@ import { join } from 'node:path'
 import process from 'node:process'
 
 import { VUE_COMPONENTS_DIR } from './lib/adapters.mjs'
+import { declarations, stripComments } from './lib/css-declarations.mjs'
 
 /**
  * 这张门禁的断言全部落在共享皮肤上，React 不在其列。
@@ -42,6 +43,7 @@ const SCOPE = 'React 不在其列：判据落在三家共用的皮肤上，Vue �
 const ANATOMY_DIR = 'packages/engine/headless/src'
 const VUE_DIR = VUE_COMPONENTS_DIR
 const SKIN_DIR = 'packages/design/styles/css'
+const FIELD_FAMILY = 'packages/design/styles/family/field-chrome.css'
 
 /**
  * 解剖里有 input 部件、但渲染的不是原生表单控件的组件。
@@ -50,9 +52,6 @@ const SKIN_DIR = 'packages/design/styles/css'
 const NOT_NATIVE = {
   'tool-call': { tag: 'div', reason: '展示工具调用的入参，是只读的代码块容器，不接受键入' },
 }
-
-/** 注释挖空但保留换行，行号不移位。 */
-const strip = css => css.replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' '))
 
 const problems = []
 
@@ -247,28 +246,381 @@ function maxSpecificity(selector) {
   return best
 }
 
-// —— 四、逐份皮肤查规则 ——
-const BG_TOKEN = /var\(\s*--xh-[a-z0-9-]*autofill-bg\s*,\s*var\(\s*--xh-bg-[a-z0-9-]+\s*\)\s*\)/
-const FG_TOKEN = /var\(\s*--xh-[a-z0-9-]*autofill-fg\s*,\s*var\(\s*--xh-fg-[a-z0-9-]+\s*\)\s*\)/
+// —— 四、autofill 色链：公开覆盖槽可直接落语义色，也可落到组件自己的状态派生槽 ——
+
+/** 在括号与方括号之外拆逗号；:is() / :not() 里的逗号不拆。 */
+function splitTopLevel(text) {
+  const out = []
+  let start = 0
+  let round = 0
+  let square = 0
+  for (let i = 0; i < text.length; i++) {
+    if (text[i] === '(') {
+      round++
+    }
+    else if (text[i] === ')') {
+      round--
+    }
+    else if (text[i] === '[') {
+      square++
+    }
+    else if (text[i] === ']') {
+      square--
+    }
+    else if (text[i] === ',' && round === 0 && square === 0) {
+      out.push(text.slice(start, i).trim())
+      start = i + 1
+    }
+  }
+  out.push(text.slice(start).trim())
+  return out.filter(Boolean)
+}
+
+function styleRules(css) {
+  return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(m => ({
+    selector: m[1].replace(/\s+/g, ' ').trim(),
+    body: m[2],
+    at: m.index,
+    line: css.slice(0, m.index).split('\n').length,
+  }))
+}
+
+/** 一条 root 选择器在状态矩阵里的正/负属性条件；后代选择器不算给 root 赋值。 */
+function rootCondition(selector, comp) {
+  const marker = new RegExp(`\\[data-scope=['"]${comp}['"]\\]\\[data-part=['"]root['"]\\]`)
+  const hit = marker.exec(selector)
+  if (!hit)
+    return null
+  if (selector.slice(0, hit.index).trim())
+    return null
+  const tail = selector.slice(hit.index + hit[0].length)
+  const residue = tail
+    .replace(/:not\(\[[^\]]+\]\)/g, '')
+    .replace(/\[[^\]]+\]/g, '')
+    .trim()
+  if (residue)
+    return null
+
+  const negative = []
+  for (const match of selector.matchAll(/:not\(\[([\w-]+)(?:=['"]([^'"]+)['"])?\]\)/g))
+    negative.push({ name: match[1], value: match[2] ?? null })
+  const withoutNegative = selector.replace(/:not\(\[[^\]]+\]\)/g, '')
+  const positive = []
+  for (const match of withoutNegative.matchAll(/\[([\w-]+)(?:=['"]([^'"]+)['"])?\]/g)) {
+    if (match[1] !== 'data-scope' && match[1] !== 'data-part')
+      positive.push({ name: match[1], value: match[2] ?? null })
+  }
+  return { positive, negative }
+}
+
+function conditionMatches(condition, state) {
+  const matches = ({ name, value }) => state.has(name) && (value === null || state.get(name) === value)
+  return condition.positive.every(matches) && condition.negative.every(entry => !matches(entry))
+}
+
+/** 公开 autofill 槽的第二参必须仍是一支 var；返回它指向的语义/私有槽。 */
+function fallbackTarget(body, role) {
+  const match = new RegExp(
+    `var\\(\\s*(--xh-[a-z0-9-]*autofill-${role})\\s*,\\s*var\\(\\s*(--xh-[\\w-]+)\\s*\\)\\s*\\)`,
+  ).exec(body)
+  return match ? { slot: match[1], target: match[2] } : null
+}
+
+function roleToken(name, role) {
+  if (role === 'bg')
+    return name.startsWith('--xh-bg-') || /^--xh-material-[\w-]+-bg$/.test(name)
+  return name.startsWith('--xh-fg-') || name === '--xh-tone-on'
+}
+
+/** 透明关键字、显式 alpha 与带 alpha 的十六进制都不是可盖住平台底的实体色。 */
+function transparencyOf(value) {
+  if (/\btransparent\b/i.test(value) || /^\s*none\s*$/i.test(value))
+    return 'transparent/none'
+  for (const match of value.matchAll(/\/\s*(\d+(?:\.\d+)?|\.\d+)(%?)\s*(?=[)\s,])/g)) {
+    const alpha = Number(match[1]) / (match[2] ? 100 : 1)
+    if (alpha < 1)
+      return `alpha=${alpha}`
+  }
+  for (const match of value.matchAll(/rgba?\([^)]*,\s*(\d+(?:\.\d+)?|\.\d+)\s*\)/gi)) {
+    if (Number(match[1]) < 1)
+      return `alpha=${match[1]}`
+  }
+  for (const match of value.matchAll(/#(?:[\da-f]{4}|[\da-f]{8})\b/gi)) {
+    const hex = match[0].slice(1)
+    const alpha = Number.parseInt(hex.length === 4 ? `${hex[3]}${hex[3]}` : hex.slice(6), 16)
+    if (alpha < 255)
+      return `alpha=${alpha}/255`
+  }
+  return null
+}
+
+/** 解析一条表达式里的所有 var 依赖；未定义、成环或任一可能取值透明都会失败。 */
+function inspectExpression(value, role, resolve, trail) {
+  const errors = []
+  const transparent = transparencyOf(value)
+  if (transparent)
+    errors.push(`${trail.join(' → ')} 的终值不是实体色（${transparent}）：${value.replace(/\s+/g, ' ')}`)
+  let roleSeen = false
+  const references = [...value.matchAll(/var\(\s*(--xh-[\w-]+)/g)].map(m => m[1])
+  for (const name of references) {
+    const result = resolve(name, [...trail, name])
+    errors.push(...result.errors)
+    roleSeen ||= result.roleSeen
+  }
+  return { errors, roleSeen }
+}
+
+function inspectGlobal(name, role, globals, trail) {
+  if (trail.slice(0, -1).includes(name))
+    return { errors: [`autofill 色链成环：${trail.join(' → ')}`], roleSeen: false }
+  const values = globals.get(name)
+  if (!values?.length)
+    return { errors: [`autofill 色链引用了未声明的 ${name}（${trail.join(' → ')}）`], roleSeen: false }
+  let roleSeen = roleToken(name, role)
+  const errors = []
+  for (const value of values) {
+    const result = inspectExpression(value, role, (next, nextTrail) => inspectGlobal(next, role, globals, nextTrail), trail)
+    errors.push(...result.errors)
+    roleSeen ||= result.roleSeen
+  }
+  return { errors, roleSeen }
+}
+
+function localDeclarationsOf(comp, css) {
+  const out = new Map()
+  for (const declaration of declarations(css)) {
+    if (!declaration.prop.startsWith('--xh-_'))
+      continue
+    const selector = declaration.selectors.at(-1)
+    if (!selector || selector.startsWith('@'))
+      continue
+    // @layer 只决定级联层，不改变规则会不会命中；其余祖先可能让声明只在某个媒体、
+    // 特性或容器条件下存在，不能拿来证明普通环境中的 autofill 底一定为实体。
+    const ancestors = declaration.selectors.slice(0, -1)
+    if (ancestors.some(ancestor => !/^@layer(?:\s|$)/.test(ancestor)))
+      continue
+    for (const branch of splitTopLevel(selector)) {
+      const condition = rootCondition(branch, comp)
+      if (!condition)
+        continue
+      const entries = out.get(declaration.prop) ?? []
+      entries.push({
+        name: declaration.prop,
+        value: declaration.value,
+        at: declaration.index,
+        condition,
+        rank: rank(specificity(branch)),
+        order: declaration.index,
+      })
+      out.set(declaration.prop, entries)
+    }
+  }
+  return out
+}
+
+/** 从目标私有槽收依赖闭包；只有当前组件 root 上的声明参与本地状态层叠。 */
+function localClosure(target, locals) {
+  const found = new Set()
+  const queue = [target]
+  while (queue.length) {
+    const name = queue.pop()
+    if (found.has(name) || !locals.has(name))
+      continue
+    found.add(name)
+    for (const declaration of locals.get(name)) {
+      for (const match of declaration.value.matchAll(/var\(\s*(--xh-_[\w-]+)/g)) {
+        if (locals.has(match[1]))
+          queue.push(match[1])
+      }
+    }
+  }
+  return found
+}
+
+function statesFor(names, locals) {
+  const domains = new Map()
+  for (const name of names) {
+    for (const declaration of locals.get(name) ?? []) {
+      for (const entry of [...declaration.condition.positive, ...declaration.condition.negative]) {
+        const domain = domains.get(entry.name) ?? new Set([null])
+        domain.add(entry.value ?? '*')
+        domains.set(entry.name, domain)
+      }
+    }
+  }
+  const axes = [...domains].map(([name, values]) => [name, [...values]])
+  const out = []
+  const visit = (index, state) => {
+    if (index === axes.length) {
+      out.push(new Map(state))
+      return
+    }
+    const [name, values] = axes[index]
+    for (const value of values) {
+      if (value === null)
+        state.delete(name)
+      else
+        state.set(name, value)
+      visit(index + 1, state)
+    }
+    state.delete(name)
+  }
+  visit(0, new Map())
+  return out.length ? out : [new Map()]
+}
+
+function stateName(state) {
+  return [...state].map(([name, value]) => `${name}=${value}`).join(', ') || '默认态'
+}
+
+function inspectFallback(comp, target, role, css, globals) {
+  if (!target.startsWith('--xh-_')) {
+    const result = inspectGlobal(target, role, globals, [target])
+    if (!result.roleSeen)
+      result.errors.push(`${target} 没有落到 --xh-${role}-* 语义色`)
+    return result.errors
+  }
+
+  const locals = localDeclarationsOf(comp, css)
+  if (!locals.has(target))
+    return [`${comp} 的 autofill 私有兜底 ${target} 未在本组件 root 的无条件规则中声明`]
+  const closure = localClosure(target, locals)
+  const errors = []
+  for (const state of statesFor(closure, locals)) {
+    const resolveLocal = (name, trail) => {
+      if (trail.slice(0, -1).includes(name))
+        return { errors: [`autofill 色链成环：${trail.join(' → ')}`], roleSeen: false }
+      const declarations = locals.get(name)
+      if (!declarations)
+        return inspectGlobal(name, role, globals, trail)
+      const matches = declarations.filter(entry => conditionMatches(entry.condition, state))
+      matches.sort((a, b) => a.rank - b.rank || a.order - b.order)
+      const selected = matches.at(-1)
+      if (!selected)
+        return { errors: [`${stateName(state)} 下 ${name} 没有生效声明`], roleSeen: false }
+      return inspectExpression(
+        selected.value,
+        role,
+        (next, nextTrail) => locals.has(next)
+          ? resolveLocal(next, nextTrail)
+          : inspectGlobal(next, role, globals, nextTrail),
+        trail,
+      )
+    }
+    const result = resolveLocal(target, [target])
+    for (const error of result.errors)
+      errors.push(`${stateName(state)}：${error}`)
+    if (!result.roleSeen)
+      errors.push(`${stateName(state)}：${target} 没有落到 --xh-${role}-* 语义色`)
+  }
+  return [...new Set(errors)]
+}
+
+/** 正反夹具随门禁常跑：保证状态覆盖能挡住透明普通底，同时拒绝坏链和条件声明伪证明。 */
+function verifyPrivateResolver() {
+  const globals = new Map([
+    ['--xh-bg-canvas', ['oklch(1 0 0)']],
+    ['--xh-fg-default', ['oklch(0.1 0 0)']],
+  ])
+  const root = '[data-scope=\'probe\'][data-part=\'root\']'
+  const positive = `
+    @layer xihan.components {
+      ${root} {
+        --xh-_probe-surface: var(--xh-bg-canvas);
+        --xh-_probe-autofill-bg: var(--xh-_probe-surface);
+      }
+      ${root}[data-variant='ghost'] {
+        --xh-_probe-surface: transparent;
+        --xh-_probe-autofill-bg: var(--xh-bg-canvas);
+      }
+    }
+  `
+  if (inspectFallback('probe', '--xh-_probe-autofill-bg', 'bg', positive, globals).length)
+    throw new Error('[check-autofill] 私有链自检失败：状态覆盖后的实体底被误判')
+
+  const bad = [
+    ['--xh-_probe-missing', `${root} { --xh-_probe-missing: var(--xh-_not-declared); }`, '未声明'],
+    ['--xh-_probe-cycle', `${root} { --xh-_probe-cycle: var(--xh-_probe-next); --xh-_probe-next: var(--xh-_probe-cycle); }`, '成环'],
+    ['--xh-_probe-clear', `${root} { --xh-_probe-clear: transparent; }`, '不是实体色'],
+    ['--xh-_probe-alpha', `${root} { --xh-_probe-alpha: oklch(1 0 0 / 0.5); }`, 'alpha=0.5'],
+  ]
+  for (const [target, css, expected] of bad) {
+    const errors = inspectFallback('probe', target, 'bg', css, globals)
+    if (!errors.some(error => error.includes(expected)))
+      throw new Error(`[check-autofill] 私有链自检失败：${expected} 夹具没有被拒绝`)
+  }
+
+  const conditional = `
+    ${root} {
+      --xh-_probe-surface: transparent;
+      --xh-_probe-autofill-bg: var(--xh-_probe-surface);
+    }
+    @media (forced-colors: active) {
+      ${root} { --xh-_probe-surface: var(--xh-bg-canvas); }
+    }
+  `
+  const conditionalErrors = inspectFallback('probe', '--xh-_probe-autofill-bg', 'bg', conditional, globals)
+  if (!conditionalErrors.some(error => error.includes('不是实体色')))
+    throw new Error('[check-autofill] 私有链自检失败：条件媒体里的实体覆盖误证了普通透明底')
+}
+
+verifyPrivateResolver()
+
+// 收集令牌与共享语气层的所有可能声明；私有链末端每一档都必须保持不透明。
+const globalDeclarations = new Map()
+for (const file of (await readdir(SKIN_DIR)).filter(name => name.endsWith('.css'))) {
+  const source = stripComments(await readFile(join(SKIN_DIR, file), 'utf8'))
+  for (const declaration of declarations(source)) {
+    if (!declaration.prop.startsWith('--xh-'))
+      continue
+    const values = globalDeclarations.get(declaration.prop) ?? []
+    values.push(declaration.value)
+    globalDeclarations.set(declaration.prop, values)
+  }
+}
+for (const declaration of declarations(stripComments(await readFile('packages/design/tokens/tokens.css', 'utf8')))) {
+  if (!declaration.prop.startsWith('--xh-'))
+    continue
+  const values = globalDeclarations.get(declaration.prop) ?? []
+  values.push(declaration.value)
+  globalDeclarations.set(declaration.prop, values)
+}
+
+// —— 五、逐份皮肤查规则 ——
 
 let ruleCount = 0
 
 for (const comp of native.sort()) {
   let css
   try {
-    css = strip(await readFile(join(SKIN_DIR, `${comp}.css`), 'utf8'))
+    const componentCss = await readFile(join(SKIN_DIR, `${comp}.css`), 'utf8')
+    if (/@import\s+['"]\.\.\/family\/field-chrome\.css['"]/.test(componentCss)) {
+      const connect = await readFile(join(ANATOMY_DIR, comp, `${comp}.connect.ts`), 'utf8')
+      if (!/['"]data-xh-field-input['"]\s*:/.test(connect))
+        problems.push(`${comp}.connect.ts 没有投影 data-xh-field-input，Field Chrome 的 autofill 规则落不到 input 部件`)
+      for (const role of ['bg', 'fg']) {
+        const suffix = role === 'bg' ? 'bg' : 'fg'
+        const fallback = role === 'bg' ? '--xh-bg-canvas' : '--xh-fg-default'
+        const bridge = new RegExp(
+          `--xh-field-autofill-${role}\\s*:\\s*var\\(\\s*--xh-${comp}-input-autofill-${suffix}\\s*,\\s*var\\(\\s*${fallback}\\s*\\)\\s*\\)`,
+        )
+        if (!bridge.test(componentCss))
+          problems.push(`${comp}.css 没把 --xh-${comp}-input-autofill-${suffix} 映到 --xh-field-autofill-${role}`)
+      }
+      const familyCss = (await readFile(FIELD_FAMILY, 'utf8'))
+        .replaceAll('[data-xh-field-input]', `[data-scope='${comp}'][data-part='input']`)
+      css = stripComments(`${familyCss}\n${componentCss}`)
+    }
+    else {
+      css = stripComments(componentCss)
+    }
   }
   catch {
     problems.push(`${comp}.css 读不到——有 input 部件就得有这份皮肤`)
     continue
   }
 
-  const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(m => ({
-    selector: m[1].replace(/\s+/g, ' ').trim(),
-    body: m[2],
-    at: m.index,
-    line: css.slice(0, m.index).split('\n').length,
-  }))
+  const rules = styleRules(css)
 
   const autofillRules = rules.filter(r => /:(?:-webkit-)?autofill\b/.test(r.selector))
   if (autofillRules.length === 0) {
@@ -302,13 +654,23 @@ for (const comp of native.sort()) {
       problems.push(`${comp}.css 缺 ${label} 那一条——两个引擎的选择器名不同，覆盖面也不同，两条都要有`)
       continue
     }
-    const full = hit.filter(r => /box-shadow:[^;]*\binset\b/.test(r.body) && BG_TOKEN.test(r.body) && FG_TOKEN.test(r.body))
+    const full = hit.filter(r =>
+      /box-shadow:[^;]*\binset\b/.test(r.body)
+      && fallbackTarget(r.body, 'bg')
+      && fallbackTarget(r.body, 'fg'))
     if (full.length === 0) {
       problems.push(
         `${comp}.css ${label} 那一条没把两个手段都写全：`
-        + 'box-shadow 用 inset 铺底（var(--xh-<组件>-…-autofill-bg, var(--xh-bg-…))）、'
-        + '-webkit-text-fill-color 接回前景（var(--xh-<组件>-…-autofill-fg, var(--xh-fg-…))）',
+        + 'box-shadow 用 inset 铺底、-webkit-text-fill-color 接回前景；'
+        + '公开 autofill 槽的第二参须为已声明的实体语义色或私有状态派生槽',
       )
+    }
+    for (const rule of full) {
+      for (const role of ['bg', 'fg']) {
+        const chain = fallbackTarget(rule.body, role)
+        for (const error of inspectFallback(comp, chain.target, role, css, globalDeclarations))
+          problems.push(`${comp}.css:${rule.line} ${chain.slot} → ${chain.target}：${error}`)
+      }
     }
   }
 
@@ -343,6 +705,7 @@ if (problems.length > 0) {
 
 console.log(
   `[check-autofill] 通过：${candidates.length} 个带 input 部件的组件里 ${native.length} 个渲染原生表单控件，`
-  + `共 ${ruleCount} 条 autofill 规则把底与字接回令牌（不是原生控件的 ${Object.keys(NOT_NATIVE).length} 个已登记）`,
+  + `共 ${ruleCount} 条 autofill 规则把底与字接回令牌（私有状态链正反自检 6 组；`
+  + `不是原生控件的 ${Object.keys(NOT_NATIVE).length} 个已登记）`,
 )
 console.log(`[check-autofill] 适用面：${SCOPE}`)

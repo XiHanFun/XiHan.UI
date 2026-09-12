@@ -24,7 +24,10 @@
 
 - roving tabindex：整组一个 Tab 停靠点，组内走方向键；`Home` / `End` 到端点。
 - `selectionMode` 三档：`none` 只是标记、`single` 单选、`multiple` 可多选（`Ctrl`/`Cmd` + `A` 全选）。
+- 每一枚标签就是库里的[标签](./tag)：标签本体是它的 `root`，文字是它的 `label`，摘除钮是它的 `close-trigger`；组只往上面叠行角色、Tab 停靠点、选中与锚点。
 - `deletable` 给出摘除钮，键盘那一路走 `Delete` / `Backspace`。
+- 选择与摘除是两个互斥动作：点标签本体才选择，点摘除钮只从选中集合移除并发 `item-delete`，
+  不会让同一次冒泡 click 又把待删值选回来。
 - 摘掉一枚之后焦点交给前一枚；前面没有就交给后一枚，一枚不剩就交给列表容器。
 - `collection` 是文本、禁用与可摘的事实源；也可以逐枚自己写。
 - 连打检索按首字母跳，只搬焦点、不改选中值。
@@ -33,7 +36,7 @@
 
 ### 基础用法
 
-一排可摘标签：整组只占一个 Tab 位，方向键走标签，Delete 或 Backspace 摘掉
+一排可摘标签，每一枚都是库里的 tag：整组只占一个 Tab 位，方向键走标签，Delete 或 Backspace 摘掉，那颗叉就是 tag 的 close-trigger
 
 <XhDemo src="tag-group/01-basic" />
 
@@ -45,13 +48,13 @@ selectionMode 决定点一枚是替换还是加选；Ctrl/Cmd + A 全选
 
 ### 尺寸
 
-size 打在组上沿继承流下发给每一枚标签，标签自己不写档位
+size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自己不写档位
 
 <XhDemo src="tag-group/03-size" />
 
 ### 手写部件
 
-逐部件自己写，标签里就能塞头像、计数这类自带内容，摘除钮照旧归 cell 管；产出的结构与只交数据那一份完全一致，Tab 位与键盘也一样
+逐部件自己写，标签里就能塞头像、计数这类自带内容，摘除钮照旧归 cell 管；条目渲出来是 tag 的 root、文字是 tag 的 label，产出的结构与只交数据那一份完全一致，Tab 位与键盘也一样
 
 <XhDemo src="tag-group/04-parts" />
 
@@ -69,7 +72,7 @@ size 打在组上沿继承流下发给每一枚标签，标签自己不写档位
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="tag-group"`：`root` · `label` · **`list`** · **`item`** · **`cell`** · `item-text` · `item-delete-trigger`
+`data-scope="tag-group"`：`root` · `label` · **`list`** · **`cell`**
 
 ## Props
 
@@ -86,9 +89,9 @@ size 打在组上沿继承流下发给每一枚标签，标签自己不写档位
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal——标签是成排出现的。 |
 | `typeahead` | `boolean` |  | 连打检索，默认开。 |
-| `variant` | `TagVariant` |  | 形态：solid / subtle / outline，沿继承流下发给每一枚标签。 |
+| `variant` | `TagVariant` |  | 形态：solid / subtle / outline，逐枚落到每一枚标签（tag 的 root）上。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，走 tag 的三档。 |
 | `onValueChange` | `(details: TagGroupValueChangeDetails) => void` |  | value 变化意图回调。 |
 | `onItemDelete` | `(details: TagGroupItemDeleteDetails) => void` |  | 摘除意图回调。条目由宿主的数据决定去留，组件只报「用户要摘这一枚」， 顺手把它从选中集合里去掉，并把焦点交给相邻的一枚。 |
 | `translations` | `Partial<TagGroupTranslations>` |  |  |
@@ -113,12 +116,6 @@ size 打在组上沿继承流下发给每一枚标签，标签自己不写档位
 | `XhTagGroupRoot` | `item` | `TagGroupNodeMeta` |  |
 
 ## 状态
-
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
-
-| 部件 | 取值 |
-| --- | --- |
-| `item-delete-trigger` | 'checked' \| 'unchecked' |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
@@ -147,10 +144,10 @@ size 打在组上沿继承流下发给每一枚标签，标签自己不写档位
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |
-| `getItemProps` | `(props: TagGroupItemProps) => T['element']` |  |
+| `getItemProps` | `(props: TagGroupItemProps) => T['element']` | 一枚标签：库里 tag 的 root（data-scope="tag"），三轴与置灰由 tag 给； row 角色、身份、roving tabindex、选中（data-selected）与锚点（data-highlighted）叠在它上面。 |
 | `getCellProps` | `(props: TagGroupItemProps) => T['element']` | 标签里那一格；摘除钮必须落在它之内。 |
-| `getItemTextProps` | `(props: TagGroupItemProps) => T['element']` |  |
-| `getItemDeleteTriggerProps` | `(props: TagGroupItemProps) => T['button']` |  |
+| `getItemTextProps` | `(props: TagGroupItemProps) => T['element']` | 标签文字：tag 的 label，截断规则挂在那一层。 |
+| `getItemDeleteTriggerProps` | `(props: TagGroupItemProps) => T['button']` | 摘除钮：所在标签那份 tag 的 close-trigger，不占 Tab 位；可及名、禁用与收起都由 tag 给。 |
 
 ## 键盘
 
@@ -181,15 +178,14 @@ size 打在组上沿继承流下发给每一枚标签，标签自己不写档位
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
 | `list` | `aria-readonly` | 'true' \| 'false' |
 | `list` | `role` | 'grid' |
+| `cell` | `role` | 'gridcell' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-selected` | 'true' \| 'false' \| undefined |
 | `item` | `role` | 'row' |
-| `cell` | `role` | 'gridcell' |
-| `item-delete-trigger` | `aria-label` | label.deleteItem(metaOf.get(item.value)?.label ?? ite… |
 
 一排可摘标签是「集合 + 每条自带动作」，这在 ARIA 里只有表格语义放得下：可聚焦的摘除钮
-不许待在 `option` 这类控件角色里，`gridcell` 允许。所以 `list` 是 `grid`、每枚标签是 `row`、
-标签里那一格是 `gridcell`——手写部件时 `cell` 这一层不能省，用 `collection` 则由组件自己铺开。
+不许待在 `option` 这类控件角色里，`gridcell` 允许。所以 `list` 是 `grid`、每枚标签（[标签](./tag)的 `root`）
+担 `row`、标签里那一格是 `gridcell`——手写部件时 `cell` 这一层不能省，用 `collection` 则由组件自己铺开。
 
 ## 样式
 
@@ -209,17 +205,23 @@ size 打在组上沿继承流下发给每一枚标签，标签自己不写档位
 | `list` | `data-orientation` | props.orientation |
 | `item` | `data-deletable` | ''（条件成立时才出现） |
 | `item` | `data-selectable` | ''（条件成立时才出现） |
-| `item` | `data-size` | props.size |
-| `item` | `data-tone` | props.tone |
-| `item` | `data-variant` | props.variant |
-| `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `item-delete-trigger` | `data-state` | 'checked' \| 'unchecked' |
 
+<!-- xh-component-tokens:start -->
 ## CSS 变量
 
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
-`--xh-tag-group-cell-gap` · `--xh-tag-group-gap` · `--xh-tag-group-item-bg` · `--xh-tag-group-item-bg-disabled` · `--xh-tag-group-item-bg-hover` · `--xh-tag-group-item-border` · `--xh-tag-group-item-border-disabled` · `--xh-tag-group-item-border-selected` · `--xh-tag-group-item-delete-bg-active` · `--xh-tag-group-item-delete-bg-hover` · `--xh-tag-group-item-delete-fg` · `--xh-tag-group-item-delete-radius` · `--xh-tag-group-item-delete-size` · `--xh-tag-group-item-fg` · `--xh-tag-group-item-fg-selected` · `--xh-tag-group-item-font-size` · `--xh-tag-group-item-font-weight` · `--xh-tag-group-item-icon-size` · `--xh-tag-group-item-px` · `--xh-tag-group-item-px-deletable` · `--xh-tag-group-item-py` · `--xh-tag-group-item-radius` · `--xh-tag-group-item-shadow` · `--xh-tag-group-label-fg` · `--xh-tag-group-label-font-size` · `--xh-tag-group-label-font-weight` · `--xh-tag-group-list-gap`
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-tag-group-gap` | `root` | `gap` | `default` | `--xh-space-2` | tag-group 的 root 部件 gap 覆盖槽。 |
+| `--xh-tag-group-item-bg-hover` | `list`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`variant=solid` | `--xh-bg-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
+| `--xh-tag-group-item-border-selected` | `list`<br>`root` | `border-color` | `disabled`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`selected`<br>`variant=solid` | `--xh-_tone`<br>`currentColor` | tag-group 的 list、root 部件 border-color 覆盖槽。 |
+| `--xh-tag-group-item-fg-selected` | `list`<br>`root` | `color` | `disabled`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`selected`<br>`variant=solid` | `--xh-_tone-fg` | tag-group 的 list、root 部件 color 覆盖槽。 |
+| `--xh-tag-group-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tag-group 的 label 部件 color 覆盖槽。 |
+| `--xh-tag-group-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tag-group 的 label 部件 font-size 覆盖槽。 |
+| `--xh-tag-group-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tag-group 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-tag-group-list-gap` | `list` | `gap` | `default` | `--xh-space-1_5` | tag-group 的 list 部件 gap 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ## 动效
 
@@ -227,13 +229,9 @@ size 打在组上沿继承流下发给每一枚标签，标签自己不写档位
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
-
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
 ## 组合
 
-- 每一枚标签的观感与[标签](./tag)同源：形态 · 语气 · 尺寸三轴写在组上，沿继承流下发。
+- 每一枚标签就是[标签](./tag)本身：形态 · 语气 · 尺寸三轴写在组上，逐枚落到每一枚的 `root` 上，样子全归 `tag.css`，`--xh-tag-*` 覆盖槽在组里照样生效。
 - 标签里的图元用[图标](./icon)。
 - 外面套[表单字段](./field)，标题就有了去处。
 

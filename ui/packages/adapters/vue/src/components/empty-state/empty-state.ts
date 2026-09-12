@@ -6,14 +6,14 @@ import { withXhConfig } from '../../config/config'
 import { provideEmptyState, useEmptyStateContext } from './context'
 import { useEmptyState } from './use-empty-state'
 
-/** 根节点渲染为 div，缺省值由 connect 给出，这里一律 default: undefined */
+/** 根节点渲染为 div，缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined */
 export const XhEmptyStateRoot = defineComponent({
   name: 'XhEmptyStateRoot',
   props: {
-    size: { type: String as PropType<'sm' | 'md' | 'lg'>, default: undefined },
-    live: { type: String as PropType<EmptyStateLive>, default: undefined },
-    status: { type: String as PropType<EmptyStateStatus>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<'sm' | 'md' | 'lg'> },
+    live: { type: String as PropType<EmptyStateLive> },
+    status: { type: String as PropType<EmptyStateStatus> },
+    tone: { type: String as PropType<Tone> },
   },
   setup(props, { slots }) {
     const ctx = useEmptyState(withXhConfig('empty-state', props as EmptyStateProps))

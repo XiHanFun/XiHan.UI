@@ -1,6 +1,6 @@
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { DateFieldSchema, DateFieldSegmentProps, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
-import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta } from '@xihan-ui/headless'
+import type { DateFieldSchema, DateFieldSegmentProps, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateSegmentSet, DateSegmentType, FormControlState } from '@xihan-ui/headless'
+import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -151,8 +151,21 @@ export class XhDateFieldElement extends XhElement {
 
   // date-field 机器无副作用：不需要 config/layer/refs，controller 只带 props。
   private readonly ctrl = new MachineController<DateFieldSchema>(this, dateFieldMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<DateFieldSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+      required: this.required,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
@@ -162,10 +175,10 @@ export class XhDateFieldElement extends XhElement {
       timeZone: this.timeZone,
       granularity: this.granularity,
       segments: this.segments,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
-      required: this.required ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
+      required: control.required,
       name: this.name,
       placeholder: this.placeholder,
       translations: this.translations,

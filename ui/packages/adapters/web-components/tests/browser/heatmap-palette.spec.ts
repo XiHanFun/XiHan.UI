@@ -202,11 +202,11 @@ describe('热力图色板轴：三种形态都吃这条轴', () => {
   }
 })
 
-// 皮肤把格距定成「聚焦环偏移 + 环宽」（css/heatmap.css 的 --xh-_heatmap-gap），
-// 聚焦环因此整圈落在格子之间的空当里，不压到相邻的格子上。这是一条几何前提，
-// 只有真浏览器量得到：改小格距或改大环宽都会让环压上相邻格子，这里会红。
-describe('热力图的聚焦环：环落在格子之间的空当里', () => {
-  it('两格之间的空当正好是环占的宽度', async () => {
+// 聚焦环往内收（--xh-ring-offset 是负的一个环宽），外沿与格子边框外沿重合，整圈落在格子
+// 自己的盒子里。格子按天铺满一年、彼此只隔一道 --xh-_heatmap-gap，环一旦改成往外扩就会压上
+// 相邻的格子。这是一条几何前提，只有真浏览器量得到：给热力图单独把环偏移改成正数，这里会红。
+describe('热力图的聚焦环：环落在格子自己的盒子里', () => {
+  it('环不越出格子边框，压不到相邻的格子', async () => {
     host = document.createElement('div')
     host.innerHTML = `
       <xh-heatmap start-date="2024-01-01" end-date="2024-01-14">
@@ -229,11 +229,18 @@ describe('热力图的聚焦环：环落在格子之间的空当里', () => {
     probe.style.cssText = 'outline-style:solid;outline-width:var(--xh-ring-width);outline-offset:var(--xh-ring-offset)'
     root.append(probe)
     const probeStyle = getComputedStyle(probe)
-    const ring = Number.parseFloat(probeStyle.outlineWidth) + Number.parseFloat(probeStyle.outlineOffset)
-    expect(ring).toBeGreaterThan(0)
+    const width = Number.parseFloat(probeStyle.outlineWidth)
+    const offset = Number.parseFloat(probeStyle.outlineOffset)
+    expect(width).toBeGreaterThan(0)
 
+    // 环的外沿相对格子边框外沿的位置：不大于 0 即整圈在格子里
+    const 外沿 = width + offset
+    expect(外沿).toBeLessThanOrEqual(0)
+
+    // 格子之间仍留着分隔用的空当，且它比环外沿越出的量宽——两条合起来才是「压不到相邻格」
     const [first, second] = [...root.querySelectorAll<HTMLElement>('[data-part="cell"]')]
     const gap = second!.getBoundingClientRect().left - first!.getBoundingClientRect().right
-    expect(gap).toBeCloseTo(ring, 1)
+    expect(gap).toBeGreaterThan(0)
+    expect(gap).toBeGreaterThan(外沿)
   })
 })

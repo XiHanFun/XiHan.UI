@@ -7,12 +7,12 @@ import { vueNormalize } from '../../runtime/normalize-props'
 
 export const XhGradientText = defineComponent({
   name: 'XhGradientText',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    from: { type: String, default: undefined },
-    to: { type: String, default: undefined },
-    direction: { type: String as PropType<GradientTextDirection>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
+    from: { type: String },
+    to: { type: String },
+    direction: { type: String as PropType<GradientTextDirection> },
+    tone: { type: String as PropType<Tone> },
   },
   setup(props, { slots }) {
     return () => h(

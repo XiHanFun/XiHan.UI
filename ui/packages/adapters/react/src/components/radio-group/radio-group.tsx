@@ -5,12 +5,16 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
+import { useFormControlProps } from '../form/use-form-control'
 import { RadioGroupItemProvider, RadioGroupProvider, useRadioGroupContext, useRadioGroupItemContext } from './context'
 import { useRadioGroup } from './use-radio-group'
 
 type RadioGroupProps = RadioGroupSchema['props']
 
-export interface XhRadioGroupRootProps {
+/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
+
+export interface XhRadioGroupRootProps extends RootElementProps {
   collection?: RadioGroupNode[]
   /** 标题文字。给了它就不必再写 label 部件。 */
   label?: ReactNode
@@ -31,8 +35,40 @@ export interface XhRadioGroupRootProps {
   children?: ReactNode
 }
 
-export function XhRadioGroupRoot({ children, label, renderItem, ...props }: XhRadioGroupRootProps): ReactNode {
-  const ctx = useRadioGroup(props as RadioGroupProps)
+export function XhRadioGroupRoot({
+  collection,
+  label,
+  value,
+  defaultValue,
+  disabled,
+  readOnly,
+  invalid,
+  required,
+  orientation,
+  dir,
+  name,
+  tone,
+  size,
+  onValueChange,
+  renderItem,
+  children,
+  ...rest
+}: XhRadioGroupRootProps): ReactNode {
+  const ctx = useRadioGroup(useFormControlProps({
+    collection,
+    value,
+    defaultValue,
+    disabled,
+    readOnly,
+    invalid,
+    required,
+    orientation,
+    dir,
+    name,
+    tone,
+    size,
+    onValueChange,
+  } as RadioGroupProps))
   const api = ctx.api
 
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
@@ -40,7 +76,7 @@ export function XhRadioGroupRoot({ children, label, renderItem, ...props }: XhRa
   // 装成原生监听器，到达路径才与另外两家一致。onFocusOut 归到的 onBlur 本就是冒泡的 focusout，不动它
   const bind = useNativeEvents(api.getRootProps() as Record<string, unknown>, ['onFocus'])
 
-  const body = children ?? (props.collection
+  const body = children ?? (collection
     ? <DefaultTree collection={api.collection} label={label} renderItem={renderItem} />
     : null)
 
@@ -49,6 +85,7 @@ export function XhRadioGroupRoot({ children, label, renderItem, ...props }: XhRa
       <div
         {...mergeReactProps(
           bind.attrs,
+          rest as Record<string, unknown>,
           { ref: bind.ref },
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}

@@ -2,6 +2,7 @@ import type { PositionResult, Transition } from '@xihan-ui/core'
 import type { TooltipSchema } from './tooltip.types'
 import { createDismissLayer, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
+import { setupLayerTransaction, trackPresenceResources } from '../shared/overlay-shell'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */
 export const TOOLTIP_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
@@ -51,11 +52,14 @@ export const tooltipMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     position: null,
     getAnchorEl: () => null,
     getFloatingEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'visible' : 'closed'),
+  // Layer 与消解资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
+  effects: ['trackLayer'],
   watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
   states: {
     closed: {
@@ -87,10 +91,10 @@ export const tooltipMachine = createMachine({
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
     },
-    // 复合态：两个子态下浮层都可见，定位与消解层挂在这一层，指针在两态间来回不重挂
+    // 复合态：两个子态下浮层都可见，定位挂在这一层，指针在两态间来回不重挂
     visible: {
       initial: 'open',
-      effects: ['trackPosition', 'trackLayer'],
+      effects: ['trackPosition'],
       on: {
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
@@ -193,27 +197,39 @@ export const tooltipMachine = createMachine({
           stop?.()
         }
       },
-      /** 浮层可见期间把层压入消解栈，不建焦点域、不锁滚动。 */
-      trackLayer: ({ refs, send }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
-        // 无 DOM 环境（纯逻辑测试 / SSR）：状态机照常转移，不挂副作用
-        if (!config || !registerLayer)
-          return undefined
+      /** 浮层退场完成前保留原栈位；关闭后不再响应消解，不建焦点域、不锁滚动。 */
+      trackLayer: ({ refs, send, flush, state, track }) => trackPresenceResources({
+        presence: () => refs.get('presence'),
+        open: () => state.matches('visible'),
+        track,
+        acquire: () => {
+          const config = refs.get('config')
+          const registerLayer = refs.get('registerLayer')
+          // 无 DOM 环境（纯逻辑测试 / SSR）：状态机照常转移，不挂副作用
+          if (!config || !registerLayer)
+            return undefined
 
-        const { layer, dispose: disposeLayer } = registerLayer()
-
-        const dismiss = createDismissLayer({
-          config,
-          layer,
-          onDismiss: reason => send({ type: reason === 'escape-key' ? 'ESCAPE' : 'CLOSE' }),
-        })
-
-        return () => {
-          dismiss.dispose()
-          disposeLayer()
-        }
-      },
+          return setupLayerTransaction(registerLayer, (layer, defer) => {
+            const dismiss = createDismissLayer({
+              config,
+              layer,
+              onEscapeKeyDown: (event) => {
+                if (!state.matches('visible'))
+                  event.preventDefault()
+              },
+              onInteractOutside: (event) => {
+                if (!state.matches('visible'))
+                  event.preventDefault()
+              },
+              onDismiss: (reason) => {
+                if (state.matches('visible'))
+                  send({ type: reason === 'escape-key' ? 'ESCAPE' : 'CLOSE' })
+              },
+            })
+            defer(() => dismiss.dispose())
+          }, { registry: config.layerRegistry, flush })
+        },
+      }),
     },
   },
 })

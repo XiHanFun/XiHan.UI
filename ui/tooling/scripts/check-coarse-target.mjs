@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// 门禁：可聚焦部件的命中区不许低于下限，粗指针下的放大只许走伪元素。
+// 门禁：可聚焦部件的命中区不许低于下限；粗指针下可放大真实盒，也可外扩伪元素。
 //
 // 两档各查各的：
 //   A 档 · 细指针 24×24（WCAG 2.2 SC 2.5.8 AA）——凡可聚焦部件（含输入盒里的内嵌控制），
 //     皮肤里写死的视觉盒边长低于 24px、伪元素又没把命中区补回 24px 的，判红。
 //   B 档 · 粗指针 44×44（WCAG 2.2 SC 2.5.5 AAA）——只查登记在册的独立触控目标：
-//     `@media (pointer: coarse)` 里要把命中区放大到 44px。
+//     `@media (pointer: coarse)` 里要把真实最小盒或伪元素命中区放大到 44px。
 //
 // 这是静态扫描，量不到浏览器算出来的盒，所以只认皮肤里写死的尺寸声明：
 // inline-size / block-size / width / height 的字面值，以及能顺着令牌链走到字面值的 var()。
@@ -40,8 +40,9 @@ const COARSE_MIN = 44
 /** 写死视觉盒边长的属性。min-* / max-* 只是上下界，量不出实际边长，不收。 */
 const BOX_PROPS = new Set(['inline-size', 'block-size', 'width', 'height'])
 
-/** 会改布局占位的属性：粗指针块里出现即判红，放大只许走伪元素。 */
+/** 会改布局占位的属性；粗指针块只放行两条逻辑轴的真实最小触摸盒。 */
 const LAYOUT_PROPS = /^(?:inline-size|block-size|width|height|min-|max-|padding|margin|gap|row-gap|column-gap|border-width|border-block|border-inline)/
+const REAL_TOUCH_MIN_PROPS = new Set(['min-inline-size', 'min-block-size'])
 
 /** 四边外扩的 inset 属性，负值即把伪元素撑到视觉盒之外。 */
 const INSET_PROPS = new Set([
@@ -75,6 +76,7 @@ for (const m of (await readFile(TOKENS, 'utf8')).matchAll(/"(--xh-[\w-]+)":\s*"(
 /** 连接层里可聚焦的部件：组件名 → 部件名集合。 */
 async function collectFocusableParts() {
   const found = new Map()
+  const action = new Map()
   const dirs = (await readdir(HEADLESS, { withFileTypes: true })).filter(d => d.isDirectory()).map(d => d.name).sort()
   for (const comp of dirs) {
     let src
@@ -93,13 +95,19 @@ async function collectFocusableParts() {
       if (!focusable)
         continue
       for (const ref of body.matchAll(/parts(?:\.([\w-]+)|\[\s*'([^']+)'\s*\])\.attrs/g)) {
+        const part = ref[1] ?? ref[2]
         if (!found.has(comp))
           found.set(comp, new Set())
-        found.get(comp).add(ref[1] ?? ref[2])
+        found.get(comp).add(part)
+        if (/['"]data-xh-action-control['"]\s*:/.test(body)) {
+          if (!action.has(comp))
+            action.set(comp, new Set())
+          action.get(comp).add(part)
+        }
       }
     }
   }
-  return found
+  return { focusable: found, action }
 }
 
 /** 在括号与方括号之外按分隔符切段：`var(--a, var(--b))` 里的逗号、`calc(a b)` 里的空格都不算分隔符。 */
@@ -158,11 +166,20 @@ function subjectPart(branch) {
   return hits.length ? hits[hits.length - 1][1] : null
 }
 
+/** 不带状态、尺寸或祖先条件的部件主选择器；只有它能证明每个状态都有真实触摸地板。 */
+function isUnconditionalPartSelector(branch, part) {
+  const withoutSubject = branch
+    .replace(/\[data-scope='[a-z0-9-]+'\]/g, '')
+    .replace(new RegExp(`\\[data-part='${part}'\\]`, 'g'), '')
+    .trim()
+  return withoutSubject === ''
+}
+
 /**
  * 扫一份皮肤，收出每个可聚焦部件的视觉盒边长、伪元素外扩量，以及粗指针块里的声明。
- * 返回 { box, expand, coarseExpand, mark, coarseDecls }，键都是部件名。
+ * 返回 { box, boxAxes, expand, coarseExpand, coarseMin, mark, coarseDecls }，键都是部件名。
  */
-function scanSkin(css, parts) {
+function scanSkin(css, parts, actionParts) {
   const lineAt = lineCounter(css)
   const locals = new Map()
   for (const decl of declarations(css)) {
@@ -171,8 +188,12 @@ function scanSkin(css, parts) {
   }
 
   const box = new Map()
+  const boxAxes = new Map()
   const expand = new Map()
   const coarseExpand = new Map()
+  const coarseMin = new Map()
+  const coarsePseudoMin = new Map()
+  const coarseTextBlock = new Map()
   const mark = new Map()
   const coarseDecls = []
 
@@ -182,57 +203,88 @@ function scanSkin(css, parts) {
     const line = lineAt(decl.index)
 
     for (const branch of splitTopLevel(selector)) {
-      const part = subjectPart(branch)
-      if (part == null || !parts.has(part))
+      const subject = subjectPart(branch)
+      const matchedParts = subject == null && branch.includes('[data-xh-action-control]')
+        ? [...actionParts]
+        : subject != null && parts.has(subject) ? [subject] : []
+      if (matchedParts.length === 0)
         continue
       const pseudo = /::(?:before|after)/.test(branch)
 
-      if (inCoarse) {
-        coarseDecls.push({ part, prop: decl.prop, value: decl.value, line, pseudo })
-      }
-
-      if (pseudo) {
-        if (!INSET_PROPS.has(decl.prop))
-          continue
-        // 四边可以写成一条 inset，也可以逐边写；取最小的那个负值做外扩量
-        const values = splitTopLevel(decl.value, ch => ch === ' ' || ch === '\t' || ch === '\n')
-        let least = null
-        for (const one of values) {
-          const px = toPx(one, locals)
-          if (px == null || px >= 0)
-            continue
-          least = least == null ? -px : Math.min(least, -px)
+      for (const part of matchedParts) {
+        if (inCoarse) {
+          const px = toPx(decl.value, locals)
+          coarseDecls.push({ part, prop: decl.prop, value: decl.value, line, pseudo, px })
+          if (pseudo && REAL_TOUCH_MIN_PROPS.has(decl.prop) && px != null && px > 0) {
+            const axis = decl.prop === 'min-inline-size' ? 'inline' : 'block'
+            const current = coarsePseudoMin.get(part) ?? {}
+            if (current[axis] == null || px < current[axis])
+              coarsePseudoMin.set(part, { ...current, [axis]: px })
+            if (axis === 'block' && branch.includes('[data-xh-action-profile=\'text\']'))
+              coarseTextBlock.set(part, px)
+          }
+          if (
+            !pseudo
+            && isUnconditionalPartSelector(branch, part)
+            && REAL_TOUCH_MIN_PROPS.has(decl.prop)
+            && px != null
+            && px > 0
+          ) {
+            const axis = decl.prop === 'min-inline-size' ? 'inline' : 'block'
+            const current = coarseMin.get(part) ?? {}
+            if (current[axis] == null || px < current[axis])
+              coarseMin.set(part, { ...current, [axis]: px })
+          }
         }
-        if (least == null)
-          continue
-        const target = inCoarse ? coarseExpand : expand
-        const cur = target.get(part)
-        if (cur == null || least < cur)
-          target.set(part, least)
-        continue
-      }
 
-      if (BOX_PROPS.has(decl.prop) && !inCoarse) {
-        const px = toPx(decl.value, locals)
-        if (px == null || px <= 0)
+        if (pseudo) {
+          if (!INSET_PROPS.has(decl.prop))
+            continue
+          // 四边可以写成一条 inset，也可以逐边写；取最小的那个负值做外扩量
+          const values = splitTopLevel(decl.value, ch => ch === ' ' || ch === '\t' || ch === '\n')
+          let least = null
+          for (const one of values) {
+            const px = toPx(one, locals)
+            if (px == null || px >= 0)
+              continue
+            least = least == null ? -px : Math.min(least, -px)
+          }
+          if (least == null)
+            continue
+          const target = inCoarse ? coarseExpand : expand
+          const cur = target.get(part)
+          if (cur == null || least < cur)
+            target.set(part, least)
           continue
-        const cur = box.get(part)
-        if (cur == null || px < cur.px)
-          box.set(part, { px, prop: decl.prop, value: decl.value.trim(), line })
-      }
+        }
 
-      // 随文标记档的两项旁证：尺寸基准取指示符档、圆角取内嵌档
-      if (BOX_PROPS.has(decl.prop) && decl.value.includes(INLINE_MARK_SIZE))
-        mark.set(part, { ...(mark.get(part) ?? {}), size: true })
-      if (decl.prop === 'border-radius' && decl.value.includes(INLINE_MARK_RADIUS))
-        mark.set(part, { ...(mark.get(part) ?? {}), radius: true })
+        if (BOX_PROPS.has(decl.prop) && !inCoarse) {
+          const px = toPx(decl.value, locals)
+          if (px == null || px <= 0)
+            continue
+          const axis = decl.prop === 'inline-size' || decl.prop === 'width' ? 'inline' : 'block'
+          const currentAxes = boxAxes.get(part) ?? {}
+          if (currentAxes[axis] == null || px < currentAxes[axis])
+            boxAxes.set(part, { ...currentAxes, [axis]: px })
+          const cur = box.get(part)
+          if (cur == null || px < cur.px)
+            box.set(part, { px, prop: decl.prop, value: decl.value.trim(), line })
+        }
+
+        // 随文标记档的两项旁证：尺寸基准取指示符档、圆角取内嵌档
+        if (BOX_PROPS.has(decl.prop) && decl.value.includes(INLINE_MARK_SIZE))
+          mark.set(part, { ...(mark.get(part) ?? {}), size: true })
+        if (decl.prop === 'border-radius' && decl.value.includes(INLINE_MARK_RADIUS))
+          mark.set(part, { ...(mark.get(part) ?? {}), radius: true })
+      }
     }
   }
 
-  return { box, expand, coarseExpand, mark, coarseDecls }
+  return { box, boxAxes, expand, coarseExpand, coarseMin, coarsePseudoMin, coarseTextBlock, mark, coarseDecls }
 }
 
-const focusableParts = await collectFocusableParts()
+const { focusable: focusableParts, action: actionParts } = await collectFocusableParts()
+const actionRecipe = await readFile('packages/design/styles/family/action-control.css', 'utf8').catch(() => '')
 const files = (await readdir(SKINS)).filter(f => f.endsWith('.css')).sort()
 
 /** 全库量得出边长的可聚焦部件：`组件:部件` → 量出来的数与出处。 */
@@ -244,9 +296,12 @@ const pointerMedia = []
 
 for (const file of files) {
   const comp = file.replace(/\.css$/, '')
-  const parts = focusableParts.get(comp)
+  const parts = focusableParts.get(comp) ?? new Set()
+  // control 可能是聚焦部件外面的唯一视觉盒；其 coarse 真实最小尺寸也必须达到触摸下限。
+  const scannedParts = new Set([...parts, 'control'])
   const raw = await readFile(join(SKINS, file), 'utf8')
-  const css = stripComments(raw)
+  const family = actionParts.has(comp) ? `${actionRecipe}\n${raw}` : raw
+  const css = stripComments(family)
   const lineAt = lineCounter(css)
 
   for (const m of css.matchAll(/@media[^{]*/g)) {
@@ -254,19 +309,31 @@ for (const file of files) {
       pointerMedia.push({ file, line: lineAt(m.index), text: m[0].trim() })
   }
 
-  if (!parts)
-    continue
-  const scan = scanSkin(css, parts)
+  const scan = scanSkin(css, scannedParts, actionParts.get(comp) ?? new Set())
   for (const [part, info] of scan.box) {
+    if (!parts.has(part))
+      continue
     const expand = scan.expand.get(part) ?? 0
-    const coarse = scan.coarseExpand.get(part) ?? expand
+    const coarseExpand = scan.coarseExpand.get(part) ?? expand
+    const axes = scan.boxAxes.get(part) ?? {}
+    const minima = scan.coarseMin.get(part) ?? {}
+    const pseudoMinima = scan.coarsePseudoMin.get(part) ?? {}
+    const coarseInline = Math.max(axes.inline ?? info.px, minima.inline ?? 0)
+    const coarseBlock = Math.max(axes.block ?? info.px, minima.block ?? 0)
+    const coarseRealBox = Math.min(coarseInline, coarseBlock)
+    const coarsePseudoBox = pseudoMinima.inline != null && pseudoMinima.block != null
+      ? Math.min(pseudoMinima.inline, pseudoMinima.block)
+      : scan.coarseTextBlock.get(part) ?? 0
+    const coarse = Math.max(info.px + 2 * coarseExpand, coarseRealBox, coarsePseudoBox)
     measured.set(`${comp}:${part}`, {
       px: info.px,
       prop: info.prop,
       value: info.value,
       at: `${file}:${info.line}`,
       fine: info.px + 2 * expand,
-      coarse: info.px + 2 * coarse,
+      coarse,
+      coarseInline,
+      coarseBlock,
       mark: scan.mark.get(part) ?? {},
     })
   }
@@ -412,14 +479,30 @@ for (const [key, entry] of Object.entries(registry.coarseTargets)) {
   }
 }
 
-// 粗指针块里不许改布局占位
+// 粗指针块允许用两个逻辑轴的 min-* 放大真实盒；每条最小值都必须静态证明达到目标，
+// 登记目标最终仍按行内与块轴的较小有效尺寸验收。其他布局属性继续判红。
 for (const decl of coarseAll) {
   if (decl.pseudo)
     continue
+  if (REAL_TOUCH_MIN_PROPS.has(decl.prop)) {
+    if (decl.px == null) {
+      problems.push(
+        `${decl.file}:${decl.line} [${decl.part}] ${decl.prop}: ${decl.value}`
+        + ` —— 真实触摸盒的最小尺寸无法解析，必须能静态证明至少为 ${COARSE_MIN}px`,
+      )
+    }
+    else if (decl.px < COARSE_MIN) {
+      problems.push(
+        `${decl.file}:${decl.line} [${decl.part}] ${decl.prop}: ${decl.value} = ${decl.px}px`
+        + ` —— 真实触摸盒这一轴不足 ${COARSE_MIN}px`,
+      )
+    }
+    continue
+  }
   if (LAYOUT_PROPS.test(decl.prop)) {
     problems.push(
       `${decl.file}:${decl.line} [${decl.part}] ${decl.prop}: ${decl.value}`
-      + ` —— 粗指针块里改了布局占位，命中区放大只许走绝对定位的伪元素`,
+      + ` —— 粗指针块只允许 min-inline-size / min-block-size 放大真实触摸盒，其他布局占位仍不得改变`,
     )
   }
 }

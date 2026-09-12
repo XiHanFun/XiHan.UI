@@ -10,6 +10,7 @@ import type {
   ToastOptions,
   ToastPlacement,
   ToastRecord,
+  ToastServiceDefaults,
   ToastTranslations,
   ToastType,
 } from '@xihan-ui/headless'
@@ -19,8 +20,10 @@ import type { XhConfigSource } from './service-config'
 import { DATA_INERT_EXEMPT, ensurePortalRoot } from '@xihan-ui/core'
 import {
   connectNotification,
+  createFeedbackServiceController,
+  NOTIFICATION_MAX,
   notificationMachine,
-  TOAST_DURATION,
+  resolveToastServiceItem,
   TOAST_GAP,
   TOAST_PLACEMENT,
   toastAnatomy,
@@ -36,17 +39,10 @@ import { createServiceConfig } from './service-config'
 
 const parts = toastAnatomy.build()
 
-/** 单条没写时的兜底：服务档一次定好，逐条渲染时补进去。 */
-interface ToastDefaults {
-  duration?: number
-  removeDelay?: number
-  pauseOnPageIdle?: boolean
-}
-
 /** 文案可以给常量，也可以给取值函数——摞里的条子会跨过一次切语言。 */
 export type ToastTranslationsSource = Partial<ToastTranslations> | (() => Partial<ToastTranslations>)
 
-export interface ToastServiceOptions extends ToastDefaults {
+export interface ToastServiceOptions extends ToastServiceDefaults {
   /** 那一摞落在哪儿，默认 'top'：视线正好在刚才操作的地方上方。 */
   placement?: ToastPlacement
   /** 最多同时留几条，默认 5；超出先挤低优先级的，同级里挤最旧的。 */
@@ -108,50 +104,27 @@ export interface ToastService {
   dispose: () => void
 }
 
-/**
- * 这一条会不会自己走掉。loading 一直挂着，duration <= 0 与非有限值也是。
- * 走不掉的必须留个出口，否则界面上一个可点、可聚焦的节点都没有。
- */
-function selfDismissing(toast: ToastRecord, defaults: ToastDefaults): boolean {
-  if (toast.type === 'loading')
-    return false
-  const duration = toast.duration ?? defaults.duration ?? TOAST_DURATION
-  return Number.isFinite(duration) && duration > 0
-}
-
-/** 合并过的在标题后追加计数，没并过就是原话。 */
-function toastTitle(toast: ToastRecord): string | undefined {
-  const count = toast.count ?? 1
-  if (count <= 1 || toast.title == null)
-    return toast.title
-  return `${toast.title} ×${count}`
-}
-
 function DefaultToast(props: {
   toast: ToastRecord
-  defaults: ToastDefaults
+  defaults: ToastServiceDefaults
   translations: Partial<ToastTranslations> | undefined
   paused: boolean
   onUnmounted: (id: string) => void
   onAction: (id: string) => void
 }): ReactNode {
   const { toast, defaults } = props
-  // 到点自己走的默认不出叉，多一颗叉就多一个「要不要点」的判断；
-  // 走不掉的反过来默认给叉。两者都能用 closable 显式改口
-  const closable = toast.closable ?? !selfDismissing(toast, defaults)
-  // 语气跟着 connect 的缺省走（type 缺席即 info）。字形不在这儿渲染：
+  const item = resolveToastServiceItem(toast, defaults)
+  // 字形不在这儿渲染：
   // 它由皮肤按 root 上的 data-severity 画，声明式用法与 Web Components 那侧才拿得到同一枚
-  const type = toast.type ?? 'info'
   return (
     <XhToastRoot
-      id={toast.id}
-      title={toastTitle(toast)}
-      type={type}
-      // 单条 > 服务档 > 机器内建默认
-      duration={toast.duration ?? defaults.duration}
-      removeDelay={toast.removeDelay ?? defaults.removeDelay}
-      closable={closable}
-      pauseOnPageIdle={defaults.pauseOnPageIdle}
+      id={item.id}
+      title={item.title}
+      type={item.type}
+      duration={item.duration}
+      removeDelay={item.removeDelay}
+      closable={item.closable}
+      pauseOnPageIdle={item.pauseOnPageIdle}
       paused={props.paused}
       translations={props.translations}
       onStatusChange={({ id, status }: { id: string, status: string }) => {
@@ -162,8 +135,8 @@ function DefaultToast(props: {
     >
       {/* 节点平铺，不再套一层行容器：横排是皮肤的事，模板套一层只会与它打架 */}
       <XhToastTitle />
-      {toast.actionLabel ? <XhToastActionTrigger>{toast.actionLabel}</XhToastActionTrigger> : null}
-      {closable ? <XhToastCloseTrigger /> : null}
+      {item.actionLabel ? <XhToastActionTrigger>{item.actionLabel}</XhToastActionTrigger> : null}
+      {item.closable ? <XhToastCloseTrigger /> : null}
     </XhToastRoot>
   )
 }
@@ -178,7 +151,7 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     config,
     placement = TOAST_PLACEMENT,
     gap = TOAST_GAP,
-    max = 5,
+    max = NOTIFICATION_MAX,
     dedupe,
     ...defaults
   } = options
@@ -186,20 +159,6 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   const holder = target ?? document.createElement('div')
   if (!target)
     ensurePortalRoot(document).append(holder)
-
-  // 队列跑 notification 那台队列机器：上限、挤条与合并计数全库一份实现，
-  // 这一摞只是它的另一个渲染端（落位由服务档一次定好，不逐条各去一处）
-  let queue: {
-    create: (opts: ToastOptions) => string
-    update: (id: string, opts: Partial<ToastOptions>) => void
-    dismiss: (id: string) => void
-    dismissAll: () => void
-  } | null = null
-
-  // 行内动作的回调按 id 存这儿：队列记录只放可搬运的纯数据，回调进不去
-  const actions = new Map<string, () => void>()
-  let pausedAll = false
-  let seq = 0
 
   // 宿主树在组件树之外，暂停一类的状态只能自己存一份并推给它重渲
   let version = 0
@@ -212,11 +171,11 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     subs.add(fn)
     return () => void subs.delete(fn)
   }
-
-  const remove = (id: string): void => {
-    actions.delete(id)
-    queue?.dismiss(id)
-  }
+  const controller = createFeedbackServiceController<ToastOptions, Partial<ToastOptions>>({
+    name: 'toast',
+    idPrefix: 'toast',
+    onStateChange: notify,
+  })
 
   function Host(): ReactNode {
     useSyncExternalStore(subscribe, () => version, () => version)
@@ -232,12 +191,13 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     // 渲染读原始记录而不是 connect 补齐后的那份：条子的 closable 缺省是
     // 「到点自己走的不出叉」，与通知卡片的恒出叉不是同一条规则
     const items = visibleNotifications(service.context.get('items'), max, placement)
-    queue = {
+    controller.attach({
       create: opts => api.create(opts),
       update: (id, opts) => api.update(id, opts),
       dismiss: id => api.dismiss(id),
       dismissAll: () => api.dismissAll(),
-    }
+    })
+    controller.syncItems(items.map(item => item.id))
     const translations = typeof toastTranslations === 'function' ? toastTranslations() : toastTranslations
     return (
       <XhConfigProvider config={configSource.read()}>
@@ -260,9 +220,9 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
                 toast={toast}
                 defaults={defaults}
                 translations={translations}
-                paused={pausedAll}
-                onUnmounted={remove}
-                onAction={id => actions.get(id)?.()}
+                paused={controller.state.paused}
+                onUnmounted={controller.unmounted}
+                onAction={controller.invokeAction}
               />
             </Fragment>
           ))}
@@ -272,48 +232,24 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   }
 
   const root: Root | null = mountServiceHost(holder, <Host />, 'toast')
-  const mounted = root != null
+  if (!root)
+    controller.attach(null)
   const stopConfig = configSource.subscribe(notify)
-  let disposed = false
-
-  /**
-   * 宿主没挂起来时命令一律空转：把提示丢掉好过让调用点（拦截器、store）连锁崩掉。
-   * 已卸载则是另一回事——那是调用方拿着一个死服务在用，明说好过静默吞掉。
-   */
-  const alive = (): boolean => {
-    if (disposed)
-      throw new Error('toast 服务已卸载')
-    return mounted && queue != null
-  }
 
   /** 入队一条；回调另存一张表，队列记录里只留文案。 */
   const create = (opts: ToastCreateOptions = {}): string => {
     const { onAction, ...record } = opts
-    const id = queue!.create({ ...record, id: record.id ?? `toast-${++seq}` })
-    if (onAction)
-      actions.set(id, onAction)
-    return id
+    return controller.create(record, onAction)
   }
 
   const sugar = (type: ToastType) => (message: string, opts: ToastMessageOptions = {}): string =>
-    alive() ? create({ ...opts, type, title: message }) : ''
+    create({ ...opts, type, title: message })
 
   return {
-    create: opts => (alive() ? create(opts) : ''),
-    update: (id, opts) => {
-      if (alive())
-        queue!.update(id, opts)
-    },
-    dismiss: (id) => {
-      if (alive())
-        remove(id)
-    },
-    dismissAll: () => {
-      if (alive()) {
-        actions.clear()
-        queue!.dismissAll()
-      }
-    },
+    create,
+    update: controller.update,
+    dismiss: controller.dismiss,
+    dismissAll: controller.dismissAll,
     info: sugar('info'),
     success: sugar('success'),
     warning: sugar('warning'),
@@ -323,41 +259,22 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     promise: <T,>(input: Promise<T> | (() => Promise<T>), opts: ToastPromiseOptions<T>): Promise<T> => {
       const { loading, success, error, ...rest } = opts
       const running = typeof input === 'function' ? input() : input
-      if (!alive())
-        return running
-      const id = create({ ...rest, type: 'loading', title: loading })
-      return running.then(
-        (value) => {
-          if (!disposed)
-            queue!.update(id, { type: 'success', title: typeof success === 'function' ? success(value) : success })
-          return value
-        },
-        (reason: unknown) => {
-          if (!disposed)
-            queue!.update(id, { type: 'error', title: typeof error === 'function' ? error(reason) : error })
-          throw reason
-        },
+      const { onAction, ...record } = rest
+      return controller.trackPromise(
+        running,
+        { ...record, type: 'loading', title: loading },
+        value => ({ type: 'success', title: typeof success === 'function' ? success(value) : success }),
+        reason => ({ type: 'error', title: typeof error === 'function' ? error(reason) : error }),
+        onAction,
       )
     },
-    pauseAll: () => {
-      if (alive()) {
-        pausedAll = true
-        notify()
-      }
-    },
-    resumeAll: () => {
-      if (alive()) {
-        pausedAll = false
-        notify()
-      }
-    },
+    pauseAll: controller.pauseAll,
+    resumeAll: controller.resumeAll,
     setConfig: next => configSource.set(next),
     dispose: () => {
       stopConfig()
       root?.unmount()
-      disposed = true
-      queue = null
-      actions.clear()
+      controller.dispose()
       if (!target)
         holder.remove()
     },

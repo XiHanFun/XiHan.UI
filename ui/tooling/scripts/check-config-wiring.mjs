@@ -48,24 +48,18 @@ const errors = []
 const covered = await reactCovered()
 
 // —— 一、三个适配器的配置面 ——
-// 共同字段在 headless 的 XhConfigBase 上；Vue 与 React 在它之上各自扩展，WC 直接用它。
+// 共同字段在 headless 的 XhConfigBase 上；三端在它之上声明各自的 Portal 容器形态。
 const mergeSource = await readFile(MERGE, 'utf8')
 const baseFields = fieldsOf(mergeSource, 'XhConfigBase', MERGE)
 const vueFields = new Set([...baseFields, ...fieldsOf(await readFile(CONFIG_FILES.vue, 'utf8'), 'XhConfig', CONFIG_FILES.vue)])
 const reactFields = new Set([...baseFields, ...fieldsOf(await readFile(CONFIG_FILES.react, 'utf8'), 'XhConfig', CONFIG_FILES.react)])
-if (!/export type XhConfig = XhConfigBase/.test(await readFile(CONFIG_FILES.wc, 'utf8')))
-  errors.push(`${CONFIG_FILES.wc} 的 XhConfig 不再等于 XhConfigBase；字段一旦分叉，同一份配置在各侧会静默不一致`)
-const wcFields = baseFields
+const wcFields = new Set([...baseFields, ...fieldsOf(await readFile(CONFIG_FILES.wc, 'utf8'), 'XhConfig', CONFIG_FILES.wc)])
 
 const fieldsByAdapter = { vue: vueFields, react: reactFields, wc: wcFields }
-// portalContainer 只有搬得动浮层的两侧有：WC 是 Light DOM，浮层不搬运，那个端口在这一侧没有意义
-const NOT_IN_WC = new Set(['portalContainer'])
 const allFields = new Set([...vueFields, ...reactFields, ...wcFields])
 for (const field of allFields) {
   for (const adapter of Object.values(ADAPTERS)) {
     if (fieldsByAdapter[adapter.name].has(field))
-      continue
-    if (adapter.name === 'wc' && NOT_IN_WC.has(field))
       continue
     errors.push(`XhConfig.${field} 在 ${adapter.label} 侧的配置面里没有；同一份配置在这一侧会静默不生效`)
   }
@@ -172,9 +166,9 @@ for (const name of components) {
 // —— 四、XhConfig 的每个字段都要有人真读 ——
 // 声明了字段、合并也正确，但没有任何组件读它，配置就是死的：scrollRoot 曾在 WC 侧一直如此。
 //
-// 扫描面是各适配器 src 下的全部 .ts / .tsx，config 那一份也在内——各侧真正把 motion 交给
-// setMotionOverride 的接线点就写在那几个 config 文件里，按文件名把它们排除，等于把要查的
-// 东西本身排除在外：删掉接线，判据照样绿。
+// 扫描面是各适配器 src 下的全部 .ts / .tsx，config 那一份也在内——visualEnvironment
+// 委托 tokens controller 的接线点就写在那几个 config 文件里，按文件名把它们排除，等于把
+// 要查的东西本身排除在外：删掉接线，判据照样绿。
 
 /**
  * 去掉注释，字符串与模板串里的 `//` 不动。
@@ -308,8 +302,6 @@ for (const field of allFields) {
   const how = `写法要能被 consumes() 认出来（config.${field} 这个形状）；确实读了但写法不同，把新形状加进 check-config-wiring.mjs 的 consumes()`
   const readers = vueReaders(field)
   for (const adapter of Object.values(ADAPTERS)) {
-    if (adapter.name === 'wc' && NOT_IN_WC.has(field))
-      continue
     if (consumes(blob[adapter.name], field, aliases[adapter.name]))
       continue
     // React 还没铺到读它的那些组件时，缺席是进度不是缺陷；适配器级的接线不在此列
@@ -321,13 +313,7 @@ for (const field of allFields) {
   }
 }
 
-// 两张豁免名单的过期反查：登了却已不成立的比漏登更危险，它会一直放行
-for (const field of NOT_IN_WC) {
-  if (!vueFields.has(field) && !reactFields.has(field))
-    errors.push(`NOT_IN_WC 里的 '${field}' 已经不是任何一侧 XhConfig 的字段——名单过期了，删掉这一条`)
-  else if (wcFields.has(field))
-    errors.push(`NOT_IN_WC 里的 '${field}' 现在 Web Components 侧也有了——名单过期了，删掉这一条，让它跟别的字段一样三侧都查`)
-}
+// 豁免名单的过期反查：登了却已不成立的比漏登更危险，它会一直放行
 for (const field of MERGED_BY_WITH) {
   if (!allFields.has(field))
     errors.push(`MERGED_BY_WITH 里的 '${field}' 已经不是 XhConfig 的字段——名单过期了，删掉这一条`)

@@ -6,6 +6,7 @@ import {
   XhCascaderControl,
   XhCascaderIndicator,
   XhCascaderItem,
+  XhCascaderItemIndicator,
   XhCascaderItemText,
   XhCascaderLabel,
   XhCascaderPositioner,
@@ -55,6 +56,7 @@ const regions = [
           <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
             <XhCascaderItem v-for="node in lv.items" :key="node.value" :value="node.value">
               <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
+              <XhCascaderItemIndicator />
             </XhCascaderItem>
           </XhCascaderColumn>
         </XhCascaderContent>

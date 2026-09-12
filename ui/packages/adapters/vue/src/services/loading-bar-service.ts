@@ -2,12 +2,12 @@ import type { Tone } from '@xihan-ui/core'
 // 全局命令式顶部进度条：自带一个挂到 body 的宿主应用，
 // start/finish 在任意模块作用域可调（路由守卫、请求拦截器），不要求调用点在组件树内。
 // 组件树内的组合用法仍走 XhLoadingBarRoot。
-import type { LoadingBarTranslations } from '@xihan-ui/headless'
+import type { LoadingBarServiceControllerState, LoadingBarTranslations } from '@xihan-ui/headless'
 import type { App, MaybeRefOrGetter } from 'vue'
 import type { XhConfig } from '../config/config'
 import { ensurePortalRoot } from '@xihan-ui/core'
-import { connectLoadingBar, loadingBarMachine } from '@xihan-ui/headless'
-import { computed, createApp, defineComponent, h, reactive, toValue } from 'vue'
+import { connectLoadingBar, createLoadingBarServiceController, loadingBarMachine } from '@xihan-ui/headless'
+import { computed, createApp, defineComponent, h, shallowRef, toValue } from 'vue'
 import { vueNormalize } from '../runtime/normalize-props'
 import { useMachine } from '../runtime/use-machine'
 import { mountServiceHost } from './mount-host'
@@ -63,13 +63,14 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
 
   const configSource = createServiceConfig(config)
 
-  // 在途计数而不是布尔开关：并发请求里第一个回来时其余还在跑，
-  // 布尔开关会把条子提前收掉。
-  const state = reactive<{ pending: number, tone: Tone, value: number | undefined }>({
-    pending: 0,
+  let publishState: (next: LoadingBarServiceControllerState) => void = () => {}
+  const controller = createLoadingBarServiceController({
     tone,
-    value: undefined,
+    errorTone,
+    onStateChange: next => publishState(next),
   })
+  const controllerState = shallowRef(controller.state)
+  publishState = next => void (controllerState.value = next)
 
   const Host = defineComponent({
     name: 'XhLoadingBarServiceHost',
@@ -80,9 +81,9 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
       // 加成了一条本可以没有的前提
       const service = useMachine(loadingBarMachine, () => ({
         ...barProps,
-        loading: state.pending > 0,
-        tone: state.tone,
-        value: state.value,
+        loading: controllerState.value.pending > 0,
+        tone: controllerState.value.tone,
+        value: controllerState.value.value,
         translations: toValue(translations),
       }))
       const api = computed(() => connectLoadingBar(service, vueNormalize))
@@ -96,40 +97,18 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
 
   const app: App = createApp(Host)
   const mounted = mountServiceHost(app, holder, 'loading-bar')
-
-  const settle = (nextTone: Tone): void => {
-    if (!mounted)
-      return
-    state.pending = 0
-    state.tone = nextTone
-    state.value = undefined
-  }
+  if (!mounted)
+    controller.dispose()
 
   return {
-    // 宿主没挂起来时整体惰化：状态一动不动，残骸也就不会被叫醒
-    start: () => {
-      if (!mounted)
-        return
-      state.tone = tone
-      state.value = undefined
-      state.pending += 1
-    },
-    finish: () => {
-      if (!mounted)
-        return
-      state.pending = Math.max(0, state.pending - 1)
-      if (state.pending === 0)
-        state.value = undefined
-    },
-    error: () => settle(errorTone),
-    finishAll: () => settle(tone),
-    set: (value) => {
-      if (!mounted)
-        return
-      state.value = value
-    },
+    start: controller.start,
+    finish: controller.finish,
+    error: controller.error,
+    finishAll: controller.finishAll,
+    set: controller.set,
     setConfig: next => configSource.set(next),
     dispose: () => {
+      controller.dispose()
       if (mounted)
         app.unmount()
       if (!target)

@@ -12,26 +12,23 @@ import type {
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
-import type { ContextMenuChain } from './context'
-import { mergeProps } from '@xihan-ui/core'
+import { groupAdjacentRuns, mergeProps } from '@xihan-ui/core'
 import { Fragment, useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
-import { MenuChainProvider, MenuProvider, useMenuContext } from '../menu/context'
-import { useMenu } from '../menu/use-menu'
+import { MenuProvider, useMenuContext } from '../menu/context'
+import { useMenuWithParent } from '../menu/use-menu'
 import {
-  ContextMenuChainProvider,
   ContextMenuGroupProvider,
   ContextMenuItemProvider,
   ContextMenuProvider,
   ContextMenuSubProvider,
-  useContextMenuChain,
   useContextMenuContext,
   useContextMenuGroupContext,
   useContextMenuItemContext,
@@ -47,7 +44,7 @@ export type ContextMenuRootSlotProps = Pick<ContextMenuApi, 'open' | 'point' | '
 /** 子菜单函数式 children 的载荷：这一层子菜单自己的展开态与开合命令。 */
 export type ContextMenuSubSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 
-export interface XhContextMenuRootProps {
+export interface XhContextMenuRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir' | 'onSelect'> {
   /** 条目数据；给了它就不必逐条摆部件。 */
   collection?: ContextMenuNode[]
   open?: boolean
@@ -72,19 +69,42 @@ export interface XhContextMenuRootProps {
   children?: SlotChildren<ContextMenuRootSlotProps>
 }
 
-export function XhContextMenuRoot({ trigger, renderItem, children, ...props }: XhContextMenuRootProps): ReactNode {
-  const ctx = useContextMenu(withXhConfig('context-menu', props) as ContextMenuProps)
-
-  // 子菜单任意层级的选中都汇到根：先发根的 select 再关根，各级随父关闭级联收起。
-  // 取值器每帧换、链只建一次：拿 ref 转一道，别让它成为重建的理由
-  const latest = useRef({ onSelect: props.onSelect, api: ctx.api })
-  latest.current = { onSelect: props.onSelect, api: ctx.api }
-  const chain = useMemo<ContextMenuChain>(() => ({
-    notifySelect: (details) => {
-      latest.current.onSelect?.(details)
-      latest.current.api.setOpen(false)
-    },
-  }), [])
+export function XhContextMenuRoot({
+  collection,
+  open,
+  defaultOpen,
+  placement,
+  offset,
+  loop,
+  typeahead,
+  translations,
+  dir,
+  longPressDelay,
+  tone,
+  size,
+  trigger,
+  renderItem,
+  onOpenChange,
+  onSelect,
+  children,
+  ...rest
+}: XhContextMenuRootProps): ReactNode {
+  const ctx = useContextMenu(withXhConfig('context-menu', {
+    collection,
+    open,
+    defaultOpen,
+    placement,
+    offset,
+    loop,
+    typeahead,
+    translations,
+    dir,
+    longPressDelay,
+    tone,
+    size,
+    onOpenChange,
+    onSelect,
+  }) as ContextMenuProps)
 
   const body = children != null
     ? renderSlot(children, {
@@ -93,15 +113,13 @@ export function XhContextMenuRoot({ trigger, renderItem, children, ...props }: X
         setOpen: ctx.api.setOpen,
         openAt: ctx.api.openAt,
       })
-    : props.collection
+    : collection
       ? <DefaultTree collection={ctx.api.collection} trigger={trigger} renderItem={renderItem} />
       : null
 
   return (
     <ContextMenuProvider value={ctx}>
-      <ContextMenuChainProvider value={chain}>
-        <div {...ctx.api.getRootProps() as Record<string, unknown>}>{body}</div>
-      </ContextMenuChainProvider>
+      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
     </ContextMenuProvider>
   )
 }
@@ -112,10 +130,12 @@ export interface XhContextMenuTriggerProps extends ComponentPropsWithRef<'div'>,
 /** 触发区渲染为 div，语义由 connect 打上的 ARIA 属性给出。 */
 export function XhContextMenuTrigger({ children, asChild, ...rest }: XhContextMenuTriggerProps): ReactNode {
   const ctx = useContextMenuContext()
-  const props = mergeReactProps(
-    ctx.api.getTriggerProps() as Record<string, unknown>,
+  const props = mergePartProps(
+    mergeReactProps(
+      ctx.api.getTriggerProps() as Record<string, unknown>,
+      { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
+    ),
     rest as Record<string, unknown>,
-    { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
   )
   return renderAsChild(asChild, children, props, 'context-menu', (p, kids) => <div {...p}>{kids}</div>)
 }
@@ -130,7 +150,7 @@ export function XhContextMenuPositioner({ children, container, ...rest }: XhCont
   // 条目列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current })
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,
@@ -307,22 +327,16 @@ export interface XhContextMenuSubProps {
  */
 export function XhContextMenuSub({ value, disabled, children, ...props }: XhContextMenuSubProps): ReactNode {
   const parent = useContextMenuContext()
-  const chain = useContextMenuChain()
-  const sub = useMenu({
+  const sub = useMenuWithParent({
     ...props,
     disabled,
     submenu: true,
     dir: props.dir ?? parent.service.prop('dir'),
     tone: props.tone ?? parent.service.prop('tone'),
     size: props.size ?? parent.service.prop('size'),
-    onSelect: details => chain.notifySelect(details),
-  })
+  }, parent.tree)
 
   const handle = useMemo(() => ({ parent, value, disabled }), [parent, value, disabled])
-  // 子层里还能再嵌一层 XhMenuSub：那一层要往上找选中汇总的链，
-  // 而链只在 XhMenuRoot 里给过，右键菜单这一支得自己接上
-  const menuChain = useMemo(() => ({ notifySelect: chain.notifySelect }), [chain])
-
   // 父层收起（Escape、外点、选中）时本层跟着收，层层传导
   const parentOpen = parent.api.open
   const setOpenRef = useRef(sub.api.setOpen)
@@ -334,11 +348,9 @@ export function XhContextMenuSub({ value, disabled, children, ...props }: XhCont
 
   return (
     <MenuProvider value={sub}>
-      <MenuChainProvider value={menuChain}>
-        <ContextMenuSubProvider value={handle}>
-          {renderSlot(children, { open: sub.api.open, setOpen: sub.api.setOpen })}
-        </ContextMenuSubProvider>
-      </MenuChainProvider>
+      <ContextMenuSubProvider value={handle}>
+        {renderSlot(children, { open: sub.api.open, setOpen: sub.api.setOpen })}
+      </ContextMenuSubProvider>
     </MenuProvider>
   )
 }
@@ -372,22 +384,6 @@ export function XhContextMenuSubTrigger({ children, ...rest }: XhContextMenuSubT
   )
 }
 
-/** 一段连续的同组条目；不分组的条目各自单独成段。 */
-type NodeRun = [ContextMenuNodeMeta, ...ContextMenuNodeMeta[]]
-
-/** 相邻同 group 的条目并成一段，没写 group 的各自成段。 */
-function groupRuns(collection: readonly ContextMenuNodeMeta[]): NodeRun[] {
-  const runs: NodeRun[] = []
-  for (const meta of collection) {
-    const last = runs.at(-1)
-    if (last && meta.group != null && last[0].group === meta.group)
-      last.push(meta)
-    else
-      runs.push([meta])
-  }
-  return runs
-}
-
 /** 单个条目：标记位排在文字前面，没给标记位就不铺那个部件。 */
 function renderItemNode(
   meta: ContextMenuNodeMeta,
@@ -407,7 +403,7 @@ function renderNodes(
   collection: readonly ContextMenuNodeMeta[],
   renderItem?: (node: ContextMenuNodeMeta) => ReactNode,
 ): ReactNode[] {
-  return groupRuns(collection).map((run, runIndex) => {
+  return groupAdjacentRuns(collection, node => node.group).map((run, runIndex) => {
     const head = run[0]
     // 首条上的标记不产出分隔线：菜单开头不留一道空隔
     const lead = runIndex > 0 && head.separatorBefore ? <XhContextMenuSeparator /> : null

@@ -8,12 +8,12 @@ import { provideList, useListContext } from './context'
 
 export const XhListRoot = defineComponent({
   name: 'XhListRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     bordered: Boolean,
     hoverable: Boolean,
     split: Boolean,
-    size: { type: String as PropType<Size>, default: undefined },
+    size: { type: String as PropType<Size> },
     /** 根渲染成哪个标签，默认 ul；换成 div 即不进读屏的列表语义。 */
     as: { type: String, default: 'ul' },
   },

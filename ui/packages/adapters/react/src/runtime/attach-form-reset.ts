@@ -18,6 +18,7 @@ export function useFormReset<T extends MachineSchema>(
       return
     let bridge: Disposable | null = createFormResetBridge({
       getNode: () => nodeRef.current,
+      getFormId: () => service.prop('form') as string | undefined,
       onReset: () => {
         if (service.getStatus() === 'Started')
           service.send({ type: FORM_RESET_EVENT } as T['event'])
