@@ -282,6 +282,28 @@ describe('焦点：把手离场或换位之后接得住', () => {
 })
 
 describe('接入 FormPath：行号变更只在 Headless 真源迁移', () => {
+  it('form 服务只桥接路径真源，控件状态以适配器解析后的 props 为准', () => {
+    const users = ['users'] as const
+    const form = makeFormService({
+      defaultValues: createFormPathRecord([[users, []]]),
+      disabled: true,
+      readOnly: true,
+    })
+    const rows = makeService({
+      name: users,
+      disabled: false,
+      readOnly: false,
+      createItem: () => '新增行',
+    })
+    rows.refs.set('form', form)
+
+    expect(api(rows).disabled).toBe(false)
+    expect(api(rows).readOnly).toBe(false)
+    expect(api(rows).canAdd).toBe(true)
+    api(rows).add()
+    expect(api(rows).value).toEqual(['新增行'])
+  })
+
   it('字符串 name 只作为一个路径段，点号与方括号绝不被自行拆解', () => {
     const dotted = makeService({ name: 'user.email', defaultValue: ['甲'] })
     const bracketed = makeService({ name: 'users[0]', defaultValue: ['乙'] })

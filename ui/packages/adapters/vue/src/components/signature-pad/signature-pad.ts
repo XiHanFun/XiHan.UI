@@ -3,6 +3,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideSignaturePad, useSignaturePadContext } from './context'
 import { useSignaturePad } from './use-signature-pad'
 
@@ -37,7 +38,7 @@ export const XhSignaturePadRoot = defineComponent({
   setup(props, { slots, emit }) {
     const onDraw: SignaturePadProps['onDraw'] = details => emit('draw', details)
     const onDrawEnd: SignaturePadProps['onDrawEnd'] = details => emit('draw-end', details)
-    const ctx = useSignaturePad(withXhConfig('signature-pad', props) as SignaturePadProps, { onDraw, onDrawEnd })
+    const ctx = useSignaturePad(withXhConfig('signature-pad', useFormControlProps(props)) as SignaturePadProps, { onDraw, onDrawEnd })
     provideSignaturePad(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       paths: ctx.api.value.paths,

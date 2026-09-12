@@ -19,9 +19,9 @@ function textField(markup = ''): string {
     </xh-text-field>`
 }
 
-type AtomicControl = 'checkbox' | 'switch' | 'radio-group' | 'number-field' | 'password-input' | 'pin-input' | 'date-field' | 'time-field' | 'editable' | 'tags-input' | 'checkbox-group' | 'slider' | 'select' | 'cascader' | 'combobox' | 'tree-select' | 'date-picker' | 'time-picker' | 'color-picker' | 'mention' | 'rating' | 'segmented' | 'toggle-group' | 'transfer'
+type AtomicControl = 'checkbox' | 'switch' | 'radio-group' | 'number-field' | 'password-input' | 'pin-input' | 'date-field' | 'time-field' | 'editable' | 'tags-input' | 'checkbox-group' | 'slider' | 'select' | 'cascader' | 'combobox' | 'tree-select' | 'date-picker' | 'time-picker' | 'color-picker' | 'mention' | 'rating' | 'segmented' | 'toggle-group' | 'transfer' | 'field-array' | 'file-upload' | 'image-cropper' | 'signature-pad'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['checkbox', 'switch', 'radio-group', 'number-field', 'password-input', 'pin-input', 'date-field', 'time-field', 'editable', 'tags-input', 'checkbox-group', 'slider', 'select', 'cascader', 'combobox', 'tree-select', 'date-picker', 'time-picker', 'color-picker', 'mention', 'rating', 'segmented', 'toggle-group', 'transfer']
+const ATOMIC_CONTROLS: AtomicControl[] = ['checkbox', 'switch', 'radio-group', 'number-field', 'password-input', 'pin-input', 'date-field', 'time-field', 'editable', 'tags-input', 'checkbox-group', 'slider', 'select', 'cascader', 'combobox', 'tree-select', 'date-picker', 'time-picker', 'color-picker', 'mention', 'rating', 'segmented', 'toggle-group', 'transfer', 'field-array', 'file-upload', 'image-cropper', 'signature-pad']
 
 function atomicControl(kind: AtomicControl, markup = ''): string {
   if (kind === 'checkbox') {
@@ -77,6 +77,18 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
   if (kind === 'transfer') {
     return `<xh-transfer ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="source-panel"><div data-xh-part="list"></div></div></div></xh-transfer>`
   }
+  if (kind === 'field-array')
+    return `<xh-field-array ${nonRequiredMarkup}><div data-xh-part="root"></div></xh-field-array>`
+  if (kind === 'file-upload') {
+    const fileUploadMarkup = markup.replace(/\b(?:read-only|required)(?:="false")?/g, '')
+    return `<xh-file-upload ${fileUploadMarkup}><div data-xh-part="root"></div></xh-file-upload>`
+  }
+  if (kind === 'image-cropper') {
+    const imageCropperMarkup = markup.replace(/\b(?:required|invalid)(?:="false")?/g, '')
+    return `<xh-image-cropper ${imageCropperMarkup}><div data-xh-part="root"></div></xh-image-cropper>`
+  }
+  if (kind === 'signature-pad')
+    return `<xh-signature-pad ${markup}><div data-xh-part="root"><input data-xh-part="hidden-input"></div></xh-signature-pad>`
   if (kind === 'editable')
     return `<xh-editable ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><span data-xh-part="preview"></span><input data-xh-part="input"></div></div></xh-editable>`
   if (kind === 'tags-input')
@@ -90,6 +102,46 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
 }
 
 async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabled: boolean): Promise<void> {
+  if (kind === 'field-array') {
+    let root: HTMLElement | null = null
+    await vi.waitFor(() => {
+      root = form.querySelector<HTMLElement>('xh-field-array [data-scope="field-array"][data-part="root"]')
+      expect(root?.hasAttribute('data-disabled')).toBe(enabled)
+    })
+    expect(root!.hasAttribute('data-readonly')).toBe(enabled)
+    expect(root!.hasAttribute('data-invalid')).toBe(enabled)
+    return
+  }
+  if (kind === 'file-upload') {
+    let root: HTMLElement | null = null
+    await vi.waitFor(() => {
+      root = form.querySelector<HTMLElement>('xh-file-upload [data-scope="file-upload"][data-part="root"]')
+      expect(root?.hasAttribute('data-disabled')).toBe(enabled)
+    })
+    expect(root!.hasAttribute('data-invalid')).toBe(enabled)
+    return
+  }
+  if (kind === 'image-cropper') {
+    let root: HTMLElement | null = null
+    await vi.waitFor(() => {
+      root = form.querySelector<HTMLElement>('xh-image-cropper [data-scope="image-cropper"][data-part="root"]')
+      expect(root?.hasAttribute('data-disabled')).toBe(enabled)
+    })
+    expect(root!.hasAttribute('data-readonly')).toBe(enabled)
+    return
+  }
+  if (kind === 'signature-pad') {
+    let root: HTMLElement | null = null
+    await vi.waitFor(() => {
+      root = form.querySelector<HTMLElement>('xh-signature-pad [data-scope="signature-pad"][data-part="root"]')
+      expect(root?.hasAttribute('data-disabled')).toBe(enabled)
+    })
+    const input = form.querySelector<HTMLInputElement>('xh-signature-pad input')!
+    expect(root!.hasAttribute('data-readonly')).toBe(enabled)
+    expect(root!.hasAttribute('data-invalid')).toBe(enabled)
+    expect(input.required).toBe(enabled)
+    return
+  }
   if (kind === 'rating') {
     let control: HTMLElement | null = null
     await vi.waitFor(() => {

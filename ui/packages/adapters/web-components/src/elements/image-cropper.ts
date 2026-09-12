@@ -1,5 +1,6 @@
 import type { Service } from '@xihan-ui/core'
 import type {
+  FormControlState,
   ImageCropperHandlePosition,
   ImageCropperRect,
   ImageCropperRotationChangeDetails,
@@ -10,7 +11,7 @@ import type {
   ImageCropperZoomChangeDetails,
 } from '@xihan-ui/headless'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
-import { connectImageCropper, imageCropperAnatomy, imageCropperMachine, imageCropperMeta } from '@xihan-ui/headless'
+import { connectImageCropper, imageCropperAnatomy, imageCropperMachine, imageCropperMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -172,7 +173,19 @@ export class XhImageCropperElement extends XhElement {
     { onBuilt: svc => this.injectRefs(svc) },
   )
 
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；ImageCropper 仅消费公开的禁用、只读两轴。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
   private machineProps(): Partial<ImageCropperSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+    }, this.inheritedControl)
     return {
       src: this.src,
       alt: this.alt,
@@ -192,9 +205,8 @@ export class XhImageCropperElement extends XhElement {
       maxRotation: this.maxRotation,
       rotationStep: this.rotationStep,
       shape: this.shape,
-      // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect
-      disabled: this.disabled,
-      readOnly: this.readOnly,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
       name: this.name,
       translations: this.translations,
       onValueChange: this.notifyValue,

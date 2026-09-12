@@ -283,11 +283,9 @@ export const formMachine = createMachine({
       { guard: not('isEditable') },
       { actions: ['setFieldValue', 'clearExternalFieldError', 'validateChangedField'] },
     ],
-    'FIELD.ARRAY.MUTATE': [
-      // FieldArray 自己的 disabled/readOnly 已拦一层；这里再守住整个 Form 的禁用与只读。
-      { guard: not('isEditable') },
-      { actions: ['mutateFieldArray'] },
-    ],
+    // FieldArray 的有效 disabled/readOnly 已由统一 FormControlState 优先级解析并在自己的机器守住；
+    // 这里仅接收结构化路径迁移，不能再次用 Form 根状态覆盖实例或最近 Field 的显式 false。
+    'FIELD.ARRAY.MUTATE': { actions: ['mutateFieldArray'] },
     'FIELD.BLUR': [
       { guard: not('isEnabled') },
       { actions: ['validateBlurredField'] },

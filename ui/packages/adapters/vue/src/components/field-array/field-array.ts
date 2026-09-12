@@ -4,6 +4,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useOptionalFormContext } from '../form/context'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideFieldArray, provideFieldArrayItem, useFieldArrayContext, useFieldArrayItemContext } from './context'
 import { useFieldArray } from './use-field-array'
 
@@ -38,9 +39,9 @@ export const XhFieldArrayRoot = defineComponent({
     max: { type: Number, default: undefined },
     createItem: { type: Function as PropType<() => unknown>, default: undefined },
     movable: Boolean,
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     name: { type: [String, Array] as PropType<FormPath>, default: undefined },
     translations: { type: Object as PropType<Partial<FieldArrayTranslations>>, default: undefined },
   },
@@ -58,7 +59,7 @@ export const XhFieldArrayRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useFieldArray(withXhConfig('field-array', props) as FieldArrayProps, { onValueChange }, form?.service)
+    const ctx = useFieldArray(withXhConfig('field-array', useFormControlProps(props)) as FieldArrayProps, { onValueChange }, form?.service)
     provideFieldArray(ctx)
     // items 里每一项都带 key，作者铺行时直接 :key="row.key"
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({

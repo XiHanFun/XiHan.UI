@@ -23,10 +23,13 @@ import {
   XhDatePickerTrigger,
   XhEditableInput,
   XhEditableRoot,
+  XhFieldArrayRoot,
   XhFieldControl,
   XhFieldRoot,
+  XhFileUploadRoot,
   XhFormFieldGroup,
   XhFormRoot,
+  XhImageCropperRoot,
   XhMentionInput,
   XhMentionRoot,
   XhNumberFieldInput,
@@ -42,6 +45,8 @@ import {
   XhSegmentedRoot,
   XhSelectRoot,
   XhSelectTrigger,
+  XhSignaturePadHiddenInput,
+  XhSignaturePadRoot,
   XhSliderControl,
   XhSliderRoot,
   XhSliderThumb,
@@ -69,9 +74,9 @@ import {
 } from '../src'
 
 type ControlState = Partial<Record<'disabled' | 'readOnly' | 'required' | 'invalid', boolean>>
-type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider' | 'Select' | 'Cascader' | 'Combobox' | 'TreeSelect' | 'DatePicker' | 'TimePicker' | 'ColorPicker' | 'Mention' | 'Rating' | 'Segmented' | 'ToggleGroup' | 'Transfer'
+type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider' | 'Select' | 'Cascader' | 'Combobox' | 'TreeSelect' | 'DatePicker' | 'TimePicker' | 'ColorPicker' | 'Mention' | 'Rating' | 'Segmented' | 'ToggleGroup' | 'Transfer' | 'FieldArray' | 'FileUpload' | 'ImageCropper' | 'SignaturePad'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider', 'Select', 'Cascader', 'Combobox', 'TreeSelect', 'DatePicker', 'TimePicker', 'ColorPicker', 'Mention', 'Rating', 'Segmented', 'ToggleGroup', 'Transfer']
+const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider', 'Select', 'Cascader', 'Combobox', 'TreeSelect', 'DatePicker', 'TimePicker', 'ColorPicker', 'Mention', 'Rating', 'Segmented', 'ToggleGroup', 'Transfer', 'FieldArray', 'FileUpload', 'ImageCropper', 'SignaturePad']
 
 function nonRequiredState(props: ControlState) {
   return { disabled: props.disabled, readOnly: props.readOnly, invalid: props.invalid }
@@ -83,6 +88,14 @@ function ratingState(props: ControlState) {
 
 function disabledState(props: ControlState) {
   return { disabled: props.disabled }
+}
+
+function disabledInvalidState(props: ControlState) {
+  return { disabled: props.disabled, invalid: props.invalid }
+}
+
+function disabledReadOnlyState(props: ControlState) {
+  return { disabled: props.disabled, readOnly: props.readOnly }
 }
 
 function atomicControl(kind: AtomicControl, props: ControlState) {
@@ -155,6 +168,14 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
       </XhTransferRoot>
     )
   }
+  if (kind === 'FieldArray')
+    return <XhFieldArrayRoot {...nonRequiredState(props)} />
+  if (kind === 'FileUpload')
+    return <XhFileUploadRoot {...disabledInvalidState(props)} />
+  if (kind === 'ImageCropper')
+    return <XhImageCropperRoot {...disabledReadOnlyState(props)} />
+  if (kind === 'SignaturePad')
+    return <XhSignaturePadRoot {...props}><XhSignaturePadHiddenInput /></XhSignaturePadRoot>
   return (
     <XhSliderRoot {...nonRequiredState(props)} defaultValue={[50]}>
       <XhSliderControl>
@@ -177,6 +198,34 @@ function renderAtomicControl(kind: AtomicControl, instance: ControlState = {}, f
 }
 
 function expectAtomicState(container: HTMLElement, kind: AtomicControl, enabled: boolean): void {
+  if (kind === 'FieldArray') {
+    const root = container.querySelector<HTMLElement>('[data-scope="field-array"][data-part="root"]')!
+    expect(root.hasAttribute('data-disabled')).toBe(enabled)
+    expect(root.hasAttribute('data-readonly')).toBe(enabled)
+    expect(root.hasAttribute('data-invalid')).toBe(enabled)
+    return
+  }
+  if (kind === 'FileUpload') {
+    const root = container.querySelector<HTMLElement>('[data-scope="file-upload"][data-part="root"]')!
+    expect(root.hasAttribute('data-disabled')).toBe(enabled)
+    expect(root.hasAttribute('data-invalid')).toBe(enabled)
+    return
+  }
+  if (kind === 'ImageCropper') {
+    const root = container.querySelector<HTMLElement>('[data-scope="image-cropper"][data-part="root"]')!
+    expect(root.hasAttribute('data-disabled')).toBe(enabled)
+    expect(root.hasAttribute('data-readonly')).toBe(enabled)
+    return
+  }
+  if (kind === 'SignaturePad') {
+    const root = container.querySelector<HTMLElement>('[data-scope="signature-pad"][data-part="root"]')!
+    const input = container.querySelector<HTMLInputElement>('input')!
+    expect(root.hasAttribute('data-disabled')).toBe(enabled)
+    expect(root.hasAttribute('data-readonly')).toBe(enabled)
+    expect(root.hasAttribute('data-invalid')).toBe(enabled)
+    expect(input.required).toBe(enabled)
+    return
+  }
   if (kind === 'Rating') {
     const control = container.querySelector<HTMLElement>('[data-scope="rating"][data-part="control"]')!
     expect(control.getAttribute('aria-disabled')).toBe(String(enabled))

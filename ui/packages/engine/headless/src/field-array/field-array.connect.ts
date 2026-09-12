@@ -21,9 +21,8 @@ export function connectFieldArray<T extends PropTypes>(
   const value = fieldArrayValue(service)
   const keys = context.get('keys')
   const count = value.length
-  const form = service.refs.get('form')
-  const disabled = !!prop('disabled') || !!form?.prop('disabled')
-  const readOnly = !!prop('readOnly') || !!form?.prop('readOnly')
+  const disabled = !!prop('disabled')
+  const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
   const name = prop('name')
   const movable = !!prop('movable')

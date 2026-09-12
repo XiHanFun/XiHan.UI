@@ -5,6 +5,7 @@ import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideFileUpload, provideFileUploadItem, useFileUploadContext, useFileUploadItemContext } from './context'
 import { useFileUpload } from './use-file-upload'
 
@@ -45,8 +46,8 @@ export const XhFileUploadRoot = defineComponent({
     maxFiles: { type: Number, default: undefined },
     maxFileSize: { type: Number, default: undefined },
     minFileSize: { type: Number, default: undefined },
-    disabled: Boolean,
-    invalid: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     name: { type: String, default: undefined },
     allowDrop: { type: Boolean, default: undefined },
     directory: Boolean,
@@ -80,7 +81,7 @@ export const XhFileUploadRoot = defineComponent({
     }
     const onUploadComplete: FileUploadProps['onUploadComplete'] = details => emit('upload-complete', details)
     const onUploadError: FileUploadProps['onUploadError'] = details => emit('upload-error', details)
-    const ctx = useFileUpload(withXhConfig('file-upload', props) as FileUploadProps, { onFilesChange, onFileAccept, onFileReject, onRemoteFilesChange, onUploadComplete, onUploadError })
+    const ctx = useFileUpload(withXhConfig('file-upload', useFormControlProps(props)) as FileUploadProps, { onFilesChange, onFileAccept, onFileReject, onRemoteFilesChange, onUploadComplete, onUploadError })
     provideFileUpload(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       acceptedFiles: ctx.api.value.acceptedFiles,

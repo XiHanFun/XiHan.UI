@@ -6,6 +6,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
 import { useOptionalFormContext } from '../form/context'
+import { useFormControlProps } from '../form/use-form-control'
 import { FieldArrayItemProvider, FieldArrayProvider, useFieldArrayContext, useFieldArrayItemContext } from './context'
 import { useFieldArray } from './use-field-array'
 
@@ -63,7 +64,7 @@ export function XhFieldArrayRoot({
   ...rest
 }: XhFieldArrayRootProps): ReactNode {
   const form = useOptionalFormContext()
-  const ctx = useFieldArray(withXhConfig('field-array', {
+  const ctx = useFieldArray(withXhConfig('field-array', useFormControlProps({
     value,
     defaultValue,
     min,
@@ -76,7 +77,7 @@ export function XhFieldArrayRoot({
     name,
     translations,
     onValueChange,
-  }) as FieldArrayProps, form?.service)
+  })) as FieldArrayProps, form?.service)
   const api = ctx.api
 
   return (

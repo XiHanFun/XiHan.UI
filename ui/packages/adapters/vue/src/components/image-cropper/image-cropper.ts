@@ -9,6 +9,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideImageCropper, useImageCropperContext } from './context'
 import { useImageCropper } from './use-image-cropper'
 
@@ -82,7 +83,7 @@ export const XhImageCropperRoot = defineComponent({
       emit('update:rotation', details.rotation)
     }
     const ctx = useImageCropper(
-      withXhConfig('image-cropper', props) as ImageCropperProps,
+      withXhConfig('image-cropper', useFormControlProps(props)) as ImageCropperProps,
       { onValueChange, onValueChangeEnd, onZoomChange, onRotationChange },
     )
     provideImageCropper(ctx)

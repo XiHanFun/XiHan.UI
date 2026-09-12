@@ -10,6 +10,7 @@ import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import { ImageCropperProvider, useImageCropperContext } from './context'
 import { useImageCropper } from './use-image-cropper'
 
@@ -86,7 +87,7 @@ export function XhImageCropperRoot({
   children,
   ...rest
 }: XhImageCropperRootProps): ReactNode {
-  const ctx = useImageCropper(withXhConfig('image-cropper', {
+  const ctx = useImageCropper(withXhConfig('image-cropper', useFormControlProps({
     src,
     alt,
     aspectRatio,
@@ -113,7 +114,7 @@ export function XhImageCropperRoot({
     onValueChangeEnd,
     onZoomChange,
     onRotationChange,
-  }) as ImageCropperProps)
+  })) as ImageCropperProps)
   const api = ctx.api
   return (
     <ImageCropperProvider value={ctx}>

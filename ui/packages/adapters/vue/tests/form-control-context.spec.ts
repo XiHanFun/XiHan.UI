@@ -25,10 +25,13 @@ import {
   XhDatePickerTrigger,
   XhEditableInput,
   XhEditableRoot,
+  XhFieldArrayRoot,
   XhFieldControl,
   XhFieldRoot,
+  XhFileUploadRoot,
   XhFormFieldGroup,
   XhFormRoot,
+  XhImageCropperRoot,
   XhMentionInput,
   XhMentionRoot,
   XhNumberFieldInput,
@@ -44,6 +47,8 @@ import {
   XhSegmentedRoot,
   XhSelectRoot,
   XhSelectTrigger,
+  XhSignaturePadHiddenInput,
+  XhSignaturePadRoot,
   XhSliderControl,
   XhSliderRoot,
   XhSliderThumb,
@@ -71,9 +76,9 @@ import {
 } from '../src'
 
 type ControlState = Partial<Record<'disabled' | 'readOnly' | 'required' | 'invalid', boolean>>
-type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider' | 'Select' | 'Cascader' | 'Combobox' | 'TreeSelect' | 'DatePicker' | 'TimePicker' | 'ColorPicker' | 'Mention' | 'Rating' | 'Segmented' | 'ToggleGroup' | 'Transfer'
+type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider' | 'Select' | 'Cascader' | 'Combobox' | 'TreeSelect' | 'DatePicker' | 'TimePicker' | 'ColorPicker' | 'Mention' | 'Rating' | 'Segmented' | 'ToggleGroup' | 'Transfer' | 'FieldArray' | 'FileUpload' | 'ImageCropper' | 'SignaturePad'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider', 'Select', 'Cascader', 'Combobox', 'TreeSelect', 'DatePicker', 'TimePicker', 'ColorPicker', 'Mention', 'Rating', 'Segmented', 'ToggleGroup', 'Transfer']
+const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider', 'Select', 'Cascader', 'Combobox', 'TreeSelect', 'DatePicker', 'TimePicker', 'ColorPicker', 'Mention', 'Rating', 'Segmented', 'ToggleGroup', 'Transfer', 'FieldArray', 'FileUpload', 'ImageCropper', 'SignaturePad']
 
 function nonRequiredState(props: ControlState) {
   return { disabled: props.disabled, readOnly: props.readOnly, invalid: props.invalid }
@@ -85,6 +90,14 @@ function ratingState(props: ControlState) {
 
 function disabledState(props: ControlState) {
   return { disabled: props.disabled }
+}
+
+function disabledInvalidState(props: ControlState) {
+  return { disabled: props.disabled, invalid: props.invalid }
+}
+
+function disabledReadOnlyState(props: ControlState) {
+  return { disabled: props.disabled, readOnly: props.readOnly }
 }
 
 function atomicControl(kind: AtomicControl, props: ControlState) {
@@ -134,6 +147,14 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
     return h(XhToggleGroupRoot, { ...disabledState(props), collection: [{ value: 'a', label: '甲' }] })
   if (kind === 'Transfer')
     return h(XhTransferRoot, { ...nonRequiredState(props), collection: [] }, () => h(XhTransferSourcePanel, null, () => h(XhTransferList)))
+  if (kind === 'FieldArray')
+    return h(XhFieldArrayRoot, nonRequiredState(props))
+  if (kind === 'FileUpload')
+    return h(XhFileUploadRoot, disabledInvalidState(props))
+  if (kind === 'ImageCropper')
+    return h(XhImageCropperRoot, disabledReadOnlyState(props))
+  if (kind === 'SignaturePad')
+    return h(XhSignaturePadRoot, props, () => h(XhSignaturePadHiddenInput))
   return h(XhSliderRoot, { ...nonRequiredState(props), defaultValue: [50] }, () => h(XhSliderControl, null, () => [h(XhSliderTrack), h(XhSliderThumb, { index: 0 })]))
 }
 
@@ -152,6 +173,33 @@ function mountAtomicControl(kind: AtomicControl, instance: ControlState = {}, fi
 }
 
 function expectAtomicState(wrapper: ReturnType<typeof mount>, kind: AtomicControl, enabled: boolean): void {
+  if (kind === 'FieldArray') {
+    const root = wrapper.find('[data-scope="field-array"][data-part="root"]')
+    expect(root.attributes('data-disabled') !== undefined).toBe(enabled)
+    expect(root.attributes('data-readonly') !== undefined).toBe(enabled)
+    expect(root.attributes('data-invalid') !== undefined).toBe(enabled)
+    return
+  }
+  if (kind === 'FileUpload') {
+    const root = wrapper.find('[data-scope="file-upload"][data-part="root"]')
+    expect(root.attributes('data-disabled') !== undefined).toBe(enabled)
+    expect(root.attributes('data-invalid') !== undefined).toBe(enabled)
+    return
+  }
+  if (kind === 'ImageCropper') {
+    const root = wrapper.find('[data-scope="image-cropper"][data-part="root"]')
+    expect(root.attributes('data-disabled') !== undefined).toBe(enabled)
+    expect(root.attributes('data-readonly') !== undefined).toBe(enabled)
+    return
+  }
+  if (kind === 'SignaturePad') {
+    const root = wrapper.find('[data-scope="signature-pad"][data-part="root"]')
+    expect(root.attributes('data-disabled') !== undefined).toBe(enabled)
+    expect(root.attributes('data-readonly') !== undefined).toBe(enabled)
+    expect(root.attributes('data-invalid') !== undefined).toBe(enabled)
+    expect(wrapper.find('input').attributes('required') !== undefined).toBe(enabled)
+    return
+  }
   if (kind === 'Rating') {
     const control = wrapper.find('[data-scope="rating"][data-part="control"]')
     expect(control.attributes('aria-disabled')).toBe(String(enabled))
