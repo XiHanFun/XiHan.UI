@@ -89,15 +89,18 @@ function loadThemes(blocks) {
   const light = new Map()
   const dark = new Map()
   for (const { selector, decls } of blocks) {
-    const target = selector === ':where(:root)'
-      ? root
-      : selector === ':where([data-theme=\'light\'])'
-        ? light
-        : selector === ':where([data-theme=\'dark\'])' ? dark : null
-    if (!target)
+    const selectors = selector.split(',').map(part => part.trim())
+    const targets = [
+      selectors.includes(':where(:root)') ? root : null,
+      selectors.includes(":where([data-theme='light'])") ? light : null,
+      selectors.includes(":where([data-theme='dark'])") ? dark : null,
+    ].filter(Boolean)
+    if (targets.length === 0)
       continue
-    for (const [k, v] of decls)
-      target.set(k, v)
+    for (const target of targets) {
+      for (const [k, v] of decls)
+        target.set(k, v)
+    }
   }
   return {
     light: new Map([...root, ...light]),

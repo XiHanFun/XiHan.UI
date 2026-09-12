@@ -8,6 +8,7 @@ import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const STYLES_DIR = 'packages/design/styles/css'
+const FAMILY_DIR = 'packages/design/styles/family'
 const HEADLESS_DIR = 'packages/engine/headless/src'
 
 /** 受管辖的输入与选择族。 */
@@ -54,6 +55,15 @@ const NESTED_CONTENT = new Set(['value-text'])
 
 /** 盒内的尾部动作钮。 */
 const ACTION_PARTS = ['clear-trigger', 'trigger', 'visibility-trigger', 'eye-dropper-trigger', 'increment-trigger', 'decrement-trigger']
+
+/** 已迁到共享 Field Chrome / Action Control 的组件；这里登记的是可验证的家族接线，不是放行名单。 */
+const SHARED_FAMILY = {
+  'text-field': {
+    boxSelector: '[data-xh-field-chrome]',
+    contentSelector: '[data-xh-field-input]',
+    actionParts: new Set(['clear-trigger']),
+  },
+}
 
 /**
  * 两套盒的控件：写了 control 由 control 画盒，不写则那个 input 自己画盒。
@@ -131,6 +141,25 @@ function lastPart(selector) {
   return parts.length ? parts.at(-1)[1] : null
 }
 
+/** 共享家族选择器没有 data-part，由组件接线把稳定角色映回解剖部件。 */
+function effectivePart(selector, comp) {
+  const direct = lastPart(selector)
+  if (direct)
+    return direct
+  const family = SHARED_FAMILY[comp]
+  if (family && selector.includes(family.boxSelector))
+    return 'control'
+  if (family && selector.includes(family.contentSelector))
+    return 'input'
+  return null
+}
+
+const fieldChromeRules = parseRules(strip(await readFile(join(FAMILY_DIR, 'field-chrome.css'), 'utf8')))
+const actionControlSource = strip(await readFile(join(FAMILY_DIR, 'action-control.css'), 'utf8'))
+const actionControlHasInsetContract = actionControlSource.includes("[data-xh-action-control][data-xh-action-profile='field-inset']")
+  && /\[data-xh-action-control\]\s*\{[\s\S]*?block-size:\s*var\(--xh-action-visual-size/.test(actionControlSource)
+  && /\[data-xh-action-control\]\[data-xh-action-profile='field-inset'\]\s*\{[\s\S]*?flex:\s*none;[\s\S]*?inline-size:\s*var\(--xh-action-visual-size/.test(actionControlSource)
+
 const files = new Set(await readdir(STYLES_DIR))
 const problems = new Map()
 const usedExempt = new Set()
@@ -159,8 +188,21 @@ for (const comp of COMPONENTS) {
     report(comp, 'box-part', `皮肤 ${file} 不存在`)
     continue
   }
-  const src = strip(await readFile(join(STYLES_DIR, file), 'utf8'))
-  const rules = parseRules(src)
+  const rawSrc = await readFile(join(STYLES_DIR, file), 'utf8')
+  const src = strip(rawSrc)
+  const family = SHARED_FAMILY[comp]
+  const usesFieldChrome = family != null
+  const rules = [...parseRules(src), ...(usesFieldChrome ? fieldChromeRules : [])]
+  const connectSource = usesFieldChrome
+    ? await readFile(join(HEADLESS_DIR, comp, `${comp}.connect.ts`), 'utf8')
+    : ''
+
+  if (usesFieldChrome) {
+    if (!rawSrc.includes("@import '../family/field-chrome.css'"))
+      report(comp, 'box-part', '登记为 Field Chrome 使用者却没有传递引入 field-chrome.css')
+    if (!connectSource.includes("'data-xh-field-chrome': ''") || !connectSource.includes("'data-xh-field-input': ''"))
+      report(comp, 'box-part', '连接层没有把 Field Chrome 的 chrome / input 稳定角色投影到解剖部件')
+  }
 
   // 本文件里每个自定义属性声明过的值，用来把组件槽的回退链走通
   const slots = new Map()
@@ -202,7 +244,7 @@ for (const comp of COMPONENTS) {
     report(comp, 'box-part', `解剖里没有 control，盒退给 input，但它不在 SINGLE_ELEMENT 名单里`)
 
   // ② 盒规则：基础块（无附加选择器那条）里的五件事
-  const boxSelector = `[data-scope='${comp}'][data-part='${box}']`
+  const boxSelector = family?.boxSelector ?? `[data-scope='${comp}'][data-part='${box}']`
   const boxDecls = new Map()
   for (const rule of rules) {
     if (!rule.selectors.includes(boxSelector))
@@ -225,18 +267,18 @@ for (const comp of COMPONENTS) {
     if (!single) {
       has('display', v => v === 'inline-flex' || v === 'flex', 'box-display', '该是 inline-flex 或 flex')
       has('align-items', v => v === 'center', 'box-align', '该是 center')
-      has('gap', v => new RegExp(`var\\(\\s*--xh-${comp}-[\\w-]*gap\\b`).test(v), 'box-gap', `该走 var(--xh-${comp}-…-gap, …)`)
+      has('gap', v => reaches(v, new RegExp(`--xh-${comp}-[\\w-]*gap\\b`)), 'box-gap', `该走 var(--xh-${comp}-…-gap, …)`)
     }
     if (boxDecls.has('block-size'))
-      has('block-size', v => new RegExp(`var\\(\\s*--xh-${comp}-[\\w-]*-h\\b`).test(v), 'box-h', `该走 var(--xh-${comp}-…-h, …)`)
+      has('block-size', v => reaches(v, new RegExp(`--xh-${comp}-[\\w-]*-h\\b`)), 'box-h', `该走 var(--xh-${comp}-…-h, …)`)
     else if (boxDecls.has('min-block-size'))
       report(comp, 'box-h', `基础块写的是 min-block-size 而不是 block-size：${boxDecls.get('min-block-size')}`)
     else
       report(comp, 'box-h', '基础块缺 block-size')
-    has('padding-inline', v => new RegExp(`var\\(\\s*--xh-${comp}-[\\w-]*px\\b`).test(v), 'box-px', `该走 var(--xh-${comp}-…-px, …)`)
+    has('padding-inline', v => reaches(v, new RegExp(`--xh-${comp}-[\\w-]*px\\b`)), 'box-px', `该走 var(--xh-${comp}-…-px, …)`)
     has(
       'min-inline-size',
-      v => new RegExp(`var\\(\\s*--xh-${comp}-[\\w-]*min-w\\b`).test(v) && reaches(v, /--xh-control-min-w\b/),
+      v => reaches(v, new RegExp(`--xh-${comp}-[\\w-]*min-w\\b`)) && reaches(v, /--xh-control-min-w\b/),
       'box-min-w',
       `该走 var(--xh-${comp}-…-min-w, var(--xh-control-min-w))`,
     )
@@ -250,7 +292,7 @@ for (const comp of COMPONENTS) {
       if (!grows)
         continue
       for (const selector of rule.selectors) {
-        const part = lastPart(selector)
+        const part = effectivePart(selector, comp)
         if (part == null)
           continue
         if (part in OUTSIDE_BOX) {
@@ -278,6 +320,14 @@ for (const comp of COMPONENTS) {
     for (const action of ACTION_PARTS) {
       if (action === 'trigger' && TRIGGER_IS_CONTENT.has(comp))
         continue
+      if (family?.actionParts.has(action)) {
+        const hasActionImport = rawSrc.includes("@import '../family/action-control.css'")
+        const hasActionProjection = connectSource.includes("'data-xh-action-control': ''")
+          && connectSource.includes("'data-xh-action-profile': 'field-inset'")
+        if (!hasActionImport || !hasActionProjection || !actionControlHasInsetContract)
+          report(comp, 'action-size', `${action} 的 Action Control field-inset 家族接线不完整`)
+        continue
+      }
       const selector = `[data-scope='${comp}'][data-part='${action}']`
       const decls = new Map()
       for (const rule of rules) {
@@ -305,7 +355,7 @@ for (const comp of COMPONENTS) {
     if (!rule.decls.some(([name, value]) => name === 'margin-inline-start' && value === 'auto'))
       continue
     for (const selector of rule.selectors) {
-      const part = lastPart(selector)
+      const part = effectivePart(selector, comp)
       if (part == null)
         continue
       if (part in OUTSIDE_BOX) {
@@ -324,7 +374,7 @@ for (const comp of COMPONENTS) {
     for (const selector of rule.selectors) {
       if (!/:focus-within|:focus-visible/.test(selector))
         continue
-      const part = lastPart(selector)
+      const part = effectivePart(selector, comp)
       if (part == null || !BOX_AREA_PARTS.has(part) || part === box)
         continue
       // 两套盒的控件：不写 control 时 input 自己是盒，那条环同样必须在
