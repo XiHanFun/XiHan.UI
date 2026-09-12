@@ -1,17 +1,14 @@
-<!-- 方向 | 竖向分隔线需要父容器有确定高度 -->
+<!-- 基础用法 | 分隔内容区域 -->
 <script setup lang="ts">
 import { XhSeparator } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <div style="width: 100%">
-    <p>上一段</p>
+  <div style="inline-size: min(480px, 100%)">
+    <strong>账户设置</strong>
+    <p style="color: var(--xh-fg-muted)">管理个人资料与登录方式。</p>
     <XhSeparator />
-    <p>下一段</p>
-  </div>
-  <div style="display: flex; align-items: center; gap: 12px; height: 24px">
-    <span>左</span>
-    <XhSeparator orientation="vertical" />
-    <span>右</span>
+    <strong style="display: block; margin-block-start: 16px">通知设置</strong>
+    <p style="margin-block-end: 0; color: var(--xh-fg-muted)">选择需要接收的消息。</p>
   </div>
 </template>
