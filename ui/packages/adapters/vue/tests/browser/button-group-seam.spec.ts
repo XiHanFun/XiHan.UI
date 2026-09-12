@@ -123,10 +123,12 @@ describe('按钮组轮廓', () => {
     expect(Number.parseFloat(getComputedStyle(first!).borderStartStartRadius)).toBeGreaterThanOrEqual(rootHeight / 2)
     expect(getComputedStyle(middle!).borderRadius).toBe('0px')
     expect(Number.parseFloat(getComputedStyle(last!).borderEndEndRadius)).toBeGreaterThanOrEqual(rootHeight / 2)
+    expect(first!.getBoundingClientRect().right).toBeCloseTo(middle!.getBoundingClientRect().left, 4)
+    expect(middle!.getBoundingClientRect().right).toBeCloseTo(last!.getBoundingClientRect().left, 4)
     for (const separator of separators) {
       const style = getComputedStyle(separator)
       expect(separator.getBoundingClientRect().height).toBeCloseTo(rootHeight / 2, 1)
-      expect(style.marginInlineStart).toBe('0px')
+      expect(style.marginInlineStart).toBe('-1px')
       expect(style.marginInlineEnd).toBe('0px')
     }
   })

@@ -63,9 +63,11 @@
   [data-scope='button-group'][data-part='separator'] {
     flex: none;
     align-self: center;
+    z-index: 1;
     border-radius: var(--xh-button-group-separator-radius, var(--xh-shape-pill));
     background: var(--xh-button-group-separator-color, var(--xh-_tone-on, var(--xh-fg-on-brand)));
     opacity: var(--xh-button-group-separator-opacity, 0.24);
+    pointer-events: none;
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -77,6 +79,7 @@
       --xh-button-group-separator-size,
       calc(var(--xh-_button-group-h, var(--xh-control-h-md)) / 2)
     );
+    margin-inline-start: calc(-1 * var(--xh-button-group-separator-thickness, var(--xh-stroke-thin)));
   }
 
   [data-scope='button-group'][data-part='separator'][data-orientation='horizontal'] {
@@ -85,6 +88,7 @@
       --xh-button-group-separator-size,
       calc(var(--xh-_button-group-h, var(--xh-control-h-md)) / 2)
     );
+    margin-block-start: calc(-1 * var(--xh-button-group-separator-thickness, var(--xh-stroke-thin)));
   }
 
   /* 整组禁用：段真正的禁用由适配器落到每一段的原生 disabled 上，
