@@ -2,7 +2,7 @@ import type { PositionResult } from '@xihan-ui/core'
 import type { ComboboxFocusIntent, ComboboxSchema } from './combobox.types'
 import { isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
-import { trackOverlayLayer, trackOverlayPosition } from '../shared/overlay-shell'
+import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 
 const { createMachine } = setup<ComboboxSchema>()
@@ -58,6 +58,7 @@ export const comboboxMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     position: null,
     getAnchorEl: () => null,
     getFloatingEl: () => null,
@@ -65,6 +66,8 @@ export const comboboxMachine = createMachine({
     getInputEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // Layer 与消解资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
+  effects: ['trackLayer'],
   // 挂载即按选中值结算一次显示文本，并据此把输入框填成选中项的文字
   entry: ['syncValueText', 'prefillInputValue'],
   watch: ({ track, prop, context, action }) => {
@@ -107,8 +110,8 @@ export const comboboxMachine = createMachine({
       // 先结算候选条数（空态节点据此显形），再按落点意图挑高亮
       entry: ['syncItems', 'setInitialHighlightedValue'],
       exit: ['clearHighlightedValue'],
-      // 进入 open：定位 → 消解。退出时逆序拆。焦点全程留在输入框，因此不挂焦点域
-      effects: ['trackPosition', 'trackLayer'],
+      // 定位只服务逻辑展开；Layer 与消解资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackPosition'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
@@ -434,25 +437,31 @@ export const comboboxMachine = createMachine({
         onResult: result => context.set('position', result),
       }),
 
-      // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape。
-      // 列表不接管焦点，因此不给焦点域；焦点离开整个组件由输入框的 blur 上报（INPUT.BLUR）
-      trackLayer: ({ refs, send, flush }) => trackOverlayLayer({
-        // 无 DOM 环境不挂副作用，状态机照常转移
-        config: refs.get('config'),
-        registerLayer: refs.get('registerLayer'),
-        flush,
-        onDismiss: (reason) => {
-          // Escape 走两拍（先清高亮再收起），所以不复用 CLOSE
-          if (reason === 'escape-key') {
-            send({ type: 'ESCAPE' })
-            return
-          }
-          // 焦点跑到层外与输入框自己的 blur 是同一件事，只认后者，
-          // 两处都收口时 onOpenChange 会为同一次离场发两遍
-          if (reason === 'focus-outside')
-            return
-          send({ type: 'CLOSE' })
-        },
+      // Layer 与 DismissableLayer 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
+      // 列表不接管焦点，因此不给焦点域；焦点离开整个组件由输入框的 blur 上报（INPUT.BLUR）。
+      trackLayer: ({ refs, send, flush, state, track }) => trackPresenceResources({
+        presence: refs.get('presence'),
+        open: () => state.get() === 'open',
+        track,
+        acquire: () => trackOverlayLayer({
+          // 无 DOM 环境不挂副作用，状态机照常转移
+          config: refs.get('config'),
+          registerLayer: refs.get('registerLayer'),
+          flush,
+          active: () => state.get() === 'open',
+          onDismiss: (reason) => {
+            // Escape 走两拍（先清高亮再收起），所以不复用 CLOSE
+            if (reason === 'escape-key') {
+              send({ type: 'ESCAPE' })
+              return
+            }
+            // 焦点跑到层外与输入框自己的 blur 是同一件事，只认后者，
+            // 两处都收口时 onOpenChange 会为同一次离场发两遍
+            if (reason === 'focus-outside')
+              return
+            send({ type: 'CLOSE' })
+          },
+        }),
       }),
     },
   },

@@ -3,7 +3,7 @@ import type { CascaderFocusIntent, CascaderNodeMeta, CascaderSchema, CascaderVal
 import { cascadeToggle, collapseChecked, itemValue, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
-import { trackOverlayLayer, trackOverlayPosition } from '../shared/overlay-shell'
+import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { cascaderAnatomy, cascaderItemQuery } from './cascader.anatomy'
 import {
   cascaderBuildColumns,
@@ -107,12 +107,15 @@ export const cascaderMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     position: null,
     getAnchorEl: () => null,
     getFloatingEl: () => null,
     getContentEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
+  effects: ['trackLayer'],
   // 开合受控时用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.* 回写
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
@@ -147,8 +150,8 @@ export const cascaderMachine = createMachine({
       // 展开那一刻把列一路铺到选中路径上并挑好焦点锚点，全程纯计算
       entry: ['setInitialFocusedPath'],
       exit: ['clearFocusedPath', 'clearInput'],
-      // 定位 → 消解 → 焦点；退出时逆序清理
-      effects: ['trackPosition', 'trackLayer'],
+      // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackPosition'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
@@ -390,49 +393,64 @@ export const cascaderMachine = createMachine({
         onResult: result => context.set('position', result),
       }),
 
-      // 层的入栈出栈与消解层、焦点域绑在同一个效应里：三者生命周期必须完全一致。
-      // 层只在展开期间入栈——消解层只让栈顶响应 Escape，若层在挂载期就注册、与开合无关地
-      // 常驻栈里，同页后挂载的那个会永久占着栈顶，把它下面每一层的 Escape 都堵死。
-      trackLayer: ({ refs, context, send, flush }) => trackOverlayLayer({
-        // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
-        config: refs.get('config'),
-        registerLayer: refs.get('registerLayer'),
-        flush,
-        onDismiss: (reason) => {
-          // Escape 分两拍：搜索词还在就先清词回列视图，词已空才收浮层
-          if (reason === 'escape-key' && context.get('inputValue') !== '') {
-            send({ type: 'INPUT.CHANGE', value: '' })
-            return
-          }
-          send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' })
-        },
-        focusScope: {
-          // 每次读最新 ref，容器晚一拍就位也能命中
-          container: () => refs.get('getContentEl')(),
-          // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测走的是
-          // focusFirst(removeLinks(...))，条目写成 <a> 时会被整体过滤掉，
-          // 且容器自身从来不是候选——只靠它焦点要等到最后一帧才落位。
-          // 这里每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
-          initialFocus: () => {
-            const content = refs.get('getContentEl')()
-            if (!content)
-              return null
-            const path = context.get('focusedPath')
-            const anchor = path?.[path.length - 1] ?? null
-            if (anchor != null)
-              return findCascaderItemEl(content, anchor)
-            // 本轮该有锚点却还没挑出来：返回 null 让焦点域重试，别滑到列上定死
-            if (!(context.get('focusIntent') === 'selected' && context.get('value').length === 0))
-              return null
-            // 确实不该有锚点（指针打开且无选中值）：焦点落到根列，它是 role=listbox 且认领着 Tab 位
-            return content.querySelector<HTMLElement>(`${cascaderAnatomy.build().column.selector}[data-level='0']`)
+      // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
+      trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
+        let reactivateFocus: (() => void) | null = null
+        return trackPresenceResources({
+          presence: refs.get('presence'),
+          open: () => state.get() === 'open',
+          track,
+          acquire: () => trackOverlayLayer({
+            // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
+            config: refs.get('config'),
+            registerLayer: refs.get('registerLayer'),
+            flush,
+            active: () => state.get() === 'open',
+            onDismiss: (reason) => {
+              // Escape 分两拍：搜索词还在就先清词回列视图，词已空才收浮层
+              if (reason === 'escape-key' && context.get('inputValue') !== '') {
+                send({ type: 'INPUT.CHANGE', value: '' })
+                return
+              }
+              send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' })
+            },
+            focusScope: {
+              // 每次读最新 ref，容器晚一拍就位也能命中
+              container: () => refs.get('getContentEl')(),
+              // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测走的是
+              // focusFirst(removeLinks(...))，条目写成 <a> 时会被整体过滤掉，
+              // 且容器自身从来不是候选——只靠它焦点要等到最后一帧才落位。
+              // 这里每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
+              initialFocus: () => {
+                const content = refs.get('getContentEl')()
+                if (!content)
+                  return null
+                const path = context.get('focusedPath')
+                const anchor = path?.[path.length - 1] ?? null
+                if (anchor != null)
+                  return findCascaderItemEl(content, anchor)
+                // 本轮该有锚点却还没挑出来：返回 null 让焦点域重试，别滑到列上定死
+                if (!(context.get('focusIntent') === 'selected' && context.get('value').length === 0))
+                  return null
+                // 确实不该有锚点（指针打开且无选中值）：焦点落到根列，它是 role=listbox 且认领着 Tab 位
+                return content.querySelector<HTMLElement>(`${cascaderAnatomy.build().column.selector}[data-level='0']`)
+              },
+              restoreFocus: () => context.get('returnFocus'),
+              // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+              // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
+              restoreTarget: () => refs.get('getAnchorEl')(),
+              onReactivate: reactivate => reactivateFocus = reactivate,
+            },
+          }),
+          onReopen: () => {
+            const activate = reactivateFocus
+            flush(() => scope.getWin().requestAnimationFrame(() => {
+              if (state.get() === 'open' && reactivateFocus === activate)
+                activate?.()
+            }))
           },
-          restoreFocus: () => context.get('returnFocus'),
-          // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
-          restoreTarget: () => refs.get('getAnchorEl')(),
-        },
-      }),
+        })
+      },
     },
   },
 })
