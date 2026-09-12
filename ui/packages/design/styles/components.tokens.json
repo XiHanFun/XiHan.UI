@@ -53656,7 +53656,7 @@
         "clear-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
@@ -53665,7 +53665,7 @@
         "transparent"
       ],
       "visibility": "public",
-      "description": "text-field 的 clear-trigger 部件 background 覆盖槽。"
+      "description": "text-field 的 clear-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-text-field-action-bg-active",
@@ -53674,16 +53674,20 @@
         "clear-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active"
+        "active",
+        "disabled",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-bg-subtle-active"
       ],
       "visibility": "public",
-      "description": "text-field 的 clear-trigger 部件 background 覆盖槽。"
+      "description": "text-field 的 clear-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-text-field-action-bg-hover",
@@ -53692,16 +53696,20 @@
         "clear-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "text-field 的 clear-trigger 部件 background 覆盖槽。"
+      "description": "text-field 的 clear-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-text-field-action-fg",
@@ -53731,7 +53739,11 @@
         "color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -53770,7 +53782,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "text-field 的 clear-trigger 部件 border-radius 覆盖槽。"
@@ -53783,16 +53795,18 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=field-inset"
       ],
       "defaultToken": [
-        "--xh-control-action-size"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "text-field 的 clear-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "text-field 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-text-field-affix-fg",
@@ -53805,7 +53819,7 @@
         "color"
       ],
       "state": [
-        "default"
+        "xh-field-affix"
       ],
       "defaultToken": [
         "--xh-fg-muted"
@@ -53824,7 +53838,8 @@
         "color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-field-affix"
       ],
       "defaultToken": [
         "--xh-fg-disabled"
@@ -53843,7 +53858,7 @@
         "font-size"
       ],
       "state": [
-        "default"
+        "xh-field-affix"
       ],
       "defaultToken": [
         "--xh-_text-field-font-size"
@@ -53858,16 +53873,16 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_text-field-bg"
       ],
       "visibility": "public",
-      "description": "text-field 的 control 部件 background 覆盖槽。"
+      "description": "text-field 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-text-field-control-bg-disabled",
@@ -53876,16 +53891,17 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "text-field 的 control 部件 background 覆盖槽。"
+      "description": "text-field 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-text-field-control-bg-hover",
@@ -53894,21 +53910,25 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "at-max",
         "disabled",
         "hover",
         "invalid",
-        "not([data-disabled], [data-readonly], [data-invalid], [data-at-max])",
-        "readonly"
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_text-field-bg-hover"
       ],
       "visibility": "public",
-      "description": "text-field 的 control 部件 background 覆盖槽。"
+      "description": "text-field 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-text-field-control-bg-readonly",
@@ -53917,16 +53937,17 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "readonly"
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "text-field 的 control 部件 background 覆盖槽。"
+      "description": "text-field 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-text-field-control-border",
@@ -53938,7 +53959,7 @@
         "border"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_text-field-border"
@@ -53956,7 +53977,9 @@
         "border-color"
       ],
       "state": [
-        "at-max"
+        "at-max",
+        "invalid",
+        "not([data-invalid])"
       ],
       "defaultToken": [
         "--xh-border-at-limit"
@@ -53976,7 +53999,8 @@
       "state": [
         "disabled",
         "focus-within",
-        "not([data-disabled])"
+        "not([data-disabled])",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_text-field-border-focus"
@@ -53994,12 +54018,16 @@
         "border-color"
       ],
       "state": [
-        "at-max",
         "disabled",
         "hover",
         "invalid",
-        "not([data-disabled], [data-readonly], [data-invalid], [data-at-max])",
-        "readonly"
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_text-field-border-hover"
@@ -54017,7 +54045,8 @@
         "border-color"
       ],
       "state": [
-        "invalid"
+        "invalid",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-border-invalid"
@@ -54035,7 +54064,7 @@
         "color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -54053,7 +54082,7 @@
         "gap"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_text-field-gap"
@@ -54065,44 +54094,47 @@
       "name": "--xh-text-field-control-h",
       "component": "text-field",
       "part": [
-        "control",
-        "input"
+        "control"
       ],
       "property": [
         "block-size",
         "min-block-size"
       ],
       "state": [
-        "default",
-        "has([data-part='input'][data-multiline])",
-        "multiline"
+        "has([data-xh-field-input][data-xh-field-layout='multi-tag'])",
+        "has([data-xh-field-input][data-xh-field-layout='single-line'])",
+        "has([data-xh-field-input][data-xh-field-layout='textarea'])",
+        "xh-field-chrome",
+        "xh-field-input",
+        "xh-field-layout=multi-tag",
+        "xh-field-layout=single-line",
+        "xh-field-layout=textarea"
       ],
       "defaultToken": [
         "--xh-_text-field-h"
       ],
       "visibility": "public",
-      "description": "text-field 的 control、input 部件 block-size、min-block-size 覆盖槽。"
+      "description": "text-field 的 control 部件 block-size、min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-text-field-control-max-h",
       "component": "text-field",
       "part": [
-        "control",
-        "input"
+        "control"
       ],
       "property": [
         "max-block-size"
       ],
       "state": [
-        "auto-resize",
-        "has([data-part='input'][data-multiline][data-auto-resize])",
-        "multiline"
+        "has([data-xh-field-input][data-xh-field-auto-size])",
+        "xh-field-auto-size",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-viewport-h-sm"
       ],
       "visibility": "public",
-      "description": "text-field 的 control、input 部件 max-block-size 覆盖槽。"
+      "description": "text-field 的 control 部件 max-block-size 覆盖槽。"
     },
     {
       "name": "--xh-text-field-control-min-w",
@@ -54115,7 +54147,8 @@
         "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-control-min-w"
@@ -54133,7 +54166,7 @@
         "padding-inline"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_text-field-px"
@@ -54151,7 +54184,7 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-shape-control"
@@ -54169,7 +54202,7 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_text-field-shadow"
@@ -54300,7 +54333,8 @@
       ],
       "state": [
         "-webkit-autofill",
-        "autofill"
+        "autofill",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-bg-canvas"
@@ -54319,7 +54353,8 @@
       ],
       "state": [
         "-webkit-autofill",
-        "autofill"
+        "autofill",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -54337,7 +54372,7 @@
         "color"
       ],
       "state": [
-        "default"
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -54355,7 +54390,7 @@
         "font-size"
       ],
       "state": [
-        "default"
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-_text-field-font-size"
@@ -54445,7 +54480,8 @@
         "color"
       ],
       "state": [
-        "placeholder"
+        "placeholder",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
@@ -54463,7 +54499,8 @@
         "padding-block"
       ],
       "state": [
-        "multiline"
+        "xh-field-input",
+        "xh-field-layout=textarea"
       ],
       "defaultToken": [
         "--xh-space-2"

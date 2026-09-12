@@ -27,6 +27,7 @@ import { fileURLToPath } from 'node:url'
 const uiRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const HEADLESS_SRC = join(uiRoot, 'packages/engine/headless/src')
 const STYLES_DIR = join(uiRoot, 'packages/design/styles/css')
+const FAMILY_STYLES_DIR = join(uiRoot, 'packages/design/styles/family')
 
 /** connect 里发射的 data-* 键，取单引号写法（本仓一律如此）。 */
 const RE_DATA_KEY = /'(data-[\w-]+)'\s*:/g
@@ -299,6 +300,28 @@ for (const file of (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).s
           scopedConsume.set(scope, new Set())
         for (const attr of attrs)
           scopedConsume.get(scope).add(attr)
+      }
+    }
+  }
+}
+
+/* Family Recipe 选择器按 data-xh-* 角色跨组件生效。只把规则归给确实投影了该组角色的组件；
+   若把其中的 data-loading 当成全局消费，会错误宣称所有组件的 loading 都有视觉。 */
+for (const file of (await readdir(FAMILY_STYLES_DIR).catch(() => [])).filter(f => f.endsWith('.css')).sort()) {
+  const css = stripForcedColors(stripComments(await readFile(join(FAMILY_STYLES_DIR, file), 'utf8')))
+  for (const list of selectorLists(css)) {
+    for (const selector of splitTop(list, ',')) {
+      const attrs = [...selector.matchAll(RE_ATTR_IN_SELECTOR)].map(match => match[1]).filter(attr => attr !== 'data-scope')
+      const roles = attrs.filter(attr => attr.startsWith('data-xh-'))
+      if (roles.length === 0)
+        continue
+      for (const [component, componentAttrs] of emitted) {
+        if (!roles.every(role => componentAttrs.has(role)))
+          continue
+        if (!scopedConsume.has(component))
+          scopedConsume.set(component, new Set())
+        for (const attr of attrs)
+          scopedConsume.get(component).add(attr)
       }
     }
   }

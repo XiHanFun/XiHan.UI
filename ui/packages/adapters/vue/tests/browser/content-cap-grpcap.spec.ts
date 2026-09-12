@@ -118,8 +118,8 @@ describe('多行输入：自增高的框不会一直长高', () => {
       <div data-scope="text-field" data-part="root">
         <div data-scope="text-field" data-part="control" id="control">
           <textarea
-            data-scope="text-field" data-part="input" data-multiline
-            ${autoResize ? 'data-auto-resize' : ''}
+            data-scope="text-field" data-part="input" data-xh-field-input data-xh-field-layout="textarea"
+            ${autoResize ? 'data-xh-field-auto-size' : ''}
             style="block-size: ${px}px; overflow-y: hidden"></textarea>
         </div>
       </div>`)

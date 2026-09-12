@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// text-field 多行宿主：as="textarea" 渲染 textarea（无 type、带 data-multiline），
+// text-field 多行宿主：as="textarea" 渲染 textarea（无 type、带 Field Chrome 布局事实），
 // autoSize 输入后按内容量高、行数下限撑底；单行路径不受影响。
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
@@ -59,12 +59,12 @@ async function mountField(rootProps: Record<string, unknown>, as: 'input' | 'tex
 }
 
 describe('text-field 多行宿主', () => {
-  it('as=textarea：渲染 textarea、无 type、带 data-multiline 与 rows', async () => {
+  it('as=textarea：渲染 textarea、无 type、带 Field Chrome 布局事实与 rows', async () => {
     const el = await mountField({ autoSize: { minRows: 3, maxRows: 6 } }, 'textarea')
     expect(el.tagName).toBe('TEXTAREA')
     expect(el.hasAttribute('type')).toBe(false)
-    expect(el.hasAttribute('data-multiline')).toBe(true)
-    expect(el.hasAttribute('data-auto-resize')).toBe(true)
+    expect(el.getAttribute('data-xh-field-layout')).toBe('textarea')
+    expect(el.hasAttribute('data-xh-field-auto-size')).toBe(true)
     expect(el.getAttribute('rows')).toBe('3')
   })
 
@@ -78,10 +78,10 @@ describe('text-field 多行宿主', () => {
     expect(el.style.overflowY).toBe('hidden')
   })
 
-  it('单行路径不受影响：input 标签带 type=text、无 data-multiline', async () => {
+  it('单行路径不受影响：input 标签带 type=text、布局事实为 single-line', async () => {
     const el = await mountField({}, 'input')
     expect(el.tagName).toBe('INPUT')
     expect(el.getAttribute('type')).toBe('text')
-    expect(el.hasAttribute('data-multiline')).toBe(false)
+    expect(el.getAttribute('data-xh-field-layout')).toBe('single-line')
   })
 })

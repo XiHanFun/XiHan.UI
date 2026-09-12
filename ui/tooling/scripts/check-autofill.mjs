@@ -43,6 +43,7 @@ const SCOPE = 'React 不在其列：判据落在三家共用的皮肤上，Vue �
 const ANATOMY_DIR = 'packages/engine/headless/src'
 const VUE_DIR = VUE_COMPONENTS_DIR
 const SKIN_DIR = 'packages/design/styles/css'
+const FIELD_FAMILY = 'packages/design/styles/family/field-chrome.css'
 
 /**
  * 解剖里有 input 部件、但渲染的不是原生表单控件的组件。
@@ -592,7 +593,27 @@ let ruleCount = 0
 for (const comp of native.sort()) {
   let css
   try {
-    css = stripComments(await readFile(join(SKIN_DIR, `${comp}.css`), 'utf8'))
+    const componentCss = await readFile(join(SKIN_DIR, `${comp}.css`), 'utf8')
+    if (/@import\s+['"]\.\.\/family\/field-chrome\.css['"]/.test(componentCss)) {
+      const connect = await readFile(join(ANATOMY_DIR, comp, `${comp}.connect.ts`), 'utf8')
+      if (!/['"]data-xh-field-input['"]\s*:/.test(connect))
+        problems.push(`${comp}.connect.ts 没有投影 data-xh-field-input，Field Chrome 的 autofill 规则落不到 input 部件`)
+      for (const role of ['bg', 'fg']) {
+        const suffix = role === 'bg' ? 'bg' : 'fg'
+        const fallback = role === 'bg' ? '--xh-bg-canvas' : '--xh-fg-default'
+        const bridge = new RegExp(
+          `--xh-field-autofill-${role}\\s*:\\s*var\\(\\s*--xh-${comp}-input-autofill-${suffix}\\s*,\\s*var\\(\\s*${fallback}\\s*\\)\\s*\\)`,
+        )
+        if (!bridge.test(componentCss))
+          problems.push(`${comp}.css 没把 --xh-${comp}-input-autofill-${suffix} 映到 --xh-field-autofill-${role}`)
+      }
+      const familyCss = (await readFile(FIELD_FAMILY, 'utf8'))
+        .replaceAll('[data-xh-field-input]', `[data-scope='${comp}'][data-part='input']`)
+      css = stripComments(`${familyCss}\n${componentCss}`)
+    }
+    else {
+      css = stripComments(componentCss)
+    }
   }
   catch {
     problems.push(`${comp}.css 读不到——有 input 部件就得有这份皮肤`)
