@@ -65,7 +65,12 @@ export function useSelect(
 
   const api = computed(() => connectSelect(service, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
-  const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+  const visible = useOverlayExit({
+    config,
+    isOpen: () => api.value.open,
+    contentRef,
+    onPresence: presence => service.refs.set('presence', presence),
+  })
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 

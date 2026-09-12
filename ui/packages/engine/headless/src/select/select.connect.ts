@@ -378,6 +378,9 @@ export function connectSelect<T extends PropTypes>(
       ...parts.content.attrs,
       'data-state': stateAttr,
       'data-placement': placement,
+      // Presence 会把视觉节点留到动画结束；逻辑关闭后立即退出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
       'onKeydown': (event: KeyboardEvent) => {

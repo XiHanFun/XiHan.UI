@@ -143,6 +143,44 @@ describe.each(['dialog', 'drawer'] as const)('wc %s 的行为资源退出合同'
   })
 })
 
+describe('wc select 行为资源退出', () => {
+  it('真实 content 退场完成前保留 Layer，逻辑关闭立即退出交互树', async () => {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes test-select-exit { from { opacity: 1 } to { opacity: 0 } }
+      @keyframes test-select-move { from { translate: 0 0 } to { translate: 0 8px } }
+      [data-scope='select'][data-part='content'][data-state='closed'] {
+        animation: test-select-exit 60s linear forwards, test-select-move 60s linear forwards;
+      }
+    `
+    document.body.append(style)
+    const element = mount(`
+      <xh-select open>
+        <div data-xh-part="root">
+          <button data-xh-part="trigger">选择</button>
+          <div data-xh-part="positioner"><div data-xh-part="content">
+            <div data-xh-part="list"><div data-xh-part="item" value="a"><span data-xh-part="item-text">甲</span></div></div>
+          </div></div>
+        </div>
+      </xh-select>`)
+    await settle()
+
+    element.setAttribute('open', 'false')
+    await settle()
+    const content = part('select', 'content')!
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    const animations = content.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
+    expect(animations).toHaveLength(2)
+    animations[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    animations[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
+  })
+})
+
 const IMAGE_VIEWER = `
   <xh-image-viewer open>
     <button data-xh-part="trigger">开</button>

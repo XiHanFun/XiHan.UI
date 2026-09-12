@@ -18,6 +18,13 @@ import {
   XhFloatingPanelTitle,
   XhImageViewerContent,
   XhImageViewerRoot,
+  XhSelectContent,
+  XhSelectItem,
+  XhSelectItemText,
+  XhSelectList,
+  XhSelectPositioner,
+  XhSelectRoot,
+  XhSelectTrigger,
   XhTourBackdrop,
   XhTourContent,
   XhTourPositioner,
@@ -71,6 +78,10 @@ function animationEnd(el: HTMLElement, timeout = 2000): Promise<boolean> {
       resolve(true)
     }, { once: true })
   })
+}
+
+function finiteAnimations(node: HTMLElement): Animation[] {
+  return node.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
 }
 
 describe('dialog 退场', () => {
@@ -137,6 +148,45 @@ describe('dialog 退场', () => {
 
     expect(document.querySelectorAll('[data-scope=\'dialog\'][data-part=\'content\']')).toHaveLength(1)
     expect(getComputedStyle(part('dialog', 'content')!).animationName).toBe('xh-dialog-in')
+  })
+})
+
+describe('select 行为资源退出', () => {
+  it('真实 content 退场完成前保留 Layer，逻辑关闭立即退出交互树', async () => {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes test-select-exit { from { opacity: 1 } to { opacity: 0 } }
+      @keyframes test-select-move { from { translate: 0 0 } to { translate: 0 8px } }
+      [data-scope='select'][data-part='content'][data-state='closed'] {
+        animation: test-select-exit 60s linear forwards, test-select-move 60s linear forwards;
+      }
+    `
+    document.body.append(style)
+    const open = mount(value => h(XhSelectRoot, { open: value }, {
+      default: () => [
+        h(XhSelectTrigger, null, () => '选择'),
+        h(XhSelectPositioner, null, () => [
+          h(XhSelectContent, null, () => [
+            h(XhSelectList, null, () => [h(XhSelectItem, { value: 'a' }, () => h(XhSelectItemText, () => '甲'))]),
+          ]),
+        ]),
+      ],
+    }))
+    await settle()
+
+    open.value = false
+    await settle()
+    const content = part('select', 'content')!
+    expect(content.inert).toBe(true)
+    expect(content.getAttribute('aria-hidden')).toBe('true')
+    const animations = finiteAnimations(content)
+    expect(animations).toHaveLength(2)
+    animations[0]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(1)
+    animations[1]!.finish()
+    await settle()
+    expect(getLayerRegistry(document).list()).toHaveLength(0)
   })
 })
 
