@@ -17,10 +17,10 @@
     --xh-_text-field-action-font-size: var(--xh-control-caption-md);
     --xh-_text-field-bg: var(--xh-bg-canvas);
     --xh-_text-field-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_text-field-bg));
-    --xh-_text-field-border: var(--xh-border-control);
-    --xh-_text-field-border-hover: var(--xh-border-control-hover);
+    --xh-_text-field-border: transparent;
+    --xh-_text-field-border-hover: var(--xh-border-default);
     --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
-    --xh-_text-field-shadow: none;
+    --xh-_text-field-shadow: var(--xh-elevation-raised);
 
     --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-md));
 
@@ -60,6 +60,7 @@
     --xh-_text-field-border: var(--xh-border-control);
     --xh-_text-field-border-hover: var(--xh-border-control-hover);
     --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
+    --xh-_text-field-shadow: none;
   }
 
   [data-scope='text-field'][data-part='root'][data-variant='subtle'] {
@@ -68,6 +69,7 @@
     --xh-_text-field-border: transparent;
     --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
     --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
+    --xh-_text-field-shadow: none;
   }
 
   [data-scope='text-field'][data-part='root'][data-variant='ghost'] {
@@ -94,7 +96,7 @@
     --xh-field-control-padding-inline: var(--xh-text-field-control-px, var(--xh-_text-field-px));
     --xh-field-control-gap: var(--xh-text-field-control-gap, var(--xh-_text-field-gap));
     --xh-field-control-min-inline-size: var(--xh-text-field-control-min-w, var(--xh-control-min-w));
-    --xh-field-control-radius: var(--xh-text-field-control-radius, var(--xh-shape-control));
+    --xh-field-control-radius: var(--xh-text-field-control-radius, var(--xh-shape-surface));
     --xh-field-bg-rest: var(--xh-text-field-control-bg, var(--xh-_text-field-bg));
     --xh-field-bg-hover: var(--xh-text-field-control-bg-hover, var(--xh-_text-field-bg-hover));
     --xh-field-bg-read-only: var(--xh-text-field-control-bg-readonly, var(--xh-bg-subtle));

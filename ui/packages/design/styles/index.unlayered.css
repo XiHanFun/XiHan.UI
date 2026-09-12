@@ -32561,11 +32561,11 @@
   padding-inline: var(--xh-field-control-padding-inline, var(--xh-_field-size-padding-inline));
   padding-block: 0;
   --xh-icon-size: var(--xh-field-glyph-size, var(--xh-_field-size-glyph-size));
-  border: var(--xh-stroke-thin) solid var(--xh-field-border-rest, var(--xh-border-control));
+  border: var(--xh-stroke-thin) solid var(--xh-field-border-rest, transparent);
   border-radius: var(--xh-field-control-radius, var(--xh-shape-control));
   background-color: var(--xh-field-bg-rest, var(--xh-bg-canvas));
   color: var(--xh-field-fg-rest, var(--xh-fg-default));
-  box-shadow: var(--xh-field-shadow-rest, none);
+  box-shadow: var(--xh-field-shadow-rest, var(--xh-elevation-raised));
   cursor: var(--xh-field-cursor-rest, text);
   transition:
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -32626,7 +32626,7 @@
 
 [data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover {
   background-color: var(--xh-field-bg-hover, color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas)));
-  border-color: var(--xh-field-border-hover, var(--xh-border-control-hover));
+  border-color: var(--xh-field-border-hover, var(--xh-border-default));
 }
 
 [data-xh-field-chrome]:focus-within:not([data-disabled]) {
@@ -32637,6 +32637,7 @@
 
 [data-xh-field-chrome][data-readonly] {
   background-color: var(--xh-field-bg-read-only, var(--xh-bg-subtle));
+  box-shadow: var(--xh-field-shadow-read-only, none);
   cursor: var(--xh-field-cursor-read-only, default);
 }
 
@@ -32656,7 +32657,7 @@
 [data-xh-field-chrome][data-disabled] {
   background-color: var(--xh-field-bg-disabled, var(--xh-bg-subtle));
   color: var(--xh-field-fg-disabled, var(--xh-fg-disabled));
-  border-color: var(--xh-field-border-disabled, var(--xh-border-strong));
+  box-shadow: var(--xh-field-shadow-disabled, none);
   cursor: var(--xh-field-cursor-disabled, not-allowed);
 }
 
@@ -32803,10 +32804,10 @@
   --xh-_text-field-action-font-size: var(--xh-control-caption-md);
   --xh-_text-field-bg: var(--xh-bg-canvas);
   --xh-_text-field-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_text-field-bg));
-  --xh-_text-field-border: var(--xh-border-control);
-  --xh-_text-field-border-hover: var(--xh-border-control-hover);
+  --xh-_text-field-border: transparent;
+  --xh-_text-field-border-hover: var(--xh-border-default);
   --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
-  --xh-_text-field-shadow: none;
+  --xh-_text-field-shadow: var(--xh-elevation-raised);
 
   --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-md));
 
@@ -32846,6 +32847,7 @@
   --xh-_text-field-border: var(--xh-border-control);
   --xh-_text-field-border-hover: var(--xh-border-control-hover);
   --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
+  --xh-_text-field-shadow: none;
 }
 
 [data-scope='text-field'][data-part='root'][data-variant='subtle'] {
@@ -32854,6 +32856,7 @@
   --xh-_text-field-border: transparent;
   --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
+  --xh-_text-field-shadow: none;
 }
 
 [data-scope='text-field'][data-part='root'][data-variant='ghost'] {
@@ -32880,7 +32883,7 @@
   --xh-field-control-padding-inline: var(--xh-text-field-control-px, var(--xh-_text-field-px));
   --xh-field-control-gap: var(--xh-text-field-control-gap, var(--xh-_text-field-gap));
   --xh-field-control-min-inline-size: var(--xh-text-field-control-min-w, var(--xh-control-min-w));
-  --xh-field-control-radius: var(--xh-text-field-control-radius, var(--xh-shape-control));
+  --xh-field-control-radius: var(--xh-text-field-control-radius, var(--xh-shape-surface));
   --xh-field-bg-rest: var(--xh-text-field-control-bg, var(--xh-_text-field-bg));
   --xh-field-bg-hover: var(--xh-text-field-control-bg-hover, var(--xh-_text-field-bg-hover));
   --xh-field-bg-read-only: var(--xh-text-field-control-bg-readonly, var(--xh-bg-subtle));

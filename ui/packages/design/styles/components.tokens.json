@@ -54219,7 +54219,7 @@
         "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-surface"
       ],
       "visibility": "public",
       "description": "text-field 的 control 部件 border-radius 覆盖槽。"

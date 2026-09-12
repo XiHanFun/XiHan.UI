@@ -49,8 +49,8 @@ afterEach(async () => {
 
 describe('field Chrome 尺寸与布局', () => {
   it.each([
-    { density: 'comfortable' as const, heights: [28, 32, 40] },
-    { density: 'compact' as const, heights: [24, 28, 36] },
+    { density: 'comfortable' as const, heights: [32, 36, 40] },
+    { density: 'compact' as const, heights: [28, 32, 36] },
   ])('$density：TextField 三尺寸只跟语义密度令牌变化', ({ density, heights }) => {
     mount(() => h('div', null, ['sm', 'md', 'lg'].map(size => field({ size }))), density)
     const controls = [...host!.querySelectorAll<HTMLElement>('[data-xh-field-chrome]')]
@@ -67,8 +67,8 @@ describe('field Chrome 尺寸与布局', () => {
     const inputs = [...host!.querySelectorAll<HTMLElement>('[data-xh-field-input]')]
     expect(inputs[0]!.dataset.xhFieldLayout).toBe('single-line')
     expect(inputs[1]!.dataset.xhFieldLayout).toBe('textarea')
-    expect(single!.getBoundingClientRect().height).toBe(32)
-    expect(textarea!.getBoundingClientRect().height).toBeGreaterThanOrEqual(32)
+    expect(single!.getBoundingClientRect().height).toBe(36)
+    expect(textarea!.getBoundingClientRect().height).toBeGreaterThanOrEqual(36)
     expect(getComputedStyle(inputs[1]!).resize).toBe('vertical')
   })
 
@@ -81,7 +81,7 @@ describe('field Chrome 尺寸与布局', () => {
     control.append(document.createTextNode('Alpha Beta Gamma'))
     host!.append(control)
     expect(getComputedStyle(control).flexWrap).toBe('wrap')
-    expect(control.getBoundingClientRect().height).toBeGreaterThanOrEqual(32)
+    expect(control.getBoundingClientRect().height).toBeGreaterThanOrEqual(36)
   })
 
   it('ime 组合事件保持原生输入路径，不改变 Field Chrome 几何', async () => {

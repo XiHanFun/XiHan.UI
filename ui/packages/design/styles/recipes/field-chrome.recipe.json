@@ -54,22 +54,22 @@
     "rest": {
       "backgroundColor": "var(--xh-bg-canvas)",
       "color": "var(--xh-fg-default)",
-      "borderColor": "var(--xh-border-control)",
-      "shadow": "none",
+      "borderColor": "transparent",
+      "shadow": "var(--xh-elevation-raised)",
       "cursor": "text"
     },
     "hover": {
       "backgroundColor": "color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas))",
       "color": "var(--xh-fg-default)",
-      "borderColor": "var(--xh-border-control-hover)",
-      "shadow": "none",
+      "borderColor": "var(--xh-border-default)",
+      "shadow": "var(--xh-elevation-raised)",
       "cursor": "text"
     },
     "focus": {
       "backgroundColor": "var(--xh-bg-canvas)",
       "color": "var(--xh-fg-default)",
       "borderColor": "var(--xh-border-control-focus)",
-      "shadow": "none",
+      "shadow": "var(--xh-elevation-raised)",
       "cursor": "text",
       "ringColor": "var(--xh-ring-focus)"
     },
@@ -77,29 +77,29 @@
       "backgroundColor": "var(--xh-bg-canvas)",
       "color": "var(--xh-fg-default)",
       "borderColor": "var(--xh-border-invalid)",
-      "shadow": "none",
+      "shadow": "var(--xh-elevation-raised)",
       "cursor": "text",
       "ringColor": "var(--xh-ring-invalid)"
     },
     "readOnly": {
       "backgroundColor": "var(--xh-bg-subtle)",
       "color": "var(--xh-fg-default)",
-      "borderColor": "var(--xh-border-control)",
+      "borderColor": "transparent",
       "shadow": "none",
       "cursor": "default"
     },
     "disabled": {
       "backgroundColor": "var(--xh-bg-subtle)",
       "color": "var(--xh-fg-disabled)",
-      "borderColor": "var(--xh-border-strong)",
+      "borderColor": "transparent",
       "shadow": "none",
       "cursor": "not-allowed"
     },
     "loading": {
       "backgroundColor": "var(--xh-bg-canvas)",
       "color": "var(--xh-fg-muted)",
-      "borderColor": "var(--xh-border-control)",
-      "shadow": "none",
+      "borderColor": "transparent",
+      "shadow": "var(--xh-elevation-raised)",
       "cursor": "progress"
     }
   },
