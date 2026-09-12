@@ -13,7 +13,7 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {boolean} default-pressed - 非受控初始为按下
  * @attr {boolean} disabled - 禁用
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 视觉变体
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} icon-only - 只有图标：左右内距清零、宽高相等；作者须自行给可及名
  * @attr {boolean} full-width - 撑满行宽
