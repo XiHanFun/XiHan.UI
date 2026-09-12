@@ -8,11 +8,11 @@
 //   withToastSound   给命令式反馈服务配上声音，调用点一行都不用改
 //   getSoundPlayer   自己拿播放器，接偏好开关或调音面板
 
-import type { DialogSoundServiceOptions, SoundPlayer, ToastSoundServiceOptions } from '@xihan-ui/sound'
+import type { DialogSoundServiceOptions, SoundPressOptions as SharedSoundPressOptions, SoundPlayer, ToastSoundServiceOptions } from '@xihan-ui/sound'
 import type { Directive } from 'vue'
 import type { DialogService } from './services/dialog-service'
 import type { ToastService } from './services/toast-service'
-import { createSharedSoundPlayerController, withDialogSoundService, withToastSoundService } from '@xihan-ui/sound'
+import { attachDocumentSoundUnlock, createSharedSoundPlayerController, isSoundTargetDisabled, resolveSoundPressOptions, withDialogSoundService, withToastSoundService } from '@xihan-ui/sound'
 
 export type { DialogSoundKey, SoundChoice } from '@xihan-ui/sound'
 
@@ -29,23 +29,6 @@ export function getSoundPlayer(): SoundPlayer {
 /** 换成自己配置的播放器（换主题、接用户偏好）。自动建的那个会被销毁。 */
 export function setSoundPlayer(player: SoundPlayer): void {
   shared.setPlayer(player)
-}
-
-/** 首次用户手势时解锁音频上下文，返回撤销函数。 */
-function attachUnlock(unlock: () => void): () => void {
-  if (typeof document === 'undefined')
-    return () => undefined
-  const listener = (): void => {
-    unlock()
-    document.removeEventListener('pointerdown', listener)
-    document.removeEventListener('keydown', listener)
-  }
-  document.addEventListener('pointerdown', listener)
-  document.addEventListener('keydown', listener)
-  return () => {
-    document.removeEventListener('pointerdown', listener)
-    document.removeEventListener('keydown', listener)
-  }
 }
 
 export interface ToastSoundOptions extends Omit<ToastSoundServiceOptions, 'player' | 'attachUnlock'> {
@@ -68,7 +51,7 @@ export function withToastSound(service: ToastService, options: ToastSoundOptions
   return withToastSoundService(service, {
     ...options,
     player: options.player ?? getSoundPlayer(),
-    attachUnlock,
+    attachUnlock: attachDocumentSoundUnlock,
   })
 }
 
@@ -84,35 +67,15 @@ export function withDialogSound(service: DialogService, options: DialogSoundOpti
   return withDialogSoundService(service, {
     ...options,
     player: options.player ?? getSoundPlayer(),
-    attachUnlock,
+    attachUnlock: attachDocumentSoundUnlock,
   })
 }
 
-export interface SoundDirectiveOptions {
-  /** 语义名或配方名，默认 'click'。 */
-  sound?: string
-  /** 本次播放的音量系数（0..1）。 */
-  volume?: number
-  /** 用哪个播放器，默认共享播放器。 */
-  player?: SoundPlayer
-}
+export interface SoundDirectiveOptions extends SharedSoundPressOptions {}
 
 export type SoundDirectiveValue = string | SoundDirectiveOptions | undefined
 
-function toOptions(value: SoundDirectiveValue): Required<Pick<SoundDirectiveOptions, 'sound'>> & SoundDirectiveOptions {
-  if (typeof value === 'string')
-    return { sound: value }
-  return { sound: 'click', ...value }
-}
-
-/** 禁用态的元素不发声：原生 disabled 不触发 click，aria/data 标注的会。 */
-function isDisabled(el: HTMLElement): boolean {
-  return el.hasAttribute('disabled')
-    || el.getAttribute('aria-disabled') === 'true'
-    || el.hasAttribute('data-disabled')
-}
-
-const bound = new WeakMap<HTMLElement, { handler: () => void, options: ReturnType<typeof toOptions> }>()
+const bound = new WeakMap<HTMLElement, { handler: () => void, options: ReturnType<typeof resolveSoundPressOptions> }>()
 
 /**
  * `v-sound` —— 给任意元素按下时配一声。
@@ -129,9 +92,9 @@ const bound = new WeakMap<HTMLElement, { handler: () => void, options: ReturnTyp
 export const vSound: Directive<HTMLElement, SoundDirectiveValue> = {
   mounted(el, binding) {
     const entry = {
-      options: toOptions(binding.value),
+      options: resolveSoundPressOptions(binding.value),
       handler: (): void => {
-        if (isDisabled(el))
+        if (isSoundTargetDisabled(el))
           return
         const { sound, volume, player } = entry.options
         ;(player ?? getSoundPlayer()).play(sound, volume === undefined ? undefined : { volume })
@@ -143,7 +106,7 @@ export const vSound: Directive<HTMLElement, SoundDirectiveValue> = {
   updated(el, binding) {
     const entry = bound.get(el)
     if (entry)
-      entry.options = toOptions(binding.value)
+      entry.options = resolveSoundPressOptions(binding.value)
   },
   unmounted(el) {
     const entry = bound.get(el)
