@@ -58,10 +58,20 @@ function normalizeValue(name: string, raw: string | null, buckets: Map<string, H
   return raw.split(/\s+/).filter(Boolean).map(id => resolveIdref(id, buckets)).join(' ')
 }
 
+function isFormPathDeclaration(el: HTMLElement, name: string): boolean {
+  return name === 'name'
+    && el.dataset.scope === 'form'
+    && (el.dataset.part === 'field-group' || el.dataset.part === 'error-summary-item')
+}
+
 /** 采集单个元素的归一化属性表（键已排序）。 */
 export function normalizeAttrs(el: HTMLElement, buckets: Map<string, HTMLElement[]>): Record<string, string | null> {
   const out: Record<string, string | null> = {}
-  for (const name of collectedNames(el))
-    out[name] = normalizeValue(name, el.getAttribute(name), buckets)
+  for (const name of collectedNames(el)) {
+    // WC 的 Light DOM 用原生 name 属性声明 FormPath，Vue/React 将同名 prop 消费掉、不落 DOM。
+    // 两侧最终状态都由 data-name / data-form-path 表达；声明介质不参与跨适配器快照。
+    const raw = isFormPathDeclaration(el, name) ? null : el.getAttribute(name)
+    out[name] = normalizeValue(name, raw, buckets)
+  }
   return out
 }

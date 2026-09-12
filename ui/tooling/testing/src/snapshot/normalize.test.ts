@@ -46,4 +46,11 @@ describe('normalizeAttrs', () => {
     const attrs = normalizeAttrs(trigger, buckets)
     expect(attrs['aria-activedescendant']).toBe('@part(item[1])')
   })
+
+  it('表单路径的 name 声明介质归一，保留连接层输出的路径状态', () => {
+    const item = el('<a name="email" data-scope="form" data-part="error-summary-item" data-name="email"></a>')
+    const attrs = normalizeAttrs(item, new Map())
+    expect(attrs.name).toBeNull()
+    expect(attrs['data-name']).toBe('email')
+  })
 })

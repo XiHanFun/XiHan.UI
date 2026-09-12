@@ -1,5 +1,5 @@
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
-import { formAnatomy, formKeyboard } from '@xihan-ui/headless'
+import { formAnatomy, formKeyboard, formPathKey } from '@xihan-ui/headless'
 
 // 表单没有对应的 APG 模式页：它是一堆原生表单控件加一层编排。
 // 可核对的规格是 HTML 的表单提交算法（提交为何一律要 preventDefault）
@@ -39,8 +39,8 @@ export const formSuite: ConformanceSuite = {
   anatomy: formAnatomy,
   keyboard: formKeyboard,
   // root 必须是原生 <form>：回车的隐式提交与 type=submit 按钮都长在它身上。
-  // 摘要条目写成原生 <a>，字段名由作者用 value 属性自报（与集合条目同一套写法）。
-  // 不用 name：它会进归一化快照，WC 侧留在 DOM、Vue 侧落成 prop，两个适配器分叉。
+  // 摘要条目写成原生 <a>；字段容器与摘要条目都按公开合同用 name 自报 FormPath。
+  // WC 必须把字符串路径留在原生属性上，Vue/React 把它消费成 prop；快照层会归一这项声明差异。
   fixture: {
     part: 'root',
     tag: 'form',
@@ -48,13 +48,13 @@ export const formSuite: ConformanceSuite = {
       {
         part: 'error-summary',
         children: [
-          { part: 'error-summary-item', tag: 'a', attrs: { value: 'email' }, text: '邮箱格式不正确' },
-          { part: 'error-summary-item', tag: 'a', attrs: { value: 'password' }, text: '密码至少 8 位' },
+          { part: 'error-summary-item', tag: 'a', attrs: { name: 'email' }, text: '邮箱格式不正确' },
+          { part: 'error-summary-item', tag: 'a', attrs: { name: 'password' }, text: '密码至少 8 位' },
         ],
       },
       // 字段容器不是控件、不给控件命名，两个输入框各自带上自己的名字
-      { part: 'field-group', attrs: { value: 'email' }, children: [{ tag: 'input', attrs: { 'aria-label': '邮箱' } }] },
-      { part: 'field-group', attrs: { value: 'password' }, children: [{ tag: 'input', attrs: { 'aria-label': '密码' } }] },
+      { part: 'field-group', attrs: { name: 'email' }, children: [{ tag: 'input', attrs: { 'aria-label': '邮箱' } }] },
+      { part: 'field-group', attrs: { name: 'password' }, children: [{ tag: 'input', attrs: { 'aria-label': '密码' } }] },
       { part: 'submit-trigger', tag: 'button', text: '提交' },
       { part: 'reset-trigger', tag: 'button', text: '重置' },
     ],
@@ -92,17 +92,17 @@ export const formSuite: ConformanceSuite = {
             'data-state': 'idle',
           },
           'error-summary-item[0]': {
-            'data-name': 'email',
+            'data-form-path': formPathKey('email'),
             'data-invalid': null,
             'hidden': '',
           },
           'error-summary-item[1]': {
-            'data-name': 'password',
+            'data-form-path': formPathKey('password'),
             'hidden': '',
           },
           'field-group[0]': {
             'id': '@self',
-            'data-name': 'email',
+            'data-form-path': formPathKey('email'),
             'data-invalid': null,
             // 容器里的控件全禁用时，焦点至少落得到这块区域上
             'tabindex': '-1',
@@ -111,7 +111,7 @@ export const formSuite: ConformanceSuite = {
           },
           'field-group[1]': {
             'id': '@self',
-            'data-name': 'password',
+            'data-form-path': formPathKey('password'),
           },
           'submit-trigger': {
             type: 'submit',
