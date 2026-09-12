@@ -62,23 +62,23 @@ export type HeatmapCellSlotProps = HeatmapCellMeta | HeatmapMatrixCellMeta
 
 export const XhHeatmapRoot = defineComponent({
   name: 'XhHeatmapRoot',
-  // 全部 default: undefined，缺省值由机器与 connect 决定
+  // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    variant: { type: String as PropType<HeatmapVariant>, default: undefined },
-    value: { type: Array as PropType<HeatmapValue[]>, default: undefined },
-    rows: { type: Array as PropType<HeatmapAxisInput[]>, default: undefined },
-    columns: { type: Array as PropType<HeatmapAxisInput[]>, default: undefined },
-    startDate: { type: String, default: undefined },
-    endDate: { type: String, default: undefined },
-    levels: { type: Number, default: undefined },
-    thresholds: { type: Array as PropType<number[]>, default: undefined },
-    firstDayOfWeek: { type: Number, default: undefined },
-    locale: { type: String, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    palette: { type: String as PropType<HeatmapPalette>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<HeatmapTranslations>>, default: undefined },
+    variant: { type: String as PropType<HeatmapVariant> },
+    value: { type: Array as PropType<HeatmapValue[]> },
+    rows: { type: Array as PropType<HeatmapAxisInput[]> },
+    columns: { type: Array as PropType<HeatmapAxisInput[]> },
+    startDate: { type: String },
+    endDate: { type: String },
+    levels: { type: Number },
+    thresholds: { type: Array as PropType<number[]> },
+    firstDayOfWeek: { type: Number },
+    locale: { type: String },
+    dir: { type: String as PropType<Direction> },
+    tone: { type: String as PropType<Tone> },
+    palette: { type: String as PropType<HeatmapPalette> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<HeatmapTranslations>> },
   },
   // 只读事件，没有双向绑定：热力图不产生值，只报焦点与详情落在哪一格
   emits: {
@@ -154,9 +154,9 @@ export const XhHeatmapMonthBlock = defineComponent({
 export const XhHeatmapRow = defineComponent({
   name: 'XhHeatmapRow',
   props: {
-    value: { type: [Number, String] as PropType<number | string>, default: undefined },
+    value: { type: [Number, String] as PropType<number | string> },
     /** 月历形态：所属月份 YYYY-MM；写在月块里就不必再写一遍。 */
-    month: { type: String, default: undefined },
+    month: { type: String },
   },
   setup(props, { slots }) {
     const ctx = useHeatmapContext()
@@ -178,7 +178,7 @@ export const XhHeatmapRow = defineComponent({
 export const XhHeatmapWeekDay = defineComponent({
   name: 'XhHeatmapWeekDay',
   props: {
-    value: { type: [Number, String] as PropType<number | string>, default: undefined },
+    value: { type: [Number, String] as PropType<number | string> },
   },
   setup(props, { slots }) {
     const ctx = useHeatmapContext()
@@ -203,7 +203,7 @@ export const XhHeatmapMonthLabel = defineComponent({
 export const XhHeatmapRowLabel = defineComponent({
   name: 'XhHeatmapRowLabel',
   props: {
-    value: { type: String, default: undefined },
+    value: { type: String },
   },
   setup(props, { slots }) {
     const ctx = useHeatmapContext()
@@ -232,7 +232,7 @@ export const XhHeatmapCell = defineComponent({
   props: {
     value: { type: String, required: true },
     /** 矩阵形态：行身份；写在行里就不必再写一遍。 */
-    row: { type: String, default: undefined },
+    row: { type: String },
   },
   setup(props, { slots }) {
     const ctx = useHeatmapContext()

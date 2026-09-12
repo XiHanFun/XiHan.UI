@@ -33,27 +33,27 @@ export interface DateFieldSegmentSlotProps {
 
 export const XhDateFieldRoot = defineComponent({
   name: 'XhDateFieldRoot',
-  // 缺省值由 connect 给出，这里一律 default: undefined
+  // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    value: { type: String as PropType<string | null>, default: undefined },
-    defaultValue: { type: String as PropType<string | null>, default: undefined },
-    min: { type: String, default: undefined },
-    max: { type: String, default: undefined },
-    locale: { type: String, default: undefined },
-    timeZone: { type: String, default: undefined },
-    granularity: { type: String as PropType<DateGranularity>, default: undefined },
+    value: { type: String as PropType<string | null> },
+    defaultValue: { type: String as PropType<string | null> },
+    min: { type: String },
+    max: { type: String },
+    locale: { type: String },
+    timeZone: { type: String },
+    granularity: { type: String as PropType<DateGranularity> },
     // 段集：给了就以它为准，granularity 让路。段位节点仍按下标认段，段集是有序的
-    segments: { type: Array as PropType<DateSegmentSet>, default: undefined },
+    segments: { type: Array as PropType<DateSegmentSet> },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
-    name: { type: String, default: undefined },
-    placeholder: { type: Object as PropType<SegmentTexts>, default: undefined },
-    translations: { type: Object as PropType<DateFieldTranslations>, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    name: { type: String },
+    placeholder: { type: Object as PropType<SegmentTexts> },
+    translations: { type: Object as PropType<DateFieldTranslations> },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // value-change 携带 { value }，update:value 携带裸串
   emits: {
@@ -114,9 +114,9 @@ export const XhDateFieldSegment = defineComponent({
   name: 'XhDateFieldSegment',
   props: {
     // 下标由作者声明，是哪一段由 locale 与段集算出；兼收字符串
-    index: { type: [Number, String] as PropType<number | string>, default: undefined },
+    index: { type: [Number, String] as PropType<number | string> },
     /** 按段名声明这一格。段集里没有这一块时它收起；与 index 二选一，两个都写按段名算。 */
-    segment: { type: String as PropType<DateSegmentType>, default: undefined },
+    segment: { type: String as PropType<DateSegmentType> },
   },
   slots: Object as SlotsType<{
     default?: (props: DateFieldSegmentSlotProps) => VNode[]

@@ -8,10 +8,10 @@ import { provideMarquee, useMarqueeContext } from './context'
 
 export const XhMarqueeRoot = defineComponent({
   name: 'XhMarqueeRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    direction: { type: String as PropType<MarqueeDirection>, default: undefined },
-    speed: { type: Number, default: undefined },
+    direction: { type: String as PropType<MarqueeDirection> },
+    speed: { type: Number },
     pauseOnHover: Boolean,
     paused: Boolean,
     autoFill: Boolean,

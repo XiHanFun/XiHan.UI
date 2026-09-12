@@ -15,20 +15,20 @@ type NavigationMenuProps = NavigationMenuSchema['props']
 /** 根节点渲染为 nav，收起的三条出口（指针离开、焦点离场、Escape）在这一层处理 */
 export const XhNavigationMenuRoot = defineComponent({
   name: 'XhNavigationMenuRoot',
-  // 全部 default: undefined，缺省值由机器与 connect 决定
+  // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<NavigationMenuNode[]>, default: undefined },
-    value: { type: String as PropType<string | null>, default: undefined },
-    defaultValue: { type: String as PropType<string | null>, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
-    delayDuration: { type: Number, default: undefined },
-    skipDelayDuration: { type: Number, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    collection: { type: Array as PropType<NavigationMenuNode[]> },
+    value: { type: String as PropType<string | null> },
+    defaultValue: { type: String as PropType<string | null> },
+    orientation: { type: String as PropType<Orientation> },
+    delayDuration: { type: Number },
+    skipDelayDuration: { type: Number },
+    dir: { type: String as PropType<Direction> },
     loop: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<Partial<NavigationMenuTranslations>>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    translations: { type: Object as PropType<Partial<NavigationMenuTranslations>> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // value-change 携带 { value }，update:value 携带裸值以支持 v-model:value
   emits: {

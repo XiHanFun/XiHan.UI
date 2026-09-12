@@ -17,15 +17,15 @@ export type SignaturePadRootSlotProps = Pick<
 
 export const XhSignaturePadRoot = defineComponent({
   name: 'XhSignaturePadRoot',
-  // 全部 default: undefined，缺省值由 connect 决定
+  // 缺省值由 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
-    name: { type: String, default: undefined },
-    drawing: { type: Object as PropType<SignaturePadDrawingOptions>, default: undefined },
-    translations: { type: Object as PropType<Partial<SignaturePadTranslations>>, default: undefined },
+    name: { type: String },
+    drawing: { type: Object as PropType<SignaturePadDrawingOptions> },
+    translations: { type: Object as PropType<Partial<SignaturePadTranslations>> },
   },
   // 两条都是只读通知，签名写不回来，因此没有 v-model
   emits: {

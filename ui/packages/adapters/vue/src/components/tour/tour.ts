@@ -32,23 +32,23 @@ export const XhTourRoot = defineComponent({
   name: 'XhTourRoot',
   // 全部 default: undefined —— 缺省值的唯一事实源在 machine 与 connect
   props: {
-    steps: { type: Array as PropType<TourStep[]>, default: undefined },
-    value: { type: Number, default: undefined },
-    defaultValue: { type: Number, default: undefined },
+    steps: { type: Array as PropType<TourStep[]> },
+    value: { type: Number },
+    defaultValue: { type: Number },
     open: { type: Boolean, default: undefined },
     defaultOpen: { type: Boolean, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
     closeOnEscape: { type: Boolean, default: undefined },
     closeOnInteractOutside: { type: Boolean, default: undefined },
     showBackdrop: { type: Boolean, default: undefined },
-    spotlightPadding: { type: Number, default: undefined },
+    spotlightPadding: { type: Number },
     autoScroll: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<TourProps['translations']>, default: undefined },
+    translations: { type: Object as PropType<TourProps['translations']> },
     /** 本实例三张 Tour 浮层的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // open-change / value-change 携带对象；update:* 携带裸值，支持 v-model:open 与 v-model:value
   emits: {

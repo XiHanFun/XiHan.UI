@@ -25,10 +25,10 @@ export const XhDialogRoot = /* @__PURE__ */ defineComponent({
     closeOnEscape: { type: Boolean, default: true },
     closeOnInteractOutside: { type: Boolean, default: undefined },
     restoreFocus: { type: Boolean, default: true },
-    initialFocus: { type: String, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    variant: { type: String as PropType<OverlayBackdropVariant>, default: undefined },
-    translations: { type: Object as PropType<DialogProps['translations']>, default: undefined },
+    initialFocus: { type: String },
+    size: { type: String as PropType<Size> },
+    variant: { type: String as PropType<OverlayBackdropVariant> },
+    translations: { type: Object as PropType<DialogProps['translations']> },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: {
@@ -78,7 +78,7 @@ export const XhDialogContent = /* @__PURE__ */ defineComponent({
   name: 'XhDialogContent',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 content 上
   inheritAttrs: false,

@@ -24,25 +24,25 @@ export interface CodeViewLineSlotProps {
 
 export const XhCodeViewRoot = defineComponent({
   name: 'XhCodeViewRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     code: { type: String, default: '' },
-    lang: { type: String, default: undefined },
-    filename: { type: String, default: undefined },
+    lang: { type: String },
+    filename: { type: String },
     // 三态，undefined 与 false 同样不落 data-complete
     complete: { type: Boolean, default: undefined },
     wrap: Boolean,
     lineNumbers: Boolean,
-    startLine: { type: Number, default: undefined },
-    highlightLines: { type: [String, Array] as PropType<string | readonly number[]>, default: undefined },
-    clamp: { type: Number, default: undefined },
+    startLine: { type: Number },
+    highlightLines: { type: [String, Array] as PropType<string | readonly number[]> },
+    clamp: { type: Number },
     // 纯受控：没有 defaultClamped，要非受控就套 collapsible
     clamped: { type: Boolean, default: undefined },
     /** 换一个着色实现（典型是接 Shiki）；显式给 null 则关掉着色。 */
-    highlighter: { type: Object as PropType<HighlighterPort | null>, default: undefined },
+    highlighter: { type: Object as PropType<HighlighterPort | null> },
     highlightWhileStreaming: { type: Boolean, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<CodeViewTranslations>>, default: undefined },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<CodeViewTranslations>> },
   },
   emits: {
     'clamp-toggle': (_details: PayloadOf<CodeViewProps, 'onClampToggle'>) => true,
@@ -136,7 +136,7 @@ export const XhCodeViewFilename = defineComponent({
   name: 'XhCodeViewFilename',
   props: {
     /** 不给就取 XhCodeViewRoot 上的 filename。 */
-    filename: { type: String, default: undefined },
+    filename: { type: String },
   },
   setup(props, { slots }) {
     const ctx = useCodeViewContext()

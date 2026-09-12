@@ -37,30 +37,30 @@ export type TagsInputRootSlotProps = Pick<
 
 export const XhTagsInputRoot = defineComponent({
   name: 'XhTagsInputRoot',
-  // 有 connect 与机器兜底的 prop 一律 default: undefined
+  // 有 connect 与机器兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    // default: undefined 表示非受控
-    value: { type: Array as PropType<string[]>, default: undefined },
-    defaultValue: { type: Array as PropType<string[]>, default: undefined },
-    inputValue: { type: String, default: undefined },
-    defaultInputValue: { type: String, default: undefined },
-    max: { type: Number, default: undefined },
+    // 缺席值 undefined 表示非受控
+    value: { type: Array as PropType<string[]> },
+    defaultValue: { type: Array as PropType<string[]> },
+    inputValue: { type: String },
+    defaultInputValue: { type: String },
+    max: { type: Number },
     allowOverflow: Boolean,
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     showCount: Boolean,
-    name: { type: String, default: undefined },
-    placeholder: { type: String, default: undefined },
-    delimiter: { type: String, default: undefined },
+    name: { type: String },
+    placeholder: { type: String },
+    delimiter: { type: String },
     addOnPaste: Boolean,
     editable: Boolean,
-    blurBehavior: { type: String as PropType<TagsInputBlurBehavior | null>, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<TagsInputTranslations>>, default: undefined },
+    blurBehavior: { type: String as PropType<TagsInputBlurBehavior | null> },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<TagsInputTranslations>> },
   },
   // value-change 携带 { value }，update:value 携带裸数组；输入文本走 input-value-change 一路
   emits: {

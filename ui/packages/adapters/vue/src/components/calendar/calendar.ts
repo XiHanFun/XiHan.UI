@@ -31,32 +31,32 @@ export type CalendarRootSlotProps = Pick<
 
 export const XhCalendarRoot = defineComponent({
   name: 'XhCalendarRoot',
-  // 缺省值由 connect 与机器给出，这里一律 default: undefined
+  // 缺省值由 connect 与机器给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    value: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    selectionMode: { type: String as PropType<CalendarSelectionMode>, default: undefined },
-    focusedValue: { type: String, default: undefined },
-    defaultFocusedValue: { type: String, default: undefined },
-    min: { type: String, default: undefined },
-    max: { type: String, default: undefined },
-    isDateUnavailable: { type: Function as PropType<(value: string) => boolean>, default: undefined },
-    locale: { type: String, default: undefined },
-    timeZone: { type: String, default: undefined },
+    value: { type: [String, Array] as PropType<string | string[]> },
+    defaultValue: { type: [String, Array] as PropType<string | string[]> },
+    selectionMode: { type: String as PropType<CalendarSelectionMode> },
+    focusedValue: { type: String },
+    defaultFocusedValue: { type: String },
+    min: { type: String },
+    max: { type: String },
+    isDateUnavailable: { type: Function as PropType<(value: string) => boolean> },
+    locale: { type: String },
+    timeZone: { type: String },
     disabled: Boolean,
     readOnly: Boolean,
-    weekdayFormat: { type: String as PropType<CalendarWeekdayFormat>, default: undefined },
+    weekdayFormat: { type: String as PropType<CalendarWeekdayFormat> },
     fixedWeeks: Boolean,
     /** 挑的粒度：天（默认）/ 月 / 季度 / 年。这一档也是「点一格即选中」的那一档。 */
-    view: { type: String as PropType<CalendarView>, default: undefined },
+    view: { type: String as PropType<CalendarView> },
     /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 view。 */
-    activeView: { type: String as PropType<CalendarView>, default: undefined },
+    activeView: { type: String as PropType<CalendarView> },
     /** 非受控初值，缺省同 view。 */
-    defaultActiveView: { type: String as PropType<CalendarView>, default: undefined },
+    defaultActiveView: { type: String as PropType<CalendarView> },
     /** 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 */
     weekSelection: { type: Boolean, default: undefined },
     /** 并排展示几页，默认 1。 */
-    visibleCount: { type: Number, default: undefined },
+    visibleCount: { type: Number },
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
   emits: {

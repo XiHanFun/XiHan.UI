@@ -59,27 +59,27 @@ interface TransferPanelSlots {
 
 export const XhTransferRoot = defineComponent({
   name: 'XhTransferRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<TransferItem[]>, default: undefined },
-    value: { type: Array as PropType<string[]>, default: undefined },
-    defaultValue: { type: Array as PropType<string[]>, default: undefined },
-    name: { type: String, default: undefined },
-    form: { type: String, default: undefined },
-    selection: { type: Array as PropType<string[]>, default: undefined },
-    defaultSelection: { type: Array as PropType<string[]>, default: undefined },
+    collection: { type: Array as PropType<TransferItem[]> },
+    value: { type: Array as PropType<string[]> },
+    defaultValue: { type: Array as PropType<string[]> },
+    name: { type: String },
+    form: { type: String },
+    selection: { type: Array as PropType<string[]> },
+    defaultSelection: { type: Array as PropType<string[]> },
     searchable: Boolean,
-    filter: { type: Function as PropType<TransferFilter>, default: undefined },
+    filter: { type: Function as PropType<TransferFilter> },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     loading: Boolean,
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
     oneWay: Boolean,
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    translations: { type: Object as PropType<TransferProps['translations']>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    translations: { type: Object as PropType<TransferProps['translations']> },
   },
   // *-change 携带 details 对象，update:* 携带裸集合以支持 v-model
   emits: {

@@ -18,17 +18,17 @@ export type DrawerRootSlotProps = Pick<DrawerApi, 'open' | 'side' | 'setOpen'>
 export const XhDrawerRoot = defineComponent({
   name: 'XhDrawerRoot',
   props: {
-    // 缺省值由 connect 给出，这里一律 default: undefined
+    // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     modal: { type: Boolean, default: undefined },
-    side: { type: String as PropType<DrawerSide>, default: undefined },
-    role: { type: String as PropType<'dialog' | 'alertdialog'>, default: undefined },
+    side: { type: String as PropType<DrawerSide> },
+    role: { type: String as PropType<'dialog' | 'alertdialog'> },
     closeOnEscape: { type: Boolean, default: undefined },
     closeOnInteractOutside: { type: Boolean, default: undefined },
     restoreFocus: { type: Boolean, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    variant: { type: String as PropType<OverlayBackdropVariant>, default: undefined },
+    size: { type: String as PropType<Size> },
+    variant: { type: String as PropType<OverlayBackdropVariant> },
     /**
      * 挂到哪个容器（CSS 选择器或元素）。给了它就是局部抽屉：
      * 浮层搬进那个容器，遮罩与定位层从 fixed 换成 absolute，只罩住它而不是盖满整屏。
@@ -36,13 +36,13 @@ export const XhDrawerRoot = defineComponent({
      * 那个容器要自己带 position（relative 之类），否则 absolute 会往上找到别的定位祖先。
      * 不给则问全局配置的 portalContainer，再没有才落 body。
      */
-    container: { type: [String, Object] as PropType<string | Element>, default: undefined },
+    container: { type: [String, Object] as PropType<string | Element> },
     /**
      * 只把画法改成局部（遮罩与定位层从 fixed 换成 absolute），不管搬到哪儿。
      * 给了 container 就默认为真，不必再写一遍；两个都不给即铺满视口。
      */
     contained: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<DrawerProps['translations']>, default: undefined },
+    translations: { type: Object as PropType<DrawerProps['translations']> },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: {

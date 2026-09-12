@@ -12,11 +12,11 @@ export const XhKbdGroup = defineComponent({
   name: 'XhKbdGroup',
   props: {
     keys: { type: Array as PropType<string[]>, required: true },
-    platform: { type: String as PropType<HotkeysPlatform>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    platform: { type: String as PropType<HotkeysPlatform> },
+    size: { type: String as PropType<Size> },
     pressed: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<Partial<KbdGroupTranslations>>, default: undefined },
+    translations: { type: Object as PropType<Partial<KbdGroupTranslations>> },
   },
   setup(props) {
     const detected = useKbdPlatform()

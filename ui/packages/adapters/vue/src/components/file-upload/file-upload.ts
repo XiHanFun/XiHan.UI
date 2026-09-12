@@ -33,26 +33,26 @@ export type FileUploadRootSlotProps = Pick<
 
 export const XhFileUploadRoot = defineComponent({
   name: 'XhFileUploadRoot',
-  // 有 connect 与机器兜底的 prop 一律 default: undefined
+  // 有 connect 与机器兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    // default: undefined 表示非受控
-    files: { type: Array as PropType<File[]>, default: undefined },
-    defaultFiles: { type: Array as PropType<File[]>, default: undefined },
-    remoteFiles: { type: Array as PropType<FileUploadRemoteFile[]>, default: undefined },
-    defaultRemoteFiles: { type: Array as PropType<FileUploadRemoteFile[]>, default: undefined },
-    upload: { type: Function as PropType<FileUploadProps['upload']>, default: undefined },
+    // 缺席值 undefined 表示非受控
+    files: { type: Array as PropType<File[]> },
+    defaultFiles: { type: Array as PropType<File[]> },
+    remoteFiles: { type: Array as PropType<FileUploadRemoteFile[]> },
+    defaultRemoteFiles: { type: Array as PropType<FileUploadRemoteFile[]> },
+    upload: { type: Function as PropType<FileUploadProps['upload']> },
     autoUpload: { type: Boolean, default: undefined },
-    accept: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    maxFiles: { type: Number, default: undefined },
-    maxFileSize: { type: Number, default: undefined },
-    minFileSize: { type: Number, default: undefined },
+    accept: { type: [String, Array] as PropType<string | string[]> },
+    maxFiles: { type: Number },
+    maxFileSize: { type: Number },
+    minFileSize: { type: Number },
     disabled: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
-    name: { type: String, default: undefined },
+    name: { type: String },
     allowDrop: { type: Boolean, default: undefined },
     directory: Boolean,
-    capture: { type: String as PropType<'user' | 'environment'>, default: undefined },
-    translations: { type: Object as PropType<Partial<FileUploadTranslations>>, default: undefined },
+    capture: { type: String as PropType<'user' | 'environment'> },
+    translations: { type: Object as PropType<Partial<FileUploadTranslations>> },
   },
   // files-change 携带 { files }，update:files 携带裸数组；file-accept / file-reject 逐个文件报告
   emits: {
@@ -164,9 +164,9 @@ export const XhFileUploadItem = defineComponent({
   name: 'XhFileUploadItem',
   props: {
     /** 这一行显示哪个文件（本地或远程附件）。 */
-    file: { type: Object as PropType<FileUploadFile>, default: undefined },
+    file: { type: Object as PropType<FileUploadFile> },
     /** 改用下标从 allFiles（远程在前、本地在后）里取文件，兼收字符串以支持模板里写 index="0"。 */
-    index: { type: [Number, String] as PropType<number | string>, default: undefined },
+    index: { type: [Number, String] as PropType<number | string> },
   },
   setup(props, { slots }) {
     const ctx = useFileUploadContext()

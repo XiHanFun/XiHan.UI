@@ -11,21 +11,21 @@ type ToggleGroupProps = ToggleGroupSchema['props']
 
 export const XhToggleGroupRoot = defineComponent({
   name: 'XhToggleGroupRoot',
-  // 全部 default: undefined，缺省值由 connect 决定
+  // 缺省值由 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<ToggleGroupNode[]>, default: undefined },
-    value: { type: [String, Array] as PropType<ToggleGroupValue>, default: undefined },
-    defaultValue: { type: [String, Array] as PropType<ToggleGroupValue>, default: undefined },
+    collection: { type: Array as PropType<ToggleGroupNode[]> },
+    value: { type: [String, Array] as PropType<ToggleGroupValue> },
+    defaultValue: { type: [String, Array] as PropType<ToggleGroupValue> },
     multiple: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     disallowEmpty: { type: Boolean, default: undefined },
-    variant: { type: String as PropType<ActionVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    variant: { type: String as PropType<ActionVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
     fullWidth: { type: Boolean, default: undefined },
-    name: { type: String, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    name: { type: String },
+    orientation: { type: String as PropType<Orientation> },
+    dir: { type: String as PropType<Direction> },
     loop: { type: Boolean, default: undefined },
     rovingFocus: { type: Boolean, default: undefined },
   },

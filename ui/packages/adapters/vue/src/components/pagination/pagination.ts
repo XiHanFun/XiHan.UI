@@ -34,23 +34,23 @@ export type PaginationRootSlotProps = Pick<
 
 export const XhPaginationRoot = defineComponent({
   name: 'XhPaginationRoot',
-  // 缺省值由 connect 给出，这里一律 default: undefined
+  // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    count: { type: Number, default: undefined },
-    pageSize: { type: Number, default: undefined },
-    defaultPageSize: { type: Number, default: undefined },
-    pageSizeOptions: { type: Array as PropType<number[]>, default: undefined },
-    page: { type: Number, default: undefined },
-    defaultPage: { type: Number, default: undefined },
-    siblingCount: { type: Number, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    translations: { type: Object as PropType<Partial<PaginationTranslations>>, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
-    openDelay: { type: Number, default: undefined },
-    closeDelay: { type: Number, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    count: { type: Number },
+    pageSize: { type: Number },
+    defaultPageSize: { type: Number },
+    pageSizeOptions: { type: Array as PropType<number[]> },
+    page: { type: Number },
+    defaultPage: { type: Number },
+    siblingCount: { type: Number },
+    dir: { type: String as PropType<Direction> },
+    translations: { type: Object as PropType<Partial<PaginationTranslations>> },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
+    openDelay: { type: Number },
+    closeDelay: { type: Number },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // page-change 携带 { page, pageSize }，update:page 携带裸页码；
   // 换档同时改页码，两个 update 都发，v-model:page 与 v-model:page-size 才不会各说各话
@@ -197,7 +197,7 @@ export const XhPaginationPageSizeSelect = defineComponent({
   name: 'XhPaginationPageSizeSelect',
   props: {
     /** 本实例的 PageSizeSelect Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 渲染出来是「挂载点 + 被搬走的浮层」两截，作者写的 class 与 style 得自己接住落到挂载点上
   inheritAttrs: false,
@@ -251,7 +251,7 @@ export const XhPaginationPositioner = defineComponent({
   name: 'XhPaginationPositioner',
   props: {
     /** 本实例的省略页 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,

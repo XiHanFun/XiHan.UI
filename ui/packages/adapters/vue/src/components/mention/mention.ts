@@ -27,27 +27,27 @@ export type MentionRootSlotProps = Pick<
 
 export const XhMentionRoot = defineComponent({
   name: 'XhMentionRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    triggerPrefix: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    collection: { type: Array as PropType<MentionNode[]>, default: undefined },
-    value: { type: String, default: undefined },
-    defaultValue: { type: String, default: undefined },
+    triggerPrefix: { type: [String, Array] as PropType<string | string[]> },
+    collection: { type: Array as PropType<MentionNode[]> },
+    value: { type: String },
+    defaultValue: { type: String },
     disabled: { type: Boolean, default: undefined },
     loading: Boolean,
-    name: { type: String, default: undefined },
+    name: { type: String },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
-    placeholder: { type: String, default: undefined },
+    placeholder: { type: String },
     loop: { type: Boolean, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
-    translations: { type: Object as PropType<MentionTranslations>, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    translations: { type: Object as PropType<MentionTranslations> },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // *-change 携带 details 对象，update:* 携带裸值
   emits: {
@@ -135,7 +135,7 @@ export const XhMentionPositioner = defineComponent({
   name: 'XhMentionPositioner',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,

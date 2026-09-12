@@ -9,11 +9,11 @@ import { provideStatistic, useStatisticContext } from './context'
 
 export const XhStatisticRoot = defineComponent({
   name: 'XhStatisticRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    size: { type: String as PropType<Size>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    trend: { type: String as PropType<StatisticTrend>, default: undefined },
+    size: { type: String as PropType<Size> },
+    tone: { type: String as PropType<Tone> },
+    trend: { type: String as PropType<StatisticTrend> },
   },
   setup(props, { slots }) {
     const api = computed(() => connectStatistic(withXhConfig('statistic', props) as StatisticProps, vueNormalize))

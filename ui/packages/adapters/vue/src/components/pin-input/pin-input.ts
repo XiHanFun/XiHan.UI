@@ -19,26 +19,26 @@ export type PinInputRootSlotProps = Pick<
 export const XhPinInputRoot = defineComponent({
   name: 'XhPinInputRoot',
   props: {
-    // default: undefined 表示非受控
-    value: { type: Array as PropType<string[]>, default: undefined },
-    defaultValue: { type: Array as PropType<string[]>, default: undefined },
-    // 缺省值由 connect 给出，这里一律 default: undefined
-    length: { type: Number, default: undefined },
-    type: { type: String as PropType<PinInputType>, default: undefined },
-    pattern: { type: String, default: undefined },
+    // 缺席值 undefined 表示非受控
+    value: { type: Array as PropType<string[]> },
+    defaultValue: { type: Array as PropType<string[]> },
+    // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
+    length: { type: Number },
+    type: { type: String as PropType<PinInputType> },
+    pattern: { type: String },
     mask: Boolean,
     otp: Boolean,
-    placeholder: { type: String, default: undefined },
+    placeholder: { type: String },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     blurOnComplete: Boolean,
-    name: { type: String, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<PinInputTranslations>>, default: undefined },
+    name: { type: String },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<PinInputTranslations>> },
   },
   // value-change 携带 { value, valueAsString }，update:value 携带裸数组
   emits: {

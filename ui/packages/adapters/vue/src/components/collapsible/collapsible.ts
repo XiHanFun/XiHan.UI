@@ -16,9 +16,9 @@ export const XhCollapsibleRoot = defineComponent({
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     disabled: Boolean,
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    dir: { type: String as PropType<Direction> },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: {

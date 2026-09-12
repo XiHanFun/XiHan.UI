@@ -30,20 +30,20 @@ export type FieldArrayRootSlotProps = Pick<
 
 export const XhFieldArrayRoot = defineComponent({
   name: 'XhFieldArrayRoot',
-  // 有 connect 与机器兜底的 prop 一律 default: undefined
+  // 有 connect 与机器兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    // default: undefined 表示非受控
-    value: { type: Array as PropType<unknown[]>, default: undefined },
-    defaultValue: { type: Array as PropType<unknown[]>, default: undefined },
-    min: { type: Number, default: undefined },
-    max: { type: Number, default: undefined },
-    createItem: { type: Function as PropType<() => unknown>, default: undefined },
+    // 缺席值 undefined 表示非受控
+    value: { type: Array as PropType<unknown[]> },
+    defaultValue: { type: Array as PropType<unknown[]> },
+    min: { type: Number },
+    max: { type: Number },
+    createItem: { type: Function as PropType<() => unknown> },
     movable: Boolean,
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
-    name: { type: [String, Array] as PropType<FormPath>, default: undefined },
-    translations: { type: Object as PropType<Partial<FieldArrayTranslations>>, default: undefined },
+    name: { type: [String, Array] as PropType<FormPath> },
+    translations: { type: Object as PropType<Partial<FieldArrayTranslations>> },
   },
   // value-change 携带 { value }，update:value 携带裸数组
   emits: {

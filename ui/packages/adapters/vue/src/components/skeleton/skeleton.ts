@@ -9,8 +9,8 @@ export const XhSkeletonRoot = defineComponent({
   name: 'XhSkeletonRoot',
   props: {
     loading: { type: Boolean, default: true },
-    shape: { type: String as PropType<SkeletonShape>, default: undefined },
-    animation: { type: String as PropType<SkeletonAnimation>, default: undefined },
+    shape: { type: String as PropType<SkeletonShape> },
+    animation: { type: String as PropType<SkeletonAnimation> },
   },
   setup(props, { slots }) {
     const ctx = useSkeleton(props as SkeletonProps)
@@ -23,7 +23,7 @@ export const XhSkeletonRoot = defineComponent({
 export const XhSkeletonItem = defineComponent({
   name: 'XhSkeletonItem',
   props: {
-    shape: { type: String as PropType<SkeletonShape>, default: undefined },
+    shape: { type: String as PropType<SkeletonShape> },
   },
   setup(props) {
     const ctx = useSkeletonContext()

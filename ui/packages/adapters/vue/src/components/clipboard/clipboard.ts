@@ -16,13 +16,13 @@ export const XhClipboardRoot = defineComponent({
   name: 'XhClipboardRoot',
   props: {
     // 属性缺席即没给要复制的文本，落回空串
-    value: { type: String, default: undefined },
-    timeout: { type: Number, default: undefined },
+    value: { type: String },
+    timeout: { type: Number },
     disabled: { type: Boolean, default: undefined },
-    variant: { type: String as PropType<ActionVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<ClipboardTranslations>>, default: undefined },
+    variant: { type: String as PropType<ActionVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<ClipboardTranslations>> },
   },
   // status-change 携带 { status }；copy-error 携带 { error, value }
   emits: {

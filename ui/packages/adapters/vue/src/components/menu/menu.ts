@@ -19,23 +19,23 @@ export type MenuRootSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 
 export const XhMenuRoot = /* @__PURE__ */ defineComponent({
   name: 'XhMenuRoot',
-  // 缺省值由 connect 给出，这里一律 default: undefined
+  // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<MenuNode[]>, default: undefined },
+    collection: { type: Array as PropType<MenuNode[]> },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
     typeahead: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<Partial<MenuTranslations>>, default: undefined },
+    translations: { type: Object as PropType<Partial<MenuTranslations>> },
     openOnHover: { type: Boolean, default: undefined },
-    hoverOpenDelay: { type: Number, default: undefined },
-    hoverCloseDelay: { type: Number, default: undefined },
+    hoverOpenDelay: { type: Number },
+    hoverCloseDelay: { type: Number },
     /**
      * 只交 collection 时，触发器插槽给的那个节点直接当触发器用，不再外包一颗 <button>。
      * 摆部件的写法有 XhMenuTrigger 自己的 asChild，这个 prop 是给代铺那条路的同一个能力。
@@ -100,7 +100,7 @@ export const XhMenuPositioner = /* @__PURE__ */ defineComponent({
   name: 'XhMenuPositioner',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
@@ -184,19 +184,19 @@ export const XhMenuSub = /* @__PURE__ */ defineComponent({
     /** 它在父菜单里的条目身份。 */
     value: { type: String, required: true },
     disabled: { type: Boolean, default: undefined },
-    collection: { type: Array as PropType<MenuNode[]>, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    collection: { type: Array as PropType<MenuNode[]> },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     loop: { type: Boolean, default: undefined },
     openOnHover: { type: Boolean, default: undefined },
-    hoverOpenDelay: { type: Number, default: undefined },
+    hoverOpenDelay: { type: Number },
     /** 文字方向；缺省继承父层。子层被搬到浮层落点，继承不到父层的方向。 */
-    dir: { type: String as PropType<Direction>, default: undefined },
+    dir: { type: String as PropType<Direction> },
     /** 语气；缺省继承父层。子层是浮层落点下的同级节点，CSS 私有槽继承不到。 */
-    tone: { type: String as PropType<Tone>, default: undefined },
+    tone: { type: String as PropType<Tone> },
     /** 尺寸；缺省继承父层，理由同 tone。 */
-    size: { type: String as PropType<Size>, default: undefined },
-    hoverCloseDelay: { type: Number, default: undefined },
+    size: { type: String as PropType<Size> },
+    hoverCloseDelay: { type: Number },
   },
   slots: Object as SlotsType<{
     default?: (props: MenuSubSlotProps) => VNode[]

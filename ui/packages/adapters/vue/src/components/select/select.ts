@@ -20,13 +20,13 @@ export type SelectRootSlotProps = Pick<
 
 export const XhSelectRoot = /* @__PURE__ */ defineComponent({
   name: 'XhSelectRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<SelectNode[]>, default: undefined },
+    collection: { type: Array as PropType<SelectNode[]> },
     /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
-    label: { type: String, default: undefined },
-    value: { type: [String, Array] as PropType<string | string[] | null>, default: undefined },
-    defaultValue: { type: [String, Array] as PropType<string | string[] | null>, default: undefined },
+    label: { type: String },
+    value: { type: [String, Array] as PropType<string | string[] | null> },
+    defaultValue: { type: [String, Array] as PropType<string | string[] | null> },
     multiple: Boolean,
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
@@ -38,17 +38,17 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
     invalid: { type: Boolean, default: undefined },
     loading: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
-    name: { type: String, default: undefined },
-    translations: { type: Object as PropType<SelectProps['translations']>, default: undefined },
-    maxTagCount: { type: Number, default: undefined },
-    placeholder: { type: String, default: undefined },
-    placement: { type: String as PropType<Placement>, default: undefined },
-    offset: { type: Number, default: undefined },
+    name: { type: String },
+    translations: { type: Object as PropType<SelectProps['translations']> },
+    maxTagCount: { type: Number },
+    placeholder: { type: String },
+    placement: { type: String as PropType<Placement> },
+    offset: { type: Number },
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
   },
   // *-change 携带 details 对象，update:* 携带裸值。
   // 校验函数恒真，只声明载荷类型：'update:value' 是 string[]，单选也是长度 1 的数组而非裸串。
@@ -246,7 +246,7 @@ export const XhSelectPositioner = /* @__PURE__ */ defineComponent({
   name: 'XhSelectPositioner',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,

@@ -52,14 +52,14 @@ export type MessageFeedRootSlotProps = Pick<
 
 export const XhMessageFeedRoot = defineComponent({
   name: 'XhMessageFeedRoot',
-  // 一律 default: undefined，缺省值由机器、connect 与粘底句柄给出
+  // 缺省值由机器、connect 与粘底句柄给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    count: { type: Number, default: undefined },
-    status: { type: String as PropType<MessageFeedStatus>, default: undefined },
-    threshold: { type: Number, default: undefined },
+    count: { type: Number },
+    status: { type: String as PropType<MessageFeedStatus> },
+    threshold: { type: Number },
     loop: { type: Boolean, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<MessageFeedTranslations>>, default: undefined },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<MessageFeedTranslations>> },
   },
   emits: {
     'stick-change': (_details: PayloadOf<Props, 'onStickChange'>) => true,
@@ -121,7 +121,7 @@ export const XhMessageFeedItem = defineComponent({
     itemId: { type: String, required: true },
     // 收字符串是为了让作者能直接写在标记上（`item-index="0"`），与自定义元素那侧同形
     itemIndex: { type: [Number, String] as PropType<number | string>, required: true },
-    itemRole: { type: String as PropType<MessageFeedItemRole>, default: undefined },
+    itemRole: { type: String as PropType<MessageFeedItemRole> },
     itemStreaming: Boolean,
   },
   setup(props, { slots }) {

@@ -47,21 +47,21 @@ export interface FormErrorSummaryItemSlotProps {
 
 export const XhFormRoot = defineComponent({
   name: 'XhFormRoot',
-  // 缺省值由 connect 与机器给出，这里一律 default: undefined
+  // 缺省值由 connect 与机器给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    values: { type: Object as PropType<FormValues>, default: undefined },
-    defaultValues: { type: Object as PropType<FormValues>, default: undefined },
-    errors: { type: Object as PropType<FormErrorPatch>, default: undefined },
-    defaultErrors: { type: Object as PropType<FormErrorPatch>, default: undefined },
-    validate: { type: Function as PropType<FormProps['validate']>, default: undefined },
-    rules: { type: Object as PropType<FormProps['rules']>, default: undefined },
-    validateMessages: { type: Object as PropType<FormProps['validateMessages']>, default: undefined },
-    validateOn: { type: String as PropType<FormValidateOn>, default: undefined },
-    layout: { type: String as PropType<FormProps['layout']>, default: undefined },
+    values: { type: Object as PropType<FormValues> },
+    defaultValues: { type: Object as PropType<FormValues> },
+    errors: { type: Object as PropType<FormErrorPatch> },
+    defaultErrors: { type: Object as PropType<FormErrorPatch> },
+    validate: { type: Function as PropType<FormProps['validate']> },
+    rules: { type: Object as PropType<FormProps['rules']> },
+    validateMessages: { type: Object as PropType<FormProps['validateMessages']> },
+    validateOn: { type: String as PropType<FormValidateOn> },
+    layout: { type: String as PropType<FormProps['layout']> },
     /** grid 排布下分几列：整数即各档同一个列数，断点对象 `{ base, sm, md, lg, xl }` 则逐档取值。 */
-    columns: { type: [Number, Object] as PropType<FormColumns>, default: undefined },
-    labelWidth: { type: [Number, String], default: undefined },
-    labelAlign: { type: String as PropType<FormProps['labelAlign']>, default: undefined },
+    columns: { type: [Number, Object] as PropType<FormColumns> },
+    labelWidth: { type: [Number, String] },
+    labelAlign: { type: String as PropType<FormProps['labelAlign']> },
     disabled: Boolean,
     readOnly: Boolean,
   },
@@ -123,7 +123,7 @@ export const XhFormFieldGroup = defineComponent({
     /** 字段路径；字符串含点仍是单键，数组才表示层级。 */
     name: { type: [String, Array] as PropType<FormPath>, required: true },
     /** grid 排布下这一格占多宽：1 至 4 跨这么多列，'full' 占满整行；不写占一列。 */
-    span: { type: [Number, String] as PropType<FormFieldSpan>, default: undefined },
+    span: { type: [Number, String] as PropType<FormFieldSpan> },
   },
   slots: Object as SlotsType<{
     default?: (props: FormFieldGroupSlotProps) => VNode[]

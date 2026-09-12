@@ -16,9 +16,9 @@ export type TruncateSlotProps = Pick<TruncateApi, 'open' | 'overflowing' | 'setO
  */
 export const XhTruncate = defineComponent({
   name: 'XhTruncate',
-  // 缺省值由机器与 connect 决定，这里一律 default: undefined
+  // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    lines: { type: Number, default: undefined },
+    lines: { type: Number },
     expandable: Boolean,
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,

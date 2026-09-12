@@ -16,17 +16,17 @@ export const XhReasoningRoot = defineComponent({
   name: 'XhReasoningRoot',
   props: {
     streaming: Boolean,
-    startTime: { type: Number, default: undefined },
-    endTime: { type: Number, default: undefined },
+    startTime: { type: Number },
+    endTime: { type: Number },
     open: { type: Boolean, default: undefined },
     defaultOpen: { type: Boolean, default: undefined },
     // 用 undefined 而非裸 Boolean，缺省值由机器给出
     autoDisclosure: { type: Boolean, default: undefined },
     disabled: Boolean,
-    variant: { type: String as PropType<ControlVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<ReasoningTranslations>>, default: undefined },
+    variant: { type: String as PropType<ControlVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<ReasoningTranslations>> },
   },
   emits: {
     'open-change': (_details: PayloadOf<MachineProps, 'onOpenChange'>) => true,

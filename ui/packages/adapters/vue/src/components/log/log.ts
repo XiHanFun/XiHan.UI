@@ -20,12 +20,12 @@ export type LogRootSlotProps = Pick<
 
 export const XhLogRoot = defineComponent({
   name: 'XhLogRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    rows: { type: Number, default: undefined },
+    rows: { type: Number },
     loading: Boolean,
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<LogTranslations>>, default: undefined },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<LogTranslations>> },
   },
   // stick-change 携带 { atBottom, sticking }，无对应的 v-model
   emits: {
@@ -76,7 +76,7 @@ export const XhLogContent = defineComponent({
 export const XhLogLine = defineComponent({
   name: 'XhLogLine',
   props: {
-    level: { type: String as PropType<LogLevel>, default: undefined },
+    level: { type: String as PropType<LogLevel> },
   },
   setup(props, { slots }) {
     const ctx = useLogContext()

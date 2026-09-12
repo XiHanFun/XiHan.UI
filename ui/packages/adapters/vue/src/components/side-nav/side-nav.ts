@@ -33,22 +33,22 @@ export type SideNavRootSlotProps = Pick<
 
 export const XhSideNavRoot = defineComponent({
   name: 'XhSideNavRoot',
-  // 缺省值由 connect 与机器给出，这里一律 default: undefined
+  // 缺省值由 connect 与机器给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<SideNavNode[]>, default: undefined },
-    value: { type: String as PropType<string | null>, default: undefined },
-    defaultValue: { type: String as PropType<string | null>, default: undefined },
-    expandedValue: { type: Array as PropType<string[]>, default: undefined },
-    defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
+    collection: { type: Array as PropType<SideNavNode[]> },
+    value: { type: String as PropType<string | null> },
+    defaultValue: { type: String as PropType<string | null> },
+    expandedValue: { type: Array as PropType<string[]> },
+    defaultExpandedValue: { type: Array as PropType<string[]> },
     accordion: Boolean,
     collapsed: { type: Boolean, default: undefined },
     collapsedPopout: { type: Boolean, default: undefined },
     disabled: Boolean,
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<SideNavProps['dir']>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<SideNavProps['translations']>, default: undefined },
+    dir: { type: String as PropType<SideNavProps['dir']> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<SideNavProps['translations']> },
   },
   // *-change 携带 details 对象，update:* 携带裸值，支持 v-model:value 与 v-model:expanded-value
   emits: {
@@ -174,7 +174,7 @@ export const XhSideNavBranchContent = defineComponent({
   name: 'XhSideNavBranchContent',
   props: {
     /** 本分支弹层的 Portal 容器；优先于应用级配置。 */
-    container: { type: Object as PropType<Element>, default: undefined },
+    container: { type: Object as PropType<Element> },
   },
   setup(props, { slots }) {
     const ctx = useSideNavContext()

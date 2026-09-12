@@ -14,13 +14,13 @@ import { slotPaints } from '../../runtime/slot-content'
  */
 export const XhTimestamp = defineComponent({
   name: 'XhTimestamp',
-  // 缺省值由 connect 给出，这里一律 default: undefined
+  // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    value: { type: [String, Number, Date] as PropType<TimestampValue>, default: undefined },
-    type: { type: String as PropType<TimestampType>, default: undefined },
-    format: { type: String, default: undefined },
-    locale: { type: String, default: undefined },
-    now: { type: [String, Number, Date] as PropType<TimestampValue>, default: undefined },
+    value: { type: [String, Number, Date] as PropType<TimestampValue> },
+    type: { type: String as PropType<TimestampType> },
+    format: { type: String },
+    locale: { type: String },
+    now: { type: [String, Number, Date] as PropType<TimestampValue> },
   },
   setup(props, { slots }) {
     const merged = withXhConfig('timestamp', props)

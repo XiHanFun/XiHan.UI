@@ -29,20 +29,20 @@ export type RatingItemSlotProps = RatingItemState
 export const XhRatingRoot = defineComponent({
   name: 'XhRatingRoot',
   props: {
-    // default: undefined 表示非受控
-    value: { type: Number, default: undefined },
-    defaultValue: { type: Number, default: undefined },
-    count: { type: Number, default: undefined },
+    // 缺席值 undefined 表示非受控
+    value: { type: Number },
+    defaultValue: { type: Number },
+    count: { type: Number },
     allowHalf: Boolean,
     allowClear: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
-    name: { type: String, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<RatingProps['translations']>, default: undefined },
+    name: { type: String },
+    dir: { type: String as PropType<Direction> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<RatingProps['translations']> },
   },
   // value-change 携带 { value }，update:value 携带裸值；hover-change 是预览通道
   emits: {

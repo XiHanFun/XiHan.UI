@@ -18,25 +18,25 @@ export type TagGroupRootSlotProps = Pick<
 
 export const XhTagGroupRoot = defineComponent({
   name: 'XhTagGroupRoot',
-  // 有 connect 兜底的 prop 一律 default: undefined
+  // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    collection: { type: Array as PropType<TagGroupNode[]>, default: undefined },
+    collection: { type: Array as PropType<TagGroupNode[]> },
     /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
-    label: { type: String, default: undefined },
-    value: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    selectionMode: { type: String as PropType<TagGroupSelectionMode>, default: undefined },
+    label: { type: String },
+    value: { type: [String, Array] as PropType<string | string[]> },
+    defaultValue: { type: [String, Array] as PropType<string | string[]> },
+    selectionMode: { type: String as PropType<TagGroupSelectionMode> },
     deletable: Boolean,
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     loop: { type: Boolean, default: undefined },
-    dir: { type: String as PropType<Direction>, default: undefined },
-    orientation: { type: String as PropType<Orientation>, default: undefined },
+    dir: { type: String as PropType<Direction> },
+    orientation: { type: String as PropType<Orientation> },
     typeahead: { type: Boolean, default: undefined },
-    variant: { type: String as PropType<TagVariant>, default: undefined },
-    tone: { type: String as PropType<Tone>, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
-    translations: { type: Object as PropType<Partial<TagGroupTranslations>>, default: undefined },
+    variant: { type: String as PropType<TagVariant> },
+    tone: { type: String as PropType<Tone> },
+    size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<TagGroupTranslations>> },
   },
   // value-change 携带 { value }，update:value 携带裸集合；回传值恒为数组，单选时长度 ≤ 1。
   // item-delete 只报「用户要摘这一枚」，条目的去留由宿主改自己的数据
