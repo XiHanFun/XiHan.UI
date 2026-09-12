@@ -28,7 +28,7 @@ type ColorPickerProps = ColorPickerSchema['props']
 /** 默认插槽的载荷：展开态、当前颜色的各式表示、预设色板、屏幕取色状态，以及改展开与改值两个动作。 */
 export type ColorPickerRootSlotProps = Pick<
   ColorPickerApi,
-  'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'picking' | 'eyeDropperSupported' | 'setOpen' | 'setValue'
+  'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'picking' | 'eyeDropperSupported' | 'errors' | 'setOpen' | 'setValue' | 'clearError'
 >
 
 export const XhColorPickerRoot = defineComponent({
@@ -55,6 +55,7 @@ export const XhColorPickerRoot = defineComponent({
   emits: {
     'value-change': (_details: PayloadOf<ColorPickerProps, 'onValueChange'>) => true,
     'open-change': (_details: PayloadOf<ColorPickerProps, 'onOpenChange'>) => true,
+    'color-error': (_details: PayloadOf<ColorPickerProps, 'onColorError'>) => true,
     'update:value': (_value: PayloadOf<ColorPickerProps, 'onValueChange'>['value']) => true,
     'update:open': (_open: PayloadOf<ColorPickerProps, 'onOpenChange'>['open']) => true,
   },
@@ -70,9 +71,11 @@ export const XhColorPickerRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
+    const notifyColorError: ColorPickerProps['onColorError'] = details => emit('color-error', details)
     const ctx = useColorPicker(withXhConfig('color-picker', useFormControlProps(props)) as ColorPickerProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
+      onColorError: notifyColorError,
     })
     provideColorPicker(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
@@ -83,8 +86,10 @@ export const XhColorPickerRoot = defineComponent({
       swatches: ctx.api.value.swatches,
       picking: ctx.api.value.picking,
       eyeDropperSupported: ctx.api.value.eyeDropperSupported,
+      errors: ctx.api.value.errors,
       setOpen: ctx.api.value.setOpen,
       setValue: ctx.api.value.setValue,
+      clearError: ctx.api.value.clearError,
     }))
   },
 })

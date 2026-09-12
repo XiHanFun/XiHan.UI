@@ -27,7 +27,7 @@ function noop(): void {}
 /** 函数式 children 的载荷：展开态、当前颜色的各式表示、预设色板、屏幕取色状态，以及改展开与改值两个动作。 */
 export type ColorPickerRootSlotProps = Pick<
   ColorPickerApi,
-  'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'picking' | 'eyeDropperSupported' | 'setOpen' | 'setValue'
+  'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'picking' | 'eyeDropperSupported' | 'errors' | 'setOpen' | 'setValue' | 'clearError'
 >
 
 /** 根上自有的那些取值；dir 与原生的同名属性含义不同，由这里接管。 */
@@ -59,6 +59,7 @@ export interface XhColorPickerRootProps extends RootElementProps {
   translations?: Partial<ColorPickerTranslations>
   onValueChange?: ColorPickerProps['onValueChange']
   onOpenChange?: ColorPickerProps['onOpenChange']
+  onColorError?: ColorPickerProps['onColorError']
   children?: SlotChildren<ColorPickerRootSlotProps>
 }
 
@@ -80,6 +81,7 @@ export function XhColorPickerRoot({
   translations,
   onValueChange,
   onOpenChange,
+  onColorError,
   children,
   ...rest
 }: XhColorPickerRootProps): ReactNode {
@@ -101,6 +103,7 @@ export function XhColorPickerRoot({
     translations,
     onValueChange,
     onOpenChange,
+    onColorError,
   })) as ColorPickerProps)
   const api = ctx.api
 
@@ -121,15 +124,17 @@ export function XhColorPickerRoot({
           swatches: api.swatches,
           picking: api.picking,
           eyeDropperSupported: api.eyeDropperSupported,
+          errors: api.errors,
           setOpen: api.setOpen,
           setValue: api.setValue,
+          clearError: api.clearError,
         })}
       </div>
     </ColorPickerProvider>
   )
 }
 
-XhColorPickerRoot.xhEvents = ['value-change', 'open-change'] as const
+XhColorPickerRoot.xhEvents = ['value-change', 'open-change', 'color-error'] as const
 
 export interface XhColorPickerLabelProps extends ComponentPropsWithRef<'label'> {}
 

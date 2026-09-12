@@ -481,6 +481,7 @@ export const colorPickerSuite: ConformanceSuite = {
               // 值没被这串半截字带跑
               'area-thumb': { 'aria-valuenow': '76' },
             },
+            events: [{ type: 'color-error', detail: { type: 'input', channel: 'hex', value: '#ff000' } }],
           },
         },
         {
@@ -499,7 +500,7 @@ export const colorPickerSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '回车收下框里的字：打了一半就复原成规范文本，且这一下必须被吞掉',
+      name: '回车提交非法文本：保留草稿与显式错误，且这一下必须被吞掉',
       spec: { apg: APG_DIALOG },
       props: { defaultValue: '#3b82f6', defaultOpen: true },
       covers: ['color-picker.kbd.input-commit'],
@@ -519,14 +520,13 @@ export const colorPickerSuite: ConformanceSuite = {
             // 取色器落在表单里时，这一下不吞就会顺手把表单提交掉
             if (!enter.defaultPrevented)
               throw new Error('回车必须被拦下，否则会触发表单提交')
-            // 收不下来就得复原成当前值的规范文本，不能把半截字留在框里
-            if (input.value !== '#3b82f6')
-              throw new Error(`半截输入应复原成 #3b82f6，实际 ${input.value}`)
+            // 收不下来就保留原字让作者修，不能静默纠正成当前值
+            if (input.value !== '#ff000')
+              throw new Error(`非法输入应保留 #ff000，实际 ${input.value}`)
           },
           expect: {
-            parts: { 'channel-input[0]': { 'aria-invalid': 'false' } },
-            // 复原不是改值，一条事件都不该发
-            events: [],
+            parts: { 'channel-input[0]': { 'aria-invalid': 'true', 'data-invalid': '' } },
+            events: [{ type: 'color-error', detail: { type: 'input', channel: 'hex', value: '#ff000' } }],
           },
         },
         {

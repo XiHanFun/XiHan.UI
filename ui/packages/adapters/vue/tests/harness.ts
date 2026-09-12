@@ -9,6 +9,7 @@ const PUBLIC_EVENTS = {
   'decision': 'onDecision',
   'granted-scopes-change': 'onGrantedScopesChange',
   'clamp-toggle': 'onClampToggle',
+  'color-error': 'onColorError',
   'column-preference-change': 'onColumnPreferenceChange',
   'download-complete': 'onDownloadComplete',
   'download-error': 'onDownloadError',

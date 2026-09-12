@@ -249,12 +249,27 @@ describe('colorPickerMachine 值', () => {
     expect(s.context.get('value')).toMatch(/^rgba\(/)
   })
 
-  it('整体赋值时解析不出的串原地不动', () => {
-    const s = makeService({ defaultValue: '#3b82f6' })
-    s.send({ type: 'VALUE.SET', value: '#3b82f' })
+  it('整体赋值解析失败时原地不动，并按来源留下可清理错误', () => {
+    const onColorError = vi.fn()
+    const s = makeService({ defaultValue: '#3b82f6', onColorError })
+    s.send({ type: 'VALUE.SET', value: '#3b82f', source: 'swatch' })
     expect(s.context.get('value')).toBe('#3b82f6')
+    expect(api(s).errors.parse).toEqual({ type: 'parse', source: 'swatch', value: '#3b82f' })
+    expect(onColorError).toHaveBeenCalledWith({ type: 'parse', source: 'swatch', value: '#3b82f' })
+    api(s).clearError()
+    expect(api(s).errors.parse).toBeNull()
     s.send({ type: 'VALUE.SET', value: 'rgb(255, 0, 0)' })
     expect(rgbaOf(s)).toEqual({ r: 255, g: 0, b: 0, a: 1 })
+  })
+
+  it('未知 format 是独立错误，修正前不允许静默用 hex 落值', () => {
+    const onColorError = vi.fn()
+    const s = makeService({ defaultValue: '#3b82f6', format: 'oklch' as never, onColorError })
+    expect(api(s).errors.format).toEqual({ type: 'format', format: 'oklch' })
+    expect(onColorError).toHaveBeenCalledWith({ type: 'format', format: 'oklch' })
+    s.send({ type: 'AREA.STEP', axis: 'x', direction: 1 })
+    expect(s.context.get('value')).toBe('#3b82f6')
+    expect(onColorError).toHaveBeenCalledTimes(1)
   })
 
   it('alpha 关掉时值恒不透明', () => {
@@ -338,13 +353,19 @@ describe('colorPickerMachine 数值输入', () => {
     expect(rgbaOf(s)).toEqual({ r: 255, g: 0, b: 0, a: 1 })
   })
 
-  it('收下（回车/失焦）时草稿丢掉，框里复原成规范文本', () => {
-    const s = makeService({ defaultValue: '#3b82f6' })
+  it('非法提交保留草稿与错误，显式清理后才恢复规范文本', () => {
+    const onColorError = vi.fn()
+    const s = makeService({ defaultValue: '#3b82f6', onColorError })
     s.send({ type: 'INPUT.CHANGE', channel: 'hex', value: '#ff000' })
     s.send({ type: 'INPUT.COMMIT', channel: 'hex' })
-    // 收不下来的草稿不该留在框里长期与实际值对不上
     expect(s.context.get('value')).toBe('#3b82f6')
+    expect(api(s).inputText('hex')).toBe('#ff000')
+    expect(api(s).errors.input).toEqual({ type: 'input', channel: 'hex', value: '#ff000' })
+    // change 与 commit 的同一个错误不得重复通知。
+    expect(onColorError).toHaveBeenCalledTimes(1)
+    api(s).clearError()
     expect(api(s).inputText('hex')).toBe('#3b82f6')
+    expect(api(s).errors.input).toBeNull()
   })
 
   it('rgb 分量框各改一路', () => {
@@ -439,6 +460,24 @@ describe('colorPickerMachine 受控', () => {
     expect(Math.round(api(s).hsva.h)).toBe(120)
   })
 
+  it('宿主写入新值会丢弃旧草稿与旧输入错误，旧提交不能污染新值', () => {
+    const runtime = createVanillaRuntime()
+    const value = runtime.signal('#ff0000')
+    const s = attachSliders(createService(colorPickerMachine, {
+      props: () => ({ value: value.get() }),
+      runtime,
+    }), runtime)
+    runtime.start()
+
+    s.send({ type: 'INPUT.CHANGE', channel: 'hex', value: '#00ff0' })
+    expect(api(s).errors.input).not.toBeNull()
+    value.set('#0000ff')
+    expect(api(s).inputText('hex')).toBe('#0000ff')
+    expect(api(s).errors.input).toBeNull()
+    s.send({ type: 'INPUT.COMMIT', channel: 'hex' })
+    expect(s.context.get('value')).toBe('#0000ff')
+  })
+
   it('受控 open：只发意图，宿主写回才转移', () => {
     const onOpenChange = vi.fn()
     const runtime = createVanillaRuntime()
@@ -479,7 +518,7 @@ describe('colorPickerMachine 屏幕取色', () => {
     expect(s.state.matches('open.picking')).toBe(false)
   })
 
-  it('取到颜色就落值，用户放弃则原地不动', async () => {
+  it('取到颜色就落值，用户放弃则原地不动且不报异常', async () => {
     let settle: (result: { sRGBHex: string }) => void = () => {}
     let reject: (reason: unknown) => void = () => {}
     Reflect.set(window, 'EyeDropper', class {
@@ -502,11 +541,85 @@ describe('colorPickerMachine 屏幕取色', () => {
     expect(s.state.matches('open.idle')).toBe(true)
 
     s.send({ type: 'EYE_DROPPER.OPEN' })
-    reject(new Error('用户按了 Esc'))
+    reject(new DOMException('用户按了 Esc', 'AbortError'))
     await Promise.resolve()
     await Promise.resolve()
     expect(s.context.get('value')).toBe('#ff0000')
     expect(s.state.matches('open.idle')).toBe(true)
+    expect(api(s).errors.eyeDropper).toBeNull()
+  })
+
+  it('屏幕取色异常走独立错误出口，重试前清理并可成功', async () => {
+    const pending: Array<{
+      resolve: (result: { sRGBHex: string }) => void
+      reject: (reason: unknown) => void
+    }> = []
+    Reflect.set(window, 'EyeDropper', class {
+      open(): Promise<{ sRGBHex: string }> {
+        return new Promise((resolve, reject) => pending.push({ resolve, reject }))
+      }
+    })
+    const onColorError = vi.fn()
+    const s = makeService({ defaultValue: '#000000', defaultOpen: true, onColorError })
+
+    s.send({ type: 'EYE_DROPPER.OPEN' })
+    const cause = new Error('平台取色失败')
+    pending[0]!.reject(cause)
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(api(s).errors.eyeDropper).toEqual({ type: 'eye-dropper', cause })
+    expect(onColorError).toHaveBeenCalledWith({ type: 'eye-dropper', cause })
+
+    s.send({ type: 'EYE_DROPPER.OPEN' })
+    expect(api(s).errors.eyeDropper).toBeNull()
+    pending[1]!.resolve({ sRGBHex: '#00ff00' })
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(s.context.get('value')).toBe('#00ff00')
+  })
+
+  it('屏幕取色返回非法颜色走解析错误，下一次重试会清掉旧诊断', async () => {
+    const pending: Array<(result: { sRGBHex: string }) => void> = []
+    Reflect.set(window, 'EyeDropper', class {
+      open(): Promise<{ sRGBHex: string }> {
+        return new Promise(resolve => pending.push(resolve))
+      }
+    })
+    const onColorError = vi.fn()
+    const s = makeService({ defaultValue: '#000000', defaultOpen: true, onColorError })
+
+    s.send({ type: 'EYE_DROPPER.OPEN' })
+    pending[0]!({ sRGBHex: '不是颜色' })
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(api(s).errors.parse).toEqual({ type: 'parse', source: 'eye-dropper', value: '不是颜色' })
+    expect(onColorError).toHaveBeenCalledWith({ type: 'parse', source: 'eye-dropper', value: '不是颜色' })
+
+    s.send({ type: 'EYE_DROPPER.OPEN' })
+    expect(api(s).errors.parse).toBeNull()
+  })
+
+  it('上一次取色的迟到结果不得污染本次结果', async () => {
+    const pending: Array<(result: { sRGBHex: string }) => void> = []
+    Reflect.set(window, 'EyeDropper', class {
+      open(): Promise<{ sRGBHex: string }> {
+        return new Promise(resolve => pending.push(resolve))
+      }
+    })
+    const s = makeService({ defaultValue: '#000000', defaultOpen: true })
+
+    s.send({ type: 'EYE_DROPPER.OPEN' })
+    s.send({ type: 'CLOSE' })
+    s.send({ type: 'OPEN' })
+    s.send({ type: 'EYE_DROPPER.OPEN' })
+    pending[0]!({ sRGBHex: '#ff0000' })
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(s.context.get('value')).toBe('#000000')
+    pending[1]!({ sRGBHex: '#00ff00' })
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(s.context.get('value')).toBe('#00ff00')
   })
 })
 

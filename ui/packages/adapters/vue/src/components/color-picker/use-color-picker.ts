@@ -30,7 +30,7 @@ export interface ColorPickerContext {
 
 export function useColorPicker(
   props: ColorPickerSchema['props'],
-  handlers: Pick<ColorPickerSchema['props'], 'onValueChange' | 'onOpenChange'> = {},
+  handlers: Pick<ColorPickerSchema['props'], 'onValueChange' | 'onOpenChange' | 'onColorError'> = {},
 ): ColorPickerContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)

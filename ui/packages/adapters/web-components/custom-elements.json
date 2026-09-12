@@ -8107,6 +8107,12 @@
             },
             {
               "kind": "field",
+              "name": "notifyColorError",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -8274,6 +8280,25 @@
             },
             {
               "kind": "field",
+              "name": "errors",
+              "type": {
+                "text": "ColorPickerErrors"
+              },
+              "description": "格式、输入、颜色解析与屏幕取色四路错误；机器未建立时均为空。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "clearError",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "清掉四路显式错误；屏幕取色重试也会自动先清它自己那一路。"
+            },
+            {
+              "kind": "field",
               "name": "ownsValueText",
               "privacy": "private",
               "readonly": true,
@@ -8352,6 +8377,13 @@
               "name": "open-change",
               "type": {
                 "text": "ColorPickerOpenChangeDetails"
+              }
+            },
+            {
+              "description": "格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象",
+              "name": "color-error",
+              "type": {
+                "text": "ColorPickerErrorDetails"
               }
             }
           ],

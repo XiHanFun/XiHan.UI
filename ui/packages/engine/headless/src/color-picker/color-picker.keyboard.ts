@@ -59,7 +59,7 @@ export const colorPickerKeyboard: KeyboardTable = {
       id: 'color-picker.kbd.input-commit',
       keys: ['Enter'],
       when: 'focus in channel-input',
-      does: '收下框里的字；收不了（打了一半）就复原成规范文本。一并拦住表单提交',
+      does: '收下框里的字；收不了就保留草稿并报告输入错误。一并拦住表单提交',
     },
     {
       id: 'color-picker.kbd.escape',
