@@ -229,8 +229,14 @@ export class XhContextMenuElement extends XhElement {
   // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
   private injectRefs(svc: Service<ContextMenuSchema>): void {
     this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: (this.open ?? this.defaultOpen) ?? false,
+      onExitComplete: () => this.requestUpdate(),
+    })
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.exit.presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     // 触发区兼作两用：收起时焦点归还它，没有光标坐标时它的起始角就是锚点

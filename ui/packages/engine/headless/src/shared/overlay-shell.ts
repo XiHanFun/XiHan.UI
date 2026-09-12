@@ -106,6 +106,8 @@ export interface OverlayLayerOptions {
   onDismiss: (reason: DismissReason) => void
   /** 逻辑层是否仍打开；退场期间为 false 时只占栈顶屏蔽下层，不再重复发关闭意图。 */
   active?: () => boolean
+  /** 行为层建立时给出实例，清理时归还 null；多层退出可据此保持严格栈序。 */
+  onLayer?: (layer: Layer | null) => void
   /** 要焦点域就把各家不同的那几项交进来；不给即不挂，焦点留在组件原处。 */
   focusScope?: OverlayFocusScopeSpec | null
 }
@@ -307,6 +309,10 @@ export interface PresenceResourceOptions {
   acquire: () => Cleanup | undefined
   /** 退场尚未完成便重开时调用；用于恢复被失活的焦点域。 */
   onReopen?: () => void
+  /** 退出完成后是否可以立即释放；多层菜单用它等待本层重新成为栈顶。 */
+  canRelease?: () => boolean
+  /** canRelease 为 false 时订阅释放条件变化。 */
+  onReleaseReady?: (retry: () => void) => Cleanup
 }
 
 /**
@@ -322,10 +328,18 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
   let lastOpen = false
   let presence: PresenceHandle | null = null
   let offExit: Cleanup | undefined
+  let offReleaseReady: Cleanup | undefined
 
   const finish = (): void => {
     if (disposed || o.open() || !release)
       return
+    if (o.canRelease && !o.canRelease()) {
+      offReleaseReady ??= o.onReleaseReady?.(finish)
+      return
+    }
+    const stopWaiting = offReleaseReady
+    offReleaseReady = undefined
+    stopWaiting?.()
     const cleanup = release
     release = undefined
     cleanup()
@@ -347,6 +361,9 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
     const reopening = open && !lastOpen && release !== undefined
     lastOpen = open
     if (open) {
+      const stopWaiting = offReleaseReady
+      offReleaseReady = undefined
+      stopWaiting?.()
       currentPresence?.update(true)
       release ??= o.acquire()
       if (reopening)
@@ -356,6 +373,27 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
     if (!currentPresence || !currentPresence.rendered)
       finish()
   }
+  const disposeRelease = (): void => {
+    const cleanup = release
+    release = undefined
+    if (!cleanup)
+      return
+    if (!o.canRelease || o.canRelease() || !o.onReleaseReady) {
+      cleanup()
+      return
+    }
+    let released = false
+    let stop: Cleanup | undefined
+    const retry = (): void => {
+      if (released || !o.canRelease?.())
+        return
+      released = true
+      stop?.()
+      cleanup()
+    }
+    stop = o.onReleaseReady(retry)
+    retry()
+  }
 
   try {
     o.track([o.open], sync)
@@ -364,9 +402,8 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
   catch (error) {
     disposed = true
     offExit?.()
-    const cleanup = release
-    release = undefined
-    cleanup?.()
+    offReleaseReady?.()
+    disposeRelease()
     throw error
   }
 
@@ -375,9 +412,8 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
       return
     disposed = true
     offExit?.()
-    const cleanup = release
-    release = undefined
-    cleanup?.()
+    offReleaseReady?.()
+    disposeRelease()
   }
 }
 
@@ -393,6 +429,8 @@ export function trackOverlayLayer(o: OverlayLayerOptions): Cleanup | undefined {
     return undefined
 
   return setupLayerTransaction(registerLayer, (layer, defer) => {
+    o.onLayer?.(layer)
+    defer(() => o.onLayer?.(null))
     const dismiss = createDismissLayer({
       config,
       layer,

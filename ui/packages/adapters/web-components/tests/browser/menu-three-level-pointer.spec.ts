@@ -94,6 +94,14 @@ function contentOf(value: string): HTMLElement {
   return content
 }
 
+async function finishExit(value: string): Promise<void> {
+  for (const animation of contentOf(value).getAnimations()) {
+    if (Number.isFinite(animation.effect?.getComputedTiming().endTime))
+      animation.finish()
+  }
+  await settle()
+}
+
 async function click(element: HTMLElement): Promise<void> {
   await userEvent.click(element)
   await settle()
@@ -199,6 +207,8 @@ describe('web Components Menu 三级真实指针', () => {
     await settle()
     expect(byValue('share-im').getAttribute('aria-expanded')).toBe('false')
     expect(byValue('share').getAttribute('aria-expanded')).toBe('true')
+    // 退场中的子层继续占栈顶，先完成它的视觉退出，下一次 Escape 才轮到父层。
+    await finishExit('share-wecom')
 
     byValue('share-email').focus()
     await userEvent.keyboard('{Escape}')

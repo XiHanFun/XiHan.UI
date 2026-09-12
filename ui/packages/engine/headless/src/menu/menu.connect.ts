@@ -184,6 +184,9 @@ export function connectMenu<T extends PropTypes>(
       // 菜单没有 root 部件，视觉轴落在浮层树最外层的 content 上，条目继承私有槽
       'data-tone': prop('tone'),
       'data-size': prop('size'),
+      // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 收起时留在 DOM 只隐藏
       'hidden': !open || undefined,
       // content 自身拿到焦点＝没有活动条目：锚点清空，Tab 停靠点回容器兜底

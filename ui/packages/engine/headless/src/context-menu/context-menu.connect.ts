@@ -245,6 +245,9 @@ export function connectContextMenu<T extends PropTypes>(
       'tabindex': open && anchor == null ? 0 : -1,
       'data-state': stateAttr,
       'data-placement': placement,
+      // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
       // content 自身拿到焦点＝没有活动条目：锚点清空，Tab 停靠点回容器兜底

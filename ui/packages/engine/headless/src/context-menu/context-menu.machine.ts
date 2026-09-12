@@ -1,9 +1,9 @@
-import type { PositionResult, VirtualAnchor } from '@xihan-ui/core'
+import type { Layer, PositionResult, VirtualAnchor } from '@xihan-ui/core'
 import type { ContextMenuFocusIntent, ContextMenuPoint, ContextMenuSchema } from './context-menu.types'
 import { createTypeahead, DIAGNOSTIC_CODES, itemValue, navigateItems, queryItems, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
-import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition } from '../shared/overlay-shell'
+import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { contextMenuAnatomy, contextMenuItemQuery } from './context-menu.anatomy'
 
 const { createMachine } = setup<ContextMenuSchema>()
@@ -49,6 +49,7 @@ export const contextMenuMachine = createMachine({
   refs: () => ({
     config: null,
     registerLayer: null,
+    presence: null,
     position: null,
     getFloatingEl: () => null,
     getTriggerEl: () => null,
@@ -57,6 +58,8 @@ export const contextMenuMachine = createMachine({
     reanchor: null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
+  effects: ['trackLayer'],
   watch: ({ track, prop, context, action }) => {
     // 受控（open 给定）时用户事件只发意图、不自改状态，由这条 track 派发 CONTROLLED.* 回写
     track([() => prop('open')], () => action(['syncOpen']))
@@ -105,8 +108,8 @@ export const contextMenuMachine = createMachine({
       // 锚点在进入展开态时就位（条目常挂，收起时只是 hidden）；锚点定了才有条目认领 tabindex=0
       entry: ['setInitialFocusedValue'],
       exit: ['clearFocusedValue', 'clearTypeahead'],
-      // 进入 open：定位 → 消解 → 焦点。退出 open 时按同序清理，焦点归还发生在消解层撤销之后。
-      effects: ['trackPosition', 'trackLayer'],
+      // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackPosition'],
       on: {
         // 已展开时在别处再右键：只挪锚点，不先关再开。
         // 定位由 watch 追着坐标重挂，层与焦点域全程不动
@@ -285,40 +288,55 @@ export const contextMenuMachine = createMachine({
         }),
         onResult: result => context.set('position', result),
       }),
-      // 层与消解层、焦点域绑在同一个效应里，三者生命周期必须一致。
-      // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape
-      trackLayer: ({ refs, context, send, flush }) => trackOverlayLayer({
-        // 无 DOM 环境不挂副作用，状态机照常转移
-        config: refs.get('config'),
-        registerLayer: refs.get('registerLayer'),
-        flush,
-        onDismiss: overlayCloseOnDismiss(send),
-        focusScope: {
-          // 每次读最新 ref，容器晚一拍就位也能命中
-          container: () => refs.get('getContentEl')(),
-          // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测走 focusFirst(removeLinks(...))，
-          // 条目写成 <a> 会被整体过滤掉，且容器自身从来不是候选——只靠它焦点要等到最后一帧才落位。
-          // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
-          initialFocus: () => {
-            const content = refs.get('getContentEl')()
-            if (!content)
-              return null
-            const anchor = context.get('focusedValue')
-            if (anchor != null)
-              return queryItems(content, contextMenuItemQuery).find(el => itemValue(el) === anchor) ?? null
-            // 本轮该有锚点却还没挑出来（WC 侧条目身份标记要等首次 wire()）：返回 null 让焦点域重试，
-            // 别滑到容器上定死——落焦一旦成功就不再重试
-            if (context.get('focusIntent') !== 'none')
-              return null
-            // 确实不该有锚点（指针打开）：焦点歇在菜单容器上，它此刻正认领着 Tab 位
-            return content
+      // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
+      trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
+        let reactivateFocus: (() => void) | null = null
+        let behaviorLayer: Layer | null = null
+        return trackPresenceResources({
+          presence: () => refs.get('presence'),
+          open: () => state.get() === 'open',
+          track,
+          acquire: () => trackOverlayLayer({
+            // 无 DOM 环境不挂副作用，状态机照常转移
+            config: refs.get('config'),
+            registerLayer: refs.get('registerLayer'),
+            flush,
+            active: () => state.get() === 'open',
+            onLayer: layer => behaviorLayer = layer,
+            onDismiss: overlayCloseOnDismiss(send),
+            focusScope: {
+              // 每次读最新 ref，容器晚一拍就位也能命中
+              container: () => refs.get('getContentEl')(),
+              // 显式指定落焦点，两种落点都不交给 Tab 序列探测。
+              initialFocus: () => {
+                const content = refs.get('getContentEl')()
+                if (!content)
+                  return null
+                const anchor = context.get('focusedValue')
+                if (anchor != null)
+                  return queryItems(content, contextMenuItemQuery).find(el => itemValue(el) === anchor) ?? null
+                // 本轮该有锚点却还没挑出来时让焦点域重试；指针打开则焦点歇在菜单容器。
+                return context.get('focusIntent') === 'none' ? content : null
+              },
+              restoreFocus: () => context.get('returnFocus'),
+              restoreTarget: () => refs.get('getTriggerEl')(),
+              onReactivate: reactivate => reactivateFocus = reactivate,
+            },
+          }),
+          canRelease: () => {
+            const config = refs.get('config')
+            return behaviorLayer == null || config == null || config.layerRegistry.top() === behaviorLayer
           },
-          restoreFocus: () => context.get('returnFocus'),
-          // 归还落点显式给触发区：右键那一下浏览器未必把焦点放在它身上（各平台不一致），
-          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
-          restoreTarget: () => refs.get('getTriggerEl')(),
-        },
-      }),
+          onReleaseReady: retry => refs.get('config')?.layerRegistry.subscribe(() => scope.getWin().queueMicrotask(retry)) ?? (() => {}),
+          onReopen: () => {
+            const activate = reactivateFocus
+            flush(() => scope.getWin().requestAnimationFrame(() => {
+              if (state.get() === 'open' && reactivateFocus === activate)
+                activate?.()
+            }))
+          },
+        })
+      },
     },
   },
 })

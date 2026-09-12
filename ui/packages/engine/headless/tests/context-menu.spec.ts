@@ -1,7 +1,9 @@
 // @vitest-environment jsdom
-import type { Anchor, PositionEnginePort, PositionOptions, PositionRect, PositionResult, Service } from '@xihan-ui/core'
+import type { Anchor, PositionEnginePort, PositionOptions, PositionRect, PositionResult, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { ContextMenuApi, ContextMenuSchema } from '../src/context-menu'
 import { createRuntimeConfig, createService, normalizeProps, onDiagnostic } from '@xihan-ui/core'
+import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { connectContextMenu, contextMenuMachine } from '../src/context-menu'
@@ -92,10 +94,14 @@ interface MountOptions {
   layer?: boolean
   /** 本层被移出层栈时调一次，用来记拆除顺序（给了它即挂层）。 */
   onLayerDispose?: () => void
+  /** 注入真实 Presence，验证行为资源延迟到视觉退场完成后释放。 */
+  withPresence?: boolean
 }
 
 interface Harness {
   api: () => ContextMenuApi
+  config: RuntimeConfig | null
+  presence: PresenceHandle | null
   trigger: HTMLElement
   positioner: HTMLElement
   content: HTMLElement
@@ -167,11 +173,18 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   service.refs.set('getTriggerEl', () => trigger)
   service.refs.set('getContentEl', () => content)
   // 层、消解层与焦点域按需接上：不接时机器照常转移，只是没有这三样副作用
-  if (options.layer || options.onLayerDispose) {
-    const config = createRuntimeConfig()
-    service.refs.set('config', config)
+  let config: RuntimeConfig | null = null
+  let presence: PresenceHandle | null = null
+  if (options.layer || options.onLayerDispose || options.withPresence) {
+    config = createRuntimeConfig()
+    const layerConfig = config
+    presence = options.withPresence
+      ? createPresence({ config: layerConfig, open: (initial.open ?? initial.defaultOpen) ?? false, onRenderedChange: () => {} })
+      : null
+    service.refs.set('config', layerConfig)
+    service.refs.set('presence', presence)
     service.refs.set('registerLayer', () => {
-      const handle = config.layerRegistry.register({
+      const handle = layerConfig.layerRegistry.register({
         kind: 'popover',
         node: () => content,
         // 触发区记为本层分支：在它身上再右键算层内交互，只挪锚点而不先关一次
@@ -215,6 +228,8 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
 
   return {
     api: () => connectContextMenu(service, normalizeProps),
+    config,
+    presence,
     trigger,
     positioner,
     content,
@@ -920,6 +935,38 @@ describe('定位效应的其余出口', () => {
     h.api().setOpen(false)
     await flushed()
     expect(h.engine.calls).toHaveLength(0)
+  })
+})
+
+describe('contextMenu 真实退场资源', () => {
+  it('逻辑关闭立即失活，行为资源等 Presence 完成才释放；中途重开复用原 Layer', () => {
+    const h = mount({ defaultOpen: true }, { withPresence: true })
+    const config = h.config!
+    const presence = h.presence!
+    const original = config.layerRegistry.list()[0]
+    expect(original).toBeDefined()
+    const leases: ExitLease[] = []
+    const stopExit = presence.onBeforeExit(() => {
+      leases.push(presence.claimExit(`context-menu exit ${leases.length + 1}`))
+    })
+
+    h.api().setOpen(false)
+    const closing = h.api().getContentProps() as Record<string, unknown>
+    expect(closing.inert).toBe(true)
+    expect(closing['aria-hidden']).toBe(true)
+    expect(config.layerRegistry.list()).toEqual([original])
+    presence.update(false)
+    h.api().setOpen(true)
+    expect(leases[0]!.settled).toBe(true)
+    expect(config.layerRegistry.list()).toEqual([original])
+
+    h.api().setOpen(false)
+    presence.update(false)
+    leases[1]!.done()
+    expect(config.layerRegistry.list()).toHaveLength(0)
+
+    stopExit()
+    presence.dispose()
   })
 })
 

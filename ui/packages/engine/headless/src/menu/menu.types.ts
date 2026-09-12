@@ -1,4 +1,5 @@
 import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 /** 展开时的落焦端：'first'/'last' 从集合两端进，'none' 不预先挑锚点。 */
 export type MenuFocusIntent = 'first' | 'last' | 'none'
@@ -8,6 +9,8 @@ export interface MenuRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈（常驻会永久占着栈顶，把下面每层的 Escape 都堵死）。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 本菜单视觉退场与行为资源共享的 Presence。每个子菜单实例各有自己的句柄。 */
+  presence: PresenceHandle | null
   /** 浮层定位引擎；缺省即不产出位置结果。 */
   position: PositionEnginePort | null
   /** 定位锚点，通常是 trigger。 */
