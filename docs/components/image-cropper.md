@@ -1,37 +1,22 @@
-# 图片裁切 <Badge type="info" text="image-cropper" />
+# ImageCropper <Badge type="info" text="图片裁切" />
 
 在一张图上框出要保留的那一块。框可以整体拖动，八个把手各拉一条边或一个角，可锁定宽高比、可设最小尺寸，也能缩放与旋转来看清细节。裁切矩形以源图的自然像素记录，出图那一步由使用者自己决定什么时候做、做成什么。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/image-cropper" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/image-cropper.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/image-cropper" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/image-cropper" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/image-cropper.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 上传头像、封面、缩略图之前，让用户自己决定保留哪一块。
-- 需要固定产出比例（16:9 的封面、1:1 的头像）的图片录入。
-- 需要把裁切结果连同表单一起提交：给了 `name`，矩形会以 `x,y,width,height` 随表单发出去。
-
-## 何时不用
-
-- 只是把图片摆在页面上：用[图片](./image)。
-- 只要放大看清楚、翻页浏览，不改数据：用[图片查看器](./image-viewer)。
-- 只是选文件、还没到框选这一步：用[文件上传](./file-upload)。
-- 要调的是一个一维的量（亮度、缩放倍率本身）：用[滑块](./slider)。
-
-## 特性
-
-- 裁切矩形的单位是源图自然像素，与图片显示多大无关；换一块屏幕、换一个容器宽度，值不变。
-- 缩放与旋转同时作用在图片和裁切框上，两者始终贴合；它们只改呈现，不改裁切矩形与源图像素的对应关系。
-- 指针位移会按当前的缩放与旋转反算回图片坐标系，放大之后拖动依然跟手。
-- 一次拖动的位移从按下那一刻的矩形整体算起，不逐帧累加，长距离拖动不会漂。
-- 锁定宽高比时，拉角由位移更大的那条轴当驱动，另一条边跟着算；拉边则由那条边驱动。
-- 受控与非受控两态齐全：`value` / `defaultValue` 管裁切矩形，`zoom` / `defaultZoom` 管缩放倍率。
-- `onValueChangeEnd` 覆盖指针与键盘两条路：一次指针拖动松手时发一次，一次方向键微调也发一次（一按就是一次改完的操作）。矩形没真的变（在框上原地点一下、顶到图片边界推不动）不发。
-
-## 示例
-
-### 基础用法
+## 用法
 
 在图上框出要保留的那一块：整块可拖动，八个把手各拉一条边或一个角；裁切矩形以源图的自然像素记录
 
 <XhDemo src="image-cropper/01-basic" />
+
+## 示例
 
 ### 锁定宽高比
 
@@ -68,6 +53,31 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 禁用把裁切框与把手一起摘出 Tab 序列；只读仍可聚焦、仍念得出来，只是改不动
 
 <XhDemo src="image-cropper/07-disabled" />
+
+## 设计指引
+
+### 何时使用
+
+- 上传头像、封面、缩略图之前，让用户自己决定保留哪一块。
+- 需要固定产出比例（16:9 的封面、1:1 的头像）的图片录入。
+- 需要把裁切结果连同表单一起提交：给了 `name`，矩形会以 `x,y,width,height` 随表单发出去。
+
+### 何时不用
+
+- 只是把图片摆在页面上：用[图片](./image)。
+- 只要放大看清楚、翻页浏览，不改数据：用[图片查看器](./image-viewer)。
+- 只是选文件、还没到框选这一步：用[文件上传](./file-upload)。
+- 要调的是一个一维的量（亮度、缩放倍率本身）：用[滑块](./slider)。
+
+### 特性
+
+- 裁切矩形的单位是源图自然像素，与图片显示多大无关；换一块屏幕、换一个容器宽度，值不变。
+- 缩放与旋转同时作用在图片和裁切框上，两者始终贴合；它们只改呈现，不改裁切矩形与源图像素的对应关系。
+- 指针位移会按当前的缩放与旋转反算回图片坐标系，放大之后拖动依然跟手。
+- 一次拖动的位移从按下那一刻的矩形整体算起，不逐帧累加，长距离拖动不会漂。
+- 锁定宽高比时，拉角由位移更大的那条轴当驱动，另一条边跟着算；拉边则由那条边驱动。
+- 受控与非受控两态齐全：`value` / `defaultValue` 管裁切矩形，`zoom` / `defaultZoom` 管缩放倍率。
+- `onValueChangeEnd` 覆盖指针与键盘两条路：一次指针拖动松手时发一次，一次方向键微调也发一次（一按就是一次改完的操作）。矩形没真的变（在框上原地点一下、顶到图片边界推不动）不发。
 
 ## 产物
 

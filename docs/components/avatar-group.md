@@ -1,28 +1,22 @@
-# 头像组 <Badge type="info" text="avatar-group" />
+# AvatarGroup <Badge type="info" text="头像组" />
 
 把若干头像叠成一排，超出上限的收成一个计数。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/avatar-group" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/avatar-group.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/avatar-group" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/avatar-group" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/avatar-group.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 表示"这几个人参与了这件事"，且个体身份不需要逐一确认。
-
-## 何时不用
-
-- 需要逐个识别或操作：排成[列表](./list)。
-- 只有一个人。
-
-## 特性
-
-- `max` 决定显示几个，其余落进 `overflow-item` 计数。
-- 尺寸写在组上，组内头像一并跟着换。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一排叠放的头像：后一枚压在前一枚上，被压住的边由一圈底色分开
 
 <XhDemo src="avatar-group/01-basic" />
+
+## 示例
 
 ### 上限与溢出计数
 
@@ -41,6 +35,22 @@
 直径、叠放量、分隔那圈底色都留了槽位，写在组上就整组换掉
 
 <XhDemo src="avatar-group/04-custom" />
+
+## 设计指引
+
+### 何时使用
+
+- 表示"这几个人参与了这件事"，且个体身份不需要逐一确认。
+
+### 何时不用
+
+- 需要逐个识别或操作：排成[列表](./list)。
+- 只有一个人。
+
+### 特性
+
+- `max` 决定显示几个，其余落进 `overflow-item` 计数。
+- 尺寸写在组上，组内头像一并跟着换。
 
 ## 产物
 

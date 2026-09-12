@@ -1,37 +1,22 @@
-# 树 <Badge type="info" text="tree" />
+# Tree <Badge type="info" text="树" />
 
 层级数据的展开与选择：分支可展开，节点可选。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tree" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/tree.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/tree" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/tree" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/tree.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 文件目录、组织架构、权限节点这类任意深度的层级数据。
-- 需要在树上多选并处理父子级联。
-
-## 何时不用
-
-- 树只是为了选一个值：用[树选择](./tree-select)，它把树收进浮层。
-- 层级规整、层数固定且只为选值：用[级联选择](./cascader)。
-- 数据是平的：用[列表](./list)或[表格](./table)。
-
-## 特性
-
-- 展开集合与选中集合两套值各自可受控。
-- `variant` 决定带不带外框，缺省 `surface`；`plain` 让树直接落在页面上。
-- `cascade` 与 `checkedStrategy` 决定勾父带不带子、以及回显给哪一层。
-- 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。
-- `expandOnClick` 决定点整行是否展开。
-- 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 里当 `tree` 的兄弟；`loading` 为真时树报 `aria-busy`，空态让位。
-- `leafOrientation` 按结构判据横排：子节点全是叶子的那层跟着它走，其余恒竖排。
-- 节点上标 `childrenOrientation: 'horizontal' | 'vertical'` 指定「我这一层子节点怎么排」，
-  比 `leafOrientation` 优先；标 `vertical` 能把树级的 `horizontal` 按回竖排。根层不受影响，恒竖排。
-
-## 示例
-
-### 基础用法
+## 用法
 
 collection 是层级元信息的唯一事实源，标记只管长相；缩进由子层容器自己顶着
 
 <XhDemo src="tree/01-basic" />
+
+## 示例
 
 ### 多选
 
@@ -104,6 +89,31 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 variant="plain" 去掉外框与底色，树直接落在页面上；缺省 surface 保持带框的样子
 
 <XhDemo src="tree/13-variant" />
+
+## 设计指引
+
+### 何时使用
+
+- 文件目录、组织架构、权限节点这类任意深度的层级数据。
+- 需要在树上多选并处理父子级联。
+
+### 何时不用
+
+- 树只是为了选一个值：用[树选择](./tree-select)，它把树收进浮层。
+- 层级规整、层数固定且只为选值：用[级联选择](./cascader)。
+- 数据是平的：用[列表](./list)或[表格](./table)。
+
+### 特性
+
+- 展开集合与选中集合两套值各自可受控。
+- `variant` 决定带不带外框，缺省 `surface`；`plain` 让树直接落在页面上。
+- `cascade` 与 `checkedStrategy` 决定勾父带不带子、以及回显给哪一层。
+- 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。
+- `expandOnClick` 决定点整行是否展开。
+- 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 里当 `tree` 的兄弟；`loading` 为真时树报 `aria-busy`，空态让位。
+- `leafOrientation` 按结构判据横排：子节点全是叶子的那层跟着它走，其余恒竖排。
+- 节点上标 `childrenOrientation: 'horizontal' | 'vertical'` 指定「我这一层子节点怎么排」，
+  比 `leafOrientation` 优先；标 `vertical` 能把树级的 `horizontal` 按回竖排。根层不受影响，恒竖排。
 
 ## 产物
 

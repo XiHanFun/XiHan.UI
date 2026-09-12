@@ -1,34 +1,22 @@
-# 标签输入 <Badge type="info" text="tags-input" />
+# TagsInput <Badge type="info" text="标签输入" />
 
 在一个输入框里录入一串标签：回车或分隔符成词，每个词是一枚可删的标签。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tags-input" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/tags-input.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/tags-input" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/tags-input" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/tags-input.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 关键词、收件人、技能这类数量不定的短词集合。
-- 需要粘贴一整串自动拆分。
-
-## 何时不用
-
-- 值来自固定清单：用[选择器](./select)的多选。
-- 需要从候选里检索着选：用[组合框](./combobox)的多选。
-
-## 特性
-
-- `delimiter` 与 `addOnPaste` 一起处理粘贴拆分。
-- 每枚标签都是库里的 tag：预览、文字与删除钮就是它的 root、label 与 close-trigger，语气与尺寸随控件，形态按控件的面派。
-- `editable` 让已有标签双击就地改。
-- `max` 与 `allowOverflow` 一对：超出上限是拒收还是标红。
-- 标签的值可以是对象，不必是字符串。
-- `showCount` 显出计数部件，数字取 `count` 与 `max`，顶到上限与越界各换一档颜色。
-- `required` 经 `aria-required` 上报必填。
-
-## 示例
-
-### 基础用法
+## 用法
 
 框里打字按 Enter 落一个标签；标签由作者按当前值渲染，每个标签自带 value 标识身份，预览与删除钮就是库里的 tag
 
 <XhDemo src="tags-input/01-basic" />
+
+## 示例
 
 ### 上限与粘贴拆分
 
@@ -95,6 +83,28 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 组件里存的是标识那一份，显示哪一份由作者定：条目文本渲染 label，提交仍按标识拼串
 
 <XhDemo src="tags-input/12-option-value" />
+
+## 设计指引
+
+### 何时使用
+
+- 关键词、收件人、技能这类数量不定的短词集合。
+- 需要粘贴一整串自动拆分。
+
+### 何时不用
+
+- 值来自固定清单：用[选择器](./select)的多选。
+- 需要从候选里检索着选：用[组合框](./combobox)的多选。
+
+### 特性
+
+- `delimiter` 与 `addOnPaste` 一起处理粘贴拆分。
+- 每枚标签都是库里的 tag：预览、文字与删除钮就是它的 root、label 与 close-trigger，语气与尺寸随控件，形态按控件的面派。
+- `editable` 让已有标签双击就地改。
+- `max` 与 `allowOverflow` 一对：超出上限是拒收还是标红。
+- 标签的值可以是对象，不必是字符串。
+- `showCount` 显出计数部件，数字取 `count` 与 `max`，顶到上限与越界各换一档颜色。
+- `required` 经 `aria-required` 上报必填。
 
 ## 产物
 

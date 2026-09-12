@@ -1,30 +1,22 @@
-# 骨架屏 <Badge type="info" text="skeleton" />
+# Skeleton <Badge type="info" text="骨架屏" />
 
 内容还没到时，先按最终版面占位。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/skeleton" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/skeleton.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/skeleton" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/skeleton" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/skeleton.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 首屏或整块区域的加载，且版面结构可预测。
-- 加载时间通常在几百毫秒到几秒之间。
-
-## 何时不用
-
-- 加载极快：骨架闪一下比直接出现更烦人。
-- 版面完全不可预测：用[加载指示器](./spinner)。
-- 是一次动作的等待（提交中）：用按钮的载入态。
-
-## 特性
-
-- `loading` 翻假即换成真内容。
-- `variant` 决定骨块的形状（文本行、圆形、矩形）。
-
-## 示例
-
-### 基础用法
+## 用法
 
 容器竖着码放骨架条，形状缺省是一行文字
 
 <XhDemo src="skeleton/01-basic" />
+
+## 示例
 
 ### 形状
 
@@ -43,6 +35,24 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 骨架条的宽高由内联样式与组件令牌定，占位形状贴着真内容将来的样子
 
 <XhDemo src="skeleton/04-layout" />
+
+## 设计指引
+
+### 何时使用
+
+- 首屏或整块区域的加载，且版面结构可预测。
+- 加载时间通常在几百毫秒到几秒之间。
+
+### 何时不用
+
+- 加载极快：骨架闪一下比直接出现更烦人。
+- 版面完全不可预测：用[加载指示器](./spinner)。
+- 是一次动作的等待（提交中）：用按钮的载入态。
+
+### 特性
+
+- `loading` 翻假即换成真内容。
+- `variant` 决定骨块的形状（文本行、圆形、矩形）。
 
 ## 产物
 

@@ -1,31 +1,22 @@
-# 渐变文字 <Badge type="info" text="gradient-text" />
+# GradientText <Badge type="info" text="渐变文字" />
 
 把渐变裁进字形里：颜色只出现在笔画上，不铺成一块底色。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/gradient-text" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/gradient-text.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/gradient-text" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/gradient-text" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/gradient-text.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 标题、品牌字样、营销页里需要一处视觉重音的短句。
-
-## 何时不用
-
-- 正文、表单标签、任何需要长时间阅读的文字：渐变会让对比度沿着文字变化，读起来更费力。
-- 需要底色而不是字色：那是普通容器的背景。
-
-## 特性
-
-- 组件是行内的，可以只包住整句话里的几个字，字号字重由外面的文字决定。
-- `from` / `to` 收颜色值并落成根上的 CSS 变量，写令牌或写具体色值都行；不给就用品牌色族。
-- `direction` 收的是档位——四条边加四个角共八档，不收任意角度。
-- `tone` 换成六族语气之一，两端自动取该族的主色与压深一档；写了 `from` / `to` 就以它们为准。
-- 高对比、强制色和打印环境自动退回当前实体前景；选中与复制仍使用原始文本，不生成替代内容。
-
-## 示例
-
-### 基础用法
+## 用法
 
 渐变裁进字形里；不给颜色就用品牌色族，走向缺省从左到右
 
 <XhDemo src="gradient-text/01-basic" />
+
+## 示例
 
 ### 两端颜色
 
@@ -50,6 +41,25 @@ direction 收的是档位，四条边加四个角共八档，逐档对应 CSS �
 tone 决定两端取哪族颜色；写了 from / to 就由它们说了算，tone 让位
 
 <XhDemo src="gradient-text/05-tone" />
+
+## 设计指引
+
+### 何时使用
+
+- 标题、品牌字样、营销页里需要一处视觉重音的短句。
+
+### 何时不用
+
+- 正文、表单标签、任何需要长时间阅读的文字：渐变会让对比度沿着文字变化，读起来更费力。
+- 需要底色而不是字色：那是普通容器的背景。
+
+### 特性
+
+- 组件是行内的，可以只包住整句话里的几个字，字号字重由外面的文字决定。
+- `from` / `to` 收颜色值并落成根上的 CSS 变量，写令牌或写具体色值都行；不给就用品牌色族。
+- `direction` 收的是档位——四条边加四个角共八档，不收任意角度。
+- `tone` 换成六族语气之一，两端自动取该族的主色与压深一档；写了 `from` / `to` 就以它们为准。
+- 高对比、强制色和打印环境自动退回当前实体前景；选中与复制仍使用原始文本，不生成替代内容。
 
 ## 产物
 

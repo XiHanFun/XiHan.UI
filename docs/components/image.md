@@ -1,30 +1,22 @@
-# 图片 <Badge type="info" text="image" />
+# Image <Badge type="info" text="图片" />
 
 一张图，带加载状态与失败回退。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/image" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/image.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/image" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/image" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/image.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 任何需要显示远端图片、且要处理加载与失败的地方。
-
-## 何时不用
-
-- 图是纯装饰且不会失败：直接写 `<img>`。
-- 是人的形象：用[头像](./avatar)。
-- 是矢量图元：用[图标](./icon)。
-
-## 特性
-
-- 状态会回调；`fallbackDelay` 避免快速加载时闪一下回退内容。
-- 回退内容可以按状态分流：加载中与失败给不同的东西。
-- 取图时机可以由作者自己决定（懒加载）。
-
-## 示例
-
-### 基础用法
+## 用法
 
 图片与回退内容始终同挂 DOM、靠 hidden 互斥显隐，换人时盒子不塌也不跳
 
 <XhDemo src="image/01-basic" />
+
+## 示例
 
 ### 回退与状态
 
@@ -67,6 +59,24 @@ fallback-delay 决定回退内容多久才露面，Infinity 表示加载期间�
 src 是响应式的：进入视口前不给地址，观察器命中再换上，机器立刻走一遍完整加载
 
 <XhDemo src="image/08-lazy-observer" />
+
+## 设计指引
+
+### 何时使用
+
+- 任何需要显示远端图片、且要处理加载与失败的地方。
+
+### 何时不用
+
+- 图是纯装饰且不会失败：直接写 `<img>`。
+- 是人的形象：用[头像](./avatar)。
+- 是矢量图元：用[图标](./icon)。
+
+### 特性
+
+- 状态会回调；`fallbackDelay` 避免快速加载时闪一下回退内容。
+- 回退内容可以按状态分流：加载中与失败给不同的东西。
+- 取图时机可以由作者自己决定（懒加载）。
 
 ## 产物
 

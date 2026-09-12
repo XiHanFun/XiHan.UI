@@ -1,4 +1,4 @@
-# 标签组 <Badge type="info" text="tag-group" />
+# TagGroup <Badge type="info" text="标签组" />
 
 一排标签当作一件东西来操作：方向键在标签之间走，整组只占一个 Tab 停靠点，
 标签可以选中、也可以被摘掉，摘完焦点有去处。
@@ -6,39 +6,21 @@
 单枚[标签](./tag)不接收焦点，它的关闭钮是页面上一个独立的 Tab 停靠点——十枚标签就是
 十个停靠点，键盘用户得按十下才能走过去。标签组把这十个收成一个。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tag-group" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/tag-group.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/tag-group" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/tag-group" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/tag-group.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 一排可摘的标签：已生效的筛选条件、一条记录挂着的若干分类。
-- 一排可选的标记：点一枚就筛一次，或者按住多选。
-- 键盘与读屏用户要能逐枚走过去、逐枚摘掉。
-
-## 何时不用
-
-- 只有一枚标签，且不接交互：直接用[标签](./tag)。
-- 用户要自己输入并累积多个值：用[标签输入](./tags-input)，它自带输入框与增删逻辑。
-- 选项很多、需要搜索：用[选择器](./select)的多选或[穿梭框](./transfer)。
-- 一组互斥选项要用户挑一个：用[单选组](./radio-group)或[分段控件](./segmented)。
-- 只是把一排标签摆开、不接键盘：用[弹性布局](./flex) 包一层就够了。
-
-## 特性
-
-- roving tabindex：整组一个 Tab 停靠点，组内走方向键；`Home` / `End` 到端点。
-- `selectionMode` 三档：`none` 只是标记、`single` 单选、`multiple` 可多选（`Ctrl`/`Cmd` + `A` 全选）。
-- 每一枚标签就是库里的[标签](./tag)：标签本体是它的 `root`，文字是它的 `label`，摘除钮是它的 `close-trigger`；组只往上面叠行角色、Tab 停靠点、选中与锚点。
-- `deletable` 给出摘除钮，键盘那一路走 `Delete` / `Backspace`。
-- 选择与摘除是两个互斥动作：点标签本体才选择，点摘除钮只从选中集合移除并发 `item-delete`，
-  不会让同一次冒泡 click 又把待删值选回来。
-- 摘掉一枚之后焦点交给前一枚；前面没有就交给后一枚，一枚不剩就交给列表容器。
-- `collection` 是文本、禁用与可摘的事实源；也可以逐枚自己写。
-- 连打检索按首字母跳，只搬焦点、不改选中值。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一排可摘标签，每一枚都是库里的 tag：整组只占一个 Tab 位，方向键走标签，Delete 或 Backspace 摘掉，那颗叉就是 tag 的 close-trigger
 
 <XhDemo src="tag-group/01-basic" />
+
+## 示例
 
 ### 可选中
 
@@ -57,6 +39,34 @@ size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自�
 逐部件自己写，标签里就能塞头像、计数这类自带内容，摘除钮照旧归 cell 管；条目渲出来是 tag 的 root、文字是 tag 的 label，产出的结构与只交数据那一份完全一致，Tab 位与键盘也一样
 
 <XhDemo src="tag-group/04-parts" />
+
+## 设计指引
+
+### 何时使用
+
+- 一排可摘的标签：已生效的筛选条件、一条记录挂着的若干分类。
+- 一排可选的标记：点一枚就筛一次，或者按住多选。
+- 键盘与读屏用户要能逐枚走过去、逐枚摘掉。
+
+### 何时不用
+
+- 只有一枚标签，且不接交互：直接用[标签](./tag)。
+- 用户要自己输入并累积多个值：用[标签输入](./tags-input)，它自带输入框与增删逻辑。
+- 选项很多、需要搜索：用[选择器](./select)的多选或[穿梭框](./transfer)。
+- 一组互斥选项要用户挑一个：用[单选组](./radio-group)或[分段控件](./segmented)。
+- 只是把一排标签摆开、不接键盘：用[弹性布局](./flex) 包一层就够了。
+
+### 特性
+
+- roving tabindex：整组一个 Tab 停靠点，组内走方向键；`Home` / `End` 到端点。
+- `selectionMode` 三档：`none` 只是标记、`single` 单选、`multiple` 可多选（`Ctrl`/`Cmd` + `A` 全选）。
+- 每一枚标签就是库里的[标签](./tag)：标签本体是它的 `root`，文字是它的 `label`，摘除钮是它的 `close-trigger`；组只往上面叠行角色、Tab 停靠点、选中与锚点。
+- `deletable` 给出摘除钮，键盘那一路走 `Delete` / `Backspace`。
+- 选择与摘除是两个互斥动作：点标签本体才选择，点摘除钮只从选中集合移除并发 `item-delete`，
+  不会让同一次冒泡 click 又把待删值选回来。
+- 摘掉一枚之后焦点交给前一枚；前面没有就交给后一枚，一枚不剩就交给列表容器。
+- `collection` 是文本、禁用与可摘的事实源；也可以逐枚自己写。
+- 连打检索按首字母跳，只搬焦点、不改选中值。
 
 ## 产物
 

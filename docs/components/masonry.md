@@ -1,32 +1,22 @@
-# 瀑布流 <Badge type="info" text="masonry" />
+# Masonry <Badge type="info" text="瀑布流" />
 
 等宽不等高的一批项，按最短列优先落进若干列，列数可随容器宽度换档。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/masonry" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/masonry.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/masonry" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/masonry" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/masonry.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 图片墙、卡片流：每一项宽度一致、高度由内容决定，希望底边尽量齐平。
-- 摘要列表：文字长短不一，不想被强行拉成等高的格子。
-
-## 何时不用
-
-- 每一项高度一致，或需要跨列跨行：用[栅格](./grid)，它是二维规则网格，还能跨列与错列。
-- 只想让一排东西之间留白：用[弹性布局](./flex)。
-- 上万条数据要滚动：瀑布流会把每一项都渲出来并逐一量高，改用[虚拟滚动](./virtualizer)。
-
-## 特性
-
-- 两种落格策略：缺省最短列优先，底边最齐；`sequential` 打开后按文档序逐列填，读起来是「先走完左列，再走下一列」。
-- 列数可写成断点对象 `{ base, sm, md, lg, xl }`，档位名与栅格同一套。
-- 落格算法是一个不碰 DOM 的纯函数，量高度归适配器；同一批高度在两个适配器上算出同一副版面。
-- 两个适配器的作者侧写法不同，最终 DOM 一致：Vue 侧只写内容，列的盒子与每一项的盒子都由组件铺；Web Components 侧元素不生成结构，列与项都要作者写进标记，元素只负责把项搬进对应的列。
-
-## 示例
-
-### 基础用法
+## 用法
 
 等宽不等高的项按最短列优先落进三列，底边尽量齐平
 
 <XhDemo src="masonry/01-basic" />
+
+## 示例
 
 ### 逐档列数
 
@@ -51,6 +41,26 @@ gap 一档管两处：列与列之间、同一列里项与项之间，留白始�
 项增删后重新量高、重新落格；新项排在末尾，摘掉一项后其余项会补位
 
 <XhDemo src="masonry/05-dynamic" />
+
+## 设计指引
+
+### 何时使用
+
+- 图片墙、卡片流：每一项宽度一致、高度由内容决定，希望底边尽量齐平。
+- 摘要列表：文字长短不一，不想被强行拉成等高的格子。
+
+### 何时不用
+
+- 每一项高度一致，或需要跨列跨行：用[栅格](./grid)，它是二维规则网格，还能跨列与错列。
+- 只想让一排东西之间留白：用[弹性布局](./flex)。
+- 上万条数据要滚动：瀑布流会把每一项都渲出来并逐一量高，改用[虚拟滚动](./virtualizer)。
+
+### 特性
+
+- 两种落格策略：缺省最短列优先，底边最齐；`sequential` 打开后按文档序逐列填，读起来是「先走完左列，再走下一列」。
+- 列数可写成断点对象 `{ base, sm, md, lg, xl }`，档位名与栅格同一套。
+- 落格算法是一个不碰 DOM 的纯函数，量高度归适配器；同一批高度在两个适配器上算出同一副版面。
+- 两个适配器的作者侧写法不同，最终 DOM 一致：Vue 侧只写内容，列的盒子与每一项的盒子都由组件铺；Web Components 侧元素不生成结构，列与项都要作者写进标记，元素只负责把项搬进对应的列。
 
 ## 产物
 

@@ -1,30 +1,22 @@
-# 日历 <Badge type="info" text="calendar" />
+# Calendar <Badge type="info" text="日历" />
 
 一整月（或周 / 月 / 季 / 年）的网格，格子里可以放内容。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/calendar" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/calendar.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/calendar" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/calendar" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/calendar.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 需要看见整段时间的分布：日程、排班、可预约情况。
-- 需要在格子里显示当天的事件。
-
-## 何时不用
-
-- 只是录入一个日期：用[日期选择器](./date-picker)或[日期输入](./date-field)。
-
-## 特性
-
-- 星期名由作者自己渲染，组件一个节点都不替你生成。
-- `isDateUnavailable` 与 `min` / `max` 都只挡落值不挡聚焦——键盘用户仍能走到不可选的日子上，读屏会念出它不可选。
-- 支持区间选择、整周选择、固定六行与多月并排。
-- 周首日、月份名与星期名跟着 `locale` 走：`en-US` 周日起、`zh-CN` 周一起。不给 `locale` 就跟宿主浏览器语言，读不到才落 `en-US`——要固定成一种排法就把 `locale` 显式传上去。
-
-## 示例
-
-### 基础用法
+## 用法
 
 网格由作者照 weeks / weekDays 自己渲染，组件一个节点都不替你生成
 
 <XhDemo src="calendar/01-basic" />
+
+## 示例
 
 ### 区间选择
 
@@ -43,6 +35,24 @@ isDateUnavailable 与 min / max 都只挡落值不挡聚焦：方向键照样走
 cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 
 <XhDemo src="calendar/04-cell-content" />
+
+## 设计指引
+
+### 何时使用
+
+- 需要看见整段时间的分布：日程、排班、可预约情况。
+- 需要在格子里显示当天的事件。
+
+### 何时不用
+
+- 只是录入一个日期：用[日期选择器](./date-picker)或[日期输入](./date-field)。
+
+### 特性
+
+- 星期名由作者自己渲染，组件一个节点都不替你生成。
+- `isDateUnavailable` 与 `min` / `max` 都只挡落值不挡聚焦——键盘用户仍能走到不可选的日子上，读屏会念出它不可选。
+- 支持区间选择、整周选择、固定六行与多月并排。
+- 周首日、月份名与星期名跟着 `locale` 走：`en-US` 周日起、`zh-CN` 周一起。不给 `locale` 就跟宿主浏览器语言，读不到才落 `en-US`——要固定成一种排法就把 `locale` 显式传上去。
 
 ## 产物
 

@@ -3382,10 +3382,19 @@
         "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "is(:not([data-variant])",
+        "loading",
+        "not([data-scope='button-group'] *)",
+        "not([data-variant])",
+        "variant",
+        "variant=solid"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_tone",
+        "--xh-bg-brand"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 background-color 覆盖槽。"
@@ -3407,7 +3416,7 @@
         "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-bg-brand-active"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 background-color 覆盖槽。"
@@ -3429,7 +3438,7 @@
         "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-bg-brand-hover"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 background-color 覆盖槽。"
@@ -3444,10 +3453,19 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "is(:not([data-variant])",
+        "loading",
+        "not([data-scope='button-group'] *)",
+        "not([data-variant])",
+        "variant",
+        "variant=solid"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_tone-on",
+        "--xh-fg-on-brand"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 color 覆盖槽。"
@@ -3593,7 +3611,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-soft-shadow"
+        "none"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 box-shadow 覆盖槽。"
@@ -3615,7 +3633,7 @@
         "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "none"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 box-shadow 覆盖槽。"

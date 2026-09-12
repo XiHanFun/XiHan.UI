@@ -224,19 +224,22 @@ async function copy() {
 
 <style scoped>
 .xh-demo {
-  margin: 20px 0;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 10px;
+  margin: 22px 0 34px;
+  border: 1px solid color-mix(in oklab, var(--vp-c-divider) 82%, transparent);
+  border-radius: 18px;
   overflow: hidden;
-  background: var(--vp-c-bg);
+  background: var(--vp-c-bg-elv);
+  box-shadow: var(--xh-doc-shadow-surface);
 }
 .xh-demo__stage {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 12px;
-  padding: 28px 20px;
-  background: var(--demo-stage-bg, var(--vp-c-bg));
+  min-height: 236px;
+  padding: 48px 32px;
+  background: var(--demo-stage-bg, var(--vp-c-bg-elv));
 }
 /* 主题轴钉住深浅时舞台的底与字改由令牌给，与所选那一档同源 */
 .xh-demo__stage--themed {
@@ -249,6 +252,7 @@ async function copy() {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   width: 100%;
 }
@@ -272,9 +276,9 @@ async function copy() {
   align-items: center;
   justify-content: space-between;
   gap: 8px 16px;
-  padding: 8px 12px;
-  border-top: 1px dashed var(--vp-c-divider);
-  background: var(--vp-c-bg-soft);
+  padding: 9px 12px;
+  border-top: 1px solid color-mix(in oklab, var(--vp-c-divider) 76%, transparent);
+  background: color-mix(in oklab, var(--vp-c-bg-soft) 68%, transparent);
 }
 /* 舞台的档位在左、代码的动作在右；行装不下时动作整组落到下一行右端 */
 .xh-demo__actions {
@@ -283,16 +287,23 @@ async function copy() {
   margin-left: auto;
 }
 .xh-demo__btn {
-  padding: 3px 10px;
-  border-radius: 6px;
+  min-height: 30px;
+  padding: 3px 11px;
+  border-radius: 999px;
   color: var(--vp-c-text-2);
   font-size: 13px;
   line-height: 20px;
-  transition: color 0.2s, background-color 0.2s;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    transform 200ms ease;
 }
 .xh-demo__btn:hover {
-  color: var(--vp-c-brand-1);
-  background: var(--vp-c-default-soft);
+  color: var(--vp-c-text-1);
+  background: var(--vp-c-bg-mute);
+}
+.xh-demo__btn:active {
+  transform: scale(0.97);
 }
 /* 代码由 XhCodeView 渲染，语法着色随之接上。
    它自带的表面（圆角、发丝边、落影）在这里收掉：外壳已经画了一圈边，代码块是它的一段。 */
@@ -307,5 +318,12 @@ async function copy() {
   --xh-code-view-py: 20px;
 
   border-top: 1px solid var(--vp-c-divider);
+}
+
+@media (max-width: 639px) {
+  .xh-demo__stage {
+    min-height: 188px;
+    padding: 34px 18px;
+  }
 }
 </style>

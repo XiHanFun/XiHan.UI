@@ -1,30 +1,22 @@
-# 时间线 <Badge type="info" text="timeline" />
+# Timeline <Badge type="info" text="时间线" />
 
 按时间顺序排开的一串事件，每条有标记、连接线与内容。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/timeline" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/timeline.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/timeline" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/timeline" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/timeline.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 展示已经发生的事件序列：审批记录、物流轨迹、变更历史。
-
-## 何时不用
-
-- 表达"还要走几步"：用[步骤条](./steps)——时间线是回顾，步骤条是前瞻。
-- 事件之间没有时间关系：用[列表](./list)。
-
-## 特性
-
-- 逐条可以有自己的语气（成功 / 失败 / 进行中）。
-- 内容可以固定在一侧，也可以左右交替。
-- 支持横排。
-- `label` 是与内容对置的那一列，装这一条的坐标（日期、版本号）；逐条交替排布时时间戳因此不跟着内容左右横跳。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一条竖向的事件流：每条一个圆点，圆点之间连一截线，末条的线自动收掉
 
 <XhDemo src="timeline/01-basic" />
+
+## 示例
 
 ### 逐条语气
 
@@ -55,6 +47,24 @@ size 换的是圆点直径、条目间距与字号，不传 size 即默认档
 label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不跟着内容左右横跳
 
 <XhDemo src="timeline/06-label" />
+
+## 设计指引
+
+### 何时使用
+
+- 展示已经发生的事件序列：审批记录、物流轨迹、变更历史。
+
+### 何时不用
+
+- 表达"还要走几步"：用[步骤条](./steps)——时间线是回顾，步骤条是前瞻。
+- 事件之间没有时间关系：用[列表](./list)。
+
+### 特性
+
+- 逐条可以有自己的语气（成功 / 失败 / 进行中）。
+- 内容可以固定在一侧，也可以左右交替。
+- 支持横排。
+- `label` 是与内容对置的那一列，装这一条的坐标（日期、版本号）；逐条交替排布时时间戳因此不跟着内容左右横跳。
 
 ## 产物
 

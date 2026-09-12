@@ -1,30 +1,22 @@
-# 复选框组 <Badge type="info" text="checkbox-group" />
+# CheckboxGroup <Badge type="info" text="复选框组" />
 
 一组多选项共一个值数组，附带全选与半选。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/checkbox-group" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/checkbox-group.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/checkbox-group" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/checkbox-group" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/checkbox-group.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 从若干项里选任意多项，且要随表单提交。
-
-## 何时不用
-
-- 选项很多、需要搜索：用[选择器](./select)的多选或[穿梭框](./transfer)。
-- 选项互斥：用[单选组](./radio-group)。
-
-## 特性
-
-- `collection` 是文本与禁用的事实源；也可以逐项自己写。
-- 全选触发器自动算半选态。
-- `orientation` 换排布；也可以直接把条目放进[栅格](./grid)。
-- 值可以是数字主键，不必强转字符串。
-
-## 示例
-
-### 基础用法
+## 用法
 
 值是字符串数组，各选各的，再点一次即取消；组内有几项就有几个 Tab 停靠点
 
 <XhDemo src="checkbox-group/01-basic" />
+
+## 示例
 
 ### 全选与半选
 
@@ -73,6 +65,24 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 tone 换勾选方框的色族，size 换方框边长与文字档；两轴打在组容器上，条目自己不写
 
 <XhDemo src="checkbox-group/09-tone-size" />
+
+## 设计指引
+
+### 何时使用
+
+- 从若干项里选任意多项，且要随表单提交。
+
+### 何时不用
+
+- 选项很多、需要搜索：用[选择器](./select)的多选或[穿梭框](./transfer)。
+- 选项互斥：用[单选组](./radio-group)。
+
+### 特性
+
+- `collection` 是文本与禁用的事实源；也可以逐项自己写。
+- 全选触发器自动算半选态。
+- `orientation` 换排布；也可以直接把条目放进[栅格](./grid)。
+- 值可以是数字主键，不必强转字符串。
 
 ## 产物
 

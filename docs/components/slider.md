@@ -1,31 +1,22 @@
-# 滑块 <Badge type="info" text="slider" />
+# Slider <Badge type="info" text="滑块" />
 
 在一个连续或离散的区间里拖出一个值或一段范围。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/slider" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/slider.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/slider" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/slider" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/slider.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 用户关心的是相对位置而不是精确数字（音量、透明度、价格区间）。
-- 需要即时看到调整的效果。
-
-## 何时不用
-
-- 需要精确输入：用[数字输入](./number-field)，或两者并排。
-- 档位只有三四个：用[单选组](./radio-group)或[切换按钮组](./toggle-group)。
-
-## 特性
-
-- 单值与区间共用一套结构，区间时 `minStepsBetweenThumbs` 防止两头交叉。
-- `marks` 画刻度，`snapToMarks` 让值吸附到刻度上。
-- 两个回调：拖动途中连着发，松手发一次——写存储用后者。
-- `getValueText` 决定读屏念出的是什么，别让它只念数字。
-
-## 示例
-
-### 基础用法
+## 用法
 
 值恒是数组，单滑块即长度 1；方向键走一格 step，PageUp 与 PageDown 走 largeStep，Home 与 End 贴到端点
 
 <XhDemo src="slider/01-basic" />
+
+## 示例
 
 ### 区间选择
 
@@ -86,6 +77,25 @@ value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出�
 可选值不必是等距数值：让滑块在档位下标上走，宿主再把下标映射回自己的取值表，键盘与拖动都只落在档位上
 
 <XhDemo src="slider/11-discrete-steps" />
+
+## 设计指引
+
+### 何时使用
+
+- 用户关心的是相对位置而不是精确数字（音量、透明度、价格区间）。
+- 需要即时看到调整的效果。
+
+### 何时不用
+
+- 需要精确输入：用[数字输入](./number-field)，或两者并排。
+- 档位只有三四个：用[单选组](./radio-group)或[切换按钮组](./toggle-group)。
+
+### 特性
+
+- 单值与区间共用一套结构，区间时 `minStepsBetweenThumbs` 防止两头交叉。
+- `marks` 画刻度，`snapToMarks` 让值吸附到刻度上。
+- 两个回调：拖动途中连着发，松手发一次——写存储用后者。
+- `getValueText` 决定读屏念出的是什么，别让它只念数字。
 
 ## 产物
 

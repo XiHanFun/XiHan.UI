@@ -1,48 +1,22 @@
-# 级联选择 <Badge type="info" text="cascader" />
+# Cascader <Badge type="info" text="级联选择" />
 
 按层逐列展开的选择器：一列选完展开下一列，值是一条路径。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/cascader" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/cascader.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/cascader" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/cascader" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/cascader.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 选项是规整的多层分类且层数固定（省市区、商品类目）。
-- 用户按层缩小范围比一次性搜索更自然。
-
-## 何时不用
-
-- 层级不规整、深浅不一：用[树选择](./tree-select)。
-- 只有一层：用[选择器](./select)。
-- 用户更习惯直接搜：给它开 `searchable`，或换[组合框](./combobox)。
-
-## 特性
-
-- `changeOnSelect` 决定中间层能不能直接作为结果。
-- `expandTrigger` 可改成悬停展开。
-- `name` 开启原生表单提交；每条已选路径生成一个同名隐藏字段，单选和多选均按 JSON 字符串数组编码，例如 `["华东","a,b"]`。通过 `FormData.getAll(name)` 取得各路径 JSON，再逐项解析；`separator` 只影响显示文字。
-- `value` / `defaultValue` 保留单路径字符串数组简写与路径集合两种正式写法；`setValue` 接收路径集合。路径必须非空且每段都是字符串，非法结构直接报错；零选中用 `[]`，不使用 `[[]]`，不猜测逗号字符串或隐式转换数字。
-- 异步候选尚未加载时仍保留已知选值，结构校验不以当前 `collection` 是否包含该路径为条件。
-- 三端根组件自动装配原生字段，零路径没有字段。`form` 指定同一文档或影子树内的表单 ID；无效 ID 不回退祖先。整体 `disabled` 不提交，只读已选值仍提交。
-- `form.reset()` 还原 `defaultValue`，保留当前浏览列、搜索和实际焦点，不主动关闭面板。受控值未声明默认值时保持业务数据；声明默认值时只通知重置意图，由业务回写。
-- 多选时 `cascade` 与 `checkedStrategy` 一对：前者决定勾父带不带子，后者决定回显给出哪一层。
-- 单选、多选、列项和搜索结果统一用末端对号表示选中；级联半选保留横线。选中正文不换色、不加粗，
-  悬停、键盘高亮、焦点与展开路径只使用中性底，不叠加品牌选中面。
-- 搜索结果与列项从同一份级联聚合读取 `checked` / `indeterminate`，所以 `all` / `parent` / `child`
-  只改变提交值的收敛形式，不会让同一节点在两种视图中显示成不同状态。半选候选同步输出
-  `aria-checked="mixed"`；整控件禁用时，候选不再保留虚假高亮。
-- 子节点可按需加载；长列表只渲可视区。
-- 后端字段名不一致时在进组件前转一道，组件只认 `label` / `value` / `children`。
-- 空（`empty`）与在途（`loading`）两个相位都由 `content` 自动装配；首次取数且当前视图没有候选时显示
-  `translations.loading`，作者显式写 `loading` 部件即可替换默认内容且不会重复。已有候选或祖先列时仍保留
-  可操作内容，只在浮层上报 `aria-busy`；加载不会把可用列清空。
-- 输入框保持实体；浮层使用 M2 磨砂材质与内侧顶光，列间和搜索框分隔线使用同一材质语义。
-  浮层按实际落位方向短距离进出，列项只淡入；减弱动效时取消位移，增强对比度时改为实体表面。
-
-## 示例
-
-### 基础用法
+## 用法
 
 collection 是层级、显示文本与禁用的唯一事实源；levels 按深度摊开，每层一个 column
 
 <XhDemo src="cascader/01-basic" />
+
+## 示例
 
 ### 中间层可选
 
@@ -133,6 +107,42 @@ trigger 部件就是原生按钮，拿到它即可 focus / blur；开合交给�
 searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表替换列视图；上下键走候选、Enter 选中、Escape 先清词再收浮层。无匹配（试试输入「苏州」）时空态占位露面，文案经 translations 覆盖
 
 <XhDemo src="cascader/16-search" />
+
+## 设计指引
+
+### 何时使用
+
+- 选项是规整的多层分类且层数固定（省市区、商品类目）。
+- 用户按层缩小范围比一次性搜索更自然。
+
+### 何时不用
+
+- 层级不规整、深浅不一：用[树选择](./tree-select)。
+- 只有一层：用[选择器](./select)。
+- 用户更习惯直接搜：给它开 `searchable`，或换[组合框](./combobox)。
+
+### 特性
+
+- `changeOnSelect` 决定中间层能不能直接作为结果。
+- `expandTrigger` 可改成悬停展开。
+- `name` 开启原生表单提交；每条已选路径生成一个同名隐藏字段，单选和多选均按 JSON 字符串数组编码，例如 `["华东","a,b"]`。通过 `FormData.getAll(name)` 取得各路径 JSON，再逐项解析；`separator` 只影响显示文字。
+- `value` / `defaultValue` 保留单路径字符串数组简写与路径集合两种正式写法；`setValue` 接收路径集合。路径必须非空且每段都是字符串，非法结构直接报错；零选中用 `[]`，不使用 `[[]]`，不猜测逗号字符串或隐式转换数字。
+- 异步候选尚未加载时仍保留已知选值，结构校验不以当前 `collection` 是否包含该路径为条件。
+- 三端根组件自动装配原生字段，零路径没有字段。`form` 指定同一文档或影子树内的表单 ID；无效 ID 不回退祖先。整体 `disabled` 不提交，只读已选值仍提交。
+- `form.reset()` 还原 `defaultValue`，保留当前浏览列、搜索和实际焦点，不主动关闭面板。受控值未声明默认值时保持业务数据；声明默认值时只通知重置意图，由业务回写。
+- 多选时 `cascade` 与 `checkedStrategy` 一对：前者决定勾父带不带子，后者决定回显给出哪一层。
+- 单选、多选、列项和搜索结果统一用末端对号表示选中；级联半选保留横线。选中正文不换色、不加粗，
+  悬停、键盘高亮、焦点与展开路径只使用中性底，不叠加品牌选中面。
+- 搜索结果与列项从同一份级联聚合读取 `checked` / `indeterminate`，所以 `all` / `parent` / `child`
+  只改变提交值的收敛形式，不会让同一节点在两种视图中显示成不同状态。半选候选同步输出
+  `aria-checked="mixed"`；整控件禁用时，候选不再保留虚假高亮。
+- 子节点可按需加载；长列表只渲可视区。
+- 后端字段名不一致时在进组件前转一道，组件只认 `label` / `value` / `children`。
+- 空（`empty`）与在途（`loading`）两个相位都由 `content` 自动装配；首次取数且当前视图没有候选时显示
+  `translations.loading`，作者显式写 `loading` 部件即可替换默认内容且不会重复。已有候选或祖先列时仍保留
+  可操作内容，只在浮层上报 `aria-busy`；加载不会把可用列清空。
+- 输入框保持实体；浮层使用 M2 磨砂材质与内侧顶光，列间和搜索框分隔线使用同一材质语义。
+  浮层按实际落位方向短距离进出，列项只淡入；减弱动效时取消位移，增强对比度时改为实体表面。
 
 ## 产物
 

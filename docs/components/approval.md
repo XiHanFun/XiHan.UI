@@ -1,43 +1,22 @@
-# 审批 <Badge type="info" text="approval" />
+# Approval <Badge type="info" text="审批" />
 
 危险动作执行前的人在环闸门：批准、拒绝，超时按拒绝收口，可带勾选式的授权范围。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/approval" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/approval.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/approval" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/approval" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/approval.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- Agent 要动真格之前（写文件、发请求、花钱）先问一句。
-- 这次授权带范围：批准的同时要说清批的是哪几项。
-
-## 何时不用
-
-- 只是一句「确定吗」：用[气泡确认](./popconfirm)。
-- 判定结果不影响任何执行：那不是闸门，是一个提示。
-
-## 特性
-
-- **超时一律按拒绝收口**，且这条由机器结构保证、不靠调用方守规矩：判定的取值域只有
-  批准与拒绝，`expired` 只是显示态；通往批准的转移全机只有一条；到点事件只在待决态上
-  有转移，迟到的定时事件落地即静默丢弃。
-- **缺省不给默认超时值**：替宿主定安全策略比不定更危险。时长非有限或非正数时一个计时器
-  都不起，停在待决——既不当 0ms 立刻到期，也绝不当成无限期放行。
-- **拒绝这条路永远走得通**：机器这一层的拒绝不吃必选项、不吃任何闸门，超时、卸载兜底与
-  宿主的 `deny()` 入口都落得下去。人手按的那两条路（拒绝按钮与 Escape）另有一道挂起闸门：
-  判定在途时它们跟批准钮一起锁住，否则等待宿主回话的空窗里能按出第二条判定。
-- 勾选与判定是原子的：批准的载荷带着「批的是哪几项」，不存在「已批准但范围还没同步」的窗口。
-- 备注（`note`）与勾选同批取快照，随判定载荷一起发出；空着就不带这一格。
-  它不参与「必选项勾满了没有」的判断。
-- `requestId` 变了即重入待决并按新时长重起计时；**不替旧一轮补一次拒绝**，旧结果由宿主自己作废。
-  重入时勾选与备注一并回到各自的默认值。
-- 判定落定后 `result` 那一格才露出，语气随判定走（批准取成功档，拒绝与超时同取危险档）。
-  它对读屏隐藏：同一句话由播报区念一次就够。
-- 两颗按钮住在 `actions` 那一行里，间距与对齐归库管，不必每个使用者自己写一个 flex 容器。
-
-## 示例
-
-### 基础用法
+## 用法
 
 勾选与判定是原子的：批准的载荷带着批的是哪几项，不存在「已批准但范围还没同步」的窗口
 
 <XhDemo src="approval/01-basic" />
+
+## 示例
 
 ### 超时按拒绝收口
 
@@ -56,6 +35,37 @@
 variant 换这块闸门怎么与正文分开，size 换标题、条目与按钮的几何档；判定链一个字不动
 
 <XhDemo src="approval/04-variant-size" />
+
+## 设计指引
+
+### 何时使用
+
+- Agent 要动真格之前（写文件、发请求、花钱）先问一句。
+- 这次授权带范围：批准的同时要说清批的是哪几项。
+
+### 何时不用
+
+- 只是一句「确定吗」：用[气泡确认](./popconfirm)。
+- 判定结果不影响任何执行：那不是闸门，是一个提示。
+
+### 特性
+
+- **超时一律按拒绝收口**，且这条由机器结构保证、不靠调用方守规矩：判定的取值域只有
+  批准与拒绝，`expired` 只是显示态；通往批准的转移全机只有一条；到点事件只在待决态上
+  有转移，迟到的定时事件落地即静默丢弃。
+- **缺省不给默认超时值**：替宿主定安全策略比不定更危险。时长非有限或非正数时一个计时器
+  都不起，停在待决——既不当 0ms 立刻到期，也绝不当成无限期放行。
+- **拒绝这条路永远走得通**：机器这一层的拒绝不吃必选项、不吃任何闸门，超时、卸载兜底与
+  宿主的 `deny()` 入口都落得下去。人手按的那两条路（拒绝按钮与 Escape）另有一道挂起闸门：
+  判定在途时它们跟批准钮一起锁住，否则等待宿主回话的空窗里能按出第二条判定。
+- 勾选与判定是原子的：批准的载荷带着「批的是哪几项」，不存在「已批准但范围还没同步」的窗口。
+- 备注（`note`）与勾选同批取快照，随判定载荷一起发出；空着就不带这一格。
+  它不参与「必选项勾满了没有」的判断。
+- `requestId` 变了即重入待决并按新时长重起计时；**不替旧一轮补一次拒绝**，旧结果由宿主自己作废。
+  重入时勾选与备注一并回到各自的默认值。
+- 判定落定后 `result` 那一格才露出，语气随判定走（批准取成功档，拒绝与超时同取危险档）。
+  它对读屏隐藏：同一句话由播报区念一次就够。
+- 两颗按钮住在 `actions` 那一行里，间距与对齐归库管，不必每个使用者自己写一个 flex 容器。
 
 ## 产物
 

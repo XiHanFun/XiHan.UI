@@ -1,30 +1,22 @@
-# 二维码 <Badge type="info" text="qr-code" />
+# QrCode <Badge type="info" text="二维码" />
 
 把一段文本画成二维码。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/qr-code" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/qr-code.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/qr-code" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/qr-code" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/qr-code.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 跨设备传递地址、配对码、票据。
-
-## 何时不用
-
-- 用户就在这台设备上：给一条可点的链接。
-- 内容很长：二维码会密到扫不出来，改成短链。
-
-## 特性
-
-- `level` 四档纠错（L / M / Q / H）：越高越能容忍污损，同样的内容也因此占更多模块。
-- `moduleShape` 与 `eyeShape` 换码点与码眼的形状；三种形状的墨都盖住每个模块的格心，读码器按格心取样。
-- `margin` 是静区，`pixelSize` 是边长。
-- 中心可以放 logo，配色可换。
-
-## 示例
-
-### 基础用法
+## 用法
 
 给 value 就画码，版本按内容长度自动选；缺省 M 级纠错、4 个模块的静区
 
 <XhDemo src="qr-code/01-basic" />
+
+## 示例
 
 ### 纠错级别
 
@@ -67,6 +59,24 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 颜色不是 props，写三个 CSS 变量即可：码点必须比底色深且对比要足，反相码一部分读码器不认
 
 <XhDemo src="qr-code/08-color" />
+
+## 设计指引
+
+### 何时使用
+
+- 跨设备传递地址、配对码、票据。
+
+### 何时不用
+
+- 用户就在这台设备上：给一条可点的链接。
+- 内容很长：二维码会密到扫不出来，改成短链。
+
+### 特性
+
+- `level` 四档纠错（L / M / Q / H）：越高越能容忍污损，同样的内容也因此占更多模块。
+- `moduleShape` 与 `eyeShape` 换码点与码眼的形状；三种形状的墨都盖住每个模块的格心，读码器按格心取样。
+- `margin` 是静区，`pixelSize` 是边长。
+- 中心可以放 logo，配色可换。
 
 ## 产物
 

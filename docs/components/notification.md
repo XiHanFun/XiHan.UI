@@ -1,34 +1,22 @@
-# 通知 <Badge type="info" text="notification" />
+# Notification <Badge type="info" text="通知" />
 
 主动推给用户的一条消息：有标题、有正文，可以带操作按钮。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/notification" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/notification.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/notification" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/notification" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/notification.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 系统或他人发起的消息：新评论、审批到达、任务跑完了。
-- 后台完成的长任务：用户当时可能已经在做别的事。
-- 一句话讲不完，需要标题加正文两层的信息。
-
-## 何时不用
-
-- 用户刚点了一下按钮，只要一句结果反馈：用[轻提示](./toast)。
-- 用户必须处理才能继续：用[对话框](./dialog)阻断。
-- 页面内某块区域的常驻状态说明：用[警告提示](./alert)。
-
-## 特性
-
-- 九宫格落位，`placement` 决定这一摞落在哪儿；也可以按条逐个指定。
-- `max` 限制每个位置同时显示几条，默认 5，超出先挤低优先级、同级里挤最旧的；给 `Infinity` 即不限。
-- 同一个 id 再发一次即就地改写，位置不动，用来做"处理中 → 已完成"。
-- 每条自带计时与暂停：指针停在卡片上、或焦点落进去时不再走表。
-- `duration` 给 0 即常驻不消失，适合需要用户处理的消息。
-
-## 示例
-
-### 基础用法
+## 用法
 
 create 入队并返回 id，队列里的每条由作者渲染成一条通知；退场窗口走完只收起不删，宿主在 status-change 里把它移出队列
 
 <XhDemo src="notification/01-basic" />
+
+## 示例
 
 ### 落位
 
@@ -59,6 +47,28 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 单条通知自带 placement 就盖掉 notification 的默认落位；placements 报出眼下有条目的位置，一个位置一摞
 
 <XhDemo src="notification/06-per-item-placement" />
+
+## 设计指引
+
+### 何时使用
+
+- 系统或他人发起的消息：新评论、审批到达、任务跑完了。
+- 后台完成的长任务：用户当时可能已经在做别的事。
+- 一句话讲不完，需要标题加正文两层的信息。
+
+### 何时不用
+
+- 用户刚点了一下按钮，只要一句结果反馈：用[轻提示](./toast)。
+- 用户必须处理才能继续：用[对话框](./dialog)阻断。
+- 页面内某块区域的常驻状态说明：用[警告提示](./alert)。
+
+### 特性
+
+- 九宫格落位，`placement` 决定这一摞落在哪儿；也可以按条逐个指定。
+- `max` 限制每个位置同时显示几条，默认 5，超出先挤低优先级、同级里挤最旧的；给 `Infinity` 即不限。
+- 同一个 id 再发一次即就地改写，位置不动，用来做"处理中 → 已完成"。
+- 每条自带计时与暂停：指针停在卡片上、或焦点落进去时不再走表。
+- `duration` 给 0 即常驻不消失，适合需要用户处理的消息。
 
 ## 产物
 

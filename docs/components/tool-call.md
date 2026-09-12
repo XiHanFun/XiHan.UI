@@ -1,38 +1,22 @@
-# 工具调用 <Badge type="info" text="tool-call" />
+# ToolCall <Badge type="info" text="工具调用" />
 
 一次工具调用的卡片：阶段、参数与结果，跑起来自动展开、结束自动收起，用户动手过一次就不再自动。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tool-call" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/tool-call.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/tool-call" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/tool-call" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/tool-call.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- Agent 界面里展示「它正在做什么」：查了什么、传了什么参数、拿回了什么。
-- 一次调用要先经人批准才能执行。
-
-## 何时不用
-
-- 展示的是「思考过程」而不是一次调用：用[思考过程](./reasoning)，两者共用同一台机器但正文形态不同。
-- 只想要一个状态色块：用[徽章](./badge)，配 `toneOfToolCallPhase(phase)` 取语气。
-- 多次调用要一次只展开一张：外面套[手风琴](./accordion)，每格里装一张。
-
-## 特性
-
-- 五档阶段：参数在传、参数齐了、等人批准、已完成、出错了。
-  **「等人批准」不是「在跑」**——协议层的审批只改审批状态、不改工具状态，
-  没有这一档的话等人的调用会被当成在跑。
-- **自动开合的锁存靠转移的放置位置，不靠一个布尔位**：用户点过一次之后，
-  阶段变化在结构上就够不着任何转移，自动开合永久停用。
-- 审批闸门常驻在开关与详情之间，不会被折叠藏起来。
-- 收起走 `hidden` + `inert`：退场动画播完之前内容还在渲染，`inert` 把这段窗口挡在读屏与 Tab 序之外。
-- 开关那一行留了摘要位与耗时位：详情收起时也看得见「查了什么」与「跑了多久」。
-- 耗时由宿主给两个时刻，`toolCallDuration(startTime, endTime)` 折出毫秒数；
-  **组件自己不读时钟也不起定时器**，秒数要跳就由宿主驱动。
-
-## 示例
-
-### 五档阶段
+## 用法
 
 等人批准不是在跑：闸门常驻在开关与详情之间，不会被折叠藏起来
 
 <XhDemo src="tool-call/01-phases" />
+
+## 示例
 
 ### 自动开合与锁存
 
@@ -57,6 +41,32 @@
 三轴只改这块壳怎么与正文分开，阶段与展开逻辑不受影响
 
 <XhDemo src="tool-call/05-variant-tone-size" />
+
+## 设计指引
+
+### 何时使用
+
+- Agent 界面里展示「它正在做什么」：查了什么、传了什么参数、拿回了什么。
+- 一次调用要先经人批准才能执行。
+
+### 何时不用
+
+- 展示的是「思考过程」而不是一次调用：用[思考过程](./reasoning)，两者共用同一台机器但正文形态不同。
+- 只想要一个状态色块：用[徽章](./badge)，配 `toneOfToolCallPhase(phase)` 取语气。
+- 多次调用要一次只展开一张：外面套[手风琴](./accordion)，每格里装一张。
+
+### 特性
+
+- 五档阶段：参数在传、参数齐了、等人批准、已完成、出错了。
+  **「等人批准」不是「在跑」**——协议层的审批只改审批状态、不改工具状态，
+  没有这一档的话等人的调用会被当成在跑。
+- **自动开合的锁存靠转移的放置位置，不靠一个布尔位**：用户点过一次之后，
+  阶段变化在结构上就够不着任何转移，自动开合永久停用。
+- 审批闸门常驻在开关与详情之间，不会被折叠藏起来。
+- 收起走 `hidden` + `inert`：退场动画播完之前内容还在渲染，`inert` 把这段窗口挡在读屏与 Tab 序之外。
+- 开关那一行留了摘要位与耗时位：详情收起时也看得见「查了什么」与「跑了多久」。
+- 耗时由宿主给两个时刻，`toolCallDuration(startTime, endTime)` 折出毫秒数；
+  **组件自己不读时钟也不起定时器**，秒数要跳就由宿主驱动。
 
 ## 产物
 

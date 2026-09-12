@@ -1,31 +1,22 @@
-# 回到顶部 <Badge type="info" text="back-top" />
+# BackTop <Badge type="info" text="回到顶部" />
 
 滚过一段距离后露面的按钮，点它滚回顶部。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/back-top" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/back-top.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/back-top" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/back-top" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/back-top.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 页面很长且没有别的快速返回方式。
-
-## 何时不用
-
-- 页面本来就不长：滚过 200px 就出现的按钮只会挡内容。
-- 需要的是一组动作而不只是回顶：用[浮动按钮](./float-button)。
-
-## 特性
-
-- `visibilityHeight` 决定滚过多少像素才露面。
-- `behavior` 决定一步跳回还是平滑滚过去。
-- `translations` 换掉读屏念出的名字。
-- 缺省触发器与浮动按钮同属 M3 通透玻璃：背景、边缘、高光、柔影和磨砂来自 `material.glass`；显式 `variant` 仍按各自语义表面绘制。
-- 键盘聚焦时触发器改用配方的实体 focus surface，让公共焦点环不依赖背后页面颜色；高对比、减少透明和强制色沿同一令牌通道降级。
-
-## 示例
-
-### 基础用法
+## 用法
 
 滚过 200px 按钮才露面，点它滚回顶部
 
 <XhDemo src="back-top/01-basic" />
+
+## 示例
 
 ### 露面阈值
 
@@ -50,6 +41,25 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 variant 换按钮的底色、描边与前景怎么用；这里把露面门槛设成 0，不滚也看得见
 
 <XhDemo src="back-top/05-variant" />
+
+## 设计指引
+
+### 何时使用
+
+- 页面很长且没有别的快速返回方式。
+
+### 何时不用
+
+- 页面本来就不长：滚过 200px 就出现的按钮只会挡内容。
+- 需要的是一组动作而不只是回顶：用[浮动按钮](./float-button)。
+
+### 特性
+
+- `visibilityHeight` 决定滚过多少像素才露面。
+- `behavior` 决定一步跳回还是平滑滚过去。
+- `translations` 换掉读屏念出的名字。
+- 缺省触发器与浮动按钮同属 M3 通透玻璃：背景、边缘、高光、柔影和磨砂来自 `material.glass`；显式 `variant` 仍按各自语义表面绘制。
+- 键盘聚焦时触发器改用配方的实体 focus surface，让公共焦点环不依赖背后页面颜色；高对比、减少透明和强制色沿同一令牌通道降级。
 
 ## 产物
 

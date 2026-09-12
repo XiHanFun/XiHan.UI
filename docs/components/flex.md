@@ -1,34 +1,22 @@
-# 弹性布局 <Badge type="info" text="flex" />
+# Flex <Badge type="info" text="弹性布局" />
 
 一维排布容器：子项沿一条轴排开，间距走档位，还能在每两项之间放一份分隔符。容器自己不给子项加任何样式。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/flex" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/flex.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/flex" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/flex" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/flex.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 一行按钮、一行图标加文字、一列表单项这类沿单轴排开的结构。
-- 需要控制主轴分布与交叉轴对齐。
-- 需要在相邻两项之间统一放一条竖线、一个点号这类分隔符。
-
-## 何时不用
-
-- 要排成二维网格、需要跨列：用[栅格](./grid)。
-- 只是想切分页面上的两块区域：用[分隔线](./separator)，那是一条有语义的横线，不是排布容器。
-- 只是想在两个元素之间留点空：直接写间距，别为此多套一层容器。
-
-## 特性
-
-- `gap` 收的是档位名不是像素：`xs` / `sm` / `md` / `lg` / `xl` 逐档指向一个间距令牌；不写不留间距。
-- `justify` 管主轴怎么分、`align` 管交叉轴怎么对，两条轴互不相干。
-- 缺省的交叉轴对齐随方向走：横排按中线对齐，竖排拉伸占满。写了 `align` 即以它为准。
-- `inline` 让容器缩到内容宽度，能跟文字排一行。
-- 档位不够用时给 `--xh-flex-gap` 写一个值，它排在所有档位之前。**它是自定义属性，会顺着继承流进嵌套在里面的每一层排布容器，把那些层的档位一并压掉**；只想改一层就写在那一层上。
-
-## 示例
-
-### 基础用法
+## 用法
 
 一维排布容器：子项横着排，间距走档位，容器自己不给子项加任何样式
 
 <XhDemo src="flex/01-basic" />
+
+## 示例
 
 ### 方向
 
@@ -59,6 +47,28 @@ wrap 让放不下的子项换行、行与行之间同样吃 gap；inline 让容�
 每两个子项之间放一份分隔符：Vue 交给 split 插槽自动铺，WC 由作者逐个写在 root 里
 
 <XhDemo src="flex/06-split" />
+
+## 设计指引
+
+### 何时使用
+
+- 一行按钮、一行图标加文字、一列表单项这类沿单轴排开的结构。
+- 需要控制主轴分布与交叉轴对齐。
+- 需要在相邻两项之间统一放一条竖线、一个点号这类分隔符。
+
+### 何时不用
+
+- 要排成二维网格、需要跨列：用[栅格](./grid)。
+- 只是想切分页面上的两块区域：用[分隔线](./separator)，那是一条有语义的横线，不是排布容器。
+- 只是想在两个元素之间留点空：直接写间距，别为此多套一层容器。
+
+### 特性
+
+- `gap` 收的是档位名不是像素：`xs` / `sm` / `md` / `lg` / `xl` 逐档指向一个间距令牌；不写不留间距。
+- `justify` 管主轴怎么分、`align` 管交叉轴怎么对，两条轴互不相干。
+- 缺省的交叉轴对齐随方向走：横排按中线对齐，竖排拉伸占满。写了 `align` 即以它为准。
+- `inline` 让容器缩到内容宽度，能跟文字排一行。
+- 档位不够用时给 `--xh-flex-gap` 写一个值，它排在所有档位之前。**它是自定义属性，会顺着继承流进嵌套在里面的每一层排布容器，把那些层的档位一并压掉**；只想改一层就写在那一层上。
 
 ## 产物
 

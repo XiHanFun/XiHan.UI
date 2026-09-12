@@ -1,30 +1,22 @@
-# 警告提示 <Badge type="info" text="alert" />
+# Alert <Badge type="info" text="警告提示" />
 
 页面里常驻的一条提示：说明一件与当前上下文有关的事。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/alert" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/alert.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/alert" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/alert" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/alert.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 表单顶部的整体错误、页面级的状态说明、功能公告。
-- 信息需要一直在，直到用户处理或关闭。
-
-## 何时不用
-
-- 只是一次操作的结果反馈：用[轻提示](./toast)——它会自己消失。
-- 需要用户当场做决定并阻断流程：用[对话框](./dialog)。
-- 是一个字段的错误：用[表单字段](./field)的错误文本。
-
-## 特性
-
-- 语气决定用哪族颜色，图标由作者放。
-- `closable` 给出关闭按钮，关闭态可受控。
-
-## 示例
-
-### 基础用法
+## 用法
 
 各部件按需摆放，标题与描述都是可选的
 
 <XhDemo src="alert/01-basic" />
+
+## 示例
 
 ### 语气
 
@@ -49,6 +41,24 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 描边、底色、标题色、圆角各是一个组件令牌；描边槽位换成透明就只剩淡底，尺寸不变
 
 <XhDemo src="alert/05-custom" />
+
+## 设计指引
+
+### 何时使用
+
+- 表单顶部的整体错误、页面级的状态说明、功能公告。
+- 信息需要一直在，直到用户处理或关闭。
+
+### 何时不用
+
+- 只是一次操作的结果反馈：用[轻提示](./toast)——它会自己消失。
+- 需要用户当场做决定并阻断流程：用[对话框](./dialog)。
+- 是一个字段的错误：用[表单字段](./field)的错误文本。
+
+### 特性
+
+- 语气决定用哪族颜色，图标由作者放。
+- `closable` 给出关闭按钮，关闭态可受控。
 
 ## 产物
 

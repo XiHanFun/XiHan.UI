@@ -1,42 +1,22 @@
-# 差异视图 <Badge type="info" text="diff-view" />
+# DiffView <Badge type="info" text="差异视图" />
 
 一份改动的逐行呈现：并排或单栏、双侧行号、变更类型的读屏文字，以及远离变更处的折叠。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/diff-view" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/diff-view.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/diff-view" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/diff-view" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/diff-view.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 展示 AI 提议的代码改动，或两版文本的对比。
-- 手里有一份统一格式的补丁，或者有新旧两版全文。
-
-## 何时不用
-
-- 只展示一段代码：用[代码视图](./code-view)。
-- 展示的是「AI 提议的数据编辑逐条取舍」：那是一张带多选的[表格](./table)。
-
-## 特性
-
-- **两个入口归一到同一个模型**：`computeTextDiff(before, after)` 拿两版全文算，
-  `parseUnifiedPatch(patch)` 解析补丁；组件只认模型。
-- 自定义渲染器可调用 `diffViewSides(view)` 取得列序：单栏为旧侧，分栏按旧侧、新侧排列。
-- **着色在建模时一次算好**，不在连接层跑：`computeTextDiff` 手里有完整文本，
-  整体切一次再按行取，跨行的块注释与多行字符串才不会着错色。
-  `parseUnifiedPatch` 拿不到完整文件，因此**一律不填着色**——宁可不着色也不错着色。
-- **词级差异**：配对的一条删除行与一条新增行之间再比一次词，只有真正动过的那几段上底色，
-  整行改写与超长行不比（比出来满行都在闪，等于没有重点）。两个入口都产出，`wordDiff: false` 关掉。
-- `contextLines` 把 hunk 内远离变更的连续上下文折成一格，点开即展开。
-  展开集合可受控，好让「全部展开」这类操作统一持有。
-- `wrap` 让长行原地折行，卡片不再横向滚动；窄栏与并排视图下尤其有用。
-- 头部自带增删统计位 `summary`，增删各一个，数字取自模型、着色跟着变更类型走。
-- `maxLines` 是必须有的上限：AI 会吐超大文件，新旧两侧各自超出即从尾部砍掉。
-  砍掉几行由模型带出来，`truncation` 提示条把这个数说给读的人。
-- 行号与列号一律从模型算，**绝不从 DOM 反推**。
-
-## 示例
-
-### 单栏差异
+## 用法
 
 两个入口归一到同一个模型：这里用新旧两版全文算，着色在建模时一次算好
 
 <XhDemo src="diff-view/01-unified" />
+
+## 示例
 
 ### 并排与折叠
 
@@ -61,6 +41,36 @@
 size 换字号、行高与行号槽的宽度，三档并列对照
 
 <XhDemo src="diff-view/05-size" />
+
+## 设计指引
+
+### 何时使用
+
+- 展示 AI 提议的代码改动，或两版文本的对比。
+- 手里有一份统一格式的补丁，或者有新旧两版全文。
+
+### 何时不用
+
+- 只展示一段代码：用[代码视图](./code-view)。
+- 展示的是「AI 提议的数据编辑逐条取舍」：那是一张带多选的[表格](./table)。
+
+### 特性
+
+- **两个入口归一到同一个模型**：`computeTextDiff(before, after)` 拿两版全文算，
+  `parseUnifiedPatch(patch)` 解析补丁；组件只认模型。
+- 自定义渲染器可调用 `diffViewSides(view)` 取得列序：单栏为旧侧，分栏按旧侧、新侧排列。
+- **着色在建模时一次算好**，不在连接层跑：`computeTextDiff` 手里有完整文本，
+  整体切一次再按行取，跨行的块注释与多行字符串才不会着错色。
+  `parseUnifiedPatch` 拿不到完整文件，因此**一律不填着色**——宁可不着色也不错着色。
+- **词级差异**：配对的一条删除行与一条新增行之间再比一次词，只有真正动过的那几段上底色，
+  整行改写与超长行不比（比出来满行都在闪，等于没有重点）。两个入口都产出，`wordDiff: false` 关掉。
+- `contextLines` 把 hunk 内远离变更的连续上下文折成一格，点开即展开。
+  展开集合可受控，好让「全部展开」这类操作统一持有。
+- `wrap` 让长行原地折行，卡片不再横向滚动；窄栏与并排视图下尤其有用。
+- 头部自带增删统计位 `summary`，增删各一个，数字取自模型、着色跟着变更类型走。
+- `maxLines` 是必须有的上限：AI 会吐超大文件，新旧两侧各自超出即从尾部砍掉。
+  砍掉几行由模型带出来，`truncation` 提示条把这个数说给读的人。
+- 行号与列号一律从模型算，**绝不从 DOM 反推**。
 
 ## 产物
 

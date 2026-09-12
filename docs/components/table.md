@@ -1,33 +1,22 @@
-# 表格 <Badge type="info" text="table" />
+# Table <Badge type="info" text="表格" />
 
 多行同构记录按列排开，支持排序、选择、展开与吸顶。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/table" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/table.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/table" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/table" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/table.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 每条记录有多个字段需要按列对照。
-- 需要排序、筛选、批量选择。
-
-## 何时不用
-
-- 每条只有标题和一句描述：用[列表](./list)，表格的列头是额外负担。
-- 移动端窄屏：横滚的表格很难用，考虑换成卡片列表。
-
-## 特性
-
-- 排序、选择、展开三套状态各自可受控。
-- 表头吸顶与列吸附、条纹、密度、边框都是开关。
-- 支持多行表头与表头分组、跨列单元格、树形表格、单元格就地编辑、列过滤、拖拽调列宽。
-- 行数很大时只渲窗口内的行。
-- 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐三样接出来：设置区照 `columnSettings` 渲，藏起来的列也在其中。两块都摆在 `root` 之外——`root` 是 grid 系角色，子节点只能是行与行组。
-- 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页的按钮点了做什么归作者，取数在途时自动停用。
-
-## 示例
-
-### 基础用法
+## 用法
 
 columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只管长相
 
 <XhDemo src="table/01-basic" />
+
+## 示例
 
 ### 排序
 
@@ -166,6 +155,27 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 工具条渲成表的兄弟排在表前（root 是 grid，工具条进不去它里面）；列设置区照 columnSettings 渲，藏起来的列也在其中，只剩最后一列显示着时那颗把手转禁用
 
 <XhDemo src="table/24-column-settings" />
+
+## 设计指引
+
+### 何时使用
+
+- 每条记录有多个字段需要按列对照。
+- 需要排序、筛选、批量选择。
+
+### 何时不用
+
+- 每条只有标题和一句描述：用[列表](./list)，表格的列头是额外负担。
+- 移动端窄屏：横滚的表格很难用，考虑换成卡片列表。
+
+### 特性
+
+- 排序、选择、展开三套状态各自可受控。
+- 表头吸顶与列吸附、条纹、密度、边框都是开关。
+- 支持多行表头与表头分组、跨列单元格、树形表格、单元格就地编辑、列过滤、拖拽调列宽。
+- 行数很大时只渲窗口内的行。
+- 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐三样接出来：设置区照 `columnSettings` 渲，藏起来的列也在其中。两块都摆在 `root` 之外——`root` 是 grid 系角色，子节点只能是行与行组。
+- 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页的按钮点了做什么归作者，取数在途时自动停用。
 
 ## 产物
 

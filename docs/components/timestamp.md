@@ -1,30 +1,22 @@
-# 时间戳 <Badge type="info" text="timestamp" />
+# Timestamp <Badge type="info" text="时间戳" />
 
 把一个时刻渲染成文本，绝对或相对。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/timestamp" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/timestamp.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/timestamp" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/timestamp" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/timestamp.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 展示创建时间、更新时间、事件发生时刻。
-- 需要"n 分钟前"这类相对表述。
-
-## 何时不用
-
-- 需要倒数剩余时长：用[计时器](./timer)。
-- 需要用户选一个时间：用[时间选择器](./time-picker)。
-
-## 特性
-
-- `type` 切绝对与相对；相对分四档（分 / 小时 / 天），超过三十天退回绝对日期。
-- `format` 自定义格式串，只改看到的文本，`datetime` 属性不跟着变。
-- `locale` 只换用词与缺省格式串：`zh` 开头用中文那套，其余英文。不给就跟宿主浏览器语言，读不到才落 `en-US`。
-
-## 示例
-
-### 基础用法
+## 用法
 
 渲染成 &lt;time datetime>：文本给人看，datetime 给机器读，两者取自同一个墙钟
 
 <XhDemo src="timestamp/01-basic" />
+
+## 示例
 
 ### 呈现方式
 
@@ -43,6 +35,24 @@ date 只到日、datetime 到秒、relative 说成「几分钟前」；datetime 
 just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只换用词，不给则跟随浏览器语言
 
 <XhDemo src="timestamp/04-relative" />
+
+## 设计指引
+
+### 何时使用
+
+- 展示创建时间、更新时间、事件发生时刻。
+- 需要"n 分钟前"这类相对表述。
+
+### 何时不用
+
+- 需要倒数剩余时长：用[计时器](./timer)。
+- 需要用户选一个时间：用[时间选择器](./time-picker)。
+
+### 特性
+
+- `type` 切绝对与相对；相对分四档（分 / 小时 / 天），超过三十天退回绝对日期。
+- `format` 自定义格式串，只改看到的文本，`datetime` 属性不跟着变。
+- `locale` 只换用词与缺省格式串：`zh` 开头用中文那套，其余英文。不给就跟宿主浏览器语言，读不到才落 `en-US`。
 
 ## 产物
 

@@ -1,30 +1,22 @@
-# 页头 <Badge type="info" text="page-header" />
+# PageHeader <Badge type="info" text="页头" />
 
 一页内容的抬头：面包屑、返回位、头像位、标题、副标题、行尾操作与页脚各占一段。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/page-header" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/page-header.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/page-header" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/page-header" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/page-header.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 详情页、编辑页需要一个统一的抬头，带返回与本页主操作。
-
-## 何时不用
-
-- 页面就是一张表或一块卡片，标题写在卡片里更近：用[卡片](./card)。
-- 需要的是站点级的头（logo、全局搜索、账户）：那属于[布局](./layout)的 `header`。
-
-## 特性
-
-- 除了 `root`，返回位、副标题、操作、页脚都可选，只写用得上的那几段。
-- 返回位就是作者自己的按钮：组件只给身份与位置，类型、可及名字与点击行为自己写。
-- `extra` 贴在整行的末尾；面包屑整行排在标题之上，头像 / 图标排在返回位与标题之间。
-- 形态分三档：不写即不画面（贴在页面底色上），`surface` 加底色与圆角，`raised` 再加一层抬起投影；后两档的 `bordered` 改画整圈描边。
-
-## 示例
-
-### 基础用法
+## 用法
 
 除了 root，返回位、副标题、操作、页脚都可选；只写用得上的那几段
 
 <XhDemo src="page-header/01-basic" />
+
+## 示例
 
 ### 返回位
 
@@ -61,6 +53,24 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 面包屑整行排在标题之上（写在标记最前面），头像/图标排在返回位与标题之间；两块都可缺省
 
 <XhDemo src="page-header/07-breadcrumb-media" />
+
+## 设计指引
+
+### 何时使用
+
+- 详情页、编辑页需要一个统一的抬头，带返回与本页主操作。
+
+### 何时不用
+
+- 页面就是一张表或一块卡片，标题写在卡片里更近：用[卡片](./card)。
+- 需要的是站点级的头（logo、全局搜索、账户）：那属于[布局](./layout)的 `header`。
+
+### 特性
+
+- 除了 `root`，返回位、副标题、操作、页脚都可选，只写用得上的那几段。
+- 返回位就是作者自己的按钮：组件只给身份与位置，类型、可及名字与点击行为自己写。
+- `extra` 贴在整行的末尾；面包屑整行排在标题之上，头像 / 图标排在返回位与标题之间。
+- 形态分三档：不写即不画面（贴在页面底色上），`surface` 加底色与圆角，`raised` 再加一层抬起投影；后两档的 `bordered` 改画整圈描边。
 
 ## 产物
 

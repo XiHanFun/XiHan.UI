@@ -1,33 +1,22 @@
-# 图片预览 <Badge type="info" text="image-viewer" />
+# ImageViewer <Badge type="info" text="图片预览" />
 
 点开看大图：全屏浮层里可以缩放、旋转、翻转与翻页。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/image-viewer" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/image-viewer.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/image-viewer" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/image-viewer" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/image-viewer.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 图片细节重要（截图、单据、商品图）。
-- 一组图需要连续浏览。
-
-## 何时不用
-
-- 图本身已经足够大：不必再套一层。
-- 需要的是编辑（裁切、标注）：这是只读的查看器。
-
-## 特性
-
-- `collection` 给整组图，`index` 决定当前哪一张，`loop` 决定是否回绕。
-- 缩放步长与上下限可调。
-- 触屏上两指撑开放大、捏合缩小，单指平移；缩放以两指中点为锚。
-- 关闭后焦点归还触发器。
-- 逻辑关闭立即退出交互与可访问树；内容和遮罩完成退场后才释放模态资源，重开会撤销旧退场。
-- 底部控件带是一组有名字的控件，每颗钮各占一个 Tab 位；左右方向键与 Home/End 留给翻页，条里条外都一样。
-
-## 示例
-
-### 基础用法
+## 用法
 
 触发器打开全屏看片：滚轮缩放、拖拽平移、工具条给缩放/旋转/翻转/归零，Esc 或点遮罩关闭
 
 <XhDemo src="image-viewer/01-basic" />
+
+## 示例
 
 ### 相册与翻页
 
@@ -46,6 +35,27 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 触屏上两指撑开放大、捏合缩小，单指平移；缩放夹在 minScale 与 maxScale 之间
 
 <XhDemo src="image-viewer/04-gesture" />
+
+## 设计指引
+
+### 何时使用
+
+- 图片细节重要（截图、单据、商品图）。
+- 一组图需要连续浏览。
+
+### 何时不用
+
+- 图本身已经足够大：不必再套一层。
+- 需要的是编辑（裁切、标注）：这是只读的查看器。
+
+### 特性
+
+- `collection` 给整组图，`index` 决定当前哪一张，`loop` 决定是否回绕。
+- 缩放步长与上下限可调。
+- 触屏上两指撑开放大、捏合缩小，单指平移；缩放以两指中点为锚。
+- 关闭后焦点归还触发器。
+- 逻辑关闭立即退出交互与可访问树；内容和遮罩完成退场后才释放模态资源，重开会撤销旧退场。
+- 底部控件带是一组有名字的控件，每颗钮各占一个 Tab 位；左右方向键与 Home/End 留给翻页，条里条外都一样。
 
 ## 产物
 

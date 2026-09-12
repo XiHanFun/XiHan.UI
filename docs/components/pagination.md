@@ -1,32 +1,22 @@
-# 分页 <Badge type="info" text="pagination" />
+# Pagination <Badge type="info" text="分页" />
 
 把一份很长的结果切成一页一页，并给出当前位置与去处。
 
-## 何时使用
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/pagination" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/pagination.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/pagination" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/pagination" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/pagination.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
 
-- 结果集很大且用户需要跳到确定的位置、或需要可分享的页码地址。
-- 需要知道一共有多少条。
-
-## 何时不用
-
-- 内容是时间流、用户只关心"再来一些"：用[无限滚动](./infinite-scroll)。
-- 结果条数很少：一次全给。
-
-## 特性
-
-- `count` 给的是总条数不是总页数。
-- 页码序列由 `root` 的插槽交出来，作者照着渲染条目与省略号；不渲染序列也行，只留上一页 / 下一页。
-- `siblingCount` 决定当前页两侧各留几页，序列长度恒定，切页时省略号左右挪、按钮不抖。
-- `dir` 只作用于排版："上一页"永远是 `page - 1`，不随书写方向翻转。
-- 换 `pageSize` 后总页数重算，越界的当前页被夹回末页。
-
-## 示例
-
-### 基础用法
+## 用法
 
 count 给的是总条数不是总页数；页码序列由 root 的插槽交出来，作者照着渲染 item 与省略号
 
 <XhDemo src="pagination/01-basic" />
+
+## 示例
 
 ### 受控与切片
 
@@ -87,6 +77,26 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 折进去的那几页悬停即摊开，点一下也摊开——纯悬停会把键盘用户挡在外面，而这几页除了这里没有别的入口；Escape 或点外面收起
 
 <XhDemo src="pagination/11-ellipsis-expand" />
+
+## 设计指引
+
+### 何时使用
+
+- 结果集很大且用户需要跳到确定的位置、或需要可分享的页码地址。
+- 需要知道一共有多少条。
+
+### 何时不用
+
+- 内容是时间流、用户只关心"再来一些"：用[无限滚动](./infinite-scroll)。
+- 结果条数很少：一次全给。
+
+### 特性
+
+- `count` 给的是总条数不是总页数。
+- 页码序列由 `root` 的插槽交出来，作者照着渲染条目与省略号；不渲染序列也行，只留上一页 / 下一页。
+- `siblingCount` 决定当前页两侧各留几页，序列长度恒定，切页时省略号左右挪、按钮不抖。
+- `dir` 只作用于排版："上一页"永远是 `page - 1`，不随书写方向翻转。
+- 换 `pageSize` 后总页数重算，越界的当前页被夹回末页。
 
 ## 产物
 
