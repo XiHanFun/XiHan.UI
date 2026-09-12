@@ -16,6 +16,12 @@
 
 <XhDemo src="json-viewer/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `empty`
+
 ## 示例
 
 ### 默认展开层数
@@ -94,7 +100,26 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 - **只认 JSON 能表达的形状**，喂进活对象时呈现是有损的：`Date` / `Map` / `Set` 一律按自有可枚举键摊，因此显示成 `{}`；`undefined` 归 `null` 一档、显示成 `undefined`；`bigint` 归 `number`；函数与 symbol 归 `string`，按各自的字符串形式呈现。要如实展示这些值，先自己转成 JSON 能表达的形状。
 - 自定义元素侧：`value` 属性收的是一段 JSON 文本（解析不了就当一个字符串值展示），对象与数组直接赋 property（`el.value = { … }`）；`expandedValue` / `defaultExpandedValue` / `translations` **没有对应属性，只能走 property**，写成 `expanded-value='["$"]'` 不会生效。
 
-## 产物
+### 组合
+
+- 放进[标签页](./tabs)或[抽屉](./drawer)里当调试面板；行数多时套一层[滚动区域](./scroll-area)。
+- 配[复制到剪贴板](./clipboard)让人把原始 JSON 拿走。
+
+### 最佳实践
+
+- 大数据一定要给 `maxItems` 与 `maxStringLength`：一次摊开几万行会让页面停住。
+- 默认展开层数别给大：`defaultExpandedDepth` 超过 2 就等于把整份数据铺满屏。
+- 值里的类型只靠颜色区分是不够的，字符串的引号、`null` 的字面量都要留着。
+- 一行被收起时，它内部那个持有焦点的行会随之离开 DOM，焦点掉回 `<body>`。要在收起前把焦点交回分支行本身，键盘用户才不会每收一层就丢一次位置。
+
+### 反模式
+
+- 拿它当日志流：日志是时间序的一串条目，用[日志](./log)。
+- 把一份几 MB 的响应体原样丢进去，再让用户自己找。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -104,13 +129,7 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 | 状态机 | `jsonViewerMachine` |
 | 皮肤 | `@xihan-ui/styles/json-viewer.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `empty`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -129,33 +148,33 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 | `translations` | `Partial<JsonViewerTranslations>` |  |  |
 | `onExpandedValueChange` | `(details: JsonViewerExpandedValueChangeDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `expanded-value-change` | `JsonViewerExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhJsonViewerRoot` | `empty` | — |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
 **事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `VIEWER.BLUR`
 
-## connect API
+### connect API
 
-`useJsonViewer` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -189,7 +208,9 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 | `getPreviewProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/treeview/#keyboardinteraction)
 
@@ -205,9 +226,9 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 | `Enter` / `Space` | focus on branch | 切换该分支的展开态；焦点在标量行上时不吞这两个键 |
 | `*` | focus in tree | 展开与焦点行同一父级的全部分支（已展开的不动）；同级没有可展开的分支时不吞这个键 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -228,13 +249,15 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 - 分支的名字显式给（`aria-label`）：它裹着整棵子层，从内容算名字会把所有子孙的文字一并念出来。
 - 收起摘要（`{…} 3`）是排版记号，对读屏隐藏；里面那个成员数折进了分支的可及名字（默认念成 `tags, 3 items`，整句可用 `translations.collapsedBranchLabel` 换）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/json-viewer.css` 按部件选择：`[data-scope="json-viewer"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/json-viewer.css` 使用 `[data-scope="json-viewer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -243,7 +266,7 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 | `root` | `data-view` | props.view |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -283,31 +306,14 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 | `--xh-json-viewer-text-fg` | `text` | `color` | `default` | `--xh-fg-default` | json-viewer 的 text 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
 
 - 左右方向键的展开/收起语义跟着书写方向走：没传 `dir` 时从 DOM 现读，整页 `dir="rtl"` 也认得出来。
-
-## 组合
-
-- 放进[标签页](./tabs)或[抽屉](./drawer)里当调试面板；行数多时套一层[滚动区域](./scroll-area)。
-- 配[复制到剪贴板](./clipboard)让人把原始 JSON 拿走。
-
-## 最佳实践
-
-- 大数据一定要给 `maxItems` 与 `maxStringLength`：一次摊开几万行会让页面停住。
-- 默认展开层数别给大：`defaultExpandedDepth` 超过 2 就等于把整份数据铺满屏。
-- 值里的类型只靠颜色区分是不够的，字符串的引号、`null` 的字面量都要留着。
-- 一行被收起时，它内部那个持有焦点的行会随之离开 DOM，焦点掉回 `<body>`。要在收起前把焦点交回分支行本身，键盘用户才不会每收一层就丢一次位置。
-
-## 反模式
-
-- 拿它当日志流：日志是时间序的一串条目，用[日志](./log)。
-- 把一份几 MB 的响应体原样丢进去，再让用户自己找。

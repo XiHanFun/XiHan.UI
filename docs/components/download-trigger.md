@@ -16,6 +16,12 @@
 
 <XhDemo src="download-trigger/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="download-trigger"`：**`root`**
+
 ## 示例
 
 ### 按需取数
@@ -69,7 +75,27 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 - 文件名与类型在发起那一刻定死，取数途中宿主改了 prop 也不影响这一次写出的那份。
 - Vue 侧默认插槽拿得到 `{ status, preparing, disabled, fileName, download }`，可据 `preparing` 换掉按钮上的文字；Web Components 侧按钮内容由作者自己写，要跟着状态换文字得自己盯 `data-state`。
 
-## 产物
+### 组合
+
+- 与[按钮](./button)是两件事：按钮带形态/语气/尺寸三轴，下载触发器只管行为，自带的是一份中性按钮外观（高度、描边、底色、字号都走令牌）。要品牌语气就把按钮的类名写到触发器上，或改 `--xh-download-trigger-*` 这一族槽位。
+- 与[进度条](./progress)搭配：取数要跑很久时，自己在旁边放一条进度，本组件只报"在途 / 结束"两档。
+
+### 最佳实践
+
+- 大文件走服务端直链，别在前端拼 Blob：整份内容会先住进内存，几十兆的导出足以让标签页卡住。
+- 取数函数里自己兜住失败并给出可见提示，`onDownloadError` 只通知你，用户看到的还是那颗没反应的按钮。
+- 文件名带扩展名。浏览器不会替你猜，`report` 与 `report.csv` 打开的方式完全不同。
+- 换外观改 `--xh-download-trigger-*` 槽位，别只覆盖前景色：禁用态的底色也在这一族里，只改一半会把禁用前后压成同一个样子。
+
+### 反模式
+
+- 认为回调触发就等于文件已经存好：组件只能知道下载已经发起，用户取消保存、磁盘写失败都在浏览器那一侧。
+- 页面一加载就把整份数据备在内存里等着点：改成取数函数，点了再算。
+- 用它下载跨域地址上的文件：浏览器发起的下载受同源与下载策略约束，跨域内容取不回来也就造不出 Blob。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -79,13 +105,7 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/download-trigger.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="download-trigger"`：**`root`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -100,40 +120,40 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 | `onDownloadComplete` | `(details: DownloadTriggerCompleteDetails) => void` |  | 数据已交给浏览器时通知一次。到这里只说明下载已经发起，浏览器把文件写没写到盘上组件看不见。 |
 | `onDownloadError` | `(details: DownloadTriggerErrorDetails) => void` |  | 取数失败或造不出下载时通知；此刻状态已经回到 idle。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `download-complete` | `DownloadTriggerCompleteDetails` | 数据已交给浏览器；detail 为 `{ fileName }` |
 | `download-error` | `DownloadTriggerErrorDetails` | 取数失败或造不出下载；detail 为 `{ error, fileName }`，此刻状态已经回到 idle |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhDownloadTrigger` | `default` | `DownloadTriggerSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `root` | state.get() |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **事件**：`DOWNLOAD.TRIGGER` · `DOWNLOAD.SUCCESS` · `DOWNLOAD.ERROR`
 
 **判据**：`isDisabled`
 
-## connect API
+### connect API
 
-`useDownloadTrigger` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -144,7 +164,9 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 | `download` | `() => void` | 走一次下载意图，与点按钮同一条路：禁用时不动，取数在途时不重复发起。 |
 | `getRootProps` | `() => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction)
 
@@ -152,9 +174,9 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 | --- | --- | --- |
 | `Enter` / `Space` | focus in root, 未禁用 | 发起一次下载；取数在途时这两个键同样不会重复发起 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -165,13 +187,15 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 - 取数在途时按钮不变成禁用，只挂 `aria-busy="true"`：禁用会把焦点从按钮上弹走，键盘用户等回来时不知道自己在哪。
 - 按钮上的文字要说清楚下的是什么（"导出 CSV"而不是"下载"），读屏一次只念一个按钮，光有图标听不出区别。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/download-trigger.css` 按部件选择：`[data-scope="download-trigger"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/download-trigger.css` 使用 `[data-scope="download-trigger"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -182,7 +206,7 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 | `root` | `data-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -207,34 +231,16 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 | `--xh-download-trigger-shadow-hover` | `root` | `box-shadow` | `hover` | `--xh-elevation-raised` | download-trigger 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-download-trigger-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[按钮](./button)是两件事：按钮带形态/语气/尺寸三轴，下载触发器只管行为，自带的是一份中性按钮外观（高度、描边、底色、字号都走令牌）。要品牌语气就把按钮的类名写到触发器上，或改 `--xh-download-trigger-*` 这一族槽位。
-- 与[进度条](./progress)搭配：取数要跑很久时，自己在旁边放一条进度，本组件只报"在途 / 结束"两档。
-
-## 最佳实践
-
-- 大文件走服务端直链，别在前端拼 Blob：整份内容会先住进内存，几十兆的导出足以让标签页卡住。
-- 取数函数里自己兜住失败并给出可见提示，`onDownloadError` 只通知你，用户看到的还是那颗没反应的按钮。
-- 文件名带扩展名。浏览器不会替你猜，`report` 与 `report.csv` 打开的方式完全不同。
-- 换外观改 `--xh-download-trigger-*` 槽位，别只覆盖前景色：禁用态的底色也在这一族里，只改一半会把禁用前后压成同一个样子。
-
-## 反模式
-
-- 认为回调触发就等于文件已经存好：组件只能知道下载已经发起，用户取消保存、磁盘写失败都在浏览器那一侧。
-- 页面一加载就把整份数据备在内存里等着点：改成取数函数，点了再算。
-- 用它下载跨域地址上的文件：浏览器发起的下载受同源与下载策略约束，跨域内容取不回来也就造不出 Blob。

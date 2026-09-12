@@ -16,6 +16,12 @@
 
 <XhDemo src="icon/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="icon"`：**`root`** · `glyph`
+
 ## 示例
 
 ### 尺寸与描边
@@ -74,7 +80,23 @@ rotate 只收 90 / 180 / 270 三档，flip 沿横轴或纵轴取反；两者是�
 - `rotate` 只收 90 / 180 / 270 三档，`flip` 沿横轴或纵轴取反；两者同写时叠加，都是静态几何，不带过渡。
 - 图标没有底色，语气只落在前景上。
 
-## 产物
+### 组合
+
+- 放进[按钮](./button)的 `prefix` / `suffix`，或[图标块](./icon-wrapper)的底座里。
+
+### 最佳实践
+
+- 旁边已经有文字说明同一件事时，别给 `label`——重复的名字会被读屏念两遍。
+- 同一屏里的图标保持同一档 `weight`，粗细混用比尺寸混用更显乱。
+
+### 反模式
+
+- 给装饰性图标写 `label`，或给唯一承载语义的图标漏写 `label`：两者都会让读屏用户听到错的东西。
+- 用图标单独表达状态而不配文字或提示：图形的含义没有共识。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -84,13 +106,7 @@ rotate 只收 90 / 180 / 270 三档，flip 沿横轴或纵轴取反；两者是�
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/icon.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="icon"`：**`root`** · `glyph`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -102,9 +118,9 @@ rotate 只收 90 / 180 / 270 三档，flip 沿横轴或纵轴取反；两者是�
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
 | `weight` | `IconWeight` |  | 描边粗细档位，缺省 regular；缺省档不输出 data-weight。 |
 
-## connect API
+### connect API
 
-`useIcon` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -115,15 +131,17 @@ rotate 只收 90 / 180 / 270 三档，flip 沿横轴或纵轴取反；两者是�
 | `getRootProps` | `() => T['element']` |  |
 | `getGlyphProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -131,13 +149,15 @@ rotate 只收 90 / 180 / 270 三档，flip 沿横轴或纵轴取反；两者是�
 | `root` | `aria-label` | props.label \| undefined |
 | `root` | `role` | undefined \| 'img' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/icon.css` 按部件选择：`[data-scope="icon"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/icon.css` 使用 `[data-scope="icon"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -149,7 +169,7 @@ rotate 只收 90 / 180 / 270 三档，flip 沿横轴或纵轴取反；两者是�
 | `root` | `data-weight` | props.weight |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -161,20 +181,6 @@ rotate 只收 90 / 180 / 270 三档，flip 沿横轴或纵轴取反；两者是�
 | `--xh-icon-stroke` | `root` | `stroke-width` | `default`<br>`weight=bold`<br>`weight=light` | `--xh-glyph-stroke-bold`<br>`--xh-glyph-stroke-light`<br>`--xh-glyph-stroke-regular` | icon 的 root 部件 stroke-width 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
-
-## 组合
-
-- 放进[按钮](./button)的 `prefix` / `suffix`，或[图标块](./icon-wrapper)的底座里。
-
-## 最佳实践
-
-- 旁边已经有文字说明同一件事时，别给 `label`——重复的名字会被读屏念两遍。
-- 同一屏里的图标保持同一档 `weight`，粗细混用比尺寸混用更显乱。
-
-## 反模式
-
-- 给装饰性图标写 `label`，或给唯一承载语义的图标漏写 `label`：两者都会让读屏用户听到错的东西。
-- 用图标单独表达状态而不配文字或提示：图形的含义没有共识。

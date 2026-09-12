@@ -16,6 +16,12 @@
 
 <XhDemo src="input-group/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="input-group"`：**`root`** · `item`
+
 ## 示例
 
 ### 搭动作钮
@@ -59,7 +65,25 @@
 - 悬停或拿到焦点的那一段抬到最上层，聚焦环不会被邻座的底色和描边切掉一半。
 - 档位跟着组内控件走：组里有 `sm` 的控件，`item` 就是 `sm`；也可以在组上写 `size` 直接指定。
 
-## 产物
+### 组合
+
+- 组里放[输入框](./text-field)、[数字输入框](./number-field)、[选择器](./select)、[按钮](./button)。
+- 要带标签与校验提示时，把整个组放进[表单域](./field)，标签与提示由它给。
+
+### 最佳实践
+
+- 一组以三到四段为宜：段越多，哪一段是可填的就越难一眼看出来。
+- 前后缀写成静态文本，别放会变的值——它长在框上，看起来像是已经填好的内容。
+- 组里各控件写同一个尺寸档，或者干脆都不写：混档会让中缝对不齐。
+
+### 反模式
+
+- 用 `item` 装可点的东西：它不出角色也不接键盘，读屏用户不知道那里能点。
+- 靠负外边距在业务代码里自己拼中缝：改一次描边宽度就得把每一处拼法翻一遍。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -68,47 +92,45 @@
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/input-group.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="input-group"`：**`root`** · `item`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `size` | `Size` |  | 尺寸：sm / md / lg，落到根上供皮肤写进 item 的高度、内衬与字号槽位。 不写时档位由组内控件自己的 data-size 决定，组里没有带档的控件就走 md。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/input-group.css` 按部件选择：`[data-scope="input-group"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/input-group.css` 使用 `[data-scope="input-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -123,28 +145,12 @@
 | `--xh-input-group-radius` | `control`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`is(*, [data-part='control'], [data-part='root'])`<br>`is([data-part='control'], [data-part='root'])`<br>`last-child` | `--xh-shape-control` | input-group 的 control、root 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 组里放[输入框](./text-field)、[数字输入框](./number-field)、[选择器](./select)、[按钮](./button)。
-- 要带标签与校验提示时，把整个组放进[表单域](./field)，标签与提示由它给。
-
-## 最佳实践
-
-- 一组以三到四段为宜：段越多，哪一段是可填的就越难一眼看出来。
-- 前后缀写成静态文本，别放会变的值——它长在框上，看起来像是已经填好的内容。
-- 组里各控件写同一个尺寸档，或者干脆都不写：混档会让中缝对不齐。
-
-## 反模式
-
-- 用 `item` 装可点的东西：它不出角色也不接键盘，读屏用户不知道那里能点。
-- 靠负外边距在业务代码里自己拼中缝：改一次描边宽度就得把每一处拼法翻一遍。

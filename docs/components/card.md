@@ -16,6 +16,12 @@
 
 <XhDemo src="card/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="card"`：**`root`** · `media` · `header` · `title` · `description` · `body` · `footer`
+
 ## 示例
 
 ### 形态
@@ -64,7 +70,23 @@ split 在段与段之间画一条分隔线；hoverable 只在能用指针的设�
 
 标题与正文统一到 14px 基准排版，描述降为 13px 次级字号；相邻的头、身、脚只产生一份 8 / 12 / 16px 纵向间距，单独使用任一部件时仍保留完整内边距。这个间距模型保留 XiHan 的可选部件与 `split` 结构，不采用 HeroUI 将全部内容压进单一 `gap + padding` 容器的做法。
 
-## 产物
+### 组合
+
+- 里面放[描述列表](./descriptions)、[表格](./table)、[统计数值](./statistic)；页脚放[按钮组](./button-group)。
+
+### 最佳实践
+
+- 整卡可点时要有明显的悬停与聚焦反馈，并让整卡进 Tab 序列。
+- 卡片内的留白统一，别让每张卡的内边距不一样。
+
+### 反模式
+
+- 卡片套卡片：两层边界互相削弱。
+- 整卡可点的同时卡内还有别的按钮：点哪里会发生什么不可预期。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -73,13 +95,7 @@ split 在段与段之间画一条分隔线；hoverable 只在能用指针的设�
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/card.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="card"`：**`root`** · `media` · `header` · `title` · `description` · `body` · `footer`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -88,9 +104,9 @@ split 在段与段之间画一条分隔线；hoverable 只在能用指针的设�
 | `split` | `boolean` |  | 分段：在头、身、脚之间画分隔线。 |
 | `variant` | `CardVariant` |  | 形态：outline / subtle / elevated / ghost，决定描边、底色与投影怎么用。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -102,20 +118,24 @@ split 在段与段之间画一条分隔线；hoverable 只在能用指针的设�
 | `getBodyProps` | `() => T['element']` |  |
 | `getFooterProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/card.css` 按部件选择：`[data-scope="card"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/card.css` 使用 `[data-scope="card"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -143,26 +163,12 @@ split 在段与段之间画一条分隔线；hoverable 只在能用指针的设�
 | `--xh-card-title-font-size` | `root`<br>`title` | `font-size` | `default`<br>`size=lg` | `--xh-control-font-lg`<br>`--xh-text-label-size` | card 的 root、title 部件 font-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background-color` · `border-color` · `box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`hover: hover`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
-
-## 组合
-
-- 里面放[描述列表](./descriptions)、[表格](./table)、[统计数值](./statistic)；页脚放[按钮组](./button-group)。
-
-## 最佳实践
-
-- 整卡可点时要有明显的悬停与聚焦反馈，并让整卡进 Tab 序列。
-- 卡片内的留白统一，别让每张卡的内边距不一样。
-
-## 反模式
-
-- 卡片套卡片：两层边界互相削弱。
-- 整卡可点的同时卡内还有别的按钮：点哪里会发生什么不可预期。

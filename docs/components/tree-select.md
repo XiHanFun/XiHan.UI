@@ -16,6 +16,12 @@
 
 <XhDemo src="tree-select/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="tree-select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · **`tree`** · `item` · `item-text` · `item-indicator` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `branch-loading` · `branch-error` · `branch-retry-trigger` · `branch-empty` · `empty` · `loading` · `footer` · `hidden-input`
+
 ## 示例
 
 ### 选中与展开双受控
@@ -119,7 +125,26 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 - 分支状态不互相降级：`api.branchLoadState(value)` 公开 `idle` / `loading` / `loaded` / `error`；`loaded` 的 `empty` 明确区分成功空数组，`error` 保留原始 cause。默认结构提供 `branch-loading`、`branch-error`、`branch-retry-trigger`、`branch-empty`，也可用同名部件替换文案；错误分支行上的 Enter/Space 是不破坏 tree roving 的正式键盘重试入口。
 - `onBranchLoadStart`、`onBranchLoad`、`onBranchLoadError`（三端事件为 `branch-load-start` / `branch-load` / `branch-load-error`）公开有效请求生命周期。分支或整浮层收起、重试、节点移除/同 value 换代、组件卸载都会中止并作废旧请求；迟到兑现或拒绝不能写回当前树，也不发成功/失败事件。
 
-## 产物
+### 组合
+
+- 外面套[表单字段](./field)。
+
+### 最佳实践
+
+- 大树一定要开浮层内过滤，逐级展开找一个节点非常慢。
+- 无头用法需要按 `api.value` 遍历，为每个值调用 `api.getHiddenInputProps({ value })` 并渲染原生 input；旧的无参调用与 CSV 提交合同已删除。Vue/React 的 `HiddenInput` 部件自动铺开，Web Components 仍只需声明一个原生 `input[data-xh-part="hidden-input"]`，额外字段由宿主管理。
+- 明确"只能选叶子"还是"分支也能选"，并在界面上让分支看起来点得动或点不动。
+- 自定义 `branch-control` 与 `item` 均应包含 `item-indicator`，分支标记直接读取所属分支的选择与半选状态，
+  不另写一套状态判定或自绘复选框。Vue / React 自动结构已提供此部件。
+
+### 反模式
+
+- 一次把整棵大树塞进浮层：首屏就卡住。
+- 勾选策略与后端理解不一致。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -129,13 +154,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | 状态机 | `treeSelectMachine` |
 | 皮肤 | `@xihan-ui/styles/tree-select.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="tree-select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · **`tree`** · `item` · `item-text` · `item-indicator` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `branch-loading` · `branch-error` · `branch-retry-trigger` · `branch-empty` · `empty` · `loading` · `footer` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -172,9 +191,9 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `onBranchLoad` | `(details: TreeSelectBranchLoadDetails) => void` |  | 一轮有效分支请求成功；children 为空仍是成功，不转换成错误或全局空态。 |
 | `onBranchLoadError` | `(details: TreeSelectBranchLoadErrorDetails) => void` |  | 一轮有效分支请求失败；保留 loader 给出的原始 error。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -182,18 +201,18 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `expanded-value-change` | `TreeSelectExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 | `open-change` | `TreeSelectOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhTreeSelectRoot` | `default` | `TreeSelectRootSlotProps` |  |
 | `XhTreeSelectRoot` | `label` | — |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -208,7 +227,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `loading` | 'open' \| 'closed' |
 | `footer` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -216,9 +235,9 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 
 **判据**：`isOpenControlled` · `isMultiple`
 
-## connect API
+### connect API
 
-`useTreeSelect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -278,7 +297,9 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `getFooterProps` | `() => T['element']` | 浮层底部的操作区：放在 content 里、tree 的兄弟，不入树的拥有关系，方向键也走不到。 |
 | `getHiddenInputProps` | `(props: { value: string }) => T['input']` | 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/#keyboardinteraction)
 
@@ -302,9 +323,9 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `Escape` | open | 收起浮层并把焦点归还 trigger，选中值与展开集合都不变 |
 | `Tab` / `Shift+Tab` | open | 收起浮层，焦点不归还 trigger，按 Tab 序列自然离开 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -338,13 +359,15 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `empty` | `role` | 'status' |
 | `loading` | `role` | 'status' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/tree-select.css` 按部件选择：`[data-scope="tree-select"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/tree-select.css` 使用 `[data-scope="tree-select"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -388,7 +411,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `footer` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -475,7 +498,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `--xh-tree-select-value-leading` | `value-text` | `line-height` | `default` | `--xh-leading-normal` | tree-select 的 value-text 部件 line-height 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -483,23 +506,6 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 外面套[表单字段](./field)。
-
-## 最佳实践
-
-- 大树一定要开浮层内过滤，逐级展开找一个节点非常慢。
-- 无头用法需要按 `api.value` 遍历，为每个值调用 `api.getHiddenInputProps({ value })` 并渲染原生 input；旧的无参调用与 CSV 提交合同已删除。Vue/React 的 `HiddenInput` 部件自动铺开，Web Components 仍只需声明一个原生 `input[data-xh-part="hidden-input"]`，额外字段由宿主管理。
-- 明确"只能选叶子"还是"分支也能选"，并在界面上让分支看起来点得动或点不动。
-- 自定义 `branch-control` 与 `item` 均应包含 `item-indicator`，分支标记直接读取所属分支的选择与半选状态，
-  不另写一套状态判定或自绘复选框。Vue / React 自动结构已提供此部件。
-
-## 反模式
-
-- 一次把整棵大树塞进浮层：首屏就卡住。
-- 勾选策略与后端理解不一致。

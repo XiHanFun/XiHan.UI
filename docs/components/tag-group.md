@@ -20,6 +20,12 @@
 
 <XhDemo src="tag-group/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="tag-group"`：`root` · `label` · **`list`** · **`cell`**
+
 ## 示例
 
 ### 可选中
@@ -68,7 +74,29 @@ size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自�
 - `collection` 是文本、禁用与可摘的事实源；也可以逐枚自己写。
 - 连打检索按首字母跳，只搬焦点、不改选中值。
 
-## 产物
+### 组合
+
+- 每一枚标签就是[标签](./tag)本身：形态 · 语气 · 尺寸三轴写在组上，逐枚落到每一枚的 `root` 上，样子全归 `tag.css`，`--xh-tag-*` 覆盖槽在组里照样生效。
+- 标签里的图元用[图标](./icon)。
+- 外面套[表单字段](./field)，标题就有了去处。
+
+### 最佳实践
+
+- 条目的去留是宿主的事：`item-delete` 只报「用户要摘这一枚」，宿主从自己的数据里删掉它。
+  组件不替宿主决定，因为撤销、二次确认、服务端失败回滚都只有宿主知道。
+- 摘掉一枚之后要有回退路径，否则用户误点就再也加不回来。
+- 标签文字尽量短，且首字母有区分度——连打检索按首字母跳。
+- 不接选中就把 `selectionMode` 留在 `none`：一排纯标记标签报「未选中」是句假话。
+
+### 反模式
+
+- 把整排标签铺成十个 Tab 停靠点：那正是这个组件要解决的问题，别再逐枚写[标签](./tag)。
+- 摘完不管焦点：被摘的那一枚带着焦点一起消失，焦点会掉回页面开头。
+- 用颜色单独表达含义：色觉障碍的用户分不出来，文字本身要说清楚。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -78,13 +106,7 @@ size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自�
 | 状态机 | `tagGroupMachine` |
 | 皮肤 | `@xihan-ui/styles/tag-group.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="tag-group"`：`root` · `label` · **`list`** · **`cell`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -106,18 +128,18 @@ size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自�
 | `onItemDelete` | `(details: TagGroupItemDeleteDetails) => void` |  | 摘除意图回调。条目由宿主的数据决定去留，组件只报「用户要摘这一枚」， 顺手把它从选中集合里去掉，并把焦点交给相邻的一枚。 |
 | `translations` | `Partial<TagGroupTranslations>` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TagGroupValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
 | `item-delete` | `TagGroupItemDeleteDetails` | 用户要摘掉某一枚；detail 为 `{ value: string }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -125,17 +147,17 @@ size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自�
 | `XhTagGroupRoot` | `label` | — |  |
 | `XhTagGroupRoot` | `item` | `TagGroupNodeMeta` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
 **事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `ITEM.DELETE` · `LIST.BLUR`
 
-## connect API
+### connect API
 
-`useTagGroup` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -159,7 +181,9 @@ size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自�
 | `getItemTextProps` | `(props: TagGroupItemProps) => T['element']` | 标签文字：tag 的 label，截断规则挂在那一层。 |
 | `getItemDeleteTriggerProps` | `(props: TagGroupItemProps) => T['button']` | 摘除钮：所在标签那份 tag 的 close-trigger，不占 Tab 位；可及名、禁用与收起都由 tag 给。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/grid/#keyboardinteraction)
 
@@ -176,9 +200,9 @@ size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自�
 | `Delete` / `Backspace` | focus on item, 该标签可摘且可改 | 摘掉焦点标签，并把焦点交给前一枚；前面没有就交给后一枚，一枚不剩就交给列表容器 |
 | `单个可打印字符` | focus in group, typeahead 未关 | 连打检索把焦点移到首字母匹配的标签，不改选中值 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -197,13 +221,15 @@ size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自�
 不许待在 `option` 这类控件角色里，`gridcell` 允许。所以 `list` 是 `grid`、每枚标签（[标签](./tag)的 `root`）
 担 `row`、标签里那一格是 `gridcell`——手写部件时 `cell` 这一层不能省，用 `collection` 则由组件自己铺开。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/tag-group.css` 按部件选择：`[data-scope="tag-group"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/tag-group.css` 使用 `[data-scope="tag-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -217,7 +243,7 @@ size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自�
 | `item` | `data-selectable` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -233,28 +259,8 @@ size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自�
 | `--xh-tag-group-list-gap` | `list` | `gap` | `default` | `--xh-space-1_5` | tag-group 的 list 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-## 组合
-
-- 每一枚标签就是[标签](./tag)本身：形态 · 语气 · 尺寸三轴写在组上，逐枚落到每一枚的 `root` 上，样子全归 `tag.css`，`--xh-tag-*` 覆盖槽在组里照样生效。
-- 标签里的图元用[图标](./icon)。
-- 外面套[表单字段](./field)，标题就有了去处。
-
-## 最佳实践
-
-- 条目的去留是宿主的事：`item-delete` 只报「用户要摘这一枚」，宿主从自己的数据里删掉它。
-  组件不替宿主决定，因为撤销、二次确认、服务端失败回滚都只有宿主知道。
-- 摘掉一枚之后要有回退路径，否则用户误点就再也加不回来。
-- 标签文字尽量短，且首字母有区分度——连打检索按首字母跳。
-- 不接选中就把 `selectionMode` 留在 `none`：一排纯标记标签报「未选中」是句假话。
-
-## 反模式
-
-- 把整排标签铺成十个 Tab 停靠点：那正是这个组件要解决的问题，别再逐枚写[标签](./tag)。
-- 摘完不管焦点：被摘的那一枚带着焦点一起消失，焦点会掉回页面开头。
-- 用颜色单独表达含义：色觉障碍的用户分不出来，文字本身要说清楚。

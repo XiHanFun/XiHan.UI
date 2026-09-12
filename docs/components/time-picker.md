@@ -16,6 +16,12 @@
 
 <XhDemo src="time-picker/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `segment-group` · **`segment`** · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · `column` · `item` · `hidden-input`
+
 ## 示例
 
 ### 分列步长
@@ -100,7 +106,23 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 - 输入框保持实体表面，浮层采用统一磨砂材质、细顶光和分隔线；时分秒与快捷选项各自滚动，共用一个浮层表面。
 - 浮层按实际弹出方向短距离淡入淡出，不缩放文字与数字；减弱动效和增强对比度沿用主题设置。
 
-## 产物
+### 组合
+
+- 与[日期选择器](./date-picker)配合组成日期时间选择。
+
+### 最佳实践
+
+- 把不可选的时段裁掉而不是置灰，列会短很多、也更快找到。
+- 打开时把浮层滚到当前值那一格。
+- 自定义格内文案要保持简短；对号由皮肤在固定轨中绘制，不要在插槽里再画第二份选中底或勾选标记。
+
+### 反模式
+
+- 步长设成 1 分钟：一列六十格，滚起来没有尽头。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -110,13 +132,7 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | 状态机 | `timePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/time-picker.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `segment-group` · **`segment`** · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · `column` · `item` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -147,18 +163,18 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `onValueChange` | `(details: TimePickerValueChangeDetails) => void` |  |  |
 | `onOpenChange` | `(details: TimePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TimePickerValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
 | `open-change` | `TimePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -167,9 +183,9 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `XhTimePickerPresetGroup` | `default` | `TimePickerPresetsSlotProps` | 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 |
 | `XhTimePickerRoot` | `default` | `TimePickerRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -182,7 +198,7 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `column` | 'open' \| 'closed' |
 | `item` | 'checked' \| 'unchecked' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -190,9 +206,9 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 
 **判据**：`isOpenControlled` · `canEdit` · `closesOnPreset`
 
-## connect API
+### connect API
 
-`useTimePicker` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -235,7 +251,9 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `getItemProps` | `(props: TimePickerItemProps) => T['element']` |  |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/#keyboardinteraction)
 
@@ -266,9 +284,9 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `Alt+ArrowDown` | focus in 某一段, closed, not disabled | 展开浮层并把焦点送进去；触发钮是可选部件，键盘那条入口不能只挂在它身上 |
 | `Enter` | focus in 某一段, open | 收起浮层。段位里敲出来的值不触发「选完即收」（那时人还在打字），这是那条路的收口手势 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -312,15 +330,17 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/time-picker.css` 按部件选择：`[data-scope="time-picker"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/time-picker.css` 使用 `[data-scope="time-picker"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -367,7 +387,7 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `item` | `data-state` | 'checked' \| 'unchecked' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -449,7 +469,7 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `--xh-time-picker-segment-radius` | `segment` | `border-radius` | `default` | `--xh-shape-inset` | time-picker 的 segment 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -457,20 +477,6 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[日期选择器](./date-picker)配合组成日期时间选择。
-
-## 最佳实践
-
-- 把不可选的时段裁掉而不是置灰，列会短很多、也更快找到。
-- 打开时把浮层滚到当前值那一格。
-- 自定义格内文案要保持简短；对号由皮肤在固定轨中绘制，不要在插槽里再画第二份选中底或勾选标记。
-
-## 反模式
-
-- 步长设成 1 分钟：一列六十格，滚起来没有尽头。

@@ -16,6 +16,12 @@
 
 <XhDemo src="reasoning/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="reasoning"`：**`root`** · **`trigger`** · `icon` · `indicator` · `label` · `duration` · **`content`**
+
 ## 示例
 
 ### 无壳内联形态
@@ -61,7 +67,27 @@ open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位
   一段回答里穿插好几处思考时用 `ghost`，它不占一块面，开关收成只占文字宽度的一枚小药丸。
 - 开合有动画：展开与收起是行高与内缩同帧动，收起在动画播完之后才真的落成隐藏。
 
-## 产物
+### 组合
+
+- 正文用[流式正文](./markdown-stream)：思考过程是散文，与工具调用的等宽结构块不同。
+  正文**放在一个容器里**：展开动画量的是第一行的行高，散落的多个兄弟节点收不干净。
+- 多段推理并排、要一次只展开一段时套[手风琴](./accordion)。
+- 要让「在想 → 想完」被读屏播报：把会话级的那一个活区放在推理块外面，
+  由它念一句结果——组件自己不开活区（见下），整段思考每来一个字都播报会把读屏刷爆。
+
+### 最佳实践
+
+- 想完之后把时长显示出来：读者据此判断这段推理值不值得展开。
+- 默认收起。思考过程是给想看的人看的，不是回答本身。
+
+### 反模式
+
+- 把思考过程当回答显示：两者混在一起时读者分不清哪句是结论。
+- 用它承载工具调用的参数与结果：正文排版是散文那一套，等宽结构块在这里会挤成一团。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -71,13 +97,7 @@ open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/reasoning.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="reasoning"`：**`root`** · **`trigger`** · `icon` · `indicator` · `label` · `duration` · **`content`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -89,25 +109,25 @@ open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位
 | `translations` | `Partial<ReasoningTranslations>` |  |  |
 | `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区（缺省档）、ghost 无壳内联。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `ToolCallOpenChangeDetails` | 开合变化；detail 为 `{ open: boolean, source: 'user' \| 'auto' \| 'api' }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhReasoningRoot` | `default` | `ReasoningRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -116,9 +136,9 @@ open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位
 | `indicator` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
 
-## connect API
+### connect API
 
-`useReasoning` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -136,7 +156,9 @@ open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位
 | `getDurationProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/)
 
@@ -144,9 +166,9 @@ open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位
 | --- | --- | --- |
 | `Enter` / `Space` | 焦点在折叠开关上且未禁用 | 展开或收起思考正文，并把自动开合永久停用 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -161,15 +183,17 @@ open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位
 - 不再另发 `aria-label`：另发会盖过节点里的文字，两者不一致时读屏念的与屏幕上看到的对不上。
 - 自己不开活区：整段思考每来一个字都播报会把读屏刷爆。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/reasoning.css` 按部件选择：`[data-scope="reasoning"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/reasoning.css` 使用 `[data-scope="reasoning"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -189,7 +213,7 @@ open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位
 | `content` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -229,7 +253,7 @@ open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位
 | `--xh-reasoning-trigger-radius` | `root`<br>`trigger` | `border-radius` | `variant=ghost` | `--xh-shape-control` | reasoning 的 root、trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-reasoning-collapse` · `xh-reasoning-expand` · `xh-reasoning-fade-in` · `xh-reasoning-shimmer` 随皮肤自带，不引用别处文件里的名字；`background` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -237,24 +261,6 @@ open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 正文用[流式正文](./markdown-stream)：思考过程是散文，与工具调用的等宽结构块不同。
-  正文**放在一个容器里**：展开动画量的是第一行的行高，散落的多个兄弟节点收不干净。
-- 多段推理并排、要一次只展开一段时套[手风琴](./accordion)。
-- 要让「在想 → 想完」被读屏播报：把会话级的那一个活区放在推理块外面，
-  由它念一句结果——组件自己不开活区（见下），整段思考每来一个字都播报会把读屏刷爆。
-
-## 最佳实践
-
-- 想完之后把时长显示出来：读者据此判断这段推理值不值得展开。
-- 默认收起。思考过程是给想看的人看的，不是回答本身。
-
-## 反模式
-
-- 把思考过程当回答显示：两者混在一起时读者分不清哪句是结论。
-- 用它承载工具调用的参数与结果：正文排版是散文那一套，等宽结构块在这里会挤成一团。

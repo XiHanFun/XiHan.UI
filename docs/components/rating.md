@@ -16,6 +16,12 @@
 
 <XhDemo src="rating/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="rating"`：**`root`** · `label` · **`control`** · `value-text` · **`item`** · `hidden-input`
+
 ## 示例
 
 ### 半星与悬停预览
@@ -83,7 +89,23 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 - 悬停预览与实际值分开，`onHoverChange` 单独回调。
 - 图案与颜色都可以换。
 
-## 产物
+### 组合
+
+- 外面套[表单字段](./field)；只读展示时与[统计数值](./statistic)并列。
+
+### 最佳实践
+
+- 档数固定在五档：更多档用户分辨不出差别。
+- 只读展示时把数值也写出来（4.2 / 5），图案本身读不出精确值。
+
+### 反模式
+
+- 用它展示进度：那是[进度条](./progress)。
+- 不允许清空却也没有默认值，用户误点后改不回来。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -93,13 +115,7 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | 状态机 | `ratingMachine` |
 | 皮肤 | `@xihan-ui/styles/rating.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="rating"`：**`root`** · `label` · **`control`** · `value-text` · **`item`** · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -119,33 +135,33 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `onValueChange` | `(details: RatingValueChangeDetails) => void` |  |  |
 | `onHoverChange` | `(details: RatingHoverChangeDetails) => void` |  | 悬停预览变化；指针离开时带 null。它不代表值变了。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `RatingValueChangeDetails` | 评分变化；detail 为 `{ value: number }` |
 | `hover-change` | `RatingHoverChangeDetails` | 悬停预览变化；detail 为 `{ value: number \| null }`，指针离开时带 null |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhRatingItem` | `default` | `RatingItemSlotProps` |  |
 | `XhRatingRoot` | `default` | `RatingRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `item` | 'checked' \| 'unchecked' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
@@ -153,9 +169,9 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 
 **判据**：`canInteract`
 
-## connect API
+### connect API
 
-`useRating` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -177,7 +193,9 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `getItemProps` | `(props: RatingItemProps) => T['element']` |  |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份视觉隐藏的原生输入，随表单提交当前评分。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/radio/#keyboardinteraction)
 
@@ -189,9 +207,9 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `Home` | focus in control, not disabled/readOnly | 取最小档（allowHalf 时是半颗，否则一颗） |
 | `End` | focus in control, not disabled/readOnly | 取满分（count） |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -210,15 +228,17 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `item` | `role` | 'radio' |
 | `hidden-input` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/rating.css` 按部件选择：`[data-scope="rating"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/rating.css` 使用 `[data-scope="rating"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -241,7 +261,7 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `hidden-input` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -260,26 +280,12 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `--xh-rating-value-text-font-size` | `value-text` | `font-size` | `default` | `--xh-_rating-font-size` | rating 的 value-text 部件 font-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 另有按 `dir` 分支的规则。
-
-## 组合
-
-- 外面套[表单字段](./field)；只读展示时与[统计数值](./statistic)并列。
-
-## 最佳实践
-
-- 档数固定在五档：更多档用户分辨不出差别。
-- 只读展示时把数值也写出来（4.2 / 5），图案本身读不出精确值。
-
-## 反模式
-
-- 用它展示进度：那是[进度条](./progress)。
-- 不允许清空却也没有默认值，用户误点后改不回来。

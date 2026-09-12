@@ -16,6 +16,12 @@
 
 <XhDemo src="affix/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="affix"`：**`root`** · **`content`**
+
 ## 示例
 
 ### 让出吸顶栏
@@ -54,7 +60,23 @@ affix-change 报吸住与松开；默认插槽也把 affixed 透出来
 - `offsetTop` 把判定线往下挪，钉住后也在同一位置留出这段高度；给了 `offsetBottom` 就改贴下边。
 - 吸附状态会回调，默认插槽也把它透出来。
 
-## 产物
+### 组合
+
+- 与[锚点](./anchor)配合做吸顶目录；与[工具栏](./toolbar)配合做吸顶操作条。
+
+### 最佳实践
+
+- 页面已有吸顶栏时把栏高填进 `offsetTop`，否则会两层叠在一起。
+- 钉住后给一点视觉变化（阴影或描边），让用户知道它已经脱离了原位。
+
+### 反模式
+
+- 一屏里钉住多个条：可视高度被吃光，正文只剩一条缝。
+- 在移动端钉住高条：小屏上这块面积很贵。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -64,13 +86,7 @@ affix-change 报吸住与松开；默认插槽也把 affixed 透出来
 | 状态机 | `affixMachine` |
 | 皮肤 | `@xihan-ui/styles/affix.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="affix"`：**`root`** · **`content`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -78,25 +94,25 @@ affix-change 报吸住与松开；默认插槽也把 affixed 透出来
 | `offsetBottom` | `number` |  | 吸住后距滚动容器可视区下边的距离（px）；给了它就改贴下边。 |
 | `onAffixChange` | `(details: AffixChangeDetails) => void` |  | 吸附状态变化回调。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `affix-change` | `AffixChangeDetails` | 吸附状态变化；detail 为 `{ affixed: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhAffixRoot` | `default` | `AffixRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`released` · `affixed`
 
@@ -104,9 +120,9 @@ affix-change 报吸住与松开；默认插槽也把 affixed 透出来
 
 **判据**：`shouldAffix` · `shouldRelease`
 
-## connect API
+### connect API
 
-`useAffix` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -114,26 +130,30 @@ affix-change 报吸住与松开；默认插槽也把 affixed 透出来
 | `getRootProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/affix.css` 按部件选择：`[data-scope="affix"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/affix.css` 使用 `[data-scope="affix"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `content` | `data-fixed` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -142,20 +162,6 @@ affix-change 报吸住与松开；默认插槽也把 affixed 透出来
 | `--xh-affix-layer` | `content` | `z-index` | `fixed` | `--xh-layer-sticky` | affix 的 content 部件 z-index 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
-
-## 组合
-
-- 与[锚点](./anchor)配合做吸顶目录；与[工具栏](./toolbar)配合做吸顶操作条。
-
-## 最佳实践
-
-- 页面已有吸顶栏时把栏高填进 `offsetTop`，否则会两层叠在一起。
-- 钉住后给一点视觉变化（阴影或描边），让用户知道它已经脱离了原位。
-
-## 反模式
-
-- 一屏里钉住多个条：可视高度被吃光，正文只剩一条缝。
-- 在移动端钉住高条：小屏上这块面积很贵。

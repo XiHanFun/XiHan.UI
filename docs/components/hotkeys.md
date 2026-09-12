@@ -59,7 +59,26 @@ useHotkeys 只安装监听，展示是 Kbd/KbdGroup 的独立职责
 - 输入法组合期间不响应。
 - `target` 缺省为所属 Document；局部监听必须传返回真实 EventTarget 的 resolver，不猜组件父节点。
 
-## 产物
+### 组合
+
+- XhHotkeys 负责触发动作，XhKbdGroup 负责在动作入口旁展示同一份 `keys`。
+- React/Vue 的 renderless 组件不渲染 children；Web Components 行为宿主也不接管子节点，保持元素为空。
+
+### 最佳实践
+
+- 全局动作使用 `target="document"` 缺省；局部动作显式返回面板节点。
+- 组件卸载或组合式作用域销毁后监听会自动解绑；命令式提前停止使用 `stop()`。
+- 跨平台主修饰键写 `Mod`，不要写死 Ctrl 或 Meta。
+
+### 反模式
+
+- 用 XhHotkeys 只为了显示键帽。
+- 使用已删除的 `target="parent"` 依赖不可见宿主猜测范围。
+- 传空 keys 或多个主键，得到静默无效注册。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -68,7 +87,7 @@ useHotkeys 只安装监听，展示是 Kbd/KbdGroup 的独立职责
 | 组合式函数 | `useHotkeys` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -79,17 +98,17 @@ useHotkeys 只安装监听，展示是 Kbd/KbdGroup 的独立职责
 | `preventDefault` | `boolean` |  | 命中后拦下浏览器的默认动作，缺省开启（注册 Mod+S 就是为了不让浏览器弹保存）。 |
 | `target` | `HotkeysTarget` |  | 监听装在哪儿，缺省 'document'；局部监听传返回 EventTarget 的函数。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `hot-key` | `HotkeysTriggerDetails` | 组合被按出来；detail 为 `{ keys: string[], event: KeyboardEvent }` |
 
-## connect API
+### connect API
 
-`useHotkeys` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -100,7 +119,9 @@ useHotkeys 只安装监听，展示是 Kbd/KbdGroup 的独立职责
 | `matches` | `(event: KeyboardEvent) => boolean` | 这次按键是否命中本组合（含输入法组合期与打字落点的排除）。 |
 | `handleKeyDown` | `(event: KeyboardEvent) => void` | 适配器把它挂到监听节点的 keydown 上：命中即按 preventDefault 决定拦不拦，并回调 onHotKey。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/TR/uievents/#event-type-keydown)
 
@@ -109,25 +130,6 @@ useHotkeys 只安装监听，展示是 Kbd/KbdGroup 的独立职责
 | `keys 指定的组合` | enabled 未关，且不在输入法组合期 | 触发 onHotKey；preventDefault 开启（默认）时同时拦下浏览器的默认动作 |
 | `keys 指定的组合` | 组合里没有 Ctrl / Meta / Alt，且按键落在输入框、文本域或可编辑区里 | 不触发也不拦：这类组合与打字撞车，输入优先 |
 
-## 无障碍
-
 - 快捷键不能成为动作的唯一路径，必须有可见且可点击的等价入口。
 - 展示提示显式组合 KbdGroup；它用组级名称只朗读一次组合。
 - 避免占用浏览器和读屏既有组合。
-
-## 组合
-
-- XhHotkeys 负责触发动作，XhKbdGroup 负责在动作入口旁展示同一份 `keys`。
-- React/Vue 的 renderless 组件不渲染 children；Web Components 行为宿主也不接管子节点，保持元素为空。
-
-## 最佳实践
-
-- 全局动作使用 `target="document"` 缺省；局部动作显式返回面板节点。
-- 组件卸载或组合式作用域销毁后监听会自动解绑；命令式提前停止使用 `stop()`。
-- 跨平台主修饰键写 `Mod`，不要写死 Ctrl 或 Meta。
-
-## 反模式
-
-- 用 XhHotkeys 只为了显示键帽。
-- 使用已删除的 `target="parent"` 依赖不可见宿主猜测范围。
-- 传空 keys 或多个主键，得到静默无效注册。

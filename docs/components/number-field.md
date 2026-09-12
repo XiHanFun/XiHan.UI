@@ -16,6 +16,12 @@
 
 <XhDemo src="number-field/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="number-field"`：**`root`** · `label` · `control` · `prefix` · **`input`** · `suffix` · `increment-trigger` · `decrement-trigger`
+
 ## 示例
 
 ### 区间与步长
@@ -125,7 +131,34 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
   指针和公开 API 操作。到达 `min` / `max` 时只禁用对应方向，`disabled` / `readOnly` 才同时锁住两侧。
 - 分隔线长度为控件高度的一半，颜色默认取 M1 柔和分隔色；位置使用逻辑属性，RTL 下自动换边。
 
-## 产物
+### 组合
+
+- 外面套[表单字段](./field)；单位与货币符号放进框内前后缀。
+
+### 最佳实践
+
+- 给出 `min` / `max`，让键盘用户按住方向键时有个尽头。
+- 显示格式与提交值分开：显示可以带千分位，提交的是纯数值。
+- 自定义加减钮尺寸时同步检查窄容器与粗指针；真实动作盒不能覆盖输入区，也不能彼此相交。
+
+### 当前边界
+
+- 默认解析使用严格的 `Number()` 语义，不识别本地化小数分隔符；需要千分位、逗号小数或单位时，
+  显式提供互逆的 `parse` / `format`。组件不会猜测 locale。
+- 空串与非法文本会以原串保留，失焦不会把它们悄悄改成另一个数；此时调用步进会从 `min`（有值时）
+  或 `0` 开始。业务校验和错误文案由表单层明确提供。
+- 长按当前按固定节奏重复：默认先等 300ms，再每 50ms 步进一次；尚未提供加速曲线。
+- 输入使用 `type="text"` 与 `inputmode="decimal"`，组件不接管滚轮，避免页面滚动时意外改值。
+- 当前标准组合是水平排列的减号、输入与加号；上下堆叠动作尚未纳入既有 anatomy，不能只靠皮肤伪造。
+
+### 反模式
+
+- 加减钮做得太小：这是移动端最常见的误触来源。
+- 用它输入年份、邮编、身份证号。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -135,13 +168,7 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | 状态机 | `numberFieldMachine` |
 | 皮肤 | `@xihan-ui/styles/number-field.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="number-field"`：**`root`** · `label` · `control` · `prefix` · **`input`** · `suffix` · `increment-trigger` · `decrement-trigger`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -165,25 +192,25 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | `format` | `(value: number) => string` |  | 数 → 显示串。默认 `String(n)`。**只在组件自己改写显示时用**——步进、取端点、 失焦规范化这三处；用户正在打字时一律不碰，否则光标会被打断。 |
 | `onValueChange` | `(details: NumberFieldValueChangeDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `NumberFieldValueChangeDetails` | 值变化；detail 为 `{ value: string, valueAsNumber: number }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhNumberFieldRoot` | `default` | `NumberFieldRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `spinning`
 
@@ -191,9 +218,9 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 
 **判据**：`canStep`
 
-## connect API
+### connect API
 
-`useNumberField` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -217,7 +244,9 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | `getIncrementTriggerProps` | `() => T['button']` |  |
 | `getDecrementTriggerProps` | `() => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton/#keyboardinteraction)
 
@@ -230,9 +259,9 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | `Home` | focus in input, 指定了 min | 取 min；未指定 min 时不动 |
 | `End` | focus in input, 指定了 max | 取 max；未指定 max 时不动 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -245,13 +274,15 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | `input` | `role` | 'spinbutton' |
 | `suffix` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/number-field.css` 按部件选择：`[data-scope="number-field"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/number-field.css` 使用 `[data-scope="number-field"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -274,7 +305,7 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | `decrement-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -339,41 +370,16 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | `--xh-number-field-trigger-size` | `decrement-trigger`<br>`increment-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-_number-field-trigger-size` | number-field 的 decrement-trigger、increment-trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 外面套[表单字段](./field)；单位与货币符号放进框内前后缀。
-
-## 最佳实践
-
-- 给出 `min` / `max`，让键盘用户按住方向键时有个尽头。
-- 显示格式与提交值分开：显示可以带千分位，提交的是纯数值。
-- 自定义加减钮尺寸时同步检查窄容器与粗指针；真实动作盒不能覆盖输入区，也不能彼此相交。
-
-### 当前边界
-
-- 默认解析使用严格的 `Number()` 语义，不识别本地化小数分隔符；需要千分位、逗号小数或单位时，
-  显式提供互逆的 `parse` / `format`。组件不会猜测 locale。
-- 空串与非法文本会以原串保留，失焦不会把它们悄悄改成另一个数；此时调用步进会从 `min`（有值时）
-  或 `0` 开始。业务校验和错误文案由表单层明确提供。
-- 长按当前按固定节奏重复：默认先等 300ms，再每 50ms 步进一次；尚未提供加速曲线。
-- 输入使用 `type="text"` 与 `inputmode="decimal"`，组件不接管滚轮，避免页面滚动时意外改值。
-- 当前标准组合是水平排列的减号、输入与加号；上下堆叠动作尚未纳入既有 anatomy，不能只靠皮肤伪造。
-
-## 反模式
-
-- 加减钮做得太小：这是移动端最常见的误触来源。
-- 用它输入年份、邮编、身份证号。

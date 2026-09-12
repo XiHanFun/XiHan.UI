@@ -16,6 +16,12 @@
 
 <XhDemo src="segmented/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="segmented"`：**`root`** · **`item`** · `item-text` · `indicator` · `hidden-input`
+
 ## 示例
 
 ### 受控
@@ -82,7 +88,28 @@ size 换的是段的高度、内边距与字号，指示器跟着量出来的段
 - 指示器位置由组件量出来，横排竖排、ltr 与 rtl 都是同一条规则。
 - 语气 · 尺寸两轴与其余组件同源；`block` 让整组撑满行宽、各段等分。
 
-## 产物
+### 组合
+
+- 放进[表单字段](./field)里，让标签、说明与错误文案一并接上。
+- 与[标签页](./tabs)搭：分段控件切数据口径，标签页切内容面板，两者不要互相顶替。
+
+### 最佳实践
+
+- 各段文字长度尽量接近：长短悬殊时指示器一滑，整排宽度会跟着跳。
+- 段数固定下来再上：分段控件不适合数量会变的选项集。
+- 选中态别只靠指示器的颜色区分，文字色也要跟着变，色觉障碍的用户才分得出。
+- 段的文字不走 `collection` 而是自己手写、且会在运行期改动时，改完叫一次 `measure()`：指示器只跟着选中值、集合与根的尺寸走，段内文字撑宽了它看不见。
+- 动态摘掉正持有焦点的那一段（比如按权限过滤掉它）之后，焦点会掉回 `<body>`。组件只保证 Tab 位退回容器、键盘还进得来；要不丢位置，得由页面自己把焦点挪到相邻的那一段上。
+
+### 反模式
+
+- 把它当按钮组用：段是一个值的几个取值，不是几个动作。要触发动作用[按钮组](./button-group)。
+- 一行里塞七八段：那已经是个下拉框了，还占着整行宽度。
+- 用它切换整页内容却不改地址：用户刷新一次就回到了第一段。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -92,13 +119,7 @@ size 换的是段的高度、内边距与字号，指示器跟着量出来的段
 | 状态机 | `segmentedMachine` |
 | 皮肤 | `@xihan-ui/styles/segmented.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="segmented"`：**`root`** · **`item`** · `item-text` · `indicator` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -118,34 +139,34 @@ size 换的是段的高度、内边距与字号，指示器跟着量出来的段
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: SegmentedValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `SegmentedValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| null }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhSegmentedRoot` | `default` | — |  |
 | `XhSegmentedRoot` | `item` | `SegmentedNodeMeta` | 铺开 collection 时每一段的文本插槽。 |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
 **事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.FOCUS` · `GROUP.BLUR` · `INDICATOR.MEASURE` · `FORM.RESET`
 
-## connect API
+### connect API
 
-`useSegmented` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -163,7 +184,9 @@ size 换的是段的高度、内边距与字号，指示器跟着量出来的段
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getHiddenInputProps` | `() => T['input']` | 选中值随这份原生输入提交。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/radio/#keyboardinteraction)
 
@@ -176,9 +199,9 @@ size 换的是段的高度、内边距与字号，指示器跟着量出来的段
 | `End` | focus in group, 组未禁用 | 焦点移到末个可停留段并选中它；只读时只移焦点 |
 | `Enter` / `Space` | focus on item, 该段未禁用且组非只读 | 选中当前段；段是原生 button，这两个键由平台翻成 click |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -198,13 +221,15 @@ size 换的是段的高度、内边距与字号，指示器跟着量出来的段
 - 组本身没有可见标题，请自己给根节点写 `aria-label` 或 `aria-labelledby`，否则读屏只会念"单选组"。
 - 指示器是纯装饰，对读屏隐藏；"当前是哪一段"靠段自己的选中态表达，指示器不渲染也读得出来。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/segmented.css` 按部件选择：`[data-scope="segmented"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/segmented.css` 使用 `[data-scope="segmented"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -219,7 +244,7 @@ size 换的是段的高度、内边距与字号，指示器跟着量出来的段
 | `indicator` | `data-value` | context.get('value') |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -250,39 +275,20 @@ size 换的是段的高度、内边距与字号，指示器跟着量出来的段
 | `--xh-segmented-track-padding` | `item`<br>`root` | `min-block-size`<br>`padding` | `default`<br>`orientation=horizontal` | `--xh-space-0_5` | segmented 的 item、root 部件 min-block-size、padding 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background-color` · `block-size` · `box-shadow` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
 - 方向从 DOM 现读：整页或某个祖先声明了 `dir='rtl'`（或 CSS `direction`），左右方向键的语义与指示器的起始缘就一起翻过来，不必再给组件传一遍。上下键不受影响。
 - `dir` 属性是显式覆盖：给了就以它为准，用在「整页 ltr、局部一块 rtl」这类场合。
 - 指示器的偏移按逻辑起始缘量，rtl 下自动从右缘算起，不必另写一套样式。
-
-## 组合
-
-- 放进[表单字段](./field)里，让标签、说明与错误文案一并接上。
-- 与[标签页](./tabs)搭：分段控件切数据口径，标签页切内容面板，两者不要互相顶替。
-
-## 最佳实践
-
-- 各段文字长度尽量接近：长短悬殊时指示器一滑，整排宽度会跟着跳。
-- 段数固定下来再上：分段控件不适合数量会变的选项集。
-- 选中态别只靠指示器的颜色区分，文字色也要跟着变，色觉障碍的用户才分得出。
-- 段的文字不走 `collection` 而是自己手写、且会在运行期改动时，改完叫一次 `measure()`：指示器只跟着选中值、集合与根的尺寸走，段内文字撑宽了它看不见。
-- 动态摘掉正持有焦点的那一段（比如按权限过滤掉它）之后，焦点会掉回 `<body>`。组件只保证 Tab 位退回容器、键盘还进得来；要不丢位置，得由页面自己把焦点挪到相邻的那一段上。
-
-## 反模式
-
-- 把它当按钮组用：段是一个值的几个取值，不是几个动作。要触发动作用[按钮组](./button-group)。
-- 一行里塞七八段：那已经是个下拉框了，还占着整行宽度。
-- 用它切换整页内容却不改地址：用户刷新一次就回到了第一段。

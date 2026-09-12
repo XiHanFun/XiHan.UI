@@ -16,6 +16,12 @@
 
 <XhDemo src="toggle-group/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="toggle-group"`：**`root`** · **`item`** · `separator` · `hidden-input`
+
 ## 示例
 
 ### 受控与不可清空
@@ -81,7 +87,23 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 - 条目一律 `aria-disabled` 而非原生 `disabled`：点不动但焦点落得上去，仍能当方向键的起点。
 - 给了 `collection` 就由它做显示文本与禁用的事实源，条目部件只需报 `value`。
 
-## 产物
+### 组合
+
+- 与[工具栏](./toolbar)嵌套：工具栏管跨组导航，本组管组内。
+
+### 最佳实践
+
+- 段数固定在二到五段，段宽尽量等长，切换时整条不该变宽。
+- 单选组默认允许点空；表单里当必填项用时把 `disallowEmpty` 打开。
+
+### 反模式
+
+- 拿它当[标签页](./tabs)用：标签页有面板关联（`aria-controls`）与相应的读屏语义，切换按钮组没有。
+- 关掉 `rovingFocus` 却不另给导航方式：每段自成一个 Tab 停靠点，键盘用户要按很多次才能走完。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -91,13 +113,7 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | 状态机 | `toggleGroupMachine` |
 | 皮肤 | `@xihan-ui/styles/toggle-group.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="toggle-group"`：**`root`** · **`item`** · `separator` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -118,31 +134,31 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `rovingFocus` | `boolean` |  | roving tabindex，默认开启：整组只占一个 Tab 位，组内靠方向键走。 关掉后每个条目自成一个 Tab 停靠点，方向键不再接管。 |
 | `onValueChange` | `(details: ToggleGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `ToggleGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| string[] \| null }`（形态跟着 multiple 走） |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `item` | 'on' \| 'off' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
 **事件**：`VALUE.SET` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET`
 
-## connect API
+### connect API
 
-`useToggleGroup` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -158,7 +174,9 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `getSeparatorProps` | `() => T['element']` | 段与段之间的装饰竖线，纯视觉、读屏不念。 |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：整组只有一份，提交的就是当前选中值。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/#keyboardinteraction)
 
@@ -171,9 +189,9 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `End` | focus in group, 组未禁用且 rovingFocus 开启 | 焦点移到末个可停留条目 |
 | `Enter` / `Space` | focus on item, 条目未禁用 | 切换该条目；条目是原生 button，这两个键由平台翻成 click |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -185,15 +203,17 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `item` | `role` | undefined \| 'radio' |
 | `separator` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/toggle-group.css` 按部件选择：`[data-scope="toggle-group"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/toggle-group.css` 使用 `[data-scope="toggle-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -209,7 +229,7 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -246,30 +266,16 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `--xh-toggle-group-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | toggle-group 的 separator 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[工具栏](./toolbar)嵌套：工具栏管跨组导航，本组管组内。
-
-## 最佳实践
-
-- 段数固定在二到五段，段宽尽量等长，切换时整条不该变宽。
-- 单选组默认允许点空；表单里当必填项用时把 `disallowEmpty` 打开。
-
-## 反模式
-
-- 拿它当[标签页](./tabs)用：标签页有面板关联（`aria-controls`）与相应的读屏语义，切换按钮组没有。
-- 关掉 `rovingFocus` 却不另给导航方式：每段自成一个 Tab 停靠点，键盘用户要按很多次才能走完。

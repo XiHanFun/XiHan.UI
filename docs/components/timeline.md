@@ -16,6 +16,12 @@
 
 <XhDemo src="timeline/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="timeline"`：**`root`** · **`item`** · `label` · `indicator` · `connector` · `content` · `title` · `description` · `time`
+
 ## 示例
 
 ### 逐条语气
@@ -66,7 +72,23 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 - 支持横排。
 - `label` 是与内容对置的那一列，装这一条的坐标（日期、版本号）；逐条交替排布时时间戳因此不跟着内容左右横跳。
 
-## 产物
+### 组合
+
+- 时间位放[时间戳](./timestamp)；内容里放[卡片](./card)或[描述列表](./descriptions)。
+
+### 最佳实践
+
+- 顺序保持一致：要么恒为最新在上，要么恒为最早在上，别混。
+- 每条都写清楚时刻，只写"刚刚"在回溯时没有价值。
+
+### 反模式
+
+- 条数很多却不折叠：一条时间线拉出十屏。
+- 用颜色区分事件类型却不给文字。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -75,13 +97,7 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/timeline.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="timeline"`：**`root`** · **`item`** · `label` · `indicator` · `connector` · `content` · `title` · `description` · `time`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -89,9 +105,9 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 | `placement` | `TimelinePlacement` |  | 内容在线的哪一侧：start / end / alternate，不写则内容落在结束侧。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定圆点直径、条目间距与字号。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -105,15 +121,17 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 | `getDescriptionProps` | `() => T['element']` |  |
 | `getTimeProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -122,13 +140,15 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 | `indicator` | `aria-hidden` | 'true' |
 | `connector` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/timeline.css` 按部件选择：`[data-scope="timeline"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/timeline.css` 使用 `[data-scope="timeline"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -143,7 +163,7 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 | `connector` | `data-orientation` | props.orientation |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -175,30 +195,16 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 | `--xh-timeline-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-label-weight` | timeline 的 title 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤按视口分档：`min-width: 768px`。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 时间位放[时间戳](./timestamp)；内容里放[卡片](./card)或[描述列表](./descriptions)。
-
-## 最佳实践
-
-- 顺序保持一致：要么恒为最新在上，要么恒为最早在上，别混。
-- 每条都写清楚时刻，只写"刚刚"在回溯时没有价值。
-
-## 反模式
-
-- 条数很多却不折叠：一条时间线拉出十屏。
-- 用颜色区分事件类型却不给文字。

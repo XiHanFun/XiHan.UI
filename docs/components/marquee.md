@@ -16,6 +16,12 @@
 
 <XhDemo src="marquee/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="marquee"`：**`root`** · **`content`**
+
 ## 示例
 
 ### 方向
@@ -53,7 +59,23 @@ speed 是每秒像素；pauseOnHover 在指针停下或焦点落进窗口时停�
 - `direction` 换方向，`speed` 调速度；速度按 `--xh-marquee-span` 换算成一圈时长，要逐字对上每秒像素数就把这支槽改到内容的真实长度。
 - `pauseOnHover` 悬停暂停，`paused` 由作者说了算——受控那一档比悬停优先。
 
-## 产物
+### 组合
+
+- 里面放[图片](./image)做 logo 墙，或[徽标](./badge)做标签流。
+
+### 最佳实践
+
+- 一定要能暂停：悬停暂停是最低要求。
+- 系统开启减弱动效时应当停下来。
+
+### 反模式
+
+- 用它承载唯一的重要信息（故障公告、截止时间）。
+- 速度快到读不完一句话。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -62,13 +84,7 @@ speed 是每秒像素；pauseOnHover 在指针停下或焦点落进窗口时停�
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/marquee.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="marquee"`：**`root`** · **`content`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -78,9 +94,9 @@ speed 是每秒像素；pauseOnHover 在指针停下或焦点落进窗口时停�
 | `pauseOnHover` | `boolean` |  | 指针停在窗口上时暂停；键盘焦点落进窗口时同样暂停。 |
 | `speed` | `number` |  | 名义上的每秒像素数。写成根上的内联变量，皮肤拿一份内容的长度除以它换成一圈的时长。 那个长度取的是 `--xh-marquee-span`——CSS 读不到布局尺寸，槽里放的是一个缺省值。 把它改到与内容真实长度一致时速度才逐字等于每秒这么多像素，否则它是一个成比例的快慢档。 只收有限正数；其余值不写出，退回皮肤缺省。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -88,18 +104,22 @@ speed 是每秒像素；pauseOnHover 在指针停下或焦点落进窗口时停�
 | `getRootProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/marquee.css` 按部件选择：`[data-scope="marquee"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/marquee.css` 使用 `[data-scope="marquee"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -111,30 +131,16 @@ speed 是每秒像素；pauseOnHover 在指针停下或焦点落进窗口时停�
 | `--xh-marquee-speed` | `content`<br>`root` | `animation-duration` | `auto-fill`<br>`default` | `60` | marquee 的 content、root 部件 animation-duration 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-marquee-x` · `xh-marquee-y` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`hover: hover`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 里面放[图片](./image)做 logo 墙，或[徽标](./badge)做标签流。
-
-## 最佳实践
-
-- 一定要能暂停：悬停暂停是最低要求。
-- 系统开启减弱动效时应当停下来。
-
-## 反模式
-
-- 用它承载唯一的重要信息（故障公告、截止时间）。
-- 速度快到读不完一句话。

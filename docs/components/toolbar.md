@@ -16,6 +16,12 @@
 
 <XhDemo src="toolbar/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="toolbar"`：**`root`** · `group` · **`item`** · `separator`
+
 ## 示例
 
 ### 分组
@@ -79,7 +85,23 @@ surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时
 - 禁用走 `aria-disabled`：禁用项仍聚焦得上、仍能当方向键的起点，只是方向键路过时跳过它。
 - 工具栏只定主轴与条目间距，怎么分布交给 CSS。
 
-## 产物
+### 组合
+
+- 条目用[切换按钮](./toggle)、[切换按钮组](./toggle-group)、[菜单](./menu)的触发器；分组之间放[分隔线](./separator)。
+
+### 最佳实践
+
+- 只画图标的条目必须自带 `aria-label`。
+- 尺寸只写在条上，条目自身的高度与字号归条目的皮肤管。
+
+### 反模式
+
+- 在工具栏里放文本输入：方向键会被输入框吃掉，条内导航当场失效。
+- 把整页的所有动作都塞进一条工具栏。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -89,13 +111,7 @@ surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时
 | 状态机 | `toolbarMachine` |
 | 皮肤 | `@xihan-ui/styles/toolbar.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="toolbar"`：**`root`** · `group` · **`item`** · `separator`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -106,25 +122,25 @@ surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时
 | `variant` | `ToolbarVariant` |  | 形态：plain / surface，决定工具条自己画不画一块面。缺省 surface。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。工具条是布局容器，只换排布尺寸，不带语气。 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhToolbarRoot` | `default` | `ToolbarRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
 **事件**：`ITEM.FOCUS` · `TOOLBAR.BLUR`
 
-## connect API
+### connect API
 
-`useToolbar` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -137,7 +153,9 @@ surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时
 | `getItemProps` | `(props: ToolbarItemProps) => T['element']` |  |
 | `getSeparatorProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/#keyboardinteraction)
 
@@ -150,9 +168,9 @@ surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时
 | `End` | 焦点在条内且未整条禁用 | 焦点移到末个可停留条目 |
 | `交叉轴的两个方向键` | 焦点在条内（横排按上下、竖排按左右） | 不归工具条管：原样放行给页面滚动与读屏，绝不 preventDefault |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -164,15 +182,17 @@ surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时
 | `separator` | `aria-orientation` | 'vertical' \| 'horizontal' |
 | `separator` | `role` | 'separator' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/toolbar.css` 按部件选择：`[data-scope="toolbar"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/toolbar.css` 使用 `[data-scope="toolbar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -186,7 +206,7 @@ surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时
 | `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -208,26 +228,12 @@ surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时
 | `--xh-toolbar-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | toolbar 的 separator 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 条目用[切换按钮](./toggle)、[切换按钮组](./toggle-group)、[菜单](./menu)的触发器；分组之间放[分隔线](./separator)。
-
-## 最佳实践
-
-- 只画图标的条目必须自带 `aria-label`。
-- 尺寸只写在条上，条目自身的高度与字号归条目的皮肤管。
-
-## 反模式
-
-- 在工具栏里放文本输入：方向键会被输入框吃掉，条内导航当场失效。
-- 把整页的所有动作都塞进一条工具栏。

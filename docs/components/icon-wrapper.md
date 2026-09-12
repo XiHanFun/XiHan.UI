@@ -16,6 +16,12 @@
 
 <XhDemo src="icon-wrapper/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="icon-wrapper"`：**`root`**
+
 ## 示例
 
 ### 形态
@@ -53,7 +59,22 @@
 - 底座直径与里面图元的直径同一个 `size` 档一起换。
 - 四种形态只决定底色、描边与前景怎么用，直径与形状一个字不动。
 
-## 产物
+### 组合
+
+- 里面放[图标](./icon)；外面常与[空状态](./empty-state)、[列表](./list)一起用。
+
+### 最佳实践
+
+- 一组图标块保持同一档尺寸与同一种形态，只让语气变化。
+- 它本身不可点：要点击就把它放进[按钮](./button)里，别给底座挂事件。
+
+### 反模式
+
+- 用它替代[徽标](./badge)表达计数：底座是容器，不是数值载体。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -62,13 +83,7 @@
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/icon-wrapper.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="icon-wrapper"`：**`root`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -76,27 +91,31 @@
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定底色、描边与前景怎么用。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/icon-wrapper.css` 按部件选择：`[data-scope="icon-wrapper"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/icon-wrapper.css` 使用 `[data-scope="icon-wrapper"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -105,7 +124,7 @@
 | `root` | `data-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -119,19 +138,6 @@
 | `--xh-icon-wrapper-size` | `root` | `block-size`<br>`inline-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | icon-wrapper 的 root 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
-
-## 组合
-
-- 里面放[图标](./icon)；外面常与[空状态](./empty-state)、[列表](./list)一起用。
-
-## 最佳实践
-
-- 一组图标块保持同一档尺寸与同一种形态，只让语气变化。
-- 它本身不可点：要点击就把它放进[按钮](./button)里，别给底座挂事件。
-
-## 反模式
-
-- 用它替代[徽标](./badge)表达计数：底座是容器，不是数值载体。

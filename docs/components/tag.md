@@ -17,6 +17,12 @@
 
 <XhDemo src="tag/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="tag"`：**`root`** · `label` · `close-trigger`
+
 ## 示例
 
 ### 形态
@@ -83,7 +89,29 @@ readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰�
 - `readOnly` 只锁关闭钮：钮留在原地但按不动，标签本身不置灰；宿主整体只读时逐枚传下来即可。
 - Vue 侧默认插槽里只有文字时自动包一层 `label`，截断规则直接生效。
 
-## 产物
+### 组合
+
+- 一排标签用[弹性布局](./flex)排开。
+- 标签里的图元用[图标](./icon)。
+- 文字过长时配[文本截断](./truncate)，或直接让皮肤截断。
+
+### 最佳实践
+
+- 关闭钮的可访问名要带上标签文字：默认只念 Delete，一屏十个标签听起来一模一样。逐实例传 `translations.close` 写成"移除 前端"。
+- 摘掉一枚之后要把焦点交出去：标签是成排出现的，被摘的那一枚带着焦点一起消失，焦点会掉回页面开头，键盘与读屏用户每摘一次就丢一次位置。交给顶上来的那一枚的关闭钮，一枚不剩就交给列表容器或"还原"钮。组件不替宿主决定去留，这件事也就只能宿主自己接。
+- 摘掉一个标签之后要有回退路径，否则用户误点就再也加不回来。
+- 标签文字尽量短：它是身份标记，不是句子。
+
+### 反模式
+
+- 自定义元素里把文字直接写在 `root` 上：文字过长时会把关闭钮挤出去，要写进 `data-xh-part="label"`。
+- 把标签当按钮用：整块可点却没有按钮语义，键盘用户根本按不到。
+- 一屏铺满高饱和度的实心标签：全都在喊，等于都没喊。
+- 用颜色单独表达含义：色觉障碍的用户分不出来，文字本身要说清楚。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -93,13 +121,7 @@ readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰�
 | 状态机 | `tagMachine` |
 | 皮肤 | `@xihan-ui/styles/tag.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="tag"`：**`root`** · `label` · `close-trigger`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -114,23 +136,23 @@ readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰�
 | `onOpenChange` | `(details: TagOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 | `translations` | `Partial<TagTranslations>` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `TagOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -138,9 +160,9 @@ readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰�
 
 **判据**：`isOpenControlled`
 
-## connect API
+### connect API
 
-`useTag` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -152,7 +174,9 @@ readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰�
 | `getLabelProps` | `() => T['element']` |  |
 | `getCloseTriggerProps` | `() => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction)
 
@@ -160,21 +184,23 @@ readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰�
 | --- | --- | --- |
 | `Enter` / `Space` | focus 在 close-trigger 上，且 closable 且未禁用、非只读 | 收起标签并通知 open=false；关闭钮是原生 button，这两个键由平台翻成 click |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `close-trigger` | `aria-label` | props.translations.close |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/tag.css` 按部件选择：`[data-scope="tag"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/tag.css` 使用 `[data-scope="tag"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -186,7 +212,7 @@ readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰�
 | `close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -212,32 +238,12 @@ readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰�
 | `--xh-tag-shadow` | `root` | `box-shadow` | `default`<br>`variant=solid` | `--xh-_tag-highlight`<br>`--xh-material-soft-shadow` | tag 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 一排标签用[弹性布局](./flex)排开。
-- 标签里的图元用[图标](./icon)。
-- 文字过长时配[文本截断](./truncate)，或直接让皮肤截断。
-
-## 最佳实践
-
-- 关闭钮的可访问名要带上标签文字：默认只念 Delete，一屏十个标签听起来一模一样。逐实例传 `translations.close` 写成"移除 前端"。
-- 摘掉一枚之后要把焦点交出去：标签是成排出现的，被摘的那一枚带着焦点一起消失，焦点会掉回页面开头，键盘与读屏用户每摘一次就丢一次位置。交给顶上来的那一枚的关闭钮，一枚不剩就交给列表容器或"还原"钮。组件不替宿主决定去留，这件事也就只能宿主自己接。
-- 摘掉一个标签之后要有回退路径，否则用户误点就再也加不回来。
-- 标签文字尽量短：它是身份标记，不是句子。
-
-## 反模式
-
-- 自定义元素里把文字直接写在 `root` 上：文字过长时会把关闭钮挤出去，要写进 `data-xh-part="label"`。
-- 把标签当按钮用：整块可点却没有按钮语义，键盘用户根本按不到。
-- 一屏铺满高饱和度的实心标签：全都在喊，等于都没喊。
-- 用颜色单独表达含义：色觉障碍的用户分不出来，文字本身要说清楚。

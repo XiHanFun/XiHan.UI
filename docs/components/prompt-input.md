@@ -16,6 +16,12 @@ Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，�
 
 <XhDemo src="prompt-input/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="prompt-input"`：**`root`** · `control` · **`input`** · **`submit-trigger`**
+
 ## 示例
 
 ### 与消息流合成一个对话
@@ -100,7 +106,31 @@ tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受
 - 发送按钮留空时皮肤画兜底字形：发送身份一枚上箭头，停止身份一枚圆角方块；
   塞进自己的图标或文案即盖掉它。
 
-## 产物
+### 组合
+
+- 附件用[文件上传](./file-upload)：它已覆盖 accept、大小校验、拖拽投放与逐条删除；
+  有附件而正文为空时把 `allowEmptySubmit` 置真。附件条摆在输入行上方，动作行摆在下方，
+  两者都是 root 的直接子节点，与输入行并列。
+- 粘贴上传由作者在输入框上自己挂 `onPaste`，处理器会与组件的链式组合。
+- 模型选择器用[选择器](./select)或[组合框](./combobox)，工具开关用[开关组](./toggle-group)，
+  它们连同自己的容器一起摆进输入行下方的那一段。
+- 与[消息流](./message-feed)合起来就是一个最小对话界面。
+
+### 最佳实践
+
+- 受控用法下提交后由宿主清空；`clearOnSubmit` 关掉时组件不动值。
+- 生成期间把 `loading` 置真而不是把整个输入框禁用：用户还要能改下一句。
+- 要药丸形状不必换形态轴：在任意祖先上写一行 `--xh-prompt-input-radius: var(--xh-shape-pill)`，
+  按钮那一颗另有 `--xh-prompt-input-submit-radius`。形态轴只管底与描边怎么画。
+
+### 反模式
+
+- 另起一颗停止按钮摆在旁边：两颗按钮的位置会互相挤，且按下去的那一刻它正好换了位置。
+- 用 `disabled` 表达「正在生成」：那会连输入一起挡住，也把停止的出口一起关掉。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -110,13 +140,7 @@ tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/prompt-input.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="prompt-input"`：**`root`** · `control` · **`input`** · **`submit-trigger`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -135,9 +159,9 @@ tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受
 | `onSubmit` | `(details: PromptInputSubmitDetails) => void` |  |  |
 | `onStop` | `() => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -145,31 +169,31 @@ tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受
 | `submit` | `PromptInputSubmitDetails` | 提交；detail 为 `{ value: string }`，清空发生在派发之后。 与原生表单提交同名，故不冒泡，请直接在 `&lt;xh-prompt-input&gt;` 元素上监听 |
 | `stop` | `` | 生成期间按下停止；无 detail |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhPromptInputRoot` | `default` | `PromptInputRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `input` | state.get() |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **事件**：`VALUE.SET` · `COMPOSITION.START` · `COMPOSITION.END` · `KEY.SUBMIT` · `SUBMIT` · `STOP` · `CONTROLLED.DISABLE` · `CONTROLLED.ENABLE` · `CONTROLLED.VALUE.EMPTY` · `CONTROLLED.VALUE.FILLED`
 
 **判据**：`canSubmit` · `isLoading` · `isValueEmpty` · `isNextValueEmpty`
 
-## connect API
+### connect API
 
-`usePromptInput` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -186,7 +210,9 @@ tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受
 | `getInputProps` | `() => T['textarea']` |  |
 | `getSubmitTriggerProps` | `() => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/WCAG21/Understanding/keyboard)
 
@@ -201,9 +227,9 @@ tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受
 | `Enter` / `Space` | 焦点在发送按钮上 | 按当前身份触发提交或停止（原生按钮激活） |
 | `Escape` | 任何时候 | 不接管：留给叠在输入框上的浮层与页面 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -215,15 +241,17 @@ tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受
 - 按钮的可访问名随身份翻面，读屏念到的与屏幕上看到的是同一件事。
 - 焦点仍由整框的 `:focus-within` 环表达；高对比、减少透明度、强制色与打印时 M3 令牌会原位换成实体表面。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/prompt-input.css` 按部件选择：`[data-scope="prompt-input"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/prompt-input.css` 使用 `[data-scope="prompt-input"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -236,7 +264,7 @@ tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受
 | `submit-trigger` | `data-mode` | 'stop' \| 'send' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -279,34 +307,12 @@ tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受
 | `--xh-prompt-input-submit-shadow` | `submit-trigger` | `box-shadow` | `default` | `--xh-_prompt-input-submit-highlight` | prompt-input 的 submit-trigger 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `border-radius` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 附件用[文件上传](./file-upload)：它已覆盖 accept、大小校验、拖拽投放与逐条删除；
-  有附件而正文为空时把 `allowEmptySubmit` 置真。附件条摆在输入行上方，动作行摆在下方，
-  两者都是 root 的直接子节点，与输入行并列。
-- 粘贴上传由作者在输入框上自己挂 `onPaste`，处理器会与组件的链式组合。
-- 模型选择器用[选择器](./select)或[组合框](./combobox)，工具开关用[开关组](./toggle-group)，
-  它们连同自己的容器一起摆进输入行下方的那一段。
-- 与[消息流](./message-feed)合起来就是一个最小对话界面。
-
-## 最佳实践
-
-- 受控用法下提交后由宿主清空；`clearOnSubmit` 关掉时组件不动值。
-- 生成期间把 `loading` 置真而不是把整个输入框禁用：用户还要能改下一句。
-- 要药丸形状不必换形态轴：在任意祖先上写一行 `--xh-prompt-input-radius: var(--xh-shape-pill)`，
-  按钮那一颗另有 `--xh-prompt-input-submit-radius`。形态轴只管底与描边怎么画。
-
-## 反模式
-
-- 另起一颗停止按钮摆在旁边：两颗按钮的位置会互相挤，且按下去的那一刻它正好换了位置。
-- 用 `disabled` 表达「正在生成」：那会连输入一起挡住，也把停止的出口一起关掉。

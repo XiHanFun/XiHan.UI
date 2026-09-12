@@ -16,6 +16,12 @@
 
 <XhDemo src="field-array/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="field-array"`：**`root`** · `item` · `item-label` · `item-content` · `item-action` · `add-trigger` · `item-delete-trigger` · `move-up-trigger` · `move-down-trigger`
+
 ## 示例
 
 ### 行数上下限
@@ -66,7 +72,23 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 - `readOnly` 让行数改不动，`invalid` 把校验状态传到每一行。
 - `item-label` 承载行前的行号或名目。
 
-## 产物
+### 组合
+
+- 每行里放[表单字段](./field)与各类录入组件；整体放进[表单](./form)。
+
+### 最佳实践
+
+- 新增一行后把焦点移到这一行的第一个输入框。
+- 删除按钮要说明删的是哪一行（`aria-label` 带上行号或内容）。
+
+### 反模式
+
+- 删除不给撤销，误删只能重填。
+- 行数上限只在提交时才提示。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -76,13 +98,7 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | 状态机 | `fieldArrayMachine` |
 | 皮肤 | `@xihan-ui/styles/field-array.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="field-array"`：**`root`** · `item` · `item-label` · `item-content` · `item-action` · `add-trigger` · `item-delete-trigger` · `move-up-trigger` · `move-down-trigger`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -99,25 +115,25 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | `translations` | `Partial<FieldArrayTranslations>` |  |  |
 | `onValueChange` | `(details: FieldArrayValueChangeDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `FieldArrayValueChangeDetails` | 数据数组变化；detail 为 `{ value: unknown[] }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhFieldArrayRoot` | `default` | `FieldArrayRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
@@ -125,9 +141,9 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 
 **判据**：`canAdd` · `canRemove` · `canMove`
 
-## connect API
+### connect API
 
-`useFieldArray` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -158,15 +174,17 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | `getMoveUpTriggerProps` | `(item: FieldArrayItemProps) => T['button']` |  |
 | `getMoveDownTriggerProps` | `(item: FieldArrayItemProps) => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -174,13 +192,15 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | `item-delete-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `item-delete-trigger` | `aria-label` | label.deleteItem(item.index + 1, count) |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/field-array.css` 按部件选择：`[data-scope="field-array"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/field-array.css` 使用 `[data-scope="field-array"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -197,7 +217,7 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -234,26 +254,12 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | `--xh-field-array-trigger-size` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 每行里放[表单字段](./field)与各类录入组件；整体放进[表单](./form)。
-
-## 最佳实践
-
-- 新增一行后把焦点移到这一行的第一个输入框。
-- 删除按钮要说明删的是哪一行（`aria-label` 带上行号或内容）。
-
-## 反模式
-
-- 删除不给撤销，误删只能重填。
-- 行数上限只在提交时才提示。

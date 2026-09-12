@@ -16,6 +16,12 @@
 
 <XhDemo src="timer/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="timer"`：**`root`** · **`display`** · `item` · `separator` · `control`
+
 ## 示例
 
 ### 倒着走
@@ -79,7 +85,39 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 - `format` 把当前值铺成一串字（`api.text`），`precision` 决定取到哪一位：`0` 到秒、`3` 到毫秒，缺省 `3` 即不量化。
 - `live` 决定时间区的读屏播报档位，缺省 `off`。
 
-## 产物
+### 组合
+
+- 与[按钮](./button)配合做「开始 / 暂停 / 重来」一排控制。
+- 与[进度条](./progress)并排，一个说还剩多久、一个说走了几成。
+- 走完后用[警告提示](./alert)或[提示消息](./toast)告诉用户下一步做什么。
+
+### 最佳实践
+
+- 计时超过一天要自己加一段 `days`：`hours` 满 24 会进位到天，只写时分秒会把整天数丢掉。
+- 数字用等宽字形，位数变化时分隔符才不会左右挪动，皮肤已经这样做了，自定义排版时别丢掉。
+- 嵌在一句话里或摆在别人的数值槽里时把 `--xh-timer-digit-font-size` 写成 `inherit`，数字就跟着上下文的字号走，不再自带展示档字号。
+- 精确到秒的倒计时别开成高频播报：读屏用户会被打断得没法做事。
+- 每一段的数字恒由组件写进条目里，作者只声明这一段是哪个单位；写在条目里的内容留不住，下一拍就会被新的数字盖掉。要在数字旁边加字（「时」「分」）请写进记号部件。
+- 起停按钮的名字（读屏念的那个）恒由组件按当前状态给，换语言走 `translations`，别硬编码。按钮里显示的那行字两个适配器不一样，见下一条。
+- 两个适配器的差别只有三处，写标记前先对一眼：
+  - **默认结构**：Vue 的根组件不写内容时会自动铺开「时:分:秒」；Web Components 侧元素不生成任何结构，root 与 display 一个都不能少，每一段与记号都要作者自己写出来。
+  - **按钮里的字**：Vue 的起停按钮不写内容时填当前动作的名字（Start / Pause / Resume / Reset）；Web Components 侧那行字归作者写（按钮里多半是个图标），元素只换按钮的 `data-action` 与读屏名字。
+  - **记号的缺省**：Vue 的记号部件不写内容时是一个冒号；Web Components 侧记号里的字一律归作者写。
+- Web Components 侧条目上的 `unit` 是作者的声明、不是元素写回的状态，改它本身不会另排一次接线：停着的时候改完要等下一次属性变更或起跑才生效（跑起来时每一拍都会重接一次，自然跟上）。
+- 走完之后要有明确的去处：或者归零重来，或者跳去下一步，别停在 00:00 就不动了。
+
+### 反模式
+
+- 用它显示当前时刻：它只认时长，不认日历也不认时区。
+- 只给终点不给起点做倒计时：起点缺省是 0，倒着走会一开跑就到点，屏幕上恒是 00:00。要倒计多久写进 `startMs`。
+- 挂载后再改 `autoStart` 指望它开跑：那个 prop 只在挂载那一刻读一次，起停请用动作或 `control`。
+- 走完了不发生任何事，用户白等一场。
+- 走完之后停在 00:00 就不动了，既不归零也不给下一步。
+- 页面切到后台后计时漂移却不校正：时间只从单调时钟的两个时刻相减，别自己按拍累加。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -89,13 +127,7 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 | 状态机 | `timerMachine` |
 | 皮肤 | `@xihan-ui/styles/timer.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="timer"`：**`root`** · **`display`** · `item` · `separator` · `control`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -114,33 +146,33 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 | `onTick` | `(details: TimerTickDetails) => void` |  | 每一拍通知一次。到点那一拍只发 onComplete。 |
 | `onComplete` | `(details: TimerCompleteDetails) => void` |  | 走到终点通知一次；中途被暂停或归零不通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `tick` | `TimerTickDetails` | 走过一拍；detail 为 `{ value: number, elapsed: number }` |
 | `complete` | `TimerCompleteDetails` | 走到终点；detail 为 `{ value: number, elapsed: number }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhTimerRoot` | `default` | `TimerRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'idle' \| 'running' \| 'paused' \| 'completed' |
 | `display` | 'idle' \| 'running' \| 'paused' \| 'completed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `running` · `paused` · `completed`
 
@@ -148,9 +180,9 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 
 **判据**：`isSettled`
 
-## connect API
+### connect API
 
-`useTimer` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -177,7 +209,9 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getControlProps` | `() => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction)
 
@@ -185,9 +219,9 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 | --- | --- | --- |
 | `Enter` / `Space` | focus on control | 按当前状态起停：没起步的开跑、在走的暂停、停在半路的接着走、走完的归零；control 是原生 button，这两个键由平台翻成 click |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -203,13 +237,15 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 - 内建名字是英文，换语言同样走 `translations.time`。
 - 缺省不播报。要播报的场景（会话到期提醒这类）把 `live` 开到 `polite` 或 `assertive`，或者自己在外层另起一个 live 区，只在关口上说一句：每秒都在变的数字按 polite 播报，一分钟就是六十条打断。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/timer.css` 按部件选择：`[data-scope="timer"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/timer.css` 使用 `[data-scope="timer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -222,7 +258,7 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 | `control` | `data-action` | 'pause' \| 'resume' \| 'reset' \| 'start' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -253,49 +289,19 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 | `--xh-timer-separator-px` | `separator` | `padding-inline` | `default` | `--xh-space-0_5` | timer 的 separator 部件 padding-inline 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
 - 时间区的排列方向钉成从左到右，`<html dir="rtl">` 下时分秒不会倒过来排——时间串的读序两个方向都一样。
 - 起停按钮相对时间区的位置、以及整个组件在页面里的排布，照常跟随文字方向。
-
-## 组合
-
-- 与[按钮](./button)配合做「开始 / 暂停 / 重来」一排控制。
-- 与[进度条](./progress)并排，一个说还剩多久、一个说走了几成。
-- 走完后用[警告提示](./alert)或[提示消息](./toast)告诉用户下一步做什么。
-
-## 最佳实践
-
-- 计时超过一天要自己加一段 `days`：`hours` 满 24 会进位到天，只写时分秒会把整天数丢掉。
-- 数字用等宽字形，位数变化时分隔符才不会左右挪动，皮肤已经这样做了，自定义排版时别丢掉。
-- 嵌在一句话里或摆在别人的数值槽里时把 `--xh-timer-digit-font-size` 写成 `inherit`，数字就跟着上下文的字号走，不再自带展示档字号。
-- 精确到秒的倒计时别开成高频播报：读屏用户会被打断得没法做事。
-- 每一段的数字恒由组件写进条目里，作者只声明这一段是哪个单位；写在条目里的内容留不住，下一拍就会被新的数字盖掉。要在数字旁边加字（「时」「分」）请写进记号部件。
-- 起停按钮的名字（读屏念的那个）恒由组件按当前状态给，换语言走 `translations`，别硬编码。按钮里显示的那行字两个适配器不一样，见下一条。
-- 两个适配器的差别只有三处，写标记前先对一眼：
-  - **默认结构**：Vue 的根组件不写内容时会自动铺开「时:分:秒」；Web Components 侧元素不生成任何结构，root 与 display 一个都不能少，每一段与记号都要作者自己写出来。
-  - **按钮里的字**：Vue 的起停按钮不写内容时填当前动作的名字（Start / Pause / Resume / Reset）；Web Components 侧那行字归作者写（按钮里多半是个图标），元素只换按钮的 `data-action` 与读屏名字。
-  - **记号的缺省**：Vue 的记号部件不写内容时是一个冒号；Web Components 侧记号里的字一律归作者写。
-- Web Components 侧条目上的 `unit` 是作者的声明、不是元素写回的状态，改它本身不会另排一次接线：停着的时候改完要等下一次属性变更或起跑才生效（跑起来时每一拍都会重接一次，自然跟上）。
-- 走完之后要有明确的去处：或者归零重来，或者跳去下一步，别停在 00:00 就不动了。
-
-## 反模式
-
-- 用它显示当前时刻：它只认时长，不认日历也不认时区。
-- 只给终点不给起点做倒计时：起点缺省是 0，倒着走会一开跑就到点，屏幕上恒是 00:00。要倒计多久写进 `startMs`。
-- 挂载后再改 `autoStart` 指望它开跑：那个 prop 只在挂载那一刻读一次，起停请用动作或 `control`。
-- 走完了不发生任何事，用户白等一场。
-- 走完之后停在 00:00 就不动了，既不归零也不给下一步。
-- 页面切到后台后计时漂移却不校正：时间只从单调时钟的两个时刻相减，别自己按拍累加。

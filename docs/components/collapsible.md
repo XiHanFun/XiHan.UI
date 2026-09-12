@@ -16,6 +16,12 @@
 
 <XhDemo src="collapsible/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="collapsible"`：`root` · `header` · `trigger` · **`content`** · `indicator`
+
 ## 示例
 
 ### 受控
@@ -71,7 +77,22 @@ tone 落在触发按钮的展开态上，六种语气各展开一份做对照
 - 展开动画由皮肤给，内容高度由组件量出来。
 - 指示符部件空着由皮肤画一枚箭头，塞进图形即以作者的为准，转向两种情形都由皮肤打。
 
-## 产物
+### 组合
+
+- 放进[卡片](./card)、[表单](./form)的高级选项区。
+
+### 最佳实践
+
+- 触发器文字说明里面是什么，别只写"展开"。
+- 收起时内容退出 Tab 序列，别让焦点落到看不见的地方。
+
+### 反模式
+
+- 把必填字段藏进折叠区：用户提交失败也不知道错在哪。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -81,13 +102,7 @@ tone 落在触发按钮的展开态上，六种语气各展开一份做对照
 | 状态机 | `collapsibleMachine` |
 | 皮肤 | `@xihan-ui/styles/collapsible.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="collapsible"`：`root` · `header` · `trigger` · **`content`** · `indicator`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -99,17 +114,17 @@ tone 落在触发按钮的展开态上，六种语气各展开一份做对照
 | `dir` | `Direction` |  | 文字方向，只作用于排版；作者没给就不写。 |
 | `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `CollapsibleOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -119,7 +134,7 @@ tone 落在触发按钮的展开态上，六种语气各展开一份做对照
 | `content` | 'open' \| 'closed' |
 | `indicator` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -127,9 +142,9 @@ tone 落在触发按钮的展开态上，六种语气各展开一份做对照
 
 **判据**：`isOpenControlled`
 
-## connect API
+### connect API
 
-`useCollapsible` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -141,7 +156,9 @@ tone 落在触发按钮的展开态上，六种语气各展开一份做对照
 | `getContentProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/#keyboardinteraction)
 
@@ -149,9 +166,9 @@ tone 落在触发按钮的展开态上，六种语气各展开一份做对照
 | --- | --- | --- |
 | `Space` / `Enter` | focus in trigger, not disabled | 展开/收起 content |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -159,13 +176,15 @@ tone 落在触发按钮的展开态上，六种语气各展开一份做对照
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `indicator` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/collapsible.css` 按部件选择：`[data-scope="collapsible"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/collapsible.css` 使用 `[data-scope="collapsible"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -182,7 +201,7 @@ tone 落在触发按钮的展开态上，六种语气各展开一份做对照
 | `indicator` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -204,7 +223,7 @@ tone 落在触发按钮的展开态上，六种语气各展开一份做对照
 | `--xh-collapsible-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | collapsible 的 trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-collapsible-collapse` · `xh-collapsible-expand` 随皮肤自带，不引用别处文件里的名字；`rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -212,19 +231,6 @@ tone 落在触发按钮的展开态上，六种语气各展开一份做对照
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 放进[卡片](./card)、[表单](./form)的高级选项区。
-
-## 最佳实践
-
-- 触发器文字说明里面是什么，别只写"展开"。
-- 收起时内容退出 Tab 序列，别让焦点落到看不见的地方。
-
-## 反模式
-
-- 把必填字段藏进折叠区：用户提交失败也不知道错在哪。

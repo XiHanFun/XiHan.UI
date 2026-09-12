@@ -16,6 +16,12 @@
 
 <XhDemo src="date-field/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="date-field"`：**`root`** · `label` · **`control`** · `segment-group` · **`segment`** · `clear-trigger` · `hidden-input`
+
 ## 示例
 
 ### 段序随 locale
@@ -109,7 +115,22 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 - `granularity` 决定精确到日还是到分。
 - 段位文本、对外值的写法与段位的拼装都可以换。
 
-## 产物
+### 组合
+
+- 外面套[表单字段](./field)；与[日期选择器](./date-picker)共用同一套段位部件。
+
+### 最佳实践
+
+- 给出 `min` / `max`，方向键才有边界。
+- 明确对外值的写法（ISO 串还是别的），并与后端对齐。
+
+### 反模式
+
+- 用一个[文本输入](./text-field)收日期再自己解析：各地区的写法互不相同，解析出来的结果不可控。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -119,13 +140,7 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 | 状态机 | `dateFieldMachine` |
 | 皮肤 | `@xihan-ui/styles/date-field.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="date-field"`：**`root`** · `label` · **`control`** · `segment-group` · **`segment`** · `clear-trigger` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -149,26 +164,26 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: DateFieldValueChangeDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `DateFieldValueChangeDetails` | 值变化；detail 为 `{ value: string \| null }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhDateFieldRoot` | `default` | `DateFieldRootSlotProps` |  |
 | `XhDateFieldSegment` | `default` | `DateFieldSegmentSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
@@ -176,9 +191,9 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 
 **判据**：`canEdit`
 
-## connect API
+### connect API
 
-`useDateField` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -206,7 +221,9 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 | `getClearTriggerProps` | `() => T['button']` | 清空钮：不占 Tab 位，没值或不可编辑时收起；点完焦点回到首段。 |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份 type=hidden 的原生输入，值是 ISO 串。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton/#keyboardinteraction)
 
@@ -222,9 +239,9 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 | `0` / `1` / `2` / `3` / `4` / `5` / `6` / `7` / `8` / `9` | focus in a segment, not disabled/readOnly | 往本段补一位数字；补满（再补一位必溢出或位数用尽）即自动跳下一段。上下午段没有数字位，不收数字 |
 | `a` / `p` | focus in 上下午段, not disabled/readOnly | 直接指定上午 / 下午；上下键在两者之间翻面 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -243,13 +260,15 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 | `segment` | `role` | undefined \| 'spinbutton' |
 | `clear-trigger` | `aria-label` | props.translations.clearTrigger |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/date-field.css` 按部件选择：`[data-scope="date-field"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/date-field.css` 使用 `[data-scope="date-field"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -278,7 +297,7 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 | `segment` | `data-segment` | item?.type |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -322,25 +341,12 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 | `--xh-date-field-segment-radius` | `segment` | `border-radius` | `default` | `--xh-shape-inset` | date-field 的 segment 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 外面套[表单字段](./field)；与[日期选择器](./date-picker)共用同一套段位部件。
-
-## 最佳实践
-
-- 给出 `min` / `max`，方向键才有边界。
-- 明确对外值的写法（ISO 串还是别的），并与后端对齐。
-
-## 反模式
-
-- 用一个[文本输入](./text-field)收日期再自己解析：各地区的写法互不相同，解析出来的结果不可控。

@@ -16,6 +16,12 @@
 
 <XhDemo src="tool-call/01-phases" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="tool-call"`：**`root`** · **`trigger`** · `indicator` · `label` · `summary` · `status` · `duration` · `approval` · **`content`** · `input` · `output` · `error`
+
 ## 示例
 
 ### 自动开合与锁存
@@ -68,7 +74,34 @@
 - 耗时由宿主给两个时刻，`toolCallDuration(startTime, endTime)` 折出毫秒数；
   **组件自己不读时钟也不起定时器**，秒数要跳就由宿主驱动。
 
-## 产物
+### 组合
+
+- 参数与结果用[代码视图](./code-view)：参数在流式期是半截 JSON，把 `complete` 接成
+  「阶段不是参数在传」即可。富文本结果走[流式正文](./markdown-stream)。
+- 结果是代码改动时，详情那一格装[差异视图](./diff-view)；收起态的摘要取它的 `stats`
+  折成 `+{added} −{removed} 文件名` 写进摘要位，减号用 U+2212 而不是连字符。
+  摘要要能悬停看全文就套[悬浮卡](./hover-card)，别自己往 body 上挂节点。
+- 审批那一格装[审批](./approval)。
+- 复制不内建，与[剪贴板](./clipboard)组合；多张并排要方向键跳卡片就套[工具条](./toolbar)。
+- 一轮里跑了好几次工具时，外面套一层[手风琴](./accordion)当分组：
+  手风琴的开关里写「跑了 N 个工具」，计数那一段加 `font-variant-numeric: tabular-nums`
+  免得数字跳动时左右挪；整组的开合由手风琴的 `aria-expanded` 承担，卡片各自只管自己那一张。
+
+### 最佳实践
+
+- 工具名与状态都写在开关里：它们会自然构成开关的可访问名（「搜索，已完成」）。
+- 出错态要容忍没有错误文本：流被中止时未拿到结果的调用会被收尾成出错，但拿不到原因。
+- 摘要位只放一句能一眼读完的参数（查询词、文件路径），整个 JSON 留给详情里的代码视图。
+- 耗时文案走 `translations.ranFor` 模板串，秒数由宿主现场代入；`endTime` 缺席时别渲染这一格。
+
+### 反模式
+
+- 每张卡各开一个 `aria-live`：一屏五张卡就是五个活区互相打断。
+- 用禁用表达「还不能展开」：读屏用户连它存在都听不到。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -78,13 +111,7 @@
 | 状态机 | `toolCallMachine` |
 | 皮肤 | `@xihan-ui/styles/tool-call.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="tool-call"`：**`root`** · **`trigger`** · `indicator` · `label` · `summary` · `status` · `duration` · `approval` · **`content`** · `input` · `output` · `error`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -102,25 +129,25 @@
 | `translations` | `Partial<ToolCallTranslations>` |  |  |
 | `variant` | `ControlVariant` |  | 形态：outline 描边（缺省档）、subtle 底色分区、ghost 无壳内联。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `ToolCallOpenChangeDetails` | 开合变化；detail 为 `{ open: boolean, source: 'user' \| 'auto' \| 'api' }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhToolCallRoot` | `default` | `ToolCallRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -137,7 +164,7 @@
 | `output` | props.phase |
 | `error` | props.phase |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`auto.collapsed` · `auto.expanded` · `held.collapsed` · `held.expanded`
 
@@ -145,9 +172,9 @@
 
 **判据**：`isOpenControlled` · `isAutoAllowed` · `isAutoEnabled`
 
-## connect API
+### connect API
 
-`useToolCall` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -173,7 +200,9 @@
 | `getOutputProps` | `() => T['element']` |  |
 | `getErrorProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/)
 
@@ -181,9 +210,9 @@
 | --- | --- | --- |
 | `Enter` / `Space` | 焦点在折叠开关上且未禁用 | 展开或收起详情，并把自动开合永久停用 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -199,15 +228,17 @@
 - 卡片自己不开活区：一屏若干张卡各开一个会互相打断。播报文本由 `statusText` 交出去，
   由宿主写进会话级的那一个播报区。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/tool-call.css` 按部件选择：`[data-scope="tool-call"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/tool-call.css` 使用 `[data-scope="tool-call"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -234,7 +265,7 @@
 | `error` | `data-state` | props.phase |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -281,7 +312,7 @@
 | `--xh-tool-call-trigger-radius` | `root`<br>`trigger` | `border-radius` | `variant=ghost` | `--xh-shape-control` | tool-call 的 root、trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-tool-call-collapse` · `xh-tool-call-enter` · `xh-tool-call-expand` · `xh-tool-call-shimmer` 随皮肤自带，不引用别处文件里的名字；`background` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -289,31 +320,6 @@
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 参数与结果用[代码视图](./code-view)：参数在流式期是半截 JSON，把 `complete` 接成
-  「阶段不是参数在传」即可。富文本结果走[流式正文](./markdown-stream)。
-- 结果是代码改动时，详情那一格装[差异视图](./diff-view)；收起态的摘要取它的 `stats`
-  折成 `+{added} −{removed} 文件名` 写进摘要位，减号用 U+2212 而不是连字符。
-  摘要要能悬停看全文就套[悬浮卡](./hover-card)，别自己往 body 上挂节点。
-- 审批那一格装[审批](./approval)。
-- 复制不内建，与[剪贴板](./clipboard)组合；多张并排要方向键跳卡片就套[工具条](./toolbar)。
-- 一轮里跑了好几次工具时，外面套一层[手风琴](./accordion)当分组：
-  手风琴的开关里写「跑了 N 个工具」，计数那一段加 `font-variant-numeric: tabular-nums`
-  免得数字跳动时左右挪；整组的开合由手风琴的 `aria-expanded` 承担，卡片各自只管自己那一张。
-
-## 最佳实践
-
-- 工具名与状态都写在开关里：它们会自然构成开关的可访问名（「搜索，已完成」）。
-- 出错态要容忍没有错误文本：流被中止时未拿到结果的调用会被收尾成出错，但拿不到原因。
-- 摘要位只放一句能一眼读完的参数（查询词、文件路径），整个 JSON 留给详情里的代码视图。
-- 耗时文案走 `translations.ranFor` 模板串，秒数由宿主现场代入；`endTime` 缺席时别渲染这一格。
-
-## 反模式
-
-- 每张卡各开一个 `aria-live`：一屏五张卡就是五个活区互相打断。
-- 用禁用表达「还不能展开」：读屏用户连它存在都听不到。

@@ -16,6 +16,12 @@
 
 <XhDemo src="carousel/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="carousel"`：**`root`** · **`viewport`** · **`list`** · `item` · `prev-trigger` · `next-trigger` · `autoplay-trigger` · `indicator-group` · `indicator`
+
 ## 示例
 
 ### 受控
@@ -83,7 +89,25 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 - 支持纵向轨道、指针拖拽、回绕与自动播放。
 - 指示点可以做成悬停即切页。
 
-## 产物
+### 组合
+
+- 每一张放[图片](./image)或[卡片](./card)。
+
+### 最佳实践
+
+- 开了自动播放就把 `autoplay-trigger` 渲出来：它是唯一能把自动翻页停住、且停住之后不会被别的交互重新点着的入口。
+- 自动播放在指针悬停或焦点进入时自动暂停，离开后从头计满一整个间隔再翻。
+- 减弱动效档下自动播放不会自己起播，此时播放开关是用户唯一的起播入口。
+- 指示点要能看出总共几屏、当前第几屏。
+
+### 反模式
+
+- 自动播放且不能暂停：读得慢的人永远读不完一张。
+- 把关键信息或唯一的行动入口放在第三张之后。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -93,13 +117,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | 状态机 | `carouselMachine` |
 | 皮肤 | `@xihan-ui/styles/carousel.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="carousel"`：**`root`** · **`viewport`** · **`list`** · `item` · `prev-trigger` · `next-trigger` · `autoplay-trigger` · `indicator-group` · `indicator`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -117,32 +135,32 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `translations` | `Partial<CarouselTranslations>` |  |  |
 | `onPageChange` | `(details: CarouselPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `page-change` | `CarouselPageChangeDetails` | 页码变化；detail 为 `{ page: number }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhCarouselAutoplayTrigger` | `default` | `{ stopped: boolean }` |  |
 | `XhCarouselRoot` | `default` | `CarouselRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `autoplay-trigger` | 'paused' \| 'running' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `playing` · `playing.running` · `playing.paused`
 
@@ -150,9 +168,9 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 **判据**：`isLastPauseSource` · `canAdvance` · `hasAutoplay`
 
-## connect API
+### connect API
 
-`useCarousel` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -187,7 +205,9 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `getIndicatorGroupProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `(props: CarouselIndicatorProps) => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/carousel/#keyboardinteraction)
 
@@ -204,9 +224,9 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `Tab` / `Shift+Tab` | 任意时刻 | 在两端按钮与各指示点之间逐个停靠；到端点后禁用的按钮自动脱序 |
 | `方向键` | 焦点在幻灯片内的输入控件上 | 不接管：交还给控件自己做光标移动 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -229,13 +249,15 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `indicator` | `aria-current` | 'true' \| 'false' |
 | `indicator` | `aria-label` | label.indicator(index + 1) |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/carousel.css` 按部件选择：`[data-scope="carousel"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/carousel.css` 使用 `[data-scope="carousel"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -261,7 +283,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `indicator` | `data-index` | String(index) |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -288,7 +310,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `--xh-carousel-viewport-radius` | `viewport` | `border-radius` | `default` | `--xh-shape-surface` | carousel 的 viewport 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `box-shadow` · `scale` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -296,22 +318,6 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
-
-## 组合
-
-- 每一张放[图片](./image)或[卡片](./card)。
-
-## 最佳实践
-
-- 开了自动播放就把 `autoplay-trigger` 渲出来：它是唯一能把自动翻页停住、且停住之后不会被别的交互重新点着的入口。
-- 自动播放在指针悬停或焦点进入时自动暂停，离开后从头计满一整个间隔再翻。
-- 减弱动效档下自动播放不会自己起播，此时播放开关是用户唯一的起播入口。
-- 指示点要能看出总共几屏、当前第几屏。
-
-## 反模式
-
-- 自动播放且不能暂停：读得慢的人永远读不完一张。
-- 把关键信息或唯一的行动入口放在第三张之后。

@@ -16,6 +16,12 @@
 
 <XhDemo src="date-picker/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="date-picker"`：`root` · `label` · **`control`** · `segment-group` · `trigger` · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · **`calendar`** · `time-column` · `time-item` · `confirm-trigger`
+
 ## 示例
 
 ### 区间选择
@@ -102,7 +108,25 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 - 浮层按实际弹出方向短距离淡入淡出，不缩放日期和文字；手机双月历堆叠、时间列与确认按钮布局在退场中保持稳定。
 - 减弱动效、增强对比度沿用主题设置，键盘关闭后归还打开前的焦点。
 
-## 产物
+### 组合
+
+- 外面套[表单字段](./field)。
+
+### 最佳实践
+
+- 区间选择要显示已选天数，用户在挑的往往是"多长"而不是"哪两天"。
+- 不可选的日子要给出原因（已约满、超出范围），只置灰用户会反复点。
+- 自定义快捷项或时间项时，用 `--xh-date-picker-*-check-size` / `*-check-fg` 调整末端对号；不要重新
+  给持久选中铺品牌底，否则会与悬停、焦点以及 Calendar 的日期范围视觉混为一层。
+
+### 反模式
+
+- 默认值是今天却不告诉用户这是默认——他会以为自己已经选过了。
+- 浮层一打开就盖住输入框，用户看不见自己输了什么。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -112,13 +136,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | 状态机 | `datePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/date-picker.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="date-picker"`：`root` · `label` · **`control`** · `segment-group` · `trigger` · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · **`calendar`** · `time-column` · `time-item` · `confirm-trigger`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -161,9 +179,9 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `onFocusedValueChange` | `(details: DatePickerFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻月、展开、段位输入都会发）。 网格由外部渲染，不监听这条日历不会换月。 |
 | `onActiveViewChange` | `(details: CalendarViewChangeDetails) => void` |  | 面板钻到了哪一层（点标题钻上、点格子钻下都会发）；受控时是唯一出口。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -172,9 +190,9 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `focused-value-change` | `DatePickerFocusChangeDetails` | 聚焦日变化（意味着展示月可能换了）；detail 为 `{ focusedValue: string }`，作者据此重画网格 |
 | `active-view-change` | `CalendarViewChangeDetails` | 钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'\|'month'\|'quarter'\|'year' }`，作者据此重画网格 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -183,9 +201,9 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `XhDatePickerRoot` | `default` | `DatePickerRootSlotProps` |  |
 | `XhDatePickerSegment` | `default` | `DatePickerSegmentSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -198,7 +216,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `calendar` | 'open' \| 'closed' |
 | `time-item` | 'checked' \| 'unchecked' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -206,9 +224,9 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 
 **判据**：`isOpenControlled` · `closesOnSelect`
 
-## connect API
+### connect API
 
-`useDatePicker` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -249,7 +267,9 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `getTimeItemProps` | `(props: DatePickerTimeItemProps) => T['element']` | 时间选项：点按把该单位写进值（没有日期时以聚焦日为日期段起值）。 |
 | `getConfirmTriggerProps` | `() => T['button']` | 确认按钮：showTime 的收口；没开 showTime 时带 hidden。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/#kbd_label)
 
@@ -265,9 +285,9 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `Alt+ArrowDown` | focus in 某一段, closed, not disabled | 展开浮层并把焦点送进去；触发钮是可选部件，键盘那条入口不能只挂在它身上 |
 | `Enter` | focus in 某一段, open | 收起浮层。段位里敲出来的值不触发「选完即收」（那时人还在打字），这是那条路的收口手势 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -300,15 +320,17 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `time-item` | `aria-selected` | 'true' \| 'false' |
 | `time-item` | `role` | 'option' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/date-picker.css` 按部件选择：`[data-scope="date-picker"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/date-picker.css` 使用 `[data-scope="date-picker"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -354,7 +376,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `time-item` | `data-value` | v |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -436,7 +458,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `--xh-date-picker-time-item-radius` | `time-item` | `border-radius` | `default` | `--xh-shape-control` | date-picker 的 time-item 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -444,26 +466,10 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤按视口分档：`min-width: 768px` · `width < 768px`。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 外面套[表单字段](./field)。
-
-## 最佳实践
-
-- 区间选择要显示已选天数，用户在挑的往往是"多长"而不是"哪两天"。
-- 不可选的日子要给出原因（已约满、超出范围），只置灰用户会反复点。
-- 自定义快捷项或时间项时，用 `--xh-date-picker-*-check-size` / `*-check-fg` 调整末端对号；不要重新
-  给持久选中铺品牌底，否则会与悬停、焦点以及 Calendar 的日期范围视觉混为一层。
-
-## 反模式
-
-- 默认值是今天却不告诉用户这是默认——他会以为自己已经选过了。
-- 浮层一打开就盖住输入框，用户看不见自己输了什么。

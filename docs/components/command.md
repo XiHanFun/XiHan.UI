@@ -16,6 +16,12 @@
 
 <XhDemo src="command/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="command"`：`trigger` · `backdrop` · `positioner` · **`content`** · **`input`** · **`list`** · `group` · `group-label` · `item` · `item-text` · `empty` · `loading` · `footer`
+
 ## 示例
 
 ### 快捷键唤起 + 手写部件
@@ -64,7 +70,28 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
   未挂载、虚拟候选不按隐藏推断；展开期间替换列表节点后，可见性观察会切换到新节点。
 - `closeOnSelect` 决定选中后收不收；连着执行多条命令时关掉它。
 
-## 产物
+### 组合
+
+- 唤起用[快捷键](./hotkeys)：把 `mod+k` 绑到 `setOpen(true)` 上。
+- 条目文字里标出命中的那几个字用[文本高亮](./highlight)，检索串就是它的关键词。
+- 行尾的快捷键提示用[键帽组](./kbd-group)，与负责唤起的[快捷键](./hotkeys)显式共享同一份 keys。
+
+### 最佳实践
+
+- 命令名写成「动词 + 宾语」（新建用户、导出报表），用户按动作找东西。
+- 分组按用户的心智分（页面 / 设置 / 动作），不要按代码模块分。
+- 底部提示条写清三件事：上下键选、回车执行、Escape 关闭。
+- 命令来自远端时给在途占位，别让面板停在一片空白上。
+
+### 反模式
+
+- 把整个后台的每个按钮都塞进来——面板变成第二份菜单树，检索反而更慢。
+- 只认命令的中文全名：用户打 `export` 什么也搜不到，别名该写进 `keywords`。
+- 选中后什么反馈都没有：命令要么当场生效，要么导航过去，要么给一条轻提示。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -74,13 +101,7 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 | 状态机 | `commandMachine` |
 | 皮肤 | `@xihan-ui/styles/command.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="command"`：`trigger` · `backdrop` · `positioner` · **`content`** · **`input`** · **`list`** · `group` · `group-label` · `item` · `item-text` · `empty` · `loading` · `footer`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -108,9 +129,9 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 | `onInputValueChange` | `(details: CommandInputValueChangeDetails) => void` |  | 检索串变化意图回调。 |
 | `onSelect` | `(details: CommandSelectDetails) => void` |  | 选中一条命令：库不执行任何动作，做什么全归这里。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -118,9 +139,9 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 | `input-value-change` | `CommandInputValueChangeDetails` | 检索串变化；detail 为 `{ inputValue: string }` |
 | `select` | `CommandSelectDetails` | 选中一条命令；detail 为 `{ value: string, label: string }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -130,9 +151,9 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 | `XhCommandRoot` | `empty` | — |  |
 | `XhCommandRoot` | `footer` | — |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -146,7 +167,7 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 | `loading` | 'open' \| 'closed' |
 | `footer` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -154,9 +175,9 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 
 **判据**：`isOpenControlled` · `keepsOpenOnSelect`
 
-## connect API
+### connect API
 
-`useCommand` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -184,7 +205,9 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏。 |
 | `getFooterProps` | `() => T['element']` | 面板底部的提示条：作者放什么由作者定，这里只给位置与观感。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/#keyboardinteraction)
 
@@ -199,9 +222,9 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 | `Enter` | open, 锚点落在可用命令上 | 选中该命令；长按连发的重复键不重复选中 |
 | `Tab` | open, modal | 在面板内循环焦点 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -230,13 +253,15 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 | `empty` | `role` | 'status' |
 | `loading` | `role` | 'status' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/command.css` 按部件选择：`[data-scope="command"][data-part="trigger"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/command.css` 使用 `[data-scope="command"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -255,7 +280,7 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 | `footer` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -318,7 +343,7 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 | `--xh-command-shadow` | `content` | `box-shadow` | `default` | `--xh-elevation-sheet` | command 的 content 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-rise-in` 随皮肤自带，不引用别处文件里的名字；`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -326,25 +351,6 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 唤起用[快捷键](./hotkeys)：把 `mod+k` 绑到 `setOpen(true)` 上。
-- 条目文字里标出命中的那几个字用[文本高亮](./highlight)，检索串就是它的关键词。
-- 行尾的快捷键提示用[键帽组](./kbd-group)，与负责唤起的[快捷键](./hotkeys)显式共享同一份 keys。
-
-## 最佳实践
-
-- 命令名写成「动词 + 宾语」（新建用户、导出报表），用户按动作找东西。
-- 分组按用户的心智分（页面 / 设置 / 动作），不要按代码模块分。
-- 底部提示条写清三件事：上下键选、回车执行、Escape 关闭。
-- 命令来自远端时给在途占位，别让面板停在一片空白上。
-
-## 反模式
-
-- 把整个后台的每个按钮都塞进来——面板变成第二份菜单树，检索反而更慢。
-- 只认命令的中文全名：用户打 `export` 什么也搜不到，别名该写进 `keywords`。
-- 选中后什么反馈都没有：命令要么当场生效，要么导航过去，要么给一条轻提示。

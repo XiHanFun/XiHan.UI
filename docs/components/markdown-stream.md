@@ -16,6 +16,12 @@
 
 <XhDemo src="markdown-stream/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="markdown-stream"`：**`root`** · **`content`** · `block` · `live-region`
+
 ## 示例
 
 ### 流式增长
@@ -67,7 +73,27 @@ size 换正文字号与块间距，三档共用同一份块列表
   一个字都没到的那一段，页面上也有东西。`caret` 设成 `false` 时两处都不发这个属性。
 - 光标在等第一个字的时候闪，出字之后停在实心：正文自己在动，再闪一下只是噪声。
 
-## 产物
+### 组合
+
+- 代码块交给[代码视图](./code-view)，整段正文放进[消息流](./message-feed)的一条消息里。
+- 逐字吐字的节奏由使用者驱动：`@xihan-ui/chat-stream` 的 `visibleLength` 是纯函数，
+  时间原点与 rAF 循环由持有它的那一方写。
+- 正文里要嵌行内来源角标、脚注这类节点：用 `block` 插槽接管那一块自己渲。
+  组件不往已消毒的 html 里插节点，这条插槽就是留给这类需求的位置。
+
+### 最佳实践
+
+- 块列表整份传进来，别在外面切片：稳定 key 靠的就是整份列表的下标与内容。
+- 代码块交出去时把 `complete` 一起带上，代码组件据此决定要不要着色。
+
+### 反模式
+
+- 每帧新建一个渲染器：缓存作废，长回复到后面会肉眼可见地卡。
+- 把代码块的 `html` 与交给代码组件的那份同时渲出来：同一段代码会出现两次。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -77,13 +103,7 @@ size 换正文字号与块间距，三档共用同一份块列表
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/markdown-stream.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="markdown-stream"`：**`root`** · **`content`** · `block` · `live-region`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -94,26 +114,26 @@ size 换正文字号与块间距，三档共用同一份块列表
 | `streaming` | `boolean` |  | 这一段正文是否仍在增长，只落 data-streaming。 |
 | `translations` | `Partial<MarkdownStreamTranslations>` |  |  |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhMarkdownStreamContent` | `block` | `MarkdownStreamBlockSlotProps` |  |
 | `XhMarkdownStreamRoot` | `default` | `MarkdownStreamRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'streaming' \| 'complete' |
 
-## connect API
+### connect API
 
-`useMarkdownStream` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -125,7 +145,9 @@ size 换正文字号与块间距，三档共用同一份块列表
 | `getBlockProps` | `(props: { block: MarkdownBlock }) => T['element']` |  |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/WCAG21/Techniques/general/G202)
 
@@ -133,9 +155,9 @@ size 换正文字号与块间距，三档共用同一份块列表
 | --- | --- | --- |
 |  | 任何时候 | 组件不接管任何按键；块内的链接、代码块各自的停靠点由它们自己提供 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -147,13 +169,15 @@ size 换正文字号与块间距，三档共用同一份块列表
 - 要在一段回复写完时播报一句，把 `announce` 设成 `polite` 并渲出播报区。
   一个会话里只该有一个活区，多开会互相打断。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/markdown-stream.css` 按部件选择：`[data-scope="markdown-stream"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/markdown-stream.css` 使用 `[data-scope="markdown-stream"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -167,7 +191,7 @@ size 换正文字号与块间距，三档共用同一份块列表
 | `block` | `data-live` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -188,30 +212,12 @@ size 换正文字号与块间距，三档共用同一份块列表
 | `--xh-markdown-stream-mono` | `block` | `font-family` | `kind=code`<br>`kind=math` | `--xh-font-family-mono` | markdown-stream 的 block 部件 font-family 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-markdown-stream-caret` · `xh-markdown-stream-caret-in` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 代码块交给[代码视图](./code-view)，整段正文放进[消息流](./message-feed)的一条消息里。
-- 逐字吐字的节奏由使用者驱动：`@xihan-ui/chat-stream` 的 `visibleLength` 是纯函数，
-  时间原点与 rAF 循环由持有它的那一方写。
-- 正文里要嵌行内来源角标、脚注这类节点：用 `block` 插槽接管那一块自己渲。
-  组件不往已消毒的 html 里插节点，这条插槽就是留给这类需求的位置。
-
-## 最佳实践
-
-- 块列表整份传进来，别在外面切片：稳定 key 靠的就是整份列表的下标与内容。
-- 代码块交出去时把 `complete` 一起带上，代码组件据此决定要不要着色。
-
-## 反模式
-
-- 每帧新建一个渲染器：缓存作废，长回复到后面会肉眼可见地卡。
-- 把代码块的 `html` 与交给代码组件的那份同时渲出来：同一段代码会出现两次。

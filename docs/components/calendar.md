@@ -16,6 +16,12 @@
 
 <XhDemo src="calendar/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="calendar"`：`root` · `header` · `prev-year-trigger` · `prev-trigger` · `next-trigger` · `next-year-trigger` · `heading` · `heading-year-trigger` · `heading-month-trigger` · **`grid`** · `grid-head` · `week-day` · `grid-body` · `week-row` · `week-number` · **`cell`** · **`cell-trigger`**
+
 ## 示例
 
 ### 区间选择
@@ -54,7 +60,23 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 - 支持区间选择、整周选择、固定六行与多月并排。
 - 周首日、月份名与星期名跟着 `locale` 走：`en-US` 周日起、`zh-CN` 周一起。不给 `locale` 就跟宿主浏览器语言，读不到才落 `en-US`——要固定成一种排法就把 `locale` 显式传上去。
 
-## 产物
+### 组合
+
+- 格子里放[徽标](./badge)或一小段[排印](./typography)；外面套[卡片](./card)。
+
+### 最佳实践
+
+- 今天要有明显标记，且与"选中"区分开。
+- 格子里的内容超出时收起来，别让某一行比别的行高很多。
+
+### 反模式
+
+- 不可选的日子连焦点都到不了：键盘用户无从知道那里有什么。
+- 用它当日期输入框。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -64,13 +86,7 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | 状态机 | `calendarMachine` |
 | 皮肤 | `@xihan-ui/styles/calendar.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="calendar"`：`root` · `header` · `prev-year-trigger` · `prev-trigger` · `next-trigger` · `next-year-trigger` · `heading` · `heading-year-trigger` · `heading-month-trigger` · **`grid`** · `grid-head` · `week-day` · `grid-body` · `week-row` · `week-number` · **`cell`** · **`cell-trigger`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -97,9 +113,9 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `onFocusedValueChange` | `(details: CalendarFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻页、点了邻月的日子都会发）；受控时是唯一出口。 |
 | `onActiveViewChange` | `(details: CalendarViewChangeDetails) => void` |  | 面板钻到了哪一层（点标题钻上、点格子钻下都会发）；受控时是唯一出口。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -107,25 +123,25 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `focused-value-change` | `CalendarFocusChangeDetails` | 聚焦日变化；detail 为 `{ focusedValue: string }` |
 | `active-view-change` | `CalendarViewChangeDetails` | 钻到了另一层；detail 为 `{ activeView: 'day'\|'month'\|'quarter'\|'year' }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhCalendarRoot` | `default` | `CalendarRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
 **事件**：`VALUE.SET` · `CELL.SELECT` · `FOCUS.SET` · `VIEW.SET` · `HOVER.SET` · `HOVER.CLEAR`
 
-## connect API
+### connect API
 
-`useCalendar` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -177,7 +193,9 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `getCellProps` | `(props: CalendarCellProps) => T['element']` |  |
 | `getCellTriggerProps` | `(props: CalendarCellProps) => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/#kbd_label)
 
@@ -196,9 +214,9 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `Shift+PageDown` | focus in grid | 进一年；粗粒度视图里进十页 |
 | `Enter` / `Space` | focus in grid, 聚焦日可用且非只读 | 选中聚焦日：单选替换、多选切换、区间先落起点再落终点。还没钻到 view 那一档时这一下是往下钻一层 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -220,13 +238,15 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `cell-trigger` | `aria-label` | cellLabelFormatter.format(state.date.toDate(timeZone)) \| undefined |
 | `cell-trigger` | `role` | 'button' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/calendar.css` 按部件选择：`[data-scope="calendar"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/calendar.css` 使用 `[data-scope="calendar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -250,7 +270,7 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `grid` | `data-view` | context.get('activeView') |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -294,26 +314,12 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `--xh-calendar-week-number-w` | `week-number`<br>`week-row` | `grid-template-columns` | `has(> [data-part='week-number'])`<br>`not([hidden])` | `2.25rem` | calendar 的 week-number、week-row 部件 grid-template-columns 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 格子里放[徽标](./badge)或一小段[排印](./typography)；外面套[卡片](./card)。
-
-## 最佳实践
-
-- 今天要有明显标记，且与"选中"区分开。
-- 格子里的内容超出时收起来，别让某一行比别的行高很多。
-
-## 反模式
-
-- 不可选的日子连焦点都到不了：键盘用户无从知道那里有什么。
-- 用它当日期输入框。

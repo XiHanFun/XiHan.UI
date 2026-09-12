@@ -16,6 +16,12 @@
 
 <XhDemo src="select/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag-list` · `positioner` · **`content`** · **`list`** · `footer` · `group` · `group-label` · `item` · `item-text` · `item-indicator` · `empty` · `loading` · `hidden-select`
+
 ## 示例
 
 ### 多选
@@ -164,7 +170,32 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
   与 `item-indicator` 投影固定内容列。三端适配器只展开这些属性，不各自判断视觉状态。
 - 相邻分组之间自动画材质分隔线，分组标题、空态、加载态与 footer 使用浮层的次要前景节奏。
 
-## 产物
+### 组合
+
+- 外面套[表单字段](./field)；选项文字过长时里面用[文本截断](./truncate)。
+- **浮层 + 列表框**：值不进表单、只是就地切一个视图参数（排序方式、显示密度）时，用[浮层](./popover)装[列表框](./listbox)——浮层管开合与定位，列表框管条目与键盘，两边各自完整，不必另立组件。这是本库「浮层壳 + 条目层」的官方组合写法，示例见本页「官方组合：浮层 + 列表框」与[列表框](./listbox)页的同一例；要随表单提交、要 `name` 与 `hidden-select` 时才用本组件。
+
+### 最佳实践
+
+- 触发器的宽度固定，别随选中项的长度变——整行布局会跟着抖。
+- 选项超过约二十条就该加搜索，也就是换成[组合框](./combobox)。
+- 多选标签直接复用 Tag 的 M1 表面；调整标签外观应使用 `--xh-tag-*` 覆盖槽，不要在 Select 里重画。
+- 自定义选项里的图标、头像、正文和尾部提示按作者 DOM 顺序写；需要截断的正文放进 `item-text`，
+  不要靠皮肤猜测任意 span 的职责。
+
+### 当前边界
+
+- 当前 anatomy 尚无独立 `separator`、`viewport`、`scroll-up-button` 或 `scroll-down-button`。本次只在
+  相邻 `group` 之间提供自动分隔，`list` 继续同时承担滚动视口；这些新部件需要独立行为与三端 API。
+
+### 反模式
+
+- 用它承载动作（"导出"、"删除"）：那是[菜单](./menu)。
+- 异步加载选项时浮层里什么都不显示：给一个加载态或空态。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -174,13 +205,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | 状态机 | `selectMachine` |
 | 皮肤 | `@xihan-ui/styles/select.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag-list` · `positioner` · **`content`** · **`list`** · `footer` · `group` · `group-label` · `item` · `item-text` · `item-indicator` · `empty` · `loading` · `hidden-select`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -209,18 +234,18 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `onValueChange` | `(details: SelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onOpenChange` | `(details: SelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `SelectValueChangeDetails` | 选中值变化；detail 为 `{ value: string[] }` |
 | `open-change` | `SelectOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -228,9 +253,9 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `XhSelectRoot` | `label` | — |  |
 | `XhSelectRoot` | `item` | `SelectNodeMeta` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -245,7 +270,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `empty` | 'open' \| 'closed' |
 | `loading` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -253,9 +278,9 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 
 **判据**：`isOpenControlled` · `isMultiple` · `isReadOnly`
 
-## connect API
+### connect API
 
-`useSelect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -301,7 +326,9 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `getItemIndicatorProps` | `(props: SelectItemProps) => T['element']` |  |
 | `getHiddenSelectProps` | `() => T['select']` | 表单出口：一份视觉隐藏的原生 select，由根部件自行渲染（作者不必手写）。 选项由适配器按当前值补齐，原生提交与 required 校验据此拿到值。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/#keyboardinteraction)
 
@@ -323,9 +350,9 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `Escape` | open | 关闭列表并把焦点归还 trigger，选中值不变 |
 | `Tab` / `Shift+Tab` | open | 关闭列表，焦点不归还 trigger，按 Tab 序列自然离开 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -352,13 +379,15 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `item-indicator` | `aria-hidden` | 'true' |
 | `hidden-select` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/select.css` 按部件选择：`[data-scope="select"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/select.css` 使用 `[data-scope="select"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -408,7 +437,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `tag` | `data-value` | v |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -499,7 +528,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `--xh-select-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_select-gap` | select 的 trigger 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -507,29 +536,6 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 外面套[表单字段](./field)；选项文字过长时里面用[文本截断](./truncate)。
-- **浮层 + 列表框**：值不进表单、只是就地切一个视图参数（排序方式、显示密度）时，用[浮层](./popover)装[列表框](./listbox)——浮层管开合与定位，列表框管条目与键盘，两边各自完整，不必另立组件。这是本库「浮层壳 + 条目层」的官方组合写法，示例见本页「官方组合：浮层 + 列表框」与[列表框](./listbox)页的同一例；要随表单提交、要 `name` 与 `hidden-select` 时才用本组件。
-
-## 最佳实践
-
-- 触发器的宽度固定，别随选中项的长度变——整行布局会跟着抖。
-- 选项超过约二十条就该加搜索，也就是换成[组合框](./combobox)。
-- 多选标签直接复用 Tag 的 M1 表面；调整标签外观应使用 `--xh-tag-*` 覆盖槽，不要在 Select 里重画。
-- 自定义选项里的图标、头像、正文和尾部提示按作者 DOM 顺序写；需要截断的正文放进 `item-text`，
-  不要靠皮肤猜测任意 span 的职责。
-
-### 当前边界
-
-- 当前 anatomy 尚无独立 `separator`、`viewport`、`scroll-up-button` 或 `scroll-down-button`。本次只在
-  相邻 `group` 之间提供自动分隔，`list` 继续同时承担滚动视口；这些新部件需要独立行为与三端 API。
-
-## 反模式
-
-- 用它承载动作（"导出"、"删除"）：那是[菜单](./menu)。
-- 异步加载选项时浮层里什么都不显示：给一个加载态或空态。

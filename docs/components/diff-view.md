@@ -16,6 +16,12 @@
 
 <XhDemo src="diff-view/01-unified" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="diff-view"`：**`root`** · `header` · `summary` · **`viewport`** · **`body`** · `row` · `line-number` · `line-content` · `change-label` · `inline-change` · `token` · `gap` · `gap-cell` · `gap-trigger` · `empty` · `truncation`
+
 ## 示例
 
 ### 并排与折叠
@@ -72,7 +78,29 @@ size 换字号、行高与行号槽的宽度，三档并列对照
   砍掉几行由模型带出来，`truncation` 提示条把这个数说给读的人。
 - 行号与列号一律从模型算，**绝不从 DOM 反推**。
 
-## 产物
+### 组合
+
+- 单栏与并排的切换用[开关组](./toggle-group)；增删统计已有成品位，不必再自己拼
+  （只要数字不要版式时仍可用 `diffStats(model)`）。
+- 装进[工具调用](./tool-call)的详情区，展示这次调用改了什么。
+- 要做「AI 提议的编辑逐条取舍 + 应用」：用[表格](./table)的选择机制承载行级取舍，
+  单元格里放[复选框](./checkbox)，页脚的计数与「应用」用[按钮](./button)。
+  差异视图本身只读，不接这套交互。
+
+### 最佳实践
+
+- 并排视图给足宽度：两列各自还要横向滚动，窄栏下单栏更好读，或者开 `wrap` 让长行折下来。
+- 折叠阈值取三到五行：再少就一直在点展开，再多就等于没折。
+
+### 反模式
+
+- 截断了却不渲 `truncation`：断掉的差异看着仍像一份完整差异，评审的人会以为自己看完了。
+- 拿补丁算出来的差异去着色：那份文本是残缺的，跨行的记号一定切错。
+- 用颜色作为变更类型的唯一线索：色觉障碍与高对比度模式下它就消失了。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -82,13 +110,7 @@ size 换字号、行高与行号槽的宽度，三档并列对照
 | 状态机 | `diffViewMachine` |
 | 皮肤 | `@xihan-ui/styles/diff-view.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="diff-view"`：**`root`** · `header` · `summary` · **`viewport`** · **`body`** · `row` · `line-number` · `line-content` · `change-label` · `inline-change` · `token` · `gap` · `gap-cell` · `gap-trigger` · `empty` · `truncation`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -102,17 +124,17 @@ size 换字号、行高与行号槽的宽度，三档并列对照
 | `translations` | `Partial<DiffViewTranslations>` |  |  |
 | `onExpandedValueChange` | `(details: DiffViewExpandedValueChangeDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `expanded-value-change` | `DiffViewExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -120,9 +142,9 @@ size 换字号、行高与行号槽的宽度，三档并列对照
 | `XhDiffViewSummary` | `default` | `{ count: number }` |  |
 | `XhDiffViewTruncation` | `default` | `{ count: number }` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
@@ -130,9 +152,9 @@ size 换字号、行高与行号槽的宽度，三档并列对照
 
 **判据**：`isExpandedControlled`
 
-## connect API
+### connect API
 
-`useDiffView` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -168,7 +190,9 @@ size 换字号、行高与行号槽的宽度，三档并列对照
 | `cellTokens` | `(props: DiffViewCellProps) => readonly CodeToken[]` | 这一行在这一侧的着色片段；不着色或空侧时为空数组。 |
 | `cellSegments` | `(props: DiffViewCellProps) => readonly DiffViewSegment[]` | 这一行在这一侧的词级片段，着色记号已按片段边界切好。 没算词级差异时为空数组，此时照 cellTokens / cellText 铺。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/WCAG21/Techniques/general/G202)
 
@@ -177,9 +201,9 @@ size 换字号、行高与行号槽的宽度，三档并列对照
 | `Tab` | 差异视图在 Tab 序列中 | 滚动容器自身可聚焦，随后方向键的横纵滚动交给浏览器，组件不接管 |
 | `Enter` / `Space` | 焦点在展开按钮上 | 展开该处折起来的上下文行；组件只接 click，按键走原生 button 的默认行为 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -207,15 +231,17 @@ size 换字号、行高与行号槽的宽度，三档并列对照
 - **刻意不采表格那套行级 roving**：只读差异不是网格，给每份差异一个吞方向键的焦点组
   会把页面滚动抢走，而读屏本来就有表格浏览模式。这是显式裁决，不是遗漏。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/diff-view.css` 按部件选择：`[data-scope="diff-view"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/diff-view.css` 使用 `[data-scope="diff-view"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -240,7 +266,7 @@ size 换字号、行高与行号槽的宽度，三档并列对照
 | `gap-trigger` | `data-value` | hunkIndex:0 |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -285,36 +311,16 @@ size 换字号、行高与行号槽的宽度，三档并列对照
 | `--xh-diff-view-truncation-gap` | `truncation` | `gap` | `default` | `--xh-space-2` | diff-view 的 truncation 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-diff-view-reveal` 随皮肤自带，不引用别处文件里的名字；`background` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤按视口分档：`min-width: 1024px`。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 单栏与并排的切换用[开关组](./toggle-group)；增删统计已有成品位，不必再自己拼
-  （只要数字不要版式时仍可用 `diffStats(model)`）。
-- 装进[工具调用](./tool-call)的详情区，展示这次调用改了什么。
-- 要做「AI 提议的编辑逐条取舍 + 应用」：用[表格](./table)的选择机制承载行级取舍，
-  单元格里放[复选框](./checkbox)，页脚的计数与「应用」用[按钮](./button)。
-  差异视图本身只读，不接这套交互。
-
-## 最佳实践
-
-- 并排视图给足宽度：两列各自还要横向滚动，窄栏下单栏更好读，或者开 `wrap` 让长行折下来。
-- 折叠阈值取三到五行：再少就一直在点展开，再多就等于没折。
-
-## 反模式
-
-- 截断了却不渲 `truncation`：断掉的差异看着仍像一份完整差异，评审的人会以为自己看完了。
-- 拿补丁算出来的差异去着色：那份文本是残缺的，跨行的记号一定切错。
-- 用颜色作为变更类型的唯一线索：色觉障碍与高对比度模式下它就消失了。

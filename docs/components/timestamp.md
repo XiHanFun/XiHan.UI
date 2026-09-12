@@ -16,6 +16,12 @@
 
 <XhDemo src="timestamp/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="timestamp"`：**`root`**
+
 ## 示例
 
 ### 呈现方式
@@ -54,7 +60,23 @@ just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只
 - `format` 自定义格式串，只改看到的文本，`datetime` 属性不跟着变。
 - `locale` 只换用词与缺省格式串：`zh` 开头用中文那套，其余英文。不给就跟宿主浏览器语言，读不到才落 `en-US`。
 
-## 产物
+### 组合
+
+- 放进[列表](./list)的条目、[表格](./table)的单元格、[时间线](./timeline)的时间位。
+
+### 最佳实践
+
+- 相对时间旁边给出绝对时间（提示或 `title`），"3 天前"在追查问题时不够用。
+- 时区要明确：跨时区团队里"昨天"是个含糊的说法。
+
+### 反模式
+
+- 只给相对时间且无法看到确切时刻。
+- 对很久以前的事仍用相对表述（"427 天前"）。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -63,13 +85,7 @@ just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/timestamp.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="timestamp"`：**`root`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -79,17 +95,17 @@ just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只
 | `type` | `TimestampType` |  | 呈现方式：date 只到日、datetime 到秒、relative 说成「几分钟前」，缺省 datetime。 |
 | `value` | `TimestampValue` |  | 要显示的时刻。只写年月日的串按本地零点解读。 |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'empty' |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -100,19 +116,23 @@ just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只
 | `relative` | `boolean` | 这一次是不是真按相对说法念的。落在四档之外退回了绝对日期时为 false。 |
 | `getRootProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/timestamp.css` 按部件选择：`[data-scope="timestamp"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/timestamp.css` 使用 `[data-scope="timestamp"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -121,7 +141,7 @@ just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只
 | `root` | `data-state` | 'empty' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -131,22 +151,8 @@ just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只
 | `--xh-timestamp-placeholder-fg` | `root` | `color` | `state=empty`<br>`state=invalid` | `--xh-fg-muted` | timestamp 的 root 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-## 组合
-
-- 放进[列表](./list)的条目、[表格](./table)的单元格、[时间线](./timeline)的时间位。
-
-## 最佳实践
-
-- 相对时间旁边给出绝对时间（提示或 `title`），"3 天前"在追查问题时不够用。
-- 时区要明确：跨时区团队里"昨天"是个含糊的说法。
-
-## 反模式
-
-- 只给相对时间且无法看到确切时刻。
-- 对很久以前的事仍用相对表述（"427 天前"）。

@@ -16,6 +16,12 @@
 
 <XhDemo src="list/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="list"`：**`root`** · `item` · `item-media` · `item-content` · `item-title` · `item-description` · `item-action`
+
 ## 示例
 
 ### 分隔线
@@ -59,7 +65,23 @@ size 换的是条目的内边距、图文间距与两行文字的字号，不传
 - 六个部件都可选。
 - `split` 在条目之间画线，`bordered` 给外框，`hoverable` 给悬停反馈。
 
-## 产物
+### 组合
+
+- 媒体位放[头像](./avatar)或[图标块](./icon-wrapper)；操作位放[按钮](./button)或[菜单](./menu)；下面接[分页](./pagination)或[无限滚动](./infinite-scroll)。
+
+### 最佳实践
+
+- 每条的高度尽量一致，参差不齐的列表很难扫读。
+- 整条可点时让整条进 Tab 序列，别只让标题可点。
+
+### 反模式
+
+- 用列表排一张有五六个字段的表。
+- 每条都塞三四个操作按钮。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -68,13 +90,7 @@ size 换的是条目的内边距、图文间距与两行文字的字号，不传
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/list.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="list"`：**`root`** · `item` · `item-media` · `item-content` · `item-title` · `item-description` · `item-action`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -83,9 +99,9 @@ size 换的是条目的内边距、图文间距与两行文字的字号，不传
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `split` | `boolean` |  | 条目之间画分隔线。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -97,18 +113,22 @@ size 换的是条目的内边距、图文间距与两行文字的字号，不传
 | `getItemDescriptionProps` | `() => T['element']` |  |
 | `getItemActionProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/list.css` 按部件选择：`[data-scope="list"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/list.css` 使用 `[data-scope="list"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -132,30 +152,16 @@ size 换的是条目的内边距、图文间距与两行文字的字号，不传
 | `--xh-list-title-font-weight` | `item-title` | `font-weight` | `default` | `--xh-font-weight-medium` | list 的 item-title 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`hover: hover`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 媒体位放[头像](./avatar)或[图标块](./icon-wrapper)；操作位放[按钮](./button)或[菜单](./menu)；下面接[分页](./pagination)或[无限滚动](./infinite-scroll)。
-
-## 最佳实践
-
-- 每条的高度尽量一致，参差不齐的列表很难扫读。
-- 整条可点时让整条进 Tab 序列，别只让标题可点。
-
-## 反模式
-
-- 用列表排一张有五六个字段的表。
-- 每条都塞三四个操作按钮。

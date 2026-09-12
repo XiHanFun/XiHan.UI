@@ -16,6 +16,12 @@ create 入队并返回 id，队列里的每条由作者渲染成一条通知；�
 
 <XhDemo src="notification/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="notification"`：**`root`** · **`group`** · `item` · `item-indicator` · `item-title` · `item-description` · `item-action-trigger` · `item-progress` · `item-close-trigger`
+
 ## 示例
 
 ### 落位
@@ -70,7 +76,26 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 - 每条自带计时与暂停：指针停在卡片上、或焦点落进去时不再走表。
 - `duration` 给 0 即常驻不消失，适合需要用户处理的消息。
 
-## 产物
+### 组合
+
+- 卡片可以放一个操作按钮（查看详情、撤销），按下即退场。
+- 队列的增删改一并从根插槽给出，业务代码不必自己维护数组。
+
+### 最佳实践
+
+- 整个应用只挂一个队列，挂在最外层。
+- 落位躲开固定的操作条与移动端手势区。
+- 重要的那条把 `duration` 关掉，让用户自己收走。
+
+### 反模式
+
+- 拿它做操作反馈：一次点击弹出一张两层文本的大卡片，喧宾夺主。
+- 每个页面各挂一个队列：多摞互相盖。
+- `max` 设得太大，一屏被通知占满。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -80,13 +105,7 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | 状态机 | `notificationMachine` |
 | 皮肤 | `@xihan-ui/styles/notification.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="notification"`：**`root`** · **`group`** · `item` · `item-indicator` · `item-title` · `item-description` · `item-action-trigger` · `item-progress` · `item-close-trigger`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -102,17 +121,17 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | `translations` | `Partial<NotificationTranslations>` |  |  |
 | `onItemsChange` | `(details: NotificationItemsChangeDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `items-change` | `NotificationItemsChangeDetails` | 队列变化；detail 为 `{ items: NotificationRecord[] }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -120,24 +139,24 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | `XhNotificationItem` | `default` | `{ item: NotificationItemApi }` |  |
 | `XhNotificationRoot` | `default` | `NotificationRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `item` | toStatus(state.get()) |
 | `item-progress` | toStatus(state.get()) |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
 **事件**：`ITEMS.CREATE` · `ITEMS.UPDATE` · `ITEMS.DISMISS` · `ITEMS.DISMISS_ALL`
 
-## connect API
+### connect API
 
-`useNotification` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -152,15 +171,17 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | `getRootProps` | `() => T['element']` |  |
 | `getGroupProps` | `(props?: NotificationGroupProps) => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/alert/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -175,13 +196,15 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | `item-progress` | `aria-hidden` | 'true' |
 | `item-close-trigger` | `aria-label` | props.translations.close |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/notification.css` 按部件选择：`[data-scope="notification"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/notification.css` 使用 `[data-scope="notification"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -198,7 +221,7 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | `item-close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -249,33 +272,16 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | `--xh-notification-title-leading` | `item-title` | `line-height` | `default` | `--xh-leading-tight` | notification 的 item-title 部件 line-height 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-countdown` · `xh-notification-in` · `xh-notification-out` · `xh-notification-spin` 随皮肤自带，不引用别处文件里的名字；`background` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 卡片可以放一个操作按钮（查看详情、撤销），按下即退场。
-- 队列的增删改一并从根插槽给出，业务代码不必自己维护数组。
-
-## 最佳实践
-
-- 整个应用只挂一个队列，挂在最外层。
-- 落位躲开固定的操作条与移动端手势区。
-- 重要的那条把 `duration` 关掉，让用户自己收走。
-
-## 反模式
-
-- 拿它做操作反馈：一次点击弹出一张两层文本的大卡片，喧宾夺主。
-- 每个页面各挂一个队列：多摞互相盖。
-- `max` 设得太大，一屏被通知占满。

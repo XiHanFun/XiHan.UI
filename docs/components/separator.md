@@ -16,6 +16,12 @@
 
 <XhDemo src="separator/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="separator"`：**`root`** · `line` · `content`
+
 ## 示例
 
 ### 纯装饰
@@ -60,7 +66,23 @@ variant 三档换深浅，dashed 画虚线（横竖各自成立），粗细与�
 - 线是拿背景画出来的：颜色槽位收的是背景值，粗细是另一个槽位；圆润端点避免细线在玻璃表面显得生硬。
 - 竖向分隔线需要父容器有确定高度。
 
-## 产物
+### 组合
+
+- 放进[菜单](./menu)、[工具栏](./toolbar)、[面包屑](./breadcrumb)的条目之间。
+
+### 最佳实践
+
+- 排版用的线一律开 `decorative`：读屏用户不需要听见一条视觉分隔。
+- 竖线记得给父容器高度，否则它量不出来、什么都不画。
+
+### 反模式
+
+- 拿分隔线代替标题做分组：分组的语义要由标题给，线只是视觉。
+- 一个界面里线太多，每一条都失去分量。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -69,13 +91,7 @@ variant 三档换深浅，dashed 画虚线（横竖各自成立），粗细与�
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/separator.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="separator"`：**`root`** · `line` · `content`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -85,9 +101,9 @@ variant 三档换深浅，dashed 画虚线（横竖各自成立），粗细与�
 | `orientation` | `'horizontal' \| 'vertical'` |  |  |
 | `variant` | `SeparatorVariant` |  | 线怎么画，缺省 default；缺省档不输出 data-variant。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -95,15 +111,17 @@ variant 三档换深浅，dashed 画虚线（横竖各自成立），粗细与�
 | `getLineProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/separator/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -112,13 +130,15 @@ variant 三档换深浅，dashed 画虚线（横竖各自成立），粗细与�
 | `root` | `role` | 'none' \| 'separator' |
 | `line` | `role` | 'none' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/separator.css` 按部件选择：`[data-scope="separator"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/separator.css` 使用 `[data-scope="separator"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -129,7 +149,7 @@ variant 三档换深浅，dashed 画虚线（横竖各自成立），粗细与�
 | `line` | `data-orientation` | props.orientation |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -146,20 +166,6 @@ variant 三档换深浅，dashed 画虚线（横竖各自成立），粗细与�
 | `--xh-separator-thickness` | `line`<br>`root` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | separator 的 line、root 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
-
-## 组合
-
-- 放进[菜单](./menu)、[工具栏](./toolbar)、[面包屑](./breadcrumb)的条目之间。
-
-## 最佳实践
-
-- 排版用的线一律开 `decorative`：读屏用户不需要听见一条视觉分隔。
-- 竖线记得给父容器高度，否则它量不出来、什么都不画。
-
-## 反模式
-
-- 拿分隔线代替标题做分组：分组的语义要由标题给，线只是视觉。
-- 一个界面里线太多，每一条都失去分量。

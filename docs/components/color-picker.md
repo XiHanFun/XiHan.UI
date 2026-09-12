@@ -16,6 +16,12 @@
 
 <XhDemo src="color-picker/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="color-picker"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `swatch` · `positioner` · **`content`** · **`saturation-area`** · **`area-thumb`** · `channel-slider` · `channel-slider-track` · `channel-slider-thumb` · `channel-input` · `eye-dropper-trigger` · `swatch-group` · `swatch-item` · `hidden-input`
+
 ## 示例
 
 ### 受控
@@ -97,7 +103,24 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 - 浮层按实际落位方向淡入并短距离移动，不缩放取色区域；收起时完整播放退场，再由适配器隐藏。
 - 局部明暗主题随 Portal 传递。增强对比度和减少透明度沿用材质令牌切为实体表面；减弱动效缩短进出场并归零位移。
 
-## 产物
+### 组合
+
+- 外面套[表单字段](./field)；预设色板走 `swatches`。
+
+### 最佳实践
+
+- 提供预设色板：绝大多数用户不需要在色域里精挑。
+- 回显时同时给色块和色值串，色块用来看、值串用来复制。
+- 监听 `onColorError` 给错误配可见说明；错误对象是诊断出口，不会自动替你渲染提示。
+
+### 反模式
+
+- 只给色域不给数值输入：用户手上有确切色值时无处可填。
+- 在需要满足对比度的场景里放任意取色而不给对比度提示。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -107,13 +130,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | 状态机 | `colorPickerMachine` |
 | 皮肤 | `@xihan-ui/styles/color-picker.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="color-picker"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `swatch` · `positioner` · **`content`** · **`saturation-area`** · **`area-thumb`** · `channel-slider` · `channel-slider-track` · `channel-slider-thumb` · `channel-input` · `eye-dropper-trigger` · `swatch-group` · `swatch-item` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -136,9 +153,9 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `onOpenChange` | `(details: ColorPickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 | `onColorError` | `(details: ColorPickerErrorDetails) => void` |  | 格式、文本、颜色解析或屏幕取色失败；与 value/open 事件独立。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -146,17 +163,17 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `open-change` | `ColorPickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `color-error` | `ColorPickerErrorDetails` | 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhColorPickerRoot` | `default` | `ColorPickerRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -164,7 +181,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `eye-dropper-trigger` | 'picking' \| 'open' \| 'closed' |
 | `swatch-item` | 'checked' \| 'unchecked' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`closed` · `open` · `open.idle` · `open.dragging` · `open.picking`
 
@@ -172,9 +189,9 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 
 **判据**：`isOpenControlled` · `canInteract` · `canPick`
 
-## connect API
+### connect API
 
-`useColorPicker` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -216,7 +233,9 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `getSwatchItemProps` | `(props: ColorPickerSwatchItemProps) => T['button']` |  |
 | `getHiddenInputProps` | `() => T['input']` | 表单影子：值随表单提交。给了 name 才带 name，不给就不参与提交。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/slider/#keyboardinteraction)
 
@@ -233,9 +252,9 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `Enter` | focus in channel-input | 收下框里的字；收不了就保留草稿并报告输入错误。一并拦住表单提交 |
 | `Escape` | open（本层在层栈顶） | 收起浮层，焦点归还触发器 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -271,15 +290,17 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `swatch-item` | `aria-label` | label.swatch(swatch) |
 | `swatch-item` | `aria-pressed` | 'true' \| 'false' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/color-picker.css` 按部件选择：`[data-scope="color-picker"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/color-picker.css` 使用 `[data-scope="color-picker"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -309,7 +330,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `swatch-item` | `data-state` | 'checked' \| 'unchecked' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -390,7 +411,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `--xh-color-picker-value-font-size` | `value-text` | `font-size` | `default` | `--xh-text-body-size` | color-picker 的 value-text 部件 font-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -398,21 +419,6 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 外面套[表单字段](./field)；预设色板走 `swatches`。
-
-## 最佳实践
-
-- 提供预设色板：绝大多数用户不需要在色域里精挑。
-- 回显时同时给色块和色值串，色块用来看、值串用来复制。
-- 监听 `onColorError` 给错误配可见说明；错误对象是诊断出口，不会自动替你渲染提示。
-
-## 反模式
-
-- 只给色域不给数值输入：用户手上有确切色值时无处可填。
-- 在需要满足对比度的场景里放任意取色而不给对比度提示。

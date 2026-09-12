@@ -16,6 +16,12 @@
 
 <XhDemo src="image-cropper/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="image-cropper"`：**`root`** · **`viewport`** · **`image`** · **`crop-area`** · `crop-handle` · `grid` · `zoom-slider` · `rotate-slider` · `hidden-input`
+
 ## 示例
 
 ### 锁定宽高比
@@ -79,7 +85,32 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 - 受控与非受控两态齐全：`value` / `defaultValue` 管裁切矩形，`zoom` / `defaultZoom` 管缩放倍率。
 - `onValueChangeEnd` 覆盖指针与键盘两条路：一次指针拖动松手时发一次，一次方向键微调也发一次（一按就是一次改完的操作）。矩形没真的变（在框上原地点一下、顶到图片边界推不动）不发。
 
-## 产物
+### 组合
+
+- 配一个[滑块](./slider)驱动 `zoom`，配两个[按钮](./button)驱动 `rotation`，是最常见的一套工具条。
+- 裁好之后把结果丢进[图片](./image)做预览。
+- 整套放进[对话框](./dialog)里，确认时再出图。
+
+### 最佳实践
+
+- 视口的尺寸要由图片撑出来（图片铺满视口、高度自适应），裁切框的百分比坐标才对得上。给视口写死一个与图片比例不同的高度，框会和图错位。
+- 角色节点的结构有三条硬要求：crop-area 必须是 viewport 的后代（坐标以 viewport 的矩形为准），image 必须是原生 `<img>`（自然尺寸只有它的 load 事件报得出来），crop-handle 必须是原生 `<button>`。
+- Web Components 侧每个 crop-handle 都要自己写 `position="nw|n|ne|e|se|s|sw|w"`——把手的身份只能从这个属性上取。写漏或写错的把手不接行为、控制台留一条诊断；Vue 侧同名 prop 是必填的，漏写会有告警。
+- 给 `minWidth` / `minHeight` 定一个下限：不给的话用户能把框拉成一条线，出图是一张空图。
+- 出图用导出的 `cropToCanvas(image, rect, options)`，在 `onValueChangeEnd` 或用户点确认时调一次即可；每帧都出图会把主线程占满。源图带透明像素又要存成 JPEG 时记得传 `background`，否则透明区会变成黑块。
+- `cropToCanvas` 只按矩形裁，不烘焙旋转角度。要把旋转也固化进结果，请先把旋转后的图渲成一张新图再喂进来。
+- 跨域图片要先设好 `crossorigin`，否则画布会被污染、`toDataURL` 直接抛错。
+- 裁切框的描边与把手底色跟着主题的表面色走，而它们压着的是一张任意的图：图与主题表面色亮度相近时（深色主题配一张暗图、浅色主题配一张亮图）线会看不清。图源的亮度可预期时，用 `--xh-image-cropper-crop-border` 与 `--xh-image-cropper-handle-bg` 把这两处钉成与图对得起来的颜色。
+
+### 反模式
+
+- 把 `zoom` 与 `rotation` 当成裁切参数来读：它们只是看图的辅助，产出永远以裁切矩形为准。
+- 每次 `onValueChange` 都去服务端出图：拖动过程中这个回调一秒会发几十次，要发请求请用 `onValueChangeEnd`。
+- 只提供指针操作、把八个把手做成两三个像素的小点：既碰不到也说不出，键盘与触屏用户都被挡在外面。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -89,13 +120,7 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 | 状态机 | `imageCropperMachine` |
 | 皮肤 | `@xihan-ui/styles/image-cropper.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="image-cropper"`：**`root`** · **`viewport`** · **`image`** · **`crop-area`** · `crop-handle` · `grid` · `zoom-slider` · `rotate-slider` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -126,9 +151,9 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 | `onZoomChange` | `(details: ImageCropperZoomChangeDetails) => void` |  | 缩放变化意图；受控时是唯一出口。 |
 | `onRotationChange` | `(details: ImageCropperRotationChangeDetails) => void` |  | 旋转变化意图；受控时是唯一出口。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -137,17 +162,17 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 | `zoom-change` | `ImageCropperZoomChangeDetails` | 缩放倍率变化；detail 为 `{ zoom: number }` |
 | `rotation-change` | `ImageCropperRotationChangeDetails` | 旋转角度变化；detail 为 `{ rotation: number }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhImageCropperRoot` | `default` | `ImageCropperRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`dragging` · `idle` · `resizing`
 
@@ -155,9 +180,9 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 
 **判据**：`canEdit`
 
-## connect API
+### connect API
 
-`useImageCropper` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -183,7 +208,9 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 | `getRotateSliderProps` | `() => T['input']` | 旋转滑杆，原生 range 输入。 |
 | `getHiddenInputProps` | `() => T['input']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/slider/#keyboardinteraction)
 
@@ -195,9 +222,9 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 | `Shift+ArrowLeft` / `Shift+ArrowRight` / `Shift+ArrowUp` / `Shift+ArrowDown` | focus on crop-handle, 未禁用且非只读 | 同上，一次走十个自然像素 |
 | `Tab` / `Shift+Tab` | 未禁用 | 裁切框与八个把手各占一个 Tab 停靠点，按文档序依次走过 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -224,13 +251,15 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 - 图片的替代文本走根上的 `alt`（与 `src` 同一条通道，与 image / avatar 一致），由连接层写到 image 部件上；作者自己写在 image 节点上的 `alt` 会被覆盖。组件不替作者编描述：不给 `alt` 时落的是空串，读屏跳过这张图而不是改念图片地址。图有内容就把它写出来。
 - 皮肤给每个把手铺了一层不可见的命中区，撑到最小可点尺寸；框拉得很小时相邻把手的命中区会挨上，需要更宽裕的话把 `--xh-image-cropper-handle-size` 调大。只放四个角的把手也是合法用法，剩下的边靠键盘调。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/image-cropper.css` 按部件选择：`[data-scope="image-cropper"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/image-cropper.css` 使用 `[data-scope="image-cropper"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -245,7 +274,7 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 | `rotate-slider` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -266,38 +295,15 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 | `--xh-image-cropper-w` | `root` | `inline-size` | `default` | `100%` | image-cropper 的 root 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
 - 裁切矩形描述的是图片像素，坐标恒是物理方向：`x` 永远从图片左边缘算起，方向键的左右也永远对应图片的左右。整页 `dir="rtl"` 时框不会翻到另一侧，组件因此不收 `dir`。
 - 皮肤里裁切框与把手的落点跟着写物理属性，与连接层算出来的那份坐标同一口径，不依赖祖先链上的文字方向。
-
-## 组合
-
-- 配一个[滑块](./slider)驱动 `zoom`，配两个[按钮](./button)驱动 `rotation`，是最常见的一套工具条。
-- 裁好之后把结果丢进[图片](./image)做预览。
-- 整套放进[对话框](./dialog)里，确认时再出图。
-
-## 最佳实践
-
-- 视口的尺寸要由图片撑出来（图片铺满视口、高度自适应），裁切框的百分比坐标才对得上。给视口写死一个与图片比例不同的高度，框会和图错位。
-- 角色节点的结构有三条硬要求：crop-area 必须是 viewport 的后代（坐标以 viewport 的矩形为准），image 必须是原生 `<img>`（自然尺寸只有它的 load 事件报得出来），crop-handle 必须是原生 `<button>`。
-- Web Components 侧每个 crop-handle 都要自己写 `position="nw|n|ne|e|se|s|sw|w"`——把手的身份只能从这个属性上取。写漏或写错的把手不接行为、控制台留一条诊断；Vue 侧同名 prop 是必填的，漏写会有告警。
-- 给 `minWidth` / `minHeight` 定一个下限：不给的话用户能把框拉成一条线，出图是一张空图。
-- 出图用导出的 `cropToCanvas(image, rect, options)`，在 `onValueChangeEnd` 或用户点确认时调一次即可；每帧都出图会把主线程占满。源图带透明像素又要存成 JPEG 时记得传 `background`，否则透明区会变成黑块。
-- `cropToCanvas` 只按矩形裁，不烘焙旋转角度。要把旋转也固化进结果，请先把旋转后的图渲成一张新图再喂进来。
-- 跨域图片要先设好 `crossorigin`，否则画布会被污染、`toDataURL` 直接抛错。
-- 裁切框的描边与把手底色跟着主题的表面色走，而它们压着的是一张任意的图：图与主题表面色亮度相近时（深色主题配一张暗图、浅色主题配一张亮图）线会看不清。图源的亮度可预期时，用 `--xh-image-cropper-crop-border` 与 `--xh-image-cropper-handle-bg` 把这两处钉成与图对得起来的颜色。
-
-## 反模式
-
-- 把 `zoom` 与 `rotation` 当成裁切参数来读：它们只是看图的辅助，产出永远以裁切矩形为准。
-- 每次 `onValueChange` 都去服务端出图：拖动过程中这个回调一秒会发几十次，要发请求请用 `onValueChangeEnd`。
-- 只提供指针操作、把八个把手做成两三个像素的小点：既碰不到也说不出，键盘与触屏用户都被挡在外面。

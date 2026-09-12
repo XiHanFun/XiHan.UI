@@ -16,6 +16,12 @@ count 给的是总条数不是总页数；页码序列由 root 的插槽交出�
 
 <XhDemo src="pagination/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="pagination"`：**`root`** · `summary` · `jumper` · `prev-trigger` · `next-trigger` · **`item`** · `ellipsis-trigger` · `page-size-select` · `positioner` · `content`
+
 ## 示例
 
 ### 受控与切片
@@ -98,7 +104,24 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 - `dir` 只作用于排版："上一页"永远是 `page - 1`，不随书写方向翻转。
 - 换 `pageSize` 后总页数重算，越界的当前页被夹回末页。
 
-## 产物
+### 组合
+
+- 与[表格](./table)、[列表](./list)配合；整组禁用时裹一层 `disabled` 的 `fieldset`。
+- 每页条数那个控制器就是[下拉选择](./select)：`page-size-select` 是挂载点，里头的角色节点带的是 `data-scope="select"`，吃 select 那份皮肤。档位来自 `pageSizeOptions`，每一档的文字取 `translations.pageSizeOption`，控件的可及名取 `translations.pageSizeSelect`。
+
+### 最佳实践
+
+- 把当前页写进地址，用户刷新或分享才回得到原处。
+- 数据在途时不要把分页整个卸载，否则每次翻页布局都跳一下。
+
+### 反模式
+
+- 已知总数却不显示，用户无法判断还要翻多久。
+- 把 `count` 当成总页数传进来：序列会短一大截。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -108,13 +131,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | 状态机 | `paginationMachine` |
 | 皮肤 | `@xihan-ui/styles/pagination.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="pagination"`：**`root`** · `summary` · `jumper` · `prev-trigger` · `next-trigger` · **`item`** · `ellipsis-trigger` · `page-size-select` · `positioner` · `content`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -136,18 +153,18 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `onPageChange` | `(details: PaginationPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onPageSizeChange` | `(details: PaginationPageSizeChangeDetails) => void` |  | 每页条数变化意图回调，语义同上；一并给出换算后的页码。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `page-change` | `PaginationPageChangeDetails` | 页码变化；detail 为 `{ page: number, pageSize: number }` |
 | `page-size-change` | `` | 每页条数变化；detail 为 `{ pageSize: number, page: number }`，页码是换算后的 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -155,9 +172,9 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `XhPaginationRoot` | `default` | `PaginationRootSlotProps` |  |
 | `XhPaginationSummary` | `default` | `{ summaryText: string, start: number, end: number, count: number }` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -165,7 +182,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`closed` · `opening` · `visible` · `visible.open` · `visible.closing`
 
@@ -173,9 +190,9 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 
 **判据**：`isSameEllipsis`
 
-## connect API
+### connect API
 
-`usePagination` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -209,7 +226,9 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `getContentProps` | `() => T['element']` |  |
 | `closeEllipsis` | `() => void` | 收起摊开的省略位。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction)
 
@@ -222,9 +241,9 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `Escape` | ellipsis-trigger 已摊开 | 收起摊开的页码面板（走消解层，点面板外面同样收起） |
 | `Tab` / `Shift+Tab` | focus in root | 逐个走过每个可用按钮——分页不做 roving tabindex，用户要能 Tab 到某一页再确认；禁用的首尾按钮自动脱序 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -242,13 +261,15 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `content` | `aria-label` | label.ellipsis(folded.length) |
 | `content` | `role` | 'group' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/pagination.css` 按部件选择：`[data-scope="pagination"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/pagination.css` 使用 `[data-scope="pagination"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -274,7 +295,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `content` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -317,7 +338,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `--xh-pagination-summary-fg` | `summary` | `color` | `default` | `--xh-fg-muted` | pagination 的 summary 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -325,25 +346,10 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 与[表格](./table)、[列表](./list)配合；整组禁用时裹一层 `disabled` 的 `fieldset`。
-- 每页条数那个控制器就是[下拉选择](./select)：`page-size-select` 是挂载点，里头的角色节点带的是 `data-scope="select"`，吃 select 那份皮肤。档位来自 `pageSizeOptions`，每一档的文字取 `translations.pageSizeOption`，控件的可及名取 `translations.pageSizeSelect`。
-
-## 最佳实践
-
-- 把当前页写进地址，用户刷新或分享才回得到原处。
-- 数据在途时不要把分页整个卸载，否则每次翻页布局都跳一下。
-
-## 反模式
-
-- 已知总数却不显示，用户无法判断还要翻多久。
-- 把 `count` 当成总页数传进来：序列会短一大截。

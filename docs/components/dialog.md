@@ -16,6 +16,12 @@
 
 <XhDemo src="dialog/01-basic" />
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="dialog"`：`trigger` · `backdrop` · `positioner` · **`content`** · `header` · `indicator` · `title` · `description` · `body` · `footer` · `close-trigger`
+
 ## 示例
 
 ### 受控
@@ -92,7 +98,24 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 - 失败提示通过服务的 `actionErrorText` 本地化：Vue 支持字符串/ref/getter，React 支持字符串/getter，Web Components 使用字符串，与各端按钮文案合同一致；提示位于 Body 的 `role=alert` 实时区。重试先清理旧异常，关闭或切换请求后旧 Promise 不再写回。
 - 服务宿主或函数正文渲染失败会拒绝所属请求，`onActionError` 通知自身失败也会拒绝所属请求；业务需要处理返回 Promise 的拒绝。显式 `target` 必须是当前文档中已经连接的元素，无法展示时不会解析为取消或永久等待。
 
-## 产物
+### 组合
+
+- 内容区套[滚动区域](./scroll-area)；按钮行用[按钮组](./button-group)；确认类的轻量场景改用[弹出确认](./popconfirm)。
+
+### 最佳实践
+
+- 标题写这次要做什么，别写"提示"。
+- 确认按钮的文字写具体动作（"删除"），不写"确定"。
+- 破坏性操作用危险语气，并让取消是默认焦点。
+
+### 反模式
+
+- 对话框里再开对话框。
+- 点外面就关，而里面有未保存的输入。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -102,13 +125,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | 状态机 | `dialogMachine` |
 | 皮肤 | `@xihan-ui/styles/dialog.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="dialog"`：`trigger` · `backdrop` · `positioner` · **`content`** · `header` · `indicator` · `title` · `description` · `body` · `footer` · `close-trigger`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -126,26 +143,26 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `onOpenChange` | `(details: DialogOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onExitComplete` | `() => void` |  | 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `exit-complete` | `CustomEvent` | 退出完成且本层资源已释放 |
 | `open-change` | `DialogOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhDialogRoot` | `default` | `DialogRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -154,7 +171,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -162,9 +179,9 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 
 **判据**：`isOpenControlled`
 
-## connect API
+### connect API
 
-`useDialog` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -182,7 +199,9 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `getFooterProps` | `() => T['element']` |  |
 | `getCloseTriggerProps` | `() => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/#keyboardinteraction)
 
@@ -193,9 +212,9 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `Tab` | open | 在 content 内向后循环焦点 |
 | `Shift+Tab` | open | 在 content 内向前循环焦点 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -210,15 +229,17 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `indicator` | `aria-hidden` | 'true' |
 | `close-trigger` | `aria-label` | props.translations.close |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/dialog.css` 按部件选择：`[data-scope="dialog"][data-part="trigger"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/dialog.css` 使用 `[data-scope="dialog"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -231,7 +252,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `content` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -284,7 +305,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `--xh-dialog-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-heading-3-weight` | dialog 的 title 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-dialog-in` · `xh-dialog-out` · `xh-fade-in` · `xh-fade-out` 随皮肤自带，不引用别处文件里的名字；`background` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -292,25 +313,10 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 内容区套[滚动区域](./scroll-area)；按钮行用[按钮组](./button-group)；确认类的轻量场景改用[弹出确认](./popconfirm)。
-
-## 最佳实践
-
-- 标题写这次要做什么，别写"提示"。
-- 确认按钮的文字写具体动作（"删除"），不写"确定"。
-- 破坏性操作用危险语气，并让取消是默认焦点。
-
-## 反模式
-
-- 对话框里再开对话框。
-- 点外面就关，而里面有未保存的输入。
