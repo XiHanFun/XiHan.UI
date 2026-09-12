@@ -14,6 +14,7 @@ import { computed, defineComponent, h, mergeProps, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   provideColorPicker,
   provideColorPickerChannel,
@@ -39,8 +40,8 @@ export const XhColorPickerRoot = defineComponent({
     format: { type: String as PropType<ColorPickerFormat>, default: undefined },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    disabled: Boolean,
-    readOnly: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
     alpha: Boolean,
     swatches: { type: Array as PropType<string[]>, default: undefined },
     name: { type: String, default: undefined },
@@ -69,7 +70,7 @@ export const XhColorPickerRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useColorPicker(withXhConfig('color-picker', props) as ColorPickerProps, {
+    const ctx = useColorPicker(withXhConfig('color-picker', useFormControlProps(props)) as ColorPickerProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
     })

@@ -1,5 +1,6 @@
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
+  FormControlState,
   TimeGranularity,
   TimeHourCycle,
   TimePickerColumn,
@@ -12,7 +13,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectTimePicker, timePickerAnatomy, timePickerMachine, timePickerMeta } from '@xihan-ui/headless'
+import { connectTimePicker, resolveFormControlState, timePickerAnatomy, timePickerMachine, timePickerMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -180,7 +181,20 @@ export class XhTimePickerElement extends XhElement {
     { scope: this.pickerScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
   private machineProps(): Partial<TimePickerSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+      required: this.required,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
@@ -193,12 +207,12 @@ export class XhTimePickerElement extends XhElement {
       granularity: this.granularity,
       step: this.step,
       presets: this.presets,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       translations: this.translations,
       isTimeUnavailable: this.isTimeUnavailable,
-      required: this.required ?? false,
+      required: control.required,
       name: this.name,
       variant: this.variant,
       tone: this.tone,

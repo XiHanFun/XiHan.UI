@@ -1,5 +1,6 @@
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
+  FormControlState,
   MentionInputEl,
   MentionItemProps,
   MentionNode,
@@ -12,7 +13,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectMention, mentionAnatomy, mentionMachine, mentionMeta } from '@xihan-ui/headless'
+import { connectMention, mentionAnatomy, mentionMachine, mentionMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -84,10 +85,10 @@ export class XhMentionElement extends XhElement {
     triggerPrefix: { converter: STRING_CONVERTER, attribute: 'trigger-prefix' },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     loading: { type: Boolean },
-    readOnly: { type: Boolean, attribute: 'read-only' },
-    invalid: { type: Boolean },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    invalid: { converter: BOOLEAN_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
     name: { converter: STRING_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
@@ -158,17 +159,28 @@ export class XhMentionElement extends XhElement {
 
   /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<MentionSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       triggerPrefix: this.triggerPrefix,
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
-      disabled: this.disabled ?? false,
+      disabled: control.disabled,
       loading: this.loading ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       placeholder: this.placeholder,
       name: this.name,
       loop: this.loop,

@@ -19,10 +19,11 @@ import type {
   DatePickerValueChangeDetails,
   DateSegmentSet,
   DateSegmentType,
+  FormControlState,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { calendarAnatomy, calendarMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldEndProps, datePickerFieldProps, datePickerMachine, datePickerMeta } from '@xihan-ui/headless'
+import { calendarAnatomy, calendarMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldEndProps, datePickerFieldProps, datePickerMachine, datePickerMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -321,7 +322,20 @@ export class XhDatePickerElement extends XhElement {
     }
   }
 
+  private inheritedControl: FormControlState | undefined
+
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
   private machineProps(): Partial<DatePickerSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+      required: this.required,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
@@ -341,10 +355,10 @@ export class XhDatePickerElement extends XhElement {
       fixedWeeks: this.fixedWeeks,
       defaultFocusedValue: this.defaultFocusedValue,
       isDateUnavailable: this.isDateUnavailable,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
-      required: this.required ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
+      required: control.required,
       name: this.name,
       endName: this.endName,
       translations: this.translations,

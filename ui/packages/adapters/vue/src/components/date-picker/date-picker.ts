@@ -21,6 +21,7 @@ import { XhPortal } from '../../runtime/portal'
 import { slotPaints } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   provideDatePicker,
   provideDatePickerCell,
@@ -123,10 +124,10 @@ export const XhDatePickerRoot = defineComponent({
     /** 快捷选项；给了就在浮层里多出一列，日子要在自己的 computed 里算好再传。 */
     presets: { type: Array as PropType<DatePickerPreset[]>, default: undefined },
     isDateUnavailable: { type: Function as PropType<(value: string) => boolean>, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
-    required: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
     name: { type: String, default: undefined },
     // 区间终点那份隐藏输入的表单名；不给即终点不参与提交
     endName: { type: String, default: undefined },
@@ -172,7 +173,7 @@ export const XhDatePickerRoot = defineComponent({
       emit('active-view-change', details)
       emit('update:activeView', details.activeView)
     }
-    const ctx = useDatePickerWithRoot(withXhConfig('date-picker', props) as DatePickerProps, {
+    const ctx = useDatePickerWithRoot(withXhConfig('date-picker', useFormControlProps(props)) as DatePickerProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
       onFocusedValueChange: notifyFocus,
@@ -293,7 +294,7 @@ export const XhDatePickerTrigger = defineComponent({
     // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
     const fieldLabel = useFieldLabelWiring()
     const ctx = useDatePickerContext()
-    return () => h('button', fieldLabel.value({ ...ctx.api.value.getTriggerProps() as Record<string, unknown>, ...fieldWiring.value }), slots.default?.())
+    return () => h('button', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getTriggerProps() as Record<string, unknown> }), slots.default?.())
   },
 })
 

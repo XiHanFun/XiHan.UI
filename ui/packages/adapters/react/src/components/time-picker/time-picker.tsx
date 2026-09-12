@@ -18,6 +18,7 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { TimePickerColumnProvider, TimePickerProvider, useTimePickerColumnContext, useTimePickerContext } from './context'
 import { useTimePicker } from './use-time-picker'
 
@@ -112,7 +113,7 @@ export function XhTimePickerRoot({
   children,
   ...rest
 }: XhTimePickerRootProps): ReactNode {
-  const ctx = useTimePicker(withXhConfig('time-picker', {
+  const ctx = useTimePicker(withXhConfig('time-picker', useFormControlProps({
     value,
     defaultValue,
     open,
@@ -139,7 +140,7 @@ export function XhTimePickerRoot({
     dir,
     onValueChange,
     onOpenChange,
-  }) as TimePickerProps)
+  })) as TimePickerProps)
   const api = ctx.api
   return (
     <TimePickerProvider value={ctx}>
@@ -227,7 +228,7 @@ export function XhTimePickerTrigger({ children, ...rest }: XhTimePickerTriggerPr
   return (
     <button
       {...mergeReactProps(
-        fieldLabel({ ...ctx.api.getTriggerProps() as Record<string, unknown>, ...fieldWiring }),
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
         rest as Record<string, unknown>,
         // 归还焦点要落到它身上：锚点取的是整个输入行，那一层不可聚焦
         { ref: (el: HTMLButtonElement | null) => { ctx.triggerRef.current = el } },

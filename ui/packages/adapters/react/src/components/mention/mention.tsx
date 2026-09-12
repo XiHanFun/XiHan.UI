@@ -9,6 +9,7 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { MentionItemProvider, MentionProvider, useMentionContext, useMentionItemContext } from './context'
 import { useMention } from './use-mention'
 
@@ -114,7 +115,7 @@ export function XhMentionRoot({
     onSelect,
     onOpenChange,
   }
-  const ctx = useMention(withXhConfig('mention', machineProps) as MentionProps)
+  const ctx = useMention(withXhConfig('mention', useFormControlProps(machineProps)) as MentionProps)
   const api = ctx.api
 
   // 首帧结算一次候选条数，之后的增删由条目自己上报
@@ -168,7 +169,7 @@ export function XhMentionInput({ ...rest }: XhMentionInputProps): ReactNode {
   // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
   const fieldLabel = useFieldLabelWiring()
   const props = mergeReactProps(
-    fieldLabel({ ...ctx.api.getInputProps() as Record<string, unknown>, ...fieldWiring }),
+    fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps() as Record<string, unknown> }),
     rest as Record<string, unknown>,
     { ref: (el: MentionInputEl | null) => { ctx.inputRef.current = el } },
   )
