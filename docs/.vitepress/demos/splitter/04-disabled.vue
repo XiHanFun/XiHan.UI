@@ -1,4 +1,4 @@
-<!-- 禁用 | disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键放行给页面 -->
+<!-- 禁用 | 禁止调整面板比例 -->
 <script setup lang="ts">
 import {
   XhSplitterPanel,
@@ -13,13 +13,13 @@ const panels = [{ id: "aside" }, { id: "main" }];
   <XhSplitterRoot
     :panels="panels"
     disabled
-    style="inline-size: 100%; block-size: 120px"
+    style="inline-size: min(480px, 100%); block-size: 140px"
   >
-    <XhSplitterPanel :index="0">
+    <XhSplitterPanel :index="0" style="background: var(--xh-bg-subtle)">
       <p style="padding: 12px">侧栏</p>
     </XhSplitterPanel>
     <XhSplitterResizeTrigger :index="0" />
-    <XhSplitterPanel :index="1">
+    <XhSplitterPanel :index="1" style="background: var(--xh-bg-brand-subtle)">
       <p style="padding: 12px">正文</p>
     </XhSplitterPanel>
   </XhSplitterRoot>

@@ -1,4 +1,4 @@
-<!-- 嵌套 | 面板里再放一套分栏即可拆出第二根轴，里外两层各管各的尺寸，互不干涉 -->
+<!-- 嵌套分栏 | 组合水平和垂直面板 -->
 <script setup lang="ts">
 import {
   XhSplitterPanel,
@@ -17,24 +17,23 @@ const inner = [
 </script>
 
 <template>
-  <XhSplitterRoot :panels="outer" style="inline-size: 100%; block-size: 220px">
-    <XhSplitterPanel :index="0">
-      <p style="padding: 12px">侧栏</p>
+  <XhSplitterRoot :panels="outer" style="inline-size: min(640px, 100%); block-size: 240px">
+    <XhSplitterPanel :index="0" style="background: var(--xh-bg-subtle)">
+      <p style="padding: 12px">文件</p>
     </XhSplitterPanel>
     <XhSplitterResizeTrigger :index="0" />
     <XhSplitterPanel :index="1">
-      <!-- 内层是另一套分栏：跨轴尺寸取满外层这一格 -->
       <XhSplitterRoot
         :panels="inner"
         orientation="vertical"
         style="inline-size: 100%; block-size: 100%"
       >
-        <XhSplitterPanel :index="0">
-          <p style="padding: 12px">编辑区</p>
+        <XhSplitterPanel :index="0" style="background: var(--xh-bg-brand-subtle)">
+          <p style="padding: 12px">编辑器</p>
         </XhSplitterPanel>
         <XhSplitterResizeTrigger :index="0" />
-        <XhSplitterPanel :index="1">
-          <p style="padding: 12px">输出区</p>
+        <XhSplitterPanel :index="1" style="background: var(--xh-bg-subtle)">
+          <p style="padding: 12px">控制台</p>
         </XhSplitterPanel>
       </XhSplitterRoot>
     </XhSplitterPanel>

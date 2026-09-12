@@ -1,4 +1,4 @@
-// 禁用 | disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键放行给页面
+// 禁用 | 禁止调整面板比例
 import type { ReactNode } from "react";
 import {
   XhSplitterPanel,
@@ -13,13 +13,13 @@ export default function Demo(): ReactNode {
     <XhSplitterRoot
       panels={panels}
       disabled
-      style={{ inlineSize: "100%", blockSize: "120px" }}
+      style={{ inlineSize: "min(480px, 100%)", blockSize: "140px" }}
     >
-      <XhSplitterPanel index={0}>
+      <XhSplitterPanel index={0} style={{ background: "var(--xh-bg-subtle)" }}>
         <p style={{ padding: "12px" }}>侧栏</p>
       </XhSplitterPanel>
       <XhSplitterResizeTrigger index={0} />
-      <XhSplitterPanel index={1}>
+      <XhSplitterPanel index={1} style={{ background: "var(--xh-bg-brand-subtle)" }}>
         <p style={{ padding: "12px" }}>正文</p>
       </XhSplitterPanel>
     </XhSplitterRoot>
