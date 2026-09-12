@@ -7,6 +7,8 @@ export { anchorItem, declaredItemDisabled, focusItem, indexOfValue, isItemDisabl
 export type { ItemQuery, NavigateOptions } from './collection/items'
 export { navIntentFromKey, stepIndex } from './collection/navigate'
 export type { NavAxis, NavIntent, NavKeyOptions, StepOptions } from './collection/navigate'
+export { groupAdjacentRuns } from './collection/runs'
+export type { AdjacentRun } from './collection/runs'
 export { createTypeahead, matchTypeahead } from './collection/typeahead'
 export type { ItemTextFn, Typeahead, TypeaheadMatchOptions, TypeaheadOptions } from './collection/typeahead'
 export { createDismissLayer, createEscapeFallback } from './dismissable-layer'

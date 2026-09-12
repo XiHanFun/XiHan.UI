@@ -4,7 +4,7 @@ import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import type { MenubarPartRegistry } from './use-menubar'
-import { mergeProps } from '@xihan-ui/core'
+import { groupAdjacentRuns, mergeProps } from '@xihan-ui/core'
 import { Fragment, useCallback, useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
@@ -441,19 +441,6 @@ export function XhMenubarSubTrigger({ children, ...rest }: XhMenubarSubTriggerPr
   )
 }
 
-/** 相邻同 group 的条目并成一段，没写 group 的各自成段。 */
-function groupRuns(collection: readonly MenubarNodeMeta[]): MenubarNodeMeta[][] {
-  const runs: MenubarNodeMeta[][] = []
-  for (const meta of collection) {
-    const last = runs.at(-1)
-    if (last && meta.group != null && last[0]!.group === meta.group)
-      last.push(meta)
-    else
-      runs.push([meta])
-  }
-  return runs
-}
-
 /** 单个条目：文字在上，副文本在下，没给副文本就不铺那个部件。 */
 function renderNode(meta: MenubarNodeMeta, renderItem?: (node: MenubarNodeMeta) => ReactNode): ReactNode {
   return (
@@ -466,7 +453,7 @@ function renderNode(meta: MenubarNodeMeta, renderItem?: (node: MenubarNodeMeta) 
 
 /** content 的内容：分组段铺成 group，段首的分隔线落在 group 外面。 */
 function renderNodes(collection: readonly MenubarNodeMeta[], renderItem?: (node: MenubarNodeMeta) => ReactNode): ReactNode {
-  return groupRuns(collection).map((run, runIndex) => {
+  return groupAdjacentRuns(collection, node => node.group).map((run, runIndex) => {
     const head = run[0]!
     // 首条上的标记不产出分隔线：菜单开头不留一道空隔
     const lead = runIndex > 0 && head.separatorBefore ? <XhMenubarSeparator /> : null
