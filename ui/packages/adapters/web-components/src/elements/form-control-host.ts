@@ -16,4 +16,8 @@ export const FORM_CONTROL_HOST_SELECTOR = [
   'xh-pin-input',
   'xh-date-field',
   'xh-time-field',
+  'xh-editable',
+  'xh-tags-input',
+  'xh-checkbox-group',
+  'xh-slider',
 ].join(', ')

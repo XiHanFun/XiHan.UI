@@ -4,6 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { normalizeItemIndex } from '@xihan-ui/core'
 import { computed, defineComponent, h } from 'vue'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideSlider, provideSliderThumb, useSliderContext, useSliderThumbContext } from './context'
 import { useSlider } from './use-slider'
 
@@ -35,9 +36,9 @@ export const XhSliderRoot = defineComponent({
     snapToMarks: { type: Boolean, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
     name: { type: String, default: undefined },
@@ -63,7 +64,7 @@ export const XhSliderRoot = defineComponent({
     const notifyEnd: SliderProps['onValueChangeEnd'] = (details) => {
       emit('value-change-end', details)
     }
-    const ctx = useSlider(props as SliderProps, notify, notifyEnd)
+    const ctx = useSlider(useFormControlProps(props) as SliderProps, notify, notifyEnd)
     provideSlider(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

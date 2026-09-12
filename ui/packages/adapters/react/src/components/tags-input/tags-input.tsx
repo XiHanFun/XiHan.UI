@@ -9,6 +9,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { TagsInputItemProvider, TagsInputProvider, useTagsInputContext, useTagsInputItemContext } from './context'
 import { useTagsInput } from './use-tags-input'
 
@@ -98,7 +99,7 @@ export function XhTagsInputRoot({
   children,
   ...rest
 }: XhTagsInputRootProps): ReactNode {
-  const ctx = useTagsInput(withXhConfig('tags-input', {
+  const ctx = useTagsInput(withXhConfig('tags-input', useFormControlProps({
     value,
     defaultValue,
     inputValue,
@@ -122,7 +123,7 @@ export function XhTagsInputRoot({
     translations,
     onValueChange,
     onInputValueChange,
-  }) as TagsInputProps)
+  })) as TagsInputProps)
   const api = ctx.api
   return (
     <TagsInputProvider value={ctx}>
@@ -190,7 +191,7 @@ export function XhTagsInputInput({ ...rest }: XhTagsInputInputProps): ReactNode 
   return (
     <input
       {...mergeReactProps(
-        fieldLabel({ ...ctx.api.getInputProps() as Record<string, unknown>, ...fieldWiring }),
+        fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps() as Record<string, unknown> }),
         rest as Record<string, unknown>,
       )}
     />

@@ -5,6 +5,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideTagsInput, provideTagsInputItem, useTagsInputContext, useTagsInputItemContext } from './context'
 import { useTagsInput } from './use-tags-input'
 
@@ -45,10 +46,10 @@ export const XhTagsInputRoot = defineComponent({
     defaultInputValue: { type: String, default: undefined },
     max: { type: Number, default: undefined },
     allowOverflow: Boolean,
-    disabled: Boolean,
-    readOnly: Boolean,
-    required: Boolean,
-    invalid: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     showCount: Boolean,
     name: { type: String, default: undefined },
     placeholder: { type: String, default: undefined },
@@ -80,7 +81,7 @@ export const XhTagsInputRoot = defineComponent({
       emit('input-value-change', details)
       emit('update:inputValue', details.inputValue)
     }
-    const ctx = useTagsInput(withXhConfig('tags-input', props) as TagsInputProps, { onValueChange, onInputValueChange })
+    const ctx = useTagsInput(withXhConfig('tags-input', useFormControlProps(props)) as TagsInputProps, { onValueChange, onInputValueChange })
     provideTagsInput(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,
@@ -128,7 +129,7 @@ export const XhTagsInputInput = defineComponent({
     // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
     const fieldLabel = useFieldLabelWiring()
     const ctx = useTagsInputContext()
-    return () => h('input', fieldLabel.value({ ...ctx.api.value.getInputProps() as Record<string, unknown>, ...fieldWiring.value }))
+    return () => h('input', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getInputProps() as Record<string, unknown> }))
   },
 })
 

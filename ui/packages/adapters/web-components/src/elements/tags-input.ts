@@ -1,5 +1,6 @@
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type {
+  FormControlState,
   TagsInputBlurBehavior,
   TagsInputInputValueChangeDetails,
   TagsInputItemProps,
@@ -7,7 +8,7 @@ import type {
   TagsInputValueChangeDetails,
 } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTagsInput, tagAnatomy, tagsInputAnatomy, tagsInputMachine, tagsInputMeta } from '@xihan-ui/headless'
+import { connectTagsInput, resolveFormControlState, tagAnatomy, tagsInputAnatomy, tagsInputMachine, tagsInputMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -142,8 +143,21 @@ export class XhTagsInputElement extends XhElement {
   // 机器只有一个聚焦副作用（自己经 scope 取节点），不需要 config/layer/定位引擎，
   // 故 controller 只带 props。
   private readonly ctrl = new MachineController<TagsInputSchema>(this, tagsInputMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<TagsInputSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      required: this.required,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
@@ -151,11 +165,11 @@ export class XhTagsInputElement extends XhElement {
       defaultInputValue: this.defaultInputValue,
       max: this.max,
       allowOverflow: this.allowOverflow ?? false,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      required: this.required ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      required: control.required,
       showCount: this.showCount ?? false,
-      invalid: this.invalid ?? false,
+      invalid: control.invalid,
       name: this.name,
       placeholder: this.placeholder,
       delimiter: this.delimiter,

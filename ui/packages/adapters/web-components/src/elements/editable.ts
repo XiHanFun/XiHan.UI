@@ -7,8 +7,9 @@ import type {
   EditableValueChangeDetails,
   EditableValueCommitDetails,
   EditableValueRevertDetails,
+  FormControlState,
 } from '@xihan-ui/headless'
-import { connectEditable, editableAnatomy, editableMachine, editableMeta } from '@xihan-ui/headless'
+import { connectEditable, editableAnatomy, editableMachine, editableMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -132,16 +133,29 @@ export class XhEditableElement extends XhElement {
     { onBuilt: svc => this.injectRefs(svc) },
   )
 
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；本组件仅消费公开的三条轴。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
   private machineProps(): Partial<EditableSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
       edit: this.edit,
       defaultEdit: this.defaultEdit ?? false,
       placeholder: this.placeholder,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       maxLength: this.maxLength,
       name: this.name,
       submitMode: this.submitMode,

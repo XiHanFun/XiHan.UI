@@ -19,9 +19,9 @@ function textField(markup = ''): string {
     </xh-text-field>`
 }
 
-type AtomicControl = 'checkbox' | 'switch' | 'radio-group' | 'number-field' | 'password-input' | 'pin-input' | 'date-field' | 'time-field'
+type AtomicControl = 'checkbox' | 'switch' | 'radio-group' | 'number-field' | 'password-input' | 'pin-input' | 'date-field' | 'time-field' | 'editable' | 'tags-input' | 'checkbox-group' | 'slider'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['checkbox', 'switch', 'radio-group', 'number-field', 'password-input', 'pin-input', 'date-field', 'time-field']
+const ATOMIC_CONTROLS: AtomicControl[] = ['checkbox', 'switch', 'radio-group', 'number-field', 'password-input', 'pin-input', 'date-field', 'time-field', 'editable', 'tags-input', 'checkbox-group', 'slider']
 
 function atomicControl(kind: AtomicControl, markup = ''): string {
   if (kind === 'checkbox') {
@@ -43,16 +43,52 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
     return `<xh-pin-input ${markup} length="1"><div data-xh-part="root"><input data-xh-part="input" index="0"></div></xh-pin-input>`
   if (kind === 'date-field')
     return `<xh-date-field ${markup} segments="year"><div data-xh-part="root"><div data-xh-part="segment" segment="year"></div></div></xh-date-field>`
-  return `<xh-time-field ${markup} granularity="hour"><div data-xh-part="root"><span data-xh-part="segment" segment="hour"></span></div></xh-time-field>`
+  if (kind === 'time-field')
+    return `<xh-time-field ${markup} granularity="hour"><div data-xh-part="root"><span data-xh-part="segment" segment="hour"></span></div></xh-time-field>`
+  const nonRequiredMarkup = markup.replace(/\brequired(?:="false")?/g, '')
+  if (kind === 'editable')
+    return `<xh-editable ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><span data-xh-part="preview"></span><input data-xh-part="input"></div></div></xh-editable>`
+  if (kind === 'tags-input')
+    return `<xh-tags-input ${markup}><div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div></xh-tags-input>`
+  if (kind === 'checkbox-group') {
+    return `<xh-checkbox-group ${nonRequiredMarkup}><div data-xh-part="root">
+      <div data-xh-part="item" value="a"><input data-xh-part="hidden-input"><span data-xh-part="indicator"></span><span data-xh-part="item-text">甲</span></div>
+    </div></xh-checkbox-group>`
+  }
+  return `<xh-slider ${nonRequiredMarkup} default-value="50"><div data-xh-part="root"><div data-xh-part="control"><div data-xh-part="track"></div><div data-xh-part="thumb" index="0"></div></div></div></xh-slider>`
 }
 
 async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabled: boolean): Promise<void> {
-  if (kind === 'number-field' || kind === 'password-input' || kind === 'pin-input') {
+  if (kind === 'number-field' || kind === 'password-input' || kind === 'pin-input' || kind === 'editable' || kind === 'tags-input') {
     const input = form.querySelector(`xh-${kind} input`) as HTMLInputElement
     await vi.waitFor(() => expect(input.disabled).toBe(enabled))
     expect(input.readOnly).toBe(enabled)
-    expect(input.required).toBe(enabled)
+    if (kind === 'tags-input')
+      expect(input.getAttribute('aria-required')).toBe(String(enabled))
+    else if (kind !== 'editable')
+      expect(input.required).toBe(enabled)
     expect(input.getAttribute('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'checkbox-group') {
+    let item: HTMLElement | null = null
+    await vi.waitFor(() => {
+      item = form.querySelector<HTMLElement>('xh-checkbox-group [role="checkbox"]')
+      expect(item?.getAttribute('aria-disabled')).toBe(String(enabled))
+    })
+    expect(item!.getAttribute('aria-readonly')).toBe(String(enabled))
+    expect(item!.getAttribute('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'slider') {
+    let thumb: HTMLElement | null = null
+    await vi.waitFor(() => {
+      thumb = form.querySelector<HTMLElement>('xh-slider [role="slider"]')
+      expect(thumb?.getAttribute('aria-disabled')).toBe(String(enabled))
+    })
+    const root = form.querySelector<HTMLElement>('xh-slider [data-scope="slider"][data-part="root"]')!
+    expect(root.hasAttribute('data-readonly')).toBe(enabled)
+    expect(root.hasAttribute('data-invalid')).toBe(enabled)
     return
   }
   if (kind === 'date-field' || kind === 'time-field') {

@@ -3,6 +3,7 @@ import type { EditableActivationMode, EditableApi, EditableSchema, EditableSubmi
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideEditable, useEditableContext } from './context'
 import { useEditable } from './use-editable'
 
@@ -23,9 +24,9 @@ export const XhEditableRoot = defineComponent({
     edit: { type: Boolean, default: undefined },
     defaultEdit: Boolean,
     placeholder: { type: String, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     maxLength: { type: Number, default: undefined },
     name: { type: String, default: undefined },
     submitMode: { type: String as PropType<EditableSubmitMode>, default: undefined },
@@ -49,7 +50,7 @@ export const XhEditableRoot = defineComponent({
     default?: (props: EditableRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    const ctx = useEditable(props as EditableProps, {
+    const ctx = useEditable(useFormControlProps(props) as EditableProps, {
       onValueChange: (details) => {
         emit('value-change', details)
         emit('update:value', details.value)
