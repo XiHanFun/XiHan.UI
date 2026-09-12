@@ -37,7 +37,6 @@ const EXEMPT = {
   'drawer': '机器整份取自 dialog，焦点域与归还都在那一层建；落点按 refs 的 partScope 取 drawer 自己的 trigger',
   'navigation-menu': '不建焦点域：面板里是链接不是菜单项，收起时由 focusItem 直接把焦点放回对应 trigger',
   'menubar': 'roving 锚点自己算，退出动作里手搬焦点（restoreTriggerFocus）',
-  'side-nav': '面板只在键盘展开时建焦点域，那种入口下创建前的持有者就是触发按钮；指针会话不建域，拆除时自己把焦点搬回锚点',
   'date-picker': '触发器是输入行，点它必然把焦点落到某一段上，创建前的快照就是它本身',
   'tour': '引导没有触发器，由宿主程序发起，除了创建前的持有者没有别的落点可交',
 }
