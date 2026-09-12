@@ -1,191 +1,187 @@
 # 组件总览
 
-128 个组件都提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）与**自定义元素**（`@xihan-ui/web-components`）；其中 127 个视觉组件另有**默认皮肤**（`@xihan-ui/styles`），1 个 renderless 行为组件不伪造视觉层。内核是唯一的行为定义，适配器不重新实现逻辑。
-
-每页统一为：用法 · 组件结构 · 示例 · 设计指引 · API 参考 · 无障碍 · 样式参考。API、ARIA、数据属性与 CSS 变量从源码生成；适用场景和设计约束与组件源码同放。某一节没有内容时整节不出现，不留空标题。
-
-不是组件、但同样由本库提供的东西——全局配置、命令式的对话框与轻提示、流式 Markdown 渲染、代码着色——收在[服务与运行时](../runtime/)。
+浏览 XiHan.UI 提供的组件。
 
 ## 通用
 
-最小粒度的原子件：触发一个动作、显示一个图标、排好一段文字。不组织数据，也不划分版面。
+<div class="xh-component-grid">
 
-| 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
-| --- | --- | --- | --- | --- |
-| [按钮](./button) | `button` | 5 | 1 | 11 |
-| [按钮组](./button-group) | `button-group` | 2 | 0 | 4 |
-| [剪贴板](./clipboard) | `clipboard` | 7 | 0 | 4 |
-| [下载触发器](./download-trigger) | `download-trigger` | 1 | 1 | 6 |
-| [文本截断](./truncate) | `truncate` | 1 | 2 | 4 |
-| [浮动按钮](./float-button) | `float-button` | 3 | 3 | 5 |
-| [渐变文字](./gradient-text) | `gradient-text` | 1 | 0 | 5 |
-| [快捷键](./hotkeys) | `hotkeys` | 0 | 2 | 4 |
-| [键帽](./kbd) | `kbd` | 1 | 0 | 4 |
-| [键帽组](./kbd-group) | `kbd-group` | 3 | 0 | 4 |
-| [图标](./icon) | `icon` | 2 | 0 | 7 |
-| [图标块](./icon-wrapper) | `icon-wrapper` | 1 | 0 | 4 |
-| [滚动条](./scrollbar) | `scrollbar` | 4 | 7 | 4 |
-| [切换按钮](./toggle) | `toggle` | 1 | 1 | 9 |
-| [切换按钮组](./toggle-group) | `toggle-group` | 4 | 6 | 8 |
-| [排印](./typography) | `typography` | 6 | 0 | 6 |
-| [水印](./watermark) | `watermark` | 2 | 0 | 4 |
+<XhComponentCard src="button" name="Button" label="按钮" href="/components/button" />
+<XhComponentCard src="button-group" name="ButtonGroup" label="按钮组" href="/components/button-group" />
+<XhComponentCard src="clipboard" name="Clipboard" label="剪贴板" href="/components/clipboard" />
+<XhComponentCard src="download-trigger" name="DownloadTrigger" label="下载触发器" href="/components/download-trigger" />
+<XhComponentCard src="truncate" name="Truncate" label="文本截断" href="/components/truncate" />
+<XhComponentCard src="float-button" name="FloatButton" label="浮动按钮" href="/components/float-button" />
+<XhComponentCard src="gradient-text" name="GradientText" label="渐变文字" href="/components/gradient-text" />
+<XhComponentCard src="hotkeys" name="Hotkeys" label="快捷键" href="/components/hotkeys" renderless />
+<XhComponentCard src="kbd" name="Kbd" label="键帽" href="/components/kbd" />
+<XhComponentCard src="kbd-group" name="KbdGroup" label="键帽组" href="/components/kbd-group" />
+<XhComponentCard src="icon" name="Icon" label="图标" href="/components/icon" />
+<XhComponentCard src="icon-wrapper" name="IconWrapper" label="图标块" href="/components/icon-wrapper" />
+<XhComponentCard src="scrollbar" name="Scrollbar" label="滚动条" href="/components/scrollbar" />
+<XhComponentCard src="toggle" name="Toggle" label="切换按钮" href="/components/toggle" />
+<XhComponentCard src="toggle-group" name="ToggleGroup" label="切换按钮组" href="/components/toggle-group" />
+<XhComponentCard src="typography" name="Typography" label="排印" href="/components/typography" />
+<XhComponentCard src="watermark" name="Watermark" label="水印" href="/components/watermark" />
+
+</div>
 
 ## 布局
 
-只分配空间、不承载内容语义的容器。
+<div class="xh-component-grid">
 
-| 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
-| --- | --- | --- | --- | --- |
-| [弹性布局](./flex) | `flex` | 2 | 0 | 6 |
-| [栅格](./grid) | `grid` | 2 | 0 | 7 |
-| [布局](./layout) | `layout` | 7 | 2 | 8 |
-| [瀑布流](./masonry) | `masonry` | 3 | 0 | 5 |
-| [滚动区域](./scroll-area) | `scroll-area` | 4 | 5 | 6 |
-| [分隔线](./separator) | `separator` | 3 | 0 | 4 |
-| [排序](./sortable) | `sortable` | 5 | 5 | 4 |
-| [可调容器](./resizable) | `resizable` | 2 | 6 | 4 |
-| [分栏](./splitter) | `splitter` | 3 | 8 | 6 |
+<XhComponentCard src="flex" name="Flex" label="弹性布局" href="/components/flex" />
+<XhComponentCard src="grid" name="Grid" label="栅格" href="/components/grid" />
+<XhComponentCard src="layout" name="Layout" label="布局" href="/components/layout" />
+<XhComponentCard src="masonry" name="Masonry" label="瀑布流" href="/components/masonry" />
+<XhComponentCard src="scroll-area" name="ScrollArea" label="滚动区域" href="/components/scroll-area" />
+<XhComponentCard src="separator" name="Separator" label="分隔线" href="/components/separator" />
+<XhComponentCard src="sortable" name="Sortable" label="排序" href="/components/sortable" />
+<XhComponentCard src="resizable" name="Resizable" label="可调容器" href="/components/resizable" />
+<XhComponentCard src="splitter" name="Splitter" label="分栏" href="/components/splitter" />
+
+</div>
 
 ## 导航
 
-在页面与视图之间移动的组件。
+<div class="xh-component-grid">
 
-| 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
-| --- | --- | --- | --- | --- |
-| [固钉](./affix) | `affix` | 2 | 0 | 4 |
-| [锚点](./anchor) | `anchor` | 6 | 2 | 9 |
-| [回到顶部](./back-top) | `back-top` | 2 | 2 | 5 |
-| [面包屑](./breadcrumb) | `breadcrumb` | 7 | 2 | 6 |
-| [右键菜单](./context-menu) | `context-menu` | 12 | 9 | 9 |
-| [菜单](./menu) | `menu` | 11 | 9 | 11 |
-| [菜单栏](./menubar) | `menubar` | 12 | 15 | 10 |
-| [导航菜单](./navigation-menu) | `navigation-menu` | 9 | 7 | 10 |
-| [页头](./page-header) | `page-header` | 8 | 0 | 7 |
-| [分页](./pagination) | `pagination` | 10 | 6 | 11 |
-| [分段控制器](./segmented) | `segmented` | 5 | 6 | 8 |
-| [侧栏导航](./side-nav) | `side-nav` | 13 | 10 | 4 |
-| [步骤条](./steps) | `steps` | 9 | 6 | 8 |
-| [标签页](./tabs) | `tabs` | 8 | 7 | 14 |
-| [工具栏](./toolbar) | `toolbar` | 4 | 6 | 8 |
-| [引导](./tour) | `tour` | 15 | 4 | 4 |
+<XhComponentCard src="affix" name="Affix" label="固钉" href="/components/affix" />
+<XhComponentCard src="anchor" name="Anchor" label="锚点" href="/components/anchor" />
+<XhComponentCard src="back-top" name="BackTop" label="回到顶部" href="/components/back-top" />
+<XhComponentCard src="breadcrumb" name="Breadcrumb" label="面包屑" href="/components/breadcrumb" />
+<XhComponentCard src="context-menu" name="ContextMenu" label="右键菜单" href="/components/context-menu" />
+<XhComponentCard src="menu" name="Menu" label="菜单" href="/components/menu" />
+<XhComponentCard src="menubar" name="Menubar" label="菜单栏" href="/components/menubar" />
+<XhComponentCard src="navigation-menu" name="NavigationMenu" label="导航菜单" href="/components/navigation-menu" />
+<XhComponentCard src="page-header" name="PageHeader" label="页头" href="/components/page-header" />
+<XhComponentCard src="pagination" name="Pagination" label="分页" href="/components/pagination" />
+<XhComponentCard src="segmented" name="Segmented" label="分段控制器" href="/components/segmented" />
+<XhComponentCard src="side-nav" name="SideNav" label="侧栏导航" href="/components/side-nav" />
+<XhComponentCard src="steps" name="Steps" label="步骤条" href="/components/steps" />
+<XhComponentCard src="tabs" name="Tabs" label="标签页" href="/components/tabs" />
+<XhComponentCard src="toolbar" name="Toolbar" label="工具栏" href="/components/toolbar" />
+<XhComponentCard src="tour" name="Tour" label="引导" href="/components/tour" />
+
+</div>
 
 ## 数据录入
 
-承载表单值的组件，统一走受控/非受控两态与 name 表单集成。
+<div class="xh-component-grid">
 
-| 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
-| --- | --- | --- | --- | --- |
-| [级联选择](./cascader) | `cascader` | 22 | 25 | 16 |
-| [复选框](./checkbox) | `checkbox` | 5 | 1 | 8 |
-| [复选框组](./checkbox-group) | `checkbox-group` | 7 | 3 | 9 |
-| [颜色选择器](./color-picker) | `color-picker` | 18 | 10 | 10 |
-| [组合框](./combobox) | `combobox` | 16 | 14 | 14 |
-| [日期输入](./date-field) | `date-field` | 7 | 9 | 13 |
-| [日期选择器](./date-picker) | `date-picker` | 14 | 9 | 10 |
-| [就地编辑](./editable) | `editable` | 8 | 3 | 7 |
-| [表单字段](./field) | `field` | 5 | 0 | 7 |
-| [字段数组](./field-array) | `field-array` | 9 | 0 | 5 |
-| [字段集](./fieldset) | `fieldset` | 6 | 0 | 5 |
-| [文件上传](./file-upload) | `file-upload` | 13 | 5 | 11 |
-| [表单](./form) | `form` | 6 | 0 | 14 |
-| [图片裁切](./image-cropper) | `image-cropper` | 9 | 5 | 7 |
-| [输入组](./input-group) | `input-group` | 2 | 0 | 4 |
-| [列表框](./listbox) | `listbox` | 11 | 10 | 9 |
-| [提及](./mention) | `mention` | 9 | 9 | 6 |
-| [数字输入](./number-field) | `number-field` | 8 | 6 | 14 |
-| [密码输入](./password-input) | `password-input` | 7 | 2 | 8 |
-| [分格输入](./pin-input) | `pin-input` | 6 | 6 | 11 |
-| [单选组](./radio-group) | `radio-group` | 6 | 4 | 7 |
-| [评分](./rating) | `rating` | 6 | 5 | 9 |
-| [选择器](./select) | `select` | 20 | 15 | 20 |
-| [签名板](./signature-pad) | `signature-pad` | 8 | 1 | 6 |
-| [滑块](./slider) | `slider` | 11 | 6 | 11 |
-| [开关](./switch) | `switch` | 5 | 1 | 11 |
-| [标签组](./tag-group) | `tag-group` | 4 | 10 | 4 |
-| [标签输入](./tags-input) | `tags-input` | 9 | 13 | 12 |
-| [文本输入](./text-field) | `text-field` | 8 | 1 | 16 |
-| [时间输入](./time-field) | `time-field` | 7 | 9 | 9 |
-| [时间选择器](./time-picker) | `time-picker` | 14 | 24 | 11 |
-| [穿梭框](./transfer) | `transfer` | 19 | 11 | 10 |
-| [树选择](./tree-select) | `tree-select` | 27 | 17 | 13 |
+<XhComponentCard src="cascader" name="Cascader" label="级联选择" href="/components/cascader" />
+<XhComponentCard src="checkbox" name="Checkbox" label="复选框" href="/components/checkbox" />
+<XhComponentCard src="checkbox-group" name="CheckboxGroup" label="复选框组" href="/components/checkbox-group" />
+<XhComponentCard src="color-picker" name="ColorPicker" label="颜色选择器" href="/components/color-picker" />
+<XhComponentCard src="combobox" name="Combobox" label="组合框" href="/components/combobox" />
+<XhComponentCard src="date-field" name="DateField" label="日期输入" href="/components/date-field" />
+<XhComponentCard src="date-picker" name="DatePicker" label="日期选择器" href="/components/date-picker" />
+<XhComponentCard src="editable" name="Editable" label="就地编辑" href="/components/editable" />
+<XhComponentCard src="field" name="Field" label="表单字段" href="/components/field" />
+<XhComponentCard src="field-array" name="FieldArray" label="字段数组" href="/components/field-array" />
+<XhComponentCard src="fieldset" name="Fieldset" label="字段集" href="/components/fieldset" />
+<XhComponentCard src="file-upload" name="FileUpload" label="文件上传" href="/components/file-upload" />
+<XhComponentCard src="form" name="Form" label="表单" href="/components/form" />
+<XhComponentCard src="image-cropper" name="ImageCropper" label="图片裁切" href="/components/image-cropper" />
+<XhComponentCard src="input-group" name="InputGroup" label="输入组" href="/components/input-group" />
+<XhComponentCard src="listbox" name="Listbox" label="列表框" href="/components/listbox" />
+<XhComponentCard src="mention" name="Mention" label="提及" href="/components/mention" />
+<XhComponentCard src="number-field" name="NumberField" label="数字输入" href="/components/number-field" />
+<XhComponentCard src="password-input" name="PasswordInput" label="密码输入" href="/components/password-input" />
+<XhComponentCard src="pin-input" name="PinInput" label="分格输入" href="/components/pin-input" />
+<XhComponentCard src="radio-group" name="RadioGroup" label="单选组" href="/components/radio-group" />
+<XhComponentCard src="rating" name="Rating" label="评分" href="/components/rating" />
+<XhComponentCard src="select" name="Select" label="选择器" href="/components/select" />
+<XhComponentCard src="signature-pad" name="SignaturePad" label="签名板" href="/components/signature-pad" />
+<XhComponentCard src="slider" name="Slider" label="滑块" href="/components/slider" />
+<XhComponentCard src="switch" name="Switch" label="开关" href="/components/switch" />
+<XhComponentCard src="tag-group" name="TagGroup" label="标签组" href="/components/tag-group" />
+<XhComponentCard src="tags-input" name="TagsInput" label="标签输入" href="/components/tags-input" />
+<XhComponentCard src="text-field" name="TextField" label="文本输入" href="/components/text-field" />
+<XhComponentCard src="time-field" name="TimeField" label="时间输入" href="/components/time-field" />
+<XhComponentCard src="time-picker" name="TimePicker" label="时间选择器" href="/components/time-picker" />
+<XhComponentCard src="transfer" name="Transfer" label="穿梭框" href="/components/transfer" />
+<XhComponentCard src="tree-select" name="TreeSelect" label="树选择" href="/components/tree-select" />
+
+</div>
 
 ## 数据展示
 
-把已有的数据摆出来：集合、媒体、身份标记与度量。
+<div class="xh-component-grid">
 
-| 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
-| --- | --- | --- | --- | --- |
-| [手风琴](./accordion) | `accordion` | 7 | 6 | 12 |
-| [头像](./avatar) | `avatar` | 3 | 0 | 11 |
-| [头像组](./avatar-group) | `avatar-group` | 2 | 0 | 4 |
-| [日历](./calendar) | `calendar` | 17 | 12 | 4 |
-| [卡片](./card) | `card` | 7 | 0 | 5 |
-| [走马灯](./carousel) | `carousel` | 9 | 10 | 9 |
-| [折叠区域](./collapsible) | `collapsible` | 5 | 1 | 7 |
-| [描述列表](./descriptions) | `descriptions` | 4 | 0 | 6 |
-| [空状态](./empty-state) | `empty-state` | 6 | 0 | 6 |
-| [热力图](./heatmap) | `heatmap` | 13 | 10 | 11 |
-| [文本高亮](./highlight) | `highlight` | 2 | 0 | 5 |
-| [图片](./image) | `image` | 4 | 0 | 8 |
-| [图片预览](./image-viewer) | `image-viewer` | 18 | 11 | 4 |
-| [无限滚动](./infinite-scroll) | `infinite-scroll` | 3 | 0 | 5 |
-| [JSON 视图](./json-viewer) | `json-viewer` | 14 | 9 | 9 |
-| [列表](./list) | `list` | 7 | 0 | 5 |
-| [跑马灯](./marquee) | `marquee` | 2 | 0 | 4 |
-| [数值动画](./number-animation) | `number-animation` | 1 | 0 | 4 |
-| [二维码](./qr-code) | `qr-code` | 2 | 0 | 8 |
-| [统计数值](./statistic) | `statistic` | 6 | 0 | 6 |
-| [表格](./table) | `table` | 23 | 18 | 24 |
-| [标签](./tag) | `tag` | 3 | 1 | 7 |
-| [时间线](./timeline) | `timeline` | 9 | 0 | 6 |
-| [计时器](./timer) | `timer` | 5 | 1 | 7 |
-| [时间戳](./timestamp) | `timestamp` | 1 | 0 | 4 |
-| [树](./tree) | `tree` | 18 | 12 | 13 |
-| [虚拟滚动](./virtualizer) | `virtualizer` | 4 | 0 | 6 |
+<XhComponentCard src="accordion" name="Accordion" label="手风琴" href="/components/accordion" />
+<XhComponentCard src="avatar" name="Avatar" label="头像" href="/components/avatar" />
+<XhComponentCard src="avatar-group" name="AvatarGroup" label="头像组" href="/components/avatar-group" />
+<XhComponentCard src="calendar" name="Calendar" label="日历" href="/components/calendar" />
+<XhComponentCard src="card" name="Card" label="卡片" href="/components/card" />
+<XhComponentCard src="carousel" name="Carousel" label="走马灯" href="/components/carousel" />
+<XhComponentCard src="collapsible" name="Collapsible" label="折叠区域" href="/components/collapsible" />
+<XhComponentCard src="descriptions" name="Descriptions" label="描述列表" href="/components/descriptions" />
+<XhComponentCard src="empty-state" name="EmptyState" label="空状态" href="/components/empty-state" />
+<XhComponentCard src="heatmap" name="Heatmap" label="热力图" href="/components/heatmap" />
+<XhComponentCard src="highlight" name="Highlight" label="文本高亮" href="/components/highlight" />
+<XhComponentCard src="image" name="Image" label="图片" href="/components/image" />
+<XhComponentCard src="image-viewer" name="ImageViewer" label="图片预览" href="/components/image-viewer" />
+<XhComponentCard src="infinite-scroll" name="InfiniteScroll" label="无限滚动" href="/components/infinite-scroll" />
+<XhComponentCard src="json-viewer" name="JsonViewer" label="JSON 视图" href="/components/json-viewer" />
+<XhComponentCard src="list" name="List" label="列表" href="/components/list" />
+<XhComponentCard src="marquee" name="Marquee" label="跑马灯" href="/components/marquee" />
+<XhComponentCard src="number-animation" name="NumberAnimation" label="数值动画" href="/components/number-animation" />
+<XhComponentCard src="qr-code" name="QrCode" label="二维码" href="/components/qr-code" />
+<XhComponentCard src="statistic" name="Statistic" label="统计数值" href="/components/statistic" />
+<XhComponentCard src="table" name="Table" label="表格" href="/components/table" />
+<XhComponentCard src="tag" name="Tag" label="标签" href="/components/tag" />
+<XhComponentCard src="timeline" name="Timeline" label="时间线" href="/components/timeline" />
+<XhComponentCard src="timer" name="Timer" label="计时器" href="/components/timer" />
+<XhComponentCard src="timestamp" name="Timestamp" label="时间戳" href="/components/timestamp" />
+<XhComponentCard src="tree" name="Tree" label="树" href="/components/tree" />
+<XhComponentCard src="virtualizer" name="Virtualizer" label="虚拟滚动" href="/components/virtualizer" />
+
+</div>
 
 ## 反馈
 
-报告系统状态：正在进行、已经完成、出了错。
+<div class="xh-component-grid">
 
-| 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
-| --- | --- | --- | --- | --- |
-| [警告提示](./alert) | `alert` | 7 | 1 | 5 |
-| [徽标](./badge) | `badge` | 2 | 0 | 4 |
-| [加载条](./loading-bar) | `loading-bar` | 4 | 0 | 6 |
-| [进度条](./progress) | `progress` | 5 | 0 | 10 |
-| [骨架屏](./skeleton) | `skeleton` | 2 | 0 | 4 |
-| [加载指示器](./spinner) | `spinner` | 2 | 0 | 7 |
-| [通知](./notification) | `notification` | 9 | 0 | 6 |
-| [轻提示](./toast) | `toast` | 7 | 2 | 6 |
+<XhComponentCard src="alert" name="Alert" label="警告提示" href="/components/alert" />
+<XhComponentCard src="badge" name="Badge" label="徽标" href="/components/badge" />
+<XhComponentCard src="loading-bar" name="LoadingBar" label="加载条" href="/components/loading-bar" />
+<XhComponentCard src="progress" name="Progress" label="进度条" href="/components/progress" />
+<XhComponentCard src="skeleton" name="Skeleton" label="骨架屏" href="/components/skeleton" />
+<XhComponentCard src="spinner" name="Spinner" label="加载指示器" href="/components/spinner" />
+<XhComponentCard src="notification" name="Notification" label="通知" href="/components/notification" />
+<XhComponentCard src="toast" name="Toast" label="轻提示" href="/components/toast" />
+
+</div>
 
 ## 浮层
 
-portal 到统一落点、由定位引擎摆位的一层，共用浮层容器与焦点归还契约。
+<div class="xh-component-grid">
 
-| 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
-| --- | --- | --- | --- | --- |
-| [命令面板](./command) | `command` | 13 | 8 | 4 |
-| [对话框](./dialog) | `dialog` | 11 | 4 | 9 |
-| [抽屉](./drawer) | `drawer` | 11 | 4 | 8 |
-| [浮动面板](./floating-panel) | `floating-panel` | 11 | 6 | 6 |
-| [悬浮卡片](./hover-card) | `hover-card` | 7 | 2 | 6 |
-| [弹出确认](./popconfirm) | `popconfirm` | 9 | 4 | 5 |
-| [气泡卡片](./popover) | `popover` | 7 | 4 | 11 |
-| [文字提示](./tooltip) | `tooltip` | 4 | 2 | 8 |
+<XhComponentCard src="command" name="Command" label="命令面板" href="/components/command" />
+<XhComponentCard src="dialog" name="Dialog" label="对话框" href="/components/dialog" />
+<XhComponentCard src="drawer" name="Drawer" label="抽屉" href="/components/drawer" />
+<XhComponentCard src="floating-panel" name="FloatingPanel" label="浮动面板" href="/components/floating-panel" />
+<XhComponentCard src="hover-card" name="HoverCard" label="悬浮卡片" href="/components/hover-card" />
+<XhComponentCard src="popconfirm" name="Popconfirm" label="弹出确认" href="/components/popconfirm" />
+<XhComponentCard src="popover" name="Popover" label="气泡卡片" href="/components/popover" />
+<XhComponentCard src="tooltip" name="Tooltip" label="文字提示" href="/components/tooltip" />
+
+</div>
 
 ## AI 对话
 
-AI 对话界面的组件。
+<div class="xh-component-grid">
 
-| 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
-| --- | --- | --- | --- | --- |
-| [审批](./approval) | `approval` | 14 | 4 | 4 |
-| [代码视图](./code-view) | `code-view` | 11 | 2 | 8 |
-| [差异视图](./diff-view) | `diff-view` | 16 | 2 | 5 |
-| [日志](./log) | `log` | 6 | 2 | 7 |
-| [流式正文](./markdown-stream) | `markdown-stream` | 4 | 1 | 5 |
-| [消息流](./message-feed) | `message-feed` | 7 | 7 | 7 |
-| [提示输入框](./prompt-input) | `prompt-input` | 4 | 8 | 10 |
-| [澄清问卷](./question-flow) | `question-flow` | 18 | 6 | 4 |
-| [思考过程](./reasoning) | `reasoning` | 7 | 1 | 4 |
-| [工具调用](./tool-call) | `tool-call` | 12 | 1 | 5 |
+<XhComponentCard src="approval" name="Approval" label="审批" href="/components/approval" />
+<XhComponentCard src="code-view" name="CodeView" label="代码视图" href="/components/code-view" />
+<XhComponentCard src="diff-view" name="DiffView" label="差异视图" href="/components/diff-view" />
+<XhComponentCard src="log" name="Log" label="日志" href="/components/log" />
+<XhComponentCard src="markdown-stream" name="MarkdownStream" label="流式正文" href="/components/markdown-stream" />
+<XhComponentCard src="message-feed" name="MessageFeed" label="消息流" href="/components/message-feed" />
+<XhComponentCard src="prompt-input" name="PromptInput" label="提示输入框" href="/components/prompt-input" />
+<XhComponentCard src="question-flow" name="QuestionFlow" label="澄清问卷" href="/components/question-flow" />
+<XhComponentCard src="reasoning" name="Reasoning" label="思考过程" href="/components/reasoning" />
+<XhComponentCard src="tool-call" name="ToolCall" label="工具调用" href="/components/tool-call" />
+
+</div>

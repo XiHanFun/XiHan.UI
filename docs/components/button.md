@@ -72,12 +72,6 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 
 <XhDemo src="button/09-custom-color" />
 
-### 按钮组
-
-相邻两段共用一条边，圆角只留在两端；档位与形状写在容器上，靠自定义属性流给组内每一段
-
-<XhDemo src="button/10-group" />
-
 ### 渲染成链接
 
 皮肤认的是 data-scope 与 data-part 这组契约，不是标签名：把契约铺到链接元素上就得到导航型按钮，跳转仍由浏览器原生完成
