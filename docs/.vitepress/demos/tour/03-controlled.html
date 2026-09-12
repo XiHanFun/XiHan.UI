@@ -1,40 +1,11 @@
-<!-- 受控 | 传了 open 与 value 就由宿主说了算：内部不再自改，只发意图，浮层里的按钮与外面的进度读的是同一份状态 -->
-<xh-tour id="tour-controlled" open="false" value="0">
+<!-- 定位 | 为每一步选择合适的浮层方向 -->
+<xh-tour id="tour-placement">
   <div data-xh-part="root">
-    <div style="display: grid; gap: 16px; justify-items: start">
-      <div style="display: flex; flex-wrap: wrap; gap: 12px">
-        <div
-          id="tour-controlled-list"
-          style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
-        >
-          列表
-        </div>
-        <div
-          id="tour-controlled-detail"
-          style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
-        >
-          详情
-        </div>
-        <div
-          id="tour-controlled-actions"
-          style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
-        >
-          操作
-        </div>
-      </div>
-      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
-        <xh-button variant="solid">
-          <button data-xh-part="root" id="tour-controlled-from-start">从头开始</button>
-        </xh-button>
-        <xh-button variant="outline">
-          <button data-xh-part="root" id="tour-controlled-from-third">
-            直接跳到第 3 步
-          </button>
-        </xh-button>
-        <span id="tour-controlled-readout" style="font-size: 13px; opacity: 0.75">
-          open=false · value=0 · （未开始）
-        </span>
-      </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <xh-button variant="outline"><button id="tour-placement-left" data-xh-part="root">左侧</button></xh-button>
+      <xh-button variant="outline"><button id="tour-placement-center" data-xh-part="root">中间</button></xh-button>
+      <xh-button variant="outline"><button id="tour-placement-right" data-xh-part="root">右侧</button></xh-button>
+      <xh-button variant="solid"><button id="tour-placement-start" data-xh-part="root">查看定位</button></xh-button>
     </div>
 
     <div data-xh-part="backdrop"></div>
@@ -43,9 +14,10 @@
       <div data-xh-part="content">
         <h3 data-xh-part="title"></h3>
         <p data-xh-part="description"></p>
+        <p data-xh-part="progress-text"></p>
         <div style="display: flex; align-items: center; gap: 8px">
           <button data-xh-part="prev-trigger">上一步</button>
-          <button data-xh-part="next-trigger">下一步</button>
+          <button id="tour-placement-next" data-xh-part="next-trigger">下一步</button>
         </div>
         <button data-xh-part="close-trigger"></button>
         <div data-xh-part="arrow"></div>
@@ -55,64 +27,26 @@
 </xh-tour>
 
 <script type="module">
-  const tour = document.getElementById("tour-controlled");
-  const readout = document.getElementById("tour-controlled-readout");
-  let log = "（未开始）";
+  const tour = document.getElementById("tour-placement");
+  const next = document.getElementById("tour-placement-next");
 
   tour.steps = [
-    {
-      id: "list",
-      target: "#tour-controlled-list",
-      title: "列表",
-      description: "记录都在这里。",
-    },
-    {
-      id: "detail",
-      target: "#tour-controlled-detail",
-      title: "详情",
-      description: "选中一条后在这块看明细。",
-    },
-    {
-      id: "actions",
-      target: "#tour-controlled-actions",
-      title: "操作",
-      description: "批量动作收在这一栏。",
-    },
+    { id: "left", target: "#tour-placement-left", title: "左侧入口", description: "浮层显示在目标下方。", placement: "bottom-start" },
+    { id: "center", target: "#tour-placement-center", title: "中间入口", description: "浮层显示在目标上方。", placement: "top" },
+    { id: "right", target: "#tour-placement-right", title: "右侧入口", description: "浮层显示在目标左侧。", placement: "left" },
   ];
+  tour.translations = {
+    close: "关闭",
+    progress: (step, count) => `第 ${step} 步，共 ${count} 步`,
+  };
 
-  function render() {
-    readout.textContent = `open=${tour.open} · value=${tour.value} · ${log}`;
-  }
-
-  // 从第几步起都由宿主先落值，再打开
-  function start(from) {
-    tour.value = from;
+  document.getElementById("tour-placement-start").addEventListener("click", () => {
     tour.open = true;
-    render();
-  }
-
-  document
-    .getElementById("tour-controlled-from-start")
-    .addEventListener("click", () => start(0));
-  document
-    .getElementById("tour-controlled-from-third")
-    .addEventListener("click", () => start(2));
-
-  // 内部只发意图，落值全在这几个处理器里
+  });
   tour.addEventListener("open-change", (event) => {
     tour.open = event.detail.open;
-    render();
   });
   tour.addEventListener("value-change", (event) => {
-    tour.value = event.detail.value;
-    render();
-  });
-  tour.addEventListener("complete", (event) => {
-    log = `走完了第 ${event.detail.value + 1} 步`;
-    render();
-  });
-  tour.addEventListener("skip", (event) => {
-    log = `在第 ${event.detail.value + 1} 步放弃`;
-    render();
+    next.textContent = event.detail.value === tour.steps.length - 1 ? "完成" : "下一步";
   });
 </script>

@@ -1,4 +1,4 @@
-<!-- 基础用法 | steps 是唯一事实源，组件只按下标取用；每步的 target 是一个 CSS 选择器，高亮框与浮层都锚在它上面 -->
+<!-- 基础用法 | 逐步介绍页面中的关键操作 -->
 <script setup lang="ts">
 import {
   XhButton,
@@ -46,9 +46,6 @@ const translations = {
   close: "关闭",
   progress: (step: number, count: number) => `第 ${step} 步，共 ${count} 步`,
 };
-
-const panel
-  = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px";
 </script>
 
 <template>
@@ -57,12 +54,10 @@ const panel
     :steps="steps"
     :translations="translations"
   >
-    <div style="display: grid; gap: 16px; justify-items: start">
-      <div style="display: flex; flex-wrap: wrap; gap: 12px">
-        <div id="tour-basic-search" :style="panel">搜索</div>
-        <div id="tour-basic-filter" :style="panel">筛选</div>
-        <div id="tour-basic-export" :style="panel">导出</div>
-      </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <XhButton id="tour-basic-search" variant="outline">搜索</XhButton>
+      <XhButton id="tour-basic-filter" variant="outline">筛选</XhButton>
+      <XhButton id="tour-basic-export" variant="outline">导出</XhButton>
       <XhButton variant="solid" @click="setOpen(true)">开始引导</XhButton>
     </div>
 

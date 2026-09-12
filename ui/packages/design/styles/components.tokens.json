@@ -61735,7 +61735,7 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "dimmed"
       ],
       "defaultToken": [
         "--xh-bg-overlay"

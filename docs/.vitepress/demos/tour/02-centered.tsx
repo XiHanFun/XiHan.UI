@@ -1,4 +1,4 @@
-// 居中步 | 不写 target 的那一步不锚定任何元素：浮层居中、不画高亮框、也不出箭头，适合当开场白与收尾
+// 居中步骤 | 用于引导的开场与结束
 import type { ReactNode } from "react";
 import {
   XhButton,
@@ -44,23 +44,11 @@ const translations = {
 export default function Demo(): ReactNode {
   return (
     <XhTourRoot steps={steps} spotlightPadding={12} translations={translations}>
-      {({ setOpen, lastStep, currentStep }) => (
+      {({ setOpen, lastStep }) => (
         <>
-          <div style={{ display: "grid", gap: "16px", justifyItems: "start" }}>
-            <div
-              id="tour-centered-inbox"
-              style={{
-                padding: "8px 14px",
-                border: "1px solid var(--vp-c-divider)",
-                borderRadius: "8px",
-              }}
-            >
-              收件箱
-            </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+            <XhButton id="tour-centered-inbox" variant="outline">收件箱</XhButton>
             <XhButton variant="solid" onClick={() => setOpen(true)}>开始引导</XhButton>
-            <span style={{ fontSize: "13px", opacity: 0.75 }}>
-              {`当前步：${currentStep ? currentStep.id : "（未开始）"}`}
-            </span>
           </div>
 
           <XhTourBackdrop />

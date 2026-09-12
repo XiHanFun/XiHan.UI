@@ -1,6 +1,6 @@
 # Tour 引导
 
-一串聚光灯步骤，逐个指向界面上的元素并解释它。
+用于逐步介绍界面中的关键功能。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tour" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-steps 是唯一事实源，组件只按下标取用；每步的 target 是一个 CSS 选择器，高亮框与浮层都锚在它上面
+逐步介绍页面中的关键操作
 
 <XhDemo src="tour/01-basic" />
 
@@ -24,21 +24,21 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 
 ## 示例
 
-### 居中步
+### 居中步骤
 
-不写 target 的那一步不锚定任何元素：浮层居中、不画高亮框、也不出箭头，适合当开场白与收尾
+用于引导的开场与结束
 
 <XhDemo src="tour/02-centered" />
 
-### 受控
+### 定位
 
-传了 open 与 value 就由宿主说了算：内部不再自改，只发意图，浮层里的按钮与外面的进度读的是同一份状态
+为每一步选择合适的浮层方向
 
 <XhDemo src="tour/03-controlled" />
 
-### 按步定制正文
+### 无遮罩
 
-标题与说明之外，正文按当前步的 id 换成自己的一块内容；showBackdrop 关掉那层压暗，引导与页面一起看
+保留页面环境并突出目标
 
 <XhDemo src="tour/04-per-step" />
 
@@ -46,34 +46,37 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 
 ### 何时使用
 
-- 新功能上线、首次进入复杂界面时的一次性介绍。
+- 首次进入复杂页面时介绍关键操作。
+- 新功能上线后提供一次性引导。
 
 ### 何时不用
 
-- 界面本身不好懂：改界面，别用引导补丁。
-- 用户需要随时查阅的说明：写进帮助或[文字提示](./tooltip)。
+- 界面结构本身不清晰时应先改进界面。
+- 需要随时查看的说明使用帮助内容或[文字提示](./tooltip)。
 
 ### 特性
 
-- 聚光灯把目标从遮罩里挖出来，`spotlightPadding` 决定挖多大。
-- `autoScroll` 把目标滚进视野。
-- 可以有居中的无目标步（开场与结束）。
-- 步序与展开都可受控，另有完成与跳过两个回调。
+- 聚光灯突出目标，`spotlightPadding` 控制留白。
+- `autoScroll` 自动将目标滚动到可见区域。
+- 无目标步骤在视口中居中，适合开场与结束。
+- `showBackdrop=false` 关闭背景暗幕，但保留目标高亮环。
+- 支持受控步序、完成和跳过回调。
 
 ### 组合
 
-- 与[对话框](./dialog)配合做开场；结束后引导用户去[空状态](./empty-state)那一页或具体功能。
+- 使用 `progress-text` 或 `progress-indicator` 展示进度。
+- 使用 `prev-trigger`、`next-trigger` 与 `skip-trigger` 提供导航。
 
 ### 最佳实践
 
-- 步数压到三到五步，多了没人走完。
-- 跳过入口从第一步就要有，且要显眼。
-- 只讲一次，记住用户已经看过。
+- 步数控制在三到五步。
+- 从第一步开始提供跳过入口。
+- 记录完成状态，避免重复展示。
 
 ### 反模式
 
-- 强制走完不许跳过。
-- 引导目标在当前视口里不存在（还没渲染出来），聚光灯挖了个空。
+- 不要强制用户完成引导。
+- 不要指向尚未渲染的目标。
 
 ## API 参考
 
@@ -237,7 +240,9 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-step` | String(value) |
+| `backdrop` | `data-position` | 'anchored' \| 'center' |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
+| `spotlight` | `data-dimmed` | ''（条件成立时才出现） |
 | `spotlight` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-position` | 'anchored' \| 'center' |
@@ -303,7 +308,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `--xh-tour-spotlight-layer` | `spotlight` | `z-index` | `default` | `--xh-_layer` | tour 的 spotlight 部件 z-index 覆盖槽。 |
 | `--xh-tour-spotlight-radius` | `spotlight` | `border-radius` | `default` | `--xh-shape-surface` | tour 的 spotlight 部件 border-radius 覆盖槽。 |
 | `--xh-tour-spotlight-ring` | `spotlight` | `box-shadow` | `default` | `--xh-ring-focus` | tour 的 spotlight 部件 box-shadow 覆盖槽。 |
-| `--xh-tour-spotlight-shroud` | `spotlight` | `box-shadow` | `default` | `--xh-bg-overlay` | tour 的 spotlight 部件 box-shadow 覆盖槽。 |
+| `--xh-tour-spotlight-shroud` | `spotlight` | `box-shadow` | `dimmed` | `--xh-bg-overlay` | tour 的 spotlight 部件 box-shadow 覆盖槽。 |
 | `--xh-tour-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | tour 的 title 部件 color 覆盖槽。 |
 | `--xh-tour-title-font-size` | `title` | `font-size` | `default` | `--xh-text-heading-3-size` | tour 的 title 部件 font-size 覆盖槽。 |
 | `--xh-tour-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-heading-3-weight` | tour 的 title 部件 font-weight 覆盖槽。 |

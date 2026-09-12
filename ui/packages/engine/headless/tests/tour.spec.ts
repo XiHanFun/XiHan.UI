@@ -478,8 +478,11 @@ describe('connectTour 输出', () => {
     const on = makeService({ steps: STEPS, defaultOpen: true })
     expect((on.api().getBackdropProps() as Dict).hidden).toBeUndefined()
     expect((on.api().getBackdropProps() as Dict)['aria-hidden']).toBe(true)
+    expect((on.api().getBackdropProps() as Dict)['data-position']).toBe('anchored')
+    expect((on.api().getSpotlightProps() as Dict)['data-dimmed']).toBe('')
     const off = makeService({ steps: STEPS, defaultOpen: true, showBackdrop: false })
     expect((off.api().getBackdropProps() as Dict).hidden).toBe(true)
+    expect((off.api().getSpotlightProps() as Dict)['data-dimmed']).toBeUndefined()
   })
 
   it('close-trigger 的名字取 translations', () => {

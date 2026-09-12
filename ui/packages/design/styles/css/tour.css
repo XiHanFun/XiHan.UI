@@ -123,18 +123,24 @@
      这里只管长相：一圈描边 + 一片铺满视口的投影当暗幕，中间那块因此是亮的——
      这就是"洞"。不吃指针：它盖在目标上面，吃了的话目标就再也点不动了 */
   [data-scope='tour'][data-part='spotlight'] {
+    --xh-_tour-spotlight-shroud: transparent;
+
     z-index: var(--xh-tour-spotlight-layer, var(--xh-_layer, var(--xh-layer-modal)));
     pointer-events: none;
     border-radius: var(--xh-tour-spotlight-radius, var(--xh-shape-surface));
     box-shadow:
       0 0 0 var(--xh-stroke-thick) var(--xh-tour-spotlight-ring, var(--xh-ring-focus)),
-      0 0 0 100vmax var(--xh-tour-spotlight-shroud, var(--xh-bg-overlay));
+      0 0 0 100vmax var(--xh-_tour-spotlight-shroud);
     /* 换步时框自己滑过去，用户的视线跟得上；逻辑属性照样可过渡 */
     transition:
       inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
       inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
       inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
       block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+  }
+
+  [data-scope='tour'][data-part='spotlight'][data-dimmed] {
+    --xh-_tour-spotlight-shroud: var(--xh-tour-spotlight-shroud, var(--xh-bg-overlay));
   }
 
   [data-scope='tour'][data-part='spotlight'][hidden] {
@@ -150,13 +156,9 @@
     animation: xh-tour-spotlight-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
-  /* 高亮框在场时遮罩让位：暗幕已经由那圈铺满视口的投影负责，
-     两层叠加会把页面压得过暗，而且洞里也会跟着变暗——洞就白挖了。
-     居中步的高亮框带 hidden，此时遮罩照常压暗（那一步本来就没有要突出的元素）。
-     两条兄弟选择器各管一个方向，谁写在前面都算数：遮罩与高亮框同为浮层落点里的兄弟，
-     不再共有 root 这个祖先 */
-  [data-scope='tour'][data-part='backdrop']:has(~ [data-scope='tour'][data-part='spotlight']:not([hidden])),
-  [data-scope='tour'][data-part='spotlight']:not([hidden]) ~ [data-scope='tour'][data-part='backdrop'] {
+  /* 锚定步的暗幕由 Spotlight 自己挖洞，Backdrop 只负责拦截背景交互。状态直接由连接层给，
+     不依赖两个 Portal shell 在落点里的相对顺序。 */
+  [data-scope='tour'][data-part='backdrop'][data-position='anchored'] {
     background: transparent;
   }
 
