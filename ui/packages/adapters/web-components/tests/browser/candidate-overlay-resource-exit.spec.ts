@@ -124,7 +124,7 @@ describe('wc mention 真实退场资源', () => {
 
     document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
     await settle()
-    const content = host.querySelector<HTMLElement>('[data-xh-part="content"]')!
+    const content = document.querySelector<HTMLElement>(`[data-scope='mention'][data-part='content']`)!
     expect(content.inert).toBe(true)
     expect(content.getAttribute('aria-hidden')).toBe('true')
     expect(getLayerRegistry(document).list()).toHaveLength(1)
