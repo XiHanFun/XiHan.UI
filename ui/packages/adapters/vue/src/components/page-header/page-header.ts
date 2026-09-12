@@ -75,7 +75,7 @@ export const XhPageHeaderTitle = defineComponent({
   },
 })
 
-// 副标题与标题排在同一行，放编号、状态这类补充信息
+// 标题下方的说明文字
 export const XhPageHeaderDescription = defineComponent({
   name: 'XhPageHeaderDescription',
   setup(_, { slots }) {

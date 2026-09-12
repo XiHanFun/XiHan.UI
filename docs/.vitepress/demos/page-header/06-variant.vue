@@ -1,20 +1,19 @@
-<!-- 形态 | 不写 variant 即不画面（与写 plain 一个样）；surface 加底色、圆角与左右内衬，raised 再加一层抬起投影，bordered 在这两档改画整圈描边 -->
+<!-- 变体 | 适配页面、表面与抬升区域 -->
 <script setup lang="ts">
 import { XhPageHeaderDescription, XhPageHeaderRoot, XhPageHeaderTitle } from "@xihan-ui/vue";
 
-// 第一档不写 variant，用 undefined 表达
 const variants = [
-  { variant: undefined, label: "不画面" },
-  { variant: "surface", label: "有面" },
-  { variant: "raised", label: "抬起" },
+  { variant: undefined, label: "纯净", description: "融入页面背景" },
+  { variant: "surface", label: "表面", description: "使用独立内容面" },
+  { variant: "raised", label: "抬升", description: "突出当前页面" },
 ] as const;
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px">
+  <div style="display: grid; gap: 12px; inline-size: min(720px, 100%)">
     <XhPageHeaderRoot v-for="v in variants" :key="v.label" :variant="v.variant" bordered>
       <XhPageHeaderTitle>{{ v.label }}</XhPageHeaderTitle>
-      <XhPageHeaderDescription>页头贴在什么底上，由这一轴决定</XhPageHeaderDescription>
+      <XhPageHeaderDescription>{{ v.description }}</XhPageHeaderDescription>
     </XhPageHeaderRoot>
   </div>
 </template>

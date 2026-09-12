@@ -13,11 +13,11 @@
     --xh-_page-header-px: 0;
     --xh-_page-header-radius: 0;
 
-    /* 一行排不下就折行；返回位、标题、副标题排在同一行，操作贴到行尾，页脚整行另起 */
-    display: flex;
-    flex-wrap: wrap;
+    /* 返回、媒体、标题区与操作区分列；标题与说明上下排列。 */
+    display: grid;
+    grid-auto-flow: dense;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
     align-items: center;
-    column-gap: var(--xh-page-header-column-gap, var(--xh-space-3));
     row-gap: var(--xh-page-header-row-gap, var(--xh-_page-header-row-gap));
     padding-block: var(--xh-page-header-py, var(--xh-_page-header-py));
     padding-inline: var(--xh-page-header-px, var(--xh-_page-header-px));
@@ -73,7 +73,7 @@
   /* —— 各段 —— */
   /* 面包屑占满一整行排在标题之上：它写在标记的最前面，整行铺开就把标题挤到了下一行 */
   [data-scope='page-header'][data-part='breadcrumb'] {
-    flex: 1 0 100%;
+    grid-column: 1 / -1;
     color: var(--xh-page-header-breadcrumb-fg, var(--xh-fg-muted));
     font-size: var(--xh-page-header-breadcrumb-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
@@ -81,23 +81,25 @@
 
   /* 头像 / 图标位：不参与伸缩，图形本身多大由作者定 */
   [data-scope='page-header'][data-part='media'] {
+    grid-column: 2;
+    margin-inline-end: var(--xh-page-header-column-gap, var(--xh-space-3));
     display: inline-flex;
-    flex: none;
     align-items: center;
     justify-content: center;
   }
 
   /* 返回位只摆位置与对齐，外观归作者自己的按钮 */
   [data-scope='page-header'][data-part='back-trigger'] {
+    grid-column: 1;
+    margin-inline-end: var(--xh-page-header-column-gap, var(--xh-space-3));
     display: inline-flex;
-    flex: none;
     align-items: center;
     justify-content: center;
   }
 
   [data-scope='page-header'][data-part='title'] {
+    grid-column: 3;
     margin: 0;
-    flex: none;
     /* 标题不参与伸缩，长过整行时收到行宽为止，中间没有断点的长串在行尾断开，
        不把整条页头撑出容器 */
     max-inline-size: 100%;
@@ -110,8 +112,8 @@
 
   /* 副标题吃掉标题与操作之间的剩余宽度，长文本在这里收窄换行 */
   [data-scope='page-header'][data-part='description'] {
+    grid-column: 3;
     margin: 0;
-    flex: 1 1 auto;
     min-inline-size: 0;
     color: var(--xh-page-header-description-fg, var(--xh-fg-muted));
     font-size: var(--xh-page-header-description-font-size, var(--xh-text-secondary-size));
@@ -120,19 +122,45 @@
 
   /* 操作区贴到行尾，没有副标题占位时也一样靠边 */
   [data-scope='page-header'][data-part='extra'] {
+    grid-column: 4;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--xh-page-header-extra-gap, var(--xh-space-2));
-    margin-inline-start: auto;
+    margin-inline-start: var(--xh-page-header-column-gap, var(--xh-space-3));
+    justify-self: end;
   }
 
   /* 页脚占满一整行，前面有内容时自然被挤到下一行 */
   [data-scope='page-header'][data-part='footer'] {
-    flex: 1 0 100%;
+    grid-column: 1 / -1;
     color: var(--xh-page-header-footer-fg, var(--xh-fg-muted));
     font-size: var(--xh-page-header-footer-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
+  }
+
+  [data-scope='page-header'][data-part='root']:has(> [data-part='description'])
+    > :is([data-part='back-trigger'], [data-part='media'], [data-part='extra']) {
+    grid-row: span 2;
+  }
+
+  @media (max-width: 640px) {
+    [data-scope='page-header'][data-part='root'] {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    [data-scope='page-header'][data-part='media'],
+    [data-scope='page-header'][data-part='title'],
+    [data-scope='page-header'][data-part='description'] {
+      grid-column: 2;
+    }
+
+    [data-scope='page-header'][data-part='root'] > [data-part='extra'] {
+      grid-column: 1 / -1;
+      grid-row: auto;
+      margin-inline-start: 0;
+      justify-self: start;
+    }
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。

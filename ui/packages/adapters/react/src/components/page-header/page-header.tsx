@@ -92,7 +92,7 @@ export function XhPageHeaderTitle({ as = 'div', children, ...rest }: XhPageHeade
 
 export interface XhPageHeaderDescriptionProps extends ComponentPropsWithRef<'div'> {}
 
-/** 副标题与标题排在同一行，放编号、状态这类补充信息。 */
+/** 标题下方的说明文字。 */
 export function XhPageHeaderDescription({ children, ...rest }: XhPageHeaderDescriptionProps): ReactNode {
   const ctx = usePageHeaderContext()
   return (
