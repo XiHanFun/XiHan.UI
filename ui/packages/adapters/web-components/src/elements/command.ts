@@ -1,4 +1,4 @@
-import type { Cleanup, Direction, IdGenerator, Layer, OverlayBackdropVariant, PortalLease, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { Cleanup, Direction, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type {
   CommandApi,
   CommandGroup,
@@ -12,7 +12,7 @@ import type {
   CommandSelectDetails,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
-import { createCounterIdGenerator, createPortalLease, createRuntimeConfig, createScope, isItemDisabled } from '@xihan-ui/core'
+import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled } from '@xihan-ui/core'
 import { commandAnatomy, commandMachine, commandMeta, connectCommand } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
@@ -20,6 +20,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { PortalLeaseController } from '../runtime/portal-lease-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -127,7 +128,19 @@ export class XhCommandElement extends XhElement {
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
-  private portal: PortalLease | null = null
+  private readonly portal = new PortalLeaseController({
+    name: 'Command 视口',
+    config: () => this.config,
+    source: () => this,
+    roots: () => {
+      const positioner = this.getPart('positioner')
+      const content = this.getPart('content')
+      const surface = positioner ?? content
+      const backdrop = (this.modal ?? true) ? this.getPart('backdrop') : null
+      return [backdrop, surface].filter((node): node is HTMLElement => node != null)
+    },
+    onChange: () => this.requestUpdate(),
+  })
 
   /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
@@ -254,42 +267,7 @@ export class XhCommandElement extends XhElement {
   }
 
   protected override externalPartRoots(): readonly HTMLElement[] {
-    return this.portal?.roots ?? []
-  }
-
-  /** Command 是视口浮层而非锚定浮层：现有 backdrop 与面板根共用一枚 Core Portal 租约。 */
-  private syncPortal(active: boolean, modal: boolean): void {
-    const positioner = this.getPart('positioner')
-    const content = this.getPart('content')
-    const surface = positioner ?? content
-    const backdrop = modal ? this.getPart('backdrop') : null
-    const roots = [backdrop, surface].filter((node): node is HTMLElement => node != null)
-    if (!active || roots.length === 0) {
-      this.releasePortal()
-      return
-    }
-    this.ensureConfig()
-    const target = this.config!.portalContainer()
-    if (!target)
-      throw new Error('[xh] Command 视口浮层需要显式可用的 Portal 容器')
-    if (this.portal?.source === this
-      && this.portal.target === target
-      && this.portal.roots.length === roots.length
-      && this.portal.roots.every((node, index) => node === roots[index]))
-      return
-    this.releasePortal()
-    this.portal = createPortalLease({ source: this, target, roots })
-    this.requestUpdate()
-  }
-
-  private releasePortal(): void {
-    const portal = this.portal
-    if (!portal)
-      return
-    this.portal = null
-    portal.release()
-    if (this.isConnected)
-      this.requestUpdate()
+    return this.portal.roots
   }
 
   // 只交注册函数，层的入栈出栈由机器的 trackOverlay 效应跟着展开态做。
@@ -401,7 +379,7 @@ export class XhCommandElement extends XhElement {
     this.exit.update(api.open)
     const visible = this.exit.visible
     const modal = this.modal ?? true
-    this.syncPortal(visible, modal)
+    this.portal.sync(visible)
 
     // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖
     this.setPartHidden(this.getPart('backdrop'), !visible || !modal)
@@ -411,7 +389,7 @@ export class XhCommandElement extends XhElement {
   }
 
   override disconnectedCallback(): void {
-    this.releasePortal()
+    this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并把子树收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上。
     // 只在机器已经收起时才强收——元素被移动（remove 后立刻 append）时展开态不该被打断

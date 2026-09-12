@@ -1,13 +1,14 @@
-import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, PortalLease, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type { DialogOpenChangeDetails, DialogSchema } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
-import { createCounterIdGenerator, createPortalLease, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectDialog, dialogAnatomy, dialogMachine, dialogMeta } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { PortalLeaseController } from '../runtime/portal-lease-controller'
 
 // 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
@@ -77,7 +78,16 @@ export class XhDialogElement extends XhElement {
   private contentNode: HTMLElement | null = null
   private exit: OverlayExit | null = null
   private backdropNode: HTMLElement | null = null
-  private portal: PortalLease | null = null
+  private readonly portal = new PortalLeaseController({
+    name: 'Dialog 视口模态',
+    config: () => this.config,
+    source: () => this,
+    roots: () => {
+      const positioner = this.getPart('positioner')
+      return this.backdropNode && positioner ? [this.backdropNode, positioner] : []
+    },
+    onChange: () => this.requestUpdate(),
+  })
 
   private readonly notify = (details: DialogOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
@@ -130,41 +140,7 @@ export class XhDialogElement extends XhElement {
   }
 
   protected override externalPartRoots(): readonly HTMLElement[] {
-    return this.portal?.roots ?? []
-  }
-
-  /**
-   * 视口模态层的 backdrop 与 positioner 一起租到当前 Document 的 Portal 根。两根共用一枚租约，
-   * 关闭完成、转为非模态、作者换根或宿主断开时，Core 用各自 placeholder 精确归还作者位置。
-   */
-  private mountViewportPortal(backdrop: HTMLElement, positioner: HTMLElement): void {
-    if (this.portal?.roots[0] === backdrop && this.portal.roots[1] === positioner && this.portal.source === this)
-      return
-    this.restoreViewportPortal()
-    this.ensureConfig()
-    const target = this.config!.portalContainer()
-    if (!target)
-      throw new Error('[xh] Dialog 视口模态浮层需要显式可用的 Portal 容器')
-    this.portal = createPortalLease({
-      source: this,
-      target,
-      roots: [backdrop, positioner],
-    })
-    this.requestUpdate()
-  }
-
-  private restoreViewportPortal(): void {
-    const portal = this.portal
-    if (!portal)
-      return
-    this.portal = null
-    try {
-      portal.release()
-    }
-    finally {
-      if (this.isConnected)
-        this.requestUpdate()
-    }
+    return this.portal.roots
   }
 
   // 只交注册函数，层的入栈出栈由机器的 trackOverlay 效应跟着展开态做。
@@ -224,12 +200,8 @@ export class XhDialogElement extends XhElement {
     const visible = exit.visible
 
     const positioner = this.getPart('positioner')
-    // 非模态不领取视口租约；Drawer 的 contained 档也保持作者局部坐标（此处 Dialog 没有 contained）。
-    // 缺一个根时不做半搬运，仍让既有 Light-DOM 结构正常工作。
-    if (modal && (open || visible) && this.backdropNode && positioner)
-      this.mountViewportPortal(this.backdropNode, positioner)
-    else
-      this.restoreViewportPortal()
+    // 非模态不领取视口租约；缺一个根时共享控制器保持既有 Light-DOM 结构。
+    this.portal.sync(modal && (open || visible))
 
     // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖
     if (positioner)
@@ -246,7 +218,7 @@ export class XhDialogElement extends XhElement {
     // 只在机器已经收起时才强收——元素被移动（remove 后立刻 append）时展开态不该被打断
     this.exit?.dispose()
     this.exit = null
-    this.restoreViewportPortal()
+    this.portal.dispose()
     if (this.ctrl.service.state.get() !== 'open')
       this.setPartHidden(this.contentNode, true)
     this.config = null // 重连时 ensureConfig 重建
