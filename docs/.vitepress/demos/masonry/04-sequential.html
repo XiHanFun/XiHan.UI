@@ -1,32 +1,16 @@
-<!-- 逐列填 | 打开 sequential 后项按文档序成段落进各列，读起来是「先走完左列，再走下一列」 -->
+<!-- 顺序排列 | 按文档顺序逐列填充 -->
 <style>
-  #masonry-sequential [data-card] {
-    padding: 12px;
-    border-radius: var(--xh-radius-md);
-    background: var(--xh-bg-subtle);
-    color: var(--xh-fg-default);
-  }
+  #masonry-sequential [data-card] { padding: 18px 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); }
+  #masonry-sequential [data-card] div { margin-block-start: 6px; }
 </style>
-
-<!-- 宿主设 display: contents，排布落在 root 上 -->
-<!-- item 只做承重的盒子，卡片样式落在它的子节点上，与 Vue 版铺出来的结构一致 -->
-<xh-masonry
-  id="masonry-sequential"
-  columns="3"
-  gap="md"
-  sequential
-  style="display: contents"
->
-  <div data-xh-part="root">
-    <div data-xh-part="column"></div>
-    <div data-xh-part="column"></div>
-    <div data-xh-part="column"></div>
-
-    <div data-xh-part="item"><div data-card style="block-size: 70px">1</div></div>
-    <div data-xh-part="item"><div data-card style="block-size: 120px">2</div></div>
-    <div data-xh-part="item"><div data-card style="block-size: 60px">3</div></div>
-    <div data-xh-part="item"><div data-card style="block-size: 100px">4</div></div>
-    <div data-xh-part="item"><div data-card style="block-size: 80px">5</div></div>
-    <div data-xh-part="item"><div data-card style="block-size: 110px">6</div></div>
+<xh-masonry id="masonry-sequential" columns="3" gap="sm" sequential style="display: contents">
+  <div data-xh-part="root" style="inline-size: min(640px, 100%)">
+    <div data-xh-part="column"></div><div data-xh-part="column"></div><div data-xh-part="column"></div>
+    <div data-xh-part="item"><div data-card><strong>1</strong><div>创建项目</div></div></div>
+    <div data-xh-part="item"><div data-card><strong>2</strong><div>配置主题</div></div></div>
+    <div data-xh-part="item"><div data-card><strong>3</strong><div>添加组件</div></div></div>
+    <div data-xh-part="item"><div data-card><strong>4</strong><div>连接数据</div></div></div>
+    <div data-xh-part="item"><div data-card><strong>5</strong><div>运行测试</div></div></div>
+    <div data-xh-part="item"><div data-card><strong>6</strong><div>发布应用</div></div></div>
   </div>
 </xh-masonry>

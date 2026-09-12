@@ -1,47 +1,24 @@
-<!-- 间距档位 | gap 一档管两处：列与列之间、同一列里项与项之间，留白始终对齐 -->
+<!-- 间距 | 设置列与项目之间的间距 -->
 <script setup lang="ts">
 import { XhMasonry } from "@xihan-ui/vue";
-import { ref } from "vue";
 
-const cardStyle
-  = "padding: 12px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
-
-const gaps = ["xs", "sm", "md", "lg", "xl"] as const;
-const gap = ref<(typeof gaps)[number]>("md");
-
-const cards = [
-  { label: "甲", height: 80 },
-  { label: "乙", height: 120 },
-  { label: "丙", height: 60 },
-  { label: "丁", height: 100 },
-  { label: "戊", height: 90 },
-  { label: "己", height: 70 },
-];
+const items = ["设计", "开发", "测试", "发布"];
+const gaps = ["sm", "lg"] as const;
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px">
-    <div style="display: flex; gap: 8px">
-      <button
-        v-for="g in gaps"
-        :key="g"
-        type="button"
-        :aria-pressed="g === gap"
-        :style="`padding: 4px 10px; border-radius: var(--xh-radius-sm); border: 1px solid var(--xh-border-default); background: ${g === gap ? 'var(--xh-bg-brand)' : 'transparent'}; color: ${g === gap ? 'var(--xh-fg-on-brand)' : 'var(--xh-fg-default)'}`"
-        @click="gap = g"
-      >
-        {{ g }}
-      </button>
+  <div style="display: flex; flex-wrap: wrap; gap: 24px">
+    <div v-for="gap in gaps" :key="gap" style="inline-size: min(280px, 100%)">
+      <div style="margin-block-end: 8px; color: var(--xh-fg-muted); font-size: 13px">{{ gap }}</div>
+      <XhMasonry :columns="2" :gap="gap">
+        <div
+          v-for="(item, index) in items"
+          :key="item"
+          :style="`padding: ${12 + index * 5}px 12px; border-radius: var(--xh-shape-control); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand)`"
+        >
+          {{ item }}
+        </div>
+      </XhMasonry>
     </div>
-
-    <XhMasonry :columns="3" :gap="gap">
-      <div
-        v-for="c in cards"
-        :key="c.label"
-        :style="`${cardStyle}; block-size: ${c.height}px`"
-      >
-        {{ c.label }}
-      </div>
-    </XhMasonry>
   </div>
 </template>
