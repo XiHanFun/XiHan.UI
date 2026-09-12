@@ -1,15 +1,14 @@
-<!-- 基础用法 | 一维排布容器：子项横着排，间距走档位，容器自己不给子项加任何样式 -->
+<!-- 基础用法 | 水平排列内容 -->
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
-
-const boxStyle
-  = "padding: 8px 14px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
 </script>
 
 <template>
-  <XhFlex gap="sm">
-    <span :style="boxStyle">甲</span>
-    <span :style="boxStyle">乙</span>
-    <span :style="boxStyle">丙</span>
+  <XhFlex align="center" gap="sm">
+    <span style="display: grid; inline-size: 40px; block-size: 40px; place-items: center; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-weight: 600">林</span>
+    <XhFlex orientation="vertical" gap="xs">
+      <strong>林晓</strong>
+      <span style="color: var(--xh-fg-muted); font-size: 13px">产品设计师</span>
+    </XhFlex>
   </XhFlex>
 </template>

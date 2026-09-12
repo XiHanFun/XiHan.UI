@@ -1,20 +1,15 @@
-// 基础用法 | 一维排布容器：子项横着排，间距走档位，容器自己不给子项加任何样式
+// 基础用法 | 水平排列内容
 import type { ReactNode } from "react";
 import { XhFlex } from "@xihan-ui/react";
 
-const boxStyle = {
-  padding: "8px 14px",
-  borderRadius: "var(--xh-radius-md)",
-  background: "var(--xh-bg-subtle)",
-  color: "var(--xh-fg-default)",
-};
-
 export default function Demo(): ReactNode {
   return (
-    <XhFlex gap="sm">
-      <span style={boxStyle}>甲</span>
-      <span style={boxStyle}>乙</span>
-      <span style={boxStyle}>丙</span>
+    <XhFlex align="center" gap="sm">
+      <span style={{ display: "grid", inlineSize: "40px", blockSize: "40px", placeItems: "center", borderRadius: "var(--xh-shape-pill)", background: "var(--xh-bg-brand-subtle)", color: "var(--xh-fg-brand)", fontWeight: 600 }}>林</span>
+      <XhFlex orientation="vertical" gap="xs">
+        <strong>林晓</strong>
+        <span style={{ color: "var(--xh-fg-muted)", fontSize: "13px" }}>产品设计师</span>
+      </XhFlex>
     </XhFlex>
   );
 }

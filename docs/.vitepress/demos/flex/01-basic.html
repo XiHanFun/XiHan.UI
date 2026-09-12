@@ -1,18 +1,12 @@
-<!-- 基础用法 | 一维排布容器：子项横着排，间距走档位，容器自己不给子项加任何样式 -->
-<style>
-  #flex-basic [data-box] {
-    padding: 8px 14px;
-    border-radius: var(--xh-radius-md);
-    background: var(--xh-bg-subtle);
-    color: var(--xh-fg-default);
-  }
-</style>
-
-<!-- 宿主设 display: contents，排布落在 root 上 -->
-<xh-flex id="flex-basic" gap="sm" style="display: contents">
+<!-- 基础用法 | 水平排列内容 -->
+<xh-flex align="center" gap="sm" style="display: contents">
   <div data-xh-part="root">
-    <span data-box>甲</span>
-    <span data-box>乙</span>
-    <span data-box>丙</span>
+    <span style="display: grid; inline-size: 40px; block-size: 40px; place-items: center; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-weight: 600">林</span>
+    <xh-flex orientation="vertical" gap="xs" style="display: contents">
+      <div data-xh-part="root">
+        <strong>林晓</strong>
+        <span style="color: var(--xh-fg-muted); font-size: 13px">产品设计师</span>
+      </div>
+    </xh-flex>
   </div>
 </xh-flex>

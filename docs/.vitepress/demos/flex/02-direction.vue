@@ -1,30 +1,18 @@
-<!-- 方向 | orientation 换主轴：horizontal 横排（缺省），vertical 竖排 -->
+<!-- 方向 | 设置水平或垂直排列 -->
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
-const boxStyle
-  = "padding: 8px 14px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
-const labelStyle = "font-size: 13px; color: var(--xh-fg-muted)";
+const items = ["设计", "开发", "测试"];
+const itemStyle = "padding: 8px 14px; border-radius: var(--xh-shape-control); background: var(--xh-bg-subtle)";
 </script>
 
 <template>
   <XhFlex orientation="vertical" gap="lg">
-    <XhFlex orientation="vertical" gap="xs">
-      <span :style="labelStyle">horizontal（缺省）</span>
-      <XhFlex gap="sm">
-        <span :style="boxStyle">甲</span>
-        <span :style="boxStyle">乙</span>
-        <span :style="boxStyle">丙</span>
-      </XhFlex>
+    <XhFlex gap="sm">
+      <span v-for="item in items" :key="item" :style="itemStyle">{{ item }}</span>
     </XhFlex>
-
-    <XhFlex orientation="vertical" gap="xs">
-      <span :style="labelStyle">vertical</span>
-      <XhFlex orientation="vertical" gap="sm">
-        <span :style="boxStyle">甲</span>
-        <span :style="boxStyle">乙</span>
-        <span :style="boxStyle">丙</span>
-      </XhFlex>
+    <XhFlex orientation="vertical" gap="sm" style="inline-size: 120px">
+      <span v-for="item in items" :key="item" :style="itemStyle">{{ item }}</span>
     </XhFlex>
   </XhFlex>
 </template>
