@@ -18,7 +18,7 @@ export type SelectRootSlotProps = Pick<
   'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'overflowText' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
 >
 
-export const XhSelectRoot = defineComponent({
+export const XhSelectRoot = /* @__PURE__ */ defineComponent({
   name: 'XhSelectRoot',
   // 有 connect 兜底的 prop 一律 default: undefined
   props: {
@@ -112,7 +112,7 @@ export const XhSelectRoot = defineComponent({
   },
 })
 
-export const XhSelectLabel = defineComponent({
+export const XhSelectLabel = /* @__PURE__ */ defineComponent({
   name: 'XhSelectLabel',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -120,7 +120,7 @@ export const XhSelectLabel = defineComponent({
   },
 })
 
-export const XhSelectControl = defineComponent({
+export const XhSelectControl = /* @__PURE__ */ defineComponent({
   name: 'XhSelectControl',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -129,7 +129,7 @@ export const XhSelectControl = defineComponent({
   },
 })
 
-export const XhSelectTrigger = defineComponent({
+export const XhSelectTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhSelectTrigger',
   setup(_, { slots }) {
     // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
@@ -145,7 +145,7 @@ export const XhSelectTrigger = defineComponent({
   },
 })
 
-export const XhSelectValueText = defineComponent({
+export const XhSelectValueText = /* @__PURE__ */ defineComponent({
   name: 'XhSelectValueText',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -158,7 +158,7 @@ export const XhSelectValueText = defineComponent({
   },
 })
 
-export const XhSelectIndicator = defineComponent({
+export const XhSelectIndicator = /* @__PURE__ */ defineComponent({
   name: 'XhSelectIndicator',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -166,7 +166,7 @@ export const XhSelectIndicator = defineComponent({
   },
 })
 
-export const XhSelectClearTrigger = defineComponent({
+export const XhSelectClearTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhSelectClearTrigger',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -175,7 +175,7 @@ export const XhSelectClearTrigger = defineComponent({
   },
 })
 
-export const XhSelectTagList = defineComponent({
+export const XhSelectTagList = /* @__PURE__ */ defineComponent({
   name: 'XhSelectTagList',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -185,7 +185,7 @@ export const XhSelectTagList = defineComponent({
 })
 
 /** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
-export const XhSelectTagLabel = defineComponent({
+export const XhSelectTagLabel = /* @__PURE__ */ defineComponent({
   name: 'XhSelectTagLabel',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -205,7 +205,7 @@ function tagChildren(content: VNode[] | string | undefined): VNode[] | string | 
 }
 
 /** 一个选中值一枚，就是库里 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从 select 传下去，形态按控件的面派；触发器里纯展示，触发器外配 XhSelectItemDeleteTrigger 可删。 */
-export const XhSelectTag = defineComponent({
+export const XhSelectTag = /* @__PURE__ */ defineComponent({
   name: 'XhSelectTag',
   props: {
     /** 它代表哪个选中值。 */
@@ -220,7 +220,7 @@ export const XhSelectTag = defineComponent({
 })
 
 /** 折起的标签合成的那一枚：同样是 tag 的 root；有插槽用插槽，否则显示 +N。没有折起的标签时连接层给 hidden。 */
-export const XhSelectOverflowTag = defineComponent({
+export const XhSelectOverflowTag = /* @__PURE__ */ defineComponent({
   name: 'XhSelectOverflowTag',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -233,7 +233,7 @@ export const XhSelectOverflowTag = defineComponent({
 })
 
 /** 标签里的删除钮：就是所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名走 translations.deleteItem；点按摘掉所在标签的选中值。 */
-export const XhSelectItemDeleteTrigger = defineComponent({
+export const XhSelectItemDeleteTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhSelectItemDeleteTrigger',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -242,7 +242,7 @@ export const XhSelectItemDeleteTrigger = defineComponent({
   },
 })
 
-export const XhSelectPositioner = defineComponent({
+export const XhSelectPositioner = /* @__PURE__ */ defineComponent({
   name: 'XhSelectPositioner',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
@@ -262,7 +262,7 @@ export const XhSelectPositioner = defineComponent({
   },
 })
 
-export const XhSelectContent = defineComponent({
+export const XhSelectContent = /* @__PURE__ */ defineComponent({
   name: 'XhSelectContent',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -276,7 +276,7 @@ export const XhSelectContent = defineComponent({
   },
 })
 
-export const XhSelectList = defineComponent({
+export const XhSelectList = /* @__PURE__ */ defineComponent({
   name: 'XhSelectList',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -285,7 +285,7 @@ export const XhSelectList = defineComponent({
   },
 })
 
-export const XhSelectFooter = defineComponent({
+export const XhSelectFooter = /* @__PURE__ */ defineComponent({
   name: 'XhSelectFooter',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -295,7 +295,7 @@ export const XhSelectFooter = defineComponent({
   },
 })
 
-export const XhSelectEmpty = defineComponent({
+export const XhSelectEmpty = /* @__PURE__ */ defineComponent({
   name: 'XhSelectEmpty',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -305,7 +305,7 @@ export const XhSelectEmpty = defineComponent({
   },
 })
 
-export const XhSelectLoading = defineComponent({
+export const XhSelectLoading = /* @__PURE__ */ defineComponent({
   name: 'XhSelectLoading',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -314,7 +314,7 @@ export const XhSelectLoading = defineComponent({
   },
 })
 
-export const XhSelectGroup = defineComponent({
+export const XhSelectGroup = /* @__PURE__ */ defineComponent({
   name: 'XhSelectGroup',
   props: {
     value: { type: String, required: true },
@@ -328,7 +328,7 @@ export const XhSelectGroup = defineComponent({
   },
 })
 
-export const XhSelectGroupLabel = defineComponent({
+export const XhSelectGroupLabel = /* @__PURE__ */ defineComponent({
   name: 'XhSelectGroupLabel',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -337,7 +337,7 @@ export const XhSelectGroupLabel = defineComponent({
   },
 })
 
-export const XhSelectItem = defineComponent({
+export const XhSelectItem = /* @__PURE__ */ defineComponent({
   name: 'XhSelectItem',
   props: {
     value: { type: String, required: true },
@@ -375,7 +375,7 @@ export const XhSelectItem = defineComponent({
   },
 })
 
-export const XhSelectItemText = defineComponent({
+export const XhSelectItemText = /* @__PURE__ */ defineComponent({
   name: 'XhSelectItemText',
   setup(_, { slots }) {
     const ctx = useSelectContext()
@@ -384,7 +384,7 @@ export const XhSelectItemText = defineComponent({
   },
 })
 
-export const XhSelectItemIndicator = defineComponent({
+export const XhSelectItemIndicator = /* @__PURE__ */ defineComponent({
   name: 'XhSelectItemIndicator',
   setup(_, { slots }) {
     const ctx = useSelectContext()

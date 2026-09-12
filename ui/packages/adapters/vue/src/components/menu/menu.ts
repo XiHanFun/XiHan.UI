@@ -17,7 +17,7 @@ type MenuProps = MenuSchema['props']
 /** 默认插槽的载荷：展开态与改展开的动作。 */
 export type MenuRootSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 
-export const XhMenuRoot = defineComponent({
+export const XhMenuRoot = /* @__PURE__ */ defineComponent({
   name: 'XhMenuRoot',
   // 缺省值由 connect 给出，这里一律 default: undefined
   props: {
@@ -69,7 +69,7 @@ export const XhMenuRoot = defineComponent({
   },
 })
 
-export const XhMenuTrigger = defineComponent({
+export const XhMenuTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhMenuTrigger',
   // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
   inheritAttrs: false,
@@ -96,7 +96,7 @@ export const XhMenuTrigger = defineComponent({
   },
 })
 
-export const XhMenuPositioner = defineComponent({
+export const XhMenuPositioner = /* @__PURE__ */ defineComponent({
   name: 'XhMenuPositioner',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
@@ -118,7 +118,7 @@ export const XhMenuPositioner = defineComponent({
   },
 })
 
-export const XhMenuContent = defineComponent({
+export const XhMenuContent = /* @__PURE__ */ defineComponent({
   name: 'XhMenuContent',
   setup(_, { slots }) {
     const ctx = useMenuContext()
@@ -132,7 +132,7 @@ export const XhMenuContent = defineComponent({
   },
 })
 
-export const XhMenuItem = defineComponent({
+export const XhMenuItem = /* @__PURE__ */ defineComponent({
   name: 'XhMenuItem',
   props: {
     value: { type: String, required: true },
@@ -178,7 +178,7 @@ export type MenuSubSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
  * 子菜单：内部再跑一台 menu 机器（submenu 模式），触发条目由 XhMenuSubTrigger
  * 渲染成「父菜单条目 + 本子菜单触发器」的双重身份。本身不渲染节点。
  */
-export const XhMenuSub = defineComponent({
+export const XhMenuSub = /* @__PURE__ */ defineComponent({
   name: 'XhMenuSub',
   props: {
     /** 它在父菜单里的条目身份。 */
@@ -226,7 +226,7 @@ export const XhMenuSub = defineComponent({
   },
 })
 
-export const XhMenuSubTrigger = defineComponent({
+export const XhMenuSubTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhMenuSubTrigger',
   setup(_, { slots }) {
     const sub = useMenuSubContext()
@@ -245,7 +245,7 @@ export const XhMenuSubTrigger = defineComponent({
 })
 
 /** 条目里的文字载体：连打检索取它，图标与副文本的文字因此不进检索串 */
-export const XhMenuItemText = defineComponent({
+export const XhMenuItemText = /* @__PURE__ */ defineComponent({
   name: 'XhMenuItemText',
   setup(_, { slots }) {
     const ctx = useMenuContext()
@@ -255,7 +255,7 @@ export const XhMenuItemText = defineComponent({
 })
 
 /** 条目里的标记位（勾选、图标），纯装饰 */
-export const XhMenuItemIndicator = defineComponent({
+export const XhMenuItemIndicator = /* @__PURE__ */ defineComponent({
   name: 'XhMenuItemIndicator',
   setup(_, { slots }) {
     const ctx = useMenuContext()
@@ -265,7 +265,7 @@ export const XhMenuItemIndicator = defineComponent({
 })
 
 /** 条目里的副文本，排在文字下一行 */
-export const XhMenuItemDescription = defineComponent({
+export const XhMenuItemDescription = /* @__PURE__ */ defineComponent({
   name: 'XhMenuItemDescription',
   setup(_, { slots }) {
     const ctx = useMenuContext()
@@ -274,7 +274,7 @@ export const XhMenuItemDescription = defineComponent({
   },
 })
 
-export const XhMenuGroup = defineComponent({
+export const XhMenuGroup = /* @__PURE__ */ defineComponent({
   name: 'XhMenuGroup',
   props: {
     value: { type: String, required: true },
@@ -287,7 +287,7 @@ export const XhMenuGroup = defineComponent({
   },
 })
 
-export const XhMenuGroupLabel = defineComponent({
+export const XhMenuGroupLabel = /* @__PURE__ */ defineComponent({
   name: 'XhMenuGroupLabel',
   setup(_, { slots }) {
     const ctx = useMenuContext()
@@ -296,7 +296,7 @@ export const XhMenuGroupLabel = defineComponent({
   },
 })
 
-export const XhMenuSeparator = defineComponent({
+export const XhMenuSeparator = /* @__PURE__ */ defineComponent({
   name: 'XhMenuSeparator',
   setup() {
     const ctx = useMenuContext()
@@ -304,7 +304,7 @@ export const XhMenuSeparator = defineComponent({
   },
 })
 
-export const XhMenuArrow = defineComponent({
+export const XhMenuArrow = /* @__PURE__ */ defineComponent({
   name: 'XhMenuArrow',
   setup() {
     const ctx = useMenuContext()

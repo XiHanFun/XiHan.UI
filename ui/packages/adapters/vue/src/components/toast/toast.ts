@@ -14,7 +14,7 @@ export type ToastRootSlotProps = Pick<
   'id' | 'status' | 'type' | 'paused' | 'remaining' | 'dismiss' | 'pause' | 'resume'
 >
 
-export const XhToastRoot = defineComponent({
+export const XhToastRoot = /* @__PURE__ */ defineComponent({
   name: 'XhToastRoot',
   // 缺省值由 connect 与机器给出，这里一律 default: undefined
   props: {
@@ -60,7 +60,7 @@ export const XhToastRoot = defineComponent({
   },
 })
 
-export const XhToastIndicator = defineComponent({
+export const XhToastIndicator = /* @__PURE__ */ defineComponent({
   name: 'XhToastIndicator',
   setup(_, { slots }) {
     const ctx = useToastContext()
@@ -68,7 +68,7 @@ export const XhToastIndicator = defineComponent({
   },
 })
 
-export const XhToastTitle = defineComponent({
+export const XhToastTitle = /* @__PURE__ */ defineComponent({
   name: 'XhToastTitle',
   setup(_, { slots }) {
     const ctx = useToastContext()
@@ -81,7 +81,7 @@ export const XhToastTitle = defineComponent({
   },
 })
 
-export const XhToastActionTrigger = defineComponent({
+export const XhToastActionTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhToastActionTrigger',
   setup(_, { slots }) {
     const ctx = useToastContext()
@@ -90,7 +90,7 @@ export const XhToastActionTrigger = defineComponent({
   },
 })
 
-export const XhToastProgress = defineComponent({
+export const XhToastProgress = /* @__PURE__ */ defineComponent({
   name: 'XhToastProgress',
   setup(_, { slots }) {
     const ctx = useToastContext()
@@ -98,7 +98,7 @@ export const XhToastProgress = defineComponent({
   },
 })
 
-export const XhToastCloseTrigger = defineComponent({
+export const XhToastCloseTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhToastCloseTrigger',
   setup(_, { slots }) {
     const ctx = useToastContext()

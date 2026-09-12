@@ -15,7 +15,7 @@ type DialogProps = DialogSchema['props']
 /** 默认插槽的载荷：展开态与改展开的动作。 */
 export type DialogRootSlotProps = Pick<DialogApi, 'open' | 'setOpen'>
 
-export const XhDialogRoot = defineComponent({
+export const XhDialogRoot = /* @__PURE__ */ defineComponent({
   name: 'XhDialogRoot',
   props: {
     open: { type: Boolean, default: undefined },
@@ -50,7 +50,7 @@ export const XhDialogRoot = defineComponent({
   },
 })
 
-export const XhDialogTrigger = defineComponent({
+export const XhDialogTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhDialogTrigger',
   // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
   inheritAttrs: false,
@@ -74,7 +74,7 @@ export const XhDialogTrigger = defineComponent({
   },
 })
 
-export const XhDialogContent = defineComponent({
+export const XhDialogContent = /* @__PURE__ */ defineComponent({
   name: 'XhDialogContent',
   props: {
     /** 本实例的 Portal 容器；优先于应用级配置。 */
@@ -108,7 +108,7 @@ export const XhDialogContent = defineComponent({
   },
 })
 
-export const XhDialogHeader = defineComponent({
+export const XhDialogHeader = /* @__PURE__ */ defineComponent({
   name: 'XhDialogHeader',
   setup(_, { slots }) {
     const ctx = useDialogContext()
@@ -117,7 +117,7 @@ export const XhDialogHeader = defineComponent({
 })
 
 /** 语气徽记：不给内容就由皮肤按节点上的 data-tone 画兜底字形，塞了节点即整枚换掉。 */
-export const XhDialogIndicator = defineComponent({
+export const XhDialogIndicator = /* @__PURE__ */ defineComponent({
   name: 'XhDialogIndicator',
   setup(_, { slots }) {
     const ctx = useDialogContext()
@@ -125,7 +125,7 @@ export const XhDialogIndicator = defineComponent({
   },
 })
 
-export const XhDialogTitle = defineComponent({
+export const XhDialogTitle = /* @__PURE__ */ defineComponent({
   name: 'XhDialogTitle',
   setup(_, { slots }) {
     const ctx = useDialogContext()
@@ -133,7 +133,7 @@ export const XhDialogTitle = defineComponent({
   },
 })
 
-export const XhDialogDescription = defineComponent({
+export const XhDialogDescription = /* @__PURE__ */ defineComponent({
   name: 'XhDialogDescription',
   setup(_, { slots }) {
     const ctx = useDialogContext()
@@ -141,7 +141,7 @@ export const XhDialogDescription = defineComponent({
   },
 })
 
-export const XhDialogBody = defineComponent({
+export const XhDialogBody = /* @__PURE__ */ defineComponent({
   name: 'XhDialogBody',
   setup(_, { slots }) {
     const ctx = useDialogContext()
@@ -149,7 +149,7 @@ export const XhDialogBody = defineComponent({
   },
 })
 
-export const XhDialogFooter = defineComponent({
+export const XhDialogFooter = /* @__PURE__ */ defineComponent({
   name: 'XhDialogFooter',
   setup(_, { slots }) {
     const ctx = useDialogContext()
@@ -157,7 +157,7 @@ export const XhDialogFooter = defineComponent({
   },
 })
 
-export const XhDialogCloseTrigger = defineComponent({
+export const XhDialogCloseTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhDialogCloseTrigger',
   setup(_, { slots }) {
     const ctx = useDialogContext()
