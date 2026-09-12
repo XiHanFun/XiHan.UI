@@ -45,6 +45,14 @@ describe('action Control Family Recipe', () => {
     expect(textTarget).not.toContain('min-inline-size')
   })
 
+  it('默认值相同的状态仍保留独立覆盖槽', async () => {
+    const css = compileActionControlRecipe(await source())
+    // hover 的前景与 rest 默认都取 fg-default，但组件仍可只覆盖 hover，不能被编译优化吞掉。
+    expect(css).toContain('color: var(--xh-action-fg-hover, var(--xh-fg-default));')
+    expect(css).toContain('opacity: var(--xh-action-opacity-loading, 1);')
+    expect(css).toContain('cursor: var(--xh-action-cursor-focus-visible, pointer);')
+  })
+
   it('compact 只复用密度轴语义令牌，RTL 只使用逻辑轴', async () => {
     const recipe = await source()
     const css = compileActionControlRecipe(recipe)
