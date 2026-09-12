@@ -7,6 +7,7 @@ export default defineConfig({
   test: {
     name: 'vue-browser',
     include: ['tests/browser/**/*.spec.ts'],
+    exclude: ['tests/browser/visual-performance.spec.ts'],
     setupFiles: ['./tests/browser/setup.ts'],
     browser: {
       enabled: true,

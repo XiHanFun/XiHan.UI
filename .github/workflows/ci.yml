@@ -114,6 +114,12 @@ jobs:
         run: pnpm build
       - name: Accessibility + visual baselines (real Chromium)
         run: pnpm test:browser
+      # 性能预算与像素基线共用 Playwright Linux 镜像，但额外固定 2 CPU / 2 GiB、
+      # 800×520@1x 与 4× CPU throttle；宿主 runner 的瞬时规格不直接成为判据。
+      - name: Pull visual performance image
+        run: docker pull mcr.microsoft.com/playwright:v1.62.0-noble
+      - name: Visual performance budget (default vs reduced transparency)
+        run: pnpm visual:performance
       # 基线对不上时把实际截图与差异图带出来：像素差异在日志里看不出来，
       # 必须下载下来逐张比对，确认是有意的视觉改动才重出基线。
       - name: Upload visual diffs

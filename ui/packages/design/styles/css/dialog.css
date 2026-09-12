@@ -379,8 +379,9 @@
     display: none;
   }
 
-  /* 光学效果只在常规档存在：主题高对比、系统减少透明度与强制色均把 blur 的遮罩原位实体化。 */
-  :where([data-contrast='more']) [data-scope='dialog'][data-part='backdrop'][data-variant='blur'] {
+  /* 光学效果只在常规档存在：高对比、显式/系统减少透明度与强制色均把 blur 的遮罩原位实体化。 */
+  :where([data-contrast='more']) [data-scope='dialog'][data-part='backdrop'][data-variant='blur'],
+  :where([data-transparency='reduce']) [data-scope='dialog'][data-part='backdrop'][data-variant='blur'] {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

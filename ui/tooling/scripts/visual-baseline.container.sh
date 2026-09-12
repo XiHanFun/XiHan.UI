@@ -102,7 +102,12 @@ step 跑用例
 # 工作副本留在卷上跨次运行，上一轮的差异图也留着。不先清掉的话，这一轮全绿也会
 # 把上一轮的红图原样拷出去，看图的人分不清是哪一轮的。
 rm -rf "$WORK/packages/adapters/vue/.vitest-attachments"
-VITEST_ARGS=(run --config vitest.browser.config.ts)
+VITEST_CONFIG=vitest.browser.config.ts
+if [ "${XH_MODE:-baseline}" = "performance" ]; then
+  VITEST_CONFIG=vitest.performance.config.ts
+  export VITE_VISUAL_PERFORMANCE_RECORD="${XH_RECORD:-0}"
+fi
+VITEST_ARGS=(run --config "$VITEST_CONFIG")
 if [ -n "${XH_SPEC:-}" ]; then
   VITEST_ARGS+=("${XH_SPEC}")
 fi
@@ -138,7 +143,18 @@ if [ -d /diff ]; then
   find /diff -mindepth 1 -delete
   if [ -d "$ATTACH" ]; then
     rsync -a "$ATTACH/" /diff/
-    echo "  差异图已拷回：$(find /diff -name '*.png' | wc -l) 张"
+    if [ "${XH_MODE:-baseline}" = "performance" ]; then
+      if [ -f /diff/visual-performance.json ]; then
+        echo "  性能报告已拷回：/diff/visual-performance.json"
+      elif [ "$TEST_CODE" -eq 0 ]; then
+        echo "  用例通过却没有产出 visual-performance.json"
+        TEST_CODE=1
+      else
+        echo "  用例在写报告前失败，没有可回拷的性能报告"
+      fi
+    else
+      echo "  差异图已拷回：$(find /diff -name '*.png' | wc -l) 张"
+    fi
   else
     echo "  没有差异图（没有比对失败的用例）"
   fi
@@ -156,8 +172,12 @@ fi
 echo ""
 if [ "$TEST_CODE" -ne 0 ]; then
   echo "[visual-baseline] ✗ 挂在这一步：跑用例（退出码 ${TEST_CODE}）"
-  echo "  截图与基线对不上。差异图在 packages/adapters/vue/.vitest-attachments 下，"
-  echo "  逐张看过、确认是有意的视觉改动之后，再用 --update 重出基线。"
+  if [ "${XH_MODE:-baseline}" = "performance" ]; then
+    echo "  视觉性能预算未通过。真实报告在 packages/adapters/vue/.vitest-attachments/visual-performance.json。"
+  else
+    echo "  截图与基线对不上。差异图在 packages/adapters/vue/.vitest-attachments 下，"
+    echo "  逐张看过、确认是有意的视觉改动之后，再用 --update 重出基线。"
+  fi
 else
   echo "[visual-baseline] ✓ 容器内全绿"
 fi
