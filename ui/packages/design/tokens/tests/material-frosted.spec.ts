@@ -1,9 +1,11 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { compileMaterialRecipes } from '../build/material-recipes.mjs'
 import { contrastRatio, parseColorToOklch } from '../src/runtime'
 
 const TOKENS_DIR = join(import.meta.dirname, '..', 'tokens')
+const MATERIALS = compileMaterialRecipes(JSON.parse(readFileSync(join(TOKENS_DIR, 'material.recipes.json'), 'utf8')))
 
 interface TokenLeaf {
   type: string
@@ -28,7 +30,8 @@ const REQUIRED_RECIPE = [
 ] as const
 
 function load(name: string): Record<string, unknown> {
-  return JSON.parse(readFileSync(join(TOKENS_DIR, name), 'utf8')) as Record<string, unknown>
+  const source = JSON.parse(readFileSync(join(TOKENS_DIR, name), 'utf8')) as Record<string, unknown>
+  return MATERIALS[name] ? { ...source, material: MATERIALS[name] } : source
 }
 
 function flatten(source: unknown, path: string[] = [], out: TokenMap = new Map()): TokenMap {

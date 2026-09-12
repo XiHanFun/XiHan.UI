@@ -1,9 +1,11 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { compileMaterialRecipes } from '../build/material-recipes.mjs'
 import { contrastRatio, parseColorToOklch } from '../src/runtime'
 
 const folder = join(import.meta.dirname, '..', 'tokens')
+const materials = compileMaterialRecipes(JSON.parse(readFileSync(join(folder, 'material.recipes.json'), 'utf8')))
 type Values = Map<string, string>
 
 function collect(value: unknown, prefix: string, result: Values): void {
@@ -21,8 +23,10 @@ function collect(value: unknown, prefix: string, result: Values): void {
 
 function load(...files: string[]): Values {
   const values: Values = new Map()
-  for (const file of files)
-    collect(JSON.parse(readFileSync(join(folder, file), 'utf8')), '', values)
+  for (const file of files) {
+    const source = JSON.parse(readFileSync(join(folder, file), 'utf8'))
+    collect(materials[file] ? { ...source, material: materials[file] } : source, '', values)
+  }
   return values
 }
 
