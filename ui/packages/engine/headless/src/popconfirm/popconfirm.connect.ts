@@ -340,6 +340,9 @@ export function connectPopconfirm<T extends PropTypes>(
       // Popconfirm 是不陷焦点、不锁页面的非模态确认面；dialog 与这份交互合同一致。
       'role': 'dialog',
       'tabindex': -1,
+      // Presence 会把收起内容留到动画结束；这段期间必须先退出焦点树与交互树。
+      'inert': !open || undefined,
+      'aria-hidden': !open || undefined,
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
       'data-state': stateAttr,

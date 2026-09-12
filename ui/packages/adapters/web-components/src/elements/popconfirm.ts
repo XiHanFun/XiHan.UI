@@ -150,6 +150,17 @@ export class XhPopconfirmElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.popconfirmScope, idGenerator: this.idGen })
   }
 
+  /** 机器挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。 */
+  private ensureExit(open: boolean): OverlayExit {
+    this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open,
+      onExitComplete: () => this.requestUpdate(),
+    })
+    return this.exit
+  }
+
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
   // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
@@ -171,6 +182,7 @@ export class XhPopconfirmElement extends XhElement {
     this.ensureConfig()
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('presence', this.ensureExit(svc.state.get() === 'open').presence)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -215,18 +227,12 @@ export class XhPopconfirmElement extends XhElement {
     // content 常驻 Light DOM，收起态由宿主用内联 display 兜住：皮肤给 content 设了 display，
     // 会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住。
     const content = this.getPart('content')
-    if (content)
-      // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
-      // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
-      this.ensureConfig()
-    this.exit ??= createOverlayExit({
-      config: this.config!,
-      open: api.open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    this.exit.track(content)
-    this.exit.update(api.open)
-    this.setPartHidden(content, !this.exit.visible)
+    // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
+    // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
+    const exit = this.ensureExit(api.open)
+    exit.track(content)
+    exit.update(api.open)
+    this.setPartHidden(content, !exit.visible)
   }
 
   override disconnectedCallback(): void {
