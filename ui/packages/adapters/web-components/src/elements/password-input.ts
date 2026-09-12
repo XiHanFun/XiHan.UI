@@ -1,6 +1,6 @@
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { PasswordInputSchema, PasswordInputTranslations, PasswordInputValueChangeDetails, PasswordInputVisibilityChangeDetails } from '@xihan-ui/headless'
-import { connectPasswordInput, passwordInputAnatomy, passwordInputMachine, passwordInputMeta } from '@xihan-ui/headless'
+import type { FormControlState, PasswordInputSchema, PasswordInputTranslations, PasswordInputValueChangeDetails, PasswordInputVisibilityChangeDetails } from '@xihan-ui/headless'
+import { connectPasswordInput, passwordInputAnatomy, passwordInputMachine, passwordInputMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -103,18 +103,31 @@ export class XhPasswordInputElement extends XhElement {
   }
 
   private readonly ctrl = new MachineController<PasswordInputSchema>(this, passwordInputMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<PasswordInputSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      required: this.required,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect
       visible: this.visible,
       defaultVisible: this.defaultVisible,
-      disabled: this.disabled,
-      readOnly: this.readOnly,
-      required: this.required,
-      invalid: this.invalid,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      required: control.required,
+      invalid: control.invalid,
       name: this.name,
       placeholder: this.placeholder,
       autoComplete: this.autoComplete,

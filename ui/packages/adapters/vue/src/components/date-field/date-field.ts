@@ -4,6 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideDateField, useDateFieldContext } from './context'
 import { useDateField } from './use-date-field'
 
@@ -43,10 +44,10 @@ export const XhDateFieldRoot = defineComponent({
     granularity: { type: String as PropType<DateGranularity>, default: undefined },
     // 段集：给了就以它为准，granularity 让路。段位节点仍按下标认段，段集是有序的
     segments: { type: Array as PropType<DateSegmentSet>, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
-    required: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
     name: { type: String, default: undefined },
     placeholder: { type: Object as PropType<SegmentTexts>, default: undefined },
     translations: { type: Object as PropType<DateFieldTranslations>, default: undefined },
@@ -67,7 +68,7 @@ export const XhDateFieldRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useDateField(withXhConfig('date-field', props) as DateFieldProps, { onValueChange })
+    const ctx = useDateField(withXhConfig('date-field', useFormControlProps(props)) as DateFieldProps, { onValueChange })
     provideDateField(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

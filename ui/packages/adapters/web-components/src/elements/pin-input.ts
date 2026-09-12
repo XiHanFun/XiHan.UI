@@ -1,6 +1,6 @@
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { PinInputSchema, PinInputTranslations, PinInputType, PinInputValueChangeDetails } from '@xihan-ui/headless'
-import { connectPinInput, pinInputAnatomy, pinInputMachine, pinInputMeta } from '@xihan-ui/headless'
+import type { FormControlState, PinInputSchema, PinInputTranslations, PinInputType, PinInputValueChangeDetails } from '@xihan-ui/headless'
+import { connectPinInput, pinInputAnatomy, pinInputMachine, pinInputMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -11,6 +11,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 // 值在属性里是一整串（value="1234"），逐字符摊成数组；长度归一交给机器。
 // 直接给 property 赋数组时不过转换器，两种写法都通
 const ARRAY_CONVERTER = { fromAttribute: (v: string | null) => (v == null ? undefined : [...v]) }
+const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 作者写在格子上的下标。缺席或写坏了就退回文档序——手写 HTML 时把格子按顺序排下来本身就是声明。 */
 function declaredIndex(el: HTMLElement, position: number): number {
@@ -72,10 +73,10 @@ export class XhPinInputElement extends XhElement {
     mask: { type: Boolean },
     otp: { type: Boolean },
     placeholder: { converter: STRING_CONVERTER },
-    disabled: { type: Boolean },
-    readOnly: { type: Boolean, attribute: 'read-only' },
-    required: { type: Boolean },
-    invalid: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    required: { converter: BOOLEAN_CONVERTER },
+    invalid: { converter: BOOLEAN_CONVERTER },
     blurOnComplete: { type: Boolean, attribute: 'blur-on-complete' },
     name: { converter: STRING_CONVERTER },
     variant: { converter: STRING_CONVERTER },
@@ -114,8 +115,21 @@ export class XhPinInputElement extends XhElement {
 
   // pin-input 机器无副作用：不需要 config/layer/refs，controller 只带 props。
   private readonly ctrl = new MachineController<PinInputSchema>(this, pinInputMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<PinInputSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      required: this.required,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
@@ -125,10 +139,10 @@ export class XhPinInputElement extends XhElement {
       mask: this.mask ?? false,
       otp: this.otp ?? false,
       placeholder: this.placeholder,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      required: this.required ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      required: control.required,
+      invalid: control.invalid,
       blurOnComplete: this.blurOnComplete ?? false,
       name: this.name,
       variant: this.variant,

@@ -6,6 +6,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import { DateFieldProvider, useDateFieldContext } from './context'
 import { useDateField } from './use-date-field'
 
@@ -81,7 +82,7 @@ export function XhDateFieldRoot({
   children,
   ...rest
 }: XhDateFieldRootProps): ReactNode {
-  const ctx = useDateField(withXhConfig('date-field', {
+  const ctx = useDateField(withXhConfig('date-field', useFormControlProps({
     value,
     defaultValue,
     min,
@@ -101,7 +102,7 @@ export function XhDateFieldRoot({
     tone,
     size,
     onValueChange,
-  }) as DateFieldProps)
+  })) as DateFieldProps)
   const api = ctx.api
   return (
     <DateFieldProvider value={ctx}>

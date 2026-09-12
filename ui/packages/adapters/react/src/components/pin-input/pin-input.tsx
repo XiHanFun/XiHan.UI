@@ -6,6 +6,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import { PinInputProvider, usePinInputContext } from './context'
 import { usePinInput } from './use-pin-input'
 
@@ -96,7 +97,7 @@ export function XhPinInputRoot({
     onValueChange,
     onValueComplete,
   }
-  const ctx = usePinInput(withXhConfig('pin-input', machineProps) as PinInputProps)
+  const ctx = usePinInput(withXhConfig('pin-input', useFormControlProps(machineProps)) as PinInputProps)
   const api = ctx.api
   return (
     <PinInputProvider value={ctx}>

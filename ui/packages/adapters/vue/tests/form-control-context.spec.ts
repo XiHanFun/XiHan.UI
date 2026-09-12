@@ -5,22 +5,30 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
 import {
   XhCheckbox,
+  XhDateFieldRoot,
+  XhDateFieldSegment,
   XhFieldControl,
   XhFieldRoot,
   XhFormFieldGroup,
   XhFormRoot,
   XhNumberFieldInput,
   XhNumberFieldRoot,
+  XhPasswordInputInput,
+  XhPasswordInputRoot,
+  XhPinInputInput,
+  XhPinInputRoot,
   XhRadioGroupRoot,
   XhSwitch,
   XhTextFieldInput,
   XhTextFieldRoot,
+  XhTimeFieldRoot,
+  XhTimeFieldSegment,
 } from '../src'
 
 type ControlState = Partial<Record<'disabled' | 'readOnly' | 'required' | 'invalid', boolean>>
-type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField'
+type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField']
+const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField']
 
 function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'Checkbox')
@@ -29,7 +37,15 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
     return h(XhSwitch, props)
   if (kind === 'RadioGroup')
     return h(XhRadioGroupRoot, { ...props, collection: [{ value: 'a', label: '甲' }] })
-  return h(XhNumberFieldRoot, props, () => h(XhNumberFieldInput))
+  if (kind === 'NumberField')
+    return h(XhNumberFieldRoot, props, () => h(XhNumberFieldInput))
+  if (kind === 'PasswordInput')
+    return h(XhPasswordInputRoot, props, () => h(XhPasswordInputInput))
+  if (kind === 'PinInput')
+    return h(XhPinInputRoot, { ...props, length: 1 }, () => h(XhPinInputInput, { index: 0 }))
+  if (kind === 'DateField')
+    return h(XhDateFieldRoot, { ...props, segments: ['year'] }, () => h(XhDateFieldSegment, { segment: 'year' }))
+  return h(XhTimeFieldRoot, { ...props, granularity: 'hour' }, () => h(XhTimeFieldSegment, { segment: 'hour' }))
 }
 
 function mountAtomicControl(kind: AtomicControl, instance: ControlState = {}, field?: ControlState) {
@@ -47,12 +63,20 @@ function mountAtomicControl(kind: AtomicControl, instance: ControlState = {}, fi
 }
 
 function expectAtomicState(wrapper: ReturnType<typeof mount>, kind: AtomicControl, enabled: boolean): void {
-  if (kind === 'NumberField') {
+  if (kind === 'NumberField' || kind === 'PasswordInput' || kind === 'PinInput') {
     const input = wrapper.find('input')
     expect(input.attributes('disabled') !== undefined).toBe(enabled)
     expect(input.attributes('readonly') !== undefined).toBe(enabled)
     expect(input.attributes('required') !== undefined).toBe(enabled)
     expect(input.attributes('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'DateField' || kind === 'TimeField') {
+    const segment = wrapper.find('[role="spinbutton"]')
+    expect(segment.attributes('aria-disabled')).toBe(String(enabled))
+    expect(segment.attributes('aria-readonly')).toBe(String(enabled))
+    expect(segment.attributes('aria-required')).toBe(String(enabled))
+    expect(segment.attributes('aria-invalid')).toBe(String(enabled))
     return
   }
   const root = wrapper.find(kind === 'RadioGroup' ? '[role="radiogroup"]' : `button[role="${kind === 'Checkbox' ? 'checkbox' : 'switch'}"]`)

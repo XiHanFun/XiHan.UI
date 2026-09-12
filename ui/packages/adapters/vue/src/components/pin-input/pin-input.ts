@@ -4,6 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFormControlProps } from '../form/use-form-control'
 import { providePinInput, usePinInputContext } from './context'
 import { usePinInput } from './use-pin-input'
 
@@ -28,10 +29,10 @@ export const XhPinInputRoot = defineComponent({
     mask: Boolean,
     otp: Boolean,
     placeholder: { type: String, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    required: Boolean,
-    invalid: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     blurOnComplete: Boolean,
     name: { type: String, default: undefined },
     variant: { type: String as PropType<ControlVariant>, default: undefined },
@@ -54,7 +55,7 @@ export const XhPinInputRoot = defineComponent({
       emit('update:value', details.value)
     }
     const onValueComplete: PinInputProps['onValueComplete'] = details => emit('value-complete', details)
-    const ctx = usePinInput(withXhConfig('pin-input', props) as PinInputProps, { onValueChange, onValueComplete })
+    const ctx = usePinInput(withXhConfig('pin-input', useFormControlProps(props)) as PinInputProps, { onValueChange, onValueComplete })
     providePinInput(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

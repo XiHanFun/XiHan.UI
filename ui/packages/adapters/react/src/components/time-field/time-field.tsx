@@ -6,6 +6,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import { TimeFieldProvider, useTimeFieldContext } from './context'
 import { useTimeField } from './use-time-field'
 
@@ -63,7 +64,7 @@ export function XhTimeFieldRoot({
   children,
   ...rest
 }: XhTimeFieldRootProps): ReactNode {
-  const ctx = useTimeField(withXhConfig('time-field', {
+  const ctx = useTimeField(withXhConfig('time-field', useFormControlProps({
     value,
     defaultValue,
     min,
@@ -82,7 +83,7 @@ export function XhTimeFieldRoot({
     tone,
     size,
     onValueChange,
-  }) as TimeFieldProps)
+  })) as TimeFieldProps)
   const api = ctx.api
   return (
     <TimeFieldProvider value={ctx}>
