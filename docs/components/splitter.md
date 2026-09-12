@@ -1,6 +1,6 @@
 # Splitter 分栏
 
-把一块区域拆成几片可拖动的面板，边界由用户自己分配。
+将内容区域拆分为可调整大小的面板。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/splitter" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-panels 数组的长度决定面板块数，每条分隔条调的是它前面那一块
+调整侧栏和编辑区域的比例
 
 <XhDemo src="splitter/01-basic" />
 
@@ -24,70 +24,56 @@ panels 数组的长度决定面板块数，每条分隔条调的是它前面那�
 
 ## 示例
 
-### 受控
+### 垂直与折叠
 
-传了 sizes 就由宿主说了算；sizes-change 拖动途中连着发，sizes-change-end 松手才发一次
-
-<XhDemo src="splitter/02-controlled" />
-
-### 竖排与折叠
-
-orientation 换轴后方向键跟着换，collapsible 的面板在它的分隔条上按 Enter 折叠
+垂直调整并折叠面板
 
 <XhDemo src="splitter/03-vertical-collapsible" />
 
 ### 禁用
 
-disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键放行给页面
+禁止调整面板比例
 
 <XhDemo src="splitter/04-disabled" />
 
-### 嵌套
+### 嵌套分栏
 
-面板里再放一套分栏即可拆出第二根轴，里外两层各管各的尺寸，互不干涉
+组合水平和垂直面板
 
 <XhDemo src="splitter/05-nested" />
-
-### 分隔条里放内容
-
-分隔条内可以再摆一个把手，粗细由 --xh-splitter-trigger-thickness 让出位置
-
-<XhDemo src="splitter/06-trigger-content" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 代码编辑器、文件管理器、带预览的编辑界面这类"两边都重要、比例因人而异"的布局。
-- 用户调好的比例需要记下来：`onSizesChangeEnd` 就是为此留的。
+- 构建编辑器、文件管理器或预览界面。
+- 保存用户调整后的面板比例。
 
 ### 何时不用
 
-- 比例是固定的：用[栅格](./grid)或[弹性布局](./flex)。
-- 侧栏只有展开与折叠两态：用[布局](./layout)的折叠侧栏。
+- 固定比例使用[栅格](./grid)或[弹性布局](./flex)。
+- 仅需展开/折叠侧栏时使用[布局](./layout)。
 
 ### 特性
 
-- `panels` 数组的长度决定面板块数，每条分隔条调的是它前面那一块。
-- 两个回调分工明确：`onSizesChange` 拖动途中连着发，`onSizesChangeEnd` 松手才发一次，存布局用后者。
-- 方向键按 `step` 推、Shift 加方向键按 `largeStep` 推；`collapsible` 的面板在分隔条上按 Enter 折叠。
-- 面板里再放一套分栏即可拆出第二根轴，里外两层各管各的尺寸。
-- 拖到一半按 Escape 放弃这一场：布局退回按下那一刻，`onSizesChangeEnd` 不发。
-- `translations` 给整组面板与各条分隔条起名，读屏念到的就不再是一串无名的盒子。
+- 支持水平、垂直和嵌套分栏。
+- 支持最小/最大尺寸和面板折叠。
+- 支持方向键、Shift、Enter 和 Escape。
+- 调整中和调整结束分别提供回调。
 
 ### 组合
 
-- 面板里放[滚动区域](./scroll-area)，让每一片各自滚动。
+- 可在每个面板中放置独立的[滚动区域](./scroll-area)。
 
 ### 最佳实践
 
-- 给每块面板设最小尺寸，否则能被拖到完全看不见、也拖不回来。
-- 存布局用 `onSizesChangeEnd`：拖动途中的每一帧都写存储会把主线程拖垮。
+- 为每个面板设置合理的最小尺寸。
+- 使用 `onSizesChangeEnd` 保存最终布局。
 
 ### 反模式
 
-- 拿它做固定比例的两栏布局：多出来的拖动能力只会让用户误操作。
-- 分隔条做得只有一两个像素宽：指针命中率极低。
+- 不要用于固定比例布局。
+- 不要缩小分隔条的交互区域。
 
 ## API 参考
 
