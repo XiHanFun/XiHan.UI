@@ -16,7 +16,7 @@ import type {
 import type { App, MaybeRefOrGetter, VNode } from 'vue'
 import type { XhConfig } from '../config/config'
 import { ensurePortalRoot } from '@xihan-ui/core'
-import { createFeedbackServiceController } from '@xihan-ui/headless'
+import { createFeedbackServiceController, resolveFeedbackServiceTitle } from '@xihan-ui/headless'
 import { computed, createApp, defineComponent, Fragment, h, shallowRef, toValue } from 'vue'
 import {
   XhNotificationItem,
@@ -84,13 +84,6 @@ export interface NotificationService {
   dispose: () => void
 }
 
-/** 合并过的在标题后追加计数，没并过就是原话。 */
-function cardTitle(item: ResolvedNotification): string | undefined {
-  if (item.count <= 1 || item.title == null)
-    return item.title
-  return `${item.title} ×${item.count}`
-}
-
 function defaultCard(
   item: ResolvedNotification,
   translations: Partial<NotificationTranslations> | undefined,
@@ -100,7 +93,7 @@ function defaultCard(
 ): VNode {
   return h(XhNotificationItem, {
     id: item.id,
-    title: cardTitle(item),
+    title: resolveFeedbackServiceTitle(item),
     description: item.description,
     type: item.type,
     duration: item.duration,

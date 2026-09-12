@@ -13,7 +13,7 @@ import {
   createFeedbackServiceController,
   NOTIFICATION_MAX,
   notificationMachine,
-  TOAST_DURATION,
+  resolveToastServiceItem,
   TOAST_GAP,
   TOAST_PLACEMENT,
   toastAnatomy,
@@ -26,25 +26,6 @@ import { createServiceHolder, createServiceReactiveHost, partNode, reportService
 import { defineFeedbackElements } from './register'
 
 const parts = toastAnatomy.build()
-
-/**
- * 这一条会不会自己走掉。loading 一直挂着，duration <= 0 与非有限值也是。
- * 走不掉的必须留个出口，否则界面上一个可点、可聚焦的节点都没有。
- */
-function selfDismissing(toast: ToastRecord, fallback: number | undefined): boolean {
-  if (toast.type === 'loading')
-    return false
-  const duration = toast.duration ?? fallback ?? TOAST_DURATION
-  return Number.isFinite(duration) && duration > 0
-}
-
-/** 合并过的在标题后追加计数，没并过就是原话。 */
-function toastTitle(toast: ToastRecord): string | undefined {
-  const count = toast.count ?? 1
-  if (count <= 1 || toast.title == null)
-    return toast.title
-  return `${toast.title} ×${count}`
-}
 
 export function createToastService(options: ToastServiceOptions = {}): ToastService {
   if (typeof document === 'undefined')
@@ -116,40 +97,36 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   }
 
   function ensureNode(item: ToastRecord): XhToastElement {
-    // 到点自己走的默认不出叉，多一颗叉就多一个「要不要点」的判断；
-    // 走不掉的反过来默认给叉。两者都能用 closable 显式改口
-    const closable = item.closable ?? !selfDismissing(item, defaults.duration)
+    const resolved = resolveToastServiceItem(item, defaults)
     let node = nodes.get(item.id)
     if (!node) {
       node = document.createElement('xh-toast') as XhToastElement
       nodes.set(item.id, node)
     }
-    const shape = `${closable ? 'c' : ''}${item.actionLabel ? 'a' : ''}`
+    const shape = `${resolved.closable ? 'c' : ''}${resolved.actionLabel ? 'a' : ''}`
     if (shapes.get(item.id) !== shape) {
       shapes.set(item.id, shape)
       const root = partNode('div', 'root')
       // 节点平铺，不再套一层行容器：横排是皮肤的事，模板套一层只会与它打架。
       // 字形不在这儿渲染：它由皮肤按 root 上的 data-severity 画
       root.appendChild(partNode('div', 'title'))
-      if (item.actionLabel)
+      if (resolved.actionLabel)
         root.appendChild(partNode('button', 'action-trigger'))
-      if (closable)
+      if (resolved.closable)
         root.appendChild(partNode('button', 'close-trigger'))
       node.replaceChildren(root)
     }
     const action = node.querySelector<HTMLElement>('[data-xh-part="action-trigger"]')
-    if (action && action.textContent !== (item.actionLabel ?? ''))
-      action.textContent = item.actionLabel ?? ''
+    if (action && action.textContent !== (resolved.actionLabel ?? ''))
+      action.textContent = resolved.actionLabel ?? ''
 
-    node.toastId = item.id
-    node.titleText = toastTitle(item)
-    // 语气跟着机器的缺省走（type 缺席即 info）
-    node.type = item.type ?? 'info'
-    // 单条 > 服务档 > 机器内建默认
-    node.duration = item.duration ?? defaults.duration
-    node.removeDelay = item.removeDelay ?? defaults.removeDelay
-    node.closable = closable
-    node.pauseOnPageIdle = defaults.pauseOnPageIdle
+    node.toastId = resolved.id
+    node.titleText = resolved.title
+    node.type = resolved.type
+    node.duration = resolved.duration
+    node.removeDelay = resolved.removeDelay
+    node.closable = resolved.closable
+    node.pauseOnPageIdle = resolved.pauseOnPageIdle
     node.paused = controller.state.paused
     node.translations = toastTranslations
     return node

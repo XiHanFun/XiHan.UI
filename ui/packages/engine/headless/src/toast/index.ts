@@ -11,7 +11,9 @@ export {
   toastMachine,
 } from './toast.machine'
 export { toastMeta } from './toast.meta'
+export { resolveToastServiceItem } from './toast.service'
 export type {
+  ResolvedToastServiceItem,
   ToastActionDetails,
   ToastApi,
   ToastOptions,
@@ -19,6 +21,7 @@ export type {
   ToastPlacement,
   ToastRecord,
   ToastSchema,
+  ToastServiceDefaults,
   ToastStatus,
   ToastStatusChangeDetails,
   ToastTranslations,

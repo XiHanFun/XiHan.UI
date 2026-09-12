@@ -1,3 +1,5 @@
+export { resolveFeedbackServiceTitle } from '../shared/feedback-service'
+export type { FeedbackServiceTitleRecord } from '../shared/feedback-service'
 export { createFeedbackServiceController } from './feedback-service.controller'
 export type { FeedbackServiceController, FeedbackServiceControllerOptions, FeedbackServiceControllerState, FeedbackServiceQueue, FeedbackServiceRecord } from './feedback-service.controller'
 export { notificationAnatomy } from './notification.anatomy'

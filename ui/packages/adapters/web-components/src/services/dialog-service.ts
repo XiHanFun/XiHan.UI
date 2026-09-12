@@ -3,12 +3,12 @@
 // 避开多层模态叠加。onOk 返回 Promise 时确认钮自动进入 pending 并拦住关闭，
 // 失败保持打开以便重试或取消。
 import type { Tone } from '@xihan-ui/core'
-import type { DialogServiceControllerSpec, DialogServiceRequest } from '@xihan-ui/headless'
+import type { DialogServiceBadge, DialogServiceControllerSpec, DialogServiceRequest } from '@xihan-ui/headless'
 import type { XhButtonElement } from '../elements/button'
 import type { XhDialogElement } from '../elements/dialog'
 import type { AlertOptions, ConfirmOptions, DialogActionError, DialogBody, DialogService, DialogServiceOptions } from './types'
 import { ensurePortalRoot } from '@xihan-ui/core'
-import { createDialogServiceController } from '@xihan-ui/headless'
+import { createDialogServiceController, dialogServiceBadgeTone } from '@xihan-ui/headless'
 import { spinArc } from './glyph'
 import { partNode } from './host'
 import { defineFeedbackElements } from './register'
@@ -21,13 +21,9 @@ interface Spec extends DialogServiceControllerSpec {
   cancelText: string
   showCancel: boolean
   /** 标题旁的类型徽记（预设档用），confirm 不带。 */
-  badge?: 'info' | 'success' | 'warning' | 'error'
+  badge?: DialogServiceBadge
   onOk?: () => unknown
   onActionError?: (error: DialogActionError) => void | Promise<void>
-}
-
-function toneOfBadge(badge: NonNullable<Spec['badge']>): Tone {
-  return badge === 'error' ? 'danger' : badge
 }
 
 export function createDialogService(options: DialogServiceOptions = {}): DialogService {
@@ -111,7 +107,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     title.textContent = spec.title
     indicator.hidden = spec.badge == null
     if (spec.badge)
-      indicator.setAttribute('data-tone', toneOfBadge(spec.badge))
+      indicator.setAttribute('data-tone', dialogServiceBadgeTone(spec.badge))
     else
       indicator.removeAttribute('data-tone')
     // 串走 description 部件（读屏的 aria-describedby 接在它上面），
@@ -186,7 +182,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   cancelRoot.addEventListener('click', onCancel)
   okRoot.addEventListener('click', onOk)
 
-  const alert = (badge: NonNullable<Spec['badge']>, tone: Tone) => async (opts: AlertOptions): Promise<void> => {
+  const alert = (badge: DialogServiceBadge, tone: Tone) => async (opts: AlertOptions): Promise<void> => {
     await controller.request({
       title: opts.title,
       content: opts.content,

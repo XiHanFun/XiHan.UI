@@ -1,5 +1,6 @@
 export { createDialogServiceController } from './dialog-service.controller'
-export type { DialogServiceActionError, DialogServiceController, DialogServiceControllerOptions, DialogServiceControllerSpec, DialogServiceControllerState, DialogServiceRequest } from './dialog-service.controller'
+export { dialogServiceBadgeTone } from './dialog-service.controller'
+export type { DialogServiceActionError, DialogServiceBadge, DialogServiceController, DialogServiceControllerOptions, DialogServiceControllerSpec, DialogServiceControllerState, DialogServiceRequest } from './dialog-service.controller'
 export { dialogAnatomy } from './dialog.anatomy'
 export { connectDialog } from './dialog.connect'
 export { dialogKeyboard } from './dialog.keyboard'
