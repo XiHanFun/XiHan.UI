@@ -1,7 +1,8 @@
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { Fragment, useRef } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -169,11 +170,35 @@ export function XhNavigationMenuContent({ value, children, ...rest }: XhNavigati
   // 一个面板一份退场闸门：它们各开各的、动画各跑各的，一份管不过来。
   // 开合判据直接取 connect 这一帧的产出，不另起一套——两边各判一次迟早会说岔
   const contentRef = useRef<HTMLElement | null>(null)
+  const presenceRef = useRef<PresenceHandle | null>(null)
   const visible = useOverlayExit({
     config: ctx.config,
-    isOpen: () => (ctx.api.getContentProps({ value }) as Record<string, unknown>).hidden !== true,
+    isOpen: () => ctx.api.isOpen(value),
     contentRef,
+    onPresence: (next) => {
+      const previous = presenceRef.current
+      presenceRef.current = next
+      if (ctx.service.getStatus() !== 'Started')
+        return
+      if (next) {
+        ctx.service.send({ type: 'PRESENCE.SET', value, presence: next, connected: true })
+      }
+      else if (previous) {
+        ctx.service.send({ type: 'PRESENCE.SET', value, presence: previous, connected: false })
+      }
+    },
   })
+  // 子级 layout effect 可能早于根机器启动；被动阶段补报一次，确保首帧 Presence 已入 Headless 表。
+  useEffect(() => {
+    const presence = presenceRef.current
+    if (!presence || ctx.service.getStatus() !== 'Started')
+      return
+    ctx.service.send({ type: 'PRESENCE.SET', value, presence, connected: true })
+    return () => {
+      if (ctx.service.getStatus() === 'Started')
+        ctx.service.send({ type: 'PRESENCE.SET', value, presence, connected: false })
+    }
+  }, [ctx.service, value])
   return (
     <div
       {...mergeReactProps(
