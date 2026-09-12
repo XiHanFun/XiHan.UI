@@ -1,7 +1,7 @@
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
-import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails } from '@xihan-ui/headless'
+import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails, FormControlState, ResolvedFormControlState } from '@xihan-ui/headless'
 import { isItemDisabled } from '@xihan-ui/core'
-import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, connectCheckboxGroup } from '@xihan-ui/headless'
+import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, connectCheckboxGroup, resolveFormControlState } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -87,16 +87,32 @@ export class XhCheckboxGroupElement extends XhElement {
   }
 
   private readonly ctrl = new MachineController<CheckboxGroupSchema>(this, checkboxGroupMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；本组件仅消费公开的三条轴。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
+  private controlState(): ResolvedFormControlState {
+    return resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
+  }
 
   private machineProps(): Partial<CheckboxGroupSchema['props']> {
+    const control = this.controlState()
     return {
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
       itemValues: this.itemValues,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       orientation: this.orientation,
       tone: this.tone,
       size: this.size,
@@ -114,7 +130,7 @@ export class XhCheckboxGroupElement extends XhElement {
     // 「作者没写」表达不出 undefined，数据里的禁用就永远轮不到生效。
     if (this.collection)
       return { value, disabled: this.declaredItemDisabled(el) }
-    const groupDisabled = !!this.disabled
+    const groupDisabled = this.controlState().disabled
     // 首次见到该条目时 DOM 上只有作者写的东西，此刻现读即真声明
     if (!this.declaredDisabled.has(el)) {
       const own = isItemDisabled(el)
@@ -168,6 +184,6 @@ export class XhCheckboxGroupElement extends XhElement {
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
     }
 
-    this.wasGroupDisabled = !!this.disabled
+    this.wasGroupDisabled = this.controlState().disabled
   }
 }

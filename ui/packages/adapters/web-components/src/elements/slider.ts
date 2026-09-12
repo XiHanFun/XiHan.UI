@@ -1,7 +1,7 @@
 import type { Direction, IdGenerator, Orientation, Service, Size, Tone } from '@xihan-ui/core'
-import type { SliderSchema, SliderValueChangeDetails, SliderValueChangeEndDetails, SliderValueTextDetails } from '@xihan-ui/headless'
+import type { FormControlState, SliderSchema, SliderValueChangeDetails, SliderValueChangeEndDetails, SliderValueTextDetails } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope, normalizeItemIndex } from '@xihan-ui/core'
-import { connectSlider, sliderAnatomy, sliderMachine, sliderMeta } from '@xihan-ui/headless'
+import { connectSlider, resolveFormControlState, sliderAnatomy, sliderMachine, sliderMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -134,7 +134,20 @@ export class XhSliderElement extends XhElement {
     { scope: this.sliderScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；本组件仅消费公开的三条轴。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
   private machineProps(): Partial<SliderSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
@@ -147,9 +160,9 @@ export class XhSliderElement extends XhElement {
       snapToMarks: this.snapToMarks,
       orientation: this.orientation,
       dir: this.direction,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
       tone: this.tone,
       size: this.size,
       name: this.name,

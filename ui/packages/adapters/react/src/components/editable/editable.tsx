@@ -5,6 +5,7 @@ import type { SlotChildren } from '../../runtime/slot-content'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import { EditableProvider, useEditableContext } from './context'
 import { useEditable } from './use-editable'
 
@@ -68,7 +69,7 @@ export function XhEditableRoot({
   children,
   ...rest
 }: XhEditableRootProps): ReactNode {
-  const ctx = useEditable({
+  const ctx = useEditable(useFormControlProps({
     value,
     defaultValue,
     edit,
@@ -90,7 +91,7 @@ export function XhEditableRoot({
     onValueCommit,
     onValueRevert,
     onEditChange,
-  } as EditableProps)
+  } as EditableProps))
   const api = ctx.api
   return (
     <EditableProvider value={ctx}>

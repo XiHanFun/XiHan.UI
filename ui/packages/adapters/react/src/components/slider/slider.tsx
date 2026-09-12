@@ -7,6 +7,7 @@ import { Fragment } from 'react'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import { SliderProvider, SliderThumbProvider, useSliderContext, useSliderThumbContext } from './context'
 import { useSlider } from './use-slider'
 
@@ -87,7 +88,7 @@ export function XhSliderRoot({
   children,
   ...rest
 }: XhSliderRootProps): ReactNode {
-  const ctx = useSlider({
+  const ctx = useSlider(useFormControlProps({
     value,
     defaultValue,
     min,
@@ -108,7 +109,7 @@ export function XhSliderRoot({
     getValueText,
     onValueChange,
     onValueChangeEnd,
-  })
+  }))
   const api = ctx.api
 
   return (

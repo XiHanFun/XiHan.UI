@@ -5,6 +5,7 @@ import type { SlotChildren } from '../../runtime/slot-content'
 import { useMemo } from 'react'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   CheckboxGroupItemProvider,
   CheckboxGroupProvider,
@@ -60,7 +61,7 @@ export function XhCheckboxGroupRoot({
   children,
   ...rest
 }: XhCheckboxGroupRootProps): ReactNode {
-  const ctx = useCheckboxGroup({
+  const ctx = useCheckboxGroup(useFormControlProps({
     collection,
     value,
     defaultValue,
@@ -73,7 +74,7 @@ export function XhCheckboxGroupRoot({
     tone,
     size,
     onValueChange,
-  } as CheckboxGroupProps)
+  } as CheckboxGroupProps))
   const api = ctx.api
 
   const body = children != null

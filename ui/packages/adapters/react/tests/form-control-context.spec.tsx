@@ -3,8 +3,11 @@ import { formPathKey } from '@xihan-ui/headless'
 import { describe, expect, it } from 'vitest'
 import {
   XhCheckbox,
+  XhCheckboxGroupRoot,
   XhDateFieldRoot,
   XhDateFieldSegment,
+  XhEditableInput,
+  XhEditableRoot,
   XhFieldControl,
   XhFieldRoot,
   XhFormFieldGroup,
@@ -16,7 +19,13 @@ import {
   XhPinInputInput,
   XhPinInputRoot,
   XhRadioGroupRoot,
+  XhSliderControl,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
   XhSwitch,
+  XhTagsInputInput,
+  XhTagsInputRoot,
   XhTextFieldInput,
   XhTextFieldRoot,
   XhTimeFieldRoot,
@@ -24,9 +33,13 @@ import {
 } from '../src'
 
 type ControlState = Partial<Record<'disabled' | 'readOnly' | 'required' | 'invalid', boolean>>
-type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField'
+type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField']
+const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider']
+
+function nonRequiredState(props: ControlState) {
+  return { disabled: props.disabled, readOnly: props.readOnly, invalid: props.invalid }
+}
 
 function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'Checkbox')
@@ -43,7 +56,22 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
     return <XhPinInputRoot {...props} length={1}><XhPinInputInput index={0} /></XhPinInputRoot>
   if (kind === 'DateField')
     return <XhDateFieldRoot {...props} segments={['year']}><XhDateFieldSegment segment="year" /></XhDateFieldRoot>
-  return <XhTimeFieldRoot {...props} granularity="hour"><XhTimeFieldSegment segment="hour" /></XhTimeFieldRoot>
+  if (kind === 'TimeField')
+    return <XhTimeFieldRoot {...props} granularity="hour"><XhTimeFieldSegment segment="hour" /></XhTimeFieldRoot>
+  if (kind === 'Editable')
+    return <XhEditableRoot {...nonRequiredState(props)}><XhEditableInput /></XhEditableRoot>
+  if (kind === 'TagsInput')
+    return <XhTagsInputRoot {...props}><XhTagsInputInput /></XhTagsInputRoot>
+  if (kind === 'CheckboxGroup')
+    return <XhCheckboxGroupRoot {...nonRequiredState(props)} collection={[{ value: 'a', label: '甲' }]} />
+  return (
+    <XhSliderRoot {...nonRequiredState(props)} defaultValue={[50]}>
+      <XhSliderControl>
+        <XhSliderTrack />
+        <XhSliderThumb index={0} />
+      </XhSliderControl>
+    </XhSliderRoot>
+  )
 }
 
 function renderAtomicControl(kind: AtomicControl, instance: ControlState = {}, field?: ControlState) {
@@ -58,12 +86,30 @@ function renderAtomicControl(kind: AtomicControl, instance: ControlState = {}, f
 }
 
 function expectAtomicState(container: HTMLElement, kind: AtomicControl, enabled: boolean): void {
-  if (kind === 'NumberField' || kind === 'PasswordInput' || kind === 'PinInput') {
+  if (kind === 'NumberField' || kind === 'PasswordInput' || kind === 'PinInput' || kind === 'Editable' || kind === 'TagsInput') {
     const input = container.querySelector('input')!
     expect(input.disabled).toBe(enabled)
     expect(input.readOnly).toBe(enabled)
-    expect(input.required).toBe(enabled)
+    if (kind === 'TagsInput')
+      expect(input.getAttribute('aria-required')).toBe(String(enabled))
+    else if (kind !== 'Editable')
+      expect(input.required).toBe(enabled)
     expect(input.getAttribute('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'CheckboxGroup') {
+    const item = container.querySelector<HTMLElement>('[role="checkbox"]')!
+    expect(item.getAttribute('aria-disabled')).toBe(String(enabled))
+    expect(item.getAttribute('aria-readonly')).toBe(String(enabled))
+    expect(item.getAttribute('aria-invalid')).toBe(String(enabled))
+    return
+  }
+  if (kind === 'Slider') {
+    const root = container.querySelector<HTMLElement>('[data-scope="slider"][data-part="root"]')!
+    const thumb = container.querySelector<HTMLElement>('[role="slider"]')!
+    expect(thumb.getAttribute('aria-disabled')).toBe(String(enabled))
+    expect(root.hasAttribute('data-readonly')).toBe(enabled)
+    expect(root.hasAttribute('data-invalid')).toBe(enabled)
     return
   }
   if (kind === 'DateField' || kind === 'TimeField') {

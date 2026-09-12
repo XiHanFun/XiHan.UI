@@ -9,6 +9,7 @@ import type {
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
+import { useFormControlProps } from '../form/use-form-control'
 import {
   provideCheckboxGroup,
   provideCheckboxGroupItem,
@@ -35,9 +36,9 @@ export const XhCheckboxGroupRoot = defineComponent({
     value: { type: Array as PropType<string[]>, default: undefined },
     defaultValue: { type: Array as PropType<string[]>, default: undefined },
     itemValues: { type: Array as PropType<string[]>, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    invalid: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     name: { type: String, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
@@ -58,7 +59,7 @@ export const XhCheckboxGroupRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useCheckboxGroup(props as CheckboxGroupProps, notify)
+    const ctx = useCheckboxGroup(useFormControlProps(props) as CheckboxGroupProps, notify)
     provideCheckboxGroup(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default
       ? slots.default({
