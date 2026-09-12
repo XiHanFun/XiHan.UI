@@ -25316,295 +25316,6 @@
       "description": "highlight 的 mark 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-hotkeys-fg",
-      "component": "hotkeys",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-fg-muted"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 root 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-hotkeys-font-size",
-      "component": "hotkeys",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "font-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_hotkeys-font-size"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 root 部件 font-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-hotkeys-gap",
-      "component": "hotkeys",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "gap"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-space-0_5"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 root 部件 gap 覆盖槽。"
-    },
-    {
-      "name": "--xh-hotkeys-key-bg",
-      "component": "hotkeys",
-      "part": [
-        "key"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-bg-surface"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 key 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-hotkeys-key-bg-disabled",
-      "component": "hotkeys",
-      "part": [
-        "key",
-        "root"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "--xh-bg-muted"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 key、root 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-hotkeys-key-border",
-      "component": "hotkeys",
-      "part": [
-        "key"
-      ],
-      "property": [
-        "border"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-border-subtle"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 key 部件 border 覆盖槽。"
-    },
-    {
-      "name": "--xh-hotkeys-key-fg",
-      "component": "hotkeys",
-      "part": [
-        "key"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-fg-default"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 key 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-hotkeys-key-fg-modifier",
-      "component": "hotkeys",
-      "part": [
-        "key"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "modifier"
-      ],
-      "defaultToken": [
-        "--xh-fg-muted"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 key 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-hotkeys-key-font",
-      "component": "hotkeys",
-      "part": [
-        "key"
-      ],
-      "property": [
-        "font-family"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-font-family-mono"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 key 部件 font-family 覆盖槽。"
-    },
-    {
-      "name": "--xh-hotkeys-key-font-weight",
-      "component": "hotkeys",
-      "part": [
-        "key"
-      ],
-      "property": [
-        "font-weight"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-font-weight-medium"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 key 部件 font-weight 覆盖槽。"
-    },
-    {
-      "name": "--xh-hotkeys-key-min-w",
-      "component": "hotkeys",
-      "part": [
-        "key"
-      ],
-      "property": [
-        "min-inline-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-control-indicator-size"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 key 部件 min-inline-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-hotkeys-key-px",
-      "component": "hotkeys",
-      "part": [
-        "key"
-      ],
-      "property": [
-        "padding-inline"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_hotkeys-key-px"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 key 部件 padding-inline 覆盖槽。"
-    },
-    {
-      "name": "--xh-hotkeys-key-py",
-      "component": "hotkeys",
-      "part": [
-        "key"
-      ],
-      "property": [
-        "padding-block"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-space-0_5"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 key 部件 padding-block 覆盖槽。"
-    },
-    {
-      "name": "--xh-hotkeys-key-radius",
-      "component": "hotkeys",
-      "part": [
-        "key"
-      ],
-      "property": [
-        "border-radius"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-shape-inset"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 key 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-hotkeys-key-shadow",
-      "component": "hotkeys",
-      "part": [
-        "key"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-elevation-raised"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 key 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-hotkeys-separator-fg",
-      "component": "hotkeys",
-      "part": [
-        "separator"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-fg-subtle"
-      ],
-      "visibility": "public",
-      "description": "hotkeys 的 separator 部件 color 覆盖槽。"
-    },
-    {
       "name": "--xh-hover-card-arrow-size",
       "component": "hover-card",
       "part": [
@@ -27997,6 +27708,632 @@
       ],
       "visibility": "public",
       "description": "json-viewer 的 text 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-bg",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-soft-bg"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-bg-disabled",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-bg-muted"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-border",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-soft-border"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-fg",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-fg-disabled",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-fg-modifier",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "modifier"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-font",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "font-family"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-family-mono"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 font-family 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-font-size",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_kbd-font-size"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-font-weight",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-min-w",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-indicator-size"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-px",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_kbd-px"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-py",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-radius",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-shadow",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-stroke-thin"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-shadow-pressed",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "active",
+        "disabled",
+        "is(button, a[href], [role='button'], [role='menuitem'], [role='option'])",
+        "not([data-disabled])",
+        "not([disabled], [aria-disabled='true'])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-stroke-thin"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-fg",
+      "component": "kbd-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 root 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-font-size",
+      "component": "kbd-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_kbd-group-font-size"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 root 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-gap",
+      "component": "kbd-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-key-bg",
+      "component": "kbd-group",
+      "part": [
+        "key"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-soft-bg"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 key 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-key-bg-disabled",
+      "component": "kbd-group",
+      "part": [
+        "key",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-bg-muted"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 key、root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-key-border",
+      "component": "kbd-group",
+      "part": [
+        "key"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-soft-border"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 key 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-key-fg",
+      "component": "kbd-group",
+      "part": [
+        "key"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 key 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-key-fg-disabled",
+      "component": "kbd-group",
+      "part": [
+        "key",
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 key、root 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-key-fg-modifier",
+      "component": "kbd-group",
+      "part": [
+        "key"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "modifier"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 key 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-key-font",
+      "component": "kbd-group",
+      "part": [
+        "key"
+      ],
+      "property": [
+        "font-family"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-family-mono"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 key 部件 font-family 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-key-font-weight",
+      "component": "kbd-group",
+      "part": [
+        "key"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 key 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-key-min-w",
+      "component": "kbd-group",
+      "part": [
+        "key"
+      ],
+      "property": [
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-indicator-size"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 key 部件 min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-key-px",
+      "component": "kbd-group",
+      "part": [
+        "key"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_kbd-group-key-px"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 key 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-key-py",
+      "component": "kbd-group",
+      "part": [
+        "key"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 key 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-key-radius",
+      "component": "kbd-group",
+      "part": [
+        "key"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 key 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-key-shadow",
+      "component": "kbd-group",
+      "part": [
+        "key"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-stroke-thin"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 key 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-key-shadow-pressed",
+      "component": "kbd-group",
+      "part": [
+        "key",
+        "root"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "active",
+        "disabled",
+        "is(button, a[href], [role='button'], [role='menuitem'], [role='option'])",
+        "not([data-disabled])",
+        "not([disabled], [aria-disabled='true'])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-stroke-thin"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 key、root 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-separator-fg",
+      "component": "kbd-group",
+      "part": [
+        "separator"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 separator 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-group-separator-fg-disabled",
+      "component": "kbd-group",
+      "part": [
+        "root",
+        "separator"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "kbd-group 的 root、separator 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-layout-bg",

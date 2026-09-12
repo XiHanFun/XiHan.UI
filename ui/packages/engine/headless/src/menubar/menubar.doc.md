@@ -37,7 +37,7 @@
 
 ### 当前边界
 
-- 当前没有正式 shortcut、trailing、checkbox/radio item 或单条 danger tone 部件。快捷键提示可由作者节点显示，
+- 当前没有正式 shortcut、trailing、checkbox/radio item 或单条 danger tone 部件。快捷键提示使用作者放入的 [KbdGroup](./kbd-group)，
   但不会自动注册键盘动作；选择类菜单项还需要完整的行为与可访问语义。
 
 ## 反模式

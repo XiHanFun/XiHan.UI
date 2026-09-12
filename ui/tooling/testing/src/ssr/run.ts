@@ -58,9 +58,9 @@ function variants(suite: ConformanceSuite): { label: string, fixture: Fixture }[
     seen.add(key)
     out.push({ label, fixture: { component: suite.component, props, tree } })
   }
-  push('默认 fixture', {}, suite.fixture)
+  push('默认 fixture', suite.defaultProps ?? {}, suite.fixture)
   for (const c of suite.cases)
-    push(`用例「${c.name}」`, c.props ?? {}, c.fixture ? c.fixture(suite.fixture) : suite.fixture)
+    push(`用例「${c.name}」`, { ...suite.defaultProps, ...c.props }, c.fixture ? c.fixture(suite.fixture) : suite.fixture)
   return out
 }
 

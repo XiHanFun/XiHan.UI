@@ -48,7 +48,6 @@ import type { GradientTextTranslations } from '../gradient-text/gradient-text.ty
 import type { GridTranslations } from '../grid/grid.types'
 import type { HeatmapTranslations } from '../heatmap/heatmap.types'
 import type { HighlightTranslations } from '../highlight/highlight.types'
-import type { HotkeysTranslations } from '../hotkeys/hotkeys.types'
 import type { HoverCardTranslations } from '../hover-card/hover-card.types'
 import type { IconWrapperTranslations } from '../icon-wrapper/icon-wrapper.types'
 import type { IconTranslations } from '../icon/icon.types'
@@ -58,6 +57,8 @@ import type { ImageTranslations } from '../image/image.types'
 import type { InfiniteScrollTranslations } from '../infinite-scroll/infinite-scroll.types'
 import type { InputGroupTranslations } from '../input-group/input-group.types'
 import type { JsonViewerTranslations } from '../json-viewer/json-viewer.types'
+import type { KbdGroupTranslations } from '../kbd-group/kbd-group.types'
+import type { KbdTranslations } from '../kbd/kbd.types'
 import type { LayoutTranslations } from '../layout/layout.types'
 import type { ListTranslations } from '../list/list.types'
 import type { ListboxTranslations } from '../listbox/listbox.types'
@@ -177,10 +178,11 @@ export interface XhTranslationOverrides {
   'grid'?: Partial<GridTranslations>
   'heatmap'?: Partial<HeatmapTranslations>
   'highlight'?: Partial<HighlightTranslations>
-  'hotkeys'?: Partial<HotkeysTranslations>
   'hover-card'?: Partial<HoverCardTranslations>
   'icon'?: Partial<IconTranslations>
   'icon-wrapper'?: Partial<IconWrapperTranslations>
+  'kbd'?: Partial<KbdTranslations>
+  'kbd-group'?: Partial<KbdGroupTranslations>
   'image'?: Partial<ImageTranslations>
   'image-cropper'?: Partial<ImageCropperTranslations>
   'image-viewer'?: Partial<ImageViewerTranslations>

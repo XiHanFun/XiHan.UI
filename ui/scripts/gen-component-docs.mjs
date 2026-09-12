@@ -827,17 +827,19 @@ function renderComponent(entry, category) {
     push(`| 皮肤 | ${code(ad.skin)} |`)
   push('')
 
-  // 解剖
-  push('## 解剖', '')
-  push(
-    `部件名即 ${code('data-part')} 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 ${code('wc.missing-part')}）。`,
-    '',
-  )
-  push(
-    `${code(`data-scope="${id}"`)}：${
-      rt.parts.map(x => (required.has(x) ? `**${code(x)}**` : code(x))).join(' · ')}`,
-    '',
-  )
+  // renderless family 没有视觉解剖，不能伪造 data-scope 或空 part 表。
+  if (rt.parts.length) {
+    push('## 解剖', '')
+    push(
+      `部件名即 ${code('data-part')} 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 ${code('wc.missing-part')}）。`,
+      '',
+    )
+    push(
+      `${code(`data-scope="${id}"`)}：${
+        rt.parts.map(x => (required.has(x) ? `**${code(x)}**` : code(x))).join(' · ')}`,
+      '',
+    )
+  }
 
   // Props
   if (tm.props.length) {
@@ -969,8 +971,7 @@ function renderComponent(entry, category) {
     push(...componentTokenDocs.split('\n'), '')
 
   // 动效：分三种情形——皮肤里真在动、动效在皮肤之外由脚本驱动、本组件不动。
-  // 「皮肤里真在动」只认剥掉减弱动效与高对比两类块之后仍成立的声明：那两处写的是关掉
-  push('## 动效', '')
+  // renderless 且没有脚本动效的 family 不伪造“本组件皮肤”小节。
   const sm = scriptedMotion(id)
   const inSkin = []
   if (sk?.keyframes.length)
@@ -987,28 +988,31 @@ function renderComponent(entry, category) {
   if (sm.prefers)
     outsideSkin.push('内核读系统的减弱动效偏好，据此决定要不要动')
 
-  if (inSkin.length) {
-    push(`${inSkin.join('；')}。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。`, '')
-    if (outsideSkin.length)
-      push(`皮肤之外还有一段：${outsideSkin.join('；')}。`, '')
-  }
-  else if (outsideSkin.length) {
-    push(
-      `皮肤里没有过渡也没有关键帧，本组件的动效不在皮肤里：${outsideSkin.join('；')}。`
-      + '时长与缓动仍读[动效令牌](../guide/motion)。',
-      '',
-    )
-  }
-  else {
-    push('本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。', '')
-  }
-  if (inSkin.length || outsideSkin.length) {
-    push(
-      sk?.reduceMotion
-        ? `${code('prefers-reduced-motion: reduce')} 下本组件另有降级规则。`
-        : '系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。',
-      '',
-    )
+  if (sk || outsideSkin.length) {
+    push('## 动效', '')
+    if (inSkin.length) {
+      push(`${inSkin.join('；')}。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。`, '')
+      if (outsideSkin.length)
+        push(`皮肤之外还有一段：${outsideSkin.join('；')}。`, '')
+    }
+    else if (outsideSkin.length) {
+      push(
+        `皮肤里没有过渡也没有关键帧，本组件的动效不在皮肤里：${outsideSkin.join('；')}。`
+        + '时长与缓动仍读[动效令牌](../guide/motion)。',
+        '',
+      )
+    }
+    else {
+      push('本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。', '')
+    }
+    if (inSkin.length || outsideSkin.length) {
+      push(
+        sk?.reduceMotion
+          ? `${code('prefers-reduced-motion: reduce')} 下本组件另有降级规则。`
+          : '系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。',
+        '',
+      )
+    }
   }
 
   // 响应式：只有视口断点与容器查询算这一节；输入能力单独说，渲染模式不进来
@@ -1054,10 +1058,11 @@ function renderComponent(entry, category) {
 
 function renderIndex() {
   const total = manifest.categories.reduce((a, c) => a + c.components.length, 0)
+  const renderless = manifest.categories.flatMap(c => c.components).filter(c => c.renderless).length
   const L = []
   L.push('# 组件总览', '')
   L.push(
-    `${total} 个组件，每个都同时提供**无头内核**（\`@xihan-ui/headless\`）、**Vue 组件**（\`@xihan-ui/vue\`）、**自定义元素**（\`@xihan-ui/web-components\`）与**默认皮肤**（\`@xihan-ui/styles\`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。`,
+    `${total} 个组件都提供**无头内核**（\`@xihan-ui/headless\`）、**Vue 组件**（\`@xihan-ui/vue\`）与**自定义元素**（\`@xihan-ui/web-components\`）；其中 ${total - renderless} 个视觉组件另有**默认皮肤**（\`@xihan-ui/styles\`），${renderless} 个 renderless 行为组件不伪造视觉层。内核是唯一的行为定义，适配器不重新实现逻辑。`,
     '',
   )
   L.push(

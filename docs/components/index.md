@@ -1,6 +1,6 @@
 # 组件总览
 
-126 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
+128 个组件都提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）与**自定义元素**（`@xihan-ui/web-components`）；其中 127 个视觉组件另有**默认皮肤**（`@xihan-ui/styles`），1 个 renderless 行为组件不伪造视觉层。内核是唯一的行为定义，适配器不重新实现逻辑。
 
 本册每个组件一页，页内小节固定：概述 · 何时使用 · 何时不用 · 特性 · 示例 · 产物 · 解剖 · Props · 事件 · 插槽 · 状态 · connect API · 键盘 · 无障碍 · 样式 · 数据属性 · CSS 变量 · 动效 · 响应式 · RTL · 组合 · 最佳实践 · 反模式。其中契约类的小节由组件源码、连接层与皮肤直接生成，不会与代码对不上；讲取舍的几节与组件源码同放，见各组件目录下的 doc.md。某一节没有内容时整节不出现，不留空标题。
 
@@ -19,7 +19,9 @@
 | [文本截断](./truncate) | `truncate` | 1 | 2 | 4 |
 | [浮动按钮](./float-button) | `float-button` | 3 | 3 | 5 |
 | [渐变文字](./gradient-text) | `gradient-text` | 1 | 0 | 5 |
-| [快捷键](./hotkeys) | `hotkeys` | 3 | 2 | 6 |
+| [快捷键](./hotkeys) | `hotkeys` | 0 | 2 | 4 |
+| [键帽](./kbd) | `kbd` | 1 | 0 | 4 |
+| [键帽组](./kbd-group) | `kbd-group` | 3 | 0 | 4 |
 | [图标](./icon) | `icon` | 2 | 0 | 7 |
 | [图标块](./icon-wrapper) | `icon-wrapper` | 1 | 0 | 4 |
 | [滚动条](./scrollbar) | `scrollbar` | 4 | 7 | 4 |

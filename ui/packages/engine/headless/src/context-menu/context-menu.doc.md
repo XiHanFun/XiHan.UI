@@ -39,7 +39,7 @@
 
 ### 当前边界
 
-- 当前没有独立的 shortcut、trailing 或单条 danger tone 部件。快捷键提示可由作者节点显示，
+- 当前没有独立的 shortcut、trailing 或单条 danger tone 部件。快捷键提示使用作者放入的 [KbdGroup](./kbd-group)，
   并按顺序参与 flex 主行；提示不会自动注册键盘动作。
 
 ## 反模式

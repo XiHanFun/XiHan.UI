@@ -2,8 +2,8 @@
 // useHotkeys 的三条：不渲染任何节点也能注册、监听挂在指定节点上且换节点会重绑、
 // 作用域销毁后不再响应。三条锁的都是不报错的失败模式。
 import { afterEach, describe, expect, it } from 'vitest'
-import { createApp, ref } from 'vue'
-import { useHotkeys } from '../src'
+import { createApp, h, ref } from 'vue'
+import { useHotkeys, XhHotkeys } from '../src'
 
 let cleanup: Array<() => void> = []
 
@@ -96,6 +96,54 @@ describe('useHotkeys', () => {
     expect(hits).toBe(1)
 
     unmount()
+    pressK(document)
+    expect(hits).toBe(1)
+  })
+
+  it('手动 stop 后即使响应式依赖变化也不会重新绑定', async () => {
+    const enabled = ref(true)
+    let hits = 0
+    let stop = () => {}
+    mount(() => {
+      stop = useHotkeys(() => ({
+        keys: ['Control', 'k'],
+        enabled: enabled.value,
+        onHotKey: () => { hits += 1 },
+      })).stop
+    })
+    pressK(document)
+    expect(hits).toBe(1)
+
+    stop()
+    enabled.value = false
+    await Promise.resolve()
+    enabled.value = true
+    await Promise.resolve()
+    pressK(document)
+    expect(hits).toBe(1)
+  })
+})
+
+describe('xhHotkeys', () => {
+  it('组件只安装监听，不渲染展示节点', () => {
+    let hits = 0
+    const host = document.createElement('div')
+    document.body.append(host)
+    const app = createApp({
+      setup: () => () => h(XhHotkeys, {
+        keys: ['Control', 'k'],
+        onHotKey: () => { hits += 1 },
+      }),
+    })
+    app.mount(host)
+    cleanup.push(() => {
+      app.unmount()
+      host.remove()
+    })
+
+    // Vue 会为 null VNode 留一个内部注释锚点，但没有元素、文字或可访问节点。
+    expect(host.children).toHaveLength(0)
+    expect(host.textContent).toBe('')
     pressK(document)
     expect(hits).toBe(1)
   })

@@ -722,7 +722,7 @@
       "pagination"
     ],
     "key": [
-      "hotkeys"
+      "kbd-group"
     ],
     "label": [
       "button",
@@ -1062,10 +1062,11 @@
       "grid",
       "heatmap",
       "highlight",
-      "hotkeys",
       "hover-card",
       "icon",
       "icon-wrapper",
+      "kbd",
+      "kbd-group",
       "image",
       "image-cropper",
       "infinite-scroll",
@@ -1204,7 +1205,7 @@
       "breadcrumb",
       "button-group",
       "context-menu",
-      "hotkeys",
+      "kbd-group",
       "menu",
       "menubar",
       "pin-input",

@@ -1079,6 +1079,10 @@ export { XhJsonViewerRoot } from './components/json-viewer/json-viewer'
 export type { XhJsonViewerRootProps } from './components/json-viewer/json-viewer'
 export { useJsonViewer } from './components/json-viewer/use-json-viewer'
 export type { JsonViewerContext } from './components/json-viewer/use-json-viewer'
+export { XhKbdGroup } from './components/kbd-group/kbd-group'
+export type { XhKbdGroupProps } from './components/kbd-group/kbd-group'
+export { XhKbd } from './components/kbd/kbd'
+export type { XhKbdProps } from './components/kbd/kbd'
 export { useLayoutContext } from './components/layout/context'
 export {
   XhLayoutContent,
