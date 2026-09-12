@@ -1,35 +1,15 @@
-// 折叠中间层级 | 省略号与分隔符同为 ol 的直接子 li，两者都对读屏隐藏，念出来仍是「列表，共 3 项」
+// 折叠层级 | 收起过长路径的中间部分
 import type { ReactNode } from "react";
-import {
-  XhBreadcrumbEllipsis,
-  XhBreadcrumbItem,
-  XhBreadcrumbLink,
-  XhBreadcrumbList,
-  XhBreadcrumbRoot,
-  XhBreadcrumbSeparator,
-} from "@xihan-ui/react";
+import { XhBreadcrumbRoot } from "@xihan-ui/react";
+
+const items = [
+  { value: "home", label: "首页", href: "#/" },
+  { value: "docs", label: "文档", href: "#/docs" },
+  { value: "guides", label: "指南", href: "#/docs/guides" },
+  { value: "components", label: "组件", href: "#/docs/guides/components" },
+  { value: "breadcrumb", label: "面包屑", current: true },
+];
 
 export default function Demo(): ReactNode {
-  return (
-    <XhBreadcrumbRoot>
-      <XhBreadcrumbList>
-        <XhBreadcrumbItem>
-          <XhBreadcrumbLink href="#/">首页</XhBreadcrumbLink>
-        </XhBreadcrumbItem>
-        <XhBreadcrumbSeparator />
-        <XhBreadcrumbItem>
-          <XhBreadcrumbLink href="#/docs">文档</XhBreadcrumbLink>
-        </XhBreadcrumbItem>
-        <XhBreadcrumbSeparator />
-        {/* 被折叠掉的那几层，只是视觉占位，不参与列表项计数 */}
-        <XhBreadcrumbEllipsis>…</XhBreadcrumbEllipsis>
-        <XhBreadcrumbSeparator />
-        <XhBreadcrumbItem>
-          <XhBreadcrumbLink href="#/docs/deep/current" current>
-            当前页
-          </XhBreadcrumbLink>
-        </XhBreadcrumbItem>
-      </XhBreadcrumbList>
-    </XhBreadcrumbRoot>
-  );
+  return <XhBreadcrumbRoot collection={items} maxItems={3} />;
 }
